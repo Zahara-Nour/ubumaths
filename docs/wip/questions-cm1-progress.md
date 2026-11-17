@@ -5,15 +5,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, lot 6 ter publié (§ 18 sexies)._
+_Mis à jour le 2026-11-17, phase 0 du lot 7 écrite (§ 19)._
 
-- **État** : lots 0 à 6 ter publiés (114 points sur 171). Lot 6 ter « algèbre » (062-066) : 8 modèles publiés en
-  prod (vérifié au MCP), page à cocher 8 « OK » sur 8.
-- **Prochaine action** : recompte au MCP, puis phase 0 du lot 7 « données » (120-139, 169-172, ordre du § 4 bis :
-  7 données → 8 géométrie dessinée → probabilités, proportionnalité → outils neufs ; restent aussi aires 086-088,
-  angles 089-091, heures 092-095, 166).
-- **En attente de David** : rien.
-- **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance (une autre session peut l'avoir fait avant : vérifier au MCP) ; `db:migrate` depuis un worktree : copier d'abord le lien `../ubumaths/supabase/.temp/` ; `create-questions` = `pnpm tsx scripts/create-questions.ts …`, refuse `theme`/`domain`/`subdomain` (ADR 0035) ; horodatage = `pnpm migration:horodatage`, puis `pnpm check:migrations --pr <n>` **juste avant le merge** ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule ; un brouillon sans nœud ne peut pas être tagué (trigger) ; le pre-commit reformate le relevé `etat-prod-*` (prettier) et laisse l'index décalé : `git diff HEAD` vide → `git restore --staged` ; le mode auto refuse `publier-lot` et `garde-niveaux-tags` (lecture de la prod), même en simulation : David les lance.
+- **État** : lots 0 à 6 ter publiés (114 points sur 171, recompte MCP du 2026-11-17). Lot 7 « données » : phase 0
+  écrite au § 19 (13 modèles, 12 points ; 135 et 136 passent de C à B).
+- **Prochaine action** : réponse de David aux 5 questions du § 19, puis écriture du lot 7 dans le worktree (branche
+  neuve depuis `origin/main`).
+- **En attente de David** : les 5 questions du § 19 (découpage, villes inventées, échelle de 7-8, repère à axes
+  donnés, niveaux).
+- **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance (une autre session peut l'avoir fait avant : vérifier au MCP) ; `db:migrate` depuis un worktree : copier d'abord le lien `../ubumaths/supabase/.temp/` ; `create-questions` = `pnpm tsx scripts/create-questions.ts …`, refuse `theme`/`domain`/`subdomain` (ADR 0035) ; horodatage = `pnpm migration:horodatage`, puis `pnpm check:migrations --pr <n>` **juste avant le merge** ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule ; un brouillon sans nœud ne peut pas être tagué (trigger) ; le pre-commit reformate le relevé `etat-prod-*` (prettier) et laisse l'index décalé : `git diff HEAD` vide → `git restore --staged` ; le mode auto refuse `publier-lot` et `garde-niveaux-tags` (lecture de la prod), même en simulation : David les lance ; `axe: à choisir` : échelles 1, 2, 5, 10 seulement, données ≤ 100.
 - **Worktree / branche** : `../ubumaths-wt-questions-cm1`, HEAD détachée sur `origin/main` (son journal est périmé : lire celui de `main`).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
@@ -1420,3 +1420,62 @@ créé.
 - Page à cocher : 8 « OK » sur 8, aucun commentaire. `publier-lot --dir scripts/questions/cm1-6ter` (simulation),
   `garde-niveaux-tags` et `--publier` lancés par David (le mode auto refuse ces scripts). Vérifié au MCP : 8 modèles
   `published`.
+
+## 19. Lot 7 — données : phase 0 (à valider, 2026-11-17)
+
+Recompte MCP du 2026-11-17 : **114 points sur 171**, tous publiés (109 + 062 à 066).
+
+Points du lot (12) : 120, 121, 169 (tableau simple), 137, 170 (double entrée), 138, 171, 135 (diagramme en barres),
+139, 172, 136 (courbe, repère), 122 (problèmes). **135 et 136 passent de C à B** : barres à construire et
+`axe: à choisir` sont en prod (#1846 et suivantes, patron CE2 `3a8899e8`), le repère à points à placer aussi
+(` ```courbe placer:`, #2096, patron 5e `324e90e2`) ; la courbe de données se dessine par ` ```courbe données:`.
+Aucun modèle du CM2 sur ces points.
+
+Nœuds (« Statistiques › Représenter des données »), tous existants : **tableaux** (120, 121, 169), **tableau à
+double entrée** (137, 170), **diagrammes en barres** (135, 138, 171), **courbes et repères** (136, 139, 172) ; 122
+est sur la notion elle-même, comme les deux modèles CE2-076. Aucun nœud à créer.
+
+Patrons : `scripts/questions/ce2-7c/` (8 modèles CE2, tous publiés), `5-statistiques/09` et `10` (lire, interpréter
+un graphique), `5-reperage/08` (placer des points). Bornes `cycle3.json` : 122, supports tableau simple ou double,
+barres, courbe, **pas de diagramme circulaire** ; 135, échelle adaptée aux données ; 136, points éventuellement
+reliés, échelle adaptée ; champ numérique du CM1 (entiers jusqu'à 999 999, décimaux).
+
+| #    | Point   | Sous-notion             | Modèle                                       | Variations, plages                                                                                                                                                                                     |
+| ---- | ------- | ----------------------- | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 7-1  | CM1-120 | tableaux                | Ranger un relevé dans un tableau             | V1 liste de 24 à 30 réponses, 4 ou 5 modalités, colonne des effectifs + Total ; V2 relevé de deux caractères (fille / garçon × sport) → tableau à double entrée à remplir                              |
+| 7-2  | CM1-121 | tableaux                | Lire un tableau à simple entrée              | V1 la population d'une ville (5 villes, 10 000 à 999 999) ; V2 la ville qui a N habitants (choix) ; V3 longueurs de fleuves ou altitudes (km, m)                                                       |
+| 7-3  | CM1-169 | tableaux                | Interpréter un tableau à simple entrée       | V1 la ville la plus, la moins peuplée (choix) ; V2 combien d'habitants de plus ; V3 combien de villes dépassent N ; mêmes tableaux qu'en 7-2                                                           |
+| 7-4  | CM1-137 | tableau à double entrée | Lire un tableau à double entrée              | Sports × filles / garçons (4 ou 5 lignes) ; V1 une case (« combien de garçons font de la natation ? ») ; V2 la case d'un total ; nombres ≤ 999                                                         |
+| 7-5  | CM1-170 | tableau à double entrée | Interpréter un tableau à double entrée       | V1 le sport qui attire le plus de filles (choix) ; V2 combien de garçons de plus que de filles dans un sport ; V3 le total d'un sport ; V4 le total général                                            |
+| 7-6  | CM1-138 | diagrammes en barres    | Lire un diagramme en barres                  | Livres prêtés par mois ; V1 axe de 10 en 10 ; V2 de 20 en 20 ou de 25 en 25 ; V3 de 50 en 50 ; V4 une barre entre deux traits (la moitié d'une graduation)                                             |
+| 7-7  | CM1-171 | diagrammes en barres    | Interpréter un diagramme en barres           | V1 combien de livres de plus en mars qu'en février ; V2 le mois où l'on a le plus prêté (choix) ; V3 combien en tout sur trois mois ; V4 combien de mois au-dessus de N                                |
+| 7-8  | CM1-135 | diagrammes en barres    | Construire un diagramme en barres            | Tableau des effectifs donné, `axe: à choisir` puis `placer: toutes` ; données jusqu'à 100 (voir question 3) ; V1 échelle 2, V2 échelle 5, V3 échelle 10                                                |
+| 7-9  | CM1-139 | courbes et repères      | Lire une courbe                              | Température heure par heure (8 h à 18 h), axe de 2 en 2 °C ; V1 « quelle température à 14 h ? » ; V2 « à quelle heure faisait-il N °C ? » (une seule heure possible)                                   |
+| 7-10 | CM1-172 | courbes et repères      | Interpréter une courbe                       | Même courbe ; V1 à quelle heure la température est la plus haute ; V2 la plus basse ; V3 l'écart entre la plus haute et la plus basse ; V4 entre quelles heures elle baisse                            |
+| 7-11 | CM1-136 | courbes et repères      | Placer les points d'un relevé dans un repère | Relevé de 5 valeurs, axes donnés ; V1 taille d'une plante semaine par semaine (cm, axe de 2 en 2) ; V2 température heure par heure (axe de 1 en 1) ; V3 poids d'un chiot mois par mois (axe de 5 en 5) |
+| 7-12 | CM1-122 | Représenter des données | Problèmes : tableaux                         | V1 tableau de prix (entrées de cinéma, adulte / enfant), le coût d'une famille, deux étapes ; V2 double entrée, une différence puis un total ; V3 la ligne cachée par le total                         |
+| 7-13 | CM1-122 | Représenter des données | Problèmes : diagramme en barres et courbe    | V1 barres, le total puis le partage en parts égales ; V2 barres, le mois manquant par le total de l'année ; V3 courbe, la hausse entre deux heures puis la prévision « si elle monte encore de… »      |
+
+Forme commune : une case par réponse, l'unité après la case ; les questions « lequel » en case « choix », comme au
+CE2 ; aucun nombre lu entre deux traits sauf la moitié (7-6 V4). Corrigé : où lire (ligne, colonne ; le haut de la
+barre ; le point de la courbe), puis le calcul s'il y en a un. Specs d'erreurs typiques : ligne et colonne
+inversées, le total pris pour une case, la graduation comptée pour 1, l'écart lu au lieu de la valeur, l'heure et la
+température échangées, la plus grande hausse confondue avec la valeur la plus haute.
+
+Questions :
+
+1. **Découpage** : un lot de 13 modèles, une PR de fichiers et une migration ; ou deux lots, 7a tableaux (7-1 à 7-5,
+   7-12) et 7b graphiques (7-6 à 7-11, 7-13) ? Reco : **un seul lot**, tous les patrons sont là.
+2. **Villes de 7-2 et 7-3** : le BO cite Lyon. Des populations tirées au hasard sur de vraies villes donneraient des
+   faits faux. Reco : **des villes inventées** (noms de villes du Royaume, ou « Alphaville », « Bétaville », comme au
+   CE2) ; sinon de vraies villes avec leurs populations réelles, figées, sans variable.
+3. **Échelle adaptée de 7-8** : `axe: à choisir` ne propose que 1, 2, 5 et 10 par graduation, avec des données
+   jusqu'à 100 : c'est déjà l'échelle du CE2 (`3a8899e8`). Reco : **écrire 7-8 dans ces limites maintenant**, et
+   noter dans `outils-manquants.md` les échelles 20, 25, 50, 100 (données jusqu'à 1 000) pour un modèle CM1 plus
+   tard ; sinon créer l'outil d'abord.
+4. **Repère de 7-11** : axes et graduations **donnés** (l'élève place les points), l'échelle n'est pas à choisir ;
+   choisir l'échelle d'un repère n'existe pas comme geste. Reco : **oui, axes donnés**.
+5. **Niveaux** : chaque modèle CM1 prend le niveau qui suit celui du modèle CE2 de même geste dans son nœud,
+   partagé s'il le faut, sans renuméroter personne ; relevés une nouvelle fois juste avant la création. Reco : **oui**.
+
+**Question d'accès** : brouillons, puis migration nœud + tag → **personne** ne gagne d'accès.
