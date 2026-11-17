@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, phase 0 (aucune PR)._
+_Mis à jour le 2026-11-17, PR du code ouverte._
 
-- **État** : phase 0 : les 9 points de la page et les 4 textes de la FAQ sont tranchés (2026-11-17).
-- **Prochaine action** : comportements de la PR (`PARENT_VIEW` + FAQ repliée) proposés à David, attendre sa validation avant de coder.
-- **En attente de David** : validation des comportements de la PR.
-- **Pièges en cours** : ne promettre que ce que prouve `docs/systeme/carte-des-fonctionnalites.md` ; argent : jamais « gratuit » seul ni « pour toujours ».
-- **Worktree / branche** : aucun encore (doc sur `main`) ; le code ira dans `views.ts` (`PARENT_VIEW`).
+- **État** : phase 0 finie (9 points + 4 FAQ tranchés). PR `feat/presentation-parents` : `PARENT_VIEW` réécrite, FAQ repliée (`<details>`) + `FAQPage` ; tests rouges vérifiés puis verts ; captures téléphone clair / sombre relues.
+- **Prochaine action** : CI verte → merge ; puis vérification de `/parents` après le prochain `deploy:prod` ; clore le chantier (élèves et professeurs : « plus tard », à reposer à David).
+- **En attente de David** : rien.
+- **Pièges en cours** : ne promettre que ce que prouve `docs/systeme/carte-des-fonctionnalites.md` ; argent : jamais « gratuit » seul ni « pour toujours » ; FAQ « À qui parler ? » à préciser si « borné au groupe » d'Akadada est codé.
+- **Worktree / branche** : `../ubumaths-wt-presentation-parents` · `feat/presentation-parents`.
 
 ## Cadre
 
@@ -119,3 +119,7 @@ Bloc « L'inscrire, et combien ça coûte » validé tel quel (« oui »), lien 
 ## Propositions en attente
 
 (aucune)
+
+## Historique
+
+- 2026-11-17 : PR du code (`views.ts`, `AudienceView.svelte`, docs `carte-des-fonctionnalites.md` et `seo.md`). Tests : `views.test.ts` 11 rouges puis verts ; `AudienceView.svelte.test.ts` 3 rouges sans le composant, verts avec ; `check:incremental` 0 erreur ; cliquet tenu.

@@ -150,10 +150,10 @@ aiguillage, Élève / Parent / Professeur, vers trois vues courtes : `/eleves`, 
 | Fichier                                                | Rôle                                                                                               |
 | ------------------------------------------------------ | -------------------------------------------------------------------------------------------------- |
 | `src/lib/kingdom-tour/audiences.ts`                    | `AUDIENCES` : les trois publics, leur libellé et leur adresse                                      |
-| `src/lib/kingdom-tour/views.ts`                        | Le contenu des trois vues (`STUDENT_VIEW`, `PARENT_VIEW`, `TEACHER_VIEW`)                          |
+| `src/lib/kingdom-tour/views.ts`                        | Le contenu des trois vues (`STUDENT_VIEW`, `PARENT_VIEW`, `TEACHER_VIEW`), `faqJsonLd`             |
 | `src/lib/kingdom-tour/drift.ts`                        | `driftGeometry`, `driftAt` : la dérive autour de Père Ubu (pures)                                  |
 | `src/lib/components/kingdom-tour/AudienceWheel.svelte` | La roue : la chandelle verte, sa lumière, ses trois choix ; `placement` `corner` (vues) ou `orbit` |
-| `src/lib/components/kingdom-tour/AudienceView.svelte`  | La mise en page d'une vue : Père Ubu, blocs, démos du Tour, portes d'entrée, autres vues en liens  |
+| `src/lib/components/kingdom-tour/AudienceView.svelte`  | La mise en page d'une vue : Père Ubu, blocs, démos du Tour, FAQ, portes d'entrée, autres vues      |
 | `src/routes/(public)/{eleves,parents,professeurs}/`    | Une page par vue ; le serveur choisit l'ambiance du mois (jamais prérendue)                        |
 
 **Invariants**
@@ -185,16 +185,24 @@ aiguillage, Élève / Parent / Professeur, vers trois vues courtes : `/eleves`, 
   toujours ». Le niveau est dit partout : du CM1 à la Terminale.
 - **Le registre** : élèves tutoyés ; parents et professeurs vouvoyés (les descriptions du Tour,
   qui tutoient, sont réécrites pour les professeurs).
-- **Les parents** lisent franchement : pas de compte parent (les liens du cahier de textes et du
-  cours, par le professeur), et le tuteur passe par un prestataire aux États-Unis.
+- **Les parents** (revue point par point du 2026-11-17, journal `docs/wip/presentation-parents-progress.md`) :
+  sur la page, ce qui fait venir (qui est derrière, ce que l'enfant y fait, le suivi par le
+  [carnet de liaison](carnet-de-liaison.md), l'inscription avec un code de classe et le prix) ;
+  dans la **FAQ**, ce qui rassure (à qui il parle, le tuteur IA et son prestataire aux États-Unis,
+  nommé, les données, les jeux). La FAQ est faite de `<details>` natifs : repliée, mais ses
+  réponses restent dans le HTML, et reprises en données structurées `FAQPage` (`faqJsonLd`). Les
+  gidouilles ne s'achètent jamais avec de l'argent réel. Pas de démonstration « La forme compte »
+  (elle reste aux professeurs).
 
 **Comment étendre** : un bloc → une entrée de `blocks` dans `views.ts` (son icône dans `ViewIcon`
-et dans `AudienceView.svelte`) ; un lien → une page publique qui existe (le test le vérifie).
+et dans `AudienceView.svelte`) ; une question fréquente → une entrée de `faq` ; un lien → une
+page publique qui existe (le test le vérifie).
 
-**Tests** : `src/lib/kingdom-tour/__tests__/views.test.ts` (liens, registre, argent, niveau),
+**Tests** : `src/lib/kingdom-tour/__tests__/views.test.ts` (liens, registre, argent, niveau, page
+des parents, `faqJsonLd`),
 `drift.test.ts` (zone libre, flanc, vitesse) ; `src/lib/components/kingdom-tour/__tests__/`
-(`AudienceWheel` : clavier, survol, invitation ; `AudienceView` : titre, roue, autres vues, pas de
-débord à 320, 375 et 1280 px) ; `src/routes/(public)/__tests__/page.svelte.test.ts` (roue pour
+(`AudienceWheel` : clavier, survol, invitation ; `AudienceView` : titre, roue, autres vues, FAQ
+repliée qui s'ouvre au clic, `FAQPage` dans l'en-tête, pas de débord à 320, 375 et 1280 px) ; `src/routes/(public)/__tests__/page.svelte.test.ts` (roue pour
 l'anonyme seulement, Père Ubu vers `/royaume`).
 
 ## Le Tour du Royaume (`/royaume`)
