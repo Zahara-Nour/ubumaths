@@ -167,3 +167,17 @@ Résultats :
   non publiés, à ne pas doublonner si le lot 2 fait des questions de cours.
 - Sonde « factorielle » trop bruitée (le `!` du texte) : la vérification des coefficients binomiaux sans
   factorielle se fait variation par variation au lot 0.
+
+## 7. Ce que les chantiers voisins ont appris (2026-11-17)
+
+- `questions-1gen` (§ 2.3 de son journal) : une passe **par mots-clés ne suffit pas** — leur deuxième passe a
+  lu en entier 49 modèles de tous niveaux (plages, conditions, corrigés) et a trouvé des modèles taguables que
+  les titres cachaient. Le § 6 ci-dessus est une passe par mots-clés : **à refaire de la même façon** au lot 0
+  (lecture complète des candidats, tous niveaux).
+- `questions-1techno` : les jumeaux passent par une **page à cocher** (instantanés exportés) avant la
+  migration de tags (lot T1). Même démarche ici pour le lot 0.
+- **Chevauchement entre chantiers** : les fonctions aˣ et le taux d'évolution moyen sont aussi à écrire en
+  1re générale (1GEN-032 à 037, 040, 059 : même nœud que TTECHNO-031 à 039, 080, 081), les suites en 1re
+  techno. Avant d'écrire les lots 3 et 4, relire le journal `questions-1gen` : un modèle écrit là-bas peut
+  porter le tag TTECHNO (un tag par programme, ADR 0020) si ses plages tiennent dans les deux bornes —
+  sinon deux modèles écrits en parallèle seraient des doublons.
