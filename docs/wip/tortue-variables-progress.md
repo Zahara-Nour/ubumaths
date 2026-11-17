@@ -4,7 +4,7 @@
 
 _Mis à jour le 2026-11-17, après #2742._
 
-- **État** : PR A (#2735) et PR B (#2742) mergées ; PR C (4 modèles, `scripts/questions/tortue-variables/`) écrite, specs vertes, publiée en base locale · **Prochaine action** : relecture de David (serveur 5179), puis PR, CI, merge ; ensuite David lance `create-questions --publier` en prod (brouillons), puis PR D (nœud + tag par migration) · **En attente de David** : relecture des 4 modèles · **Pièges en cours** : un modèle `niveau:` n'a d'écran en prod qu'après `deploy:prod` ; « répéter jusqu’à » s'écrit avec l'apostrophe courbe ; reste en suspens (revue PR A) : `1e2`, `répéter 2,5` · **Worktree / branche** : `../ubumaths-wt-tortue-variables`, `feat/tortue-variables-modeles`
+- **État** : PR A (#2735) et PR B (#2742) mergées ; PR C (4 modèles, `scripts/questions/tortue-variables/`) écrite, specs vertes, publiée en base locale · **Prochaine action** : relecture de David (serveur 5179, base locale), puis David lance `create-questions --publier` en prod (brouillons), puis PR D (nœud + tag par migration) · **En attente de David** : relecture des 4 modèles · **Pièges en cours** : un modèle `niveau:` n'a d'écran en prod qu'après `deploy:prod` ; « répéter jusqu’à » s'écrit avec l'apostrophe courbe ; reste en suspens (revue PR A) : `1e2`, `répéter 2,5` · **Worktree / branche** : `../ubumaths-wt-tortue-variables`, `feat/tortue-variables-modeles`
 
 ## Origine
 
