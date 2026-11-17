@@ -1229,3 +1229,10 @@ publication, les élèves de 4e voient 3 modèles de plus.
 a-t-il des arêtes ? » (027 v5 : le BO ne tranche pas) ; catégories telles quelles ; 074 v1 : `colorier:` jugé au
 nombre de parts, accepté ; 028 v2 (patron dans un choix) : essayé en base locale, retiré si le rendu est mauvais,
 le trou noté pour le chantier d'outils.
+
+## Note de la session 3e (2026-11-17, clôture de `questions-3`)
+
+- **4-068 / 4-069** sont encore rangés sur la notion « Algorithmique › Variables et instructions » (relevé MCP du
+  2026-11-17 : 2 et 1 modèles publiés). La sous-notion « blocs personnalisés » créée pour 3-050 « leur servira »
+  (décision du 2026-11-01, journal archivé `docs/archive/wip/questions-3-progress.md` § 14.10) : à ranger avec les
+  modèles de 4e qui les couvrent.

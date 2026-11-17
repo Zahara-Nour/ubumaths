@@ -41,7 +41,7 @@ fait déjà (` ```figure ` + ` ```choix `, B).
 | 6e         | 179 (définition) ; **180** (construire, papier uni aussi)                                  | énoncer ; **construire**                | case / choix ; **§ 1 n° 1**                     | 179, 180 faits (`9e83ea34` ; `59694d66`, `6-constructions/15`)              |
 | 5e         | 054, 055 (demi-tour : définir, propriétés) ; tracé du symétrique central                   | reconnaître, appliquer ; **construire** | B ; **§ 1 n° 1** (symétrique par un point)      | Lot 15 de `questions-5` publié (2026-11-16) ; tracé `symetrique par O`      |
 | 4e         | 030, 031, 032 (translation) ; symétrie centrale en 4e (sans code relevé)                   | choisir l'image, calculer               | ` ```figure grille:` + `translation()` + choix  | 030-032 faits (lot 6) ; 4e symétrie centrale à vérifier en base             |
-| 3e         | 024, 025, 026 (translation, vecteurs, enchaînements)                                       | choisir le point image ; tracer         | quadrillage + choix ; `tracer: vecteur` (#2274) | En cours (`questions-3` lot 6)                                              |
+| 3e         | 024, 025, 026 (translation, vecteurs, enchaînements)                                       | choisir le point image ; tracer         | quadrillage + choix ; `tracer: vecteur` (#2274) | Faits (`questions-3` lot 6, publié 2026-11-01)                              |
 | 1re techno | 015, 109, 016, 110, 018, 019 (frises, pavages, motif, transformations du plan)             | analyser une frise, créer une figure    | à concevoir                                     | Aucun journal ne le traite (1TECHNO en second tag seulement)                |
 
 ## 3. À trancher par David

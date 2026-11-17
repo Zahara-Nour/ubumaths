@@ -1,20 +1,19 @@
 # Chantier « questions-3 » — couvrir la 3e en modèles de questions
 
-> Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) (skill `couvrir-niveau`).
+> Démarche : [couvrir-un-niveau.md](../../pratiques/couvrir-un-niveau.md) (skill `couvrir-niveau`).
 > Bornes : `docs/systeme/programmes/bornes/cycle4.json` → `3.points`.
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après la publication des lots 7 et 8._
+_Mis à jour le 2026-11-17 : **chantier clos** (go de David)._
 
-- **État** : lots 0 à 8 publiés. **65 points de 3e sur 66** ont au moins un modèle publié (relevé MCP du
-  2026-11-17, § 16.3). Seul reste 3-017 (analyse-synthèse), classé non évaluable (§ 3, D).
-- **Prochaine action** : clôture du chantier à proposer à David (recompter le découpage du § 4 contre les
-  lots publiés, puis versement du durable et archivage du journal).
-- **En attente de David** : le go de clôture ; le sort de 3-017 (reste sans modèle ?).
-- **Pièges en cours** : 4-068 / 4-069 encore sur la notion « Variables et instructions » (à ranger avec
-  les modèles de 4e qui les couvrent, § 16) ; `publier-lot.ts` et `db:migrate` = David, avec `!`.
-- **Worktree / branche** : `../ubumaths-wt-questions-3`, HEAD détachée sur `origin/main` (propre).
+- **État** : lots 0 à 8 publiés ; relevé MCP de clôture : 92 modèles publiés de niveau `3`, **65 points sur 66**
+  couverts. 3-017 sans modèle, non évaluable (décision confirmée le 2026-11-17).
+- **Durable versé** dans `docs/systeme/programmes/bornes/cycle4.md` § Troisième, « Couverture en modèles de questions ».
+- **Transmis** : 4-068 / 4-069 encore sur la notion « Variables et instructions » → journal `questions-4` ;
+  brouillon 27ac630c (associer) → `docs/wip/verifications-manuelles.md`.
+- Scripts de lots (`docs/wip/questions/lot-3-*.py`, `lot-rangement-3*.py`) laissés en place : d'autres chantiers
+  s'en servent de gabarit.
 
 ## 1. Relevé (prod, 2026-10-28)
 
@@ -1146,3 +1145,10 @@ publiés de plus. Aucune règle ne change.
 - Lot 7 : publié par David (`publier-lot.ts --publier`, 4/4, statut relu en base).
 - MCP : 962da675, 9f9bddbd, 4ce8eb3c, 0a470416, 1bd7378d, 9a9026fc tous `published`.
 - Couverture : 66 points de 3e, **65 avec au moins un modèle publié** ; sans modèle : 3-017 seul.
+
+## 17. Clôture (2026-11-17)
+
+- Découpage du § 4 recompté contre la base : lots 0 à 7 du § 4 faits (lot 5 avancé en 3e position) ; outils C
+  livrés (boîte à moustaches = lot 8, solides : 3-020 au lot 6) ; 3-032 couvert par la 4e ; 3-050 couvert au lot 7.
+- Relevé MCP : seul 3-017 sans modèle publié ; seul brouillon de niveau `3` : 27ac630c (chantier `associer`).
+- Sans tag, par décision (§ 6.2) : 77b82211, cf4468c3.
