@@ -8,16 +8,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, relevé et classement (§ 1 à 4)._
+_Mis à jour le 2026-11-17, décisions Q1-Q8 (§ 7)._
 
-- **État** : relevé fait ; existant vérifié contre les bornes ; 82 points sans modèle classés. Aucun fichier,
-  aucune migration.
-- **Prochaine action** : réponses de David aux questions du § 6, puis phase 0 du premier lot (§ 5).
-- **En attente de David** : Q1 à Q8 (§ 6).
+- **État** : relevé, classement et décisions faits (§ 1 à 7). Aucun fichier, aucune migration.
+- **Prochaine action** : phase 0 du lot 0 + T1 (§ 8), à valider.
+- **En attente de David** : Q4 bis (83b1f614) et Q5 bis (page à cocher avant ou après la migration) — § 7 ;
+  accord sur le retrait des tags (destructif, § 8).
 - **Pièges en cours** : deux nœuds s'appellent « définition » (arithmétique, géométrique) → les résoudre par
   leur chemin dans les migrations ; les modèles réutilisés sont partagés avec la 1re spé (toute correction de
   contenu les change aussi).
-- **Worktree / branche** : aucun (relevé en lecture seule).
+- **Worktree / branche** : aucun ; le premier lot ouvrira `../ubumaths-wt-questions-1techno`.
 
 ## 1. Relevé (prod, 2026-11-17)
 
@@ -146,3 +146,19 @@ Couverts de fait par un savoir-faire voisin (le tag est quand même proposé au 
   oui, la borne dit « u(n) d'abord », pas « jamais uₙ » ; les modèles neufs écriront u(n).)
 - **Q7 — Ordre des lots** du § 5 ? (reco : tel quel, les tags d'abord : 45 points pour trois migrations.)
 - **Q8 — D** : 012 et 143 hors appli, sans modèle propre ? (reco : oui.)
+
+## 7. Décisions (David, 2026-11-17)
+
+« Je suis tes recos ; le nom est questions-1techno. »
+
+- **Q1** : STD2A (26 points) hors du chantier.
+- **Q2** : chantier `questions-1techno`.
+- **Q3** : (a) retirer tag 1TECHNO et `1_TECHNO` des 4 modèles partagés qui débordent ; jumeaux techno écrits
+  dans les lots.
+- **Q4** : c90fa022 v3 gardée telle quelle. **83b1f614 : non tranché** (la reco hésitait : corriger un modèle
+  publié et partagé avec la 1re spé) → Q4 bis.
+- **Q5** : tags posés, modèles de 2de et de 3e compris. **Page à cocher avant ou après la migration : non
+  tranché** (pas de reco) → Q5 bis.
+- **Q6** : uₙ accepté dans les modèles réutilisés ; les modèles neufs écrivent u(n).
+- **Q7** : ordre du § 5.
+- **Q8** : 012 et 143 hors appli, sans modèle propre.
