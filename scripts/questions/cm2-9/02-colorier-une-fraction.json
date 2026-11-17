@@ -1,4 +1,5 @@
 {
+	"id": "549c7f1c-d885-45d3-9fc1-6deefd1fea62",
 	"title": "Colorier une fraction d'une figure",
 	"description": "Colorier les parts d'une grille pour représenter une fraction de dénominateur au plus 60 : 3/4 sur 24 parts, 17/24 ; au-delà de 1, sur 2 ou 3 bandes (11/4)",
 	"grades": ["CM2"],

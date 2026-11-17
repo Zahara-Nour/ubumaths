@@ -1,4 +1,5 @@
 {
+	"id": "5cc4ef1a-3f3c-4c2c-9e2a-74482a528956",
 	"title": "Colorier une fraction décimale d'une figure",
 	"description": "Colorier une grille de 100 cases ou des bandes de 10 pour représenter une fraction décimale : 37/100, 3/10 = 30 cases ; au-delà de 1 : 17/10, 124/100",
 	"grades": ["CM2"],

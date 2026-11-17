@@ -1,4 +1,5 @@
 {
+	"id": "b9ff4834-5d67-4e50-9227-ea7d50932041",
 	"title": "Colorier un nombre décimal",
 	"description": "Représenter un nombre décimal en coloriant des grilles de 100 cases ou des bandes de 10 : 0,37 ; 0,4 = 40 cases ; 1,37 ; 2,6",
 	"grades": ["CM2"],
