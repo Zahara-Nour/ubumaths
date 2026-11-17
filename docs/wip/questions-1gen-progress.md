@@ -14,7 +14,7 @@ _Mis à jour le 2026-11-17, lot 4 écrit (avant sa PR)._
 - **Prochaine action** : finir l'aperçu admin (T2, T3, T5, T6 restent à jouer ; brouillons à recréer en base
   locale, remise à zéro par une autre session), puis PR des fichiers (commit déjà fait sur la branche) ; ensuite
   brouillons en prod (David), migration nœud + tags, page à cocher.
-- **En attente de David** : accepter les écarts à la phase 0 du § 20.
+- **En attente de David** : rien (écarts du § 20 acceptés).
 - **Pièges en cours** : ADR 0020 et `couvrir-un-niveau.md` § 9 avant tout tag ; `db push` pousse TOUTES les
   migrations en attente (`migration list --linked` d'abord) ; ids écrits par `create-questions` dans le dépôt
   principal → les copier dans un worktree, commiter, puis `git restore` ; envoyer à questions-ttechno les ids de T1
@@ -741,7 +741,8 @@ locale a été remise à zéro par une autre session (brouillons recréés une f
 | T6     | `06-seuil-par-le-calcul`                 | 3          | 9     |
 | T7     | `07-seuil-sur-un-graphique`              | 3          | 9     |
 
-Écarts à la phase 0 (§ 14), sans effet sur les points ni sur les formes de réponse — **à accepter par David** :
+Écarts à la phase 0 (§ 14), sans effet sur les points ni sur les formes de réponse — **acceptés par David le
+2026-11-17** :
 
 - **T1** : v1 « hausse de a %, puis baisse de b % » (n = 2), v2 deux hausses puis une baisse (n = 3), v3 tableau de
   quatre évolutions alternées (n = 4). Une condition écarte les tirages où la moyenne des taux, arrondie au
