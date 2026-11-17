@@ -91,6 +91,13 @@ Détails qui comptent :
 | **Nuit**                                                | Intégration (cron `17 2 * * *`, 02:17 UTC, `nightly-integration.yml`) ; Pyodide réel (cron `0 3 * * *`, `nightly-pyodide.yml`, `RUN_PYODIDE_REAL=1`, `vitest run --project client src/**/*-real.svelte.test.ts`).                                                                                                                                   |
 | **Jamais en CI**                                        | `pnpm test:e2e` (build + preview, lancé à la demande — le `pnpm build` du `webServer` prend le verrou gros process) ; `pnpm test:verifs` (serveur de dev, ou la prod avec `VERIFS_URL=https://chiph.re` : une ligne de vérification manuelle par test, un test rouge = bug ou ligne périmée, jamais un attendu à changer) ; `pnpm test:lint-rules`. |
 
+**`e2e/verifs/carnet.spec.ts` écrit dans la base locale** (décor du carnet de liaison :
+une classe remise à zéro, consentement, inactivité, limites de débit effacées ; garde : jamais
+avec `VERIFS_URL`). La lancer sous le verrou Supabase, serveur de dev déjà démarré :
+`VERIFS_PORT=<port> bash scripts/with-db-lock.sh pnpm test:verifs carnet`. Les courriels sont lus
+dans `.captures/courriels/`, les captures d'écran (téléphone, clair et sombre) écrites dans
+`.captures/verifs/carnet/`.
+
 **Intégration : PR ou nightly ? Les deux.** Le workflow `nightly-integration.yml` se déclenche
 (1) chaque nuit, (2) sur toute PR qui touche un fichier de son filtre `paths` (`supabase/**`,
 `tests/integration/**`, `tests/helpers/**`, configs vitest, `package.json`, et la fermeture des
