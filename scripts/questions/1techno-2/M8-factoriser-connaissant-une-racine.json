@@ -1,4 +1,5 @@
 {
+	"id": "9adefa88-5d73-4fea-b64e-538323a3f45f",
 	"title": "Factoriser un polynôme du second degré connaissant ses racines",
 	"description": "Racines données ou évidentes ; coefficients retrouvés par le terme en x² et le terme constant",
 	"grades": ["1_TECHNO"],

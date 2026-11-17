@@ -1,4 +1,5 @@
 {
+	"id": "f95f05a0-4c66-409f-9ea3-0f9fcdd98759",
 	"title": "Éléments caractéristiques de ax² + bx + c en résolvant f(x) = c",
 	"description": "Résoudre f(x) = c par factorisation par x, en déduire l'axe puis le sommet",
 	"grades": ["1_GEN", "1_TECHNO"],
