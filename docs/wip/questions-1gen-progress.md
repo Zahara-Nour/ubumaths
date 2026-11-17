@@ -7,18 +7,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, lot 4 écrit (avant sa PR)._
+_Mis à jour le 2026-11-17, aperçu du lot 4 terminé (avant sa PR)._
 
-- **État** : lots 1, 2 et 3 publiés ; lot 4 écrit (§ 20) : specs, sondes, simulation prod vertes, 7 brouillons en
-  base locale. Lot 5 (second degré) écrit par questions-1techno (§ 4).
-- **Prochaine action** : finir l'aperçu admin (T2, T3, T5, T6 restent à jouer ; brouillons à recréer en base
-  locale, remise à zéro par une autre session), puis PR des fichiers (commit déjà fait sur la branche) ; ensuite
-  brouillons en prod (David), migration nœud + tags, page à cocher.
+- **État** : lots 1, 2 et 3 publiés ; lot 4 écrit et joué en entier dans l'aperçu admin (§ 20), PR des fichiers
+  ouverte. Lot 5 (second degré) écrit par questions-1techno (§ 4).
+- **Prochaine action** : CI verte → merge ; puis brouillons en prod (David lance `create-questions --publier`),
+  migration nœud + tags, page à cocher.
 - **En attente de David** : rien (écarts du § 20 acceptés).
 - **Pièges en cours** : ADR 0020 et `couvrir-un-niveau.md` § 9 avant tout tag ; `db push` pousse TOUTES les
   migrations en attente (`migration list --linked` d'abord) ; ids écrits par `create-questions` dans le dépôt
   principal → les copier dans un worktree, commiter, puis `git restore` ; envoyer à questions-ttechno les ids de T1
-  (→ 035) et T2 (→ 038).
+  (→ 035) et T2 (→ 038). Aperçu : le serveur redirige vers `[::1]` → lancer `--host ::`, pas `--host 127.0.0.1`.
 - **Worktree / branche** : `../ubumaths-wt-questions-1gen-lot4`, `feat/questions-1gen-lot4`.
 
 ## 1. Relevé (prod, 2026-11-17)
@@ -730,6 +729,14 @@ base locale : 7 brouillons créés (copie des fichiers, ids locaux). Aperçu adm
 lente) : T7 v1 « 4 » pour 4,12 → juste, nuage de la v3 et droite y = 9 lisibles ; T4 « 5000·1,02ˣ » → juste ; T1 v3
 (+30, −20, +40, −10) « 10 » (moyenne des taux) → faux, tableau rendu. T2, T3, T5, T6 restent à jouer : la base
 locale a été remise à zéro par une autre session (brouillons recréés une fois), puis le serveur a été arrêté.
+
+Aperçu repris le 2026-11-17 (brouillons recréés en base locale depuis une copie des fichiers, serveur `--host ::`),
+une réponse juste et une fausse par variation, corrections lues : **T2** v1 (25 000 → 30 000 en 5 ans) « 3,71 »
+juste, « 4 » (taux global ÷ n) faux, v1 en baisse « −1,05 » juste, v2 « 4,61 » juste, v3 « 0,797 » juste, « 0,833 »
+(10/12) et « 0,8 » faux ; **T3** 8/8 variations juste et faux, option « t ↦ k × aᵗ » rendue, correction « ni l'une
+ni l'autre » (différences 1, 2, 3, 4 ; quotients 10/9 ≠ 12/10) juste ; **T5** 3/3 (2³⁰ → 10⁹, 20 demi-vies → 10⁶,
+vidéo 18 min sur 6 h → 2²⁰ → 10⁶), correction rendue ; **T6** 3/3 (1,1ⁿ ⩾ 2 → 8, 200 × 0,7ⁿ < 10 → 9,
+1,03ⁿ ⩾ 1,5 → 14), n − 1 faux, correction rendue (200 × 0,7⁸ ≈ 11,53, 200 × 0,7⁹ ≈ 8,07). Rien à corriger.
 
 | Modèle | Fichier                                  | Variations | Specs |
 | ------ | ---------------------------------------- | ---------- | ----- |
