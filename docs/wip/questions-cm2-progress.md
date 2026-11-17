@@ -6,11 +6,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après #2780._
+_Mis à jour le 2026-11-17, après #2780 et le reclassement (§ 14)._
 
 - **État** : lots 0 à 8 publiés (lot 8 : 038, 053, 055-057, publiés le 2026-11-17, `published` relu au MCP).
-- **Prochaine action** : reclasser le § 3 (§ 12 d) : points du CM2 encore sans modèle, puis phase 0 du lot suivant.
-- **En attente de David** : rien. ⛔ Jamais `--mettre-a-jour` de `cm2-7b` avec des fichiers d'avant #2770 (ids CM1).
+- **Prochaine action** : phase 0 du lot suivant, une fois l'ordre tranché (§ 14 : 76 points sans modèle, plus aucun en C, 13 lots proposés).
+- **En attente de David** : § 14 « À trancher » (a) partages d'abord ? (b) 101 en B ? (c) 121 dans les limites actuelles ? ⛔ Jamais `--mettre-a-jour` de `cm2-7b` avec des fichiers d'avant #2770 (ids CM1).
 - **Pièges en cours** : migrations depuis #2181 : `pnpm migration:horodatage` = heure réelle UTC ; `db:migrate` refuse une migration plus ancienne que la dernière jouée → `--dry-run --include-all`, liste relue, puis `--include-all`. Worktree neuf : copier `supabase/.temp/` (lien projet) du dépôt principal. Modèle à placer avec grands nombres : `spaces: off`. Page à cocher : `line` non dessiné, à jouer dans l'aperçu. `Doc-inchangée:` dans un COMMIT. `git commit -m … -- <fichiers>`. Colonne du nœud au MCP : `question_templates.classification_node_id`.
 - **Worktree / branche** : aucun (worktree du lot 8 retiré, branches mergées supprimées).
 
@@ -828,3 +828,43 @@ modèles. Tableau du § 13 gardé.
 - 2026-11-17 : `db:migrate` joué par David (lot 8 + 1re techno lot 1) ; 5 modèles rangés et tagués, `updated_at` inchangé (MCP). Page à cocher publiée (5 fiches ; « bloc operation non dessiné » sur 055, 056, 057 : à jouer dans l'aperçu) : https://claude.ai/artifact/71F7ncJkoVsfEqzNCpsJSr ; 5 verdicts « OK » écrits à 20:49 (base relue). `publier-lot` en simulation : 5 brouillons passent.
 
 - 2026-11-17 : lot 8 publié par David (`publier-lot --publier`), 5/5 `published` relus au MCP.
+
+## 14. Reclassement du § 3 après le lot 8 (2026-11-17)
+
+Décision § 12.1 d. Relevé MCP du 2026-11-17 : **76 points du CM2 sans modèle CM2** (144 − 68 couverts
+par les lots 1 à 8 et le lot 0) ; aucun n'a de modèle d'un autre niveau tagué. Prod = v0.93.0 : tous les
+outils de l'ancienne classe C y sont (vérifié sur `origin/production`) : ` ```partage colorier:` (grille
+10×10 = centièmes, `unites:`), trotteuse de ` ```horloge ` (#2179), courbe de données (#2491), repère à
+placer (` ```courbe placer:`), barres à construire, ` ```cubes `, ` ```patron ` (`designer:`,
+`completer:`), ` ```robot `, case « figure » (perpendiculaire, parallèle, carré, rectangle, triangle,
+cercle, symétrique). **Plus aucun point en classe C.**
+
+- **A. Texte / formule (29)** : problèmes 058, 119, 059, 060, 061, 062, 063, 064, 066 ; suite de nombres
+  068 ; aires 073, 074, 075, 120 ; angle droit 081 ; durées 085 ; géométrie 091, 093 ; solides 099 ;
+  déplacements 103 ; tableaux 107, 156 ; probabilités 109, 110, 111, 112, 113 ; proportionnalité 115, 116.
+- **B. Outil en prod (40)** :
+  - partages : 132, 137 (`gris:`, lire) ; 131, 136, 143 (`colorier:`) ;
+  - horloge : 082 (lire, secondes), 083 (placer), 084, 153 (durées entre deux cadrans) ;
+  - motifs 069, 070 et aires sur quadrillage 071, 072 (` ```figure `) ;
+  - angles 076, 077, 078 ; codes 088 ; perpendiculaires, parallèles 089, 090 ; figures usuelles 092 ;
+  - tracés (case « figure ») : 154, 155, 094, 095, 097 ;
+  - solides 098, patrons 100, 102, assemblages de cubes 105, robot 104 ;
+  - données : 123, 157 (`barres`), 124, 158 (`circulaire`), 125, 159 (courbe `données:`), 108 (mélange),
+    114 (`probtree` / `tableau-croise`), 121 (barres à construire : échelle 1, 2, 5, 10 et données
+    ≤ 100, `outils-manquants.md` n° 36 reporté par David), 122 (repère à placer).
+- **D. Hors appli (7, tranché le 2026-11-04)** : 126, 087, 079, 080, 096, 101, 106.
+
+**Lots proposés** (thème, 3 à 10 modèles) : 9 partages (131, 132, 136, 137, 143) ; 10 heures et
+durées (082, 083, 084, 153, 085) ; 11a problèmes en une étape (058, 059, 061, 066, 115, 116) ; 11b en
+plusieurs étapes (119, 060, 062, 063, 064) ; 12 suites et motifs (068, 069, 070) ; 13 aires (071, 072,
+073, 074, 075, 120) ; 14a données lues (107, 156, 123, 157, 124, 158) ; 14b courbes, construire,
+problèmes (125, 159, 121, 122, 108) ; 15 probabilités (109 à 114) ; 16 angles (076, 077, 078, 081) ;
+17 géométrie (088, 089, 090, 091, 092, 093) ; 18 tracés (154, 155, 094, 095, 097) ; 19 solides et
+déplacements (098, 099, 100, 102, 105, 103, 104).
+
+**À trancher** : (a) l'ordre du § 4.6 (problèmes → grandeurs → données → probabilités → géométrie) ne
+place pas les partages ni l'horloge, qui attendaient leurs outils. Reco : **lot 9 partages d'abord**
+(clôt les nombres, outil et modèles CM1 jumeaux déjà relus), puis le lot 10 (horloge) avec les
+grandeurs, puis l'ordre du § 4.6. (b) 101 (construire un patron du cube) reste en D, ou passe en B
+avec ` ```patron completer:` (compléter un patron à qui manque une face) ? Reco : B, un modèle.
+(c) 121 : écrit dans les limites actuelles (≤ 100, comme le lot 7 du CM1) ? Reco : oui.
