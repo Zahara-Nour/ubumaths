@@ -6,13 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, ids erronés du lot 7b retirés._
+_Mis à jour le 2026-11-17, après #2770 (lot 7b rangé)._
 
-- **État** : lots 0 à 7a publiés. Lot 7b (138, 025, 144, 032) mergé (#2236). Le 2026-11-17, le `--publier` a trouvé les 4 « déjà en base » : le commit `ed0cd5caf6` (2026-11-04, id écrit dans les fichiers de lot) leur avait donné les ids des modèles **CM1** de même titre (`cm1-3b/07-08`, `cm1-4/03-04`). Ids retirés sur cette branche ; simulation : 4 à créer. Titres CM2 identiques aux CM1 gardés (grade et niveau les distinguent).
-- **Prochaine action** : 4 brouillons créés (`b432b38e` 138, `521c3f16` 025, `4a2edffb` 144, `03c5df14` 032) ; migration `20261117181922_questions_cm2_lot7b_rangement_tags` en PR → security-auditor, CI, merge, `db:migrate`, MCP, page à cocher. Ensuite petit lot 8 (038, 053, 055-057), puis reclasser le § 3.
-- **En attente de David** : rien. ⛔ Jamais `--mettre-a-jour` avec les anciens fichiers : il écraserait les modèles CM1.
+- **État** : lots 0 à 7a publiés. Lot 7b : 4 brouillons [CM2] créés (`b432b38e` 138, `521c3f16` 025, `4a2edffb` 144, `03c5df14` 032), rangés et tagués (#2770, `db:migrate` joué, MCP conforme). Page à cocher : https://claude.ai/artifact/EPw29tzZFXVERGzBottWAT (`verdicts` vide au départ).
+- **Prochaine action** : lire et compter les verdicts ; tout OK → `publier-lot --dir scripts/questions/cm2-7b` en simulation, puis David `--publier`. Ensuite petit lot 8 (038, 053, 055-057), puis reclasser le § 3.
+- **En attente de David** : relecture des 4 fiches. ⛔ Jamais `--mettre-a-jour` de `cm2-7b` avec des fichiers d'avant #2770 (ids CM1).
 - **Pièges en cours** : migrations depuis #2181 : `pnpm migration:horodatage` = heure réelle UTC ; `db:migrate` refuse une migration plus ancienne que la dernière jouée → `--dry-run --include-all`, liste relue, puis `--include-all`. Worktree neuf : copier `supabase/.temp/` (lien projet) du dépôt principal. Modèle à placer avec grands nombres : `spaces: off`. Page à cocher : `line` non dessiné, à jouer dans l'aperçu. `Doc-inchangée:` dans un COMMIT. `git commit -m … -- <fichiers>`. Colonne du nœud au MCP : `question_templates.classification_node_id`.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, branche `feat/questions-cm2-lot7b-rangement` (ids retirés commités ; à jour avec `main` au 2026-11-17).
+- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, branche `feat/questions-cm2-lot7b-rangement` mergée (#2770) ; worktree gardé pour la suite du lot 7b.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -755,3 +755,5 @@ reclasser le § 3 (outils de la classe C maintenant en prod). Tableau du § 12 g
 - `--publier` (dépôt principal) : 4 « déjà en base, CONTENU DIFFÉRENT ». Cause : `ed0cd5caf6` (2026-11-04, id écrit dans 1 806 fichiers de lot par titre et catégorie) avait mis dans les 4 fichiers `cm2-7b` les ids des jumeaux **CM1** (`6de4ad5b`, `5b038fc8`, `06f246e4`, `3560dded`), créés entre-temps. Aucun autre dossier CM2 touché (ids en double relevés). Ids retirés ; titres CM2 gardés identiques au CM1 (David). Simulation : 4 à créer.
 - David : `--publier` depuis le worktree → `b432b38e` (138, niv. 12), `521c3f16` (025, 13), `4a2edffb` (144, 5), `03c5df14` (032, 6) ; MCP : 4 brouillons [CM2] sans nœud ni tag, `updated_at` = création ; jumeaux CM1 intacts (publiés, [CM1], rangés).
 - Migration `20261117181922_questions_cm2_lot7b_rangement_tags.sql`, copie du lot 7a ; nœuds : « droite graduée » de « Fractions : sens et écritures » (138, 025) et de « Décimaux : numération » (144, 032). Test `questions-cm2-lot7b-rangement-tags` : 9 verts ; corps remplacé par `select 1;` → 5 rouges ; fichier restauré depuis sa copie (`cmp`).
+- #2770 : `security-auditor` sans finding bloquant (non bloquant : aucun test n'asserte les jumeaux CM1 intacts, écritures filtrées par uuid) ; test relancé après le pre-commit : 9 verts ; CI verte ; `check:migrations --pr 2770` sortie 0 ; mergée. `migration list --linked` : la nôtre seule en attente ; `db:migrate` joué. MCP : 4 `draft` [CM2], nœud et point attendus, `updated_at` = création, trigger `O` ; jumeaux CM1 inchangés.
+- Page à cocher (4 fiches, aucune alerte) : https://claude.ai/artifact/EPw29tzZFXVERGzBottWAT.
