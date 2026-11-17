@@ -8,19 +8,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, page à cocher T1 publiée (§ 8)._
+_Mis à jour le 2026-11-17, PR #2743 (T1) ouverte, passe anti-doublons (§ 9)._
 
-- **État** : décisions Q1-Q8, Q4 bis, Q5 bis prises (§ 7). Page à cocher T1 publiée :
-  https://claude.ai/artifact/3w5V2hN7XMDco8RbRMcHVp (19 modèles, instantanés dans
-  `scripts/questions/1techno-t1/`, branche `feat/questions-1techno-t1`, non commités).
-- **Prochaine action** : compter les verdicts T1 (`ArtifactData list verdicts`), puis migration T1 (tags +
-  `1_TECHNO`) sur les seuls « OK ».
-- **En attente de David** : verdicts T1 ; réponse à la question d'accès T1 ; accord sur le lot 0 (retrait
-  des tags 1TECHNO-118 de 1239554b et 79d69593, destructif ; ceux de 1acb6d47 / 97b3a376 au lot de leurs
-  jumeaux — proposition).
-- **Pièges en cours** : deux nœuds « définition » (arithmétique, géométrique) → par leur chemin ; modèles
-  partagés avec la 1re spé ; les pages à cocher montrent les points actuels (1SPE), le point visé est dans
-  l'intro.
+- **État** : T1 = PR #2743 (15 tags, migration `20261117122739`), CI en cours ; `security-auditor` sans
+  finding bloquant ; test rouge sans la migration, vert avec. Passe anti-doublons faite (§ 9).
+- **Prochaine action** : CI verte → `check:migrations --pr 2743`, merge, `db:migrate` depuis le dépôt
+  principal, vérification en prod (15 tags, 15 `1_TECHNO`). Puis page à cocher T2 / T3 (§ 9).
+- **En attente de David** : Q9 à Q12 (§ 9).
+- **Pièges en cours** : **un point par programme** (trigger) ; point sur une sous-notion → seuls les modèles
+  de CETTE sous-notion ; `grades` : `array_append` / `array_remove` seulement (accord avec `questions-1gen`) ;
+  deux nœuds « définition ».
 - **Worktree / branche** : `../ubumaths-wt-questions-1techno`, `feat/questions-1techno-t1`.
 
 ## 1. Relevé (prod, 2026-11-17)
@@ -179,3 +176,50 @@ publiée avec la capacité `db`, collection `verdicts` vide au départ. Point vi
 
 Proposition (non validée) pour le lot 0 : retirer maintenant 1TECHNO-118 de 1239554b et 79d69593 (118 garde
 f36ce3ff) ; retirer 057 de 1acb6d47 et 137 de 97b3a376 dans la PR qui publie leurs jumeaux (lots 2 et 5).
+
+## 9. Règle « un point par programme » et passe anti-doublons (2026-11-17)
+
+**Erreur du § 3** : le trigger `question_template_points_check_rules` refuse un 2e point du même programme
+sur un modèle (ADR 0020). Refusés : 5cb7f6ce → 039, 8d4e5302 → 041, a430a698 → 034 (déjà un point
+1TECHNO) ; T2 / T3 : 05387201, f52395d1 (071), 1666b8e9 (074, 130, 131), cda8e0d2 (131), 17f64f63 (076),
+18e26873 (058), 1c65d58e (084), 5ba712bc (090), 6fbc355c (096), 83b1f614 (132) ; un seul point pour
+4f8f420a (034 / 117), 3020b065 (068 / 128), afe51ac4 (066 / 126), a181f10b et a16a9bba (072 / 073 / 129).
+Et le trigger est plus étroit qu'écrit au § 3 : point sur une **sous-notion** → seuls les modèles rangés
+sur cette sous-notion ; point sur une **notion** → la notion et ses sous-notions.
+
+**Passe anti-doublons** (David : « as-tu regardé les modèles de 1re spé et 1_GEN ? ») : 333 couples
+(point, modèle publié sans point 1TECHNO) posables, lus.
+
+- **Conviennent tels quels (9 points)** : 034 4f8f420a ; 047 d1010214 ; 054 42c19a19, ddc60d24 ; 058
+  aab8e41c ; 076 03b3d9b3 ; 096 8354a0e7, ad555cb1, bc59d5ce ; 100 77498f1b (⚠ la 1re passe l'avait
+  écarté pour ses leurres 𝒢(p), ℬ(100 ; p) : à trancher sur la page à cocher) ; 132 b7b0c27b ; 007
+  8d46dd50, 4ce02817, e4784c78.
+- **En partie (16 points)** : une ou plusieurs variations hors bornes (surtout u0 / q signés en
+  géométrique, discriminant, forme canonique, 1/x) : 036 (cea65372, ab4d55f7, 279cf28f, 349e1be5,
+  85afd455), 047 (84114cb2, fcf1057e), 038 (e67b1cbd, 727fb88a, cf51cb93, eca755e6, fc921674, 95c38330,
+  acaeb02a), 040 / 049 (5042401b), 056 (7f82d15a, 93bc8b5e), 058 (eae2ff6a), 059 (406fd9a8), 061
+  (8a7e39b7), 064 (604f83b7), 124 (56b1803f), 126 (568c7bee, b48d72dd), 071 (9e377c97), 072 (a86442c1,
+  b05ec37a), 130 (74d77343), 076 (3fa3af6c), 081 (2b382069), 132 (47843e39), 090 (2c116f4d, a9c71276,
+  69a05f98), 103 (5192e88a), 013 (82101744, 89e928a4).
+- **Sans modèle (27 points)**, avec le « presque » d'où partir : 039 (55bb8507), 040 (5042401b), 041 /
+  044 / 051 / 121 (4f8f420a v0, 55bb8507), 117 (4f8f420a v1-v2, d1010214 v2-v3), 123 et 062 (9f00da01),
+  125 (0113c53d, 8a7e39b7 v1), 069 (9e377c97 v0), 074 / 131 (74d77343, a86442c1), 128 (b05ec37a), 067
+  (66cd841d), 097 (77498f1b), 136 (1043c29e), 101 / 104 (5192e88a), 107 (bcc687bb), 122 (eb9517ed) ;
+  sans rien : 003, 105, 082, 084, 085, 087.
+- Écartés : baefb288 (escalier u(n+1) = f(u(n)), hors STMG), 9f00da01, db7bb314, f8ccc8b6, 0113c53d (rangé
+  ailleurs), 4ff9d049 (binomiale n ≥ 5), 1043c29e, e0520082 et ecf4d46b (partition en trois), 006fce09,
+  eb9517ed, bcc687bb, 7652fee6, e05ecec7.
+
+Coordination : chantier `questions-1gen` (session voisine) — chacun ne touche que son niveau dans
+`grades` ; un modèle neuf commun 1GEN-022 + 1TECHNO-057 (sommet sans formule), écrit par le premier qui
+arrive au second degré ; je préviens avant de corriger 83b1f614 ou de retirer des tags.
+
+**Questions à David (posées le 2026-11-17)** :
+
+- **Q9 — 4f8f420a** : 034 (toutes ses variations conviennent) ou 117 (seules v1, v2) ? Reco révisée : **034**.
+- **Q10 — Les 9 « conviennent »** : page à cocher T2 / T3 (avec les candidats du § 3 encore posables) avant
+  la migration, comme T1 ?
+- **Q11 — Les « en partie »** : jumeau techno copié du modèle de 1re spé en ne gardant que les variations
+  dans les bornes (comme Q3), ou resserrer le modèle de 1re spé ? Reco : jumeau.
+- **Q12 — Connaissances couvertes de fait** (question 2 du message précédent : un modèle court par point,
+  ou rien) : toujours ouverte.
