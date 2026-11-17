@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après #2749._
+_Mis à jour le 2026-11-17, après #2752._
 
-- **État** : PR 1 à 4, 6 à 8 mergées (… #2745, #2749), migrations en prod (dont `carnet_erase_old_notifications`, vérifiée). Code des PR 2 à 4 **pas encore déployé**. PR 9 (Q42, code) en cours : appel dans `runCarnetDaily`, politique v1.4 (§ 7 « 1 an »), registre 1.3.
-- **Prochaine action** : PR 9 → merge. Puis point 8 sur `/parents` après le déploiement (chantier `presentation-parents`).
+- **État** : PR 1 à 4 et 6 à 9 mergées (#2718, #2724, #2731, #2736, #2737, #2739, #2745, #2749, #2752), migrations en prod. Q42 faite : journal des courriels effacé au bout d'un an par le passage quotidien, politique v1.4. Code des PR 2 à 4 et 9 **pas encore déployé**.
+- **Prochaine action** : rien ne bloque le `deploy:prod` du carnet. Puis point 8 sur `/parents` après le déploiement (chantier `presentation-parents`).
 - **En attente de David** : `deploy:prod` (avant le 28 novembre pour les messages trimestriels) ; échec de l'effacement : arrêter tout le passage ? (gardé : les autres étapes tournent, passage noté en échec).
-- **Pièges en cours** : données d'élèves mineurs. Base locale en retard sur d'anciennes migrations de contenu : migration appliquée à la main (`docker exec … psql`). `db:migrate` lancé depuis le worktree (`supabase/.temp` copié du dépôt principal, occupé par une autre session). Rejets Brevo différés non marqués `invalid`. AIPD : analyse de risque du carnet à y intégrer.
-- **Worktree / branche** : `../ubumaths-wt-partage-parents`, `feat/partage-parents-q42-cron`.
+- **Pièges en cours** : données d'élèves mineurs. 1er trimestre fini le 27 nov. : messages trimestriels dès le 28 si déployé. Base locale en retard sur d'anciennes migrations de contenu. Rejets Brevo différés non marqués `invalid` (pas de webhook). AIPD : l'analyse de risque du carnet reste à y intégrer.
+- **Worktree / branche** : aucun.
 
 ## Origine
 
@@ -326,3 +326,4 @@ Branche `feat/partage-parents-q42-cron`.
 
 - `db:types` (prod) ; `runCarnetDaily` appelle `carnet_erase_old_notifications` après l'effacement des adresses ; rapport `erasedNotifications`. Test `courriels.test.ts` (2), rouge avant, vert après.
 - `/legal/confidentialite` version 1.4 : § 7, liste des courriels « chaque courriel en est effacé 1 an après son envoi ; supprimée avec le profil ». Registre 1.3 (T9). Doc `carnet-de-liaison.md`.
+- Revues : `code-reviewer` (Sonnet) et `security-auditor` (Opus), aucun finding bloquant. **Mergée** le 2026-11-17 (#2752), CI verte.
