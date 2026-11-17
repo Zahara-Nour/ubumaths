@@ -5,14 +5,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après #2785 (§ 21 septies)._
+_Mis à jour le 2026-11-17, après la publication du lot 8a (§ 21 octies)._
 
-- **État** : lots 0 à 7 publiés, 126 points sur 171. Lot 8a « heures et durées » : 5 brouillons en prod, rangés et
-  tagués (migration passée) ; page à cocher publiée. Puis 8b, 8c, 8d, 8e, 9 (§ 20).
-- **Prochaine action** : relecture de David sur https://claude.ai/artifact/XV275GWdRMSihZBrJKzUw1 ; puis
-  `publier-lot --dir scripts/questions/cm1-8a` (simulation), `garde-niveaux-tags`, `--publier` par David ; puis lot 8b.
-- **En attente de David** : la relecture ; « 05 » vaut ½ point dans les horloges CE2 (règle `zeros`, § 21 ter) :
-  corriger ces modèles publiés (`zeros: off`) ?
+- **État** : lots 0 à 8a publiés, 131 points sur 171. Restent 8b, 8c, 8d, 8e, 9 (§ 20, découpage validé § 20 bis).
+- **Prochaine action** : selon la réponse de David, correctif `zeros` des horloges CE1 / CE2 (reco § 21 octies), puis
+  lot 8b « aires et angles » (086, 087, 088 ; 089, 090, 091 sans degré) : relevé des patrons, phase 0.
+- **En attente de David** : go sur le correctif `zeros` (« 05 » vaut ½ point dans les horloges CE publiées).
 - **Pièges en cours** : `create-questions --publier` lancé depuis le dépôt principal écrit les ids dans SES fichiers :
   les reporter sur la branche du worktree, puis `git restore` dans le dépôt principal ; `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance (une autre session peut l'avoir fait avant : vérifier au MCP) ; `db:migrate` depuis un worktree : copier d'abord le lien `../ubumaths/supabase/.temp/` ; `create-questions` = `pnpm tsx scripts/create-questions.ts …`, refuse `theme`/`domain`/`subdomain` (ADR 0035) ; horodatage = `pnpm migration:horodatage`, puis `pnpm check:migrations --pr <n>` **juste avant le merge** ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule ; un brouillon sans nœud ne peut pas être tagué (trigger) ; le pre-commit reformate le relevé `etat-prod-*` (prettier) et laisse l'index décalé : `git diff HEAD` vide → `git restore --staged` ; le mode auto refuse `publier-lot` et `garde-niveaux-tags` (lecture de la prod), même en simulation : David les lance ; zsh ne découpe pas `$F` : un tableau `F=(…)`.
 - **Worktree / branche** : `../ubumaths-wt-questions-cm1`, détaché sur `main`, aucune branche ouverte.
@@ -1682,3 +1680,13 @@ celui qui suit le modèle CE2 de même geste dans le nœud, partagé, sans renum
   68134013 → 095).
 - `page-a-cocher.ts --dir scripts/questions/cm1-8a` : 5 fiches (15 exemples), aucune alerte. Page :
   https://claude.ai/artifact/XV275GWdRMSihZBrJKzUw1 (`verdicts`, capacité `db`, vide).
+
+### 21 octies. Lot 8a — publié (2026-11-17)
+
+- Page à cocher : 5 « OK » sur 5, aucun commentaire. `garde-niveaux-tags`, `publier-lot --dir scripts/questions/cm1-8a`
+  (simulation) et `--publier` lancés par David. Vérifié au MCP : 5 modèles `published`.
+- Recompte MCP : **131 points du CM1 sur 171** ont un modèle publié (126 + les 5 du lot).
+- Reco proposée à David (sans réponse) : corriger `zeros` dans les modèles CE1 / CE2 publiés où l'élève TAPE des
+  minutes (12 modèles à horloge, aucun en `zeros: off` ; trier : pas « Place les aiguilles » ni les QCM), lot
+  `update-published-questions` comme `totaux-ce`, spec « 05 » = point entier ; ne pas réécrire l'affichage « 9 h 5 ».
+  Puis 8b.
