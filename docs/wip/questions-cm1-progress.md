@@ -5,14 +5,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après #2785 (§ 21 sexies)._
+_Mis à jour le 2026-11-17, après #2785 (§ 21 septies)._
 
-- **État** : lots 0 à 7 publiés, 126 points sur 171. Lot 8a « heures et durées » : 5 brouillons en prod, migration
-  de rangement mergée (#2785), pas encore passée. Puis 8b, 8c, 8d, 8e, 9 (§ 20).
-- **Prochaine action** : David lance `db:migrate` (seule `20261117210204` en attente, vérifié au MCP) ; puis
-  vérification au MCP (nœuds, tags), page à cocher `page-a-cocher.ts --dir scripts/questions/cm1-8a`.
-- **En attente de David** : ce `db:migrate` ; « 05 » vaut ½ point dans les horloges CE2 (règle `zeros`, § 21 ter) : corriger ces
-  modèles publiés (`zeros: off`) ?
+- **État** : lots 0 à 7 publiés, 126 points sur 171. Lot 8a « heures et durées » : 5 brouillons en prod, rangés et
+  tagués (migration passée) ; page à cocher publiée. Puis 8b, 8c, 8d, 8e, 9 (§ 20).
+- **Prochaine action** : relecture de David sur https://claude.ai/artifact/XV275GWdRMSihZBrJKzUw1 ; puis
+  `publier-lot --dir scripts/questions/cm1-8a` (simulation), `garde-niveaux-tags`, `--publier` par David ; puis lot 8b.
+- **En attente de David** : la relecture ; « 05 » vaut ½ point dans les horloges CE2 (règle `zeros`, § 21 ter) :
+  corriger ces modèles publiés (`zeros: off`) ?
 - **Pièges en cours** : `create-questions --publier` lancé depuis le dépôt principal écrit les ids dans SES fichiers :
   les reporter sur la branche du worktree, puis `git restore` dans le dépôt principal ; `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance (une autre session peut l'avoir fait avant : vérifier au MCP) ; `db:migrate` depuis un worktree : copier d'abord le lien `../ubumaths/supabase/.temp/` ; `create-questions` = `pnpm tsx scripts/create-questions.ts …`, refuse `theme`/`domain`/`subdomain` (ADR 0035) ; horodatage = `pnpm migration:horodatage`, puis `pnpm check:migrations --pr <n>` **juste avant le merge** ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule ; un brouillon sans nœud ne peut pas être tagué (trigger) ; le pre-commit reformate le relevé `etat-prod-*` (prettier) et laisse l'index décalé : `git diff HEAD` vide → `git restore --staged` ; le mode auto refuse `publier-lot` et `garde-niveaux-tags` (lecture de la prod), même en simulation : David les lance ; zsh ne découpe pas `$F` : un tableau `F=(…)`.
 - **Worktree / branche** : `../ubumaths-wt-questions-cm1`, détaché sur `main`, aucune branche ouverte.
@@ -1674,3 +1674,11 @@ celui qui suit le modèle CE2 de même geste dans le nœud, partagé, sans renum
 
 - #2785 mergée (CI verte, `check:migrations --pr 2785` passé), branche supprimée ; worktree détaché sur `main`.
 - MCP : `20261117210204` est la seule migration en attente (les 72 depuis le 2026-11-11 sont passées).
+
+### 21 septies. Lot 8a — migration passée, page à cocher (2026-11-17)
+
+- Vérifié au MCP : `20261117210204` dans `schema_migrations` ; 5 brouillons CM1 sous « Durées », chacun avec son tag
+  (lecture de l'heure : 9e655e1a → 092, dd81eefb → 093 ; calcul de durées : f3f00294 → 094, cdec9199 → 166,
+  68134013 → 095).
+- `page-a-cocher.ts --dir scripts/questions/cm1-8a` : 5 fiches (15 exemples), aucune alerte. Page :
+  https://claude.ai/artifact/XV275GWdRMSihZBrJKzUw1 (`verdicts`, capacité `db`, vide).
