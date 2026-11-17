@@ -2,15 +2,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, phase 0 en cours, rien n'est écrit dans le Compendium ni dans le code._
+_Mis à jour le 2026-11-17, chantier clos et archivé._
 
-- **État** : la règle d'avancement est validée (§ « Règle d'avancement »). Le voyage va de la classe d'arrivée à la Terminale. Patanaute ne se gagne qu'en Terminale. Les galons comblent les années sans grade. Le primaire entre dans l'Ordre dès son arrivée.
-- **Prochaine action** : obtenir les réponses à A et C (§ « Questions ouvertes »), puis réécrire la section VII du Compendium.
-- **En attente de David** : A (périmètre : la règle seule ou aussi le code) et C (la médaille et le collier de l'Ordre dans la Chatterie).
-- **Pièges** :
-  - Le Compendium dit encore « par seuil de gidouilles cumulées » (`lore-pataphysique.md:1100`). C'est à réécrire ; David a tranché.
-  - L'Ordre n'existe pas dans le code. Seuls des noms de décorations de Mathoux y font allusion (`src/lib/mathoux/decorations.ts:90,104`).
-- **Worktree / branche** : aucun.
+- **État** : clos. La règle d'avancement est validée et versée dans le Compendium (`docs/Chiphres/lore-pataphysique.md`, section VII, « Mécanique d'attribution »).
+- **Suite** : le code de l'Ordre (calcul, mémoire en base, affichage, cérémonie) est un **futur chantier**, à ouvrir quand on voudra montrer le grade aux élèves. Il faudra y trancher où le grade s'affiche et qui le voit, et les points laissés « à préciser au moment du code » ci-dessous.
+- **Navadra 5a** : si le travail débloque les coups et les sorts, utiliser la même mesure (D).
 
 ## Décision (2026-11-09, David)
 
@@ -49,14 +45,15 @@ Exemples : arrivée en 6e (6e Moussaillon, 5e Matelot, 4e Marinier, 3e Quartier-
 
 **Données** : `student_point_state` ne remplit que depuis le 2026-11-04 (2 élèves, aucun point acquis le 2026-11-17). Les seuils de parts (50 %, 30/60 %, 75 %) sont un pari, à revoir après une année de données.
 
-## Questions ouvertes
+## Questions tranchées (2026-11-17, David suit les recommandations)
 
-- **A. Périmètre** : fixer la règle et réécrire le Compendium seulement (recommandé), ou faire aussi le code (calcul, mémoire en base, affichage, cérémonie) ?
-- **C. Médaille et collier de l'Ordre** (Chatterie, 40 gidouilles chacun, `src/lib/mathoux/decorations.ts:90,104`) : les garder achetables comme ornements (recommandé), ou les réserver à un grade ?
-- **D.** (navadra 5a) : si le travail débloque les coups et les sorts, utiliser la même mesure que l'Ordre. À trancher dans navadra.
+- **A. Périmètre** : la règle seule, versée dans le Compendium. Le code est un futur chantier.
+- **C. Médaille et collier de l'Ordre** (Chatterie, `src/lib/mathoux/decorations.ts:90,104`) : ils restent achetables, comme ornements du Mathou. Ce ne sont pas le grade.
+- **D.** (navadra 5a) : reste à trancher dans navadra ; recommandation : la même mesure du travail que l'Ordre.
 
 ## Historique
 
+- **2026-11-17** : A et C tranchés (recommandations suivies). Section VII du Compendium réécrite (décrets royaux retirés). Chantier clos et archivé.
 - **2026-11-17** : phase 0. Règle d'avancement validée par David (voyage jusqu'à la Terminale, galons, primaire dans l'Ordre).
 
 - **2026-11-09** : ouvert pendant la question 5 du chantier `navadra` (la progression).
