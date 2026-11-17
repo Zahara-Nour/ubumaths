@@ -103,8 +103,9 @@ connexion Google désactivée (`GOOGLE_LOGIN_ENABLED`, `src/routes/(public)/auth
 - **Un suivi « accessible aux parents »** : aucun rôle parent ni vue de progression pour eux ; le
   seul accès famille est le lien du cahier de textes et celui du cours (ADR 0025). `/a-propos` dit
   désormais exactement cela (D12, 2026-10-12). Le **carnet de liaison** (ADR 0040,
-  [carnet-de-liaison.md](carnet-de-liaison.md)) est en construction (2026-11) : une page par
-  parent, sans compte, sans note ; pas avant qu'il soit livré et activé par le professeur.
+  [carnet-de-liaison.md](carnet-de-liaison.md)) est construit (PR #2718 à #2737, 2026-11) : une
+  page par parent, sans compte, sans note. Ne le promettre qu'une fois en production, et toujours
+  « si le professeur l'active pour la classe » (il ne part qu'à son geste ; pas d'élève hors classe).
   `/carnet/lien-perdu` est hors du sitemap (`noindex`).
 - **Une interface multilingue** : l'interface est en français seulement ; seuls certains contenus
   (fiches) existent en anglais.
