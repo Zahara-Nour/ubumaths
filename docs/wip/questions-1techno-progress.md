@@ -8,18 +8,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, lot 2 écrit (branche, pas encore de PR)._
+_Mis à jour le 2026-11-17, après #2787 (lot 2, fichiers)._
 
-- **État** : lot 1 clos (#2783). **Lot 2 « second degré »** : phase 0 validée (§ 24), 8 modèles écrits
-  (`scripts/questions/1techno-2/`, script `lot-1techno-2.py`), simulation tout vert, essai en base locale OK.
-- **Prochaine action** : commit des fichiers sur la branche → PR (contenu, sans revue) → CI → merge ; puis David
-  lance `create-questions --dir scripts/questions/1techno-2 --publier` ; ids → questions-1gen ; page à cocher ;
-  migration (nœuds, tags 1TECHNO + 1GEN, retrait de 1TECHNO-057 et `1_TECHNO` de 1acb6d47).
-- **En attente de David** : rien.
-- **Pièges en cours** : M1–M7 communs `{1_GEN,1_TECHNO}`, deux tags (un par programme) ; 126 ↔ 1GEN-027 (croisé,
-  afe51ac4 a 1GEN-055 + 066) ; `bad_form` d'une spec exige `constraintViolations: ['form']` ; zsh : `echo ====`
-  plante ; `db:migrate` pousse tout ce qui attend (`migration list --linked` avant).
-- **Worktree / branche** : `../ubumaths-wt-questions-1techno`, `feat/questions-1techno-lot2`.
+- **État** : lot 1 clos (#2783). **Lot 2** : fichiers mergés (#2787), 8 brouillons créés en prod (ids § 24), page à
+  cocher publiée, migration `20261117222845_questions_1techno_lot2_rangement_tags` + test écrits sur la branche.
+- **Prochaine action** : verdicts de la page à cocher ; test d'intégration vert puis rouge sans la migration ;
+  `security-auditor` ; PR → CI → merge ; `db:migrate` par David ; publication (`publier-lot.ts`).
+- **En attente de David** : la relecture (https://claude.ai/artifact/FrRt7ig4wuX6mLsY9dP5Q3) ; le go sur la partie
+  destructive (1acb6d47 perd 1TECHNO-057 et `1_TECHNO`, aucune donnée d'élève).
+- **Pièges en cours** : M1–M7 communs `{1_GEN,1_TECHNO}`, deux tags (un par programme) ; worktree neuf →
+  `svelte-kit sync` avant `page-a-cocher.ts` ; `db:migrate` pousse tout ce qui attend (`migration list --linked`).
+- **Worktree / branche** : `../ubumaths-wt-questions-1techno`, `feat/questions-1techno-lot2-rangement`.
 
 ## 1. Relevé (prod, 2026-11-17)
 
@@ -594,3 +593,22 @@ factorisée ou ax² + c seulement. questions-1gen d'accord (message du 2026-11-1
 simulation : 8 « à créer », tout vert. Essai en base locale (copie scratchpad) : 8 brouillons ; M6 joué dans
 l'aperçu admin (juste, corrigé avec flèches), M2 rendu (4 courbes). Question d'accès : brouillons ; la migration
 range et tague ; 1acb6d47 quitte le catalogue de 1re techno (M1 le remplace).
+
+### Lot 2 — brouillons en prod, page à cocher, migration (2026-11-17)
+
+PR #2787 (fichiers) mergée (un shard de la CI bloqué au checkout, relancé). David a lancé `create-questions --publier` :
+M1 `129067e4-e97c-458c-9bd7-540383a5dac6`, M2 `7efa9e79-e985-407d-bdec-73dce30ef283`, M3
+`f81b8735-9b8f-41aa-ada0-08b7415a6076`, M4 `493adeb4-7eb9-4156-bd1b-79996f54c5e4`, M5
+`f95f05a0-4c66-409f-9ea3-0f9fcdd98759`, M6 `e539088a-1eee-4259-8e61-b0f6fa514eaf`, M7
+`82e40d16-6069-4bea-b7e6-df3344d26bd3`, M8 `9adefa88-5d73-4fea-b64e-538323a3f45f` ; brouillons sans nœud ni tag
+(vérifié MCP). Ids envoyés à questions-1gen : aucune objection, rien en cours sur les 7 points 1GEN, « pose les deux
+tags ». Page à cocher https://claude.ai/artifact/FrRt7ig4wuX6mLsY9dP5Q3 (capacité `db`, collection `verdicts`).
+
+1acb6d47 (« Déterminer la nature de l'extremum », 1re spé, publié, tags 1SPE-402 + 1TECHNO-057) : 0 carte, 0
+tentative, 0 évaluation, 0 entrée de cahier de texte, 0 état de point sur 1TECHNO-057 (MCP).
+
+Migration `20261117222845_questions_1techno_lot2_rangement_tags` : (A) 8 brouillons rangés sur le nœud de leur point
+1TECHNO, 15 tags (8 × 1TECHNO, 7 × 1GEN, le point 1GEN exigé sur le même nœud) ; (B) 1acb6d47 perd 1TECHNO-057 et
+`1_TECHNO`. **Partie destructive** (une ligne de tag, une valeur de niveau), rendue par le rollback. Gardes : tout ou
+rien (9), brouillons sans nœud ni tag avec les niveaux du relevé, 1acb6d47 avec `1_TECHNO` et 057 pour seul point
+1TECHNO. Test `tests/integration/questions-1techno-lot2-rangement-tags.test.ts`.
