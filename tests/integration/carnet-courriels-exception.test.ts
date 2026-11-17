@@ -789,10 +789,13 @@ describe('carnet de liaison — courriels d’exception (base locale)', () => {
 			// Rentrée de la classe commune : il y a 80 jours
 			const eleve = await nouvelEleve('Xavier', classId);
 			const p = await parentConfirme(eleve.id, `p-xavier@${DOMAINE}`);
-			await evaluation('Année passée non faite', null, { class_id: classId }, ilYA(100));
+			await evaluation('Année passée non faite', null, { class_id: classId }, ilYA(200));
 			await evaluation('Cette année non faite', null, { class_id: classId }, ilYA(70));
+			// Préparée l'été, 10 jours avant la rentrée : de l'année en cours
+			await evaluation('Préparée l’été', null, { class_id: classId }, ilYA(90));
 			const titres = await titresDuCarnet(p.jeton);
 			expect(titres).toContain('Cette année non faite');
+			expect(titres).toContain('Préparée l’été');
 			expect(titres).not.toContain('Année passée non faite');
 		});
 	});
@@ -801,6 +804,14 @@ describe('carnet de liaison — courriels d’exception (base locale)', () => {
 		it('inactivité : comptée depuis l’arrivée dans la classe, pas depuis la rentrée', async () => {
 			const nouveau = await nouvelEleve('Yanis', classId, 5);
 			await parentConfirme(nouveau.id, `p-yanis@${DOMAINE}`);
+			// Membre depuis longtemps d'une classe SANS carnet : ignorée
+			const { error } = await service.from('class_members').insert({
+				class_id: classeEteinte,
+				student_id: nouveau.id,
+				status: 'active',
+				joined_at: ilYA(400)
+			});
+			if (error) throw new Error(error.message);
 			expect(await exceptions(nouveau.id)).toEqual([]);
 
 			// Arrivé il y a 20 jours, rien fait : l'alerte part

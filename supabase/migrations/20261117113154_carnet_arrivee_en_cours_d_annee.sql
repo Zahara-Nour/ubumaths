@@ -6,8 +6,9 @@
 -- arrivée, semaines et évaluations d'avant son arrivée dans le carnet. Tout se
 -- compte désormais depuis son arrivée dans une classe au carnet (la plus
 -- ancienne de ses adhésions actives, `class_members.joined_at`). Une
--- évaluation sans échéance non faite ne reste que si elle date de l'année
--- scolaire en cours.
+-- évaluation sans échéance non faite, hors de la fenêtre de 5 semaines, ne
+-- reste que si elle date de l'année scolaire en cours (créée au plus tôt un
+-- mois avant la rentrée).
 --
 -- Question d'accès (tranchée par David le 2026-11-17) : personne ne lit rien
 -- de nouveau. En miroir, le parent (et l'élève, même carnet) ne lit plus les
@@ -18,8 +19,10 @@
 -- `create or replace` garde les droits (carnet_payload interne,
 -- carnet_current_exceptions au service role seul).
 --
--- Rollback : rejouer les corps de carnet_payload et carnet_current_exceptions
--- depuis 20261116215952_carnet_courriels_exception.sql.
+-- Rollback : rejouer, tels quels, les deux `create or replace function` de
+-- 20261116215952_carnet_courriels_exception.sql : carnet_payload (lignes
+-- 215-368) et carnet_current_exceptions (lignes 453-566). Signatures
+-- identiques : les droits restent en place.
 
 create or replace function public.carnet_payload(p_student_id uuid)
 returns jsonb
@@ -114,14 +117,19 @@ begin
 				)
 				or (
 					e.deadline is null
-					and e.created_at >= v_first_day::timestamp at time zone 'Europe/Paris'
 					and (
 						e.created_at >= v_start::timestamp at time zone 'Europe/Paris'
-						or not exists (
-							select 1 from public.test_sessions ts
-							where ts.evaluation_id = e.id
-								and ts.user_id = p_student_id
-								and ts.completed_at is not null
+						or (
+							-- Non faite : seulement de l'année en cours (Q27 bornée). Un
+							-- mois de marge avant la rentrée : le professeur prépare en
+							-- été ; juin de l'année passée reste dehors.
+							e.created_at >= (v_first_day - 31)::timestamp at time zone 'Europe/Paris'
+							and not exists (
+								select 1 from public.test_sessions ts
+								where ts.evaluation_id = e.id
+									and ts.user_id = p_student_id
+									and ts.completed_at is not null
+							)
 						)
 					)
 				)

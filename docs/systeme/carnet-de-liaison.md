@@ -31,7 +31,8 @@ et les liens du cahier et du cours de la classe.
 Tout se compte depuis la rentrée **et depuis l'arrivée de l'élève** dans une classe au carnet
 (Q43 ; la plus ancienne de ses adhésions actives, `class_members.joined_at`) : ni semaine, ni
 évaluation échue d'avant son arrivée. Une évaluation sans échéance non faite reste tant
-qu'elle n'est pas faite, si elle date de l'année scolaire en cours (Q27).
+qu'elle n'est pas faite, si elle date de l'année scolaire en cours (créée au plus tôt un mois
+avant la rentrée : préparation d'été ; Q27).
 
 ## Les surfaces
 
@@ -153,8 +154,10 @@ formulaire sans `Origin` de notre site (Q39).
   semaine plus tard.
 - Arrêter puis reprendre les courriels resignale une exception encore en cours (voulu : le
   parent qui reprend veut l'état présent).
-- Un élève qui change de classe en cours d'année : le compte repart de sa nouvelle classe (au
-  plus 15 jours de délai avant une alerte d'inactivité, jamais de fausse alarme).
+- Un élève qui change de classe en cours d'année, ou retiré puis remis dans sa classe (un
+  retrait efface l'adhésion) : tout repart de sa nouvelle arrivée. Le parent ne voit plus les
+  semaines ni les évaluations échues d'avant ; l'alerte d'inactivité attend N jours (jamais de
+  fausse alarme).
 - L'effacement des 90 jours efface aussi les adresses « Je ne suis pas le parent » et retirées :
   leur empreinte ne bloque plus une ressaisie.
 - Le journal des courriels (`parent_notifications`) n'a pas de durée propre : il vit avec le profil
