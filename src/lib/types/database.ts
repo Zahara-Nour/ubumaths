@@ -8109,6 +8109,7 @@ export type Database = {
           email_hash: string
           emails_stopped_at: string | null
           id: string
+          orphaned_since: string | null
           source: string
           status: string
           student_id: string
@@ -8126,6 +8127,7 @@ export type Database = {
           email_hash: string
           emails_stopped_at?: string | null
           id?: string
+          orphaned_since?: string | null
           source: string
           status?: string
           student_id: string
@@ -8143,6 +8145,7 @@ export type Database = {
           email_hash?: string
           emails_stopped_at?: string | null
           id?: string
+          orphaned_since?: string | null
           source?: string
           status?: string
           student_id?: string
@@ -8199,8 +8202,78 @@ export type Database = {
           },
         ]
       }
+      parent_exception_episodes: {
+        Row: {
+          closed_at: string | null
+          contact_id: string
+          evaluation_id: string | null
+          id: string
+          notified_at: string | null
+          opened_at: string
+          reason: string
+          student_id: string
+        }
+        Insert: {
+          closed_at?: string | null
+          contact_id: string
+          evaluation_id?: string | null
+          id?: string
+          notified_at?: string | null
+          opened_at?: string
+          reason: string
+          student_id: string
+        }
+        Update: {
+          closed_at?: string | null
+          contact_id?: string
+          evaluation_id?: string | null
+          id?: string
+          notified_at?: string | null
+          opened_at?: string
+          reason?: string
+          student_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "parent_exception_episodes_contact_id_fkey"
+            columns: ["contact_id"]
+            isOneToOne: false
+            referencedRelation: "parent_contacts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "parent_exception_episodes_evaluation_id_fkey"
+            columns: ["evaluation_id"]
+            isOneToOne: false
+            referencedRelation: "evaluations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "parent_exception_episodes_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "minesweeper_student_achievement_progress"
+            referencedColumns: ["student_id"]
+          },
+          {
+            foreignKeyName: "parent_exception_episodes_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "parent_exception_episodes_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
+        ]
+      }
       parent_notifications: {
         Row: {
+          access_token_hash: string | null
           contact_id: string | null
           created_at: string
           id: string
@@ -8210,6 +8283,7 @@ export type Database = {
           student_id: string
         }
         Insert: {
+          access_token_hash?: string | null
           contact_id?: string | null
           created_at?: string
           id?: string
@@ -8219,6 +8293,7 @@ export type Database = {
           student_id: string
         }
         Update: {
+          access_token_hash?: string | null
           contact_id?: string | null
           created_at?: string
           id?: string
@@ -15074,11 +15149,55 @@ export type Database = {
         Args: { student_profile_id: string }
         Returns: boolean
       }
+      carnet_contact_by_token: { Args: { p_token: string }; Returns: string }
+      carnet_current_exceptions: {
+        Args: never
+        Returns: {
+          evaluation_id: string
+          reason: string
+          student_id: string
+        }[]
+      }
+      carnet_erase_orphan_contacts: { Args: never; Returns: number }
+      carnet_exception_plan: {
+        Args: never
+        Returns: {
+          contact_id: string
+          email: string
+          episode_ids: string[]
+          firstname: string
+          inactivity_days: number
+          overdue_days: number
+          reasons: string[]
+          student_id: string
+        }[]
+      }
+      carnet_is_holiday: {
+        Args: { p_day: string; p_year_id: string }
+        Returns: boolean
+      }
       carnet_payload: { Args: { p_student_id: string }; Returns: Json }
+      carnet_quarterly_plan: {
+        Args: never
+        Returns: {
+          contact_id: string
+          email: string
+          firstname: string
+          period_id: string
+          regular: boolean
+          reviews_up_to_date: boolean
+          student_id: string
+        }[]
+      }
+      carnet_school_year: {
+        Args: { p_student_id: string }
+        Returns: Record<string, unknown>
+      }
       carnet_student_is_shared: {
         Args: { p_student_id: string }
         Returns: boolean
       }
+      carnet_sync_exception_episodes: { Args: never; Returns: undefined }
       check_achievement_prerequisites: {
         Args: { p_achievement_id: string; p_student_id: string }
         Returns: boolean

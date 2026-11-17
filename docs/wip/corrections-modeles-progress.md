@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-16, page `/dev/corrections` en relecture._
+_Mis à jour le 2026-11-17, à la reprise._
 
-- **État** : phase 0 ; page de démonstration `/dev/corrections` (14 modèles × Flash-cards / Saisie / fin de série) dans le worktree `ubumaths-wt-corrections-modeles`, branche `feat/corrections-demo`, **non commitée** (serveur 5176) · **Prochaine action** : recueillir les retours de David (§ Retours), puis choisir quoi reprendre de TinyMath et répondre aux Q1–Q5 · **En attente de David** : Q1 à Q5 ci-dessous · **Pièges en cours** : ne pas refaire ce que l'ADR 0017 et Q91–Q101 ont déjà tranché ; le dire si une proposition y revient · **Worktree / branche** : aucun (étude seulement) ; au premier code → `ubumaths-wt-corrections-modeles`
+- **État** : phase 0 ; page de démonstration `/dev/corrections` (14 modèles × Flash-cards / Saisie / fin de série) sur la branche `feat/corrections-demo`, commitée et poussée, **sans PR** (serveur `pnpm dev --port 5176 --strictPort` depuis le worktree) · **Prochaine action** : recueillir les retours de David sur la page (§ Retours ; RC1 → chantier `mots-cliquables`), puis choisir quoi reprendre de TinyMath et répondre aux Q1–Q5 · **En attente de David** : Q1 à Q5 ci-dessous · **Pièges en cours** : ne pas refaire ce que l'ADR 0017 et Q91–Q101 ont déjà tranché ; le dire si une proposition y revient ; le journal vit sur `main` (l'exemplaire de la branche est périmé) · **Worktree / branche** : `ubumaths-wt-corrections-modeles` · `feat/corrections-demo`
 
 ## Origine
 

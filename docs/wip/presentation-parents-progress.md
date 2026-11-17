@@ -42,6 +42,15 @@ _Mis à jour le 2026-11-15, phase 0 (aucune PR)._
 - **Futur chantier** (hors de celui-ci) : une **limite de temps ou d'utilisation des jeux**, pour que les élèves n'y restent pas trop longtemps ; aucune n'existe aujourd'hui, donc rien à promettre sur la page.
 - **Point 8** : **bloc « Suivre son travail » retiré de la page pour l'instant** ; il sera réécrit **après le chantier `partage-parents`** (`docs/wip/partage-parents-progress.md`). Origine : « il y a une vraie réflexion à mener sur ce qu'on partage avec les parents, et comment on le fait ». Texte de travail en attente : « Son professeur peut vous donner deux liens, à ouvrir sans compte : le cahier de textes de la classe, avec les séances et les devoirs, et le cours, avec ses chapitres et ses documents. Il n'y a pas de compte parent. »
 
+### 2026-11-17 (point 8, texte validé)
+
+Le carnet de liaison est construit (ADR 0040). Texte proposé pour le bloc « Suivre son travail »
+(en ligne seulement après le `deploy:prod` qui livre le carnet) :
+
+> **Suivre son travail**
+> Si son professeur l'active pour la classe, vous recevez par courriel le lien de son **carnet de liaison** : une page à vous, sans compte, qui montre s'il travaille régulièrement, s'il est à jour dans ses révisions et quelles évaluations il a faites, sans les notes. Vous y trouvez aussi le cahier de textes et le cours de la classe. Chiphre ne vous écrit que si quelque chose ne va pas, une fois par semaine au plus, et, s'il y a de quoi, une bonne nouvelle par trimestre. Votre enfant voit la même page que vous.
+> → J'ai perdu mon lien (`/carnet/lien-perdu`)
+
 ## Les 9 questions du parent
 
 1. Qu'est-ce que c'est, en une phrase ? — ✅ tranché.
@@ -51,7 +60,7 @@ _Mis à jour le 2026-11-15, phase 0 (aucune PR)._
 5. Ses données ? — ✅ FAQ (sauf « Sans publicité »).
 6. Est-ce que ça l'aide vraiment ? — ✅ page (paragraphe), démo forme retirée.
 7. Les jeux et les gidouilles ne vont-ils pas le distraire ? — ✅ FAQ.
-8. Comment le suivre ? — ✅ retiré de la page ; à réécrire après `partage-parents`.
+8. Comment le suivre ? — ✅ texte validé le 2026-11-17 (ci-dessus) ; en ligne après le `deploy:prod` du carnet.
 9. Comment l'inscrire, combien ça coûte ? (`/auth/register/parent` absent de la page)
 
 ## FAQ (textes de travail, non validés)

@@ -323,6 +323,16 @@ colonne) ; ni `anon` ni l'élève n'écrivent rien. Les fonctions qui reçoivent
 `issue_parent_carnet_link`) sont réservées au `service_role` et rendent la même réponse quelle que soit
 la cause d'un échec ; l'élève lit son carnet par `get_my_carnet`. Le contenu (`carnet_payload`,
 interne) suit la règle du jour actif de `class_regularity_weeks` : la changer aux deux endroits.
+Migration `20261116215952` (courriels d'exception, PR 4 du chantier) : `parent_exception_episodes`
+(une exception en cours par parent, signalée une fois ; **service role seul**, aucune policy),
+`parent_notifications.access_token_hash` (jeton propre à chaque courriel, haché : il ouvre le carnet
+et arrête les courriels tant que l'adresse a un lien actif ; colonne illisible par les comptes) et
+`parent_contacts.orphaned_since` (élève sans classe active : adresses effacées après 90 jours par
+`carnet_erase_orphan_contacts`). Fonctions du cron, toutes au `service_role` :
+`carnet_current_exceptions`, `carnet_sync_exception_episodes`, `carnet_exception_plan`,
+`carnet_quarterly_plan`, `carnet_erase_orphan_contacts` ; internes : `carnet_school_year`,
+`carnet_is_holiday`, `carnet_contact_by_token`. Une évaluation sans échéance non faite reste dans le
+carnet (Q27).
 
 `reconcileAutoCoverage()` (`src/lib/server/curriculum-coverage.ts`) recalcule les lignes `auto` de
 `journal_entry_points` depuis les activités, sans toucher aux lignes `manual` : la couverture

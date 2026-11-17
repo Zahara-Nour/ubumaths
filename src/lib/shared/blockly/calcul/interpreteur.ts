@@ -50,6 +50,12 @@ export type ErreurCalcul =
 	| { type: 'nom-de-variable'; nom: string }
 	| { type: 'trop-de-variables' };
 
+/** Erreurs de la lecture d'un programme, avant son exécution (`preparerProgramme`). */
+export type ErreurDeLecture = Extract<
+	ErreurCalcul,
+	{ type: 'bloc-inconnu' | 'programme-illisible' | 'nom-de-variable' | 'trop-de-variables' }
+>;
+
 interface Sortie {
 	/** Nombres affichés, dans l'ordre. */
 	affichages: number[];
@@ -320,7 +326,7 @@ export function* tousLesBlocs(bloc: BlocLu | undefined): Generator<BlocLu> {
 function erreurDesVariables(
 	piles: BlocLu[],
 	noms: ReadonlyMap<string, string>
-): ErreurCalcul | null {
+): ErreurDeLecture | null {
 	const vus = new Set<string>();
 	for (const pile of piles) {
 		for (const bloc of tousLesBlocs(pile)) {
@@ -352,19 +358,61 @@ export function siDuProgramme(piles: readonly BlocLu[]): BlocLu[] {
 // Fonctions — exécution
 // =============================================================================
 
-class TropLong extends Error {}
-class DivisionParZero extends Error {}
-class TropGrand extends Error {}
+/** Arrêt du moteur : trop de pas (programme trop long, ou sans fin). */
+export class TropLong extends Error {}
+/** Arrêt du moteur : division par 0 (÷ ou reste). */
+export class DivisionParZero extends Error {}
+/** Arrêt du moteur : un nombre devenu infini. */
+export class TropGrand extends Error {}
+
+/** Ce que le moteur prête aux blocs propres à un domaine (programme de calcul, tortue). */
+export interface OutilsMoteur {
+	/** Valeur d'une entrée ; une entrée vide vaut 0. */
+	evaluer(bloc: BlocLu | undefined): number;
+	compterUnPas(): void;
+}
+
+/**
+ * Blocs propres à un domaine, en plus des blocs communs que le moteur exécute lui-même :
+ * nombres, variables (`variables_set`, `variables_get`, `math_change`), opérations, reste,
+ * comparaisons, ET / OU / NON, « si », répétitions.
+ */
+export interface DomaineMoteur {
+	/** Valeur d'un bloc du domaine ; undefined : bloc inconnu. */
+	valeur?(bloc: BlocLu, outils: OutilsMoteur): number | undefined;
+	/** Exécute une instruction du domaine (son pas est déjà compté) ; false : inconnue. */
+	instruction?(bloc: BlocLu, outils: OutilsMoteur): boolean;
+	/**
+	 * Nombre de tours d'une répétition à nombre calculé (`controls_repeat_ext`), à partir de la
+	 * valeur de son entrée ; par défaut, l'entier le plus proche, jamais négatif.
+	 */
+	toursCalcules?(valeur: number): number;
+	surCondition?: SurCondition;
+}
+
+export interface Moteur {
+	/** Exécute une pile ; lève `TropLong`, `DivisionParZero`, `TropGrand` ou `ProgrammeIllisible`. */
+	executerPile(bloc: BlocLu | undefined): void;
+	/** Pas comptés jusqu'ici. */
+	pas(): number;
+}
 
 type Prepare =
-	{ ok: true; piles: BlocLu[]; noms: Map<string, string> } | { ok: false; erreur: ErreurCalcul };
+	{ ok: true; piles: BlocLu[]; noms: Map<string, string> } | { ok: false; erreur: ErreurDeLecture };
 
-/** Lit et vérifie l'état : forme, blocs du niveau, noms de variables. */
-function preparer(etat: unknown, niveau: NiveauCalcul): Prepare {
+/**
+ * Lit et vérifie l'état : forme, blocs connus (`connus`), noms de variables. Les piles qui
+ * commencent par un bloc de `ignorees` (un calcul posé seul) sont ignorées.
+ */
+export function preparerProgramme(
+	etat: unknown,
+	ignorees: ReadonlySet<string>,
+	connus: BlocsConnus
+): Prepare {
 	try {
-		const piles = lirePilesCalcul(etat);
+		const piles = lirePilesDe(etat, ignorees);
 		for (const pile of piles) {
-			const inconnu = premierBlocInconnuCalcul(pile, 'instruction', niveau);
+			const inconnu = premierBlocInconnuDe(pile, 'instruction', connus);
 			if (inconnu) return { ok: false, erreur: { type: 'bloc-inconnu', typeBloc: inconnu } };
 		}
 		const noms = nomsDesVariables(etat);
@@ -376,20 +424,27 @@ function preparer(etat: unknown, niveau: NiveauCalcul): Prepare {
 	}
 }
 
-/** Exécute des piles déjà vérifiées. Ne lève jamais. */
-function executer(
-	piles: BlocLu[],
+/** Lit et vérifie un programme de calcul au niveau donné. */
+function preparer(etat: unknown, niveau: NiveauCalcul): Prepare {
+	return preparerProgramme(etat, VALEURS, connusAuNiveau(niveau));
+}
+
+/**
+ * Moteur d'exécution des blocs communs aux programmes de calcul et à la tortue (ADR 0039) :
+ * variables (une variable jamais mise vaut 0), calculs, conditions, « si », répétitions. Les
+ * blocs propres au domaine lui sont confiés (`domaine`). Chaque bloc exécuté, chaque tour de
+ * boucle et chaque opération comptent un pas ; au-delà de `limitePas`, `TropLong`.
+ */
+export function creerMoteur(
 	noms: ReadonlyMap<string, string>,
-	nombre: number,
-	surCondition?: SurCondition
-): ResultatCalcul {
-	const affichages: number[] = [];
+	domaine: DomaineMoteur,
+	limitePas: number = LIMITE_PAS_CALCUL
+): Moteur {
 	const variables = new Map<string, number>();
-	let resultat = 0;
 	let pas = 0;
 
 	function compterUnPas(): void {
-		if (pas >= LIMITE_PAS_CALCUL) throw new TropLong();
+		if (pas >= limitePas) throw new TropLong();
 		pas++;
 	}
 
@@ -401,16 +456,14 @@ function executer(
 
 	const cle = (bloc: BlocLu): string => normaliserMot(nomDeVariable(bloc, noms));
 
+	const outils: OutilsMoteur = { evaluer, compterUnPas };
+
 	function evaluer(bloc: BlocLu | undefined): number {
 		// Une entrée vide vaut 0, comme dans le code généré
 		if (!bloc) return 0;
 		switch (bloc.type) {
 			case 'math_number':
 				return valeurNombre(bloc);
-			case 'calcul_nombre_choisi':
-				return nombre;
-			case 'calcul_resultat':
-				return resultat;
 			case 'variables_get':
 				return variables.get(cle(bloc)) ?? 0;
 			case 'calcul_operation': {
@@ -435,6 +488,8 @@ function executer(
 				return fini(Math.max(0, a - b * Math.floor(a / b)));
 			}
 		}
+		const propre = domaine.valeur?.(bloc, outils);
+		if (propre !== undefined) return propre;
 		// Une condition à la place d'un nombre, ou un bloc inconnu
 		throw new ProgrammeIllisible();
 	}
@@ -486,12 +541,6 @@ function executer(
 			if (!courant.actif) continue;
 			compterUnPas();
 			switch (courant.type) {
-				case 'calcul_afficher':
-					affichages.push(evaluer(courant.entrees.VALEUR));
-					break;
-				case 'calcul_mettre_resultat':
-					resultat = evaluer(courant.entrees.VALEUR);
-					break;
 				case 'variables_set':
 					variables.set(cle(courant), evaluer(courant.entrees.VALUE));
 					break;
@@ -503,7 +552,7 @@ function executer(
 				case 'calcul_si':
 				case 'calcul_si_sinon': {
 					const vrai = condition(courant.entrees.CONDITION);
-					surCondition?.(courant, vrai);
+					domaine.surCondition?.(courant, vrai);
 					if (vrai) executerPile(courant.entrees.ALORS);
 					else if (courant.type === 'calcul_si_sinon') executerPile(courant.entrees.SINON);
 					break;
@@ -511,10 +560,15 @@ function executer(
 				case 'controls_repeat':
 					repeter(nombreDeToursDe(courant, evaluer), courant.entrees.DO);
 					break;
-				case 'controls_repeat_ext':
-					// Nombre de tours calculé : arrondi à l'entier le plus proche, jamais négatif
-					repeter(Math.max(0, Math.round(evaluer(courant.entrees.TIMES))), courant.entrees.DO);
+				case 'controls_repeat_ext': {
+					const valeur = evaluer(courant.entrees.TIMES);
+					const tours = domaine.toursCalcules
+						? domaine.toursCalcules(valeur)
+						: // Nombre de tours calculé : arrondi à l'entier le plus proche, jamais négatif
+							Math.max(0, Math.round(valeur));
+					repeter(tours, courant.entrees.DO);
 					break;
+				}
 				case 'calcul_repeter_jusqua':
 					for (;;) {
 						// Un tour compte même vide : une boucle sans fin s'arrête
@@ -524,13 +578,46 @@ function executer(
 					}
 					break;
 				default:
-					throw new ProgrammeIllisible();
+					if (!domaine.instruction?.(courant, outils)) throw new ProgrammeIllisible();
 			}
 		}
 	}
 
+	return { executerPile, pas: () => pas };
+}
+
+/** Exécute des piles déjà vérifiées. Ne lève jamais. */
+function executer(
+	piles: BlocLu[],
+	noms: ReadonlyMap<string, string>,
+	nombre: number,
+	surCondition?: SurCondition
+): ResultatCalcul {
+	const affichages: number[] = [];
+	let resultat = 0;
+
+	const moteur = creerMoteur(noms, {
+		valeur(bloc) {
+			if (bloc.type === 'calcul_nombre_choisi') return nombre;
+			if (bloc.type === 'calcul_resultat') return resultat;
+			return undefined;
+		},
+		instruction(bloc, { evaluer }) {
+			if (bloc.type === 'calcul_afficher') {
+				affichages.push(evaluer(bloc.entrees.VALEUR));
+				return true;
+			}
+			if (bloc.type === 'calcul_mettre_resultat') {
+				resultat = evaluer(bloc.entrees.VALEUR);
+				return true;
+			}
+			return false;
+		},
+		surCondition
+	});
+
 	try {
-		for (const pile of piles) executerPile(pile);
+		for (const pile of piles) moteur.executerPile(pile);
 	} catch (erreur) {
 		const type =
 			erreur instanceof TropLong
@@ -540,10 +627,10 @@ function executer(
 					: erreur instanceof TropGrand
 						? 'nombre-trop-grand'
 						: 'programme-illisible';
-		return { ok: false, erreur: { type }, affichages, pas };
+		return { ok: false, erreur: { type }, affichages, pas: moteur.pas() };
 	}
 
-	return { ok: true, affichages, pas };
+	return { ok: true, affichages, pas: moteur.pas() };
 }
 
 /**

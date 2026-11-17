@@ -1,7 +1,8 @@
 # 0040 — Le carnet de liaison : un lien par parent, des courriels sur exception
 
 - **Statut** : acceptée — phase 0 du chantier `partage-parents` (journal
-  `docs/wip/partage-parents-progress.md`, tours 1 à 5) ; mise en œuvre à venir
+  `docs/wip/partage-parents-progress.md`, tours 1 à 5) ; mise en œuvre par les PR #2718, #2724,
+  #2731, #2736 et #2737 (fonctionnement : [carnet-de-liaison.md](../systeme/carnet-de-liaison.md))
 - **Date** : 2026-11-16 · **Décidée par** : David
 
 ## Contexte
@@ -77,3 +78,22 @@ sur **un** élève, sans compte, par un lien qui lui est propre.
   son adresse peut faire tourner son lien (3 fois par jour). Gêne sans fuite.
 - Le professeur lit les adresses et l'état des liens, **jamais les empreintes** (droits par colonne) :
   l'empreinte d'une adresse refusée n'est pas anonyme (sha256 non salé).
+- **Effacement des adresses** (amendement du 2026-11-16, Q35) : les adresses d'un élève qui n'est
+  membre actif d'**aucune classe active depuis 90 jours** sont effacées (ligne entière : adresse,
+  empreinte, liens) ; le journal des courriels reste, sans l'adresse. Les 90 jours se comptent par une
+  marque du passage quotidien (`orphaned_since`), pas par `left_at` (vide sur les membres archivés).
+  « Gardées d'une année à l'autre » (Q21) tient : l'été dure moins de 90 jours. Un parent effacé doit
+  être ressaisi et reconfirmé ; une adresse « Je ne suis pas le parent » effacée ainsi peut être
+  ressaisie.
+- **Un jeton par courriel** (amendement du 2026-11-16, Q38) : le lien du parent est stocké haché, le
+  passage quotidien ne le connaît pas. Chaque courriel d'exception ou trimestriel porte son **propre
+  jeton**, haché sur sa ligne du journal ; il ouvre le carnet et arrête les courriels aux mêmes
+  conditions que le lien du parent, et seulement tant que vit le lien qui était actif à l'envoi.
+  Écartés : un lien neuf à chaque courriel (il tuerait le raccourci de l'écran d'accueil) ; un
+  courriel sans lien. Question d'accès : le détenteur d'un courriel lit le carnet tant que le lien du
+  parent vit, comme celui qui détient le courriel du lien.
+- **Pas de désinscription en un geste par la messagerie** (2026-11-16, Q39, recommandation en
+  attente de David) : `List-Unsubscribe-Post` exige d'accepter un POST sans en-tête `Origin`, que
+  SvelteKit refuse avant tout hook. L'en-tête `List-Unsubscribe` mène au carnet (`#courriels`), où le
+  parent clique « Ne plus recevoir ». Gmail n'exige le geste unique qu'au-delà de 5 000 courriels par
+  jour.
