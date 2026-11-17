@@ -1522,4 +1522,6 @@ geste dans le nœud, partagé, sans renuméroter.
   139, da976537 → 172, a434bd68 → 136 ; la notion elle-même : ae74fe73, f1f7b2d1 → 122), 13 tags posés, aucun niveau
   ni statut changé.
 - Test `questions-cm1-lot7-rangement-tags.test.ts` : 20/20 vert (relancé après le commit) ; corps neutralisé
-  (`select 1;`) : 9 échecs + suite principale sautée. `types:cliquet` tenu.
+  (`select 1;`) : 9 échecs + suite principale sautée. `types:cliquet` tenu ; `security-auditor` : aucun finding
+  (diff avec la 6 ter : données, compteurs, préfixe `_qcm1l7_` ; rangement sur la notion pour CM1-122 vérifié ;
+  état « avant » remesuré au MCP).
