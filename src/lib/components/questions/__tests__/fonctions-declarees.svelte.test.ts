@@ -22,8 +22,6 @@ function choiceQuestion(genericFunctions?: string[]): QuestionInstance {
 	return {
 		templateId: 'tpl-fonctions',
 		grades: ['1_SPE'],
-		theme: 'Fonctions',
-		domain: 'Dérivation',
 		level: 1,
 		generatedAt: new Date().toISOString(),
 		statement: resolvedMarkdown(`${STATEMENT}\n\n\`\`\`choix\ncase: 0\n- ~P'(1)~\n- $12$\n\`\`\``),

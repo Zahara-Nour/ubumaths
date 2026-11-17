@@ -16,6 +16,9 @@ vi.mock('$lib/server/middleware/auth', () => ({ requireAdmin: vi.fn() }));
 vi.mock('$lib/server/confirmAction', () => ({ assertTypedConfirmation: vi.fn() }));
 vi.mock('$lib/server/env', () => ({ getEnv: () => ({ CRON_SECRET: undefined }) }));
 vi.mock('$lib/server/serviceRoleClient', () => ({ createServiceRoleClient: vi.fn() }));
+vi.mock('$lib/server/rateLimiter', () => ({
+	checkEndpointRateLimit: vi.fn(async () => ({ allowed: true }))
+}));
 
 const { POST } = await import('../+server');
 const { ALLOWED_JOB_PATHS } = await import('$lib/server/validation/cron');

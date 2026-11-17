@@ -38,7 +38,7 @@ import { flattenSumShallow } from '$lib/mathAST/flatten';
 import { findNodes } from '$lib/mathAST/transforms';
 import { getVariables } from '$lib/mathAST/eval/substitute';
 import { astOf } from './parse';
-import { degreeSignWritten } from './degrees';
+import { degreeSignWritten } from '$lib/mathAST/cli/core/degrees';
 import { summaryOf } from './steps-summary';
 import { tidyAlternative, type DomainAlternative } from './domain-guard';
 

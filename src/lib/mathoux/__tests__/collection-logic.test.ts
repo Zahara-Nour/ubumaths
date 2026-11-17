@@ -20,7 +20,7 @@ import {
 	mergeMemory,
 	starGradeLabel,
 	selectTrainingTemplates,
-	trainingCategories,
+	trainingItems,
 	trainingQuery,
 	trainingTemplateFrom,
 	MAX_TRAINING_QUESTIONS,
@@ -747,18 +747,34 @@ describe('phrases', () => {
 // « Faire grandir » : l'Entraînement sur la notion (v1.1, spec du 2026-10-18)
 // =============================================================================
 
-/** Modèle publié fictif : sa catégorie porte son identifiant (niveau = rang). */
-function template(id: string, level = 1): TrainingTemplate {
-	return {
-		id,
-		category: { theme: 'Nombres', domain: `Domaine ${id}`, subdomain: null, level },
-		delay: 20
-	};
+/** Uuids des modèles fictifs, attribués dans l'ordre de première apparition du nom. */
+const uuidByName = new Map<string, string>();
+
+function uuidOf(name: string): string {
+	let id = uuidByName.get(name);
+	if (!id) {
+		id = `00000000-0000-4000-8000-${String(uuidByName.size + 1).padStart(12, '0')}`;
+		uuidByName.set(name, id);
+	}
+	return id;
+}
+
+/** Nom lisible d'un modèle fictif (pour les comparaisons). */
+function nameOf(id: string): string {
+	return [...uuidByName].find(([, uuid]) => uuid === id)?.[0] ?? id;
+}
+
+/** Modèle publié fictif ; son id est un uuid dérivé du nom (`uuidOf`). */
+function template(name: string): TrainingTemplate {
+	return { id: uuidOf(name), delay: 20 };
 }
 
 function templatesMap(entries: Record<string, string[]>): Map<string, TrainingTemplate[]> {
 	return new Map(
-		Object.entries(entries).map(([pointId, ids]) => [pointId, ids.map((id) => template(id))])
+		Object.entries(entries).map(([pointId, names]) => [
+			pointId,
+			names.map((name) => template(name))
+		])
 	);
 }
 
@@ -772,7 +788,7 @@ describe('selectTrainingTemplates', () => {
 			}),
 			templatesMap({ 'p-acquis': ['t-a'], 'p-neuf': ['t-n'], 'p-perdu': ['t-p'] })
 		);
-		expect(chosen.map((t) => t.id)).toEqual(['t-p', 't-n', 't-a']);
+		expect(chosen.map((t) => nameOf(t.id))).toEqual(['t-p', 't-n', 't-a']);
 	});
 
 	it('un point jamais travaillé (absent des états) compte comme non acquis', () => {
@@ -781,7 +797,7 @@ describe('selectTrainingTemplates', () => {
 			progress({ 'p-acquis': { isAcquired: true, hasSuccess: true } }),
 			templatesMap({ 'p-acquis': ['t-a'], 'p-jamais': ['t-j'] })
 		);
-		expect(chosen.map((t) => t.id)).toEqual(['t-j', 't-a']);
+		expect(chosen.map((t) => nameOf(t.id))).toEqual(['t-j', 't-a']);
 	});
 
 	it('au plus 10 modèles, les plus prioritaires gardés', () => {
@@ -797,7 +813,7 @@ describe('selectTrainingTemplates', () => {
 		expect(MAX_TRAINING_QUESTIONS).toBe(10);
 		expect(chosen).toHaveLength(10);
 		// Les 7 modèles du point perdu d'abord, puis 3 du point acquis
-		expect(chosen.slice(0, 7).map((t) => t.id)).toEqual(ids.slice(7));
+		expect(chosen.slice(0, 7).map((t) => nameOf(t.id))).toEqual(ids.slice(7));
 	});
 
 	it('un modèle qui tague plusieurs points ne vient qu’une fois, au rang du plus prioritaire', () => {
@@ -809,7 +825,7 @@ describe('selectTrainingTemplates', () => {
 			}),
 			templatesMap({ 'p-acquis': ['t-commun', 't-a'], 'p-perdu': ['t-commun'] })
 		);
-		expect(chosen.map((t) => t.id)).toEqual(['t-commun', 't-a']);
+		expect(chosen.map((t) => nameOf(t.id))).toEqual(['t-commun', 't-a']);
 	});
 
 	it('à priorité égale, les points sont servis tour à tour (un modèle chacun)', () => {
@@ -818,7 +834,7 @@ describe('selectTrainingTemplates', () => {
 			NONE,
 			templatesMap({ p1: ['t-1a', 't-1b', 't-1c'], p2: ['t-2a'] })
 		);
-		expect(chosen.map((t) => t.id)).toEqual(['t-1a', 't-2a', 't-1b', 't-1c']);
+		expect(chosen.map((t) => nameOf(t.id))).toEqual(['t-1a', 't-2a', 't-1b', 't-1c']);
 	});
 
 	it('aucun modèle publié : liste vide', () => {
@@ -827,22 +843,10 @@ describe('selectTrainingTemplates', () => {
 });
 
 describe('trainingTemplateFrom (ligne lue → modèle d’Entraînement)', () => {
-	const ROW = {
-		id: 't1',
-		theme: 'Nombres',
-		domain: 'Fractions',
-		subdomain: 'Somme',
-		level: 2,
-		delay: 30,
-		status: 'published'
-	};
+	const ROW = { id: uuidOf('t1'), delay: 30, status: 'published' };
 
-	it('un modèle publié donne sa catégorie et sa durée', () => {
-		expect(trainingTemplateFrom(ROW)).toEqual({
-			id: 't1',
-			category: { theme: 'Nombres', domain: 'Fractions', subdomain: 'Somme', level: 2 },
-			delay: 30
-		});
+	it('un modèle publié donne son id et sa durée', () => {
+		expect(trainingTemplateFrom(ROW)).toEqual({ id: uuidOf('t1'), delay: 30 });
 	});
 
 	it('aucun brouillon, même si la ligne arrive', () => {
@@ -853,42 +857,30 @@ describe('trainingTemplateFrom (ligne lue → modèle d’Entraînement)', () =>
 		expect(trainingTemplateFrom({ ...ROW, delay: null })?.delay).toBe(20);
 		expect(trainingTemplateFrom({ ...ROW, delay: 9999 })?.delay).toBe(600);
 	});
-
-	it('une catégorie que le lien refuserait (thème vide) est écartée', () => {
-		expect(trainingTemplateFrom({ ...ROW, theme: '' })).toBeNull();
-	});
 });
 
-describe('trainingCategories et trainingQuery', () => {
-	it('aucun modèle : pas de catégories, pas de lien', () => {
-		expect(trainingCategories([])).toBeNull();
+describe('trainingItems et trainingQuery', () => {
+	it('aucun modèle : pas de lignes, pas de lien', () => {
+		expect(trainingItems([])).toBeNull();
 		expect(trainingQuery(null)).toBeNull();
 	});
 
-	it('catégories minimales : catégorie, une question, durée (rien d’autre, pas l’id du modèle)', () => {
-		expect(trainingCategories([template('t1')])).toEqual([
-			{ category: template('t1').category, quantity: 1, delay: 20 }
+	it('lignes minimales : id du modèle, une question, durée (rien d’autre)', () => {
+		expect(trainingItems([template('t1')])).toEqual([
+			{ templateId: uuidOf('t1'), quantity: 1, delay: 20 }
 		]);
 	});
 
 	it('un Entraînement (mode interactif) d’une question par modèle, que resolveTestLaunch accepte', () => {
 		const templates = Array.from({ length: 10 }, (_, i) =>
-			trainingTemplateFrom({
-				id: `t${i}`,
-				theme: 'Fonctions de référence',
-				domain: 'Équations du second degré',
-				subdomain: 'Résolution par le discriminant',
-				level: i + 1,
-				delay: 20,
-				status: 'published'
-			})
+			trainingTemplateFrom({ id: uuidOf(`m${i}`), delay: 20, status: 'published' })
 		).filter((t): t is TrainingTemplate => t !== null);
-		const categories = trainingCategories(templates);
-		const query = trainingQuery(categories);
+		const items = trainingItems(templates);
+		const query = trainingQuery(items);
 		expect(query).not.toBeNull();
 		// Même encodage que les liens de série (`buildSeriesLink`)
 		expect(`/automaths/test?${query}`).toBe(
-			buildSeriesLink('', categories ?? [], { mode: 'interactive' })
+			buildSeriesLink('', items ?? [], { mode: 'interactive' })
 		);
 		const url = new URL(`/automaths/test?${query}`, 'https://chiph.re');
 
@@ -896,11 +888,11 @@ describe('trainingCategories et trainingQuery', () => {
 		expect(launch.kind).toBe('start');
 		if (launch.kind !== 'start') return;
 		expect(launch.mode).toBe('interactive');
-		expect(launch.categories).toHaveLength(10);
-		expect(launch.categories.every((c) => c.quantity === 1)).toBe(true);
-		expect(launch.categories[0].category).toEqual(templates[0].category);
-		// Longueur raisonnable avec 10 modèles aux noms accentués et longs
-		expect((query as string).length).toBeLessThan(6000);
+		expect(launch.lines).toHaveLength(10);
+		expect(launch.lines.every((line) => line.quantity === 1)).toBe(true);
+		expect(launch.lines).toEqual(items);
+		// Un lien de dix uuid reste court
+		expect((query as string).length).toBeLessThan(2000);
 	});
 });
 
@@ -920,15 +912,14 @@ describe('buildMathouCollection : Entraînement et réveil', () => {
 		});
 		const [mathou] = collection.races[0].mathoux;
 		const launch = resolveTestLaunch(
-			new URLSearchParams(trainingQuery(mathou.trainingCategories) ?? '')
+			new URLSearchParams(trainingQuery(mathou.trainingItems) ?? '')
 		);
 		expect(launch.kind).toBe('start');
 		if (launch.kind !== 'start') return;
 		// p2 (1re, non acquis) avant p1 (2de, acquis)
-		expect(launch.categories.map((c) => c.category.domain)).toEqual([
-			'Domaine t-1re',
-			'Domaine t-2de'
-		]);
+		expect(
+			launch.lines.map((line) => ('templateId' in line ? nameOf(line.templateId) : null))
+		).toEqual(['t-1re', 't-2de']);
 	});
 
 	it('une silhouette n’a pas de lien ; une notion sans modèle publié non plus', () => {
@@ -944,12 +935,12 @@ describe('buildMathouCollection : Entraînement et réveil', () => {
 		});
 		const byId = new Map(collection.races.flatMap((r) => r.mathoux).map((m) => [m.notionId, m]));
 		expect(byId.get('n-frac')?.growth).toBe('a_decouvrir');
-		expect(byId.get('n-frac')?.trainingCategories).toBeNull();
+		expect(byId.get('n-frac')?.trainingItems).toBeNull();
 		expect(byId.get('n-ent')?.growth).toBe('chaton');
-		expect(byId.get('n-ent')?.trainingCategories).toBeNull();
+		expect(byId.get('n-ent')?.trainingItems).toBeNull();
 	});
 
-	it('poids : la collection porte les catégories, jamais un lien encodé', () => {
+	it('poids : la collection porte les lignes, jamais un lien encodé', () => {
 		const ids = Array.from({ length: 12 }, (_, i) => `t-${i}`);
 		const collection = buildMathouCollection({
 			points: POINTS,
@@ -959,7 +950,7 @@ describe('buildMathouCollection : Entraînement et réveil', () => {
 			templatesByPoint: templatesMap({ p1: ids })
 		});
 		const [mathou] = collection.races[0].mathoux;
-		expect(mathou.trainingCategories).toHaveLength(10);
+		expect(mathou.trainingItems).toHaveLength(10);
 		const json = JSON.stringify(collection);
 		expect(json).not.toMatch(/automaths|%7B|%257B/);
 	});

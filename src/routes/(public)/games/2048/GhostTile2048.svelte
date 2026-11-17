@@ -11,9 +11,11 @@
 	import type { GhostTile } from './types';
 
 	// Props
-	let { ghost } = $props<{
+	let {
+		ghost
+	}: {
 		ghost: GhostTile;
-	}>();
+	} = $props();
 
 	/**
 	 * Returns Tailwind classes for tile background and text color based on value

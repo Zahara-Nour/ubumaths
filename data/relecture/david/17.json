@@ -6,12 +6,9 @@
 	"template": {
 		"delay": 20,
 		"level": 9,
-		"theme": "Entiers",
 		"title": "Décomposition décimale -> nombre entier",
-		"domain": "Apprivoiser",
 		"grades": ["CM1"],
 		"status": "draft",
-		"subdomain": "Décomposition",
 		"testSpecs": [
 			{
 				"answers": ["12\\,345"],
@@ -23,7 +20,7 @@
 					"b": "2",
 					"c": "3",
 					"d": "4",
-					"e": "5"
+					"h": "5"
 				},
 				"description": "Réponse correcte",
 				"variationIndex": 0
@@ -38,7 +35,7 @@
 					"b": "2",
 					"c": "3",
 					"d": "4",
-					"e": "5"
+					"h": "5"
 				},
 				"description": "Réponse vide",
 				"variationIndex": 0
@@ -53,7 +50,7 @@
 					"b": "2",
 					"c": "3",
 					"d": "4",
-					"e": "5"
+					"h": "5"
 				},
 				"description": "Réponse incorrecte",
 				"variationIndex": 0
@@ -85,12 +82,12 @@
 						"expression": "0..9"
 					},
 					{
-						"name": "e",
+						"name": "h",
 						"expression": "0..9"
 					},
 					{
 						"name": "expression",
-						"expression": "(a*10000) +  (b*1000) + (c*100) + (d*10) + e",
+						"expression": "(a*10000) +  (b*1000) + (c*100) + (d*10) + h",
 						"displayOptions": {
 							"shuffleTerms": true,
 							"removeNullTerms": true

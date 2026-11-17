@@ -27,7 +27,11 @@ import {
 } from './feedback';
 import { normalizeStudentQuantity, studentNumericLatex } from './student-input';
 import { readStudentCalculation, type StudentCalculation } from './student-calculation';
-import { readCompositeDuration, type DurationFormIssue } from './composite-duration';
+import {
+	readCompositeDuration,
+	singleExpectedDuration,
+	type DurationFormIssue
+} from './composite-duration';
 import { compareQuantities, type Tolerance } from './quantity-comparison';
 import { isDuration, unitsAreCompatible } from './operations';
 import type { PrecisionType } from '$lib/questions/types';
@@ -234,8 +238,9 @@ const HOUSE_QUANTITY_REGEX = /^(-?\d+(?:\.\d+)?)\[([^[\]]+)\]$/;
  * Toute autre écriture est rendue telle quelle.
  */
 function houseQuantityToLatex(expected: string): string {
-	// Écriture de `;()` (`(-3[m])`) et de `;+` (`+3[m]`) : même grandeur
-	const bare = expected
+	// Écriture de `;()` (`(-3[m])`) et de `;+` (`+3[m]`) : même grandeur ; une durée
+	// en h-min-s (`{2[h]}{30[min]}`) : UNE grandeur, `150[min]`
+	const bare = singleExpectedDuration(expected)
 		.trim()
 		.replace(/^\((.*)\)$/, '$1')
 		.replace(/^\+/, '');

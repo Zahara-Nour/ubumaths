@@ -18,6 +18,7 @@ import { generateInstance } from '../generator/instance-generator';
 import { toPublicQuestion } from '../public-question';
 import type { QuestionInstance, QuestionTemplate } from '../types';
 import { templateMarkdown } from '$lib/ubumark';
+import '$lib/questions/construction/positions-setup';
 import { parseEspaceContent } from '$lib/ubumark/parser/espace-parser';
 import { readConstructionHeader } from '$lib/ubumark/parser/construction-parser';
 import { sideColumns } from '$lib/ubumark/utils/cubes-gestes';
@@ -36,8 +37,6 @@ function template(statement: string): QuestionTemplate {
 		type: 'fill_in_blanks',
 		variations: [{ statement: templateMarkdown(statement) }],
 		grades: ['5e'],
-		theme: 'Test',
-		domain: 'Test',
 		level: 1
 	} as unknown as QuestionTemplate;
 }
@@ -184,6 +183,53 @@ describe('figure à compléter (```figure-a-completer)', () => {
 		expect(header.spec.checks).toEqual([]);
 		expect(header.spec.caseIndex).toBe(real.spec.caseIndex);
 		expect(header.figureSource.split('---')[1]).toBe(real.figureSource.split('---')[1]);
+	});
+
+	it('angle à mesurer (lot 6) : verifier: mesure AOB reste, l’écran y lit la case', () => {
+		const { statement } = sent(
+			`Mesure l’angle.\n\n${block('figure-a-completer', 'fenetre: 0 ; 10 ; 0 ; 8', 'verifier: mesure AOB', '---', 'O = point(4, 3)', 'A = point(9, 3)', 'B = rotation(A, angle=50, centre=O)', 'x = demidroite(O, A)', 'y = demidroite(O, B)')}`
+		);
+		const header = readConstructionHeader(body(statement, 'figure-a-completer'));
+		expect(header.errors).toEqual([]);
+		expect(header.spec.checks.map((c) => c.kind)).toEqual(['mesure']);
+	});
+
+	it('angle à mesurer : les points calculés en coordonnées, plus de mesure dans la source', () => {
+		const { full, statement } = sent(
+			`Mesure l’angle.\n\n${block('figure-a-completer', 'fenetre: 0 ; 10 ; 0 ; 8', 'verifier: mesure AOB', '---', 'O = point(4, 3)', 'A = point(9, 3)', 'C = rotation(A, angle=50, centre=O, visible=faux)', 'B = milieu(O, C)', 'x = demidroite(O, A)', 'y = demidroite(O, C)')}`
+		);
+		const masked = body(statement, 'figure-a-completer');
+		expect(masked).not.toMatch(/50|rotation|angle=/);
+		// cos 50° × 5 + 4 = 7,213938 ; sin 50° × 5 + 3 = 6,830222
+		expect(masked).toContain('C = point(7.213938, 6.830222, visible=faux)');
+		expect(masked).toContain('B = point(5.606969, 4.915111)');
+		expect(masked).toContain('O = point(4, 3)');
+		expect(masked).toContain('y = demidroite(O, C)');
+		// L'instance complète (jugée par le serveur) ne bouge pas
+		expect(body(full.statement, 'figure-a-completer')).toContain('rotation(A, angle=50');
+	});
+
+	it('segment à mesurer (n° 26) : verifier: mesure AB reste, les points calculés en coordonnées', () => {
+		const { statement } = sent(
+			`Mesure le segment.\n\n${block('figure-a-completer', 'fenetre: 0 ; 12 ; 0 ; 6', 'verifier: mesure AB en mm', '---', 'A = point(2, 3)', 'C = point(14, 3, visible=faux)', 'B = milieu(A, C)', 's = segment(A, B)')}`
+		);
+		const masked = body(statement, 'figure-a-completer');
+		const header = readConstructionHeader(masked);
+		expect(header.errors).toEqual([]);
+		expect(header.spec.checks).toMatchObject([{ kind: 'mesure_segment', unit: 'mm' }]);
+		expect(masked).toContain('B = point(8, 3)');
+		expect(masked).not.toMatch(/milieu/);
+	});
+
+	it('papier uni : la palette des instruments est écrite (lot 2b)', () => {
+		const { statement } = sent(
+			`Construis le symétrique de A.\n\n${block('figure-a-completer', 'fenetre: 0 ; 10 ; 0 ; 6', "verifier: point A' = symetrie(A, axe=d)", '---', 'P = point(0, 0)', 'Q = point(6, 6)', 'd = droite(P, Q)', 'A = point(1, 4)')}`
+		);
+		const masked = body(statement, 'figure-a-completer');
+		expect(masked).not.toContain('symetrie(A');
+		const header = readConstructionHeader(masked);
+		expect(header.errors).toEqual([]);
+		expect(header.spec.tools).toEqual(['point', 'droite', 'equerre', 'compas', 'report']);
 	});
 
 	it('deux droites, outil écrit : plus aucun point nommé dans verifier:', () => {

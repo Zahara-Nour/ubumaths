@@ -1,10 +1,8 @@
 {
+	"id": "9f072622-9ce5-4e76-b02e-a738bf6ea39a",
 	"title": "Calculer la pente d'une sécante",
 	"description": "Coefficient directeur de la sécante (AB), A et B sur la courbe d'une fonction ; puis équation réduite de (AB)",
 	"grades": ["1_SPE"],
-	"theme": "Fonctions",
-	"domain": "Dérivation",
-	"subdomain": "Taux de variation",
 	"level": 3,
 	"delay": 75,
 	"status": "draft",

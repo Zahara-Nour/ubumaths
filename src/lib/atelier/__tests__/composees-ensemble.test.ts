@@ -195,7 +195,7 @@ describe('commandes sur f(u(x))', () => {
 		const d = desk(F);
 		d.submit('.résoudre f(2x)=4');
 		expect(last(d).failed).toBe(false);
-		expect(last(d).latex).toBe('x = 1');
+		expect(last(d).latex).toBe('S = \\left\\{ 1 \\right\\}');
 		const titles = (last(d).steps ?? []).map((s) => s.title);
 		expect(titles[0]).toBe('2x doit être dans [0 ; +∞[, donc x est dans [0 ; +∞[');
 		expect(titles.at(-1)).toBe('On ne garde que les solutions qui sont dans [0 ; +∞[');
@@ -204,7 +204,7 @@ describe('commandes sur f(u(x))', () => {
 	it('N3 .résoudre g(x) = 4 avec g(x) = f(2x) : même réponse', () => {
 		const d = desk(F, 'g(x) = f(2x)');
 		d.submit('.résoudre g(x)=4');
-		expect(last(d).latex).toBe('x = 1');
+		expect(last(d).latex).toBe('S = \\left\\{ 1 \\right\\}');
 	});
 
 	// `.limite (x-3)^2 en +∞` répondait « Je ne sais pas calculer cette limite »
@@ -268,7 +268,7 @@ describe('f⁻¹(u(x)) : même règle sur l’ensemble de départ de f⁻¹', ()
 		const d = desk('f(x) = e^x');
 		d.submit('.résoudre f^-1(2x)=0');
 		expect(last(d).failed).toBe(false);
-		expect(last(d).latex).toBe('x = \\dfrac{1}{2}');
+		expect(last(d).latex).toBe('S = \\left\\{ \\dfrac{1}{2} \\right\\}');
 	});
 
 	it('f(x) = x + 1 sur [0 ; +∞[ : f⁻¹(2x) sur [1/2 ; +∞[', () => {

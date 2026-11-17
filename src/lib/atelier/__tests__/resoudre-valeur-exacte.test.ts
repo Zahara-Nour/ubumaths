@@ -32,10 +32,10 @@ describe('la ligne des solutions de .résoudre', () => {
 			'S = \\left\\{ \\dfrac{1 - \\sqrt{5}}{2} \\,;\\, \\dfrac{1 + \\sqrt{5}}{2} \\right\\}'
 		],
 		// S1 : le registre décimal de l'équation
-		['.résoudre 2x = 0,6', 'x = 0{,}3'],
-		['.résoudre 0,5x + 1 = 0,2', 'x = -1{,}6'],
+		['.résoudre 2x = 0,6', 'S = \\left\\{ 0{,}3 \\right\\}'],
+		['.résoudre 0,5x + 1 = 0,2', 'S = \\left\\{ -1{,}6 \\right\\}'],
 		// Inchangé
-		['.résoudre 3x = 1', 'x = \\dfrac{1}{3}']
+		['.résoudre 3x = 1', 'S = \\left\\{ \\dfrac{1}{3} \\right\\}']
 	])('%s', (input, expected) => {
 		expect(answerLatex(input)).toBe(expected);
 	});

@@ -14,11 +14,12 @@
  */
 
 import type { Point, Viewport } from './types';
-import type { AnalysisInput } from './analysis';
+import type { AnalysisASTInfo, AnalysisInput } from './analysis';
 import { isInsideRestriction } from './restriction';
 import { subtract } from '$lib/mathAST/factory';
 import { compile } from '$lib/mathAST/eval/compile';
 import { findRoots } from '$lib/mathAST/analysis/roots';
+import type { MathNode } from '$lib/mathAST/types';
 
 // =============================================================================
 // Types
@@ -36,6 +37,32 @@ export interface IntersectionResult {
 
 /** Default distance below which two intersection points are considered one. */
 const DEFAULT_DEDUP_TOLERANCE = 0.001;
+
+/** Fenêtres gardées par paire avant que son cache ne soit vidé. */
+const MAX_WINDOWS_PER_PAIR = 200;
+
+// =============================================================================
+// Cache
+// =============================================================================
+
+/**
+ * Intersections, par paire d'expressions puis par fenêtre.
+ *
+ * Les points de croisement ne dépendent que des deux expressions et de la
+ * fenêtre. Or deux composants les redemandent (points d'intersection, survol)
+ * à chaque changement de la liste des courbes ou de la fenêtre : sans cache,
+ * le calcul de toutes les paires se faisait deux fois, et ajouter une courbe
+ * recalculait aussi les paires anciennes.
+ *
+ * Les valeurs des paramètres n'ont pas besoin de clé : `bindParameters` rend
+ * un nœud distinct par jeu de valeurs (même raisonnement que `analyzeCached`).
+ * La restriction de chaque courbe est appliquée APRÈS, par l'appelant.
+ */
+const intersectionCache = new WeakMap<MathNode, WeakMap<MathNode, Map<string, readonly Point[]>>>();
+
+function viewportKey(viewport: Viewport): string {
+	return `${viewport.xMin},${viewport.xMax},${viewport.yMin},${viewport.yMax}`;
+}
 
 // =============================================================================
 // Core
@@ -56,10 +83,43 @@ export function findIntersections(
 	f1: AnalysisInput,
 	f2: AnalysisInput,
 	viewport: Viewport
-): Point[] {
+): readonly Point[] {
 	if (!f1.ast || !f2.ast) return [];
 
-	const difference = subtract(f1.ast.expression, f2.ast.expression);
+	const first = f1.ast.expression;
+	const second = f2.ast.expression;
+	const key = viewportKey(viewport);
+
+	let bySecond = intersectionCache.get(first);
+	if (!bySecond) {
+		bySecond = new WeakMap();
+		intersectionCache.set(first, bySecond);
+	}
+	let byWindow = bySecond.get(second);
+	if (!byWindow) {
+		byWindow = new Map();
+		bySecond.set(second, byWindow);
+	}
+
+	const cached = byWindow.get(key);
+	if (cached) return cached;
+
+	// Un panoramique crée une clé par fenêtre traversée : on repart à zéro
+	// plutôt que de laisser la carte enfler sans fin.
+	if (byWindow.size >= MAX_WINDOWS_PER_PAIR) byWindow.clear();
+
+	const points = computeIntersections(f1.ast, second, viewport);
+	byWindow.set(key, points);
+	return points;
+}
+
+/** Le calcul lui-même, sans cache : racines de `f₁ − f₂` dans la fenêtre. */
+function computeIntersections(
+	ast1: AnalysisASTInfo,
+	second: MathNode,
+	viewport: Viewport
+): readonly Point[] {
+	const difference = subtract(ast1.expression, second);
 
 	let compiledDifference;
 	try {
@@ -71,7 +131,7 @@ export function findIntersections(
 	const points: Point[] = [];
 
 	for (const root of findRoots(difference, compiledDifference, 'x', viewport.xMin, viewport.xMax)) {
-		const y = f1.ast.compiledFn({ x: root.x });
+		const y = ast1.compiledFn({ x: root.x });
 		if (!Number.isFinite(y)) continue;
 		if (y < viewport.yMin || y > viewport.yMax) continue;
 

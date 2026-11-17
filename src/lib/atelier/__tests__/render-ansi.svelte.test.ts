@@ -1,11 +1,12 @@
 /**
  * Ce que l'eleve lit ne doit jamais contenir de sequences de terminal.
  *
- * WARN **Ce fichier est un test CLIENT pour une raison precise.** En node, le
- * moteur rend « d/dx(x^2) = 2x » proprement ; en navigateur il rend
- * « ESC[1md/dx(x^2)ESC[22m = ESC[36m2xESC[39m ». `chalk` detecte le support
- * des couleurs differemment selon l'environnement, donc **un test serveur ne
- * peut pas voir ce defaut**.
+ * WARN **Ce fichier est un test CLIENT pour une raison precise.** Autrefois, en
+ * node, le moteur rendait « d/dx(x^2) = 2x » proprement et, en navigateur,
+ * « ESC[1md/dx(x^2)ESC[22m = ESC[36m2xESC[39m » : `chalk` detectait le support
+ * des couleurs selon l'environnement, et **un test serveur ne pouvait pas voir
+ * ce defaut**. Les commandes passent desormais par une palette en texte brut
+ * (`mathAST/cli/core/terminal-colors.ts`) ; ce test garde qu'il en reste ainsi.
  *
  * Meme famille que le `structuredClone` sur un proxy `$state` : mesure en
  * node, tout va bien ; mesure dans Chromium, tout casse.

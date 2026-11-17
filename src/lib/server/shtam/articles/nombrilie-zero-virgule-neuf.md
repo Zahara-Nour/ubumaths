@@ -5,6 +5,8 @@ author: merdranpo
 lede: Le plaignant estime avoir été lésé d'une quantité « infiniment petite, mais à moi ». La Cour des Phynances a rendu son verdict après trois jours de délibération.
 ---
 
+![Au tribunal, un Galopin monté sur un tabouret examine une pièce d’or à la loupe, à la recherche du petit bout qui manque ; trois juges en perruque somnolent, et Mère Ubu, éventail à la main, sourit, sûre d’elle.](/shtam/nombrilie-zero-virgule-neuf.webp){size=large}
+
 L'affaire a été plaidée lundi devant la Cour des Phynances d'Empoche-les-Bains. Un Galopin de Troyz'esme accuse la Gouverneure de Nombrilie, Mère Ubu, de lui avoir versé $0{,}999\ldots$ gidouille au lieu d'une gidouille entière. « Il manque un petit bout », a-t-il expliqué à la barre. « Il est tout petit, mais il est à moi. »
 
 Mère Ubu, qui assurait sa propre défense, a demandé au plaignant de montrer le petit bout en question. « Il est après le dernier 9 », a répondu le Galopin. « Et où est le dernier 9 ? », a demandé Mère Ubu. Un long silence a suivi.

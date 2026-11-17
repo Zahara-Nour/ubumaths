@@ -88,8 +88,6 @@ const SUBMIT_RESPONSE = {
 				}
 			],
 			grades: ['6'],
-			theme: 'T',
-			domain: 'D',
 			level: 1,
 			generatedAt: ''
 		},
@@ -135,7 +133,7 @@ async function renderPage() {
 	const main = document.body.appendChild(document.createElement('main'));
 	return await render(Page, {
 		target: main,
-		props: { data: { templates: [], user: { id: 'eleve' } } } as never
+		props: { data: { user: { id: 'eleve' } } } as never
 	});
 }
 

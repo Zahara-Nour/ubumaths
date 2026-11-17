@@ -39,8 +39,6 @@ function instance(statement = STATEMENT, blanks?: { expectedAnswer: string }[]):
 			type: 'fill_in_blanks',
 			variations: [{ statement: templateMarkdown(statement), ...(blanks && { blanks }) }],
 			grades: ['CP'],
-			theme: 'Test',
-			domain: 'Test',
 			level: 1
 		} as unknown as QuestionTemplate,
 		42

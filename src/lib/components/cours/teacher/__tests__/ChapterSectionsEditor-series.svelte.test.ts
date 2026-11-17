@@ -95,7 +95,7 @@ describe('ChapterSectionsEditor — séries de chapitre', () => {
 	it('forme interactive : bascule vers flash', async () => {
 		const racine = await rendre([serie({ form: 'interactive' })]);
 		const form = formulaire(racine, '?/setSeriesForm');
-		expect(form?.textContent).toContain('Entraînement');
+		expect(form?.textContent).toContain('Contrôle blanc');
 		expect(champ(form, 'form')).toBe('flash');
 	});
 

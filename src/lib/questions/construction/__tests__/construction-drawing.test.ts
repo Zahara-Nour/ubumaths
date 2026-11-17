@@ -6,6 +6,7 @@ import { describe, it, expect } from 'vitest';
 import {
 	addTap,
 	canErase,
+	cancelPending,
 	clipLineToWindow,
 	eraseLast,
 	snapTap,
@@ -229,4 +230,70 @@ describe('segments sur quadrillage (CP-060, § 9)', () => {
 			status: 'correct'
 		});
 	});
+});
+
+describe('Report (lot 4) : prendre un écartement, piquer ailleurs', () => {
+	const a = { x: 1, y: 8 };
+	const b = { x: 5, y: 8 };
+	const c = { x: 2, y: 2 };
+	const d = { x: 8, y: 2 };
+
+	it('deux touchers : l’écartement, rien dans la réponse', () => {
+		const once = addTap(EMPTY, a, 'report');
+		expect(once.start).toEqual(a);
+		const twice = addTap(once, b, 'report');
+		expect(twice.objects).toEqual([]);
+		expect(twice.start).toBeNull();
+		expect(twice.span).toEqual({ a, b });
+	});
+
+	it('chaque toucher suivant : un cercle de ce rayon, l’écartement gardé', () => {
+		let drawing = addTap(addTap(EMPTY, a, 'report'), b, 'report');
+		drawing = addTap(drawing, c, 'report');
+		drawing = addTap(drawing, d, 'report');
+		expect(drawing.objects).toEqual([
+			{ kind: 'report', cx: 2, cy: 2, ax: 1, ay: 8, bx: 5, by: 8 },
+			{ kind: 'report', cx: 8, cy: 2, ax: 1, ay: 8, bx: 5, by: 8 }
+		]);
+		expect(drawing.span).toEqual({ a, b });
+	});
+
+	it('écartement nul (même point deux fois) : rien', () => {
+		const once = addTap(EMPTY, a, 'report');
+		expect(addTap(once, a, 'report')).toEqual(once);
+	});
+
+	it('changer d’outil : l’écartement est lâché', () => {
+		const drawing = addTap(addTap(EMPTY, a, 'report'), b, 'report');
+		expect(cancelPending(drawing).span).toBeUndefined();
+	});
+
+	it('Effacer sans cercle : lâche l’écartement ; après un cercle : le cercle, l’écartement reste', () => {
+		const spanned = addTap(addTap(EMPTY, a, 'report'), b, 'report');
+		expect(canErase(spanned)).toBe(true);
+		expect(eraseLast(spanned)).toEqual({ objects: [], start: null });
+		const drawn = addTap(spanned, c, 'report');
+		const erased = eraseLast(drawn);
+		expect(erased.objects).toEqual([]);
+		expect(erased.span).toEqual({ a, b });
+	});
+});
+
+describe('réponse `report(cx;cy;ax;ay;bx;by)`', () => {
+	it('se lit et s’écrit', () => {
+		const text = 'report(2;2;1;8;5;8)|segment(2;2;5;3)';
+		const objects = parseConstructionAnswer(text);
+		expect(objects).toEqual([
+			{ kind: 'report', cx: 2, cy: 2, ax: 1, ay: 8, bx: 5, by: 8 },
+			{ kind: 'segment', x1: 2, y1: 2, x2: 5, y2: 3 }
+		]);
+		expect(serializeConstructionAnswer(objects ?? [])).toBe(text);
+	});
+
+	it.each(['report(2;2;1;8;1;8)', 'report(2;2;1;8;5)', 'report(1e7;2;1;8;5;8)'])(
+		'illisible : %s',
+		(text) => {
+			expect(parseConstructionAnswer(text)).toBeNull();
+		}
+	);
 });

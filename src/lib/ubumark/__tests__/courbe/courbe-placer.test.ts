@@ -3,7 +3,7 @@
  * (`axes:`) : analyse et calcul pur
  *
  * Spécification validée par David le 2026-11-01 :
- * `docs/wip/points-repere-progress.md` § 3 (lot 1, table des cas).
+ * `docs/archive/wip/points-repere-progress.md` § 3 (lot 1, table des cas).
  */
 import { describe, it, expect } from 'vitest';
 import { parseCourbeContent } from '../../parser/courbe-parser';

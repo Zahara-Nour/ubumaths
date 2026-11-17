@@ -101,17 +101,17 @@ describe('.résoudre sur l’ensemble de la fonction', () => {
 		d.submit('.résoudre f(x)=4');
 		const entry = last(d);
 		expect(entry.failed).toBe(false);
-		expect(entry.latex).toBe('x = 2');
+		expect(entry.latex).toBe('S = \\left\\{ 2 \\right\\}');
 		expect(entry.text).not.toContain('-2');
 		// Les étapes résolvent sur ℝ, puis gardent ce qui est dans l'ensemble
 		expect(entry.steps?.at(-1)?.title).toContain('[0 ; +∞[');
-		expect(entry.steps?.at(-1)?.expressionLatex).toBe('x = 2');
+		expect(entry.steps?.at(-1)?.expressionLatex).toBe('S = \\left\\{ 2 \\right\\}');
 	});
 
 	it('l’action « Résoudre f(x) = 0 » de la carte', () => {
 		const d = desk('f(x) = x^2-4 sur [0;+∞[');
 		d.runFromPanel('solve', 'f');
-		expect(last(d).latex).toBe('x = 2');
+		expect(last(d).latex).toBe('S = \\left\\{ 2 \\right\\}');
 	});
 
 	it('aucune solution dans l’ensemble : S = ∅', () => {
@@ -123,7 +123,7 @@ describe('.résoudre sur l’ensemble de la fonction', () => {
 	it('`dans` tapé se combine avec l’ensemble de f', () => {
 		const d = desk('f(x) = x^2 sur [0;+∞[');
 		d.submit('.résoudre f(x)=4 dans [1;5]');
-		expect(last(d).latex).toBe('x = 2');
+		expect(last(d).latex).toBe('S = \\left\\{ 2 \\right\\}');
 		d.submit('.résoudre f(x)=4 dans [-5;1]');
 		expect(last(d).latex).toBe('S = \\emptyset');
 	});
@@ -140,7 +140,7 @@ describe('.résoudre sur l’ensemble de la fonction', () => {
 	it('la lettre choisie : f(t) = t² sur [0;+∞[', () => {
 		const d = desk('f(t) = t^2 sur [0;+∞[');
 		d.submit('.résoudre f(t)=4');
-		expect(last(d).latex).toBe('t = 2');
+		expect(last(d).latex).toBe('S = \\left\\{ 2 \\right\\}');
 	});
 
 	it('une réunion : h(x) = x sur [−1;1] ∪ [2;3]', () => {
@@ -148,14 +148,14 @@ describe('.résoudre sur l’ensemble de la fonction', () => {
 		d.submit('.résoudre h(x)=1.5');
 		expect(last(d).latex).toBe('S = \\emptyset');
 		d.submit('.résoudre h(x)=2.5');
-		expect(last(d).latex).toMatch(/^x = /);
+		expect(last(d).latex).toBe('S = \\left\\{ 2{,}5 \\right\\}');
 	});
 
 	it('`dans [0 ; +∞[` tapé sur une expression : x² = 4 donne 2', () => {
 		const d = desk();
 		d.submit('.résoudre x^2=4 dans [0;+∞[');
 		expect(last(d).failed).toBe(false);
-		expect(last(d).latex).toBe('x = 2');
+		expect(last(d).latex).toBe('S = \\left\\{ 2 \\right\\}');
 	});
 });
 
@@ -184,13 +184,13 @@ describe('suites de revue', () => {
 	it('f(a) avec a une valeur : un nombre, l’inconnue n’est pas restreinte', () => {
 		const d = desk('a = 3', 'f(x) = x^2 sur [0;+∞[');
 		d.submit('.résoudre f(a) = -x');
-		expect(last(d).latex).toBe('x = -9');
+		expect(last(d).latex).toBe('S = \\left\\{ -9 \\right\\}');
 	});
 
 	it('`dans [0;+∞[ pour t` tapé dans cet ordre', () => {
 		const d = desk();
 		d.submit('.résoudre t^2=4 dans [0;+∞[ pour t');
-		expect(last(d).latex).toBe('t = 2');
+		expect(last(d).latex).toBe('S = \\left\\{ 2 \\right\\}');
 		d.submit('.variations t^2 dans [0;+∞[ pour t');
 		expect(last(d).failed).toBe(false);
 		expect(last(d).table?.domain).toEqual([{ expression: '0' }, { expression: '+\\infty' }]);
@@ -248,7 +248,7 @@ describe('f′ hérite de l’ensemble de f', () => {
 	it('.résoudre f′(x) = 0 : sur l’ensemble de f', () => {
 		const d = desk('f(x) = x^3-3x sur [0;+∞[');
 		d.submit(".résoudre f'(x)=0");
-		expect(last(d).latex).toBe('x = 1');
+		expect(last(d).latex).toBe('S = \\left\\{ 1 \\right\\}');
 	});
 
 	it('l’ensemble de f′ n’est pas sauvegardé : il se relit sur f', () => {

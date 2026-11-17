@@ -1,10 +1,8 @@
 {
+	"id": "10dcf449-569d-44ff-b3a0-c10edb4c370f",
 	"title": "Combien de cubes pour construire cet assemblage ?",
 	"description": "Assemblage de 4 à 10 cubes, sans cube caché, sur une ou deux rangées",
 	"grades": ["CE1"],
-	"theme": "Géométrie",
-	"domain": "Solides",
-	"subdomain": "Assemblages de cubes",
 	"level": 4,
 	"delay": 90,
 	"status": "draft",

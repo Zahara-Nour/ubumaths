@@ -56,6 +56,31 @@ describe('le bouton « Dériver »', () => {
 	});
 });
 
+describe('la réponse du registre (registre-reference, D1)', () => {
+	// La forme finale de f′ que rend le registre, là où l'ancienne écriture
+	// (`eˣ + xeˣ`) différait : le branchement de `calcul.ts` est vu ici
+	const REDUITE = '\\left( x + 1 \\right) \\exponentialE^x';
+
+	it('le bouton affiche la réponse du registre', () => {
+		const s = session();
+		runInput(s, 'f(x) = x e^x');
+
+		const outcome = runAction(s, 'derive', 'f');
+
+		expect(outcome.ok).toBe(true);
+		if (!outcome.ok) return;
+		expect(outcome.latex).toBe(`f'(x) = ${REDUITE}`);
+	});
+
+	it('la commande tapée aussi', () => {
+		const line = runInput(session(), '.dériver x e^x');
+
+		expect(line.kind).toBe('commande');
+		if (line.kind !== 'commande') return;
+		expect(line.latex).toBe(REDUITE);
+	});
+});
+
 describe('la commande `.dériver`', () => {
 	it('rend les mêmes étapes que le bouton', () => {
 		const s = session();

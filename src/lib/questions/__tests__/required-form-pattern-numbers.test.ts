@@ -74,8 +74,6 @@ describe('générateur : variables tirées dans le motif', () => {
 				}
 			],
 			grades: ['6'],
-			theme: 'Entiers',
-			domain: 'Vocabulaire',
 			level: 1
 		} as unknown as QuestionTemplate;
 		const generated = generateInstance(template, 1);

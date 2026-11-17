@@ -1,10 +1,8 @@
 {
+	"id": "ee9256c0-476f-47e9-a217-8e58821ea6ec",
 	"title": "Somme ou produit ?",
 	"description": "Dire si une expression littérale est une somme ou un produit selon la dernière opération à effectuer : 3x + 5 et 3(x + 5) + 2 sont des sommes ; 3(x + 5) est un produit",
 	"grades": ["5"],
-	"theme": "Calcul littéral",
-	"domain": "Reconnaître",
-	"subdomain": "Somme ou produit",
 	"level": 1,
 	"delay": 20,
 	"status": "draft",

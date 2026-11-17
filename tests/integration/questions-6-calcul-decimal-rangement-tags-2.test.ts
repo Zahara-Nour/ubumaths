@@ -5,7 +5,7 @@
  * Migration `20261027210000_questions_6_calcul_decimal_rangement_tags_2` : les 3 brouillons de 6e
  * créés le 2026-10-27 par scripts/create-questions.ts (sans nœud ni tag) — calcul astucieux par
  * regroupement et par compensation — vont sur la sous-notion de leur point et reçoivent ce point,
- * un seul (ADR 0020). Décision de David (journal docs/wip/questions-6-progress.md § 10.5).
+ * un seul (ADR 0020). Décision de David (journal docs/archive/wip/questions-6-progress.md § 10.5).
  *
  * Les modèles n'existent qu'en production. Le test fabrique donc l'état de la prod — des copies
  * minimales portant les VRAIS identifiants, en 6e, sans nœud ni tag — puis rejoue la migration

@@ -1,10 +1,8 @@
 {
+	"id": "8f2aff1d-e827-4030-909f-616d7dd69657",
 	"title": "Ajouter des unités d'un seul rang, avec une retenue",
 	"description": "Une retenue : 8,45 + 3 ; 27,456 + 5 ; 7 530,4 + 600",
 	"grades": ["CM2"],
-	"theme": "Décimaux",
-	"domain": "Additionner",
-	"subdomain": "Somme",
 	"level": 7,
 	"delay": 30,
 	"status": "draft",

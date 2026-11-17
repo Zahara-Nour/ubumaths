@@ -11,6 +11,7 @@
 
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { requireAuth } from '$lib/server/middleware/auth';
 import { z } from 'zod';
 import { createServerLogger } from '$lib/utils/logger';
 
@@ -21,11 +22,8 @@ const tradeIdSchema = z.string().uuid('Invalid trade ID');
 
 export const POST: RequestHandler = async ({ params, locals }) => {
 	const supabase = locals.supabase;
-	const userId = locals.user?.id;
-
-	if (!userId) {
-		throw error(401, 'Non authentifie');
-	}
+	const { user } = await requireAuth(locals);
+	const userId = user.id;
 
 	// Validate trade ID
 	const tradeIdValidation = tradeIdSchema.safeParse(params.id);

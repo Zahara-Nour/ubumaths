@@ -5,7 +5,7 @@
  * Requires a reference to the command registry.
  */
 
-import chalk from 'chalk';
+import { colors } from '../core/terminal-colors';
 import { BaseCommand } from './base-command';
 import type { CommandContext, CommandResult } from '../types';
 import type { CommandRegistry } from '../core/command-registry';
@@ -101,15 +101,15 @@ export class HelpCommand extends BaseCommand {
 		// =================================================================
 		// Plain text output (for terminal)
 		// =================================================================
-		const lines: string[] = [chalk.bold('MathAST CAS - Commandes disponibles'), ''];
+		const lines: string[] = [colors.bold('MathAST CAS - Commandes disponibles'), ''];
 
 		for (const category of COMMAND_CATEGORIES) {
-			lines.push(chalk.bold.yellow(category.name + ':'));
+			lines.push(colors.boldYellow(category.name + ':'));
 			for (const cmdName of category.commands) {
 				const cmd = commandMap.get(cmdName);
 				if (cmd) {
-					const aliases = cmd.aliases.length > 0 ? chalk.gray(` (${cmd.aliases.join(', ')})`) : '';
-					lines.push(`  ${chalk.cyan(cmd.name)}${aliases} - ${cmd.description}`);
+					const aliases = cmd.aliases.length > 0 ? colors.gray(` (${cmd.aliases.join(', ')})`) : '';
+					lines.push(`  ${colors.cyan(cmd.name)}${aliases} - ${cmd.description}`);
 					displayedCommands.add(cmd.name);
 				}
 			}
@@ -125,24 +125,24 @@ export class HelpCommand extends BaseCommand {
 		}
 
 		if (uncategorized.length > 0) {
-			lines.push(chalk.bold.yellow('Autres:'));
+			lines.push(colors.boldYellow('Autres:'));
 			for (const cmdName of uncategorized) {
 				const cmd = commandMap.get(cmdName);
 				if (cmd) {
-					const aliases = cmd.aliases.length > 0 ? chalk.gray(` (${cmd.aliases.join(', ')})`) : '';
-					lines.push(`  ${chalk.cyan(cmd.name)}${aliases} - ${cmd.description}`);
+					const aliases = cmd.aliases.length > 0 ? colors.gray(` (${cmd.aliases.join(', ')})`) : '';
+					lines.push(`  ${colors.cyan(cmd.name)}${aliases} - ${cmd.description}`);
 				}
 			}
 			lines.push('');
 		}
 
-		lines.push(chalk.bold.yellow('Syntaxe directe:'));
-		lines.push(`  ${chalk.cyan('x := 5')}          Assigner une variable`);
-		lines.push(`  ${chalk.cyan('x <- 5')}          Assigner (style R/algo)`);
-		lines.push(`  ${chalk.cyan('f(x) := x^2')}     Definir une fonction`);
-		lines.push(`  ${chalk.cyan('a = b')}           Tester l'equivalence`);
+		lines.push(colors.boldYellow('Syntaxe directe:'));
+		lines.push(`  ${colors.cyan('x := 5')}          Assigner une variable`);
+		lines.push(`  ${colors.cyan('x <- 5')}          Assigner (style R/algo)`);
+		lines.push(`  ${colors.cyan('f(x) := x^2')}     Definir une fonction`);
+		lines.push(`  ${colors.cyan('a = b')}           Tester l'equivalence`);
 		lines.push('');
-		lines.push(chalk.gray('Prefixez les commandes avec . (ex: .help, .tree)'));
+		lines.push(colors.gray('Prefixez les commandes avec . (ex: .help, .tree)'));
 
 		return {
 			success: true,

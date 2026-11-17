@@ -13,6 +13,7 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { requireAuth } from '$lib/server/middleware/auth';
 import { validateUuidParam } from '$lib/server/validation/params';
 import { createServerLogger } from '$lib/utils/logger';
 
@@ -23,11 +24,8 @@ const MAX_LIMIT = 50;
 
 export const GET: RequestHandler = async ({ locals, params, url }) => {
 	const exerciseId = validateUuidParam(params.id);
-	const { user, supabase } = locals;
-
-	if (!user) {
-		throw error(401, 'Connexion requise');
-	}
+	await requireAuth(locals);
+	const { supabase } = locals;
 
 	const rawLimit = parseInt(url.searchParams.get('limit') ?? '', 10);
 	const limit = Number.isFinite(rawLimit)

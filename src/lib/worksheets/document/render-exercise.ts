@@ -18,6 +18,7 @@
 
 import { parseMarkdown } from '$lib/ubumark';
 import {
+	TYPST_BREAK_MARKER,
 	escapeTypst,
 	generateTypst,
 	processTableCellContent
@@ -99,6 +100,9 @@ export function renderExercises(
 
 	let content = '';
 	for (const { header, exercise } of withSectionHeaders(printed, form)) {
+		// Marqueur de coupure au début de la chaîne collée « section, titre, début de
+		// l'énoncé » (chantier coupures-pdf) : jamais entre deux de ses blocs
+		content += `${TYPST_BREAK_MARKER}\n`;
 		if (header) content += renderSectionHeader(header, layout);
 		content += renderExercise(exercise, doc, form, layout, options);
 	}
@@ -289,8 +293,8 @@ function renderTemplateExercise(
 
 	// Réponses : la police du document ; corrigé : sa correction seule en police
 	// du corrigé, en-tête et titres de section dans celle du document
-	if (form === 'answers') return content + renderTeacherCorrection(exercise, doc, form);
-	if (form === 'correction') return content + correctionInFonts(exercise, doc, options);
+	if (form === 'answers') return content + renderTeacherCorrection(exercise, doc, form, true);
+	if (form === 'correction') return content + correctionInFonts(exercise, doc, options, true);
 
 	// Bloc sécable de l'énoncé, collé à son titre au lieu d'hériter de
 	// l'espacement entre blocs du gabarit (souvent 1,8em). Exercice
@@ -300,8 +304,9 @@ function renderTemplateExercise(
 		: `#block(width: 100%, inset: 0pt, above: 0.5em)[\n`;
 	// Fiche + corrigé : la correction remplace les cadres de réponse
 	if (options.inlineCorrections) {
-		content += indent(markdownTypst(exercise.statement, exercise, doc)) + '\n';
-		return content + '\n]\n' + correctionInFonts(exercise, doc, options);
+		content +=
+			indent(markdownTypst(exercise.statement, exercise, doc, { chainedStart: true })) + '\n';
+		return content + '\n]\n' + correctionInFonts(exercise, doc, options, false);
 	}
 	const frames = answerFrames(exercise, doc);
 	// Cadre unique à la fin : la fin de l'énoncé reste collée à lui (jamais seul
@@ -310,7 +315,8 @@ function renderTemplateExercise(
 		indent(
 			markdownTypst(exercise.statement, exercise, doc, {
 				afterQuestion: frames.afterQuestion,
-				keepEndWithNext: frames.atEnd !== null
+				keepEndWithNext: frames.atEnd !== null,
+				chainedStart: true
 			})
 		) + '\n';
 	if (frames.atEnd !== null) content += indent(answerFrameTypst(frames.atEnd)) + '\n';
@@ -361,9 +367,10 @@ function answerFrames(
 function correctionInFonts(
 	exercise: DocumentExercise,
 	doc: WorksheetDocument,
-	options: RenderOptions
+	options: RenderOptions,
+	afterTitle: boolean
 ): string {
-	const correction = renderTeacherCorrection(exercise, doc, 'correction');
+	const correction = renderTeacherCorrection(exercise, doc, 'correction', afterTitle);
 	if (!correction) return '';
 	// Le bloc `#[ … ]` borne les règles de police à cette correction
 	const fonts = options.correctionFonts === false ? '' : `${CORRECTION_FONT_RULES}\n`;
@@ -423,12 +430,14 @@ export function renderDocumentPreamble(
 export function renderPrintedCorrection(
 	exercise: DocumentExercise,
 	doc: WorksheetDocument,
-	form: Exclude<DocumentForm, 'worksheet'>
+	form: Exclude<DocumentForm, 'worksheet'>,
+	afterTitle = false
 ): string | null {
 	const printed = printedCorrection(exercise, doc, form);
 	if (printed === null) return null;
+	// Juste sous le titre de l'exercice : la chaîne collée du titre continue
 	return 'markdown' in printed
-		? markdownTypst(printed.markdown, exercise, doc)
+		? markdownTypst(printed.markdown, exercise, doc, { chainedStart: afterTitle })
 		: `#emph[${escapeTypst(printed.message)}]`;
 }
 
@@ -449,15 +458,19 @@ function printedCorrection(
 	return { message: labels.correctionNotWritten };
 }
 
-/** Sous l'en-tête d'un exercice du prof, sans l'énoncé (même espacement serré) */
+/**
+ * Sous l'en-tête d'un exercice du prof, sans l'énoncé (même espacement serré) ;
+ * `afterTitle` : juste sous le titre (pas après l'énoncé, corrections en ligne)
+ */
 function renderTeacherCorrection(
 	exercise: DocumentExercise,
 	doc: WorksheetDocument,
-	form: Exclude<DocumentForm, 'worksheet'>
+	form: Exclude<DocumentForm, 'worksheet'>,
+	afterTitle: boolean
 ): string {
 	const printed = printedCorrection(exercise, doc, form);
 	if (printed === null) return '';
-	const body = indent(renderPrintedCorrection(exercise, doc, form) ?? '');
+	const body = indent(renderPrintedCorrection(exercise, doc, form, afterTitle) ?? '');
 	// Le corrigé rédigé sur fond gris ; réponses et messages en clair
 	if (form === 'correction' && 'markdown' in printed) {
 		return `#block(width: 100%, fill: rgb("#f0f0f0"), inset: 10pt, radius: 4pt, above: 0.5em)[
@@ -505,7 +518,7 @@ function markdownTypst(
 	markdown: string,
 	exercise: DocumentExercise,
 	doc: WorksheetDocument,
-	frames: Pick<TypstTranspilerOptions, 'afterQuestion' | 'keepEndWithNext'> = {}
+	frames: Pick<TypstTranspilerOptions, 'afterQuestion' | 'keepEndWithNext' | 'chainedStart'> = {}
 ): string {
 	return generateTypst(parseMarkdown(markdown), {
 		includeSetup: false,

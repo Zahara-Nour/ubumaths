@@ -1,10 +1,8 @@
 {
+	"id": "4ce8eb3c-e00a-4a26-adf7-d4f215b8cc3b",
 	"title": "Boucle « répéter jusqu'à ce que »",
 	"description": "Exécuter à la main une boucle « répéter jusqu'à ce que » d'un programme Scratch : reste par soustractions successives, nombre de passages, compteur, doublement",
 	"grades": ["3"],
-	"theme": "Algorithmique",
-	"domain": "Boucles",
-	"subdomain": "Boucle non bornée",
 	"level": 1,
 	"delay": 90,
 	"status": "draft",

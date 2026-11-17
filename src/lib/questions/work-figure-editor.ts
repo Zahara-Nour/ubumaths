@@ -18,7 +18,8 @@ import type { ConstructionTool } from '$lib/ubumark/types/construction';
 // Types
 /** Ce que dit la carte d'une figure de travail */
 export interface WorkFigureCase {
-	tool: ConstructionTool;
+	/** Outils proposés à l'élève (plusieurs : une palette) */
+	tools: ConstructionTool[];
 	/** Messages pour l'auteur (bloc mal écrit) */
 	errors: string[];
 }
@@ -40,7 +41,7 @@ export function readWorkFigureCases(statement: string): Map<number, WorkFigureCa
 			? []
 			: parseFigureContent(header.figureSource).errors;
 		cases.set(Number(key), {
-			tool: header.spec.tools[0] ?? 'droite',
+			tools: header.spec.tools,
 			errors: [...header.errors, ...figureErrors].map((e) => e.message)
 		});
 	}

@@ -1,10 +1,8 @@
 {
+	"id": "d8a958ba-c6f2-4e6b-b4c9-ee7b370cc03e",
 	"title": "Équation d'une droite par un point et un vecteur directeur",
 	"description": "Droite passant par A, de vecteur directeur u : det(AM, u) = 0 développé ; u(0 ; k) donne x = c ; forme libre (pièges : u pris pour vecteur normal, signe de c, (−b ; a) mal lu)",
 	"grades": ["2"],
-	"theme": "Géométrie",
-	"domain": "Droites du plan",
-	"subdomain": "Équations de droites",
 	"level": 5,
 	"delay": 120,
 	"status": "draft",

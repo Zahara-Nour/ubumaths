@@ -3,7 +3,7 @@
  * =================================================================
  *
  * Chantier `controles-figure`, lot 2a (phase 0 validée par David le 2026-11-02,
- * `docs/wip/controles-figure-progress.md` § 5) : un toucher place un point, au
+ * `docs/archive/wip/controles-figure-progress.md` § 5) : un toucher place un point, au
  * nœud le plus proche ; juste → en vert ; pas à la même distance → le message,
  * et A' en pointillés avec son nom et [AA'] codé.
  */
@@ -40,8 +40,6 @@ const TEMPLATE = {
 		}
 	],
 	grades: ['CM1'],
-	theme: 'Test',
-	domain: 'Test',
 	level: 1
 } as unknown as QuestionTemplate;
 

@@ -1,10 +1,8 @@
 {
+	"id": "4cd0d93f-9273-45ea-89b1-b7523c390306",
 	"title": "Paie tes achats en euros et centimes",
 	"description": "Payer un article, deux articles ; dire si l'argent montré suffit",
 	"grades": ["CE1"],
-	"theme": "Grandeurs",
-	"domain": "Monnaie",
-	"subdomain": "Pièces et billets",
 	"level": 11,
 	"delay": 120,
 	"status": "draft",

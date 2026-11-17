@@ -5,6 +5,7 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { requireRole } from '$lib/server/middleware/auth';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import {
 	submitExerciseSchema,
@@ -35,22 +36,8 @@ type ZodIssue = { path: (string | number)[]; message: string };
  */
 export const POST: RequestHandler = async ({ locals, params, request }) => {
 	const exerciseId = validateUuidParam(params.id);
-	const { user, supabase } = locals;
-
-	if (!user) {
-		throw error(401, 'Connexion requise');
-	}
-
-	// Verify student role and check consent
-	const { data: profile, error: profileError } = await supabase
-		.from('profiles')
-		.select('role, consent_required, consent_granted_at, consent_grace_period_ends')
-		.eq('id', user.id)
-		.single();
-
-	if (profileError || !profile || profile.role !== 'student') {
-		throw error(403, 'Réservé aux élèves');
-	}
+	const { user, profile } = await requireRole(locals, 'student');
+	const { supabase } = locals;
 
 	requireConsent(profile, 'submit_exercise');
 

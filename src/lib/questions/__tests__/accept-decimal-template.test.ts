@@ -36,8 +36,6 @@ function rootTemplate(
 			}
 		],
 		grades: ['2'],
-		theme: 'Fonctions',
-		domain: 'Affines',
 		level: 1
 	};
 }

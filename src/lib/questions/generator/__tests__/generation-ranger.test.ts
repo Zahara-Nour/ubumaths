@@ -31,8 +31,6 @@ function template(
 		status: 'draft',
 		variations: [{ ...variation, statement: templateMarkdown(variation.statement) }],
 		grades: ['6'],
-		theme: 'Test',
-		domain: 'Test',
 		level: 1,
 		...(options && { options })
 	} as QuestionTemplate;
@@ -129,6 +127,13 @@ describe('étiquettes à ranger : les cases et leurs réponses', () => {
 	it('signe: > gardé dans le bloc affiché', () => {
 		const instance = generate(template({ statement: ranger('signe: >', '- 9', '- 5', '- 1') }));
 		expect(shownBlock(instance).sign).toBe('>');
+	});
+
+	it('signe: aucun gardé dans le bloc affiché', () => {
+		const instance = generate(
+			template({ statement: ranger('signe: aucun', '- a', '- b', '- c', '- d') })
+		);
+		expect(shownBlock(instance).sign).toBe('aucun');
 	});
 
 	it('variables résolues avant le mélange', () => {

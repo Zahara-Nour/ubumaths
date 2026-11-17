@@ -38,6 +38,7 @@ import { createServerLogger } from '$lib/utils/logger';
 import { notifyAdminsOfPendingUser } from '$lib/server/notifications';
 import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 import { validateRedirectUrl } from '$lib/server/validateRedirectUrl';
+import { googlePhotoUrl } from '$lib/server/google-photo';
 import { GOOGLE_LOGIN_ENABLED } from '$lib/config/google-login';
 
 const logger = createServerLogger('auth/callback');
@@ -116,8 +117,8 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
 
 		// Create profile if it doesn't exist
 		if (!existingProfile) {
-			// Extract avatar URL from Google OAuth metadata
-			// Google uses 'picture' field (standard), but check 'avatar_url' as fallback
+			// Photo Google seulement (googlePhotoUrl) ; la base la garde aussi dans
+			// google_avatar_url (trigger keep_google_avatar_url_trg, boutique d'avatars).
 			// Créé par le client service : la base ne laisse plus un compte connecté créer
 			// lui-même son profil (il aurait pu choisir son statut ou son école). Les
 			// valeurs sensibles sont donc imposées ici, côté serveur.
@@ -127,7 +128,7 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
 					id: user.id,
 					email: user.email!,
 					full_name: user.user_metadata?.full_name || null,
-					avatar_url: user.user_metadata?.picture || user.user_metadata?.avatar_url || null,
+					avatar_url: googlePhotoUrl(user.user_metadata),
 					role: 'student', // Default role for new users
 					school_id: null,
 					status: 'pending' // New users must be approved by admin
@@ -178,18 +179,28 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
 			throw redirect(303, `/auth/login?error=${encodeURIComponent(errorMessage)}`);
 		}
 
-		// User is approved - sync avatar from Google only if the profile has none
-		// yet, to avoid overwriting a user-customized avatar on every login.
-		// Google OAuth stores avatar in 'picture' field (standard), check 'avatar_url' as fallback
-		const googleAvatar = user.user_metadata?.picture || user.user_metadata?.avatar_url;
+		// User is approved - sync avatar from Google only if the profile has none yet.
+		// Un avatar porté de la boutique remplit avatar_url : il n'est donc jamais écrasé.
+		// Client service : la base refuse toute écriture de l'avatar par le compte
+		// connecté (garde guard_profile_avatar_fields). La photo écrite ici est aussi
+		// gardée dans google_avatar_url par la base (trigger keep_google_avatar_url_trg).
+		const googleAvatar = googlePhotoUrl(user.user_metadata);
 		if (googleAvatar && !existingProfile.avatar_url) {
-			const { error: updateError } = await supabase
+			const { data: updated, error: updateError } = await createServiceRoleClient()
 				.from('profiles')
 				.update({ avatar_url: googleAvatar })
-				.eq('id', user.id);
+				.eq('id', user.id)
+				.or('avatar_url.is.null,avatar_url.eq.')
+				.select('id');
 
 			if (updateError) {
-				logger.error('Failed to update avatar:', updateError);
+				logger.error('Failed to update avatar:', {
+					code: updateError.code,
+					message: updateError.message
+				});
+			} else if (!updated?.length) {
+				// Avatar posé entre-temps (port d'un avatar) : rien à faire
+				logger.info('Avatar already set, Google photo not applied:', user.id);
 			}
 		}
 

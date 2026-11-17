@@ -1,16 +1,25 @@
 /**
  * API Route: POST /api/skill-attempts
  *
- * Crée une row `skill_attempts` (régime per-template famille A) à chaque réponse
- * d'un quiz interactif (Monde 1 — `FlashCard.svelte`).
+ * Crée une row `skill_attempts` (régime per-template) à chaque réponse d'une
+ * série libre, envoyée dès la réponse : Flash-cards, Contrôle blanc, Course aux
+ * nombres, Saisie (`series-trace.ts`).
+ * Source : `student_self` (déclaré) pour une carte de cours ou le lieu
+ * `flash_cards`, `auto` (corrigé par l'application) sinon.
  *
  * Effets cumulés (Phase 2 refonte 2026-06-10) :
  *   1. UPSERT `srs_card_stats` via FSRS-6 (le grade est dérivé de `success`).
  *   2. INSERT 1 row dans `skill_attempts` (au lieu de N comme avant).
- *   3. Si template tagué famille A : auto-ajout au deck Programme.
+ *   3. Si template tagué sur un point du programme : auto-ajout au deck Programme.
  *   4. Le trigger PG recalcule `student_point_state` pour chaque point tagué.
  *
  * Famille B : non gérée ici (passe par evaluation_tasks côté prof).
+ *
+ * Contenu d'une trace (ADR 0038) : lieu exigé (flash_cards, typing, mock_test,
+ * number_race — jamais `evaluation` ni `review`), graine, durées et fin (formes
+ * chronométrées), réponse et verdict par case (formes où l'on tape). Les règles
+ * du Zod reprennent les CHECK de la base. `answer_parts` est du texte libre
+ * écrit par un mineur : toujours affiché échappé.
  *
  * Réponse :
  *   200 { inserted: 1, point_ids: [...points tagués...] }
@@ -61,7 +70,19 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(400, validation.error.issues[0].message);
 	}
 
-	const { template_id, success, with_help, phase_blocage } = validation.data;
+	const {
+		template_id,
+		success,
+		with_help,
+		phase_blocage,
+		place,
+		seed,
+		response_ms,
+		allotted_ms,
+		end_reason,
+		answer_parts,
+		part_verdicts
+	} = validation.data;
 
 	// Seul un élève laisse une trace. L'aperçu admin d'un modèle et les pages de
 	// démo passent par la même `FlashCard` : un admin ou un professeur y répond
@@ -102,11 +123,14 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	// Fail-loud : si FSRS UPSERT échoue, on n'insère PAS skill_attempts pour
 	// éviter une désynchro durable srs_card_stats ↔ student_point_state.
 	// Le client peut retenter ; un échec persistant signale un vrai bug à fixer.
-	// Carte de cours (#617) : fiche mise à jour au plus une fois par jour,
-	// écriture vérifiée ; la trace ci-dessous est TOUJOURS insérée.
-	const isCard = attemptSourceForTemplate(templateRow) === 'student_self';
+	// Auto-évaluation (« déclaré ») : carte de cours (#617), lue en base, ou forme
+	// Flash-cards (l'élève retourne la carte et dit s'il a réussi, ADR 0038).
+	// Fiche : meilleur résultat du jour (ADR 0016), écriture vérifiée ; la trace
+	// ci-dessous est TOUJOURS insérée.
+	const selfAssessed =
+		place === 'flash_cards' || attemptSourceForTemplate(templateRow) === 'student_self';
 	try {
-		if (isCard) {
+		if (selfAssessed) {
 			const now = new Date();
 			await applyFsrsReview(
 				locals.supabase,
@@ -148,15 +172,28 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			success,
 			grade,
 			with_help,
-			// Carte de cours (#617) : auto-évaluation → `student_self`
-			source: attemptSourceForTemplate(templateRow),
-			...(phase_blocage !== undefined ? { phase_blocage } : {})
+			// Auto-évaluation (carte de cours, Flash-cards) → `student_self`
+			source: selfAssessed ? 'student_self' : 'auto',
+			...(phase_blocage !== undefined ? { phase_blocage } : {}),
+			// Contenu d'une trace (ADR 0038) : absent → NULL ; aucune case → NULL
+			place,
+			seed: seed ?? null,
+			response_ms: response_ms ?? null,
+			allotted_ms: allotted_ms ?? null,
+			end_reason: end_reason ?? null,
+			answer_parts,
+			part_verdicts
 		})
 		.select('id');
 
 	if (insertError) {
-		logger.error('[skill-attempts] INSERT failed:', insertError);
-		return json({ error: 'insert_failed', detail: insertError.message }, { status: 500 });
+		// Code et message seulement : `details` d'une violation de CHECK contient la
+		// ligne entière, réponse tapée par l'élève comprise (texte libre de mineur)
+		logger.error('[skill-attempts] INSERT failed:', {
+			code: insertError.code,
+			message: insertError.message
+		});
+		return json({ error: 'insert_failed' }, { status: 500 });
 	}
 
 	if (!insertedRows || insertedRows.length !== 1) {

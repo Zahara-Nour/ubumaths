@@ -1,0 +1,138 @@
+{
+	"id": "fbe65ad1-dd95-4cf8-a5d3-d08c2546abe3",
+	"title": "Construire un parallélogramme par ses diagonales",
+	"description": "Les diagonales se coupent en leur milieu : construire les sommets manquants au compas, par le centre du parallélogramme ou du losange",
+	"grades": ["5"],
+	"level": 7,
+	"delay": 240,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "$ABCD$ est un parallélogramme de centre $O$. Construis les points $C$ et $D$ avec tes instruments.\n\n```figure-a-completer\nfenetre: 0 ; 12 ; 0 ; 9\noutils: point, droite, compas\nverifier: point C = symetrie(A, centre=O)\nverifier: point D = symetrie(B, centre=O)\n---\n{{if:k==1|A = point(2, 2, etiquette=\"bas-gauche\")\nB = point(7, 1.5, etiquette=\"bas-droite\")\nO = point(6, 4.5, etiquette=\"haut\")|{{if:k==2|A = point(1.5, 4, etiquette=\"bas-gauche\")\nB = point(6, 1, etiquette=\"bas-gauche\")\nO = point(6.5, 4.5, etiquette=\"haut\")|A = point(3, 1.5, etiquette=\"bas-gauche\")\nB = point(9, 3, etiquette=\"bas-droite\")\nO = point(6, 5, etiquette=\"haut\")}}}}\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..3"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Propriété.** Les diagonales d'un parallélogramme se coupent en leur milieu : $O$ est le milieu de $[AC]$ et de $[BD]$.",
+					"On trace la droite $(AO)$, puis le cercle de centre $O$ qui passe par $A$ : il recoupe la droite en $\\textcolor{{{color:primary.0}}}{\\text{C}}$, de l'autre côté de $O$.",
+					"De même avec $B$ : la droite $(BO)$ et le cercle de centre $O$ passant par $B$ donnent $\\textcolor{{{color:primary.0}}}{\\text{D}}$."
+				]
+			}
+		},
+		{
+			"statement": "$ABCD$ est un **losange** de diagonale $[AC]$ ; ses diagonales se coupent en $O$. Construis le point $D$ avec tes instruments.\n\n```figure-a-completer\nfenetre: 0 ; 12 ; 0 ; 9\noutils: point, droite, compas\nverifier: point D = symetrie(B, centre=O)\n---\n{{if:k==1|A = point(2, 4.5, etiquette=\"gauche\")\nC = point(10, 4.5, etiquette=\"droite\")\nB = point(6, 1.7, etiquette=\"bas\")\nO = point(6, 4.5, etiquette=\"haut-droite\")\nsegment(A, C)\nmarque_segment(A, O)\nmarque_segment(O, C)\ndroite(B, O, trait=\"tirets\", couleur=\"gris\")\nangle(C, O, B, marque=\"carre\")|A = point(3, 2, etiquette=\"bas-gauche\")\nC = point(9, 7, etiquette=\"haut-droite\")\nB = point(7.536, 2.656, etiquette=\"bas-droite\")\nO = point(6, 4.5, etiquette=\"haut-droite\")\nsegment(A, C)\nmarque_segment(A, O)\nmarque_segment(O, C)\ndroite(B, O, trait=\"tirets\", couleur=\"gris\")\nangle(C, O, B, marque=\"carre\")}}\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un losange est un parallélogramme : ses diagonales se coupent en leur milieu $O$. $D$ est donc sur la droite $(BO)$, avec $OD = OB$.",
+					"On trace le cercle de centre $O$ qui passe par $B$ : il recoupe la droite $(BO)$ en $\\textcolor{{{color:primary.0}}}{\\text{D}}$, de l'autre côté de $O$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Parallélogramme 1 : C et D construits",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": [
+				"droite(2;2;6;4.5)|cercle(6;4.5;2;2)|point(10;7)|droite(7;1.5;6;4.5)|cercle(6;4.5;7;1.5)|point(5;7.5)"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Parallélogramme 2 : C et D construits",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2"
+			},
+			"answers": [
+				"droite(1.5;4;6.5;4.5)|cercle(6.5;4.5;1.5;4)|point(11.5;5)|droite(6;1;6.5;4.5)|cercle(6.5;4.5;6;1)|point(7;8)"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : cercle de centre A passant par O (C au-delà de A)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"answers": [
+				"droite(3;1.5;6;5)|cercle(3;1.5;6;5)|point(0;-2)|droite(9;3;6;5)|cercle(6;5;9;3)|point(3;7)"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : C et D placés à l'œil",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["point(10;7)|point(5;7.5)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Losange 1 : D construit",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["droite(6;1.7;6;4.5)|cercle(6;4.5;6;1.7)|point(6;7.3)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Losange 2 : D construit",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["droite(7.536;2.656;6;4.5)|cercle(6;4.5;7.536;2.656)|point(4.464;6.344)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : D sur le cercle, hors de la droite (BO)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["cercle(6;4.5;6;1.7)|point(8.8;4.5)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : rien de placé",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2"
+			},
+			"answers": [""],
+			"expected": {
+				"status": "empty"
+			}
+		}
+	]
+}

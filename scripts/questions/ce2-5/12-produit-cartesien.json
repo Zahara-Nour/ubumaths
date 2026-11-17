@@ -1,10 +1,8 @@
 {
+	"id": "837d027b-37c9-4378-b721-5122948d8402",
 	"title": "Produits cartésiens : combien de façons ?",
 	"description": "Deux ensembles : 3 pantalons × 7 tee-shirts = 21 ; trois ensembles : 2 chapeaux × 3 tee-shirts × 2 pantalons = 12",
 	"grades": ["CE2"],
-	"theme": "Entiers",
-	"domain": "Problèmes",
-	"subdomain": "Produits cartésiens",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

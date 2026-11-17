@@ -56,7 +56,6 @@ const RELATIONS_FERMEES = [
 	'chapter_template_instantiations',
 	'chapter_templates',
 	'class_chapters',
-	'class_google_classroom_links',
 	'class_members',
 	'classes',
 	'coursework_categories',
@@ -373,9 +372,11 @@ describe('(a) anon n’a plus aucun droit sur les objets fermés', () => {
 	// 2026-10-29 (fin de l'import TinyMath, figure-et-choix) : `migration_tracking`, `migration_edits`,
 	// `migration_review_tree` et `update_migration_tracking_updated_at()` supprimées
 	// → 132 relations, 133 fonctions.
-	it('l’inventaire compte 132 relations et 133 fonctions', () => {
-		expect(RELATIONS_FERMEES).toHaveLength(132);
-		expect(new Set(RELATIONS_FERMEES).size).toBe(132);
+	// 2026-11-03 (M11, ecarts-a-trier) : `class_google_classroom_links` supprimée
+	// → 131 relations, 133 fonctions.
+	it('l’inventaire compte 131 relations et 133 fonctions', () => {
+		expect(RELATIONS_FERMEES).toHaveLength(131);
+		expect(new Set(RELATIONS_FERMEES).size).toBe(131);
 		expect(FONCTIONS_REVOQUEES).toHaveLength(133);
 		expect(new Set(FONCTIONS_REVOQUEES).size).toBe(133);
 	});

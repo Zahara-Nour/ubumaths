@@ -69,7 +69,9 @@ const mockProfile = {
 	email: 'test@example.com',
 	firstname: 'John',
 	lastname: 'Doe',
-	avatar_url: null,
+	avatar_url: '/avatars/bonnet_ubu.webp',
+	google_avatar_url: 'https://lh3.googleusercontent.com/a/photo',
+	worn_avatar: 'bonnet_ubu',
 	role: 'student',
 	grade: '6eme',
 	gidouilles: 100,
@@ -131,6 +133,11 @@ const mockMathouDecorations = [
 	{ decoration: 'leather', price_paid: 20, purchased_at: '2026-10-25T10:00:00Z' },
 	{ decoration: 'monocle', price_paid: 20, purchased_at: '2026-10-26T10:00:00Z' },
 	{ decoration: 'bowler', price_paid: 10, purchased_at: '2026-10-26T11:00:00Z' }
+];
+
+// Boutique d'avatars (2026-11-06) : la collection de l'élève
+const mockAvatars = [
+	{ avatar_key: 'bonnet_ubu', price_paid: 15, purchased_at: '2026-11-12T10:00:00Z' }
 ];
 
 // Palotin de l'élève (une ligne par élève)
@@ -218,10 +225,16 @@ function setupMockSupabase() {
 						return mockMathoux;
 					case 'student_mathou_decorations':
 						return mockMathouDecorations;
+					case 'student_avatars':
+						return mockAvatars;
 					case 'student_buddies':
 						return mockBuddy;
 					case 'student_last_visits':
-						return { last_visit_date: '2026-10-20', welcome_back_on: '2026-10-20' };
+						return {
+							last_visit_date: '2026-10-20',
+							welcome_back_on: '2026-10-20',
+							week_celebrated_on: '2026-10-19'
+						};
 					case 'game_players':
 						return null; // maybeSingle returns null if no data
 					default:
@@ -451,6 +464,31 @@ describe('GET /api/account/export', () => {
 			expect(eq).toHaveBeenCalledWith('student_id', TEST_USER.id);
 		});
 
+		// Boutique d'avatars (2026-11-06, comportement 17) : collection et avatar porté
+		test('contient la collection d’avatars de l’appelant (catégorie gaming)', async () => {
+			const response = await GET(createMockEvent() as never);
+			const data = await response.json();
+
+			expect(data.gaming.avatars).toEqual(mockAvatars);
+			const appel = mockSupabase.from.mock.calls.findIndex(
+				(c: unknown[]) => c[0] === 'student_avatars'
+			);
+			expect(appel).toBeGreaterThanOrEqual(0);
+			const chaine = mockSupabase.from.mock.results[appel].value;
+			expect(chaine.select.mock.calls[0][0]).toBe('avatar_key, price_paid, purchased_at');
+			const eq = chaine.select.mock.results[0].value.eq;
+			expect(eq).toHaveBeenCalledWith('student_id', TEST_USER.id);
+		});
+
+		test('le profil exporté dit l’avatar porté et garde la photo Google', async () => {
+			const response = await GET(createMockEvent() as never);
+			const data = await response.json();
+
+			expect(data.profile.avatar_url).toBe('/avatars/bonnet_ubu.webp');
+			expect(data.profile.worn_avatar).toBe('bonnet_ubu');
+			expect(data.profile.google_avatar_url).toBe('https://lh3.googleusercontent.com/a/photo');
+		});
+
 		// Palotin de l'élève (décision de David, 2026-10-18)
 		test('contient le Palotin de l’appelant (catégorie gaming)', async () => {
 			const response = await GET(createMockEvent() as never);
@@ -472,12 +510,13 @@ describe('GET /api/account/export', () => {
 
 		// Jour du dernier passage (Palotin triste au retour, 2026-10-21) : lisible par le
 		// serveur seul, donc lu au client service, filtré sur l'identité de la session
-		test('contient le jour du dernier passage et le retour à fêter, lus au client service pour l’appelant', async () => {
+		test('contient le jour du dernier passage, le retour et la semaine fêtée, lus au client service pour l’appelant', async () => {
 			const response = await GET(createMockEvent() as never);
 			const data = await response.json();
 
 			expect(data.gaming.dernier_passage).toBe('2026-10-20');
 			expect(data.gaming.retour_a_feter).toBe('2026-10-20');
+			expect(data.gaming.semaine_fetee).toBe('2026-10-19');
 			const service = serviceClient.current as typeof mockSupabase;
 			const appel = service.from.mock.calls.findIndex(
 				(c: unknown[]) => c[0] === 'student_last_visits'
@@ -521,7 +560,7 @@ describe('GET /api/account/export', () => {
 			const response = await GET(event as never);
 			const data = await response.json();
 
-			// Évaluation référentielle (connaissances famille A + compétences famille B)
+			// Évaluation (points du programme + compétences mathématiques)
 			expect(data.evaluation.connaissances).toBeDefined();
 			expect(data.evaluation.competences).toBeDefined();
 			expect(data.evaluation.tentatives).toBeDefined();
@@ -591,6 +630,7 @@ describe('GET /api/account/export', () => {
 		test.each([
 			'student_mathoux',
 			'student_mathou_decorations',
+			'student_avatars',
 			'student_buddies',
 			'student_last_visits'
 		])('%s illisible → 500', async (table) => {
@@ -640,7 +680,7 @@ describe('GET /api/account/export', () => {
 			const fromCalls = mockSupabase.from.mock.calls.map((call) => call[0]);
 
 			expect(fromCalls).toContain('profiles');
-			// Évaluation référentielle (connaissances famille A + compétences famille B)
+			// Évaluation (points du programme + compétences mathématiques)
 			expect(fromCalls).toContain('student_point_state');
 			expect(fromCalls).toContain('student_competence_level');
 			expect(fromCalls).toContain('skill_attempts');
@@ -652,6 +692,27 @@ describe('GET /api/account/export', () => {
 			expect(fromCalls).toContain('messages');
 			expect(fromCalls).toContain('friendships');
 			expect(fromCalls).toContain('notifications');
+		});
+
+		test('N15 — les traces exportent lieu, durées, graine, réponse et verdicts (ADR 0038)', async () => {
+			await GET(createMockEvent() as never);
+
+			const index = mockSupabase.from.mock.calls.findIndex((call) => call[0] === 'skill_attempts');
+			expect(index).toBeGreaterThanOrEqual(0);
+			const columns = String(
+				mockSupabase.from.mock.results[index].value.select.mock.calls[0][0]
+			).split(/,\s*/);
+			for (const column of [
+				'place',
+				'response_ms',
+				'allotted_ms',
+				'end_reason',
+				'seed',
+				'answer_parts',
+				'part_verdicts'
+			]) {
+				expect(columns).toContain(column);
+			}
 		});
 
 		test('never queries tables removed/renamed by schema drift', async () => {

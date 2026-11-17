@@ -21,8 +21,6 @@ function instance(statement: string, blanks: QuestionInstance['blanks']): Questi
 		statement: statement as ResolvedMarkdown,
 		blanks,
 		grades: ['6'],
-		theme: 'T',
-		domain: 'D',
 		level: 1,
 		generatedAt: ''
 	};

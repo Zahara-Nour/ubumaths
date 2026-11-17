@@ -1,10 +1,8 @@
 {
+	"id": "5db370fc-6573-4398-aaee-7014947e25b9",
 	"title": "Connaître le centimètre cube",
 	"description": "Savoir qu'un cube de 1 cm d'arête a un volume de 1 cm³, compter les cubes d'un pavé pour trouver son volume, distinguer cm, cm² et cm³",
 	"grades": ["6"],
-	"theme": "Grandeurs",
-	"domain": "Volumes",
-	"subdomain": "Unités",
 	"level": 1,
 	"delay": 30,
 	"status": "draft",

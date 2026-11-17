@@ -1,10 +1,8 @@
 {
+	"id": "d727be44-bd71-4697-ba1e-c56167b8ac63",
 	"title": "Le coefficient multiplicateur",
 	"description": "Définir le coefficient multiplicateur (arrivée ÷ départ) : de 80 € à 100 €, × 1,25 ; de 80 € à 60 €, × 0,75 ; multiplier par 0,9 est une diminution",
 	"grades": ["4"],
-	"theme": "Proportionnalité",
-	"domain": "Pourcentages",
-	"subdomain": "Coefficient",
 	"level": 1,
 	"delay": 30,
 	"status": "draft",

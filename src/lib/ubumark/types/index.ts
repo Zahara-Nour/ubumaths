@@ -214,6 +214,15 @@ export type { ScratchNode, ScratchIssue } from './scratch';
 
 export type { HorlogeNode, HorlogeIssue, HorlogeSpec, HorlogeTime } from './horloge';
 
+// TORTUE (bloc ```tortue)
+export type { TortueNode, TortueIssue, TortueSpec } from './tortue';
+
+// CALCUL (bloc ```calcul)
+export type { CalculNode, CalculIssue, CalculSpec } from './calcul';
+
+// ROBOT (bloc ```robot)
+export type { RobotNode, RobotIssue, RobotSpec, RobotScene, Instruction } from './robot';
+
 // ============================================================================
 // PARTAGE (bloc ```partage)
 // ============================================================================
@@ -243,6 +252,17 @@ export type { CollectionNode, CollectionIssue, CollectionSpec, CollectionSet } f
 // ============================================================================
 
 export type { MonnaieNode, MonnaieIssue, MonnaieSpec, MonnaieSet } from './monnaie';
+
+// ============================================================================
+// SCHÉMA EN BARRES (bloc ```schema-barres)
+// ============================================================================
+
+export type {
+	SchemaBarresNode,
+	SchemaBarresSpec,
+	SchemaBarresBar,
+	SchemaBarresSegment
+} from './schema-barres';
 
 // ============================================================================
 // PARSER TYPES

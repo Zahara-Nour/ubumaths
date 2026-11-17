@@ -28,8 +28,21 @@
  *   section ; cylindre `perpendiculaire 2` (hauteur) ou `parallele 1`
  *   (distance à l'axe) ; boule `1` (distance au centre). Sans distance : au
  *   milieu (pavé, cylindre ⊥), par l'axe ou le centre (cylindre ‖, boule).
+ * - `points:` (facultatif, polyèdres) : `I milieu AE, O centre ABCD` (centre
+ *   d'une face ; cube, pavé : `centre ABCDEFGH`, le centre du solide) ; un
+ *   milieu peut prendre un point déjà déclaré (`J milieu IG`).
+ * - `vecteurs:` (facultatif, polyèdres) : `AB, AE, u = AI`, entre points nommés
+ *   (sommets, points déclarés) ; `u =` pose la lettre sur la flèche.
+ * - `tracer:` (facultatif, polyèdres, geste de l'élève) : `vecteur AB + AD + AE`,
+ *   puis `depuis A` pour imposer l'origine ; au plus 6 vecteurs entre points nommés
+ *   ou nommés dans `vecteurs:` (`2 u - v`), coefficients entiers ou fractions
+ *   irréductibles de dénominateur 2, 3 ou 4 (`2 AB`, `1/3 AE`, `3/2AB`). Refusé : vecteur nul,
+ *   extrémité qui ne tombe sur aucun point cliquable (sommets nommés, points
+ *   déclarés) depuis l'origine imposée, ou depuis aucun point si elle est libre.
+ *   `case: N` y est posée par le générateur de questions.
  *
- * Chantier `solides`, lots 3 et 6 (§ 8 et 11 du journal), ADR 0034.
+ * Chantier `solides`, lots 3 et 6 (§ 8 et 11 du journal), ADR 0034 ; points et
+ * vecteurs : chantier `solide-vecteur`, lot 1 ; `tracer:` : lot 2.
  *
  * @module ubumark/parser/solide-parser
  */
@@ -39,21 +52,31 @@ import {
 	SOLIDE_KEYS,
 	SOLIDE_MAX_DECIMALS,
 	SOLIDE_MAX_DIMENSION,
+	SOLIDE_MAX_POINTS,
 	SOLIDE_MAX_RATIO,
+	SOLIDE_MAX_TERMS,
+	SOLIDE_MAX_VECTORS,
 	SOLIDE_UNITS,
 	type SolideForm,
 	type SolideMark,
+	type SolidePoint,
 	type SolideSection,
-	type SolideSpec
+	type SolideSpec,
+	type SolideTask,
+	type SolideVector,
+	type SolideVectorTerm
 } from '../types/espace';
 import {
 	SOLIDE_FLAT_CONE,
 	SOLIDE_PLACES,
 	polyhedronVertices,
+	solidePoints3,
 	solideTopology,
+	type Point3,
 	type SolidePlace,
 	type SolideTopology
 } from '../utils/espace-solides';
+import { isNullCombination, solideVectorPairs } from '../utils/solide-gestes';
 
 // ============================================================================
 // CONSTANTES
@@ -69,6 +92,24 @@ const DIMENSION_REGEX = /^\d+(?:[.,]\d+)?$/;
 /** Un nom de sommet : une majuscule, puis des primes ou un nombre (A, A', O1) */
 const NAME_REGEX = /^[A-Z](?:'+|\d+)?$/;
 const NAMES_IN_TEXT_REGEX = /[A-Z](?:'+|\d+)?/g;
+
+/** Un nom de vecteur : une minuscule, puis éventuellement un chiffre (u, v, u1) */
+const VECTOR_NAME_REGEX = /^[a-z]\d?$/;
+
+/**
+ * Un terme de `tracer:` : signe, coefficient (`2`, `1/3`), puis deux noms de
+ * points (`AB`) ou le nom d'un vecteur de `vecteurs:` (`u`, `w1`)
+ */
+const TERM_REGEX =
+	/^([+-])?\s*(?:(\d+)\s*(?:\/\s*(\d+))?)?\s*((?:[A-Z](?:'+|\d+)?)+|[a-z]\d?(?![A-Za-z\d]))\s*/;
+
+/** Dénominateurs admis dans `tracer:` (D-SV2 : fractions simples) */
+const TRACER_DENOMINATORS = [1, 2, 3, 4];
+
+const TRACER_USAGE = 'ex. tracer: vecteur AB + AD + AE, ou … depuis A';
+
+/** Deux points plus proches que cela sont confondus (vecteur nul, milieu d'un point avec lui-même) */
+const SAME_POINT = 1e-9;
 
 const FIRST_WORDS = ['cube', 'pave', 'prisme', 'pyramide', 'cylindre', 'cone', 'boule'];
 const PRISM_BASES = ['triangle', 'triangle-rectangle'];
@@ -403,6 +444,204 @@ function readSection(
 	return `section : cube, pavé, cylindre ou boule (pas ${topology.indefinite})`;
 }
 
+/** Les points nommés d'un texte (« AE », « [AE] »), indices dans `known` ; une phrase d'erreur sinon */
+function namedPoints(text: string, known: string[]): number[] | string {
+	const bare = text.replace(/[[\]()\s]/g, '');
+	const written = bare.match(NAMES_IN_TEXT_REGEX) ?? [];
+	if (written.join('') !== bare || written.length === 0) {
+		return `« ${text.trim()} » : écris les noms des points (ex. AE)`;
+	}
+	const indices: number[] = [];
+	for (const name of written) {
+		const index = known.indexOf(name);
+		if (index < 0) return `aucun point ne s’appelle ${name}`;
+		indices.push(index);
+	}
+	return indices;
+}
+
+/** Plus grand diviseur commun de deux entiers positifs */
+const gcd = (a: number, b: number): number => (b === 0 ? a : gcd(b, a % b));
+
+const samePosition = (a: Point3, b: Point3) =>
+	Math.hypot(a.x - b.x, a.y - b.y, a.z - b.z) < SAME_POINT;
+
+/** Les points de `points:` ; une phrase d'erreur sinon */
+function readPoints(
+	value: string,
+	shape: { form: SolideForm; dims: number[] },
+	topology: SolideTopology,
+	names: (string | null)[]
+): SolidePoint[] | string {
+	const items = value.split(',').filter((i) => i.trim() !== '');
+	if (items.length > SOLIDE_MAX_POINTS) return `au plus ${SOLIDE_MAX_POINTS} points`;
+	const known = names.map((n) => n ?? '');
+	const points: SolidePoint[] = [];
+	const usage = 'ex. I milieu AE, O centre ABCD';
+	for (const item of items) {
+		const match = /^(\S+)\s+(\S+)\s*(.*)$/.exec(item.trim());
+		const name = match?.[1] ?? item.trim();
+		const kind = plain(match?.[2] ?? '');
+		if (match === null || (kind !== 'milieu' && kind !== 'centre')) {
+			return `point « ${item.trim()} » non compris (${usage})`;
+		}
+		if (!NAME_REGEX.test(name)) {
+			return `« ${name} » : un nom de point est une majuscule, puis éventuellement ' ou un nombre (I, I', O1)`;
+		}
+		if (names.includes(name)) return `« ${name} » est déjà le nom d’un sommet`;
+		if (points.some((p) => p.name === name))
+			return `« ${name} » deux fois : chaque point a son nom`;
+		if (match[3].trim() === '') return `${kind} de quels points ? (${usage})`;
+		const refs = namedPoints(match[3], known);
+		if (typeof refs === 'string') return refs;
+		// Un point répété fausserait l'isobarycentre (centre ABCDEFGA n'est pas le centre du cube)
+		const twice = refs.find((r, i) => refs.indexOf(r) !== i);
+		if (twice !== undefined && kind === 'centre')
+			return `« ${known[twice]} » deux fois dans ${kind} ${match[3].trim()}`;
+		const written = refs.map((i) => known[i]).join('');
+		if (kind === 'milieu') {
+			if (refs.length !== 2) return `milieu de deux points (ex. ${name} milieu AE)`;
+			const at = solidePoints3(shape.form, shape.dims, points);
+			if (samePosition(at[refs[0]], at[refs[1]])) {
+				return `milieu de deux points distincts (${written} : un seul point)`;
+			}
+			points.push({ name, of: refs, label: `milieu de [${written}]` });
+		} else {
+			const allVertices = sameSet(refs, [...Array(topology.vertexCount).keys()]);
+			if (allVertices && (shape.form === 'cube' || shape.form === 'pave')) {
+				points.push({
+					name,
+					of: [...refs].sort((a, b) => a - b),
+					label: `centre ${topology.ofThe}`
+				});
+				known.push(name);
+				continue;
+			}
+			const face = topology.faces.find((f) => sameSet(f, refs));
+			if (face === undefined) return `${written} n’est pas une face ${topology.ofThe}`;
+			points.push({
+				name,
+				of: face,
+				label: `centre de ${face.map((i) => known[i]).join('')}`
+			});
+		}
+		known.push(name);
+	}
+	return points;
+}
+
+/** Les vecteurs de `vecteurs:` ; une phrase d'erreur sinon */
+function readVectors(
+	value: string,
+	shape: { form: SolideForm; dims: number[] },
+	names: (string | null)[],
+	points: SolidePoint[]
+): SolideVector[] | string {
+	const items = value.split(',').filter((i) => i.trim() !== '');
+	if (items.length > SOLIDE_MAX_VECTORS) return `au plus ${SOLIDE_MAX_VECTORS} vecteurs`;
+	const known = [...names.map((n) => n ?? ''), ...points.map((p) => p.name)];
+	const at = solidePoints3(shape.form, shape.dims, points);
+	const vectors: SolideVector[] = [];
+	for (const item of items) {
+		const match = /^(?:([^=]+)=)?(.*)$/.exec(item.trim());
+		const name = match?.[1]?.trim() ?? null;
+		const what = (match?.[2] ?? '').trim();
+		if (name !== null) {
+			if (!VECTOR_NAME_REGEX.test(name)) {
+				return `« ${name} » : un nom de vecteur est une minuscule, puis éventuellement un chiffre (u, v, u1)`;
+			}
+			if (vectors.some((v) => v.name === name)) {
+				return `« ${name} » deux fois : chaque vecteur a son nom`;
+			}
+		}
+		const refs = namedPoints(what, known);
+		if (typeof refs === 'string') return refs;
+		if (refs.length !== 2) return `« ${what} » : un vecteur se désigne par deux points (ex. AB)`;
+		if (samePosition(at[refs[0]], at[refs[1]])) {
+			return `${what.replace(/[[\]()\s]/g, '')} : vecteur nul (origine et extrémité confondues)`;
+		}
+		vectors.push({ from: refs[0], to: refs[1], name });
+	}
+	return vectors;
+}
+
+/** La combinaison de `tracer:` et son origine imposée ; une phrase d'erreur sinon */
+function readTask(
+	value: string,
+	shape: { form: SolideForm; dims: number[] },
+	names: (string | null)[],
+	points: SolidePoint[],
+	vectors: SolideVector[]
+): SolideTask | string {
+	const match = /^vecteur\s+(.*?)(?:\s+depuis\s+(\S+))?$/i.exec(value.trim());
+	if (match === null || match[1].trim() === '') {
+		return `tracer « ${value} » non compris (tracer: vecteur AB + AD, ou … depuis A)`;
+	}
+	const known = [...names.map((n) => n ?? ''), ...points.map((p) => p.name)];
+	const at = solidePoints3(shape.form, shape.dims, points);
+	const terms: SolideVectorTerm[] = [];
+	let rest = match[1].trim();
+	while (rest !== '') {
+		const term = TERM_REGEX.exec(rest);
+		if (term === null || (terms.length > 0 && term[1] === undefined)) {
+			return `vecteur « ${match[1].trim()} » non compris (${TRACER_USAGE})`;
+		}
+		// Pas de zéro en tête (01/2, 1/04) : la phrase de l'élève reprend l'écriture de l'auteur
+		if (term[3] !== undefined && (/^0\d/.test(term[2] ?? '') || /^0\d/.test(term[3]))) {
+			return `coefficient ${term[2]}/${term[3]} : écrire ${Number(term[2])}/${Number(term[3])}`;
+		}
+		const numerator = term[2] === undefined ? 1 : Number(term[2]);
+		const denominator = term[3] === undefined ? 1 : Number(term[3]);
+		if (!TRACER_DENOMINATORS.includes(denominator)) {
+			return `coefficient ${term[2]}/${term[3]} : coefficients entiers ou fractions de dénominateur 2, 3 ou 4 (ex. 1/2 AE, 2/3 AB)`;
+		}
+		if (numerator === 0) return `coefficient nul devant ${term[4]}`;
+		// La phrase de l'élève reprend l'écriture de l'auteur : pas de 2/4 dans une correction
+		const divisor = gcd(numerator, denominator);
+		if (term[3] !== undefined && (divisor !== 1 || denominator === 1)) {
+			const n = numerator / divisor;
+			const d = denominator / divisor;
+			return `coefficient ${term[2]}/${term[3]} : écrire ${d === 1 ? n : `${n}/${d}`}`;
+		}
+		const sign = term[1] === '-' ? -1 : 1;
+		const coef = (sign * numerator) / denominator;
+		if (VECTOR_NAME_REGEX.test(term[4])) {
+			const named = vectors.find((v) => v.name === term[4]);
+			if (named === undefined) return `${term[4]} : aucun vecteur de ce nom dans vecteurs:`;
+			terms.push({ coef, from: named.from, to: named.to, name: term[4] });
+		} else {
+			const refs = namedPoints(term[4], known);
+			if (typeof refs === 'string') return refs;
+			if (refs.length !== 2)
+				return `« ${term[4]} » : un vecteur se désigne par deux points (ex. AB)`;
+			if (samePosition(at[refs[0]], at[refs[1]])) {
+				return `${term[4]} : vecteur nul (origine et extrémité confondues)`;
+			}
+			terms.push({ coef, from: refs[0], to: refs[1] });
+		}
+		rest = rest.slice(term[0].length);
+	}
+	if (terms.length > SOLIDE_MAX_TERMS) return `au plus ${SOLIDE_MAX_TERMS} vecteurs à additionner`;
+	let origin: number | null = null;
+	if (match[2] !== undefined) {
+		const refs = namedPoints(match[2], known);
+		if (typeof refs === 'string') return `depuis ${match[2]} : ${refs}`;
+		if (refs.length !== 1) return `depuis « ${match[2]} » : un seul point (ex. depuis A)`;
+		origin = refs[0];
+	}
+	const geometry = { ...shape, names, points };
+	if (isNullCombination(geometry, terms)) {
+		return 'la combinaison est le vecteur nul : l’élève n’a rien à tracer';
+	}
+	const task: SolideTask = { kind: 'vecteur', terms, origin };
+	if (solideVectorPairs(geometry, task).length === 0) {
+		return origin === null
+			? 'l’extrémité ne tombe sur aucun point du solide, quelle que soit l’origine (points possibles : sommets nommés, points déclarés)'
+			: `depuis ${known[origin]}, l’extrémité ne tombe sur aucun point du solide (points possibles : sommets nommés, points déclarés)`;
+	}
+	return task;
+}
+
 /**
  * Analyser le texte d'un bloc ```solide (sans les clôtures).
  * Ligne 1 = première ligne après ```solide.
@@ -410,6 +649,8 @@ function readSection(
 export function parseSolideContent(source: string): {
 	spec: SolideSpec | null;
 	errors: string[];
+	/** Geste dans une question : sa case, posée par le générateur (`case: N`) */
+	caseIndex?: number;
 } {
 	const errors: string[] = [];
 	const fail = (line: number, message: string) => errors.push(`Ligne ${line} : ${message}`);
@@ -501,8 +742,83 @@ export function parseSolideContent(source: string): {
 		else section = read;
 	}
 
-	if (errors.length > 0) return { spec: null, errors };
+	// Points et vecteurs : polyèdres nommés ; des noms faux rendent tout illisible (une erreur, celle des noms)
+	const pointsEntry = seen.get('points');
+	const vectorsEntry = seen.get('vecteurs');
+	let points: SolidePoint[] = [];
+	let vectors: SolideVector[] = [];
+	const needs = (entry: { line: number }, what: 'points' | 'vecteurs' | 'tracer'): boolean => {
+		if (topology.curved) {
+			fail(entry.line, `${what} : polyèdres seulement (pas ${topology.indefinite})`);
+			return false;
+		}
+		if (namesEntry === undefined) {
+			const purpose = {
+				points: 'déclarer des points',
+				vecteurs: 'dessiner des vecteurs',
+				tracer: 'faire tracer un vecteur'
+			}[what];
+			fail(entry.line, `nomme les sommets (sommets:) pour ${purpose}`);
+			return false;
+		}
+		return names !== null;
+	};
+	let pointsRead = true;
+	if (pointsEntry !== undefined) {
+		pointsRead = false;
+		if (needs(pointsEntry, 'points') && names !== null) {
+			const read = readPoints(pointsEntry.value, shape, topology, names);
+			if (typeof read === 'string') fail(pointsEntry.line, read);
+			else {
+				points = read;
+				pointsRead = true;
+			}
+		}
+	}
+	// `tracer:` peut nommer un vecteur de `vecteurs:` : une ligne fausse ne doit pas en ajouter une seconde
+	let vectorsRead = true;
+	if (vectorsEntry !== undefined) {
+		vectorsRead = false;
+		if (needs(vectorsEntry, 'vecteurs') && names !== null && pointsRead) {
+			const read = readVectors(vectorsEntry.value, shape, names, points);
+			if (typeof read === 'string') fail(vectorsEntry.line, read);
+			else {
+				vectors = read;
+				vectorsRead = true;
+			}
+		}
+	}
+	// Geste (`tracer:`) : sur les points nommés, comme `vecteurs:`
+	const tracerEntry = seen.get('tracer');
+	let task: SolideTask | undefined;
+	if (
+		tracerEntry !== undefined &&
+		needs(tracerEntry, 'tracer') &&
+		names !== null &&
+		pointsRead &&
+		vectorsRead
+	) {
+		const read = readTask(tracerEntry.value, shape, names, points, vectors);
+		if (typeof read === 'string') fail(tracerEntry.line, read);
+		else task = read;
+	}
+	const caseEntry = seen.get('case');
+	let caseIndex: number | undefined;
+	if (caseEntry !== undefined) {
+		if (/^\d+$/.test(caseEntry.value)) caseIndex = Number(caseEntry.value);
+		else fail(caseEntry.line, `case « ${caseEntry.value} » : numéro de case entier`);
+		if (tracerEntry === undefined) fail(caseEntry.line, 'case: sans objet sans tracer:');
+	}
+	const withCase = caseIndex === undefined ? {} : { caseIndex };
+
+	const taken = points.find((p) => section?.kind === 'face' && section.names?.includes(p.name));
+	if (taken !== undefined && sectionEntry !== undefined) {
+		fail(sectionEntry.line, `« ${taken.name} » est déjà le nom d’un point (points:)`);
+	}
+
+	if (errors.length > 0) return { spec: null, errors, ...withCase };
 	return {
+		...withCase,
 		spec: {
 			kind: 'solide',
 			form: shape.form,
@@ -511,7 +827,10 @@ export function parseSolideContent(source: string): {
 			marks,
 			cotes,
 			hidden,
-			section
+			section,
+			points,
+			vectors,
+			...(task !== undefined && { task })
 		},
 		errors
 	};

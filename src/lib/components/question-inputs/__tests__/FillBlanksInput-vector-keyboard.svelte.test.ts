@@ -86,8 +86,6 @@ function instanceFor(blanks: InstanceBlank[]): QuestionInstance {
 		statement,
 		blanks,
 		grades: ['1_SPE'],
-		theme: 'Test',
-		domain: 'Test',
 		level: 1,
 		generatedAt: new Date().toISOString()
 	};

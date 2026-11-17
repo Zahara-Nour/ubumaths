@@ -6,13 +6,15 @@
  */
 
 import type { MathNode, RelationNode } from '../../types';
-import type { CommandContext } from '../types';
+import type { CommandContext, ErrorCode } from '../types';
 import { CommandRegistry, parse, createEvalState, bindingsToRecord, setBinding } from '../core';
 import { hideIndexedNames } from '../../common/indexed-names';
 import { createFunctionBinding, getFunctionNames, getFunction } from '../core/eval-state';
 import type { EvalState } from '../core';
 import type { PipelineOptions } from '../core/pipeline';
 import { createDefaultRegistry } from '../commands';
+import { readTypedLine } from '../core/typed-line';
+import { remarkableValuesInTrigonometry } from '../core/angle-radians';
 import type { ReplExecutionResult, WebFunctionInfo } from './types';
 import {
 	toCustom,
@@ -24,7 +26,7 @@ import {
 	toLatex
 } from '../../index';
 import type { FunctionBindings } from '../../eval/function-bindings';
-import { evaluateNodeToApproximatedNumber } from '../../eval/evaluate';
+import { evaluateNodeToApproximatedNumber, isBooleanExpression } from '../../eval/evaluate';
 import { normalFormsEquivalent } from '../../normal';
 import { equivalenceForms } from '../../normal/normalize';
 import type { EvalValue, ComplexValueResult, EvalResult } from '../../eval/types';
@@ -36,7 +38,7 @@ import {
 } from '../quantities';
 import { displayUnitsInLatex } from '../../units/display';
 import { isBoolean, isLogical, isLogicalNot, isRelation, isUnit, isVariable } from '../../guards';
-import { relation } from '../../factory';
+import { boolean, relation } from '../../factory';
 import { summarizeList, summarizeTable } from '../../../statistics/describe';
 import { formatSummary } from '../../../statistics/format';
 import {
@@ -77,7 +79,8 @@ import {
 	estimatedExactDigits,
 	exactCharacters,
 	isTooLongToCompute,
-	productValue
+	productValue,
+	shortFactorialValue
 } from '../exact-size';
 import { rationalToNode } from '../../common/numeric';
 import { boundedComparison } from '../bounded-comparison';
@@ -85,13 +88,15 @@ import { withFrenchErrors } from './french-errors';
 import {
 	approximateDigitsOf,
 	approximateLatexOf,
+	approximationLatex,
 	approximationNode,
 	approximationText,
 	isWrittenNumber,
 	type ApproximateDigits
 } from '../approximation';
 import { exactValueToShow } from '../../eval/exact-value';
-import { mapNode } from '../../transforms';
+import { findNodes, mapNode } from '../../transforms';
+import { tidy } from '../../tidy';
 
 // =============================================================================
 // Constants
@@ -153,6 +158,18 @@ function measuredTooLong(result: EvalResult, expanded: MathNode): number | null 
 	return length > MAX_EXACT_CHARACTERS ? length : null;
 }
 
+/**
+ * Un résultat calculé dont les factorielles se réduisent à une valeur courte (`1000!/999!` →
+ * 1000) : le moteur garde toute factorielle au-delà de 2⁵³, même quand le quotient est petit.
+ */
+function withFactorialsReduced(result: EvalResult): EvalResult {
+	if (result.status !== 'value' || result.node.type === 'boolean') return result;
+	const value = shortFactorialValue(result.node);
+	if (value === null) return result;
+	const node = rationalToNode(value);
+	return { status: 'value', value: node, node, exact: true };
+}
+
 /** Les fonctions de l'utilisateur remplacées par leur définition (l'expression telle quelle sinon). */
 function withFunctionsExpanded(node: MathNode, functions: FunctionBindings | undefined): MathNode {
 	if (functions === undefined) return node;
@@ -192,16 +209,63 @@ function keptValue(
 }
 
 /**
+ * Une expression à lettres rangée comme sur l'écran de l'Atelier (`resultToShow`
+ * de `render.ts`) : une grandeur est déjà mise au propre (`quantities.ts`), `tidy`
+ * recalculerait l'écriture juxtaposée `2 h 30 min` en une seule unité (lot C).
+ */
+function tidiedExpression(node: MathNode): MathNode {
+	return findNodes(node, isUnit).length > 0 ? node : tidy(node, { order: 'kept' });
+}
+
+/**
  * La réponse brute d'un calcul tapé seul (`1/2+1/3` → `\dfrac{5}{6}`) : l'arbre
- * affiché, en LaTeX. Une réponse trop longue (`exactTooLong`) n'en a pas : son
- * arbre est l'écriture tapée, pas un résultat.
+ * affiché, en LaTeX — l'écriture tapée pour un résultat exact trop long
+ * (`exactTooLong`), posée par le calcul lui-même (lot 2).
  */
 function withExpressionAnswer(result: ReplExecutionResult): ReplExecutionResult {
-	if (!result.success || result.ast === undefined || result.exactTooLong !== undefined) {
-		return result;
-	}
+	if (!result.success || result.ast === undefined) return result;
+	// Un calcul la pose lui-même, exacte même en mode décimal (décision B)
+	if (result.answer !== undefined) return result;
 	return { ...result, answer: toLatex(result.ast) };
 }
+
+/** Une comparaison que le calcul ne tranche pas : refus destiné à l'élève (décision C du lot 2) */
+export const RELATION_UNDECIDABLE = 'RELATION_UNDECIDABLE' satisfies ErrorCode;
+
+/**
+ * Une égalité ou une comparaison tranchée (`2=2`, `1<2<3`) : `\text{vrai}` /
+ * `\text{faux}` dans `answer` (décision C du lot 2). Le texte reste `true` / `false`
+ * (une chaîne s'arrête au premier maillon qui n'est pas `true`).
+ */
+function booleanResult(value: boolean): ReplExecutionResult {
+	const latex = value ? '\\text{vrai}' : '\\text{faux}';
+	return { success: true, output: String(value), ast: boolean(value), latex, answer: latex };
+}
+
+/** `decimal` / `decimalExact` d'un calcul (décision A du lot 2) ; rien sans écriture décimale. */
+function decimalFields(digits: ApproximateDigits | null): {
+	decimal?: string;
+	decimalExact?: boolean;
+} {
+	return digits === null ? {} : { decimal: approximationLatex(digits), decimalExact: digits.exact };
+}
+
+/**
+ * Les commandes qui ne lisent pas une expression : des valeurs (`.stats 1 ; 2`, `.linreg`) ou
+ * une unité cible (`.convert °` — le `°` y est l'unité, pas un angle à porter), ou un nom de
+ * commande (`.help`).
+ */
+const NOT_AN_EXPRESSION = /^\.(?:stats|linreg|convert|help)(?:\s|$)/i;
+
+/** Les commandes d'écriture : elles montrent l'expression telle que tapée, sans la calculer. */
+const WRITING_COMMANDS: ReadonlySet<string> = new Set([
+	'parse',
+	'tree',
+	'latex',
+	'custom',
+	'hash',
+	'normal'
+]);
 
 /**
  * Browser-safe REPL execution engine.
@@ -257,14 +321,29 @@ export class WebReplEngine {
 	}
 
 	private executeInput(input: string): ReplExecutionResult {
-		const trimmedInput = input.trim();
+		const trimmed = input.trim();
 
-		if (!trimmedInput) {
+		if (!trimmed) {
 			return {
 				success: true,
 				output: ''
 			};
 		}
+
+		// La ligne lue comme dans l'Atelier (degrés, `π`, refus de `pi`) : le registre est la
+		// référence commune (registre-reference, lot 2, PR 3). Pas pour une commande qui ne lit
+		// pas d'expression (`NOT_AN_EXPRESSION`)
+		const read = NOT_AN_EXPRESSION.test(trimmed)
+			? { ok: true as const, text: trimmed }
+			: readTypedLine(trimmed);
+		if (!read.ok) {
+			return {
+				success: false,
+				output: read.message,
+				error: { code: 'INPUT_REFUSED', message: read.message }
+			};
+		}
+		const trimmedInput = read.text;
 
 		// Handle dot-commands
 		if (trimmedInput.startsWith('.')) {
@@ -458,7 +537,12 @@ export class WebReplEngine {
 			const parseResult = parse(args, this.parseOptions());
 
 			if (parseResult.ast) {
-				ast = parseResult.ast;
+				// La valeur remarquable d'un angle mesuré (`.simplify cos(420°)` → 1/2) : le moteur
+				// ne calcule pas le cosinus d'une grandeur ; `cos(20°)` garde son angle. Pas pour
+				// une commande d'ÉCRITURE, qui montre l'expression telle que tapée
+				ast = WRITING_COMMANDS.has(cmdName)
+					? parseResult.ast
+					: remarkableValuesInTrigonometry(parseResult.ast);
 				cmdInput = args;
 			} else if (parseResult.errors.length > 0) {
 				// ⚠️ Un argument qui ne se lit pas comme une expression n'est une
@@ -658,12 +742,15 @@ export class WebReplEngine {
 			return this.executeExpression(input);
 		}
 
+		// La valeur remarquable d'un angle mesuré, comme une commande : sans elle,
+		// `cos(60°) = 1/2` répondait faux (revue de la PR 3 du lot 2)
+		const left = remarkableValuesInTrigonometry(result1.ast);
+		const right = remarkableValuesInTrigonometry(result2.ast);
+
 		// Substitute bound variables before comparison
 		const bindings = bindingsToRecord(this.evalState.bindings);
-		let substituted1 =
-			Object.keys(bindings).length > 0 ? substitute(result1.ast, bindings) : result1.ast;
-		let substituted2 =
-			Object.keys(bindings).length > 0 ? substitute(result2.ast, bindings) : result2.ast;
+		let substituted1 = Object.keys(bindings).length > 0 ? substitute(left, bindings) : left;
+		let substituted2 = Object.keys(bindings).length > 0 ? substitute(right, bindings) : right;
 
 		// Le plafond de calcul, membre par membre (`boundedComparison`) :
 		// `2^{30000000}/2^{29999999} = 2` prenait 3,5 s, et
@@ -739,12 +826,7 @@ export class WebReplEngine {
 	 * Create result for equality check.
 	 */
 	private createEqualityResult(isEqual: boolean): ReplExecutionResult {
-		const resultStr = isEqual ? 'true' : 'false';
-
-		return {
-			success: true,
-			output: resultStr
-		};
+		return booleanResult(isEqual);
 	}
 
 	/**
@@ -823,21 +905,26 @@ export class WebReplEngine {
 	}
 
 	/**
-	 * Create a simple display result for expressions with unbound variables.
+	 * Une expression à lettres non liées : sa forme rangée, celle de l'écran de
+	 * l'Atelier (`render.ts`, décision D du lot 2 de `registre-reference`) —
+	 * dans l'ordre de l'élève (`2x+3x → 5x`, `x*x → x^2`, `3-2x+x^2` gardé) et
+	 * sans changer le domaine (`x/x` reste `x/x`, S3). `ast` reste l'entrée lue :
+	 * l'Atelier la range lui-même, et ses autres lecteurs y lisent la saisie.
 	 */
 	private createExpressionDisplayResult(
 		ast: MathNode,
 		unboundVars: Set<string>
 	): ReplExecutionResult {
-		const exprStr = toCustom(ast);
+		const shown = tidiedExpression(ast);
 		const varList = [...unboundVars].sort().join(', ');
 
-		const output = `${exprStr}  (variables: ${varList})`;
+		const output = `${toCustom(shown)}  (variables: ${varList})`;
 
 		return {
 			success: true,
 			output,
-			ast
+			ast,
+			answer: toLatex(shown)
 		};
 	}
 
@@ -878,7 +965,8 @@ export class WebReplEngine {
 			if (hasUnits) {
 				// Une grandeur : calculée par `tidy`, unité écrite d'abord (lot A)
 				return this.quantityResult(
-					computeQuantity(substituted, this.evalState.mode === 'decimal' ? 'decimal' : 'exact')
+					computeQuantity(substituted, this.evalState.mode === 'decimal' ? 'decimal' : 'exact'),
+					true
 				);
 			}
 
@@ -904,10 +992,12 @@ export class WebReplEngine {
 				factorsNode !== null
 					? { status: 'value', value: factorsNode, node: factorsNode, exact: true }
 					: notComputed === null
-						? evaluate(boundedComparison(expanded) ?? substituted, {
-								mode: 'exact',
-								functions: this.evalState.functions
-							})
+						? withFactorialsReduced(
+								evaluate(boundedComparison(expanded) ?? substituted, {
+									mode: 'exact',
+									functions: this.evalState.functions
+								})
+							)
 						: { status: 'value', value: expanded, node: expanded, exact: true };
 			// En deçà, la règle des 1 000 caractères se lit sur le résultat calculé : la
 			// prévision ignorait une base irrationnelle (`\sqrt{2}^{100000}`, 15 052
@@ -920,14 +1010,7 @@ export class WebReplEngine {
 
 			// Boolean result: no exact/decimal toggle
 			if (exactResult.status === 'value' && exactResult.node.type === 'boolean') {
-				const boolValue = exactResult.value as boolean;
-				const resultStr = String(boolValue);
-
-				return {
-					success: true,
-					output: resultStr,
-					ast: exactResult.node
-				};
+				return booleanResult(exactResult.value as boolean);
 			}
 
 			// Evaluate in BOTH modes to enable toggle
@@ -938,6 +1021,16 @@ export class WebReplEngine {
 			});
 			this.lastQuantity = null; // Un nombre : plus de grandeur à convertir
 			this.lastWritten = undefined;
+
+			// Une comparaison que le calcul ne tranche pas (`2 \approx 2`) : un refus en
+			// français, que l'Atelier montre comme tel (décision C du lot 2)
+			if (exactResult.status === 'unevaluable' && isBooleanExpression(expanded)) {
+				return {
+					success: false,
+					output: `Erreur de calcul : ${exactResult.reason}`,
+					error: { code: RELATION_UNDECIDABLE, message: exactResult.reason }
+				};
+			}
 
 			// Non-value result (indeterminate / unevaluable): surface via the catch
 			if (exactResult.status !== 'value') {
@@ -1014,7 +1107,12 @@ export class WebReplEngine {
 				...(currentMode === 'decimal' &&
 					digits !== null && { quantityAst: keptValue(decimalResult, digits, exactResult.node) }),
 				...approximationFields(currentMode, exactResult.node, canToggle, digits, tooLong !== null),
-				...(tooLong !== null && { exactTooLong: Math.round(tooLong) })
+				...(tooLong !== null && { exactTooLong: Math.round(tooLong) }),
+				// La réponse brute, exacte dans les deux modes, et son écriture décimale
+				// (décisions A et B du lot 2) ; une écriture gardée répond par elle-même,
+				// comme l'écran de l'Atelier (`(1+1/1000)^{1000}`, lot 2)
+				answer: toLatex(exactShown),
+				...decimalFields(digits)
 			};
 		} catch (err) {
 			const message = err instanceof Error ? err.message : 'Unknown error during evaluation';
@@ -1038,7 +1136,7 @@ export class WebReplEngine {
 	}
 
 	/** La réponse de la console pour un calcul ou une conversion de grandeurs. */
-	private quantityResult(outcome: QuantityOutcome): ReplExecutionResult {
+	private quantityResult(outcome: QuantityOutcome, typed = false): ReplExecutionResult {
 		if (outcome.ok === false) {
 			return {
 				success: false,
@@ -1069,7 +1167,15 @@ export class WebReplEngine {
 			...(outcome.quantity !== null &&
 				outcome.quantity !== outcome.answer.node && { quantityAst: outcome.quantity }),
 			// Le bouton ≈ de l'atelier (#1086), écrit pour l'affichage
-			...(approximate !== undefined && { approximateLatex: approximate })
+			...(approximate !== undefined && { approximateLatex: approximate }),
+			// Un calcul tapé : la réponse brute, exacte dans les deux modes, et son
+			// écriture décimale (décisions A et B du lot 2) ; `.convert` n'en a pas encore
+			...(typed && { answer: toLatex(outcome.exact.node) }),
+			...(typed &&
+				outcome.decimalWriting !== undefined && {
+					decimal: toLatex(outcome.decimalWriting.node),
+					decimalExact: outcome.decimalWriting.exact
+				})
 		};
 	}
 

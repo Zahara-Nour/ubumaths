@@ -1,10 +1,8 @@
 {
+	"id": "8b6f9e98-fb32-4dcb-857b-241890890f95",
 	"title": "Instruction conditionnelle",
 	"description": "Prévoir ce que fait un programme avec « si … alors … sinon » : message affiché, nombre obtenu, deux tests à la suite, tests imbriqués ; écrire la condition qui manque",
 	"grades": ["4"],
-	"theme": "Algorithmique",
-	"domain": "Conditions",
-	"subdomain": "Si alors sinon",
 	"level": 1,
 	"delay": 90,
 	"status": "draft",

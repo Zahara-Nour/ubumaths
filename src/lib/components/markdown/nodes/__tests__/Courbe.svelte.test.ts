@@ -300,3 +300,30 @@ describe('Courbe — tangente (chantier dérivation)', () => {
 		expect(svg!.getAttribute('aria-label')).toMatch(/tangente/);
 	});
 });
+
+describe('Courbe — courbe de données (`données:`, chantier relier-points)', () => {
+	const DONNEES = `x: 6 ; 20
+y: 0 ; 25
+grille: 2 ; 5
+axes: x = heure ; y = température (°C)
+données: (6 ; 8) ; (8 ; 11) ; (10 ; 15) ; (12 ; 19) ; (14 ; 21) ; (16 ; 20) ; (18 ; 16) ; (20 ; 12)`;
+
+	it('dans un document : une ligne brisée visible par les 8 points, un disque par point', async () => {
+		const screen = await render(MarkdownRenderer, {
+			target: mainElement(),
+			props: { content: `Relevé de la journée :\n\n\`\`\`courbe\n${DONNEES}\n\`\`\`` }
+		});
+		const root = screen.container;
+		const lines = root.querySelectorAll<SVGPolylineElement>('polyline.courbe-donnees');
+		expect(lines.length).toBe(1);
+		expect(lines[0].getAttribute('points')!.trim().split(/\s+/)).toHaveLength(8);
+		const style = getComputedStyle(lines[0]);
+		expect(style.fill).toBe('none');
+		expect(style.stroke).not.toBe('none');
+		expect(style.stroke).not.toBe('');
+		expect(parseFloat(style.strokeWidth)).toBeGreaterThan(1);
+		expect(root.querySelectorAll('circle.courbe-donnee').length).toBe(8);
+		const svg = root.querySelector('svg[role="img"]');
+		expect(svg!.getAttribute('aria-label')).toMatch(/^Courbe de données de 8 points : \(6 ; 8\)/);
+	});
+});

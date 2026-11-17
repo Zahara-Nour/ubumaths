@@ -1,10 +1,8 @@
 {
+	"id": "b2908d52-9b12-478e-a0d9-acebce7b013f",
 	"title": "Déterminer la médiane",
 	"description": "Déterminer la médiane d'une série de petit effectif donnée en données brutes, rangée ou non (3, 7, 8, 12, 15 → 8) ; effectif pair : toute valeur entre les deux valeurs centrales",
 	"grades": ["4"],
-	"theme": "Statistiques",
-	"domain": "Indicateurs",
-	"subdomain": "Médiane",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

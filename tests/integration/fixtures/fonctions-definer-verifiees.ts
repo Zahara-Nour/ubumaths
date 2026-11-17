@@ -88,6 +88,11 @@ export const FONCTIONS_DEFINER_VERIFIEES: Record<string, FonctionDefinerVerifiee
 		categorie: 'compte-appelant',
 		justification: 'refuse p_user_id <> auth.uid() ; NULL = auth.uid()'
 	},
+	'get_my_carnet()': {
+		categorie: 'compte-appelant',
+		justification:
+			'aucun argument : carnet de auth.uid() seul, null si non connecté ou rôle autre que student ; nombre de parents, jamais leurs adresses (ADR 0040)'
+	},
 	'insert_tutor_messages(p_conversation_id uuid, p_user_id uuid, p_messages jsonb)': {
 		categorie: 'compte-appelant',
 		justification: 'garde auth.uid() = p_user_id et conversation possédée'

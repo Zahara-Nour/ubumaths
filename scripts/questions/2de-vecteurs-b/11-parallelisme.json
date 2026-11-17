@@ -1,10 +1,8 @@
 {
+	"id": "f53ad892-dba0-49b4-badb-0a3b6add8973",
 	"title": "Deux droites parallèles ?",
 	"description": "(AB) et (CD) parallèles ? par det(AB, CD) (case choix), puis l'ordonnée de D qui les rend parallèles (pièges : déterminant nul lu « non », y_C non ajouté)",
 	"grades": ["2"],
-	"theme": "Géométrie",
-	"domain": "Vecteurs du plan",
-	"subdomain": "Colinéarité",
 	"level": 4,
 	"delay": 90,
 	"status": "draft",

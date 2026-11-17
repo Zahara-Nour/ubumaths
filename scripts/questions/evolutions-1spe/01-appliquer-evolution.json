@@ -1,10 +1,8 @@
 {
+	"id": "c4372fd8-eb9d-4d62-a01a-7ab7618eed4b",
 	"title": "Appliquer une évolution en pourcentage",
 	"description": "Nouvelle valeur après une hausse ou une baisse",
 	"grades": ["2"],
-	"theme": "Proportionnalité",
-	"domain": "Pourcentages",
-	"subdomain": "Variations",
 	"level": 7,
 	"delay": 20,
 	"status": "draft",

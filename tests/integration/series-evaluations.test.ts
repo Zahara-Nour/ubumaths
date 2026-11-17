@@ -95,7 +95,7 @@ async function createEvaluation(
 ): Promise<Created> {
 	const { data: series, error: seriesError } = await service
 		.from('series')
-		.insert({ title, grade: '6', categories: CATEGORIES, created_by: teacher.id })
+		.insert({ title, grade: '6', items: CATEGORIES, created_by: teacher.id })
 		.select('id')
 		.single();
 	expect(seriesError, 'décor : série').toBeNull();
@@ -134,7 +134,7 @@ async function insertSession(
 		.insert({
 			user_id: userId,
 			mode,
-			categories: CATEGORIES,
+			items: CATEGORIES,
 			total_questions: 2,
 			evaluation_id: evaluationId
 		})
@@ -152,7 +152,7 @@ async function serverSession(userId: string, evaluationId: string, mode = 'inter
 		.insert({
 			user_id: userId,
 			mode,
-			categories: CATEGORIES,
+			items: CATEGORIES,
 			total_questions: 2,
 			evaluation_id: evaluationId
 		})
@@ -205,7 +205,7 @@ describe('séries et évaluations (20260930130000)', () => {
 
 				const { data: series, error: e1 } = await client
 					.from('series')
-					.insert({ title: `A1 ${who}`, grade: '5', categories: CATEGORIES, created_by: actor.id })
+					.insert({ title: `A1 ${who}`, grade: '5', items: CATEGORIES, created_by: actor.id })
 					.select('id')
 					.single();
 				expect(e1).toBeNull();
@@ -279,7 +279,7 @@ describe('séries et évaluations (20260930130000)', () => {
 		it('INSERT série / évaluation / assignation refusés, rien d’écrit', async () => {
 			const { error: e1 } = await studentA.client
 				.from('series')
-				.insert({ title: 'A2 pirate', grade: '6', categories: CATEGORIES, created_by: studentA.id })
+				.insert({ title: 'A2 pirate', grade: '6', items: CATEGORIES, created_by: studentA.id })
 				.select('id');
 			expect(e1?.code).toBe('42501');
 
@@ -405,7 +405,7 @@ describe('séries et évaluations (20260930130000)', () => {
 		}
 		const { error } = await anon
 			.from('series')
-			.insert({ title: 'anon', grade: '6', categories: CATEGORIES, created_by: teacher.id });
+			.insert({ title: 'anon', grade: '6', items: CATEGORIES, created_by: teacher.id });
 		expect(error?.code).toBe('42501');
 	});
 
@@ -522,7 +522,7 @@ describe('séries et évaluations (20260930130000)', () => {
 		it('A7 : une série sans séance se supprime', async () => {
 			const { data: series } = await service
 				.from('series')
-				.insert({ title: 'A7 libre', grade: '6', categories: CATEGORIES, created_by: teacher.id })
+				.insert({ title: 'A7 libre', grade: '6', items: CATEGORIES, created_by: teacher.id })
 				.select('id')
 				.single();
 			const { data } = await teacher.client
@@ -597,7 +597,7 @@ describe('séries et évaluations (20260930130000)', () => {
 				.insert({
 					title: 'Série de l’admin',
 					grade: '6',
-					categories: CATEGORIES,
+					items: CATEGORIES,
 					created_by: admin.id
 				})
 				.select('id')

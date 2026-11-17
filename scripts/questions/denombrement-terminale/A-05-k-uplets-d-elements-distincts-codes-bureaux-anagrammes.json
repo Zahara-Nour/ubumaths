@@ -1,10 +1,8 @@
 {
+	"id": "0965c56c-7808-4698-8c1f-8124d3a6505d",
 	"title": "k-uplets d'éléments distincts : codes, bureaux, places, anagrammes",
 	"description": "Arrangements n!/(n − k)! et permutations n! en situation : code sans chiffre répété, bureau à rôles, places dans une rangée, anagrammes (pièges : nᵏ, combinaison au lieu d'arrangement)",
 	"grades": ["T_SPE"],
-	"theme": "Probabilités",
-	"domain": "Dénombrement",
-	"subdomain": "Arrangements et permutations",
 	"level": 2,
 	"status": "draft",
 	"delay": 60,

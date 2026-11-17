@@ -1,5 +1,5 @@
 /**
- * Repère à points à placer à l'écran (chantier `docs/wip/points-repere-progress.md` § 3, lot 1)
+ * Repère à points à placer à l'écran (chantier `docs/archive/wip/points-repere-progress.md` § 3, lot 1)
  *
  * Rendu dans <main> : décor réel de l'application (`app.css` y impose des règles).
  */
@@ -397,8 +397,6 @@ describe('FillBlanksInput — repère à placer', () => {
 					}
 				],
 				grades: ['CP'],
-				theme: 'Test',
-				domain: 'Test',
 				level: 1
 			} as QuestionTemplate,
 			42

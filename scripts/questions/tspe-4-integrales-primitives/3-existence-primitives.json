@@ -1,10 +1,8 @@
 {
+	"id": "31defbfe-6b65-4b30-9c42-f60eab110f23",
 	"title": "Existence de primitives d'une fonction continue",
 	"description": "Toute fonction continue sur un intervalle admet des primitives, même sans expression explicite (pièges : pas de formule donc pas de primitive, une seule primitive, fonction non définie sur l'intervalle)",
 	"grades": ["T_SPE"],
-	"theme": "Primitives et équations différentielles",
-	"domain": "Primitives",
-	"subdomain": "Notion de primitive",
 	"level": 4,
 	"delay": 60,
 	"status": "draft",

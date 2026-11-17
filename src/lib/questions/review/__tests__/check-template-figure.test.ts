@@ -55,8 +55,6 @@ function figureTemplate(
 			}
 		],
 		grades: ['CP'],
-		theme: 'Géométrie',
-		domain: 'Tracés',
 		level: 1,
 		testSpecs: [
 			{
@@ -238,8 +236,6 @@ function symmetryTemplate(xa: string): QuestionTemplate {
 			}
 		],
 		grades: ['CM1'],
-		theme: 'Géométrie',
-		domain: 'Symétrie',
 		level: 1,
 		testSpecs: [
 			{
@@ -304,8 +300,6 @@ function pointTemplate(xa: string): QuestionTemplate {
 			}
 		],
 		grades: ['6'],
-		theme: 'Géométrie',
-		domain: 'Symétrie',
 		level: 1,
 		testSpecs: [
 			{
@@ -337,6 +331,57 @@ describe('checkTemplate — point à placer (`verifier: point A’ = …`)', () 
 		expect(report.figures.failures.some((f) => f.errors[0].includes('déjà dans la figure'))).toBe(
 			true
 		);
+		expect(report.passed).toBe(false);
+	});
+});
+
+/** Le même modèle sur papier uni (lot 2b) : l'élève construit aux instruments */
+function plainPaperPointTemplate(xa: string, expression = 'symetrie(A, axe=d)'): QuestionTemplate {
+	const template = withFigure(pointTemplate(xa), [
+		['grille: 1\n', ''],
+		["point A' = symetrie(A, axe=d)", `point A' = ${expression}`]
+	]);
+	return {
+		...template,
+		testSpecs: [
+			{
+				description:
+					'construit : perpendiculaire à l’équerre, compas au pied, point à l’intersection',
+				variables: { xa: '2' },
+				answers: ['droite(2;5;-6;5)|cercle(6;5;2;5)|point(10;5)'],
+				expected: { status: 'correct' }
+			},
+			{
+				description: 'posé à l’œil',
+				variables: { xa: '2' },
+				answers: ['point(10.01;5)'],
+				expected: { status: 'incorrect' }
+			},
+			{
+				description: 'posé à l’œil pile au bon endroit, sans construction',
+				variables: { xa: '2' },
+				answers: ['point(10;5)'],
+				expected: { status: 'incorrect' }
+			}
+		]
+	};
+}
+
+describe('checkTemplate — point à construire sur papier uni (lot 2b)', () => {
+	it('modèle juste : importable, specs jugées par le vrai juge', () => {
+		const report = checkTemplate(plainPaperPointTemplate('1..4'), { instances: 10 });
+		expect(report.reasons).toEqual([]);
+		expect(report.specs.every((spec) => spec.passed)).toBe(true);
+		expect(report.passed).toBe(true);
+	});
+
+	it('autre chose qu’un symétrique sans quadrillage : NON importable', () => {
+		const report = checkTemplate(plainPaperPointTemplate('1..4', 'point(5, 4)'), {
+			instances: 5
+		});
+		expect(
+			report.figures.failures.some((f) => f.errors[0].includes('seulement un symétrique'))
+		).toBe(true);
 		expect(report.passed).toBe(false);
 	});
 });

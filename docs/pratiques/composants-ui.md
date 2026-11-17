@@ -35,6 +35,11 @@ Référence synthétique pour Claude : **composants UI obligatoires**, imports S
 | `onchange`                                                                   | `(value) => void`                                        | —             | Alias rétro-compatible                   |
 | `disabled`, `required`, `name`, `id`, `open`, `onOpenChange`, `contentProps` | —                                                        | —             | Passés à Bits UI                         |
 
+**Nom accessible et tests.** Le déclencheur a le rôle `combobox` (Bits UI ≥ 2.20) : son nom ne vient
+jamais de son contenu. Il vaut `triggerAriaLabel`, sinon `placeholder`, sinon la valeur affichée.
+`triggerAriaLabel` doit contenir la valeur choisie (« Avec la liste M ») : le `placeholder` seul ne
+l'annonce pas. Dans un test : `page.getByRole('combobox', { name: … })`, jamais `'button'`.
+
 ### Usages canoniques
 
 ```svelte
@@ -121,7 +126,7 @@ Règle tranchée par David le 2026-10-11. **Fichier** : `src/lib/components/navi
 
 **Où** : en haut de la page, **au-dessus du `h1`**, sur sa propre ligne. Le titre reste aligné avec le contenu et rien ne déborde sur mobile.
 
-**Où il mène** : à la **page parente, lue dans l'adresse de la page** — jamais `history.back()`, jamais `goto()` dans un `onclick`. Une page qui a deux parents possibles le dit dans son adresse : un exercice ouvert depuis une fiche porte `?fiche=<uuid>` (`worksheetReturnHref`, `src/lib/worksheets/exercise-edit-link.ts`) ; le journal d'un élève ouvert depuis l'accueil porte `?depuis=accueil`, une session de révision lancée depuis le Programme `?depuis=programme`, la page d'une notion ouverte depuis le deck « Programme » aussi, l'aperçu « vue élève » d'une affectation ouvert depuis un signalement `?depuis=signalement&signalement=<uuid>`, les copies par élève d'une affectation ouvertes depuis son aperçu `?depuis=apercu` (`src/lib/navigation/return-links.ts`, qui écrit le lien et le relit).
+**Où il mène** : à la **page parente, lue dans l'adresse de la page** — jamais `history.back()`, jamais `goto()` dans un `onclick`. Une page qui a deux parents possibles le dit dans son adresse : un exercice ouvert depuis une fiche porte `?fiche=<uuid>` (`worksheetReturnHref`, `src/lib/worksheets/exercise-edit-link.ts`) ; le journal d'un élève ouvert depuis l'accueil porte `?depuis=accueil`, depuis son suivi `?depuis=suivi`, le suivi d'un élève ouvert depuis l'analytique `?depuis=analytique&classe=<uuid>`, les résultats d'un contrôle ouverts depuis ce suivi `?depuis=suivi&eleve=<uuid>`, une session de révision lancée depuis le Programme `?depuis=programme`, la page d'une notion ouverte depuis le deck « Programme » aussi, l'aperçu « vue élève » d'une affectation ouvert depuis un signalement `?depuis=signalement&signalement=<uuid>`, les copies par élève d'une affectation ouvertes depuis son aperçu `?depuis=apercu` (`src/lib/navigation/return-links.ts`, qui écrit le lien et le relit).
 
 Pourquoi : la destination écrite dans le lien est la même après un lien partagé, dans un nouvel onglet ou après un rechargement, et le libellé peut l'annoncer avant le clic. Revenir là où on était, c'est le rôle du bouton retour du navigateur, que ce lien ne double pas.
 
@@ -257,6 +262,9 @@ let content = $state('');
 
 Props clés : `preset` (`'full'` par défaut), `toolbar`, `minHeight`, `maxHeight`, `disabled`, `imageUpload`, `onchange`.  
 Section « Insertion » de la barre : droite graduée, tableau de variation, arbre de probabilité, cercle trigonométrique, QR code (bloc ubumark ` ```qr ` prérempli, sans nœud TipTap dédié).  
+Section « Formule » : formule en ligne, modèles, bloc `$$...$$`, et **« Calcul aligné »** (calcul centré `array{rcl}` d'une ligne, curseur dedans ; Cmd+Entrée y ajoute une ligne — voir [ubumark § Formules](../systeme/ubumark.md#formules)).  
+Création : l'éditeur TipTap naît dans `onMount`, après `await import('mathlive')` (le créer dès le montage changeait le moment où il apparaît : essayé et retiré, #2423) ; d’ici là la barre (et le bouton markdown) est inerte et « Chargement de l’éditeur… » s’affiche, annoncé par une région `role="status"` toujours présente. Import NU de MathLive en tête (`import 'mathlive'`, jamais d’import nommé) : côté serveur `mathlive` résout vers `mathlive-ssr`, sans `MathfieldElement` — garde : `__tests__/mathlive-imports-ssr.test.ts`. Si la création lève, la barre reste inerte et « L'éditeur n'a pas pu se charger » propose de recharger la page (`role="alert"`) au lieu d'un éditeur muet.  
+Lire le contenu à l'envoi (`bind:this`, puis `getMarkdown()`) : vérifier d'abord `isReady()`. Tant que l'éditeur n'est pas créé (chargement en cours, ou échec), `getMarkdown()` rend `''` — l'enregistrer effacerait le contenu ; garder alors le contenu chargé (cahier de texte, `editorText`).  
 Pour l'affichage seul : `RichTextDisplay.svelte` (pas d'éditeur).
 
 ---
@@ -305,4 +313,4 @@ import {cn} from '$lib/utils';
 
 > Voir aussi : [best-practices.md](svelte-typescript.md) · [quality-standards.md](qualite.md) · [architecture.md](../systeme/architecture-generale.md).
 
-Vérifié contre le code le 2026-10-10 ; retour de la page d’une notion le 2026-10-21.
+Vérifié contre le code le 2026-10-10 ; retour de la page d’une notion le 2026-10-21 ; bouton « Calcul aligné » le 2026-11-05 ; chargement et échec de création de l’éditeur le 2026-11-06 ; `isReady()` le 2026-11-06.

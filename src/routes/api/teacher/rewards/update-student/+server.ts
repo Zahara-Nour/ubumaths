@@ -8,6 +8,7 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { requireRoles } from '$lib/server/middleware/auth';
 import { z } from 'zod';
 import { createServerLogger } from '$lib/utils/logger';
 
@@ -21,15 +22,8 @@ const schema = z.object({
 });
 
 export const POST: RequestHandler = async ({ request, locals }) => {
-	const { user, profile } = locals;
-
-	if (!user) {
-		throw error(401, 'Authentication required');
-	}
 	// SECURITY (finding M5): teacher/admin only (defense in depth over the RPC guard).
-	if (profile?.role !== 'teacher' && profile?.role !== 'admin') {
-		throw error(403, 'Réservé aux enseignants');
-	}
+	const { user } = await requireRoles(locals, ['teacher', 'admin']);
 
 	// Validate input
 	const validation = schema.safeParse(await request.json());

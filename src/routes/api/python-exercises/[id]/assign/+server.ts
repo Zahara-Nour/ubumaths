@@ -5,6 +5,7 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { requireRole } from '$lib/server/middleware/auth';
 import {
 	assignExerciseSchema,
 	type AssignExerciseInput
@@ -27,22 +28,8 @@ type ZodIssue = { path: (string | number)[]; message: string };
  */
 export const POST: RequestHandler = async ({ locals, params, request }) => {
 	const exerciseId = validateUuidParam(params.id);
-	const { user, supabase } = locals;
-
-	if (!user) {
-		throw error(401, 'Connexion requise');
-	}
-
-	// Verify teacher role
-	const { data: profile, error: profileError } = await supabase
-		.from('profiles')
-		.select('role')
-		.eq('id', user.id)
-		.single();
-
-	if (profileError || !profile || profile.role !== 'teacher') {
-		throw error(403, 'Réservé aux professeurs');
-	}
+	const { user } = await requireRole(locals, 'teacher');
+	const { supabase } = locals;
 
 	// Verify exercise exists
 	const { data: exercise, error: exerciseError } = await supabase

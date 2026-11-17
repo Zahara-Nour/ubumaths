@@ -6,6 +6,8 @@
 		Gamepad2,
 		PenTool,
 		Terminal,
+		Turtle,
+		Blocks,
 		Calculator,
 		Laugh,
 		FlaskConical,
@@ -39,6 +41,10 @@
 				icon: Terminal,
 				roles: ['student', 'teacher']
 			},
+			// La Tortue (chantier blockly, PR 3) : publique, aucune donnée serveur
+			{ label: 'La Tortue', href: '/tortue', icon: Turtle },
+			// Programmes de calcul (chantier blockly) : publique, aucune donnée serveur
+			{ label: 'Programmes de calcul', href: '/programmes-de-calcul', icon: Blocks },
 			{ label: 'Upsilon', href: '/upsilon', icon: Calculator },
 			// Sans `roles` : l'atelier, Automaths et le Shtam ne lisent aucune donnée serveur
 			// réservée, ils sont donc ouverts, y compris hors connexion.

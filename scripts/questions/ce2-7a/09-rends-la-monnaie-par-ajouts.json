@@ -1,10 +1,8 @@
 {
+	"id": "91805d1e-10ea-40ed-ab39-8a55c576d27e",
 	"title": "Rends la monnaie par ajouts",
 	"description": "Rendre par ajouts successifs (3,68 € payé 5 € : 32 c puis 1 €), puis donner le total rendu sur 5 €, 10 €, 20 € et 50 €",
 	"grades": ["CE2"],
-	"theme": "Grandeurs",
-	"domain": "Monnaie",
-	"subdomain": "Rendre la monnaie",
 	"level": 5,
 	"delay": 120,
 	"status": "draft",

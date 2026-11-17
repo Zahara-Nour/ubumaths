@@ -134,6 +134,7 @@
 	}
 
 	let { initialZone = null }: Props = $props();
+	const uid = $props.id();
 
 	const atelier = useAtelier();
 
@@ -402,8 +403,15 @@
 		return skipped === '' ? main : `${main} · ${skipped}`;
 	}
 
-	const summaryId = (name: string) => `atelier-apercu-${name}`;
-	const chartMessageId = (name: string) => `atelier-diagramme-${name}`;
+	// Les id ne reprennent pas le nom de la liste (texte saisi) : un id peut partir
+	// dans `error_logs` (cible d'une interaction lente, `inp-tracker.ts`)
+	const listNumbers = new Map<string, number>();
+	function listNumber(name: string): number {
+		if (!listNumbers.has(name)) listNumbers.set(name, listNumbers.size);
+		return listNumbers.get(name) ?? 0;
+	}
+	const summaryId = (name: string) => `${uid}-apercu-${listNumber(name)}`;
+	const chartMessageId = (name: string) => `${uid}-diagramme-${listNumber(name)}`;
 
 	// -------------------------------------------------------------------------
 	// Sélection et frappe

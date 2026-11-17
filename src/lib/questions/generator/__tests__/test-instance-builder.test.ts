@@ -20,8 +20,6 @@ function makeTemplate(
 		status: 'draft',
 		variations: [variation],
 		grades: ['6'],
-		theme: 'Test',
-		domain: 'Test',
 		level: 1,
 		...overrides
 	};
@@ -93,8 +91,6 @@ describe('generateInstanceWithFixedVariables', () => {
 				}
 			],
 			grades: ['6'],
-			theme: 'Test',
-			domain: 'Test',
 			level: 1
 		};
 
@@ -122,8 +118,6 @@ describe('generateInstanceWithFixedVariables', () => {
 				}
 			],
 			grades: ['6'],
-			theme: 'Test',
-			domain: 'Test',
 			level: 1
 		};
 

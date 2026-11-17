@@ -1,10 +1,8 @@
 {
+	"id": "0f5d9ad8-4676-432e-88aa-d8f6fff43184",
 	"title": "Comparaison multiplicative : fois plus, fois moins",
 	"description": "Une trottinette 4 fois plus chère qu'un casque à 32 € ; 4 fois moins cher ; « fois plus » et « de plus » dans le même énoncé",
 	"grades": ["CE2"],
-	"theme": "Entiers",
-	"domain": "Problèmes",
-	"subdomain": "Comparaison",
 	"level": 3,
 	"delay": 90,
 	"status": "draft",

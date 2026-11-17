@@ -40,23 +40,15 @@
 
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { requireRole } from '$lib/server/middleware/auth';
 import type { StudentProfile, ClassMembership } from '$lib/types/student-cache';
 import { createServerLogger } from '$lib/utils/logger';
 
 const logger = createServerLogger('api/student/profile/+server');
 
 export const GET: RequestHandler = async ({ locals }) => {
-	const { user, profile, supabase } = locals;
-
-	// Auth check: Must be logged in
-	if (!user || !profile) {
-		throw error(401, 'Authentication required');
-	}
-
-	// Auth check: Must be a student
-	if (profile.role !== 'student') {
-		throw error(403, 'This endpoint is only accessible to students');
-	}
+	const { user, profile } = await requireRole(locals, 'student');
+	const { supabase } = locals;
 
 	try {
 		// Fetch active class memberships with class details.

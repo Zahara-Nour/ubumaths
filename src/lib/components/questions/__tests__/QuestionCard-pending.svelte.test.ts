@@ -16,8 +16,6 @@ function choiceQuestion(): QuestionInstance {
 		templateId: 'tpl-choix',
 		statement: resolvedMarkdown('Combien font 2 + 2 ?\n\n```choix\ncase: 0\n- 3\n- 4\n```'),
 		grades: ['6'],
-		theme: 'Entiers',
-		domain: 'Calcul',
 		level: 1,
 		generatedAt: new Date().toISOString(),
 		blanks: [

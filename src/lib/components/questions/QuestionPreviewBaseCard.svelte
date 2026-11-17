@@ -58,6 +58,8 @@
 
 	interface Props {
 		instance: QuestionInstance;
+		/** Chemin dans l'arbre des notions, fourni par l'appelant ; absent = rien d'affiché */
+		path?: string | null;
 
 		// Display options
 		truncateStatement?: boolean; // Truncate statement text
@@ -88,6 +90,7 @@
 
 	let {
 		instance,
+		path = null,
 		truncateStatement = false,
 		statementMaxLength = 200,
 		showDescription = true,
@@ -274,23 +277,13 @@
 					</Collapsible.Trigger>
 
 					<Collapsible.Content class="space-y-3 px-2">
-						<!-- Theme, Domain, Subdomain -->
-						<div class="space-y-1 text-sm">
-							<div class="flex items-center gap-2">
-								<span class="font-medium text-muted-foreground">Thème:</span>
-								<span>{instance.theme}</span>
+						<!-- Chemin dans l'arbre des notions -->
+						{#if path}
+							<div class="flex items-center gap-2 text-sm">
+								<span class="font-medium text-muted-foreground">Rangé dans:</span>
+								<span>{path}</span>
 							</div>
-							<div class="flex items-center gap-2">
-								<span class="font-medium text-muted-foreground">Domaine:</span>
-								<span>{instance.domain}</span>
-							</div>
-							{#if instance.subdomain}
-								<div class="flex items-center gap-2">
-									<span class="font-medium text-muted-foreground">Sous-domaine:</span>
-									<span>{instance.subdomain}</span>
-								</div>
-							{/if}
-						</div>
+						{/if}
 
 						<!-- Grades -->
 						<div class="flex items-center gap-2">

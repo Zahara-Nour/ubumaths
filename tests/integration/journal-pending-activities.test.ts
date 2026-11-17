@@ -113,9 +113,6 @@ async function makeTaggedTemplate(pointIds: string[], notionId: string): Promise
 			type: 'fill_in_blanks',
 			grades: [TEST_GRADE],
 			classification_node_id: notionId,
-			theme: `Thème ${crypto.randomUUID().slice(0, 8)}`,
-			domain: 'Domaine',
-			subdomain: null,
 			level: 1,
 			variations: [{ blanks: [{ expectedAnswer: '2' }], statement: 'Calculer $1 + 1 = ?$' }]
 		} as never)

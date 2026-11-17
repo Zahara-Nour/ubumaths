@@ -6,18 +6,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2221._
+_Mis à jour le 2026-11-08, après #2477 : lot 12b publié. Chantier EN PAUSE, en attente d'outil._
 
-- **État** : lots 1 à 7a en prod. Lot 7b (horloge + droite graduée, 9 modèles, `scripts/questions/ce2-7b/`) : fichiers mergés
-  (#2221), **pas encore en prod**. Jouées dans l'aperçu local : 01, 04, 09 ; restent 03, 05-08 (page à cocher).
-- **Prochaine action** : David lance `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/ce2-7b --publier`
-  (brouillons en prod) ; je relève les `id`, puis migration nœud + tag (`pnpm migration:horodatage`, gabarit lot 7a) et son
-  test rouge sans la migration, `security-auditor`, merge, `db:migrate`, page à cocher, publication. Ensuite 7c.
-- **En attente de David** : la commande `--publier` ci-dessus.
-- **Pièges en cours** : jamais de variable `e` (Euler) ; `sonde-horloges.ts` (blocs `horloge` / `line`, choix compris) à
-  relancer si on retouche un modèle ; niveaux : lecture de l'heure 5-8, calcul de durées 5-7 (6e occupe déjà 5-8), droite
-  graduée 2-3 ; `Doc-inchangée:` dans un MESSAGE DE COMMIT ; commitlint : sujet en minuscule, corps ≤ 100 caractères.
-- **Worktree / branche** : aucun (retirés après #2221).
+- **État** : lots 1 à 12b publiés (12b : 4 modèles CE2-070, 2 modèles CE1-072). Restent au CE2 : 086, 043, 051, 065
+  (non évaluables sans manipulation) et 039, plus les constructions cotées en cm de 070 (règle graduée, n° 18).
+- **En attente** : `outils-manquants.md` n° 18, règle graduée (« à décider avec David » ; `feat/regle-graduee` citée).
+- **Prochaine action** : à la reprise, regarder la section « Livré » de `outils-manquants.md` ; n° 18 livré → 039 et
+  070 coté. Vérification manuelle du lot 12b dans `verifications-manuelles.md` (relecture non prouvée).
+- **Pièges en cours** : coordonnées en flottants → arrondies (garde de complexité) ; `db:migrate` depuis un worktree :
+  copier `supabase/.temp/{project-ref,linked-project.json,pooler-url}` ; commitlint : corps ≤ 100 caractères par ligne.
+- **Worktree / branche** : `../ubumaths-wt-questions-ce2`, HEAD détaché sur `origin/main` (aucune branche en cours).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -629,3 +627,466 @@ de durées noté, publiés intacts) ; horloge « digitale » = texte + `cadran: 
 
 - 2026-11-02 : #2221 mergée (CI verte, revue : aucune, contenu) ; worktree retiré. 9 modèles écrits (130 specs), simulation
   verte, sonde 0 problème (300 tirages × 9). Aperçu local : 01, 04, 09 bien rendus ; 09 réponse juste → « Juste ».
+- 2026-11-05 : les 9 brouillons sont en prod (créés pendant le chantier `automaths-arbre`) ; relevé MCP : `draft`, CE2,
+  niveaux 5, 6, 7, 8, 5, 6, 7, 2, 3, sans nœud ni point. Points 057, 058 → « Durées › lecture de l'heure » ; 059, 094 →
+  « Durées › calcul de durées » ; 010 → « Entiers : numération › droite graduée » (relevé du jour). Migration
+  `20261105054151_questions_ce2_lot7b_rangement_tags` (gabarit 7a) et test
+  `tests/integration/questions-ce2-lot7b-rangement-tags.test.ts` : rouge sans le corps (5 échecs sur 9), vert avec (9/9).
+- 2026-11-05 : `security-auditor` : aucun finding. #2387 mergée (CI verte après relance : un test client de la démo diaporama
+  tombé sur « Browser connection was closed », sans lien avec la PR) ; `check:migrations --pr 2387` ok ; `db:migrate`
+  depuis le worktree (dry-run : seule la mienne ; le dépôt principal avait des fichiers modifiés d'une autre session) ;
+  relevé MCP : les 9 rangés, un point chacun, `draft`, `updated_at` du 2026-11-02 inchangé.
+- 2026-11-05 : relevé MCP suivant : les 9 sont `published` (même `updated_at`, 07:07:34, quatre minutes après le merge),
+  sans que 02, 03, 05-08 aient été joués à l'écran. Page à cocher publiée après coup :
+  https://claude.ai/artifact/JdCbHActB2vzgTsasDxN4b (capacité `db`, 9 fiches ; alerte « bloc `line` non dessiné » sur 08 et
+  09). Worktree et branche supprimés.
+
+## 13. Lot 7c — statistiques (phase 0, proposée le 2026-11-05, à valider)
+
+Points CE2-074, 075, 076, 083, 096, 097, sans modèle au relevé MCP du 2026-11-05 ; **082 aussi** (classé « outil neuf :
+barres à monter » au § 3, mais l'outil est en prod depuis le 2026-10-28 : `placer:` du bloc `barres`, et `axe: à choisir`
+pour l'échelle adaptée du BO). Nœuds existants, aucun à créer :
+« Représenter des données › tableaux » (074 ; CP 1, CE1 2, 6e 1 et 3, 5e 3-5), « › tableau à double entrée » (075, 096 ;
+CP 1-2, CE1 3-4), « › diagrammes en barres » (083, 097, 082 ; CE1 1-3, 5e 4-5), « Statistiques › Représenter des données »
+(076 : son point est sur le nœud parent ; 2de 1-2). Le CE1 (lot `ce1-7`) a déjà la cantine et le sport préféré : le CE2
+monte les nombres, gradue l'axe de 2 en 2, 5 en 5, 10 en 10, et ajoute les totaux.
+
+| Fichier                               | Point | Nœud · niveau               | Variations                                                                                |
+| ------------------------------------- | ----- | --------------------------- | ----------------------------------------------------------------------------------------- |
+| `01-ranger-les-donnees-en-tableau`    | 074   | Tableaux · 3                | liste de 15 à 25 réponses (frères et sœurs, âge) → effectifs du tableau en cases `$?$`    |
+| `02-lire-un-tableau-double-entree`    | 075   | Tableau double entrée · 5   | 3 × 4, nombres jusqu'à 200 ; une case nommée par sa ligne et sa colonne                   |
+| `03-interpreter-un-tableau`           | 096   | Tableau double entrée · 6   | le jour où il y a le plus / le moins (case choix), combien de plus, sans totaux           |
+| `04-completer-un-tableau-avec-totaux` | 076   | Représenter des données · 1 | `totaux: oui`, cases cachées : une case, un total, une case retrouvée par le total        |
+| `05-completer-une-barre-par-le-total` | 076   | Représenter des données · 2 | total donné (175 élèves, BO) ; barre manquante à construire (`placer:`), puis à calculer  |
+| `06-lire-un-diagramme-gradue`         | 083   | Diagrammes en barres · 4    | axe de 2 en 2, 5 en 5, 10 en 10 ; barre sur une graduation, puis entre deux (5 en 5 → 35) |
+| `07-comparer-sur-un-diagramme`        | 097   | Diagrammes en barres · 5    | combien de plus (BO : foot / basket), combien en tout, le plus choisi (case choix)        |
+| `08-construire-un-diagramme-echelle`  | 082   | Diagrammes en barres · 6    | tableau donné, effectifs jusqu'à 60 ; `axe: à choisir` puis barres à monter               |
+
+Erreurs typiques des `testSpecs` : graduation lue comme un pas de 1 (axe de 5 en 5 : 7 pour 35) ; total de ligne pris pour
+une case ; écart lu comme la plus grande barre ; échelle trop fine (barres qui ne rentrent pas).
+
+**Question d'accès** : personne ne lit rien de plus (brouillons, admin seul) ; la migration nœud + tag ne change aucune règle.
+
+Décisions (David, « je suis tes recos », 2026-11-05) : niveaux partagés (diagrammes 4-6 avec la 5e ; 076 aux niveaux 1-2
+avec la 2de, sur le nœud parent) ; 082 dans ce lot (outil en prod) plutôt qu'en « outils neufs ».
+
+- 2026-11-05 : 8 modèles écrits (`docs/wip/questions/lot-ce2-7c.py`, gabarit `lot-ce1-7.py`, sans theme / domain /
+  subdomain), simulation verte (76 specs). Essai en base locale (`.env.local`, copie du dossier pour ne pas écrire les `id`
+  locaux dans les fichiers), aperçu admin : 05 barre du basket montée à 45 → « Juste » ; 08 échelle 5 → axe 0-50 ; 04 deux cases
+  cachées (ligne Bus, total des filles) bien rendues ; 06 « entre deux traits » : une barre de 5 sur un axe de 100 illisible →
+  effectifs 15 à 75, axe 0-80. 08 : la plus grande barre était toujours la première → toutes tirées, condition sur `max`.
+- 2026-11-05 : #2393 mergée (CI verte ; revue : aucune, contenu).
+- 2026-11-05 : relecture de David sur la page à cocher (`UMiJFDZijXarjtMGoZZXPg`) : 8 verdicts « OK », sans
+  commentaire (base `verdicts` comptée), posés en 9 s (12:12:29 à 12:12:38). Simulation `publier-lot` refusée à Claude
+  par le classifieur du mode auto (accès prod) : à lancer par David.
+- 2026-11-05 : simulation puis `--publier` (David) : 8/8 publiés ; relevé MCP : 8 `published`, `grades` CE2, rangés, un
+  point chacun (074, 075, 096, 076 ×2, 083, 097, 082). Worktree retiré. **Lot 7c clos.**
+
+## 14. Relevé après le lot 7c et lot 8 — figures planes et symétrie (phase 0 validée le 2026-11-05)
+
+Relevé MCP (prod, 2026-11-05) : **28 points CE2 sans modèle** — 001, 002 (`collection` `centaines:`, outil C) ;
+D : 086, 039, 043, 051, 065, 070 ; longueurs et masses : 012, 040, 041, 042, 044, 049, 050 ; solides : 061, 062,
+063, 064, 066 ; figures planes : 067, 068, 095, 069, 071, 081 ; symétrie : 072, 073.
+
+Outils depuis le § 4 bis : case `choix` en prod (les QCM ne sont plus bloqués, décision 6 remplie) ; contrôle
+`symetrique par d` de ` ```figure-a-completer ` en prod (0.69.0, quadrillage `grille:`) → **073 passe de C à B**.
+Pas de papier pointé (quadrillage seul).
+
+Découpage proposé : **lot 8 figures planes et symétrie** (8 points) → lot 9 longueurs, fraction de l'unité et masses
+(012, 040, 041, 042, 044, 049, 050) → lot 10 solides (061 à 064, 066) → chantier à part `collection` `centaines:`
+(001, 002, matériel de 005).
+
+Rangement (prod) : 067, 068, 095, 069, 081 sur « Géométrie › Figures planes › propriétés » (niveaux 1 à 5 pris, CP et
+CE1) ; 071 sur « … › angles droits » (1, 2 pris, CE1) ; 072, 073 sur la notion « Géométrie › Symétrie axiale » (aucun
+modèle, aucune sous-notion ; 8 points de CE2 à 6e y sont attachés ; 153 modèles de la base sont déjà rangés sur une
+notion).
+
+| Fichier                           | Point   | Catégorie · niveau              | Variations                                                                                                                                                                                                                 |
+| --------------------------------- | ------- | ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `01-quelle-est-cette-figure`      | CE2-068 | Figures planes · propriétés · 6 | carré, rectangle, triangle, triangle rectangle, **losange** (choix) ; losange sur la pointe, carré sur la pointe (angles droits codés), losange presque carré, rectangle allongé                                           |
+| `02-decrire-la-figure`            | CE2-095 | propriétés · 7                  | côtés, sommets, angles droits des 5 figures, losange compris (0) → [_] ; « qui suis-je ? » (4 côtés égaux, aucun angle droit → losange) (choix)                                                                            |
+| `03-carre-rectangle-losange`      | CE2-069 | propriétés · 8                  | phrase vraie (choix) : côtés égaux, côtés opposés égaux, 4 angles droits ; figure codée (côtés et angles) → son nom (choix) ; ce qui manque au losange pour être un carré (choix)                                          |
+| `04-le-bon-mot`                   | CE2-067 | propriétés · 9                  | élément en couleur : diagonale, rayon, diamètre, centre, milieu, longueur / largeur du rectangle (choix) ; nombre de côtés → triangle, quadrilatère, pentagone, hexagone (choix)                                           |
+| `05-le-code-des-longueurs`        | CE2-081 | propriétés · 10                 | quels segments ont la même longueur ? (choix) ; rectangle codé : [AB] = 6 cm, [CD] = ? → [_] ; quelle figure est bien codée ? (choix de dessins)                                                                           |
+| `06-utiliser-le-code-angle-droit` | CE2-071 | angles droits · 3               | quadrilatère aux angles codés : lesquels sont droits (choix des sommets) ; angle qui « a l'air » droit mais non codé ; codes de longueurs et d'angles → nom de la figure (choix)                                           |
+| `07-est-ce-un-axe`                | CE2-072 | Symétrie axiale · 1             | figure + droite tracée : est-ce un axe de symétrie ? oui / non — losange et sa diagonale (oui), rectangle et sa diagonale (non, piège), cerf-volant, lettres A, H, N, flèche ; quelle figure a un axe ? (choix de dessins) |
+| `08-combien-d-axes`               | CE2-072 | Symétrie axiale · 2             | carré 4, rectangle 2, losange 2, cerf-volant 1, triangle à deux côtés égaux 1, triangle aux trois côtés égaux 3 (montrés, jamais nommés), parallélogramme 0 → [_]                                                          |
+| `09-complete-par-symetrie`        | CE2-073 | Symétrie axiale · 3             | quadrillage, axe vertical ou horizontal ; la moitié d'une figure (maison, sapin, flèche, vase, 3 à 6 segments) contre l'axe → l'élève trace l'autre moitié (`symetrique par d`) ; v1 : figure écartée de l'axe             |
+
+Erreurs typiques des `testSpecs` : losange pris pour un carré (et l'inverse) ; triangle rectangle → « rectangle » ;
+diagonale / côté, rayon / diamètre confondus ; diagonale du rectangle prise pour un axe ; carré à 2 axes (médianes
+seules) ; figure glissée au lieu de retournée (message du juge).
+
+**Question d'accès** : personne ne lit rien de plus — modèles neufs en brouillon (admin seul) ; la migration nœud +
+tag ne change aucune règle.
+
+### Questions à David
+
+1. **Noms au 068** : même convention qu'au CE1 — le nom le plus précis est seul juste ; « rectangle » et « losange »
+   restent des leurres d'un carré, jamais « triangle » avec « triangle rectangle ». Recommandation : oui.
+2. **Symétrie axiale** : modèles rangés sur la notion elle-même (niveaux 1 à 3), là où sont les points ; pas de
+   sous-notion créée (le CM1, le CM2 et la 6e prendront 4 et suivants). Recommandation : oui.
+3. **Papier pointé** (073) : absent ; quadrillage seul, sans outil neuf. Recommandation : oui.
+4. **Figures du 072** : cœur, pique, trèfle (courbes) non dessinés ; figures à côtés droits (carreau = losange,
+   cerf-volant, rectangle, panneaux, lettres en segments). Recommandation : oui.
+5. **Découpage** : lot 8 ici, puis 9 (longueurs, masses), 10 (solides), puis `collection` `centaines:`. Recommandation : oui.
+
+Réponse de David (« je te suis », 2026-11-05) : les cinq recommandations.
+
+### Lot 8 — écriture (2026-11-05)
+
+- Script `docs/wip/questions/lot-ce2-8.py` → `scripts/questions/ce2-8/` : 9 modèles, 105 specs ; `create-questions`
+  en simulation (prod) : 9 « à créer » ; `question:specs` 200 tirages par variation, verts, 0 `\textcolor` hors `$` ;
+  `sonde-figures` : 0 problème. 9 brouillons en base locale, joués dans l'aperçu admin (symétrique de la flèche tracé
+  au segment : « Juste »).
+- Rendu relu (page d'essai locale + aperçu) ; corrigé en route : un dessin dans un choix est rapetissé et le code de
+  l'angle droit y devient invisible (`arcRadiusPx` sans effet) → « Quel triangle est rectangle ? » en **une figure à
+  trois triangles numérotés** ; dessins des choix en fenêtre serrée et `taille: grande` ; trapèze codé : codes sur
+  ses côtés obliques égaux (et non sur deux côtés visiblement inégaux) ; parallélogramme du 08 plus franc.
+- Pièges : la page à cocher n'affiche pas l'italique `_…_` (l'appli oui, vu dans l'aperçu) ; la sonde ne passe pas les
+  figures d'un choix (seul le rendu les voit) ; `{{if}}` autour d'un bloc `choix` refusé (« bloc non fermé ») : faire
+  varier le contenu d'une figure, jamais le bloc.
+- CI #2408 rouge : la garde `answer-complexity-corpus` veut chaque réponse de spec ≤ 133 caractères (limite 400,
+  marge × 3) ; le château du 09 (11 segments, 189 caractères) → une tour de 6 segments (105 au plus).
+- 2026-11-05 : #2408 mergée (CI verte après la correction).
+- 2026-11-05 : `create-questions --publier` (David) : 9 brouillons en prod, relus au MCP (draft, CE2, niveaux 6 à 10,
+  3, 1 à 3 ; specs complètes ; sans nœud ni tag ; `updated_at` = `created_at`) ; ids commités. Migration
+  `20261105201824_questions_ce2_lot8_rangement_tags` + test : rouge sans le corps (6 échecs sur 10), vert 10/10 ;
+  `security-auditor` : aucun finding bloquant (diff avec la 7c : valeurs seules ; chemins et points vérifiés en prod).
+- 2026-11-05 : #2409 mergée (CI verte, intégration comprise ; `check:migrations --pr 2409` OK) ; `db:migrate` depuis le
+  dépôt principal (dry-run : la seule migration du lot) ; relevé MCP : 9/9 sur le nœud de leur point, un point chacun,
+  brouillons, `updated_at` intact. Page à cocher publiée (https://claude.ai/artifact/AkuQcXN5U1GitVZzWRbGsF), une
+  alerte attendue (09 non dessiné : le jouer dans l'aperçu), base `verdicts` vide.
+- 2026-11-05 : relecture de David sur la page à cocher : 9 verdicts « OK », sans commentaire (base `verdicts` comptée,
+  posés de 22:55:55 à 22:56:01). `publier-lot --publier` (David, depuis le dépôt principal) ; relevé MCP : 9
+  `published`, rangés, un point chacun. **Lot 8 clos.**
+
+## 15. Lot 9 — longueurs, fraction de l'unité, masses (phase 0 validée le 2026-11-06)
+
+Relevé MCP (prod, 2026-11-06) : 012, 040, 041, 042, 044, 049, 050 toujours sans modèle. Rangement : 012 → « Fractions :
+sens et écritures › droite graduée » (1 à 11 pris par CM1, CM2, 6e ; aucun CE2) ; 040, 041 → « Longueurs ›
+comparaison et mesure » (CE2 : 4) ; 042, 044 → « Périmètres » (un modèle de 2de) ; 049, 050 → « Masses › comparaison
+et mesure » (CE2 : 3). Aucun outil neuf : règle graduée en ` ```figure ` (CE1 `01-mesure-a-la-regle`), case « choix ».
+
+| Fichier                         | Point | Rangement · niveau CE2                | Variations                                                                                                                     |
+| ------------------------------- | ----- | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `01-regle-en-quarts`            | 012   | Fractions › droite graduée · 1        | unité u en 4 ou 8 ; segment → « [_] u + [_] u » (2 u + 1/4 u ; 7/8 u ; 1 u + 5/8 u)                                            |
+| `02-regle-en-dixiemes`          | 012   | droite graduée · 2                    | unité en 10 : segment juste (1 u + 3/10 u) ; bout entre deux graduations → encadrer entre deux dixièmes                        |
+| `03-longueurs-de-reference`     | 040   | Longueurs › comparaison et mesure · 5 | « mesure environ… ? » (choix) : 1 mm, 1 cm, 1 dm, 1 m, 2 m, 1 km (¼ h à pied), 100 km (1 h d'autoroute), ~1 000 km (la France) |
+| `04-estimer-une-longueur`       | 041   | comparaison et mesure · 6             | « plutôt… » : 3 choix au même chiffre (30 cm / 30 m / 30 km) ; objets et distances, mm à km                                    |
+| `05-qu-est-ce-que-le-perimetre` | 042   | Périmètres · 1                        | phrase juste (« longueur du tour ») ; tour en couleur / intérieur grisé ; deux figures sur quadrillage : le plus grand tour    |
+| `06-perimetre-a-la-regle`       | 044   | Périmètres · 2                        | polygone « démonté » : chaque côté (3 à 5) sur sa règle, au 0 puis non ; mesures puis périmètre ; aucune formule               |
+| `07-masses-de-reference`        | 049   | Masses › comparaison et mesure · 4    | « pèse environ… ? » (choix) : 1 g trombone, 100 g tablette, 1 kg bouteille d'1 L, 10 kg seau d'eau, 1 t voiture                |
+| `08-estimer-une-masse`          | 050   | comparaison et mesure · 5             | objets du BO (feuille, pomme, dictionnaire, seau d'eau, voiture ≈ 1 000 kg) ; 3 choix au même chiffre, g ou kg                 |
+
+Erreurs typiques des `testSpecs` : graduations comptées au lieu des parts ; 1/4 pris pour 1/8 ; encadrement renversé ;
+estimation à × 10 près ; périmètre pris pour l'intérieur ; côté oublié ou compté deux fois, départ de la règle non retiré.
+
+**Question d'accès** : personne ne lit rien de plus — modèles neufs en brouillon (admin seul) ; la migration nœud +
+tag ne change aucune règle.
+
+**Décisions (David, « tes recos ? » puis « ok », 2026-11-06)** :
+
+1. 044 : polygone démonté, chaque côté sur sa règle dessinée (pas de quadrillage).
+2. 040 : repères indépendants de l'école (¼ h à pied, 1 h d'autoroute, traversée de la France), pas « vers Paris ».
+3. 050 : g et kg seulement (voiture ≈ 1 000 kg) ; la tonne au 049.
+4. 012 : réponse « [_] u + [_] u », fraction dans la seconde case ; simplification coupée (2/8 juste pour 1/4).
+5. Un seul lot de 8 modèles, puis le lot 10.
+
+### Lot 9 — écriture (2026-11-06)
+
+- Script `docs/wip/questions/lot-ce2-9.py` → `scripts/questions/ce2-9/` : 8 modèles, 86 specs ; `create-questions` en
+  simulation (prod) : 8 « à créer » ; `question:specs` 200 tirages par variation, verts, 0 `\textcolor` hors `$` ;
+  `sonde-figures` : 0 problème. 8 brouillons en base locale (copies du dossier dans le scratchpad, pour ne pas écrire
+  d'id local dans les fichiers), rendu relu sur la page à cocher locale et dans l'aperçu.
+- Piège : `{{eval:…}}` rend un non-entier en fraction LaTeX (`\dfrac{9}{2}`), refusée comme coordonnée de figure →
+  helper `demi()` qui écrit « partie entière . 0 ou 5 » ; l'encadrement en dixièmes écrit ses centièmes de même.
+- Piège : la sonde exige une fenêtre de figure de rapport hauteur / largeur ≥ 1/4 (règles graduées : hauteur 3,6).
+- Corrigé en route : 05, dessins du choix « où voit-on le périmètre ? » — contour `gris` invisible sur fond sombre →
+  `noir` (suit le thème), tour, intérieur et côté en rouge.
+- 2026-11-06 : #2414 mergée (CI verte ; merge retardé par un `deploy:prod` en cours).
+- 2026-11-06 : `create-questions --publier` (David) : 8 brouillons en prod, relus au MCP (draft, CE2, niveaux 1, 2, 5,
+  6, 1, 2, 4, 5 ; specs complètes ; sans nœud ni tag ; `updated_at` = `created_at`) ; ids commités (les fichiers du
+  dépôt principal, où le script les avait écrits, rendus propres). Migration
+  `20261106050331_questions_ce2_lot9_rangement_tags` + test : rouge sans le corps (6 échecs sur 10), vert 10/10 ;
+  résolution des 8 chemins vérifiée en prod (nœud = celui du point). « Périmètres » a trois sous-notions (carré,
+  rectangle, disque) : admises par la garde, 042 et 044 vont sur la notion, où sont leurs points.
+- 2026-11-06 : `security-auditor` : aucun finding bloquant (diff avec le lot 8 : valeurs et sous-notions admises de « Périmètres » seulement ; rollback, gardes et octets de « carré » vérifiés en prod).
+- 2026-11-06 : #2418 mergée (CI verte, intégration comprise ; `check:migrations --pr 2418` OK) ; `db:migrate` depuis le
+  dépôt principal (dry-run : la seule migration du lot) ; relevé MCP : 8/8 sur le nœud de leur point, un point chacun,
+  brouillons, `updated_at` intact. Page à cocher publiée (https://claude.ai/artifact/Nkr73iMhHLraV8WjW4U7Qq), aucune
+  alerte, rendu vérifié à 390 px, base `verdicts` vide.
+- 2026-11-06 : relecture de David sur la page à cocher : 8 verdicts « ok », sans commentaire (base `verdicts` comptée).
+  Simulation `publier-lot` refusée à Claude par le classifieur ; simulation puis `--publier` (David) ; relevé MCP :
+  8/8 `published`, `grades` CE2. **Lot 9 clos.**
+
+## 16. Lot 10 — solides (phase 0 proposée le 2026-11-06, à valider)
+
+Relevé MCP (prod, 2026-11-06) : 061, 062, 063, 064, 066 sans modèle (065 reste en D). Existant sur « Solides ›
+propriétés » : CP 1 à 6 (dont 5 « Combien de faces ? » = 6 pour cube et pavé, 6 « toutes des carrés / toutes des
+rectangles », solides dessinés en ` ```figure `), CE1 7 (« Où est le solide ? », cylindre compris) et 8 (« Nommer un
+solide », **sans cylindre**). « Solides › patrons » : vide. Aucun outil neuf : ` ```solide ` (arêtes cachées en
+tirets, `marquer: face | arete | sommet`, nom accessible sans le nom du solide ; pyramide carrée, rectangle,
+triangle) et ` ```patron ` (cube : 11 vrais patrons, 8 faux, grille libre ; options d'un choix).
+
+| Fichier                       | Point | Rangement · niveau CE2   | Variations                                                                                                                                   |
+| ----------------------------- | ----- | ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `01-nomme-le-solide`          | 061   | Solides › propriétés · 9 | un solide dessiné → 6 choix (cube, pavé, boule, cône, pyramide, **cylindre**) ; pièges : pavé presque cube, cylindre couché, cône / pyramide |
+| `02-face-arete-sommet`        | 062   | propriétés · 10          | cube, pavé ou pyramide, un élément marqué (face grisée, arête épaisse, sommet pointé) → « C'est une face / une arête / un sommet »           |
+| `03-compter-faces-aretes`     | 062   | propriétés · 11          | « Combien de sommets ? d'arêtes ? de faces ? » → [_] : cube, pavé (8, 12, 6), pyramide carrée (5, 8, 5), à base triangle (4, 6, 4)           |
+| `04-faces-du-cube-et-du-pave` | 063   | propriétés · 12          | cube, pavé quelconque, pavé à base carrée : « [_] faces, dont [_] carrés » ; la face ABCD grisée est un carré / un rectangle                 |
+| `05-faces-de-la-pyramide`     | 064   | propriétés · 13          | pyramide carrée, rectangle, triangle : les faces de côté sont des… (triangles) ; la base est un… ; « [_] faces triangulaires »               |
+| `06-se-plie-en-cube`          | 066   | Solides › patrons · 1    | un assemblage de 6 carrés (vrai 1 à 11 / faux 1 à 8, tourné, retourné) → « Se plie en cube : oui / non »                                     |
+| `07-lequel-est-un-patron`     | 066   | patrons · 2              | « Lequel se plie en cube ? » : 3 assemblages, un vrai, deux faux (dont un à 5 carrés ou à 7 : le nombre de faces)                            |
+
+Erreurs typiques des `testSpecs` : faces cachées oubliées (3 au lieu de 6) ; arêtes cachées oubliées (9 au lieu de 12) ;
+sommet et arête inversés ; pyramide comptée comme un cube ; base de la pyramide prise pour un triangle ; pavé presque
+cube nommé cube ; cylindre nommé pavé ; faux patron 1-4-1 décalé jugé bon.
+
+**Question d'accès** : personne ne lit rien de plus — modèles neufs en brouillon (admin seul) ; la migration nœud +
+tag ne change aucune règle.
+
+**Questions à David** :
+
+1. 063, « dont [_] carrés » : un carré est aussi un rectangle. Recommandation : ne jamais demander « combien de
+   rectangles ? », seulement « combien de carrés ? » et « la face grisée est un carré / un rectangle » sur un pavé
+   quelconque (aucune face carrée), pour ne pas trancher la question à la place du maître.
+2. 066 : le geste `completer:` (ajouter la case qui manque) ou `designer: opposee` (face opposée) ? Recommandation :
+   pas au CE2 (l'exemple de réussite du BO = dire si c'est un patron) ; oui / non et « lequel ? » seulement.
+3. 062 et 063 : arêtes cachées toujours en tirets (comme le BO : « à identifier »). Recommandation : oui, jamais
+   `cachees: non`.
+4. Un seul lot de 7 modèles, puis le chantier à part `collection` `centaines:`.
+
+**Décisions (David, « tes recos ? » puis « je te suis », 2026-11-06)** :
+
+1. 063 : jamais « combien de rectangles ? » ; « combien de carrés ? », et « carré ou rectangle ? » sur un pavé
+   sans face carrée seulement.
+2. 066 : oui / non et « lequel ? » ; ni `completer:` ni `designer:`.
+3. Arêtes cachées toujours en tirets (jamais `cachees: non`).
+4. Un seul lot de 7 modèles, puis le chantier à part `collection` `centaines:`.
+
+### Lot 10 — écriture (2026-11-06)
+
+- Script `docs/wip/questions/lot-ce2-10.py` → `scripts/questions/ce2-10/` : 7 modèles, 72 specs ; `create-questions` en
+  simulation (prod) : 7 « à créer » ; `question:specs` 200 tirages par variation, verts, 0 `\textcolor` hors `$` ;
+  `sonde-cubes` : 3 600 blocs d'espace, 0 problème. 7 brouillons en base locale (copie du dossier dans le scratchpad),
+  rendu relu sur la page à cocher locale (solides) et dans l'aperçu (patrons, que la page à cocher ne dessine pas).
+- Corrigé en route : 02, l'arête marquée (trait épais) se distingue à peine → l'élément est aussi nommé dans la question
+  (« qu'est-ce que $AE$ ? ») ; 04, « dessinée penchée » faux pour la face de devant → phrase selon la face ; 05, base
+  carrée : plus de renvoi aux cotes (une seule cote de base).
+- Piège : la page à cocher ne dessine pas ` ```patron ` (06, 07) : David les joue dans l'aperçu admin.
+- 2026-11-06 : #2426 mergée (CI verte ; revue : aucune, contenu).
+- 2026-11-06 : `create-questions --publier` (David) : 7 brouillons en prod, relus au MCP (draft, CE2, niveaux 9 à 13,
+  1, 2 ; specs complètes ; sans nœud ni tag ; `updated_at` = `created_at`) ; ids portés sur la branche
+  `feat/questions-ce2-lot10-db` (fichiers du dépôt principal rendus propres). Migration
+  `20261106112702_questions_ce2_lot10_rangement_tags` + test : rouge sans le corps (5 échecs sur 9), vert 9/9 ;
+  chemins vérifiés en prod (061 à 064 → « Géométrie › Solides › propriétés », 066 → « … › patrons », sous-notions).
+- 2026-11-06 : `security-auditor` : aucun finding bloquant (diff avec le lot 9 : ids, codes, chemins, compte 7, listes
+  du rollback fermées). CI : job navigateur planté (`wrapDynamicImport`, connu), relancé, vert. #2428 mergée
+  (`check:migrations --pr 2428` OK) ; `db:migrate` depuis le dépôt principal (dry-run : la seule migration du lot) ;
+  relevé MCP : 7/7 sur le nœud de leur point, un point chacun, brouillons, `updated_at` intact. Page à cocher publiée
+  (https://claude.ai/artifact/1AQfsQ8V4KDKzE44M742tB), base `verdicts` vide ; patrons (06, 07) non dessinés sur la page.
+- 2026-11-06 : relecture de David sur la page à cocher : 7 verdicts « ok », sans commentaire (base `verdicts` comptée),
+  posés en 5 s (11:49:53 à 11:49:58). Simulation puis `--publier` (David) ; relevé MCP : 7/7 `published`, CE2, rangés,
+  un point chacun (061, 062 ×2, 063, 064, 066 ×2). **Lot 10 clos.** Reste au CE2 : 001, 002 (outil `centaines:`) et
+  les 6 points de la classe D.
+
+## 17. Lot 11 — dénombrer et construire avec le matériel multibase (phase 0 validée le 2026-11-06)
+
+Outil : `collection` `centaines:` / `milliers:` (#2420, **en prod depuis 0.75.0**) : plaques et gros cubes, grand bloc
+(plafonds milliers 9, centaines 40, dizaines 30, unités 100, valeur ≤ 9 999) ; `construire:` jusqu'à 9 999, réserve
+déduite de la valeur, seule la valeur jugée. Relevé MCP (2026-11-06) : 001 et 002 sans modèle, 005 en a un
+(`03-unites-non-canoniques`, texte seul). Un seul modèle publié utilise `collection` (`ded05f7c`, CP-002). Bornes
+(`cycle2.json`) : groupes de dix, cent ou mille ; plus de dix éléments d'une unité (17 u, 8 d, 32 c et 2 milliers).
+
+| Fichier                         | Point   | Variations                                                                                      |
+| ------------------------------- | ------- | ----------------------------------------------------------------------------------------------- |
+| `01-denombrer-centaines`        | CE2-001 | plaques, barres, cubes rangés (100 à 999) ; un rang vide (3 c 0 d 4 u) → « Combien de cubes ? » |
+| `02-denombrer-milliers`         | CE2-001 | gros cubes, plaques, barres, cubes (1 000 à 9 999) ; zéros intérieurs (2 m 0 c 5 d 0 u)         |
+| `03-denombrer-plus-de-dix`      | CE2-001 | un ou deux rangs au-delà de 9 (17 u, 8 d, 32 c, 2 m) ; corrigé par échanges (32 c = 3 m 2 c)    |
+| `04-construis-trois-chiffres`   | CE2-002 | `construire:` 100 à 999 ; avec un zéro (305, 470)                                               |
+| `05-construis-quatre-chiffres`  | CE2-002 | `construire:` 1 000 à 9 999 ; zéros intérieurs (3 045, 6 900)                                   |
+| `06-materiel-unites-numeration` | CE2-005 | collection dessinée → 4 cases « … milliers … centaines … dizaines … unités » ; puis le nombre   |
+
+Corrigé : la valeur de chaque rang puis la somme (2 000 + 3 200 + 80 + 17 = 5 297). Espaces dès 4 chiffres, comme le
+lot 2. Faux attendus : rangs confondus (plaques comptées comme barres), zéro intérieur oublié, rang au-delà de 9 recopié
+tel quel (« 2 32 8 17 »).
+
+Questions à David :
+
+1. **QCM « Quel dessin montre 4 635 ? »** (chiffres → matériel, 005) : piège connu du chantier `collection-centaines`,
+   un grand bloc dans un choix de QCM **imprimé** (3 cm) est illisible. Reco : pas de QCM dans ce lot (le sens
+   chiffres → matériel est couvert par 04-05) ; le piège reste dans `outils-manquants.md`.
+2. **Hauteur des dessins** : 32 plaques = 8 rangées de 4. Reco : au plus 20 centaines dans `03` (5 rangées), la
+   phrase du BO (32 c) restant dans le modèle texte `03-unites-non-canoniques` déjà publié.
+3. **Question d'accès** : personne ne lit rien de plus (brouillons neufs ; la migration nœud + tag ne change aucune
+   règle).
+
+Décision de David (2026-11-06, « je suis tes recos ») : pas de QCM de dessins ; au plus 20 centaines dans `03` ;
+question d'accès : rien de plus.
+
+### Lot 11 — écriture (2026-11-06)
+
+- `lot-ce2-11.py` → `scripts/questions/ce2-11/` (6 modèles, 46 specs) ; `create-questions` en simulation : tout vert.
+  Niveaux : 10 à 14 sur « dénombrement » (2 à 9 laissés au CP et au CE1), 20 sur « écritures ».
+- Sonde neuve `scripts/questions/sonde-collections.ts` (calquée sur `sonde-cubes`) : 1 800 blocs, 0 problème ; elle voit
+  bien un plafond dépassé (`centaines: 41`) et une valeur au-delà de 9 999 (essai à la main).
+- Mesuré : « Espaces dès 4 chiffres » rend `unoptimal_form` toute valeur posée par `construire:` à 4 chiffres (`4635`,
+  4 specs sur 7 rouges) → 04 et 05 sans l'option ; le nombre de l'énoncé de 05 est écrit groupé chiffre par chiffre
+  (`{{m}}\,{{c}}{{d}}{{u}}`, `{{m}}\,0{{d}}{{u}}`, `{{m}}\,{{c}}00`). À noter dans `outils-manquants.md` si David veut
+  que `construire:` ignore la règle des espaces.
+- 2026-11-09 : **c'est fait** (#2495, `outils-manquants` ex-n° 15) : une case `construire:` n'est plus jugée sur
+  sa forme. Reste à faire ici : `04` et `05` reprennent « Espaces dès 4 chiffres » et l'énoncé de `05` perd le
+  nombre groupé à la main (`{{m}}\,{{c}}{{d}}{{u}}` → nombre écrit normalement).
+- Corrigé en route : « petit cubes » → « petits cubes » ; listes « a, b et c » ; 06, plus de `$$…$$ dizaines`.
+- 6 brouillons en base locale (copie du dossier dans le scratchpad). Aperçu admin : Chrome figé (défilement sans effet,
+  capture inchangée) → modèles **pas encore joués à l'écran**.
+- Aperçu admin local (Chrome reconnecté) : 05 joué (4 001 → faux, « Ta collection vaut 4001. » ; 4 100 → juste,
+  correction lue) ; 03 joué (3697 sans espace → ½ point, « Les chiffres sont mal espacés ») ; 06 vu (5 cases) ; dessins
+  justes (gros cubes en perspective, plaques quadrillées). Corrigé en route : « gross cubes » → « gros cubes ».
+- Vu à l'écran : 16 plaques (03, variation 3) = 4 rangées, le dessin fait près de deux écrans à 540 px ; la carte de
+  correction le redessine dans un cadre à défilement propre.
+- Décision de David (2026-11-06, « je suis tes recos ») : **au plus 15 plaques** dans `03` (11 à 15, 4 rangées) ; borne
+  de la spec 3 m 15 c 9 d 19 u = 4 609.
+- Revue `code-reviewer` (Sonnet) de `sonde-collections.ts` : faux « 0 problème » si `--tirages` invalide ou si aucun bloc
+  n'est lu → corrigé (refus de `--tirages abc`, échec à 0 bloc, essayé sur `ce2-10`) ; regex d'ouverture tolérant
+  espaces et `\r` comme le parseur. Même défaut dans `sonde-cubes.ts`, hors de cette PR.
+- 2026-11-06 : #2433 mergée (CI verte ; revue : `code-reviewer` Sonnet sur la sonde, corrigé). Branche
+  `feat/questions-ce2-lot11-db` pour les ids et la migration.
+- 2026-11-06 : `create-questions --publier` (David, depuis le worktree) : 6 brouillons en prod, relus au MCP (draft, CE2,
+  niveaux 10 à 14 et 20 ; specs complètes ; sans nœud ni tag ; `updated_at` = `created_at`) ; ids sur la branche
+  `feat/questions-ce2-lot11-db`. Migration `20261106130322_questions_ce2_lot11_rangement_tags` + test, tirés du lot 10.
+- Base locale : la mise en place des tests d'intégration ne pouvait plus effacer les profs de démo (un lien
+  `class_journal_share_tokens` du prof `11111111…`, créé à 13 h 49 par une autre session) → ligne supprimée (accord de
+  David). Test : rouge sans le corps (5 échecs sur 9), vert 9/9.
+- `security-auditor` : aucun finding bloquant ; défaut du test relevé (point archivé CE2-001 = 3 modèles, message
+  « 1 point(s) » attendu) → le test archive CE2-005 (un modèle).
+- 2026-11-06 : #2437 mergée (CI verte après un commit `Doc-inchangée:` ; `check:migrations --pr 2437` OK) ;
+  `db:migrate` depuis le dépôt principal (dry-run : la seule migration du lot) ; relevé MCP : 6/6 sur le nœud de leur
+  point, un point chacun, brouillons, `updated_at` intact. Page à cocher publiée
+  (https://claude.ai/artifact/CdY516JNgduVk2UtziL6a7) ; elle dessinait plaques et gros cubes en cadres vides
+  identiques → rendu corrigé (#2440), page republiée.
+- 2026-11-06 : relecture de David : 6 verdicts « ok », sans commentaire (base `verdicts` comptée), posés à 13:47, après
+  la version corrigée de la page (13:46:37). `publier-lot --publier` (David) ; relevé MCP : 6/6 `published`.
+  **Lot 11 clos.**
+
+## 18. Lot 12 — constructions (phase 0 validée le 2026-11-06)
+
+Restaient 6 points D : 086, 039, 043, 051, 065, 070. Ce que la case « figure » vérifie (lu dans
+`src/lib/questions/construction/`) : carré et rectangle **sur quadrillage**, à terminer (un côté ou deux côtés donnés,
+obliques admis) ; triangle de deux longueurs reportées au compas (papier uni) ; cercle **circonscrit seulement**
+(`circle.ts`, refus de `cercle(O, A)` à la publication) ; pas de triangle rectangle (l'angle donné passe par le
+rapporteur) ; règle **non graduée** (aucune longueur en cm réelle à l'écran).
+
+- **039** (segment de longueur donnée au mm) : sans modèle, règle graduée → `outils-manquants.md` n° 18.
+- **070** en partie : 01 et 02 ci-dessous ; cercle de centre donné (n° 19) et triangle rectangle (n° 20) plus tard,
+  lot 12b.
+
+| Fichier                      | Point   | Catégorie · niveau                 | Variations                                                                                                                            |
+| ---------------------------- | ------- | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `01-termine-carre-rectangle` | CE2-070 | Figures planes · constructions · 3 | quadrillage : terminer un carré, un côté oblique donné (pas (3;1), (3;2), (4;1)…) ; terminer un rectangle, deux côtés obliques donnés |
+| `02-reproduis-le-triangle`   | CE2-070 | Figures planes · constructions · 4 | papier uni : triangle modèle DEF, [AB] = [DE] tracé ; construire C au compas en reportant DF et EF                                    |
+
+Niveau 1 : les brouillons du CP (`010d81a5`, `1cf6eaa9`) ; niveau 2 laissé au modèle du CE1-072 (lot 11 du CE1, en
+phase 0). Erreurs typiques des `testSpecs` : rectangle au lieu d'un carré, côté donné prolongé, trait de trop, C placé
+à l'œil, longueurs DF et EF interverties.
+
+**Question d'accès** : personne ne lit rien de plus — brouillons (admin seul) ; migration nœud + tag sans règle neuve.
+
+Décisions de David (« je suis tes recos », 2026-11-06) : report au compas au CE2 (oui) ; outils manquants en lignes
+de `outils-manquants.md` (oui) ; niveaux 3 et 4, relevés avant la publication ; publication sans attendre l'essai
+tablette (comme le 09 du lot 8). Puis, la phase 0 corrigée (cercle circonscrit seul) : lot 12 sans cercle, le cercle
+de centre donné en ligne n° 19.
+
+### Lot 12 — écriture (2026-11-06)
+
+- Script `docs/wip/questions/lot-ce2-12.py` → `scripts/questions/ce2-12/` : 2 modèles, 26 specs ; `create-questions`
+  en simulation (prod) : 2 « à créer » ; `question:specs` 200 tirages par variation, verts, 0 `\textcolor` hors `$` ;
+  `sonde-figures` : 0 problème.
+- Base locale, aperçu admin (port 5176) : triangle construit au report (R → T piqué en A, S → T piqué en B, puis
+  [AC] et [BC]) → « Juste » ; carré mal fermé → « Ta figure n'est pas fermée », bon carré en pointillés.
+- Corrigé en route : arcs du report coupés en bas de la fenêtre → fenêtre 0 ; 15 ; 0 ; 9, [AB] relevé d'un carreau.
+- 2026-11-06 : #2445 mergée (CI verte ; revue : aucune, contenu).
+- 2026-11-06 : `create-questions --publier` (David) : 2 brouillons en prod (`5d869c65` 01, `9f5b92a2` 02), relus au
+  MCP (draft, CE2, niveaux 3 et 4, specs 18 et 8, sans nœud ni tag, `updated_at` = `created_at`) ; ids commités.
+  Migration `20261106171101_questions_ce2_lot12_rangement_tags` + test, tirés du lot 11 : rouge sans le corps
+  (5 échecs sur 9), vert 9/9.
+- `security-auditor` : aucun finding (diff avec le lot 11 : valeurs seules ; ids, nœud et point vérifiés en prod).
+- 2026-11-06 : #2448 mergée (CI verte, intégration comprise ; `check:migrations --pr 2448` OK) ; `db:migrate` depuis le
+  dépôt principal (dry-run : la seule migration du lot) ; relevé MCP : 2/2 sur « constructions », CE2-070, brouillons,
+  `updated_at` intact. Page à cocher publiée (https://claude.ai/artifact/HnWZ6reTpJF5uSKTg9Cyba), alerte attendue
+  (case « figure » non dessinée : jouer les modèles dans l'aperçu), base `verdicts` vide.
+- 2026-11-08 : relecture de David sur la page à cocher : 2 verdicts « ok », sans commentaire (base `verdicts`
+  comptée). Simulation `publier-lot` (Claude) : 2 brouillons passent le contrôle ; `--publier` (David) ; relevé MCP :
+  2/2 `published`. **Lot 12 clos.**
+
+## 19. Lot 12b — cercle de centre donné et triangle rectangle (phase 0, 2026-11-08)
+
+Outils livrés (`docs/systeme/questions.md`) : `verifier: cercle c = cercle(O, passant=A)` (quadrillage ou papier uni)
+et `cercle(O, rayon=distance(D, E))` (papier uni, compas + report) ; `verifier: triangle ABC : CAB = 90 ; AC = u`
+(papier uni, équerre + report), `AC = 3 carreaux` ([AB] sur une ligne) ou `AC = AB` (oblique) sur quadrillage.
+BO CE2 (`CE2-espace.md`) : « sur tout support (papier quadrillé ou pointé ou papier uni) » ; exemples de réussite en
+cm (rectangle 7 × 3, carré de 6 et cercle de rayon 4, triangle rectangle 10 et 4) → la taille réelle reste au n° 18.
+
+| Fichier                          | Point   | Catégorie · niveau                 | Variations                                                                                                    |
+| -------------------------------- | ------- | ---------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `03-trace-le-cercle`             | CE2-070 | Figures planes · constructions · 3 | cercle de centre O passant par A : quadrillage (A sur une ligne du quadrillage, ou en oblique) ; papier uni   |
+| `04-cercle-de-rayon-donne`       | CE2-070 | Figures planes · constructions · 4 | papier uni : segment [DE] donné, cercle de centre O de rayon DE (Report puis compas)                          |
+| `05-triangle-rectangle-carreaux` | CE2-070 | Figures planes · constructions · 3 | quadrillage, [AB] tracé : angle droit en A, AC = 2 à 6 carreaux ([AB] sur une ligne) ; AC = AB ([AB] oblique) |
+| `06-triangle-rectangle-equerre`  | CE2-070 | Figures planes · constructions · 4 | papier uni, [AB] tracé et segment u donné : angle droit en A à l'équerre, AC reportée de u                    |
+
+Erreurs typiques des `testSpecs` : compas ouvert à l'œil, cercle centré ailleurs, mauvais rayon ; angle en A non droit,
+côté tracé à l'œil (sans équerre), C placé à l'œil, AC trop long d'un carreau, côté [BC] manquant.
+Hors lot : l'assemblage du BO (carré + cercle centré sur un sommet) — une case = une vérification ; les longueurs en cm (n° 18).
+
+**Question d'accès** : personne ne lit rien de plus — brouillons (admin seul) ; migration nœud + tag sans règle neuve
+(comme le lot 12).
+
+Questions à David :
+
+- **Q1** — CE1-072 (« cercle de centre donné passant par un point donné », triangle rectangle) : des modèles de
+  niveau 2 dans ce lot (quadrillage seul, O et A sur une ligne, AC en carreaux), rangés sur CE1-072 ? Reco : oui,
+  `07-cercle-ce1` et `08-triangle-rectangle-ce1`, comme le prévoyait l'archive `cercle-triangle-rectangle`.
+- **Q2** — Niveaux 3 (quadrillage, sans instrument ou compas seul) et 4 (papier uni, instruments enchaînés) ? Reco : oui.
+- **Q3** — Publication : #2463 et #2473 ne sont pas en prod ; les brouillons peuvent être créés tout de suite, mais
+  l'aperçu admin de prod et les élèves ont besoin du `deploy:prod`. Écrire et relire en local maintenant, publier
+  après ton `deploy:prod` ? Reco : oui.
+
+Décisions de David (« je suis tes recos », 2026-11-08) : Q1 oui (07 et 08 pour CE1-072, niveau 2) ; Q2 oui (niveaux
+3 et 4) ; Q3 oui (écrire et relire en local maintenant, publier après le `deploy:prod`).
+
+### Lot 12b — écriture (2026-11-08)
+
+- Script `docs/wip/questions/lot-ce2-12b.py` → `scripts/questions/ce2-12b/` : 6 modèles, 71 specs (03 : 20, 04 : 9,
+  05 : 15, 06 : 9, 07 : 10, 08 : 8) ; `question:specs` 200 tirages par variation, verts, 0 `\textcolor` hors `$` ;
+  `create-questions` en simulation (prod) : 6 « à créer » ; `sonde-figures` : 0 problème.
+- Messages des erreurs relevés un par un (sonde `validateAnswer`) : chaque spec `incorrect` rend le message visé
+  (« Pique ton compas en O. », « Ton compas est ouvert à l'œil… », « Ton côté [AC] mesure 5 carreaux au lieu de 4. »,
+  « Ton côté [AC] est tracé à l'œil : utilise l'équerre. », « Ton sommet C est placé à l'œil… »). Corrigé en route :
+  « [AC] plus court » du 05 oblique tombait sur « angle non droit » (arrondi qui déviait la direction) → remplacé par
+  « [AC] deux fois plus long » (aucun nœud plus proche sur la perpendiculaire).
+- Base locale, aperçu admin (5176) : 06 (palette Segment · Équerre · Report, [MN] nommé) et 05 oblique (quadrillage,
+  palette Segment) rendus ; « même longueur » ramenée à la couleur d'accent unique. Pas de tracé à la souris : les
+  verdicts passent par `validateAnswer`, le même chemin que l'appli.
+- Points nommés : M et N pour le segment donné (jamais E) ; papier uni du 03, « autre point à la même distance » =
+  faux (compas ouvert à l'œil), juste sur quadrillage.
+- CI de #2475 rouge : `answer-complexity-corpus.test.ts` (marge ×3 sur la longueur des réponses, limite 400) ; une
+  spec du 06 faisait 141 caractères à cause du bruit des flottants (`0.20000000000000018`) → `fmt` arrondit à 6
+  décimales, plus longue réponse 79. **Piège** : coordonnées calculées en flottants → toujours arrondies.
+- 2026-11-08 : #2475 mergée (CI verte au 2e commit ; revue : aucune, contenu).
+- 2026-11-08 : `create-questions --publier` (David) : 6 brouillons en prod (`1c0ba52e` 03, `d73d429b` 04, `b8fb32a4` 05,
+  `f4b94b4f` 06, `d0f7d7a8` 07, `e50d512d` 08), relus au MCP (draft, niveaux 3-4-3-4-2-2, CE2 ×4 et CE1 ×2, specs
+  20/9/15/9/10/8, sans nœud ni tag, `updated_at` = `created_at`) ; ids commités. CE2-070 et CE1-072 sur le même nœud
+  « Géométrie › Figures planes › constructions ». Migration `20261108182223_questions_ce2_lot12b_rangement_tags` +
+  test, tirés du lot 12 avec une colonne `grade` (le point du CE1) : rouge sans le corps (5 échecs sur 9), vert 9/9.
+- `security-auditor` : aucun finding (diff avec le lot 12 : identifiants, `grade`, comptes ; nœud et points vérifiés
+  en prod).
+- 2026-11-08 : #2477 mergée (CI verte, intégration comprise ; `check:migrations --pr 2477` OK) ; `db:migrate` depuis
+  le worktree sur `origin/main` (dépôt principal bloqué par le travail d'autres sessions ; dry-run : la seule migration
+  du lot) ; relevé MCP : 6/6 sur « constructions », un point chacun (CE2-070 ×4, CE1-072 ×2), brouillons, `updated_at`
+  intact. Page à cocher publiée (https://claude.ai/artifact/1uRvdQ8m99jjW3piU3J8dw), alerte attendue (case « figure »
+  non dessinée).
+- 2026-11-08 : relecture de David : 6 verdicts « ok », sans commentaire (base `verdicts` comptée), posés en 3,5 s →
+  relecture du tracé non prouvée, ligne ajoutée à `verifications-manuelles.md`. `deploy:prod` (v0.78.1, livre #2463 et
+  #2473, vérifié sur `origin/production`) ; `publier-lot` simulation puis `--publier` (David) ; relevé MCP : 6/6
+  `published`. **Lot 12b clos.**

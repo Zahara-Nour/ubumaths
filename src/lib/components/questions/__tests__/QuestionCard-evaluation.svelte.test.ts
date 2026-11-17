@@ -26,8 +26,6 @@ import { templateMarkdown } from '$lib/ubumark';
 const TEMPLATE = {
 	id: '00000000-0000-4000-8000-0000000000c1',
 	title: 'Quatre choix',
-	theme: 'T',
-	domain: 'D',
 	level: 1,
 	grades: ['6'],
 	status: 'published',

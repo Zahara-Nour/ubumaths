@@ -129,14 +129,11 @@ async function memory(type: 'template' | 'custom', refId: string) {
 	return data;
 }
 
-function template(id: string, domain: string) {
+function template(id: string) {
 	return {
 		id,
 		type: 'numerical_exact',
 		title: `Mémoire serveur ${id.slice(-4)}`,
-		theme: 'Thème SRSMS',
-		domain,
-		subdomain: null,
 		level: 1,
 		grades: ['6'],
 		status: 'published',
@@ -159,8 +156,8 @@ describe('mémoire de révision écrite par le serveur seul (Q171)', () => {
 		student = await person('student');
 		teacher = await person('teacher');
 
-		for (const [key, id] of Object.entries(T)) {
-			await insertRow('question_templates', template(id, `Domaine ${key} SRSMS`));
+		for (const id of Object.values(T)) {
+			await insertRow('question_templates', template(id));
 		}
 
 		// Fiche existante, posée au service : échue MAINTENANT
@@ -341,10 +338,18 @@ describe('mémoire de révision écrite par le serveur seul (Q171)', () => {
 	it('POST /api/skill-attempts écrit la fiche', async () => {
 		const response = await skillAttemptsRoute({
 			locals: buildLocals(student),
-			request: postRequest({ template_id: T.skill, success: true })
+			request: postRequest({ template_id: T.skill, success: true, place: 'flash_cards' })
 		} as never);
 		expect(response.status).toBe(200);
 		expect((await memory('template', T.skill))?.total_reviews).toBe(1);
+		// Flash-cards : trace « déclarée » acceptée par la RLS de l'élève (ADR 0038)
+		const { data: traces, error } = await service
+			.from('skill_attempts')
+			.select('source, place')
+			.eq('student_id', student.id)
+			.eq('template_id', T.skill);
+		expect(error).toBeNull();
+		expect(traces).toEqual([{ source: 'student_self', place: 'flash_cards' }]);
 	});
 
 	it('recordSeriesReviews (séries et évaluations) écrit les fiches, auto-évaluation comprise', async () => {

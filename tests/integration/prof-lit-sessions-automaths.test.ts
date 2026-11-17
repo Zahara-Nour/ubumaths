@@ -45,7 +45,7 @@ describe('sessions automaths : lecture par le prof', () => {
 			.insert({
 				user_id: studentId,
 				mode: 'interactive',
-				categories: [],
+				items: [],
 				score: 7,
 				total_questions: 2,
 				completed_at: new Date().toISOString()

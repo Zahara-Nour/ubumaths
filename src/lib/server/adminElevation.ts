@@ -168,6 +168,31 @@ export function createEphemeralAuthClient(): SupabaseClient<Database> {
 // ============================================================================
 
 /**
+ * Routes d'écriture réservées à l'admin (`requireAdmin`) hors de `/api/admin` :
+ * le handle doit y lire le cookie, sinon le prof élevé y reçoit un 403
+ * (suppression d'un modèle refusée, 2026-11-11). Sans cookie, aucun coût :
+ * le handle rend la main avant toute requête. Le journal d'erreurs
+ * (`/api/errors/log`, appelé par tous) reste hors périmètre.
+ */
+const ADMIN_WRITE_API_PREFIXES = [
+	'/api/questions/templates',
+	'/api/errors/bulk-resolve',
+	'/api/errors/delete-resolved',
+	'/api/bug-reports/config',
+	'/api/messages/templates'
+] as const;
+
+/** Liste publique des modèles (anonyme, lue par tous) : jamais d'élévation à vérifier */
+const PUBLIC_TEMPLATES_LIST_PATH = '/api/questions/templates/all';
+
+function isAdminWriteApiPath(pathname: string): boolean {
+	if (pathname === PUBLIC_TEMPLATES_LIST_PATH) return false;
+	return ADMIN_WRITE_API_PREFIXES.some(
+		(prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`)
+	);
+}
+
+/**
  * Build the elevation Handle. Wire it into `hooks.server.ts` AFTER
  * `userProfileHandle` and BEFORE `csrfHandle`.
  *
@@ -221,7 +246,8 @@ export function createAdminElevationHandle(
 		if (
 			!pathname.startsWith('/dashboard/admin') &&
 			!pathname.startsWith('/api/admin') &&
-			!isDevPath
+			!isDevPath &&
+			!isAdminWriteApiPath(pathname)
 		) {
 			event.locals.adminElevation = null;
 			return resolve(event);

@@ -1,10 +1,8 @@
 {
+	"id": "5be4ac71-a093-4501-bf71-47f0db619177",
 	"title": "Approximation affine de f(a + h)",
 	"description": "f(a + h) ≈ f(a) + f′(a)h, en fonction de h : carré, inverse, racine carrée en 1, carré en a",
 	"grades": ["1_SPE"],
-	"theme": "Fonctions",
-	"domain": "Dérivation",
-	"subdomain": "Approximation affine",
 	"level": 2,
 	"delay": 45,
 	"status": "draft",

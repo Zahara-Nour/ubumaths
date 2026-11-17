@@ -18,6 +18,7 @@ import {
 	duplicateSchoolYearSchema
 } from '$lib/server/validation/academic';
 import { createServerLogger } from '$lib/utils/logger';
+import { schoolYearConflictMessage } from '$lib/server/school-year-errors';
 
 const logger = createServerLogger(
 	'(protected)/dashboard/admin/schools/[schoolId]/organisation/+page.server'
@@ -129,6 +130,8 @@ export const actions: Actions = {
 		const { error: dbError } = await supabase.from('school_years').insert(validation.data);
 
 		if (dbError) {
+			const conflict = schoolYearConflictMessage(dbError, validation.data.name);
+			if (conflict) return fail(409, { error: conflict });
 			logger.error('Error creating school year:', dbError);
 			return fail(500, { error: "Erreur lors de la création de l'année scolaire" });
 		}
@@ -169,6 +172,8 @@ export const actions: Actions = {
 		const { error: dbError } = await supabase.from('school_years').update(updateData).eq('id', id);
 
 		if (dbError) {
+			const conflict = schoolYearConflictMessage(dbError, validation.data.name ?? '');
+			if (conflict) return fail(409, { error: conflict });
 			logger.error('Error updating school year:', dbError);
 			return fail(500, { error: "Erreur lors de la mise à jour de l'année scolaire" });
 		}
@@ -560,6 +565,8 @@ export const actions: Actions = {
 			.single();
 
 		if (yearError || !newYear) {
+			const conflict = schoolYearConflictMessage(yearError, validation.data.target_year_name);
+			if (conflict) return fail(409, { error: conflict });
 			logger.error('Error creating duplicate year:', yearError);
 			return fail(500, { error: "Erreur lors de la création de l'année dupliquée" });
 		}

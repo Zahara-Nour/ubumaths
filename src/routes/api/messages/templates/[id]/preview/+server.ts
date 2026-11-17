@@ -10,6 +10,7 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { requireRoles } from '$lib/server/middleware/auth';
 import { previewTemplate } from '$lib/templates/templateEngine';
 import { previewTemplateSchema } from '$lib/server/validation/message-templates';
 import { validateUuidParam } from '$lib/server/validation/params';
@@ -19,17 +20,11 @@ import { toMessageTemplate } from '$lib/types/messageTemplates';
 // POST - Generate preview
 // =====================================================
 export const POST: RequestHandler = async ({ locals, params, request }) => {
-	const { supabase, user, profile } = locals;
-
-	if (!user) {
-		return error(401, 'Non authentifié');
-	}
+	const { supabase } = locals;
 
 	// SECURITY (finding M11): message templates are a teacher/admin tool — every
-	// sibling route gates on role; this one only checked `!user`.
-	if (profile?.role !== 'teacher' && profile?.role !== 'admin') {
-		return error(403, 'Réservé aux enseignants');
-	}
+	// sibling route gates on role.
+	await requireRoles(locals, ['teacher', 'admin']);
 
 	// SECURITY (finding M11): validate the id as a UUID (was passed straight into
 	// .eq('id', id), yielding raw 22P02 errors on malformed input).

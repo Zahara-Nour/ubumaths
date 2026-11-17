@@ -91,9 +91,6 @@ function question(id: string, title: string, status: 'published' | 'draft', crea
 		id,
 		type: 'fill_in_blanks',
 		title,
-		theme: 'Nombres',
-		domain: 'Fractions',
-		subdomain: 'Équivalence',
 		level: 1,
 		grades: ['6'],
 		status,
@@ -296,14 +293,6 @@ describe('vue resources + recherche globale', () => {
 		const ids = (data ?? []).map((r) => r.id);
 		// « ALGEBRE » doit trouver « Algèbre ».
 		expect(ids).toContain(EX_PUBLIC);
-	});
-
-	it('cherche aussi dans les métadonnées, pas seulement le titre', async () => {
-		// Le sous-titre d'une question est son quadruplet thème/domaine/sous-domaine.
-		const { data, error } = await teacher.rpc('search_resources', { p_query: 'equivalence' });
-
-		expect(error).toBeNull();
-		expect((data ?? []).map((r) => r.id)).toContain(Q_PUBLISHED);
 	});
 
 	it('filtre par type', async () => {

@@ -23,16 +23,29 @@ const toaster = vi.hoisted(() => ({
 vi.mock('$lib/stores/toaster.svelte', () => ({ toaster }));
 
 import Page from '../+page.svelte';
+import { questionTemplatesCache } from '$lib/stores/questionTemplates.svelte';
 import { questionCart } from '$lib/stores/questionCart.svelte';
-import { parseCategoriesParam } from '$lib/validation/series';
+import { parseSeriesLink } from '$lib/validation/series';
 
-const CATEGORY = { theme: 'Calcul', domain: 'Tables', subdomain: null, level: 3 };
+const TEMPLATE_ID = '11111111-1111-4111-8111-111111111111';
+
+/**
+ * Remplit le cache des modèles (la page le lit, le serveur ne les envoie plus)
+ * sans appeler la vraie API sur le serveur de test.
+ */
+async function seedTemplatesCache(templates: unknown[] = []) {
+	questionTemplatesCache.clear();
+	vi.stubGlobal('fetch', async () => new Response(JSON.stringify({ templates })));
+	await questionTemplatesCache.fetchTemplates();
+	vi.unstubAllGlobals();
+}
 
 async function renderPanier(userRole: string | null) {
+	await seedTemplatesCache();
 	const main = document.body.appendChild(document.createElement('main'));
 	return await render(Page, {
 		target: main,
-		props: { data: { templates: [], userRole } } as never
+		props: { data: { userRole } } as never
 	});
 }
 
@@ -41,7 +54,7 @@ describe('Panier — série (C18)', () => {
 
 	beforeEach(() => {
 		questionCart.clearCart();
-		questionCart.addToCart(CATEGORY, 3, 20);
+		questionCart.addToCart(TEMPLATE_ID, 3, 20);
 		writeText = vi.fn(async () => {});
 		Object.defineProperty(navigator, 'clipboard', {
 			value: { writeText },
@@ -81,17 +94,17 @@ describe('Panier — série (C18)', () => {
 		const link = new URL(writeText.mock.calls[0][0] as string);
 		expect(link.pathname).toBe('/automaths/panier');
 		expect(link.searchParams.has('mode')).toBe(false);
-		const categories = parseCategoriesParam(link.searchParams.get('categories'));
-		expect(categories).toMatchObject({
+		expect(link.searchParams.has('categories')).toBe(false);
+		expect(parseSeriesLink(link.searchParams)).toMatchObject({
 			success: true,
-			data: [{ category: CATEGORY, quantity: 3 }]
+			lines: [{ templateId: TEMPLATE_ID, quantity: 3 }]
 		});
 		expect(toaster.success).toHaveBeenCalledWith('Lien copié');
 	});
 
 	it('Q44 : forme « Flash-cards » → lien qui lance la série sous cette forme', async () => {
 		await renderPanier('student');
-		await page.getByRole('button', { name: 'Forme du lien' }).click();
+		await page.getByRole('combobox', { name: 'Forme du lien' }).click();
 		await page.getByRole('option', { name: 'Flash-cards' }).click();
 		await page.getByRole('button', { name: 'Copier le lien' }).click();
 
@@ -104,7 +117,7 @@ describe('Panier — série (C18)', () => {
 
 	it('Q44 : « Course aux nombres » → le lien porte le temps limite réglé', async () => {
 		await renderPanier('student');
-		await page.getByRole('button', { name: 'Forme du lien' }).click();
+		await page.getByRole('combobox', { name: 'Forme du lien' }).click();
 		await page.getByRole('option', { name: 'Course aux nombres' }).click();
 		await expect.element(page.getByLabelText('Temps limite (minutes)')).toHaveValue(5);
 		await page.getByLabelText('Temps limite (minutes)').fill('8');
@@ -119,7 +132,7 @@ describe('Panier — série (C18)', () => {
 
 	it('Q44 : temps limite hors de 1 à 60 min → rien n’est copié, message', async () => {
 		await renderPanier('student');
-		await page.getByRole('button', { name: 'Forme du lien' }).click();
+		await page.getByRole('combobox', { name: 'Forme du lien' }).click();
 		await page.getByRole('option', { name: 'Course aux nombres' }).click();
 		await page.getByLabelText('Temps limite (minutes)').fill('90');
 		await page.getByRole('button', { name: 'Copier le lien' }).click();
@@ -140,7 +153,7 @@ describe('Panier — série (C18)', () => {
 		);
 	});
 
-	it('enregistrer : POST /api/series avec le titre et les catégories du panier', async () => {
+	it('enregistrer : POST /api/series avec le titre et les modèles du panier', async () => {
 		const fetchSpy = vi
 			.spyOn(globalThis, 'fetch')
 			.mockResolvedValue(
@@ -157,7 +170,8 @@ describe('Panier — série (C18)', () => {
 			expect(url).toBe('/api/series');
 			const body = JSON.parse((init as RequestInit).body as string);
 			expect(body).toMatchObject({ title: 'Tables de 7', grade: '6' });
-			expect(body.categories).toEqual([{ category: CATEGORY, quantity: 3, delay: 20 }]);
+			expect(body.items).toEqual([{ templateId: TEMPLATE_ID, quantity: 3, delay: 20 }]);
+			expect(body).not.toHaveProperty('categories');
 		} finally {
 			fetchSpy.mockRestore();
 		}

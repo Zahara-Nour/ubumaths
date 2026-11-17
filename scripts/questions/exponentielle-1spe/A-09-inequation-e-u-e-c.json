@@ -1,10 +1,8 @@
 {
+	"id": "6a5e58da-8015-4d0d-9a1f-6c8e8d9cae4d",
 	"title": "Résoudre une inéquation du type eᵘ < eᶜ",
 	"description": "Inéquation avec v constant, réponse en intervalle ; a < 0 dans deux variations",
 	"grades": ["1_SPE"],
-	"theme": "Fonctions",
-	"domain": "Fonction exponentielle",
-	"subdomain": "Équations et inéquations",
 	"level": 4,
 	"status": "draft",
 	"delay": 60,

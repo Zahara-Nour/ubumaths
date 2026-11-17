@@ -1,10 +1,8 @@
 {
+	"id": "0b490331-eda5-4201-b4be-a77e5ebe2229",
 	"title": "Soustraire des dizaines entières",
 	"description": "Exemple : 541 − 20 ; sans retenue",
 	"grades": ["CE1"],
-	"theme": "Entiers",
-	"domain": "Soustraire",
-	"subdomain": "Différence",
 	"level": 15,
 	"delay": 20,
 	"status": "draft",

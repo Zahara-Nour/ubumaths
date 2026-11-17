@@ -12,6 +12,7 @@
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { goto as _goto } from '$app/navigation';
 	import { syncGidouilles } from '$lib/utils/cache-sync';
+	import { receiveBuddyGain } from '$lib/components/buddy/buddy-gain';
 
 	let { data }: { data: PageData } = $props();
 
@@ -37,6 +38,8 @@
 			const result = await response.json();
 
 			if (response.ok && result.success) {
+				// Gain du Palotin : son widget à jour, et un retour après une pause à fêter
+				void receiveBuddyGain(result);
 				if (result.isCorrect === true) {
 					// Update cache with earned gidouilles (server-confirmed amount)
 					const gidouillesEarned = result.attempt.gidouilles_awarded || 0;

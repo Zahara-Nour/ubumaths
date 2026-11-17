@@ -1,10 +1,8 @@
 {
+	"id": "655d06ff-7e1b-4ec5-b489-65473d73a9b9",
 	"title": "Étudier la parité d'une fonction",
 	"description": "Calcul de f(−x) puis parité (case choix) : polynôme pair, impair, ni l'un ni l'autre, x/(x² + k) ; piège : domaine non symétrique",
 	"grades": ["1_SPE"],
-	"theme": "Fonctions",
-	"domain": "Généralités",
-	"subdomain": "Parité",
 	"level": 2,
 	"delay": 60,
 	"status": "draft",

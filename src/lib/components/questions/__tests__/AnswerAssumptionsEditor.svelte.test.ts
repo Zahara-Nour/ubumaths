@@ -27,8 +27,8 @@ describe('AnswerAssumptionsEditor', () => {
 		const { container } = await render(AnswerAssumptionsEditor, {
 			rows,
 			drawnNames: [],
-			theme: 'Algèbre',
-			domain: 'Puissances'
+			branch: 'Algèbre',
+			notion: 'Puissances'
 		});
 		expect(nameInputs(container).map((i) => i.value)).toEqual(['x']);
 		expect(container.textContent).toContain('strictement positif');
@@ -38,8 +38,8 @@ describe('AnswerAssumptionsEditor', () => {
 		const { container } = await render(AnswerAssumptionsEditor, {
 			rows: [],
 			drawnNames: [],
-			theme: 'Algèbre',
-			domain: 'Puissances'
+			branch: 'Algèbre',
+			notion: 'Puissances'
 		});
 		expect(nameInputs(container)).toHaveLength(0);
 		await userEvent.click(buttonByText(container, 'Ajouter une hypothèse')!);
@@ -56,8 +56,8 @@ describe('AnswerAssumptionsEditor', () => {
 				{ name: 'e', kind: 'positive' }
 			],
 			drawnNames: ['a'],
-			theme: 'Algèbre',
-			domain: 'Puissances'
+			branch: 'Algèbre',
+			notion: 'Puissances'
 		});
 		expect(container.textContent).toContain('variable tirée');
 		expect(container.textContent).toContain('constante');
@@ -67,8 +67,8 @@ describe('AnswerAssumptionsEditor', () => {
 		const { container } = await render(AnswerAssumptionsEditor, {
 			rows: [],
 			drawnNames: [],
-			theme: 'Suites',
-			domain: 'Suites arithmétiques'
+			branch: 'Suites',
+			notion: 'Suites arithmétiques'
 		});
 		expect(container.textContent).toContain('n ∈ ℕ');
 		expect(nameInputs(container)).toHaveLength(0);
@@ -84,8 +84,8 @@ describe('AnswerAssumptionsEditor', () => {
 		const { container } = await render(AnswerAssumptionsEditor, {
 			rows: [],
 			drawnNames: [],
-			theme: 'Algèbre',
-			domain: 'Puissances'
+			branch: 'Algèbre',
+			notion: 'Puissances'
 		});
 		expect(buttonByText(container, 'Ajouter n ∈ ℕ')).toBeUndefined();
 	});
@@ -94,8 +94,8 @@ describe('AnswerAssumptionsEditor', () => {
 		const { container } = await render(AnswerAssumptionsEditor, {
 			rows: [],
 			drawnNames: ['n'],
-			theme: 'Suites',
-			domain: 'Généralités'
+			branch: 'Suites',
+			notion: 'Généralités'
 		});
 		expect(buttonByText(container, 'Ajouter n ∈ ℕ')).toBeUndefined();
 	});

@@ -84,9 +84,9 @@ function supabaseFixture() {
 			case 'question_templates':
 				return {
 					data: [
-						{ id: 't-partagee', subdomain: 'Partagée' },
-						{ id: 't-seule', subdomain: 'Seule' },
-						{ id: 't-archive', subdomain: 'Archivée' }
+						{ id: 't-partagee', title: 'Partagée' },
+						{ id: 't-seule', title: 'Seule' },
+						{ id: 't-archive', title: 'Archivée' }
 					]
 				};
 			case 'question_template_points':

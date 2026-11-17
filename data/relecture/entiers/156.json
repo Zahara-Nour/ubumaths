@@ -59,9 +59,6 @@
 			}
 		],
 		"grades": ["CM2"],
-		"theme": "Entiers",
-		"domain": "Multiplier",
-		"subdomain": "Produits particuliers",
 		"level": 4,
 		"status": "draft",
 		"delay": 20,

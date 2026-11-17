@@ -15,6 +15,10 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
+vi.mock('$lib/server/middleware/auth', async (importActual) =>
+	(await import('$tests/helpers/garde-auth-locals')).gardeAuthDepuisLocals(importActual)
+);
+
 // Capture per-test via the mocked factory
 let serviceRoleMock: ReturnType<typeof createTrackerClient>;
 

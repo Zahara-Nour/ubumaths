@@ -1,10 +1,8 @@
 {
+	"id": "ece43e92-c87e-4ea5-b1d1-28045635996f",
 	"title": "Traduire « de » par une multiplication",
 	"description": "Choisir l'écriture qui calcule une fraction d'un entier : 2/5 de 60, c'est 2/5 × 60 (et non 2/5 + 60, 60 − 2/5 ni 60 ÷ 2/5)",
 	"grades": ["6"],
-	"theme": "Fractions",
-	"domain": "Calculer",
-	"subdomain": "Fraction d'une quantité",
 	"level": 5,
 	"delay": 30,
 	"status": "draft",

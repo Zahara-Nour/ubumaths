@@ -1,10 +1,8 @@
 {
+	"id": "89283903-974d-44b3-8350-99f62f56e3ce",
 	"title": "Des longueurs de référence, du millimètre au kilomètre",
 	"description": "1 mm : l'épaisseur d'une carte ; 1 cm : la largeur d'un doigt ; 1 dm : la largeur d'une main ; 1 m : un grand pas ; 10 m : un bus ; 100 m : un terrain de football ; 1 km : un quart d'heure de marche",
 	"grades": ["CM1"],
-	"theme": "Grandeurs",
-	"domain": "Longueurs",
-	"subdomain": "Ordres de grandeur",
 	"level": 6,
 	"delay": 45,
 	"status": "draft",

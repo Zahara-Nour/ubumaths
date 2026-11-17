@@ -71,27 +71,53 @@ function answersOf(template: QuestionTemplate): string[] {
 			const result = generateInstance(single, seed);
 			if (!result.success) continue;
 			for (const blank of result.instance.blanks ?? []) {
-				if (blank.answerKind !== 'intervalles') answers.push(blank.expectedAnswer);
+				if (blank.answerKind !== 'intervalles' && !isProgramBlank(blank)) {
+					answers.push(blank.expectedAnswer);
+				}
 			}
 		}
 	}
 	for (const spec of template.testSpecs ?? []) {
-		if (isColoring(template, spec.variationIndex)) continue;
+		if (isJudgedBeforeGuard(template, spec.variationIndex)) continue;
 		answers.push(...(spec.answers ?? []));
 	}
 	return answers.filter((answer) => answer.trim() !== '');
 }
 
 /**
- * Variation à colorier (```partage + `colorier:`) : la réponse (rangs coloriés, `1, 2, …, 137`)
- * ne passe pas par la garde en prod (`validateSingleBlank` la juge avant), donc ses specs non
- * plus ; sinon 1,37 sur deux grilles (137 rangs) ne pourrait pas avoir de spec juste.
+ * Variation dont la réponse ne passe pas par la garde en prod (`validateSingleBlank` la juge
+ * avant), donc ses specs non plus :
+ * - à colorier (```partage + `colorier:`) : rangs coloriés, `1, 2, …, 137` ; sinon 1,37 sur deux
+ *   grilles (137 rangs) ne pourrait pas avoir de spec juste ;
+ * - figure à compléter (```figure-a-completer, `blank.construction`) : tracé en coordonnées
+ *   pleine précision, qu'une bissectrice construite (trois cercles et une droite) porte à
+ *   plus de 250 caractères (lot 11a de la 6e) ;
+ * - programme tortue ou de calcul (```tortue, ```calcul) : programme en notation texte, rejoué
+ *   par son interpréteur et borné par `LONGUEUR_MAX_PROGRAMME` ; un programme de quatre étapes
+ *   dépasse 150 caractères (lot 11 de la 5e) ;
+ * - code de robot (```robot + `produire: oui`) : rejoué sur la scène, 15 instructions au plus
+ *   (« avance de 9, » × 15 dépasse 150 caractères).
  */
-function isColoring(template: QuestionTemplate, variationIndex: number | undefined): boolean {
+function isJudgedBeforeGuard(
+	template: QuestionTemplate,
+	variationIndex: number | undefined
+): boolean {
 	const variation = template.variations[variationIndex ?? 0];
 	if (!variation) return false;
 	const result = generateInstance({ ...template, variations: [variation] }, 0);
-	return result.success && (result.instance.blanks ?? []).some((b) => b.construire === 'partage');
+	return (
+		result.success &&
+		(result.instance.blanks ?? []).some(
+			(b) => b.construire === 'partage' || b.construction || isProgramBlank(b)
+		)
+	);
+}
+
+/** Case programme (tortue, calcul, robot) : jugée par son interpréteur, avant la garde */
+function isProgramBlank(blank: { construire?: string }): boolean {
+	return (
+		blank.construire === 'tortue' || blank.construire === 'calcul' || blank.construire === 'robot'
+	);
 }
 
 describe('garde de complexité — corpus du dépôt', () => {

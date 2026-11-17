@@ -1,10 +1,8 @@
 {
+	"id": "576e8aed-3ea2-4bdd-8584-89d247fd3f03",
 	"title": "Distance entre deux points",
 	"description": "AB en repère orthonormé (entière, √n), puis « ABC isocèle en A ? » par AB² et AC² (pièges : racine oubliée, différences non élevées au carré)",
 	"grades": ["2"],
-	"theme": "Géométrie",
-	"domain": "Vecteurs du plan",
-	"subdomain": "Norme et distance",
 	"level": 2,
 	"delay": 90,
 	"status": "draft",

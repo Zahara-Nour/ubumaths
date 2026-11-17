@@ -39,7 +39,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 	logger.info('Data export requested', { userId });
 
 	// Step 2: Rate limiting (1 per hour)
-	rateLimit(`account_export:${userId}`, RATE_LIMIT_MAX, RATE_LIMIT_WINDOW_MS);
+	await rateLimit(`account_export:${userId}`, RATE_LIMIT_MAX, RATE_LIMIT_WINDOW_MS);
 
 	try {
 		// Step 3: Fetch all user data in parallel
@@ -63,6 +63,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			tutorConversationsResult,
 			mathouxResult,
 			mathouDecorationsResult,
+			avatarsResult,
 			buddyResult,
 			lastVisitResult
 		] = await Promise.all([
@@ -85,17 +86,18 @@ export const GET: RequestHandler = async ({ locals }) => {
 				)
 				.eq('student_id', userId),
 
-			// Évaluation — tentatives évaluées (couche brute commune aux deux référentiels)
+			// Évaluation — traces (couche brute commune aux deux référentiels), avec lieu,
+			// durées, graine, réponse tapée et verdict par case (ADR 0038, N15)
 			supabase
 				.from('skill_attempts')
 				.select(
-					'observable_id, success, with_help, phase_blocage, grade, template_id, task_id, source, created_at'
+					'observable_id, success, with_help, phase_blocage, grade, template_id, task_id, source, created_at, place, response_ms, allotted_ms, end_reason, seed, answer_parts, part_verdicts'
 				)
 				.eq('student_id', userId)
 				.order('created_at', { ascending: false })
 				.limit(5000),
 
-			// Évaluation — indicateurs observables par capacité
+			// Évaluation — indicateurs observables par point du programme
 			supabase
 				.from('student_observable_state')
 				.select('observable_id, count_plus, count_minus, is_acquis, last_attempt_at')
@@ -173,7 +175,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			supabase
 				.from('test_sessions')
 				.select(
-					'id, mode, categories, score, grade, points_earned, total_questions, time_spent, completed_at, evaluation_id, created_at, test_answers(template_id, question_instance, user_answer, is_correct, points, status, time_spent, attempts, created_at)'
+					'id, mode, items, score, grade, points_earned, total_questions, time_spent, completed_at, evaluation_id, created_at, test_answers(template_id, question_instance, user_answer, is_correct, points, status, time_spent, attempts, created_at)'
 				)
 				.eq('user_id', userId)
 				.order('created_at', { ascending: false })
@@ -209,6 +211,12 @@ export const GET: RequestHandler = async ({ locals }) => {
 				.select('decoration, price_paid, purchased_at')
 				.eq('student_id', userId),
 
+			// Jeux — avatars achetés dans la boutique d'avatars (lisibles par l'élève seul)
+			supabase
+				.from('student_avatars')
+				.select('avatar_key, price_paid, purchased_at')
+				.eq('student_id', userId),
+
 			// Jeux — le Palotin de l'élève (une ligne par élève ; décision de David, 2026-10-18)
 			supabase
 				.from('student_buddies')
@@ -223,7 +231,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			// service, filtrés sur l'identité de la SESSION.
 			createServiceRoleClient()
 				.from('student_last_visits')
-				.select('last_visit_date, welcome_back_on')
+				.select('last_visit_date, welcome_back_on, week_celebrated_on')
 				.eq('student_id', userId)
 				.maybeSingle()
 		]);
@@ -250,6 +258,10 @@ export const GET: RequestHandler = async ({ locals }) => {
 			);
 		}
 
+		if (avatarsResult.error) {
+			throw new Error(`student_avatars illisible : ${avatarsResult.error.message}`);
+		}
+
 		if (buddyResult.error) {
 			throw new Error(`student_buddies illisible : ${buddyResult.error.message}`);
 		}
@@ -271,6 +283,9 @@ export const GET: RequestHandler = async ({ locals }) => {
 			firstname: profile.firstname,
 			lastname: profile.lastname,
 			avatar_url: profile.avatar_url,
+			// Boutique d'avatars : avatar porté (clé du catalogue) et photo Google gardée
+			worn_avatar: profile.worn_avatar,
+			google_avatar_url: profile.google_avatar_url,
 			role: profile.role,
 			grade: profile.grade,
 			gidouilles: profile.gidouilles,
@@ -309,7 +324,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			// Profile
 			profile: sanitizedProfile,
 
-			// Évaluation référentielle : connaissances (famille A) + compétences (famille B)
+			// Évaluation : points du programme (`connaissances`) + compétences mathématiques
 			evaluation: {
 				connaissances: skillStateResult.data || [],
 				competences: competenceLevelResult.data || [],
@@ -342,9 +357,11 @@ export const GET: RequestHandler = async ({ locals }) => {
 				player_stats: gamePlayerResult.data || null,
 				mathoux: mathouxResult.data || [],
 				mathou_decorations: mathouDecorationsResult.data || [],
+				avatars: avatarsResult.data || [],
 				palotin: buddyResult.data || null,
 				dernier_passage: lastVisitResult.data?.last_visit_date ?? null,
-				retour_a_feter: lastVisitResult.data?.welcome_back_on ?? null
+				retour_a_feter: lastVisitResult.data?.welcome_back_on ?? null,
+				semaine_fetee: lastVisitResult.data?.week_celebrated_on ?? null
 			},
 
 			// Rewards & Economy

@@ -8,81 +8,37 @@
  * Test Categories:
  * 1. HEARTBEAT INTERVAL (CRITICAL - BILLING)
  * 2. Heartbeat Lifecycle (start, send, stop)
- * 3. Presence Tracking (subscribe, unsubscribe, update)
+ * 3. Relecture du statut des amis (toutes les 60 s, signal de vie < 270 s)
  * 4. Friend Presence Management
  * 5. Edge Cases & Error Handling
- * 6. Integration with supabaseRealtimeManager
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { presenceManager, HEARTBEAT_INTERVAL } from '../presence.svelte';
-import { supabaseRealtimeManager } from '../supabaseRealtime.svelte';
-import type { SupabaseClient, RealtimeChannel } from '@supabase/supabase-js';
+import {
+	presenceManager,
+	HEARTBEAT_INTERVAL,
+	PRESENCE_POLL_INTERVAL,
+	STALE_AFTER_MS
+} from '../presence.svelte';
+import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 
 // ============================================================================
 // TEST SETUP
 // ============================================================================
 
-// Extended mock channel type with helper methods
-interface MockRealtimeChannel extends RealtimeChannel {
-	channelName: string;
-	simulateEvent: (type: string, config: unknown, payload: unknown) => void;
-}
-
 // Mock Supabase client
 function createMockSupabaseClient(): SupabaseClient<Database> {
 	return {
-		channel: vi.fn((name: string) => createMockChannel(name)),
+		channel: vi.fn(),
 		rpc: vi.fn(),
 		from: vi.fn(() => ({
 			select: vi.fn(() => ({
-				in: vi.fn(() => ({
-					data: [],
-					error: null
-				}))
+				in: vi.fn(() => Promise.resolve({ data: [], error: null }))
 			}))
 		})),
 		removeChannel: vi.fn()
 	} as unknown as SupabaseClient<Database>;
-}
-
-function createMockChannel(name: string): MockRealtimeChannel {
-	const listeners = new Map<string, ((payload: unknown) => void)[]>();
-
-	const channel = {
-		channelName: name,
-		on: vi.fn(function (
-			this: MockRealtimeChannel,
-			type: string,
-			config: unknown,
-			callback: (payload: unknown) => void
-		) {
-			const key = JSON.stringify({ type, config });
-			if (!listeners.has(key)) {
-				listeners.set(key, []);
-			}
-			listeners.get(key)!.push(callback);
-			return this;
-		}),
-		subscribe: vi.fn(function (this: MockRealtimeChannel, callback?: (status: string) => void) {
-			if (callback) {
-				setTimeout(() => callback('SUBSCRIBED'), 0);
-			}
-			return this;
-		}),
-		unsubscribe: vi.fn(),
-		// Helper to simulate events
-		simulateEvent: (type: string, config: unknown, payload: unknown) => {
-			const key = JSON.stringify({ type, config });
-			const callbacks = listeners.get(key);
-			if (callbacks) {
-				callbacks.forEach((cb) => cb(payload));
-			}
-		}
-	} as unknown as MockRealtimeChannel;
-
-	return channel;
 }
 
 // Mock browser environment using vi.stubEnv
@@ -92,13 +48,6 @@ vi.mock('$app/environment', () => ({
 	dev: true,
 	version: '1.0.0'
 }));
-
-// Helper to skip tests that require browser: false (edge cases not critical for migration)
-function mockBrowser(_isBrowser: boolean) {
-	// Note: vi.mock is static and can't be changed per-test
-	// These tests verify SSR safety but aren't critical for the Realtime migration
-	// In practice, these stores only run in browser environment
-}
 
 // ============================================================================
 // 1. HEARTBEAT INTERVAL (CRITICAL - BILLING)
@@ -153,8 +102,6 @@ describe('CRITICAL: Heartbeat Interval (Billing)', () => {
 		supabase.rpc = rpcMock;
 
 		// Mock realtime manager methods
-		vi.spyOn(supabaseRealtimeManager, 'createChannel').mockReturnValue(createMockChannel('test'));
-		vi.spyOn(supabaseRealtimeManager, 'subscribeChannel').mockResolvedValue(undefined);
 
 		// Start tracking (this returns after setting up subscriptions)
 		const promise = presenceManager.startPresenceTracking(['friend-1']);
@@ -204,8 +151,6 @@ describe('Heartbeat Lifecycle', () => {
 		supabase.rpc = rpcMock;
 
 		// Mock realtime manager methods
-		vi.spyOn(supabaseRealtimeManager, 'createChannel').mockReturnValue(createMockChannel('test'));
-		vi.spyOn(supabaseRealtimeManager, 'subscribeChannel').mockResolvedValue(undefined);
 
 		await presenceManager.startPresenceTracking(['friend-1']);
 
@@ -225,8 +170,6 @@ describe('Heartbeat Lifecycle', () => {
 		supabase.rpc = rpcMock;
 
 		// Mock realtime manager methods
-		vi.spyOn(supabaseRealtimeManager, 'createChannel').mockReturnValue(createMockChannel('test'));
-		vi.spyOn(supabaseRealtimeManager, 'subscribeChannel').mockResolvedValue(undefined);
 
 		await presenceManager.startPresenceTracking(['friend-1']);
 
@@ -254,9 +197,6 @@ describe('Heartbeat Lifecycle', () => {
 
 	it('should clear heartbeat interval on stop', async () => {
 		// Mock realtime manager methods
-		vi.spyOn(supabaseRealtimeManager, 'createChannel').mockReturnValue(createMockChannel('test'));
-		vi.spyOn(supabaseRealtimeManager, 'subscribeChannel').mockResolvedValue(undefined);
-		vi.spyOn(supabaseRealtimeManager, 'unsubscribeChannel').mockResolvedValue(undefined);
 
 		await presenceManager.startPresenceTracking(['friend-1']);
 
@@ -274,9 +214,6 @@ describe('Heartbeat Lifecycle', () => {
 		supabase.rpc = rpcMock;
 
 		// Mock realtime manager methods
-		vi.spyOn(supabaseRealtimeManager, 'createChannel').mockReturnValue(createMockChannel('test'));
-		vi.spyOn(supabaseRealtimeManager, 'subscribeChannel').mockResolvedValue(undefined);
-		vi.spyOn(supabaseRealtimeManager, 'unsubscribeChannel').mockResolvedValue(undefined);
 
 		await presenceManager.startPresenceTracking(['friend-1']);
 
@@ -302,9 +239,6 @@ describe('Heartbeat Lifecycle', () => {
 
 	it('should clear existing interval before starting new one', async () => {
 		// Mock realtime manager methods
-		vi.spyOn(supabaseRealtimeManager, 'createChannel').mockReturnValue(createMockChannel('test'));
-		vi.spyOn(supabaseRealtimeManager, 'subscribeChannel').mockResolvedValue(undefined);
-		vi.spyOn(supabaseRealtimeManager, 'unsubscribeChannel').mockResolvedValue(undefined);
 
 		await presenceManager.startPresenceTracking(['friend-1']);
 
@@ -324,8 +258,6 @@ describe('Heartbeat Lifecycle', () => {
 		supabase.rpc = rpcMock;
 
 		// Mock realtime manager methods
-		vi.spyOn(supabaseRealtimeManager, 'createChannel').mockReturnValue(createMockChannel('test'));
-		vi.spyOn(supabaseRealtimeManager, 'subscribeChannel').mockResolvedValue(undefined);
 
 		await presenceManager.startPresenceTracking([]);
 
@@ -349,8 +281,6 @@ describe('Heartbeat Lifecycle', () => {
 		supabase.rpc = rpcMock;
 
 		// Mock realtime manager methods
-		vi.spyOn(supabaseRealtimeManager, 'createChannel').mockReturnValue(createMockChannel('test'));
-		vi.spyOn(supabaseRealtimeManager, 'subscribeChannel').mockResolvedValue(undefined);
 
 		// Should not throw
 		await expect(presenceManager.startPresenceTracking(['friend-1'])).resolves.not.toThrow();
@@ -366,8 +296,6 @@ describe('Heartbeat Lifecycle', () => {
 		supabase.rpc = rpcMock;
 
 		// Mock realtime manager methods
-		vi.spyOn(supabaseRealtimeManager, 'createChannel').mockReturnValue(createMockChannel('test'));
-		vi.spyOn(supabaseRealtimeManager, 'subscribeChannel').mockResolvedValue(undefined);
 
 		await presenceManager.startPresenceTracking(['friend-1']);
 
@@ -382,203 +310,206 @@ describe('Heartbeat Lifecycle', () => {
 });
 
 // ============================================================================
-// 3. Presence Tracking (Subscribe/Unsubscribe/Update)
+// 3. Relecture du statut des amis (écart T1, 2026-11-03)
 // ============================================================================
 
-describe('Presence Tracking', () => {
+function presenceFrom(rows: () => { data: unknown; error: unknown }) {
+	return vi.fn(() => ({
+		select: vi.fn(() => ({
+			in: vi.fn(() => Promise.resolve(rows()))
+		}))
+	}));
+}
+
+describe('Relecture du statut des amis', () => {
 	let supabase: SupabaseClient<Database>;
 	const userId = 'user-123';
+	const NOW = new Date('2026-11-03T12:00:00Z').getTime();
+	const secondsAgo = (s: number) => new Date(NOW - s * 1000).toISOString();
 
 	beforeEach(() => {
+		vi.useFakeTimers();
+		vi.setSystemTime(NOW);
 		supabase = createMockSupabaseClient();
 		presenceManager.init(supabase, userId);
-
-		// Mock supabaseRealtimeManager
-		vi.spyOn(supabaseRealtimeManager, 'init');
-		vi.spyOn(supabaseRealtimeManager, 'createChannel').mockReturnValue(createMockChannel('test'));
-		vi.spyOn(supabaseRealtimeManager, 'subscribeChannel').mockResolvedValue(undefined);
-		vi.spyOn(supabaseRealtimeManager, 'unsubscribeChannel').mockResolvedValue(undefined);
 	});
 
-	afterEach(() => {
+	afterEach(async () => {
+		await presenceManager.stopPresenceTracking();
+		vi.useRealTimers();
 		vi.clearAllMocks();
 	});
 
-	it('should subscribe to postgres_changes with correct filter', async () => {
-		const friendIds = ['friend-1', 'friend-2', 'friend-3'];
-		const mockChannel = createMockChannel('user-presence-updates');
-		vi.spyOn(supabaseRealtimeManager, 'createChannel').mockReturnValue(mockChannel);
-
-		await presenceManager.startPresenceTracking(friendIds);
-
-		// Verify channel.on was called with correct filter
-		expect(mockChannel.on).toHaveBeenCalledWith(
-			'postgres_changes',
-			{
-				event: '*',
-				schema: 'public',
-				table: 'user_presence',
-				filter: 'user_id=in.(friend-1,friend-2,friend-3)'
-			},
-			expect.any(Function)
-		);
-	});
-
-	it('should subscribe to channel via supabaseRealtimeManager', async () => {
+	it("n'ouvre aucun canal temps réel", async () => {
 		await presenceManager.startPresenceTracking(['friend-1']);
-
-		expect(supabaseRealtimeManager.subscribeChannel).toHaveBeenCalledWith('user-presence-updates');
+		expect(supabase.channel).not.toHaveBeenCalled();
 	});
 
-	it('should fetch initial presence state after subscribing', async () => {
-		const friendIds = ['friend-1', 'friend-2'];
-		const fromMock = vi.fn(() => ({
-			select: vi.fn(() => ({
-				in: vi.fn(() =>
-					Promise.resolve({
-						data: [
-							{ user_id: 'friend-1', status: 'online' },
-							{ user_id: 'friend-2', status: 'offline' }
-						],
-						error: null
-					})
-				)
-			}))
-		}));
+	it('lit le statut à l’ouverture, puis toutes les 60 s', async () => {
+		const fromMock = presenceFrom(() => ({ data: [], error: null }));
 		supabase.from = fromMock as unknown as typeof supabase.from;
 
-		await presenceManager.startPresenceTracking(friendIds);
-
+		await presenceManager.startPresenceTracking(['friend-1']);
+		expect(fromMock).toHaveBeenCalledTimes(1);
 		expect(fromMock).toHaveBeenCalledWith('user_presence');
+		expect(PRESENCE_POLL_INTERVAL).toBe(60000);
+
+		await vi.advanceTimersByTimeAsync(59_000);
+		expect(fromMock).toHaveBeenCalledTimes(1);
+		await vi.advanceTimersByTimeAsync(1_000);
+		expect(fromMock).toHaveBeenCalledTimes(2);
+	});
+
+	it('suit un ami qui se connecte puis se déconnecte entre deux relectures', async () => {
+		let rows = [{ user_id: 'friend-1', status: 'offline', last_heartbeat: secondsAgo(500) }];
+		supabase.from = presenceFrom(() => ({
+			data: rows,
+			error: null
+		})) as unknown as typeof supabase.from;
+
+		await presenceManager.startPresenceTracking(['friend-1']);
+		expect(presenceManager.getFriendPresence('friend-1')).toBe('offline');
+
+		rows = [{ user_id: 'friend-1', status: 'online', last_heartbeat: secondsAgo(0) }];
+		await vi.advanceTimersByTimeAsync(PRESENCE_POLL_INTERVAL);
+		expect(presenceManager.getFriendPresence('friend-1')).toBe('online');
+
+		rows = [{ user_id: 'friend-1', status: 'offline', last_heartbeat: secondsAgo(0) }];
+		await vi.advanceTimersByTimeAsync(PRESENCE_POLL_INTERVAL);
+		expect(presenceManager.getFriendPresence('friend-1')).toBe('offline');
+	});
+
+	it('un ami « online » sans signal de vie depuis 270 s est hors ligne', async () => {
+		supabase.from = presenceFrom(() => ({
+			data: [
+				{ user_id: 'friend-1', status: 'online', last_heartbeat: secondsAgo(269) },
+				{ user_id: 'friend-2', status: 'online', last_heartbeat: secondsAgo(270) },
+				{ user_id: 'friend-3', status: 'online', last_heartbeat: secondsAgo(86_400) }
+			],
+			error: null
+		})) as unknown as typeof supabase.from;
+
+		await presenceManager.startPresenceTracking(['friend-1', 'friend-2', 'friend-3']);
+
+		expect(STALE_AFTER_MS).toBe(270000);
 		expect(presenceManager.getFriendPresence('friend-1')).toBe('online');
 		expect(presenceManager.getFriendPresence('friend-2')).toBe('offline');
+		expect(presenceManager.getFriendPresence('friend-3')).toBe('offline');
 	});
 
-	it('should unsubscribe from channel on stop', async () => {
+	it('un ami sans ligne de présence est hors ligne', async () => {
+		supabase.from = presenceFrom(() => ({
+			data: [],
+			error: null
+		})) as unknown as typeof supabase.from;
+		await presenceManager.startPresenceTracking(['friend-1']);
+		expect(presenceManager.getFriendPresence('friend-1')).toBe('offline');
+	});
+
+	it('une relecture en échec garde le dernier statut connu', async () => {
+		let fail = false;
+		supabase.from = presenceFrom(() =>
+			fail
+				? { data: null, error: { message: 'réseau' } }
+				: {
+						data: [{ user_id: 'friend-1', status: 'online', last_heartbeat: secondsAgo(0) }],
+						error: null
+					}
+		) as unknown as typeof supabase.from;
+
+		await presenceManager.startPresenceTracking(['friend-1']);
+		expect(presenceManager.getFriendPresence('friend-1')).toBe('online');
+
+		fail = true;
+		await vi.advanceTimersByTimeAsync(PRESENCE_POLL_INTERVAL);
+		expect(presenceManager.getFriendPresence('friend-1')).toBe('online');
+	});
+
+	it('arrête la relecture à l’arrêt du suivi', async () => {
+		const fromMock = presenceFrom(() => ({ data: [], error: null }));
+		supabase.from = fromMock as unknown as typeof supabase.from;
+
 		await presenceManager.startPresenceTracking(['friend-1']);
 		await presenceManager.stopPresenceTracking();
-
-		expect(supabaseRealtimeManager.unsubscribeChannel).toHaveBeenCalledWith(
-			'user-presence-updates'
-		);
+		await vi.advanceTimersByTimeAsync(PRESENCE_POLL_INTERVAL * 3);
+		expect(fromMock).toHaveBeenCalledTimes(1);
 	});
 
-	it('should handle postgres_changes INSERT event', async () => {
-		const mockChannel = createMockChannel('user-presence-updates');
-		vi.spyOn(supabaseRealtimeManager, 'createChannel').mockReturnValue(mockChannel);
+	it('une relecture qui revient après l’arrêt ne réaffiche rien', async () => {
+		let resolve!: (v: { data: unknown; error: null }) => void;
+		let calls = 0;
+		supabase.from = vi.fn(() => ({
+			select: vi.fn(() => ({
+				in: vi.fn(() => {
+					calls++;
+					if (calls === 1) {
+						return Promise.resolve({ data: [], error: null });
+					}
+					return new Promise((r) => (resolve = r));
+				})
+			}))
+		})) as unknown as typeof supabase.from;
 
 		await presenceManager.startPresenceTracking(['friend-1']);
-
-		// Simulate INSERT event
-		mockChannel.simulateEvent(
-			'postgres_changes',
-			{
-				event: '*',
-				schema: 'public',
-				table: 'user_presence',
-				filter: 'user_id=in.(friend-1)'
-			},
-			{
-				eventType: 'INSERT',
-				new: {
-					user_id: 'friend-1',
-					status: 'online',
-					last_seen: new Date().toISOString()
-				},
-				old: {}
-			}
-		);
-
-		expect(presenceManager.getFriendPresence('friend-1')).toBe('online');
-	});
-
-	it('should handle postgres_changes UPDATE event', async () => {
-		const mockChannel = createMockChannel('user-presence-updates');
-		vi.spyOn(supabaseRealtimeManager, 'createChannel').mockReturnValue(mockChannel);
-
-		await presenceManager.startPresenceTracking(['friend-1']);
-
-		// Simulate UPDATE event
-		mockChannel.simulateEvent(
-			'postgres_changes',
-			{
-				event: '*',
-				schema: 'public',
-				table: 'user_presence',
-				filter: 'user_id=in.(friend-1)'
-			},
-			{
-				eventType: 'UPDATE',
-				new: {
-					user_id: 'friend-1',
-					status: 'offline',
-					last_seen: new Date().toISOString()
-				},
-				old: {
-					user_id: 'friend-1'
-				}
-			}
-		);
+		await vi.advanceTimersByTimeAsync(PRESENCE_POLL_INTERVAL); // relecture en vol
+		await presenceManager.stopPresenceTracking();
+		resolve({
+			data: [{ user_id: 'friend-1', status: 'online', last_heartbeat: secondsAgo(0) }],
+			error: null
+		});
+		await vi.advanceTimersByTimeAsync(0);
 
 		expect(presenceManager.getFriendPresence('friend-1')).toBe('offline');
 	});
 
-	it('should handle postgres_changes DELETE event', async () => {
-		const mockChannel = createMockChannel('user-presence-updates');
-		vi.spyOn(supabaseRealtimeManager, 'createChannel').mockReturnValue(mockChannel);
-
-		// Pre-populate friend as online
-		const fromMock = vi.fn(() => ({
+	it('un arrêt pendant le démarrage ne laisse ni relecture ni signal de vie', async () => {
+		let resolve!: (v: { data: unknown; error: null }) => void;
+		supabase.from = vi.fn(() => ({
 			select: vi.fn(() => ({
-				in: vi.fn(() =>
-					Promise.resolve({
-						data: [{ user_id: 'friend-1', status: 'online' }],
-						error: null
-					})
-				)
+				in: vi.fn(() => new Promise((r) => (resolve = r)))
 			}))
-		}));
-		supabase.from = fromMock as unknown as typeof supabase.from;
+		})) as unknown as typeof supabase.from;
 
-		await presenceManager.startPresenceTracking(['friend-1']);
-		expect(presenceManager.getFriendPresence('friend-1')).toBe('online');
+		const starting = presenceManager.startPresenceTracking(['friend-1']);
+		await presenceManager.stopPresenceTracking();
+		resolve({ data: [], error: null });
+		await starting;
 
-		// Simulate DELETE event
-		mockChannel.simulateEvent(
-			'postgres_changes',
-			{
-				event: '*',
-				schema: 'public',
-				table: 'user_presence',
-				filter: 'user_id=in.(friend-1)'
-			},
-			{
-				eventType: 'DELETE',
-				new: {},
-				old: {
-					user_id: 'friend-1'
-				}
-			}
-		);
-
-		expect(presenceManager.getFriendPresence('friend-1')).toBe('offline');
+		expect(vi.getTimerCount()).toBe(0);
+		expect(supabase.rpc).not.toHaveBeenCalledWith('upsert_user_presence', {
+			p_user_id: userId,
+			p_status: 'online'
+		});
 	});
 
-	it('should handle initial presence fetch errors gracefully', async () => {
-		const fromMock = vi.fn(() => ({
+	it('deux démarrages simultanés ne laissent qu’une relecture et un signal de vie', async () => {
+		const resolvers: ((v: { data: unknown; error: null }) => void)[] = [];
+		supabase.from = vi.fn(() => ({
 			select: vi.fn(() => ({
-				in: vi.fn(() =>
-					Promise.resolve({
-						data: null,
-						error: { message: 'Fetch failed' }
-					})
-				)
+				in: vi.fn(() => new Promise((r) => resolvers.push(r)))
 			}))
-		}));
+		})) as unknown as typeof supabase.from;
+
+		const first = presenceManager.startPresenceTracking(['friend-1']);
+		const second = presenceManager.startPresenceTracking(['friend-1', 'friend-2']);
+		resolvers.forEach((r) => r({ data: [], error: null }));
+		await Promise.all([first, second]);
+
+		// Un minuteur de relecture + un minuteur de signal de vie.
+		expect(vi.getTimerCount()).toBe(2);
+	});
+
+	it('ne relit rien sans ami, mais envoie le signal de vie', async () => {
+		const fromMock = presenceFrom(() => ({ data: [], error: null }));
 		supabase.from = fromMock as unknown as typeof supabase.from;
 
-		// Should not throw
-		await expect(presenceManager.startPresenceTracking(['friend-1'])).resolves.not.toThrow();
+		await presenceManager.startPresenceTracking([]);
+		await vi.advanceTimersByTimeAsync(PRESENCE_POLL_INTERVAL * 2);
+		expect(fromMock).not.toHaveBeenCalled();
+		expect(supabase.rpc).toHaveBeenCalledWith('upsert_user_presence', {
+			p_user_id: userId,
+			p_status: 'online'
+		});
 	});
 });
 
@@ -593,10 +524,6 @@ describe('Friend Presence Management', () => {
 	beforeEach(() => {
 		supabase = createMockSupabaseClient();
 		presenceManager.init(supabase, userId);
-
-		vi.spyOn(supabaseRealtimeManager, 'createChannel').mockReturnValue(createMockChannel('test'));
-		vi.spyOn(supabaseRealtimeManager, 'subscribeChannel').mockResolvedValue(undefined);
-		vi.spyOn(supabaseRealtimeManager, 'unsubscribeChannel').mockResolvedValue(undefined);
 	});
 
 	afterEach(() => {
@@ -623,7 +550,9 @@ describe('Friend Presence Management', () => {
 			select: vi.fn(() => ({
 				in: vi.fn(() =>
 					Promise.resolve({
-						data: [{ user_id: 'friend-1', status: 'online' }],
+						data: [
+							{ user_id: 'friend-1', status: 'online', last_heartbeat: new Date().toISOString() }
+						],
 						error: null
 					})
 				)
@@ -646,9 +575,9 @@ describe('Friend Presence Management', () => {
 				in: vi.fn(() =>
 					Promise.resolve({
 						data: [
-							{ user_id: 'friend-1', status: 'online' },
-							{ user_id: 'friend-2', status: 'offline' },
-							{ user_id: 'friend-3', status: 'online' }
+							{ user_id: 'friend-1', status: 'online', last_heartbeat: new Date().toISOString() },
+							{ user_id: 'friend-2', status: 'offline', last_heartbeat: new Date().toISOString() },
+							{ user_id: 'friend-3', status: 'online', last_heartbeat: new Date().toISOString() }
 						],
 						error: null
 					})
@@ -682,32 +611,16 @@ describe('Edge Cases & Error Handling', () => {
 	});
 
 	it('should not start tracking if not initialized', async () => {
-		mockBrowser(true);
-
 		await presenceManager.startPresenceTracking(['friend-1']);
 
 		expect(supabase.channel).not.toHaveBeenCalled();
 	});
 
-	it('should initialize supabaseRealtimeManager on init', () => {
-		mockBrowser(true);
-		const initSpy = vi.spyOn(supabaseRealtimeManager, 'init');
-
-		presenceManager.init(supabase, userId);
-
-		expect(initSpy).toHaveBeenCalledWith(supabase, userId);
-	});
-
 	it('should handle RPC error when marking offline on stop', async () => {
-		mockBrowser(true);
 		presenceManager.init(supabase, userId);
 
 		const rpcMock = vi.fn().mockRejectedValue(new Error('RPC failed'));
 		supabase.rpc = rpcMock;
-
-		vi.spyOn(supabaseRealtimeManager, 'createChannel').mockReturnValue(createMockChannel('test'));
-		vi.spyOn(supabaseRealtimeManager, 'subscribeChannel').mockResolvedValue(undefined);
-		vi.spyOn(supabaseRealtimeManager, 'unsubscribeChannel').mockResolvedValue(undefined);
 
 		await presenceManager.startPresenceTracking(['friend-1']);
 		rpcMock.mockClear();
@@ -718,236 +631,9 @@ describe('Edge Cases & Error Handling', () => {
 	});
 
 	it('should handle empty friend array gracefully', async () => {
-		mockBrowser(true);
 		presenceManager.init(supabase, userId);
-
-		vi.spyOn(supabaseRealtimeManager, 'createChannel').mockReturnValue(createMockChannel('test'));
-		vi.spyOn(supabaseRealtimeManager, 'subscribeChannel').mockResolvedValue(undefined);
 
 		// Should not throw, should still start heartbeat
 		await expect(presenceManager.startPresenceTracking([])).resolves.not.toThrow();
-	});
-});
-
-// ============================================================================
-// 6. Integration with supabaseRealtimeManager
-// ============================================================================
-
-describe('Integration with supabaseRealtimeManager', () => {
-	let supabase: SupabaseClient<Database>;
-	const userId = 'user-123';
-
-	beforeEach(() => {
-		supabase = createMockSupabaseClient();
-		presenceManager.init(supabase, userId);
-	});
-
-	afterEach(() => {
-		vi.clearAllMocks();
-	});
-
-	it('should use channel name "user-presence-updates"', async () => {
-		const createChannelSpy = vi
-			.spyOn(supabaseRealtimeManager, 'createChannel')
-			.mockReturnValue(createMockChannel('test'));
-		vi.spyOn(supabaseRealtimeManager, 'subscribeChannel').mockResolvedValue(undefined);
-
-		await presenceManager.startPresenceTracking(['friend-1']);
-
-		expect(createChannelSpy).toHaveBeenCalledWith('user-presence-updates');
-	});
-
-	it('should pass correct channel name to subscribeChannel', async () => {
-		vi.spyOn(supabaseRealtimeManager, 'createChannel').mockReturnValue(createMockChannel('test'));
-		const subscribeSpy = vi
-			.spyOn(supabaseRealtimeManager, 'subscribeChannel')
-			.mockResolvedValue(undefined);
-
-		await presenceManager.startPresenceTracking(['friend-1']);
-
-		expect(subscribeSpy).toHaveBeenCalledWith('user-presence-updates');
-	});
-
-	it('should pass correct channel name to unsubscribeChannel', async () => {
-		vi.spyOn(supabaseRealtimeManager, 'createChannel').mockReturnValue(createMockChannel('test'));
-		vi.spyOn(supabaseRealtimeManager, 'subscribeChannel').mockResolvedValue(undefined);
-		const unsubscribeSpy = vi
-			.spyOn(supabaseRealtimeManager, 'unsubscribeChannel')
-			.mockResolvedValue(undefined);
-
-		await presenceManager.startPresenceTracking(['friend-1']);
-		await presenceManager.stopPresenceTracking();
-
-		expect(unsubscribeSpy).toHaveBeenCalledWith('user-presence-updates');
-	});
-});
-
-// ============================================================================
-// 7. Reconnection Logic
-// ============================================================================
-
-describe('Reconnection Logic', () => {
-	let supabase: SupabaseClient<Database>;
-	const userId = 'user-123';
-
-	beforeEach(() => {
-		supabase = createMockSupabaseClient();
-		vi.useFakeTimers();
-		presenceManager.init(supabase, userId);
-	});
-
-	afterEach(async () => {
-		// Clean up presence manager state
-		vi.spyOn(supabaseRealtimeManager, 'unsubscribeChannel').mockResolvedValue(undefined);
-		await presenceManager.stopPresenceTracking();
-		vi.useRealTimers();
-		vi.clearAllMocks();
-	});
-
-	it('should schedule reconnection with exponential backoff on system error', async () => {
-		const mockChannel = createMockChannel('user-presence-updates');
-		vi.spyOn(supabaseRealtimeManager, 'createChannel').mockReturnValue(mockChannel);
-		vi.spyOn(supabaseRealtimeManager, 'subscribeChannel').mockResolvedValue(undefined);
-		const unsubscribeSpy = vi
-			.spyOn(supabaseRealtimeManager, 'unsubscribeChannel')
-			.mockResolvedValue(undefined);
-
-		await presenceManager.startPresenceTracking(['friend-1']);
-
-		// Simulate system error using the mock's event simulation. The impl
-		// registers `channel.on('system', {}, …)` and discriminates on the payload
-		// (`status !== 'ok'`), so the mock filter must be `{}` to match the listener
-		// key; any non-ok payload then triggers reconnection.
-		mockChannel.simulateEvent('system', {}, { message: 'Connection error' });
-
-		// Should have scheduled reconnection timer (in addition to heartbeat)
-		const timerCount = vi.getTimerCount();
-		expect(timerCount).toBeGreaterThan(1);
-
-		// First reconnection delay should be 5000ms (RECONNECT_DELAY_MS)
-		// Plus 1000ms for the internal reconnect delay
-		await vi.advanceTimersByTimeAsync(6500);
-
-		// Should have attempted reconnection
-		expect(unsubscribeSpy).toHaveBeenCalledWith('user-presence-updates');
-	});
-
-	it('should clear reconnect timer on stopPresenceTracking', async () => {
-		const mockChannel = createMockChannel('user-presence-updates');
-		vi.spyOn(supabaseRealtimeManager, 'createChannel').mockReturnValue(mockChannel);
-		vi.spyOn(supabaseRealtimeManager, 'subscribeChannel').mockResolvedValue(undefined);
-		vi.spyOn(supabaseRealtimeManager, 'unsubscribeChannel').mockResolvedValue(undefined);
-
-		await presenceManager.startPresenceTracking(['friend-1']);
-
-		// Trigger error to schedule reconnection
-		mockChannel.simulateEvent('system', {}, {});
-
-		// Should have timers (heartbeat + reconnection)
-		expect(vi.getTimerCount()).toBeGreaterThan(1);
-
-		await presenceManager.stopPresenceTracking();
-
-		// All timers should be cleared
-		expect(vi.getTimerCount()).toBe(0);
-	});
-
-	it('should prevent concurrent reconnection attempts (isReconnecting flag)', async () => {
-		const mockChannel = createMockChannel('user-presence-updates');
-		vi.spyOn(supabaseRealtimeManager, 'createChannel').mockReturnValue(mockChannel);
-		vi.spyOn(supabaseRealtimeManager, 'subscribeChannel').mockResolvedValue(undefined);
-		vi.spyOn(supabaseRealtimeManager, 'unsubscribeChannel').mockResolvedValue(undefined);
-
-		await presenceManager.startPresenceTracking(['friend-1']);
-
-		// Access private isReconnecting flag for testing
-		expect(presenceManager['isReconnecting']).toBe(false);
-
-		// Trigger first error
-		mockChannel.simulateEvent('system', {}, {});
-
-		// isReconnecting should now be true
-		expect(presenceManager['isReconnecting']).toBe(true);
-
-		// Second error should be ignored because isReconnecting is true
-		const reconnectAttemptsBefore = presenceManager['reconnectAttempts'];
-		mockChannel.simulateEvent('system', {}, {});
-
-		// Reconnect attempts should NOT have increased
-		expect(presenceManager['reconnectAttempts']).toBe(reconnectAttemptsBefore);
-	});
-
-	it('should reset reconnection state after successful reconnection', async () => {
-		const mockChannel = createMockChannel('user-presence-updates');
-		vi.spyOn(supabaseRealtimeManager, 'createChannel').mockReturnValue(mockChannel);
-		vi.spyOn(supabaseRealtimeManager, 'subscribeChannel').mockResolvedValue(undefined);
-		vi.spyOn(supabaseRealtimeManager, 'unsubscribeChannel').mockResolvedValue(undefined);
-
-		await presenceManager.startPresenceTracking(['friend-1']);
-
-		// Trigger error
-		mockChannel.simulateEvent('system', {}, {});
-
-		// Should be reconnecting
-		expect(presenceManager['isReconnecting']).toBe(true);
-		expect(presenceManager['reconnectAttempts']).toBe(1);
-
-		// Advance past reconnection delay + internal delay
-		await vi.advanceTimersByTimeAsync(6500);
-
-		// After successful reconnection, state should be reset
-		expect(presenceManager['isReconnecting']).toBe(false);
-		expect(presenceManager['reconnectAttempts']).toBe(0);
-	});
-
-	it('should stop reconnecting after MAX_RECONNECT_ATTEMPTS (5)', async () => {
-		const mockChannel = createMockChannel('user-presence-updates');
-		vi.spyOn(supabaseRealtimeManager, 'createChannel').mockReturnValue(mockChannel);
-		vi.spyOn(supabaseRealtimeManager, 'subscribeChannel').mockResolvedValue(undefined);
-		// Make unsubscribe fail to trigger error path
-		vi.spyOn(supabaseRealtimeManager, 'unsubscribeChannel').mockRejectedValue(new Error('Failed'));
-
-		await presenceManager.startPresenceTracking(['friend-1']);
-
-		// Simulate 5 reconnection attempts
-		for (let i = 0; i < 5; i++) {
-			// Trigger error (will be ignored if isReconnecting is true, so we need to wait)
-			mockChannel.simulateEvent('system', {}, {});
-
-			// Wait for reconnection attempt to complete (and fail)
-			const delay = 5000 * Math.pow(2, i);
-			await vi.advanceTimersByTimeAsync(delay + 2000);
-		}
-
-		// After 5 attempts, should have given up
-		expect(presenceManager['reconnectAttempts']).toBe(5);
-
-		// Trigger another error - should be ignored due to max attempts
-		mockChannel.simulateEvent('system', {}, {});
-
-		// Still at 5 attempts (not 6)
-		expect(presenceManager['reconnectAttempts']).toBe(5);
-	});
-
-	it('should use exponential backoff for reconnection delays', async () => {
-		const mockChannel = createMockChannel('user-presence-updates');
-		vi.spyOn(supabaseRealtimeManager, 'createChannel').mockReturnValue(mockChannel);
-		vi.spyOn(supabaseRealtimeManager, 'subscribeChannel').mockResolvedValue(undefined);
-		const unsubscribeSpy = vi
-			.spyOn(supabaseRealtimeManager, 'unsubscribeChannel')
-			.mockResolvedValue(undefined);
-
-		await presenceManager.startPresenceTracking(['friend-1']);
-
-		// Trigger error
-		mockChannel.simulateEvent('system', {}, {});
-
-		// Before 5000ms - should NOT have called unsubscribe
-		await vi.advanceTimersByTimeAsync(4900);
-		expect(unsubscribeSpy).not.toHaveBeenCalled();
-
-		// After 5000ms - should call unsubscribe
-		await vi.advanceTimersByTimeAsync(200);
-		expect(unsubscribeSpy).toHaveBeenCalledTimes(1);
 	});
 });

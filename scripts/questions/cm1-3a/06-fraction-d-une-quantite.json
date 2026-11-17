@@ -1,10 +1,8 @@
 {
+	"id": "ef1ed0ce-f8d9-42e5-bb52-cde271ca885e",
 	"title": "Fraction d'une quantité",
 	"description": "Un tiers de 12 billes, un quart de 10 m (2,5 m) : fractions de numérateur 1 seulement, résultat entier ou décimal",
 	"grades": ["CM1"],
-	"theme": "Fractions",
-	"domain": "Calculer",
-	"subdomain": "Fraction d'une quantité",
 	"level": 6,
 	"delay": 30,
 	"status": "draft",

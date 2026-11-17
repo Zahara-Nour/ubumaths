@@ -67,8 +67,6 @@ function template(
 			}
 		],
 		grades: ['1_SPE'],
-		theme: 'Géométrie',
-		domain: 'Géométrie repérée',
 		level: 1
 	};
 }

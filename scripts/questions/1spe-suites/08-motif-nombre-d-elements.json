@@ -1,10 +1,8 @@
 {
+	"id": "89594aa7-17b2-45cb-9991-0483d311796f",
 	"title": "Motif : nombre d'éléments à une étape",
 	"description": "Suite définie par un motif géométrique dessiné (allumettes, croix, triangle de points) : compter les éléments d'une étape non dessinée",
 	"grades": ["1_SPE"],
-	"theme": "Suites",
-	"domain": "Apprivoiser",
-	"subdomain": "Motifs",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

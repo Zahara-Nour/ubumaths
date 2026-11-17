@@ -1,10 +1,8 @@
 {
+	"id": "e8ce1278-4f9c-4be5-9e45-e6323239a42b",
 	"title": "Résoudre une équation ax + b = 0",
 	"description": "Ensemble des solutions de ax + b = 0 : solution entière, solution fractionnaire",
 	"grades": ["2"],
-	"theme": "Calcul littéral",
-	"domain": "Equations",
-	"subdomain": "Ensemble des solutions",
 	"level": 3,
 	"delay": 45,
 	"status": "draft",

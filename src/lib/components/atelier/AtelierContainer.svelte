@@ -52,11 +52,13 @@
 	import {
 		ArchiveRestore,
 		EllipsisVertical,
+		Expand,
 		FolderOpen,
 		Redo2,
 		RotateCcw,
 		Save,
 		Share2,
+		Shrink,
 		SquareTerminal,
 		Undo2,
 		X
@@ -618,6 +620,13 @@
 	let graphExpanded = $state(false);
 	/** Seulement sur la vue Graphe : une autre vue ouverte par une commande le défait. */
 	const graphFills = $derived(graphExpanded && activeView === 'graphe');
+	/**
+	 * L'atelier en plein écran (bouton à côté des réglages) : TOUT l'atelier
+	 * recouvre la fenêtre, sans l'en-tête ni le menu du site. Pas le plein écran
+	 * du navigateur : Échap en sortirait aussi (Chrome), et David l'a écarté.
+	 * Non retenu : chaque visite repart en mode normal.
+	 */
+	let fullScreen = $state(false);
 	let calculView = $state<CalculView | null>(null);
 	let consoleButton = $state<ToolButton | null>(null);
 	let consolePanel = $state<HTMLElement | null>(null);
@@ -1044,9 +1053,9 @@
 		else openConsole();
 	}
 
-	// Graphe agrandi : la page derrière ne défile plus
+	// Graphe agrandi ou plein écran : la page derrière ne défile plus
 	$effect(() => {
-		if (!graphFills) return;
+		if (!graphFills && !fullScreen) return;
 		document.body.style.overflow = 'hidden';
 		return () => {
 			document.body.style.overflow = '';
@@ -1068,14 +1077,20 @@
 	 * écouté sur `window`, donc après le `document`).
 	 */
 	function handleExpandedEscape(event: KeyboardEvent) {
-		if (!graphFills || event.key !== 'Escape' || event.defaultPrevented) return;
+		if (!(graphFills || fullScreen) || event.key !== 'Escape' || event.defaultPrevented) return;
 		const target = event.target instanceof Element ? event.target : null;
 		if (target !== null && target.closest(FIELD_SELECTOR) !== null) return;
 		const open =
 			'[role="alertdialog"], [role="dialog"][data-state="open"], [role="menu"], [role="listbox"]';
 		if (document.querySelector(open)) return;
+		// Un Échap venu de la console est le sien (la fermer) : l'ordre des deux
+		// écouteurs n'est pas sûr (délégation de Svelte), on ne compte pas dessus
+		if (target !== null && consolePanel?.contains(target)) return;
 		event.preventDefault();
-		graphExpanded = false;
+		// Le graphe agrandi d'abord, puis la console ouverte : un Échap par étage
+		if (graphFills) graphExpanded = false;
+		else if (consoleOpen) closeConsole();
+		else fullScreen = false;
 	}
 
 	/**
@@ -1197,7 +1212,7 @@
 <svelte:window onkeydown={handleUndoKey} onkeydowncapture={handleConsoleShortcut} />
 <svelte:document onkeydown={handleExpandedEscape} />
 
-<div class="atelier" class:graphe-agrandi={graphFills}>
+<div class="atelier" class:graphe-agrandi={graphFills} class:plein-ecran={fullScreen}>
 	<ObjectPanel bind:selected onAction={handleAction} onTabulate={handleTabulate} />
 
 	<!-- `section` et non `main` : la page est déjà dans le `<main>` du layout,
@@ -1284,6 +1299,12 @@
 					bind:angleUnit={() => atelier.angleUnit, chooseAngleUnit}
 					bind:pointDragMode={() => atelier.pointDragMode, choosePointDragMode}
 					bind:domainMode={() => atelier.domainMode, chooseDomainMode}
+				/>
+				<ToolButton
+					label={fullScreen ? 'Quitter le plein écran' : 'Plein écran'}
+					icon={fullScreen ? Shrink : Expand}
+					hint={fullScreen ? 'Échap' : undefined}
+					onclick={() => (fullScreen = !fullScreen)}
 				/>
 			</div>
 		</div>
@@ -1475,23 +1496,38 @@
 </div>
 
 <style>
+	/* Une rangée bornée à la hauteur de la page : sans elle, la rangée implicite
+	   (`auto`) suivait le contenu de la zone et « Mes objets » passait sous le bas
+	   de l'écran (777 px pour 736 à 1280×800) */
 	.atelier {
 		display: grid;
 		grid-template-columns: minmax(14rem, 18rem) 1fr;
+		grid-template-rows: minmax(0, 1fr);
 		height: 100%;
 		min-height: 0;
+	}
+	/* « Mes objets » replié sur bureau : une bande, la vue prend la place.
+	   Pas sous le graphe agrandi : le panneau y est masqué, la vue reste seule */
+	@media (min-width: 721px) {
+		.atelier:not(.graphe-agrandi):has(> :global(.panneau.replie-large)) {
+			grid-template-columns: auto 1fr;
+		}
 	}
 
 	/* Le graphe agrandi prend toute la fenêtre, par-dessus l'en-tête et le menu
 	   du site ; les menus et fenêtres, rendus à la fin du `body` avec le même
 	   z-index, passent encore devant. Masqués (pas démontés — un champ en cours
-	   d'écriture garde son texte), le panneau, la barre et les onglets */
+	   d'écriture garde son texte), le panneau, la barre et les onglets.
+	   Le plein écran prend la même place, mais garde tout l'atelier */
+	.atelier.plein-ecran,
 	.atelier.graphe-agrandi {
 		position: fixed;
 		inset: 0;
 		z-index: 50;
 		height: auto;
 		background: var(--color-background);
+	}
+	.atelier.graphe-agrandi {
 		grid-template-columns: 1fr;
 		grid-template-rows: minmax(0, 1fr);
 	}

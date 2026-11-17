@@ -1,10 +1,8 @@
 {
+	"id": "b44e582b-a999-43c0-873a-16309427bf59",
 	"title": "La fonction valeur absolue",
 	"description": "Reconnaître la courbe de x ↦ |x| (V de pointe l'origine) ; |x| = −x pour x < 0 ; image d'un négatif (pièges : parabole prise pour le V, |x| = x toujours, image négative)",
 	"grades": ["2"],
-	"theme": "Fonctions",
-	"domain": "Valeur absolue",
-	"subdomain": "Courbe",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

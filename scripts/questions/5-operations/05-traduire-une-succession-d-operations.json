@@ -1,10 +1,8 @@
 {
+	"id": "c7fc49c4-1778-415a-b036-42180236ff48",
 	"title": "Traduire une succession d'opérations",
 	"description": "Écrire en une seule expression une succession donnée d'opérations : « ajoute 3 à 5, puis multiplie le résultat par 2 » s'écrit (5 + 3) × 2 ; parenthèses seulement si besoin",
 	"grades": ["5"],
-	"theme": "Entiers",
-	"domain": "Priorités opératoires",
-	"subdomain": "Traduire en une expression",
 	"level": 2,
 	"delay": 60,
 	"status": "draft",

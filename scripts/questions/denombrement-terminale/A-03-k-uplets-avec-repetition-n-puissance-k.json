@@ -1,10 +1,8 @@
 {
+	"id": "67b349ab-02c1-4e06-9026-b31d918acd46",
 	"title": "k-uplets (avec répétition) : n puissance k",
 	"description": "Nombre de k-uplets d'un ensemble à n éléments : cadenas, questionnaire, ADN, dés, mots (pièges : kⁿ au lieu de nᵏ, n × k, éléments distincts à tort)",
 	"grades": ["T_SPE"],
-	"theme": "Probabilités",
-	"domain": "Dénombrement",
-	"subdomain": "k-uplets",
 	"level": 1,
 	"status": "draft",
 	"delay": 60,

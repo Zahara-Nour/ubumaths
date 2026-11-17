@@ -57,7 +57,7 @@ describe('.résoudre — les décimaux tapés restent décimaux dans les étapes
 	it('2x = 0,6 : x = 0,3 dans la division et dans la solution', () => {
 		const text = shown('2x=0,6');
 		expect(text).toContain('x=0.3');
-		expect(last('2x=0,6').title).toBe('Solution : $x = 0.3$');
+		expect(last('2x=0,6').title).toBe('L’ensemble des solutions');
 		expect(text).not.toContain('\\dfrac{3}{10}');
 	});
 
@@ -174,8 +174,8 @@ describe('.résoudre — les solutions des étapes ont l’écriture de la répo
 	});
 
 	it('sans décimal tapé, une fraction reste une fraction : 3x = 2 → x = 2/3', () => {
-		expect(last('3x=2').title).toBe('Solution : $x = \\dfrac{2}{3}$');
-		expect(flat(last('(x-1)(2x-1)=0').expressionLatex)).toBe('S={1;\\dfrac{1}{2}}');
+		expect(last('3x=2').title).toBe('L’ensemble des solutions');
+		expect(flat(last('(x-1)(2x-1)=0').expressionLatex)).toBe('S={\\dfrac{1}{2};1}');
 	});
 
 	it('les étapes d’une équation sans décimal ni irrationnel ne changent pas', () => {
@@ -192,7 +192,7 @@ describe('.résoudre — V32 : la dernière étape du premier degré s’écrit 
 	it('3x = −π : x = −π/3 dans la division et dans « Solution », pas −(1/3)π', () => {
 		const text = shown('3x=-\\pi');
 		expect(text).not.toContain('\\dfrac{1}{3}\\pi');
-		expect(flat(last('3x=-\\pi').expressionLatex)).toBe('x=-\\dfrac{\\pi}{3}');
+		expect(flat(last('3x=-\\pi').expressionLatex)).toBe('S={-\\dfrac{\\pi}{3}}');
 		expect(flat(last('3x=-\\pi').expressionLatex)).toBe(flat(solved('3x=-\\pi').answer));
 	});
 
@@ -203,6 +203,6 @@ describe('.résoudre — V32 : la dernière étape du premier degré s’écrit 
 
 	it('2x = √3 : x = √3/2, la ligne et la dernière étape d’accord', () => {
 		expect(shown('2x=\\sqrt{3}')).not.toContain('\\dfrac{1}{2}\\sqrt{3}');
-		expect(flat(last('2x=\\sqrt{3}').expressionLatex)).toBe('x=\\dfrac{\\sqrt{3}}{2}');
+		expect(flat(last('2x=\\sqrt{3}').expressionLatex)).toBe('S={\\dfrac{\\sqrt{3}}{2}}');
 	});
 });

@@ -26,8 +26,6 @@ function generate(statement: string, blanks: unknown[]): QuestionInstance {
 		id: 't',
 		type: 'fill_in_blanks',
 		level: 1,
-		theme: 'x',
-		domain: 'y',
 		grades: ['6'],
 		title: 't',
 		variations: [{ statement, blanks, variables: [] }]

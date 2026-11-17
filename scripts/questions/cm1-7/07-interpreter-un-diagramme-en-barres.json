@@ -1,0 +1,327 @@
+{
+	"id": "c245f0cc-7b05-45be-bdbd-e0f7217fe87d",
+	"title": "Que dit le diagramme en barres ? (livres prêtés)",
+	"description": "Combien de livres de plus un mois que le précédent (BO : mars et février), le mois du plus grand nombre de prêts (case choix), combien en tout de janvier à mars ; axes de 10, 25, 50",
+	"grades": ["CM1"],
+	"level": 6,
+	"delay": 120,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Ce diagramme donne le nombre de livres prêtés par la bibliothèque, chaque mois.\n\n```barres\ntitre: Livres prêtés\naxes: Mois ; Livres\nJanvier = {{a1}}\nFévrier = {{a2}}\nMars = {{a3}}\nAvril = {{a4}}\nMai = {{a5}}\naxe: 0 à 120, de 10 en 10\n```\n\nCombien de livres a-t-on prêtés de plus en {{if:k==0|février|{{if:k==1|mars|{{if:k==2|avril|mai}}}}}} qu'en {{if:k==0|janvier|{{if:k==1|février|{{if:k==2|mars|avril}}}}}} ?\n\n$?$ livres de plus",
+			"variables": [
+				{
+					"name": "u1",
+					"expression": "1..12"
+				},
+				{
+					"name": "u2",
+					"expression": "1..12"
+				},
+				{
+					"name": "u3",
+					"expression": "1..12"
+				},
+				{
+					"name": "u4",
+					"expression": "1..12"
+				},
+				{
+					"name": "u5",
+					"expression": "1..12"
+				},
+				{
+					"name": "a1",
+					"expression": "eval:10*u1"
+				},
+				{
+					"name": "a2",
+					"expression": "eval:10*u2"
+				},
+				{
+					"name": "a3",
+					"expression": "eval:10*u3"
+				},
+				{
+					"name": "a4",
+					"expression": "eval:10*u4"
+				},
+				{
+					"name": "a5",
+					"expression": "eval:10*u5"
+				},
+				{
+					"name": "k",
+					"expression": "0..3"
+				},
+				{
+					"name": "x",
+					"expression": "eval:(a1)*((k-1)*(k-2)*(k-3))/(-6)+(a2)*((k-0)*(k-2)*(k-3))/(2)+(a3)*((k-0)*(k-1)*(k-3))/(-2)+(a4)*((k-0)*(k-1)*(k-2))/(6)"
+				},
+				{
+					"name": "y",
+					"expression": "eval:(a2)*((k-1)*(k-2)*(k-3))/(-6)+(a3)*((k-0)*(k-2)*(k-3))/(2)+(a4)*((k-0)*(k-1)*(k-3))/(-2)+(a5)*((k-0)*(k-1)*(k-2))/(6)"
+				},
+				{
+					"name": "d",
+					"expression": "eval:y-x"
+				}
+			],
+			"conditions": ["y > x"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On lit les deux barres : {{if:k==0|février|{{if:k==1|mars|{{if:k==2|avril|mai}}}}}} ${{y}}$ livres, {{if:k==0|janvier|{{if:k==1|février|{{if:k==2|mars|avril}}}}}} ${{x}}$ livres.",
+					"« Combien de plus » : l'écart, ${{y}} - {{x}} = \\textcolor{{{color:primary.0}}}{{{d}}}$ livres."
+				]
+			}
+		},
+		{
+			"statement": "Ce diagramme donne le nombre de livres prêtés par la bibliothèque, chaque mois.\n\n```barres\ntitre: Livres prêtés\naxes: Mois ; Livres\nJanvier = {{a1}}\nFévrier = {{a2}}\nMars = {{a3}}\nAvril = {{a4}}\nMai = {{a5}}\naxe: 0 à 250, de 25 en 25\n```\n\nQuel mois a-t-on prêté le plus de livres ?\n\n```choix\nmelanger: non\n- Janvier\n- Février\n- Mars\n- Avril\n- Mai\n```",
+			"variables": [
+				{
+					"name": "u1",
+					"expression": "1..8"
+				},
+				{
+					"name": "u2",
+					"expression": "1..8"
+				},
+				{
+					"name": "u3",
+					"expression": "1..8"
+				},
+				{
+					"name": "u4",
+					"expression": "1..8"
+				},
+				{
+					"name": "u5",
+					"expression": "1..8"
+				},
+				{
+					"name": "c",
+					"expression": "9..10"
+				},
+				{
+					"name": "k",
+					"expression": "0..4"
+				},
+				{
+					"name": "a1",
+					"expression": "eval:25*u1+(25*c-25*u1)*((k-1)*(k-2)*(k-3)*(k-4))/(24)"
+				},
+				{
+					"name": "a2",
+					"expression": "eval:25*u2+(25*c-25*u2)*((k-0)*(k-2)*(k-3)*(k-4))/(-6)"
+				},
+				{
+					"name": "a3",
+					"expression": "eval:25*u3+(25*c-25*u3)*((k-0)*(k-1)*(k-3)*(k-4))/(4)"
+				},
+				{
+					"name": "a4",
+					"expression": "eval:25*u4+(25*c-25*u4)*((k-0)*(k-1)*(k-2)*(k-4))/(-6)"
+				},
+				{
+					"name": "a5",
+					"expression": "eval:25*u5+(25*c-25*u5)*((k-0)*(k-1)*(k-2)*(k-3))/(24)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le plus de livres : la barre la plus haute.",
+					"C'est {{if:k==0|janvier|{{if:k==1|février|{{if:k==2|mars|{{if:k==3|avril|mai}}}}}}}}, avec ${{eval:25*c}}$ livres."
+				]
+			}
+		},
+		{
+			"statement": "Ce diagramme donne le nombre de livres prêtés par la bibliothèque, chaque mois.\n\n```barres\ntitre: Livres prêtés\naxes: Mois ; Livres\nJanvier = {{a1}}\nFévrier = {{a2}}\nMars = {{a3}}\nAvril = {{a4}}\nMai = {{a5}}\naxe: 0 à 500, de 50 en 50\n```\n\nCombien de livres a-t-on prêtés en tout de janvier à mars ?\n\n$?$ livres",
+			"variables": [
+				{
+					"name": "u1",
+					"expression": "1..10"
+				},
+				{
+					"name": "u2",
+					"expression": "1..10"
+				},
+				{
+					"name": "u3",
+					"expression": "1..10"
+				},
+				{
+					"name": "u4",
+					"expression": "1..10"
+				},
+				{
+					"name": "u5",
+					"expression": "1..10"
+				},
+				{
+					"name": "a1",
+					"expression": "eval:50*u1"
+				},
+				{
+					"name": "a2",
+					"expression": "eval:50*u2"
+				},
+				{
+					"name": "a3",
+					"expression": "eval:50*u3"
+				},
+				{
+					"name": "a4",
+					"expression": "eval:50*u4"
+				},
+				{
+					"name": "a5",
+					"expression": "eval:50*u5"
+				},
+				{
+					"name": "n",
+					"expression": "eval:a1+a2+a3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"De janvier à mars : trois barres, janvier, février et mars (l'axe compte de $50$ en $50$).",
+					"On les additionne : ${{a1}} + {{a2}} + {{a3}} = \\textcolor{{{color:primary.0}}}{{{n}}}$ livres."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Mars − février : 90 − 70 = 20",
+			"variationIndex": 0,
+			"variables": {
+				"u1": "4",
+				"u2": "7",
+				"u3": "9",
+				"u4": "3",
+				"u5": "6",
+				"a1": "40",
+				"a2": "70",
+				"a3": "90",
+				"a4": "30",
+				"a5": "60",
+				"k": "1",
+				"x": "70",
+				"y": "90",
+				"d": "20"
+			},
+			"answers": ["20"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la barre de mars (90)",
+			"variationIndex": 0,
+			"variables": {
+				"u1": "4",
+				"u2": "7",
+				"u3": "9",
+				"u4": "3",
+				"u5": "6",
+				"a1": "40",
+				"a2": "70",
+				"a3": "90",
+				"a4": "30",
+				"a5": "60",
+				"k": "1",
+				"x": "70",
+				"y": "90",
+				"d": "20"
+			},
+			"answers": ["90"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Le plus : avril (250)",
+			"variationIndex": 1,
+			"variables": {
+				"u1": "4",
+				"u2": "7",
+				"u3": "8",
+				"u4": "3",
+				"u5": "6",
+				"c": "10",
+				"k": "3",
+				"a1": "100",
+				"a2": "175",
+				"a3": "200",
+				"a4": "250",
+				"a5": "150"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Janvier à mars : 200 + 350 + 450 = 1 000",
+			"variationIndex": 2,
+			"variables": {
+				"u1": "4",
+				"u2": "7",
+				"u3": "9",
+				"u4": "3",
+				"u5": "6",
+				"a1": "200",
+				"a2": "350",
+				"a3": "450",
+				"a4": "150",
+				"a5": "300",
+				"n": "1000"
+			},
+			"answers": ["1 000"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : les cinq mois",
+			"variationIndex": 2,
+			"variables": {
+				"u1": "4",
+				"u2": "7",
+				"u3": "9",
+				"u4": "3",
+				"u5": "6",
+				"a1": "200",
+				"a2": "350",
+				"a3": "450",
+				"a4": "150",
+				"a5": "300",
+				"n": "1000"
+			},
+			"answers": ["1 450"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

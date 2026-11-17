@@ -78,6 +78,12 @@ export const DOMAINS: Domain[] = [
 			'friendships',
 			'student_warnings',
 			'parental_consents',
+			'parent_contacts',
+			'parent_carnet_links',
+			'parent_notifications',
+			'parent_exception_episodes',
+			'class_carnet_settings',
+			'student_carnet_opt_outs',
 			'terms_acceptances',
 			'account_deletion_audit',
 			'welcome_emails_sent'
@@ -156,18 +162,14 @@ export const DOMAINS: Domain[] = [
 			'student_buddies',
 			'student_mathoux',
 			'student_mathou_decorations',
-			'student_last_visits'
+			'student_last_visits',
+			'avatar_catalog',
+			'student_avatars'
 		]
 	},
 	{
 		title: 'Google Classroom',
-		match: [
-			'google_',
-			'class_google_classroom_links',
-			'coursework_',
-			'shared_coursework',
-			'shared_materials'
-		]
+		match: ['google_', 'coursework_', 'shared_coursework', 'shared_materials']
 	},
 	{
 		title: 'Outils du professeur (kanban, tableau blanc, constructions, figures, liens courts)',

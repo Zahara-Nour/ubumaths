@@ -1,10 +1,8 @@
 {
+	"id": "ce3c4e11-d2ac-4b56-bf45-58211f085be9",
 	"title": "Compter les cubes d'un assemblage",
 	"description": "Dénombrer les cubes d'un assemblage dessiné en perspective : une seule rangée de piles, deux rangées (cubes cachés sous d'autres), un empilement en escalier ou en pyramide",
 	"grades": ["6"],
-	"theme": "Géométrie",
-	"domain": "Solides",
-	"subdomain": "Assemblages de cubes",
 	"level": 1,
 	"delay": 45,
 	"status": "draft",

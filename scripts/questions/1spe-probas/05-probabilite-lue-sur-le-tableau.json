@@ -1,10 +1,8 @@
 {
+	"id": "22332630-20c6-4f63-9929-5c455c62a62d",
 	"title": "Probabilité lue sur le tableau",
 	"description": "Deux épreuves indépendantes représentées par un tableau : probabilité d'une somme de deux dés (issues équiprobables), probabilité d'une réunion lue sur le tableau des probabilités",
 	"grades": ["1_SPE"],
-	"theme": "Probabilités",
-	"domain": "Probabilités conditionnelles",
-	"subdomain": "Épreuves indépendantes",
 	"level": 4,
 	"delay": 90,
 	"status": "draft",

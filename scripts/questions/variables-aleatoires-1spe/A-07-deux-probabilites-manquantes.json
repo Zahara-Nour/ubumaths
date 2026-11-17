@@ -1,10 +1,8 @@
 {
+	"id": "f3addbe3-7254-483f-a640-0ea75e23dc69",
 	"title": "Compléter une loi : deux probabilités manquantes liées",
 	"description": "Deux probabilités de la loi manquent, une information les relie (rapport, égalité ou probabilité cumulée) : utiliser aussi que la somme vaut 1",
 	"grades": ["1_SPE"],
-	"theme": "Probabilités",
-	"domain": "Variables aléatoires",
-	"subdomain": "Compléter une loi",
 	"level": 3,
 	"status": "draft",
 	"delay": 90,

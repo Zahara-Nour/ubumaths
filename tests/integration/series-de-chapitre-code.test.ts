@@ -40,13 +40,10 @@ const ANON_KEY =
 const SERVICE_KEY =
 	process.env.SUPABASE_TEST_SERVICE_ROLE_KEY ||
 	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU';
-const CATEGORIES = [
-	{
-		category: { theme: 'Fonctions', domain: 'Étude de fonction', subdomain: 'Méthode', level: 1 },
-		quantity: 4,
-		delay: 20
-	}
-];
+/** Modèle publié du décor : la ligne de série le désigne par son identifiant (ADR 0035) */
+const TEMPLATE_ID = '0a11f0e0-0000-4000-8000-00000000c5d1';
+/** Série à la forme actuelle (une ligne par modèle), relue sous la RLS de l'élève */
+const CATEGORIES = [{ templateId: TEMPLATE_ID, quantity: 4, delay: 20 }];
 const PAST = new Date(Date.now() - 3600_000).toISOString();
 
 // Variables
@@ -122,8 +119,20 @@ describe('séries de chapitre — code serveur', () => {
 		chapter = await newChapter('Fonctions SD');
 		otherChapter = await newChapter('Second SD');
 
+		await service.from('question_templates').delete().eq('id', TEMPLATE_ID);
+		const { error: templateError } = await service.from('question_templates').insert({
+			id: TEMPLATE_ID,
+			type: 'fill_in_blanks',
+			title: 'Modèle SD',
+			level: 1,
+			grades: ['1_SPE'],
+			status: 'published',
+			variations: [{ statement: 'Combien font $$2+2$$ ? ____', blanks: [{ expectedAnswer: '4' }] }]
+		});
+		expect(templateError, 'décor : modèle publié').toBeNull();
+
 		const series = (title: string, owner = teacher.id) =>
-			insertRow('series', { title, grade: '1_SPE', categories: CATEGORIES, created_by: owner });
+			insertRow('series', { title, grade: '1_SPE', items: CATEGORIES, created_by: owner });
 		published = { series: await series('Publiée SD'), link: '' };
 		published.link = await insertRow('chapter_series', {
 			chapter_id: chapter,
@@ -136,6 +145,7 @@ describe('séries de chapitre — code serveur', () => {
 
 	afterAll(async () => {
 		await cleanupAllTestData();
+		await service.from('question_templates').delete().eq('id', TEMPLATE_ID);
 	});
 
 	it('élève : listChapterSeries rend la série publiée, titre et lien de lancement', async () => {
@@ -147,6 +157,10 @@ describe('séries de chapitre — code serveur', () => {
 		const href = new URL(data![0].launchHref!, 'http://x');
 		expect(href.pathname).toBe('/automaths/test');
 		expect(href.searchParams.get('mode')).toBe('flash');
+		// Ancienne catégorie → son modèle, dans un lien `?modeles=`
+		expect(JSON.parse(decodeURIComponent(href.searchParams.get('modeles') ?? '[]'))).toEqual([
+			{ templateId: TEMPLATE_ID, quantity: 4, delay: 20 }
+		]);
 	});
 
 	it('élève : retirer, changer la forme, ranger → not_found, rien ne change', async () => {
@@ -213,7 +227,7 @@ describe('séries de chapitre — code serveur', () => {
 			const s = await insertRow('series', {
 				title: `Éval ${status} SD`,
 				grade: '1_SPE',
-				categories: CATEGORIES,
+				items: CATEGORIES,
 				created_by: teacher.id
 			});
 			await insertRow('evaluations', {

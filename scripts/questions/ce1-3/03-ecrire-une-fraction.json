@@ -1,10 +1,8 @@
 {
+	"id": "b165ea1c-f0ee-4434-87c0-3531e44286fb",
 	"title": "Écrire en chiffres une fraction",
 	"description": "Trois huitièmes → 3/8",
 	"grades": ["CE1"],
-	"theme": "Fractions",
-	"domain": "Apprivoiser",
-	"subdomain": "Ecriture",
 	"level": 3,
 	"delay": 30,
 	"status": "draft",

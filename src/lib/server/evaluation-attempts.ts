@@ -27,7 +27,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 import { toJson } from '$lib/types/database-helpers';
-import type { CartItem } from '$lib/stores/questionCart.svelte';
+import type { SeriesItem } from '$lib/validation/series';
 import type { QuestionInstance, QuestionTemplate } from '$lib/questions/types';
 import type { AnswerData } from '$lib/types/question-display';
 import type { EvaluationWithSeries } from '$lib/types/evaluation';
@@ -64,6 +64,11 @@ import {
 	isAssignmentRecipient
 } from '$lib/server/evaluations';
 import { recordSeriesReviews } from '$lib/server/srs/record-series-reviews';
+import {
+	evaluationTraceOf,
+	type EvaluationEndReason,
+	type EvaluationTraceColumns
+} from '$lib/server/evaluation-trace';
 import { addBuddyXpFromTest } from '$lib/server/buddy-xp-service';
 import { createServerLogger } from '$lib/utils/logger';
 
@@ -98,7 +103,7 @@ interface EvaluationSummary {
 export type StartResult =
 	| {
 			kind: 'preview';
-			evaluation: EvaluationSummary & { categories: CartItem[] };
+			evaluation: EvaluationSummary & { items: SeriesItem[] };
 	  }
 	| {
 			kind: 'attempt';
@@ -111,7 +116,13 @@ export type StartResult =
 	  };
 
 export interface SubmitInput {
-	answers: Array<SubmittedAnswer & { position: number; timeSpent?: number }>;
+	answers: Array<
+		SubmittedAnswer & {
+			position: number;
+			timeSpent?: number;
+			endReason?: EvaluationEndReason;
+		}
+	>;
 }
 
 export type { CorrectedQuestion };
@@ -148,12 +159,14 @@ export class AttemptAlreadySubmittedError extends EvaluationError {
  */
 export function srsReviewsOf(
 	questions: ReadonlyArray<{ status: ValidationStatus; partial: boolean }>,
-	templateIds: readonly string[]
+	templateIds: readonly string[],
+	traces?: readonly EvaluationTraceColumns[]
 ): SeriesReview[] {
 	return questions.map((question, index) => ({
 		templateId: templateIds[index],
 		success: isKnownForSrs(question),
-		selfAssessed: false
+		selfAssessed: false,
+		...(traces?.[index] && { trace: traces[index] })
 	}));
 }
 
@@ -210,18 +223,16 @@ function remainingSeconds(
 /** Modèles de la série (publiés, lus sous RLS par l'élève) */
 async function loadSeriesTemplates(
 	userClient: Db,
-	categories: readonly CartItem[]
+	items: readonly SeriesItem[]
 ): Promise<QuestionTemplate[]> {
-	const themes = [...new Set(categories.map((c) => c.category.theme))];
-	const domains = [...new Set(categories.map((c) => c.category.domain))];
-	if (themes.length === 0) return [];
+	const ids = [...new Set(items.map((item) => item.templateId))];
+	if (ids.length === 0) return [];
 
 	const { data, error } = await userClient
 		.from('question_templates')
 		.select('*')
 		.eq('status', 'published')
-		.in('theme', themes)
-		.in('domain', domains);
+		.in('id', ids);
 
 	if (error) {
 		logger.error('[evaluation-attempts] Modèles illisibles :', error);
@@ -235,7 +246,6 @@ interface StoredQuestion {
 	template_id: string;
 	seed: number;
 	delay_seconds: number;
-	category_key: string;
 }
 
 /** Instance figée lue en base (objet JSON écrit par le serveur au démarrage) */
@@ -263,7 +273,7 @@ async function regenerateAttempt(
 ): Promise<Array<{ stored: StoredQuestion; instance: QuestionInstance }>> {
 	const { data: rows, error } = await service
 		.from('evaluation_attempt_questions')
-		.select('position, template_id, seed, delay_seconds, category_key, instance')
+		.select('position, template_id, seed, delay_seconds, instance')
 		.eq('test_session_id', attemptId)
 		.order('position', { ascending: true });
 
@@ -373,7 +383,7 @@ export async function startEvaluationAttempt(
 		) {
 			return {
 				kind: 'preview',
-				evaluation: { ...summary(evaluation), categories: evaluation.series.categories }
+				evaluation: { ...summary(evaluation), items: evaluation.series.items }
 			};
 		}
 		throw new EvaluationError(404, 'Contrôle introuvable');
@@ -406,12 +416,11 @@ export async function startEvaluationAttempt(
 	}
 
 	// Tirage : même règle que `buildSeriesItems` (cartes de cours exclues)
-	const categories = evaluation.series.categories;
-	const templates = await loadSeriesTemplates(userClient, categories);
-	const draws = drawSeriesQuestions(categories, templates, {
+	const items = evaluation.series.items;
+	const templates = await loadSeriesTemplates(userClient, items);
+	const draws = drawSeriesQuestions(items, templates, {
 		excludeCourseCards: true,
-		nextSeed: () => randomInt(MAX_QUESTION_SEED),
-		pickIndex: (count) => randomInt(count - 1)
+		nextSeed: () => randomInt(MAX_QUESTION_SEED)
 	});
 	const generated: Array<{ stored: StoredQuestion; instance: QuestionInstance }> = [];
 	for (const draw of draws) {
@@ -439,8 +448,7 @@ export async function startEvaluationAttempt(
 				position: generated.length,
 				template_id: draw.template.id,
 				seed: draw.seed,
-				delay_seconds: draw.delaySeconds,
-				category_key: draw.categoryKey
+				delay_seconds: draw.delaySeconds
 			},
 			instance: result.instance
 		});
@@ -458,7 +466,7 @@ export async function startEvaluationAttempt(
 			user_id: userId,
 			evaluation_id: evaluation.id,
 			mode: evaluation.form,
-			categories: toJson(categories),
+			items: toJson(items),
 			total_questions: generated.length,
 			time_limit: evaluation.form === 'course' ? evaluation.time_limit : null,
 			completed_at: null
@@ -631,7 +639,9 @@ export async function submitEvaluationAttempt(
 		// D18 : la graine ne quitte jamais le serveur, ni dans la réponse ni dans
 		// `test_answers.question_instance` (lisible par l'élève et le prof)
 		const { seed: _seed, ...instance } = full;
-		const sent = late ? null : (answersByPosition.get(stored.position) ?? null);
+		const received = late ? null : (answersByPosition.get(stored.position) ?? null);
+		// Question vide (fin et durée seules, PR 4 bis) : jugée vide, comme sans réponse
+		const sent = received?.values ? received : null;
 		// Cases choix : positions AFFICHÉES reçues → indices d'origine (corrigés et
 		// enregistrés) ; illisibles → refus de l'envoi, rien n'est écrit
 		let answer = sent;
@@ -730,15 +740,26 @@ export async function submitEvaluationAttempt(
 
 	if (!late) {
 		// Q39 : le verdict du SERVEUR alimente le SRS (révision corrigée par
-		// l'application : ni meilleur-du-jour ni auto-évaluation, ADR 0016)
+		// l'application : ni meilleur-du-jour ni auto-évaluation, ADR 0016).
+		// PR 4 bis : traces au lieu `evaluation`, écrites au client service (la
+		// policy élève refuse ce lieu) ; FSRS et paquet au client de l'élève.
+		const form = session.mode === 'course' ? 'course' : 'interactive';
 		await recordSeriesReviews(
 			userClient,
 			userId,
 			srsReviewsOf(
 				corrected,
-				questions.map(({ stored }) => stored.template_id)
+				questions.map(({ stored }) => stored.template_id),
+				questions.map(({ stored }) =>
+					evaluationTraceOf({
+						form,
+						delaySeconds: stored.delay_seconds,
+						timeLimitSeconds: session.time_limit,
+						sent: answersByPosition.get(stored.position) ?? null
+					})
+				)
 			),
-			{ logLabel: '[evaluation-attempts]' }
+			{ logLabel: '[evaluation-attempts]', attemptsClient: service }
 		);
 		try {
 			await addBuddyXpFromTest(

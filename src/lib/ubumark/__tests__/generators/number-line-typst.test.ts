@@ -33,8 +33,17 @@ describe('generateNumberLineTypst', () => {
 		const typst = generateNumberLineTypst(node);
 
 		expect(typst).toContain('#import "@preview/cetz:0.3.0"');
-		expect(typst).toContain('#cetz.canvas({');
+		expect(typst).toContain('cetz.canvas({');
 		expect(typst).toContain('})');
+	});
+
+	it('réduite à la largeur de la colonne si elle la dépasse, jamais agrandie (lot 4 automatismes-1spe)', () => {
+		// 12 cm de droite pour une colonne de fiche de ~8,7 cm : elle débordait sur la colonne voisine
+		const typst = generateNumberLineTypst(createNode(['start: -3', 'end: 1', 'step: 1/4']));
+
+		expect(typst).toContain('#layout(size => {');
+		expect(typst).toContain('let k = calc.min(1, size.width / measure(droite).width) * 100%');
+		expect(typst).toContain('scale(x: k, y: k, origin: top + left, reflow: true, droite)');
 	});
 
 	it('should draw the main horizontal line', () => {
@@ -161,27 +170,52 @@ describe('generateNumberLineTypst', () => {
 	// SEGMENTS
 	// ========================================================================
 
-	it('should render closed segments with filled endpoints', () => {
+	/** Lignes des crochets (un crochet = une ligne brisée de 4 points, `// crochet`) */
+	function brackets(typst: string): string[] {
+		return typst.split('\n').filter((l) => l.includes('// crochet'));
+	}
+
+	it('segment fermé [2, 5] : deux crochets à la couleur du segment, aucun disque', () => {
 		const node = createNode(['start: 0', 'end: 10', 'step: 1', 'segments: [2, 5] blue']);
 		const typst = generateNumberLineTypst(node);
 
 		expect(typst).toContain('// Segments');
-		expect(typst).toMatch(/fill: rgb\("#2563eb"\)/);
+		expect(brackets(typst)).toHaveLength(2);
+		expect(brackets(typst).every((l) => l.includes('rgb("#2563eb")'))).toBe(true);
+		expect(typst).not.toContain('circle(');
 	});
 
-	it('should render open segments with empty endpoints', () => {
-		const node = createNode(['start: 0', 'end: 10', 'step: 1', 'segments: ]1, 4[']);
-		const typst = generateNumberLineTypst(node);
-
-		expect(typst).toMatch(/fill: white/);
+	it('crochet de gauche : becs vers la droite si fermé, vers la gauche si ouvert', () => {
+		// lineWidth 12 sur [0, 10] : x = 2 → 2.4 ; becs de 0.1
+		const at = (seg: string) =>
+			brackets(
+				generateNumberLineTypst(createNode(['start: 0', 'end: 10', 'step: 1', `segments: ${seg}`]))
+			)[0];
+		expect(at('[2, 5]')).toMatch(/^\s*line\(\(2\.5, /);
+		expect(at(']2, 5]')).toMatch(/^\s*line\(\(2\.3, /);
 	});
 
-	it('should render half-open segments', () => {
-		const node = createNode(['start: 0', 'end: 10', 'step: 1', 'segments: [1, 4[ green']);
+	it('demi-droite [2, +inf[ : un seul crochet, trait jusqu’à la flèche', () => {
+		const node = createNode([
+			'start: 0',
+			'end: 10',
+			'step: 1',
+			'arrows: true',
+			'segments: [2, +inf['
+		]);
 		const typst = generateNumberLineTypst(node);
 
-		expect(typst).toContain('fill: rgb("#018639")');
-		expect(typst).toContain('fill: white');
+		expect(brackets(typst)).toHaveLength(1);
+		// lineWidth 12 + axis 0.3 − pointe 0.25 : le trait s'arrête à la base de la flèche
+		expect(typst).toMatch(/line\(\(2\.4, 0\), \(12\.05, 0\)/);
+	});
+
+	it(']-inf, +inf[ : toute la droite, sans crochet', () => {
+		const node = createNode(['start: 0', 'end: 10', 'step: 1', 'segments: ]-inf, +inf[']);
+		const typst = generateNumberLineTypst(node);
+
+		expect(brackets(typst)).toHaveLength(0);
+		expect(typst).toMatch(/line\(\(0, 0\), \(12, 0\)/);
 	});
 
 	// ========================================================================
@@ -199,7 +233,7 @@ describe('generateNumberLineTypst', () => {
 		]);
 		const typst = generateNumberLineTypst(node);
 
-		expect(typst).toContain('#cetz.canvas({');
+		expect(typst).toContain('cetz.canvas({');
 		expect(typst).toContain('$1$');
 		expect(typst).toContain('$100$');
 	});

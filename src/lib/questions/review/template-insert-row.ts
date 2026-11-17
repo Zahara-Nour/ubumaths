@@ -6,7 +6,9 @@
  * snake_case), avec deux différences voulues :
  * - `status` est TOUJOURS `draft` : David publie lui-même ;
  * - `level` est celui du template (pas d'ajustement d'unicité, qui ne vaut
- *   que pour les templates publiés).
+ *   que pour les templates publiés) ;
+ * - ni thème, ni domaine, ni sous-domaine (ancien quadruplet, ADR 0035) : le modèle se
+ *   range dans l'arbre des notions.
  */
 
 import type { QuestionTemplate } from '$lib/questions/types';
@@ -28,9 +30,6 @@ export function toTemplateInsertRow(
 		exercise_instruction: template.exerciseInstruction || null,
 		options: toJson(template.options ?? null),
 		grades: template.grades,
-		theme: template.theme,
-		domain: template.domain,
-		subdomain: template.subdomain || null,
 		level: template.level,
 		// Jamais publié par l'import, quoi que dise le brouillon (cas de #28)
 		status: 'draft',

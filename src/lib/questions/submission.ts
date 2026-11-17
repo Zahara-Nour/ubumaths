@@ -3,7 +3,8 @@
  * =========================================================================
  *
  * Aucun verdict, aucune durée totale (le serveur mesure), aucun LaTeX à part
- * (la forme est jugée sur la valeur). Bornée ICI aux limites du schéma de
+ * (la forme est jugée sur la valeur). Par question : durée et fin (validée,
+ * temps écoulé), même vide, pour la trace écrite par le serveur (PR 4 bis). Bornée ICI aux limites du schéma de
  * l'envoi : une case trop longue ou trop de cases ne font pas refuser toute la
  * copie, elles sont tronquées.
  */
@@ -23,7 +24,12 @@ export const MAX_ANSWER_LENGTH = 2_000;
 export const MAX_ANSWER_SECONDS = 86_400;
 
 // Types
-export type SubmittedPositionAnswer = SubmittedAnswer & { position: number; timeSpent?: number };
+export type SubmittedPositionAnswer = SubmittedAnswer & {
+	position: number;
+	timeSpent?: number;
+	/** Fin de la question, pour sa trace (PR 4 bis) ; absente : laissée par « Terminer » */
+	endReason?: 'validated' | 'timeout';
+};
 
 export interface Submission {
 	answers: SubmittedPositionAnswer[];
@@ -32,14 +38,19 @@ export interface Submission {
 // Functions
 function toAnswer(position: number, answer: TestAnswerResult | undefined): SubmittedPositionAnswer {
 	const data = answer?.userAnswer;
+	// Fin et durée partent même pour une question vide : la trace en a besoin (PR 4 bis)
+	const timing: Pick<SubmittedPositionAnswer, 'timeSpent' | 'endReason'> = {};
+	if (data) {
+		timing.timeSpent = Math.min(MAX_ANSWER_SECONDS, Math.max(0, Math.round(data.timeSpent ?? 0)));
+	}
+	if (answer?.endReason) timing.endReason = answer.endReason;
 	// Chrono écoulé sans rien taper : `value` vaut '' → question vide
-	if (!data || data.value === '') return { position };
-	const timeSpent = Math.min(MAX_ANSWER_SECONDS, Math.max(0, Math.round(data.timeSpent ?? 0)));
+	if (!data || data.value === '') return { position, ...timing };
 	const value = data.value;
 	const values = (Array.isArray(value) ? value : [value])
 		.slice(0, MAX_ANSWER_PARTS)
 		.map((v) => String(v).slice(0, MAX_ANSWER_LENGTH));
-	return { position, values, timeSpent };
+	return { position, values, ...timing };
 }
 
 /**

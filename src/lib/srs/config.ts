@@ -21,27 +21,27 @@
  * These parameters are scientifically validated and work excellently.
  */
 export const DEFAULT_FSRS_PARAMS = [
-	0.212, // w[0]  - Initial stability factor 1
-	1.2931, // w[1]  - Initial stability factor 2
-	2.3065, // w[2]  - Initial stability factor 3
-	8.2956, // w[3]  - Initial stability factor 4
-	6.4133, // w[4]  - Initial difficulty factor 1
-	0.8334, // w[5]  - Initial difficulty factor 2
-	3.0194, // w[6]  - Difficulty update rate
-	0.001, // w[7]  - Minimum stability
-	1.8722, // w[8]  - Stability increase rate
-	0.1666, // w[9]  - Stability decay power
-	0.796, // w[10] - Retrievability effect
-	1.4835, // w[11] - Post-lapse stability base
-	0.0614, // w[12] - Post-lapse difficulty factor
-	0.2629, // w[13] - Post-lapse stability power
-	1.6483, // w[14] - Post-lapse retrievability
-	0.6014, // w[15] - Hard interval factor
-	1.8729, // w[16] - Easy interval factor
-	0.5425, // w[17] - Same-day review factor 1
-	0.0912, // w[18] - Same-day review factor 2
-	0.0658, // w[19] - Same-day review power
-	0.1542 // w[20] - Additional factor
+	0.212, // w[0]  - stabilité initiale, Again
+	1.2931, // w[1]  - stabilité initiale, Hard
+	2.3065, // w[2]  - stabilité initiale, Good
+	8.2956, // w[3]  - stabilité initiale, Easy
+	6.4133, // w[4]  - difficulté initiale (base)
+	0.8334, // w[5]  - difficulté initiale (pente selon la note)
+	3.0194, // w[6]  - variation de la difficulté selon la note
+	0.001, // w[7]  - retour de la difficulté vers sa valeur initiale
+	1.8722, // w[8]  - hausse de stabilité après un rappel
+	0.1666, // w[9]  - frein de la hausse quand S est grande
+	0.796, // w[10] - effet de R sur la hausse
+	1.4835, // w[11] - stabilité après un oubli (base)
+	0.0614, // w[12] - stabilité après un oubli (effet de D)
+	0.2629, // w[13] - stabilité après un oubli (effet de S)
+	1.6483, // w[14] - stabilité après un oubli (effet de R)
+	0.6014, // w[15] - pénalité Hard
+	1.8729, // w[16] - bonus Easy
+	0.5425, // w[17] - court terme (même jour), facteur
+	0.0912, // w[18] - court terme (même jour), décalage
+	0.0658, // w[19] - court terme (même jour), effet de S
+	0.1542 // w[20] - exposant de la courbe d'oubli (decay = −w[20])
 ];
 
 /**
@@ -104,12 +104,9 @@ export const DEFAULT_DESIRED_RETENTION = RETENTION_PROFILES.balanced;
 export const DEFAULT_MAXIMUM_INTERVAL = 36500;
 
 /**
- * Decay parameter for forgetting curve
- * Default: -0.5 (scientifically validated)
- *
- * DO NOT modify unless you know what you're doing.
+ * Exposant de la courbe d'oubli FSRS-6 : −w[20] (−0,1542 avec les paramètres par défaut)
  */
-export const DECAY_PARAMETER = -0.5;
+export const DECAY_PARAMETER = -DEFAULT_FSRS_PARAMS[20];
 
 /**
  * Learning steps (short intervals for new cards)

@@ -8,9 +8,6 @@ function template(statement: string, expectedAnswer: string): QuestionTemplate {
 		title: 'plus zéro',
 		description: 'test',
 		grades: ['1_SPE'],
-		theme: 'T',
-		domain: 'D',
-		subdomain: 'S',
 		level: 1,
 		status: 'draft',
 		variations: [

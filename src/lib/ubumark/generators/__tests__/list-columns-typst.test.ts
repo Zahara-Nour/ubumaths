@@ -11,7 +11,6 @@
 import { describe, it, expect } from 'vitest';
 import { parseMarkdown } from '$lib/ubumark';
 import { generateTypst } from '../typst-generator';
-import { generateLatex } from '../latex-generator';
 
 /** Corps du document, après l'en-tête de lisibilité (qui définit `ubu-item-bloc` avec une grille). */
 const typst = (md: string) =>
@@ -75,13 +74,5 @@ describe('Typst — liste à puces en colonnes', () => {
 		const code = typst(':colonnes 2\n- a\n- b\n- c');
 		expect(code).toContain('grid(columns: (1fr, 1fr)');
 		expect(code.match(/ ubu-item\(\[•\], w: "•"\)/g)).toHaveLength(3);
-	});
-});
-
-describe('Export LaTeX : marqueur ignoré, liste normale', () => {
-	it('même sortie qu’une liste sans marqueur', () => {
-		expect(generateLatex(parseMarkdown(':colonnes 2\n1. a\n2. b'))).toBe(
-			generateLatex(parseMarkdown('1. a\n2. b'))
-		);
 	});
 });

@@ -2,7 +2,7 @@
 1re spé dans scripts/questions/1spe-probas/.
 
 Phase 0 validée par David le 2026-11-01 (« je valide » sur les recos, § 21 du journal
-« docs/wip/questions-1spe-progress.md »), un point par modèle :
+« docs/archive/wip/questions-1spe-progress.md »), un point par modèle :
 
 | # | Point    | Titre                                    | Catégorie, niveau                                              |
 | 1 | 1SPE-337 | Partition de l'univers                   | Probabilités conditionnelles › Partition de l'univers, 1       |
@@ -70,6 +70,11 @@ def col(x, k=0):
     return '\\textcolor{{{color:primary.' + str(k) + '}}}{' + x + '}'
 
 
+def colt(*a, **k):
+    """Valeur colorée en plein texte : `\\textcolor` hors `$…$` s'afficherait en LaTeX brut."""
+    return '$' + col(*a, **k) + '$'
+
+
 def ev(x):
     return '{{eval:' + x + '}}'
 
@@ -123,13 +128,13 @@ def v337(debut_b, attendu, steps):
 
 V337_OUI = v337('a+1', '0', [
     'Ces trois ensembles se suivent sans se chevaucher ni laisser de trou : ils sont deux à deux'
-    ' disjoints et leur réunion est $\\Omega$. ' + col('\\text{Oui}') + ', c\'est une partition.'])
+    ' disjoints et leur réunion est $\\Omega$. ' + colt('\\text{Oui}') + ', c\'est une partition.'])
 V337_COMMUNE = v337('a', '1', [
     'L\'issue $' + ev('a') + '$ appartient à la fois à $A$ et à $B$ : $A\\cap B\\neq\\varnothing$.'
-    ' ' + col('\\text{Non}') + ', ce n\'est pas une partition.'])
+    ' ' + colt('\\text{Non}') + ', ce n\'est pas une partition.'])
 V337_MANQUE = v337('a+2', '2', [
     'L\'issue $' + ev('a+1') + '$ n\'appartient ni à $A$, ni à $B$, ni à $C$ : la réunion n\'est pas'
-    ' $\\Omega$. ' + col('\\text{Non}') + ', ce n\'est pas une partition.'])
+    ' $\\Omega$. ' + colt('\\text{Non}') + ', ce n\'est pas une partition.'])
 V337_PC = variation(
     'Les événements $A$, $B$ et $C$ forment une partition de l\'univers. On sait que $P(A)='
     + evd('a/100') + '$ et $P(B)=' + evd('b/100') + '$.\n\n$P(C)=?$',

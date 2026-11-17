@@ -1,10 +1,8 @@
 {
+	"id": "b4ea91fe-7f9b-4b87-8056-425e4b93a93b",
 	"title": "Le nombre de centaines, de milliers…",
 	"description": "Distinguer le chiffre et le nombre de dizaines… de dizaines de mille dans un entier de 5 à 6 chiffres ; problème des cartons (342 320 filtres en cartons de 1 000)",
 	"grades": ["CM1"],
-	"theme": "Entiers",
-	"domain": "Apprivoiser",
-	"subdomain": "Décomposition",
 	"level": 22,
 	"delay": 30,
 	"status": "draft",

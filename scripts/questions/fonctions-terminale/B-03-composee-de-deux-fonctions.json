@@ -1,10 +1,8 @@
 {
+	"id": "bc1807a1-400e-4645-9f22-1157addd36bc",
 	"title": "Composée de deux fonctions : calculer v∘u",
 	"description": "Calculer (v∘u)(k), (u∘v)(k) ou l'expression de ln(u(x)) (pièges : ordre de composition inversé, une seule fonction appliquée)",
 	"grades": ["T_SPE"],
-	"theme": "Fonctions",
-	"domain": "Dérivation",
-	"subdomain": "Fonctions composées",
 	"level": 1,
 	"status": "draft",
 	"delay": 60,

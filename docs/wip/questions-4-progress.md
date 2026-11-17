@@ -5,22 +5,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, phase 0 du lot 10 proposée._
+_Mis à jour le 2026-11-17, après #2768 (lot 10 rangé en prod)._
 
-- **État** : lots 1 à 9 en prod et publiés. Outils C revus le 2026-11-02 (§ 50.1) : solides et patrons LIVRÉS
-  (chantier `solides`), schéma de fraction couvert par ` ```partage ` (grille = carré unité, bande = barres) →
-  lot 10 (027, 028, 074) ; seul 038 (rectangle sans équerre) reste un outil neuf, rattaché à la 6e.
-- **Prochaine action** : écrire le lot 10 (§ 50 validé le 2026-11-02) : worktree, branche `feat/questions-4-lot-10`,
-  `docs/wip/questions/lot-4-10.py` → `scripts/questions/4-lot-10/`.
-- **En attente de David** : rien.
-- **Pièges en cours** : migrations, dès #2165 mergée (règle de David, 2026-11-01) : horodatage par `pnpm
-migration:horodatage` (jamais un nombre rond choisi à la main), `pnpm check:migrations --pr <n>` avant `gh pr merge`,
-  premier job de CI = porte des horodatages (`git merge origin/main` dans le worktree d'abord) ; `mtexte()` refusé dans une figure de question (§ 26) ; `db push --include-all` : **réservé à
-  David** (§ 27, § 30, § 34), même quand une autre session dit le contraire ; horodatage de migration : rebaser sur
-  `origin/main` avant la CI (§ 34) et relever la dernière version jouée juste avant de pousser (§ 42) ; exemption de doc d'une migration de données = ligne `Doc-inchangée:` dans un
-  COMMIT ; QCM = case choix ; un grand nombre s'écrit `10\,000` dans une spec ; tests navigateur de la CI parfois
-  tombés (`wrapDynamicImport`) : relancer le job ; une borne qui ne repose que sur 2019/2016 : la signaler dans la
-  phase 0 du lot qui s'en sert (§ 36).
+- **État** : lots 1 à 9 publiés. Lot 10 (027, 028, 074) : brouillons en prod (0ea43bcd, 235df57a, 63a06b04),
+  rangés et tagués (#2768, `db:migrate` fait, vérifié au MCP). Page à cocher :
+  https://claude.ai/artifact/M18upimVqzAupAsfpu8xNd (`verdicts` vide). Après publication : 81 points sur 82 ;
+  reste 038 (outil manquant n° 37, rattaché à la 6e) et 026 (classe D).
+- **Prochaine action** : lire et compter les verdicts ; corriger les « à revoir » ; puis `publier-lot.ts --dir
+scripts/questions/4-lot-10` en simulation, et David le lance avec `--publier`.
+- **En attente de David** : la relecture (page à cocher ; 028 : bloc patron non dessiné sur la page, le jouer dans
+  l'aperçu admin) ; supprimer la branche locale périmée `feat/questions-4-lot-10` (`branch -D` = liste `ask`).
+- **Pièges en cours** : `db:migrate` depuis le dépôt principal (worktree non lié) ; job « Types des tests » de la
+  CI parfois annulé (« The operation was canceled ») : relancer ; `db push --include-all` réservé à David.
 - **Worktree / branche** : `../ubumaths-wt-questions-4` (HEAD détachée sur `origin/main`), aucune branche en cours.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-28)
@@ -1229,3 +1225,37 @@ publication, les élèves de 4e voient 3 modèles de plus.
 a-t-il des arêtes ? » (027 v5 : le BO ne tranche pas) ; catégories telles quelles ; 074 v1 : `colorier:` jugé au
 nombre de parts, accepté ; 028 v2 (patron dans un choix) : essayé en base locale, retiré si le rendu est mauvais,
 le trou noté pour le chantier d'outils.
+
+## Note de la session 3e (2026-11-17, clôture de `questions-3`)
+
+- **4-068 / 4-069** sont encore rangés sur la notion « Algorithmique › Variables et instructions » (relevé MCP du
+  2026-11-17 : 2 et 1 modèles publiés). La sous-notion « blocs personnalisés » créée pour 3-050 « leur servira »
+  (décision du 2026-11-01, journal archivé `docs/archive/wip/questions-3-progress.md` § 14.10) : à ranger avec les
+  modèles de 4e qui les couvrent.
+
+## 51. Lot 10 : écrit, rendu vu, PR (2026-11-03 → 17)
+
+- Écrit le 2026-11-03 (`lot-4-10.py` → `scripts/questions/4-lot-10/`, 3 JSON) sur `feat/questions-4-lot-10`,
+  jamais poussé (Chrome n'avait chargé aucune page). Repris le 2026-11-17 sur une branche neuve
+  `feat/questions-4-lot-10-bis` partie d'`origin/main` (3 109 commits de retard ; `rebase` = liste `ask`) :
+  commit des fichiers repris, `theme`/`domain`/`subdomain` retirés (ADR 0035, refusés à la lecture).
+- Simulation : 3/3 verts (22, 24, 15 specs) ; `sonde-cubes` : 1 389 blocs, 0 problème.
+- Base locale : brouillons 21b4cd42 (027), d67c695c (028), 8122fd84 (074), créés depuis une copie dans le
+  scratchpad (les `id` locaux hors du dépôt). Aperçu admin : 028 v2 (patrons dans un choix : cube, pyramide,
+  prisme) lisible → **gardée** ; 074 v1 grille 5 × 3 « les 1/5 des 1/3 du rectangle », attendu 1/15, juste.
+- **Décision de David (2026-11-17)** : 074, b ≠ d gardé, énoncé « du rectangle » (« du carré » si b = d), déjà
+  écrit ainsi.
+- 4-038 ajouté à `outils-manquants.md` (n° 37) : il n'y figurait pas.
+- PR #2765 (contenu seul, pas de revue) : CI verte, mergée le 2026-11-17.
+
+## 52. Lot 10 : en prod, rangé, page à cocher (2026-11-17)
+
+- David a lancé `create-questions --publier` : brouillons 0ea43bcd (027), 235df57a (028), 63a06b04 (074) ;
+  `id` commités dans #2768.
+- #2768 (migration `20261117174541`, gabarit du lot 9) : test d'intégration rouge sans la migration (3 échecs,
+  4 sautés), 9/9 vert avec ; `security-auditor` : aucun finding bloquant ; CI : job « Types des tests » annulé
+  une fois, vert à la relance ; `check:migrations --pr 2768` OK ; mergée. `migration list --linked` : seule
+  `20261117174541` en attente ; `db:migrate` depuis le dépôt principal. MCP : 3 brouillons sur leur sous-notion,
+  un tag chacun.
+- Page à cocher : https://claude.ai/artifact/M18upimVqzAupAsfpu8xNd (capacités `db` + `user`, `verdicts` vide,
+  rendu vérifié à 390 px) ; alerte attendue : bloc `patron` non dessiné (028).

@@ -1,5 +1,6 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { requireRoles } from '$lib/server/middleware/auth';
 import { createServerLogger } from '$lib/utils/logger';
 
 const logger = createServerLogger('api/moderation/messages/[id]/context/+server');
@@ -25,15 +26,8 @@ const logger = createServerLogger('api/moderation/messages/[id]/context/+server'
  * - 500: Database error
  */
 export const GET: RequestHandler = async ({ params, url, locals }) => {
-	// 1. Check authentication
-	if (!locals.user || !locals.profile) {
-		throw error(401, 'Not authenticated');
-	}
-
-	// 2. Check teacher role
-	if (!['teacher', 'admin'].includes(locals.profile.role)) {
-		throw error(403, 'Only teachers can access message context');
-	}
+	// 1-2. Authentification + rôle enseignant/admin
+	await requireRoles(locals, ['teacher', 'admin']);
 
 	// 3. Validate message ID
 	const messageId = params.id;

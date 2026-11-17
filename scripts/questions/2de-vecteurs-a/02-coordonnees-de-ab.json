@@ -1,10 +1,8 @@
 {
+	"id": "5a97d95a-8d28-40d6-a64c-79dbad34bc63",
 	"title": "Coordonnées du vecteur AB",
 	"description": "Coordonnées de AB à partir de A et B (entiers, puis décimaux), et de B à partir de A et AB (pièges : A − B, soustraire au lieu d'ajouter)",
 	"grades": ["2"],
-	"theme": "Géométrie",
-	"domain": "Vecteurs du plan",
-	"subdomain": "Coordonnées",
 	"level": 2,
 	"delay": 90,
 	"status": "draft",

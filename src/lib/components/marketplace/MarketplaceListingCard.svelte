@@ -12,10 +12,13 @@
 	import { marketplaceStore } from '$lib/stores/marketplace.svelte';
 
 	// Props
-	let { listing, onclick } = $props<{
+	let {
+		listing,
+		onclick
+	}: {
 		listing: MarketplaceListing;
 		onclick?: () => void;
-	}>();
+	} = $props();
 
 	// Check if user has a proposal on this listing
 	let myProposal = $derived(marketplaceStore.myProposals.find((p) => p.listing_id === listing.id));

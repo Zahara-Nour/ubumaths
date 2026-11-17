@@ -1,0 +1,223 @@
+{
+	"id": "0d4760f8-5fe1-40de-bb88-ace85b268625",
+	"title": "Construire le symétrique par rapport à un point",
+	"description": "Construire le symétrique d'un point ou d'une figure par rapport à un point : sur quadrillage, puis au compas sur papier uni",
+	"grades": ["5"],
+	"level": 2,
+	"delay": 150,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Place le point $A'$, symétrique du point $A$ par rapport au point $O$.\n\n```figure-a-completer\nfenetre: 0 ; 10 ; 0 ; 8\ngrille: 1\noutils: point\nverifier: point A' = symetrie(A, centre=O)\n---\n{{if:k==1|A = point(2, 2, etiquette=\"bas-gauche\")\nO = point(5, 4, etiquette=\"bas\")|{{if:k==2|A = point(3, 6, etiquette=\"haut-gauche\")\nO = point(5, 4, etiquette=\"bas\")|A = point(1, 4, etiquette=\"haut-gauche\")\nO = point(4, 3, etiquette=\"bas\")}}}}\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..3"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Définition.** Le symétrique du point $M$ par rapport au point $O$ est le point $M'$ tel que $O$ soit le **milieu** du segment $[MM']$ : on fait un **demi-tour** autour de $O$.",
+					"Sur le quadrillage, on compte les carreaux pour aller de $A$ à $O$, puis on fait **le même déplacement** à partir de $O$ : on arrive en $\\textcolor{{{color:primary.0}}}{\\text{A'}}$."
+				]
+			}
+		},
+		{
+			"statement": "Construis le symétrique de la figure par rapport au point $O$.\n\n```figure-a-completer\nfenetre: 0 ; 10 ; 0 ; 8\ngrille: 1\nverifier: symetrique par O\n---\n{{if:k==1|p0 = point(1, 1, visible=faux)\np1 = point(4, 2, visible=faux)\np2 = point(2, 4, visible=faux)\nsegment(p0, p1, epaisseur=3)\nsegment(p1, p2, epaisseur=3)\nsegment(p2, p0, epaisseur=3)\nO = point(5, 4, etiquette=\"bas\")|{{if:k==2|p0 = point(1, 5, visible=faux)\np1 = point(3, 7, visible=faux)\np2 = point(4, 5, visible=faux)\np3 = point(2, 4, visible=faux)\nsegment(p0, p1, epaisseur=3)\nsegment(p1, p2, epaisseur=3)\nsegment(p2, p3, epaisseur=3)\nsegment(p3, p0, epaisseur=3)\nO = point(5, 4, etiquette=\"bas\")|p0 = point(2, 1, visible=faux)\np1 = point(4, 1, visible=faux)\np2 = point(4, 4, visible=faux)\nsegment(p0, p1, epaisseur=3)\nsegment(p1, p2, epaisseur=3)\nsegment(p2, p0, epaisseur=3)\nO = point(5, 4, etiquette=\"bas\")}}}}\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..3"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On construit le symétrique de chaque sommet par rapport à $O$ : on compte les carreaux du sommet jusqu'à $O$, et on refait le même déplacement après $O$.",
+					"On relie les sommets obtenus dans le même ordre : la figure obtenue est $\\textcolor{{{color:primary.0}}}{\\text{retournée d'un demi-tour}}$ autour de $O$."
+				]
+			}
+		},
+		{
+			"statement": "Construis le point $A'$, symétrique du point $A$ par rapport au point $O$, avec tes instruments.\n\n```figure-a-completer\nfenetre: 0 ; 12 ; 0 ; 9\noutils: point, droite, compas\nverifier: point A' = symetrie(A, centre=O)\n---\n{{if:k==1|A = point(2, 3, etiquette=\"bas-gauche\")\nO = point(6, 4.5, etiquette=\"bas\")|{{if:k==2|A = point(3, 7, etiquette=\"haut-gauche\")\nO = point(6, 5, etiquette=\"bas\")|A = point(2.5, 5, etiquette=\"haut-gauche\")\nO = point(6.5, 4, etiquette=\"bas\")}}}}\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..3"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Définition.** Le symétrique du point $M$ par rapport au point $O$ est le point $M'$ tel que $O$ soit le **milieu** du segment $[MM']$ : on fait un **demi-tour** autour de $O$.",
+					"On trace la droite $(AO)$, puis le cercle de centre $O$ qui passe par $A$ : il recoupe la droite en $\\textcolor{{{color:primary.0}}}{\\text{A'}}$, de l'autre côté de $O$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Quadrillage 1 : A' juste",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["point(8;6)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Quadrillage 2 : A' juste",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["point(7;2)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Quadrillage 3 : A' juste",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["point(7;2)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : symétrique par la verticale passant par O",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["point(8;2)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : A' placé sur O",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["point(5;4)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : rien de placé",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"answers": [""],
+			"expected": {
+				"status": "empty"
+			}
+		},
+		{
+			"description": "Triangle : juste",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["segment(9;7;6;6)|segment(6;6;8;4)|segment(8;4;9;7)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Quadrilatère : juste",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["segment(9;3;7;1)|segment(7;1;6;3)|segment(6;3;8;4)|segment(8;4;9;3)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Triangle rectangle : juste",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["segment(8;7;6;7)|segment(6;7;6;4)|segment(6;4;8;7)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : figure glissée (translation)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["segment(6;4;9;5)|segment(9;5;7;7)|segment(7;7;6;4)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : symétrique par la verticale passant par O",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["segment(8;1;6;1)|segment(6;1;6;4)|segment(6;4;8;1)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Papier uni 1 : construit",
+			"variationIndex": 2,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["droite(2;3;6;4.5)|cercle(6;4.5;2;3)|point(10;6)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Papier uni 2 : construit",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["droite(3;7;6;5)|cercle(6;5;3;7)|point(9;3)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : cercle de centre A passant par O",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["droite(2.5;5;6.5;4)|cercle(2.5;5;6.5;4)|point(-1.5;6)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : A' placé à l'œil",
+			"variationIndex": 2,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["point(10;6)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

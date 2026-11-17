@@ -11,8 +11,10 @@
  * Chaque cible a son fichier JSON (modèle complet en camelCase, avec ses `testSpecs`). Pour
  * chaque cible :
  *  - le modèle est relu en base ; le fichier doit porter le même `id` ;
- *  - seuls `variations`, `options`, `test_specs`, `title`, `description`, `level` sont écrits ;
- *    tout autre champ du fichier (thème, domaine, sous-domaine, classes…) doit être
+ *  - seuls `variations`, `options`, `test_specs`, `title`, `description`, `level`, `delay` sont
+ *    écrits ; ⚠️ `delay` n'est donc plus une garde : relancer un ancien lot réécrit le temps
+ *    de son instantané (chantier `tableau-signes`, 2026-11-03) ;
+ *    tout autre champ du fichier (classes, consigne…) doit être
  *    IDENTIQUE à la base, sinon arrêt ; `status` n'est jamais écrit ;
  *  - `shared` : seul l'AJOUT de `cleanCoefficients: true` s'écrit (valeur = `shared` de la
  *    base + l'option, `relecture/shared-clean-coefficients.ts`) ; tout autre écart = arrêt ;
@@ -21,14 +23,13 @@
  *  - après écriture, la ligne est relue et comparée champ par champ.
  * S'arrête à la première erreur.
  *
- * Changement de niveau : l'index `idx_question_templates_unique_category` interdit deux modèles
- * publiés au même (thème, domaine, sous-domaine, niveau). Un échange de niveaux passe donc par
- * un niveau temporaire (900 + niveau) avant l'écriture finale.
- *
  * Usage :
  *   pnpm tsx scripts/update-published-questions.ts --lot <lot>            (simulation, diff)
  *   pnpm tsx scripts/update-published-questions.ts --lot <lot> --publier  (écrit)
- *   lots : second-degre, suites, derivation, textcolor-2de
+ *   lots : second-degre, suites, derivation, textcolor-2de, niveaux-2de-probabilites,
+ *          textcolor-hors-2de, tracer-droites-2de, tableau-signes-2de, valeur-absolue-droite-2de,
+ *          resoudre-graphique-droite-3, somme-vecteurs-2de, triangle-cm-6, blockly-6-210,
+ *          blockly-5-106, variable-e, totaux-ce
  *   … --seulement <id8>[,<id8>]   restreint aux cibles dont l'id commence ainsi
  *   … --sans-diff                 simulation sans le diff (preuves rouges seulement)
  */
@@ -71,7 +72,7 @@ const SECOND_DEGRE: readonly string[] = [
 	'eae2ff6a-5e46-445b-bfa6-02cadb6d956a' // Apprivoiser 7 — racines lues (courbe, Q57)
 ];
 
-/** Suites 1re SPE (docs/wip/suites-1spe-progress.md, lot 1) */
+/** Suites 1re SPE (docs/archive/wip/suites-1spe-progress.md, lot 1) */
 const SUITES: readonly string[] = [
 	'8ed02829-51de-40e2-af77-8fa47d01ea98', // Arithmétiques › calculer un terme 3 — u_a quelconque (n'est plus le double du 4)
 	'a8b51d16-261f-4acd-a2c2-933d3ea9bab5', // Arithmétiques › calculer un terme 4 — terme éloigné, rang inférieur
@@ -119,17 +120,155 @@ const TEXTCOLOR_2DE: readonly string[] = [
 	'6670b161-4120-44a4-a6fd-22c8db71d2a1', // signes-a › Fonction affine : variations, signe et droite
 	'6bb5ff09-34ba-401b-a7d5-8edb76d9dee0', // signes-a › Signe d'un produit, sans tableau
 	'80826238-a393-4840-b6be-b115dbfae8d7', // signes-a › Signe d'un quotient, sans tableau
-	'9c7ab1c7-d3f3-4c78-96f4-c14e5a657574', // signes-b › Tableau de signes d'un quotient
+	// 9c7ab1c7 (signes-b › Tableau de signes d'un quotient) retiré le 2026-11-03 : réécrit par le lot
+	// `tableau-signes-2de` ; son instantané d'ici (90 s, cases sous le tableau) le ramènerait en arrière
 	'93bc8b5e-b2a5-4793-b64e-271601504498', // variations-c › Croissante ou décroissante sur un intervalle
 	'4f887f53-263e-4ef3-b497-b3b50d83ec59', // variations-c › Comparer des images par le sens de variation
 	'275cb665-f0ab-4649-8188-df9ae44bb322' // variations-c › Comparer des images sur la courbe
+];
+
+/** Seconde, lot 8 E : 4 brouillons sur une catégorie déjà prise par un modèle publié de 3e ou de 1re
+ *  (une catégorie = un modèle publié) ; seul `level` change (§ 62, décision de David du 2026-11-03) */
+const NIVEAUX_2DE_PROBABILITES: readonly string[] = [
+	'7953dcfc-bedc-465e-9abe-b8db19647d7e', // Stabilisation › Loi des grands nombres, 1 → 2
+	'38fe4cd5-90ad-446d-a2cc-936faa2dde13', // Arbres pondérés › Arbre de deux épreuves indépendantes, 3 → 6
+	'b28f4a68-de95-4437-9e5a-c423fce38ead', // Arbres pondérés › Construire un arbre pondéré, 4 → 7
+	'd7507e78-4041-441a-82fc-40de926f92cc' // Arbres pondérés › Probabilité conditionnelle sur un arbre, 5 → 8
+];
+
+/** `\\textcolor` hors `$` hors de la seconde (§ 58 et § 63) : 27 modèles publiés, du CE1 à la
+ *  terminale ; seules les variations changent (générateurs régénérés, ou JSON corrigé à la main) */
+const TEXTCOLOR_HORS_2DE: readonly string[] = [
+	// CE1
+	'bbb43bf4-2cb7-4aa0-abf2-946b7199d159', // Angle droit, aigu ou obtus ?
+	'0fa9f1f8-268c-421c-b5dd-b21dc3f7a826', // Décrire une figure : côtés et angles droits
+	'9733e97c-0313-429a-bd0e-bfe5b4ee82b1', // Le bon mot : sommet, côté, centre, milieu, droite, segment
+	'803969b5-2a86-44c1-8168-f125c191235e', // Le code de l'angle droit
+	'b3ff17bc-74f7-4fbe-a696-675d83aa45a3', // Quelle est cette figure ? Cercle, carré, rectangle, triangles
+	// CM1
+	'6dbea912-4647-4021-91e8-18e6f9dc36b9', // Est-ce un diviseur ?
+	'5dbcc8dd-861a-4d4d-ba98-735fb7418c3d', // Est-ce un multiple ?
+	// 4e
+	'edcc194a-bf2a-45ea-a20f-dd1d06713cdc', // Appliquer un programme de calcul
+	'e7ef2835-a2c6-4666-b288-a56c2570e7a5', // Ce que conserve une translation
+	'f7d802ae-0dfa-4bd9-ad31-44bfd9f68254', // Centre du cercle circonscrit
+	'bdcc75c5-697a-44ae-824a-41ed7dd8ba81', // Droite des milieux
+	'0150ef82-b5bf-4a87-8fa9-8144e4f3e284', // Effet d'une translation
+	'e678f1d0-9b29-4829-a3fa-96420eb9cff2', // Formule, tableau et graphique
+	'bd2aa548-31ca-4cbc-9ae0-b38f93dbcedb', // Remonter un programme de calcul
+	'75713f0c-f3d9-4c89-af22-9d6f3a4f5ee0', // Triangle inscrit dans un demi-cercle
+	'c8306505-e030-4d65-8a56-3271669f28b5', // Translation et parallélogramme (4e et 3e)
+	// 3e
+	'6bcb3535-6632-4659-9a83-23a740b8e685', // Boule ou sphère ?
+	'cd756e21-af71-4922-8106-8387658a45e1', // Grands cercles et diamètre d'une sphère
+	'7407f328-e770-49da-8bc8-38cdf6081b6d', // La courbe de la fonction carré
+	'8cb2cdfd-d905-4e37-bff4-cceeb774fdc9', // Résoudre x² = a graphiquement
+	'7bb95104-9256-4bdb-a481-bdd2aae66a67', // Sections de solides
+	'787cc937-5bc7-435f-9a63-7d4d0f102ea1', // Somme de deux vecteurs
+	'ff3bd841-6d22-40f6-a4e3-4ddc7e017905', // Vecteurs égaux, opposés, nul
+	// 1re
+	'e0520082-84d1-417b-b344-b3bdea05300e', // Partition de l'univers
+	'dc5d7cb6-5d9a-41ca-89c3-83f4d6750613', // Tracer une droite donnée par un point et sa pente
+	// Terminale spé
+	'7ea93a82-d1d2-4dd3-8089-5f58cc1fe08f', // Dérivable implique continue
+	'86c59a05-936c-41a5-a05e-d85ab56a2bfb' // Variations de ln : comparer, signe
+];
+
+/** Seconde, 2-316 et 2-445 : la droite se trace au geste ` ```courbe tracer: ` au lieu d'un choix
+ *  entre 4 figures (docs/wip/questions-2de-progress.md, § 61, § 64) ; variations, description, specs */
+const TRACER_DROITES_2DE: readonly string[] = [
+	'8d4bd94d-73f7-4589-8b3f-67c84edcf778', // droites-b › Tracer une droite donnée par son équation réduite
+	'2cfae58d-7fdb-45f7-8ea1-777a4a307b5a' // droites-b › Tracer une droite donnée par une équation cartésienne
+];
+
+/** 2-330 et 2-446 réécrits avec le tableau à compléter (chantier `tableau-signes`, Q6 de David du
+ *  2026-11-02 ; phase 0 du 2026-11-03 : tout caché, temps porté à 180 s) */
+const TABLEAU_SIGNES_2DE: readonly string[] = [
+	'f0163416-0610-49cc-bf2d-83db744dbf43', // signes-b › Tableau de signes d'un produit
+	'9c7ab1c7-d3f3-4c78-96f4-c14e5a657574' // signes-b › Tableau de signes d'un quotient
+];
+
+const VALEUR_ABSOLUE_DROITE_2DE: readonly string[] = [
+	'80a87e34-251c-481a-a086-7b7add231cc9' // intervalles-b › Résoudre |x| < k (droite graduée au corrigé)
+];
+
+const RESOUDRE_GRAPHIQUE_DROITE_3: readonly string[] = [
+	'320f5ac7-b16a-48a7-b136-704d62854138' // Inéquations › Résoudre ax ⩾ b graphiquement (droite graduée au corrigé, 3-057)
+];
+
+const SOMME_VECTEURS_2DE: readonly string[] = [
+	'51192dc4-78df-4d5d-b6be-7062f456cef3' // Vecteurs › Représenter la somme de deux vecteurs (flèches u et v données, 2-297)
+];
+
+/** Chantier `triangle-cote-cm`, point 5 : variations en cm ajoutées (docs/wip/questions/lot-12b-triangle-cm.py) */
+const TRIANGLE_CM_6: readonly string[] = [
+	'f06e45e8-45f3-48f7-8bd2-2a16ae86958f' // Triangles › Construire un triangle (6-173), + trois longueurs en cm, deux côtés et l'angle en cm
+];
+
+/** Chantier `blockly` (#2683) : `afficher 10` faux (ne dépend pas du nombre choisi), corrigé ajusté */
+const BLOCKLY_6_210: readonly string[] = [
+	'befab91c-c77e-464e-a5bf-79206462928d' // Algorithmique › Programme pour un résultat donné (6-210)
+];
+
+/** Chantier `blockly` (nombre maximal de blocs) : `blocs:` force la répétition (carré 3, escalier 5, créneaux 9) */
+const BLOCKLY_5_106: readonly string[] = [
+	'51636342-7294-407b-9fd0-42f9ede6e8a9' // Boucles › boucle bornée : Répéter des instructions (5-106)
+];
+
+/** Chantier `questions-cm1` (§ 19 ter) : `totaux: non` là où la ligne Total, affichée par défaut
+ *  depuis `238ec6bc6a`, donnait la réponse (le jour où il y en a le plus, le moins, le total d'un jour) */
+const TOTAUX_CE: readonly string[] = [
+	'f0f681c4-4057-4124-87dd-9ce75036bb0e', // CE2 « Que dit le tableau à double entrée ? (trois lignes) » V1, V2, V3
+	'29edb833-67b0-4bb1-8c0d-3862094c96dd' // CE1 « Que dit le tableau à double entrée ? » V2
+];
+
+/** Chantier `variable-e` (#2725) : `e` = constante d'Euler, jamais une variable ; renommée en h, v ou w */
+const VARIABLE_E: readonly string[] = [
+	'd5a36be9-f6bb-428f-b0e0-60bee080bd19', // CP « Où est-il ? » (e → h)
+	'092b310c-7a6b-44d0-8d41-3351beb2c912', // CM1 « Quelle fraction de la figure est coloriée ? » (e → h)
+	'406fd9a8-ad71-4c24-ab35-5029ddc1b18b', // 2de « Résoudre graphiquement f(x) = g(x) » (e → v)
+	'7efd2e76-f27c-4b9c-b8f0-71dfa86265e2', // 2de « Résoudre graphiquement f(x) < g(x) » (e → v)
+	'95bea43b-c956-47f0-b66b-31c93a79fde6' // 5e « Côtés opposés et diagonales d'un parallélogramme » (e → w)
 ];
 
 const LOTS: Record<string, Lot> = {
 	'second-degre': { dossier: 'scripts/questions/second-degre-existants', cibles: SECOND_DEGRE },
 	suites: { dossier: 'scripts/questions/suites-existants', cibles: SUITES },
 	derivation: { dossier: 'scripts/questions/derivation-existants', cibles: DERIVATION },
-	'textcolor-2de': { dossier: 'scripts/questions/2de-textcolor-existants', cibles: TEXTCOLOR_2DE }
+	'textcolor-2de': { dossier: 'scripts/questions/2de-textcolor-existants', cibles: TEXTCOLOR_2DE },
+	'niveaux-2de-probabilites': {
+		dossier: 'scripts/questions/2de-niveaux-probabilites-existants',
+		cibles: NIVEAUX_2DE_PROBABILITES
+	},
+	'textcolor-hors-2de': {
+		dossier: 'scripts/questions/textcolor-hors-2de-existants',
+		cibles: TEXTCOLOR_HORS_2DE
+	},
+	'tracer-droites-2de': {
+		dossier: 'scripts/questions/2de-tracer-droites-existants',
+		cibles: TRACER_DROITES_2DE
+	},
+	'tableau-signes-2de': {
+		dossier: 'scripts/questions/2de-tableau-signes-existants',
+		cibles: TABLEAU_SIGNES_2DE
+	},
+	'valeur-absolue-droite-2de': {
+		dossier: 'scripts/questions/2de-valeur-absolue-droite-existants',
+		cibles: VALEUR_ABSOLUE_DROITE_2DE
+	},
+	'resoudre-graphique-droite-3': {
+		dossier: 'scripts/questions/3-resoudre-graphique-existants',
+		cibles: RESOUDRE_GRAPHIQUE_DROITE_3
+	},
+	'somme-vecteurs-2de': {
+		dossier: 'scripts/questions/2de-somme-vecteurs-existants',
+		cibles: SOMME_VECTEURS_2DE
+	},
+	'triangle-cm-6': { dossier: 'scripts/questions/6-triangle-existants', cibles: TRIANGLE_CM_6 },
+	'blockly-6-210': { dossier: 'scripts/questions/6-blockly-existants', cibles: BLOCKLY_6_210 },
+	'blockly-5-106': { dossier: 'scripts/questions/5-blockly-existants', cibles: BLOCKLY_5_106 },
+	'variable-e': { dossier: 'scripts/questions/variable-e-existants', cibles: VARIABLE_E },
+	'totaux-ce': { dossier: 'scripts/questions/ce-totaux-existants', cibles: TOTAUX_CE }
 };
 
 /** Champs écrits ; tout le reste doit être identique entre le fichier et la base */
@@ -140,24 +279,19 @@ const CHAMPS_ECRITS = [
 	'testSpecs',
 	'title',
 	'description',
-	'level'
+	'level',
+	'delay'
 ] as const;
 type ChampEcrit = (typeof CHAMPS_ECRITS)[number];
 
 /** Champs comparés sans être écrits (un écart = arrêt) */
 const CHAMPS_FIGES = [
-	'theme',
-	'domain',
-	'subdomain',
 	'grades',
-	'delay',
 	'status',
 	'exerciseInstruction',
 	'defaultDisplayOptions',
 	'multipleAnswers'
 ] as const;
-
-const NIVEAU_TEMPORAIRE = 900;
 
 // ============================================================================
 // FONCTIONS
@@ -170,7 +304,7 @@ function colonne(champ: ChampEcrit): keyof TablesUpdate<'question_templates'> {
 function valeurColonne(modele: QuestionTemplate, champ: ChampEcrit): unknown {
 	const valeur = modele[champ];
 	if (champ === 'description') return valeur || null;
-	if (champ === 'title' || champ === 'level') return valeur;
+	if (champ === 'title' || champ === 'level' || champ === 'delay') return valeur;
 	return toJson(valeur ?? null);
 }
 
@@ -281,24 +415,9 @@ async function main(): Promise<number> {
 		preparations.push({ id, fichier, base, cible, changes });
 	}
 
-	// Niveaux finaux : jamais deux modèles publiés de la même catégorie
+	// Niveaux changés
 	const aDeplacer = preparations.filter((p) => p.changes.includes('level'));
 	for (const p of aDeplacer) {
-		const { data, error } = await supabase
-			.from('question_templates')
-			.select('id')
-			.eq('status', 'published')
-			.eq('theme', p.base.theme)
-			.eq('domain', p.base.domain)
-			.eq('subdomain', p.base.subdomain ?? '')
-			.in('level', [p.cible.level, NIVEAU_TEMPORAIRE + p.base.level]);
-		if (error) throw new Error(`${p.id} : lecture des niveaux — ${error.message}`);
-		const occupants = (data ?? []).filter((row) => !aDeplacer.some((autre) => autre.id === row.id));
-		if (occupants.length > 0) {
-			throw new Error(
-				`${p.id} : niveau ${p.cible.level} déjà pris par ${occupants.map((o) => o.id).join(', ')}`
-			);
-		}
 		console.log(`  ↕ ${p.id.slice(0, 8)} : niveau ${p.base.level} → ${p.cible.level}`);
 	}
 
@@ -307,23 +426,7 @@ async function main(): Promise<number> {
 		return 0;
 	}
 
-	// 2. Niveaux temporaires (échange sans violer l'index unique)
-	for (const p of aDeplacer) {
-		const temporaire = NIVEAU_TEMPORAIRE + p.base.level;
-		const { data, error } = await supabase
-			.from('question_templates')
-			.update({ level: temporaire })
-			.eq('id', p.id)
-			.eq('level', p.base.level)
-			.select('id, level');
-		if (error || data?.length !== 1 || data[0].level !== temporaire) {
-			throw new Error(
-				`${p.id} : niveau temporaire non confirmé — ${error?.message ?? 'aucune ligne'}`
-			);
-		}
-	}
-
-	// 3. Écriture des champs, puis relecture
+	// 2. Écriture des champs, puis relecture
 	let ecrits = 0;
 	for (const p of preparations) {
 		if (p.changes.length === 0) continue;

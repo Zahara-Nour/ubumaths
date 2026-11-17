@@ -1,10 +1,8 @@
 {
+	"id": "bf4619fc-617a-4fea-9c56-3fe13f0acb2a",
 	"title": "Le même assemblage de cubes",
 	"description": "Retrouver un assemblage parmi trois : un cube de plus, deux piles échangées",
 	"grades": ["CE1"],
-	"theme": "Géométrie",
-	"domain": "Solides",
-	"subdomain": "Assemblages de cubes",
 	"level": 5,
 	"delay": 90,
 	"status": "draft",

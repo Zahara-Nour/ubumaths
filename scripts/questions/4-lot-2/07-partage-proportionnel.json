@@ -1,10 +1,8 @@
 {
+	"id": "0c5f6039-2a38-4418-b08b-3c890a784f90",
 	"title": "Partage proportionnel",
 	"description": "Partager une quantité en parts proportionnelles : 80 € dans le ratio 5 : 11 ; 90 € dans le ratio 4 : 3 : 2 ; un gain partagé proportionnellement aux mises",
 	"grades": ["4"],
-	"theme": "Proportionnalité",
-	"domain": "Ratios",
-	"subdomain": "Partage proportionnel",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

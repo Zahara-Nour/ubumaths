@@ -46,8 +46,6 @@ function derivativeTemplate(finalForm?: FinalForm, requiredForm?: RequiredForm):
 			}
 		],
 		grades: ['1_SPE'],
-		theme: 'Dérivation',
-		domain: 'Dériver',
 		level: 1,
 		testSpecs: [
 			{
@@ -81,8 +79,6 @@ function definiteIntegralTemplate(finalForm?: FinalForm): QuestionTemplate {
 			}
 		],
 		grades: ['T_SPE'],
-		theme: 'Intégration',
-		domain: 'Intégrer',
 		level: 1,
 		testSpecs: [
 			{

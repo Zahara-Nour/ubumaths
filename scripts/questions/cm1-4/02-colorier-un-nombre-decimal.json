@@ -1,10 +1,8 @@
 {
+	"id": "b832dfdf-f1eb-4f4c-8469-66d89a9db899",
 	"title": "Colorier un nombre décimal",
 	"description": "Représenter un nombre décimal en coloriant une bande de 10 ou une grille 10 × 10 : 0,7 ; 0,37 ; 1,3 ; 1,37 (une unité entière, puis une partie de la deuxième)",
 	"grades": ["CM1"],
-	"theme": "Décimaux",
-	"domain": "Apprivoiser",
-	"subdomain": "Partage",
 	"level": 1,
 	"delay": 90,
 	"status": "draft",

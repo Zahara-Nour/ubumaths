@@ -1,10 +1,8 @@
 {
+	"id": "f1295102-f779-4e3a-adcb-4072410a2f99",
 	"title": "Exécuter un programme pour un nombre de départ",
 	"description": "Appliquer un programme de calcul à un nombre donné : écrit en liste, en Scratch (demander, mettre, dire), avec un nombre de départ décimal",
 	"grades": ["6"],
-	"theme": "Algorithmique",
-	"domain": "Variables et instructions",
-	"subdomain": "Exécuter un programme",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

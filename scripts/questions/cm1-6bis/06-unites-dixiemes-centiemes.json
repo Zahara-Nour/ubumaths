@@ -1,0 +1,308 @@
+{
+	"id": "620f11e8-1d3e-4e36-b01c-c074aecca70d",
+	"title": "Unités, dixièmes, centièmes",
+	"description": "Relations entre unités, dixièmes et centièmes, dans les deux sens ; échanges ; un nombre décimal écrit en centièmes (pas de millièmes)",
+	"grades": ["CM1"],
+	"level": 9,
+	"delay": 45,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Complète.\n\n$$1~\\text{{{if:u==1|centième|{{if:u==2|dixième|unité}}}}} = ?~\\text{{{if:w==1|centièmes|{{if:w==2|dixièmes|unités}}}}}$$",
+			"variables": [
+				{
+					"name": "u",
+					"expression": "2..3"
+				},
+				{
+					"name": "w",
+					"expression": "1..2"
+				},
+				{
+					"name": "p",
+					"expression": "eval:u-w"
+				}
+			],
+			"conditions": ["p>=1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:10^p}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**D'un rang au rang juste à sa droite, on multiplie par $10$** : $1$ unité $= 10$ dixièmes, $1$ dixième $= 10$ centièmes.",
+					"Des {{if:u==1|centièmes|{{if:u==2|dixièmes|unités}}}} aux {{if:w==1|centièmes|{{if:w==2|dixièmes|unités}}}}, on descend de ${{p}}$ rang{{if:p>1|s|}} : $1~\\text{{{if:u==1|centième|{{if:u==2|dixième|unité}}}}} = \\textcolor{{{color:primary.0}}}{{{eval:10^p}}}~\\text{{{if:w==1|centièmes|{{if:w==2|dixièmes|unités}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n$${{k}}~\\text{{{if:u==1|centièmes|{{if:u==2|dixièmes|unités}}}}} = ?~\\text{{{if:w==1|centièmes|{{if:w==2|dixièmes|unités}}}}}$$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..9"
+				},
+				{
+					"name": "u",
+					"expression": "2..3"
+				},
+				{
+					"name": "w",
+					"expression": "1..2"
+				},
+				{
+					"name": "p",
+					"expression": "eval:u-w"
+				}
+			],
+			"conditions": ["p>=1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:k*10^p}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**D'un rang au rang juste à sa droite, on multiplie par $10$** : $1$ unité $= 10$ dixièmes, $1$ dixième $= 10$ centièmes.",
+					"$1~\\text{{{if:u==1|centième|{{if:u==2|dixième|unité}}}}} = {{eval:10^p}}~\\text{{{if:w==1|centièmes|{{if:w==2|dixièmes|unités}}}}}$, donc ${{k}}~\\text{{{if:u==1|centièmes|{{if:u==2|dixièmes|unités}}}}} = {{k}} \\times {{eval:10^p}} = \\textcolor{{{color:primary.0}}}{{{eval:k*10^p}}}~\\text{{{if:w==1|centièmes|{{if:w==2|dixièmes|unités}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n$${{eval:k*10^p}}~\\text{{{if:w==1|centièmes|{{if:w==2|dixièmes|unités}}}}} = ?~\\text{{{if:u==1|centièmes|{{if:u==2|dixièmes|unités}}}}}$$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..9"
+				},
+				{
+					"name": "u",
+					"expression": "2..3"
+				},
+				{
+					"name": "w",
+					"expression": "1..2"
+				},
+				{
+					"name": "p",
+					"expression": "eval:u-w"
+				}
+			],
+			"conditions": ["p>=1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**D'un rang au rang juste à sa droite, on multiplie par $10$** : $1$ unité $= 10$ dixièmes, $1$ dixième $= 10$ centièmes.",
+					"$1~\\text{{{if:u==1|centième|{{if:u==2|dixième|unité}}}}} = {{eval:10^p}}~\\text{{{if:w==1|centièmes|{{if:w==2|dixièmes|unités}}}}}$ : dans ${{eval:k*10^p}}$ {{if:w==1|centièmes|{{if:w==2|dixièmes|unités}}}}, il y a ${{eval:k*10^p}} \\div {{eval:10^p}} = \\textcolor{{{color:primary.0}}}{{{k}}}$ {{if:u==1|centièmes|{{if:u==2|dixièmes|unités}}}}."
+				]
+			}
+		},
+		{
+			"statement": "Complète : ${{n}}$ {{if:w==1|centièmes|{{if:w==2|dixièmes|unités}}}}, c'est…\n\n$$?~\\text{{{if:h==1|centièmes|{{if:h==2|dixièmes|unités}}}}}\\text{ et } ?~\\text{{{if:w==1|centièmes|{{if:w==2|dixièmes|unités}}}}}$$",
+			"variables": [
+				{
+					"name": "w",
+					"expression": "1..2"
+				},
+				{
+					"name": "h",
+					"expression": "eval:w+1"
+				},
+				{
+					"name": "t",
+					"expression": "1..9"
+				},
+				{
+					"name": "r",
+					"expression": "1..9"
+				},
+				{
+					"name": "n",
+					"expression": "eval:10*t+r"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{t}}"
+				},
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**D'un rang au rang juste à sa droite, on multiplie par $10$** : $1$ unité $= 10$ dixièmes, $1$ dixième $= 10$ centièmes.",
+					"$10~\\text{{{if:w==1|centièmes|{{if:w==2|dixièmes|unités}}}}} = 1~\\text{{{if:h==1|centième|{{if:h==2|dixième|unité}}}}}$ : dans ${{n}}$ {{if:w==1|centièmes|{{if:w==2|dixièmes|unités}}}}, il y a ${{t}}$ fois $10$ {{if:w==1|centièmes|{{if:w==2|dixièmes|unités}}}}, et il en reste ${{r}}$.",
+					"$${{n}}~\\text{{{if:w==1|centièmes|{{if:w==2|dixièmes|unités}}}}} = \\textcolor{{{color:primary.0}}}{{{t}}}~\\text{{{if:t<=1|{{if:h==1|centième|{{if:h==2|dixième|unité}}}}|{{if:h==1|centièmes|{{if:h==2|dixièmes|unités}}}}}}}\\text{ et } \\textcolor{{{color:primary.0}}}{{{r}}}~\\text{{{if:r<=1|{{if:w==1|centième|{{if:w==2|dixième|unité}}}}|{{if:w==1|centièmes|{{if:w==2|dixièmes|unités}}}}}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n$${{eval:n/100;d}} = ?~\\text{centièmes}$$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "101..999"
+				}
+			],
+			"conditions": ["mod(n,10)!=0", "mod(n,100)>=10"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$1$ unité $= 100$ centièmes et $1$ dixième $= 10$ centièmes.",
+					"${{eval:n/100;d}}$, c'est ${{eval:floor(n/100)}}$ unité{{if:n>=200|s|}}, ${{eval:floor(mod(n,100)/10)}}$ dixième{{if:mod(n,100)>=20|s|}} et ${{eval:mod(n,10)}}$ centième{{if:mod(n,10)>1|s|}} : ${{eval:100*floor(n/100)}}+{{eval:10*floor(mod(n,100)/10)}}+{{eval:mod(n,10)}}=\\textcolor{{{color:primary.0}}}{{{n}}}$ centièmes."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "1 unité = 100 centièmes",
+			"variationIndex": 0,
+			"variables": {
+				"u": "3",
+				"w": "1",
+				"p": "2"
+			},
+			"answers": ["100"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 unité = 10 centièmes",
+			"variationIndex": 0,
+			"variables": {
+				"u": "3",
+				"w": "1",
+				"p": "2"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "4 dixièmes = 40 centièmes",
+			"variationIndex": 1,
+			"variables": {
+				"k": "4",
+				"u": "2",
+				"w": "1",
+				"p": "1"
+			},
+			"answers": ["40"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 400",
+			"variationIndex": 1,
+			"variables": {
+				"k": "4",
+				"u": "2",
+				"w": "1",
+				"p": "1"
+			},
+			"answers": ["400"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "300 centièmes = 3 unités",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3",
+				"u": "3",
+				"w": "1",
+				"p": "2"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 30 unités",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3",
+				"u": "3",
+				"w": "1",
+				"p": "2"
+			},
+			"answers": ["30"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "35 centièmes = 3 dixièmes et 5 centièmes",
+			"variationIndex": 3,
+			"variables": {
+				"w": "1",
+				"h": "2",
+				"t": "3",
+				"r": "5",
+				"n": "35"
+			},
+			"answers": ["3", "5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 5 et 3 (échangés)",
+			"variationIndex": 3,
+			"variables": {
+				"w": "1",
+				"h": "2",
+				"t": "3",
+				"r": "5",
+				"n": "35"
+			},
+			"answers": ["5", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2,35 = 235 centièmes",
+			"variationIndex": 4,
+			"variables": {
+				"n": "235"
+			},
+			"answers": ["235"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 35 centièmes (unités oubliées)",
+			"variationIndex": 4,
+			"variables": {
+				"n": "235"
+			},
+			"answers": ["35"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

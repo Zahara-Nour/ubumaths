@@ -21,6 +21,7 @@ import {
 	getQuestionType,
 	isPlaceKind,
 	type BuildKind,
+	type InstanceBlank,
 	type QuestionInstance,
 	type ValidationStatus
 } from './types';
@@ -36,19 +37,31 @@ import { findHorlogesToPlace } from '$lib/ubumark/parser/horloge-parser';
 import { findBarsToPlace, findBoxPlotsToPlace } from '$lib/ubumark/parser/stat-chart-parser';
 import { findCourbesToPlace } from '$lib/ubumark/parser/courbe-parser';
 import { findTrigCirclesToPlace } from '$lib/ubumark/parser/trig-circle-parser';
+import { findTortuesToProgram } from '$lib/ubumark/parser/tortue-parser';
+import { findCalculsToProgram } from '$lib/ubumark/parser/calcul-parser';
+import { findRobotsToProduce } from '$lib/ubumark/parser/robot-parser';
 import { findRangersToPlace } from '$lib/ubumark/parser/ranger-parser';
+import { findAssociersToPlace } from '$lib/ubumark/parser/associer-parser';
+import { findTrousToPlace } from '$lib/ubumark/parser/trous-parser';
 import { findPartagesToColorier } from '$lib/ubumark/parser/partage-parser';
 import { NOTHING_COLORED } from '$lib/ubumark/utils/partage-colorier';
 import {
 	findCubesToBuild,
 	findPatronsToBuild,
+	findSolidesToBuild,
 	parseEspaceContent
 } from '$lib/ubumark/parser/espace-parser';
 import { MISSING_HEIGHTS, NOTHING_COLORED_CUBES } from '$lib/ubumark/utils/cubes-gestes';
 import { NOTHING_PLACED, NOTHING_TOUCHED } from '$lib/ubumark/utils/patron-gestes';
+import { BOTH_MISSING, END_MISSING } from '$lib/ubumark/utils/solide-gestes';
 import { buildCaseCount } from './generator/build-answer';
+import { findVariationsToFill } from '$lib/ubumark/parser/variation-table-parser';
+import type { HiddenCellKind } from '$lib/ubumark/types/variation-table';
+import { isSignTableCell, signCellToken } from './sign-table-case';
+import { blankErrorGuess, errorGuessSentence } from './error-kinds';
 import {
 	validateAnswerDetailed,
+	type BlankVerdict,
 	type DetailedVerdict,
 	type StudentAnswer
 } from '$lib/utils/answer-validator';
@@ -90,6 +103,24 @@ export interface ExpectedChoiceCase {
 	choices: ExpectedChoice[];
 }
 
+/** Cellule cachée d'un tableau de signes à compléter, dans sa ligne `sign-table` */
+export interface ExpectedSignCell {
+	/** Case de la question */
+	index: number;
+	cellule: HiddenCellKind;
+	/**
+	 * Réponse attendue, lue dans la case (jamais dans le bloc : énoncé masqué en
+	 * évaluation) : LaTeX d'une valeur de x, jeton `+` | `-` | `z` | `||` | `rien` sinon
+	 */
+	expected: string;
+	/**
+	 * Réponse de l'élève : LaTeX NEUTRALISÉ d'une valeur de x ; jeton d'un signe ou
+	 * d'une marque (`0` ramené à `z`), texte échappé s'il n'en est pas un ; `null` vide
+	 */
+	student: string | null;
+	status: ExpectedStatus;
+}
+
 export type ExpectedLine =
 	/** R1 : `lhs = réponse` (juste, forme) ou `lhs ≠ réponse` (valeur fausse) */
 	| { kind: 'comparison'; lhs: string; relation: '=' | '≠'; answer: ExpectedFill }
@@ -126,6 +157,20 @@ export type ExpectedLine =
 			studentStatus?: ExpectedStatus;
 	  }
 	| { kind: 'empty'; text: string }
+	/**
+	 * Tableau de signes à compléter (bloc ```variation à `?`) : le tableau lui-même,
+	 * chaque cellule cachée avec la réponse de l'élève, son statut et la bonne valeur ;
+	 * sans réponse (R9), les cellules remplies des solutions (statut `solution`)
+	 */
+	| {
+			kind: 'sign-table';
+			/** Première case du tableau */
+			index: number;
+			/** Texte du bloc, sans `case:` (cellules cachées gardées, `?`) */
+			source: string;
+			cells: ExpectedSignCell[];
+			status: ExpectedStatus;
+	  }
 	/**
 	 * Case « figure » (bloc ```figure-a-completer) : la figure elle-même, avec les
 	 * tracés de l'élève (`answer`, chaîne `droite(…)` lue par le juge, jamais
@@ -165,8 +210,9 @@ export type ExpectedLine =
 			 */
 			answers?: { answer: string; status: ExpectedStatus }[];
 			/**
-			 * Étiquettes à ranger : la bonne réponse de chaque place (position affichée) ;
-			 * le bloc de l'énoncé ne dit pas l'ordre juste
+			 * Étiquettes à ranger, éléments à associer, texte à trous : la bonne réponse de chaque place
+			 * (position affichée) ; le bloc de l'énoncé ne dit pas la réponse. Programme tortue, de calcul :
+			 * la réponse attendue de la case (`position | <programme>`, `<essais> | <programme>`)
 			 */
 			expected?: string[];
 	  };
@@ -181,11 +227,19 @@ export interface ExpectedResult {
 export const EMPTY_ANSWER_TEXT = "Tu n'as rien répondu.";
 /** Case à construire laissée vide (plan vide) */
 export const EMPTY_BUILD_TEXT = "Tu n'as rien posé.";
+/** Tableau de signes laissé vide (aucune cellule remplie) */
+export const EMPTY_SIGN_TABLE_TEXT = "Tu n'as rien rempli dans le tableau.";
 /** Droite à placer laissée vide (aucun point) */
 export const EMPTY_PLACE_TEXT = "Tu n'as rien placé.";
+/** Programme tortue ou de calcul laissé vide (aucun bloc) */
+export const EMPTY_PROGRAM_TEXT = "Tu n'as écrit aucun programme.";
+/** Robot à produire laissé vide (aucune instruction) */
+export const EMPTY_CODE_TEXT = "Tu n'as écrit aucun code.";
 /** Texte d'une case de ce genre laissée vide : rien posé, placé, colorié ou rempli */
 function emptyBuildText(kind: BuildKind, source: string): string {
 	if (kind === 'partage') return NOTHING_COLORED;
+	if (kind === 'tortue' || kind === 'calcul') return EMPTY_PROGRAM_TEXT;
+	if (kind === 'robot') return EMPTY_CODE_TEXT;
 	if (kind === 'cubes') {
 		return parseEspaceContent(source).spec?.task?.kind === 'retrouver'
 			? MISSING_HEIGHTS
@@ -194,6 +248,11 @@ function emptyBuildText(kind: BuildKind, source: string): string {
 	if (kind === 'patron') {
 		const spec = parseEspaceContent(source, 'patron').spec;
 		return spec?.task?.kind === 'completer' ? NOTHING_PLACED : NOTHING_TOUCHED;
+	}
+	if (kind === 'solide') {
+		// Origine imposée : posée d'office, seule l'extrémité manque
+		const task = parseEspaceContent(source, 'solide').spec?.task;
+		return task?.kind === 'vecteur' && task.origin !== null ? END_MISSING : BOTH_MISSING;
 	}
 	return isPlaceKind(kind) ? EMPTY_PLACE_TEXT : EMPTY_BUILD_TEXT;
 }
@@ -309,11 +368,17 @@ function buildCaseBlocks(statement: string): Map<number, BuildCaseBlock> {
 			kind: 'boite-a-moustaches' as const
 		})),
 		...findRangersToPlace(statement).map((b) => ({ ...b, kind: 'ranger' as const })),
+		...findAssociersToPlace(statement).map((b) => ({ ...b, kind: 'associer' as const })),
+		...findTrousToPlace(statement).map((b) => ({ ...b, kind: 'trous' as const })),
 		...findPartagesToColorier(statement).map((b) => ({ ...b, kind: 'partage' as const })),
 		...findCubesToBuild(statement).map((b) => ({ ...b, kind: 'cubes' as const })),
 		...findPatronsToBuild(statement).map((b) => ({ ...b, kind: 'patron' as const })),
 		...findCourbesToPlace(statement).map((b) => ({ ...b, kind: 'courbe' as const })),
-		...findTrigCirclesToPlace(statement).map((b) => ({ ...b, kind: 'trig' as const }))
+		...findTrigCirclesToPlace(statement).map((b) => ({ ...b, kind: 'trig' as const })),
+		...findSolidesToBuild(statement).map((b) => ({ ...b, kind: 'solide' as const })),
+		...findTortuesToProgram(statement).map((b) => ({ ...b, kind: 'tortue' as const })),
+		...findCalculsToProgram(statement).map((b) => ({ ...b, kind: 'calcul' as const })),
+		...findRobotsToProduce(statement).map((b) => ({ ...b, kind: 'robot' as const }))
 	];
 	const blocks = new Map<number, BuildCaseBlock>();
 	for (const block of found) {
@@ -346,6 +411,44 @@ export function withoutBuildCases(statement: string): string {
 		.join('\n');
 }
 
+/** Tableau de signes à compléter d'un énoncé (premier niveau, fermé, `case:` posée) */
+interface SignTableBlock {
+	/** Texte du bloc, sans `case:` */
+	source: string;
+	startIndex: number;
+	endIndex: number;
+	first: number;
+	cases: number;
+}
+
+/** Tableaux à compléter numérotés d'un énoncé (ceux du générateur, masqués compris) */
+function signTableBlocks(statement: string): SignTableBlock[] {
+	return findVariationsToFill(statement).flatMap((block) => {
+		const first = block.node?.caseIndex;
+		const cases = block.node?.cases?.length ?? 0;
+		if (block.nested || !block.closed || first === undefined || cases === 0) return [];
+		return [
+			{
+				source: block.body.filter((line) => !CASE_LINE.test(line.trim())).join('\n'),
+				startIndex: block.startIndex,
+				endIndex: block.startIndex + block.body.length + 1,
+				first,
+				cases
+			}
+		];
+	});
+}
+
+/** L'énoncé sans ses tableaux à compléter numérotés (la ligne `sign-table` les montre) */
+export function withoutSignTableCases(statement: string): string {
+	const blocks = signTableBlocks(statement);
+	if (blocks.length === 0) return statement;
+	return statement
+		.split('\n')
+		.filter((_, i) => !blocks.some((b) => i >= b.startIndex && i <= b.endIndex))
+		.join('\n');
+}
+
 /** L'énoncé sans ses blocs ```choix (leurs choix sont montrés à part) */
 export function withoutChoiceCases(statement: string): string {
 	return replaceChoiceBlocks(statement, () => '');
@@ -358,7 +461,7 @@ export function withoutChoiceCases(statement: string): string {
 export function showsInstructionOnly(lines: readonly ExpectedLine[]): boolean {
 	if (lines.some((l) => l.kind === 'comparison' || l.kind === 'solution')) return true;
 	return (
-		lines.some((l) => l.kind === 'figure' || l.kind === 'build') &&
+		lines.some((l) => l.kind === 'figure' || l.kind === 'build' || l.kind === 'sign-table') &&
 		!lines.some((l) => l.kind === 'filled-statement' || l.kind === 'your-answer')
 	);
 }
@@ -427,6 +530,8 @@ interface BlankView {
 	rulesDecide: boolean;
 	/** Réponse de l'élève, neutralisée (R6 + sécurité) ; `null` si la case est vide */
 	student: string | null;
+	/** Réponse telle que saisie, jamais rendue (jeton d'une case de tableau de signes) */
+	typed: string;
 	status: ValidationStatus | null;
 	remarks: string[];
 	/** Case « figure » : texte du bloc et réponse brute (la figure la dessine, rien n'est rendu) */
@@ -472,8 +577,9 @@ function blankViews(
 						: blank.expectedAnswer,
 				rulesDecide: rulesDecide(blank),
 				student,
+				typed,
 				status: detail?.status ?? null,
-				remarks: detail?.remarks ?? [],
+				remarks: detail ? blankRemarks(instance, detail) : [],
 				...(blank.construction && {
 					figure: { source: blank.construction.source, answer: detail?.answer ?? value }
 				}),
@@ -490,6 +596,16 @@ function blankViews(
 			}
 		];
 	});
+}
+
+/**
+ * Remarques d'une case : celles du validateur, sinon la phrase du type d'erreur
+ * deviné (chantier `type-erreur`, PR 3) — un message existant prime toujours
+ */
+function blankRemarks(instance: QuestionInstance, detail: BlankVerdict): string[] {
+	if (detail.remarks.length > 0) return detail.remarks;
+	const guess = blankErrorGuess(instance, detail);
+	return guess ? [errorGuessSentence(guess)] : [];
 }
 
 /** Solution montrée : sa réponse juste pour une case `rulesSuffice` (R7), sinon l'attendu */
@@ -637,7 +753,12 @@ function buildLines(
 		buildKind: build.kind,
 		source: build.source,
 		answer: answered ? build.answer : null,
-		status: answered ? status : 'solution'
+		status: answered ? status : 'solution',
+		// Programme tortue ou de calcul : la réponse attendue porte le programme de référence (le
+		// bloc d'un énoncé masqué ne le dit plus, `attendu: ?`) ; robot : la scène et un code juste
+		...((build.kind === 'tortue' || build.kind === 'calcul' || build.kind === 'robot') && {
+			expected: [view.expected]
+		})
 	};
 	// Propre à la case : une autre case de l'énoncé peut avoir sa réponse
 	if (withAnswer && status === 'empty') {
@@ -673,13 +794,73 @@ function placeLines(
 		answer: answered ? answers.map((a) => a.answer).join(' ; ') : null,
 		status: answered ? (allAccepted ? 'correct' : 'incorrect') : 'solution',
 		...(answered && { answers }),
-		...(build.kind === 'ranger' && { expected: points.map((p) => p.expected) })
+		...((build.kind === 'ranger' || build.kind === 'associer' || build.kind === 'trous') && {
+			expected: points.map((p) => p.expected)
+		})
 	};
 	if (withAnswer && !answered) {
 		const text = emptyBuildText(build.kind, build.source);
 		return [line, { kind: 'empty', text }];
 	}
 	return [line];
+}
+
+/** Jetons d'un signe, d'une marque ou d'une flèche, montrés tels quels (le rendu les dessine) */
+const SIGN_TOKENS = new Set(['+', '-', 'z', '||', 'rien', '↗', '↘']);
+
+/** Réponse de l'élève dans une cellule : jeton connu, sinon texte neutralisé */
+function signCellStudent(view: BlankView, blank: InstanceBlank): string | null {
+	if (view.student === null) return null;
+	if (!isSignTableCell(blank)) return view.student;
+	const token = signCellToken(view.typed);
+	return SIGN_TOKENS.has(token) ? token : view.student;
+}
+
+/**
+ * Tableau de signes à compléter : le tableau, ses cellules (réponse de l'élève,
+ * statut, bonne valeur), puis les remarques de ses cases ; juste quand toutes le
+ * sont ; aucune cellule remplie : le tableau juste et « rien rempli », sans verdict
+ * (comme une case à construire laissée vide). Une cellule sans case de tableau
+ * (instance inattendue) : les réponses attendues seules (R10).
+ */
+function signTableLines(
+	instance: QuestionInstance,
+	table: SignTableBlock,
+	cells: readonly BlankView[],
+	withAnswer: boolean
+): ExpectedLine[] {
+	const blanks = cells.map((view) => instance.blanks?.[view.index]);
+	if (cells.length !== table.cases || blanks.some((blank) => !blank?.cellule)) {
+		return cells.map((view) => expectedOnlyLine(view, withAnswer));
+	}
+	const expectedCells: ExpectedSignCell[] = cells.map((view, k) => {
+		const blank = blanks[k]!;
+		return {
+			index: view.index,
+			cellule: blank.cellule!,
+			expected: blank.expectedAnswer,
+			student: withAnswer ? signCellStudent(view, blank) : null,
+			status: withAnswer ? toExpectedStatus(view.status ?? 'empty') : 'solution'
+		};
+	});
+	const nothingFilled = expectedCells.every((c) => c.student === null);
+	const allCorrect = expectedCells.every((c) => c.status === 'correct');
+	const allAccepted = expectedCells.every(
+		(c) => c.status === 'correct' || c.status === 'unoptimal'
+	);
+	let status: ExpectedStatus = 'solution';
+	if (withAnswer && !nothingFilled) {
+		status = allCorrect ? 'correct' : allAccepted ? 'unoptimal' : 'incorrect';
+	}
+	const line: ExpectedLine = {
+		kind: 'sign-table',
+		index: table.first,
+		source: table.source,
+		cells: expectedCells,
+		status
+	};
+	if (withAnswer && nothingFilled) return [line, { kind: 'empty', text: EMPTY_SIGN_TABLE_TEXT }];
+	return [line, ...(withAnswer ? remarkLines(cells) : [])];
 }
 
 function expectedOnlyLine(view: BlankView, withAnswer: boolean): ExpectedLine {
@@ -752,6 +933,37 @@ function build(
 	return work.length === 0 ? result : { ...result, lines: [...result.lines, ...work] };
 }
 
+/**
+ * L'énoncé en morceaux, dans l'ordre : le texte entre les tableaux (sans les lignes
+ * vides en bord), et chaque tableau à compléter à sa place
+ */
+function statementPieces(
+	markdown: string,
+	tables: readonly SignTableBlock[]
+): (string | SignTableBlock)[] {
+	const lines = markdown.split('\n');
+	const pieces: (string | SignTableBlock)[] = [];
+	let from = 0;
+	const pushText = (to: number) => {
+		const text = lines.slice(from, to).join('\n').trim();
+		if (text !== '') pieces.push(text);
+	};
+	for (const table of [...tables].sort((a, b) => a.startIndex - b.startIndex)) {
+		pushText(table.startIndex);
+		pieces.push(table);
+		from = table.endIndex + 1;
+	}
+	pushText(lines.length);
+	return pieces;
+}
+
+/** Statut d'un morceau d'énoncé, d'après ses cases : juste, vide ou faux */
+function pieceStatus(statuses: readonly ValidationStatus[]): ValidationStatus {
+	if (statuses.every((s) => s === 'correct')) return 'correct';
+	if (statuses.every((s) => s === 'empty')) return 'empty';
+	return 'incorrect';
+}
+
 /** Résultat attendu des cases notées (les figures de travail viennent après, cf. `build`) */
 function buildAnswers(
 	instance: QuestionInstance,
@@ -766,7 +978,13 @@ function buildAnswers(
 	const statement = typeof instance.statement === 'string' ? instance.statement : '';
 	// Case « figure » : hors de l'énoncé rempli, sa figure est dans sa ligne. Case
 	// « choix » : son bloc reste À SA PLACE dans l'énoncé rempli (`choiceCases`)
-	const markdown = prepareStatement(withoutBuildCases(withoutFigureCases(statement)), instance);
+	// Tableau de signes à compléter : hors de l'énoncé rempli, il est dans sa ligne,
+	// À SA PLACE parmi les morceaux de l'énoncé (« En déduire… » vient après lui)
+	const withTables = prepareStatement(withoutBuildCases(withoutFigureCases(statement)), instance);
+	const markdown = withoutSignTableCases(withTables);
+	const tables = signTableBlocks(withTables);
+	const tableOf = (v: BlankView) =>
+		tables.find((t) => v.index >= t.first && v.index < t.first + t.cases);
 	const marked = markedIndexes(markdown);
 	const choiceBlocks = choiceBlockIndexes(markdown);
 	const views = blankViews(instance, answer, verdict);
@@ -774,7 +992,9 @@ function buildAnswers(
 	const choiceViews = views.filter((v) => isChoiceView(v) && choiceBlocks.has(v.index));
 	const inStatement = views.filter((v) => !v.graphical && !isChoiceView(v) && marked.has(v.index));
 	// R8 / R10 : case graphique, ou case introuvable dans l'énoncé
-	const outside = views.filter((v) => !inStatement.includes(v) && !choiceViews.includes(v));
+	const outside = views.filter(
+		(v) => !inStatement.includes(v) && !choiceViews.includes(v) && !tableOf(v)
+	);
 	// La figure avant l'énoncé rempli, comme dans l'énoncé (CP-058 : la droite, puis « oui »)
 	const figures = outside.flatMap((v) =>
 		v.figure ? figureLines(v, v.figure, verdict !== undefined) : []
@@ -792,6 +1012,13 @@ function buildAnswers(
 		);
 		return placeLines(v, v.build, points, verdict !== undefined);
 	});
+	const tableLinesOf = (table: SignTableBlock) =>
+		signTableLines(
+			instance,
+			table,
+			views.filter((v) => tableOf(v) === table),
+			verdict !== undefined
+		);
 	const apart = [
 		...builds,
 		...outside.flatMap((v) =>
@@ -801,7 +1028,34 @@ function buildAnswers(
 	const choiceCases = choiceViews.flatMap((v) => choiceCaseOf(instance, v.index, verdict) ?? []);
 
 	if (inStatement.length === 0 && choiceCases.length === 0) {
-		return { status, lines: [...figures, ...apart] };
+		// Tableau seul : la consigne est montrée à part (`showsInstructionOnly`)
+		return { status, lines: [...figures, ...tables.flatMap(tableLinesOf), ...apart] };
+	}
+
+	// Tableau ET autres cases : l'énoncé rempli découpé autour de chaque tableau
+	if (tables.length > 0) {
+		const ordered = statementPieces(withTables, tables).flatMap((piece) => {
+			if (typeof piece !== 'string') return tableLinesOf(piece);
+			const pieceMarked = markedIndexes(piece);
+			const pieceChoices = choiceBlockIndexes(piece);
+			const pieceViews = inStatement.filter((v) => pieceMarked.has(v.index));
+			const pieceChoiceCases = choiceCases.filter((c) => pieceChoices.has(c.index));
+			if (!verdict || status === null) {
+				const filled: ExpectedLine = {
+					kind: 'filled-statement',
+					markdown: piece,
+					fills: pieceViews.map((v) => solutionFill(v, 'solution')),
+					possible: pieceViews.some((v) => v.rulesDecide),
+					...withChoiceCases(pieceChoiceCases)
+				};
+				return [filled];
+			}
+			const judged = [...pieceViews, ...choiceViews.filter((v) => pieceChoices.has(v.index))].map(
+				(v) => v.status ?? 'empty'
+			);
+			return statementLines(piece, pieceViews, pieceStatus(judged), pieceChoiceCases);
+		});
+		return { status, lines: [...figures, ...ordered, ...apart] };
 	}
 
 	const lhs = wholeRightHandSide(markdown, instance);

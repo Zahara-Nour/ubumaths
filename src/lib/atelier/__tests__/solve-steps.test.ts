@@ -17,7 +17,8 @@ describe('solveSteps — cas nominaux', () => {
 		const solved = solveSteps('3x+5=14');
 
 		expect(solved).not.toBeNull();
-		expect(solved!.steps.length).toBe(4);
+		// La 5e conclut sur l'ensemble des solutions (Q2)
+		expect(solved!.steps.length).toBe(5);
 		expect(solved!.steps[0].title).toBe('Équation du premier degré');
 		expect(solved!.steps[3].title).toBe('Solution : $x = 3$');
 	});
@@ -95,7 +96,7 @@ describe('solveSteps lit des MATHÉMATIQUES, pas une ligne de commande', () => {
 		expect(espace).not.toBeNull();
 		// La même équation, écrite deux fois : la même réponse.
 		expect(espace!.answer).toBe(colle!.answer);
-		expect(espace!.answer).toBe('x = \\dfrac{5}{11}');
+		expect(espace!.answer).toBe('S = \\left\\{ \\dfrac{5}{11} \\right\\}');
 	});
 
 	// Passé à la nouvelle règle (2026-10-06) : l'inconnue est x sauf « ; v »
@@ -103,7 +104,7 @@ describe('solveSteps lit des MATHÉMATIQUES, pas une ligne de commande', () => {
 		const solved = solveSteps('3-v=1 ; v');
 
 		expect(solved).not.toBeNull();
-		expect(solved!.answer).toBe('v = 2');
+		expect(solved!.answer).toBe('S = \\left\\{ 2 \\right\\}');
 	});
 });
 
@@ -148,7 +149,7 @@ describe('la réponse que garde la ligne', () => {
 	 * sortie texte du moteur — c'est la règle de `render.ts`, mesures à l'appui.
 	 */
 	it('rend la solution d’une équation du premier degré', () => {
-		expect(solveSteps('3x+5=14')!.answer).toBe('x = 3');
+		expect(solveSteps('3x+5=14')!.answer).toBe('S = \\left\\{ 3 \\right\\}');
 	});
 
 	it('rend l’ensemble des solutions d’une équation du second degré', () => {

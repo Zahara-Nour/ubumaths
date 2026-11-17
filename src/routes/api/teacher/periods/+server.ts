@@ -12,6 +12,7 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { requireRoles } from '$lib/server/middleware/auth';
 import {
 	getCurrentAcademicPeriod,
 	getSchoolYearPeriods,
@@ -22,16 +23,8 @@ import { createServerLogger } from '$lib/utils/logger';
 const logger = createServerLogger('api/teacher/periods/+server');
 
 export const GET: RequestHandler = async ({ locals }) => {
-	const { user, profile } = locals;
-
-	// Auth check
-	if (!user || !profile) {
-		throw error(401, 'Authentication required');
-	}
 	// SECURITY (finding M5): teacher/admin only (defense in depth over the RPC guard).
-	if (profile.role !== 'teacher' && profile.role !== 'admin') {
-		throw error(403, 'Réservé aux enseignants');
-	}
+	const { profile } = await requireRoles(locals, ['teacher', 'admin']);
 
 	// School check
 	const schoolId = profile.school_id;

@@ -10,11 +10,11 @@
  *   questions et renvoie leur version PUBLIQUE (ni réponse, ni correction, ni
  *   graine). Date limite passée, tentatives épuisées → 403.
  * - Non destinataire, brouillon, membre archivé → 404.
- * - Propriétaire ou admin non destinataire : APERÇU (catégories ; le navigateur
+ * - Propriétaire ou admin non destinataire : APERÇU (lignes de la série ; le navigateur
  *   génère comme un entraînement libre, rien n'est rattaché).
  *
  * Réponses :
- * - aperçu : { preview: true, evaluation: { id, form, time_limit, title, categories } }
+ * - aperçu : { preview: true, evaluation: { id, form, time_limit, title, items } }
  * - tentative : { preview: false, evaluation: { id, form, time_limit, title },
  *   attempt: { id, resumed, remainingSeconds, questions } }
  */
@@ -31,7 +31,7 @@ import { rateLimit } from '$lib/server/middleware/rateLimit';
 export const POST: RequestHandler = async ({ locals, params }) => {
 	const { user, profile } = await requireAuth(locals);
 	// Démarrer tire et génère toutes les questions : pas de rafale
-	rateLimit(`evaluation-start:${user.id}`, 20, 60_000);
+	await rateLimit(`evaluation-start:${user.id}`, 20, 60_000);
 
 	const idValidation = uuidSchema.safeParse(params.id);
 	if (!idValidation.success) {

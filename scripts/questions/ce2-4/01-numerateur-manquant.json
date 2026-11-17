@@ -1,10 +1,8 @@
 {
+	"id": "e0aaf18f-0c9e-4de2-81a5-13e2e5252c4d",
 	"title": "Égalité de fractions : le numérateur manquant",
 	"description": "1/2 = ?/8 ; 6/8 = ?/4 ; 1 = ?/8 (exemples du BO)",
 	"grades": ["CE2"],
-	"theme": "Fractions",
-	"domain": "Apprivoiser",
-	"subdomain": "Egalité de fractions",
 	"level": 6,
 	"delay": 45,
 	"status": "draft",

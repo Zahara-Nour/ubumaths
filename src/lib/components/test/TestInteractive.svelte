@@ -1,7 +1,8 @@
 <!--
 	TestInteractive Component
 	=========================
-	Forme « Entraînement » d'une série (spécification de David, 2026-09-30).
+	Forme « Contrôle blanc » d'une série (ex-« Entraînement », spécification de
+	David, 2026-09-30 ; renommée le 2026-11-11, chantier `formes-de-serie`).
 
 	Une question à la fois, chacune avec SON chrono (durée portée par la
 	question, `ClassroomItem.delaySeconds`) :
@@ -27,6 +28,13 @@
 	  la correction du serveur) ; « Envoi de ta copie… » en attendant
 	- buddyGain: gain du Palotin, affiché sur l'écran de résultats (`null` → rien)
 	- mathouNews: nouveautés de la Chatterie, affichées sur l'écran de résultats (`null` → rien)
+	- traceRecorder: série libre d'un élève connecté → une trace par question,
+	  envoyée dès la réponse (lieu `mock_test`, durée de réponse, durée allouée,
+	  fin, réponse case par case ; ADR 0038) ; `null` → rien (contrôle, visiteur)
+	- palotinReactions: Contrôle blanc libre d'un élève connecté → le Palotin réagit
+	  (5 réussites d'affilée, 3 erreurs sur une notion), une fois au plus, et la
+	  question suivante attend son départ ; `null` → jamais (contrôle, visiteur).
+	  Chantier `palotins`, partie C (docs/wip/palotins-progress.md).
 -->
 
 <script lang="ts">
@@ -46,6 +54,9 @@
 	import { ArrowLeft, LogIn } from '@lucide/svelte';
 	import { SvelteMap } from 'svelte/reactivity';
 	import { slideFromRight, slideToLeft } from '$lib/transitions/slide-transition';
+	import { isCourseCard } from '$lib/questions/types';
+	import { createSeanceReactions } from '$lib/components/buddy/seance-reactions';
+	import { buildSeriesTrace, type TraceRecorder } from '$lib/questions/series-trace';
 
 	// Types
 	interface Props {
@@ -61,6 +72,8 @@
 		showResults?: boolean;
 		buddyGain?: BuddyGainView | null;
 		mathouNews?: MathouNews | null;
+		palotinReactions?: { notionOf: (templateId: string) => string | null } | null;
+		traceRecorder?: TraceRecorder | null;
 	}
 
 	// Constants
@@ -79,7 +92,9 @@
 		collectOnly = false,
 		showResults = true,
 		buddyGain = null,
-		mathouNews = null
+		mathouNews = null,
+		palotinReactions = null,
+		traceRecorder = null
 	}: Props = $props();
 
 	let backLabel = $derived(inEvaluation ? 'Mes contrôles' : 'Retour au panier');
@@ -91,12 +106,19 @@
 	// Variables
 	let currentIndex = $state(0);
 	let answers = new SvelteMap<number, AnswerData>();
+	// Fin de chaque question (validée, temps écoulé) : envoyée avec la copie d'un contrôle (PR 4 bis)
+	const endReasons = new SvelteMap<number, 'validated' | 'timeout'>();
 	let testResult = $state<TestResult | null>(null);
 	// Carte en cours : sa réponse tapée est validée à l'expiration du chrono
 	let currentCard = $state<ReturnType<typeof QuestionCard>>();
 	let pendingAdvance: ReturnType<typeof setTimeout> | undefined;
+	// Réactions du Palotin : une série (Recommencer = nouveau composant)
+	const seanceReactions = createSeanceReactions();
+	let destroyed = false;
 
 	const startTime = Date.now();
+	// Affichage de la question en cours : début de sa durée de réponse
+	let questionShownAt = Date.now();
 
 	const currentItem = $derived(items[currentIndex]);
 	const progressPercentage = $derived(((currentIndex + 1) / items.length) * 100);
@@ -116,13 +138,64 @@
 			return;
 		}
 		currentIndex += 1;
+		questionShownAt = Date.now();
+	}
+
+	/**
+	 * Trace de la question (N9, N12) : envoyée dès la réponse, le verdict reste
+	 * caché jusqu'à la fin de la série. Jamais en contrôle (`traceRecorder` nul).
+	 */
+	function recordTrace(index: number, answerData: AnswerData, endReason: 'validated' | 'timeout') {
+		if (!traceRecorder || collectOnly) return;
+		const item = items[index];
+		const trace = buildSeriesTrace({
+			place: 'mock_test',
+			instance: item.instance,
+			// Rien de tapé au temps écoulé : ratée, sans réponse
+			answer: answerData,
+			timing: {
+				responseMs: Date.now() - questionShownAt,
+				allottedMs: item.delaySeconds * 1000,
+				endReason
+			}
+		});
+		if (trace) traceRecorder.record(trace);
+	}
+
+	/**
+	 * Le Palotin réagit-il à cette réponse ? `null` : non, la suite arrive
+	 * aussitôt. Jamais en contrôle, ni sur une carte de cours (hors score).
+	 */
+	function reactTo(index: number, answerData: AnswerData): Promise<void> | null {
+		const item = items[index];
+		if (!palotinReactions || collectOnly || isCourseCard(item.instance)) return null;
+		return seanceReactions.afterAnswer({
+			correct: answerData.isCorrect,
+			notionId: palotinReactions.notionOf(item.templateId),
+			isLast: index + 1 >= items.length
+		});
+	}
+
+	/** Lance `next` une fois le Palotin reparti (aussitôt s'il ne passe pas). */
+	function afterReaction(waiting: Promise<void> | null, next: () => void) {
+		if (!waiting) {
+			next();
+			return;
+		}
+		void waiting.then(() => {
+			if (!destroyed) next();
+		});
 	}
 
 	function handleAnswerSubmit(answerData: AnswerData) {
 		const index = currentIndex;
 		if (answers.has(index)) return;
 		answers.set(index, answerData);
-		pendingAdvance = setTimeout(() => advanceFrom(index), ADVANCE_DELAY_MS);
+		endReasons.set(index, 'validated');
+		recordTrace(index, answerData, 'validated');
+		afterReaction(reactTo(index, answerData), () => {
+			pendingAdvance = setTimeout(() => advanceFrom(index), ADVANCE_DELAY_MS);
+		});
 	}
 
 	/**
@@ -134,17 +207,17 @@
 		if (answers.has(index)) return;
 
 		const pending = currentCard?.submitPendingAnswer() ?? null;
-		answers.set(
-			index,
-			pending ?? {
-				value: '',
-				isCorrect: false,
-				timeSpent: items[index].delaySeconds,
-				attempts: 0,
-				submittedAt: new Date().toISOString()
-			}
-		);
-		advanceFrom(index);
+		const answerData = pending ?? {
+			value: '',
+			isCorrect: false,
+			timeSpent: items[index].delaySeconds,
+			attempts: 0,
+			submittedAt: new Date().toISOString()
+		};
+		answers.set(index, answerData);
+		endReasons.set(index, 'timeout');
+		recordTrace(index, answerData, 'timeout');
+		afterReaction(reactTo(index, answerData), () => advanceFrom(index));
 	}
 
 	function completeTest() {
@@ -158,7 +231,8 @@
 				userAnswer,
 				isCorrect: userAnswer?.isCorrect || false,
 				timeSpent: userAnswer?.timeSpent,
-				attempts: userAnswer?.attempts
+				attempts: userAnswer?.attempts,
+				endReason: endReasons.get(index)
 			};
 		});
 
@@ -185,7 +259,10 @@
 
 	// Une avance en attente ne doit pas survivre au composant
 	$effect(() => {
-		return () => clearTimeout(pendingAdvance);
+		return () => {
+			destroyed = true;
+			clearTimeout(pendingAdvance);
+		};
 	});
 </script>
 
@@ -227,7 +304,7 @@
 							{#if assessmentTitle}
 								Contrôle : {assessmentTitle}
 							{:else}
-								Entraînement
+								Contrôle blanc
 							{/if}
 						</h1>
 						<p class="text-sm text-muted-foreground" data-testid="interactive-position">

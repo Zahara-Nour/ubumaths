@@ -32,11 +32,11 @@ function solve(input: string): CalcResult {
 
 describe('une inconnue indicée est une inconnue ordinaire', () => {
 	it.each([
-		['u_n+1=3', 'u_n=2'],
-		['2u_n-5=7', 'u_n=6'],
-		['x_1+2=5', 'x_1=3'],
-		['0.5u_n+3=1', 'u_n=-4'],
-		['u_{n+1}=3', 'u_{n+1}=3']
+		['u_n+1=3', 'S=\\left\\{2\\right\\}'],
+		['2u_n-5=7', 'S=\\left\\{6\\right\\}'],
+		['x_1+2=5', 'S=\\left\\{3\\right\\}'],
+		['0.5u_n+3=1', 'S=\\left\\{-4\\right\\}'],
+		['u_{n+1}=3', 'S=\\left\\{3\\right\\}']
 	])('%s → %s', (input, expected) => {
 		expect(answer(solve(input))).toBe(expected);
 	});
@@ -59,13 +59,13 @@ describe('une inconnue indicée est une inconnue ordinaire', () => {
 
 describe('l’inconnue en exposant : aⁿ = b', () => {
 	it.each([
-		['2^n=1024', 'n=10'],
-		['3*2^n=96', 'n=5'],
-		// Le décimal tapé reste décimal dans le ln, valeur approchée comprise
+		['2^n=1024', 'S=\\left\\{10\\right\\}'],
+		['3*2^n=96', 'S=\\left\\{5\\right\\}'],
+		// Le décimal tapé reste décimal dans le ln ; la valeur approchée au bouton ≈
 		// (décision de David, 2026-10-09 — voir `seuils-ecriture.test.ts`)
-		['1.5^n=10', 'n=\\dfrac{\\ln\\left(10\\right)}{\\ln\\left(1{,}5\\right)}\\approx5{,}68'],
-		['2^{n+1}=32', 'n=4'],
-		['e^n=5', 'n=\\ln\\left(5\\right)\\approx1{,}61']
+		['1.5^n=10', 'S=\\left\\{\\dfrac{\\ln\\left(10\\right)}{\\ln\\left(1{,}5\\right)}\\right\\}'],
+		['2^{n+1}=32', 'S=\\left\\{4\\right\\}'],
+		['e^n=5', 'S=\\left\\{\\ln\\left(5\\right)\\right\\}']
 	])('%s → %s', (input, expected) => {
 		expect(answer(solve(input))).toBe(expected);
 	});
@@ -112,12 +112,12 @@ describe('ce que le moteur ne sait pas résoudre : un refus en français', () =>
 	// `u_0` s'écrit u₀, plus `\\mathit{u_0}` (noms indicés, 2026-10-19)
 	it('u_0*0.5^n=1 pour n → n = ln(1/u₀)/ln(0,5), si u₀ > 0', () => {
 		expect(answer(solve('u_0*0.5^n=1 pour n'))).toBe(
-			'n=\\dfrac{\\ln\\left(\\dfrac{1}{u_0}\\right)}{\\ln\\left(0{,}5\\right)}\\quad\\text{si}u_0>0'
+			'S=\\left\\{\\dfrac{\\ln\\left(\\dfrac{1}{u_0}\\right)}{\\ln\\left(0{,}5\\right)}\\right\\}\\quad\\text{si}u_0>0'
 		);
 	});
 
 	it('le coefficient numérique, lui, se résout : 2*0.5^n=1 → n = 1', () => {
-		expect(answer(solve('2*0.5^n=1'))).toBe('n=1');
+		expect(answer(solve('2*0.5^n=1'))).toBe('S=\\left\\{1\\right\\}');
 	});
 
 	it('sans paramètre : « Je ne sais pas encore résoudre cette équation. »', () => {

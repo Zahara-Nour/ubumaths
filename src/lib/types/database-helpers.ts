@@ -443,14 +443,14 @@ export type AntiFraudFlagType =
 /** Severity 1..5 (1=info ; 5=critical). */
 export type AntiFraudSeverity = 1 | 2 | 3 | 4 | 5;
 
-/** Flag enrichi avec données élève + capacité (endpoint GET prof). */
+/** Flag enrichi avec données élève + point du programme (endpoint GET prof). */
 export interface AntiFraudFlagWithStudent extends AntiFraudFlag {
 	student: {
 		id: string;
 		first_name: string | null;
 		last_name: string | null;
 	};
-	capacity: {
+	point: {
 		id: string;
 		name: string;
 	} | null;

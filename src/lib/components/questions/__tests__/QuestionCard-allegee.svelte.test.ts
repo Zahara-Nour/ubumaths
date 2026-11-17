@@ -16,8 +16,6 @@ import { resolvedMarkdown, templateMarkdown } from '$lib/ubumark';
 
 const base = {
 	grades: ['6'],
-	theme: 'Entiers',
-	domain: 'Calcul',
 	level: 1,
 	generatedAt: new Date().toISOString()
 };

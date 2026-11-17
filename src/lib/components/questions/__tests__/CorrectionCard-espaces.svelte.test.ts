@@ -18,8 +18,6 @@ function result(options?: QuestionInstance['options']): TestAnswerResult {
 			statement: resolvedMarkdown('Calcule $7900+100 = \\placeholder[0]{}$'),
 			blanks: [{ expectedAnswer: '8000', expectedAnswerLatex: '8000', type: 'math' }],
 			grades: ['CM1'],
-			theme: 'Entiers',
-			domain: 'Additionner',
 			level: 1,
 			generatedAt: new Date().toISOString(),
 			options

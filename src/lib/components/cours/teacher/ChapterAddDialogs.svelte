@@ -65,7 +65,7 @@
 	// Constantes
 	const seriesFormItems = [
 		{ value: 'flash', label: 'Flash-cards' },
-		{ value: 'interactive', label: 'Entraînement' }
+		{ value: 'interactive', label: 'Contrôle blanc' }
 	];
 
 	// Variables

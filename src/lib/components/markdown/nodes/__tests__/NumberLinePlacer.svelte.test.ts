@@ -297,8 +297,6 @@ describe('FillBlanksInput — droite à placer', () => {
 					}
 				],
 				grades: ['CP'],
-				theme: 'Test',
-				domain: 'Test',
 				level: 1
 			} as QuestionTemplate,
 			42

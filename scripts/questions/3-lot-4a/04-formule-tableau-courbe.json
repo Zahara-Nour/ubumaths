@@ -1,10 +1,8 @@
 {
+	"id": "6ad254b4-69c3-49db-9541-fa921964cefc",
 	"title": "Formule, tableau de valeurs, courbe",
 	"description": "Passer d'une représentation d'une fonction à une autre : formule → tableau (affine, x² + c en un nombre négatif), courbe → tableau, tableau → formule",
 	"grades": ["3"],
-	"theme": "Fonctions",
-	"domain": "Généralités",
-	"subdomain": "Représentations",
 	"level": 1,
 	"delay": 75,
 	"status": "draft",

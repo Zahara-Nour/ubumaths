@@ -1,0 +1,64 @@
+/**
+ * TopCurriculumPointsToRemediate — component tests (Widget E).
+ */
+
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { lore } from '$lib/config/lore';
+import { render } from 'vitest-browser-svelte';
+import { page } from 'vitest/browser';
+import TopCurriculumPointsToRemediate from '../TopCurriculumPointsToRemediate.svelte';
+
+describe('TopCurriculumPointsToRemediate', () => {
+	let originalFetch: typeof globalThis.fetch;
+	beforeEach(() => {
+		originalFetch = globalThis.fetch;
+	});
+	afterEach(() => {
+		globalThis.fetch = originalFetch;
+	});
+
+	function mockFetch(payload: unknown) {
+		globalThis.fetch = vi.fn().mockResolvedValue({
+			ok: true,
+			json: async () => payload
+		} as Response);
+	}
+
+	it('renders rows with point name, notion badge, percentage', async () => {
+		mockFetch({
+			rows: [
+				{
+					point_id: 'cap1',
+					point_name: 'Calcul fractions',
+					notion_name: 'Fractions',
+					students_concerned: [{ student_id: 's1', display_name: 'Alice', badge: 'a_remedier' }],
+					remediate_pct: 75
+				}
+			]
+		});
+		await render(TopCurriculumPointsToRemediate, { classId: 'class-1' });
+		await expect.element(page.getByText('Calcul fractions')).toBeVisible();
+		await expect.element(page.getByText('Fractions', { exact: true })).toBeVisible();
+		await expect
+			.element(page.getByText(new RegExp(`75% des ${lore.entities.student}s concernés`)))
+			.toBeVisible();
+	});
+
+	it('shows congratulations when no rows', async () => {
+		mockFetch({ rows: [] });
+		await render(TopCurriculumPointsToRemediate, { classId: 'class-1' });
+		await expect
+			.element(page.getByText(new RegExp(`Bravo, votre ${lore.entities.class}`)))
+			.toBeVisible();
+	});
+
+	it('handles fetch error', async () => {
+		globalThis.fetch = vi.fn().mockResolvedValue({
+			ok: false,
+			status: 500,
+			json: async () => ({ error: 'Boom' })
+		} as Response);
+		await render(TopCurriculumPointsToRemediate, { classId: 'class-1' });
+		await expect.element(page.getByText('⚠ Boom')).toBeVisible();
+	});
+});

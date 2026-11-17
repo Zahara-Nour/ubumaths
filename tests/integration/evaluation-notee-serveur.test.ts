@@ -23,7 +23,7 @@
 import { readFileSync } from 'node:fs';
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database, Json } from '$lib/types/database';
 import { cleanupAllTestData } from '../helpers/database/trigger-test-helpers';
 import { DEFAULT_TEST_PASSWORD } from '../helpers/database/supabase-client';
 import { TestData } from '../helpers/database/test-data-factory';
@@ -80,16 +80,10 @@ const CHOICE_ID = '0a11f0e0-0000-4000-8000-00000000e604';
 const GESTE_ID = '0a11f0e0-0000-4000-8000-00000000e605';
 /** Assemblage à retrouver (`fuite-enonce`, lot 2) : l'énoncé envoyé ne dit pas les hauteurs */
 const CUBES_ID = '0a11f0e0-0000-4000-8000-00000000e606';
-const THEME = 'ZZ Éval serveur';
-const FILL_CATEGORY = { theme: THEME, domain: 'Moitié', subdomain: 'Entiers', level: 1 };
-const QCM_CATEGORY = { theme: THEME, domain: 'Comparer', subdomain: 'Relatifs', level: 1 };
-const MULTI_CATEGORY = { theme: THEME, domain: 'Plusieurs', subdomain: 'Pairs', level: 1 };
-const CHOICE_CATEGORY = { theme: THEME, domain: 'Case choix', subdomain: 'Pairs', level: 1 };
-const GESTE_CATEGORY = { theme: THEME, domain: 'Droite', subdomain: 'Placer', level: 1 };
-const CUBES_CATEGORY = { theme: THEME, domain: 'Cubes', subdomain: 'Retrouver', level: 1 };
+/** Composition par défaut : nouvelle forme, une ligne par modèle (ADR 0035) */
 const CATEGORIES = [
-	{ category: FILL_CATEGORY, quantity: 2, delay: 20 },
-	{ category: QCM_CATEGORY, quantity: 1, delay: 15 }
+	{ templateId: FILL_ID, quantity: 2, delay: 20 },
+	{ templateId: QCM_ID, quantity: 1, delay: 15 }
 ];
 /** Clés qui, présentes dans ce que reçoit l'élève, laisseraient tricher */
 const FORBIDDEN_KEYS = [
@@ -158,7 +152,7 @@ async function createEvaluation(
 		max_attempts?: number | null;
 		deadline?: string | null;
 		status?: 'draft' | 'published';
-		categories?: typeof CATEGORIES;
+		items?: Json;
 	} = {}
 ): Promise<{ evaluationId: string; assignmentId: string }> {
 	const { data: series, error: seriesError } = await service
@@ -166,7 +160,7 @@ async function createEvaluation(
 		.insert({
 			title: 'Éval serveur ZZ',
 			grade: '6',
-			categories: settings.categories ?? CATEGORIES,
+			items: settings.items ?? CATEGORIES,
 			created_by: teacher.id
 		})
 		.select('id')
@@ -332,7 +326,7 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 				id: QCM_ID,
 				type: 'fill_in_blanks',
 				title: 'QCM ZZ éval serveur',
-				...QCM_CATEGORY,
+				level: 1,
 				grades: ['5'],
 				status: 'published',
 				shared: qcm.shared,
@@ -342,7 +336,7 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 				id: FILL_ID,
 				type: 'fill_in_blanks',
 				title: 'Moitié ZZ éval serveur',
-				...FILL_CATEGORY,
+				level: 1,
 				grades: ['6'],
 				status: 'published',
 				variations: fill.variations
@@ -476,8 +470,9 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 			const instances = await oracle(first.attemptId);
 			const result = await submitEvaluationAttempt(actors(student), first.attemptId, {
 				answers: [
-					{ position: 0, ...rightAnswer(instances[0]) },
-					{ position: 1, ...wrongAnswer(instances[1]) },
+					// PR 4 bis : fin et durée de chaque question, pour sa trace
+					{ position: 0, ...rightAnswer(instances[0]), timeSpent: 5, endReason: 'validated' },
+					{ position: 1, ...wrongAnswer(instances[1]), timeSpent: 99, endReason: 'timeout' },
 					{ position: 2, ...rightAnswer(instances[2]) }
 				]
 			});
@@ -553,6 +548,39 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 			expect(traces).toHaveLength(3);
 			expect(traces!.every((t) => t.source === 'auto')).toBe(true);
 			expect(traces!.filter((t) => t.success)).toHaveLength(2);
+		});
+
+		it('PR 4 bis : traces au lieu « contrôle », avec durées, sans graine ni réponse', async () => {
+			const { data: traces, error } = await service
+				.from('skill_attempts')
+				.select(
+					'template_id, success, place, response_ms, allotted_ms, end_reason, seed, answer_parts, part_verdicts'
+				)
+				.eq('student_id', student.id);
+			expect(error).toBeNull();
+			const shown = (traces ?? [])
+				.map((t) => [
+					t.template_id,
+					t.success,
+					t.place,
+					t.response_ms,
+					t.allotted_ms,
+					t.end_reason,
+					t.seed,
+					t.answer_parts,
+					t.part_verdicts
+				])
+				.sort((a, b) => String(a).localeCompare(String(b)));
+			expect(shown).toEqual(
+				[
+					// Validée en 5 s sur 20 s allouées
+					[FILL_ID, true, 'evaluation', 5000, 20_000, 'validated', null, null, null],
+					// Temps écoulé : durée = durée allouée (99 s envoyées, ignorées)
+					[FILL_ID, false, 'evaluation', 20_000, 20_000, 'timeout', null, null, null],
+					// Ni fin ni durée envoyées : lieu seul
+					[QCM_ID, true, 'evaluation', null, null, null, null, null, null]
+				].sort((a, b) => String(a).localeCompare(String(b)))
+			);
 		});
 
 		it('C11 : renvoyer une tentative terminée → 409 AVEC la copie déjà notée, rien d’écrit', async () => {
@@ -693,6 +721,68 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 			);
 			expect(result).toMatchObject({ late: false, grade: 20 });
 		});
+
+		it('PR 4 bis : Course — validée, vide au chrono, laissée par « Terminer »', async () => {
+			// Élève neuf : ses traces ne viennent que de cette copie
+			const racer = await person('student');
+			const { error: memberError } = await service
+				.from('class_members')
+				.insert({ class_id: classId, student_id: racer.id, status: 'active' });
+			expect(memberError, 'décor : inscription').toBeNull();
+
+			const attempt = await start(racer, assignmentId);
+			const instances = await oracle(attempt.attemptId);
+			const result = await submitEvaluationAttempt(actors(racer), attempt.attemptId, {
+				answers: [
+					{ position: 0, ...rightAnswer(instances[0]), timeSpent: 12, endReason: 'validated' },
+					// Rien de tapé, chrono écoulé : fin et durée seules
+					{ position: 1, timeSpent: 60, endReason: 'timeout' }
+					// Position 2 : laissée par « Terminer », rien d'envoyé
+				]
+			});
+			expect(result.questions.map((q) => [q.status, q.points])).toEqual([
+				['correct', 1],
+				['empty', 0],
+				['empty', 0]
+			]);
+
+			// Question vide : jugée vide, sans réponse rangée, sa durée gardée
+			const { data: empty } = await service
+				.from('test_answers')
+				.select('status, points, user_answer, time_spent, question_instance')
+				.eq('test_session_id', attempt.attemptId);
+			const second = (empty ?? []).find(
+				(a) => (a.question_instance as { attemptPosition: number }).attemptPosition === 1
+			);
+			expect(second).toMatchObject({ status: 'empty', user_answer: null, time_spent: 60 });
+			expect(Number(second!.points)).toBe(0);
+
+			const { data: traces, error } = await service
+				.from('skill_attempts')
+				.select('template_id, success, place, response_ms, allotted_ms, end_reason, seed')
+				.eq('student_id', racer.id);
+			expect(error).toBeNull();
+			const shown = (traces ?? [])
+				.map((t) => [
+					t.template_id,
+					t.success,
+					t.place,
+					t.response_ms,
+					t.allotted_ms,
+					t.end_reason,
+					t.seed
+				])
+				.sort((a, b) => String(a).localeCompare(String(b)));
+			expect(shown).toEqual(
+				[
+					// Durée allouée = durée de la course (60 s)
+					[FILL_ID, true, 'evaluation', 12_000, 60_000, 'validated', null],
+					[FILL_ID, false, 'evaluation', 60_000, 60_000, 'timeout', null],
+					// « Terminer » : ratée, sans durée ni fin
+					[QCM_ID, false, 'evaluation', null, null, null, null]
+				].sort((a, b) => String(a).localeCompare(String(b)))
+			);
+		});
 	});
 
 	describe('Q59 : copie hostile, budget de correction de 5 s', () => {
@@ -702,7 +792,7 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 
 		beforeAll(async () => {
 			({ assignmentId } = await createEvaluation({
-				categories: [{ category: FILL_CATEGORY, quantity: QUESTIONS, delay: 20 }]
+				items: [{ templateId: FILL_ID, quantity: QUESTIONS, delay: 20 }]
 			}));
 		});
 
@@ -901,8 +991,6 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 				id: '0a11f0e0-0000-4000-8000-00000000e603',
 				type: 'fill_in_blanks',
 				title: 'Tiré seulement ZZ',
-				theme: 'ZZ tiré',
-				domain: 'Tiré',
 				level: 1,
 				grades: ['6'],
 				status: 'draft',
@@ -915,7 +1003,7 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 			.insert({
 				user_id: student.id,
 				mode: 'interactive',
-				categories: CATEGORIES,
+				items: CATEGORIES,
 				total_questions: 1
 			})
 			.select('id')
@@ -925,8 +1013,7 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 			position: 0,
 			template_id: template!.id,
 			seed: 1,
-			delay_seconds: 20,
-			category_key: 'zz'
+			delay_seconds: 20
 		});
 		const { error } = await service.from('question_templates').delete().eq('id', template!.id);
 		expect(error?.code).toBe('23503');
@@ -956,7 +1043,7 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 				id: MULTI_ID,
 				type: 'fill_in_blanks',
 				title: 'Pairs ZZ éval serveur',
-				...MULTI_CATEGORY,
+				level: 1,
 				grades: ['6'],
 				status: 'published',
 				variations: [
@@ -971,7 +1058,7 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 
 			({ assignmentId } = await createEvaluation({
 				max_attempts: 3,
-				categories: [{ category: MULTI_CATEGORY, quantity: 1, delay: 20 }]
+				items: [{ templateId: MULTI_ID, quantity: 1, delay: 20 }]
 			}));
 		}, 60_000);
 
@@ -1042,7 +1129,7 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 				id: CHOICE_ID,
 				type: 'fill_in_blanks',
 				title: 'Case choix ZZ éval serveur',
-				...CHOICE_CATEGORY,
+				level: 1,
 				grades: ['6'],
 				status: 'published',
 				variations: [
@@ -1057,7 +1144,7 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 
 			({ assignmentId } = await createEvaluation({
 				max_attempts: 3,
-				categories: [{ category: CHOICE_CATEGORY, quantity: 1, delay: 20 }]
+				items: [{ templateId: CHOICE_ID, quantity: 1, delay: 20 }]
 			}));
 		}, 60_000);
 
@@ -1106,7 +1193,7 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 				id: GESTE_ID,
 				type: 'fill_in_blanks',
 				title: 'Droite à placer ZZ éval serveur',
-				...GESTE_CATEGORY,
+				level: 1,
 				grades: ['6'],
 				status: 'published',
 				variations: [
@@ -1120,7 +1207,7 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 
 			({ assignmentId } = await createEvaluation({
 				max_attempts: 2,
-				categories: [{ category: GESTE_CATEGORY, quantity: 1, delay: 20 }]
+				items: [{ templateId: GESTE_ID, quantity: 1, delay: 20 }]
 			}));
 		}, 60_000);
 
@@ -1170,7 +1257,7 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 				id: CUBES_ID,
 				type: 'fill_in_blanks',
 				title: 'Assemblage à retrouver ZZ éval serveur',
-				...CUBES_CATEGORY,
+				level: 1,
 				grades: ['6'],
 				status: 'published',
 				variations: [
@@ -1184,7 +1271,7 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 
 			({ assignmentId } = await createEvaluation({
 				max_attempts: 2,
-				categories: [{ category: CUBES_CATEGORY, quantity: 1, delay: 20 }]
+				items: [{ templateId: CUBES_ID, quantity: 1, delay: 20 }]
 			}));
 		}, 60_000);
 

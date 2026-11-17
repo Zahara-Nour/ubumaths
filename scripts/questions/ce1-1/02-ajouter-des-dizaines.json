@@ -1,10 +1,8 @@
 {
+	"id": "cb08bf78-8c21-4c48-83da-8214dbc2d7a2",
 	"title": "Ajouter des dizaines entières",
 	"description": "Exemple : 234 + 60, puis 746 + 80 (avec retenue)",
 	"grades": ["CE1"],
-	"theme": "Entiers",
-	"domain": "Additionner",
-	"subdomain": "Somme",
 	"level": 21,
 	"delay": 20,
 	"status": "draft",

@@ -27,7 +27,7 @@ describe('bloc ```collection — cas nominaux', () => {
 		const node = collectionOf(doc('```collection', 'unités: 23', '```'));
 		expect(node.errors).toEqual([]);
 		expect(node.spec).toEqual({
-			sets: [{ tens: 0, units: 23 }],
+			sets: [{ thousands: 0, hundreds: 0, tens: 0, units: 23 }],
 			captions: null,
 			drawing: 'barres',
 			unitLayout: 'vrac',
@@ -38,16 +38,20 @@ describe('bloc ```collection — cas nominaux', () => {
 	it('dizaines et unités, paquets (comportements 2, 3)', () => {
 		const node = parse('dizaines: 4', 'unités: 7', 'dessin: paquets');
 		expect(node.errors).toEqual([]);
-		expect(node.spec?.sets).toEqual([{ tens: 4, units: 7 }]);
+		expect(node.spec?.sets).toEqual([{ thousands: 0, hundreds: 0, tens: 4, units: 7 }]);
 		expect(node.spec?.drawing).toBe('paquets');
 	});
 
 	it('groupement partiel : plus de 9 unités à côté des dizaines (comportement 4)', () => {
-		expect(parse('dizaines: 3', 'unités: 15').spec?.sets).toEqual([{ tens: 3, units: 15 }]);
+		expect(parse('dizaines: 3', 'unités: 15').spec?.sets).toEqual([
+			{ thousands: 0, hundreds: 0, tens: 3, units: 15 }
+		]);
 	});
 
 	it('dizaines seules : unités à 0 (limite 13)', () => {
-		expect(parse('dizaines: 5').spec?.sets).toEqual([{ tens: 5, units: 0 }]);
+		expect(parse('dizaines: 5').spec?.sets).toEqual([
+			{ thousands: 0, hundreds: 0, tens: 5, units: 0 }
+		]);
 	});
 
 	it('plusieurs collections et leurs légendes (comportement 5, décision 7)', () => {
@@ -61,8 +65,8 @@ describe('bloc ```collection — cas nominaux', () => {
 		expect(node.errors).toEqual([]);
 		expect(node.spec).toEqual({
 			sets: [
-				{ tens: 2, units: 8 },
-				{ tens: 3, units: 1 }
+				{ thousands: 0, hundreds: 0, tens: 2, units: 8 },
+				{ thousands: 0, hundreds: 0, tens: 3, units: 1 }
 			],
 			captions: ['Léa', 'Tom'],
 			drawing: 'barres',
@@ -73,9 +77,9 @@ describe('bloc ```collection — cas nominaux', () => {
 
 	it('une seule ligne de quantités pour plusieurs collections : l’autre vaut 0', () => {
 		expect(parse('unités: 31 ; 0 ; 12').spec?.sets).toEqual([
-			{ tens: 0, units: 31 },
-			{ tens: 0, units: 0 },
-			{ tens: 0, units: 12 }
+			{ thousands: 0, hundreds: 0, tens: 0, units: 31 },
+			{ thousands: 0, hundreds: 0, tens: 0, units: 0 },
+			{ thousands: 0, hundreds: 0, tens: 0, units: 12 }
 		]);
 	});
 
@@ -102,7 +106,9 @@ describe('bloc ```collection — cas nominaux', () => {
 			{ name: 'd', value: '3' },
 			{ name: 'u', value: '15' }
 		]);
-		expect(collectionOf(parseMarkdown(text).children).spec?.sets).toEqual([{ tens: 3, units: 15 }]);
+		expect(collectionOf(parseMarkdown(text).children).spec?.sets).toEqual([
+			{ thousands: 0, hundreds: 0, tens: 3, units: 15 }
+		]);
 	});
 
 	it('ne prend pas un $ de l’énoncé autour pour une formule du bloc', () => {
@@ -173,10 +179,10 @@ describe('bloc ```collection — erreurs (le nœud reste, avec son message)', ()
 		expect(messages(node).join()).toContain('40');
 	});
 
-	it('centaines : réservée, pas encore disponible (décision 4)', () => {
+	it('centaines : lue depuis le chantier collection-centaines (décision 4 levée)', () => {
 		const node = parse('centaines: 1', 'unités: 3');
-		expect(node.spec).toBeNull();
-		expect(messages(node)).toEqual([expect.stringContaining('pas encore disponible')]);
+		expect(node.errors).toEqual([]);
+		expect(node.spec?.sets).toEqual([{ thousands: 0, hundreds: 1, tens: 0, units: 3 }]);
 	});
 
 	it.each([
@@ -232,7 +238,7 @@ describe('bloc ```collection dans un item de liste', () => {
 		const list = children[0] as ListNode;
 		const node = collectionOf(list.items[0].children);
 		expect(node.errors).toEqual([]);
-		expect(node.spec?.sets).toEqual([{ tens: 3, units: 5 }]);
+		expect(node.spec?.sets).toEqual([{ thousands: 0, hundreds: 0, tens: 3, units: 5 }]);
 	});
 });
 

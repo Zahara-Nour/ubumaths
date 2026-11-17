@@ -32,8 +32,6 @@ function instanceWith(
 		statement: 'Donner une équation' as ResolvedMarkdown,
 		blanks,
 		grades: ['1_SPE'],
-		theme: 'Géométrie',
-		domain: 'Géométrie repérée',
 		level: 3,
 		generatedAt: new Date().toISOString(),
 		...(options && { options })
@@ -70,8 +68,6 @@ function lineTemplate(expected = '{{a}}x-y+{{b}}=0'): QuestionTemplate {
 			}
 		],
 		grades: ['1_SPE'],
-		theme: 'Géométrie',
-		domain: 'Géométrie repérée',
 		level: 3
 	};
 }

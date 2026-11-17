@@ -2,10 +2,7 @@
 	"title": "Somme et produit des racines",
 	"description": "x₁ + x₂ = −b/a et x₁x₂ = c/a sans calculer les racines",
 	"grades": ["1_SPE"],
-	"theme": "Fonctions",
-	"domain": "Polynôme du second degré",
 	"status": "draft",
-	"subdomain": "Racines",
 	"level": 5,
 	"delay": 40,
 	"shared": {

@@ -1,10 +1,8 @@
 {
+	"id": "9f9bddbd-19cc-43cc-90b9-e67c9058468d",
 	"title": "Conditions composées",
 	"description": "Lire une condition composée avec « et » ou « ou » dans un programme Scratch : ce que dit le programme selon les valeurs, traduire « strictement compris entre »",
 	"grades": ["3"],
-	"theme": "Algorithmique",
-	"domain": "Variables et instructions",
-	"subdomain": "Instructions conditionnelles",
 	"level": 1,
 	"delay": 90,
 	"status": "draft",

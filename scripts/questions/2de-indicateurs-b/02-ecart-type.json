@@ -1,10 +1,8 @@
 {
+	"id": "ef92701a-a752-42b5-9873-7aa9f2035166",
 	"title": "Écart type d'une série",
 	"description": "Calculer l'écart type d'une petite série (résultat entier) ; comparer les écarts types de deux séries de même moyenne",
 	"grades": ["2"],
-	"theme": "Statistiques",
-	"domain": "Indicateurs",
-	"subdomain": "Écart type",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

@@ -1,10 +1,8 @@
 {
+	"id": "777c5d31-83df-4b8f-90dd-f6baa3fb6b1f",
 	"title": "Réduire une expression avec des puissances",
 	"description": "Calcul littéral, exposants relatifs : (kxᵃ)² × mxᵇ ; quotient de monômes en x et y",
 	"grades": ["2"],
-	"theme": "Calcul littéral",
-	"domain": "Calculs",
-	"subdomain": "Avec des puissances",
 	"level": 3,
 	"delay": 60,
 	"status": "draft",

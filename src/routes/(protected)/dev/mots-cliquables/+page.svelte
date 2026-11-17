@@ -34,16 +34,16 @@
 		'T_EXP'
 	];
 
+	// Mots marqués `{.def}` : sur une carte, seuls les mots récents sont soulignés
+	// d'office (R1, chantier mots-cliquables), « aire » et « carré » ne le seraient plus
 	const QUESTION: QuestionInstance = {
 		templateId: 'demo-mots-cliquables',
 		statement: resolvedMarkdown(
-			'Calcule l’aire d’un carré de côté $3$ : $\\mathcal{A}=\\placeholder[0]{}$'
+			'Calcule l’[aire]{.def} d’un [carré]{.def} de côté $3$ : $\\mathcal{A}=\\placeholder[0]{}$'
 		),
 		blanks: [{ expectedAnswer: '9', expectedAnswerLatex: '9', type: 'math' }],
 		correction: { steps: [resolvedMarkdown('L’aire du carré vaut $3 \\times 3 = 9$.')] },
 		grades: ['6'],
-		theme: 'Grandeurs',
-		domain: 'Aires',
 		level: 1,
 		generatedAt: '2026-10-10T00:00:00.000Z'
 	};

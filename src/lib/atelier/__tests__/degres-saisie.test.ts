@@ -186,7 +186,7 @@ describe('un angle en degrés pris par cos, sin, tan dans une fonction ou une su
 
 	it('.résoudre h(x)=1 avec h(x) = cos(60°)·x : x = 2, sans cosinus d’une grandeur', () => {
 		const { result } = typed('h(x) = cos(60°)*x', '.résoudre h(x)=1');
-		expect(result.kind === 'commande' && result.latex).toBe('x = 2');
+		expect(result.kind === 'commande' && result.latex).toBe('S = \\left\\{ 2 \\right\\}');
 	});
 
 	it('.évaluer cos(60°)*x en x=2 : 1', () => {

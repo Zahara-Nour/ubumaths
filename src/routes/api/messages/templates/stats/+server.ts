@@ -10,6 +10,7 @@
  */
 
 import { json, error } from '@sveltejs/kit';
+import { requireRoles } from '$lib/server/middleware/auth';
 import type { RequestHandler } from './$types';
 import { templateStatsQuerySchema } from '$lib/server/validation/message-templates';
 import { createServerLogger } from '$lib/utils/logger';
@@ -17,28 +18,9 @@ import { createServerLogger } from '$lib/utils/logger';
 const logger = createServerLogger('api/messages/templates/stats/+server');
 
 export const GET: RequestHandler = async ({ locals, url }) => {
-	const { supabase, user } = locals;
+	const { supabase } = locals;
 
-	if (!user) {
-		return error(401, 'Non authentifié');
-	}
-
-	const { data: profile, error: profileError } = await supabase
-		.from('profiles')
-		.select('role')
-		.eq('id', user.id)
-		.single();
-
-	// PGRST116 = pas de profil, et le refus qui suit est légitime. Toute AUTRE
-	// panne produisait le même refus, indiscernable d'un refus mérité.
-	if (profileError && profileError.code !== 'PGRST116') {
-		logger.error('Rôle illisible :', profileError);
-		return error(500, 'Impossible de vérifier les droits');
-	}
-
-	if (!profile || (profile.role !== 'admin' && profile.role !== 'teacher')) {
-		return error(403, 'Permissions insuffisantes');
-	}
+	const { user, profile } = await requireRoles(locals, ['teacher', 'admin']);
 
 	// ✅ SECURITY: Validate query parameters with Zod
 	const validation = templateStatsQuerySchema.safeParse({

@@ -1,10 +1,8 @@
 {
+	"id": "2f4f4ae0-9bfc-43ae-84d3-e2f2c941af46",
 	"title": "Probabilité lue sur l'arbre",
 	"description": "Arbre de deux épreuves indépendantes : probabilité d'un chemin (deux urnes), d'un événement réalisé par deux chemins (un seul tir réussi)",
 	"grades": ["1_SPE"],
-	"theme": "Probabilités",
-	"domain": "Probabilités conditionnelles",
-	"subdomain": "Épreuves indépendantes",
 	"level": 2,
 	"delay": 90,
 	"status": "draft",

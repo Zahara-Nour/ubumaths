@@ -21,6 +21,11 @@ describe('Sidebar (Outils libres)', () => {
 			await expect.element(page.getByText('Upsilon', { exact: true })).toBeInTheDocument();
 			await expect.element(page.getByText('Zygomatics', { exact: true })).toBeInTheDocument();
 		});
+
+		it('affiche La Tortue sans connexion (bac à sable public)', async () => {
+			await render(Sidebar, { profile: null });
+			await expect.element(page.getByText('La Tortue', { exact: true })).toBeInTheDocument();
+		});
 	});
 
 	describe('outils ouverts sans connexion', () => {

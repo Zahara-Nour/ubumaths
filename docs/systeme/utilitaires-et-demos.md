@@ -88,7 +88,7 @@ couvre:
 
 > Vérifié contre le code le 2026-10-12 (commit 4ab55c5e8) ; `french-math.ts` le 2026-10-23 ; pages de
 > démo et de mise au point le 2026-10-24 ; vitrine `/demo` et clôture du chantier demo-debug le 2026-10-25 ;
-> fiche du bloc patron (gestes) le 2026-10-30 ; fiche de la boîte à moustaches le 2026-11-01, construire la boîte le 2026-11-01.
+> fiche du bloc patron (gestes) le 2026-10-30 ; fiche de la boîte à moustaches le 2026-11-01, construire la boîte le 2026-11-01 ; cases à compléter des variations (`?`, `?flèche`, `??n` à ne pas écrire), étiquette indicée de l'arbre (`G_1`), fiches collection et monnaie le 2026-11-09 ; fiche du programme tortue le 2026-11-14, `blocs:` le 2026-11-15, `niveau:` (4e / 3e) le 2026-11-17 ; fiche du programme de calcul le 2026-11-14, `niveau:` (4e / 3e) le 2026-11-16 ; fiche du robot le 2026-11-15.
 > Ce fichier **recense** : il dit ce que fait chaque fichier, qui l'appelle, et s'il est mort.
 > Chaque fichier de l'index est dans le `couvre:` : une PR qui le modifie relit sa ligne.
 > Il ne remplace pas la doc du domaine qui l'utilise ; quand elle existe, elle est citée.
@@ -133,7 +133,7 @@ journal dans `docs/archive/wip/demo-debug-progress.md`) :
   carrefour de la vitrine (plus bas).
 - **Plus rien sous `/dashboard/admin/debug/`**. Seule la page de contrôle de la base y est restée,
   devenue `/dashboard/admin/integrite-donnees` (« Intégrité des données »).
-- **Anciennes adresses** (`/test-*`, `/geometry-demo/…`, `/slides/…`, `/blockly/playground`,
+- **Anciennes adresses** (`/test-*`, `/geometry-demo/…`, `/slides/…`,
   `/construction-demo`, `/dashboard/admin/debug/…`, anciennes `/demo/…`) : redirigées en 308 par
   `redirectHandle` (table `MOVED_PAGES`, [auth.md](auth.md#la-chaîne-de-handles)), sous-pages et
   query string comprises ; une ancienne adresse publique mène donc le visiteur à la connexion.
@@ -186,7 +186,7 @@ sont de vraies pages.
 | `/dev/structure`              | admin (`/dev`)                             | `/dev`                                                 | « Structure d'une expression » au survol (`$lib/mathAST/structure`)                                                                                                  | **Chantier vivant**   |
 | `/demo/structure`             | tous                                       | `/demo`, sitemap                                       | Vitrine : la formule de `/dev/structure` seule, 6 exemples, réglages par défaut                                                                                      | Vitrine               |
 | `/demo/cercle-trigo`          | tous                                       | `/demo`, sitemap                                       | Vitrine : 4 exemples du bloc `trig` (exploration, π/6, cos x = 1/2, cos x > 1/2), sans le texte du bloc                                                              | Vitrine               |
-| `/demo/blocs`                 | tous                                       | `/demo`, sitemap                                       | Vitrine : 9 blocs du catalogue rangés par niveau (primaire, collège, lycée), texte du prof replié                                                                    | Vitrine               |
+| `/demo/blocs`                 | tous                                       | `/demo`, sitemap                                       | Vitrine : 10 blocs du catalogue rangés par niveau (primaire, collège, lycée), texte du prof replié                                                                   | Vitrine               |
 | `/demo/cartes`                | tous                                       | `/demo`, sitemap                                       | Vitrine : 4 cartes VIP écrites dans le code, une par rareté, avec leur effet holographique                                                                           | Vitrine               |
 | `/demo/lexique`               | tous                                       | `/demo`, sitemap                                       | Vitrine : mots du dictionnaire soulignés dans une question et 5 phrases, sélecteur de niveau                                                                         | Vitrine               |
 | `/demo/corriges`              | tous                                       | `/demo`, sitemap                                       | Vitrine : une page de Corrigé de fiche (écriture manuscrite) en image fixe, `static/demo/corriges/`                                                                  | Vitrine               |
@@ -222,9 +222,9 @@ Précisions :
   l'ouverture, l'expression de l'article Sésamath.
 - **Catalogue des blocs** (`/aide-ecriture/blocs`, chantier
   [catalogue-blocs](../archive/wip/catalogue-blocs-progress.md)) : une fiche par bloc spécial d'ubumark
-  (variations, arbre, droite graduée — avec `placer:` d'une question, un ou plusieurs points —, courbe, figure — en-tête seulement, renvoi vers
+  (variations — avec un `?` devant une case d'une question, le tableau de signes ou de variations à compléter, valeur, signe, marque ou flèche (`?flèche`) ; `??1` dit « à ne pas écrire », jeton de l'énoncé d'une évaluation notée —, arbre — événements indicés `G_1` —, droite graduée — avec `placer:` d'une question, un ou plusieurs points ; avec `representer:`, l'intervalle que l'élève dessine —, courbe, figure — en-tête seulement, renvoi vers
   `/aide-ecriture/geometrie` —, figure à compléter — case « figure » d'une question, rendue ici en
-  figure de départ —, figure de travail — même rendu, jamais notée —, statistiques — 9 genres sur une page, avec `axe:` et `placer:` d’une question, le diagramme en barres que l’élève construit, `axe: à choisir` où il choisit d’abord l’échelle —, boîte à moustaches (``boite-a-moustaches, sa fiche à part dans `stat-chart.ts`, `boxPlotEntry` : boîtes nommées, `données:`, `valeurs: oui` — avec `placer:` d’une question, la boîte dont l’élève pose les cinq traits —), QR code, horloge — la trotteuse quand les secondes sont écrites ; avec `placer:` d’une question, le cadran où l’élève pose les aiguilles, trotteuse comprise —, étiquettes à ranger — le geste de l’élève, glisser ou toucher —, figure partagée en parts égales (``partage, `gris:` — avec `colorier:` d’une question, la figure où l’élève colorie les parts, en touchant ou en glissant ; avec `unites:`, plusieurs figures pour une fraction plus grande que 1 —), assemblage de cubes (``cubes — avec `dessiner:` d’une question, le quadrillage où l’élève colorie une vue ; avec `retrouver:`, la vue de dessus où il écrit les hauteurs d’après les vues —), solide en perspective cavalière (``solide : arêtes cachées en tirets, sommets nommés, `marquer:`, `cotes:`, `section:` — pavé, cylindre ou boule coupé par un plan, section teintée —), patron d’un solide (``patron : les 11 patrons et 8 faux patrons du cube dessinés, grille pliée, noms du solide répétés — avec `designer:` d’une question, les faces que l’élève touche ; avec `completer:`, les emplacements où il pose la face manquante —), opération posée,
+  figure de départ —, figure de travail — même rendu, jamais notée —, statistiques — 9 genres sur une page, avec `axe:` et `placer:` d’une question, le diagramme en barres que l’élève construit, `axe: à choisir` où il choisit d’abord l’échelle —, boîte à moustaches (``boite-a-moustaches, sa fiche à part dans `stat-chart.ts`, `boxPlotEntry` : boîtes nommées, `données:`, `valeurs: oui` — avec `placer:` d’une question, la boîte dont l’élève pose les cinq traits —), QR code, horloge — la trotteuse quand les secondes sont écrites ; avec `placer:` d’une question, le cadran où l’élève pose les aiguilles, trotteuse comprise —, collection d’objets (``collection : barres de dix, cubes, jetons, plaques de cent et gros cubes de mille — avec `construire:` d’une question, la collection que l’élève pose, jusqu’à 9 999 —), pièces et billets (``monnaie : `billets:`, `pièces:`, `montant:` — avec `construire:` et `réserve:` d’une question, la somme que l’élève pose —), étiquettes à ranger — le geste de l’élève, glisser ou toucher ; avec `signe: aucun`, les étapes d’une démonstration en colonne numérotée —, associer deux colonnes — `- élément -> étiquette`, intrus `- -> …`, une étiquette pour plusieurs éléments, une courbe dans un élément (````associer, ```courbe en retrait) —, texte à trous à étiquettes — ``trous, `[étiquette]` dans le texte, `intrus: a ; b` en dernière ligne —, programme tortue — ``tortue, `attendu:`, `montrer:`, `comparer:`, `blocs:` (au plus N blocs), `niveau:` (variables en 4e, conditions en 3e ; exemples polygone à n côtés et spirale à compléter), fiche `tortue.ts`, l’éditeur de blocs dans l’essai —, programme de calcul — ``calcul, `attendu:`, `essais:`, `départ:`, `niveau:` (blocs de 5e, 4e ou 3e ; exemples « si » et « répéter jusqu’à »), fiche `calcul.ts`, l’éditeur de blocs et « Essayer avec » dans l’essai —, robot sur un quadrillage — ``robot, `quadrillage:`, `codage:` (flèches ou avance-pivote), `départ:`, `arrivée:`, `interdites:`, `produire:`, fiche `robot.ts` en dernier ; avec `produire:` d’une question, les cartes que l’élève pose pour composer le code —, figure partagée en parts égales (``partage, `gris:` — avec `colorier:` d’une question, la figure où l’élève colorie les parts, en touchant ou en glissant ; avec `unites:`, plusieurs figures pour une fraction plus grande que 1 —), assemblage de cubes (``cubes — avec `dessiner:` d’une question, le quadrillage où l’élève colorie une vue ; avec `retrouver:`, la vue de dessus où il écrit les hauteurs d’après les vues —), solide en perspective cavalière (``solide : arêtes cachées en tirets, sommets nommés, `marquer:`, `cotes:`, `section:` — pavé, cylindre ou boule coupé par un plan, section teintée —, `points:` — milieux et centres nommés — et `vecteurs:` — flèches entre points nommés, nom sous une petite flèche — ; avec `tracer:` d’une question, les points que l’élève touche pour l’origine et l’extrémité du vecteur, une combinaison à coefficients en fractions (dénominateur 2, 3 ou 4) écrite avec des points ou des vecteurs nommés de `vecteurs:` —), patron d’un solide (``patron : les 11 patrons et 8 faux patrons du cube dessinés, grille pliée, noms du solide répétés — avec `designer:` d’une question, les faces que l’élève touche ; avec `completer:`, les emplacements où il pose la face manquante —), opération posée,
 cercle trigo — avec `placer:` d’une question, le cercle gradué tous les π/12 où l’élève pose ses points —, programme Scratch — ``scratch, page « Instructions » au lieu de « Réglages » —). Contenu écrit une fois dans `src/lib/block-catalog/<bloc>.ts`
   (`BlockCatalogEntry` : réglages avec clé, valeurs, défaut ; exemples ; erreurs fréquentes ; texte
   de la zone « Essayer »), liste ordonnée `BLOCK_CATALOG`. Page commune
@@ -243,9 +243,9 @@ il y ajoute la vérification des instructions (`checkScratchProgram`), faite hor
   `preset: custom` sans angle), π/6 seul avec projections et tableau, cos x = 1/2, cos x > 1/2 en
   arc. Le catalogue complet et la syntaxe restent sur `/aide-ecriture/cercle-trigo`, dont un test
   vérifie que chaque exemple se dessine.
-- **`/demo/blocs`** (vitrine, chantier catalogue-blocs, PR 2) : 9 exemples du catalogue des blocs,
+- **`/demo/blocs`** (vitrine, chantier catalogue-blocs, PR 2 ; schéma en barres ajouté le 2026-11-12) : 10 exemples du catalogue des blocs,
   rangés par niveau : horloge, opération posée, droite graduée (primaire) ; barres, circulaire,
-  nuage de points (collège) ; variations, arbre, courbe (lycée). Le texte n’est pas recopié :
+  nuage de points, schéma en barres (collège) ; variations, arbre, courbe (lycée). Le texte n’est pas recopié :
   `src/lib/block-catalog/showcase.ts` renvoie à un exemple d’une fiche (slug + titre), un renvoi
   cassé fait échouer `showcase.test.ts`. Rendu sans `showAuthoringErrors` ; le texte du prof est
   replié sous « Voir ce qu’écrit le prof », comme « Voir le script » de `/demo/geometrie`.
@@ -288,20 +288,20 @@ il y ajoute la vérification des instructions (`checkScratchProgram`), faite hor
   taille. L'éditeur reste au prof, sur `/constructions/essais`
   ([constructions.md](geometrie/constructions.md)).
 - **`/demo/questions`** (vitrine, PR 6g) : la même série de 4 questions (écrites dans
-  `questions.ts`, sans base) sous ses cinq formes, en onglets, avec une phrase « qui, quand » par
-  forme : En classe, Entraînement, Flash-cards et Course aux nombres sont les vrais composants
+  `questions.ts`, sans base) sous ses six formes, en onglets, avec une phrase « qui, quand » par
+  forme : En classe, Contrôle blanc, Flash-cards, Saisie et Course aux nombres sont les vrais composants
   d'Automaths (`$lib/components/test/`) ; les révisions espacées sont simulées
-  (`SpacedReviewDemo.svelte` : carte, 4 notes et la prochaine date d'une carte neuve, calculée
+  (`SpacedReviewDemo.svelte` : carte, deux boutons « Pas réussi / Réussi » et la prochaine date d'une carte neuve, calculée
   par `$lib/srs/fsrs`). Rien n'est enregistré : la fin de série n'appelle rien, et le bandeau
-  « Connecte-toi… » d'Entraînement et Flash-cards est coupé par `loginNote={false}`. Les boutons
+  « Connecte-toi… » du Contrôle blanc, des Flash-cards et de la Saisie est coupé par `loginNote={false}`. Les boutons
   « Retour au panier » mènent à `/automaths/panier`.
 - **`/demo/editeur`** (vitrine, PR 6h) : un seul `RichTextEditor` (`preset="standard"`) dont le
   JSON alimente trois cartes, chacune par le vrai moteur de son usage : message privé au prof
-  (`RestrictedRichText`, comme `/messages/[id]`), cahier de texte (`generateHTML`, même
-  sérialisation que `editor.getHTML()`, puis `transformMathHtml` et `linkifyResourceReferences`,
-  comme la page élève) et énoncé d'exercice (`tipTapToMarkdown` puis `MarkdownRenderer`). Le HTML
-  du cahier est calculé après `onMount` : l'hydratation garde le `{@html}` du serveur sans le
-  corriger. Les formules de la carte « cahier » sortent vides (écart de
+  (`RestrictedRichText`, comme `/messages/[id]`), cahier de texte (`tipTapToMarkdown` puis
+  `JournalContent` en lecteur élève, comme la page élève) et énoncé d'exercice
+  (`tipTapToMarkdown` puis `MarkdownRenderer`). La carte « cahier » passait par l'ancien chemin
+  HTML (`transformMathHtml`) jusqu'au 2026-11-08 : elle montrait un rendu retiré du vrai cahier,
+  et son assainisseur tronquait toute formule contenant `}}` (écart de
   [editeur-riche.md](editeur-riche.md)). Rien n'est envoyé ;
 - **`/demo/diaporama`** (vitrine, PR 6i-c) : un `Deck` de 13 diapositives dans un cadre (bouton
   ou F pour le plein écran, `hash: false`) : comment avancer, pile verticale, fragments,
@@ -367,8 +367,6 @@ Notés pendant le rangement (chantier demo-debug), pas traités :
   fera plus tard ».
 - **`/dev/saisie-naturelle`** : prototype jetable dont le travail est fait (#1355), candidat à la
   suppression ; à trancher par David.
-- **`/dev/blockly`** : deviendra une vraie fonctionnalité (algorithmique par blocs, cycle 4,
-  relais vers Python ; décidé par David le 2026-10-24) ; phase 0 à ouvrir. Ne pas le supprimer.
 - **Scripts d'essai de constructions et brouillons de `/constructions`** : doublon possible, à
   revoir.
 - **Images de 4 cartes VIP de Mathémo** (Voyelles Révélées, Multiplicateur x1.5, Lettre Bonus,
@@ -378,8 +376,6 @@ Notés pendant le rangement (chantier demo-debug), pas traités :
   deux) ; `dsl-builtins.md` dit « en radians », faux en mode degrés. Les courbes trigonométriques
   de l'aide à l'écriture déclarent `unite_angle("radians")`, gardé par
   `courbes-trigo-radians.test.ts`.
-- **Carte « cahier » de `/demo/editeur`** : formules vides, voir l'écart de
-  [editeur-riche.md](editeur-riche.md) (futur chantier : cahier de texte en ubumark).
 - **Révisions espacées** : `calculateNewStability` (`src/lib/srs/fsrs.ts`) ignore la note après
   la 1re révision ([srs.md](srs.md), futur chantier `fsrs`) ; `/demo/questions` n'affiche que la
   1re, non touchée.

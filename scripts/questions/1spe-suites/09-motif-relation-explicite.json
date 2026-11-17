@@ -1,10 +1,8 @@
 {
+	"id": "05edc72b-5253-454c-91d6-b001fa50e12c",
 	"title": "Motif : relation explicite",
 	"description": "Suite définie par un motif géométrique dessiné (allumettes, croix, triangle, carré de points), étapes numérotées à partir de 0 ou de 1 : uₙ en fonction de n",
 	"grades": ["1_SPE"],
-	"theme": "Suites",
-	"domain": "Apprivoiser",
-	"subdomain": "Motifs",
 	"level": 2,
 	"delay": 60,
 	"status": "draft",

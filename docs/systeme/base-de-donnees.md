@@ -102,11 +102,23 @@ Accès :
 - **Élève** : lit son profil, ses adhésions, ses classes, et les adhésions des classes **actives** où
   il est actif (`is_classmate`). Il lit le profil d'un autre élève seulement s'il est ami, camarade,
   demandeur d'amitié en attente ou co-participant d'un tournoi. Il modifie son profil sans pouvoir
-  changer son `role` ni son `status`, ni augmenter ses `gidouilles`. Il demande une amitié **dans son
+  changer son `role` ni son `status`, ni augmenter ses `gidouilles`, ni toucher à son avatar
+  (voir « Avatar » ci-dessous). Il demande une amitié **dans son
   école seulement** (`same_school`).
 - **Professeur / admin** : lit et gère classes et adhésions, lit tous les profils d'élèves, les
   amitiés (et peut les supprimer), les consentements parentaux.
 - **Création de profil** : par le serveur seulement (policy passée `TO service_role`, `20261001200000`).
+
+**Avatar** (migration `20261106164739`, boutique d'avatars) : `profiles.avatar_url` est l'image
+affichée partout ; `google_avatar_url` garde la photo Google (recopiée par le trigger
+`keep_google_avatar_url_trg` quand une photo `https://lh3.googleusercontent.com/…` arrive dans
+`avatar_url` sans avatar porté, et par `handle_new_user`, qui n'accepte que ces adresses) ;
+`worn_avatar` est la clé de l'avatar de la boutique porté (clé composée vers `student_avatars` du
+même élève, SET NULL). **Personne n'écrit ces trois colonnes par l'API**, ni l'élève, ni le prof,
+ni l'admin : trigger `guard_profile_avatar_fields_trg` (42501 quand `current_user` est
+`authenticated` ou `anon`), en plus de la policy d'auto-modification. Seuls le serveur
+(`service_role`, ex. `/auth/callback`) et les fonctions de la boutique les écrivent. Test :
+`tests/integration/boutique-avatars.test.ts`.
 
 **Sortie d'une classe** : retirer un élève l'**archive** (`status = 'archived'`), il n'y a plus de
 DELETE (`src/routes/api/admin/remove-from-class`). Le trigger `trg_class_members_left_at` pose
@@ -114,6 +126,13 @@ DELETE (`src/routes/api/admin/remove-from-class`). Le trigger `trg_class_members
 réintégration. `left_at` NULL = départ inconnu (les adhésions archivées avant 2026-09-13) : ne jamais
 le remplacer par un `coalesce`. L'élève archivé relit ce qu'il a reçu, ne reçoit plus rien. Test :
 `tests/integration/archived-member-stops-receiving.test.ts`.
+
+**Élèves actifs, pour les mesures** (migration `20261112144816`) : `active_student_ids()` rend les
+élèves réels (`is_test` faux) membres `active` d'au moins une classe — la définition d'« élève actif »
+de [CONTEXT.md](../../CONTEXT.md#les-personnes-et-les-frontières). Toute mesure sur les élèves part
+de là (`where student_id in (select student_id from public.active_student_ids())`), jamais de
+`profiles` entier : il mêle les comptes des années passées (adhésions archivées au passage
+d'année), les élèves hors-classe et les élèves de test. `security invoker`, exécution réservée à `service_role` (scripts serveur) et à `supabase_read_only_user` (l'outil Supabase en lecture seule, qui lit déjà toutes les tables ; migration `20261112154105`) — 42501 pour `anon` et `authenticated`. Test : `tests/integration/eleves-actifs.test.ts`.
 
 **Import d'élèves** : deux ordres possibles, à toujours considérer. Import puis connexion : la ligne
 `pending_students` est activée à la première connexion. Connexion avant import : il faut insérer
@@ -155,6 +174,37 @@ Deux référentiels, deux usages (la famille A, ex-`skills`, n'existe plus :
   admin). Un CHECK impose le XOR entre les deux régimes. Le trigger `trg_skill_attempts_after_insert`
   recalcule les caches (`update_student_point_state`, `update_student_observable_state` →
   `update_student_competence_level`) ; les caches ne s'écrivent que par lui.
+- **Contenu d'une trace** ([ADR 0038](../adr/0038-contenu-d-une-trace.md), `20261111092522`) :
+  colonnes facultatives `place` (lieu : `flash_cards`, `typing`, `mock_test`, `number_race`, `review`,
+  `evaluation`), `response_ms`, `allotted_ms`, `end_reason` (`validated` / `timeout`), `seed`,
+  `answer_parts` (une chaîne par case) et `part_verdicts` (juste / faux par case). Bornes **et**
+  cohérence par lieu en CHECK, parce que l'élève insère ses traces directement par PostgREST :
+  50 cases, 2 000 caractères par case et 10 000 en tout (`trace_answer_parts_valid`), durées 0-24 h ; durées et fin
+  seulement en `mock_test` / `number_race` / `evaluation` ; réponse seulement en `typing` /
+  `mock_test` / `number_race`, avec autant de verdicts que de cases ; sans lieu, aucune de ces
+  colonnes (anciennes traces). Mêmes lecteurs que le reste de la ligne : l'élève, le professeur.
+  Une trace `evaluation` (contrôle) est **écrite par le serveur seulement** : la policy
+  `skill_attempts_insert_own_student` la refuse à l'élève (`place is distinct from 'evaluation'`,
+  `20261111111212`) ; ses traces sans lieu restent acceptées.
+  **Purge de fin d'année** (L6, `20261111224115`) : chaque dimanche, `purge_trace_answers()`
+  (appelée par `run_cleanup_expired_data`, serveur seul) remet `answer_parts` et `part_verdicts` à
+  NULL pour les traces créées avant le 1er août de l'année scolaire en cours (minuit, heure de
+  Paris, `trace_answers_cutoff`) ; seule mise à jour de la ligne après son insertion.
+- **Régularité comptée en base** (`20261112210248`) : `class_regularity_weeks(p_class_id,
+p_first_day, p_min_traces)` rend, par élève `active` de la classe et par semaine (lundi), le
+  nombre de jours de Paris à au moins `p_min_traces` traces autonomes (`auto`/`srs`/`student_self`,
+  hors lieu `evaluation`, sans lieu compté) depuis `p_first_day`. `security invoker` : la RLS de
+  l'appelant s'applique (le professeur compte ce qu'il lit déjà, un élève ses seules traces) ;
+  exécution à `authenticated`, 42501 pour `anon`. Sert la grille de régularité du professeur
+  ([analytique-prof.md](analytique-prof.md), widget C). Test :
+  `tests/integration/regularite-comptee-en-base.test.ts`.
+- **Taux de réussite compté en base** (`20261114173810`) : `class_template_success(p_class_id,
+p_first_day)` rend, par élève `active` de la classe et par modèle (`template_id` non NULL), les
+  réponses prouvées faites et justes (sources `auto`/`teacher`, contrôles compris) et les réponses
+  déclarées faites (`srs`/`student_self`), depuis `p_first_day` (jour de Paris). `security invoker`
+  (RLS de l'appelant), exécution à `authenticated`, 42501 pour `anon`. Sert le widget « Taux de
+  réussite » de l'analytique ([analytique-prof.md](analytique-prof.md)), qui la lit par pages
+  (`max_rows`) ; tests : `tests/integration/taux-par-point-compte-en-base.test.ts`.
 - **Position d'affichage** : `display_order` est local à la fratrie ; un nœud créé sans position va en
   dernier (triggers `*_place_last`) ; `reorder_curriculum_points` / `_themes` / `_objectives` renumérotent 1..N et refusent une liste
   incomplète (en **INVOKER** pour que la RLS s'applique) ; plus aucun appelant depuis la C5 étape 3 :
@@ -175,8 +225,12 @@ points d'un niveau), `src/lib/server/curriculum-coverage.ts`,
 
 ### Questions et exercices
 
-- `question_templates` : le modèle de question (énoncé paramétré, `variations`, cases, correction).
-  `question_template_points` le tague aux points du programme (**RESTRICT** côté point : pivot de
+- `question_templates` : le modèle de question (énoncé paramétré, `variations`, cases, correction),
+  rangé dans l'arbre des notions par `classification_node_id`. Les anciens `theme` / `domain` /
+  `subdomain` et l'index unique `idx_question_templates_unique_category` ont été supprimés par
+  `20261104224856` ([ADR 0035](../adr/0035-une-serie-enregistre-des-modeles.md)). Le sens « produit » de `AB` (matrices), jadis déduit du thème `Graphes et matrices`, est
+  déclaré dans `shared.capitalPairs` : l'éditeur l'écrit, `20261104165734` l'a posé sur les modèles
+  existants de ce thème. `question_template_points` le tague aux points du programme (**RESTRICT** côté point : pivot de
   l'acquisition).
 - `question_template_reviews` (depuis `20261029150000`) : le verdict de relecture d'un modèle
   (`valide` / `a_revoir` + commentaire), un par modèle, posé depuis `/dev/modeles`. **Admin seul** en
@@ -256,10 +310,38 @@ fonctions `SECURITY DEFINER` qui refont les gardes élève. Pour le cours :
 les lignes des cadres de réponse de chaque exercice) ;
 `get_course_document_by_share_token`, qui rend le chemin du fichier, est réservée au `service_role`.
 
+**Carnet de liaison** ([ADR 0040](../adr/0040-carnet-de-liaison-lien-par-parent.md), migration
+`20261116133453`) : la page d'**un** parent sur **un** élève, sans compte. `class_carnet_settings`
+(activation et seuils par classe ; pas de ligne = désactivé), `parent_contacts` (deux adresses
+actives au plus, trigger `UBP01` ; une adresse refusée est effacée, son empreinte reste et interdit la
+ressaisie ; une adresse **retirée** par le professeur, état `removed`, migration `20261116204753`,
+est effacée aussi, ses liens révoqués par trigger, et seul le professeur la ressaisit), `parent_carnet_links` (un lien actif par adresse, stocké **haché**), `student_carnet_opt_outs`
+(partage coupé : un trigger révoque les liens), `parent_notifications` (courriels envoyés ; l'élève lit
+les siens). Le professeur lit adresses et état des liens, **jamais les colonnes `*_hash`** (droits par
+colonne) ; ni `anon` ni l'élève n'écrivent rien. Les fonctions qui reçoivent un lien
+(`get_carnet_by_token`, `confirm_parent_contact`, `refuse_parent_contact`, `set_parent_emails_stopped`,
+`issue_parent_carnet_link`) sont réservées au `service_role` et rendent la même réponse quelle que soit
+la cause d'un échec ; l'élève lit son carnet par `get_my_carnet`. Le contenu (`carnet_payload`,
+interne) suit la règle du jour actif de `class_regularity_weeks` : la changer aux deux endroits.
+Migration `20261116215952` (courriels d'exception, PR 4 du chantier) : `parent_exception_episodes`
+(une exception en cours par parent, signalée une fois ; **service role seul**, aucune policy),
+`parent_notifications.access_token_hash` (jeton propre à chaque courriel, haché : il ouvre le carnet
+et arrête les courriels tant que l'adresse a un lien actif ; colonne illisible par les comptes) et
+`parent_contacts.orphaned_since` (élève sans classe active : adresses effacées après 90 jours par
+`carnet_erase_orphan_contacts`). Fonctions du cron, toutes au `service_role` :
+`carnet_current_exceptions`, `carnet_sync_exception_episodes`, `carnet_exception_plan`,
+`carnet_quarterly_plan`, `carnet_erase_orphan_contacts` ; internes : `carnet_school_year`,
+`carnet_is_holiday`, `carnet_contact_by_token`. Une évaluation sans échéance non faite reste dans le
+carnet si elle date de l'année en cours (Q27). Migration `20261117113154` : `carnet_payload` et
+`carnet_current_exceptions` comptent depuis l'**arrivée** de l'élève dans une classe au carnet
+(`class_members.joined_at`, Q43), pas seulement depuis la rentrée. Migration `20261117134539` :
+`carnet_erase_old_notifications` (cron, `service_role` seul) efface les lignes de
+`parent_notifications` de plus d'un an (Q42).
+
 `reconcileAutoCoverage()` (`src/lib/server/curriculum-coverage.ts`) recalcule les lignes `auto` de
 `journal_entry_points` depuis les activités, sans toucher aux lignes `manual` : la couverture
-s'allume quand le contenu est tagué après coup. Une évaluation se résout en points par ses
-catégories de série (quadruplet unique d'un modèle publié), en TypeScript.
+s'allume quand le contenu est tagué après coup. Une évaluation se résout en points par les
+modèles de sa série, en TypeScript.
 
 Documents : plafond de **25 Mo** tenu à deux endroits qui doivent bouger ensemble (bucket
 `file_size_limit` et CHECK `valid_file_size` de `chapter_documents`) ; le fichier va directement du
@@ -330,7 +412,18 @@ des fiches : [pratiques/fiches-exercices.md](../pratiques/fiches-exercices.md).
 - `evaluations` (une série, une `form`, `status`) → `evaluation_assignments` (à une classe ou un
   élève) ; `evaluation_attempt_questions` : questions tirées et corrigées **côté serveur**
   ([ADR 0015](../adr/0015-evaluation-notee-correction-serveur.md)) — aucun droit pour `anon` ni
-  `authenticated`, `service_role` seul.
+  `authenticated`, `service_role` seul. Chaque question désigne son modèle (`template_id`) ;
+  l'ancienne `category_key` a été supprimée par `20261104224856_automaths_fin_ancienne_forme`
+  ([ADR 0035](../adr/0035-une-serie-enregistre-des-modeles.md)).
+- `series.items` et `test_sessions.items` (jsonb, ex-`categories`, renommées par
+  `20261104224856_automaths_fin_ancienne_forme`) : lignes `{templateId, quantity, delay}`
+  ([ADR 0035](../adr/0035-une-serie-enregistre-des-modeles.md)), au moins une par série
+  (`series_items_non_empty`). Les anciennes lignes `{category: {theme, domain, subdomain, level}, …}`
+  ont été converties par `20261104204345_series_lignes_par_modele` ; `src/lib/server/series-lines.ts`
+  ne lit que la forme par modèle.
+- `question_templates` n'a plus de thème / domaine / sous-domaine (même migration) : un modèle est
+  rangé par `classification_node_id` dans l'arbre des notions ; dans la vue `resources`, son
+  sous-titre est son chemin dans l'arbre (« branche · notion · sous-notion »).
 - `test_sessions` / `test_answers` : passages de séries. Une policy RESTRICTIVE interdit à un
   compte connecté d'écrire une séance de contrôle (`evaluation_id`, note, points) : c'est le serveur
   qui les écrit.
@@ -360,6 +453,9 @@ Répétition espacée FSRS greffée sur les modèles de questions. Détail : [sr
   `source_deck_id` = copie assignée par le professeur) → `srs_deck_sections`, `srs_cards`.
 - `srs_card_stats` : état FSRS par élève et carte, calculé en TypeScript (`src/lib/srs/fsrs.ts`).
 - `srs_deck_assignments`, `srs_review_sessions`, `srs_anti_fraud_flags` ([srs.md](srs.md), § anti-triche).
+- Statistiques d'un paquet : RPC `get_deck_stats` (SECURITY DEFINER, son compte ou prof / admin, paquet
+  lisible par l'appelant) ; « En cours » = `learning` + `relearning` depuis `20261115221544` (avant :
+  `learning` seul).
 
 Accès : l'élève gère ses paquets **non assignés et non automatiques** ; il ne crée ni ne transforme un
 paquet assigné, automatique ou copié (policies RESTRICTIVE `srs_decks_paquets_serveur_*`) — ces
@@ -502,6 +598,17 @@ portés dans `student_mathoux.glasses` et `student_mathoux.hat` avec les mêmes 
 `buy_mathou_decoration` pose aux quatre emplacements ; `set_mathou_glasses` et `set_mathou_hat`
 posent, déplacent, remplacent ou retirent (mêmes gardes) ; les autres poses refusent ces clés. Test :
 `tests/integration/mathoux-lunettes-chapeaux.test.ts`.
+Boutique d'avatars (migration `20261106164739`) : `avatar_catalog` (clé, famille, nom, prix,
+`image_path` forcé sous `/avatars/….webp`, fenêtre de vente `available_from` / `available_until`
+pour les séries de l'Almanach, `active`) est lisible par tout compte connecté, écrite par le
+serveur seul ; `student_avatars` (achats : `avatar_key`, `price_paid`, `purchased_at`) est lisible
+par **l'élève seul** (ni prof ni admin, décision de David du 2026-11-06), cascade depuis
+`profiles`. Deux fonctions `service_role` seul, qui verrouillent la ligne `profiles` :
+`buy_avatar` (refus `unknown_avatar`, `already_owned`, `not_on_sale`, `insufficient_funds` +
+`missing` ; débit et ligne « Avatar : <nom> acheté » au journal ; n'équipe pas) et
+`set_worn_avatar` (porte un avatar possédé, même hors vente ou retiré : `avatar_url` = son image ;
+NULL : la photo Google revient ; refus `not_owned`). Changer `image_path` met à jour les porteurs
+(trigger `sync_worn_avatar_image_trg`). Test : `tests/integration/boutique-avatars.test.ts`.
 `student_last_visits` (migration `20261021210000`) garde le jour UTC du dernier passage de l'élève
 (dernière page vue hors API, `studentPresenceHandle`) et, depuis la migration `20261022100000`, le
 jour du retour à fêter (`welcome_back_on`), pour le Palotin triste après une longue absence. Lisible
@@ -534,6 +641,8 @@ Code : `src/lib/server/games/`, `src/lib/server/achievements/`, `src/routes/api/
 Synchronisation avec Google Classroom : `google_integrations` (jeton du professeur, lu par lui seul et
 l'admin) → `google_classroom_courses`, `_coursework`, `_materials`, `_topics` ; `shared_coursework` /
 `shared_materials` exposent aux élèves ce qui est partagé. Code : `src/lib/server/google/`, `src/routes/api/google`.
+La table de liaison classe ↔ cours `class_google_classroom_links`, vide et lue nulle part, est
+supprimée (M11, migration `20261103170936`).
 
 ### Outils du professeur (kanban, tableau blanc, tableur, constructions, figures)
 
@@ -660,4 +769,4 @@ Le schéma part du baseline `20260616220000_baseline_schema.sql` (anciennes migr
 
 ---
 
-Vérifié contre le code le 2026-10-11 (passages `student_last_visits` et `app_metadata` de GoTrue : 2026-10-21).
+Vérifié contre le code le 2026-10-11 (passages `student_last_visits` et `app_metadata` de GoTrue : 2026-10-21 ; avatar et boutique d'avatars : 2026-11-06 ; contenu d'une trace et traces d'un contrôle réservées au serveur : 2026-11-11).

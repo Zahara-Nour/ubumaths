@@ -1,10 +1,8 @@
 {
+	"id": "5248cab0-f58d-422b-b4d9-519d7d77cb68",
 	"title": "Euros et centimes",
 	"description": "1 € = 100 centimes ; 300 centimes = 3 € ; 345 centimes = 3 € et 45 centimes ; ce qu'il manque pour 1 €",
 	"grades": ["CE1"],
-	"theme": "Grandeurs",
-	"domain": "Monnaie",
-	"subdomain": "Euros et centimes",
 	"level": 1,
 	"delay": 90,
 	"status": "draft",

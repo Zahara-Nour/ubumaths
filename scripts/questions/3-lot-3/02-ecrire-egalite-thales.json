@@ -1,10 +1,8 @@
 {
+	"id": "034e6b74-8881-488b-b621-af56414378cb",
 	"title": "Écrire l'égalité de Thalès",
 	"description": "Écrire l'égalité des rapports de Thalès (AM/AB = AN/AC = MN/BC) : triangles emboîtés, papillon, puis le grand triangle en haut de chaque fraction",
 	"grades": ["3"],
-	"theme": "Géométrie",
-	"domain": "Théorème de Thalès",
-	"subdomain": "Égalité des rapports",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

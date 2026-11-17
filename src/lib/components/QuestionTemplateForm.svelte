@@ -16,9 +16,13 @@
 
 	PROPS:
 	- template?: QuestionTemplate (for editing)
-	- onSave: (template) => void
+	- onSave: (template) => void | Promise<boolean> (`false` = refusé par le serveur)
 	- onCancel: () => void
 	- isSubmitting: boolean
+	- serverErrors?: string[] (raisons du dernier refus, dans « Erreurs à corriger »)
+
+	BOUTONS : brouillon → « Enregistrer brouillon », « Publier » ; publié → « Enregistrer »
+	(reste publié, contrôle complet du serveur), « Repasser en brouillon » (confirmation).
 -->
 
 <script lang="ts">
@@ -47,6 +51,8 @@
 	} from '$lib/questions/generic-functions';
 	import {
 		capitalPairsChoiceItems,
+		capitalPairsContextOf,
+		capitalPairsToWrite,
 		capitalPairsChoiceOf,
 		type CapitalPairsChoice
 	} from '$lib/questions/capital-pairs';
@@ -77,11 +83,11 @@
 	import CourseQuestionToggle from './CourseQuestionToggle.svelte';
 	import PrecisionEditor from './PrecisionEditor.svelte';
 	import { templateMarkdown, type TemplateMarkdown } from '$lib/ubumark';
-	import QuestionCategoryFields from './QuestionCategoryFields.svelte';
-	import type { CategoryEntry } from '$lib/questions/category-options';
+	import ClassificationNodePicker from './questions/ClassificationNodePicker.svelte';
+	import { indexNodes, placeOfNode, type TreeNode } from '$lib/questions/classification-tree';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import * as Collapsible from '$lib/components/ui/collapsible';
-	import { tick, onMount } from 'svelte';
+	import { onMount } from 'svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 
 	// Lazy-loaded heavy components to reduce initial bundle size
@@ -107,7 +113,6 @@
 		Braces,
 		FlaskConical
 	} from '@lucide/svelte';
-	import { questionCategoriesCache } from '$lib/stores/questionCategories.svelte';
 	import QuestionTemplateHelpDialogs from './QuestionTemplateHelpDialogs.svelte';
 	import DisplayOptionsEditor from './DisplayOptionsEditor.svelte';
 	import ValidationOptionsEditor from './ValidationOptionsEditor.svelte';
@@ -137,9 +142,13 @@
 		) => void | Promise<boolean>;
 		onCancel: () => void;
 		isSubmitting: boolean;
+		/** Nœuds non archivés de l'arbre des notions (champ « Rangé dans ») */
+		nodes?: TreeNode[];
+		/** Raisons du dernier refus du serveur (contrôle de publication), affichées avec les erreurs */
+		serverErrors?: string[];
 	}
 
-	let { template, onSave, onCancel, isSubmitting }: Props = $props();
+	let { template, onSave, onCancel, isSubmitting, nodes = [], serverErrors = [] }: Props = $props();
 
 	// Snapshot of the initial template prop for $state initializers.
 	// This form initializes once from the prop and then evolves independently;
@@ -162,10 +171,10 @@
 	let title = $state<string>(initialTemplate?.title || '');
 	let description = $state<string>(initialTemplate?.description || '');
 
-	// Categorization fields (shared)
-	let theme = $state<string>(initialTemplate?.theme || '');
-	let domain = $state<string>(initialTemplate?.domain || '');
-	let subdomain = $state<string | undefined>(initialTemplate?.subdomain);
+	// Rangement : nœud de l'arbre des notions (notion ou sous-notion), facultatif.
+	let classificationNodeId = $state<string | null>(initialTemplate?.classification_node_id ?? null);
+	// Ancien thème / domaine d'un modèle existant : jamais modifiés ni envoyés (ils restent
+	// en base pour les anciens liens), mais le contexte de certaines aides en dépend encore.
 	let level = $state<number>(initialTemplate?.level || 1);
 	let status = $state<'draft' | 'published'>(initialTemplate?.status || 'draft');
 
@@ -173,15 +182,9 @@
 	let testSpecs = $state<TestSpec[]>(initialTemplate?.testSpecs ?? []);
 	let testSpecMode = $state(false);
 
-	// Category duplicate detection
-	let categoryDuplicate = $state<boolean>(false);
-	let suggestedLevel = $state<number | null>(null);
-
-	// Publish confirmation dialog
-	let showPublishDialog = $state(false);
-
-	// Catégories existantes (triplets thème / domaine / sous-domaine) pour filtrer les listes
-	let categoryEntries = $state<CategoryEntry[]>([]);
+	// Branche et notion du nœud choisi : contexte de la suggestion « n ∈ ℕ » (Suites)
+	const nodesById = $derived(indexNodes(nodes));
+	const chosenPlace = $derived(placeOfNode(classificationNodeId, nodesById));
 
 	// Lazy loading functions for heavy components
 	async function loadRichTextEditor() {
@@ -214,57 +217,9 @@
 	let jsonValid = $state(true);
 	let _jsonErrors = $state<string[]>([]);
 
-	// Load category cache, preview component, and category options on mount
-	onMount(async () => {
-		questionCategoriesCache.fetchCategories();
+	// Load preview component on mount
+	onMount(() => {
 		loadQuestionPreview();
-
-		// Fetch existing categories for autocomplete options
-		try {
-			const response = await fetch('/api/questions/categories');
-			if (response.ok) {
-				const data: { entries?: CategoryEntry[] } = await response.json();
-				// Valeurs courantes du modèle toujours proposées : géré par QuestionCategoryFields
-				categoryEntries = data.entries ?? [];
-			}
-		} catch (error) {
-			console.error('Error fetching categories:', error);
-		}
-	});
-
-	// Real-time category duplicate detection
-	$effect(() => {
-		// Only check if all required fields are filled
-		if (!theme || !domain || !level) {
-			categoryDuplicate = false;
-			suggestedLevel = null;
-			return;
-		}
-
-		// Check if category exists in cache
-		// Exclude current template ID if editing (to allow saving without changing category)
-		const exists = questionCategoriesCache.categoryExists(
-			{
-				theme,
-				domain,
-				subdomain: subdomain || null,
-				level
-			},
-			template?.id // Exclude current template from check when editing
-		);
-
-		categoryDuplicate = exists;
-
-		// Get suggested level if duplicate
-		if (exists) {
-			suggestedLevel = questionCategoriesCache.getNextAvailableLevel({
-				theme,
-				domain,
-				subdomain: subdomain || null
-			});
-		} else {
-			suggestedLevel = null;
-		}
 	});
 
 	// Default display options state
@@ -424,8 +379,10 @@
 	let capitalPairsChoice = $state<CapitalPairsChoice>(
 		capitalPairsChoiceOf(initialTemplate?.shared?.capitalPairs)
 	);
-	// Options de la liste : la première dit ce que donne le contexte (thème courant)
-	let capitalPairsItems = $derived(capitalPairsChoiceItems(theme));
+	// Contexte : branche de « Rangé dans » (ADR 0035)
+	const capitalPairsContext = $derived(capitalPairsContextOf(chosenPlace?.branch.name));
+	// Options de la liste : la première dit ce que donne le contexte
+	let capitalPairsItems = $derived(capitalPairsChoiceItems(capitalPairsContext));
 	let genericFunctionsError = $derived.by(() => {
 		const result = genericFunctionNamesSchema.safeParse(
 			parseGenericFunctionNames(genericFunctionsText)
@@ -509,8 +466,7 @@
 	// Garde auteur (Q-A) : un nom de figure attendu en mode longueur ne serait jamais accepté
 	let capitalPairsWarnings = $derived(
 		figureNameWarnings({
-			shared: capitalPairsChoice === 'auto' ? undefined : { capitalPairs: capitalPairsChoice },
-			theme,
+			shared: { capitalPairs: capitalPairsToWrite(capitalPairsChoice, capitalPairsContext) },
 			variations
 		})
 	);
@@ -807,8 +763,10 @@
 		if (genericFunctionNames.length > 0) shared.genericFunctions = genericFunctionNames;
 		// Absente quand décochée : un modèle sans l'option reste identique
 		if (cleanCoefficients) shared.cleanCoefficients = true;
-		// Absente sur « selon le contexte » : le thème décide à la génération
-		if (capitalPairsChoice !== 'auto') shared.capitalPairs = capitalPairsChoice;
+		// « Selon le contexte » + contexte « produit » (branche Matrices, Graphes…) : déclaré
+		// explicitement, le générateur ne lit pas l'arbre. Sinon absente (longueur par défaut).
+		const capitalPairsWritten = capitalPairsToWrite(capitalPairsChoice, capitalPairsContext);
+		if (capitalPairsWritten) shared.capitalPairs = capitalPairsWritten;
 
 		// Build defaultDisplayOptions
 		const displayOpts: DisplayOptions = {};
@@ -853,9 +811,7 @@
 			exerciseInstruction,
 			options: finalOptions,
 			grades,
-			theme,
-			domain,
-			subdomain,
+			classification_node_id: classificationNodeId,
 			level,
 			status,
 			delay,
@@ -873,9 +829,7 @@
 		// Metadata
 		title = t.title || '';
 		description = t.description || '';
-		theme = t.theme || '';
-		domain = t.domain || '';
-		subdomain = t.subdomain;
+		classificationNodeId = t.classification_node_id ?? null;
 		level = t.level || 1;
 		status = t.status || 'draft';
 		grades = t.grades || [];
@@ -1093,6 +1047,82 @@
 		if (saved === false) status = previousStatus;
 	}
 
+	/**
+	 * « Enregistrer » d'un modèle publié : il reste publié, donc mêmes contrôles
+	 * que « Publier » (le serveur repasse le contrôle complet).
+	 */
+	function handleSavePublished() {
+		if (jsonMode) {
+			handleSaveDraft();
+			return;
+		}
+		hasAttemptedPublish = true;
+		if (!isValid) return;
+		// Doublon d'hypothèse : l'enregistrement perdrait la première ligne en silence
+		const duplicate = duplicateAssumptionMessage(assumptionRows);
+		if (duplicate) {
+			toaster.error(duplicate);
+			return;
+		}
+		onSave(buildTemplate());
+	}
+
+	// Même texte que la confirmation de la liste (onglet « Publiés »)
+	const UNPUBLISH_CONFIRM_TEXT =
+		'Ce modèle ne sera plus proposé aux élèves. Le republier repassera le contrôle complet.';
+	let showUnpublishDialog = $state(false);
+
+	/**
+	 * Repasse en brouillon, modifications en cours comprises ; on reste sur la page
+	 * (`silent`) pour voir le nouveau statut. Refus du serveur → le statut revient.
+	 */
+	async function confirmUnpublish() {
+		showUnpublishDialog = false;
+		if (jsonMode) {
+			let parsed: Parameters<typeof onSave>[0];
+			try {
+				parsed = JSON.parse(jsonString);
+			} catch {
+				_jsonErrors = ['JSON invalide'];
+				jsonValid = false;
+				return;
+			}
+			parsed.status = 'draft';
+			const saved = await onSave(parsed, { silent: true });
+			if (saved === false) return;
+			// Le JSON affiché dit le nouveau statut : repasser en mode formulaire le relit
+			jsonString = JSON.stringify(parsed, null, 2);
+			status = 'draft';
+			hasAttemptedPublish = false;
+			savedSnapshot = computeSnapshot();
+			return;
+		}
+		// Mêmes gardes qu'« Enregistrer brouillon » : sinon perte silencieuse ou refus sans raison
+		const duplicate = duplicateAssumptionMessage(assumptionRows);
+		if (duplicate) {
+			toaster.error(duplicate);
+			return;
+		}
+		status = 'draft';
+		const templateData = buildTemplate();
+		const countErrors = choiceAnswerCountErrors(templateData, { draft: true });
+		if (countErrors.length > 0) {
+			status = 'published';
+			toaster.error(countErrors[0]);
+			return;
+		}
+		// Instantané de ce qui part, pris avant l'envoi : une saisie faite pendant
+		// l'enregistrement reste « non sauvegardée »
+		const sentSnapshot = computeSnapshot();
+		const saved = await onSave(templateData, { silent: true });
+		if (saved === false) {
+			status = 'published';
+			return;
+		}
+		hasAttemptedPublish = false;
+		savedSnapshot = sentSnapshot;
+	}
+
 	// Publish question (with category validation)
 	function handlePublish() {
 		if (jsonMode) {
@@ -1108,28 +1138,10 @@
 		}
 		hasAttemptedPublish = true;
 		if (!isValid) return;
-		if (categoryDuplicate) {
-			// Show confirmation dialog
-			showPublishDialog = true;
-		} else {
-			// No duplicate, publish directly
-			publish();
-		}
+		publish();
 	}
 
-	// Confirm publication with adjusted level
-	async function confirmPublishWithAdjustedLevel() {
-		if (suggestedLevel) {
-			level = suggestedLevel;
-		}
-		showPublishDialog = false;
-
-		// Wait for next tick to let level update
-		await tick();
-		await publish();
-	}
-
-	// Memoize buildTemplate() for preview (avoid recalculating on every render)
+	// Memoize buildTemplate() for preview (avoid recalculating on every render).
 	let previewTemplate = $derived(buildTemplate());
 
 	// Dirty state: protect against accidental data loss
@@ -1137,9 +1149,7 @@
 		return JSON.stringify({
 			title,
 			description,
-			theme,
-			domain,
-			subdomain,
+			classificationNodeId,
 			level,
 			status,
 			grades,
@@ -1161,9 +1171,10 @@
 	}
 
 	// Capture initial snapshot once (all $state vars are already initialized above)
-	const initialSnapshot = computeSnapshot();
+	// Repris après un enregistrement qui garde la page ouverte (retour en brouillon)
+	let savedSnapshot = $state(computeSnapshot());
 
-	let isDirty = $derived(computeSnapshot() !== initialSnapshot);
+	let isDirty = $derived(computeSnapshot() !== savedSnapshot);
 
 	// Warn before leaving with unsaved changes
 	$effect(() => {
@@ -1184,29 +1195,26 @@
 	let gradesError = $derived(
 		hasAttemptedPublish && grades.length === 0 ? 'Sélectionnez au moins un niveau scolaire' : ''
 	);
-	let themeError = $derived(hasAttemptedPublish && !theme.trim() ? 'Le thème est obligatoire' : '');
-	let domainError = $derived(
-		hasAttemptedPublish && !domain.trim() ? 'Le domaine est obligatoire' : ''
-	);
 	let levelError = $derived(
 		hasAttemptedPublish && level <= 0 ? 'Le niveau doit être supérieur à 0' : ''
 	);
 
+	// Pas de contrôle « réponse manquante » ici : les réponses peuvent être écrites dans
+	// le texte (`?4`, `?flèche`), que seul le serveur (`checkTemplate`) sait lire ; il
+	// refuse une version sans réponse et ses raisons arrivent par `serverErrors`.
 	function getVariationErrors(v: QuestionVariation, index: number): string[] {
 		if (!hasAttemptedPublish) return [];
 		const errors: string[] = [];
 		if (!(v.statement ?? '').trim() && !sharedStatement.trim())
 			errors.push(`Variation ${index + 1} : énoncé manquant`);
-		const hasAnswer =
-			v.blanks && v.blanks.length > 0 && v.blanks.some((b) => b.expectedAnswer?.trim());
-		if (!hasAnswer) errors.push(`Variation ${index + 1} : réponse manquante`);
 		return errors;
 	}
 	// Case choix (V1) : exactement une bonne réponse, au moins une avec `plusieurs: oui`
 	let answerCountErrors = $derived(choiceAnswerCountErrors(previewTemplate));
 	let variationErrors = $derived([
 		...variations.flatMap((v, i) => getVariationErrors(v, i)),
-		...(hasAttemptedPublish ? answerCountErrors : [])
+		...(hasAttemptedPublish ? answerCountErrors : []),
+		...serverErrors
 	]);
 
 	// Variables tirées (partagées + variations) : une hypothèse ne peut pas les viser
@@ -1224,15 +1232,9 @@
 		title.trim().length > 0 &&
 			variations.length > 0 &&
 			variations.every(
-				(v) =>
-					((v.statement ?? '').trim().length > 0 || sharedStatement.trim().length > 0) &&
-					v.blanks &&
-					v.blanks.length > 0 &&
-					v.blanks.some((b) => b.expectedAnswer?.trim())
+				(v) => (v.statement ?? '').trim().length > 0 || sharedStatement.trim().length > 0
 			) &&
 			grades.length > 0 &&
-			theme.trim().length > 0 &&
-			domain.trim().length > 0 &&
 			level > 0 &&
 			assumptionsAreValid &&
 			answerCountErrors.length === 0
@@ -1432,16 +1434,11 @@
 			isCourseCard={questionType === 'course_card'}
 		/>
 
-		<!-- Categorization Fields -->
+		<!-- Rangement -->
 		<!--
-		Category system allows organizing questions by:
-		- Theme: Broad subject area (e.g., "Algèbre", "Géométrie") [required]
-		- Domain: Specific topic within theme (e.g., "Équations", "Polynômes") [required]
-		- Subdomain: Optional sub-topic (e.g., "Linéaires", "Quadratiques") [optional]
-		- Level: Difficulty as positive integer (1=easy, higher=harder) [required]
-
-		These fields are independent from grade levels (grades field).
-		Admins can add new categories on-the-fly via « Ajouter… » (QuestionCategoryFields).
+		Un modèle est rangé dans l'arbre des notions (« Rangé dans », facultatif) ;
+		le niveau ordonne les modèles d'une même rubrique. Plus de thème, domaine ni
+		sous-domaine (ADR 0035).
 	-->
 		<Card.Root>
 			<Card.Header>
@@ -1450,7 +1447,7 @@
 						class="flex w-full items-center justify-between rounded-md p-2 transition-colors hover:bg-muted/50"
 					>
 						<Card.Title class="flex items-center gap-2">
-							Catégorisation
+							Rangement
 							<button
 								type="button"
 								onclick={(e) => {
@@ -1458,7 +1455,7 @@
 									categorizationHelpOpen = true;
 								}}
 								class="text-muted-foreground transition-colors hover:text-foreground"
-								aria-label="Aide sur la catégorisation"
+								aria-label="Aide sur le rangement"
 							>
 								<CircleQuestionMark class="h-5 w-5" />
 							</button>
@@ -1471,15 +1468,11 @@
 					</Collapsible.Trigger>
 					<Collapsible.Content>
 						<Card.Content class="space-y-4">
-							<!-- Thème / Domaine / Sous-domaine, listes filtrées les unes par les autres -->
-							<QuestionCategoryFields
-								entries={categoryEntries}
-								bind:theme
-								bind:domain
-								bind:subdomain={() => subdomain ?? '', (v) => (subdomain = v || undefined)}
-								{themeError}
-								{domainError}
-							/>
+							<!-- Rangé dans : branche → notion → sous-notion, tout facultatif -->
+							<div class="space-y-2">
+								<Label>Rangé dans</Label>
+								<ClassificationNodePicker {nodes} bind:value={classificationNodeId} />
+							</div>
 
 							<div class="grid gap-4 md:grid-cols-2">
 								<!-- Difficulty Level (Required, positive integer, no max) -->
@@ -1498,11 +1491,6 @@
 									/>
 									{#if levelError}
 										<p class="text-xs text-destructive">{levelError}</p>
-									{/if}
-									{#if categoryDuplicate && status === 'draft'}
-										<p class="text-xs text-amber-600 dark:text-amber-400">
-											⚠️ Cette catégorie existe déjà au niveau {level}. Niveau suggéré : {suggestedLevel}
-										</p>
 									{/if}
 								</div>
 							</div>
@@ -1582,8 +1570,8 @@
 			/>
 			<p id="capital-pairs-help" class="text-xs text-muted-foreground">
 				Lecture de AB dans les réponses (élève et attendue) : la longueur du segment [AB] (BA = AB,
-				AB² = BA²), ou le produit A × B (matrices, physique). Rien de déclaré : produit pour le
-				thème « Graphes et matrices » ou un thème de physique, longueur sinon.
+				AB² = BA²), ou le produit A × B (matrices, graphes). Rien de choisi : produit pour les
+				branches « Matrices » et « Graphes », longueur sinon.
 			</p>
 			{#each capitalPairsWarnings as warning (warning)}
 				<p class="text-xs text-destructive" role="alert">{warning}</p>
@@ -1621,8 +1609,8 @@
 		<AnswerAssumptionsEditor
 			bind:rows={assumptionRows}
 			drawnNames={drawnVariableNames}
-			{theme}
-			{domain}
+			branch={chosenPlace?.branch.name ?? ''}
+			notion={chosenPlace?.notion.name ?? ''}
 		/>
 
 		<!-- Options de validation -->
@@ -2000,7 +1988,7 @@
 	{/if}
 
 	<!-- Validation Errors Summary -->
-	{#if hasAttemptedPublish && variationErrors.length > 0}
+	{#if (hasAttemptedPublish || serverErrors.length > 0) && variationErrors.length > 0}
 		<div class="rounded-lg border border-destructive/50 bg-destructive/5 p-3">
 			<p class="mb-1 text-sm font-medium text-destructive">Erreurs à corriger :</p>
 			<ul class="space-y-1 text-xs text-destructive">
@@ -2022,26 +2010,62 @@
 			<Button variant="outline" onclick={handleCancel} disabled={isSubmitting}>
 				<X class="mr-2 h-4 w-4" />{lore.actions.cancel}</Button
 			>
-			<Button
-				variant="secondary"
-				onclick={handleSaveDraft}
-				disabled={isSubmitting || (jsonMode && !jsonValid)}
-				class="bg-amber-100 text-amber-900 hover:bg-amber-200 dark:bg-amber-900 dark:text-amber-100"
-			>
-				<FileText class="mr-2 h-4 w-4" />
-				{isSubmitting ? 'Enregistrement...' : 'Enregistrer brouillon'}
-			</Button>
-			<Button
-				onclick={handlePublish}
-				disabled={isSubmitting || (jsonMode && !jsonValid)}
-				class="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800"
-			>
-				<CheckCircle2 class="mr-2 h-4 w-4" />
-				{isSubmitting ? 'Publication...' : 'Publier'}
-			</Button>
+			{#if status === 'published'}
+				<Button
+					variant="secondary"
+					onclick={() => (showUnpublishDialog = true)}
+					disabled={isSubmitting || (jsonMode && !jsonValid)}
+					class="bg-amber-100 text-amber-900 hover:bg-amber-200 dark:bg-amber-900 dark:text-amber-100"
+				>
+					<FileText class="mr-2 h-4 w-4" />
+					Repasser en brouillon
+				</Button>
+				<Button
+					onclick={handleSavePublished}
+					disabled={isSubmitting || (jsonMode && !jsonValid)}
+					class="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800"
+				>
+					<CheckCircle2 class="mr-2 h-4 w-4" />
+					{isSubmitting ? 'Enregistrement...' : 'Enregistrer'}
+				</Button>
+			{:else}
+				<Button
+					variant="secondary"
+					onclick={() => handleSaveDraft()}
+					disabled={isSubmitting || (jsonMode && !jsonValid)}
+					class="bg-amber-100 text-amber-900 hover:bg-amber-200 dark:bg-amber-900 dark:text-amber-100"
+				>
+					<FileText class="mr-2 h-4 w-4" />
+					{isSubmitting ? 'Enregistrement...' : 'Enregistrer brouillon'}
+				</Button>
+				<Button
+					onclick={handlePublish}
+					disabled={isSubmitting || (jsonMode && !jsonValid)}
+					class="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800"
+				>
+					<CheckCircle2 class="mr-2 h-4 w-4" />
+					{isSubmitting ? 'Publication...' : 'Publier'}
+				</Button>
+			{/if}
 		</div>
 	</div>
 </div>
+
+<!-- Confirmation du retour en brouillon (même texte que la liste) -->
+<Dialog.Root bind:open={showUnpublishDialog}>
+	<Dialog.Content>
+		<Dialog.Header>
+			<Dialog.Title>Repasser en brouillon</Dialog.Title>
+			<Dialog.Description>{UNPUBLISH_CONFIRM_TEXT}</Dialog.Description>
+		</Dialog.Header>
+		<div class="flex justify-end gap-2">
+			<Button variant="outline" onclick={() => (showUnpublishDialog = false)}>Annuler</Button>
+			<Button variant="destructive" onclick={confirmUnpublish} disabled={isSubmitting}
+				>Repasser en brouillon</Button
+			>
+		</div>
+	</Dialog.Content>
+</Dialog.Root>
 
 <!-- Duplicate Variation Dialog -->
 <Dialog.Root bind:open={showDuplicateDialog}>
@@ -2096,52 +2120,3 @@
 	bind:answerHelpOpen
 	bind:correctionHelpOpen
 />
-
-<!-- Publish Confirmation Dialog -->
-<Dialog.Root bind:open={showPublishDialog}>
-	<Dialog.Content class="max-w-md">
-		<Dialog.Header>
-			<Dialog.Title class="flex items-center gap-2">
-				<CheckCircle2 class="h-5 w-5 text-amber-600" />
-				Publier avec ajustement de niveau
-			</Dialog.Title>
-			<Dialog.Description>
-				Cette catégorie existe déjà au niveau {level}.
-			</Dialog.Description>
-		</Dialog.Header>
-
-		<div class="space-y-4">
-			<div class="rounded-lg bg-muted p-4">
-				<p class="text-sm font-medium">Catégorie :</p>
-				<ul class="mt-2 space-y-1 text-sm text-muted-foreground">
-					<li>• Thème : <strong>{theme}</strong></li>
-					<li>• Domaine : <strong>{domain}</strong></li>
-					{#if subdomain}
-						<li>• Sous-domaine : <strong>{subdomain}</strong></li>
-					{/if}
-					<li>
-						• Niveau : <strong class="text-destructive">{level}</strong>
-						→
-						<strong class="text-green-600">{suggestedLevel}</strong>
-					</li>
-				</ul>
-			</div>
-
-			<p class="text-sm text-muted-foreground">
-				Si tu confirmes, le niveau passera à <strong class="text-green-600">{suggestedLevel}</strong
-				>
-				pour éviter les doublons.
-			</p>
-		</div>
-
-		<Dialog.Footer>
-			<Button variant="outline" onclick={() => (showPublishDialog = false)}
-				>{lore.actions.cancel}</Button
-			>
-			<Button onclick={confirmPublishWithAdjustedLevel} class="bg-green-600 hover:bg-green-700">
-				<CheckCircle2 class="mr-2 h-4 w-4" />
-				Publier au niveau {suggestedLevel}
-			</Button>
-		</Dialog.Footer>
-	</Dialog.Content>
-</Dialog.Root>

@@ -33,13 +33,10 @@ const SECTION_A = '22222222-2222-4222-8222-222222222222';
 const SECTION_B = '33333333-3333-4333-8333-333333333333';
 const FICHE = '44444444-4444-4444-8444-444444444444';
 
-const CATEGORIES = [
-	{
-		category: { theme: 'Calcul', domain: 'Tables', subdomain: null, level: 3 },
-		quantity: 2,
-		delay: 20
-	}
-];
+const MODELE = '55555555-5555-4555-8555-555555555555';
+const ITEMS = [{ templateId: MODELE, quantity: 2, delay: 20 }];
+/** Ancienne forme (avant l'ADR 0035) : une catégorie, plus relue */
+const ANCIENNES_LIGNES = [{ category: { level: 3 }, quantity: 2, delay: 20 }];
 
 function client(rpcResult: { data: unknown; error: unknown }) {
 	const rpc = vi.fn(async () => rpcResult);
@@ -126,7 +123,7 @@ function cours(): PublicCourse {
 						series_id: 'serie-1',
 						title: 'Tables',
 						description: null,
-						categories: CATEGORIES,
+						items: ITEMS,
 						form: 'flash',
 						section_id: SECTION_A,
 						section_order: 1,
@@ -144,7 +141,19 @@ describe('resolveCourseShareToken', () => {
 		const resultat = await resolveCourseShareToken(sb, JETON);
 		expect(rpc).toHaveBeenCalledWith('get_class_course_by_share_token', { p_token: JETON });
 		expect(resultat?.class_name).toBe('4e B');
-		expect(resultat?.chapters[0].series[0].categories).toEqual(CATEGORIES);
+		expect(resultat?.chapters[0].series[0].items).toEqual(ITEMS);
+	});
+
+	it('une série d’ancienne forme (catégories) n’est plus relue : le cours reste lisible, la série sans lien', async () => {
+		const c = cours();
+		c.chapters[0].series[0].items = ANCIENNES_LIGNES;
+		const { sb } = client({ data: c, error: null });
+		vi.spyOn(console, 'error').mockImplementation(() => {});
+
+		const resultat = await resolveCourseShareToken(sb, JETON);
+
+		expect(resultat?.class_name).toBe('4e B');
+		expect(resultat?.chapters[0].series[0].items).toBeNull();
 	});
 
 	it('rend null quand la fonction SQL rend null', async () => {
@@ -268,7 +277,7 @@ describe('buildPublicCourseView', () => {
 		const serie = plan[0].items[1];
 		expect(serie.kind).toBe('series');
 		if (serie.kind !== 'series') return;
-		expect(serie.series.launchHref).toMatch(/^\/automaths\/test\?categories=.*&mode=flash$/);
+		expect(serie.series.launchHref).toMatch(/^\/automaths\/test\?modeles=.*&mode=flash$/);
 		expect(serie.series.questionCount).toBe(2);
 	});
 
@@ -283,7 +292,7 @@ describe('buildPublicCourseView', () => {
 
 	it('une composition de série illisible donne une série sans lien', () => {
 		const c = cours();
-		c.chapters[0].series[0].categories = 'abîmée';
+		c.chapters[0].series[0].items = 'abîmée';
 		vi.spyOn(console, 'error').mockImplementation(() => {});
 		const item = buildPublicCourseView(c).chapters[0].plan[0].items[1];
 		expect(item.kind === 'series' && item.series.launchHref).toBeNull();

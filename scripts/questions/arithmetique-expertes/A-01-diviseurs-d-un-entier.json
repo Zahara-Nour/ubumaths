@@ -1,10 +1,8 @@
 {
+	"id": "e12e4d95-1e6c-4d37-ae9c-77304ad0ea4a",
 	"title": "Diviseurs d'un entier : les compter, en donner un",
 	"description": "Lister les diviseurs positifs d'un entier (au plus 200) pour les compter, les compter dans ℤ, donner un diviseur strict (pièges : oublier 1 et n, oublier les diviseurs négatifs dans ℤ)",
 	"grades": ["T_EXP"],
-	"theme": "Arithmétique",
-	"domain": "Divisibilité",
-	"subdomain": "Divisibilité",
 	"level": 2,
 	"status": "draft",
 	"delay": 60,

@@ -23,7 +23,7 @@
 	import { fetchShortLinkPath } from '$lib/qr/short-link';
 	import { Link } from '@lucide/svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { buildSeriesLink, type SeriesCategories } from '$lib/validation/series';
+	import { buildSeriesLink, type SeriesItem } from '$lib/validation/series';
 	import {
 		COURSE_TIME_LIMIT_MAX_MINUTES,
 		COURSE_TIME_LIMIT_MIN_MINUTES
@@ -31,27 +31,28 @@
 	import type { TestMode } from '$lib/types/test';
 
 	interface Props {
-		categories: SeriesCategories;
+		items: SeriesItem[];
 		/** Mise en page serrée (pied de carte de la page « Séries ») */
 		compact?: boolean;
 		/** Prof ou admin connecté : lui seul crée le lien court du QR (`create_short_link`) */
 		canMakeQr?: boolean;
 	}
 
-	let { categories, compact = false, canMakeQr = false }: Props = $props();
+	let { items, compact = false, canMakeQr = false }: Props = $props();
 
 	/** Pas de forme : le lien ouvre le panier */
 	const NO_FORM = 'none';
 	/** Même défaut que la fenêtre de choix du panier (`TestModeDialog`) */
 	const DEFAULT_COURSE_MINUTES = 5;
-	const TEST_MODES: readonly string[] = ['display', 'interactive', 'course', 'flash'];
+	const TEST_MODES: readonly string[] = ['display', 'interactive', 'course', 'flash', 'typing'];
 
 	const formItems: { value: TestMode | typeof NO_FORM; label: string }[] = [
 		{ value: NO_FORM, label: 'Sans forme (ouvre le panier)' },
 		{ value: 'display', label: 'En classe' },
-		{ value: 'interactive', label: 'Entraînement' },
+		{ value: 'interactive', label: 'Contrôle blanc' },
 		{ value: 'course', label: 'Course aux nombres' },
-		{ value: 'flash', label: 'Flash-cards' }
+		{ value: 'flash', label: 'Flash-cards' },
+		{ value: 'typing', label: 'Saisie' }
 	];
 
 	const uid = $props.id();
@@ -79,10 +80,10 @@
 	 */
 	function linkToCopy(origin = window.location.origin): { link: string } | { error: string } {
 		if (!isTestMode(selectedForm)) {
-			return { link: buildSeriesLink(origin, categories) };
+			return { link: buildSeriesLink(origin, items) };
 		}
 		if (selectedForm !== 'course') {
-			return { link: buildSeriesLink(origin, categories, { mode: selectedForm }) };
+			return { link: buildSeriesLink(origin, items, { mode: selectedForm }) };
 		}
 
 		const minutes = Number(courseMinutes);
@@ -96,7 +97,7 @@
 			};
 		}
 		return {
-			link: buildSeriesLink(origin, categories, { mode: 'course', timeLimit: minutes * 60 })
+			link: buildSeriesLink(origin, items, { mode: 'course', timeLimit: minutes * 60 })
 		};
 	}
 

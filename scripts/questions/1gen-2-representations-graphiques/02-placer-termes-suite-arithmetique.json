@@ -1,0 +1,164 @@
+{
+	"id": "96668141-c1a7-4996-bb59-b39f6c106b45",
+	"title": "Placer les premiers termes d'une suite arithmétique",
+	"description": "Représenter u₀ à u₄ par des points (n ; uₙ) : forme explicite, récurrence, épargne",
+	"grades": ["1_GEN"],
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par $u_n={{eval:(r)*n}}{{eval:a;+}}$.\n\nPlace les points $A$, $B$, $C$, $D$ et $E$ qui représentent $u_0$, $u_1$, $u_2$, $u_3$ et $u_4$ : le point d'abscisse $n$ a pour ordonnée $u_n$.\n\n```courbe\nx: -1 ; 5\ny: -6 ; 14\ngrille: 1 ; 1\nplacer: A=(0 ; {{eval:a+0*r}}) ; B=(1 ; {{eval:a+1*r}}) ; C=(2 ; {{eval:a+2*r}}) ; D=(3 ; {{eval:a+3*r}}) ; E=(4 ; {{eval:a+4*r}})\ntaille: moyenne\ndescription: Repère gradué de 1 en 1 : n de −1 à 5 en abscisse, de −6 à 14 en ordonnée.\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "n|n"
+				},
+				{
+					"name": "a",
+					"expression": "-3..8"
+				},
+				{
+					"name": "r",
+					"expression": "-3|-2|-1|1|2|3"
+				}
+			],
+			"conditions": ["a+4*r >= -5", "a+4*r <= 13", "a != 0"],
+			"correction": {
+				"steps": [
+					"On calcule chaque terme en remplaçant $n$ : $u_0={{a}}$, $u_1={{eval:a+r}}$, $u_2={{eval:a+2*r}}$, $u_3={{eval:a+3*r}}$, $u_4={{eval:a+4*r}}$.",
+					"On place chaque point $(n\\,;u_n)$ : $A\\textcolor{{{color:primary.0}}}{(0\\,;{{eval:a+0*r}})}$, $B\\textcolor{{{color:primary.0}}}{(1\\,;{{eval:a+1*r}})}$, $C\\textcolor{{{color:primary.0}}}{(2\\,;{{eval:a+2*r}})}$, $D\\textcolor{{{color:primary.0}}}{(3\\,;{{eval:a+3*r}})}$, $E\\textcolor{{{color:primary.0}}}{(4\\,;{{eval:a+4*r}})}$. Les points sont alignés : la suite est arithmétique."
+				]
+			}
+		},
+		{
+			"statement": "La suite $(u_n)$ est définie par $u_0={{a}}$ et, pour tout entier naturel $n$, $u_{n+1}=u_n{{r;+}}$.\n\nPlace les points $A$, $B$, $C$, $D$ et $E$ qui représentent $u_0$, $u_1$, $u_2$, $u_3$ et $u_4$ : le point d'abscisse $n$ a pour ordonnée $u_n$.\n\n```courbe\nx: -1 ; 5\ny: -6 ; 14\ngrille: 1 ; 1\nplacer: A=(0 ; {{eval:a+0*r}}) ; B=(1 ; {{eval:a+1*r}}) ; C=(2 ; {{eval:a+2*r}}) ; D=(3 ; {{eval:a+3*r}}) ; E=(4 ; {{eval:a+4*r}})\ntaille: moyenne\ndescription: Repère gradué de 1 en 1 : n de −1 à 5 en abscisse, de −6 à 14 en ordonnée.\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-3..8"
+				},
+				{
+					"name": "r",
+					"expression": "-3|-2|-1|1|2|3"
+				}
+			],
+			"conditions": ["a+4*r >= -5", "a+4*r <= 13"],
+			"correction": {
+				"steps": [
+					"On part de $u_0={{a}}$ et on ajoute ${{r;()}}$ à chaque rang : $u_1={{eval:a+r}}$, $u_2={{eval:a+2*r}}$, $u_3={{eval:a+3*r}}$, $u_4={{eval:a+4*r}}$.",
+					"On place chaque point $(n\\,;u_n)$ : $A\\textcolor{{{color:primary.0}}}{(0\\,;{{eval:a+0*r}})}$, $B\\textcolor{{{color:primary.0}}}{(1\\,;{{eval:a+1*r}})}$, $C\\textcolor{{{color:primary.0}}}{(2\\,;{{eval:a+2*r}})}$, $D\\textcolor{{{color:primary.0}}}{(3\\,;{{eval:a+3*r}})}$, $E\\textcolor{{{color:primary.0}}}{(4\\,;{{eval:a+4*r}})}$. Les points sont alignés : la suite est arithmétique."
+				]
+			}
+		},
+		{
+			"statement": "Inès a ${{a}}~\\unit{€}$ d'économies. Chaque semaine, elle en ajoute ${{r}}~\\unit{€}$. On note $u_n$ ses économies, en euros, au bout de $n$ semaines.\n\nPlace les points $A$, $B$, $C$, $D$ et $E$ qui représentent $u_0$, $u_1$, $u_2$, $u_3$ et $u_4$ : le point d'abscisse $n$ a pour ordonnée $u_n$.\n\n```courbe\nx: -1 ; 5\ny: -1 ; 21\ngrille: 1 ; 1\naxes: x = Semaines ; y = Économies (€)\nplacer: A=(0 ; {{eval:a+0*r}}) ; B=(1 ; {{eval:a+1*r}}) ; C=(2 ; {{eval:a+2*r}}) ; D=(3 ; {{eval:a+3*r}}) ; E=(4 ; {{eval:a+4*r}})\ntaille: moyenne\ndescription: Repère gradué de 1 en 1 : semaines de −1 à 5 en abscisse, économies de −1 à 21 € en ordonnée.\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..8"
+				},
+				{
+					"name": "r",
+					"expression": "1..3"
+				}
+			],
+			"conditions": [],
+			"correction": {
+				"steps": [
+					"Au départ, $u_0={{a}}$ ; chaque semaine, on ajoute ${{r}}$ : $u_1={{eval:a+r}}$, $u_2={{eval:a+2*r}}$, $u_3={{eval:a+3*r}}$, $u_4={{eval:a+4*r}}$.",
+					"On place chaque point $(n\\,;u_n)$ : $A\\textcolor{{{color:primary.0}}}{(0\\,;{{eval:a+0*r}})}$, $B\\textcolor{{{color:primary.0}}}{(1\\,;{{eval:a+1*r}})}$, $C\\textcolor{{{color:primary.0}}}{(2\\,;{{eval:a+2*r}})}$, $D\\textcolor{{{color:primary.0}}}{(3\\,;{{eval:a+3*r}})}$, $E\\textcolor{{{color:primary.0}}}{(4\\,;{{eval:a+4*r}})}$. Les points sont alignés : la suite est arithmétique."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "u_n = 2n + 3 : les cinq points",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"r": "2"
+			},
+			"answers": ["0;3", "1;5", "2;7", "3;9", "4;11"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : B avec abscisse et ordonnée échangées",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"r": "2"
+			},
+			"answers": ["0;3", "5;1", "2;7", "3;9", "4;11"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : décalage d'un rang (u₁ placé en 0)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"r": "2"
+			},
+			"answers": ["0;5", "1;7", "2;9", "3;11", "4;13"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "u₀ = 6, u_{n+1} = u_n − 2",
+			"variationIndex": 1,
+			"variables": {
+				"a": "6",
+				"r": "-2"
+			},
+			"answers": ["0;6", "1;4", "2;2", "3;0", "4;-2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : raison prise positive",
+			"variationIndex": 1,
+			"variables": {
+				"a": "6",
+				"r": "-2"
+			},
+			"answers": ["0;6", "1;8", "2;10", "3;12", "4;14"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Inès : 4 € puis 3 € par semaine",
+			"variationIndex": 2,
+			"variables": {
+				"a": "4",
+				"r": "3"
+			},
+			"answers": ["0;4", "1;7", "2;10", "3;13", "4;16"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : u₀ oublié (commence à 7)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "4",
+				"r": "3"
+			},
+			"answers": ["0;7", "1;10", "2;13", "3;16", "4;19"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

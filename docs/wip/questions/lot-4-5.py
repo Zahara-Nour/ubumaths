@@ -73,6 +73,11 @@ def col(x, k=0):
     return '\\textcolor{{{color:primary.' + str(k) + '}}}{' + x + '}'
 
 
+def colt(*a, **k):
+    """Valeur colorée en plein texte : `\\textcolor` hors `$…$` s'afficherait en LaTeX brut."""
+    return '$' + col(*a, **k) + '$'
+
+
 def ev(x):
     return '{{eval:' + x + '}}'
 
@@ -427,7 +432,7 @@ V33_PARALLELES = variation(
                              'Elles sont sécantes', 'On ne peut rien dire']),
     LETTRES + [ORIENTATION], ['0'],
     [TH_PARALLELE, 'Donc ' + droite(M, N) + ' et ' + droite(B, C) + ' sont '
-     + col('\\text{parallèles}') + '.'])
+     + colt('\\text{parallèles}') + '.'])
 V33_MOITIE = variation(
     MILIEUX + ' ' + donnees((B + C, '{{bc}}')) + ' Calcule $' + M + N + '$.' + fig_milieux()
     + '\n\n$' + M + N + ' = ?' + CM + '$',
@@ -513,7 +518,7 @@ V36_SUR = variation(
     + fig_demi_cercle(XA2, YA2) + choix(OPTIONS_SUR),
     LETTRES + [ORIENTATION, var('d', '10')] + DEMI_VARS, ['0'],
     [TH_CERCLE, 'Ici le diamètre est ' + seg(B, C) + ' : le triangle $' + A + B + C + '$ est '
-     + col('\\text{rectangle en }' + A) + '.'])
+     + colt('\\text{rectangle en }' + A) + '.'])
 V36_HORS = variation(
     'Le point $' + A + '$ n\'est pas sur le cercle de diamètre ' + seg(B, C)
     + ' : il est {{if:d<10|à l\'intérieur|à l\'extérieur}} du cercle. Que peut-on dire du triangle $'
@@ -524,7 +529,7 @@ V36_HORS = variation(
     ['Un triangle $' + A + B + C + '$ est rectangle en $' + A + '$ **seulement si** $' + A
      + '$ est sur le cercle de diamètre ' + seg(B, C) + '.',
      'Ici $' + A + '$ n\'est pas sur ce cercle : le triangle $' + A + B + C + '$ '
-     + col('\\text{n\'est pas rectangle en }' + A) + '. Son angle en $' + A + '$ est'
+     + colt('\\text{n\'est pas rectangle en }' + A) + '. Son angle en $' + A + '$ est'
      ' {{if:d<10|plus grand|plus petit}} qu\'un angle droit.'])
 # v3 : diamètre BC et AB donnés ; A placé à l'échelle (cos B = AB/BC).
 XA3 = ev('round(100*(1 + 8*(ab/bc)^2))/100;d')
@@ -565,7 +570,7 @@ V37_CENTRE = variation(
              'À l\'intérieur du triangle, loin des côtés']),
     LETTRES + [ORIENTATION], ['0'],
     [TH_CENTRE, 'L\'hypoténuse est le côté opposé à l\'angle droit, ' + seg(B, C)
-     + ' : le centre est ' + col('\\text{le milieu de }[' + B + C + ']') + '.'])
+     + ' : le centre est ' + colt('\\text{le milieu de }[' + B + C + ']') + '.'])
 V37_RAYON = variation(
     RECTANGLE + ' ' + donnees((B + C, '{{bc}}')) + ' Calcule le rayon du cercle circonscrit au'
     ' triangle $' + A + B + C + '$.' + fig_rectangle('8', '6') + '\n\n$r = ?' + CM + '$',

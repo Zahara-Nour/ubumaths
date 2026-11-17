@@ -5,7 +5,7 @@
 	Renders an ordered or unordered list with support for:
 	- Nested lists (recursive rendering)
 	- Custom starting number for ordered lists
-	- Rich content in list items (paragraphs, nested lists, etc.)
+	- Rich content in list items (paragraphs, nested lists, images, videos, etc.)
 	- Configurable numbering schemes via CSS classes
 
 	The component handles recursive rendering by importing BlockRenderer
@@ -26,6 +26,7 @@
 	import ParagraphNode from './ParagraphNode.svelte';
 	import MathBlock from './MathBlock.svelte';
 	import ImageDisplay from './ImageDisplay.svelte';
+	import VideoDisplay from './VideoDisplay.svelte';
 	import HorizontalRule from './HorizontalRule.svelte';
 	import HeadingNode from './HeadingNode.svelte';
 	import TableNode from './TableNode.svelte';
@@ -44,6 +45,7 @@
 	import Operation from './Operation.svelte';
 	import Collection from './Collection.svelte';
 	import Monnaie from './Monnaie.svelte';
+	import SchemaBarres from './SchemaBarres.svelte';
 	// Self-import for recursive rendering (Svelte 5 pattern)
 	import ListNode from './ListNode.svelte';
 	import type { VariationTableNode } from '$lib/ubumark/types/variation-table';
@@ -60,6 +62,7 @@
 	import type { OperationNode } from '$lib/ubumark/types/operation';
 	import type { CollectionNode } from '$lib/ubumark/types/collection';
 	import type { MonnaieNode } from '$lib/ubumark/types/monnaie';
+	import type { SchemaBarresNode } from '$lib/ubumark/types/schema-barres';
 
 	interface Props {
 		ordered: boolean;
@@ -297,6 +300,13 @@
 	}
 
 	/**
+	 * Bloc ```schema-barres en retrait dans un item de liste
+	 */
+	function isSchemaBarresNode(node: ASTNode): node is SchemaBarresNode {
+		return node.type === 'schema-barres';
+	}
+
+	/**
 	 * Bloc ```partage en retrait dans un item de liste
 	 */
 	function isPartageNode(node: ASTNode): node is PartageNode {
@@ -319,6 +329,7 @@
 			'code-block',
 			'list',
 			'image',
+			'video',
 			'table',
 			'horizontal-rule',
 			'variation-table',
@@ -334,7 +345,8 @@
 			'espace',
 			'operation',
 			'collection',
-			'monnaie'
+			'monnaie',
+			'schema-barres'
 		].includes(node.type);
 	}
 
@@ -437,6 +449,20 @@
 							originalWidth={child.originalWidth}
 							originalHeight={child.originalHeight}
 						/>
+					{:else if child.type === 'video'}
+						<VideoDisplay
+							src={child.src}
+							alt={child.alt}
+							provider={child.provider}
+							videoId={child.videoId}
+							sizeClass={child.sizeClass}
+							widthPercent={child.widthPercent}
+							alignment={child.alignment}
+							controls={child.controls}
+							autoplay={child.autoplay}
+							loop={child.loop}
+							muted={child.muted}
+						/>
 					{:else if isTableNode(child)}
 						<TableNode
 							header={child.header}
@@ -475,6 +501,8 @@
 						<Collection node={child} />
 					{:else if isMonnaieNode(child)}
 						<Monnaie node={child} />
+					{:else if isSchemaBarresNode(child)}
+						<SchemaBarres node={child} />
 					{:else if child.type === 'horizontal-rule'}
 						<HorizontalRule />
 					{/if}
@@ -535,6 +563,20 @@
 							originalWidth={child.originalWidth}
 							originalHeight={child.originalHeight}
 						/>
+					{:else if child.type === 'video'}
+						<VideoDisplay
+							src={child.src}
+							alt={child.alt}
+							provider={child.provider}
+							videoId={child.videoId}
+							sizeClass={child.sizeClass}
+							widthPercent={child.widthPercent}
+							alignment={child.alignment}
+							controls={child.controls}
+							autoplay={child.autoplay}
+							loop={child.loop}
+							muted={child.muted}
+						/>
 					{:else if isTableNode(child)}
 						<TableNode
 							header={child.header}
@@ -573,6 +615,8 @@
 						<Collection node={child} />
 					{:else if isMonnaieNode(child)}
 						<Monnaie node={child} />
+					{:else if isSchemaBarresNode(child)}
+						<SchemaBarres node={child} />
 					{:else if child.type === 'horizontal-rule'}
 						<HorizontalRule />
 					{/if}

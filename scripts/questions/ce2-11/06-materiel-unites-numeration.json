@@ -1,0 +1,180 @@
+{
+	"id": "d7564aaa-9827-4a83-87e6-03366ee88bca",
+	"title": "Du matériel aux unités de numération",
+	"description": "Matériel dessiné → milliers, centaines, dizaines, unités et le nombre ; en dizaines (463 dizaines et 5 unités)",
+	"grades": ["CE2"],
+	"level": 20,
+	"delay": 90,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Complète.\n\n```collection\nmilliers: {{m}}\ncentaines: {{c}}\ndizaines: {{d}}\nunités: {{u}}\n```\n\nCe matériel montre $?$ milliers, $?$ centaines, $?$ dizaines et $?$ unités.\n\nC'est le nombre $?$.",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "2..9"
+				},
+				{
+					"name": "c",
+					"expression": "2..9"
+				},
+				{
+					"name": "d",
+					"expression": "2..9"
+				},
+				{
+					"name": "u",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{m}}"
+				},
+				{
+					"expectedAnswer": "{{c}}"
+				},
+				{
+					"expectedAnswer": "{{d}}"
+				},
+				{
+					"expectedAnswer": "{{u}}"
+				},
+				{
+					"expectedAnswer": "{{eval:1000*m+100*c+10*d+u}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un gros cube = $1$ millier, une plaque = $1$ centaine, une barre = $1$ dizaine, un petit cube = $1$ unité.",
+					"${{m}}$ milliers, ${{c}}$ centaines, ${{d}}$ dizaines et ${{u}}$ unités.",
+					"$${{eval:1000*m}}+{{eval:100*c}}+{{eval:10*d}}+{{u}}={{eval:1000*m+100*c+10*d+u}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n```collection\nmilliers: {{m}}\ncentaines: {{c}}\ndizaines: {{d}}\nunités: {{u}}\n```\n\nCe matériel montre $?$ dizaines et ${{u}}$ unités.",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "1..9"
+				},
+				{
+					"name": "c",
+					"expression": "1..9"
+				},
+				{
+					"name": "d",
+					"expression": "1..9"
+				},
+				{
+					"name": "u",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:100*m+10*c+d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un gros cube, c'est $100$ dizaines ; une plaque, $10$ dizaines ; une barre, $1$ dizaine.",
+					"${{m}}$ {{if:m<=1|gros cube|gros cubes}} : ${{eval:100*m}}$ dizaines ; ${{c}}$ {{if:c<=1|plaque|plaques}} : ${{eval:10*c}}$ dizaines ; ${{d}}$ {{if:d<=1|barre|barres}} : ${{d}}$ {{if:d<=1|dizaine|dizaines}}.",
+					"En tout : ${{eval:100*m}}+{{eval:10*c}}+{{d}}={{solution}}$ dizaines, et ${{u}}$ unités."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "4 m, 6 c, 3 d, 5 u : 4 635",
+			"variationIndex": 0,
+			"variables": {
+				"m": "4",
+				"c": "6",
+				"d": "3",
+				"u": "5"
+			},
+			"answers": ["4", "6", "3", "5", "4\\,635"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : rangs inversés",
+			"variationIndex": 0,
+			"variables": {
+				"m": "4",
+				"c": "6",
+				"d": "3",
+				"u": "5"
+			},
+			"answers": ["4", "3", "6", "5", "4\\,365"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "463 dizaines et 5 unités",
+			"variationIndex": 1,
+			"variables": {
+				"m": "4",
+				"c": "6",
+				"d": "3",
+				"u": "5"
+			},
+			"answers": ["463"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : chiffre des dizaines seul (3)",
+			"variationIndex": 1,
+			"variables": {
+				"m": "4",
+				"c": "6",
+				"d": "3",
+				"u": "5"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : dizaines entières oubliées du millier (63)",
+			"variationIndex": 1,
+			"variables": {
+				"m": "4",
+				"c": "6",
+				"d": "3",
+				"u": "5"
+			},
+			"answers": ["63"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "borne : 9 m, 9 c, 9 d : 999 dizaines",
+			"variationIndex": 1,
+			"variables": {
+				"m": "9",
+				"c": "9",
+				"d": "9",
+				"u": "9"
+			},
+			"answers": ["999"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

@@ -52,7 +52,7 @@ const createdNodeIds: string[] = [];
 let notionId: string | null = null;
 
 async function cleanup() {
-	await service.from('question_templates').delete().eq('domain', 'test-tagging');
+	await service.from('question_templates').delete().like('title', 'Question test-tagging %');
 	// Points NEUFS puis nœuds (enfants d'abord : parent_id est en RESTRICT).
 	if (createdNodeIds.length > 0) {
 		await service.from('curriculum_points').delete().in('node_id', createdNodeIds);
@@ -110,9 +110,7 @@ async function svcTemplate(grades: string[] = [TEST_GRADE]): Promise<{ id: strin
 	const { data, error } = await service
 		.from('question_templates')
 		.insert({
-			title: `Question ${crypto.randomUUID().slice(0, 8)}`,
-			theme: 'Test',
-			domain: 'test-tagging',
+			title: `Question test-tagging ${crypto.randomUUID().slice(0, 8)}`,
 			level: 1,
 			grades,
 			type: 'fill_in_blanks',

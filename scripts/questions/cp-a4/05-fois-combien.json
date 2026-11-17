@@ -1,10 +1,8 @@
 {
+	"id": "b873739e-1e3e-4530-8b7c-7bcaf048e404",
 	"title": "Le sens de « fois » : combien ?",
 	"description": "3 fois 4, c'est 4 + 4 + 4 = 12 (sans le signe ×)",
 	"grades": ["CP"],
-	"theme": "Entiers",
-	"domain": "Multiplier",
-	"subdomain": "Sens",
 	"level": 2,
 	"delay": 20,
 	"status": "draft",

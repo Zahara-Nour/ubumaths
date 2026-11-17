@@ -27,6 +27,16 @@ vi.mock('$lib/server/course-card-attempts', () => ({
 
 import { POST } from '../+server';
 
+vi.mock('$lib/server/middleware/auth', () => ({
+	// Garde commune simulée : la session vient de `locals.safeGetSession`
+	requireAuth: async (locals: { safeGetSession: () => Promise<{ user: unknown }> }) => {
+		const { user } = await locals.safeGetSession();
+		// Comme la vraie garde : pas de session → 401
+		if (!user) throw (await import('@sveltejs/kit')).error(401, 'Non autorisé');
+		return { user, profile: { role: 'student' } };
+	}
+}));
+
 // Constantes
 const ELEVE = '11111111-1111-4111-8111-111111111111';
 const MODELE_A = '22222222-2222-4222-8222-222222222222';
@@ -63,7 +73,6 @@ function reponse(templateId: string | undefined, isCorrect: boolean, index: numb
 		instance: {
 			templateId,
 			statement: 'Combien font 2 + 2 ?',
-			theme: 'Calcul',
 			generatedAt: new Date().toISOString()
 		},
 		isCorrect,
@@ -88,9 +97,9 @@ async function enregistrer(answers: ReturnType<typeof reponse>[], mode = 'intera
 				completedAt: new Date().toISOString(),
 				answers
 			},
-			categories: [
+			items: [
 				{
-					category: { theme: 'Calcul', domain: 'Nombres', subdomain: null, level: 5 },
+					templateId: '4d5e6f70-4444-4444-8444-444444444444',
 					quantity: answers.length,
 					delay: 20
 				}
@@ -105,7 +114,7 @@ async function enregistrer(answers: ReturnType<typeof reponse>[], mode = 'intera
 		}
 	} as never);
 	// Un corps refusé par Zod rendrait 400 : tous les cas seraient rouges pour rien.
-	expect(response.status, 'statut de la route').toBe(201);
+	expect(response.status, 'statut de la route').toBe(200);
 	return response;
 }
 

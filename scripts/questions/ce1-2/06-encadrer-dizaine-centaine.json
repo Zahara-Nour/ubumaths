@@ -1,10 +1,8 @@
 {
+	"id": "29cb38fb-bdb6-4473-9fe1-10cf02bfbd80",
 	"title": "Encadrer un nombre (unité, dizaine, centaine)",
 	"description": "238 < 239 < 240 ; 230 < 239 < 240 ; 200 < 239 < 300",
 	"grades": ["CE1"],
-	"theme": "Entiers",
-	"domain": "Apprivoiser",
-	"subdomain": "Encadrer",
 	"level": 7,
 	"delay": 20,
 	"status": "draft",

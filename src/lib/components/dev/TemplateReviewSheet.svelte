@@ -35,6 +35,8 @@
 		review: TemplateReview | null;
 		alerts: string[];
 		nodePath: string[];
+		/** Ligne de la série choisie dans la revue : répétitions et durée (secondes) */
+		seriesLine?: { quantity: number; delay: number } | null;
 		open?: boolean;
 	}
 
@@ -48,7 +50,15 @@
 	};
 
 	// Variables
-	let { row, points, review, alerts, nodePath, open = $bindable(false) }: Props = $props();
+	let {
+		row,
+		points,
+		review,
+		alerts,
+		nodePath,
+		seriesLine = null,
+		open = $bindable(false)
+	}: Props = $props();
 
 	const template = $derived(toQuestionTemplate(row));
 	const typeLabel = $derived(QUESTION_TYPE_LABELS[getQuestionType(template)]);
@@ -119,6 +129,9 @@
 					</span>
 				{:else}
 					<span class="verdict" data-verdict="none">Sans verdict</span>
+				{/if}
+				{#if seriesLine}
+					<Badge variant="secondary">× {seriesLine.quantity} · {seriesLine.delay} s</Badge>
 				{/if}
 				<span class="text-muted-foreground">
 					niveau {row.level} · {points.map((p) => p.code).join(', ') || 'sans point'} ·

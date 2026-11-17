@@ -1,10 +1,8 @@
 {
+	"id": "0f4a530e-4cb4-4cdb-a27c-d20ca702ac84",
 	"title": "Combien d'argent y a-t-il ?",
 	"description": "Trouver la valeur en euros de pièces et de billets (≤ 100 €), rangés ou en vrac",
 	"grades": ["CP"],
-	"theme": "Grandeurs",
-	"domain": "Monnaie",
-	"subdomain": "Pièces et billets",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

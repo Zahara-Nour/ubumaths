@@ -1,10 +1,8 @@
 {
+	"id": "d683e906-b1ca-44f0-bed5-8df2a9740b11",
 	"title": "Probabilités de la loi de X à partir d'un arbre pondéré",
 	"description": "Deux épreuves successives représentées par un arbre : regrouper les chemins qui donnent la même valeur de X (nombre de succès ou gain) et additionner leurs probabilités",
 	"grades": ["1_SPE"],
-	"theme": "Probabilités",
-	"domain": "Variables aléatoires",
-	"subdomain": "Loi d'une variable aléatoire",
 	"level": 3,
 	"status": "draft",
 	"delay": 90,

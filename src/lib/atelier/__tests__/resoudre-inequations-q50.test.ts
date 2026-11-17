@@ -77,13 +77,13 @@ describe('.résoudre — les bornes s’écrivent comme les solutions d’une é
 	});
 
 	it('premier degré : 2x < √2 répond x < √2/2, dans l’étape aussi', () => {
-		expect(answer('2x<\\sqrt{2}')).toBe('x<\\dfrac{\\sqrt{2}}{2}');
+		expect(answer('2x<\\sqrt{2}')).toBe('S=]-\\infty;\\dfrac{\\sqrt{2}}{2}[');
 		expect(shown('2x<\\sqrt{2}')).not.toContain('\\dfrac{1}{2}\\sqrt{2}');
-		expect(answer('2x<1+\\sqrt{5}')).toBe('x<\\dfrac{1+\\sqrt{5}}{2}');
+		expect(answer('2x<1+\\sqrt{5}')).toBe('S=]-\\infty;\\dfrac{1+\\sqrt{5}}{2}[');
 	});
 
 	it('sans décimal, 3x < 1 garde x < 1/3', () => {
-		expect(answer('3x<1')).toBe('x<\\dfrac{1}{3}');
+		expect(answer('3x<1')).toBe('S=]-\\infty;\\dfrac{1}{3}[');
 	});
 });
 
@@ -94,19 +94,19 @@ describe('.résoudre — les bornes s’écrivent comme les solutions d’une é
 describe('.résoudre — les décimaux tapés restent décimaux dans une inéquation (Q50)', () => {
 	it('2x < 0,6 : x < 0,3 dans la division et sur la ligne', () => {
 		const text = shown('2x<0,6');
-		expect(answer('2x<0,6')).toBe('x<0.3');
+		expect(answer('2x<0,6')).toBe('S=]-\\infty;0.3[');
 		expect(text).not.toContain('\\dfrac{3}{10}');
 	});
 
 	it('−2x ≤ 0,6 : x ≥ −0,3, sens retourné', () => {
-		expect(answer('-2x<=0,6')).toBe('x\\geqslant-0.3');
+		expect(answer('-2x<=0,6')).toBe('S=[-0.3;+\\infty[');
 	});
 
 	it('0,5x > 1 : « On divise les deux membres par 0,5 »', () => {
 		const text = shown('0,5x>1');
 		expect(text).toContain('0.5');
 		expect(text).not.toContain('\\dfrac{1}{2}');
-		expect(answer('0,5x>1')).toBe('x>2');
+		expect(answer('0,5x>1')).toBe('S=]2;+\\infty[');
 	});
 
 	it('x² < 0,5 : x² − 0,5 < 0 dans les étapes', () => {

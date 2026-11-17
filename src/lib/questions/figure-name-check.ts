@@ -38,14 +38,13 @@ function figureNameIn(expectedAnswer: string): string | null {
 /**
  * Messages (français) pour l'auteur : une ligne par case dont la réponse attendue
  * contient un nom de figure, quand le modèle lit deux majuscules collées comme une
- * longueur. Rien en mode produit (déclaré ou par le contexte).
+ * longueur. Rien en mode produit (déclaré dans le modèle).
  */
 export function figureNameWarnings(
-	template: Pick<QuestionTemplate, 'shared' | 'theme' | 'variations'>
+	template: Pick<QuestionTemplate, 'shared' | 'variations'>
 ): string[] {
 	const { capitalPairs } = resolveCapitalPairs({
-		declaration: template.shared?.capitalPairs,
-		theme: template.theme
+		declaration: template.shared?.capitalPairs
 	});
 	if (capitalPairs !== 'length') return [];
 
@@ -54,9 +53,16 @@ export function figureNameWarnings(
 		// Type des cases lu dans l'énoncé, comme au tirage (`[_]` = texte)
 		const statement = variation.statement ?? template.shared?.statement ?? '';
 		const answerFormats = variation.answerFormats ?? template.shared?.answerFormats;
-		const { blankTypes, operationBlanks = {} } = assignBlankIndices(statement, answerFormats);
-		// Case d'un bloc ```operation : réponse calculée par le bloc, souvent omise de blanks[]
-		const operationIndices = Object.keys(operationBlanks).map(Number);
+		const {
+			blankTypes,
+			operationBlanks = {},
+			variationBlanks = {}
+		} = assignBlankIndices(statement, answerFormats);
+		// Case d'un bloc ```operation ou d'un tableau de signes : réponse tirée du bloc,
+		// souvent omise de blanks[]
+		const operationIndices = [...Object.keys(operationBlanks), ...Object.keys(variationBlanks)].map(
+			Number
+		);
 		const omitted = (variation.blanks?.length ?? 0) < blankTypes.length;
 		const caseIndices = blankTypes
 			.map((_, i) => i)

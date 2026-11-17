@@ -1,0 +1,281 @@
+{
+	"id": "03bd034d-5c4e-49d4-8da4-5e621089c12b",
+	"title": "Problèmes d'optimisation",
+	"description": "Le plus de bracelets possible avec des perles de deux couleurs (le plus petit des deux quotients) ; payer une somme exacte avec le moins de pièces de 2 € et de 5 €",
+	"grades": ["CM1"],
+	"level": 1,
+	"delay": 120,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Pour fabriquer un bracelet, Inès enfile ${{a}}$ perles rouges et ${{b}}$ perles bleues. Elle a ${{R}}$ perles rouges et ${{B}}$ perles bleues.\n\nCombien de bracelets peut-elle fabriquer, au maximum ?\n\nElle peut fabriquer $?$ bracelets.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..6"
+				},
+				{
+					"name": "b",
+					"expression": "2..6"
+				},
+				{
+					"name": "R",
+					"expression": "12..80"
+				},
+				{
+					"name": "B",
+					"expression": "12..80"
+				},
+				{
+					"name": "qr",
+					"expression": "eval:floor(R/a)"
+				},
+				{
+					"name": "qb",
+					"expression": "eval:floor(B/b)"
+				},
+				{
+					"name": "w",
+					"expression": "eval:min(qr,qb)"
+				}
+			],
+			"conditions": ["qr != qb"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{w}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque bracelet demande ${{a}}$ perles rouges **et** ${{b}}$ perles bleues : il faut que les deux couleurs suffisent.",
+					"Les rouges : ${{R}} = {{a}} \\times {{qr}} + {{eval:R-a*qr}}$, assez pour ${{qr}}$ bracelets. Les bleues : ${{B}} = {{b}} \\times {{qb}} + {{eval:B-b*qb}}$, assez pour ${{qb}}$ bracelets.",
+					"La couleur qui manque la première décide : le plus petit des deux nombres, $\\textcolor{{{color:primary.0}}}{{{w}}}$.",
+					"Inès peut fabriquer ${{w}}$ bracelets.",
+					"On vérifie : un bracelet de plus demanderait {{if:qr<qb|${{eval:a*(w+1)}}$ perles rouges, plus que les ${{R}}$|${{eval:b*(w+1)}}$ perles bleues, plus que les ${{B}}$}} qu'elle a."
+				]
+			}
+		},
+		{
+			"statement": "Kenzo doit payer exactement ${{S}}~\\unit{€}$. Il n'a que des pièces de $2~\\unit{€}$ et de $5~\\unit{€}$ (autant qu'il en veut), et on ne lui rend pas la monnaie.\n\nCombien de pièces doit-il donner, au minimum ?\n\nIl doit donner $?$ pièces.",
+			"variables": [
+				{
+					"name": "S",
+					"expression": "11..49"
+				},
+				{
+					"name": "q",
+					"expression": "eval:floor(S/5)"
+				},
+				{
+					"name": "k",
+					"expression": "eval:q-mod(S-5*q,2)"
+				},
+				{
+					"name": "t",
+					"expression": "eval:(S-5*k)/2"
+				},
+				{
+					"name": "w",
+					"expression": "eval:k+t"
+				}
+			],
+			"conditions": ["mod(S,5) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{w}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour donner le moins de pièces possible, on prend le plus de pièces de $5~\\unit{€}$ possible ; mais le reste doit se payer en pièces de $2~\\unit{€}$ : il doit être **pair**.",
+					"${{q}}$ pièces de $5~\\unit{€}$ font ${{eval:5*q}}~\\unit{€}$ ; il reste ${{eval:S-5*q}}~\\unit{€}${{if:k<q|, un nombre impair : impossible en pièces de $2~\\unit{€}$. Avec une pièce de $5~\\unit{€}$ de moins, il reste ${{eval:S-5*k}}~\\unit{€}$|}}, soit ${{t}}$ {{if:t==1|pièce|pièces}} de $2~\\unit{€}$.",
+					"$${{k}} + {{t}} = \\textcolor{{{color:primary.0}}}{{{w}}}$$",
+					"Kenzo doit donner ${{w}}$ pièces : ${{k}}$ {{if:k==1|pièce|pièces}} de $5~\\unit{€}$ et ${{t}}$ {{if:t==1|pièce|pièces}} de $2~\\unit{€}$.",
+					"On vérifie : $5 \\times {{k}} + 2 \\times {{t}} = {{S}}$ ; avec plus de pièces de $5~\\unit{€}$, le reste ne se paierait plus en pièces de $2~\\unit{€}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "bracelets : 3 rouges et 2 bleues, 20 et 18 → 6",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"R": "20",
+				"B": "18",
+				"qr": "6",
+				"qb": "9",
+				"w": "6"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : bracelets, le plus grand quotient (9)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"R": "20",
+				"B": "18",
+				"qr": "6",
+				"qb": "9",
+				"w": "6"
+			},
+			"answers": ["9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : bracelets, toutes les perles ensemble (38 ÷ 5 → 7)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"R": "20",
+				"B": "18",
+				"qr": "6",
+				"qb": "9",
+				"w": "6"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "bracelets : les bleues manquent d'abord (2, 5, 40, 22 → 4)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "5",
+				"R": "40",
+				"B": "22",
+				"qr": "20",
+				"qb": "4",
+				"w": "4"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : bracelets, les rouges seules (20)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "5",
+				"R": "40",
+				"B": "22",
+				"qr": "20",
+				"qb": "4",
+				"w": "4"
+			},
+			"answers": ["20"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "pièces : 16 € = 2 × 5 + 3 × 2 → 5",
+			"variationIndex": 1,
+			"variables": {
+				"S": "16",
+				"q": "3",
+				"k": "2",
+				"t": "3",
+				"w": "5"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : pièces, que des pièces de 2 € (8)",
+			"variationIndex": 1,
+			"variables": {
+				"S": "16",
+				"q": "3",
+				"k": "2",
+				"t": "3",
+				"w": "5"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : pièces, 3 pièces de 5 € et un reste de 1 € (4)",
+			"variationIndex": 1,
+			"variables": {
+				"S": "16",
+				"q": "3",
+				"k": "2",
+				"t": "3",
+				"w": "5"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "pièces : 13 € = 5 + 4 × 2 → 5",
+			"variationIndex": 1,
+			"variables": {
+				"S": "13",
+				"q": "2",
+				"k": "1",
+				"t": "4",
+				"w": "5"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "pièces : 22 € = 4 × 5 + 2 → 5",
+			"variationIndex": 1,
+			"variables": {
+				"S": "22",
+				"q": "4",
+				"k": "4",
+				"t": "1",
+				"w": "5"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : pièces, 22 € en pièces de 2 € (11)",
+			"variationIndex": 1,
+			"variables": {
+				"S": "22",
+				"q": "4",
+				"k": "4",
+				"t": "1",
+				"w": "5"
+			},
+			"answers": ["11"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

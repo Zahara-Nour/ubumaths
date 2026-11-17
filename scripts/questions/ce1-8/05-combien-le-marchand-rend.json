@@ -1,10 +1,8 @@
 {
+	"id": "3c9711f9-90e7-49f5-a1c1-4537bfe0fe41",
 	"title": "Combien le marchand rend-il ? Euros et centimes",
 	"description": "Rendu sur 1 €, 5 €, 10 € et 20 €, par complément, réponse en centimes ou à virgule",
 	"grades": ["CE1"],
-	"theme": "Grandeurs",
-	"domain": "Monnaie",
-	"subdomain": "Rendre la monnaie",
 	"level": 3,
 	"delay": 120,
 	"status": "draft",

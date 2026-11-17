@@ -37,8 +37,6 @@ const TEMPLATE = {
 	type: 'fill_in_blanks',
 	variations: [{ statement: templateMarkdown(`Termine le carré.\n\n${BLOCK}`) }],
 	grades: ['CP'],
-	theme: 'Test',
-	domain: 'Test',
 	level: 1
 } as unknown as QuestionTemplate;
 

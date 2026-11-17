@@ -27,9 +27,6 @@
 			}
 		],
 		"grades": ["CP"],
-		"theme": "Entiers",
-		"domain": "Additionner",
-		"subdomain": "Double et moitié",
 		"level": 3,
 		"status": "draft",
 		"delay": 10,

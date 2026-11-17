@@ -18,8 +18,6 @@ function makeTemplate(overrides: Partial<QuestionTemplate> = {}): QuestionTempla
 		status: 'draft',
 		variations: [],
 		grades: ['6'],
-		theme: 'Test',
-		domain: 'Test',
 		level: 1,
 		...overrides
 	};

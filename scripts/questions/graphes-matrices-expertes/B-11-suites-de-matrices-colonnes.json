@@ -1,13 +1,14 @@
 {
+	"id": "7a28103b-435d-4f7d-a583-44d9269ff4a1",
 	"title": "Suites de matrices colonnes Uₙ₊₁ = AUₙ + C",
 	"description": "Calculer U₁ et U₂ pour une suite de matrices colonnes définie par Uₙ₊₁ = AUₙ ou Uₙ₊₁ = AUₙ + C, en situation de populations (pièges : UₙA au lieu de AUₙ, C oubliée, U₂ = 2U₁)",
 	"grades": ["T_EXP"],
-	"theme": "Graphes et matrices",
-	"domain": "Matrices",
-	"subdomain": "Suites et matrices",
 	"level": 2,
 	"status": "draft",
 	"delay": 60,
+	"shared": {
+		"capitalPairs": "product"
+	},
 	"variations": [
 		{
 			"statement": "Deux populations vérifient $\\begin{cases} a_{n+1} = {{a1}}a_n + {{a2}}b_n \\\\ b_{n+1} = {{a3}}a_n + {{a4}}b_n \\end{cases}$, avec $a_0 = {{x}}$ et $b_0 = {{y}}$.\n\nOn pose $U_n = \\begin{pmatrix}a_n\\\\b_n\\end{pmatrix}$, de sorte que $U_{n+1} = AU_n$ avec $A = \\begin{pmatrix}{{a1}}&{{a2}}\\\\{{a3}}&{{a4}}\\end{pmatrix}$.\n\n$a_1=?$\n\n$b_1=?$",

@@ -14,7 +14,7 @@ import { resolvedMarkdown } from '$lib/ubumark';
 function session(): TestSession {
 	return {
 		mode: 'course',
-		categories: [],
+		items: [],
 		instances: [],
 		userAnswers: new Map(),
 		startTime: Date.now(),
@@ -108,8 +108,6 @@ describe('TestCourse — évaluation, réponses non validées', () => {
 			templateId: '',
 			statement: resolvedMarkdown(`${statement}\n\n\`\`\`choix\ncase: 0\n- $$3$$\n- $$4$$\n\`\`\``),
 			grades: [],
-			theme: '',
-			domain: '',
 			level: 0,
 			generatedAt: '',
 			blanks: [
@@ -153,6 +151,8 @@ describe('TestCourse — évaluation, réponses non validées', () => {
 		const result = onComplete.mock.calls[0][0];
 		expect(result.answers[0].userAnswer?.value).toEqual(['1']);
 		expect(result.answers[1].userAnswer?.value).toEqual(['0']);
+		// PR 4 bis : laissée par « Terminer » → aucune fin ; validée → validated
+		expect(result.answers.map((a) => a.endReason)).toEqual([undefined, 'validated']);
 		confirmSpy.mockRestore();
 	});
 
@@ -203,5 +203,137 @@ describe('TestCourse — quitter en cours de route', () => {
 		expect(clickQuit(container)).toBe(false);
 		expect(confirmSpy).not.toHaveBeenCalled();
 		confirmSpy.mockRestore();
+	});
+});
+
+// Une trace par question (ADR 0038) ; question jamais validée : décision du 2026-11-11
+describe('TestCourse — traces de la Course aux nombres', () => {
+	const MODELES = ['22222222-2222-4222-8222-222222222222', '33333333-3333-4333-8333-333333333333'];
+
+	function tracedSession(timeLimit = 420): TestSession {
+		const instance = (statement: string, templateId: string): QuestionInstance => ({
+			templateId,
+			statement: resolvedMarkdown(`${statement}\n\n\`\`\`choix\ncase: 0\n- 3\n- 4\n\`\`\``),
+			grades: ['6'],
+			level: 1,
+			generatedAt: '',
+			seed: 5,
+			blanks: [
+				{
+					expectedAnswer: '1',
+					type: 'choice',
+					choice: { choices: ['3', '4'], order: [0, 1], multiple: false }
+				}
+			]
+		});
+		return {
+			...session(),
+			timeLimit,
+			instances: [instance('Q1 ?', MODELES[0]), instance('Q2 ?', MODELES[1])]
+		};
+	}
+
+	async function openTraced(timeLimit?: number) {
+		const record = vi.fn();
+		const screen = await render(TestCourse, {
+			session: tracedSession(timeLimit),
+			onComplete: vi.fn(),
+			onBack: vi.fn(),
+			traceRecorder: { record, settle: async () => ({ failed: 0 }) }
+		});
+		return { ...screen, record };
+	}
+
+	async function validate(card: Element, choiceIndex: number) {
+		card.querySelectorAll<HTMLButtonElement>('.choice-button')[choiceIndex].click();
+		await vi.waitFor(() => {
+			const button = [...card.querySelectorAll('button')].find((b) =>
+				b.textContent?.includes('Valider')
+			);
+			expect(button?.disabled).toBe(false);
+			button!.click();
+		});
+	}
+
+	it('question validée : trace aussitôt, durée depuis le début, durée allouée = la course', async () => {
+		const { container, record } = await openTraced();
+		const cards = container.querySelectorAll('.question-card-wrapper');
+		await validate(cards[1], 1);
+		await vi.waitFor(() => expect(record).toHaveBeenCalledTimes(1));
+		expect(record.mock.calls[0][0]).toMatchObject({
+			template_id: MODELES[1],
+			success: true,
+			place: 'number_race',
+			seed: 5,
+			allotted_ms: 420000,
+			end_reason: 'validated',
+			answer_parts: ['1'],
+			part_verdicts: [true]
+		});
+	});
+
+	it('« Terminer » : la question jamais validée est ratée, sans durée ni fin', async () => {
+		const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true);
+		const { container, record } = await openTraced();
+		const cards = container.querySelectorAll('.question-card-wrapper');
+		await validate(cards[1], 0);
+		await page.getByRole('button', { name: 'Terminer' }).click();
+		await vi.waitFor(() => expect(record).toHaveBeenCalledTimes(2));
+		expect(record.mock.calls[1][0]).toEqual({
+			template_id: MODELES[0],
+			success: false,
+			place: 'number_race',
+			seed: 5
+		});
+		confirmSpy.mockRestore();
+	});
+
+	it('contrôle (copie collectée) : aucune trace, ni à « Valider », ni en fin de course', async () => {
+		const record = vi.fn();
+		const { container } = await render(TestCourse, {
+			session: tracedSession(),
+			onComplete: vi.fn(),
+			onBack: vi.fn(),
+			inEvaluation: true,
+			collectOnly: true,
+			showResults: false,
+			traceRecorder: { record, settle: async () => ({ failed: 0 }) }
+		});
+		const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true);
+		const cards = container.querySelectorAll('.question-card-wrapper');
+		await validate(cards[1], 1);
+		await page.getByRole('button', { name: 'Terminer' }).click();
+		await vi.waitFor(() => expect(container.textContent).toContain('Envoi de ta copie'));
+		expect(record).not.toHaveBeenCalled();
+		confirmSpy.mockRestore();
+	});
+
+	it('chrono écoulé : la question jamais validée est ratée, fin « temps écoulé »', async () => {
+		const { record } = await openTraced(1);
+		await vi.waitFor(() => expect(record).toHaveBeenCalledTimes(2), { timeout: 4000 });
+		for (const call of record.mock.calls) {
+			expect(call[0]).toMatchObject({
+				success: false,
+				end_reason: 'timeout',
+				allotted_ms: 1000,
+				response_ms: 1000
+			});
+		}
+	});
+
+	it('contrôle, chrono écoulé : chaque question non validée part avec la fin « temps écoulé »', async () => {
+		const onComplete = vi.fn<(result: TestResult) => void>();
+		await render(TestCourse, {
+			session: tracedSession(1),
+			onComplete,
+			onBack: vi.fn(),
+			inEvaluation: true,
+			collectOnly: true,
+			showResults: false
+		});
+		await vi.waitFor(() => expect(onComplete).toHaveBeenCalledTimes(1), { timeout: 4000 });
+		const { answers } = onComplete.mock.calls[0][0];
+		expect(answers.length).toBeGreaterThan(0);
+		expect(answers.every((a) => a.endReason === 'timeout')).toBe(true);
 	});
 });

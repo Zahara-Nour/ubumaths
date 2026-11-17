@@ -40,8 +40,6 @@ function divisorTemplate(
 			}
 		],
 		grades: ['6'],
-		theme: 'Entiers',
-		domain: 'Diviser',
 		level: 1
 	};
 }

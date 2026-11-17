@@ -37,7 +37,7 @@ function mathou(notionId: string, growth: Mathou['growth'], stars: string[] = []
 		collar: null,
 		glasses: null,
 		hat: null,
-		trainingCategories: null,
+		trainingItems: null,
 		stars,
 		workablePoints: 2,
 		acquiredPoints: 1,

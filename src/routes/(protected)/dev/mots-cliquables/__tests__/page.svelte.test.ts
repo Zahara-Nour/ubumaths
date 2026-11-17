@@ -51,7 +51,7 @@ describe('page de test des mots cliquables', () => {
 		expect(document.body.textContent).not.toContain('(puissance)');
 		await userEvent.keyboard('{Escape}');
 
-		await page.getByRole('button', { name: 'Niveau de lecture' }).click();
+		await page.getByRole('combobox', { name: 'Niveau de lecture' }).click();
 		await page.getByRole('option', { name: '5ème' }).click();
 		await carre.click();
 		await expect.element(page.getByText('(puissance)').last()).toBeInTheDocument();

@@ -6,7 +6,6 @@
 	import { TrendingUp, Package, Coins, CheckCircle, XCircle, Clock, Trophy } from '@lucide/svelte';
 
 	interface Stats {
-		period: string;
 		totalTrades: number;
 		completedTrades: number;
 		cancelledTrades: number;

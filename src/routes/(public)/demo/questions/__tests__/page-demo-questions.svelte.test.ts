@@ -2,10 +2,10 @@
  * Vitrine — les questions (`/demo/questions`)
  * Comportements validés par David le 2026-10-25 (docs/wip/demo-debug-progress.md, PR 6g).
  *
- * - un visiteur voit le titre, le retour vers `/demo`, 5 onglets et le lien vers Automaths ;
+ * - un visiteur voit le titre, le retour vers `/demo`, 6 onglets et le lien vers Automaths ;
  * - chaque onglet monte sa forme sur les 4 questions de la page ;
  * - pas de bandeau « Connecte-toi… », une ligne « Rien n'est enregistré » ;
- * - révisions espacées simulées : après le retournement, 4 notes et leur prochaine date ;
+ * - révisions espacées simulées : après le retournement, « Pas réussi / Réussi » et la prochaine date ;
  * - rien n'est enregistré : aucune requête d'écriture (le lexique lit `/api/dictionnaire`).
  */
 import { afterEach, describe, it, expect, vi } from 'vitest';
@@ -18,8 +18,9 @@ vi.mock('$lib/dictionary/fetch-dictionary', () => ({ fetchDictionary: async () =
 
 const TABS = [
 	'En classe',
-	'Entraînement',
+	'Contrôle blanc',
 	'Flash-cards',
+	'Saisie',
 	'Course aux nombres',
 	'Révisions espacées'
 ];
@@ -39,7 +40,7 @@ describe('/demo/questions', () => {
 
 		await expect
 			.element(page.getByRole('heading', { level: 1 }))
-			.toHaveTextContent('Une série, cinq formes');
+			.toHaveTextContent('Une série, six formes');
 		await expect
 			.element(page.getByRole('link', { name: /démonstrations/ }))
 			.toHaveAttribute('href', '/demo');
@@ -61,10 +62,10 @@ describe('/demo/questions', () => {
 		await expect.element(page.getByText('Question 1 / 4').first()).toBeInTheDocument();
 	});
 
-	it('monte l’Entraînement et les Flash-cards sans bandeau « Connecte-toi »', async () => {
+	it('monte le Contrôle blanc et les Flash-cards sans bandeau « Connecte-toi »', async () => {
 		await render(Page);
 
-		await openTab('Entraînement');
+		await openTab('Contrôle blanc');
 		await expect.element(page.getByText('Question 1 sur 4')).toBeInTheDocument();
 		expect(page.getByText(/Connecte-toi/).elements()).toHaveLength(0);
 
@@ -72,6 +73,10 @@ describe('/demo/questions', () => {
 		await expect
 			.element(page.getByRole('button', { name: 'Voir la correction' }))
 			.toBeInTheDocument();
+		expect(page.getByText(/Connecte-toi/).elements()).toHaveLength(0);
+
+		await openTab('Saisie');
+		await expect.element(page.getByTestId('typing-position')).toHaveTextContent('Question 1 / 4');
 		expect(page.getByText(/Connecte-toi/).elements()).toHaveLength(0);
 	});
 
@@ -83,17 +88,19 @@ describe('/demo/questions', () => {
 		expect(page.getByText(/Calcule/).elements().length).toBeGreaterThanOrEqual(3);
 	});
 
-	it('révisions espacées : après le retournement, 4 notes et la prochaine date', async () => {
+	it('révisions espacées : après le retournement, deux boutons et la prochaine date', async () => {
 		await render(Page);
 
 		await openTab('Révisions espacées');
 		await expect.element(page.getByText('Carte 1 sur 4')).toBeInTheDocument();
-		expect(page.getByRole('button', { name: /^Bien/ }).elements()).toHaveLength(0);
+		expect(page.getByRole('button', { name: 'Réussi', exact: true }).elements()).toHaveLength(0);
 
 		await page.getByRole('button', { name: 'Voir la correction' }).click();
-		await page.getByRole('button', { name: /^Bien/ }).click();
+		expect(page.getByRole('button', { name: 'Bien' }).elements()).toHaveLength(0);
+		await expect.element(page.getByRole('button', { name: 'Pas réussi' })).toBeVisible();
+		await page.getByRole('button', { name: 'Réussi', exact: true }).click();
 		await expect
-			.element(page.getByText(/« Bien » : cette carte reviendra/))
+			.element(page.getByText(/« Réussi » : cette carte reviendra/))
 			.toHaveTextContent(/dans \d+ jours/);
 
 		await page.getByRole('button', { name: 'Carte suivante' }).click();

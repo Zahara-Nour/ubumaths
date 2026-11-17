@@ -25,7 +25,10 @@ import { templateMarkdown } from '$lib/ubumark';
 
 function template(
 	expectedAnswer: string,
-	{ theme = 'Géométrie', statement = 'Calcule : $?$' }: { theme?: string; statement?: string } = {}
+	{
+		statement = 'Calcule : $?$',
+		capitalPairs
+	}: { statement?: string; capitalPairs?: 'length' | 'product' } = {}
 ): QuestionTemplate {
 	return {
 		id: 'test-capital-pairs-affichage',
@@ -40,9 +43,8 @@ function template(
 				}
 			}
 		],
+		shared: capitalPairs ? { capitalPairs } : undefined,
 		grades: ['4'],
-		theme,
-		domain: 'Théorème de Pythagore',
 		level: 1
 	};
 }
@@ -64,8 +66,8 @@ describe('expectedAnswerLatex suit le sens de l’instance', () => {
 		expect(instance.blanks?.[0]?.expectedAnswerLatex).toBe('2 AB^2');
 	});
 
-	it('produit (Graphes et matrices) : l’écriture d’avant', () => {
-		const instance = instanceOf(template('2AB^2', { theme: 'Graphes et matrices' }));
+	it('produit (déclaré) : l’écriture d’avant', () => {
+		const instance = instanceOf(template('2AB^2', { capitalPairs: 'product' }));
 		expect(instance.capitalPairs).toBe('product');
 		expect(instance.blanks?.[0]?.expectedAnswerLatex).toBe(convertToLatex('2AB^2'));
 		expect(convertToLatex('2AB^2')).toContain('A B');
@@ -90,7 +92,7 @@ describe('formules de l’énoncé et de la correction', () => {
 
 	it('produit : l’énoncé garde l’écriture d’avant', () => {
 		const instance = instanceOf(
-			template('5', { statement: 'Si $AB=5$, combien vaut $?$', theme: 'Graphes et matrices' })
+			template('5', { statement: 'Si $AB=5$, combien vaut $?$', capitalPairs: 'product' })
 		);
 		expect(String(instance.statement)).toContain('$A B = 5$');
 	});

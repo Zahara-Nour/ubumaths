@@ -33,6 +33,9 @@ describe('aucune commande permise ne recopie un argument dans un attribut', () =
 	// Les formes d’arguments de `\htmlStyle`, `\htmlData`, `\href`, `\enclose`, `\bbox`
 	const shapes = (command: string) => [
 		`\\${command}{${TRAP}}{${TRAP}}`,
+		// MathLive 0.111.4 retire du style ce qu'il juge dangereux (`url(…)`) : une
+		// propriété banale garde le témoin `\htmlStyle` (le style recopié reste un risque)
+		`\\${command}{color:zzevil}{x}`,
 		`\\${command}[${TRAP}]{${TRAP}}{${TRAP}}`,
 		`\\${command}{k=zzevil}{x}`,
 		`\\${command}{https://zzevil.example}{x}`,

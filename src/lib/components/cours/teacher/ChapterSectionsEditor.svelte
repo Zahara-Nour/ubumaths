@@ -291,7 +291,7 @@
 		{ label: string; autre: ChapterSeries['form'] }
 	> = {
 		flash: { label: 'Flash-cards', autre: 'interactive' },
-		interactive: { label: 'Entraînement', autre: 'flash' }
+		interactive: { label: 'Contrôle blanc', autre: 'flash' }
 	};
 
 	/** Le menu « Ajouter », dans l'ordre où le professeur les cherche. */

@@ -1,10 +1,8 @@
 {
+	"id": "3d1856ac-c0d8-43ad-a7c7-a3c40c3201d3",
 	"title": "Pose et calcule une addition (jusqu'à 10 000)",
 	"description": "Addition posée en colonnes, quatre chiffres, deux ou trois termes, retenues en chaîne, somme < 10 000",
 	"grades": ["CE2"],
-	"theme": "Nombres",
-	"domain": "Addition",
-	"subdomain": "Calcul posé",
 	"level": 3,
 	"delay": 180,
 	"status": "draft",

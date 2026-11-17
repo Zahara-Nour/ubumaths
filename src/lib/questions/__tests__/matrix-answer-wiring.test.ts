@@ -29,8 +29,6 @@ function instanceWith(
 		statement: 'Calculer AB' as ResolvedMarkdown,
 		blanks,
 		grades: ['T_EXP'],
-		theme: 'Graphes et matrices',
-		domain: 'Matrices',
 		level: 1,
 		generatedAt: new Date().toISOString(),
 		...(options && { options })
@@ -69,8 +67,6 @@ function productTemplate(expected = M): QuestionTemplate {
 			}
 		],
 		grades: ['T_EXP'],
-		theme: 'Graphes et matrices',
-		domain: 'Matrices',
 		level: 1
 	};
 }

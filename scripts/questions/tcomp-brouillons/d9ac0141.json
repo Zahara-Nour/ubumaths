@@ -1,0 +1,71 @@
+{
+	"id": "d9ac0141-321b-47a0-abf4-8be4f710b0e1",
+	"title": "Loi uniforme sur [0 ; b] : fonction de répartition",
+	"description": "F(x) = P(X ⩽ x) = x/b pour la loi uniforme sur [0 ; b] (figure)",
+	"grades": ["T_COMP"],
+	"level": 4,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:c/b}}"
+				}
+			],
+			"statement": "La variable aléatoire $X$ suit la loi uniforme sur $\\left[0\\,;{{b}}\\right]$, de densité représentée ci-dessous. On note $F$ sa fonction de répartition : $F(x)=P(X\\leqslant x)$.\n\n```courbe\nx: -0.5 ; {{eval:b+1}}\ny: -0.05 ; {{eval:1/b+0.1;d}}\ngrille: 1 ; {{eval:1/b;d}}\nf(x) = 1/{{b}} sur [0 ; {{b}}]   bleu   nom=C_f\naire: f ; 0 ; {{c}}\ntaille: moyenne\ndescription: Densité constante sur [0 ; {{b}}], rectangle colorié entre 0 et {{c}}.\n```\n\nCalcule $F({{c}})$.\n\n$F({{c}})=?$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "4..10"
+				},
+				{
+					"name": "c",
+					"expression": "1..{{eval:b-1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$F({{c}})=P(X\\leqslant {{c}})$ est l'aire du rectangle colorié, de largeur ${{c}}$ et de hauteur $\\dfrac{1}{ {{b}} }$.",
+					"$F({{c}})=\\dfrac{ {{c}} }{ {{b}} }=\\textcolor{{{color:primary.0}}}{{{eval:c/b}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["\\frac{3}{8}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"b": "8",
+				"c": "3"
+			},
+			"description": "v0 : b = 8, c = 3 → 3/8",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{1}{8}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"b": "8",
+				"c": "3"
+			},
+			"description": "v0 : hauteur 1/8",
+			"variationIndex": 0
+		}
+	]
+}

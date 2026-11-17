@@ -17,6 +17,9 @@ vi.mock('$lib/server/env', () => ({
 	getEnv: () => ({ CRON_SECRET: 'test-secret-12345678901234567890' })
 }));
 vi.mock('$lib/server/serviceRoleClient', () => ({ createServiceRoleClient: vi.fn() }));
+vi.mock('$lib/server/rateLimiter', () => ({
+	checkEndpointRateLimit: vi.fn(async () => ({ allowed: true }))
+}));
 
 const { POST } = await import('../+server');
 

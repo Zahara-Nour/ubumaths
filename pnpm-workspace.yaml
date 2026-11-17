@@ -16,6 +16,13 @@ overrides:
   postcss: '>=8.5.18'
   nanoid@3: '>=3.3.18'
   cookie: '>=0.7.0'
+  # glob 13 et minimatch 10 (ReDoS, AbortSignal ignore) : @vercel/nft et
+  # typescript-eslint (epingle) restent sur la majeure precedente ; ils
+  # n'appellent que glob() et minimatch(), inchanges en glob 14 / minimatch 11.
+  glob@13: ^14.0.4
+  minimatch@10: ^11.0.5
+  # @tailwindcss/typography epingle 6.0.10 (complexite quadratique)
+  postcss-selector-parser@6: ^6.1.5
 
 # Âge minimal d'une version avant de l'installer : 3 jours (en minutes). Une
 # version piégée est presque toujours retirée en quelques heures (audit du

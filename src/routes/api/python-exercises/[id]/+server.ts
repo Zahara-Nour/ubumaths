@@ -7,6 +7,7 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { requireRole } from '$lib/server/middleware/auth';
 import {
 	updateExerciseSchema,
 	type UpdateExerciseInput
@@ -85,22 +86,8 @@ export const GET: RequestHandler = async ({ locals, params }) => {
  */
 export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	const exerciseId = validateUuidParam(params.id);
-	const { user, supabase } = locals;
-
-	if (!user) {
-		throw error(401, 'Connexion requise');
-	}
-
-	// Verify teacher role
-	const { data: profile, error: profileError } = await supabase
-		.from('profiles')
-		.select('role')
-		.eq('id', user.id)
-		.single();
-
-	if (profileError || !profile || profile.role !== 'teacher') {
-		throw error(403, 'Réservé aux professeurs');
-	}
+	const { user } = await requireRole(locals, 'teacher');
+	const { supabase } = locals;
 
 	// Check if exercise exists and user is the author
 	const { data: existingExercise, error: fetchError } = await supabase
@@ -186,22 +173,8 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
  */
 export const DELETE: RequestHandler = async ({ locals, params }) => {
 	const exerciseId = validateUuidParam(params.id);
-	const { user, supabase } = locals;
-
-	if (!user) {
-		throw error(401, 'Connexion requise');
-	}
-
-	// Verify teacher role
-	const { data: profile, error: profileError } = await supabase
-		.from('profiles')
-		.select('role')
-		.eq('id', user.id)
-		.single();
-
-	if (profileError || !profile || profile.role !== 'teacher') {
-		throw error(403, 'Réservé aux professeurs');
-	}
+	const { user } = await requireRole(locals, 'teacher');
+	const { supabase } = locals;
 
 	// Check if exercise exists and user is the author
 	const { data: existingExercise, error: fetchError } = await supabase

@@ -1,0 +1,2368 @@
+[
+	{
+		"id": "156dc0bd-0520-4855-b1ed-4f4c6da40c29",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CE2"],
+		"delay": 120,
+		"level": 12,
+		"variations": [
+			{
+				"blanks": [],
+				"statement": "Construis ${{m}}\\,{{c}}{{d}}{{u}}$ avec le matériel.\n\n```collection\nconstruire: {{n}}\n```",
+				"variables": [
+					{
+						"name": "m",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "1..9"
+					},
+					{
+						"name": "d",
+						"expression": "1..9"
+					},
+					{
+						"name": "u",
+						"expression": "1..9"
+					},
+					{
+						"name": "n",
+						"expression": "eval:1000*m+100*c+10*d+1*u"
+					}
+				],
+				"correction": {
+					"steps": [
+						"${{m}}\\,{{c}}{{d}}{{u}}$, c'est ${{m}}$ {{if:m<=1|millier|milliers}}, ${{c}}$ {{if:c<=1|centaine|centaines}}, ${{d}}$ {{if:d<=1|dizaine|dizaines}} et ${{u}}$ {{if:u<=1|unité|unités}}.",
+						"On pose ${{m}}$ {{if:m<=1|gros cube|gros cubes}}, ${{c}}$ {{if:c<=1|plaque|plaques}}, ${{d}}$ {{if:d<=1|barre|barres}} et ${{u}}$ {{if:u<=1|petit cube|petits cubes}}."
+					]
+				}
+			},
+			{
+				"blanks": [],
+				"statement": "Construis ${{m}}\\,0{{d}}{{u}}$ avec le matériel.\n\n```collection\nconstruire: {{n}}\n```",
+				"variables": [
+					{
+						"name": "m",
+						"expression": "1..9"
+					},
+					{
+						"name": "d",
+						"expression": "1..9"
+					},
+					{
+						"name": "u",
+						"expression": "1..9"
+					},
+					{
+						"name": "n",
+						"expression": "eval:1000*m+10*d+1*u"
+					}
+				],
+				"correction": {
+					"steps": [
+						"${{m}}\\,0{{d}}{{u}}$, c'est ${{m}}$ {{if:m<=1|millier|milliers}}, ${{d}}$ {{if:d<=1|dizaine|dizaines}} et ${{u}}$ {{if:u<=1|unité|unités}}, aucune centaine.",
+						"On pose ${{m}}$ {{if:m<=1|gros cube|gros cubes}}, ${{d}}$ {{if:d<=1|barre|barres}} et ${{u}}$ {{if:u<=1|petit cube|petits cubes}}."
+					]
+				}
+			},
+			{
+				"blanks": [],
+				"statement": "Construis ${{m}}\\,{{c}}00$ avec le matériel.\n\n```collection\nconstruire: {{n}}\n```",
+				"variables": [
+					{
+						"name": "m",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "1..9"
+					},
+					{
+						"name": "n",
+						"expression": "eval:1000*m+100*c"
+					}
+				],
+				"correction": {
+					"steps": [
+						"${{m}}\\,{{c}}00$, c'est ${{m}}$ {{if:m<=1|millier|milliers}} et ${{c}}$ {{if:c<=1|centaine|centaines}}, ni dizaine ni unité.",
+						"On pose ${{m}}$ {{if:m<=1|gros cube|gros cubes}} et ${{c}}$ {{if:c<=1|plaque|plaques}}."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Construire un nombre de 1 000 à 9 999 avec le matériel",
+		"description": "Gros cubes, plaques, barres et cubes ; zéros intérieurs (3 045, 6 900)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["4635"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "6",
+					"d": "3",
+					"m": "4",
+					"n": "4635",
+					"u": "5"
+				},
+				"description": "4 635 construit",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["4365"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "6",
+					"d": "3",
+					"m": "4",
+					"n": "4635",
+					"u": "5"
+				},
+				"description": "Erreur : 4 365 construit",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["9999"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "9",
+					"d": "9",
+					"m": "9",
+					"n": "9999",
+					"u": "9"
+				},
+				"description": "borne : 9 999 construit",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["3045"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"d": "4",
+					"m": "3",
+					"n": "3045",
+					"u": "5"
+				},
+				"description": "3 045 construit",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["345"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"d": "4",
+					"m": "3",
+					"n": "3045",
+					"u": "5"
+				},
+				"description": "Erreur : 345 construit (zéro oublié)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["6900"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "9",
+					"m": "6",
+					"n": "6900"
+				},
+				"description": "6 900 construit",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["69"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "9",
+					"m": "6",
+					"n": "6900"
+				},
+				"description": "Erreur : 69 construit",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": "04f3bf0d-71d1-4c76-b01d-174867712ff5"
+	},
+	{
+		"id": "1e01404d-5400-4a39-b465-7e86b5b7bd6e",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"spacesFromFourDigits": true
+			}
+		},
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 45,
+		"level": 7,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{r}}"
+					}
+				],
+				"statement": "{{if:k==1|Une fourmi|{{if:k==2|L'épaisseur d'un cahier|{{if:k==3|L'épaisseur d'une pièce de monnaie|{{if:k==4|L'épaisseur d'un téléphone|{{if:k==5|Une gomme|{{if:k==6|Un crayon neuf|{{if:k==7|La longueur d'une salle de classe|{{if:k==8|La hauteur de la tour Eiffel|{{if:k==9|Un trajet d'une heure en voiture|{{if:k==10|La France, du nord au sud|{{if:k==11|Une piscine olympique|Un lit}}}}}}}}}}}}}}}}}}}}}} mesure environ…\n\n```choix\nmelanger: non\n- ${{if:k==1|5|{{if:k==2|5|{{if:k==3|2|{{if:k==4|8|{{if:k==5|4|{{if:k==6|18|{{if:k==7|8|{{if:k==8|330|{{if:k==9|80|{{if:k==10|1\\,000|{{if:k==11|50|2}}}}}}}}}}}}}}}}}}}}}}~\\unit{{{if:k==1|mm|{{if:k==2|mm|{{if:k==3|mm|{{if:k==4|mm|{{if:k==5|mm|{{if:k==6|mm|{{if:k==7|dm|{{if:k==8|cm|{{if:k==9|cm|{{if:k==10|cm|{{if:k==11|cm|mm}}}}}}}}}}}}}}}}}}}}}}}$\n- ${{if:k==1|5|{{if:k==2|5|{{if:k==3|2|{{if:k==4|8|{{if:k==5|4|{{if:k==6|18|{{if:k==7|8|{{if:k==8|330|{{if:k==9|80|{{if:k==10|1\\,000|{{if:k==11|50|2}}}}}}}}}}}}}}}}}}}}}}~\\unit{{{if:k==1|cm|{{if:k==2|cm|{{if:k==3|cm|{{if:k==4|cm|{{if:k==5|cm|{{if:k==6|cm|{{if:k==7|m|{{if:k==8|m|{{if:k==9|m|{{if:k==10|m|{{if:k==11|dm|cm}}}}}}}}}}}}}}}}}}}}}}}$\n- ${{if:k==1|5|{{if:k==2|5|{{if:k==3|2|{{if:k==4|8|{{if:k==5|4|{{if:k==6|18|{{if:k==7|8|{{if:k==8|330|{{if:k==9|80|{{if:k==10|1\\,000|{{if:k==11|50|2}}}}}}}}}}}}}}}}}}}}}}~\\unit{{{if:k==1|dm|{{if:k==2|dm|{{if:k==3|dm|{{if:k==4|dm|{{if:k==5|m|{{if:k==6|m|{{if:k==7|km|{{if:k==8|km|{{if:k==9|km|{{if:k==10|km|{{if:k==11|m|m}}}}}}}}}}}}}}}}}}}}}}}$\n```",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "1..12"
+					},
+					{
+						"name": "r",
+						"expression": "eval:floor((k-1)/4)"
+					}
+				],
+				"correction": {
+					"steps": [
+						"On compare à des longueurs connues : $1~\\unit{mm}$, l'épaisseur d'une carte ; $1~\\unit{cm}$, la largeur d'un doigt ; $1~\\unit{m}$, un grand pas ; $1~\\unit{km}$, un quart d'heure de marche.",
+						"{{if:k==1|Une fourmi|{{if:k==2|L'épaisseur d'un cahier|{{if:k==3|L'épaisseur d'une pièce de monnaie|{{if:k==4|L'épaisseur d'un téléphone|{{if:k==5|Une gomme|{{if:k==6|Un crayon neuf|{{if:k==7|La longueur d'une salle de classe|{{if:k==8|La hauteur de la tour Eiffel|{{if:k==9|Un trajet d'une heure en voiture|{{if:k==10|La France, du nord au sud|{{if:k==11|Une piscine olympique|Un lit}}}}}}}}}}}}}}}}}}}}}} mesure environ **${{if:k==1|5|{{if:k==2|5|{{if:k==3|2|{{if:k==4|8|{{if:k==5|4|{{if:k==6|18|{{if:k==7|8|{{if:k==8|330|{{if:k==9|80|{{if:k==10|1\\,000|{{if:k==11|50|2}}}}}}}}}}}}}}}}}}}}}}~\\unit{{{if:k==1|mm|{{if:k==2|mm|{{if:k==3|mm|{{if:k==4|mm|{{if:k==5|cm|{{if:k==6|cm|{{if:k==7|m|{{if:k==8|m|{{if:k==9|km|{{if:k==10|km|{{if:k==11|m|m}}}}}}}}}}}}}}}}}}}}}}}$**."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Estimer une longueur",
+		"description": "Choisir l'ordre de grandeur : une fourmi de 5 mm, une gomme de 4 cm, une salle de classe de 8 m, un trajet d'une heure en voiture de 80 km",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "1",
+					"r": "0"
+				},
+				"description": "une fourmi : 5 mm",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "1",
+					"r": "0"
+				},
+				"description": "Erreur : une fourmi de 5 cm",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "7",
+					"r": "1"
+				},
+				"description": "une salle de classe : 8 m",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "7",
+					"r": "1"
+				},
+				"description": "Erreur : une salle de 8 dm",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "9",
+					"r": "2"
+				},
+				"description": "un trajet d'une heure : 80 km",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "9",
+					"r": "2"
+				},
+				"description": "Erreur : un trajet de 80 m",
+				"variationIndex": 0
+			}
+		],
+		"classification_node_id": "672d1502-aae4-42ce-bc76-25051ee26958"
+	},
+	{
+		"id": "25b269de-5019-4ecf-90bf-7feed86eb444",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"reducedFractions": "off",
+				"spacesFromFourDigits": true
+			}
+		},
+		"precision": null,
+		"grades": ["CM2"],
+		"delay": 30,
+		"level": 8,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:10^p}}"
+					}
+				],
+				"statement": "Complète.\n\n$$1~\\text{{{if:u==0|millième|{{if:u==1|centième|{{if:u==2|dixième|unité}}}}}}} = ?~\\text{{{if:w==0|millièmes|{{if:w==1|centièmes|{{if:w==2|dixièmes|unités}}}}}}}$$",
+				"variables": [
+					{
+						"name": "u",
+						"expression": "1..3"
+					},
+					{
+						"name": "w",
+						"expression": "0..2"
+					},
+					{
+						"name": "p",
+						"expression": "eval:u-w"
+					}
+				],
+				"conditions": ["p>=1"],
+				"correction": {
+					"steps": [
+						"**D'un rang au rang juste à sa droite, on multiplie par $10$** : $1$ unité $= 10$ dixièmes, $1$ dixième $= 10$ centièmes, $1$ centième $= 10$ millièmes.",
+						"Des {{if:u==0|millièmes|{{if:u==1|centièmes|{{if:u==2|dixièmes|unités}}}}}} aux {{if:w==0|millièmes|{{if:w==1|centièmes|{{if:w==2|dixièmes|unités}}}}}}, on descend de ${{p}}$ rang{{if:p>1|s|}} : $1~\\text{{{if:u==0|millième|{{if:u==1|centième|{{if:u==2|dixième|unité}}}}}}} = \\textcolor{{{color:primary.0}}}{{{eval:10^p}}}~\\text{{{if:w==0|millièmes|{{if:w==1|centièmes|{{if:w==2|dixièmes|unités}}}}}}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:k*10^p}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{k}}~\\text{{{if:u==0|millièmes|{{if:u==1|centièmes|{{if:u==2|dixièmes|unités}}}}}}} = ?~\\text{{{if:w==0|millièmes|{{if:w==1|centièmes|{{if:w==2|dixièmes|unités}}}}}}}$$",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "2..9"
+					},
+					{
+						"name": "u",
+						"expression": "1..3"
+					},
+					{
+						"name": "w",
+						"expression": "0..2"
+					},
+					{
+						"name": "p",
+						"expression": "eval:u-w"
+					}
+				],
+				"conditions": ["p>=1"],
+				"correction": {
+					"steps": [
+						"**D'un rang au rang juste à sa droite, on multiplie par $10$** : $1$ unité $= 10$ dixièmes, $1$ dixième $= 10$ centièmes, $1$ centième $= 10$ millièmes.",
+						"$1~\\text{{{if:u==0|millième|{{if:u==1|centième|{{if:u==2|dixième|unité}}}}}}} = {{eval:10^p}}~\\text{{{if:w==0|millièmes|{{if:w==1|centièmes|{{if:w==2|dixièmes|unités}}}}}}}$, donc ${{k}}~\\text{{{if:u==0|millièmes|{{if:u==1|centièmes|{{if:u==2|dixièmes|unités}}}}}}} = {{k}} \\times {{eval:10^p}} = \\textcolor{{{color:primary.0}}}{{{eval:k*10^p}}}~\\text{{{if:w==0|millièmes|{{if:w==1|centièmes|{{if:w==2|dixièmes|unités}}}}}}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{k}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{eval:k*10^p}}~\\text{{{if:w==0|millièmes|{{if:w==1|centièmes|{{if:w==2|dixièmes|unités}}}}}}} = ?~\\text{{{if:u==0|millièmes|{{if:u==1|centièmes|{{if:u==2|dixièmes|unités}}}}}}}$$",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "2..9"
+					},
+					{
+						"name": "u",
+						"expression": "1..3"
+					},
+					{
+						"name": "w",
+						"expression": "0..2"
+					},
+					{
+						"name": "p",
+						"expression": "eval:u-w"
+					}
+				],
+				"conditions": ["p>=1"],
+				"correction": {
+					"steps": [
+						"**D'un rang au rang juste à sa droite, on multiplie par $10$** : $1$ unité $= 10$ dixièmes, $1$ dixième $= 10$ centièmes, $1$ centième $= 10$ millièmes.",
+						"$1~\\text{{{if:u==0|millième|{{if:u==1|centième|{{if:u==2|dixième|unité}}}}}}} = {{eval:10^p}}~\\text{{{if:w==0|millièmes|{{if:w==1|centièmes|{{if:w==2|dixièmes|unités}}}}}}}$ : dans ${{eval:k*10^p}}$ {{if:w==0|millièmes|{{if:w==1|centièmes|{{if:w==2|dixièmes|unités}}}}}}, il y a ${{eval:k*10^p}} \\div {{eval:10^p}} = \\textcolor{{{color:primary.0}}}{{{k}}}$ {{if:u==0|millièmes|{{if:u==1|centièmes|{{if:u==2|dixièmes|unités}}}}}}."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{t}}"
+					},
+					{
+						"expectedAnswer": "{{r}}"
+					}
+				],
+				"statement": "Complète : ${{n}}$ {{if:w==0|millièmes|{{if:w==1|centièmes|{{if:w==2|dixièmes|unités}}}}}}, c'est…\n\n$$?~\\text{{{if:h==0|millièmes|{{if:h==1|centièmes|{{if:h==2|dixièmes|unités}}}}}}}\\text{ et } ?~\\text{{{if:w==0|millièmes|{{if:w==1|centièmes|{{if:w==2|dixièmes|unités}}}}}}}$$",
+				"variables": [
+					{
+						"name": "w",
+						"expression": "0..2"
+					},
+					{
+						"name": "h",
+						"expression": "eval:w+1"
+					},
+					{
+						"name": "t",
+						"expression": "1..9"
+					},
+					{
+						"name": "r",
+						"expression": "1..9"
+					},
+					{
+						"name": "n",
+						"expression": "eval:10*t+r"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**D'un rang au rang juste à sa droite, on multiplie par $10$** : $1$ unité $= 10$ dixièmes, $1$ dixième $= 10$ centièmes, $1$ centième $= 10$ millièmes.",
+						"$10~\\text{{{if:w==0|millièmes|{{if:w==1|centièmes|{{if:w==2|dixièmes|unités}}}}}}} = 1~\\text{{{if:h==0|millième|{{if:h==1|centième|{{if:h==2|dixième|unité}}}}}}}$ : dans ${{n}}$ {{if:w==0|millièmes|{{if:w==1|centièmes|{{if:w==2|dixièmes|unités}}}}}}, il y a ${{t}}$ fois $10$ {{if:w==0|millièmes|{{if:w==1|centièmes|{{if:w==2|dixièmes|unités}}}}}}, et il en reste ${{r}}$.",
+						"$${{n}}~\\text{{{if:w==0|millièmes|{{if:w==1|centièmes|{{if:w==2|dixièmes|unités}}}}}}} = \\textcolor{{{color:primary.0}}}{{{t}}}~\\text{{{if:h==0|millièmes|{{if:h==1|centièmes|{{if:h==2|dixièmes|unités}}}}}}}\\text{ et } \\textcolor{{{color:primary.0}}}{{{r}}}~\\text{{{if:w==0|millièmes|{{if:w==1|centièmes|{{if:w==2|dixièmes|unités}}}}}}}$$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Unités, dixièmes, centièmes, millièmes",
+		"description": "Relations entre unité, dixième, centième et millième : 1 unité = 1 000 millièmes ; 4 dixièmes = 40 centièmes ; 300 millièmes = 3 dixièmes ; 35 centièmes = 3 dixièmes et 5 centièmes",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["1\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"p": "3",
+					"u": "3",
+					"w": "0"
+				},
+				"description": "1 unité = 1000 millièmes",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["100"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"p": "3",
+					"u": "3",
+					"w": "0"
+				},
+				"description": "Erreur : 100 (un rang de moins)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["40"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "4",
+					"p": "1",
+					"u": "2",
+					"w": "1"
+				},
+				"description": "4 dixièmes = 40 centièmes",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["400"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "4",
+					"p": "1",
+					"u": "2",
+					"w": "1"
+				},
+				"description": "Erreur : 400",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["3"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "3",
+					"p": "2",
+					"u": "2",
+					"w": "0"
+				},
+				"description": "300 millièmes = 3 dixièmes",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["30"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "3",
+					"p": "2",
+					"u": "2",
+					"w": "0"
+				},
+				"description": "Erreur : 30",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["3", "5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"h": "2",
+					"n": "35",
+					"r": "5",
+					"t": "3",
+					"w": "1"
+				},
+				"description": "35 centièmes = 3 dixièmes et 5 centièmes",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["5", "3"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"h": "2",
+					"n": "35",
+					"r": "5",
+					"t": "3",
+					"w": "1"
+				},
+				"description": "Erreur : 5 et 3 (échangés)",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["35", "0"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"h": "2",
+					"n": "35",
+					"r": "5",
+					"t": "3",
+					"w": "1"
+				},
+				"description": "Erreur : 35 et 0",
+				"variationIndex": 3
+			}
+		],
+		"classification_node_id": "717c9f23-fbde-4444-804c-6fb51394ae9a"
+	},
+	{
+		"id": "4df6c483-fb74-4f2c-a4be-d24a9d95922d",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"spacesFromFourDigits": true
+			}
+		},
+		"precision": null,
+		"grades": ["CE2"],
+		"delay": 90,
+		"level": 14,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:100*c+10*d+1*u}}"
+					}
+				],
+				"statement": "Combien de petits cubes y a-t-il en tout ?\n\n```collection\ncentaines: {{c}}\ndizaines: {{d}}\nunités: {{u}}\n```\n\nIl y a $?$ cubes en tout.",
+				"variables": [
+					{
+						"name": "c",
+						"expression": "1..8"
+					},
+					{
+						"name": "d",
+						"expression": "11..19"
+					},
+					{
+						"name": "u",
+						"expression": "1..9"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Une plaque vaut $100$ cubes, une barre $10$ cubes et un gros cube $1\\,000$ cubes, même quand il y en a plus de $10$.",
+						"${{c}}$ {{if:c<=1|plaque|plaques}} : ${{c}}$ {{if:c<=1|centaine|centaines}}, c'est ${{eval:100*c}}$ cubes.",
+						"${{d}}$ {{if:d<=1|barre|barres}} : ${{d}}$ {{if:d<=1|dizaine|dizaines}}, c'est ${{eval:10*d}}$ cubes.",
+						"${{u}}$ {{if:u<=1|petit cube|petits cubes}} : ${{u}}$ {{if:u<=1|unité|unités}}.",
+						"$${{eval:100*c}}+{{eval:10*d}}+{{u}}={{solution}}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:100*c+10*d+1*u}}"
+					}
+				],
+				"statement": "Combien de petits cubes y a-t-il en tout ?\n\n```collection\ncentaines: {{c}}\ndizaines: {{d}}\nunités: {{u}}\n```\n\nIl y a $?$ cubes en tout.",
+				"variables": [
+					{
+						"name": "c",
+						"expression": "1..9"
+					},
+					{
+						"name": "d",
+						"expression": "1..9"
+					},
+					{
+						"name": "u",
+						"expression": "11..19"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Une plaque vaut $100$ cubes, une barre $10$ cubes et un gros cube $1\\,000$ cubes, même quand il y en a plus de $10$.",
+						"${{c}}$ {{if:c<=1|plaque|plaques}} : ${{c}}$ {{if:c<=1|centaine|centaines}}, c'est ${{eval:100*c}}$ cubes.",
+						"${{d}}$ {{if:d<=1|barre|barres}} : ${{d}}$ {{if:d<=1|dizaine|dizaines}}, c'est ${{eval:10*d}}$ cubes.",
+						"${{u}}$ {{if:u<=1|petit cube|petits cubes}} : ${{u}}$ {{if:u<=1|unité|unités}}.",
+						"$${{eval:100*c}}+{{eval:10*d}}+{{u}}={{solution}}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:1000*m+100*c+10*d+1*u}}"
+					}
+				],
+				"statement": "Combien de petits cubes y a-t-il en tout ?\n\n```collection\nmilliers: {{m}}\ncentaines: {{c}}\ndizaines: {{d}}\nunités: {{u}}\n```\n\nIl y a $?$ cubes en tout.",
+				"variables": [
+					{
+						"name": "m",
+						"expression": "1..3"
+					},
+					{
+						"name": "c",
+						"expression": "11..15"
+					},
+					{
+						"name": "d",
+						"expression": "1..9"
+					},
+					{
+						"name": "u",
+						"expression": "11..19"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Une plaque vaut $100$ cubes, une barre $10$ cubes et un gros cube $1\\,000$ cubes, même quand il y en a plus de $10$.",
+						"${{m}}$ {{if:m<=1|gros cube|gros cubes}} : ${{m}}$ {{if:m<=1|millier|milliers}}, c'est ${{eval:1000*m}}$ cubes.",
+						"${{c}}$ {{if:c<=1|plaque|plaques}} : ${{c}}$ {{if:c<=1|centaine|centaines}}, c'est ${{eval:100*c}}$ cubes.",
+						"${{d}}$ {{if:d<=1|barre|barres}} : ${{d}}$ {{if:d<=1|dizaine|dizaines}}, c'est ${{eval:10*d}}$ cubes.",
+						"${{u}}$ {{if:u<=1|petit cube|petits cubes}} : ${{u}}$ {{if:u<=1|unité|unités}}.",
+						"$${{eval:1000*m}}+{{eval:100*c}}+{{eval:10*d}}+{{u}}={{solution}}$$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Dénombrer avec plus de dix objets d'un rang",
+		"description": "Plus de 10 barres, cubes ou plaques (comme 17 u, 8 d, 32 c, 2 milliers) ; au plus 15 plaques",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["446"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "3",
+					"d": "14",
+					"u": "6"
+				},
+				"description": "3 plaques, 14 barres, 6 cubes : 446",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["3\\,146"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "3",
+					"d": "14",
+					"u": "6"
+				},
+				"description": "Erreur : rangs recopiés (3146)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["323"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "3",
+					"d": "14",
+					"u": "6"
+				},
+				"description": "Erreur : 14 barres = 14 (323)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["999"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "8",
+					"d": "19",
+					"u": "9"
+				},
+				"description": "borne : 8 plaques, 19 barres, 9 cubes : 999",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["537"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "5",
+					"d": "2",
+					"u": "17"
+				},
+				"description": "5 plaques, 2 barres, 17 cubes : 537",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["5\\,217"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "5",
+					"d": "2",
+					"u": "17"
+				},
+				"description": "Erreur : rangs recopiés (5217)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["3\\,897"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "18",
+					"d": "8",
+					"m": "2",
+					"u": "17"
+				},
+				"description": "2 gros cubes, 18 plaques, 8 barres, 17 cubes : 3 897",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["218\\,817"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "18",
+					"d": "8",
+					"m": "2",
+					"u": "17"
+				},
+				"description": "Erreur : rangs recopiés (218817)",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["4\\,609"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "15",
+					"d": "9",
+					"m": "3",
+					"u": "19"
+				},
+				"description": "borne : 3 gros cubes, 15 plaques, 9 barres, 19 cubes : 4 609",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": "04f3bf0d-71d1-4c76-b01d-174867712ff5"
+	},
+	{
+		"id": "52c4d773-d86c-45a3-88e4-ddc99cc4beab",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CP"],
+		"delay": 20,
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"requiredForm": {
+							"pattern": "a:multipleOf(10)+b:inN* & lt(10)"
+						},
+						"expectedAnswer": "{{eval:a*10}}+{{b}}"
+					}
+				],
+				"statement": "Décompose ce nombre en dizaines et unités comme dans cet exemple : $74=70+4$.\n\n$${{expression}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "expression",
+						"expression": "eval:a*10+b"
+					}
+				],
+				"conditions": ["a*10+b != 74"],
+				"correction": {
+					"steps": [
+						"On range les chiffres de ${{expression}}$ dans le tableau de numération : le chiffre des dizaines, puis celui des unités. $$\\begin{array}{|c|c|} \\text{dizaines} & \\text{unités} \\\\ \\textcolor{{{color:primary.0}}}{{{a}}} & \\textcolor{{{color:primary.0}}}{{{b}}} \\end{array}$$",
+						"$\\textcolor{{{color:primary.0}}}{{{a}}}$ {{if:a==1|dizaine}}{{if:a!=1|dizaines}}, c'est ${{eval:a*10}}$ ; $\\textcolor{{{color:primary.0}}}{{{b}}}$ {{if:b==1|unité}}{{if:b!=1|unités}}, c'est ${{b}}$.",
+						"$${{expression}} = {{solution}}$$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Décomposer l'écriture décimale d'un nombre",
+		"description": "En dizaines et unités",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["70+4"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "4"
+				},
+				"description": "74 = 70 + 4",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["4+70"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "4"
+				},
+				"description": "ordre inversé accepté",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7+4"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "4"
+				},
+				"description": "chiffres additionnés au lieu de dizaines",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["74"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "7",
+					"b": "4"
+				},
+				"description": "nombre recopié non décomposé",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["10+9"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1",
+					"b": "9"
+				},
+				"description": "borne : 19 = 10 + 9",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["40+13"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "5",
+					"b": "3"
+				},
+				"description": "74 = 60 + 14 : décomposition refusée (unités > 9)",
+				"variationIndex": 0
+			}
+		],
+		"classification_node_id": "6ce95f7a-c7b2-410e-814e-e46c04ac3b67"
+	},
+	{
+		"id": "54ea05d7-c160-4803-a440-d583a6c4fe10",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CP"],
+		"delay": 30,
+		"level": 14,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{n}}"
+					}
+				],
+				"statement": "Écris en chiffres le nombre « **{{if:n==1|un|{{if:n==2|deux|{{if:n==3|trois|{{if:n==4|quatre|{{if:n==5|cinq|{{if:n==6|six|{{if:n==7|sept|{{if:n==8|huit|{{if:n==9|neuf|{{if:n==10|dix|{{if:n==11|onze|{{if:n==12|douze|{{if:n==13|treize|{{if:n==14|quatorze|{{if:n==15|quinze|{{if:n==16|seize|{{if:n==17|dix-sept|{{if:n==18|dix-huit|{{if:n==19|dix-neuf|{{if:n==20|vingt|{{if:n==21|vingt-et-un|{{if:n==22|vingt-deux|{{if:n==23|vingt-trois|{{if:n==24|vingt-quatre|{{if:n==25|vingt-cinq|{{if:n==26|vingt-six|{{if:n==27|vingt-sept|{{if:n==28|vingt-huit|{{if:n==29|vingt-neuf|{{if:n==30|trente|{{if:n==31|trente-et-un|{{if:n==32|trente-deux|{{if:n==33|trente-trois|{{if:n==34|trente-quatre|{{if:n==35|trente-cinq|{{if:n==36|trente-six|{{if:n==37|trente-sept|{{if:n==38|trente-huit|{{if:n==39|trente-neuf|{{if:n==40|quarante|{{if:n==41|quarante-et-un|{{if:n==42|quarante-deux|{{if:n==43|quarante-trois|{{if:n==44|quarante-quatre|{{if:n==45|quarante-cinq|{{if:n==46|quarante-six|{{if:n==47|quarante-sept|{{if:n==48|quarante-huit|{{if:n==49|quarante-neuf|cinquante}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}** ».\n\nC'est $?$.",
+				"variables": [
+					{
+						"name": "n",
+						"expression": "1..50"
+					}
+				],
+				"conditions": [],
+				"correction": {
+					"steps": [
+						"{{if:n==1|« un », c'est $1$.|{{if:n==2|« deux », c'est $2$.|{{if:n==3|« trois », c'est $3$.|{{if:n==4|« quatre », c'est $4$.|{{if:n==5|« cinq », c'est $5$.|{{if:n==6|« six », c'est $6$.|{{if:n==7|« sept », c'est $7$.|{{if:n==8|« huit », c'est $8$.|{{if:n==9|« neuf », c'est $9$.|{{if:n==10|« dix », c'est $10$.|{{if:n==11|$11$ a un nom à lui : **onze**. En chiffres : $11$.|{{if:n==12|$12$ a un nom à lui : **douze**. En chiffres : $12$.|{{if:n==13|$13$ a un nom à lui : **treize**. En chiffres : $13$.|{{if:n==14|$14$ a un nom à lui : **quatorze**. En chiffres : $14$.|{{if:n==15|$15$ a un nom à lui : **quinze**. En chiffres : $15$.|{{if:n==16|$16$ a un nom à lui : **seize**. En chiffres : $16$.|{{if:n==17|$17=10+7$ : on écrit « dix », puis « sept », reliés par un trait d'union : **dix-sept**. En chiffres : $17$.|{{if:n==18|$18=10+8$ : on écrit « dix », puis « huit », reliés par un trait d'union : **dix-huit**. En chiffres : $18$.|{{if:n==19|$19=10+9$ : on écrit « dix », puis « neuf », reliés par un trait d'union : **dix-neuf**. En chiffres : $19$.|{{if:n==20|$20$, ce sont $2$ dizaines : **vingt**. En chiffres : $20$.|{{if:n==21|$21=20+1$ : on écrit « vingt », puis « et » puis « un », reliés par des traits d'union : **vingt-et-un**. En chiffres : $21$.|{{if:n==22|$22=20+2$ : on écrit « vingt », puis « deux », reliés par un trait d'union : **vingt-deux**. En chiffres : $22$.|{{if:n==23|$23=20+3$ : on écrit « vingt », puis « trois », reliés par un trait d'union : **vingt-trois**. En chiffres : $23$.|{{if:n==24|$24=20+4$ : on écrit « vingt », puis « quatre », reliés par un trait d'union : **vingt-quatre**. En chiffres : $24$.|{{if:n==25|$25=20+5$ : on écrit « vingt », puis « cinq », reliés par un trait d'union : **vingt-cinq**. En chiffres : $25$.|{{if:n==26|$26=20+6$ : on écrit « vingt », puis « six », reliés par un trait d'union : **vingt-six**. En chiffres : $26$.|{{if:n==27|$27=20+7$ : on écrit « vingt », puis « sept », reliés par un trait d'union : **vingt-sept**. En chiffres : $27$.|{{if:n==28|$28=20+8$ : on écrit « vingt », puis « huit », reliés par un trait d'union : **vingt-huit**. En chiffres : $28$.|{{if:n==29|$29=20+9$ : on écrit « vingt », puis « neuf », reliés par un trait d'union : **vingt-neuf**. En chiffres : $29$.|{{if:n==30|$30$, ce sont $3$ dizaines : **trente**. En chiffres : $30$.|{{if:n==31|$31=30+1$ : on écrit « trente », puis « et » puis « un », reliés par des traits d'union : **trente-et-un**. En chiffres : $31$.|{{if:n==32|$32=30+2$ : on écrit « trente », puis « deux », reliés par un trait d'union : **trente-deux**. En chiffres : $32$.|{{if:n==33|$33=30+3$ : on écrit « trente », puis « trois », reliés par un trait d'union : **trente-trois**. En chiffres : $33$.|{{if:n==34|$34=30+4$ : on écrit « trente », puis « quatre », reliés par un trait d'union : **trente-quatre**. En chiffres : $34$.|{{if:n==35|$35=30+5$ : on écrit « trente », puis « cinq », reliés par un trait d'union : **trente-cinq**. En chiffres : $35$.|{{if:n==36|$36=30+6$ : on écrit « trente », puis « six », reliés par un trait d'union : **trente-six**. En chiffres : $36$.|{{if:n==37|$37=30+7$ : on écrit « trente », puis « sept », reliés par un trait d'union : **trente-sept**. En chiffres : $37$.|{{if:n==38|$38=30+8$ : on écrit « trente », puis « huit », reliés par un trait d'union : **trente-huit**. En chiffres : $38$.|{{if:n==39|$39=30+9$ : on écrit « trente », puis « neuf », reliés par un trait d'union : **trente-neuf**. En chiffres : $39$.|{{if:n==40|$40$, ce sont $4$ dizaines : **quarante**. En chiffres : $40$.|{{if:n==41|$41=40+1$ : on écrit « quarante », puis « et » puis « un », reliés par des traits d'union : **quarante-et-un**. En chiffres : $41$.|{{if:n==42|$42=40+2$ : on écrit « quarante », puis « deux », reliés par un trait d'union : **quarante-deux**. En chiffres : $42$.|{{if:n==43|$43=40+3$ : on écrit « quarante », puis « trois », reliés par un trait d'union : **quarante-trois**. En chiffres : $43$.|{{if:n==44|$44=40+4$ : on écrit « quarante », puis « quatre », reliés par un trait d'union : **quarante-quatre**. En chiffres : $44$.|{{if:n==45|$45=40+5$ : on écrit « quarante », puis « cinq », reliés par un trait d'union : **quarante-cinq**. En chiffres : $45$.|{{if:n==46|$46=40+6$ : on écrit « quarante », puis « six », reliés par un trait d'union : **quarante-six**. En chiffres : $46$.|{{if:n==47|$47=40+7$ : on écrit « quarante », puis « sept », reliés par un trait d'union : **quarante-sept**. En chiffres : $47$.|{{if:n==48|$48=40+8$ : on écrit « quarante », puis « huit », reliés par un trait d'union : **quarante-huit**. En chiffres : $48$.|{{if:n==49|$49=40+9$ : on écrit « quarante », puis « neuf », reliés par un trait d'union : **quarante-neuf**. En chiffres : $49$.|$50$, ce sont $5$ dizaines : **cinquante**. En chiffres : $50$.}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Lire un nombre écrit en lettres (jusqu'à cinquante)",
+		"description": "Écrire en chiffres un nombre donné en lettres : trente-sept → 37",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["37"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"n": "37"
+				},
+				"description": "trente-sept : 37",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["73"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"n": "37"
+				},
+				"description": "Erreur : trente-sept, 73",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["307"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"n": "37"
+				},
+				"description": "Erreur : trente-sept, 307",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["21"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"n": "21"
+				},
+				"description": "vingt-et-un : 21",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"n": "1"
+				},
+				"description": "borne : un, 1",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["50"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"n": "50"
+				},
+				"description": "borne : cinquante, 50",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"n": "50"
+				},
+				"description": "Erreur : cinquante, 5",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["037"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["zeros"]
+				},
+				"variables": {
+					"n": "37"
+				},
+				"description": "Zéro inutile",
+				"variationIndex": 0
+			}
+		],
+		"classification_node_id": "6ce95f7a-c7b2-410e-814e-e46c04ac3b67"
+	},
+	{
+		"id": "7df1aadd-82a0-4df0-af34-2873083b7e4a",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"spaces": "off"
+			}
+		},
+		"precision": null,
+		"grades": ["CM2"],
+		"delay": 45,
+		"level": 3,
+		"variations": [
+			{
+				"statement": "Place le nombre ${{x}}$ sur la demi-droite graduée.\n\n```line\nstart: {{a}}\nend: {{fin}}\nstep: {{s}}\nmajor: 5\nlabels: {{a}}, {{l}}\nplacer: {{x}}\n```",
+				"variables": [
+					{
+						"name": "s",
+						"expression": "1|10|100"
+					},
+					{
+						"name": "b",
+						"expression": "1..99"
+					},
+					{
+						"name": "a",
+						"expression": "eval:10*s*b"
+					},
+					{
+						"name": "l",
+						"expression": "eval:a+5*s"
+					},
+					{
+						"name": "fin",
+						"expression": "eval:a+10*s"
+					},
+					{
+						"name": "k",
+						"expression": "1..9"
+					},
+					{
+						"name": "x",
+						"expression": "eval:a+k*s"
+					}
+				],
+				"conditions": ["k!=5"],
+				"correction": {
+					"steps": [
+						"**Le pas.** De ${{a}}$ à ${{l}}$, il y a $5$ intervalles : un intervalle vaut $({{l}} - {{a}}) \\div 5 = {{s}}$.",
+						"${{x}} = {{a}} + {{k}} \\times {{s}}$ : on part de ${{a}}$ et on avance de ${{k}}$ intervalle{{if:k>1|s|}}."
+					]
+				}
+			},
+			{
+				"statement": "Place le nombre ${{x}}$ sur la demi-droite graduée.\n\n```line\nstart: {{a}}\nend: {{fin}}\nstep: {{s}}\nmajor: 5\nlabels: {{a}}, {{l}}\nplacer: {{x}}\n```",
+				"variables": [
+					{
+						"name": "s",
+						"expression": "1000|10000|100000"
+					},
+					{
+						"name": "b",
+						"expression": "1..99"
+					},
+					{
+						"name": "a",
+						"expression": "eval:10*s*b"
+					},
+					{
+						"name": "l",
+						"expression": "eval:a+5*s"
+					},
+					{
+						"name": "fin",
+						"expression": "eval:a+10*s"
+					},
+					{
+						"name": "k",
+						"expression": "1..9"
+					},
+					{
+						"name": "x",
+						"expression": "eval:a+k*s"
+					}
+				],
+				"conditions": ["k!=5"],
+				"correction": {
+					"steps": [
+						"**Le pas.** De ${{a}}$ à ${{l}}$, il y a $5$ intervalles : un intervalle vaut $({{l}} - {{a}}) \\div 5 = {{s}}$.",
+						"${{x}} = {{a}} + {{k}} \\times {{s}}$ : on part de ${{a}}$ et on avance de ${{k}}$ intervalle{{if:k>1|s|}}."
+					]
+				}
+			},
+			{
+				"statement": "Place les points $A({{x}})$ et $B({{y}})$ sur la demi-droite graduée.\n\n```line\nstart: {{a}}\nend: {{fin}}\nstep: {{s}}\nmajor: 5\nlabels: {{a}}, {{l}}\nplacer: A={{x}} ; B={{y}}\n```",
+				"variables": [
+					{
+						"name": "s",
+						"expression": "10|100|1000|10000"
+					},
+					{
+						"name": "b",
+						"expression": "1..99"
+					},
+					{
+						"name": "a",
+						"expression": "eval:10*s*b"
+					},
+					{
+						"name": "l",
+						"expression": "eval:a+5*s"
+					},
+					{
+						"name": "fin",
+						"expression": "eval:a+10*s"
+					},
+					{
+						"name": "k",
+						"expression": "1..9"
+					},
+					{
+						"name": "m",
+						"expression": "1..9"
+					},
+					{
+						"name": "x",
+						"expression": "eval:a+k*s"
+					},
+					{
+						"name": "y",
+						"expression": "eval:a+m*s"
+					}
+				],
+				"conditions": ["k!=5", "m!=5", "k!=m"],
+				"correction": {
+					"steps": [
+						"**Le pas.** De ${{a}}$ à ${{l}}$, il y a $5$ intervalles : un intervalle vaut $({{l}} - {{a}}) \\div 5 = {{s}}$.",
+						"$A$ : ${{x}} = {{a}} + {{k}} \\times {{s}}$ ; $B$ : ${{y}} = {{a}} + {{m}} \\times {{s}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Placer un nombre entier sur une demi-droite graduée",
+		"description": "Placer un nombre entier sur une demi-droite graduée de 1 en 1 jusqu'à 100 000 en 100 000 (deux graduations étiquetées, le pas est à trouver), puis deux points sur la même droite",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["3700"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3400",
+					"b": "34",
+					"k": "3",
+					"l": "3900",
+					"s": "100",
+					"x": "3700",
+					"fin": "4400"
+				},
+				"description": "3 700 placé",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["3600"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3400",
+					"b": "34",
+					"k": "3",
+					"l": "3900",
+					"s": "100",
+					"x": "3700",
+					"fin": "4400"
+				},
+				"description": "Erreur : 3 600 (graduation voisine)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["3470000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3400000",
+					"b": "34",
+					"k": "7",
+					"l": "3450000",
+					"s": "10000",
+					"x": "3470000",
+					"fin": "3500000"
+				},
+				"description": "3 470 000 placé",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["3420000"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3400000",
+					"b": "34",
+					"k": "7",
+					"l": "3450000",
+					"s": "10000",
+					"x": "3470000",
+					"fin": "3500000"
+				},
+				"description": "Erreur : 3 420 000 (2 intervalles au lieu de 7)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["1220", "1280"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1200",
+					"b": "12",
+					"k": "2",
+					"l": "1250",
+					"m": "8",
+					"s": "10",
+					"x": "1220",
+					"y": "1280",
+					"fin": "1300"
+				},
+				"description": "A 1 220, B 1 280 placés",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["1280", "1220"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "1200",
+					"b": "12",
+					"k": "2",
+					"l": "1250",
+					"m": "8",
+					"s": "10",
+					"x": "1220",
+					"y": "1280",
+					"fin": "1300"
+				},
+				"description": "Erreur : A et B échangés",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": "bcd6323e-77da-4716-9dfc-62f7e98817d8"
+	},
+	{
+		"id": "86f0ca3b-c149-49ac-a392-672a472f26df",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"spacesFromFourDigits": true
+			}
+		},
+		"precision": null,
+		"grades": ["CE2"],
+		"delay": 60,
+		"level": 13,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:1000*m+100*c+10*d+1*u}}"
+					}
+				],
+				"statement": "Combien de petits cubes y a-t-il en tout ?\n\n```collection\nmilliers: {{m}}\ncentaines: {{c}}\ndizaines: {{d}}\nunités: {{u}}\n```\n\nIl y a $?$ cubes en tout.",
+				"variables": [
+					{
+						"name": "m",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "1..9"
+					},
+					{
+						"name": "d",
+						"expression": "1..9"
+					},
+					{
+						"name": "u",
+						"expression": "1..9"
+					}
+				],
+				"correction": {
+					"steps": [
+						"${{m}}$ {{if:m<=1|gros cube|gros cubes}} : ${{m}}$ {{if:m<=1|millier|milliers}}, c'est ${{eval:1000*m}}$ cubes.",
+						"${{c}}$ {{if:c<=1|plaque|plaques}} : ${{c}}$ {{if:c<=1|centaine|centaines}}, c'est ${{eval:100*c}}$ cubes.",
+						"${{d}}$ {{if:d<=1|barre|barres}} : ${{d}}$ {{if:d<=1|dizaine|dizaines}}, c'est ${{eval:10*d}}$ cubes.",
+						"${{u}}$ {{if:u<=1|petit cube|petits cubes}} : ${{u}}$ {{if:u<=1|unité|unités}}.",
+						"$${{eval:1000*m}}+{{eval:100*c}}+{{eval:10*d}}+{{u}}={{solution}}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:1000*m+10*d+u}}"
+					}
+				],
+				"statement": "Combien de petits cubes y a-t-il en tout ?\n\n```collection\nmilliers: {{m}}\ndizaines: {{d}}\nunités: {{u}}\n```\n\nIl y a $?$ cubes en tout.",
+				"variables": [
+					{
+						"name": "m",
+						"expression": "1..9"
+					},
+					{
+						"name": "d",
+						"expression": "1..9"
+					},
+					{
+						"name": "u",
+						"expression": "1..9"
+					}
+				],
+				"correction": {
+					"steps": [
+						"${{m}}$ {{if:m<=1|gros cube|gros cubes}} : ${{m}}$ {{if:m<=1|millier|milliers}}, c'est ${{eval:1000*m}}$ cubes.",
+						"Aucune plaque : $0$ centaine.",
+						"${{d}}$ {{if:d<=1|barre|barres}} : ${{d}}$ {{if:d<=1|dizaine|dizaines}}, c'est ${{eval:10*d}}$ cubes.",
+						"${{u}}$ {{if:u<=1|petit cube|petits cubes}} : ${{u}}$ {{if:u<=1|unité|unités}}.",
+						"$${{eval:1000*m}}+0+{{eval:10*d}}+{{u}}={{solution}}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:1000*m+100*c}}"
+					}
+				],
+				"statement": "Combien de petits cubes y a-t-il en tout ?\n\n```collection\nmilliers: {{m}}\ncentaines: {{c}}\n```\n\nIl y a $?$ cubes en tout.",
+				"variables": [
+					{
+						"name": "m",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "1..9"
+					}
+				],
+				"correction": {
+					"steps": [
+						"${{m}}$ {{if:m<=1|gros cube|gros cubes}} : ${{m}}$ {{if:m<=1|millier|milliers}}, c'est ${{eval:1000*m}}$ cubes.",
+						"${{c}}$ {{if:c<=1|plaque|plaques}} : ${{c}}$ {{if:c<=1|centaine|centaines}}, c'est ${{eval:100*c}}$ cubes.",
+						"Aucune barre, aucun petit cube.",
+						"$${{eval:1000*m}}+{{eval:100*c}}={{solution}}$$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Dénombrer avec des gros cubes de mille",
+		"description": "Gros cubes, plaques, barres, cubes jusqu'à 9 999 ; centaines vides (2 053), ni dizaine ni unité (4 700)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["4\\,635"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "6",
+					"d": "3",
+					"m": "4",
+					"u": "5"
+				},
+				"description": "4 gros cubes, 6 plaques, 3 barres, 5 cubes : 4 635",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["4\\,365"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "6",
+					"d": "3",
+					"m": "4",
+					"u": "5"
+				},
+				"description": "Erreur : rangs inversés (4 365)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["18"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "6",
+					"d": "3",
+					"m": "4",
+					"u": "5"
+				},
+				"description": "Erreur : objets comptés un à un (18)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["4635"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				},
+				"variables": {
+					"c": "6",
+					"d": "3",
+					"m": "4",
+					"u": "5"
+				},
+				"description": "Forme : espace oubliée (4635)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["9\\,999"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "9",
+					"d": "9",
+					"m": "9",
+					"u": "9"
+				},
+				"description": "borne : 9 999",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2\\,053"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"d": "5",
+					"m": "2",
+					"u": "3"
+				},
+				"description": "2 gros cubes, 5 barres, 3 cubes : 2 053",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["253"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"d": "5",
+					"m": "2",
+					"u": "3"
+				},
+				"description": "Erreur : zéro oublié (253)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["4\\,700"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "7",
+					"m": "4"
+				},
+				"description": "4 gros cubes, 7 plaques : 4 700",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["47"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "7",
+					"m": "4"
+				},
+				"description": "Erreur : zéros oubliés (47)",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": "04f3bf0d-71d1-4c76-b01d-174867712ff5"
+	},
+	{
+		"id": "92c8e499-865c-4e41-82d0-0679ae311afd",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CP"],
+		"delay": 30,
+		"level": 13,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Comment écrit-on le nombre ${{n}}$ en lettres ?\n\n```choix\n- {{if:n==11|onze|{{if:n==12|douze|{{if:n==13|treize|{{if:n==14|quatorze|{{if:n==15|quinze|{{if:n==16|seize|{{if:n==17|dix-sept|{{if:n==18|dix-huit|{{if:n==19|dix-neuf|{{if:n==20|vingt|{{if:n==21|vingt-et-un|{{if:n==22|vingt-deux|{{if:n==23|vingt-trois|{{if:n==24|vingt-quatre|{{if:n==25|vingt-cinq|{{if:n==26|vingt-six|{{if:n==27|vingt-sept|{{if:n==28|vingt-huit|{{if:n==29|vingt-neuf|{{if:n==30|trente|{{if:n==31|trente-et-un|{{if:n==32|trente-deux|{{if:n==33|trente-trois|{{if:n==34|trente-quatre|{{if:n==35|trente-cinq|{{if:n==36|trente-six|{{if:n==37|trente-sept|{{if:n==38|trente-huit|{{if:n==39|trente-neuf|{{if:n==40|quarante|{{if:n==41|quarante-et-un|{{if:n==42|quarante-deux|{{if:n==43|quarante-trois|{{if:n==44|quarante-quatre|{{if:n==45|quarante-cinq|{{if:n==46|quarante-six|{{if:n==47|quarante-sept|{{if:n==48|quarante-huit|{{if:n==49|quarante-neuf|cinquante}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}\n- {{if:n==11|onse|{{if:n==12|douse|{{if:n==13|treise|{{if:n==14|quatorse|{{if:n==15|kinze|{{if:n==16|seise|{{if:n==17|dix-set|{{if:n==18|dix-uit|{{if:n==19|dix-neufe|{{if:n==20|vint|{{if:n==21|vint-et-un|{{if:n==22|vingt-deu|{{if:n==23|vingt-troi|{{if:n==24|vingt-quatres|{{if:n==25|vingt-cinque|{{if:n==26|vingt-sis|{{if:n==27|vingt-set|{{if:n==28|vingt-uit|{{if:n==29|vingt-neufe|{{if:n==30|trante|{{if:n==31|trante-et-un|{{if:n==32|trente-deu|{{if:n==33|trente-troi|{{if:n==34|trente-quatres|{{if:n==35|trente-cinque|{{if:n==36|trente-sis|{{if:n==37|trente-set|{{if:n==38|trente-uit|{{if:n==39|trente-neufe|{{if:n==40|karante|{{if:n==41|karante-et-un|{{if:n==42|quarante-deu|{{if:n==43|quarante-troi|{{if:n==44|quarante-quatres|{{if:n==45|quarante-cinque|{{if:n==46|quarante-sis|{{if:n==47|quarante-set|{{if:n==48|quarante-uit|{{if:n==49|quarante-neufe|cinquente}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}\n- {{if:n==11|un-un|{{if:n==12|un-deux|{{if:n==13|un-trois|{{if:n==14|un-quatre|{{if:n==15|un-cinq|{{if:n==16|un-six|{{if:n==17|dix sept|{{if:n==18|dix huit|{{if:n==19|dix neuf|{{if:n==20|vingts|{{if:n==21|vingt-un|{{if:n==22|vingt deux|{{if:n==23|vingt trois|{{if:n==24|vingt quatre|{{if:n==25|vingt cinq|{{if:n==26|vingt six|{{if:n==27|vingt sept|{{if:n==28|vingt huit|{{if:n==29|vingt neuf|{{if:n==30|trentes|{{if:n==31|trente-un|{{if:n==32|trente deux|{{if:n==33|trente trois|{{if:n==34|trente quatre|{{if:n==35|trente cinq|{{if:n==36|trente six|{{if:n==37|trente sept|{{if:n==38|trente huit|{{if:n==39|trente neuf|{{if:n==40|quarantes|{{if:n==41|quarante-un|{{if:n==42|quarante deux|{{if:n==43|quarante trois|{{if:n==44|quarante quatre|{{if:n==45|quarante cinq|{{if:n==46|quarante six|{{if:n==47|quarante sept|{{if:n==48|quarante huit|{{if:n==49|quarante neuf|cinquantes}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}\n- {{if:n==11|dix-un|{{if:n==12|dix-deux|{{if:n==13|dix-trois|{{if:n==14|dix-quatre|{{if:n==15|dix-cinq|{{if:n==16|dix-six|{{if:n==17|sept-dix|{{if:n==18|huit-dix|{{if:n==19|neuf-dix|{{if:n==20|deux-dix|{{if:n==21|douze|{{if:n==22|deux-deux|{{if:n==23|trente-deux|{{if:n==24|quarante-deux|{{if:n==25|cinquante-deux|{{if:n==26|soixante-deux|{{if:n==27|soixante-douze|{{if:n==28|quatre-vingt-deux|{{if:n==29|quatre-vingt-douze|{{if:n==30|trois-dix|{{if:n==31|treize|{{if:n==32|vingt-trois|{{if:n==33|trois-trois|{{if:n==34|quarante-trois|{{if:n==35|cinquante-trois|{{if:n==36|soixante-trois|{{if:n==37|soixante-treize|{{if:n==38|quatre-vingt-trois|{{if:n==39|quatre-vingt-treize|{{if:n==40|quatre-dix|{{if:n==41|quatorze|{{if:n==42|vingt-quatre|{{if:n==43|trente-quatre|{{if:n==44|quatre-quatre|{{if:n==45|cinquante-quatre|{{if:n==46|soixante-quatre|{{if:n==47|soixante-quatorze|{{if:n==48|quatre-vingt-quatre|{{if:n==49|quatre-vingt-quatorze|cinq-dix}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}\n```",
+				"variables": [
+					{
+						"name": "n",
+						"expression": "11..50"
+					}
+				],
+				"conditions": [],
+				"correction": {
+					"steps": [
+						"{{if:n==11|$11$ a un nom à lui : **onze**.|{{if:n==12|$12$ a un nom à lui : **douze**.|{{if:n==13|$13$ a un nom à lui : **treize**.|{{if:n==14|$14$ a un nom à lui : **quatorze**.|{{if:n==15|$15$ a un nom à lui : **quinze**.|{{if:n==16|$16$ a un nom à lui : **seize**.|{{if:n==17|$17=10+7$ : on écrit « dix », puis « sept », reliés par un trait d'union : **dix-sept**.|{{if:n==18|$18=10+8$ : on écrit « dix », puis « huit », reliés par un trait d'union : **dix-huit**.|{{if:n==19|$19=10+9$ : on écrit « dix », puis « neuf », reliés par un trait d'union : **dix-neuf**.|{{if:n==20|$20$, ce sont $2$ dizaines : **vingt**.|{{if:n==21|$21=20+1$ : on écrit « vingt », puis « et » puis « un », reliés par des traits d'union : **vingt-et-un**.|{{if:n==22|$22=20+2$ : on écrit « vingt », puis « deux », reliés par un trait d'union : **vingt-deux**.|{{if:n==23|$23=20+3$ : on écrit « vingt », puis « trois », reliés par un trait d'union : **vingt-trois**.|{{if:n==24|$24=20+4$ : on écrit « vingt », puis « quatre », reliés par un trait d'union : **vingt-quatre**.|{{if:n==25|$25=20+5$ : on écrit « vingt », puis « cinq », reliés par un trait d'union : **vingt-cinq**.|{{if:n==26|$26=20+6$ : on écrit « vingt », puis « six », reliés par un trait d'union : **vingt-six**.|{{if:n==27|$27=20+7$ : on écrit « vingt », puis « sept », reliés par un trait d'union : **vingt-sept**.|{{if:n==28|$28=20+8$ : on écrit « vingt », puis « huit », reliés par un trait d'union : **vingt-huit**.|{{if:n==29|$29=20+9$ : on écrit « vingt », puis « neuf », reliés par un trait d'union : **vingt-neuf**.|{{if:n==30|$30$, ce sont $3$ dizaines : **trente**.|{{if:n==31|$31=30+1$ : on écrit « trente », puis « et » puis « un », reliés par des traits d'union : **trente-et-un**.|{{if:n==32|$32=30+2$ : on écrit « trente », puis « deux », reliés par un trait d'union : **trente-deux**.|{{if:n==33|$33=30+3$ : on écrit « trente », puis « trois », reliés par un trait d'union : **trente-trois**.|{{if:n==34|$34=30+4$ : on écrit « trente », puis « quatre », reliés par un trait d'union : **trente-quatre**.|{{if:n==35|$35=30+5$ : on écrit « trente », puis « cinq », reliés par un trait d'union : **trente-cinq**.|{{if:n==36|$36=30+6$ : on écrit « trente », puis « six », reliés par un trait d'union : **trente-six**.|{{if:n==37|$37=30+7$ : on écrit « trente », puis « sept », reliés par un trait d'union : **trente-sept**.|{{if:n==38|$38=30+8$ : on écrit « trente », puis « huit », reliés par un trait d'union : **trente-huit**.|{{if:n==39|$39=30+9$ : on écrit « trente », puis « neuf », reliés par un trait d'union : **trente-neuf**.|{{if:n==40|$40$, ce sont $4$ dizaines : **quarante**.|{{if:n==41|$41=40+1$ : on écrit « quarante », puis « et » puis « un », reliés par des traits d'union : **quarante-et-un**.|{{if:n==42|$42=40+2$ : on écrit « quarante », puis « deux », reliés par un trait d'union : **quarante-deux**.|{{if:n==43|$43=40+3$ : on écrit « quarante », puis « trois », reliés par un trait d'union : **quarante-trois**.|{{if:n==44|$44=40+4$ : on écrit « quarante », puis « quatre », reliés par un trait d'union : **quarante-quatre**.|{{if:n==45|$45=40+5$ : on écrit « quarante », puis « cinq », reliés par un trait d'union : **quarante-cinq**.|{{if:n==46|$46=40+6$ : on écrit « quarante », puis « six », reliés par un trait d'union : **quarante-six**.|{{if:n==47|$47=40+7$ : on écrit « quarante », puis « sept », reliés par un trait d'union : **quarante-sept**.|{{if:n==48|$48=40+8$ : on écrit « quarante », puis « huit », reliés par un trait d'union : **quarante-huit**.|{{if:n==49|$49=40+9$ : on écrit « quarante », puis « neuf », reliés par un trait d'union : **quarante-neuf**.|$50$, ce sont $5$ dizaines : **cinquante**.}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Écrire un nombre en lettres (jusqu'à cinquante)",
+		"description": "Choisir l'écriture en lettres d'un nombre de 11 à 50 (leurres : orthographe, traits d'union, « et », accord, chiffres inversés ou lus un par un) ; orthographe rectifiée",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"n": "37"
+				},
+				"description": "37 : trente-sept",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"n": "37"
+				},
+				"description": "Erreur : 37, orthographe (trente-set)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"n": "37"
+				},
+				"description": "Erreur : 37, sans traits d'union (trente sept)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["3"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"n": "37"
+				},
+				"description": "Erreur : 37, chiffres inversés (soixante-treize)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"n": "21"
+				},
+				"description": "21 : vingt-et-un",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"n": "21"
+				},
+				"description": "Erreur : 21, « et » oublié (vingt-un)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"n": "21"
+				},
+				"description": "Erreur : 21, orthographe (vint-et-un)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"n": "11"
+				},
+				"description": "borne : 11, onze",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["3"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"n": "14"
+				},
+				"description": "Erreur : 14, dizaine lue à la lettre (dix-quatre)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["3"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"n": "17"
+				},
+				"description": "Erreur : 17, mots inversés (sept-dix)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"n": "50"
+				},
+				"description": "borne : 50, cinquante",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"n": "20"
+				},
+				"description": "Erreur : 20, accord (vingts)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["3"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"n": "20"
+				},
+				"description": "Erreur : 20, deux-dix",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["3"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"n": "33"
+				},
+				"description": "Erreur : 33, chiffres lus un par un (trois-trois)",
+				"variationIndex": 0
+			}
+		],
+		"classification_node_id": "6ce95f7a-c7b2-410e-814e-e46c04ac3b67"
+	},
+	{
+		"id": "aaebfe52-5740-47ab-8c5c-799023a6d906",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"spacesFromFourDigits": true
+			}
+		},
+		"precision": null,
+		"grades": ["CE2"],
+		"delay": 60,
+		"level": 11,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:100*c+10*d+1*u}}"
+					}
+				],
+				"statement": "Combien de petits cubes y a-t-il en tout ?\n\n```collection\ncentaines: {{c}}\ndizaines: {{d}}\nunités: {{u}}\n```\n\nIl y a $?$ cubes en tout.",
+				"variables": [
+					{
+						"name": "c",
+						"expression": "1..9"
+					},
+					{
+						"name": "d",
+						"expression": "1..9"
+					},
+					{
+						"name": "u",
+						"expression": "1..9"
+					}
+				],
+				"correction": {
+					"steps": [
+						"${{c}}$ {{if:c<=1|plaque|plaques}} : ${{c}}$ {{if:c<=1|centaine|centaines}}, c'est ${{eval:100*c}}$ cubes.",
+						"${{d}}$ {{if:d<=1|barre|barres}} : ${{d}}$ {{if:d<=1|dizaine|dizaines}}, c'est ${{eval:10*d}}$ cubes.",
+						"${{u}}$ {{if:u<=1|petit cube|petits cubes}} : ${{u}}$ {{if:u<=1|unité|unités}}.",
+						"$${{eval:100*c}}+{{eval:10*d}}+{{u}}={{solution}}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:100*c+u}}"
+					}
+				],
+				"statement": "Combien de petits cubes y a-t-il en tout ?\n\n```collection\ncentaines: {{c}}\nunités: {{u}}\n```\n\nIl y a $?$ cubes en tout.",
+				"variables": [
+					{
+						"name": "c",
+						"expression": "1..9"
+					},
+					{
+						"name": "u",
+						"expression": "1..9"
+					}
+				],
+				"correction": {
+					"steps": [
+						"${{c}}$ {{if:c<=1|plaque|plaques}} : ${{c}}$ {{if:c<=1|centaine|centaines}}, c'est ${{eval:100*c}}$ cubes.",
+						"Aucune barre : $0$ dizaine.",
+						"${{u}}$ {{if:u<=1|petit cube|petits cubes}} : ${{u}}$ {{if:u<=1|unité|unités}}.",
+						"$${{eval:100*c}}+0+{{u}}={{solution}}$$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Dénombrer des plaques, des barres et des cubes",
+		"description": "Matériel multibase jusqu'à 999 → nombre de cubes ; avec une dizaine vide (304)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["347"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "3",
+					"d": "4",
+					"u": "7"
+				},
+				"description": "3 plaques, 4 barres, 7 cubes : 347",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["77"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "3",
+					"d": "4",
+					"u": "7"
+				},
+				"description": "Erreur : plaques comptées comme barres (3 + 4 = 7 dizaines, 77)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["374"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "3",
+					"d": "4",
+					"u": "7"
+				},
+				"description": "Erreur : rangs inversés (374)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["14"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "3",
+					"d": "4",
+					"u": "7"
+				},
+				"description": "Erreur : objets comptés un à un (14)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["999"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "9",
+					"d": "9",
+					"u": "9"
+				},
+				"description": "borne : 9 plaques, 9 barres, 9 cubes : 999",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["304"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "3",
+					"u": "4"
+				},
+				"description": "3 plaques, 4 cubes : 304",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["34"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "3",
+					"u": "4"
+				},
+				"description": "Erreur : zéro oublié (34)",
+				"variationIndex": 1
+			}
+		],
+		"classification_node_id": "04f3bf0d-71d1-4c76-b01d-174867712ff5"
+	},
+	{
+		"id": "b19dfc8e-4e9c-4918-b24a-9e132bcd025f",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CP"],
+		"delay": 20,
+		"level": 12,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:10*d+u}}"
+					}
+				],
+				"statement": "Écris le nombre en chiffres.\n\n${{d}}$ {{if:d==1|dizaine|dizaines}} et ${{u}}$ {{if:u<=1|unité|unités}}, c'est $?$.",
+				"variables": [
+					{
+						"name": "d",
+						"expression": "1..9"
+					},
+					{
+						"name": "u",
+						"expression": "0..9"
+					}
+				],
+				"correction": {
+					"steps": [
+						"On range dans le tableau de numération : ${{d}}$ au rang des dizaines, ${{u}}$ au rang des unités. $$\\begin{array}{|c|c|} \\text{dizaines} & \\text{unités} \\\\ \\textcolor{{{color:primary.0}}}{{{d}}} & \\textcolor{{{color:primary.1}}}{{{u}}} \\end{array}$$",
+						"Le nombre est ${{solution}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:10*d+u}}"
+					}
+				],
+				"statement": "Écris le nombre en chiffres.\n\n${{u}}$ {{if:u<=1|unité|unités}} et ${{d}}$ {{if:d==1|dizaine|dizaines}}, c'est $?$.",
+				"variables": [
+					{
+						"name": "d",
+						"expression": "1..9"
+					},
+					{
+						"name": "u",
+						"expression": "0..9"
+					}
+				],
+				"conditions": ["u != 0", "u != d"],
+				"correction": {
+					"steps": [
+						"On range dans le tableau de numération : ${{d}}$ au rang des dizaines, ${{u}}$ au rang des unités. $$\\begin{array}{|c|c|} \\text{dizaines} & \\text{unités} \\\\ \\textcolor{{{color:primary.0}}}{{{d}}} & \\textcolor{{{color:primary.1}}}{{{u}}} \\end{array}$$",
+						"Le nombre est ${{solution}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Dizaines et unités : écrire le nombre",
+		"description": "De « 7 dizaines et 4 unités » à 74",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["74"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"d": "7",
+					"u": "4"
+				},
+				"description": "7 dizaines et 4 unités : 74",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["90"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"d": "9",
+					"u": "0"
+				},
+				"description": "borne : 9 dizaines et 0 unité : 90",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["11"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"d": "1",
+					"u": "1"
+				},
+				"description": "1 dizaine et 1 unité : 11",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["47"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"d": "7",
+					"u": "4"
+				},
+				"description": "Erreur : chiffres inversés (47)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["704"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"d": "7",
+					"u": "4"
+				},
+				"description": "Erreur : 70 et 4 juxtaposés (704)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["074"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["zeros"]
+				},
+				"variables": {
+					"d": "7",
+					"u": "4"
+				},
+				"description": "Zéro inutile 074",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["74"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"d": "7",
+					"u": "4"
+				},
+				"description": "ordre inversé : 4 unités et 7 dizaines : 74",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["47"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"d": "7",
+					"u": "4"
+				},
+				"description": "Erreur : ordre de l'énoncé recopié (47)",
+				"variationIndex": 1
+			}
+		],
+		"classification_node_id": "6ce95f7a-c7b2-410e-814e-e46c04ac3b67"
+	},
+	{
+		"id": "c20b687f-f089-4ed0-b1b0-dc3641c3c978",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"spacesFromFourDigits": true
+			}
+		},
+		"precision": null,
+		"grades": ["CM2"],
+		"delay": 45,
+		"level": 2,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{x}}"
+					}
+				],
+				"statement": "Quel nombre repère le point $A$ ?\n\n```line\nstart: {{a}}\nend: {{fin}}\nstep: {{s}}\nmajor: 5\nlabels: {{a}}, {{l}}\npoints: A={{x}}\n```\n\n$$A : ?$$",
+				"variables": [
+					{
+						"name": "s",
+						"expression": "1|10|100"
+					},
+					{
+						"name": "b",
+						"expression": "1..99"
+					},
+					{
+						"name": "a",
+						"expression": "eval:10*s*b"
+					},
+					{
+						"name": "l",
+						"expression": "eval:a+5*s"
+					},
+					{
+						"name": "fin",
+						"expression": "eval:a+10*s"
+					},
+					{
+						"name": "k",
+						"expression": "1..9"
+					},
+					{
+						"name": "x",
+						"expression": "eval:a+k*s"
+					}
+				],
+				"conditions": ["k!=5"],
+				"correction": {
+					"steps": [
+						"**Le pas.** De ${{a}}$ à ${{l}}$, il y a $5$ intervalles : un intervalle vaut $({{l}} - {{a}}) \\div 5 = {{s}}$.",
+						"Le point $A$ est à ${{k}}$ intervalle{{if:k>1|s|}} de ${{a}}$ : il repère ${{a}} + {{k}} \\times {{s}} = \\textcolor{green}{{{x}}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{x}}"
+					}
+				],
+				"statement": "Quel nombre repère le point $A$ ?\n\n```line\nstart: {{a}}\nend: {{fin}}\nstep: {{s}}\nmajor: 5\nlabels: {{a}}, {{l}}\npoints: A={{x}}\n```\n\n$$A : ?$$",
+				"variables": [
+					{
+						"name": "s",
+						"expression": "1000|10000|100000"
+					},
+					{
+						"name": "b",
+						"expression": "1..99"
+					},
+					{
+						"name": "a",
+						"expression": "eval:10*s*b"
+					},
+					{
+						"name": "l",
+						"expression": "eval:a+5*s"
+					},
+					{
+						"name": "fin",
+						"expression": "eval:a+10*s"
+					},
+					{
+						"name": "k",
+						"expression": "1..9"
+					},
+					{
+						"name": "x",
+						"expression": "eval:a+k*s"
+					}
+				],
+				"conditions": ["k!=5"],
+				"correction": {
+					"steps": [
+						"**Le pas.** De ${{a}}$ à ${{l}}$, il y a $5$ intervalles : un intervalle vaut $({{l}} - {{a}}) \\div 5 = {{s}}$.",
+						"Le point $A$ est à ${{k}}$ intervalle{{if:k>1|s|}} de ${{a}}$ : il repère ${{a}} + {{k}} \\times {{s}} = \\textcolor{green}{{{x}}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Repérer un point par un nombre entier",
+		"description": "Lire le nombre entier qui repère un point d'une demi-droite graduée de 1 en 1, 10 en 10 ou 100 en 100, ou de 1 000 en 1 000 jusqu'à 100 000 en 100 000 (3 470 000) ; deux graduations étiquetées, le pas est à trouver",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["3\\,700"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3400",
+					"b": "34",
+					"k": "3",
+					"l": "3900",
+					"s": "100",
+					"x": "3700",
+					"fin": "4400"
+				},
+				"description": "A repère 3 700",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["3\\,403"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3400",
+					"b": "34",
+					"k": "3",
+					"l": "3900",
+					"s": "100",
+					"x": "3700",
+					"fin": "4400"
+				},
+				"description": "Erreur : 3 403 (intervalle compté pour 1)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["3\\,600"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3400",
+					"b": "34",
+					"k": "3",
+					"l": "3900",
+					"s": "100",
+					"x": "3700",
+					"fin": "4400"
+				},
+				"description": "Erreur : 3 600 (graduation voisine)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["3700"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				},
+				"variables": {
+					"a": "3400",
+					"b": "34",
+					"k": "3",
+					"l": "3900",
+					"s": "100",
+					"x": "3700",
+					"fin": "4400"
+				},
+				"description": "Sans espaces : forme à améliorer",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["3\\,470\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3400000",
+					"b": "34",
+					"k": "7",
+					"l": "3450000",
+					"s": "10000",
+					"x": "3470000",
+					"fin": "3500000"
+				},
+				"description": "A repère 3 470 000",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["3\\,407\\,000"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3400000",
+					"b": "34",
+					"k": "7",
+					"l": "3450000",
+					"s": "10000",
+					"x": "3470000",
+					"fin": "3500000"
+				},
+				"description": "Erreur : 3 407 000 (pas de 1 000)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["3\\,400\\,007"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3400000",
+					"b": "34",
+					"k": "7",
+					"l": "3450000",
+					"s": "10000",
+					"x": "3470000",
+					"fin": "3500000"
+				},
+				"description": "Erreur : 3 400 007 (intervalle compté pour 1)",
+				"variationIndex": 1
+			}
+		],
+		"classification_node_id": "bcd6323e-77da-4716-9dfc-62f7e98817d8"
+	}
+]

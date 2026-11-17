@@ -1,10 +1,8 @@
 {
+	"id": "62ae6847-6cc4-41c9-98c1-97b26487c4d0",
 	"title": "Suites qui se répètent : quel élément à quelle place ?",
 	"description": "Motifs de 2 à 4 éléments (● ▲, ● ● ▲, ■ ▲ ●, A B C D) : l'élément de la 9e place",
 	"grades": ["CP"],
-	"theme": "Entiers",
-	"domain": "Apprivoiser",
-	"subdomain": "Ordinaux",
 	"level": 6,
 	"delay": 60,
 	"status": "draft",

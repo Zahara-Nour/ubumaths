@@ -7,7 +7,7 @@
  */
 import { describe, expect, it } from 'vitest';
 import { parseMarkdown } from '$lib/ubumark';
-import { generateTypst } from '../typst-generator';
+import { TYPST_BREAK_MARKER, generateTypst } from '../typst-generator';
 
 const SOURCE = [
 	'Partie A',
@@ -43,13 +43,14 @@ describe('afterQuestion', () => {
 	});
 
 	// Empreintes figées, produites par le générateur d'avant les cadres (origin/main,
-	// 2026-10-15) : sans option, une liste se rend exactement comme avant ; seule
-	// différence voulue depuis : l'énoncé collé à ses sous-questions (`tete`, 2026-10-26)
+	// 2026-10-15) : sans option, une liste se rend exactement comme avant ; seules
+	// différences voulues depuis : l'énoncé collé à ses sous-questions (`tete`,
+	// 2026-10-26), précédé du marqueur de coupure (coupures-pdf, 2026-11-09)
 	it.each([
 		[
 			'liste imbriquée',
 			'1. UN\n   1. UNA\n   2. UNB\n2. DEUX',
-			'\n#ubu-item(numbering("1)", 1), w: "1)", tete: [UN])[#ubu-item(numbering("a)", 1), w: "a)")[UNA]\n#ubu-item(numbering("a)", 2), w: "a)")[UNB]]\n#ubu-item(numbering("1)", 2), w: "1)")[DEUX]'
+			`\n${TYPST_BREAK_MARKER}\n#ubu-item(numbering("1)", 1), w: "1)", tete: [UN])[#ubu-item(numbering("a)", 1), w: "a)")[UNA]\n#ubu-item(numbering("a)", 2), w: "a)")[UNB]]\n#ubu-item(numbering("1)", 2), w: "1)")[DEUX]`
 		],
 		[
 			'liste en colonnes',

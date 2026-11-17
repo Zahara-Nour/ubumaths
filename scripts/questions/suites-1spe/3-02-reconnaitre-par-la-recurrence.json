@@ -2,10 +2,7 @@
 	"title": "Reconnaître une suite arithmétique ou géométrique à partir de sa relation de récurrence",
 	"description": "u(n+1) = u(n) + r, u(n+1) = q u(n), ou ni l'un ni l'autre",
 	"grades": ["1_SPE"],
-	"theme": "Suites",
-	"domain": "Reconnaître une suite",
 	"status": "draft",
-	"subdomain": "Arithmétique ou géométrique",
 	"level": 2,
 	"delay": 30,
 	"variations": [

@@ -19,7 +19,8 @@ import {
 	courseCardBackParts,
 	courseCardFront,
 	excludeCourseCards,
-	isCourseCard
+	isCourseCard,
+	seriesFormExcludesCourseCards
 } from '../course-card';
 import { questionTypeSchema } from '$lib/server/validation/questions';
 import { checkTemplate } from '$lib/questions/review/check-template';
@@ -46,8 +47,6 @@ function card(overrides: Partial<QuestionTemplate> = {}): QuestionTemplate {
 			}
 		],
 		grades: ['2'],
-		theme: 'Fonctions',
-		domain: 'Généralités',
 		level: 1,
 		...overrides
 	};
@@ -65,8 +64,6 @@ function blankQuestion(overrides: Partial<QuestionTemplate> = {}): QuestionTempl
 			}
 		],
 		grades: ['6'],
-		theme: 'Entiers',
-		domain: 'Multiplier',
 		level: 1,
 		...overrides
 	};
@@ -269,5 +266,19 @@ describe('verso en étapes générées (generatedSteps)', () => {
 		});
 		expect(parts.text).toBe('Écrit');
 		expect(parts.generatedSteps).toBeUndefined();
+	});
+});
+
+describe('formes de série qui retirent les cartes de cours', () => {
+	// Règle de David (2026-11-09) : une carte non évaluable n'est retirée que
+	// des formes qui corrigent les réponses.
+	it('les retire des formes qui corrigent : Entraînement, Course aux nombres', () => {
+		expect(seriesFormExcludesCourseCards('interactive')).toBe(true);
+		expect(seriesFormExcludesCourseCards('course')).toBe(true);
+	});
+
+	it('les garde dans les formes sans correction : Flash-cards, En classe', () => {
+		expect(seriesFormExcludesCourseCards('flash')).toBe(false);
+		expect(seriesFormExcludesCourseCards('display')).toBe(false);
 	});
 });

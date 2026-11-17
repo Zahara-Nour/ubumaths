@@ -1,10 +1,8 @@
 {
+	"id": "6dd2f133-e203-4cf6-a422-6a0e716203f3",
 	"title": "Construire un arbre pondéré à partir d'un énoncé",
 	"description": "Traduire un énoncé en pourcentages par un arbre pondéré, puis calculer une probabilité totale",
 	"grades": ["1_SPE"],
-	"theme": "Probabilités",
-	"domain": "Probabilités conditionnelles",
-	"subdomain": "Arbres pondérés",
 	"level": 5,
 	"status": "draft",
 	"delay": 120,

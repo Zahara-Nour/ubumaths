@@ -1,10 +1,8 @@
 {
+	"id": "f1440b52-5a2b-4e6a-a112-7182b029d023",
 	"title": "Dériver un quotient",
 	"description": "Dérivée d'un quotient u/v : affine sur affine, polynôme du second degré sur affine",
 	"grades": ["1_SPE"],
-	"theme": "Fonctions",
-	"domain": "Dérivation",
-	"subdomain": "Fonctions dérivées",
 	"level": 4,
 	"status": "draft",
 	"delay": 90,

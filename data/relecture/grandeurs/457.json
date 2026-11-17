@@ -35,9 +35,6 @@
 			}
 		],
 		"grades": ["6"],
-		"theme": "Grandeurs",
-		"domain": "Durées",
-		"subdomain": "Convertir",
 		"level": 9,
 		"status": "draft",
 		"delay": 20,

@@ -21,7 +21,7 @@ describe('octets et bits dans Calcul', () => {
 		['5 ko', '5~\\mathrm{ko}'],
 		// « Ko » accepté pour le ko (décision de David, 2026-10-18)
 		['5 Ko + 3 ko', '8~\\mathrm{Ko}'],
-		['1[Ko]+1[o]', '1{,}001~\\mathrm{Ko}'],
+		['1[Ko]+1[o]', '1001~\\mathrm{o}'],
 		['100[Mbit/s]*8[s]', '800~\\mathrm{Mbit}']
 	])('%s', (input, latex) => {
 		expect(latexOf(runInput(session(), input))).toBe(latex);

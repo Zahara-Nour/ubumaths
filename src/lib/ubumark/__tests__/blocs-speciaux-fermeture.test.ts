@@ -29,7 +29,8 @@ describe('Q66 — un ``` lointain ne ferme pas un bloc séparé par du texte', (
 		['cubes', '```cubes\nhauteurs: 2 1'],
 		['operation', '```operation\ncalcul: 45 + 37'],
 		['collection', '```collection\nunités: 9'],
-		['monnaie', '```monnaie\nbillets: 10']
+		['monnaie', '```monnaie\nbillets: 10'],
+		['schema-barres', '```schema-barres\nOr : ? (4)']
 	])('%s : le texte intermédiaire est un paragraphe', (_, block) => {
 		const md = `${block}\n\nVoici le texte qui suit le bloc\n\n\`\`\`\n\nfin`;
 		const nodes = children(md);
@@ -56,6 +57,7 @@ describe('une faute de frappe dans un bloc fermé : la suite du document intacte
 		['operation', '```operation\ncalcul: 45 + 37\n\ncases aucune\n```'],
 		['collection', '```collection\nunités: 9\n\ndessin paquets\n```'],
 		['monnaie', '```monnaie\nbillets: 10\n\ndisposition mélangé\n```'],
+		['schema-barres', '```schema-barres\nOr : ? (4)\n\nArgent 5\n```'],
 		['probtree', '```probtree\nRouge:1/2\n\nBoule rouge 3/5\n```'],
 		['variation', '```variation\nvariable: x\ndomain: -inf, +inf\n\nsign f de x\n```']
 	])('%s', (_, block) => {

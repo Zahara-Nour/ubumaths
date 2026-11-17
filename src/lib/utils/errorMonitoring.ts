@@ -14,6 +14,12 @@
  */
 
 import { browser } from '$app/environment';
+import {
+	firstHiddenTime,
+	isPaintAfterHidden,
+	type VisibilityEntry
+} from '$lib/utils/web-vitals-visibilite';
+import { createInpTracker, type InteractionEntry } from '$lib/utils/inp-tracker';
 
 // =====================================================
 // TYPES
@@ -278,14 +284,17 @@ async function sendErrorBatch(): Promise<void> {
 
 /**
  * Queue error for sending
+ *
+ * Rend `true` si l'erreur est en file ou déjà envoyée (doublon), `false` si elle
+ * est abandonnée (suivi désactivé, limite par minute atteinte).
  */
-function queueError(error: ClientErrorData): void {
-	if (!CONFIG.ENABLED) return;
+function queueError(error: ClientErrorData): boolean {
+	if (!CONFIG.ENABLED) return false;
 
 	// Check rate limit
 	if (!isWithinRateLimit()) {
 		console.warn('[Error Monitoring] Rate limit exceeded, skipping error');
-		return;
+		return false;
 	}
 
 	const hash = generateErrorHash(error);
@@ -293,7 +302,7 @@ function queueError(error: ClientErrorData): void {
 	// Check for duplicates
 	if (isDuplicate(hash)) {
 		console.debug('[Error Monitoring] Duplicate error, skipping');
-		return;
+		return true;
 	}
 
 	// Add to queue
@@ -314,6 +323,7 @@ function queueError(error: ClientErrorData): void {
 			batchTimer = setTimeout(sendErrorBatch, CONFIG.BATCH_TIMEOUT);
 		}
 	}
+	return true;
 }
 
 // =====================================================
@@ -578,24 +588,28 @@ function getWebVitalSeverity(metric: WebVitalMetric, value: number): 'info' | 'w
 
 /**
  * Report a Web Vital metric
+ *
+ * Rend `true` si la mesure est partie (en file), `false` sinon (sous le seuil,
+ * ou abandonnée par `queueError`).
  */
 function reportWebVital(
 	metric: WebVitalMetric,
 	value: number,
-	context?: Record<string, unknown>
-): void {
+	context?: Record<string, unknown>,
+	url: string = window.location.href
+): boolean {
 	const severity = getWebVitalSeverity(metric, value);
 	const threshold = WEB_VITALS_THRESHOLDS[metric];
 
 	// Only report metrics that need improvement or are poor
 	// Good metrics are not worth logging to reduce noise
-	if (severity === 'info') return;
+	if (severity === 'info') return false;
 
 	const errorData: ClientErrorData = {
 		error_type: 'performance',
 		severity,
 		message: `Web Vital ${metric}: ${metric === 'CLS' ? value.toFixed(3) : Math.round(value)}${metric === 'CLS' ? '' : 'ms'} (threshold: ${threshold.good}${metric === 'CLS' ? '' : 'ms'})`,
-		url: sanitizeUrl(window.location.href),
+		url: sanitizeUrl(url),
 		...getBrowserContext(),
 		context: {
 			metric,
@@ -607,7 +621,24 @@ function reportWebVital(
 		tags: ['web_vitals', metric.toLowerCase()]
 	};
 
-	queueError(errorData);
+	return queueError(errorData);
+}
+
+/** Nombre d'interactions de la visite, quand le navigateur le donne (Chrome) */
+function readInteractionCount(): number | undefined {
+	const count = (performance as Performance & { interactionCount?: number }).interactionCount;
+	return typeof count === 'number' ? count : undefined;
+}
+
+/** Premier passage en arrière-plan, lu dans l'historique de visibilité s'il existe */
+function readFirstHiddenTime(): number {
+	let entries: VisibilityEntry[] | undefined;
+	try {
+		entries = performance.getEntriesByType('visibility-state');
+	} catch {
+		entries = undefined; // historique non pris en charge
+	}
+	return firstHiddenTime(entries, document.visibilityState);
 }
 
 /**
@@ -624,15 +655,31 @@ export function initWebVitals(): void {
 	let clsValue = 0;
 	let clsShiftCount = 0;
 
-	// Track INP across session
-	let inpValue = 0;
+	// INP de la visite : interactions seules, adresse de la page où chacune a commencé
+	const inpTracker = createInpTracker();
+	let removeInpListeners = () => {};
+
+	// Dernières valeurs envoyées : INP et CLS partent à chaque passage en arrière-plan,
+	// mais une valeur déjà envoyée ne repart pas (un onglet ouvert des jours renvoyait
+	// sinon le même INP toutes les 5 minutes d'absence, fin de la fenêtre anti-doublon)
+	let reportedCls = 0;
+	let reportedInp = 0;
+
+	// Premier passage en arrière-plan : FCP et LCP mesurés après lui sont écartés
+	// (onglet ouvert en arrière-plan → « LCP » de plusieurs heures, cf. web-vitals-visibilite.ts)
+	let hiddenTime = readFirstHiddenTime();
+	document.addEventListener('visibilitychange', (event) => {
+		if (document.visibilityState === 'hidden') {
+			hiddenTime = Math.min(hiddenTime, event.timeStamp);
+		}
+	});
 
 	// LCP (Largest Contentful Paint)
 	try {
 		const lcpObserver = new PerformanceObserver((entryList) => {
 			const entries = entryList.getEntries();
 			const lastEntry = entries[entries.length - 1] as PerformanceEntry & { startTime: number };
-			if (lastEntry) {
+			if (lastEntry && !isPaintAfterHidden(lastEntry.startTime, hiddenTime)) {
 				reportWebVital('LCP', lastEntry.startTime);
 			}
 		});
@@ -683,7 +730,7 @@ export function initWebVitals(): void {
 		const fcpObserver = new PerformanceObserver((entryList) => {
 			const entries = entryList.getEntries();
 			const fcpEntry = entries.find((e) => e.name === 'first-contentful-paint');
-			if (fcpEntry) {
+			if (fcpEntry && !isPaintAfterHidden(fcpEntry.startTime, hiddenTime)) {
 				reportWebVital('FCP', fcpEntry.startTime);
 			}
 		});
@@ -712,14 +759,7 @@ export function initWebVitals(): void {
 	// INP (Interaction to Next Paint) - aggregated across session
 	try {
 		const inpObserver = new PerformanceObserver((entryList) => {
-			for (const entry of entryList.getEntries()) {
-				const eventTiming = entry as PerformanceEventTiming;
-				const duration = eventTiming.duration;
-				// Track the worst interaction
-				if (duration > inpValue) {
-					inpValue = duration;
-				}
-			}
+			inpTracker.add(entryList.getEntries() as unknown as InteractionEntry[], window.location.href);
 		});
 		// durationThreshold is a valid option for event entries but not in TS types
 		inpObserver.observe({
@@ -728,6 +768,16 @@ export function initWebVitals(): void {
 			durationThreshold: 16
 		} as PerformanceObserverInit);
 		webVitalsObservers.push(inpObserver);
+		// Début de chaque interaction : l'adresse de la page à cet instant (un clic
+		// qui navigue est observé après la navigation)
+		const recordStart = (event: Event) =>
+			inpTracker.recordStart(event.timeStamp, window.location.href);
+		window.addEventListener('pointerdown', recordStart, { capture: true, passive: true });
+		window.addEventListener('keydown', recordStart, { capture: true, passive: true });
+		removeInpListeners = () => {
+			window.removeEventListener('pointerdown', recordStart, { capture: true });
+			window.removeEventListener('keydown', recordStart, { capture: true });
+		};
 	} catch {
 		// INP not supported
 	}
@@ -736,14 +786,22 @@ export function initWebVitals(): void {
 	// Report on page hide (when user leaves or switches tabs)
 	document.addEventListener('visibilitychange', () => {
 		if (document.visibilityState === 'hidden') {
-			// Report CLS if any shifts occurred
-			if (clsValue > 0) {
-				reportWebVital('CLS', clsValue, { shift_count: clsShiftCount });
+			// Report CLS if it grew since the last report (une mesure abandonnée retente)
+			if (
+				clsValue > reportedCls &&
+				reportWebVital('CLS', clsValue, { shift_count: clsShiftCount })
+			) {
+				reportedCls = clsValue;
 			}
 
-			// Report INP if any interactions occurred
-			if (inpValue > 0) {
-				reportWebVital('INP', inpValue);
+			// Report INP if a slower interaction occurred since the last report
+			const inp = inpTracker.current(readInteractionCount());
+			if (
+				inp &&
+				inp.value > reportedInp &&
+				reportWebVital('INP', inp.value, { event_name: inp.eventName, target: inp.target }, inp.url)
+			) {
+				reportedInp = inp.value;
 			}
 
 			// Note: We don't reset values - cumulative metrics continue across tab switches
@@ -754,6 +812,7 @@ export function initWebVitals(): void {
 	window.addEventListener('beforeunload', () => {
 		webVitalsObservers.forEach((observer) => observer.disconnect());
 		webVitalsObservers.length = 0;
+		removeInpListeners();
 		webVitalsInitialized = false;
 	});
 

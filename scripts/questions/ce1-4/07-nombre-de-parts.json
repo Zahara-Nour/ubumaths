@@ -1,10 +1,8 @@
 {
+	"id": "bc521c99-3335-4b38-8bbe-e49cce095ebf",
 	"title": "Problèmes de partage : le nombre de parts",
 	"description": "Combien d'équipes, de pages, de boîtes : 60 élèves par 5 ; 189 photos à 10 par page (19 pages) ; 75 œufs par 6 (12 boîtes pleines)",
 	"grades": ["CE1"],
-	"theme": "Entiers",
-	"domain": "Problèmes",
-	"subdomain": "Multiplicatifs",
 	"level": 7,
 	"delay": 90,
 	"status": "draft",

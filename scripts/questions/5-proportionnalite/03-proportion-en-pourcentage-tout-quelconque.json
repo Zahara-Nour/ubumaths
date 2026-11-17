@@ -1,10 +1,8 @@
 {
+	"id": "ade95ae4-5374-4bb3-b31b-02b61e3c1ccc",
 	"title": "Exprimer une proportion en pourcentage",
 	"description": "Exprimer une part en pourcentage quand le tout n'est ni un diviseur ni un multiple de 100 (6 voix sur 24 = 25 % ; 22 sur 40 = 55 %)",
 	"grades": ["5"],
-	"theme": "Proportionnalité",
-	"domain": "Pourcentages",
-	"subdomain": "Proportion",
 	"level": 3,
 	"delay": 90,
 	"status": "draft",

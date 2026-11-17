@@ -1,10 +1,8 @@
 {
+	"id": "c99be374-4d52-4a9c-bcd4-03b71f45f717",
 	"title": "Additionner des fractions de dénominateurs différents",
 	"description": "Somme de deux fractions : dénominateurs multiples (2/3 + 1/6), quelconques dans des cas simples (5/4 + 2/3)",
 	"grades": ["6"],
-	"theme": "Fractions",
-	"domain": "Calculer",
-	"subdomain": "Addition et Soustraction",
 	"level": 12,
 	"delay": 30,
 	"status": "draft",

@@ -188,10 +188,16 @@ pas sur la fraction telle qu'elle est écrite : `−(6x+3)/9`, `(x(6x+3))/(9x)`
 et `(6x+3)/9` donnent tous `(2x+1)/3`, et `tidy` reste idempotent. Deux
 garde-fous, issus de la revue de la PR :
 
-- **pas d'annulation cachée** : si la somme réduite devenait égale à un autre
-  facteur, les deux s'annuleraient — une simplification par une somme, qui
-  change le domaine. Le terme reste alors tel quel : `(2x+2)/(4(x+1))`
-  inchangé (et non `1/2`) ;
+- **pas d'annulation cachée** : si la somme réduite devient égale à un facteur
+  de l'autre côté de la barre, elle y reste des deux côtés, comme une base
+  écrite des deux côtés (S3, `keepDomain`) — simplifier par une somme
+  changerait le domaine. Le résultat est celui de l'écriture déjà réduite
+  (`signes-06`, David, 2026-11-02) : `(2x+2)/(4(x+1)) → (x+1)/(2(x+1))`
+  (comme `2(x+1)/(4(x+1))`, et non `1/2`), `(4x+4)/(2(x+1)) → 2(x+1)/(x+1)`,
+  `(2x+2)/(4(x+1)²) → 1/(2(x+1))`, même sans nombre commun :
+  `(2x+2)/(x+1) → 2(x+1)/(x+1)`, `(3x+3)/(x+1)² → 3/(x+1)` ; seul l'autre côté
+  écrit primitif est reconnu (`(2x+2)/(4x+4)` donne `(x+1)/(2x+2)`, non traité) ; `tidyWithConditions` rend `1/2, pour
+x ≠ −1`. Code : `mergeKeepingDomain`, `meetsAcross` ;
 - **pas de développement** : un nombre venu de l'autre côté de la barre reste
   en coefficient — `(x+1)/(1/2) → 2(x+1)`, `((x+1)/2)/(x+3) → (x+1)/(2(x+3))`.
   Un produit sans dénominateur ne se réduit que si un nombre commun se
@@ -237,11 +243,12 @@ nœud de parenthèse. Un arbre construit par le moteur, `x(2x+1) − (x²+x+1)` 
 ce nœud, est aplati par `flattenSumShallow` et le − est distribué
 (`x(2x+1) − x² − x − 1`). `tidyTerms` le contourne (§G.1) ; `tidy` non.
 
-### A.3 Le registre décimal (S1, David, 2026-10-22 ; Q3, Q8, Q9 le 2026-10-23)
+### A.3 Le registre décimal (S1, David, 2026-10-22 ; Q3, Q8 le 2026-10-23 ; Q9 le 2026-11-02)
 
 Un décimal reste décimal. Le coefficient d'un terme s'écrit en **fraction** si
-un opérande est une fraction — **une barre de fraction en est une** quand
-rien d'autre qu'un nombre n'est dessous (Q3, Q9) — ou si le résultat n'a pas
+un opérande est une fraction — **une barre de fraction en est une**, quel que
+soit son dénominateur (Q3, Q9), un facteur resté au dénominateur aussi
+(`0,5·x⁻¹`) — ou si le résultat n'a pas
 d'écriture décimale finie. Un entier ne compte ni pour l'un ni pour l'autre.
 Code : `Accumulator.decimal` / `.fraction` / `.bar`, `readsFraction` et
 `TidyTerm.decimal` dans `collect.ts`, rendu par `buildTermMagnitude`.
@@ -262,11 +269,19 @@ Code : `Accumulator.decimal` / `.fraction` / `.bar`, `readsFraction` et
 | `2,5x/5`     | `x/2`     |                                                   |
 | `(0,5x+1)/3` | `(x+2)/6` | table A.1                                         |
 
-**Dénominateur avec une variable (Q9)** : la barre ne compte pas comme
-fraction, les décimaux restent, au coefficient comme dans une somme —
-`0,5/x`, `0,5·x⁻¹ → 0,5/x`, `(0,5x+1)/(x+1)`, `x/(0,5x+1)`, `0,5x/x`
-inchangés. Une vraie fraction interne se chasse toujours :
-`(x/2+1)/(x+1) → (x+2)/(2(x+1))`.
+**Dénominateur avec une lettre (Q9, rouverte en entier par David le
+2026-11-02, chantier registre-reference)** : la barre compte comme fraction,
+les décimaux se chassent, au coefficient comme dans une somme — `0,5/x →
+1/(2x)`, `0,5·x⁻¹ → 1/(2x)`, `1,5/x → 3/(2x)`, `0,5/(x+1) → 1/(2(x+1))`,
+`(x+0,5)/(x−1) → (2x+1)/(2(x−1))`, `x/(0,5x+1) → 2x/(x+2)`, `(0,5x+1)/(x+1)
+→ (x+2)/(2(x+1))`, `0,5x/x → x/(2x)` (S3), quel que soit le dénominateur :
+`0,5√2/x → √2/(2x)`, `0,5/eˣ → 1/(2eˣ)`, `0,5/ln x → 1/(2 ln x)`. Une somme
+se range terme par terme : `0,5/x + 0,5 → 0,5 + 1/(2x)`. Sauf une grandeur, dont la
+valeur reste décimale (§D : `0,5 m/x` gardé), et une division par zéro, qui
+ressort telle quelle (`1,5/0`, jamais `3/(2·0)`). Avant (2026-10-23),
+ces décimaux restaient ; les raisons sont tombées (S3 accepte
+`(x+1)/(2(x+1))`, et une règle limitée à certains dénominateurs dépendrait de
+l'écriture).
 
 **Racine d'un décimal (Q8)** : un décimal **sous** la racine donne une fraction
 si la racine est irrationnelle — `√0,5 → √2/2`, `√0,2 → √5/5`,
@@ -428,6 +443,13 @@ la convention de `evaluateWithUnits`.
 
 ### D.3 Affichage (`tidy`, étape 10) — décision 3
 
+> **Depuis le 2026-11-02, ce choix scolaire n'est plus le défaut** : `tidy` écrit une grandeur
+> dans une unité TAPÉE (`unitChoice: 'written'`, la valeur avec le moins de chiffres, à égalité la
+> plus petite unité ; durées en h-min-s quand au moins deux de h, min, s sont tapées). Règle et
+> exemples : [grandeurs.md](../grandeurs.md#calculer--tidy-une-unité-tapée). Ce qui suit décrit
+> l'option `unitChoice: 'school'`, que plus aucun appelant ne demande, et le repli de
+> `'written'` quand aucune unité tapée ne convient.
+
 Une grandeur **numérique** est écrite dans l'unité qui place sa valeur entre
 0,1 et 1000 (`selectBestUnit`, mode `best`), en **décimal** :
 
@@ -500,15 +522,24 @@ Cas limites :
 - `options.recorder` (`TidyStepRecorder`) : `tidy` raconte ses étapes
   (`tidy-fold-numbers` « On calcule les nombres », `tidy-collect-like-terms`,
   `tidy-sort-terms`, `tidy-number-first`, `tidy-choose-unit`,
+  `tidy-write-duration` « On décompose la durée en heures, minutes, secondes » — dit
+  même quand seul l'affichage change (`1[h]+30[min]` → `1[h] 30[min]`, 2026-11-03 ;
+  `tidyAsSteps` compare l'écriture À L'ÉCRAN, `sameShown`, pour que `.simplifier` la montre),
   `tidy-power-to-root` « On écrit la puissance avec une racine carrée », …). Une étape
   n'est nommée que si une **seule** famille de gestes a travaillé ; sinon le
   filet `tidy-terms` « On met chaque terme au propre » (c'est le cas de la
   réduction d'une fraction de sommes, §A.1). Une relation est racontée entière
   (`3x+2x=5 → 5x=5`). Un enregistreur vaut pour **un** appel ; le résultat ne
   dépend jamais de sa présence. Spec : `docs/archive/wip/tidy-voix-phase0.md`.
-- `options.unitChoice` : `'school'` (défaut) ou `'written'` — l'unité écrite
-  d'abord, si la valeur y tombe juste (`7 mm · 5 cm → mm²`, `120 km / 2 h →
-km/h`), 2026-09-27.
+- `options.unitChoice` : `'written'` (défaut depuis le 2026-11-02) — une unité
+  tapée, celle où la valeur a le moins de chiffres, à égalité la plus petite
+  (`7 mm · 5 cm → 3,5 cm²`, `120 km / 2 h → 60 km/h`, `5 km + 3 m → 5003 m`) ;
+  ou `'school'` — §D.3 (2026-09-27).
+- `options.durations` : `'hms'` (défaut) — une durée où au moins deux de h,
+  min, s sont tapées s'écrit en h-min-s, au niveau de tête seulement
+  (`2[h]+30[min] → 2[h] 30[min]`, somme juxtaposée, `tidy/duration.ts`) ;
+  `'single'` — UNE grandeur (`2.5[h]`). Les sous-expressions reçoivent
+  toujours `'single'` : `(2[h]+30[min])/1[s] → 9000`.
 - `options.typeCtx` : les hypothèses déclarées sur les variables (ADR 0012) ;
   « x non nul » ou « x > 0 » permet `x/x → 1`, `x²/x → x` (S3, 2026-10-23).
 - `options.domain` : des expressions dont le domaine de définition est acquis
@@ -617,6 +648,8 @@ des termes notamment).
 - 2026-09-20 : phase 0, décisions fondatrices (§0), contrat (§A).
 - 2026-09-21 : narration (G.1).
 - 2026-09-27 : `unitChoice: 'written'`.
+- 2026-11-02 : `unitChoice: 'written'` par défaut, une unité tapée (moins de
+  chiffres) ; durées en h-min-s (`durations`) ; chantier registre-reference.
 - 2026-10-06 : ordre des sommes de degré 1, signe des sommes toutes négatives.
 - 2026-10-12 : rationnel en tête, forme a + ib (étape 8).
 - 2026-10-20 : fraction de sommes irréductible (§A.1) ; document réécrit
@@ -645,3 +678,7 @@ des termes notamment).
 - 2026-10-26 : conditions écrites sur la lettre aux points irrationnels
   (`x ≠ √2`, `x ≠ tan(1)`), en intervalles (`x < −√2 ou x > √2`) ; `tan`,
   `arcsin`, `arccos` ont un domaine écrit (tidy-conditions § 5, PR A).
+- 2026-11-02 : Q9 rouverte en entier (un décimal sous une barre à lettre se
+  chasse : `0,5/x → 1/(2x)`) ; une somme réduite égale à un facteur de
+  l'autre côté reste des deux côtés au lieu de bloquer la réduction
+  (`(2x+2)/(4(x+1)) → (x+1)/(2(x+1))`) — chantier registre-reference.

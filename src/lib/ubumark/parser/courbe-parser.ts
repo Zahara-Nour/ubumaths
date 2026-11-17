@@ -25,6 +25,15 @@
  * point sur un nœud de la grille et dans la fenêtre ; `case: N` est posée par
  * le générateur. Titres des axes : `axes: x = Durée (min) ; y = Température (°C)`.
  *
+ * Droite à tracer (une question) : `tracer: y = 2x - 1` (réduite, `x = 3`, ou
+ * cartésienne `2x + 3y - 6 = 0`), jamais avec `placer:` ; la droite doit passer par
+ * au moins deux nœuds de la grille dans la fenêtre.
+ *
+ * Vecteur à tracer (une question) : `tracer: vecteur (3 ; -2)`, nommé
+ * `tracer: vecteur u = (3 ; -2)`, origine imposée `… depuis A` (A de `points:`) ;
+ * coordonnées multiples du pas de la grille, vecteur non nul qui tient dans la
+ * fenêtre.
+ *
  * Les variables de template (`{{a}}`) sont remplacées AVANT l'analyse : une
  * valeur négative produit donc `x--2` ou `+-3`, normalisés ici.
  *
@@ -41,6 +50,7 @@ import type {
 	CourbeAsymptote,
 	CourbeAxisTitles,
 	CourbeBlockRange,
+	CourbeData,
 	CourbeColor,
 	CourbeDomain,
 	CourbeFunction,
@@ -49,6 +59,9 @@ import type {
 	CourbeSequenceTerm,
 	CourbeIssue,
 	CourbeLabel,
+	CourbeLineToTrace,
+	CourbeVectorToTrace,
+	CourbeGivenVector,
 	CourbeNode,
 	CourbePoint,
 	CourbeSize,
@@ -67,6 +80,14 @@ import { variable } from '$lib/mathAST/factory';
 import { differentiate } from '$lib/mathAST/differentiation';
 import { computeSequenceTerms, PREV_TERM_VARIABLE } from '$lib/grapheur/sequence';
 import { isGridNode, isInWindow, courbeGridSteps } from '../utils/courbe-placer';
+import { lineCoefficients, lineNodes } from '../utils/courbe-tracer';
+import { vectorProblem } from '../utils/courbe-vecteur';
+import {
+	combinationCoords,
+	isCombinationText,
+	readCombination,
+	readGivenVectors
+} from '../utils/courbe-combinaison';
 
 // ============================================================================
 // CONSTANTES
@@ -112,9 +133,15 @@ const KNOWN_KEYS = [
 	'taille',
 	'description',
 	'placer',
+	'tracer',
 	'axes',
-	'case'
+	'case',
+	'vecteurs',
+	'données'
 ] as const;
+
+/** Clé écrite sans accent, lue comme la clé accentuée */
+const KEY_ALIASES: Record<string, string> = { donnees: 'données' };
 
 /** `A=(2 ; 3)`, ou `(2 ; 3)` pour un point seul : nom éventuel, coordonnées */
 const TARGET_REGEX = /^(?:([^=\s()]+)\s*=\s*)?\((.*)\)$/;
@@ -127,6 +154,9 @@ const MASKED_TARGET_REGEX = /^(?:([A-Z])\s*=\s*)?\?$/;
  * ni nœud ni fenêtre à vérifier. Un objet par point, jamais réutilisé.
  */
 const maskedTargets = new WeakSet<CourbeTarget>();
+
+/** Droite à tracer masquée (`tracer: ?`) : énoncé d'une évaluation notée */
+const MASKED_EQUATION = '?';
 
 /** `x = Durée (min)` : axe, titre */
 const AXIS_TITLE_REGEX = /^([^=\s]+)\s*=\s*(.*)$/;
@@ -153,7 +183,11 @@ function looksLikeCourbeLine(line: string): boolean {
 	const trimmed = line.trim();
 	if (FUNCTION_LINE_REGEX.test(trimmed) || SEQUENCE_TERM_LINE_REGEX.test(trimmed)) return true;
 	const kv = KEY_LINE_REGEX.exec(trimmed);
-	return kv !== null && (KNOWN_KEYS as readonly string[]).includes(kv[1].toLowerCase());
+	if (kv === null) return false;
+	const key = canonicalKey(kv[1]);
+	// « Données : voir le tableau » est de la prose : la clé n'est reconnue que suivie d'un point
+	if (key === 'données') return kv[2].trim().startsWith('(');
+	return (KNOWN_KEYS as readonly string[]).includes(key);
 }
 
 /**
@@ -197,11 +231,12 @@ export function findCourbeBlocks(lines: string[]): CourbeBlockRange[] {
 	return blocks;
 }
 
-/** Ligne `placer:` d'un bloc */
-const PLACER_LINE_REGEX = /^\s*placer\s*:/i;
+/** Ligne du geste d'un bloc : `placer:` (points) ou `tracer:` (droite) */
+const GESTURE_LINE_REGEX = /^\s*(?:placer|tracer)\s*:/i;
 
 /**
- * Les repères à points à placer (`placer:`) d'un énoncé, délimités comme le
+ * Les repères à points à placer (`placer:`) ou à droite à tracer (`tracer:`)
+ * d'un énoncé, délimités comme le
  * parseur : corps sans clôtures, fermeture, et `nested` pour un bloc en
  * retrait, cité ou ouvert sur la ligne d'un item (l'élève ne pourrait pas y
  * répondre : sa case n'est pas créée)
@@ -225,10 +260,10 @@ export function findCourbesToPlace(markdown: string): {
 				nested: lines[block.startIndex] !== plain[block.startIndex]
 			};
 		})
-		.filter((block) => block.body.some((line) => PLACER_LINE_REGEX.test(line)));
+		.filter((block) => block.body.some((line) => GESTURE_LINE_REGEX.test(line)));
 }
 
-/** L'énoncé a-t-il un repère à points à placer ? */
+/** L'énoncé a-t-il un repère à points à placer ou à droite à tracer ? */
 export function hasCourbeToPlace(markdown: string): boolean {
 	return findCourbesToPlace(markdown).length > 0;
 }
@@ -549,6 +584,49 @@ function parsePoints(value: string, functions: FunctionTable, line: number): Cou
 		});
 	}
 	return points;
+}
+
+/** Clé en minuscules, alias sans accent ramené à la clé accentuée */
+function canonicalKey(raw: string): string {
+	const lower = raw.toLowerCase();
+	return KEY_ALIASES[lower] ?? lower;
+}
+
+/**
+ * `données: (6 ; 8) ; (8 ; 11) ; …` : 2 à `COURBE_LIMITS.dataPoints` points, abscisses
+ * distinctes, rendus triés par abscisse (une courbe de données se lit de gauche à droite).
+ */
+function parseData(value: string, line: number): CourbeData {
+	const items = splitTopLevel(decimalPoint(value), ';').filter((item) => item !== '');
+	if (items.length > COURBE_LIMITS.dataPoints) {
+		throw new LineError(`données : au plus ${COURBE_LIMITS.dataPoints} points`);
+	}
+	const points = items.map((item) => {
+		if (!item.startsWith('(') || !item.endsWith(')')) {
+			throw new LineError(`données : point « ${item} » mal écrit (ex. (6 ; 8))`);
+		}
+		const coords = splitTopLevel(item.slice(1, -1), ';');
+		if (coords.length !== 2 || coords.some((c) => c === '')) {
+			throw new LineError(`données : point « ${item} » : deux coordonnées séparées par « ; »`);
+		}
+		// Arrondi à 12 chiffres : `0,1+0,2` et `0,3` sont la même abscisse
+		return {
+			x: Number(evaluateConstant(coords[0]).toPrecision(12)),
+			y: Number(evaluateConstant(coords[1]).toPrecision(12))
+		};
+	});
+	if (points.length < 2) {
+		throw new LineError('données : au moins deux points à relier (ex. (6 ; 8) ; (8 ; 11))');
+	}
+	points.sort((a, b) => a.x - b.x);
+	for (let i = 1; i < points.length; i++) {
+		if (points[i].x === points[i - 1].x) {
+			throw new LineError(
+				`données : deux points de même abscisse (${formatPlain(points[i].x)}) : une courbe de données n'en a qu'un par abscisse`
+			);
+		}
+	}
+	return { points, line };
 }
 
 function parseAsymptotes(value: string, line: number): CourbeAsymptote[] {
@@ -950,6 +1028,82 @@ function targetProblem(
 	return null;
 }
 
+/**
+ * `tracer: y = 2x - 1` : l'équation normalisée (variables substituées, virgule
+ * décimale) ; `tracer: ?` (énoncé masqué d'une évaluation notée) est gardé tel quel
+ */
+function parseLineToTrace(value: string, line: number): CourbeLineToTrace {
+	if (value === '') {
+		throw new LineError('tracer: attend l’équation d’une droite (ex. tracer: y = 2x - 1)');
+	}
+	if (value === MASKED_EQUATION) return { equation: MASKED_EQUATION, line };
+	if (value.length > COURBE_LIMITS.equation) {
+		throw new LineError(
+			`tracer : équation trop longue (${COURBE_LIMITS.equation} caractères au plus)`
+		);
+	}
+	const equation = spacedEquation(normalizeCourbeExpression(decimalPoint(value)));
+	const coefficients = lineCoefficients(equation);
+	if (typeof coefficients === 'string') throw new LineError(`tracer : ${coefficients}`);
+	return { equation, line };
+}
+
+/**
+ * Une espace de part et d'autre de `=`, `+` et `-` binaires, aucune après un
+ * signe : `y=-2x-3` → `y = -2x - 3`
+ */
+function spacedEquation(equation: string): string {
+	return equation
+		.replace(/\s*([=+-])\s*/g, ' $1 ')
+		.trim()
+		.replace(/(^|[=(*/^])\s*([+-])\s+/g, (_, before: string, sign: string) =>
+			before === '' ? sign : before === '=' ? `= ${sign}` : `${before}${sign}`
+		);
+}
+
+/** `tracer: vecteur u = (3 ; -2) depuis A` ; coordonnées `?` dans l'énoncé masqué */
+const VECTOR_REGEX =
+	/^vecteur\s*(?:([a-z])\s*=\s*)?(?:\(\s*(-?\d+(?:[.,]\d+)?)\s*;\s*(-?\d+(?:[.,]\d+)?)\s*\)|(\?))(?:\s+depuis\s+([A-Z]))?$/;
+
+/** Le tracer: est-il celui d'un vecteur ? */
+function isVectorLine(value: string): boolean {
+	return /^vecteur\b/i.test(value);
+}
+
+/** `vecteur u + v depuis A` → ce qui suit « vecteur », et l'origine imposée */
+function splitVectorLine(value: string): { text: string; from?: string } {
+	const body = value.replace(/^vecteur\b/i, '').trim();
+	const depuis = /\s+depuis\s+([A-Za-z][A-Za-z0-9']*)$/.exec(body);
+	if (depuis === null) return { text: body };
+	return { text: body.slice(0, depuis.index).trim(), from: depuis[1] };
+}
+
+/** `tracer: vecteur …` : nom, coordonnées (null si masquées), origine imposée (nom) */
+function parseVectorToTrace(value: string, line: number): CourbeVectorToTrace {
+	const match = VECTOR_REGEX.exec(value);
+	if (!match) {
+		throw new LineError(
+			`tracer : vecteur « ${value} » illisible (ex. tracer: vecteur (3 ; -2), tracer: vecteur u = (3 ; -2) depuis A ; des nombres seulement)`
+		);
+	}
+	const [, name = '', x, y, masked, from] = match;
+	const coords =
+		masked !== undefined ? null : { x: Number(decimalPoint(x)), y: Number(decimalPoint(y)) };
+	return { name, coords, ...(from !== undefined && { from }), line };
+}
+
+/** Ce qui empêche l'élève de tracer la droite : moins de deux nœuds dans la fenêtre */
+function traceProblem(
+	tracer: CourbeLineToTrace,
+	spec: Pick<CourbeSpec, 'window' | 'grid' | 'size'>
+): string | null {
+	if (tracer.equation === MASKED_EQUATION) return null;
+	const coefficients = lineCoefficients(tracer.equation);
+	if (typeof coefficients === 'string') return coefficients;
+	if (lineNodes(spec, coefficients).length >= 2) return null;
+	return `la droite ${tracer.equation} passe par moins de deux nœuds de la grille dans la fenêtre : l'élève ne peut pas la tracer (régler x:, y: ou grille:)`;
+}
+
 /** `axes: x = Durée (min) ; y = Température (°C)` : un titre par axe, un ou deux axes */
 function parseAxisTitles(value: string): CourbeAxisTitles {
 	const example = 'ex. axes: x = Durée (min) ; y = Température (°C)';
@@ -1007,6 +1161,13 @@ export function parseCourbeContent(source: string): CourbeNode {
 	}[] = [];
 	const seenKeys = new Set<string>();
 	let axisTitles: CourbeAxisTitles | undefined;
+	let tracer: CourbeLineToTrace | undefined;
+	let vecteur: CourbeVectorToTrace | undefined;
+	/** Combinaison à tracer (`tracer: vecteur u + v`), lue après points: et vecteurs: */
+	let combination: string | undefined;
+	/** `vecteurs:`, lu après points: */
+	let givenLine: { value: string; line: number } | undefined;
+	let donnees: CourbeData | undefined;
 	let caseIndex: number | undefined;
 	let caseLine = 0;
 
@@ -1056,7 +1217,7 @@ export function parseCourbeContent(source: string): CourbeNode {
 
 			const kv = KEY_LINE_REGEX.exec(content);
 			if (!kv) throw new LineError(`ligne incomprise « ${content} »`);
-			const key = kv[1].toLowerCase();
+			const key = canonicalKey(kv[1]);
 			const value = kv[2].trim();
 			if (!(KNOWN_KEYS as readonly string[]).includes(key)) {
 				throw new LineError(
@@ -1117,6 +1278,26 @@ export function parseCourbeContent(source: string): CourbeNode {
 					break;
 				case 'axes':
 					axisTitles = parseAxisTitles(value);
+					break;
+				case 'tracer':
+					if (isVectorLine(value)) {
+						const written = splitVectorLine(value);
+						if (isCombinationText(written.text)) {
+							combination = written.text;
+							vecteur = {
+								name: '',
+								coords: null,
+								...(written.from !== undefined && { from: written.from }),
+								line
+							};
+						} else vecteur = parseVectorToTrace(value, line);
+					} else tracer = parseLineToTrace(value, line);
+					break;
+				case 'vecteurs':
+					givenLine = { value, line };
+					break;
+				case 'données':
+					donnees = parseData(value, line);
 					break;
 				case 'case':
 					if (!/^\d+$/.test(value)) {
@@ -1204,9 +1385,9 @@ export function parseCourbeContent(source: string): CourbeNode {
 		}
 	}
 
-	if (caseIndex !== undefined && !seenKeys.has('placer')) {
+	if (caseIndex !== undefined && !seenKeys.has('placer') && !seenKeys.has('tracer')) {
 		errors.push({
-			message: `Ligne ${caseLine} : case: sans objet sans placer:`,
+			message: `Ligne ${caseLine} : case: sans objet sans placer: ni tracer:`,
 			line: caseLine,
 			content: lines[caseLine - 1].trim()
 		});
@@ -1227,6 +1408,76 @@ export function parseCourbeContent(source: string): CourbeNode {
 		}
 	}
 
+	// Droite à tracer : seule sur son repère, au moins deux nœuds dans la fenêtre
+	if (errors.length === 0 && tracer !== undefined) {
+		const problem =
+			placer !== undefined
+				? 'tracer: et placer: ne vont pas ensemble : un seul geste par repère'
+				: traceProblem(tracer, { window: window as CourbeWindow, grid, size });
+		if (problem !== null) {
+			errors.push({
+				message: `Ligne ${tracer.line} : tracer : ${problem}`,
+				line: tracer.line,
+				content: lines[tracer.line - 1].trim()
+			});
+		}
+	}
+
+	// Courbe de données : toute faite, jamais avec un geste (Q2 de `relier-points`)
+	if (errors.length === 0 && donnees !== undefined) {
+		const gesture = placer !== undefined ? 'placer:' : seenKeys.has('tracer') ? 'tracer:' : null;
+		if (gesture !== null) {
+			errors.push({
+				message: `Ligne ${donnees.line} : données: et ${gesture} ne vont pas ensemble : la courbe de données se lit, elle ne se construit pas`,
+				line: donnees.line,
+				content: lines[donnees.line - 1].trim()
+			});
+		}
+	}
+
+	// Vecteurs donnés : entre points de points:
+	let vecteurs: CourbeGivenVector[] | undefined;
+	if (errors.length === 0 && givenLine !== undefined) {
+		try {
+			vecteurs = readGivenVectors(givenLine.value, givenLine.line, points);
+		} catch (error) {
+			fail(givenLine.line, lines[givenLine.line - 1].trim(), error);
+		}
+	}
+
+	// Combinaison à tracer : ses coordonnées, calculées des vecteurs donnés et des points
+	if (errors.length === 0 && vecteur !== undefined && combination !== undefined) {
+		try {
+			const terms = readCombination(combination, vecteurs ?? [], points);
+			vecteur = { ...vecteur, coords: combinationCoords(terms), terms };
+		} catch (error) {
+			const message = error instanceof Error ? error.message : String(error);
+			fail(vecteur.line, lines[vecteur.line - 1].trim(), new Error(`tracer : ${message}`));
+		}
+	}
+
+	// Vecteur à tracer : seul sur son repère, origine imposée prise dans points:
+	if (errors.length === 0 && vecteur !== undefined) {
+		const origin =
+			vecteur.from === undefined ? undefined : points.find((p) => p.name === vecteur!.from);
+		if (origin !== undefined) vecteur = { ...vecteur, origin: { x: origin.x, y: origin.y } };
+		const problem =
+			placer !== undefined
+				? 'tracer: et placer: ne vont pas ensemble : un seul geste par repère'
+				: vecteur.from !== undefined && origin === undefined
+					? `origine ${vecteur.from} absente : la donner dans points: (ex. points: ${vecteur.from}(1;2))`
+					: vecteur.coords === null
+						? null
+						: vectorProblem({ window: window as CourbeWindow, grid, size }, vecteur.coords, origin);
+		if (problem !== null) {
+			errors.push({
+				message: `Ligne ${vecteur.line} : tracer : ${problem}`,
+				line: vecteur.line,
+				content: lines[vecteur.line - 1].trim()
+			});
+		}
+	}
+
 	const spec: CourbeSpec | null =
 		errors.length === 0
 			? {
@@ -1241,7 +1492,11 @@ export function parseCourbeContent(source: string): CourbeNode {
 					size,
 					description,
 					...(placer !== undefined && { placer }),
-					...(axisTitles !== undefined && { axisTitles })
+					...(tracer !== undefined && { tracer }),
+					...(vecteur !== undefined && { vecteur }),
+					...(vecteurs !== undefined && { vecteurs }),
+					...(axisTitles !== undefined && { axisTitles }),
+					...(donnees !== undefined && { donnees })
 				}
 			: null;
 

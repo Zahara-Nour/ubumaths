@@ -1,10 +1,8 @@
 {
+	"id": "62105594-17b0-4a0e-91e1-f5be360db13f",
 	"title": "Calculer une fréquence marginale",
 	"description": "Tableau croisé de 200 élèves : fréquence d'une modalité, en pourcentage ou en fraction",
 	"grades": ["2"],
-	"theme": "Statistiques",
-	"domain": "Tableaux croisés",
-	"subdomain": "Fréquences marginales",
 	"level": 2,
 	"delay": 90,
 	"status": "draft",

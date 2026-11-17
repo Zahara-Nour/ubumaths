@@ -1,10 +1,8 @@
 {
+	"id": "f1759d81-6c73-4c3a-9db0-df90f37b71c7",
 	"title": "Quelle horloge indique… ? (heures entières)",
 	"description": "Reconnaître l'horloge qui montre une heure entière ≤ 12 ; leurres : aiguilles inversées, heure voisine",
 	"grades": ["CP"],
-	"theme": "Grandeurs",
-	"domain": "Durées",
-	"subdomain": "Lire l'heure",
 	"level": 1,
 	"delay": 30,
 	"status": "draft",

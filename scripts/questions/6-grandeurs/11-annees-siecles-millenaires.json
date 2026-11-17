@@ -1,10 +1,8 @@
 {
+	"id": "ffca5b4a-cb8d-43c2-979e-fb7956046032",
 	"title": "Années, siècles et millénaires",
 	"description": "Connaître les durées du calendrier : 365 ou 366 jours dans une année, 100 ans dans un siècle, 1 000 ans (10 siècles) dans un millénaire",
 	"grades": ["6"],
-	"theme": "Grandeurs",
-	"domain": "Durées",
-	"subdomain": "Convertir",
 	"level": 13,
 	"delay": 30,
 	"status": "draft",

@@ -1,10 +1,8 @@
 {
+	"id": "28ede1b8-76ec-4343-aab3-cd4f5f8a37a2",
 	"title": "Problème : demi-vie, doublement (exp et ln)",
 	"description": "Décroissance radioactive (demi-vie, constante λ) et croissance exponentielle (temps pour multiplier par k) : valeur exacte par ln (pièges : arrondi, ln(1/2) = ln 2, λ/ln 2)",
 	"grades": ["T_SPE"],
-	"theme": "Fonctions",
-	"domain": "Logarithmes",
-	"subdomain": "Équations et inéquations",
 	"level": 4,
 	"delay": 60,
 	"status": "draft",

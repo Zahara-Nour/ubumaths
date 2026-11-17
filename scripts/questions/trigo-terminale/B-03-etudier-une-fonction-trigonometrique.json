@@ -1,10 +1,8 @@
 {
+	"id": "7026a36a-dc96-4d46-8c39-950220a60f82",
 	"title": "Étudier les variations d'une fonction avec cos ou sin",
 	"description": "f(x) = cx − 2 sin x, cx + 2 cos x, 2 sin x − cx sur [0 ; π] (c = 1, √2 ou √3) : signe de f′ par cos x ⩽ a ou sin x ⩾ a ; bornes ouvrables (pièges : sens, cos et sin confondus, π − α oublié)",
 	"grades": ["T_SPE"],
-	"theme": "Fonctions",
-	"domain": "Fonctions trigonométriques",
-	"subdomain": "Dérivées et variations",
 	"level": 3,
 	"status": "draft",
 	"delay": 120,

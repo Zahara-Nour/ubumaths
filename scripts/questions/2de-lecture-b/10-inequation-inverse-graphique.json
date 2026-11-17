@@ -1,10 +1,8 @@
 {
+	"id": "2d4c0b35-1eb0-454e-bf7d-e246a65b5055",
 	"title": "Résoudre graphiquement une inéquation 1/x < k",
 	"description": "Inéquation 1/x < k lue sur l'hyperbole de la fonction inverse : k > 0 ou k < 0, les quatre sens ; 0 jamais solution",
 	"grades": ["2"],
-	"theme": "Fonctions",
-	"domain": "Fonction inverse",
-	"subdomain": "Lecture graphique",
 	"level": 2,
 	"delay": 75,
 	"status": "draft",

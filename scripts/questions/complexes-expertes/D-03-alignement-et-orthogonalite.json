@@ -1,10 +1,8 @@
 {
+	"id": "d400a330-ede5-4167-ab2a-1919eeed2468",
 	"title": "Alignement ou orthogonalité par un quotient de nombres complexes",
 	"description": "Le quotient (z_C − z_A)/(z_B − z_A) est réel (alignés), imaginaire pur (perpendiculaires) ou ni l'un ni l'autre (pièges : réel et imaginaire pur confondus, conclusion sans calcul)",
 	"grades": ["T_EXP"],
-	"theme": "Nombres complexes",
-	"domain": "Géométrie et nombres complexes",
-	"subdomain": "Alignement et orthogonalité",
 	"level": 2,
 	"status": "draft",
 	"delay": 60,

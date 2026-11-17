@@ -1,10 +1,8 @@
 {
+	"id": "5ecdc120-01b2-401b-b729-f5f628cadd35",
 	"title": "Estimer une masse, du milligramme à la tonne",
 	"description": "Choisir l'ordre de grandeur : une pomme de 150 g, un comprimé de 500 mg, un enfant de 30 kg, un éléphant de 5 t",
 	"grades": ["CM1"],
-	"theme": "Grandeurs",
-	"domain": "Masses",
-	"subdomain": "Ordres de grandeur",
 	"level": 4,
 	"delay": 45,
 	"status": "draft",

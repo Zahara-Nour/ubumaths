@@ -1,11 +1,9 @@
 {
+	"id": "d2067413-da43-42bb-a24c-642d2a3cc5e8",
 	"title": "Reconnaître une suite arithmétique ou géométrique sur un nuage de points",
 	"description": "Points alignés, termes multipliés par un même nombre, ou ni l'un ni l'autre",
 	"grades": ["1_SPE"],
-	"theme": "Suites",
-	"domain": "Reconnaître une suite",
 	"status": "draft",
-	"subdomain": "Arithmétique ou géométrique",
 	"level": 4,
 	"delay": 45,
 	"variations": [

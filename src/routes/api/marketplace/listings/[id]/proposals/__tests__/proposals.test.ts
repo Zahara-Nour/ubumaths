@@ -26,6 +26,11 @@ import {
 // enrichment real. The `checkCardsUnused` guard is intentionally NOT wired into
 // the proposal handler anymore (removed in commit 8260972a3 because it queried
 // vip_cards_activity, which logs power activations rather than consumption).
+// Garde commune : session/profil lus dans `locals` (cf. helper)
+vi.mock('$lib/server/middleware/auth', async (importActual) =>
+	(await import('$tests/helpers/garde-auth-locals')).gardeAuthDepuisLocals(importActual)
+);
+
 vi.mock('$lib/server/marketplace/helpers', async (importActual) => {
 	const actual = await importActual<typeof import('$lib/server/marketplace/helpers')>();
 	return {
@@ -221,7 +226,7 @@ describe('/api/marketplace/listings/[id]/proposals', () => {
 			const response = await POST({
 				request: mockRequest,
 				params: { id: LISTING_UUID },
-				locals: { supabase: mockSupabase, user: { id: buyer1.id } }
+				locals: { supabase: mockSupabase, user: { id: buyer1.id }, profile: { role: 'student' } }
 			} as unknown as Parameters<typeof POST>[0]);
 
 			const data = await response.json();
@@ -261,7 +266,7 @@ describe('/api/marketplace/listings/[id]/proposals', () => {
 			const response = await POST({
 				request: mockRequest,
 				params: { id: LISTING_UUID },
-				locals: { supabase: mockSupabase, user: { id: buyer1.id } }
+				locals: { supabase: mockSupabase, user: { id: buyer1.id }, profile: { role: 'student' } }
 			} as unknown as Parameters<typeof POST>[0]);
 
 			expect(response.status).toBe(201);
@@ -278,7 +283,10 @@ describe('/api/marketplace/listings/[id]/proposals', () => {
 					params: { id: LISTING_UUID },
 					locals: { supabase: mockSupabase, user: null }
 				} as unknown as Parameters<typeof POST>[0])
-			).rejects.toMatchObject({ status: 401, body: { message: 'Non authentifié' } });
+			).rejects.toMatchObject({
+				status: 401,
+				body: { message: 'Non autorisé - Authentification requise' }
+			});
 		});
 
 		test('validates request body with Zod', async () => {
@@ -292,7 +300,7 @@ describe('/api/marketplace/listings/[id]/proposals', () => {
 				POST({
 					request: mockRequest,
 					params: { id: LISTING_UUID },
-					locals: { supabase: mockSupabase, user: { id: buyer1.id } }
+					locals: { supabase: mockSupabase, user: { id: buyer1.id }, profile: { role: 'student' } }
 				} as unknown as Parameters<typeof POST>[0])
 			).rejects.toMatchObject({ status: 400 });
 		});
@@ -310,7 +318,7 @@ describe('/api/marketplace/listings/[id]/proposals', () => {
 				POST({
 					request: mockRequest,
 					params: { id: LISTING_UUID },
-					locals: { supabase: mockSupabase, user: { id: buyer1.id } }
+					locals: { supabase: mockSupabase, user: { id: buyer1.id }, profile: { role: 'student' } }
 				} as unknown as Parameters<typeof POST>[0])
 			).rejects.toMatchObject({
 				status: 400,
@@ -340,7 +348,7 @@ describe('/api/marketplace/listings/[id]/proposals', () => {
 				POST({
 					request: mockRequest,
 					params: { id: LISTING_UUID },
-					locals: { supabase: mockSupabase, user: { id: buyer1.id } }
+					locals: { supabase: mockSupabase, user: { id: buyer1.id }, profile: { role: 'student' } }
 				} as unknown as Parameters<typeof POST>[0])
 			).rejects.toMatchObject({
 				status: 403,
@@ -364,7 +372,7 @@ describe('/api/marketplace/listings/[id]/proposals', () => {
 				POST({
 					request: mockRequest,
 					params: { id: LISTING_UUID },
-					locals: { supabase: mockSupabase, user: { id: buyer1.id } }
+					locals: { supabase: mockSupabase, user: { id: buyer1.id }, profile: { role: 'student' } }
 				} as unknown as Parameters<typeof POST>[0])
 			).rejects.toMatchObject({
 				status: 403,
@@ -390,7 +398,7 @@ describe('/api/marketplace/listings/[id]/proposals', () => {
 				POST({
 					request: mockRequest,
 					params: { id: LISTING_UUID },
-					locals: { supabase: mockSupabase, user: { id: buyer1.id } }
+					locals: { supabase: mockSupabase, user: { id: buyer1.id }, profile: { role: 'student' } }
 				} as unknown as Parameters<typeof POST>[0])
 			).rejects.toMatchObject({
 				status: 403,
@@ -415,7 +423,7 @@ describe('/api/marketplace/listings/[id]/proposals', () => {
 				POST({
 					request: mockRequest,
 					params: { id: LISTING_UUID },
-					locals: { supabase: mockSupabase, user: { id: buyer1.id } }
+					locals: { supabase: mockSupabase, user: { id: buyer1.id }, profile: { role: 'student' } }
 				} as unknown as Parameters<typeof POST>[0])
 			).rejects.toMatchObject({
 				status: 403,
@@ -455,7 +463,7 @@ describe('/api/marketplace/listings/[id]/proposals', () => {
 			const response = await POST({
 				request: mockRequest,
 				params: { id: LISTING_UUID },
-				locals: { supabase: mockSupabase, user: { id: buyer1.id } }
+				locals: { supabase: mockSupabase, user: { id: buyer1.id }, profile: { role: 'student' } }
 			} as unknown as Parameters<typeof POST>[0]);
 
 			expect(response.status).toBe(201);
@@ -481,7 +489,7 @@ describe('/api/marketplace/listings/[id]/proposals', () => {
 				POST({
 					request: mockRequest,
 					params: { id: LISTING_UUID },
-					locals: { supabase: mockSupabase, user: { id: buyer1.id } }
+					locals: { supabase: mockSupabase, user: { id: buyer1.id }, profile: { role: 'student' } }
 				} as unknown as Parameters<typeof POST>[0])
 			).rejects.toMatchObject({
 				status: 403,
@@ -637,7 +645,7 @@ describe('/api/marketplace/listings/[id]/proposals', () => {
 			await POST({
 				request: mockRequest,
 				params: { id: LISTING_UUID },
-				locals: { supabase: mockSupabase, user: { id: buyer1.id } }
+				locals: { supabase: mockSupabase, user: { id: buyer1.id }, profile: { role: 'student' } }
 			} as unknown as Parameters<typeof POST>[0]);
 
 			// Handler signature: notifyNewProposal(supabase, listing.creator_id, userId, 'Annonce', proposal.id)
@@ -672,7 +680,7 @@ describe('/api/marketplace/listings/[id]/proposals', () => {
 				POST({
 					request: mockRequest,
 					params: { id: LISTING_UUID },
-					locals: { supabase: mockSupabase, user: { id: buyer1.id } }
+					locals: { supabase: mockSupabase, user: { id: buyer1.id }, profile: { role: 'student' } }
 				} as unknown as Parameters<typeof POST>[0])
 			).rejects.toMatchObject({ status: 404, body: { message: 'Annonce non trouvée' } });
 		});
@@ -694,7 +702,7 @@ describe('/api/marketplace/listings/[id]/proposals', () => {
 				POST({
 					request: mockRequest,
 					params: { id: LISTING_UUID },
-					locals: { supabase: mockSupabase, user: { id: buyer1.id } }
+					locals: { supabase: mockSupabase, user: { id: buyer1.id }, profile: { role: 'student' } }
 				} as unknown as Parameters<typeof POST>[0])
 			).rejects.toMatchObject({
 				status: 500,
@@ -731,7 +739,7 @@ describe('/api/marketplace/listings/[id]/proposals', () => {
 			const response = await POST({
 				request: mockRequest,
 				params: { id: LISTING_UUID },
-				locals: { supabase: mockSupabase, user: { id: buyer1.id } }
+				locals: { supabase: mockSupabase, user: { id: buyer1.id }, profile: { role: 'student' } }
 			} as unknown as Parameters<typeof POST>[0]);
 
 			expect(response.status).toBe(201);
@@ -748,7 +756,7 @@ describe('/api/marketplace/listings/[id]/proposals', () => {
 				POST({
 					request: invalidRequest,
 					params: { id: LISTING_UUID },
-					locals: { supabase: mockSupabase, user: { id: buyer1.id } }
+					locals: { supabase: mockSupabase, user: { id: buyer1.id }, profile: { role: 'student' } }
 				} as unknown as Parameters<typeof POST>[0])
 			).rejects.toMatchObject({ status: 400 });
 		});

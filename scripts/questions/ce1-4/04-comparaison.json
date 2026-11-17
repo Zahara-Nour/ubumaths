@@ -1,10 +1,8 @@
 {
+	"id": "612eeb31-b373-451d-87c1-390c7662ab4f",
 	"title": "Problèmes de comparaison",
 	"description": "Le plus grand, le plus petit ou l'écart : Léo 188 billes, Lucie 75 de plus ; 111 garçons, 257 filles ; Elsa 15,30 €, 6 € de plus que Noé",
 	"grades": ["CE1"],
-	"theme": "Entiers",
-	"domain": "Problèmes",
-	"subdomain": "Comparaison",
 	"level": 1,
 	"delay": 90,
 	"status": "draft",

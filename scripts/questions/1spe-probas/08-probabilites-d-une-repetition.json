@@ -1,10 +1,8 @@
 {
+	"id": "d8c9cb60-e9c5-4f38-a8d9-b5c2b83de908",
 	"title": "Probabilités d'une répétition (n ⩽ 4)",
 	"description": "Répétition de n ⩽ 4 épreuves de Bernoulli : exactement j succès sur 3, au moins un succès (événement contraire), exactement un succès sur 4 — par les chemins, sans loi binomiale",
 	"grades": ["1_SPE"],
-	"theme": "Probabilités",
-	"domain": "Probabilités conditionnelles",
-	"subdomain": "Répétition de Bernoulli",
 	"level": 3,
 	"delay": 90,
 	"status": "draft",

@@ -1,0 +1,264 @@
+{
+	"id": "c8da0674-7e4b-44d5-a062-573c5b54ce32",
+	"title": "Écrire le code du robot : avance et pivote",
+	"description": "Composer avec « avance de », « pivote à droite / à gauche » le code qui mène le robot à la case verte : sans obstacle, puis en contournant des cases grises",
+	"grades": ["CE1"],
+	"level": 5,
+	"delay": 120,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Écris le code qui mène le robot à la case verte. Son nez montre où il regarde. **Avance de 3** : il avance de $3$ cases tout droit. **Pivote à droite** (ou **à gauche**) : il tourne d'un quart de tour sur place, vers sa droite (ou sa gauche), sans changer de case.\n\n```robot\nquadrillage: 8 x 5\ncodage: avance-pivote\ndépart: {{xd}}, {{yd}}, {{if:s==1|haut|{{if:s==2|droite|{{if:s==3|bas|gauche}}}}}}\narrivée: {{xa}}, {{ya}}\nproduire: oui\n```",
+			"variables": [
+				{
+					"name": "xd",
+					"expression": "1..8"
+				},
+				{
+					"name": "yd",
+					"expression": "1..5"
+				},
+				{
+					"name": "xa",
+					"expression": "1..8"
+				},
+				{
+					"name": "ya",
+					"expression": "1..5"
+				},
+				{
+					"name": "s",
+					"expression": "1..4"
+				}
+			],
+			"conditions": ["abs(xa-xd)+abs(ya-yd) >= 5", "xa != xd", "ya != yd"],
+			"correction": {
+				"steps": [
+					"Avant d'avancer, on fait pivoter le robot pour que son nez regarde là où il doit aller. Sa droite et sa gauche sont celles du robot, pas les tiennes.",
+					"On suit le code case par case depuis le robot : il est juste s'il finit sur la case verte, sans sortir du quadrillage ni entrer dans une case grise. Un autre chemin que celui du corrigé est juste aussi."
+				]
+			}
+		},
+		{
+			"statement": "Écris le code qui mène le robot à la case verte. Son nez montre où il regarde. **Avance de 3** : il avance de $3$ cases tout droit. **Pivote à droite** (ou **à gauche**) : il tourne d'un quart de tour sur place, vers sa droite (ou sa gauche), sans changer de case. Il ne peut pas entrer dans une case grise.\n\n```robot\nquadrillage: 8 x 5\ncodage: avance-pivote\ndépart: {{if:k==1|1, 3, droite|{{if:k==2|3, 1, droite|{{if:k==3|1, 1, bas|{{if:k==4|2, 2, bas|{{if:k==5|3, 2, gauche|{{if:k==6|2, 3, droite|{{if:k==7|1, 1, haut|{{if:k==8|1, 1, bas|{{if:k==9|2, 5, bas|{{if:k==10|1, 5, bas|{{if:k==11|1, 5, haut|1, 5, haut}}}}}}}}}}}}}}}}}}}}}}\narrivée: {{if:k==1|6, 4|{{if:k==2|5, 2|{{if:k==3|8, 2|{{if:k==4|7, 4|{{if:k==5|5, 5|{{if:k==6|5, 5|{{if:k==7|6, 5|{{if:k==8|5, 4|{{if:k==9|7, 1|{{if:k==10|8, 3|{{if:k==11|8, 5|7, 5}}}}}}}}}}}}}}}}}}}}}}\ninterdites: {{if:k==1|4, 1 ; 4, 2 ; 4, 3 ; 4, 4|{{if:k==2|4, 1 ; 4, 2 ; 4, 3 ; 4, 4|{{if:k==3|4, 1 ; 4, 2 ; 4, 3 ; 4, 4|{{if:k==4|4, 1 ; 4, 2 ; 4, 3 ; 4, 4|{{if:k==5|4, 2 ; 4, 3 ; 4, 4 ; 4, 5 ; 5, 2 ; 6, 2|{{if:k==6|4, 2 ; 4, 3 ; 4, 4 ; 4, 5 ; 5, 2 ; 6, 2|{{if:k==7|4, 2 ; 4, 3 ; 4, 4 ; 4, 5 ; 5, 2 ; 6, 2|{{if:k==8|4, 2 ; 4, 3 ; 4, 4 ; 4, 5 ; 5, 2 ; 6, 2|{{if:k==9|3, 1 ; 3, 2 ; 3, 3 ; 3, 4 ; 6, 2 ; 6, 3 ; 6, 4 ; 6, 5|{{if:k==10|3, 1 ; 3, 2 ; 3, 3 ; 3, 4 ; 6, 2 ; 6, 3 ; 6, 4 ; 6, 5|{{if:k==11|3, 1 ; 3, 2 ; 3, 3 ; 3, 4 ; 6, 2 ; 6, 3 ; 6, 4 ; 6, 5|3, 1 ; 3, 2 ; 3, 3 ; 3, 4 ; 6, 2 ; 6, 3 ; 6, 4 ; 6, 5}}}}}}}}}}}}}}}}}}}}}}\nproduire: oui\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..12"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Avant d'avancer, on fait pivoter le robot pour que son nez regarde là où il doit aller. Sa droite et sa gauche sont celles du robot, pas les tiennes.",
+					"Le chemin tout droit est barré par le gris : il faut le contourner.",
+					"On suit le code case par case depuis le robot : il est juste s'il finit sur la case verte, sans sortir du quadrillage ni entrer dans une case grise. Un autre chemin que celui du corrigé est juste aussi."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Juste : pivote à droite d'abord",
+			"variationIndex": 0,
+			"variables": {
+				"xd": "2",
+				"yd": "1",
+				"xa": "6",
+				"ya": "4",
+				"s": "1"
+			},
+			"answers": ["pivote à droite, avance de 4, pivote à gauche, avance de 3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Juste : en haut d'abord",
+			"variationIndex": 0,
+			"variables": {
+				"xd": "2",
+				"yd": "1",
+				"xa": "6",
+				"ya": "4",
+				"s": "1"
+			},
+			"answers": ["avance de 3, pivote à droite, avance de 4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : gauche et droite du robot inversées",
+			"variationIndex": 0,
+			"variables": {
+				"xd": "2",
+				"yd": "1",
+				"xa": "6",
+				"ya": "4",
+				"s": "1"
+			},
+			"answers": ["pivote à gauche, avance de 4, pivote à droite, avance de 3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : avance comme une flèche, sans pivoter",
+			"variationIndex": 0,
+			"variables": {
+				"xd": "2",
+				"yd": "1",
+				"xa": "6",
+				"ya": "4",
+				"s": "1"
+			},
+			"answers": ["avance de 4, pivote à gauche, avance de 3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : une case de trop",
+			"variationIndex": 0,
+			"variables": {
+				"xd": "2",
+				"yd": "1",
+				"xa": "6",
+				"ya": "4",
+				"s": "1"
+			},
+			"answers": ["avance de 3, pivote à droite, avance de 5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Juste : robot vers la gauche",
+			"variationIndex": 0,
+			"variables": {
+				"xd": "2",
+				"yd": "1",
+				"xa": "6",
+				"ya": "4",
+				"s": "4"
+			},
+			"answers": ["pivote à droite, avance de 3, pivote à droite, avance de 4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Mur : un code juste (k = 1)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1"
+			},
+			"answers": [
+				"pivote à gauche, avance de 2, pivote à droite, avance de 5, pivote à droite, avance de 1"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : gauche et droite inversées (k = 1)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1"
+			},
+			"answers": [
+				"pivote à droite, avance de 2, pivote à gauche, avance de 5, pivote à gauche, avance de 1"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : sans le premier pivot (k = 1)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["avance de 2, pivote à droite, avance de 5, pivote à droite, avance de 1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Mur : un code juste (k = 5)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "5"
+			},
+			"answers": [
+				"pivote à gauche, avance de 1, pivote à gauche, avance de 4, pivote à gauche, avance de 4, pivote à gauche, avance de 2"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : gauche et droite inversées (k = 5)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "5"
+			},
+			"answers": [
+				"pivote à droite, avance de 1, pivote à droite, avance de 4, pivote à droite, avance de 4, pivote à droite, avance de 2"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : sans le premier pivot (k = 5)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "5"
+			},
+			"answers": [
+				"avance de 1, pivote à gauche, avance de 4, pivote à gauche, avance de 4, pivote à gauche, avance de 2"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Mur : un code juste (k = 9)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "9"
+			},
+			"answers": [
+				"pivote à gauche, avance de 2, pivote à droite, avance de 4, pivote à gauche, avance de 3"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : gauche et droite inversées (k = 9)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "9"
+			},
+			"answers": [
+				"pivote à droite, avance de 2, pivote à gauche, avance de 4, pivote à droite, avance de 3"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : sans le premier pivot (k = 9)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "9"
+			},
+			"answers": ["avance de 2, pivote à droite, avance de 4, pivote à gauche, avance de 3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

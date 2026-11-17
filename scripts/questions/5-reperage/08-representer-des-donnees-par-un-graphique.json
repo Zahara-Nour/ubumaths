@@ -1,0 +1,170 @@
+{
+	"id": "324e90e2-c378-407e-8c25-494230250e19",
+	"title": "Représenter des données par un graphique cartésien",
+	"description": "Représenter un relevé (température heure par heure, négative possible ; taille d'une plante semaine par semaine) par des points dans un repère, axes donnés",
+	"grades": ["5"],
+	"level": 3,
+	"delay": 180,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Un matin d'hiver, on a relevé la température toutes les heures.\n\n| Point | A | B | C | D | E |\n|---|---|---|---|---|---|\n| Heure (h) | $6$ | $7$ | $8$ | $9$ | $10$ |\n| Température (°C) | ${{t1}}$ | ${{t2}}$ | ${{t3}}$ | ${{t4}}$ | ${{t5}}$ |\n\nPlace les points A, B, C, D et E : l'heure en abscisse, la température en ordonnée.\n\n```courbe\nx: -1 ; 11\ny: -6 ; 6\ngrille: 1 ; 1\naxes: x = Heure (h) ; y = Température (°C)\nplacer: A=(6 ; {{t1}}) ; B=(7 ; {{t2}}) ; C=(8 ; {{t3}}) ; D=(9 ; {{t4}}) ; E=(10 ; {{t5}})\ntaille: moyenne\ndescription: Repère : heure en abscisse, de 1 en 1 ; température en ordonnée, de −6 à 6 °C.\n```",
+			"variables": [
+				{
+					"name": "t1",
+					"expression": "-5..-3"
+				},
+				{
+					"name": "t2",
+					"expression": "-3..-1"
+				},
+				{
+					"name": "t3",
+					"expression": "-1..1"
+				},
+				{
+					"name": "t4",
+					"expression": "1..3"
+				},
+				{
+					"name": "t5",
+					"expression": "3..5"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque colonne donne un point : (heure ; température). Une température négative se place sous l'axe des abscisses.",
+					"$A\\textcolor{{{color:primary.0}}}{(6 ; {{t1}})}$, $B\\textcolor{{{color:primary.0}}}{(7 ; {{t2}})}$, $C\\textcolor{{{color:primary.0}}}{(8 ; {{t3}})}$, $D\\textcolor{{{color:primary.0}}}{(9 ; {{t4}})}$, $E\\textcolor{{{color:primary.0}}}{(10 ; {{t5}})}$."
+				]
+			}
+		},
+		{
+			"statement": "Chaque semaine, on a mesuré la hauteur d'une plante.\n\n| Point | A | B | C | D | E |\n|---|---|---|---|---|---|\n| Semaine | $0$ | $1$ | $2$ | $3$ | $4$ |\n| Hauteur (cm) | ${{h0}}$ | ${{h1}}$ | ${{h2}}$ | ${{h3}}$ | ${{h4}}$ |\n\nPlace les points A, B, C, D et E : la semaine en abscisse, la hauteur en ordonnée.\n\n```courbe\nx: -1 ; 5\ny: -2 ; 22\ngrille: 1 ; 2\naxes: x = Semaine ; y = Hauteur (cm)\nplacer: A=(0 ; {{h0}}) ; B=(1 ; {{h1}}) ; C=(2 ; {{h2}}) ; D=(3 ; {{h3}}) ; E=(4 ; {{h4}})\ntaille: moyenne\ndescription: Repère : semaines en abscisse, de 1 en 1 ; hauteur en ordonnée, de 2 en 2 cm.\n```",
+			"variables": [
+				{
+					"name": "u0",
+					"expression": "1..2"
+				},
+				{
+					"name": "d1",
+					"expression": "1..2"
+				},
+				{
+					"name": "d2",
+					"expression": "1..2"
+				},
+				{
+					"name": "d3",
+					"expression": "1..2"
+				},
+				{
+					"name": "d4",
+					"expression": "1..2"
+				},
+				{
+					"name": "h0",
+					"expression": "eval:2*u0"
+				},
+				{
+					"name": "h1",
+					"expression": "eval:2*(u0+d1)"
+				},
+				{
+					"name": "h2",
+					"expression": "eval:2*(u0+d1+d2)"
+				},
+				{
+					"name": "h3",
+					"expression": "eval:2*(u0+d1+d2+d3)"
+				},
+				{
+					"name": "h4",
+					"expression": "eval:2*(u0+d1+d2+d3+d4)"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque colonne donne un point : (semaine ; hauteur). Sur l'axe vertical, une graduation vaut $2$ cm.",
+					"$A\\textcolor{{{color:primary.0}}}{(0 ; {{h0}})}$, $B\\textcolor{{{color:primary.0}}}{(1 ; {{h1}})}$, $C\\textcolor{{{color:primary.0}}}{(2 ; {{h2}})}$, $D\\textcolor{{{color:primary.0}}}{(3 ; {{h3}})}$, $E\\textcolor{{{color:primary.0}}}{(4 ; {{h4}})}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Températures −4, −2, 0, 2, 4",
+			"variationIndex": 0,
+			"variables": {
+				"t1": "-4",
+				"t2": "-2",
+				"t3": "0",
+				"t4": "2",
+				"t5": "4"
+			},
+			"answers": ["6;-4", "7;-2", "8;0", "9;2", "10;4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : températures négatives placées au-dessus de l'axe",
+			"variationIndex": 0,
+			"variables": {
+				"t1": "-4",
+				"t2": "-2",
+				"t3": "0",
+				"t4": "2",
+				"t5": "4"
+			},
+			"answers": ["6;4", "7;2", "8;0", "9;2", "10;4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : A avec abscisse et ordonnée échangées",
+			"variationIndex": 0,
+			"variables": {
+				"t1": "-3",
+				"t2": "-2",
+				"t3": "0",
+				"t4": "2",
+				"t5": "4"
+			},
+			"answers": ["-3;6", "7;-2", "8;0", "9;2", "10;4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Plante : 2, 4, 8, 10, 14",
+			"variationIndex": 1,
+			"variables": {
+				"u0": "1",
+				"d1": "1",
+				"d2": "2",
+				"d3": "1",
+				"d4": "2"
+			},
+			"answers": ["0;2", "1;4", "2;8", "3;10", "4;14"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : hauteurs lues de 1 en 1 (moitié)",
+			"variationIndex": 1,
+			"variables": {
+				"u0": "1",
+				"d1": "1",
+				"d2": "2",
+				"d3": "1",
+				"d4": "2"
+			},
+			"answers": ["0;1", "1;2", "2;4", "3;5", "4;7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

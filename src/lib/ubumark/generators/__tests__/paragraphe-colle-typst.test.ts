@@ -5,7 +5,10 @@
  *
  * Décision de David (2026-10-26) : un paragraphe reste collé (`sticky`) à tout
  * bloc qui le suit, SAUF un autre paragraphe, un titre ou un trait. Au niveau
- * du document comme dans un élément de liste.
+ * du document comme dans un élément de liste. Depuis le 2026-11-09 (chantier
+ * coupures-pdf), collé en fin de PAGE seulement (`ubu-colle()`), avec un marqueur
+ * de coupure au début de la chaîne collée ; la mise en page réelle des colonnes :
+ * `coupures-colonnes.test.ts`.
  *
  * Le rendu est vérifié avec le compilateur de prod (typst.ts en WebAssembly) :
  * texte de chaque page lu par pdfjs.
@@ -15,16 +18,16 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { loadFonts } from '@myriaddreamin/typst.ts/options.init';
 import { parseMarkdown } from '$lib/ubumark';
-import { generateTypst } from '../typst-generator';
+import { TYPST_BREAK_MARKER, generateTypst } from '../typst-generator';
 
 const body = (md: string) =>
 	generateTypst(parseMarkdown(md), { includeSetup: false }).split(
 		'// ubumark: fin de l’en-tête'
 	)[1];
 
-/** Le paragraphe `text` est-il enveloppé dans un bloc collé au suivant ? */
+/** Le paragraphe `text` est-il enveloppé dans un bloc collé au suivant (en fin de page) ? */
 function isSticky(typst: string, text: string): boolean {
-	return new RegExp(`#block\\(width: 100%, sticky: true\\)\\[\\n${text}\\n\\]`).test(typst);
+	return typst.includes(`#context block(width: 100%, sticky: ubu-colle())[\n${text}\n]`);
 }
 
 const MONNAIE = '```monnaie\npièces: 30×1\ndisposition: mélangé\n```';
@@ -151,4 +154,51 @@ describe('rendu réel : le paragraphe change de page avec son bloc', () => {
 		},
 		60_000
 	);
+});
+
+describe('marqueur de coupure : au début de chaque chaîne collée, jamais au milieu', () => {
+	const markers = (typst: string) => typst.split(TYPST_BREAK_MARKER).length - 1;
+
+	it('paragraphe collé : marqueur juste avant lui', () => {
+		expect(body('INTRO :\n\n$$x^2=4$$')).toBe(
+			`\n${TYPST_BREAK_MARKER}\n#context block(width: 100%, sticky: ubu-colle())[\nINTRO :\n]\n\n$ x^2=4 $`
+		);
+	});
+
+	it('document qui suit un titre d’exercice (`chainedStart`) : pas de marqueur', () => {
+		const out = generateTypst(parseMarkdown('INTRO :\n\n$$x^2=4$$'), {
+			includeSetup: false,
+			chainedStart: true
+		});
+		expect(markers(out)).toBe(0);
+		expect(isSticky(out, 'INTRO :')).toBe(true);
+	});
+
+	it('titre (collé par Typst) : marqueur avant lui, aucun entre lui et l’introduction', () => {
+		const out = body('## Titre\n\nINTRO :\n\n$$x^2=4$$');
+		expect(markers(out)).toBe(1);
+		expect(out.indexOf(TYPST_BREAK_MARKER)).toBeLessThan(out.indexOf('Titre'));
+	});
+
+	it('paragraphe collé à une liste dont la 1re question a une tête : un seul marqueur', () => {
+		const out = body('INTRO :\n\n1. QUESTION :\n\n   $$x$$\n2. AUTRE :\n\n   $$y$$');
+		expect(markers(out)).toBe(2);
+		// Celui de l'introduction, puis celui de la 2e question ; aucun entre
+		// l'introduction et la 1re question
+		const intro = out.indexOf('INTRO :');
+		const premiere = out.indexOf('QUESTION :');
+		expect(out.indexOf(TYPST_BREAK_MARKER)).toBeLessThan(intro);
+		expect(out.slice(intro, premiere)).not.toContain(TYPST_BREAK_MARKER);
+		expect(out.slice(premiere, out.indexOf('AUTRE :'))).toContain(TYPST_BREAK_MARKER);
+	});
+
+	it('énoncé collé à ses sous-questions : pas de marqueur entre la tête et la 1re sous-question', () => {
+		const out = body('1. ÉNONCÉ\n   1. A :\n\n      $$x$$\n   2. B');
+		expect(markers(out)).toBe(1);
+		expect(out.indexOf(TYPST_BREAK_MARKER)).toBeLessThan(out.indexOf('ÉNONCÉ'));
+	});
+
+	it('rien de collé : aucun marqueur', () => {
+		expect(markers(body('UN\n\nDEUX\n\n---\n\n1. a\n2. b'))).toBe(0);
+	});
 });

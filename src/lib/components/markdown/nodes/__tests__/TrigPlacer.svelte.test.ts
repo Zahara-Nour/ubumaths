@@ -283,8 +283,6 @@ describe('Cercle à placer — hors question, et dans une question', () => {
 					}
 				],
 				grades: ['1_SPE'],
-				theme: 'Test',
-				domain: 'Test',
 				level: 1
 			} as QuestionTemplate,
 			42

@@ -44,6 +44,14 @@ import {
 	type PinnedLabelTarget
 } from '$lib/grapheur/pinned-labels';
 
+/**
+ * Délai de fin d'un geste bref (cran de molette, appui sur un bouton ou une
+ * touche de zoom, flèche) : tant que les gestes s'enchaînent plus vite, la vue
+ * reste « en interaction » et les analyses (points remarquables,
+ * intersections) dorment ; elles tournent une fois, ce délai après le dernier.
+ */
+export const BRIEF_GESTURE_DELAY = 150;
+
 // =============================================================================
 // Grapheur Store Class
 // =============================================================================
@@ -635,7 +643,40 @@ class GrapheurStore {
 	 * @param value - Whether user is currently interacting
 	 */
 	setInteracting(value: boolean): void {
-		this.isInteracting = value;
+		this.held = value;
+		this.isInteracting = value || this.briefTimer !== null;
+	}
+
+	/** Un geste continu (glisser) est-il en cours ? */
+	private held = false;
+
+	/** Minuteur de fin du geste bref en cours, relancé à chaque geste. */
+	private briefTimer: ReturnType<typeof setTimeout> | null = null;
+
+	/**
+	 * Marque un geste bref : la vue est en interaction jusqu'à
+	 * `BRIEF_GESTURE_DELAY` après le dernier. Un glisser en cours garde la main :
+	 * c'est son relâchement qui clôt l'interaction.
+	 *
+	 * Sans cela, chaque cran de molette ou appui de zoom relançait l'analyse de
+	 * toutes les courbes et les intersections de toutes les paires — ~150 ms
+	 * par appui avec dix courbes sur un appareil modeste (mesures du 2026-11-11).
+	 */
+	briefGesture(): void {
+		this.isInteracting = true;
+		if (this.briefTimer !== null) clearTimeout(this.briefTimer);
+		this.briefTimer = setTimeout(() => {
+			this.briefTimer = null;
+			this.isInteracting = this.held;
+		}, BRIEF_GESTURE_DELAY);
+	}
+
+	/** Clôt tout de suite le geste bref en cours (graphe démonté pendant le geste). */
+	endBriefGesture(): void {
+		if (this.briefTimer === null) return;
+		clearTimeout(this.briefTimer);
+		this.briefTimer = null;
+		this.isInteracting = this.held;
 	}
 
 	/**

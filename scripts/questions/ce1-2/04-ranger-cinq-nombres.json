@@ -1,10 +1,8 @@
 {
+	"id": "0e60a71e-0267-4c02-a242-36820362b5f0",
 	"title": "Ranger cinq nombres",
 	"description": "Nombres proches jusqu'à 1 000 : 234, 243, 239, 300, 229",
 	"grades": ["CE1"],
-	"theme": "Entiers",
-	"domain": "Apprivoiser",
-	"subdomain": "Comparer",
 	"level": 6,
 	"delay": 40,
 	"status": "draft",

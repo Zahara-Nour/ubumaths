@@ -803,6 +803,70 @@ li .code-block-wrapper {
 }
 
 /*
+ * Boîtes de Blockly (« Créer une variable… », « Renommer la variable ») : un <dialog> ouvert en
+ * modal par Blockly 13. La remise à zéro de Tailwind (margin, padding, bordures) l'envoyait en
+ * haut à gauche, sans marge ni boutons visibles : on le recentre aux couleurs de l'appli.
+ */
+.blocklyDialog {
+	margin: auto;
+	padding: 1.25rem;
+	min-width: min(20rem, calc(100vw - 2rem));
+	border: 1px solid var(--color-border);
+	border-radius: 0.75rem;
+	background: var(--color-card);
+	color: var(--color-foreground);
+	box-shadow: 0 8px 24px rgb(0 0 0 / 0.25);
+}
+
+.blocklyDialog::backdrop {
+	background: rgb(0 0 0 / 0.4);
+}
+
+.blocklyDialogForm {
+	display: flex;
+	flex-direction: column;
+	row-gap: 0.75rem;
+}
+
+.blocklyDialogPrompt {
+	font-weight: 500;
+}
+
+.blocklyDialogInput {
+	padding: 0.375rem 0.625rem;
+	border: 1px solid var(--color-input);
+	border-radius: 0.375rem;
+	background: var(--color-background);
+	color: var(--color-foreground);
+}
+
+.blocklyDialogInput:focus-visible {
+	outline: 2px solid var(--color-primary);
+	outline-offset: 1px;
+}
+
+.blocklyDialogButtonRow {
+	display: flex;
+	justify-content: flex-end;
+	column-gap: 0.5rem;
+}
+
+.blocklyDialogButtonRow button {
+	padding: 0.375rem 0.875rem;
+	border: 1px solid var(--color-border);
+	border-radius: 0.375rem;
+	font-size: 0.875rem;
+	font-weight: 500;
+	cursor: pointer;
+}
+
+.blocklyDialogButtonRow .blocklyDialogConfirmButton {
+	border-color: var(--color-primary);
+	background: var(--color-primary);
+	color: var(--color-primary-foreground);
+}
+
+/*
  * List Numbering Schemes
  * ======================
  *
@@ -1143,4 +1207,17 @@ li .code-block-wrapper {
 	background: rgba(0, 0, 0, 0.5);
 	color: white;
 	font-size: 0.875rem;
+}
+
+/*
+ * Clavier virtuel MathLive sur un écran bas (téléphone en paysage) : touches de 32 px au lieu
+ * de 42. Avec ses 4 rangées et sa barre d'onglets, il couvrait presque tout l'écran visible
+ * de Safari (essais iPhone du 2026-11-03). Le clavier est dans <body>, hors shadow DOM :
+ * il lit ces variables sur :root.
+ */
+@media (max-height: 500px) {
+	:root {
+		--keycap-height: 32px;
+		--keyboard-padding-top: 2px;
+	}
 }

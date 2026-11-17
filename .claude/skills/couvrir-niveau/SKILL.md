@@ -23,7 +23,11 @@ Chantier de référence : le CP ([journal](../../../docs/wip/questions-progress.
    nombre de modèles ; modèles du niveau avec statut, nœud, tags.
 2. Bornes : `docs/systeme/programmes/bornes/` (le cycle du niveau).
 3. Vérifier chaque modèle existant contre les bornes (plages ET corrigé) ; modèles non tagués :
-   point du niveau, d'un niveau suivant, ou rien.
+   point du niveau, d'un niveau suivant, ou rien. Chercher aussi les modèles **de tous les niveaux**
+   (pas par mots-clés de titre) qu'on pourrait taguer au lieu d'en écrire : la 1re spé, la 2de, la Tle…
+   **Avant de proposer un tag**, vérifier en base les deux règles de l'ADR 0020 (doc, § 9) : **un seul
+   point par programme** sur un modèle, et le point **sur le nœud du modèle ou sur sa notion**
+   (`question_template_points_check_rules`). Un tag qui les viole est refusé à la migration.
 4. Classer chaque point sans modèle : **A** texte, **B** outil existant, **C** outil neuf,
    **D** non évaluable.
 5. Écrire tout cela dans le journal, puis **questions à David** (ordre des outils, corrections,
@@ -62,7 +66,9 @@ couvre (ce niveau et les suivants) et sa place dans l'ordre des lots. David déc
    `create-questions` en simulation tout vert ; essai en base **locale** (`.env.local` chargé) et
    modèles joués dans l'aperçu admin. PR des fichiers (revue : aucune, contenu), merge.
 3. **Prod** : `deploy:prod` si un bloc neuf l'exige (David seul) ; **David** lance
-   `create-questions --publier` (brouillons) ; relever les `id`.
+   `create-questions --publier` (brouillons) ; l'`id` de chaque modèle est écrit en tête de son
+   fichier : commiter les fichiers. Un fichier ne porte ni `theme`, ni `domain`, ni `subdomain`
+   (refusés, ADR 0035).
 4. **Migration nœud + tag** (gabarit `20261026210000_questions_cp_c_rangement_tags.sql` + son
    test d'intégration) : test rouge sans la migration puis vert, `security-auditor`, CI verte,
    `pnpm check:migrations --pr <n>`, merge, `db:migrate` depuis le dépôt principal, vérification en prod.

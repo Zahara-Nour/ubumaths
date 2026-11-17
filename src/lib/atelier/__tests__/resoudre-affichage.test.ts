@@ -39,11 +39,11 @@ describe('.résoudre sans étapes : les solutions en LaTeX', () => {
 			'.résoudre 2x^3=x',
 			'S = \\left\\{ -\\dfrac{\\sqrt{2}}{2} \\,;\\, 0 \\,;\\, \\dfrac{\\sqrt{2}}{2} \\right\\}'
 		],
-		['.résoudre x^3=8', 'x = 2'],
+		['.résoudre x^3=8', 'S = \\left\\{ 2 \\right\\}'],
 		['.résoudre x^4=2', 'S = \\left\\{ -\\sqrt[4]{2} \\,;\\, \\sqrt[4]{2} \\right\\}'],
 		// Une solution en ln : sa valeur approchée (décision de David, 2026-10-09)
-		['.résoudre e^x=2', 'x = \\ln\\left( 2 \\right) \\approx 0{,}69'],
-		['.résoudre sqrt(x)=1/2', 'x = \\dfrac{1}{4}']
+		['.résoudre e^x=2', 'S = \\left\\{ \\ln\\left( 2 \\right) \\right\\}'],
+		['.résoudre sqrt(x)=1/2', 'S = \\left\\{ \\dfrac{1}{4} \\right\\}']
 	])('%s → %s', (input, latex) => {
 		const shown = latexOf(input);
 		expect(shown).toBe(latex);
@@ -65,11 +65,20 @@ describe('.résoudre trigonométrique : la famille périodique entière', () => 
 	it.each([
 		[
 			'.résoudre sin(x)=1/2',
-			'x = \\dfrac{\\pi}{6} + 2k\\pi \\text{ ou } x = \\dfrac{5 \\pi}{6} + 2k\\pi, \\; k \\in \\mathbb{Z}'
+			'S = \\left\\{ \\dfrac{\\pi}{6} + 2k\\pi \\,;\\, \\dfrac{5 \\pi}{6} + 2k\\pi ,\\; k \\in \\mathbb{Z} \\right\\}'
 		],
-		['.résoudre tan(x)=1', 'x = \\dfrac{\\pi}{4} + k\\pi, \\; k \\in \\mathbb{Z}'],
-		['.résoudre sin(x)cos(x)=0', 'x = \\dfrac{k\\pi}{2}, \\; k \\in \\mathbb{Z}'],
-		['.résoudre sin(3x)=1', 'x = \\dfrac{\\pi}{6} + \\dfrac{2k\\pi}{3}, \\; k \\in \\mathbb{Z}']
+		[
+			'.résoudre tan(x)=1',
+			'S = \\left\\{ \\dfrac{\\pi}{4} + k\\pi ,\\; k \\in \\mathbb{Z} \\right\\}'
+		],
+		[
+			'.résoudre sin(x)cos(x)=0',
+			'S = \\left\\{ \\dfrac{k\\pi}{2} ,\\; k \\in \\mathbb{Z} \\right\\}'
+		],
+		[
+			'.résoudre sin(3x)=1',
+			'S = \\left\\{ \\dfrac{\\pi}{6} + \\dfrac{2k\\pi}{3} ,\\; k \\in \\mathbb{Z} \\right\\}'
+		]
 	])('%s → %s', (input, latex) => {
 		expect(latexOf(input)).toBe(latex);
 	});
@@ -90,16 +99,18 @@ describe('.résoudre : ce qui n’est pas sûr reste du texte', () => {
 	// était refusée, et le texte rendait « x = 0 ou x = 3π » sans période. Elle
 	// est désormais exacte (2026-10-09, voir trig-expo-proba.test.ts).
 	it('sin(x/3) = 0 : la période exacte, la famille entière', () => {
-		expect(latexOf('.résoudre sin(x/3)=0')).toBe('x = 3k\\pi, \\; k \\in \\mathbb{Z}');
+		expect(latexOf('.résoudre sin(x/3)=0')).toBe(
+			'S = \\left\\{ 3k\\pi ,\\; k \\in \\mathbb{Z} \\right\\}'
+		);
 	});
 });
 
 describe('.résoudre : non-régressions (étapes pédagogiques)', () => {
 	it.each([
-		['.résoudre 2x=3', 'x = \\dfrac{3}{2}'],
+		['.résoudre 2x=3', 'S = \\left\\{ \\dfrac{3}{2} \\right\\}'],
 		['.résoudre x^2=4', 'S = \\left\\{ -2 \\,;\\, 2 \\right\\}'],
 		['.résoudre x^2=-1', 'S = \\emptyset'],
-		['.résoudre 2x+1<7', 'x < 3']
+		['.résoudre 2x+1<7', 'S = ]-\\infty ; 3[']
 	])('%s → %s', (input, latex) => {
 		expect(latexOf(input)).toBe(latex);
 	});

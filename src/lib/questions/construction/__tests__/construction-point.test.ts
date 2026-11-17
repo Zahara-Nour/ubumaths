@@ -1,7 +1,7 @@
 /**
  * Juge d'une case « figure » : placer un point (`verifier: point A' = symetrie(A, axe=d)`,
  * chantier `controles-figure`, lot 2a, phase 0 validée par David le 2026-11-02,
- * `docs/wip/controles-figure-progress.md` § 5).
+ * `docs/archive/wip/controles-figure-progress.md` § 5).
  *
  * L'élève place des points (outil point, un toucher, réponse `point(x;y)`) ; à
  * droite du `=`, une expression du langage des figures calculée à chaque tirage.
@@ -331,9 +331,13 @@ describe('erreurs d’auteur (refus à la publication)', () => {
 		expect(() => assertChecks(source)).toThrow('nœud');
 	});
 
-	it('sans quadrillage : refusé (papier uni = lot suivant)', () => {
-		const source = figure("point A' = symetrie(A, axe=d)", AXIS_BODY, []);
-		expect(() => assertChecks(source)).toThrow('grille:');
+	it('sans quadrillage : un symétrique se construit aux instruments (lot 2b), le reste est refusé', () => {
+		expect(() =>
+			assertChecks(figure("point A' = symetrie(A, axe=d)", AXIS_BODY, []))
+		).not.toThrow();
+		expect(() => assertChecks(figure("point A' = point(5, 4)", AXIS_BODY, []))).toThrow(
+			'sans quadrillage, seulement un symétrique'
+		);
 	});
 
 	it('deux points attendus au même endroit', () => {

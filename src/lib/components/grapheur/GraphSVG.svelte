@@ -266,6 +266,13 @@
 	const CLICK_TOLERANCE = 4;
 
 	/**
+	 * Un démontage pendant la molette clôt le geste : le magasin survit au
+	 * graphe (changement de vue de l'atelier), et un `isInteracting` resté vrai
+	 * laisserait les analyses endormies jusqu'à la fin du délai.
+	 */
+	$effect(() => () => grapheurStore.endBriefGesture());
+
+	/**
 	 * Handle pointer down - initiate dragging (pan or axis scale)
 	 */
 	function handlePointerDown(e: PointerEvent): void {
@@ -400,6 +407,8 @@
 
 		// Zoom factor: scroll up = zoom in, scroll down = zoom out
 		const factor = e.deltaY < 0 ? 0.9 : 1.1;
+		// Geste bref : les analyses ne tournent qu'une fois, après le dernier cran.
+		grapheurStore.briefGesture();
 		grapheurStore.zoom(factor, mathPoint.x, mathPoint.y);
 	}
 

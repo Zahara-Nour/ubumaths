@@ -84,11 +84,13 @@
 		<Progress value={progressPercent} class="h-2" />
 	</div>
 
-	<!-- Constance Royale -->
-	<div class="mb-1 flex items-center gap-2 text-sm">
-		<Flame class="h-4 w-4 text-orange-500" />
-		<span>{lore.learning.streak} : {weeks(constanceWeeks)}</span>
-	</div>
+	<!-- Constance Royale : à 0, rien (une remise à zéro ne se montre pas, R1 du 2026-11-12) -->
+	{#if constanceWeeks > 0}
+		<div class="mb-1 flex items-center gap-2 text-sm">
+			<Flame class="h-4 w-4 text-orange-500" />
+			<span>{lore.learning.streak} : {weeks(constanceWeeks)}</span>
+		</div>
+	{/if}
 	<div class="mb-3 text-xs text-muted-foreground">
 		Cette semaine : {daysThisWeek} jour{daysThisWeek > 1 ? 's' : ''} sur {CONSTANCE_DAYS_PER_WEEK}
 	</div>

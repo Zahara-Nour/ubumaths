@@ -1,0 +1,265 @@
+{
+	"id": "a37968c5-67fa-4d42-be36-8af55518d7c5",
+	"title": "Calculer un indice de base 100",
+	"description": "Indice d'une valeur, valeur retrouvée à partir de l'indice, indice dans un tableau",
+	"grades": ["T_TECHNO"],
+	"level": 1,
+	"delay": 45,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "En 2020, une salle de sport comptait ${{a}}$ abonnés ; en 2024, elle en compte ${{eval:a+d}}$.\n\nCalcule l'indice du nombre d'abonnés en 2024, base $100$ en 2020, arrondi au dixième.\n\n$I_{2024}\\approx ?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "120..480"
+				},
+				{
+					"name": "d",
+					"expression": "-60..90"
+				}
+			],
+			"conditions": ["d*d >= 25"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:round(1000*(a+d)/a)/10;d}}",
+					"precision": {
+						"type": "decimal",
+						"digits": 1
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'indice de base $100$ d'une valeur $V$ par rapport à la valeur de référence $V_0$ est $I=100\\times\\dfrac{V}{V_0}$.",
+					"$I_{2024}=100\\times\\dfrac{ {{eval:a+d}} }{ {{a}} }\\approx\\textcolor{{{color:primary.0}}}{{{eval:round(1000*(a+d)/a)/10;d}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Le loyer mensuel d'un appartement était de ${{l}}~\\unit{€}$ en 2019. En 2025, l'indice de ce loyer, base $100$ en 2019, vaut ${{k}}$.\n\nQuel est le loyer mensuel en 2025 ?\n\n$?~\\unit{€}$",
+			"variables": [
+				{
+					"name": "l",
+					"expression": "500|600|650|720|800"
+				},
+				{
+					"name": "k",
+					"expression": "96|104|108|112|115|120"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:l*k/100;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un indice de ${{k}}$ signifie que le loyer vaut $\\dfrac{ {{k}} }{100}$ du loyer de 2019.",
+					"${{l}}\\times\\dfrac{ {{k}} }{100}=\\textcolor{{{color:primary.0}}}{{{eval:l*k/100;d}}}$ : le loyer est de ${{eval:l*k/100;d}}~\\unit{€}$."
+				]
+			}
+		},
+		{
+			"statement": "Le tableau donne le prix d'un panier de courses, en euros, et son indice base $100$ en 2021.\n\n| Année | 2021 | 2022 | 2023 |\n| --- | --- | --- | --- |\n| Prix (€) | ${{a}}$ | ${{eval:a+b}}$ | ${{eval:a+c}}$ |\n| Indice | $100$ | ${{eval:round(1000*(a+b)/a)/10;d}}$ | $?$ |\n\nComplète l'indice de 2023, arrondi au dixième.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "40..80"
+				},
+				{
+					"name": "b",
+					"expression": "1..6"
+				},
+				{
+					"name": "c",
+					"expression": "4..12"
+				}
+			],
+			"conditions": ["c > b"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:round(1000*(a+c)/a)/10;d}}",
+					"precision": {
+						"type": "decimal",
+						"digits": 1
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'indice de base $100$ d'une valeur $V$ par rapport à la valeur de référence $V_0$ est $I=100\\times\\dfrac{V}{V_0}$.",
+					"$I_{2023}=100\\times\\dfrac{ {{eval:a+c}} }{ {{a}} }\\approx\\textcolor{{{color:primary.0}}}{{{eval:round(1000*(a+c)/a)/10;d}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "200 → 250 : 125",
+			"variationIndex": 0,
+			"variables": {
+				"a": "200",
+				"d": "50"
+			},
+			"answers": ["125"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "300 → 260 : 86,7",
+			"variationIndex": 0,
+			"variables": {
+				"a": "300",
+				"d": "-40"
+			},
+			"answers": ["86,7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : rapport inversé (115,4)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "300",
+				"d": "-40"
+			},
+			"answers": ["115,4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : différence (−40)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "300",
+				"d": "-40"
+			},
+			"answers": ["-40"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : sans le × 100 (0,9)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "300",
+				"d": "-40"
+			},
+			"answers": ["0,9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "600 €, indice 112 : 672",
+			"variationIndex": 1,
+			"variables": {
+				"l": "600",
+				"k": "112"
+			},
+			"answers": ["672"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 600 + 112",
+			"variationIndex": 1,
+			"variables": {
+				"l": "600",
+				"k": "112"
+			},
+			"answers": ["712"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 600 × 100 / 112 (535,71)",
+			"variationIndex": 1,
+			"variables": {
+				"l": "600",
+				"k": "112"
+			},
+			"answers": ["535,71"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "650 €, indice 96 : 624",
+			"variationIndex": 1,
+			"variables": {
+				"l": "650",
+				"k": "96"
+			},
+			"answers": ["624"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "60 → 69 : 115",
+			"variationIndex": 2,
+			"variables": {
+				"a": "60",
+				"b": "3",
+				"c": "9"
+			},
+			"answers": ["115"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "48 → 55 : 114,6",
+			"variationIndex": 2,
+			"variables": {
+				"a": "48",
+				"b": "2",
+				"c": "7"
+			},
+			"answers": ["114,6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : indice de 2022 (104,2)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "48",
+				"b": "2",
+				"c": "7"
+			},
+			"answers": ["104,2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 100 + écart en euros (107)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "48",
+				"b": "2",
+				"c": "7"
+			},
+			"answers": ["107"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

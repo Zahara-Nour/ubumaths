@@ -1,10 +1,8 @@
 {
+	"id": "2f556139-902b-4d03-853b-ad07d8fafc61",
 	"title": "Développer avec un facteur décimal",
 	"description": "Développer et réduire k(x + q) ou k(x − q) avec un facteur ou un terme décimal : 0,5(x + 4) = 0,5x + 2 ; (x + 2,5) × 4 = 4x + 10",
 	"grades": ["5"],
-	"theme": "Calcul littéral",
-	"domain": "Transformation",
-	"subdomain": "Développement",
 	"level": 2,
 	"delay": 60,
 	"status": "draft",

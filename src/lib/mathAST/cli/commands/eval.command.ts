@@ -5,7 +5,7 @@
  * and displays the numeric result.
  */
 
-import chalk from 'chalk';
+import { colors } from '../core/terminal-colors';
 import { BaseCommand } from './base-command';
 import type { CommandContext, CommandResult, ErrorCode } from '../types';
 import { toCustom } from '../../index';
@@ -178,10 +178,10 @@ export class EvalCommand extends BaseCommand {
 			// Boolean result: colored output, no mode/exact info
 			if (result.status === 'value' && result.node.type === 'boolean') {
 				const boolValue = result.value as boolean;
-				const colorFn = boolValue ? chalk.green : chalk.red;
+				const colorFn = boolValue ? colors.boldGreen : colors.boldRed;
 				return {
 					success: true,
-					output: chalk.bold('Result:') + ' ' + colorFn.bold(String(boolValue)),
+					output: colors.bold('Result:') + ' ' + colorFn(String(boolValue)),
 					ast: result.node,
 					latex: boolValue ? '\\text{vrai}' : '\\text{faux}',
 					answer: boolValue ? '\\text{vrai}' : '\\text{faux}'
@@ -198,11 +198,11 @@ export class EvalCommand extends BaseCommand {
 			// Numeric result: standard formatting
 			const resultStr = toCustom(result.node);
 			const modeStr = ctx.evalState.mode;
-			const exactStr = result.exact ? chalk.green('(exact)') : chalk.yellow('(approximate)');
+			const exactStr = result.exact ? colors.green('(exact)') : colors.yellow('(approximate)');
 
 			const lines = [
-				chalk.bold('Result:') + ' ' + chalk.cyan(resultStr) + ' ' + exactStr,
-				chalk.dim('Mode:') + '   ' + modeStr
+				colors.bold('Result:') + ' ' + colors.cyan(resultStr) + ' ' + exactStr,
+				colors.dim('Mode:') + '   ' + modeStr
 			];
 
 			const shown = displayedValue(substituted, result.node, ctx.evalState.mode === 'decimal');

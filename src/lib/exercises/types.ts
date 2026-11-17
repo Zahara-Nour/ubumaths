@@ -1144,23 +1144,31 @@ export interface TypstTranspilerOptions {
 	 * dernier élément seulement. Défaut : non.
 	 */
 	keepEndWithNext?: boolean;
+
+	/**
+	 * Le document suit un bloc collé (titre d'exercice) précédé du marqueur de
+	 * coupure (`TYPST_BREAK_MARKER`) : son premier bloc continue cette chaîne, sans
+	 * marqueur à lui (un marqueur entre les deux décollerait le titre). Défaut : non,
+	 * le premier bloc collé a son propre marqueur.
+	 */
+	chainedStart?: boolean;
 }
 
 /**
  * Options une fois les défauts appliqués. `genericFunctions`, `capitalPairs`,
- * `afterQuestion` et `keepEndWithNext` restent optionnels :
+ * `afterQuestion`, `keepEndWithNext` et `chainedStart` restent optionnels :
  * son absence a un sens (« défauts du parseur ») distinct de `null`, qu'un
  * `Required<>` effacerait.
  */
 export type ResolvedTypstTranspilerOptions = Required<
 	Omit<
 		TypstTranspilerOptions,
-		'genericFunctions' | 'capitalPairs' | 'afterQuestion' | 'keepEndWithNext'
+		'genericFunctions' | 'capitalPairs' | 'afterQuestion' | 'keepEndWithNext' | 'chainedStart'
 	>
 > &
 	Pick<
 		TypstTranspilerOptions,
-		'genericFunctions' | 'capitalPairs' | 'afterQuestion' | 'keepEndWithNext'
+		'genericFunctions' | 'capitalPairs' | 'afterQuestion' | 'keepEndWithNext' | 'chainedStart'
 	>;
 
 // Note: RenderOptions, ParseResult, and MathPlaceholder are re-exported from $lib/ubumark

@@ -1,10 +1,8 @@
 {
+	"id": "320f5ac7-b16a-48a7-b136-704d62854138",
 	"title": "Résoudre ax ⩾ b graphiquement",
 	"description": "Résoudre graphiquement une inéquation ax ⩾ b (les quatre sens) avec les droites y = ax et y = b tracées : a positif, a négatif ; réponse écrite en inégalité « x ⩾ 2 »",
 	"grades": ["3"],
-	"theme": "Calcul littéral",
-	"domain": "Inéquations",
-	"subdomain": "Résolution graphique",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

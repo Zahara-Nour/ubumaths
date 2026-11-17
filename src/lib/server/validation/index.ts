@@ -35,11 +35,8 @@ export * from './params';
 
 // Disambiguate names exported by several modules (resolves the `export *` collisions).
 // An explicit named re-export takes precedence over the star-exported ones. No barrel
-// consumer imports these two directly, so the pick is functionally neutral — it only
+// consumer imports it directly, so the pick is functionally neutral — it only
 // satisfies TypeScript.
-// NOTE (latent debt): `questionCategorySchema` is defined twice with DIFFERENT shapes
-// ($lib/validation/series has `level`, ./questions does not); `variableSchema` is defined in
-// ./exercises AND in $lib/questions/template-schema (re-exported by ./questions).
-// These duplications should be consolidated to a single source of truth.
-export { questionCategorySchema } from '$lib/validation/series';
+// NOTE (latent debt): `variableSchema` is defined in ./exercises AND in
+// $lib/questions/template-schema (re-exported by ./questions).
 export { variableSchema } from './exercises';

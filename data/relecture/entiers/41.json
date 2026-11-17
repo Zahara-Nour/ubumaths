@@ -30,9 +30,6 @@
 			}
 		],
 		"grades": ["CE1"],
-		"theme": "Entiers",
-		"domain": "Additionner",
-		"subdomain": "Somme",
 		"level": 8,
 		"status": "draft",
 		"delay": 20,

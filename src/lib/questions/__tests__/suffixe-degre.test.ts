@@ -68,8 +68,6 @@ describe('case à unité : traitement des unités inchangé', () => {
 			type: 'fill_in_blanks',
 			title: 't',
 			grades: ['6'],
-			theme: 'T',
-			domain: 'D',
 			level: 1,
 			delay: 20,
 			status: 'draft',
@@ -106,8 +104,6 @@ describe('barème serveur (validateBlanksDetailed, chemin de grading.ts)', () =>
 			statement: STATEMENT as ResolvedMarkdown,
 			blanks: [{ expectedAnswer: '150', type: 'math' }],
 			grades: ['1_SPE'],
-			theme: 'T',
-			domain: 'D',
 			level: 1,
 			generatedAt: new Date().toISOString()
 		};

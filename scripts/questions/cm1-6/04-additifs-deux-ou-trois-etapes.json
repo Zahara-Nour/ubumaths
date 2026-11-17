@@ -1,0 +1,361 @@
+{
+	"id": "9666ca34-ce4b-4a16-b87b-693a2bcb3827",
+	"title": "Problèmes additifs en deux ou trois étapes",
+	"description": "Un stock, une arrivée, un départ ; « de moins » puis le total ; deux achats à virgule et la monnaie sur un billet ; un bus et ses deux arrêts (trois étapes)",
+	"grades": ["CM1"],
+	"level": 10,
+	"delay": 120,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true,
+			"zeros": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Le matin, un entrepôt contient ${{a}}$ colis. Dans la journée, des camions en apportent ${{b}}$, puis d'autres en emportent ${{c}}$.\n\nCombien de colis l'entrepôt contient-il le soir ?\n\nIl contient $?$ colis.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "20000..600000"
+				},
+				{
+					"name": "b",
+					"expression": "5000..300000"
+				},
+				{
+					"name": "c",
+					"expression": "5000..400000"
+				}
+			],
+			"conditions": ["a + b <= 999999", "a + b - c >= 5000", "b != c"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a+b-c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On calcule en deux étapes, dans l'ordre de la journée : d'abord l'arrivée (on ajoute), puis le départ (on enlève).",
+					"$${{a}} + {{b}} = {{eval:a+b}}$$",
+					"$${{eval:a+b}} - {{c}} = \\textcolor{{{color:primary.0}}}{{{eval:a+b-c}}}$$",
+					"Le soir, l'entrepôt contient ${{eval:a+b-c}}$ colis.",
+					"Il est arrivé {{if:b>c|plus|moins}} de colis qu'il n'en est parti : le soir, il y en a {{if:b>c|plus|moins}} que le matin. C'est cohérent."
+				]
+			}
+		},
+		{
+			"statement": "En janvier, le musée de Vaulx a reçu ${{a}}$ visiteurs. En février, il en a reçu ${{d}}$ de moins qu'en janvier.\n\nCombien de visiteurs le musée a-t-il reçus en janvier et en février ensemble ?\n\nIl a reçu $?$ visiteurs.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "10000..450000"
+				},
+				{
+					"name": "d",
+					"expression": "1000..90000"
+				}
+			],
+			"conditions": ["a - d >= 5000", "2 * a - d <= 999999"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2*a-d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On calcule en deux étapes : d'abord les visiteurs de février (il y en a moins : on enlève l'écart), puis les deux mois ensemble (on ajoute).",
+					"$${{a}} - {{d}} = {{eval:a-d}}$$",
+					"$${{a}} + {{eval:a-d}} = \\textcolor{{{color:primary.0}}}{{{eval:2*a-d}}}$$",
+					"Le musée a reçu ${{eval:2*a-d}}$ visiteurs en janvier et en février.",
+					"Février a moins de visiteurs que janvier : le total est un peu plus petit que deux fois janvier ($2 \\times {{a}} = {{eval:2*a}}$). C'est vraisemblable."
+				]
+			}
+		},
+		{
+			"statement": "Au marché, Clara achète un panier de fruits à ${{eval:floor((a)/100)}}.{{eval:floor(mod(a,100)/10)}}{{eval:mod(a,10)}}~\\unit{€}$ et un fromage à ${{eval:floor((b)/100)}}.{{eval:floor(mod(b,100)/10)}}{{eval:mod(b,10)}}~\\unit{€}$. Elle paie avec un billet de ${{B}}~\\unit{€}$.\n\nCombien la marchande doit-elle lui rendre ?\n\nElle rend $?~\\text{€}$.",
+			"variables": [
+				{
+					"name": "B",
+					"expression": "20|50"
+				},
+				{
+					"name": "aE",
+					"expression": "5..14"
+				},
+				{
+					"name": "aC",
+					"expression": "1..99"
+				},
+				{
+					"name": "a",
+					"expression": "eval:100*aE+aC"
+				},
+				{
+					"name": "bE",
+					"expression": "2..9"
+				},
+				{
+					"name": "bC",
+					"expression": "1..99"
+				},
+				{
+					"name": "b",
+					"expression": "eval:100*bE+bC"
+				}
+			],
+			"conditions": ["a + b <= 100 * B - 100"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(100*B-a-b)/100;d}}",
+					"requiredForm": {
+						"pattern": "a:number"
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"On calcule en deux étapes : d'abord le prix des deux achats (on ajoute), puis ce qui manque pour aller jusqu'à ${{B}}~\\unit{€}$ (on enlève).",
+					"$${{eval:floor((a)/100)}}.{{eval:floor(mod(a,100)/10)}}{{eval:mod(a,10)}} + {{eval:floor((b)/100)}}.{{eval:floor(mod(b,100)/10)}}{{eval:mod(b,10)}} = {{eval:floor((a+b)/100)}}.{{eval:floor(mod(a+b,100)/10)}}{{eval:mod(a+b,10)}}$$",
+					"$${{B}} - {{eval:floor((a+b)/100)}}.{{eval:floor(mod(a+b,100)/10)}}{{eval:mod(a+b,10)}} = \\textcolor{{{color:primary.0}}}{{{eval:floor((100*B-a-b)/100)}}.{{eval:floor(mod(100*B-a-b,100)/10)}}{{eval:mod(100*B-a-b,10)}}}$$",
+					"La marchande rend ${{eval:floor((100*B-a-b)/100)}}.{{eval:floor(mod(100*B-a-b,100)/10)}}{{eval:mod(100*B-a-b,10)}}~\\unit{€}$ à Clara.",
+					"On vérifie : ${{eval:floor((a+b)/100)}}.{{eval:floor(mod(a+b,100)/10)}}{{eval:mod(a+b,10)}} + {{eval:floor((100*B-a-b)/100)}}.{{eval:floor(mod(100*B-a-b,100)/10)}}{{eval:mod(100*B-a-b,10)}} = {{B}}$, on retrouve le billet."
+				]
+			}
+		},
+		{
+			"statement": "Un bus part du dépôt avec ${{a}}$ passagers. Au premier arrêt, ${{b}}$ passagers descendent et ${{c}}$ montent. Au deuxième arrêt, ${{f}}$ passagers descendent.\n\nCombien de passagers y a-t-il dans le bus après le deuxième arrêt ?\n\nIl y a $?$ passagers.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "20..60"
+				},
+				{
+					"name": "b",
+					"expression": "3..15"
+				},
+				{
+					"name": "c",
+					"expression": "3..20"
+				},
+				{
+					"name": "f",
+					"expression": "3..20"
+				}
+			],
+			"conditions": ["a - b + c <= 90", "a - b + c - f >= 5", "b != c", "c != b + f"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a-b+c-f}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On calcule en trois étapes, dans l'ordre du trajet : on enlève ceux qui descendent, on ajoute ceux qui montent.",
+					"$${{a}} - {{b}} = {{eval:a-b}}$$",
+					"$${{eval:a-b}} + {{c}} = {{eval:a-b+c}}$$",
+					"$${{eval:a-b+c}} - {{f}} = \\textcolor{{{color:primary.0}}}{{{eval:a-b+c-f}}}$$",
+					"Après le deuxième arrêt, il y a ${{eval:a-b+c-f}}$ passagers dans le bus.",
+					"En tout, ${{c}}$ passagers sont montés et ${{eval:b+f}}$ sont descendus : il y en a {{if:c>b+f|plus|moins}} qu'au départ. C'est cohérent."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "stock : 240 000 + 85 500 − 120 300 = 205 200",
+			"variationIndex": 0,
+			"variables": {
+				"a": "240000",
+				"b": "85500",
+				"c": "120300"
+			},
+			"answers": ["205\\,200"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : stock, le départ oublié (325 500)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "240000",
+				"b": "85500",
+				"c": "120300"
+			},
+			"answers": ["325\\,500"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : stock, tout ajouté (445 800)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "240000",
+				"b": "85500",
+				"c": "120300"
+			},
+			"answers": ["445\\,800"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "musée : 125 400 + (125 400 − 18 600) = 232 200",
+			"variationIndex": 1,
+			"variables": {
+				"a": "125400",
+				"d": "18600"
+			},
+			"answers": ["232\\,200"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : musée, février seul (106 800)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "125400",
+				"d": "18600"
+			},
+			"answers": ["106\\,800"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : musée, janvier + l'écart (144 000)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "125400",
+				"d": "18600"
+			},
+			"answers": ["144\\,000"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : musée, « de moins » lu « de plus » (269 400)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "125400",
+				"d": "18600"
+			},
+			"answers": ["269\\,400"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "monnaie : 20 − (8,45 + 3,70) = 7,85 €",
+			"variationIndex": 2,
+			"variables": {
+				"B": "20",
+				"aE": "8",
+				"aC": "45",
+				"a": "845",
+				"bE": "3",
+				"bC": "70",
+				"b": "370"
+			},
+			"answers": ["7,85"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : monnaie, un seul achat retiré (11,55 €)",
+			"variationIndex": 2,
+			"variables": {
+				"B": "20",
+				"aE": "8",
+				"aC": "45",
+				"a": "845",
+				"bE": "3",
+				"bC": "70",
+				"b": "370"
+			},
+			"answers": ["11,55"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : monnaie, le prix des achats (12,15 €)",
+			"variationIndex": 2,
+			"variables": {
+				"B": "20",
+				"aE": "8",
+				"aC": "45",
+				"a": "845",
+				"bE": "3",
+				"bC": "70",
+				"b": "370"
+			},
+			"answers": ["12,15"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "bus : 42 − 8 + 12 − 9 = 37",
+			"variationIndex": 3,
+			"variables": {
+				"a": "42",
+				"b": "8",
+				"c": "12",
+				"f": "9"
+			},
+			"answers": ["37"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : bus, tout ajouté (71)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "42",
+				"b": "8",
+				"c": "12",
+				"f": "9"
+			},
+			"answers": ["71"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : bus, le deuxième arrêt oublié (46)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "42",
+				"b": "8",
+				"c": "12",
+				"f": "9"
+			},
+			"answers": ["46"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : bus, tout enlevé (13)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "42",
+				"b": "8",
+				"c": "12",
+				"f": "9"
+			},
+			"answers": ["13"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

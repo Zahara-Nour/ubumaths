@@ -21,8 +21,6 @@ function check(answer: string, expectedAnswer: string, precision: PrecisionType)
 		statement: 'Test' as ResolvedMarkdown,
 		blanks: [blank],
 		grades: ['6'],
-		theme: 'Test',
-		domain: 'Test',
 		level: 1,
 		generatedAt: new Date().toISOString()
 	};
@@ -37,8 +35,6 @@ function statusOf(answer: string, expectedAnswer: string, precision: PrecisionTy
 		statement: 'Test' as ResolvedMarkdown,
 		blanks: [blank],
 		grades: ['6'],
-		theme: 'Test',
-		domain: 'Test',
 		level: 1,
 		generatedAt: new Date().toISOString()
 	};
@@ -242,8 +238,6 @@ describe('orderIndependent : trop de chiffres mais bon arrondi → mauvaise form
 				{ expectedAnswer: '1.136', type: 'math', precision: HUNDREDTH }
 			],
 			grades: ['6'],
-			theme: 'Test',
-			domain: 'Test',
 			level: 1,
 			generatedAt: new Date().toISOString(),
 			options: { orderIndependent: true }

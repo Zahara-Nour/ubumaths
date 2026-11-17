@@ -19,6 +19,10 @@ import {
 	mockError
 } from '$tests/helpers';
 
+vi.mock('$lib/server/middleware/auth', async (importActual) =>
+	(await import('$tests/helpers/garde-auth-locals')).gardeAuthDepuisLocals(importActual)
+);
+
 const NOTEBOOK_ID = '550e8400-e29b-41d4-a716-446655440100';
 const USER_ID = '550e8400-e29b-41d4-a716-446655440200';
 const CELL_ID = 'cell-abc-123';

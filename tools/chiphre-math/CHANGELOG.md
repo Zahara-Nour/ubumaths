@@ -2,6 +2,19 @@
 
 Toutes les modifications notables de ce projet sont documentées dans ce fichier.
 
+## [1.22.0] - 2026-11-12
+
+### Modifié
+
+- Script `angular_z.py` : `z` minuscule redessiné à coins, comme on l'écrit en maths ; le `z` de Shantell (et ses trois variantes) a l'épaule ronde du `2`, et « 2z » se lisait « 22 »
+  - trois traits à la main d'un seul tenant : barre du haut qui part un peu bas et se bombe à peine, coin net, diagonale à peine creusée, coin net, barre du bas qui remonte au bout
+  - sans barre au travers : essayée, elle bouchait le `z` gras (trait 153)
+  - retracé au trait des lettres Shantell (68 en 300, 153 en gras), bouts et coins ronds, comme le `x` de `round_x.py`
+  - boîte et largeur d'avance du `z` de Shantell : l'espacement de MathLive ne change pas
+  - Main-Regular, Main-Italic, Math-Italic (depuis Shantell 300), Main-Bold (depuis Shantell gras) ; relancer le script donne le même glyphe
+- Police Typst reconstruite (`build_typst_math_font.py`) : `z`, `𝑧` (U+1D467) et `𝐳` (U+1D433) suivent ; aucun autre glyphe ne change
+- Ordre de génération de la police principale : `replace_symbols.py` → `round_x.py` → `angular_z.py` → `replace_radicals.py`, puis `build_typst_math_font.py`
+
 ## [1.21.0] - 2026-10-13
 
 ### Corrigé

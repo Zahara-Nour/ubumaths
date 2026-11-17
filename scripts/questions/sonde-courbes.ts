@@ -19,6 +19,7 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { basename, join } from 'node:path';
 import { generateInstance } from '../../src/lib/questions/generator/instance-generator';
 import { findCourbeBlocks, parseCourbe } from '../../src/lib/ubumark/parser/courbe-parser';
+import { isAssocierBlockStart } from '../../src/lib/ubumark/parser/associer-parser';
 import type { QuestionTemplate } from '../../src/lib/questions/types';
 import { readTemplateFile } from '../lib/template-file';
 import { valeurArgument } from '../lib/lot-questions';
@@ -28,6 +29,17 @@ function lireModele(chemin: string): QuestionTemplate {
 	const lu = readTemplateFile(JSON.parse(readFileSync(chemin, 'utf8')) as unknown, nom);
 	if (!lu.ok) throw new Error(`${nom} : ${lu.error}`);
 	return { ...(lu.template as object), id: 'sonde' } as unknown as QuestionTemplate;
+}
+
+/**
+ * Lignes où chercher les blocs ```courbe : dans un bloc associer, la courbe d'un élément est
+ * décalée sous son « - » (« - ```courbe », puis 2 espaces) ; on retire ce décalage, sinon
+ * `findCourbeBlocks` ne la voit pas et la sonde rend « 0 problème » sans avoir rien lu.
+ */
+function lignesASonder(texte: string): string[] {
+	const lignes = texte.split('\n');
+	if (!lignes.some(isAssocierBlockStart)) return lignes;
+	return lignes.map((l) => l.replace(/^(?:- | {2})/, ''));
 }
 
 function montrer(chemin: string, graine: number): number {
@@ -63,7 +75,7 @@ function sonder(dossier: string, tirages: number): number {
 				...(r.instance.correction?.steps ?? []).map(String)
 			];
 			for (const texte of textes) {
-				const lignes = texte.split('\n');
+				const lignes = lignesASonder(texte);
 				for (const b of findCourbeBlocks(lignes)) {
 					blocs++;
 					const bloc = parseCourbe(lignes, b.startIndex, b.endIndex);

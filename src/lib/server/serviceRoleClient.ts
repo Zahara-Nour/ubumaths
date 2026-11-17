@@ -60,6 +60,9 @@ const ALLOWED_SERVICE_ROLE_PATHS = [
 	'lib/server/chapter-templates.ts',
 	// Consentement parental : IP et navigateur relevés par le serveur, pas par le client
 	'/consent/',
+	// Carnet de liaison (ADR 0040) : fonctions à lien réservées à service_role, appelées
+	// APRÈS la forme du jeton et la limite de débit des routes ; aucune policy `anon`
+	'lib/server/carnet/',
 	// Style d'une fiche (lot 4b, D11) : l'élève destinataire reçoit la mise en page
 	// du style de l'auteur ; il n'a aucun droit sur les tables des styles
 	'lib/server/worksheets/worksheet-styles.ts',
@@ -75,6 +78,7 @@ const ALLOWED_SERVICE_ROLE_PATHS = [
 	'/api/messages/attachments/[attachmentId]/+server',
 	// Nature d'un modèle (carte de cours, statut) lue même en brouillon — lecture seule
 	'/api/skill-attempts',
+	// Fin de série : nature « carte » lue même en brouillon (pas d'XP pour une carte)
 	'/api/tests/save',
 	// Évaluation notée (ADR 0015) : séance, graines, réponses et note écrites par le serveur
 	'/api/evaluations/',
@@ -112,13 +116,21 @@ const ALLOWED_SERVICE_ROLE_PATHS = [
 	// Récompenses (lot 3, Q141) : XP du compagnon et succès réservés au serveur,
 	// appelés APRÈS le contrôle d'identité de la route
 	'lib/server/buddy-queries.ts',
+	// Semaines actives du Palotin (chantier `regularite`, B2) : élève de la session
+	// seulement ; `student_last_visits` sans policy, traces et classes filtrées par
+	// `student_id`, rien d'autre que le nom du moment ne sort
+	'lib/server/buddy-weeks.ts',
 	'lib/server/achievements/service.ts',
 	// Mémoire des Mathoux (Chatterie) : `authenticated` n'a que SELECT sur
 	// `student_mathoux` ; écrite par le serveur pour l'élève de la session, après le calcul
 	'lib/server/mathoux/collection.ts',
 	// Décorations (panse et colliers) : achat et pose réservés à `service_role`, pour l’élève de la
 	// session ; consentement vérifié avant l'achat
-	'/api/student/mathoux/decorations/'
+	'/api/student/mathoux/decorations/',
+	// Boutique d'avatars : achat et port réservés à `service_role` (buy_avatar,
+	// set_worn_avatar), pour l'élève de la session ; consentement vérifié avant l'achat
+	'/api/student/avatars/buy/',
+	'/api/student/avatars/wear/'
 ] as const;
 
 /**

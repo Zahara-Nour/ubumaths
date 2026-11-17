@@ -416,6 +416,8 @@
 									toaster.success(`${lore.entities.class} mis à jour avec succès`);
 								} else {
 									toaster.success(`${lore.entities.class} créé avec succès`);
+									const warning = (result.data as { warning?: string } | undefined)?.warning;
+									if (warning) toaster.warning(warning);
 								}
 							} else if (result.type === 'failure') {
 								const message =

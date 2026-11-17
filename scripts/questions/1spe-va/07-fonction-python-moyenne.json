@@ -1,10 +1,8 @@
 {
+	"id": "5192e88a-6afc-4dcb-a7a1-dd79841ef3dc",
 	"title": "Fonction Python : moyenne d'un échantillon",
 	"description": "Lire une fonction Python de moyenne (valeur renvoyée pour une liste), compléter sa dernière ligne (return s / n), comprendre ce que renvoie moyenne(1000)",
 	"grades": ["1_SPE"],
-	"theme": "Probabilités",
-	"domain": "Variables aléatoires",
-	"subdomain": "Échantillons et simulation",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

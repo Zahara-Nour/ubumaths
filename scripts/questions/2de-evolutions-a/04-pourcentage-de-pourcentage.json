@@ -1,10 +1,8 @@
 {
+	"id": "11f91d46-82c7-4dca-8812-e85b7bd93ae2",
 	"title": "Pourcentage d'un pourcentage",
 	"description": "Ensembles emboîtés : la proportion d'une partie d'une partie est le produit des proportions ; retrouver une des deux proportions",
 	"grades": ["2"],
-	"theme": "Proportionnalité",
-	"domain": "Pourcentages",
-	"subdomain": "Proportion",
 	"level": 4,
 	"delay": 60,
 	"status": "draft",

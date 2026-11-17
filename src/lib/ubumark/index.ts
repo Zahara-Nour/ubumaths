@@ -298,9 +298,6 @@ export {
 // GENERATOR EXPORTS
 // ============================================================================
 
-// LaTeX Generator
-export { generateLatex, escapeLatex, resolveLatexImagePath, markdownToLatex } from './generators';
-
 // Typst Generator
 export {
 	generateTypst,

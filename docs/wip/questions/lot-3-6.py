@@ -82,6 +82,11 @@ def col(x, k=0):
     return '\\textcolor{{{color:primary.' + str(k) + '}}}{' + x + '}'
 
 
+def colt(*a, **k):
+    """Valeur colorée en plein texte : `\\textcolor` hors `$…$` s'afficherait en LaTeX brut."""
+    return '$' + col(*a, **k) + '$'
+
+
 def ev(x):
     return '{{eval:' + x + '}}'
 
@@ -250,7 +255,7 @@ V_NUL = variation(
              'La droite $(AB)$ est horizontale.', 'On ne peut rien dire.']),
     [], ['0'],
     ['Le **vecteur nul** $\\vec{0}$ est le vecteur de longueur $0$ : il ne déplace aucun point.',
-     '$' + vec('AB') + ' = \\vec{0}$ signifie que $AB = 0$ : ' + col('\\text{A et B sont confondus}')
+     '$' + vec('AB') + ' = \\vec{0}$ signifie que $AB = 0$ : ' + colt('\\text{A et B sont confondus}')
      + '.'])
 
 MODELES.append(modele(
@@ -329,7 +334,7 @@ V_IMAGE = variation(
     ['Enchaîner la translation de vecteur $' + U + '$ et celle de vecteur $' + V + '$, c\'est'
      ' appliquer la translation de vecteur $' + U + ' + ' + V + '$.',
      'Depuis $A$ : ' + deplacement(U, 'ux', 'uy') + ', puis ' + deplacement(V, 'vx', 'vy') + '.',
-     'On arrive au point ' + col(nom_point(0)) + '.'],
+     'On arrive au point ' + colt(nom_point(0)) + '.'],
     CONDS_UV + CONDS_POINTS + ['ax+ux>=9', 'ax+ux<=24', 'ay+uy>=1', 'ay+uy<=13'])
 
 # Quel vecteur est u + v : sortes u + v, u − v, −u + v, −u − v (dans les cases de 3-025)
@@ -479,7 +484,7 @@ V_POSITION = variation(
      var('d', 'eval:r+(t-1)*k')], ['0'],
     [SPHERE,
      'Ici $OM = {{d}}' + CM + '$ et $r = {{r}}' + CM + '$ : $OM '
-     + selon('t', ['<', '=', '>']) + ' r$, donc $M$ est ' + col('\\text{' + selon('t', [
+     + selon('t', ['<', '=', '>']) + ' r$, donc $M$ est ' + colt('\\text{' + selon('t', [
          'à l\'intérieur de la boule', 'sur la sphère', 'à l\'extérieur de la boule']) + '}')
      + '.'])
 
@@ -494,7 +499,7 @@ V_DEFINITION = variation(
     [var('w', '0..1')], ['0'],
     [SPHERE,
      'Dans l\'espace, $OM ' + selon('w', ['=', '\\leqslant']) + ' r$ décrit '
-     + col('\\text{' + selon('w', ['la sphère', 'la boule']) + '}') + ' ; le cercle et le'
+     + colt('\\text{' + selon('w', ['la sphère', 'la boule']) + '}') + ' ; le cercle et le'
      ' disque sont des figures **planes**.'])
 
 MODELES.append(modele(
@@ -530,7 +535,7 @@ V_GRAND_CERCLE = variation(
     [var('r', '2..12')], ['{{r}}'],
     ['Un plan qui passe par le centre de la sphère la coupe suivant un **grand cercle** : même'
      ' centre et même rayon que la sphère.',
-     'Son rayon est donc ' + col('{{r}}' + CM) + '.'])
+     'Son rayon est donc ' + colt('{{r}}' + CM) + '.'])
 
 V_TERRE = variation(
     'On assimile la Terre à une sphère. Parmi ces cercles tracés sur sa surface, lesquels sont des'
@@ -541,7 +546,7 @@ V_TERRE = variation(
     [], ['0;1'],
     ['Un **grand cercle** est un cercle de la sphère dont le centre est celui de la sphère : son'
      ' plan passe par le centre de la Terre.',
-     'C\'est le cas de ' + col('\\text{l\'équateur}') + ' et d\'' + col(
+     'C\'est le cas de ' + colt('\\text{l\'équateur}') + ' et d\'' + colt(
          '\\text{un cercle qui passe par les deux pôles}') + ' (deux méridiens opposés).',
      'Les autres parallèles (le $45^{\\circ}$ Nord, le cercle polaire) ont leur centre sur l\'axe'
      ' des pôles, hors du centre : leur rayon est plus petit.'])
@@ -655,7 +660,7 @@ V_PAVE = variation(
     ['La section d\'un pavé droit par un plan parallèle à une face est un **rectangle** de mêmes'
      ' dimensions que cette face.',
      'La face $EFGH$ mesure $EF = AB = {{l}}' + CM + '$ sur $FG = BC = {{p}}' + CM + '$ : la'
-     ' section est ' + col('\\text{un rectangle de {{l}} cm sur {{p}} cm}') + '.'],
+     ' section est ' + colt('\\text{un rectangle de {{l}} cm sur {{p}} cm}') + '.'],
     ['l!=p', 'l!=h', 'p!=h', 'k<h'])
 
 DISQUE = 'un disque de rayon ${{r}}' + CM + '$, comme la base'
@@ -667,7 +672,7 @@ V_CYL_PERP = variation(
              'un disque plus petit que la base']),
     [var('r', '2..5'), var('h', '4..9'), var('k', '1..3')], ['0'],
     ['La section d\'un cylindre de révolution par un plan **perpendiculaire à son axe** est un'
-     ' disque de même rayon que la base : ' + col('\\text{un disque de rayon {{r}} cm}') + '.',
+     ' disque de même rayon que la base : ' + colt('\\text{un disque de rayon {{r}} cm}') + '.',
      'Sur le dessin en perspective, ce disque est **vu** comme une ellipse, mais c\'est bien un'
      ' disque.'],
     ['k<h', 'r!=h'])
@@ -683,7 +688,7 @@ V_CYL_PARA = variation(
     ['La section d\'un cylindre de révolution par un plan **parallèle à son axe** est un'
      ' rectangle.',
      'Deux de ses côtés sont des génératrices du cylindre : ils mesurent la hauteur. C\'est '
-     + col('\\text{un rectangle dont un côté mesure {{h}} cm}') + '.'],
+     + colt('\\text{un rectangle dont un côté mesure {{h}} cm}') + '.'],
     ['k<r', 'r!=h'])
 
 TRIPLETS = [(5, 3, 4), (5, 4, 3), (10, 6, 8), (10, 8, 6), (13, 5, 12), (13, 12, 5), (15, 9, 12),

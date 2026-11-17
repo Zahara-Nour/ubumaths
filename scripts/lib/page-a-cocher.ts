@@ -66,6 +66,15 @@ import {
 	HORLOGE_VIEW
 } from '../../src/lib/ubumark/utils/horloge-scene';
 import { parseCourbeContent } from '../../src/lib/ubumark/parser/courbe-parser';
+import { parseSchemaBarresContent } from '../../src/lib/ubumark/parser/schema-barres-parser';
+import {
+	SCHEMA_BARRES_CM_PER_UNIT,
+	SCHEMA_BARRES_DASH,
+	SCHEMA_BARRES_FONT_SIZE,
+	SCHEMA_BARRES_STROKE,
+	buildSchemaBarresScene,
+	schemaBarresLabel
+} from '../../src/lib/ubumark/utils/schema-barres-scene';
 import {
 	COURBE_COLORS,
 	type CourbeColor,
@@ -100,6 +109,20 @@ import {
 } from '../../src/lib/ubumark/utils/stat-chart-scene';
 import { parseProbTreeContent } from '../../src/lib/ubumark/parser/probability-tree-parser';
 import type { ProbTreeNode } from '../../src/lib/ubumark/types/probability-tree';
+import { parseNumberLineContent } from '../../src/lib/ubumark/parser/number-line-parser';
+import type { NumberLineNode } from '../../src/lib/ubumark/types/number-line';
+import {
+	NL_LAYOUT,
+	bracketDirection,
+	bracketPoints,
+	computeGraduations,
+	computeLineExtents,
+	numVal,
+	phoneGapWarning,
+	resolveNumberLineColors,
+	segmentLevels,
+	valueToX
+} from '../../src/lib/ubumark/utils/number-line-render';
 import { namedColorScreen, namedColorTable } from '../../src/lib/theme/named-colors';
 import { toFrenchDecimal, toLocaleDecimal } from '../../src/lib/utils/french-math';
 import type { ModeleFichier } from './lot-questions';
@@ -291,6 +314,24 @@ function collectionObjets(items: readonly CollectionItem[]): string {
 				return `<circle class="c-forme" cx="${it.cx}" cy="${it.cy}" r="${it.width / 2}"/>`;
 			if (it.kind === 'cube')
 				return `<rect class="c-forme" x="${it.x}" y="${it.y}" width="${it.width}" height="${it.height}"/>`;
+			// Plaque et gros cube (#2420) : rectangle (plaque), faces (gros cube) et quadrillage,
+			// calculés par la scène, comme CollectionObjets.svelte
+			if (it.kind === 'plaque' || it.kind === 'gros-cube') {
+				const fond =
+					it.kind === 'plaque'
+						? `<rect class="c-forme" x="${it.x}" y="${it.y}" width="${it.width}" height="${it.height}"/>`
+						: '';
+				const faces = (it.faces ?? [])
+					.map(
+						(face, k) =>
+							`<polygon class="c-forme c-face-${k}" points="${face.map((q) => `${q.x},${q.y}`).join(' ')}"/>`
+					)
+					.join('');
+				const traits = (it.lines ?? [])
+					.map((l) => `<line class="c-quad" x1="${l.x1}" y1="${l.y1}" x2="${l.x2}" y2="${l.y2}"/>`)
+					.join('');
+				return `<g>${fond}${faces}${traits}</g>`;
+			}
 			if (it.kind === 'barre') {
 				const sep = Array.from({ length: 9 }, (_, k) => {
 					const y = +(it.y + ((k + 1) * it.height) / 10).toFixed(2);
@@ -413,6 +454,37 @@ function horloge(source: string): Bloc {
 		return `<svg class="h-cadran" role="img" aria-label="Horloge à aiguilles" viewBox="${-h} ${-h} ${2 * h} ${2 * h}" style="width:${taille}"><circle class="h-fond" r="${HORLOGE_VIEW.radius}" stroke-width="${HORLOGE_VIEW.rim}"/>${traits}${chiffres}${minutes}<line class="h-aiguille h-heures" x1="0" y1="0" x2="${s.hourHand.x}" y2="${s.hourHand.y}" stroke-width="${HORLOGE_STROKE.hourHand}"/><circle class="h-axe" r="${HORLOGE_STROKE.center}"/></svg>`;
 	});
 	return { html: figures(cadrans, legendes(spec.captions, spec.times.length)) };
+}
+
+// ---- Schéma en barres : balisage de SchemaBarres.svelte, même scène `buildSchemaBarresScene` ----
+
+function schemaBarres(source: string): Bloc {
+	const node = parseSchemaBarresContent(source);
+	if (!node.spec || node.errors.length > 0)
+		throw new Error('bloc schema-barres en erreur : ' + node.errors.join(' ; '));
+	const s = buildSchemaBarresScene(node.spec);
+	const tirets = SCHEMA_BARRES_DASH.join(' ');
+	const segments = s.rects
+		.map(
+			(r) =>
+				`<rect class="sb-segment${r.dashed ? ' sb-manquant' : ''}" x="${r.x}" y="${r.y}" width="${r.width}" height="${r.height}"${r.dashed ? ` stroke-dasharray="${tirets}"` : ''}/>`
+		)
+		.join('');
+	const accolades = s.braces
+		.map(
+			(b) =>
+				`<polyline class="sb-accolade" points="${b.points.map((q) => `${q.x},${q.y}`).join(' ')}"/>`
+		)
+		.join('');
+	const textes = s.texts
+		.map(
+			(t) =>
+				`<text class="sb-texte" x="${t.x}" y="${t.y}" text-anchor="${t.anchor}" dominant-baseline="central">${attr(t.text)}</text>`
+		)
+		.join('');
+	return {
+		html: `<svg class="sb-schema" role="img" aria-label="${attr(schemaBarresLabel(node.spec))}" viewBox="0 0 ${s.width} ${s.height}" style="width:${+(s.width * SCHEMA_BARRES_CM_PER_UNIT).toFixed(3)}cm" stroke-width="${SCHEMA_BARRES_STROKE}" stroke-linejoin="round" stroke-linecap="round" font-size="${SCHEMA_BARRES_FONT_SIZE}">${segments}${accolades}${textes}</svg>`
+	};
 }
 
 // ---- Courbe : balisage de Courbe.svelte, même scène `buildCourbeScene` ----
@@ -648,6 +720,11 @@ function variation(source: string): Bloc {
 		);
 	const d = node.domain;
 	const derniere = d.length - 1;
+	// Tableau à compléter : chaque cellule cachée encadrée, remplie de sa réponse
+	// (« rien » écrit : une marque absente ne se verrait pas)
+	const cachees = new Set((node.cases ?? []).map((c) => `${c.row}|${c.key}`));
+	const cache = (ligne: 'domain' | number, cle: string, html: string) =>
+		cachees.has(`${ligne}|${cle}`) ? `<span class="vt-cache">${html || 'rien'}</span>` : html;
 	// Une ligne : l'étiquette, puis une case par valeur et une par intervalle
 	const ligne = (
 		classe: string,
@@ -663,26 +740,41 @@ function variation(source: string): Bloc {
 			)
 			.join('')}</tr>`;
 	const tete = `<tr class="vt-tete"><th>${tex(node.variable)}</th>${d
-		.map((p, i) => `<th>${tex(p.expression)}</th>` + (i < derniere ? '<th></th>' : ''))
+		.map(
+			(p, i) =>
+				`<th>${cache('domain', p.expression, tex(p.expression))}</th>` +
+				(i < derniere ? '<th></th>' : '')
+		)
 		.join('')}</tr>`;
-	const lignes = node.rows.map((row) => {
-		if (row.type === 'sign')
+	const lignes = node.rows.map((row, rang) => {
+		if (row.type === 'sign') {
+			const intervalle = (i: number) => `${d[i].expression},${d[i + 1].expression}`;
 			return ligne(
 				'vt-ligne-signe',
 				row.label,
-				(i) => signe(row.values.get(d[i].expression)),
-				(i) => signeDIntervalle(row.values.get(`${d[i].expression},${d[i + 1].expression}`))
+				(i) => cache(rang, d[i].expression, signe(row.values.get(d[i].expression))),
+				(i) => cache(rang, intervalle(i), signeDIntervalle(row.values.get(intervalle(i))))
 			);
+		}
 		const r = withImplicitEndpoints(row, d);
 		const v = (i: number) => r.values.get(d[i].expression);
 		return ligne(
 			'vt-ligne-variation',
 			r.label,
-			(i) => valeurDeVariation(v(i)),
+			(i) => {
+				const html = valeurDeVariation(v(i));
+				if (!cachees.has(`${rang}|${d[i].expression}`)) return html;
+				// Valeur cachée : encadrée DANS son bloc de hauteur (haut / bas), qui garde sa place
+				const bloc = /^(<div class="vt-val[^"]*">)([^]*)(<\/div>)$/.exec(html);
+				return bloc
+					? `${bloc[1]}<span class="vt-cache">${bloc[2]}</span>${bloc[3]}`
+					: cache(rang, d[i].expression, html);
+			},
 			(i) => {
 				if (interdite(v(i)) || interdite(v(i + 1))) return MARQUE_LARGE;
 				const s = sens(v(i), v(i + 1));
-				return s === 0 ? '' : fleche(s);
+				// Flèche cachée (variations-a-completer) : encadrée comme les autres cases
+				return cache(rang, `${d[i].expression},${d[i + 1].expression}`, s === 0 ? '' : fleche(s));
 			}
 		);
 	});
@@ -1379,7 +1471,147 @@ function arbre(source: string): Bloc {
 	};
 }
 
+// ---- Line : droite graduée de NumberLine.svelte (mêmes graduations, couleurs, crochets) ----
+
+/** Hauteur du SVG, comme NumberLine.svelte */
+const DROITE_HAUTEUR = 120;
+/** Demi-hauteur et becs des crochets, comme NumberLine.svelte */
+const DROITE_CROCHET = { hauteur: 9, bec: 5 };
+/** Point posé SUR la droite (construction juste d'une droite à placer), comme `pointsOnLine` */
+const DROITE_POINT_POSE = 7;
+/** Écart entre les noms de points posés au même endroit */
+const DROITE_NOMS_ECART = 14;
+/** Couleur de la correction d'une droite à placer ou à représenter (`SOLUTION_COLOR`) */
+const DROITE_SOLUTION = 'vert';
+
+/** Le SVG d'une droite graduée ; `posés` : points sur la droite (droite à placer, solution) */
+function droiteSvg(node: NumberLineNode, poses = false): string {
+	const {
+		LINE_Y,
+		MINOR_TICK_HEIGHT,
+		MAJOR_TICK_HEIGHT,
+		LABEL_Y_OFFSET,
+		POINT_RADIUS,
+		POINT_Y_OFFSET,
+		POINT_LABEL_Y_OFFSET,
+		SEGMENT_LEVEL_GAP,
+		ARROW_SIZE,
+		SVG_WIDTH: largeur
+	} = NL_LAYOUT;
+	const { config } = node;
+	const debut = numVal(config.start);
+	const fin = numVal(config.end);
+	const echelle = config.scale ?? 'linear';
+	const x = (v: number) => c2(valueToX(v, debut, fin, echelle, largeur));
+	const couleurs = resolveNumberLineColors(node);
+	const { lineStartX: x0, lineEndX: x1 } = computeLineExtents(config.arrows, largeur);
+	const niveaux = segmentLevels(node.segments);
+
+	const axe = `<line class="nl-axe" x1="${x0}" y1="${LINE_Y}" x2="${x1}" y2="${LINE_Y}" stroke-width="1.5"/>`;
+	const segments = node.segments
+		.map((s, i) => {
+			const a = s.startInfinite ? x0 : x(numVal(s.start));
+			const b = s.endInfinite ? x1 : x(numVal(s.end));
+			const y = LINE_Y - niveaux[i] * SEGMENT_LEVEL_GAP;
+			const style = `style="stroke:${couleurs.segments[i].screen}"`;
+			const crochet = (cx: number, cote: 'start' | 'end', ouvert: boolean) =>
+				`<path class="nl-bracket" d="${bracketPoints(
+					cx,
+					y,
+					bracketDirection(cote, ouvert),
+					DROITE_CROCHET.hauteur,
+					DROITE_CROCHET.bec
+				)
+					.map(([px, py], k) => `${k === 0 ? 'M' : 'L'} ${c2(px)} ${c2(py)}`)
+					.join(' ')}" fill="none" ${style} stroke-width="2.5" stroke-linejoin="miter"/>`;
+			return (
+				`<line class="nl-segment" x1="${a}" y1="${y}" x2="${b}" y2="${y}" ${style} stroke-width="4"/>` +
+				(s.startInfinite ? '' : crochet(a, 'start', s.startOpen)) +
+				(s.endInfinite ? '' : crochet(b, 'end', s.endOpen))
+			);
+		})
+		.join('');
+	const fleches = config.arrows
+		? `<path class="nl-arrow" d="M ${x0} ${LINE_Y} L ${x0 + ARROW_SIZE} ${LINE_Y - ARROW_SIZE / 2} L ${x0 + ARROW_SIZE} ${LINE_Y + ARROW_SIZE / 2} Z"/>` +
+			`<path class="nl-arrow" d="M ${x1} ${LINE_Y} L ${x1 - ARROW_SIZE} ${LINE_Y - ARROW_SIZE / 2} L ${x1 - ARROW_SIZE} ${LINE_Y + ARROW_SIZE / 2} Z"/>`
+		: '';
+	const graduations = computeGraduations(config, largeur)
+		.map((g) => {
+			const h = g.isMajor ? MAJOR_TICK_HEIGHT : MINOR_TICK_HEIGHT;
+			const gx = c2(g.x);
+			const trait = `<line class="nl-tick" x1="${gx}" y1="${LINE_Y - h / 2}" x2="${gx}" y2="${LINE_Y + h / 2}" stroke-width="${g.isMajor ? 1.5 : 1}"/>`;
+			if (g.label === null) return trait;
+			// 100 × 45 px centrés, comme le foreignObject de NumberLine.svelte
+			const contenu = g.hidden
+				? '<span class="nl-cache">?</span>'
+				: `<span class="tex" data-tex="${attr(toLocaleDecimal(g.label, 'fr'))}"></span>`;
+			return `${trait}<foreignObject x="${c2(g.x - 50)}" y="${LINE_Y + LABEL_Y_OFFSET - 5}" width="100" height="45"><div class="nl-nombre">${contenu}</div></foreignObject>`;
+		})
+		.join('');
+	const xs = node.points.map((p) => x(numVal(p.value)));
+	const points = node.points
+		.map((p, i) => {
+			const px = xs[i];
+			const memePlace = xs.filter((o) => Math.abs(o - px) < 0.5).length;
+			const rang = xs.slice(0, i).filter((o) => Math.abs(o - px) < 0.5).length;
+			const nx = px + (rang - (memePlace - 1) / 2) * DROITE_NOMS_ECART;
+			const py = poses ? LINE_Y : LINE_Y + POINT_Y_OFFSET;
+			const couleur = couleurs.points[i].screen;
+			return (
+				`<circle class="nl-point" cx="${px}" cy="${py}" r="${poses ? DROITE_POINT_POSE : POINT_RADIUS}" style="fill:${couleur}" stroke-width="1.5"/>` +
+				`<foreignObject x="${c2(nx - 25)}" y="${py + POINT_LABEL_Y_OFFSET + 5}" width="50" height="20"><div class="nl-nom" style="color:${couleur}">${attr(p.label)}</div></foreignObject>`
+			);
+		})
+		.join('');
+	return `<svg class="nl" role="img" aria-label="Droite graduée" viewBox="0 0 ${largeur} ${DROITE_HAUTEUR}" style="max-width:${largeur}px">${axe}${segments}${fleches}${graduations}${points}</svg>`;
+}
+
+function droite(source: string): Bloc {
+	const r = parseNumberLineContent(source);
+	if (!r.node)
+		throw new Error('bloc line en erreur : ' + r.errors.map((e) => e.message).join(' ; '));
+	const node = r.node;
+	const avertissements = [
+		...r.warnings.map((w) => w.message),
+		...resolveNumberLineColors(node).warnings
+	];
+	// Droite à placer, comme NumberLinePlacer.svelte : énoncé sans point (le parseur refuse
+	// `points:`, l'écran ne montre que ceux de l'élève) ; correction : points attendus, en vert
+	if (node.placer !== undefined) {
+		const ecart = phoneGapWarning(node.config);
+		if (ecart) avertissements.push(ecart);
+		const poses = node.placer.map((t) => ({
+			label: t.name,
+			value: t.value,
+			color: DROITE_SOLUTION
+		}));
+		return {
+			html: droiteSvg({ ...node, points: [] }),
+			solution: droiteSvg({ ...node, points: poses }, true),
+			avertissements: avertissements.map((a) => `bloc line : ${a}`)
+		};
+	}
+	// Droite à représenter, comme NumberLineRepresenter.svelte : énoncé sans segment (le parseur
+	// refuse `segments:`) ; correction : l'intervalle attendu, en vert
+	if (node.representer !== undefined) {
+		const intervalle = node.representer.interval;
+		if (!intervalle) avertissements.push('aucun intervalle lisible dans representer:');
+		return {
+			html: droiteSvg({ ...node, segments: [] }),
+			solution: intervalle
+				? droiteSvg({ ...node, segments: [{ ...intervalle, color: DROITE_SOLUTION }] })
+				: undefined,
+			avertissements: avertissements.map((a) => `bloc line : ${a}`)
+		};
+	}
+	return {
+		html: droiteSvg(node),
+		avertissements: avertissements.map((a) => `bloc line : ${a}`)
+	};
+}
+
 const DESSINS: Record<string, (source: string) => Bloc> = {
+	line: droite,
 	figure,
 	monnaie,
 	partage,
@@ -1387,6 +1619,7 @@ const DESSINS: Record<string, (source: string) => Bloc> = {
 	cubes,
 	collection,
 	horloge,
+	'schema-barres': schemaBarres,
 	courbe,
 	variation,
 	histogramme: (s) => statistique('histogramme', s),

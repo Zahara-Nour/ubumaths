@@ -1,10 +1,8 @@
 {
+	"id": "98c3f740-1fae-440f-a5d1-142a85029a36",
 	"title": "Évolution à accroissement constant",
 	"description": "Évolutions successives à accroissement constant = suite arithmétique : prévoir une valeur, retrouver l'accroissement entre deux années éloignées, rangs de sièges (premier terme u₁)",
 	"grades": ["1_SPE"],
-	"theme": "Suites",
-	"domain": "Modélisation",
-	"subdomain": "Évolutions successives",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

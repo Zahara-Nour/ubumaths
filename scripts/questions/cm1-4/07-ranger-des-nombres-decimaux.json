@@ -1,10 +1,8 @@
 {
+	"id": "2af5f9fe-de36-4b1c-adf9-dec60f759910",
 	"title": "Ranger des nombres décimaux",
 	"description": "Ranger dans l'ordre croissant ou décroissant trois nombres décimaux de même partie entière (2,09 ; 2,12 ; 2,6), l'un parfois en fraction décimale (209/100)",
 	"grades": ["CM1"],
-	"theme": "Décimaux",
-	"domain": "Apprivoiser",
-	"subdomain": "Comparer",
 	"level": 5,
 	"delay": 60,
 	"status": "draft",

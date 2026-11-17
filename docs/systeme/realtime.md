@@ -15,7 +15,7 @@ couvre:
 
 # Temps réel (Supabase Realtime)
 
-> Vérifié contre le code le 2026-10-10.
+> Vérifié contre le code le 2026-10-10 ; `provideProjectMediaOnly` (voisin du mode restreint) le 2026-11-06 et le 2026-11-08.
 
 ## À quoi ça sert
 
@@ -47,14 +47,14 @@ du **navigateur** (synchronisation entre onglets).
 
 ## Deux mécanismes (pas de Presence API native)
 
-| Mécanisme              | Coût                 | Usage                                                               |
-| ---------------------- | -------------------- | ------------------------------------------------------------------- |
-| **`postgres_changes`** | compte dans le quota | présence amis, notifications, succès, messages du chat, multijoueur |
-| **`broadcast`**        | gratuit, éphémère    | signaux du chat et du troc ; présence du partenaire de troc         |
+| Mécanisme              | Coût                 | Usage                                                       |
+| ---------------------- | -------------------- | ----------------------------------------------------------- |
+| **`postgres_changes`** | compte dans le quota | notifications, succès, messages du chat, multijoueur        |
+| **`broadcast`**        | gratuit, éphémère    | signaux du chat et du troc ; présence du partenaire de troc |
 
-L'API Presence native (`channel.track()`) n'est **pas** utilisée. La présence des amis passe par
-`postgres_changes` sur `user_presence` (voir écarts connus) ; celle du partenaire de troc par un
-événement broadcast `'presence'`.
+L'API Presence native (`channel.track()`) n'est **pas** utilisée. La présence des amis n'est
+**pas du temps réel** : elle est relue en base toutes les 60 s (voir `presenceManager`) ; celle du
+partenaire de troc passe par un événement broadcast `'presence'`.
 
 **Un `postgres_changes` ne reçoit rien si la table n'est pas publiée**, et l'abonnement réussit
 quand même. La liste fermée des tables publiées est gardée par
@@ -88,7 +88,6 @@ await supabaseRealtimeManager.disconnect(); // tous les canaux
 
 | Concern        | Nom du canal                   | Nature    | Mécanisme                                        |
 | -------------- | ------------------------------ | --------- | ------------------------------------------------ |
-| Présence amis  | `'user-presence-updates'`      | public    | postgres_changes `user_presence`                 |
 | Notifications  | `'user-notifications'`         | public    | postgres_changes `notifications`                 |
 | Succès         | `'achievements-realtime'`      | public    | postgres_changes `student_achievements`          |
 | Chat           | `` `chat-${conversationId}` `` | **privé** | broadcast (signal) + postgres_changes `messages` |
@@ -104,13 +103,19 @@ n'interroge pas ces policies.
 
 ### `presenceManager`
 
-`startPresenceTracking(friendIds)` (appelé par `friendsManager` dans `src/lib/stores/friends.svelte.ts`)
-lit l'état initial dans `user_presence`, s'abonne avec le filtre `user_id=in.(…)` et lance le
-battement de cœur : RPC `upsert_user_presence` toutes les `HEARTBEAT_INTERVAL` = 180 s
-(exporté ; calibré sur le quota, à recalculer avant tout changement). `getFriendPresence(id)`
-(`'online' | 'offline'`, défaut hors ligne), `stopPresenceTracking()`. Reconnexion sur un
-événement `system` en erreur, au plus `MAX_RECONNECT_ATTEMPTS` = 5 essais
-(`RECONNECT_DELAY_MS` = 5 s).
+**Sans canal** (écart T1, décision de David du 2026-11-03). `startPresenceTracking(friendIds)`
+(appelé par `friendsManager` dans `src/lib/stores/friends.svelte.ts`) lit `user_presence` (sous
+RLS : seulement les amis acceptés) tout de suite, puis toutes les `PRESENCE_POLL_INTERVAL` = 60 s,
+et lance le battement de cœur : RPC `upsert_user_presence` toutes les `HEARTBEAT_INTERVAL` = 180 s
+(exporté ; calibré sur le quota, à recalculer avant tout changement).
+
+Un ami est « en ligne » si sa ligne dit `online` **et** si `last_heartbeat` date de moins de
+`STALE_AFTER_MS` = 270 s (180 s + 90 s de marge), calculé dans le navigateur
+(`presenceStatusOf`) : la fonction `cleanup_stale_presence` existe en base mais n'est planifiée
+nulle part, une ligne `online` reste donc figée quand un onglet se ferme sans arrêter le suivi.
+Une relecture en échec garde le dernier statut connu. `getFriendPresence(id)`
+(`'online' | 'offline'`, défaut hors ligne), `stopPresenceTracking()` (arrête la relecture et le
+battement, marque l'utilisateur hors ligne).
 
 ### `notificationsRealtimeManager`
 
@@ -143,6 +148,11 @@ INSERT sur `student_achievements`, filtre `student_id=eq.<moi>`. Valide le paylo
 - Rendu : `src/lib/components/chat/ChatMessageList.svelte` affiche les messages en **mode
   restreint** (`src/lib/components/markdown/restricted-rendering.ts`) — chantier vivant :
   [chat-rendu-restreint](../wip/chat-rendu-restreint-progress.md).
+  Le même module porte aussi `provideProjectMediaOnly` (vidéos du seul stockage du projet ; depuis le
+  2026-11-08, formules et blocs à commande à attributs écartés, `neutralizeUnsafeBlocks` ; depuis le 2026-11-09,
+  images hors de notre stockage en lien), qui ne
+  sert pas au chat mais au cahier de texte ([cours-et-chapitres.md](cours-et-chapitres.md)) ; le
+  mode restreint du chat n'en dépend pas (il n'affiche aucune vidéo).
 
 ### `tradeRealtimeStore` — signaux + relecture
 
@@ -175,7 +185,8 @@ cycle de vie lié au match) : son en-tête l'explique, ne pas « corriger ». R�
   `startListening` ; `$effect(() => () => stopListening())`.
 - Présence amis : `src/routes/(protected)/dashboard/friends/+page.svelte` — `onMount` →
   `presenceManager.init` (le suivi démarre dans `friendsManager.loadFriendships()`) ; nettoyage →
-  `stopPresenceTracking()` + `supabaseRealtimeManager.disconnect()`. `presenceManager` est aussi lu
+  `stopPresenceTracking()`. Plus de bandeau « système de présence » (il ne reflétait que
+  l'abonnement retiré). `presenceManager` est aussi lu
   par `ChatConversationList`, `NewChatDialog`, `StartFriendTradeModal`.
 - Succès : `src/lib/components/achievements/AchievementNotifications.svelte`.
 - Chat : `src/lib/components/chat/ChatWindow.svelte` et `ChatMessageList.svelte`.
@@ -212,11 +223,18 @@ Historique : [canal privé du chat](../archive/wip/realtime-chat-prive-progress.
 
 ## Écarts connus
 
-- **`user_presence` n'est pas publiée** (décision en attente de David, gardée par
-  `realtime-publication.test.ts` : la publier diffuserait l'UUID d'un compte supprimé). Le
-  `postgres_changes` de `presenceManager` ne reçoit donc rien : le statut des amis n'est que celui
-  lu au démarrage du suivi, et le bandeau « connecté » de la page amis reflète l'abonnement, pas
-  la réception.
-- Les canaux `match:<id>`, présence, notifications et succès restent publics : ils ne portent que
-  des `postgres_changes`, filtrés par la RLS des tables.
+- **`user_presence` n'est pas publiée** (gardé par `realtime-publication.test.ts` : la publier
+  diffuserait l'UUID d'un compte supprimé). Réglé le 2026-11-03 (écart T1) : la présence des amis
+  est relue toutes les 60 s, sans canal.
+- Les canaux `match:<id>`, notifications et succès restent publics : ils ne portent que
+  des `postgres_changes`, filtrés par la RLS des tables (mesuré le 2026-11-03 : un intrus qui
+  rejoint le canal ne reçoit que ce qu'il pourrait déjà lire ; décision de David, écart T2 : pas de
+  passage en privé). **Garde** : `src/lib/stores/__tests__/canaux-publics-garde.test.ts` échoue
+  si un fichier qui ouvre un canal public utilise `broadcast`, `presence`, `.track()` ou
+  `.send()` ; ce canal doit alors passer en privé.
 - Un canal privé déjà joint le reste jusqu'à la reconnexion ou au rafraîchissement du JWT (~1 h).
+  **Limite acceptée** (décision de David du 2026-11-03, écart T3) : aucun code ne sort un élève
+  d'un canal quand ses droits changent (retrait d'une conversation, fin d'un troc). Les policies de
+  `realtime.messages` ne sont relues qu'à la jonction et au rafraîchissement du jeton ; une
+  suspension de compte ne coupe pas, à elle seule, un canal déjà joint. Pour une exclusion
+  urgente, il faut que l'élève soit déconnecté.

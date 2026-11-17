@@ -16,6 +16,7 @@
 
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { requireAuth } from '$lib/server/middleware/auth';
 import { z } from 'zod';
 import { createServerLogger } from '$lib/utils/logger';
 
@@ -131,10 +132,7 @@ async function verifyAssignmentAccess(
  * }
  */
 export const GET: RequestHandler = async ({ params, locals }) => {
-	const { user } = await locals.safeGetSession();
-	if (!user) {
-		throw error(401, 'Connexion requise');
-	}
+	const { user } = await requireAuth(locals);
 
 	const assignmentId = params.assignmentId;
 	if (!assignmentId) {
@@ -294,10 +292,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
  * }
  */
 export const POST: RequestHandler = async ({ params, locals, request }) => {
-	const { user } = await locals.safeGetSession();
-	if (!user) {
-		throw error(401, 'Connexion requise');
-	}
+	const { user } = await requireAuth(locals);
 
 	const assignmentId = params.assignmentId;
 	if (!assignmentId) {
@@ -398,10 +393,7 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
  * }
  */
 export const DELETE: RequestHandler = async ({ params, locals, url }) => {
-	const { user } = await locals.safeGetSession();
-	if (!user) {
-		throw error(401, 'Connexion requise');
-	}
+	const { user } = await requireAuth(locals);
 
 	const assignmentId = params.assignmentId;
 	if (!assignmentId) {

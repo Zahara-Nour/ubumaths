@@ -6,6 +6,8 @@
  * @module worksheets/pdf-file-name
  */
 
+import type { ContentLocale } from '$lib/types/locale';
+
 /**
  * Nom de fichier lisible à partir d'un titre (fiche, élève, classe)
  *
@@ -45,19 +47,30 @@ const PDF_KIND_SUFFIXES: Record<WorksheetPdfKind, string> = {
 };
 
 /**
+ * Marque de langue en fin de nom : la version anglaise d'une fiche garde le
+ * titre français et finit par `_EN`, pour la distinguer de la française.
+ */
+export function localeFileNameSuffix(locale: ContentLocale | undefined): string {
+	return locale && locale !== 'fr' ? `_${locale.toUpperCase()}` : '';
+}
+
+/**
  * Nom du PDF téléchargé : titre (et élève), puis « - Réponses » ou
- * « - Corrigé », pour que les trois fichiers ne s'écrasent pas.
+ * « - Corrigé », pour que les trois fichiers ne s'écrasent pas ; `_EN` à la
+ * fin pour la version anglaise.
  *
  * @example
  * ```typescript
  * worksheetPdfFileName('Équations', 'answers') // 'Equations - Réponses.pdf'
+ * worksheetPdfFileName('Équations', 'answers', undefined, 'en') // 'Equations - Réponses_EN.pdf'
  * ```
  */
 export function worksheetPdfFileName(
 	title: string,
 	kind: WorksheetPdfKind,
-	studentName?: string
+	studentName?: string,
+	locale?: ContentLocale
 ): string {
 	const student = studentName ? `_${sanitizeForFileName(studentName)}` : '';
-	return `${sanitizeForFileName(title)}${student}${PDF_KIND_SUFFIXES[kind]}.pdf`;
+	return `${sanitizeForFileName(title)}${student}${PDF_KIND_SUFFIXES[kind]}${localeFileNameSuffix(locale)}.pdf`;
 }

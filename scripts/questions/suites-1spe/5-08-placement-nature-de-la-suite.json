@@ -1,10 +1,8 @@
 {
+	"id": "c90fa022-9493-4812-adb7-c785babee9d4",
 	"title": "Intérêts simples ou composés : nature de la suite",
 	"description": "Reconnaître une suite arithmétique ou géométrique dans un placement",
 	"grades": ["1_SPE"],
-	"theme": "Suites",
-	"domain": "Modélisation",
-	"subdomain": "Placements",
 	"level": 1,
 	"status": "draft",
 	"delay": 40,

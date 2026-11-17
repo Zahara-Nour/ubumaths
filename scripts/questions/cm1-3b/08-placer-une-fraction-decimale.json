@@ -1,10 +1,8 @@
 {
+	"id": "5b038fc8-226f-4307-8609-27d87e5f7608",
 	"title": "Placer une fraction décimale sur une demi-droite graduée",
 	"description": "Placer une fraction décimale sur une demi-droite graduée en dixièmes (place 23/10), ou sur un morceau de droite gradué en centièmes (place 237/100), en touchant la droite",
 	"grades": ["CM1"],
-	"theme": "Fractions",
-	"domain": "Apprivoiser",
-	"subdomain": "Repérage",
 	"level": 6,
 	"delay": 45,
 	"status": "draft",

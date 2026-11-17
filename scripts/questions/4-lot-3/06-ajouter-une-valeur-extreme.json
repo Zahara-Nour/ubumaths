@@ -1,10 +1,8 @@
 {
+	"id": "410c104b-81cd-4a6b-8796-01a303d88f54",
 	"title": "Ajouter une valeur extrême",
 	"description": "Comprendre l'évolution de la moyenne et de la médiane quand on ajoute une valeur extrême à une série : la moyenne change beaucoup, la médiane peu",
 	"grades": ["4"],
-	"theme": "Statistiques",
-	"domain": "Problèmes",
-	"subdomain": "Valeur extrême",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

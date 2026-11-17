@@ -30,8 +30,6 @@ function createInstance(
 		statement: 'Soit x > 0' as ResolvedMarkdown,
 		blanks,
 		grades: ['2'],
-		theme: 'Algèbre',
-		domain: 'Puissances',
 		level: 1,
 		generatedAt: new Date().toISOString(),
 		options

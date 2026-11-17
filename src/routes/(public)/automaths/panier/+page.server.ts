@@ -1,28 +1,14 @@
-import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import type { QuestionTemplate } from '$lib/questions/types';
 import { createServerLogger } from '$lib/utils/logger';
 
 const logger = createServerLogger('(public)/automaths/panier/+page.server');
 
+/**
+ * Panier : rôle du visiteur seulement (enregistrer une série = prof ou admin).
+ * Les modèles viennent du cache de l'onglet (`questionTemplatesCache`).
+ */
 export const load: PageServerLoad = async ({ locals }) => {
 	const { supabase } = locals;
-
-	// Fetch all published question templates directly from database
-	const { data: allTemplates, error: templatesError } = await supabase
-		.from('question_templates')
-		.select('*')
-		.eq('status', 'published')
-		// Tri délégué à la base : `created_at` est nullable, et le tri JS
-		// construisait une `Date` à partir de `null`.
-		.order('created_at', { ascending: false });
-
-	if (templatesError) {
-		logger.error('Failed to load question templates:', templatesError);
-		throw error(500, 'Failed to load questions');
-	}
-
-	const templates = allTemplates ?? [];
 
 	// Get user role if authenticated
 	const { user } = await locals.safeGetSession();
@@ -45,7 +31,6 @@ export const load: PageServerLoad = async ({ locals }) => {
 	}
 
 	return {
-		templates: (templates as QuestionTemplate[]) || [],
 		userRole
 	};
 };

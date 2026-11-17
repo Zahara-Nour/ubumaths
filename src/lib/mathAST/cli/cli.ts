@@ -19,6 +19,7 @@ import chalk from 'chalk';
 import { parse, formatError, formatInputError } from './core';
 import { createDefaultRegistry } from './commands';
 import { startRepl } from './repl';
+import { useChalkColors } from './terminal-palette';
 import type { CommandContext } from './types';
 
 // =============================================================================
@@ -357,4 +358,6 @@ function handleEquiv(expr1OrCombined: string, expr2?: string): void {
 // Entry Point
 // =============================================================================
 
+// Le terminal colore les sorties des commandes (texte brut ailleurs).
+useChalkColors();
 program.parse();

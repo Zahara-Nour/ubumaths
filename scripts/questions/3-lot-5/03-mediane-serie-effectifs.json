@@ -1,10 +1,8 @@
 {
+	"id": "96992ea8-a78f-433d-90e4-5824ed7afb45",
 	"title": "Médiane d'une série à effectifs",
 	"description": "Donner la médiane d'une série donnée par un tableau d'effectifs ou un diagramme en barres, par les effectifs cumulés",
 	"grades": ["3"],
-	"theme": "Statistiques",
-	"domain": "Indicateurs",
-	"subdomain": "Médiane à effectifs",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

@@ -1,0 +1,3 @@
+# zone  x  y  côté   (carrés découpés dans essai-1-ia.jpg, 1264×848)
+reflet  200 110 300
+barbier 530 100 300

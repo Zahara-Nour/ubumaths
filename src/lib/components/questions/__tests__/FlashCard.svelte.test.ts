@@ -16,8 +16,6 @@ describe('FlashCard — face réponse sans réponse structurée', () => {
 			templateId: 'test',
 			statement: resolvedMarkdown('Calculer $$\\frac{3}{4} + \\frac{1}{2}$$'),
 			grades: ['6'],
-			theme: 'Algèbre',
-			domain: 'Fractions',
 			level: 1,
 			generatedAt: new Date().toISOString(),
 			...overrides
@@ -75,8 +73,6 @@ describe('FlashCard — verso d’une question à plusieurs bonnes réponses', (
 			templateId: 'test',
 			statement: resolvedMarkdown('Trouve un diviseur de 12 : $?$'),
 			grades: ['6'],
-			theme: 'Entiers',
-			domain: 'Diviser',
 			level: 1,
 			generatedAt: new Date().toISOString(),
 			blanks: [
@@ -121,8 +117,6 @@ describe('FlashCard — recto allégé', () => {
 		statement: resolvedMarkdown('Calcule. $$2 \\times 80$$'),
 		blanks: [{ expectedAnswer: '160', type: 'math' }],
 		grades: ['6'],
-		theme: 'Entiers',
-		domain: 'Multiplier',
 		level: 1,
 		generatedAt: new Date().toISOString()
 	} as unknown as QuestionInstance;
@@ -175,8 +169,6 @@ describe('FlashCard — hauteur des deux faces', () => {
 		blanks: [{ expectedAnswer: '160', expectedAnswerLatex: '160', type: 'math' }],
 		correction: { steps: LONG_CORRECTION },
 		grades: ['6'],
-		theme: 'Entiers',
-		domain: 'Multiplier',
 		level: 1,
 		generatedAt: new Date().toISOString()
 	} as unknown as QuestionInstance;
@@ -248,8 +240,6 @@ describe('FlashCard — verso allégé', () => {
 			blanks: [{ expectedAnswer: '160', expectedAnswerLatex: '160', type: 'math' }],
 			correction: { steps: [resolvedMarkdown('On multiplie 2 par 8 dizaines.')] },
 			grades: ['6'],
-			theme: 'Entiers',
-			domain: 'Multiplier',
 			level: 1,
 			generatedAt: new Date().toISOString(),
 			...overrides
@@ -337,8 +327,6 @@ describe('FlashCard — prop flippable', () => {
 		templateId: 'test',
 		statement: resolvedMarkdown('Combien font $$2 + 3$$ ?'),
 		grades: ['6'],
-		theme: 'Entiers',
-		domain: 'Additionner',
 		level: 1,
 		generatedAt: new Date().toISOString()
 	} as QuestionInstance;
@@ -380,8 +368,6 @@ describe('FlashCard — correction concise par défaut', () => {
 					steps: [resolvedMarkdown('On multiplie 2 par 8 dizaines [soit 16 dizaines]{.calcul}.')]
 				},
 				grades: ['6'],
-				theme: 'Entiers',
-				domain: 'Multiplier',
 				level: 1,
 				generatedAt: new Date().toISOString()
 			} as unknown as QuestionInstance

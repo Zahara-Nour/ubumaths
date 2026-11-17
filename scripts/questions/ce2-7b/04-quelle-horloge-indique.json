@@ -1,10 +1,8 @@
 {
+	"id": "2c94cb41-70fe-4424-b7de-f669541f9ff0",
 	"title": "Quelle horloge indique… ? (heures et minutes)",
 	"description": "Reconnaître l'horloge qui montre 8 h 35, 13 h 20, « sept heures moins le quart » ; leurres : aiguilles inversées, heure d'après, minutes symétriques",
 	"grades": ["CE2"],
-	"theme": "Grandeurs",
-	"domain": "Durées",
-	"subdomain": "Lire l'heure",
 	"level": 8,
 	"delay": 90,
 	"status": "draft",

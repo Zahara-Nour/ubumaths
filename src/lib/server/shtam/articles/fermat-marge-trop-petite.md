@@ -5,6 +5,8 @@ author: pile
 lede: Une note de frais de 1637 refait surface dans les sous-sols du Cabinet des Phynances. Le montant réclamé pour « une page de plus » ferait aujourd'hui frémir n'importe quel Polonais.
 ---
 
+![Dans une cave d’archives, Mère Ubu brandit une vieille facture cachetée de cire, devant une armoire ouverte d’où débordent rouleaux et registres ; à ses pieds, un vieux livre ouvert et une plume d’oie.](/shtam/fermat-marge-trop-petite.webp){size=large}
+
 C'est une trouvaille qui relance un débat vieux de près de quatre siècles. En vidant une armoire du Cabinet des Phynances, des archivistes ont mis la main sur une facture de 1637, adressée à un certain Pierre de Fermat. Objet : « Fourniture d'une page supplémentaire, pour démonstration ne tenant pas dans la marge. »
 
 Fermat avait écrit, en marge de son livre, qu'il avait trouvé « une démonstration merveilleuse » de son théorème, mais que la marge était trop étroite pour la contenir. Depuis, les mathématiciens se demandent s'il avait vraiment trouvé cette démonstration. La facture semble leur donner une réponse : Fermat n'a commandé qu'**une** page. Or la démonstration trouvée en 1994 en compte plus de cent. « Une page de plus, c'est juste assez pour écrire : la démonstration est laissée au lecteur », résume un étudiant, habitué à lire cette phrase dans ses livres de maths. Un mathématicien se montre plus sévère : « Sa démonstration était sans doute magnifique. Elle avait juste un défaut : elle était fausse. »

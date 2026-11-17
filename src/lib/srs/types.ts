@@ -482,6 +482,8 @@ export type DueReviewCard =
 			cardType: 'template';
 			templateId: string;
 			instance: QuestionInstance;
+			/** Notion du modèle (`classification_node_id`) : réactions du Palotin en séance */
+			notionId: string | null;
 			stats: DueReviewCardStats;
 	  }
 	| {
@@ -499,6 +501,8 @@ export type DueReviewCard =
 export interface ChapterDueCard {
 	templateId: string;
 	instance: QuestionInstance;
+	/** Notion du modèle (`classification_node_id`) : réactions du Palotin en séance */
+	notionId: string | null;
 	/** Jamais vue : première révision */
 	isNew: boolean;
 }

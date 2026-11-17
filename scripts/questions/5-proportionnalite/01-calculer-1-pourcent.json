@@ -1,10 +1,8 @@
 {
+	"id": "950cfa36-7eb8-44ba-9912-21c5e42d3bd9",
 	"title": "Calculer 1 % d'une quantité",
 	"description": "Calculer 1 % d'une quantité en la divisant par 100 (1 % de 350 = 3,5), puis s'en servir pour un autre pourcentage (7 % de 300 = 7 × 3 = 21)",
 	"grades": ["5"],
-	"theme": "Proportionnalité",
-	"domain": "Pourcentages",
-	"subdomain": "Calculer",
 	"level": 8,
 	"delay": 45,
 	"status": "draft",

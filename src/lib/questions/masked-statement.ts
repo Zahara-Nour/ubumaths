@@ -10,7 +10,8 @@
  * noms, le nombre de points ou de barres, la forme. La correction ne change pas :
  * le serveur juge sur l'instance complète.
  *
- * Masqué : ```line, ```courbe et ```trig (`placer:`), ```horloge (`placer:`), ```collection et
+ * Masqué : ```tortue (`attendu:`, la figure seule en `figure:`), ```calcul (`attendu:`), ```line, ```courbe et ```trig (`placer:`), ```courbe (`tracer:` : l'équation
+ * de la droite devient `tracer: ?`), ```horloge (`placer:`), ```collection et
  * ```monnaie (`construire:`, avec sa réserve par défaut écrite : `maskMonnaie`), ```partage (`colorier:`), ```barres (effectifs des
  * barres de `placer:`, `axe: à choisir` compris : l'échelle ne se déduit plus),
  * ```boite-a-moustaches (les cinq valeurs des boîtes de `placer:`, ou `données:`).
@@ -22,12 +23,23 @@
  *   `completer: ? ?` (une face à poser par `?`) ;
  * - ```figure-a-completer : `verifier: ?`, l'outil écrit (`outils:`). Les points
  *   restent : un point invisible posé sur la réponse fuirait (aucun modèle).
+ *   `verifier: mesure AOB` reste tel quel ; ses points calculés passent en coordonnées.
+ * Tableau à compléter (```variation à `?`, chantiers `tableau-signes`,
+ * `variations-a-completer`) : chaque valeur de x cachée devient un jeton `??1`, `??2`…
+ * dans `domain:` ET dans les clés des lignes (`-inf,-3` → `-inf,??1`, sinon la clé
+ * dirait la valeur) ; chaque signe, marque ou flèche cachés devient `?` seul, une valeur
+ * cachée d'une ligne `variation:` `?, position`. Les valeurs qui encadrent une flèche
+ * cachée passent au milieu (`center`) et les bornes implicites de la ligne sont écrites
+ * (`-inf: , top`) : la flèche donnée voisine reste dessinée, la cachée ne se lit pas.
+ * Le parseur lit ces formes comme des cases sans réponse.
  * Un bloc dans une option d'un ```choix n'est pas un geste (le générateur met le
  * choix à l'abri avant de repérer les gestes) : il reste tel quel, sinon les options
  * deviendraient identiques.
- * Sans objet : ```ranger (déjà mélangé), ```patron `designer:` (la tâche, que la
+ * Sans objet : ```ranger (déjà mélangé), ```associer (réécrit sans liens au tirage ; la garde
+ * `findUnmaskedAnswers` vérifie qu'il n'en reste aucun), ```trous (réécrit aux trous vides, gardé de même), ```patron `designer:` (la tâche, que la
  * consigne dit ; les faces se trouvent par le pliage), ```cubes `dessiner:` (la
- * perspective est la figure), opération posée.
+ * perspective est la figure), ```solide `tracer:` (la combinaison est la tâche, que
+ * la consigne dit ; les points se trouvent par le calcul), opération posée.
  *
  * @module questions/masked-statement
  */
@@ -35,6 +47,12 @@
 import { findLinesToPlace } from '$lib/ubumark/parser/number-line-parser';
 import { findCourbesToPlace } from '$lib/ubumark/parser/courbe-parser';
 import { findTrigCirclesToPlace } from '$lib/ubumark/parser/trig-circle-parser';
+import {
+	figureText,
+	findTortuesToProgram,
+	parseTortueContent
+} from '$lib/ubumark/parser/tortue-parser';
+import { findCalculsToProgram } from '$lib/ubumark/parser/calcul-parser';
 import {
 	findHorlogesToPlace,
 	isMaskedPlacerValue,
@@ -50,17 +68,36 @@ import {
 	parseStatChartContent
 } from '$lib/ubumark/parser/stat-chart-parser';
 import { findChoiceBlocks } from '$lib/ubumark/parser/choix-parser';
+import { findAssociersToPlace, parseAssocierBody } from '$lib/ubumark/parser/associer-parser';
+import { findTrousToPlace, trousHasFilledHole } from '$lib/ubumark/parser/trous-parser';
 import {
 	findCubesToBuild,
 	findPatronsToBuild,
 	parseEspaceContent
 } from '$lib/ubumark/parser/espace-parser';
 import { readConstructionHeader } from '$lib/ubumark/parser/construction-parser';
+import {
+	constructionPositions,
+	constructionShapes,
+	hasConstructionPositions
+} from '$lib/questions/construction/positions';
+import {
+	findVariationsToFill,
+	variationRowForDisplay,
+	withImplicitEndpoints,
+	type VariationToFill
+} from '$lib/ubumark/parser/variation-table-parser';
+import type { VariationTableNode } from '$lib/ubumark/types/variation-table';
 import { unnestedLine } from '$lib/ubumark/parser/nested-line';
-import { MASKED_VALUE } from '$lib/ubumark/utils/masked-value';
+import {
+	isMaskedVectorValue,
+	isCombinationVectorValue,
+	isVectorValue,
+	MASKED_VALUE,
+	maskVectorValue
+} from '$lib/ubumark/utils/masked-value';
 import { sideColumns } from '$lib/ubumark/utils/espace-scene';
 import { transformGrid, trimGrid } from '$lib/ubumark/utils/espace-patrons';
-import { CHECK_TOOL } from '$lib/ubumark/types/construction';
 
 // Types
 interface FoundBlock {
@@ -76,8 +113,11 @@ type MaskLine = (line: string, rank: number) => string | string[] | null;
 
 // Constantes
 const PLACER_LINE = /^(placer\s*:)(.*)$/i;
+const REPRESENTER_LINE = /^(representer\s*:)(.*)$/i;
+const TRACER_LINE = /^(tracer\s*:)(.*)$/i;
 const BUILD_LINE = /^(construire\s*:)(.*)$/i;
 const COLORIER_LINE = /^(colorier\s*:)(.*)$/i;
+const ATTENDU_LINE = /^(attendu\s*:)(.*)$/i;
 const RESERVE_LINE = /^réserve\s*:/i;
 /** `A=3` sur une droite : le nom avant `=` */
 const NAMED_TARGET = /^([^=\s]+)\s*=/;
@@ -96,6 +136,20 @@ function maskLineTargets(value: string): string {
 			return named ? `${named[1]}=${MASKED_VALUE}` : MASKED_VALUE;
 		})
 		.join(' ; ');
+}
+
+/**
+ * `representer:` masqué en gardant le geste : `?` (demi-droite, une borne et un
+ * côté), `? ; ?` (intervalle borné, deux bornes) ; ni bornes ni crochets
+ */
+function maskRepresenter(value: string): string {
+	return isLineToRepresentBounded(value) ? `${MASKED_VALUE} ; ${MASKED_VALUE}` : MASKED_VALUE;
+}
+
+/** `[-1, 3[` : deux bornes finies ; `[2, +inf[` : non (une borne infinie) */
+function isLineToRepresentBounded(value: string): boolean {
+	if (/^\s*\?\s*;\s*\?\s*$/.test(value)) return true;
+	return !/(?:inf|∞|\\infty)/i.test(value);
 }
 
 /** Ligne retirée d'un bloc réécrit (filtrée à la fin) */
@@ -125,10 +179,10 @@ function keyLine(pattern: RegExp, mask: (value: string) => string): MaskLine {
 }
 
 /** Réécrire les lignes du corps de chaque bloc, en gardant ce qui les imbrique */
-function maskLines(
+function maskLines<T extends FoundBlock>(
 	lines: string[],
-	blocks: FoundBlock[],
-	maskFor: (block: FoundBlock) => MaskLine
+	blocks: T[],
+	maskFor: (block: T) => MaskLine
 ): void {
 	for (const block of blocks) {
 		const mask = maskFor(block);
@@ -152,6 +206,20 @@ function maskLines(
  * dépend de la somme (pièces de centimes si elle en a, chantier `monnaie-centimes`) :
  * l'énoncé masqué l'écrit, pour que l'élève ait la même réserve qu'à l'entraînement.
  */
+/**
+ * Programme tortue : `attendu: ?` ; la figure à reproduire (`montrer: oui`) part seule, en
+ * segments (`figure:`), sans le programme qui la trace
+ */
+function maskTortue(block: FoundBlock): MaskLine {
+	const attendu = keyLine(ATTENDU_LINE, () => MASKED_VALUE);
+	const modele = parseTortueContent(block.body.join('\n')).spec?.modele ?? null;
+	return (line, rank) => {
+		const masked = attendu(line, rank);
+		if (masked === null || modele === null) return masked;
+		return `${masked}\nfigure: ${figureText(modele)}`;
+	};
+}
+
 function maskMonnaie(block: FoundBlock): MaskLine {
 	const build = keyLine(BUILD_LINE, () => MASKED_VALUE);
 	if (block.body.some((line) => RESERVE_LINE.test(line.trim()))) return build;
@@ -294,6 +362,53 @@ function findFiguresACompleter(lines: string[]): FoundBlock[] {
 }
 
 /**
+ * `verifier: mesure AOB` (lot 6), `, rapporteur posé` (lot 8), `mesure AB` et
+ * `mesure AB en mm` (n° 26) : rien à cacher
+ */
+const MEASURE_CHECK =
+	/^mesure\s+(?:[A-Z]{3}(?:\s*,\s*rapporteur\s+pos[ée])?|[A-Z]{2}(?:\s+en\s+(?:cm|mm))?)$/;
+/** Définition d'un point nommé : `B = <expression>` */
+const POINT_DEFINITION = /^\s*([A-Za-z][A-Za-z0-9_']*)\s*=\s*(.+)$/;
+/** Une expression qui peut porter la mesure d'un angle (garde de l'énoncé masqué) */
+const ANGLE_IN_FIGURE = /\bangle\s*=|\brotation\s*\(/;
+
+/** Coordonnée écrite dans l'énoncé masqué : 6 décimales, sans zéros inutiles */
+function coordinate(value: number): string {
+	return String(Number(value.toFixed(6)));
+}
+
+/**
+ * Angle à mesurer (lot 6, décision de David du 2026-11-03) : dans l'énoncé masqué,
+ * chaque point nommé défini par un calcul devient `B = point(x, y)` (invisible :
+ * `visible=faux` gardé ; ses autres réglages d'affichage tombent). Les autres lignes
+ * restent : les traits nomment leurs points. Sans le calcul des figures (positions
+ * non inscrites), rien n'est réécrit : la garde refuse alors l'envoi.
+ */
+function maskMeasureFigure(block: FoundBlock): MaskLine {
+	if (!hasConstructionPositions()) return () => null;
+	const source = block.body.join('\n');
+	let points: ReadonlyMap<string, { x: number; y: number }>;
+	let visible: ReadonlySet<string>;
+	try {
+		points = constructionPositions(source);
+		visible = constructionShapes(source).visiblePoints;
+	} catch {
+		return () => null;
+	}
+	const separator = block.body.findIndex((line) => FIGURE_SEPARATOR.test(line.trim()));
+	return (line, rank) => {
+		if (separator === -1 || rank <= separator) return null;
+		const definition = POINT_DEFINITION.exec(line);
+		if (!definition) return null;
+		const [, name, expression] = definition;
+		const at = points.get(name);
+		if (!at || /^point\s*\(/.test(expression.trim())) return null;
+		const hidden = visible.has(name) ? '' : ', visible=faux';
+		return `${name} = point(${coordinate(at.x)}, ${coordinate(at.y)}${hidden})`;
+	};
+}
+
+/**
  * Figure à compléter : la première ligne `verifier:` devient `verifier: ?` (précédée
  * de `outils:` si l'outil venait de la vérification), les autres sont retirées.
  * Les lignes de la figure (après `---`) restent.
@@ -301,10 +416,17 @@ function findFiguresACompleter(lines: string[]): FoundBlock[] {
 function maskFigure(block: FoundBlock): MaskLine {
 	const header = readConstructionHeader(block.body.join('\n'));
 	if (header.spec.masked || header.spec.checks.length === 0) return () => null;
+	// Angle à mesurer (lot 6) : `verifier: mesure AOB` reste (l'écran en tire la case) ; les
+	// points calculés sont écrits en coordonnées (`B = rotation(A, angle=50, …)` dirait la réponse)
+	// Segment à mesurer (n° 26) : de même, `mesure AB` reste ; `B = milieu(A, C)` dirait la longueur
+	if (header.spec.checks.some((c) => c.kind === 'mesure' || c.kind === 'mesure_segment')) {
+		return maskMeasureFigure(block);
+	}
 	const separator = block.body.findIndex((line) => FIGURE_SEPARATOR.test(line.trim()));
 	const headerEnd = separator === -1 ? block.body.length : separator;
 	const toolsWritten = block.body.slice(0, headerEnd).some((line) => keyOf(line) === 'outils');
-	const tool = CHECK_TOOL[header.spec.checks[0].kind];
+	// La palette déduite (un outil, ou les instruments du papier uni) : écrite telle quelle
+	const tools = header.spec.tools.join(', ');
 	let first = true;
 	return (line, rank) => {
 		if (rank >= headerEnd || !/^(verifier|vérifier)$/.test(keyOf(line) ?? '')) return null;
@@ -312,8 +434,144 @@ function maskFigure(block: FoundBlock): MaskLine {
 		first = false;
 		return toolsWritten
 			? `verifier: ${MASKED_VALUE}`
-			: [`outils: ${tool}`, `verifier: ${MASKED_VALUE}`];
+			: [`outils: ${tools}`, `verifier: ${MASKED_VALUE}`];
 	};
+}
+
+/** Ligne `domain:` d'un tableau */
+const DOMAIN_LINE = /^(\s*domain\s*:\s*)(.*)$/i;
+/** Valeur de x cachée dans `domain:` : borne éventuelle, `?`, valeur, borne éventuelle */
+const HIDDEN_DOMAIN_POINT = /^(\s*[[\]]?\s*)\?(.*?)(\s*[[\]]?\s*)$/;
+/** Cellule d'une ligne du tableau (`  -inf,-3: ?-`) : retrait, clé, séparateur, valeur */
+const TABLE_ENTRY = /^(\s{2,})(.+?)(\s*:\s*)(.+?)\s*$/;
+
+/** En-tête d'une ligne du tableau (`sign: …`, `variation: …`) */
+const ROW_HEADER = /^\s*(sign|variation)\s*:/i;
+
+/**
+ * Rang de la ligne du tableau (dans `rows`) qui porte chaque ligne du corps, -1 hors
+ * de toute ligne ; mêmes en-têtes que le parseur.
+ */
+function rowRanks(body: readonly string[]): number[] {
+	let row = -1;
+	return body.map((line) => {
+		if (ROW_HEADER.test(line)) row++;
+		return row;
+	});
+}
+
+/**
+ * Lignes `variation:` à flèches cachées : par rang de ligne, les points qui encadrent
+ * une flèche cachée (au milieu dans l'énoncé masqué) et les bornes implicites qui
+ * restent dessinées, à écrire (`clé`, position)
+ */
+function hiddenArrowRows(
+	node: VariationTableNode | null
+): Map<number, { centered: Set<string>; implicit: [string, string][] }> {
+	const result = new Map<number, { centered: Set<string>; implicit: [string, string][] }>();
+	if (node === null) return result;
+	node.rows.forEach((row, rank) => {
+		if (row.type !== 'variation') return;
+		const arrows = (node.cases ?? []).filter((c) => c.kind === 'fleche' && c.row === rank);
+		if (arrows.length === 0) return;
+		const shown = variationRowForDisplay(node, rank);
+		result.set(rank, {
+			centered: new Set(arrows.flatMap((cell) => cell.key.split(','))),
+			implicit: [...shown.values.entries()]
+				.filter(([key]) => !row.values.has(key))
+				.map(([key, value]) => [key, value.position])
+		});
+	});
+	return result;
+}
+
+/**
+ * Tableau à compléter : valeurs de x cachées → `??n` (dans `domain:` et dans les clés),
+ * signes, marques et flèches cachés → `?`, valeur cachée d'une ligne `variation:` →
+ * `?, position` ; les valeurs qui encadrent une flèche cachée passent au milieu, les
+ * bornes implicites de leur ligne sont écrites. Les lignes sont réécrites d'après tout
+ * le corps (les clés dépendent du domaine, les hauteurs des flèches).
+ */
+function maskVariation(block: VariationToFill): MaskLine {
+	const tokens = new Map<string, string>();
+	const masked = block.body.map((line) => {
+		const domain = DOMAIN_LINE.exec(line);
+		if (!domain) return null;
+		const points = domain[2].split(',').map((part) => {
+			const hidden = HIDDEN_DOMAIN_POINT.exec(part);
+			if (!hidden || hidden[2].trim().startsWith('?')) return part;
+			const token = `??${tokens.size + 1}`;
+			tokens.set(hidden[2].trim(), token);
+			return `${hidden[1]}${token}${hidden[3]}`;
+		});
+		// Sans retrait : `maskLines` remet ce qui précédait la ligne
+		return `${domain[1].trimStart()}${points.join(',')}`;
+	});
+	const ranks = rowRanks(block.body);
+	const arrowRows = hiddenArrowRows(block.node);
+	const rename = (key: string) =>
+		key
+			.split(',')
+			.map((part) => tokens.get(part.trim()) ?? part.trim())
+			.join(',');
+	return (line, rank) => {
+		if (masked[rank] !== null) return masked[rank];
+		const arrows = arrowRows.get(ranks[rank]);
+		// En-tête d'une ligne à flèche cachée : ses bornes implicites, écrites
+		if (arrows && ROW_HEADER.test(line) && arrows.implicit.length > 0) {
+			return [
+				line.trim(),
+				...arrows.implicit.map(([key, position]) => `  ${rename(key)}: , ${position}`)
+			];
+		}
+		const entry = TABLE_ENTRY.exec(line);
+		if (!entry) return null;
+		const [, , key, separator, value] = entry;
+		const plainKey = key
+			.split(',')
+			.map((part) => part.trim())
+			.join(',');
+		const renamed = rename(key);
+		const parts = value.split(',').map((part) => part.trim());
+		const isPoint = !plainKey.includes(',');
+		const inVariationRow = block.node?.rows[ranks[rank]]?.type === 'variation';
+		let shownValue = value;
+		if (inVariationRow && isPoint && parts.length === 2) {
+			// Valeur d'une ligne variation: (cachée ou non) : hauteur gardée, sauf à côté
+			// d'une flèche cachée
+			const position = arrows?.centered.has(plainKey) ? 'center' : parts[1];
+			const expression = parts[0].startsWith('?') ? MASKED_VALUE : parts[0];
+			shownValue = `${expression}, ${position}`;
+		} else if (value.trim().startsWith('?')) {
+			shownValue = MASKED_VALUE;
+		}
+		if (renamed === plainKey && shownValue === value) return null;
+		return `${renamed}${separator}${shownValue}`;
+	};
+}
+
+/**
+ * Tableau à compléter masqué : chaque case sans réponse, aucune clé de ligne qui ne
+ * soit une valeur du domaine (une clé `-3` dirait la valeur cachée `??1`), et aucune
+ * hauteur à côté d'une flèche cachée (elle dirait la flèche)
+ */
+function variationMasked(node: ReturnType<typeof findVariationsToFill>[number]['node']): boolean {
+	if (node === null) return false;
+	if ((node.cases ?? []).some((cell) => cell.answer !== '')) return false;
+	const domain = new Set(node.domain.map((point) => point.expression));
+	const keysInDomain = node.rows.every((row) =>
+		[...row.values.keys()].every((key) => key.split(',').every((part) => domain.has(part)))
+	);
+	if (!keysInDomain) return false;
+	return (node.cases ?? []).every((cell) => {
+		const row = cell.row === 'domain' ? undefined : node.rows[cell.row];
+		if (cell.kind !== 'fleche' || row?.type !== 'variation') return true;
+		const filled = withImplicitEndpoints(row, node.domain);
+		return cell.key.split(',').every((point) => {
+			const value = filled.values.get(point);
+			return value === undefined || value.position === 'center';
+		});
+	});
 }
 
 /** `A=? ; B=?`, `?` : chaque cible de la ligne est masquée */
@@ -373,12 +631,29 @@ export function findUnmaskedAnswers(statement: string): string[] {
 	const keyMasked = (keys: string[]) => (block: FoundBlock) =>
 		valuesOf(block.body, keys).every(allMasked);
 	return [
-		...leaks('line', findLinesToPlace(statement), keyMasked(['placer'])),
-		...leaks('courbe', findCourbesToPlace(statement), keyMasked(['placer'])),
+		...leaks('line', findLinesToPlace(statement), keyMasked(['placer', 'representer'])),
+		...leaks(
+			'courbe',
+			findCourbesToPlace(statement),
+			(block) =>
+				valuesOf(block.body, ['placer']).every(allMasked) &&
+				valuesOf(block.body, ['tracer']).every((v) =>
+					isVectorValue(v) ? isMaskedVectorValue(v) || isCombinationVectorValue(v) : allMasked(v)
+				)
+		),
 		...leaks('trig', findTrigCirclesToPlace(statement), keyMasked(['placer'])),
+		// Bloc cité ou en retrait compris : `attendu:` est la réponse elle-même, où qu'il soit
+		...leaks('tortue', findTortuesToProgram(statement), keyMasked(['attendu'])),
+		...leaks('calcul', findCalculsToProgram(statement), keyMasked(['attendu'])),
 		...leaks('horloge', findHorlogesToPlace(statement), (block) =>
 			valuesOf(block.body, ['placer']).every(isMaskedPlacerValue)
 		),
+		// Éléments à associer : l'énoncé d'instance n'a plus aucun lien (`- élément ->`)
+		...leaks('associer', own(findAssociersToPlace(statement)), (block) =>
+			parseAssocierBody(block.body).answers.every((answer) => answer === null)
+		),
+		// Texte à trous : l'énoncé d'instance n'a que des trous vides (`[]`), même avec sa réserve écrite
+		...leaks('trous', own(findTrousToPlace(statement)), (block) => !trousHasFilledHole(block.body)),
 		...leaks('collection', findBuildCollections(statement), keyMasked(['construire'])),
 		...leaks('monnaie', findBuildMonnaies(statement), keyMasked(['construire'])),
 		...leaks('partage', findPartagesToColorier(statement), keyMasked(['colorier'])),
@@ -389,7 +664,20 @@ export function findUnmaskedAnswers(statement: string): string[] {
 				v.split(/\s+/).every((w) => w === MASKED_VALUE)
 			)
 		),
-		...leaks('figure-a-completer', findFiguresACompleter(lines), keyMasked(['verifier']))
+		// Angle à mesurer (lot 6) : `mesure AOB` ne dit rien que la figure ne montre ; une
+		// rotation ou un `angle=` restés dans sa figure, si
+		...leaks('figure-a-completer', findFiguresACompleter(lines), (block) => {
+			const values = valuesOf(block.body, ['verifier']);
+			if (values.every(allMasked)) return true;
+			if (!values.every((v) => allMasked(v) || MEASURE_CHECK.test(v.trim()))) return false;
+			const separator = block.body.findIndex((line) => FIGURE_SEPARATOR.test(line.trim()));
+			return block.body.slice(separator + 1).every((line) => !ANGLE_IN_FIGURE.test(line));
+		}),
+		...(findVariationsToFill(statement).some(
+			(block) => !block.nested && !inChoice(block) && !variationMasked(block.node)
+		)
+			? ['variation']
+			: [])
 	];
 }
 
@@ -402,16 +690,33 @@ export function maskGestureAnswers(statement: string): string {
 	const choices = findChoiceBlocks(lines);
 	const inChoice = (block: FoundBlock) =>
 		choices.some((c) => block.startIndex > c.startIndex && block.startIndex <= c.endIndex);
-	const maskBlocks = (found: FoundBlock[], maskFor: (block: FoundBlock) => MaskLine) =>
+	const maskBlocks = <T extends FoundBlock>(found: T[], maskFor: (block: T) => MaskLine) =>
 		maskLines(
 			lines,
 			found.filter((block) => !inChoice(block)),
 			maskFor
 		);
 	const placer = keyLine(PLACER_LINE, maskLineTargets);
-	maskBlocks(findLinesToPlace(statement), () => placer);
-	maskBlocks(findCourbesToPlace(statement), () => keyLine(PLACER_LINE, maskCourbeTargets));
+	const representer = keyLine(REPRESENTER_LINE, maskRepresenter);
+	maskBlocks(
+		findLinesToPlace(statement),
+		() => (line, rank) => placer(line, rank) ?? representer(line, rank)
+	);
+	const courbePoints = keyLine(PLACER_LINE, maskCourbeTargets);
+	// Droite : l'équation entière ; vecteur : ses coordonnées seules (nom, origine gardés)
+	const courbeLine = keyLine(TRACER_LINE, (value) =>
+		isVectorValue(value) ? maskVectorValue(value) : MASKED_VALUE
+	);
+	maskBlocks(
+		findCourbesToPlace(statement),
+		() => (line, rank) => courbePoints(line, rank) ?? courbeLine(line, rank)
+	);
 	maskBlocks(findTrigCirclesToPlace(statement), () => placer);
+	// Tous les blocs, cités ou en retrait compris : `attendu:` est la réponse elle-même
+	maskBlocks(findTortuesToProgram(statement), maskTortue);
+	// Programme de calcul : `attendu: ?` ; les essais et le départ restent (ni l'un ni l'autre
+	// ne dit la réponse)
+	maskBlocks(findCalculsToProgram(statement), () => keyLine(ATTENDU_LINE, () => MASKED_VALUE));
 	maskBlocks(findHorlogesToPlace(statement), () => keyLine(PLACER_LINE, maskedPlacerValue));
 	const build = keyLine(BUILD_LINE, () => MASKED_VALUE);
 	maskBlocks(findBuildCollections(statement), () => build);
@@ -425,5 +730,6 @@ export function maskGestureAnswers(statement: string): string {
 	maskBlocks(ownBlocks(findCubesToBuild(statement)), maskCubes);
 	maskBlocks(ownBlocks(findPatronsToBuild(statement)), maskPatron);
 	maskBlocks(findFiguresACompleter(statement.split('\n')), maskFigure);
+	maskBlocks(ownBlocks(findVariationsToFill(statement)), maskVariation);
 	return lines.filter((line) => line !== REMOVED_LINE).join('\n');
 }

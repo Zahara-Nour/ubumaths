@@ -38,9 +38,11 @@ RELEASE="${DEPLOY_PROD_RELEASE:-pnpm release}"
 PAUSE="${DEPLOY_PROD_PAUSE:-30}"
 ATTENTE_MAX="${DEPLOY_PROD_ATTENTE_MAX:-1500}"
 RELANCES_MAX="${DEPLOY_PROD_RELANCES_MAX:-2}"
-# Plantage connu du serveur de vitest dans les tests navigateur, sans lien avec le
-# code (vu sur main et sur des PR depuis octobre ; v0.60.0, v0.61.0, v0.63.0).
-SIGNATURE="reading 'wrapDynamicImport'"
+# Plantage connu des tests navigateur, sans lien avec le code (vu sur main et sur
+# des PR depuis octobre ; v0.60.0, v0.61.0, v0.63.0) : le navigateur se ferme.
+# Pas `wrapDynamicImport`, présent dans TOUS les logs du job client, verts compris :
+# un vrai test client rouge aurait été relancé (2026-11-08).
+SIGNATURE="Browser connection was closed"
 essai=0
 relancer_ci=0
 for option in "$@"; do
@@ -102,7 +104,11 @@ plantage_connu() {
 	log="$(gh run view "$run" --log-failed 2>/dev/null)" || return 1
 	jobs="$(printf '%s\n' "$rouges" | grep -vx -e "$CHECK" -e '' | sort -u)" || return 1
 	while IFS= read -r job; do
-		printf '%s\n' "$log" | awk -F'\t' -v j="$job" '$1 == j' | grep -qF "$SIGNATURE" || return 1
+		# awk cherche lui-même et lit tout : `| grep -q` s'arrêtait au premier résultat,
+		# awk écrivait dans un tuyau fermé et, sous pipefail, l'échec masquait la
+		# signature trouvée (deploy:prod du 2026-11-08, relancé par --relancer-ci).
+		printf '%s\n' "$log" | awk -F'\t' -v j="$job" -v s="$SIGNATURE" \
+			'$1 == j && index($0, s) { t = 1 } END { exit !t }' || return 1
 	done <<<"$jobs"
 }
 
@@ -125,7 +131,7 @@ relancer() {
 		motif="--relancer-ci"
 		relancer_ci=0
 	elif [ "$etat" = failure ] && plantage_connu "$sha"; then
-		motif="plantage connu (wrapDynamicImport)"
+		motif="plantage connu (navigateur fermé)"
 	else
 		return 1
 	fi

@@ -1,10 +1,8 @@
 {
+	"id": "eb0dcd85-af63-442c-9bf4-3848b15891ea",
 	"title": "Lire un tableau croisé d'effectifs",
 	"description": "Tableau croisé sexe × régime : effectif d'une case, d'une marge, effectif total",
 	"grades": ["2"],
-	"theme": "Statistiques",
-	"domain": "Tableaux croisés",
-	"subdomain": "Effectifs",
 	"level": 1,
 	"delay": 90,
 	"status": "draft",

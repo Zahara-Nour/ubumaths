@@ -10,8 +10,12 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { createMockSupabase, createMockLocals, mockSuccess, mockError } from '$tests/helpers';
+
+vi.mock('$lib/server/middleware/auth', async (importActual) =>
+	(await import('$tests/helpers/garde-auth-locals')).gardeAuthDepuisLocals(importActual)
+);
 
 const EXERCISE_ID = '550e8400-e29b-41d4-a716-446655440003';
 const TEACHER_ID = '550e8400-e29b-41d4-a716-446655440011';
@@ -38,7 +42,10 @@ describe('GET /api/python-exercises/[id]/results', () => {
 	it('returns 400 when id is not a UUID', async () => {
 		const { GET } = await import('../+server');
 		const supabase = createMockSupabase();
-		const locals = createMockLocals(TEACHER_ID, supabase);
+		const locals = {
+			...createMockLocals(TEACHER_ID, supabase),
+			profile: { role: 'teacher' }
+		};
 		await expect(
 			GET({ params: { id: 'not-a-uuid' }, locals, url: makeUrl() } as any)
 		).rejects.toMatchObject({ status: 400 });
@@ -47,8 +54,10 @@ describe('GET /api/python-exercises/[id]/results', () => {
 	it('returns 403 when caller is not a teacher', async () => {
 		const { GET } = await import('../+server');
 		const supabase = createMockSupabase();
-		mockSuccess(supabase, { role: 'student' }, 'single');
-		const locals = createMockLocals(STUDENT_ID, supabase);
+		const locals = {
+			...createMockLocals(STUDENT_ID, supabase),
+			profile: { role: 'student' }
+		};
 		await expect(
 			GET({ params: { id: EXERCISE_ID }, locals, url: makeUrl() } as any)
 		).rejects.toMatchObject({ status: 403 });
@@ -57,9 +66,11 @@ describe('GET /api/python-exercises/[id]/results', () => {
 	it('returns 404 when exercise does not exist', async () => {
 		const { GET } = await import('../+server');
 		const supabase = createMockSupabase();
-		mockSuccess(supabase, { role: 'teacher' }, 'single');
 		mockError(supabase, 'not found', 'single');
-		const locals = createMockLocals(TEACHER_ID, supabase);
+		const locals = {
+			...createMockLocals(TEACHER_ID, supabase),
+			profile: { role: 'teacher' }
+		};
 		await expect(
 			GET({ params: { id: EXERCISE_ID }, locals, url: makeUrl() } as any)
 		).rejects.toMatchObject({ status: 404 });
@@ -68,10 +79,12 @@ describe('GET /api/python-exercises/[id]/results', () => {
 	it('returns 403 when teacher is not the author and has no assignments', async () => {
 		const { GET } = await import('../+server');
 		const supabase = createMockSupabase();
-		mockSuccess(supabase, { role: 'teacher' }, 'single');
 		mockSuccess(supabase, { author_id: OTHER_TEACHER_ID }, 'single');
 		mockSuccess(supabase, [], 'then'); // assignments
-		const locals = createMockLocals(TEACHER_ID, supabase);
+		const locals = {
+			...createMockLocals(TEACHER_ID, supabase),
+			profile: { role: 'teacher' }
+		};
 		await expect(
 			GET({ params: { id: EXERCISE_ID }, locals, url: makeUrl() } as any)
 		).rejects.toMatchObject({ status: 403 });
@@ -80,11 +93,13 @@ describe('GET /api/python-exercises/[id]/results', () => {
 	it('class filter: empty class members → empty results array', async () => {
 		const { GET } = await import('../+server');
 		const supabase = createMockSupabase();
-		mockSuccess(supabase, { role: 'teacher' }, 'single'); // profile
 		mockSuccess(supabase, { author_id: TEACHER_ID }, 'single'); // exercise (own)
 		mockSuccess(supabase, [], 'then'); // assignments check (passes because author)
 		mockSuccess(supabase, [], 'then'); // class_members
-		const locals = createMockLocals(TEACHER_ID, supabase);
+		const locals = {
+			...createMockLocals(TEACHER_ID, supabase),
+			profile: { role: 'teacher' }
+		};
 
 		const response = await GET({
 			params: { id: EXERCISE_ID },
@@ -99,11 +114,13 @@ describe('GET /api/python-exercises/[id]/results', () => {
 	it('no class filter, teacher has no classes → empty results', async () => {
 		const { GET } = await import('../+server');
 		const supabase = createMockSupabase();
-		mockSuccess(supabase, { role: 'teacher' }, 'single');
 		mockSuccess(supabase, { author_id: TEACHER_ID }, 'single');
 		mockSuccess(supabase, [], 'then'); // assignments check
 		mockSuccess(supabase, [], 'then'); // teacher_classes
-		const locals = createMockLocals(TEACHER_ID, supabase);
+		const locals = {
+			...createMockLocals(TEACHER_ID, supabase),
+			profile: { role: 'teacher' }
+		};
 
 		const response = await GET({
 			params: { id: EXERCISE_ID },
@@ -118,7 +135,6 @@ describe('GET /api/python-exercises/[id]/results', () => {
 	it('happy path: aggregates student stats from submissions', async () => {
 		const { GET } = await import('../+server');
 		const supabase = createMockSupabase();
-		mockSuccess(supabase, { role: 'teacher' }, 'single'); // profile
 		mockSuccess(supabase, { author_id: TEACHER_ID }, 'single'); // exercise
 		mockSuccess(supabase, [], 'then'); // assignments check
 		mockSuccess(supabase, [{ id: CLASS_ID }], 'then'); // teacher_classes
@@ -158,7 +174,10 @@ describe('GET /api/python-exercises/[id]/results', () => {
 			],
 			'then'
 		);
-		const locals = createMockLocals(TEACHER_ID, supabase);
+		const locals = {
+			...createMockLocals(TEACHER_ID, supabase),
+			profile: { role: 'teacher' }
+		};
 
 		const response = await GET({
 			params: { id: EXERCISE_ID },

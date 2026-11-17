@@ -1,10 +1,8 @@
 {
+	"id": "10aae729-4a29-4dac-9578-21ef655d60d1",
 	"title": "Donner la partie entière d'un nombre décimal",
 	"description": "Donner la partie entière d'un nombre décimal à une ou deux décimales (3,7 → 3 ; 135,78 → 135)",
 	"grades": ["CM1"],
-	"theme": "Décimaux",
-	"domain": "Apprivoiser",
-	"subdomain": "Arrondir",
 	"level": 4,
 	"delay": 30,
 	"status": "draft",

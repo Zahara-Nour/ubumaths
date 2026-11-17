@@ -1,10 +1,8 @@
 {
+	"id": "41dd05bc-345d-4a18-843c-dc4785585ec5",
 	"title": "Encadrer un nombre (unité, dizaine, centaine, millier)",
 	"description": "6 238 < 6 239 < 6 240 ; 6 230 < 6 239 < 6 240 ; 6 200 < … < 6 300 ; 6 000 < … < 7 000",
 	"grades": ["CE2"],
-	"theme": "Entiers",
-	"domain": "Apprivoiser",
-	"subdomain": "Encadrer",
 	"level": 11,
 	"delay": 20,
 	"status": "draft",

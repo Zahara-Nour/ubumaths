@@ -177,9 +177,6 @@
 			}
 		],
 		"grades": ["4"],
-		"theme": "Calcul littéral",
-		"domain": "Transformation",
-		"subdomain": "Développement",
 		"level": 1,
 		"status": "draft",
 		"delay": 30,

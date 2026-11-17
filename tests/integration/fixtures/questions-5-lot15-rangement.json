@@ -1,0 +1,90 @@
+[
+	{
+		"id": "017b381a-9ecf-451d-a4b5-3713260102ed",
+		"noeudAvant": null,
+		"noeudApres": "Géométrie > Symétrie centrale",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-054"]
+	},
+	{
+		"id": "0d4760f8-5fe1-40de-bb88-ace85b268625",
+		"noeudAvant": null,
+		"noeudApres": "Géométrie > Symétrie centrale",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-054"]
+	},
+	{
+		"id": "9cc1336b-bb55-4995-884a-446e53727f16",
+		"noeudAvant": null,
+		"noeudApres": "Géométrie > Solides > perspective cavalière",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-048"]
+	},
+	{
+		"id": "b05fcd29-73ce-4b7f-8223-109ce7fd48a2",
+		"noeudAvant": null,
+		"noeudApres": "Géométrie > Symétrie centrale",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-055"]
+	},
+	{
+		"id": "b4c9a2a1-320b-4f3c-86c6-dfa43908d31b",
+		"noeudAvant": null,
+		"noeudApres": "Géométrie > Solides > patrons",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-049"]
+	},
+	{
+		"id": "dc220b3b-f555-44ba-8425-fcf24f7db10f",
+		"noeudAvant": null,
+		"noeudApres": "Grandeurs et mesures > Aires",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-115"]
+	},
+	{
+		"id": "e206964d-c612-43df-a086-33b6180bd14b",
+		"noeudAvant": null,
+		"noeudApres": "Grandeurs et mesures > Aires",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-115"]
+	},
+	{
+		"id": "e2419609-0d83-4531-a799-acf1659323a5",
+		"noeudAvant": null,
+		"noeudApres": "Géométrie > Solides > perspective cavalière",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-144"]
+	}
+]

@@ -81,6 +81,44 @@ describe('Solide — figure', () => {
 		expect(width / cm).toBeCloseTo(4 + 0.1, 1);
 	});
 
+	it('vecteurs donnés : une flèche à pointe pleine, visible (couleur du texte)', async () => {
+		const screen = await render(Espace, {
+			target: mainElement(),
+			props: {
+				node: node(
+					'forme: cube 2',
+					'sommets: A B C D E F G H',
+					'points: I milieu AE',
+					'vecteurs: AB, u = AI'
+				)
+			}
+		});
+		// AB, AI et la petite flèche de u : trois traits, trois pointes
+		expect(screen.container.querySelectorAll('line.solide-trait')).toHaveLength(3);
+		const heads = screen.container.querySelectorAll('polygon.solide-pointe');
+		expect(heads).toHaveLength(3);
+		const fill = getComputedStyle(heads[0]).fill;
+		expect(fill).not.toBe('none');
+		expect(fill).toBe(getComputedStyle(screen.container.querySelector('text')!).fill);
+		const texts = [...screen.container.querySelectorAll('text')].map((t) => t.textContent);
+		expect(texts).toContain('I');
+		expect(texts).toContain('u');
+		expect(screen.container.querySelector('svg')!.getAttribute('aria-label')).toContain(
+			'vecteur u égal à AI'
+		);
+	});
+
+	it('vecteur indicé : w puis 1 en indice (tspan plus petit, abaissé)', async () => {
+		const screen = await render(Espace, {
+			target: mainElement(),
+			props: { node: node('forme: cube 2', 'sommets: A B C D E F G H', 'vecteurs: w1 = AB') }
+		});
+		const w = [...screen.container.querySelectorAll('text')].find((t) => t.textContent === 'w1');
+		const sub = w?.querySelector('tspan');
+		expect(sub?.textContent).toBe('1');
+		expect(Number(sub?.getAttribute('dy'))).toBeGreaterThan(0);
+	});
+
 	it('bloc en erreur : cadre neutre pour l’élève, messages pour le prof', async () => {
 		const pupil = await render(Espace, {
 			target: mainElement(),

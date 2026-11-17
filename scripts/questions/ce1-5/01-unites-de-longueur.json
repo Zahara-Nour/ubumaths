@@ -1,10 +1,8 @@
 {
+	"id": "ee4e61b6-5443-406d-b2bc-aff5c4d64112",
 	"title": "Les unités de longueur : km, m, cm",
 	"description": "Symbole et sens de km, m, cm ; la plus grande et la plus petite des trois unités",
 	"grades": ["CE1"],
-	"theme": "Grandeurs",
-	"domain": "Longueurs",
-	"subdomain": "Unités",
 	"level": 5,
 	"delay": 45,
 	"status": "draft",

@@ -23,13 +23,15 @@
 	// 2. Avoids adding to the root layout's static dependency chain (see Safari TDZ fix
 	//    in +layout.ts for details on WebKit module initialization issues)
 	import { browser } from '$app/environment';
+	import { redactAnalyticsEvent } from '$lib/utils/analytics-redact';
 
 	$effect(() => {
 		if (!browser) return;
 		Promise.all([import('@vercel/analytics'), import('@vercel/speed-insights/sveltekit')])
 			.then(([{ inject }, { injectSpeedInsights }]) => {
-				inject();
-				injectSpeedInsights();
+				// Le jeton d'un lien personnel (carnet de liaison) ne part pas chez Vercel
+				inject({ beforeSend: redactAnalyticsEvent });
+				injectSpeedInsights({ beforeSend: redactAnalyticsEvent });
 			})
 			.catch((e) => {
 				console.debug('[Analytics] Failed to initialize:', e);
@@ -42,7 +44,9 @@
 	import { theme } from '$lib/stores/theme.svelte';
 	import { fontSize } from '$lib/stores/fontSize.svelte';
 	import { initializeTemplates } from '$lib/stores/vipCardTemplates.svelte';
-	import { page } from '$app/state';
+	import { page, updated } from '$app/state';
+	import { beforeNavigate } from '$app/navigation';
+	import { shouldReloadOnNavigate } from '$lib/utils/app-version';
 	import { showsInfoButton } from '$lib/utils/footer';
 	import InfoPanel from '$lib/components/InfoPanel.svelte';
 	import { navigating } from '$app/stores';
@@ -55,12 +59,29 @@
 	import SkeletonForm from '$lib/components/skeleton/SkeletonForm.svelte';
 	import { getSkeletonType } from '$lib/utils/skeleton-detector';
 	import ModalStackRenderer from '$lib/components/modals/ModalStackRenderer.svelte';
+	import MathKeyboardClose from '$lib/components/MathKeyboardClose.svelte';
 	import { provideReaderGrade } from '$lib/lexicon/reader-grade';
+	import type { Component } from 'svelte';
 
 	let { children, data }: { children: import('svelte').Snippet; data: LayoutData } = $props();
 
 	// Niveau de l'élève connecté : lu par les mots cliquables des questions
 	provideReaderGrade(() => data.profile?.grade);
+
+	// Onglet resté ouvert pendant un déploiement : sur un lien ou Précédent / Suivant, la page
+	// suivante se charge en entier avec le nouveau code (jamais sur un `goto` : en pleine activité)
+	// Lien : `cancel()` arrête la navigation de Kit (sinon l'ancien code charge la page en parallèle).
+	// Précédent / Suivant : surtout pas de `cancel()` (Kit annulerait le déplacement dans
+	// l'historique) ; l'adresse a déjà changé, on recharge.
+	beforeNavigate(({ willUnload, type, to, cancel }) => {
+		if (!to || !shouldReloadOnNavigate({ updated: updated.current, willUnload, type, to })) return;
+		if (type === 'popstate') {
+			location.reload();
+			return;
+		}
+		cancel();
+		location.href = to.url.href;
+	});
 
 	// Check if we're in a dashboard route
 	let isDashboardRoute = $derived(page.url.pathname.startsWith('/dashboard'));
@@ -82,6 +103,18 @@
 		// Access to ensure reactivity
 		void theme.dark;
 		void fontSize.size;
+	});
+
+	// Palotin de l'élève connecté (maison, écusson, passages : chantier `palotins`).
+	// Chargé à la demande : ni le visiteur ni le professeur ne téléchargent son code,
+	// et le module d'entrée reste léger (Safari TDZ, cf. +layout.ts).
+	let PalotinPresence = $state<Component | null>(null);
+	const isStudent = $derived(data.profile?.role === 'student');
+	$effect(() => {
+		if (!browser || !isStudent || PalotinPresence) return;
+		import('$lib/components/buddy/PalotinPresence.svelte')
+			.then((module) => (PalotinPresence = module.default))
+			.catch((e) => console.debug('[Palotin] Chargement impossible :', e));
 	});
 
 	// Initialize VIP card templates store from server data
@@ -128,6 +161,14 @@
 
 <!-- Modal Stack Renderer - renders modal stack from modalStack store -->
 <ModalStackRenderer />
+
+<!-- « Fermer le clavier » au-dessus du clavier virtuel MathLive, tant qu'il est ouvert -->
+<MathKeyboardClose />
+
+<!-- Palotin de l'élève : il décide lui-même des pages où il apparaît -->
+{#if PalotinPresence && isStudent}
+	<PalotinPresence />
+{/if}
 
 <div class="flex h-screen flex-col">
 	<!-- Header - only show on non-dashboard routes -->

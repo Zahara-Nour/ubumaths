@@ -72,7 +72,8 @@ const NOTIFICATION_ALLOWED_TAGS = [
  * - ALLOWED_ATTR: [] - NO attributes allowed (blocks onclick, href, style, class)
  * - ALLOW_DATA_ATTR: false - Blocks data-* attributes (XSS vector)
  * - ALLOW_UNKNOWN_PROTOCOLS: false - Only http:, https:, mailto:
- * - SAFE_FOR_TEMPLATES: true - Extra protection for template injection
+ * - Pas de SAFE_FOR_TEMPLATES : il effaçait tout de `{{` au dernier `}}` (formules) ; il ne
+ *   protège que d'un moteur de gabarits relisant le HTML (Angular, Vue), absent ici (2026-11-08)
  * - KEEP_CONTENT: true - Preserve text even if tags are stripped
  *
  * WHY ZERO ATTRIBUTES?
@@ -93,7 +94,6 @@ export const NOTIFICATION_SANITIZE_CONFIG = {
 	ALLOWED_ATTR: [], // CRITICAL: No attributes = no XSS vectors
 	ALLOW_DATA_ATTR: false,
 	ALLOW_UNKNOWN_PROTOCOLS: false,
-	SAFE_FOR_TEMPLATES: true,
 	KEEP_CONTENT: true,
 	RETURN_TRUSTED_TYPE: false // Return string, not TrustedHTML
 } as const;

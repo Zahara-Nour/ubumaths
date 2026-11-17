@@ -29,8 +29,6 @@ function handsTemplate(
 			}
 		],
 		grades: ['T_SPE'],
-		theme: 'Probabilités',
-		domain: 'Dénombrement',
 		level: 1
 	};
 }

@@ -10,6 +10,7 @@ import { describe, it, expect } from 'vitest';
 import { documentFromTeacherCopy } from '../teacher-adapter';
 import { documentFromStudentView } from '../student-adapter';
 import { EXERCISE_LAYOUTS, renderExercises, renderPrintedCorrection } from '../render-exercise';
+import { TYPST_BREAK_MARKER } from '$lib/ubumark/generators/typst-generator';
 import type {
 	InstanceData,
 	StudentWorksheetView,
@@ -226,5 +227,78 @@ describe('vue élève mélangée', () => {
 	it('sans `shuffled` : retri par `position`, comme avant', () => {
 		const doc = documentFromStudentView(twoInSection(undefined));
 		expect(doc.exercises.map((e) => e.title)).toEqual(['A', 'B', 'Last']);
+	});
+});
+
+/**
+ * Coupures (chantier coupures-pdf, 2026-11-09) : un marqueur de coupure au début
+ * de la chaîne collée « section, titre, début de l'énoncé » de chaque exercice ;
+ * jamais entre le titre et l'énoncé (le titre s'y collerait et pourrait rester
+ * seul en bas de colonne). Un paragraphe d'introduction en tête d'énoncé continue
+ * la chaîne du titre : pas de marqueur à lui.
+ */
+describe('marqueur de coupure de chaque exercice', () => {
+	const INTRO = 'INTRO :\n\n$$x^2=4$$';
+	function withIntro(statement: string, solution: string | null) {
+		const doc = teacherDocument();
+		return {
+			...doc,
+			exercises: doc.exercises.map((e) => ({
+				...e,
+				statement,
+				correction: { solution, answers: null }
+			}))
+		};
+	}
+	const markers = (typst: string) => typst.split(TYPST_BREAK_MARKER).length - 1;
+
+	/** Chaque introduction, collée en fin de page, continue la chaîne d'un titre marqué */
+	function expectChainedToTitle(out: string, count: number) {
+		const intros = out.split('INTRO :').slice(0, -1);
+		expect(intros).toHaveLength(count);
+		for (const avant of intros) {
+			const chaine = avant.slice(avant.lastIndexOf(TYPST_BREAK_MARKER));
+			expect(chaine).toContain('sticky: true');
+			expect(chaine.trimEnd().endsWith('#context block(width: 100%, sticky: ubu-colle())[')).toBe(
+				true
+			);
+		}
+	}
+
+	it.each(EXERCISE_LAYOUTS)(
+		'« %s » : un marqueur par exercice, avant sa section et son titre',
+		(layout) => {
+			const doc = withIntro(INTRO, null);
+			const out = renderExercises(doc, 'worksheet', layout);
+			expect(markers(out)).toBe(doc.exercises.length);
+			expectChainedToTitle(out, doc.exercises.length);
+		}
+	);
+
+	it('corrigé : la correction sous le titre continue sa chaîne (pas de marqueur à elle)', () => {
+		const doc = withIntro('Énoncé.', INTRO);
+		const out = renderExercises(doc, 'correction', 'badge');
+		expect(markers(out)).toBe(doc.exercises.length);
+		expectChainedToTitle(out, doc.exercises.length);
+	});
+
+	it('réponses : les réponses sous le titre continuent sa chaîne', () => {
+		const base = withIntro('Énoncé.', null);
+		const doc = {
+			...base,
+			exercises: base.exercises.map((e) => ({
+				...e,
+				correction: { solution: null, answers: INTRO }
+			}))
+		};
+		const out = renderExercises(doc, 'answers', 'badge');
+		expect(markers(out)).toBe(doc.exercises.length);
+		expectChainedToTitle(out, doc.exercises.length);
+	});
+
+	it('fiche + corrigé : la correction après l’énoncé a son propre marqueur', () => {
+		const doc = withIntro('Énoncé.', INTRO);
+		const out = renderExercises(doc, 'worksheet', 'badge', { inlineCorrections: true });
+		expect(markers(out)).toBe(2 * doc.exercises.length);
 	});
 });

@@ -1,10 +1,8 @@
 {
+	"id": "eca617ae-eaae-4dcb-b37b-1c27cecfc31c",
 	"title": "Retirer des unités d'un seul rang",
 	"description": "Sans retenue : des unités (8,694 − 6) ; des dizaines, centaines, milliers (5 846,3 − 400)",
 	"grades": ["CM2"],
-	"theme": "Décimaux",
-	"domain": "Soustraire",
-	"subdomain": "Différence",
 	"level": 6,
 	"delay": 30,
 	"status": "draft",

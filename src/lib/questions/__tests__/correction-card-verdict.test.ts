@@ -17,8 +17,6 @@ const base = {
 	templateId: 't',
 	statement: 's' as ResolvedMarkdown,
 	grades: ['6'],
-	theme: 'T',
-	domain: 'D',
 	level: 1,
 	generatedAt: ''
 };

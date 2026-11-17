@@ -135,7 +135,7 @@ describe('PdfPreview — copie hors affectation', () => {
 		const preview = () => screen.container.querySelector('#pdf-svg-preview')?.textContent ?? '';
 		await expect.poll(preview).toMatch(/Guidé : calcule \d+ fois 3\./);
 
-		await page.getByRole('button', { name: 'Niveau à imprimer' }).click();
+		await page.getByRole('combobox', { name: 'Niveau à imprimer' }).click();
 		await page.getByRole('option', { name: 'Autonome' }).click();
 
 		await expect.poll(preview).toMatch(/Autonome : triple de \d+ \?/);
@@ -150,7 +150,7 @@ describe('PdfPreview — copie hors affectation', () => {
 		await expect.poll(preview).toMatch(/^Guidé/);
 
 		await page.getByRole('tab', { name: 'Lot' }).click();
-		await page.getByRole('button', { name: 'Niveau à imprimer' }).click();
+		await page.getByRole('combobox', { name: 'Niveau à imprimer' }).click();
 		await page.getByRole('option', { name: 'Autonome' }).click();
 		await page.getByRole('tab', { name: 'Apercu' }).click();
 
@@ -166,12 +166,12 @@ describe('PdfPreview — copie hors affectation', () => {
 		let release: () => void = () => {};
 		captured.gate = new Promise<void>((resolve) => (release = resolve));
 		const before = captured.instances.length;
-		await page.getByRole('button', { name: 'Niveau à imprimer' }).click();
+		await page.getByRole('combobox', { name: 'Niveau à imprimer' }).click();
 		await page.getByRole('option', { name: 'Intermédiaire' }).click();
 		await expect.poll(() => captured.instances.length).toBeGreaterThan(before);
 
 		// Changement pendant qu'elle tourne
-		await page.getByRole('button', { name: 'Niveau à imprimer' }).click();
+		await page.getByRole('combobox', { name: 'Niveau à imprimer' }).click();
 		await page.getByRole('option', { name: 'Autonome' }).click();
 		captured.gate = null;
 		release();

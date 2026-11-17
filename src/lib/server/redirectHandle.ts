@@ -20,7 +20,6 @@ const MOVED_PAGES: Record<string, string> = {
 	'/test-saisie': '/dev/saisie-naturelle',
 	'/test-cadres': '/dev/cadres',
 	'/test-erreur': '/dev/erreurs/page',
-	'/blockly/playground': '/dev/blockly',
 	'/dashboard/admin/errors/test': '/dev/erreurs/surveillance',
 	'/dashboard/admin/debug/session': '/dev/session',
 	'/dashboard/admin/debug/rls': '/dev/rls',

@@ -1,10 +1,8 @@
 {
+	"id": "9ee150a2-7bbb-402a-8ddf-77a21fee6f8c",
 	"title": "Mètre ou centimètre ?",
 	"description": "L'unité qui convient (un crayon mesure 15 cm, la classe 8 m), le symbole, la lecture",
 	"grades": ["CP"],
-	"theme": "Grandeurs",
-	"domain": "Longueurs",
-	"subdomain": "Unités",
 	"level": 2,
 	"delay": 30,
 	"status": "draft",

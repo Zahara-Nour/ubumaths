@@ -7,7 +7,7 @@ import { createFakeSupabase } from '$lib/server/__tests__/helpers/fake-supabase'
 
 const TEACHER = '22222222-2222-4222-8222-222222222222';
 const ITEM = {
-	category: { theme: 'Calcul', domain: 'Tables', subdomain: null, level: 3 },
+	templateId: '4d5e6f70-4444-4444-8444-444444444444',
 	quantity: 4,
 	delay: 20
 };
@@ -49,27 +49,27 @@ describe('POST /api/series (B11)', () => {
 		const { promise, fake } = call('teacher', {
 			title: ' Tables ',
 			grade: '6',
-			categories: [ITEM]
+			items: [ITEM]
 		});
 		const response = await promise;
 		expect(response.status).toBe(201);
-		expect((await response.json()).series).toMatchObject({ title: 'Tables', categories: [ITEM] });
+		expect((await response.json()).series).toMatchObject({ title: 'Tables', items: [ITEM] });
 		expect(fake.on('series')).toHaveLength(1);
 	});
 
 	it('admin : autorisé', async () => {
-		const { promise } = call('admin', { title: 'Tables', grade: '6', categories: [ITEM] });
+		const { promise } = call('admin', { title: 'Tables', grade: '6', items: [ITEM] });
 		expect((await promise).status).toBe(201);
 	});
 
 	it('élève : refusé (403), rien d’écrit', async () => {
-		const { promise, fake } = call('student', { title: 'Tables', grade: '6', categories: [ITEM] });
+		const { promise, fake } = call('student', { title: 'Tables', grade: '6', items: [ITEM] });
 		await expect(promise).rejects.toMatchObject({ status: 403 });
 		expect(fake.on('series')).toHaveLength(0);
 	});
 
 	it('titre vide : 400 en français', async () => {
-		const { promise } = call('teacher', { title: '  ', grade: '6', categories: [ITEM] });
+		const { promise } = call('teacher', { title: '  ', grade: '6', items: [ITEM] });
 		const response = await promise;
 		expect(response.status).toBe(400);
 		expect((await response.json()).error).toBe('Titre requis');
@@ -79,7 +79,7 @@ describe('POST /api/series (B11)', () => {
 		const { promise } = call('teacher', {
 			title: 'Tables',
 			grade: '6',
-			categories: Array(51).fill(ITEM)
+			items: Array(51).fill(ITEM)
 		});
 		expect((await promise).status).toBe(400);
 	});

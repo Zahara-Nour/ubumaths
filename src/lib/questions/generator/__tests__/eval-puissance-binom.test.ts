@@ -15,8 +15,6 @@ function makeTemplate(variation: Partial<QuestionVariation>): QuestionTemplate {
 		title: 'Eval puissance',
 		status: 'draft',
 		grades: ['6'],
-		theme: 'Test',
-		domain: 'Test',
 		level: 1,
 		variations: [{ statement: templateMarkdown('$?$'), ...variation }]
 	};

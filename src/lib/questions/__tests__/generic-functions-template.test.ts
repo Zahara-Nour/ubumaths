@@ -55,8 +55,6 @@ function polynomialTemplate(
 			}
 		],
 		grades: ['1_SPE'],
-		theme: 'Fonctions',
-		domain: 'Dérivation',
 		level: 1
 	};
 }
@@ -130,8 +128,6 @@ describe('Schéma des noms de fonctions', () => {
 			title: 'Dérivée',
 			variations: [{ statement: 'Soit $P(x)$' }],
 			grades: ['1_SPE'],
-			theme: 'Fonctions',
-			domain: 'Dérivation',
 			level: 1
 		};
 		expect(

@@ -1,10 +1,8 @@
 {
+	"id": "ea9d2de8-70df-4481-a658-d319702d57ab",
 	"title": "Limite de qⁿ pour une raison négative",
 	"description": "QCM : (−q)ⁿ sans limite pour q ≥ 1, (q)ⁿ → 0 pour −1 < q < 0, et le piège −qⁿ = −(qⁿ) → −∞",
 	"grades": ["T_SPE"],
-	"theme": "Suites",
-	"domain": "Limites de suites",
-	"subdomain": "Suites géométriques",
 	"level": 2,
 	"status": "draft",
 	"delay": 60,

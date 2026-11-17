@@ -1,10 +1,8 @@
 {
+	"id": "be35cd63-cbd3-4a8e-9171-77c5b2b8f3c6",
 	"title": "Connaître les carrés",
 	"description": "Carrés des entiers de 0 à 12 (5² = 25, 12² = 144)",
 	"grades": ["5"],
-	"theme": "Entiers",
-	"domain": "Multiplier",
-	"subdomain": "Carrés",
 	"level": 2,
 	"delay": 20,
 	"status": "draft",

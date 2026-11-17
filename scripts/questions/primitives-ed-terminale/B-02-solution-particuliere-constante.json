@@ -1,10 +1,8 @@
 {
+	"id": "32bb4b83-1323-435e-b21d-4dd722321dd7",
 	"title": "Solution constante de y′ = ay + b",
 	"description": "Trouver la fonction constante solution de y′ = ay + b (c = −b/a), y compris sous les formes y′ + ay = b et py′ = ay + b",
 	"grades": ["T_SPE", "T_COMP"],
-	"theme": "Primitives et équations différentielles",
-	"domain": "Équations différentielles",
-	"subdomain": "Équation y′ = ay + b",
 	"level": 1,
 	"status": "draft",
 	"delay": 45,

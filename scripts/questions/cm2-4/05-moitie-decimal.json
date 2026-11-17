@@ -1,10 +1,8 @@
 {
+	"id": "3437286f-3395-4d36-adf5-e760097305a8",
 	"title": "Calculer la moitié d'un nombre décimal",
 	"description": "Dixièmes pairs (13,6 → 6,8) ; centièmes pairs (1,22 → 0,61) ; dernier chiffre impair (3,9 → 1,95)",
 	"grades": ["CM2"],
-	"theme": "Décimaux",
-	"domain": "Additionner",
-	"subdomain": "Moitié",
 	"level": 2,
 	"delay": 30,
 	"status": "draft",

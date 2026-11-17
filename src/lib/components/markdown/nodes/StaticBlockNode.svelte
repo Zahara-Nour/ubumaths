@@ -36,8 +36,14 @@
 	import Operation from './Operation.svelte';
 	import Collection from './Collection.svelte';
 	import Monnaie from './Monnaie.svelte';
+	import SchemaBarres from './SchemaBarres.svelte';
 	import ChoiceBlock from './ChoiceBlock.svelte';
 	import RangerPlacer from './RangerPlacer.svelte';
+	import AssocierPlacer from './AssocierPlacer.svelte';
+	import TrousEtiquettes from './TrousEtiquettes.svelte';
+	import TortueProgramme from './TortueProgramme.svelte';
+	import RobotCode from './RobotCode.svelte';
+	import CalculProgramme from './CalculProgramme.svelte';
 
 	interface Props {
 		node: BlockNode;
@@ -106,8 +112,20 @@
 	<Collection {node} />
 {:else if node.type === 'monnaie'}
 	<Monnaie {node} />
+{:else if node.type === 'schema-barres'}
+	<SchemaBarres {node} />
 {:else if node.type === 'choice'}
 	<ChoiceBlock {node} />
 {:else if node.type === 'ranger'}
 	<RangerPlacer {node} />
+{:else if node.type === 'associer'}
+	<AssocierPlacer {node} />
+{:else if node.type === 'trous'}
+	<TrousEtiquettes {node} />
+{:else if node.type === 'tortue'}
+	<TortueProgramme {node} />
+{:else if node.type === 'calcul'}
+	<CalculProgramme {node} />
+{:else if node.type === 'robot'}
+	<RobotCode {node} />
 {/if}

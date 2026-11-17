@@ -1,10 +1,8 @@
 {
+	"id": "4c4d43dc-966d-4661-be5c-85272a3d73cf",
 	"title": "Parité d'une fonction trigonométrique : calculer f(−x)",
 	"description": "Fonctions construites avec cos et sin (somme avec un polynôme, produit, quotient par x) : paire, impaire ou ni l'une ni l'autre (pièges : sin(−x) = −sin x, produit impaire × paire, quotient de deux impaires)",
 	"grades": ["T_SPE"],
-	"theme": "Fonctions",
-	"domain": "Fonctions trigonométriques",
-	"subdomain": "Parité et périodicité",
 	"level": 2,
 	"status": "draft",
 	"delay": 60,
@@ -68,7 +66,7 @@
 			"correction": {
 				"steps": [
 					"Pour tout réel $x$, $f(-x)={{a}}\\sin(-x)\\cos(-{{k}}x)={{a}}\\times(-\\sin x)\\times\\cos({{k}}x)=-f(x)$.",
-					"Un produit d'une fonction impaire par une fonction paire est impair : $f$ est \\textcolor{{{color:primary.0}}}{\\text{impaire}}."
+					"Un produit d'une fonction impaire par une fonction paire est impair : $f$ est $\\textcolor{{{color:primary.0}}}{\\text{impaire}}$."
 				]
 			},
 			"blanks": [
@@ -113,7 +111,7 @@
 			"correction": {
 				"steps": [
 					"$\\mathbb{R}^{*}$ est symétrique par rapport à $0$ et, pour tout $x\\neq0$, $f(-x)=\\dfrac{ {{a}}\\sin(-x)}{-x}=\\dfrac{-{{a}}\\sin x}{-x}=f(x)$.",
-					"Quotient de deux fonctions impaires : $f$ est \\textcolor{{{color:primary.0}}}{\\text{paire}}."
+					"Quotient de deux fonctions impaires : $f$ est $\\textcolor{{{color:primary.0}}}{\\text{paire}}$."
 				]
 			},
 			"blanks": [

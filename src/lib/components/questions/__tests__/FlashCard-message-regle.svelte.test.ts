@@ -39,8 +39,6 @@ const counterExample = {
 	],
 	correction: { steps: [resolvedMarkdown('Tout réel de $]0;5[$ convient.')] },
 	grades: ['1_SPE'],
-	theme: 'Logique',
-	domain: 'Logique',
 	level: 2,
 	generatedAt: new Date().toISOString()
 } as QuestionInstance;

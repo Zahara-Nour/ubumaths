@@ -1,10 +1,8 @@
 {
+	"id": "7f13ca89-ad64-4665-9f6b-e11fad8f8b08",
 	"title": "Intervalle de croissance ou de décroissance d'une fonction avec ln",
 	"description": "Signe de f′ pour x − a ln x, a ln x − bx, x ln x − ax sur ]0 ; +∞[ ; réponse en intervalle, bornes fermées ouvrables (pièges : domaine x > 0 oublié, sens, (x ln x)′)",
 	"grades": ["T_SPE", "T_COMP"],
-	"theme": "Fonctions",
-	"domain": "Dérivation",
-	"subdomain": "Variations",
 	"level": 3,
 	"status": "draft",
 	"delay": 90,

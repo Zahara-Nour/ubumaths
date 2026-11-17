@@ -41,6 +41,7 @@
 
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { requireRole } from '$lib/server/middleware/auth';
 import type { StudentRewards } from '$lib/types/student-cache';
 import { asStudentVipCards } from '$lib/types/vip-card';
 import { createServerLogger } from '$lib/utils/logger';
@@ -48,17 +49,8 @@ import { createServerLogger } from '$lib/utils/logger';
 const logger = createServerLogger('api/student/rewards/+server');
 
 export const GET: RequestHandler = async ({ locals }) => {
-	const { user, profile, supabase } = locals;
-
-	// Auth check: Must be logged in
-	if (!user || !profile) {
-		throw error(401, 'Authentication required');
-	}
-
-	// Auth check: Must be a student
-	if (profile.role !== 'student') {
-		throw error(403, 'This endpoint is only accessible to students');
-	}
+	const { user } = await requireRole(locals, 'student');
+	const { supabase } = locals;
 
 	try {
 		// Fetch student rewards from profiles table

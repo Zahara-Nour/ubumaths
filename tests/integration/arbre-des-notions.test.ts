@@ -918,8 +918,6 @@ describe('Arbre des notions (classification_nodes, source_types, rangements)', (
 					type: 'numerical_exact',
 					title: name('Q modèle'),
 					grades: ['1_SPE'],
-					theme: 'Test',
-					domain: 'Test',
 					level: 1,
 					variations: [{ statement: '1+1', answer: '2' }],
 					status: 'draft'

@@ -1,10 +1,8 @@
 {
+	"id": "7d605742-cf00-4282-b56c-c99aee16ad14",
 	"title": "Reconnaître des vecteurs directeurs d'une droite",
 	"description": "Parmi des vecteurs, lesquels dirigent (AB) ou une droite de vecteur directeur u (case choix à plusieurs réponses) (pièges : coordonnées du point B, coordonnées échangées, u + (1 ; 1))",
 	"grades": ["2"],
-	"theme": "Géométrie",
-	"domain": "Droites du plan",
-	"subdomain": "Pente et vecteur directeur",
 	"level": 4,
 	"delay": 90,
 	"status": "draft",

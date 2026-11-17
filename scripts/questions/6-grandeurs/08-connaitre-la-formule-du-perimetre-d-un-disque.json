@@ -1,10 +1,8 @@
 {
+	"id": "ccb4f5e5-3494-4447-9f6a-3bc3b3622eab",
 	"title": "Connaître la formule du périmètre d'un disque",
 	"description": "Choisir la formule du périmètre : P = π × D avec le diamètre, P = 2 × π × R avec le rayon",
 	"grades": ["6"],
-	"theme": "Grandeurs",
-	"domain": "Périmètres",
-	"subdomain": "Périmètre d'un disque",
 	"level": 2,
 	"delay": 30,
 	"status": "draft",

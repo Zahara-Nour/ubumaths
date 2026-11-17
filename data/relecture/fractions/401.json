@@ -40,9 +40,6 @@
 			}
 		],
 		"grades": ["4"],
-		"theme": "Fractions",
-		"domain": "Calculer",
-		"subdomain": "Division",
 		"level": 2,
 		"status": "draft",
 		"delay": 20,

@@ -2,7 +2,7 @@
 	Vitrine : les blocs ubumark (`/demo/blocs`)
 	===========================================
 
-	Neuf blocs rangés par niveau (primaire, collège, lycée), chacun avec le texte
+	Dix blocs rangés par niveau (primaire, collège, lycée), chacun avec le texte
 	qu'écrit le prof replié sous « Voir ce qu'écrit le prof ». Les exemples sont
 	ceux du catalogue (`$lib/block-catalog/showcase`) ; la syntaxe complète reste
 	sur `/aide-ecriture/blocs` (chantier catalogue-blocs, PR 2).

@@ -1,10 +1,8 @@
 {
+	"id": "51b95890-db2f-4174-9173-a94a6a596438",
 	"title": "Trouver la fraction égale",
 	"description": "Parmi quatre, la fraction égale à 3/4 (leurres : même nombre ajouté en haut et en bas, dénominateur seul multiplié)",
 	"grades": ["CE2"],
-	"theme": "Fractions",
-	"domain": "Apprivoiser",
-	"subdomain": "Egalité de fractions",
 	"level": 8,
 	"delay": 30,
 	"status": "draft",

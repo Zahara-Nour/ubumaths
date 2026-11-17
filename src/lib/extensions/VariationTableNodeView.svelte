@@ -415,7 +415,7 @@
 					{/if}
 				</div>
 			{:else if parsedNode}
-				<VariationTable node={parsedNode} />
+				<VariationTable node={parsedNode} hiddenCells="filled" />
 			{:else}
 				<div class="loading">Chargement...</div>
 			{/if}
@@ -447,7 +447,7 @@
 			<div class="dialog-preview">
 				<h4 class="preview-title">Apercu</h4>
 				{#if dialogPreviewResult.node}
-					<VariationTable node={dialogPreviewResult.node} />
+					<VariationTable node={dialogPreviewResult.node} hiddenCells="filled" />
 				{:else}
 					<div class="preview-error">
 						<AlertCircle class="h-4 w-4" />

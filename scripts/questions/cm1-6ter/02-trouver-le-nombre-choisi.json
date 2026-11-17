@@ -1,0 +1,208 @@
+{
+	"id": "98f558e4-3361-42df-9bee-5e5837100e74",
+	"title": "Trouver le nombre choisi",
+	"description": "Un nombre inconnu noté par une lettre ou un symbole : k × (a + N) = r, N × k + a = r, deux égalités à symboles enchaînées",
+	"grades": ["CM1"],
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Rose a choisi un nombre, noté $N$. Elle a calculé $${{k}} \\times ({{a}} + N)$$ et elle a trouvé ${{r}}$.\n\nQuel nombre Rose a-t-elle choisi ?\n\n$N = ?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..5"
+				},
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "n",
+					"expression": "2..20"
+				},
+				{
+					"name": "r",
+					"expression": "eval:k*(a+n)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Le nombre entre parenthèses.** ${{k}} \\times ({{a}} + N) = {{r}}$, donc $({{a}} + N) = {{r}} \\div {{k}} = {{eval:a+n}}$.",
+					"**Le nombre choisi.** ${{a}} + N = {{eval:a+n}}$, donc $N = {{eval:a+n}} - {{a}} = \\textcolor{{{color:primary.0}}}{{{n}}}$.",
+					"**Vérification.** ${{k}} \\times ({{a}} + {{n}}) = {{k}} \\times {{eval:a+n}} = {{r}}$."
+				]
+			}
+		},
+		{
+			"statement": "Léo a choisi un nombre, noté $N$. Il a calculé $$N \\times {{k}} + {{a}}$$ et il a trouvé ${{r}}$.\n\nQuel nombre Léo a-t-il choisi ?\n\n$N = ?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..9"
+				},
+				{
+					"name": "a",
+					"expression": "1..20"
+				},
+				{
+					"name": "n",
+					"expression": "2..30"
+				},
+				{
+					"name": "r",
+					"expression": "eval:n*k+a"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**On défait la dernière étape.** $N \\times {{k}} + {{a}} = {{r}}$, donc $N \\times {{k}} = {{r}} - {{a}} = {{eval:n*k}}$.",
+					"**Puis la première.** $N = {{eval:n*k}} \\div {{k}} = \\textcolor{{{color:primary.0}}}{{{n}}}$.",
+					"**Vérification.** ${{n}} \\times {{k}} + {{a}} = {{eval:n*k}} + {{a}} = {{r}}$."
+				]
+			}
+		},
+		{
+			"statement": "Chaque symbole cache un nombre ; un même symbole cache toujours le même nombre.\n\n$${\\square} + {\\square}{{if:k>2| + {\\square}|}}{{if:k>3| + {\\square}|}} = {{s}}$$\n\n$${\\square} + {\\triangle} = {{t}}$$\n\nQuel nombre cache $\\triangle$ ?\n\n$\\triangle = ?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..4"
+				},
+				{
+					"name": "c",
+					"expression": "2..30"
+				},
+				{
+					"name": "d",
+					"expression": "1..40"
+				},
+				{
+					"name": "s",
+					"expression": "eval:k*c"
+				},
+				{
+					"name": "t",
+					"expression": "eval:c+d"
+				}
+			],
+			"conditions": ["c!=d"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**D'abord $\\square$.** ${{k}}$ fois le même nombre font ${{s}}$ : $\\square = {{s}} \\div {{k}} = {{c}}$.",
+					"**Puis $\\triangle$.** ${{c}} + \\triangle = {{t}}$, donc $\\triangle = {{t}} - {{c}} = \\textcolor{{{color:primary.0}}}{{{d}}}$.",
+					"**Vérification.** ${{c}} + {{d}} = {{t}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3 × (2 + N) = 27 : N = 7",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"a": "2",
+				"n": "7",
+				"r": "27"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 9 (le 2 oublié)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"a": "2",
+				"n": "7",
+				"r": "27"
+			},
+			"answers": ["9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "N × 4 + 5 = 53 : N = 12",
+			"variationIndex": 1,
+			"variables": {
+				"k": "4",
+				"a": "5",
+				"n": "12",
+				"r": "53"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 48 (pas divisé)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "4",
+				"a": "5",
+				"n": "12",
+				"r": "53"
+			},
+			"answers": ["48"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "□ + □ + □ = 36, □ + △ = 20 : △ = 8",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3",
+				"c": "12",
+				"d": "8",
+				"s": "36",
+				"t": "20"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 12 (le carré rendu)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3",
+				"c": "12",
+				"d": "8",
+				"s": "36",
+				"t": "20"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

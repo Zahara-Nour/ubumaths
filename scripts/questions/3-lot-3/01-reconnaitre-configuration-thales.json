@@ -1,10 +1,8 @@
 {
+	"id": "16478dab-5fbe-4300-a8ad-f1895cc81102",
 	"title": "Reconnaître une configuration de Thalès",
 	"description": "Reconnaître une configuration de Thalès : triangles emboîtés ou papillon, les deux triangles où l'appliquer, les droites qui doivent être parallèles",
 	"grades": ["3"],
-	"theme": "Géométrie",
-	"domain": "Théorème de Thalès",
-	"subdomain": "Configurations",
 	"level": 1,
 	"delay": 45,
 	"status": "draft",

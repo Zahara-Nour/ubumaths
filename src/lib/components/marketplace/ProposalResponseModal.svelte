@@ -14,12 +14,12 @@
 		listing = undefined,
 		open = $bindable(false),
 		onResponse = async () => {}
-	} = $props<{
+	}: {
 		proposal: MarketplaceProposal;
 		listing?: MarketplaceListing | null;
 		open?: boolean;
 		onResponse?: (action: 'accept' | 'reject', message?: string) => Promise<void>;
-	}>();
+	} = $props();
 
 	// State
 	let responseMessage = $state('');

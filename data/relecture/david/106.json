@@ -6,12 +6,9 @@
 	"template": {
 		"delay": 20,
 		"level": 11,
-		"theme": "Entiers",
 		"title": "Calculer une différence (résultat positif)",
-		"domain": "Soustraire",
 		"grades": ["CM1"],
 		"status": "draft",
-		"subdomain": "Différence",
 		"testSpecs": [
 			{
 				"answers": ["229"],

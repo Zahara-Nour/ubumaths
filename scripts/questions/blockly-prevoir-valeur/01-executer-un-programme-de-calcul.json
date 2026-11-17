@@ -1,0 +1,213 @@
+{
+	"id": "98f54315-c96d-49de-acbf-c81ed73cb6df",
+	"title": "Exécuter un programme de calcul",
+	"description": "Appliquer à un nombre entier un programme de calcul de deux ou trois instructions, écrit en mots ou avec Scratch.",
+	"grades": ["CM2"],
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Voici un programme de calcul :\n\n- choisir un nombre entier ;\n- ajouter ${{a}}$ au nombre choisi ;\n- multiplier le résultat trouvé à l'étape précédente par ${{b}}$ ;\n- retirer ${{c}}$ au nombre obtenu à l'étape précédente ;\n- écrire le nombre obtenu.\n\nOn choisit le nombre ${{n}}$. Quel nombre le programme écrit-il ?\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2..10"
+				},
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..5"
+				},
+				{
+					"name": "c",
+					"expression": "1..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(n+a)*b-c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Dans l'ordre.** Chaque étape s'applique au résultat de la précédente.",
+					"${{n}} + {{a}} = {{eval:n+a}}$",
+					"${{eval:n+a}} \\times {{b}} = {{eval:(n+a)*b}}$",
+					"${{eval:(n+a)*b}} - {{c}} = \\textcolor{{{color:primary.0}}}{{{eval:(n+a)*b-c}}}$ : le programme écrit $\\textcolor{{{color:primary.0}}}{{{eval:(n+a)*b-c}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Voici un programme de calcul :\n\n- choisir un nombre ;\n- le multiplier par ${{a}}$ ;\n- ajouter ${{b}}$ au résultat ;\n- écrire le nombre obtenu.\n\nOn choisit le nombre ${{n}}$. Quel nombre le programme écrit-il ?\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2..12"
+				},
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..20"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*n+b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Dans l'ordre.** On multiplie d'abord, puis on ajoute.",
+					"${{n}} \\times {{a}} = {{eval:a*n}}$",
+					"${{eval:a*n}} + {{b}} = \\textcolor{{{color:primary.0}}}{{{eval:a*n+b}}}$ : le programme écrit $\\textcolor{{{color:primary.0}}}{{{eval:a*n+b}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Voici un programme de calcul écrit avec Scratch.\n\n```scratch\nquand le drapeau vert pressé\ndemander [Choisis un nombre.] et attendre\nmettre [nombre v] à ((réponse) * ({{a}}))\nmettre [nombre v] à ((nombre) - ({{b}}))\ndire (nombre)\n```\n\nOn tape ${{n}}$. Quel nombre le lutin dit-il ?\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2..10"
+				},
+				{
+					"name": "a",
+					"expression": "2..5"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				}
+			],
+			"conditions": ["a*n>b"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*n-b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Une instruction après l'autre.** La variable « nombre » garde le dernier résultat.",
+					"On tape ${{n}}$ : « nombre » prend la valeur ${{n}} \\times {{a}} = {{eval:a*n}}$.",
+					"Puis « nombre » prend la valeur ${{eval:a*n}} - {{b}} = \\textcolor{{{color:primary.0}}}{{{eval:a*n-b}}}$ : le lutin dit $\\textcolor{{{color:primary.0}}}{{{eval:a*n-b}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "(4 + 3) × 2 − 5 = 9",
+			"variationIndex": 0,
+			"variables": {
+				"n": "4",
+				"a": "3",
+				"b": "2",
+				"c": "5"
+			},
+			"answers": ["9"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4 + 3 × 2 − 5 = 5 (ordre des étapes)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "4",
+				"a": "3",
+				"b": "2",
+				"c": "5"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : dernière étape oubliée (14)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "4",
+				"a": "3",
+				"b": "2",
+				"c": "5"
+			},
+			"answers": ["14"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "7 × 3 + 8 = 29",
+			"variationIndex": 1,
+			"variables": {
+				"n": "7",
+				"a": "3",
+				"b": "8"
+			},
+			"answers": ["29"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : (7 + 8) × 3 = 45 (ordre inversé)",
+			"variationIndex": 1,
+			"variables": {
+				"n": "7",
+				"a": "3",
+				"b": "8"
+			},
+			"answers": ["45"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "6 × 4 − 5 = 19",
+			"variationIndex": 2,
+			"variables": {
+				"n": "6",
+				"a": "4",
+				"b": "5"
+			},
+			"answers": ["19"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 6 − 5 = 1 (multiplication oubliée)",
+			"variationIndex": 2,
+			"variables": {
+				"n": "6",
+				"a": "4",
+				"b": "5"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : soustraction oubliée (24)",
+			"variationIndex": 2,
+			"variables": {
+				"n": "6",
+				"a": "4",
+				"b": "5"
+			},
+			"answers": ["24"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -1,10 +1,8 @@
 {
+	"id": "a3f92832-2daf-4f00-94b5-68b57275e93a",
 	"title": "Interpréter une espérance",
 	"description": "Choisir l'interprétation correcte d'une espérance : valeur moyenne sur un grand nombre de répétitions",
 	"grades": ["1_SPE"],
-	"theme": "Probabilités",
-	"domain": "Variables aléatoires",
-	"subdomain": "Espérance",
 	"level": 1,
 	"status": "draft",
 	"delay": 40,

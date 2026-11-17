@@ -7,12 +7,14 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 vi.mock('$lib/server/middleware/auth', () => ({ requireRole: vi.fn() }));
 vi.mock('$lib/server/buddy-queries', () => ({ acknowledgeWelcomeBack: vi.fn() }));
+vi.mock('$lib/server/buddy-weeks', () => ({ markWeekCelebrated: vi.fn() }));
 vi.mock('$lib/utils/logger', () => ({
 	createServerLogger: () => ({ info: vi.fn(), error: vi.fn(), warn: vi.fn(), debug: vi.fn() })
 }));
 
 import { requireRole } from '$lib/server/middleware/auth';
 import { acknowledgeWelcomeBack } from '$lib/server/buddy-queries';
+import { markWeekCelebrated } from '$lib/server/buddy-weeks';
 import { POST } from '../+server';
 
 const locals = { supabase: {} } as unknown as App.Locals;
@@ -24,6 +26,8 @@ function call() {
 beforeEach(() => {
 	vi.mocked(requireRole).mockReset();
 	vi.mocked(acknowledgeWelcomeBack).mockReset();
+	vi.mocked(markWeekCelebrated).mockReset();
+	vi.mocked(markWeekCelebrated).mockResolvedValue(true);
 	vi.mocked(requireRole).mockResolvedValue({
 		user: { id: 'eleve-1' },
 		profile: { id: 'eleve-1', role: 'student' }
@@ -45,13 +49,27 @@ describe('POST /api/student/buddy/welcome-back', () => {
 		expect(await response.json()).toEqual({ acknowledged: true });
 	});
 
-	it('rien à fêter : acknowledged faux', async () => {
+	it('la semaine en cours compte aussi comme fêtée (T4)', async () => {
+		vi.mocked(acknowledgeWelcomeBack).mockResolvedValue(true);
+		await call();
+		expect(markWeekCelebrated).toHaveBeenCalledWith('eleve-1', 'current');
+	});
+
+	it('semaine non marquée : le retour reste acquitté', async () => {
+		vi.mocked(acknowledgeWelcomeBack).mockResolvedValue(true);
+		vi.mocked(markWeekCelebrated).mockRejectedValue(new Error('panne'));
+		expect(await (await call()).json()).toEqual({ acknowledged: true });
+	});
+
+	it('rien à fêter : acknowledged faux, la semaine n’est pas consommée', async () => {
 		vi.mocked(acknowledgeWelcomeBack).mockResolvedValue(false);
 		expect(await (await call()).json()).toEqual({ acknowledged: false });
+		expect(markWeekCelebrated).not.toHaveBeenCalled();
 	});
 
 	it('écriture en échec : 500', async () => {
 		vi.mocked(acknowledgeWelcomeBack).mockRejectedValue(new Error('panne'));
 		await expect(call()).rejects.toMatchObject({ status: 500 });
+		expect(markWeekCelebrated).not.toHaveBeenCalled();
 	});
 });

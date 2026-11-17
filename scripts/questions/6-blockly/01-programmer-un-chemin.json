@@ -1,0 +1,301 @@
+{
+	"id": "94d75415-2ff0-4d5d-8fdc-e80929b43198",
+	"title": "Programmer un chemin sur quadrillage",
+	"description": "Faire tracer à la tortue un chemin de 3 à 6 traits montré sur le quadrillage, sans boucle.",
+	"grades": ["6"],
+	"level": 1,
+	"delay": 300,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Fais tracer à la tortue le chemin dessiné en gris. Au départ, elle regarde vers la droite.\n\nLe chemin a $3$ traits : ${{a}}$ carreaux vers la droite, ${{b}}$ vers le haut, puis ${{c}}$ vers la droite.\n\n```tortue\nattendu: avancer {{a}} ; tourner à gauche 90 ; avancer {{b}} ; tourner à droite 90 ; avancer {{c}}\nmontrer: oui\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..4"
+				},
+				{
+					"name": "b",
+					"expression": "2..4"
+				},
+				{
+					"name": "c",
+					"expression": "2..4"
+				}
+			],
+			"conditions": [],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"La tortue avance de ${{a}}$ vers la droite.",
+					"Pour monter, elle tourne d'un quart de tour **à gauche**, puis avance de ${{b}}$.",
+					"Pour repartir vers la droite, elle tourne d'un quart de tour **à droite**, puis avance de ${{c}}$."
+				]
+			}
+		},
+		{
+			"statement": "Fais tracer à la tortue le chemin dessiné en gris. Au départ, elle regarde vers la droite.\n\nLe chemin a $4$ traits : ${{a}}$ carreaux vers la droite, ${{b}}$ vers le bas, ${{c}}$ vers la droite, puis ${{d}}$ vers le haut.\n\n```tortue\nattendu: avancer {{a}} ; tourner à droite 90 ; avancer {{b}} ; tourner à gauche 90 ; avancer {{c}} ; tourner à gauche 90 ; avancer {{d}}\nmontrer: oui\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..3"
+				},
+				{
+					"name": "b",
+					"expression": "2..4"
+				},
+				{
+					"name": "c",
+					"expression": "2..3"
+				},
+				{
+					"name": "d",
+					"expression": "2..5"
+				}
+			],
+			"conditions": [],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"La tortue avance de ${{a}}$, puis tourne **à droite** pour descendre de ${{b}}$.",
+					"Elle tourne **à gauche** : elle regarde de nouveau vers la droite, et avance de ${{c}}$.",
+					"Elle tourne encore **à gauche** pour monter, et avance de ${{d}}$.",
+					"Pour savoir de quel côté tourner, on se met à la place de la tortue : à gauche, c'est sa gauche à elle."
+				]
+			}
+		},
+		{
+			"statement": "Fais tracer à la tortue le chemin dessiné en gris. Au départ, elle regarde vers la droite.\n\nLe chemin a $5$ traits et fait le tour d'un obstacle par le haut : ${{a}}$ carreaux vers la droite, ${{b}}$ vers le haut, ${{c}}$ vers la droite, ${{b}}$ vers le bas, puis ${{a}}$ vers la droite.\n\n```tortue\nattendu: avancer {{a}} ; tourner à gauche 90 ; avancer {{b}} ; tourner à droite 90 ; avancer {{c}} ; tourner à droite 90 ; avancer {{b}} ; tourner à gauche 90 ; avancer {{a}}\nmontrer: oui\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3"
+				},
+				{
+					"name": "b",
+					"expression": "2..4"
+				},
+				{
+					"name": "c",
+					"expression": "2..3"
+				}
+			],
+			"conditions": ["2*a+c <= 8"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"La tortue avance de ${{a}}$, tourne à gauche et monte de ${{b}}$.",
+					"Elle tourne à droite et avance de ${{c}}$ au-dessus de l'obstacle.",
+					"Elle tourne à droite pour redescendre de ${{b}}$, puis à gauche pour finir par ${{a}}$ vers la droite.",
+					"Monter de ${{b}}$ puis redescendre de ${{b}}$ ramène la tortue à sa hauteur de départ."
+				]
+			}
+		},
+		{
+			"statement": "Fais tracer à la tortue le chemin dessiné en gris. Au départ, elle regarde vers la droite.\n\nLe chemin a $6$ traits : ${{a}}$ carreaux vers la droite, ${{b}}$ vers le haut, ${{a}}$ vers la droite, ${{d}}$ vers le bas, ${{a}}$ vers la droite, puis ${{b}}$ vers le haut.\n\n```tortue\nattendu: avancer {{a}} ; tourner à gauche 90 ; avancer {{b}} ; tourner à droite 90 ; avancer {{a}} ; tourner à droite 90 ; avancer {{d}} ; tourner à gauche 90 ; avancer {{a}} ; tourner à gauche 90 ; avancer {{b}}\nmontrer: oui\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..2"
+				},
+				{
+					"name": "b",
+					"expression": "1..3"
+				},
+				{
+					"name": "d",
+					"expression": "eval:2*b"
+				}
+			],
+			"conditions": [],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"Chaque trait se trace en deux instructions : tourner (sauf au premier), puis avancer.",
+					"Pour monter : tourner à gauche quand la tortue regarde vers la droite ; pour descendre : tourner à droite.",
+					"Après chaque trait vertical, elle tourne de l'autre côté pour regarder de nouveau vers la droite.",
+					"Le $4$e trait descend de ${{d}}$ : ${{b}}$ pour revenir à la hauteur de départ, et ${{b}}$ de plus."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3 traits : programme de référence",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"c": "4"
+			},
+			"answers": ["avancer 3 ; tourner à gauche 90 ; avancer 2 ; tourner à droite 90 ; avancer 4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "3 traits : en reculant (tortue retournée)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"c": "4"
+			},
+			"answers": [
+				"tourner à droite 180 ; reculer 3 ; tourner à droite 90 ; avancer 2 ; tourner à gauche 90 ; reculer 4"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : tourne à droite au lieu de gauche (chemin vers le bas)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"c": "4"
+			},
+			"answers": ["avancer 3 ; tourner à droite 90 ; avancer 2 ; tourner à gauche 90 ; avancer 4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : oublie de tourner avant le dernier trait",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"c": "4"
+			},
+			"answers": ["avancer 3 ; tourner à gauche 90 ; avancer 2 ; avancer 4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "4 traits : programme de référence",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "3",
+				"d": "4"
+			},
+			"answers": [
+				"avancer 2 ; tourner à droite 90 ; avancer 3 ; tourner à gauche 90 ; avancer 3 ; tourner à gauche 90 ; avancer 4"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : dernier trait vers le bas",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "3",
+				"d": "4"
+			},
+			"answers": [
+				"avancer 2 ; tourner à droite 90 ; avancer 3 ; tourner à gauche 90 ; avancer 3 ; tourner à droite 90 ; avancer 4"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : un trait trop court",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "3",
+				"d": "4"
+			},
+			"answers": [
+				"avancer 2 ; tourner à droite 90 ; avancer 2 ; tourner à gauche 90 ; avancer 3 ; tourner à gauche 90 ; avancer 4"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "5 traits : programme de référence",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "2"
+			},
+			"answers": [
+				"avancer 2 ; tourner à gauche 90 ; avancer 3 ; tourner à droite 90 ; avancer 2 ; tourner à droite 90 ; avancer 3 ; tourner à gauche 90 ; avancer 2"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : contourne par le bas",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "2"
+			},
+			"answers": [
+				"avancer 2 ; tourner à droite 90 ; avancer 3 ; tourner à gauche 90 ; avancer 2 ; tourner à gauche 90 ; avancer 3 ; tourner à droite 90 ; avancer 2"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : dernier trait oublié",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "2"
+			},
+			"answers": [
+				"avancer 2 ; tourner à gauche 90 ; avancer 3 ; tourner à droite 90 ; avancer 2 ; tourner à droite 90 ; avancer 3"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "6 traits : programme de référence",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "2",
+				"d": "4"
+			},
+			"answers": [
+				"avancer 2 ; tourner à gauche 90 ; avancer 2 ; tourner à droite 90 ; avancer 2 ; tourner à droite 90 ; avancer 4 ; tourner à gauche 90 ; avancer 2 ; tourner à gauche 90 ; avancer 2"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4e trait de 2 au lieu de 4",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "2",
+				"d": "4"
+			},
+			"answers": [
+				"avancer 2 ; tourner à gauche 90 ; avancer 2 ; tourner à droite 90 ; avancer 2 ; tourner à droite 90 ; avancer 2 ; tourner à gauche 90 ; avancer 2 ; tourner à gauche 90 ; avancer 2"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

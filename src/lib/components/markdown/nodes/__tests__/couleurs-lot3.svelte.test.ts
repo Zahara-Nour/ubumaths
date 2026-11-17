@@ -84,14 +84,14 @@ async function renderTrig(block: string, showErrors = false) {
 }
 
 describe('Droite graduée', () => {
-	it('points ouverts : remplis de la couleur du fond, dans les deux modes', async () => {
+	it('bornes exclues : crochets de la couleur du segment, dans les deux modes', async () => {
 		const c = await renderNumberLine(
 			numberLine(['start: 0', 'end: 10', 'step: 1', 'segments: ]1, 3[ bleu'])
 		);
-		const open = c.querySelectorAll('circle.nl-endpoint-open');
-		expect(open).toHaveLength(2);
-		expect(inBothModes(() => getComputedStyle(open[0]).fill)).toEqual(BACKGROUND);
-		expect(inBothModes(() => getComputedStyle(open[0]).stroke)).toEqual(BLUE);
+		const brackets = c.querySelectorAll('path.nl-bracket');
+		expect(brackets).toHaveLength(2);
+		expect(inBothModes(() => getComputedStyle(brackets[0]).stroke)).toEqual(BLUE);
+		expect(getComputedStyle(brackets[0]).fill).toBe('none');
 	});
 
 	it('`bleu` et `blue` : le bleu de la palette, qui suit le thème', async () => {

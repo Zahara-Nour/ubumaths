@@ -1,10 +1,8 @@
 {
+	"id": "fc2ea212-c23b-407a-b4b7-6f3a48b40ef5",
 	"title": "Intégration par parties",
 	"description": "∫ₐᵇ u v′ = [uv]ₐᵇ − ∫ₐᵇ u′v : x eˣ, ln x, x ln x, x e⁻ˣ en valeur exacte (spécialité seulement)",
 	"grades": ["T_SPE"],
-	"theme": "Intégration",
-	"domain": "Calcul intégral",
-	"subdomain": "Intégration par parties",
 	"level": 3,
 	"status": "draft",
 	"delay": 90,

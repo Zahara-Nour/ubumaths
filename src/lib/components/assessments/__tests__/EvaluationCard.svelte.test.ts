@@ -26,9 +26,7 @@ const evaluation: EvaluationWithSeries = {
 		title: 'Tables',
 		description: null,
 		grade: '6',
-		categories: [
-			{ category: { theme: 'T', domain: 'D', subdomain: null, level: 1 }, quantity: 2, delay: 20 }
-		],
+		items: [{ templateId: '11111111-1111-4111-8111-111111111111', quantity: 2, delay: 20 }],
 		created_by: 't',
 		created_at: '2026-09-30T10:00:00Z',
 		updated_at: '2026-09-30T10:00:00Z'

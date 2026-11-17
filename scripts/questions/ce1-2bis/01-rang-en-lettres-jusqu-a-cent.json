@@ -1,10 +1,8 @@
 {
+	"id": "8e9c0137-ece7-4ad6-9ca0-bb343cb34955",
 	"title": "Le rang en lettres (jusqu'à centième)",
 	"description": "Écrire un rang en lettres : 48e → quarante-huitième (leurres : rangs voisins, le nombre quarante-huit)",
 	"grades": ["CE1"],
-	"theme": "Entiers",
-	"domain": "Apprivoiser",
-	"subdomain": "Ordinaux",
 	"level": 7,
 	"delay": 30,
 	"status": "draft",

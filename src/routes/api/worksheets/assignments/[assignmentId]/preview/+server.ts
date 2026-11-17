@@ -40,6 +40,7 @@
 import { exerciseCapitalPairs } from '$lib/questions/capital-pairs';
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { requireAuth } from '$lib/server/middleware/auth';
 import { z } from 'zod';
 import { getCorrectionVisibilityMap } from '$lib/server/worksheets/correction-visibility';
 import {
@@ -158,10 +159,7 @@ async function verifyTeacherAccess(
 
 export const GET: RequestHandler = async ({ locals, params, url }) => {
 	// Auth check
-	const { user } = await locals.safeGetSession();
-	if (!user) {
-		throw error(401, 'Connexion requise');
-	}
+	const { user } = await requireAuth(locals);
 
 	// Validate assignment ID parameter
 	const paramValidation = assignmentParamSchema.safeParse({

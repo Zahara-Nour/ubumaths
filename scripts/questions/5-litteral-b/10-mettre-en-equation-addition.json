@@ -1,10 +1,8 @@
 {
+	"id": "1cd9dc60-8fcf-4f8e-85e4-b5a66398f8cf",
 	"title": "Quelle équation traduit le problème ?",
 	"description": "Choisir, parmi quatre, l'équation x + b = c qui traduit un problème d'addition à trou (billes gagnées, planche sciée, âge dans b ans) ; piège : x = c + b",
 	"grades": ["5"],
-	"theme": "Calcul littéral",
-	"domain": "Equations",
-	"subdomain": "Mettre en équation",
 	"level": 1,
 	"delay": 45,
 	"status": "draft",

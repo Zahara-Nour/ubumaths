@@ -488,10 +488,51 @@
 		width: 12rem;
 	}
 
+	/* Bloc line : droite graduée de NumberLine.svelte */
+	.nl {
+		display: block;
+		width: 100%;
+		height: auto;
+		margin: 0.5rem auto;
+		overflow: visible;
+	}
+	.nl .nl-axe,
+	.nl .nl-tick {
+		stroke: var(--color-foreground);
+	}
+	.nl .nl-arrow {
+		fill: var(--color-foreground);
+	}
+	.nl .nl-point {
+		stroke: var(--color-background);
+	}
+	.nl .nl-nombre {
+		text-align: center;
+		font-size: 0.75rem;
+		line-height: 1;
+		color: var(--color-foreground);
+	}
+	.nl .nl-cache {
+		font-weight: bold;
+		font-size: 0.85rem;
+		color: var(--color-fig-rouge);
+	}
+	.nl .nl-nom {
+		text-align: center;
+		font-weight: 600;
+		font-size: 0.8rem;
+		line-height: 1;
+	}
+
 	/* Bloc variation : tableau de VariationTable.svelte (signes en couleur du texte) */
+	/* Bloc de type block : seul le tableau défile sur un écran étroit, pas la page */
 	.vt {
 		border-collapse: collapse;
 		margin: 0.5rem auto;
+		display: block;
+		width: fit-content;
+		max-width: 100%;
+		overflow-x: auto;
 	}
 	.vt th,
 	.vt td {
@@ -537,6 +578,16 @@
 		display: flex;
 		align-items: stretch;
 		gap: 0.25rem;
+	}
+	/* Cellule cachée d'un tableau à compléter : encadrée, remplie de la réponse */
+	.vt .vt-cache {
+		display: inline-flex;
+		justify-content: center;
+		min-width: 1.6em;
+		padding: 0 0.2em;
+		border: 1.5px dashed var(--accent);
+		border-radius: 4px;
+		background: var(--accent-soft);
 	}
 	.vt .vt-barre {
 		display: inline-block;
@@ -967,6 +1018,16 @@
 		stroke: color-mix(in oklab, var(--m-primaire) 45%, black);
 		stroke-width: 0.6;
 	}
+	.c-face-1 {
+		fill: color-mix(in oklab, var(--m-primaire) 70%, white);
+	}
+	.c-face-2 {
+		fill: color-mix(in oklab, var(--m-primaire) 75%, black);
+	}
+	.c-quad {
+		stroke: color-mix(in oklab, var(--m-primaire) 45%, black);
+		stroke-width: 0.3;
+	}
 	.sol {
 		display: grid;
 		gap: 4px;
@@ -1012,6 +1073,30 @@
 	}
 	.h-axe {
 		fill: var(--fg);
+	}
+	/* Schéma en barres : SchemaBarres.svelte (segments sur fond discret, manquants en pointillés sans fond) */
+	.sb-schema {
+		display: block;
+		max-width: 100%;
+		height: auto;
+		margin: 0.5rem auto;
+		font-family: var(--body);
+		color: var(--fg);
+	}
+	.sb-segment {
+		fill: color-mix(in srgb, var(--fg) 8%, var(--surface));
+		stroke: currentColor;
+	}
+	.sb-manquant {
+		fill: none;
+	}
+	.sb-accolade {
+		fill: none;
+		stroke: currentColor;
+	}
+	.sb-texte {
+		fill: currentColor;
+		stroke: none;
 	}
 	.c-contour {
 		fill: none;
@@ -1238,7 +1323,7 @@
 	function exemple(e) {
 		const reponse = e.choices
 			? `<ul class="choix${e.choices.some((c) => c.content.startsWith('@@HTML@@')) ? ' dessins' : ''}">${e.choices.map((c) => `<li class="${c.bon ? 'bon' : ''}">${c.bon ? '✔ ' : ''}${c.content.startsWith('@@HTML@@') ? formules(c.content.slice(8)) : enLigne(c.content)}</li>`).join('')}</ul>`
-			: `<div class="attendu">Attendu, case par case : <b>${e.answer.split(' | ').map(maths).join(' | ')}</b></div>${e.solution ? `<div class="sol"><div class="attendu">Une construction juste, le moins d'objets (celle que montre la correction) :</div><div class="m-bloc">${e.solution}</div></div>` : ''}`;
+			: `<div class="attendu">Attendu, case par case : <b>${e.answer.split(' | ').map(maths).join(' | ')}</b></div>${e.solution ? `<div class="sol"><div class="attendu">Une construction juste (monnaie, collection : le moins d'objets, celle que montre la correction) :</div><div class="m-bloc">${formules(e.solution)}</div></div>` : ''}`;
 		return `<div class="ex"><div class="var">variation ${e.variation}</div><div class="enonce">${rendu(e.statement)}</div>${reponse}<ol class="corrige">${e.steps.map((s) => `<li>${s.includes('@@HTML@@') ? rendu(s) : etape(s)}</li>`).join('')}</ol></div>`;
 	}
 

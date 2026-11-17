@@ -1,10 +1,8 @@
 {
+	"id": "7f9d7df5-3be5-43b2-8dac-9c37e04c7909",
 	"title": "Les parenthèses sont-elles indispensables ?",
 	"description": "Dire si les parenthèses sont indispensables au sens d'une écriture : oui dans 3 + (−2), −(−2), −(2 + 3), −(2 − 3) ; non dans (−2) + 5 et (−2)",
 	"grades": ["5"],
-	"theme": "Relatifs",
-	"domain": "Additionner et soustraire",
-	"subdomain": "Sommes algébriques",
 	"level": 5,
 	"delay": 30,
 	"status": "draft",

@@ -1,10 +1,8 @@
 {
+	"id": "18ff6a91-3e94-4391-81a8-037af4ce1470",
 	"title": "Calculer une puissance avec la formule de Moivre",
 	"description": "(1+i)ⁿ, (√3+i)ⁿ sous forme algébrique, (1 − i√3)ⁿ sous forme exponentielle, suite z_{n+1} = i z_n (pièges : puissance du module oubliée, argument non multiplié par n ou non ramené)",
 	"grades": ["T_EXP"],
-	"theme": "Nombres complexes",
-	"domain": "Formes trigonométrique et exponentielle",
-	"subdomain": "Formule de Moivre",
 	"level": 2,
 	"status": "draft",
 	"delay": 60,

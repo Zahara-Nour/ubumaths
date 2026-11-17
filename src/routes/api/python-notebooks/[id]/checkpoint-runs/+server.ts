@@ -16,6 +16,7 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { requireAuth } from '$lib/server/middleware/auth';
 import { upsertCheckpointRunSchema } from '$lib/server/validation/notebook-checkpoints';
 import { validateUuidParam } from '$lib/server/validation/params';
 import type { CheckpointRun, CheckpointRunStatus } from '$lib/types/database-helpers';
@@ -43,11 +44,8 @@ type CheckpointRunResponse = Omit<CheckpointRun, 'status'> & { status: Checkpoin
  */
 export const POST: RequestHandler = async ({ locals, params, request }) => {
 	const notebookId = validateUuidParam(params.id);
-	const { user, supabase } = locals;
-
-	if (!user) {
-		throw error(401, 'Connexion requise');
-	}
+	await requireAuth(locals);
+	const { supabase } = locals;
 
 	let body: unknown;
 	try {
@@ -112,11 +110,8 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
  */
 export const GET: RequestHandler = async ({ locals, params }) => {
 	const notebookId = validateUuidParam(params.id);
-	const { user, supabase } = locals;
-
-	if (!user) {
-		throw error(401, 'Connexion requise');
-	}
+	await requireAuth(locals);
+	const { supabase } = locals;
 
 	const { data: runs, error: dbError } = await supabase
 		.from('python_notebook_checkpoint_runs')

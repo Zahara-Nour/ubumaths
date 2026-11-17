@@ -12,7 +12,10 @@
 import { describe, it, expect, vi } from 'vitest';
 
 vi.mock('$lib/server/middleware/auth', () => ({
-	requireRole: vi.fn(async () => ({ user: { id: 'admin' }, profile: { role: 'admin' } })),
+	requireAdmin: vi.fn(async (locals: { supabase: unknown }) => ({
+		supabase: locals.supabase,
+		adminUserId: 'admin'
+	})),
 	requireRoles: vi.fn()
 }));
 

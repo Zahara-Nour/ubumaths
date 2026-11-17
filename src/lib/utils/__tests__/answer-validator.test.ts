@@ -27,8 +27,6 @@ function createNumericalInstance(
 		statement: 'Test question' as ResolvedMarkdown,
 		blanks: [{ expectedAnswer, type: 'math' }],
 		grades: ['6'],
-		theme: 'Test',
-		domain: 'Test',
 		level: 1,
 		generatedAt: new Date().toISOString(),
 		options: constraintOptions
@@ -47,8 +45,6 @@ function createAlgebraicInstance(
 		statement: 'Test question' as ResolvedMarkdown,
 		blanks: [{ expectedAnswer, type: 'math' }],
 		grades: ['6'],
-		theme: 'Test',
-		domain: 'Test',
 		level: 1,
 		generatedAt: new Date().toISOString(),
 		options: constraintOptions
@@ -278,8 +274,6 @@ describe('validateAnswer - Constraint Integration', () => {
 				statement: 'Test' as ResolvedMarkdown,
 				blanks: [{ expectedAnswer: '5', type: 'math' }],
 				grades: ['6'],
-				theme: 'Test',
-				domain: 'Test',
 				level: 1,
 				generatedAt: new Date().toISOString()
 				// options is undefined
@@ -622,8 +616,6 @@ describe('validateAnswer - Multiple Answers', () => {
 			templateId: 'test',
 			statement: 'Test {{blank:0}} and {{blank:1}}' as ResolvedMarkdown,
 			grades: ['6'],
-			theme: 'Test',
-			domain: 'Test',
 			level: 1,
 			generatedAt: new Date().toISOString(),
 			blanks: [
@@ -740,8 +732,6 @@ describe('validateAnswer - Required Form Integration', () => {
 			statement: 'Test question' as ResolvedMarkdown,
 			blanks: [{ expectedAnswer, type: 'math', requiredForm }],
 			grades: ['6'],
-			theme: 'Test',
-			domain: 'Test',
 			level: 1,
 			generatedAt: new Date().toISOString()
 		};
@@ -870,8 +860,6 @@ describe('validateAnswer - Required Form Integration', () => {
 				statement: 'Test question' as ResolvedMarkdown,
 				blanks: [{ expectedAnswer: '6', type: 'math', requiredForm: 'product' }],
 				grades: ['6'],
-				theme: 'Test',
-				domain: 'Test',
 				level: 1,
 				generatedAt: new Date().toISOString(),
 				options: {
@@ -899,8 +887,6 @@ describe('validateAnswer - Required Form Integration', () => {
 				statement: 'Test question' as ResolvedMarkdown,
 				blanks: [{ expectedAnswer: '5', type: 'math', requiredForm: 'sum' }],
 				grades: ['6'],
-				theme: 'Test',
-				domain: 'Test',
 				level: 1,
 				generatedAt: new Date().toISOString(),
 				options: {
@@ -934,8 +920,6 @@ describe('orderIndependent - order-independent multi-answer matching', () => {
 			statement: 'Test question' as ResolvedMarkdown,
 			blanks: expectedAnswers.map((a) => ({ expectedAnswer: a, type: 'math' as const })),
 			grades: ['2'],
-			theme: 'Test',
-			domain: 'Test',
 			level: 1,
 			generatedAt: new Date().toISOString(),
 			options: { orderIndependent: true }
@@ -997,8 +981,6 @@ describe('orderIndependent - order-independent multi-answer matching', () => {
 					{ expectedAnswer: '-3', type: 'math' }
 				],
 				grades: ['2'],
-				theme: 'Test',
-				domain: 'Test',
 				level: 1,
 				generatedAt: new Date().toISOString()
 			};

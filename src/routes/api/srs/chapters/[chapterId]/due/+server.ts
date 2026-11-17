@@ -88,7 +88,12 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			// Nouvelle graine à chaque séance (`generateSRSInstance`)
 			const result = generateSRSInstance(toQuestionTemplate(row));
 			if (result.success) {
-				cards.push({ templateId, instance: result.instance, isNew: fresh.has(templateId) });
+				cards.push({
+					templateId,
+					instance: result.instance,
+					notionId: row.classification_node_id,
+					isNew: fresh.has(templateId)
+				});
 			} else {
 				skipped.push({ templateId, reason: result.errors.join('; ') });
 			}

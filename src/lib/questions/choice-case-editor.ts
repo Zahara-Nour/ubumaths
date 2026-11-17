@@ -68,7 +68,8 @@ export function withBlockCases<T>(
 			result.operationBlanks,
 			result.constructionBlanks,
 			result.workFigureBlanks,
-			result.buildBlanks
+			result.buildBlanks,
+			result.variationBlanks
 		].flatMap((map) => Object.keys(map ?? {}).map(Number))
 	);
 	if (blockCases.size === 0 || blanks.length !== result.totalBlanks - blockCases.size) return null;

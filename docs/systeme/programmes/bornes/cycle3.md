@@ -599,6 +599,24 @@ Les incertitudes du cycle 3 sont tranchées (détail : `questions.json`, champ `
 
 ## 6e
 
+### Couverture en modèles de questions (prod, 2026-11-13)
+
+Chantier `questions-6` (démarche [couvrir-un-niveau.md](../../../pratiques/couvrir-un-niveau.md)), du 2026-10-26 au
+2026-11-13 ; journal dans `docs/archive/wip/questions-6-progress.md`.
+
+- **195 modèles publiés** contenant le niveau `6` (187 de 6e seule, 8 partagés avec le cours moyen : `[CM2, 6]`,
+  `[CM1, 6]`) ; **105 points sur 111** ont au moins un modèle publié (relevé MCP du 2026-11-13).
+- **6 points sans modèle, par décision de David (2026-10-26)** : 129 (graduer un segment), 138 (inventer des
+  problèmes), 182 (planifier une enquête), 183 (réaliser des mesures) sont **non évaluables** dans l'appli ; 197 et
+  210 (programmer) sont **en attente de Blockly** (`docs/wip/outils-manquants.md`, n° 10).
+- **Ordonner** (110, 134, 204) : trois cases `$? < ? < ?$`, ou ` ```ranger ` une fois l'outil livré (décision du
+  2026-10-26).
+- **Modèles marqués 6e à tort** (2026-10-26) : un modèle dont le contenu relève d'un autre niveau prend le niveau du
+  point qui le décrit (niveau suivant : `grades` remplacé ; cours moyen : niveau ajouté, `6` gardé).
+- **Outils livrés pour la 6e** : ` ```cubes ` (assemblages, 154, 155, 181, 208, 209), rapporteur posé sur une
+  figure (169, 170), contrôles de la figure à compléter (modèles témoins, lot 11a), ` ```schema-barres ` (142).
+- **Brouillon gardé** : 3a7a5711 (« Trouver la largeur d'un rectangle »), doublon de 059e3fc9, **à ne pas publier**.
+
 ### Bornes générales
 
 | Borne                                                                                                                                                        | Force        | Source                                                               |

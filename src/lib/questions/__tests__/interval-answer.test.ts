@@ -254,6 +254,10 @@ describe('expectedIntervalsLatex — réponse attendue affichée (corrigé, flas
 		['\\emptyset', '\\emptyset'],
 		['\\mathbb{R}', '\\mathbb{R}'],
 		['\\{3\\}', '\\{3\\}'],
+		// Ensemble fini : un seul ensemble, pas une réunion de singletons
+		['\\{ -3 ; 1 ; -1 \\}', '\\{-3;-1;1\\}'],
+		['[0;1]\\cup\\{3\\}\\cup\\{2\\}', '[0;1]\\cup\\{2;3\\}'],
+		['\\{-2\\}\\cup[0;1]\\cup\\{3\\}', '\\{-2\\}\\cup[0;1]\\cup\\{3\\}'],
 		['\\mathbb{R}\\setminus\\{2\\}', '\\mathbb{R}\\setminus\\{2\\}']
 	])('%s → %s', (expected, latex) => {
 		expect(expectedIntervalsLatex(expected)).toBe(latex);
@@ -261,6 +265,11 @@ describe('expectedIntervalsLatex — réponse attendue affichée (corrigé, flas
 
 	it('se relit comme la réponse attendue (aller-retour)', () => {
 		const expected = ']-\\infty;(1-sqrt(5))/2]\\cup[(1+sqrt(5))/2;+\\infty[';
+		expect(judgeIntervalAnswer(expectedIntervalsLatex(expected), expected).status).toBe('correct');
+	});
+
+	it('ensemble fini : se relit comme la réponse attendue (aller-retour)', () => {
+		const expected = '\\{ -4 ; -1 \\}';
 		expect(judgeIntervalAnswer(expectedIntervalsLatex(expected), expected).status).toBe('correct');
 	});
 

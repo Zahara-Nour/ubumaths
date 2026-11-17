@@ -15,8 +15,6 @@ function instance(expected: string): QuestionInstance {
 		statement: `Combien ? $\\placeholder[0]{}$` as ResolvedMarkdown,
 		blanks: [{ expectedAnswer: expected, type: 'math' }],
 		grades: ['6'],
-		theme: 'T',
-		domain: 'D',
 		level: 1,
 		generatedAt: ''
 	};

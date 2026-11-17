@@ -1,10 +1,8 @@
 {
+	"id": "77ab770d-f591-4ad9-89e9-a03f6b413591",
 	"title": "Décomposer en facteurs premiers",
 	"description": "Décomposer un entier en produit de facteurs premiers : 60 = 2² × 3 × 5 ; 306 = 2 × 3² × 17 ; reconnaître la décomposition parmi 4 × 15, 2 × 30, 2² × 15",
 	"grades": ["3"],
-	"theme": "Entiers",
-	"domain": "Nombres premiers",
-	"subdomain": "Décomposition",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

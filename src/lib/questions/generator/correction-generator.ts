@@ -1020,7 +1020,10 @@ function parseExpression(
 	instance: QuestionInstance,
 	cleanCoefficients: boolean
 ): MathNode | null {
-	const resolved = resolveExpression(template, instance.resolvedVariables ?? []);
+	// Une formule à lire : une durée reste UNE grandeur (2026-11-03)
+	const resolved = resolveExpression(template, instance.resolvedVariables ?? [], undefined, {
+		durations: 'single'
+	});
 	const parseResult = parseCustomSafe(resolved.trim(), readingOf(instance));
 	if (!parseResult.ast) return null;
 	return cleanCoefficients ? cleanCoefficientsAst(parseResult.ast) : parseResult.ast;
@@ -1035,7 +1038,9 @@ function resolveForSteps(
 	instance: QuestionInstance,
 	cleanCoefficients: boolean
 ): string {
-	const resolved = resolveExpression(template, instance.resolvedVariables ?? []).trim();
+	const resolved = resolveExpression(template, instance.resolvedVariables ?? [], undefined, {
+		durations: 'single'
+	}).trim();
 	return cleanCoefficients
 		? cleanCoefficientsCustom(
 				resolved,

@@ -22,7 +22,7 @@
  * se placent avant ou après `; t`, comme les bornes de `.integrate`.
  */
 
-import chalk from 'chalk';
+import { colors } from '../core/terminal-colors';
 import { BaseCommand } from './base-command';
 import type { CommandContext, CommandResult } from '../types';
 import { toCustom } from '../../custom-generator';
@@ -231,9 +231,9 @@ export class TaylorCommand extends BaseCommand {
 			const centerDesc = center === 0 ? `${varName}=0 (Maclaurin)` : `${varName}=${center}`;
 
 			const output = [
-				chalk.bold(`Taylor series of ${exprCustom} at ${centerDesc}, order ${order}:`),
-				chalk.cyan(taylorCustom),
-				chalk.dim('LaTeX:') + ' ' + taylorLatex,
+				colors.bold(`Taylor series of ${exprCustom} at ${centerDesc}, order ${order}:`),
+				colors.cyan(taylorCustom),
+				colors.dim('LaTeX:') + ' ' + taylorLatex,
 				...(hint === null ? [] : [hint])
 			].join('\n');
 

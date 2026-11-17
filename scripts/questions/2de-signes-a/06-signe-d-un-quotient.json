@@ -1,10 +1,8 @@
 {
+	"id": "80826238-a393-4840-b6be-b115dbfae8d7",
 	"title": "Signe d'un quotient, sans tableau",
 	"description": "Signe de (ax + b)/(cx + d) en une valeur (numérateur nul, valeur interdite compris) et sur un intervalle, par la règle des signes (pièges : « nul » à la valeur interdite, dénominateur oublié)",
 	"grades": ["2"],
-	"theme": "Calcul littéral",
-	"domain": "Inéquations",
-	"subdomain": "Produit et quotient",
 	"level": 2,
 	"delay": 60,
 	"status": "draft",

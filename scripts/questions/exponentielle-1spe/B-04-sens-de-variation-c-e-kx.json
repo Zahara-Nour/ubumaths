@@ -1,11 +1,9 @@
 {
+	"id": "c7b5130d-15f7-4b80-b678-34c3c13dff40",
 	"title": "Sens de variation d'une fonction exponentielle de paramètre k",
 	"description": "Le signe de C × k donne le sens de variation ; C·eᵏ sans x est constante",
 	"grades": ["1_SPE"],
-	"theme": "Fonctions",
-	"domain": "Fonction exponentielle",
 	"status": "draft",
-	"subdomain": "Variations",
 	"level": 1,
 	"delay": 30,
 	"variations": [

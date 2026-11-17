@@ -1,10 +1,8 @@
 {
+	"id": "de02429a-2035-472f-bf29-5c80c431af90",
 	"title": "Repérer un point par une fraction",
 	"description": "Lire la fraction qui repère un point d'une demi-droite graduée, au-delà de 1 (A repère 7/3) ; ou sur un morceau de droite qui commence à un entier, unité partagée jusqu'à 12 parts (A repère 17/7)",
 	"grades": ["CM2"],
-	"theme": "Fractions",
-	"domain": "Apprivoiser",
-	"subdomain": "Repérage",
 	"level": 8,
 	"delay": 45,
 	"status": "draft",

@@ -489,7 +489,8 @@ describe('WorksheetGenerator', () => {
 			const content = result.typstContent;
 			const statementAt = content.indexOf('Solve for x');
 			const statementBlock = content.slice(
-				content.lastIndexOf('#block(', statementAt),
+				// Bloc de l'énoncé (le bloc vide collé qui l'ouvre n'a pas de largeur)
+				content.lastIndexOf('#block(width:', statementAt),
 				statementAt
 			);
 			expect(statementBlock).toContain('above: 0.5em');
@@ -516,7 +517,8 @@ describe('WorksheetGenerator', () => {
 			expect(content).toContain('Exercice 1');
 			const statementAt = content.indexOf('Solve for x');
 			const statementBlock = content.slice(
-				content.lastIndexOf('#block(', statementAt),
+				// Bloc de l'énoncé (le bloc vide collé qui l'ouvre n'a pas de largeur)
+				content.lastIndexOf('#block(width:', statementAt),
 				statementAt
 			);
 			expect(statementBlock).toContain('above: 0.5em');
@@ -689,9 +691,10 @@ describe('WorksheetGenerator', () => {
 				'#block(width: 100%, inset: 0pt, sticky: true, below: 0.3em)[\n  #text(size: 1.1em, weight: "bold")[Exercice 1'
 			);
 			// Énoncé dans un bloc à part, juste après l'en-tête ; il commence par l'en-tête
-			// de lisibilité (règles et fonctions, sans contenu), puis le texte
+			// de lisibilité (règles et fonctions, sans contenu), puis le bloc vide collé
+			// qui fait suivre le titre (CHAINED_START_TYPST), puis le texte
 			expect(result.typstContent).toMatch(
-				/\]\n#block\(width: 100%, inset: 0pt, above: 0\.5em\)\[\n {2}#show math\.equation[\s\S]*?\/\/ ubumark: fin de l’en-tête\n\s*Solve for x/
+				/\]\n#block\(width: 100%, inset: 0pt, above: 0\.5em\)\[\n {2}#show math\.equation[\s\S]*?\/\/ ubumark: fin de l’en-tête\n\s*#block\(sticky: true, above: 0pt, below: 0pt\)\n\s*#v\(0pt, weak: true\)\n\s*Solve for x/
 			);
 		});
 

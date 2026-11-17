@@ -1,5 +1,6 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { requireAuth } from '$lib/server/middleware/auth';
 // Supabase client is now accessed via locals.supabase
 import { updateConfigSchema } from '$lib/server/marketplace/validation';
 import { z } from 'zod';
@@ -19,22 +20,8 @@ const configQuerySchema = z.object({
  */
 export const GET: RequestHandler = async ({ url, locals }) => {
 	const supabase = locals.supabase;
-	const userId = locals.user?.id;
-
-	if (!userId) {
-		throw error(401, 'Non authentifié');
-	}
-
-	// Get user profile to determine role
-	const { data: profile, error: profileError } = await supabase
-		.from('profiles')
-		.select('role, school_id')
-		.eq('id', userId)
-		.single();
-
-	if (profileError || !profile) {
-		throw error(404, 'Profil non trouvé');
-	}
+	const { user, profile } = await requireAuth(locals);
+	const userId = user.id;
 
 	// Validate query parameters
 	const queryValidation = configQuerySchema.safeParse({
@@ -199,11 +186,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
  */
 export const PATCH: RequestHandler = async ({ url, request, locals }) => {
 	const supabase = locals.supabase;
-	const userId = locals.user?.id;
-
-	if (!userId) {
-		throw error(401, 'Non authentifié');
-	}
+	const { profile } = await requireAuth(locals);
 
 	// Get class_id or school_id from query params
 	const classId = url.searchParams.get('class_id');
@@ -226,17 +209,6 @@ export const PATCH: RequestHandler = async ({ url, request, locals }) => {
 	}
 
 	const updates = validation.data;
-
-	// Get user profile
-	const { data: profile, error: profileError } = await supabase
-		.from('profiles')
-		.select('role, school_id')
-		.eq('id', userId)
-		.single();
-
-	if (profileError || !profile) {
-		throw error(404, 'Profil non trouvé');
-	}
 
 	if (classId) {
 		// Updating class-level config

@@ -1,10 +1,8 @@
 {
+	"id": "cb5a6a89-dcea-475c-acc3-70eeca375a31",
 	"title": "Que dit le diagramme en barres ?",
 	"description": "Le plus choisi, le moins choisi (case choix), combien de plus, combien en tout",
 	"grades": ["CE1"],
-	"theme": "Statistiques",
-	"domain": "Représenter des données",
-	"subdomain": "Diagrammes en barres",
 	"level": 2,
 	"delay": 120,
 	"status": "draft",

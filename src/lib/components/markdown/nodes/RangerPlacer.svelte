@@ -4,14 +4,16 @@
 
 	L'élève range des étiquettes (chantier `docs/wip/reponses-a-placer-progress.md`
 	§ 21, 22) : les étiquettes mélangées en haut, en dessous les places vides
-	séparées du signe (`□ < □ < □`).
+	séparées du signe (`□ < □ < □`). Avec `signe: aucun` (étapes d'une
+	démonstration) : étiquettes et places en colonne, places numérotées, sans signe.
 
 	- Glisser une étiquette sur une place ; ou toucher l'étiquette, puis la place.
 	  Place déjà prise : les deux étiquettes s'échangent (venue d'en haut, l'autre
 	  remonte). Toucher une étiquette posée la renvoie en haut ; la glisser en haut
 	  aussi.
 	- Clavier : Tab, Entrée (prendre, poser), flèches (d'une étiquette ou d'une place
-	  à la voisine, ↑ ↓ d'une rangée à l'autre), Échap (lâcher).
+	  à la voisine, ↑ ↓ d'une rangée à l'autre ; en étapes, ↑ ↓ dans la colonne,
+	  ← → d'une colonne à l'autre), Échap (lâcher).
 	- Nom accessible : « Étiquette 2 sur 3 : … », « Place 1 sur 3, vide » — jamais
 	  l'ordre juste.
 	- Dans une question (`answers`, une case par place) : la réponse de chaque place
@@ -47,6 +49,8 @@
 
 	let labels = $derived(displayedLabels(node));
 	let count = $derived(labels.length);
+	/** Étapes d'une démonstration : colonne numérotée, sans signe */
+	let steps = $derived(node.sign === 'aucun');
 	let signText = $derived(node.sign === '>' ? '>' : '<');
 	let signSpoken = $derived(node.sign === '>' ? 'plus grand que' : 'plus petit que');
 
@@ -178,7 +182,10 @@
 		drag = null;
 	}
 
-	/** Flèches : d'un bouton à son voisin dans la rangée, ↑ ↓ d'une rangée à l'autre */
+	/**
+	 * Flèches : d'un bouton à son voisin dans la rangée, ↑ ↓ d'une rangée à l'autre ;
+	 * en étapes (colonnes), ↑ ↓ dans la colonne, ← → d'une colonne à l'autre
+	 */
 	function onKeydown(event: KeyboardEvent) {
 		if (event.key === 'Escape') {
 			selected = null;
@@ -190,17 +197,21 @@
 		const buttons = (element: HTMLElement) => [
 			...element.querySelectorAll<HTMLButtonElement>('button:not(:disabled)')
 		];
-		if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+		const [previous, following] = steps ? ['ArrowUp', 'ArrowDown'] : ['ArrowLeft', 'ArrowRight'];
+		const [previousRow, followingRow] = steps
+			? ['ArrowLeft', 'ArrowRight']
+			: ['ArrowUp', 'ArrowDown'];
+		if (event.key === previous || event.key === following) {
 			const list = buttons(row);
 			const index = list.indexOf(current as HTMLButtonElement);
-			const next = list[index + (event.key === 'ArrowLeft' ? -1 : 1)];
+			const next = list[index + (event.key === previous ? -1 : 1)];
 			if (next) {
 				event.preventDefault();
 				next.focus();
 			}
-		} else if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
+		} else if (event.key === previousRow || event.key === followingRow) {
 			const rows = [...root.querySelectorAll<HTMLElement>('[data-ranger-row]')];
-			const other = rows[rows.indexOf(row) + (event.key === 'ArrowUp' ? -1 : 1)];
+			const other = rows[rows.indexOf(row) + (event.key === previousRow ? -1 : 1)];
 			const first = other ? buttons(other)[0] : undefined;
 			if (first) {
 				event.preventDefault();
@@ -226,11 +237,15 @@
 	live: boolean
 )}
 	<div
-		class="ranger-places flex flex-wrap items-center justify-center gap-2"
+		class={steps
+			? 'ranger-places ranger-places-etapes'
+			: 'ranger-places flex flex-wrap items-center justify-center gap-2'}
 		data-ranger-row={live ? '' : undefined}
 	>
 		{#each filled as position, k (k)}
-			{#if k > 0}
+			{#if steps}
+				<span class="ranger-numero" aria-hidden="true">{k + 1}.</span>
+			{:else if k > 0}
 				<span class="ranger-signe text-lg" aria-hidden="true">{signText}</span>
 				<span class="sr-only">{signSpoken}</span>
 			{/if}
@@ -277,13 +292,14 @@
 <div
 	bind:this={root}
 	class="ranger my-3 flex flex-col items-center gap-3 {className}"
+	class:ranger-etapes={steps}
 	role="group"
 	aria-labelledby="{uid}-consigne"
 >
 	<p id="{uid}-consigne" class="sr-only">
-		Étiquettes à ranger, du {node.sign === '>'
-			? 'plus grand au plus petit'
-			: 'plus petit au plus grand'}
+		{steps
+			? 'Étapes à remettre dans l’ordre, de la première à la dernière'
+			: `Étiquettes à ranger, du ${node.sign === '>' ? 'plus grand au plus petit' : 'plus petit au plus grand'}`}
 		{selected !== null ? `; étiquette ${selected + 1} prise, choisis sa place` : ''}
 	</p>
 
@@ -331,7 +347,7 @@
 		{/if}
 
 		{#if judged && !allRight && solution}
-			<div class="ranger-correction flex flex-col items-center gap-1">
+			<div class="ranger-correction flex flex-col gap-1 {steps ? 'items-stretch' : 'items-center'}">
 				<p class="text-sm font-medium text-muted-foreground">Correction</p>
 				{@render places(solution, [], false)}
 			</div>
@@ -430,5 +446,37 @@
 
 	.ranger-signe {
 		color: var(--color-foreground);
+	}
+
+	/* Étapes (`signe: aucun`) : colonnes sur toute la largeur, une étape longue passe à la ligne */
+	.ranger-etapes {
+		align-items: stretch;
+		min-width: 0;
+	}
+
+	.ranger-etapes .ranger-etiquettes {
+		flex-direction: column;
+		flex-wrap: nowrap;
+		align-items: stretch;
+	}
+
+	.ranger-places-etapes {
+		display: grid;
+		grid-template-columns: auto minmax(0, 1fr);
+		align-items: center;
+		gap: 0.5rem;
+	}
+
+	.ranger-etapes .ranger-etiquette,
+	.ranger-etapes .ranger-place {
+		justify-content: flex-start;
+		min-width: 0;
+		text-align: left;
+		overflow-wrap: anywhere;
+	}
+
+	.ranger-numero {
+		color: var(--color-muted-foreground);
+		font-variant-numeric: tabular-nums;
 	}
 </style>

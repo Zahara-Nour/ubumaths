@@ -1,10 +1,8 @@
 {
+	"id": "8bc8159f-1095-4b71-ba96-329ffe90471b",
 	"title": "Résoudre x² < k",
 	"description": "Inéquation x² < k par la parabole : k carré parfait, k non carré (√5), les quatre sens ; k < 0 (∅ ou ℝ), k = 0 (pièges : ]−∞ ; 3[ pour x² < 9, la partie négative oubliée, crochets)",
 	"grades": ["2"],
-	"theme": "Fonctions",
-	"domain": "Fonction carré",
-	"subdomain": "Résolution algébrique",
 	"level": 2,
 	"delay": 90,
 	"status": "draft",

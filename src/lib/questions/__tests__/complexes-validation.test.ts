@@ -19,8 +19,6 @@ function verdicts(
 		type: 'fill_in_blanks',
 		title: 't',
 		grades: ['T_EXP'],
-		theme: 'T',
-		domain: 'D',
 		level: 1,
 		delay: 20,
 		status: 'draft',

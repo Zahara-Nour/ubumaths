@@ -114,7 +114,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	// Chaque signalement notifie les admins : 10 par heure et par compte suffisent,
 	// et empêchent un élève d'inonder leurs notifications.
-	rateLimit(`bug-report:${user.id}`, 10, 60 * 60 * 1000);
+	await rateLimit(`bug-report:${user.id}`, 10, 60 * 60 * 1000);
 
 	// Validate request body
 	const body = await request.json();

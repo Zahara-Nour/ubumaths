@@ -97,9 +97,6 @@
 			}
 		],
 		"grades": ["6"],
-		"theme": "Entiers",
-		"domain": "Multiplier",
-		"subdomain": "Distributivité",
 		"level": 18,
 		"status": "draft",
 		"delay": 20,

@@ -1,10 +1,8 @@
 {
+	"id": "5e469f6f-706b-47db-8506-88b41beb4a91",
 	"title": "Problèmes de partage : la valeur d'une part",
 	"description": "Combien chacun : 18 images pour 3 enfants ; 200 élèves en 40 équipes ; 9,60 € pour 3",
 	"grades": ["CE1"],
-	"theme": "Entiers",
-	"domain": "Problèmes",
-	"subdomain": "Multiplicatifs",
 	"level": 8,
 	"delay": 90,
 	"status": "draft",

@@ -2097,6 +2097,48 @@ Grande carte et sept cartes de capitales validées par David (2026-10-29 au 2026
   - Nano Banana compte mal (tours de spirale, tours d'enceinte) et ne suit pas les proportions demandées.
 - **Contenu** : pas de formes géométriques plaquées sur le paysage ; la discipline de chaque province ne se montre que dans sa ville. Références sans texte ; jamais de personne réelle nommée ; fichiers pour l'IA copiés dans `~/Downloads`.
 
+#### Avatars par défaut 🟡
+
+Décision de David (2026-11-06) : l'avatar affiché quand un compte n'a pas de photo est un **emblème du rôle**, sans visage : lisible dans un rond de 32 à 40 px, sans genre (règle RGPD de `getAvatarFallback`) et sans confusion avec un personnage qui parle (Père Ubu, Bordure).
+
+| Rôle                   | Emblème                                                                                                                   | Fichier            |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------- | ------------------ |
+| Galopin (élève)        | bonnet vert à plume blanche, insigne doré à la gidouille                                                                  | `avatar-galopin`   |
+| Capitaine (professeur) | konfederatka pourpre à aigle doré, sur deux sabres croisés                                                                | `avatar-capitaine` |
+| Admin                  | attributs d'Ubu (la Chambre du Conseil Privé lui est réservée) : couronne d'or et bâton-à-physique à pommeau en gidouille | `avatar-admin`     |
+
+Originaux 1024×1024 (Nano Banana, nuancier numérique seul en pièce jointe) : `docs/Chiphres/illustrations/avatars/` ; dans l'appli, `.webp` 256×256 sous `src/lib/assets/images/avatars/`. Le bonnet du Galopin est une invention 🟡, sur le modèle des couvre-chefs des Palotins.
+
+```text
+Draw a single emblem object for a round profile picture: a Galopin's cap — a soft, floppy beret-like cap of a young apprentice adventurer, slightly tilted, emerald green, with a small round marigold yellow badge on the front showing a navy ink spiral, and a short white feather tucked into the band. Playful and friendly, for students aged 11 to 17. No person, no face, no head under the cap: the cap alone.
+
+Style: 1896 Montmartre lithographic poster in the manner of Théophile-Alexandre Steinlen. Bold thick dark contours, flat color areas, no gradients, no 3D, no shading beyond flat shadow shapes.
+
+Colors: use only the colors of the attached palette image: navy ink for the outlines and the spiral, emerald green for the cap, marigold yellow for the badge, white for the feather.
+
+Composition: square 1:1 format, the object centered and filling about 65% of the image, entirely inside the central circle (the image will be cropped to a circle), plain flat cream parchment background. No text, no letters, no numbers, no signature.
+```
+
+```text
+Draw a single emblem object for a round profile picture: a Polish captain's konfederatka cap (square-topped military cap with a short black visor), deep crimson, with a small golden emblem on the front and a thin golden cord, resting at a slight angle on two crossed sabres with golden hilts behind it. Proud and a bit pompous, but friendly, for students aged 11 to 17. No person, no face, no head under the cap.
+
+Style: 1896 Montmartre lithographic poster in the manner of Théophile-Alexandre Steinlen. Bold thick dark contours, flat color areas, no gradients, no 3D, no shading beyond flat shadow shapes.
+
+Colors: use only the colors of the attached palette image: navy ink for the outlines and the visor, deep crimson for the cap, marigold yellow for the emblem, the cord and the hilts, white for the sabre blades.
+
+Composition: square 1:1 format, the object centered and filling about 65% of the image, entirely inside the central circle (the image will be cropped to a circle), plain flat cream parchment background. No text, no letters, no numbers, no signature.
+```
+
+```text
+Draw a single emblem for a round profile picture: the attributes of Père Ubu, the greedy and pompous king from Alfred Jarry's play "Ubu Roi" (1896). A small, slightly too ornate golden crown, sitting in front of a short, stout wooden baton (his "physics stick", a royal staff carried under the arm) placed diagonally behind it; the baton ends in a round golden knob engraved with a navy ink spiral. Gaudy and comically self-important, never scary, for students aged 11 to 17. No person, no face.
+
+Style: 1896 Montmartre lithographic poster in the manner of Théophile-Alexandre Steinlen. Bold thick dark contours, flat color areas, no gradients, no 3D, no shading beyond flat shadow shapes.
+
+Colors: use only the colors of the attached palette image: navy ink for the outlines and the spiral, marigold yellow for the crown and the knob, emerald green for the jewels of the crown, warm brown for the wooden baton.
+
+Composition: square 1:1 format, the emblem centered and filling about 65% of the image, entirely inside the central circle (the image will be cropped to a circle), plain flat cream parchment background. No text, no letters, no numbers, no signature.
+```
+
 #### Prompt de référence — Père Ubu 🟡
 
 Validé par David le 2026-10-26 (Nano Banana, avec en pièces jointes `nuancier-numerique-reference.png` et une capture d'un Mathou).

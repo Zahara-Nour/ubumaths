@@ -11,7 +11,7 @@
 import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
 import { requireAuth } from '$lib/server/middleware/auth';
-import { templateToBadge } from '$lib/server/srs/capacity-badge';
+import { templateToBadge } from '$lib/server/srs/curriculum-point-badge';
 import { keepLinksOfGrade } from '$lib/server/curriculum-grade';
 import { loadNodesWithAncestors } from '$lib/server/programme-tree';
 import { placeOfNode } from '$lib/utils/programme-tree';
@@ -21,7 +21,7 @@ import { createServerLogger } from '$lib/utils/logger';
 const logger = createServerLogger('(protected)/dashboard/revisions/decks/programme/+page.server');
 
 /**
- * Sous-ensemble des CapacityBadge utilisé côté Programme : un template seul
+ * Sous-ensemble des CurriculumPointBadge utilisé côté Programme : un template seul
  * n'est jamais `non_commencee` (sinon il ne serait pas dans le deck).
  */
 export type ProgrammeBadge =
@@ -135,7 +135,7 @@ export const load: PageServerLoad = async ({ locals }): Promise<ProgrammeData> =
 			.eq('user_id', user.id)
 			.eq('card_reference_type', 'template')
 			.in('card_reference_id', templateIds),
-		locals.supabase.from('question_templates').select('id, subdomain').in('id', templateIds),
+		locals.supabase.from('question_templates').select('id, title').in('id', templateIds),
 		locals.supabase
 			.from('question_template_points')
 			.select('template_id, curriculum_points(code, node_id, grade, archived_at)')
@@ -168,7 +168,7 @@ export const load: PageServerLoad = async ({ locals }): Promise<ProgrammeData> =
 
 	const templateNameById = new Map<string, string>();
 	for (const t of templates ?? []) {
-		templateNameById.set(t.id, t.subdomain ?? '');
+		templateNameById.set(t.id, t.title ?? '');
 	}
 
 	type LinkRow = {

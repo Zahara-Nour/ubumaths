@@ -31,7 +31,7 @@ import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 export const POST: RequestHandler = async ({ locals, params, request }) => {
 	const { user, profile } = await requireAuth(locals);
 	// Corriger coûte (régénération + validation de chaque question)
-	rateLimit(`evaluation-submit:${user.id}`, 10, 60_000);
+	await rateLimit(`evaluation-submit:${user.id}`, 10, 60_000);
 
 	const idValidation = uuidSchema.safeParse(params.id);
 	if (!idValidation.success) {

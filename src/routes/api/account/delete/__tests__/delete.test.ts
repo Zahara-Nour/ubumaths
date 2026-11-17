@@ -72,8 +72,7 @@ vi.mock('$lib/server/serviceRoleClient', () => ({
 
 // Mock rate limiter
 vi.mock('$lib/server/middleware/rateLimit', () => ({
-	rateLimit: vi.fn(),
-	resetRateLimit: vi.fn()
+	rateLimit: vi.fn()
 }));
 
 // Import after mocks
@@ -600,7 +599,7 @@ describe('DELETE /api/account/delete', () => {
 describe('Email Hashing', () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
-		vi.mocked(rateLimit.rateLimit).mockImplementation(() => {});
+		vi.mocked(rateLimit.rateLimit).mockResolvedValue(undefined);
 	});
 
 	test('produces consistent hash for same email', async () => {

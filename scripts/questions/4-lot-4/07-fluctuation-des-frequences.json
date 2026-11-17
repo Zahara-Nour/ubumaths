@@ -1,10 +1,8 @@
 {
+	"id": "17a469bb-bfb8-4c3d-b11b-8e9e87929f5f",
 	"title": "Fluctuation des fréquences",
 	"description": "Observer la fluctuation des fréquences pour un nombre de répétitions fixé : trois groupes de 50 lancers, deux simulations de 100 lancers, recommencer 20 lancers",
 	"grades": ["4"],
-	"theme": "Probabilités",
-	"domain": "Simulation",
-	"subdomain": "Fluctuation",
 	"level": 1,
 	"delay": 45,
 	"status": "draft",

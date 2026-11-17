@@ -442,4 +442,16 @@
 	math-field[data-sans-menu]::part(menu-toggle) {
 		display: none;
 	}
+
+	/*
+	 * MathLive surligne tout `\text{…}` du champ qui a le focus (fond bleu
+	 * marqué en sombre), consigne comprise : les mots (« sur », « ou ») y
+	 * paraissaient sélectionnés. Deux variables publiques, une par thème
+	 * (`--highlight-text` en clair, `--text-highlight-background-color` en
+	 * sombre) : elles traversent le shadow DOM par héritage.
+	 */
+	math-field {
+		--highlight-text: transparent;
+		--text-highlight-background-color: transparent;
+	}
 </style>

@@ -1,10 +1,8 @@
 {
+	"id": "3fa7e2b5-43f8-4f74-bc91-ebb7840e816c",
 	"title": "Combien d'argent ? Euros et centimes",
 	"description": "Compter des pièces de centimes, des euros et des centimes, des billets et des pièces ; réponse en centimes, en euros et centimes, ou à virgule",
 	"grades": ["CE1"],
-	"theme": "Grandeurs",
-	"domain": "Monnaie",
-	"subdomain": "Pièces et billets",
 	"level": 8,
 	"delay": 90,
 	"status": "draft",

@@ -1,10 +1,8 @@
 {
+	"id": "692d237e-a9db-464d-ad46-817b20e2fa90",
 	"title": "Le nombre qui suit, le nombre qui précède (jusqu'à $10\\,000$)",
 	"description": "Avec passage de la dizaine, de la centaine, du millier, et 9 999 → 10 000",
 	"grades": ["CE2"],
-	"theme": "Entiers",
-	"domain": "Apprivoiser",
-	"subdomain": "Ecriture",
 	"level": 17,
 	"delay": 20,
 	"status": "draft",

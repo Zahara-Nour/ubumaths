@@ -1,10 +1,8 @@
 {
+	"id": "70fc062a-ee2f-4ef9-9284-4ee3d738f4b4",
 	"title": "L'écriture à virgule des prix",
 	"description": "2 € et 17 centimes = 2,17 € ; 2,05 € et 2,50 € ; 0,85 € ; 1 € et 120 centimes = 2,20 € ; 3,45 € = 3 € et 45 centimes",
 	"grades": ["CE1"],
-	"theme": "Grandeurs",
-	"domain": "Monnaie",
-	"subdomain": "Euros et centimes",
 	"level": 2,
 	"delay": 90,
 	"status": "draft",

@@ -24,7 +24,7 @@ function lexiconButtons(container: HTMLElement): string[] {
 }
 
 async function chooseGrade(label: string): Promise<void> {
-	await page.getByRole('button', { name: 'Niveau de l’élève' }).click();
+	await page.getByRole('combobox', { name: 'Niveau de l’élève' }).click();
 	await page.getByRole('option', { name: label, exact: true }).click();
 }
 

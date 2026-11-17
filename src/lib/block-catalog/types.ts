@@ -28,7 +28,15 @@ export type CatalogNodeType =
 	| 'partage'
 	| 'espace'
 	| 'operation'
-	| 'ranger';
+	| 'ranger'
+	| 'associer'
+	| 'trous'
+	| 'tortue'
+	| 'calcul'
+	| 'robot'
+	| 'collection'
+	| 'monnaie'
+	| 'schema-barres';
 
 /** Une ligne du tableau des réglages */
 export interface BlockSetting {

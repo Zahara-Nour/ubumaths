@@ -9,6 +9,7 @@
  */
 
 import { json, error } from '@sveltejs/kit';
+import { requireAuth } from '$lib/server/middleware/auth';
 import type { RequestHandler } from './$types';
 import { validateTemplate } from '$lib/templates/templateEngine';
 import { updateMessageTemplateSchema, validateRequest } from '$lib/server/validation';
@@ -20,12 +21,10 @@ const logger = createServerLogger('api/messages/templates/[id]/+server');
 // GET - Get template details
 // =====================================================
 export const GET: RequestHandler = async ({ locals, params }) => {
-	const { supabase, user } = locals;
+	const { supabase } = locals;
 	const { id } = params;
 
-	if (!user) {
-		return error(401, 'Non authentifié');
-	}
+	await requireAuth(locals);
 
 	const { data: template, error: dbError } = await supabase
 		.from('message_templates')
@@ -61,33 +60,10 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 // PATCH - Update template
 // =====================================================
 export const PATCH: RequestHandler = async ({ locals, params, request }) => {
-	const { supabase, user } = locals;
+	const { supabase } = locals;
 	const { id } = params;
 
-	// ====================================================================
-	// SECURITY: Authentication Check
-	// ====================================================================
-	if (!user) {
-		return error(401, 'Non authentifié');
-	}
-
-	// Get user profile
-	const { data: profile, error: profileError } = await supabase
-		.from('profiles')
-		.select('role')
-		.eq('id', user.id)
-		.single();
-
-	// PGRST116 = pas de profil, et le refus qui suit est légitime. Toute AUTRE
-	// panne produisait le même refus, indiscernable d'un refus mérité.
-	if (profileError && profileError.code !== 'PGRST116') {
-		logger.error('Rôle illisible :', profileError);
-		return error(500, 'Impossible de vérifier les droits');
-	}
-
-	if (!profile) {
-		return error(404, 'Profil non trouvé');
-	}
+	const { user, profile } = await requireAuth(locals);
 
 	// Get existing template
 	const { data: existingTemplate, error: fetchError } = await supabase
@@ -221,30 +197,10 @@ export const PATCH: RequestHandler = async ({ locals, params, request }) => {
 // DELETE - Delete template
 // =====================================================
 export const DELETE: RequestHandler = async ({ locals, params }) => {
-	const { supabase, user } = locals;
+	const { supabase } = locals;
 	const { id } = params;
 
-	if (!user) {
-		return error(401, 'Non authentifié');
-	}
-
-	// Get user profile
-	const { data: profile, error: profileError } = await supabase
-		.from('profiles')
-		.select('role')
-		.eq('id', user.id)
-		.single();
-
-	// PGRST116 = pas de profil, et le refus qui suit est légitime. Toute AUTRE
-	// panne produisait le même refus, indiscernable d'un refus mérité.
-	if (profileError && profileError.code !== 'PGRST116') {
-		logger.error('Rôle illisible :', profileError);
-		return error(500, 'Impossible de vérifier les droits');
-	}
-
-	if (!profile) {
-		return error(404, 'Profil non trouvé');
-	}
+	const { user, profile } = await requireAuth(locals);
 
 	// Get existing template
 	const { data: existingTemplate, error: fetchError } = await supabase

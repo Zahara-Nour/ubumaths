@@ -34,12 +34,8 @@ describe('expression selon le contexte', () => {
 		expect(buddyMessageEngine.getExpression('incorrect')).toBe('determined');
 	});
 
-	it('Constance perdue : déterminé aussi (les répliques disent « on repart »)', () => {
-		expect(buddyMessageEngine.getExpression('streak_lost')).toBe('determined');
-	});
-
-	it('retour après une longue absence : triste', () => {
-		expect(buddyMessageEngine.getExpression('long_absence')).toBe('sad');
+	it('retour après une pause : joyeux, jamais triste (R2, 2026-11-12)', () => {
+		expect(buddyMessageEngine.getExpression('return_after_pause')).toBe('happy');
 	});
 });
 

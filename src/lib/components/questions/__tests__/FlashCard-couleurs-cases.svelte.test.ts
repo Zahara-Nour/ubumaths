@@ -21,8 +21,6 @@ function instanceWith(blank: InstanceBlank): QuestionInstance {
 		statement: resolvedMarkdown('Réponds : $\\placeholder[0]{}$'),
 		blanks: [blank],
 		grades: ['6'],
-		theme: 'Test',
-		domain: 'Test',
 		level: 1,
 		generatedAt: new Date().toISOString()
 	} as QuestionInstance;

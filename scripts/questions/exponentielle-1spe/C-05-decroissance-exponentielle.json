@@ -1,11 +1,9 @@
 {
+	"id": "245b4eb1-11fc-497a-b4cd-0a8934719d2c",
 	"title": "Décroissance exponentielle",
 	"description": "Modèle de décroissance : valeur initiale, sens de variation, valeur approchée de N(t₀) arrondie à l'unité",
 	"grades": ["1_SPE"],
-	"theme": "Fonctions",
-	"domain": "Fonction exponentielle",
 	"status": "draft",
-	"subdomain": "Suites et modélisation",
 	"level": 2,
 	"delay": 60,
 	"variations": [

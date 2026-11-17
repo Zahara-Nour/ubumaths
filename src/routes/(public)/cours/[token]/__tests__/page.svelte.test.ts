@@ -62,7 +62,7 @@ function donnees() {
 										title: 'Tables',
 										form: 'flash' as const,
 										questionCount: 2,
-										launchHref: '/automaths/test?categories=abc&mode=flash'
+										launchHref: '/automaths/test?modeles=abc&mode=flash'
 									}
 								}
 							]
@@ -110,7 +110,7 @@ describe('/cours/[token]', () => {
 
 		const liens = hrefs(container as HTMLElement);
 		expect(liens).toContain(`/cours/${JETON}/fiche/${FICHE}`);
-		expect(liens).toContain('/automaths/test?categories=abc&mode=flash');
+		expect(liens).toContain('/automaths/test?modeles=abc&mode=flash');
 		expect(liens).toContain(`/cours/${JETON}/document/doc-1`);
 		expect(liens).toContain(`/cours/${JETON}/document/doc-1?download`);
 		expect(liens).toContain('https://drive.google.com/file/d/abc');

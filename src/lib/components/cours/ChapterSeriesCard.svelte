@@ -8,7 +8,7 @@
 
 	Le lien est calculé côté serveur depuis la série ACTUELLE (Q125) ; s'il
 	manque (composition illisible), on le dit au lieu d'afficher un lien mort.
-	Il porte sa requête (`?categories=…&mode=…`) : d'où le transtypage vers la
+	Il porte sa requête (`?modeles=…&mode=…`) : d'où le transtypage vers la
 	route, comme dans `Header.svelte`.
 
 	@module components/cours/ChapterSeriesCard
@@ -29,7 +29,7 @@
 
 	const FORM_LABELS: Record<ChapterSeries['form'], string> = {
 		flash: 'Flash-cards',
-		interactive: 'Entraînement'
+		interactive: 'Contrôle blanc'
 	};
 
 	let title = $derived(series.title ?? 'Série');

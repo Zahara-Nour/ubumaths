@@ -16,6 +16,11 @@ const config = {
 		},
 		alias: {
 			$tests: './tests'
+		},
+		// Onglet resté ouvert pendant un déploiement : `updated.current` passe à vrai, et le
+		// prochain lien charge la page en entier (`+layout.svelte`, `$lib/utils/app-version`)
+		version: {
+			pollInterval: 5 * 60 * 1000
 		}
 	}
 };

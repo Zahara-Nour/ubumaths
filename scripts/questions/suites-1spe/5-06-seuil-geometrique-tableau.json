@@ -1,10 +1,8 @@
 {
+	"id": "0b686e01-725c-448d-9e10-b295cf9b4128",
 	"title": "Seuil d'une suite géométrique avec un tableau de valeurs",
 	"description": "Plus petit n tel que uₙ > A (ou uₙ < A), lu dans un tableau",
 	"grades": ["1_SPE"],
-	"theme": "Suites",
-	"domain": "Seuil et algorithmes",
-	"subdomain": "Seuil",
 	"level": 2,
 	"status": "draft",
 	"delay": 45,

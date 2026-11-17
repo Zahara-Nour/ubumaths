@@ -1,10 +1,8 @@
 {
+	"id": "0b491d0e-3063-426f-91aa-847b71fa9057",
 	"title": "Calculer un écart",
 	"description": "Calculer l'écart entre deux températures : −3 °C et 4 °C (7 °C) ; −9 °C et −2 °C (7 °C) ; avec des décimaux (−2,5 °C et 6,3 °C)",
 	"grades": ["5"],
-	"theme": "Relatifs",
-	"domain": "Additionner et soustraire",
-	"subdomain": "Problèmes",
 	"level": 2,
 	"delay": 60,
 	"status": "draft",

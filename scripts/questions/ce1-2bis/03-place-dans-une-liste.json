@@ -1,10 +1,8 @@
 {
+	"id": "14dfdd8c-751c-46e1-8dea-6ae9c9ae9bba",
 	"title": "La place d'un nombre ou d'une lettre dans une liste",
 	"description": "Listes de 5 en 5, de 2 en 2, de 10 en 10, l'alphabet : à quelle place est 60 ? P ?",
 	"grades": ["CE1"],
-	"theme": "Entiers",
-	"domain": "Apprivoiser",
-	"subdomain": "Ordinaux",
 	"level": 9,
 	"delay": 45,
 	"status": "draft",

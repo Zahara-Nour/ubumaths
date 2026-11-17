@@ -638,7 +638,8 @@
 					"sous_notions": [
 						"explicite ou par récurrence",
 						"représentation graphique",
-						"sens de variation"
+						"sens de variation",
+						"sommes de termes"
 					],
 					"note": null
 				},
@@ -657,7 +658,7 @@
 				{
 					"nom": "Modèles d'évolution",
 					"niveaux": "1re, Tle, Tle comp.",
-					"sous_notions": ["seuil"],
+					"sous_notions": ["seuil", "emprunt"],
 					"note": null
 				},
 				{
@@ -685,7 +686,7 @@
 				{
 					"nom": "Suites récurrentes",
 					"niveaux": "Tle, Tle comp.",
-					"sous_notions": ["escalier", "point fixe"],
+					"sous_notions": ["escalier", "point fixe", "récurrence linéaire d'ordre 2"],
 					"note": null
 				},
 				{
@@ -888,7 +889,8 @@
 						"intersection de deux droites",
 						"vecteur normal et équation de droite",
 						"équation de cercle",
-						"projeté orthogonal"
+						"projeté orthogonal",
+						"parabole"
 					],
 					"note": null
 				},
@@ -1060,7 +1062,8 @@
 						"absence de mémoire",
 						"densité et aire",
 						"fonction de répartition",
-						"espérance et variance"
+						"espérance et variance",
+						"loi de Poisson"
 					],
 					"note": null
 				},

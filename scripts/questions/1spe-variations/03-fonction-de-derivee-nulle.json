@@ -1,10 +1,8 @@
 {
+	"id": "75b2aa08-1481-4a82-9551-9d9378b3dbb8",
 	"title": "Fonction de dérivée nulle",
 	"description": "f′ nulle sur un intervalle ⟺ f constante : f(p) connaissant f(m), constante cachée (x + a)² − x² − 2ax, équation de la courbe",
 	"grades": ["1_SPE"],
-	"theme": "Fonctions",
-	"domain": "Dérivation",
-	"subdomain": "Variations",
 	"level": 6,
 	"delay": 45,
 	"status": "draft",

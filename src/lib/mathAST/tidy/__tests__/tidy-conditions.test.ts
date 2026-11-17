@@ -46,6 +46,9 @@ describe('la simplification que tidy refuse, avec sa condition', () => {
 		['(x-2)/(x-2)', '1', ['x ≠ 2']],
 		['(2x+1)/(2x+1)', '1', ['x ≠ −1/2']],
 		['(x+1)^2/(x+1)', 'x+1', ['x ≠ −1']],
+		// signes-06 (2026-11-02) : la somme réduite rejoint la base de l'autre côté
+		['(2x+2)/(4(x+1))', '1/2', ['x ≠ −1']],
+		['(0.5x+0.5)/(x+1)', '1/2', ['x ≠ −1']],
 		['x*(1/x)', '1', ['x ≠ 0']],
 		['y/y', '1', ['y ≠ 0']],
 		['(x^2-1)/(x^2-1)', '1', ['x^2−1 ≠ 0']],

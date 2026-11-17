@@ -2,7 +2,7 @@
 dans scripts/questions/1spe-savoir-a/.
 
 Phase 0 validée par David le 2026-11-02 (« je valide » sur les recos, § 23 du journal
-« docs/wip/questions-1spe-progress.md », D29), un point par modèle :
+« docs/archive/wip/questions-1spe-progress.md », D29), un point par modèle :
 
 | # | Point    | Titre                              | Catégorie, niveau                                 |
 | 1 | 1SPE-264 | Dérivée de la fonction carré       | Dérivation › À savoir, 1                          |

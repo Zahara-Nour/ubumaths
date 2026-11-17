@@ -15,6 +15,7 @@
  *   division euclidienne : DEUX cases, N (quotient) et N + 1 (reste), seul N est posé
  * - Bloc ```collection ou ```monnaie à construire (`construire: N`) → UNE case, `case: N`
  *   posé dans le bloc ; droite à placer (```line, `placer: A=3 ; B=7`) → une case par point,
+ *   droite à représenter (```line, `representer: [2, +inf[`) → une case (texte),
  *   N, N + 1…, seul N est posé ; diagramme en barres à construire (```barres, `placer:`) →
  *   une case par barre, de même ; repère à points à placer (```courbe, `placer: A=(2 ; 3)`)
  *   → une case par point, de même (refusé aussi comme option d'un bloc choix)
@@ -23,6 +24,9 @@
  * - Bloc ```figure-de-travail → de même UNE case, jamais notée (l'élève trace pour vérifier)
  * - Bloc ```choix → UNE case (type 'choice'), `case: N` posé dans le bloc ; une case
  *   écrite dans un choix (`?` en formule, `[_]`) est refusée avec un message situé
+ * - Tableau de signes à compléter (```variation à `?`) → une case par cellule cachée,
+ *   N, N + 1… dans l'ordre de lecture du parseur, seul N est posé (`case: N`) ;
+ *   valeur de x : case `math`, signe et marque : case `text`
  *
  * @module questions/generator/assign-blank-indices
  */
@@ -31,14 +35,29 @@ import { parseOperationContent } from '$lib/ubumark/parser/operation-parser';
 import { findFigureBlocks } from '$lib/ubumark/parser/figure-parser';
 import { findBuildCollections } from '$lib/ubumark/parser/collection-parser';
 import { findBuildMonnaies } from '$lib/ubumark/parser/monnaie-parser';
-import { findLinesToPlace } from '$lib/ubumark/parser/number-line-parser';
+import { findLinesToPlace, isLineToRepresent } from '$lib/ubumark/parser/number-line-parser';
 import { findHorlogesToPlace } from '$lib/ubumark/parser/horloge-parser';
 import { findBarsToPlace, findBoxPlotsToPlace } from '$lib/ubumark/parser/stat-chart-parser';
 import { findRangersToPlace } from '$lib/ubumark/parser/ranger-parser';
+import {
+	ASSOCIER_FENCE_MESSAGE,
+	associerItemHasBlock,
+	findAssociersToPlace,
+	parseAssocierContent
+} from '$lib/ubumark/parser/associer-parser';
+import { findTrousToPlace } from '$lib/ubumark/parser/trous-parser';
 import { findPartagesToColorier } from '$lib/ubumark/parser/partage-parser';
-import { findCubesToBuild, findPatronsToBuild } from '$lib/ubumark/parser/espace-parser';
+import {
+	findCubesToBuild,
+	findPatronsToBuild,
+	findSolidesToBuild
+} from '$lib/ubumark/parser/espace-parser';
 import { findCourbesToPlace } from '$lib/ubumark/parser/courbe-parser';
 import { findTrigCirclesToPlace } from '$lib/ubumark/parser/trig-circle-parser';
+import { findTortuesToProgram } from '$lib/ubumark/parser/tortue-parser';
+import { findCalculsToProgram } from '$lib/ubumark/parser/calcul-parser';
+import { findRobotsToProduce } from '$lib/ubumark/parser/robot-parser';
+import { findVariationsToFill } from '$lib/ubumark/parser/variation-table-parser';
 import { NESTED_PREFIX } from '$lib/ubumark/parser/nested-line';
 import { buildCaseCount } from './build-answer';
 import { buildKindName, type BuildKind } from '../types';
@@ -114,6 +133,20 @@ export interface AssignBlankIndicesResult {
 	choiceBlanks?: Record<number, string>;
 	/** Blocs ```choix mal placés, non fermés, ou qui contiennent une case : messages pour l'auteur */
 	choiceErrors?: string[];
+	/**
+	 * Case → texte du tableau à compléter qui la porte (sans `case:`) et rang de sa
+	 * cellule cachée dans `cases` du nœud, pour que le générateur lise la réponse
+	 * attendue. Absent sans tel tableau.
+	 */
+	variationBlanks?: Record<number, VariationBlank>;
+	/** Tableaux à compléter mal placés (liste, citation) : messages pour l'auteur */
+	variationErrors?: string[];
+}
+
+/** Case d'un tableau de signes à compléter : le texte du bloc, le rang de la cellule */
+export interface VariationBlank {
+	source: string;
+	cell: number;
 }
 
 /** Marque d'un bloc ```choix mis à l'abri : début, rang du bloc, fin */
@@ -244,6 +277,18 @@ function choiceBlockErrors(block: MarkedChoiceBlock, caseIndex: number): string[
 	if (findTrigCirclesToPlace(block.body.join('\n')).length > 0) {
 		errors.push(`${prefix} ${buildNestedMessage('trig')}`);
 	}
+	if (findTortuesToProgram(block.body.join('\n')).length > 0) {
+		errors.push(`${prefix} ${buildNestedMessage('tortue')}`);
+	}
+	if (findCalculsToProgram(block.body.join('\n')).length > 0) {
+		errors.push(`${prefix} ${buildNestedMessage('calcul')}`);
+	}
+	if (findRobotsToProduce(block.body.join('\n')).length > 0) {
+		errors.push(`${prefix} ${buildNestedMessage('robot')}`);
+	}
+	if (findVariationsToFill(block.body.join('\n')).length > 0) {
+		errors.push(`${prefix} ${VARIATION_NESTED_MESSAGE}`);
+	}
 	parseChoiceBody(block.body).choices.forEach((choice, index) => {
 		if (choiceHasBlank(choice)) {
 			errors.push(
@@ -351,15 +396,21 @@ const NESTED_BLOCK_NAMES: Record<BuildKind, string> = {
 	barres: 'Un diagramme en barres à construire',
 	'boite-a-moustaches': 'Une boîte à moustaches à construire',
 	ranger: 'Des étiquettes à ranger',
+	associer: 'Des éléments à associer',
+	trous: 'Un texte à trous',
 	partage: 'Une figure à colorier',
 	cubes: 'Un assemblage de cubes à geste',
 	patron: 'Un patron à geste',
 	courbe: 'Un repère à points à placer',
-	trig: 'Un cercle trigonométrique à points à placer'
+	trig: 'Un cercle trigonométrique à points à placer',
+	solide: 'Un solide à geste',
+	tortue: 'Un programme tortue',
+	calcul: 'Un programme de calcul',
+	robot: 'Un robot à produire'
 };
 
 const buildNestedMessage = (kind: BuildKind) =>
-	`${NESTED_BLOCK_NAMES[kind]} ${kind === 'ranger' ? 'doivent' : 'doit'} être au premier niveau de l’énoncé (ni dans une liste, ni dans une citation)`;
+	`${NESTED_BLOCK_NAMES[kind]} ${kind === 'ranger' || kind === 'associer' ? 'doivent' : 'doit'} être au premier niveau de l’énoncé (ni dans une liste, ni dans une citation)`;
 
 /** Bloc `cases: aucune` : opération résolue, rien à remplir */
 function isSolvedOperation(body: string[]): boolean {
@@ -463,6 +514,10 @@ function markBuildBlocks(statement: string): {
 	blocks: BuildBlock[];
 	errors: string[];
 } {
+	const associers = findAssociersToPlace(statement);
+	/** Une courbe dans un élément à associer : le bloc associer la refuse, avec son message */
+	const inAssocier = (index: number) =>
+		associers.some((b) => index > b.startIndex && index < b.endIndex);
 	const found = [
 		...findBuildCollections(statement).map((b) => ({ ...b, kind: 'collection' as const })),
 		...findBuildMonnaies(statement).map((b) => ({ ...b, kind: 'monnaie' as const })),
@@ -474,13 +529,28 @@ function markBuildBlocks(statement: string): {
 			kind: 'boite-a-moustaches' as const
 		})),
 		...findRangersToPlace(statement).map((b) => ({ ...b, kind: 'ranger' as const })),
+		...associers.map((b) => ({ ...b, kind: 'associer' as const })),
+		...findTrousToPlace(statement).map((b) => ({ ...b, kind: 'trous' as const })),
 		...findPartagesToColorier(statement).map((b) => ({ ...b, kind: 'partage' as const })),
 		...findCubesToBuild(statement).map((b) => ({ ...b, kind: 'cubes' as const })),
 		...findPatronsToBuild(statement).map((b) => ({ ...b, kind: 'patron' as const })),
-		...findCourbesToPlace(statement).map((b) => ({ ...b, kind: 'courbe' as const })),
-		...findTrigCirclesToPlace(statement).map((b) => ({ ...b, kind: 'trig' as const }))
+		...findCourbesToPlace(statement)
+			.filter((b) => !inAssocier(b.startIndex))
+			.map((b) => ({ ...b, kind: 'courbe' as const })),
+		...findTrigCirclesToPlace(statement).map((b) => ({ ...b, kind: 'trig' as const })),
+		...findSolidesToBuild(statement).map((b) => ({ ...b, kind: 'solide' as const })),
+		...findTortuesToProgram(statement).map((b) => ({ ...b, kind: 'tortue' as const })),
+		...findCalculsToProgram(statement).map((b) => ({ ...b, kind: 'calcul' as const })),
+		...findRobotsToProduce(statement).map((b) => ({ ...b, kind: 'robot' as const }))
 	].sort((a, b) => a.startIndex - b.startIndex);
 	const errors = found.filter((b) => b.nested).map((b) => buildNestedMessage(b.kind));
+	// Courbe dans un élément d'un bloc fermé par ``` : même message que l'aperçu
+	for (const block of associers) {
+		if (block.nested || block.fence.length > 3) continue;
+		if (parseAssocierContent(block.body.join('\n')).items.some(associerItemHasBlock)) {
+			errors.push(`Des éléments à associer : ${ASSOCIER_FENCE_MESSAGE}`);
+		}
+	}
 	const marked = found.filter((b) => !b.nested);
 	const markAfter = new Set(marked.map((b) => b.startIndex));
 	const out = statement
@@ -493,6 +563,47 @@ function markBuildBlocks(statement: string): {
 			const cases = buildCaseCount(b.kind, source);
 			return { kind: b.kind, source, closed: b.closed, cases };
 		}),
+		errors
+	};
+}
+
+/** Marque provisoire de la première case d'un tableau à compléter */
+const VARIATION_CASE_MARK = '\u0000variation-case\u0000';
+
+const VARIATION_NESTED_MESSAGE =
+	'Un tableau de signes à compléter doit être au premier niveau de l’énoncé (ni dans une liste, ni dans une citation)';
+
+/** Tableau à compléter, et ce que ses cases sont */
+interface VariationBlock {
+	source: string;
+	closed: boolean;
+	/** Type de chaque case ; tableau refusé par le parseur : une case (refusé au générateur) */
+	types: AssignedBlankType[];
+}
+
+/**
+ * Repère les tableaux de signes à compléter : une marque est posée après la fence de
+ * chacun. Délimités comme leur parseur (`findVariationsToFill`, lignes vides comprises).
+ */
+function markVariationBlocks(statement: string): {
+	statement: string;
+	blocks: VariationBlock[];
+	errors: string[];
+} {
+	const found = findVariationsToFill(statement);
+	const errors = found.filter((b) => b.nested).map(() => VARIATION_NESTED_MESSAGE);
+	const marked = found.filter((b) => !b.nested);
+	const markAfter = new Set(marked.map((b) => b.startIndex));
+	const out = statement
+		.split('\n')
+		.flatMap((line, i) => (markAfter.has(i) ? [line, VARIATION_CASE_MARK] : [line]));
+	return {
+		statement: out.join('\n'),
+		blocks: marked.map((b) => ({
+			source: b.body.join('\n'),
+			closed: b.closed,
+			types: b.node?.cases?.map((cell) => (cell.kind === 'valeur' ? 'math' : 'text')) ?? ['text']
+		})),
 		errors
 	};
 }
@@ -537,7 +648,10 @@ export function assignBlankIndices(
 	const workFigureBlanks: Record<number, string> = {};
 	const operations = markCaseBlocks(constructions.statement, OPERATION_BLOCKS);
 	const builds = markBuildBlocks(operations.statement);
-	const statement = builds.statement;
+	const variations = markVariationBlocks(builds.statement);
+	const statement = variations.statement;
+	const variationBlanks: Record<number, VariationBlank> = {};
+	let variationCount = 0;
 	let operationCount = 0;
 	const buildBlanks: Record<number, BuildBlank> = {};
 	let buildCount = 0;
@@ -659,29 +773,53 @@ export function assignBlankIndices(
 								build.kind === 'barres' ||
 								build.kind === 'boite-a-moustaches' ||
 								build.kind === 'ranger' ||
+								build.kind === 'associer' ||
+								build.kind === 'trous' ||
 								build.kind === 'courbe' ||
 								build.kind === 'trig') && {
 								point
 							})
 						};
 						counter++;
-						// Horloge : la réponse est une heure (`9 h 25`), étiquettes : une position
+						// Droite à représenter : un intervalle (`[2 ; +∞[`) ; horloge : la réponse est une heure (`9 h 25`), étiquettes : une position
 						// (`2`), figure à colorier : des rangs (`1, 4`), assemblage de cubes : un
 						// quadrillage ou des hauteurs, patron : des faces ou un quadrillage,
-						// point d'un repère : ses coordonnées (`2;3`) ; jamais lues comme un calcul
+						// point d'un repère : ses coordonnées (`2;3`), vecteur sur un solide : deux
+						// noms de points (`A/G`) ; jamais lues comme un calcul
 						blankTypes.push(
-							build.kind === 'horloge' ||
+							(build.kind === 'line' && isLineToRepresent(build.source)) ||
+								build.kind === 'horloge' ||
 								build.kind === 'courbe' ||
 								build.kind === 'trig' ||
 								build.kind === 'ranger' ||
+								build.kind === 'associer' ||
+								build.kind === 'trous' ||
 								build.kind === 'partage' ||
 								build.kind === 'cubes' ||
-								build.kind === 'patron'
+								build.kind === 'patron' ||
+								build.kind === 'solide' ||
+								build.kind === 'tortue' ||
+								build.kind === 'calcul' ||
+								build.kind === 'robot'
 								? 'text'
 								: 'math'
 						);
 					}
 					i += BUILD_CASE_MARK.length;
+				} else if (text.startsWith(VARIATION_CASE_MARK, i)) {
+					newText += `case: ${counter}`;
+					const block = variations.blocks[variationCount++];
+					if (!block.closed) {
+						variations.errors.push(
+							`Case ${counter + 1} (tableau de signes) : bloc non fermé (\`\`\` manquant après la dernière ligne)`
+						);
+					}
+					block.types.forEach((type, cell) => {
+						variationBlanks[counter] = { source: block.source, cell };
+						counter++;
+						blankTypes.push(type);
+					});
+					i += VARIATION_CASE_MARK.length;
 				} else if (text[i] === '[' && text[i + 1] === '_' && text[i + 2] === ']') {
 					newText += `{{blank:${counter}}}`;
 					counter++;
@@ -711,7 +849,9 @@ export function assignBlankIndices(
 		...(Object.keys(workFigureBlanks).length > 0 && { workFigureBlanks }),
 		...(constructions.errors.length > 0 && { constructionErrors: constructions.errors }),
 		...(choices.blocks.length > 0 && { choiceBlanks }),
-		...(choiceErrors.length > 0 && { choiceErrors })
+		...(choiceErrors.length > 0 && { choiceErrors }),
+		...(variationCount > 0 && { variationBlanks }),
+		...(variations.errors.length > 0 && { variationErrors: variations.errors })
 	};
 }
 

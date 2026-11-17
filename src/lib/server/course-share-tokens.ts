@@ -30,7 +30,8 @@ import {
 	type JournalShareToken,
 	type PublicWorksheet
 } from '$lib/server/journal-share-tokens';
-import { buildSeriesLink, seriesCategoriesSchema, totalQuestions } from '$lib/validation/series';
+import { buildSeriesLink, seriesItemsSchema, totalQuestions } from '$lib/validation/series';
+import { readStoredSeriesMany } from '$lib/server/series-lines';
 import { createServerLogger } from '$lib/utils/logger';
 
 const logger = createServerLogger('server/course-share-tokens');
@@ -108,9 +109,9 @@ const publicSeriesSchema = z.object({
 	series_id: z.string(),
 	title: z.string(),
 	description: z.string().nullable(),
-	// Validée plus loin, série par série : une composition abîmée ne doit pas
-	// rendre tout le cours illisible.
-	categories: z.unknown(),
+	// Relue plus loin (`resolveCourseShareToken`), série par série : une
+	// composition abîmée ne doit pas rendre tout le cours illisible.
+	items: z.unknown(),
 	form: z.enum(['flash', 'interactive']),
 	...placement
 });
@@ -242,11 +243,9 @@ export function safeExternalUrl(raw: string | null): string | null {
 }
 
 function toPublicSeries(s: PublicCourseChapter['series'][number]): PublicCourseSeries {
-	const categories = seriesCategoriesSchema.safeParse(s.categories);
-	if (!categories.success) {
-		logger.error('[course-share] Composition illisible pour la série', s.series_id);
-	}
-	const lisible = categories.success ? categories.data : null;
+	// `items` a été relue dans la nouvelle forme par `resolveCourseShareToken`
+	const items = seriesItemsSchema.safeParse(s.items);
+	const lisible = items.success ? items.data : null;
 	return {
 		title: s.title,
 		form: s.form,
@@ -475,6 +474,12 @@ export async function resolveCourseShareToken(
 		logger.error('[course-share] cours de forme inattendue:', parsed.error.issues[0]);
 		return null;
 	}
+
+	// Compositions relues dans la nouvelle forme (ADR 0035) ; une composition
+	// illisible laisse la série sans lien, pas le cours illisible
+	const allSeries = parsed.data.chapters.flatMap((chapter) => chapter.series);
+	const read = readStoredSeriesMany(allSeries.map((s) => ({ id: s.id, items: s.items })));
+	for (const s of allSeries) s.items = read.get(s.id) ?? null;
 	return parsed.data;
 }
 

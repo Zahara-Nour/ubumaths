@@ -1,10 +1,8 @@
 {
+	"id": "1c977b76-1bdc-4d6b-ba1d-222743866b11",
 	"title": "Comparer deux fractions de dénominateurs différents",
 	"description": "Écrire deux fractions avec le même dénominateur pour les comparer : l'un multiple de l'autre (7/4 et 20/12), ou un multiple commun (7/4 et 17/10 ; 13/2 et 20/3)",
 	"grades": ["CM2"],
-	"theme": "Fractions",
-	"domain": "Apprivoiser",
-	"subdomain": "Comparer",
 	"level": 16,
 	"delay": 30,
 	"status": "draft",

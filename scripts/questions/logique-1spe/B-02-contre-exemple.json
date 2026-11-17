@@ -1,10 +1,8 @@
 {
+	"id": "f98164b1-031d-4ff9-8d16-8c97ebe485f6",
 	"title": "Donner un contre-exemple",
 	"description": "Prouver qu'une proposition universelle est fausse en donnant un contre-exemple ; tout contre-exemple valable est accepté",
 	"grades": ["1_SPE"],
-	"theme": "Logique",
-	"domain": "Logique et raisonnement",
-	"subdomain": "Connecteurs et contre-exemples",
 	"level": 2,
 	"status": "draft",
 	"delay": 90,

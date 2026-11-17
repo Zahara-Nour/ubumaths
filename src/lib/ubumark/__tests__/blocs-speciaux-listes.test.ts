@@ -33,7 +33,8 @@ describe('Q66 dans une liste — un ``` lointain ne ferme pas un bloc séparé p
 		['cubes', 'espace', ['```cubes', 'hauteurs: 2 1']],
 		['operation', 'operation', ['```operation', 'calcul: 45 + 37']],
 		['collection', 'collection', ['```collection', 'unités: 9']],
-		['monnaie', 'monnaie', ['```monnaie', 'billets: 10']]
+		['monnaie', 'monnaie', ['```monnaie', 'billets: 10']],
+		['schema-barres', 'schema-barres', ['```schema-barres', 'Or : ? (4)']]
 	])('%s : le bloc, puis le texte intermédiaire en paragraphe', (_, type, block) => {
 		const nodes = inItem([...block, '', 'Voici le texte qui suit le bloc', '', '```']);
 
@@ -41,6 +42,30 @@ describe('Q66 dans une liste — un ``` lointain ne ferme pas un bloc séparé p
 		expect(paragraphWith(nodes, 'Voici le texte qui suit le bloc')).toBeDefined();
 		const codes = nodes.filter((n) => n.type === 'code-block');
 		expect(JSON.stringify(codes)).not.toContain('Voici le texte');
+	});
+});
+
+describe('droite graduée FERMÉE dans un item de liste (chantier automatismes-1spe, lot 4)', () => {
+	it('une droite, pas un bloc de code brut (« start: … » affiché tel quel)', () => {
+		const nodes = inItem([
+			'```line',
+			'start: -3',
+			'end: -1',
+			'step: 1/10',
+			'major: 10',
+			'points: A=-11/10',
+			'```'
+		]);
+
+		expect(nodes.map((n) => n.type)).toEqual(['paragraph', 'number-line']);
+		expect(nodes.some((n) => n.type === 'code-block')).toBe(false);
+	});
+
+	it('droite illisible : sa source en bloc de code, rien de perdu (Q64)', () => {
+		const nodes = inItem(['```line', 'start: 5', 'end: 1', '```']);
+
+		const code = nodes.find((n) => n.type === 'code-block') as { code: string } | undefined;
+		expect(code?.code).toContain('start: 5');
 	});
 });
 
@@ -113,6 +138,7 @@ describe('bloc ouvert sur la ligne de l’item', () => {
 		['cubes', 'espace', ['- ```cubes', '  hauteurs: 2 1', '  ```']],
 		['horloge', 'horloge', ['- ```horloge', '  heure: 9 h', '  ```']],
 		['partage', 'partage', ['1. ```partage', '   forme: bande 8', '   ```']],
+		['schema-barres', 'schema-barres', ['- ```schema-barres', '  Or : ? (4)', '  ```']],
 		['solide', 'espace', ['- ```solide', '  forme: pyramide carree 4 3', '  ```']],
 		['python', 'code-block', ['- ```python', '  print(1)', '  ```']]
 	])('%s : un seul nœud, sans erreur', (_, type, lines) => {

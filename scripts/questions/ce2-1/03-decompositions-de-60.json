@@ -1,10 +1,8 @@
 {
+	"id": "2cdbac43-8e03-461b-8307-60232192f890",
 	"title": "Les décompositions de $60$",
 	"description": "2 × 30, 3 × 20, 4 × 15, 5 × 12, 6 × 10",
 	"grades": ["CE2"],
-	"theme": "Entiers",
-	"domain": "Multiplier",
-	"subdomain": "Décomposition",
 	"level": 2,
 	"delay": 20,
 	"status": "draft",

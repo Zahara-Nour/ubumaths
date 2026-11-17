@@ -1,6 +1,7 @@
 /**
  * Résultats d'une évaluation (professeur) : les séances sont lues par
- * `test_sessions.evaluation_id`.
+ * `test_sessions.evaluation_id`. Le bilan par question et par notion porte sur
+ * les élèves du tableau (mode test compris) et ne fait jamais échouer la page.
  */
 
 import { error } from '@sveltejs/kit';
@@ -12,6 +13,7 @@ import {
 	getEvaluation,
 	getEvaluationResults
 } from '$lib/server/evaluations';
+import { getEvaluationBreakdown } from '$lib/server/evaluation-breakdown';
 import { getTeacherTestMode } from '$lib/server/test-mode';
 import { validateUuidParam } from '$lib/server/validation/params';
 
@@ -30,10 +32,17 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		const isTestMode = await getTeacherTestMode(user.id, locals.supabase);
 		const results = await getEvaluationResults(locals.supabase, evaluation, isTestMode);
 
+		const breakdown = await getEvaluationBreakdown(
+			locals.supabase,
+			evaluation,
+			results.map((r) => r.student_id)
+		);
+
 		return {
 			evaluation,
 			results,
-			statistics: computeEvaluationStatistics(evaluation.id, results)
+			statistics: computeEvaluationStatistics(evaluation.id, results),
+			breakdown
 		};
 	} catch (e) {
 		if (e instanceof EvaluationError) throw error(e.status, e.message);

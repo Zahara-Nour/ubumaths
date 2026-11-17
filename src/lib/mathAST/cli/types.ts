@@ -54,8 +54,12 @@ export type ErrorCode =
 	| 'INEQUALITY_UNSOLVED'
 	/** Équation lue mais pas résolue (aucun solveur, ou un paramètre) : message en français, destiné à l'élève */
 	| 'EQUATION_UNSOLVED'
+	/** Résolution qui dépend d'un paramètre non posé (V57) : message en français, destiné à l'élève */
+	| 'PARAMETER_DEPENDS'
 	/** `.eval` : valeur interdite (dénominateur nul, racine d'un négatif…) — message en français, destiné à l'élève */
-	| 'VALUE_FORBIDDEN';
+	| 'VALUE_FORBIDDEN'
+	/** Comparaison que le calcul ne tranche pas (`2 ≈ 2`, `x > 1` sans valeur) : message en français, destiné à l'élève */
+	| 'RELATION_UNDECIDABLE';
 
 /**
  * Structured error for command execution
@@ -114,9 +118,9 @@ export interface CommandResult {
 	 * l'Atelier, `pnpm math` et la calculatrice montrent tous (chantier
 	 * `registre-reference`, D1) ; le corpus `tests/fixtures/mathast/registre-corpus.ts`
 	 * en est le contrat. Absente : la commande n'a pas encore de réponse déclarée.
-	 * ⚠️ Défini et jugé en mode exact seulement (corpus, lot 1) : le mode décimal
-	 * (`.decimal`), l'égalité tapée seule (`2=2`, pas de champ) et l'expression
-	 * non évaluée (`x+1` recopiée) seront tranchés avec le lot 2 du corpus.
+	 * Lot 2 : exacte même en mode décimal (B), `\text{vrai}` / `\text{faux}` pour
+	 * une égalité tapée seule (C), forme rangée d'une expression à lettres (D),
+	 * écriture tapée pour un résultat exact trop long (`exactTooLong`).
 	 */
 	readonly answer?: string;
 	// Toggle support for exact/decimal display (like eval results)

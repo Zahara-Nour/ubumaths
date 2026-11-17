@@ -25,7 +25,12 @@
 	import { readContentLocale } from '../content-locale';
 	import { readCapitalPairs } from '../content-capital-pairs';
 	import { readDigitGrouping } from '../content-digit-grouping';
-	import { isRefusedRestrictedFormula, readRestrictedRendering } from '../restricted-rendering';
+	import {
+		hasUnsafeMathCommand,
+		isRefusedRestrictedFormula,
+		readProjectMediaOnly,
+		readRestrictedRendering
+	} from '../restricted-rendering';
 	import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
 
 	interface Props {
@@ -63,8 +68,13 @@
 	// `expression` d'abord : hors bornes, `latex` n'est jamais calculé (`$derived`
 	// paresseux) — sa conversion lèverait sur une entrée géante.
 	const isRestricted = readRestrictedRendering();
+	// Cahier de texte (lecteurs anonymes du lien public, décision du 2026-11-08) : une
+	// commande à attributs ferait charger une adresse choisie — texte, comme au chat
+	const isProjectMediaOnly = readProjectMediaOnly();
 	let unsafe = $derived(
-		isRestricted() && (isRefusedRestrictedFormula(expression) || isRefusedRestrictedFormula(latex))
+		(isRestricted() &&
+			(isRefusedRestrictedFormula(expression) || isRefusedRestrictedFormula(latex))) ||
+			(isProjectMediaOnly() && (hasUnsafeMathCommand(expression) || hasUnsafeMathCommand(latex)))
 	);
 </script>
 

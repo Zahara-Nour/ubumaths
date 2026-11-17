@@ -52,6 +52,10 @@ const CUSTOM_PATTERNS: readonly RegExp[] = [
 	// l'autre ne doit passer pour une grandeur. `·`, `⋅` et `×` : le produit
 	// d'unités que lit le parseur maison (`3[m⋅s^-1]`, 2026-10-20).
 	/[\d\w)]\s*\[[\p{L}°€][\p{L}\p{N}°€^/*.·⋅×-]*\]/u,
+	// Le signe du produit tapé tel quel (`2·x`, `3×4`) : le parseur maison le
+	// lit `*` (décision de David, 2026-10-20) ; le parseur LaTeX y voyait une
+	// lettre (`.dériver 2·x^2` → `4x·`, chantier registre-reference, 2026-11-03)
+	/[·⋅×]/u,
 	// Inline division: :/
 	/:\/(?![/])/,
 	// nth root: sqrt[3](x)

@@ -1,10 +1,8 @@
 {
+	"id": "7407f328-e770-49da-8bc8-38cdf6081b6d",
 	"title": "La courbe de la fonction carré",
 	"description": "La courbe de la fonction carré : la reconnaître parmi quatre tracés (−x², x² + c, droite), compléter son tableau de valeurs, dire si un point est dessus",
 	"grades": ["3"],
-	"theme": "Fonctions",
-	"domain": "Fonction carré",
-	"subdomain": "Courbe",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",
@@ -83,7 +81,7 @@
 				"steps": [
 					"$A$ est sur la courbe si son ordonnée est le **carré** de son abscisse.",
 					"$${{if:n<0|({{n}})|{{n}}}}^2 = {{eval:(n)^2}}$$",
-					"{{if:t==0|L'ordonnée de $A$ vaut bien ${{eval:(n)^2}}$ : \\textcolor{{{color:primary.0}}}{\\text{oui}}, $A$ est sur la courbe.|L'ordonnée de $A$ est ${{b}}$, et non ${{eval:(n)^2}}$ : \\textcolor{{{color:primary.0}}}{\\text{non}}, $A$ n'est pas sur la courbe.}}"
+					"{{if:t==0|L'ordonnée de $A$ vaut bien ${{eval:(n)^2}}$ : $\\textcolor{{{color:primary.0}}}{\\text{oui}}$, $A$ est sur la courbe.|L'ordonnée de $A$ est ${{b}}$, et non ${{eval:(n)^2}}$ : $\\textcolor{{{color:primary.0}}}{\\text{non}}$, $A$ n'est pas sur la courbe.}}"
 				]
 			}
 		}

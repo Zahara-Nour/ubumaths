@@ -1,6 +1,6 @@
 /**
  * Une grandeur écrite dans un énoncé, de la notation jusqu'aux trois sorties
- * (2026-09-24) : écran (MathLive), export `.tex`, PDF (Typst).
+ * (2026-09-24) : écran (MathLive), PDF (Typst). (L'export `.tex` a été retiré, M8.)
  *
  * Avant : `~3[m.s^{-1}]~` était une erreur de parseur ; `~2[cm]~` s'affichait
  * « \unitcm » en rouge à l'écran, faisait échouer l'export `.tex` (siunitx
@@ -10,7 +10,6 @@
 import { describe, it, expect } from 'vitest';
 import { convertLatexToMarkup } from 'mathlive/ssr';
 import { parseMarkdown } from '../../parser/markdown-parser';
-import { generateLatex } from '../latex-generator';
 import { generateTypst } from '../typst-generator';
 import { expressionToLatex } from '$lib/components/markdown/utils/math-utils';
 
@@ -32,16 +31,6 @@ describe('écran — expressionToLatex rend un LaTeX que MathLive affiche', () =
 		const latex = expressionToLatex('3[m s^-1]', 'custom');
 		expect(latex).toContain('\\textcolor{red}');
 		expect(latex).toMatch(/Space inside a unit/);
-	});
-});
-
-describe('export .tex', () => {
-	it('ne contient plus aucune commande \\unit', () => {
-		const tex = generateLatex(parseMarkdown(SOURCE), { includePreamble: false });
-		expect(tex).not.toContain('\\unit');
-		expect(tex).toContain('\\mathrm{m}\\cdot\\mathrm{s}^{-1}');
-		expect(tex).toContain('\\mathrm{km}/\\mathrm{h}');
-		expect(tex).toContain('2~\\mathrm{cm}');
 	});
 });
 

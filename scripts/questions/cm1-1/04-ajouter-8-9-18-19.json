@@ -1,10 +1,8 @@
 {
+	"id": "01729e6e-7fe0-4708-a130-236faf9bd1f3",
 	"title": "Ajouter $8$, $9$, $18$, $19$, $28$, $29$, $38$ ou $39$",
 	"description": "Ajouter la dizaine au-dessus, puis enlever 1 ou 2 : 57 + 9, 57 + 29, 347 + 28",
 	"grades": ["CM1"],
-	"theme": "Entiers",
-	"domain": "Additionner",
-	"subdomain": "Somme astucieuse",
 	"level": 11,
 	"delay": 30,
 	"status": "draft",

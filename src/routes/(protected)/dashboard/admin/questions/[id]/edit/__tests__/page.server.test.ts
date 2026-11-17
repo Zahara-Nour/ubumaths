@@ -73,6 +73,11 @@ async function loadWith(nodeId: string | null, tags: unknown[]) {
 			case 'question_template_points':
 				return { data: tags };
 			case 'classification_nodes':
+				// Lecture de tout l'arbre (sans `in`) : une seule page, puis une page vide
+				if (!calls.some((c) => c.method === 'in')) {
+					const from = calls.find((c) => c.method === 'range')?.args[0];
+					return { data: from === 0 ? NODES : [] };
+				}
 				return { data: NODES.filter((n) => idsIn(calls).includes(n.id)) };
 			case 'curriculum_points':
 				return { data: POINTS.filter((p) => idsIn(calls).includes(p.node_id)) };
@@ -164,6 +169,11 @@ describe('édition d’un modèle — fiche du modèle (version courte)', () => 
 	it('le chemin dans l’arbre, de la branche au nœud du modèle', async () => {
 		const { result } = await loadWith('sous-notion', []);
 		expect(result.factSheet.path?.map((n) => n.name)).toEqual(['Nombres', 'Fractions', 'Addition']);
+	});
+
+	it('rend l’arbre des notions pour le champ « Rangé dans »', async () => {
+		const { result } = await loadWith('sous-notion', []);
+		expect(result.nodes.map((n) => n.id)).toEqual(NODES.map((n) => n.id));
 	});
 
 	it('modèle sans nœud : pas de chemin', async () => {

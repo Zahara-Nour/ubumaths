@@ -1,10 +1,8 @@
 {
+	"id": "dbd5debf-38d2-48f3-ae13-05701f5b09fc",
 	"title": "Écrire cos, sin ou tan d'un angle",
 	"description": "Écrire le cosinus, le sinus ou la tangente d'un angle aigu d'un triangle rectangle (cos B = AB/BC) : angle en B, puis l'autre angle aigu",
 	"grades": ["3"],
-	"theme": "Géométrie",
-	"domain": "Trigonométrie",
-	"subdomain": "Lignes trigonométriques",
 	"level": 1,
 	"delay": 45,
 	"status": "draft",

@@ -4,7 +4,7 @@
  * Removes a single function binding from the evaluation state.
  */
 
-import chalk from 'chalk';
+import { colors } from '../core/terminal-colors';
 import { BaseCommand } from './base-command';
 import type { CommandContext, CommandResult } from '../types';
 import { removeFunctionBinding, hasFunction } from '../core/eval-state';
@@ -89,7 +89,7 @@ export class UndefCommand extends BaseCommand {
 		// Remove the function binding
 		removeFunctionBinding(ctx.evalState, funcName);
 
-		const output = chalk.green('Removed function:') + ' ' + chalk.bold(funcName);
+		const output = colors.green('Removed function:') + ' ' + colors.bold(funcName);
 
 		return {
 			success: true,

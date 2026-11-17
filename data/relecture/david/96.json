@@ -6,12 +6,9 @@
 	"template": {
 		"delay": 10,
 		"level": 1,
-		"theme": "Entiers",
 		"title": "Calculer une différence (résultat positif)",
-		"domain": "Soustraire",
 		"grades": ["CP"],
 		"status": "draft",
-		"subdomain": "Différence",
 		"variations": [
 			{
 				"blanks": [

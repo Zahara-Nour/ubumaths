@@ -3,28 +3,27 @@
 	=========================================================
 
 	La séance de révision d'un élève connecté passe par la base ; ici, les cartes
-	sont les 4 questions de la page et rien n'est enregistré. Chaque bouton montre
-	la vraie prochaine date d'une carte neuve, calculée par FSRS (PR 6g).
+	sont les 4 questions de la page et rien n'est enregistré. Chacun des deux
+	boutons montre la vraie prochaine date d'une carte neuve, calculée par FSRS (PR 6g).
 -->
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import { Progress } from '$lib/components/ui/progress';
 	import FlashCard from '$lib/components/questions/FlashCard.svelte';
-	import FSRSButtons from '$lib/components/srs/FSRSButtons.svelte';
+	import SelfAssessButtons from '$lib/components/questions/SelfAssessButtons.svelte';
 	import { RotateCcw } from '@lucide/svelte';
 	import { demoInstances, firstReviewIntervals } from './questions';
 
 	// Constantes
-	const GRADE_LABELS = ['Encore', 'Difficile', 'Bien', 'Facile'] as const;
 	const instances = demoInstances();
 	const intervals = firstReviewIntervals();
 
 	// Variables
 	let position = $state(0);
 	let flipped = $state(false);
-	// Note donnée à la carte courante (1 à 4), en attente de « Carte suivante »
-	let grade = $state<1 | 2 | 3 | 4 | null>(null);
+	// Auto-évaluation de la carte courante, en attente de « Carte suivante »
+	let succeeded = $state<boolean | null>(null);
 
 	let finished = $derived(position >= instances.length);
 	let progressPercent = $derived((position / instances.length) * 100);
@@ -34,20 +33,20 @@
 		return days > 1 ? `dans ${days} jours` : 'demain';
 	}
 
-	function handleGrade(value: 1 | 2 | 3 | 4) {
-		grade = value;
+	function handleAssess(value: boolean) {
+		succeeded = value;
 	}
 
 	function next() {
 		position += 1;
 		flipped = false;
-		grade = null;
+		succeeded = null;
 	}
 
 	function restart() {
 		position = 0;
 		flipped = false;
-		grade = null;
+		succeeded = null;
 	}
 </script>
 
@@ -80,19 +79,23 @@
 			/>
 		{/key}
 
-		{#if grade !== null}
+		{#if succeeded !== null}
 			<div class="space-y-4 text-center" role="status">
 				<p>
-					« {GRADE_LABELS[grade - 1]} » : cette carte reviendra
-					<strong>{daysLabel(intervals[grade - 1])}</strong>.
+					« {succeeded ? 'Réussi' : 'Pas réussi'} » : cette carte reviendra
+					<strong>{daysLabel(succeeded ? intervals.succeeded : intervals.missed)}</strong>.
 				</p>
 				<Button onclick={next}>Carte suivante</Button>
 			</div>
 		{:else if flipped}
-			<FSRSButtons onGrade={handleGrade} showIntervals {intervals} />
+			<SelfAssessButtons
+				onAssess={handleAssess}
+				missedHint={daysLabel(intervals.missed)}
+				succeededHint={daysLabel(intervals.succeeded)}
+			/>
 		{:else}
 			<p class="text-center text-sm text-muted-foreground">
-				Retournez la carte pour voir la correction, puis dites comment ça s'est passé.
+				Retournez la carte pour voir la correction, puis dites si vous aviez réussi.
 			</p>
 		{/if}
 	</div>

@@ -34,9 +34,6 @@
 			}
 		],
 		"grades": ["5"],
-		"theme": "Relatifs",
-		"domain": "Additionner et soustraire",
-		"subdomain": "Sommes",
 		"level": 3,
 		"status": "draft",
 		"delay": 20,

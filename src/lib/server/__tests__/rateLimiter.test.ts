@@ -46,7 +46,8 @@ import {
 	checkNotificationDeleteRateLimit,
 	checkElevationRateLimitByIP,
 	checkElevationRateLimitByEmail,
-	checkChildSignupRateLimitByClass
+	checkChildSignupRateLimitByClass,
+	checkEndpointRateLimit
 } from '../rateLimiter';
 
 // ============================================================================
@@ -1309,6 +1310,31 @@ describe('Rate Limiter (Database-backed)', () => {
 				expect((await checkElevationRateLimitByEmail('admin@example.com')).allowed).toBe(true);
 			}
 			expect((await checkElevationRateLimitByEmail('admin@example.com')).allowed).toBe(false);
+		});
+	});
+
+	// T8 : les gardes des endpoints (ex-limiteur en mémoire) comptent en base.
+	describe('Gardes des endpoints (checkEndpointRateLimit)', () => {
+		it('laisse passer jusqu’à la limite, puis refuse avec le délai restant', async () => {
+			for (let i = 0; i < 3; i++) {
+				expect((await checkEndpointRateLimit('search:eleve-1', 3, 60)).allowed).toBe(true);
+			}
+			const blocked = await checkEndpointRateLimit('search:eleve-1', 3, 60);
+			expect(blocked.allowed).toBe(false);
+			expect(blocked.message).toBe('Trop de requêtes.');
+			expect(blocked.retryAfter).toBeGreaterThan(0);
+			expect(blocked.retryAfter).toBeLessThanOrEqual(60);
+			expect(rateLimits.get('search:eleve-1')?.count).toBe(3);
+		});
+
+		it('chaque clé a son propre seau', async () => {
+			await checkEndpointRateLimit('search:eleve-1', 1, 60);
+			expect((await checkEndpointRateLimit('search:eleve-2', 1, 60)).allowed).toBe(true);
+		});
+
+		it.each(['error', 'throw'] as const)('base en panne (%s) : laisse passer', async (mode) => {
+			rpcFailure = mode;
+			expect((await checkEndpointRateLimit('search:eleve-1', 1, 60)).allowed).toBe(true);
 		});
 	});
 

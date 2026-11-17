@@ -34,6 +34,11 @@ const ecriture = vi.hoisted(() => ({
 	appels: [] as Array<{ table: string; valeurs: unknown; id: unknown }>
 }));
 
+// Garde commune : session/profil lus dans `locals` (cf. helper)
+vi.mock('$lib/server/middleware/auth', async (importActual) =>
+	(await import('$tests/helpers/garde-auth-locals')).gardeAuthDepuisLocals(importActual)
+);
+
 vi.mock('$lib/server/serviceRoleClient', () => ({
 	createServiceRoleClient: () => ({
 		from: (table: string) => {
@@ -146,7 +151,7 @@ describe('DELETE /api/moderation/messages/[id] - Authentication & Authorization'
 		} catch (err: unknown) {
 			const error = err as { status: number; body: { message: string } };
 			expect(error.status).toBe(401);
-			expect(error.body.message).toBe('Not authenticated');
+			expect(error.body.message).toBe('Non autorisé - Authentification requise');
 		}
 	});
 
@@ -173,7 +178,7 @@ describe('DELETE /api/moderation/messages/[id] - Authentication & Authorization'
 		} catch (err: unknown) {
 			const error = err as { status: number; body: { message: string } };
 			expect(error.status).toBe(403);
-			expect(error.body.message).toBe('Only teachers and admins can delete messages');
+			expect(error.body.message).toBe('Interdit - Enseignants, Administrateurs uniquement');
 		}
 	});
 

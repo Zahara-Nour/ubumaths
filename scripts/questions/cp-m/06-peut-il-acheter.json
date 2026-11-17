@@ -1,10 +1,8 @@
 {
+	"id": "b81c8cf4-85ad-4470-bb0f-7191932c3c57",
 	"title": "Peut-il acheter ?",
 	"description": "Comparer l'argent qu'on a au prix d'un objet ; une variation tombe pile sur le prix",
 	"grades": ["CP"],
-	"theme": "Grandeurs",
-	"domain": "Monnaie",
-	"subdomain": "Pièces et billets",
 	"level": 5,
 	"delay": 45,
 	"status": "draft",

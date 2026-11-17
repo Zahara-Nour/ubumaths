@@ -13,13 +13,20 @@
  *    les déplie (#339 : 14 tests verts sur une action morte).
  */
 
-import { describe, it, expect, afterEach } from 'vitest';
+import { beforeAll, describe, it, expect, afterEach } from 'vitest';
 import { mount, unmount, tick } from 'svelte';
 import { convertLatexToMarkup } from 'mathlive';
 import { Atelier } from '../atelier.svelte';
 import { CalcDesk } from '../desk.svelte';
 import { simplifySteps } from '../simplify-steps';
 import CalculView from '$lib/components/atelier/CalculView.svelte';
+import { stepsCorrection } from '../steps-loader';
+
+// Le composant des étapes se charge au premier dépliage : chargé d'avance, le
+// rendu se lit dès le clic (le chargement a son test : StepsOnDemand).
+beforeAll(async () => {
+	await stepsCorrection.load();
+});
 
 /** Le marqueur que MathLive pose sur ce qu'il n'a pas su composer. */
 const ERROR_MARKER = 'ML__error';

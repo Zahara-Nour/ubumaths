@@ -53,8 +53,6 @@ describe('jugement sans registre', () => {
 			templateId: 't',
 			statement: '',
 			grades: ['CP'],
-			theme: 'T',
-			domain: 'D',
 			level: 1,
 			blanks: [
 				{

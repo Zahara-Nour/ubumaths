@@ -1,10 +1,8 @@
 {
+	"id": "2ab49a6f-2fc4-4583-9cbb-46ace580c019",
 	"title": "Résoudre une équation produit nul",
 	"description": "Résoudre une équation produit nul : (x − 3)(x + 5) = 0, (2x − 3)(5x + 7) = 0, coefficients décimaux (2,5x − 7)(8x − 9,6) = 0, x(3x − 5) = 0, puis factoriser d'abord (x + 2)(3x − 1) + (x + 2)(x + 4) = 0 ; ensemble des solutions écrit",
 	"grades": ["3"],
-	"theme": "Calcul littéral",
-	"domain": "Equations",
-	"subdomain": "Produit nul",
 	"level": 1,
 	"delay": 90,
 	"status": "draft",

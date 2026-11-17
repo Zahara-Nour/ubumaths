@@ -6,7 +6,7 @@
 	cartes la montrent telle que la lisent trois usages réels, chacun par son
 	vrai moteur d'affichage :
 	- message privé au professeur : JSON → `RestrictedRichText` (`/messages/[id]`) ;
-	- cahier de texte : HTML → `transformMathHtml` + liens de ressources
+	- cahier de texte : markdown (ubumark) → `JournalContent`
 	  (`/dashboard/student/cahier-texte/[entryId]`) ;
 	- énoncé d'exercice : markdown → `MarkdownRenderer` (`ExerciseDisplay`).
 	Rien n'est envoyé ni enregistré. Le banc d'essai complet (réglages,
@@ -15,17 +15,14 @@
 <script lang="ts">
 	import { demoSeo } from '$lib/seo/demo-pages';
 	import SeoHead from '$lib/seo/SeoHead.svelte';
-	import { onMount } from 'svelte';
-	import { generateHTML, type JSONContent } from '@tiptap/core';
+	import type { JSONContent } from '@tiptap/core';
 	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import * as Card from '$lib/components/ui/card';
 	import { MarkdownRenderer } from '$lib/components/markdown';
 	import RichTextEditor from '$lib/components/rich-text/RichTextEditor.svelte';
 	import RestrictedRichText from '$lib/components/rich-text/RestrictedRichText.svelte';
-	import { createEditorExtensions } from '$lib/components/rich-text/editor-config';
 	import { tipTapToMarkdown } from '$lib/components/rich-text/markdown-export';
-	import { linkifyResourceReferences } from '$lib/resources/linkify';
-	import { transformMathHtml } from '$lib/utils/sanitize';
+	import JournalContent from '$lib/components/journal/JournalContent.svelte';
 
 	// Constantes
 	const INITIAL_DOC: JSONContent = {
@@ -46,24 +43,11 @@
 
 	// Variables
 	let doc = $state<unknown>(INITIAL_DOC);
-	let mounted = $state(false);
 
-	// Les trois formes que gardent les usages réels, tirées du même document
+	// Les formes que gardent les usages réels, tirées du même document : le cahier de texte
+	// et l'énoncé sont tous deux écrits en markdown (ubumark)
 	let markdown = $derived(tipTapToMarkdown(doc as JSONContent));
-	// Même sérialisation que `editor.getHTML()`. Elle a besoin du DOM, donc pas au serveur ; et
-	// pas avant le montage : l'hydratation garde le `{@html}` du serveur sans le corriger.
-	let html = $derived(
-		mounted ? generateHTML(doc as JSONContent, createEditorExtensions({ headingLevels: 6 })) : ''
-	);
-	let lessonHtml = $derived(
-		linkifyResourceReferences(transformMathHtml(html), { role: 'student' })
-	);
 	let isEmpty = $derived(markdown.trim() === '');
-
-	// Functions
-	onMount(() => {
-		mounted = true;
-	});
 </script>
 
 <SeoHead {...demoSeo('/demo/editeur')} />
@@ -120,9 +104,7 @@
 			{#if isEmpty}
 				<p class="text-muted-foreground italic">Écrivez une phrase ci-dessus.</p>
 			{:else}
-				<div class="lesson prose prose-sm max-w-none dark:prose-invert">
-					{@html lessonHtml}
-				</div>
+				<JournalContent content={markdown} links={{ role: 'student' }} />
 			{/if}
 		</Card.Content>
 	</Card.Root>
@@ -143,18 +125,3 @@
 		</Card.Content>
 	</Card.Root>
 </div>
-
-<style>
-	/* Comme au cahier de texte de l'élève : les formules restent dans la ligne */
-	.lesson :global(.math-inline-wrapper) {
-		display: inline;
-	}
-	.lesson :global(.math-block-wrapper) {
-		display: block;
-		text-align: center;
-		margin: 1rem 0;
-	}
-	.lesson :global(math-field) {
-		font-size: inherit;
-	}
-</style>

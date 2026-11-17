@@ -16,6 +16,7 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { requireAuth } from '$lib/server/middleware/auth';
 import { z } from 'zod';
 import { generateExerciseSlug, isValidSlug } from '$lib/exercises/slug-generator';
 
@@ -24,11 +25,8 @@ const generateSlugSchema = z.object({
 });
 
 export const POST: RequestHandler = async ({ request, locals }) => {
-	// Verify user is authenticated
-	const session = await locals.safeGetSession();
-	if (!session.user) {
-		throw error(401, 'Connexion requise');
-	}
+	// Vérifie que l'utilisateur est connecté
+	await requireAuth(locals);
 
 	// Parse and validate request body
 	let body: unknown;

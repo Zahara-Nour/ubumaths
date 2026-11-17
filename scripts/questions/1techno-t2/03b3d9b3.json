@@ -1,0 +1,20 @@
+{
+	"id": "03b3d9b3-2d38-4062-a70b-c9b31839444b",
+	"title": "Étude de fonction : ce que donne la dérivée",
+	"description": "Carte de cours",
+	"grades": ["1_SPE"],
+	"level": 3,
+	"status": "published",
+	"options": {
+		"courseCard": true,
+		"courseQuestion": true
+	},
+	"variations": [
+		{
+			"statement": "Que permet de trouver la dérivée d'une fonction ?",
+			"correction": {
+				"steps": ["Ses **variations** et ses **extremums**."]
+			}
+		}
+	]
+}

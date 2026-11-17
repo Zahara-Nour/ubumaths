@@ -37,8 +37,6 @@ function createInstance(
 		statement: 'Test statement' as ResolvedMarkdown,
 		blanks,
 		grades: ['6'],
-		theme: 'Test',
-		domain: 'Test',
 		level: 1,
 		generatedAt: new Date().toISOString(),
 		options

@@ -1,10 +1,8 @@
 {
+	"id": "db4e32ba-5c83-43ec-b6b9-0bcb8fdf65f0",
 	"title": "Des masses de référence, du milligramme à la tonne",
 	"description": "1 mg : une petite fourmi ; 1 g : un trombone ; 100 g : une tablette de chocolat ; 1 kg : une bouteille d'un litre d'eau ; 10 kg : un seau de dix litres d'eau ; 1 t : une voiture",
 	"grades": ["CM1"],
-	"theme": "Grandeurs",
-	"domain": "Masses",
-	"subdomain": "Ordres de grandeur",
 	"level": 3,
 	"delay": 45,
 	"status": "draft",

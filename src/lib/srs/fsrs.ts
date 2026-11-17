@@ -1,66 +1,80 @@
 /**
- * FSRS (Free Spaced Repetition Scheduler) Implementation
- * =======================================================
+ * FSRS (Free Spaced Repetition Scheduler)
+ * =======================================
  *
- * Implements the FSRS-6 algorithm for optimal spaced repetition scheduling.
+ * FSRS-6 tel que publié (open-spaced-repetition, « The Algorithm », FSRS-6),
+ * vérifié contre l'implémentation de référence `ts-fsrs` (`fsrs-reference.test.ts`).
  *
- * Algorithm: FSRS v4/v6
- * Model: DSR (Difficulty, Stability, Retrievability)
- * Reference: FSRS_GUIDE.md
- *
- * Key Features:
- * - 30% fewer reviews than SM-2 (Anki's old algorithm)
- * - Adaptive learning (learns user's memory patterns)
- * - Smart handling of review delays
- * - Adjustable retention target (70%-97%)
+ * Modèle DSR : difficulté D (1-10), stabilité S (jours), récupérabilité R.
+ * L'écart entre deux révisions se compte en **jours civils à Paris** (entiers) :
+ * 0 = même jour → formule court terme (`w[17]`, `w[18]`, `w[19]`).
  *
  * @example
  * ```typescript
  * const fsrs = new FSRS();
- * const cardStats = fsrs.initCard();
- * const updated = fsrs.reviewCard(cardStats, Grade.GOOD);
- * console.log(`Next review in ${fsrs.calculateInterval(updated.stability)} days`);
+ * const card = fsrs.initCard(userId, 'template', templateId);
+ * const updated = fsrs.reviewCard(card, Grade.GOOD);
  * ```
  */
 
-import {
-	DEFAULT_FSRS_PARAMS,
-	DEFAULT_DESIRED_RETENTION,
-	DEFAULT_MAXIMUM_INTERVAL,
-	DECAY_PARAMETER
-} from './config';
+import { DEFAULT_FSRS_PARAMS, DEFAULT_DESIRED_RETENTION, DEFAULT_MAXIMUM_INTERVAL } from './config';
 import type { CardStats, Grade, CardState, ReviewHistoryEntry } from './types';
+
+// Types
+type CardInput = CardStats | Omit<CardStats, 'id' | 'createdAt' | 'updatedAt'>;
+
+// Constantes
+const DAY_MS = 24 * 60 * 60 * 1000;
+/** Bornes de la stabilité (celles de FSRS-6) */
+const S_MIN = 0.001;
+const S_MAX = 36500;
+/** Jour civil des élèves (le même que `best-of-day.ts`) */
+const PARIS_DAY = new Intl.DateTimeFormat('en-CA', {
+	timeZone: 'Europe/Paris',
+	year: 'numeric',
+	month: '2-digit',
+	day: '2-digit'
+});
+
+// Functions
+function clamp(value: number, min: number, max: number): number {
+	return Math.max(min, Math.min(max, value));
+}
+
+/** Numéro du jour civil à Paris (jours depuis l'époque) */
+function parisDayNumber(date: Date): number {
+	const [year, month, day] = PARIS_DAY.format(date).split('-').map(Number);
+	return Math.round(Date.UTC(year, month - 1, day) / DAY_MS);
+}
+
+/** Jours civils entiers entre deux instants, jamais négatif */
+function civilDaysBetween(from: Date, to: Date): number {
+	return Math.max(0, parisDayNumber(to) - parisDayNumber(from));
+}
 
 /**
  * FSRS Scheduler Class
  */
 export class FSRS {
-	/**
-	 * FSRS-6 parameters (21 values)
-	 */
+	/** Paramètres FSRS-6 (21 valeurs) */
 	private w: number[];
 
-	/**
-	 * Desired retention rate (0.7 - 0.97)
-	 */
+	/** Rétention visée (0,7 - 0,97) */
 	private desiredRetention: number;
 
-	/**
-	 * Decay parameter for forgetting curve
-	 */
+	/** Exposant de la courbe d'oubli (−w[20]) */
 	private decay: number;
 
-	/**
-	 * Maximum interval in days
-	 */
+	/** Facteur qui donne R = 0,9 quand t = S */
+	private factor: number;
+
+	/** Intervalle maximal en jours */
 	private maxInterval: number;
 
 	/**
-	 * Create a new FSRS scheduler
-	 *
-	 * @param parameters - FSRS-6 parameters (default: DEFAULT_FSRS_PARAMS)
-	 * @param desiredRetention - Target retention rate (default: 0.9)
-	 * @param maximumInterval - Max days between reviews (default: 36500)
+	 * @param parameters - paramètres FSRS-6 (défaut : DEFAULT_FSRS_PARAMS)
+	 * @param desiredRetention - rétention visée (défaut : 0,9)
+	 * @param maximumInterval - intervalle maximal en jours (défaut : 36 500)
 	 */
 	constructor(
 		parameters: number[] = DEFAULT_FSRS_PARAMS,
@@ -77,14 +91,13 @@ export class FSRS {
 
 		this.w = parameters;
 		this.desiredRetention = desiredRetention;
-		this.decay = DECAY_PARAMETER;
+		this.decay = -parameters[20];
+		this.factor = Math.pow(0.9, 1 / this.decay) - 1;
 		this.maxInterval = maximumInterval;
 	}
 
 	/**
-	 * Initialize a new card with default values
-	 *
-	 * @returns CardStats with initial FSRS values
+	 * Fiche neuve
 	 */
 	initCard(
 		userId: string,
@@ -97,190 +110,147 @@ export class FSRS {
 			userId,
 			cardReferenceType,
 			cardReferenceId,
-			difficulty: 5, // Start at medium difficulty
-			stability: 0, // Will be set on first review
+			difficulty: 5, // fixée à la première révision (difficulté initiale de la note)
+			stability: 0, // fixée à la première révision
 			state: 'new',
 			lastReview: null,
-			nextReview: now, // Due immediately
+			nextReview: now, // due tout de suite
 			totalReviews: 0,
 			reviewHistory: []
 		};
 	}
 
+	/** Courbe d'oubli FSRS-6 : R = (1 + facteur · t / S)^decay */
+	private forgettingCurve(elapsedDays: number, stability: number): number {
+		return Math.pow(1 + (this.factor * elapsedDays) / stability, this.decay);
+	}
+
 	/**
-	 * Calculate retrievability (R) - probability of remembering the card
-	 *
-	 * Formula: R = (1 + elapsed_days / (9 × S))^(-0.5)
-	 *
-	 * @param card - Card stats
-	 * @returns Retrievability between 0 and 1
+	 * Récupérabilité R (probabilité de se souvenir) à l'instant `now`, écart en jours décimaux
 	 */
-	calculateRetrievability(
-		card: CardStats | Omit<CardStats, 'id' | 'createdAt' | 'updatedAt'>
-	): number {
-		if (!card.lastReview || card.stability === 0) {
-			return 1; // New card, 100% retrievability
+	calculateRetrievability(card: CardInput, now: Date = new Date()): number {
+		if (!card.lastReview || card.stability <= 0) {
+			return 1; // fiche neuve
 		}
 
-		const now = Date.now();
-		const lastReviewTime = new Date(card.lastReview).getTime();
-		const elapsedDays = (now - lastReviewTime) / (1000 * 60 * 60 * 24);
+		const elapsedDays = Math.max(0, (now.getTime() - new Date(card.lastReview).getTime()) / DAY_MS);
+		return clamp(this.forgettingCurve(elapsedDays, card.stability), 0, 1);
+	}
 
-		const retrievability = Math.pow(1 + elapsedDays / (9 * card.stability), this.decay);
+	/** Stabilité initiale : w[note − 1] */
+	private initialStability(grade: Grade): number {
+		return clamp(this.w[grade - 1], S_MIN, S_MAX);
+	}
 
-		return Math.max(0, Math.min(1, retrievability));
+	/** Difficulté initiale : w[4] − e^(w[5]·(note − 1)) + 1 */
+	private initialDifficulty(grade: Grade): number {
+		return this.w[4] - Math.exp(this.w[5] * (grade - 1)) + 1;
 	}
 
 	/**
-	 * Calculate initial stability based on grade
-	 *
-	 * Used for the first review of a new card.
-	 *
-	 * @param grade - Grade given (1-4)
-	 * @returns Initial stability in days
+	 * Difficulté après une révision : ΔD = −w[6]·(note − 3), amorti par (10 − D)/9,
+	 * puis retour vers la difficulté initiale de « Facile » (poids w[7])
 	 */
-	private calculateInitialStability(grade: Grade): number {
-		// Formula: w[0] + w[1] * (grade - 1)
-		return this.w[0] + this.w[1] * (grade - 1);
+	private nextDifficulty(difficulty: number, grade: Grade): number {
+		const delta = -this.w[6] * (grade - 3);
+		const damped = difficulty + (delta * (10 - difficulty)) / 9;
+		const reverted = this.w[7] * this.initialDifficulty(4) + (1 - this.w[7]) * damped;
+		return clamp(reverted, 1, 10);
 	}
 
-	/**
-	 * Calculate new stability after successful review
-	 *
-	 * Formula: S' = S × (1 + SInc)
-	 * Where SInc = e^(w[8]) × (11 - D) × S^(-w[9]) × (e^((1-R) × w[10]) - 1)
-	 *
-	 * @param card - Card stats
-	 * @param grade - Grade given (2-4, not AGAIN)
-	 * @returns New stability in days
-	 */
-	private calculateNewStability(
-		card: CardStats | Omit<CardStats, 'id' | 'createdAt' | 'updatedAt'>,
-		grade: Grade
-	): number {
-		const { difficulty, stability } = card;
-
-		// First review (stability = 0)
-		if (stability === 0) {
-			return this.calculateInitialStability(grade);
-		}
-
-		const retrievability = this.calculateRetrievability(card);
-
-		// Factors for stability increase
-		const difficultyFactor = Math.exp(this.w[8]) * (11 - difficulty);
-		const stabilityFactor = Math.pow(stability, -this.w[9]);
-		const retrievabilityFactor = Math.exp((1 - retrievability) * this.w[10]) - 1;
-
-		const stabilityIncrease = 1 + difficultyFactor * stabilityFactor * retrievabilityFactor;
-
-		return stability * Math.max(1, stabilityIncrease);
+	/** Stabilité après un rappel réussi (Difficile : ×w[15] ; Facile : ×w[16]) */
+	private recallStability(d: number, s: number, r: number, grade: Grade): number {
+		const hardPenalty = grade === 2 ? this.w[15] : 1;
+		const easyBonus = grade === 4 ? this.w[16] : 1;
+		const increase =
+			Math.exp(this.w[8]) *
+			(11 - d) *
+			Math.pow(s, -this.w[9]) *
+			(Math.exp((1 - r) * this.w[10]) - 1) *
+			hardPenalty *
+			easyBonus;
+		return clamp(s * (1 + increase), S_MIN, S_MAX);
 	}
 
-	/**
-	 * Calculate stability after forgetting (AGAIN grade)
-	 *
-	 * Formula: S' = w[11] × D^(-w[12]) × (S + 1)^(w[13]) × e^(w[14] × (1-R))
-	 *
-	 * @param card - Card stats
-	 * @returns Post-lapse stability
-	 */
-	private calculatePostLapseStability(
-		card: CardStats | Omit<CardStats, 'id' | 'createdAt' | 'updatedAt'>
-	): number {
-		const { difficulty, stability } = card;
-		const retrievability = this.calculateRetrievability(card);
-
-		return (
+	/** Stabilité après un oubli, plafonnée à S / e^(w[17]·w[18]) */
+	private forgetStability(d: number, s: number, r: number): number {
+		const afterFail =
 			this.w[11] *
-			Math.pow(difficulty, -this.w[12]) *
-			(Math.pow(stability + 1, this.w[13]) - 1) *
-			Math.exp(this.w[14] * (1 - retrievability))
-		);
+			Math.pow(d, -this.w[12]) *
+			(Math.pow(s + 1, this.w[13]) - 1) *
+			Math.exp((1 - r) * this.w[14]);
+		const ceiling = s / Math.exp(this.w[17] * this.w[18]);
+		return clamp(Math.min(afterFail, ceiling), S_MIN, S_MAX);
+	}
+
+	/** Stabilité après une révision le même jour (court terme) */
+	private shortTermStability(s: number, grade: Grade): number {
+		const increase = Math.pow(s, -this.w[19]) * Math.exp(this.w[17] * (grade - 3 + this.w[18]));
+		const masked = grade >= 2 ? Math.max(increase, 1) : increase;
+		return clamp(s * masked, S_MIN, S_MAX);
 	}
 
 	/**
-	 * Update difficulty based on grade
-	 *
-	 * Formula: D' = clamp(D - w[6] × (G - 3), 1, 10)
-	 *
-	 * @param card - Card stats
-	 * @param grade - Grade given (1-4)
-	 * @returns New difficulty (1-10)
-	 */
-	private updateDifficulty(
-		card: CardStats | Omit<CardStats, 'id' | 'createdAt' | 'updatedAt'>,
-		grade: Grade
-	): number {
-		const newDifficulty = card.difficulty - this.w[6] * (grade - 3);
-		return Math.max(1, Math.min(10, newDifficulty));
-	}
-
-	/**
-	 * Calculate optimal interval based on stability
-	 *
-	 * Formula: I = 9 × S × (DR^(-2) - 1)
-	 * Where DR = desired retention
-	 *
-	 * @param stability - Current stability in days
-	 * @returns Interval in days (rounded to integer)
+	 * Intervalle en jours pour la rétention visée : I = S / facteur · (r^(1/decay) − 1)
 	 */
 	calculateInterval(stability: number): number {
-		const interval = 9 * stability * (Math.pow(this.desiredRetention, 1 / this.decay) - 1);
+		const interval =
+			(stability / this.factor) * (Math.pow(this.desiredRetention, 1 / this.decay) - 1);
 
 		return Math.max(1, Math.min(this.maxInterval, Math.round(interval)));
 	}
 
 	/**
-	 * Review a card - MAIN METHOD
+	 * Révise une fiche — MÉTHODE PRINCIPALE
 	 *
-	 * Updates FSRS metadata based on review grade.
-	 *
-	 * @param card - Current card stats
-	 * @param grade - Grade given (1=Again, 2=Hard, 3=Good, 4=Easy)
-	 * @param timeSpent - Time spent on review (seconds, optional)
-	 * @returns Updated card stats
+	 * @param card - fiche actuelle
+	 * @param grade - note (1 = Again, 2 = Hard, 3 = Good, 4 = Easy)
+	 * @param timeSpent - temps passé (secondes, facultatif)
+	 * @param now - instant de la révision (défaut : maintenant)
+	 * @returns fiche mise à jour
 	 */
 	reviewCard(
-		card: CardStats | Omit<CardStats, 'id' | 'createdAt' | 'updatedAt'>,
+		card: CardInput,
 		grade: Grade,
-		timeSpent?: number
+		timeSpent?: number,
+		now: Date = new Date()
 	): Omit<CardStats, 'id' | 'createdAt' | 'updatedAt'> {
-		const now = new Date();
 		const nowISO = now.toISOString();
+		const lastReview = card.lastReview ? new Date(card.lastReview) : null;
+		const isNew = lastReview === null || !(card.stability > 0);
 
-		// Calculate elapsed days since last review
-		const elapsedDays = card.lastReview
-			? (now.getTime() - new Date(card.lastReview).getTime()) / (1000 * 60 * 60 * 24)
-			: 0;
+		// Écart réel (historique) et écart en jours civils (algorithme)
+		const elapsedDays = lastReview ? (now.getTime() - lastReview.getTime()) / DAY_MS : 0;
+		const t = lastReview ? civilDaysBetween(lastReview, now) : 0;
 
-		// Current retrievability
-		const retrievability = this.calculateRetrievability(card);
-
-		// Update stability based on grade
 		let newStability: number;
-		let newState: CardState;
+		let newDifficulty: number;
+		let retrievability = 1;
 
-		if (grade === 1) {
-			// AGAIN: Failed review
-			newStability = this.calculatePostLapseStability(card);
-			newState = 'relearning';
+		if (isNew) {
+			newStability = this.initialStability(grade);
+			newDifficulty = clamp(this.initialDifficulty(grade), 1, 10);
 		} else {
-			// HARD, GOOD, EASY: Successful review
-			newStability = this.calculateNewStability(card, grade);
-			newState = card.state === 'new' || card.state === 'learning' ? 'learning' : 'review';
+			const s = clamp(card.stability, S_MIN, S_MAX);
+			const d = clamp(Number.isFinite(card.difficulty) ? card.difficulty : 5, 1, 10);
+			retrievability = this.forgettingCurve(t, s);
+
+			if (t === 0) newStability = this.shortTermStability(s, grade);
+			else if (grade === 1) newStability = this.forgetStability(d, s, retrievability);
+			else newStability = this.recallStability(d, s, retrievability, grade);
+
+			newDifficulty = this.nextDifficulty(d, grade);
 		}
 
-		// Update difficulty
-		const newDifficulty = this.updateDifficulty(card, grade);
+		// Échec → relearning ; neuve réussie → learning (une révision) ; sinon réussite → review
+		let newState: CardState;
+		if (grade === 1) newState = 'relearning';
+		else if (card.state === 'new') newState = 'learning';
+		else newState = 'review';
 
-		// Calculate next review interval
 		const interval = this.calculateInterval(newStability);
+		const nextReviewDate = new Date(now.getTime() + interval * DAY_MS);
 
-		// Calculate next review date
-		const nextReviewDate = new Date(now.getTime() + interval * 24 * 60 * 60 * 1000);
-
-		// Create review history entry
 		const historyEntry: ReviewHistoryEntry = {
 			date: nowISO,
 			grade,
@@ -289,7 +259,6 @@ export class FSRS {
 			timeSpent
 		};
 
-		// Return updated card stats
 		return {
 			...card,
 			difficulty: newDifficulty,

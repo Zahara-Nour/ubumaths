@@ -1,10 +1,8 @@
 {
+	"id": "050c8807-34ea-44fa-8bf0-a4f682d03b91",
 	"title": "Formule de l'aire d'un triangle",
 	"description": "Produire la formule de l'aire d'un triangle (b × h ÷ 2) : hauteur intérieure, hauteur extérieure, figure composée, formule vraisemblable, puis la tester",
 	"grades": ["4"],
-	"theme": "Calcul littéral",
-	"domain": "Produire une formule",
-	"subdomain": "Aires",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

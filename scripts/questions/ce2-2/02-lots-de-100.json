@@ -1,10 +1,8 @@
 {
+	"id": "78d3ff5b-b047-41b2-9600-0500d0feec24",
 	"title": "Ranger par lots de $100$ ou de $10$",
 	"description": "1 235 filtres par lots de 100 : 13 lots (le dernier n'est pas plein)",
 	"grades": ["CE2"],
-	"theme": "Entiers",
-	"domain": "Apprivoiser",
-	"subdomain": "Décomposition",
 	"level": 20,
 	"delay": 40,
 	"status": "draft",

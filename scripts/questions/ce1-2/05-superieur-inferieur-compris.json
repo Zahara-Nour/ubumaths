@@ -1,10 +1,8 @@
 {
+	"id": "be6f0f5f-da09-44b6-81e2-e53daa1bb2cc",
 	"title": "Supérieur à, inférieur à, compris entre",
 	"description": "Écrire un nombre qui respecte la phrase (toute réponse juste acceptée)",
 	"grades": ["CE1"],
-	"theme": "Entiers",
-	"domain": "Apprivoiser",
-	"subdomain": "Comparer",
 	"level": 7,
 	"delay": 20,
 	"status": "draft",

@@ -23,7 +23,9 @@ describe('```solide — forme:', () => {
 			marks: [],
 			cotes: null,
 			hidden: true,
-			section: null
+			section: null,
+			points: [],
+			vectors: []
 		});
 	});
 

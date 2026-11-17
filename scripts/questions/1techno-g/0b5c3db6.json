@@ -1,0 +1,314 @@
+{
+	"id": "0b5c3db6-cb37-40fc-8247-12e3ace03a46",
+	"title": "Déterminer la raison d'une suite géométrique à termes positifs",
+	"description": "À partir de deux termes consécutifs ou d'une évolution en pourcentage",
+	"grades": ["1_GEN"],
+	"level": 1,
+	"delay": 30,
+	"status": "published",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"options": {
+		"constraints": {
+			"form": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{q}}"
+				}
+			],
+			"statement": "Détermine la raison de cette suite géométrique.\n\n$u_{{k}}={{a}}$ et $u_{{k1}}={{eval:a*q;d}}$\n\nLa raison est $?$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..8"
+				},
+				{
+					"name": "k1",
+					"expression": "eval:k+1"
+				},
+				{
+					"name": "a",
+					"expression": "2..12"
+				},
+				{
+					"name": "q",
+					"expression": "2..5"
+				}
+			],
+			"conditions": [],
+			"correction": {
+				"steps": [
+					"Pour une suite géométrique, on passe d'un terme au suivant en multipliant par la raison $q$ : $q=\\dfrac{u_{n+1}}{u_n}$.",
+					"$q=\\dfrac{u_{{k1}}}{u_{{k}}}=\\dfrac{{{eval:a*q;d}}}{{{a}}}=\\textcolor{{{color:primary.0}}}{{{q}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{q}}"
+				}
+			],
+			"statement": "Détermine la raison de cette suite géométrique.\n\n$u_{{k}}={{a}}$ et $u_{{k1}}={{eval:a*q;d}}$\n\nLa raison est $?$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..8"
+				},
+				{
+					"name": "k1",
+					"expression": "eval:k+1"
+				},
+				{
+					"name": "m",
+					"expression": "2..20"
+				},
+				{
+					"name": "a",
+					"expression": "eval:4*m"
+				},
+				{
+					"name": "q",
+					"expression": "0.5|0.25|0.75"
+				}
+			],
+			"conditions": [],
+			"correction": {
+				"steps": [
+					"Pour une suite géométrique, on passe d'un terme au suivant en multipliant par la raison $q$ : $q=\\dfrac{u_{n+1}}{u_n}$.",
+					"$q=\\dfrac{u_{{k1}}}{u_{{k}}}=\\dfrac{{{eval:a*q;d}}}{{{a}}}=\\textcolor{{{color:primary.0}}}{{{q}}}$. La raison est inférieure à $1$ : les termes diminuent."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1+t/100;d}}"
+				}
+			],
+			"statement": "Le prix d'un abonnement augmente de ${{t}}~\\%$ chaque année. On note $u_n$ le prix de l'abonnement l'année $n$ : la suite $(u_n)$ est géométrique.\n\nQuelle est sa raison ?\n\n$q=?$",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "2|3|5|10|20"
+				}
+			],
+			"conditions": [],
+			"correction": {
+				"steps": [
+					"Augmenter de ${{t}}~\\%$, c'est multiplier par $1+\\dfrac{{{t}}}{100}$.",
+					"D'une année à la suivante, le prix est multiplié par $1+\\dfrac{{{t}}}{100}=\\textcolor{{{color:primary.0}}}{{{eval:1+t/100;d}}}$ : c'est la raison."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1-t/100;d}}"
+				}
+			],
+			"statement": "La valeur d'une voiture baisse de ${{t}}~\\%$ chaque année. On note $u_n$ sa valeur l'année $n$ : la suite $(u_n)$ est géométrique.\n\nQuelle est sa raison ?\n\n$q=?$",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "5|10|20|25"
+				}
+			],
+			"conditions": [],
+			"correction": {
+				"steps": [
+					"Baisser de ${{t}}~\\%$, c'est multiplier par $1-\\dfrac{{{t}}}{100}$.",
+					"D'une année à la suivante, la valeur est multipliée par $1-\\dfrac{{{t}}}{100}=\\textcolor{{{color:primary.0}}}{{{eval:1-t/100;d}}}$ : c'est la raison."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "5",
+				"k": "3",
+				"q": "3",
+				"k1": "4"
+			},
+			"description": "u_3=5, u_4=15 → 3",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["10"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "5",
+				"k": "3",
+				"q": "3",
+				"k1": "4"
+			},
+			"description": "Erreur : la différence (10)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{1}{3}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "5",
+				"k": "3",
+				"q": "3",
+				"k1": "4"
+			},
+			"description": "Erreur : le rapport inversé (1/3)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0,25"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "40",
+				"k": "2",
+				"m": "10",
+				"q": "0.25",
+				"k1": "3"
+			},
+			"description": "u_2=40, u_3=10 → 0,25",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\frac{1}{4}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "40",
+				"k": "2",
+				"m": "10",
+				"q": "0.25",
+				"k1": "3"
+			},
+			"description": "u_2=40, u_3=10 → 1/4 accepté",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "40",
+				"k": "2",
+				"m": "10",
+				"q": "0.25",
+				"k1": "3"
+			},
+			"description": "Erreur : le rapport inversé (4)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-30"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "40",
+				"k": "2",
+				"m": "10",
+				"q": "0.25",
+				"k1": "3"
+			},
+			"description": "Erreur : la différence (−30)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["1,05"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"t": "5"
+			},
+			"description": "hausse de 5 % → 1,05",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["0,05"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"t": "5"
+			},
+			"description": "Erreur : 0,05",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"t": "5"
+			},
+			"description": "Erreur : 1 + t (6)",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"t": "5"
+			},
+			"description": "Erreur : t (5)",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["0,8"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"t": "20"
+			},
+			"description": "baisse de 20 % → 0,8",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["1,2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"t": "20"
+			},
+			"description": "Erreur : 1,2 (hausse)",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["-0,2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"t": "20"
+			},
+			"description": "Erreur : −0,2",
+			"variationIndex": 3
+		}
+	]
+}

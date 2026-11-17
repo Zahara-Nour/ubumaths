@@ -1,10 +1,8 @@
 {
+	"id": "8db109a5-ea7a-41e6-9a6d-62caed1160de",
 	"title": "Aire d'un disque : valeur exacte",
 	"description": "Donner l'aire exacte d'un disque en fonction de π, à partir du rayon (3 cm : 9π cm²) ou du diamètre",
 	"grades": ["5"],
-	"theme": "Grandeurs",
-	"domain": "Aires",
-	"subdomain": "Aire d'un disque",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

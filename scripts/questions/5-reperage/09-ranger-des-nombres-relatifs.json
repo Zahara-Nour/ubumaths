@@ -1,0 +1,125 @@
+{
+	"id": "8683328e-34af-47f6-8a1e-9d53b8f4f9eb",
+	"title": "Ranger des nombres relatifs",
+	"description": "Ranger cinq nombres relatifs : entiers dans l'ordre croissant, puis décimaux dans l'ordre décroissant (−2,05 et −2,5 ; −0,7 et 0)",
+	"grades": ["5"],
+	"level": 3,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Range ces nombres du plus petit au plus grand.\n\n```ranger\nsigne: <\n- $-{{p}}$\n- $-{{q}}$\n- ${{s}}$\n- ${{t}}$\n- ${{u}}$\n```",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "6..9"
+				},
+				{
+					"name": "q",
+					"expression": "2..5"
+				},
+				{
+					"name": "s",
+					"expression": "-1|0|1"
+				},
+				{
+					"name": "t",
+					"expression": "2..5"
+				},
+				{
+					"name": "u",
+					"expression": "6..9"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Deux nombres négatifs** : le plus petit est celui qui est le plus loin de $0$ ; $-{{p}} < -{{q}}$.",
+					"**Un nombre négatif** est plus petit qu'un nombre positif.",
+					"$$\\textcolor{{{color:primary.0}}}{-{{p}} < -{{q}} < {{s}} < {{t}} < {{u}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Range ces nombres du plus grand au plus petit.\n\n```ranger\nsigne: >\n- ${{eval:b/10;d}}$\n- $0$\n- ${{eval:-d/10;d}}$\n- ${{eval:-(100*a+5)/100;d}}$\n- ${{eval:-(10*a+5)/10;d}}$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..4"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "d",
+					"expression": "1..9"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Un nombre positif** est plus grand que $0$, et $0$ est plus grand que tout nombre négatif.",
+					"**Deux nombres négatifs** : le plus grand est le plus proche de $0$. ${{eval:(100*a+5)/100;d}}$ est plus proche de $0$ que ${{eval:(10*a+5)/10;d}}$ : $-{{eval:(100*a+5)/100;d}} > -{{eval:(10*a+5)/10;d}}$.",
+					"$$\\textcolor{{{color:primary.0}}}{{{eval:b/10;d}} > 0 > {{eval:-d/10;d}} > {{eval:-(100*a+5)/100;d}} > {{eval:-(10*a+5)/10;d}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Ordre juste",
+			"variationIndex": 0,
+			"variables": {
+				"p": "7",
+				"q": "3",
+				"s": "0",
+				"t": "4",
+				"u": "8"
+			},
+			"answers": ["4", "0", "1", "2", "3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : −3 avant −7 (distance à zéro)",
+			"variationIndex": 0,
+			"variables": {
+				"p": "7",
+				"q": "3",
+				"s": "0",
+				"t": "4",
+				"u": "8"
+			},
+			"answers": ["0", "4", "1", "2", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Ordre juste",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "4",
+				"d": "7"
+			},
+			"answers": ["4", "0", "1", "2", "3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : −2,5 avant −2,05 (plus de chiffres)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "4",
+				"d": "7"
+			},
+			"answers": ["4", "0", "1", "3", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

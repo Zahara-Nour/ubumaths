@@ -1,10 +1,8 @@
 {
+	"id": "70449b92-5917-4aa1-97db-2ae9774ce8e7",
 	"title": "Problèmes avec la racine carrée",
 	"description": "Trouver le côté d'un carré connaissant son aire : 49 cm² → 7 cm ; 21 cm² → √21 cm ; 20 cm² → ≈ 4,5 cm ; carré de même aire qu'un rectangle 18 cm × 2 cm",
 	"grades": ["3"],
-	"theme": "Racines carrées",
-	"domain": "Problèmes",
-	"subdomain": "Aire et côté",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

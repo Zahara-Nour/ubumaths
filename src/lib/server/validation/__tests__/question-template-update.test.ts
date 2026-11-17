@@ -30,8 +30,6 @@ describe('updateQuestionTemplateSchema', () => {
 		const parsed = createQuestionTemplateSchema.parse({
 			title: 'T',
 			grades: ['CE1'],
-			theme: 'Entiers',
-			domain: 'Multiplier',
 			level: 1
 		});
 		expect(parsed.status).toBe('published');

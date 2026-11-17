@@ -21,8 +21,6 @@ function createInstance(blanks: InstanceBlank[]): QuestionInstance {
 		statement: 'Combien ?' as ResolvedMarkdown,
 		blanks,
 		grades: ['T_SPE'],
-		theme: 'Probabilités',
-		domain: 'Dénombrement',
 		level: 1,
 		generatedAt: new Date().toISOString()
 	};

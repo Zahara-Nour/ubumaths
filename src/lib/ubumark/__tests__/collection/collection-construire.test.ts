@@ -35,16 +35,14 @@ describe('construire: — analyse', () => {
 		expect(node.spec).toMatchObject({ build: 7, drawing: 'paquets', sizeCm: 6 });
 	});
 
-	it('valeur de 1 à 100, entière', () => {
+	it('valeur de 1 à 9 999, entière (1 à 100 avant le chantier collection-centaines)', () => {
 		expect(parse('construire: 100').errors).toEqual([]);
+		expect(parse('construire: 101').errors).toEqual([]);
 		expect(messages(parse('construire: 0'))).toEqual([
-			'Ligne 1 : construire « 0 » : écris un nombre entier de 1 à 100'
-		]);
-		expect(messages(parse('construire: 101'))).toEqual([
-			'Ligne 1 : construire « 101 » : écris un nombre entier de 1 à 100'
+			'Ligne 1 : construire « 0 » : écris un nombre entier de 1 à 9 999'
 		]);
 		expect(messages(parse('construire: 3,5'))).toEqual([
-			'Ligne 1 : construire « 3,5 » : écris un nombre entier de 1 à 100'
+			'Ligne 1 : construire « 3,5 » : écris un nombre entier de 1 à 9 999'
 		]);
 	});
 
@@ -86,34 +84,49 @@ describe('construire: — la construction de l’élève', () => {
 	});
 
 	it('la valeur posée, groupement partiel compris', () => {
-		expect(buildAnswer({ tens: 3, units: 4 })).toBe('34');
-		expect(buildAnswer({ tens: 0, units: 34 })).toBe('34');
-		expect(buildAnswer({ tens: 2, units: 14 })).toBe('34');
+		expect(buildAnswer({ thousands: 0, hundreds: 0, tens: 3, units: 4 })).toBe('34');
+		expect(buildAnswer({ thousands: 0, hundreds: 0, tens: 0, units: 34 })).toBe('34');
+		expect(buildAnswer({ thousands: 0, hundreds: 0, tens: 2, units: 14 })).toBe('34');
 	});
 
 	it('ajouter, enlever ; jamais sous 0 ni au-dessus des plafonds', () => {
-		expect(addToBuild(EMPTY_BUILD, 'tens')).toEqual({ tens: 1, units: 0 });
-		expect(addToBuild({ tens: 1, units: 0 }, 'units')).toEqual({ tens: 1, units: 1 });
-		expect(removeFromBuild({ tens: 1, units: 1 }, 'tens')).toEqual({ tens: 0, units: 1 });
+		expect(addToBuild(EMPTY_BUILD, 'tens')).toEqual({
+			thousands: 0,
+			hundreds: 0,
+			tens: 1,
+			units: 0
+		});
+		expect(addToBuild({ thousands: 0, hundreds: 0, tens: 1, units: 0 }, 'units')).toEqual({
+			thousands: 0,
+			hundreds: 0,
+			tens: 1,
+			units: 1
+		});
+		expect(removeFromBuild({ thousands: 0, hundreds: 0, tens: 1, units: 1 }, 'tens')).toEqual({
+			thousands: 0,
+			hundreds: 0,
+			tens: 0,
+			units: 1
+		});
 		expect(removeFromBuild(EMPTY_BUILD, 'units')).toEqual(EMPTY_BUILD);
-		const full = { tens: BUILD_LIMITS.tens, units: BUILD_LIMITS.units };
+		const full = { thousands: 0, hundreds: 0, tens: BUILD_LIMITS.tens, units: BUILD_LIMITS.units };
 		expect(addToBuild(full, 'tens')).toEqual(full);
 		expect(addToBuild(full, 'units')).toEqual(full);
 	});
 
 	it('remontée avec une seule valeur : redessinée en dizaines et unités', () => {
-		expect(buildFromAnswer('34')).toEqual({ tens: 3, units: 4 });
-		expect(buildFromAnswer('')).toEqual(EMPTY_BUILD);
-		expect(buildFromAnswer('abc')).toEqual(EMPTY_BUILD);
+		expect(buildFromAnswer('34', 34)).toEqual({ thousands: 0, hundreds: 0, tens: 3, units: 4 });
+		expect(buildFromAnswer('', 34)).toEqual(EMPTY_BUILD);
+		expect(buildFromAnswer('abc', 34)).toEqual(EMPTY_BUILD);
 	});
 
 	it('une construction juste : le moins d’objets (Q8)', () => {
-		expect(solutionBuild(34)).toEqual({ tens: 3, units: 4 });
-		expect(solutionBuild(100)).toEqual({ tens: 10, units: 0 });
+		expect(solutionBuild(34)).toEqual({ thousands: 0, hundreds: 0, tens: 3, units: 4 });
+		expect(solutionBuild(100)).toEqual({ thousands: 0, hundreds: 1, tens: 0, units: 0 });
 	});
 
 	it('la scène : un objet par barre et par cube, cubes en rangées', () => {
-		const scene = buildScene('barres', { tens: 2, units: 14 });
+		const scene = buildScene('barres', { thousands: 0, hundreds: 0, tens: 2, units: 14 });
 		expect(scene.items.filter((i) => i.kind === 'barre')).toHaveLength(2);
 		expect(scene.items.filter((i) => i.kind === 'cube')).toHaveLength(14);
 		// Rangées de 10 : le 11e cube commence la deuxième rangée, sous le 1er
@@ -123,7 +136,7 @@ describe('construire: — la construction de l’élève', () => {
 	});
 
 	it('la scène suit le matériel : paquets et jetons', () => {
-		const scene = buildScene('paquets', { tens: 1, units: 2 });
+		const scene = buildScene('paquets', { thousands: 0, hundreds: 0, tens: 1, units: 2 });
 		expect(scene.items.map((i) => i.kind)).toEqual(['paquet', 'jeton', 'jeton']);
 	});
 });

@@ -178,10 +178,12 @@ describe('plusieurs lettres : une réécriture qui rétrécit le domaine n’a p
 	});
 });
 
-describe('revue du 2026-10-26 : un décimal tapé reste décimal', () => {
-	it('0,5x/x → « 0,5, pour x ≠ 0 »', () => {
+// Revue du 2026-10-26 (« un décimal tapé reste décimal ») revue par Q9, rouverte
+// en entier le 2026-11-02 : une barre est une fraction, même sur une lettre
+describe('un décimal sous une barre à lettre se chasse (Q9)', () => {
+	it('0,5x/x → « 1/2, pour x ≠ 0 »', () => {
 		expect(flat(line('0,5x/x').alternative?.latex)).toBe(
-			flat('0{,}5\\text{,}\\quad\\text{pour }x\\neq0')
+			flat('\\dfrac{1}{2}\\text{,}\\quad\\text{pour }x\\neq0')
 		);
 	});
 });

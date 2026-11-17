@@ -2,22 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, après #1809._
+_Mis à jour le 2026-11-09, après #2527._
 
-- **État** : CP-059, CP-060, CP-058 mergés (#1793, #1798), pas en prod ; garde des tirages (#1805) ; côté donné
-  prolongé, carré et rectangle, message à part (#1809, § 12).
-- **Prochaine action** : aucune ici ; CP-058 attend le chantier `figure-et-choix`.
-- **En attente de David** : (1) fin de l'essai de CP-060 et CP-058 (`docs/wip/verifications-manuelles.md`) ;
-  (2) message du carré décalé qui chevauche [AB] (§ 12) ; (3) **figure de travail** (idée de David) : figure
-  manipulable NON notée dans l'énoncé (outils limités, ex. droites seules), réponse à côté, QCM compris → CP-058 en
-  QCM oui / non. À trancher : geste plus vérifié ? tracé gardé dans la copie ? un bloc figure ou un bloc à part
-  (`deplacable:` réservé aux figures stockées, ADR 0027) ? Reco : chantier à part ; **ne pas publier CP-058 en l'état**.
-  **Tranché le 2026-10-26** (§ 13) : consigne au choix du modèle (« tu peux vérifier » = figure de travail non notée,
-  « montre comment » = figure notée) ; figure déplaçable utilisable partout ; **QCM réécrit en case « choix »**,
-  TOUS les QCM migrés (« le plus propre possible, même si c'est plus de travail ») ; tracé GARDÉ, non noté.
-  → **Chantier `figure-et-choix`** (worktree `../ubumaths-wt-figure-et-choix`), ouvert le 2026-10-26.
+- **État** : CP-059, CP-060, CP-058 en brouillon ; essais iPad passés (§ 15). Messages du carré décalé (#2526), accolé,
+  séparé, sur une partie de [AB] (#2527) mergés ; en prod au prochain `deploy:prod`.
+- **Prochaine action** : clore le chantier (versement du durable dans `docs/systeme/`, journal archivé).
+- **En attente de David** : publication de CP-060 et CP-058 (brouillons `1cf6eaa9…`, `a7dfe502…`).
 - **Pièges en cours** : lettres impossibles en valeurs de variables (§ 6) ; limites connues de CP-060 au § 9 et § 12.
-- **Worktree / branche** : aucun (retiré après #1809).
+- **Worktree / branche** : aucun (retiré après #2527).
 
 ## 1. Relevé : ce qui existe et ce qui manque (2026-10-24)
 
@@ -508,3 +500,52 @@ et pourquoi le oui / non n'est-il pas un QCM ?
 **À trancher (là-bas)** : une réponse ou
 plusieurs ; ordre mélangé ; notation d'une question mêlant « choix » et autres cases ; copie corrigée et PDF ; nom du
 chantier et des termes dans `CONTEXT.md` ; ADR (révise la décision QCM / cases).
+
+## 14. CP-060 rangé dans l'arbre (2026-11-05)
+
+Depuis la v0.73.0 (fin de thème / domaine / sous-domaine), le brouillon CP-060 « Termine le carré ou le rectangle sur
+le quadrillage » (`1cf6eaa9-376d-43a1-a3e4-eb7d18c40099`) était « Non rangé », sans nœud et sans point.
+
+- **Relevé de la prod (2026-11-05, lecture seule)** : le point CP-060 (« Construire un carré, un rectangle, un
+  triangle ou un assemblage de ces figures sur du papier quadrillé ou pointé ») est sur Géométrie › Figures planes ›
+  **constructions**, à côté de CP-059. Il n'a aucun modèle. Le modèle : brouillon, sans nœud, 0 tag.
+- **Nœud** : « constructions » (reco suivie par David : « je suis tes recos »). L'autre nœud possible, « reconnaître
+  et nommer des formes » (CP-054, CP-055), aurait obligé à déplacer le point (trigger : point sur le nœud du modèle
+  ou sur sa notion).
+- **Question d'accès** : personne ne gagne ni ne perd d'accès (reco suivie par David).
+- Migration `20261105055111_questions_cp060_rangement_tag` (forme du lot 12 a de `questions-2de`), test
+  `tests/integration/questions-cp060-rangement-tag.test.ts` : 8/8 verts, 4 rouges sans la migration.
+- Reste : publier CP-060 (David, après son essai, `docs/wip/verifications-manuelles.md`).
+- **Livré (2026-11-05)** : #2388 mergée (CI verte) ; `security-auditor` sans finding bloquant. `db push --include-all`
+  lancé par David depuis le dépôt principal (le classifieur l'a refusé à Claude), avec 055243 (`questions-2de`) et
+  060921 (`questions-1spe-demonstrations`, audit confirmé par sa session) : `20261105055721` (déjà en prod) imposait
+  `--include-all`. Vérifié en prod : nœud « constructions », un seul point CP-060, brouillon, `updated_at` inchangé.
+
+## 15. Essais sur iPad et carré décalé (2026-11-09)
+
+- **Essais de David sur iPad** (Tailscale Serve, `/dev/carte-question`) : CP-060 et CP-058, toutes les lignes de
+  `verifications-manuelles.md` passent (lignes retirées).
+- **Carré décalé** (limite du § 12) : un carré fermé le long de (AB), qui chevauche [AB] sans le contenir, disait
+  « Ta figure n'est pas fermée. ». **Décision de David** (reco suivie) : « Ton carré doit être construit sur le côté
+  déjà tracé. » — vrai que la figure soit un carré ou non. Placé après « prolongé ». Un carré posé sur une partie
+  de [AB] seulement (contenu dedans) et la figure en L gardent « pas fermée ».
+- **Codé** : `closedOnLineOfSide` (`construction/polygon.ts`) généralise `closedOnProlongedSide` ; deux filtres,
+  `prolongsSide` et `shiftsSide`. Tests : décalé vers B / vers A, rectangle décalé, côté vertical (rouges avant) ;
+  décalé ouvert et carré intérieur → « pas fermée ». 805 tests de `construction/` verts.- **Livré** : #2526 mergée (CI verte, revue Opus sans finding bloquant ; test oblique ajouté à sa demande).
+  Restent à trancher : le carré accolé par un sommet et le petit carré intérieur (toujours « pas fermée »).
+
+## 16. Carré accolé, séparé, ou sur une partie de [AB] (2026-11-09)
+
+Questions de la revue de #2526, **décisions de David** (« oui pour les deux, je suis tes recos ») :
+
+- Carré fermé sur la droite (AB), **accolé** à [AB] par un sommet ou **séparé** par un trou : même message que le
+  décalé, « Ton carré doit être construit sur le côté déjà tracé. » (`shiftsSide` élargi : ni contient [AB], ni
+  contenu dedans).
+- Petit carré fermé sur une **partie** de [AB] : « Ton carré doit avoir pour côté le côté déjà tracé. »
+  (`PART_OF_SIDE_FEEDBACK`, filtre `partOfSide`), après « prolongé » et « décalé ».
+- Tests rouges avant : accolé en A, en B, séparé d'un carreau ; petit carré intérieur, calé sur A au-dessous.
+  Ouverts → toujours « pas fermée ». 807 tests de `construction/` verts.
+- **Livré** : #2527 mergée (CI verte). Revue Opus : partition exacte des trois filtres, aucun finding bloquant ;
+  cas mineurs laissés (le message reçu reste vrai) : carré pas fini + trait intérieur qui ferme un rectangle sur une
+  partie de [AB] → « partie » (avant « pas fermée ») ; rectangle sur une partie de [AB] → « partie » sans « pas un
+  carré ».

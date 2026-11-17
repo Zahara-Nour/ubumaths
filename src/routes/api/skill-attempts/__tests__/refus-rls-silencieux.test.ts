@@ -77,7 +77,12 @@ async function post() {
 	const request = new Request('http://localhost/api/skill-attempts', {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({ template_id: TEMPLATE_ID, success: true, with_help: false })
+		body: JSON.stringify({
+			template_id: TEMPLATE_ID,
+			success: true,
+			with_help: false,
+			place: 'flash_cards'
+		})
 	});
 	return POST({ request, locals: { supabase: fakeSupabase() } } as never);
 }

@@ -1,10 +1,8 @@
 {
+	"id": "c85626fa-c875-4314-bbb9-96c4b7c6dd48",
 	"title": "Combien de côtés ? Combien de sommets ?",
 	"description": "Compter les côtés ou les sommets d'un triangle, d'un carré ou d'un rectangle",
 	"grades": ["CP"],
-	"theme": "Géométrie",
-	"domain": "Figures planes",
-	"subdomain": "Propriétés",
 	"level": 1,
 	"delay": 30,
 	"status": "draft",

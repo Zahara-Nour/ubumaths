@@ -1,10 +1,8 @@
 {
+	"id": "6670b161-4120-44a4-a6fd-22c8db71d2a1",
 	"title": "Fonction affine : variations, signe et droite",
 	"description": "Sens de variation, valeur qui annule et signe d'une fonction affine, par la formule, sur la droite, depuis le tableau de signes (pièges : signe de p au lieu de m, zéro −p/m écrit p/m, signe inversé pour m < 0)",
 	"grades": ["2"],
-	"theme": "Fonctions",
-	"domain": "Fonctions affines",
-	"subdomain": "Variations-Signe",
 	"level": 4,
 	"delay": 60,
 	"status": "draft",

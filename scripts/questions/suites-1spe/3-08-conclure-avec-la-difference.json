@@ -1,11 +1,9 @@
 {
+	"id": "ecba8a9e-bedb-478d-a324-a4f3fbdb3967",
 	"title": "Sens de variation à partir du signe de u(n+1) − u(n)",
 	"description": "La différence de deux termes consécutifs est donnée : en déduire le sens de variation",
 	"grades": ["1_SPE"],
-	"theme": "Suites",
-	"domain": "Sens de variation",
 	"status": "draft",
-	"subdomain": "Différence de deux termes",
 	"level": 2,
 	"delay": 30,
 	"variations": [

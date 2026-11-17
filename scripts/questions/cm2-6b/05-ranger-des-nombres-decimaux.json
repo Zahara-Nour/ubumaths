@@ -1,10 +1,8 @@
 {
+	"id": "de29bf83-795e-4876-9fb1-ad2353cfea94",
 	"title": "Ranger des nombres décimaux",
 	"description": "Ranger dans l'ordre croissant ou décroissant cinq nombres : un entier, trois décimaux de même partie entière et une fraction décimale (12,082 ; 12,09 ; 12 324/1 000 ; 12,6 ; 14)",
 	"grades": ["CM2"],
-	"theme": "Décimaux",
-	"domain": "Apprivoiser",
-	"subdomain": "Comparer",
 	"level": 7,
 	"delay": 60,
 	"status": "draft",

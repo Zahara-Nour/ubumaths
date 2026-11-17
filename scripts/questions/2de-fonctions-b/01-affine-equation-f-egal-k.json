@@ -1,10 +1,8 @@
 {
+	"id": "d49de3f3-05c3-4986-8825-9e13b4544161",
 	"title": "Résoudre f(x) = k (fonction affine)",
 	"description": "Fonction affine donnée par son expression : résoudre f(x) = k (solution entière, puis fractionnaire) ; antécédent de k (pièges : signe en changeant de membre, f(k) au lieu de résoudre, « 4 » sans accolades)",
 	"grades": ["2"],
-	"theme": "Fonctions",
-	"domain": "Fonctions affines",
-	"subdomain": "Résolution algébrique",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

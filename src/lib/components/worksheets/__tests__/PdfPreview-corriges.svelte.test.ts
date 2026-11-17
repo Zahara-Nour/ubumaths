@@ -86,7 +86,7 @@ async function downloadedFileName(): Promise<string> {
 }
 
 async function choose(label: string) {
-	await page.getByRole('button', { name: 'PDF à générer' }).click();
+	await page.getByRole('combobox', { name: 'PDF à générer' }).click();
 	await page.getByRole('option', { name: label, exact: true }).click();
 }
 

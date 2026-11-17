@@ -40,7 +40,7 @@ const DECORATION_RATE_MAX = 30;
 export const POST: RequestHandler = async ({ request, locals }) => {
 	const { user } = await requireRole(locals, 'student');
 	// Partagée par l'achat et la pose : chaque appel verrouille la ligne `profiles` de l'élève
-	rateLimit(`mathou_decoration:${user.id}`, DECORATION_RATE_MAX, 60_000);
+	await rateLimit(`mathou_decoration:${user.id}`, DECORATION_RATE_MAX, 60_000);
 
 	const parsed = bodySchema.safeParse(await request.json().catch(() => null));
 	if (!parsed.success) throw error(400, 'Requête invalide');

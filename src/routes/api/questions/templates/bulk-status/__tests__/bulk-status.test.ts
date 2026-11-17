@@ -4,8 +4,8 @@
  *
  * Les 640 modèles importés sont en brouillon. Publier = repasser chaque modèle
  * dans `checkTemplate` côté serveur (specs vertes, 50 tirages par variation…) ;
- * un modèle qui échoue reste en brouillon, raison en français. Une collision de
- * catégorie est refusée (pas de décalage automatique du niveau).
+ * un modèle qui échoue reste en brouillon, raison en français. La catégorie n'est plus
+ * contrôlée (les modèles sont rangés dans l'arbre des notions).
  *
  * La base est simulée en mémoire, avec des lignes de la forme réelle : le modèle
  * est la question TinyMath #139 relue (`data/relecture/entiers/139.json`).
@@ -29,7 +29,7 @@ interface FakeDb {
 	profiles: Row[];
 	/** Simule une RLS qui refuse l'écriture : 0 ligne rendue, pas d'erreur */
 	blockUpdates?: boolean;
-	/** Simule un conflit d'unicité (index partiel des catégories publiées) */
+	/** Simule une erreur de la base (23505) : l'erreur générique, pas un refus rangé */
 	uniqueViolation?: boolean;
 }
 
@@ -39,9 +39,6 @@ interface FixtureTemplate {
 	shared?: unknown;
 	variations: unknown[];
 	grades: string[];
-	theme: string;
-	domain: string;
-	subdomain?: string;
 	level: number;
 	delay?: number;
 	testSpecs?: Array<{ answers: string[]; expected: { status: string } }>;
@@ -72,9 +69,6 @@ function templateRow(id: string, overrides: Row = {}): Row {
 		id,
 		title: FIXTURE.title,
 		description: FIXTURE.description ?? null,
-		theme: FIXTURE.theme,
-		domain: FIXTURE.domain,
-		subdomain: FIXTURE.subdomain ?? null,
 		level: FIXTURE.level,
 		status: 'draft',
 		grades: FIXTURE.grades,
@@ -116,7 +110,7 @@ function fakeQuery(db: FakeDb, table: 'question_templates' | 'profiles') {
 			if (db.uniqueViolation) {
 				return {
 					data: null,
-					error: { code: '23505', message: 'idx_question_templates_unique_category' }
+					error: { code: '23505', message: 'duplicate key value' }
 				};
 			}
 			if (db.blockUpdates) {
@@ -192,7 +186,9 @@ function fakeDb(
 
 function fakeLocals(db: FakeDb) {
 	return {
-		safeGetSession: async () => ({ user: { id: USER_ID } }),
+		// Ce que posent les hooks : session et profil du compte connecté
+		user: { id: USER_ID },
+		profile: db.profiles.find((p) => p.id === USER_ID) ?? null,
 		supabase: {
 			from: (table: 'question_templates' | 'profiles') => fakeQuery(db, table)
 		}
@@ -244,48 +240,36 @@ describe('POST /api/questions/templates/bulk-status — publier', () => {
 		expect(statusOf(db, ID_B)).toBe('published');
 	});
 
-	it('refuse une collision de catégorie avec un modèle déjà publié (pas de décalage de niveau)', async () => {
+	it('ne contrôle aucune catégorie : un modèle de même niveau qu’un publié passe', async () => {
 		const db = fakeDb('admin', [
 			templateRow(ID_PUBLISHED, { status: 'published', title: 'Double (déjà publié)' }),
 			templateRow(ID_A)
 		]);
 
-		const response = await callBulk(db, { ids: [ID_A], status: 'published' });
+		const body = await (await callBulk(db, { ids: [ID_A], status: 'published' })).json();
 
-		const body = await response.json();
-		expect(body.published).toEqual([]);
-		expect(body.refused).toHaveLength(1);
-		expect(body.refused[0].reasons.join(' ')).toMatch(/catégorie.*Double \(déjà publié\)/);
-		expect(statusOf(db, ID_A)).toBe('draft');
-		// Le niveau n'a pas été décalé en douce
-		expect(db.question_templates.find((row) => row.id === ID_A)?.level).toBe(4);
+		expect(body.published).toEqual([{ id: ID_A, title: 'Trouver le double' }]);
+		expect(body.refused).toEqual([]);
+		expect(statusOf(db, ID_A)).toBe('published');
 	});
 
-	it('refuse les modèles de la sélection qui se disputent la même catégorie', async () => {
+	it('publie ensemble des modèles de la sélection rangés au même endroit', async () => {
 		const db = fakeDb('admin', [templateRow(ID_A), templateRow(ID_B, { title: 'Double bis' })]);
 
-		const response = await callBulk(db, { ids: [ID_A, ID_B], status: 'published' });
+		const body = await (await callBulk(db, { ids: [ID_A, ID_B], status: 'published' })).json();
 
-		const body = await response.json();
-		expect(body.published).toEqual([]);
-		expect(body.refused.map((entry: { id: string }) => entry.id).sort()).toEqual(
-			[ID_A, ID_B].sort()
-		);
-		expect(body.refused[0].reasons.join(' ')).toMatch(/même catégorie/);
-		expect(statusOf(db, ID_A)).toBe('draft');
-		expect(statusOf(db, ID_B)).toBe('draft');
+		expect(body.published).toHaveLength(2);
+		expect(body.refused).toEqual([]);
+		expect(statusOf(db, ID_A)).toBe('published');
+		expect(statusOf(db, ID_B)).toBe('published');
 	});
 
-	it("traite un sous-domaine vide comme absent, comme l'index unique de la base", async () => {
-		const db = fakeDb('admin', [
-			templateRow(ID_PUBLISHED, { status: 'published', subdomain: null }),
-			templateRow(ID_A, { subdomain: '' })
-		]);
+	it('publie un modèle rangé par l’arbre', async () => {
+		const db = fakeDb('admin', [templateRow(ID_A, { classification_node_id: ID_B })]);
 
 		const body = await (await callBulk(db, { ids: [ID_A], status: 'published' })).json();
 
-		expect(body.published).toEqual([]);
-		expect(body.refused[0].reasons.join(' ')).toMatch(/catégorie/);
+		expect(body.published).toHaveLength(1);
 	});
 
 	it("signale un identifiant introuvable au lieu de l'ignorer", async () => {
@@ -320,15 +304,13 @@ describe('POST /api/questions/templates/bulk-status — publier', () => {
 		expect(statusOf(db, ID_A)).toBe('archived');
 	});
 
-	it('transforme un conflit d’unicité de la base (23505) en refus, pas en erreur 500', async () => {
+	it('une erreur 23505 de la base n’a plus de cas à part : erreur générique 500', async () => {
 		const db = fakeDb('admin', [templateRow(ID_A)], { uniqueViolation: true });
 
-		const response = await callBulk(db, { ids: [ID_A], status: 'published' });
-
-		expect(response.status).toBe(200);
-		const body = await response.json();
-		expect(body.published).toEqual([]);
-		expect(body.refused[0].reasons.join(' ')).toMatch(/catégorie est devenue occupée/);
+		await expect(callBulk(db, { ids: [ID_A], status: 'published' })).rejects.toMatchObject({
+			status: 500
+		});
+		expect(statusOf(db, ID_A)).toBe('draft');
 	});
 
 	it("rend un échec, pas un succès, quand la RLS refuse l'écriture en silence (0 ligne)", async () => {
@@ -361,19 +343,6 @@ describe('publishTemplates — simulation (scripts/questions/publier-lot.ts)', (
 		expect(result.refused.map((r) => r.id)).toEqual([ID_A]);
 		expect(statusOf(db, ID_A)).toBe('draft');
 		expect(statusOf(db, ID_B)).toBe('draft');
-	});
-
-	it('signale une collision de catégorie sans rien écrire', async () => {
-		const db = fakeDb('admin', [
-			templateRow(ID_PUBLISHED, { status: 'published', title: 'Double (déjà publié)' }),
-			templateRow(ID_A)
-		]);
-
-		const result = await publishTemplates(client(db), [ID_A], { simulation: true });
-
-		expect(result.published).toEqual([]);
-		expect(result.refused[0].reasons.join(' ')).toMatch(/catégorie.*Double \(déjà publié\)/);
-		expect(statusOf(db, ID_A)).toBe('draft');
 	});
 
 	it('sans simulation, le même appel écrit (témoin)', async () => {

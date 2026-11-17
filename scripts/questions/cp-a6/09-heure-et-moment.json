@@ -1,10 +1,8 @@
 {
+	"id": "fc63fdf0-fe90-4fd3-a5c4-347db2510ee0",
 	"title": "Quelle heure pour… ? (moments de la journée)",
 	"description": "Associer une heure entière à un moment de la journée : se lever, cantine, goûter, dîner, dormir",
 	"grades": ["CP"],
-	"theme": "Grandeurs",
-	"domain": "Durées",
-	"subdomain": "Moments de la journée",
 	"level": 1,
 	"delay": 30,
 	"status": "draft",

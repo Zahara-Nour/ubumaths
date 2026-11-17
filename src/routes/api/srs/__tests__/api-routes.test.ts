@@ -926,7 +926,7 @@ describe('POST /api/srs/review/submit - Submit Review', () => {
 				};
 			}
 			if (table === 'skill_attempts') {
-				// template card → 1 INSERT into skill_attempts (source='srs')
+				// template card → 1 INSERT into skill_attempts (student_self, lieu review)
 				return {
 					insert: vi.fn().mockResolvedValue({ error: null })
 				};
@@ -1201,8 +1201,6 @@ describe('GET /api/srs/review/due - Get Due Cards', () => {
 									options: { courseCard: true },
 									variations: [{ statement: 'Recto' }],
 									grades: ['2'],
-									theme: 'Fonctions',
-									domain: 'Généralités',
 									level: 1
 								},
 								error: null

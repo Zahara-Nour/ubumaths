@@ -1,10 +1,8 @@
 {
+	"id": "2f1657b0-0ccd-4f68-93b5-0c6256a0e6e6",
 	"title": "Nommer un calcul",
 	"description": "Dire si un calcul est une somme ou un produit, d'après sa dernière opération (3 + 4 × 5 est une somme ; (3 + 4) × 5 est un produit)",
 	"grades": ["5"],
-	"theme": "Entiers",
-	"domain": "Priorités opératoires",
-	"subdomain": "Vocabulaire",
 	"level": 1,
 	"delay": 30,
 	"status": "draft",

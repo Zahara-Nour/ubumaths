@@ -1,10 +1,8 @@
 {
+	"id": "bcfbf5f8-367e-4927-8041-489acaeb9831",
 	"title": "Un point est-il sur la courbe ? (par le calcul)",
 	"description": "Calculer f(x_A) puis dire si A est sur C_f : polynôme du second degré, produit, quotient k/(x − c) (pièges : (−2)² calculé −4, coordonnées échangées, conclusion sans calcul)",
 	"grades": ["2"],
-	"theme": "Fonctions",
-	"domain": "Généralités",
-	"subdomain": "Définition et courbe",
 	"level": 3,
 	"delay": 90,
 	"status": "draft",

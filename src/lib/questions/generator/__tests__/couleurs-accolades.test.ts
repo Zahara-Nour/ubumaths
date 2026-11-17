@@ -19,8 +19,6 @@ function statementOf(statement: string): string {
 		title: 't',
 		status: 'draft',
 		grades: ['6'],
-		theme: 'T',
-		domain: 'D',
 		level: 1,
 		variations: [
 			{

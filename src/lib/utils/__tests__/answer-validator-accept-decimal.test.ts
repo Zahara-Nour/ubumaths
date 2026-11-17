@@ -27,8 +27,6 @@ function createInstance(
 		statement: 'Donne la valeur' as ResolvedMarkdown,
 		blanks,
 		grades: ['2'],
-		theme: 'Fonctions',
-		domain: 'Affines',
 		level: 1,
 		generatedAt: new Date().toISOString(),
 		...(options && { options })

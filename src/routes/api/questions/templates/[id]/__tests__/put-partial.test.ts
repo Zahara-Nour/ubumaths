@@ -100,21 +100,6 @@ describe('PUT partiel : publication contrôlée sur le modèle fusionné', () =>
 		expect(response.status).toBe(200);
 		expect(db.updates).toEqual([{ title: 'Le double' }]);
 	});
-
-	it('{status: published} alors qu’un AUTRE publié occupe la catégorie → 400', async () => {
-		const db = fakeDb();
-		db.question_templates.push({
-			...templateRow(),
-			id: '33333333-3333-4333-8333-333333333333',
-			status: 'published'
-		});
-		const response = await callPut(db, { status: 'published' });
-
-		expect(response.status).toBe(400);
-		const body = await response.json();
-		expect(body.errors.join(' ')).toMatch(/Cette catégorie existe déjà/);
-		expect(db.updates).toEqual([]);
-	});
 });
 
 describe('PUT partiel : hypothèses et absence', () => {
@@ -154,9 +139,6 @@ describe("PUT complet (éditeur) : objet d'écriture inchangé", () => {
 			exerciseInstruction: null,
 			options: null,
 			grades: FIXTURE.grades,
-			theme: FIXTURE.theme,
-			domain: FIXTURE.domain,
-			subdomain: FIXTURE.subdomain,
 			level: FIXTURE.level,
 			status: 'draft',
 			delay: FIXTURE.delay,
@@ -165,7 +147,7 @@ describe("PUT complet (éditeur) : objet d'écriture inchangé", () => {
 		const response = await callPut(db, payload);
 
 		expect(response.status).toBe(200);
-		// Objet qu'écrivait la route avant le correctif, expression par expression
+		// Objet qu'écrivait la route (rangement par `classification_node_id`, ADR 0035)
 		expect(db.updates).toEqual([
 			{
 				type: 'fill_in_blanks',
@@ -177,9 +159,6 @@ describe("PUT complet (éditeur) : objet d'écriture inchangé", () => {
 				exercise_instruction: null,
 				options: null,
 				grades: FIXTURE.grades,
-				theme: FIXTURE.theme,
-				domain: FIXTURE.domain,
-				subdomain: FIXTURE.subdomain,
 				level: FIXTURE.level,
 				status: 'draft',
 				delay: FIXTURE.delay,

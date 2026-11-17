@@ -1,10 +1,8 @@
 {
+	"id": "d5a36be9-f6bb-428f-b0e0-60bee080bd19",
 	"title": "Où est-il ?",
 	"description": "Positions relatives : gauche, droite, au-dessus, en dessous, entre, sur, sous, devant, derrière",
 	"grades": ["CP"],
-	"theme": "Géométrie",
-	"domain": "Repérage et déplacements",
-	"subdomain": "Positions et plans",
 	"level": 1,
 	"delay": 30,
 	"status": "draft",
@@ -37,12 +35,12 @@
 					"expression": "0..2"
 				},
 				{
-					"name": "e",
+					"name": "h",
 					"expression": "0..1"
 				},
 				{
 					"name": "k",
-					"expression": "eval:1+2*g+e"
+					"expression": "eval:1+2*g+h"
 				}
 			],
 			"conditions": [],
@@ -148,7 +146,7 @@
 			"variationIndex": 1,
 			"variables": {
 				"g": "0",
-				"e": "0",
+				"h": "0",
 				"k": "1"
 			},
 			"expected": {
@@ -161,7 +159,7 @@
 			"variationIndex": 1,
 			"variables": {
 				"g": "0",
-				"e": "0",
+				"h": "0",
 				"k": "1"
 			},
 			"expected": {
@@ -174,7 +172,7 @@
 			"variationIndex": 1,
 			"variables": {
 				"g": "2",
-				"e": "1",
+				"h": "1",
 				"k": "6"
 			},
 			"expected": {

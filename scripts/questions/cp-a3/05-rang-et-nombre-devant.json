@@ -1,10 +1,8 @@
 {
+	"id": "0559204d-cee6-4c77-b4e8-33088416ff18",
 	"title": "Rang et nombre d'enfants devant",
 	"description": "Je suis le 3e : combien devant moi ? 4 devant moi : quelle place ? Combien derrière ?",
 	"grades": ["CP"],
-	"theme": "Entiers",
-	"domain": "Apprivoiser",
-	"subdomain": "Ordinaux",
 	"level": 5,
 	"delay": 60,
 	"status": "draft",

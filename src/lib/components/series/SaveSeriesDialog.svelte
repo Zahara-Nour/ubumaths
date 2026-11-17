@@ -13,15 +13,15 @@
 	import MySelect from '$lib/components/MySelect.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { getGradeSelectItems } from '$lib/utils/grades';
-	import type { CartItem } from '$lib/stores/questionCart.svelte';
+	import type { SeriesItem } from '$lib/validation/series';
 
 	interface Props {
 		open: boolean;
-		categories: CartItem[];
+		items: SeriesItem[];
 		onSaved?: (seriesId: string) => void;
 	}
 
-	let { open = $bindable(), categories, onSaved }: Props = $props();
+	let { open = $bindable(), items, onSaved }: Props = $props();
 
 	const gradeItems = getGradeSelectItems();
 
@@ -48,7 +48,7 @@
 					title: trimmedTitle,
 					grade,
 					description: description.trim() || null,
-					categories
+					items
 				})
 			});
 			const body: unknown = await response.json().catch(() => null);
@@ -87,8 +87,8 @@
 		<Dialog.Header>
 			<Dialog.Title>Enregistrer comme série</Dialog.Title>
 			<Dialog.Description>
-				La série garde les {categories.length} catégorie{categories.length > 1 ? 's' : ''} du panier.
-				Tu pourras ensuite en faire un contrôle.
+				La série garde les {items.length} modèle{items.length > 1 ? 's' : ''} du panier. Tu pourras ensuite
+				en faire un contrôle.
 			</Dialog.Description>
 		</Dialog.Header>
 

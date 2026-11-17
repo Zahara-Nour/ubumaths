@@ -16,9 +16,6 @@ export const PASSE_LYCEE = 'supabase/migrations/20261022180000_passe_points_lyce
 /** Libellés et points neufs de la passe lycée (étape e, PR 2), venus après l'étape a. */
 export const PASSE_LYCEE_LIBELLES =
 	'supabase/migrations/20261023220000_passe_lycee_libelles_points.sql';
-/** Sous-notion « reconnaître et nommer des formes » (CP-054, CP-055) et niveaux de 19 brouillons CP. */
-export const QUESTIONS_CP_FORMES =
-	'supabase/migrations/20261026170000_questions_cp_formes_et_niveaux.sql';
 /** Sous-notion « Statistiques > Représenter des données > choisir une représentation » (5-079) et lot 6 de la 5e. */
 export const QUESTIONS_5_LOT6 =
 	'supabase/migrations/20261101190200_questions_5_lot6_rangement_tags.sql';
@@ -28,12 +25,31 @@ export const QUESTIONS_TSPE_LOT2 =
 /** Sous-notion « Algorithmique > Variables et instructions > blocs personnalisés » (3-050), lots 7 et 8 de la 3e. */
 export const QUESTIONS_3_LOTS7_8 =
 	'supabase/migrations/20261102070008_questions_3_lots7_8_rangement_tags.sql';
+/** Sous-notions « Généralités sur les suites > sommes de termes » et « Modèles d'évolution > emprunt », lot 5 de 1re spé. */
+export const QUESTIONS_1SPE_APPRO5 =
+	'supabase/migrations/20261103233226_questions_1spe_approfondissements_5_rangement_tags.sql';
+/** Sous-notion « Géométrie > Géométrie repérée > parabole », lot 8 de 1re spé. */
+export const QUESTIONS_1SPE_APPRO8 =
+	'supabase/migrations/20261105195513_questions_1spe_approfondissements_8_rangement_tags.sql';
+/** Point 2-496 (automatismes de 2de, rang 51 : les points de 2de suivants descendent d'un rang), chantier automatismes-1spe. */
+export const AUTOMATISMES_1SPE_POINT_2_496 =
+	'supabase/migrations/20261106162749_automatismes_1spe_point_application_numerique.sql';
+/** Sous-notion « Suites > Suites récurrentes > récurrence linéaire d'ordre 2 », lot 11 de terminale spé (approfondissements). */
+export const QUESTIONS_TSPE_APPRO11 =
+	'supabase/migrations/20261114021510_questions_tspe_approfondissements_11_rangement_tags.sql';
+/** Sous-notion « Probabilités > Autres lois > loi de Poisson », lot 15 de terminale spé (approfondissements). */
+export const QUESTIONS_TSPE_APPRO15 =
+	'supabase/migrations/20261114111511_questions_tspe_approfondissements_15_rangement_tags.sql';
 /** Du plus récent au plus ancien. */
 const LATER = [
+	QUESTIONS_TSPE_APPRO15,
+	QUESTIONS_TSPE_APPRO11,
+	AUTOMATISMES_1SPE_POINT_2_496,
+	QUESTIONS_1SPE_APPRO8,
+	QUESTIONS_1SPE_APPRO5,
 	QUESTIONS_3_LOTS7_8,
 	QUESTIONS_TSPE_LOT2,
 	QUESTIONS_5_LOT6,
-	QUESTIONS_CP_FORMES,
 	PASSE_LYCEE_LIBELLES,
 	PASSE_LYCEE
 ];

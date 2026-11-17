@@ -16,8 +16,6 @@ function check(answer: string, expectedAnswer: string): boolean {
 		statement: 'Test' as ResolvedMarkdown,
 		blanks: [blank],
 		grades: ['6'],
-		theme: 'Test',
-		domain: 'Test',
 		level: 1,
 		generatedAt: new Date().toISOString()
 	};

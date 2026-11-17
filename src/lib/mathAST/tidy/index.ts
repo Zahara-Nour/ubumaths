@@ -22,7 +22,14 @@ import type { TidyCondition } from './types';
 import { conditionKey, domainLoss, mergeConditions } from './conditions';
 
 export { TidyStepRecorder, TIDY_RULE_DESCRIPTIONS } from './step-recorder';
-export type { TermOrder, TidyOptions, TidyRule, TidyStep, UnitChoice } from './step-recorder';
+export type {
+	DurationWriting,
+	TermOrder,
+	TidyOptions,
+	TidyRule,
+	TidyStep,
+	UnitChoice
+} from './step-recorder';
 export type { TidyCondition } from './types';
 export {
 	avoidsPeriodicPoints,

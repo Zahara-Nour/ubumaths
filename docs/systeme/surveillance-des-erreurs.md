@@ -6,7 +6,7 @@ couvre:
   - 'src/routes/(protected)/dev/erreurs/surveillance/**'
   - 'src/routes/(protected)/dashboard/bug-reports/**'
   - 'src/lib/components/bug-reports/**'
-  - 'src/lib/utils/{errorMonitoring,freezeDetection,errors,version}.ts'
+  - 'src/lib/utils/{errorMonitoring,freezeDetection,errors,version,web-vitals-visibilite,inp-tracker,analytics-redact}.ts'
   - src/lib/stores/bugReportsConfig.svelte.ts
   - src/lib/types/bug-reports.ts
   - 'src/lib/server/{errorMonitoring,healthStats,bug-report-errors,bug-report-export,bug-report-screenshots,docs-scanner,markdown-parser,search}.ts'
@@ -59,7 +59,20 @@ Trois boucles distinctes :
   - `initWebVitals` : observe LCP, CLS, INP, etc. ; une valeur au-dessus du seuil part
     en `performance` (rien n'est envoyé si la sévérité vaut `info`) ; l'URL passe par
     `sanitizeUrl` (paramètres `token`, `key`, `secret`, `password`, `auth`, `session`,
-    `code` remplacés par `[REDACTED]`) ;
+    `code` remplacés par `[REDACTED]`) ; un FCP ou un LCP mesuré après le premier passage
+    de la page en arrière-plan est écarté (`web-vitals-visibilite.ts`, même règle que
+    `web-vitals` : un onglet ouvert en arrière-plan donnait des « LCP » de plusieurs heures) ;
+    INP et CLS partent au passage en arrière-plan, mais seulement s'ils ont grandi depuis
+    le dernier envoi (avant, un onglet ouvert des jours renvoyait le même INP dès la fin
+    de la fenêtre anti-doublon de 5 minutes : jusqu'à 28 fois la même valeur) ;
+  - INP (`inp-tracker.ts`) : seuls les événements d'une interaction comptent
+    (`interactionId` non nul ; survol, défilement exclus) ; une interaction vaut son
+    événement le plus lent ; la plus lente par tranche de 50 interactions est écartée
+    (`performance.interactionCount`, à défaut les interactions observées). L'URL envoyée est
+    celle de la page où l'interaction a commencé (relevée au `pointerdown` / `keydown`), pas
+    celle du passage en arrière-plan. `context` reçoit `event_name` (`pointerup`, `keydown`…)
+    et `target` : balise, `id`, `role` — **jamais d'`aria-label`** (certains portent le nom
+    d'un élève) ni de texte saisi ;
   - garde-fous (objet `CONFIG`) : 10 erreurs par minute au plus, file envoyée toutes
     les 10 s ou dès 5 erreurs. « Lot » ne veut dire que regroupement dans le temps :
     chaque erreur part dans son propre `POST` ;
@@ -102,8 +115,11 @@ Trois boucles distinctes :
 | Route                              | Qui                             | Rôle                                                                                                                          |
 | ---------------------------------- | ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
 | `POST /api/errors/log`             | tout le monde, même sans compte | écrit une erreur ; 20 par minute et par IP ; sans compte approuvé, `critical` devient `error` ; `context` ≤ 10 000 caractères |
-| `POST /api/errors/bulk-resolve`    | admin                           | résout par empreinte tout ce qui correspond aux filtres                                                                       |
-| `POST /api/errors/delete-resolved` | admin                           | supprime toutes les erreurs résolues (client service)                                                                         |
+| `POST /api/errors/bulk-resolve`    | admin (ou prof élevé)           | résout par empreinte tout ce qui correspond aux filtres                                                                       |
+| `POST /api/errors/delete-resolved` | admin (ou prof élevé)           | supprime toutes les erreurs résolues (client service)                                                                         |
+
+Les deux routes admin se gardent par `requireAdmin` (vrai compte admin, ou prof en mode
+administration : [auth.md](auth.md) § Élévation admin) ; `bulk-resolve` écrit avec le client rendu.
 
 Pages admin : `/dashboard/admin/errors` (statistiques 24 h et occurrences, filtres
 `type`, `severity`, `resolved`, `search` dans l'adresse), `/dashboard/admin/errors/[id]`
@@ -180,7 +196,8 @@ Les rappels sont branchés dans `src/routes/(protected)/dashboard/+layout.svelte
 
 Table singleton `bug_reports_config` (`singleton_key = 'global'`), quatre drapeaux :
 `fab_enabled`, `freeze_detection_enabled`, `freeze_prompt_enabled`, `auto_report_enabled`.
-`/api/bug-reports/config` : `GET` pour tout compte connecté, `PATCH` admin. Côté client,
+`/api/bug-reports/config` : `GET` pour tout compte connecté, `PATCH` admin (`requireAdmin` : le prof en
+mode administration passe aussi, [auth.md](auth.md)). Côté client,
 `bugReportsConfigStore` (`src/lib/stores/bugReportsConfig.svelte.ts`), valeurs par
 défaut `DEFAULT_BUG_REPORTS_CONFIG` (tout à `true`). Réglage : `BugReportsConfigCard`, sur
 `/dashboard/admin/bug-reports` et `/dashboard/admin/settings`.
@@ -255,6 +272,11 @@ défaut `DEFAULT_BUG_REPORTS_CONFIG` (tout à `true`). Réglage : `BugReportsCon
   adresses mail dans le message, la pile, l'URL **et toutes les valeurs texte** des en-têtes, du
   corps et du contexte, quel que soit le nom de la clé (depuis le 2026-10-13). Aucun appelant
   ne range plus `user_email` dans le contexte : `user_id` suffit.
+- Le jeton d'un lien du carnet de liaison (ADR 0040) est dans le CHEMIN (`/carnet/<jeton>`,
+  `/carnet/confirmer/<jeton>`), que `sanitizeUrl` ne voit pas : `logError` le remplace par
+  `[token]` dans l'URL et le message (`redactSecretUrl`, `src/lib/utils/analytics-redact.ts`,
+  depuis le 2026-11-16). Toutes les sources y passent : navigateur (`/api/errors/log`), requête
+  lente et exception de `hooks.server.ts`.
 - Une erreur porte `user_id` et `user_role` si l'utilisateur est connecté.
 - Un signalement porte l'URL, le user-agent, les sélecteurs des dernières actions. Les
   erreurs récentes de l'auteur n'y sont **pas** enregistrées : son auteur peut le relire, et
@@ -268,7 +290,7 @@ défaut `DEFAULT_BUG_REPORTS_CONFIG` (tout à `true`). Réglage : `BugReportsCon
 
 ### Limites de débit
 
-En mémoire, par instance (voir [serveur.md](serveur.md) §1.5) : `error-log:<ip>` 20/min,
+En base, partagées par toutes les instances (`rateLimit()`, voir [serveur.md](serveur.md) §1.5) : `error-log:<ip>` 20/min,
 `bug-report:<userId>` 10/h (test : `src/routes/api/bug-reports/__tests__/rate-limit.test.ts`),
 `search:<userId>` 30/min. Côté navigateur, 10 erreurs par minute.
 
@@ -318,7 +340,8 @@ rapport en UUID. Exceptions : voir Écarts.
   `failed` et `success` vaut `false` ; capture non rattachée au rapport → 403 et fichier retiré
   du bucket.
 - `src/lib/server/__tests__/errorMonitoring-journal.test.ts` : adresses masquées dans le
-  contexte et l'URL, message de l'alerte critique échappé.
+  contexte et l'URL, jeton du carnet masqué dans l'URL et le message, message de l'alerte
+  critique échappé.
 - `src/routes/api/errors/log/__tests__/log.test.ts` : `critical` ramené à `error` sans compte approuvé,
   taille du contexte bornée.
 - `tests/integration/database/error-monitoring-triggers.test.ts` : empreinte SHA-256 et

@@ -139,9 +139,6 @@
 			}
 		],
 		"grades": ["CM2"],
-		"theme": "Décimaux",
-		"domain": "Multiplier",
-		"subdomain": "Produits astucieux",
 		"level": 3,
 		"status": "draft",
 		"delay": 20,

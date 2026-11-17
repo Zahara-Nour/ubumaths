@@ -94,13 +94,15 @@ Any static import in the root `+layout.ts` becomes part of the route entry modul
 - `$env/static/public` (compile-time constants)
 - `$app/environment` (a constant, does not go through `client.js`)
 - `$lib/utils/work-data` (imports nothing; work data owner check, see `docs/systeme/conformite/rgpd.md`)
+- `$lib/utils/app-version` (imports nothing; skips the hourly refresh after a deploy, see `docs/systeme/coquille-et-caches.md`)
 - Type imports (`import type { ... }`)
 
 **Must be dynamic imports** (heavy, large dep trees):
 
 - `@supabase/ssr`, `@supabase/supabase-js`
 - Any library that transitively imports many modules
-- `$app/navigation` (can create circular chunk references)
+- `$app/navigation` (can create circular chunk references) — in `+layout.ts` only; the root
+  `+layout.svelte` imports `beforeNavigate` statically, like `$app/state` and `$app/stores`
 
 ### How to verify
 

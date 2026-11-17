@@ -181,7 +181,7 @@ export const PLACES: Place[] = [
 		title: 'Automaths',
 		tagline: 'Des Corvées à la chaîne, et pas une de trop.',
 		description:
-			'Choisis tes questions, puis lance la série : en classe, en entraînement, en Course aux nombres ou en Flash-cards.',
+			'Choisis tes questions, puis lance la série : en classe, en contrôle blanc, en Course aux nombres ou en Flash-cards.',
 		href: '/automaths',
 		featured: true
 	},

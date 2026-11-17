@@ -81,7 +81,7 @@
 	{:else}
 		<div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
 			{#each data.series as series (series.id)}
-				{@const questions = countSeriesQuestions(series.categories)}
+				{@const questions = countSeriesQuestions(series.items)}
 				<Card.Root data-testid="series-card">
 					<Card.Header>
 						<div class="mb-2 flex flex-wrap items-center gap-2">
@@ -100,7 +100,7 @@
 					</Card.Header>
 					<Card.Content class="space-y-1 text-sm text-muted-foreground">
 						<p>
-							{series.categories.length} catégorie{series.categories.length > 1 ? 's' : ''} ·
+							{series.items.length} modèle{series.items.length > 1 ? 's' : ''} ·
 							{questions} question{questions > 1 ? 's' : ''}
 						</p>
 						<p>
@@ -146,7 +146,7 @@
 							Supprimer
 						</Button>
 						<!-- Lien de la série, avec ou sans forme (Q44, Q46) -->
-						<SeriesLinkShare categories={series.categories} compact canMakeQr />
+						<SeriesLinkShare items={series.items} compact canMakeQr />
 					</Card.Footer>
 				</Card.Root>
 			{/each}

@@ -1,10 +1,8 @@
 {
+	"id": "c25f80f0-d9d3-4323-a07e-9ee96f2fa138",
 	"title": "Pose et calcule une multiplication par un nombre à deux chiffres",
 	"description": "Multiplication posée : 2 chiffres × 2 chiffres, 3 chiffres × 2 chiffres (produit ≤ 10 000), × 20, × 30",
 	"grades": ["CE2"],
-	"theme": "Entiers",
-	"domain": "Multiplier",
-	"subdomain": "Calcul posé",
 	"level": 3,
 	"delay": 240,
 	"status": "draft",

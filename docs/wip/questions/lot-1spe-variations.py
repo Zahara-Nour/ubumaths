@@ -1,6 +1,6 @@
 """Écrit les 7 modèles du lot « variations et courbes » de la 1re spé dans scripts/questions/1spe-variations/.
 
-Phase 0 validée par David le 2026-11-01 (D25, § 19 du journal « docs/wip/questions-1spe-progress.md »),
+Phase 0 validée par David le 2026-11-01 (D25, § 19 du journal « docs/archive/wip/questions-1spe-progress.md »),
 un point par modèle :
 
 | # | Point    | Titre                                     | Catégorie (Fonctions › …), niveau        |

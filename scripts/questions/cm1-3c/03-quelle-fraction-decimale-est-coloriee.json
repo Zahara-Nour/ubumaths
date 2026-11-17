@@ -1,10 +1,8 @@
 {
+	"id": "60ce79bb-f8da-4e21-b45a-9f8daa69a190",
 	"title": "Quelle fraction décimale de la figure est coloriée ?",
 	"description": "Lire une fraction décimale sur une figure partagée en 10 parts (bande, disque) ou en 100 cases (grille 10 × 10) : 7/10, 37/100",
 	"grades": ["CM1"],
-	"theme": "Fractions",
-	"domain": "Apprivoiser",
-	"subdomain": "Partage",
 	"level": 3,
 	"delay": 30,
 	"status": "draft",

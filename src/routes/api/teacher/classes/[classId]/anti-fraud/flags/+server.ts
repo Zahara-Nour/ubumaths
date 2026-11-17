@@ -2,7 +2,7 @@
  * GET /api/teacher/classes/[classId]/anti-fraud/flags
  *
  * Liste les flags anti-fraud des élèves de la classe (jointure class_members).
- * Filtres : resolved, since, type, capacity.
+ * Filtres : resolved, since, type, point (point du programme).
  *
  * Cf. spec TDD : docs/archive/wip/srs-anti-fraud-spec-tdd.md §B9
  */
@@ -29,14 +29,14 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 		resolved: url.searchParams.get('resolved') ?? undefined,
 		since: url.searchParams.get('since') ?? undefined,
 		type: url.searchParams.get('type') ?? undefined,
-		capacity: url.searchParams.get('capacity') ?? undefined
+		point: url.searchParams.get('point') ?? undefined
 	});
 	if (!queryCheck.success) {
 		return json({ error: queryCheck.error.issues[0].message }, { status: 400 });
 	}
 
 	const { classId } = paramCheck.data;
-	const { resolved, since, type, capacity } = queryCheck.data;
+	const { resolved, since, type, point } = queryCheck.data;
 	await requireTeacherOfClass(locals, classId);
 
 	// 1. Liste des élèves actifs de la classe.
@@ -75,7 +75,7 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 		.limit(MAX_FLAGS_PER_REQUEST);
 
 	if (type) q = q.eq('flag_type', type);
-	if (capacity) q = q.eq('capacity_point_id', capacity);
+	if (point) q = q.eq('capacity_point_id', point);
 
 	const { data: flagRows, error: flagErr } = await q;
 	if (flagErr) {
@@ -96,7 +96,7 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 		resolved_at: string | null;
 		created_at: string;
 		profiles: { id: string; first_name: string | null; last_name: string | null } | null;
-		skills: { id: string; name: string } | null;
+		curriculum_points: { id: string; name: string } | null;
 	};
 
 	const flags = ((flagRows ?? []) as unknown as FlagRow[]).map((row) => ({
@@ -119,7 +119,9 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 					last_name: row.profiles.last_name
 				}
 			: { id: row.student_id, first_name: null, last_name: null },
-		capacity: row.skills ? { id: row.skills.id, name: row.skills.name } : null
+		point: row.curriculum_points
+			? { id: row.curriculum_points.id, name: row.curriculum_points.name }
+			: null
 	}));
 
 	// 3. Compteur total + résolus (pour le tableau de bord).

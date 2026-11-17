@@ -31,10 +31,10 @@ function answer(equation: string): string | undefined {
 
 describe('√u = c : une valeur exacte reste exacte', () => {
 	it.each([
-		['sqrt(x)=sqrt(2)', 'x = 2'],
-		['sqrt(x)=sqrt(3)', 'x = 3'],
-		['sqrt(x)=2sqrt(2)', 'x = 8'],
-		['sqrt(x+1)=sqrt(5)', 'x = 4']
+		['sqrt(x)=sqrt(2)', 'S = \\left\\{ 2 \\right\\}'],
+		['sqrt(x)=sqrt(3)', 'S = \\left\\{ 3 \\right\\}'],
+		['sqrt(x)=2sqrt(2)', 'S = \\left\\{ 8 \\right\\}'],
+		['sqrt(x+1)=sqrt(5)', 'S = \\left\\{ 4 \\right\\}']
 	])('%s → %s', (equation, expected) => {
 		expect(answer(equation)).toBe(expected);
 	});
@@ -42,12 +42,12 @@ describe('√u = c : une valeur exacte reste exacte', () => {
 
 describe('√u = v, v dépendant de x : v ≥ 0 et u = v²', () => {
 	it.each([
-		['sqrt(x)=x-2', 'x = 4'],
-		['sqrt(x+3)=x+1', 'x = 1'],
-		['sqrt(2x+3)=x', 'x = 3'],
-		['sqrt(x+5)=x-1', 'x = 4'],
-		['sqrt(x)=2x-1', 'x = 1'],
-		['sqrt(x+2)=x', 'x = 2'],
+		['sqrt(x)=x-2', 'S = \\left\\{ 4 \\right\\}'],
+		['sqrt(x+3)=x+1', 'S = \\left\\{ 1 \\right\\}'],
+		['sqrt(2x+3)=x', 'S = \\left\\{ 3 \\right\\}'],
+		['sqrt(x+5)=x-1', 'S = \\left\\{ 4 \\right\\}'],
+		['sqrt(x)=2x-1', 'S = \\left\\{ 1 \\right\\}'],
+		['sqrt(x+2)=x', 'S = \\left\\{ 2 \\right\\}'],
 		['2sqrt(x)=x', 'S = \\left\\{ 0 \\,;\\, 4 \\right\\}']
 	])('%s → %s', (equation, expected) => {
 		expect(answer(equation)).toBe(expected);
@@ -56,22 +56,19 @@ describe('√u = v, v dépendant de x : v ≥ 0 et u = v²', () => {
 	it('√(x+1) = −x garde la condition −x ≥ 0 : seule la racine négative reste', () => {
 		// x² − x − 1 = 0 : (1 ± √5)/2 ; seule (1 − √5)/2 ≤ 0
 		const latex = answer('sqrt(x+1)=-x');
-		expect(latex).toMatch(/^x = /);
-		expect(latex).toContain('\\sqrt{5}');
-		expect(latex).not.toContain('S =');
-		// Une seule fraction sur le dénominateur commun (lot 5c, Q23)
-		expect(latex).toBe('x = \\dfrac{1 - \\sqrt{5}}{2}');
+		// Une seule solution, une seule fraction sur le dénominateur commun (lot 5c, Q23)
+		expect(latex).toBe('S = \\left\\{ \\dfrac{1 - \\sqrt{5}}{2} \\right\\}');
 	});
 });
 
 describe('déjà justes avant le lot (non-régression)', () => {
 	it.each([
-		['sqrt(x)=3', 'x = 9'],
-		['sqrt(x+1)=3', 'x = 8'],
-		['sqrt(2x-1)=5', 'x = 13'],
+		['sqrt(x)=3', 'S = \\left\\{ 9 \\right\\}'],
+		['sqrt(x+1)=3', 'S = \\left\\{ 8 \\right\\}'],
+		['sqrt(2x-1)=5', 'S = \\left\\{ 13 \\right\\}'],
 		['sqrt(x)=-1', 'S = \\emptyset'],
-		['3sqrt(x)-6=0', 'x = 4'],
-		['sqrt(x)=1/2', 'x = \\dfrac{1}{4}'],
+		['3sqrt(x)-6=0', 'S = \\left\\{ 4 \\right\\}'],
+		['sqrt(x)=1/2', 'S = \\left\\{ \\dfrac{1}{4} \\right\\}'],
 		['sqrt(x^2+1)=2', 'S = \\left\\{ -\\sqrt{3} \\,;\\, \\sqrt{3} \\right\\}'],
 		['sqrt(x^2)=3', 'S = \\left\\{ -3 \\,;\\, 3 \\right\\}']
 	])('%s → %s', (equation, expected) => {
@@ -106,12 +103,12 @@ describe('inéquations à racine : l’ensemble, domaine u ≥ 0 compris', () =>
 describe('revue : x² qui s’annulent, singletons, <= et ≤ (2026-10-08)', () => {
 	it.each([
 		// √u = v où u − v² devient AFFINE : x² + 5 = x² + 2x + 1
-		['sqrt(x^2+5)=x+1', 'x = 2'],
-		['sqrt(x^2+9)=x+3', 'x = 0'],
-		['sqrt(x^2-3)=x-1', 'x = 2'],
+		['sqrt(x^2+5)=x+1', 'S = \\left\\{ 2 \\right\\}'],
+		['sqrt(x^2+9)=x+3', 'S = \\left\\{ 0 \\right\\}'],
+		['sqrt(x^2-3)=x-1', 'S = \\left\\{ 2 \\right\\}'],
 		// La même cause sans racine : les x² s'annulent après développement
-		['x^2+5=(x+1)^2', 'x = 2'],
-		['x^2-x^2+2x=4', 'x = 2']
+		['x^2+5=(x+1)^2', 'S = \\left\\{ 2 \\right\\}'],
+		['x^2-x^2+2x=4', 'S = \\left\\{ 2 \\right\\}']
 	])('%s → %s', (equation, expected) => {
 		expect(answer(equation)).toBe(expected);
 	});
@@ -128,7 +125,7 @@ describe('revue : x² qui s’annulent, singletons, <= et ≤ (2026-10-08)', () 
 		['e^x>=1', 'S = [0 ; +\\infty['],
 		// Inchangés
 		['x^2>=4', 'S = ]-\\infty ; -2] \\cup [2 ; +\\infty['],
-		['x<=3', 'x \\leqslant 3'],
+		['x<=3', 'S = ]-\\infty ; 3]'],
 		// ≤ ≥ tapés tels quels
 		['sqrt(x)≤3', 'S = [0 ; 9]'],
 		['√(x+1)≤3', 'S = [-1 ; 8]'],
@@ -145,26 +142,26 @@ describe('revue : x² qui s’annulent, singletons, <= et ≤ (2026-10-08)', () 
 
 	it('le nombre e s’écrit \\exponentialE, que MathLive rend « e » (vérifié)', () => {
 		expect(answer('ln(x)<1')).toBe('S = ]0 ; \\exponentialE[');
-		expect(answer('ln(x)=1')).toBe('x = \\exponentialE');
+		expect(answer('ln(x)=1')).toBe('S = \\left\\{ \\exponentialE \\right\\}');
 	});
 });
 
 describe('√ tapé sans parenthèses : la racine porte sur l’atome qui suit', () => {
 	it.each([
-		['√x=3', 'x = 9'],
+		['√x=3', 'S = \\left\\{ 9 \\right\\}'],
 		['√x<2', 'S = [0 ; 4['],
-		['√x+1=3', 'x = 4'],
+		['√x+1=3', 'S = \\left\\{ 4 \\right\\}'],
 		// Inchangés
-		['√(x+1)=3', 'x = 8'],
-		['sqrt(x)=3', 'x = 9'],
-		['\\sqrt{x}=3', 'x = 9']
+		['√(x+1)=3', 'S = \\left\\{ 8 \\right\\}'],
+		['sqrt(x)=3', 'S = \\left\\{ 9 \\right\\}'],
+		['\\sqrt{x}=3', 'S = \\left\\{ 9 \\right\\}']
 	])('%s → %s', (equation, expected) => {
 		expect(answer(equation)).toBe(expected);
 	});
 
 	it('√2x = 4 se lit √2 · x : x = 2√2', () => {
 		expect(answer('√2x=4')).toBe(answer('sqrt(2)x=4'));
-		expect(answer('√2x=4')).toBe('x = 2 \\sqrt{2}');
+		expect(answer('√2x=4')).toBe('S = \\left\\{ 2 \\sqrt{2} \\right\\}');
 	});
 
 	it('√u_n = 2 se lit √(u_n) : pas de refus « plusieurs lettres »', () => {
@@ -214,7 +211,7 @@ describe('une identité sur le domaine a pour solutions TOUT le domaine', () => 
 		['(x^2-1)/(x-1)=x+1', 'S = \\mathbb{R} \\setminus \\left\\{ 1 \\right\\}'],
 		// Inchangés
 		['(x^2-1)/(x-1)=2', 'S = \\emptyset'],
-		['1/x=2', 'x = \\dfrac{1}{2}'],
+		['1/x=2', 'S = \\left\\{ \\dfrac{1}{2} \\right\\}'],
 		['x+1=x+1', 'S = \\mathbb{R}'],
 		['x+1=x', 'S = \\emptyset']
 	])('%s → %s', (equation, expected) => {

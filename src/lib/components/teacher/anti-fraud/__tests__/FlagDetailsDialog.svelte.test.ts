@@ -14,11 +14,11 @@ const sampleFlag = {
 	sample_size: 25,
 	created_at: '2026-06-10T10:00:00Z',
 	details: { ratio: 0.95, easy_count: 24, total: 25 },
-	capacity: { id: 'cap1', name: 'Additionner' }
+	point: { id: 'cap1', name: 'Additionner' }
 };
 
 describe('FlagDetailsDialog', () => {
-	it('renders title and capacity when open', async () => {
+	it('renders title and curriculum point when open', async () => {
 		await render(FlagDetailsDialog, {
 			open: true,
 			flag: sampleFlag,

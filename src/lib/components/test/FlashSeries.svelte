@@ -3,8 +3,8 @@
 	=====================
 	Forme « Flash-cards » d'une série (spécification de David, 2026-09-30).
 
-	Une carte à la fois, sans chrono : l'élève la retourne, puis dit s'il avait
-	trouvé. Ce clic enregistre sa réponse (auto-évaluation) et passe à la carte
+	Une carte à la fois, sans chrono : l'élève la retourne, puis dit s'il a
+	réussi (« Pas réussi / Réussi », comme en révision). Ce clic enregistre sa réponse (auto-évaluation) et passe à la carte
 	suivante. Les cartes de cours suivent la même mécanique.
 
 	Fin : bilan « k cartes trouvées sur n » (cartes de cours à part, comme
@@ -18,11 +18,15 @@
 	- onComplete: (result: TestResult) => void - Appelé une seule fois, à la fin du premier tour
 	- onRestart: () => void - Nouvelles questions (la page régénère)
 	- onBack: () => void - Retour au panier
+	- traceRecorder: élève connecté → une trace par carte du premier tour, envoyée
+	  au clic « Réussi / Pas réussi » (lieu `flash_cards`, trace « déclarée »,
+	  ADR 0038) ; `null` → rien (visiteur, vitrine). « Revoir » n'en laisse pas.
 -->
 
 <script lang="ts">
 	import { tick } from 'svelte';
 	import FlashCard from '$lib/components/questions/FlashCard.svelte';
+	import SelfAssessButtons from '$lib/components/questions/SelfAssessButtons.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import * as Card from '$lib/components/ui/card';
@@ -30,7 +34,8 @@
 	import { computeTestScore } from '$lib/utils/test-score';
 	import type { QuestionInstance } from '$lib/questions/types';
 	import type { TestAnswerResult, TestResult } from '$lib/types/test';
-	import { ArrowLeft, Check, LogIn, RefreshCw, RotateCcw, X } from '@lucide/svelte';
+	import { ArrowLeft, LogIn, RefreshCw, RotateCcw } from '@lucide/svelte';
+	import { buildSeriesTrace, type TraceRecorder } from '$lib/questions/series-trace';
 
 	// Types
 	interface Props {
@@ -40,9 +45,18 @@
 		onComplete: (result: TestResult) => void;
 		onRestart: () => void;
 		onBack: () => void;
+		traceRecorder?: TraceRecorder | null;
 	}
 
-	let { instances, isLoggedIn, loginNote = true, onComplete, onRestart, onBack }: Props = $props();
+	let {
+		instances,
+		isLoggedIn,
+		loginNote = true,
+		onComplete,
+		onRestart,
+		onBack,
+		traceRecorder = null
+	}: Props = $props();
 
 	// Variables
 	// Indices (dans `instances`) des cartes du tour en cours : toutes, puis les ratées
@@ -104,6 +118,21 @@
 			timeSpent: Math.round((Date.now() - cardStart) / 1000),
 			attempts: 1
 		});
+		// Trace « déclarée » de la carte, tout de suite (premier tour seulement)
+		if (isFirstRound && traceRecorder) {
+			const trace = buildSeriesTrace({
+				place: 'flash_cards',
+				instance: currentInstance,
+				answer: {
+					value: isCorrect ? 'knew' : 'did_not_know',
+					isCorrect,
+					timeSpent: 0,
+					attempts: 1,
+					submittedAt: new Date().toISOString()
+				}
+			});
+			if (trace) traceRecorder.record(trace);
+		}
 
 		if (position + 1 < round.length) {
 			position += 1;
@@ -215,20 +244,7 @@
 		</div>
 
 		{#if revealed}
-			<div class="flex flex-col justify-center gap-3 sm:flex-row">
-				<Button
-					class="bg-green-600 text-white hover:bg-green-700"
-					data-self-assess="found"
-					onclick={() => handleSelfAssessment(true)}
-				>
-					<Check class="mr-2 h-4 w-4" aria-hidden="true" />
-					J'avais trouvé
-				</Button>
-				<Button variant="destructive" onclick={() => handleSelfAssessment(false)}>
-					<X class="mr-2 h-4 w-4" aria-hidden="true" />
-					Je n'avais pas trouvé
-				</Button>
-			</div>
+			<SelfAssessButtons onAssess={handleSelfAssessment} keyboard />
 		{:else}
 			<p class="text-center text-sm text-muted-foreground">
 				Retourne la carte pour voir la réponse.

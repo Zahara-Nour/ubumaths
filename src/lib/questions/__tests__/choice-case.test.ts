@@ -36,8 +36,6 @@ function template(statement: string, expected: string[]): QuestionTemplate {
 			}
 		],
 		grades: ['6'],
-		theme: 'Test',
-		domain: 'Test',
 		level: 1
 	} as QuestionTemplate;
 }

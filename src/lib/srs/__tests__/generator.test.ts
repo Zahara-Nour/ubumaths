@@ -38,8 +38,6 @@ vi.mock('$lib/questions/generator/instance-generator', async () => {
 					templateId: template.id,
 					statement: resolvedMarkdown(`Question générée (graine ${seed})`),
 					grades: template.grades,
-					theme: template.theme,
-					domain: template.domain,
 					level: template.level,
 					generatedAt: new Date().toISOString(),
 					seed,
@@ -55,8 +53,6 @@ const createMockTemplate = (overrides: Partial<QuestionTemplate> = {}): Question
 	title: 'Test Template',
 	description: 'Test description',
 	grades: ['6'],
-	theme: 'Algèbre',
-	domain: 'Calcul',
 	level: 5,
 	status: 'published',
 	variations: [

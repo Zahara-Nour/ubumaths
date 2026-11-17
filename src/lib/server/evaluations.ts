@@ -24,8 +24,9 @@ import type {
 } from '$lib/types/evaluation';
 import { getAttemptsRemaining, getStudentStatus, isEvaluationForm } from '$lib/types/evaluation';
 import { isDeadlinePassed } from '$lib/utils/dates';
-import { toDbSeries } from '$lib/server/series';
-import { savedSeriesCategoriesSchema } from '$lib/validation/series';
+import { SeriesError, toDbSeriesMany } from '$lib/server/series';
+import { savedSeriesItemsSchema } from '$lib/validation/series';
+import { parseStoredSeries } from '$lib/server/series-lines';
 import type { EvaluationSettings } from '$lib/server/validation/evaluations';
 import { createServerLogger } from '$lib/utils/logger';
 
@@ -74,11 +75,38 @@ export function toDbEvaluation(row: Tables<'evaluations'>): DbEvaluation {
 	};
 }
 
+/**
+ * Lignes jointes → évaluations avec leur série (composition relue dans la
+ * nouvelle forme, en une lecture) ; `null` à la place d'une série illisible.
+ */
+export async function toEvaluationsWithSeries(
+	supabase: TypedSupabaseClient,
+	rows: readonly EvaluationRowWithSeries[]
+): Promise<Array<EvaluationWithSeries | null>> {
+	const seriesRows = rows.flatMap((row) => (row.series ? [row.series] : []));
+	let dbSeriesList;
+	try {
+		dbSeriesList = await toDbSeriesMany(supabase, seriesRows);
+	} catch (readError) {
+		if (!(readError instanceof SeriesError)) throw readError;
+		throw new EvaluationError(500, 'Impossible de charger les contrôles');
+	}
+	const series = new Map(dbSeriesList.map((dbSeries) => [dbSeries.id, dbSeries]));
+	return rows.map((row) => {
+		const dbSeries = row.series ? series.get(row.series.id) : undefined;
+		if (!dbSeries) return null;
+		const { series: _joined, ...evaluation } = row;
+		return { ...toDbEvaluation(evaluation), series: dbSeries };
+	});
+}
+
 /** Ligne jointe → évaluation avec sa série ; null si la série est illisible */
-export function toEvaluationWithSeries(row: EvaluationRowWithSeries): EvaluationWithSeries | null {
-	if (!row.series) return null;
-	const { series, ...evaluation } = row;
-	return { ...toDbEvaluation(evaluation), series: toDbSeries(series) };
+export async function toEvaluationWithSeries(
+	supabase: TypedSupabaseClient,
+	row: EvaluationRowWithSeries
+): Promise<EvaluationWithSeries | null> {
+	const [evaluation] = await toEvaluationsWithSeries(supabase, [row]);
+	return evaluation;
 }
 
 function toDbAssignment(row: Tables<'evaluation_assignments'>): DbEvaluationAssignment {
@@ -113,7 +141,7 @@ export async function createEvaluation(
 	// qu'elles existent ne devient pas une évaluation impossible à passer
 	const { data: series, error: seriesError } = await supabase
 		.from('series')
-		.select('categories')
+		.select('items')
 		.eq('id', input.series_id)
 		.maybeSingle();
 	if (seriesError) {
@@ -121,9 +149,11 @@ export async function createEvaluation(
 		throw new EvaluationError(500, 'Impossible de vérifier la série');
 	}
 	if (!series) throw new EvaluationError(404, 'Série introuvable');
-	const categories = savedSeriesCategoriesSchema.safeParse(series.categories);
-	if (!categories.success) {
-		throw new EvaluationError(400, categories.error.issues[0].message);
+	const items = savedSeriesItemsSchema.safeParse(
+		parseStoredSeries(input.series_id, series.items) ?? []
+	);
+	if (!items.success) {
+		throw new EvaluationError(400, items.error.issues[0].message);
 	}
 
 	const { data, error } = await supabase
@@ -168,7 +198,7 @@ export async function getEvaluation(
 			logger.error('[getEvaluation] Lecture impossible :', error);
 			throw new EvaluationError(500, 'Impossible de charger le contrôle');
 		}
-		if (data) return toEvaluationWithSeries(data as EvaluationRowWithSeries);
+		if (data) return toEvaluationWithSeries(supabase, data as EvaluationRowWithSeries);
 	}
 	return null;
 }
@@ -192,12 +222,16 @@ export async function getTeacherEvaluations(
 	const rows = (data ?? []) as Array<
 		EvaluationRowWithSeries & { evaluation_assignments: { id: string }[] | null }
 	>;
+	const evaluations = await toEvaluationsWithSeries(
+		supabase,
+		rows.map(({ evaluation_assignments: _assignments, ...row }) => row)
+	);
 	const result: Array<EvaluationWithSeries & { assignments_count: number }> = [];
-	for (const { evaluation_assignments, ...row } of rows) {
-		const evaluation = toEvaluationWithSeries(row);
-		if (!evaluation) continue;
-		result.push({ ...evaluation, assignments_count: evaluation_assignments?.length ?? 0 });
-	}
+	rows.forEach((row, index) => {
+		const evaluation = evaluations[index];
+		if (!evaluation) return;
+		result.push({ ...evaluation, assignments_count: row.evaluation_assignments?.length ?? 0 });
+	});
 	return result;
 }
 
@@ -372,7 +406,7 @@ export async function getAssignmentWithEvaluation(
 	if (!data) return null;
 
 	const row = data as unknown as AssignmentRowWithEvaluation;
-	const evaluation = row.evaluation ? toEvaluationWithSeries(row.evaluation) : null;
+	const evaluation = row.evaluation ? await toEvaluationWithSeries(supabase, row.evaluation) : null;
 	if (!evaluation) return null;
 
 	const { evaluation: _joined, ...assignment } = row;
@@ -514,8 +548,16 @@ export async function getStudentAssignments(
 		assignment: DbEvaluationAssignment;
 		evaluation: EvaluationWithSeries;
 	}> = [];
-	for (const raw of (data ?? []) as unknown as AssignmentRowWithEvaluation[]) {
-		const evaluation = raw.evaluation ? toEvaluationWithSeries(raw.evaluation) : null;
+	const rawRows = (data ?? []) as unknown as AssignmentRowWithEvaluation[];
+	const joined = await toEvaluationsWithSeries(
+		supabase,
+		rawRows.flatMap((raw) => (raw.evaluation ? [raw.evaluation] : []))
+	);
+	const byEvaluationId = new Map(
+		joined.flatMap((evaluation) => (evaluation ? [[evaluation.id, evaluation] as const] : []))
+	);
+	for (const raw of rawRows) {
+		const evaluation = raw.evaluation ? byEvaluationId.get(raw.evaluation.id) : undefined;
 		if (!evaluation || evaluation.status !== 'published') continue;
 		const { evaluation: _joined, ...assignment } = raw;
 		assignments.push({ assignment: toDbAssignment(assignment), evaluation });

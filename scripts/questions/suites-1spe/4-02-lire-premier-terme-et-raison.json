@@ -1,10 +1,8 @@
 {
+	"id": "8d4e5302-a133-441d-a618-69abb9cb4b63",
 	"title": "Lire le premier terme et la raison sur un graphique",
 	"description": "Suite arithmétique : lire u_0 et la raison r sur le nuage de points",
 	"grades": ["1_SPE"],
-	"theme": "Suites",
-	"domain": "Représentation graphique",
-	"subdomain": "Lire un terme",
 	"level": 2,
 	"delay": 45,
 	"status": "draft",

@@ -1,10 +1,8 @@
 {
+	"id": "7063979e-b3b5-4b12-8ff9-e6df2c05b23c",
 	"title": "Limite infinie par comparaison : minoration, majoration",
 	"description": "QCM : minorée par une suite qui tend vers +∞ ⟹ +∞, majorée par une suite qui tend vers −∞ ⟹ −∞ ; majorée par une suite qui tend vers +∞ : on ne peut pas conclure",
 	"grades": ["T_SPE"],
-	"theme": "Suites",
-	"domain": "Limites de suites",
-	"subdomain": "Comparaison et encadrement",
 	"level": 2,
 	"status": "draft",
 	"delay": 60,

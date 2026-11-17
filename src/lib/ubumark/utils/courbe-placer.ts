@@ -3,7 +3,7 @@
  * ===========================================================
  *
  * L'élève pose des points dans le repère d'un bloc ```courbe (`placer: A=(2 ; 3)`,
- * chantier `docs/wip/points-repere-progress.md` § 3, lot 1). Un point se pose
+ * chantier `docs/archive/wip/points-repere-progress.md` § 3, lot 1). Un point se pose
  * toujours sur un NŒUD de la grille (aimant) : intersection d'une ligne
  * verticale et d'une ligne horizontale, multiples du pas de chaque axe (le pas
  * de `grille:`, sinon le pas automatique de la scène), dans la fenêtre.
@@ -53,7 +53,7 @@ function tolerance(scale: number): number {
 }
 
 /** Retire le bruit flottant (0.30000000000000004 → 0.3) et le -0 */
-function clean(value: number): number {
+export function clean(value: number): number {
 	const rounded = Number(value.toPrecision(12));
 	return Object.is(rounded, -0) ? 0 : rounded;
 }
@@ -74,7 +74,7 @@ function nearestMultiple(step: number, min: number, max: number, value: number):
 }
 
 /** La valeur est-elle un multiple du pas (au bruit flottant près) ? */
-function isMultiple(value: number, step: number): boolean {
+export function isMultiple(value: number, step: number): boolean {
 	const k = Math.round(value / step);
 	return Math.abs(k * step - value) <= tolerance(step);
 }

@@ -23,7 +23,7 @@
  * `core/variable-argument.ts`, décision de David du 2026-10-06).
  */
 
-import chalk from 'chalk';
+import { colors } from '../core/terminal-colors';
 import { BaseCommand } from './base-command';
 import type { CommandContext, CommandResult } from '../types';
 import { parse } from '../core/pipeline';
@@ -210,23 +210,23 @@ export class VariationsCommand extends BaseCommand {
 			const lines: string[] = [];
 
 			// Expression header
-			lines.push(chalk.bold('Expression :') + ' ' + chalk.cyan(toCustom(result.expression)));
+			lines.push(colors.bold('Expression :') + ' ' + colors.cyan(toCustom(result.expression)));
 			lines.push(
-				chalk.bold('Dérivée :') +
+				colors.bold('Dérivée :') +
 					` f'(${variable}) = ` +
 					// Réduite et lisible : `-2/(2x-1)^2`, jamais `{-2}/{(2x-1)^2}`
-					chalk.cyan(readableText(reducedDerivative(result.derivative, result.expression)))
+					colors.cyan(readableText(reducedDerivative(result.derivative, result.expression)))
 			);
 			lines.push('');
 
 			// Domain
 			const domainStr = this.formatDomain(result.domain);
-			lines.push(chalk.bold('Domaine :') + ' ' + chalk.green(domainStr));
+			lines.push(colors.bold('Domaine :') + ' ' + colors.green(domainStr));
 			lines.push('');
 
 			if (result.derivativeZerosUnresolved) {
 				// ⚠️ f'(x) = 0 non résolue : ni « aucun », ni sens de variation.
-				lines.push(chalk.yellow(unresolvedDerivativeZerosMessage(variable)));
+				lines.push(colors.yellow(unresolvedDerivativeZerosMessage(variable)));
 			} else {
 				// Critical points
 				lines.push(this.formatCriticalPointsColored(result.criticalPoints, variable));
@@ -238,9 +238,9 @@ export class VariationsCommand extends BaseCommand {
 				const unknown = result.monotonicIntervals.filter((i) => i.monotonicity === 'unknown');
 				if (unknown.length > 0 && unknown.length === result.monotonicIntervals.length) {
 					lines.push(
-						chalk.yellow(`Signe de f'(${variable}) et sens de variation : non déterminés`)
+						colors.yellow(`Signe de f'(${variable}) et sens de variation : non déterminés`)
 					);
-					lines.push(chalk.yellow('Extrema : non déterminés'));
+					lines.push(colors.yellow('Extrema : non déterminés'));
 				} else {
 					// Sign of derivative and monotonicity
 					lines.push(this.formatMonotonicIntervalsColored(result.monotonicIntervals, variable));
@@ -249,7 +249,7 @@ export class VariationsCommand extends BaseCommand {
 					// Extrema : un sens indéterminé quelque part interdit de conclure « aucun »
 					lines.push(
 						unknown.length > 0 && result.extrema.length === 0
-							? chalk.yellow('Extrema : non déterminés')
+							? colors.yellow('Extrema : non déterminés')
 							: this.formatExtremaColored(result.extrema)
 					);
 				}
@@ -264,9 +264,9 @@ export class VariationsCommand extends BaseCommand {
 			// Warnings
 			if (result.warnings && result.warnings.length > 0) {
 				lines.push('');
-				lines.push(chalk.yellow('Avertissements :'));
+				lines.push(colors.yellow('Avertissements :'));
 				for (const warning of result.warnings) {
-					lines.push(chalk.yellow('  ! ' + warning));
+					lines.push(colors.yellow('  ! ' + warning));
 				}
 			}
 
@@ -320,17 +320,17 @@ export class VariationsCommand extends BaseCommand {
 		variable: string
 	): string {
 		if (points.length === 0) {
-			return chalk.bold('Points critiques :') + ' ' + chalk.dim('aucun');
+			return colors.bold('Points critiques :') + ' ' + colors.dim('aucun');
 		}
 
 		const lines: string[] = [];
-		lines.push(chalk.bold('Points critiques :'));
+		lines.push(colors.bold('Points critiques :'));
 
 		for (const point of points) {
 			const xStr = formatBound(point.x);
 			const nature =
-				point.nature === 'derivative_zero' ? chalk.dim("(f'=0)") : chalk.dim("(f' non définie)");
-			lines.push(`  ${variable} = ${chalk.yellow(xStr)} ${nature}`);
+				point.nature === 'derivative_zero' ? colors.dim("(f'=0)") : colors.dim("(f' non définie)");
+			lines.push(`  ${variable} = ${colors.yellow(xStr)} ${nature}`);
 		}
 
 		return lines.join('\n');
@@ -344,11 +344,11 @@ export class VariationsCommand extends BaseCommand {
 		variable: string
 	): string {
 		if (intervals.length === 0) {
-			return chalk.bold(`Signe de f'(${variable}) :`) + ' ' + chalk.dim('indéterminé');
+			return colors.bold(`Signe de f'(${variable}) :`) + ' ' + colors.dim('indéterminé');
 		}
 
 		const lines: string[] = [];
-		lines.push(chalk.bold(`Signe de f'(${variable}) :`));
+		lines.push(colors.bold(`Signe de f'(${variable}) :`));
 
 		// Calculate max interval width for alignment
 		const intervalStrs = intervals.map((mi) => this.formatSingleInterval(mi.interval));
@@ -361,7 +361,7 @@ export class VariationsCommand extends BaseCommand {
 			const signColored = this.colorSign(signStr);
 			const monotonicityDesc = this.getMonotonicityShortDescription(mi.monotonicity);
 			const monoColored = this.colorMonotonicity(mi.monotonicity, monotonicityDesc);
-			lines.push(`  ${chalk.cyan(intervalStr)} : ${signColored}  ${monoColored}`);
+			lines.push(`  ${colors.cyan(intervalStr)} : ${signColored}  ${monoColored}`);
 		}
 
 		return lines.join('\n');
@@ -372,11 +372,11 @@ export class VariationsCommand extends BaseCommand {
 	 */
 	private formatExtremaColored(extrema: readonly ExtremumInfo[]): string {
 		if (extrema.length === 0) {
-			return chalk.bold('Extrema :') + ' ' + chalk.dim('aucun');
+			return colors.bold('Extrema :') + ' ' + colors.dim('aucun');
 		}
 
 		const lines: string[] = [];
-		lines.push(chalk.bold('Extrema :'));
+		lines.push(colors.bold('Extrema :'));
 
 		for (const ext of extrema) {
 			const typeStr = this.getExtremumTypeFr(ext.type);
@@ -385,10 +385,10 @@ export class VariationsCommand extends BaseCommand {
 			const isGlobal = ext.type.includes('global');
 			const isMin = ext.type.includes('minimum');
 
-			const typeColored = isGlobal ? chalk.bold(typeStr) : typeStr;
-			const valueColored = isMin ? chalk.blue(yStr) : chalk.magenta(yStr);
+			const typeColored = isGlobal ? colors.bold(typeStr) : typeStr;
+			const valueColored = isMin ? colors.blue(yStr) : colors.magenta(yStr);
 
-			lines.push(`  ${typeColored} : f(${chalk.yellow(xStr)}) = ${valueColored}`);
+			lines.push(`  ${typeColored} : f(${colors.yellow(xStr)}) = ${valueColored}`);
 		}
 
 		return lines.join('\n');
@@ -403,7 +403,7 @@ export class VariationsCommand extends BaseCommand {
 		}
 
 		const lines: string[] = [];
-		lines.push(chalk.bold('Limites aux bornes :'));
+		lines.push(colors.bold('Limites aux bornes :'));
 
 		for (const bl of limits) {
 			const pointStr = formatBound(bl.point);
@@ -413,7 +413,7 @@ export class VariationsCommand extends BaseCommand {
 			const side = bl.point.type === 'infinity' ? undefined : bl.direction;
 			const dirStr = side === 'left' ? '⁻' : side === 'right' ? '⁺' : '';
 			lines.push(
-				`  lim (${variable} → ${chalk.yellow(pointStr)}${dirStr}) f(${variable}) = ${chalk.cyan(limitStr)}`
+				`  lim (${variable} → ${colors.yellow(pointStr)}${dirStr}) f(${variable}) = ${colors.cyan(limitStr)}`
 			);
 		}
 
@@ -463,13 +463,13 @@ export class VariationsCommand extends BaseCommand {
 	private colorSign(sign: string): string {
 		switch (sign) {
 			case '+':
-				return chalk.green('+');
+				return colors.green('+');
 			case '-':
-				return chalk.red('-');
+				return colors.red('-');
 			case '0':
-				return chalk.dim('0');
+				return colors.dim('0');
 			default:
-				return chalk.yellow('?');
+				return colors.yellow('?');
 		}
 	}
 
@@ -479,13 +479,13 @@ export class VariationsCommand extends BaseCommand {
 	private colorMonotonicity(monotonicity: Monotonicity, description: string): string {
 		switch (monotonicity) {
 			case 'increasing':
-				return chalk.green(`(${description})`);
+				return colors.green(`(${description})`);
 			case 'decreasing':
-				return chalk.red(`(${description})`);
+				return colors.red(`(${description})`);
 			case 'constant':
-				return chalk.dim(`(${description})`);
+				return colors.dim(`(${description})`);
 			default:
-				return chalk.yellow(`(${description})`);
+				return colors.yellow(`(${description})`);
 		}
 	}
 

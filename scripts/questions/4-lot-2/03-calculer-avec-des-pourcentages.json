@@ -1,10 +1,8 @@
 {
+	"id": "4f599434-9927-4420-bf62-f8047ca65bec",
 	"title": "Calculer avec des pourcentages",
 	"description": "Calculer avec des pourcentages : 1 % de 4 537 ; 35 % de 120 ; 20 % d'un nombre valent 30, quel est ce nombre ?",
 	"grades": ["4"],
-	"theme": "Proportionnalité",
-	"domain": "Pourcentages",
-	"subdomain": "Calculer",
 	"level": 7,
 	"delay": 45,
 	"status": "draft",

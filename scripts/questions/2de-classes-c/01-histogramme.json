@@ -1,10 +1,8 @@
 {
+	"id": "7ca1d2da-5519-4968-b903-5003ed4b1502",
 	"title": "Lire un histogramme",
 	"description": "Histogramme à classes de même amplitude : effectif d'une classe, effectif total, classe modale",
 	"grades": ["2"],
-	"theme": "Statistiques",
-	"domain": "Représenter des données",
-	"subdomain": "Histogramme",
 	"level": 1,
 	"delay": 90,
 	"status": "draft",

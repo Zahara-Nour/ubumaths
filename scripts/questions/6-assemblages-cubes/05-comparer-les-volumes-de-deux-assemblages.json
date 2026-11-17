@@ -1,10 +1,8 @@
 {
+	"id": "0464c3f6-3b73-49fb-8af2-576574fcaa87",
 	"title": "Comparer les volumes de deux assemblages de cubes",
 	"description": "Comparer les volumes de deux assemblages de cubes identiques en comptant les cubes : des nombres différents, le même volume sous deux formes (l'un haut, l'autre étalé), le nombre de cubes à ajouter",
 	"grades": ["6"],
-	"theme": "Grandeurs",
-	"domain": "Volumes",
-	"subdomain": "Assemblages de cubes",
 	"level": 2,
 	"delay": 60,
 	"status": "draft",

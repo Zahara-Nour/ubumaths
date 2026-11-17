@@ -1,10 +1,8 @@
 {
+	"id": "544b98ec-a39f-4547-aa32-63d28f2059c5",
 	"title": "Encadrer une fraction entre deux entiers consécutifs",
 	"description": "Encadrer une fraction par deux entiers consécutifs à l'aide des tables (5 < 43/8 < 6) ou des multiples de 12, 15, 20, 25, 50, 60 (3 < 86/25 < 4)",
 	"grades": ["CM2"],
-	"theme": "Fractions",
-	"domain": "Apprivoiser",
-	"subdomain": "Encadrer",
 	"level": 5,
 	"delay": 30,
 	"status": "draft",

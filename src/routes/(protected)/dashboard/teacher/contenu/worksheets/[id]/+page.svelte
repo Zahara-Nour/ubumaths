@@ -841,11 +841,7 @@
 
 			<!-- PDF Tab -->
 			<Tabs.Content value="pdf" class="space-y-6">
-				<UntranslatedExercisesNotice
-					exercises={worksheet.exercises ?? []}
-					config={worksheet.config}
-					class="mb-4"
-				/>
+				<!-- L'avertissement des exercices non traduits est dans l'aperçu : il suit la langue d'impression -->
 				<PdfPreview {worksheet} />
 			</Tabs.Content>
 		</Tabs.Root>

@@ -1,10 +1,8 @@
 {
+	"id": "b19dfc8e-4e9c-4918-b24a-9e132bcd025f",
 	"title": "Dizaines et unités : écrire le nombre",
 	"description": "De « 7 dizaines et 4 unités » à 74",
 	"grades": ["CP"],
-	"theme": "Entiers",
-	"domain": "Apprivoiser",
-	"subdomain": "Décomposition",
 	"level": 12,
 	"delay": 20,
 	"status": "draft",

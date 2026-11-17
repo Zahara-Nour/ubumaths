@@ -1,10 +1,8 @@
 {
+	"id": "29e7e3c6-4f48-4ef7-8914-ce712636f7a2",
 	"title": "Soustraire des fractions de même dénominateur",
 	"description": "4/5 − 1/5 ; 1 − 3/10 (exemples du BO)",
 	"grades": ["CE1"],
-	"theme": "Fractions",
-	"domain": "Calculer",
-	"subdomain": "Addition et Soustraction",
 	"level": 16,
 	"delay": 60,
 	"status": "draft",

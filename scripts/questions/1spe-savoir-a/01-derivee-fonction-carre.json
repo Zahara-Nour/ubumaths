@@ -1,10 +1,8 @@
 {
+	"id": "a181f10b-1b9c-436c-8f8c-51cce68352db",
 	"title": "Dérivée de la fonction carré",
 	"description": "À savoir : (x²)′ = 2x, reconnue parmi des erreurs typiques, et dans l'autre sens (quelle fonction a pour dérivée 2x)",
 	"grades": ["1_SPE"],
-	"theme": "Fonctions",
-	"domain": "Dérivation",
-	"subdomain": "À savoir",
 	"level": 1,
 	"delay": 30,
 	"status": "draft",

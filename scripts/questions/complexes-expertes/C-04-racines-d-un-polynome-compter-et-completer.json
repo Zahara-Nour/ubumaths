@@ -1,10 +1,8 @@
 {
+	"id": "293f8225-0268-48bc-8487-52c6bf5b01e3",
 	"title": "Racines d'un polynôme : compter les solutions, compléter par conjugaison",
 	"description": "Compléter les racines d'un polynôme réel de degré 4 connaissant deux racines non conjuguées, compter les solutions dans ℂ et dans ℝ de (z − r)(z² + q) = 0, solutions distinctes avec une racine double, racines restantes au plus (pièges : opposé au lieu du conjugué, solutions de z² + q = 0 comptées réelles, racine double comptée deux fois)",
 	"grades": ["T_EXP"],
-	"theme": "Nombres complexes",
-	"domain": "Équations polynomiales",
-	"subdomain": "Racines d'un polynôme",
 	"level": 2,
 	"status": "draft",
 	"delay": 60,

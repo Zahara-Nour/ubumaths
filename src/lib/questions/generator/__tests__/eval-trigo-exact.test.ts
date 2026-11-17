@@ -23,8 +23,6 @@ function valueOf(expression: string, variables: Variable[] = []): string {
 		title: 't',
 		status: 'draft',
 		grades: ['1_SPE'],
-		theme: 'T',
-		domain: 'D',
 		level: 1,
 		variations: [
 			{

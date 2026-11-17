@@ -24,8 +24,6 @@ function template(variation: Omit<QuestionVariation, 'statement'> & { statement:
 		status: 'draft',
 		variations: [{ ...variation, statement: templateMarkdown(variation.statement) }],
 		grades: ['CP'],
-		theme: 'Test',
-		domain: 'Test',
 		level: 1
 	} as QuestionTemplate;
 }

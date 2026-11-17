@@ -1,10 +1,8 @@
 {
+	"id": "6de641bd-a13d-477b-9eb5-2ac4fd5b5292",
 	"title": "Comparer deux fractions de même numérateur ou de même dénominateur",
 	"description": "Comparer deux fractions de même dénominateur (23/40 et 31/40) ou de même numérateur (17/12 et 17/8) ; dénominateur au plus 60",
 	"grades": ["CM2"],
-	"theme": "Fractions",
-	"domain": "Apprivoiser",
-	"subdomain": "Comparer",
 	"level": 15,
 	"delay": 30,
 	"status": "draft",

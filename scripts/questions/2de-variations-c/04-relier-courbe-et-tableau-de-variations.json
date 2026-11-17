@@ -1,10 +1,8 @@
 {
+	"id": "3810a06c-a433-41f6-9fbc-533c2acfaf4f",
 	"title": "Relier courbe et tableau de variations",
 	"description": "Choisir le tableau de variations d'une courbe, puis la courbe d'un tableau (pièges : flèches à l'envers, abscisse et ordonnée du sommet échangées, extremum mal placé)",
 	"grades": ["2"],
-	"theme": "Fonctions",
-	"domain": "Généralités",
-	"subdomain": "Variations",
 	"level": 3,
 	"delay": 90,
 	"status": "draft",

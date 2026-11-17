@@ -47,7 +47,7 @@ describe('le catalogue tranche, y compris à l’exécution', () => {
 	it('la commande revendiquée en second garde son nom entier', () => {
 		// Rien n'est retiré à `solve` ni à `hash` : seul le raccourci change de
 		// main, et il change pour celle que l'élève voit dans le catalogue.
-		expect(run('.résoudre 3x+5=14').latex).toBe('x = 3');
+		expect(run('.résoudre 3x+5=14').latex).toBe('S = \\left\\{ 3 \\right\\}');
 		expect(run('.empreinte x+1').output).toContain('Hash');
 	});
 

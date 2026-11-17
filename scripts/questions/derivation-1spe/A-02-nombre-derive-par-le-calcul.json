@@ -1,11 +1,9 @@
 {
+	"id": "cda8e0d2-366c-482f-8cf3-2564b4b7083d",
 	"title": "Calculer un nombre dérivé",
 	"description": "Nombre dérivé f′(a) d'un polynôme de degré 2 ou 3 en un entier a, par la fonction dérivée",
 	"grades": ["1_SPE"],
-	"theme": "Fonctions",
-	"domain": "Dérivation",
 	"status": "draft",
-	"subdomain": "Nombre dérivé",
 	"level": 2,
 	"delay": 45,
 	"options": {

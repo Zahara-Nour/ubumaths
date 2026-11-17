@@ -28,8 +28,6 @@ function generated(statement: string) {
 			type: 'fill_in_blanks',
 			variations: [{ statement: templateMarkdown(statement) }],
 			grades: ['CE1'],
-			theme: 'Test',
-			domain: 'Test',
 			level: 1
 		} as unknown as QuestionTemplate,
 		42

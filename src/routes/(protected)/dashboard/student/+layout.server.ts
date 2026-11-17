@@ -20,7 +20,6 @@
  * - Student profile (id, email, name, avatar, etc.)
  * - Class memberships (classes student is enrolled in)
  * - Rewards (gidouilles balance + VIP cards)
- * - Retour après une longue absence (oui/non) : le passage du jour est enregistré
  *
  * PERFORMANCE:
  * - 2 database queries on server (profile + rewards)
@@ -37,8 +36,6 @@ import type { StudentProfile, ClassMembership, StudentRewards } from '$lib/types
 import { asStudentVipCards } from '$lib/types/vip-card';
 import { error } from '@sveltejs/kit';
 import { toBuddyState } from '$lib/types/buddy';
-import { isWelcomeBackPending, resetLostConstance } from '$lib/server/buddy-queries';
-import { constanceReset, utcDay } from '$lib/utils/buddy-constance';
 import { createServerLogger } from '$lib/utils/logger';
 
 const logger = createServerLogger('(protected)/dashboard/student/+layout.server');
@@ -139,36 +136,6 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 			logger.error('Contexte illisible :', buddyDataError);
 		}
 
-		// Constance Royale perdue (dernière semaine enregistrée finie sous 3 jours
-		// travaillés, ou semaine sautée) : remise à zéro au client service, règle
-		// réévaluée sur la ligne relue, écriture vérifiée. Une ancienne série en
-		// jours est remise à zéro sans réplique (ce n'est pas une semaine manquée).
-		let streakLost = false;
-		let buddyRow = buddyData;
-		if (buddyData && constanceReset(buddyData, utcDay())) {
-			try {
-				const reset = await resetLostConstance(user.id);
-				if (reset) {
-					buddyRow = reset.buddy;
-					streakLost = reset.kind === 'lost';
-				}
-			} catch (resetError) {
-				// Non bloquant : la Constance sera remise à zéro au prochain chargement
-				logger.error('[Layout] Constance perdue non remise à zéro :', resetError);
-			}
-		}
-
-		// Retour à fêter : LU seulement (la présence est notée par le hook, sur toute
-		// page) — un préchargement au survol ne consomme rien. Le widget l'efface une
-		// fois la bulle montrée. Le serveur ne transmet que « oui/non », jamais le jour.
-		let longAbsence = false;
-		try {
-			longAbsence = await isWelcomeBackPending(user.id);
-		} catch (welcomeError) {
-			// Non bloquant : pas de « tu m'as manqué » plutôt qu'un chargement en échec
-			logger.error('[Layout] Retour à fêter illisible :', welcomeError);
-		}
-
 		// Return data for cache hydration on client
 		// The +layout.svelte will call studentCache.hydrateProfile(), hydrateRewards(), hydrateBuddy()
 		return {
@@ -176,10 +143,9 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 			rewards,
 			// `palotin_type` est du texte simple en base : le rétrécir ici évite que
 			// chaque consommateur ait à le faire, et garantit un compagnon parlant.
-			buddy: buddyRow ? toBuddyState(buddyRow) : null,
-			streakLost,
-			// Sans Palotin, rien à dire : celui choisi ensuite pendant la séance est tout neuf
-			longAbsence: buddyRow ? longAbsence : false
+			// La Constance perdue et le retour à fêter sont lus après l'affichage par le
+			// composant de présence (GET /api/student/buddy/presence, chantier `palotins`).
+			buddy: buddyData ? toBuddyState(buddyData) : null
 		};
 	} catch (err) {
 		logger.error('[Layout] Unexpected error loading student dashboard:', err);
@@ -202,9 +168,7 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 				bonus: 0,
 				vip_cards: {}
 			},
-			buddy: null,
-			streakLost: false,
-			longAbsence: false
+			buddy: null
 		};
 	}
 };

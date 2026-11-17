@@ -1,10 +1,8 @@
 {
+	"id": "4b0b03b7-3b46-4531-aaca-44ab04b13d1c",
 	"title": "Soustraire des nombres décimaux",
 	"description": "Différence de décimaux : premier terme plus court (15,2 − 3,47), entier moins décimal (10 − 3,6), retenue sur deux rangs (8,03 − 2,75)",
 	"grades": ["6"],
-	"theme": "Décimaux",
-	"domain": "Soustraire",
-	"subdomain": "Différence",
 	"level": 5,
 	"delay": 30,
 	"status": "draft",

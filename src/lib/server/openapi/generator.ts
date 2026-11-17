@@ -411,7 +411,7 @@ All request bodies and query parameters are validated using Zod schemas. Invalid
 							'application/json': {
 								schema: {
 									type: 'object',
-									required: ['type', 'title', 'grades', 'theme', 'domain', 'level'],
+									required: ['type', 'title', 'grades', 'level'],
 									properties: {
 										type: {
 											type: 'string',
@@ -427,15 +427,9 @@ All request bodies and query parameters are validated using Zod schemas. Invalid
 											items: { $ref: '#/components/schemas/Grade' },
 											minItems: 1
 										},
-										theme: {
+										classification_node_id: {
 											type: 'string',
-											minLength: 1,
-											maxLength: 100
-										},
-										domain: {
-											type: 'string',
-											minLength: 1,
-											maxLength: 100
+											format: 'uuid'
 										},
 										level: {
 											type: 'integer',

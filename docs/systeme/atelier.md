@@ -5,12 +5,14 @@ couvre:
   - src/lib/mathAST/cli/web/web-repl-engine.ts
   - 'src/routes/(public)/atelier/**'
   - 'src/routes/(public)/grapheur/**'
+  - src/lib/utils/lazy-loader.svelte.ts
 ---
 
 # L'atelier (et `/grapheur`)
 
 > Synthèse des journaux archivés `docs/archive/wip/atelier-*`. Syntaxe des commandes de Calcul :
-> [atelier-syntaxe.md](atelier-syntaxe.md) (cité par le code). Vérifié contre le code le 2026-10-19 (outils de construction de la géométrie, lot 3, PR 3 ; valeur exacte à afficher commune, ligne d'un calcul et `S = …` de `.résoudre`, 2026-10-24 ; relecture des virgules rangées, 2026-10-21 ; test d'égalité `a = b`, 2026-10-22 ; cartes de la figure, point de couleur, défilement de la console et noms en couleur du texte, 2026-10-23 ; panneau Propriétés, 2026-10-23 ; π au numérateur d'un périmètre, #1634, 2026-10-24 ; espaces de groupement dès 5 chiffres, 2026-10-23 ; étapes de `.résoudre` écrites comme la réponse, lot 5f-4, 2026-10-25 ; inéquations aussi, Q50, 2026-10-25 ; ouvrir dans l'atelier depuis Python, 2026-10-25 ; ligne réservée sous la barre de la grille et libellé de « Résoudre », 2026-10-26 ; conditions sur la lettre, points irrationnels, `tan`/`arcsin`, `avec x ≥ e`, tidy-conditions § 5 PR A, 2026-10-26 ; Partager et Enregistrer d'une grille seule, confirmation de Charger, `X suit …` tapé, 2026-10-26 ; valeurs remarquables et degrés de `.simplifier`, `.développer`, `.résoudre`, 2026-10-27).
+> [atelier-syntaxe.md](atelier-syntaxe.md) (cité par le code). Vérifié contre le code le 2026-10-19 (étapes chargées au premier dépliage, 2026-11-11 ; outils de construction de la géométrie, lot 3, PR 3 ; lecture des degrés et de `π` partagée avec le registre, 2026-11-03 ; égalité tapée seule → vrai / faux, `≈` refusé, 2026-11-03 ; `.dériver` affiche la réponse du registre, 2026-11-03 ; valeur exacte à afficher commune, ligne d'un calcul et `S = …` de `.résoudre`, 2026-10-24 ; relecture des virgules rangées, 2026-10-21 ; test d'égalité `a = b`, 2026-10-22 ; cartes de la figure, point de couleur, défilement de la console et noms en couleur du texte, 2026-10-23 ; panneau Propriétés, 2026-10-23 ; π au numérateur d'un périmètre, #1634, 2026-10-24 ; espaces de groupement dès 5 chiffres, 2026-10-23 ; étapes de `.résoudre` écrites comme la réponse, lot 5f-4, 2026-10-25 ; inéquations aussi, Q50, 2026-10-25 ; ouvrir dans l'atelier depuis Python, 2026-10-25 ; ligne réservée sous la barre de la grille et libellé de « Résoudre », 2026-10-26 ; conditions sur la lettre, points irrationnels, `tan`/`arcsin`, `avec x ≥ e`, tidy-conditions § 5 PR A, 2026-10-26 ; Partager et Enregistrer d'une grille seule, confirmation de Charger, `X suit …` tapé, 2026-10-26 ; valeurs remarquables et degrés de `.simplifier`, `.développer`, `.résoudre`, 2026-10-27 ; `.résoudre` répond par l'ensemble des solutions, 2026-11-03 ; degrés et refus V57 lus par le
+> registre, 2026-11-09).
 
 ## À quoi ça sert
 
@@ -83,6 +85,7 @@ Ceux du code et de l'interface :
 | `src/lib/atelier/parse.ts`                  | Lecture d'une définition (`parseDefinition`), dépendances (`referencesOf`), provenance (`Provenance`) ; une définition illisible dit l'aide précise du parseur, comme la ligne de calcul (`invalidExpressionMessage`) |
 | `src/lib/atelier/letter.ts`                 | `f(t) = t^2` : la lettre de l'élève à l'affichage, la définition rangée en x                                                                                                                                          |
 | `src/lib/atelier/interval.ts`               | `f(x) = x^2 sur [0;+∞[` : coupe au mot « sur », lit l'ensemble, juge I3 (domaine) et I4 (`f(5)`)                                                                                                                      |
+| `src/lib/atelier/draft-hint.ts`             | Le « Modèle : » d'une définition de fonction sous le champ de la console : `g(t) = t² sur [0;3]`, puis, « sur » tapé, `[a;b], ]a;b[, [0;+∞[`                                                                          |
 | `src/lib/atelier/reciprocal.ts`             | La carte `f⁻¹` et `.réciproque` : f passée au moteur, paramètres gardés en lettres, refus en français                                                                                                                 |
 | `src/lib/atelier/limit.ts`                  | `.limite EXPR en POINT` : point lu (côté, infini, `en x=1`), `evaluateLimit`, réponse en formule                                                                                                                      |
 | `src/lib/atelier/limit-steps.ts`            | `.limite` : « Comment ? » (`limitSteps`), garde de concordance dans `limit-steps-check.ts`                                                                                                                            |
@@ -113,32 +116,33 @@ Ceux du code et de l'interface :
 
 **Vue Calcul** (saisie, commandes, historique) :
 
-| Fichier                                 | Rôle                                                                                                       |
-| --------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| `src/lib/atelier/calcul.ts`             | **Aiguillage de la saisie** (`runInput`) : définition, calcul ou commande ; actions de carte (`runAction`) |
-| `src/lib/atelier/desk.svelte.ts`        | `CalcDesk`, le pupitre : historique, actions venues du panneau, garder une ligne, rejeu                    |
-| `src/lib/atelier/commands.ts`           | Catalogue français des commandes (`commandCatalog`, `resolveCommand`, `suggestFor`)                        |
-| `src/lib/atelier/help.ts`               | `.aide` pour l'élève (`studentHelpText`) ; l'aide du moteur derrière `.aide dev`                           |
-| `src/lib/atelier/listing.ts`            | `.valeurs` et `.fonctions` : les cartes du panneau, en français (`valuesListing`, `functionsListing`)      |
-| `src/lib/atelier/render.ts`             | Rendu d'un résultat du moteur en LaTeX, sans jamais reparser la sortie texte                               |
-| `src/lib/atelier/decimal-comma.ts`      | Virgule décimale à l'affichage, refus des virgules ambiguës à la saisie                                    |
-| `src/lib/atelier/simplify-steps.ts`     | `.simplifier` par étapes (`simplifySteps`)                                                                 |
-| `src/lib/atelier/factor-steps.ts`       | `.factoriser` par étapes (`factorSteps`)                                                                   |
-| `src/lib/atelier/expand.ts`             | `.développer` : refus et messages (`expandExpression`) ; réponse et « Comment ? » par `explainExpansion`   |
-| `src/lib/atelier/derive-steps.ts`       | `.dériver` et « Dériver » expliqués (`deriveSteps`)                                                        |
-| `src/lib/atelier/solve-steps.ts`        | `.résoudre` par étapes (`solveSteps`)                                                                      |
-| `src/lib/atelier/solve-steps-check.ts`  | Garde-fou : une conclusion d'étapes que les nombres démentent n'est pas montrée                            |
-| `src/lib/atelier/variations-steps.ts`   | `.variations` et « Variations » : tableau et détail (`variationsRendering`)                                |
-| `src/lib/atelier/steps-summary.ts`      | Interrupteur « Résumé / Détaillé » : `summaryOf`, choix retenu dans le navigateur                          |
-| `src/lib/atelier/copy-text.ts`          | « Copier » d'une ligne : la réponse en texte lisible depuis son LaTeX (`readableText`, `answerToCopy`)     |
-| `src/lib/atelier/point-drag-mode.ts`    | Réglage « Déplacement des points » (aimanté / fluide), retenu dans le navigateur                           |
-| `src/lib/atelier/input-mode.ts`         | Réglage « Saisie dans Calcul » (texte / écriture mathématique), retenu dans le navigateur                  |
-| `src/lib/atelier/console-key.ts`        | Raccourcis de la console : touche sous Échap (par `event.code`, hors d'un champ), Ctrl+Entrée              |
-| `src/lib/atelier/natural-input.ts`      | Écriture mathématique : règles des mots, complétion, LaTeX du champ ↔ texte de Calcul (`calcTextOf`)       |
-| `src/lib/atelier/virtual-keyboard.ts`   | Clavier virtuel de l'écriture mathématique : onglets « Calcul » et « Commandes »                           |
-| `src/lib/atelier/domain-steps.ts`       | `.domaine` : réponse `D = …` et « Comment ? » (`domainLine`)                                               |
-| `src/lib/atelier/domain-steps-check.ts` | Garde-fou : l'ensemble conclu par les étapes est, par valeur, le domaine du moteur (`sameDomainByValue`)   |
-| `src/lib/atelier/tidy-terms.ts`         | Ré-export de `tidyTerms` (vit dans `src/lib/mathAST/tidy/terms.ts`)                                        |
+| Fichier                                 | Rôle                                                                                                                                       |
+| --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `src/lib/atelier/calcul.ts`             | **Aiguillage de la saisie** (`runInput`) : définition, calcul ou commande ; actions de carte (`runAction`)                                 |
+| `src/lib/atelier/desk.svelte.ts`        | `CalcDesk`, le pupitre : historique, actions venues du panneau, garder une ligne, rejeu                                                    |
+| `src/lib/atelier/commands.ts`           | Catalogue français des commandes (`commandCatalog`, `resolveCommand`, `suggestFor`)                                                        |
+| `src/lib/atelier/help.ts`               | `.aide` pour l'élève (`studentHelpText`) ; l'aide du moteur derrière `.aide dev`                                                           |
+| `src/lib/atelier/listing.ts`            | `.valeurs` et `.fonctions` : les cartes du panneau, en français (`valuesListing`, `functionsListing`)                                      |
+| `src/lib/atelier/render.ts`             | Rendu d'un résultat du moteur en LaTeX, sans jamais reparser la sortie texte                                                               |
+| `src/lib/atelier/decimal-comma.ts`      | Virgule décimale à l'affichage, refus des virgules ambiguës à la saisie                                                                    |
+| `src/lib/atelier/simplify-steps.ts`     | `.simplifier` par étapes (`simplifySteps`)                                                                                                 |
+| `src/lib/atelier/factor-steps.ts`       | `.factoriser` par étapes (`factorSteps`)                                                                                                   |
+| `src/lib/atelier/expand.ts`             | `.développer` : refus et messages (`expandExpression`) ; réponse et « Comment ? » par `explainExpansion`                                   |
+| `src/lib/atelier/derive-steps.ts`       | `.dériver` et « Dériver » expliqués (`deriveSteps`)                                                                                        |
+| `src/lib/atelier/solve-steps.ts`        | `.résoudre` par étapes (`solveSteps`)                                                                                                      |
+| `src/lib/atelier/solve-steps-check.ts`  | Garde-fou : une conclusion d'étapes que les nombres démentent n'est pas montrée                                                            |
+| `src/lib/atelier/variations-steps.ts`   | `.variations` et « Variations » : tableau et détail (`variationsRendering`)                                                                |
+| `src/lib/atelier/steps-summary.ts`      | Interrupteur « Résumé / Détaillé » : `summaryOf`, choix retenu dans le navigateur                                                          |
+| `src/lib/atelier/steps-loader.ts`       | Le composant des étapes (`GeneratedStepsCorrection`) chargé au premier « Comment ? » (`lazyLoader`, `src/lib/utils/lazy-loader.svelte.ts`) |
+| `src/lib/atelier/copy-text.ts`          | « Copier » d'une ligne : la réponse en texte lisible depuis son LaTeX (`readableText`, `answerToCopy`)                                     |
+| `src/lib/atelier/point-drag-mode.ts`    | Réglage « Déplacement des points » (aimanté / fluide), retenu dans le navigateur                                                           |
+| `src/lib/atelier/input-mode.ts`         | Réglage « Saisie dans Calcul » (texte / écriture mathématique), retenu dans le navigateur                                                  |
+| `src/lib/atelier/console-key.ts`        | Raccourcis de la console : touche sous Échap (par `event.code`, hors d'un champ), Ctrl+Entrée                                              |
+| `src/lib/atelier/natural-input.ts`      | Écriture mathématique : règles des mots, complétion, LaTeX du champ ↔ texte de Calcul (`calcTextOf`)                                       |
+| `src/lib/atelier/virtual-keyboard.ts`   | Clavier virtuel de l'écriture mathématique : onglets « Calcul » et « Commandes »                                                           |
+| `src/lib/atelier/domain-steps.ts`       | `.domaine` : réponse `D = …` et « Comment ? » (`domainLine`)                                                                               |
+| `src/lib/atelier/domain-steps-check.ts` | Garde-fou : l'ensemble conclu par les étapes est, par valeur, le domaine du moteur (`sameDomainByValue`)                                   |
+| `src/lib/atelier/tidy-terms.ts`         | Ré-export de `tidyTerms` (vit dans `src/lib/mathAST/tidy/terms.ts`)                                                                        |
 
 **Statistiques et probabilités** (commandes servies par l'atelier, pas par le moteur) :
 
@@ -178,6 +182,7 @@ Ceux du code et de l'interface :
 | Composant                    | Rôle                                                                                                                                                                                                                                                                                                                          |
 | ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `AtelierContainer.svelte`    | Le conteneur : barre d'icônes, panneau + vues (le **graphe agrandi**, bouton de la barre du graphe : `position: fixed` sur toute la fenêtre, en-tête et menu du site recouverts, panneau, barre et onglets masqués, Échap le réduit sans recadrer le graphe), console déroulante, session, `CalcDesk`, `GrapheurStore` propre |
+| `AtelierSilhouette.svelte`   | La forme de l'atelier rendue par le serveur tant que son JS charge (« Mes objets », barre, onglets, « Chargement de l'atelier… ») ; aucun contrôle, parties visibles `inert`                                                                                                                                                  |
 | `roving-toolbar.ts`          | Motif ARIA « barre d'outils » de la barre d'icônes : un arrêt de tabulation, flèches, Début / Fin                                                                                                                                                                                                                             |
 | `ToolButton.svelte`          | Un bouton de la barre : icône seule, nom en `aria-label` et en infobulle, indisponible mais focalisable ; compteur (A3)                                                                                                                                                                                                       |
 | `ObjectPanel.svelte`         | « Mes objets » : création, liste des cartes ; replié par défaut sur téléphone                                                                                                                                                                                                                                                 |
@@ -198,7 +203,8 @@ Ceux du code et de l'interface :
 | `ValueSlider.svelte`         | Le curseur d'une valeur, sous la ligne de sa carte                                                                                                                                                                                                                                                                            |
 | `SliderSettings.svelte`      | Les bornes et le pas du curseur, refusés avec leur raison (fenêtre ouverte depuis le menu de la valeur)                                                                                                                                                                                                                       |
 | `CurveSettings.svelte`       | « Sur le graphique » : couleur, trait, tangente, aire ; `compact` : le point de tangence, les bornes et les nombres seuls                                                                                                                                                                                                     |
-| `CalculView.svelte`          | Le contenu de la console : champ (texte ou écriture mathématique), historique (`>` / `-->`), « Garder »                                                                                                                                                                                                                       |
+| `CalculView.svelte`          | Le contenu de la console : champ (texte ou écriture mathématique) validé par Entrée ou la touche ↵ du clavier virtuel ou du téléphone, sans bouton « Calculer » (2026-11-14), historique (`>` / `-->`), « Garder »                                                                                                            |
+| `StepsOnDemand.svelte`       | Les étapes d'une ligne dépliée : « Chargement des étapes… » au premier dépliage, puis le rendu ; échec → message et « Réessayer »                                                                                                                                                                                             |
 | `NaturalField.svelte`        | Le champ MathLive de l'écriture mathématique (en essai) : mots finis en texte, complétion, ↑ / ↓, clavier virtuel                                                                                                                                                                                                             |
 | `AtelierSettings.svelte`     | Le bouton « Réglages » (icône seule) et sa fenêtre : saisie dans Calcul, angles, déplacement des points                                                                                                                                                                                                                       |
 | `FormulaText.svelte`         | Un message de l'atelier dont les formules `$…$` sont composées (refus de `.réciproque`, valeur interdite de `.évaluer`)                                                                                                                                                                                                       |
@@ -353,7 +359,8 @@ erreur avec son message (`quantityProblem`) ; une fonction ne refuse qu'un angle
 (`hasBareAngle` : `cos(angle(…))·x` passe, `T·x` non) ; la grille dit « T est une grandeur (un
 angle) » ; une ligne de mesure écrit `π`, `vrai`/`faux` sans « ≈ », et refuse une puissance d'un
 angle (choix prudent) ; le champ de la carte montre `\operatorname{aire}` (`measureFieldLatex`). Dans l'arbre substitué d'un objet, un angle mesuré pris
-par un sin, cos, tan devient un nombre de radians (`angle-radians.ts`) : le moteur n'évalue pas le
+par un sin, cos, tan devient un nombre de radians (`angle-radians.ts`, dont la réduction sur l'arbre,
+`radiansInTrigonometry`, vit dans `mathAST/cli/core/angle-radians.ts`) : le moteur n'évalue pas le
 cosinus d'une grandeur dans une fonction (`g(x) = cos(R)·x`, R = 90°). La carte recopie le mode
 de la console (`Atelier.calcMode`, posé par le pupitre après chaque saisie). Revue (2026-10-18) : une mesure se cite aussi
 dans les nombres d'une construction (`cercle(A ; AM)`) et dans des coordonnées (`G = (aire(B, C, D) ;
@@ -369,7 +376,8 @@ ne s'arrête pas quand deux sommets se rejoignent au glisser ; une valeur APPROC
 en pleine précision et toute ligne qui la cite, même par un autre objet (`approximateNames`), se dit
 `≈`, 4 décimales, jamais en fraction.
 
-**Écrire un angle en degrés** (`degrees.ts`, 2026-10-19) : comme sur la copie. Un `°` collé
+**Écrire un angle en degrés** (`degrees.ts`, 2026-10-19 ; dans `mathAST/cli/core/` depuis le
+2026-11-03 : le registre lit la ligne de la même façon, `typed-line.ts`) : comme sur la copie. Un `°` collé
 après un nombre, un nom ou une parenthèse fermante est l'unité degré (`60[°]`, π/180 rad) —
 `cos(60°)` → `1/2`, `a = 60°`, `cos(a°)` avec a = 60, `cos((30+30)°)`, `60 °` aussi. En LaTeX,
 `60^\circ`, `60^{\circ}`, `60{}^{\circ}` et `60\degree` (ce que MathLive écrit quand on tape `°`,
@@ -385,13 +393,13 @@ typographique des angles), et `60{}^{\circ}` en LaTeX (`degreeSignWritten`, appl
 `runInput` : mesures d'angle comprises, `≈ 36,8699°`, la valeur approchée aussi). Un angle écrit
 en degrés pris par un sin, cos, tan devient un nombre de radians exact dans l'arbre substitué
 (`h(x) = cos(90°)·x` → `h(1) = 0`, `.variations h` constante, `f(x) = sin(30°) + x` → `f(0) = 1/2`)
-et dans l'argument d'une commande (`radiansInText` : `.résoudre h(x)=1` → `x = 2`, `.évaluer
-cos(60°)*x en x=2` → 1). Sauf pour `.simplifier`, `.développer` et `.résoudre` (`DEGREES_READ`,
+et dans l'argument d'une commande (`radiansInText` : `.évaluer cos(60°)*x en x=2` → 1). Sauf pour `.simplifier`, `.développer` et `.résoudre` (`DEGREES_READ`,
 `calcul.ts`, chantier valeurs-remarquables, 2026-10-27) : leurs étapes lisent les degrés et disent
 la valeur remarquable (« On utilise une valeur remarquable : cos(60°) = 1/2 ») ; un angle hors
-table reste en degrés (`.simplifier cos(20°)x`, `.développer x(cos(20°)+1)`), sauf dans
-`.résoudre`, dont les étapes passent ensuite en radians exacts (`radiansInTrigonometry`,
-`cos(π/9)`) et dont le moteur reçoit l'argument converti. **Une variable en degrés** (choix prudent, à trancher par David) :
+table reste en degrés (`.simplifier cos(20°)x`, `.développer x(cos(20°)+1)`, et `.résoudre
+cos(20°)x=1` → `S = {1/cos(20°)}` depuis la PR 2c de registre-reference, 2026-11-09 : ses étapes
+calculent en radians exacts, `radiansInTrigonometry`, puis `anglesAsTyped` remet l'angle tapé).
+Le moteur de `.résoudre` reçoit les degrés tels quels : le registre les lit lui-même. **Une variable en degrés** (choix prudent, à trancher par David) :
 `f(x) = cos(x°)` est acceptée — exacte, `cos(πx/180)`, et c'est l'arbre que trace le Graphe ; un
 angle BRUT écrit dans une fonction ou une suite (`f(x) = 2x°`, `x[°]`, `u(n) = n°`) est en erreur
 avec le message des mesures (« Une mesure d'angle est une grandeur… », `WRITTEN_ANGLE`,
@@ -631,7 +639,11 @@ l'ensemble est refusé dans Calcul (`outsideIntervalRefusal`, argument sans vari
 de la carte (I4). Dans la carte, `smartFence` est coupé dès que le champ contient le « sur » d'un
 intervalle — même règle `intervalWord`, « sur » en fin de saisie compris (jugé au `keydown`,
 `beforeinput` et `input` en capture : l'`input` arrive trop tard) — sinon `[0;1[` s'écrit
-`\left\lbrack0;1\left\lbrack\right\rbrack\right\rbrack`, illisible.
+`\left\lbrack0;1\left\lbrack\right\rbrack\right\rbrack`, illisible. Dans la console, une
+définition de fonction en cours (`f(x) =`, dans les deux champs) montre sous le champ « Modèle :
+f(x) = x² sur [0;3] — pour choisir l'ensemble », nom et variable tapés ; « sur » tapé, le modèle
+devient celui d'un intervalle (`definitionHint`, `draft-hint.ts`). Une indication seulement :
+Entrée calcule la ligne telle quelle.
 
 **Les calculs sur l'intervalle** (lot 2, I4) : `.résoudre` et `.variations` travaillent sur
 l'ensemble des fonctions qu'ils citent SEULES ou appelées sur une lettre (`f`, `f(x)`, `f'(t)` —
@@ -948,7 +960,8 @@ Une cellule est du texte brut ; une cellule qui commence par `=` est une **formu
   être calculé, `médiane(L)` lu « Fonction inconnue : diane » (2026-10-15) ; `max`, `min`, `abs`,
   `ln`, `exp`, que Calcul connaît, restent des calculs, comme un nom de deux lettres sans point
   (`nb(…)`, `si(…)` : des produits, la règle de `readFunctionCall`). `pi` en lettres est refusé dans la grille
-  comme dans Calcul (`PI_IN_LETTERS`, `names.ts`, décision de David du 2026-10-06), et dans la
+  comme dans Calcul (`PI_IN_LETTERS`, `mathAST/cli/core/typed-line.ts`, partagé avec le registre,
+  décision de David du 2026-10-06), et dans la
   grille en toutes casses (`=PI`, `=Pi`) hors des guillemets ; `PI()` et `π` restent lus. `plainSyntax` ramène au tableur les guillemets
   courbes ou français (`“fille”`, `«fille»` : la ponctuation intelligente de l'iPad) et `≤ ≥ ≠` ;
   la barre et les cases ont `autocorrect="off"`. Le critère de NB.SI peut être une case seule, dont
@@ -1271,7 +1284,17 @@ retirée du moteur le 2026-10-13) n'est pas au catalogue non plus.
 
 **La réponse du registre fait foi** (chantier `registre-reference`, 2026-11-01) : chaque commande
 du registre déclare sa **réponse brute** dans le champ `answer` de `WebReplEngine.execute` (LaTeX
-de la réponse seule) ; l'Atelier l'habille, il ne la remplace pas. Le contrat est le corpus
+de la réponse seule, exacte dans les deux modes) et, pour un calcul tapé ou une grandeur seule,
+son **écriture décimale** dans `decimal` (au point, en LaTeX comme `answer`, sans `=` ni `≈`, moins
+compris, arrondie selon Q3, même pour un nombre déjà écrit) et `decimalExact` (`=` ou `≈`) — décisions A et B du lot 2 : le mode
+décimal est un choix d'affichage de l'outil, qui pose `=`/`≈`, la virgule et le `×`. Une
+expression à lettres non liées répond par sa **forme rangée**, celle de l'écran (`tidy`, ordre
+de l'élève, S3 : `x/x` gardé ; décision D, 2026-11-03), dans `answer` et dans le texte ; son `ast`
+reste l'entrée lue, que `resultToShow` range. Un résultat exact trop long répond par son
+**écriture gardée**, celle de l'écran (`(1+1/1000)^{1000}`, `1000!` ; lot 2, 2026-11-03). L'Atelier
+l'habille, il ne la remplace pas : `.dériver` et « Dériver » affichent la réponse du registre
+(forme finale de f′, `(x + 1)eˣ`), les étapes de `deriveSteps` y aboutissent (garde
+`src/lib/atelier/__tests__/deriver-registre.test.ts`, PR 1, 2026-11-03). Le contrat est le corpus
 `tests/fixtures/mathast/registre-corpus.ts`, joué contre le registre et contre la ligne affichée
 par l'Atelier (`src/lib/mathAST/cli/__tests__/registre-corpus/`, `src/lib/atelier/__tests__/registre-corpus.test.ts`) ;
 les écarts d'aujourd'hui sont listés dans `connues-fausses.ts` et se retirent au fil du chantier.
@@ -1313,7 +1336,10 @@ décisions de David du 2026-10-11) :
   `commandBeingWritten`) reste sous le champ pendant qu'on tape la suite. Garde : toute commande
   d'élève disponible a un exemple (`commands.test.ts`).
 
-**Garder le domaine** (chantier tidy-conditions, David 2026-10-26 ; `domain-guard.ts`) : toutes
+**Garder le domaine** (chantier tidy-conditions, David 2026-10-26 ; `domain-guard.ts` pour les
+boutons, le calcul dans `mathAST/pedagogical-simplify/keep-domain.ts` depuis registre-reference,
+2026-11-03 : `.simplifier` du registre rend la même réponse ; la ligne affiche la fin des étapes
+quand il y en a, sinon la réponse du registre — garde `simplifier-registre.test.ts`) : toutes
 les lignes se comportent comme une expression tapée et `.développer` — une simplification n'a lieu
 que si le domaine ne change pas (`domainLoss` de `mathAST/tidy`). `.simplifier` et `.factoriser`
 coupent le calcul du moteur pédagogique avant la première étape qui change le domaine
@@ -1431,8 +1457,12 @@ fractions », 2026-10-12) :
   caractères se lit sur sa **longueur réelle** (`exactCharacters`) : une base irrationnelle
   échappait à la prévision (`\sqrt{2}^{100000}` affichait 15 052 caractères), et la prévision
   ignore les simplifications (`10^{600}×10^{-598}` gardait son écriture pour 100). Une factorielle
-  que le moteur garde (`1000!`) compte par sa valeur (2 568 chiffres) ; `1000!/999!` n'est plus
-  annoncé « environ 5 000 chiffres ». L'arrondi se lit alors sur le résultat calculé (√2 tapé
+  que le moteur garde (`1000!`) compte par sa valeur (2 568 chiffres) ; un résultat fait de
+  factorielles dont la valeur est courte se calcule (`shortFactorialValue` : `1000!/999!` → 1000,
+  `1000!/998!` → 999 000 ; règle « calcul puis mesure », David, 2026-11-01 — avant le 2026-11-03,
+  la ligne gardait `\dfrac{1000!}{999!}`, le moteur ne réduisant aucune factorielle au-delà de
+  2⁵³) ; une comparaison aussi, membre par membre (`boundedComparison` : `1000!/999! = 1000` est
+  vraie, elle répondait faux). L'arrondi se lit alors sur le résultat calculé (√2 tapé
   n'entre en fraction que par son flottant, dont la puissance déborde).
 
 **Chaînes et « différent de »** (2026-10-12) : `1 < x < 3` est vraie si chaque maillon l'est
@@ -1486,6 +1516,13 @@ soustraction : `(1+1/20000)^{20000}×10^{16} − 27182138745278831 < 0` → `fal
 `(1+1/100000)^{100000}×(1+1/100000)^{-100000} < 1` plus de 300 s. `2^{100000} > 3^{60000}` répond toujours `true`. Le résultat porte `exactTooLong` ; le rendu ne passe pas l'écriture
 gardée à `tidy`, qui la développerait. La console ne calcule plus le résultat exact deux fois (le
 test du booléen le réutilise), ni l'arrondi deux fois (ligne et bouton ≈).
+Une égalité tranchée par `executeEquality` (`2=2`, `3! = 6`, `x+x=2x`) ou une chaîne (`2 = 2 = 3`)
+s'affiche `\text{vrai}` / `\text{faux}` comme toute comparaison (`booleanResult` du moteur :
+`latex`, `answer` et un nœud booléen ; avant le 2026-11-03, la ligne montrait le texte `true`).
+Une comparaison que le calcul ne tranche pas (`2 \approx 2`) est un **refus** de l'atelier (code
+`RELATION_UNDECIDABLE`, dans `STUDENT_FACING_ERRORS`) : « Relation « ≈ » non évaluable : seules
+= ≠ < > ≤ ≥ se tranchent » (décision C du lot 2 du registre ; avant, une ligne « Erreur de calcul »).
+Limite connue : `2 ≈ 2` avec le caractère `≈` se lit mal (« Nombre « 2 » écrit après un facteur »).
 
 **Complétion des fonctions et des lettres grecques** (PR 3, `src/lib/atelier/completion.ts`) :
 règle unique — la liste s'ouvre quand le mot qui finit au CURSEUR (lettres seulement, curseur relu
@@ -1923,6 +1960,16 @@ compte suit. Le choix n'est pas retenu d'un chargement à l'autre. ⚠️ Les te
 tournent à 414 px, se jouent sur bureau (`harness/desktop-screen.ts`) ; le repli a ses propres
 tests (`mes-objets-telephone.svelte.test.ts`).
 
+**« Mes objets » replié sur bureau** (chantier `atelier-plein-ecran`, validé par David le
+2026-11-15) : au-dessus de 720 px, un second bouton de l'en-tête (« Replier / Déplier « Mes
+objets » », `aria-controls` ; pas d'`aria-expanded`, le nom dit déjà l'état) replie le panneau en une **bande** de 2,75rem : le bouton en haut,
+puis le titre et le compte écrits de haut en bas ; la vue prend la largeur (la colonne de la
+grille passe à `auto` par `:has(.panneau.replie-large)`, sauf sous le graphe agrandi). Il s'ouvre
+déplié, n'a pas de bouton quand l'atelier est vide, se rouvre quand une carte prend la main
+(`selected` non nul, comme sur téléphone) et n'est pas retenu d'une visite à l'autre. État à part
+de celui du téléphone (`foldedWide` contre `opened`) : le CSS montre l'un ou l'autre bouton.
+Tests : `plein-ecran-et-repli.svelte.test.ts`.
+
 **𝒞f dans la vue Géométrie** (PR 3, K1-K3) : l'action de carte « Afficher dans Géométrie » /
 « Retirer de Géométrie » (`figure` dans `BY_KIND`, bascule comme « Tracer ») pose `inFigure` sur
 la fonction (`setInFigure`, un état d'affichage **rangé** comme `plotted` : sauvegarde, lien,
@@ -2026,8 +2073,8 @@ frappe : [atelier-saisie-naturelle.md](../archive/wip/atelier-saisie-naturelle.m
 - **Le clavier virtuel est un seul pour la page** : les onglets « Calcul » et « Commandes » sont
   posés quand le champ prend le focus et retirés quand il le perd (les cartes ont leurs champs
   MathLive), comme `FillBlanksInput.svelte`.
-- En écriture mathématique, la liste des commandes et le « Modèle : » du mode texte ne s'ouvrent
-  pas : le champ a sa propre liste. Le focus réel est dans le shadow DOM de MathLive, où
+- En écriture mathématique, la liste des commandes et le « Modèle : » d'une commande ne s'ouvrent
+  pas : le champ a sa propre liste (le « Modèle : » d'une définition de fonction, lui, s'affiche). Le focus réel est dans le shadow DOM de MathLive, où
   `aria-controls` de l'hôte ne porte pas : une région `status` annonce la proposition surlignée
   (« résoudre, 1 sur 2 »). La liste s'ouvre au-dessus du mot quand le champ est dans la moitié
   basse de l'écran, et défile.
@@ -2041,6 +2088,16 @@ frappe : [atelier-saisie-naturelle.md](../archive/wip/atelier-saisie-naturelle.m
   LaTeX).
 
 ### Session, persistance, URL
+
+**Avant l'ouverture : la silhouette** (`AtelierSilhouette.svelte`, chantier amelioration,
+2026-11-11). La page ne pose l'atelier qu'une fois `openLink(…)` résolu, dans le navigateur : le
+serveur ne rendait rien, et l'écran restait vide le temps du JS (≈ 3 s en 4G lente). Il rend
+désormais la silhouette, aux dimensions de l'atelier vide (rien ne saute à l'arrivée) : le titre
+`<h1>` et « Chargement de l'atelier… » (`role="status"`) pour les lecteurs d'écran, le reste
+`inert`, sans bouton ni champ. Elle ne rend pas l'atelier utilisable plus tôt. Limite connue : si
+le JS ne charge pas, la silhouette reste, sans message d'échec (le site entier exige le JS). ⚠️ Ses
+dimensions recopient `AtelierContainer`, `ObjectPanel` et `ToolButton`. Test :
+`routes/(public)/atelier/__tests__/silhouette-serveur.test.ts` (rendu serveur de la page).
 
 - **Stockage local** (`persistence.ts`) : clé `ATELIER_STORAGE_KEY` (`chiphre-atelier`),
   version `ATELIER_STATE_VERSION`. On range de quoi **reconstruire** (nom, type, définition,
@@ -2268,7 +2325,18 @@ Lot 1 de la refonte de l'interface (`docs/archive/wip/atelier-refonte-interface-
 David le 2026-10-18). Une seule barre (`role="toolbar"`) au-dessus des onglets, en icônes seules
 (`ToolButton.svelte`) : à gauche **Repartir de zéro**, **Charger un atelier**, **Enregistrer
 l'atelier**, précédés d'**Annuler** et **Rétablir** (lot 5, voir « Annuler / Rétablir ») ; à
-droite **Console**, **Partager** et **Réglages**.
+droite **Console**, **Partager**, **Réglages** et **Plein écran**.
+
+**Plein écran** (chantier `atelier-plein-ecran`, 2026-11-15) : tout l'atelier recouvre la fenêtre
+(classe `plein-ecran` : `position: fixed`, `inset: 0`, comme le graphe agrandi), sans l'en-tête
+ni le menu du site ; « Mes objets », la barre et les onglets restent. Le bouton devient
+« Quitter le plein écran ». Ce n'est **pas** le plein écran du navigateur (Échap en sortirait
+aussi dans Chrome, écarté par David). Échap en sort (`handleExpandedEscape`), après ce qui a
+mieux à faire : un champ, un menu ou une fenêtre ouverts, la console (un Échap venu d'elle la
+ferme seulement — l'ordre des écouteurs délégués de Svelte n'étant pas sûr, on teste
+`consolePanel.contains(target)` — ; ouverte, focus ailleurs, Échap la ferme d'abord), le graphe
+agrandi (un Échap par étage). Non retenu d'une
+visite à l'autre.
 Un bouton indisponible garde le focus (`aria-disabled`, pas `disabled`) et dit pourquoi, dans son
 infobulle et à l'aide technique (« Ton atelier est vide : il n'y a rien à enregistrer. »).
 « Vide » se lit sur `atelier.isBlank` (ni objet, ni grille) : une grille seule s'enregistre et se
@@ -2452,13 +2520,29 @@ ligne ne compile plus. Conclusions acceptées pour la ligne : `read-solution`, `
 `no-real-solution`, les conclusions d'inéquation, et `read-all-reals` (`S = ℝ`,
 `|x-1|=|1-x|`).
 
+**La réponse est l'ensemble des solutions** (chantier `registre-reference`, Q2, PR 2b,
+2026-11-03), comme celle du registre (`solve-latex.ts`, `solve.command.ts`) : `S = {3}` pour une
+seule solution, `S = ]−∞ ; 3[` pour une inéquation du premier degré, `S = ℝ \ {3}` pour `≠`,
+`S = {π/4 + kπ, k ∈ ℤ}` pour une famille périodique (deux familles : `S = {π/6 + 2kπ ; 5π/6 + 2kπ,
+k ∈ ℤ}`). Les étapes passent par `x = 3` ou `x < 3` et concluent sur S : `concludedOn` ajoute
+l'étape « L'ensemble des solutions » quand la dernière ne l'écrit pas, ou réécrit l'ensemble de la
+conclusion dans l'ordre de la réponse. Solutions rangées par valeur croissante (`ascending`,
+R-ordre du 2026-11-01 : `(x − 1)(x + 2) = 0` → `S = {−2 ; 1}`, `−x² + x + 1 = 0` aussi) ; une
+solution sans valeur (paramètre) garde l'ordre du calcul. Une solution en ln ne porte plus sa valeur
+approchée (`e^x = 3` → `S = {ln 3}`, `S ≈ {1,0986}` au bouton ≈) ; seul le **seuil** d'une
+inéquation la garde (`0,8ⁿ < 0,1` → `n > ln(0,1)/ln(0,8) ≈ 10,32`, David, 2026-11-03). Le
+bouton ≈ suit la forme de la réponse (`S ≈ {…}`). Garde : `__tests__/resoudre-registre.test.ts`
+(dernière étape = ligne affichée = réponse du registre ; écarts de lecture de la PR 2c — degrés,
+décimaux tapés, paramètre — figés dans `READ_DIFFERENTLY`). L'Atelier affiche encore la fin de
+ses étapes, pas `result.answer`, jusqu'à la PR 2c.
+
 **Étapes écrites comme la réponse** (lot 5f-4 de `simplify-carte`, Q46, 2026-10-25). Les étapes
 d'une équation ou d'une inéquation passent par `stepsAsShown` avant le rendu ; le garde-fou et
-la ligne `S = …` d'une équation lisent les étapes du calcul. Décimaux tapés gardés (`2x = 0,6` : « Solution : x = 0,3 » ;
+la ligne `S = …` d'une équation lisent les étapes du calcul. Décimaux tapés gardés (`2x = 0,6` : « Solution : x = 0,3 », puis `S = {0,3}` ;
 `0,5x + 1 = 2` : `0,5x = 1`, « On divise les deux membres par 0,5 »), solutions écrites comme la
 réponse (`2x² = 1` : `S = {−√2/2 ; √2/2}` ; `x² − x − 1 = 0` : « On simplifie les solutions »
-donne `(1 − √5)/2`). Une inéquation s'écrit de même (Q50, 2026-10-25) : `2x < 0,6` répond
-`x < 0,3` (ligne lue sur les étapes montrées), `x² < 0,5` conclut `S = ]−√2/2 ; √2/2[`,
+donne `(1 − √5)/2`). Une inéquation s'écrit de même (Q50, 2026-10-25) : `2x < 0,6` passe par
+`x < 0,3` et répond `S = ]−∞ ; 0,3[` (ligne lue sur les étapes montrées), `x² < 0,5` conclut `S = ]−√2/2 ; √2/2[`,
 `1/(2x − 1) > 0` conclut `]1/2 ; +∞[` en vraie fraction, les racines du tableau de signes
 s'écrivent comme des solutions. Détail : `docs/systeme/mathast/README.md`, `pedagogical-solve` ;
 tests `__tests__/resoudre-etapes-5f4.test.ts`, `__tests__/resoudre-inequations-q50.test.ts`.
@@ -2467,6 +2551,17 @@ Une inéquation dont l'écriture a une valeur interdite que la forme canonique e
 (`\frac{3x^2}{2x}\geq 0`, `\frac{2x^3}{x}<2`) n'a pas d'étapes : les pipelines du premier et du
 second degré la refusent (`rejectForbiddenValues`, V47 puis V48), `solveSteps` rend `null` et
 l'atelier affiche la réponse du moteur sans « Comment ? ».
+
+**Étapes chargées au premier dépliage** (`StepsOnDemand.svelte`, `steps-loader.ts`, chantier
+amelioration, 2026-11-11). Le composant des étapes tire le rendu markdown (DOMPurify compris) ;
+il n'est téléchargé qu'au premier « Comment ? » de la session : ~160 Ko gzip de moins à
+l'ouverture de l'atelier (1 467 → 1 308 Ko, avec l'élagage des modules de `src/lib`, voir
+[environnement-de-dev.md](../pratiques/environnement-de-dev.md)). Pendant le chargement, la ligne
+dépliée dit « Chargement des étapes… » ; une fois chargé, le composant s'affiche aussitôt sur
+toutes les lignes, y compris celles qui avaient échoué (`lazyLoader` : un seul téléchargement, `loaded` réactif, lu sans promesse). Un échec
+(réseau, nouvelle version déployée) affiche « Les étapes n'ont pas pu se charger. » et
+« Réessayer » ; la ligne de calcul reste au-dessus. Les tests qui déplient puis lisent le rendu
+appellent `stepsCorrection.load()` dans un `beforeAll`.
 
 **« Résumé / Détaillé »** (`steps-summary.ts`, 2026-10-13). Les commandes qui rédigent
 (simplifier, factoriser, dériver, résoudre, intégrer, domaine — tapées, ou Résoudre / Dériver sur une carte ; `.évaluer` construit le sien, voir plus bas) rendent le même
@@ -2591,8 +2686,9 @@ recevait le symbole f, une constante, et `.dériver f` répondait 0, `.intégrer
   saisie. « a ⩾ v » et « a ≠ v » ensemble → « a > v » (`mergedConditions`, décision Q2 de David,
   2026-11-01) : `\sqrt{a}\ln(a)`, `x/\sqrt{a}` de 0 à 1 → (a > 0). `1/\ln(a)` garde
   « ln(a) ≠ 0 » brut (Q4, laissé).
-- **`.résoudre` tapé avec une lettre non posée** (V57, Q5 — `parameterSolveRefusal`, après le
-  moteur, ses refus d'abord) : refus « Le résultat dépend de a… » quand la résolution DIVISE par
+- **`.résoudre` tapé avec une lettre non posée** (V57, Q5 — refus du REGISTRE depuis la PR 2c de
+  registre-reference, 2026-11-09 : `parameterSolveRefusal` de `mathAST/cli/core/parameter-refusal.ts`,
+  code `PARAMETER_DEPENDS`, que l'Atelier affiche tel quel ; après le moteur, ses refus d'abord) : refus « Le résultat dépend de a… » quand la résolution DIVISE par
   le paramètre — polynôme dont le coefficient dominant en contient un (`a x = 0`, `a x + b = 0`,
   `x/a = 1`, `a x^2 = 1`, `a x > 1`) ; sinon l'inconnue multipliée par un paramètre
   (`e^{a x} = 1`) ou un paramètre au dénominateur de la réponse (`1/x = a`), sauf si le moteur
@@ -3131,4 +3227,4 @@ lois (`.binomiale`, `.géométrique`, `.uniforme`, `.exponentielle`, `.normale`)
 
 ---
 
-Vérifié contre le code le 2026-10-19 (outils de construction de la géométrie, lot 3, PR 3).
+Vérifié contre le code le 2026-10-19 (étapes chargées au premier dépliage, 2026-11-11 ; outils de construction de la géométrie, lot 3, PR 3).

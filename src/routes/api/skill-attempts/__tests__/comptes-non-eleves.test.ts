@@ -63,11 +63,18 @@ function fauxSupabase() {
 	};
 }
 
-async function post() {
+async function post(
+	corps: Record<string, unknown> = {
+		template_id: MODELE,
+		success: true,
+		with_help: false,
+		place: 'flash_cards'
+	}
+) {
 	const request = new Request('http://localhost/api/skill-attempts', {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({ template_id: MODELE, success: true, with_help: false })
+		body: JSON.stringify(corps)
 	});
 	return POST({ request, locals: { supabase: fauxSupabase() } } as never);
 }
@@ -104,6 +111,65 @@ describe('POST /api/skill-attempts — comptes non élèves', () => {
 			expect.objectContaining({ student_id: COMPTE, template_id: MODELE, success: true })
 		);
 		expect(ensureProgrammeDeckCard).toHaveBeenCalledWith(expect.anything(), COMPTE, MODELE);
+	});
+
+	it('ADR 0038 : les colonnes de la trace sont écrites telles quelles', async () => {
+		role.value = 'student';
+		const response = await post({
+			template_id: MODELE,
+			success: false,
+			place: 'number_race',
+			seed: 123456,
+			response_ms: 10000,
+			allotted_ms: 10000,
+			end_reason: 'timeout',
+			answer_parts: ['12', ''],
+			part_verdicts: [true, false]
+		});
+		expect(response.status).toBe(200);
+		expect(insert).toHaveBeenCalledWith(
+			expect.objectContaining({
+				place: 'number_race',
+				seed: 123456,
+				response_ms: 10000,
+				allotted_ms: 10000,
+				end_reason: 'timeout',
+				answer_parts: ['12', ''],
+				part_verdicts: [true, false]
+			})
+		);
+	});
+
+	it('ADR 0038 : sans durée, graine ni case, les colonnes valent NULL', async () => {
+		role.value = 'student';
+		await post({
+			template_id: MODELE,
+			success: true,
+			place: 'number_race',
+			answer_parts: [],
+			part_verdicts: []
+		});
+		expect(insert).toHaveBeenCalledWith(
+			expect.objectContaining({
+				place: 'number_race',
+				seed: null,
+				response_ms: null,
+				allotted_ms: null,
+				end_reason: null,
+				answer_parts: null,
+				part_verdicts: null
+			})
+		);
+	});
+
+	it('lieu absent ou « evaluation » : 400, rien d’écrit', async () => {
+		role.value = 'student';
+		for (const place of [undefined, 'evaluation']) {
+			await expect(post({ template_id: MODELE, success: true, place })).rejects.toMatchObject({
+				status: 400
+			});
+		}
+		expect(insert).not.toHaveBeenCalled();
 	});
 
 	it('corps invalide : 400 quel que soit le rôle', async () => {

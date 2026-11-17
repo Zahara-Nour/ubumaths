@@ -36,9 +36,6 @@
 			}
 		],
 		"grades": ["6"],
-		"theme": "Proportionnalité",
-		"domain": "Pourcentages",
-		"subdomain": "Définition",
 		"level": 3,
 		"status": "draft",
 		"delay": 10,

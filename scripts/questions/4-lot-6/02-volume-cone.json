@@ -1,10 +1,8 @@
 {
+	"id": "35002b15-46dc-4813-aa6e-d241762d1b69",
 	"title": "Volume d'un cône",
 	"description": "Calculer le volume d'un cône de révolution (π × r² × h ÷ 3) : valeur exacte, valeur arrondie, diamètre donné, lien avec le cylindre, formule à choisir",
 	"grades": ["4"],
-	"theme": "Grandeurs",
-	"domain": "Volumes",
-	"subdomain": "Pyramide et cône",
 	"level": 2,
 	"delay": 120,
 	"status": "draft",

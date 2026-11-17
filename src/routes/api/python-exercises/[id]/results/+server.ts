@@ -5,6 +5,7 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { requireRole } from '$lib/server/middleware/auth';
 import { exerciseIdParamSchema } from '$lib/server/validation/python-exercises';
 import { z } from 'zod';
 import { createServerLogger } from '$lib/utils/logger';
@@ -32,11 +33,8 @@ const resultsQuerySchema = z.object({
  * @returns Array of submissions with student info
  */
 export const GET: RequestHandler = async ({ locals, params, url }) => {
-	const { user, supabase } = locals;
-
-	if (!user) {
-		throw error(401, 'Connexion requise');
-	}
+	const { user } = await requireRole(locals, 'teacher');
+	const { supabase } = locals;
 
 	// Validate ID parameter
 	const idValidation = exerciseIdParamSchema.safeParse({ id: params.id });
@@ -45,17 +43,6 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 	}
 
 	const exerciseId = params.id;
-
-	// Verify teacher role
-	const { data: profile, error: profileError } = await supabase
-		.from('profiles')
-		.select('role')
-		.eq('id', user.id)
-		.single();
-
-	if (profileError || !profile || profile.role !== 'teacher') {
-		throw error(403, 'Réservé aux professeurs');
-	}
 
 	// Verify exercise exists and teacher has access
 	const { data: exercise, error: exerciseError } = await supabase

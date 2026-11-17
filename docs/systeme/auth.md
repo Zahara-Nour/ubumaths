@@ -4,6 +4,7 @@ couvre:
   - src/app.d.ts
   - src/lib/server/supabase.ts
   - src/lib/server/auth.ts
+  - src/lib/server/google-photo.ts
   - src/lib/server/accountStatusHandle.ts
   - src/lib/server/redirectHandle.ts
   - 'src/lib/server/auth/**'
@@ -48,7 +49,7 @@ couvre:
 > Remplace les 11 fichiers de [`auth/`](../archive/systeme-2026-06/auth/README.md) (juin 2026, archivés, antérieurs au modèle
 > mono-professeur). En cas de désaccord, **cette page et le code font foi**.
 >
-> Vérifié contre le code le 2026-10-22 ; `MOVED_PAGES` le 2026-10-25.
+> Vérifié contre le code le 2026-10-22 ; `MOVED_PAGES` le 2026-10-25 ; photo Google du callback le 2026-11-06.
 
 ## À quoi ça sert
 
@@ -135,12 +136,12 @@ Détail de chaque chemin dans les sections qui suivent ; règle du consentement 
 | ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `src/hooks.server.ts`                             | Chaîne des handles (ordre ci-dessous) ; `userProfileHandle`, `securityHeadersHandle` ; `csrfHandle` vit dans `src/lib/server/csrfHandle.ts`, `redirectHandle` dans `src/lib/server/redirectHandle.ts`.                                                                                                                                                  |
 | `src/lib/server/supabase.ts`                      | Handle Supabase : `locals.supabase` (cookies SSR) et `locals.safeGetSession()`.                                                                                                                                                                                                                                                                         |
-| `src/lib/server/auth.ts`                          | Pour les **pages** : `getUserProfile`, `requireAuth(user)` (redirige), `requireRole(profile, …)`, `hasRole`, `hasAnyRole`.                                                                                                                                                                                                                              |
-| `src/lib/server/middleware/auth.ts`               | Pour les **API** : `requireAuth(locals)`, `requireRole`, `requireRoles`, `requireAdmin` ; types `UserRole`, `Profile`.                                                                                                                                                                                                                                  |
+| `src/lib/server/auth.ts`                          | Pour les **pages** : `getUserProfile`, `requireUserOrRedirect(user)` (redirige), `requireRole(profile, …)`, `hasRole`, `hasAnyRole`.                                                                                                                                                                                                                    |
+| `src/lib/server/middleware/auth.ts`               | Pour les **API** : `requireAuth(locals)` (401 sans session, 403 sans profil, 500 si la lecture du profil tombe en panne), `requireRole`, `requireRoles`, `requireAdmin` ; types `UserRole`, `Profile`.                                                                                                                                                  |
 | `src/lib/server/adminElevation.ts`                | Élévation : cookie `ubu-admin-elevation`, `createAdminClient`, `createEphemeralAuthClient`, `adminElevationHandle`.                                                                                                                                                                                                                                     |
 | `src/lib/server/serviceRoleClient.ts`             | `createServiceRoleClient()` — contourne la RLS ; liste `ALLOWED_SERVICE_ROLE_PATHS` (avertissement **en dev seulement**) ; ex. pièces jointes de la messagerie, signées après contrôle RLS ; style d'une fiche pour l'élève destinataire (`worksheet-styles.ts`, lot 4b).                                                                               |
 | `src/lib/server/rateLimiter.ts`                   | Limites persistantes (RPC `check_and_increment_rate_limit`, table `rate_limits`) : login, inscription, reset, changement de mot de passe (seau par compte), élévation, OAuth. `response-floor.ts` : durée plancher d'une réponse neutre ; `after-response.ts` : envoi après la réponse (`waitUntil`).                                                   |
-| `src/lib/server/middleware/rateLimit.ts`          | Limiteur **en mémoire** (par instance), utilisé par quelques API (`account/delete`, `search`…).                                                                                                                                                                                                                                                         |
+| `src/lib/server/middleware/rateLimit.ts`          | Garde de débit des API (`account/delete`, `search`…) : 429 au-delà de la limite, compte **en base** via `rateLimiter.ts`.                                                                                                                                                                                                                               |
 | `src/lib/server/validation/auth.ts`               | Zod : `loginFormSchema`, `registerFormSchema`, `requestPasswordResetSchema` (adresse ou identifiant), `updatePasswordSchema`, `parentSetChildPasswordSchema`…                                                                                                                                                                                           |
 | `src/lib/server/passwordPolicy.ts`                | `validatePasswordPolicy`, appliquée par les schémas d'inscription et de changement de mot de passe.                                                                                                                                                                                                                                                     |
 | `src/lib/utils/child-account.ts`                  | Compte d'un enfant inscrit par son parent : `CHILD_ACCOUNT_DOMAIN` (`eleves.chiph.re`), `normalizeLoginIdentifier` (identifiant → adresse fictive), `isChildAccountEmail` (garde des envois), `childLoginBase` / `pickChildLoginId` / `childAccountEmail` (choix de l'identifiant), `childLoginIdOf` (adresse fictive → identifiant, pour l'affichage). |
@@ -206,8 +207,8 @@ ou sous `/constructions/essais` (`/construction-demo`), sous-pages et query stri
 8. `studentPresenceHandle` — élève connecté au compte approuvé, toute page hors `/api/*` : présence du jour notée au client service, au plus une fois par jour et par instance (mémoire locale, sans cookie) ; sert au « tu m'as manqué » du Palotin ([buddy-palotins.md](buddy-palotins.md#retour-apres-une-longue-absence-2026-10-21)).
 9. `adminElevationHandle` — `locals.adminSupabase`, `locals.adminElevation`.
 10. `reservedAreasHandle` (`src/lib/server/reservedAreasHandle.ts`) — espaces réservés, par identifiant de route : `/dev` admin seul (vrai compte admin ou prof élevé ; prof non élevé → `/dashboard/elevate?redirect=…`), `/aide-ecriture` prof seul (un vrai compte admin reçoit 403) ; visiteur → `/auth/login` (401 en écriture), sinon 403. Dans le hook et non dans un layout : ni les loads de page parallèles ni les actions n'y échappent (chantier demo-debug, 2026-10-24). ⚠️ En navigation côté client, le hook ne tourne que si le navigateur demande `__data.json` : chaque espace a donc son `+layout.server.ts`, qui force cette requête et refait le contrôle (`checkReservedArea`). Un load universel (`+page.ts`) ou une requête Supabase faite dans le navigateur n'y passent pas : **aucune donnée sensible par là sous `/dev`**.
-11. `csrfHandle` — `Origin` doit correspondre à `Host` pour POST/PUT/PATCH/DELETE.
-12. `securityHeadersHandle` — CSP, HSTS (prod), `X-Frame-Options`, `Cache-Control: private, no-store` si connecté ou cookie posé.
+11. `csrfHandle` — `Origin` doit correspondre à `Host` pour POST/PUT/PATCH/DELETE. Un appel sans `Origin` ni `Host` (appel interne) passe. **Les deux protections CSRF sont gardées, c'est voulu** (décision de David du 2026-11-03, écart T9) : le contrôle `csrf` de SvelteKit (`svelte.config.js`) ne vérifie que les corps de formulaire (`application/x-www-form-urlencoded`, `multipart/form-data`, `text/plain`) ; `csrfHandle` couvre en plus les requêtes JSON des routes d'API. Ne pas retirer l'un en le croyant redondant.
+12. `securityHeadersHandle` — CSP, HSTS (prod), `X-Frame-Options`, `Cache-Control: private, no-store` si connecté ou cookie posé. **`'unsafe-eval'` reste dans `script-src`, c'est voulu** (décision de David du 2026-11-03, écart T6, mesuré en local) : le WASM du compilateur Typst (wasm-bindgen) appelle `new Function` (`return 0`, `return true`, `path ⟂ return path`…) et `'wasm-unsafe-eval'` seul le casse (`EvalError`). Le limiter aux pages PDF ne tient pas : la CSP est fixée au premier chargement du document, et la navigation côté client garde celle de la page de départ (12 routes chargent Typst). Le gain serait d'ailleurs faible tant que `'unsafe-inline'` reste : un script injecté n'a pas besoin d'`eval`. Le vrai levier serait des nonces à la place de `'unsafe-inline'` (futur chantier, non ouvert). Autres appels à `eval` repérés, à corriger si l'on retire un jour `'unsafe-eval'` : les défis navadra (`challenge-variables.ts`) et Plotly (prendre `plotly-strict`). Le worker Pyodide n'est pas soumis à la CSP de la page (le bac à sable JavaScript de Blockly, retiré le 2026-11-16, l'était aussi ; ADR 0039).
 13. `errorMonitoringHandle` — erreurs et requêtes lentes (> 3 s) vers `error_logs`.
 
 ### Session et cookies SSR
@@ -252,7 +253,10 @@ ou sous `/constructions/essais` (`/construction-demo`), sous-pages et query stri
   `GOOGLE_LOGIN_ENABLED` vaut `false` (la plateforme a quitté le domaine Google Workspace de
   l'ancienne école). La plomberie reste : domaine `@voltairedoha.com` imposé, profil manquant
   créé par le client service (`student`, `pending`, sans école), `next` passé par
-  `validateRedirectUrl`.
+  `validateRedirectUrl`. La photo n'est retenue que si elle est servie par Google
+  (`googlePhotoUrl`, `src/lib/server/google-photo.ts`) ; elle est posée par le client service, et
+  seulement si `avatar_url` est vide (la base refuse toute écriture de l'avatar par le compte
+  connecté, et un avatar porté de la boutique n'est jamais écrasé).
 - **Mot de passe oublié** : `/auth/reset-password` (Zod, limites IP + e-mail, réponse neutre
   rendue après une **durée plancher de 2 s** sur tous les chemins — `waitForResponseFloor` —
   pour que le temps ne trahisse pas un enfant à parent confirmé ; pour un identifiant d'enfant,
@@ -471,8 +475,15 @@ passe du compte admin** ; le jeton du prof n'acquiert jamais de pouvoir admin.
    **sans** jeton de rafraîchissement). Pas de chiffrement : l'intégrité vient de la signature
    du JWT, revérifiée à chaque requête. Le nom ne commence pas par `sb-` : `@supabase/ssr`
    l'ignore et la racine ne le transmet pas au client.
-3. `adminElevationHandle` ne travaille que sous `/dashboard/admin*`, `/api/admin*` et `/dev`
-   (pages de dev, gardées par l'élévation : `reservedAreasHandle`).
+3. `adminElevationHandle` ne travaille que sous `/dashboard/admin*`, `/api/admin*`, `/dev`
+   (pages de dev, gardées par l'élévation : `reservedAreasHandle`) et les routes d'écriture
+   admin restées hors de `/api/admin` (`ADMIN_WRITE_API_PREFIXES` : `/api/questions/templates`,
+   `/api/errors/bulk-resolve`, `/api/errors/delete-resolved`, `/api/bug-reports/config`,
+   `/api/messages/templates`). Elles vérifiaient `requireRole(locals, 'admin')`, qui lit le rôle
+   du compte **connecté** (toujours `teacher` en mode administration) : 403 au prof élevé
+   (2026-11-11). Sans cookie, le handle rend la main avant toute requête ; `/api/errors/log` et
+   `/api/questions/templates/all` (liste publique, anonyme), appelés par tous, restent hors
+   périmètre.
    **Sans session, ou avec la session d'un autre compte que `elevatedBy`, jamais d'élévation** :
    le cookie est effacé, le jeton n'est pas vérifié (poste partagé : logout, session expirée,
    élève connecté ensuite sur le même navigateur ; constat B4, 2026-10-10). Sinon : décode,
@@ -514,7 +525,8 @@ connexion : aucune session n'est créée.
    l'écriture à l'utilisateur, **après** le contrôle d'identité de la route, et en
    l'ajoutant à `ALLOWED_SERVICE_ROLE_PATHS`. Seule lecture anonyme : le document du lien du
    cours (`(public)/cours/[token]/document/[id]`, ADR 0025), où la garde est le jeton, vérifiée
-   par une fonction SQL que seul le service role exécute. Le fichier d'un document de chapitre
+   par une fonction SQL que seul le service role exécute ; de même le carnet de liaison
+   (`lib/server/carnet/`, ADR 0040), après la forme du jeton et la limite de débit par IP. Le fichier d'un document de chapitre
    (`api/documents/[id]`, ADR 0029) se lit aussi par le service, après la lecture de sa ligne
    avec le client de l'utilisateur (RLS : chapitre visible, document publié).
 6. **Pas d'énumération** : login, inscription et reset rendent le même message que le compte
@@ -563,7 +575,9 @@ Attention aux deux modules homonymes : `$lib/server/auth` (pages, prend `user`/`
 401/403). Toujours vérifier lequel est importé.
 
 **Une route admin** : sous `/dashboard/admin/` ou `/api/admin/` (sinon le handle d'élévation
-ne s'y exécute pas), garde `requireAdmin`, écritures avec le client rendu.
+ne s'y exécute pas : l'ajouter à `ADMIN_WRITE_API_PREFIXES`), garde `requireAdmin` — jamais
+`requireRole(locals, 'admin')`, qui refuse le prof en mode administration —, écritures avec le
+client rendu.
 
 **Une policy sur `profiles`** : poser d'abord la question d'accès à David (CLAUDE.md), tests
 d'intégration obligatoires, et relire [rls-echecs-silencieux](../pratiques/rls-echecs-silencieux.md).

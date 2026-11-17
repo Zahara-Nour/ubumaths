@@ -24,7 +24,12 @@
 	import { escapeHtml } from '../utils';
 	import { PUBLIC_SUPABASE_URL } from '$env/static/public';
 	import { getQuestionImageUrl } from '$lib/questions/constants';
-	import { isProjectStorageImage, readRestrictedRendering } from '../restricted-rendering';
+	import { sanitizeUrl } from '$lib/utils/sanitize';
+	import {
+		isProjectStorageImage,
+		readProjectMediaOnly,
+		readRestrictedRendering
+	} from '../restricted-rendering';
 
 	interface Props {
 		src: string;
@@ -65,6 +70,16 @@
 	// chemin relatif — ne fait AUCUNE requête (fuite d'IP, S1).
 	const isRestricted = readRestrictedRendering();
 	let blocked = $derived(isRestricted() && !isProjectStorageImage(src, PUBLIC_SUPABASE_URL));
+
+	// Cahier de texte (lecteurs anonymes du lien public, décision de David du
+	// 2026-11-09, comme les vidéos) : image de notre stockage seulement ; une autre
+	// devient un lien, à ouvrir au clic — aucune requête tierce à l'affichage.
+	const projectMediaOnly = readProjectMediaOnly();
+	let externalHref = $derived(
+		projectMediaOnly() && !isProjectStorageImage(resolvedSrc, PUBLIC_SUPABASE_URL)
+			? sanitizeUrl(resolvedSrc)
+			: null
+	);
 
 	// Escaped values for safe rendering
 	let escapedSrc = $derived(escapeHtml(resolvedSrc));
@@ -158,6 +173,13 @@
 	<!-- Texte échappé par Svelte : aucune requête réseau -->
 	<span class="restricted-media text-sm text-muted-foreground italic"
 		>[image externe non affichée{alt ? ` : ${alt}` : ''}]</span
+	>
+{:else if externalHref !== null}
+	<a
+		class="external-media my-2 block w-fit text-sm text-primary underline underline-offset-2"
+		href={externalHref}
+		target="_blank"
+		rel="noopener noreferrer nofollow">Image : {alt || 'ouvrir'}</a
 	>
 {:else if useFigure}
 	<figure class="exercise-figure {alignmentClass} {className}">

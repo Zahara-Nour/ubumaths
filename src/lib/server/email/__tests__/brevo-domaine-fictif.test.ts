@@ -4,6 +4,10 @@ import { CHILD_ACCOUNT_DOMAIN } from '$lib/utils/child-account';
 const sendTransacEmail = vi.fn(async () => ({ body: { messageId: 'm1' } }));
 
 vi.mock('$env/dynamic/private', () => ({ env: { BREVO_API_KEY: 'cle-de-test' } }));
+// Base distante : envoi réel (la capture locale a son propre test).
+vi.mock('$env/dynamic/public', () => ({
+	env: { PUBLIC_SUPABASE_URL: 'https://exemple.supabase.co' }
+}));
 
 vi.mock('@getbrevo/brevo', () => ({
 	TransactionalEmailsApi: class {
