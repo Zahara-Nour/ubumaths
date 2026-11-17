@@ -15,8 +15,9 @@ _Mis à jour le 2026-11-17, phase 0, rien n'est codé ; 5a tranchée._
 - **Tranché aussi** : le grade de l'Ordre de la Grande Passoire se fondera sur le travail réel, pas sur les gidouilles ; c'est le chantier à part `ordre-grande-passoire`.
 - **Tranché aussi (5a, 2026-11-17)** : on gagne des coups et des sorts en **maîtrisant des notions**, comme pour l'Ordre ; les questions des combats comptent comme du travail.
 - **Tranché aussi (5b, 2026-11-17)** : une victoire rapporte des gidouilles, plafonnées par jour, et rien d'autre.
-- **Prochaine action** : la question **5c** (le carnet de route), puis 5d et 5e. Les propositions sont dans § « À trancher ».
-- **En attente de David** : 5c à 5e. La question 3 (public) est réglée : du primaire au lycée.
+- **Tranché aussi (5c, 2026-11-17)** : un carnet de voyage, album des Bêtes vaincues par Province, visible par l'élève seul.
+- **Prochaine action** : la question **5d** (le Mathou familier), puis 5e. Les propositions sont dans § « À trancher ».
+- **En attente de David** : 5d et 5e. La question 3 (public) est réglée : du primaire au lycée.
 - **Façon de poser** : David n'a pas compris la 5a posée en termes techniques. Poser chaque point **en mots simples, avec un exemple**, sans noms de tables ni de colonnes.
 - **Pièges en cours** :
   - L'analyse du jeu d'origine est dans `extern/navadra-jeu/CLAUDE.md`, un fichier **non versionné**. Ce journal en reprend l'essentiel.
@@ -79,6 +80,10 @@ _Mis à jour le 2026-11-17, phase 0, rien n'est codé ; 5a tranchée._
   - **plafond par jour, tenu par le serveur** : au-delà, les combats ne rapportent plus de gidouilles ce jour-là, mais comptent toujours pour la maîtrise des notions ;
   - le chiffre du plafond se règle au moment du code, en le comparant à ce que rapportent les autres activités (`docs/systeme/jeux-et-economie.md`), pour que la Descente ne rapporte pas plus que le reste de Chiphre.
 
+- **2026-11-17 — 5c : le carnet de voyage** (David suit ma recommandation) :
+  - un album personnel : pour chacune des 6 Provinces, les Bêtes vaincues avec leur dessin, et celles pas encore rencontrées en silhouette ;
+  - **visible par l'élève seul** : aucune comparaison, aucun classement.
+
 ## À trancher (posé à David le 2026-11-09)
 
 1. **Combattants** : les **Mathoux** servent-ils de combattants (équipe de 3, chaque attaque est une question de la notion du Mathou), à la place des sorts et du grimoire ? C'est la décision du 2026-10-18 (`mathoux-conception.md:98-109`) : la confirmer ou la rouvrir.
@@ -92,7 +97,7 @@ _Mis à jour le 2026-11-17, phase 0, rien n'est codé ; 5a tranchée._
 7. **Progression (question 5)**, proposée le 2026-11-09. On n'ajoute pas de grade propre au jeu.
    - ✅ **5a. Puissance de l'avatar** : pas de niveau ni de chiffres qui gonflent ; on progresse par déblocage (coups, sorts, cases de la grille). _Tranché le 2026-11-17, voir § « Tranché »._
    - ✅ **5b. Récompenses** : gidouilles seulement, plafonnées côté serveur. _Tranché le 2026-11-17, voir § « Tranché »._
-   - **5c. Carnet de route** : les Bêtes vaincues, Province par Province.
+   - ✅ **5c. Carnet de route** : les Bêtes vaincues, Province par Province. _Tranché le 2026-11-17, voir § « Tranché »._
    - **5d. Le Mathou familier** : un appui modeste qui grandit avec son stade.
    - **5e. Apparition des Bêtes** : 3 par jour, 5 en stock au plus. Une Bête née d'un point à remédier reste jusqu'à sa défaite. Une grosse Bête par semaine.
    - **Hors du jeu** : le grade de l'Ordre se fondera sur le travail réel, pas sur les gidouilles (décision de David du 2026-11-09). C'est le chantier `ordre-grande-passoire`, clos le 2026-11-17 : règle dans le Compendium (section VII), journal `docs/archive/wip/ordre-grande-passoire-progress.md`. La Descente ne doit pas être le moyen le plus rapide de monter dans l'Ordre.
@@ -154,6 +159,7 @@ _Mis à jour le 2026-11-17, phase 0, rien n'est codé ; 5a tranchée._
 
 ## Historique
 
+- **2026-11-17** : 5c tranchée (carnet de voyage, élève seul).
 - **2026-11-17** : 5b tranchée (gidouilles plafonnées par jour, rien d'autre).
 - **2026-11-17** : 5a tranchée (maîtrise des notions ; les combats comptent comme du travail).
 

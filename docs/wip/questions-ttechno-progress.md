@@ -5,18 +5,17 @@ Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) · bornes 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après #2776 (migrée)._
+_Mis à jour le 2026-11-17, après la publication du lot 2a (§ 16)._
 
-- **État** : lots 0 et 1 en prod. Lot 2a : 8 brouillons en prod, rangés et tagués (#2774, #2776) ; c4887e49 → 025
-  et 0b5c3db6 → 023 tagués, `T_TECHNO` posé (§ 14).
-- **Prochaine action** : lire les verdicts de la page à cocher (https://claude.ai/artifact/4fCZW4x4Y5yKuZDwmt7v2Z),
-  puis `publier-lot.ts --dir scripts/questions/ttechno-2a-suites` (simulation) ; David lance `--publier`. Ensuite
-  lot 2b (Python, P1–P3).
-- **En attente de David** : relecture de la page à cocher (8 fiches).
-- **En attente de `questions-1gen`** : leurs ids et plages des lots 3 et 4 (§ 8 bis), puis nos tags et compléments.
+- **État** : lots 0, 1 et 2a en prod et publiés (2a : 8/8 relus OK, publiés par David).
+- **Prochaine action** : lot 2b (Python, P1–P3, § 12), dans un worktree `questions-ttechno-lot2b`.
+- **`questions-1gen`** : lot 3 (aˣ) **publié** ; E1–E4 à lire contre nos bornes puis taguer (§ 15). Par défaut, un
+  seul lot de tags avec T1 → 035 et T2 → 038 du lot 4 (pas encore écrit, ids promis par `questions-1gen`).
+- **En attente de David** : tags E1–E4 maintenant (PR à part) ou avec le lot 4 (défaut) ?
 - **Pièges en cours** : un point TTECHNO par modèle (trigger) ; `grades` en `array_append` seulement ; Chrome
-  piloté = choisir celui du Mac mini (`switch_browser`), serveur en `--host 127.0.0.1`.
-- **Worktree / branche** : aucun (#2774 mergée, worktree retiré).
+  piloté = choisir celui du Mac mini (`switch_browser`), serveur en `--host 127.0.0.1` ; `publier-lot.ts` et
+  `garde-niveaux-tags.ts` lisent la prod : David les lance (`!`), le classifieur me les refuse.
+- **Worktree / branche** : aucun.
 
 ## 1. Périmètre
 
@@ -423,3 +422,32 @@ bloquant : ids, chemins, points revérifiés en prod, rollback miroir, aucune ta
 Copie des ids mise de côté sur `main` jetée (identique). `garde-niveaux-tags` : aucun niveau manquant.
 
 - Page à cocher : https://claude.ai/artifact/4fCZW4x4Y5yKuZDwmt7v2Z (8 fiches, aucune alerte ; `verdicts` vide).
+
+## 15. Message de `questions-1gen` : lot 3 (aˣ) en prod (2026-11-17)
+
+7 brouillons rangés et tagués 1GEN (migration `20261117191427`, #2778), tous sur « Fonctions > Fonction exponentielle >
+fonctions x ↦ aˣ », `grades ['1_GEN']`, encore brouillons (leur page à cocher d'abord). Candidats TTECHNO (§ 8 bis) :
+
+- **E1** `e4e65a69-2710-45d1-9592-1edd100d9067` « Calculer une valeur de a^x » → 031 : a ∈ {1,5 ; 2 ; 3 ; 0,5 ;
+  0,8}, x ∈ {0,5 ; 1,5 ; 2,5 ; 3,2} ; capital 1000 / 2000 / 5000 € à 2–4 %, x ∈ {1,5 ; 2,5 ; 3,5} ; 1000 / 8000 ×
+  0,5ˣ, x ∈ {0,5 ; 1,5 ; 2,5}.
+- **E2** `60971c9a-82e7-4ed5-a18a-7520b40c38b2` « Une seule puissance » (commun, Q15) → 081 : exposants positifs
+  seulement (a ∈ {2 ; 3 ; 5 ; 1,5}, exposants 0,5…4,5, k ∈ 2..4, b ∈ {2 ; 3 ; 4}) ; complément à exposants
+  négatifs à écrire ici.
+- **E3** `2a9c316a-ee3d-44dc-89be-8b3b5c00ac2c` « Sens de variation de x ↦ a^x » → 032 : a > 1, 0 < a < 1, a = 1,
+  comparaison sans calcul, médicament (−p %/h), sur [0 ; +∞[.
+- **E4** `065eea60-1d6d-4404-9015-f4624e661ab2` « Associer une courbe à sa fonction » → 033 : courbes sur [0 ; 4],
+  a ∈ {1,2 ; 1,5 ; 2 ; 2,5 ; 0,5 ; 0,6 ; 0,8}, a = 1 en v2.
+- E5 3a8ef5f7, E6 9ead685c, E7 fc27769e : sans point TTECHNO.
+- ⚠ Le rollback commenté de leur migration retire le nœud : ils ne le joueront plus une fois nos tags posés.
+
+À faire au lot 3 ici : lire les 4 en entier contre nos bornes (031 parle aussi de a⁻ˣ = 1/aˣ ; 032 / 033 sur ℝ
+chez nous, [0 ; +∞[ chez eux → complément x < 0 si besoin), puis tags + `array_append('T_TECHNO')`.
+
+## 16. Lot 2a : publication (2026-11-17)
+
+- Page à cocher : 8/8 « OK », aucun commentaire (base de l'artefact lue et comptée).
+- `garde-niveaux-tags.ts` (David) : 2 400 modèles tagués, aucun niveau manquant (12 écarts voulus, hors lot).
+- `publier-lot.ts --dir scripts/questions/ttechno-2a-suites` : simulation verte, puis `--publier` par David :
+  **8/8 publiés**, statut relu en base.
+- `questions-1gen` : lot 3 publié (7/7) ; ids E1–E4 confirmés (031, 081, 032, 033), lot 4 à venir.

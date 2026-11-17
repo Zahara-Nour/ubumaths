@@ -5,7 +5,7 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après #2782 (lot 8a écrit, brouillons créés, rangement en PR, § 21 quater)._
+_Mis à jour le 2026-11-17, après #2782 (lot 8a écrit, brouillons créés, rangement en PR, § 21 quinquies)._
 
 - **État** : lots 0 à 7 publiés, 126 points sur 171. Lot 8a « heures et durées » : fichiers mergés (#2782),
   5 brouillons créés en prod ; PR de rangement (migration nœud + tag) en cours. Puis 8b, 8c, 8d, 8e, 9 (§ 20).
@@ -1652,7 +1652,11 @@ celui qui suit le modèle CE2 de même geste dans le nœud, partagé, sans renum
 - Base locale (copie du dossier, `.env.local`, sous `scripts/with-db-lock.sh`), aperçu admin à 390 px (Playwright,
   port 5178) : les 15 variations vues, cadrans nus, horloge à placer, quatre horloges légendées, cases + choix du jour.
 
-### 21 quater. Lot 8a — création en prod et rangement (2026-11-17)
+### 21 quater. Lot 8a — fichiers mergés (2026-11-17)
+
+- #2782 mergée (CI verte), branche supprimée ; worktree détaché sur `main`.
+
+### 21 quinquies. Lot 8a — création en prod et rangement (2026-11-17)
 
 - #2782 mergée. `create-questions --dir scripts/questions/cm1-8a --publier` lancé (ids écrits dans le worktree) : 5 brouillons CM1
   (relevé : draft, niveaux 6, 8, 6, 8, 5 comme écrits, sans nœud ni tag). Ids commités sur
@@ -1662,4 +1666,5 @@ celui qui suit le modèle CE2 de même geste dans le nœud, partagé, sans renum
   Durées » (lecture de l'heure : 9e655e1a → 092, dd81eefb → 093 ; calcul de durées : f3f00294 → 094, cdec9199 →
   166, 68134013 → 095), 5 tags posés, aucun niveau ni statut changé.
 - Test `questions-cm1-lot8a-rangement-tags.test.ts` : 20/20 vert ; corps neutralisé (`select 1;`) : 9 échecs + suite
-  principale sautée. `types:cliquet` tenu.
+  principale sautée. `types:cliquet` tenu ; `security-auditor` : aucun finding (diff avec le lot 7 : données,
+  compteurs, préfixe `_qcm1l8a_` ; état « avant » remesuré au MCP).

@@ -237,6 +237,34 @@ export function isRuledPolygonCheck(check: ConstructionCheck): check is RuledPol
 }
 
 /**
+ * Rectangle sans équerre (chantier `rectangle-sans-equerre`, phase 0 validée par
+ * David le 2026-11-17) : `rectangle A ; B ; C ; D : AB = 4 cm ; AC = 6 cm`. La
+ * diagonale [AC] est tracée dans la figure (sa longueur y est vérifiée), B et D
+ * n'y sont pas. L'élève construit B et D au compas et à la règle graduée (les
+ * diagonales : même milieu, même longueur ; B sur le cercle de diamètre [AC]).
+ * Longueurs en millimètres entiers, côté plus court que la diagonale. Seul dans
+ * la figure, papier uni.
+ */
+export interface DiagonalRectangleCheck {
+	kind: 'rectangle';
+	points: [string, string, string, string];
+	/** Longueur du côté [AB] */
+	side: { length: number; unit: LengthUnit };
+	/** Longueur de la diagonale [AC] */
+	diagonal: { length: number; unit: LengthUnit };
+	line: number;
+}
+
+/** Palette du rectangle sans équerre : Segment · Compas · Règle graduée */
+export const DIAGONAL_RECTANGLE_TOOLS: ConstructionTool[] = ['segment', 'compas', 'regle'];
+
+export function isDiagonalRectangleCheck(
+	check: ConstructionCheck
+): check is DiagonalRectangleCheck {
+	return 'diagonal' in check;
+}
+
+/**
  * `symetrique par d` : l'élève trace l'image de tout ce qui est tracé dans la
  * figure sauf l'axe ; `par O` (un point) : symétrie centrale.
  * `symetrique A ; B ; C par d` : seulement les traits dont les deux bouts sont
@@ -457,6 +485,7 @@ export type ConstructionCheck =
 	| DroiteParCheck
 	| SegmentFigureCheck
 	| RuledPolygonCheck
+	| DiagonalRectangleCheck
 	| PointCheck
 	| LineCheck
 	| CircleCheck

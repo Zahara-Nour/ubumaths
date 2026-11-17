@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après #2771._
+_Mis à jour le 2026-11-17, après #2775._
 
-- **État** : découpage fini. PR 1 (#2760) capture des courriels en local ; PR 2 (#2771) `e2e/verifs/carnet.spec.ts`, 3/3 verts sur la base locale (#2731, #2724, #2736/#2737), revue `code-reviewer` sans bloquant.
-- **Prochaine action** : quand David a coché la [page des captures](https://claude.ai/artifact/2qMVSgXJcc64tsiUQWWJsL) (lire ses réponses : `ArtifactData list reponses`), corriger ce qui est « À revoir », puis clore : versement (la doc durable est déjà dans `docs/pratiques/`), journal archivé.
-- **En attente de David** : la relecture des 6 fiches de captures (ligne #2771 de `verifications-manuelles.md`).
+- **État** : découpage fini et relu. #2760 (capture locale), #2771 (`e2e/verifs/carnet.spec.ts`, 3/3 verts), #2775 (phrase « Gardez ce courriel… » dans le courriel du lien). Relecture de David : 3 fiches OK ; courriel du lien corrigé par #2775 ; page du parent et « Mon carnet » → chantier `carnet-heatmap`.
+- **Prochaine action** : clore : versement (la doc durable est déjà dans `docs/pratiques/`), journal archivé.
+- **En attente de David** : rien.
 - **Pièges en cours** : la suite ÉCRIT dans la base locale → sous verrou : `VERIFS_PORT=<port> bash scripts/with-db-lock.sh pnpm test:verifs carnet`, serveur de dev du même dossier lancé et chauffé avant. Le décor efface les limites de débit `carnet%`, renomme 3 élèves fictifs et désactive l'ancienne année scolaire de l'école (rétabli par `pnpm db:seed-riche`).
-- **Worktree / branche** : aucun (nettoyés après #2771).
+- **Worktree / branche** : aucun.
 
 ---
 
@@ -53,3 +53,9 @@ Comportements proposés par Claude, David : « je te suis ».
 - Revue `code-reviewer` (Sonnet) : aucun bloquant ; corrigés : garde `.env.local` sur la base locale, journal de la tâche lu pour CE passage (valeurs numériques exigées), relance exigée à 200 avec un nouveau passage, ancre `#courriels` testée à largeur téléphone, nom de famille cherché aussi dans le HTML. Laissés : attentes négatives de 3 s (« lien perdu », ajout neutre, relance), assumées.
 - Connexion : saisie avant l'hydratation = champs vidés → attendre `networkidle` et vérifier les valeurs avant de cliquer.
 - #2771 mergée le 2026-11-17 (CI 16/16 verte).
+
+### 2026-11-17 — relecture de David
+
+- Page à cocher : courriel de confirmation, page « confirmer », courriel d'exception → OK.
+- Courriel du lien « À revoir » : remplacer « Lien perdu ? » par « Gardez ce courriel. Si vous ne le retrouvez plus un jour, demandez un nouveau lien (l'ancien cessera de fonctionner) » → #2775, mergée (CI verte).
+- Page du parent et « Mon carnet » « À revoir » : la régularité doit être la heatmap de la grille du prof, depuis la rentrée → chantier `carnet-heatmap` (`docs/wip/carnet-heatmap-progress.md`).

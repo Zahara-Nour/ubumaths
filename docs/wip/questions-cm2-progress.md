@@ -6,13 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après #2777._
+_Mis à jour le 2026-11-17, après #2780._
 
-- **État** : lots 0 à 7 publiés. **Lot 8** (038, 053, 055-057 ; 5 modèles) : fichiers mergés (#2777), pas encore en prod.
-- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/cm2-8 --publier` (brouillons en prod), puis commit des ids ; migration nœud + tag (gabarit du lot 7b), page à cocher, publication. Après le lot 8 : reclasser le § 3 (§ 12 d).
-- **En attente de David** : le `--publier` du lot 8. ⛔ Jamais `--mettre-a-jour` de `cm2-7b` avec des fichiers d'avant #2770 (ids CM1).
+- **État** : lots 0 à 8 publiés (lot 8 : 038, 053, 055-057, publiés le 2026-11-17, `published` relu au MCP).
+- **Prochaine action** : reclasser le § 3 (§ 12 d) : points du CM2 encore sans modèle, puis phase 0 du lot suivant.
+- **En attente de David** : rien. ⛔ Jamais `--mettre-a-jour` de `cm2-7b` avec des fichiers d'avant #2770 (ids CM1).
 - **Pièges en cours** : migrations depuis #2181 : `pnpm migration:horodatage` = heure réelle UTC ; `db:migrate` refuse une migration plus ancienne que la dernière jouée → `--dry-run --include-all`, liste relue, puis `--include-all`. Worktree neuf : copier `supabase/.temp/` (lien projet) du dépôt principal. Modèle à placer avec grands nombres : `spaces: off`. Page à cocher : `line` non dessiné, à jouer dans l'aperçu. `Doc-inchangée:` dans un COMMIT. `git commit -m … -- <fichiers>`. Colonne du nœud au MCP : `question_templates.classification_node_id`.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, branche `feat/questions-cm2-lot8` mergée (#2777) ; nouvelle branche pour la migration du lot 8.
+- **Worktree / branche** : aucun (worktree du lot 8 retiré, branches mergées supprimées).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -824,3 +824,7 @@ modèles. Tableau du § 13 gardé.
 - Base locale : 5 brouillons créés, joués dans l'aperçu admin (division 43 713 ÷ 6 saisie 7285,5 → juste, correction lisible ; 1 − 1/2 = ?/4 ; estimation 4 980 − 293 en case « choix » ; 212 × 60,8 posé). Fichiers réécrits par le script ensuite (ids locaux retirés).
 - Aperçu : le serveur de dev doit écouter sur `127.0.0.1` (`--host 127.0.0.1`) ; l'extension Chrome refuse `[::1]`.
 - #2777 (fichiers) : CI verte, mergée.
+
+- 2026-11-17 : `db:migrate` joué par David (lot 8 + 1re techno lot 1) ; 5 modèles rangés et tagués, `updated_at` inchangé (MCP). Page à cocher publiée (5 fiches ; « bloc operation non dessiné » sur 055, 056, 057 : à jouer dans l'aperçu) : https://claude.ai/artifact/71F7ncJkoVsfEqzNCpsJSr ; 5 verdicts « OK » écrits à 20:49 (base relue). `publier-lot` en simulation : 5 brouillons passent.
+
+- 2026-11-17 : lot 8 publié par David (`publier-lot --publier`), 5/5 `published` relus au MCP.

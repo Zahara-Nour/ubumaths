@@ -1,0 +1,145 @@
+{
+	"id": "28d1c03e-add8-46d1-affe-87ae04598041",
+	"title": "Cours : sens de variation d'une suite géométrique",
+	"description": "Raison comparée à 1 et sens de variation, termes strictement positifs",
+	"grades": ["1_TECHNO"],
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"shared": {},
+	"options": {
+		"courseQuestion": true
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "$(u(n))$ est une suite géométrique de premier terme $u(0)>0$ et de raison $q>1$. Alors la suite $(u(n))$ est…\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n- on ne peut pas savoir\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"$u(n+1)-u(n)=u(n)\\times q-u(n)=u(n)\\times(q-1)$, avec $u(n)>0$ : $q-1>0$, donc chaque terme est plus grand que le précédent : la suite est croissante."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"statement": "$(u(n))$ est une suite géométrique de premier terme $u(0)>0$ et de raison $q$ telle que $0<q<1$. Alors la suite $(u(n))$ est…\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n- on ne peut pas savoir\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"$u(n+1)-u(n)=u(n)\\times q-u(n)=u(n)\\times(q-1)$, avec $u(n)>0$ : $q-1<0$, donc chaque terme est plus petit que le précédent : la suite est décroissante."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			],
+			"statement": "$(u(n))$ est une suite géométrique de premier terme $u(0)>0$ et de raison $q=1$. Alors la suite $(u(n))$ est…\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n- on ne peut pas savoir\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"$u(n+1)=u(n)\\times 1=u(n)$ : tous les termes sont égaux, la suite est constante."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "Pour une suite géométrique de premier terme et de raison strictement positifs, le sens de variation se lit…\n\n```choix\n- en comparant la raison $q$ à $1$\n- en comparant la raison $q$ à $0$\n- sur le signe du premier terme $u(0)$\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"$u(n+1)-u(n)=u(n)\\times q-u(n)=u(n)\\times(q-1)$, avec $u(n)>0$ : le signe de $q-1$ décide. Croissante si $q>1$, décroissante si $0<q<1$, constante si $q=1$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "croissante",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "Erreur : décroissante",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "décroissante",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "Erreur : croissante (q > 0)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "constante",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "Erreur : croissante",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "comparer q à 1",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "Erreur : comparer q à 0",
+			"variationIndex": 3
+		}
+	]
+}

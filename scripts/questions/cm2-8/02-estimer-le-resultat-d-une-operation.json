@@ -1,4 +1,5 @@
 {
+	"id": "1f2e22ab-47a5-4862-95fb-1f95f69f9191",
 	"title": "Estimer le résultat d'une opération",
 	"description": "Différence d'un nombre de 4 chiffres et d'un nombre de 3 chiffres (1 212 − 496 ≈ 700), produit de 3 chiffres par 2 chiffres (724 × 68 ≈ 49 000), quotient d'un nombre de 5 chiffres (59 437 ÷ 6 ≈ 10 000) ; choisir parmi quatre valeurs",
 	"grades": ["CM2"],

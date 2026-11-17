@@ -8,17 +8,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, lot 1 refondu (§ 23)._
+_Mis à jour le 2026-11-17, après #2783 (migration du lot 1)._
 
-- **État** : T1, T2, lot 0, lot G, 83b1f614 v3, lot R en prod (#2743 … #2772). Lot 1 « suites géométriques » vide
-  (couvert par G et T2) → **lot 1 = connaissances des suites (039, 040, 041)** ; lots refaits (§ 23, tableau).
-- **Prochaine action** : PR des fichiers M1, M2 (`scripts/questions/1techno-1/`) ; après merge, **David** lance
-  `create-questions --dir scripts/questions/1techno-1 --publier` ; puis page à cocher (M1, M2, 817d257f) et migration.
-- **En attente de David** : rien avant le merge.
+- **État** : T1, T2, lot 0, lot G, 83b1f614 v3, lot R, **lot 1 (039, 040, 041) en prod et publié** (#2743 … #2783).
+  Reste 5 lots, 37 points (§ 23, tableau) : 2 second degré, 3 dérivation, 4 algorithmique, 5 graphiques/stats, 6 probas.
+- **Prochaine action** : lot 2 « second degré sans formule » (123, 124, 061, 062, 064, 125, 126 ; 057 jumeau de
+  1GEN-022 → demander à questions-1gen) : phase 0 à proposer, nouveau worktree depuis `origin/main`.
+- **En attente de David** : rien.
 - **Pièges en cours** : un point par programme (trigger) ; `grades` en `array_append`/`array_remove` seulement ;
   worktree neuf → `pnpm exec svelte-kit sync` avant un script `tsx` ; export prod : `env $(grep … .env)` (sinon
-  `.env.local` = base locale) ; commitlint refuse « T1 » en début de sujet ; CI : le cliquet peut être coupé à 20 min ; `Doc-inchangée:` dans un COMMIT (pas la PR) pour une migration ; `db:migrate` « inserted before » → `--dry-run --include-all`.
-- **Worktree / branche** : `../ubumaths-wt-questions-1techno`, `feat/questions-1techno-lot1`.
+  `.env.local` = base locale) ; commitlint refuse « T1 » en début de sujet ; `Doc-inchangée:` dans un COMMIT pour une
+  migration ; `db:migrate` pousse tout ce qui attend (`migration list --linked` avant).
+- **Worktree / branche** : aucun (à créer pour le lot 2).
 
 ## 1. Relevé (prod, 2026-11-17)
 
@@ -545,3 +546,25 @@ Phase 0 validée par David (« oui »). Script `docs/wip/questions/lot-1techno-1
 (M1 5 variations, 11 specs ; M2 4 variations, 8 specs). `create-questions` en simulation : tout vert. Essai en base
 locale (copie dans le scratchpad, ids locaux hors dépôt) : deux brouillons créés ; M1 joué dans l'aperçu admin (choix
 faux marqué faux, bonne réponse montrée) ; aperçus `question:specs --apercu 12` relus pour les deux.
+
+### Lot 1 — brouillons en prod, page à cocher, migration (2026-11-17)
+
+PR #2779 (fichiers) mergée. David a lancé `create-questions --publier` : M1 `0e64a8b0-92c1-4c74-be3f-5894d7b7eba6`, M2
+`28d1c03e-add8-46d1-affe-87ae04598041`, brouillons `{1_TECHNO}`, sans nœud ni tag (vérifié MCP). Page à cocher
+https://claude.ai/artifact/MxXrLSyDNPEozMGpM7zp3m (capacité `db`) : 3 « ok » sur 3 (M1, M2, 817d257f), sans
+commentaire. Instantanés prod : `scripts/questions/1techno-1-tags/`.
+
+questions-1gen (message du 2026-11-17) : d'accord pour 817d257f → 041, aucune modification en cours ; le rollback de
+sa migration du lot 2 (20261117174437) ne sera plus joué une fois notre tag posé (il retire le nœud de R1).
+
+Migration `20261117192425_questions_1techno_lot1_rangement_tags` : (A) M1, M2 rangés sur le nœud de leur point (lu
+sur `node_id`) et tagués 039, 040 ; (B) 817d257f `array_append('1_TECHNO')` + 041. Gardes : tout ou rien (3),
+brouillons sans nœud ni tag avec `1_TECHNO`, 817d257f sans `1_TECHNO` et sur le nœud de 041, aucun point 1TECHNO
+déjà posé. Test `tests/integration/questions-1techno-lot1-rangement-tags.test.ts` : 14 verts ; corps retiré → 6
+rouges et le bloc nominal ne démarre pas.
+
+PR #2783 mergée. Migration appliquée en prod le 2026-11-17 par le `db:migrate` de David (avec celle du lot 8 de
+questions-cm2). Vérifié MCP : M1 sur 7ed1251c + 1TECHNO-039, M2 sur c90700c5 + 1TECHNO-040 (point sur le nœud) ;
+817d257f `{1_GEN,1_TECHNO}`, publié, tags 1GEN-016 + 1TECHNO-041, `updated_at` inchangé ; trigger de date `O`.
+Publication : `publier-lot.ts` en simulation (2 brouillons) puis lancé par David avec `--publier` : 2/2 publiés,
+relu en base. **Lot 1 clos.**
