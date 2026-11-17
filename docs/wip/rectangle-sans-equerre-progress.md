@@ -6,13 +6,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, phase 0 validée (§ 3.8), PR 1 en cours._
+_Mis à jour le 2026-11-17, PR 1 codée et commitée (§ 4), pas encore ouverte._
 
-- **État** : phase 0 validée par David (Q1 à Q5 = recos, § 3.8) ; PR 1 (l'outil) en cours dans le worktree.
-- **Prochaine action** : tests rouges (parseur, juge), puis parseur, juge, correction, catalogue, `ubumark.md`.
+- **État** : PR 1 (l'outil) commitée sur la branche, tests verts (40 + 2 de vue), `check:incremental` 0,
+  cliquet tenu, `lint:fast` propre ; revue `code-reviewer` (Opus) lancée, résultat pas encore lu.
+- **Prochaine action** : relancer la revue `code-reviewer` en `model: opus` sur `git diff origin/main...HEAD
+-- src` (le résultat de la session précédente est perdu au /clear), corriger, pousser, ouvrir la PR, CI,
+  merge. Puis PR 2 : le modèle 4-038 dans `questions-4`.
 - **En attente de David** : rien.
-- **Pièges en cours** : ne pas toucher au juge du rectangle à l'équerre (`ruled-polygon.ts`) ; « construit » par
-  la règle graduée n'est pas dans `constructionOf` : l'étendre dans le nouveau juge (§ 3.3).
+- **Pièges en cours** : `docs:check-a-jour` signale `utilitaires-et-demos.md` (catalogue) : `Doc-inchangée:`
+  déjà au commit du journal. Ne pas toucher à `ruled-polygon.ts`.
 - **Worktree / branche** : `../ubumaths-wt-rectangle-sans-equerre`, `feat/rectangle-sans-equerre`.
 
 ## 1. Ce qui existe (lecture du code, 2026-11-17)
@@ -160,3 +163,20 @@ posée, pas de codage (Q4).
 Q1 diagonale écrite (`AB = 4 cm ; AC = 6 cm`, vérifiée contre la figure) · Q2 message de l'angle en B avec
 l'indice du cercle de diamètre [AC] · Q3 segments sur [AC] et [BD] admis (traits de construction) · Q4
 correction sans codage · Q5 côté donné [AB] seul.
+
+## 4. PR 1 — l'outil (2026-11-17)
+
+- Juge `src/lib/questions/construction/diagonal-rectangle.ts` (`DiagonalRectangleCheck`, clé `diagonal`),
+  parseur `readDiagonalRectangle` / `diagonalRectangleError`, branchements `judge.ts`, `drawing.ts`,
+  `instance-generator.ts` ; le rectangle à l'équerre (`ruled-polygon.ts`) n'est pas touché.
+- Tests : `construction-rectangle-diagonales.test.ts` (40, rouges d'abord : module absent), et deux tests de
+  vue dans `figure-a-completer-regle.svelte.test.ts` (M1 entière aux touchers → juste ; B à l'œil → message,
+  cercle et arc à la correction).
+- **Précision prise en codant** (cohérente avec M4 validée) : les segments sur la médiatrice de [AC] sont des
+  traits de construction, comme ceux des diagonales (Q3) — sinon M4 serait « trait de trop ».
+- **Choix de B** entre les deux sommets du quadrilatère : celui que l'élève a mesuré depuis A (compas piqué
+  en A, règle posée en A), sinon le plus près de AB (un rectangle AB = 4,5 cm donnait sinon « [AB] ne mesure
+  pas exactement 4 cm », AD ≈ 3,97 cm étant plus près).
+- Vue : une seule retouche, l'indice de la Règle posée propose aussi le Segment (O à 3 cm, D à 6 cm de B).
+- Doc : `docs/systeme/questions.md`, `docs/systeme/ubumark.md`, exemple du catalogue
+  (`block-catalog/figure-a-completer.ts`, page `/aide-ecriture/blocs/figure-a-completer`).
