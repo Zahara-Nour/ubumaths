@@ -7,15 +7,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après #2778 et la page à cocher du lot 3._
+_Mis à jour le 2026-11-17, après la publication du lot 3._
 
-- **État** : lots 1 et 2 **publiés**. Lot 3 (aˣ) en prod **en brouillon**, rangé et tagué (#2778, `db:migrate` fait),
-  page à cocher **7/7 OK** (§ 19), simulation `publier-lot.ts` verte.
-- **Prochaine action** : **David** lance `pnpm tsx scripts/questions/publier-lot.ts --dir
-scripts/questions/1gen-3-fonctions-exponentielles --publier` ; relire `published` au MCP ; prévenir questions-ttechno
-  (elle tague E1 à E4 après la publication). Puis lot 4 (taux moyen, phénomènes exponentiels, seuils ; phase 0 § 14),
-  worktree neuf `../ubumaths-wt-questions-1gen-lot4` ; questions-ttechno attend ses ids.
-- **En attente de David** : `publier-lot.ts --publier` du lot 3.
+- **État** : lots 1, 2 et 3 **publiés** (lot 3 : 7/7 `published` relu au MCP, § 19).
+- **Prochaine action** : lot 4 (taux moyen, phénomènes exponentiels, seuils ; phase 0 validée § 14, T1 à T7),
+  worktree neuf `../ubumaths-wt-questions-1gen-lot4` ; envoyer ses ids à questions-ttechno (T1 → 035, T2 → 038).
+- **En attente de David** : rien.
 - **Pièges en cours** : ADR 0020 et `couvrir-un-niveau.md` § 9 avant tout tag ; `db push` pousse TOUTES les
   migrations en attente (`migration list --linked` d'abord) ; ids écrits par `create-questions` dans le dépôt
   principal → les copier dans un worktree, commiter, puis `git restore` (jamais les fichiers d'une autre session) ;
@@ -716,3 +713,6 @@ Tous sur « Fonctions > Fonction exponentielle > fonctions x ↦ aˣ ».
 - Page à cocher : 7 fiches, 23 exemples ; une alerte attendue (bloc associer d'E4 non dessiné, joué dans l'aperçu,
   § 18). https://claude.ai/artifact/3XEaFxSbGcryky6bLtYeZG (capacité `db`). Verdicts lus en base : **7/7 OK**, sans
   commentaire. Simulation `publier-lot.ts` : 7 brouillons passent.
+
+**Publication (2026-11-17)** : David a lancé `publier-lot.ts --publier` ; 7/7 modèles relus `published` (script et
+MCP). questions-ttechno prévenue (tags TTECHNO d'E1 à E4).
