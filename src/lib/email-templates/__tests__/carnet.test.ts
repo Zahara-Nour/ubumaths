@@ -66,6 +66,16 @@ describe('courriel du lien', () => {
 			expect(body).toContain('https://www.chiph.re/carnet/lien-perdu');
 		}
 	});
+
+	it("« lien perdu » dit quand s'en servir : plus tard, sans ce courriel", () => {
+		const data = { studentFirstname: 'Léa', token: JETON };
+		const text = getCarnetLinkEmailText(data);
+		const html = getCarnetLinkEmailHtml(data);
+		expect(text).toContain('Gardez ce courriel. Si vous ne le retrouvez plus un jour,');
+		expect(html).toContain('Gardez ce courriel. Si vous ne le retrouvez plus un jour,');
+		expect(html).toContain("(l'ancien cessera de fonctionner)");
+		for (const body of [text, html]) expect(body).not.toContain('Lien perdu ?');
+	});
 });
 
 describe("courriel d'exception (E1, E5, Q38)", () => {
