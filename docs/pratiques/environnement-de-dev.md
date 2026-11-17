@@ -1,6 +1,7 @@
 ---
 couvre:
   - src/lib/server/email/capture.ts
+  - src/lib/server/email/capture-index.ts
   - '.github/workflows/**'
   - .github/dependabot.yml
   - '.husky/*'
@@ -147,10 +148,15 @@ copiée, **jamais de données d'élèves en local** (`scripts/db-seed-riche/inde
 `127.0.0.1` ou le Mac mini par le tailnet `*.ts.net`, hors Vercel), `sendEmail` n'appelle pas Brevo : chaque courriel est écrit dans
 `.captures/courriels/` (ignoré par git), un `.html` à ouvrir dans le navigateur (et un `.txt`),
 plus une ligne dans `index.jsonl` (date, destinataire, sujet, fichier, en-têtes). Les tests
-Playwright y lisent les liens (`readCapturedEmails`). L'appli voit un envoi réussi, et le service
+Playwright lisent l'index par `readCaptureIndex` (`src/lib/server/email/capture-index.ts`, sans
+`$env`, donc importable hors SvelteKit) et suivent les liens des courriels :
+`e2e/verifs/carnet.spec.ts` rejoue ainsi les vérifications manuelles du carnet de liaison. Les
+gabarits écrivent l'adresse de la prod (`https://www.chiph.re/...`) : le test n'en garde que le
+chemin. L'appli voit un envoi réussi, et le service
 de courriel compte comme configuré même sans clé. `EMAIL_ENVOI_REEL=1` dans `.env.local` envoie
 pour de vrai ; `EMAIL_CAPTURE_DIR` change le dossier. Base distante (worktree sans `.env.local`)
-→ envoi réel. Le dossier ne se vide jamais seul. Code : `src/lib/server/email/capture.ts`.
+→ envoi réel. Le dossier ne se vide jamais seul. Code : `src/lib/server/email/capture.ts`,
+`src/lib/server/email/capture-index.ts`.
 
 ## GitHub
 

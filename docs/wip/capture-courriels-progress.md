@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après #2760._
+_Mis à jour le 2026-11-17, PR 2 en cours._
 
-- **État** : PR 1 mergée (#2760) : sur la base locale, les courriels sont capturés dans `.captures/courriels/`, rien ne part chez Brevo (`EMAIL_ENVOI_REEL=1` pour envoyer).
-- **Prochaine action** : PR 2, nouveau worktree `../ubumaths-wt-capture-courriels`, branche `test/capture-courriels-carnet` : tests `e2e/verifs/carnet-*.spec.ts` (étapes 1 à 3 des vérifications manuelles du carnet, lignes #2724, #2731, #2736/#2737), liens lus par `readCapturedEmails`, inactivité de 15 jours posée en SQL local, captures téléphone clair/sombre, page à cocher.
+- **État** : PR 1 mergée (#2760). PR 2 en cours : `e2e/verifs/carnet.spec.ts`, 3 tests verts sur la base locale (#2731, #2724, #2736/#2737), rejouables à la suite ; captures téléphone dans `.captures/verifs/carnet/`.
+- **Prochaine action** : doc (`environnement-de-dev`, `tests`), page à cocher des captures, PR, CI, merge.
 - **En attente de David** : rien.
-- **Pièges en cours** : la capture exige base locale (`localhost`, `127.0.0.1`, `*.ts.net`) ET hors Vercel ; au moindre doute → envoi réel. Worktree sans `.env.local` = base de prod = envoi réel. Les tests serveur qui n'ont pas de mock de `brevo` captureraient dans `.captures/` du worktree.
-- **Worktree / branche** : aucun (PR 1 nettoyée).
+- **Pièges en cours** : la suite ÉCRIT dans la base locale → la lancer sous verrou : `VERIFS_PORT=5181 bash scripts/with-db-lock.sh pnpm test:verifs carnet`. Serveur de dev à lancer et chauffer avant (le `webServer` de Playwright a répondu vide au 1er essai). Liens des courriels = `https://www.chiph.re/...` : le test n'en garde que le chemin.
+- **Worktree / branche** : `../ubumaths-wt-capture-courriels`, `test/capture-courriels-carnet`.
 
 ---
 
@@ -43,3 +43,10 @@ Comportements proposés par Claude, David : « je te suis ».
 
 - Tests `brevo-capture.test.ts` : 4 rouges sans le code (capture, sans clé, dossier inaccessible, en-têtes), 9/9 verts avec. `brevo-domaine-fictif.test.ts` : mock de l'adresse de base (distante) ajouté, sinon il capturait.
 - Revues : `code-reviewer` et `security-auditor`, aucun bloquant ; corrigés : ligne d'index tronquée (lecture qui levait), base jointe par le tailnet (`*.ts.net`, essais sur iPhone) qui envoyait encore pour de vrai.
+
+### 2026-11-17 — PR 2
+
+- `capture-index.ts` : lecture de l'index sans `$env` (Playwright l'importe) ; `capture.ts` la réexporte.
+- Décor (`e2e/verifs/helpers/carnet.ts`, base locale seulement) : première classe active avec école et trois élèves fictifs ; remise à zéro du carnet de ses élèves, prénoms/noms inventés, consentement accordé pour A, A arrivé il y a 30 jours sans travail, année scolaire en cours si absente, limites de débit du carnet effacées, prénom + nom du prof local (`full_name` seul en local ; la page du prof signe avec prénom + nom, rempli en prod — vérifié en lecture seule).
+- Écarts rencontrés, tous du décor, aucun bug : classe d'`eleve01` inactive ; prof local sans prénom (courriel sans nom du prof) ; limite d'ajout d'adresse de l'élève (6/h) atteinte en rejouant.
+- Non couvert par les assertions (à l'œil) : lisibilité clair/sombre, barres vides discrètes ; évaluations « à venir / passées » (le décor n'en a pas) ; message trimestriel (à partir du 28 nov.).
