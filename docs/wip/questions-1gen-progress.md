@@ -197,3 +197,21 @@ est donc une décision.
   des racines ou f(x) = c, aucune formule ; bornes 1techno dans `bornes/lycee/1techno.md`) : celui qui arrive le
   premier au second degré l'écrit, l'autre pose son tag ; non tranché par David. Il prévient avant de corriger
   83b1f614 v3.
+
+## 7. Règle du nœud : vérification du plan de tags (prod, 2026-11-17)
+
+Le plan des § 2 à 6 ignorait les deux règles écrites dans l'ADR 0020 (« un point par programme » ; « le point est sur
+le nœud du modèle ou sur sa notion », refus par `question_template_points_check_rules`) et rappelées dans
+`couvrir-un-niveau.md` § 9 (Tle spé : 8 tags sur 13 refusés). Je n'avais lu ni l'ADR ni le § 9 avant de proposer.
+
+Requête : pour chaque tag prévu, nœud du modèle, nœud du point, et points 1GEN admis sur le nœud du modèle.
+
+- **Admis (12)** : 103cf8d9 → 048, 21f42c7f → 009, 42bb2d66 → 011, 5397c20f → 062, 70e682f9 et c90fa022 → 017,
+  aab8e41c → 023, afe51ac4 → 055, bd27e002 → 018, d2067413 → 031, d8c9cb60 et f2ed0ea0 → 010.
+- **Refusés (11)**, aucun point 1GEN admis sur leur nœud ne décrit le modèle : 1c86d122 (002 ; nœud « courbes et
+  repères »), f5585668, 27ac630c, a55ad3b4 (051), 27d77564 (029), aeb1389d (056), f3100c29 (038), d1010214 (058),
+  98c3f740 (048), 2f4f4ae0 et fe6f5606 (012).
+
+**Bilan corrigé** : la migration couvre **9 points** (009, 010, 011, 017, 018, 023, 031, 048, 055). **38 points restent à
+écrire** : les 30 du § 2.4, plus 002, 016, 027, 029, 038, 051, 056, 058. Q2 : seul 5397c20f reçoit un point ;
+1c86d122 et f5585668 rejoignent les 4 dont on retire `1_GEN` (à confirmer par David).
