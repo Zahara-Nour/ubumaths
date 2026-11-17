@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, PR 1 en cours._
+_Mis à jour le 2026-11-17, après #2760._
 
-- **État** : PR 1 (capture des courriels sur la base locale) codée, tests verts, PR à ouvrir.
-- **Prochaine action** : PR 1 → CI → merge. Puis PR 2 : tests `e2e/verifs/carnet-*.spec.ts` (étapes 1 à 3 des vérifications manuelles du carnet), liens lus dans les courriels capturés.
+- **État** : PR 1 mergée (#2760) : sur la base locale, les courriels sont capturés dans `.captures/courriels/`, rien ne part chez Brevo (`EMAIL_ENVOI_REEL=1` pour envoyer).
+- **Prochaine action** : PR 2, nouveau worktree `../ubumaths-wt-capture-courriels`, branche `test/capture-courriels-carnet` : tests `e2e/verifs/carnet-*.spec.ts` (étapes 1 à 3 des vérifications manuelles du carnet, lignes #2724, #2731, #2736/#2737), liens lus par `readCapturedEmails`, inactivité de 15 jours posée en SQL local, captures téléphone clair/sombre, page à cocher.
 - **En attente de David** : rien.
-- **Pièges en cours** : la capture exige base locale ET hors Vercel ; au moindre doute → envoi réel. Les tests serveur tournent avec `.env.local` (base locale) : un test qui appelle le vrai `sendEmail` capture dans `.captures/courriels/` du worktree.
-- **Worktree / branche** : `../ubumaths-wt-capture-courriels`, `feat/capture-courriels`.
+- **Pièges en cours** : la capture exige base locale (`localhost`, `127.0.0.1`, `*.ts.net`) ET hors Vercel ; au moindre doute → envoi réel. Worktree sans `.env.local` = base de prod = envoi réel. Les tests serveur qui n'ont pas de mock de `brevo` captureraient dans `.captures/` du worktree.
+- **Worktree / branche** : aucun (PR 1 nettoyée).
 
 ---
 
