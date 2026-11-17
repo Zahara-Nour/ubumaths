@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.93.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.92.0...v0.93.0) (2026-11-17)
+
+### ✨ Features
+
+- **questions:** ttechno lot 0, tags TTECHNO sur 30 modeles publies ([56b0b44](https://github.com/Zahara-Nour/ubumaths/commit/56b0b442bac1aed6d5dfff6c3f781979551e7e62))
+
+### 📚 Documentation
+
+- **wip:** questions-1gen, lot 1 relu et publie ([7600880](https://github.com/Zahara-Nour/ubumaths/commit/76008804a3bfa36cd756e54fda6c7aa2e1f5f189))
+- **wip:** questions-1techno, lot G (G5 vers 049, notation u_n), page a cocher ([600391c](https://github.com/Zahara-Nour/ubumaths/commit/600391c0950fa8b12d513fc46c6e5a8c5742c222))
+
 ## [0.92.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.91.0...v0.92.0) (2026-11-17)
 
 ### ✨ Features
