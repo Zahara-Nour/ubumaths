@@ -59,6 +59,21 @@ function carnetUrl(): string {
 	return `/dashboard/teacher/classes/${decor.classId}/carnet`;
 }
 
+/**
+ * Cases de la régularité de A : une par semaine depuis son arrivée (décor :
+ * il y a 30 jours, après la rentrée), semaine en cours comprise.
+ */
+function weeksSinceArrival(): number {
+	const parisDay = (d: Date) =>
+		new Date(
+			`${new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Paris' }).format(d)}T12:00:00Z`
+		);
+	const monday = (d: Date) => d.getTime() - ((d.getUTCDay() + 6) % 7) * 86_400_000;
+	const today = parisDay(new Date());
+	const arrival = parisDay(new Date(Date.now() - 30 * 86_400_000));
+	return Math.round((monday(today) - monday(arrival)) / (7 * 86_400_000)) + 1;
+}
+
 /** Le texte d'un courriel ne porte que le prénom de l'élève, jamais son nom. */
 async function expectFirstnameOnly(
 	email: Awaited<ReturnType<typeof waitForEmail>>,
@@ -193,7 +208,7 @@ test('#2724 carnet, côté élève et page du parent', async ({ page, browser })
 	const linkA = (await emailsTo(parents.a))[0];
 	await parent.goto(await emailLink(linkA, 'Ouvrir le carnet'));
 	await expect(parent.getByText(`Le travail de ${a.firstname} sur Chiphre.`)).toBeVisible();
-	await expect(parent.locator('[data-cell]')).toHaveCount(5);
+	await expect(parent.locator('[data-cell]')).toHaveCount(weeksSinceArrival());
 	await expect(parent.getByText(/\d+([,.]\d+)?\s*\/\s*20/)).toHaveCount(0);
 	await shootPage(parent, '2724-parent');
 	await parent.getByRole('button', { name: 'Ne plus recevoir ces courriels' }).click();

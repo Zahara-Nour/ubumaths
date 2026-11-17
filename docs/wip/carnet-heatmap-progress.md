@@ -6,13 +6,13 @@ status: en-cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après le deploy:prod v0.94.0 (#2786 en prod)._
+_Mis à jour le 2026-11-17, PR 2 en cours (branche `feat/carnet-heatmap-sql`)._
 
-- **État** : PR 1 (affichage, Zod `max(53)`) mergée (#2786) et **en prod (v0.94.0)**. Le SQL rend toujours 5 semaines.
-- **Prochaine action** : PR 2 (migration `carnet_payload` depuis la rentrée / l'arrivée ; évaluations gardées à 5 semaines ; L3 école sans année = 5 semaines ; ADR 0040 ; e2e à refaire) : **débloquée** (#2786 en prod).
+- **État** : PR 2 écrite : migration `20261117222600_carnet_regularite_depuis_la_rentree.sql` (appliquée en LOCAL seulement), intégration rouge sans elle puis verte (70/70), e2e `carnet` 3/3, ADR 0040 et docs système à jour.
+- **Prochaine action** : PR → revues (`code-reviewer` + `security-auditor`) → CI → merge → `db:migrate` (additive, 4 conditions) → captures à l'œil de David.
 - **En attente de David** : rien.
-- **Pièges en cours** : port 5176 souvent pris par un autre worktree : e2e avec `VERIFS_PORT` libre.
-- **Worktree / branche** : aucun (à recréer pour la PR 2).
+- **Pièges en cours** : base locale partagée modifiée par d'autres sessions (e2e « aucune classe à trois élèves » ou 401 en plein test : relancer) ; port 5176 souvent pris : `VERIFS_PORT` libre.
+- **Worktree / branche** : `../ubumaths-wt-carnet-heatmap` · `feat/carnet-heatmap-sql`.
 
 ---
 
@@ -106,3 +106,4 @@ au merge (`db:migrate`) alors que le code en prod (Zod `.max(5)`) n'est livré q
 
 - 2026-11-17 : phase 0 validée (ordre inversé, Q1 « jours de travail », Q2 sans colonne de nom). Worktree ouvert pour la PR 1.
 - 2026-11-17 : PR 1 #2786 mergée (CI verte, `code-reviewer` : rien de bloquant).
+- 2026-11-17 : PR 2. **L3, prémisse corrigée** : `carnet_school_year` ne rend jamais une rentrée nulle (à défaut, le 1er septembre écoulé, sans année) ; la décision « année inconnue → 5 semaines » est appliquée sur `year_id` nul (classe sans école ou école sans année active), comme l'alerte d'inactivité. Évaluations : `v_start` (5 semaines) inchangé, régularité sur `v_weeks_start`. e2e : le compte de cases suit l'arrivée de A (il y a 30 jours : 5 ou 6 selon le jour).
