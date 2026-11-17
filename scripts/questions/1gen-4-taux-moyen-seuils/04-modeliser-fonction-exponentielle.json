@@ -1,4 +1,5 @@
 {
+	"id": "4de7638a-64c5-4e4e-9809-6a222bb903bb",
 	"title": "Modéliser une évolution par une fonction exponentielle",
 	"description": "Écrire f(t) = k × aᵗ : baisse ou hausse d'un pourcentage, division par 2, rumeur",
 	"grades": ["1_GEN"],

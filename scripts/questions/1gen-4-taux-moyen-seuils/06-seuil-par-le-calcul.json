@@ -1,4 +1,5 @@
 {
+	"id": "7314d829-b61a-4bf8-8a6a-0df9770bb60c",
 	"title": "Problème de seuil d'une évolution exponentielle, par le calcul",
 	"description": "Premier rang n tel que k × qⁿ franchit un seuil : placement, médicament, population",
 	"grades": ["1_GEN"],

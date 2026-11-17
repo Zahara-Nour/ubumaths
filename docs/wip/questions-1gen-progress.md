@@ -7,18 +7,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, aperçu du lot 4 terminé (avant sa PR)._
+_Mis à jour le 2026-11-17, lot 4 en brouillons en prod (après #2788)._
 
-- **État** : lots 1, 2 et 3 publiés ; lot 4 écrit et joué en entier dans l'aperçu admin (§ 20), PR des fichiers
-  ouverte. Lot 5 (second degré) écrit par questions-1techno (§ 4).
-- **Prochaine action** : CI verte → merge ; puis brouillons en prod (David lance `create-questions --publier`),
-  migration nœud + tags, page à cocher.
-- **En attente de David** : rien (écarts du § 20 acceptés).
+- **État** : lots 1, 2 et 3 publiés ; lot 4 mergé (#2788), 7 brouillons créés en prod par David (§ 21), migration
+  nœud + tags écrite et prouvée (rouge 5 échecs sans le corps, 9/9 vert), PR à ouvrir.
+- **Prochaine action** : `security-auditor`, PR, CI verte, `check:migrations --pr`, merge, `db:migrate` depuis le
+  dépôt principal (`migration list --linked` d'abord) ; puis page à cocher ; ids T1, T2 à questions-ttechno.
+- **En attente de David** : rien.
 - **Pièges en cours** : ADR 0020 et `couvrir-un-niveau.md` § 9 avant tout tag ; `db push` pousse TOUTES les
-  migrations en attente (`migration list --linked` d'abord) ; ids écrits par `create-questions` dans le dépôt
-  principal → les copier dans un worktree, commiter, puis `git restore` ; envoyer à questions-ttechno les ids de T1
-  (→ 035) et T2 (→ 038). Aperçu : le serveur redirige vers `[::1]` → lancer `--host ::`, pas `--host 127.0.0.1`.
-- **Worktree / branche** : `../ubumaths-wt-questions-1gen-lot4`, `feat/questions-1gen-lot4`.
+  migrations en attente ; ids écrits par `create-questions` dans le dépôt principal → copie dans un worktree,
+  commit, `git restore` ; aperçu : serveur `--host ::`.
+- **Worktree / branche** : `../ubumaths-wt-questions-1gen-lot4`, `feat/questions-1gen-lot4-rangement`.
 
 ## 1. Relevé (prod, 2026-11-17)
 
@@ -768,3 +767,27 @@ vidéo 18 min sur 6 h → 2²⁰ → 10⁶), correction rendue ; **T6** 3/3 (1,1
   20 mg ; v3 seuil 1,2, 1,3 ou 1,5 fois la population, t ∈ {2 ; 3 ; 5}. n ⩽ 20 partout.
 - **T7** : v1 et v2 abscisses graduées de 0,5 en 0,5, tolérance 0,25 (comme E7) ; v3 nuage u₀ × qⁿ (u₀ ∈ {1 ; 1,5},
   q ∈ {1,5 ; 1,6}, n = 0..6), seuil entier à 0,4 au moins de chaque terme.
+
+## 21. Lot 4 : en prod, rangement (2026-11-17)
+
+David a lancé `create-questions --publier` après #2788. Relu au MCP : 7 brouillons, `grades` `['1_GEN']`, sans nœud,
+0 tag. Ids copiés du dépôt principal dans le worktree puis `git restore` là-bas.
+
+| Modèle | id                                     | Point    | Nœud                                                                 |
+| ------ | -------------------------------------- | -------- | -------------------------------------------------------------------- |
+| T1     | `a439df84-9d32-4138-bbc1-cf846616e0ca` | 1GEN-037 | Proportionnalité > Évolutions > taux d'évolution moyen               |
+| T2     | `f84e23a3-36c0-4cb0-801f-3807134f307d` | 1GEN-040 | Proportionnalité > Évolutions > taux d'évolution moyen               |
+| T3     | `6c83bcee-0c52-4879-bc80-355d0af6ad7f` | 1GEN-038 | Fonctions > Fonction exponentielle > croissance et décroissance exp. |
+| T4     | `4de7638a-64c5-4e4e-9809-6a222bb903bb` | 1GEN-056 | Fonctions > Fonction exponentielle > croissance et décroissance exp. |
+| T5     | `33098914-4128-4c9d-8ef8-36b2eef5c61e` | 1GEN-043 | Fonctions > Fonction exponentielle > croissance et décroissance exp. |
+| T6     | `7314d829-b61a-4bf8-8a6a-0df9770bb60c` | 1GEN-044 | Suites > Modèles d'évolution > seuil                                 |
+| T7     | `1a82af47-4609-4627-b1fb-295afa41d32b` | 1GEN-060 | Suites > Modèles d'évolution > seuil                                 |
+
+- Migration `20261117222809_questions_1gen_lot4_rangement_tags.sql` (calquée sur celle du lot 3, trois nœuds) et son
+  test : rouge sans le corps (5 échecs), 9 / 9 vert avec.
+- **Lot 5 écrit par questions-1techno** (lot 2 de son chantier, #2787) : 7 brouillons communs `{1_GEN,1_TECHNO}`, elle
+  pose nœud + tags 1GEN et 1TECHNO par sa migration (accord donné le 2026-11-17). M1 allure 1GEN-022
+  `129067e4-e97c-458c-9bd7-540383a5dac6` ; M2 associer 1GEN-024 `7efa9e79-e985-407d-bdec-73dce30ef283` ; M3 axe
+  1GEN-052 `f81b8735-9b8f-41aa-ada0-08b7415a6076` ; M4 sommet 1GEN-053 `493adeb4-7eb9-4156-bd1b-79996f54c5e4` ; M5
+  f(x) = c 1GEN-025 `f95f05a0-4c66-409f-9ea3-0f9fcdd98759` ; M6 tableau de variation 1GEN-054
+  `e539088a-1eee-4259-8e61-b0f6fa514eaf` ; M7 signe 1GEN-027 `82e40d16-6069-4bea-b7e6-df3344d26bd3`.

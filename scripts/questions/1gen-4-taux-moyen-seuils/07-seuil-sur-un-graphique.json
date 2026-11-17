@@ -1,4 +1,5 @@
 {
+	"id": "1a82af47-4609-4627-b1fb-295afa41d32b",
 	"title": "Problème de seuil d'une évolution exponentielle, sur un graphique",
 	"description": "Courbe de k × aˣ ou nuage d'une suite géométrique et droite y = s : lire où le seuil est franchi",
 	"grades": ["1_GEN"],
