@@ -1,0 +1,191 @@
+{
+	"id": "9f072622-9ce5-4e76-b02e-a738bf6ea39a",
+	"title": "Calculer la pente d'une sécante",
+	"description": "Coefficient directeur de la sécante (AB), A et B sur la courbe d'une fonction ; puis équation réduite de (AB)",
+	"grades": ["1_SPE"],
+	"level": 3,
+	"delay": 75,
+	"status": "published",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(fb-fa)/d}}"
+				}
+			],
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{eval:x^3+n*x}}$, de courbe $\\mathcal{C}_f$. $A$ et $B$ sont les points de $\\mathcal{C}_f$ d'abscisses ${{a}}$ et ${{b}}$.\n\nCalcule le coefficient directeur de la sécante $(AB)$.\n\n$m=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "n",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "a",
+					"expression": "-2..1"
+				},
+				{
+					"name": "d",
+					"expression": "1..3"
+				},
+				{
+					"name": "b",
+					"expression": "eval:a+d"
+				},
+				{
+					"name": "fa",
+					"expression": "eval:a^3+n*a"
+				},
+				{
+					"name": "fb",
+					"expression": "eval:b^3+n*b"
+				}
+			],
+			"conditions": ["a != 0", "fa != 0", "abs(fb) <= 40"],
+			"correction": {
+				"steps": [
+					"$A({{a}}\\,;{{fa}})$ et $B({{b}}\\,;{{fb}})$ : on calcule les ordonnées avec $f$.",
+					"Le coefficient directeur de $(AB)$ est le taux de variation de $f$ entre ${{a}}$ et ${{b}}$ : $$m=\\dfrac{y_B-y_A}{x_B-x_A}=\\dfrac{{{fb}}{{eval:-fa;+}}}{{{b}}{{eval:-a;+}}}=\\dfrac{{{eval:fb-fa}}}{{{d}}}=\\textcolor{{{color:primary.0}}}{{{eval:(fb-fa)/d}}}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:k}}"
+				},
+				{
+					"expectedAnswer": "{{eval:k*x+p}}"
+				}
+			],
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{eval:x^2+n*x+c}}$, de courbe $\\mathcal{C}_f$. $A$ et $B$ sont les points de $\\mathcal{C}_f$ d'abscisses ${{a}}$ et ${{b}}$.\n\nCalcule le coefficient directeur $m$ de la sécante $(AB)$, puis donne son équation réduite.\n\n$m=?$\n\n$y=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "n",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "a",
+					"expression": "-3..2"
+				},
+				{
+					"name": "d",
+					"expression": "1..3"
+				},
+				{
+					"name": "b",
+					"expression": "eval:a+d"
+				},
+				{
+					"name": "fa",
+					"expression": "eval:a^2+n*a+c"
+				},
+				{
+					"name": "fb",
+					"expression": "eval:b^2+n*b+c"
+				},
+				{
+					"name": "k",
+					"expression": "eval:a+b+n"
+				},
+				{
+					"name": "p",
+					"expression": "eval:fa-k*a"
+				}
+			],
+			"conditions": ["a != 0", "fa != 0", "k != 0"],
+			"correction": {
+				"steps": [
+					"$A({{a}}\\,;{{fa}})$ et $B({{b}}\\,;{{fb}})$ : $$m=\\dfrac{{{fb}}{{eval:-fa;+}}}{{{b}}{{eval:-a;+}}}=\\dfrac{{{eval:fb-fa}}}{{{d}}}=\\textcolor{{{color:primary.0}}}{{{k}}}$$",
+					"$(AB)$ passe par $A$ : $y={{k}}(x{{eval:-a;+}}){{eval:fa;+}}$, soit $$y=\\textcolor{{{color:primary.0}}}{{{eval:k*x+p}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["8"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"d": "1",
+				"n": "1",
+				"fa": "2",
+				"fb": "10"
+			},
+			"description": "f(x) = x³ + x, entre 1 et 2 : 8",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-8"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"d": "1",
+				"n": "1",
+				"fa": "2",
+				"fb": "10"
+			},
+			"description": "Erreur de signe : −8",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["4", "4x"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"c": "2",
+				"d": "1",
+				"k": "4",
+				"n": "1",
+				"p": "0",
+				"fa": "4",
+				"fb": "8"
+			},
+			"description": "f(x) = x² + x + 2, entre 1 et 2 : m = 4, y = 4x",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["4", "4x+4"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"c": "2",
+				"d": "1",
+				"k": "4",
+				"n": "1",
+				"p": "0",
+				"fa": "4",
+				"fb": "8"
+			},
+			"description": "Erreur : ordonnée à l'origine f(a) : y = 4x + 4",
+			"variationIndex": 1
+		}
+	]
+}
