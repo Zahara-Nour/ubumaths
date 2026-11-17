@@ -6,13 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après #2770 (lot 7b rangé)._
+_Mis à jour le 2026-11-17, lot 7b publié._
 
-- **État** : lots 0 à 7a publiés. Lot 7b : 4 brouillons [CM2] créés (`b432b38e` 138, `521c3f16` 025, `4a2edffb` 144, `03c5df14` 032), rangés et tagués (#2770, `db:migrate` joué, MCP conforme). Page à cocher : https://claude.ai/artifact/EPw29tzZFXVERGzBottWAT (`verdicts` vide au départ).
-- **Prochaine action** : lire et compter les verdicts ; tout OK → `publier-lot --dir scripts/questions/cm2-7b` en simulation, puis David `--publier`. Ensuite petit lot 8 (038, 053, 055-057), puis reclasser le § 3.
-- **En attente de David** : relecture des 4 fiches. ⛔ Jamais `--mettre-a-jour` de `cm2-7b` avec des fichiers d'avant #2770 (ids CM1).
+- **État** : lots 0 à 7 publiés. **Lot 7 clos** (7a : 6 modèles ; 7b : 4 modèles `b432b38e`, `521c3f16`, `4a2edffb`, `03c5df14`, publiés le 2026-11-17).
+- **Prochaine action** : phase 0 du **petit lot 8** (038 relations entre fractions usuelles, 053 estimation, 055-057 opérations posées ; décision § 12.1 c) dans un nouveau worktree, à faire valider avant d'écrire. Ensuite reclasser le § 3 (outils de la classe C en prod, § 12 d).
+- **En attente de David** : rien. ⛔ Jamais `--mettre-a-jour` de `cm2-7b` avec des fichiers d'avant #2770 (ids CM1).
 - **Pièges en cours** : migrations depuis #2181 : `pnpm migration:horodatage` = heure réelle UTC ; `db:migrate` refuse une migration plus ancienne que la dernière jouée → `--dry-run --include-all`, liste relue, puis `--include-all`. Worktree neuf : copier `supabase/.temp/` (lien projet) du dépôt principal. Modèle à placer avec grands nombres : `spaces: off`. Page à cocher : `line` non dessiné, à jouer dans l'aperçu. `Doc-inchangée:` dans un COMMIT. `git commit -m … -- <fichiers>`. Colonne du nœud au MCP : `question_templates.classification_node_id`.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, branche `feat/questions-cm2-lot7b-rangement` mergée (#2770) ; worktree gardé pour la suite du lot 7b.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, branche `feat/questions-cm2-lot7b-rangement` mergée (#2770) : à retirer ; nouveau worktree pour le lot 8.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -757,3 +757,5 @@ reclasser le § 3 (outils de la classe C maintenant en prod). Tableau du § 12 g
 - Migration `20261117181922_questions_cm2_lot7b_rangement_tags.sql`, copie du lot 7a ; nœuds : « droite graduée » de « Fractions : sens et écritures » (138, 025) et de « Décimaux : numération » (144, 032). Test `questions-cm2-lot7b-rangement-tags` : 9 verts ; corps remplacé par `select 1;` → 5 rouges ; fichier restauré depuis sa copie (`cmp`).
 - #2770 : `security-auditor` sans finding bloquant (non bloquant : aucun test n'asserte les jumeaux CM1 intacts, écritures filtrées par uuid) ; test relancé après le pre-commit : 9 verts ; CI verte ; `check:migrations --pr 2770` sortie 0 ; mergée. `migration list --linked` : la nôtre seule en attente ; `db:migrate` joué. MCP : 4 `draft` [CM2], nœud et point attendus, `updated_at` = création, trigger `O` ; jumeaux CM1 inchangés.
 - Page à cocher (4 fiches, aucune alerte) : https://claude.ai/artifact/EPw29tzZFXVERGzBottWAT.
+- Relecture de David : 4 OK sur 4, sans commentaire (`verdicts` lu et compté). `publier-lot` en simulation : 4 passent ; `garde-niveaux-tags` : aucun niveau manquant (2 378 modèles tagués).
+- David lance `publier-lot --dir scripts/questions/cm2-7b --publier` : 4/4 publiés, statut relu en base par le script. **Lot 7b clos, lot 7 clos.**
