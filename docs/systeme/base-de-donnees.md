@@ -334,7 +334,9 @@ et arrête les courriels tant que l'adresse a un lien actif ; colonne illisible 
 `carnet_is_holiday`, `carnet_contact_by_token`. Une évaluation sans échéance non faite reste dans le
 carnet si elle date de l'année en cours (Q27). Migration `20261117113154` : `carnet_payload` et
 `carnet_current_exceptions` comptent depuis l'**arrivée** de l'élève dans une classe au carnet
-(`class_members.joined_at`, Q43), pas seulement depuis la rentrée.
+(`class_members.joined_at`, Q43), pas seulement depuis la rentrée. Migration `20261117134539` :
+`carnet_erase_old_notifications` (cron, `service_role` seul) efface les lignes de
+`parent_notifications` de plus d'un an (Q42).
 
 `reconcileAutoCoverage()` (`src/lib/server/curriculum-coverage.ts`) recalcule les lignes `auto` de
 `journal_entry_points` depuis les activités, sans toucher aux lignes `manual` : la couverture
