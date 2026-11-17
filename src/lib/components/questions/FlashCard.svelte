@@ -111,7 +111,7 @@
 		flipOnSubmit = false
 	}: Props = $props();
 
-	// Mots cliquables dans l'énoncé et la correction
+	// Mots cliquables dans l'énoncé du recto ; le verso n'en a aucun (R2, `LexiconOff`)
 	// Question de cours : seuls les mots marqués `{.def}` (R4, chantier mots-cliquables)
 	provideQuestionLexicon(
 		() => instance.grades,

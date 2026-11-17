@@ -202,6 +202,9 @@ function linkText(
 		const entries = markedEntries(node.content, node.lexicon, index, grade, getTermById);
 		if (entries.length === 0) return node;
 		seen.add(idsKey(entries));
+		// Même clé que le repérage d'office, qui écarte les entrées anciennes d'un
+		// homonyme (R1) : l'occurrence suivante n'est pas soulignée une seconde fois
+		seen.add(idsKey(entries.filter((term) => index.autoTerms.has(term))));
 		return { ...node, terms: [{ start: 0, end: node.content.length, ids: entries.map(termId) }] };
 	}
 	if (!auto || !index.auto) return node;

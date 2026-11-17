@@ -83,6 +83,25 @@ describe('R1 : mots de l’année de l’élève et de l’année d’avant', ()
 	});
 });
 
+describe('R1 : homonymes', () => {
+	/** Mots repérés et leurs entrées. */
+	function links(markdown: string, grade: GradeCode): [string, string[]][] {
+		return texts(linker.linkDocument(parseMarkdown(markdown), grade, RECENT)).flatMap((n) =>
+			(n.terms ?? []).map((t): [string, string[]] => [n.content.slice(t.start, t.end), t.ids])
+		);
+	}
+
+	it('élève de 4e : « carré » ouvre le sens récent (puissance, 5e), pas l’ancien (CP)', () => {
+		expect(links('Le carré de $5$.', '4')).toEqual([['carré', ['carré (puissance)']]]);
+	});
+
+	it('un mot marqué `{.def}` compte comme première occurrence pour le sens récent', () => {
+		expect(links('Le [carré]{.def}, puis encore le carré.', '4')).toEqual([
+			['carré', ['carré (puissance)', 'carré (géométrie)']]
+		]);
+	});
+});
+
 describe('R4 : question de cours, seuls les mots marqués', () => {
 	it('aucun mot repéré automatiquement ; `{.def}` toujours possible', () => {
 		const course: LinkOptions = { recentOnly: true, auto: false };

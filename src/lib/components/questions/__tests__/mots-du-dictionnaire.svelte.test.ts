@@ -112,11 +112,11 @@ describe('mots du dictionnaire masqués par défaut (R6)', () => {
 
 	it('B3. masqué, à la souris : survol → souligné ; clic → sa fiche', async () => {
 		const { container } = await renderCard();
-		const [, aire] = terms(container);
-		expect(underlined(aire)).toBe(false);
-		await userEvent.hover(aire);
-		await expect.poll(() => underlined(aire)).toBe(true);
-		await userEvent.click(aire);
+		const [, mot] = terms(container);
+		expect(underlined(mot)).toBe(false);
+		await userEvent.hover(mot);
+		await expect.poll(() => underlined(mot)).toBe(true);
+		await userEvent.click(mot);
 		await expect
 			.poll(() => document.querySelector('[role="dialog"]')?.textContent)
 			.toContain('pourcentage');
