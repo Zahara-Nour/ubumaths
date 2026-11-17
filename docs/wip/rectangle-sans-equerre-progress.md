@@ -8,10 +8,11 @@
 
 _Mis à jour le 2026-11-17, après #2781._
 
-- **État** : PR 1 (l'outil) mergée (#2781), pas encore en prod. PR 2 (modèle 4-038) : phase 0 écrite (§ 6).
-- **Prochaine action** : après le go de David sur le § 6, écrire `lot-4-11.py` → `scripts/questions/4-lot-11/`,
-  simulation, base locale, aperçu, PR de contenu.
-- **En attente de David** : Q6 (orientation de [AC]) et Q7 (niveau 3), § 6.4.
+- **État** : PR 1 (l'outil) mergée (#2781), pas encore en prod. PR 2 (modèle 4-038) écrite, vue en base
+  locale (§ 7), PR ouverte.
+- **Prochaine action** : CI verte → merge ; puis `deploy:prod` (David) qui livre #2781, `create-questions
+--publier` (David), migration nœud + tag, page à cocher, publication.
+- **En attente de David** : rien avant le merge.
 - **Pièges en cours** : ne pas toucher à `ruled-polygon.ts`. Push : ne pas filtrer sa sortie par
   `grep -E "->…"` (ugrep plante, le push meurt en SIGPIPE). Publication du modèle seulement après le
   `deploy:prod` qui livre #2781.
@@ -248,3 +249,19 @@ publication, les élèves de 4e voient un modèle de plus.
   concentre sur la méthode.
 - **Q7. Niveau 3** sur la sous-notion « triangles » (après le demi-cercle et le centre du cercle
   circonscrit) ? **Reco : oui**, c'est la suite logique du BO.
+
+### 6.5 Décisions de David (2026-11-17, « go » après mes recos)
+
+Le modèle du § 6.2 tel quel ; Q6 [AC] horizontale ; Q7 niveau 3.
+
+## 7. PR 2 : écrite (2026-11-17)
+
+- `docs/wip/questions/lot-4-11.py` → `scripts/questions/4-lot-11/01-rectangle-sans-equerre.json`.
+- **Écart d'écriture** : AC est un nombre **pair** de mm (`ac = 2*h`, h de 20 à 45), pour que le milieu O
+  tombe sur une graduation (3,15 cm ne se mesure pas) et que la méthode de la correction marche à chaque tirage.
+- Simulation : 10/10 specs vertes (M1 des deux côtés et pour les 4 jeux de noms, M3 ; B et D à l'œil, AB
+  faux, angle en B pas droit, BD ≠ AC), 50/50 tirages ; `sonde-figures` : 300 blocs, 0 problème. Message
+  de chaque erreur vérifié (le bon, dans l'ordre du § 3.4).
+- Base locale : brouillon 552e0ade (créé depuis une copie dans le scratchpad, l'id local hors du dépôt).
+  Aperçu admin : énoncé à virgules (« EF = 3,4 cm »), figure, palette Segment · Compas · Règle graduée ;
+  rectangle à l'œil → « Ton sommet F est placé à l'œil… », correction dessinée (rectangle, cercles, [BD]).
