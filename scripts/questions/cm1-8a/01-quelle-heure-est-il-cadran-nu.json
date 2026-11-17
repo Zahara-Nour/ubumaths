@@ -1,4 +1,5 @@
 {
+	"id": "9e655e1a-c193-48d5-9190-64ae918e1a03",
 	"title": "Quelle heure est-il ? (cadran nu)",
 	"description": "Lire l'heure à la minute près sur un cadran où seuls 12, 3, 6, 9 sont écrits, puis sans chiffre ; l'après-midi (15 h 22)",
 	"grades": ["CM1"],
