@@ -5,17 +5,20 @@ Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) · bornes 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après #2784 (lot 2b, fichiers)._
+_Mis à jour le 2026-11-17, migration du lot 2b écrite (§ 18), PR ouverte._
 
-- **État** : lots 0, 1 et 2a en prod et publiés. Lot 2b (P1–P3, Python) mergé (#2784), pas encore en base.
-- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/ttechno-2b-python
---publier` ; puis migration nœud + tag (030, 075, 076) sur le gabarit du lot 2a, page à cocher, publication.
+- **État** : lots 0, 1 et 2a en prod et publiés. Lot 2b : 3 brouillons en prod (2327bbef P1, fe576c5b P2,
+  e1f5fa4d P3), migration nœud + tag `20261117215645` en PR.
+- **Prochaine action** : CI verte → merge → `check:migrations --pr` → `migration list --linked` (seule
+  `20261117215645` en attente) → `db:migrate` depuis le dépôt principal (4 conditions réunies, § 18) → vérif MCP →
+  page à cocher (3 fiches) → publication.
 - **`questions-1gen`** : lot 3 (aˣ) **publié** ; E1–E4 à lire contre nos bornes puis taguer (§ 15). Par défaut, un
   seul lot de tags avec T1 → 035 et T2 → 038 du lot 4 (pas encore écrit, ids promis par `questions-1gen`).
-- **En attente de David** : `create-questions --publier` du lot 2b ; tags E1–E4 maintenant ou avec le lot 4 (défaut).
+- **En attente de David** : tags E1–E4 maintenant ou avec le lot 4 (défaut).
 - **Pièges en cours** : un point TTECHNO par modèle (trigger) ; `grades` en `array_append` seulement ;
-  `publier-lot.ts`, `garde-niveaux-tags.ts`, `create-questions --publier` visent la prod : David les lance (`!`).
-- **Worktree / branche** : aucun (#2784 mergée, worktree retiré).
+  `publier-lot.ts`, `garde-niveaux-tags.ts`, `create-questions --publier` visent la prod : David les lance (`!`) ;
+  copie des ids du lot 2b mise de côté sur `main` par `git stash` : à jeter après le merge, une fois `main` égal.
+- **Worktree / branche** : `../ubumaths-wt-questions-ttechno-lot2b-tags` · `feat/questions-ttechno-lot2b-tags`.
 
 ## 1. Périmètre
 
@@ -468,3 +471,16 @@ chez nous, [0 ; +∞[ chez eux → complément x < 0 si besoin), puis tags + `ar
   rendu, P3 v2 `5/6` refusé « Faux » (11/6 attendu), P3 v0 choix D « coché, juste ».
 
 **#2784 mergée (2026-11-17)**, CI verte sur le dernier commit.
+
+## 18. Lot 2b : prod, rangement et tags (2026-11-17)
+
+David a lancé `create-questions --publier` : 3 brouillons (2327bbef P1, fe576c5b P2, e1f5fa4d P3), vérifiés par
+MCP (`draft`, `{T_TECHNO}`, niveau 2, sans nœud ni tag) ; ids commités sur la branche de la migration.
+
+- Points 030, 075, 076 : tous sur la notion « Suites > Généralités sur les suites » (relevé MCP).
+- Question d'accès posée avant le SQL, tranchée par David : **personne** (brouillons).
+- Migration `20261117215645_questions_ttechno_lot2b_rangement_tags` sur le gabarit du lot 1 (partie A seule).
+- Test `tests/integration/questions-ttechno-lot2b-rangement-tags.test.ts` : 9 verts ; corps retiré → 5 rouges ;
+  fichier restauré d'une copie, identique. `types:cliquet` tenu.
+- `security-auditor` : aucun finding bloquant (diff avec le lot 1 = ids, codes, chemins, compteurs ; rollback
+  miroir ; trigger `updated_at` actif en prod ; aucune policy, aucune table d'élève).

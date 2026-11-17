@@ -1,4 +1,5 @@
 {
+	"id": "fe576c5b-0787-4cbe-9b1d-4d17f815d8b5",
 	"title": "Fonction Python : somme des n premiers cubes",
 	"description": "Compléter l'accumulateur et les bornes de la boucle d'une fonction Python qui calcule la somme des n premiers cubes, puis la faire tourner",
 	"grades": ["T_TECHNO"],
