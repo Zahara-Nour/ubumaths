@@ -282,3 +282,11 @@ Questions (recommandation en premier) :
 - **Q40 — Texte du point 8** : celui de `presentation-parents-progress.md` (2026-11-17). Le code de `/parents` (`views.ts`, bloc `suivi`) reste au chantier `presentation-parents`.
 - **Q41 — Politique de confidentialité** (`/legal/confidentialite`) : elle ne dit rien du carnet (adresses des parents, liens, courriels). Recommandation : la compléter **avant** le `deploy:prod` du carnet (§ 3 données, § 4 finalités, § 6 Brevo, § 7 durées), PR de code, texte validé par David.
 - **Q42 — Journal des courriels** (`parent_notifications` : date, nature, motifs, sans adresse) : aucune durée propre, il vit avec le profil de l'élève. Recommandation : l'effacer au bout d'**un an** par le passage quotidien (l'élève ne lit que les récents). Effacement voulu (RGPD) : nouvelle fonction SQL, donc migration + PR de code.
+
+### 2026-11-17 (recommandations suivies)
+
+- **Q39** : pas de `List-Unsubscribe-Post` (état actuel). **Q40** : texte du point 8 validé, avec « et, s'il y a de quoi, une bonne nouvelle par trimestre ». **Q41** : politique de confidentialité complétée **avant** le `deploy:prod` du carnet (PR de code). **Q42** : journal des courriels effacé au bout d'un an (migration plus tard, perte voulue acceptée).
+- **Q43 — Arrivée en cours d'année** : l'inactivité se compte depuis l'arrivée dans la classe (`class_members.joined_at`), pas depuis la rentrée. **Q27 bornée** : une évaluation sans échéance non faite ne reste dans le carnet que si elle date de l'année scolaire en cours.
+- Question d'accès (migration Q43 + Q27) : personne ne lit rien de nouveau ; en miroir, le parent **ne lit plus** les évaluations sans échéance non faites d'une année passée.
+- Laissés tels quels : effacement des 90 jours qui efface les refus ; plafond par élève ; resignalement après arrêt puis reprise.
+- Ordre : PR 6 (migration Q43 + Q27) → PR 7 (code si besoin, politique de confidentialité, point 8 sur `/parents` après le déploiement) ; avant le 28 novembre.
