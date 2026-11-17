@@ -8,14 +8,14 @@
 
 _Mis à jour le 2026-11-17, après #2781._
 
-- **État** : PR 1 (l'outil, `verifier: rectangle A ; B ; C ; D : AB = 4 cm ; AC = 6 cm`) mergée (#2781), les 5
-  findings de la revue corrigés (§ 5). Worktree retiré, branche supprimée.
-- **Prochaine action** : PR 2, le modèle 4-038 dans `questions-4` (énoncé du § 3.1, figure du § 3.2), dans un
-  nouveau worktree `../ubumaths-wt-rectangle-sans-equerre` (branche `feat/rectangle-sans-equerre-modele`).
-- **En attente de David** : rien.
+- **État** : PR 1 (l'outil) mergée (#2781), pas encore en prod. PR 2 (modèle 4-038) : phase 0 écrite (§ 6).
+- **Prochaine action** : après le go de David sur le § 6, écrire `lot-4-11.py` → `scripts/questions/4-lot-11/`,
+  simulation, base locale, aperçu, PR de contenu.
+- **En attente de David** : Q6 (orientation de [AC]) et Q7 (niveau 3), § 6.4.
 - **Pièges en cours** : ne pas toucher à `ruled-polygon.ts`. Push : ne pas filtrer sa sortie par
-  `grep -E "->…"` (ugrep plante, le push meurt en SIGPIPE).
-- **Worktree / branche** : aucun (à recréer pour la PR 2).
+  `grep -E "->…"` (ugrep plante, le push meurt en SIGPIPE). Publication du modèle seulement après le
+  `deploy:prod` qui livre #2781.
+- **Worktree / branche** : `../ubumaths-wt-rectangle-sans-equerre`, `feat/rectangle-sans-equerre-modele`.
 
 ## 1. Ce qui existe (lecture du code, 2026-11-17)
 
