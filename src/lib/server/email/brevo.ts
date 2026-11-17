@@ -16,12 +16,16 @@
  * - BREVO_API_KEY: API key from Brevo dashboard
  * - BREVO_SENDER_EMAIL: Verified sender email (e.g., noreply@ubumaths.fr)
  * - BREVO_SENDER_NAME: Sender display name (e.g., Chiphre)
+ *
+ * Sur la base locale, rien ne part : les courriels sont capturés dans un
+ * dossier (voir `capture.ts`, `EMAIL_ENVOI_REEL=1` pour envoyer quand même).
  */
 
 import * as Brevo from '@getbrevo/brevo';
 import { env } from '$env/dynamic/private';
 import { createServerLogger } from '$lib/utils/logger';
 import { isChildAccountEmail } from '$lib/utils/child-account';
+import { captureEmail, isEmailCaptureActive } from './capture';
 import type { ChildRegistrationEmailData } from '$lib/email-templates/child-registration';
 import type { ChildPasswordResetEmailData } from '$lib/email-templates/child-password-reset';
 import type {
@@ -94,6 +98,27 @@ export async function sendEmail(
 	if (isChildAccountEmail(to)) {
 		logger.warn('[Brevo] Envoi refusé : adresse du domaine fictif');
 		return { success: false, error: 'Adresse fictive : aucun courriel envoyé' };
+	}
+
+	// Base locale : le courriel est écrit dans un dossier, rien ne part (capture.ts).
+	if (isEmailCaptureActive()) {
+		try {
+			const captured = await captureEmail({
+				to,
+				subject,
+				html: htmlContent,
+				text: textContent,
+				headers
+			});
+			logger.info(`[Courriel capturé] ${captured.file}`);
+			return { success: true, messageId: `capture:${captured.file}` };
+		} catch (error) {
+			logger.error(
+				'[Courriel] Capture impossible :',
+				error instanceof Error ? error.message : 'erreur inconnue'
+			);
+			return { success: false, error: 'Capture du courriel impossible' };
+		}
 	}
 
 	try {
@@ -346,5 +371,6 @@ export async function sendCarnetQuarterlyEmail(
  * Useful for graceful degradation or admin checks
  */
 export function isBrevoConfigured(): boolean {
-	return !!env.BREVO_API_KEY;
+	// En local, la capture tient lieu de service : les pages d'envoi restent utilisables.
+	return !!env.BREVO_API_KEY || isEmailCaptureActive();
 }

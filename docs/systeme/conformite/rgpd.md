@@ -508,6 +508,13 @@ CRON_SECRET                   # Secret taches planifiees
 > 90 jours sont effacées par le cron quotidien, et les lignes de `parent_notifications` au bout
 > d'un an (Q42, 2026-11-17 ; politique v1.4, registre T9). Voir
 > [carnet-de-liaison.md](../carnet-de-liaison.md).
+>
+> **Base locale (2026-11-17)** : `.env` porte la clé Brevo de prod ; avant ce jour, une adresse
+> de parent saisie sur la base locale recevait un vrai courriel. Désormais, sur la base locale
+> (adresse Supabase `localhost`/`127.0.0.1`, hors Vercel), `sendEmail` n'appelle plus Brevo : le
+> courriel est écrit dans `.captures/courriels/` (ignoré par git), `EMAIL_ENVOI_REEL=1` pour
+> envoyer quand même. Au moindre doute (adresse absente, Vercel), envoi réel : une capture en prod
+> avalerait les courriels des parents. Voir `src/lib/server/email/capture.ts`.
 
 ---
 
