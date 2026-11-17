@@ -7,19 +7,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après #2767 (migration nœud + tags du lot 2, appliquée en prod)._
+_Mis à jour le 2026-11-17, après la publication du lot 2._
 
-- **État** : lot 1 publié (§ 13). Lot 2 : 6 brouillons en prod, rangés et tagués (§ 17), page à cocher publiée,
-  https://claude.ai/artifact/7rNB4sGX6PJP6LaYjWLNAJ. Phases 0 des lots 3 et 4 validées (§ 14).
-- **Prochaine action** : lire et compter les verdicts (`ArtifactData list verdicts`) ; 6/6 OK → simulation
-  `publier-lot.ts --dir scripts/questions/1gen-2-representations-graphiques`, puis David `--publier`. Ensuite lots 3, 4.
-- **En attente de David** : relire la page à cocher (R1 se joue dans l'aperçu : bloc associer non dessiné).
+- **État** : lots 1 (§ 13) et 2 (§ 17) **publiés**. Phases 0 des lots 3 (aˣ) et 4 (taux moyen / seuils) validées
+  (§ 14), envoyées à questions-ttechno.
+- **Prochaine action** : écrire le lot 3 dans un worktree neuf `../ubumaths-wt-questions-1gen-lot3`, branche
+  `feat/questions-1gen-lot3` (script `docs/wip/questions/lot-1gen-3.py` calqué sur `lot-1gen-2.py`) ; puis lot 4.
+- **En attente de David** : rien.
 - **Pièges en cours** : ADR 0020 et `couvrir-un-niveau.md` § 9 avant tout tag ; `grades` par `array_append` /
   `array_remove` ciblés ; `db push` pousse TOUTES les migrations en attente (`migration list --linked` d'abord) ;
-  rollback du lot 2 valable seulement avant les tags 1TECHNO de R2, R3, R4 (ids envoyés à questions-1techno) ;
-  coquille « t/n » de `src/lib/server/programmes/transcriptions/1_GEN.md` à corriger dans la PR du lot 3.
-- **Worktree / branche** : `../ubumaths-wt-questions-1gen-lot2` (`feat/questions-1gen-lot2`, mergée), gardé jusqu'à la
-  publication.
+  specs d'un bloc associer : le testeur tire avec la graine 0 (relever l'ordre affiché) ; aperçu admin : serveur
+  `--host 127.0.0.1` (l'extension Chrome refuse `[::1]`), et la base locale peut avoir été remise à zéro par une autre
+  session ; questions-1techno tague R2, R3, R4 (044, 117, 119) ; coquille « t/n » de
+  `src/lib/server/programmes/transcriptions/1_GEN.md` à corriger dans la PR du lot 3.
+- **Worktree / branche** : aucun ; le lot 3 ouvre une branche neuve.
 
 ## 1. Relevé (prod, 2026-11-17)
 
@@ -634,3 +635,5 @@ tag. Ids commités dans les fichiers.
 - Ids de R2, R3, R4 envoyés à questions-1techno (tags 1TECHNO-044, 117, 119 à poser par elle).
 - Page à cocher : 6 fiches, 23 exemples ; une alerte attendue (bloc associer de R1 non dessiné, joué dans l'aperçu,
   § 16). https://claude.ai/artifact/7rNB4sGX6PJP6LaYjWLNAJ (capacité `db`, collection `verdicts` vide au départ).
+- Verdicts lus en base : **6/6 OK**, sans commentaire. Simulation `publier-lot.ts` : 6 brouillons passent ; David a
+  lancé `--publier` : « 6/6 modèles du lot publiés ». Relu au MCP : les 6 `published`, `grades` `['1_GEN']`.
