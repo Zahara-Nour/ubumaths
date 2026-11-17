@@ -7,15 +7,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après la deuxième passe anti-doublons (§ 2.3)._
+_Mis à jour le 2026-11-17, décisions Q2 bis à Q9 prises (§ 5)._
 
-- **État** : relevé (§ 1), existant vérifié en deux passes sur tous les niveaux (§ 2.1 à 2.4) : une migration de
-  tags couvrirait 17 points, 30 restent à écrire. Q1, Q2 répondues. Aucun code, aucune écriture en base.
-- **Prochaine action** : réponses de David à Q2 bis à Q9 (§ 5, « Questions reposées »), puis question d'accès de la
-  migration de tags.
-- **En attente de David** : Q2 bis, Q3 à Q9.
-- **Pièges en cours** : les suites géométriques de 1re spé tirent des termes négatifs → jamais taguables 1GEN ;
-  chercher les doublons sur **tous** les niveaux, pas par mots-clés (§ 2.3).
+- **État** : relevé et vérification de l'existant faits (§ 1, 2) ; Q1 à Q9 tranchées (§ 5) ; coordination avec
+  questions-1techno et questions-ttechno (§ 6). Migration de tags : 15 points ; 32 points à écrire en 5 lots (§ 4,
+  016 au lot 1, 027 au lot 4). Aucun code, aucune écriture en base.
+- **Prochaine action** : réponse de David à la question d'accès de la migration de tags, puis worktree
+  `../ubumaths-wt-questions-1gen`, migration + test d'intégration.
+- **En attente de David** : question d'accès de la migration.
+- **Pièges en cours** : un seul point 1GEN par modèle (trigger, § 6) ; `grades` touchés par `array_append` /
+  `array_remove` ciblés ; envoyer à questions-ttechno la phase 0 des lots 2 et 3 ; modèle 1GEN-022 commun avec
+  1TECHNO-057.
 - **Worktree / branche** : aucun (journal seul, sur `main`).
 
 ## 1. Relevé (prod, 2026-11-17)
@@ -158,6 +160,9 @@ découper les modèles de 1re spé en prod (Q8).
   spé) — en attente de David (Q2 bis).
 
 ### Questions reposées après la deuxième passe (2026-11-17)
+
+**Tranchées par David le 2026-11-17 : « je suis tes recos pour Q2 bis à Q9 »** — chaque recommandation ci-dessous
+est donc une décision.
 
 - **Q2 bis** — retirer `1_GEN` de 9852d62c, 7f82d15a, 95ee57c8, 0f673c27 (recommandé).
 - **Q3** — 1acb6d47 : retirer son tag 1GEN-022, modèle 1GEN propre au lot 4 (recommandé).
