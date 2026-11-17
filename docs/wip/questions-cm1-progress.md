@@ -5,12 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après #2769 (§ 19 octies)._
+_Mis à jour le 2026-11-17, lot 8a écrit (§ 21 ter)._
 
-- **État** : lots 0 à 7 publiés, **126 points sur 171** (recompte MCP). Totaux masqués dans 4 variations CE1 / CE2 :
-  écrits en prod et vérifiés au MCP (§ 19 octies).
-- **Prochaine action** : écrire le lot 8a (heures et durées) après validation de sa phase 0 (§ 21).
-- **En attente de David** : phase 0 du lot 8a, questions 1 à 4 (§ 21).
+- **État** : lots 0 à 7 publiés, 126 points sur 171. Lot 8a « heures et durées » (5 modèles) écrit, PR des fichiers
+  en cours ; puis 8b, 8c, 8d, 8e, 9 (découpage du § 20).
+- **Prochaine action** : merge de la PR 8a, puis `create-questions --publier` par David, migration nœud + tag.
+- **En attente de David** : « 05 » vaut ½ point dans les horloges CE2 (règle `zeros`, § 21 ter) : corriger ces
+  modèles publiés (`zeros: off`) ?
 - **Pièges en cours** : `create-questions --publier` lancé depuis le dépôt principal écrit les ids dans SES fichiers :
   les reporter sur la branche du worktree, puis `git restore` dans le dépôt principal ; `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance (une autre session peut l'avoir fait avant : vérifier au MCP) ; `db:migrate` depuis un worktree : copier d'abord le lien `../ubumaths/supabase/.temp/` ; `create-questions` = `pnpm tsx scripts/create-questions.ts …`, refuse `theme`/`domain`/`subdomain` (ADR 0035) ; horodatage = `pnpm migration:horodatage`, puis `pnpm check:migrations --pr <n>` **juste avant le merge** ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule ; un brouillon sans nœud ne peut pas être tagué (trigger) ; le pre-commit reformate le relevé `etat-prod-*` (prettier) et laisse l'index décalé : `git diff HEAD` vide → `git restore --staged` ; le mode auto refuse `publier-lot` et `garde-niveaux-tags` (lecture de la prod), même en simulation : David les lance ; zsh ne découpe pas `$F` : un tableau `F=(…)`.
 - **Worktree / branche** : `../ubumaths-wt-questions-cm1`, aucune branche ouverte.
@@ -1626,3 +1627,27 @@ Questions :
    renuméroter ; relevés de nouveau juste avant la création. Reco : **oui**.
 
 **Question d'accès** : brouillons, puis migration nœud + tag → **personne** ne gagne d'accès.
+
+### 21 bis. Lot 8a : réponse de David (2026-11-17)
+
+« je te suis » : les quatre recommandations du § 21. 1. **cadran nu** (`chiffres: quarts`, puis `aucun`) pour lire et
+placer ; 2. une variation **jours et heures** (8a-5 V4) ; 3. 166 en case « choix » à **trois issues** ; 4. **niveaux** :
+celui qui suit le modèle CE2 de même geste dans le nœud, partagé, sans renuméroter.
+
+### 21 ter. Lot 8a — écriture (2026-11-17)
+
+- Script `docs/wip/questions/lot-cm1-8a.py` → `scripts/questions/cm1-8a/` (5 JSON, 15 variations). Niveaux : lecture
+  de l'heure 6 (lire, après CE2 `0d41a45e` 5) et 8 (placer, après CE2 `c06fe751` 7) ; calcul de durées 6 (durée entre
+  deux horloges, après CE2 `4c75f053` 5), 8 (comparer, après CE2 `19c370bd` 7), 5 (problèmes, après CE2 `ba8f2f75`
+  4). À relever de nouveau avant la création en prod.
+- Minutes écrites sur deux chiffres (`8 h 04`, forme `{{if:m<10|0{{m}}|{{m}}}}` du modèle 6e `6-grandeurs/12`) ;
+  ⚠️ **« 04 » tapé dans une case était jugé « forme non optimale » (½ point)** par la règle de superflu `zeros`, même
+  avec une réponse attendue `04` : `options.constraints.zeros: off` sur les 5 modèles (comme `ce1-4/02`), spec « 04 »
+  verte. Les modèles CE2 d'horloge écrivent « 9 h 5 » et gardent la règle : un élève qui tape « 05 » y a ½ point.
+- Corrigés par instants intermédiaires (heure pleine, heures entières, minutes), jamais de soustraction en base
+  soixante ; la V3 des problèmes signale chaque passage d'heure pleine (`passe`). V4 : le car passe minuit ou non
+  (`jr` = 0 ou 1) ; le 3e jour proposé n'est jamais le bon (leurre).
+- `question:specs` 300 tirages par variation : 4 500 / 4 500, 56 specs vertes ; `sonde-horloges` : 1 200 blocs,
+  0 problème ; `create-questions` en simulation (prod) : 5 « à créer ».
+- Base locale (copie du dossier, `.env.local`, sous `scripts/with-db-lock.sh`), aperçu admin à 390 px (Playwright,
+  port 5178) : les 15 variations vues, cadrans nus, horloge à placer, quatre horloges légendées, cases + choix du jour.
