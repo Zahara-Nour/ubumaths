@@ -7,19 +7,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, à l'ouverture de la PR du lot 3._
+_Mis à jour le 2026-11-17, après #2773._
 
-- **État** : lots 1 (§ 13) et 2 (§ 17) **publiés**. Lot 3 (aˣ) **écrit** (§ 18) : 7 modèles verts, joués en local ;
-  PR des fichiers ouverte (coquille « t/n » de la transcription corrigée dedans).
-- **Prochaine action** : merger la PR du lot 3 ; puis **David** lance `create-questions --dir
-scripts/questions/1gen-3-fonctions-exponentielles --publier` ; ids commités, migration nœud + tags (nœud « fonctions
-  x ↦ aˣ » pour les 7), page à cocher, publication ; envoyer ids et plages à questions-ttechno. Puis lot 4.
-- **En attente de David** : relire les écarts à la phase 0 du § 18 ; `create-questions --publier` après le merge.
+- **État** : lots 1 (§ 13) et 2 (§ 17) **publiés**. Lot 3 (aˣ, 7 modèles) **mergé** (#2773, § 18), pas encore en
+  prod ; coquille « t/n » de la transcription corrigée.
+- **Prochaine action** : **David** lance `pnpm tsx scripts/create-questions.ts --dir
+scripts/questions/1gen-3-fonctions-exponentielles --publier` ; relire au MCP, commiter les ids (worktree neuf
+  `../ubumaths-wt-questions-1gen-lot3-tags`), migration nœud « fonctions x ↦ aˣ » + 7 tags (032 à 036, 042, 059),
+  page à cocher, publication ; envoyer ids et plages à questions-ttechno (E1 → 031, E2 → 081, E3 → 032, E4 → 033).
+  Puis lot 4.
+- **En attente de David** : `create-questions --publier` du lot 3 ; relire les écarts à la phase 0 du § 18.
 - **Pièges en cours** : ADR 0020 et `couvrir-un-niveau.md` § 9 avant tout tag ; `db push` pousse TOUTES les
   migrations en attente (`migration list --linked` d'abord) ; specs d'un bloc associer : graine 0 (ordre 2, 0, 1) ;
   aperçu admin : serveur `--host 127.0.0.1`, saisie MathLive : cliquer la case par sa référence ; spec `bad_form` :
-  nommer la contrainte (`['form']`).
-- **Worktree / branche** : `../ubumaths-wt-questions-1gen-lot3`, `feat/questions-1gen-lot3`.
+  nommer la contrainte (`['form']`) ; test `/demo/diaporama` instable en CI (relancer le job).
+- **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, 2026-11-17)
 
@@ -682,3 +684,6 @@ juste ; E7 (f(x) = 8 sur 10 × 0,7ˣ, attendu 0,63) 0,6 jugé juste ; E2 « 27 �
 
 Coquille de la transcription corrigée dans la même PR : `src/lib/server/programmes/transcriptions/1_GEN.md`, ligne
 390, « exposant $\dfrac{t}{n}$ » → « $\dfrac{1}{n}$ » (le PDF du BO dit 1/n).
+
+PR #2773 : CI verte (un test chronométré de `/demo/diaporama` rouge au premier passage, sans lien avec le
+lot, vert à la relance), mergée le 2026-11-17. Worktree et branche supprimés.
