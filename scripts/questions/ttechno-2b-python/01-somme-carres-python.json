@@ -1,4 +1,5 @@
 {
+	"id": "2327bbef-c5d7-474e-ac8b-4a917f2ca2b4",
 	"title": "Fonction Python : somme des n premiers carrés",
 	"description": "Compléter l'accumulateur et les bornes de la boucle d'une fonction Python qui calcule la somme des n premiers carrés, puis la faire tourner",
 	"grades": ["T_TECHNO"],
