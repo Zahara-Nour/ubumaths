@@ -8,8 +8,8 @@ Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) · bornes 
 _Mis à jour le 2026-11-17, migration du lot 0 écrite (§ 10), PR à ouvrir._
 
 - **État** : page à cocher du lot 0 : **30 « OK » sur 30**, ⚠ compris, sans commentaire. Migration
-  `20261117145436_questions_ttechno_lot0_tags` + test d'intégration (12 verts, rouges sans le corps) ;
-  instantanés dans `scripts/questions/ttechno-t0/`. Revues `code-reviewer` + `security-auditor` en cours.
+  `20261117145436_questions_ttechno_lot0_tags` + test d'intégration (14 verts, rouges sans le corps) ;
+  instantanés dans `scripts/questions/ttechno-t0/`. Revues `code-reviewer` + `security-auditor` sans bloquant.
 - **Prochaine action** : PR, CI verte, merge, puis `db:migrate` depuis la branche mergée
   (`migration list --linked` avant), vérification en prod (MCP : 30 tags, 30 `T_TECHNO`).
 - **En attente de `questions-1gen`** : sa phase 0 aˣ et taux moyen ; nos lots 3 et 4 attendent.
@@ -247,3 +247,7 @@ départ ; 3 fiches au bloc « ranger » non dessiné, à jouer dans l'aperçu : 
   suite principale tombe (rollback refusé : 0 tag sur 30) ; fichier restauré d'une copie, identique.
 - Instantanés : `scripts/questions/ttechno-t0/` (30 fichiers, export en lecture seule de la prod).
 - Question d'accès : celle du § 3 (Q2), tranchée par David.
+- Revues : `code-reviewer` et `security-auditor` sans bloquant (prod rejouée : gardes passent, codes
+  uniques, trigger `updated_at` réactivé après le gabarit). Retenus : décor avec un tag d'un autre programme
+  (1TECHNO-120 sur e4eaaf16, sinon « ne bougent pas » comparait du vide) ; tests des gardes « point archivé »
+  et « rollback : tag retiré » → 14 verts.

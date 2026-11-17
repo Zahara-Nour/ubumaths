@@ -80,6 +80,8 @@ const ids = LOT.map(([id]) => id);
 /** Modèle rangé, en prod, sur une sous-notion fille du nœud de son point (branche « notion »
  *  du trigger des tags) ; les autres sont sur le nœud même du point. */
 const SUR_SOUS_NOTION = new Set(['e4eaaf16-407c-4a8b-9ba0-a93f28312fd6']);
+/** Tag d'un autre programme porté en prod (1TECHNO-120 sur e4eaaf16) : il ne doit pas bouger. */
+const AUTRE_TAG: [string, string] = ['e4eaaf16-407c-4a8b-9ba0-a93f28312fd6', '1TECHNO-120'];
 /** Date de modification fabriquée : elle ne doit pas bouger (tags et niveaux ne sont pas du contenu). */
 const AVANT = '2026-01-02T03:04:05.000Z';
 
@@ -121,6 +123,11 @@ async function poserEtatProd(pg: Client, auteur: string): Promise<void> {
 			[id, grades, code]
 		);
 	}
+	await pg.query(
+		`insert into public.question_template_points (template_id, point_id)
+		 select $1, id from public.curriculum_points where code = $2 and archived_at is null`,
+		AUTRE_TAG
+	);
 	// Garde du décor : chaque copie est rangée (sinon le trigger refuserait pour une autre raison),
 	// et celle de SUR_SOUS_NOTION l'est bien sur une sous-notion du nœud de son point.
 	const r = await pg.query<{ ranges: string; sous: string }>(
@@ -210,6 +217,8 @@ describe('Tle techno lot 0 : tags TTECHNO sur 30 modèles publiés (migration de
 	});
 
 	it('les tags des autres programmes ne bougent pas', () => {
+		// le décor en porte un (sinon on comparerait du vide à du vide)
+		expect(avant.autresPoints.get(AUTRE_TAG[0])).toEqual([AUTRE_TAG[1]]);
 		expect(apres.autresPoints).toEqual(avant.autresPoints);
 		expect(annule.autresPoints).toEqual(avant.autresPoints);
 	});
@@ -327,6 +336,33 @@ describe('Tle techno lot 0 : les branches d’échec de la migration', () => {
 				[ids[0]]
 			);
 			expect(r2.rows[0].grades).toEqual(['1_SPE', '1_TECHNO', '1_GEN']);
+		});
+	});
+
+	it('un point TTECHNO archivé fait échouer la migration', async () => {
+		await enTransaction(async () => {
+			await poserEtatProd(pg, auteur);
+			await pg.query(
+				`update public.curriculum_points set archived_at = now() where code = 'TTECHNO-068'`
+			);
+			await expect(pg.query(readFileSync(MIGRATION, 'utf-8'))).rejects.toThrow(
+				/points TTECHNO introuvables : 16 sur 17/
+			);
+		});
+	});
+
+	it('rollback refusé si un tag a été retiré depuis la migration', async () => {
+		await enTransaction(async () => {
+			await poserEtatProd(pg, auteur);
+			await pg.query(readFileSync(MIGRATION, 'utf-8'));
+			await pg.query(
+				`delete from public.question_template_points t using public.curriculum_points p
+				  where t.template_id = $1 and t.point_id = p.id and p.code = 'TTECHNO-068'`,
+				[ids[0]]
+			);
+			await expect(pg.query(extractRollback(MIGRATION))).rejects.toThrow(
+				/rollback : tags changés depuis la migration : 29 sur 30 présents/
+			);
 		});
 	});
 
