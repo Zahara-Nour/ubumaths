@@ -12,7 +12,7 @@
 	<article class="prose max-w-none prose-slate dark:prose-invert">
 		<h1>Politique de confidentialité</h1>
 
-		<p class="lead text-muted-foreground">Dernière mise à jour : 17 novembre 2026 | Version 1.3</p>
+		<p class="lead text-muted-foreground">Dernière mise à jour : 17 novembre 2026 | Version 1.4</p>
 
 		<hr />
 
@@ -393,7 +393,7 @@
 						</tr>
 						<tr>
 							<td>Liste des courriels envoyés aux parents</td>
-							<td>Supprimée avec le profil de l'élève</td>
+							<td>Chaque courriel en est effacé 1 an après son envoi ; supprimée avec le profil</td>
 						</tr>
 						<tr>
 							<td>Logs techniques</td>

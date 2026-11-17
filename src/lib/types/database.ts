@@ -15158,6 +15158,7 @@ export type Database = {
           student_id: string
         }[]
       }
+      carnet_erase_old_notifications: { Args: never; Returns: number }
       carnet_erase_orphan_contacts: { Args: never; Returns: number }
       carnet_exception_plan: {
         Args: never

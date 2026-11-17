@@ -2,7 +2,7 @@
  * GET|POST /api/cron/carnet-de-liaison
  * ====================================
  * Le passage quotidien du carnet de liaison (ADR 0040) : effacement des adresses
- * orphelines, liens manquants, courriels d'exception, message trimestriel
+ * orphelines et du journal des courriels de plus d'un an, liens manquants, courriels d'exception, message trimestriel
  * (`src/lib/server/carnet/courriels.ts`).
  *
  * Appelée chaque jour par le cron Vercel (GET, `vercel.json`, 16 h UTC : 17 h à

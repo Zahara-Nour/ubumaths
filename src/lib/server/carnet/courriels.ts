@@ -6,7 +6,8 @@
  * Dans cet ordre :
  *
  *  1. **Effacement** (Q21, Q35) : adresses d'un élève sans classe active depuis
- *     90 jours (`carnet_erase_orphan_contacts`).
+ *     90 jours (`carnet_erase_orphan_contacts`), puis lignes du journal des
+ *     courriels de plus d'un an (Q42, `carnet_erase_old_notifications`).
  *  2. **Liens manquants** (Q29, Q36) : pour chaque classe au carnet activé, le
  *     même passage que le bouton du professeur (élève arrivé après, consentement
  *     accordé après, rentrée, envoi précédent en échec).
@@ -46,7 +47,10 @@ import { sendClassMissingLinks } from './envois';
 type SB = SupabaseClient<Database>;
 
 export interface CarnetDailyReport {
+	/** Adresses effacées (Q35) */
 	erased: number;
+	/** Lignes du journal des courriels effacées, plus d'un an (Q42) */
+	erasedNotifications: number;
 	links: { sent: number; failed: number };
 	exceptions: { sent: number; failed: number };
 	quarterly: { sent: number; failed: number };
@@ -145,6 +149,16 @@ async function eraseOrphans(service: SB): Promise<number> {
 	if (error) {
 		logger.error('[carnet_erase_orphan_contacts]', error);
 		throw new Error('Effacement des adresses impossible');
+	}
+	return data ?? 0;
+}
+
+/** 1 bis. Effacement du journal des courriels de plus d'un an (Q42). */
+async function eraseOldNotifications(service: SB): Promise<number> {
+	const { data, error } = await service.rpc('carnet_erase_old_notifications');
+	if (error) {
+		logger.error('[carnet_erase_old_notifications]', error);
+		throw new Error('Effacement du journal des courriels impossible');
 	}
 	return data ?? 0;
 }
@@ -291,6 +305,7 @@ export async function runCarnetDaily(
 ): Promise<CarnetDailyReport> {
 	const report: CarnetDailyReport = {
 		erased: 0,
+		erasedNotifications: 0,
 		links: { sent: 0, failed: 0 },
 		exceptions: { sent: 0, failed: 0 },
 		quarterly: { sent: 0, failed: 0 },
@@ -309,6 +324,11 @@ export async function runCarnetDaily(
 
 	try {
 		report.erased = await eraseOrphans(service);
+	} catch (err) {
+		errors.push(err);
+	}
+	try {
+		report.erasedNotifications = await eraseOldNotifications(service);
 	} catch (err) {
 		errors.push(err);
 	}
