@@ -9,15 +9,15 @@
 
 _Mis à jour le 2026-11-17, décisions Q2 bis à Q9 prises (§ 5)._
 
-- **État** : relevé et vérification de l'existant faits (§ 1, 2) ; Q1 à Q9 tranchées (§ 5) ; coordination avec
-  questions-1techno et questions-ttechno (§ 6). Migration de tags : 15 points ; 32 points à écrire en 5 lots (§ 4,
-  016 au lot 1, 027 au lot 4). Aucun code, aucune écriture en base.
-- **Prochaine action** : réponse de David à la question d'accès de la migration de tags, puis worktree
-  `../ubumaths-wt-questions-1gen`, migration + test d'intégration.
-- **En attente de David** : question d'accès de la migration.
-- **Pièges en cours** : un seul point 1GEN par modèle (trigger, § 6) ; `grades` touchés par `array_append` /
-  `array_remove` ciblés ; envoyer à questions-ttechno la phase 0 des lots 2 et 3 ; modèle 1GEN-022 commun avec
-  1TECHNO-057.
+- **État** : relevé et vérification de l'existant faits (§ 1, 2) ; Q1 à Q9 tranchées (§ 5) ; coordination (§ 6).
+  Plan de tags revu contre la règle du nœud (§ 7) : 12 modèles, **9 points** ; **38 points à écrire**. Aucun code,
+  aucune écriture en base.
+- **Prochaine action** : David confirme le § 7 (retrait de `1_GEN` de 1c86d122 et f5585668 aussi) et répond à la
+  question d'accès ; puis worktree `../ubumaths-wt-questions-1gen`, migration + test d'intégration.
+- **En attente de David** : § 7, question d'accès.
+- **Pièges en cours** : AVANT tout tag, lire l'ADR 0020 et `couvrir-un-niveau.md` § 9 — un point par programme, point
+  sur le nœud du modèle ou sa notion (§ 7) ; `grades` par `array_append` / `array_remove` ciblés ; phase 0 des lots 2
+  et 3 à envoyer à questions-ttechno ; modèle 1GEN-022 commun avec 1TECHNO-057.
 - **Worktree / branche** : aucun (journal seul, sur `main`).
 
 ## 1. Relevé (prod, 2026-11-17)
