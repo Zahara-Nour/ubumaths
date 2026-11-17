@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, PR B ouverte._
+_Mis à jour le 2026-11-17, PR B commitée (pas encore poussée)._
 
-- **État** : PR A (logique) mergée (#2735) ; PR B (écran) en cours sur `feat/tortue-variables-ecran` : boîtes à outils par niveau, carte / corrigé / bac à sable au niveau, sélecteur « base · 4e · 3e » de `/tortue`, `départ:` sans contrôle des variables, messages au vocabulaire tortue · **Prochaine action** : CI de la PR B, merge ; puis PR C (modèles : relevé prod des points 4-067, 4-068, 3-047, 3-051, liste proposée à David — Q7) · **En attente de David** : rien · **Pièges en cours** : aucun modèle `niveau:` publié avant le merge de la PR B ; reste en suspens (revue PR A) : `1e2` lu sans niveau / refusé en 4e, `répéter 2,5 [ … ]` arrondi sans prévenir l'auteur · **Worktree / branche** : `ubumaths-wt-tortue-variables` / `feat/tortue-variables-ecran`
+- **État** : PR A (logique) mergée (#2735) ; PR B (écran) en cours sur `feat/tortue-variables-ecran` : boîtes à outils par niveau, carte / corrigé / bac à sable au niveau, sélecteur « base · 4e · 3e » de `/tortue`, `départ:` sans contrôle des variables, messages au vocabulaire tortue · **Prochaine action** : revue `code-reviewer` (Sonnet) de la PR B — à relancer si la session a été vidée ; relancer aussi les tests touchés (oxlint du pre-commit) ; puis push, PR, CI, merge ; puis PR C (modèles : relevé prod des points 4-067, 4-068, 3-047, 3-051, liste proposée à David — Q7) · **En attente de David** : rien · **Pièges en cours** : aucun modèle `niveau:` publié avant le merge de la PR B ; reste en suspens (revue PR A) : `1e2` lu sans niveau / refusé en 4e, `répéter 2,5 [ … ]` arrondi sans prévenir l'auteur · **Worktree / branche** : `ubumaths-wt-tortue-variables` / `feat/tortue-variables-ecran`
 
 ## Origine
 
