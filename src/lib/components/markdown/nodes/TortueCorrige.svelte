@@ -9,6 +9,8 @@
 	  son programme puis un programme juste.
 	- Sans réponse : le tracé juste et le programme de référence.
 	- `blocs:` dépassé : le message sous le programme de l'élève.
+	- `niveau: 4e | 3e` : les programmes se lisent et s'exécutent au niveau (celui de la réponse
+	  attendue, sinon celui du bloc).
 	- Référence inconnue (énoncé masqué d'une évaluation notée, `attendu: ?`) : la figure du
 	  bloc seule s'il la montre, jamais d'attendu inventé.
 
@@ -38,14 +40,16 @@
 	let reference = $derived(attendue?.attendu ?? spec?.attendu ?? null);
 	/** La limite de la réponse attendue, sinon celle du bloc (gardée dans un énoncé masqué) */
 	let blocsMax = $derived(attendue ? attendue.blocsMax : (spec?.blocsMax ?? null));
+	/** Le niveau de la réponse attendue, sinon celui du bloc (gardé dans un énoncé masqué) */
+	let niveau = $derived(attendue?.niveau ?? spec?.niveau ?? 'base');
 	let traceReference = $derived.by(() => {
 		if (reference === null) return null;
-		const lu = lireProgrammeTortue(reference);
+		const lu = lireProgrammeTortue(reference, niveau);
 		return lu.ok ? lu.segments : null;
 	});
-	let eleve = $derived(answer === null ? null : lireProgrammeTortue(answer));
+	let eleve = $derived(answer === null ? null : lireProgrammeTortue(answer, niveau));
 	let tropDeBlocs = $derived(
-		answer !== null && eleve?.ok ? depassementDeBlocs(answer, blocsMax) : null
+		answer !== null && eleve?.ok ? depassementDeBlocs(answer, blocsMax, niveau) : null
 	);
 </script>
 

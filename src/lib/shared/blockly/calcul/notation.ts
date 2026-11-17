@@ -24,7 +24,9 @@
  *
  * Tortue de 4e / 3e (option `tortue`) : la même notation, avec en plus les instructions tortue
  * `avancer <calcul>`, `reculer <calcul>`, `tourner à droite <calcul>`, `tourner à gauche
- * <calcul>`, `lever le stylo`, `baisser le stylo` (ex. `tourner à gauche 360 ÷ n`).
+ * <calcul>`, `lever le stylo`, `baisser le stylo` (ex. `tourner à gauche 360 ÷ n`) ; sans les
+ * mots propres aux programmes de calcul (`afficher`, `nombre`, `résultat`, `reste de`), refusés en
+ * les nommant, et des messages aux exemples de la tortue.
  *
  * Lecture souple : accents, majuscules, espaces, virgule ou point décimal. Écriture canonique :
  * `mettre … à …` (en 5e, `résultat = résultat × 3` se lirait comme une égalité), accents, virgule
@@ -135,6 +137,13 @@ const PRIORITES_LOGIQUES = { OR: 1, AND: 2 } as const;
 const EXEMPLE = 'afficher (nombre + 2) × 4';
 
 const EXEMPLE_TORTUE = 'tourner à gauche 360 ÷ n';
+
+/** Exemples d'un « si » et d'une comparaison, dans les messages (calcul, tortue). */
+const EXEMPLES_SI = {
+	calcul: 'si nombre > 0 alors [ afficher 1 ]',
+	tortue: 'si n > 0 alors [ avancer 1 ]'
+};
+const EXEMPLES_COMPARAISON = { calcul: 'nombre > 0', tortue: 'n > 0' };
 
 /** Instructions tortue à un calcul : mots normalisés → type de bloc et nom de l'entrée. */
 const TORTUE_A_CALCUL: readonly { mots: string[]; type: string; entree: string }[] = [
@@ -556,6 +565,14 @@ export function texteVersEtatCalcul(texte: string, options: OptionsNotation = {}
 		return jeton === undefined || jeton.type === ';' || jeton.type === ']';
 	};
 
+	const domaine = options.tortue ? 'tortue' : 'calcul';
+
+	/** Mot propre aux programmes de calcul, écrit dans un programme tortue. */
+	const absentDeLaTortue = (ecrit: string): TexteIllisible =>
+		new TexteIllisible(
+			`« ${ecrit} » n’existe pas pour la tortue : dans un calcul, des nombres et des variables (ex. ${EXEMPLE_TORTUE}).`
+		);
+
 	const ecrireJeton = (j: Jeton): string =>
 		j.type === 'mot'
 			? j.mot
@@ -574,6 +591,10 @@ export function texteVersEtatCalcul(texte: string, options: OptionsNotation = {}
 
 	/** Id de la variable nommée (créée à sa première écriture) ; nom refusé → erreur. */
 	function variable(nom: string): string {
+		// Tortue : `ajouter 1 à résultat` dit le même refus que `avancer résultat`
+		const normal = normaliserMot(nom);
+		if (options.tortue && normal === 'resultat') throw absentDeLaTortue('résultat');
+		if (options.tortue && normal === 'nombre') throw absentDeLaTortue('nombre');
 		const refus = verifierNomDeVariable(nom);
 		if (refus) throw new TexteIllisible(refus);
 		const cle = normaliserMot(nom);
@@ -621,6 +642,7 @@ export function texteVersEtatCalcul(texte: string, options: OptionsNotation = {}
 
 	/** `mettre <nom> à …` ou `<nom> = …` : la variable `résultat` (5e) ou une variable. */
 	function mettre(nom: string, debut: number): Bloc {
+		if (options.tortue && normaliserMot(nom) === 'resultat') throw absentDeLaTortue('résultat');
 		const calcul = entree(lireCalculEntier(debut));
 		if (normaliserMot(nom) === 'resultat') {
 			return { type: 'calcul_mettre_resultat', inputs: { VALEUR: calcul } };
@@ -665,6 +687,11 @@ export function texteVersEtatCalcul(texte: string, options: OptionsNotation = {}
 			if (tortue) return tortue;
 		}
 		if (mot() === 'afficher') {
+			if (options.tortue) {
+				throw new TexteIllisible(
+					`« afficher » n’existe pas pour la tortue : elle avance, tourne et répète (ex. ${EXEMPLE_TORTUE}).`
+				);
+			}
 			position++;
 			if (finInstruction()) {
 				throw new TexteIllisible(`Après « afficher », il faut un calcul (ex. ${EXEMPLE}).`);
@@ -704,7 +731,7 @@ export function texteVersEtatCalcul(texte: string, options: OptionsNotation = {}
 			const condition = lireCondition(0);
 			if (mot() !== 'alors') {
 				throw new TexteIllisible(
-					'Après la condition, il faut « alors » (ex. si nombre > 0 alors [ afficher 1 ]).'
+					`Après la condition, il faut « alors » (ex. ${EXEMPLES_SI[domaine]}).`
 				);
 			}
 			position++;
@@ -823,6 +850,11 @@ export function texteVersEtatCalcul(texte: string, options: OptionsNotation = {}
 				position++;
 				return nombreBloc(lireNombreFini(jeton.mot));
 			}
+			if (options.tortue && normal === 'nombre') throw absentDeLaTortue('nombre');
+			if (options.tortue && normal === 'resultat') throw absentDeLaTortue('résultat');
+			if (options.tortue && normal === 'reste' && mot(1) === 'de') {
+				throw absentDeLaTortue('reste de');
+			}
 			if (normal === 'nombre') {
 				position++;
 				if (mot() === 'choisi') position++;
@@ -849,7 +881,9 @@ export function texteVersEtatCalcul(texte: string, options: OptionsNotation = {}
 				return { type: 'variables_get', fields: { VAR: { id: variable(jeton.mot) } } };
 			}
 			throw new TexteIllisible(
-				`« ${jeton.mot} » : dans un calcul, seulement des nombres, « nombre », « résultat » et des variables.`
+				options.tortue
+					? `« ${jeton.mot} » : dans un calcul, seulement des nombres et des variables.`
+					: `« ${jeton.mot} » : dans un calcul, seulement des nombres, « nombre », « résultat » et des variables.`
 			);
 		}
 		throw new TexteIllisible('Calcul mal écrit : un nombre manque.');
@@ -882,7 +916,7 @@ export function texteVersEtatCalcul(texte: string, options: OptionsNotation = {}
 		if (profondeur > PROFONDEUR_MAX) throw new TexteIllisible('Trop de conditions imbriquées.');
 		const jeton = jetons[position];
 		if (finInstruction() || jeton.type === '[' || mot() === 'alors') {
-			throw new TexteIllisible('Il manque une condition (ex. si nombre > 0 alors [ afficher 1 ]).');
+			throw new TexteIllisible(`Il manque une condition (ex. ${EXEMPLES_SI[domaine]}).`);
 		}
 		if (mot() === 'non') {
 			position++;
@@ -920,7 +954,7 @@ export function texteVersEtatCalcul(texte: string, options: OptionsNotation = {}
 			jeton?.type === 'cmp' ? jeton.op : jeton?.type === '=' ? 'EQ' : null;
 		if (op === null) {
 			throw new TexteIllisible(
-				`« ${cite(debut, position - 1)} » : il faut une comparaison (ex. nombre > 0).`
+				`« ${cite(debut, position - 1)} » : il faut une comparaison (ex. ${EXEMPLES_COMPARAISON[domaine]}).`
 			);
 		}
 		position++;

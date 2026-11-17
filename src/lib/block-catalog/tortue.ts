@@ -23,7 +23,7 @@ export const tortueEntry: BlockCatalogEntry = {
 			settings: [
 				{
 					key: 'attendu',
-					values: 'un programme (notation texte, variables admises)',
+					values: 'un programme (notation texte)',
 					defaultValue: null,
 					description:
 						'Le programme de référence. Il doit se lire et tracer quelque chose : sinon la question est refusée à la publication. Il n’est jamais envoyé à l’élève pendant une évaluation notée.'
@@ -47,7 +47,14 @@ export const tortueEntry: BlockCatalogEntry = {
 					values: 'un programme (notation texte)',
 					defaultValue: 'aucun',
 					description:
-						'Un programme posé d’avance dans l’espace de travail de l’élève, à modifier (« change un nombre pour que le carré ait un côté de 4 »). Tant qu’il n’y touche pas, il n’a pas répondu.'
+						'Un programme posé d’avance dans l’espace de travail de l’élève, à modifier (« change un nombre pour que le carré ait un côté de 4 »). Tant qu’il n’y touche pas, il n’a pas répondu. En 4e / 3e, il peut lire une variable qu’il ne met pas : c’est à l’élève de la mettre (« complète le programme »).'
+				},
+				{
+					key: 'niveau',
+					values: '4e ou 3e',
+					defaultValue: 'aucun (blocs de base)',
+					description:
+						'Les blocs proposés à l’élève, et les seuls admis. 4e ajoute les variables qu’il crée (mettre n à 6, ajouter 1 à n), les calculs + − × ÷ dans les entrées (tourner à gauche 360 ÷ n) et la répétition à nombre de tours calculé (répéter n [ … ], arrondi) ; 3e ajoute « si … alors (sinon) », les comparaisons, et / ou / non et « répéter jusqu’à ». Les programmes s’écrivent comme ceux des programmes de calcul, et attendu: et départ: doivent tenir dans le niveau. Une variable jamais mise vaut 0.'
 				},
 				{
 					key: 'blocs',
@@ -99,9 +106,42 @@ export const tortueEntry: BlockCatalogEntry = {
 			),
 			explanation:
 				'Trois blocs au plus : répéter, avancer, tourner. Le même carré écrit sans répéter (8 blocs) est faux.'
+		},
+		{
+			title: 'Un polygone à n côtés (4e)',
+			source: fence(
+				'tortue',
+				'attendu: mettre n à 6 ; répéter n [ avancer 3 ; tourner à gauche 360 ÷ n ]',
+				'montrer: oui',
+				'niveau: 4e'
+			),
+			explanation:
+				'Une variable n, un angle calculé : en changeant seulement n, le même programme trace n’importe quel polygone régulier.'
+		},
+		{
+			title: 'Une spirale, à compléter (4e)',
+			source: fence(
+				'tortue',
+				'attendu: mettre côté à 1 ; répéter 8 [ avancer côté ; tourner à gauche 90 ; ajouter 1 à côté ]',
+				'départ: répéter 8 [ avancer côté ; tourner à gauche 90 ]',
+				'montrer: oui',
+				'niveau: 4e'
+			),
+			explanation:
+				'Le départ lit la variable côté sans la mettre : l’élève ajoute « mettre côté à 1 » au début et « ajouter 1 à côté » dans la répétition.'
 		}
 	],
 	mistakes: [
+		{
+			title: 'Variable sans niveau',
+			source: fence(
+				'tortue',
+				'attendu: mettre n à 6 ; répéter n [ avancer 3 ; tourner à gauche 60 ]'
+			),
+			message: 'niveau: 4e',
+			explanation:
+				'Sans niveau:, la tortue n’a ni variables ni calculs. Le message dit quel niveau ajouter.'
+		},
 		{
 			title: 'Programme de référence oublié',
 			source: fence('tortue', 'montrer: oui'),

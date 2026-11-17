@@ -9,6 +9,7 @@ import {
 	texteVersEtatTortue
 } from '../niveaux';
 import { texteVersEtat } from '../notation';
+import { texteVersEtatCalcul } from '../../calcul/notation';
 
 // Tortue avec variables, 4e / 3e (chantier `tortue-variables`, phase 0 validée le 2026-11-16) :
 // variables, calculs dans les entrées, « répéter » calculé (4e) ; « si », conditions,
@@ -141,9 +142,32 @@ describe('executerTortue avec niveau — blocs admis', () => {
 	});
 
 	it('jamais les blocs propres au programme de calcul (afficher, nombre choisi, reste)', () => {
-		expect(erreur('afficher 3')).toMatchObject({ type: 'bloc-inconnu' });
-		expect(erreur('avancer nombre')).toMatchObject({ type: 'bloc-inconnu' });
-		expect(erreur('avancer reste de 7 par 2')).toMatchObject({ type: 'bloc-inconnu' });
+		// La notation de la tortue ne les écrit plus : états posés à la main (blocs d'un autre espace)
+		const avancer = (valeur: object) => ({
+			blocks: {
+				languageVersion: 0,
+				blocks: [{ type: 'tortue_avancer', inputs: { VALEUR: { block: valeur } } }]
+			}
+		});
+		const afficher = texteVersEtatCalcul('afficher 3');
+		if (!afficher.ok) throw new Error(afficher.message);
+		const enErreur = (e: unknown) => executerTortue(e, '3e');
+		expect(enErreur(afficher.etat)).toMatchObject({ ok: false, erreur: { type: 'bloc-inconnu' } });
+		expect(enErreur(avancer({ type: 'calcul_nombre_choisi' }))).toMatchObject({
+			ok: false,
+			erreur: { type: 'bloc-inconnu' }
+		});
+		expect(
+			enErreur(
+				avancer({
+					type: 'math_modulo',
+					inputs: {
+						DIVIDEND: { shadow: { type: 'math_number', fields: { NUM: 7 } } },
+						DIVISOR: { shadow: { type: 'math_number', fields: { NUM: 2 } } }
+					}
+				})
+			)
+		).toMatchObject({ ok: false, erreur: { type: 'bloc-inconnu' } });
 	});
 
 	it('les programmes de base marchent aux deux niveaux', () => {
@@ -302,5 +326,47 @@ describe('jugerProgrammeTortue avec niveau', () => {
 		expect(depassementDeBlocs(HEXAGONE, 4, '4e')).toBeNull();
 		expect(depassementDeBlocs(HEXAGONE, 3, '4e')).toMatch(/4 blocs/);
 		expect(jugerProgrammeTortue(HEXAGONE, HEXAGONE, 'position', 3, '4e').juste).toBe(false);
+	});
+});
+
+describe('notation de 4e / 3e : messages au vocabulaire de la tortue', () => {
+	function message(texte: string): string {
+		const lu = texteVersEtatTortue(texte, '3e');
+		if (lu.ok) throw new Error(`« ${texte} » devait être refusé`);
+		return lu.message;
+	}
+
+	it('« afficher » nommé : la tortue ne l’a pas', () => {
+		expect(message('afficher 3')).toMatch(/« afficher » n’existe pas pour la tortue/);
+	});
+
+	it('« nombre », « résultat », « reste de » : refusés en le disant', () => {
+		expect(message('avancer nombre')).toMatch(/« nombre » n’existe pas pour la tortue/);
+		expect(message('avancer nombre choisi')).toMatch(/« nombre » n’existe pas pour la tortue/);
+		expect(message('mettre résultat à 3')).toMatch(/« résultat » n’existe pas pour la tortue/);
+		expect(message('avancer résultat')).toMatch(/« résultat » n’existe pas pour la tortue/);
+		expect(message('ajouter 1 à résultat')).toMatch(/« résultat » n’existe pas pour la tortue/);
+		expect(message('ajouter 1 à nombre')).toMatch(/« nombre » n’existe pas pour la tortue/);
+		expect(message('avancer reste de 7 par 2')).toMatch(/« reste de » n’existe pas pour la tortue/);
+	});
+
+	it('exemples des messages : jamais « nombre » ni « afficher »', () => {
+		for (const texte of [
+			'si n > 1 [ avancer 1 ]',
+			'si n alors [ avancer 1 ]',
+			'répéter jusqu’à [ avancer 1 ]',
+			'avancer 1e2',
+			'sauter 2'
+		]) {
+			const lu = message(texte);
+			expect(lu, texte).not.toMatch(/nombre >|afficher|« nombre »|« résultat »/);
+		}
+	});
+
+	it('programmes de calcul : messages inchangés', () => {
+		const lu = texteVersEtatCalcul('si n alors [ afficher 1 ]');
+		expect(lu.ok).toBe(false);
+		if (!lu.ok) expect(lu.message).toMatch(/ex\. nombre > 0/);
+		expect(texteVersEtatCalcul('afficher nombre').ok).toBe(true);
 	});
 });

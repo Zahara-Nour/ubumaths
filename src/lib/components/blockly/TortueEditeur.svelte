@@ -11,6 +11,12 @@
 
   Verrouillé (`readonly`, après la validation) : les blocs de l'élève sans boîte à outils, le
   tracé final de son programme tout de suite, l'attendu en pointillés s'il est connu.
+
+  Niveau (`niveau: 4e | 3e` du bloc, chantier `tortue-variables`) : les blocs proposés
+  (`toolboxTortue`), la notation du programme et les blocs exécutés. Changé en cours de route
+  (sélecteur du bac à sable) : la boîte à outils change, les blocs posés restent ; un bloc
+  au-dessus du niveau est refusé au lancer. En 4e / 3e, un nom de variable refusé l'est dès sa
+  création (`surveillerNomsDeVariables`), message sous les blocs.
 -->
 <script lang="ts">
 	import type * as Blockly from 'blockly';
@@ -20,10 +26,12 @@
 	import { Button } from '$lib/components/ui/button';
 	import BlocklyWorkspace from './BlocklyWorkspace.svelte';
 	import TortueCanvas from './TortueCanvas.svelte';
-	import { TORTUE_TOOLBOX } from '$lib/shared/blockly/tortue/toolbox';
+	import { toolboxTortue } from '$lib/shared/blockly/tortue/toolbox';
+	import { surveillerNomsDeVariables } from '$lib/shared/blockly/calcul/blocs';
 	import {
 		executerTortue,
 		messageErreurTortue,
+		type NiveauTortue,
 		type ResultatTortue
 	} from '$lib/shared/blockly/tortue/interpreteur';
 	import {
@@ -31,7 +39,8 @@
 		rythmeAnimation,
 		PAUSE_DEPART_MS
 	} from '$lib/shared/blockly/tortue/animation';
-	import { etatVersTexte, texteVersEtat, type TexteLu } from '$lib/shared/blockly/tortue/notation';
+	import { etatVersTexteTortue, texteVersEtatTortue } from '$lib/shared/blockly/tortue/niveaux';
+	import type { TexteLu } from '$lib/shared/blockly/tortue/notation';
 	import type { Segment } from '$lib/shared/blockly/tortue/segments';
 
 	// =============================================================================
@@ -43,6 +52,8 @@
 	interface Props {
 		/** Programme de départ (notation texte) ; relu verrouillé pour dessiner le tracé final */
 		programme: string;
+		/** Blocs proposés, notation et blocs exécutés (sans niveau par défaut) */
+		niveau?: NiveauTortue;
 		readonly?: boolean;
 		modele?: readonly Segment[] | null;
 		attendu?: readonly Segment[] | null;
@@ -68,6 +79,7 @@
 
 	let {
 		programme,
+		niveau = 'base',
 		readonly = false,
 		modele = null,
 		attendu = null,
@@ -95,6 +107,15 @@
 	/** Dernier texte rendu : un rechargement des blocs ne refait pas la réponse */
 	let dernierTexte: string | null = untrack(() => programme);
 
+	/** Boîte à outils de l'espace de travail : celle du niveau de départ */
+	const toolbox = untrack(() => toolboxTortue(niveau));
+
+	/** Niveau de la boîte à outils affichée */
+	let niveauAffiche: NiveauTortue = untrack(() => niveau);
+
+	/** Nom de variable refusé à sa création ou à son renommage (message) ; null sinon */
+	let nomRefuse = $state<string | null>(null);
+
 	let minuterie: ReturnType<typeof setInterval> | null = null;
 	let attente: ReturnType<typeof setTimeout> | null = null;
 
@@ -107,8 +128,8 @@
 	/** Verrouillé : le tracé final du programme de l'élève, sans animation */
 	const traceVerrouillee = $derived.by((): ResultatTortue | null => {
 		if (!readonly) return null;
-		const lu = texteVersEtat(programme);
-		return executerTortue(lu.ok ? lu.etat : {});
+		const lu = texteVersEtatTortue(programme, niveau);
+		return executerTortue(lu.ok ? lu.etat : {}, niveau);
 	});
 
 	const image = $derived(
@@ -139,13 +160,37 @@
 		if (!espace) return;
 		untrack(() => {
 			if (programme.trim() === '') return;
-			const lu = texteVersEtat(programme);
+			const lu = texteVersEtatTortue(programme, niveau);
 			if (!lu.ok) return;
 			BlocklyCore.serialization.workspaces.load(lu.etat, espace);
 			// La réponse relue peut s'écrire autrement (point décimal…) : le rechargement ne la renvoie pas
-			const relu = etatVersTexte(BlocklyCore.serialization.workspaces.save(espace));
+			const relu = etatVersTexteTortue(BlocklyCore.serialization.workspaces.save(espace), niveau);
 			if (relu.ok) dernierTexte = relu.texte;
 		});
+	});
+
+	// Noms de variables refusés dès leur création (4e / 3e)
+	$effect(() => {
+		const espace = workspace;
+		if (!espace || readonly) return;
+		return surveillerNomsDeVariables(espace, (message) => {
+			nomRefuse = message;
+			// Un renommage refusé est remis sans événement : la réponse est refaite ici
+			if (message) rendreProgramme();
+		});
+	});
+
+	// Niveau changé (sélecteur du bac à sable) : la boîte à outils suit, les blocs restent
+	$effect(() => {
+		const espace = workspace;
+		const voulu = niveau;
+		if (!espace || readonly || voulu === niveauAffiche) return;
+		niveauAffiche = voulu;
+		espace.updateToolbox(
+			toolboxTortue(voulu) as unknown as Blockly.utils.toolbox.ToolboxDefinition
+		);
+		// Le dernier lancer était au niveau d'avant : il ne vaut plus
+		untrack(remettreAZero);
 	});
 
 	// =============================================================================
@@ -166,7 +211,7 @@
 	function lancer(): void {
 		if (!workspace) return;
 		arreterAnimation();
-		const nouveau = executerTortue(BlocklyCore.serialization.workspaces.save(workspace));
+		const nouveau = executerTortue(BlocklyCore.serialization.workspaces.save(workspace), niveau);
 		resultat = nouveau;
 		// Sur téléphone, on montre le tracé : l'animation se joue sous les yeux de l'élève
 		onglet = 'tortue';
@@ -192,17 +237,30 @@
 	}
 
 	function effacer(): void {
+		nomRefuse = null;
 		workspace?.clear();
 	}
 
-	/** Toute modification des blocs arrête l'animation, vide le quadrillage, refait la réponse. */
-	function handleChange(): void {
-		// Verrouillé : les événements viennent du rechargement des blocs, pas de l'élève
-		if (readonly || !workspace) return;
+	function remettreAZero(): void {
 		arreterAnimation();
 		resultat = null;
 		etape = -1;
-		const lu = etatVersTexte(BlocklyCore.serialization.workspaces.save(workspace));
+	}
+
+	/** Toute modification des blocs arrête l'animation, vide le quadrillage, refait la réponse. */
+	function handleChange(event: Blockly.Events.Abstract): void {
+		// Verrouillé : les événements viennent du rechargement des blocs, pas de l'élève
+		if (readonly || !workspace) return;
+		remettreAZero();
+		// L'élève passe aux blocs : le nom refusé n'est plus d'actualité
+		if (event instanceof BlocklyCore.Events.BlockBase) nomRefuse = null;
+		rendreProgramme();
+	}
+
+	/** Le programme des blocs, en texte : la réponse, envoyée seulement si elle a changé. */
+	function rendreProgramme(): void {
+		if (!workspace) return;
+		const lu = etatVersTexteTortue(BlocklyCore.serialization.workspaces.save(workspace), niveau);
 		const texte = lu.ok ? lu.texte : null;
 		if (texte !== null && texte === dernierTexte) return;
 		dernierTexte = texte;
@@ -264,12 +322,7 @@
 				? ''
 				: 'hidden'}"
 		>
-			<BlocklyWorkspace
-				bind:workspace
-				toolbox={TORTUE_TOOLBOX}
-				{readonly}
-				onchange={handleChange}
-			/>
+			<BlocklyWorkspace bind:workspace {toolbox} {readonly} onchange={handleChange} />
 		</div>
 
 		<div
@@ -296,4 +349,8 @@
 			</p>
 		</div>
 	</div>
+
+	{#if nomRefuse && !readonly}
+		<p class="tortue-nom-refuse text-sm text-destructive" role="alert">{nomRefuse}</p>
+	{/if}
 </div>

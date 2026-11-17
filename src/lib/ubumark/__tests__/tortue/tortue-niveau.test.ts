@@ -51,6 +51,16 @@ describe('parseTortueContent — niveau:', () => {
 		expect(trop.errors[0].message).toMatch(/Ligne 2 : départ: .*niveau: 3e/);
 	});
 
+	it('départ: une variable lue jamais mise est admise (« complète le programme »)', () => {
+		const node = bloc(
+			`attendu: ${HEXAGONE}`,
+			'départ: répéter n [ avancer 3 ; tourner à gauche 360 ÷ n ]',
+			'niveau: 4e'
+		);
+		expect(node.errors).toEqual([]);
+		expect(node.spec?.depart).toBe('répéter n [ avancer 3 ; tourner à gauche 360 ÷ n ]');
+	});
+
 	it('variable lue mais jamais mise : faute de frappe signalée', () => {
 		const node = bloc('attendu: mettre n à 6 ; répéter m [ avancer 3 ]', 'niveau: 4e');
 		expect(node.errors[0].message).toMatch(/« m » est lue mais jamais mise/);
