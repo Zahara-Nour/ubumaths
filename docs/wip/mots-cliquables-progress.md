@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, PR R6 en cours._
+_Mis à jour le 2026-11-17, après #2741._
 
-- **État** : R1–R6 validées ; R5 en prod (#2732) ; **R6 codée** sur `feat/mots-cliquables-r6` (B1–B7 verts, `mots-du-dictionnaire.svelte.test.ts`) ; R1–R4 : phase 0, aucun code · **Prochaine action** : PR R6 (revue `code-reviewer`, CI, merge), puis PR suivante R1–R4 (tests rouges N1–L4, E1) · **En attente de David** : rien · **Pièges en cours** : le niveau de lecture sert aussi au choix des définitions montrées (Q1) ; un test qui compare la base au jeu de référence figé applique `withConsigneVerbs` (`tests/fixtures/lexique/verbes-consigne-2026-11-16.ts`) ; R6 : `register()` du compteur de carte appelé sous `untrack` (sinon boucle d'effet) · **Worktree / branche** : `ubumaths-wt-mots-cliquables` / `feat/mots-cliquables-r6`
+- **État** : R1–R6 validées ; R5 en prod (#2732) ; **R6 mergée** (#2741 : masqué par défaut, bouton « Mots du dictionnaire » sur QuestionCard — carte de cours comprise —, FlashCard recto, CorrectionCard), pas encore déployée ; R1–R4 : phase 0, aucun code · **Prochaine action** : PR R1–R4 (tests rouges N1–L4, E1, B6 « question de cours » ; implémentation ; `code-reviewer`) · **En attente de David** : 3 points de la revue de #2741 — (1) verso sans bouton (R2 le règle), (2) écrans hybrides vus comme souris (`(hover: hover)`), (3) bouton 32 px → 40 px ? · **Pièges en cours** : niveau de lecture aussi pour la fiche (Q1) ; `withConsigneVerbs` pour comparer base et référence ; `register()` du compteur de carte sous `untrack` · **Worktree / branche** : `ubumaths-wt-mots-cliquables` gardé (serveur de test 5177) ; prochaine PR → nouvelle branche depuis `origin/main`
 
 ## Origine
 
@@ -115,3 +115,4 @@ Erreur :
 - 2026-11-16 : Q1, Q2 tranchées (oui) ; N1–E1 et B1–B7 validés.
 - 2026-11-16 : R6 validée (masqué par défaut, bouton sur la carte, mémoire de l'appareil ; doigt : non cliquable masqué ; prof : même défaut) ; B1–B7 écrits.
 - 2026-11-17 : R6 codée (worktree `ubumaths-wt-mots-cliquables`) : `visibility.svelte.ts` (choix de l'appareil), `card-terms.svelte.ts` (mots d'une carte), `can-hover.svelte.ts`, `LexiconToggle` sur `QuestionCard`, `FlashCard` (recto), `CorrectionCard` (en-tête) ; B1–B7 verts. Hors carte (démo, structure) : mots toujours soulignés.
+- 2026-11-17 : #2741 (R6) mergée après revue (finding : carte de cours sans bouton, corrigé) ; vérification manuelle notée.
