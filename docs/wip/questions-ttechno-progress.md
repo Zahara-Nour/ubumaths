@@ -299,3 +299,13 @@ départ ; 3 fiches au bloc « ranger » non dessiné, à jouer dans l'aperçu : 
   choix, corrigé OK ; U, P, I en romain droit (comme le modèle de la loi d'Ohm en prod).
 - Message de `questions-1techno` : corrigé de 83b1f614 réécrit (racines évidentes de f′) ; sans effet ici,
   83b1f614 est « non » au § 9.
+
+**Prod (2026-11-17)** : #2763 mergée ; David a créé les 4 brouillons (a37968c5 I1, 4950a32e I2, 4131bd94 I3,
+3909b24a I4), vérifiés par MCP (`draft`, `T_TECHNO`, sans nœud ni tag) ; ids écrits dans les fichiers.
+
+- Migration `20261117172627_questions_ttechno_lot1_rangement_tags` (gabarit 1gen lot 1) : nœud + tag, tout ou
+  rien, `updated_at` préservé, rollback en commentaire. Test
+  `tests/integration/questions-ttechno-lot1-rangement-tags.test.ts` : 9 verts ; corps retiré → 5 rouges ;
+  fichier restauré d'une copie, identique.
+- `security-auditor` : aucun bloquant (ids, codes, chemins revérifiés en prod ; écart avec le gabarit = données
+  seules ; rollback symétrique ; accès : personne). Note : `migration list --linked` juste avant `db:migrate`.

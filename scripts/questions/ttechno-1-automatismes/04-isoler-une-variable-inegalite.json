@@ -1,4 +1,5 @@
 {
+	"id": "3909b24a-9c44-4a8e-9110-0d6ff9732abc",
 	"title": "Isoler une variable dans une inégalité",
 	"description": "Exprimer une variable en fonction des autres dans une inégalité, en gardant ou en changeant le sens",
 	"grades": ["T_TECHNO"],

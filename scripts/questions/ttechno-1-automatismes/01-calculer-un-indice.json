@@ -1,4 +1,5 @@
 {
+	"id": "a37968c5-67fa-4d42-be36-8af55518d7c5",
 	"title": "Calculer un indice de base 100",
 	"description": "Indice d'une valeur, valeur retrouvée à partir de l'indice, indice dans un tableau",
 	"grades": ["T_TECHNO"],
