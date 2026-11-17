@@ -8,19 +8,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après #2758 (lot G en prod)._
+_Mis à jour le 2026-11-17, après #2764 (83b1f614 v3 en prod)._
 
-- **État** : T1, T2, lot 0, **lot G** en prod (#2743, #2748, #2753, #2758). Lot G : 0b5c3db6 → 036, c4887e49 → 038,
-  569e0140 → 049, `{1_GEN,1_TECHNO}`, vérifié en prod (§ 17).
-- **En cours** : 83b1f614 v3, migration de contenu (§ 19), branche `fix/questions-1techno-83b1f614`, PR à
-  ouvrir → audit, CI, merge, `db:migrate`, vérif prod. **Ensuite** : lots d'écriture (§ 5, 9) ; lot 2 commun de
-  questions-1gen (R2 → 044, R3 → 117, R4 → 119, PR #2762 chez eux) : attendre leurs ids, puis page à cocher +
-  migration (§ 18).
+- **État** : T1, T2, lot 0, lot G, **83b1f614 v3** en prod (#2743, #2748, #2753, #2758, #2764). 83b1f614 : corrigé
+  de v3 par racines évidentes, migration jouée et vérifiée en prod (§ 19).
+- **Prochaine action** : lots d'écriture (§ 5, 9), lot 1 « suites géométriques » d'abord (moins 036, 038, 049
+  couverts par le lot G). Lot 2 commun de questions-1gen (R2 → 044, R3 → 117, R4 → 119, PR #2762 chez eux) :
+  attendre leurs ids, puis page à cocher + migration (§ 18).
 - **En attente de David** : rien.
 - **Pièges en cours** : un point par programme (trigger) ; `grades` en `array_append`/`array_remove` seulement ;
   worktree neuf → `pnpm exec svelte-kit sync` avant un script `tsx` ; export prod : `env $(grep … .env)` (sinon
-  `.env.local` = base locale) ; commitlint refuse « T1 » en début de sujet ; CI : le cliquet peut être coupé à 20 min.
-- **Worktree / branche** : `../ubumaths-wt-questions-1techno`, `fix/questions-1techno-83b1f614`.
+  `.env.local` = base locale) ; commitlint refuse « T1 » en début de sujet ; CI : le cliquet peut être coupé à 20 min ; `Doc-inchangée:` dans un COMMIT (pas la PR) pour une migration ; `db:migrate` « inserted before » → `--dry-run --include-all`.
+- **Worktree / branche** : aucun (83b1f614 nettoyé).
 
 ## 1. Relevé (prod, 2026-11-17)
 
@@ -431,3 +430,8 @@ md5 de la prod) ; migration vidée → 2 rouges et le bloc nominal ne démarre p
 PR #2764 : audit de sécurité sans finding bloquant (non bloquant : modèle absent en prod → migration muette ; couvert
 par la vérification prod après `db:migrate`). CI : Lint rouge sur la garde de doc (`Doc-inchangée:` dans la PR
 seulement, pas dans le commit) → commit de journal qui porte la ligne.
+
+Mergée (48e3cad4bc). `migration list --linked` : seule 20261117171928 en attente ; `db:migrate` refusé
+(« inserted before », une migration plus récente déjà en prod) → `db push --dry-run --include-all` (seule la
+nôtre) puis `--include-all`. Prod vérifiée (MCP) : v3 en 5 étapes, la 2e = racines évidentes ; publié,
+`{1_SPE,1_TECHNO}`, 2 tags inchangés. Vérification visuelle notée dans `verifications-manuelles.md`.
