@@ -209,3 +209,7 @@ migration ; puis clôture du chantier.
   vertes ; `check:incremental` 0 erreur ; `docs/systeme/blockly.md` mise à jour.
 - Hors correctif, inchangé : `controls_repeat` (champ entier, Blockly interdit virgule et
   négatif) ; calcul de 5e (arrondi façon Scratch).
+- Revue `code-reviewer` Opus : aucun bloquant, 3 comportements tenus, modèles existants intacts.
+  Corrigé : `exposantEcrit` ne recolle que ce qui est écrit d'un seul tenant (`1e − 2` cite « 1e ») ;
+  `−` typographique dans le message d'exposant (aussi lu : `1e−2`) ; doc (arrondi Scratch = programmes
+  de calcul 4e / 3e ; champ de `controls_repeat` lu à l'entier inférieur, état fabriqué seulement).

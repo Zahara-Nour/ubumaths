@@ -14,7 +14,7 @@ const FORMAT_NOMBRE = new Intl.NumberFormat('en-US', {
 });
 
 /** Nombre écrit avec un exposant (`1e2`, `2,5E-3`). */
-const AVEC_EXPOSANT = /^-?\d+(?:[.,]\d+)?e[+-]?\d+$/i;
+const AVEC_EXPOSANT = /^[-−]?\d+(?:[.,]\d+)?e[+\-−]?\d+$/i;
 
 /** Écart toléré à l'entier : `0,1 × 30` vaut 3,0000000000000004 en machine. */
 const TOLERANCE_ENTIER = 1e-9;
@@ -34,8 +34,8 @@ export function ecrireSansExposant(n: number): string {
  */
 export function messageExposant(ecrit: string): string | null {
 	if (!AVEC_EXPOSANT.test(ecrit)) return null;
-	const n = Number(ecrit.replace(',', '.'));
-	const enEntier = Number.isFinite(n) ? ` (${ecrireSansExposant(n)})` : '';
+	const n = Number(ecrit.replace(',', '.').replaceAll('−', '-'));
+	const enEntier = Number.isFinite(n) ? ` (${ecrireSansExposant(n).replace('-', '−')})` : '';
 	return `« ${ecrit} » : écrire le nombre en entier${enEntier}.`;
 }
 

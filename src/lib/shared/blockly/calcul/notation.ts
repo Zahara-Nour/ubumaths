@@ -585,13 +585,17 @@ export function texteVersEtatCalcul(texte: string, options: OptionsNotation = {}
 
 	/**
 	 * Le nombre écrit à `i`, exposant compris : `1e-2` est découpé en `1e`, `-`, `2` par la
-	 * lecture des opérations, et se recolle ici pour le message.
+	 * lecture des opérations, et se recolle ici pour le message — seulement s'il est écrit d'un
+	 * seul tenant (`avancer 1e − 2` cite « 1e », pas un nombre que l'élève n'a pas écrit).
 	 */
 	function exposantEcrit(i: number): string {
 		const [a, b, c] = [jetons[i], jetons[i + 1], jetons[i + 2]];
 		if (a?.type !== 'mot') return '';
-		const signe = b?.type === 'op' ? { ADD: '+', MINUS: '-' }[b.op as string] : undefined;
-		if (/e$/i.test(a.mot) && signe && c?.type === 'mot') return `${a.mot}${signe}${c.mot}`;
+		if (/e$/i.test(a.mot) && b?.type === 'op' && c?.type === 'mot') {
+			const signes = b.op === 'ADD' ? ['+'] : b.op === 'MINUS' ? ['-', '−'] : [];
+			const ecrit = signes.map((s) => `${a.mot}${s}${c.mot}`).find((e) => texte.includes(e));
+			if (ecrit) return ecrit;
+		}
 		return a.mot;
 	}
 

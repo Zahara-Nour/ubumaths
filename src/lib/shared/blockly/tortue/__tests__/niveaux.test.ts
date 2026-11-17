@@ -464,8 +464,26 @@ describe('nombres sans exposant, à tous les niveaux', () => {
 			ok: false,
 			message: '« 1e-2 » : écrire le nombre en entier (0,01).'
 		});
-		const lu = texteVersEtatTortue('avancer 1e-2', '4e');
+		expect(texteVersEtatTortue('avancer 1e-2', '4e')).toEqual({
+			ok: false,
+			message: '« 1e-2 » : écrire le nombre en entier (0,01).'
+		});
+		expect(texteVersEtatTortue('avancer 1e−2', '4e')).toMatchObject({
+			ok: false,
+			message: '« 1e−2 » : écrire le nombre en entier (0,01).'
+		});
+	});
+
+	it('exposant écrit en morceaux (« 1e − 2 ») : le message ne cite que ce qui est écrit', () => {
+		const lu = texteVersEtatTortue('avancer 1e − 2', '4e');
 		expect(lu.ok).toBe(false);
-		if (!lu.ok) expect(lu.message).toMatch(/écrire le nombre en entier/);
+		if (!lu.ok) expect(lu.message).not.toMatch(/1e-2|0,01/);
+	});
+
+	it('nombre négatif : signe moins typographique dans le message', () => {
+		expect(texteVersEtat('avancer -1e2')).toEqual({
+			ok: false,
+			message: '« -1e2 » : écrire le nombre en entier (−100).'
+		});
 	});
 });

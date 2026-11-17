@@ -99,7 +99,8 @@ dessiné et un PDF « À faire sur Chiphre » (§ L'écran d'une question tortue
 - Blocs : `tortue_avancer` / `tortue_reculer` (entrée `VALEUR`), `tortue_gauche` /
   `tortue_droite` (entrée `ANGLE`), `tortue_lever_stylo`, `tortue_baisser_stylo` ;
   `controls_repeat` / `controls_repeat_ext` (nombre de tours entier ≥ 0, cf. § Tortue de 4e et 3e,
-  Exécution), `math_number`. Entrée vide → 0, bloc désactivé → ignoré, nombre posé seul → ignoré. Piles
+  Exécution ; le champ de `controls_repeat` est entier ≥ 0 par Blockly, et lu à l'entier
+  inférieur s'il ne l'était pas — état fabriqué seulement), `math_number`. Entrée vide → 0, bloc désactivé → ignoré, nombre posé seul → ignoré. Piles
   exécutées de haut en bas ; les suivants (`next`) sont lus en boucle, seule l'imbrication
   (bornée à 1 000) fait récursion.
 - Repère : unité = un carreau, départ en (0, 0), cap 0 = vers la droite, tourner à gauche = sens
@@ -190,7 +191,8 @@ corrigé au niveau, sélecteur de `/tortue` (§ L'écran d'une question tortue, 
   calcul près (`toursEntiers`, `0,1 × 30` = 3), jamais arrondi en silence ; sinon arrêt
   `tours-non-entier` avec le tracé partiel (« Répéter : le nombre de fois vaut 2,5, il faut un
   nombre entier (0, 1, 2…). »). Écrit non entier ou négatif (`répéter 2,5 [ … ]`, `répéter -2`) :
-  refusé dès la lecture. Le calcul de 5e garde l'arrondi à l'entier le plus proche (Scratch).
+  refusé dès la lecture. Les programmes de calcul (répétition calculée de 4e / 3e) gardent
+  l'arrondi à l'entier le plus proche (Scratch).
   Distance négative = recule ; angle non entier admis. Arrêts :
   ÷ 0 → `division-par-zero` (« on ne peut pas diviser par 0 ») ; nombre infini → `trop-loin` ;
   boucle sans fin → `trop-long` (10 000 pas, une opération ou une comparaison comptent un pas).
