@@ -8,7 +8,7 @@
 _Mis à jour le 2026-11-17, lot 7 créé en prod, migration nœud + tags écrite (§ 19 quater)._
 
 - **État** : lots 0 à 6 ter publiés (114 points sur 171). Lot 7 « données » : 13 brouillons en prod (#2751), migration
-  `20261117165426` (13 rangés, 13 tags) sur `feat/questions-cm1-lot7-rangement`.
+  `20261117165426` (13 rangés, 13 tags) en PR #2759.
 - **Prochaine action** : PR mergée → David lance `db:migrate` ; vérifier au MCP ; page à cocher
   (`page-a-cocher.ts --dir scripts/questions/cm1-7`) ; publication.
 - **En attente de David** : `db:migrate` après le merge ; décider du sort des 4 variations CE1 / CE2 dont le total
@@ -1525,3 +1525,4 @@ geste dans le nœud, partagé, sans renuméroter.
   (`select 1;`) : 9 échecs + suite principale sautée. `types:cliquet` tenu ; `security-auditor` : aucun finding
   (diff avec la 6 ter : données, compteurs, préfixe `_qcm1l7_` ; rangement sur la notion pour CM1-122 vérifié ;
   état « avant » remesuré au MCP).
+- PR #2759 ouverte.
