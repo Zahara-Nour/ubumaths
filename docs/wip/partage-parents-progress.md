@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après #2745._
+_Mis à jour le 2026-11-17, PR 8 (Q42, migration) en cours._
 
-- **État** : PR 1 à 4, 6 et 7 mergées (#2718, #2724, #2731, #2736, #2737, #2739, #2745), migrations en prod. PR 7 = politique de confidentialité v1.3 (carnet de liaison, base légale intérêt légitime). Code des PR 2 à 4 **pas encore déployé** (`deploy:prod` = David).
-- **Prochaine action** : rien ne bloque le `deploy:prod` du carnet. Puis Q42 (journal des courriels effacé après un an : migration + passer la ligne § 7 de la politique à « 1 an ») ; point 8 sur `/parents` après le déploiement (chantier `presentation-parents`).
+- **État** : PR 1 à 4, 6 et 7 mergées, migrations en prod. Code des PR 2 à 4 **pas encore déployé**. PR 8 (Q42) : migration `carnet_erase_old_notifications` + test d'intégration, branche `feat/partage-parents-q42`.
+- **Prochaine action** : PR 8 → merge → `db:migrate` (David prévenu : la fonction efface) → `db:types` → PR 9 : appel dans `runCarnetDaily` (rapport `erasedNotifications`), politique § 7 « 1 an » (version 1.4), registre T9. Puis point 8 sur `/parents` après le déploiement (chantier `presentation-parents`).
 - **En attente de David** : `deploy:prod` (avant le 28 novembre pour les messages trimestriels).
-- **Pièges en cours** : données d'élèves mineurs. 1er trimestre fini le 27 nov. : messages trimestriels dès le 28 si déployé. Rejets Brevo différés non marqués `invalid` (pas de webhook). AIPD : l'analyse de risque du carnet reste à y intégrer (noté dans son historique).
-- **Worktree / branche** : aucun.
+- **Pièges en cours** : données d'élèves mineurs. Une étape du passage en échec n'arrête pas les autres (le passage finit en échec). Base locale en retard sur d'anciennes migrations de contenu : migration appliquée à la main (`docker exec … psql`). Rejets Brevo différés non marqués `invalid`. AIPD : analyse de risque du carnet à y intégrer.
+- **Worktree / branche** : `../ubumaths-wt-partage-parents`, `feat/partage-parents-q42`.
 
 ## Origine
 
@@ -309,3 +309,12 @@ Worktree `../ubumaths-wt-partage-parents`, branche `feat/partage-parents-pr7`.
 - `/legal/confidentialite` version 1.3 : § 2 (carnet), § 3.3 nouveau « Données des parents » (tableau, ce que montre le carnet, base légale), ancien 3.3 → 3.4, § 4 finalité « Information des parents », § 5.2 (transparence envers l'élève, élève majeur), § 6 (parent destinataire, Brevo), § 7 (adresse 90 jours, lien 31 août, liste des courriels avec le profil), § 8 (droits des parents).
 - **Tranché par David (2026-11-17, recommandations suivies)** : base légale **intérêt légitime** (art. 6.1.f), écrite dans la page et dans le registre ; la durée de la liste des courriels reste « supprimée avec le profil » jusqu'à la PR de Q42, qui la passera à 1 an dans la page.
 - Registre T9 : base légale et remarque mises à jour.
+
+## PR 8 — journal des courriels effacé au bout d'un an, migration (Q42, 2026-11-17)
+
+Worktree `../ubumaths-wt-partage-parents`, branche `feat/partage-parents-q42`.
+
+- Phase 0 validée par David (2026-11-17) : effacement chaque jour des lignes de plus d'un an, toutes natures et issues ; nombre effacé au rapport du cron ; fonction séparée `carnet_erase_old_notifications` (recommandation). Question d'accès : personne ne lit rien de nouveau ; en miroir, plus personne ne lit les traces de plus d'un an (perte acceptée, Q42).
+- Correction de la phase 0 : une étape du passage en échec n'empêche pas les suivantes ; le passage est alors noté en échec (comportement actuel de l'effacement des adresses, gardé).
+- Vérifié : aucune règle ne lit plus d'un an en arrière (plafond 6 j 12 h, trimestriel depuis la fin du trimestre, jeton de courriel avec lien actif jusqu'au 31 août, dernier envoi vu par le professeur).
+- Migration `20261117134539_carnet_effacement_journal_courriels.sql` ; deux PR car `db:types` lit la prod. Tests : `carnet-courriels-exception.test.ts` (Q42 + fonction fermée aux comptes), **rouges sans la migration** (PGRST202), 28/28 avec.
