@@ -143,8 +143,8 @@ copiée, **jamais de données d'élèves en local** (`scripts/db-seed-riche/inde
 
 ### Courriels en local : capturés, jamais envoyés
 
-`.env` porte la clé Brevo de prod. Sur la **base locale** (adresse Supabase `localhost` ou
-`127.0.0.1`, hors Vercel), `sendEmail` n'appelle pas Brevo : chaque courriel est écrit dans
+`.env` porte la clé Brevo de prod. Sur la **base locale** (adresse Supabase `localhost`,
+`127.0.0.1` ou le Mac mini par le tailnet `*.ts.net`, hors Vercel), `sendEmail` n'appelle pas Brevo : chaque courriel est écrit dans
 `.captures/courriels/` (ignoré par git), un `.html` à ouvrir dans le navigateur (et un `.txt`),
 plus une ligne dans `index.jsonl` (date, destinataire, sujet, fichier, en-têtes). Les tests
 Playwright y lisent les liens (`readCapturedEmails`). L'appli voit un envoi réussi, et le service

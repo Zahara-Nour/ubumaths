@@ -1,4 +1,4 @@
-import { mkdtemp, readFile, readdir, rm } from 'node:fs/promises';
+import { appendFile, mkdtemp, readFile, readdir, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -101,6 +101,26 @@ describe('Brevo — capture des courriels sur la base locale', () => {
 		setEnv({ BREVO_API_KEY: 'cle-de-test' }, {});
 		await sendEmail('parent@exemple.fr', 'Sujet', '<p>x</p>');
 		expect(sendTransacEmail).toHaveBeenCalledTimes(1);
+	});
+
+	it('base jointe par le tailnet (autre appareil) : capture', async () => {
+		setEnv(
+			{ BREVO_API_KEY: 'cle-de-test' },
+			{
+				PUBLIC_SUPABASE_URL: 'https://serveur.tail00000.ts.net:8443'
+			}
+		);
+		await sendEmail('parent@exemple.fr', 'Sujet', '<p>x</p>');
+		expect(sendTransacEmail).not.toHaveBeenCalled();
+		expect(await readCapturedEmails(dir)).toHaveLength(1);
+	});
+
+	it('index avec une ligne tronquée : les autres restent lisibles', async () => {
+		setEnv({}, LOCAL);
+		await sendEmail('a@exemple.fr', 'Premier', '<p>1</p>');
+		await appendFile(join(dir, 'index.jsonl'), '{"date":"2026\n');
+		await sendEmail('b@exemple.fr', 'Second', '<p>2</p>');
+		expect((await readCapturedEmails(dir)).map((c) => c.subject)).toEqual(['Premier', 'Second']);
 	});
 
 	it('adresse du domaine fictif : refusée, rien de capturé', async () => {

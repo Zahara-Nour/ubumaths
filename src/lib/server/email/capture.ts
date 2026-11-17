@@ -9,9 +9,10 @@
  * navigateur, et une ligne dans `index.jsonl` que lisent les tests Playwright.
  *
  * La capture exige DEUX signes du local : l'adresse de la base Supabase est
- * `localhost` / `127.0.0.1`, et l'appli ne tourne pas sur Vercel. Au moindre
- * doute (adresse absente, illisible), c'est l'envoi réel : en prod, une
- * capture avalerait les courriels des parents sans bruit.
+ * `localhost` / `127.0.0.1` (ou le Mac mini par le tailnet, `*.ts.net`), et
+ * l'appli ne tourne pas sur Vercel. Au moindre doute (adresse absente,
+ * illisible), c'est l'envoi réel : en prod, une capture avalerait les
+ * courriels des parents sans bruit.
  *
  * `EMAIL_ENVOI_REEL=1` (dans `.env.local`) rétablit l'envoi réel en local.
  */
@@ -25,6 +26,8 @@ import { env as publicEnv } from '$env/dynamic/public';
 export const DEFAULT_CAPTURE_DIR = '.captures/courriels';
 const INDEX_FILE = 'index.jsonl';
 const LOCAL_HOSTS = new Set(['localhost', '127.0.0.1', '[::1]']);
+/** Le Mac mini joint par le tailnet (tester-sur-un-autre-appareil.md) : base locale aussi. */
+const TAILNET_SUFFIX = '.ts.net';
 
 export interface CapturedEmail {
 	date: string;
@@ -48,7 +51,8 @@ function isLocalDatabase(): boolean {
 	const url = publicEnv.PUBLIC_SUPABASE_URL;
 	if (!url) return false;
 	try {
-		return LOCAL_HOSTS.has(new URL(url).hostname);
+		const host = new URL(url).hostname;
+		return LOCAL_HOSTS.has(host) || host.endsWith(TAILNET_SUFFIX);
 	} catch {
 		return false;
 	}
@@ -70,7 +74,7 @@ function fileName(date: Date, subject: string): string {
 	const slug =
 		subject
 			.normalize('NFD')
-			.replace(/[̀-ͯ]/g, '')
+			.replace(/[\u0300-\u036f]/g, '')
 			.toLowerCase()
 			.replace(/[^a-z0-9]+/g, '-')
 			.replace(/^-|-$/g, '')
@@ -118,7 +122,14 @@ export async function readCapturedEmails(dir: string = captureDir()): Promise<Ca
 	const emails: CapturedEmail[] = [];
 	for (const line of raw.split('\n')) {
 		if (!line.trim()) continue;
-		const parsed = capturedEmailSchema.safeParse(JSON.parse(line));
+		// Ligne tronquée (écriture interrompue) : ignorée, les autres restent lisibles.
+		let value: unknown;
+		try {
+			value = JSON.parse(line);
+		} catch {
+			continue;
+		}
+		const parsed = capturedEmailSchema.safeParse(value);
 		if (parsed.success) emails.push(parsed.data);
 	}
 	return emails;
