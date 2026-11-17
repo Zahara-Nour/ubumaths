@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, PR #2747 (R1–R4) ouverte, revue faite._
+_Mis à jour le 2026-11-17, après #2747._
 
-- **État** : R1–R6 validées ; R5 en prod (#2732) ; R6 mergée (#2741), pas déployée ; **R1–R4 codées** sur `feat/mots-cliquables-r1-r4` (tests `mots-recents.test.ts`, `mots-recents-cartes.svelte.test.ts`, vérifiés rouges sans le code), bouton 40 px · **Prochaine action** : CI de #2747, merge ; puis vérification manuelle et versement (`docs/systeme/dictionnaire.md` déjà à jour) · **En attente de David** : rien · **Pièges en cours** : un nom trop ancien reste dans le motif (il occupe son texte) ; prof/visiteur : fiche au plus petit niveau, repli au plus haut (`fallbackGrade`) ; `CorrectionCard` montre l'énoncé rempli au recto, donc sans mot (N3) · **Worktree / branche** : `ubumaths-wt-mots-cliquables-r14` / `feat/mots-cliquables-r1-r4` ; `ubumaths-wt-mots-cliquables` gardé figé (serveur de test 5177)
+- **État** : R1–R6 toutes mergées (R5 #2732 en prod ; R6 #2741 et R1–R4 #2747 pas encore déployées) · **Prochaine action** : vérifications manuelles de #2741 et #2747 (`docs/wip/verifications-manuelles.md`) après `deploy:prod`, puis clôture : versement (`docs/systeme/dictionnaire.md` déjà à jour), journal archivé · **En attente de David** : vérifications manuelles ; décider si un test d'écran de la fiche prof/visiteur (question 4e + 3e) est utile · **Pièges en cours** : un nom trop ancien reste dans le motif (il occupe son texte) ; `CorrectionCard` montre l'énoncé rempli au recto, donc sans mot (N3) · **Worktree / branche** : aucun chantier ouvert ; `ubumaths-wt-mots-cliquables` (serveur de test 5177, branche R6 mergée) à retirer quand David a fini d'y tester
 
 ## Origine
 
@@ -119,3 +119,4 @@ Erreur :
 - 2026-11-17 : points de la revue de #2741 tranchés par David : écrans hybrides vus comme souris → **garder** ; bouton 32 px → **40 px** ; verso sans bouton → réglé par R2.
 - 2026-11-17 : R1–R4 codées (worktree `ubumaths-wt-mots-cliquables-r14`, le premier reste figé pour le serveur 5177) : `LinkOptions` (`recentOnly`, `auto`) dans `linker.ts`, `questionReadingGrades` (R3), `LexiconReading` dans `lexicon-context.ts`, `LexiconOff` (R2), `isCourseQuestion` passé à `provideQuestionLexicon` (R4). Anciens tests passés à des mots de 6e (R1) ; `/dev/mots-cliquables` : « aire » et « carré » marqués `{.def}`.
 - 2026-11-17 : PR #2747 ouverte ; revue `code-reviewer` : aucun bloquant ; corrigé : clé de première occurrence d'un homonyme marqué `{.def}` (sens ancien + récent), test des homonymes, commentaires.
+- 2026-11-17 : #2747 (R1–R4) mergée, CI verte ; worktree `ubumaths-wt-mots-cliquables-r14` retiré.
