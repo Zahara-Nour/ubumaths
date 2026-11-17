@@ -28,6 +28,13 @@ travail pour chacune des 5 dernières semaines (0, 1, 2-3, 4+ ; jamais le nombre
 jours), le nombre de révisions en retard, les évaluations faites ou non (**jamais la note**),
 et les liens du cahier et du cours de la classe.
 
+La régularité s'affiche en **une rangée de cases**, une par semaine, la plus ancienne à
+gauche : une ligne de la grille du professeur (`RegularityTable`, sans colonne de nom, en
+« jours de travail » et non « jours actifs »), calée à droite pour que la semaine en cours soit
+visible sur téléphone. La forme accepte jusqu'à 53 semaines (`carnetSchema`) : le carnet doit
+passer à « depuis la rentrée » (chantier `carnet-heatmap`, PR 2), après la livraison de
+l'affichage.
+
 Tout se compte depuis la rentrée **et depuis l'arrivée de l'élève** dans une classe au carnet
 (Q43 ; la plus ancienne de ses adhésions actives, `class_members.joined_at`) : ni semaine, ni
 évaluation échue d'avant son arrivée. Une évaluation sans échéance non faite reste tant
@@ -196,8 +203,10 @@ formulaire sans `Origin` de notre site (Q39).
 - `src/routes/(protected)/dashboard/teacher/classes/[classId]/carnet/__tests__/` : gardes,
   appartenance à la classe, gestes.
 - `src/routes/(public)/carnet/**/__tests__/`, `src/routes/(protected)/dashboard/student/carnet/__tests__/`.
-- `src/lib/components/carnet/__tests__/CarnetView.svelte.test.ts` : paliers, évaluations par
+- `src/lib/components/carnet/__tests__/CarnetView.svelte.test.ts` : une case par semaine
+  (ordre, palier, vacances, sans nom), rangée calée sur la semaine en cours, évaluations par
   ligne, aucune note.
+- `src/lib/validation/__tests__/carnet.test.ts` : 53 semaines au plus, palier connu seulement.
 - `tests/integration/carnet-courriels-exception.test.ts` : exceptions, épisodes, plafond,
   vacances, jeton d'un courriel, Q27, trimestriel, effacement.
 - `tests/integration/carnet-passage-quotidien.test.ts` : `runCarnetDaily` contre la base locale,

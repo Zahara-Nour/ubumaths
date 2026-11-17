@@ -188,12 +188,12 @@ test('#2724 carnet, côté élève et page du parent', async ({ page, browser })
 	await expect(page.getByText('Envoi du lien du carnet')).toBeVisible();
 	await shootPage(page, '2724-eleve');
 
-	// La page du parent de A : 5 semaines, évaluations sans note, courriels arrêtés puis repris.
+	// La page du parent de A : une case par semaine, évaluations sans note, courriels arrêtés puis repris.
 	const parent = await parentPage(browser);
 	const linkA = (await emailsTo(parents.a))[0];
 	await parent.goto(await emailLink(linkA, 'Ouvrir le carnet'));
 	await expect(parent.getByText(`Le travail de ${a.firstname} sur Chiphre.`)).toBeVisible();
-	await expect(parent.locator('li[data-level]')).toHaveCount(5);
+	await expect(parent.locator('[data-cell]')).toHaveCount(5);
 	await expect(parent.getByText(/\d+([,.]\d+)?\s*\/\s*20/)).toHaveCount(0);
 	await shootPage(parent, '2724-parent');
 	await parent.getByRole('button', { name: 'Ne plus recevoir ces courriels' }).click();
