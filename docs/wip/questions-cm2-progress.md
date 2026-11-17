@@ -6,13 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, lot 7b écrit (§ 12.4)._
+_Mis à jour le 2026-11-17, ids erronés du lot 7b retirés._
 
-- **État** : lots 0 à 7a publiés. Lot 7b (4 modèles : 138, 025, 144, 032) écrit, essayé en base locale, PR `feat/questions-cm2-lot7b` ouverte.
-- **Prochaine action** : merger la PR du lot 7b ; puis `create-questions --dir scripts/questions/cm2-7b --publier` (David, prod), migration de rangement (copie du lot 7a), page à cocher. Ensuite petit lot 8 (038, 053, 055-057), puis reclasser le § 3 (§ 12.1).
-- **En attente de David** : le `--publier` en prod après le merge.
+- **État** : lots 0 à 7a publiés. Lot 7b (138, 025, 144, 032) mergé (#2236). Le 2026-11-17, le `--publier` a trouvé les 4 « déjà en base » : le commit `ed0cd5caf6` (2026-11-04, id écrit dans les fichiers de lot) leur avait donné les ids des modèles **CM1** de même titre (`cm1-3b/07-08`, `cm1-4/03-04`). Ids retirés sur cette branche ; simulation : 4 à créer. Titres CM2 identiques aux CM1 gardés (grade et niveau les distinguent).
+- **Prochaine action** : 4 brouillons créés (`b432b38e` 138, `521c3f16` 025, `4a2edffb` 144, `03c5df14` 032) ; migration `20261117181922_questions_cm2_lot7b_rangement_tags` en PR → security-auditor, CI, merge, `db:migrate`, MCP, page à cocher. Ensuite petit lot 8 (038, 053, 055-057), puis reclasser le § 3.
+- **En attente de David** : rien. ⛔ Jamais `--mettre-a-jour` avec les anciens fichiers : il écraserait les modèles CM1.
 - **Pièges en cours** : migrations depuis #2181 : `pnpm migration:horodatage` = heure réelle UTC ; `db:migrate` refuse une migration plus ancienne que la dernière jouée → `--dry-run --include-all`, liste relue, puis `--include-all`. Worktree neuf : copier `supabase/.temp/` (lien projet) du dépôt principal. Modèle à placer avec grands nombres : `spaces: off`. Page à cocher : `line` non dessiné, à jouer dans l'aperçu. `Doc-inchangée:` dans un COMMIT. `git commit -m … -- <fichiers>`. Colonne du nœud au MCP : `question_templates.classification_node_id`.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, branche `feat/questions-cm2-lot7b`.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, branche `feat/questions-cm2-lot7b-rangement` (ids retirés commités ; à jour avec `main` au 2026-11-17).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -748,3 +748,10 @@ reclasser le § 3 (outils de la classe C maintenant en prod). Tableau du § 12 g
 - `question:specs` : 41 specs vertes, 13 000 tirages réussis. Fractions : `requiredForm: 'fraction'`, `reducedFractions: off`, `spacesFromFourDigits` (réponse `\frac{2\,812}{1\,000}`, comme le lot 6a).
 - Sonde tsx hors dépôt (parseur + `number-line-placer`), 3 000 tirages par modèle : toujours 11 graduations, chaque point à placer sur une graduation, `placerAnswer` = réponse attendue (pas `0.001` sans erreur d'arrondi), aucun `phoneGapWarning`.
 - Base locale (`create-questions --publier` avec `.env.local`, passé cette fois) ; aperçu (port 5183, fenêtre de 606 px, Chrome ne descend pas plus bas) : deux points en millièmes (35,501 ; 35,507) placés → « Juste » ; étiquettes 108/100 et 109/100 lisibles.
+- CI de #2236 : Client Tests shard 1 rouge deux fois (`wrapDynamicImport` dans `get_hooks`, 112 fichiers sur 210 chargés ; PR de JSON seuls) ; après fusion de `origin/main` (nouveau commit), verte ; **#2236 mergée**. Simulation `create-questions` (prod, dépôt principal) : 4 à créer, 0 en base.
+
+### 12.5 Lot 7b : ids erronés, brouillons, rangement (2026-11-17)
+
+- `--publier` (dépôt principal) : 4 « déjà en base, CONTENU DIFFÉRENT ». Cause : `ed0cd5caf6` (2026-11-04, id écrit dans 1 806 fichiers de lot par titre et catégorie) avait mis dans les 4 fichiers `cm2-7b` les ids des jumeaux **CM1** (`6de4ad5b`, `5b038fc8`, `06f246e4`, `3560dded`), créés entre-temps. Aucun autre dossier CM2 touché (ids en double relevés). Ids retirés ; titres CM2 gardés identiques au CM1 (David). Simulation : 4 à créer.
+- David : `--publier` depuis le worktree → `b432b38e` (138, niv. 12), `521c3f16` (025, 13), `4a2edffb` (144, 5), `03c5df14` (032, 6) ; MCP : 4 brouillons [CM2] sans nœud ni tag, `updated_at` = création ; jumeaux CM1 intacts (publiés, [CM1], rangés).
+- Migration `20261117181922_questions_cm2_lot7b_rangement_tags.sql`, copie du lot 7a ; nœuds : « droite graduée » de « Fractions : sens et écritures » (138, 025) et de « Décimaux : numération » (144, 032). Test `questions-cm2-lot7b-rangement-tags` : 9 verts ; corps remplacé par `select 1;` → 5 rouges ; fichier restauré depuis sa copie (`cmp`).
