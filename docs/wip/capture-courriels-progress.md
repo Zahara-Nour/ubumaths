@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, PR 2 en cours._
+_Mis à jour le 2026-11-17, après #2771._
 
-- **État** : PR 1 mergée (#2760). PR 2 en cours : `e2e/verifs/carnet.spec.ts`, 3 tests verts sur la base locale (#2731, #2724, #2736/#2737), rejouables à la suite ; captures téléphone dans `.captures/verifs/carnet/`.
-- **Prochaine action** : doc (`environnement-de-dev`, `tests`), page à cocher des captures, PR, CI, merge.
-- **En attente de David** : rien.
-- **Pièges en cours** : la suite ÉCRIT dans la base locale → la lancer sous verrou : `VERIFS_PORT=5181 bash scripts/with-db-lock.sh pnpm test:verifs carnet`. Serveur de dev à lancer et chauffer avant (le `webServer` de Playwright a répondu vide au 1er essai). Liens des courriels = `https://www.chiph.re/...` : le test n'en garde que le chemin.
-- **Worktree / branche** : `../ubumaths-wt-capture-courriels`, `test/capture-courriels-carnet`.
+- **État** : découpage fini. PR 1 (#2760) capture des courriels en local ; PR 2 (#2771) `e2e/verifs/carnet.spec.ts`, 3/3 verts sur la base locale (#2731, #2724, #2736/#2737), revue `code-reviewer` sans bloquant.
+- **Prochaine action** : quand David a coché la [page des captures](https://claude.ai/artifact/2qMVSgXJcc64tsiUQWWJsL) (lire ses réponses : `ArtifactData list reponses`), corriger ce qui est « À revoir », puis clore : versement (la doc durable est déjà dans `docs/pratiques/`), journal archivé.
+- **En attente de David** : la relecture des 6 fiches de captures (ligne #2771 de `verifications-manuelles.md`).
+- **Pièges en cours** : la suite ÉCRIT dans la base locale → sous verrou : `VERIFS_PORT=<port> bash scripts/with-db-lock.sh pnpm test:verifs carnet`, serveur de dev du même dossier lancé et chauffé avant. Le décor efface les limites de débit `carnet%`, renomme 3 élèves fictifs et désactive l'ancienne année scolaire de l'école (rétabli par `pnpm db:seed-riche`).
+- **Worktree / branche** : aucun (nettoyés après #2771).
 
 ---
 
@@ -50,3 +50,6 @@ Comportements proposés par Claude, David : « je te suis ».
 - Décor (`e2e/verifs/helpers/carnet.ts`, base locale seulement) : première classe active avec école et trois élèves fictifs ; remise à zéro du carnet de ses élèves, prénoms/noms inventés, consentement accordé pour A, A arrivé il y a 30 jours sans travail, année scolaire en cours si absente, limites de débit du carnet effacées, prénom + nom du prof local (`full_name` seul en local ; la page du prof signe avec prénom + nom, rempli en prod — vérifié en lecture seule).
 - Écarts rencontrés, tous du décor, aucun bug : classe d'`eleve01` inactive ; prof local sans prénom (courriel sans nom du prof) ; limite d'ajout d'adresse de l'élève (6/h) atteinte en rejouant.
 - Non couvert par les assertions (à l'œil) : lisibilité clair/sombre, barres vides discrètes ; évaluations « à venir / passées » (le décor n'en a pas) ; message trimestriel (à partir du 28 nov.).
+- Revue `code-reviewer` (Sonnet) : aucun bloquant ; corrigés : garde `.env.local` sur la base locale, journal de la tâche lu pour CE passage (valeurs numériques exigées), relance exigée à 200 avec un nouveau passage, ancre `#courriels` testée à largeur téléphone, nom de famille cherché aussi dans le HTML. Laissés : attentes négatives de 3 s (« lien perdu », ajout neutre, relance), assumées.
+- Connexion : saisie avant l'hydratation = champs vidés → attendre `networkidle` et vérifier les valeurs avant de cliquer.
+- #2771 mergée le 2026-11-17 (CI 16/16 verte).
