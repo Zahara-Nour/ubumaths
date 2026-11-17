@@ -5,17 +5,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, PR du correctif `zeros` des horloges CE (§ 21 neuvies)._
+_Mis à jour le 2026-11-17, après #2792 (§ 21 neuvies)._
 
-- **État** : lots 0 à 8a publiés, 131 points sur 171. Correctif `zeros` (2 modèles CE2) en PR. Restent 8b, 8c, 8d,
-  8e, 9 (§ 20, découpage validé § 20 bis).
-- **Prochaine action** : merge de la PR `fix/horloges-ce-zeros`, puis David lance
-  `update-published-questions.ts --lot horloges-ce-zeros --publier`, vérification au MCP ; puis lot 8b « aires et
-  angles » (086, 087, 088 ; 089, 090, 091 sans degré) : relevé des patrons, phase 0.
-- **En attente de David** : l'écriture en prod du correctif.
+- **État** : lots 0 à 8a publiés, 131 points sur 171. Correctif `zeros` des horloges CE2 écrit en prod. Restent 8b,
+  8c, 8d, 8e, 9 (§ 20, découpage validé § 20 bis).
+- **Prochaine action** : lot 8b « aires et angles » (086, 087, 088 ; 089, 090, 091 sans degré) : relevé des patrons
+  en prod (angles CE1 / CE2, aires 6e), puis phase 0 à faire valider.
+- **En attente de David** : rien. Ouvert si David le veut : « 1 h 05 min » vaut ½ point dans les durées
+  « ? h ? min » (`4c75f053` V4, `2370bc8d` V2), laissé tel quel (§ 21 neuvies).
 - **Pièges en cours** : `create-questions --publier` lancé depuis le dépôt principal écrit les ids dans SES fichiers :
   les reporter sur la branche du worktree, puis `git restore` dans le dépôt principal ; `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance (une autre session peut l'avoir fait avant : vérifier au MCP) ; `db:migrate` depuis un worktree : copier d'abord le lien `../ubumaths/supabase/.temp/` ; `create-questions` = `pnpm tsx scripts/create-questions.ts …`, refuse `theme`/`domain`/`subdomain` (ADR 0035) ; horodatage = `pnpm migration:horodatage`, puis `pnpm check:migrations --pr <n>` **juste avant le merge** ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule ; un brouillon sans nœud ne peut pas être tagué (trigger) ; le pre-commit reformate le relevé `etat-prod-*` (prettier) et laisse l'index décalé : `git diff HEAD` vide → `git restore --staged` ; le mode auto refuse `publier-lot` et `garde-niveaux-tags` (lecture de la prod), même en simulation : David les lance ; zsh ne découpe pas `$F` : un tableau `F=(…)`.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, `fix/horloges-ce-zeros`.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, détaché sur `main`, aucune branche ouverte (un id de `4-lot-11/01` d'une autre session y traîne, non commité : pas à nous).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -1705,3 +1705,5 @@ celui qui suit le modèle CE2 de même geste dans le nœud, partagé, sans renum
   `unoptimal_form zeros` ; avec, 18/18 et 18/18.
 - Lot `horloges-ce-zeros` de `update-published-questions.ts` (instantané `scripts/questions/ce-horloges-zeros/`,
   commit à part). Simulation en prod : `options` et `testSpecs` seuls. Écriture en prod : à lancer par David.
+- #2792 mergée (CI verte), branche supprimée ; worktree détaché sur `main`. `--publier` lancé par David ; vérifié au
+  MCP : `0d41a45e` et `71741618` `published`, `options.constraints.zeros: off`, 18 specs chacun.
