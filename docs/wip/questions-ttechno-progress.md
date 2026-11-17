@@ -5,13 +5,14 @@ Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) · bornes 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après #2756 (lot 0 migré en prod)._
+_Mis à jour le 2026-11-17, après #2756 (lot 0 migré en prod) et la phase 0 1GEN des lots 3 et 4._
 
 - **État** : lot 0 en prod (#2756, `20261117145436`) : 30 modèles tagués TTECHNO (17 points) + `T_TECHNO`,
   vérifié par MCP (30/30, `updated_at` intact). Avec 4ff9d049 : 31 modèles réutilisés. Les 13 « en partie »
   et les « non » attendent les lots d'écriture (jumeaux / plages, § 9).
 - **Prochaine action** : lot suivant de l'ordre du § 4 (lots d'écriture), hors lots 3 et 4.
-- **En attente de `questions-1gen`** : sa phase 0 aˣ et taux moyen ; nos lots 3 et 4 attendent.
+- **En attente de `questions-1gen`** : phase 0 aˣ / taux moyen validée (leur § 14, § 8 bis ici) ; leurs ids
+  et plages des lots 3 et 4 à leur création, puis nos tags et compléments.
 - **Pièges en cours** : un point TTECHNO par modèle (trigger) ; `grades` en `array_append` seulement ;
   worktree sans lien Supabase : `db:migrate` après copie de `supabase/.temp` du dépôt principal.
 - **Worktree / branche** : aucun (#2756 mergée ; journal sur `main`).
@@ -195,6 +196,22 @@ Message de la session `questions-1gen` ; réponse envoyée :
 - Seuils : 1GEN sans logarithme, TTECHNO-085 par le logarithme décimal → modèles distincts.
 - Points 1 et 2 du message (7 modèles sans point, `1acb6d47`) : chantier `questions-1techno`, pas celui-ci.
 
+## 8 bis. Phase 0 des lots 3 et 4 de `questions-1gen` (2026-11-17)
+
+Leur § 14 (commit e4cab938cf), validé par David : 14 modèles 1GEN (a > 0, x ⩾ 0, ni log, ni eˣ, ni dérivée).
+Lot 3, nœud « fonctions x ↦ aˣ » : E1 calculer aˣ · E2 propriétés algébriques · E3 sens de variation · E4 courbes ↔
+aˣ · E5 exposant 1/n · E6 placer des points · E7 lecture sur k·aˣ. Lot 4 : T1, T2 taux moyen · T3–T5 phénomènes
+exponentiels · T6, T7 seuils (sans log). Ordre chez eux : lot 2, puis 3, puis 4 ; ils envoient ids et plages.
+
+- **Q15 (David)** : E2 est un modèle **commun**, écrit par eux à exposants positifs (`grades ['1_GEN']`) ; après
+  leur migration nœud + tags, on fait `array_append('T_TECHNO')` + tag. On n'écrit que le complément à exposants
+  négatifs, **sans réécrire les calques eˣ** (6137a555, bd45ed7f, c24d21e1, e6b429b4). Même règle Q11 ailleurs.
+- **Rattachements TTECHNO prévus** (un point par modèle, trigger ; réponse envoyée, aucune objection) : E2 → 081 ·
+  E1 → 031 · E3 → 032 · E4 → 033 · T1 → 035 · T2 → 038. E5, E6, E7, T3–T7 : aucun point.
+- **Restent à écrire ici (lot 3)** : 034, 078, 079 (trois compléments à exposants négatifs, un par propriété ;
+  079 avec n relatif) ; a⁻ˣ = 1/aˣ (031) ; allure / sens sur ℝ (x < 0) si E3 / E4 ne suffisent pas ; 036, 080
+  (k·aˣ, k < 0). Lot 5 : 085 (seuil par le log), distinct de T6.
+
 ## 9. Lot 0 : lecture complète des candidats (2026-11-17)
 
 Relevé prod (MCP) : tous les couples (point TTECHNO STMG, modèle **publié** rangé sur le nœud du point ou une
@@ -225,7 +242,8 @@ jumeau) : 025 ← 95c38330, e67b1cbd, eca755e6, fc921674 (raison ou termes ±) ;
 a86442c1 (x⁴, x⁵), d2bca2d8 (√x, 1/x²) ; 049 ← 3fa3af6c (eˣ ⩾ 1 + x ; v2 x + a²/x est le bon exemple) ; 058 ←
 040b57c3 (démonstrations de E = np) ; 085 ← 4ee9a359 (seuil corrigé par ln) ; 059 / 061 ← 4dcbae71, 970dab52,
 ef3c495c (n > 10 calculé par l'élève, contre ltt-3).
-**Calques à réécrire** (lots 3 et 5) : 6137a555, bd45ed7f, c24d21e1, e6b429b4 (eˣ → aˣ : 034, 078, 079) ;
+**Calques à réécrire** (lots 3 et 5) : ~~6137a555, bd45ed7f, c24d21e1, e6b429b4 (eˣ → aˣ : 034, 078, 079)~~
+(annulé par Q15 de `questions-1gen`, § 8 bis) ;
 7c8b341b (ln → log : 042, 082, 083) ; 17f35a67 (ln y → log y : 052).
 
 **Points couverts après le lot 0** : 024, 026, 027, 046, 047, 048, 055, 056, 058, 059, 062–066, 068, 077 (+ 089).
