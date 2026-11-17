@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après #2735._
+_Mis à jour le 2026-11-17, PR B ouverte._
 
-- **État** : PR A (logique) mergée (#2735) : moteur commun, `tortue/niveaux.ts`, `niveau:` du parseur, réponse attendue `4e | …` · **Prochaine action** : PR B (écran) — nouveau worktree `ubumaths-wt-tortue-variables` sur `feat/tortue-variables-ecran` : boîtes à outils par niveau, `TortueEditeur` / `TortueProgramme` / `TortueCorrige` au niveau (`texteVersEtatTortue`, `etatVersTexteTortue`, `nombreDeBlocsTortue`, `lireProgrammeTortue(…, niveau)`), sélecteur « base · 4e · 3e » de `/tortue` (Q6) ; **en tête de PR B** : `départ:` n'exige plus qu'une variable lue soit mise (validé par David le 2026-11-17 : « complète le programme » ; `attendu:` garde le contrôle, `départ:` garde lisibilité + niveau), et messages d'erreur au vocabulaire tortue + `afficher` nommé · **En attente de David** : rien · **Pièges en cours** : écran pas encore au niveau → aucun modèle `niveau:` publié avant la PR B · **Worktree / branche** : aucun (supprimé après #2735)
+- **État** : PR A (logique) mergée (#2735) ; PR B (écran) en cours sur `feat/tortue-variables-ecran` : boîtes à outils par niveau, carte / corrigé / bac à sable au niveau, sélecteur « base · 4e · 3e » de `/tortue`, `départ:` sans contrôle des variables, messages au vocabulaire tortue · **Prochaine action** : CI de la PR B, merge ; puis PR C (modèles : relevé prod des points 4-067, 4-068, 3-047, 3-051, liste proposée à David — Q7) · **En attente de David** : rien · **Pièges en cours** : aucun modèle `niveau:` publié avant le merge de la PR B ; reste en suspens (revue PR A) : `1e2` lu sans niveau / refusé en 4e, `répéter 2,5 [ … ]` arrondi sans prévenir l'auteur · **Worktree / branche** : `ubumaths-wt-tortue-variables` / `feat/tortue-variables-ecran`
 
 ## Origine
 
@@ -71,3 +71,26 @@ trois` sans niveau. Reste :
 - Pour la PR B ou plus tard : en 4e / 3e, des messages de lecture citent le vocabulaire du calcul
   (`nombre`, `afficher`) ; `afficher` refusé sans nommer le bloc ; `1e2` lu sans niveau, refusé en
   4e ; `répéter 2,5 [ … ]` écrit tel quel est arrondi sans prévenir l'auteur.
+
+## PR B — écran (2026-11-17)
+
+- **Boîtes à outils** : `toolboxTortue(niveau)` (`tortue/toolbox.ts`) ; base = `TORTUE_TOOLBOX`
+  inchangée ; 4e = Tortue, Calcul (+ − × ÷), Variables (catégorie dynamique), Boucles
+  (`controls_repeat_ext` seul) ; 3e + Conditions et « répéter jusqu'à ». Catégories partagées avec
+  le calcul (`operation`, `CATEGORIE_DES_VARIABLES`, `categorieConditions` exportés de
+  `calcul/toolbox.ts`). Test : chaque bloc proposé (variables de la catégorie dynamique comprises)
+  est admis au niveau.
+- **Éditeur, carte, corrigé** : `TortueEditeur` prend `niveau` (boîte à outils, notation, tracé
+  verrouillé, noms de variables surveillés) ; `TortueProgramme` lui passe `spec.niveau` et compte
+  les blocs au niveau ; attendu en pointillés et `TortueCorrige` au niveau de la réponse attendue,
+  sinon du bloc.
+- **Bac à sable** (Q6) : sélecteur « Blocs : base · 4e · 3e » sur `/tortue` ; boîte à outils
+  changée à chaud (`updateToolbox`), blocs gardés ; « Voir en Python » au niveau de base seulement.
+- **`départ:`** : variable lue jamais mise admise (validé par David le 2026-11-17 : « complète le
+  programme ») ; `attendu:` garde le contrôle.
+- **Messages de la notation (option `tortue`)** : `afficher`, `nombre`, `résultat`, `reste de`
+  refusés à la lecture en les nommant (« « afficher » n'existe pas pour la tortue… ») ; exemples
+  `si n > 0 alors [ avancer 1 ]`, `n > 0` ; calcul inchangé.
+- **Catalogue** : clé `niveau`, exemples « polygone à n côtés (4e) » et « spirale à compléter
+  (4e) », erreur « variable sans niveau ».
+- Laissés pour plus tard (revue PR A) : `1e2`, `répéter 2,5 [ … ]` arrondi sans prévenir.

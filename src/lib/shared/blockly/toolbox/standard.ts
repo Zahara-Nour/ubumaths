@@ -1,4 +1,4 @@
-import type { TORTUE_TOOLBOX } from '../tortue/toolbox';
+import type { toolboxTortue } from '../tortue/toolbox';
 import type { toolboxCalcul } from '../calcul/toolbox';
 
 /**
@@ -554,4 +554,4 @@ export const STANDARD_TOOLBOX = {
  * Boîtes à outils connues : standard (prototype), tortue ou programme de calcul (ADR 0039).
  */
 export type ToolboxDefinition =
-	typeof STANDARD_TOOLBOX | typeof TORTUE_TOOLBOX | ReturnType<typeof toolboxCalcul>;
+	typeof STANDARD_TOOLBOX | ReturnType<typeof toolboxTortue> | ReturnType<typeof toolboxCalcul>;
