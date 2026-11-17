@@ -6,13 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, lot 7b publié._
+_Mis à jour le 2026-11-17, lot 8 écrit._
 
 - **État** : lots 0 à 7 publiés. **Lot 7 clos** (7a : 6 modèles ; 7b : 4 modèles `b432b38e`, `521c3f16`, `4a2edffb`, `03c5df14`, publiés le 2026-11-17).
-- **Prochaine action** : phase 0 du **petit lot 8** (038 relations entre fractions usuelles, 053 estimation, 055-057 opérations posées ; décision § 12.1 c) dans un nouveau worktree, à faire valider avant d'écrire. Ensuite reclasser le § 3 (outils de la classe C en prod, § 12 d).
-- **En attente de David** : rien. ⛔ Jamais `--mettre-a-jour` de `cm2-7b` avec des fichiers d'avant #2770 (ids CM1).
+- **Prochaine action** : PR des fichiers du lot 8 (`scripts/questions/cm2-8/`), merge, puis David lance `create-questions --dir scripts/questions/cm2-8 --publier` ; ensuite migration nœud + tag. Après le lot 8 : reclasser le § 3 (§ 12 d).
+- **En attente de David** : rien avant le merge. ⛔ Jamais `--mettre-a-jour` de `cm2-7b` avec des fichiers d'avant #2770 (ids CM1).
 - **Pièges en cours** : migrations depuis #2181 : `pnpm migration:horodatage` = heure réelle UTC ; `db:migrate` refuse une migration plus ancienne que la dernière jouée → `--dry-run --include-all`, liste relue, puis `--include-all`. Worktree neuf : copier `supabase/.temp/` (lien projet) du dépôt principal. Modèle à placer avec grands nombres : `spaces: off`. Page à cocher : `line` non dessiné, à jouer dans l'aperçu. `Doc-inchangée:` dans un COMMIT. `git commit -m … -- <fichiers>`. Colonne du nœud au MCP : `question_templates.classification_node_id`.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, branche `feat/questions-cm2-lot7b-rangement` mergée (#2770) : à retirer ; nouveau worktree pour le lot 8.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, branche `feat/questions-cm2-lot8`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -759,3 +759,67 @@ reclasser le § 3 (outils de la classe C maintenant en prod). Tableau du § 12 g
 - Page à cocher (4 fiches, aucune alerte) : https://claude.ai/artifact/EPw29tzZFXVERGzBottWAT.
 - Relecture de David : 4 OK sur 4, sans commentaire (`verdicts` lu et compté). `publier-lot` en simulation : 4 passent ; `garde-niveaux-tags` : aucun niveau manquant (2 378 modèles tagués).
 - David lance `publier-lot --dir scripts/questions/cm2-7b --publier` : 4/4 publiés, statut relu en base par le script. **Lot 7b clos, lot 7 clos.**
+
+## 13. Lot 8 — restes du calcul (038, 053, 055-057) : phase 0 (proposée le 2026-11-17)
+
+Décision § 12.1 c. Relevé MCP du 2026-11-17 : **aucun modèle** sur CM2-038, 053, 055, 056, 057. Jumeaux
+CM1, chacun sur le nœud du point CM2 : `2d58ce54` (CM1-037, relations 1/2, 1/4, 1, 1/10, 1/100 ;
+complète `1/2 = ?/4`, `1 − 1/4 = ?/4`…), `c08f689b` (CM1-048, estimation en case « choix » : somme de
+trois centaines, 2 ch. × 2 ch., division), `c3246792` (CM1-052, décimal × entier < 10, bloc
+` ```operation `), `4b666c28` (CM1-053, division euclidienne posée). En 6e, `26aceb03` (décimal ÷
+entier) fait poser la division **sur le brouillon** et saisir le quotient : pas le geste du CM2.
+
+Outil : le bloc ` ```operation ` (en prod) suffit, classe B confirmée. La réserve du § 3 (« saisie
+jusqu'aux centièmes ? ») est levée : `quotient: décimal` ouvre des carreaux jusqu'au **millième**,
+l'élève pose sa virgule, quotient jugé à la valeur ; multiplication : 6 chiffres en haut, 3 en bas,
+virgule du résultat posée par l'élève (`ubumark.md` § Opération posée).
+
+Bornes `cycle3.json` : 038 → 1/4, 1/2, 3/4, 1 ; 1/1 000, 1/100, 1/10, 1 ; 1/4, 1/2, 3/4 en …/10,
+…/100, …/1 000. 053 → cas simples, arrondis, `≈`, meilleure estimation parmi des puissances de 10
+(1 212 − 496 ≈ 700 ; 724 × 68 ≈ 50 000 ; 59 437 ÷ 6 ≈ 10 000). 055 → décimal × entier quelconque
+(876 × 20,8 ; 8,76 × 208). 056 → dividende entier ≤ 5 chiffres, diviseur 2..9, quotient au plus au
+centième, reste nul (785 ÷ 4 ; 9 855 ÷ 6). 057 → dividende décimal ≤ 5 chiffres, diviseur 2..9,
+arrêt au plus au centième, reste nul (148,2 ÷ 5 ; 986,3 ÷ 5).
+
+| #   | Point   | Modèle                                                                                                                                                                                                                                                                                                                                                         | Nœud, niveau                                               |
+| --- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| 1   | CM2-038 | « Relations entre fractions usuelles » : V1 1/4, 1/2, 3/4 en fractions décimales (`3/4 = ?/100` → 75 ; `1/2 = ?/1000` → 500 ; `1/4 = ?/1000` → 250) ; V2 1/1 000, 1/100, 1/10, 1 (`1/10 = ?/1000` ; `1 = ?/1000` ; `1/100 = ?/1000`) ; V3 1/4, 1/2, 3/4, 1 (`3/4 + 1/4 = ?` ; `1 − 3/4 = ?/4` ; `3/4 = 1/2 + ?/4` ; `3 × 1/4 = ?/4`) ; un nombre dans une case | Fractions : sens et écritures > égalité de fractions, 9    |
+| 2   | CM2-053 | « Estimer le résultat d'une opération », case « choix », 4 propositions : V1 4 ch. − 3 ch., arrondis à la centaine (1 212 − 496 ≈ 700 ; leurres ×10, ÷10, ±100) ; V2 3 ch. × 2 ch. (724 × 68 ≈ 700 × 70) ; V3 5 ch. ÷ 1 ch. (59 437 ÷ 6 ≈ 60 000 ÷ 6) ; V2 et V3 : leurres = la bonne × 10, ÷ 10, × 100 (puissances de 10)                                     | Décimaux : numération > arrondis et ordres de grandeur, 10 |
+| 3   | CM2-055 | « Poser la multiplication d'un nombre décimal par un entier » (` ```operation `) : V1 entier de 2-3 chiffres × décimal à une décimale (876 × 20,8) ; V2 décimal à deux décimales × entier de 2-3 chiffres (8,76 × 208) ; dernier chiffre du produit ≠ 0                                                                                                        | Décimaux : calculs > multiplication, 10                    |
+| 4   | CM2-056 | « Poser une division décimale : dividende entier » (`quotient: décimal`) : V1 quotient au dixième (9 855 ÷ 6 = 1 642,5) ; V2 au centième (785 ÷ 4 = 196,25) ; dividende de 3 à 5 chiffres, reste nul, quotient non entier                                                                                                                                      | Décimaux : calculs > division, 9                           |
+| 5   | CM2-057 | « Poser une division décimale : dividende décimal » : V1 quotient au rang du dividende (45,36 ÷ 4 = 11,34 ; 2,45 ÷ 7 = 0,35) ; V2 un zéro à ajouter (148,2 ÷ 5 = 29,64) ; ≤ 5 chiffres, diviseur 2..9, reste nul                                                                                                                                               | Décimaux : calculs > division, 10                          |
+
+Corrigés : 1 → « un quart, c'est 25 centièmes », « un dixième, c'est 100 millièmes » (V3 comme
+`2d58ce54`) ; 2 → on arrondit chaque nombre, on calcule, on garde la puissance de 10 la plus
+proche ; 3 → comme `c3246792` (poser sans la virgule, compter les décimales) ; 4, 5 → potence
+résolue par le bloc, plus « on ajoute un zéro après la virgule pour continuer », « la virgule du
+quotient se pose quand on abaisse le premier chiffre après la virgule ». Erreurs typiques en
+`testSpecs` : 1/4 = 25/1 000, 1/2 = 5/100 ; leurre « × 10 » choisi ; virgule mal placée (87,6 ×
+20,8 compté une décimale de trop), décimales des deux facteurs non réunies ; division arrêtée au
+reste (1 642 au lieu de 1 642,5), virgule oubliée (19 625).
+
+Niveaux : max + 1 sur chaque nœud (égalité de fractions 8 → 9 ; arrondis 9 → 10 ; multiplication
+9 → 10 ; division 8 → 9, 10).
+
+**Question d'accès** : 5 brouillons neufs, puis nœud + tag → personne ne lit rien de plus avant la
+publication.
+
+**À trancher** : (a) 056 : seuls 2, 4, 5, 6, 8 donnent un quotient décimal non entier avec un
+dividende entier (3, 7, 9 ne s'arrêtent jamais au centième) ; 6 n'a que des quotients en ,5 → V1.
+D'accord pour tirer le diviseur dans {2, 4, 5, 6, 8} ? (b) 038 V3 reprend en partie le CM1 (`1 −
+1/4`) : la garder (révision) ou la limiter aux relations avec 3/4 ? (c) 053 V1 (soustraction) :
+leurres ×10, ÷10, ±100 comme au CM1, ou puissances de 10 seules comme V2-V3 ? (d) un seul lot de 5
+modèles (reco), ou 038 + 053 d'un côté, opérations posées de l'autre ?
+
+### 13.1 Lot 8 : décisions (David, 2026-11-17)
+
+Recommandations suivies (« je te suis ») : (a) 056, diviseur dans {2, 4, 5, 6, 8} (6 en V1 seulement) ;
+(b) 038 V3 gardée, avec 3/4 ; (c) 053 V1, leurres du CM1 (× 10, ÷ 10, ± 100) ; (d) un seul lot de 5
+modèles. Tableau du § 13 gardé.
+
+### 13.2 Lot 8 : écriture (2026-11-17)
+
+- `docs/wip/questions/lot-cm2-8.py` → `scripts/questions/cm2-8/` (5 modèles) ; `create-questions` en simulation : 5 à créer, 37 specs vertes ; `question:specs --instances 200` : 2 600 tirages réussis, aucun `\textcolor` hors `$`.
+- Variable `e` refusée (constante d'Euler) : `f` pour l'écart de l'estimation par division.
+- Base locale : 5 brouillons créés, joués dans l'aperçu admin (division 43 713 ÷ 6 saisie 7285,5 → juste, correction lisible ; 1 − 1/2 = ?/4 ; estimation 4 980 − 293 en case « choix » ; 212 × 60,8 posé). Fichiers réécrits par le script ensuite (ids locaux retirés).
+- Aperçu : le serveur de dev doit écouter sur `127.0.0.1` (`--host 127.0.0.1`) ; l'extension Chrome refuse `[::1]`.
