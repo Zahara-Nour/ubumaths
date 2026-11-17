@@ -5,17 +5,17 @@ Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) · bornes 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après la publication du lot 2a (§ 16)._
+_Mis à jour le 2026-11-17, lot 2b écrit (§ 17), PR ouverte._
 
-- **État** : lots 0, 1 et 2a en prod et publiés (2a : 8/8 relus OK, publiés par David).
-- **Prochaine action** : lot 2b (Python, P1–P3, § 12), dans un worktree `questions-ttechno-lot2b`.
+- **État** : lots 0, 1 et 2a en prod et publiés. Lot 2b (P1–P3, Python) écrit, PR des fichiers ouverte.
+- **Prochaine action** : CI verte → merge ; David lance `create-questions --publier` sur
+  `scripts/questions/ttechno-2b-python` ; puis migration nœud + tag (030, 075, 076), page à cocher, publication.
 - **`questions-1gen`** : lot 3 (aˣ) **publié** ; E1–E4 à lire contre nos bornes puis taguer (§ 15). Par défaut, un
   seul lot de tags avec T1 → 035 et T2 → 038 du lot 4 (pas encore écrit, ids promis par `questions-1gen`).
 - **En attente de David** : tags E1–E4 maintenant (PR à part) ou avec le lot 4 (défaut) ?
-- **Pièges en cours** : un point TTECHNO par modèle (trigger) ; `grades` en `array_append` seulement ; Chrome
-  piloté = choisir celui du Mac mini (`switch_browser`), serveur en `--host 127.0.0.1` ; `publier-lot.ts` et
-  `garde-niveaux-tags.ts` lisent la prod : David les lance (`!`), le classifieur me les refuse.
-- **Worktree / branche** : aucun.
+- **Pièges en cours** : un point TTECHNO par modèle (trigger) ; `grades` en `array_append` seulement ;
+  `publier-lot.ts`, `garde-niveaux-tags.ts`, `create-questions --publier` visent la prod : David les lance (`!`).
+- **Worktree / branche** : `../ubumaths-wt-questions-ttechno-lot2b` · `feat/questions-ttechno-lot2b`.
 
 ## 1. Périmètre
 
@@ -451,3 +451,18 @@ chez nous, [0 ; +∞[ chez eux → complément x < 0 si besoin), puis tags + `ar
 - `publier-lot.ts --dir scripts/questions/ttechno-2a-suites` : simulation verte, puis `--publier` par David :
   **8/8 publiés**, statut relu en base.
 - `questions-1gen` : lot 3 publié (7/7) ; ids E1–E4 confirmés (031, 081, 032, 033), lot 4 à venir.
+
+## 17. Lot 2b : écriture (2026-11-17)
+
+`docs/wip/questions/lot-ttechno-2b.py` → `scripts/questions/ttechno-2b-python/` (3 fichiers, 44 specs).
+
+- P1 (030) carrés, P2 (075) cubes : accumulateur (choix), bornes de `range` (choix), valeur renvoyée (case).
+  `range(n + 1)` est **juste** pour les carrés et les cubes (0² = 0³ = 0) → jamais proposé en distracteur.
+- P3 (076) inverses : idem, valeur **exacte** en fraction (Python affiche un décimal, la correction le dit) ;
+  v3 « Lucas » : `range(n + 1)` → division par zéro au premier tour (`ZeroDivisionError`).
+- Rang de la bonne proposition varié (1, 2, 2, 0, 3, 1, 2) ; `melanger: non`.
+- Simulation `create-questions` verte (base locale) ; `question:specs` 3/3 importables, 0 `\textcolor` hors `$` ;
+  32 formules distinctes de 40 aperçus par modèle à `validateLatex` + accolades : 0 problème.
+- Corrigé en route : `\textcolor` hors `$` (P3 v3) → gras ; « 1, …, 2 » pour n = 2 → « de 1 à n ».
+- Base locale : 3 brouillons créés (copie des fichiers) ; aperçu admin (Chrome, `127.0.0.1:5176`) : bloc Python
+  rendu, P3 v2 `5/6` refusé « Faux » (11/6 attendu), P3 v0 choix D « coché, juste ».
