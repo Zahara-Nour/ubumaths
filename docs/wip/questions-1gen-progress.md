@@ -338,3 +338,10 @@ avec les ids écrits en tête des fichiers (commit 1487a0f73). Relevé en prod :
 - **Question d'accès**, posée à David le 2026-11-17 AVANT le SQL : « qui pourra lire quoi, qu'il ne pouvait pas lire
   avant ? ». Réponse de David le 2026-11-17 : **personne**. Les modèles restent des brouillons, ils sont seulement
   rangés et tagués ; les élèves ne les voient qu'après la publication par David.
+
+## 12. Lot 1 : migration nœud + tags (2026-11-17)
+
+`20261117142038_questions_1gen_lot1_rangement_tags.sql` (calquée sur `20261026210000`, lot C du CP) +
+`tests/integration/questions-1gen-lot1-rangement-tags.test.ts`. Relevé MCP avant le SQL : les 5 brouillons toujours
+sans nœud, 0 tag, `grades` `['1_GEN']` ; les 5 points sur les nœuds du § 11. Test rouge sans le corps (5 / 9 en
+échec), 9 / 9 vert avec. `grades` non touché. Rollback à jouer avant que questions-1techno ait tagué G1, G4, G5.
