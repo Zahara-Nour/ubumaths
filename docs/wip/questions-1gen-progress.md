@@ -476,6 +476,10 @@ Nos modèles tiennent dans ses bornes (a > 0, x ⩾ 0 est un cas de ses x réels
 son `array_append('T_TECHNO')` et ses tags après notre migration nœud + tags. Lui envoyer cette phase 0 dès sa
 validation, puis les ids des brouillons.
 
+**Réponse de questions-ttechno (2026-11-17)** : aucune objection. Un seul point TTECHNO par modèle : E1 → 031,
+E2 → 081 seul, E3 → 032, E4 → 033, T1 → 035, T2 → 038 ; E5, E6, E7 sans point TTECHNO. Ses compléments couvrent
+034, 078, 079 (exposants négatifs), 036, 080 (k < 0). Lui envoyer ids et plages de chaque lot à leur création.
+
 **Question d'accès** (migrations nœud + tags de chaque lot) : personne ne lit rien de nouveau ; brouillons rangés et
 tagués, visibles des élèves seulement après publication par David.
 
