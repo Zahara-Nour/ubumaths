@@ -5,17 +5,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, lot 7 créé en prod, migration nœud + tags écrite (§ 19 quater)._
+_Mis à jour le 2026-11-17, après #2759 (§ 19 quinquies)._
 
 - **État** : lots 0 à 6 ter publiés (114 points sur 171). Lot 7 « données » : 13 brouillons en prod (#2751), migration
-  `20261117165426` (13 rangés, 13 tags) en PR #2759.
-- **Prochaine action** : PR mergée → David lance `db:migrate` ; vérifier au MCP ; page à cocher
-  (`page-a-cocher.ts --dir scripts/questions/cm1-7`) ; publication.
-- **En attente de David** : `db:migrate` après le merge ; décider du sort des 4 variations CE1 / CE2 dont le total
+  `20261117165426` (13 rangés, 13 tags) (#2759 mergée, migrée).
+- **Prochaine action** : relecture de la page à cocher https://claude.ai/artifact/94MF9SuHHDq8Jaa9hkBSLq
+  (`verdicts`), puis publication (`publier-lot`, lancé par David).
+- **En attente de David** : la relecture ; décider du sort des 4 variations CE1 / CE2 dont le total
   affiché donne la réponse (§ 19 ter).
 - **Pièges en cours** : `create-questions --publier` lancé depuis le dépôt principal écrit les ids dans SES fichiers :
   les reporter sur la branche du worktree, puis `git restore` dans le dépôt principal ; `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance (une autre session peut l'avoir fait avant : vérifier au MCP) ; `db:migrate` depuis un worktree : copier d'abord le lien `../ubumaths/supabase/.temp/` ; `create-questions` = `pnpm tsx scripts/create-questions.ts …`, refuse `theme`/`domain`/`subdomain` (ADR 0035) ; horodatage = `pnpm migration:horodatage`, puis `pnpm check:migrations --pr <n>` **juste avant le merge** ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule ; un brouillon sans nœud ne peut pas être tagué (trigger) ; le pre-commit reformate le relevé `etat-prod-*` (prettier) et laisse l'index décalé : `git diff HEAD` vide → `git restore --staged` ; le mode auto refuse `publier-lot` et `garde-niveaux-tags` (lecture de la prod), même en simulation : David les lance ; zsh ne découpe pas `$F` : un tableau `F=(…)`.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, branche `feat/questions-cm1-lot7-rangement`.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, aucune branche ouverte.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -1526,3 +1526,13 @@ geste dans le nœud, partagé, sans renuméroter.
   (diff avec la 6 ter : données, compteurs, préfixe `_qcm1l7_` ; rangement sur la notion pour CM1-122 vérifié ;
   état « avant » remesuré au MCP).
 - PR #2759 ouverte.
+- #2759 mergée (CI verte après `Doc-inchangée:` dans un commit, `check:migrations --pr 2759` passé), branche
+  supprimée.
+
+### 19 quinquies. Lot 7 — migration passée, page à cocher (2026-11-17)
+
+- `db:migrate` lancé par David. Vérifié au MCP : `20261117165426` dans `schema_migrations` ; 13 brouillons CM1,
+  chacun sur son nœud avec son tag (tableaux 120, 121, 169 ; double entrée 137, 170 ; barres 138, 171, 135 ; courbes
+  et repères 139, 172, 136 ; notion « Représenter des données » 122 ×2).
+- `page-a-cocher.ts --dir scripts/questions/cm1-7` : 13 fiches (38 exemples), aucune alerte. Page :
+  https://claude.ai/artifact/94MF9SuHHDq8Jaa9hkBSLq (`verdicts`, capacité `db`, vide).
