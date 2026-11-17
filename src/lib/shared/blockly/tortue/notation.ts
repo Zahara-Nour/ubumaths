@@ -15,6 +15,7 @@
 
 import { lirePiles, nombreDeTours, premierBlocInconnu, valeur, type BlocLu } from './interpreteur';
 import { MAX_ANSWER_LENGTH } from '$lib/questions/submission';
+import { ecrireSansExposant, messageExposant } from '../nombres';
 
 // =============================================================================
 // Types
@@ -48,8 +49,8 @@ export const LONGUEUR_MAX_PROGRAMME = MAX_ANSWER_LENGTH - 1;
 /** Répétitions imbriquées au plus. */
 const PROFONDEUR_MAX = 50;
 
-/** Nombre écrit : entier ou décimal (virgule ou point), signe et exposant admis. */
-const NOMBRE = /^-?\d+(?:[.,]\d+)?(?:e[+-]?\d+)?$/i;
+/** Nombre écrit : entier ou décimal (virgule ou point), signe admis ; jamais d'exposant (`1e2`). */
+const NOMBRE = /^-?\d+(?:[.,]\d+)?$/;
 
 /** Instructions sans nombre, forme normalisée → type de bloc. */
 const INSTRUCTIONS_SEULES: Record<string, string> = {
@@ -80,7 +81,7 @@ const ECRITURES: Record<string, string> = {
 // =============================================================================
 
 function ecrireNombre(nombre: number): string {
-	return String(nombre || 0).replace('.', ',');
+	return ecrireSansExposant(nombre);
 }
 
 function ecrirePile(bloc: BlocLu | undefined): string[] {
@@ -91,7 +92,12 @@ function ecrirePile(bloc: BlocLu | undefined): string[] {
 		if (courant.type === 'controls_repeat' || courant.type === 'controls_repeat_ext') {
 			const contenu = ecrirePile(courant.entrees.DO);
 			const corps = contenu.length > 0 ? ` ${contenu.join(' ; ')} ` : ' ';
-			instructions.push(`répéter ${nombreDeTours(courant)} [${corps}]`);
+			// Nombre de tours d'une entrée valeur écrit tel quel : non entier, la relecture le refuse
+			const fois =
+				courant.type === 'controls_repeat_ext'
+					? ecrireNombre(valeur(courant.entrees.TIMES))
+					: String(nombreDeTours(courant));
+			instructions.push(`répéter ${fois} [${corps}]`);
 		} else if (courant.type === 'tortue_avancer' || courant.type === 'tortue_reculer') {
 			instructions.push(
 				`${ECRITURES[courant.type]} ${ecrireNombre(valeur(courant.entrees.VALEUR))}`
@@ -212,6 +218,9 @@ export function texteVersEtat(texte: string): EtatLu {
 		const normalises = mots.map(normaliser);
 		const sansNombre = normalises.slice(0, -1).join(' ');
 		const nombre = lireNombre(normalises.at(-1));
+
+		const exposant = messageExposant(mots.at(-1) ?? '');
+		if (exposant) throw new TexteIllisible(exposant);
 
 		const seule = INSTRUCTIONS_SEULES[normalises.join(' ')];
 		if (seule) return { type: seule };
