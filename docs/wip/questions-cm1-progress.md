@@ -5,15 +5,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-16, lot 6 ter écrit (§ 18 ter)._
+_Mis à jour le 2026-11-17, lot 6 ter : migration nœud + tags en PR (§ 18 quater)._
 
-- **État** : lots 0 à 6 bis publiés (109 points sur 171). Lot 6 ter « algèbre » (062-066) : 8 modèles écrits,
-  PR des fichiers ouverte (branche `feat/questions-cm1-lot6ter`).
-- **Prochaine action** : CI verte → merge ; puis David lance `create-questions --publier` (8 brouillons), commit des
-  ids, migration nœud + tags (gabarit `lot-cm1-6bis-rangement.py`).
-- **En attente de David** : rien avant le merge ; ensuite `create-questions --publier`.
-- **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance (une autre session peut l'avoir fait avant : vérifier au MCP) ; `db:migrate` depuis un worktree : copier d'abord le lien `../ubumaths/supabase/.temp/` ; `create-questions` = `pnpm tsx scripts/create-questions.ts …`, refuse `theme`/`domain`/`subdomain` (ADR 0035) et les homonymes titre + niveau ; horodatage = `pnpm migration:horodatage`, puis `pnpm check:migrations --pr <n>` **juste avant le merge** ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule et le type `content` ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` ; **jamais de `{{if}}` dans une réponse attendue** ; un brouillon sans nœud ne peut pas être tagué (trigger) ; aperçu : corrigé derrière « Voir la correction » (Playwright à 390 px). Les ids écrits par `--publier` depuis le dépôt principal y restent en fichiers modifiés : les commiter sur la branche du lot, puis les restaurer dans le dépôt principal (identiques à `origin/main`).
-- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, branche `feat/questions-cm1-lot6ter`.
+- **État** : lots 0 à 6 bis publiés (109 points sur 171). Lot 6 ter « algèbre » (062-066) : #2734 mergée, 8 brouillons
+  créés en prod (ids commités), migration `20261117113333_questions_cm1_lot6ter_rangement_tags` en PR (branche
+  `feat/questions-cm1-lot6ter-rangement`).
+- **Prochaine action** : CI verte, `check:migrations --pr <n>`, merge ; David lance `db:migrate` ; vérifier au MCP ;
+  page à cocher (`page-a-cocher.ts --dir scripts/questions/cm1-6ter`) ; puis `publier-lot`.
+- **En attente de David** : `db:migrate` après le merge.
+- **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance (une autre session peut l'avoir fait avant : vérifier au MCP) ; `db:migrate` depuis un worktree : copier d'abord le lien `../ubumaths/supabase/.temp/` ; `create-questions` = `pnpm tsx scripts/create-questions.ts …`, refuse `theme`/`domain`/`subdomain` (ADR 0035) ; horodatage = `pnpm migration:horodatage`, puis `pnpm check:migrations --pr <n>` **juste avant le merge** ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule ; un brouillon sans nœud ne peut pas être tagué (trigger) ; le pre-commit reformate le relevé `etat-prod-*` (prettier) et laisse l'index décalé : `git diff HEAD` vide → `git restore --staged`.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, branche `feat/questions-cm1-lot6ter-rangement`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -1390,3 +1391,16 @@ créé.
   session a remis la base à zéro juste après ma première création, mes 8 brouillons ont disparu sans un mot. Aperçu
   admin à 390 px (Playwright, onglet « Flash-card » puis « Voir la correction ») : balances, schémas, Scratch, suites,
   motifs et choix rendus correctement. Piège zsh : `$ids` ne se découpe pas, écrire `${=ids}`.
+
+### 18 quater. Lot 6 ter — création en prod et rangement (2026-11-17)
+
+- #2734 mergée. `create-questions --dir scripts/questions/cm1-6ter --publier` lancé par David : 8 brouillons CM1
+  (vérifiés au MCP : draft, niveau 1, sans nœud ni tag) ; ids commités sur `feat/questions-cm1-lot6ter-rangement`.
+- Relevé `etat-prod-2026-11-17-cm1-6ter/` (`releve-prod-cm1.ts`), script `lot-cm1-6ter-rangement.py` (gabarit 6 bis)
+  → migration `20261117113333_questions_cm1_lot6ter_rangement_tags` + fixture : 8 rangés sous « Algèbre › Premiers pas
+  algébriques » (nombre inconnu : b28c7f78, 98f558e4 → 062, c4011427 → 063 ; programmes de calcul : 2d7d0e63 → 064 ;
+  suites de motifs : b47f2699, e59976bf → 065, 37dd213b, ac5fcd5c → 066), 8 tags posés, aucun niveau ni statut
+  changé.
+- Test `questions-cm1-lot6ter-rangement-tags.test.ts` : 20/20 vert ; corps neutralisé (`select 1;`) : 9 échecs + suite
+  principale sautée. `types:cliquet` tenu ; `security-auditor` : aucun finding (diff avec la 6 bis : données,
+  compteurs, préfixe `_qcm1l6t_` ; état « avant » remesuré au MCP).
