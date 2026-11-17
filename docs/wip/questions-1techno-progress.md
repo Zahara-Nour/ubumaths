@@ -12,10 +12,10 @@ _Mis à jour le 2026-11-17, après #2764 (83b1f614 v3 en prod)._
 
 - **État** : T1, T2, lot 0, lot G, **83b1f614 v3** en prod (#2743, #2748, #2753, #2758, #2764). 83b1f614 : corrigé
   de v3 par racines évidentes, migration jouée et vérifiée en prod (§ 19).
-- **Prochaine action** : lot 2 commun (§ 20) : ids reçus de questions-1gen → page à cocher R2, R3, R4, puis migration
-  `array_append('1_TECHNO')` + tags 044 / 117 / 119 (gabarit du lot G, § 17 ; modèles en BROUILLON). Ensuite lots
-  d'écriture (§ 5, 9), lot 1 « suites géométriques » d'abord (moins 036, 038, 049).
-- **En attente de David** : rien.
+- **Prochaine action** : lot 2 commun (§ 20, 21) : lire les verdicts de la page à cocher R2, R3, R4, puis migration
+  `array_append('1_TECHNO')` + tags 044 / 117 / 119 sur les « OK » (gabarit du lot G, § 17 ; modèles en BROUILLON).
+  Ensuite lots d'écriture (§ 5, 9), lot 1 « suites géométriques » d'abord (moins 036, 038, 049).
+- **En attente de David** : verdicts de la page à cocher R2, R3, R4 (§ 21).
 - **Pièges en cours** : un point par programme (trigger) ; `grades` en `array_append`/`array_remove` seulement ;
   worktree neuf → `pnpm exec svelte-kit sync` avant un script `tsx` ; export prod : `env $(grep … .env)` (sinon
   `.env.local` = base locale) ; commitlint refuse « T1 » en début de sujet ; CI : le cliquet peut être coupé à 20 min ; `Doc-inchangée:` dans un COMMIT (pas la PR) pour une migration ; `db:migrate` « inserted before » → `--dry-run --include-all`.
@@ -451,3 +451,11 @@ sur « Suites > Généralités sur les suites > représentation graphique », en
 (1 à 4). R3 : 5 variations (explicite, récurrence, croissante / décroissante, bactéries) ; R4 : 6 (u₀ et q, u_k,
 sens croissante, sens décroissante, dépasse, passe sous). Ordre convenu : **page à cocher d'abord**, puis notre
 migration. Leur rollback n'est valable qu'avant nos tags.
+
+## 21. Lot 2 commun : page à cocher (2026-11-17)
+
+Relevé prod (MCP) : 96668141, 13388e8f, e8f08a19 en **brouillon**, `grades = {1_GEN}` (3, 5 et 6 variations).
+Instantanés (`export-question-templates.ts`) dans le scratchpad, à copier dans `scripts/questions/1techno-r/` sur la
+branche de la migration. Page à cocher : https://claude.ai/artifact/LbvfzTA9MAxfVfQsfyyJUF (capacité `db`,
+collection `verdicts` vide au départ ; 14 exemples, chacun avec son nuage dessiné ; aucune alerte). Point affiché =
+le point 1GEN ; le point 1TECHNO visé est dans l'intro (R2 → 044, R3 → 117, R4 → 119).
