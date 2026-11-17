@@ -5,11 +5,13 @@ Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) · bornes 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, à l'ouverture (relevé fait, aucune PR)._
+_Mis à jour le 2026-11-17, après les décisions Q1 à Q6 et la recherche de doublons (§ 6)._
 
-- **État** : relevé et classement faits (§ 1 à 4) ; rien d'écrit en base ni en fichiers de modèles.
-- **Prochaine action** : réponses de David aux questions du § 5, puis phase 0 du lot 1.
-- **En attente de David** : Q1 à Q6 (§ 5).
+- **État** : relevé, classement, recherche de doublons faits (§ 1 à 6) ; Q1 à Q6 tranchées (§ 5) ; rien
+  d'écrit en base ni en fichiers de modèles.
+- **Prochaine action** : lot 0 — vérifier chaque jumeau variation par variation contre les bornes, puis
+  migration de tags.
+- **En attente de David** : rien.
 - **Pièges en cours** : aucun modèle « jumeau » n'est encore vérifié variation par variation contre les
   bornes de Tle techno (pas de e, pas de ln, pas de factorielle, pas de variance) ; le tag ne se pose
   qu'après cette vérification.
@@ -19,7 +21,7 @@ _Mis à jour le 2026-11-17, à l'ouverture (relevé fait, aucune PR)._
 
 - STMG = niveau **`T_TECHNO`** : programme **commun** à toute la voie technologique (BO 2026), 92 points.
 - Les 17 points « Activités géométriques (série STD2A) » sont **hors STMG** : TTECHNO-001 à 014, 070, 071,
-  072 (coniques, perspective centrale). → **75 points** pour la STMG (sous réserve de Q1).
+  072 (coniques, perspective centrale). → **75 points** pour la STMG (Q1 tranchée).
 
 ## 2. Relevé MCP prod (2026-11-17, lecture seule)
 
@@ -126,3 +128,42 @@ centrale STD2A, hors périmètre ; elle n'est pas dans `outils-manquants.md`).
 - **Q5 — Python / tableur** (030, 075, 076, 077, 053, 054, 066) : même forme que les modèles Python de
   1re spé (compléter ou lire un programme, réponse en case) ? (reco : oui.)
 - **Q6 — Ordre des lots** : celui du § 4 (lot 0 d'abord, il couvre 31 points sans écrire un modèle) ?
+
+### Décisions (David, 2026-11-17)
+
+« Je te suis » : **Q1 à Q6 tranchées selon les recommandations** — STD2A hors périmètre ; jumeaux réutilisés
+par tag + niveau `T_TECHNO` (accès élargi aux classes de Tle techno, personne ne perd rien) ; eˣ / ln
+réécrits en base a / log dans des modèles neufs, originaux intacts ; points 069, 090, 091 en lecture d'un
+graphique fourni ; Python et tableur sous la forme des modèles Python de 1re spé ; ordre du § 4, lot 0
+d'abord.
+
+## 6. Recherche de doublons hors des sous-notions (2026-11-17)
+
+David : « as-tu regardé les modèles déjà faits pour les 1re, terminales spécialités maths ? ». Le § 2 ne
+regardait que les modèles rangés sur le **nœud** d'un point TTECHNO. Recherche élargie : **tous** les
+modèles (publiés et brouillons, tous niveaux), par mots-clés du titre (indice, base 100, log, moyenne
+géométrique / arithmétique, taux moyen, évolutions successives, puissance, exponentielle, inverse,
+asymptote, Pascal, binomiale, bâtons, changement de variable, ajustement, somme, Σ, inégalité, inéquation,
+isoler, intercaler, taux, pourcentage, coefficient multiplicateur), puis contenu (variations + parties
+communes) sondé pour e / ln, log, Python.
+
+Résultats :
+
+- **Aucun modèle** en logarithme décimal (`\log` absent partout), sur l'indice base 100, la moyenne
+  géométrique de deux nombres, le taux d'évolution moyen, Σ, la fonction aˣ de base quelconque. Les lots
+  1 à 5 du § 4 ne doublonnent rien.
+- **Contenu en e / ln** (donc hors bornes, non réutilisables) : `f1963ef2` (seuil qⁿ par le logarithme,
+  TCOMP-239 — même idée que TTECHNO-085, à réécrire en log), `22141fa4` (évolution exponentielle et suite
+  géométrique), `f40e8a4a` (reconnaître la courbe d'une exponentielle), `245b4eb1` (décroissance
+  exponentielle), `8ce83078` (inégalité arithmético-géométrique, TSPE).
+- **Corrections du § 2** : `96d19805` (somme des n premiers carrés) et `9eac8754` (cubes) n'ont **pas** de
+  Python → ils ne couvrent pas TTECHNO-030 / 075 (formules seules) ; retirés des jumeaux. `e4eaaf16`
+  (calculer une somme de termes avec Python, 1SPE-380) est, lui, en Python → candidat pour 030 / 077.
+- **Voisins utiles, pas des doublons** (2de, à citer comme prérequis, pas à taguer) : évolutions
+  successives et coefficient multiplicateur (`36abc642`, `8b59ca4b`, `bbd511cb`…), première puissance qui
+  dépasse un seuil en Python (`bcc687bb`), inéquation graphique 1/x < k (`2d4c0b35`), ajouter / multiplier
+  des inégalités (`57585d68`, `d15b096f`).
+- **Brouillons 1re spé** : `252e85d9`, `e2743a04`, `7f63ea6b` (questions de cours sur les sommes) —
+  non publiés, à ne pas doublonner si le lot 2 fait des questions de cours.
+- Sonde « factorielle » trop bruitée (le `!` du texte) : la vérification des coefficients binomiaux sans
+  factorielle se fait variation par variation au lot 0.
