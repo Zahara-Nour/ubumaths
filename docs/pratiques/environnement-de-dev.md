@@ -1,5 +1,6 @@
 ---
 couvre:
+  - src/lib/server/email/capture.ts
   - '.github/workflows/**'
   - .github/dependabot.yml
   - '.husky/*'
@@ -139,6 +140,17 @@ copiée, **jamais de données d'élèves en local** (`scripts/db-seed-riche/inde
   `deploy:prod` n'y est plus soumis (décision de David, 2026-10-10) : la règle vit dans CLAUDE.md.
 - Agents : [.claude/agents/README.md](../../.claude/agents/README.md). Skills du projet
   (`.claude/skills/`) et skills personnels (`~/.claude/skills/`) : [skills-claude.md](skills-claude.md).
+
+### Courriels en local : capturés, jamais envoyés
+
+`.env` porte la clé Brevo de prod. Sur la **base locale** (adresse Supabase `localhost`,
+`127.0.0.1` ou le Mac mini par le tailnet `*.ts.net`, hors Vercel), `sendEmail` n'appelle pas Brevo : chaque courriel est écrit dans
+`.captures/courriels/` (ignoré par git), un `.html` à ouvrir dans le navigateur (et un `.txt`),
+plus une ligne dans `index.jsonl` (date, destinataire, sujet, fichier, en-têtes). Les tests
+Playwright y lisent les liens (`readCapturedEmails`). L'appli voit un envoi réussi, et le service
+de courriel compte comme configuré même sans clé. `EMAIL_ENVOI_REEL=1` dans `.env.local` envoie
+pour de vrai ; `EMAIL_CAPTURE_DIR` change le dossier. Base distante (worktree sans `.env.local`)
+→ envoi réel. Le dossier ne se vide jamais seul. Code : `src/lib/server/email/capture.ts`.
 
 ## GitHub
 
