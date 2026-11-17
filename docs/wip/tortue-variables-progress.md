@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après #2755._
+_Mis à jour le 2026-11-17, après la publication des 4 modèles._
 
-- **État** : PR A (#2735), B (#2742), C (#2746), D (#2755) mergées ; migration `20261117140132` appliquée en prod (vérifiée MCP : 4 brouillons sur le nœud de leur point, 4 tags) · **Prochaine action** : après le `deploy:prod` de David, publier les 4 modèles (25991652, 81bacf03, a0b27395, d64ddd78) ; puis clore le chantier (versement dans `docs/systeme/blockly.md`, journal archivé) · **En attente de David** : `deploy:prod` · **Pièges en cours** : écran tortue 4e / 3e pas en prod avant `deploy:prod` ; en suspens (revue PR A) : `1e2`, `répéter 2,5` ; `db:migrate` pousse TOUTES les migrations de `main` en attente (celles de questions-1techno et questions-1gen sont parties avec la nôtre) · **Worktree / branche** : aucun (supprimé après #2755)
+- **État** : PR A (#2735), B (#2742), C (#2746), D (#2755) mergées, livrées par `deploy:prod` (0.93.0) ; 4 modèles publiés par David (`publier-lot --publier`), vérifiés `published` (MCP) · **Prochaine action** : clore le chantier (versement dans `docs/systeme/blockly.md`, ligne de `outils-manquants.md`, journal archivé) · **En attente de David** : `1e2` et `répéter 2,5` (revue PR A) — corriger, ou noter en limite connue · **Pièges en cours** : `db:migrate` pousse TOUTES les migrations de `main` en attente · **Worktree / branche** : aucun
 
 ## Origine
 
@@ -173,3 +173,9 @@ Les 4 modèles relus en base locale, validés tels quels (`répéter 8` admis po
 - Prod (MCP) : 25991652 → variables et affectation, 4-067 ; 81bacf03 → Variables et instructions,
   4-068 ; a0b27395 → variables et affectation, 3-047 ; d64ddd78 → Variables et instructions, 3-051 ;
   tous `draft`.
+
+## Publication (2026-11-17)
+
+- `deploy:prod` 0.93.0 par David : #2735, #2742, #2746, #2755 dans `origin/production` (vérifié).
+- `publier-lot --dir scripts/questions/tortue-variables --publier` lancé par David ; MCP : 25991652,
+  81bacf03, a0b27395, d64ddd78 → `published`.
