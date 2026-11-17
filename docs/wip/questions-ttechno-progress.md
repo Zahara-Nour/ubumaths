@@ -5,16 +5,16 @@ Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) · bornes 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après les décisions Q1 à Q6 et la recherche de doublons (§ 6)._
+_Mis à jour le 2026-11-17, après la coordination avec `questions-1gen` (§ 8)._
 
-- **État** : relevé, classement, recherche de doublons faits (§ 1 à 6) ; Q1 à Q6 tranchées (§ 5) ; rien
-  d'écrit en base ni en fichiers de modèles.
-- **Prochaine action** : lot 0 — vérifier chaque jumeau variation par variation contre les bornes, puis
-  migration de tags.
-- **En attente de David** : rien.
-- **Pièges en cours** : aucun modèle « jumeau » n'est encore vérifié variation par variation contre les
-  bornes de Tle techno (pas de e, pas de ln, pas de factorielle, pas de variance) ; le tag ne se pose
-  qu'après cette vérification.
+- **État** : relevé, classement, recherche de doublons faits (§ 1 à 7) ; Q1 à Q6 tranchées (§ 5) ;
+  coordination avec la session `questions-1gen` (§ 8). Rien d'écrit en base ni en fichiers de modèles.
+- **Prochaine action** : lot 0 — lire en entier chaque candidat (tous niveaux, § 7), page à cocher,
+  puis migration de tags (`array_append` de `T_TECHNO` seulement).
+- **En attente de David** : rien. **En attente de `questions-1gen`** : ses modèles aˣ (x ⩾ 0) et taux
+  moyen, avant nos lots 3 et 4.
+- **Pièges en cours** : jumeaux pas encore vérifiés variation par variation (pas de e, ln, factorielle,
+  variance) ; ne jamais réécrire `grades` en entier (modèles partagés avec 1gen et 1techno).
 - **Worktree / branche** : aucun (journal sur `main`).
 
 ## 1. Périmètre
@@ -181,3 +181,17 @@ Résultats :
   techno. Avant d'écrire les lots 3 et 4, relire le journal `questions-1gen` : un modèle écrit là-bas peut
   porter le tag TTECHNO (un tag par programme, ADR 0020) si ses plages tiennent dans les deux bornes —
   sinon deux modèles écrits en parallèle seraient des doublons.
+
+## 8. Coordination avec `questions-1gen` (2026-11-17)
+
+Message de la session `questions-1gen` ; réponse envoyée :
+
+- **`grades`** : chaque chantier ne touche que son niveau (`array_append` / `array_remove` ciblés, jamais
+  d'affectation complète). Ici : `array_append(grades, 'T_TECHNO')` sous garde « `T_TECHNO` absent ».
+- Liste des ids candidats du lot 0 transmise (§ 2) ; aucun modèle existant corrigé ni scindé ici sans
+  prévenir `questions-1gen` avant.
+- **Partage** : aˣ (TTECHNO-031 à 037, 080, 081 ↔ 1GEN-032 à 036, 042, 059) et taux moyen (TTECHNO-035, 038 ↔
+  1GEN-037, 040) — `questions-1gen` écrit ; on tague TTECHNO ce qui tient dans nos bornes ; on n'écrit que
+  les compléments (x < 0, k·aˣ, propriétés algébriques). **Lots 3 et 4 ici après les siens.**
+- Seuils : 1GEN sans logarithme, TTECHNO-085 par le logarithme décimal → modèles distincts.
+- Points 1 et 2 du message (7 modèles sans point, `1acb6d47`) : chantier `questions-1techno`, pas celui-ci.
