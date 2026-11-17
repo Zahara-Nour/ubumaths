@@ -4,9 +4,9 @@
 
 _Mis à jour le 2026-11-17, phase 0 (aucune PR)._
 
-- **État** : phase 0, revue de `/parents` point par point (9 points, ci-dessous). Points 1 à 8 tranchés (point 8 validé le 2026-11-17 ; le carnet est en prod depuis v0.93.0, le texte peut donc être mis en ligne) ; FAQ décidée.
-- **Prochaine action** : point 9 (Comment l'inscrire, combien ça coûte ?). Fait vérifié : `/auth/register/parent` exige un code de classe.
-- **En attente de David** : point 9 ; FAQ « À qui parler ? » encore non validée (question Akadada ouverte).
+- **État** : phase 0, revue de `/parents` point par point : **les 9 points sont tranchés** (8 et 9 le 2026-11-17). FAQ : 3 textes validés sur 4.
+- **Prochaine action** : trancher la FAQ « À qui mon enfant peut-il parler ? » (question Akadada), puis découpage de la PR du code (`PARENT_VIEW` + FAQ).
+- **En attente de David** : FAQ « À qui parler ? » — la règle « borné au groupe » d'Akadada n'est pas codée : la coder avant de publier, ou ajuster la phrase ?
 - **Pièges en cours** : ne promettre que ce que prouve `docs/systeme/carte-des-fonctionnalites.md` ; argent : jamais « gratuit » seul ni « pour toujours ».
 - **Worktree / branche** : aucun encore (doc sur `main`) ; le code ira dans `views.ts` (`PARENT_VIEW`).
 
@@ -51,6 +51,17 @@ Le carnet de liaison est construit (ADR 0040). Texte proposé pour le bloc « Su
 > Si son professeur l'active pour la classe, vous recevez par courriel le lien de son **carnet de liaison** : une page à vous, sans compte, qui montre s'il travaille régulièrement, s'il est à jour dans ses révisions et quelles évaluations il a faites, sans les notes. Vous y trouvez aussi le cahier de textes et le cours de la classe. Chiphre ne vous écrit que si quelque chose ne va pas, une fois par semaine au plus, et, s'il y a de quoi, une bonne nouvelle par trimestre. Votre enfant voit la même page que vous.
 > → J'ai perdu mon lien (`/carnet/lien-perdu`)
 
+### 2026-11-17 (point 9, texte validé)
+
+Bloc « L'inscrire, et combien ça coûte » validé tel quel (« oui »), lien « J'inscris mon enfant » sur la page :
+
+> **L'inscrire, et combien ça coûte**
+> Si son professeur utilise Chiphre, il vous donne un code de classe : avec lui, vous inscrivez votre enfant en deux minutes. Pour les élèves des classes de son créateur, Chiphre est entièrement gratuit. Sans publicité.
+> Pour des cours particuliers, écrivez-nous.
+> → J'inscris mon enfant (`/auth/register/parent`) · Nous écrire
+
+- Fait vérifié : `/auth/register/parent` exige un code de classe ; le parent B (sans code) passe donc par le contact.
+
 ## Les 9 questions du parent
 
 1. Qu'est-ce que c'est, en une phrase ? — ✅ tranché.
@@ -61,7 +72,7 @@ Le carnet de liaison est construit (ADR 0040). Texte proposé pour le bloc « Su
 6. Est-ce que ça l'aide vraiment ? — ✅ page (paragraphe), démo forme retirée.
 7. Les jeux et les gidouilles ne vont-ils pas le distraire ? — ✅ FAQ.
 8. Comment le suivre ? — ✅ texte validé le 2026-11-17 (ci-dessus) ; en ligne après le `deploy:prod` du carnet.
-9. Comment l'inscrire, combien ça coûte ? (`/auth/register/parent` absent de la page)
+9. Comment l'inscrire, combien ça coûte ? — ✅ texte validé le 2026-11-17 (ci-dessus) ; lien `/auth/register/parent` sur la page.
 
 ## FAQ (textes de travail, non validés)
 
