@@ -8,14 +8,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après #2753 (lot 0 mergé, PAS migré)._
+_Mis à jour le 2026-11-17, après #2753 (lot 0 en prod)._
 
-- **État** : T1 et T2 en prod (#2743, #2748). **Lot 0 mergé (#2753), migration `20261117140233` pas jouée** :
-  c'est la seule migration du dépôt absente de la prod (vérifié).
-- **Prochaine action** : `db:migrate` du lot 0 depuis le dépôt principal **sur go explicite de David**
-  (destructive), puis vérification prod (MCP) ; ensuite correction de 83b1f614 v3 (prévenir questions-1gen
-  avant), puis lots d'écriture (§ 5, 9).
-- **En attente de David** : go pour le `db:migrate` du lot 0 (ce qui est perdu : § 15).
+- **État** : T1, T2 et **lot 0** en prod (#2743, #2748, #2753). Le lot 0 a été migré par le `db push` d'une autre
+  session (tortue-variables), pas par ce chantier ; effet vérifié conforme (§ 15).
+- **Prochaine action** : correction de 83b1f614 v3 (prévenir questions-1gen avant), puis lots d'écriture (§ 5, 9).
+- **En attente de David** : rien.
 - **questions-1gen** : G1, G4, G5 en prod en brouillon (ids au § 15) → notre migration `1_TECHNO` + tags 036,
   038, 040 ou 049, après leur migration nœud + tags 1GEN (branche `feat/questions-1gen-lot1-tags`).
 - **Pièges en cours** : un point par programme (trigger) ; `grades` en `array_append`/`array_remove` seulement ;
@@ -353,3 +351,10 @@ nœud ni tag — G1 « raison » `0b5c3db6-cb37-40fc-8247-12e3ace03a46` (→ 036
 (→ 040 ou 049). Non communs : G2 `f15045ec`, G3 `e0f3ac2f`. Ils posent nœud + tags 1GEN par leur migration
 (branche `feat/questions-1gen-lot1-tags`), sans toucher `grades` ; à nous `array_append('1_TECHNO')` et nos tags,
 après la leur (le trigger exige le nœud). Fichiers : `scripts/questions/1gen-1-suites-geometriques/`.
+
+**Lot 0 migré (2026-11-17)** : `20261117140233` jouée en prod par le `pnpm db:migrate` de la session
+tortue-variables (son `db push` a poussé toutes les migrations de `main` en attente), avant le go de David ;
+David prévenu par cette session. Prod vérifiée (MCP) : 1239554b et 79d69593 → `{1_SPE}`, seul tag 1SPE-377,
+publiés, `updated_at` inchangé ; f36ce3ff garde `{1_SPE,1_TECHNO}` et 118 ; brouillon 0495289a inchangé ;
+trigger de date `O`. Leçon : une migration destructive mergée part au prochain `db push` de n'importe quelle
+session ; la garder hors de `main` (PR non mergée) tant que le go n'est pas donné.
