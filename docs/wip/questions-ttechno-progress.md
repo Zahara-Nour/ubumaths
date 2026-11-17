@@ -397,3 +397,21 @@ points du § 12.
   « chiffres mal espacés », `10 203` attendu.
 - #2774 mergée (CI verte). Suite : après merge, David lance `create-questions --publier` ; puis migration
   nœud + tag des 8 et tags c4887e49 → 025, 0b5c3db6 → 023 (`array_append('T_TECHNO')`), page à cocher d'abord.
+
+## 14. Lot 2a : prod, rangement et tags (2026-11-17)
+
+David a lancé `create-questions --publier` : 8 brouillons (45ea676f M1, 72b876d7 M2, 6336ae4d M3, a46e60cf M4,
+292f865b M5, 65e0e9f5 M6, 5ec00b89 M7, 752d26c9 M8), vérifiés par MCP (`draft`, `{T_TECHNO}`, niveaux du fichier,
+sans nœud ni tag) ; ids commités sur la branche de la migration (copie retirée de `main` par `git stash`, à jeter
+après le merge une fois `main` égal).
+
+- Relevé MCP des communs : c4887e49 et 0b5c3db6 publiés, `{1_GEN,1_TECHNO}`, chacun sur le nœud de son point
+  TTECHNO (025 « terme général », 023 « définition »), tags 1GEN-029 + 1TECHNO-038 / 1GEN-028 + 1TECHNO-036, aucun
+  point TTECHNO.
+- Migration `20261117190410_questions_ttechno_lot2a_rangement_tags` : partie A sur le gabarit du lot 1 (nœud par
+  chemin strict = nœud du point, tout ou rien, sans nœud ni tag), partie B sur celui du lot 0 (tag +
+  `array_append('T_TECHNO')`, garde « sur le nœud du point »), `updated_at` préservé, rollback en commentaire.
+- Test `tests/integration/questions-ttechno-lot2a-rangement-tags.test.ts` : 14 verts (décor avec les 4 tags 1GEN /
+  1TECHNO, gardes des deux parties) ; corps retiré → 10 rouges ; fichier restauré d'une copie, identique.
+- Question d'accès : partie A personne (brouillons) ; partie B Q2 du chantier (classes de Tle techno, personne ne
+  perd rien).

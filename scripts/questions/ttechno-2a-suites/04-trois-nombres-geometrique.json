@@ -1,4 +1,5 @@
 {
+	"id": "a46e60cf-69d5-4911-b905-67b873fd6887",
 	"title": "Trois nombres consécutifs d'une suite géométrique ?",
 	"description": "Prouver que trois nombres positifs sont, ou ne sont pas, des termes consécutifs d'une suite géométrique, en comparant les quotients",
 	"grades": ["T_TECHNO"],
