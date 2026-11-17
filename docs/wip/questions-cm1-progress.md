@@ -5,16 +5,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après #2751._
+_Mis à jour le 2026-11-17, lot 7 créé en prod, migration nœud + tags écrite (§ 19 quater)._
 
-- **État** : lots 0 à 6 ter publiés (114 points sur 171). Lot 7 « données » écrit (13 modèles, § 19 ter), #2751
-  mergée.
-- **Prochaine action** : David lance `create-questions --dir scripts/questions/cm1-7 --publier` ; puis
-  relevé, migration nœud + tags (gabarit 6 ter), page à cocher, publication.
-- **En attente de David** : la création en prod après le merge ; décider du sort des 4 variations CE1 / CE2 dont le
-  total affiché donne la réponse (§ 19 ter).
-- **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance (une autre session peut l'avoir fait avant : vérifier au MCP) ; `db:migrate` depuis un worktree : copier d'abord le lien `../ubumaths/supabase/.temp/` ; `create-questions` = `pnpm tsx scripts/create-questions.ts …`, refuse `theme`/`domain`/`subdomain` (ADR 0035) ; horodatage = `pnpm migration:horodatage`, puis `pnpm check:migrations --pr <n>` **juste avant le merge** ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule ; un brouillon sans nœud ne peut pas être tagué (trigger) ; le pre-commit reformate le relevé `etat-prod-*` (prettier) et laisse l'index décalé : `git diff HEAD` vide → `git restore --staged` ; le mode auto refuse `publier-lot` et `garde-niveaux-tags` (lecture de la prod), même en simulation : David les lance ; `axe: à choisir` : échelles 1, 2, 5, 10 seulement, données ≤ 100.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, HEAD détachée sur `origin/main` ; prochaine branche `feat/questions-cm1-lot7-rangement`.
+- **État** : lots 0 à 6 ter publiés (114 points sur 171). Lot 7 « données » : 13 brouillons en prod (#2751), migration
+  `20261117165426` (13 rangés, 13 tags) sur `feat/questions-cm1-lot7-rangement`.
+- **Prochaine action** : PR mergée → David lance `db:migrate` ; vérifier au MCP ; page à cocher
+  (`page-a-cocher.ts --dir scripts/questions/cm1-7`) ; publication.
+- **En attente de David** : `db:migrate` après le merge ; décider du sort des 4 variations CE1 / CE2 dont le total
+  affiché donne la réponse (§ 19 ter).
+- **Pièges en cours** : `create-questions --publier` lancé depuis le dépôt principal écrit les ids dans SES fichiers :
+  les reporter sur la branche du worktree, puis `git restore` dans le dépôt principal ; `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance (une autre session peut l'avoir fait avant : vérifier au MCP) ; `db:migrate` depuis un worktree : copier d'abord le lien `../ubumaths/supabase/.temp/` ; `create-questions` = `pnpm tsx scripts/create-questions.ts …`, refuse `theme`/`domain`/`subdomain` (ADR 0035) ; horodatage = `pnpm migration:horodatage`, puis `pnpm check:migrations --pr <n>` **juste avant le merge** ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule ; un brouillon sans nœud ne peut pas être tagué (trigger) ; le pre-commit reformate le relevé `etat-prod-*` (prettier) et laisse l'index décalé : `git diff HEAD` vide → `git restore --staged` ; le mode auto refuse `publier-lot` et `garde-niveaux-tags` (lecture de la prod), même en simulation : David les lance ; zsh ne découpe pas `$F` : un tableau `F=(…)`.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, branche `feat/questions-cm1-lot7-rangement`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -1508,3 +1509,17 @@ geste dans le nœud, partagé, sans renuméroter.
   session a remis la base locale à zéro pendant les captures : créer **et** capturer dans une seule commande sous
   `scripts/with-db-lock.sh`.
 - #2751 mergée (CI verte), branche supprimée.
+
+### 19 quater. Lot 7 — création en prod et rangement (2026-11-17)
+
+- `create-questions --dir scripts/questions/cm1-7 --publier` lancé par David (un premier « publié » ne l'avait pas
+  créé : rien au MCP) : 13 brouillons CM1 (vérifiés au MCP : draft, niveau 1, sans nœud ni tag). Ids écrits dans le
+  dépôt principal, reportés et commités sur `feat/questions-cm1-lot7-rangement`.
+- Relevé `etat-prod-2026-11-17-cm1-7/` (`releve-prod-cm1.ts`), script `lot-cm1-7-rangement.py` (gabarit 6 ter) →
+  migration `20261117165426_questions_cm1_lot7_rangement_tags` + fixture : 13 rangés sous « Statistiques ›
+  Représenter des données » (tableaux : 1e1e0342 → 120, f5742b78 → 121, 40dcbbcc → 169 ; double entrée : 62389b29 →
+  137, e1d59914 → 170 ; barres : cc52549c → 138, c245f0cc → 171, 01b73ca2 → 135 ; courbes et repères : 5291dc9f →
+  139, da976537 → 172, a434bd68 → 136 ; la notion elle-même : ae74fe73, f1f7b2d1 → 122), 13 tags posés, aucun niveau
+  ni statut changé.
+- Test `questions-cm1-lot7-rangement-tags.test.ts` : 20/20 vert (relancé après le commit) ; corps neutralisé
+  (`select 1;`) : 9 échecs + suite principale sautée. `types:cliquet` tenu.
