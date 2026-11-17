@@ -2,12 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après #2739._
+_Mis à jour le 2026-11-17, après #2745._
 
-- **État** : PR 1 à 4 et 6 mergées (#2718, #2724, #2731, #2736, #2737, #2739), migrations en prod (dont `20261117113154`, vérifiée). Code des PR 2 à 4 **pas encore déployé** (`deploy:prod` = David). PR 5 (doc) sur `main`.
-- **Prochaine action** : PR 7, politique de confidentialité (Q41) **avant** le `deploy:prod` du carnet ; brouillon du texte donné à David le 2026-11-17 (§ 3.4 nouveau, § 4, § 6 Brevo, § 7 durées). Plus tard : Q42 (journal des courriels effacé après un an, migration) ; point 8 sur `/parents` après le déploiement (chantier `presentation-parents`).
-- **En attente de David** : validation du texte de la politique de confidentialité (Q41).
-- **Pièges en cours** : données d'élèves mineurs. 1er trimestre fini le 27 nov. : messages trimestriels dès le 28 si déployé. Rejets Brevo différés non marqués `invalid` (pas de webhook).
+- **État** : PR 1 à 4, 6 et 7 mergées (#2718, #2724, #2731, #2736, #2737, #2739, #2745), migrations en prod. PR 7 = politique de confidentialité v1.3 (carnet de liaison, base légale intérêt légitime). Code des PR 2 à 4 **pas encore déployé** (`deploy:prod` = David).
+- **Prochaine action** : rien ne bloque le `deploy:prod` du carnet. Puis Q42 (journal des courriels effacé après un an : migration + passer la ligne § 7 de la politique à « 1 an ») ; point 8 sur `/parents` après le déploiement (chantier `presentation-parents`).
+- **En attente de David** : `deploy:prod` (avant le 28 novembre pour les messages trimestriels).
+- **Pièges en cours** : données d'élèves mineurs. 1er trimestre fini le 27 nov. : messages trimestriels dès le 28 si déployé. Rejets Brevo différés non marqués `invalid` (pas de webhook). AIPD : l'analyse de risque du carnet reste à y intégrer (noté dans son historique).
 - **Worktree / branche** : aucun.
 
 ## Origine
