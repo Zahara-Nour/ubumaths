@@ -8,18 +8,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après #2753 (lot 0 en prod)._
+_Mis à jour le 2026-11-17, PR du lot G ouverte (tags 1TECHNO sur G1, G4, G5)._
 
-- **État** : T1, T2 et **lot 0** en prod (#2743, #2748, #2753). Le lot 0 a été migré par le `db push` d'une autre
-  session (tortue-variables), pas par ce chantier ; effet vérifié conforme (§ 15).
-- **Prochaine action** : verdicts de la page à cocher G1, G4, G5 (§ 16), puis migration de tags ; puis 83b1f614 v3 ; puis lots (§ 5, 9).
-- **En attente de David** : verdicts sur la page à cocher G1, G4, G5 (§ 16).
-- **questions-1gen** : G1, G4, G5 en prod, brouillons, **rangés et tagués 1GEN** (#2754, migrée) → notre
-  migration `1_TECHNO` + tags 036 (G1), 038 (G4), 040 ou 049 (G5) est débloquée ; page à cocher avant (Q10).
+- **État** : T1, T2, lot 0 en prod (#2743, #2748, #2753). **Lot G** : page à cocher 3/3 OK ; migration
+  `20261117164821_questions_1techno_lot_g_tags` (036, 038, 049 + `1_TECHNO`) sur la branche, test vert, rouge sans (§ 17).
+- **Prochaine action** : CI verte → merge → `db:migrate` (additive, 4 conditions réunies ; `migration list --linked`
+  avant) → vérifier en prod ; puis 83b1f614 v3 (prévenir questions-1gen) ; puis lots (§ 5, 9).
+- **En attente de David** : rien.
 - **Pièges en cours** : un point par programme (trigger) ; `grades` en `array_append`/`array_remove` seulement ;
-  worktree neuf → `pnpm exec svelte-kit sync` avant un script `tsx` ; commitlint refuse « T1 » en début de sujet ;
-  CI : le cliquet peut être coupé à 20 min (relancer).
-- **Worktree / branche** : aucun (lot 0 nettoyé).
+  worktree neuf → `pnpm exec svelte-kit sync` avant un script `tsx` ; export prod : `env $(grep … .env)` (sinon
+  `.env.local` = base locale) ; commitlint refuse « T1 » en début de sujet ; CI : le cliquet peut être coupé à 20 min.
+- **Worktree / branche** : `../ubumaths-wt-questions-1techno` · `feat/questions-1techno-lot-g`.
 
 ## 1. Relevé (prod, 2026-11-17)
 
@@ -381,3 +380,14 @@ départ). Instantanés prod (`export-question-templates.ts`) dans le scratchpad,
 `scripts/questions/1techno-g/` sur la branche de la migration. Relecture préalable : premier terme et raison
 strictement positifs partout, ni somme ni limite. Points 036, 038, 049 sur le même nœud que le point 1GEN de
 G1, G4, G5.
+
+## 17. Lot G : migration (2026-11-17)
+
+Verdicts de la page à cocher : 3 « ok » sur 3 (0b5c3db6, c4887e49, 569e0140), sans commentaire. Relevé prod
+(MCP) : les trois sont désormais **publiés** par questions-1gen (`updated_at` 15:05), `grades = {1_GEN}`, chacun
+sur le nœud de son point 1GEN, qui est aussi celui du point 1TECHNO visé (028/036, 029/038, 030/049). Même nature
+que T1/T2 (modèles publiés) : la question d'accès du chantier s'applique.
+Migration `20261117164821_questions_1techno_lot_g_tags` sur le gabarit de T2 (sans `deja` : aucun n'a
+`1_TECHNO`) ; test `tests/integration/questions-1techno-lot-g-tags.test.ts` (décor avec le tag 1GEN posé,
+12 tests verts ; migration vidée → 6 rouges et le bloc nominal ne démarre pas). Instantanés prod :
+`scripts/questions/1techno-g/`.
