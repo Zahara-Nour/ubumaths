@@ -204,3 +204,47 @@ quel que soit l'autre bout ; 2. B = le seul sommet à AB de A, avant « mesuré 
 autre que [BC] → `readDiagonalRectangle` ; 4. [AC] = un segment de la figure de bouts A et C ; 5. segment
 sur la médiatrice admis entre les croisements de deux cercles de même rayon centrés en A et en C (au-delà :
 trait qui dépasse ; sans ces cercles : trait de trop).
+
+## 6. PR 2 — le modèle 4-038 : phase 0 (proposée le 2026-11-17)
+
+Worktree `../ubumaths-wt-rectangle-sans-equerre`, branche `feat/rectangle-sans-equerre-modele`. Le script
+s'écrit comme les lots de `questions-4` (`docs/wip/questions/lot-4-11.py` → `scripts/questions/4-lot-11/`).
+
+### 6.1 Relevé (prod, MCP lecture seule, 2026-11-17)
+
+- 4-038 « Construire des rectangles sans équerre. », 0 modèle, sur la sous-notion
+  **Géométrie > Figures planes > triangles** (avec 4-036 et 4-037). Bornes : aucune.
+- Modèles de 4e sur ce nœud : « Triangle inscrit dans un demi-cercle » (niveau 1), « Centre du cercle
+  circonscrit » (niveau 2), tous deux publiés.
+- **L'outil (#2781) n'est pas encore en prod** : merge absent de `origin/production`. Le modèle reste en
+  brouillon jusqu'au `deploy:prod` qui le livre (David).
+
+### 6.2 Le modèle proposé
+
+| Point | Titre                                | Nœud, niveau                                  | Réponse            |
+| ----- | ------------------------------------ | --------------------------------------------- | ------------------ |
+| 4-038 | Construire un rectangle sans équerre | Géométrie > Figures planes > triangles, **3** | figure à compléter |
+
+- **Énoncé** (§ 3.1) : « Construis le rectangle ABCD tel que AB = 4 cm et AC = 6 cm. La diagonale [AC] est
+  tracée. » Papier uni, fenêtre 12 × 9 (règle de 12 cm), [AC] horizontale, centrée, A à gauche.
+- **Variations** (décision 1) : AB de 3 à 6 cm, AC de AB + 1 à 9 cm, au mm ; noms des sommets tirés parmi
+  ABCD, EFGH, MNPQ, RSTU (une seule variation, les noms en variable).
+- **Délai** : 240 s (comme « Construire un triangle » de 6e, qui reporte deux longueurs).
+- **Correction** : la méthode M1 en trois étapes (O milieu de [AC] ; B au croisement du cercle de diamètre
+  [AC] et du cercle de centre A de rayon AB ; D sur (BO) à la distance AC de B, ou par le milieu) ; le juge
+  dessine en plus le rectangle, le cercle, l'arc et [BD].
+- **`testSpecs`** : M1 des deux côtés de (AC), M3 (D au compas) → justes ; B à l'œil, AB faux, angle en B pas
+  droit, D faux → faux.
+
+### 6.3 Question d'accès
+
+Comme les lots de `questions-4` : brouillon, puis migration nœud + tag ; **personne** ne gagne d'accès. À la
+publication, les élèves de 4e voient un modèle de plus.
+
+### 6.4 Questions à David
+
+- **Q6. Orientation de [AC]** : toujours horizontale, ou aussi oblique (tirée parmi quelques angles) ?
+  **Reco : horizontale** — la figure tient dans la fenêtre pour toutes les longueurs, l'élève de 4e se
+  concentre sur la méthode.
+- **Q7. Niveau 3** sur la sous-notion « triangles » (après le demi-cercle et le centre du cercle
+  circonscrit) ? **Reco : oui**, c'est la suite logique du BO.
