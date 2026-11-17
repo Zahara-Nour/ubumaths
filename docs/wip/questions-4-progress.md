@@ -5,16 +5,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après #2768 (lot 10 rangé en prod)._
+_Mis à jour le 2026-11-17, lot 10 relu (3/3 ok), publication à lancer par David._
 
 - **État** : lots 1 à 9 publiés. Lot 10 (027, 028, 074) : brouillons en prod (0ea43bcd, 235df57a, 63a06b04),
   rangés et tagués (#2768, `db:migrate` fait, vérifié au MCP). Page à cocher :
   https://claude.ai/artifact/M18upimVqzAupAsfpu8xNd (`verdicts` vide). Après publication : 81 points sur 82 ;
   reste 038 (outil manquant n° 37, rattaché à la 6e) et 026 (classe D).
-- **Prochaine action** : lire et compter les verdicts ; corriger les « à revoir » ; puis `publier-lot.ts --dir
-scripts/questions/4-lot-10` en simulation, et David le lance avec `--publier`.
-- **En attente de David** : la relecture (page à cocher ; 028 : bloc patron non dessiné sur la page, le jouer dans
-  l'aperçu admin) ; supprimer la branche locale périmée `feat/questions-4-lot-10` (`branch -D` = liste `ask`).
+- **Prochaine action** : David lance `publier-lot.ts --dir scripts/questions/4-lot-10 --publier` (simulation
+  verte, 3 brouillons) ; puis vérifier `published` au MCP et clore le lot (§ 53).
+- **En attente de David** : la publication ; supprimer la branche locale périmée `feat/questions-4-lot-10`
+  (`branch -D` = liste `ask`).
 - **Pièges en cours** : `db:migrate` depuis le dépôt principal (worktree non lié) ; job « Types des tests » de la
   CI parfois annulé (« The operation was canceled ») : relancer ; `db push --include-all` réservé à David.
 - **Worktree / branche** : `../ubumaths-wt-questions-4` (HEAD détachée sur `origin/main`), aucune branche en cours.
@@ -1259,3 +1259,9 @@ le trou noté pour le chantier d'outils.
   un tag chacun.
 - Page à cocher : https://claude.ai/artifact/M18upimVqzAupAsfpu8xNd (capacités `db` + `user`, `verdicts` vide,
   rendu vérifié à 390 px) ; alerte attendue : bloc `patron` non dessiné (028).
+
+## 53. Lot 10 : relecture (2026-11-17)
+
+- Verdicts de la page à cocher : 3/3 « ok », aucun commentaire.
+- `publier-lot.ts --dir scripts/questions/4-lot-10` en simulation : 3 brouillons passent le contrôle ;
+  `--publier` à lancer par David.
