@@ -8,23 +8,22 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, PR #2743 (T1) ouverte, page T2 relue (33 « OK »)._
+_Mis à jour le 2026-11-17, après #2743 (T1 mergée, migrée, vérifiée en prod)._
 
-- **État** : T1 = PR #2743 (15 tags, migration `20261117122739`, test 11/11, rouge sans la migration,
-  `security-auditor` sans finding bloquant). CI : tout vert sauf « Client Tests (browser, shard 1/2) »
-  (`wrapDynamicImport`, sans lien avec la PR) → relancé une fois (1re tentative sur 2), en attente.
-  Page T2 relue : **33 « OK » sur 33** (§ 10, données au § 11).
-- **Prochaine action** : `gh pr checks 2743` ; vert → `pnpm check:migrations --pr 2743`, `gh pr merge 2743
---merge`, `db:migrate` depuis le dépôt principal, vérifier en prod 15 tags + 15 `1_TECHNO`. Puis branche
-  `feat/questions-1techno-t2` (même worktree) : migration + test T2 générés à partir de ceux de T1 avec le § 11.
+- **État** : **T1 en prod** (#2743, migration `20261117122739` jouée) : 15 modèles publiés portent chacun leur
+  point 1TECHNO (14 points) et `1_TECHNO` ; garde des niveaux verte. Page T2 relue : **33 « OK » sur 33**
+  (§ 10, données au § 11). Rien d'écrit pour T2.
+- **Prochaine action** : attendre l'avis de `questions-1gen` (`db:migrate` de sa PR #2744 joué), puis worktree
+  `git worktree add -b feat/questions-1techno-t2 ../ubumaths-wt-questions-1techno origin/main` ; relever de
+  nouveau les grades des 33 ; migration + test T2 générés à partir de ceux de T1 (§ 11).
 - **En attente de David** : rien (décisions Q1-Q12 prises).
 - **Pièges en cours** : **un point par programme** (trigger) ; point sur une sous-notion → seuls les modèles
   de cette sous-notion ; `grades` en `array_append` / `array_remove` seulement (accord `questions-1gen`) ;
-  **T2 : 95ee57c8 et 5397c20f ont DÉJÀ `1_TECHNO`** → n'ajouter le niveau que s'il manque (la garde T1
-  « 1_TECHNO absent » les refuserait) ; **T2 attend le `db:migrate` de la PR #2744 (`questions-1gen`)** : sa migration
-  garde le relevé exact des tags de 19 modèles, dont 8 de T2 (21f42c7f, 42bb2d66, aab8e41c, afe51ac4,
-  d8c9cb60, f2ed0ea0, 5397c20f, 95ee57c8) ; elle prévient quand c'est joué ; commitlint refuse « T1 » en début de sujet (sentence-case).
-- **Worktree / branche** : `../ubumaths-wt-questions-1techno`, `feat/questions-1techno-t1` (propre, poussée).
+  **T2 : 95ee57c8 et 5397c20f ont DÉJÀ `1_TECHNO`** → n'ajouter le niveau que s'il manque ; **T2 attend le
+  `db:migrate` de #2744** (sa migration garde le relevé exact des tags de 19 modèles, dont 8 de T2 :
+  21f42c7f, 42bb2d66, aab8e41c, afe51ac4, d8c9cb60, f2ed0ea0, 5397c20f, 95ee57c8) ; commitlint refuse
+  « T1 » en début de sujet ; CI : « Client Tests browser » peut tomber sur `wrapDynamicImport` (relancer).
+- **Worktree / branche** : aucun (T1 nettoyé).
 
 ## 1. Relevé (prod, 2026-11-17)
 
@@ -289,3 +288,11 @@ comme en T1). Instantanés de la page : hors dépôt (scratchpad, perdus au red�
 
 Après T2 : lot 0 (retrait 1TECHNO-118 sur 1239554b et 79d69593, destructif, accord de David), correction
 de 83b1f614 v3 (prévenir `questions-1gen` avant), puis les lots d'écriture (jumeaux, connaissances, § 5 et 9).
+
+## 12. Lot T1 mergé et migré (2026-11-17)
+
+PR #2743 : CI verte après une relance (« Client Tests browser, shard 1/2 », `wrapDynamicImport`, sans lien) ;
+`check:migrations --pr 2743` vert ; merge ; `db:migrate` depuis le dépôt principal (4 conditions réunies).
+Prod vérifiée (MCP) : 15 modèles, 15 tags 1TECHNO (001, 004, 005, 006, 008, 009, 010, 011, 032, 046, 106,
+108, 120, 142), 15 avec `1_TECHNO`, 15 publiés. `garde-niveaux-tags` : aucun niveau manquant. Worktree et
+branche retirés.
