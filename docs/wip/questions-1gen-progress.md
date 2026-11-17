@@ -16,7 +16,7 @@ scripts/questions/1gen-3-fonctions-exponentielles --publier` ; relire au MCP, co
   `../ubumaths-wt-questions-1gen-lot3-tags`), migration nœud « fonctions x ↦ aˣ » + 7 tags (032 à 036, 042, 059),
   page à cocher, publication ; envoyer ids et plages à questions-ttechno (E1 → 031, E2 → 081, E3 → 032, E4 → 033).
   Puis lot 4.
-- **En attente de David** : `create-questions --publier` du lot 3 ; relire les écarts à la phase 0 du § 18.
+- **En attente de David** : `create-questions --publier` du lot 3 (écarts du § 18 acceptés).
 - **Pièges en cours** : ADR 0020 et `couvrir-un-niveau.md` § 9 avant tout tag ; `db push` pousse TOUTES les
   migrations en attente (`migration list --linked` d'abord) ; specs d'un bloc associer : graine 0 (ordre 2, 0, 1) ;
   aperçu admin : serveur `--host 127.0.0.1`, saisie MathLive : cliquer la case par sa référence ; spec `bad_form` :
@@ -659,7 +659,8 @@ juste ; E7 (f(x) = 8 sur 10 × 0,7ˣ, attendu 0,63) 0,6 jugé juste ; E2 « 27 �
 | E6     | `06-placer-points-courbe-exponentielle`  | 3          | 8     |
 | E7     | `07-lire-courbe-exponentielle`           | 3          | 11    |
 
-Écarts à la phase 0 (§ 14), sans effet sur les points ni sur les formes de réponse — **à relire par David** :
+Écarts à la phase 0 (§ 14), sans effet sur les points ni sur les formes de réponse — **acceptés par David le
+2026-11-17** :
 
 - **E1** : l'énoncé donne le modèle (`V(x) = C × 1,0t^x`, `N(x) = N₀ × 0,5^x`) ; l'élève calcule. Réponses à
   `precision` décimale (2 chiffres, ou 0 pour les noyaux).
