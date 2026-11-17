@@ -9,8 +9,8 @@ _Mis à jour le 2026-11-17, après #2774._
 
 - **État** : lots 0 et 1 en prod. Lot 2a (M1–M8 : moyennes, trois nombres, raison, sommes en situation, Σ ;
   § 12–13) mergé (#2774), fichiers dans `scripts/questions/ttechno-2a-suites/`, **pas encore créés en prod**.
-- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/ttechno-2a-suites
---publier` (8 brouillons, ids écrits dans les fichiers → les commiter) ; puis migration nœud + tag des 8 et tags
+- **Prochaine action** : David lance la création en prod (commande au § 13, `create-questions … --publier` sur
+  `scripts/questions/ttechno-2a-suites`) (8 brouillons, ids écrits dans les fichiers → les commiter) ; puis migration nœud + tag des 8 et tags
   c4887e49 → 025, 0b5c3db6 → 023 (`array_append('T_TECHNO')`, Q16) ; page à cocher ; publication. Ensuite lot 2b
   (Python, P1–P3).
 - **En attente de David** : la commande `create-questions --publier` ci-dessus.
