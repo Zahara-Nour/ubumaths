@@ -7,12 +7,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après la phase 0 des lots 3 et 4._
+_Mis à jour le 2026-11-17, après la validation de la phase 0 des lots 3 et 4._
 
 - **État** : lot 1 (5 modèles de suites géométriques) relu (5/5 OK) et **publié** en prod (§ 13).
-- **Prochaine action** : après validation, envoyer la phase 0 des lots 3 et 4 (§ 14) à questions-ttechno ; puis
-  écrire le lot 2 (représentations graphiques), puis 3, puis 4.
-- **En attente de David** : Q13 à Q16 (phase 0 de nos lots 3 aˣ et 4 taux moyen, § 14).
+- **Prochaine action** : phase 0 du lot 2 (représentations graphiques : 016, 019, 041, 058, 020, 051) ; puis
+  écriture des lots 2, 3, 4. Phase 0 des lots 3 et 4 validée (§ 14) et envoyée à questions-ttechno.
+- **En attente de David** : rien.
 - **Pièges en cours** : ADR 0020 et `couvrir-un-niveau.md` § 9 avant tout tag ; `grades` par `array_append` /
   `array_remove` ciblés ; `db push` pousse TOUTES les migrations de `main` en attente (`--dry-run` d'abord) ; rollback
   du § 12 valable seulement avant les tags 1TECHNO de G1, G4, G5 ; modèle 1GEN-022 commun avec 1TECHNO-057 ; G1, G4,
@@ -486,3 +486,12 @@ tagués, visibles des élèves seulement après publication par David.
 - **Q15** — Propriétés algébriques (033) : modèle commun avec questions-ttechno (elle réécrivait les calques eˣ en aˣ
   pour ses 034, 078, 079) : nous l'écrivons à exposants positifs et elle écrit seulement le complément négatif ?
 - **Q16** — Phase 0 des lots 3 et 4 (modèles, variations, plages, niveaux, formes de réponse) ci-dessus : validée ?
+
+### Décisions (David, 2026-11-17 : « je te suis »)
+
+- **Q13** : T1 (037) = évolutions successives données une à une ; T2 (040) = valeurs de départ et d'arrivée, taux
+  global, taux mensuel équivalent.
+- **Q14** : E6 place les points d'un tableau sans tracer la courbe ; E2 à exposants positifs seulement.
+- **Q15** : E2 est un modèle **commun** avec questions-ttechno : nous l'écrivons (exposants positifs, `grades`
+  `['1_GEN']`), elle ajoute `T_TECHNO` et son tag, et n'écrit que le complément à exposants négatifs.
+- **Q16** : phase 0 des lots 3 et 4 validée telle quelle. Écriture dans l'ordre de Q10 (lot 2, puis 3, puis 4).
