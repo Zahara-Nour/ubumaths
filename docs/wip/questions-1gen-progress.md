@@ -7,18 +7,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après les décisions Q10 à Q12 (§ 9)._
+_Mis à jour le 2026-11-17, lot 1 écrit, PR #2750 ouverte._
 
-- **État** : #2744 jouée en prod (§ 8). 39 points sans modèle, redécoupés en 6 lots (§ 4). Phase 0 du lot 1 (suites
-  géométriques, G1 à G5) **validée** (§ 9) ; questions-1techno prévenu (G1, G4, G5 communs).
-- **Prochaine action** : écrire le lot 1 dans `../ubumaths-wt-questions-1gen` (`feat/questions-1gen-lot1`) ; envoyer
-  à questions-1techno les ids des brouillons G1 à G5 dès leur création ; puis phase 0 des lots 3 et 4 pour
-  questions-ttechno.
-- **En attente de David** : rien.
+- **État** : lot 1 (G1 à G5, suites géométriques) écrit et essayé en base locale (§ 10) ; **PR #2750 ouverte**, CI à suivre (`gh run watch`) puis merge dès le vert.
+- **Prochaine action** : PR mergée → David lance `create-questions --dir scripts/questions/1gen-1-suites-geometriques
+--publier` (prod, brouillons) ; commiter les ids écrits en tête des fichiers ; envoyer les ids à questions-1techno ;
+  migration nœud + tags (gabarit `20261026210000`), page à cocher, publication. En parallèle : phase 0 des lots 3 et
+  4 pour questions-ttechno.
+- **En attente de David** : le `--publier` en prod, après le merge.
 - **Pièges en cours** : AVANT tout tag, ADR 0020 et `couvrir-un-niveau.md` § 9 (un point par programme, point sur le
   nœud du modèle ou sa notion) ; `grades` par `array_append` / `array_remove` ciblés ; `db:migrate` seulement après
-  le merge, depuis le dépôt principal à jour ; modèles G1, G4, G5 communs avec 1TECHNO (on écrit `1_GEN` seul,
-  questions-1techno ajoute `1_TECHNO` et ses tags par sa migration) ; modèle 1GEN-022 commun avec 1TECHNO-057.
+  le merge, depuis le dépôt principal à jour ; G1, G4, G5 communs avec 1TECHNO (on écrit `1_GEN` seul,
+  questions-1techno ajoute `1_TECHNO` et ses tags) ; modèle 1GEN-022 commun avec 1TECHNO-057.
 - **Worktree / branche** : `../ubumaths-wt-questions-1gen` · `feat/questions-1gen-lot1`.
 
 ## 1. Relevé (prod, 2026-11-17)
@@ -298,3 +298,19 @@ modèles sont créés en brouillon, la migration ne fait que les ranger et les t
   après la création des brouillons. Session prévenue le 2026-11-17 ; elle n'écrit aucun modèle de suites
   géométriques de son lot 1 (il lui reste 047).
 - **Q12** : phase 0 du lot 1 validée telle quelle (modèles, variations, plages, niveaux, formes de réponse).
+
+## 10. Lot 1 : écriture (2026-11-17)
+
+Script `docs/wip/questions/lot-1gen-1.py` → `scripts/questions/1gen-1-suites-geometriques/` (5 fichiers, 55 specs).
+Simulation `create-questions` verte ; formules des aperçus (40 tirages par modèle) passées à `validateLatex` : seul
+`\unit{€}` signalé (macro du projet). Essai en base locale (copie des fichiers, ids locaux) et aperçu admin : G1 v3
+(1,02 accepté, corrigé en virgule), G5 v4 (QCM, mauvaise réponse refusée), G4 v3 (`500×1,05^n` accepté).
+
+Écarts à la phase 0, sans effet sur les décisions :
+
+- Titres de G1 et G4 suffixés « à termes positifs » : même titre et même niveau que des modèles de 1re spé (85afd455,
+  eca755e6), refusés par la garde d'homonymes de `create-questions`.
+- `constraints.form: off` sur G1 (`1/4` tombait en `bad_form` pour 0,25) et G4 (un décimal dans une expression,
+  `1000×1,03^n`, tombe en `bad_form` : `acceptDecimal` ne vaut que pour un nombre seul).
+- `{{eval:…;d}}` partout où le résultat est décimal (sans cela, `1 + 2/100` s'affiche « 51/50 »).
+- G2 v2 : « un village » (1 000 à 5 000 habitants).
