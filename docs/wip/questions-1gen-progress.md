@@ -7,18 +7,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après #2754 et son `db:migrate`._
+_Mis à jour le 2026-11-17, après la publication du lot 1._
 
-- **État** : lot 1 rangé et tagué en prod (#2754, § 12), 5 brouillons, `grades` `['1_GEN']`. Migration jouée par la
-  session tortue-variables (son `db push` a emporté toutes les migrations en attente), relue au MCP : conforme.
-  questions-1techno prévenu.
-- **Prochaine action** : page à cocher du lot 1 pour David, puis publication. En parallèle : phase 0 des lots 3 et 4
-  pour questions-ttechno ; puis lot 2.
+- **État** : lot 1 (5 modèles de suites géométriques) relu (5/5 OK) et **publié** en prod (§ 13).
+- **Prochaine action** : phase 0 des lots 3 et 4 pour questions-ttechno ; puis lot 2.
 - **En attente de David** : rien.
 - **Pièges en cours** : ADR 0020 et `couvrir-un-niveau.md` § 9 avant tout tag ; `grades` par `array_append` /
   `array_remove` ciblés ; `db push` pousse TOUTES les migrations de `main` en attente (`--dry-run` d'abord) ; rollback
-  du § 12 valable seulement avant les tags 1TECHNO de G1, G4, G5 ; modèle 1GEN-022 commun avec 1TECHNO-057.
-- **Worktree / branche** : aucun (retiré après #2754) ; le lot suivant ouvre une branche neuve.
+  du § 12 valable seulement avant les tags 1TECHNO de G1, G4, G5 ; modèle 1GEN-022 commun avec 1TECHNO-057 ; G1, G4,
+  G5 publiés avec `grades` `['1_GEN']` seul : l'`array_append('1_TECHNO')` revient à questions-1techno.
+- **Worktree / branche** : aucun ; le lot suivant ouvre une branche neuve.
 
 ## 1. Relevé (prod, 2026-11-17)
 
@@ -354,3 +352,13 @@ David. Entre-temps, la session tortue-variables a lancé `db:migrate`, qui a pou
 la nôtre, sans erreur. Relu en prod (MCP) : version enregistrée ; G1 → définition / 1GEN-028, G2 → Suites
 géométriques / 039, G3 → idem / 057, G4 → terme général / 029, G5 → Suites géométriques / 030 ; un seul tag chacun ;
 brouillons, `grades` `['1_GEN']`, `updated_at` inchangés.
+
+## 13. Lot 1 : page à cocher et publication (2026-11-17)
+
+`page-a-cocher.ts` sur `scripts/questions/1gen-1-suites-geometriques` : 5 fiches, 16 exemples, aucune alerte (point,
+nœud et niveau lus en prod). Artefact (capacité `db`, collection `verdicts`) :
+https://claude.ai/artifact/8oXNs9VrKYg9aUMvrfiMyN. Verdicts lus en base : **5/5 OK**, sans commentaire (la remarque
+`a = 1` de G2 v1 et G3 v1, « u_n = 1 × 3^n », laissée telle quelle).
+
+Simulation `publier-lot.ts` : 5 brouillons passent le contrôle. David a lancé `--publier` : « 5/5 modèles du lot
+publiés (statut relu en base) ». Relu au MCP : les 5 `published`, `grades` `['1_GEN']`.
