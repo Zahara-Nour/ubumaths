@@ -1,4 +1,5 @@
 {
+	"id": "f3f00294-bee8-4d32-9a8b-f0218828dc76",
 	"title": "Combien de temps a-t-il duré ? (heures et minutes)",
 	"description": "Durée entre deux horloges à la minute près : 8 h 52 → 9 h 17 ; 8 h 52 → 11 h 37 ; l'après-midi sur un cadran de 24 h",
 	"grades": ["CM1"],

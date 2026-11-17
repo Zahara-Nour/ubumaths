@@ -1,4 +1,5 @@
 {
+	"id": "cdec9199-5aa5-41bd-a571-1e94a08f7dba",
 	"title": "Quelle durée est la plus longue ? (à la minute)",
 	"description": "Comparer deux durées lues sur quatre horloges, en heures et minutes, à quelques minutes près",
 	"grades": ["CM1"],
