@@ -1,4 +1,5 @@
 {
+	"id": "e59976bf-d175-4d13-adf4-8952015a1606",
 	"title": "Suite de nombres : choisir la règle",
 	"description": "Reconnaître la règle d'une suite (+ a, × k, + a − b et + a + b en alternance) parmi quatre phrases",
 	"grades": ["CM1"],
