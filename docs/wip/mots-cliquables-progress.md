@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-16, après #2732._
+_Mis à jour le 2026-11-17, PR R6 en cours._
 
-- **État** : R1–R6 validées ; **R5 en prod** (#2732 mergée, `db:migrate` fait et vérifié le 2026-11-16 : 10 verbes à `auto_link = false`, notions intactes) ; R1–R4 : phase 0, aucun code · **Prochaine action** : nouveau worktree, tests rouges de R6 (B1–B7) puis R1–R4 (N1–L4, E1), implémentation, `code-reviewer` · **En attente de David** : rien · **Pièges en cours** : le niveau de lecture sert aussi au choix des définitions montrées (Q1) ; un test qui compare la base au jeu de référence figé applique `withConsigneVerbs` (`tests/fixtures/lexique/verbes-consigne-2026-11-16.ts`) · **Worktree / branche** : aucun (retiré après #2732) ; prochaine PR → nouveau worktree `ubumaths-wt-mots-cliquables`
+- **État** : R1–R6 validées ; R5 en prod (#2732) ; **R6 codée** sur `feat/mots-cliquables-r6` (B1–B7 verts, `mots-du-dictionnaire.svelte.test.ts`) ; R1–R4 : phase 0, aucun code · **Prochaine action** : PR R6 (revue `code-reviewer`, CI, merge), puis PR suivante R1–R4 (tests rouges N1–L4, E1) · **En attente de David** : rien · **Pièges en cours** : le niveau de lecture sert aussi au choix des définitions montrées (Q1) ; un test qui compare la base au jeu de référence figé applique `withConsigneVerbs` (`tests/fixtures/lexique/verbes-consigne-2026-11-16.ts`) ; R6 : `register()` du compteur de carte appelé sous `untrack` (sinon boucle d'effet) · **Worktree / branche** : `ubumaths-wt-mots-cliquables` / `feat/mots-cliquables-r6`
 
 ## Origine
 
@@ -114,3 +114,4 @@ Erreur :
 - 2026-11-16 : #2732 (migration R5) mergée ; `db:migrate` appliqué et vérifié en prod.
 - 2026-11-16 : Q1, Q2 tranchées (oui) ; N1–E1 et B1–B7 validés.
 - 2026-11-16 : R6 validée (masqué par défaut, bouton sur la carte, mémoire de l'appareil ; doigt : non cliquable masqué ; prof : même défaut) ; B1–B7 écrits.
+- 2026-11-17 : R6 codée (worktree `ubumaths-wt-mots-cliquables`) : `visibility.svelte.ts` (choix de l'appareil), `card-terms.svelte.ts` (mots d'une carte), `can-hover.svelte.ts`, `LexiconToggle` sur `QuestionCard`, `FlashCard` (recto), `CorrectionCard` (en-tête) ; B1–B7 verts. Hors carte (démo, structure) : mots toujours soulignés.

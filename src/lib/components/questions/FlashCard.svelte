@@ -63,6 +63,7 @@
 	import CorrectionView from './CorrectionView.svelte';
 	import ExpectedResultView from './ExpectedResultView.svelte';
 	import { provideQuestionLexicon } from '$lib/components/markdown/lexicon-context';
+	import LexiconToggle from './LexiconToggle.svelte';
 
 	// Props
 	interface Props {
@@ -374,6 +375,8 @@
 					class={cn('face-card h-full', height && 'scrollable', flippable && 'reserve-bouton')}
 				>
 					<Card.Content class="space-y-6">
+						<!-- Bouton « Mots du dictionnaire » (R6), avant l'énoncé dans l'ordre de tabulation -->
+						<LexiconToggle class="float-right -mt-2 -mr-2 ml-2" />
 						{#if instance.exerciseInstruction}
 							<p class="text-base font-medium text-muted-foreground">
 								{instance.exerciseInstruction}

@@ -5,6 +5,7 @@ couvre:
   - 'src/lib/server/dictionary/**'
   - src/lib/components/markdown/lexicon-context.ts
   - src/lib/components/markdown/nodes/LexiconTerm.svelte
+  - src/lib/components/questions/LexiconToggle.svelte
   - tests/fixtures/lexique/dictionnaire-reference.ts
   - 'src/routes/api/dictionnaire/**'
   - 'src/routes/api/admin/dictionnaire/**'
@@ -53,6 +54,8 @@ cliquables s'appelle `src/lib/lexicon/` (nom historique du chantier « lexique �
 | `src/lib/lexicon/grade.ts`, `reader-grade.ts`                         | Niveau de lecture (`lexiconGrade`, `provideReaderGrade`)                                 |
 | `src/lib/components/markdown/lexicon-context.ts`                      | `provideLexicon`, `provideQuestionLexicon` : qui active les mots cliquables              |
 | `src/lib/components/markdown/nodes/LexiconTerm.svelte`                | Le mot souligné et sa fiche (dialogue accessible)                                        |
+| `src/lib/lexicon/visibility.svelte.ts`, `card-terms.svelte.ts`        | Mots affichés ou masqués sur les cartes (appareil), mots repérés d'une carte             |
+| `src/lib/components/questions/LexiconToggle.svelte`                   | Bouton « Mots du dictionnaire » d'une carte de question                                  |
 | `src/lib/dictionary/consistency.ts`                                   | `checkDictionary`, `newProblems` : règles de cohérence (enregistrement admin et tests)   |
 | `src/lib/dictionary/admin-draft.ts`                                   | Brouillon d'une entrée sur la page d'admin ↔ saisie envoyée au serveur                   |
 | `src/lib/server/dictionary/admin.ts`                                  | `loadAdminDictionary`, `createEntry`, `updateEntry`, `loadVersions`                      |
@@ -148,6 +151,15 @@ personne n'écrit directement dans l'historique.
 - Qui active : `QuestionCard`, `FlashCard`, `CorrectionCard` via `provideQuestionLexicon`.
   `null` coupe les mots : **évaluation notée** (`collectOnly`), fiche d'un mot déjà ouverte, choix
   de QCM (un choix est un bouton). Sans fournisseur (chat, fiches, aperçus) : aucun mot souligné.
+- **Soulignement masqué par défaut sur une carte** (R6, chantier `mots-cliquables`, 2026-11-17) :
+  `provideQuestionLexicon` pose aussi le compteur des mots de la carte (`card-terms.svelte.ts`) ;
+  chaque `LexiconTerm` repéré s'y annonce. `LexiconToggle` (bouton « Mots du dictionnaire »,
+  `aria-pressed`) n'apparaît que si le compteur est non nul, et bascule `setLexiconShown`
+  (`visibility.svelte.ts`) : choix valable pour toutes les cartes, mémorisé sur l'appareil
+  (`chiphre:mots-du-dictionnaire`), masqué si le stockage est illisible. Masqué : à la souris, le
+  mot reste cliquable et se souligne au survol ; au doigt (`canHover`, `(hover: hover)`), il reste
+  du texte ; au clavier, `tabindex=-1`. Hors d'une carte (démo, structure, programmes), les mots
+  restent soulignés.
 
 ## Invariants
 
@@ -198,6 +210,7 @@ personne n'écrit directement dans l'historique.
 | `tests/integration/dictionnaire-slug.test.ts`                                     | Adresse fixe : calcul, figée au renommage, suffixe `-2`, masquée cachée   |
 | `src/lib/server/dictionary/__tests__/load.test.ts`                                | Mémoire, repli, lecture unique                                            |
 | `src/routes/api/dictionnaire/__tests__/server.test.ts`                            | Cache public, `?frais` réservé à l'admin                                  |
+| `src/lib/components/questions/__tests__/mots-du-dictionnaire.svelte.test.ts`      | R6 : masqué par défaut, bouton, survol, doigt, clavier, stockage bloqué   |
 | `src/lib/dictionary/__tests__/entry-schema.test.ts`                               | Toutes les entrées relues à l'identique par le schéma                     |
 | `src/lib/dictionary/__tests__/reference*.test.ts`                                 | Jeu de référence : cohérence, lots 0b → 0h au mot près, chiffrement       |
 | `src/lib/dictionary/__tests__/consistency.test.ts`                                | Règles de cohérence : référence sans problème, chaque refus 10 → 16       |

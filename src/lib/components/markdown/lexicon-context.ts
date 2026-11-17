@@ -16,6 +16,7 @@ import { getContext, hasContext, setContext } from 'svelte';
 import type { GradeCode } from '$lib/types/grades';
 import { lexiconGrade } from '$lib/lexicon/grade';
 import { readReaderGrade } from '$lib/lexicon/reader-grade';
+import { createCardTerms, type LexiconCardTerms } from '$lib/lexicon/card-terms.svelte';
 
 const LEXICON_KEY = Symbol('markdown-lexicon');
 
@@ -44,6 +45,9 @@ export function readLexicon(): LexiconGetter {
  * Cadre d'une question : mots cliquables dans l'énoncé, les réponses et la
  * correction, au niveau de l'élève connecté, sinon au plus petit niveau de la
  * question (visiteur, professeur). `enabled` faux : évaluation notée, aucun mot.
+ *
+ * Pose aussi le compteur des mots de la carte : leur soulignement y est masqué
+ * tant que le bouton « Mots du dictionnaire » ne l'affiche pas (R6).
  */
 export function provideQuestionLexicon(
 	questionGrades: () => readonly string[] | undefined,
@@ -51,4 +55,16 @@ export function provideQuestionLexicon(
 ): void {
 	const reader = readReaderGrade();
 	provideLexicon(() => (enabled() ? lexiconGrade(reader(), questionGrades() ?? []) : null));
+	setContext<LexiconCardTerms>(CARD_TERMS_KEY, createCardTerms());
+}
+
+// Mots d'une carte (R6 : soulignement masqué, bouton « Mots du dictionnaire »)
+const CARD_TERMS_KEY = Symbol('lexicon-card-terms');
+
+/**
+ * Les mots de la carte de question englobante, ou `null` hors d'une carte
+ * (démo du lexique, structure, programmes) : là, les mots restent soulignés.
+ */
+export function readLexiconCardTerms(): LexiconCardTerms | null {
+	return hasContext(CARD_TERMS_KEY) ? getContext<LexiconCardTerms>(CARD_TERMS_KEY) : null;
 }

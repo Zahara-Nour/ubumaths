@@ -60,6 +60,7 @@
 	import CorrectionView from './CorrectionView.svelte';
 	import { provideChoiceCaseResults } from '$lib/components/markdown/choice-case-results';
 	import { provideQuestionLexicon } from '$lib/components/markdown/lexicon-context';
+	import LexiconToggle from './LexiconToggle.svelte';
 
 	// Props
 	interface Props {
@@ -302,6 +303,8 @@
 								{/if}
 							</Card.Title>
 
+							<!-- Bouton « Mots du dictionnaire » (R6) -->
+							<LexiconToggle class="ml-auto" />
 							{#if isCourseCard}
 								<Badge variant={answerResult.isCorrect ? 'default' : 'secondary'}>
 									{answerResult.isCorrect ? 'Réussi' : 'Pas réussi'}
