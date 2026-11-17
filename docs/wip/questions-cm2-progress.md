@@ -6,13 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après #2789 et les brouillons du lot 9._
+_Mis à jour le 2026-11-18, après #2794 (migration du lot 9 mergée, PAS jouée)._
 
-- **État** : lots 0 à 8 publiés ; lot 9 (partages) : 5 brouillons en prod (§ 15.3), migration de rangement écrite, tests rouges puis verts.
-- **Prochaine action** : PR de la migration du lot 9 (+ ids des fichiers), `security-auditor`, CI, `check:migrations --pr`, merge, `migration list --linked` puis `db:migrate`, vérif MCP, page à cocher.
-- **En attente de David** : rien avant le merge. ⛔ Jamais `--mettre-a-jour` de `cm2-7b` avec des fichiers d'avant #2770 (ids CM1).
-- **Pièges en cours** : migrations depuis #2181 : `pnpm migration:horodatage` = heure réelle UTC ; `db:migrate` refuse une migration plus ancienne que la dernière jouée → `--dry-run --include-all`, liste relue, puis `--include-all`. Worktree neuf : copier `supabase/.temp/` (lien projet) du dépôt principal, puis `pnpm exec svelte-kit sync`. Page à cocher : `partage` non dessiné, à jouer dans l'aperçu. `Doc-inchangée:` dans un COMMIT. `git commit -m … -- <fichiers>`. Stash du dépôt principal « cm2-9 ids » à supprimer après le merge (copie sur la branche).
-- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, `feat/questions-cm2-lot9-tags`.
+- **État** : lots 0 à 8 publiés ; lot 9 (partages) : 5 brouillons en prod (§ 15.3), migration `20261117222938` mergée (#2794), **pas jouée**.
+- **Prochaine action** : `db:migrate` du lot 9 une fois la voie libre, vérif MCP (5 rangés, 5 tags, `updated_at` inchangé), page à cocher, publication.
+- **En attente de David** : `db:migrate` bloqué : `20261117222600_carnet_regularite_depuis_la_rentree.sql` (chantier `carnet-heatmap`) est en attente et plus ancienne que la dernière jouée → `--include-all` la pousserait avec la nôtre. À jouer par sa session (ou David), puis la nôtre. ⛔ Jamais `--mettre-a-jour` de `cm2-7b` avec des fichiers d'avant #2770 (ids CM1).
+- **Pièges en cours** : migrations depuis #2181 : `pnpm migration:horodatage` = heure réelle UTC ; `db:migrate` refuse une migration plus ancienne que la dernière jouée → `--dry-run --include-all`, liste relue, puis `--include-all`. Worktree neuf : copier `supabase/.temp/` (lien projet) du dépôt principal, puis `pnpm exec svelte-kit sync`. Page à cocher : `partage` non dessiné, à jouer dans l'aperçu. `Doc-inchangée:` dans un COMMIT. `git commit -m … -- <fichiers>`. Stash du dépôt principal « cm2-9 ids » : copie identique de ce qui est mergé, à supprimer (David).
+- **Worktree / branche** : aucun (#2794 mergée, worktree retiré).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -951,3 +951,6 @@ de 30 ; (b) un seul lot de 5 modèles. Tableau du § 15 gardé.
 - `security-auditor` : aucun finding (diff au gabarit du lot 8 : ids, codes, chemins, table temporaire et
   commentaires seuls ; 5 ids concordants partout ; relevé MCP : 5 points résolus sur leur sous-notion).
   Prod : dernière migration jouée `20261117215645`, la nôtre seule en attente.
+- #2794 : CI verte au 3e passage (runner arrêté, puis job coupé à 20 min, sans lien avec la PR) ;
+  `check:migrations --pr 2794` sortie 0 ; mergée. `db:migrate --dry-run` : refusé, `20261117222600` (carnet-heatmap)
+  en attente avant la dernière jouée → stop, pas de `--include-all`.
