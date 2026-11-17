@@ -8,18 +8,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après #2764 (83b1f614 v3 en prod)._
+_Mis à jour le 2026-11-17, après #2772 (lot R en prod)._
 
-- **État** : T1, T2, lot 0, lot G, **83b1f614 v3** en prod (#2743, #2748, #2753, #2758, #2764). 83b1f614 : corrigé
-  de v3 par racines évidentes, migration jouée et vérifiée en prod (§ 19).
-- **Prochaine action** : lot R (§ 22) : PR de la migration `20261117181914` (tags 044 / 117 / 119 + `1_TECHNO`
-  sur R2, R3, R4, publiés), audit, CI, merge, `db:migrate`, vérif prod. Ensuite lots d'écriture (§ 5, 9), lot 1
-  « suites géométriques » d'abord (moins 036, 038, 049).
+- **État** : T1, T2, lot 0, lot G, 83b1f614 v3, **lot R** en prod (#2743, #2748, #2753, #2758, #2764, #2772). Lot R :
+  R2, R3, R4 de questions-1gen (représentation graphique) tagués 1TECHNO-044 / 117 / 119, `{1_GEN,1_TECHNO}` (§ 22).
+- **Prochaine action** : lots d'écriture (§ 5, 9), lot 1 « suites géométriques » d'abord (moins 036, 038, 049) ;
+  lot 4 « graphiques » garde 121, 085, 082, 059, 104 (§ 18).
 - **En attente de David** : rien.
 - **Pièges en cours** : un point par programme (trigger) ; `grades` en `array_append`/`array_remove` seulement ;
   worktree neuf → `pnpm exec svelte-kit sync` avant un script `tsx` ; export prod : `env $(grep … .env)` (sinon
   `.env.local` = base locale) ; commitlint refuse « T1 » en début de sujet ; CI : le cliquet peut être coupé à 20 min ; `Doc-inchangée:` dans un COMMIT (pas la PR) pour une migration ; `db:migrate` « inserted before » → `--dry-run --include-all`.
-- **Worktree / branche** : aucun (83b1f614 nettoyé).
+- **Worktree / branche** : aucun (lot R nettoyé).
 
 ## 1. Relevé (prod, 2026-11-17)
 
@@ -470,3 +469,11 @@ Migration `20261117181914_questions_1techno_lot_r_tags`, générée du lot G par
 temporaire `_q1tr_`) ; test `tests/integration/questions-1techno-lot-r-tags.test.ts`. Instantanés prod (publiés) :
 `scripts/questions/1techno-r/`.
 12 tests verts ; migration vidée → 7 rouges et le bloc nominal (5) ne démarre pas.
+
+PR #2772 : audit de sécurité sans finding bloquant (non bloquants, comme le lot G : `set local lock_timeout` sans
+effet sous `db push` ; la garde ne vérifie que l'absence de `1_TECHNO`) ; CI verte ; `check:migrations --pr 2772`
+vert ; mergée (f18b1afd42). `migration list --linked` : seule `20261117181914` en attente ; « inserted before » →
+`db push --dry-run --include-all` (seule la nôtre) puis `--include-all`, joué depuis le worktree (dépôt principal
+non tirable : modifications d'une autre session ; `supabase/.temp` copié pour le lien). Prod vérifiée (MCP) : les 3
+`{1_GEN,1_TECHNO}`, publiés, tags 1GEN-019 + 1TECHNO-044, 1GEN-041 + 1TECHNO-117, 1GEN-058 + 1TECHNO-119 ;
+`updated_at` inchangé (18:18:12, publication par questions-1gen).
