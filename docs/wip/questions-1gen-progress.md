@@ -7,20 +7,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après #2773._
+_Mis à jour le 2026-11-17, après #2778 et la page à cocher du lot 3._
 
-- **État** : lots 1 (§ 13) et 2 (§ 17) **publiés**. Lot 3 (aˣ, 7 modèles) **mergé** (#2773, § 18), pas encore en
-  prod ; coquille « t/n » de la transcription corrigée.
-- **Prochaine action** : **David** lance `pnpm tsx scripts/create-questions.ts --dir
-scripts/questions/1gen-3-fonctions-exponentielles --publier` ; relire au MCP, commiter les ids (worktree neuf
-  `../ubumaths-wt-questions-1gen-lot3-tags`), migration nœud « fonctions x ↦ aˣ » + 7 tags (032 à 036, 042, 059),
-  page à cocher, publication ; envoyer ids et plages à questions-ttechno (E1 → 031, E2 → 081, E3 → 032, E4 → 033).
-  Puis lot 4.
-- **En attente de David** : `create-questions --publier` du lot 3 (écarts du § 18 acceptés).
+- **État** : lots 1 et 2 **publiés**. Lot 3 (aˣ) en prod **en brouillon**, rangé et tagué (#2778, `db:migrate` fait),
+  page à cocher **7/7 OK** (§ 19), simulation `publier-lot.ts` verte.
+- **Prochaine action** : **David** lance `pnpm tsx scripts/questions/publier-lot.ts --dir
+scripts/questions/1gen-3-fonctions-exponentielles --publier` ; relire `published` au MCP ; prévenir questions-ttechno
+  (elle tague E1 à E4 après la publication). Puis lot 4 (taux moyen, phénomènes exponentiels, seuils ; phase 0 § 14),
+  worktree neuf `../ubumaths-wt-questions-1gen-lot4` ; questions-ttechno attend ses ids.
+- **En attente de David** : `publier-lot.ts --publier` du lot 3.
 - **Pièges en cours** : ADR 0020 et `couvrir-un-niveau.md` § 9 avant tout tag ; `db push` pousse TOUTES les
-  migrations en attente (`migration list --linked` d'abord) ; specs d'un bloc associer : graine 0 (ordre 2, 0, 1) ;
-  aperçu admin : serveur `--host 127.0.0.1`, saisie MathLive : cliquer la case par sa référence ; spec `bad_form` :
-  nommer la contrainte (`['form']`) ; test `/demo/diaporama` instable en CI (relancer le job).
+  migrations en attente (`migration list --linked` d'abord) ; ids écrits par `create-questions` dans le dépôt
+  principal → les copier dans un worktree, commiter, puis `git restore` (jamais les fichiers d'une autre session) ;
+  merge de `origin/main` dans une branche : message conventionnel (commitlint) ; rollbacks des lots 2 et 3 : ne plus
+  les jouer une fois les tags 1TECHNO / TTECHNO posés.
 - **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, 2026-11-17)
@@ -688,3 +688,31 @@ Coquille de la transcription corrigée dans la même PR : `src/lib/server/progra
 
 PR #2773 : CI verte (un test chronométré de `/demo/diaporama` rouge au premier passage, sans lien avec le
 lot, vert à la relance), mergée le 2026-11-17. Worktree et branche supprimés.
+
+## 19. Lot 3 : en prod, rangement et page à cocher (2026-11-17)
+
+David a lancé `create-questions --publier` après #2773. Relu au MCP : 7 brouillons, `grades` `['1_GEN']`, sans nœud,
+0 tag. Ids commités dans les fichiers (#2778).
+
+| Modèle | id                                     | Point    |
+| ------ | -------------------------------------- | -------- |
+| E1     | `e4e65a69-2710-45d1-9592-1edd100d9067` | 1GEN-032 |
+| E2     | `60971c9a-82e7-4ed5-a18a-7520b40c38b2` | 1GEN-033 |
+| E3     | `2a9c316a-ee3d-44dc-89be-8b3b5c00ac2c` | 1GEN-034 |
+| E4     | `065eea60-1d6d-4404-9015-f4624e661ab2` | 1GEN-035 |
+| E5     | `3a8ef5f7-402f-48a3-9ddc-aca94723bf56` | 1GEN-036 |
+| E6     | `9ead685c-6032-4b2b-982d-0cadfcdf40b4` | 1GEN-042 |
+| E7     | `fc27769e-ad53-4b35-8b97-b0d86acef03a` | 1GEN-059 |
+
+Tous sur « Fonctions > Fonction exponentielle > fonctions x ↦ aˣ ».
+
+- Migration `20261117191427_questions_1gen_lot3_rangement_tags.sql` (calquée sur celle du lot 2) et son test : rouge
+  sans le corps (5 échecs), 9 / 9 vert avec. `security-auditor` : aucun finding bloquant (faible, hérité :
+  `lock_timeout` sans effet hors transaction). PR #2778, CI verte, `check:migrations` vert, mergée.
+- `db:migrate` depuis le dépôt principal : seule notre migration en attente. Relu au MCP : chaque modèle sur son
+  nœud, un seul tag, brouillon, `updated_at` inchangé.
+- Ids et plages de E1 à E4 envoyés à questions-ttechno (TTECHNO-031, 081, 032, 033 après la publication) ; R1 du lot
+  2 (817d257f) : questions-1techno y pose 1TECHNO-041, accord donné.
+- Page à cocher : 7 fiches, 23 exemples ; une alerte attendue (bloc associer d'E4 non dessiné, joué dans l'aperçu,
+  § 18). https://claude.ai/artifact/3XEaFxSbGcryky6bLtYeZG (capacité `db`). Verdicts lus en base : **7/7 OK**, sans
+  commentaire. Simulation `publier-lot.ts` : 7 brouillons passent.
