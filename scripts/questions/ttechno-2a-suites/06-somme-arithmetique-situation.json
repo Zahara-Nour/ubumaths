@@ -1,4 +1,5 @@
 {
+	"id": "65e0e9f5-dfff-49b5-8a91-11ae76bbc89b",
 	"title": "Somme arithmétique en situation",
 	"description": "Reconnaître qu'un total relève d'une somme de termes consécutifs d'une suite arithmétique, puis la calculer",
 	"grades": ["T_TECHNO"],

@@ -1,4 +1,5 @@
 {
+	"id": "45ea676f-2454-407d-a3ef-88da0d201a73",
 	"title": "Moyenne arithmétique de deux nombres",
 	"description": "Calculer la moyenne arithmétique de deux nombres, retrouver un terme d'une suite arithmétique entre deux autres",
 	"grades": ["T_TECHNO"],

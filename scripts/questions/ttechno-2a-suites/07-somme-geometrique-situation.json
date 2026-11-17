@@ -1,4 +1,5 @@
 {
+	"id": "5ec00b89-1cb5-45b5-a781-cda1d051e359",
 	"title": "Somme géométrique en situation",
 	"description": "Reconnaître qu'un total relève d'une somme de termes consécutifs d'une suite géométrique (versements réguliers à intérêts composés, production en baisse), puis la calculer",
 	"grades": ["T_TECHNO"],
