@@ -7,9 +7,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, lot 1 écrit (PR à ouvrir)._
+_Mis à jour le 2026-11-17, lot 1 écrit, PR #2750 ouverte._
 
-- **État** : lot 1 (G1 à G5, suites géométriques) écrit et essayé en base locale (§ 10) ; PR des fichiers en cours.
+- **État** : lot 1 (G1 à G5, suites géométriques) écrit et essayé en base locale (§ 10) ; **PR #2750 ouverte**, CI à suivre (`gh run watch`) puis merge dès le vert.
 - **Prochaine action** : PR mergée → David lance `create-questions --dir scripts/questions/1gen-1-suites-geometriques
 --publier` (prod, brouillons) ; commiter les ids écrits en tête des fichiers ; envoyer les ids à questions-1techno ;
   migration nœud + tags (gabarit `20261026210000`), page à cocher, publication. En parallèle : phase 0 des lots 3 et
