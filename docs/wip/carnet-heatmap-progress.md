@@ -6,13 +6,13 @@ status: en-cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, PR 2 en cours (branche `feat/carnet-heatmap-sql`)._
+_Mis à jour le 2026-11-18, après #2797._
 
-- **État** : PR 2 écrite : migration `20261117222600_carnet_regularite_depuis_la_rentree.sql` (appliquée en LOCAL seulement), intégration rouge sans elle puis verte (70/70), e2e `carnet` 3/3, ADR 0040 et docs système à jour.
-- **Prochaine action** : PR → revues (`code-reviewer` + `security-auditor`) → CI → merge → `db:migrate` (additive, 4 conditions) → captures à l'œil de David.
-- **En attente de David** : rien.
-- **Pièges en cours** : base locale partagée modifiée par d'autres sessions (e2e « aucune classe à trois élèves » ou 401 en plein test : relancer) ; port 5176 souvent pris : `VERIFS_PORT` libre.
-- **Worktree / branche** : `../ubumaths-wt-carnet-heatmap` · `feat/carnet-heatmap-sql`.
+- **État** : PR 2 mergée (#2797) : `carnet_payload` rend la régularité depuis la rentrée (53 sem. max ; 5 sans année connue), évaluations à 5 semaines. Les deux PR du découpage sont mergées.
+- **Prochaine action** : `db:migrate` de `20261117222600` (additive, 4 conditions réunies) **par David** ; une autre migration attend aussi (`20261117222845_questions_1techno_lot2…`, autre session) : `db push` pousserait les deux. Puis vérification manuelle (ligne du 2026-11-18 dans `verifications-manuelles.md`), puis clôture (versement, archivage du journal).
+- **En attente de David** : `db:migrate` (seul ou avec la migration du lot 1techno).
+- **Pièges en cours** : aucun code à livrer (`deploy:prod` inutile : SQL seul) ; base locale partagée modifiée par d'autres sessions → relancer l'e2e.
+- **Worktree / branche** : supprimés.
 
 ---
 
@@ -107,3 +107,4 @@ au merge (`db:migrate`) alors que le code en prod (Zod `.max(5)`) n'est livré q
 - 2026-11-17 : phase 0 validée (ordre inversé, Q1 « jours de travail », Q2 sans colonne de nom). Worktree ouvert pour la PR 1.
 - 2026-11-17 : PR 1 #2786 mergée (CI verte, `code-reviewer` : rien de bloquant).
 - 2026-11-17 : PR 2. **L3, prémisse corrigée** : `carnet_school_year` ne rend jamais une rentrée nulle (à défaut, le 1er septembre écoulé, sans année) ; la décision « année inconnue → 5 semaines » est appliquée sur `year_id` nul (classe sans école ou école sans année active), comme l'alerte d'inactivité. Évaluations : `v_start` (5 semaines) inchangé, régularité sur `v_weeks_start`. e2e : le compte de cases suit l'arrivée de A (il y a 30 jours : 5 ou 6 selon le jour).
+- 2026-11-18 : #2797 mergée (CI verte ; `code-reviewer` : e2e fragile en septembre corrigé, rentrée lue dans le décor ; `security-auditor` : rien de bloquant). `db:migrate` laissé à David (autre migration en attente).
