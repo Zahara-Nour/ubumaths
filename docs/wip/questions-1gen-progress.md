@@ -7,20 +7,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après #2750 et la création des brouillons en prod._
+_Mis à jour le 2026-11-17, après #2754._
 
-- **État** : lot 1 mergé (#2750) ; 5 brouillons créés en prod par David (§ 11), ids commités (1487a0f73), `grades`
-  `['1_GEN']`, sans nœud ni tag (vérifié). questions-1techno a reçu les ids de G1, G4, G5 (lecture non confirmée).
-- **Prochaine action** : écrire la migration nœud + tags (`pnpm migration:horodatage`, gabarit `20261026210000`,
-  tableau du § 11) et son test d'intégration (vérifié rouge sans la migration) ; `security-auditor` ; PR ; au merge,
-  `db:migrate` depuis le dépôt principal à jour, **puis prévenir questions-1techno** (il attend notre nœud, § 11) ; puis page à cocher, publication. En parallèle : phase 0 des lots 3
-  et 4 pour questions-ttechno.
-- **En attente de David** : rien (question d'accès tranchée : personne, § 11).
-- **Pièges en cours** : AVANT tout tag, ADR 0020 et `couvrir-un-niveau.md` § 9 (un point par programme, point sur le
-  nœud du modèle ou sa notion) ; `grades` par `array_append` / `array_remove` ciblés ; `db:migrate` seulement après
-  le merge, depuis le dépôt principal à jour ; G1, G4, G5 communs avec 1TECHNO (on écrit `1_GEN` seul,
-  questions-1techno ajoute `1_TECHNO` et ses tags) ; modèle 1GEN-022 commun avec 1TECHNO-057.
-- **Worktree / branche** : `../ubumaths-wt-questions-1gen` · `feat/questions-1gen-lot1-tags` (ids + migration).
+- **État** : migration nœud + tags du lot 1 mergée (#2754, § 12), **pas encore jouée en prod**. 5 brouillons en prod,
+  `grades` `['1_GEN']`, sans nœud ni tag tant que `db:migrate` n'est pas fait.
+- **Prochaine action** : `db:migrate` depuis le dépôt principal à jour (`--dry-run` d'abord : SEULE la nôtre doit
+  partir), relire en prod (MCP), **puis prévenir questions-1techno** (il attend notre nœud) ; puis page à cocher,
+  publication. En parallèle : phase 0 des lots 3 et 4 pour questions-ttechno.
+- **En attente de David** : `db push` emporterait aussi `20261117140233_questions_1techno_lot0_retrait_118.sql`
+  (questions-1techno, DESTRUCTIVE, mergée non jouée) : la jouer avec la nôtre, ou attendre que questions-1techno
+  la joue ?
+- **Pièges en cours** : ADR 0020 et `couvrir-un-niveau.md` § 9 avant tout tag ; `grades` par `array_append` /
+  `array_remove` ciblés ; rollback du § 12 valable seulement avant les tags 1TECHNO de G1, G4, G5 ; modèle 1GEN-022
+  commun avec 1TECHNO-057.
+- **Worktree / branche** : aucun (retiré après #2754) ; le lot suivant ouvre une branche neuve.
 
 ## 1. Relevé (prod, 2026-11-17)
 
