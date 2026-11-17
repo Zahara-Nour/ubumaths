@@ -345,6 +345,8 @@ describe('notation de 4e / 3e : messages au vocabulaire de la tortue', () => {
 		expect(message('avancer nombre choisi')).toMatch(/« nombre » n’existe pas pour la tortue/);
 		expect(message('mettre résultat à 3')).toMatch(/« résultat » n’existe pas pour la tortue/);
 		expect(message('avancer résultat')).toMatch(/« résultat » n’existe pas pour la tortue/);
+		expect(message('ajouter 1 à résultat')).toMatch(/« résultat » n’existe pas pour la tortue/);
+		expect(message('ajouter 1 à nombre')).toMatch(/« nombre » n’existe pas pour la tortue/);
 		expect(message('avancer reste de 7 par 2')).toMatch(/« reste de » n’existe pas pour la tortue/);
 	});
 

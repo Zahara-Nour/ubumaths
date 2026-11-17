@@ -193,6 +193,8 @@
 		if (!workspace) return;
 		// L'élève passe aux blocs : le nom refusé n'est plus d'actualité
 		if (event instanceof BlocklyCore.Events.BlockBase) nomRefuse = null;
+		// Aperçu Python au niveau de base seulement : rien à générer au-delà
+		if (niveau !== 'base') return;
 		const genere = generateCode(workspace, 'python');
 		python = genere.success ? genere.code : '';
 	}

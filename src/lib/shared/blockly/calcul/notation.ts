@@ -591,6 +591,10 @@ export function texteVersEtatCalcul(texte: string, options: OptionsNotation = {}
 
 	/** Id de la variable nommée (créée à sa première écriture) ; nom refusé → erreur. */
 	function variable(nom: string): string {
+		// Tortue : `ajouter 1 à résultat` dit le même refus que `avancer résultat`
+		const normal = normaliserMot(nom);
+		if (options.tortue && normal === 'resultat') throw absentDeLaTortue('résultat');
+		if (options.tortue && normal === 'nombre') throw absentDeLaTortue('nombre');
 		const refus = verifierNomDeVariable(nom);
 		if (refus) throw new TexteIllisible(refus);
 		const cle = normaliserMot(nom);
