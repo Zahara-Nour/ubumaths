@@ -5,14 +5,15 @@ Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) · bornes 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après #2766 (lot 1 rangé et tagué en prod)._
+_Mis à jour le 2026-11-17, après la relecture du lot 1 (4/4 ok)._
 
 - **État** : lot 0 en prod (#2756). Lot 1 (§ 11, 4 modèles : indices base 100, inégalité) : brouillons en prod,
-  nœud + tags migrés (#2766, `20261117172627`, vérifié par MCP). Page à cocher publiée, 0 verdict :
-  https://claude.ai/artifact/TJCp41QzxCSUjjiKRjpgej
-- **Prochaine action** : relire et compter les verdicts (`ArtifactData list verdicts`) ; puis `publier-lot.ts
---dir scripts/questions/ttechno-1-automatismes` en simulation, **David** avec `--publier`. Ensuite lot 2 (suites).
-- **En attente de David** : sa relecture du lot 1 sur la page à cocher.
+  nœud + tags migrés (#2766, `20261117172627`). Relecture comptée : **4 verdicts sur 4, tous ok** (page
+  https://claude.ai/artifact/TJCp41QzxCSUjjiKRjpgej). `publier-lot.ts` en simulation : 4 brouillons passent ;
+  `garde-niveaux-tags.ts` : aucun niveau manquant.
+- **Prochaine action** : **David** lance `pnpm tsx scripts/questions/publier-lot.ts --dir
+scripts/questions/ttechno-1-automatismes --publier` ; relire le statut `published` en base (MCP). Ensuite lot 2 (suites).
+- **En attente de David** : la publication du lot 1 (`--publier`, écriture en prod).
 - **En attente de `questions-1gen`** : leurs ids et plages des lots 3 et 4 (§ 8 bis), puis nos tags et compléments.
 - **Pièges en cours** : un point TTECHNO par modèle (trigger) ; `grades` en `array_append` seulement ; Chrome
   piloté = choisir celui du Mac mini (`switch_browser`), serveur en `--host 127.0.0.1`.
