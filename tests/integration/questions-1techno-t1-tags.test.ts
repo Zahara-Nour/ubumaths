@@ -60,6 +60,8 @@ const LOT: [string, string[], string][] = [
 	['fb3b536c-1ead-4863-85b2-a6104d949d50', ['1_SPE'], '1TECHNO-106']
 ];
 const ids = LOT.map(([id]) => id);
+/** Points dont le modèle est rangé, en prod, sur une sous-notion fille du nœud du point. */
+const SUR_SOUS_NOTION = new Set(['1TECHNO-004', '1TECHNO-005', '1TECHNO-120']);
 /** Date de modification fabriquée : elle ne doit pas bouger (tags et niveaux ne sont pas du contenu). */
 const AVANT = '2026-01-02T03:04:05.000Z';
 
@@ -86,14 +88,37 @@ async function poserEtatProd(pg: Client, auteur: string): Promise<void> {
 		timestamp: AVANT
 	});
 	for (const [id, grades, code] of LOT) {
+		// En prod, 3 modèles sont rangés sur une sous-notion fille du nœud du point (branche
+		// « notion » du trigger des tags) ; les autres sur le nœud même du point.
+		const noeud = SUR_SOUS_NOTION.has(code)
+			? `(select n.id from public.classification_nodes n
+			     join public.curriculum_points p on p.node_id = n.parent_id
+			    where p.code = $3 and p.archived_at is null and n.archived_at is null
+			    order by n.position limit 1)`
+			: '(select node_id from public.curriculum_points where code = $3 and archived_at is null)';
 		await sansTriggerDeDate(
 			pg,
 			`update public.question_templates
-			    set grades = $2, status = 'published',
-			        classification_node_id = (select node_id from public.curriculum_points where code = $3 and archived_at is null)
+			    set grades = $2, status = 'published', classification_node_id = ${noeud}
 			  where id = $1`,
 			[id, grades, code]
 		);
+	}
+	// Garde du décor : les 3 copies sont bien sur une sous-notion (sinon le test ne prouverait rien)
+	const r = await pg.query<{ n: string }>(
+		`select count(*) as n
+		   from unnest($1::uuid[], $2::text[]) as l(id, code)
+		   join public.question_templates q on q.id = l.id
+		   join public.classification_nodes n on n.id = q.classification_node_id
+		   join public.curriculum_points p on p.code = l.code and p.archived_at is null
+		  where n.kind = 'subnotion' and n.parent_id = p.node_id`,
+		[
+			LOT.filter(([, , code]) => SUR_SOUS_NOTION.has(code)).map(([id]) => id),
+			LOT.filter(([, , code]) => SUR_SOUS_NOTION.has(code)).map(([, , code]) => code)
+		]
+	);
+	if (Number(r.rows[0].n) !== SUR_SOUS_NOTION.size) {
+		throw new Error('décor faux : sous-notion introuvable sous le nœud d’un point');
 	}
 }
 
