@@ -5,15 +5,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après la publication du lot 8a (§ 21 octies)._
+_Mis à jour le 2026-11-17, PR du correctif `zeros` des horloges CE (§ 21 neuvies)._
 
-- **État** : lots 0 à 8a publiés, 131 points sur 171. Restent 8b, 8c, 8d, 8e, 9 (§ 20, découpage validé § 20 bis).
-- **Prochaine action** : selon la réponse de David, correctif `zeros` des horloges CE1 / CE2 (reco § 21 octies), puis
-  lot 8b « aires et angles » (086, 087, 088 ; 089, 090, 091 sans degré) : relevé des patrons, phase 0.
-- **En attente de David** : go sur le correctif `zeros` (« 05 » vaut ½ point dans les horloges CE publiées).
+- **État** : lots 0 à 8a publiés, 131 points sur 171. Correctif `zeros` (2 modèles CE2) en PR. Restent 8b, 8c, 8d,
+  8e, 9 (§ 20, découpage validé § 20 bis).
+- **Prochaine action** : merge de la PR `fix/horloges-ce-zeros`, puis David lance
+  `update-published-questions.ts --lot horloges-ce-zeros --publier`, vérification au MCP ; puis lot 8b « aires et
+  angles » (086, 087, 088 ; 089, 090, 091 sans degré) : relevé des patrons, phase 0.
+- **En attente de David** : l'écriture en prod du correctif.
 - **Pièges en cours** : `create-questions --publier` lancé depuis le dépôt principal écrit les ids dans SES fichiers :
   les reporter sur la branche du worktree, puis `git restore` dans le dépôt principal ; `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance (une autre session peut l'avoir fait avant : vérifier au MCP) ; `db:migrate` depuis un worktree : copier d'abord le lien `../ubumaths/supabase/.temp/` ; `create-questions` = `pnpm tsx scripts/create-questions.ts …`, refuse `theme`/`domain`/`subdomain` (ADR 0035) ; horodatage = `pnpm migration:horodatage`, puis `pnpm check:migrations --pr <n>` **juste avant le merge** ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule ; un brouillon sans nœud ne peut pas être tagué (trigger) ; le pre-commit reformate le relevé `etat-prod-*` (prettier) et laisse l'index décalé : `git diff HEAD` vide → `git restore --staged` ; le mode auto refuse `publier-lot` et `garde-niveaux-tags` (lecture de la prod), même en simulation : David les lance ; zsh ne découpe pas `$F` : un tableau `F=(…)`.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, détaché sur `main`, aucune branche ouverte.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, `fix/horloges-ce-zeros`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -1690,3 +1692,16 @@ celui qui suit le modèle CE2 de même geste dans le nœud, partagé, sans renum
   minutes (12 modèles à horloge, aucun en `zeros: off` ; trier : pas « Place les aiguilles » ni les QCM), lot
   `update-published-questions` comme `totaux-ce`, spec « 05 » = point entier ; ne pas réécrire l'affichage « 9 h 5 ».
   Puis 8b.
+
+### 21 neuvies. Horloges CE : « 05 » au point entier (2026-11-17)
+
+- Go de David (« oui ») sur la reco du § 21 octies. Tri par sonde (600 tirages par modèle, réponse attendue préfixée
+  d'un 0) des 12 modèles CE1 / CE2 publiés à horloge : seuls **2** ont une case où l'élève écrit une HEURE et où
+  « 05 » valait ½ point (`zeros`) : CE2 `0d41a45e` « Quelle heure est-il ? (heures et minutes) » V1 à V3, CE2
+  `71741618` « Dire l'heure et l'écrire en chiffres » V2, V3. Hors champ : cases de choix, heure seule, durées en
+  minutes (« 05 min » reste ½ point) ; durées « ? h ? min » (`4c75f053` V4, `2370bc8d` V2) laissées telles quelles.
+- `options.constraints.zeros: off` sur les 2 modèles (l'heure « 07 » a aussi le point entier) ; 8 specs (« 05 »,
+  « 04 », « 00 », « 07 », « 08 » au point entier ; « 5 » juste aussi). Preuve rouge : sans l'option, 6 specs en
+  `unoptimal_form zeros` ; avec, 18/18 et 18/18.
+- Lot `horloges-ce-zeros` de `update-published-questions.ts` (instantané `scripts/questions/ce-horloges-zeros/`,
+  commit à part). Simulation en prod : `options` et `testSpecs` seuls. Écriture en prod : à lancer par David.

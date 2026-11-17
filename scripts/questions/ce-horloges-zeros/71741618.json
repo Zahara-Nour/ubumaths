@@ -6,6 +6,11 @@
 	"level": 6,
 	"delay": 120,
 	"status": "published",
+	"options": {
+		"constraints": {
+			"zeros": "off"
+		}
+	},
 	"variations": [
 		{
 			"blanks": [
@@ -319,6 +324,44 @@
 			},
 			"description": "Erreur : midi moins le quart lu 12 h 45",
 			"variationIndex": 3
+		},
+		{
+			"description": "trois heures cinq écrit 3 h 05 : point entier",
+			"variationIndex": 1,
+			"variables": {
+				"n": "3",
+				"t": "1"
+			},
+			"answers": ["3", "05"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "trois heures cinq écrit 3 h 5 : juste aussi",
+			"variationIndex": 1,
+			"variables": {
+				"n": "3",
+				"t": "1"
+			},
+			"answers": ["3", "5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "15 h 08 écrit avec le zéro : point entier",
+			"variationIndex": 2,
+			"variables": {
+				"h": "15",
+				"m": "8",
+				"q": "1",
+				"r": "3"
+			},
+			"answers": ["15", "08"],
+			"expected": {
+				"status": "correct"
+			}
 		}
 	]
 }

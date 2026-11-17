@@ -6,6 +6,11 @@
 	"level": 5,
 	"delay": 120,
 	"status": "published",
+	"options": {
+		"constraints": {
+			"zeros": "off"
+		}
+	},
 	"variations": [
 		{
 			"blanks": [
@@ -296,6 +301,74 @@
 			},
 			"description": "Après-midi, minute 0 : 14 h",
 			"variationIndex": 2
+		},
+		{
+			"description": "8 h 05 écrit avec le zéro (« 05 ») : réponse juste, point entier",
+			"variationIndex": 0,
+			"variables": {
+				"h": "8",
+				"q": "1",
+				"m": "5"
+			},
+			"answers": ["8", "05"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "8 h 5 écrit sans le zéro : juste aussi",
+			"variationIndex": 0,
+			"variables": {
+				"h": "8",
+				"q": "1",
+				"m": "5"
+			},
+			"answers": ["8", "5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "2 h 04 écrit avec le zéro : point entier",
+			"variationIndex": 1,
+			"variables": {
+				"h": "2",
+				"m": "4",
+				"q": "0",
+				"r": "4"
+			},
+			"answers": ["2", "04"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "14 h 00 écrit « 00 » : point entier",
+			"variationIndex": 2,
+			"variables": {
+				"h": "2",
+				"m": "0",
+				"q": "0",
+				"r": "0"
+			},
+			"answers": ["14", "00"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "15 h 07 écrit avec le zéro : point entier",
+			"variationIndex": 2,
+			"variables": {
+				"h": "3",
+				"m": "7",
+				"q": "1",
+				"r": "2"
+			},
+			"answers": ["15", "07"],
+			"expected": {
+				"status": "correct"
+			}
 		}
 	]
 }
