@@ -5,16 +5,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après #2782 (lot 8a écrit, brouillons créés, rangement en PR, § 21 quinquies)._
+_Mis à jour le 2026-11-17, après #2785 (§ 21 sexies)._
 
-- **État** : lots 0 à 7 publiés, 126 points sur 171. Lot 8a « heures et durées » : fichiers mergés (#2782),
-  5 brouillons créés en prod ; PR de rangement (migration nœud + tag) en cours. Puis 8b, 8c, 8d, 8e, 9 (§ 20).
-- **Prochaine action** : merge de la PR de rangement 8a, `db:migrate` par David, vérification au MCP, page à cocher.
-- **En attente de David** : « 05 » vaut ½ point dans les horloges CE2 (règle `zeros`, § 21 ter) : corriger ces
+- **État** : lots 0 à 7 publiés, 126 points sur 171. Lot 8a « heures et durées » : 5 brouillons en prod, migration
+  de rangement mergée (#2785), pas encore passée. Puis 8b, 8c, 8d, 8e, 9 (§ 20).
+- **Prochaine action** : David lance `db:migrate` (seule `20261117210204` en attente, vérifié au MCP) ; puis
+  vérification au MCP (nœuds, tags), page à cocher `page-a-cocher.ts --dir scripts/questions/cm1-8a`.
+- **En attente de David** : ce `db:migrate` ; « 05 » vaut ½ point dans les horloges CE2 (règle `zeros`, § 21 ter) : corriger ces
   modèles publiés (`zeros: off`) ?
 - **Pièges en cours** : `create-questions --publier` lancé depuis le dépôt principal écrit les ids dans SES fichiers :
   les reporter sur la branche du worktree, puis `git restore` dans le dépôt principal ; `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance (une autre session peut l'avoir fait avant : vérifier au MCP) ; `db:migrate` depuis un worktree : copier d'abord le lien `../ubumaths/supabase/.temp/` ; `create-questions` = `pnpm tsx scripts/create-questions.ts …`, refuse `theme`/`domain`/`subdomain` (ADR 0035) ; horodatage = `pnpm migration:horodatage`, puis `pnpm check:migrations --pr <n>` **juste avant le merge** ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule ; un brouillon sans nœud ne peut pas être tagué (trigger) ; le pre-commit reformate le relevé `etat-prod-*` (prettier) et laisse l'index décalé : `git diff HEAD` vide → `git restore --staged` ; le mode auto refuse `publier-lot` et `garde-niveaux-tags` (lecture de la prod), même en simulation : David les lance ; zsh ne découpe pas `$F` : un tableau `F=(…)`.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, `feat/questions-cm1-lot8a-rangement`.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, détaché sur `main`, aucune branche ouverte.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -1668,3 +1669,8 @@ celui qui suit le modèle CE2 de même geste dans le nœud, partagé, sans renum
 - Test `questions-cm1-lot8a-rangement-tags.test.ts` : 20/20 vert ; corps neutralisé (`select 1;`) : 9 échecs + suite
   principale sautée. `types:cliquet` tenu ; `security-auditor` : aucun finding (diff avec le lot 7 : données,
   compteurs, préfixe `_qcm1l8a_` ; état « avant » remesuré au MCP).
+
+### 21 sexies. Lot 8a — rangement mergé (2026-11-17)
+
+- #2785 mergée (CI verte, `check:migrations --pr 2785` passé), branche supprimée ; worktree détaché sur `main`.
+- MCP : `20261117210204` est la seule migration en attente (les 72 depuis le 2026-11-11 sont passées).
