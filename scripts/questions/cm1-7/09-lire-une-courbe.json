@@ -1,4 +1,5 @@
 {
+	"id": "5291dc9f-a66d-46fa-8f0a-ccbdca44f35f",
 	"title": "Lis la courbe des températures",
 	"description": "Relevé de la journée : la température à une heure donnée (BO : à 14 h), toutes les deux heures ou toutes les heures ; l'heure du relevé qui indique une température donnée",
 	"grades": ["CM1"],

@@ -1,4 +1,5 @@
 {
+	"id": "a434bd68-a6e8-43b4-9c36-77114bce678b",
 	"title": "Place les points d'un relevé dans un repère",
 	"description": "Relevé de cinq valeurs (plante semaine par semaine, température heure par heure, hauteur d'eau mois par mois) : placer les points, axes et graduations donnés (de 2, 1 ou 5)",
 	"grades": ["CM1"],
