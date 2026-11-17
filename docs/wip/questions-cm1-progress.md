@@ -9,8 +9,8 @@ _Mis à jour le 2026-11-17, après #2769 (§ 19 octies)._
 
 - **État** : lots 0 à 7 publiés, **126 points sur 171** (recompte MCP). Totaux masqués dans 4 variations CE1 / CE2 :
   écrits en prod et vérifiés au MCP (§ 19 octies).
-- **Prochaine action** : relever les 45 points sans modèle publié, puis phase 0 du lot 8.
-- **En attente de David** : rien.
+- **Prochaine action** : écrire le lot 8a (heures et durées) après validation de sa phase 0 (§ 21).
+- **En attente de David** : phase 0 du lot 8a, questions 1 à 4 (§ 21).
 - **Pièges en cours** : `create-questions --publier` lancé depuis le dépôt principal écrit les ids dans SES fichiers :
   les reporter sur la branche du worktree, puis `git restore` dans le dépôt principal ; `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance (une autre session peut l'avoir fait avant : vérifier au MCP) ; `db:migrate` depuis un worktree : copier d'abord le lien `../ubumaths/supabase/.temp/` ; `create-questions` = `pnpm tsx scripts/create-questions.ts …`, refuse `theme`/`domain`/`subdomain` (ADR 0035) ; horodatage = `pnpm migration:horodatage`, puis `pnpm check:migrations --pr <n>` **juste avant le merge** ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule ; un brouillon sans nœud ne peut pas être tagué (trigger) ; le pre-commit reformate le relevé `etat-prod-*` (prettier) et laisse l'index décalé : `git diff HEAD` vide → `git restore --staged` ; le mode auto refuse `publier-lot` et `garde-niveaux-tags` (lecture de la prod), même en simulation : David les lance ; zsh ne découpe pas `$F` : un tableau `F=(…)`.
 - **Worktree / branche** : `../ubumaths-wt-questions-cm1`, aucune branche ouverte.
@@ -1556,3 +1556,73 @@ geste dans le nœud, partagé, sans renuméroter.
 - `update-published-questions.ts --lot totaux-ce --publier` lancé par David. Vérifié au MCP : CE2 `f0f681c4`
   V1 à V3 en `totaux: non` ; CE1 `29edb833` V2 en `totaux: non`, V1 et V3 en `totaux: oui` (comme l'instantané
   `scripts/questions/ce-totaux-existants/`). Les deux modèles restent `published`.
+
+## 20. Relevé des 45 points restants (MCP, 2026-11-17)
+
+Recompte MCP : **45 points sans modèle publié** (126 sur 171 couverts), aucun brouillon en attente. Deux outils
+classés C au § 3 sont désormais en prod, ce qui fait passer 5 points en B :
+
+- **horloge à placer** (` ```horloge ` + `placer`, CE1 `d478935f`, CE2 `c06fe751`) → 093 en vrai geste ;
+- **figure à compléter** avec les contrôles symétrique (CE2 `49b8dc0b`, 6e `59694d66`), perpendiculaire (6e
+  `59694d66`, 5e `9dc37ad2`), parallèle (CE2 `5d869c65`, 5e `fbe65ad1`) → 107, 108, 167, 168.
+
+Découpage proposé (38 points évaluables + 7 D) :
+
+| Lot | Thème                          | Points                                                    | Patrons en prod                    |
+| --- | ------------------------------ | --------------------------------------------------------- | ---------------------------------- |
+| 8a  | heures et durées               | 092, 093, 094, 166, 095                                   | 7 modèles CE2 à horloge            |
+| 8b  | aires et angles                | 086, 087, 088 ; 089, 090, 091 (sans degré)                | angles CE1 / CE2, aires 6e         |
+| 8c  | géométrie plane                | 098 (codes), 099 (cercle), 100, 101, 102, 103, 106 (axes) | axes CE2 `b307a9f9`, `79e8e279`    |
+| 8d  | figures à compléter            | 107, 108, 167, 168                                        | ci-dessus                          |
+| 8e  | solides, déplacements          | 109, 110-113, 115 (patrons du cube), 117, 118 (robot)     | patrons CE2 `11ebf9fe`, `c8c9746a` |
+| 9   | probabilités, proportionnalité | 123-128 ; 129, 130                                        | 6e, 5e                             |
+
+**D (sans modèle, décidé au § 4 bis)** : 140, 097, 104, 105, 114, 116, 119.
+
+Questions à David : découpage et ordre (reco : 8a d'abord, patrons CE2 prêts) ; 093 en horloge à placer et 107,
+108, 167, 168 en figure à compléter (B), plus en C.
+
+### 20 bis. Découpage : réponse de David (2026-11-17)
+
+« oui » : découpage du § 20 (8a heures et durées → 8b aires et angles → 8c géométrie plane → 8d figures à compléter →
+8e solides, déplacements → 9 probabilités, proportionnalité) ; 093 en horloge à placer ; 107, 108, 167, 168 en figure
+à compléter.
+
+## 21. Lot 8a — heures et durées : phase 0 (à valider, 2026-11-17)
+
+Points : 092, 093, 094, 166, 095. Aucun modèle CM1 ni CM2 sur ces points. Nœuds existants (« Durées ») : **lecture
+de l'heure** (092, 093) et **calcul de durées** (094, 166, 095), comme les modèles CE2. Patrons : `scripts/questions/
+ce2-7b/` (01, 03, 05, 07 : lire, placer, durée entre deux horloges, comparer) et `ce2-6b/` (12, 13 : problèmes à une
+et deux étapes), tous publiés. Bornes `cycle3.json` : heures et minutes, pas de secondes ; 094 « de 8 h 52 min à
+11 h 37 min » ; 095 une ou deux étapes, instants intermédiaires, pas de calcul posé en base soixante, unités jour,
+heure, minute.
+
+**Ce qui distingue le CM1 du CE2** : le CE2 lit déjà à la minute près sur un cadran à 12 chiffres, et ses durées
+restent à 5 min près, dans 2 h 20 (`ce2-7b/05`). Le CM1 lit un **cadran moins aidé** (`chiffres: quarts`, puis
+`aucun`), et ses durées sont **à la minute près, en heures et minutes, avec passage d'une ou plusieurs heures**.
+
+| #    | Point   | Sous-notion        | Modèle                               | Variations, plages                                                                                                                                                                                                          |
+| ---- | ------- | ------------------ | ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 8a-1 | CM1-092 | lecture de l'heure | Quelle heure est-il ? (cadran nu)    | V1 `chiffres: quarts`, à la minute ; V2 `chiffres: aucun`, à la minute ; V3 « c'est l'après-midi », `chiffres: quarts`, réponse 13 h à 23 h 59                                                                              |
+| 8a-2 | CM1-093 | lecture de l'heure | Place les aiguilles (cadran nu)      | V1 `placer:` à la minute, `chiffres: quarts` ; V2 heure de l'après-midi écrite 13 h à 23 h (« 15 h 37 ») ; V3 `chiffres: aucun`                                                                                             |
+| 8a-3 | CM1-094 | calcul de durées   | Durée entre deux horloges (h et min) | V1 moins d'une heure, à cheval sur l'heure, à la minute (8 h 52 → 9 h 17) : réponse en min ; V2 de 1 h à 3 h 59 (8 h 52 → 11 h 37) : h et min ; V3 l'après-midi, `cadran: 24`                                               |
+| 8a-4 | CM1-166 | calcul de durées   | Quelle durée est la plus longue ?    | Deux activités, deux paires d'horloges, durées en h et min à la minute ; V1 écart de 1 à 9 min ; V2 « elles durent autant » possible. Case « choix » à trois issues                                                         |
+| 8a-5 | CM1-095 | calcul de durées   | Problèmes de durées                  | V1 heure d'arrivée (départ + durée h min, à la minute) ; V2 heure de départ (arrivée − durée) ; V3 deux étapes (trajet, arrêt, trajet) ; V4 jours et heures (départ lundi 21 h, 14 h de trajet : quel jour, quelle heure ?) |
+
+Forme commune : une case par nombre, l'unité après la case (`$?~\text{h}~?~\text{min}$`), comme au CE2 ; 166 en case
+« choix » (« le film », « le match », « ils durent autant »). Corrigé : l'axe des instants intermédiaires (« de 8 h 52
+à 9 h : 8 min ; de 9 h à 11 h : 2 h ; de 11 h à 11 h 37 : 37 min »), jamais une soustraction posée en base soixante.
+Specs d'erreurs typiques : aiguilles échangées (lire la petite comme la grande), l'heure suivante lue trop tôt (8 h 55
+lu 9 h 55), soustraction décimale (11,37 − 8,52 → 2 h 85), minutes au-delà de 59, 12 h ajoutée à tort.
+
+Questions :
+
+1. **Cadran nu** (8a-1, 8a-2) : `chiffres: quarts` puis `aucun` pour distinguer le CM1 du CE2, qui lit déjà à la
+   minute près. Reco : **oui**.
+2. **Jours et heures** (8a-5 V4) : le BO cite l'unité « jour » ; une variation qui passe minuit (jour de la semaine
+   - heure). Reco : **oui**, une variation.
+3. **166** : case « choix » à trois issues, dont « ils durent autant ». Reco : **oui**.
+4. **Niveaux** : même règle qu'au lot 7, le niveau qui suit le modèle CE2 de même geste dans le nœud, partagé, sans
+   renuméroter ; relevés de nouveau juste avant la création. Reco : **oui**.
+
+**Question d'accès** : brouillons, puis migration nœud + tag → **personne** ne gagne d'accès.
