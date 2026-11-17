@@ -5,14 +5,12 @@ Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) · bornes 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après la publication du lot 1._
+_Mis à jour le 2026-11-17, phase 0 du lot 2._
 
-- **État** : lot 0 en prod (#2756). Lot 1 (§ 11, 4 modèles : indices base 100, inégalité) **publié** : relu 4/4 ok,
-  `publier-lot.ts --publier` lancé par David, 4 `published` vérifiés par MCP.
-- **Prochaine action** : lot 2 (suites : 016, 018, 074, 076, 077 ; § 3, § 4) — phase 0 : relever l'existant
-  (tous niveaux, lecture complète, § 7 ; brouillons 1re spé du § 6 ; journal `questions-1techno` pour les suites),
-  puis proposer les modèles à David et **attendre sa validation**.
-- **En attente de David** : rien.
+- **État** : lots 0 et 1 en prod (#2756, #2763, #2766 ; lot 1 publié). Lot 2 (suites) : phase 0 écrite (§ 12),
+  15 points, 11 modèles neufs proposés (M1–M8, P1–P3) + 2 tags (c4887e49 → 025, 0b5c3db6 → 023).
+- **Prochaine action** : réponses de David à Q16–Q18 (§ 12), puis écriture du lot 2a (M1–M8) dans un worktree.
+- **En attente de David** : Q16 (tag 0b5c3db6 → 023 ?), Q17 (connaissances 017, 019 : rien ?), Q18 (2a puis 2b ?).
 - **En attente de `questions-1gen`** : leurs ids et plages des lots 3 et 4 (§ 8 bis), puis nos tags et compléments.
 - **Pièges en cours** : un point TTECHNO par modèle (trigger) ; `grades` en `array_append` seulement ; Chrome
   piloté = choisir celui du Mac mini (`switch_browser`), serveur en `--host 127.0.0.1`.
@@ -318,3 +316,60 @@ départ ; 3 fiches au bloc « ranger » non dessiné, à jouer dans l'aperçu : 
 **Publication (2026-11-17)** : page à cocher relue, 4 verdicts sur 4 « ok » ; `publier-lot.ts` en simulation (4
 passent) ; `garde-niveaux-tags.ts` vert ; David a lancé `--publier` ; 4 `published`, `grades ['T_TECHNO']`,
 vérifiés par MCP. **Lot 1 clos.**
+
+## 12. Lot 2 : suites, phase 0 (2026-11-17)
+
+**Points du lot** (sans modèle après le lot 0, § 9) : 016, 017, 018, 019, 020, 021, 022, 023, 025, 028, 029,
+030, 074, 075, 076 — 15 points (le bloc « Reprendre ici » n'en citait que 5 : la lecture complète du lot 0 avait
+déclassé les jumeaux de 017–023, 025, 028–030). 077 reste couvert par e4eaaf16 (Σ jamais écrit, accepté au lot 0).
+
+**Relevé prod (MCP, lecture seule)**, tous les modèles rangés sur le nœud de ces points ou une sous-notion fille,
+plus une passe par contenu (`\sum`, Σ, moyenne, trois nombres, termes consécutifs, inverses) :
+
+- **Nouveaux depuis le lot 0** (modèles communs de `questions-1gen`, publiés, `{1_GEN,1_TECHNO}`, instantanés
+  `scripts/questions/1techno-g/`, lus en entier) :
+  - **c4887e49** « Terme général d'une suite géométrique à termes positifs » (sous-notion « terme général », celle
+    de 025) : u₀ ou u₁ ∈ 2..9, q ∈ 2..5, v2 intérêts composés → **tout dans les bornes de 025**.
+  - **0b5c3db6** « Déterminer la raison d'une suite géométrique à termes positifs » (sous-notion « définition »,
+    celle de 023) : v2, v3 = évolution en % (abonnement, voiture) → la raison **modélise une évolution** ; v0, v1 =
+    calcul nu u(k+1)/u(k), termes positifs (dans les bornes, mais pas le grain de 023).
+  - f15045ec, e0f3ac2f (calculer un terme, `1_GEN` seul, non communs), 96668141, 13388e8f, e8f08a19, 817d257f
+    (graphiques, notion « Généralités ») : aucun point du lot.
+- **Toujours rien** sur Σ, la moyenne arithmétique ou géométrique de deux nombres, « trois nombres consécutifs »,
+  les sommes en situation, la somme des inverses ; les sommes de carrés / cubes (96d19805, 9eac8754) restent sans
+  Python ; 31a77ba9 (Python, terme d'une suite) ne somme rien.
+- 98c3f740 (accroissement constant), b6753dff (taux constant) : rangés sur la **notion**, 022 / 023 sur la
+  sous-notion « définition » → trigger refuse (§ 9) ; les déplacer toucherait le rangement de 1re spé : non.
+- Brouillons 1re spé « Cours » (`scripts/questions/1spe-cours-suites/` D20–D23 : 9bfe6c4c, 53facec2, e2743a04,
+  7f63ea6b, 252e85d9) : questions de cours à réponse libre sur les sommes ; ne pas les doublonner.
+- Chantiers voisins : aucun point 1GEN / 1TECHNO sur moyennes, trois nombres, Σ, sommes en situation, Python des
+  sommes (seuls 1TECHNO-005 et 120, déjà servis) → pas de modèle commun à prévoir.
+
+**Proposition** (modèles neufs `grades ['T_TECHNO']`, brouillons, un point TTECHNO chacun, sur le nœud du point) :
+
+| #   | Modèle                                                   | Point | Contenu (variations)                                                                        | Niv. |
+| --- | -------------------------------------------------------- | ----- | ------------------------------------------------------------------------------------------- | ---- |
+| M1  | Moyenne arithmétique de deux nombres                     | 016   | calcul (entiers, décimaux, relatifs) ; terme manquant u₁ entre u₀ et u₂ d'une suite arithm. | 1    |
+| M2  | Moyenne géométrique de deux nombres positifs             | 018   | √(ab) à produit carré parfait ; arrondi ; terme manquant d'une suite géométrique > 0        | 1    |
+| M3  | Trois nombres consécutifs d'une suite arithmétique ?     | 020   | choix « sont / ne sont pas » + écart b − a, c − b en cases ; un cas en situation            | 2    |
+| M4  | Trois nombres consécutifs d'une suite géométrique ?      | 021   | même forme par les quotients b/a, c/b (nombres > 0)                                         | 2    |
+| M5  | Raison d'une suite arithmétique modélisant une évolution | 022   | « augmente de r par an » ; tableau de relevés ; deux valeurs non consécutives (années)      | 1–2  |
+| M6  | Somme arithmétique en situation                          | 028   | total sur n périodes (production, épargne qui augmente de r) : reconnaître puis calculer    | 3    |
+| M7  | Somme géométrique en situation                           | 029   | versements réguliers à intérêts composés (exemple du BO), production qui baisse de t %      | 3    |
+| M8  | Notation Σ                                               | 074   | développer Σ (carrés, cubes, inverses) ; nombre de termes ; écrire une somme avec Σ (choix) | 2    |
+| P1  | Fonction Python : somme des n premiers carrés            | 030   | compléter l'accumulateur (choix) ; bornes de `range` (choix) ; valeur renvoyée (case)       | 2    |
+| P2  | Fonction Python : somme des n premiers cubes             | 075   | idem                                                                                        | 2    |
+| P3  | Fonction Python : somme des n premiers inverses          | 076   | idem, valeur exacte en fraction ; piège `1/k` avec k = 0 au départ de `range(n)`            | 2    |
+
+**Tags** (migration, page à cocher d'abord, comme le lot 0) : c4887e49 → 025 ; 0b5c3db6 → 023 (Q16).
+
+**Questions à David** :
+
+- **Q16 — 0b5c3db6 → 023** : 2 variations sur 4 modélisent une évolution, les 2 autres sont le calcul nu (dans
+  les bornes). Le taguer 023, ou écrire un modèle « raison géométrique modélisant une évolution » (jumeau de M5) ?
+  Reco : **taguer** (le grain y est, rien n'est hors bornes ; 349e1be5 était refusé aussi pour ses termes ±).
+- **Q17 — Connaissances 017, 019** (« somme des n premiers termes », formules) : couvertes de fait par 026 / 027
+  (44b32cad, e7cfe442). Un modèle court par connaissance (formule à compléter), ou rien ? Reco : **rien** pour
+  l'instant (les brouillons « Cours » D20–D22 de 1re spé font ce travail une fois publiés).
+- **Q18 — Découpage** : lot 2a « suites » (M1–M8 + tags) puis lot 2b « Python » (P1–P3), ou un seul lot ?
+  Reco : **2a puis 2b** (11 modèles d'un coup font une page à cocher trop longue).
