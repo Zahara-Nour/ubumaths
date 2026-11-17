@@ -7,19 +7,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après la validation des phases 0 des lots 2, 3 et 4._
+_Mis à jour le 2026-11-17, lot 2 écrit (§ 16), PR des fichiers ouverte._
 
-- **État** : lot 1 publié (§ 13). Phases 0 **validées** : lot 2 représentations graphiques (§ 15), lots 3 aˣ et 4
-  taux moyen / seuils (§ 14). Envoyées à questions-ttechno (lots 3, 4) et questions-1techno (lot 2).
-- **Prochaine action** : écrire le lot 2 dans un worktree neuf `../ubumaths-wt-questions-1gen-lot2`, branche
-  `feat/questions-1gen-lot2` (script `docs/wip/questions/lot-1gen-2.py` calqué sur `lot-1gen-1.py`) ; puis lots 3, 4.
-- **En attente de David** : rien.
+- **État** : lot 1 publié (§ 13). Lot 2 écrit : 6 modèles R1 à R6, specs, sonde et essai local verts (§ 16), PR des
+  fichiers sur `feat/questions-1gen-lot2`. Phases 0 des lots 3 et 4 validées (§ 14).
+- **Prochaine action** : PR verte → merge ; puis **David** lance `create-questions --dir
+scripts/questions/1gen-2-representations-graphiques --publier` ; commiter les ids ; migration nœud + tags (016, 019,
+  041, 058 → représentation graphique ; 020, 051 → expression et droite) ; envoyer les ids de R2, R3, R4 à
+  questions-1techno. Ensuite lots 3, 4.
+- **En attente de David** : jouer R1 à R6 dans l'aperçu admin (l'extension Chrome ne pilote pas `[::1]`, § 16) ; dire
+  si les écarts à la phase 0 du § 16 lui vont.
 - **Pièges en cours** : ADR 0020 et `couvrir-un-niveau.md` § 9 avant tout tag ; `grades` par `array_append` /
-  `array_remove` ciblés ; `db push` pousse TOUTES les migrations de `main` en attente (`--dry-run` d'abord) ; repère à
-  placer = 6 points au plus, sur les nœuds de la grille ; `tracer:` et `placer:` jamais dans le même bloc ; modèles
+  `array_remove` ciblés ; `db push` pousse TOUTES les migrations de `main` en attente (`--dry-run` d'abord) ; modèles
   communs : R2, R3, R4 (1techno), E2 et autres candidats TTECHNO (ttechno) ; correction de la coquille « t/n » de
   `src/lib/server/programmes/transcriptions/1_GEN.md` dans la PR du lot 3.
-- **Worktree / branche** : aucun ; le lot 2 ouvre une branche neuve.
+- **Worktree / branche** : `../ubumaths-wt-questions-1gen-lot2`, `feat/questions-1gen-lot2`.
 
 ## 1. Relevé (prod, 2026-11-17)
 
@@ -573,3 +575,36 @@ publication par David.
 **Réponse de questions-1techno (2026-11-17)** : d'accord, plages vérifiées contre ses bornes. R2 → 1TECHNO-044,
 R3 → 117, R4 → 119 (même nœud). Retirés de son lot 4. Lui envoyer les ids en prod ; elle tague après notre migration,
 page à cocher d'abord. Sa migration du lot G (G1, G4, G5) est en PR #2758.
+
+## 16. Lot 2 : écriture (2026-11-17)
+
+Script `docs/wip/questions/lot-1gen-2.py` → `scripts/questions/1gen-2-representations-graphiques/` (6 fichiers,
+65 specs). `question:specs` vert pour les 6 modèles (50 tirages par variation) ; simulation `create-questions` verte
+contre la prod (aucun homonyme) ; 555 formules des aperçus (40 tirages) passées à `validateLatex` avec un compte des
+accolades : 0 problème ; `sonde-courbes` sur 300 tirages, 2 700 blocs ` ```courbe ` (nuages du bloc associer
+compris) : 0 problème. Essai en base locale : les 6 modèles créés en brouillon (copie des fichiers, ids locaux).
+**Aperçu admin non joué** : l'appli redirige vers `http://[::1]:<port>` et l'extension Chrome refuse cette adresse.
+
+| Modèle | Fichier                                | Variations | Specs |
+| ------ | -------------------------------------- | ---------- | ----- |
+| R1     | `01-associer-nuage-suite-arithmetique` | 2          | 4     |
+| R2     | `02-placer-termes-suite-arithmetique`  | 3          | 7     |
+| R3     | `03-placer-termes-suite-geometrique`   | 5          | 11    |
+| R4     | `04-lire-nuage-suite-geometrique`      | 6          | 14    |
+| R5     | `05-tracer-droite-fonction-affine`     | 3          | 8     |
+| R6     | `06-lire-droite-fonction-affine`       | 4          | 11    |
+
+Écarts à la phase 0 (§ 15), sans effet sur les points ni sur les formes de réponse :
+
+- **R1** : les premiers termes sont tirés dans trois plages disjointes (−3..−1, 1..4, 5..8). Avec 15 conditions, le
+  tirage échouait 4 fois sur 100. Le nuage 1 a donc toujours le plus petit u₀, mais les étiquettes sont mélangées au
+  tirage : l'ordre ne révèle rien. Formules explicites écrites `u_n = rn + u₀` (`2n − 3`). Specs : le testeur tire
+  avec la graine 0, d'où l'ordre affiché 2, 0, 1.
+- **R3 et R4** : n = 0..3 partout (4 points). La grille verticale vaut le plus petit terme : 1, 2, 3 ou 4.
+  (81 ; 1/3) se place ainsi sur une grille de 3, à côté des grilles de 1 ou 2 prévues. Les variations sont dédoublées
+  croissante / décroissante, car leurs variables diffèrent. R3 a donc 5 variations : explicite ×2, récurrence ×2,
+  bactéries. R4 en a 6 : u₀ et q, u_k, sens ×2, « dépasse », « passe sous ». Le sens se donne par un choix à deux
+  propositions, sans « constante ».
+- **R4** : nuage limité à u₀..u₃, au lieu de u₀..u₅ : avec u₅, les termes dépasseraient 32 (jusqu'à 243). Seuils à mi-chemin
+  entre deux termes, toujours entiers.
+- **R5 v3** : salle d'escalade, 10 à 20 € d'inscription, 5 ou 10 € la séance, grille 1 × 5.
