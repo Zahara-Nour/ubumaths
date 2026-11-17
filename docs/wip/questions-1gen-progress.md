@@ -10,7 +10,7 @@
 _Mis à jour le 2026-11-17, après #2750._
 
 - **État** : lot 1 (G1 à G5, suites géométriques) **mergé (#2750)**, essayé en base locale (§ 10) ; pas encore en prod.
-- **Prochaine action** : David lance `pnpm create-questions --dir scripts/questions/1gen-1-suites-geometriques
+- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/1gen-1-suites-geometriques
 --publier` depuis le worktree (prod, brouillons) ; commiter les ids écrits en tête des fichiers ; envoyer les ids à
   questions-1techno ; migration nœud + tags (gabarit `20261026210000`), page à cocher, publication. En parallèle :
   phase 0 des lots 3 et 4 pour questions-ttechno.
