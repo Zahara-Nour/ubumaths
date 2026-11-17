@@ -10,7 +10,7 @@ import QuestionCard from '../QuestionCard.svelte';
 import FlashCard from '../FlashCard.svelte';
 import { generateInstance } from '$lib/questions/generator/instance-generator';
 import type { QuestionInstance, QuestionTemplate } from '$lib/questions/types';
-import { templateMarkdown } from '$lib/ubumark';
+import { resolvedMarkdown, templateMarkdown } from '$lib/ubumark';
 import { LEXICON_VISIBILITY_STORAGE_KEY, setLexiconShown } from '$lib/lexicon/visibility.svelte';
 
 // Le dictionnaire arrive de /api/dictionnaire (ADR 0022) : ici, le jeu de référence figé
@@ -196,5 +196,23 @@ describe('mots du dictionnaire masqués par défaut (R6)', () => {
 		});
 		const front = () => container.querySelector('.flip-front') ?? container;
 		await expect.poll(() => toggleOf(front() as HTMLElement)).not.toBeNull();
+	});
+
+	// Revue de la PR : la carte de cours n'avait pas de bouton, ses mots masqués étaient perdus au doigt
+	it('carte de cours : le bouton est là aussi', async () => {
+		pointer.canHover = false;
+		const course = {
+			templateId: 'carte',
+			statement: resolvedMarkdown('Quelle est l’aire du rectangle ?'),
+			correction: { steps: [resolvedMarkdown('Longueur fois largeur.')] },
+			options: { courseCard: true },
+			grades: ['6'],
+			level: 1,
+			generatedAt: new Date().toISOString()
+		} as QuestionInstance;
+		const { container } = await render(QuestionCard, { interactive: true, instance: course });
+		await expect.poll(() => toggleOf(container)).not.toBeNull();
+		await userEvent.click(toggleOf(container)!);
+		await expect.poll(() => terms(container).length).toBeGreaterThan(0);
 	});
 });

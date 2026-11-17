@@ -26,6 +26,7 @@
 
 	const cardTerms = readLexiconCardTerms();
 
+	// L'état se dit par aria-pressed seulement (titre fixe : pas d'annonce contradictoire)
 	let shown = $derived(lexiconShown());
 </script>
 
@@ -37,7 +38,7 @@
 			className
 		)}
 		aria-label="Mots du dictionnaire"
-		title={shown ? 'Masquer les mots du dictionnaire' : 'Afficher les mots du dictionnaire'}
+		title="Mots du dictionnaire"
 		aria-pressed={shown}
 		onclick={() => setLexiconShown(!shown)}
 	>

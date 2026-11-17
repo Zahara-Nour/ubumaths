@@ -306,6 +306,9 @@
 	     ni intitulés « Énoncé » / « Votre réponse », ni encadré -->
 	<Card.Root class="h-full">
 		<Card.Content class="space-y-6">
+			<!-- Bouton « Mots du dictionnaire » (R6), avant l'énoncé dans l'ordre de tabulation ;
+			     carte de cours comprise : sans lui, ses mots masqués seraient hors d'atteinte au doigt -->
+			<LexiconToggle class="float-right -mt-2 -mr-2 ml-2" />
 			{#if getQuestionType(instance) === 'course_card'}
 				<!-- Carte de cours : recto → « Voir la réponse » → verso → auto-évaluation -->
 				<CourseCardView
@@ -315,8 +318,6 @@
 					onSelfAssess={interactive ? handleSelfAssess : undefined}
 				/>
 			{:else}
-				<!-- Bouton « Mots du dictionnaire » (R6), avant l'énoncé dans l'ordre de tabulation -->
-				<LexiconToggle class="float-right -mt-2 -mr-2 ml-2" />
 				{#if instance.exerciseInstruction}
 					<p class="text-base font-medium text-muted-foreground">{instance.exerciseInstruction}</p>
 				{/if}
