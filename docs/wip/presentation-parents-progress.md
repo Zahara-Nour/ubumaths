@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, PR du code ouverte._
+_Mis à jour le 2026-11-17, après #2798._
 
-- **État** : phase 0 finie (9 points + 4 FAQ tranchés). PR `feat/presentation-parents` : `PARENT_VIEW` réécrite, FAQ repliée (`<details>`) + `FAQPage` ; tests rouges vérifiés puis verts ; captures téléphone clair / sombre relues.
-- **Prochaine action** : CI verte → merge ; puis vérification de `/parents` après le prochain `deploy:prod` ; clore le chantier (élèves et professeurs : « plus tard », à reposer à David).
-- **En attente de David** : rien.
-- **Pièges en cours** : ne promettre que ce que prouve `docs/systeme/carte-des-fonctionnalites.md` ; argent : jamais « gratuit » seul ni « pour toujours » ; FAQ « À qui parler ? » à préciser si « borné au groupe » d'Akadada est codé.
-- **Worktree / branche** : `../ubumaths-wt-presentation-parents` · `feat/presentation-parents`.
+- **État** : page `/parents` réécrite et mergée (#2798) : 4 blocs + FAQ repliée (`FAQPage`). Pas encore en prod.
+- **Prochaine action** : après le prochain `deploy:prod` (demandé par David), vérification de `/parents` (ligne de `verifications-manuelles.md`) ; puis demander à David si l'on passe aux vues élèves et professeurs (« plus tard ») ou si l'on clôt (versement : `carte-des-fonctionnalites.md` déjà à jour).
+- **En attente de David** : `deploy:prod` quand il le voudra ; suite du chantier (élèves / professeurs, ou clôture).
+- **Pièges en cours** : FAQ « À qui parler ? » à préciser si « borné au groupe » d'Akadada est codé ; argent : jamais « gratuit » seul ni « pour toujours ».
+- **Worktree / branche** : aucun (supprimés après #2798).
 
 ## Cadre
 
@@ -123,3 +123,4 @@ Bloc « L'inscrire, et combien ça coûte » validé tel quel (« oui »), lien 
 ## Historique
 
 - 2026-11-17 : PR du code (`views.ts`, `AudienceView.svelte`, docs `carte-des-fonctionnalites.md` et `seo.md`). Tests : `views.test.ts` 11 rouges puis verts ; `AudienceView.svelte.test.ts` 3 rouges sans le composant, verts avec ; `check:incremental` 0 erreur ; cliquet tenu.
+- 2026-11-17 : #2798 mergée (CI verte ; relecture `code-reviewer` sans bloquant, test `FAQPage` renforcé). Vérification manuelle notée.
