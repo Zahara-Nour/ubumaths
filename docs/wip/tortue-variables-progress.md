@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-16, après #2735._
+_Mis à jour le 2026-11-17, après #2735._
 
-- **État** : PR A (logique) mergée (#2735) : moteur commun, `tortue/niveaux.ts`, `niveau:` du parseur, réponse attendue `4e | …` · **Prochaine action** : PR B (écran) — nouveau worktree `ubumaths-wt-tortue-variables` sur `feat/tortue-variables-ecran` : boîtes à outils par niveau, `TortueEditeur` / `TortueProgramme` / `TortueCorrige` au niveau (`texteVersEtatTortue`, `etatVersTexteTortue`, `nombreDeBlocsTortue`, `lireProgrammeTortue(…, niveau)`), sélecteur « base · 4e · 3e » de `/tortue` (Q6) · **En attente de David** : `départ:` doit-il refuser une variable jamais mise (empêche « complète le programme ») ? cf. § Revue PR A · **Pièges en cours** : écran pas encore au niveau → aucun modèle `niveau:` publié avant la PR B · **Worktree / branche** : aucun (supprimé après #2735)
+- **État** : PR A (logique) mergée (#2735) : moteur commun, `tortue/niveaux.ts`, `niveau:` du parseur, réponse attendue `4e | …` · **Prochaine action** : PR B (écran) — nouveau worktree `ubumaths-wt-tortue-variables` sur `feat/tortue-variables-ecran` : boîtes à outils par niveau, `TortueEditeur` / `TortueProgramme` / `TortueCorrige` au niveau (`texteVersEtatTortue`, `etatVersTexteTortue`, `nombreDeBlocsTortue`, `lireProgrammeTortue(…, niveau)`), sélecteur « base · 4e · 3e » de `/tortue` (Q6) ; **en tête de PR B** : `départ:` n'exige plus qu'une variable lue soit mise (validé par David le 2026-11-17 : « complète le programme » ; `attendu:` garde le contrôle, `départ:` garde lisibilité + niveau), et messages d'erreur au vocabulaire tortue + `afficher` nommé · **En attente de David** : rien · **Pièges en cours** : écran pas encore au niveau → aucun modèle `niveau:` publié avant la PR B · **Worktree / branche** : aucun (supprimé après #2735)
 
 ## Origine
 
