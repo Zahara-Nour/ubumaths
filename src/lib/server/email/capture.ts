@@ -17,34 +17,18 @@
  * `EMAIL_ENVOI_REEL=1` (dans `.env.local`) rétablit l'envoi réel en local.
  */
 
-import { appendFile, mkdir, readFile, writeFile } from 'node:fs/promises';
+import { appendFile, mkdir, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
-import { z } from 'zod';
 import { env } from '$env/dynamic/private';
 import { env as publicEnv } from '$env/dynamic/public';
+import { CAPTURE_INDEX_FILE, readCaptureIndex, type CapturedEmail } from './capture-index';
+
+export type { CapturedEmail } from './capture-index';
 
 export const DEFAULT_CAPTURE_DIR = '.captures/courriels';
-const INDEX_FILE = 'index.jsonl';
 const LOCAL_HOSTS = new Set(['localhost', '127.0.0.1', '[::1]']);
 /** Le Mac mini joint par le tailnet (tester-sur-un-autre-appareil.md) : base locale aussi. */
 const TAILNET_SUFFIX = '.ts.net';
-
-export interface CapturedEmail {
-	date: string;
-	to: string;
-	subject: string;
-	/** Nom du fichier `.html`, relatif au dossier de capture. */
-	file: string;
-	headers?: Record<string, string>;
-}
-
-const capturedEmailSchema = z.object({
-	date: z.string().max(40),
-	to: z.string().max(320),
-	subject: z.string().max(1000),
-	file: z.string().max(200),
-	headers: z.record(z.string(), z.string()).optional()
-});
 
 /** Vrai si la base Supabase visée est locale (sinon, ou au moindre doute : faux). */
 function isLocalDatabase(): boolean {
@@ -107,30 +91,11 @@ export async function captureEmail(email: {
 		file,
 		...(email.headers ? { headers: email.headers } : {})
 	};
-	await appendFile(join(dir, INDEX_FILE), JSON.stringify(entry) + '\n', 'utf8');
+	await appendFile(join(dir, CAPTURE_INDEX_FILE), JSON.stringify(entry) + '\n', 'utf8');
 	return entry;
 }
 
 /** Les courriels capturés, dans l'ordre d'envoi (dossier absent → aucun). */
 export async function readCapturedEmails(dir: string = captureDir()): Promise<CapturedEmail[]> {
-	let raw: string;
-	try {
-		raw = await readFile(join(dir, INDEX_FILE), 'utf8');
-	} catch {
-		return [];
-	}
-	const emails: CapturedEmail[] = [];
-	for (const line of raw.split('\n')) {
-		if (!line.trim()) continue;
-		// Ligne tronquée (écriture interrompue) : ignorée, les autres restent lisibles.
-		let value: unknown;
-		try {
-			value = JSON.parse(line);
-		} catch {
-			continue;
-		}
-		const parsed = capturedEmailSchema.safeParse(value);
-		if (parsed.success) emails.push(parsed.data);
-	}
-	return emails;
+	return readCaptureIndex(dir);
 }
