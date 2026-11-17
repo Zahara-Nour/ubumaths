@@ -12,7 +12,7 @@ _Mis à jour le 2026-11-17, ouverture (relevé, état des lieux, classement)._
 - **État** : relevé prod fait (§ 1), existant vérifié contre les bornes (§ 2), 42 points sans modèle classés (§ 3).
   Aucun code, aucune écriture en base.
 - **Prochaine action** : réponses de David aux questions Q1 à Q7 (§ 5), puis phase 0 du premier lot.
-- **En attente de David** : Q1 à Q7.
+- **En attente de David** : Q2 bis (4 modèles sans point), Q3 à Q7.
 - **Pièges en cours** : la plupart des modèles de suites géométriques de 1re spé tirent des termes négatifs → pas
   taguables 1GEN tels quels (§ 2.2).
 - **Worktree / branche** : aucun (journal seul, sur `main`).
@@ -109,3 +109,21 @@ Aucun point en D.
   paraboles) ?
 - **Q6** — 006 (tableur) : formule écrite en texte, comparée après normalisation, comme 3-032 ?
 - **Q7** — Ordre des lots du § 4 ?
+
+### Réponses (David, 2026-11-17)
+
+- **Q1** : oui, `1_GEN`.
+- **Q2** : « on les vérifie et on leur trouve un point ». Vérification (prod, énoncés et corrigés lus) :
+
+  | Modèle   | Contenu                                                           | Point 1GEN                                                                 | Verdict              |
+  | -------- | ----------------------------------------------------------------- | -------------------------------------------------------------------------- | -------------------- |
+  | 5397c20f | tableau de signes lu sur une courbe (cubique, parabole)           | **062** (lecture graphique)                                                | dans la borne        |
+  | f5585668 | équation réduite d'une droite lue sur le repère                   | **051** (exploiter la courbe d'une affine)                                 | dans la borne        |
+  | 1c86d122 | nuage année × abonnés, axe qui ne part pas de 0, taux d'évolution | **002** (nuage de points)                                                  | dans la borne        |
+  | 9852d62c | angle d'un secteur, **un seul** caractère                         | 001 parle de **croisement** de deux caractères                             | pas de point honnête |
+  | 7f82d15a | tableau de variations lu sur une **cubique**                      | 054 = parabole seulement                                                   | pas de point         |
+  | 95ee57c8 | f(x) < k sur une **cubique**                                      | 060 = seuil exponentiel seulement                                          | pas de point         |
+  | 0f673c27 | tableau de signes de ax + b                                       | 027 = degré 2 factorisé ; le signe d'un affine n'est pas au programme 1GEN | pas de point         |
+
+  Recommandation : taguer les 3 premiers ; retirer `1_GEN` des niveaux des 4 autres (ils restent en 2de / 5e / 1re
+  spé) — en attente de David (Q2 bis).
