@@ -5,18 +5,17 @@ Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) · bornes 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après #2776 (migrée)._
+_Mis à jour le 2026-11-17, après la publication du lot 2a (§ 16)._
 
-- **État** : lots 0 et 1 en prod. Lot 2a : 8 brouillons en prod, rangés et tagués (#2774, #2776) ; c4887e49 → 025
-  et 0b5c3db6 → 023 tagués, `T_TECHNO` posé (§ 14).
-- **Prochaine action** : lire les verdicts de la page à cocher (https://claude.ai/artifact/4fCZW4x4Y5yKuZDwmt7v2Z),
-  puis `publier-lot.ts --dir scripts/questions/ttechno-2a-suites` (simulation) ; David lance `--publier`. Ensuite
-  lot 2b (Python, P1–P3).
-- **En attente de David** : relecture de la page à cocher (8 fiches).
-- **`questions-1gen`** : lot 3 (aˣ) reçu (§ 15, 4 candidats E1–E4, brouillons) ; lot 4 (taux moyen) encore attendu.
+- **État** : lots 0, 1 et 2a en prod et publiés (2a : 8/8 relus OK, publiés par David).
+- **Prochaine action** : lot 2b (Python, P1–P3, § 12), dans un worktree `questions-ttechno-lot2b`.
+- **`questions-1gen`** : lot 3 (aˣ) **publié** ; E1–E4 à lire contre nos bornes puis taguer (§ 15). Par défaut, un
+  seul lot de tags avec T1 → 035 et T2 → 038 du lot 4 (pas encore écrit, ids promis par `questions-1gen`).
+- **En attente de David** : tags E1–E4 maintenant (PR à part) ou avec le lot 4 (défaut) ?
 - **Pièges en cours** : un point TTECHNO par modèle (trigger) ; `grades` en `array_append` seulement ; Chrome
-  piloté = choisir celui du Mac mini (`switch_browser`), serveur en `--host 127.0.0.1`.
-- **Worktree / branche** : aucun (#2774 mergée, worktree retiré).
+  piloté = choisir celui du Mac mini (`switch_browser`), serveur en `--host 127.0.0.1` ; `publier-lot.ts` et
+  `garde-niveaux-tags.ts` lisent la prod : David les lance (`!`), le classifieur me les refuse.
+- **Worktree / branche** : aucun.
 
 ## 1. Périmètre
 
@@ -444,3 +443,11 @@ fonctions x ↦ aˣ », `grades ['1_GEN']`, encore brouillons (leur page à coch
 
 À faire au lot 3 ici : lire les 4 en entier contre nos bornes (031 parle aussi de a⁻ˣ = 1/aˣ ; 032 / 033 sur ℝ
 chez nous, [0 ; +∞[ chez eux → complément x < 0 si besoin), puis tags + `array_append('T_TECHNO')`.
+
+## 16. Lot 2a : publication (2026-11-17)
+
+- Page à cocher : 8/8 « OK », aucun commentaire (base de l'artefact lue et comptée).
+- `garde-niveaux-tags.ts` (David) : 2 400 modèles tagués, aucun niveau manquant (12 écarts voulus, hors lot).
+- `publier-lot.ts --dir scripts/questions/ttechno-2a-suites` : simulation verte, puis `--publier` par David :
+  **8/8 publiés**, statut relu en base.
+- `questions-1gen` : lot 3 publié (7/7) ; ids E1–E4 confirmés (031, 081, 032, 033), lot 4 à venir.
