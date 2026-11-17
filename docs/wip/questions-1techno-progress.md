@@ -8,20 +8,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, branche T2 prête (PR pas encore ouverte)._
+_Mis à jour le 2026-11-17, après #2748 (T2 mergée, migrée, vérifiée en prod)._
 
-- **État** : T1 en prod (#2743). **T2 prêt sur sa branche** (§ 13) : migration `20261117131417` (33 modèles,
-  24 points, `1_TECHNO` ajouté à 31) + test d'intégration (13 verts, rouges sans le corps) + 33 instantanés.
-  #2744 (questions-1gen) **mergée, mais pas encore migrée** en prod au moment du commit.
-- **Prochaine action** : dès que `20261117124605_questions_1gen_tags` est en prod → relevé des 33 (grades, tags :
-  95ee57c8 doit avoir perdu `1_GEN`, 8 modèles un tag 1GEN), ajuster `LOT` du test si besoin, ouvrir la PR,
-  CI, `check:migrations --pr`, merge, `db:migrate`, vérification prod.
-- **En attente de David** : rien (décisions Q1-Q12 prises ; question d'accès tranchée pour T1, même nature).
-- **Pièges en cours** : **ne pas ouvrir la PR T2 avant le `db:migrate` de #2744** (sa garde compte les tags
-  exacts de 8 modèles de T2) ; un point par programme (trigger) ; `grades` en `array_append`/`array_remove`
-  seulement ; worktree neuf → `pnpm exec svelte-kit sync` avant un script `tsx` (`$lib`) ; export prod :
-  `pnpm tsx --env-file=.env scripts/export-question-templates.ts` ; commitlint refuse « T1 » en début de sujet.
-- **Worktree / branche** : `../ubumaths-wt-questions-1techno` · `feat/questions-1techno-t2`.
+- **État** : **T1 et T2 en prod** (#2743, #2748) : 48 modèles portent un point 1TECHNO et `1_TECHNO`. Q11 de
+  questions-1gen tranchée (§ 14) : les modèles de suites géométriques G1, G4, G5 sont **communs**, écrits par
+  questions-1gen ; notre lot 1 se réduit à **047**.
+- **Prochaine action** : lot 0 (retrait de 1TECHNO-118 sur 1239554b et 79d69593 : destructif, accord de David),
+  puis correction de 83b1f614 v3 (prévenir questions-1gen avant), puis lots d'écriture (§ 5, 9).
+- **En attente de David** : accord sur le lot 0 (destructif).
+- **En attente de questions-1gen** : ids de G1-G5 en prod → notre migration de tags 036, 038, 040 ou 049
+  (+ 039, 057 si un point s'y prête), `array_append` de `1_TECHNO`.
+- **Pièges en cours** : un point par programme (trigger) ; `grades` en `array_append`/`array_remove` seulement ;
+  worktree neuf → `pnpm exec svelte-kit sync` avant un script `tsx` ; export prod :
+  `pnpm tsx --env-file=.env scripts/export-question-templates.ts` ; commitlint refuse « T1 » en début de sujet ;
+  CI : le cliquet peut être coupé à 20 min (relancer).
+- **Worktree / branche** : aucun (T2 nettoyé).
 
 ## 1. Relevé (prod, 2026-11-17)
 
@@ -312,3 +313,17 @@ un `db push` jouerait aussi `20261117124605_questions_1gen_tags` si elle n'est p
 questions-1gen l'ait migrée** ; après un `db push` en échec, relire `tgenabled` de
 `update_question_templates_updated_at` (attendu `O`) ; `set local lock_timeout` sans effet hors transaction
 (risque d'attente seulement).
+
+## 14. Lot T2 mergé et migré ; Q11 de questions-1gen (2026-11-17)
+
+PR #2748 : relevé refait après le `db:migrate` de #2744 (6 modèles + `1_GEN`, 95ee57c8 − `1_GEN`) ; test à
+12 cas. CI : cliquet coupé à 20 min (annulé, sans erreur), vert à la relance ; `check:migrations --pr 2748`
+vert ; merge ; `db:migrate` depuis le dépôt principal (4 conditions). Prod vérifiée (MCP) : 33 publiés, 33 avec
+`1_TECHNO` (aucun doublon), 33 tags sur 24 points, `updated_at` inchangé, trigger `O`. `garde-niveaux-tags` :
+aucun niveau manquant. Worktree et branche retirés.
+
+Q11 (journal questions-1gen § 9, commit 1029a04775, David « je te suis tes recos ») : G1 « raison » (1GEN-028
+→ notre 036), G4 « terme général » (1GEN-029 → 038), G5 « sens de variation » (1GEN-030 → 040 ou 049, à
+choisir) sont des modèles communs ; questions-1gen les écrit avec `grades` `1_GEN` ; nous posons `1_TECHNO`
+et nos tags par notre propre migration, après création des brouillons. G2 (forme explicite, 039) et G3
+(récurrence, 057) sont sur la notion « Suites géométriques ». Notre lot 1 n'écrit que 047.
