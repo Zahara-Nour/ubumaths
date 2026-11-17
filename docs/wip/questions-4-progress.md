@@ -5,18 +5,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, lot 10 relu (3/3 ok), publication à lancer par David._
+_Mis à jour le 2026-11-17, lot 10 publié._
 
-- **État** : lots 1 à 9 publiés. Lot 10 (027, 028, 074) : brouillons en prod (0ea43bcd, 235df57a, 63a06b04),
-  rangés et tagués (#2768, `db:migrate` fait, vérifié au MCP). Page à cocher :
-  https://claude.ai/artifact/M18upimVqzAupAsfpu8xNd (`verdicts` vide). Après publication : 81 points sur 82 ;
-  reste 038 (outil manquant n° 37, rattaché à la 6e) et 026 (classe D).
-- **Prochaine action** : David lance `publier-lot.ts --dir scripts/questions/4-lot-10 --publier` (simulation
-  verte, 3 brouillons) ; puis vérifier `published` au MCP et clore le lot (§ 53).
-- **En attente de David** : la publication ; supprimer la branche locale périmée `feat/questions-4-lot-10`
-  (`branch -D` = liste `ask`).
-- **Pièges en cours** : `db:migrate` depuis le dépôt principal (worktree non lié) ; job « Types des tests » de la
-  CI parfois annulé (« The operation was canceled ») : relancer ; `db push --include-all` réservé à David.
+- **État** : lots 1 à 10 publiés. Relevé prod du 2026-11-17 (MCP) : **80 points de 4e sur 82** ont un modèle
+  publié ; sans modèle : 4-026 (classe D, non évaluable) et 4-038 (outil manquant, `outils-manquants.md`
+  n° 37, rattaché à la 6e).
+- **Prochaine action** : rien dans ce chantier tant que l'outil de 4-038 n'existe pas ; proposer à David la
+  clôture (versement du durable dans `docs/systeme/`, archivage du journal).
+- **En attente de David** : décider la clôture du chantier ; supprimer la branche locale périmée
+  `feat/questions-4-lot-10` (`branch -D` = liste `ask`).
+- **Pièges en cours** : aucun propre au chantier.
 - **Worktree / branche** : `../ubumaths-wt-questions-4` (HEAD détachée sur `origin/main`), aucune branche en cours.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-28)
@@ -1265,3 +1263,5 @@ le trou noté pour le chantier d'outils.
 - Verdicts de la page à cocher : 3/3 « ok », aucun commentaire.
 - `publier-lot.ts --dir scripts/questions/4-lot-10` en simulation : 3 brouillons passent le contrôle ;
   `--publier` à lancer par David.
+- David a lancé `publier-lot.ts --dir scripts/questions/4-lot-10 --publier` : 3/3 publiés (statut relu en base).
+  MCP : 80 points sur 82 couverts, restent 4-026 (D) et 4-038 (outil n° 37).
