@@ -5,19 +5,16 @@ Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) · bornes 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après #2790 (migrée)._
+_Mis à jour le 2026-11-17, après la publication du lot 2b._
 
-- **État** : lots 0, 1 et 2a en prod et publiés. Lot 2b : 3 brouillons en prod, rangés et tagués (#2784, #2790).
-- **Prochaine action** : lire les verdicts de la page à cocher (https://claude.ai/artifact/VgyVMezCt3FqJM1wqZZXZE),
-  puis David lance `garde-niveaux-tags.ts` et `publier-lot.ts --dir scripts/questions/ttechno-2b-python` (simulation,
-  puis `--publier`). Ensuite : tags des modèles de `questions-1gen` (E1–E4, T1–T2).
-- **En attente de David** : relecture de la page à cocher (3 fiches) ; tags E1–E4 maintenant ou avec le lot 4
-  (défaut).
-- **`questions-1gen`** : lot 3 (aˣ) **publié** ; E1–E4 à lire contre nos bornes puis taguer (§ 15) ; lot 4 (T1 → 035,
-  T2 → 038) en cours d'écriture chez eux, ids promis.
+- **État** : lots 0, 1, 2a et 2b en prod et **publiés** (2b : 3 modèles, § 19).
+- **Prochaine action** : tags des modèles de `questions-1gen` — E1–E4 (lot 3, § 15) à lire contre nos bornes puis
+  taguer avec T1–T2 du lot 4 (défaut : un seul lot de tags), une fois leurs ids reçus.
+- **En attente de David** : tags E1–E4 maintenant ou avec le lot 4 (défaut : avec le lot 4).
+- **`questions-1gen`** : lot 3 (aˣ) **publié** ; lot 4 (T1 → 035, T2 → 038) en cours d'écriture chez eux, ids promis.
 - **Pièges en cours** : un point TTECHNO par modèle (trigger) ; `grades` en `array_append` seulement ;
   `publier-lot.ts`, `garde-niveaux-tags.ts`, `create-questions --publier` visent la prod : David les lance (`!`).
-- **Worktree / branche** : aucun (#2790 mergée, worktree retiré).
+- **Worktree / branche** : aucun.
 
 ## 1. Périmètre
 
@@ -490,3 +487,10 @@ brouillons sur « Suites > Généralités sur les suites », un tag chacun (030,
 Copie des ids mise de côté sur `main` jetée (identique).
 
 - Page à cocher : https://claude.ai/artifact/VgyVMezCt3FqJM1wqZZXZE (3 fiches, `verdicts` vide).
+
+## 19. Lot 2b : publication (2026-11-17)
+
+- Page à cocher relue : 3 verdicts sur 3 « ok », sans commentaire.
+- `garde-niveaux-tags.ts` (David) : 2 408 modèles tagués, aucun niveau manquant (12 écarts voulus, hors lot).
+- `publier-lot.ts --dir scripts/questions/ttechno-2b-python` : simulation verte (3 brouillons), puis `--publier` par
+  David : 3/3 publiés, statut relu en base (2327bbef, fe576c5b, e1f5fa4d).
