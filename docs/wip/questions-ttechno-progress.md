@@ -11,8 +11,8 @@ _Mis à jour le 2026-11-17, après la coordination avec `questions-1gen` (§ 8).
   coordination avec la session `questions-1gen` (§ 8). Rien d'écrit en base ni en fichiers de modèles.
 - **Prochaine action** : lot 0 — lire en entier chaque candidat (tous niveaux, § 7), page à cocher,
   puis migration de tags (`array_append` de `T_TECHNO` seulement).
-- **En attente de David** : rien. **En attente de `questions-1gen`** : ses modèles aˣ (x ⩾ 0) et taux
-  moyen, avant nos lots 3 et 4.
+- **En attente de David** : rien. **En attente de `questions-1gen`** : sa phase 0 aˣ et taux moyen
+  (promise avant écriture : un modèle, tags 1GEN + TTECHNO) ; nos lots 3 et 4 attendent.
 - **Pièges en cours** : jumeaux pas encore vérifiés variation par variation (pas de e, ln, factorielle,
   variance) ; ne jamais réécrire `grades` en entier (modèles partagés avec 1gen et 1techno).
 - **Worktree / branche** : aucun (journal sur `main`).
