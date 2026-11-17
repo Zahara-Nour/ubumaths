@@ -5,9 +5,9 @@ Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) · bornes 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, lot 2b écrit (§ 17), PR ouverte._
+_Mis à jour le 2026-11-17, lot 2b écrit (§ 17), #2784 ouverte._
 
-- **État** : lots 0, 1 et 2a en prod et publiés. Lot 2b (P1–P3, Python) écrit, PR des fichiers ouverte.
+- **État** : lots 0, 1 et 2a en prod et publiés. Lot 2b (P1–P3, Python) écrit, PR des fichiers #2784 ouverte (CI à suivre).
 - **Prochaine action** : CI verte → merge ; David lance `create-questions --publier` sur
   `scripts/questions/ttechno-2b-python` ; puis migration nœud + tag (030, 075, 076), page à cocher, publication.
 - **`questions-1gen`** : lot 3 (aˣ) **publié** ; E1–E4 à lire contre nos bornes puis taguer (§ 15). Par défaut, un
