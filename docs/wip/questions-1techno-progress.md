@@ -8,17 +8,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, PR du lot G ouverte (tags 1TECHNO sur G1, G4, G5)._
+_Mis à jour le 2026-11-17, après #2758 (lot G en prod)._
 
-- **État** : T1, T2, lot 0 en prod (#2743, #2748, #2753). **Lot G** : page à cocher 3/3 OK ; migration
-  `20261117164821_questions_1techno_lot_g_tags` (036, 038, 049 + `1_TECHNO`) sur la branche, test vert, rouge sans (§ 17).
-- **Prochaine action** : CI verte → merge → `db:migrate` (additive, 4 conditions réunies ; `migration list --linked`
-  avant) → vérifier en prod ; puis 83b1f614 v3 (prévenir questions-1gen) ; puis lots (§ 5, 9).
+- **État** : T1, T2, lot 0, **lot G** en prod (#2743, #2748, #2753, #2758). Lot G : 0b5c3db6 → 036, c4887e49 → 038,
+  569e0140 → 049, `{1_GEN,1_TECHNO}`, vérifié en prod (§ 17).
+- **Prochaine action** : 83b1f614 v3 (Q4 bis (a) : « x = p est racine évidente » au corrigé ; prévenir questions-1gen
+  avant) ; puis lots d'écriture (§ 5, 9). Lot 2 commun de questions-1gen (R2 → 044, R3 → 117, R4 → 119) : attendre
+  leurs ids, puis page à cocher + migration (§ 18).
 - **En attente de David** : rien.
 - **Pièges en cours** : un point par programme (trigger) ; `grades` en `array_append`/`array_remove` seulement ;
   worktree neuf → `pnpm exec svelte-kit sync` avant un script `tsx` ; export prod : `env $(grep … .env)` (sinon
   `.env.local` = base locale) ; commitlint refuse « T1 » en début de sujet ; CI : le cliquet peut être coupé à 20 min.
-- **Worktree / branche** : `../ubumaths-wt-questions-1techno` · `feat/questions-1techno-lot-g`.
+- **Worktree / branche** : aucun (lot G nettoyé).
 
 ## 1. Relevé (prod, 2026-11-17)
 
@@ -391,3 +392,18 @@ Migration `20261117164821_questions_1techno_lot_g_tags` sur le gabarit de T2 (sa
 `1_TECHNO`) ; test `tests/integration/questions-1techno-lot-g-tags.test.ts` (décor avec le tag 1GEN posé,
 12 tests verts ; migration vidée → 6 rouges et le bloc nominal ne démarre pas). Instantanés prod :
 `scripts/questions/1techno-g/`.
+
+PR #2758 : audit de sécurité sans finding bloquant ; CI verte ; `check:migrations --pr 2758` vert ; merge ;
+`migration list --linked` : seule `20261117164821` en attente ; `db:migrate` depuis le dépôt principal (4 conditions
+réunies). Prod vérifiée (MCP) : les 3 modèles `{1_GEN,1_TECHNO}`, publiés, tags 1GEN-028 + 1TECHNO-036, 1GEN-029 +
+1TECHNO-038, 1GEN-030 + 1TECHNO-049 ; `updated_at` inchangé (15:05:51) ; trigger de date `O`.
+
+## 18. Lot 2 de questions-1gen : modèles communs « représentation graphique » (2026-11-17)
+
+Message de questions-1gen (journal questions-1gen § 15, lot 2 validé par David) : R2 placer les termes d'une suite
+arithmétique, R3 placer les termes d'une suite géométrique > 0, R4 lire sur le nuage d'une suite géométrique > 0,
+écrits en `['1_GEN']` sur le nœud « Suites > Généralités sur les suites > représentation graphique ». Réponse :
+d'accord, aucune objection sur les plages (termes > 0, q = 1/2 ou 1/3 = fractions simples, seuil lu sur le nuage
+sans logarithme, uₙ accepté pour les communs). Points : **R2 → 044, R3 → 117, R4 → 119**, tous trois sur ce nœud
+(`320aaed2`). **Retirés de notre lot 4 « graphiques »**, qui garde 121, 085, 082, 059, 104. Suite : leurs ids après
+leur migration nœud + tags, puis page à cocher et migration `array_append('1_TECHNO')` + tags (gabarit du lot G).
