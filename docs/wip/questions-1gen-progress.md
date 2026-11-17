@@ -7,19 +7,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, lot 1 écrit, PR #2750 ouverte._
+_Mis à jour le 2026-11-17, après #2750 et la création des brouillons en prod._
 
-- **État** : lot 1 (G1 à G5, suites géométriques) écrit et essayé en base locale (§ 10) ; **PR #2750 ouverte**, CI à suivre (`gh run watch`) puis merge dès le vert.
-- **Prochaine action** : PR mergée → David lance `create-questions --dir scripts/questions/1gen-1-suites-geometriques
---publier` (prod, brouillons) ; commiter les ids écrits en tête des fichiers ; envoyer les ids à questions-1techno ;
-  migration nœud + tags (gabarit `20261026210000`), page à cocher, publication. En parallèle : phase 0 des lots 3 et
-  4 pour questions-ttechno.
-- **En attente de David** : le `--publier` en prod, après le merge.
+- **État** : lot 1 mergé (#2750) ; 5 brouillons créés en prod par David (§ 11), ids commités (1487a0f73), `grades`
+  `['1_GEN']`, sans nœud ni tag (vérifié). questions-1techno a reçu les ids de G1, G4, G5 (lecture non confirmée).
+- **Prochaine action** : écrire la migration nœud + tags (`pnpm migration:horodatage`, gabarit `20261026210000`,
+  tableau du § 11) et son test d'intégration (vérifié rouge sans la migration) ; `security-auditor` ; PR ; au merge,
+  `db:migrate` depuis le dépôt principal à jour, **puis prévenir questions-1techno** (il attend notre nœud, § 11) ; puis page à cocher, publication. En parallèle : phase 0 des lots 3
+  et 4 pour questions-ttechno.
+- **En attente de David** : rien (question d'accès tranchée : personne, § 11).
 - **Pièges en cours** : AVANT tout tag, ADR 0020 et `couvrir-un-niveau.md` § 9 (un point par programme, point sur le
   nœud du modèle ou sa notion) ; `grades` par `array_append` / `array_remove` ciblés ; `db:migrate` seulement après
   le merge, depuis le dépôt principal à jour ; G1, G4, G5 communs avec 1TECHNO (on écrit `1_GEN` seul,
   questions-1techno ajoute `1_TECHNO` et ses tags) ; modèle 1GEN-022 commun avec 1TECHNO-057.
-- **Worktree / branche** : `../ubumaths-wt-questions-1gen` · `feat/questions-1gen-lot1`.
+- **Worktree / branche** : `../ubumaths-wt-questions-1gen` · `feat/questions-1gen-lot1-tags` (ids + migration).
 
 ## 1. Relevé (prod, 2026-11-17)
 
@@ -314,3 +315,36 @@ Simulation `create-questions` verte ; formules des aperçus (40 tirages par mod�
   `1000×1,03^n`, tombe en `bad_form` : `acceptDecimal` ne vaut que pour un nombre seul).
 - `{{eval:…;d}}` partout où le résultat est décimal (sans cela, `1 + 2/100` s'affiche « 51/50 »).
 - G2 v2 : « un village » (1 000 à 5 000 habitants).
+
+## 11. Lot 1 : en prod, brouillons (2026-11-17)
+
+Après le merge de #2750, David a lancé `pnpm tsx scripts/create-questions.ts --dir
+scripts/questions/1gen-1-suites-geometriques --publier` depuis le worktree. Les 5 modèles ont été créés en brouillon,
+avec les ids écrits en tête des fichiers (commit 1487a0f73). Relevé en prod : `grades` `['1_GEN']`, sans nœud, 0 tag.
+
+| Modèle | id                                     | Point    | Nœud (chemin)                                |
+| ------ | -------------------------------------- | -------- | -------------------------------------------- |
+| G1     | `0b5c3db6-cb37-40fc-8247-12e3ace03a46` | 1GEN-028 | Suites > Suites géométriques > définition    |
+| G2     | `f15045ec-2ecd-41b5-8196-077bf3d7b3a1` | 1GEN-039 | Suites > Suites géométriques                 |
+| G3     | `e0f3ac2f-3f35-44e6-ac10-4058e12b1481` | 1GEN-057 | Suites > Suites géométriques                 |
+| G4     | `c4887e49-2337-4ac7-a2c9-369434868b65` | 1GEN-029 | Suites > Suites géométriques > terme général |
+| G5     | `569e0140-d5da-440f-a4c3-07bae4e6b30b` | 1GEN-030 | Suites > Suites géométriques                 |
+
+- Ids de G1, G4 et G5 envoyés à questions-1techno le 2026-11-17 (G2 et G3 pour information). Il lui revient d'ajouter
+  `1_TECHNO` et ses tags ; notre migration ne touche pas à `grades`.
+- Réponse de questions-1techno (2026-11-17) : ids notés à son § 15. Son trigger exige le nœud, donc elle attend
+  notre `db:migrate` en prod pour faire son `array_append('1_TECHNO')` et poser ses tags 036, 038 et 040/049 :
+  **la prévenir dès notre `db:migrate` fait.** Sa PR #2753 ne touche aucun modèle 1GEN.
+- **Question d'accès**, posée à David le 2026-11-17 AVANT le SQL : « qui pourra lire quoi, qu'il ne pouvait pas lire
+  avant ? ». Réponse de David le 2026-11-17 : **personne**. Les modèles restent des brouillons, ils sont seulement
+  rangés et tagués ; les élèves ne les voient qu'après la publication par David.
+
+## 12. Lot 1 : migration nœud + tags (2026-11-17)
+
+`20261117142038_questions_1gen_lot1_rangement_tags.sql` (calquée sur `20261026210000`, lot C du CP) +
+`tests/integration/questions-1gen-lot1-rangement-tags.test.ts`. Relevé MCP avant le SQL : les 5 brouillons toujours
+sans nœud, 0 tag, `grades` `['1_GEN']` ; les 5 points sur les nœuds du § 11. Test rouge sans le corps (5 / 9 en
+échec), 9 / 9 vert avec. `grades` non touché. Rollback à jouer avant que questions-1techno ait tagué G1, G4, G5.
+
+`security-auditor` : aucun finding bloquant. Faibles : branche en retard sur `main` (fusionnée, test relancé, 9 / 9) ;
+rollback valable seulement avant les tags 1TECHNO de G1, G4, G5 (dit dans l'en-tête).

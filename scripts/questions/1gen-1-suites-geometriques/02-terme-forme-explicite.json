@@ -1,4 +1,5 @@
 {
+	"id": "f15045ec-2ecd-41b5-8196-077bf3d7b3a1",
 	"title": "Calculer un terme d'une suite géométrique (forme explicite)",
 	"description": "Suite définie par $u_n=a\\times q^n$",
 	"grades": ["1_GEN"],
