@@ -5,23 +5,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, phase 0 du lot 10 proposée._
+_Mis à jour le 2026-11-17, PR #2765 du lot 10 ouverte._
 
-- **État** : lots 1 à 9 en prod et publiés. Outils C revus le 2026-11-02 (§ 50.1) : solides et patrons LIVRÉS
-  (chantier `solides`), schéma de fraction couvert par ` ```partage ` (grille = carré unité, bande = barres) →
-  lot 10 (027, 028, 074) ; seul 038 (rectangle sans équerre) reste un outil neuf, rattaché à la 6e.
-- **Prochaine action** : écrire le lot 10 (§ 50 validé le 2026-11-02) : worktree, branche `feat/questions-4-lot-10`,
-  `docs/wip/questions/lot-4-10.py` → `scripts/questions/4-lot-10/`.
-- **En attente de David** : rien.
-- **Pièges en cours** : migrations, dès #2165 mergée (règle de David, 2026-11-01) : horodatage par `pnpm
-migration:horodatage` (jamais un nombre rond choisi à la main), `pnpm check:migrations --pr <n>` avant `gh pr merge`,
-  premier job de CI = porte des horodatages (`git merge origin/main` dans le worktree d'abord) ; `mtexte()` refusé dans une figure de question (§ 26) ; `db push --include-all` : **réservé à
-  David** (§ 27, § 30, § 34), même quand une autre session dit le contraire ; horodatage de migration : rebaser sur
-  `origin/main` avant la CI (§ 34) et relever la dernière version jouée juste avant de pousser (§ 42) ; exemption de doc d'une migration de données = ligne `Doc-inchangée:` dans un
-  COMMIT ; QCM = case choix ; un grand nombre s'écrit `10\,000` dans une spec ; tests navigateur de la CI parfois
-  tombés (`wrapDynamicImport`) : relancer le job ; une borne qui ne repose que sur 2019/2016 : la signaler dans la
-  phase 0 du lot qui s'en sert (§ 36).
-- **Worktree / branche** : `../ubumaths-wt-questions-4` (HEAD détachée sur `origin/main`), aucune branche en cours.
+- **État** : lots 1 à 9 publiés. Relevé prod du 2026-11-17 : 78 points sur 82 ont un modèle publié ; sans
+  modèle : 027, 028, 074 (lot 10), 038 (outil manquant, `outils-manquants.md` n° 37, rattaché à la 6e), 026
+  (classe D). 068, 069 couverts depuis (modèles tortue, #2746). Lot 10 : PR **#2765** (branche
+  `feat/questions-4-lot-10-bis`), § 51.
+- **Prochaine action** : CI verte → merge #2765 ; puis David lance `create-questions --publier` sur
+  `scripts/questions/4-lot-10` ; commiter les `id` ; migration nœud + tag ; page à cocher ; publication.
+- **En attente de David** : supprimer la branche locale périmée `feat/questions-4-lot-10` (2 commits jamais
+  poussés, remplacés par `-bis` ; `branch -D` = liste `ask`).
+- **Pièges en cours** : migrations : `pnpm migration:horodatage`, `pnpm check:migrations --pr <n>` avant
+  `gh pr merge`, `git merge origin/main` dans le worktree avant la CI ; `db push --include-all` réservé à David ;
+  QCM = case choix ; tests navigateur de la CI parfois tombés (`wrapDynamicImport`) : relancer le job.
+- **Worktree / branche** : `../ubumaths-wt-questions-4`, branche `feat/questions-4-lot-10-bis`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-28)
 
@@ -1236,3 +1233,18 @@ le trou noté pour le chantier d'outils.
   2026-11-17 : 2 et 1 modèles publiés). La sous-notion « blocs personnalisés » créée pour 3-050 « leur servira »
   (décision du 2026-11-01, journal archivé `docs/archive/wip/questions-3-progress.md` § 14.10) : à ranger avec les
   modèles de 4e qui les couvrent.
+
+## 51. Lot 10 : écrit, rendu vu, PR (2026-11-03 → 17)
+
+- Écrit le 2026-11-03 (`lot-4-10.py` → `scripts/questions/4-lot-10/`, 3 JSON) sur `feat/questions-4-lot-10`,
+  jamais poussé (Chrome n'avait chargé aucune page). Repris le 2026-11-17 sur une branche neuve
+  `feat/questions-4-lot-10-bis` partie d'`origin/main` (3 109 commits de retard ; `rebase` = liste `ask`) :
+  commit des fichiers repris, `theme`/`domain`/`subdomain` retirés (ADR 0035, refusés à la lecture).
+- Simulation : 3/3 verts (22, 24, 15 specs) ; `sonde-cubes` : 1 389 blocs, 0 problème.
+- Base locale : brouillons 21b4cd42 (027), d67c695c (028), 8122fd84 (074), créés depuis une copie dans le
+  scratchpad (les `id` locaux hors du dépôt). Aperçu admin : 028 v2 (patrons dans un choix : cube, pyramide,
+  prisme) lisible → **gardée** ; 074 v1 grille 5 × 3 « les 1/5 des 1/3 du rectangle », attendu 1/15, juste.
+- **Décision de David (2026-11-17)** : 074, b ≠ d gardé, énoncé « du rectangle » (« du carré » si b = d), déjà
+  écrit ainsi.
+- 4-038 ajouté à `outils-manquants.md` (n° 37) : il n'y figurait pas.
+- PR #2765 (contenu seul, pas de revue).
