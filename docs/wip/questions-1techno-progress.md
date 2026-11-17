@@ -12,8 +12,8 @@ _Mis à jour le 2026-11-17, après #2753 (lot 0 en prod)._
 
 - **État** : T1, T2 et **lot 0** en prod (#2743, #2748, #2753). Le lot 0 a été migré par le `db push` d'une autre
   session (tortue-variables), pas par ce chantier ; effet vérifié conforme (§ 15).
-- **Prochaine action** : correction de 83b1f614 v3 (prévenir questions-1gen avant), puis lots d'écriture (§ 5, 9).
-- **En attente de David** : rien.
+- **Prochaine action** : verdicts de la page à cocher G1, G4, G5 (§ 16), puis migration de tags ; puis 83b1f614 v3 ; puis lots (§ 5, 9).
+- **En attente de David** : verdicts sur la page à cocher G1, G4, G5 (§ 16).
 - **questions-1gen** : G1, G4, G5 en prod, brouillons, **rangés et tagués 1GEN** (#2754, migrée) → notre
   migration `1_TECHNO` + tags 036 (G1), 038 (G4), 040 ou 049 (G5) est débloquée ; page à cocher avant (Q10).
 - **Pièges en cours** : un point par programme (trigger) ; `grades` en `array_append`/`array_remove` seulement ;
@@ -364,3 +364,20 @@ Message de questions-1gen (2026-11-17) : nœuds et tags 1GEN posés en prod (`20
 `569e0140` sur la notion « Suites géométriques » (1GEN-030) ; G2, G3 sur la notion (039, 057). Brouillons,
 `grades = ['1_GEN']`. À vérifier pour nos tags : le trigger exige que le point 1TECHNO soit sur le nœud du modèle
 ou sur sa notion.
+
+## 16. Lot G (modèles communs de questions-1gen) : décisions et page à cocher (2026-11-17)
+
+Décisions (David, « je te suis ») :
+
+- **G5 → 1TECHNO-049** (capacité « à l'aide de la raison », mot pour mot) ; 040 (connaissance) aura son modèle
+  court dans le lot « connaissances » (Q12).
+- **uₙ accepté** dans G1, G4, G5 (communs avec la 1re générale ; la borne dit « u(n) précède uₙ », pas une
+  exclusion). Exception à Q6, limitée aux modèles communs.
+- **Ordre** : page à cocher G1 (→ 036), G4 (→ 038), G5 (→ 049) puis migration `array_append('1_TECHNO')` + tags ;
+  ensuite 83b1f614 v3. Les trois restent brouillons : leur publication revient à questions-1gen.
+
+Page à cocher : https://claude.ai/artifact/4FS9xTHryEFuPPpbdASNCs (capacité `db`, collection `verdicts` vide au
+départ). Instantanés prod (`export-question-templates.ts`) dans le scratchpad, à copier dans
+`scripts/questions/1techno-g/` sur la branche de la migration. Relecture préalable : premier terme et raison
+strictement positifs partout, ni somme ni limite. Points 036, 038, 049 sur le même nœud que le point 1GEN de
+G1, G4, G5.
