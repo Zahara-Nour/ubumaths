@@ -1,4 +1,5 @@
 {
+	"id": "d6415687-a82d-40dc-affd-1ef7f0ac37c1",
 	"title": "Poser une division décimale : dividende décimal",
 	"description": "Division posée d'un décimal d'au plus cinq chiffres par un nombre à un chiffre, quotient qui s'arrête au centième : 45,36 ÷ 4 ; 2,45 ÷ 7 ; un zéro à ajouter (148,2 ÷ 5)",
 	"grades": ["CM2"],
