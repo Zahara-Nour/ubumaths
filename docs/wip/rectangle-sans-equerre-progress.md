@@ -6,15 +6,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, findings de la revue corrigés (§ 5), PR 1 à ouvrir._
+_Mis à jour le 2026-11-17, après #2781._
 
-- **État** : PR 1 sur `feat/rectangle-sans-equerre`, les 5 findings du § 5 corrigés (6 tests rouges puis
-  verts), doc mise à jour. PR ouverte ou à ouvrir : `gh pr list --search "head:feat/rectangle-sans-equerre"`.
-- **Prochaine action** : CI verte → merge. Puis PR 2 : le modèle 4-038 dans `questions-4`.
+- **État** : PR 1 (l'outil, `verifier: rectangle A ; B ; C ; D : AB = 4 cm ; AC = 6 cm`) mergée (#2781), les 5
+  findings de la revue corrigés (§ 5). Worktree retiré, branche supprimée.
+- **Prochaine action** : PR 2, le modèle 4-038 dans `questions-4` (énoncé du § 3.1, figure du § 3.2), dans un
+  nouveau worktree `../ubumaths-wt-rectangle-sans-equerre` (branche `feat/rectangle-sans-equerre-modele`).
 - **En attente de David** : rien.
 - **Pièges en cours** : ne pas toucher à `ruled-polygon.ts`. Push : ne pas filtrer sa sortie par
   `grep -E "->…"` (ugrep plante, le push meurt en SIGPIPE).
-- **Worktree / branche** : `../ubumaths-wt-rectangle-sans-equerre`, `feat/rectangle-sans-equerre`.
+- **Worktree / branche** : aucun (à recréer pour la PR 2).
 
 ## 1. Ce qui existe (lecture du code, 2026-11-17)
 
