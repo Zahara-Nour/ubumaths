@@ -1,4 +1,5 @@
 {
+	"id": "d64ddd78-fd78-4e81-b41a-db25ce687111",
 	"title": "Tracer une figure avec un programme (3e)",
 	"description": "Écrire en blocs un programme qui trace une spirale avec « répéter jusqu'à » ou des créneaux alternés avec « si … sinon ».",
 	"grades": ["3"],

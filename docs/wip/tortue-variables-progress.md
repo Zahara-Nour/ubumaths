@@ -4,7 +4,7 @@
 
 _Mis à jour le 2026-11-17, après #2746._
 
-- **État** : PR A (#2735), PR B (#2742), PR C (#2746 : 4 modèles dans `scripts/questions/tortue-variables/`, publiés en base locale) mergées · **Prochaine action** : PR D (nœud du point + tag par migration, comme #2727) une fois les ids de prod connus · **En attente de David** : (relecture validée le 2026-11-17) `create-questions --dir scripts/questions/tortue-variables --publier` en prod (brouillons, ids écrits dans les fichiers) ; `deploy:prod` avant toute publication · **Pièges en cours** : écran tortue 4e / 3e pas en prod avant `deploy:prod` ; « répéter jusqu’à » à l'apostrophe courbe ; en suspens (revue PR A) : `1e2`, `répéter 2,5` · **Worktree / branche** : aucun (supprimé après #2746)
+- **État** : PR A (#2735), B (#2742), C (#2746) mergées ; 4 modèles publiés en prod en brouillon par David ; PR D (migration `20261117140132`, nœud du point + tag) ouverte · **Prochaine action** : CI verte → merge → `db:migrate` (4 conditions réunies) → vérifier en prod (MCP) nœuds + tags · **En attente de David** : `deploy:prod` avant toute publication des 4 modèles · **Pièges en cours** : écran tortue 4e / 3e pas en prod avant `deploy:prod` ; « répéter jusqu’à » à l'apostrophe courbe ; en suspens (revue PR A) : `1e2`, `répéter 2,5` · **Worktree / branche** : `../ubumaths-wt-tortue-variables`, `feat/tortue-variables-rangement`
 
 ## Origine
 
@@ -151,3 +151,16 @@ avancer côté ; tourner à gauche 90 ; ajouter p à côté ]`, 5 blocs) ; escal
 
 Les 4 modèles relus en base locale, validés tels quels (`répéter 8` admis pour la spirale de 3e,
 8 blocs pour Fibonacci). Reste : publication en prod par David, puis PR D.
+
+## PR D — rangement (2026-11-17)
+
+- Ids de prod (publiés par David) : 25991652 Spirale avec une variable (4-067), 81bacf03 Tracer une
+  figure (4e) (4-068), a0b27395 Deux variables (tortue) (3-047), d64ddd78 Tracer une figure (3e)
+  (3-051) ; relevé `docs/wip/questions/etat-prod-2026-11-17-tortue-variables/` (4 brouillons, sans
+  nœud ni tag).
+- Accès (David, 2026-11-17 : « je te suis ») : personne ne gagne de lecture.
+- Migration `20261117140132_questions_tortue_variables_rangement_tags` générée par
+  `docs/wip/questions/lot-tortue-variables-rangement.py` (gabarit #2727) : 4 nœuds (variables et
+  affectation pour 4-067 / 3-047, la notion Variables et instructions pour 4-068 / 3-051), 4 tags.
+- Test d'intégration : 19 verts ; rouge sans la migration (8 échecs) ; `security-auditor` : aucun
+  finding (diff avec #2727 = données seules ; gardes vérifiées sur la prod en lecture).

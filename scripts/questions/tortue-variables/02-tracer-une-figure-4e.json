@@ -1,4 +1,5 @@
 {
+	"id": "81bacf03-66b8-44b0-bb37-a6703fe77edd",
 	"title": "Tracer une figure avec un programme (4e)",
 	"description": "Écrire en blocs un programme qui trace un polygone régulier ou des carrés emboîtés, avec une variable.",
 	"grades": ["4"],
