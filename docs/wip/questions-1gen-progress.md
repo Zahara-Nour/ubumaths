@@ -7,20 +7,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après #2762 (fichiers du lot 2)._
+_Mis à jour le 2026-11-17, après #2767 (migration nœud + tags du lot 2, appliquée en prod)._
 
-- **État** : lot 1 publié (§ 13). Lot 2 écrit : 6 modèles R1 à R6, specs, sonde et essai local verts (§ 16), fichiers
-  mergés (#2762). Phases 0 des lots 3 et 4 validées (§ 14).
-- **Prochaine action** : **David** lance, depuis le worktree, `create-questions --dir
-scripts/questions/1gen-2-representations-graphiques --publier` ; commiter les ids ; migration nœud + tags (016, 019,
-  041, 058 → représentation graphique ; 020, 051 → expression et droite) ; envoyer les ids de R2, R3, R4 à
-  questions-1techno. Ensuite lots 3, 4.
-- **En attente de David** : lancer `create-questions --publier` (écarts du § 16 acceptés le 2026-11-17).
+- **État** : lot 1 publié (§ 13). Lot 2 : 6 brouillons en prod, rangés et tagués (§ 17), page à cocher publiée,
+  https://claude.ai/artifact/7rNB4sGX6PJP6LaYjWLNAJ. Phases 0 des lots 3 et 4 validées (§ 14).
+- **Prochaine action** : lire et compter les verdicts (`ArtifactData list verdicts`) ; 6/6 OK → simulation
+  `publier-lot.ts --dir scripts/questions/1gen-2-representations-graphiques`, puis David `--publier`. Ensuite lots 3, 4.
+- **En attente de David** : relire la page à cocher (R1 se joue dans l'aperçu : bloc associer non dessiné).
 - **Pièges en cours** : ADR 0020 et `couvrir-un-niveau.md` § 9 avant tout tag ; `grades` par `array_append` /
-  `array_remove` ciblés ; `db push` pousse TOUTES les migrations de `main` en attente (`--dry-run` d'abord) ; modèles
-  communs : R2, R3, R4 (1techno), E2 et autres candidats TTECHNO (ttechno) ; correction de la coquille « t/n » de
-  `src/lib/server/programmes/transcriptions/1_GEN.md` dans la PR du lot 3.
-- **Worktree / branche** : `../ubumaths-wt-questions-1gen-lot2`, `feat/questions-1gen-lot2`.
+  `array_remove` ciblés ; `db push` pousse TOUTES les migrations en attente (`migration list --linked` d'abord) ;
+  rollback du lot 2 valable seulement avant les tags 1TECHNO de R2, R3, R4 (ids envoyés à questions-1techno) ;
+  coquille « t/n » de `src/lib/server/programmes/transcriptions/1_GEN.md` à corriger dans la PR du lot 3.
+- **Worktree / branche** : `../ubumaths-wt-questions-1gen-lot2` (`feat/questions-1gen-lot2`, mergée), gardé jusqu'à la
+  publication.
 
 ## 1. Relevé (prod, 2026-11-17)
 
@@ -612,3 +611,26 @@ compris.
 - **R4** : nuage limité à u₀..u₃, au lieu de u₀..u₅ : avec u₅, les termes dépasseraient 32 (jusqu'à 243). Seuils à mi-chemin
   entre deux termes, toujours entiers.
 - **R5 v3** : salle d'escalade, 10 à 20 € d'inscription, 5 ou 10 € la séance, grille 1 × 5.
+
+## 17. Lot 2 : en prod, rangement et page à cocher (2026-11-17)
+
+David a lancé `create-questions --publier` après #2762. Relu au MCP : 6 brouillons, `grades` `['1_GEN']`, sans nœud, 0
+tag. Ids commités dans les fichiers.
+
+| Modèle | id                                     | Point    | Nœud                                                           |
+| ------ | -------------------------------------- | -------- | -------------------------------------------------------------- |
+| R1     | `817d257f-dcc6-4c31-92ca-57b0d20665da` | 1GEN-016 | Suites > Généralités sur les suites > représentation graphique |
+| R2     | `96668141-c1a7-4996-bb59-b39f6c106b45` | 1GEN-019 | idem                                                           |
+| R3     | `13388e8f-e662-4f28-97b6-934afaeead31` | 1GEN-041 | idem                                                           |
+| R4     | `e8f08a19-b417-4183-9cd3-fab7f3810211` | 1GEN-058 | idem                                                           |
+| R5     | `216555e7-9f28-4992-b0f4-416bc418e7da` | 1GEN-020 | Fonctions > Fonctions affines > expression et droite           |
+| R6     | `e17ce5be-7beb-4773-b267-7910d6c8a86b` | 1GEN-051 | idem                                                           |
+
+- Migration `20261117174437_questions_1gen_lot2_rangement_tags.sql` (calquée sur celle du lot 1) et son test : rouge
+  sans le corps, 9 / 9 vert avec. `security-auditor` : aucun finding bloquant (faible, hérité du gabarit :
+  `set local lock_timeout` sans effet hors transaction). PR #2767, CI verte, `check:migrations` vert, mergée.
+- `db:migrate` depuis le dépôt principal : seule notre migration en attente (`migration list --linked`). Relu au MCP :
+  chaque modèle sur son nœud, un seul tag, brouillon, `updated_at` inchangé.
+- Ids de R2, R3, R4 envoyés à questions-1techno (tags 1TECHNO-044, 117, 119 à poser par elle).
+- Page à cocher : 6 fiches, 23 exemples ; une alerte attendue (bloc associer de R1 non dessiné, joué dans l'aperçu,
+  § 16). https://claude.ai/artifact/7rNB4sGX6PJP6LaYjWLNAJ (capacité `db`, collection `verdicts` vide au départ).
