@@ -6,13 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après #2780, reclassement (§ 14) et phase 0 du lot 9 (§ 15)._
+_Mis à jour le 2026-11-17, lot 9 écrit (§ 15.2), PR à ouvrir._
 
 - **État** : lots 0 à 8 publiés (lot 8 : 038, 053, 055-057, publiés le 2026-11-17, `published` relu au MCP).
-- **Prochaine action** : écrire le lot 9 (partages, § 15) dès la phase 0 validée ; ordre des lots suivants au § 14 / 14.1.
-- **En attente de David** : phase 0 du lot 9 (§ 15 « À trancher » : grilles jusqu'à 60 parts ? un seul lot ?). ⛔ Jamais `--mettre-a-jour` de `cm2-7b` avec des fichiers d'avant #2770 (ids CM1).
+- **Prochaine action** : PR des fichiers du lot 9 (§ 15.2), merge, puis David : `create-questions --dir scripts/questions/cm2-9 --publier` (prod) ; ensuite migration nœud + tag (nœuds « définition » 12-15, « écritures » 14).
+- **En attente de David** : rien avant le merge. ⛔ Jamais `--mettre-a-jour` de `cm2-7b` avec des fichiers d'avant #2770 (ids CM1).
 - **Pièges en cours** : migrations depuis #2181 : `pnpm migration:horodatage` = heure réelle UTC ; `db:migrate` refuse une migration plus ancienne que la dernière jouée → `--dry-run --include-all`, liste relue, puis `--include-all`. Worktree neuf : copier `supabase/.temp/` (lien projet) du dépôt principal. Modèle à placer avec grands nombres : `spaces: off`. Page à cocher : `line` non dessiné, à jouer dans l'aperçu. `Doc-inchangée:` dans un COMMIT. `git commit -m … -- <fichiers>`. Colonne du nœud au MCP : `question_templates.classification_node_id`.
-- **Worktree / branche** : aucun (worktree du lot 8 retiré, branches mergées supprimées).
+- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, `feat/questions-cm2-lot9`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -914,3 +914,24 @@ publication.
 **À trancher** : (a) lire une grille de 60 parts (#1 V1, V2) : jusqu'à 60 comme la borne, ou plafonner à
 40 pour que le comptage reste faisable sur téléphone ? Reco : **jusqu'à 60**, grilles à colonnes de 10
 (6×10, 5×10 : on compte par lignes de 10). (b) un seul lot de 5 modèles ? Reco : oui.
+
+### 15.1 Lot 9 : décisions (David, 2026-11-17)
+
+Recommandations suivies (« je te suis ») : (a) grilles à lire jusqu'à 60 parts, en lignes de 10 au-delà
+de 30 ; (b) un seul lot de 5 modèles. Tableau du § 15 gardé.
+
+### 15.2 Lot 9 : écriture (2026-11-17)
+
+- `docs/wip/questions/lot-cm2-9.py` → `scripts/questions/cm2-9/` (5 modèles, sans `theme` / `domain` /
+  `subdomain`) ; `question:specs --instances 300` : 43 specs vertes, 5 100 tirages réussis, aucun
+  `\textcolor` hors `$`. `create-questions` en simulation (prod) : 5 à créer, 0 en base.
+- **Écart à la phase 0** : #1 V2 (parts éparpillées) au plus **12 parts coloriées** (on ne compte pas
+  40 parts éparpillées une à une) ; grilles de 15 à 60 parts (13 et 14 n'ont pas de grille utile).
+- Sonde des blocs ` ```partage ` (copie de `sonde-collections.ts` passée à `parsePartageContent`, hors
+  dépôt) : 5 000 blocs lus, 0 problème.
+- Worktree neuf : `pnpm exec svelte-kit sync` avant `question:specs` (sinon `Cannot find package '$lib'`).
+- Base locale : 5 brouillons ; aperçu admin (port 5176, `--host 127.0.0.1`) : « Colorie 1/25 » sur une
+  grille 5×5, 2 parts → « Faux », « Tu as colorié 2 parts sur 25 ; il fallait en colorier 1 (1/25) »,
+  figure juste dessinée ; grille 5×10 à lire (47/50) lisible ; « Colorie 0,1 », une ligne glissée →
+  « Juste ». La saisie MathLive ne se fait pas par l'extension Chrome : réponses tapées couvertes par les
+  specs. Fichiers réécrits par le script ensuite (ids locaux retirés, identiques à la copie d'avant).
