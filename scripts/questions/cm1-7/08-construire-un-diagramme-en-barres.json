@@ -1,4 +1,5 @@
 {
+	"id": "01b73ca2-004e-4cb1-8237-ce7ebf516ac9",
 	"title": "Choisis l'échelle et construis le diagramme (nombres quelconques)",
 	"description": "Tableau des effectifs donné, nombres qui ne tombent pas tous sur un trait : choisir l'échelle (2, 5 ou 10 par graduation) puis monter toutes les barres",
 	"grades": ["CM1"],

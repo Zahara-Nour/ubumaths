@@ -1,4 +1,5 @@
 {
+	"id": "1e1e0342-0768-4529-af21-a4650fb8bbc9",
 	"title": "Range un relevé dans un tableau",
 	"description": "Compter un relevé de 28 réponses (5 sports) et remplir les effectifs avec le total ; ou un relevé de deux caractères (filles / garçons, 3 activités) et remplir un tableau à double entrée",
 	"grades": ["CM1"],

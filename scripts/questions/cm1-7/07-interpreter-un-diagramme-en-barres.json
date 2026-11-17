@@ -1,4 +1,5 @@
 {
+	"id": "c245f0cc-7b05-45be-bdbd-e0f7217fe87d",
 	"title": "Que dit le diagramme en barres ? (livres prêtés)",
 	"description": "Combien de livres de plus un mois que le précédent (BO : mars et février), le mois du plus grand nombre de prêts (case choix), combien en tout de janvier à mars ; axes de 10, 25, 50",
 	"grades": ["CM1"],
