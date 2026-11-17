@@ -7,14 +7,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après #2744 (migration de tags jouée en prod)._
+_Mis à jour le 2026-11-17, après le redécoupage (§ 4) et la phase 0 du lot 1 (§ 9)._
 
-- **État** : migration `20261117124605_questions_1gen_tags` (#2744) jouée et vérifiée en prod (§ 8) : 12 modèles
-  tagués 1GEN (9 points nouveaux), `1_GEN` retiré de 7. **38 points restent à écrire** en 5 lots (§ 4, avec 002, 016,
-  027, 029, 038, 051, 056, 058 du § 7 à répartir).
-- **Prochaine action** : redécouper les 38 points en lots (mise à jour du § 4), puis phase 0 du lot 1 ; envoyer à
-  questions-ttechno la phase 0 des lots aˣ et taux moyen.
-- **En attente de David** : rien.
+- **État** : #2744 jouée en prod (§ 8). Relevé prod : **39 points sans modèle** (les 38 du § 7 + 022, qui a perdu
+  1acb6d47). Redécoupés en 6 lots (§ 4). Phase 0 du lot 1 (suites géométriques, 5 modèles) écrite (§ 9).
+- **Prochaine action** : après le go de David (Q10 à Q12, § 9), prévenir questions-1techno (modèles communs du lot 1),
+  puis worktree `questions-1gen` et écriture du lot 1 ; envoyer à questions-ttechno la phase 0 des lots 3 et 4.
+- **En attente de David** : Q10 (découpage), Q11 (modèles communs 1GEN + 1TECHNO), Q12 (phase 0 du lot 1).
 - **Pièges en cours** : AVANT tout tag, ADR 0020 et `couvrir-un-niveau.md` § 9 (un point par programme, point sur le
   nœud du modèle ou sa notion) ; `grades` par `array_append` / `array_remove` ciblés ; `db:migrate` seulement après
   le merge, depuis le dépôt principal à jour ; modèle 1GEN-022 commun avec 1TECHNO-057 (le premier au second degré
@@ -115,14 +114,24 @@ courbes, case choix (en prod). **Aucun geste ne trace une courbe non affine** (Q
 
 Aucun point en D.
 
-## 4. Découpage proposé (révisé après § 2.3, à valider, Q7)
+## 4. Découpage (redécoupé le 2026-11-17 après #2744, à valider : Q10)
 
-0. **Migration de tags** (Q2, Q3, Q4) : une PR, 17 points couverts sans écrire de modèle.
-1. **Suites géométriques et représentations** : 028, 030, 039, 057, 019, 041, 020 (7).
-2. **Fonctions aˣ et seuils exponentiels** : 032 à 036, 042, 059, 044, 060 (9).
-3. **Taux moyen et ordres de grandeur** : 037, 040, 043 (3).
-4. **Second degré** : 022 (remplace 1acb6d47), 024, 025, 052, 053, 054 (6).
-5. **Statistiques à deux caractères** : 001, 003, 004, 005, 006, 007 (6).
+Relevé prod du 2026-11-17 (après #2744) : **39 points 1GEN sans modèle**, les 38 du § 7 plus **022**, dont le seul
+modèle (1acb6d47) a perdu son tag. Six lots, un thème chacun, groupés par nœud et par outil :
+
+1. **Suites géométriques à termes positifs** (A) : 028, 029, 030, 039, 057 (5). Mêmes nœuds que 1TECHNO-036, 038,
+   040, 049 (Q11).
+2. **Représentations graphiques : suites et affines** (B, ` ```courbe ` `placer:` / `tracer:` / lecture) : 016, 019,
+   041, 058 (sous-notion « représentation graphique » des suites), 020, 051 (« expression et droite ») (6). Même
+   nœud que 1TECHNO-044, 117, 119, 121.
+3. **Fonctions aˣ** (A + B) : 032, 033, 034, 035, 036, 042, 059 (7). Partagé avec questions-ttechno (§ 6).
+4. **Taux moyen, phénomènes exponentiels, seuils** (A + B) : 037, 040, 043, 038, 056, 044, 060 (7). 037, 040
+   partagés avec questions-ttechno.
+5. **Second degré** (A + B) : 022 (modèle commun avec 1TECHNO-057), 024, 025, 027, 052, 053, 054 (7).
+6. **Statistiques à deux caractères** (B, plus A pour 006) : 001, 002, 003, 004, 005, 006, 007 (7).
+
+Ancien découpage (5 lots, avant le § 7) : lot 1 mêlait suites géométriques et représentations ; lots 2 et 3
+séparaient aˣ et taux moyen ; 016, 027, 029, 038, 051, 056, 058 et 002 n'y étaient pas.
 
 Les variations « partielles » du § 2.3 servent de point de départ (texte repris dans un modèle 1GEN) plutôt que de
 découper les modèles de 1re spé en prod (Q8).
@@ -233,3 +242,49 @@ date » : le fichier n'était pas sur `main`). `--dry-run` après le merge : cet
 Relu en prod (MCP) : version enregistrée ; trigger `update_question_templates_updated_at` à `O` ; les 19 modèles ont
 les tags et niveaux attendus, `updated_at` et statut inchangés (c90fa022, d2067413 toujours brouillons).
 questions-1techno prévenu (son T2 attendait ce `db:migrate`).
+
+## 9. Lot 1 « suites géométriques à termes positifs » — phase 0 (proposée le 2026-11-17)
+
+Borne commune aux cinq points : premier terme et raison **strictement positifs** (BO 1re ES p.6). Raison ≠ 1 sauf
+dans le modèle « sens de variation » (suite constante). Tous les modèles de 1re spé du thème tirent u₀ ou q signés
+(§ 2.2) : modèles neufs, calqués sur les modèles arithmétiques 1GEN déjà en prod (1315d326, 337d31c3, 373fc5b4,
+5cb7f6ce). Nœuds relevés en prod : 028 → sous-notion « définition », 029 → « terme général », 030, 039, 057 → notion
+« Suites géométriques » (des modèles y sont déjà rangés, 5cb7f6ce l'est sur la notion arithmétique).
+
+| Modèle                                                         | Point | Nœud                | Niveau |
+| -------------------------------------------------------------- | ----- | ------------------- | ------ |
+| G1 Déterminer la raison d'une suite géométrique                | 028   | définition          | 1      |
+| G2 Calculer un terme d'une suite géométrique (forme explicite) | 039   | Suites géométriques | 1      |
+| G3 Calculer un terme d'une suite géométrique (récurrence)      | 057   | Suites géométriques | 2      |
+| G4 Terme général d'une suite géométrique                       | 029   | terme général       | 2      |
+| G5 Sens de variation d'une suite géométrique                   | 030   | Suites géométriques | 1      |
+
+- **G1** (case, nombre décimal accepté) : v1 deux termes consécutifs, `u_k` ∈ 2..12, q ∈ {2, 3, 4, 5} ; v2 q ∈ {0,5 ;
+  0,25 ; 0,75}, `u_k` multiple de 4 entre 8 et 80 ; v3 « augmente de t % par an », t ∈ {2, 3, 5, 10, 20} → 1 + t/100 ;
+  v4 « baisse de t % », t ∈ {5, 10, 20, 25} → 1 − t/100. Erreurs typiques : la différence `u_{k+1} − u_k`, t/100,
+  1 + t.
+- **G2** (case) : `u_n = a × qⁿ`, calculer `u_k`. v1 a ∈ 1..9, q ∈ {2, 3}, k ∈ 2..5 ; v2 en contexte, `1000 × 1,05ⁿ`
+  (population, placement), k ∈ 5..12, arrondi à l'unité (calculatrice). Erreurs : (a·q)ᵏ, a·q·k.
+- **G3** (case) : `u₀ = a`, `u_{n+1} = q × u_n`, calculer `u₂`, `u₃` ou `u₄`. v1 a ∈ 1..9, q ∈ {2, 3} ; v2 a ∈ {100,
+  200, 500, 1000}, q ∈ {1,1 ; 1,2 ; 0,9 ; 0,8}, rang 2 ou 3 (décimal exact). Erreurs : a + k·q (confusion
+  arithmétique), qᵏ sans a, exposant k − 1.
+- **G4** (case, expression) : v1 `u₀ = a`, raison q → `a × qⁿ` ; v2 `u₁ = a` → `a × q^{n−1}` ; v3 contexte « C € placés
+  à t % par an » → `C × (1 + t/100)ⁿ`. a ∈ 1..9, q ∈ 2..5 ; C ∈ {500, 1000, 2000}, t ∈ {2, 3, 4, 5}. Erreurs : `a + nq`,
+  `(aq)ⁿ`, exposant n au lieu de n − 1 (v2). Piège à vérifier à l'écriture : forme normalisée de `a·q^{n−1}`
+  (`requiredForm`, § 9 de la démarche).
+- **G5** (QCM croissante / décroissante / constante, comme 5cb7f6ce) : v1 récurrence, q > 1 ; v2 récurrence,
+  0 < q < 1 ; v3 `u_n = a × qⁿ` ; v4 contexte « baisse de t % par an » ; v5 q = 1 (constante). a ∈ 1..9 ;
+  q ∈ {1,2 ; 1,5 ; 2 ; 3} ou {0,2 ; 0,5 ; 0,8 ; 0,9}.
+
+**Question d'accès** (migration nœud + tags après la création des brouillons) : personne ne lit rien de nouveau ; les
+modèles sont créés en brouillon, la migration ne fait que les ranger et les taguer.
+
+### Questions (2026-11-17)
+
+- **Q10** — Découpage en 6 lots du § 4, dans cet ordre ? (reco : oui ; le lot 3 aˣ pourrait passer en tête pour
+  débloquer questions-ttechno.)
+- **Q11** — Les points 1TECHNO-036 (définition), 038 (terme général), 040 ou 049 (sens de variation) sont sur les
+  mêmes nœuds, avec la même borne (premier terme et raison > 0), et forment le lot 1 de questions-1techno. Reco :
+  nos modèles G1, G4, G5 sont **communs** (on écrit, `grades` 1_GEN + 1_TECHNO, questions-1techno pose ses tags par
+  sa propre migration), comme le modèle 1GEN-022 + 1TECHNO-057 ; prévenir la session avant d'écrire.
+- **Q12** — Phase 0 du lot 1 (modèles, variations, plages, niveaux, formes de réponse) ci-dessus : validée ?
