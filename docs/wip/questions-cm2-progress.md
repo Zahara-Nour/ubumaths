@@ -6,13 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après #2777._
+_Mis à jour le 2026-11-17, après #2780._
 
-- **État** : lots 0 à 7 publiés. **Lot 8** (038, 053, 055-057 ; 5 modèles) : fichiers mergés (#2777), pas encore en prod.
-- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/cm2-8 --publier` (brouillons en prod), puis commit des ids ; migration nœud + tag (gabarit du lot 7b), page à cocher, publication. Après le lot 8 : reclasser le § 3 (§ 12 d).
-- **En attente de David** : le `--publier` du lot 8. ⛔ Jamais `--mettre-a-jour` de `cm2-7b` avec des fichiers d'avant #2770 (ids CM1).
+- **État** : lots 0 à 7 publiés. **Lot 8** (038, 053, 055-057 ; 5 modèles) : brouillons en prod, rangés et tagués (#2780, `db:migrate` joué et vérifié au MCP).
+- **Prochaine action** : page à cocher du lot 8 (`scripts/questions/page-a-cocher.ts --dir scripts/questions/cm2-8`), relecture de David, `publier-lot` en simulation puis `--publier` par David. Après le lot 8 : reclasser le § 3 (§ 12 d).
+- **En attente de David** : sa relecture sur la page à cocher du lot 8. ⛔ Jamais `--mettre-a-jour` de `cm2-7b` avec des fichiers d'avant #2770 (ids CM1).
 - **Pièges en cours** : migrations depuis #2181 : `pnpm migration:horodatage` = heure réelle UTC ; `db:migrate` refuse une migration plus ancienne que la dernière jouée → `--dry-run --include-all`, liste relue, puis `--include-all`. Worktree neuf : copier `supabase/.temp/` (lien projet) du dépôt principal. Modèle à placer avec grands nombres : `spaces: off`. Page à cocher : `line` non dessiné, à jouer dans l'aperçu. `Doc-inchangée:` dans un COMMIT. `git commit -m … -- <fichiers>`. Colonne du nœud au MCP : `question_templates.classification_node_id`.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, branche `feat/questions-cm2-lot8` mergée (#2777) ; nouvelle branche pour la migration du lot 8.
+- **Worktree / branche** : aucun (worktree du lot 8 retiré, branches mergées supprimées).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
