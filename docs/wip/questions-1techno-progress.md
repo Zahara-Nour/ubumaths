@@ -12,9 +12,9 @@ _Mis à jour le 2026-11-17, après #2764 (83b1f614 v3 en prod)._
 
 - **État** : T1, T2, lot 0, lot G, **83b1f614 v3** en prod (#2743, #2748, #2753, #2758, #2764). 83b1f614 : corrigé
   de v3 par racines évidentes, migration jouée et vérifiée en prod (§ 19).
-- **Prochaine action** : lots d'écriture (§ 5, 9), lot 1 « suites géométriques » d'abord (moins 036, 038, 049
-  couverts par le lot G). Lot 2 commun de questions-1gen (R2 → 044, R3 → 117, R4 → 119, PR #2762 chez eux) :
-  attendre leurs ids, puis page à cocher + migration (§ 18).
+- **Prochaine action** : lot 2 commun (§ 20) : ids reçus de questions-1gen → page à cocher R2, R3, R4, puis migration
+  `array_append('1_TECHNO')` + tags 044 / 117 / 119 (gabarit du lot G, § 17 ; modèles en BROUILLON). Ensuite lots
+  d'écriture (§ 5, 9), lot 1 « suites géométriques » d'abord (moins 036, 038, 049).
 - **En attente de David** : rien.
 - **Pièges en cours** : un point par programme (trigger) ; `grades` en `array_append`/`array_remove` seulement ;
   worktree neuf → `pnpm exec svelte-kit sync` avant un script `tsx` ; export prod : `env $(grep … .env)` (sinon
@@ -435,3 +435,19 @@ Mergée (48e3cad4bc). `migration list --linked` : seule 20261117171928 en attent
 (« inserted before », une migration plus récente déjà en prod) → `db push --dry-run --include-all` (seule la
 nôtre) puis `--include-all`. Prod vérifiée (MCP) : v3 en 5 étapes, la 2e = racines évidentes ; publié,
 `{1_SPE,1_TECHNO}`, 2 tags inchangés. Vérification visuelle notée dans `verifications-manuelles.md`.
+
+## 20. Lot 2 commun de questions-1gen : ids reçus (2026-11-17)
+
+Message de questions-1gen : migration `20261117174437` appliquée en prod (vérifiée par eux, MCP) ; les trois sont
+sur « Suites > Généralités sur les suites > représentation graphique », en **brouillon**, `grades = {1_GEN}` :
+
+| Modèle                                        | id                                     | tag 1GEN | à poser     |
+| --------------------------------------------- | -------------------------------------- | -------- | ----------- |
+| R2 Placer les termes d'une suite arithmétique | `96668141-c1a7-4996-bb59-b39f6c106b45` | 1GEN-019 | 1TECHNO-044 |
+| R3 Placer les termes d'une suite géométrique  | `13388e8f-e662-4f28-97b6-934afaeead31` | 1GEN-041 | 1TECHNO-117 |
+| R4 Lire sur le nuage d'une suite géométrique  | `e8f08a19-b417-4183-9cd3-fab7f3810211` | 1GEN-058 | 1TECHNO-119 |
+
+Écarts acceptés par David (chez eux) : R3 et R4 sur u₀ à u₃ seulement, graduation verticale = plus petit terme
+(1 à 4). R3 : 5 variations (explicite, récurrence, croissante / décroissante, bactéries) ; R4 : 6 (u₀ et q, u_k,
+sens croissante, sens décroissante, dépasse, passe sous). Ordre convenu : **page à cocher d'abord**, puis notre
+migration. Leur rollback n'est valable qu'avant nos tags.
