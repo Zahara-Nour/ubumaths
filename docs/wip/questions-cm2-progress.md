@@ -6,11 +6,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après #2780 et le reclassement (§ 14)._
+_Mis à jour le 2026-11-17, après #2780, reclassement (§ 14) et phase 0 du lot 9 (§ 15)._
 
 - **État** : lots 0 à 8 publiés (lot 8 : 038, 053, 055-057, publiés le 2026-11-17, `published` relu au MCP).
-- **Prochaine action** : phase 0 du lot suivant, une fois l'ordre tranché (§ 14 : 76 points sans modèle, plus aucun en C, 13 lots proposés).
-- **En attente de David** : § 14 « À trancher » (a) partages d'abord ? (b) 101 en B ? (c) 121 dans les limites actuelles ? ⛔ Jamais `--mettre-a-jour` de `cm2-7b` avec des fichiers d'avant #2770 (ids CM1).
+- **Prochaine action** : écrire le lot 9 (partages, § 15) dès la phase 0 validée ; ordre des lots suivants au § 14 / 14.1.
+- **En attente de David** : phase 0 du lot 9 (§ 15 « À trancher » : grilles jusqu'à 60 parts ? un seul lot ?). ⛔ Jamais `--mettre-a-jour` de `cm2-7b` avec des fichiers d'avant #2770 (ids CM1).
 - **Pièges en cours** : migrations depuis #2181 : `pnpm migration:horodatage` = heure réelle UTC ; `db:migrate` refuse une migration plus ancienne que la dernière jouée → `--dry-run --include-all`, liste relue, puis `--include-all`. Worktree neuf : copier `supabase/.temp/` (lien projet) du dépôt principal. Modèle à placer avec grands nombres : `spaces: off`. Page à cocher : `line` non dessiné, à jouer dans l'aperçu. `Doc-inchangée:` dans un COMMIT. `git commit -m … -- <fichiers>`. Colonne du nœud au MCP : `question_templates.classification_node_id`.
 - **Worktree / branche** : aucun (worktree du lot 8 retiré, branches mergées supprimées).
 
@@ -868,3 +868,49 @@ place pas les partages ni l'horloge, qui attendaient leurs outils. Reco : **lot 
 grandeurs, puis l'ordre du § 4.6. (b) 101 (construire un patron du cube) reste en D, ou passe en B
 avec ` ```patron completer:` (compléter un patron à qui manque une face) ? Reco : B, un modèle.
 (c) 121 : écrit dans les limites actuelles (≤ 100, comme le lot 7 du CM1) ? Reco : oui.
+
+### 14.1 Reclassement : décisions (David, 2026-11-17)
+
+Recommandations suivies (« je te suis ») : (a) **lot 9 partages d'abord**, puis le lot 10 (horloge) avec les
+grandeurs, puis l'ordre du § 4.6 ; (b) 101 passe en **B** (` ```patron completer:`, un modèle, au lot 19) ;
+(c) 121 écrit dans les limites actuelles (échelle 1, 2, 5, 10 ; données ≤ 100).
+
+## 15. Lot 9 — partages (131, 132, 136, 137, 143) : phase 0 (proposée le 2026-11-17)
+
+Relevé MCP du 2026-11-17 : aucun modèle sur les 5 points. Nœuds : « Fractions : sens et écritures >
+définition » (131, 132, 136, 137 ; niveaux 1 à 11 pris) et « Décimaux : numération > écritures » (143 ;
+niveaux 1 à 13 pris). Jumeaux publiés : CM1 `092b310c` (145, lire), `14a2d26f` (144, colorier),
+`60ce79bb` (150, lire décimale), `fe91cbd9` (149, colorier décimale), `b832dfdf` (156, colorier un
+décimal) ; CE1 `6bee2313`, `435eb33c`, `191eee18`, `2d051cdc`. Décision § 4 bis : modèles CM2 propres.
+
+Bornes `cycle3.json` : 131, 132 → dénominateur **≤ 60** (5/8) ; 136, 137 → dixièmes ou centièmes ;
+143 → figure en dixièmes ou centièmes. Ce qui distingue le CM2 du CM1 : grandes grilles (jusqu'à 60
+parts), fractions plus grandes que 1 jusqu'à 3 unités, centièmes au-delà de 1.
+
+Outil (en prod) : ` ```partage ` : bande, disque (2 à 12 parts), grille L×C (≤ 10×10), `gris:` (lire, parts
+d'affilée ou rangs tirés), `colorier:` (juge = NOMBRE de parts), `unites:` (1 à 5 figures).
+
+| #   | Point   | Modèle                                               | Variations, plages                                                                                                                                                                                                                                                               | Nœud, niveau   |
+| --- | ------- | ---------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------- |
+| 1   | CM2-132 | Quelle fraction de la figure est coloriée ?          | case fraction, toute fraction égale juste, `requiredForm: 'fraction'` ; V1 grille de 13 à 60 parts (3×5, 4×6, 5×8, 6×10…), parts d'affilée ; V2 même grille, parts éparpillées ; V3 > 1 : 2 ou 3 bandes ou disques de d parts (d 3 à 12), « chaque figure est une unité » (11/4) | définition, 12 |
+| 2   | CM2-131 | Colorier une fraction d'une figure                   | `colorier:` ; V1 figure de k × d parts, d ≤ 12 (3/4 sur une grille 4×6) ; V2 grille, dénominateur de 13 à 60 (17/24, 23/40) ; V3 > 1 : `unites:` 2 ou 3, juste ce qu'il faut (11/4 sur 3 bandes de 4)                                                                            | définition, 13 |
+| 3   | CM2-137 | Quelle fraction décimale de la figure est coloriée ? | case fraction, `requiredForm: 'fraction'` (virgule refusée) ; V1 grille 10×10, g/100 (non multiple de 10) ; V2 > 1 : 2 ou 3 bandes de 10, g/10 (14/10, 23/10) ; V3 > 1 : 2 grilles 10×10, 1xx/100 (137/100)                                                                      | définition, 14 |
+| 4   | CM2-136 | Colorier une fraction décimale d'une figure          | `colorier:` ; V1 grille 10×10, n/100 ; V2 grille 10×10, n/10 (dixièmes = 10 cases chacun) ; V3 > 1 : bandes de 10, `unites:` 2 ou 3 (17/10) ; V4 > 1 : 2 grilles 10×10 (124/100)                                                                                                 | définition, 15 |
+| 5   | CM2-143 | Colorier un nombre décimal                           | `colorier:` (énoncé « Colorie 0,37 de la figure… chaque grille est une unité ») ; V1 grille 10×10, 0,nn ; V2 grille 10×10, 0,n (0,4 = 40 cases) ; V3 deux grilles, 1,nn (1,37 du BO) ; V4 trois bandes de 10, 2,n                                                                | écritures, 14  |
+
+Corrigés : « la figure est partagée en d parts égales, g sont coloriées : g/d » ; au-delà de 1, « chaque
+figure est une unité : 2 unités et 3 quarts, soit 11/4 » ; décimal : « 0,4 = 4/10 = 40/100 : 40 cases ».
+`reducedFractions: off` partout (1/2 juste sur une grille de 24 à moitié coloriée). Erreurs typiques en
+`testSpecs` : parts non coloriées comptées (9/24 au lieu de 15/24), total des parts de toutes les figures
+au dénominateur (11/12 au lieu de 11/4), 4 cases pour 0,4, « 1 + 3/4 » refusé (forme).
+
+Pièges repris du CM1 (lot 3c) : specs de coloriage d'une grille ≤ 34 rangs (garde `answer-complexity-corpus`) ;
+énoncé « Colorie 3/8 de la figure », pas « les 3/8 » ; éparpillées sans outil neuf (rangs (s + i × p) mod N + 1, p
+premier avec N).
+
+**Question d'accès** : 5 brouillons neufs, puis nœud + tag → personne ne lit rien de plus avant la
+publication.
+
+**À trancher** : (a) lire une grille de 60 parts (#1 V1, V2) : jusqu'à 60 comme la borne, ou plafonner à
+40 pour que le comptage reste faisable sur téléphone ? Reco : **jusqu'à 60**, grilles à colonnes de 10
+(6×10, 5×10 : on compte par lignes de 10). (b) un seul lot de 5 modèles ? Reco : oui.
