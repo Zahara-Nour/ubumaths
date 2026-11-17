@@ -7,20 +7,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après la publication du lot 2._
+_Mis à jour le 2026-11-17, à l'ouverture de la PR du lot 3._
 
-- **État** : lots 1 (§ 13) et 2 (§ 17) **publiés**. Phases 0 des lots 3 (aˣ) et 4 (taux moyen / seuils) validées
-  (§ 14), envoyées à questions-ttechno.
-- **Prochaine action** : écrire le lot 3 dans un worktree neuf `../ubumaths-wt-questions-1gen-lot3`, branche
-  `feat/questions-1gen-lot3` (script `docs/wip/questions/lot-1gen-3.py` calqué sur `lot-1gen-2.py`) ; puis lot 4.
-- **En attente de David** : rien.
-- **Pièges en cours** : ADR 0020 et `couvrir-un-niveau.md` § 9 avant tout tag ; `grades` par `array_append` /
-  `array_remove` ciblés ; `db push` pousse TOUTES les migrations en attente (`migration list --linked` d'abord) ;
-  specs d'un bloc associer : le testeur tire avec la graine 0 (relever l'ordre affiché) ; aperçu admin : serveur
-  `--host 127.0.0.1` (l'extension Chrome refuse `[::1]`), et la base locale peut avoir été remise à zéro par une autre
-  session ; questions-1techno tague R2, R3, R4 (044, 117, 119) ; coquille « t/n » de
-  `src/lib/server/programmes/transcriptions/1_GEN.md` à corriger dans la PR du lot 3.
-- **Worktree / branche** : aucun ; le lot 3 ouvre une branche neuve.
+- **État** : lots 1 (§ 13) et 2 (§ 17) **publiés**. Lot 3 (aˣ) **écrit** (§ 18) : 7 modèles verts, joués en local ;
+  PR des fichiers ouverte (coquille « t/n » de la transcription corrigée dedans).
+- **Prochaine action** : merger la PR du lot 3 ; puis **David** lance `create-questions --dir
+scripts/questions/1gen-3-fonctions-exponentielles --publier` ; ids commités, migration nœud + tags (nœud « fonctions
+  x ↦ aˣ » pour les 7), page à cocher, publication ; envoyer ids et plages à questions-ttechno. Puis lot 4.
+- **En attente de David** : relire les écarts à la phase 0 du § 18 ; `create-questions --publier` après le merge.
+- **Pièges en cours** : ADR 0020 et `couvrir-un-niveau.md` § 9 avant tout tag ; `db push` pousse TOUTES les
+  migrations en attente (`migration list --linked` d'abord) ; specs d'un bloc associer : graine 0 (ordre 2, 0, 1) ;
+  aperçu admin : serveur `--host 127.0.0.1`, saisie MathLive : cliquer la case par sa référence ; spec `bad_form` :
+  nommer la contrainte (`['form']`).
+- **Worktree / branche** : `../ubumaths-wt-questions-1gen-lot3`, `feat/questions-1gen-lot3`.
 
 ## 1. Relevé (prod, 2026-11-17)
 
@@ -637,3 +636,49 @@ tag. Ids commités dans les fichiers.
   § 16). https://claude.ai/artifact/7rNB4sGX6PJP6LaYjWLNAJ (capacité `db`, collection `verdicts` vide au départ).
 - Verdicts lus en base : **6/6 OK**, sans commentaire. Simulation `publier-lot.ts` : 6 brouillons passent ; David a
   lancé `--publier` : « 6/6 modèles du lot publiés ». Relu au MCP : les 6 `published`, `grades` `['1_GEN']`.
+
+## 18. Lot 3 « fonctions x ↦ aˣ » : écriture (2026-11-17)
+
+Script `docs/wip/questions/lot-1gen-3.py` → `scripts/questions/1gen-3-fonctions-exponentielles/` (7 fichiers,
+69 specs). `question:specs` vert pour les 7 (50 tirages par variation) ; `sonde-courbes` sur 300 tirages, 1 500
+blocs ` ```courbe ` (courbes du bloc associer comprises) : 0 problème ; simulation `create-questions` verte contre la
+prod (aucun homonyme). Essai en base locale (copie des fichiers, ids locaux). Aperçu admin joué le 2026-11-17 : E4
+(1,5 / 2,5 / 0,6) relié juste, graduations des petits repères lisibles ; E6 (32 × 0,5ˣ) cinq points placés,
+juste ; E7 (f(x) = 8 sur 10 × 0,7ˣ, attendu 0,63) 0,6 jugé juste ; E2 « 27 » pour 3³ → faux, « La réponse doit être
+écrite sous forme de puissance. » Décimaux rendus en virgule (`2{,}5`).
+
+| Modèle | Fichier                                  | Variations | Specs |
+| ------ | ---------------------------------------- | ---------- | ----- |
+| E1     | `01-calculer-valeur-a-puissance-x`       | 3          | 9     |
+| E2     | `02-une-seule-puissance-exposants-reels` | 4          | 11    |
+| E3     | `03-sens-de-variation-a-puissance-x`     | 5          | 16    |
+| E4     | `04-associer-courbe-a-puissance-x`       | 2          | 4     |
+| E5     | `05-exposant-un-sur-n`                   | 3          | 10    |
+| E6     | `06-placer-points-courbe-exponentielle`  | 3          | 8     |
+| E7     | `07-lire-courbe-exponentielle`           | 3          | 11    |
+
+Écarts à la phase 0 (§ 14), sans effet sur les points ni sur les formes de réponse — **à relire par David** :
+
+- **E1** : l'énoncé donne le modèle (`V(x) = C × 1,0t^x`, `N(x) = N₀ × 0,5^x`) ; l'élève calcule. Réponses à
+  `precision` décimale (2 chiffres, ou 0 pour les noyaux).
+- **E2** : `requiredForm: power`. Plages élargies pour le quotient (x ∈ {2 ; 2,5 ; 3 ; 3,5 ; 4,5}, y ∈ {0,5 ; 1 ;
+  1,5 ; 2}, x > y) et b ∈ {2 ; 3 ; 4} pour aˣ × bˣ ; conditions qui écartent les coïncidences avec l'erreur typique
+  (x·y ≠ x + y, x/y ≠ x − y, x·k ≠ x + k).
+- **E3** : v4 (comparer sans calcul) avec a ∈ {0,5 ; 0,8 ; 1,5 ; 2 ; 3}, x₁ ∈ {0,5 … 2} < x₂ ∈ {2,5 … 4} ; v5 en
+  médicament (`Q(x) = Q₀ × (1 − p/100)ˣ`).
+- **E4** : un petit repère par courbe dans le bloc associer (même fenêtre [0 ; 4] × [−0,5 ; 6], même échelle), le
+  point A(1 ; a) marqué sur chaque courbe. v1 : a ∈ {1,2 ; 1,5}, {2 ; 2,5}, {0,5 ; 0,6 ; 0,8} ; v2 avec a = 1.
+- **E5** : v1 b = rⁿ ⩽ 81, r ∈ {2 ; 3 ; 4} (16^{1/2} et 16^{1/4} en plus de la liste) ; v2 et v3 sans puissance
+  parfaite ; `constraints.form: off` (8/3 jugé faux, pas refusé pour sa forme).
+- **E6** : valeurs choisies pour tomber sur la grille au lieu de 100 × 0,5ˣ et 10 × 2ˣ : v1 k × 2ˣ (k ∈ {1 ; 2},
+  grille k) ; v2 16g × 0,5ˣ (g ∈ {1 ; 2 ; 3 ; 5}, grille g) ; v3 bactéries 8g × 1,5ˣ, **tableau donné**, x = 0..3
+  (4 points, grille g).
+- **E7** : v1 croissante (k ∈ {1 ; 2}, a ∈ {1,4 ; 1,5}, k·a⁶ ⩽ 16), grille 1, tolérance 0,5 ; v2 décroissante
+  (k ∈ {10 ; 12 ; 16}, a ∈ {0,5 ; 0,6 ; 0,7}), abscisses graduées de 0,5 en 0,5, tolérance 0,25, solution entre
+  0,5 et 5,5 ; v3 lire a ∈ {0,5 ; 1,5 ; 2 ; 2,5} (ordonnées de 0,5 en 0,5, tolérance 0,25 ; la courbe sort du
+  repère par le haut pour a ⩾ 2).
+- La description accessible des courbes d'E7 écrit les décimaux avec un point (« 0.7^x ») : valeur brute de la
+  variable, comme aux lots précédents.
+
+Coquille de la transcription corrigée dans la même PR : `src/lib/server/programmes/transcriptions/1_GEN.md`, ligne
+390, « exposant $\dfrac{t}{n}$ » → « $\dfrac{1}{n}$ » (le PDF du BO dit 1/n).
