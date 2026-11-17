@@ -7,12 +7,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après la validation de la phase 0 des lots 3 et 4._
+_Mis à jour le 2026-11-17, après la phase 0 du lot 2._
 
 - **État** : lot 1 (5 modèles de suites géométriques) relu (5/5 OK) et **publié** en prod (§ 13).
-- **Prochaine action** : phase 0 du lot 2 (représentations graphiques : 016, 019, 041, 058, 020, 051) ; puis
-  écriture des lots 2, 3, 4. Phase 0 des lots 3 et 4 validée (§ 14) et envoyée à questions-ttechno.
-- **En attente de David** : rien.
+- **Prochaine action** : après validation du lot 2 (§ 15), prévenir questions-1techno (R2, R3, R4 communs), puis
+  écrire le lot 2 dans un worktree neuf ; puis lots 3, 4 (phase 0 validée, § 14, envoyée à questions-ttechno).
+- **En attente de David** : Q17 à Q19 (phase 0 du lot 2, § 15).
 - **Pièges en cours** : ADR 0020 et `couvrir-un-niveau.md` § 9 avant tout tag ; `grades` par `array_append` /
   `array_remove` ciblés ; `db push` pousse TOUTES les migrations de `main` en attente (`--dry-run` d'abord) ; rollback
   du § 12 valable seulement avant les tags 1TECHNO de G1, G4, G5 ; modèle 1GEN-022 commun avec 1TECHNO-057 ; G1, G4,
@@ -495,3 +495,63 @@ tagués, visibles des élèves seulement après publication par David.
 - **Q15** : E2 est un modèle **commun** avec questions-ttechno : nous l'écrivons (exposants positifs, `grades`
   `['1_GEN']`), elle ajoute `T_TECHNO` et son tag, et n'écrit que le complément à exposants négatifs.
 - **Q16** : phase 0 des lots 3 et 4 validée telle quelle. Écriture dans l'ordre de Q10 (lot 2, puis 3, puis 4).
+
+## 15. Lot 2 « représentations graphiques : suites et affines » — phase 0 (proposée le 2026-11-17)
+
+**Nœuds relevés en prod (2026-11-17)** :
+
+- 016, 019, 041, 058 → « Suites > Généralités sur les suites > représentation graphique ». Modèles déjà rangés :
+  8d4e5302 (050, lire u₀ et r), a430a698 (lire un terme, partiel : var. 3 hors 016), d2067413 (031, brouillon),
+  baefb288 (escalier, hors programme), 4f8f420a (réservé à la 1re spé, Q4). Aucun ne fait **placer** des termes,
+  aucun ne lit une suite géométrique à termes positifs.
+- 020, 051 → « Fonctions > Fonctions affines > expression et droite ». Modèles rangés : 15ddcc75, 7c07749c (3e, par le
+  calcul, sans graphique), 0d43f797, 1c5bce2c (reconnaître). Les modèles de droite à tracer ou à lire (8d4bd94d,
+  2cfae58d, f5585668, c64028b0, 0d0e88f5…) sont sur d'autres nœuds : refusés par la règle du nœud (§ 7).
+- Points 1TECHNO sur le même nœud de suites : 044 (réaliser la représentation des termes d'une suite), 117
+  (représentation d'une suite géométrique > 0), 119 (exploiter) ; prévus au lot 4 « graphiques » de
+  questions-1techno.
+
+**Contrainte de l'outil** (`ubumark.md`, repère à placer) : 6 points au plus, chacun **sur un nœud de la grille**.
+Les termes placés sont donc entiers (ou demi-entiers avec une grille de 0,5).
+
+| Modèle                                           | Point | Niveau | Réponse                    |
+| ------------------------------------------------ | ----- | ------ | -------------------------- |
+| R1 Reconnaître le nuage d'une suite arithmétique | 016   | 1      | ` ```associer ` + courbes  |
+| R2 Placer les termes d'une suite arithmétique    | 019   | 1      | ` ```courbe ` + `placer:`  |
+| R3 Placer les termes d'une suite géométrique     | 041   | 2      | ` ```courbe ` + `placer:`  |
+| R4 Lire sur le nuage d'une suite géométrique     | 058   | 2      | case, nombre               |
+| R5 Tracer la droite d'une fonction affine        | 020   | 1      | ` ```courbe ` + `tracer:`  |
+| R6 Lire sur la droite d'une fonction affine      | 051   | 1      | case, nombre ou expression |
+
+- **R1** (016) : trois nuages ↔ trois formules ; v1 formes explicites `u_n = u₀ + nr` ; v2 récurrences
+  `u₀ = …, u_{n+1} = u_n + r`. u₀ ∈ −3..8, r ∈ {−2 ; −1 ; 1 ; 2 ; 3}, trois couples qui se distinguent par u₀ **et**
+  par r (sinon deux nuages ne se départagent que d'un point). Les points sont alignés : c'est dit dans le corrigé.
+- **R2** (019) : placer A, B, C, D, E = (n ; u_n) pour n = 0..4 ; v1 forme explicite ; v2 récurrence ; v3 contexte
+  (« 3 € de plus chaque semaine », u₀ = économies de départ). u₀ ∈ −3..8, r ∈ ±1..3, termes dans la fenêtre, grille 1.
+  Erreurs nommées par l'outil (point oublié, abscisse et ordonnée échangées) ; le corrigé calcule chaque terme.
+- **R3** (041) : même geste, termes **> 0** : (u₀ ; q) ∈ {(1 ; 2), (2 ; 2), (3 ; 2), (1 ; 3)} croissante (n = 0..3 ou
+  0..4, termes ⩽ 32, grille 1 ou 2 selon la parité) ou {(16 ; 0,5), (32 ; 0,5), (27 ; 1/3), (81 ; 1/3)}
+  décroissante ; v1 explicite `u_n = u₀ × qⁿ`, v2 récurrence, v3 contexte (population de bactéries qui double).
+- **R4** (058) : nuage de u₀..u₅ (mêmes plages que R3) ; v1 lire u₀ et q (q = u₁ / u₀) ; v2 lire u_k ; v3 sens de
+  variation (choix croissante / décroissante, lu sur le nuage) ; v4 premier rang où u_n dépasse (ou passe sous) une
+  valeur. Erreurs : q = u₁ − u₀ (confusion arithmétique), rang décalé de 1.
+- **R5** (020) : `tracer: y = ax + b` à partir de `f(x) = ax + b` ; v1 a, b entiers (a ∈ ±1..3, b ∈ −4..4) ; v2 a
+  fractionnaire (±1/2, ±1/3, ±2/3) ; v3 contexte (coût fixe + coût par unité, fenêtre en quart de plan positif).
+  Erreurs nommées par l'outil (« ta droite n'est pas celle d'équation … »).
+- **R6** (051, « travail succinct ») : droite tracée ; v1 lire f(x₀) ; v2 lire l'antécédent de y₀ ; v3 lire
+  l'ordonnée à l'origine et le coefficient directeur, écrire `f(x) = …` (lien taux d'accroissement / coefficient
+  directeur, BO) ; v4 sens de variation (choix). Valeurs sur la grille.
+
+**Coordination questions-1techno** : R2 et R3 sont candidats à 1TECHNO-044 (ou 117 pour R3), R4 à 119 : modèles
+**communs** comme Q11 (`grades` `['1_GEN']`, elle fait son `array_append('1_TECHNO')` et ses tags). La prévenir
+après validation.
+
+**Question d'accès** : personne ne lit rien de nouveau ; brouillons rangés et tagués, visibles des élèves après
+publication par David.
+
+### Questions (2026-11-17)
+
+- **Q17** — R1 (016, contenu) par association nuages ↔ formules, plutôt qu'un deuxième modèle de lecture (050 est
+  déjà couvert par 8d4e5302) ?
+- **Q18** — R2, R3, R4 communs avec questions-1techno (044, 117, 119) ?
+- **Q19** — Phase 0 du lot 2 (modèles, variations, plages, niveaux, formes de réponse) ci-dessus : validée ?
