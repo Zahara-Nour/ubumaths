@@ -6,18 +6,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après #2791._
+_Mis à jour le 2026-11-17, PR 3 (migration nœud + tag) en cours._
 
-- **État** : outil (#2781) et modèle 4-038 (#2791, `scripts/questions/4-lot-11/`) mergés. L'outil n'est pas
-  encore en prod.
-- **Prochaine action** : après le `deploy:prod` et le `create-questions --dir scripts/questions/4-lot-11
---publier` de David : `id` du brouillon commité, migration nœud + tag (gabarit `20261117174541`, sous-notion
-  Géométrie > Figures planes > triangles, point 4-038), page à cocher, publication ; puis clôture de
-  `questions-4`.
-- **En attente de David** : `pnpm deploy:prod` (livre #2781), puis `create-questions … --publier`.
+- **État** : outil (#2781) en prod (v0.94.0) ; brouillon 4-038 créé en prod par David : **`a95aedfd`**.
+  PR 3 : migration `20261117222811` (nœud + tag), test d'intégration rouge sans elle, vert avec (8/8).
+- **Prochaine action** : CI verte → merge → `db:migrate` depuis le dépôt principal (4 conditions, § 8) ;
+  puis page à cocher, publication par David ; puis clôture de `questions-4`.
+- **En attente de David** : rien pour l'instant.
 - **Pièges en cours** : ne pas toucher à `ruled-polygon.ts`. Push : ne pas filtrer sa sortie par
-  `grep -E "->…"` (ugrep plante). Publier seulement après le `deploy:prod` qui livre #2781.
-- **Worktree / branche** : aucun (à recréer pour la migration).
+  `grep -E "->…"` (ugrep plante). `db:migrate` pousse TOUTES les migrations en attente : `migration list
+--linked` avant.
+- **Worktree / branche** : `../ubumaths-wt-rectangle-sans-equerre`, `chore/rectangle-sans-equerre-tags`.
 
 ## 1. Ce qui existe (lecture du code, 2026-11-17)
 
@@ -267,3 +266,17 @@ Le modèle du § 6.2 tel quel ; Q6 [AC] horizontale ; Q7 niveau 3.
   Aperçu admin : énoncé à virgules (« EF = 3,4 cm »), figure, palette Segment · Compas · Règle graduée ;
   rectangle à l'œil → « Ton sommet F est placé à l'œil… », correction dessinée (rectangle, cercles, [BD]).
 - #2791 : CI verte, mergée le 2026-11-17.
+
+## 8. PR 3 : nœud et tag du modèle (2026-11-17)
+
+- `deploy:prod` v0.94.0 (livre #2781), puis `create-questions --dir scripts/questions/4-lot-11 --publier`
+  (David) : brouillon **a95aedfd-e91e-4eb4-91e6-3a440ecaa1d5**, en [4].
+- Relevé de la prod (MCP, lecture seule) : modèle sans nœud ni tag ; point 4-038 actif sur
+  Géométrie > Figures planes > triangles.
+- Migration `20261117222811_rectangle_sans_equerre_rangement_tags.sql`, copie à un modèle de celle du lot 10
+  de `questions-4` (`20261117174541`) ; test `tests/integration/rectangle-sans-equerre-rangement-tags.test.ts`
+  (le cas « TOUT ou RIEN » du lot 10 n'a pas d'objet avec un seul modèle). Corps de la migration retiré :
+  4 rouges ; rétabli : 8/8 verts.
+- Conditions de `db:migrate` : (1) accès, § 6.3, validé § 6.5 ; (2) rouge sans / vert avec ; (3) `security-auditor` :
+  aucun finding bloquant (SQL identique au lot 10 hormis les listes ; prod conforme au relevé ; aucune
+  migration en attente avant celle-ci) ; (4) additive, rollback en commentaire, éprouvé par le test.
