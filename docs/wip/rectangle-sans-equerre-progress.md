@@ -6,17 +6,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, PR 3 (migration nœud + tag) en cours._
+_Mis à jour le 2026-11-17, après #2795._
 
-- **État** : outil (#2781) en prod (v0.94.0) ; brouillon 4-038 créé en prod par David : **`a95aedfd`**.
-  PR 3 : migration `20261117222811` (nœud + tag), test d'intégration rouge sans elle, vert avec (8/8).
-- **Prochaine action** : CI verte → merge → `db:migrate` depuis le dépôt principal (4 conditions, § 8) ;
-  puis page à cocher, publication par David ; puis clôture de `questions-4`.
-- **En attente de David** : rien pour l'instant.
+- **État** : brouillon 4-038 **`a95aedfd`** en prod, rangé sous Géométrie > Figures planes > triangles et
+  tagué 4-038 (#2795, `db:migrate` fait, relu au MCP). Page à cocher publiée (§ 9). PR de l'`id` dans le
+  JSON en cours.
+- **Prochaine action** : lire les verdicts de la page à cocher ; tout « ok » → `publier-lot.ts --dir
+scripts/questions/4-lot-11` en simulation, puis `--publier` par David ; puis clôture de `questions-4`
+  (4-026 reste en D).
+- **En attente de David** : relecture sur la page à cocher (jouer la figure dans l'aperçu admin).
 - **Pièges en cours** : ne pas toucher à `ruled-polygon.ts`. Push : ne pas filtrer sa sortie par
-  `grep -E "->…"` (ugrep plante). `db:migrate` pousse TOUTES les migrations en attente : `migration list
---linked` avant.
-- **Worktree / branche** : `../ubumaths-wt-rectangle-sans-equerre`, `chore/rectangle-sans-equerre-tags`.
+  `grep -E "->…"` (ugrep plante). Worktree : `supabase/.temp` copié du dépôt principal pour `db:migrate`.
+- **Worktree / branche** : `../ubumaths-wt-rectangle-sans-equerre`, `chore/rectangle-sans-equerre-id`.
 
 ## 1. Ce qui existe (lecture du code, 2026-11-17)
 
@@ -280,3 +281,13 @@ Le modèle du § 6.2 tel quel ; Q6 [AC] horizontale ; Q7 niveau 3.
 - Conditions de `db:migrate` : (1) accès, § 6.3, validé § 6.5 ; (2) rouge sans / vert avec ; (3) `security-auditor` :
   aucun finding bloquant (SQL identique au lot 10 hormis les listes ; prod conforme au relevé ; aucune
   migration en attente avant celle-ci) ; (4) additive, rollback en commentaire, éprouvé par le test.
+
+## 9. PR 3 mergée, en prod ; page à cocher (2026-11-17)
+
+- #2795 : CI verte, `check:migrations --pr 2795` OK, mergée. `migration list --linked` : seule
+  `20261117222811` en attente ; `db:migrate` depuis le worktree (branche mergée ; le dépôt principal était
+  occupé par une autre session). MCP : brouillon sur « triangles », tag 4/4-038, `updated_at` inchangé,
+  trigger actif.
+- `id` du brouillon ajouté au JSON du lot (oublié dans #2795) : PR 4.
+- Page à cocher : https://claude.ai/artifact/TohLeMRwgMmDUj8Lg5jxy3 (capacités `db` + `user`, `verdicts`
+  vide) ; alerte attendue : bloc `figure-a-completer` non dessiné, à jouer dans l'aperçu admin.
