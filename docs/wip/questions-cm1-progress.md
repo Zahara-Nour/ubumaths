@@ -9,8 +9,8 @@ _Mis à jour le 2026-11-17, après #2769 (§ 19 octies)._
 
 - **État** : lots 0 à 7 publiés, **126 points sur 171** (recompte MCP). Totaux masqués dans 4 variations CE1 / CE2 :
   écrits en prod et vérifiés au MCP (§ 19 octies).
-- **Prochaine action** : relever les 45 points sans modèle publié, puis phase 0 du lot 8.
-- **En attente de David** : rien.
+- **Prochaine action** : phase 0 du premier lot du découpage (§ 20).
+- **En attente de David** : découpage et ordre des lots 8a à 9 (§ 20).
 - **Pièges en cours** : `create-questions --publier` lancé depuis le dépôt principal écrit les ids dans SES fichiers :
   les reporter sur la branche du worktree, puis `git restore` dans le dépôt principal ; `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance (une autre session peut l'avoir fait avant : vérifier au MCP) ; `db:migrate` depuis un worktree : copier d'abord le lien `../ubumaths/supabase/.temp/` ; `create-questions` = `pnpm tsx scripts/create-questions.ts …`, refuse `theme`/`domain`/`subdomain` (ADR 0035) ; horodatage = `pnpm migration:horodatage`, puis `pnpm check:migrations --pr <n>` **juste avant le merge** ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule ; un brouillon sans nœud ne peut pas être tagué (trigger) ; le pre-commit reformate le relevé `etat-prod-*` (prettier) et laisse l'index décalé : `git diff HEAD` vide → `git restore --staged` ; le mode auto refuse `publier-lot` et `garde-niveaux-tags` (lecture de la prod), même en simulation : David les lance ; zsh ne découpe pas `$F` : un tableau `F=(…)`.
 - **Worktree / branche** : `../ubumaths-wt-questions-cm1`, aucune branche ouverte.
@@ -1556,3 +1556,28 @@ geste dans le nœud, partagé, sans renuméroter.
 - `update-published-questions.ts --lot totaux-ce --publier` lancé par David. Vérifié au MCP : CE2 `f0f681c4`
   V1 à V3 en `totaux: non` ; CE1 `29edb833` V2 en `totaux: non`, V1 et V3 en `totaux: oui` (comme l'instantané
   `scripts/questions/ce-totaux-existants/`). Les deux modèles restent `published`.
+
+## 20. Relevé des 45 points restants (MCP, 2026-11-17)
+
+Recompte MCP : **45 points sans modèle publié** (126 sur 171 couverts), aucun brouillon en attente. Deux outils
+classés C au § 3 sont désormais en prod, ce qui fait passer 5 points en B :
+
+- **horloge à placer** (` ```horloge ` + `placer`, CE1 `d478935f`, CE2 `c06fe751`) → 093 en vrai geste ;
+- **figure à compléter** avec les contrôles symétrique (CE2 `49b8dc0b`, 6e `59694d66`), perpendiculaire (6e
+  `59694d66`, 5e `9dc37ad2`), parallèle (CE2 `5d869c65`, 5e `fbe65ad1`) → 107, 108, 167, 168.
+
+Découpage proposé (38 points évaluables + 7 D) :
+
+| Lot | Thème                          | Points                                                    | Patrons en prod                    |
+| --- | ------------------------------ | --------------------------------------------------------- | ---------------------------------- |
+| 8a  | heures et durées               | 092, 093, 094, 166, 095                                   | 7 modèles CE2 à horloge            |
+| 8b  | aires et angles                | 086, 087, 088 ; 089, 090, 091 (sans degré)                | angles CE1 / CE2, aires 6e         |
+| 8c  | géométrie plane                | 098 (codes), 099 (cercle), 100, 101, 102, 103, 106 (axes) | axes CE2 `b307a9f9`, `79e8e279`    |
+| 8d  | figures à compléter            | 107, 108, 167, 168                                        | ci-dessus                          |
+| 8e  | solides, déplacements          | 109, 110-113, 115 (patrons du cube), 117, 118 (robot)     | patrons CE2 `11ebf9fe`, `c8c9746a` |
+| 9   | probabilités, proportionnalité | 123-128 ; 129, 130                                        | 6e, 5e                             |
+
+**D (sans modèle, décidé au § 4 bis)** : 140, 097, 104, 105, 114, 116, 119.
+
+Questions à David : découpage et ordre (reco : 8a d'abord, patrons CE2 prêts) ; 093 en horloge à placer et 107,
+108, 167, 168 en figure à compléter (B), plus en C.
