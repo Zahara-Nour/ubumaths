@@ -7,18 +7,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, décisions Q2 bis à Q9 prises (§ 5)._
+_Mis à jour le 2026-11-17, après #2744 (migration de tags jouée en prod)._
 
-- **État** : relevé et vérification de l'existant faits (§ 1, 2) ; Q1 à Q9 tranchées (§ 5) ; coordination (§ 6).
-  Plan de tags revu contre la règle du nœud (§ 7) : 12 modèles, **9 points** ; **38 points à écrire**. Aucun code,
-  aucune écriture en base.
-- **Prochaine action** : David confirme le § 7 (retrait de `1_GEN` de 1c86d122 et f5585668 aussi) et répond à la
-  question d'accès ; puis worktree `../ubumaths-wt-questions-1gen`, migration + test d'intégration.
-- **En attente de David** : § 7, question d'accès.
-- **Pièges en cours** : AVANT tout tag, lire l'ADR 0020 et `couvrir-un-niveau.md` § 9 — un point par programme, point
-  sur le nœud du modèle ou sa notion (§ 7) ; `grades` par `array_append` / `array_remove` ciblés ; phase 0 des lots 2
-  et 3 à envoyer à questions-ttechno ; modèle 1GEN-022 commun avec 1TECHNO-057.
-- **Worktree / branche** : aucun (journal seul, sur `main`).
+- **État** : migration `20261117124605_questions_1gen_tags` (#2744) jouée et vérifiée en prod (§ 8) : 12 modèles
+  tagués 1GEN (9 points nouveaux), `1_GEN` retiré de 7. **38 points restent à écrire** en 5 lots (§ 4, avec 002, 016,
+  027, 029, 038, 051, 056, 058 du § 7 à répartir).
+- **Prochaine action** : redécouper les 38 points en lots (mise à jour du § 4), puis phase 0 du lot 1 ; envoyer à
+  questions-ttechno la phase 0 des lots aˣ et taux moyen.
+- **En attente de David** : rien.
+- **Pièges en cours** : AVANT tout tag, ADR 0020 et `couvrir-un-niveau.md` § 9 (un point par programme, point sur le
+  nœud du modèle ou sa notion) ; `grades` par `array_append` / `array_remove` ciblés ; `db:migrate` seulement après
+  le merge, depuis le dépôt principal à jour ; modèle 1GEN-022 commun avec 1TECHNO-057 (le premier au second degré
+  l'écrit).
+- **Worktree / branche** : aucun (`../ubumaths-wt-questions-1gen` retiré après #2744).
 
 ## 1. Relevé (prod, 2026-11-17)
 
@@ -220,3 +221,15 @@ Requête : pour chaque tag prévu, nœud du modèle, nœud du point, et points 1
 f5585668 (6 modèles en tout) ; question d'accès validée sur le plan réduit (11 modèles publiés gagnent `1_GEN` et un
 point ; 6 modèles et le tag 1GEN-022 de 1acb6d47 retirés ; aucune table d'élèves touchée) ; les deux règles de
 l'ADR 0020 ajoutées à l'étape 3 du skill `couvrir-niveau`.
+
+## 8. Migration de tags (#2744, 2026-11-17)
+
+`20261117124605_questions_1gen_tags.sql` + `tests/integration/questions-1gen-tags.test.ts` : rouge sans le corps,
+15 / 15 vert avec. `security-auditor` : aucun finding bloquant (faibles : tout ou rien sous `db push` non prouvé par
+le test ; ordre avec les autres chantiers ; rollback qui retirerait un `1_GEN` ajouté entre-temps). CI verte,
+`check:migrations --pr 2744` passé, mergée. Un premier `db:migrate` lancé avant le merge n'a rien poussé (« up to
+date » : le fichier n'était pas sur `main`). `--dry-run` après le merge : cette seule migration ; jouée par David.
+
+Relu en prod (MCP) : version enregistrée ; trigger `update_question_templates_updated_at` à `O` ; les 19 modèles ont
+les tags et niveaux attendus, `updated_at` et statut inchangés (c90fa022, d2067413 toujours brouillons).
+questions-1techno prévenu (son T2 attendait ce `db:migrate`).
