@@ -160,8 +160,9 @@ formulaire sans `Origin` de notre site (Q39).
   fausse alarme).
 - L'effacement des 90 jours efface aussi les adresses « Je ne suis pas le parent » et retirées :
   leur empreinte ne bloque plus une ressaisie.
-- Le journal des courriels (`parent_notifications`) n'a pas de durée propre : il vit avec le profil
-  de l'élève.
+- Le journal des courriels (`parent_notifications`) est effacé au bout d'**un an** (Q42) par
+  `carnet_erase_old_notifications` (migration `20261117134539`). Tant que le passage quotidien ne
+  l'appelle pas (PR suivante, après `db:types`), il vit avec le profil de l'élève.
 
 ## Les portes
 

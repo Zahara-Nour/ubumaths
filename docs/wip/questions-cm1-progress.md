@@ -5,14 +5,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, phase 0 du lot 7 validée (§ 19 bis)._
+_Mis à jour le 2026-11-17, lot 7 écrit (§ 19 ter)._
 
-- **État** : lots 0 à 6 ter publiés (114 points sur 171, recompte MCP du 2026-11-17). Lot 7 « données » : phase 0
-  écrite au § 19 (13 modèles, 12 points ; 135 et 136 passent de C à B).
-- **Prochaine action** : écriture du lot 7 (§ 19 bis) dans le worktree, branche `feat/questions-cm1-lot7`.
-- **En attente de David** : rien.
+- **État** : lots 0 à 6 ter publiés (114 points sur 171). Lot 7 « données » écrit (13 modèles, § 19 ter), PR des
+  fichiers sur `feat/questions-cm1-lot7`.
+- **Prochaine action** : PR mergée → David lance `create-questions --dir scripts/questions/cm1-7 --publier` ; puis
+  relevé, migration nœud + tags (gabarit 6 ter), page à cocher, publication.
+- **En attente de David** : la création en prod après le merge ; décider du sort des 4 variations CE1 / CE2 dont le
+  total affiché donne la réponse (§ 19 ter).
 - **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance (une autre session peut l'avoir fait avant : vérifier au MCP) ; `db:migrate` depuis un worktree : copier d'abord le lien `../ubumaths/supabase/.temp/` ; `create-questions` = `pnpm tsx scripts/create-questions.ts …`, refuse `theme`/`domain`/`subdomain` (ADR 0035) ; horodatage = `pnpm migration:horodatage`, puis `pnpm check:migrations --pr <n>` **juste avant le merge** ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule ; un brouillon sans nœud ne peut pas être tagué (trigger) ; le pre-commit reformate le relevé `etat-prod-*` (prettier) et laisse l'index décalé : `git diff HEAD` vide → `git restore --staged` ; le mode auto refuse `publier-lot` et `garde-niveaux-tags` (lecture de la prod), même en simulation : David les lance ; `axe: à choisir` : échelles 1, 2, 5, 10 seulement, données ≤ 100.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, HEAD détachée sur `origin/main` (son journal est périmé : lire celui de `main`).
+- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, branche `feat/questions-cm1-lot7`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -1484,3 +1486,24 @@ Les cinq recommandations du § 19 : 1. **un seul lot** de 13 modèles ; 2. **vil
 écrit **dans les limites de `axe: à choisir`** (1, 2, 5, 10, données ≤ 100), échelles 20 à 100 notées au n° 36 de
 `outils-manquants.md` ; 4. repère de 7-11 à **axes donnés** ; 5. **niveaux** : celui qui suit le modèle CE2 de même
 geste dans le nœud, partagé, sans renuméroter.
+
+### 19 ter. Lot 7 — écriture (2026-11-17)
+
+- Script `docs/wip/questions/lot-cm1-7.py` → `scripts/questions/cm1-7/` (13 JSON, 40 variations). Niveaux : tableaux
+  4, 4, 5 ; double entrée 6, 7 ; barres 5, 6, 7 ; courbes 1, 2, 3 (comme les modèles de 5e, pas de CE2) ; problèmes
+  3, 3 (notion « Représenter des données »). Villes inventées (Brumeval, Castelroc, Pontaval, Mirelande,
+  Sablonnière), sommets inventés.
+- « Le plus », « le moins » : la donnée gagnante est posée au rang k par un polynôme de Lagrange (`posee`), la réponse
+  attendue est `{{k}}` (ni `{{if}}`, ni condition d'unicité). Courbes : montée puis baisse (09 V2), montée continue
+  (09 V3 : une température = une heure), un seul sommet ou creux en `2*(w ∓ s*abs(j-k))` (10 V1, V2) — les premiers
+  tirages au hasard dessinaient des pics invraisemblables (vu dans l'aperçu).
+- ⚠️ **` ```tableau-croise ` affiche ses totaux par défaut** (`showTotals: true`, depuis `238ec6bc6a`) : `totaux: non`
+  écrit partout où le total donnerait la réponse (04 V1, V3 ; 05 ; 12 V2, V3). **En prod**, le total donne la réponse
+  dans 4 variations publiées : CE2 `f0f681c4` V1 (le jour où il y a le plus de personnes), V2 (le moins), V3 (combien
+  en tout un jour) ; CE1 `29edb833` V2 (le jour où il y a le plus d'élèves). Non corrigé ici : signalé à David.
+- `question:specs` 300 tirages par variation : 12 000 / 12 000, 75 specs vertes ; sonde jetable (parseurs
+  ` ```barres `, ` ```tableau-croise `, ` ```courbe ` sur chaque tirage, témoin rouge vérifié) : 9 291 blocs, 0 problème ;
+  `create-questions` en simulation (prod) : 13 « à créer ».
+- Base locale (copie du dossier), aperçu admin à 390 px (Playwright, port 5178), les 40 variations vues. Une autre
+  session a remis la base locale à zéro pendant les captures : créer **et** capturer dans une seule commande sous
+  `scripts/with-db-lock.sh`.

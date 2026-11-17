@@ -760,7 +760,8 @@ describe('carnet de liaison — courriels d’exception (base locale)', () => {
 					'carnet_sync_exception_episodes',
 					'carnet_exception_plan',
 					'carnet_quarterly_plan',
-					'carnet_erase_orphan_contacts'
+					'carnet_erase_orphan_contacts',
+					'carnet_erase_old_notifications'
 				]) {
 					const appel = await client.rpc(fn);
 					expect(appel.error?.code, fn).toBe('42501');
@@ -997,6 +998,39 @@ describe('carnet de liaison — courriels d’exception (base locale)', () => {
 				.select('contact_id, kind')
 				.eq('student_id', parti.id);
 			expect(traces.data).toEqual([{ contact_id: null, kind: 'link' }]);
+		});
+	});
+
+	describe('effacement du journal des courriels (Q42)', () => {
+		it('efface les courriels de plus d’un an, quelle que soit leur nature, et garde les autres', async () => {
+			const eleve = await nouvelEleve('Fanny', classId);
+			const p = await parentConfirme(eleve.id, `p-fanny@${DOMAINE}`);
+			await journal(eleve.id, p.contactId, 'link', ilYA(400));
+			await journal(eleve.id, p.contactId, 'quarterly', ilYA(367));
+			await insertId('parent_notifications', {
+				student_id: eleve.id,
+				contact_id: null,
+				kind: 'exception',
+				status: 'failed',
+				reasons: ['inactivity'],
+				created_at: ilYA(380)
+			});
+			await journal(eleve.id, p.contactId, 'exception', ilYA(360));
+			await journal(eleve.id, p.contactId, 'confirmation', ilYA(1));
+
+			const { data, error } = await service.rpc('carnet_erase_old_notifications');
+			expect(error).toBeNull();
+			expect(data).toBeGreaterThanOrEqual(3);
+
+			const restes = await service
+				.from('parent_notifications')
+				.select('kind')
+				.eq('student_id', eleve.id)
+				.order('created_at');
+			expect(restes.data).toEqual([{ kind: 'exception' }, { kind: 'confirmation' }]);
+			// L'adresse et le lien du parent ne bougent pas
+			const contact = await service.from('parent_contacts').select('id').eq('id', p.contactId);
+			expect(contact.data).toHaveLength(1);
 		});
 	});
 });
