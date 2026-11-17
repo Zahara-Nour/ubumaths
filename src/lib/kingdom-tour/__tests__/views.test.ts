@@ -197,6 +197,15 @@ describe('la page des parents', () => {
 		]);
 	});
 
+	it('des questions toutes différentes, et des liens distincts dans chaque réponse (clés du rendu)', () => {
+		const questions = (PARENT_VIEW.faq ?? []).map((f) => f.question);
+		expect(new Set(questions).size).toBe(questions.length);
+		for (const entry of PARENT_VIEW.faq ?? []) {
+			const hrefs = (entry.links ?? []).map((l) => l.href);
+			expect(new Set(hrefs).size, entry.question).toBe(hrefs.length);
+		}
+	});
+
 	it('les gidouilles ne s’achètent pas avec de l’argent réel', () => {
 		expect(text(PARENT_VIEW)).toMatch(/Les gidouilles ne s’achètent pas avec de l’argent réel\./);
 	});

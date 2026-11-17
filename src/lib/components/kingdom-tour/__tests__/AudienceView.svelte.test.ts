@@ -7,7 +7,7 @@ import { describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import AudienceView from '../AudienceView.svelte';
 import { MONTH_PALETTES } from '$lib/almanach/palettes';
-import { AUDIENCE_VIEWS, PARENT_VIEW } from '$lib/kingdom-tour/views';
+import { AUDIENCE_VIEWS, PARENT_VIEW, STUDENT_VIEW, faqJsonLd } from '$lib/kingdom-tour/views';
 
 // Constantes
 
@@ -72,10 +72,19 @@ describe('AudienceView', () => {
 			await expect.element(screen.getByText(/Les gidouilles ne s’achètent pas/)).toBeVisible();
 		});
 
-		it('les données structurées FAQPage dans l’en-tête', async () => {
+		it('les données structurées FAQPage dans l’en-tête : une fois, lisibles, celles de la FAQ', async () => {
 			await renderView(PARENT_VIEW);
+			const faqScripts = [
+				...document.head.querySelectorAll('script[type="application/ld+json"]')
+			].filter((s) => s.textContent?.includes('"FAQPage"'));
+			expect(faqScripts.length).toBe(1);
+			expect(JSON.parse(faqScripts[0].textContent ?? '')).toEqual(faqJsonLd(PARENT_VIEW.faq ?? []));
+		});
+
+		it('la vue des élèves ne met aucune FAQPage dans l’en-tête', async () => {
+			await renderView(STUDENT_VIEW);
 			const scripts = [...document.head.querySelectorAll('script[type="application/ld+json"]')];
-			expect(scripts.some((s) => s.textContent?.includes('"FAQPage"'))).toBe(true);
+			expect(scripts.some((s) => s.textContent?.includes('"FAQPage"'))).toBe(false);
 		});
 
 		it.each(VIEWS.filter(([id]) => id !== 'parent'))('%s : pas de FAQ', async (_, view) => {
