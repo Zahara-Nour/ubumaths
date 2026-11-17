@@ -11,8 +11,8 @@
 | **Coordonnées**                               | contact@ubumaths.fr — [adresse postale À COMPLÉTER]                                |
 | **Représentant légal**                        | [À COMPLÉTER]                                                                      |
 | **Délégué à la protection des données (DPO)** | [À COMPLÉTER — facultatif sauf si désignation obligatoire ; sinon « Non désigné »] |
-| **Date de dernière mise à jour**              | 22 octobre 2026                                                                    |
-| **Version**                                   | 1.1                                                                                |
+| **Date de dernière mise à jour**              | 17 novembre 2026                                                                   |
+| **Version**                                   | 1.2                                                                                |
 
 ---
 
@@ -45,6 +45,7 @@ coexister : responsable pour le grand public, sous-traitant pour les établissem
 | T6  | Assistance IA — tuteur/chat + RAG (Groq, HuggingFace) | [Intérêt légitime / Consentement — À CONFIRMER]             | Non                 |
 | T7  | Support et signalement de bugs                        | Intérêt légitime                                            | Non                 |
 | T8  | Mesure d'audience et performance technique            | Intérêt légitime                                            | Non                 |
+| T9  | Carnet de liaison (information des parents)           | [Intérêt légitime / Mission d'intérêt public — À CONFIRMER] | Non                 |
 
 > Aucune **donnée sensible** au sens de l'art. 9 (santé, opinions, etc.) n'est traitée. ⚠️ Les
 > données concernent en grande partie des **mineurs** → vigilance renforcée (voir § dédié en fin de doc).
@@ -164,17 +165,38 @@ coexister : responsable pour le grand public, sous-traitant pour les établissem
 
 ---
 
+### T9 — Carnet de liaison (information des parents)
+
+Mis en place par le chantier `partage-parents` (novembre 2026). Décision :
+[ADR 0040](../../adr/0040-carnet-de-liaison-lien-par-parent.md) ; fonctionnement :
+[carnet-de-liaison.md](../carnet-de-liaison.md).
+
+| Champ                              | Contenu                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Finalité(s)**                    | Informer les parents du travail de leur enfant, sans compte : une page par parent et par élève (le carnet de liaison), et des courriels seulement quand quelque chose ne va pas (évaluation non faite, révisions en retard, inactivité), plus un message positif par trimestre s'il y a du vrai à dire. Activé par le professeur, classe par classe.                                                                                                                                                                                                                                                                                                                                                                          |
+| **Base légale**                    | [À CONFIRMER] — intérêt légitime (art. 6.1.f) ou mission d'intérêt public (art. 6.1.e) si un établissement déploie Chiphre. L'information des titulaires de l'autorité parentale court jusqu'à 18 ans ; un élève majeur obtient l'arrêt auprès du professeur. La confirmation de l'adresse par le parent n'a **pas** valeur de consentement.                                                                                                                                                                                                                                                                                                                                                                                  |
+| **Personnes concernées**           | Élèves des classes dont le professeur a activé le carnet ; leurs parents (deux adresses au plus par élève) ; une personne dont l'adresse a été saisie par erreur (elle ne reçoit qu'un courriel de confirmation).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| **Catégories de données**          | **Parent** : adresse e-mail et son empreinte (sha256), état (en attente, confirmée, refusée, invalide, retirée), origine (consentement, professeur, élève), dates de confirmation et d'arrêt des courriels ; empreinte des liens et des jetons de courriel (jamais en clair), expiration, révocation, nombre et date du dernier accès ; journal des courriels envoyés (date, nature, motifs — sans l'adresse). **Élève** (lu, non copié) : prénom, palier de jours de travail par semaine (0, 1, 2-3, 4+ ; 5 semaines), nombre de révisions en retard, évaluations faites ou non avec échéance (**jamais la note**), liens du cahier et du cours de sa classe. Épisodes d'exception (motif, dates). Aucune date de naissance. |
+| **Destinataires / sous-traitants** | Le détenteur du lien (le parent) ; l'élève lui-même (même carnet, et la liste des courriels envoyés, jamais les adresses) ; le professeur de la classe (adresses et état des liens, jamais les empreintes). Brevo (envoi des courriels) ; Supabase (hébergement) ; Vercel (hébergement ; les journaux d'exécution gardent l'adresse de la page, jeton compris).                                                                                                                                                                                                                                                                                                                                                               |
+| **Transferts hors UE**             | Brevo : société française (UE) → néant [À CONFIRMER]. Vercel : société US → CCT, traitement réalisé sur les fonctions **cdg1/Paris**.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| **Durée de conservation**          | Adresse : tant que l'élève est membre d'une classe active ; **effacée 90 jours** après qu'il n'en a plus aucune (passage quotidien) ; effacée aussitôt si le destinataire répond « Je ne suis pas le parent » ou si le professeur la retire (l'empreinte reste alors pour bloquer la ressaisie, jusqu'à l'effacement des 90 jours). Lien : expire le **31 août** ; effacé avec l'adresse. Épisodes d'exception : effacés avec l'adresse. Journal des courriels : supprimé avec le profil de l'élève [durée propre À DÉCIDER]. Tout est supprimé avec le profil de l'élève.                                                                                                                                                    |
+| **Mesures de sécurité**            | Jetons de 32 octets aléatoires, stockés hachés ; accès par fonctions `SECURITY DEFINER` réservées au serveur, aucune policy `anon` ; pages `noindex`, `Cache-Control: private, no-store`, aucun Referer ; jeton masqué dans la mesure d'audience et dans le journal des erreurs ; limites de débit par IP et par adresse ; confirmation et refus par bouton (un antivirus de messagerie qui ouvre le lien ne confirme rien) ; réponse identique que l'adresse soit connue ou non (« J'ai perdu mon lien ») ; la forme du carnet est filtrée côté serveur (une donnée ajoutée par erreur ne descend pas).                                                                                                                      |
+| **Droits**                         | Le parent arrête les courriels en un clic (le carnet reste ouvert) ; le destinataire d'une confirmation se déclare « pas le parent » (adresse effacée) ; l'élève voit exactement ce que voient ses parents ; un élève majeur obtient la coupure du partage auprès du professeur. Autres droits : § Droits des personnes concernées.                                                                                                                                                                                                                                                                                                                                                                                           |
+| **Remarque**                       | ⚠️ La politique de confidentialité publique (`/legal/confidentialite`) ne décrit pas encore ce traitement [À FAIRE avant la mise en production du carnet].                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+
+---
+
 ## Récapitulatif des sous-traitants (art. 28)
 
-| Sous-traitant          | Rôle                                                           | Siège       | Localisation des données               | Garanties / encadrement                                        |
-| ---------------------- | -------------------------------------------------------------- | ----------- | -------------------------------------- | -------------------------------------------------------------- |
-| **Supabase Inc.**      | Hébergement BDD, Auth, Storage, Realtime                       | Singapour   | **UE — France (AWS eu-west-3, Paris)** | DPA Supabase ; chiffrement ; UE → **pas de transfert hors UE** |
-| **Vercel Inc.**        | Hébergement application + fonctions                            | USA         | Fonctions **cdg1/Paris (UE)**          | DPA Vercel ; **CCT** (société US)                              |
-| **Google LLC**         | Authentification OAuth / Classroom (+ Gmail API emails élèves) | USA         | USA                                    | **CCT + Data Privacy Framework**                               |
-| **Brevo (Sendinblue)** | Emails transactionnels (consentement parental)                 | France (UE) | UE                                     | DPA ; UE — pas de transfert hors UE [À CONFIRMER]              |
-| **Groq Inc.**          | LLM tuteur/chat (`/api/chat`)                                  | USA         | USA                                    | **CCT** ; exiger zero-retention [À CONFIRMER]                  |
-| **Hugging Face Inc.**  | Embeddings RAG (`multilingual-e5-large`)                       | USA         | USA                                    | **CCT** [DPA à confirmer]                                      |
-| **Vercel (Analytics)** | Mesure d'audience/perf **sans cookie**                         | USA         | USA (agrégé)                           | **CCT** ; cookieless                                           |
+| Sous-traitant          | Rôle                                                              | Siège       | Localisation des données               | Garanties / encadrement                                        |
+| ---------------------- | ----------------------------------------------------------------- | ----------- | -------------------------------------- | -------------------------------------------------------------- |
+| **Supabase Inc.**      | Hébergement BDD, Auth, Storage, Realtime                          | Singapour   | **UE — France (AWS eu-west-3, Paris)** | DPA Supabase ; chiffrement ; UE → **pas de transfert hors UE** |
+| **Vercel Inc.**        | Hébergement application + fonctions                               | USA         | Fonctions **cdg1/Paris (UE)**          | DPA Vercel ; **CCT** (société US)                              |
+| **Google LLC**         | Authentification OAuth / Classroom (+ Gmail API emails élèves)    | USA         | USA                                    | **CCT + Data Privacy Framework**                               |
+| **Brevo (Sendinblue)** | Emails transactionnels (consentement parental, carnet de liaison) | France (UE) | UE                                     | DPA ; UE — pas de transfert hors UE [À CONFIRMER]              |
+| **Groq Inc.**          | LLM tuteur/chat (`/api/chat`)                                     | USA         | USA                                    | **CCT** ; exiger zero-retention [À CONFIRMER]                  |
+| **Hugging Face Inc.**  | Embeddings RAG (`multilingual-e5-large`)                          | USA         | USA                                    | **CCT** [DPA à confirmer]                                      |
+| **Vercel (Analytics)** | Mesure d'audience/perf **sans cookie**                            | USA         | USA (agrégé)                           | **CCT** ; cookieless                                           |
 
 > Penser à conserver une **copie signée du DPA** de chaque sous-traitant.
 
@@ -215,13 +237,15 @@ coexister : responsable pour le grand public, sous-traitant pour les établissem
 > Durées reprises de la **politique de confidentialité §7** — à valider et à tenir **cohérentes
 > entre les deux documents** (toute modification ici doit être répercutée sur la page publique).
 
-| Donnée               | Durée de conservation                                                        |
-| -------------------- | ---------------------------------------------------------------------------- |
-| Profil utilisateur   | Durée de la scolarité + 5 ans, puis suppression/anonymisation ou sur demande |
-| Données pédagogiques | 5 ans après la dernière activité, puis suppression/anonymisation             |
-| Messages             | 3 ans                                                                        |
-| Logs techniques      | 90 jours (suppression automatique)                                           |
-| Signalements de bugs | Jusqu'à résolution, puis suppression                                         |
+| Donnée                                   | Durée de conservation                                                                           |
+| ---------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| Profil utilisateur                       | Durée de la scolarité + 5 ans, puis suppression/anonymisation ou sur demande                    |
+| Données pédagogiques                     | 5 ans après la dernière activité, puis suppression/anonymisation                                |
+| Messages                                 | 3 ans                                                                                           |
+| Logs techniques                          | 90 jours (suppression automatique)                                                              |
+| Signalements de bugs                     | Jusqu'à résolution, puis suppression                                                            |
+| Adresses des parents (carnet de liaison) | 90 jours après que l'élève n'est plus dans aucune classe active ; aussitôt sur refus ou retrait |
+| Liens du carnet de liaison               | Expirent le 31 août ; effacés avec l'adresse                                                    |
 
 ---
 
@@ -249,7 +273,8 @@ Autorité de contrôle : **CNIL** — www.cnil.fr — 3 Place de Fontenoy, TSA 8
 
 ## Historique des révisions
 
-| Date            | Version | Modification                                                                                                                                           |
-| --------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| 22 octobre 2026 | 1.1     | T3 : présence de l'élève pour le Palotin (`student_last_visits` : jour du dernier passage, jour du retour à fêter), finalité, données et conservation. |
-| 15 juin 2026    | 1.0     | Création du registre. Hébergement BDD migré USA (us-east-2) → UE/France (eu-west-3).                                                                   |
+| Date             | Version | Modification                                                                                                                                           |
+| ---------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 17 novembre 2026 | 1.2     | T9 : carnet de liaison (chantier `partage-parents`, ADR 0040) ; Brevo : courriels du carnet.                                                           |
+| 22 octobre 2026  | 1.1     | T3 : présence de l'élève pour le Palotin (`student_last_visits` : jour du dernier passage, jour du retour à fêter), finalité, données et conservation. |
+| 15 juin 2026     | 1.0     | Création du registre. Hébergement BDD migré USA (us-east-2) → UE/France (eu-west-3).                                                                   |

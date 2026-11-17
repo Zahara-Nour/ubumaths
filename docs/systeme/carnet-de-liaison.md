@@ -12,12 +12,10 @@ couvre:
 
 # Carnet de liaison
 
-> Première doc de cette zone, écrite avec la PR 2 du chantier
-> [`partage-parents`](../wip/partage-parents-progress.md) (2026-11-16) ; côté professeur et
-> envois ajoutés en PR 3 ; passage quotidien (courriels d'exception, trimestriel, effacement)
-> en PR 4 (migration `20261116215952`, cron `api/cron/carnet-de-liaison`). Le versement complet en
-> PR 5. Vérifié contre le code le 2026-11-16. Décision :
-> [ADR 0040](../adr/0040-carnet-de-liaison-lien-par-parent.md).
+> Écrite au fil du chantier `partage-parents` (PR #2718, #2724, #2731, #2736, #2737,
+> novembre 2026), versée à sa fin. Vérifiée contre le code le 2026-11-17. Décision :
+> [ADR 0040](../adr/0040-carnet-de-liaison-lien-par-parent.md). Registre RGPD : fiche T9 de
+> [registre-traitements.md](conformite/registre-traitements.md).
 
 ## À quoi ça sert
 
@@ -138,7 +136,7 @@ et à son bas (`#courriels`, bouton « Ne plus recevoir ») ; en-tête `List-Uns
 même lien. Pas de `List-Unsubscribe-Post` : SvelteKit refuse, avant tout hook, un POST de
 formulaire sans `Origin` de notre site (Q39).
 
-### Limites connues (PR 4)
+### Limites connues
 
 - Les rejets définitifs que Brevo signale **après** l'envoi ne marquent pas l'adresse
   `invalid` (pas de webhook Brevo) ; seuls les échecs immédiats sont journalisés.
@@ -151,6 +149,10 @@ formulaire sans `Origin` de notre site (Q39).
 - Arrêter puis reprendre les courriels resignale une exception encore en cours ; un élève
   arrivé en cours d'année est jugé inactif depuis la rentrée de l'école ; une évaluation sans
   échéance jamais faite reste dans le carnet d'une année sur l'autre (Q27).
+- L'effacement des 90 jours efface aussi les adresses « Je ne suis pas le parent » et retirées :
+  leur empreinte ne bloque plus une ressaisie.
+- Le journal des courriels (`parent_notifications`) n'a pas de durée propre : il vit avec le profil
+  de l'élève.
 
 ## Les portes
 

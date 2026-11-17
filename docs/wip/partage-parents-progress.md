@@ -2,11 +2,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après #2737._
+_Mis à jour le 2026-11-17, PR 5 (doc, commit direct sur `main`)._
 
-- **État** : PR 1 à 4 mergées (#2718, #2724, #2731, #2736, #2737). Migrations toutes appliquées en prod. Code des PR 2 à 4 **pas encore déployé** (`deploy:prod` = David) ; le cron `carnet-de-liaison` ne tourne qu'en prod, donc après ce déploiement. Vérifications manuelles : #2724, #2731, #2736-#2737 dans `verifications-manuelles.md`.
-- **Prochaine action** : PR 5, nouveau worktree (`../ubumaths-wt-partage-parents`, `docs/partage-parents-pr5`) : versement de la doc dans `docs/systeme/`, registre RGPD du carnet, point 8 de `presentation-parents` (bloc « Suivre son travail » de `/parents`), ADR 0040 complétée (Q38, jeton par courriel).
-- **En attente de David** : **Q39** (`List-Unsubscribe-Post` : recommandé de ne pas toucher au CSRF ; c'est l'état actuel). Points laissés, à trancher ou non : effacement après 90 jours qui efface aussi les « Je ne suis pas le parent » ; Q27 sans borne d'année ; plafond par élève (deux enfants → deux courriels le même jour) ; resignalement après arrêt puis reprise des courriels.
+- **État** : PR 1 à 4 mergées (#2718, #2724, #2731, #2736, #2737), migrations en prod. Code des PR 2 à 4 **pas encore déployé** (`deploy:prod` = David). PR 5 faite : registre RGPD (fiche T9), ADR 0040 complétée (Q35, Q38, Q39), `carnet-de-liaison.md` versée, carte des fonctionnalités, texte du point 8 proposé dans `presentation-parents-progress.md`.
+- **Prochaine action** : selon les réponses de David : politique de confidentialité (PR de code, **avant** le `deploy:prod` du carnet) ; puis archiver ce journal (`docs/archive/wip/`).
+- **En attente de David** : **Q39** (`List-Unsubscribe-Post`) ; **Q40** texte du point 8 ; **Q41** politique de confidentialité publique ; **Q42** durée du journal des courriels. Points laissés : effacement des 90 jours qui efface aussi les « Je ne suis pas le parent » ; Q27 sans borne d'année ; plafond par élève ; resignalement après arrêt puis reprise.
 - **Pièges en cours** : données d'élèves mineurs. 1er trimestre fini le 27 nov. : messages trimestriels dès le 28 si déployé. Rejets Brevo différés non marqués `invalid` (pas de webhook).
 - **Worktree / branche** : aucun.
 
@@ -266,3 +266,27 @@ Questions (recommandation en premier) :
   - objet du courriel sans caractère de contrôle ; « Votre enfant » en début de phrase ; inactivité « ces N derniers jours de classe » (la règle SQL se déclenche à N exactement) ; trimestriel sans « Une bonne nouvelle ».
 - Laissés, à dire à David : plafond par adresse ET par élève (deux enfants → deux courriels possibles le même jour) ; pas de `maxDuration` (la valeur par défaut de Vercel suffit pour un professeur ; à revoir si le passage grossit).
 - **Mergée** le 2026-11-17 (#2737), CI verte au 2e passage (filtre de chemins de la suite d'intégration : gabarits de courriels et `validation/carnet.ts` ajoutés). Pas de migration.
+
+## PR 5 — versement de la doc (2026-11-17)
+
+Toute en doc : commit direct sur `main` (pas de worktree, contrairement au plan du bloc précédent).
+
+- `docs/systeme/conformite/registre-traitements.md` 1.2 : fiche **T9 Carnet de liaison** (finalité, données, destinataires, conservation, mesures, droits), Brevo, durées.
+- ADR 0040 : statut (mise en œuvre, PR citées) ; amendements Q35 (effacement des 90 jours), Q38 (jeton par courriel), Q39 (pas de `List-Unsubscribe-Post`, en attente de David).
+- `docs/systeme/carnet-de-liaison.md` : en-tête de versement, limites connues complétées (effacement des refus, journal sans durée propre).
+- `docs/systeme/carte-des-fonctionnalites.md` : le carnet est construit ; ne le promettre qu'en production et « si le professeur l'active ».
+- Point 8 de `presentation-parents` : texte proposé (bloc « Suivre son travail »), à valider ; il ne va sur `/parents` qu'après le `deploy:prod` du carnet.
+
+Questions (recommandation en premier) :
+
+- **Q40 — Texte du point 8** : celui de `presentation-parents-progress.md` (2026-11-17). Le code de `/parents` (`views.ts`, bloc `suivi`) reste au chantier `presentation-parents`.
+- **Q41 — Politique de confidentialité** (`/legal/confidentialite`) : elle ne dit rien du carnet (adresses des parents, liens, courriels). Recommandation : la compléter **avant** le `deploy:prod` du carnet (§ 3 données, § 4 finalités, § 6 Brevo, § 7 durées), PR de code, texte validé par David.
+- **Q42 — Journal des courriels** (`parent_notifications` : date, nature, motifs, sans adresse) : aucune durée propre, il vit avec le profil de l'élève. Recommandation : l'effacer au bout d'**un an** par le passage quotidien (l'élève ne lit que les récents). Effacement voulu (RGPD) : nouvelle fonction SQL, donc migration + PR de code.
+
+### 2026-11-17 (recommandations suivies)
+
+- **Q39** : pas de `List-Unsubscribe-Post` (état actuel). **Q40** : texte du point 8 validé, avec « et, s'il y a de quoi, une bonne nouvelle par trimestre ». **Q41** : politique de confidentialité complétée **avant** le `deploy:prod` du carnet (PR de code). **Q42** : journal des courriels effacé au bout d'un an (migration plus tard, perte voulue acceptée).
+- **Q43 — Arrivée en cours d'année** : l'inactivité se compte depuis l'arrivée dans la classe (`class_members.joined_at`), pas depuis la rentrée. **Q27 bornée** : une évaluation sans échéance non faite ne reste dans le carnet que si elle date de l'année scolaire en cours.
+- Question d'accès (migration Q43 + Q27) : personne ne lit rien de nouveau ; en miroir, le parent **ne lit plus** les évaluations sans échéance non faites d'une année passée.
+- Laissés tels quels : effacement des 90 jours qui efface les refus ; plafond par élève ; resignalement après arrêt puis reprise.
+- Ordre : PR 6 (migration Q43 + Q27) → PR 7 (code si besoin, politique de confidentialité, point 8 sur `/parents` après le déploiement) ; avant le 28 novembre.
