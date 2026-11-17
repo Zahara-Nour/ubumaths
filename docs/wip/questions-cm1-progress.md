@@ -5,16 +5,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, lot 6 ter : migration nœud + tags en PR (§ 18 quater)._
+_Mis à jour le 2026-11-17, après #2740 et `db:migrate` (lot 6 ter rangé, page à cocher publiée)._
 
-- **État** : lots 0 à 6 bis publiés (109 points sur 171). Lot 6 ter « algèbre » (062-066) : #2734 mergée, 8 brouillons
-  créés en prod (ids commités), migration `20261117113333_questions_cm1_lot6ter_rangement_tags` en PR (branche
-  `feat/questions-cm1-lot6ter-rangement`).
-- **Prochaine action** : CI verte, `check:migrations --pr <n>`, merge ; David lance `db:migrate` ; vérifier au MCP ;
-  page à cocher (`page-a-cocher.ts --dir scripts/questions/cm1-6ter`) ; puis `publier-lot`.
-- **En attente de David** : `db:migrate` après le merge.
+- **État** : lots 0 à 6 bis publiés (109 points sur 171). Lot 6 ter « algèbre » (062-066) : 8 brouillons en prod,
+  rangés et tagués (#2740, migration passée, vérifié au MCP) ; page à cocher publiée, en relecture.
+- **Prochaine action** : lire les verdicts (`ArtifactData list verdicts`, page
+  https://claude.ai/artifact/XiA4snkC73LZt3Ktvsny5Q) et les compter ; « À revoir » → corriger ; tout « OK » →
+  `publier-lot` (simulation), `garde-niveaux-tags`, puis `--publier` par David.
+- **En attente de David** : la relecture des 8 fiches (Scratch de 2d7d0e63 non dessiné par la page : le jouer dans
+  l'aperçu admin).
 - **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance (une autre session peut l'avoir fait avant : vérifier au MCP) ; `db:migrate` depuis un worktree : copier d'abord le lien `../ubumaths/supabase/.temp/` ; `create-questions` = `pnpm tsx scripts/create-questions.ts …`, refuse `theme`/`domain`/`subdomain` (ADR 0035) ; horodatage = `pnpm migration:horodatage`, puis `pnpm check:migrations --pr <n>` **juste avant le merge** ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule ; un brouillon sans nœud ne peut pas être tagué (trigger) ; le pre-commit reformate le relevé `etat-prod-*` (prettier) et laisse l'index décalé : `git diff HEAD` vide → `git restore --staged`.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, branche `feat/questions-cm1-lot6ter-rangement`.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, HEAD détachée sur `origin/main`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -1404,3 +1405,13 @@ créé.
 - Test `questions-cm1-lot6ter-rangement-tags.test.ts` : 20/20 vert ; corps neutralisé (`select 1;`) : 9 échecs + suite
   principale sautée. `types:cliquet` tenu ; `security-auditor` : aucun finding (diff avec la 6 bis : données,
   compteurs, préfixe `_qcm1l6t_` ; état « avant » remesuré au MCP).
+- #2740 mergée (CI verte, `check:migrations --pr 2740` passé ; conflit sur « Reprendre ici » seulement), branche
+  supprimée.
+
+### 18 quinquies. Lot 6 ter — migration passée, page à cocher (2026-11-17)
+
+- `db:migrate` lancé par David. Vérifié au MCP : `20261117113333` dans `schema_migrations` ; 8 brouillons CM1, chacun
+  sur son nœud avec son tag (062 ×2, 063, 064, 065 ×2, 066 ×2).
+- `page-a-cocher.ts --dir scripts/questions/cm1-6ter` : 8 fiches (30 exemples), une alerte (bloc `scratch` de
+  2d7d0e63 non dessiné : déjà vu dans l'aperçu admin à 390 px, § 18 ter). Page :
+  https://claude.ai/artifact/XiA4snkC73LZt3Ktvsny5Q (`verdicts`, capacité `db`, vide).
