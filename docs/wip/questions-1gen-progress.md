@@ -7,19 +7,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, lot 1 écrit, PR #2750 ouverte._
+_Mis à jour le 2026-11-17, après #2750._
 
-- **État** : lot 1 (G1 à G5, suites géométriques) écrit et essayé en base locale (§ 10) ; **PR #2750 ouverte**, CI à suivre (`gh run watch`) puis merge dès le vert.
-- **Prochaine action** : PR mergée → David lance `create-questions --dir scripts/questions/1gen-1-suites-geometriques
---publier` (prod, brouillons) ; commiter les ids écrits en tête des fichiers ; envoyer les ids à questions-1techno ;
-  migration nœud + tags (gabarit `20261026210000`), page à cocher, publication. En parallèle : phase 0 des lots 3 et
-  4 pour questions-ttechno.
-- **En attente de David** : le `--publier` en prod, après le merge.
+- **État** : lot 1 (G1 à G5, suites géométriques) **mergé (#2750)**, essayé en base locale (§ 10) ; pas encore en prod.
+- **Prochaine action** : David lance `pnpm create-questions --dir scripts/questions/1gen-1-suites-geometriques
+--publier` depuis le worktree (prod, brouillons) ; commiter les ids écrits en tête des fichiers ; envoyer les ids à
+  questions-1techno ; migration nœud + tags (gabarit `20261026210000`), page à cocher, publication. En parallèle :
+  phase 0 des lots 3 et 4 pour questions-ttechno.
+- **En attente de David** : le `--publier` en prod.
 - **Pièges en cours** : AVANT tout tag, ADR 0020 et `couvrir-un-niveau.md` § 9 (un point par programme, point sur le
   nœud du modèle ou sa notion) ; `grades` par `array_append` / `array_remove` ciblés ; `db:migrate` seulement après
   le merge, depuis le dépôt principal à jour ; G1, G4, G5 communs avec 1TECHNO (on écrit `1_GEN` seul,
   questions-1techno ajoute `1_TECHNO` et ses tags) ; modèle 1GEN-022 commun avec 1TECHNO-057.
-- **Worktree / branche** : `../ubumaths-wt-questions-1gen` · `feat/questions-1gen-lot1`.
+- **Worktree / branche** : `../ubumaths-wt-questions-1gen` · `feat/questions-1gen-lot1-tags` (ids + migration).
 
 ## 1. Relevé (prod, 2026-11-17)
 
