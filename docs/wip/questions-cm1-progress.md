@@ -5,14 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après #2792 (§ 21 neuvies)._
+_Mis à jour le 2026-11-17, phase 0 du lot 8b (§ 22)._
 
 - **État** : lots 0 à 8a publiés, 131 points sur 171. Correctif `zeros` des horloges CE2 écrit en prod. Restent 8b,
   8c, 8d, 8e, 9 (§ 20, découpage validé § 20 bis).
-- **Prochaine action** : lot 8b « aires et angles » (086, 087, 088 ; 089, 090, 091 sans degré) : relevé des patrons
-  en prod (angles CE1 / CE2, aires 6e), puis phase 0 à faire valider.
-- **En attente de David** : rien. Ouvert si David le veut : « 1 h 05 min » vaut ½ point dans les durées
-  « ? h ? min » (`4c75f053` V4, `2370bc8d` V2), laissé tel quel (§ 21 neuvies).
+- **Prochaine action** : lot 8b « aires et angles » : phase 0 écrite (§ 22, 6 modèles, tout en bloc `figure`) ;
+  après le go, écrire le script du lot dans un worktree neuf (l'ancien est détaché sur `main`).
+- **En attente de David** : les 3 questions du § 22 (modèles ; sous-notion « aires sur quadrillage » ; jumeaux CM2).
 - **Pièges en cours** : `create-questions --publier` lancé depuis le dépôt principal écrit les ids dans SES fichiers :
   les reporter sur la branche du worktree, puis `git restore` dans le dépôt principal ; `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance (une autre session peut l'avoir fait avant : vérifier au MCP) ; `db:migrate` depuis un worktree : copier d'abord le lien `../ubumaths/supabase/.temp/` ; `create-questions` = `pnpm tsx scripts/create-questions.ts …`, refuse `theme`/`domain`/`subdomain` (ADR 0035) ; horodatage = `pnpm migration:horodatage`, puis `pnpm check:migrations --pr <n>` **juste avant le merge** ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule ; un brouillon sans nœud ne peut pas être tagué (trigger) ; le pre-commit reformate le relevé `etat-prod-*` (prettier) et laisse l'index décalé : `git diff HEAD` vide → `git restore --staged` ; le mode auto refuse `publier-lot` et `garde-niveaux-tags` (lecture de la prod), même en simulation : David les lance ; zsh ne découpe pas `$F` : un tableau `F=(…)`.
 - **Worktree / branche** : `../ubumaths-wt-questions-cm1`, détaché sur `main`, aucune branche ouverte (un id de `4-lot-11/01` d'une autre session y traîne, non commité : pas à nous).
@@ -1707,3 +1706,43 @@ celui qui suit le modèle CE2 de même geste dans le nœud, partagé, sans renum
   commit à part). Simulation en prod : `options` et `testSpecs` seuls. Écriture en prod : à lancer par David.
 - #2792 mergée (CI verte), branche supprimée ; worktree détaché sur `main`. `--publier` lancé par David ; vérifié au
   MCP : `0d41a45e` et `71741618` `published`, `options.constraints.zeros: off`, 18 specs chacun.
+
+## 22. Lot 8b — aires et angles : phase 0 (à valider, 2026-11-17)
+
+Relevé MCP : aucun modèle sur 086 à 091, **ni sur leurs jumeaux CM2** (071, 072, 076, 077, 078, mêmes intitulés),
+aucun brouillon. **Aucun modèle d'aire sur quadrillage, à aucun niveau** : les « aires 6e » du § 20 sont des calculs
+par formule, interdits au CM1 (bornes). Patrons réels : CE1 `bbb43bf4` « Angle droit, aigu ou obtus ? »
+(`ce1-9/09`, bloc `figure` + `grille: oui` + `angle()` + `choix`) ; polygones coloriés (`polygone(…, remplissage=…)`)
+déjà en prod. Les 6 points sont en **B** (bloc `figure` seul, rien à créer).
+
+Rangement : 086, 087, 089, 090 sont sur les notions **Aires** et **Angles** ; 088 sur la sous-notion **unités et
+conversions** (d'Aires) ; 091 sur **comparaison** (d'Angles). Les sous-notions d'Aires sont toutes « par formule »
+(carré, rectangle, disque…) : aucune ne va aux aires sur quadrillage.
+
+Bornes (cycle3) : 086 sans mesure (superposition, découpage-recollement) ; 087 unité fournie, carreaux entiers et
+demi-carreaux ; 088 le cm² seul ; 089 sommet, côtés, angle droit, aigu, obtus ; 090 notations â, ABC chapeau, Â ;
+091 sans mesure, pas de degré.
+
+| #   | Point | Modèle (titre)                     | Variations                                                                                                                                                         | Réponse                 | Rangement             |
+| --- | ----- | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------- | --------------------- |
+| 1   | 086   | Comparer les aires de deux figures | V1 aires nettement différentes ; V2 même aire, formes différentes (l'une est l'autre découpée et recollée) ; V3 la figure au plus grand tour a la plus petite aire | choix : A, B, égales    | Aires                 |
+| 2   | 087   | Aire en carreaux                   | V1 polygone en carreaux entiers (6 à 20) ; V2 avec des demi-carreaux ; V3 unité fournie = un domino de 2 carreaux                                                  | nombre d'unités         | Aires                 |
+| 3   | 088   | Aire en centimètres carrés         | V1 carreaux de 1 cm entiers ; V2 avec des demi-carreaux ; V3 deux figures, « combien de cm² de plus ? »                                                            | nombre, « cm² » affiché | unités et conversions |
+| 4   | 089   | Le vocabulaire des angles          | V1 nommer le sommet ; V2 nommer les deux côtés ; V3 droit, aigu ou obtus (sans quadrillage, côtés de longueurs différentes)                                        | lettre ; choix          | Angles                |
+| 5   | 090   | Noter un angle                     | V1 angle marqué → sa notation parmi 3 ($\widehat{ABC}$, $\widehat{BAC}$, $\widehat{ACB}$) ; V2 notation → sommet ; V3 notation → quel angle marqué (couleurs)      | choix ; lettre          | Angles                |
+| 6   | 091   | Comparer deux angles               | V1 deux angles, côtés courts au plus grand (piège) ; V2 comparer à l'angle droit ; V3 ranger trois angles                                                          | choix                   | comparaison           |
+
+Corrigés : 086 superposition / découpage-recollement, puis compte des carreaux pour vérifier ; 087-088 compte par
+lignes, deux demi-carreaux font un carreau ; 089-091 avec le coin de l'équerre comme gabarit.
+
+**Question d'accès** (migration nœud + tag) : personne ne pourra lire quelque chose qu'il ne pouvait pas lire
+avant. Les modèles publiés sont lus comme les autres ; la migration ne fait que les ranger et les taguer.
+
+**Questions à David** :
+
+1. Les 6 modèles et leurs variations : OK ?
+2. Aires sur quadrillage (modèles 1 et 2) : les ranger directement sous **Aires**, ou créer une sous-notion
+   « aires sur quadrillage » (pour CM1, CM2, et plus tard le CE2 s'il en a) ? Reco : la sous-notion, sinon les
+   modèles « par formule » et « par comptage » se mélangent sous Aires.
+3. Jumeaux CM2 (mêmes intitulés, aucun modèle) : niveaux « CM1 et CM2 » et tags sur les deux points ? Reco :
+   oui pour 086, 087, 089, 090, 091 (c'est le même attendu au CM2) ; non pour 088 (le CM2 ajoute dm² et m²).
