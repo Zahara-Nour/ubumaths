@@ -1,4 +1,5 @@
 {
+	"id": "b47f2699-d908-49bb-aa13-d4ba6ccc350d",
 	"title": "Suite de nombres : les trois termes suivants",
 	"description": "Trouver la règle d'une suite (+ a, × k, + a − b et + a + b en alternance) et écrire les trois termes suivants",
 	"grades": ["CM1"],

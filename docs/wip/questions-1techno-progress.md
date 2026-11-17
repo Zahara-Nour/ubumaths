@@ -8,16 +8,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, décisions Q1-Q8 (§ 7)._
+_Mis à jour le 2026-11-17, page à cocher T1 publiée (§ 8)._
 
-- **État** : relevé, classement et décisions faits (§ 1 à 7). Aucun fichier, aucune migration.
-- **Prochaine action** : phase 0 du lot 0 + T1 (§ 8), à valider.
-- **En attente de David** : Q4 bis (83b1f614) et Q5 bis (page à cocher avant ou après la migration) — § 7 ;
-  accord sur le retrait des tags (destructif, § 8).
-- **Pièges en cours** : deux nœuds s'appellent « définition » (arithmétique, géométrique) → les résoudre par
-  leur chemin dans les migrations ; les modèles réutilisés sont partagés avec la 1re spé (toute correction de
-  contenu les change aussi).
-- **Worktree / branche** : aucun ; le premier lot ouvrira `../ubumaths-wt-questions-1techno`.
+- **État** : décisions Q1-Q8, Q4 bis, Q5 bis prises (§ 7). Page à cocher T1 publiée :
+  https://claude.ai/artifact/3w5V2hN7XMDco8RbRMcHVp (19 modèles, instantanés dans
+  `scripts/questions/1techno-t1/`, branche `feat/questions-1techno-t1`, non commités).
+- **Prochaine action** : compter les verdicts T1 (`ArtifactData list verdicts`), puis migration T1 (tags +
+  `1_TECHNO`) sur les seuls « OK ».
+- **En attente de David** : verdicts T1 ; réponse à la question d'accès T1 ; accord sur le lot 0 (retrait
+  des tags 1TECHNO-118 de 1239554b et 79d69593, destructif ; ceux de 1acb6d47 / 97b3a376 au lot de leurs
+  jumeaux — proposition).
+- **Pièges en cours** : deux nœuds « définition » (arithmétique, géométrique) → par leur chemin ; modèles
+  partagés avec la 1re spé ; les pages à cocher montrent les points actuels (1SPE), le point visé est dans
+  l'intro.
+- **Worktree / branche** : `../ubumaths-wt-questions-1techno`, `feat/questions-1techno-t1`.
 
 ## 1. Relevé (prod, 2026-11-17)
 
@@ -162,3 +166,16 @@ Couverts de fait par un savoir-faire voisin (le tag est quand même proposé au 
 - **Q6** : uₙ accepté dans les modèles réutilisés ; les modèles neufs écrivent u(n).
 - **Q7** : ordre du § 5.
 - **Q8** : 012 et 143 hors appli, sans modèle propre.
+
+**Complété le 2026-11-17 (David, « je te suis »)** : **Q4 bis** = (a), ajouter au corrigé de 83b1f614 v3 la
+racine évidente de f′ (modèle publié et partagé : correction par migration de contenu, § 7 de la doc) ;
+**Q5 bis** = page à cocher **avant** la migration de tags, tag posé sur les seuls « OK ».
+
+## 8. Lot T1 : page à cocher (2026-11-17)
+
+19 modèles exportés de la prod (`export-question-templates.ts`) dans `scripts/questions/1techno-t1/` ; page
+publiée avec la capacité `db`, collection `verdicts` vide au départ. Point visé par modèle : intro de la page
+(= § 3).
+
+Proposition (non validée) pour le lot 0 : retirer maintenant 1TECHNO-118 de 1239554b et 79d69593 (118 garde
+f36ce3ff) ; retirer 057 de 1acb6d47 et 137 de 97b3a376 dans la PR qui publie leurs jumeaux (lots 2 et 5).
