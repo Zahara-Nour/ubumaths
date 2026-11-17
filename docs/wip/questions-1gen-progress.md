@@ -13,7 +13,7 @@ _Mis à jour le 2026-11-17, après #2750 et la création des brouillons en prod.
   `['1_GEN']`, sans nœud ni tag (vérifié). questions-1techno a reçu les ids de G1, G4, G5 (lecture non confirmée).
 - **Prochaine action** : écrire la migration nœud + tags (`pnpm migration:horodatage`, gabarit `20261026210000`,
   tableau du § 11) et son test d'intégration (vérifié rouge sans la migration) ; `security-auditor` ; PR ; au merge,
-  `db:migrate` depuis le dépôt principal à jour ; puis page à cocher, publication. En parallèle : phase 0 des lots 3
+  `db:migrate` depuis le dépôt principal à jour, **puis prévenir questions-1techno** (il attend notre nœud, § 11) ; puis page à cocher, publication. En parallèle : phase 0 des lots 3
   et 4 pour questions-ttechno.
 - **En attente de David** : rien (question d'accès tranchée : personne, § 11).
 - **Pièges en cours** : AVANT tout tag, ADR 0020 et `couvrir-un-niveau.md` § 9 (un point par programme, point sur le
@@ -332,6 +332,9 @@ avec les ids écrits en tête des fichiers (commit 1487a0f73). Relevé en prod :
 
 - Ids de G1, G4 et G5 envoyés à questions-1techno le 2026-11-17 (G2 et G3 pour information). Il lui revient d'ajouter
   `1_TECHNO` et ses tags ; notre migration ne touche pas à `grades`.
+- Réponse de questions-1techno (2026-11-17) : ids notés à son § 15. Son trigger exige le nœud, donc elle attend
+  notre `db:migrate` en prod pour faire son `array_append('1_TECHNO')` et poser ses tags 036, 038 et 040/049 :
+  **la prévenir dès notre `db:migrate` fait.** Sa PR #2753 ne touche aucun modèle 1GEN.
 - **Question d'accès**, posée à David le 2026-11-17 AVANT le SQL : « qui pourra lire quoi, qu'il ne pouvait pas lire
   avant ? ». Réponse de David le 2026-11-17 : **personne**. Les modèles restent des brouillons, ils sont seulement
   rangés et tagués ; les élèves ne les voient qu'après la publication par David.
