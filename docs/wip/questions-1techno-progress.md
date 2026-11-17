@@ -14,8 +14,8 @@ _Mis à jour le 2026-11-17, après #2753 (lot 0 en prod)._
   session (tortue-variables), pas par ce chantier ; effet vérifié conforme (§ 15).
 - **Prochaine action** : correction de 83b1f614 v3 (prévenir questions-1gen avant), puis lots d'écriture (§ 5, 9).
 - **En attente de David** : rien.
-- **questions-1gen** : G1, G4, G5 en prod en brouillon (ids au § 15) → notre migration `1_TECHNO` + tags 036,
-  038, 040 ou 049, après leur migration nœud + tags 1GEN (branche `feat/questions-1gen-lot1-tags`).
+- **questions-1gen** : G1, G4, G5 en prod, brouillons, **rangés et tagués 1GEN** (#2754, migrée) → notre
+  migration `1_TECHNO` + tags 036 (G1), 038 (G4), 040 ou 049 (G5) est débloquée ; page à cocher avant (Q10).
 - **Pièges en cours** : un point par programme (trigger) ; `grades` en `array_append`/`array_remove` seulement ;
   worktree neuf → `pnpm exec svelte-kit sync` avant un script `tsx` ; commitlint refuse « T1 » en début de sujet ;
   CI : le cliquet peut être coupé à 20 min (relancer).
@@ -358,3 +358,9 @@ David prévenu par cette session. Prod vérifiée (MCP) : 1239554b et 79d69593 �
 publiés, `updated_at` inchangé ; f36ce3ff garde `{1_SPE,1_TECHNO}` et 118 ; brouillon 0495289a inchangé ;
 trigger de date `O`. Leçon : une migration destructive mergée part au prochain `db push` de n'importe quelle
 session ; la garder hors de `main` (PR non mergée) tant que le go n'est pas donné.
+
+Message de questions-1gen (2026-11-17) : nœuds et tags 1GEN posés en prod (`20261117142038`, #2754) — G1
+`0b5c3db6` sur la sous-notion « définition » (1GEN-028), G4 `c4887e49` sur « terme général » (1GEN-029), G5
+`569e0140` sur la notion « Suites géométriques » (1GEN-030) ; G2, G3 sur la notion (039, 057). Brouillons,
+`grades = ['1_GEN']`. À vérifier pour nos tags : le trigger exige que le point 1TECHNO soit sur le nœud du modèle
+ou sur sa notion.
