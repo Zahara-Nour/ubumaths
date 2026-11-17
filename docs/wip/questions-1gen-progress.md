@@ -569,3 +569,7 @@ publication par David.
   elle fait son `array_append('1_TECHNO')` et ses tags après notre migration nœud + tags. Session prévenue le
   2026-11-17.
 - **Q19** : phase 0 du lot 2 validée telle quelle.
+
+**Réponse de questions-1techno (2026-11-17)** : d'accord, plages vérifiées contre ses bornes. R2 → 1TECHNO-044,
+R3 → 117, R4 → 119 (même nœud). Retirés de son lot 4. Lui envoyer les ids en prod ; elle tague après notre migration,
+page à cocher d'abord. Sa migration du lot G (G1, G4, G5) est en PR #2758.
