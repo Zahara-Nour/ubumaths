@@ -53,6 +53,7 @@
 	import { toFrenchDecimal } from '$lib/utils/french-math';
 	import CourseCardView from './CourseCardView.svelte';
 	import { provideQuestionLexicon } from '$lib/components/markdown/lexicon-context';
+	import LexiconToggle from './LexiconToggle.svelte';
 
 	// Props
 	interface Props {
@@ -314,6 +315,8 @@
 					onSelfAssess={interactive ? handleSelfAssess : undefined}
 				/>
 			{:else}
+				<!-- Bouton « Mots du dictionnaire » (R6), avant l'énoncé dans l'ordre de tabulation -->
+				<LexiconToggle class="float-right -mt-2 -mr-2 ml-2" />
 				{#if instance.exerciseInstruction}
 					<p class="text-base font-medium text-muted-foreground">{instance.exerciseInstruction}</p>
 				{/if}
