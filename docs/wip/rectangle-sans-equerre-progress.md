@@ -6,15 +6,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, phase 0 écrite (§ 3), soumise à David._
+_Mis à jour le 2026-11-17, findings de la revue corrigés (§ 5), PR 1 à ouvrir._
 
-- **État** : phase 0 écrite (§ 3) ; aucun code, aucun worktree.
-- **Prochaine action** : David tranche Q1 à Q5 (§ 3.7) ; puis worktree, tests rouges, PR 1 (l'outil).
-- **En attente de David** : Q1 à Q5 du § 3.7 (recommandations données).
-- **Pièges en cours** : ne pas toucher au juge du rectangle à l'équerre (`ruled-polygon.ts`, chantier
-  `regle-graduee`) : une forme à côté, pas un changement de l'existante. « Construit » par la règle graduée
-  n'est pas dans `constructionOf` : l'étendre dans le nouveau juge (§ 3.3), sans changer les autres juges.
-- **Worktree / branche** : aucun (à créer : `../ubumaths-wt-rectangle-sans-equerre`, `feat/rectangle-sans-equerre`).
+- **État** : PR 1 sur `feat/rectangle-sans-equerre`, les 5 findings du § 5 corrigés (6 tests rouges puis
+  verts), doc mise à jour. PR ouverte ou à ouvrir : `gh pr list --search "head:feat/rectangle-sans-equerre"`.
+- **Prochaine action** : CI verte → merge. Puis PR 2 : le modèle 4-038 dans `questions-4`.
+- **En attente de David** : rien.
+- **Pièges en cours** : ne pas toucher à `ruled-polygon.ts`. Push : ne pas filtrer sa sortie par
+  `grep -E "->…"` (ugrep plante, le push meurt en SIGPIPE).
+- **Worktree / branche** : `../ubumaths-wt-rectangle-sans-equerre`, `feat/rectangle-sans-equerre`.
 
 ## 1. Ce qui existe (lecture du code, 2026-11-17)
 
@@ -155,3 +155,51 @@ posée, pas de codage (Q4).
   **Reco : sans** (l'arc et le cercle suffisent ; le codage s'ajoute après si tu le veux).
 - **Q5. Côté donné** : seulement [AB] (depuis A), ou aussi [BC] (depuis C, la même figure retournée) ?
   **Reco : [AB] seul** — l'auteur renomme ; une forme de moins à tester.
+
+### 3.8 Décisions de David (2026-11-17, « je te suis, go »)
+
+Q1 diagonale écrite (`AB = 4 cm ; AC = 6 cm`, vérifiée contre la figure) · Q2 message de l'angle en B avec
+l'indice du cercle de diamètre [AC] · Q3 segments sur [AC] et [BD] admis (traits de construction) · Q4
+correction sans codage · Q5 côté donné [AB] seul.
+
+## 4. PR 1 — l'outil (2026-11-17)
+
+- Juge `src/lib/questions/construction/diagonal-rectangle.ts` (`DiagonalRectangleCheck`, clé `diagonal`),
+  parseur `readDiagonalRectangle` / `diagonalRectangleError`, branchements `judge.ts`, `drawing.ts`,
+  `instance-generator.ts` ; le rectangle à l'équerre (`ruled-polygon.ts`) n'est pas touché.
+- Tests : `construction-rectangle-diagonales.test.ts` (40, rouges d'abord : module absent), et deux tests de
+  vue dans `figure-a-completer-regle.svelte.test.ts` (M1 entière aux touchers → juste ; B à l'œil → message,
+  cercle et arc à la correction).
+- **Précision prise en codant** (cohérente avec M4 validée) : les segments sur la médiatrice de [AC] sont des
+  traits de construction, comme ceux des diagonales (Q3) — sinon M4 serait « trait de trop ».
+- **Choix de B** entre les deux sommets du quadrilatère : celui que l'élève a mesuré depuis A (compas piqué
+  en A, règle posée en A), sinon le plus près de AB (un rectangle AB = 4,5 cm donnait sinon « [AB] ne mesure
+  pas exactement 4 cm », AD ≈ 3,97 cm étant plus près).
+- Vue : une seule retouche, l'indice de la Règle posée propose aussi le Segment (O à 3 cm, D à 6 cm de B).
+- Doc : `docs/systeme/questions.md`, `docs/systeme/ubumark.md`, exemple du catalogue
+  (`block-catalog/figure-a-completer.ts`, page `/aide-ecriture/blocs/figure-a-completer`).
+
+## 5. Revue de la PR 1 (code-reviewer, Opus, 2026-11-17) — corrigée
+
+1. **Important** — D construit sur la règle mais atteint par un autre segment que [BD] refusé
+   (`builtPredicate` exige le 0 de la règle sur l'autre bout du MÊME segment). Gestes : règle en B vers O, puis
+   [CD] tracé de C jusqu'à la graduation 60 ; ou [BO] puis [OD] arrêté sur la graduation 60. Correction : un
+   bout `p` est construit s'il existe une règle posée avant le segment, 0 sur un point construit, dirigée vers
+   un point construit, `p` sur une graduation > 0 (comme `ruledGraduationOf` du triangle).
+2. **Important** — le choix de B par « mesuré depuis A » passe avant la longueur : `AB = 3 cm ; AC = 5 cm`,
+   B pris par CB = 4 (compas en C), D par la règle de B vers O, puis règle posée en A vers D pour tracer [AD]
+   → « [AB] mesure 4 cm au lieu de 3 cm » sur une réponse juste. Correction : si un seul des deux sommets est
+   à AB de A (à eps près), c'est B ; « mesuré » ne départage que le reste.
+3. **Mineur** — parseur : `AB = 4 cm` seul ou `BD = 6 cm` seul renvoient au message du rectangle à
+   l'équerre (`BC = 3 cm`) ; router toute longueur seule autre que [BC] vers `readDiagonalRectangle`.
+4. **Mineur** — `d = droite(A, C)` (ou un segment plus long passant par A et C) accepté comme diagonale :
+   exiger un segment de la figure de bouts A et C.
+5. **Mineur** — segment sur la médiatrice de [AC] admis sans limite de longueur : le borner (par exemple aux
+   croisements des deux cercles de même rayon) ou le dire dans la doc.
+
+**Corrections (2026-11-17)**, un test rouge chacune (`describe('… revue de la PR 1')`) : 1. bout de segment
+construit par toute règle posée avant lui (0 sur un point construit, dirigée vers un point construit),
+quel que soit l'autre bout ; 2. B = le seul sommet à AB de A, avant « mesuré » ; 3. toute longueur seule
+autre que [BC] → `readDiagonalRectangle` ; 4. [AC] = un segment de la figure de bouts A et C ; 5. segment
+sur la médiatrice admis entre les croisements de deux cercles de même rayon centrés en A et en C (au-delà :
+trait qui dépasse ; sans ces cercles : trait de trop).

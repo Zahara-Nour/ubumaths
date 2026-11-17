@@ -60,6 +60,7 @@
 	import {
 		CHECK_TOOL,
 		INSTRUMENT_TOOLS,
+		isDiagonalRectangleCheck,
 		type ConstructionTool
 	} from '$lib/ubumark/types/construction';
 	import {
@@ -263,9 +264,10 @@
 				return 'Règle posée : touche Compas pour l’ouvrir sur la règle. Pour la reposer, touche où mettre le 0.';
 			}
 			// Triangle coté en cm : le compas s'ouvre sur la règle ; avec l'angle (rapporteur), le
-			// côté se trace aussi le long de la règle (revue de #2658)
+			// côté se trace aussi le long de la règle (revue de #2658), comme au rectangle sans
+			// équerre (O à 3 cm, D à 6 cm de B)
 			if (ruler && tools.includes('compas')) {
-				return tools.includes('rapporteur')
+				return tools.includes('rapporteur') || checks.some(isDiagonalRectangleCheck)
 					? 'Règle posée : touche Compas pour l’ouvrir sur la règle, ou Segment pour tracer le long de la règle. Pour la reposer, touche où mettre le 0.'
 					: 'Règle posée : touche Compas pour l’ouvrir sur la règle. Pour la reposer, touche où mettre le 0.';
 			}

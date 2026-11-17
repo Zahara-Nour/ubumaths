@@ -24,6 +24,7 @@
  */
 
 import {
+	isDiagonalRectangleCheck,
 	isRuledPolygonCheck,
 	type ConstructionCheck,
 	type ConstructionTool
@@ -60,6 +61,7 @@ import {
 import { circleLengthRulers, circleSolution, isCircleCheck, type CircleSolution } from './circle';
 import { polygonSolution } from './polygon';
 import { ruledPolygonCorrection, ruledPolygonRulers, ruledPolygonSolution } from './ruled-polygon';
+import { diagonalRectangleCorrection, diagonalRectangleSolution } from './diagonal-rectangle';
 import {
 	triangleCorrection,
 	triangleRulers,
@@ -540,6 +542,9 @@ export function solutionLines(
 		if (check.kind === 'angle') return angleSolution(check, points, shapes, drawn);
 		if (check.kind === 'segment') return segmentLengthSolution(check, points, shapes, drawn);
 		if (isRuledPolygonCheck(check)) return ruledPolygonSolution(check, points, shapes, drawn);
+		if (isDiagonalRectangleCheck(check)) {
+			return diagonalRectangleSolution(check, points, shapes, drawn);
+		}
 		if (check.kind !== 'droite_par')
 			return polygonSolution(check, points, drawn.filter(isDrawnLine));
 		const a = points.get(check.points[0]);
@@ -585,6 +590,9 @@ export function solutionTriangle(
 	// Carré / rectangle coté (PR 6 de `regle-graduee`) : les perpendiculaires et les angles droits
 	const ruled = checks.find(isRuledPolygonCheck);
 	if (ruled) return ruledPolygonCorrection(ruled, points, shapes, drawn);
+	// Rectangle sans équerre : le cercle de diamètre [AC], l'arc en A, la diagonale [BD]
+	const diagonal = checks.find(isDiagonalRectangleCheck);
+	if (diagonal) return diagonalRectangleCorrection(diagonal, points, shapes, drawn);
 	const check = checks.find((c) => c.kind === 'triangle');
 	return check ? triangleCorrection(check, points, shapes, drawn) : null;
 }
@@ -638,6 +646,8 @@ export function solutionRulers(
 	// Carré / rectangle coté (PR 6) : une règle en B (vers C), une en A (vers D)
 	const ruled = checks.find(isRuledPolygonCheck);
 	if (ruled) return ruledPolygonRulers(ruled, points, shapes, drawn);
+	// Rectangle sans équerre (Q4) : pas de règle à la correction
+	if (checks.some(isDiagonalRectangleCheck)) return [];
 	// Triangle coté en cm : la règle posée au sommet de l'angle droit (PR 4), en A et en B
 	// (trois longueurs) ou au sommet de l'angle donné (`triangle-cote-cm`)
 	const triangle = checks.find((c) => c.kind === 'triangle');

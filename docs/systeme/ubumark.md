@@ -792,7 +792,12 @@ pour `droite`, quadrillage ou non, sans `report` sur quadrillage (`LINE_GRID_TOO
 `PLAIN_PAPER_TOOLS` ; sans quadrillage, une palette sans `equerre`, `compas`, `report`, `rapporteur` ni `regle` est refusée), `verifier:` (obligatoire, une par ligne ; `CONSTRUCTION_CHECK_KINDS` : `droite_par P ; Q`,
 `carre A ; B`, `rectangle A ; B ; C` (sur papier uni, cotés : `carre A ; B ; C ; D`,
 `rectangle A ; B ; C ; D : BC = 3 cm`, chantier `regle-graduee`, PR 6 : quatre sommets, C et D absents de la
-figure, palette Segment · Équerre · Règle graduée exactement, seul dans la figure, quadrillage refusé),
+figure, palette Segment · Équerre · Règle graduée exactement, seul dans la figure, quadrillage refusé ;
+sans équerre, `rectangle A ; B ; C ; D : AB = 4 cm ; AC = 6 cm`, chantier `rectangle-sans-equerre` : le
+côté [AB] et la diagonale [AC] dans n'importe quel ordre (`BA`, `CA` admis), au mm près, le côté plus
+court que la diagonale, [AC] tracé dans la figure à la longueur écrite, B et D absents, palette Segment ·
+Compas · Règle graduée exactement, seul dans la figure, quadrillage refusé ; reconnu aux deux longueurs
+ou à une longueur nommée autre que [BC], `readDiagonalRectangle`),
 `symetrique par d` / `symetrique A ; B ; C par d` (`symétrique`
 accentué admis ; `d` = droite, segment ou point nommé, le centre d'une symétrie centrale) — un seul carré,
 rectangle ou symétrique, jamais mêlé à `droite_par` ; `point A' = <expression>`, outil point, une ligne par

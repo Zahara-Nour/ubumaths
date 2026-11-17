@@ -723,7 +723,41 @@ grise pas « Valider » (`FlashCard`, `QuestionCard` ; la version publique porte
    côté où l'élève a le plus tracé (sinon le plus haut), les deux règles (B vers C, A vers D,
    `solutionRulers`), les perpendiculaires et les deux angles droits (`solutionTriangle` rend une
    `TriangleCorrection` pour ce cas). Les formes du quadrillage (`carre A ; B`, `rectangle A ; B ; C`)
-   sont inchangées. Vérification `symetrique par d` (outil segment,
+   sont inchangées.
+   **Rectangle sans équerre** (chantier `rectangle-sans-equerre`, 4-038, phase 0 validée le 2026-11-17 ;
+   `construction/diagonal-rectangle.ts`) : `rectangle A ; B ; C ; D : AB = 4 cm ; AC = 6 cm`
+   (`DiagonalRectangleCheck`, `isDiagonalRectangleCheck` : clé `diagonal` ; `side` et `diagonal` en mm
+   entiers). La diagonale [AC] est un segment de la figure de bouts A et C (ni une droite, ni un segment
+   plus long), de la longueur écrite ; B et D absents (le
+   contrôle des noms de `instance-generator.ts` demande A et C). Palette Segment · Compas · Règle graduée
+   exactement (`DIAGONAL_RECTANGLE_TOOLS`), papier uni, seul dans la figure. Juge
+   (`judgeDiagonalRectangle`) : le RÉSULTAT, toute méthode juste passe. Quadrilatère fermé A → X → C → Y
+   (X, Y bouts de segments, de part et d'autre de (AC), côtés couverts par les segments fusionnés) ; B est
+   le seul des deux à la longueur donnée de A, sinon celui que l'élève a mesuré depuis A (compas piqué en
+   A, règle posée en A), sinon le plus près de la longueur donnée. « Construit » (`builtPredicate`) étend `constructionOf` de proche en proche : un compas
+   ouvert sur une graduation d'une règle posée avant lui, son 0 au centre construit (`compassGraduationOf`),
+   est un trait construit ; le bout d'un segment arrêté sur une graduation d'une règle posée avant lui, son
+   0 sur un point construit et sa direction vers un point construit, est un point construit, quel que soit
+   l'autre bout du segment ([CD] ou [OD] arrêté sur la règle posée de B vers O) (une règle
+   posée à l'œil ne construit rien). Messages, dans l'ordre : hors palette (point, report…) → faux sans
+   message ; aucun côté parti de A ou de C → « Trace les côtés du rectangle ABCD. » ; « Ta figure n'est pas
+   fermée. » ; « Trace un seul rectangle ABCD. » ; B non construit → « Ton sommet B est placé à l'œil :
+   construis-le avec ton compas ou ta règle. » ; [AB] faux → « Ton côté [AB] mesure 4,5 cm au lieu de
+   4 cm. » (arrondi au mm ; s'il tombe juste : « … ne mesure pas exactement 4 cm. ») ; B hors du cercle de
+   diamètre [AC] → « Ton angle ABC n'est pas droit : B doit être sur le cercle de diamètre [AC]. » ; D non
+   construit ; BD ≠ AC → « Tes diagonales n'ont pas la même longueur… » ; milieux différents → « Tes
+   diagonales n'ont pas le même milieu… » ; trait de trop, trait qui dépasse (`leftoverFeedback`), les
+   segments sur [AC], sur [BD] et sur la médiatrice de [AC] étant des traits de construction (un segment
+   sur (AC) ou (BD) qui sort de la diagonale dépasse ; sur la médiatrice, il faut deux cercles de même
+   rayon centrés en A et en C, et le segment qui sort de leurs croisements dépasse ; sans eux, trait de
+   trop). Erreurs de l'auteur : A ou C absents ou confondus, B
+   ou D déjà dans la figure, [AC] pas tracé ou d'une autre longueur que celle écrite, fenêtre absente,
+   diagonale plus longue que la règle, figure hors de la fenêtre des deux côtés ; parseur : un autre côté
+   que [AB], une autre diagonale, côté ≥ diagonale, longueur pas au mm, quadrillage, autre vérification,
+   palette autre. Correction : [AB], [BC], [CD], [DA] du rectangle dont B est le plus près d'un bout tracé
+   (sinon B le plus haut), et (`solutionTriangle`) le cercle de diamètre [AC], l'arc de centre A de rayon
+   AB, la diagonale [BD] ; ni règle ni codage. Vue : la Règle posée propose aussi le Segment (tracer le
+   long de la règle). Vérification `symetrique par d` (outil segment,
    `construction/symmetry.ts`, chantier `controles-figure`) : l'élève trace l'image de tout ce que la
    figure trace (segments, côtés des polygones visibles) sauf l'axe — ou des seuls traits entre les points
    listés (`symetrique A ; B ; C par d`) ; `par O` (un point) : symétrie centrale. Même fusion par droite
