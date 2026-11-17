@@ -8,14 +8,15 @@
 
 _Mis à jour le 2026-11-17, après #2781._
 
-- **État** : PR 1 (l'outil, `verifier: rectangle A ; B ; C ; D : AB = 4 cm ; AC = 6 cm`) mergée (#2781), les 5
-  findings de la revue corrigés (§ 5). Worktree retiré, branche supprimée.
-- **Prochaine action** : PR 2, le modèle 4-038 dans `questions-4` (énoncé du § 3.1, figure du § 3.2), dans un
-  nouveau worktree `../ubumaths-wt-rectangle-sans-equerre` (branche `feat/rectangle-sans-equerre-modele`).
-- **En attente de David** : rien.
+- **État** : PR 1 (l'outil) mergée (#2781), pas encore en prod. PR 2 (modèle 4-038) écrite, vue en base
+  locale (§ 7), PR ouverte.
+- **Prochaine action** : CI verte → merge ; puis `deploy:prod` (David) qui livre #2781, `create-questions
+--publier` (David), migration nœud + tag, page à cocher, publication.
+- **En attente de David** : rien avant le merge.
 - **Pièges en cours** : ne pas toucher à `ruled-polygon.ts`. Push : ne pas filtrer sa sortie par
-  `grep -E "->…"` (ugrep plante, le push meurt en SIGPIPE).
-- **Worktree / branche** : aucun (à recréer pour la PR 2).
+  `grep -E "->…"` (ugrep plante, le push meurt en SIGPIPE). Publication du modèle seulement après le
+  `deploy:prod` qui livre #2781.
+- **Worktree / branche** : `../ubumaths-wt-rectangle-sans-equerre`, `feat/rectangle-sans-equerre-modele`.
 
 ## 1. Ce qui existe (lecture du code, 2026-11-17)
 
@@ -204,3 +205,63 @@ quel que soit l'autre bout ; 2. B = le seul sommet à AB de A, avant « mesuré 
 autre que [BC] → `readDiagonalRectangle` ; 4. [AC] = un segment de la figure de bouts A et C ; 5. segment
 sur la médiatrice admis entre les croisements de deux cercles de même rayon centrés en A et en C (au-delà :
 trait qui dépasse ; sans ces cercles : trait de trop).
+
+## 6. PR 2 — le modèle 4-038 : phase 0 (proposée le 2026-11-17)
+
+Worktree `../ubumaths-wt-rectangle-sans-equerre`, branche `feat/rectangle-sans-equerre-modele`. Le script
+s'écrit comme les lots de `questions-4` (`docs/wip/questions/lot-4-11.py` → `scripts/questions/4-lot-11/`).
+
+### 6.1 Relevé (prod, MCP lecture seule, 2026-11-17)
+
+- 4-038 « Construire des rectangles sans équerre. », 0 modèle, sur la sous-notion
+  **Géométrie > Figures planes > triangles** (avec 4-036 et 4-037). Bornes : aucune.
+- Modèles de 4e sur ce nœud : « Triangle inscrit dans un demi-cercle » (niveau 1), « Centre du cercle
+  circonscrit » (niveau 2), tous deux publiés.
+- **L'outil (#2781) n'est pas encore en prod** : merge absent de `origin/production`. Le modèle reste en
+  brouillon jusqu'au `deploy:prod` qui le livre (David).
+
+### 6.2 Le modèle proposé
+
+| Point | Titre                                | Nœud, niveau                                  | Réponse            |
+| ----- | ------------------------------------ | --------------------------------------------- | ------------------ |
+| 4-038 | Construire un rectangle sans équerre | Géométrie > Figures planes > triangles, **3** | figure à compléter |
+
+- **Énoncé** (§ 3.1) : « Construis le rectangle ABCD tel que AB = 4 cm et AC = 6 cm. La diagonale [AC] est
+  tracée. » Papier uni, fenêtre 12 × 9 (règle de 12 cm), [AC] horizontale, centrée, A à gauche.
+- **Variations** (décision 1) : AB de 3 à 6 cm, AC de AB + 1 à 9 cm, au mm ; noms des sommets tirés parmi
+  ABCD, EFGH, MNPQ, RSTU (une seule variation, les noms en variable).
+- **Délai** : 240 s (comme « Construire un triangle » de 6e, qui reporte deux longueurs).
+- **Correction** : la méthode M1 en trois étapes (O milieu de [AC] ; B au croisement du cercle de diamètre
+  [AC] et du cercle de centre A de rayon AB ; D sur (BO) à la distance AC de B, ou par le milieu) ; le juge
+  dessine en plus le rectangle, le cercle, l'arc et [BD].
+- **`testSpecs`** : M1 des deux côtés de (AC), M3 (D au compas) → justes ; B à l'œil, AB faux, angle en B pas
+  droit, D faux → faux.
+
+### 6.3 Question d'accès
+
+Comme les lots de `questions-4` : brouillon, puis migration nœud + tag ; **personne** ne gagne d'accès. À la
+publication, les élèves de 4e voient un modèle de plus.
+
+### 6.4 Questions à David
+
+- **Q6. Orientation de [AC]** : toujours horizontale, ou aussi oblique (tirée parmi quelques angles) ?
+  **Reco : horizontale** — la figure tient dans la fenêtre pour toutes les longueurs, l'élève de 4e se
+  concentre sur la méthode.
+- **Q7. Niveau 3** sur la sous-notion « triangles » (après le demi-cercle et le centre du cercle
+  circonscrit) ? **Reco : oui**, c'est la suite logique du BO.
+
+### 6.5 Décisions de David (2026-11-17, « go » après mes recos)
+
+Le modèle du § 6.2 tel quel ; Q6 [AC] horizontale ; Q7 niveau 3.
+
+## 7. PR 2 : écrite (2026-11-17)
+
+- `docs/wip/questions/lot-4-11.py` → `scripts/questions/4-lot-11/01-rectangle-sans-equerre.json`.
+- **Écart d'écriture** : AC est un nombre **pair** de mm (`ac = 2*h`, h de 20 à 45), pour que le milieu O
+  tombe sur une graduation (3,15 cm ne se mesure pas) et que la méthode de la correction marche à chaque tirage.
+- Simulation : 10/10 specs vertes (M1 des deux côtés et pour les 4 jeux de noms, M3 ; B et D à l'œil, AB
+  faux, angle en B pas droit, BD ≠ AC), 50/50 tirages ; `sonde-figures` : 300 blocs, 0 problème. Message
+  de chaque erreur vérifié (le bon, dans l'ordre du § 3.4).
+- Base locale : brouillon 552e0ade (créé depuis une copie dans le scratchpad, l'id local hors du dépôt).
+  Aperçu admin : énoncé à virgules (« EF = 3,4 cm »), figure, palette Segment · Compas · Règle graduée ;
+  rectangle à l'œil → « Ton sommet F est placé à l'œil… », correction dessinée (rectangle, cercles, [BD]).
