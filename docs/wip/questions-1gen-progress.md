@@ -215,3 +215,8 @@ Requête : pour chaque tag prévu, nœud du modèle, nœud du point, et points 1
 **Bilan corrigé** : la migration couvre **9 points** (009, 010, 011, 017, 018, 023, 031, 048, 055). **38 points restent à
 écrire** : les 30 du § 2.4, plus 002, 016, 027, 029, 038, 051, 056, 058. Q2 : seul 5397c20f reçoit un point ;
 1c86d122 et f5585668 rejoignent les 4 dont on retire `1_GEN` (à confirmer par David).
+
+**Décisions de David sur le § 7 (2026-11-17, « je suis tes recos »)** : retirer aussi `1_GEN` de 1c86d122 et
+f5585668 (6 modèles en tout) ; question d'accès validée sur le plan réduit (11 modèles publiés gagnent `1_GEN` et un
+point ; 6 modèles et le tag 1GEN-022 de 1acb6d47 retirés ; aucune table d'élèves touchée) ; les deux règles de
+l'ADR 0020 ajoutées à l'étape 3 du skill `couvrir-niveau`.
