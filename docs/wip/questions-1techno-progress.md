@@ -8,19 +8,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, lot 0 en branche (avant PR)._
+_Mis à jour le 2026-11-17, après #2753 (lot 0 mergé, PAS migré)._
 
-- **État** : T1 et T2 en prod (#2743, #2748). **Lot 0** (§ 15) : migration de retrait de 1TECHNO-118 et
-  `1_TECHNO` sur 1239554b et 79d69593 écrite, test 15 verts (rouge sans le corps), revues sans bloquant.
-- **Prochaine action** : PR du lot 0, CI, merge ; puis `db:migrate` **sur go explicite de David** (destructive :
-  jamais autonome) ; puis correction de 83b1f614 v3 (prévenir questions-1gen avant), puis lots d'écriture (§ 5, 9).
+- **État** : T1 et T2 en prod (#2743, #2748). **Lot 0 mergé (#2753), migration `20261117140233` pas jouée** :
+  c'est la seule migration du dépôt absente de la prod (vérifié).
+- **Prochaine action** : `db:migrate` du lot 0 depuis le dépôt principal **sur go explicite de David**
+  (destructive), puis vérification prod (MCP) ; ensuite correction de 83b1f614 v3 (prévenir questions-1gen
+  avant), puis lots d'écriture (§ 5, 9).
 - **En attente de David** : go pour le `db:migrate` du lot 0 (ce qui est perdu : § 15).
 - **questions-1gen** : G1, G4, G5 en prod en brouillon (ids au § 15) → notre migration `1_TECHNO` + tags 036,
   038, 040 ou 049, après leur migration nœud + tags 1GEN (branche `feat/questions-1gen-lot1-tags`).
 - **Pièges en cours** : un point par programme (trigger) ; `grades` en `array_append`/`array_remove` seulement ;
   worktree neuf → `pnpm exec svelte-kit sync` avant un script `tsx` ; commitlint refuse « T1 » en début de sujet ;
   CI : le cliquet peut être coupé à 20 min (relancer).
-- **Worktree / branche** : `../ubumaths-wt-questions-1techno`, `fix/questions-1techno-lot0`.
+- **Worktree / branche** : aucun (lot 0 nettoyé).
 
 ## 1. Relevé (prod, 2026-11-17)
 
