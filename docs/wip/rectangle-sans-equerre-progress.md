@@ -6,17 +6,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après #2781._
+_Mis à jour le 2026-11-17, après #2791._
 
-- **État** : PR 1 (l'outil) mergée (#2781), pas encore en prod. PR 2 (modèle 4-038) écrite, vue en base
-  locale (§ 7), PR ouverte.
-- **Prochaine action** : CI verte → merge ; puis `deploy:prod` (David) qui livre #2781, `create-questions
---publier` (David), migration nœud + tag, page à cocher, publication.
-- **En attente de David** : rien avant le merge.
+- **État** : outil (#2781) et modèle 4-038 (#2791, `scripts/questions/4-lot-11/`) mergés. L'outil n'est pas
+  encore en prod.
+- **Prochaine action** : après le `deploy:prod` et le `create-questions --dir scripts/questions/4-lot-11
+--publier` de David : `id` du brouillon commité, migration nœud + tag (gabarit `20261117174541`, sous-notion
+  Géométrie > Figures planes > triangles, point 4-038), page à cocher, publication ; puis clôture de
+  `questions-4`.
+- **En attente de David** : `pnpm deploy:prod` (livre #2781), puis `create-questions … --publier`.
 - **Pièges en cours** : ne pas toucher à `ruled-polygon.ts`. Push : ne pas filtrer sa sortie par
-  `grep -E "->…"` (ugrep plante, le push meurt en SIGPIPE). Publication du modèle seulement après le
-  `deploy:prod` qui livre #2781.
-- **Worktree / branche** : `../ubumaths-wt-rectangle-sans-equerre`, `feat/rectangle-sans-equerre-modele`.
+  `grep -E "->…"` (ugrep plante). Publier seulement après le `deploy:prod` qui livre #2781.
+- **Worktree / branche** : aucun (à recréer pour la migration).
 
 ## 1. Ce qui existe (lecture du code, 2026-11-17)
 
@@ -265,3 +266,4 @@ Le modèle du § 6.2 tel quel ; Q6 [AC] horizontale ; Q7 niveau 3.
 - Base locale : brouillon 552e0ade (créé depuis une copie dans le scratchpad, l'id local hors du dépôt).
   Aperçu admin : énoncé à virgules (« EF = 3,4 cm »), figure, palette Segment · Compas · Règle graduée ;
   rectangle à l'œil → « Ton sommet F est placé à l'œil… », correction dessinée (rectangle, cercles, [BD]).
+- #2791 : CI verte, mergée le 2026-11-17.
