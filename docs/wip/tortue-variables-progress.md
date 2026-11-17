@@ -4,7 +4,7 @@
 
 _Mis à jour le 2026-11-17, après #2746._
 
-- **État** : PR A (#2735), PR B (#2742), PR C (#2746 : 4 modèles dans `scripts/questions/tortue-variables/`, publiés en base locale) mergées · **Prochaine action** : PR D (nœud du point + tag par migration, comme #2727) une fois les ids de prod connus · **En attente de David** : relecture des 4 modèles (serveur 5175, base locale), puis `create-questions --dir scripts/questions/tortue-variables --publier` en prod (brouillons, ids écrits dans les fichiers) ; `deploy:prod` avant toute publication · **Pièges en cours** : écran tortue 4e / 3e pas en prod avant `deploy:prod` ; « répéter jusqu’à » à l'apostrophe courbe ; en suspens (revue PR A) : `1e2`, `répéter 2,5` · **Worktree / branche** : aucun (supprimé après #2746)
+- **État** : PR A (#2735), PR B (#2742), PR C (#2746 : 4 modèles dans `scripts/questions/tortue-variables/`, publiés en base locale) mergées · **Prochaine action** : PR D (nœud du point + tag par migration, comme #2727) une fois les ids de prod connus · **En attente de David** : (relecture validée le 2026-11-17) `create-questions --dir scripts/questions/tortue-variables --publier` en prod (brouillons, ids écrits dans les fichiers) ; `deploy:prod` avant toute publication · **Pièges en cours** : écran tortue 4e / 3e pas en prod avant `deploy:prod` ; « répéter jusqu’à » à l'apostrophe courbe ; en suspens (revue PR A) : `1e2`, `répéter 2,5` · **Worktree / branche** : aucun (supprimé après #2746)
 
 ## Origine
 
@@ -146,3 +146,8 @@ avancer côté ; tourner à gauche 90 ; ajouter p à côté ]`, 5 blocs) ; escal
   inversées → 0/8.
 - Base locale : `create-questions --publier` depuis une copie (les ids locaux ne vont pas dans le
   dépôt).
+
+### Relecture (David, 2026-11-17 : « je valide les essais »)
+
+Les 4 modèles relus en base locale, validés tels quels (`répéter 8` admis pour la spirale de 3e,
+8 blocs pour Fibonacci). Reste : publication en prod par David, puis PR D.
