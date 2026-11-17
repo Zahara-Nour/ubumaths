@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après #2742._
+_Mis à jour le 2026-11-17, après #2746._
 
-- **État** : PR A (#2735) et PR B (#2742) mergées ; PR C (4 modèles, `scripts/questions/tortue-variables/`) écrite, specs vertes, publiée en base locale · **Prochaine action** : relecture de David (serveur 5179, base locale), puis David lance `create-questions --publier` en prod (brouillons), puis PR D (nœud + tag par migration) · **En attente de David** : relecture des 4 modèles · **Pièges en cours** : un modèle `niveau:` n'a d'écran en prod qu'après `deploy:prod` ; « répéter jusqu’à » s'écrit avec l'apostrophe courbe ; reste en suspens (revue PR A) : `1e2`, `répéter 2,5` · **Worktree / branche** : `../ubumaths-wt-tortue-variables`, `feat/tortue-variables-modeles`
+- **État** : PR A (#2735), PR B (#2742), PR C (#2746 : 4 modèles dans `scripts/questions/tortue-variables/`, publiés en base locale) mergées · **Prochaine action** : PR D (nœud du point + tag par migration, comme #2727) une fois les ids de prod connus · **En attente de David** : relecture des 4 modèles (serveur 5175, base locale), puis `create-questions --dir scripts/questions/tortue-variables --publier` en prod (brouillons, ids écrits dans les fichiers) ; `deploy:prod` avant toute publication · **Pièges en cours** : écran tortue 4e / 3e pas en prod avant `deploy:prod` ; « répéter jusqu’à » à l'apostrophe courbe ; en suspens (revue PR A) : `1e2`, `répéter 2,5` · **Worktree / branche** : aucun (supprimé après #2746)
 
 ## Origine
 
