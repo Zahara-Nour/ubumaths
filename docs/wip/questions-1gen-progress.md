@@ -7,17 +7,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, lot 4 en brouillons en prod (après #2788)._
+_Mis à jour le 2026-11-17, après #2793 (lot 4 rangé en prod)._
 
-- **État** : lots 1, 2 et 3 publiés ; lot 4 mergé (#2788), 7 brouillons créés en prod par David (§ 21), migration
-  nœud + tags écrite et prouvée (rouge 5 échecs sans le corps, 9/9 vert), PR à ouvrir.
-- **Prochaine action** : `security-auditor`, PR, CI verte, `check:migrations --pr`, merge, `db:migrate` depuis le
-  dépôt principal (`migration list --linked` d'abord) ; puis page à cocher ; ids T1, T2 à questions-ttechno.
-- **En attente de David** : rien.
+- **État** : lots 1, 2 et 3 publiés ; lot 4 en brouillons en prod, rangés et tagués (§ 21), page à cocher publiée,
+  0 verdict. Lot 5 (second degré) : brouillons créés par questions-1techno (#2787), qui les range et les tague.
+- **Prochaine action** : lire les verdicts (`ArtifactData list verdicts`, compter 7) ; tout OK → simulation
+  `publier-lot.ts --dir scripts/questions/1gen-4-taux-moyen-seuils`, puis David lance `--publier` ; relire
+  `published` ; prévenir questions-ttechno (T1, T2).
+- **En attente de David** : relecture de la page à cocher https://claude.ai/artifact/4zbYF42f9MapzqfF4VTw7k
 - **Pièges en cours** : ADR 0020 et `couvrir-un-niveau.md` § 9 avant tout tag ; `db push` pousse TOUTES les
-  migrations en attente ; ids écrits par `create-questions` dans le dépôt principal → copie dans un worktree,
-  commit, `git restore` ; aperçu : serveur `--host ::`.
-- **Worktree / branche** : `../ubumaths-wt-questions-1gen-lot4`, `feat/questions-1gen-lot4-rangement`.
+  migrations en attente ; aperçu : serveur `--host ::`.
+- **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, 2026-11-17)
 
@@ -791,3 +791,9 @@ David a lancé `create-questions --publier` après #2788. Relu au MCP : 7 brouil
   1GEN-052 `f81b8735-9b8f-41aa-ada0-08b7415a6076` ; M4 sommet 1GEN-053 `493adeb4-7eb9-4156-bd1b-79996f54c5e4` ; M5
   f(x) = c 1GEN-025 `f95f05a0-4c66-409f-9ea3-0f9fcdd98759` ; M6 tableau de variation 1GEN-054
   `e539088a-1eee-4259-8e61-b0f6fa514eaf` ; M7 signe 1GEN-027 `82e40d16-6069-4bea-b7e6-df3344d26bd3`.
+- PR #2793 (ids + migration + test), `security-auditor` : aucun finding bloquant (faible hérité : `lock_timeout` hors
+  transaction). CI verte, `check:migrations` vert, mergée. `db:migrate` depuis le dépôt principal : seule notre
+  migration en attente. Relu au MCP : chaque modèle sur son nœud, un seul tag, brouillon, `updated_at` inchangé.
+- Ids de T1 (→ TTECHNO-035) et T2 (→ TTECHNO-038) envoyés à questions-ttechno.
+- Page à cocher : 7 fiches, 27 exemples, aucune alerte. https://claude.ai/artifact/4zbYF42f9MapzqfF4VTw7k (capacité
+  `db`, 0 verdict à la publication ; rendu 390 px non revu, même gabarit que le lot 3).
