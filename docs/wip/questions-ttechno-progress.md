@@ -5,18 +5,17 @@ Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) · bornes 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après la lecture complète du lot 0 (§ 9)._
+_Mis à jour le 2026-11-17, migration du lot 0 écrite (§ 10), PR à ouvrir._
 
-- **État** : lot 0 lu en entier (157 modèles, 60 points, § 9) : **30 OK** à taguer (+ 4ff9d049 déjà posé), 13
-  « en partie », le reste non. Page à cocher publiée : https://claude.ai/artifact/DXvJnW815iBaxJcf54b3Eh.
-- **Prochaine action** : lire les verdicts de la page (collection `verdicts`), puis worktree + migration de
-  tags sur les seuls « OK » (gabarit `20261117131417_questions_1techno_t2_tags`, `array_append(T_TECHNO)`).
-- **En attente de David** : la page à cocher (30 fiches ; 4 marquées ⚠ à trancher).
+- **État** : page à cocher du lot 0 : **30 « OK » sur 30**, ⚠ compris, sans commentaire. Migration
+  `20261117145436_questions_ttechno_lot0_tags` + test d'intégration (12 verts, rouges sans le corps) ;
+  instantanés dans `scripts/questions/ttechno-t0/`. Revues `code-reviewer` + `security-auditor` en cours.
+- **Prochaine action** : PR, CI verte, merge, puis `db:migrate` depuis la branche mergée
+  (`migration list --linked` avant), vérification en prod (MCP : 30 tags, 30 `T_TECHNO`).
 - **En attente de `questions-1gen`** : sa phase 0 aˣ et taux moyen ; nos lots 3 et 4 attendent.
 - **Pièges en cours** : un point TTECHNO par modèle (trigger) ; `grades` en `array_append` seulement ;
-  instantanés et verdicts détaillés hors dépôt (scratchpad `ttechno-lot0/`, `ttechno-verdicts-g1..3.md`) :
-  à réexporter sur la branche (`export-question-templates.ts --ids …` dans `scripts/questions/ttechno-t0/`).
-- **Worktree / branche** : aucun (journal sur `main`).
+  verdicts détaillés du § 9 hors dépôt (scratchpad `ttechno-verdicts-g1..3.md`).
+- **Worktree / branche** : `../ubumaths-wt-questions-ttechno` · `feat/questions-ttechno-lot0`.
 
 ## 1. Périmètre
 
@@ -234,3 +233,17 @@ ef3c495c (n > 10 calculé par l'élève, contre ltt-3).
 Sans modèle : 016–023, 025, 028–030, 034–045, 049–054, 057, 060, 061, 067, 069, 073–076, 078–088, 090–092.
 Page à cocher : https://claude.ai/artifact/DXvJnW815iBaxJcf54b3Eh (30 fiches, collection `verdicts` vide au
 départ ; 3 fiches au bloc « ranger » non dessiné, à jouer dans l'aperçu : a4b9281f, b0a94f05, e2908d60).
+
+## 10. Lot 0 : migration des tags (2026-11-17)
+
+- Page à cocher : 30 « OK » sur 30 (dont les 4 ⚠ : e4eaaf16, b0a94f05, a29488bc, a4b9281f), aucun
+  commentaire. Les 13 « en partie » et les « non » ne sont pas tagués (jumeaux / plages aux lots d'écriture).
+- Relevé prod (MCP) : les 30 sont publiés, aucun n'a `T_TECHNO` ni de point TTECHNO, tous rangés sur le
+  nœud du point visé, sauf e4eaaf16 sur une sous-notion fille de TTECHNO-077. Aucune migration d'une autre
+  branche ne touche ces 30 identifiants.
+- Migration `20261117145436_questions_ttechno_lot0_tags` (gabarit 1techno T2) : 30 tags sur 17 points +
+  `array_append(T_TECHNO)`, `updated_at` préservé, tout ou rien ; rollback en commentaire, éprouvé.
+- Test `tests/integration/questions-ttechno-lot0-tags.test.ts` : 12 verts ; corps retiré → 5 rouges et la
+  suite principale tombe (rollback refusé : 0 tag sur 30) ; fichier restauré d'une copie, identique.
+- Instantanés : `scripts/questions/ttechno-t0/` (30 fichiers, export en lecture seule de la prod).
+- Question d'accès : celle du § 3 (Q2), tranchée par David.
