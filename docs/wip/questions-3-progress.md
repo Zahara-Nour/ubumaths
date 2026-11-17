@@ -5,18 +5,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après la relecture des lots 7 et 8._
+_Mis à jour le 2026-11-17, après la publication des lots 7 et 8._
 
-- **État** : lots 0 à 6 publiés ; lots 7 (Scratch, 4 modèles) et 8 (boîte à moustaches, 2) en brouillon en prod,
-  rangés (#2206) et **relus : 6 verdicts sur 6 « OK »**, aucun commentaire (§ 16.2).
-- **Prochaine action** : publication, lancée par David avec `!` depuis le dépôt principal :
-  `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/3-lot-7` (puis `3-lot-8`) en simulation,
-  puis les deux avec `--publier` ; ensuite vérifier au MCP que les 6 sont `published`, journal à jour.
-- **En attente de David** : lancer ces quatre commandes.
-- **Pièges en cours** : `db:migrate` et `publier-lot.ts` (même en simulation) refusés par le classifieur
-  du mode auto → David les lance avec `!` ; base locale en retard d'une soixantaine de migrations (tests
-  d'arbre : la CI fait foi) ; `audit-question-draws` : faux positifs « nombres juxtaposés » (blocs
-  statistiques), `<<` (Scratch) ; points 4-068/4-069 encore sur la notion « Variables et instructions ».
+- **État** : lots 0 à 8 publiés. **65 points de 3e sur 66** ont au moins un modèle publié (relevé MCP du
+  2026-11-17, § 16.3). Seul reste 3-017 (analyse-synthèse), classé non évaluable (§ 3, D).
+- **Prochaine action** : clôture du chantier à proposer à David (recompter le découpage du § 4 contre les
+  lots publiés, puis versement du durable et archivage du journal).
+- **En attente de David** : le go de clôture ; le sort de 3-017 (reste sans modèle ?).
+- **Pièges en cours** : 4-068 / 4-069 encore sur la notion « Variables et instructions » (à ranger avec
+  les modèles de 4e qui les couvrent, § 16) ; `publier-lot.ts` et `db:migrate` = David, avec `!`.
 - **Worktree / branche** : `../ubumaths-wt-questions-3`, HEAD détachée sur `origin/main` (propre).
 
 ## 1. Relevé (prod, 2026-10-28)
@@ -1142,3 +1139,10 @@ publiés de plus. Aucune règle ne change.
 - Verdicts lus en base (`verdicts`) et comptés : **6 sur 6 « OK »**, aucun commentaire (962da675, 9f9bddbd,
   4ce8eb3c, 0a470416, 1bd7378d, 9a9026fc). Rien à corriger.
 - Reste la publication (`publier-lot.ts`, David) : non lancée à la fin de la session du 2026-11-03.
+
+### 16.3 Publication (2026-11-17)
+
+- Lot 8 : déjà publié (simulation : « Tout le lot est déjà publié »), publication non notée au journal.
+- Lot 7 : publié par David (`publier-lot.ts --publier`, 4/4, statut relu en base).
+- MCP : 962da675, 9f9bddbd, 4ce8eb3c, 0a470416, 1bd7378d, 9a9026fc tous `published`.
+- Couverture : 66 points de 3e, **65 avec au moins un modèle publié** ; sans modèle : 3-017 seul.
