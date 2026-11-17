@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, PR B ouverte._
+_Mis à jour le 2026-11-17, après #2742._
 
-- **État** : PR A (logique) mergée (#2735) ; PR B (écran) en cours sur `feat/tortue-variables-ecran` : boîtes à outils par niveau, carte / corrigé / bac à sable au niveau, sélecteur « base · 4e · 3e » de `/tortue`, `départ:` sans contrôle des variables, messages au vocabulaire tortue · **Prochaine action** : CI de la PR B (revue faite, 2 mineurs corrigés), merge ; puis PR C (modèles : relevé prod des points 4-067, 4-068, 3-047, 3-051, liste proposée à David — Q7) · **En attente de David** : rien · **Pièges en cours** : aucun modèle `niveau:` publié avant le merge de la PR B ; reste en suspens (revue PR A) : `1e2` lu sans niveau / refusé en 4e, `répéter 2,5 [ … ]` arrondi sans prévenir l'auteur · **Worktree / branche** : `ubumaths-wt-tortue-variables` / `feat/tortue-variables-ecran`
+- **État** : PR A (logique, #2735) et PR B (écran, #2742) mergées : tortue de 4e / 3e complète (boîtes à outils, carte, corrigé, sélecteur de `/tortue`, `départ:` à compléter) · **Prochaine action** : PR C (modèles, Q7) — relevé prod des points 4-067, 4-068, 3-047, 3-051, puis liste de modèles proposée à David avant d'écrire · **En attente de David** : rien (la liste de la PR C lui sera soumise) · **Pièges en cours** : un modèle `niveau:` n'a d'écran en prod qu'après `deploy:prod` ; reste en suspens (revue PR A) : `1e2` lu sans niveau / refusé en 4e, `répéter 2,5 [ … ]` arrondi sans prévenir l'auteur ; vérification manuelle du bac à sable notée · **Worktree / branche** : aucun (supprimé après #2742)
 
 ## Origine
 
