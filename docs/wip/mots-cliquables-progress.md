@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après #2747._
+_Mis à jour le 2026-11-17, après #2757._
 
-- **État** : R1–R6 toutes mergées (R5 #2732 en prod ; R6 #2741 et R1–R4 #2747 pas encore déployées) · **Prochaine action** : vérifications manuelles de #2741 et #2747 (`docs/wip/verifications-manuelles.md`) après `deploy:prod`, puis clôture : versement (`docs/systeme/dictionnaire.md` déjà à jour), journal archivé · **En attente de David** : vérifications manuelles ; décider si un test d'écran de la fiche prof/visiteur (question 4e + 3e) est utile · **Pièges en cours** : un nom trop ancien reste dans le motif (il occupe son texte) ; `CorrectionCard` montre l'énoncé rempli au recto, donc sans mot (N3) · **Worktree / branche** : aucun chantier ouvert ; `ubumaths-wt-mots-cliquables` (serveur de test 5177, branche R6 mergée) à retirer quand David a fini d'y tester
+- **État** : R1–R6 en prod (v0.93.0 du 2026-11-17) ; test d'écran prof/visiteur 4e + 3e ajouté (#2757, mergée) · **Prochaine action** : clôture après les vérifications manuelles : versement (`docs/systeme/dictionnaire.md` déjà à jour), journal archivé · **En attente de David** : vérifications manuelles de #2741 et #2747 en prod (`docs/wip/verifications-manuelles.md`) ; feu vert pour retirer `ubumaths-wt-mots-cliquables` (serveur 5177) · **Pièges en cours** : un nom trop ancien reste dans le motif (il occupe son texte) ; `CorrectionCard` montre l'énoncé rempli au recto, donc sans mot (N3) · **Worktree / branche** : aucun chantier ouvert ; `ubumaths-wt-mots-cliquables` (branche R6 mergée) à retirer sur feu vert de David
 
 ## Origine
 
@@ -120,3 +120,5 @@ Erreur :
 - 2026-11-17 : R1–R4 codées (worktree `ubumaths-wt-mots-cliquables-r14`, le premier reste figé pour le serveur 5177) : `LinkOptions` (`recentOnly`, `auto`) dans `linker.ts`, `questionReadingGrades` (R3), `LexiconReading` dans `lexicon-context.ts`, `LexiconOff` (R2), `isCourseQuestion` passé à `provideQuestionLexicon` (R4). Anciens tests passés à des mots de 6e (R1) ; `/dev/mots-cliquables` : « aire » et « carré » marqués `{.def}`.
 - 2026-11-17 : PR #2747 ouverte ; revue `code-reviewer` : aucun bloquant ; corrigé : clé de première occurrence d'un homonyme marqué `{.def}` (sens ancien + récent), test des homonymes, commentaires.
 - 2026-11-17 : #2747 (R1–R4) mergée, CI verte ; worktree `ubumaths-wt-mots-cliquables-r14` retiré.
+- 2026-11-17 : `deploy:prod` → v0.93.0 (la 0.92.0 avait sa CI rouge : job cliquet bloqué 20 min, sans lien avec le code) ; R6 et R1–R4 en prod.
+- 2026-11-17 : test d'écran demandé par David (« je te suis ») : prof/visiteur, question 4e + 3e, « fonction » souligné, fiche avec sa définition de 3e (niveau de secours de `lexiconCard`, jusque-là sans test) ; vérifié rouge sans le secours ; #2757 mergée, CI verte.
