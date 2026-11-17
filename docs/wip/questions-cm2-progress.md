@@ -6,11 +6,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, phase 0 du lot 8 écrite._
+_Mis à jour le 2026-11-17, lot 8 écrit._
 
 - **État** : lots 0 à 7 publiés. **Lot 7 clos** (7a : 6 modèles ; 7b : 4 modèles `b432b38e`, `521c3f16`, `4a2edffb`, `03c5df14`, publiés le 2026-11-17).
-- **Prochaine action** : après validation de la phase 0 du **lot 8** (§ 13 : 038, 053, 055-057, 5 modèles), écrire `lot-cm2-8.py`. Ensuite reclasser le § 3 (outils de la classe C en prod, § 12 d).
-- **En attente de David** : phase 0 du lot 8, § 13, questions (a) à (d). ⛔ Jamais `--mettre-a-jour` de `cm2-7b` avec des fichiers d'avant #2770 (ids CM1).
+- **Prochaine action** : PR des fichiers du lot 8 (`scripts/questions/cm2-8/`), merge, puis David lance `create-questions --dir scripts/questions/cm2-8 --publier` ; ensuite migration nœud + tag. Après le lot 8 : reclasser le § 3 (§ 12 d).
+- **En attente de David** : rien avant le merge. ⛔ Jamais `--mettre-a-jour` de `cm2-7b` avec des fichiers d'avant #2770 (ids CM1).
 - **Pièges en cours** : migrations depuis #2181 : `pnpm migration:horodatage` = heure réelle UTC ; `db:migrate` refuse une migration plus ancienne que la dernière jouée → `--dry-run --include-all`, liste relue, puis `--include-all`. Worktree neuf : copier `supabase/.temp/` (lien projet) du dépôt principal. Modèle à placer avec grands nombres : `spaces: off`. Page à cocher : `line` non dessiné, à jouer dans l'aperçu. `Doc-inchangée:` dans un COMMIT. `git commit -m … -- <fichiers>`. Colonne du nœud au MCP : `question_templates.classification_node_id`.
 - **Worktree / branche** : `../ubumaths-wt-questions-cm2`, branche `feat/questions-cm2-lot8`.
 
@@ -810,3 +810,16 @@ D'accord pour tirer le diviseur dans {2, 4, 5, 6, 8} ? (b) 038 V3 reprend en par
 1/4`) : la garder (révision) ou la limiter aux relations avec 3/4 ? (c) 053 V1 (soustraction) :
 leurres ×10, ÷10, ±100 comme au CM1, ou puissances de 10 seules comme V2-V3 ? (d) un seul lot de 5
 modèles (reco), ou 038 + 053 d'un côté, opérations posées de l'autre ?
+
+### 13.1 Lot 8 : décisions (David, 2026-11-17)
+
+Recommandations suivies (« je te suis ») : (a) 056, diviseur dans {2, 4, 5, 6, 8} (6 en V1 seulement) ;
+(b) 038 V3 gardée, avec 3/4 ; (c) 053 V1, leurres du CM1 (× 10, ÷ 10, ± 100) ; (d) un seul lot de 5
+modèles. Tableau du § 13 gardé.
+
+### 13.2 Lot 8 : écriture (2026-11-17)
+
+- `docs/wip/questions/lot-cm2-8.py` → `scripts/questions/cm2-8/` (5 modèles) ; `create-questions` en simulation : 5 à créer, 37 specs vertes ; `question:specs --instances 200` : 2 600 tirages réussis, aucun `\textcolor` hors `$`.
+- Variable `e` refusée (constante d'Euler) : `f` pour l'écart de l'estimation par division.
+- Base locale : 5 brouillons créés, joués dans l'aperçu admin (division 43 713 ÷ 6 saisie 7285,5 → juste, correction lisible ; 1 − 1/2 = ?/4 ; estimation 4 980 − 293 en case « choix » ; 212 × 60,8 posé). Fichiers réécrits par le script ensuite (ids locaux retirés).
+- Aperçu : le serveur de dev doit écouter sur `127.0.0.1` (`--host 127.0.0.1`) ; l'extension Chrome refuse `[::1]`.
