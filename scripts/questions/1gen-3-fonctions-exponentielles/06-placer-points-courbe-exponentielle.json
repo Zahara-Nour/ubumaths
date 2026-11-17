@@ -1,4 +1,5 @@
 {
+	"id": "9ead685c-6032-4b2b-982d-0cadfcdf40b4",
 	"title": "Placer des points de la courbe d'une fonction exponentielle",
 	"description": "f(x) = k × aˣ : calculer f(0) à f(4) puis placer les points ; tableau de valeurs donné",
 	"grades": ["1_GEN"],

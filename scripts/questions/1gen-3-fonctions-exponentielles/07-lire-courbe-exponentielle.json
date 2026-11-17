@@ -1,4 +1,5 @@
 {
+	"id": "fc27769e-ad53-4b35-8b97-b0d86acef03a",
 	"title": "Lire sur la courbe d'une fonction exponentielle",
 	"description": "f(x) = k × aˣ : lire une image, résoudre f(x) = b graphiquement, lire a",
 	"grades": ["1_GEN"],

@@ -1,4 +1,5 @@
 {
+	"id": "3a8ef5f7-402f-48a3-9ddc-aca94723bf56",
 	"title": "Puissance d'exposant 1/n",
 	"description": "b^(1/n) : valeur exacte, nombre positif dont la puissance n-ième vaut b, (a^(1/n))ⁿ = a",
 	"grades": ["1_GEN"],

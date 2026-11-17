@@ -1,4 +1,5 @@
 {
+	"id": "2a9c316a-ee3d-44dc-89be-8b3b5c00ac2c",
 	"title": "Sens de variation de la fonction x ↦ a^x",
 	"description": "a > 1, 0 < a < 1, a = 1 ; comparer deux images sans calcul ; quantité qui diminue",
 	"grades": ["1_GEN"],
