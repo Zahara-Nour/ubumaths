@@ -108,7 +108,8 @@ seulement). Module `src/lib/server/carnet/courriels.ts` (`runCarnetDaily`), dans
    jour où l'élève n'est dans aucune classe active, retire la marque s'il revient, efface les
    adresses marquées depuis 90 jours (ligne entière, liens et épisodes ; le journal des
    courriels garde ses lignes sans adresse). Une adresse « Je ne suis pas le parent » effacée
-   ainsi peut être ressaisie.
+   ainsi peut être ressaisie. Puis `carnet_erase_old_notifications` (Q42) efface les lignes du
+   journal des courriels de plus d'un an (rapport : `erasedNotifications`).
 2. **Liens manquants** (Q29, Q36) : `sendClassMissingLinks` sur chaque classe active au carnet
    activé (élève arrivé après, consentement accordé après, rentrée, envoi en échec).
 3. **Exceptions** (E1-E3, E7) : `carnet_sync_exception_episodes` ouvre un épisode par adresse
@@ -160,9 +161,8 @@ formulaire sans `Origin` de notre site (Q39).
   fausse alarme).
 - L'effacement des 90 jours efface aussi les adresses « Je ne suis pas le parent » et retirées :
   leur empreinte ne bloque plus une ressaisie.
-- Le journal des courriels (`parent_notifications`) est effacé au bout d'**un an** (Q42) par
-  `carnet_erase_old_notifications` (migration `20261117134539`). Tant que le passage quotidien ne
-  l'appelle pas (PR suivante, après `db:types`), il vit avec le profil de l'élève.
+- Le journal des courriels (`parent_notifications`) est effacé au bout d'**un an** (Q42) : l'élève,
+  le professeur et l'admin ne voient plus les courriels plus anciens.
 
 ## Les portes
 

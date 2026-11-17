@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, PR 8 (Q42, migration) en cours._
+_Mis à jour le 2026-11-17, après #2749._
 
-- **État** : PR 1 à 4, 6 et 7 mergées, migrations en prod. Code des PR 2 à 4 **pas encore déployé**. PR 8 (Q42) : migration `carnet_erase_old_notifications` + test d'intégration, branche `feat/partage-parents-q42`.
-- **Prochaine action** : PR 8 → merge → `db:migrate` (David prévenu : la fonction efface) → `db:types` → PR 9 : appel dans `runCarnetDaily` (rapport `erasedNotifications`), politique § 7 « 1 an » (version 1.4), registre T9. Puis point 8 sur `/parents` après le déploiement (chantier `presentation-parents`).
-- **En attente de David** : `deploy:prod` (avant le 28 novembre pour les messages trimestriels).
-- **Pièges en cours** : données d'élèves mineurs. Une étape du passage en échec n'arrête pas les autres (le passage finit en échec). Base locale en retard sur d'anciennes migrations de contenu : migration appliquée à la main (`docker exec … psql`). Rejets Brevo différés non marqués `invalid`. AIPD : analyse de risque du carnet à y intégrer.
-- **Worktree / branche** : `../ubumaths-wt-partage-parents`, `feat/partage-parents-q42`.
+- **État** : PR 1 à 4, 6 à 8 mergées (… #2745, #2749), migrations en prod (dont `carnet_erase_old_notifications`, vérifiée). Code des PR 2 à 4 **pas encore déployé**. PR 9 (Q42, code) en cours : appel dans `runCarnetDaily`, politique v1.4 (§ 7 « 1 an »), registre 1.3.
+- **Prochaine action** : PR 9 → merge. Puis point 8 sur `/parents` après le déploiement (chantier `presentation-parents`).
+- **En attente de David** : `deploy:prod` (avant le 28 novembre pour les messages trimestriels) ; échec de l'effacement : arrêter tout le passage ? (gardé : les autres étapes tournent, passage noté en échec).
+- **Pièges en cours** : données d'élèves mineurs. Base locale en retard sur d'anciennes migrations de contenu : migration appliquée à la main (`docker exec … psql`). `db:migrate` lancé depuis le worktree (`supabase/.temp` copié du dépôt principal, occupé par une autre session). Rejets Brevo différés non marqués `invalid`. AIPD : analyse de risque du carnet à y intégrer.
+- **Worktree / branche** : `../ubumaths-wt-partage-parents`, `feat/partage-parents-q42-cron`.
 
 ## Origine
 
@@ -318,3 +318,11 @@ Worktree `../ubumaths-wt-partage-parents`, branche `feat/partage-parents-q42`.
 - Correction de la phase 0 : une étape du passage en échec n'empêche pas les suivantes ; le passage est alors noté en échec (comportement actuel de l'effacement des adresses, gardé).
 - Vérifié : aucune règle ne lit plus d'un an en arrière (plafond 6 j 12 h, trimestriel depuis la fin du trimestre, jeton de courriel avec lien actif jusqu'au 31 août, dernier envoi vu par le professeur).
 - Migration `20261117134539_carnet_effacement_journal_courriels.sql` ; deux PR car `db:types` lit la prod. Tests : `carnet-courriels-exception.test.ts` (Q42 + fonction fermée aux comptes), **rouges sans la migration** (PGRST202), 28/28 avec.
+- **Mergée** le 2026-11-17 (#2749), CI verte. `db:migrate` (4 conditions réunies) depuis le worktree (le dépôt principal portait les modifications d'une autre session) ; seule cette migration est partie. Vérifié en prod en lecture seule : SECURITY DEFINER, exécution `postgres` et `service_role` seuls ; 0 ligne de plus d'un an aujourd'hui.
+
+## PR 9 — journal des courriels effacé au bout d'un an, code (Q42, 2026-11-17)
+
+Branche `feat/partage-parents-q42-cron`.
+
+- `db:types` (prod) ; `runCarnetDaily` appelle `carnet_erase_old_notifications` après l'effacement des adresses ; rapport `erasedNotifications`. Test `courriels.test.ts` (2), rouge avant, vert après.
+- `/legal/confidentialite` version 1.4 : § 7, liste des courriels « chaque courriel en est effacé 1 an après son envoi ; supprimée avec le profil ». Registre 1.3 (T9). Doc `carnet-de-liaison.md`.

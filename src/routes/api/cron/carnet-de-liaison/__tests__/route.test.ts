@@ -25,6 +25,7 @@ vi.mock('$lib/server/serviceRoleClient', () => ({
 const SECRET = 'test-secret-12345678901234567890';
 const RAPPORT = {
 	erased: 0,
+	erasedNotifications: 0,
 	links: { sent: 1, failed: 0 },
 	exceptions: { sent: 2, failed: 0 },
 	quarterly: { sent: 0, failed: 0 },

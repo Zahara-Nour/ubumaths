@@ -505,8 +505,9 @@ CRON_SECRET                   # Secret taches planifiees
 > les adresses confirmées, au plus un par semaine — exception (évaluation non faite, révisions
 > en retard, inactivité ; une phrase par motif) et fin de trimestre (sans aucun nombre) ; chaque
 > courriel porte un jeton propre, haché. Les adresses d'un élève sans classe active depuis
-> 90 jours sont effacées par le cron quotidien. Registre à compléter en PR 5 du
-> chantier ([carnet-de-liaison.md](../carnet-de-liaison.md)).
+> 90 jours sont effacées par le cron quotidien, et les lignes de `parent_notifications` au bout
+> d'un an (Q42, 2026-11-17 ; politique v1.4, registre T9). Voir
+> [carnet-de-liaison.md](../carnet-de-liaison.md).
 
 ---
 
