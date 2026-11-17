@@ -5,15 +5,14 @@ Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) · bornes 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après #2774._
+_Mis à jour le 2026-11-17, après #2776 (migrée)._
 
-- **État** : lots 0 et 1 en prod. Lot 2a (M1–M8 : moyennes, trois nombres, raison, sommes en situation, Σ ;
-  § 12–13) mergé (#2774), fichiers dans `scripts/questions/ttechno-2a-suites/`, **pas encore créés en prod**.
-- **Prochaine action** : David lance la création en prod (commande au § 13, `create-questions … --publier` sur
-  `scripts/questions/ttechno-2a-suites`) (8 brouillons, ids écrits dans les fichiers → les commiter) ; puis migration nœud + tag des 8 et tags
-  c4887e49 → 025, 0b5c3db6 → 023 (`array_append('T_TECHNO')`, Q16) ; page à cocher ; publication. Ensuite lot 2b
-  (Python, P1–P3).
-- **En attente de David** : la commande `create-questions --publier` ci-dessus.
+- **État** : lots 0 et 1 en prod. Lot 2a : 8 brouillons en prod, rangés et tagués (#2774, #2776) ; c4887e49 → 025
+  et 0b5c3db6 → 023 tagués, `T_TECHNO` posé (§ 14).
+- **Prochaine action** : lire les verdicts de la page à cocher (https://claude.ai/artifact/4fCZW4x4Y5yKuZDwmt7v2Z),
+  puis `publier-lot.ts --dir scripts/questions/ttechno-2a-suites` (simulation) ; David lance `--publier`. Ensuite
+  lot 2b (Python, P1–P3).
+- **En attente de David** : relecture de la page à cocher (8 fiches).
 - **En attente de `questions-1gen`** : leurs ids et plages des lots 3 et 4 (§ 8 bis), puis nos tags et compléments.
 - **Pièges en cours** : un point TTECHNO par modèle (trigger) ; `grades` en `array_append` seulement ; Chrome
   piloté = choisir celui du Mac mini (`switch_browser`), serveur en `--host 127.0.0.1`.
@@ -397,3 +396,30 @@ points du § 12.
   « chiffres mal espacés », `10 203` attendu.
 - #2774 mergée (CI verte). Suite : après merge, David lance `create-questions --publier` ; puis migration
   nœud + tag des 8 et tags c4887e49 → 025, 0b5c3db6 → 023 (`array_append('T_TECHNO')`), page à cocher d'abord.
+
+## 14. Lot 2a : prod, rangement et tags (2026-11-17)
+
+David a lancé `create-questions --publier` : 8 brouillons (45ea676f M1, 72b876d7 M2, 6336ae4d M3, a46e60cf M4,
+292f865b M5, 65e0e9f5 M6, 5ec00b89 M7, 752d26c9 M8), vérifiés par MCP (`draft`, `{T_TECHNO}`, niveaux du fichier,
+sans nœud ni tag) ; ids commités sur la branche de la migration (copie retirée de `main` par `git stash`, à jeter
+après le merge une fois `main` égal).
+
+- Relevé MCP des communs : c4887e49 et 0b5c3db6 publiés, `{1_GEN,1_TECHNO}`, chacun sur le nœud de son point
+  TTECHNO (025 « terme général », 023 « définition »), tags 1GEN-029 + 1TECHNO-038 / 1GEN-028 + 1TECHNO-036, aucun
+  point TTECHNO.
+- Migration `20261117190410_questions_ttechno_lot2a_rangement_tags` : partie A sur le gabarit du lot 1 (nœud par
+  chemin strict = nœud du point, tout ou rien, sans nœud ni tag), partie B sur celui du lot 0 (tag +
+  `array_append('T_TECHNO')`, garde « sur le nœud du point »), `updated_at` préservé, rollback en commentaire.
+- Test `tests/integration/questions-ttechno-lot2a-rangement-tags.test.ts` : 14 verts (décor avec les 4 tags 1GEN /
+  1TECHNO, gardes des deux parties) ; corps retiré → 10 rouges ; fichier restauré d'une copie, identique.
+- Question d'accès : partie A personne (brouillons) ; partie B Q2 du chantier (classes de Tle techno, personne ne
+  perd rien).
+
+**Migré (2026-11-17)** : #2776 mergée (CI verte, `check:migrations --pr 2776` vert ; `security-auditor` sans
+bloquant : ids, chemins, points revérifiés en prod, rollback miroir, aucune table d'élève) ; `migration list
+--linked` : seule `20261117190410` en attente ; `db:migrate` depuis le dépôt principal (4 conditions). Prod vérifiée
+(MCP) : 8 brouillons sur le nœud de leur point, un tag TTECHNO chacun ; c4887e49 et 0b5c3db6
+`{1_GEN,1_TECHNO,T_TECHNO}`, tags 1GEN / 1TECHNO intacts + TTECHNO-025 / 023 ; `updated_at` inchangés ; trigger `O`.
+Copie des ids mise de côté sur `main` jetée (identique). `garde-niveaux-tags` : aucun niveau manquant.
+
+- Page à cocher : https://claude.ai/artifact/4fCZW4x4Y5yKuZDwmt7v2Z (8 fiches, aucune alerte ; `verdicts` vide).
