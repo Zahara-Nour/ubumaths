@@ -7,17 +7,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après la phase 0 du lot 2._
+_Mis à jour le 2026-11-17, après la validation des phases 0 des lots 2, 3 et 4._
 
-- **État** : lot 1 (5 modèles de suites géométriques) relu (5/5 OK) et **publié** en prod (§ 13).
-- **Prochaine action** : après validation du lot 2 (§ 15), prévenir questions-1techno (R2, R3, R4 communs), puis
-  écrire le lot 2 dans un worktree neuf ; puis lots 3, 4 (phase 0 validée, § 14, envoyée à questions-ttechno).
-- **En attente de David** : Q17 à Q19 (phase 0 du lot 2, § 15).
+- **État** : lot 1 publié (§ 13). Phases 0 **validées** : lot 2 représentations graphiques (§ 15), lots 3 aˣ et 4
+  taux moyen / seuils (§ 14). Envoyées à questions-ttechno (lots 3, 4) et questions-1techno (lot 2).
+- **Prochaine action** : écrire le lot 2 dans un worktree neuf `../ubumaths-wt-questions-1gen-lot2`, branche
+  `feat/questions-1gen-lot2` (script `docs/wip/questions/lot-1gen-2.py` calqué sur `lot-1gen-1.py`) ; puis lots 3, 4.
+- **En attente de David** : rien.
 - **Pièges en cours** : ADR 0020 et `couvrir-un-niveau.md` § 9 avant tout tag ; `grades` par `array_append` /
-  `array_remove` ciblés ; `db push` pousse TOUTES les migrations de `main` en attente (`--dry-run` d'abord) ; rollback
-  du § 12 valable seulement avant les tags 1TECHNO de G1, G4, G5 ; modèle 1GEN-022 commun avec 1TECHNO-057 ; G1, G4,
-  G5 publiés avec `grades` `['1_GEN']` seul : l'`array_append('1_TECHNO')` revient à questions-1techno.
-- **Worktree / branche** : aucun ; le lot suivant ouvre une branche neuve.
+  `array_remove` ciblés ; `db push` pousse TOUTES les migrations de `main` en attente (`--dry-run` d'abord) ; repère à
+  placer = 6 points au plus, sur les nœuds de la grille ; `tracer:` et `placer:` jamais dans le même bloc ; modèles
+  communs : R2, R3, R4 (1techno), E2 et autres candidats TTECHNO (ttechno) ; correction de la coquille « t/n » de
+  `src/lib/server/programmes/transcriptions/1_GEN.md` dans la PR du lot 3.
+- **Worktree / branche** : aucun ; le lot 2 ouvre une branche neuve.
 
 ## 1. Relevé (prod, 2026-11-17)
 
@@ -555,3 +557,11 @@ publication par David.
   déjà couvert par 8d4e5302) ?
 - **Q18** — R2, R3, R4 communs avec questions-1techno (044, 117, 119) ?
 - **Q19** — Phase 0 du lot 2 (modèles, variations, plages, niveaux, formes de réponse) ci-dessus : validée ?
+
+### Décisions (David, 2026-11-17 : « je te suis »)
+
+- **Q17** : R1 (016) par association nuages ↔ formules.
+- **Q18** : R2, R3, R4 **communs** avec questions-1techno (044, 117, 119) : nous écrivons avec `grades` `['1_GEN']`,
+  elle fait son `array_append('1_TECHNO')` et ses tags après notre migration nœud + tags. Session prévenue le
+  2026-11-17.
+- **Q19** : phase 0 du lot 2 validée telle quelle.
