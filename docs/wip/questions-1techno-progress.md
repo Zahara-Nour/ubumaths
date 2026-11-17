@@ -305,3 +305,10 @@ retrait au rollback) ; garde « niveau 1_TECHNO différent du relevé ». Test
 5 ignorés (rollback refusé : 2 sur 33 conformes). Cas ajouté : état d'après questions-1gen (95ee57c8 sans
 `1_GEN`) → `['1_SPE', '1_TECHNO']`, 1_TECHNO conservé au rollback. NB : la base locale `db:seed-riche` porte
 les modèles de prod ; le cas « base sans les modèles » y rejoue donc la vraie migration.
+
+Revues (2026-11-17) : `code-reviewer` et `security-auditor` sans bloquant. Retenu : cas « base sans les
+modèles » rendu probant (modèles retirés dans la transaction, 0 tag vérifié). À savoir pour le `db:migrate` :
+un `db push` jouerait aussi `20261117124605_questions_1gen_tags` si elle n'est pas en prod → **attendre que
+questions-1gen l'ait migrée** ; après un `db push` en échec, relire `tgenabled` de
+`update_question_templates_updated_at` (attendu `O`) ; `set local lock_timeout` sans effet hors transaction
+(risque d'attente seulement).
