@@ -1,4 +1,5 @@
 {
+	"id": "a439df84-9d32-4138-bbc1-cf846616e0ca",
 	"title": "Taux d'évolution moyen de plusieurs évolutions successives",
 	"description": "Taux moyen de 2, 3 ou 4 évolutions données une à une, à l'aide de l'exposant 1/n",
 	"grades": ["1_GEN"],
