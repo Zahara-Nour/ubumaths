@@ -5,20 +5,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, PR #2765 du lot 10 ouverte._
+_Mis à jour le 2026-11-17, après #2765 (lot 10 mergé)._
 
 - **État** : lots 1 à 9 publiés. Relevé prod du 2026-11-17 : 78 points sur 82 ont un modèle publié ; sans
   modèle : 027, 028, 074 (lot 10), 038 (outil manquant, `outils-manquants.md` n° 37, rattaché à la 6e), 026
-  (classe D). 068, 069 couverts depuis (modèles tortue, #2746). Lot 10 : PR **#2765** (branche
-  `feat/questions-4-lot-10-bis`), § 51.
-- **Prochaine action** : CI verte → merge #2765 ; puis David lance `create-questions --publier` sur
+  (classe D). 068, 069 couverts depuis (modèles tortue, #2746). Lot 10 : fichiers mergés (**#2765**), § 51.
+- **Prochaine action** : David lance `create-questions --publier` sur
   `scripts/questions/4-lot-10` ; commiter les `id` ; migration nœud + tag ; page à cocher ; publication.
 - **En attente de David** : supprimer la branche locale périmée `feat/questions-4-lot-10` (2 commits jamais
   poussés, remplacés par `-bis` ; `branch -D` = liste `ask`).
 - **Pièges en cours** : migrations : `pnpm migration:horodatage`, `pnpm check:migrations --pr <n>` avant
   `gh pr merge`, `git merge origin/main` dans le worktree avant la CI ; `db push --include-all` réservé à David ;
   QCM = case choix ; tests navigateur de la CI parfois tombés (`wrapDynamicImport`) : relancer le job.
-- **Worktree / branche** : `../ubumaths-wt-questions-4`, branche `feat/questions-4-lot-10-bis`.
+- **Worktree / branche** : `../ubumaths-wt-questions-4` (HEAD détachée sur `origin/main`), aucune branche en cours.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-28)
 
@@ -1247,4 +1246,4 @@ le trou noté pour le chantier d'outils.
 - **Décision de David (2026-11-17)** : 074, b ≠ d gardé, énoncé « du rectangle » (« du carré » si b = d), déjà
   écrit ainsi.
 - 4-038 ajouté à `outils-manquants.md` (n° 37) : il n'y figurait pas.
-- PR #2765 (contenu seul, pas de revue).
+- PR #2765 (contenu seul, pas de revue) : CI verte, mergée le 2026-11-17.
