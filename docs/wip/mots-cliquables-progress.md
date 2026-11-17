@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après #2757._
+_Mis à jour le 2026-11-17, après #2757 (homonymes tranchés)._
 
-- **État** : R1–R6 en prod (v0.93.0 du 2026-11-17) ; test d'écran prof/visiteur 4e + 3e ajouté (#2757, mergée) · **Prochaine action** : clôture après les vérifications manuelles : versement (`docs/systeme/dictionnaire.md` déjà à jour), journal archivé · **En attente de David** : vérifications au doigt sur téléphone (toucher un mot masqué = rien, icône 40 px confortable) et coup d'œil en prod ; le reste vérifié par Claude en dev le 2026-11-17 (voir l'historique) ; décider si le visiteur/prof doit voir « image (fonction) » sur une question de translation (R3 : homonymes visibles en 3e) ; feu vert pour retirer `ubumaths-wt-mots-cliquables` (serveur 5177) · **Pièges en cours** : un nom trop ancien reste dans le motif (il occupe son texte) ; `CorrectionCard` montre l'énoncé rempli au recto, donc sans mot (N3) · **Worktree / branche** : aucun chantier ouvert ; `ubumaths-wt-mots-cliquables` (branche R6 mergée) à retirer sur feu vert de David
+- **État** : R1–R6 en prod (v0.93.0 du 2026-11-17) ; test d'écran prof/visiteur 4e + 3e ajouté (#2757, mergée) · **Prochaine action** : clôture après les vérifications manuelles : versement (`docs/systeme/dictionnaire.md` déjà à jour), journal archivé · **En attente de David** : vérifications au doigt sur téléphone (toucher un mot masqué = rien, icône 40 px confortable) et coup d'œil en prod ; le reste vérifié par Claude en dev le 2026-11-17 (voir l'historique) ; feu vert pour retirer `ubumaths-wt-mots-cliquables` (serveur 5177) · **Pièges en cours** : un nom trop ancien reste dans le motif (il occupe son texte) ; `CorrectionCard` montre l'énoncé rempli au recto, donc sans mot (N3) · **Worktree / branche** : aucun chantier ouvert ; `ubumaths-wt-mots-cliquables` (branche R6 mergée) à retirer sur feu vert de David
 
 ## Origine
 
@@ -108,6 +108,8 @@ Erreur :
   `provideQuestionLexicon(() => instance.grades)` dans `FlashCard`, `CorrectionCard`, `QuestionCard`, sans
   test du type ni de `courseQuestion`). L'appliquer dans ce chantier ? Reco : oui.
 
+- **Homonymes chez le prof et le visiteur → laisser tel quel** (David, 2026-11-17, reco suivie) : sur une question de translation 4e + 3e, la fiche d'« image » montre « image (transformation) » (4e) et « image (fonction) » (3e, lu par le secours), comme pour un élève de 3e ; pas de choix du sens selon le contexte de la question.
+
 ## Journal
 
 - 2026-11-16 : chantier ouvert (retour de David sur `/dev/corrections`), mesures, R1–R3 validées ; R4 (question de cours) validée ; R5 (verbes de consigne) validée, faite en local.
@@ -123,3 +125,4 @@ Erreur :
 - 2026-11-17 : `deploy:prod` → v0.93.0 (la 0.92.0 avait sa CI rouge : job cliquet bloqué 20 min, sans lien avec le code) ; R6 et R1–R4 en prod.
 - 2026-11-17 : test d'écran demandé par David (« je te suis ») : prof/visiteur, question 4e + 3e, « fonction » souligné, fiche avec sa définition de 3e (niveau de secours de `lexiconCard`, jusque-là sans test) ; vérifié rouge sans le secours ; #2757 mergée, CI verte.
 - 2026-11-17 : vérifications de #2741 et #2747 faites par Claude dans Chrome, en dev sur `main` (= v0.93.0), comptes locaux fictifs (élève passé en 4e puis 1re spé le temps du test, remis en 6e), GIF `~/Downloads/verif-mots-cliquables-v0.93.gif`. Tout conforme : élève 4e, « Calcule », « calcul », « figure », « prix » non soulignés, « coefficient multiplicateur » et « parallélogramme » (5e) soulignés ; masqués par défaut, survol → souligné, clic → fiche, icône 40 × 40, choix gardé sur la carte suivante et au rechargement, Tab saute les mots masqués et s'y arrête affichés ; verso de flash-card et cartes de correction de fin de série sans mot ni icône ; carte de cours « dérivée » (élève 1re spé) sans mot ni icône, question ordinaire « dérivée » soulignée, « fonction » (3e) non ; visiteur et prof sur question 4e + 3e : « image », « translation » soulignés, « parallélogramme » non (R3), fiches pleines, dont « image (fonction) », sens de 3e lu par le secours. Aucune question 4e + 3e de la base ne contient de mot de 3e seul : ce cas reste couvert par le test de #2757. Non vérifiable ici : le doigt sur un vrai téléphone, la prod.
+- 2026-11-17 : homonymes chez le prof/visiteur tranchés par David : laisser tel quel (les deux sens d'« image » sur une question de translation, comme un élève de 3e).
