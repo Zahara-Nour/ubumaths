@@ -8,17 +8,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, PR #2743 (T1) ouverte, passe anti-doublons (§ 9)._
+_Mis à jour le 2026-11-17, PR #2743 (T1) ouverte, page T2 relue (33 « OK »)._
 
-- **État** : T1 = PR #2743 (15 tags, migration `20261117122739`), CI en cours ; `security-auditor` sans
-  finding bloquant ; test rouge sans la migration, vert avec. Passe anti-doublons faite (§ 9).
-- **Prochaine action** : CI verte → `check:migrations --pr 2743`, merge, `db:migrate` depuis le dépôt
-  principal, vérification en prod (15 tags, 15 `1_TECHNO`). Puis page à cocher T2 / T3 (§ 9).
-- **En attente de David** : Q9 à Q12 (§ 9).
+- **État** : T1 = PR #2743 (15 tags, migration `20261117122739`, test 11/11, rouge sans la migration,
+  `security-auditor` sans finding bloquant). CI : tout vert sauf « Client Tests (browser, shard 1/2) »
+  (`wrapDynamicImport`, sans lien avec la PR) → relancé une fois (1re tentative sur 2), en attente.
+  Page T2 relue : **33 « OK » sur 33** (§ 10, données au § 11).
+- **Prochaine action** : `gh pr checks 2743` ; vert → `pnpm check:migrations --pr 2743`, `gh pr merge 2743
+--merge`, `db:migrate` depuis le dépôt principal, vérifier en prod 15 tags + 15 `1_TECHNO`. Puis branche
+  `feat/questions-1techno-t2` (même worktree) : migration + test T2 générés à partir de ceux de T1 avec le § 11.
+- **En attente de David** : rien (décisions Q1-Q12 prises).
 - **Pièges en cours** : **un point par programme** (trigger) ; point sur une sous-notion → seuls les modèles
-  de CETTE sous-notion ; `grades` : `array_append` / `array_remove` seulement (accord avec `questions-1gen`) ;
-  deux nœuds « définition ».
-- **Worktree / branche** : `../ubumaths-wt-questions-1techno`, `feat/questions-1techno-t1`.
+  de cette sous-notion ; `grades` en `array_append` / `array_remove` seulement (accord `questions-1gen`) ;
+  **T2 : 95ee57c8 et 5397c20f ont DÉJÀ `1_TECHNO`** → n'ajouter le niveau que s'il manque (la garde T1
+  « 1_TECHNO absent » les refuserait) ; commitlint refuse « T1 » en début de sujet (sentence-case).
+- **Worktree / branche** : `../ubumaths-wt-questions-1techno`, `feat/questions-1techno-t1` (propre, poussée).
 
 ## 1. Relevé (prod, 2026-11-17)
 
@@ -223,3 +227,63 @@ arrive au second degré ; je préviens avant de corriger 83b1f614 ou de retirer 
   dans les bornes (comme Q3), ou resserrer le modèle de 1re spé ? Reco : jumeau.
 - **Q12 — Connaissances couvertes de fait** (question 2 du message précédent : un modèle court par point,
   ou rien) : toujours ouverte.
+
+**Décisions (David, 2026-11-17, « je suis tes recos »)** : **Q9** 4f8f420a → 034 ; **Q10** page à cocher
+avant la migration ; **Q11** jumeaux techno (le modèle de 1re spé n'est pas touché) ; **Q12** un modèle
+court par connaissance (lot « connaissances »).
+
+## 10. Lot T2 : page à cocher (2026-11-17)
+
+T2 et T3 réunis en une page : 33 modèles, tous publiés, tous posables, aucun avec un point 1TECHNO
+(vérifié en prod) — les candidats du § 3 encore libres, 4f8f420a → 034, et les 9 points « conviennent » du
+§ 9. Page : https://claude.ai/artifact/Wnh4bDD9e4wjzC3GJuTMTZ ; instantanés hors dépôt (scratchpad) jusqu'à
+la branche T2. 77498f1b (100) signalé dans l'intro (leurres 𝒢(p), ℬ(100 ; p)).
+
+## 11. Lot T2 : données pour la migration (prod, 2026-11-17)
+
+33 modèles, 24 points, tous publiés, aucun point 1TECHNO. `id | grades actuels | point | rangement`
+(`sous` = modèle rangé sur une sous-notion fille du nœud du point, à reproduire dans le test) :
+
+```
+03b3d9b3-2d38-4062-a70b-c9b31839444b | 1_SPE | 1TECHNO-076 | noeud
+21f42c7f-82bc-4204-b294-cb9658bcfd8e | 1_SPE | 1TECHNO-089 | noeud
+286a68a8-49c1-4d7d-b845-452457e8dab8 | 1_SPE | 1TECHNO-055 | noeud
+3020b065-2be5-4541-beda-1115718121c5 | 1_SPE | 1TECHNO-068 | noeud
+3bd19f82-85f7-4828-8cac-2a2281642f86 | 1_SPE | 1TECHNO-098 | noeud
+42bb2d66-4559-4a1b-8124-de6977fbb0b1 | 1_SPE | 1TECHNO-094 | noeud
+42c19a19-4533-4dc5-81a3-2dba70b5cdb4 | 2 | 1TECHNO-054 | sous
+49fac266-f622-4ef5-8a2b-5638ca5a4c99 | T_COMP | 1TECHNO-083 | noeud
+4ce02817-c5b4-4500-9d0c-0bbf7be0a662 | 2 | 1TECHNO-007 | sous
+4f8f420a-c93b-4d99-8fe2-acfac2d38cbe | 1_SPE | 1TECHNO-034 | noeud
+5397c20f-7b3a-4d56-b441-644607e0138a | 1_SPE,1_GEN,1_TECHNO | 1TECHNO-139 | noeud
+6ad254b4-69c3-49db-9541-fa921964cefc | 3 | 1TECHNO-053 | noeud
+77498f1b-3625-4701-aa9c-f6132eb3b4ba | T_SPE,T_COMP | 1TECHNO-100 | noeud
+7953dcfc-bedc-465e-9abe-b8db19647d7e | 2 | 1TECHNO-102 | noeud
+8354a0e7-f707-48e0-ac3d-f43cc5b2e2fa | 1_SPE | 1TECHNO-096 | noeud
+8a384698-1367-4a12-a995-b6cd4df9cfe1 | 1_SPE | 1TECHNO-060 | noeud
+8d46dd50-34ea-4504-b92f-d269a84f0179 | 2 | 1TECHNO-007 | sous
+95ee57c8-4e16-4554-add5-cb8f72ee6f28 | 1_SPE,1_GEN,1_TECHNO | 1TECHNO-127 | noeud
+9c04693a-33f3-4c4c-bf1a-ff801b8b15c4 | 1_SPE | 1TECHNO-098 | noeud
+9f072622-9ce5-4e76-b02e-a738bf6ea39a | 1_SPE | 1TECHNO-060 | noeud
+a16a9bba-2cc5-48d8-b98b-eb4fee6ded3d | 1_SPE | 1TECHNO-129 | noeud
+a181f10b-1b9c-436c-8f8c-51cce68352db | 1_SPE | 1TECHNO-073 | noeud
+aab8e41c-4539-4c90-9c1d-6ee41dc7a1cb | 1_SPE | 1TECHNO-058 | sous
+ad555cb1-c4a2-4390-ad14-6a626b39e0fb | 1_SPE | 1TECHNO-096 | noeud
+afe51ac4-8552-454e-b45e-46f0edbd9416 | 1_SPE | 1TECHNO-066 | noeud
+b7b0c27b-0c30-4297-b707-53f328d36f7a | 1_SPE | 1TECHNO-132 | noeud
+bc59d5ce-a696-4460-91a3-ad8614de25a7 | 1_SPE | 1TECHNO-096 | noeud
+d1010214-1537-4b3d-9b99-1b3718a5d981 | 1_SPE | 1TECHNO-047 | noeud
+d8c9cb60-e9c5-4f38-a8d9-b5c2b83de908 | 1_SPE | 1TECHNO-093 | noeud
+ddc60d24-ddce-473b-8e23-58af62ec8b78 | 2 | 1TECHNO-054 | sous
+de73e71d-031b-4f9a-b3c9-a1cc6f970a0e | 1_SPE | 1TECHNO-055 | noeud
+e4784c78-13d5-49ac-b50b-b07efca03d19 | 2 | 1TECHNO-007 | sous
+f2ed0ea0-e285-49fc-93df-9e388cc36eb0 | 1_SPE | 1TECHNO-093 | noeud
+```
+
+Les grades sont à relever de nouveau juste avant d'écrire la migration (la session `questions-1gen` peut
+avoir ajouté `1_GEN` entre-temps : sans effet sur `array_append`, mais la garde du rollback doit le tolérer,
+comme en T1). Instantanés de la page : hors dépôt (scratchpad, perdus au redémarrage) ; à réexporter dans
+`scripts/questions/1techno-t2/` sur la branche T2 (`export-question-templates.ts --ids …`).
+
+Après T2 : lot 0 (retrait 1TECHNO-118 sur 1239554b et 79d69593, destructif, accord de David), correction
+de 83b1f614 v3 (prévenir `questions-1gen` avant), puis les lots d'écriture (jumeaux, connaissances, § 5 et 9).
