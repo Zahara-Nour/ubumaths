@@ -170,7 +170,7 @@ dessiné et un PDF « À faire sur Chiphre » (§ L'écran d'une question tortue
 ### Tortue de 4e et 3e
 
 Chantier `tortue-variables`, phase 0 validée par David le 2026-11-16 (journal
-`docs/wip/tortue-variables-progress.md`). Même bloc ```tortue, clé `niveau: 4e | 3e` ; absente →
+`docs/archive/wip/tortue-variables-progress.md`). Même bloc ```tortue, clé `niveau: 4e | 3e` ; absente →
 `base`, rien ne change (modèles publiés compris). Écran : boîtes à outils par niveau, carte et
 corrigé au niveau, sélecteur de `/tortue` (§ L'écran d'une question tortue, § Trois pages).
 

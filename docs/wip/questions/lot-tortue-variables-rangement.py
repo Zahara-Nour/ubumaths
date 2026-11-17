@@ -1,7 +1,7 @@
 """Tortue avec variables, rangement : migration 20261117140132_questions_tortue_variables_rangement_tags + fixture du test.
 
 Lit l'instantané `etat-prod-2026-11-17-tortue-variables/` (docs/archive/wip/questions-5/releve-prod.ts)
-et applique les décisions de David du 2026-11-17 (journal `docs/wip/tortue-variables-progress.md`
+et applique les décisions de David du 2026-11-17 (journal `docs/archive/wip/tortue-variables-progress.md`
 § Phase 0 Q7, PR C) sur 4 modèles : les 4 brouillons tortue de 4e et de 3e
 (scripts/questions/tortue-variables/, #2746), créés sans nœud ni tag le 2026-11-17, chacun sur le nœud
 de son point, tag posé, aucun nœud créé. Gabarit : docs/wip/questions/lot-blockly-4e-3e-rangement.py.
@@ -155,7 +155,7 @@ w(f"""-- =======================================================================
 -- Bilan : {N_DEPLACES} rangés sur un nœud, {N_NIVEAUX} niveau changé, {N_RETIRES} tag retiré, {N_POSES} posés. Aucun
 -- statut ne change (4 brouillons). Le contenu ne change pas : `updated_at` est PRÉSERVÉ.
 -- ============================================================================
--- Phase 0 validée par David le 2026-11-16 (journal docs/wip/tortue-variables-progress.md § Phase 0,
+-- Phase 0 validée par David le 2026-11-16 (journal docs/archive/wip/tortue-variables-progress.md § Phase 0,
 -- découpage : « PR D ids de prod + rangement (nœud du point + tag) » ; aucun nœud créé). Les 4
 -- brouillons ont été créés le 2026-11-17 par David avec scripts/create-questions.ts
 -- (scripts/questions/tortue-variables/, #2746), qui ne pose ni nœud ni tag. Fichier GÉNÉRÉ par
