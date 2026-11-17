@@ -824,3 +824,5 @@ modèles. Tableau du § 13 gardé.
 - Base locale : 5 brouillons créés, joués dans l'aperçu admin (division 43 713 ÷ 6 saisie 7285,5 → juste, correction lisible ; 1 − 1/2 = ?/4 ; estimation 4 980 − 293 en case « choix » ; 212 × 60,8 posé). Fichiers réécrits par le script ensuite (ids locaux retirés).
 - Aperçu : le serveur de dev doit écouter sur `127.0.0.1` (`--host 127.0.0.1`) ; l'extension Chrome refuse `[::1]`.
 - #2777 (fichiers) : CI verte, mergée.
+
+- 2026-11-17 : `db:migrate` joué par David (lot 8 + 1re techno lot 1) ; 5 modèles rangés et tagués, `updated_at` inchangé (MCP). Page à cocher publiée (5 fiches ; « bloc operation non dessiné » sur 055, 056, 057 : à jouer dans l'aperçu) : https://claude.ai/artifact/71F7ncJkoVsfEqzNCpsJSr ; 5 verdicts « OK » écrits à 20:49 (base relue). `publier-lot` en simulation : 5 brouillons passent.
