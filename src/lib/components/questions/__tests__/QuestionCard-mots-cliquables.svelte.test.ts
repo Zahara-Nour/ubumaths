@@ -51,24 +51,26 @@ describe('mots cliquables dans une question', () => {
 	it('en entraînement, les mots de l’énoncé sont cliquables', async () => {
 		const { container } = await render(QuestionCard, {
 			interactive: true,
-			instance: instanceOf('Calcule l’aire du rectangle.', ['6'])
+			instance: instanceOf('Le quotient du pourcentage à l’échelle.', ['6'])
 		});
-		await expect.poll(() => lexiconButtons(container)).toEqual(['Calcule', 'aire', 'rectangle']);
+		await expect
+			.poll(() => lexiconButtons(container))
+			.toEqual(['quotient', 'pourcentage', 'échelle']);
 	});
 
 	it('13. en évaluation notée, aucun mot n’est souligné', async () => {
 		// Une carte d'entraînement d'abord : le dictionnaire est chargé, l'absence prouve le refus
 		const entrainement = await render(QuestionCard, {
 			interactive: true,
-			instance: instanceOf('Calcule l’aire.', ['6'])
+			instance: instanceOf('Le pourcentage.', ['6'])
 		});
-		await expect.poll(() => lexiconButtons(entrainement.container)).toEqual(['Calcule', 'aire']);
+		await expect.poll(() => lexiconButtons(entrainement.container)).toEqual(['pourcentage']);
 		const evaluation = await render(QuestionCard, {
 			interactive: true,
 			collectOnly: true,
-			instance: instanceOf('Calcule l’aire.', ['6'])
+			instance: instanceOf('Le pourcentage.', ['6'])
 		});
-		await expect.poll(() => evaluation.container.textContent).toContain('Calcule');
+		await expect.poll(() => evaluation.container.textContent).toContain('pourcentage');
 		expect(lexiconButtons(evaluation.container)).toEqual([]);
 	});
 
@@ -78,7 +80,8 @@ describe('mots cliquables dans une question', () => {
 			interactive: true,
 			instance: instanceOf(
 				'Quelle figure a quatre côtés égaux ?',
-				['6'],
+				// CP : « côté » et « triangle » sont des mots récents (R1)
+				['CP'],
 				['un losange', 'un triangle']
 			)
 		});
@@ -91,14 +94,15 @@ describe('mots cliquables dans une question', () => {
 			instance: instanceOf('Calcule la dérivée.', ['6']),
 			readerGrade: '1_SPE'
 		});
-		await expect.poll(() => lexiconButtons(container)).toEqual(['Calcule', 'dérivée']);
+		// « Calcule » (CE1) : trop ancien pour un élève de 1re (R1)
+		await expect.poll(() => lexiconButtons(container)).toEqual(['dérivée']);
 	});
 
-	it('12. sans élève connecté, le plus petit niveau de la question', async () => {
+	it('R3. sans élève connecté, le plus haut niveau de la question', async () => {
 		const { container } = await render(ReaderGradeHarness, {
 			instance: instanceOf('Calcule la dérivée.', ['6', '1_SPE']),
 			readerGrade: null
 		});
-		await expect.poll(() => lexiconButtons(container)).toEqual(['Calcule']);
+		await expect.poll(() => lexiconButtons(container)).toEqual(['dérivée']);
 	});
 });

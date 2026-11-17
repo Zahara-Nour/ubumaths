@@ -59,7 +59,7 @@ function underlined(element: Element): boolean {
 	return getComputedStyle(element).textDecorationLine.includes('underline');
 }
 
-async function renderCard(statement = 'Calcule l’aire du rectangle.') {
+async function renderCard(statement = 'Le quotient du pourcentage à l’échelle.') {
 	const result = await render(QuestionCard, { interactive: true, instance: instanceOf(statement) });
 	await expect.poll(() => terms(result.container).length).toBe(3);
 	return result;
@@ -119,19 +119,19 @@ describe('mots du dictionnaire masqués par défaut (R6)', () => {
 		await userEvent.click(aire);
 		await expect
 			.poll(() => document.querySelector('[role="dialog"]')?.textContent)
-			.toContain('aire');
+			.toContain('pourcentage');
 	});
 
 	it('B4. masqué, écran tactile : les mots ne sont pas cliquables', async () => {
 		pointer.canHover = false;
 		const { container } = await render(QuestionCard, {
 			interactive: true,
-			instance: instanceOf('Calcule l’aire du rectangle.')
+			instance: instanceOf('Le quotient du pourcentage à l’échelle.')
 		});
 		// Le bouton prouve que les mots sont repérés ; ils restent du texte
 		await expect.poll(() => toggleOf(container)).not.toBeNull();
 		expect(terms(container)).toEqual([]);
-		expect(container.textContent).toContain('rectangle');
+		expect(container.textContent).toContain('échelle');
 
 		await userEvent.click(toggleOf(container)!);
 		await expect.poll(() => terms(container).length).toBe(3);
@@ -149,7 +149,7 @@ describe('mots du dictionnaire masqués par défaut (R6)', () => {
 		await expect.poll(() => toggle.getAttribute('aria-pressed')).toBe('true');
 		toggle.focus();
 		await userEvent.tab();
-		expect(document.activeElement?.textContent).toBe('Calcule');
+		expect(document.activeElement?.textContent).toBe('quotient');
 	});
 
 	it('B6. aucun mot repéré sur la carte : pas de bouton', async () => {
@@ -169,9 +169,9 @@ describe('mots du dictionnaire masqués par défaut (R6)', () => {
 		const { container } = await render(QuestionCard, {
 			interactive: true,
 			collectOnly: true,
-			instance: instanceOf('Calcule l’aire du rectangle.')
+			instance: instanceOf('Le quotient du pourcentage à l’échelle.')
 		});
-		await expect.poll(() => container.textContent).toContain('rectangle');
+		await expect.poll(() => container.textContent).toContain('échelle');
 		expect(toggleOf(container)).toBeNull();
 	});
 
@@ -192,7 +192,7 @@ describe('mots du dictionnaire masqués par défaut (R6)', () => {
 
 	it('le bouton est aussi sur le recto d’une flash-card', async () => {
 		const { container } = await render(FlashCard, {
-			instance: instanceOf('Calcule l’aire du rectangle.')
+			instance: instanceOf('Le quotient du pourcentage à l’échelle.')
 		});
 		const front = () => container.querySelector('.flip-front') ?? container;
 		await expect.poll(() => toggleOf(front() as HTMLElement)).not.toBeNull();
@@ -203,7 +203,8 @@ describe('mots du dictionnaire masqués par défaut (R6)', () => {
 		pointer.canHover = false;
 		const course = {
 			templateId: 'carte',
-			statement: resolvedMarkdown('Quelle est l’aire du rectangle ?'),
+			// Question de cours : seuls les mots marqués sont repérés (R4)
+			statement: resolvedMarkdown('Quel est le [quotient]{.def} de $6$ par $2$ ?'),
 			correction: { steps: [resolvedMarkdown('Longueur fois largeur.')] },
 			options: { courseCard: true },
 			grades: ['6'],
