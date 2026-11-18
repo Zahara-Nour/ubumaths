@@ -1267,3 +1267,12 @@ corrigé ; (e) un seul lot de 5 modèles. Tableau du § 18 gardé.
 - David : `create-questions --dir scripts/questions/cm2-11b --publier`, depuis le dépôt principal → `960e6a84` (119,
   niv. 12), `da63ec7b` (060, 13), `3d2219c0` (062, 3), `ea559f53` (063, 2), `66a1a4ee` (064, 1). Fichiers (ids) copiés
   sur `feat/questions-cm2-lot11b-tags` (identiques, `cmp`), puis remis à l'état de `main` dans le dépôt principal.
+
+### 18.4 Lot 11b : rangement (2026-11-18)
+
+- MCP : 5 brouillons [CM2] sans nœud ni tag, `updated_at` = création.
+- CM2-064 est posé sur la **notion** « Algorithmique > Préalgorithmique », qui n'a aucune sous-notion (les 5 modèles de 6e
+  y sont rangés directement) : le modèle va sur cette notion (`sous_notion` nulle, cas déjà prévu par le gabarit).
+- Migration `20261118215227_questions_cm2_lot11b_rangement_tags.sql`, générée depuis celle du lot 11a par un script de
+  substitution (aucun reste du lot 11a). Test `questions-cm2-lot11b-rangement-tags` : 9 verts ; corps remplacé par
+  `select 1;` → 5 rouges ; fichier restauré depuis sa copie (`cmp`).
