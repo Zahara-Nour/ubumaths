@@ -5,18 +5,16 @@ Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) · bornes 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après #2811 (lot 3a rangé et tagué en prod)._
+_Mis à jour le 2026-11-18, après la publication du lot 3a._
 
-- **État** : lots 0 à 3 en prod ; lot 3a « propriétés » (C1–C4) : 4 brouillons en prod, rangés et tagués
-  (#2811, `db:migrate` fait, § 24) ; page à cocher publiée, `verdicts` vide.
-- **Prochaine action** : David relit la page à cocher (https://claude.ai/artifact/APGco4p8HR7FuviYRBuqXe) ;
-  compter les verdicts, `garde-niveaux-tags.ts`, `publier-lot.ts --dir scripts/questions/ttechno-3a-proprietes`
-  (simulation, puis `--publier` par David). Ensuite lot 3b « fonctions » (C5–C8 : aˣ sur ℝ, k·aˣ), déjà validé.
-- **En attente de David** : relecture de la page à cocher du lot 3a.
+- **État** : lots 0 à 3a en prod et publiés ; lot 3a « propriétés » (C1–C4) : 4/4 verdicts « ok », publié (§ 25).
+- **Prochaine action** : lot 3b « fonctions » (C5–C8 : sens de variation et courbe de aˣ sur ℝ, k·aˣ), déjà
+  validé (§ 22) : écriture sur une nouvelle branche, puis le même cycle que 3a.
+- **En attente de David** : rien.
 - **Pièges en cours** : un point TTECHNO par modèle (trigger) ; `grades` en `array_append` seulement ;
-  `publier-lot.ts`, `garde-niveaux-tags.ts`, `create-questions --publier` visent la prod : David les lance (`!`) ;
-  `Doc-inchangée:` dans un COMMIT de la PR (ligne de corps ≤ 100 caractères) ; 034 / 078 / 079 vivent sur
-  « propriétés algébriques », pas sur le nœud aˣ d'E2.
+  `publier-lot.ts`, `garde-niveaux-tags.ts`, `create-questions --publier` visent la prod : David les lance (`!`),
+  **depuis le dépôt principal** (`cd /Users/david/Coding/js/ubumaths && …`) ; `Doc-inchangée:` dans un COMMIT de
+  la PR (ligne de corps ≤ 100 caractères) ; C5, C6 (032, 033) et C7, C8 (036, 080) : nœud des points à relever.
 - **Worktree / branche** : `../ubumaths-wt-questions-ttechno` (branche `feat/questions-ttechno-lot3a-tags`
   mergée ; le lot 3b partira d'une nouvelle branche).
 
@@ -626,3 +624,10 @@ sur « propriétés algébriques » (034, 078, 079), C4 sur « fonctions x ↦ a
 
 - Page à cocher : https://claude.ai/artifact/APGco4p8HR7FuviYRBuqXe (4 fiches, 14 exemples, aucune alerte,
   `verdicts` vide). Rendu à 390 px non vérifié cette fois.
+
+## 25. Lot 3a : publication (2026-11-18)
+
+- Page à cocher relue : 4 verdicts sur 4 « ok », sans commentaire.
+- `publier-lot.ts --dir scripts/questions/ttechno-3a-proprietes` : simulation verte (4 brouillons), puis
+  `--publier` par David (premier essai hors du dépôt principal : ENOENT, relancé avec `cd`) ; statut relu en base
+  (MCP) : 4/4 `published` (a5b2c4fa, ebefd0a9, e52d93b4, b14f7169).
