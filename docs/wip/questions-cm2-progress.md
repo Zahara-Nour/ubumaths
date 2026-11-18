@@ -6,18 +6,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après #2841 (nœud + tag du lot 11a)._
+_Mis à jour le 2026-11-18, après #2841 et `db:migrate` du lot 11a._
 
-- **État** : lots 0 à 10 publiés ; lot 11a : 7 brouillons en prod, ids et migration `20261118194448` mergés (#2841, § 17.3),
-  migration **pas encore jouée**. Restent ensuite les lots 11b à 19 du § 14.
-- **Prochaine action** : `db:migrate` du lot 11a, puis MCP (7 rangés, un tag chacun), page à cocher, verdicts, `publier-lot`.
-- **En attente de David** : `20261118192953` (questions-cm1, lot 8d) est en attente avant la nôtre — `db:migrate` les
-  jouerait ensemble : la session questions-cm1 la joue, ou David dit de jouer les deux. Fichiers `cm2-11a/*.json` modifiés
-  dans `ubumaths-wt-questions-cm1` (ids, copie de ce qui est mergé) : à annuler là-bas (David).
+- **État** : lots 0 à 10 publiés ; lot 11a : 7 brouillons rangés et tagués en prod (§ 17.3), page à cocher publiée
+  (https://claude.ai/artifact/JpVRrBTdn3tXrGPfDU4nLW), `verdicts` vide au départ. Restent ensuite les lots 11b à 19 du § 14.
+- **Prochaine action** : lire et compter les verdicts ; tout « OK » → `publier-lot --dir scripts/questions/cm2-11a` en
+  simulation, puis David `--publier`. Ensuite, phase 0 du lot 11b.
+- **En attente de David** : la relecture des 7 fiches. Fichiers `cm2-11a/*.json` modifiés dans `ubumaths-wt-questions-cm1`
+  (ids, copie de ce qui est mergé) : à annuler là-bas. Stash « cm2-9 ids » du dépôt principal : à supprimer.
 - **Pièges en cours** : lancer `create-questions` depuis le dépôt principal (au lot 11a, lancé du worktree cm1 : ids
-  écrits là-bas). `Doc-inchangée:` dans un COMMIT, pas dans la PR. `migration:horodatage` = heure réelle UTC.
-  Commit par `git commit -m … -- <fichiers>`. Stash « cm2-9 ids » du dépôt principal : à supprimer (David).
-- **Worktree / branche** : `ubumaths-wt-questions-cm2` (`feat/questions-cm2-lot11a-tags`, mergée), gardé pour `db:migrate`.
+  écrits là-bas). `Doc-inchangée:` dans un COMMIT, pas dans la PR. `migration:horodatage` = heure réelle UTC ; une autre
+  migration en attente → stop avant `db:migrate`. Commit par `git commit -m … -- <fichiers>`.
+- **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -1172,3 +1172,8 @@ de 7 modèles. Tableau du § 17 gardé.
   commentaires et résolution nœud-ou-notion ; 7 ids concordants partout ; codes de points uniques). Cosmétique corrigé :
   titre du test. #2841 : CI non déclenchée au premier push (relancée par la fusion de `origin/main`) ; garde « doc à jour »
   rouge faute de `Doc-inchangée:` dans un commit (mise dans la description de la PR seulement).
+- #2841 mergée ; `db:migrate` d'abord retenu (`20261118192953`, lot 8d du CM1, en attente avant la nôtre), puis lancé
+  une fois celle-ci jouée par sa session : la nôtre seule appliquée. MCP : 7 brouillons rangés sur leur sous-notion, un tag
+  chacun (058 ×2, 059, 061, 066, 115, 116), `updated_at` = création.
+- Page à cocher publiée (7 fiches, aucune alerte) : https://claude.ai/artifact/JpVRrBTdn3tXrGPfDU4nLW ; `verdicts` vide au
+  départ. Rendu à 390 px non revérifié (même gabarit que les lots 9 et 10).
