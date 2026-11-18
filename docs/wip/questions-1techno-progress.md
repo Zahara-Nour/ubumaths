@@ -8,18 +8,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, PR du lot 4 (rangement + tags) ouverte._
+_Mis à jour le 2026-11-18, après #2836 (lot 4 rangé et tagué en prod)._
 
-- **État** : lots 1 à 3 clos ; lot 4 « algorithmique » : 8 brouillons en prod (ids commités), migration
-  `20261118190129_questions_1techno_lot4_rangement_tags` sur `feat/questions-1techno-lot4-tags` (§ 27). Reste les
-  lots 5 (graphiques, stats à deux variables) et 6 (probabilités).
-- **Prochaine action** : CI verte → `check:migrations --pr` → merge → `db:migrate` depuis le dépôt principal
-  (`migration list --linked` avant : rien d'autre en attente) → vérif MCP → page à cocher → `publier-lot.ts`.
-- **En attente de David** : rien avant la page à cocher.
-- **Pièges en cours** : M2 porte aussi 1SPE-362 (`grades` 1_TECHNO + 1_SPE) ; `db:migrate` pousse tout ce qui
-  attend ; lot 5 : modèles communs de questions-1gen S2 f3cb0c7a → 085, S3 7461bb44 → 082, S4 4f328c8c → 084,
-  S6 3fec6b41 → 087 (publiés, à vérifier contre mes bornes en phase 0).
-- **Worktree / branche** : `../ubumaths-wt-questions-1techno` · `feat/questions-1techno-lot4-tags`.
+- **État** : lots 1 à 3 clos ; lot 4 « algorithmique » : 8 brouillons rangés et tagués en prod (§ 27), page à
+  cocher publiée https://claude.ai/artifact/3J8hZfstwcX15X7hToDERh (collection `verdicts`, vide). Reste les lots 5
+  (graphiques, stats à deux variables) et 6 (probabilités).
+- **Prochaine action** : lire et **compter** les verdicts ; 8 « OK » → `pnpm tsx scripts/questions/publier-lot.ts
+--dir scripts/questions/1techno-4` en simulation, puis David avec `--publier`. Ensuite phase 0 du lot 5.
+- **En attente de David** : la relecture des 8 modèles sur la page à cocher.
+- **Pièges en cours** : `db:migrate` pousse tout ce qui attend ; lot 5 : modèles communs de questions-1gen S2
+  f3cb0c7a → 085, S3 7461bb44 → 082, S4 4f328c8c → 084, S6 3fec6b41 → 087 (publiés, à vérifier contre mes bornes en
+  phase 0).
+- **Worktree / branche** : aucun (lot 4 mergé, worktree retiré).
 
 ## 1. Relevé (prod, 2026-11-17)
 
@@ -766,3 +766,12 @@ nœud ni tag, niveaux du relevé. Additive, rollback écrit et éprouvé. Test
 `tests/integration/questions-1techno-lot4-rangement-tags.test.ts` : rouge sans la migration (ENOENT, 6 échecs), puis
 10 verts. `security-auditor` : aucun bloquant (deux faibles, déjà connus aux lots 2-3 : nœud non revérifié au
 rollback, `lock_timeout` sous `db push`).
+
+### Lot 4 — migré, page à cocher (2026-11-18)
+
+PR #2836 mergée (CI verte, `check:migrations` OK). `migration list --linked` : seule `20261118190129` en attente ;
+`db:migrate` lancé depuis le dépôt principal. Vérifié MCP : les 8 rangés (Variables et instructions, simulation ×2,
+fluctuation, Boucles, représentation graphique, seuil, équations et inéquations f(x) = k), chacun avec son point
+1TECHNO (M2 : 1SPE-362 en plus), point sur le nœud, brouillons, `updated_at` = création. Page à cocher
+(`page-a-cocher.ts`, 0 alerte sur 8 fiches) publiée avec la capacité `db` :
+https://claude.ai/artifact/3J8hZfstwcX15X7hToDERh ; `verdicts` vide à la publication.
