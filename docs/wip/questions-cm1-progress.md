@@ -1966,7 +1966,7 @@ avant. La migration ne fait que ranger et taguer les modèles, sur des nœuds qu
 
 - les 4 modèles et leurs variations ;
 - 167, 168 sur quadrillage seulement, équerre proposée mais non exigée ; le tracé à l'équerre sur papier uni est
-  la ligne n° 39 de `outils-manquants.md`, pour plus tard ;
+  la ligne n° 40 de `outils-manquants.md`, pour plus tard ;
 - niveaux **CM1 et CM2**, tag sur les deux points pour 167/154 et 168/155 ; **CM1 seul** pour 107, 108 ;
 - 107 : modèle CM1 écrit (pas de CM1 ajouté au modèle CE2 `49b8dc0b`).
 
