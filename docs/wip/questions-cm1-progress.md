@@ -5,18 +5,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après #2812 et la publication du lot 8b (§ 22 sexies)._
+_Mis à jour le 2026-11-18, après #2823 (fichiers du lot 8c, § 23 ter)._
 
-- **État** : lots 0 à 8b publiés, **137 points du CM1 sur 171** (CM2 : 92 sur 158). Restent 8c géométrie plane,
-  8d figures à compléter, 8e solides et déplacements, 9 probabilités et proportionnalité (§ 20, découpage § 20 bis).
-- **Prochaine action** : phase 0 du lot 8c (géométrie plane) : relevé MCP des points et de l'existant, tableau des
-  modèles, questions à David.
-- **En attente de David** : rien.
+- **État** : lots 0 à 8b publiés, **137 points du CM1 sur 171** (CM2 : 92 sur 158). Lot 8c (géométrie plane, 7
+  modèles, `scripts/questions/cm1-8c/`) écrit et mergé (#2823), **pas encore en prod**. Restent ensuite 8d figures à
+  compléter, 8e solides et déplacements, 9 probabilités et proportionnalité (§ 20, découpage § 20 bis).
+- **Prochaine action** : David lance `create-questions --dir scripts/questions/cm1-8c --publier` depuis le worktree ;
+  puis commiter les ids, migration nœud + tag (nœuds existants, pas de sous-notion neuve ; tags CM2-091, 089, 090
+  sur 02, 03, 04), page à cocher, publication.
+- **En attente de David** : le `--publier` du lot 8c.
 - **Pièges en cours** : lancer `create-questions --publier` et `db:migrate` **depuis le worktree** (lien
   `supabase/.temp/` copié) ; `db:migrate` « inserted before » → `--dry-run --include-all` puis `--include-all` ;
-  une sous-notion neuve casse `seed-classification-nodes` + `arbre-notions-seed.json` + `later-migrations.ts` ;
   titre homonyme d'un autre niveau → `create-questions` refuse (renommer) ; commitlint refuse le type `content` ;
-  le mode auto refuse `publier-lot` et `garde-niveaux-tags` : David les lance ; zsh : tableau `F=(…)`.
+  le mode auto refuse `publier-lot` et `garde-niveaux-tags` : David les lance ; `sonde-figures` ne voit pas les
+  dessins d'une case choix (aperçu) ; ports 5176, 5177 pris par d'autres sessions.
 - **Worktree / branche** : `../ubumaths-wt-questions-cm1`, détaché sur `main`, aucune branche ouverte.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
