@@ -7,13 +7,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après la publication du lot 4 (§ 22)._
+_Mis à jour le 2026-11-18, phase 0 du lot 6 proposée (§ 23)._
 
-- **État** : lots 1 à 4 publiés (28 modèles). Lot 5 (second degré) clos par questions-1techno (#2787, #2796) : ses
-  modèles communs `{1_GEN,1_TECHNO}` sont publiés. Lot 6 (statistiques à deux caractères, 001 à 007) : rien d'écrit.
-- **Prochaine action** : phase 0 du lot 6 (§ 4, point 6). Demander d'abord à questions-1techno où en est son lot
-  « graphiques et stats à deux variables » (modèles communs possibles), puis relevé prod et proposition à David.
-- **En attente de David** : rien.
+- **État** : lots 1 à 4 publiés (28 modèles), lot 5 clos par questions-1techno. Lot 6 (statistiques à deux
+  variables, 001 à 007) : phase 0 écrite au § 23 (7 modèles S1-S7 + tag de 49fac266 en 1GEN-003), rien de codé.
+- **Prochaine action** : après les réponses de David, worktree `ubumaths-wt-questions-1gen`, script
+  `docs/wip/questions/lot-6.py`, puis envoyer la phase 0 validée à questions-1techno (S2, S3, S4, S6 communs).
+- **En attente de David** : Q20 à Q23 (§ 23).
 - **Pièges en cours** : ADR 0020 et `couvrir-un-niveau.md` § 9 avant tout tag ; `db push` pousse TOUTES les
   migrations en attente ; publication en prod = commande `!` de David (ma simulation est refusée : elle vise la
   prod) ; aperçu : serveur `--host ::`.
@@ -807,3 +807,85 @@ David a lancé `create-questions --publier` après #2788. Relu au MCP : 7 brouil
 - questions-ttechno prévenue : T1 `a439df84` (→ TTECHNO-035) et T2 `f84e23a3` (→ TTECHNO-038) sont publiés ; elle
   n'ajoute que ses tags.
 - Lot 5 : questions-1techno l'a clos (#2796), modèles communs du second degré publiés.
+
+## 23. Lot 6 « statistiques à deux variables » — phase 0 (proposée le 2026-11-18)
+
+**Relevé prod (2026-11-18)** : 001 à 007 n'ont **aucun modèle**. 008 (calculer le point moyen, 1c65d58e) et 045
+(interpoler avec une droite donnée, a573d517) sont couverts. Nœuds : 001 → « Statistiques > Tableaux croisés » (aucun
+modèle rangé dessus) ; 002 → « Statistique à deux variables > nuage de points » ; 003, 005, 007 → « … > ajustement
+affine » ; 004 → « … > point moyen » ; 006 → « Statistiques > Représenter des données ». Modèles déjà rangés sur ces
+nœuds : 49fac266 (interpréter a et b d'un ajustement, 1TECHNO-083 + TCOMP), a573d517, 1c65d58e, deux modèles de
+corrélation (r, TCOMP seul, hors 1GEN), et des modèles CE2 à 2de sans rapport.
+
+**Tag sans écrire** : **49fac266 → 1GEN-003** (« ajustement affine », contenu). Même nœud que 003, aucun point 1GEN
+dessus. Il interprète le coefficient directeur et l'ordonnée à l'origine d'une droite des moindres carrés donnée par
+la calculatrice, sans aucune théorie : dans la borne. Il gagne `1_GEN` par `array_append` gardé (§ 6).
+
+**Outils, sondés (parseur, 2026-11-18)** : barres à deux séries `données Filles: Bus ; Vélo ; …` / `données Garçons: …`
+(catégories acceptées, `afficher: fréquences` aussi ; données brutes, donc jeux fixés écrits par le script) ;
+circulaire ; tableau croisé `afficher: fréquences par ligne` ; ` ```nuage ` (ne dessine que la droite des moindres
+carrés) ; ` ```courbe ` avec `points:` donnés + droites `d(x) = …`, `placer:` (6 points au plus, sur la grille).
+**Correction du § 3** : 007 « au jugé » n'est **pas** `tracer:` sur `données:` (combinaison refusée, et `tracer:`
+attend une droite exacte, pas une droite au jugé) ; il passe par un choix entre droites dessinées.
+
+| Modèle                                  | Point | Commun avec | Niveau | Réponse                   |
+| --------------------------------------- | ----- | ----------- | ------ | ------------------------- |
+| S1 Comparer deux groupes sur diagrammes | 001   | —           | 1-2    | case (%) ou choix         |
+| S2 Représenter un nuage de points       | 002   | 1TECHNO-085 | 1      | ` ```courbe ` + `placer:` |
+| S3 Lire un nuage de points              | 002   | 1TECHNO-082 | 1      | case, choix               |
+| S4 Le point moyen dans le nuage         | 004   | 1TECHNO-084 | 1-2    | `placer:` G, case         |
+| S5 Interpoler ou extrapoler ?           | 005   | —           | 1      | choix, case               |
+| S6 Déterminer un ajustement affine      | 007   | 1TECHNO-087 | 2      | case (a et b), choix      |
+| S7 Formules du tableur (tableau croisé) | 006   | —           | 1-2    | choix (Q22)               |
+
+- **S1** (001, croisement de deux caractères qualitatifs) : v1 deux diagrammes circulaires (Filles / Garçons, mode
+  de transport), groupes de tailles différentes, « quelle part des filles vient à vélo ? » (%) ; v2 barres groupées
+  en **effectifs** (jeux fixés) : « les garçons viennent-ils plus souvent à vélo que les filles ? », où l'effectif le
+  plus grand n'est pas la proportion la plus grande (piège voulu, corrigé par les fréquences) ; v3 les mêmes barres
+  en `afficher: fréquences`, lire et comparer ; v4 tableau croisé en fréquences par ligne, choisir le diagramme qui
+  le représente. Effectifs 5..40 par case, pourcentages arrondis à l'unité.
+- **S2** (002) : tableau (rang de l'année × valeur, 5 ou 6 couples) → placer A..F. v1 x = 1..6, y = 0..12, grille 1 ;
+  v2 y multiples de 5 jusqu'à 60, grille 5 ; v3 axe des x qui ne part pas de 0 (années 2018..2023 en rang).
+  Erreurs nommées par l'outil (point oublié, abscisse et ordonnée échangées).
+- **S3** (002) : ` ```nuage ` sans ajustement. v1 lire la valeur de y d'un point ; v2 tendance (choix : y augmente
+  quand x augmente / diminue / pas de tendance nette) ; v3 « un ajustement affine semble-t-il adapté ? » (nuage
+  presque aligné ou nettement courbé, choix).
+- **S4** (004, point moyen comme contenu ; le calcul seul est 008) : v1 nuage de 4 à 6 points donnés, **placer G**
+  (moyennes entières, ou demi-entières avec une grille de 0,5) ; v2 « la droite d'ajustement passe par G » : G et
+  le coefficient a donnés, trouver b (b = ȳ − a x̄) ; v3 choisir G parmi quatre points marqués (pièges : point
+  médian, milieu des extrêmes, point du nuage le plus central).
+- **S5** (005, contenu) : v1 série observée de 2016 à 2023, estimation en 2020,5 ou en 2030 : interpolation ou
+  extrapolation ? (choix) ; v2 nuage + droite d'ajustement affichée (` ```nuage ` `ajustement: affine`, sans
+  `prévoir:`), lire une estimation dans le domaine observé ; v3 « l'estimation pour dans 50 ans est-elle fiable ? »
+  (choix : extrapolation lointaine, le modèle peut cesser de valoir).
+- **S6** (007) : v1 **droite de Mayer** : 6 points, deux groupes de 3, calculer G₁, G₂ puis a et b de (G₁G₂)
+  (données choisies pour que a et b soient décimaux à 2 chiffres au plus) ; v2 la même avec 8 points (deux groupes
+  de 4) ; v3 **au jugé** : nuage + trois droites dessinées (` ```courbe `, `points:` + `d₁, d₂, d₃`), laquelle est
+  un ajustement acceptable (choix ; pièges : droite qui passe par deux points extrêmes en laissant tout le nuage
+  d'un côté, pente de signe contraire) ; v4 **moindres carrés** : écran de calculatrice a = 2,3417, b = 15,082 →
+  équation avec coefficients arrondis au centième (case). Aucune formule des moindres carrés (« aucune connaissance
+  théorique »).
+- **S7** (006, tableur) : tableau croisé dans une feuille (colonnes A..D, lignes 1..4). v1 formule du total d'une
+  ligne (`=SOMME(B2:C2)` ; pièges `=SOMME(B2:B4)`, la colonne au lieu de la ligne, et `=B2+C2/2`) ; v2 fréquence à
+  recopier vers le bas,
+  `=B2/B$5` (piège : `=B2/B5`, faux après recopie) ; v3 pourcentage par ligne `=B2/D2` ; v4 quel diagramme le
+  tableur doit produire pour comparer deux groupes (barres groupées en fréquences / circulaire de l'effectif total /
+  courbe). Corrigé : la règle des références ($), comme 4-lot-3 « formules du tableur ».
+
+**Coordination questions-1techno (2026-11-18)** : rien en cours chez elle sur 082, 084, 085, 087 (son lot 5 vient
+après la dérivation et l'algorithmique). D'accord sur le principe des modèles communs comme au lot 2 : nous écrivons
+avec `grades` `['1_GEN']`, elle pose son `array_append('1_TECHNO')` et ses tags ; David tranchera chez elle à son
+lot 5. Lui envoyer la phase 0 validée puis les ids.
+
+**Question d'accès** : personne ne lit rien de nouveau. Brouillons rangés et tagués, visibles des élèves après
+publication par David ; 49fac266 (publié) gagne le niveau `1_GEN` et le tag 1GEN-003, ce qui l'ajoute aux parcours
+de 1re générale ; aucune table d'élèves touchée.
+
+### Questions (2026-11-18)
+
+- **Q20** — Taguer 49fac266 en 1GEN-003 plutôt qu'écrire un modèle « ajustement affine » de plus ?
+- **Q21** — S2, S3, S4, S6 communs avec questions-1techno (085, 082, 084, 087) ?
+- **Q22** — S7 (tableur) : la décision Q6 disait « formule écrite en texte, comme 3-032 », mais 3-032 (5c092e43) et
+  4-lot-3 font **choisir** la formule (` ```choix `). Je n'ai trouvé aucune case qui compare une formule écrite.
+  Choix parmi quatre formules (recommandé), ou outil neuf « formule de tableur » (classe C, chantier à part) ?
+- **Q23** — Phase 0 du lot 6 (modèles, variations, plages, niveaux, formes de réponse) ci-dessus : validée ?
