@@ -9,10 +9,10 @@ _Mis à jour le 2026-11-18, après #2820 (lot 4 migré)._
 
 - **État** : lots 0 à 3b publiés ; lot 4 (5e810e16 M1 037, 7a37a3e1 M2 039) en prod en brouillon, rangé sur
   « fonctions x ↦ aˣ » et tagué (#2820 migrée, vérifié MCP) ; aucun worktree ouvert.
-- **Prochaine action** : page à cocher du lot 4 (gabarit : https://claude.ai/artifact/GDznUQpPDffxKACVVUEH7h,
-  lot 3b) ; après les verdicts de David, `publier-lot.ts --dir scripts/questions/ttechno-4-fonctions`
+- **Prochaine action** : lire les verdicts de la page à cocher du lot 4
+  (https://claude.ai/artifact/4sxC6vTuygGLBECtmuznzv) ; puis `publier-lot.ts --dir scripts/questions/ttechno-4-fonctions`
   (simulation, puis `--publier` par David) ; puis bilan des points restants (042, 082, 083 : lot 5, logarithme).
-- **En attente de David** : rien avant la page à cocher.
+- **En attente de David** : verdicts de la page à cocher du lot 4.
 - **Pièges en cours** : un point TTECHNO par modèle (trigger) ; tag = nœud DU POINT (relevé MCP, pas le journal) ;
   `publier-lot.ts`, `create-questions --publier` visent la prod : David les lance (`!`) depuis le dépôt principal ;
   `db:migrate` pousse toutes les migrations en attente ; worktree neuf → `svelte-kit sync`.
@@ -763,3 +763,9 @@ David a lancé `create-questions --publier` : 2 brouillons (5e810e16 M1, 7a37a3e
   `migration list --linked` : seule `20261118104421` en attente → `db:migrate` depuis le dépôt principal
   (4 conditions). Prod vérifiée (MCP) : M1 et M2 sur « fonctions x ↦ aˣ », un tag chacun (037, 039), `draft`,
   `updated_at` inchangés. Worktree retiré.
+
+## 32. Lot 4 : page à cocher (2026-11-18)
+
+- Page à cocher : https://claude.ai/artifact/4sxC6vTuygGLBECtmuznzv (2 fiches : 5e810e16 TTECHNO-037, 6 exemples ;
+  7a37a3e1 TTECHNO-039, 5 exemples ; aucune alerte ; nœud lu en base : « fonctions x ↦ aˣ » ; `verdicts` vide).
+  Rendu à 390 px non vérifié.
