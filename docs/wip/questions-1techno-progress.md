@@ -687,3 +687,11 @@ PR #2801 (fichiers) mergée. David a lancé `create-questions --publier` : M1 `0
 `14b60caa-e18e-46d8-9ff6-3889fd9de40e`, M9 `936b7e76-74eb-4c82-a3b8-bdccb3682cfc` ; brouillons `{1_TECHNO}`, sans
 nœud ni tag, niveaux du script (vérifié MCP). Page à cocher https://claude.ai/artifact/VszQXF6HbQ9VZbvgHZFLro
 (capacité `db`, collection `verdicts`, vide à la publication) ; décimaux écrits « 0{,}1 » dans la page.
+
+### Lot 3 — verdicts et migration (2026-11-18)
+
+Page à cocher : 9 « ok » sur 9, sans commentaire (collection `verdicts`, lue). Migration
+`20261118055440_questions_1techno_lot3_rangement_tags` : 9 brouillons rangés sur le nœud de leur point (lu sur
+`node_id`) et tagués de leur point 1TECHNO. Gardes : tout ou rien (9), brouillons sans nœud ni tag avec `1_TECHNO`.
+Additive (rollback écrit et éprouvé). Test `tests/integration/questions-1techno-lot3-rangement-tags.test.ts` : 10 verts ;
+corps retiré → 4 rouges et le bloc nominal ne démarre pas.
