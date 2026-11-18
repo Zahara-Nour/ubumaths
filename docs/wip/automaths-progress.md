@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, avant toute PR (phase de recherche)._
+_Mis à jour le 2026-11-18, choix validés, avant la PR 1._
 
-- **État** : recherche faite, rien de codé. Page de synthèse : [automaths-recherche-ui.html](automaths-recherche-ui.html), publiée sur https://claude.ai/artifact/SCczsfi9ayGXjioFtsQq2R (diagnostic, sources, maquettes ordinateur/tablette/téléphone, roue, arbre du programme).
-- **Prochaine action** : attendre les réponses de David (mes recommandations sont dans l’historique, 2026-11-18) aux 8 questions de la section « Ce que tu dois trancher » de la page ; la PR 1 (correctifs immédiats) n'en dépend pas et peut partir sur un go.
-- **En attente de David** : les 8 choix (recherche ou arbre d'abord, niveau obligatoire, place de la série, sous-notions dépliées, hauteur des cartes, parcours par le programme, points qui partagent une notion, sort de la roue).
-- **Pièges en cours** : la tuile reste la flash-card (décision du 2026-09-29, ne pas la remettre en cause) ; plusieurs points du programme désignent le même nœud (4-021, 4-075, 4-023 → Calcul littéral) ; un point posé sur une notion peut n'avoir aucune question en propre (4-003).
-- **Worktree / branche** : aucun pour l'instant (travail doc sur `main`) ; créer `../ubumaths-wt-automaths` au premier code.
+- **État** : recherche faite, **les 8 choix sont validés par David (2026-11-18)** : ce sont mes recommandations, telles quelles (historique ci-dessous). Rien de codé. Page : [automaths-recherche-ui.html](automaths-recherche-ui.html), https://claude.ai/artifact/SCczsfi9ayGXjioFtsQq2R.
+- **Prochaine action** : créer le worktree `../ubumaths-wt-automaths` (branche `feat/automaths-catalogue`), puis PR 1 « correctifs immédiats » : aperçu de série qui ne masque plus « Ajouter », sans clignotement ; retrait depuis la grille (bouton + / ✓) ; notion gardée dans l’adresse. Phase 0 (comportements en français) à présenter avant de coder. Puis PR 2 recherche, PR 3 navigation (arbre des notions + bascule programme), PR 4 série en cours.
+- **En attente de David** : rien.
+- **Pièges en cours** : la tuile reste la flash-card (décision du 2026-09-29) ; plusieurs points désignent le même nœud (4-021, 4-075, 4-023 → Calcul littéral) ; un point posé sur une notion peut n’avoir aucune question en propre (4-003) → inclure ses sous-notions ; le panier détaillé `/automaths/panier` ne change pas.
+- **Worktree / branche** : aucun encore.
 
 ## Historique
 
@@ -22,7 +22,7 @@ _Mis à jour le 2026-11-18, avant toute PR (phase de recherche)._
 - Arbre du programme : les 2 762 points (tous niveaux) ont un `node_id` ; presque tous ont des questions (exception T_EXP : 13 sur 176). Avis : deuxième façon de parcourir, dès qu'un niveau est choisi.
 - Découpage proposé : PR 1 correctifs immédiats · PR 2 recherche · PR 3 navigation · PR 4 série en cours.
 
-### 2026-11-18 — recommandations données à David (non validées)
+### 2026-11-18 — recommandations, validées par David le jour même
 
 1. Recherche et arbre visibles ensemble, sans focus automatique (clavier du téléphone).
 2. Niveau non obligatoire ; « Tous » à la 1re visite, puis le dernier niveau retenu.
