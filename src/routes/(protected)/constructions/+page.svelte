@@ -12,7 +12,7 @@
 	import * as Card from '#lib/components/ui/card/index.ts';
 	import * as DropdownMenu from '#lib/components/ui/dropdown-menu/index.ts';
 	import { toaster } from '#lib/stores/toaster.svelte.ts';
-	import { invalidateAll } from '$app/navigation';
+	import { refreshAll } from '$app/navigation';
 	import {
 		Plus,
 		MoreVertical,
@@ -53,7 +53,7 @@
 
 			if (response.ok) {
 				toaster.success('Construction supprimée');
-				await invalidateAll();
+				await refreshAll();
 			} else {
 				const result = await response.json();
 				toaster.error(result.message || 'Erreur lors de la suppression');

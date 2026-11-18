@@ -31,7 +31,7 @@
  */
 
 import { deserialize } from '$app/forms';
-import { invalidateAll } from '$app/navigation';
+import { refreshAll } from '$app/navigation';
 import type { ActionResult } from '$app/forms';
 import { toaster } from '#lib/stores/toaster.svelte.ts';
 
@@ -165,7 +165,7 @@ export async function submitAction<T = Record<string, unknown>>(
 /**
  * Recharge les données de la page après une écriture réussie.
  *
- * `invalidateAll()` peut rejeter (réseau coupé entre l'écriture et le
+ * `refreshAll()` peut rejeter (réseau coupé entre l'écriture et le
  * rechargement). Laissé nu, ce rejet saute le message de succès et la fermeture
  * de la modale : l'écran se fige sans rien dire, alors que l'écriture, elle, a
  * bien eu lieu — le symptôme même que ce module existe pour supprimer.
@@ -179,7 +179,7 @@ export async function submitAction<T = Record<string, unknown>>(
  */
 export async function refreshPageData(): Promise<void> {
 	try {
-		await invalidateAll();
+		await refreshAll();
 	} catch (err) {
 		console.error('[refreshPageData] Rechargement des données échoué :', err);
 		toaster.warning("Enregistré, mais l'affichage n'a pas pu être rafraîchi");

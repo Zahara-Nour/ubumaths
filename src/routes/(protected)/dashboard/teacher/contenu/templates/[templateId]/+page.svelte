@@ -18,7 +18,7 @@
 <script lang="ts">
 	import { lore } from '#lib/config/lore.ts';
 	import { enhance } from '$app/forms';
-	import { goto, invalidateAll } from '$app/navigation';
+	import { goto, refreshAll } from '$app/navigation';
 	import type { PageData, ActionData } from './$types';
 	import { Button } from '#lib/components/ui/button/index.ts';
 	import BackLink from '#lib/components/navigation/BackLink.svelte';
@@ -185,7 +185,7 @@
 			}
 
 			if (form.action === 'update') showEditDialog = false;
-			invalidateAll();
+			refreshAll();
 		} else if (form?.error) {
 			toaster.error(form.error);
 		}
@@ -404,7 +404,7 @@
 	takenExerciseIds={data.content.exercises.map((e) => e.exerciseId)}
 	takenWorksheetIds={data.content.worksheets.map((w) => w.worksheetId)}
 	takenSeriesIds={data.content.series.map((s) => s.seriesId)}
-	onDocumentAdded={() => invalidateAll()}
+	onDocumentAdded={() => refreshAll()}
 />
 
 <!-- Modifier le titre et la description -->

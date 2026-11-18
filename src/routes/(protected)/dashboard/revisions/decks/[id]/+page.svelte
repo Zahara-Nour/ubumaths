@@ -8,7 +8,7 @@
 	 */
 
 	import { studySessionHref } from '#lib/navigation/return-links.ts';
-	import { invalidateAll, goto } from '$app/navigation';
+	import { refreshAll, goto } from '$app/navigation';
 	import * as Card from '#lib/components/ui/card/index.ts';
 	import { Button } from '#lib/components/ui/button/index.ts';
 	import BackLink from '#lib/components/navigation/BackLink.svelte';
@@ -92,7 +92,7 @@
 			}
 			toaster.success(editingSection ? 'Section modifiée.' : 'Section créée.');
 			showCreateDialog = false;
-			await invalidateAll();
+			await refreshAll();
 		} finally {
 			busy = false;
 		}
@@ -112,7 +112,7 @@
 				return;
 			}
 			toaster.success('Section supprimée.');
-			await invalidateAll();
+			await refreshAll();
 		} finally {
 			busy = false;
 		}
@@ -133,7 +133,7 @@
 				toaster.error(err.error ?? 'Erreur inconnue');
 				return;
 			}
-			await invalidateAll();
+			await refreshAll();
 		} finally {
 			busy = false;
 		}

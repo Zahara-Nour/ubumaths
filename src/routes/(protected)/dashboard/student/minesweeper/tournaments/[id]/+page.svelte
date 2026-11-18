@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
-	import { invalidateAll } from '$app/navigation';
+	import { refreshAll } from '$app/navigation';
 	import { navigating } from '$app/state';
 	import { Button } from '#lib/components/ui/button/index.ts';
 	import BackLink from '#lib/components/navigation/BackLink.svelte';
@@ -140,7 +140,7 @@
 		// When the store exits tournament mode (after modal interaction),
 		// refresh the page data to get updated standings
 		if (!minesweeperStore.isInTournamentMode() && !minesweeperStore.currentGame) {
-			invalidateAll();
+			refreshAll();
 		}
 	});
 

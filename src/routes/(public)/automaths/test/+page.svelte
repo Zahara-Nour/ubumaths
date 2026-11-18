@@ -111,7 +111,7 @@
 			// Ancien lien de série sans forme : le serveur redirige déjà vers le
 			// panier (Q46) ; filet pour une navigation qui ne passerait pas par lui
 			if (launch.kind === 'cart') {
-				await goto(launch.href, { replaceState: true });
+				await goto(launch.href, { replace: true });
 				return;
 			}
 

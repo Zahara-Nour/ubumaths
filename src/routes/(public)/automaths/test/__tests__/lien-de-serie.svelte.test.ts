@@ -83,11 +83,11 @@ describe('C19 — lien de série', () => {
 		await renderPage();
 
 		await vi.waitFor(() => expect(goto).toHaveBeenCalledTimes(1));
-		const [target, options] = goto.mock.calls[0] as unknown as [string, { replaceState: boolean }];
+		const [target, options] = goto.mock.calls[0] as unknown as [string, { replace: boolean }];
 		const href = new URL(target, 'http://localhost');
 		expect(href.pathname).toBe('/automaths/panier');
 		expect(href.searchParams.get(SERIES_LINK_PARAM)).toBe(encoded);
-		expect(options).toMatchObject({ replaceState: true });
+		expect(options).toMatchObject({ replace: true });
 		expect(document.body.textContent).not.toContain('Choisissez un mode de test');
 	});
 

@@ -12,7 +12,7 @@
 	- Acheter (consentement parental exigé, comme la boutique VIP) n'équipe pas
 	  l'avatar ; porter et retirer sont gratuits et restent possibles sans
 	  consentement.
-	- Après un port ou un retrait, la page est rechargée (`invalidateAll`) : l'en-tête
+	- Après un port ou un retrait, la page est rechargée (`refreshAll`) : l'en-tête
 	  relit le profil et montre le nouvel avatar aussitôt.
 
 	La base tient les règles (solde, possession, fenêtre de vente) : ici, seulement
@@ -20,7 +20,7 @@
 -->
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { invalidateAll } from '$app/navigation';
+	import { refreshAll } from '$app/navigation';
 	import { Button } from '#lib/components/ui/button/index.ts';
 	import { Badge } from '#lib/components/ui/badge/index.ts';
 	import { Skeleton } from '#lib/components/ui/skeleton/index.ts';
@@ -124,7 +124,7 @@
 				return;
 			}
 			toaster.success(avatar ? `Tu portes ${avatar.name}.` : 'Avatar retiré.');
-			await Promise.all([load(), invalidateAll()]);
+			await Promise.all([load(), refreshAll()]);
 		} finally {
 			busyKey = null;
 		}

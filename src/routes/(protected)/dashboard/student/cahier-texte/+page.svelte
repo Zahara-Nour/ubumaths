@@ -85,7 +85,7 @@
 			// Remove class filter
 			const url = new URL(page.url.href);
 			url.searchParams.delete('class');
-			goto(url.toString(), { replaceState: true });
+			goto(url.toString(), { replace: true });
 		}
 	}
 
@@ -97,7 +97,7 @@
 		for (const [key, value] of Object.entries(params)) {
 			url.searchParams.set(key, value);
 		}
-		goto(url.toString(), { replaceState: true });
+		goto(url.toString(), { replace: true });
 	}
 
 	/**

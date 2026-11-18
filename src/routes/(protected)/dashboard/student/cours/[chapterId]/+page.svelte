@@ -15,7 +15,7 @@
 	 * publication. Ne pas la ré-implémenter ici, et surtout ne pas la déplacer.
 	 */
 
-	import { invalidateAll } from '$app/navigation';
+	import { refreshAll } from '$app/navigation';
 	import { Button } from '#lib/components/ui/button/index.ts';
 	import BackLink from '#lib/components/navigation/BackLink.svelte';
 	import * as Card from '#lib/components/ui/card/index.ts';
@@ -45,7 +45,7 @@
 
 	$effect(() => {
 		if (form?.success) {
-			invalidateAll();
+			refreshAll();
 		}
 	});
 </script>

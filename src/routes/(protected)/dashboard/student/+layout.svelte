@@ -43,7 +43,7 @@
 	import { consent } from '#lib/stores/consent.svelte.ts';
 	import ConsentBanner from '#lib/components/ConsentBanner.svelte';
 	import AgeQuestionDialog from '#lib/components/AgeQuestionDialog.svelte';
-	import { invalidateAll } from '$app/navigation';
+	import { refreshAll } from '$app/navigation';
 	import { onMount } from 'svelte';
 
 	// Get server data (includes consentStatus from parent protected layout)
@@ -51,7 +51,7 @@
 
 	// Réponse enregistrée : recharge le profil et l'état du consentement (bandeau).
 	async function handleAgeAnswered() {
-		await invalidateAll();
+		await refreshAll();
 		if (data.consentStatus) consent.set(data.consentStatus);
 	}
 

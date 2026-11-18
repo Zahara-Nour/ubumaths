@@ -4,7 +4,7 @@
 	import * as Dialog from '#lib/components/ui/dialog/index.ts';
 	import { Label } from '#lib/components/ui/label/index.ts';
 	import { toaster } from '#lib/stores/toaster.svelte.ts';
-	import { invalidateAll } from '$app/navigation';
+	import { refreshAll } from '$app/navigation';
 	import type { ImportResult } from '#lib/exercises/types.ts';
 
 	interface Props {
@@ -131,7 +131,7 @@
 				}
 
 				// Refresh exercise list
-				await invalidateAll();
+				await refreshAll();
 
 				// Call success callback
 				if (onSuccess) onSuccess();

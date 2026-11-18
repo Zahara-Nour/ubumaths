@@ -13,7 +13,7 @@
 	 */
 
 	import { enhance } from '$app/forms';
-	import { invalidateAll } from '$app/navigation';
+	import { refreshAll } from '$app/navigation';
 	import { navigating, page } from '$app/state';
 	import { Button } from '#lib/components/ui/button/index.ts';
 	import BackLink from '#lib/components/navigation/BackLink.svelte';
@@ -128,7 +128,7 @@
 				showTemplateDialog = false;
 				resetTemplateForm();
 			}
-			invalidateAll();
+			refreshAll();
 		} else if (form?.error) {
 			toaster.error(form.error);
 		}
