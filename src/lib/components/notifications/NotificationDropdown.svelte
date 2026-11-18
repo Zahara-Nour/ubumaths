@@ -11,6 +11,7 @@
 	import * as Popover from '$lib/components/ui/popover';
 	import { Bell } from '@lucide/svelte';
 	import { goto } from '$app/navigation';
+	import { gotoNotification } from '$lib/navigation/goto-notification';
 
 	// Get top 5 notifications for dropdown
 	const MAX_DROPDOWN_NOTIFICATIONS = 5;
@@ -42,9 +43,8 @@
 		isOpen = false;
 
 		// Navigate if action URL exists
-		// Type assertion: action_url comes from database, assumed to be valid route
 		if (notification.action_url) {
-			goto(notification.action_url as Parameters<typeof goto>[0]);
+			gotoNotification(notification.action_url);
 		}
 	}
 
