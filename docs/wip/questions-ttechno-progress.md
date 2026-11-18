@@ -5,22 +5,19 @@ Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) · bornes 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après #2819._
+_Mis à jour le 2026-11-18, migration du lot 4 écrite (§ 31), PR à ouvrir._
 
-- **État** : lots 0 à 3b en prod et publiés ; lot 4 (M1 037, M2 039) mergé (#2819), fichiers seulement, pas
-  encore en base ; aucun worktree ouvert.
-- **Prochaine action** : David lance, depuis le dépôt principal,
-  `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/ttechno-4-fonctions --publier` ; puis ids
-  vérifiés (MCP) et commités ; puis worktree `feat/questions-ttechno-lot4-rangement` : migration nœud + tags
-  (gabarit lot 3b, `20261118080905` ; M1 → « propriétés algébriques » 44206987, M2 → « fonctions x ↦ aˣ »
-  c185c955), test d'intégration, `security-auditor`, page à cocher, publication.
-- **En attente de David** : le `create-questions --publier` ci-dessus.
-- **Pièges en cours** : un point TTECHNO par modèle (trigger) ; `grades` en `array_append` seulement ;
-  `publier-lot.ts`, `garde-niveaux-tags.ts`, `create-questions --publier` visent la prod : David les lance (`!`),
-  **depuis le dépôt principal, après le merge** ; `Doc-inchangée:` dans un COMMIT de la PR ; `db:migrate` pousse
-  toutes les migrations en attente (`migration list --linked` avant) ; worktree neuf → `svelte-kit sync` avant
-  `question:specs`.
-- **Worktree / branche** : aucun (`../ubumaths-wt-questions-ttechno` retiré après #2819).
+- **État** : lot 4 en prod en brouillon (5e810e16 M1 037, 7a37a3e1 M2 039, sans nœud ni tag) ; migration
+  `20261118104421` + test (9 verts, 5 rouges sans) commités sur `feat/questions-ttechno-lot4-rangement`, pas
+  poussés ; `security-auditor` sans finding (§ 31).
+- **Prochaine action** : PR #2820, CI verte →
+  merge → `check:migrations --pr <n>` avant le merge ; `migration list --linked` ; `db:migrate` depuis le dépôt
+  principal ; vérif MCP ; page à cocher ; publication par David.
+- **En attente de David** : rien.
+- **Pièges en cours** : **037 et 039 sont sur « fonctions x ↦ aˣ » (c185c955)**, pas « propriétés algébriques » ;
+  `create-questions --publier`, `publier-lot.ts` visent la prod : David les lance (`!`) depuis le dépôt principal ;
+  `db:migrate` pousse toutes les migrations en attente ; worktree neuf → `svelte-kit sync`.
+- **Worktree / branche** : `../ubumaths-wt-questions-ttechno` · `feat/questions-ttechno-lot4-rangement`.
 
 ## 1. Périmètre
 
@@ -747,3 +744,19 @@ quotient, puissance, a⁰, a⁻ˣ ; pas (ab)ˣ) ; **Q22** M2 avec une variation 
 - Base locale (copie des fichiers) : 2 brouillons ; aperçu admin (Chrome, `127.0.0.1:5177`) : M2 tableur
   (a = 4) C → juste, correction lue ; M2 deux intercalations (a = 0,5, x₁ = 2) `2,5` et `0,18` → juste.
 - **#2819 mergée (2026-11-18)**, CI verte ; worktree retiré.
+
+## 31. Lot 4 : prod, rangement et tags (2026-11-18)
+
+David a lancé `create-questions --publier` : 2 brouillons (5e810e16 M1, 7a37a3e1 M2), vérifiés par MCP (`draft`,
+`{T_TECHNO}`, sans nœud ni tag) ; ids commités sur la branche de la migration.
+
+- Points (MCP) : **037 et 039 sur « Fonctions > Fonction exponentielle > fonctions x ↦ aˣ » (c185c955)**. Le § 29
+  plaçait 037 sur « propriétés algébriques » (44206987) : faux, M1 va sur le nœud du point.
+- Question d'accès tranchée au § 29 : **personne** (brouillons), Tle techno à la publication.
+- Migration `20261118104421_questions_ttechno_lot4_rangement_tags` sur le gabarit du lot 3b (ids, codes, 2 modèles,
+  table temporaire).
+- Test `tests/integration/questions-ttechno-lot4-rangement-tags.test.ts` : 9 verts (encore 9 après le commit) ;
+  corps retiré (en-tête et rollback gardés) → 5 rouges ; fichier restauré d'une copie, identique.
+  `types:cliquet` tenu.
+- `security-auditor` : aucun finding (diff avec le lot 3b = en-tête, ids, codes, gardes « 0 ou 2 », table
+  temporaire ; rollback miroir ; aucune policy, aucun GRANT, aucune table d'élève ; état prod mesuré conforme).
