@@ -10,8 +10,8 @@
 	import { whiteboardStore } from '../stores/whiteboard.svelte';
 	import { MIN_TEXT_BLOCK_WIDTH, MIN_TEXT_BLOCK_HEIGHT } from '../stores/whiteboard.svelte';
 	import type { TextBlockElement } from '../types/document';
-	import RichTextEditor from '$lib/components/rich-text/RichTextEditor.svelte';
-	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
+	import RichTextEditor from '#lib/components/rich-text/RichTextEditor.svelte';
+	import MarkdownRenderer from '#lib/components/markdown/MarkdownRenderer.svelte';
 
 	// ==========================================================================
 	// Props

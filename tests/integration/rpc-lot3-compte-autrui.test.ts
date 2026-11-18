@@ -29,20 +29,20 @@ import {
 } from '../helpers/database/trigger-test-helpers';
 import { createAuthenticatedClient } from '../helpers/database/supabase-client';
 import { TestData } from '../helpers/database/test-data-factory';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 
 // Le client service des modules serveur lit process.env (qui peut viser la prod
 // via .env) : on le branche explicitement sur la base LOCALE de test.
-vi.mock('$lib/server/serviceRoleClient', async () => {
+vi.mock('#lib/server/serviceRoleClient.ts', async () => {
 	const helpers = await import('../helpers/database/trigger-test-helpers');
 	return { createServiceRoleClient: helpers.createServiceRoleClient };
 });
 
 // Le consentement parental est hors sujet ici (testé ailleurs).
-vi.mock('$lib/server/middleware/consent', () => ({ requireConsent: vi.fn() }));
+vi.mock('#lib/server/middleware/consent.ts', () => ({ requireConsent: vi.fn() }));
 
-import { addBuddyXp } from '$lib/server/buddy-queries';
-import { processEvent } from '$lib/server/achievements/service';
+import { addBuddyXp } from '#lib/server/buddy-queries.ts';
+import { processEvent } from '#lib/server/achievements/service.ts';
 import { POST as soumettreScore2048 } from '../../src/routes/api/games/2048/scores/+server';
 
 const service = createServiceRoleClient();

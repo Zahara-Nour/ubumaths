@@ -20,7 +20,7 @@ import {
 	judgeConstruction
 } from '../judge';
 import { parseConstructionAnswer } from '../answer';
-import type { ConstructionCheck } from '$lib/ubumark/types/construction';
+import type { ConstructionCheck } from '#lib/ubumark/types/construction.ts';
 
 // Carré : côté donné [AB], horizontal ; les deux carrés possibles tiennent dans la fenêtre
 const SQUARE_POINTS = new Map([

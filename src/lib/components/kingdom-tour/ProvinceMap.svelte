@@ -9,10 +9,10 @@
 	 */
 	import type { Action } from 'svelte/action';
 	import { Crown } from '@lucide/svelte';
-	import { resolve } from '$app/paths';
+	import { resolvePath } from '#lib/navigation/resolve-path.ts';
 	import KingdomMap from './KingdomMap.svelte';
-	import { capitalOf, cityPath } from '$lib/kingdom-tour/cities';
-	import { PROVINCES } from '$lib/kingdom-tour/tour';
+	import { capitalOf, cityPath } from '#lib/kingdom-tour/cities.ts';
+	import { PROVINCES } from '#lib/kingdom-tour/tour.ts';
 
 	// Constantes
 
@@ -54,7 +54,7 @@
 <div class="map" data-testid="province-map">
 	<div class="kingdom-col">
 		<KingdomMap active={active < 0 ? null : PROVINCES[active].id} />
-		<a class="royal-link" href={resolve(cityPath('sandomir'))}>
+		<a class="royal-link" href={resolvePath(cityPath('sandomir'))}>
 			<Crown size={18} strokeWidth={2} aria-hidden="true" />
 			Sandomir, capitale du Royaume <span aria-hidden="true">→</span>
 		</a>
@@ -79,7 +79,7 @@
 						<div>
 							<dt>Capitale</dt>
 							<dd>
-								<a class="capital" href={resolve(cityPath(capitalOf(province.id).slug))}
+								<a class="capital" href={resolvePath(cityPath(capitalOf(province.id).slug))}
 									>{province.capital}</a
 								>
 							</dd>

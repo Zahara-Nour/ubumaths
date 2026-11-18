@@ -85,6 +85,7 @@ Ceux du code et de l'interface :
 | `src/lib/atelier/parse.ts`                  | Lecture d'une définition (`parseDefinition`), dépendances (`referencesOf`), provenance (`Provenance`) ; une définition illisible dit l'aide précise du parseur, comme la ligne de calcul (`invalidExpressionMessage`) |
 | `src/lib/atelier/letter.ts`                 | `f(t) = t^2` : la lettre de l'élève à l'affichage, la définition rangée en x                                                                                                                                          |
 | `src/lib/atelier/interval.ts`               | `f(x) = x^2 sur [0;+∞[` : coupe au mot « sur », lit l'ensemble, juge I3 (domaine) et I4 (`f(5)`)                                                                                                                      |
+| `src/lib/atelier/draft-hint.ts`             | Le « Modèle : » d'une définition de fonction sous le champ de la console : `g(t) = t² sur [0;3]`, puis, « sur » tapé, `[a;b], ]a;b[, [0;+∞[`                                                                          |
 | `src/lib/atelier/reciprocal.ts`             | La carte `f⁻¹` et `.réciproque` : f passée au moteur, paramètres gardés en lettres, refus en français                                                                                                                 |
 | `src/lib/atelier/limit.ts`                  | `.limite EXPR en POINT` : point lu (côté, infini, `en x=1`), `evaluateLimit`, réponse en formule                                                                                                                      |
 | `src/lib/atelier/limit-steps.ts`            | `.limite` : « Comment ? » (`limitSteps`), garde de concordance dans `limit-steps-check.ts`                                                                                                                            |
@@ -202,7 +203,7 @@ Ceux du code et de l'interface :
 | `ValueSlider.svelte`         | Le curseur d'une valeur, sous la ligne de sa carte                                                                                                                                                                                                                                                                            |
 | `SliderSettings.svelte`      | Les bornes et le pas du curseur, refusés avec leur raison (fenêtre ouverte depuis le menu de la valeur)                                                                                                                                                                                                                       |
 | `CurveSettings.svelte`       | « Sur le graphique » : couleur, trait, tangente, aire ; `compact` : le point de tangence, les bornes et les nombres seuls                                                                                                                                                                                                     |
-| `CalculView.svelte`          | Le contenu de la console : champ (texte ou écriture mathématique), historique (`>` / `-->`), « Garder »                                                                                                                                                                                                                       |
+| `CalculView.svelte`          | Le contenu de la console : champ (texte ou écriture mathématique) validé par Entrée ou la touche ↵ du clavier virtuel ou du téléphone, sans bouton « Calculer » (2026-11-14), historique (`>` / `-->`), « Garder »                                                                                                            |
 | `StepsOnDemand.svelte`       | Les étapes d'une ligne dépliée : « Chargement des étapes… » au premier dépliage, puis le rendu ; échec → message et « Réessayer »                                                                                                                                                                                             |
 | `NaturalField.svelte`        | Le champ MathLive de l'écriture mathématique (en essai) : mots finis en texte, complétion, ↑ / ↓, clavier virtuel                                                                                                                                                                                                             |
 | `AtelierSettings.svelte`     | Le bouton « Réglages » (icône seule) et sa fenêtre : saisie dans Calcul, angles, déplacement des points                                                                                                                                                                                                                       |
@@ -638,7 +639,11 @@ l'ensemble est refusé dans Calcul (`outsideIntervalRefusal`, argument sans vari
 de la carte (I4). Dans la carte, `smartFence` est coupé dès que le champ contient le « sur » d'un
 intervalle — même règle `intervalWord`, « sur » en fin de saisie compris (jugé au `keydown`,
 `beforeinput` et `input` en capture : l'`input` arrive trop tard) — sinon `[0;1[` s'écrit
-`\left\lbrack0;1\left\lbrack\right\rbrack\right\rbrack`, illisible.
+`\left\lbrack0;1\left\lbrack\right\rbrack\right\rbrack`, illisible. Dans la console, une
+définition de fonction en cours (`f(x) =`, dans les deux champs) montre sous le champ « Modèle :
+f(x) = x² sur [0;3] — pour choisir l'ensemble », nom et variable tapés ; « sur » tapé, le modèle
+devient celui d'un intervalle (`definitionHint`, `draft-hint.ts`). Une indication seulement :
+Entrée calcule la ligne telle quelle.
 
 **Les calculs sur l'intervalle** (lot 2, I4) : `.résoudre` et `.variations` travaillent sur
 l'ensemble des fonctions qu'ils citent SEULES ou appelées sur une lettre (`f`, `f(x)`, `f'(t)` —
@@ -1955,6 +1960,16 @@ compte suit. Le choix n'est pas retenu d'un chargement à l'autre. ⚠️ Les te
 tournent à 414 px, se jouent sur bureau (`harness/desktop-screen.ts`) ; le repli a ses propres
 tests (`mes-objets-telephone.svelte.test.ts`).
 
+**« Mes objets » replié sur bureau** (chantier `atelier-plein-ecran`, validé par David le
+2026-11-15) : au-dessus de 720 px, un second bouton de l'en-tête (« Replier / Déplier « Mes
+objets » », `aria-controls` ; pas d'`aria-expanded`, le nom dit déjà l'état) replie le panneau en une **bande** de 2,75rem : le bouton en haut,
+puis le titre et le compte écrits de haut en bas ; la vue prend la largeur (la colonne de la
+grille passe à `auto` par `:has(.panneau.replie-large)`, sauf sous le graphe agrandi). Il s'ouvre
+déplié, n'a pas de bouton quand l'atelier est vide, se rouvre quand une carte prend la main
+(`selected` non nul, comme sur téléphone) et n'est pas retenu d'une visite à l'autre. État à part
+de celui du téléphone (`foldedWide` contre `opened`) : le CSS montre l'un ou l'autre bouton.
+Tests : `plein-ecran-et-repli.svelte.test.ts`.
+
 **𝒞f dans la vue Géométrie** (PR 3, K1-K3) : l'action de carte « Afficher dans Géométrie » /
 « Retirer de Géométrie » (`figure` dans `BY_KIND`, bascule comme « Tracer ») pose `inFigure` sur
 la fonction (`setInFigure`, un état d'affichage **rangé** comme `plotted` : sauvegarde, lien,
@@ -2058,8 +2073,8 @@ frappe : [atelier-saisie-naturelle.md](../archive/wip/atelier-saisie-naturelle.m
 - **Le clavier virtuel est un seul pour la page** : les onglets « Calcul » et « Commandes » sont
   posés quand le champ prend le focus et retirés quand il le perd (les cartes ont leurs champs
   MathLive), comme `FillBlanksInput.svelte`.
-- En écriture mathématique, la liste des commandes et le « Modèle : » du mode texte ne s'ouvrent
-  pas : le champ a sa propre liste. Le focus réel est dans le shadow DOM de MathLive, où
+- En écriture mathématique, la liste des commandes et le « Modèle : » d'une commande ne s'ouvrent
+  pas : le champ a sa propre liste (le « Modèle : » d'une définition de fonction, lui, s'affiche). Le focus réel est dans le shadow DOM de MathLive, où
   `aria-controls` de l'hôte ne porte pas : une région `status` annonce la proposition surlignée
   (« résoudre, 1 sur 2 »). La liste s'ouvre au-dessus du mot quand le champ est dans la moitié
   basse de l'écran, et défile.
@@ -2310,7 +2325,18 @@ Lot 1 de la refonte de l'interface (`docs/archive/wip/atelier-refonte-interface-
 David le 2026-10-18). Une seule barre (`role="toolbar"`) au-dessus des onglets, en icônes seules
 (`ToolButton.svelte`) : à gauche **Repartir de zéro**, **Charger un atelier**, **Enregistrer
 l'atelier**, précédés d'**Annuler** et **Rétablir** (lot 5, voir « Annuler / Rétablir ») ; à
-droite **Console**, **Partager** et **Réglages**.
+droite **Console**, **Partager**, **Réglages** et **Plein écran**.
+
+**Plein écran** (chantier `atelier-plein-ecran`, 2026-11-15) : tout l'atelier recouvre la fenêtre
+(classe `plein-ecran` : `position: fixed`, `inset: 0`, comme le graphe agrandi), sans l'en-tête
+ni le menu du site ; « Mes objets », la barre et les onglets restent. Le bouton devient
+« Quitter le plein écran ». Ce n'est **pas** le plein écran du navigateur (Échap en sortirait
+aussi dans Chrome, écarté par David). Échap en sort (`handleExpandedEscape`), après ce qui a
+mieux à faire : un champ, un menu ou une fenêtre ouverts, la console (un Échap venu d'elle la
+ferme seulement — l'ordre des écouteurs délégués de Svelte n'étant pas sûr, on teste
+`consolePanel.contains(target)` — ; ouverte, focus ailleurs, Échap la ferme d'abord), le graphe
+agrandi (un Échap par étage). Non retenu d'une
+visite à l'autre.
 Un bouton indisponible garde le focus (`aria-disabled`, pas `disabled`) et dit pourquoi, dans son
 infobulle et à l'aide technique (« Ton atelier est vide : il n'y a rien à enregistrer. »).
 « Vide » se lit sur `atelier.isBlank` (ni objet, ni grille) : une grille seule s'enregistre et se

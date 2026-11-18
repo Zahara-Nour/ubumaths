@@ -7,16 +7,16 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
+import { requireRole } from '#lib/server/middleware/auth.ts';
 import {
 	updateExerciseSchema,
 	type UpdateExerciseInput
-} from '$lib/server/validation/python-exercises';
-import type { PythonExercise, PythonExerciseStudentView } from '$lib/types/python-exercises';
-import { validateUuidParam } from '$lib/server/validation/params';
-import { toJson } from '$lib/types/database-helpers';
-import { fetchResourceTagNames, syncResourceTags } from '$lib/server/resource-tags';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/validation/python-exercises.ts';
+import type { PythonExercise, PythonExerciseStudentView } from '#lib/types/python-exercises.ts';
+import { validateUuidParam } from '#lib/server/validation/params.ts';
+import { toJson } from '#lib/types/database-helpers.ts';
+import { fetchResourceTagNames, syncResourceTags } from '#lib/server/resource-tags.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/python-exercises/[id]/+server');
 

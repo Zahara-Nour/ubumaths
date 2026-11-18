@@ -38,7 +38,7 @@ l'un pour l'autre.
 | `rule.ts`        | `createRule`, `instantiate`, `applyRule*`                           |
 | `verify.ts`      | `verifyForm`, `matchesForm`, `extractBindings` (entrée : chaînes)   |
 | `rule-sets/`     | jeux de règles prêts à l'emploi (voir plus bas)                     |
-| `index.ts`       | point d'entrée `$lib/mathAST/pattern`                               |
+| `index.ts`       | point d'entrée `#lib/mathAST/pattern/index.ts`                      |
 
 ```
 motif + MathNode ──match()──► { success, bindings }
@@ -47,7 +47,7 @@ Rule { pattern, replacement } ──instantiate(bindings)──► nouveau MathN
 
 ## Construire un motif : `P`
 
-`import { P } from '$lib/mathAST/pattern'`. Chaque constructeur existe aussi en export
+`import { P } from '#lib/mathAST/pattern/index.ts'`. Chaque constructeur existe aussi en export
 individuel (`wildcard`, `seqWildcard`, `optSeqWildcard`, `num`, `varPat`, `lit`, `add`…).
 
 ### Jokers et littéraux
@@ -120,7 +120,7 @@ contraintes sensibles aux hypothèses (« x > 0 ») : c'est ainsi que tirent `ab
 ⚠️ L'ordre est **motif d'abord, nœud ensuite** (l'ancien glossaire disait l'inverse).
 
 ```typescript
-import { P, tryMatch } from '$lib/mathAST/pattern';
+import { P, tryMatch } from '#lib/mathAST/pattern/index.ts';
 
 const b = tryMatch(P.prod(P._('coeff', P.isFreeOf('x')), P.func('sin', [P._('arg')])), node);
 if (b) {
@@ -142,7 +142,7 @@ if (b) {
 ## Règles
 
 ```typescript
-import { P, createRule } from '$lib/mathAST/pattern';
+import { P, createRule } from '#lib/mathAST/pattern/index.ts';
 
 createRule(P.add(P._('x'), P.num(0)), P._('x'), { name: 'add-zero-right' });
 // remplacement calculé :
@@ -209,7 +209,7 @@ extractBindings(réponse, motif); // Record<string, string> | null
 
 ## Jeux de règles (`rule-sets/`)
 
-Exportés par `$lib/mathAST/pattern` : `arithmeticRules`, `powerRules`, `absRules`,
+Exportés par `#lib/mathAST/pattern/index.ts` : `arithmeticRules`, `powerRules`, `absRules`,
 `allPatternRules`, `simplifyRules`. Les autres s'importent de `pattern/rule-sets`.
 `simplifyRules` (= `absSimplifyRules`) sert à l'usage direct (`applyRules`) : `simplify()`
 ne le lit **pas**, il assemble ses jeux dans `buildSimplifyRules` (voir plus bas).

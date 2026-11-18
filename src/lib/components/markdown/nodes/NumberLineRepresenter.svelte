@@ -28,16 +28,16 @@
 		NumberLinePoint,
 		NumberLineSegment,
 		NumberLineValue
-	} from '$lib/ubumark/types/number-line';
-	import { parseCustom } from '$lib/mathAST/parser/custom';
-	import { numVal, phoneGapWarning, xToValue } from '$lib/ubumark/utils/number-line-render';
+	} from '#lib/ubumark/types/number-line.ts';
+	import { parseCustom } from '#lib/mathAST/parser/custom/index.ts';
+	import { numVal, phoneGapWarning, xToValue } from '#lib/ubumark/utils/number-line-render.ts';
 	import {
 		decimalString,
 		graduationCount,
 		graduationValue,
 		nearestIndex,
 		placerText
-	} from '$lib/ubumark/utils/number-line-placer';
+	} from '#lib/ubumark/utils/number-line-placer.ts';
 	import {
 		expectedInterval,
 		representerAnswer,
@@ -46,7 +46,7 @@
 		stateOfAnswer,
 		type RepresenterSide,
 		type RepresenterState
-	} from '$lib/ubumark/utils/number-line-representer';
+	} from '#lib/ubumark/utils/number-line-representer.ts';
 	import NumberLine from './NumberLine.svelte';
 	import { readAuthoringAdvice, readAuthoringErrors } from '../authoring-errors';
 	import type { BuildCase } from './CollectionConstruire.svelte';

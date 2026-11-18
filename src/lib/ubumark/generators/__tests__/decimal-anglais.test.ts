@@ -11,11 +11,11 @@
  * dans une fiche anglaise, prend aussi le point.
  */
 import { describe, it, expect } from 'vitest';
-import { parseMarkdown } from '$lib/ubumark';
-import { toLocaleDecimal, toFrenchDecimal } from '$lib/utils/french-math';
+import { parseMarkdown } from '#lib/ubumark/index.ts';
+import { toLocaleDecimal, toFrenchDecimal } from '#lib/utils/french-math.ts';
 import { generateTypst, processTableCellContent } from '../typst-generator';
-import { WorksheetGenerator } from '$lib/typst/generators/worksheet-generator';
-import type { WorksheetConfig, WorksheetRow, InstanceData } from '$lib/types/worksheets';
+import { WorksheetGenerator } from '#lib/typst/generators/worksheet-generator.ts';
+import type { WorksheetConfig, WorksheetRow, InstanceData } from '#lib/types/worksheets.ts';
 
 const typst = (md: string, language?: string) =>
 	(generateTypst(parseMarkdown(md), { includeSetup: false, language }).split(

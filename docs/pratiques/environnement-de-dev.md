@@ -1,11 +1,13 @@
 ---
 couvre:
+  - src/lib/server/email/capture.ts
+  - src/lib/server/email/capture-index.ts
   - '.github/workflows/**'
   - .github/dependabot.yml
   - '.husky/*'
   - .lintstagedrc.js
   - vercel.json
-  - svelte.config.js
+  - src/env.ts
   - vite.config.ts
   - .nvmrc
   - .claude/settings.json
@@ -82,6 +84,12 @@ Un fichier qui perd des erreurs fait aussi échouer : `pnpm types:cliquet --maj`
 TypeScript (`eslint.fast.config.js`), plus oxlint, la parité des variables d'environnement avec
 `.github/ci.env` et la garde des `render` attendus. Eslint complet : 530 s, en CI.
 
+**Variables d'environnement lues par l'appli : `src/env.ts`.** Depuis SvelteKit 3, `$app/env/*` (et
+`$env/*`, qui le réexporte) n'expose que les variables déclarées là (`defineEnvVars`) ; une
+variable absente de la liste vaut `undefined`. Déclarée sans `schema`, elle est obligatoire : la
+génération des modules échoue si elle manque, d'où la parité avec `.github/ci.env` ci-dessus.
+`process.env` n'est pas concerné.
+
 Ses fichiers (`scripts/lint-fast-fichiers.sh`) : à la main, ce qui diffère d'`origin/main` **plus
 les fichiers non suivis** (un fichier tout neuf est relu avant son premier commit) ; au pre-push
 (`--push`), **seulement les fichiers des commits qui partent**. Le dépôt principal est partagé : le
@@ -140,6 +148,22 @@ copiée, **jamais de données d'élèves en local** (`scripts/db-seed-riche/inde
 - Agents : [.claude/agents/README.md](../../.claude/agents/README.md). Skills du projet
   (`.claude/skills/`) et skills personnels (`~/.claude/skills/`) : [skills-claude.md](skills-claude.md).
 
+### Courriels en local : capturés, jamais envoyés
+
+`.env` porte la clé Brevo de prod. Sur la **base locale** (adresse Supabase `localhost`,
+`127.0.0.1` ou le Mac mini par le tailnet `*.ts.net`, hors Vercel), `sendEmail` n'appelle pas Brevo : chaque courriel est écrit dans
+`.captures/courriels/` (ignoré par git), un `.html` à ouvrir dans le navigateur (et un `.txt`),
+plus une ligne dans `index.jsonl` (date, destinataire, sujet, fichier, en-têtes). Les tests
+Playwright lisent l'index par `readCaptureIndex` (`src/lib/server/email/capture-index.ts`, sans
+`$env`, donc importable hors SvelteKit) et suivent les liens des courriels :
+`e2e/verifs/carnet.spec.ts` rejoue ainsi les vérifications manuelles du carnet de liaison. Les
+gabarits écrivent l'adresse de la prod (`https://www.chiph.re/...`) : le test n'en garde que le
+chemin. L'appli voit un envoi réussi, et le service
+de courriel compte comme configuré même sans clé. `EMAIL_ENVOI_REEL=1` dans `.env.local` envoie
+pour de vrai ; `EMAIL_CAPTURE_DIR` change le dossier. Base distante (worktree sans `.env.local`)
+→ envoi réel. Le dossier ne se vide jamais seul. Code : `src/lib/server/email/capture.ts`,
+`src/lib/server/email/capture-index.ts`.
+
 ## GitHub
 
 | Workflow                    | Déclencheur                                                           | Rôle                                                                                                                                                                                                                                                                                  |
@@ -188,12 +212,15 @@ copiée, **jamais de données d'élèves en local** (`scripts/db-seed-riche/inde
   (CI, worktrees, Vercel). Mesuré le 2026-10-11 : `mathlive@0.111.1` (#1081) a cassé
   l'installation de `main`, débloquée par une exception datée.
 - **Versions retenues exprès** (2026-10-12) — ne pas les monter sans relire la raison :
-  `typescript-eslint` **8.71.0 exacte** (#1188) : la 8.71.1 voit à tort les props `$bindable` comme
-  « only used as a type » (6 erreurs, bug amont sveltejs/eslint-plugin-svelte#1607) ; on libère
-  quand une version corrigée passe `pnpm lint` complet. `prettier` 3.9.9 et
+  `prettier` 3.9.9 et
   `prettier-plugin-svelte` 4.1.1 **exactes** (#1179) : une montée reformate des centaines de
   fichiers, elle se fait dans sa propre PR. `typst` reste en 0.6.1-rc5 tant qu'aucune nouveauté
   n'est nécessaire. Une PR Dependabot qui touche l'une d'elles échoue en CI ou se ferme.
+- **Paquets de la config ESLint** (`typescript-eslint`, `eslint-plugin-svelte`, `globals`) : leur
+  montée invalide tout le cache ESLint, donc relecture à froid en CI (au-delà de 30 min sur #2537 et
+  #2577) ; le job Lint a 60 min. `typescript-eslint` n'est plus épinglé depuis la 8.72.1 : le faux
+  positif `$bindable` de la 8.71.1 (sveltejs/eslint-plugin-svelte#1607) est corrigé dans
+  `svelte-eslint-parser` 1.10.
 - **Routines cloud claude.ai** (agents sur cron, gérées sur claude.ai/code/routines) : tri des CI
   échouées chaque nuit (03:30 UTC, PR `ci-fix/*` ou issue), audit sécurité / dépendances le lundi (PR
   `deps/security-audit-<date>`), scan de secrets quotidien (issue sans valeur en clair), hygiène des
@@ -240,13 +267,14 @@ copiée, **jamais de données d'élèves en local** (`scripts/db-seed-riche/inde
 - ⚠️ **Une montée de l'outil de build se vérifie sur le rendu**, pas seulement sur les statuts et la
   console : un CSS invalide ne fait aucune erreur (couleurs perdues en v0.54.0, cf. décision du
   2026-10-28).
-- Région des fonctions : **`cdg1`**, imposée par `svelte.config.js` (`regions: ['cdg1']`, runtime
-  `nodejs22.x`) ; le `iad1` des réglages du projet n'est qu'un défaut remplacé. Fluid Compute actif.
+- Région des fonctions : **`cdg1`**, imposée par l'adaptateur dans `vite.config.ts` (options de
+  `sveltekit()` depuis SvelteKit 3 : `regions: ['cdg1']`, runtime `nodejs22.x`) ; le `iad1` des réglages du projet n'est qu'un défaut remplacé. Fluid Compute actif.
 - `vercel.json` pose les en-têtes de cache : 30 jours pour `/fonts/` et `/upsilon-simulator/`, 1 jour
   (+ `stale-while-revalidate` 7 jours) pour les images, sons et CSS de `static/`.
-- `vercel.json` déclare **deux crons** : `/api/cron/riddle-of-the-day`, chaque jour à 00:05 UTC
-  (énigme du jour), et `/api/cron/deleted-account-files`, le dimanche à 04:00 UTC (fichiers des
-  comptes supprimés) — voir [serveur.md](../systeme/serveur.md). Vercel les appelle en GET
+- `vercel.json` déclare **trois crons** : `/api/cron/riddle-of-the-day`, chaque jour à 00:05 UTC
+  (énigme du jour), `/api/cron/deleted-account-files`, le dimanche à 04:00 UTC (fichiers des
+  comptes supprimés), et `/api/cron/carnet-de-liaison`, chaque jour à 16:00 UTC (courriels du
+  carnet de liaison) — voir [serveur.md](../systeme/serveur.md). Vercel les appelle en GET
   avec `Bearer CRON_SECRET` (variable définie en Production) ; ils ne tournent que sur le
   déploiement de production.
 - Speed Insights est branché dans `src/routes/+layout.svelte` ; relevé mensuel et diagnostic :

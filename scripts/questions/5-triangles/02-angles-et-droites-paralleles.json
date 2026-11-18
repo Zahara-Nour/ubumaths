@@ -1,0 +1,230 @@
+{
+	"id": "a69eb7f7-599b-4962-9751-5be7b8cd850d",
+	"title": "Angles et droites parallèles",
+	"description": "Deux droites parallèles coupées par une sécante : les angles alternes-internes ou correspondants ont la même mesure ; réciproque : deux tels angles de même mesure, les droites sont parallèles",
+	"grades": ["5"],
+	"level": 2,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Les droites $(d)$ et $(d')$ sont **parallèles**.\n\n```figure\nfenetre: -6 ; 6 ; -3.8 ; 4.4\ndescription: Deux droites parallèles (d) et (d') coupées par une sécante ; un angle bleu de {{a}} degrés et un angle rouge de mesure inconnue.\n---\nE = point(0, 1.5, visible=faux)\nF = point(-3*cos({{a}})/sin({{a}}), -1.5, visible=faux)\nD1 = point(-6, 1.5, visible=faux)\nD2 = point(6, 1.5, visible=faux)\nT1 = point(4*cos({{a}}), 1.5 + 4*sin({{a}}), visible=faux)\nH2 = point(-3*cos({{a}})/sin({{a}}) + 6, -1.5, visible=faux)\nG2 = rotation(H2, angle={{a}} - {{b}}, centre=F, visible=faux)\nG1 = rotation(G2, angle=180, centre=F, visible=faux)\ndroite(D1, D2)\ndroite(G1, G2)\ndroite(E, F)\ntexte(-5.4, 1.85, \"(d)\")\ntexte(-5.4, -1.15, \"(d')\")\nangle({{if:q==1|D1, E, F|D2, E, T1}}, couleur=\"bleu\")\nangle(G2, F, E, couleur=\"rouge\")\ntexte({{if:q==1|-1.4*cos({{a}}/2), 1.5 - 1.4*sin({{a}}/2)|1.4*cos({{a}}/2), 1.5 + 1.4*sin({{a}}/2)}}, \"{{a}}°\", couleur=\"bleu\")\ntexte(-3*cos({{a}})/sin({{a}}) + 1.4*cos({{a}}/2), -1.5 + 1.4*sin({{a}}/2), \"?\", couleur=\"rouge\")\n```\n\nCombien mesure l'angle rouge ?\n\n$\\text{angle rouge} = ?^\\circ$",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "1..2"
+				},
+				{
+					"name": "u",
+					"expression": "40..80"
+				},
+				{
+					"name": "g",
+					"expression": "1..2"
+				},
+				{
+					"name": "a",
+					"expression": "eval:u+60*(g-1)"
+				},
+				{
+					"name": "b",
+					"expression": "eval:a"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les angles bleu et rouge sont $\\textcolor{{{color:primary.0}}}{\\text{{{if:q==1|alternes-internes|correspondants}}}}$ : {{if:q==1|entre les deux droites, de part et d'autre de la sécante|du même côté de la sécante, chacun au-dessus de sa droite}}.",
+					"**Propriété.** Si deux droites parallèles sont coupées par une sécante, les angles {{if:q==1|alternes-internes|correspondants}} qu'elles forment ont la même mesure.",
+					"L'angle rouge mesure donc $\\textcolor{{{color:primary.0}}}{{{a}}^\\circ}$."
+				]
+			}
+		},
+		{
+			"statement": "Les droites $(d)$ et $(d')$ sont coupées par une sécante. On a mesuré deux angles.\n\n```figure\nfenetre: -6 ; 6 ; -3.8 ; 4.4\ndescription: Deux droites (d) et (d') coupées par une sécante ; un angle bleu de {{a}} degrés et un angle rouge de {{b}} degrés.\n---\nE = point(0, 1.5, visible=faux)\nF = point(-3*cos({{a}})/sin({{a}}), -1.5, visible=faux)\nD1 = point(-6, 1.5, visible=faux)\nD2 = point(6, 1.5, visible=faux)\nT1 = point(4*cos({{a}}), 1.5 + 4*sin({{a}}), visible=faux)\nH2 = point(-3*cos({{a}})/sin({{a}}) + 6, -1.5, visible=faux)\nG2 = rotation(H2, angle={{a}} - {{b}}, centre=F, visible=faux)\nG1 = rotation(G2, angle=180, centre=F, visible=faux)\ndroite(D1, D2)\ndroite(G1, G2)\ndroite(E, F)\ntexte(-5.4, 1.85, \"(d)\")\ntexte(-5.4, -1.15, \"(d')\")\nangle({{if:q==1|D1, E, F|D2, E, T1}}, couleur=\"bleu\")\nangle(G2, F, E, couleur=\"rouge\")\ntexte({{if:q==1|-1.4*cos({{a}}/2), 1.5 - 1.4*sin({{a}}/2)|1.4*cos({{a}}/2), 1.5 + 1.4*sin({{a}}/2)}}, \"{{a}}°\", couleur=\"bleu\")\ntexte(-3*cos({{a}})/sin({{a}}) + 1.4*cos({{a}}/2), -1.5 + 1.4*sin({{a}}/2), \"{{b}}°\", couleur=\"rouge\")\n```\n\nLes droites $(d)$ et $(d')$ sont-elles parallèles ?\n\n```choix\nmelanger: non\n- oui\n- non\n- on ne peut pas savoir\n```",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "1..2"
+				},
+				{
+					"name": "u",
+					"expression": "45..75"
+				},
+				{
+					"name": "g",
+					"expression": "1..2"
+				},
+				{
+					"name": "a",
+					"expression": "eval:u+60*(g-1)"
+				},
+				{
+					"name": "z",
+					"expression": "1..2"
+				},
+				{
+					"name": "w",
+					"expression": "3..6"
+				},
+				{
+					"name": "b",
+					"expression": "eval:a+(z-1)*w"
+				},
+				{
+					"name": "j",
+					"expression": "eval:z-1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{j}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les angles bleu et rouge sont {{if:q==1|alternes-internes|correspondants}} ({{if:q==1|entre les deux droites, de part et d'autre de la sécante|du même côté de la sécante, chacun au-dessus de sa droite}}).",
+					"{{if:z==1|**Propriété réciproque.** Si deux droites coupées par une sécante forment deux angles {{if:q==1|alternes-internes|correspondants}} de même mesure, alors elles sont parallèles. Ici, les deux angles mesurent ${{a}}^\\circ$ : $\\textcolor{{{color:primary.0}}}{\\text{oui}}$, $(d)$ et $(d')$ sont parallèles.|Si $(d)$ et $(d')$ étaient parallèles, ces deux angles auraient la même mesure. Or ${{a}}^\\circ \\neq {{b}}^\\circ$ : $\\textcolor{{{color:primary.0}}}{\\text{non}}$, les droites ne sont pas parallèles.}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Alternes-internes, 50°",
+			"variationIndex": 0,
+			"variables": {
+				"q": "1",
+				"u": "50",
+				"g": "1",
+				"a": "50",
+				"b": "50"
+			},
+			"answers": ["50"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 180 − 50 = 130",
+			"variationIndex": 0,
+			"variables": {
+				"q": "1",
+				"u": "50",
+				"g": "1",
+				"a": "50",
+				"b": "50"
+			},
+			"answers": ["130"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Correspondants, 115°",
+			"variationIndex": 0,
+			"variables": {
+				"q": "2",
+				"u": "55",
+				"g": "2",
+				"a": "115",
+				"b": "115"
+			},
+			"answers": ["115"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 180 − 115 = 65",
+			"variationIndex": 0,
+			"variables": {
+				"q": "2",
+				"u": "55",
+				"g": "2",
+				"a": "115",
+				"b": "115"
+			},
+			"answers": ["65"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Réciproque : 62° et 62°, parallèles",
+			"variationIndex": 1,
+			"variables": {
+				"q": "1",
+				"u": "62",
+				"g": "1",
+				"a": "62",
+				"z": "1",
+				"w": "4",
+				"b": "62",
+				"j": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : « on ne peut pas savoir » alors que la réciproque conclut",
+			"variationIndex": 1,
+			"variables": {
+				"q": "1",
+				"u": "62",
+				"g": "1",
+				"a": "62",
+				"z": "1",
+				"w": "4",
+				"b": "62",
+				"j": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "118° et 122°, pas parallèles",
+			"variationIndex": 1,
+			"variables": {
+				"q": "2",
+				"u": "58",
+				"g": "2",
+				"a": "118",
+				"z": "2",
+				"w": "4",
+				"b": "122",
+				"j": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : oui, à l'œil",
+			"variationIndex": 1,
+			"variables": {
+				"q": "2",
+				"u": "58",
+				"g": "2",
+				"a": "118",
+				"z": "2",
+				"w": "4",
+				"b": "122",
+				"j": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

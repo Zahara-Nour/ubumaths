@@ -13,14 +13,14 @@
  * jamais un plantage.
  */
 
-import type { TestMode } from '$lib/types/test';
+import type { TestMode } from '#lib/types/test.ts';
 import {
 	ANCIEN_LIEN_PARAM,
 	SERIES_LINK_PARAM,
 	hasSeriesLink,
 	parseSeriesLink,
 	type SeriesItem
-} from '$lib/validation/series';
+} from '#lib/validation/series.ts';
 
 export type TestLaunch =
 	| { kind: 'assignment'; assignmentId: string }

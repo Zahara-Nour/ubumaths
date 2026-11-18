@@ -1,9 +1,9 @@
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 import { supabaseRealtimeManager } from './supabaseRealtime.svelte';
 import { notificationStore } from './notifications.svelte';
-import { createLogger } from '$lib/utils/logger';
+import { createLogger } from '#lib/utils/logger.ts';
 
 const logger = createLogger('notificationsRealtime.svelte.ts');
 
@@ -30,7 +30,7 @@ const CHANNEL_NAME = 'user-notifications';
  *
  * @example
  * ```ts
- * import { notificationsRealtimeManager } from '$lib/stores/notificationsRealtime.svelte';
+ * import { notificationsRealtimeManager } from '#lib/stores/notificationsRealtime.svelte.ts';
  *
  * // Initialize
  * notificationsRealtimeManager.init(supabase, userId);

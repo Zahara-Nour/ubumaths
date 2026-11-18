@@ -26,7 +26,7 @@ import {
 	BADGE_PRIORITY,
 	type CurriculumPointBadge
 } from '../curriculum-point-badge';
-import { IN_CHUNK_SIZE } from '$lib/server/utils/chunked-in';
+import { IN_CHUNK_SIZE } from '#lib/server/utils/chunked-in.ts';
 
 // ============================================================================
 // templateToBadge — règle de mapping pour 1 template
@@ -69,18 +69,20 @@ describe('templateToBadge', () => {
 		});
 	});
 
+	// « à remédier » suppose un échec : `learning` (réussie une fois) due → à renforcer
+	// (chantier `fsrs`, Q6)
 	describe('state = "learning" — apprentissage initial', () => {
-		it('returns a_remedier when learning + nextReview in past', () => {
-			expect(templateToBadge('learning', pastDate(86_400_000), now)).toBe('a_remedier');
+		it('returns a_renforcer when learning + nextReview in past (never failed)', () => {
+			expect(templateToBadge('learning', pastDate(86_400_000), now)).toBe('a_renforcer');
 		});
 
 		it('returns en_apprentissage when learning + nextReview in future', () => {
 			expect(templateToBadge('learning', futureDate(86_400_000), now)).toBe('en_apprentissage');
 		});
 
-		it('treats nextReview exactly equal to nowMs as due (a_remedier)', () => {
+		it('treats nextReview exactly equal to nowMs as due (a_renforcer)', () => {
 			// Convention : nextReviewMs <= nowMs → isDue=true.
-			expect(templateToBadge('learning', new Date(now).toISOString(), now)).toBe('a_remedier');
+			expect(templateToBadge('learning', new Date(now).toISOString(), now)).toBe('a_renforcer');
 		});
 	});
 
@@ -111,7 +113,7 @@ describe('templateToBadge', () => {
 	describe('toutes les transitions de l état dérivent isDue cohéremment', () => {
 		it('applies the same isDue boundary across all non-new states', () => {
 			// nextReview = now → due pour tous les states
-			expect(templateToBadge('learning', new Date(now).toISOString(), now)).toBe('a_remedier');
+			expect(templateToBadge('learning', new Date(now).toISOString(), now)).toBe('a_renforcer');
 			expect(templateToBadge('relearning', new Date(now).toISOString(), now)).toBe('a_remedier');
 			expect(templateToBadge('review', new Date(now).toISOString(), now)).toBe('a_renforcer');
 			// state='new' échappe à cette règle (toujours en_apprentissage)
@@ -191,10 +193,10 @@ describe('aggregateBadge', () => {
 		expect(aggregateBadge([], now)).toBe('non_commencee');
 	});
 
-	it('returns a_remedier if any state is due + learning/relearning', () => {
+	it('returns a_remedier if any state is due + relearning', () => {
 		const states = [
 			{ card_reference_id: 't1', state: 'review' as const, next_review: future },
-			{ card_reference_id: 't2', state: 'learning' as const, next_review: past }
+			{ card_reference_id: 't2', state: 'relearning' as const, next_review: past }
 		];
 		expect(aggregateBadge(states, now)).toBe('a_remedier');
 	});
@@ -305,7 +307,7 @@ describe('computePointBadges', () => {
 			],
 			[
 				{ card_reference_id: 'tpl-1', state: 'review', next_review: future }, // acquise_en_memoire
-				{ card_reference_id: 'tpl-2', state: 'learning', next_review: past } // a_remedier
+				{ card_reference_id: 'tpl-2', state: 'relearning', next_review: past } // a_remedier
 			]
 		);
 		const result = await computePointBadges(supabase, 'student-uuid', ['skill-A']);

@@ -29,28 +29,28 @@ import type {
 	DisplayOptions,
 	TemplateMarkdown,
 	ResolvedMarkdown
-} from '$lib/ubumark';
-import type { AnswerAssumptions } from '$lib/math';
+} from '#lib/ubumark/index.ts';
+import type { AnswerAssumptions } from '#lib/math/index.ts';
 
 // Re-export shared types for convenience
 export type NumberOrVariable = SharedNumberOrVariable;
 export type Exclusion = SharedExclusion;
-export type { DisplayOptions } from '$lib/ubumark';
+export type { DisplayOptions } from '#lib/ubumark/index.ts';
 
 // ============================================================================
 // GRADE LEVELS (re-exported from unified system)
 // ============================================================================
 
 // Import from unified grade system - single source of truth
-import { type GradeCode } from '$lib/types/grades';
-export { GRADE_CODES, GRADES, type GradeCode } from '$lib/types/grades';
+import { type GradeCode } from '#lib/types/grades.ts';
+export { GRADE_CODES, GRADES, type GradeCode } from '#lib/types/grades.ts';
 
 // Import from mathAST pedagogical layer (used by Mode B `generatedSteps`)
-import type { RenderedStep, SchoolLevel } from '$lib/mathAST/common/step-renderer-base';
-import type { CapitalPairs } from '$lib/mathAST/parser/types';
-import type { SuperfluRuleId } from '$lib/mathAST/superflu/rules';
-import type { ConstructionCheck } from '$lib/ubumark/types/construction';
-import type { HiddenCellKind } from '$lib/ubumark/types/variation-table';
+import type { RenderedStep, SchoolLevel } from '#lib/mathAST/common/step-renderer-base.ts';
+import type { CapitalPairs } from '#lib/mathAST/parser/types.ts';
+import type { SuperfluRuleId } from '#lib/mathAST/superflu/rules.ts';
+import type { ConstructionCheck } from '#lib/ubumark/types/construction.ts';
+import type { HiddenCellKind } from '#lib/ubumark/types/variation-table.ts';
 
 /**
  * French educational grade levels
@@ -693,7 +693,8 @@ export type ResolvedVariable = SharedResolvedVariable;
 /**
  * Genre d'un bloc qui porte sa case et dont la réponse est sa valeur : à construire
  * (```collection, ```monnaie, `construire:`) ou à placer (```line, ```horloge,
- * ```barres, ```boite-a-moustaches, `placer:`), des étiquettes à ranger (```ranger), ou une figure à colorier
+ * ```barres, ```boite-a-moustaches, `placer:`), des étiquettes à ranger (```ranger), des
+ * éléments à associer (```associer), un texte à trous (```trous), ou une figure à colorier
  * (```partage, `colorier:`), ou un assemblage de cubes à geste (```cubes, `dessiner:` / `retrouver:`),
  * ou un patron à geste (```patron, `designer:` / `completer:`), ou des points à placer
  * dans un repère (```courbe, `placer:`) ou sur le cercle trigonométrique (```trig, `placer:`),
@@ -707,12 +708,17 @@ export type BuildKind =
 	| 'barres'
 	| 'boite-a-moustaches'
 	| 'ranger'
+	| 'associer'
+	| 'trous'
 	| 'partage'
 	| 'cubes'
 	| 'patron'
 	| 'courbe'
 	| 'trig'
-	| 'solide';
+	| 'solide'
+	| 'tortue'
+	| 'calcul'
+	| 'robot';
 
 /** Nom du bloc pour les messages au prof : « bloc collection », « droite graduée », « horloge » */
 export function buildKindName(kind: BuildKind): string {
@@ -720,12 +726,17 @@ export function buildKindName(kind: BuildKind): string {
 	if (kind === 'barres') return 'diagramme en barres';
 	if (kind === 'boite-a-moustaches') return 'boîte à moustaches';
 	if (kind === 'ranger') return 'étiquettes à ranger';
+	if (kind === 'associer') return 'éléments à associer';
+	if (kind === 'trous') return 'texte à trous';
 	if (kind === 'partage') return 'figure à colorier';
 	if (kind === 'cubes') return 'assemblage de cubes';
 	if (kind === 'patron') return 'patron à geste';
 	if (kind === 'solide') return 'solide à geste';
 	if (kind === 'courbe') return 'repère';
 	if (kind === 'trig') return 'cercle trigonométrique';
+	if (kind === 'tortue') return 'programme tortue';
+	if (kind === 'calcul') return 'programme de calcul';
+	if (kind === 'robot') return 'robot à produire';
 	return kind === 'horloge' ? 'horloge' : `bloc ${kind}`;
 }
 

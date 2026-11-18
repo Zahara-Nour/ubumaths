@@ -9,9 +9,9 @@
  */
 
 import type { JSONContent } from '@tiptap/core';
-import { parseMarkdown } from '$lib/ubumark/parser/markdown-parser';
-import { parseCustomSafe, toLatex } from '$lib/mathAST';
-import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
+import { parseMarkdown } from '#lib/ubumark/parser/markdown-parser.ts';
+import { parseCustomSafe, toLatex } from '#lib/mathAST/index.ts';
+import type { GenericFunctionConfig } from '#lib/mathAST/parser/types.ts';
 import type {
 	DocumentNode,
 	BlockNode,
@@ -34,8 +34,8 @@ import type {
 	MentionNode,
 	VariationTableNode,
 	ProbabilityTreeNode
-} from '$lib/ubumark/types';
-import type { FigureNode } from '$lib/ubumark/types/figure';
+} from '#lib/ubumark/types/index.ts';
+import type { FigureNode } from '#lib/ubumark/types/figure.ts';
 
 // ============================================================================
 // TEMPLATE DETECTION REGEX (same as template-extensions.ts)
@@ -251,6 +251,12 @@ function convertBlock(block: BlockNode): JSONContent | null {
 			return convertCodeBlock({ type: 'code-block', language: 'scratch', code: block.source });
 		case 'horloge':
 			return convertCodeBlock({ type: 'code-block', language: 'horloge', code: block.source });
+		case 'tortue':
+			return convertCodeBlock({ type: 'code-block', language: 'tortue', code: block.source });
+		case 'calcul':
+			return convertCodeBlock({ type: 'code-block', language: 'calcul', code: block.source });
+		case 'robot':
+			return convertCodeBlock({ type: 'code-block', language: 'robot', code: block.source });
 		case 'partage':
 			return convertCodeBlock({ type: 'code-block', language: 'partage', code: block.source });
 		case 'espace':
@@ -261,10 +267,20 @@ function convertBlock(block: BlockNode): JSONContent | null {
 			return convertCodeBlock({ type: 'code-block', language: 'collection', code: block.source });
 		case 'monnaie':
 			return convertCodeBlock({ type: 'code-block', language: 'monnaie', code: block.source });
+		case 'schema-barres':
+			return convertCodeBlock({
+				type: 'code-block',
+				language: 'schema-barres',
+				code: block.source
+			});
 		case 'choice':
 			return convertCodeBlock({ type: 'code-block', language: 'choix', code: block.source });
 		case 'ranger':
 			return convertCodeBlock({ type: 'code-block', language: 'ranger', code: block.source });
+		case 'associer':
+			return convertCodeBlock({ type: 'code-block', language: 'associer', code: block.source });
+		case 'trous':
+			return convertCodeBlock({ type: 'code-block', language: 'trous', code: block.source });
 
 		default:
 			return null;
@@ -414,6 +430,16 @@ function convertListItem(item: ListItemNode): JSONContent {
 			content.push(
 				convertCodeBlock({ type: 'code-block', language: 'horloge', code: child.source })
 			);
+		} else if (child.type === 'tortue') {
+			content.push(
+				convertCodeBlock({ type: 'code-block', language: 'tortue', code: child.source })
+			);
+		} else if (child.type === 'calcul') {
+			content.push(
+				convertCodeBlock({ type: 'code-block', language: 'calcul', code: child.source })
+			);
+		} else if (child.type === 'robot') {
+			content.push(convertCodeBlock({ type: 'code-block', language: 'robot', code: child.source }));
 		} else if (child.type === 'operation') {
 			content.push(
 				convertCodeBlock({ type: 'code-block', language: 'operation', code: child.source })
@@ -426,10 +452,20 @@ function convertListItem(item: ListItemNode): JSONContent {
 			content.push(
 				convertCodeBlock({ type: 'code-block', language: 'monnaie', code: child.source })
 			);
+		} else if (child.type === 'schema-barres') {
+			content.push(
+				convertCodeBlock({ type: 'code-block', language: 'schema-barres', code: child.source })
+			);
 		} else if (child.type === 'ranger') {
 			content.push(
 				convertCodeBlock({ type: 'code-block', language: 'ranger', code: child.source })
 			);
+		} else if (child.type === 'associer') {
+			content.push(
+				convertCodeBlock({ type: 'code-block', language: 'associer', code: child.source })
+			);
+		} else if (child.type === 'trous') {
+			content.push(convertCodeBlock({ type: 'code-block', language: 'trous', code: child.source }));
 		} else if (child.type === 'partage') {
 			content.push(
 				convertCodeBlock({ type: 'code-block', language: 'partage', code: child.source })

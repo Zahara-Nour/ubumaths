@@ -9,7 +9,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { ConstructionExecutor } from '../executor';
-import type { GeoElement } from '$lib/geometry-core/types/elements';
+import type { GeoElement } from '#lib/geometry-core/types/elements.ts';
 
 // =============================================================================
 // Décor

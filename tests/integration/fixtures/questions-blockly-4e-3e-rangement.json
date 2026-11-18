@@ -1,0 +1,101 @@
+[
+	{
+		"id": "01109f75-71fd-4d1f-b093-844c896f1984",
+		"noeudAvant": null,
+		"noeudApres": "Algorithmique > Variables et instructions > variables et affectation",
+		"gradesAvant": ["4"],
+		"gradesApres": ["4"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["4§4-067"]
+	},
+	{
+		"id": "6e99d291-aa1e-4abe-8813-f8f0e8deac32",
+		"noeudAvant": null,
+		"noeudApres": "Algorithmique > Variables et instructions",
+		"gradesAvant": ["3"],
+		"gradesApres": ["3"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["3§3-051"]
+	},
+	{
+		"id": "81ab97a2-6bfc-496b-a089-15164dc22da1",
+		"noeudAvant": null,
+		"noeudApres": "Algorithmique > Variables et instructions > instructions conditionnelles",
+		"gradesAvant": ["4"],
+		"gradesApres": ["4"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["4§4-066"]
+	},
+	{
+		"id": "a63f24b7-f21c-4ac9-8c54-6f57e01d2397",
+		"noeudAvant": null,
+		"noeudApres": "Algorithmique > Variables et instructions > instructions conditionnelles",
+		"gradesAvant": ["3"],
+		"gradesApres": ["3"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["3§3-048"]
+	},
+	{
+		"id": "c3db6174-0271-44cd-bb99-8dfd4b802824",
+		"noeudAvant": null,
+		"noeudApres": "Algorithmique > Variables et instructions > instructions conditionnelles",
+		"gradesAvant": ["4"],
+		"gradesApres": ["4"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["4§4-065"]
+	},
+	{
+		"id": "d43fda5a-4526-4ae8-b628-293ff7292899",
+		"noeudAvant": null,
+		"noeudApres": "Algorithmique > Variables et instructions",
+		"gradesAvant": ["4"],
+		"gradesApres": ["4"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["4§4-069"]
+	},
+	{
+		"id": "dbab36af-697d-4734-ae52-468cca749db2",
+		"noeudAvant": null,
+		"noeudApres": "Algorithmique > Variables et instructions > variables et affectation",
+		"gradesAvant": ["3"],
+		"gradesApres": ["3"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["3§3-047"]
+	},
+	{
+		"id": "ee87b7b1-5c23-465d-b506-d00d18bfc96b",
+		"noeudAvant": null,
+		"noeudApres": "Algorithmique > Boucles > boucle non bornée",
+		"gradesAvant": ["3"],
+		"gradesApres": ["3"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["3§3-049"]
+	},
+	{
+		"id": "f91149f2-27c0-45c0-80aa-737e317e9d67",
+		"noeudAvant": null,
+		"noeudApres": "Algorithmique > Variables et instructions",
+		"gradesAvant": ["4"],
+		"gradesApres": ["4"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["4§4-068"]
+	}
+]

@@ -9,8 +9,8 @@
  *
  * @example
  * ```typescript
- * import { analyzeDifferentiability } from '$lib/mathAST/analysis';
- * import { parse } from '$lib/mathAST/parser';
+ * import { analyzeDifferentiability } from '#lib/mathAST/analysis/index.ts';
+ * import { parse } from '#lib/mathAST/parser/index.ts';
  *
  * // Analyze |x|
  * const expr = parse('abs(x)');

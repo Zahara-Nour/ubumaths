@@ -18,11 +18,11 @@ import {
 	generateInequalitySteps,
 	quadraticSignTableGrid,
 	rationalSignTableGrid
-} from '$lib/mathAST/pedagogical-solve';
-import { parseCustomSafe } from '$lib/mathAST/parser/custom';
-import type { RelationNode } from '$lib/mathAST/types';
-import { isRelation } from '$lib/mathAST/guards';
-import type { SignRow } from '$lib/ubumark/types/variation-table';
+} from '#lib/mathAST/pedagogical-solve/index.ts';
+import { parseCustomSafe } from '#lib/mathAST/parser/custom/index.ts';
+import type { RelationNode } from '#lib/mathAST/types.ts';
+import { isRelation } from '#lib/mathAST/guards.ts';
+import type { SignRow } from '#lib/ubumark/types/variation-table.ts';
 
 /** L'inéquation lue, AFFIRMÉE comme une relation (`<`, `≥`…) */
 function relation(source: string): RelationNode {

@@ -33,22 +33,22 @@
 -->
 
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import { untrack } from 'svelte';
-	import { Button } from '$lib/components/ui/button';
-	import * as Avatar from '$lib/components/ui/avatar';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Avatar from '#lib/components/ui/avatar/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import { User, Trash2, Loader2 } from '@lucide/svelte';
-	import pereUbuImage from '$lib/assets/images/avatar-pereubu.png';
-	import { MarkdownRenderer } from '$lib/components/markdown';
-	import { convertLegacyLatexToMarkdown } from '$lib/utils/latex-syntax-adapter';
+	import pereUbuImage from '#lib/assets/images/avatar-pereubu.png';
+	import { MarkdownRenderer } from '#lib/components/markdown/index.ts';
+	import { convertLegacyLatexToMarkdown } from '#lib/utils/latex-syntax-adapter.ts';
 	import TutorUsageIndicator from './TutorUsageIndicator.svelte';
-	import RichTextEditor from '$lib/components/rich-text/RichTextEditor.svelte';
-	import { TUTOR_MAX_HELP_LEVEL } from '$lib/config/tutor-limits';
-	import { createLogger } from '$lib/utils/logger';
-	import { tipTapToMarkdown } from '$lib/components/rich-text/markdown-export';
+	import RichTextEditor from '#lib/components/rich-text/RichTextEditor.svelte';
+	import { TUTOR_MAX_HELP_LEVEL } from '#lib/config/tutor-limits.ts';
+	import { createLogger } from '#lib/utils/logger.ts';
+	import { tipTapToMarkdown } from '#lib/components/rich-text/markdown-export.ts';
 	import type { JSONContent } from '@tiptap/core';
-	import { clearCapitalPairs } from '$lib/components/markdown/content-capital-pairs';
+	import { clearCapitalPairs } from '#lib/components/markdown/content-capital-pairs.ts';
 
 	const logger = createLogger('TutorChat');
 

@@ -4,12 +4,12 @@
 	Les hypothèses sont pré-remplies avec les deux lettres les plus fréquentes.
 -->
 <script lang="ts">
-	import MySelect from '$lib/components/MySelect.svelte';
-	import { ALPHABET } from '$lib/ciphers/alphabet';
-	import { affineBruteForce, affineDecrypt, twoLetterAttack } from '$lib/ciphers/affine';
-	import { letterFrequencies } from '$lib/ciphers/frequency';
-	import { attempt } from '$lib/ciphers/outcome';
-	import { CipherInputError } from '$lib/ciphers/errors';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import { ALPHABET } from '#lib/ciphers/alphabet.ts';
+	import { affineBruteForce, affineDecrypt, twoLetterAttack } from '#lib/ciphers/affine.ts';
+	import { letterFrequencies } from '#lib/ciphers/frequency.ts';
+	import { attempt } from '#lib/ciphers/outcome.ts';
+	import { CipherInputError } from '#lib/ciphers/errors.ts';
 	import CipherOutput from './CipherOutput.svelte';
 	import FrequencyChart from './FrequencyChart.svelte';
 

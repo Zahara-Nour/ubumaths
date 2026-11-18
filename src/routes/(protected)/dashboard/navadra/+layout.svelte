@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { playerStore } from '$lib/stores/game/player.svelte';
-	import { spellsStore } from '$lib/stores/game/spells.svelte';
+	import { playerStore } from '#lib/stores/game/player.svelte.ts';
+	import { spellsStore } from '#lib/stores/game/spells.svelte.ts';
 	import type { LayoutData } from './$types';
 	import type { Snippet } from 'svelte';
 

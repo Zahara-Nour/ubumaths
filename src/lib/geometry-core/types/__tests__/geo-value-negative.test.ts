@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { numeric, exact, geoValueToMathNode } from '../geo-value';
-import { number } from '$lib/mathAST/factory';
+import { number } from '#lib/mathAST/factory.ts';
 
 describe('geoValueToMathNode handles negative numeric values', () => {
 	it('numeric(-5) → opposite(number("5"))', () => {

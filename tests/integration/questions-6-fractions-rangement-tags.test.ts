@@ -6,7 +6,7 @@
  * le 2026-10-28 par scripts/create-questions.ts (sans nœud ni tag) vont sur le nœud de leur point
  * (sous-notion, ou notion pour 6-137) et reçoivent ce point, un seul (ADR 0020) ; 3 modèles publiés
  * de 5e, déjà sur le nœud de 6-131, passent en 6e et reçoivent 6-131. Décisions de David
- * (journal docs/wip/questions-6-progress.md § 11).
+ * (journal docs/archive/wip/questions-6-progress.md § 11).
  *
  * Les modèles n'existent qu'en production. Le test fabrique donc l'état de la prod — des copies
  * minimales portant les VRAIS identifiants, aux niveaux, nœud et statut relevés, sans tag — puis

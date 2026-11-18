@@ -1,19 +1,19 @@
 <script lang="ts">
-	import MySelect from '$lib/components/MySelect.svelte';
-	import AlphabetStrip from '$lib/components/ciphers/AlphabetStrip.svelte';
-	import CipherWorkbench from '$lib/components/ciphers/CipherWorkbench.svelte';
-	import SubstitutionSolver from '$lib/components/ciphers/SubstitutionSolver.svelte';
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
-	import { lettersOnly } from '$lib/ciphers/alphabet';
-	import { attempt } from '$lib/ciphers/outcome';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import AlphabetStrip from '#lib/components/ciphers/AlphabetStrip.svelte';
+	import CipherWorkbench from '#lib/components/ciphers/CipherWorkbench.svelte';
+	import SubstitutionSolver from '#lib/components/ciphers/SubstitutionSolver.svelte';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import { lettersOnly } from '#lib/ciphers/alphabet.ts';
+	import { attempt } from '#lib/ciphers/outcome.ts';
 	import {
 		keyFromKeyword,
 		substitutionDecrypt,
 		substitutionEncrypt,
 		validateKey
-	} from '$lib/ciphers/substitution';
-	import SeoHead from '$lib/seo/SeoHead.svelte';
+	} from '#lib/ciphers/substitution.ts';
+	import SeoHead from '#lib/seo/SeoHead.svelte';
 
 	// Types
 	type KeyMode = 'keyword' | 'full';

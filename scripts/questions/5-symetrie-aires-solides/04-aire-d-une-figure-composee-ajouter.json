@@ -1,0 +1,204 @@
+{
+	"id": "dc220b3b-f555-44ba-8425-fcf24f7db10f",
+	"title": "Aire d'une figure composée : ajouter",
+	"description": "Calculer l'aire d'une figure faite d'un rectangle ou d'un parallélogramme et d'un triangle ou d'un demi-disque : on additionne les aires",
+	"grades": ["5"],
+	"level": 1,
+	"delay": 120,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "La figure colorée est faite d'un rectangle et d'un triangle rectangle.\n\n```figure\nfenetre: -4 ; {{eval:2*L+2*t+2}} ; -2 ; {{eval:max(2*l+1,6)}}\ndescription: Un rectangle de {{L}} cm sur {{l}} cm, et à sa droite un triangle rectangle de côtés {{l}} cm et {{t}} cm.\n---\na = point(0, 0, visible=faux)\nb = point({{eval:2*L}}, 0, visible=faux)\nc = point({{eval:2*L+2*t}}, 0, visible=faux)\nd = point({{eval:2*L}}, {{eval:2*l}}, visible=faux)\ng = point(0, {{eval:2*l}}, visible=faux)\npolygone(a, c, d, g, remplissage=\"bleu\", opacite_fond=0.3)\nsegment(b, d, trait=\"tirets\")\nangle(c, b, d, marque=\"carre\")\ntexte({{L}}, -1, \"{{L}} cm\")\ntexte({{eval:2*L+t}}, -1, \"{{t}} cm\")\ntexte(-2, {{l}}, \"{{l}} cm\")\n```\n\nCalcule son aire.\n\n$?~\\unit{cm^2}$",
+			"variables": [
+				{
+					"name": "L",
+					"expression": "4..8"
+				},
+				{
+					"name": "l",
+					"expression": "2..6"
+				},
+				{
+					"name": "t",
+					"expression": "2..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:L*l+t*l/2;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On découpe la figure en deux : $\\text{aire} = \\text{aire du rectangle} + \\text{aire du triangle}$.",
+					"Rectangle : ${{L}} \\times {{l}} = {{eval:L*l}}~\\unit{cm^2}$. Triangle rectangle : $\\dfrac{ {{t}} \\times {{l}} }{2} = {{eval:t*l/2;d}}~\\unit{cm^2}$.",
+					"Aire de la figure : ${{eval:L*l}} + {{eval:t*l/2;d}} = \\textcolor{{{color:primary.0}}}{{{eval:L*l+t*l/2;d}}~\\unit{cm^2}}$."
+				]
+			}
+		},
+		{
+			"statement": "La figure colorée est faite d'un rectangle et d'un demi-disque. On prend $\\pi \\approx 3{,}14$.\n\n```figure\nfenetre: -4 ; {{eval:2*L+d+2}} ; -2 ; {{eval:2*d+1}}\ndescription: Un rectangle de {{L}} cm sur {{d}} cm, et à sa droite un demi-disque de diamètre {{d}} cm.\n---\nO = point({{eval:2*L}}, {{d}}, visible=faux)\ncercle(O, rayon={{d}}, remplissage=\"bleu\", opacite_fond=0.3)\na = point(0, 0, visible=faux)\nb = point({{eval:2*L}}, 0, visible=faux)\nc = point({{eval:2*L}}, {{eval:2*d}}, visible=faux)\ng = point(0, {{eval:2*d}}, visible=faux)\npolygone(a, b, c, g, remplissage=\"blanc\", opacite_fond=1)\npolygone(a, b, c, g, remplissage=\"bleu\", opacite_fond=0.3)\ntexte({{L}}, -1, \"{{L}} cm\")\ntexte(-2, {{d}}, \"{{d}} cm\")\n```\n\nCalcule son aire.\n\n$?~\\unit{cm^2}$",
+			"variables": [
+				{
+					"name": "L",
+					"expression": "4..8"
+				},
+				{
+					"name": "r",
+					"expression": "1..3"
+				},
+				{
+					"name": "d",
+					"expression": "eval:2*r"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:L*d+157*r^2/100;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On découpe la figure en deux : $\\text{aire} = \\text{aire du rectangle} + \\text{aire du demi-disque}$.",
+					"Rectangle : ${{L}} \\times {{d}} = {{eval:L*d}}~\\unit{cm^2}$. Le demi-disque a pour rayon $\\dfrac{ {{d}} }{2} = {{r}}$ cm : $\\dfrac{3{,}14 \\times {{r}} \\times {{r}}}{2} = {{eval:157*r^2/100;d}}~\\unit{cm^2}$.",
+					"Aire de la figure : ${{eval:L*d}} + {{eval:157*r^2/100;d}} = \\textcolor{{{color:primary.0}}}{{{eval:L*d+157*r^2/100;d}}~\\unit{cm^2}}$."
+				]
+			}
+		},
+		{
+			"statement": "La figure colorée est faite d'un parallélogramme et d'un triangle posé sur son côté du haut. Les hauteurs sont en pointillés.\n\n```figure\nfenetre: -2 ; {{eval:2*b+5}} ; -2 ; {{eval:2*h+2*t+1}}\ndescription: Un parallélogramme de base {{b}} cm et de hauteur {{h}} cm, surmonté d'un triangle de même base et de hauteur {{t}} cm.\n---\nA = point(0, 0, visible=faux)\nB = point({{eval:2*b}}, 0, visible=faux)\nC = point({{eval:2*b+3}}, {{eval:2*h}}, visible=faux)\nD = point(3, {{eval:2*h}}, visible=faux)\nE = point({{eval:b+3}}, {{eval:2*h+2*t}}, visible=faux)\npolygone(A, B, C, E, D, remplissage=\"bleu\", opacite_fond=0.3)\nsegment(D, C, trait=\"tirets\")\nH = point(3, 0, visible=faux)\nsegment(D, H, trait=\"tirets\")\nangle(B, H, D, marque=\"carre\")\nK = point({{eval:b+3}}, {{eval:2*h}}, visible=faux)\nsegment(E, K, trait=\"tirets\")\nangle(C, K, E, marque=\"carre\")\ntexte({{b}}, -1, \"{{b}} cm\")\ntexte(4.6, {{h}}, \"{{h}} cm\")\ntexte({{eval:b+4.6}}, {{eval:2*h+t}}, \"{{t}} cm\")\n```\n\nCalcule son aire.\n\n$?~\\unit{cm^2}$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "4..8"
+				},
+				{
+					"name": "h",
+					"expression": "2..4"
+				},
+				{
+					"name": "t",
+					"expression": "2..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:b*h+b*t/2;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On découpe la figure en deux : $\\text{aire} = \\text{aire du parallélogramme} + \\text{aire du triangle}$.",
+					"Parallélogramme : $\\text{base} \\times \\text{hauteur} = {{b}} \\times {{h}} = {{eval:b*h}}~\\unit{cm^2}$. Triangle : $\\dfrac{ {{b}} \\times {{t}} }{2} = {{eval:b*t/2;d}}~\\unit{cm^2}$.",
+					"Aire de la figure : ${{eval:b*h}} + {{eval:b*t/2;d}} = \\textcolor{{{color:primary.0}}}{{{eval:b*h+b*t/2;d}}~\\unit{cm^2}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Rectangle 6 × 4 + triangle 3 × 4 / 2 = 30",
+			"variationIndex": 0,
+			"variables": {
+				"L": "6",
+				"l": "4",
+				"t": "3"
+			},
+			"answers": ["30"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : triangle non divisé par 2",
+			"variationIndex": 0,
+			"variables": {
+				"L": "6",
+				"l": "4",
+				"t": "3"
+			},
+			"answers": ["36"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : périmètre",
+			"variationIndex": 0,
+			"variables": {
+				"L": "6",
+				"l": "4",
+				"t": "3"
+			},
+			"answers": ["22"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Rectangle 5 × 4 + demi-disque r = 2 : 26,28",
+			"variationIndex": 1,
+			"variables": {
+				"L": "5",
+				"r": "2",
+				"d": "4"
+			},
+			"answers": ["26,28"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : disque entier",
+			"variationIndex": 1,
+			"variables": {
+				"L": "5",
+				"r": "2",
+				"d": "4"
+			},
+			"answers": ["32,56"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : diamètre pris pour rayon",
+			"variationIndex": 1,
+			"variables": {
+				"L": "5",
+				"r": "2",
+				"d": "4"
+			},
+			"answers": ["45,12"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Parallélogramme 6 × 3 + triangle 6 × 2 / 2 = 24",
+			"variationIndex": 2,
+			"variables": {
+				"b": "6",
+				"h": "3",
+				"t": "2"
+			},
+			"answers": ["24"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : triangle non divisé par 2",
+			"variationIndex": 2,
+			"variables": {
+				"b": "6",
+				"h": "3",
+				"t": "2"
+			},
+			"answers": ["30"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

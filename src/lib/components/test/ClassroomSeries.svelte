@@ -15,16 +15,16 @@
 
 <script lang="ts">
 	import type { ActionReturn } from 'svelte/action';
-	import type { ClassroomItem } from '$lib/types/test';
-	import type { DeckContext } from '$lib/slides/core/types';
-	import Deck from '$lib/slides/core/Deck.svelte';
-	import Slide from '$lib/slides/core/Slide.svelte';
-	import { isFromEditableField } from '$lib/slides/actions/editableTarget';
-	import FlashCard from '$lib/components/questions/FlashCard.svelte';
-	import { TILE_CARD_HEIGHT } from '$lib/components/questions/tile-card';
-	import { Button } from '$lib/components/ui/button';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import { cn } from '$lib/utils';
+	import type { ClassroomItem } from '#lib/types/test.ts';
+	import type { DeckContext } from '#lib/slides/core/types.ts';
+	import Deck from '#lib/slides/core/Deck.svelte';
+	import Slide from '#lib/slides/core/Slide.svelte';
+	import { isFromEditableField } from '#lib/slides/actions/editableTarget.ts';
+	import FlashCard from '#lib/components/questions/FlashCard.svelte';
+	import { TILE_CARD_HEIGHT } from '#lib/components/questions/tile-card.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import { cn } from '#lib/utils.ts';
 	import {
 		ArrowLeft,
 		BookOpen,

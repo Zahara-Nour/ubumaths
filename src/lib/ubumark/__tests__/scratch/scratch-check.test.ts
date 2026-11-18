@@ -7,7 +7,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { checkScratchProgram } from '$lib/ubumark/utils/scratch-check';
+import { checkScratchProgram } from '#lib/ubumark/utils/scratch-check.ts';
 
 const messages = (source: string) => checkScratchProgram(source).map((e) => e.message);
 

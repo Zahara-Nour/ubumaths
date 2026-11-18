@@ -9,7 +9,7 @@
  * @module lexicon/parentheses-advice-grade
  */
 
-import { GRADES, isGradeCode } from '$lib/types/grades';
+import { GRADES, isGradeCode } from '#lib/types/grades.ts';
 
 /** Dernière année sans somme algébrique ni nombres relatifs : la 6e (CP = 1) */
 const LAST_YEAR_WITHOUT_RELATIVES = GRADES['6'].schoolYear;

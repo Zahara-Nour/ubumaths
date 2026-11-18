@@ -19,7 +19,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { createMockSupabase, createMockLocals, createMockRequest } from '$tests/helpers';
+import { createMockSupabase, createMockLocals, createMockRequest } from '#tests/helpers/index.ts';
 
 // ============================================================================
 // CLIENT SERVICE (l'écriture du soft-delete)
@@ -35,11 +35,11 @@ const ecriture = vi.hoisted(() => ({
 }));
 
 // Garde commune : session/profil lus dans `locals` (cf. helper)
-vi.mock('$lib/server/middleware/auth', async (importActual) =>
-	(await import('$tests/helpers/garde-auth-locals')).gardeAuthDepuisLocals(importActual)
+vi.mock('#lib/server/middleware/auth.ts', async (importActual) =>
+	(await import('#tests/helpers/garde-auth-locals.ts')).gardeAuthDepuisLocals(importActual)
 );
 
-vi.mock('$lib/server/serviceRoleClient', () => ({
+vi.mock('#lib/server/serviceRoleClient.ts', () => ({
 	createServiceRoleClient: () => ({
 		from: (table: string) => {
 			const appel = { table, valeurs: undefined as unknown, id: undefined as unknown };

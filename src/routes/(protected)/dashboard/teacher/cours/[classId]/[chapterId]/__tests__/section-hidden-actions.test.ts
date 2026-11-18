@@ -14,7 +14,7 @@
 
 import { describe, it, expect, vi } from 'vitest';
 
-vi.mock('$lib/server/middleware/auth', () => ({
+vi.mock('#lib/server/middleware/auth.ts', () => ({
 	requireRole: vi.fn(async () => ({ user: { id: 'prof' } }))
 }));
 

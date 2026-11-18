@@ -22,21 +22,21 @@
 
 <script lang="ts">
 	import { untrack } from 'svelte';
-	import type { QuestionType, TemplateBlank } from '$lib/questions/types';
-	import type { TemplateMarkdown } from '$lib/ubumark';
-	import { templateMarkdown } from '$lib/ubumark';
+	import type { QuestionType, TemplateBlank } from '#lib/questions/types.ts';
+	import type { TemplateMarkdown } from '#lib/ubumark/index.ts';
+	import { templateMarkdown } from '#lib/ubumark/index.ts';
 	import {
 		appendChoiceCase,
 		statementCaseKinds,
 		type ChoiceCaseDraft,
 		withBlockCases
-	} from '$lib/questions/choice-case-editor';
-	import { readWorkFigureCases, type WorkFigureCase } from '$lib/questions/work-figure-editor';
+	} from '#lib/questions/choice-case-editor.ts';
+	import { readWorkFigureCases, type WorkFigureCase } from '#lib/questions/work-figure-editor.ts';
 	import ChoiceCaseEditor from './ChoiceCaseEditor.svelte';
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
-	import * as Card from '$lib/components/ui/card';
-	import { Button } from '$lib/components/ui/button';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import { Plus, Trash2 } from '@lucide/svelte';
 
 	interface Props {

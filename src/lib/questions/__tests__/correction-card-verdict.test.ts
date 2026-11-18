@@ -10,8 +10,8 @@ import {
 	trainingStatus
 } from '../correction-card-verdict';
 import type { QuestionInstance } from '../types';
-import type { AnswerData } from '$lib/types/question-display';
-import type { ResolvedMarkdown } from '$lib/ubumark';
+import type { AnswerData } from '#lib/types/question-display.ts';
+import type { ResolvedMarkdown } from '#lib/ubumark/index.ts';
 
 const base = {
 	templateId: 't',

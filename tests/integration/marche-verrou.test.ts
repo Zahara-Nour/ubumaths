@@ -23,27 +23,27 @@ import {
 } from '../helpers/database/trigger-test-helpers';
 import { createAuthenticatedClient } from '../helpers/database/supabase-client';
 import { TestData } from '../helpers/database/test-data-factory';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 
 // Le client service des modules serveur lit process.env (qui peut viser la prod
 // via .env) : on le branche explicitement sur la base LOCALE de test.
-vi.mock('$lib/server/serviceRoleClient', async () => {
+vi.mock('#lib/server/serviceRoleClient.ts', async () => {
 	const helpers = await import('../helpers/database/trigger-test-helpers');
 	return { createServiceRoleClient: helpers.createServiceRoleClient };
 });
 
 // Notifications hors sujet ; l'activation du marché dépend d'une configuration d'école.
-vi.mock('$lib/server/marketplace/notifications', () => ({
+vi.mock('#lib/server/marketplace/notifications.ts', () => ({
 	notifyNewProposal: vi.fn().mockResolvedValue(undefined),
 	notifyProposalAccepted: vi.fn().mockResolvedValue(undefined),
 	notifyProposalRejected: vi.fn().mockResolvedValue(undefined)
 }));
-vi.mock('$lib/server/marketplace/helpers', async (importActual) => {
-	const actual = await importActual<typeof import('$lib/server/marketplace/helpers')>();
+vi.mock('#lib/server/marketplace/helpers.ts', async (importActual) => {
+	const actual = await importActual<typeof import('#lib/server/marketplace/helpers.ts')>();
 	return { ...actual, isMarketplaceEnabled: vi.fn().mockResolvedValue(true) };
 });
 
-import { notifyProposalRejected } from '$lib/server/marketplace/notifications';
+import { notifyProposalRejected } from '#lib/server/marketplace/notifications.ts';
 import { POST as proposer } from '../../src/routes/api/marketplace/listings/[id]/proposals/+server';
 import {
 	DELETE as retirer,

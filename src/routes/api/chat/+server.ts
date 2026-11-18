@@ -1,20 +1,20 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { checkChatbotRateLimit } from '$lib/server/rateLimiter';
-import { checkTutorRateLimit, incrementTutorUsage } from '$lib/server/tutor/tutor-rate-limiter';
-import { getEnv } from '$lib/server/env';
-import { chatRequestSchema, tutorRequestSchema } from '$lib/server/validation/chat';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { requireConsent } from '$lib/server/middleware/consent';
-import { buildTutorPrompt, type HelpMethodId, type MathTopic } from '$lib/config/tutor-prompts';
-import { selectHelpMethod } from '$lib/config/tutor-help-methods';
-import { getAdaptationForGrade } from '$lib/config/tutor-grade-adaptations';
-import { analyzeMessage } from '$lib/server/tutor/cheat-detector';
-import { analyzeStudentMessages, calculateEffortScore } from '$lib/server/tutor/help-escalation';
-import { hybridSearch, formatResultsForPrompt } from '$lib/server/rag';
-import type { GradeCode } from '$lib/types/grades';
-import { personalities } from '$lib/config/personalities';
-import { createServerLogger } from '$lib/utils/logger';
+import { checkChatbotRateLimit } from '#lib/server/rateLimiter.ts';
+import { checkTutorRateLimit, incrementTutorUsage } from '#lib/server/tutor/tutor-rate-limiter.ts';
+import { getEnv } from '#lib/server/env.ts';
+import { chatRequestSchema, tutorRequestSchema } from '#lib/server/validation/chat.ts';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { requireConsent } from '#lib/server/middleware/consent.ts';
+import { buildTutorPrompt, type HelpMethodId, type MathTopic } from '#lib/config/tutor-prompts.ts';
+import { selectHelpMethod } from '#lib/config/tutor-help-methods.ts';
+import { getAdaptationForGrade } from '#lib/config/tutor-grade-adaptations.ts';
+import { analyzeMessage } from '#lib/server/tutor/cheat-detector.ts';
+import { analyzeStudentMessages, calculateEffortScore } from '#lib/server/tutor/help-escalation.ts';
+import { hybridSearch, formatResultsForPrompt } from '#lib/server/rag/index.ts';
+import type { GradeCode } from '#lib/types/grades.ts';
+import { personalities } from '#lib/config/personalities.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/chat/+server');
 

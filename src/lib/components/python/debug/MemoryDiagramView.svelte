@@ -16,8 +16,8 @@
 	import { tick, onMount } from 'svelte';
 	import { flip } from 'svelte/animate';
 	import { fade } from 'svelte/transition';
-	import type { DebugStackFrame, HeapObject } from '$lib/shared/python/debug/types';
-	import { cn } from '$lib/utils';
+	import type { DebugStackFrame, HeapObject } from '#lib/shared/python/debug/types.ts';
+	import { cn } from '#lib/utils.ts';
 	import { colorForHeapId } from './heap-utils';
 	import { buildDiagramGraph } from './diagram-graph';
 	import { layoutDiagram, type DiagramLayout, type ElkLike, type SizeMap } from './diagram-layout';

@@ -15,19 +15,19 @@
 
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
+import { requireRole } from '#lib/server/middleware/auth.ts';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import {
 	submitMathemoScoreSchema,
 	getMathemoScoreResponseSchema,
 	submitMathemoScoreWithRewardResponseSchema
-} from '$lib/server/validation/games';
-import { requireConsent } from '$lib/server/middleware/consent';
-import { validateJsonResponse } from '$lib/server/validation/response-utils';
-import { calculateMathemoTheoreticalReward } from '$lib/server/games/reward-mathemo';
-import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
-import { creditAchievementGidouilles } from '$lib/server/achievements/credit-gidouilles';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/validation/games.ts';
+import { requireConsent } from '#lib/server/middleware/consent.ts';
+import { validateJsonResponse } from '#lib/server/validation/response-utils.ts';
+import { calculateMathemoTheoreticalReward } from '#lib/server/games/reward-mathemo.ts';
+import { createServiceRoleClient } from '#lib/server/serviceRoleClient.ts';
+import { creditAchievementGidouilles } from '#lib/server/achievements/credit-gidouilles.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/games/mathemo/scores/+server');
 

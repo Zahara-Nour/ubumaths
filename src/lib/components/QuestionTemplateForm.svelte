@@ -26,7 +26,7 @@
 -->
 
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import type {
 		QuestionTemplate,
 		QuestionVariation,
@@ -40,55 +40,55 @@
 		SharedVariationDefaults,
 		ConstraintMode,
 		TestSpec
-	} from '$lib/questions/types';
-	import { COMPLEX_FORMS, EQUATION_FORMS, getQuestionType } from '$lib/questions/types';
-	import type { DisplayOptions } from '$lib/ubumark/parameterization/display-options';
-	import { questionTemplateSchema } from '$lib/questions/template-schema';
+	} from '#lib/questions/types.ts';
+	import { COMPLEX_FORMS, EQUATION_FORMS, getQuestionType } from '#lib/questions/types.ts';
+	import type { DisplayOptions } from '#lib/ubumark/parameterization/display-options.ts';
+	import { questionTemplateSchema } from '#lib/questions/template-schema.ts';
 	import {
 		formatGenericFunctionNames,
 		genericFunctionNamesSchema,
 		parseGenericFunctionNames
-	} from '$lib/questions/generic-functions';
+	} from '#lib/questions/generic-functions.ts';
 	import {
 		capitalPairsChoiceItems,
 		capitalPairsContextOf,
 		capitalPairsToWrite,
 		capitalPairsChoiceOf,
 		type CapitalPairsChoice
-	} from '$lib/questions/capital-pairs';
-	import { figureNameWarnings } from '$lib/questions/figure-name-check';
-	import { CONSTRAINT_IDS } from '$lib/questions/constraint-constants';
+	} from '#lib/questions/capital-pairs.ts';
+	import { figureNameWarnings } from '#lib/questions/figure-name-check.ts';
+	import { CONSTRAINT_IDS } from '#lib/questions/constraint-constants.ts';
 	import {
 		ACCEPTABLE_PLACEHOLDER,
 		REQUIRED_FORM_OPTIONS,
 		acceptableOf,
 		customRequiredForm
-	} from '$lib/questions/form-options';
+	} from '#lib/questions/form-options.ts';
 	import {
 		applyCourseQuestionOption,
 		readCourseQuestionOption
-	} from '$lib/questions/course-question';
-	import { GRADE_CODES, GRADES } from '$lib/types/grades';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
-	import { Badge } from '$lib/components/ui/badge';
-	import * as Card from '$lib/components/ui/card';
+	} from '#lib/questions/course-question.ts';
+	import { GRADE_CODES, GRADES } from '#lib/types/grades.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
 
 	import VariableEditor from './VariableEditor.svelte';
-	import { MarkdownEditor } from '$lib/components/markdown';
+	import { MarkdownEditor } from '#lib/components/markdown/index.ts';
 	import AnswerEditor from './AnswerEditor.svelte';
 	import MySelect from './MySelect.svelte';
 	import MyCheckbox from './MyCheckbox.svelte';
 	import CourseQuestionToggle from './CourseQuestionToggle.svelte';
 	import PrecisionEditor from './PrecisionEditor.svelte';
-	import { templateMarkdown, type TemplateMarkdown } from '$lib/ubumark';
+	import { templateMarkdown, type TemplateMarkdown } from '#lib/ubumark/index.ts';
 	import ClassificationNodePicker from './questions/ClassificationNodePicker.svelte';
-	import { indexNodes, placeOfNode, type TreeNode } from '$lib/questions/classification-tree';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import * as Collapsible from '$lib/components/ui/collapsible';
+	import { indexNodes, placeOfNode, type TreeNode } from '#lib/questions/classification-tree.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import * as Collapsible from '#lib/components/ui/collapsible/index.ts';
 	import { onMount } from 'svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 
 	// Lazy-loaded heavy components to reduce initial bundle size
 	let RichTextEditor = $state<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -120,10 +120,10 @@
 	import {
 		calculusBlankDefaults,
 		calculusEditorState
-	} from '$lib/questions/calculus/calculus-editor';
+	} from '#lib/questions/calculus/calculus-editor.ts';
 	import TestSpecEditor from './questions/TestSpecEditor.svelte';
 	import AnswerAssumptionsEditor from './questions/AnswerAssumptionsEditor.svelte';
-	import { choiceAnswerCountErrors } from '$lib/questions/validators/choice-answer-count';
+	import { choiceAnswerCountErrors } from '#lib/questions/validators/choice-answer-count.ts';
 	import {
 		assumptionsToRows,
 		duplicateAssumptionMessage,
@@ -131,7 +131,7 @@
 		templateDrawnVariableNames,
 		validateAssumptionRows,
 		type AnswerAssumptionRow
-	} from '$lib/questions/answer-assumptions';
+	} from '#lib/questions/answer-assumptions.ts';
 
 	interface Props {
 		template?: QuestionTemplate;
@@ -205,7 +205,7 @@
 
 	async function loadJsonEditor() {
 		if (!loadedComponents.jsonEditor) {
-			const module = await import('$lib/constructions/components/JsonEditor.svelte');
+			const module = await import('#lib/constructions/components/JsonEditor.svelte');
 			JsonEditorComponent = module.default;
 			loadedComponents.jsonEditor = true;
 		}
@@ -513,7 +513,7 @@
 	let currentVariationIndex = $state(0);
 
 	// Available grade levels - use GRADE_CODES from unified system
-	// GRADE_CODES is already imported from '$lib/types/grades'
+	// GRADE_CODES is already imported from '#lib/types/grades.ts'
 
 	// Question type options
 	const QUESTION_TYPES: { value: QuestionType; label: string }[] = [

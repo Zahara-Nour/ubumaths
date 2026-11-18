@@ -90,7 +90,7 @@ describe('InfoPanel — lisibilité en mode sombre', () => {
 			.slice(0, 3)
 			.map(Number);
 		const hex = '#' + [r, g, b].map((v) => Math.round(v).toString(16).padStart(2, '0')).join('');
-		const { contrastRatio } = await import('$lib/theme/author-color');
+		const { contrastRatio } = await import('#lib/theme/author-color.ts');
 		expect(contrastRatio(hex, '#262624')).toBeGreaterThanOrEqual(7);
 	});
 });

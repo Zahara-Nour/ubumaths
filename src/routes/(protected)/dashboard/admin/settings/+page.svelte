@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	/**
 	 * Admin Settings Page
 	 *
@@ -15,17 +15,17 @@
 	 * - Database statistics
 	 */
 
-	import * as Card from '$lib/components/ui/card';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Separator } from '$lib/components/ui/separator';
-	import { Button } from '$lib/components/ui/button';
-	import { getVersion, getRawVersion } from '$lib/utils/version';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { Separator } from '#lib/components/ui/separator/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { getVersion, getRawVersion } from '#lib/utils/version.ts';
 	import { Settings, Info, ListOrdered, RotateCcw } from '@lucide/svelte';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import { listNumberingStore } from '$lib/stores/listNumbering.svelte';
-	import { NUMBERING_SCHEMES, type SchemeId } from '$lib/types/list-numbering';
-	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
-	import BugReportsConfigCard from '$lib/components/bug-reports/BugReportsConfigCard.svelte';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import { listNumberingStore } from '#lib/stores/listNumbering.svelte.ts';
+	import { NUMBERING_SCHEMES, type SchemeId } from '#lib/types/list-numbering.ts';
+	import MarkdownRenderer from '#lib/components/markdown/MarkdownRenderer.svelte';
+	import BugReportsConfigCard from '#lib/components/bug-reports/BugReportsConfigCard.svelte';
 
 	// Convert schemes to select items
 	const schemeItems = Object.values(NUMBERING_SCHEMES).map((s) => ({

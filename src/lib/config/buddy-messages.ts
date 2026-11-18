@@ -4,7 +4,7 @@
  * Generated via ChatGPT with personality-specific prompts (see docs/systeme/buddy-palotins.md).
  */
 
-import { lore } from '$lib/config/lore';
+import { lore } from '#lib/config/lore.ts';
 
 export type BuddyMessageContext =
 	| 'correct'
@@ -15,9 +15,25 @@ export type BuddyMessageContext =
 	| 'streak_7'
 	| 'streak_14'
 	| 'streak_30'
-	| 'streak_lost'
-	/** Retour après une longue absence (21 jours ou plus) : « tu m'as manqué » */
-	| 'long_absence'
+	/**
+	 * Retour après une pause (21 jours ou plus sans passage), fêté après la 1re
+	 * activité : joyeux, jamais la durée ni l'absence (R2, chantier `regularite`)
+	 */
+	| 'return_after_pause'
+	/**
+	 * Semaine qui devient active (5 traces autonomes un jour de la semaine) :
+	 * 1re activité de la semaine, ou 3, 5, 10 semaines actives d'affilée. Fier,
+	 * jamais un nombre de jours ni la Constance Royale (B2, chantier `regularite`)
+	 */
+	| 'week_first_activity'
+	| 'active_weeks_3'
+	| 'active_weeks_5'
+	| 'active_weeks_10'
+	/**
+	 * Question longtemps ratée enfin réussie, sur la carte de fin de série :
+	 * fier, sans nombre, sans durée, sans rappeler les échecs (B3, `regularite`)
+	 */
+	| 'long_struggle_won'
 	| 'level_up'
 	| 'theme_fractions'
 	| 'theme_geometry'
@@ -39,8 +55,6 @@ export type BuddyMessageContext =
 
 /** Mot du lore pour le niveau du Palotin (« Tour de panse »), jamais « Niveau » */
 const LEVEL = lore.buddy.level;
-/** Mot du lore pour la série de semaines tenues (« Constance Royale ») */
-const CONSTANCE = lore.learning.streak;
 
 export type PalotinType = 'giron' | 'pile' | 'cotice';
 
@@ -140,16 +154,35 @@ const giron: BuddyMessages = {
 		'Le jeu s’incline devant toi !',
 		'Cornegidouille, t’es intouchable !'
 	],
-	streak_lost: [
-		`La semaine n’a pas eu ses trois jours : la ${CONSTANCE} retombe ! On relance !`,
-		'Semaine ratée, pas grave ! Trois jours cette semaine et on repart !',
-		`La ${CONSTANCE} casse, mais on la reconstruit dès cette semaine !`,
-		'Le combat continue ! Une nouvelle semaine, trois jours, on attaque !'
+	return_after_pause: [
+		'Te revoilà dans la course ! On fonce !',
+		'Ça repart, et ça repart fort ! Bienvenue !',
+		'Par ma chandelle verte, quel plaisir de te revoir à l’œuvre !'
 	],
-	long_absence: [
-		'Te revoilà ! Tu m’as manqué, tu sais !',
-		'Ça faisait long sans toi ! Content de te revoir !',
-		'Par ma chandelle verte, tu m’as manqué !'
+	week_first_activity: [
+		'Première victoire de la semaine ! On lance la machine !',
+		'La semaine démarre, et elle démarre fort !',
+		'Hop, la semaine est lancée ! En avant !'
+	],
+	active_weeks_3: [
+		'Trois semaines de suite au combat ! Ça devient du sérieux !',
+		'Trois semaines d’affilée ! Le rythme est là !',
+		'Par ma chandelle verte, trois semaines sans lâcher !'
+	],
+	active_weeks_5: [
+		'Cinq semaines de suite ! Rien ne t’arrête !',
+		'Cinq semaines d’affilée ! Quelle cadence !',
+		'Cinq semaines au front ! Le Royaume en tremble !'
+	],
+	active_weeks_10: [
+		'Dix semaines de suite ! C’est légendaire !',
+		'Dix semaines d’affilée ! Cornegidouille, quel exploit !',
+		'Dix semaines sans faiblir ! On en parlera dans tout le Royaume !'
+	],
+	long_struggle_won: [
+		'Celle-là te résistait, et tu l’as eue ! Cornegidouille !',
+		'Tu n’as rien lâché, et voilà la victoire !',
+		'Par ma chandelle verte, celle-là, tu l’as enfin domptée !'
 	],
 	level_up: [
 		`${LEVEL} 1 ! On commence tranquille !`,
@@ -312,16 +345,35 @@ const pile: BuddyMessages = {
 		'Tu avances comme un fleuve qui ne s’arrête pas.',
 		'Cornegidouille, même le temps semble suivre ton rythme.'
 	],
-	streak_lost: [
-		`La semaine s’est fermée avant ses trois jours… la ${CONSTANCE} s’interrompt, comme une respiration.`,
-		'Une semaine qui passe sans trois jours, ce n’est qu’une pause dans le mouvement.',
-		`La ${CONSTANCE} recommence à zéro, doucement, avec cette nouvelle semaine.`,
-		'Trois jours cette semaine, et le fil se renoue sans bruit.'
+	return_after_pause: [
+		'Te revoilà au travail… le fil se renoue, tranquillement.',
+		'Quel plaisir de te retrouver ici. On continue, à ton rythme.',
+		'La reprise te va bien. On avance ensemble.'
 	],
-	long_absence: [
-		'Te voilà de retour… tu m’as manqué, en silence.',
-		'Le temps passait plus lentement sans toi.',
-		'Tu m’as manqué. On reprend doucement ?'
+	week_first_activity: [
+		'La semaine commence par du travail. Beau départ.',
+		'Une nouvelle semaine s’ouvre, et tu es là. C’est bien.',
+		'Premier pas de la semaine. Le chemin continue.'
+	],
+	active_weeks_3: [
+		'Trois semaines de suite. La régularité prend racine.',
+		'Trois semaines d’affilée… le fil tient bon.',
+		'Trois semaines où tu reviens au travail. C’est précieux.'
+	],
+	active_weeks_5: [
+		'Cinq semaines de suite. Une belle constance, tranquille.',
+		'Cinq semaines d’affilée. Pas à pas, on va loin.',
+		'Cinq semaines au travail. Quelle belle persévérance.'
+	],
+	active_weeks_10: [
+		'Dix semaines de suite. Voilà une vraie habitude.',
+		'Dix semaines d’affilée… c’est rare, et c’est beau.',
+		'Dix semaines au travail. Le Royaume te salue.'
+	],
+	long_struggle_won: [
+		'Celle-là te résistait. Aujourd’hui, elle a cédé.',
+		'Tu as persévéré, et elle a fini par céder.',
+		'Ce qui semblait difficile ne l’est plus. Beau chemin.'
 	],
 	level_up: [
 		`${LEVEL} 1, une porte s’ouvre doucement.`,
@@ -505,16 +557,35 @@ const cotice: BuddyMessages = {
 		'T’es une machine, impossible de t’arrêter !',
 		'Cornegidouille, c’est du jamais vu !'
 	],
-	streak_lost: [
-		`Ah, la semaine n’a pas eu ses trois jours : la ${CONSTANCE} s’arrête, mais on repart direct !`,
-		'Pas grave, nouvelle semaine, nouveaux trois jours en vue !',
-		`On perd la ${CONSTANCE}, mais pas la motivation !`,
-		'Allez, trois jours cette semaine et on relance la machine !'
+	return_after_pause: [
+		'Te revoilà ! Trop bien de bosser de nouveau ensemble !',
+		'Ouais, ça repart ! Bienvenue de retour dans l’équipe !',
+		'Cornegidouille, quelle joie de te retrouver !'
 	],
-	long_absence: [
-		'Ah, enfin ! Tu m’as trop manqué !',
-		'J’ai cru que tu m’avais oublié ! Tu m’as manqué !',
-		'Cornegidouille, tu m’as manqué !'
+	week_first_activity: [
+		'Première séance de la semaine ! Trop bien, on est partis !',
+		'Ouais, la semaine commence ! On fait équipe !',
+		'Et c’est parti pour la semaine ! Top départ !'
+	],
+	active_weeks_3: [
+		'Trois semaines de suite ! On forme une sacrée équipe !',
+		'Trois semaines d’affilée ! Trop fort !',
+		'Trois semaines ensemble, sans s’arrêter ! J’adore !'
+	],
+	active_weeks_5: [
+		'Cinq semaines de suite ! Tope là !',
+		'Cinq semaines d’affilée ! On est inarrêtables !',
+		'Cinq semaines ! Ça mérite une danse de la victoire !'
+	],
+	active_weeks_10: [
+		'Dix semaines de suite ! C’est énorme !',
+		'Dix semaines d’affilée ! Cornegidouille, je n’en reviens pas !',
+		'Dix semaines ensemble ! Meilleure équipe du Royaume !'
+	],
+	long_struggle_won: [
+		'Trop fort ! Celle-là, on l’a enfin eue !',
+		'Ouais ! Tu as tenu bon, et ça a payé !',
+		'Celle qui nous résistait ? Battue ! Tope là !'
 	],
 	level_up: [
 		`${LEVEL} 1 ! On démarre tranquille !`,

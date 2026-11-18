@@ -5,7 +5,7 @@
  * 20261024120100) ; ces gardes ne servent qu'à répondre 403 / 404 et à masquer les
  * boutons.
  */
-import type { UserRole } from '$lib/server/middleware/auth';
+import type { UserRole } from '#lib/server/middleware/auth.ts';
 
 export const CONSTRUCTION_AUTHOR_ROLES: UserRole[] = ['teacher'];
 

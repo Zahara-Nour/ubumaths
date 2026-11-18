@@ -1,4 +1,5 @@
 {
+	"id": "7a3e2bc9-bdcc-41b0-b54d-86061d0cba1d",
 	"title": "Calculer un angle d'un triangle",
 	"description": "Avec la somme des angles (180°) : le troisième angle à partir de deux, les trois angles d'un triangle isocèle à partir d'un seul",
 	"grades": ["6"],

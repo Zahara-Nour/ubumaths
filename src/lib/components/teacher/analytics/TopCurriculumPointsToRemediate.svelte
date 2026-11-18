@@ -2,18 +2,18 @@
 	Widget E — Top points du programme à remédier dans la classe.
 
 	Liste triée % {À remédier + À renforcer} desc.
-	Modal "élèves concernés" au clic.
+	Fenêtre du point au clic : élèves concernés, erreurs de la classe (PointDetailsModal).
 -->
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import { Users } from '@lucide/svelte';
-	import { Button } from '$lib/components/ui/button';
-	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Skeleton } from '$lib/components/ui/skeleton';
-	import * as Card from '$lib/components/ui/card';
-	import { Progress } from '$lib/components/ui/progress';
-	import AnalyticsModal from './AnalyticsModal.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import InlineMarkdown from '#lib/components/markdown/InlineMarkdown.svelte';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { Skeleton } from '#lib/components/ui/skeleton/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Progress } from '#lib/components/ui/progress/index.ts';
+	import PointDetailsModal from './PointDetailsModal.svelte';
 
 	interface StudentRef {
 		student_id: string;
@@ -41,6 +41,7 @@
 
 	let modalOpen = $state(false);
 	let modalTitle = $state('');
+	let modalPointId = $state('');
 	let modalStudents = $state<{ student_id: string; display_name: string; caption?: string }[]>([]);
 
 	async function load() {
@@ -72,6 +73,7 @@
 
 	function openModal(row: TopRow) {
 		modalTitle = row.point_name;
+		modalPointId = row.point_id;
 		modalStudents = row.students_concerned.map((s) => ({
 			student_id: s.student_id,
 			display_name: s.display_name,
@@ -148,9 +150,12 @@
 	</Card.Content>
 </Card.Root>
 
-<AnalyticsModal
-	bind:open={modalOpen}
-	title={modalTitle}
-	description="{lore.entities.student}s concernés par ce point."
-	students={modalStudents}
-/>
+{#key `${classId}:${modalPointId}`}
+	<PointDetailsModal
+		bind:open={modalOpen}
+		{classId}
+		pointId={modalPointId}
+		title={modalTitle}
+		students={modalStudents}
+	/>
+{/key}

@@ -29,7 +29,7 @@ import {
 	cleanupAllTestData
 } from '../helpers/database/trigger-test-helpers';
 import { TestData } from '../helpers/database/test-data-factory';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 import { load as chargerLaPage } from '../../src/routes/(public)/presques-evaluations/+page.server';
 
 const SUPABASE_URL = process.env.SUPABASE_TEST_URL || 'http://localhost:54321';

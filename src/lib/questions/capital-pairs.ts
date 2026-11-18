@@ -24,7 +24,7 @@
 
 import { z } from 'zod';
 // Type du parseur seul (aucune logique)
-import type { CapitalPairs } from '$lib/mathAST/parser/types';
+import type { CapitalPairs } from '#lib/mathAST/parser/types.ts';
 
 // Types
 

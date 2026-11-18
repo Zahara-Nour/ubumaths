@@ -1,0 +1,124 @@
+{
+	"id": "34bfa4b1-fd08-4213-8e76-3c32198b5967",
+	"title": "Poser la multiplication d'un nombre décimal par un nombre entier",
+	"description": "Multiplication posée d'un décimal par un entier de 2 ou 3 chiffres : 876 × 20,8 ; 8,76 × 208",
+	"grades": ["CM2"],
+	"level": 10,
+	"delay": 180,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Pose et calcule.\n\n```operation\ncalcul: {{n}} × {{eval:T/10;d}}\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "12..999"
+				},
+				{
+					"name": "T",
+					"expression": "101..999"
+				}
+			],
+			"conditions": ["mod(n,10) != 0", "mod(T,10) != 0", "mod(n*T,10) != 0"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"On pose la multiplication comme avec des nombres entiers, sans s'occuper de la virgule.",
+					"${{n}} \\times {{T}} = {{eval:n*T}}$.",
+					"${{eval:T/10;d}}$ a un chiffre après la virgule : le produit en a un aussi.",
+					"$${{n}} \\times {{eval:T/10;d}} = \\textcolor{{{color:primary.0}}}{{{eval:n*T/10;d}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Pose et calcule.\n\n```operation\ncalcul: {{eval:C/100;d}} × {{n}}\n```",
+			"variables": [
+				{
+					"name": "C",
+					"expression": "101..9999"
+				},
+				{
+					"name": "n",
+					"expression": "12..999"
+				}
+			],
+			"conditions": ["mod(C,10) != 0", "mod(n,10) != 0", "mod(C*n,10) != 0"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"On pose la multiplication comme avec des nombres entiers, sans s'occuper de la virgule.",
+					"${{C}} \\times {{n}} = {{eval:C*n}}$.",
+					"${{eval:C/100;d}}$ a deux chiffres après la virgule : le produit en a deux aussi.",
+					"$${{eval:C/100;d}} \\times {{n}} = \\textcolor{{{color:primary.0}}}{{{eval:C*n/100;d}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "BO : 876 × 20,8 = 18 220,8",
+			"variationIndex": 0,
+			"variables": {
+				"n": "876",
+				"T": "208"
+			},
+			"answers": ["18 220,8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : virgule oubliée, 182 208",
+			"variationIndex": 0,
+			"variables": {
+				"n": "876",
+				"T": "208"
+			},
+			"answers": ["182 208"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : virgule décalée, 1 822,08",
+			"variationIndex": 0,
+			"variables": {
+				"n": "876",
+				"T": "208"
+			},
+			"answers": ["1 822,08"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BO : 8,76 × 208 = 1 822,08",
+			"variationIndex": 1,
+			"variables": {
+				"C": "876",
+				"n": "208"
+			},
+			"answers": ["1 822,08"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : une décimale seulement, 18 220,8",
+			"variationIndex": 1,
+			"variables": {
+				"C": "876",
+				"n": "208"
+			},
+			"answers": ["18 220,8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

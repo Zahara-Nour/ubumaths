@@ -67,7 +67,9 @@ export const PLAIN_PAPER_TOOLS: Partial<Record<ConstructionCheckKind, Constructi
 	// Lot 6 (§ 19) : mesurer un angle, le rapporteur seul
 	mesure: ['rapporteur'],
 	// Chantier `regle-graduee` (ADR 0036) : segment de longueur donnée, papier uni seulement
-	segment: ['regle', 'segment']
+	segment: ['regle', 'segment'],
+	// N° 26 (`amelioration`) : mesurer un segment, la règle graduée seule
+	mesure_segment: ['regle']
 };
 
 /** `bissectrice(A, O, B)` : trois points nommés, le sommet au milieu (lot 9, § 25) */
@@ -134,7 +136,9 @@ export const LINE_GRID_TOOLS: ConstructionTool[] = ['droite', 'equerre', 'compas
  * avec un angle (lot 7, § 21), Rapporteur · Règle · Segment, plus le Report et
  * le Compas s'il reste une longueur à reporter ; triangle rectangle (n° 20) :
  * Segment · Équerre (· Report, ou · Règle graduée pour un côté en cm) sur papier
- * uni, Segment seul sur quadrillage
+ * uni, Segment seul sur quadrillage ; longueurs en cm (`triangle-cote-cm`) :
+ * Segment · Compas · Règle graduée, ou Segment · Rapporteur · Règle graduée ·
+ * Compas avec l'angle
  */
 export function triangleTools(
 	check: Pick<TriangleCheck, 'angles' | 'lengths'>,
@@ -146,6 +150,13 @@ export function triangleTools(
 		// Côté coté en cm (PR 4 de `regle-graduee`) : la règle graduée à la place du Report
 		if (check.lengths.some(isRuledLength)) return ['segment', 'equerre', 'regle'];
 		return check.lengths.length > 0 ? ['segment', 'equerre', 'report'] : ['segment', 'equerre'];
+	}
+	// Triangle quelconque coté en cm (chantier `triangle-cote-cm`, décision de David du
+	// 2026-11-14) : la règle graduée à la place du Report, la longueur se prend sur la règle
+	if (check.lengths.some(isRuledLength)) {
+		return check.angles.length === 0
+			? ['segment', 'compas', 'regle']
+			: ['segment', 'rapporteur', 'regle', 'compas'];
 	}
 	if (check.angles.length === 0) return [...(PLAIN_PAPER_TOOLS.triangle ?? [])];
 	const tools: ConstructionTool[] = ['rapporteur', 'droite', 'segment'];
@@ -164,7 +175,8 @@ export const CONSTRUCTION_CHECK_KINDS = [
 	'triangle',
 	'angle',
 	'mesure',
-	'segment'
+	'segment',
+	'mesure_segment'
 ] as const;
 export type ConstructionCheckKind = (typeof CONSTRUCTION_CHECK_KINDS)[number];
 
@@ -222,6 +234,34 @@ export const RULED_POLYGON_TOOLS: ConstructionTool[] = ['segment', 'equerre', 'r
 /** Carré ou rectangle coté sur papier uni (PR 6), pas la forme du quadrillage */
 export function isRuledPolygonCheck(check: ConstructionCheck): check is RuledPolygonCheck {
 	return 'ruled' in check;
+}
+
+/**
+ * Rectangle sans équerre (chantier `rectangle-sans-equerre`, phase 0 validée par
+ * David le 2026-11-17) : `rectangle A ; B ; C ; D : AB = 4 cm ; AC = 6 cm`. La
+ * diagonale [AC] est tracée dans la figure (sa longueur y est vérifiée), B et D
+ * n'y sont pas. L'élève construit B et D au compas et à la règle graduée (les
+ * diagonales : même milieu, même longueur ; B sur le cercle de diamètre [AC]).
+ * Longueurs en millimètres entiers, côté plus court que la diagonale. Seul dans
+ * la figure, papier uni.
+ */
+export interface DiagonalRectangleCheck {
+	kind: 'rectangle';
+	points: [string, string, string, string];
+	/** Longueur du côté [AB] */
+	side: { length: number; unit: LengthUnit };
+	/** Longueur de la diagonale [AC] */
+	diagonal: { length: number; unit: LengthUnit };
+	line: number;
+}
+
+/** Palette du rectangle sans équerre : Segment · Compas · Règle graduée */
+export const DIAGONAL_RECTANGLE_TOOLS: ConstructionTool[] = ['segment', 'compas', 'regle'];
+
+export function isDiagonalRectangleCheck(
+	check: ConstructionCheck
+): check is DiagonalRectangleCheck {
+	return 'diagonal' in check;
 }
 
 /**
@@ -293,7 +333,8 @@ export type TriangleLength =
 	| { side: [string, string]; squares: number }
 	/**
 	 * À la règle graduée (chantier `regle-graduee`, PR 4) : `AC = 4 cm`, en
-	 * millimètres entiers ; triangle rectangle sur papier uni seulement
+	 * millimètres entiers ; papier uni seulement (triangle rectangle, ou
+	 * quelconque depuis le chantier `triangle-cote-cm`)
 	 */
 	| { side: [string, string]; length: number; unit: LengthUnit };
 
@@ -378,6 +419,20 @@ export interface MeasureCheck {
 }
 
 /**
+ * `mesure AB` (n° 26 de `outils-manquants.md`, CP-035, CE1-044 ; phase 0 validée
+ * par David le 2026-11-12) : le segment [AB] est tracé ; l'élève pose la règle
+ * graduée (jamais notée) et tape la longueur sous la figure. La longueur attendue
+ * est calculée sur la figure (1 unité = 1 cm, ADR 0036). `unit` : `mesure AB`
+ * ou `mesure AB en cm` → cm entiers ; `mesure AB en mm` → mm entiers.
+ */
+export interface SegmentMeasureCheck {
+	kind: 'mesure_segment';
+	points: [string, string];
+	unit: 'cm' | 'mm';
+	line: number;
+}
+
+/**
  * Unité dans laquelle l'auteur a écrit la longueur (messages à l'élève dans la
  * même) : `6 cm` ou `5,3 cm` → cm décimaux ; `5 cm 3 mm` → cm et mm ; `72 mm` → mm
  */
@@ -430,13 +485,15 @@ export type ConstructionCheck =
 	| DroiteParCheck
 	| SegmentFigureCheck
 	| RuledPolygonCheck
+	| DiagonalRectangleCheck
 	| PointCheck
 	| LineCheck
 	| CircleCheck
 	| TriangleCheck
 	| AngleCheck
 	| MeasureCheck
-	| SegmentLengthCheck;
+	| SegmentLengthCheck
+	| SegmentMeasureCheck;
 
 /** L'outil avec lequel se trace chaque vérification */
 export const CHECK_TOOL: Record<ConstructionCheckKind, ConstructionTool> = {
@@ -452,7 +509,8 @@ export const CHECK_TOOL: Record<ConstructionCheckKind, ConstructionTool> = {
 	angle: 'rapporteur',
 	mesure: 'rapporteur',
 	// Le segment est exigé aussi (cohérence du parseur) ; la règle graduée est l'outil de départ
-	segment: 'regle'
+	segment: 'regle',
+	mesure_segment: 'regle'
 };
 
 export interface ConstructionSpec {

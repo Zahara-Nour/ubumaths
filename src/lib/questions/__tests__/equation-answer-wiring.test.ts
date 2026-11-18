@@ -14,10 +14,10 @@ import {
 	validateAnswer,
 	validateBlanksDetailed,
 	isBlankValueCorrect
-} from '$lib/utils/answer-validator';
-import { computeBlankVerdicts } from '$lib/components/questions/blank-verdicts';
+} from '#lib/utils/answer-validator.ts';
+import { computeBlankVerdicts } from '#lib/components/questions/blank-verdicts.ts';
 import type { InstanceBlank, QuestionInstance, QuestionTemplate, RequiredForm } from '../types';
-import { templateMarkdown, type ResolvedMarkdown } from '$lib/ubumark';
+import { templateMarkdown, type ResolvedMarkdown } from '#lib/ubumark/index.ts';
 
 // Fixtures
 const LINE = '2x-y+1=0';

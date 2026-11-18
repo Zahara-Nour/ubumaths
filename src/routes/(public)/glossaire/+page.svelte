@@ -1,17 +1,17 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import SeoHead from '$lib/seo/SeoHead.svelte';
-	import { GRADES } from '$lib/types/grades';
-	import type { GradeCode } from '$lib/types/grades';
-	import { gradeMetBy, isTermVisibleTo, type MathTerm } from '$lib/dictionary/model';
-	import { pageSlugFor, termKey } from '$lib/dictionary/glossary-page';
+	import SeoHead from '#lib/seo/SeoHead.svelte';
+	import { GRADES } from '#lib/types/grades.ts';
+	import type { GradeCode } from '#lib/types/grades.ts';
+	import { gradeMetBy, isTermVisibleTo, type MathTerm } from '#lib/dictionary/model.ts';
+	import { pageSlugFor, termKey } from '#lib/dictionary/glossary-page.ts';
 	import { resolve } from '$app/paths';
-	import { Input } from '$lib/components/ui/input';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Button } from '$lib/components/ui/button';
-	import { Separator } from '$lib/components/ui/separator';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import QrCodeButton from '$lib/components/qr/QrCodeButton.svelte';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Separator } from '#lib/components/ui/separator/index.ts';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import QrCodeButton from '#lib/components/qr/QrCodeButton.svelte';
 	import { Search, BookOpen, RotateCcw } from '@lucide/svelte';
 	import type { PageProps } from './$types';
 
@@ -113,8 +113,8 @@
 	function termHref(term: MathTerm): string {
 		const slug = pageSlugFor(term, data.entries, data.slugs);
 		return slug
-			? resolve(`/glossaire/${slug}`)
-			: `${resolve('/glossaire')}?q=${encodeURIComponent(term.term)}`;
+			? resolve(`glossaire/${slug}`)
+			: `${resolve('glossaire')}?q=${encodeURIComponent(term.term)}`;
 	}
 
 	function scrollToLetter(letter: string) {

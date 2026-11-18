@@ -44,14 +44,17 @@ import {
 	triangleTools,
 	rightAngleOf,
 	isRuledLength,
+	isDiagonalRectangleCheck,
 	isRuledPolygonCheck,
 	isSquaresLength,
+	DIAGONAL_RECTANGLE_TOOLS,
 	RULED_POLYGON_TOOLS,
 	type ConstructionCheck,
 	type ConstructionCheckKind,
 	type ConstructionSpec,
 	type ConstructionTool,
 	readLengthText,
+	type DiagonalRectangleCheck,
 	type RuledPolygonCheck,
 	type TriangleAngle,
 	type TriangleLength
@@ -117,7 +120,15 @@ function hasGrid(lines: readonly string[], headerEnd: number): boolean {
 
 /** Vérifications à forme propre (pas une liste de points) */
 type NamedKind =
-	'symetrique' | 'point' | 'droite' | 'cercle' | 'triangle' | 'angle' | 'mesure' | 'segment';
+	| 'symetrique'
+	| 'point'
+	| 'droite'
+	| 'cercle'
+	| 'triangle'
+	| 'angle'
+	| 'mesure'
+	| 'segment'
+	| 'mesure_segment';
 
 /** Nombre de points de chaque vérification, et comment l'écrire */
 const CHECK_ARITY: Record<
@@ -361,12 +372,39 @@ const POSED_REGEX = /^rapporteur\s+pos[ée]$/;
 /** Ce qui suit les trois lettres : la pose, ou autre chose (refusé) */
 const MEASURE_SUFFIX_REGEX = /^([A-Z]{3})\s*(?:,\s*(.*)|\s+(.+))$/;
 
+const SEGMENT_MEASURE_EXAMPLE = 'mesure AB';
+/** `AB`, `AB en cm`, `AB en mm` (n° 26) : les deux bouts du segment, l'unité de la case */
+const SEGMENT_MEASURE_REGEX = /^([A-Z])([A-Z])(?:\s*(.*))?$/;
+const SEGMENT_MEASURE_UNIT_REGEX = /^en\s+(cm|mm)$/;
+
+/**
+ * `mesure AB` (n° 26) : le segment [AB] est tracé, l'élève le mesure à la règle
+ * graduée et tape sa longueur, en cm entiers (`en mm` : en mm entiers)
+ */
+function readSegmentMeasure(match: RegExpExecArray, line: number): ConstructionCheck {
+	const [a, b] = [match[1], match[2]];
+	if (a === b) throw new LineError(`mesure ${a}${b} : deux points différents`);
+	const suffix = match[3]?.trim() ?? '';
+	if (suffix === '') return { kind: 'mesure_segment', points: [a, b], unit: 'cm', line };
+	const unit = SEGMENT_MEASURE_UNIT_REGEX.exec(suffix);
+	if (!unit) {
+		throw new LineError(
+			`mesure ${a}${b} : la longueur se tape en cm ou en mm : « mesure ${a}${b} » (cm) ou « mesure ${a}${b} en mm »`
+		);
+	}
+	return { kind: 'mesure_segment', points: [a, b], unit: unit[1] as 'cm' | 'mm', line };
+}
+
 /**
  * `mesure AOB` (lot 6) : l'angle est tracé, l'élève tape sa mesure ;
- * `mesure AOB, rapporteur posé` (lot 8) : le rapporteur est déjà posé
+ * `mesure AOB, rapporteur posé` (lot 8) : le rapporteur est déjà posé ;
+ * `mesure AB` (n° 26) : le segment, à la règle graduée
  */
 function readMeasure(rest: string, line: number): ConstructionCheck {
 	const text = rest.trim();
+	// Deux lettres (puis l'unité, ou autre chose) : un segment ; trois : un angle
+	const segment = /^[A-Z]{2}(?![A-Z])/.test(text) ? SEGMENT_MEASURE_REGEX.exec(text) : null;
+	if (segment) return readSegmentMeasure(segment, line);
 	// Une suite qui vise la pose : une virgule, ou le mot rapporteur (`mesure AOB = 50` n'en est pas)
 	const found = MEASURE_SUFFIX_REGEX.exec(text);
 	const suffixed = found && (found[2] !== undefined || /rapporteur/i.test(found[3])) ? found : null;
@@ -375,7 +413,7 @@ function readMeasure(rest: string, line: number): ConstructionCheck {
 	const match = MEASURE_REGEX.exec(letters);
 	if (!match) {
 		throw new LineError(
-			`mesure attend l’angle par trois points, le sommet au milieu : « ${MEASURE_EXAMPLE} »`
+			`mesure attend un segment par ses deux bouts (« ${SEGMENT_MEASURE_EXAMPLE} ») ou un angle par trois points, le sommet au milieu (« ${MEASURE_EXAMPLE} »)`
 		);
 	}
 	const [a, o, b] = [match[1], match[2], match[3]];
@@ -497,7 +535,7 @@ function readRuledPolygon(
 	kind: 'carre' | 'rectangle',
 	text: string,
 	line: number
-): RuledPolygonCheck | null {
+): RuledPolygonCheck | DiagonalRectangleCheck | null {
 	const colon = text.indexOf(':');
 	const pointsText = colon === -1 ? text : text.slice(0, colon);
 	const lengthText = colon === -1 ? null : text.slice(colon + 1).trim();
@@ -521,6 +559,17 @@ function readRuledPolygon(
 		}
 		return { kind, points: [a, b, c, d], ruled: true, line };
 	}
+	// Rectangle sans équerre : deux longueurs, ou une longueur nommée autre que [BC]
+	if (lengthText !== null) {
+		const parts = lengthText.split(';').map((part) => part.trim());
+		const namesOtherThanBC = (part: string) => {
+			const named = /^([A-Z])([A-Z])\s*=/.exec(part);
+			return named !== null && [named[1], named[2]].sort().join('') !== [b, c].sort().join('');
+		};
+		if (parts.length > 1 || parts.some(namesOtherThanBC)) {
+			return readDiagonalRectangle([a, b, c, d], parts, line);
+		}
+	}
 	const usage = `« rectangle ${a} ; ${b} ; ${c} ; ${d} : ${b}${c} = 3 cm »`;
 	if (lengthText === null) {
 		throw new LineError(`rectangle ${a}${b}${c}${d} : donner la longueur de [${b}${c}], ${usage}`);
@@ -541,6 +590,59 @@ function readRuledPolygon(
 	return { kind, points: [a, b, c, d], ruled: true, height: read, line };
 }
 
+/**
+ * Rectangle sans équerre (chantier `rectangle-sans-equerre`, phase 0 du 2026-11-17) :
+ * `rectangle A ; B ; C ; D : AB = 4 cm ; AC = 6 cm`, le côté [AB] et la diagonale
+ * [AC] (dans n'importe quel ordre, `BA` et `CA` admis), au mm près, le côté plus
+ * court que la diagonale
+ */
+function readDiagonalRectangle(
+	points: [string, string, string, string],
+	parts: readonly string[],
+	line: number
+): DiagonalRectangleCheck {
+	const [a, b, c, d] = points;
+	const name = `rectangle ${a}${b}${c}${d}`;
+	const usage = `« rectangle ${a} ; ${b} ; ${c} ; ${d} : ${a}${b} = 4 cm ; ${a}${c} = 6 cm »`;
+	const read = parts.map((part) => /^([A-Z])([A-Z])\s*=\s*(.+)$/.exec(part));
+	const is = (match: RegExpExecArray | null, p: string, q: string) =>
+		match !== null && [match[1], match[2]].sort().join('') === [p, q].sort().join('');
+	const diagonalAt = read.findIndex((match) => is(match, a, c));
+	if (read.length !== 2 || read.some((match) => match === null) || diagonalAt === -1) {
+		throw new LineError(`${name} : donner le côté [${a}${b}] et la diagonale [${a}${c}], ${usage}`);
+	}
+	const sideMatch = read[1 - diagonalAt];
+	if (is(sideMatch, a, c)) {
+		throw new LineError(`${name} : donner le côté [${a}${b}] et la diagonale [${a}${c}], ${usage}`);
+	}
+	if (!is(sideMatch, a, b)) {
+		throw new LineError(
+			`${name} : le côté donné est [${a}${b}] (la diagonale [${a}${c}] est tracée), ${usage}`
+		);
+	}
+	const lengthOf = (match: RegExpExecArray | null) => {
+		const length = match ? readLengthText(match[3].trim()) : null;
+		if (!length) throw new LineError(`${name} : longueur en cm ou en mm, ${usage}`);
+		if (!Number.isInteger(length.length) || length.length <= 0) {
+			throw new LineError(
+				`${name} : une longueur à la règle graduée se donne au millimètre près (3 cm, 3 cm 5 mm ou 35 mm)`
+			);
+		}
+		return length;
+	};
+	const side = lengthOf(sideMatch);
+	const diagonal = lengthOf(read[diagonalAt]);
+	if (side.length >= diagonal.length) {
+		throw new LineError(
+			`${name} : le côté [${a}${b}] doit être plus court que la diagonale [${a}${c}]`
+		);
+	}
+	return { kind: 'rectangle', points: [a, b, c, d], side, diagonal, line };
+}
+
+/** Les mots de `verifier:` (le segment à mesurer s'écrit `mesure AB`) */
+const AUTHOR_CHECK_WORDS = CONSTRUCTION_CHECK_KINDS.filter((kind) => kind !== 'mesure_segment');
+
 function readCheck(value: string, line: number): ConstructionCheck {
 	const [rawWord = '', ...rest] = value.split(/\s+/);
 	// `symétrique` accentué, comme `vérifier:`
@@ -550,6 +652,9 @@ function readCheck(value: string, line: number): ConstructionCheck {
 	if (word === 'angle') return readAngle(rest.join(' '), line);
 	if (word === 'mesure') return readMeasure(rest.join(' '), line);
 	if (word === 'segment') return readSegmentLength(rest.join(' '), line);
+	if (word === 'mesure_segment') {
+		throw new LineError(`pour mesurer un segment, écrire « ${SEGMENT_MEASURE_EXAMPLE} »`);
+	}
 	if (word === 'carre' || word === 'rectangle') {
 		const ruled = readRuledPolygon(word, rest.join(' '), line);
 		if (ruled) return ruled;
@@ -558,9 +663,7 @@ function readCheck(value: string, line: number): ConstructionCheck {
 		return readNamed(word, rest.join(' '), line);
 	}
 	if (!(CONSTRUCTION_CHECK_KINDS as readonly string[]).includes(word)) {
-		throw new LineError(
-			`vérification « ${word} » inconnue (${CONSTRUCTION_CHECK_KINDS.join(', ')})`
-		);
+		throw new LineError(`vérification « ${word} » inconnue (${AUTHOR_CHECK_WORDS.join(', ')})`);
 	}
 	const kind = word as Exclude<ConstructionCheckKind, NamedKind>;
 	const { count, example, word: countWord } = CHECK_ARITY[kind];
@@ -656,6 +759,35 @@ function ruledPolygonError(
 }
 
 /**
+ * Rectangle sans équerre : seul dans la figure, papier uni, palette Segment ·
+ * Compas · Règle graduée exactement (décision 2)
+ */
+function diagonalRectangleError(
+	check: DiagonalRectangleCheck,
+	spec: ConstructionSpec,
+	grid: boolean
+): string | null {
+	const name = `rectangle ${check.points.join('')}`;
+	if (spec.checks.length > 1) {
+		return `${name} : un rectangle sans équerre ne se mêle pas à d’autres vérifications`;
+	}
+	if (grid) {
+		return `${name} : le rectangle sans équerre se construit sur papier uni ; retirer « grille: » (ou écrire « grille: non »)`;
+	}
+	const palette = DIAGONAL_RECTANGLE_TOOLS.join(', ');
+	const other = spec.tools.find((t) => !DIAGONAL_RECTANGLE_TOOLS.includes(t));
+	if (other) return `${name} : outil ${other} hors de la palette (${palette})`;
+	const labels: Record<string, string> = {
+		segment: 'le segment',
+		compas: 'le compas',
+		regle: 'la règle graduée'
+	};
+	const missing = DIAGONAL_RECTANGLE_TOOLS.find((t) => !spec.tools.includes(t));
+	if (missing) return `${name} : il faut ${labels[missing]} (outils: ${palette})`;
+	return null;
+}
+
+/**
  * Une vérification qui ne va pas avec les autres : son outil n'est pas celui
  * de la figure, ou c'est un second carré / rectangle (le juge compte les
  * segments en trop sur UN polygone).
@@ -676,14 +808,24 @@ function coherenceError(
 		(check.kind === 'triangle' && check.angles.length > 0 && !rightAngleOf(check)) ||
 		(check.kind === 'droite' && bissectriceOf(check.expression) !== null);
 	// Chantier `regle-graduee` (ADR 0036) : la règle graduée ne sert qu'au segment de longueur
-	// donnée, au cercle de rayon donné en cm (PR 3) et au triangle rectangle coté en cm (PR 4)
+	// donnée, au cercle de rayon donné en cm (PR 3) et au triangle coté en cm (PR 4, rectangle ;
+	// chantier `triangle-cote-cm`, quelconque)
 	const rulerCircle =
 		check.kind === 'cercle' && centeredCircleOf(check.expression)?.kind === 'longueur';
 	const rulerTriangle = check.kind === 'triangle' && check.lengths.some(isRuledLength);
 	// … et au carré / rectangle coté (PR 6), qui a ses propres règles ci-dessous
 	if (isRuledPolygonCheck(check)) return ruledPolygonError(check, spec, grid);
-	if (check.kind !== 'segment' && !rulerCircle && !rulerTriangle && spec.tools.includes('regle')) {
-		return `la règle graduée ne sert qu’à tracer un segment de longueur donnée (« verifier: ${SEGMENT_EXAMPLE} »), un cercle de rayon donné (« verifier: ${RULER_CIRCLE_EXAMPLE} ») ou un triangle rectangle coté (« verifier: ${RULER_TRIANGLE_EXAMPLE} ») ; la retirer de outils:`;
+	// … et au rectangle sans équerre (chantier `rectangle-sans-equerre`)
+	if (isDiagonalRectangleCheck(check)) return diagonalRectangleError(check, spec, grid);
+	// … et à mesurer un segment (n° 26)
+	if (
+		check.kind !== 'segment' &&
+		check.kind !== 'mesure_segment' &&
+		!rulerCircle &&
+		!rulerTriangle &&
+		spec.tools.includes('regle')
+	) {
+		return `la règle graduée ne sert qu’à tracer un segment de longueur donnée (« verifier: ${SEGMENT_EXAMPLE} »), un cercle de rayon donné (« verifier: ${RULER_CIRCLE_EXAMPLE} »), un triangle coté en cm (« verifier: ${RULER_TRIANGLE_EXAMPLE} ») ou à mesurer un segment (« verifier: ${SEGMENT_MEASURE_EXAMPLE} ») ; la retirer de outils:`;
 	}
 	if (!protractorAllowed && spec.tools.includes('rapporteur')) {
 		return `le rapporteur ne sert qu’à construire un angle (« verifier: ${ANGLE_EXAMPLE} »), à le mesurer (« verifier: ${MEASURE_EXAMPLE} ») à construire un triangle dont un angle est donné (« verifier: ${TRIANGLE_ANGLES_EXAMPLE} ») ou une bissectrice (« verifier: droite d = bissectrice(A, O, B) ») ; le retirer de outils:`;
@@ -722,6 +864,17 @@ function coherenceError(
 		if (grid) {
 			return `angle ${name} : l’angle se construit sur papier uni ; retirer « grille: » (ou écrire « grille: non »)`;
 		}
+	} else if (check.kind === 'mesure_segment') {
+		// N° 26 : seul dans la figure, papier uni, la règle graduée seule
+		const name = check.points.join('');
+		if (spec.checks.length > 1) {
+			return `mesure ${name} : un segment à mesurer ne se mêle pas à d’autres vérifications`;
+		}
+		const other = spec.tools.find((t) => t !== 'regle');
+		if (other) return `mesure ${name} : outil ${other} hors de la palette (regle)`;
+		if (grid) {
+			return `mesure ${name} : la règle graduée sert sur papier uni (sur quadrillage, le carreau fait l’unité) ; retirer « grille: » (ou écrire « grille: non »)`;
+		}
 	} else if (check.kind === 'mesure') {
 		// Lot 6 (§ 19) : seul dans la figure, papier uni, le rapporteur seul
 		const name = check.points.join('');
@@ -740,13 +893,18 @@ function coherenceError(
 			return `triangle ${name} : un triangle à construire ne se mêle pas à d’autres vérifications`;
 		}
 		const right = rightAngleOf(check);
-		// PR 4 de `regle-graduee` : les cm, pour le triangle rectangle sur papier uni seulement
-		if (check.lengths.some(isRuledLength)) {
-			if (!right) {
-				return `triangle ${name} : une longueur en cm ne sert qu’au triangle rectangle, avec l’angle droit (« triangle ${name} : C${check.points[0]}${check.points[1]} = 90 ; ${check.points[0]}${check.points[2]} = 4 cm »)`;
+		// PR 4 de `regle-graduee` (triangle rectangle) et chantier `triangle-cote-cm` (quelconque) :
+		// les cm, sur papier uni seulement ; toutes les longueurs en cm, ou aucune (décision de
+		// David du 2026-11-14 : une seule façon de prendre les longueurs par question)
+		const ruled = check.lengths.some(isRuledLength);
+		if (ruled) {
+			if (!check.lengths.every(isRuledLength)) {
+				return `triangle ${name} : les longueurs se donnent toutes en cm (à la règle graduée) ou toutes par un segment à reporter, pas les deux`;
 			}
 			if (grid) {
-				return `triangle ${name} : une longueur en cm se construit sur papier uni (sur quadrillage : « ${right.vertex}${check.points[2]} = 3 carreaux »)`;
+				return right
+					? `triangle ${name} : une longueur en cm se construit sur papier uni (sur quadrillage : « ${right.vertex}${check.points[2]} = 3 carreaux »)`
+					: `triangle ${name} : une longueur en cm se construit sur papier uni ; retirer « grille: » (ou écrire « grille: non »)`;
 			}
 		}
 		// N° 20 : les carreaux, pour le triangle rectangle sur quadrillage seulement
@@ -777,6 +935,18 @@ function coherenceError(
 				return grid
 					? `triangle ${name} : sur quadrillage, les côtés se tracent au segment (outils: segment)`
 					: `triangle ${name} : l’angle droit se construit à l’équerre${check.lengths.length === 0 ? '' : check.lengths.some(isRuledLength) ? ', la longueur à la règle graduée' : ', la longueur au report'}, puis les côtés au segment (outils: ${allowed.join(', ')})`;
+			}
+			return null;
+		}
+		// Chantier `triangle-cote-cm` : les longueurs au compas ouvert sur la règle graduée ;
+		// l'angle au rapporteur, C sur la graduation ou à l'arc : la palette entière est exigée
+		// (revue de #2658 : un cercle tracé est alors toujours dans la palette)
+		if (ruled) {
+			const missing = allowed.find((t) => !spec.tools.includes(t));
+			if (missing) {
+				return check.angles.length > 0
+					? `triangle ${name} : l’angle se construit au rapporteur, la longueur à la règle graduée ou au compas ouvert sur la règle, puis les côtés au segment (outils: ${allowed.join(', ')})`
+					: `triangle ${name} : les longueurs se prennent au compas ouvert sur la règle graduée, puis les côtés au segment (outils: ${allowed.join(', ')})`;
 			}
 			return null;
 		}
@@ -849,7 +1019,8 @@ function coherenceError(
 				c.kind !== 'triangle' &&
 				c.kind !== 'angle' &&
 				c.kind !== 'mesure' &&
-				c.kind !== 'segment'
+				c.kind !== 'segment' &&
+				c.kind !== 'mesure_segment'
 		);
 		if (check.kind !== 'droite_par' && segmentChecks[0] !== check) {
 			const symmetry = check.kind === 'symetrique' || segmentChecks[0].kind === 'symetrique';
@@ -939,7 +1110,8 @@ export function readConstructionHeader(
 			kind === 'triangle' ||
 			kind === 'angle' ||
 			kind === 'mesure' ||
-			kind === 'segment';
+			kind === 'segment' ||
+			kind === 'mesure_segment';
 		const first = spec.checks[0];
 		// Cercle de centre donné (n° 19) : le compas (et le Report), sur papier uni comme sur quadrillage
 		const centered = first.kind === 'cercle' ? centeredCircleOf(first.expression) : null;
@@ -948,13 +1120,15 @@ export function readConstructionHeader(
 				? undefined
 				: isRuledPolygonCheck(first)
 					? RULED_POLYGON_TOOLS
-					: first.kind === 'triangle'
-						? triangleTools(first, grid)
-						: centered
-							? centeredCircleTools(centered)
-							: kind === 'droite' && grid
-								? LINE_GRID_TOOLS
-								: PLAIN_PAPER_TOOLS[kind];
+					: isDiagonalRectangleCheck(first)
+						? DIAGONAL_RECTANGLE_TOOLS
+						: first.kind === 'triangle'
+							? triangleTools(first, grid)
+							: centered
+								? centeredCircleTools(centered)
+								: kind === 'droite' && grid
+									? LINE_GRID_TOOLS
+									: PLAIN_PAPER_TOOLS[kind];
 		spec.tools = plainPaper ? [...plainPaper] : [CHECK_TOOL[kind]];
 	}
 	const coherent: ConstructionCheck[] = [];

@@ -1,0 +1,21 @@
+{
+  "fiche": "Fonctions affines : applications",
+  "fiche_en": "Affine functions: applications",
+  "sections": [
+    { "id": "S1", "title": "Modéliser par une fonction affine", "position": 1, "en": "Modelling with affine functions" },
+    { "id": "S2", "title": "Comparer deux offres", "position": 2, "en": "Comparing two offers" },
+    { "id": "S3", "title": "Pourcentages et fonctions linéaires", "position": 3, "en": "Percentages and linear functions" },
+    { "id": "S4", "title": "Démontrer et relier", "position": 4, "en": "Proving and connecting" }
+  ],
+  "exercises": [
+    { "key": "A01", "section": "S1", "title": "Le prix d'une course en taxi", "en_title": "The price of a taxi ride", "category": "application" },
+    { "key": "A02", "section": "S1", "title": "Degrés Celsius et Fahrenheit", "en_title": "Degrees Celsius and Fahrenheit", "category": "application" },
+    { "key": "A03", "section": "S1", "title": "Le réservoir d'une voiture", "en_title": "A car's fuel tank", "category": "application" },
+    { "key": "A04", "section": "S2", "title": "Deux tarifs de cinéma", "en_title": "Two cinema prices", "category": "application" },
+    { "key": "A05", "section": "S2", "title": "Louer une voiture", "en_title": "Hiring a car", "category": "application" },
+    { "key": "A06", "section": "S3", "title": "Augmentations et réductions", "en_title": "Increases and discounts", "category": "application" },
+    { "key": "A07", "section": "S3", "title": "Proportionnel, affine, ou ni l'un ni l'autre ?", "en_title": "Proportional, affine, or neither?", "category": "application" },
+    { "key": "A08", "section": "S4", "title": "Démontrer le sens de variation", "en_title": "Proving whether it increases or decreases", "category": "application" },
+    { "key": "A09", "section": "S4", "title": "Droite, variations et signe", "en_title": "Line, variation and sign", "category": "application" }
+  ]
+}

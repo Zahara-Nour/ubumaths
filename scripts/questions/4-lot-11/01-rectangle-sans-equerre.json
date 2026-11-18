@@ -1,0 +1,202 @@
+{
+	"id": "a95aedfd-e91e-4eb4-91e6-3a440ecaa1d5",
+	"title": "Construire un rectangle sans équerre",
+	"description": "La diagonale est tracée : construire le rectangle au compas et à la règle graduée, par le cercle de diamètre la diagonale et les diagonales de même milieu et de même longueur",
+	"grades": ["4"],
+	"level": 3,
+	"delay": 240,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Construis le rectangle ${{if:s==0|A|}}{{if:s==1|E|}}{{if:s==2|M|}}{{if:s==3|R|}}{{if:s==0|B|}}{{if:s==1|F|}}{{if:s==2|N|}}{{if:s==3|S|}}{{if:s==0|C|}}{{if:s==1|G|}}{{if:s==2|P|}}{{if:s==3|T|}}{{if:s==0|D|}}{{if:s==1|H|}}{{if:s==2|Q|}}{{if:s==3|U|}}$ tel que ${{if:s==0|A|}}{{if:s==1|E|}}{{if:s==2|M|}}{{if:s==3|R|}}{{if:s==0|B|}}{{if:s==1|F|}}{{if:s==2|N|}}{{if:s==3|S|}} = {{eval:ab/10;d}}$ cm et ${{if:s==0|A|}}{{if:s==1|E|}}{{if:s==2|M|}}{{if:s==3|R|}}{{if:s==0|C|}}{{if:s==1|G|}}{{if:s==2|P|}}{{if:s==3|T|}} = {{eval:ac/10;d}}$ cm, sans équerre. La diagonale $[{{if:s==0|A|}}{{if:s==1|E|}}{{if:s==2|M|}}{{if:s==3|R|}}{{if:s==0|C|}}{{if:s==1|G|}}{{if:s==2|P|}}{{if:s==3|T|}}]$ est tracée.\n\n```figure-a-completer\nfenetre: 0 ; 12 ; 0 ; 9\nverifier: rectangle {{if:s==0|A|}}{{if:s==1|E|}}{{if:s==2|M|}}{{if:s==3|R|}} ; {{if:s==0|B|}}{{if:s==1|F|}}{{if:s==2|N|}}{{if:s==3|S|}} ; {{if:s==0|C|}}{{if:s==1|G|}}{{if:s==2|P|}}{{if:s==3|T|}} ; {{if:s==0|D|}}{{if:s==1|H|}}{{if:s==2|Q|}}{{if:s==3|U|}} : {{if:s==0|A|}}{{if:s==1|E|}}{{if:s==2|M|}}{{if:s==3|R|}}{{if:s==0|B|}}{{if:s==1|F|}}{{if:s==2|N|}}{{if:s==3|S|}} = {{eval:ab/10;d}} cm ; {{if:s==0|A|}}{{if:s==1|E|}}{{if:s==2|M|}}{{if:s==3|R|}}{{if:s==0|C|}}{{if:s==1|G|}}{{if:s==2|P|}}{{if:s==3|T|}} = {{eval:ac/10;d}} cm\n---\n{{if:s==0|A|}}{{if:s==1|E|}}{{if:s==2|M|}}{{if:s==3|R|}} = point({{eval:(120-ac)/20;d}}, 4.5, etiquette=\"gauche\")\n{{if:s==0|C|}}{{if:s==1|G|}}{{if:s==2|P|}}{{if:s==3|T|}} = point({{eval:(120+ac)/20;d}}, 4.5, etiquette=\"droite\")\nd = segment({{if:s==0|A|}}{{if:s==1|E|}}{{if:s==2|M|}}{{if:s==3|R|}}, {{if:s==0|C|}}{{if:s==1|G|}}{{if:s==2|P|}}{{if:s==3|T|}})\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0..3"
+				},
+				{
+					"name": "ab",
+					"expression": "30..60"
+				},
+				{
+					"name": "h",
+					"expression": "20..45"
+				},
+				{
+					"name": "ac",
+					"expression": "eval:2*h"
+				}
+			],
+			"conditions": ["ac>=ab+10"],
+			"correction": {
+				"steps": [
+					"Les diagonales d'un rectangle ont le $\\textcolor{{{color:primary.0}}}{\\text{même milieu}}$ et la $\\textcolor{{{color:primary.1}}}{\\text{même longueur}}$. On place $O$, milieu de $[{{if:s==0|A|}}{{if:s==1|E|}}{{if:s==2|M|}}{{if:s==3|R|}}{{if:s==0|C|}}{{if:s==1|G|}}{{if:s==2|P|}}{{if:s==3|T|}}]$ : règle posée en ${{if:s==0|A|}}{{if:s==1|E|}}{{if:s==2|M|}}{{if:s==3|R|}}$, ${{if:s==0|A|}}{{if:s==1|E|}}{{if:s==2|M|}}{{if:s==3|R|}}O = {{eval:ac/20;d}}$ cm.",
+					"Le triangle ${{if:s==0|A|}}{{if:s==1|E|}}{{if:s==2|M|}}{{if:s==3|R|}}{{if:s==0|B|}}{{if:s==1|F|}}{{if:s==2|N|}}{{if:s==3|S|}}{{if:s==0|C|}}{{if:s==1|G|}}{{if:s==2|P|}}{{if:s==3|T|}}$ est rectangle en ${{if:s==0|B|}}{{if:s==1|F|}}{{if:s==2|N|}}{{if:s==3|S|}}$ : ${{if:s==0|B|}}{{if:s==1|F|}}{{if:s==2|N|}}{{if:s==3|S|}}$ est sur le $\\textcolor{{{color:primary.0}}}{\\text{cercle de diamètre}}$ $[{{if:s==0|A|}}{{if:s==1|E|}}{{if:s==2|M|}}{{if:s==3|R|}}{{if:s==0|C|}}{{if:s==1|G|}}{{if:s==2|P|}}{{if:s==3|T|}}]$ (centre $O$, passant par ${{if:s==0|A|}}{{if:s==1|E|}}{{if:s==2|M|}}{{if:s==3|R|}}$). Il est aussi à ${{eval:ab/10;d}}$ cm de ${{if:s==0|A|}}{{if:s==1|E|}}{{if:s==2|M|}}{{if:s==3|R|}}$ : compas ouvert à ${{eval:ab/10;d}}$ cm, piqué en ${{if:s==0|A|}}{{if:s==1|E|}}{{if:s==2|M|}}{{if:s==3|R|}}$. ${{if:s==0|B|}}{{if:s==1|F|}}{{if:s==2|N|}}{{if:s==3|S|}}$ est au croisement des deux cercles.",
+					"${{if:s==0|D|}}{{if:s==1|H|}}{{if:s==2|Q|}}{{if:s==3|U|}}$ est sur la droite $({{if:s==0|B|}}{{if:s==1|F|}}{{if:s==2|N|}}{{if:s==3|S|}}O)$, de l'autre côté de $O$, avec ${{if:s==0|B|}}{{if:s==1|F|}}{{if:s==2|N|}}{{if:s==3|S|}}{{if:s==0|D|}}{{if:s==1|H|}}{{if:s==2|Q|}}{{if:s==3|U|}} = {{if:s==0|A|}}{{if:s==1|E|}}{{if:s==2|M|}}{{if:s==3|R|}}{{if:s==0|C|}}{{if:s==1|G|}}{{if:s==2|P|}}{{if:s==3|T|}} = {{eval:ac/10;d}}$ cm (règle posée en ${{if:s==0|B|}}{{if:s==1|F|}}{{if:s==2|N|}}{{if:s==3|S|}}$, dirigée vers $O$). On trace les côtés $[{{if:s==0|A|}}{{if:s==1|E|}}{{if:s==2|M|}}{{if:s==3|R|}}{{if:s==0|B|}}{{if:s==1|F|}}{{if:s==2|N|}}{{if:s==3|S|}}]$, $[{{if:s==0|B|}}{{if:s==1|F|}}{{if:s==2|N|}}{{if:s==3|S|}}{{if:s==0|C|}}{{if:s==1|G|}}{{if:s==2|P|}}{{if:s==3|T|}}]$, $[{{if:s==0|C|}}{{if:s==1|G|}}{{if:s==2|P|}}{{if:s==3|T|}}{{if:s==0|D|}}{{if:s==1|H|}}{{if:s==2|Q|}}{{if:s==3|U|}}]$ et $[{{if:s==0|D|}}{{if:s==1|H|}}{{if:s==2|Q|}}{{if:s==3|U|}}{{if:s==0|A|}}{{if:s==1|E|}}{{if:s==2|M|}}{{if:s==3|R|}}]$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "M1 : ABCD, AB = 4 cm, AC = 6 cm, B au-dessus",
+			"variationIndex": 0,
+			"variables": {
+				"s": "0",
+				"ab": "40",
+				"h": "30",
+				"ac": "60"
+			},
+			"answers": [
+				"regle(3;4.5;9;4.5;1)|cercle(3;4.5;6;4.5)|cercle(6;4.5;3;4.5)|cercle(3;4.5;7;4.5)|segment(3;4.5;5.666666666667;7.48142397)|segment(5.666666666667;7.48142397;9;4.5)|regle(5.666666666667;7.48142397;6;4.5;1)|segment(5.666666666667;7.48142397;6.333333333333;1.51857603)|segment(9;4.5;6.333333333333;1.51857603)|segment(6.333333333333;1.51857603;3;4.5)"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "M1 : B au-dessous de (AC)",
+			"variationIndex": 0,
+			"variables": {
+				"s": "0",
+				"ab": "40",
+				"h": "30",
+				"ac": "60"
+			},
+			"answers": [
+				"regle(3;4.5;9;4.5;1)|cercle(3;4.5;6;4.5)|cercle(6;4.5;3;4.5)|cercle(3;4.5;7;4.5)|segment(3;4.5;5.666666666667;1.51857603)|segment(5.666666666667;1.51857603;9;4.5)|regle(5.666666666667;1.51857603;6;4.5;1)|segment(5.666666666667;1.51857603;6.333333333333;7.48142397)|segment(9;4.5;6.333333333333;7.48142397)|segment(6.333333333333;7.48142397;3;4.5)"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "M1 : EFGH, EF = 3,5 cm, EG = 7,2 cm",
+			"variationIndex": 0,
+			"variables": {
+				"s": "1",
+				"ab": "35",
+				"h": "36",
+				"ac": "72"
+			},
+			"answers": [
+				"regle(2.4;4.5;9.6;4.5;1)|cercle(2.4;4.5;6;4.5)|cercle(6;4.5;2.4;4.5)|cercle(2.4;4.5;5.9;4.5)|segment(2.4;4.5;4.101388888889;7.558639542144)|segment(4.101388888889;7.558639542144;9.6;4.5)|regle(4.101388888889;7.558639542144;6;4.5;1)|segment(4.101388888889;7.558639542144;7.898611111111;1.441360457856)|segment(9.6;4.5;7.898611111111;1.441360457856)|segment(7.898611111111;1.441360457856;2.4;4.5)"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "M1 : MNPQ, MN = 6 cm, MP = 7 cm",
+			"variationIndex": 0,
+			"variables": {
+				"s": "2",
+				"ab": "60",
+				"h": "35",
+				"ac": "70"
+			},
+			"answers": [
+				"regle(2.5;4.5;9.5;4.5;1)|cercle(2.5;4.5;6;4.5)|cercle(6;4.5;2.5;4.5)|cercle(2.5;4.5;8.5;4.5)|segment(2.5;4.5;7.642857142857;1.409527478174)|segment(7.642857142857;1.409527478174;9.5;4.5)|regle(7.642857142857;1.409527478174;6;4.5;1)|segment(7.642857142857;1.409527478174;4.357142857143;7.590472521826)|segment(9.5;4.5;4.357142857143;7.590472521826)|segment(4.357142857143;7.590472521826;2.5;4.5)"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "M1 : RSTU, RS = 3 cm, RT = 9 cm (les plus longues)",
+			"variationIndex": 0,
+			"variables": {
+				"s": "3",
+				"ab": "30",
+				"h": "45",
+				"ac": "90"
+			},
+			"answers": [
+				"regle(1.5;4.5;10.5;4.5;1)|cercle(1.5;4.5;6;4.5)|cercle(6;4.5;1.5;4.5)|cercle(1.5;4.5;4.5;4.5)|segment(1.5;4.5;2.5;7.328427124746)|segment(2.5;7.328427124746;10.5;4.5)|regle(2.5;7.328427124746;6;4.5;1)|segment(2.5;7.328427124746;9.5;1.671572875254)|segment(10.5;4.5;9.5;1.671572875254)|segment(9.5;1.671572875254;1.5;4.5)"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "M3 : D au compas piqué en C",
+			"variationIndex": 0,
+			"variables": {
+				"s": "1",
+				"ab": "35",
+				"h": "36",
+				"ac": "72"
+			},
+			"answers": [
+				"regle(2.4;4.5;9.6;4.5;1)|cercle(2.4;4.5;6;4.5)|cercle(6;4.5;2.4;4.5)|cercle(2.4;4.5;5.9;4.5)|regle(9.6;4.5;2.4;4.5;1)|cercle(9.6;4.5;6.1;4.5)|segment(2.4;4.5;4.101388888889;7.558639542144)|segment(4.101388888889;7.558639542144;9.6;4.5)|segment(9.6;4.5;7.898611111111;1.441360457856)|segment(7.898611111111;1.441360457856;2.4;4.5)"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : B et D posés à l'œil",
+			"variationIndex": 0,
+			"variables": {
+				"s": "0",
+				"ab": "40",
+				"h": "30",
+				"ac": "60"
+			},
+			"answers": [
+				"segment(3;4.5;5.7;7.5)|segment(5.7;7.5;9;4.5)|segment(9;4.5;6.3;1.5)|segment(6.3;1.5;3;4.5)"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : compas ouvert à 4,5 cm au lieu de 4 cm",
+			"variationIndex": 0,
+			"variables": {
+				"s": "0",
+				"ab": "40",
+				"h": "30",
+				"ac": "60"
+			},
+			"answers": [
+				"regle(3;4.5;9;4.5;1)|cercle(3;4.5;6;4.5)|cercle(6;4.5;3;4.5)|cercle(3;4.5;7.5;4.5)|segment(3;4.5;6.375;7.476470224948)|segment(6.375;7.476470224948;9;4.5)|regle(6.375;7.476470224948;6;4.5;1)|segment(6.375;7.476470224948;5.625;1.523529775052)|segment(9;4.5;5.625;1.523529775052)|segment(5.625;1.523529775052;3;4.5)"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : angle en B pas droit (B hors du cercle de diamètre [AC])",
+			"variationIndex": 0,
+			"variables": {
+				"s": "0",
+				"ab": "40",
+				"h": "30",
+				"ac": "60"
+			},
+			"answers": [
+				"regle(3;4.5;9;4.5;1)|cercle(3;4.5;6;4.5)|cercle(3;4.5;7;4.5)|regle(9;4.5;3;4.5;1)|cercle(9;4.5;4;4.5)|segment(3;4.5;5.25;7.807189138831)|segment(5.25;7.807189138831;9;4.5)|regle(5.25;7.807189138831;6;4.5;1)|segment(5.25;7.807189138831;6.576977605394;1.95576790679)|segment(9;4.5;6.576977605394;1.95576790679)|segment(6.576977605394;1.95576790679;3;4.5)"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : [BD] arrêté à 6,5 cm (diagonales de longueurs différentes)",
+			"variationIndex": 0,
+			"variables": {
+				"s": "0",
+				"ab": "40",
+				"h": "30",
+				"ac": "60"
+			},
+			"answers": [
+				"regle(3;4.5;9;4.5;1)|cercle(3;4.5;6;4.5)|cercle(6;4.5;3;4.5)|cercle(3;4.5;7;4.5)|segment(3;4.5;5.666666666667;7.48142397)|segment(5.666666666667;7.48142397;9;4.5)|regle(5.666666666667;7.48142397;6;4.5;1)|segment(5.666666666667;7.48142397;6.388888888889;1.021672035)|segment(9;4.5;6.388888888889;1.021672035)|segment(6.388888888889;1.021672035;3;4.5)"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

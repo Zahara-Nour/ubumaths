@@ -21,13 +21,13 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { uuidSchema } from '$lib/server/validation/common';
-import { saveAsTemplateSchema } from '$lib/server/validation/notebook-templates';
-import type { NotebookContent, NotebookCell } from '$lib/types/notebook';
-import { asNotebookContent } from '$lib/types/notebook';
-import { toJson } from '$lib/types/database-helpers';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { uuidSchema } from '#lib/server/validation/common.ts';
+import { saveAsTemplateSchema } from '#lib/server/validation/notebook-templates.ts';
+import type { NotebookContent, NotebookCell } from '#lib/types/notebook.ts';
+import { asNotebookContent } from '#lib/types/notebook.ts';
+import { toJson } from '#lib/types/database-helpers.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/python-notebooks/[id]/save-as-template/+server');
 

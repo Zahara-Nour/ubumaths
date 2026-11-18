@@ -562,13 +562,19 @@ export type { StatChartNode } from './stat-chart';
 export type { QrNode } from './qr';
 export type { ScratchNode } from './scratch';
 export type { HorlogeNode } from './horloge';
+export type { TortueNode } from './tortue';
+export type { CalculNode } from './calcul';
+export type { RobotNode } from './robot';
 export type { PartageNode } from './partage';
 export type { EspaceNode } from './espace';
 export type { OperationNode } from './operation';
 export type { CollectionNode } from './collection';
 export type { MonnaieNode } from './monnaie';
+export type { SchemaBarresNode } from './schema-barres';
 export type { ChoiceNode } from './choix';
 export type { RangerNode } from './ranger';
+export type { AssocierNode } from './associer';
+export type { TrousNode } from './trous';
 
 // Import the types for use in BlockNode union
 import type { VariationTableNode } from './variation-table';
@@ -581,13 +587,19 @@ import type { StatChartNode } from './stat-chart';
 import type { QrNode } from './qr';
 import type { ScratchNode } from './scratch';
 import type { HorlogeNode } from './horloge';
+import type { TortueNode } from './tortue';
+import type { CalculNode } from './calcul';
+import type { RobotNode } from './robot';
 import type { PartageNode } from './partage';
 import type { EspaceNode } from './espace';
 import type { OperationNode } from './operation';
 import type { CollectionNode } from './collection';
 import type { MonnaieNode } from './monnaie';
+import type { SchemaBarresNode } from './schema-barres';
 import type { ChoiceNode } from './choix';
 import type { RangerNode } from './ranger';
+import type { AssocierNode } from './associer';
+import type { TrousNode } from './trous';
 
 /**
  * Union of block nodes (top-level document structure)
@@ -613,13 +625,19 @@ export type BlockNode =
 	| QrNode
 	| ScratchNode
 	| HorlogeNode
+	| TortueNode
+	| CalculNode
+	| RobotNode
 	| PartageNode
 	| EspaceNode
 	| OperationNode
 	| CollectionNode
 	| MonnaieNode
+	| SchemaBarresNode
 	| ChoiceNode
-	| RangerNode;
+	| RangerNode
+	| AssocierNode
+	| TrousNode;
 
 // ============================================================================
 // COMPOSITE NODES

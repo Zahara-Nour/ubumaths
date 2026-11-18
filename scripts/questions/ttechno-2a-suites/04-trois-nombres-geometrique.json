@@ -1,0 +1,348 @@
+{
+	"id": "a46e60cf-69d5-4911-b905-67b873fd6887",
+	"title": "Trois nombres consécutifs d'une suite géométrique ?",
+	"description": "Prouver que trois nombres positifs sont, ou ne sont pas, des termes consécutifs d'une suite géométrique, en comparant les quotients",
+	"grades": ["T_TECHNO"],
+	"level": 2,
+	"delay": 45,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "On considère les nombres $a={{x}}$, $b={{eval:x*q}}$ et $c={{eval:x*q^2+s*d}}$.\n\nSont-ils, dans cet ordre, trois termes consécutifs d'une suite géométrique ?\n\n```choix\nmelanger: non\n- oui, car $\\dfrac{b}{a}=\\dfrac{c}{b}$\n- non, car $\\dfrac{b}{a}\\neq\\dfrac{c}{b}$\n- oui, car $b-a=c-b$\n```",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "2..9"
+				},
+				{
+					"name": "q",
+					"expression": "2..4"
+				},
+				{
+					"name": "s",
+					"expression": "0|1"
+				},
+				{
+					"name": "d",
+					"expression": "1..5"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{s}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Trois nombres strictement positifs $a$, $b$, $c$ sont, dans cet ordre, des termes consécutifs d'une suite géométrique si et seulement si $\\dfrac{b}{a}=\\dfrac{c}{b}$ (on multiplie toujours par le même nombre).",
+					"$\\dfrac{b}{a}=\\dfrac{ {{eval:x*q}} }{ {{x}} }={{q}}$ et $\\dfrac{c}{b}=\\dfrac{ {{eval:x*q^2+s*d}} }{ {{eval:x*q}} }{{if:s==0|={{q}}|\\neq{{q}}}}$.",
+					"{{if:s==0|Les deux quotients sont égaux : **oui**, ce sont trois termes consécutifs d'une suite géométrique de raison ${{q}}$.|Les deux quotients sont différents : **non**.}}"
+				]
+			}
+		},
+		{
+			"statement": "On considère les nombres $a={{x}}$, $b={{eval:x*q}}$ et $c={{eval:(1-s)*x*q^2+s*(2*x*q-x)}}$.\n\nSont-ils, dans cet ordre, trois termes consécutifs d'une suite géométrique ?\n\n```choix\nmelanger: non\n- oui, car $\\dfrac{b}{a}=\\dfrac{c}{b}$\n- non, car $\\dfrac{b}{a}\\neq\\dfrac{c}{b}$\n- oui, car $b-a=c-b$\n```",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "2..9"
+				},
+				{
+					"name": "q",
+					"expression": "2..3"
+				},
+				{
+					"name": "s",
+					"expression": "0|1"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{s}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Trois nombres strictement positifs $a$, $b$, $c$ sont, dans cet ordre, des termes consécutifs d'une suite géométrique si et seulement si $\\dfrac{b}{a}=\\dfrac{c}{b}$ (on multiplie toujours par le même nombre).",
+					"$\\dfrac{b}{a}=\\dfrac{ {{eval:x*q}} }{ {{x}} }={{q}}$ et $\\dfrac{c}{b}=\\dfrac{ {{eval:(1-s)*x*q^2+s*(2*x*q-x)}} }{ {{eval:x*q}} }{{if:s==0|={{q}}|={{eval:(2*q-1)/q}}\\neq{{q}}}}$.",
+					"{{if:s==0|Les deux quotients sont égaux : **oui**, suite géométrique de raison ${{q}}$.|Les deux quotients sont différents : **non**. Ici $b-a=c-b$ : ce sont trois termes consécutifs d'une suite **arithmétique**, pas géométrique.}}"
+				]
+			}
+		},
+		{
+			"statement": "Le prix d'un abonnement était de ${{p}}~\\unit{€}$ en 2023, de ${{eval:p*(1+t/100);d}}~\\unit{€}$ en 2024 et de ${{eval:(1-s)*p*(1+t/100)^2+s*p*(1+2*t/100);d}}~\\unit{€}$ en 2025.\n\nCes trois prix sont-ils trois termes consécutifs d'une suite géométrique ?\n\n```choix\nmelanger: non\n- oui, car le prix est multiplié par le même nombre chaque année\n- non, car le prix n'est pas multiplié par le même nombre chaque année\n- oui, car le prix augmente chaque année\n```",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "100|200|400|500"
+				},
+				{
+					"name": "t",
+					"expression": "5|10|20"
+				},
+				{
+					"name": "s",
+					"expression": "0|1"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{s}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Trois nombres strictement positifs $a$, $b$, $c$ sont, dans cet ordre, des termes consécutifs d'une suite géométrique si et seulement si $\\dfrac{b}{a}=\\dfrac{c}{b}$ (on multiplie toujours par le même nombre).",
+					"$\\dfrac{ {{eval:p*(1+t/100);d}} }{ {{p}} }={{eval:1+t/100;d}}$ et $\\dfrac{ {{eval:(1-s)*p*(1+t/100)^2+s*p*(1+2*t/100);d}} }{ {{eval:p*(1+t/100);d}} }{{if:s==0|={{eval:1+t/100;d}}|\\approx{{eval:round(1000*(1+2*t/100)/(1+t/100))/1000;d}}}}$.",
+					"{{if:s==0|Le prix est multiplié par ${{eval:1+t/100;d}}$ chaque année : **oui**, suite géométrique de raison ${{eval:1+t/100;d}}$.|Les deux quotients sont différents : **non**. Le prix augmente de ${{eval:p*t/100;d}}~\\unit{€}$ chaque année : c'est une suite **arithmétique**.}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "choix : bonne réponse 0",
+			"variationIndex": 0,
+			"variables": {
+				"x": "3",
+				"q": "2",
+				"s": "0",
+				"d": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "choix 1 refusé",
+			"variationIndex": 0,
+			"variables": {
+				"x": "3",
+				"q": "2",
+				"s": "0",
+				"d": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "choix 2 refusé",
+			"variationIndex": 0,
+			"variables": {
+				"x": "3",
+				"q": "2",
+				"s": "0",
+				"d": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "choix : bonne réponse 1",
+			"variationIndex": 0,
+			"variables": {
+				"x": "3",
+				"q": "2",
+				"s": "1",
+				"d": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "choix 0 refusé",
+			"variationIndex": 0,
+			"variables": {
+				"x": "3",
+				"q": "2",
+				"s": "1",
+				"d": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "choix 2 refusé",
+			"variationIndex": 0,
+			"variables": {
+				"x": "3",
+				"q": "2",
+				"s": "1",
+				"d": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "choix : bonne réponse 0",
+			"variationIndex": 1,
+			"variables": {
+				"x": "4",
+				"q": "2",
+				"s": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "choix 1 refusé",
+			"variationIndex": 1,
+			"variables": {
+				"x": "4",
+				"q": "2",
+				"s": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "choix 2 refusé",
+			"variationIndex": 1,
+			"variables": {
+				"x": "4",
+				"q": "2",
+				"s": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "choix : bonne réponse 1",
+			"variationIndex": 1,
+			"variables": {
+				"x": "4",
+				"q": "2",
+				"s": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "choix 0 refusé",
+			"variationIndex": 1,
+			"variables": {
+				"x": "4",
+				"q": "2",
+				"s": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "choix 2 refusé",
+			"variationIndex": 1,
+			"variables": {
+				"x": "4",
+				"q": "2",
+				"s": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "choix : bonne réponse 0",
+			"variationIndex": 2,
+			"variables": {
+				"p": "200",
+				"t": "10",
+				"s": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "choix 1 refusé",
+			"variationIndex": 2,
+			"variables": {
+				"p": "200",
+				"t": "10",
+				"s": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "choix 2 refusé",
+			"variationIndex": 2,
+			"variables": {
+				"p": "200",
+				"t": "10",
+				"s": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "choix : bonne réponse 1",
+			"variationIndex": 2,
+			"variables": {
+				"p": "200",
+				"t": "10",
+				"s": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "choix 0 refusé",
+			"variationIndex": 2,
+			"variables": {
+				"p": "200",
+				"t": "10",
+				"s": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "choix 2 refusé",
+			"variationIndex": 2,
+			"variables": {
+				"p": "200",
+				"t": "10",
+				"s": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -14,14 +14,14 @@
 	 * <SchoolConfigModal bind:open={showModal} school={selectedSchool} onsave={handleSave} />
 	 */
 
-	import * as Dialog from '$lib/components/ui/dialog';
-	import { Button } from '$lib/components/ui/button';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import TimezoneSelect from './TimezoneSelect.svelte';
 	import WeekConfigEditor from './WeekConfigEditor.svelte';
-	import { DEFAULT_TIMEZONE } from '$lib/utils/timezones';
-	import { DEFAULT_WEEK_CONFIG, type WeekConfig } from '$lib/utils/week-config';
-	import type { SchoolTimetable } from '$lib/utils/timetable';
+	import { DEFAULT_TIMEZONE } from '#lib/utils/timezones.ts';
+	import { DEFAULT_WEEK_CONFIG, type WeekConfig } from '#lib/utils/week-config.ts';
+	import type { SchoolTimetable } from '#lib/utils/timetable.ts';
 
 	type School = {
 		id: string;

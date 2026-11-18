@@ -12,15 +12,15 @@
 -->
 
 <script lang="ts">
-	import type { EvaluationSubmitResponse } from '$lib/types/evaluation-attempt';
-	import type { TestAnswerResult } from '$lib/types/test';
-	import { formatGrade } from '$lib/types/evaluation';
-	import CorrectionCard from '$lib/components/questions/CorrectionCard.svelte';
-	import * as Card from '$lib/components/ui/card';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Button } from '$lib/components/ui/button';
+	import type { EvaluationSubmitResponse } from '#lib/types/evaluation-attempt.ts';
+	import type { TestAnswerResult } from '#lib/types/test.ts';
+	import { formatGrade } from '#lib/types/evaluation.ts';
+	import CorrectionCard from '#lib/components/questions/CorrectionCard.svelte';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import { ArrowLeft, Clock } from '@lucide/svelte';
-	import { cn } from '$lib/utils';
+	import { cn } from '#lib/utils.ts';
 
 	interface Props {
 		result: EvaluationSubmitResponse;

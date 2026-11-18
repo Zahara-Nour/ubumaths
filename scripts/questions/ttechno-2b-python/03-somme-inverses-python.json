@@ -1,0 +1,274 @@
+{
+	"id": "e1f5fa4d-e33b-47ad-81de-880d9b6baa94",
+	"title": "Fonction Python : somme des n premiers inverses",
+	"description": "Compléter l'accumulateur et les bornes de la boucle d'une fonction Python qui calcule la somme des n premiers inverses, la faire tourner, repérer la division par zéro",
+	"grades": ["T_TECHNO"],
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "La fonction `somme_inverses` doit renvoyer $1+\\dfrac{1}{2}+\\cdots+\\dfrac{1}{n}$.\n\n```python\ndef somme_inverses(n):\n    s = 0\n    for k in range(1, n + 1):\n        ...\n    return s\n```\n\nQue faut-il écrire à la place des points de suspension ?\n\n```choix\nmelanger: non\n- `s = s + 1 / n`\n- `s = s + k`\n- `s = 1 / k`\n- `s = s + 1 / k`\n```",
+			"variables": [],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "3"
+				}
+			],
+			"correction": {
+				"steps": [
+					"`s` sert d'accumulateur : il part de $0$ et, à chaque tour de boucle, on lui ajoute le terme du rang `k`.",
+					"Le terme du rang `k` est $\\dfrac{1}{k}$, qui s'écrit `1 / k` en Python.",
+					"`1 / n` ajouterait $n$ fois le même nombre ; `s + k` sommerait les entiers ; avec `s = 1 / k`, `s` ne garderait que le dernier inverse.",
+					"La ligne est donc `s = s + 1 / k`."
+				]
+			}
+		},
+		{
+			"statement": "La fonction `somme_inverses` doit renvoyer $1+\\dfrac{1}{2}+\\cdots+\\dfrac{1}{n}$.\n\n```python\ndef somme_inverses(n):\n    s = 0\n    for k in range(...):\n        s = s + 1 / k\n    return s\n```\n\nQue faut-il écrire entre les parenthèses de `range` ?\n\n```choix\nmelanger: non\n- `n + 1`\n- `1, n + 1`\n- `n`\n- `1, n`\n```",
+			"variables": [],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"`range(a, b)` donne les entiers de `a` à `b - 1` : il s'arrête **juste avant** `b`.",
+					"`k` doit prendre les valeurs $1$, $2$, …, $n$ : on écrit `range(1, n + 1)`.",
+					"`range(n + 1)` et `range(n)` commencent à $0$ : au premier tour, Python calcule `1 / 0` et s'arrête sur une erreur. `range(1, n)` oublie $\\dfrac{1}{n}$."
+				]
+			}
+		},
+		{
+			"statement": "La fonction `somme_inverses` doit renvoyer $1+\\dfrac{1}{2}+\\cdots+\\dfrac{1}{n}$.\n\n```python\ndef somme_inverses(n):\n    s = 0\n    for k in range(1, n + 1):\n        s = s + 1 / k\n    return s\n```\n\nQuelle est la valeur exacte du nombre que `somme_inverses({{n}})` calcule ? Donne-la sous forme de fraction.\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2|3|4"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:{{if:n==2|3/2|{{if:n==3|11/6|25/12}}}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"`k` prend les valeurs entières de $1$ à ${{n}}$ : la fonction calcule ${{if:n==2|1+\\dfrac{1}{2}|{{if:n==3|1+\\dfrac{1}{2}+\\dfrac{1}{3}|1+\\dfrac{1}{2}+\\dfrac{1}{3}+\\dfrac{1}{4}}}}}$.",
+					"Python l'affiche sous forme décimale (valeur approchée) ; sa valeur exacte est ${{if:n==2|1+\\dfrac{1}{2}|{{if:n==3|1+\\dfrac{1}{2}+\\dfrac{1}{3}|1+\\dfrac{1}{2}+\\dfrac{1}{3}+\\dfrac{1}{4}}}}}=\\textcolor{{{color:primary.0}}}{{{eval:{{if:n==2|3/2|{{if:n==3|11/6|25/12}}}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Lucas a écrit cette fonction pour calculer $1+\\dfrac{1}{2}+\\cdots+\\dfrac{1}{n}$.\n\n```python\ndef somme_inverses(n):\n    s = 0\n    for k in range(n + 1):\n        s = s + 1 / k\n    return s\n```\n\nQue se passe-t-il quand on appelle `somme_inverses({{n}})` ?\n\n```choix\nmelanger: non\n- elle renvoie la bonne somme\n- elle renvoie la somme avec un terme de trop\n- Python s'arrête sur une erreur : division par zéro\n- elle renvoie $0$\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "5..10"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"`range(n + 1)` commence à $0$ : au premier tour, `k` vaut $0$.",
+					"Python doit alors calculer `1 / 0` : la division par zéro est impossible, le programme **s'arrête sur une erreur** (`ZeroDivisionError`).",
+					"Il faut écrire `range(1, n + 1)`."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "choix : bonne réponse 3",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "choix 0 refusé",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "choix 1 refusé",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "choix 2 refusé",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "choix : bonne réponse 1",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "choix 0 refusé",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "choix 2 refusé",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "choix 3 refusé",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "n = 3 : 11/6",
+			"variationIndex": 2,
+			"variables": {
+				"n": "3"
+			},
+			"answers": ["\\frac{11}{6}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3/6",
+			"variationIndex": 2,
+			"variables": {
+				"n": "3"
+			},
+			"answers": ["\\frac{3}{6}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1/6",
+			"variationIndex": 2,
+			"variables": {
+				"n": "3"
+			},
+			"answers": ["\\frac{1}{6}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1/2 + 1/3 sans le 1 (5/6)",
+			"variationIndex": 2,
+			"variables": {
+				"n": "3"
+			},
+			"answers": ["\\frac{5}{6}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "n = 4 : 25/12",
+			"variationIndex": 2,
+			"variables": {
+				"n": "4"
+			},
+			"answers": ["\\frac{25}{12}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "n = 2 : 3/2",
+			"variationIndex": 2,
+			"variables": {
+				"n": "2"
+			},
+			"answers": ["\\frac{3}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "choix : bonne réponse 2",
+			"variationIndex": 3,
+			"variables": {
+				"n": "6"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "choix 0 refusé",
+			"variationIndex": 3,
+			"variables": {
+				"n": "6"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "choix 1 refusé",
+			"variationIndex": 3,
+			"variables": {
+				"n": "6"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "choix 3 refusé",
+			"variationIndex": 3,
+			"variables": {
+				"n": "6"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

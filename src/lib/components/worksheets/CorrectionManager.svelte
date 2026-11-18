@@ -1,21 +1,21 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import { onMount } from 'svelte';
 	import { SvelteMap } from 'svelte/reactivity';
-	import { Button } from '$lib/components/ui/button';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Input } from '$lib/components/ui/input';
-	import * as Popover from '$lib/components/ui/popover';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import * as Popover from '#lib/components/ui/popover/index.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import {
 		compileTypstDocument,
 		fallbackWarning
-	} from '$lib/typst/compiler/correction-fonts-compiler';
+	} from '#lib/typst/compiler/correction-fonts-compiler.ts';
 	import { Eye, Loader2, EyeOff, Settings2, FileText, AlertTriangle } from '@lucide/svelte';
-	import type { WorksheetAssignmentRow, CorrectionReleaseMode } from '$lib/types/worksheets';
+	import type { WorksheetAssignmentRow, CorrectionReleaseMode } from '#lib/types/worksheets.ts';
 
 	interface ExerciseWithVisibility {
 		id: string;

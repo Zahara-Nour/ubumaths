@@ -16,7 +16,7 @@
  * - Uses test queries without exposing real user data
  */
 import type { PageServerLoad } from './$types';
-import { requireAdmin } from '$lib/server/middleware/auth';
+import { requireAdmin } from '#lib/server/middleware/auth.ts';
 
 interface PolicyTest {
 	table: string;

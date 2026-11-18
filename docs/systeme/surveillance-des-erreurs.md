@@ -6,7 +6,7 @@ couvre:
   - 'src/routes/(protected)/dev/erreurs/surveillance/**'
   - 'src/routes/(protected)/dashboard/bug-reports/**'
   - 'src/lib/components/bug-reports/**'
-  - 'src/lib/utils/{errorMonitoring,freezeDetection,errors,version,web-vitals-visibilite,inp-tracker}.ts'
+  - 'src/lib/utils/{errorMonitoring,freezeDetection,errors,version,web-vitals-visibilite,inp-tracker,analytics-redact}.ts'
   - src/lib/stores/bugReportsConfig.svelte.ts
   - src/lib/types/bug-reports.ts
   - 'src/lib/server/{errorMonitoring,healthStats,bug-report-errors,bug-report-export,bug-report-screenshots,docs-scanner,markdown-parser,search}.ts'
@@ -51,7 +51,9 @@ Trois boucles distinctes :
 - `src/hooks.client.ts` appelle `initErrorMonitoring()`, `initWebVitals()` et
   `initFreezeDetection()` au chargement. Son `handleError` envoie lui-même un `fetch`
   vers `/api/errors/log` pour les erreurs que SvelteKit intercepte (rendu, `$effect`,
-  `load`). Une 404 de navigation part en `warning`, le reste en `error`.
+  `load`). SvelteKit 3 lui passe toutes les erreurs avec un `kind` : une 404 de
+  navigation (`framework`) part en `warning`, une exception (`unknown`) en `error`, une
+  erreur voulue (`app`, levée par `error(...)`) n'est pas journalisée.
 - `src/lib/utils/errorMonitoring.ts` :
   - écoute `error` et `unhandledrejection` sur `window` ;
   - API manuelle : `captureError`, `captureValidationError`, `capturePerformance`,
@@ -272,6 +274,11 @@ défaut `DEFAULT_BUG_REPORTS_CONFIG` (tout à `true`). Réglage : `BugReportsCon
   adresses mail dans le message, la pile, l'URL **et toutes les valeurs texte** des en-têtes, du
   corps et du contexte, quel que soit le nom de la clé (depuis le 2026-10-13). Aucun appelant
   ne range plus `user_email` dans le contexte : `user_id` suffit.
+- Le jeton d'un lien du carnet de liaison (ADR 0040) est dans le CHEMIN (`/carnet/<jeton>`,
+  `/carnet/confirmer/<jeton>`), que `sanitizeUrl` ne voit pas : `logError` le remplace par
+  `[token]` dans l'URL et le message (`redactSecretUrl`, `src/lib/utils/analytics-redact.ts`,
+  depuis le 2026-11-16). Toutes les sources y passent : navigateur (`/api/errors/log`), requête
+  lente et exception de `hooks.server.ts`.
 - Une erreur porte `user_id` et `user_role` si l'utilisateur est connecté.
 - Un signalement porte l'URL, le user-agent, les sélecteurs des dernières actions. Les
   erreurs récentes de l'auteur n'y sont **pas** enregistrées : son auteur peut le relire, et
@@ -335,7 +342,8 @@ rapport en UUID. Exceptions : voir Écarts.
   `failed` et `success` vaut `false` ; capture non rattachée au rapport → 403 et fichier retiré
   du bucket.
 - `src/lib/server/__tests__/errorMonitoring-journal.test.ts` : adresses masquées dans le
-  contexte et l'URL, message de l'alerte critique échappé.
+  contexte et l'URL, jeton du carnet masqué dans l'URL et le message, message de l'alerte
+  critique échappé.
 - `src/routes/api/errors/log/__tests__/log.test.ts` : `critical` ramené à `error` sans compte approuvé,
   taille du contexte bornée.
 - `tests/integration/database/error-monitoring-triggers.test.ts` : empreinte SHA-256 et

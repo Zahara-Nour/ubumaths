@@ -1,5 +1,5 @@
 <script lang="ts">
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
 	import DslDemo from '../../DslDemo.svelte';
 
 	const exponentialDecay = `f = courbe("y = exp(-x)")

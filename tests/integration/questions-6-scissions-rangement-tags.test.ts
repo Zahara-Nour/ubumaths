@@ -5,7 +5,7 @@
  * Migration `20261028234500_questions_6_scissions_rangement_tags` : les 7 brouillons de 6e créés
  * le 2026-10-28 par scripts/create-questions.ts (scripts/questions/6-fractions-scissions/, sans
  * nœud ni tag) vont sur le nœud et le point de leur modèle d'origine (02, 03, 04, 08), un seul
- * point chacun (ADR 0020). Décisions de David (journal docs/wip/questions-6-progress.md § 12).
+ * point chacun (ADR 0020). Décisions de David (journal docs/archive/wip/questions-6-progress.md § 12).
  *
  * Les modèles n'existent qu'en production. Le test fabrique donc l'état de la prod — des copies
  * minimales portant les VRAIS identifiants, en 6e, brouillons, sans nœud ni tag — puis rejoue la

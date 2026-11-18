@@ -17,13 +17,13 @@ import { describe, it, expect } from 'vitest';
 import { generateInstance } from '../generator/instance-generator';
 import { toPublicQuestion } from '../public-question';
 import type { QuestionInstance, QuestionTemplate } from '../types';
-import { templateMarkdown } from '$lib/ubumark';
-import '$lib/questions/construction/positions-setup';
-import { parseEspaceContent } from '$lib/ubumark/parser/espace-parser';
-import { readConstructionHeader } from '$lib/ubumark/parser/construction-parser';
-import { sideColumns } from '$lib/ubumark/utils/cubes-gestes';
-import { completerStart } from '$lib/ubumark/utils/patron-gestes';
-import type { CubesSpec, PatronSpec } from '$lib/ubumark/types/espace';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
+import '#lib/questions/construction/positions-setup.ts';
+import { parseEspaceContent } from '#lib/ubumark/parser/espace-parser.ts';
+import { readConstructionHeader } from '#lib/ubumark/parser/construction-parser.ts';
+import { sideColumns } from '#lib/ubumark/utils/cubes-gestes.ts';
+import { completerStart } from '#lib/ubumark/utils/patron-gestes.ts';
+import type { CubesSpec, PatronSpec } from '#lib/ubumark/types/espace.ts';
 
 // Constantes
 const META = { position: 0, delaySeconds: 20 };
@@ -207,6 +207,18 @@ describe('figure à compléter (```figure-a-completer)', () => {
 		expect(masked).toContain('y = demidroite(O, C)');
 		// L'instance complète (jugée par le serveur) ne bouge pas
 		expect(body(full.statement, 'figure-a-completer')).toContain('rotation(A, angle=50');
+	});
+
+	it('segment à mesurer (n° 26) : verifier: mesure AB reste, les points calculés en coordonnées', () => {
+		const { statement } = sent(
+			`Mesure le segment.\n\n${block('figure-a-completer', 'fenetre: 0 ; 12 ; 0 ; 6', 'verifier: mesure AB en mm', '---', 'A = point(2, 3)', 'C = point(14, 3, visible=faux)', 'B = milieu(A, C)', 's = segment(A, B)')}`
+		);
+		const masked = body(statement, 'figure-a-completer');
+		const header = readConstructionHeader(masked);
+		expect(header.errors).toEqual([]);
+		expect(header.spec.checks).toMatchObject([{ kind: 'mesure_segment', unit: 'mm' }]);
+		expect(masked).toContain('B = point(8, 3)');
+		expect(masked).not.toMatch(/milieu/);
 	});
 
 	it('papier uni : la palette des instruments est écrite (lot 2b)', () => {

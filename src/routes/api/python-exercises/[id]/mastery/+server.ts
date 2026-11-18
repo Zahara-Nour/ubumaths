@@ -11,10 +11,10 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { validateUuidParam } from '$lib/server/validation/params';
-import { pythonMasterySingleQuerySchema } from '$lib/server/validation/python-exercises';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { validateUuidParam } from '#lib/server/validation/params.ts';
+import { pythonMasterySingleQuerySchema } from '#lib/server/validation/python-exercises.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/python-exercises/[id]/mastery/+server');
 

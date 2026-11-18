@@ -1,7 +1,7 @@
 import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { EvaluationError, getStudentAssignments } from '$lib/server/evaluations';
-import { createServerLogger } from '$lib/utils/logger';
+import { EvaluationError, getStudentAssignments } from '#lib/server/evaluations.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('(protected)/dashboard/student/assessments/+page.server');
 

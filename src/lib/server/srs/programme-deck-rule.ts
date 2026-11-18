@@ -15,7 +15,7 @@
  * dernier, la règle doit rester la vraie.
  */
 
-import { isCourseQuestion } from '$lib/questions/types';
+import { isCourseQuestion } from '#lib/questions/types.ts';
 
 // Types
 /** Ce que la règle lit d'un modèle (`question_templates`). */

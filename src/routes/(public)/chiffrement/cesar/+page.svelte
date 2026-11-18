@@ -1,13 +1,13 @@
 <script lang="ts">
-	import MySelect from '$lib/components/MySelect.svelte';
-	import AlphabetStrip from '$lib/components/ciphers/AlphabetStrip.svelte';
-	import CaesarBruteForce from '$lib/components/ciphers/CaesarBruteForce.svelte';
-	import CipherWorkbench from '$lib/components/ciphers/CipherWorkbench.svelte';
-	import FrequencyChart from '$lib/components/ciphers/FrequencyChart.svelte';
-	import { ALPHABET } from '$lib/ciphers/alphabet';
-	import { caesarDecrypt, caesarEncrypt } from '$lib/ciphers/caesar';
-	import { attempt } from '$lib/ciphers/outcome';
-	import SeoHead from '$lib/seo/SeoHead.svelte';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import AlphabetStrip from '#lib/components/ciphers/AlphabetStrip.svelte';
+	import CaesarBruteForce from '#lib/components/ciphers/CaesarBruteForce.svelte';
+	import CipherWorkbench from '#lib/components/ciphers/CipherWorkbench.svelte';
+	import FrequencyChart from '#lib/components/ciphers/FrequencyChart.svelte';
+	import { ALPHABET } from '#lib/ciphers/alphabet.ts';
+	import { caesarDecrypt, caesarEncrypt } from '#lib/ciphers/caesar.ts';
+	import { attempt } from '#lib/ciphers/outcome.ts';
+	import SeoHead from '#lib/seo/SeoHead.svelte';
 
 	// Constantes
 	const PLAIN = 'Rendez-vous à minuit au bord de la Vistule. Apportez les phynances !';

@@ -10,7 +10,7 @@
  */
 
 import { z } from 'zod';
-import { SHORT_LINK_CODE, shortLinkPath } from '$lib/validation/short-link';
+import { SHORT_LINK_CODE, shortLinkPath } from '#lib/validation/short-link.ts';
 
 // ============================================================================
 // CONSTANTES

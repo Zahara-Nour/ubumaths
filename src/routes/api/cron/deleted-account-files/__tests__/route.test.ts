@@ -3,16 +3,16 @@
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { GET, POST } from '../+server';
-import { sweepDeletedAccountFiles } from '$lib/server/deleted-account-files';
-import { sweepOrphanMessageAttachments } from '$lib/server/message-attachments';
-import { getEnv } from '$lib/server/env';
+import { sweepDeletedAccountFiles } from '#lib/server/deleted-account-files.ts';
+import { sweepOrphanMessageAttachments } from '#lib/server/message-attachments.ts';
+import { getEnv } from '#lib/server/env.ts';
 
-vi.mock('$lib/server/env', () => ({ getEnv: vi.fn() }));
-vi.mock('$lib/server/deleted-account-files', () => ({ sweepDeletedAccountFiles: vi.fn() }));
-vi.mock('$lib/server/message-attachments', () => ({ sweepOrphanMessageAttachments: vi.fn() }));
+vi.mock('#lib/server/env.ts', () => ({ getEnv: vi.fn() }));
+vi.mock('#lib/server/deleted-account-files.ts', () => ({ sweepDeletedAccountFiles: vi.fn() }));
+vi.mock('#lib/server/message-attachments.ts', () => ({ sweepOrphanMessageAttachments: vi.fn() }));
 
 const rpc = vi.fn();
-vi.mock('$lib/server/serviceRoleClient', () => ({
+vi.mock('#lib/server/serviceRoleClient.ts', () => ({
 	createServiceRoleClient: () => ({ rpc })
 }));
 

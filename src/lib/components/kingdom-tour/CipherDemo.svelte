@@ -4,8 +4,8 @@
 	 * tourne sous les yeux. Le vrai module du Cabinet Noir (`caesarEncrypt`), sans l'établi.
 	 */
 	import { resolve } from '$app/paths';
-	import { ALPHABET } from '$lib/ciphers/alphabet';
-	import { caesarEncrypt } from '$lib/ciphers/caesar';
+	import { ALPHABET } from '#lib/ciphers/alphabet.ts';
+	import { caesarEncrypt } from '#lib/ciphers/caesar.ts';
 
 	// Constantes
 

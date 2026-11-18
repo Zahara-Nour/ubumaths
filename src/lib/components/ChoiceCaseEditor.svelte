@@ -21,19 +21,19 @@
 -->
 
 <script lang="ts">
-	import { templateMarkdown, type TemplateMarkdown } from '$lib/ubumark';
+	import { templateMarkdown, type TemplateMarkdown } from '#lib/ubumark/index.ts';
 	import {
 		choiceIndexesAfterRemoval,
 		readCheckedChoices,
 		readChoiceCase,
 		writeChoiceCase,
 		type ChoiceCaseDraft
-	} from '$lib/questions/choice-case-editor';
-	import { formatChoiceAnswer } from '$lib/questions/choice-case';
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
-	import { Textarea } from '$lib/components/ui/textarea';
-	import { Button } from '$lib/components/ui/button';
+	} from '#lib/questions/choice-case-editor.ts';
+	import { formatChoiceAnswer } from '#lib/questions/choice-case.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import { Textarea } from '#lib/components/ui/textarea/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import MyCheckbox from './MyCheckbox.svelte';
 	import { Plus, Trash2 } from '@lucide/svelte';
 

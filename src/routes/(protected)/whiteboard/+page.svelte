@@ -16,7 +16,7 @@
 	 * Access: Students, Teachers, Admins only
 	 */
 
-	import { Whiteboard } from '$lib/whiteboard';
+	import { Whiteboard } from '#lib/whiteboard/index.ts';
 </script>
 
 <svelte:head>

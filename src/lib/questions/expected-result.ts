@@ -28,36 +28,43 @@ import {
 import { rulesDecide } from './rules-suffice';
 import { escapeStudentText, neutralizeStudentLatex } from './student-answer-safety';
 import { correctChoiceIndexesOf, isChoiceBlank, parseChoiceAnswer } from './choice-case';
-import { replaceChoiceBlocks } from '$lib/ubumark/parser/choix-parser';
+import { replaceChoiceBlocks } from '#lib/ubumark/parser/choix-parser.ts';
 import { isWorkFigureBlank } from './graded-part';
-import { findBuildCollections } from '$lib/ubumark/parser/collection-parser';
-import { findBuildMonnaies } from '$lib/ubumark/parser/monnaie-parser';
-import { findLinesToPlace } from '$lib/ubumark/parser/number-line-parser';
-import { findHorlogesToPlace } from '$lib/ubumark/parser/horloge-parser';
-import { findBarsToPlace, findBoxPlotsToPlace } from '$lib/ubumark/parser/stat-chart-parser';
-import { findCourbesToPlace } from '$lib/ubumark/parser/courbe-parser';
-import { findTrigCirclesToPlace } from '$lib/ubumark/parser/trig-circle-parser';
-import { findRangersToPlace } from '$lib/ubumark/parser/ranger-parser';
-import { findPartagesToColorier } from '$lib/ubumark/parser/partage-parser';
-import { NOTHING_COLORED } from '$lib/ubumark/utils/partage-colorier';
+import { findBuildCollections } from '#lib/ubumark/parser/collection-parser.ts';
+import { findBuildMonnaies } from '#lib/ubumark/parser/monnaie-parser.ts';
+import { findLinesToPlace } from '#lib/ubumark/parser/number-line-parser.ts';
+import { findHorlogesToPlace } from '#lib/ubumark/parser/horloge-parser.ts';
+import { findBarsToPlace, findBoxPlotsToPlace } from '#lib/ubumark/parser/stat-chart-parser.ts';
+import { findCourbesToPlace } from '#lib/ubumark/parser/courbe-parser.ts';
+import { findTrigCirclesToPlace } from '#lib/ubumark/parser/trig-circle-parser.ts';
+import { findTortuesToProgram } from '#lib/ubumark/parser/tortue-parser.ts';
+import { findCalculsToProgram } from '#lib/ubumark/parser/calcul-parser.ts';
+import { findRobotsToProduce } from '#lib/ubumark/parser/robot-parser.ts';
+import { findRangersToPlace } from '#lib/ubumark/parser/ranger-parser.ts';
+import { findAssociersToPlace } from '#lib/ubumark/parser/associer-parser.ts';
+import { findTrousToPlace } from '#lib/ubumark/parser/trous-parser.ts';
+import { findPartagesToColorier } from '#lib/ubumark/parser/partage-parser.ts';
+import { NOTHING_COLORED } from '#lib/ubumark/utils/partage-colorier.ts';
 import {
 	findCubesToBuild,
 	findPatronsToBuild,
 	findSolidesToBuild,
 	parseEspaceContent
-} from '$lib/ubumark/parser/espace-parser';
-import { MISSING_HEIGHTS, NOTHING_COLORED_CUBES } from '$lib/ubumark/utils/cubes-gestes';
-import { NOTHING_PLACED, NOTHING_TOUCHED } from '$lib/ubumark/utils/patron-gestes';
-import { BOTH_MISSING, END_MISSING } from '$lib/ubumark/utils/solide-gestes';
+} from '#lib/ubumark/parser/espace-parser.ts';
+import { MISSING_HEIGHTS, NOTHING_COLORED_CUBES } from '#lib/ubumark/utils/cubes-gestes.ts';
+import { NOTHING_PLACED, NOTHING_TOUCHED } from '#lib/ubumark/utils/patron-gestes.ts';
+import { BOTH_MISSING, END_MISSING } from '#lib/ubumark/utils/solide-gestes.ts';
 import { buildCaseCount } from './generator/build-answer';
-import { findVariationsToFill } from '$lib/ubumark/parser/variation-table-parser';
-import type { HiddenCellKind } from '$lib/ubumark/types/variation-table';
+import { findVariationsToFill } from '#lib/ubumark/parser/variation-table-parser.ts';
+import type { HiddenCellKind } from '#lib/ubumark/types/variation-table.ts';
 import { isSignTableCell, signCellToken } from './sign-table-case';
+import { blankErrorGuess, errorGuessSentence } from './error-kinds';
 import {
 	validateAnswerDetailed,
+	type BlankVerdict,
 	type DetailedVerdict,
 	type StudentAnswer
-} from '$lib/utils/answer-validator';
+} from '#lib/utils/answer-validator.ts';
 
 // Types
 /** Statut d'affichage : la couleur est choisie par l'écran ou le PDF */
@@ -203,8 +210,9 @@ export type ExpectedLine =
 			 */
 			answers?: { answer: string; status: ExpectedStatus }[];
 			/**
-			 * Étiquettes à ranger : la bonne réponse de chaque place (position affichée) ;
-			 * le bloc de l'énoncé ne dit pas l'ordre juste
+			 * Étiquettes à ranger, éléments à associer, texte à trous : la bonne réponse de chaque place
+			 * (position affichée) ; le bloc de l'énoncé ne dit pas la réponse. Programme tortue, de calcul :
+			 * la réponse attendue de la case (`position | <programme>`, `<essais> | <programme>`)
 			 */
 			expected?: string[];
 	  };
@@ -223,9 +231,15 @@ export const EMPTY_BUILD_TEXT = "Tu n'as rien posé.";
 export const EMPTY_SIGN_TABLE_TEXT = "Tu n'as rien rempli dans le tableau.";
 /** Droite à placer laissée vide (aucun point) */
 export const EMPTY_PLACE_TEXT = "Tu n'as rien placé.";
+/** Programme tortue ou de calcul laissé vide (aucun bloc) */
+export const EMPTY_PROGRAM_TEXT = "Tu n'as écrit aucun programme.";
+/** Robot à produire laissé vide (aucune instruction) */
+export const EMPTY_CODE_TEXT = "Tu n'as écrit aucun code.";
 /** Texte d'une case de ce genre laissée vide : rien posé, placé, colorié ou rempli */
 function emptyBuildText(kind: BuildKind, source: string): string {
 	if (kind === 'partage') return NOTHING_COLORED;
+	if (kind === 'tortue' || kind === 'calcul') return EMPTY_PROGRAM_TEXT;
+	if (kind === 'robot') return EMPTY_CODE_TEXT;
 	if (kind === 'cubes') {
 		return parseEspaceContent(source).spec?.task?.kind === 'retrouver'
 			? MISSING_HEIGHTS
@@ -354,12 +368,17 @@ function buildCaseBlocks(statement: string): Map<number, BuildCaseBlock> {
 			kind: 'boite-a-moustaches' as const
 		})),
 		...findRangersToPlace(statement).map((b) => ({ ...b, kind: 'ranger' as const })),
+		...findAssociersToPlace(statement).map((b) => ({ ...b, kind: 'associer' as const })),
+		...findTrousToPlace(statement).map((b) => ({ ...b, kind: 'trous' as const })),
 		...findPartagesToColorier(statement).map((b) => ({ ...b, kind: 'partage' as const })),
 		...findCubesToBuild(statement).map((b) => ({ ...b, kind: 'cubes' as const })),
 		...findPatronsToBuild(statement).map((b) => ({ ...b, kind: 'patron' as const })),
 		...findCourbesToPlace(statement).map((b) => ({ ...b, kind: 'courbe' as const })),
 		...findTrigCirclesToPlace(statement).map((b) => ({ ...b, kind: 'trig' as const })),
-		...findSolidesToBuild(statement).map((b) => ({ ...b, kind: 'solide' as const }))
+		...findSolidesToBuild(statement).map((b) => ({ ...b, kind: 'solide' as const })),
+		...findTortuesToProgram(statement).map((b) => ({ ...b, kind: 'tortue' as const })),
+		...findCalculsToProgram(statement).map((b) => ({ ...b, kind: 'calcul' as const })),
+		...findRobotsToProduce(statement).map((b) => ({ ...b, kind: 'robot' as const }))
 	];
 	const blocks = new Map<number, BuildCaseBlock>();
 	for (const block of found) {
@@ -560,7 +579,7 @@ function blankViews(
 				student,
 				typed,
 				status: detail?.status ?? null,
-				remarks: detail?.remarks ?? [],
+				remarks: detail ? blankRemarks(instance, detail) : [],
 				...(blank.construction && {
 					figure: { source: blank.construction.source, answer: detail?.answer ?? value }
 				}),
@@ -577,6 +596,16 @@ function blankViews(
 			}
 		];
 	});
+}
+
+/**
+ * Remarques d'une case : celles du validateur, sinon la phrase du type d'erreur
+ * deviné (chantier `type-erreur`, PR 3) — un message existant prime toujours
+ */
+function blankRemarks(instance: QuestionInstance, detail: BlankVerdict): string[] {
+	if (detail.remarks.length > 0) return detail.remarks;
+	const guess = blankErrorGuess(instance, detail);
+	return guess ? [errorGuessSentence(guess)] : [];
 }
 
 /** Solution montrée : sa réponse juste pour une case `rulesSuffice` (R7), sinon l'attendu */
@@ -724,7 +753,12 @@ function buildLines(
 		buildKind: build.kind,
 		source: build.source,
 		answer: answered ? build.answer : null,
-		status: answered ? status : 'solution'
+		status: answered ? status : 'solution',
+		// Programme tortue ou de calcul : la réponse attendue porte le programme de référence (le
+		// bloc d'un énoncé masqué ne le dit plus, `attendu: ?`) ; robot : la scène et un code juste
+		...((build.kind === 'tortue' || build.kind === 'calcul' || build.kind === 'robot') && {
+			expected: [view.expected]
+		})
 	};
 	// Propre à la case : une autre case de l'énoncé peut avoir sa réponse
 	if (withAnswer && status === 'empty') {
@@ -760,7 +794,9 @@ function placeLines(
 		answer: answered ? answers.map((a) => a.answer).join(' ; ') : null,
 		status: answered ? (allAccepted ? 'correct' : 'incorrect') : 'solution',
 		...(answered && { answers }),
-		...(build.kind === 'ranger' && { expected: points.map((p) => p.expected) })
+		...((build.kind === 'ranger' || build.kind === 'associer' || build.kind === 'trous') && {
+			expected: points.map((p) => p.expected)
+		})
 	};
 	if (withAnswer && !answered) {
 		const text = emptyBuildText(build.kind, build.source);

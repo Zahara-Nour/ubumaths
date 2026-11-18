@@ -1,4 +1,4 @@
-import type { TemplateStatus } from '$lib/types/chapter-templates';
+import type { TemplateStatus } from '#lib/types/chapter-templates.ts';
 
 // Seul un modèle publié s'instancie (garde serveur de `instantiateTemplate`).
 // Les autres restent visibles — le professeur sait qu'ils existent — mais

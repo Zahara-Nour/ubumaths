@@ -6,9 +6,9 @@
 import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import CorrectionCard from '../CorrectionCard.svelte';
-import type { QuestionInstance } from '$lib/questions/types';
-import type { TestAnswerResult } from '$lib/types/test';
-import { resolvedMarkdown } from '$lib/ubumark';
+import type { QuestionInstance } from '#lib/questions/types.ts';
+import type { TestAnswerResult } from '#lib/types/test.ts';
+import { resolvedMarkdown } from '#lib/ubumark/index.ts';
 
 function result(options?: QuestionInstance['options']): TestAnswerResult {
 	return {

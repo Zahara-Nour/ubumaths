@@ -40,7 +40,7 @@ import {
 	Terminal
 } from '@lucide/svelte';
 import type { LucideIcon } from '@lucide/svelte';
-import { lore } from '$lib/config/lore';
+import { lore } from '#lib/config/lore.ts';
 import { RESOURCE_KINDS, isResourceKind, type ResourceKind } from './kinds';
 
 export { RESOURCE_KINDS, isResourceKind };

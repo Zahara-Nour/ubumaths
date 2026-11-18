@@ -9,14 +9,14 @@
  *
  * @example Basic parsing
  * ```typescript
- * import { parseMarkdown } from '$lib/ubumark';
+ * import { parseMarkdown } from '#lib/ubumark/index.ts';
  *
  * const doc = parseMarkdown('# Title\n\nSome **bold** text with $x = 5$');
  * ```
  *
  * @example Template resolution
  * ```typescript
- * import { resolveVariables, resolveText, templateMarkdown } from '$lib/ubumark';
+ * import { resolveVariables, resolveText, templateMarkdown } from '#lib/ubumark/index.ts';
  *
  * const variables = [
  *   { name: 'a', expression: '{{random:1..10}}' },
@@ -31,7 +31,7 @@
  *
  * @example Validation
  * ```typescript
- * import { validateVariables, detectCircularDependencies } from '$lib/ubumark';
+ * import { validateVariables, detectCircularDependencies } from '#lib/ubumark/index.ts';
  *
  * const result = validateVariables(variables);
  * if (!result.valid) {

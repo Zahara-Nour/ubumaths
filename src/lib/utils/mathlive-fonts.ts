@@ -6,7 +6,7 @@
  *
  * @example
  * ```typescript
- * import { switchMathFonts, MathFontSet } from '$lib/utils/mathlive-fonts';
+ * import { switchMathFonts, MathFontSet } from '#lib/utils/mathlive-fonts.ts';
  *
  * // Switch to handwritten fonts
  * await switchMathFonts('shantell');
@@ -16,7 +16,7 @@
  * ```
  */
 
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 
 /** Available font sets */
 export type MathFontSet = 'katex' | 'shantell';
@@ -24,7 +24,7 @@ export type MathFontSet = 'katex' | 'shantell';
 /**
  * Feuille qui SURCHARGE les polices KaTeX par défaut. Le jeu `katex` n'en a pas :
  * ses `@font-face` viennent de `mathlive/static.css`, importé par les composants
- * qui rendent des maths (`$lib/utils/mathlive-styles`). La surcharge est ajoutée
+ * qui rendent des maths (`#lib/utils/mathlive-styles.ts`). La surcharge est ajoutée
  * en fin de `<head>`, donc déclarée après : à descripteurs égaux, la dernière
  * `@font-face` l'emporte.
  */

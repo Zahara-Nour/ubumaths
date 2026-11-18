@@ -3,21 +3,21 @@
 	=============================
 
 	Un champ, des filtres par type, des résultats cliquables. Les URL viennent
-	toutes du registre `$lib/resources` : c'est ici que la phase 1 commence à
+	toutes du registre `#lib/resources/index.ts` : c'est ici que la phase 1 commence à
 	payer, puisque la page ne connaît aucune route.
 
 	La recherche est un GET : le formulaire navigue, le serveur cherche. Pas de
 	fetch client, pas d'état à resynchroniser, et une URL partageable.
 -->
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button';
-	import * as Card from '$lib/components/ui/card';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Input } from '$lib/components/ui/input';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
 	import { Search } from '@lucide/svelte';
 	import { untrack } from 'svelte';
-	import { RESOURCE_KINDS, type ResourceKind } from '$lib/resources/kinds';
-	import { RESOURCE_REGISTRY, resolveResource } from '$lib/resources';
+	import { RESOURCE_KINDS, type ResourceKind } from '#lib/resources/kinds.ts';
+	import { RESOURCE_REGISTRY, resolveResource } from '#lib/resources/index.ts';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();

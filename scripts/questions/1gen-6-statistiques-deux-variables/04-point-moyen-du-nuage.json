@@ -1,0 +1,316 @@
+{
+	"id": "4f328c8c-16c8-40b0-b192-bc2eaa94a867",
+	"title": "Le point moyen d'un nuage de points",
+	"description": "Placer le point moyen G, retrouver b sachant que la droite d'ajustement passe par G, reconnaître G parmi des coordonnées",
+	"grades": ["1_GEN"],
+	"level": 2,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Le nuage ci-dessous compte quatre points $A$, $B$, $C$ et $D$.\n\n```courbe\nx: -1 ; 9\ny: -1 ; 11\ngrille: 1 ; 1\npoints: A({{x1}} ; {{y1}}), B({{x2}} ; {{y2}}), C({{x3}} ; {{y3}}), D({{x4}} ; {{y4}})\nplacer: G=({{gx}} ; {{gy}})\ntaille: moyenne\ndescription: Repère gradué de 1 en 1 : x de −1 à 9, y de −1 à 11 ; quatre points A({{x1}} ; {{y1}}), B({{x2}} ; {{y2}}), C({{x3}} ; {{y3}}), D({{x4}} ; {{y4}}).\n```\n\nPlace le point moyen $G$ de ce nuage.",
+			"variables": [
+				{
+					"name": "x1",
+					"expression": "0..1"
+				},
+				{
+					"name": "x2",
+					"expression": "{{eval:x1+1}}..{{eval:x1+3}}"
+				},
+				{
+					"name": "x3",
+					"expression": "{{eval:x2+1}}..{{eval:x2+3}}"
+				},
+				{
+					"name": "gx",
+					"expression": "3..5"
+				},
+				{
+					"name": "x4",
+					"expression": "eval:4*gx-x1-x2-x3"
+				},
+				{
+					"name": "y1",
+					"expression": "1..9"
+				},
+				{
+					"name": "y2",
+					"expression": "1..9"
+				},
+				{
+					"name": "y3",
+					"expression": "1..9"
+				},
+				{
+					"name": "gy",
+					"expression": "3..7"
+				},
+				{
+					"name": "y4",
+					"expression": "eval:4*gy-y1-y2-y3"
+				}
+			],
+			"conditions": ["x4 > x3", "x4 <= 8", "y4 >= 0", "y4 <= 10", "gx != x2", "gx != x3"],
+			"correction": {
+				"steps": [
+					"Le point moyen $G(\\bar{x}\\,;\\bar{y})$ a pour coordonnées la moyenne des abscisses et la moyenne des ordonnées.",
+					"$\\bar{x}=\\dfrac{ {{x1}}+{{x2}}+{{x3}}+{{x4}} }{4}={{gx}}$ et $\\bar{y}=\\dfrac{ {{y1}}+{{y2}}+{{y3}}+{{y4}} }{4}={{gy}}$.",
+					"On place $G\\textcolor{{{color:primary.0}}}{({{gx}}\\,;{{gy}})}$ : il est « au centre » du nuage, mais ce n'est en général pas un point du nuage."
+				]
+			}
+		},
+		{
+			"statement": "Le point moyen d'un nuage de points est $G({{gx}}\\,;{{gy}})$. On ajuste ce nuage par une droite de coefficient directeur ${{eval:A/2;d}}$ qui passe par $G$, d'équation $y={{eval:A/2;d}}x+b$.\n\nCalcule $b$.\n\n$b=?$",
+			"variables": [
+				{
+					"name": "gx",
+					"expression": "2..8"
+				},
+				{
+					"name": "gy",
+					"expression": "20..60"
+				},
+				{
+					"name": "A",
+					"expression": "1..9"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:gy-A*gx/2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La droite passe par $G$ : les coordonnées de $G$ vérifient son équation.",
+					"${{gy}}={{eval:A/2;d}}\\times{{gx}}+b$, donc $b={{gy}}-{{eval:A*gx/2;d}}=\\textcolor{{{color:primary.0}}}{{{eval:gy-A*gx/2;d}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On considère la série statistique à deux variables suivante.\n\n| $x_i$ | ${{x1}}$ | ${{x2}}$ | ${{x3}}$ | ${{x4}}$ | ${{x5}}$ |\n|---|---|---|---|---|---|\n| $y_i$ | ${{y1}}$ | ${{y2}}$ | ${{y3}}$ | ${{y4}}$ | ${{y5}}$ |\n\nQuel est le point moyen du nuage associé ?\n\n```choix\n- $G({{gx}}\\,;{{gy}})$\n- $G({{gy}}\\,;{{gx}})$\n- $G({{x3}}\\,;{{y3}})$\n- $G({{eval:5*gx/4;d}}\\,;{{eval:5*gy/4;d}})$\n```",
+			"variables": [
+				{
+					"name": "x1",
+					"expression": "1..2"
+				},
+				{
+					"name": "x2",
+					"expression": "{{eval:x1+1}}..{{eval:x1+3}}"
+				},
+				{
+					"name": "x3",
+					"expression": "{{eval:x2+1}}..{{eval:x2+3}}"
+				},
+				{
+					"name": "x4",
+					"expression": "{{eval:x3+1}}..{{eval:x3+3}}"
+				},
+				{
+					"name": "gx",
+					"expression": "4..7"
+				},
+				{
+					"name": "x5",
+					"expression": "eval:5*gx-x1-x2-x3-x4"
+				},
+				{
+					"name": "y1",
+					"expression": "8..20"
+				},
+				{
+					"name": "y2",
+					"expression": "8..20"
+				},
+				{
+					"name": "y3",
+					"expression": "8..20"
+				},
+				{
+					"name": "y4",
+					"expression": "8..20"
+				},
+				{
+					"name": "gy",
+					"expression": "10..18"
+				},
+				{
+					"name": "y5",
+					"expression": "eval:5*gy-y1-y2-y3-y4"
+				}
+			],
+			"conditions": [
+				"x5 > x4",
+				"x5 <= 16",
+				"y5 >= 5",
+				"y5 <= 25",
+				"gx != gy",
+				"abs(x3-gx)+abs(y3-gy) > 0"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le point moyen $G(\\bar{x}\\,;\\bar{y})$ : moyenne des $x_i$, puis moyenne des $y_i$, chacune divisée par l'effectif $5$.",
+					"$\\bar{x}=\\dfrac{ {{eval:5*gx}} }{5}={{gx}}$ et $\\bar{y}=\\dfrac{ {{eval:5*gy}} }{5}={{gy}}$, donc $\\textcolor{{{color:primary.0}}}{G({{gx}}\\,;{{gy}})}$.",
+					"La colonne du milieu du tableau n'est pas le point moyen, et on divise bien par $5$, le nombre de points."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "G(4 ; 5)",
+			"variationIndex": 0,
+			"variables": {
+				"x1": "1",
+				"x2": "3",
+				"x3": "5",
+				"gx": "4",
+				"x4": "7",
+				"y1": "2",
+				"y2": "6",
+				"y3": "4",
+				"gy": "5",
+				"y4": "8"
+			},
+			"answers": ["4;5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : abscisse et ordonnée échangées",
+			"variationIndex": 0,
+			"variables": {
+				"x1": "1",
+				"x2": "3",
+				"x3": "5",
+				"gx": "4",
+				"x4": "7",
+				"y1": "2",
+				"y2": "6",
+				"y3": "4",
+				"gy": "5",
+				"y4": "8"
+			},
+			"answers": ["5;4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : un point du nuage (B)",
+			"variationIndex": 0,
+			"variables": {
+				"x1": "1",
+				"x2": "3",
+				"x3": "5",
+				"gx": "4",
+				"x4": "7",
+				"y1": "2",
+				"y2": "6",
+				"y3": "4",
+				"gy": "5",
+				"y4": "8"
+			},
+			"answers": ["3;6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "G(4 ; 30), a = 2,5 : b = 20",
+			"variationIndex": 1,
+			"variables": {
+				"gx": "4",
+				"gy": "30",
+				"A": "5"
+			},
+			"answers": ["20"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : b = ȳ + a·x̄ (40)",
+			"variationIndex": 1,
+			"variables": {
+				"gx": "4",
+				"gy": "30",
+				"A": "5"
+			},
+			"answers": ["40"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : b = ȳ (30)",
+			"variationIndex": 1,
+			"variables": {
+				"gx": "4",
+				"gy": "30",
+				"A": "5"
+			},
+			"answers": ["30"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Bon point moyen",
+			"variationIndex": 2,
+			"variables": {
+				"x1": "1",
+				"x2": "3",
+				"x3": "5",
+				"x4": "7",
+				"gx": "5",
+				"x5": "9",
+				"y1": "10",
+				"y2": "14",
+				"y3": "12",
+				"y4": "16",
+				"gy": "13",
+				"y5": "13"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : coordonnées échangées",
+			"variationIndex": 2,
+			"variables": {
+				"x1": "1",
+				"x2": "3",
+				"x3": "5",
+				"x4": "7",
+				"gx": "5",
+				"x5": "9",
+				"y1": "10",
+				"y2": "14",
+				"y3": "12",
+				"y4": "16",
+				"gy": "13",
+				"y5": "13"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

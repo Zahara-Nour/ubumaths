@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { numericNode } from '$lib/mathAST/common/numeric';
+import { numericNode } from '#lib/mathAST/common/numeric.ts';
 import { findPointNear, findElementNear, findElementsNear } from '../hit-testing';
 import { Figure } from '../../graph/figure';
 import { exact } from '../../types/geo-value';

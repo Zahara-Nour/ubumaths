@@ -12,10 +12,10 @@
  */
 
 import { json, error } from '@sveltejs/kit';
-import { requireAuth } from '$lib/server/middleware/auth';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
 import type { RequestHandler } from './$types';
-import type { TriggerType } from '$lib/types/messageTemplates';
-import { createServerLogger } from '$lib/utils/logger';
+import type { TriggerType } from '#lib/types/messageTemplates.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/messages/templates/match/+server');
 

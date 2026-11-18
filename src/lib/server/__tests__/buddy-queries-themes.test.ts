@@ -16,7 +16,7 @@ import { buddyRow, createFakeBuddyDb, type FakeBuddyDb } from './helpers/fake-bu
 import { called } from './helpers/fake-supabase';
 
 const service = vi.hoisted(() => ({ current: null as unknown }));
-vi.mock('$lib/server/serviceRoleClient', () => ({
+vi.mock('#lib/server/serviceRoleClient.ts', () => ({
 	createServiceRoleClient: () => service.current
 }));
 

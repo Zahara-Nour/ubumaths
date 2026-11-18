@@ -6,11 +6,11 @@
 
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { getAssignmentsForStudent } from '$lib/server/exercise-assignments';
-import type { StudentExerciseFilters } from '$lib/exercises/types';
-import { validateStudentExerciseFilters } from '$lib/server/validation';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { createServerLogger } from '$lib/utils/logger';
+import { getAssignmentsForStudent } from '#lib/server/exercise-assignments.ts';
+import type { StudentExerciseFilters } from '#lib/exercises/types.ts';
+import { validateStudentExerciseFilters } from '#lib/server/validation/index.ts';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/exercises/assigned/+server');
 

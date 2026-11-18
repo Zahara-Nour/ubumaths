@@ -12,7 +12,11 @@
  * de cours donne son recto à l'énoncé et son verso au corrigé. Les gestes à figer :
  * tableau de signes à compléter (vide / rempli), droite à tracer (repère vide / droite
  * dessinée), boîte à moustaches à construire (axe seul / boîte dessinée), points à
- * placer sur une droite graduée ou dans un repère (sans eux / points posés).
+ * placer sur une droite graduée ou dans un repère (sans eux / points posés), éléments à
+ * associer (deux colonnes à relier / la liste « élément → bonne étiquette », « 1 → étiquette »
+ * quand un élément contient une courbe), texte à trous (la réserve et les trous numérotés /
+ * « 1 → étiquette ; 2 → étiquette »), robot à produire (le quadrillage et 15 cases vides /
+ * le quadrillage et « Un code juste : … »).
  *
  * Formules maison (`~…~`, `~~…~~`) : converties en LaTeX AU MOMENT DE FIGER, avec les
  * fonctions déclarées par le modèle de la question (`shared.genericFunctions`). L'écran
@@ -22,32 +26,49 @@
  * Toute anomalie (modèle absent, génération en échec, marqueur non résolu, formule
  * maison illisible) lève une exception : l'appelant ne doit rien écrire.
  */
-import { generateInstance } from '$lib/questions/generator/instance-generator';
-import { isCourseCard, type QuestionInstance, type QuestionTemplate } from '$lib/questions/types';
-import { templateGenericFunctions } from '$lib/questions/generic-functions';
-import { parseCustomSafe } from '$lib/mathAST/parser/custom';
-import { toLatex } from '$lib/mathAST';
-import type { CapitalPairs, GenericFunctionConfig } from '$lib/mathAST/parser/types';
-import { withDigitGrouping } from '$lib/utils/french-math';
-import { SCHOOL_MIN_DIGITS_FOR_GROUPING } from '$lib/mathAST/digit-grouping';
-import { withChoiceClockSize } from '$lib/ubumark/parser/horloge-parser';
-import { withChoiceCollectionSize } from '$lib/ubumark/parser/collection-parser';
-import { withChoiceMonnaieSize } from '$lib/ubumark/parser/monnaie-parser';
-import { replaceChoiceBlocks, type ChoiceBlock } from '$lib/ubumark/parser/choix-parser';
-import { correctChoiceIndexesOf, isChoiceBlank } from '$lib/questions/choice-case';
-import { findCourbesToPlace, parseCourbeContent } from '$lib/ubumark/parser/courbe-parser';
-import { findLinesToPlace, parseNumberLineContent } from '$lib/ubumark/parser/number-line-parser';
-import { lineCoefficients } from '$lib/ubumark/utils/courbe-tracer';
+import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
+import {
+	isCourseCard,
+	type QuestionInstance,
+	type QuestionTemplate
+} from '#lib/questions/types.ts';
+import { templateGenericFunctions } from '#lib/questions/generic-functions.ts';
+import { parseCustomSafe } from '#lib/mathAST/parser/custom/index.ts';
+import { toLatex } from '#lib/mathAST/index.ts';
+import type { CapitalPairs, GenericFunctionConfig } from '#lib/mathAST/parser/types.ts';
+import { withDigitGrouping } from '#lib/utils/french-math.ts';
+import { SCHOOL_MIN_DIGITS_FOR_GROUPING } from '#lib/mathAST/digit-grouping.ts';
+import { withChoiceClockSize } from '#lib/ubumark/parser/horloge-parser.ts';
+import { withChoiceCollectionSize } from '#lib/ubumark/parser/collection-parser.ts';
+import { withChoiceMonnaieSize } from '#lib/ubumark/parser/monnaie-parser.ts';
+import { replaceChoiceBlocks, type ChoiceBlock } from '#lib/ubumark/parser/choix-parser.ts';
+import { correctChoiceIndexesOf, isChoiceBlank } from '#lib/questions/choice-case.ts';
+import { findCourbesToPlace, parseCourbeContent } from '#lib/ubumark/parser/courbe-parser.ts';
+import {
+	findLinesToPlace,
+	parseNumberLineContent
+} from '#lib/ubumark/parser/number-line-parser.ts';
+import { lineCoefficients } from '#lib/ubumark/utils/courbe-tracer.ts';
 import {
 	findBoxPlotsToPlace,
 	parseStatChartContent,
 	PLACER_LINE_REGEX
-} from '$lib/ubumark/parser/stat-chart-parser';
-import { boxPlotCaseCount } from '$lib/ubumark/utils/boxplot-placer';
+} from '#lib/ubumark/parser/stat-chart-parser.ts';
+import { boxPlotCaseCount } from '#lib/ubumark/utils/boxplot-placer.ts';
+import {
+	associerItemHasBlock,
+	findAssociersToPlace,
+	parseAssocierContent
+} from '#lib/ubumark/parser/associer-parser.ts';
+import { associerPlacedOf } from '#lib/ubumark/utils/associer.ts';
+import { findTrousToPlace, parseTrousContent } from '#lib/ubumark/parser/trous-parser.ts';
+import { trousPlacedOf } from '#lib/ubumark/utils/trous.ts';
+import { findRobotsToProduce, parseRobotContent } from '#lib/ubumark/parser/robot-parser.ts';
+import { readExpectedRobotAnswer } from '#lib/ubumark/utils/robot-answer.ts';
 import {
 	findVariationsToFill,
 	revealVariationBody
-} from '$lib/ubumark/parser/variation-table-parser';
+} from '#lib/ubumark/parser/variation-table-parser.ts';
 
 export type SerieItem = { templateId: string; seed: number };
 /**
@@ -165,6 +186,8 @@ function reponse(
 
 /** Ligne `case: N` d'un bloc (posée par le générateur, inutile à l'impression) */
 const CASE_LINE = /^\s*case\s*:/;
+/** `produire: oui` d'un robot : retirée au corrigé (le quadrillage seul) */
+const PRODUIRE_LINE = /^\s*produire\s*:/i;
 
 /**
  * Tableaux de signes à compléter (```variation à `?`) : leur corps réécrit par
@@ -405,6 +428,139 @@ function boitesAConstruire(
 	return { texte: lignes.join('\n'), cases };
 }
 
+/**
+ * Éléments à associer (```associer, déjà sans liens, étiquettes dans l'ordre affiché) :
+ * à l'énoncé, le bloc sans `case:` (le PDF dessine les deux colonnes à relier) ; au
+ * corrigé (`corrige`), à sa place la liste « élément → bonne étiquette ». Une case par
+ * élément. Bloc en retrait ou cité, illisible, ou réponse attendue hors des étiquettes
+ * → refus, message à l'appui.
+ */
+function associersAFiger(
+	modele: string,
+	texte: string,
+	corrige: boolean,
+	instance: QuestionInstance
+): { texte: string; cases: number } {
+	const lignes = texte.split('\n');
+	const blocs = findAssociersToPlace(texte);
+	let cases = 0;
+	// Du dernier au premier : les rangs des blocs précédents restent justes
+	for (const bloc of [...blocs].reverse()) {
+		const refus = (raison: string) => new Error(`${modele} : ${raison}`);
+		if (bloc.nested) throw refus('éléments à associer en retrait ou cités');
+		const node = parseAssocierContent(bloc.body.join('\n'));
+		if (node.errors.length > 0 || node.caseIndex === undefined) {
+			throw refus(`éléments à associer illisibles (${node.errors.join(' ; ')})`);
+		}
+		cases += node.items.length;
+		const first = node.caseIndex;
+		const fin = bloc.closed
+			? bloc.startIndex + bloc.body.length + 1
+			: bloc.startIndex + bloc.body.length;
+		if (corrige) {
+			// Un élément contient un bloc (```courbe) : éléments numérotés à l'énoncé (PDF),
+			// le corrigé dit « 1 → étiquette » sans redessiner la courbe
+			const numerotes = node.items.some(associerItemHasBlock);
+			const liste = node.items.map((item, k) => {
+				const attendue = instance.blanks?.[first + k]?.expectedAnswer ?? '';
+				const position = associerPlacedOf(attendue, node.labels.length);
+				if (position === null) throw refus(`élément ${k + 1} : réponse attendue illisible`);
+				return `- ${numerotes ? k + 1 : item} → ${node.labels[position]}`;
+			});
+			lignes.splice(bloc.startIndex, fin - bloc.startIndex + 1, ...liste);
+			continue;
+		}
+		const corps = bloc.body.filter((ligne) => !CASE_LINE.test(ligne));
+		lignes.splice(bloc.startIndex + 1, bloc.body.length, ...corps);
+	}
+	return { texte: lignes.join('\n'), cases };
+}
+
+/**
+ * Texte à trous (```trous, déjà aux trous vides, réserve dans l'ordre affiché) : à
+ * l'énoncé, le bloc sans `case:` (le PDF dessine la réserve et les trous numérotés) ;
+ * au corrigé (`corrige`), à sa place « 1 → étiquette ; 2 → étiquette ». Une case par
+ * trou. Bloc en retrait ou cité, illisible, ou réponse attendue hors de la réserve
+ * → refus, message à l'appui.
+ */
+function trousAFiger(
+	modele: string,
+	texte: string,
+	corrige: boolean,
+	instance: QuestionInstance
+): { texte: string; cases: number } {
+	const lignes = texte.split('\n');
+	const blocs = findTrousToPlace(texte);
+	let cases = 0;
+	// Du dernier au premier : les rangs des blocs précédents restent justes
+	for (const bloc of [...blocs].reverse()) {
+		const refus = (raison: string) => new Error(`${modele} : ${raison}`);
+		if (bloc.nested) throw refus('texte à trous en retrait ou cité');
+		const node = parseTrousContent(bloc.body.join('\n'));
+		if (node.errors.length > 0 || node.caseIndex === undefined) {
+			throw refus(`texte à trous illisible (${node.errors.join(' ; ')})`);
+		}
+		cases += node.answers.length;
+		const first = node.caseIndex;
+		if (corrige) {
+			const liste = node.answers.map((_, k) => {
+				const attendue = instance.blanks?.[first + k]?.expectedAnswer ?? '';
+				const position = trousPlacedOf(attendue, node.labels.length);
+				if (position === null) throw refus(`trou ${k + 1} : réponse attendue illisible`);
+				return `${k + 1} → ${node.labels[position]}`;
+			});
+			lignes.splice(bloc.startIndex, bloc.endIndex - bloc.startIndex + 1, liste.join(' ; '));
+			continue;
+		}
+		const corps = bloc.body.filter((ligne) => !CASE_LINE.test(ligne));
+		lignes.splice(bloc.startIndex + 1, bloc.body.length, ...corps);
+	}
+	return { texte: lignes.join('\n'), cases };
+}
+
+/**
+ * Robots à produire (```robot, `produire: oui`) : à l'énoncé, le bloc sans `case:` (le PDF
+ * dessine le quadrillage, puis « Écris le code : » et 15 cases vides) ; au corrigé
+ * (`corrige`), le quadrillage seul (`produire:` retirée) et « Un code juste : … » dessous —
+ * le CODE de la réponse attendue, jamais la scène qui le précède. Une case par robot. Bloc en
+ * retrait ou cité, sans fin, illisible, ou réponse attendue illisible → refus.
+ */
+function robotsAFiger(
+	modele: string,
+	texte: string,
+	corrige: boolean,
+	instance: QuestionInstance
+): { texte: string; cases: number } {
+	const lignes = texte.split('\n');
+	const blocs = findRobotsToProduce(texte);
+	let cases = 0;
+	// Du dernier au premier : les rangs des blocs précédents restent justes
+	for (const bloc of [...blocs].reverse()) {
+		const refus = (raison: string) => new Error(`${modele} : ${raison}`);
+		if (bloc.nested) throw refus('robot à produire en retrait ou cité');
+		if (!bloc.closed) throw refus('robot à produire sans fin de bloc');
+		const node = parseRobotContent(bloc.body.join('\n'));
+		if (node.errors.length > 0 || node.spec === null || node.caseIndex === undefined) {
+			throw refus(`robot à produire illisible (${node.errors.map((e) => e.message).join(' ; ')})`);
+		}
+		cases += 1;
+		const corps = bloc.body.filter(
+			(ligne) => !CASE_LINE.test(ligne) && !(corrige && PRODUIRE_LINE.test(ligne))
+		);
+		const suite: string[] = [];
+		if (corrige) {
+			const attendue = instance.blanks?.[node.caseIndex]?.expectedAnswer ?? '';
+			const lu = readExpectedRobotAnswer(attendue);
+			if (lu === null) throw refus('robot à produire : réponse attendue illisible');
+			suite.push('', `Un code juste : **${lu.solution}**`);
+		}
+		// Corps du bloc, sa fin (```), puis le code juste au corrigé
+		const fin = bloc.startIndex + bloc.body.length + 1;
+		lignes.splice(bloc.startIndex + 1, bloc.body.length + 1, ...corps, lignes[fin], ...suite);
+	}
+	return { texte: lignes.join('\n'), cases };
+}
+
 /** Un choix à imprimer : taille des blocs (horloge, collection, monnaie) posée */
 function choixImprime(contenu: string): string {
 	return withChoiceMonnaieSize(withChoiceCollectionSize(withChoiceClockSize(contenu)));
@@ -456,6 +612,13 @@ function figer(template: QuestionTemplate, instance: QuestionInstance): Question
 	if (etapes.length === 0 && instance.correction?.generatedSteps) {
 		throw new Error(`${template.id} : correction générée (mode B) non prise en charge`);
 	}
+	// Question à programme (tortue, calcul) : elle se fait à l'écran, pas sur une fiche
+	// (David, 2026-11-14) ; refusée avec un message qui le dit au prof
+	if (instance.blanks?.some((b) => b.construire === 'tortue' || b.construire === 'calcul')) {
+		throw new Error(
+			`${template.id} : une question à programme (tortue, calcul) ne peut pas entrer dans une série d’automatismes`
+		);
+	}
 	// Consigne du modèle : lue avec SES fonctions, posée au-dessus du groupe par `buildSerie`
 	const consigne = instance.exerciseInstruction ? enLatex(instance.exerciseInstruction) : undefined;
 	const texte = enLatex(deplierExpressions(instance.statement, instance));
@@ -503,6 +666,18 @@ function figer(template: QuestionTemplate, instance: QuestionInstance): Question
 	const graduationsEnonce = droitesAPlacer(template.id, boitesEnonce.texte, false);
 	const graduationsCorrige = droitesAPlacer(template.id, boitesCorrige.texte, true);
 
+	// Éléments à associer : deux colonnes à l'énoncé, la liste des bonnes associations au corrigé
+	const associerEnonce = associersAFiger(template.id, graduationsEnonce.texte, false, instance);
+	const associerCorrige = associersAFiger(template.id, graduationsCorrige.texte, true, instance);
+
+	// Texte à trous : la réserve et les trous numérotés à l'énoncé, « 1 → étiquette » au corrigé
+	const trousEnonce = trousAFiger(template.id, associerEnonce.texte, false, instance);
+	const trousCorrige = trousAFiger(template.id, associerCorrige.texte, true, instance);
+
+	// Robot à produire : le quadrillage et 15 cases à l'énoncé, un code juste au corrigé
+	const robotsEnonce = robotsAFiger(template.id, trousEnonce.texte, false, instance);
+	const robotsCorrige = robotsAFiger(template.id, trousCorrige.texte, true, instance);
+
 	// Chaque case attendue doit être remplacée, ni plus ni moins (un marqueur d'une
 	// autre convention, `<<expr:…>>`, laisserait sinon une question sans case)
 	const cases =
@@ -511,17 +686,20 @@ function figer(template: QuestionTemplate, instance: QuestionInstance): Question
 		tableauxEnonce.cases +
 		droitesEnonce.cases +
 		boitesEnonce.cases +
-		graduationsEnonce.cases;
+		graduationsEnonce.cases +
+		associerEnonce.cases +
+		trousEnonce.cases +
+		robotsEnonce.cases;
 	if (cases !== (instance.blanks?.length ?? 0)) {
 		throw new Error(
 			`${template.id} : ${cases} case(s) dans l'énoncé pour ${instance.blanks?.length ?? 0} réponse(s) attendue(s)`
 		);
 	}
 
-	const enonce = graduationsEnonce.texte
+	const enonce = robotsEnonce.texte
 		.replace(PLACEHOLDER, `\\text{${BLANK_TEXT}}`)
 		.replace(TEXT_BLANK, BLANK_TEXT);
-	const corrige = graduationsCorrige.texte
+	const corrige = robotsCorrige.texte
 		.replace(PLACEHOLDER, (_m, i: string) => reponse(instance, Number(i), true, minDigits))
 		.replace(TEXT_BLANK, (_m, i: string) => reponse(instance, Number(i), false, minDigits));
 

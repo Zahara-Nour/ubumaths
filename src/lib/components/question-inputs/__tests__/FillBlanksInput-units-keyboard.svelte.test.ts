@@ -10,9 +10,9 @@
 import { describe, it, expect, beforeAll } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import FillBlanksInput from '../FillBlanksInput.svelte';
-import type { ResolvedMarkdown } from '$lib/ubumark';
-import type { InstanceBlank, QuestionInstance } from '$lib/questions/types';
-import { validateAnswer } from '$lib/utils/answer-validator';
+import type { ResolvedMarkdown } from '#lib/ubumark/index.ts';
+import type { InstanceBlank, QuestionInstance } from '#lib/questions/types.ts';
+import { validateAnswer } from '#lib/utils/answer-validator.ts';
 import type { VirtualKeyboardKeycap, VirtualKeyboardLayout, MathfieldElement } from 'mathlive';
 
 const statement = 'Distance : $\\placeholder[0]{}$' as ResolvedMarkdown;

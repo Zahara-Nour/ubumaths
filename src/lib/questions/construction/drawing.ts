@@ -24,11 +24,12 @@
  */
 
 import {
+	isDiagonalRectangleCheck,
 	isRuledPolygonCheck,
 	type ConstructionCheck,
 	type ConstructionTool
-} from '$lib/ubumark/types/construction';
-import type { FigureStep } from '$lib/ubumark/types/figure';
+} from '#lib/ubumark/types/construction.ts';
+import type { FigureStep } from '#lib/ubumark/types/figure.ts';
 import {
 	CONSTRUCTION_ANSWER_LIMITS,
 	isDrawnLine,
@@ -60,14 +61,16 @@ import {
 import { circleLengthRulers, circleSolution, isCircleCheck, type CircleSolution } from './circle';
 import { polygonSolution } from './polygon';
 import { ruledPolygonCorrection, ruledPolygonRulers, ruledPolygonSolution } from './ruled-polygon';
+import { diagonalRectangleCorrection, diagonalRectangleSolution } from './diagonal-rectangle';
 import {
 	triangleCorrection,
-	triangleRuler,
+	triangleRulers,
 	triangleSolution,
 	type TriangleCorrection
 } from './triangle';
 import { angleCorrection, angleSolution, type AngleCorrection } from './angle';
 import { measureCorrection } from './measure';
+import { segmentMeasureCorrection, segmentMeasureRuler } from './segment-measure';
 import { segmentLengthRuler, segmentLengthSolution } from './segment-length';
 import { symmetrySolution, type FigureShapes } from './symmetry';
 
@@ -525,13 +528,23 @@ export function solutionLines(
 	expected?: ExpectedPoints
 ): DrawnLine[] {
 	return checks.flatMap((check): DrawnLine[] => {
-		if (check.kind === 'point' || check.kind === 'cercle' || check.kind === 'mesure') return [];
+		if (
+			check.kind === 'point' ||
+			check.kind === 'cercle' ||
+			check.kind === 'mesure' ||
+			check.kind === 'mesure_segment'
+		) {
+			return [];
+		}
 		if (check.kind === 'droite') return lineSolution([check], expected);
 		if (check.kind === 'symetrique') return symmetrySolution(check, points, shapes);
 		if (check.kind === 'triangle') return triangleSolution(check, points, shapes, drawn);
 		if (check.kind === 'angle') return angleSolution(check, points, shapes, drawn);
 		if (check.kind === 'segment') return segmentLengthSolution(check, points, shapes, drawn);
 		if (isRuledPolygonCheck(check)) return ruledPolygonSolution(check, points, shapes, drawn);
+		if (isDiagonalRectangleCheck(check)) {
+			return diagonalRectangleSolution(check, points, shapes, drawn);
+		}
 		if (check.kind !== 'droite_par')
 			return polygonSolution(check, points, drawn.filter(isDrawnLine));
 		const a = points.get(check.points[0]);
@@ -577,6 +590,9 @@ export function solutionTriangle(
 	// Carré / rectangle coté (PR 6 de `regle-graduee`) : les perpendiculaires et les angles droits
 	const ruled = checks.find(isRuledPolygonCheck);
 	if (ruled) return ruledPolygonCorrection(ruled, points, shapes, drawn);
+	// Rectangle sans équerre : le cercle de diamètre [AC], l'arc en A, la diagonale [BD]
+	const diagonal = checks.find(isDiagonalRectangleCheck);
+	if (diagonal) return diagonalRectangleCorrection(diagonal, points, shapes, drawn);
 	const check = checks.find((c) => c.kind === 'triangle');
 	return check ? triangleCorrection(check, points, shapes, drawn) : null;
 }
@@ -597,8 +613,8 @@ export function solutionAngle(
 
 /**
  * La règle graduée de la correction : posée en A (segment de longueur donnée), au
- * centre O (cercle de rayon donné en cm, PR 3) ou au sommet de l'angle droit
- * (triangle rectangle coté en cm, PR 4) ; null sinon
+ * centre O (cercle de rayon donné en cm, PR 3) ou au bout d'un côté coté en cm
+ * d'un triangle (PR 4, `triangle-cote-cm`) ; null sinon
  */
 export function solutionRuler(
 	checks: readonly ConstructionCheck[],
@@ -621,16 +637,32 @@ export function solutionRulers(
 		const ruler = segmentLengthRuler(check, points, shapes, drawn);
 		return ruler ? [ruler] : [];
 	}
+	// Segment à mesurer (n° 26) : la règle posée au 0 en A, le long de [AB]
+	const measured = checks.find((c) => c.kind === 'mesure_segment');
+	if (measured) {
+		const ruler = segmentMeasureRuler(measured, points, shapes);
+		return ruler ? [ruler] : [];
+	}
 	// Carré / rectangle coté (PR 6) : une règle en B (vers C), une en A (vers D)
 	const ruled = checks.find(isRuledPolygonCheck);
 	if (ruled) return ruledPolygonRulers(ruled, points, shapes, drawn);
-	// Triangle rectangle coté en cm (PR 4) : la règle posée au sommet de l'angle droit
+	// Rectangle sans équerre (Q4) : pas de règle à la correction
+	if (checks.some(isDiagonalRectangleCheck)) return [];
+	// Triangle coté en cm : la règle posée au sommet de l'angle droit (PR 4), en A et en B
+	// (trois longueurs) ou au sommet de l'angle donné (`triangle-cote-cm`)
 	const triangle = checks.find((c) => c.kind === 'triangle');
-	if (triangle) {
-		const ruler = triangleRuler(triangle, points, shapes, drawn);
-		return ruler ? [ruler] : [];
-	}
+	if (triangle) return triangleRulers(triangle, points, shapes, drawn);
 	return circleLengthRulers(checks.filter(isCircleCheck), points, drawn);
+}
+
+/** Segment à mesurer (n° 26) : sa longueur, écrite le long de [AB] ; null sinon */
+export function solutionSegmentMeasure(
+	checks: readonly ConstructionCheck[],
+	points: ReadonlyMap<string, Position>,
+	shapes: FigureShapes | undefined
+): { from: Position; to: Position; text: string } | null {
+	const check = checks.find((c) => c.kind === 'mesure_segment');
+	return check ? segmentMeasureCorrection(check, points, shapes) : null;
 }
 
 /** Les points à placer : où ils vont, avec leur nom (vérifications `point`) */

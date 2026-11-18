@@ -10,7 +10,7 @@ import type {
 	GameChallenge,
 	PlayerSnapshot,
 	MonsterSnapshot
-} from '$lib/types/game';
+} from '#lib/types/game.ts';
 
 // ============================================================================
 // Factory Functions

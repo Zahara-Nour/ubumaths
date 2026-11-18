@@ -26,9 +26,9 @@
  * `ChoreographyError` (the parallel is (AB) itself, nothing to animate).
  */
 
-import type { Figure } from '$lib/geometry-core/graph/figure';
-import { exact, numeric } from '$lib/geometry-core/types/geo-value';
-import { numericNode } from '$lib/mathAST/common/numeric';
+import type { Figure } from '#lib/geometry-core/graph/figure.ts';
+import { exact, numeric } from '#lib/geometry-core/types/geo-value.ts';
+import { numericNode } from '#lib/mathAST/common/numeric.ts';
 import { ChoreographyError } from './types';
 import { revealHiddenUsedPoints } from './reveal-points';
 import { capitalize, de, en, labelAux, lineFormRoles, mesure, nom, type Role } from './names';

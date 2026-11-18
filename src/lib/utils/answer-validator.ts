@@ -3,12 +3,12 @@
  * ============================
  *
  * Provides validation functions for different question types,
- * en s'appuyant sur mathAST (`$lib/math`, `$lib/mathAST`) pour lire et comparer les expressions.
+ * en s'appuyant sur mathAST (`#lib/math/index.ts`, `#lib/mathAST/index.ts`) pour lire et comparer les expressions.
  *
  * @module utils/answer-validator
  */
 
-import { isCombinatorialNotationLatex } from '$lib/questions/combinatorial-notation';
+import { isCombinatorialNotationLatex } from '#lib/questions/combinatorial-notation.ts';
 import type {
 	QuestionInstance,
 	InstanceBlank,
@@ -19,17 +19,17 @@ import type {
 	ConstraintMode,
 	ConstraintOptions,
 	ValidationRule
-} from '$lib/questions/types';
+} from '#lib/questions/types.ts';
 import {
 	DEFAULT_CONSTRAINT_MODE,
 	DEFAULT_FORM_CONSTRAINT_MODE,
 	getQuestionType
-} from '$lib/questions/types';
-import type { ValidationResult } from '$lib/types/question-display';
-import { gradedPart } from '$lib/questions/graded-part';
-import { evaluateExpression, areEquivalent, type AnswerAssumptions } from '$lib/math';
-import { checkUnit } from '$lib/questions/constraint-validators';
-import { SUPERFLU_RULE_IDS } from '$lib/mathAST/superflu/rules';
+} from '#lib/questions/types.ts';
+import type { ValidationResult } from '#lib/types/question-display.ts';
+import { gradedPart } from '#lib/questions/graded-part.ts';
+import { evaluateExpression, areEquivalent, type AnswerAssumptions } from '#lib/math/index.ts';
+import { checkUnit } from '#lib/questions/constraint-validators.ts';
+import { SUPERFLU_RULE_IDS } from '#lib/mathAST/superflu/rules.ts';
 import {
 	checkForm as checkFormUnified,
 	type CheckFormOptions,
@@ -41,65 +41,71 @@ import {
 	isQuantityValueLatex,
 	forgotPercentSign,
 	type ConstraintSeverity
-} from '$lib/mathAST/cosmetic-transforms';
-import { extractUnitFromLatex } from '$lib/questions/units/parser';
-import { normalizeStudentQuantity } from '$lib/questions/units/student-input';
-import { studentValueLatex } from '$lib/questions/units/student-calculation';
+} from '#lib/mathAST/cosmetic-transforms.ts';
+import { extractUnitFromLatex } from '#lib/questions/units/parser.ts';
+import { normalizeStudentQuantity } from '#lib/questions/units/student-input.ts';
+import { studentValueLatex } from '#lib/questions/units/student-calculation.ts';
 import {
 	CONSTRAINT_FEEDBACK,
 	FORGOTTEN_PERCENT_SIGN,
 	MISSING_CHOICES_FEEDBACK
-} from '$lib/questions/feedback';
-import { evaluateRule, type EvaluationContext } from '$lib/questions/validation-rule-evaluator';
-import { readingOf, type FormulaReading } from '$lib/questions/formula-reading';
-import { statusFromChoices } from '$lib/questions/choices';
+} from '#lib/questions/feedback.ts';
+import { evaluateRule, type EvaluationContext } from '#lib/questions/validation-rule-evaluator.ts';
+import { readingOf, type FormulaReading } from '#lib/questions/formula-reading.ts';
+import { statusFromChoices } from '#lib/questions/choices.ts';
 import {
 	getRequiredFormFeedback,
 	REQUIRED_FORM_FEEDBACK,
 	requiredFormVerdict
-} from '$lib/questions/required-form-validator';
-import { validateQuantityAnswer } from '$lib/questions/units/validator';
-import type { DurationFormIssue } from '$lib/questions/units/composite-duration';
-import { rulesDecide } from '$lib/questions/rules-suffice';
-import { matchesAngleModulo2Pi } from '$lib/questions/angle-modulo';
+} from '#lib/questions/required-form-validator.ts';
+import { validateQuantityAnswer } from '#lib/questions/units/validator.ts';
+import type { DurationFormIssue } from '#lib/questions/units/composite-duration.ts';
+import { rulesDecide } from '#lib/questions/rules-suffice.ts';
+import { matchesAngleModulo2Pi } from '#lib/questions/angle-modulo.ts';
 import {
 	judgeIntervalAnswer,
 	DEFAULT_INTERVAL_FORM_MODE
-} from '$lib/questions/intervals/interval-answer';
-import { judgeEquationAnswer } from '$lib/questions/equations/equation-answer';
-import { coordinateTexts, judgeVectorAnswer } from '$lib/questions/vectors/vector-answer';
-import { judgeMatrixAnswer, matrixEntryTexts } from '$lib/questions/matrices/matrix-answer';
-import { judgePrimitiveAnswer } from '$lib/questions/calculus/primitive-answer';
-import { judgeDifferentialEquationAnswer } from '$lib/questions/calculus/differential-equation-answer';
-import type { CalculusVerdict } from '$lib/questions/calculus/calculus-reading';
-import { judgeRounding, roundingFeedback, roundToPrecision } from '$lib/questions/rounding';
-import { ANSWER_TOO_COMPLEX_FEEDBACK, isAnswerTooComplex } from '$lib/questions/answer-complexity';
-import { expectsValue, withoutVariablePrefix } from '$lib/questions/answer-variable-prefix';
-import { expectsUnitlessValue, withoutDegreeSuffix } from '$lib/questions/answer-degree-suffix';
-import { judgeConstruction } from '$lib/questions/construction/judge';
-import { isPlacedTimeCorrect } from '$lib/ubumark/utils/horloge-placer';
-import { isCourbeAnswerCorrect } from '$lib/ubumark/utils/courbe-tracer';
-import { isPlacedAngleCorrect } from '$lib/ubumark/utils/trig-placer';
+} from '#lib/questions/intervals/interval-answer.ts';
+import { judgeEquationAnswer } from '#lib/questions/equations/equation-answer.ts';
+import { coordinateTexts, judgeVectorAnswer } from '#lib/questions/vectors/vector-answer.ts';
+import { judgeMatrixAnswer, matrixEntryTexts } from '#lib/questions/matrices/matrix-answer.ts';
+import { judgePrimitiveAnswer } from '#lib/questions/calculus/primitive-answer.ts';
+import { judgeDifferentialEquationAnswer } from '#lib/questions/calculus/differential-equation-answer.ts';
+import type { CalculusVerdict } from '#lib/questions/calculus/calculus-reading.ts';
+import { judgeRounding, roundingFeedback, roundToPrecision } from '#lib/questions/rounding.ts';
+import {
+	ANSWER_TOO_COMPLEX_FEEDBACK,
+	isAnswerTooComplex
+} from '#lib/questions/answer-complexity.ts';
+import { expectsValue, withoutVariablePrefix } from '#lib/questions/answer-variable-prefix.ts';
+import { expectsUnitlessValue, withoutDegreeSuffix } from '#lib/questions/answer-degree-suffix.ts';
+import { judgeConstruction } from '#lib/questions/construction/judge.ts';
+import { isPlacedTimeCorrect } from '#lib/ubumark/utils/horloge-placer.ts';
+import { isCourbeAnswerCorrect } from '#lib/ubumark/utils/courbe-tracer.ts';
+import { isPlacedAngleCorrect } from '#lib/ubumark/utils/trig-placer.ts';
+import { isTortueAnswerCorrect, tortueAnswerVerdict } from '#lib/ubumark/utils/tortue-answer.ts';
+import { calculAnswerVerdict, isCalculAnswerCorrect } from '#lib/ubumark/utils/calcul-answer.ts';
+import { isRobotAnswerCorrect, robotAnswerVerdict } from '#lib/ubumark/utils/robot-answer.ts';
 import {
 	isLineToRepresentBlank,
 	isRepresentedIntervalCorrect
-} from '$lib/ubumark/utils/number-line-representer';
-import { isColoringCorrect } from '$lib/ubumark/utils/partage-colorier';
-import { isCubesAnswerCorrect } from '$lib/ubumark/utils/cubes-gestes';
-import { isPatronAnswerCorrect } from '$lib/ubumark/utils/patron-gestes';
-import { isSolideAnswerCorrect } from '$lib/ubumark/utils/solide-gestes';
+} from '#lib/ubumark/utils/number-line-representer.ts';
+import { isColoringCorrect } from '#lib/ubumark/utils/partage-colorier.ts';
+import { isCubesAnswerCorrect } from '#lib/ubumark/utils/cubes-gestes.ts';
+import { isPatronAnswerCorrect } from '#lib/ubumark/utils/patron-gestes.ts';
+import { isSolideAnswerCorrect } from '#lib/ubumark/utils/solide-gestes.ts';
 import {
 	constructionExpected,
 	constructionPositions,
 	constructionShapes
-} from '$lib/questions/construction/positions';
+} from '#lib/questions/construction/positions.ts';
 import {
 	correctChoiceIndexesOf,
 	displayedChoiceLetter,
 	isChoiceBlank,
 	parseChoiceAnswer
-} from '$lib/questions/choice-case';
-import { isSignCellCorrect, isSignTableCell } from '$lib/questions/sign-table-case';
+} from '#lib/questions/choice-case.ts';
+import { isSignCellCorrect, isSignTableCell } from '#lib/questions/sign-table-case.ts';
 
 // ============================================================================
 // CONSTRAINT CHECKING
@@ -830,6 +836,12 @@ function validateBlankValue(
 	if (blank.construire === 'courbe') return isCourbeAnswerCorrect(userAnswer, blank.expectedAnswer);
 	// Point du cercle trigonométrique : le même cran, modulo 2π
 	if (blank.construire === 'trig') return isPlacedAngleCorrect(userAnswer, blank.expectedAnswer);
+	// Programme tortue : son tracé, rejoué par l'interpréteur, contre celui de l'attendu
+	if (blank.construire === 'tortue') return isTortueAnswerCorrect(userAnswer, blank.expectedAnswer);
+	// Programme de calcul : ses affichages, rejoués sur chaque essai, contre ceux de l'attendu
+	if (blank.construire === 'calcul') return isCalculAnswerCorrect(userAnswer, blank.expectedAnswer);
+	// Robot à produire : le code de l'élève rejoué sur la scène, juste s'il finit sur l'arrivée
+	if (blank.construire === 'robot') return isRobotAnswerCorrect(userAnswer, blank.expectedAnswer);
 	// Figure à colorier : le nombre de parts coloriées, quelles qu'elles soient
 	if (blank.construire === 'partage') return isColoringCorrect(userAnswer, blank.expectedAnswer);
 	// Assemblage de cubes : la vue à une translation près, ou les mêmes vues
@@ -839,7 +851,13 @@ function validateBlankValue(
 	// Vecteur sur un solide : l'un des couples de points justes
 	if (blank.construire === 'solide') return isSolideAnswerCorrect(userAnswer, blank.expectedAnswer);
 	// Étiquettes à ranger : l'étiquette posée (sa position affichée), jamais sa valeur
-	if (blank.construire === 'ranger') return userAnswer.trim() === blank.expectedAnswer;
+	if (
+		blank.construire === 'ranger' ||
+		blank.construire === 'associer' ||
+		blank.construire === 'trous'
+	) {
+		return userAnswer.trim() === blank.expectedAnswer;
+	}
 	// Signe ou marque d'un tableau de signes : le même jeton
 	if (isSignTableCell(blank)) return isSignCellCorrect(userAnswer, blank.expectedAnswer);
 
@@ -1342,6 +1360,30 @@ function validateSingleBlank(
 			: { isCorrect: false };
 	}
 
+	// Programme tortue : son tracé contre celui de l'attendu ; un programme qui ne se lit pas ou
+	// ne s'arrête pas dit pourquoi
+	if (blank.construire === 'tortue') {
+		const verdict = tortueAnswerVerdict(userAnswer, blank.expectedAnswer);
+		if (verdict.juste) return { isCorrect: true, status: 'correct' };
+		return verdict.message ? { isCorrect: false, feedback: verdict.message } : { isCorrect: false };
+	}
+
+	// Robot à produire : le code rejoué sur la scène ; faux, il dit pourquoi (sortie, case
+	// grise, arrivée manquée, instruction inconnue)
+	if (blank.construire === 'robot') {
+		const verdict = robotAnswerVerdict(userAnswer, blank.expectedAnswer);
+		if (verdict.juste) return { isCorrect: true, status: 'correct' };
+		return verdict.message ? { isCorrect: false, feedback: verdict.message } : { isCorrect: false };
+	}
+
+	// Programme de calcul : ses affichages sur chaque essai contre ceux de l'attendu ; un
+	// programme illisible, muet ou en erreur sur un essai dit pourquoi
+	if (blank.construire === 'calcul') {
+		const verdict = calculAnswerVerdict(userAnswer, blank.expectedAnswer);
+		if (verdict.juste) return { isCorrect: true, status: 'correct' };
+		return verdict.message ? { isCorrect: false, feedback: verdict.message } : { isCorrect: false };
+	}
+
 	// Point du cercle trigonométrique : le même cran, modulo 2π
 	if (blank.construire === 'trig') {
 		return isPlacedAngleCorrect(userAnswer, blank.expectedAnswer)
@@ -1377,8 +1419,13 @@ function validateSingleBlank(
 			: { isCorrect: false };
 	}
 
-	// Étiquettes à ranger : l'étiquette posée (sa position affichée), jamais sa valeur
-	if (blank.construire === 'ranger') {
+	// Étiquettes à ranger, éléments à associer, texte à trous : l'étiquette posée (sa position
+	// affichée), jamais sa valeur
+	if (
+		blank.construire === 'ranger' ||
+		blank.construire === 'associer' ||
+		blank.construire === 'trous'
+	) {
 		return userAnswer.trim() === blank.expectedAnswer
 			? { isCorrect: true, status: 'correct' }
 			: { isCorrect: false };

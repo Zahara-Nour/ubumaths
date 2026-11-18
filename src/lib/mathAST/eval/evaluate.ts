@@ -8,7 +8,7 @@
 import type { MathNode, FunctionNode } from '../types';
 import type { EvalOptions, EvalResult } from './types';
 import type { Rational } from '../normal/types';
-import type { PrecisionType } from '$lib/questions/types';
+import type { PrecisionType } from '#lib/questions/types.ts';
 import { DEFAULT_EVAL_OPTIONS } from './types';
 import { getVariables } from './substitute';
 import {

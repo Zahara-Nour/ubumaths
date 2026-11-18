@@ -10,7 +10,7 @@
  * noms, le nombre de points ou de barres, la forme. La correction ne change pas :
  * le serveur juge sur l'instance complète.
  *
- * Masqué : ```line, ```courbe et ```trig (`placer:`), ```courbe (`tracer:` : l'équation
+ * Masqué : ```tortue (`attendu:`, la figure seule en `figure:`), ```calcul (`attendu:`), ```line, ```courbe et ```trig (`placer:`), ```courbe (`tracer:` : l'équation
  * de la droite devient `tracer: ?`), ```horloge (`placer:`), ```collection et
  * ```monnaie (`construire:`, avec sa réserve par défaut écrite : `maskMonnaie`), ```partage (`colorier:`), ```barres (effectifs des
  * barres de `placer:`, `axe: à choisir` compris : l'échelle ne se déduit plus),
@@ -35,7 +35,8 @@
  * Un bloc dans une option d'un ```choix n'est pas un geste (le générateur met le
  * choix à l'abri avant de repérer les gestes) : il reste tel quel, sinon les options
  * deviendraient identiques.
- * Sans objet : ```ranger (déjà mélangé), ```patron `designer:` (la tâche, que la
+ * Sans objet : ```ranger (déjà mélangé), ```associer (réécrit sans liens au tirage ; la garde
+ * `findUnmaskedAnswers` vérifie qu'il n'en reste aucun), ```trous (réécrit aux trous vides, gardé de même), ```patron `designer:` (la tâche, que la
  * consigne dit ; les faces se trouvent par le pliage), ```cubes `dessiner:` (la
  * perspective est la figure), ```solide `tracer:` (la combinaison est la tâche, que
  * la consigne dit ; les points se trouvent par le calcul), opération posée.
@@ -43,52 +44,60 @@
  * @module questions/masked-statement
  */
 
-import { findLinesToPlace } from '$lib/ubumark/parser/number-line-parser';
-import { findCourbesToPlace } from '$lib/ubumark/parser/courbe-parser';
-import { findTrigCirclesToPlace } from '$lib/ubumark/parser/trig-circle-parser';
+import { findLinesToPlace } from '#lib/ubumark/parser/number-line-parser.ts';
+import { findCourbesToPlace } from '#lib/ubumark/parser/courbe-parser.ts';
+import { findTrigCirclesToPlace } from '#lib/ubumark/parser/trig-circle-parser.ts';
+import {
+	figureText,
+	findTortuesToProgram,
+	parseTortueContent
+} from '#lib/ubumark/parser/tortue-parser.ts';
+import { findCalculsToProgram } from '#lib/ubumark/parser/calcul-parser.ts';
 import {
 	findHorlogesToPlace,
 	isMaskedPlacerValue,
 	maskedPlacerValue
-} from '$lib/ubumark/parser/horloge-parser';
-import { findBuildCollections } from '$lib/ubumark/parser/collection-parser';
-import { defaultReserve, findBuildMonnaies } from '$lib/ubumark/parser/monnaie-parser';
-import { fromCents, isCents, readAmount, toCents } from '$lib/ubumark/utils/monnaie-valeurs';
-import { findPartagesToColorier } from '$lib/ubumark/parser/partage-parser';
+} from '#lib/ubumark/parser/horloge-parser.ts';
+import { findBuildCollections } from '#lib/ubumark/parser/collection-parser.ts';
+import { defaultReserve, findBuildMonnaies } from '#lib/ubumark/parser/monnaie-parser.ts';
+import { fromCents, isCents, readAmount, toCents } from '#lib/ubumark/utils/monnaie-valeurs.ts';
+import { findPartagesToColorier } from '#lib/ubumark/parser/partage-parser.ts';
 import {
 	findBarsToPlace,
 	findBoxPlotsToPlace,
 	parseStatChartContent
-} from '$lib/ubumark/parser/stat-chart-parser';
-import { findChoiceBlocks } from '$lib/ubumark/parser/choix-parser';
+} from '#lib/ubumark/parser/stat-chart-parser.ts';
+import { findChoiceBlocks } from '#lib/ubumark/parser/choix-parser.ts';
+import { findAssociersToPlace, parseAssocierBody } from '#lib/ubumark/parser/associer-parser.ts';
+import { findTrousToPlace, trousHasFilledHole } from '#lib/ubumark/parser/trous-parser.ts';
 import {
 	findCubesToBuild,
 	findPatronsToBuild,
 	parseEspaceContent
-} from '$lib/ubumark/parser/espace-parser';
-import { readConstructionHeader } from '$lib/ubumark/parser/construction-parser';
+} from '#lib/ubumark/parser/espace-parser.ts';
+import { readConstructionHeader } from '#lib/ubumark/parser/construction-parser.ts';
 import {
 	constructionPositions,
 	constructionShapes,
 	hasConstructionPositions
-} from '$lib/questions/construction/positions';
+} from '#lib/questions/construction/positions.ts';
 import {
 	findVariationsToFill,
 	variationRowForDisplay,
 	withImplicitEndpoints,
 	type VariationToFill
-} from '$lib/ubumark/parser/variation-table-parser';
-import type { VariationTableNode } from '$lib/ubumark/types/variation-table';
-import { unnestedLine } from '$lib/ubumark/parser/nested-line';
+} from '#lib/ubumark/parser/variation-table-parser.ts';
+import type { VariationTableNode } from '#lib/ubumark/types/variation-table.ts';
+import { unnestedLine } from '#lib/ubumark/parser/nested-line.ts';
 import {
 	isMaskedVectorValue,
 	isCombinationVectorValue,
 	isVectorValue,
 	MASKED_VALUE,
 	maskVectorValue
-} from '$lib/ubumark/utils/masked-value';
-import { sideColumns } from '$lib/ubumark/utils/espace-scene';
-import { transformGrid, trimGrid } from '$lib/ubumark/utils/espace-patrons';
+} from '#lib/ubumark/utils/masked-value.ts';
+import { sideColumns } from '#lib/ubumark/utils/espace-scene.ts';
+import { transformGrid, trimGrid } from '#lib/ubumark/utils/espace-patrons.ts';
 
 // Types
 interface FoundBlock {
@@ -108,6 +117,7 @@ const REPRESENTER_LINE = /^(representer\s*:)(.*)$/i;
 const TRACER_LINE = /^(tracer\s*:)(.*)$/i;
 const BUILD_LINE = /^(construire\s*:)(.*)$/i;
 const COLORIER_LINE = /^(colorier\s*:)(.*)$/i;
+const ATTENDU_LINE = /^(attendu\s*:)(.*)$/i;
 const RESERVE_LINE = /^réserve\s*:/i;
 /** `A=3` sur une droite : le nom avant `=` */
 const NAMED_TARGET = /^([^=\s]+)\s*=/;
@@ -196,6 +206,20 @@ function maskLines<T extends FoundBlock>(
  * dépend de la somme (pièces de centimes si elle en a, chantier `monnaie-centimes`) :
  * l'énoncé masqué l'écrit, pour que l'élève ait la même réserve qu'à l'entraînement.
  */
+/**
+ * Programme tortue : `attendu: ?` ; la figure à reproduire (`montrer: oui`) part seule, en
+ * segments (`figure:`), sans le programme qui la trace
+ */
+function maskTortue(block: FoundBlock): MaskLine {
+	const attendu = keyLine(ATTENDU_LINE, () => MASKED_VALUE);
+	const modele = parseTortueContent(block.body.join('\n')).spec?.modele ?? null;
+	return (line, rank) => {
+		const masked = attendu(line, rank);
+		if (masked === null || modele === null) return masked;
+		return `${masked}\nfigure: ${figureText(modele)}`;
+	};
+}
+
 function maskMonnaie(block: FoundBlock): MaskLine {
 	const build = keyLine(BUILD_LINE, () => MASKED_VALUE);
 	if (block.body.some((line) => RESERVE_LINE.test(line.trim()))) return build;
@@ -337,8 +361,12 @@ function findFiguresACompleter(lines: string[]): FoundBlock[] {
 	return found;
 }
 
-/** `verifier: mesure AOB` (lot 6), `, rapporteur posé` (lot 8) : rien à cacher */
-const MEASURE_CHECK = /^mesure\s+[A-Z]{3}(?:\s*,\s*rapporteur\s+pos[ée])?$/;
+/**
+ * `verifier: mesure AOB` (lot 6), `, rapporteur posé` (lot 8), `mesure AB` et
+ * `mesure AB en mm` (n° 26) : rien à cacher
+ */
+const MEASURE_CHECK =
+	/^mesure\s+(?:[A-Z]{3}(?:\s*,\s*rapporteur\s+pos[ée])?|[A-Z]{2}(?:\s+en\s+(?:cm|mm))?)$/;
 /** Définition d'un point nommé : `B = <expression>` */
 const POINT_DEFINITION = /^\s*([A-Za-z][A-Za-z0-9_']*)\s*=\s*(.+)$/;
 /** Une expression qui peut porter la mesure d'un angle (garde de l'énoncé masqué) */
@@ -390,7 +418,10 @@ function maskFigure(block: FoundBlock): MaskLine {
 	if (header.spec.masked || header.spec.checks.length === 0) return () => null;
 	// Angle à mesurer (lot 6) : `verifier: mesure AOB` reste (l'écran en tire la case) ; les
 	// points calculés sont écrits en coordonnées (`B = rotation(A, angle=50, …)` dirait la réponse)
-	if (header.spec.checks.some((c) => c.kind === 'mesure')) return maskMeasureFigure(block);
+	// Segment à mesurer (n° 26) : de même, `mesure AB` reste ; `B = milieu(A, C)` dirait la longueur
+	if (header.spec.checks.some((c) => c.kind === 'mesure' || c.kind === 'mesure_segment')) {
+		return maskMeasureFigure(block);
+	}
 	const separator = block.body.findIndex((line) => FIGURE_SEPARATOR.test(line.trim()));
 	const headerEnd = separator === -1 ? block.body.length : separator;
 	const toolsWritten = block.body.slice(0, headerEnd).some((line) => keyOf(line) === 'outils');
@@ -611,9 +642,18 @@ export function findUnmaskedAnswers(statement: string): string[] {
 				)
 		),
 		...leaks('trig', findTrigCirclesToPlace(statement), keyMasked(['placer'])),
+		// Bloc cité ou en retrait compris : `attendu:` est la réponse elle-même, où qu'il soit
+		...leaks('tortue', findTortuesToProgram(statement), keyMasked(['attendu'])),
+		...leaks('calcul', findCalculsToProgram(statement), keyMasked(['attendu'])),
 		...leaks('horloge', findHorlogesToPlace(statement), (block) =>
 			valuesOf(block.body, ['placer']).every(isMaskedPlacerValue)
 		),
+		// Éléments à associer : l'énoncé d'instance n'a plus aucun lien (`- élément ->`)
+		...leaks('associer', own(findAssociersToPlace(statement)), (block) =>
+			parseAssocierBody(block.body).answers.every((answer) => answer === null)
+		),
+		// Texte à trous : l'énoncé d'instance n'a que des trous vides (`[]`), même avec sa réserve écrite
+		...leaks('trous', own(findTrousToPlace(statement)), (block) => !trousHasFilledHole(block.body)),
 		...leaks('collection', findBuildCollections(statement), keyMasked(['construire'])),
 		...leaks('monnaie', findBuildMonnaies(statement), keyMasked(['construire'])),
 		...leaks('partage', findPartagesToColorier(statement), keyMasked(['colorier'])),
@@ -672,6 +712,11 @@ export function maskGestureAnswers(statement: string): string {
 		() => (line, rank) => courbePoints(line, rank) ?? courbeLine(line, rank)
 	);
 	maskBlocks(findTrigCirclesToPlace(statement), () => placer);
+	// Tous les blocs, cités ou en retrait compris : `attendu:` est la réponse elle-même
+	maskBlocks(findTortuesToProgram(statement), maskTortue);
+	// Programme de calcul : `attendu: ?` ; les essais et le départ restent (ni l'un ni l'autre
+	// ne dit la réponse)
+	maskBlocks(findCalculsToProgram(statement), () => keyLine(ATTENDU_LINE, () => MASKED_VALUE));
 	maskBlocks(findHorlogesToPlace(statement), () => keyLine(PLACER_LINE, maskedPlacerValue));
 	const build = keyLine(BUILD_LINE, () => MASKED_VALUE);
 	maskBlocks(findBuildCollections(statement), () => build);

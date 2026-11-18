@@ -15,7 +15,7 @@
  *
  * @example
  * ```typescript
- * import { inferType, isIntegerType, isSubtype, P } from '$lib/mathAST';
+ * import { inferType, isIntegerType, isSubtype, P } from '#lib/mathAST/index.ts';
  *
  * // Simple inference
  * inferType(parseLatex('5'));           // { base: 'integer', sign: 'positive' }

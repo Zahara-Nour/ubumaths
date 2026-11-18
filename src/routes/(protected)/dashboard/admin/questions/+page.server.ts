@@ -24,15 +24,15 @@
  * - Includes total count for pagination
  */
 
-import { COURSE_QUESTION_FILTER } from '$lib/questions/course-question';
+import { COURSE_QUESTION_FILTER } from '#lib/questions/course-question.ts';
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { requireAdmin } from '$lib/server/middleware/auth';
-import { readAllRows } from '$lib/server/read-all-rows';
-import { loadActiveNodes } from '$lib/server/classification-nodes';
+import { requireAdmin } from '#lib/server/middleware/auth.ts';
+import { readAllRows } from '#lib/server/read-all-rows.ts';
+import { loadActiveNodes } from '#lib/server/classification-nodes.ts';
 import { z } from 'zod';
-import { filterNodeIds, type TreeNode } from '$lib/questions/classification-tree';
-import { createServerLogger } from '$lib/utils/logger';
+import { filterNodeIds, type TreeNode } from '#lib/questions/classification-tree.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('(protected)/dashboard/admin/questions/+page.server');
 

@@ -22,13 +22,13 @@
 		HORLOGE_ARIA_LABEL,
 		HORLOGE_UNAVAILABLE,
 		type HorlogeNode
-	} from '$lib/ubumark/types/horloge';
+	} from '#lib/ubumark/types/horloge.ts';
 	import {
 		buildHorlogeScene,
 		HORLOGE_FONT,
 		HORLOGE_STROKE,
 		HORLOGE_VIEW
-	} from '$lib/ubumark/utils/horloge-scene';
+	} from '#lib/ubumark/utils/horloge-scene.ts';
 	import { readAuthoringErrors } from '../authoring-errors';
 	import HorlogePlacer from './HorlogePlacer.svelte';
 

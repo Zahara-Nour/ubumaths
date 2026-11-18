@@ -1,7 +1,7 @@
 import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { isMarketplaceEnabled } from '$lib/server/marketplace/helpers';
-import { createServerLogger } from '$lib/utils/logger';
+import { isMarketplaceEnabled } from '#lib/server/marketplace/helpers.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('(protected)/dashboard/student/marketplace/+page.server');
 

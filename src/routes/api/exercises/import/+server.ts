@@ -9,10 +9,10 @@ import {
 	importExerciseFromJSON,
 	importExerciseFromMarkdown,
 	importExercisesFromJSON
-} from '$lib/server/exercise-import-export';
-import type { ImportOptions } from '$lib/exercises/types';
-import { importExercisesSchema } from '$lib/server/validation/exercises';
-import { requireRole } from '$lib/server/middleware/auth';
+} from '#lib/server/exercise-import-export.ts';
+import type { ImportOptions } from '#lib/exercises/types.ts';
+import { importExercisesSchema } from '#lib/server/validation/exercises.ts';
+import { requireRole } from '#lib/server/middleware/auth.ts';
 
 /**
  * POST /api/exercises/import

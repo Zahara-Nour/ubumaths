@@ -6,9 +6,9 @@
 
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireTeacherOfClass } from '$lib/server/stats/teacher-class-auth';
-import { classIdParamSchema } from '$lib/server/validation/teacher-analytics';
-import { getClassCompetenceGrid } from '$lib/server/stats';
+import { requireTeacherOfClass } from '#lib/server/stats/teacher-class-auth.ts';
+import { classIdParamSchema } from '#lib/server/validation/teacher-analytics.ts';
+import { getClassCompetenceGrid } from '#lib/server/stats/index.ts';
 
 export const GET: RequestHandler = async ({ params, locals }) => {
 	const paramCheck = classIdParamSchema.safeParse(params);

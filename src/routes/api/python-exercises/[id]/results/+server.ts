@@ -5,10 +5,10 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import { exerciseIdParamSchema } from '$lib/server/validation/python-exercises';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { exerciseIdParamSchema } from '#lib/server/validation/python-exercises.ts';
 import { z } from 'zod';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/python-exercises/[id]/results/+server');
 

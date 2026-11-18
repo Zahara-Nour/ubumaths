@@ -1,0 +1,201 @@
+{
+	"id": "81bacf03-66b8-44b0-bb37-a6703fe77edd",
+	"title": "Tracer une figure avec un programme (4e)",
+	"description": "Écrire en blocs un programme qui trace un polygone régulier ou des carrés emboîtés, avec une variable.",
+	"grades": ["4"],
+	"level": 2,
+	"delay": 300,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Le programme posé dans l'espace de travail range dans la variable **n** le nombre de côtés d'un {{nom}}, puis répète n fois « avancer ${{c}}$ ».\n\nComplète-le pour qu'il trace le {{nom}} dessiné en gris : à chaque sommet, la tortue tourne à gauche de $360 \\div n$ degrés.\n\n```tortue\nniveau: 4e\nattendu: mettre n à {{n}} ; répéter n [ avancer {{c}} ; tourner à gauche 360 ÷ n ]\ndépart: mettre n à {{n}} ; répéter n [ avancer {{c}} ]\nmontrer: oui\n```",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..3"
+				},
+				{
+					"name": "n",
+					"expression": "{{if:t==0|3|}}{{if:t==1|5|}}{{if:t==2|6|}}{{if:t==3|8|}}"
+				},
+				{
+					"name": "a",
+					"expression": "{{if:t==0|120|}}{{if:t==1|72|}}{{if:t==2|60|}}{{if:t==3|45|}}"
+				},
+				{
+					"name": "nom",
+					"expression": "{{if:t==0|triangle équilatéral|}}{{if:t==1|pentagone régulier|}}{{if:t==2|hexagone régulier|}}{{if:t==3|octogone régulier|}}"
+				},
+				{
+					"name": "c",
+					"expression": "2..3"
+				}
+			],
+			"conditions": [],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"En faisant le tour du polygone, la tortue fait un tour complet : $360$ degrés, partagés entre les ${{n}}$ sommets.",
+					"À chaque sommet, elle tourne donc de $360 \\div {{n}} = {{a}}$ degrés.",
+					"Un programme juste : mettre n à ${{n}}$ ; répéter n [ avancer ${{c}}$ ; tourner à gauche $360 \\div$ n ]."
+				]
+			}
+		},
+		{
+			"statement": "Fais tracer à la tortue les ${{k}}$ carrés dessinés en gris : ils partent tous du même coin, le premier a un côté de $1$ et chaque carré a un côté plus long de ${{p}}$ que le précédent.\n\nUtilise une variable **c** pour le côté : au plus $6$ blocs.\n\n```tortue\nniveau: 4e\nattendu: mettre c à 1 ; répéter {{k}} [ répéter 4 [ avancer c ; tourner à gauche 90 ] ; ajouter {{p}} à c ]\nmontrer: oui\nblocs: 6\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "3..5"
+				},
+				{
+					"name": "p",
+					"expression": "1..2"
+				}
+			],
+			"conditions": [],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"Un carré de côté c : répéter $4$ [ avancer c ; tourner à gauche $90$ ]. La tortue revient à son point de départ.",
+					"Après chaque carré, on ajoute ${{p}}$ à c ; on répète le tout ${{k}}$ fois.",
+					"Un programme juste : mettre c à $1$ ; répéter ${{k}}$ [ répéter $4$ [ avancer c ; tourner à gauche $90$ ] ; ajouter ${{p}}$ à c ]."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Polygone : juste",
+			"variationIndex": 0,
+			"variables": {
+				"t": "2",
+				"n": "6",
+				"a": "60",
+				"nom": "hexagone régulier",
+				"c": "3"
+			},
+			"answers": ["mettre n à 6 ; répéter n [ avancer 3 ; tourner à gauche 360 ÷ n ]"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Polygone : juste, angle calculé à la main",
+			"variationIndex": 0,
+			"variables": {
+				"t": "2",
+				"n": "6",
+				"a": "60",
+				"nom": "hexagone régulier",
+				"c": "3"
+			},
+			"answers": ["mettre n à 6 ; répéter n [ avancer 3 ; tourner à gauche 60 ]"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : angle du polygone confondu avec l'angle de rotation",
+			"variationIndex": 0,
+			"variables": {
+				"t": "2",
+				"n": "6",
+				"a": "60",
+				"nom": "hexagone régulier",
+				"c": "3"
+			},
+			"answers": ["mettre n à 6 ; répéter n [ avancer 3 ; tourner à gauche 120 ]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : tourner à droite",
+			"variationIndex": 0,
+			"variables": {
+				"t": "2",
+				"n": "6",
+				"a": "60",
+				"nom": "hexagone régulier",
+				"c": "3"
+			},
+			"answers": ["mettre n à 6 ; répéter n [ avancer 3 ; tourner à droite 360 ÷ n ]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : départ non modifié",
+			"variationIndex": 0,
+			"variables": {
+				"t": "2",
+				"n": "6",
+				"a": "60",
+				"nom": "hexagone régulier",
+				"c": "3"
+			},
+			"answers": ["mettre n à 6 ; répéter n [ avancer 3 ]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Polygone : octogone juste",
+			"variationIndex": 0,
+			"variables": {
+				"t": "3",
+				"n": "8",
+				"a": "45",
+				"nom": "octogone régulier",
+				"c": "2"
+			},
+			"answers": ["mettre n à 8 ; répéter n [ avancer 2 ; tourner à gauche 360 ÷ n ]"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Carrés : juste",
+			"variationIndex": 1,
+			"variables": {
+				"k": "4",
+				"p": "2"
+			},
+			"answers": [
+				"mettre c à 1 ; répéter 4 [ répéter 4 [ avancer c ; tourner à gauche 90 ] ; ajouter 2 à c ]"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ajouter dans la petite répétition",
+			"variationIndex": 1,
+			"variables": {
+				"k": "4",
+				"p": "2"
+			},
+			"answers": [
+				"mettre c à 1 ; répéter 4 [ répéter 4 [ avancer c ; tourner à gauche 90 ; ajouter 2 à c ] ]"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : sans variable, trop de blocs",
+			"variationIndex": 1,
+			"variables": {
+				"k": "4",
+				"p": "2"
+			},
+			"answers": [
+				"répéter 4 [ avancer 1 ; tourner à gauche 90 ] ; répéter 4 [ avancer 3 ; tourner à gauche 90 ] ; répéter 4 [ avancer 5 ; tourner à gauche 90 ] ; répéter 4 [ avancer 7 ; tourner à gauche 90 ]"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

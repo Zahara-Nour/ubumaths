@@ -29,10 +29,10 @@
 -->
 <script lang="ts">
 	import { untrack } from 'svelte';
-	import { COURBE_COLORS } from '$lib/ubumark/types/courbe';
-	import type { StatChartNode } from '$lib/ubumark/types/stat-chart';
-	import { namedColorScreen, namedColorTable } from '$lib/theme/named-colors';
-	import { buildStatChartScene, STAT_CHART_CHAR_PX } from '$lib/ubumark/utils/stat-chart-scene';
+	import { COURBE_COLORS } from '#lib/ubumark/types/courbe.ts';
+	import type { StatChartNode } from '#lib/ubumark/types/stat-chart.ts';
+	import { namedColorScreen, namedColorTable } from '#lib/theme/named-colors.ts';
+	import { buildStatChartScene, STAT_CHART_CHAR_PX } from '#lib/ubumark/utils/stat-chart-scene.ts';
 	import {
 		barMistake,
 		barsToPlace,
@@ -44,7 +44,7 @@
 		scaleMistake,
 		scaleOfAnswer,
 		solvedSpec
-	} from '$lib/ubumark/utils/barres-placer';
+	} from '#lib/ubumark/utils/barres-placer.ts';
 	import { readContentLocale } from '../content-locale';
 	import type { BuildCase } from './CollectionConstruire.svelte';
 	import StatChart from './StatChart.svelte';

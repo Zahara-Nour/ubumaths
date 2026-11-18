@@ -64,7 +64,7 @@
  */
 
 import type { Database, Json, Tables, TablesUpdate } from './database';
-import type { GradeCode } from '$lib/types/grades';
+import type { GradeCode } from '#lib/types/grades.ts';
 
 // ============================================================================
 // Table Row Type Aliases

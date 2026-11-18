@@ -15,7 +15,7 @@
 
 import { describe, test, expect, vi, beforeEach, afterEach } from 'vitest';
 import { DELETE } from '../+server';
-import { ACCOUNT_DELETION_CONFIRMATION_PHRASE } from '$lib/server/validation/account';
+import { ACCOUNT_DELETION_CONFIRMATION_PHRASE } from '#lib/server/validation/account.ts';
 
 // ============================================================================
 // SHARED TEST STATE
@@ -38,7 +38,7 @@ const TEST_USER = { id: 'user-123', email: 'test@example.com' };
 // ============================================================================
 
 // Mock logger
-vi.mock('$lib/utils/logger', () => ({
+vi.mock('#lib/utils/logger.ts', () => ({
 	createServerLogger: () => ({
 		info: vi.fn(),
 		error: vi.fn(),
@@ -49,7 +49,7 @@ vi.mock('$lib/utils/logger', () => ({
 }));
 
 // Mock auth middleware - returns a fixed user
-vi.mock('$lib/server/middleware/auth', () => ({
+vi.mock('#lib/server/middleware/auth.ts', () => ({
 	requireAuth: vi.fn().mockResolvedValue({
 		user: { id: 'user-123', email: 'test@example.com' },
 		profile: { id: 'user-123', role: 'student' }
@@ -57,7 +57,7 @@ vi.mock('$lib/server/middleware/auth', () => ({
 }));
 
 // Mock service role client - uses getter to access mockServiceClient
-vi.mock('$lib/server/serviceRoleClient', () => ({
+vi.mock('#lib/server/serviceRoleClient.ts', () => ({
 	createServiceRoleClient: vi.fn(() => {
 		// This factory function is called at runtime, not at module load
 		// So it can access the mockServiceClient variable
@@ -71,14 +71,14 @@ vi.mock('$lib/server/serviceRoleClient', () => ({
 }));
 
 // Mock rate limiter
-vi.mock('$lib/server/middleware/rateLimit', () => ({
+vi.mock('#lib/server/middleware/rateLimit.ts', () => ({
 	rateLimit: vi.fn()
 }));
 
 // Import after mocks
-import * as auth from '$lib/server/middleware/auth';
-import * as rateLimit from '$lib/server/middleware/rateLimit';
-import * as serviceRoleClient from '$lib/server/serviceRoleClient';
+import * as auth from '#lib/server/middleware/auth.ts';
+import * as rateLimit from '#lib/server/middleware/rateLimit.ts';
+import * as serviceRoleClient from '#lib/server/serviceRoleClient.ts';
 
 // ============================================================================
 // HELPERS

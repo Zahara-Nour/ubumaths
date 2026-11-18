@@ -32,7 +32,7 @@ import {
 import { DEFAULT_TEST_PASSWORD } from '../helpers/database/supabase-client';
 import { getPostgresClient } from '../helpers/database/postgres-client';
 import { TestData } from '../helpers/database/test-data-factory';
-import type { Database, Json } from '$lib/types/database';
+import type { Database, Json } from '#lib/types/database.ts';
 
 // ============================================================================
 // CONSTANTS

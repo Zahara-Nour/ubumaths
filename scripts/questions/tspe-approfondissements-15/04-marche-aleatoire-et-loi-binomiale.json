@@ -1,0 +1,268 @@
+{
+	"id": "7f9366af-1eee-44c2-9afc-681370c0a9c7",
+	"title": "Marche aléatoire et loi binomiale",
+	"description": "Pion sur une droite graduée : S_n = 2X_n − n (deux cases), P(S_4 = 0) par la loi binomiale (case), espérance et variance de S_N (deux cases), retour à l'origine après un nombre impair d'étapes (case choix)",
+	"grades": ["T_SPE"],
+	"level": 6,
+	"delay": 120,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Un pion part de l'origine d'une droite graduée. À chaque étape, il avance de $1$ avec la probabilité ${{eval:k/10;d}}$ et recule de $1$ sinon ; les étapes sont indépendantes. On note $X_n$ le nombre d'avancées au cours des $n$ premières étapes et $S_n$ l'abscisse du pion après $n$ étapes.\n\nComplète, pour tout $n\\geqslant 1$.\n\n$S_n=?X_n-?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				},
+				{
+					"expectedAnswer": "n"
+				}
+			],
+			"correction": {
+				"steps": [
+					"En $n$ étapes, le pion avance $X_n$ fois et recule $n-X_n$ fois.",
+					"$S_n=X_n-(n-X_n)=2X_n-n$.",
+					"Donc $\\textcolor{{{color:primary.0}}}{S_n=2X_n-n}$. $X_{n}$ compte les succès de $n$ épreuves de Bernoulli indépendantes : $X_{n}$ suit la loi binomiale $\\mathcal{B}(n;{{eval:k/10;d}})$."
+				]
+			}
+		},
+		{
+			"statement": "Un pion part de l'origine d'une droite graduée. À chaque étape, il avance de $1$ avec la probabilité ${{eval:k/10;d}}$ et recule de $1$ sinon ; les étapes sont indépendantes. On note $X_n$ le nombre d'avancées au cours des $n$ premières étapes et $S_n$ l'abscisse du pion après $n$ étapes.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P(S_4=0)=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:6*k^2*(10-k)^2/10000}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$S_4=2X_4-4$, donc $S_4=0$ si et seulement si $X_4=2$ : deux avancées et deux reculs.",
+					"$X_{4}$ compte les succès de $4$ épreuves de Bernoulli indépendantes : $X_{4}$ suit la loi binomiale $\\mathcal{B}(4;{{eval:k/10;d}})$.",
+					"$P(X_4=2)=\\dbinom{4}{2}\\times{{eval:k/10;d}}^2\\times{{eval:1-k/10;d}}^2=6\\times{{eval:k^2/100;d}}\\times{{eval:(10-k)^2/100;d}}$.",
+					"Donc $\\textcolor{{{color:primary.0}}}{P(S_4=0)={{eval:6*k^2*(10-k)^2/10000;d}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Un pion part de l'origine d'une droite graduée. À chaque étape, il avance de $1$ avec la probabilité ${{eval:k/10;d}}$ et recule de $1$ sinon ; les étapes sont indépendantes. On note $X_n$ le nombre d'avancées au cours des $n$ premières étapes et $S_n$ l'abscisse du pion après $n$ étapes.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$E(S_{{{eval:N}}})=?$ et $V(S_{{{eval:N}}})=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..9"
+				},
+				{
+					"name": "N",
+					"expression": "10..50"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:N*(2*k-10)/10}}"
+				},
+				{
+					"expectedAnswer": "{{eval:4*N*k*(10-k)/100}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$X_{{{eval:N}}}$ compte les succès de ${{eval:N}}$ épreuves de Bernoulli indépendantes : $X_{{{eval:N}}}$ suit la loi binomiale $\\mathcal{B}({{eval:N}};{{eval:k/10;d}})$. Donc $E(X_{{{eval:N}}})={{eval:N*k/10;d}}$ et $V(X_{{{eval:N}}})={{eval:N*k*(10-k)/100;d}}$.",
+					"$S_{{{eval:N}}}=2X_{{{eval:N}}}-{{eval:N}}$ : $E(S_{{{eval:N}}})=2E(X_{{{eval:N}}})-{{eval:N}}$ et $V(S_{{{eval:N}}})=2^2V(X_{{{eval:N}}})$.",
+					"Donc $\\textcolor{{{color:primary.0}}}{E(S_{{{eval:N}}})={{eval:N*(2*k-10)/10;d}}}$ et $\\textcolor{{{color:primary.0}}}{V(S_{{{eval:N}}})={{eval:4*N*k*(10-k)/100;d}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Un pion part de l'origine d'une droite graduée. À chaque étape, il avance de $1$ avec la probabilité ${{eval:k/10;d}}$ et recule de $1$ sinon ; les étapes sont indépendantes. On note $X_n$ le nombre d'avancées au cours des $n$ premières étapes et $S_n$ l'abscisse du pion après $n$ étapes.\n\nQue vaut $P(S_{{{eval:2*m+1}}}=0)$ ?\n\n```choix\n- $0$, car $S_{{{eval:2*m+1}}}=2X_{{{eval:2*m+1}}}-{{eval:2*m+1}}$ est un entier impair\n- $\\dfrac{1}{2}$, car le pion avance et recule autant en moyenne\n- ${{eval:k/10;d}}^{{{eval:2*m+1}}}$\n- $P(X_{{{eval:2*m+1}}}={{eval:m}})$\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..9"
+				},
+				{
+					"name": "m",
+					"expression": "3..12"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$S_{{{eval:2*m+1}}}=2X_{{{eval:2*m+1}}}-{{eval:2*m+1}}$ : un nombre pair moins un nombre impair est impair.",
+					"$S_{{{eval:2*m+1}}}$ ne vaut jamais $0$ ; $X_{{{eval:2*m+1}}}={{eval:m}}$ donne $S_{{{eval:2*m+1}}}=-1$.",
+					"Donc $\\textcolor{{{color:primary.0}}}{P(S_{{{eval:2*m+1}}}=0)=0}$ : après un nombre impair d'étapes, le pion n'est jamais à l'origine."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2X_n − n",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["2", "n"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : X_n − n",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["1", "n"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 2X_n",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["2", "0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "0,2646",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["0,2646"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sans le coefficient binomial",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["0,0441"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : q⁴",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["0,2401"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−8 et 16,8",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3",
+				"N": "20"
+			},
+			"answers": ["-8", "16,8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : E(X)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3",
+				"N": "20"
+			},
+			"answers": ["6", "16,8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 2V(X)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3",
+				"N": "20"
+			},
+			"answers": ["-8", "8,4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "0, parité",
+			"variationIndex": 3,
+			"variables": {
+				"k": "3",
+				"m": "5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1/2",
+			"variationIndex": 3,
+			"variables": {
+				"k": "3",
+				"m": "5"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : pⁿ",
+			"variationIndex": 3,
+			"variables": {
+				"k": "3",
+				"m": "5"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : P(X = m)",
+			"variationIndex": 3,
+			"variables": {
+				"k": "3",
+				"m": "5"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

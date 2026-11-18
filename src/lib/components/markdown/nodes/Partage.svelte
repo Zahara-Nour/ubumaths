@@ -19,14 +19,14 @@
 	@module components/markdown/nodes/Partage
 -->
 <script lang="ts">
-	import { PARTAGE_UNAVAILABLE, type PartageNode } from '$lib/ubumark/types/partage';
+	import { PARTAGE_UNAVAILABLE, type PartageNode } from '#lib/ubumark/types/partage.ts';
 	import {
 		PARTAGE_CM_PER_UNIT,
 		PARTAGE_MARGIN,
 		PARTAGE_STROKE,
 		buildPartageScenes,
 		partageFigureLabel
-	} from '$lib/ubumark/utils/partage-scene';
+	} from '#lib/ubumark/utils/partage-scene.ts';
 	import { readAuthoringErrors } from '../authoring-errors';
 	import PartageColorier from './PartageColorier.svelte';
 

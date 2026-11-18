@@ -22,12 +22,12 @@
 	```
 -->
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import { Button } from '$lib/components/ui/button';
-	import * as Card from '$lib/components/ui/card';
-	import { Badge } from '$lib/components/ui/badge';
-	import StudentSelector from '$lib/components/worksheets/StudentSelector.svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { lore } from '#lib/config/lore.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import StudentSelector from '#lib/components/worksheets/StudentSelector.svelte';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import { Loader2, Users, UserMinus, RefreshCw } from '@lucide/svelte';
 
 	// ============================================================================

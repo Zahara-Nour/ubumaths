@@ -30,7 +30,7 @@ import {
 	planSectionCopies,
 	indexCopiedSections,
 	resolveCardSection
-} from '$lib/server/srs/deck-copy';
+} from '#lib/server/srs/deck-copy.ts';
 
 const service = createServiceRoleClient();
 

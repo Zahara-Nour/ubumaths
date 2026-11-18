@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { afterNavigate, goto } from '$app/navigation';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Button } from '$lib/components/ui/button';
-	import * as Card from '$lib/components/ui/card';
-	import { Input } from '$lib/components/ui/input';
-	import MySelect from '$lib/components/MySelect.svelte';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import MySelect from '#lib/components/MySelect.svelte';
 	import { Plus } from '@lucide/svelte';
-	import { getGradeSelectItems } from '$lib/utils/grades';
-	import { GRADES, type GradeCode } from '$lib/types/grades';
+	import { getGradeSelectItems } from '#lib/utils/grades.ts';
+	import { GRADES, type GradeCode } from '#lib/types/grades.ts';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
@@ -57,7 +57,7 @@
 		if (q.trim()) params.set('q', q.trim());
 		for (const tag of tags) params.append('tag', tag);
 		const query = params.toString();
-		goto(query ? `${LIST_PATH}?${query}` : LIST_PATH, { keepFocus: true }).then(() => {});
+		goto(query ? `${LIST_PATH}?${query}` : LIST_PATH, { reset: false }).then(() => {});
 	}
 
 	function handleReset() {

@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { Button } from '$lib/components/ui/button';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import * as Card from '$lib/components/ui/card';
-	import * as Table from '$lib/components/ui/table';
-	import { Badge } from '$lib/components/ui/badge';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import * as Table from '#lib/components/ui/table/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
 	import { TrendingUp, Target, Clock, Calendar } from '@lucide/svelte';
-	import { formatGrade, formLabel } from '$lib/types/evaluation';
+	import { formatGrade, formLabel } from '#lib/types/evaluation.ts';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();

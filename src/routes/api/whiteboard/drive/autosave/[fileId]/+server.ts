@@ -16,11 +16,11 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import { GoogleDriveClient } from '$lib/server/google/drive-api';
-import { getTeacherAccessToken } from '$lib/server/google/sync';
-import { DRIVE_FILE_ID_REGEX } from '$lib/server/validation/whiteboard-drive';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { GoogleDriveClient } from '#lib/server/google/drive-api.ts';
+import { getTeacherAccessToken } from '#lib/server/google/sync.ts';
+import { DRIVE_FILE_ID_REGEX } from '#lib/server/validation/whiteboard-drive.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/whiteboard/drive/autosave/[fileId]/+server');
 

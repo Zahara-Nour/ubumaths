@@ -20,20 +20,20 @@
 
 <script lang="ts">
 	// Imports
-	import type { QuestionInstance } from '$lib/questions/types';
-	import { getQuestionType } from '$lib/questions/types';
-	import type { AnswerData } from '$lib/types/question-display';
-	import type { TestAnswerResult } from '$lib/types/test';
-	import FlashCard from '$lib/components/questions/FlashCard.svelte';
-	import QuestionCard from '$lib/components/questions/QuestionCard.svelte';
-	import CorrectionCard from '$lib/components/questions/CorrectionCard.svelte';
-	import { TILE_CARD_HEIGHT } from '$lib/components/questions/tile-card';
+	import type { QuestionInstance } from '#lib/questions/types.ts';
+	import { getQuestionType } from '#lib/questions/types.ts';
+	import type { AnswerData } from '#lib/types/question-display.ts';
+	import type { TestAnswerResult } from '#lib/types/test.ts';
+	import FlashCard from '#lib/components/questions/FlashCard.svelte';
+	import QuestionCard from '#lib/components/questions/QuestionCard.svelte';
+	import CorrectionCard from '#lib/components/questions/CorrectionCard.svelte';
+	import { TILE_CARD_HEIGHT } from '#lib/components/questions/tile-card.ts';
 	import {
 		provideAuthoringAdvice,
 		provideAuthoringErrors
-	} from '$lib/components/markdown/authoring-errors';
-	import * as Tabs from '$lib/components/ui/tabs';
-	import { Button } from '$lib/components/ui/button';
+	} from '#lib/components/markdown/authoring-errors.ts';
+	import * as Tabs from '#lib/components/ui/tabs/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import { RotateCcw } from '@lucide/svelte';
 
 	// Types

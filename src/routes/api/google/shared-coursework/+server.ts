@@ -43,15 +43,15 @@
  */
 
 import { json, error } from '@sveltejs/kit';
-import { assertGoogleClassroomEnabled } from '$lib/server/google/feature-guard';
+import { assertGoogleClassroomEnabled } from '#lib/server/google/feature-guard.ts';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
+import { requireRole } from '#lib/server/middleware/auth.ts';
 import {
 	listSharedCourseworkEnhancedSchema,
 	shareSingleCourseworkSchema,
 	bulkUnshareCourseworkSchema
-} from '$lib/server/validation/google';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/validation/google.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/google/shared-coursework/+server');
 

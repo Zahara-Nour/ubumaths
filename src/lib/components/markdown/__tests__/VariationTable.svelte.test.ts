@@ -17,7 +17,7 @@ import type {
 	VariationTableNode,
 	VariationValue,
 	VariationRow
-} from '$lib/ubumark/types/variation-table';
+} from '#lib/ubumark/types/variation-table.ts';
 
 // Type-safe render wrapper for Svelte 5 component
 const renderTable = async (props: { node: VariationTableNode; class?: string }) =>

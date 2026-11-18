@@ -37,7 +37,7 @@
  * ```
  */
 
-import type { Challenge, VariableDefinition, AnswerDefinition } from '$lib/types/game';
+import type { Challenge, VariableDefinition, AnswerDefinition } from '#lib/types/game.ts';
 
 /**
  * Generate random number within range

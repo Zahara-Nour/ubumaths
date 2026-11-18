@@ -8,11 +8,11 @@
 	 * Cf. docs/systeme/srs.md §5.2
 	 */
 
-	import { notionHref, studySessionHref } from '$lib/navigation/return-links';
-	import * as Card from '$lib/components/ui/card';
-	import { Button } from '$lib/components/ui/button';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import { Badge } from '$lib/components/ui/badge';
+	import { notionHref, studySessionHref } from '#lib/navigation/return-links.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
 	import { AlertCircle, RefreshCw, Clock, CheckCircle, PlayCircle, Target } from '@lucide/svelte';
 	import type { PageData } from './$types';
 	import type { ProgrammeBadge } from './+page.server';
@@ -38,8 +38,8 @@
 	};
 
 	const sectionStateFilter: Record<ProgrammeBadge, string> = {
-		a_remedier: 'learning,relearning',
-		a_renforcer: 'review',
+		a_remedier: 'relearning',
+		a_renforcer: 'learning,review',
 		en_apprentissage: '',
 		acquise_en_memoire: ''
 	};

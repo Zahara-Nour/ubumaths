@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { ShoppingCart } from '@lucide/svelte';
-	import { Badge } from '$lib/components/ui/badge';
-	import { questionCart } from '$lib/stores/questionCart.svelte';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { questionCart } from '#lib/stores/questionCart.svelte.ts';
 	import { goto } from '$app/navigation';
 
 	// Reactive values from store

@@ -31,14 +31,14 @@
  *   … --malgre-homonyme           crée même si un modèle de même titre et niveau existe
  *   … --publier --mettre-a-jour   remplace aussi le contenu des modèles DÉJÀ en base, s'ils
  *                                 sont encore en brouillon (un modèle publié n'est jamais touché).
- *                                 Contenu = description, variations, shared, options, test_specs
+ *                                 Contenu = description, délai, variations, shared, options, test_specs
  *                                 ET grades (comparés comme un ensemble).
  */
 import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import type { QuestionTemplate } from '$lib/questions/types';
-import { checkTemplate } from '$lib/questions/review/check-template';
-import { toTemplateInsertRow } from '$lib/questions/review/template-insert-row';
+import type { QuestionTemplate } from '#lib/questions/types.ts';
+import { checkTemplate } from '#lib/questions/review/check-template.ts';
+import { toTemplateInsertRow } from '#lib/questions/review/template-insert-row.ts';
 import { argValue, createScriptClient, findReviewerId, hasFlag } from './relecture/common';
 import {
 	readTemplateFile,
@@ -138,7 +138,7 @@ async function main(): Promise<number> {
 		? await supabase
 				.from('question_templates')
 				.select(
-					'id, title, level, status, grades, description, variations, shared, options, test_specs'
+					'id, title, level, status, grades, description, delay, variations, shared, options, test_specs'
 				)
 				.in('id', idsDuLot)
 		: { data: [], error: null };
@@ -202,6 +202,7 @@ async function main(): Promise<number> {
 			const identique =
 				memesGrades &&
 				existant.description === ligne.description &&
+				existant.delay === ligne.delay &&
 				canonique(existant.variations) === canonique(ligne.variations) &&
 				canonique(existant.shared) === canonique(ligne.shared) &&
 				canonique(existant.options) === canonique(ligne.options) &&
@@ -229,6 +230,7 @@ async function main(): Promise<number> {
 				.update({
 					grades: ligne.grades,
 					description: ligne.description,
+					delay: ligne.delay,
 					variations: ligne.variations,
 					shared: ligne.shared,
 					options: ligne.options,

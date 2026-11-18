@@ -6,7 +6,7 @@
  * BRANCHE. La collection n'est pas stockée : elle se déduit, à chaque
  * affichage, de l'acquisition des points (`student_point_state`) et de leurs
  * badges FSRS. Ce module ne lit rien : il reçoit les lignes déjà chargées
- * (cf. `$lib/server/mathoux/collection.ts`) et rend la collection.
+ * (cf. `#lib/server/mathoux/collection.ts`) et rend la collection.
  *
  * Tout le PARCOURS compte (complément de David, 2026-10-18) : les points du
  * niveau de l'élève ET ceux de ses niveaux antérieurs. Le stade se calcule
@@ -35,12 +35,12 @@
  * Spec validée par David : docs/wip/mathoux-conception.md § 9.
  */
 
-import { GRADE_CODES, GRADES, isGradeCode } from '$lib/types/grades';
+import { GRADE_CODES, GRADES, isGradeCode } from '#lib/types/grades.ts';
 import {
 	buildSeriesLink,
 	MAX_QUESTION_DELAY_SECONDS,
 	type SeriesItem
-} from '$lib/validation/series';
+} from '#lib/validation/series.ts';
 import { MATHOU_NAMES } from './mathou-noms';
 import type {
 	MathouCollarId,
@@ -68,7 +68,7 @@ export interface MathouMemory {
 	asleep: boolean;
 	/**
 	 * Décoration de panse portée (`student_mathoux.decoration`). Lue seulement : la
-	 * mémoire ne l'écrit jamais (achat et pose : `$lib/server/mathoux/decorations.ts`).
+	 * mémoire ne l'écrit jamais (achat et pose : `#lib/server/mathoux/decorations.ts`).
 	 */
 	decoration?: MathouDecorationId | null;
 	/** Collier porté (`student_mathoux.collar`), lu seulement comme la décoration. */

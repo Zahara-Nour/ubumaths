@@ -32,26 +32,26 @@ import {
 } from '../helpers/database/trigger-test-helpers';
 import { DEFAULT_TEST_PASSWORD } from '../helpers/database/supabase-client';
 import { TestData } from '../helpers/database/test-data-factory';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 import {
 	REVIEW_REWARD_CARDS_ANY_DECK,
 	REVIEW_REWARD_CARDS_EMPTIED_DECK,
 	XP_SOURCES
-} from '$lib/utils/buddy-xp';
+} from '#lib/utils/buddy-xp.ts';
 
 // `add_buddy_xp` et la lecture des cartes de cours partent au client service :
 // le brancher sur la base LOCALE.
-vi.mock('$lib/server/serviceRoleClient', async () => {
+vi.mock('#lib/server/serviceRoleClient.ts', async () => {
 	const helpers = await import('../helpers/database/trigger-test-helpers');
 	return { createServiceRoleClient: helpers.createServiceRoleClient };
 });
 
 import { POST as testsSaveRoute } from '../../src/routes/api/tests/save/+server';
 import { POST as reviewSubmitRoute } from '../../src/routes/api/srs/review/submit/+server';
-import { addExploredThemes } from '$lib/server/buddy-queries';
-import { addBuddyXpFromTest } from '$lib/server/buddy-xp-service';
+import { addExploredThemes } from '#lib/server/buddy-queries.ts';
+import { addBuddyXpFromTest } from '#lib/server/buddy-xp-service.ts';
 import { GET as presenceRoute } from '../../src/routes/api/student/buddy/presence/+server';
-import { utcDay, weekStartOf } from '$lib/utils/buddy-constance';
+import { utcDay, weekStartOf } from '#lib/utils/buddy-constance.ts';
 
 // Types
 type Person = { id: string; client: SupabaseClient<Database> };
@@ -104,12 +104,12 @@ function buildLocals(p: Person): App.Locals {
 /** Lecture de présence du Palotin (première page d'une zone du Palotin) */
 async function readPresence(
 	locals: App.Locals
-): Promise<{ buddy: { current_streak: number } | null; streakLost: boolean }> {
+): Promise<{ buddy: { current_streak: number } | null; returnAfterPause: boolean }> {
 	const response = await presenceRoute({ locals } as never);
 	expect(response.status, 'statut de /api/student/buddy/presence').toBe(200);
 	return (await response.json()) as {
 		buddy: { current_streak: number } | null;
-		streakLost: boolean;
+		returnAfterPause: boolean;
 	};
 }
 
@@ -595,7 +595,8 @@ describe('la boucle du Palotin tourne', () => {
 
 			const data = await readPresence({ ...buildLocals(p), profile } as App.Locals);
 
-			expect(data.streakLost).toBe(true);
+			// Remise à zéro en silence (R1, 2026-11-12) : aucune réplique à demander
+			expect(data).not.toHaveProperty('streakLost');
 			expect(data.buddy?.current_streak).toBe(0);
 			expect(await constanceOf(p)).toMatchObject({ current_streak: 0, longest_streak: 5 });
 		});
@@ -613,7 +614,6 @@ describe('la boucle du Palotin tourne', () => {
 
 			const data = await readPresence({ ...buildLocals(p), profile } as App.Locals);
 
-			expect(data.streakLost).toBe(false);
 			expect(data.buddy?.current_streak).toBe(3);
 			expect((await constanceOf(p))?.current_streak).toBe(3);
 		});

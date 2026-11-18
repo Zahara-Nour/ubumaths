@@ -5,10 +5,10 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
-import { Atelier } from '$lib/atelier/atelier.svelte';
-import { runInput, type CalcResult } from '$lib/atelier/calcul';
-import { commandCatalog } from '$lib/atelier/commands';
+import { WebReplEngine } from '#lib/mathAST/cli/web/web-repl-engine.ts';
+import { Atelier } from '#lib/atelier/atelier.svelte.ts';
+import { runInput, type CalcResult } from '#lib/atelier/calcul.ts';
+import { commandCatalog } from '#lib/atelier/commands.ts';
 import {
 	calcTextOf,
 	cleanedShortcuts,

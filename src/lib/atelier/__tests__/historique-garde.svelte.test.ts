@@ -10,7 +10,7 @@
 import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
 import { cleanup, render } from 'vitest-browser-svelte';
 import { tick } from 'svelte';
-import AtelierContainer from '$lib/components/atelier/AtelierContainer.svelte';
+import AtelierContainer from '#lib/components/atelier/AtelierContainer.svelte';
 import { Atelier } from '../atelier.svelte';
 import { CALC_HISTORY_STORAGE_KEY, CALC_HISTORY_VERSION } from '../history-storage';
 

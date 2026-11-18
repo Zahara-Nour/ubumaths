@@ -13,10 +13,10 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database, Tables } from '$lib/types/database';
-import type { StudentWorkInbox, WorkItem, WorkSource } from '$lib/types/student-inbox';
-import { formLabel } from '$lib/types/evaluation';
-import { createServerLogger } from '$lib/utils/logger';
+import type { Database, Tables } from '#lib/types/database.ts';
+import type { StudentWorkInbox, WorkItem, WorkSource } from '#lib/types/student-inbox.ts';
+import { formLabel } from '#lib/types/evaluation.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/student-inbox');
 

@@ -15,7 +15,7 @@ couvre:
 > Doc de référence du module `src/lib/ubumark/` et de son rendu `src/lib/components/markdown/`.
 > Pratiques d'écriture (à ne pas dupliquer ici) : [notation-unites](../pratiques/notation-unites.md)
 > (grandeurs), [fiches-exercices](../pratiques/fiches-exercices.md) (fiches, pièges PDF).
-> Vérifié contre le code le 2026-10-11 ; calcul aligné des blocs `$$` le 2026-11-05, centré (`array{rcl}`) le 2026-11-06 ; durée d'une variable `{{eval}}` le 2026-11-03 ; largeur des étiquettes de la droite graduée le 2026-11-02 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; lecteur des références (`internalLinks`, `internal-link-context.ts`) le 2026-11-06 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25 ; saisie de la division le 2026-10-25 ; bloc collection le 2026-10-25, centaines et milliers le 2026-11-06 ; bloc figure-a-completer le 2026-10-25 (carré / rectangle le 2026-10-26, symétrique le 2026-11-02, instruments sur papier uni le 2026-11-02, droite à construire le 2026-11-02, cercle circonscrit le 2026-11-02, triangle et report le 2026-11-03, triangle par des angles le 2026-11-03, report dans la palette de la droite et du cercle le 2026-11-06, bissectrice le 2026-11-06, cercle de centre donné le 2026-11-08, triangle rectangle le 2026-11-08) ; scène commune collection / monnaie le 2026-10-25 ; bloc monnaie le 2026-10-25 ; sa recette le 2026-10-25 ; paragraphe collé au bloc qui le suit (PDF) le 2026-10-26, en fin de page seulement le 2026-11-09 ; collection à construire le 2026-10-26 ; monnaie à construire le 2026-10-26 ; bloc figure-de-travail le 2026-10-26 ; droite à placer (`placer:`) le 2026-10-26 ; graduations décimales en virgule le 2026-11-01 ; à plusieurs points le 2026-10-27 ; horloge à placer le 2026-10-27 ; diagramme en barres à construire le 2026-10-28 ; échelle à choisir (`axe: à choisir`) le 2026-10-29 ; bloc ranger le 2026-10-28, `signe: aucun` (étapes) le 2026-11-03 ; bloc partage (affichage) le 2026-10-29, figure à colorier (`colorier:`) le 2026-10-29, plusieurs figures (`unites:`) le 2026-10-29 ; figure à manipuler (`deplacable:`, `rendu:`) le 2026-10-29 ; bloc cubes (affichage) le 2026-10-30, gestes `dessiner:` / `retrouver:` le 2026-10-30 ; bloc solide (affichage) le 2026-10-30 ; bloc patron (affichage) le 2026-10-30, gestes `designer:` / `completer:` le 2026-10-30 ; sections du bloc solide (`section:`) le 2026-10-31 ; repère à placer (` ```courbe ` + `placer:`) et titres d'axes (`axes:`) le 2026-11-01, droite à tracer (`tracer:`) le 2026-11-02, vecteur à tracer (`tracer: vecteur`) le 2026-11-03, vecteurs donnés (`vecteurs:`) et somme à tracer (`tracer: vecteur u + v`) le 2026-11-08 ; courbe de données (`données:`) le 2026-11-08 ; valeur masquée `?` (énoncé d'évaluation) le 2026-11-01 ; trotteuse du bloc horloge (lire, placer) le 2026-11-01 ; point à placer sur le cercle trigonométrique (` ```trig ` + `placer:`) le 2026-11-02 ; centimes et billets de 200 / 500 € du bloc monnaie le 2026-11-01 (réponse de la case et messages après revue, le même jour) ; boîte à moustaches (affichage) le 2026-11-01, à construire (`placer:`) le 2026-11-01 ; segments à crochets et demi-droites (`segments: [2, +inf[`) le 2026-11-03 ; droite à représenter (`representer:`) le 2026-11-03, réponse incomplète = case vide le 2026-11-03 ; tableaux à compléter d'un énoncé (`findVariationsToFill`) et clé `??n` d'une ligne `variation:` le 2026-11-03 ; cellules cachées à l'écran (`hiddenCells`, `cell`) le 2026-11-03 ; tableau trop large (ombres, téléphone) le 2026-11-04 ; tableau révélé pour le corrigé imprimé (`revealVariationBody`) le 2026-11-03 ; valeur et flèche cachées d'une ligne `variation:` (`variationRowForDisplay`, PDF sans flèche) le 2026-11-08 ; droite graduée fermée dans un item de liste et droite PDF réduite à la colonne le 2026-11-08 ; points déclarés et vecteurs donnés du bloc solide (`points:`, `vecteurs:`) le 2026-11-03, vecteur à tracer (`tracer: vecteur`) le 2026-11-03, fractions et vecteurs nommés dans `tracer:` (D-SV2) le 2026-11-03.
+> Vérifié contre le code le 2026-10-11 ; bloc trous (texte à trous à étiquettes) le 2026-11-14 ; bloc schema-barres (affichage) le 2026-11-12, colonne étroite le 2026-11-13 ; calcul aligné des blocs `$$` le 2026-11-05, centré (`array{rcl}`) le 2026-11-06 ; durée d'une variable `{{eval}}` le 2026-11-03 ; largeur des étiquettes de la droite graduée le 2026-11-02 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; lecteur des références (`internalLinks`, `internal-link-context.ts`) le 2026-11-06 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25 ; saisie de la division le 2026-10-25 ; bloc collection le 2026-10-25, centaines et milliers le 2026-11-06 ; bloc figure-a-completer le 2026-10-25 (carré / rectangle le 2026-10-26, symétrique le 2026-11-02, instruments sur papier uni le 2026-11-02, droite à construire le 2026-11-02, cercle circonscrit le 2026-11-02, triangle et report le 2026-11-03, triangle par des angles le 2026-11-03, report dans la palette de la droite et du cercle le 2026-11-06, bissectrice le 2026-11-06, cercle de centre donné le 2026-11-08, triangle rectangle le 2026-11-08) ; scène commune collection / monnaie le 2026-10-25 ; bloc monnaie le 2026-10-25 ; sa recette le 2026-10-25 ; paragraphe collé au bloc qui le suit (PDF) le 2026-10-26, en fin de page seulement le 2026-11-09 ; collection à construire le 2026-10-26 ; monnaie à construire le 2026-10-26 ; bloc figure-de-travail le 2026-10-26 ; droite à placer (`placer:`) le 2026-10-26 ; graduations décimales en virgule le 2026-11-01 ; à plusieurs points le 2026-10-27 ; horloge à placer le 2026-10-27 ; diagramme en barres à construire le 2026-10-28 ; échelle à choisir (`axe: à choisir`) le 2026-10-29 ; bloc ranger le 2026-10-28, `signe: aucun` (étapes) le 2026-11-03 ; bloc partage (affichage) le 2026-10-29, figure à colorier (`colorier:`) le 2026-10-29, plusieurs figures (`unites:`) le 2026-10-29 ; figure à manipuler (`deplacable:`, `rendu:`) le 2026-10-29 ; bloc cubes (affichage) le 2026-10-30, gestes `dessiner:` / `retrouver:` le 2026-10-30 ; bloc solide (affichage) le 2026-10-30 ; bloc patron (affichage) le 2026-10-30, gestes `designer:` / `completer:` le 2026-10-30 ; sections du bloc solide (`section:`) le 2026-10-31 ; repère à placer (` ```courbe ` + `placer:`) et titres d'axes (`axes:`) le 2026-11-01, droite à tracer (`tracer:`) le 2026-11-02, vecteur à tracer (`tracer: vecteur`) le 2026-11-03, vecteurs donnés (`vecteurs:`) et somme à tracer (`tracer: vecteur u + v`) le 2026-11-08 ; courbe de données (`données:`) le 2026-11-08 ; valeur masquée `?` (énoncé d'évaluation) le 2026-11-01 ; trotteuse du bloc horloge (lire, placer) le 2026-11-01 ; point à placer sur le cercle trigonométrique (` ```trig ` + `placer:`) le 2026-11-02 ; centimes et billets de 200 / 500 € du bloc monnaie le 2026-11-01 (réponse de la case et messages après revue, le même jour) ; boîte à moustaches (affichage) le 2026-11-01, à construire (`placer:`) le 2026-11-01 ; segments à crochets et demi-droites (`segments: [2, +inf[`) le 2026-11-03 ; droite à représenter (`representer:`) le 2026-11-03, réponse incomplète = case vide le 2026-11-03 ; tableaux à compléter d'un énoncé (`findVariationsToFill`) et clé `??n` d'une ligne `variation:` le 2026-11-03 ; cellules cachées à l'écran (`hiddenCells`, `cell`) le 2026-11-03 ; tableau trop large (ombres, téléphone) le 2026-11-04 ; tableau révélé pour le corrigé imprimé (`revealVariationBody`) le 2026-11-03 ; valeur et flèche cachées d'une ligne `variation:` (`variationRowForDisplay`, PDF sans flèche) le 2026-11-08 ; droite graduée fermée dans un item de liste et droite PDF réduite à la colonne le 2026-11-08 ; points déclarés et vecteurs donnés du bloc solide (`points:`, `vecteurs:`) le 2026-11-03, vecteur à tracer (`tracer: vecteur`) le 2026-11-03, fractions et vecteurs nommés dans `tracer:` (D-SV2) le 2026-11-03 ; bloc associer le 2026-11-14, courbe dans un élément (lot 2) le 2026-11-14 ; bloc tortue (écran, PDF) le 2026-11-14, `départ:` le 2026-11-14, `blocs:` le 2026-11-15, `niveau:` (4e / 3e, parseur) le 2026-11-16, `départ:` à compléter le 2026-11-17 ; bloc calcul (parseur, PR 5a) le 2026-11-14, écran et PDF (PR 5b) le 2026-11-14, `niveau:` (4e / 3e) le 2026-11-16, son écran (blocs du niveau dans la carte) le 2026-11-16 ; bloc robot (parseur, moteur, juge) le 2026-11-15, écran, corrigé et PDF (PR 1b) le 2026-11-15.
 
 ## À quoi ça sert
 
@@ -268,25 +268,31 @@ branche dans `parseContentWithCodeBlocks` (`markdown-parser.ts`) : un langage ou
 comme du code brut, à l'écran et dans le PDF (` ```line ` FERMÉ l'était jusqu'au 2026-11-08 ;
 une droite illisible y garde sa source en bloc de code, Q64).
 
-| Fence                                                                                                                                           | Nœud (`type`)               | Parseur (`src/lib/ubumark/parser/`)                           | Rendu écran                                                                                                                              | Générateur PDF                               |
-| ----------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------- | ------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------- |
-| `variation`                                                                                                                                     | `variation-table`           | `variation-table-parser.ts`                                   | `VariationTable.svelte`                                                                                                                  | `variation-table-typst.ts`                   |
-| `probtree`                                                                                                                                      | `probability-tree`          | `probability-tree-parser.ts`                                  | `ProbabilityTree.svelte`                                                                                                                 | `probability-tree-typst.ts`                  |
-| `trig`                                                                                                                                          | `trig-circle`               | `trig-circle-parser.ts`                                       | `TrigCircle.svelte`                                                                                                                      | `trig-circle-typst.ts`                       |
-| `line`                                                                                                                                          | `number-line`               | `number-line-parser.ts`                                       | `NumberLine.svelte`                                                                                                                      | `number-line-typst.ts`                       |
-| `courbe`                                                                                                                                        | `courbe`                    | `courbe-parser.ts`                                            | `Courbe.svelte`                                                                                                                          | `courbe-typst.ts`                            |
-| `figure`, `figure-a-completer`, `figure-de-travail`                                                                                             | `figure`                    | `figure-parser.ts`                                            | `FigureBlock.svelte`                                                                                                                     | `figure-typst.ts` (via registre)             |
-| `barres`, `circulaire`, `histogramme`, `frequences-cumulees`, `tableau-croise`, `loi`, `simulation`, `effectifs`, `nuage`, `boite-a-moustaches` | `stat-chart` (champ `kind`) | `stat-chart-parser.ts`                                        | `StatChart.svelte` (`BoxPlotChart.svelte` pour la boîte à moustaches, `BoxPlotPlacer.svelte` à construire)                               | `stat-chart-typst.ts`                        |
-| `qr`                                                                                                                                            | `qr`                        | `qr-parser.ts`                                                | `QrBlock.svelte`                                                                                                                         | `qr-typst.ts`                                |
-| `scratch`                                                                                                                                       | `scratch`                   | `scratch-parser.ts`                                           | `ScratchBlock.svelte` (dessin : `utils/scratch-render.ts`)                                                                               | `scratch-typst.ts` (texte)                   |
-| `horloge`                                                                                                                                       | `horloge`                   | `horloge-parser.ts`                                           | `Horloge.svelte`                                                                                                                         | `horloge-typst.ts`                           |
-| `operation`                                                                                                                                     | `operation`                 | `operation-parser.ts`                                         | `Operation.svelte`                                                                                                                       | `operation-typst.ts`                         |
-| `collection`                                                                                                                                    | `collection`                | `collection-parser.ts`                                        | `Collection.svelte`                                                                                                                      | `collection-typst.ts`                        |
-| `monnaie`                                                                                                                                       | `monnaie`                   | `monnaie-parser.ts`                                           | `Monnaie.svelte`                                                                                                                         | `monnaie-typst.ts`                           |
-| `partage`                                                                                                                                       | `partage`                   | `partage-parser.ts`                                           | `Partage.svelte`                                                                                                                         | `partage-typst.ts`                           |
-| `cubes`, `solide`, `patron` (nœud `espace`, un genre par clôture)                                                                               | `espace`                    | `espace-parser.ts` (+ `solide-parser.ts`, `patron-parser.ts`) | `Espace.svelte` + `Cubes.svelte` / `CubesGeste.svelte` / `Solide.svelte` / `SolideGeste.svelte` / `Patron.svelte` / `PatronGeste.svelte` | `espace-typst.ts`                            |
-| `choix` (clôture ```` si un choix contient un bloc)                                                                                             | `choice`                    | `choix-parser.ts`                                             | `ChoiceBlock.svelte`                                                                                                                     | `typst-generator.ts` (« A) … »)              |
-| `ranger`                                                                                                                                        | `ranger`                    | `ranger-parser.ts`                                            | `RangerPlacer.svelte`                                                                                                                    | `typst-generator.ts` (`generateRangerTypst`) |
+| Fence                                                                                                                                           | Nœud (`type`)               | Parseur (`src/lib/ubumark/parser/`)                           | Rendu écran                                                                                                                              | Générateur PDF                                 |
+| ----------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------- | ------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
+| `variation`                                                                                                                                     | `variation-table`           | `variation-table-parser.ts`                                   | `VariationTable.svelte`                                                                                                                  | `variation-table-typst.ts`                     |
+| `probtree`                                                                                                                                      | `probability-tree`          | `probability-tree-parser.ts`                                  | `ProbabilityTree.svelte`                                                                                                                 | `probability-tree-typst.ts`                    |
+| `trig`                                                                                                                                          | `trig-circle`               | `trig-circle-parser.ts`                                       | `TrigCircle.svelte`                                                                                                                      | `trig-circle-typst.ts`                         |
+| `line`                                                                                                                                          | `number-line`               | `number-line-parser.ts`                                       | `NumberLine.svelte`                                                                                                                      | `number-line-typst.ts`                         |
+| `courbe`                                                                                                                                        | `courbe`                    | `courbe-parser.ts`                                            | `Courbe.svelte`                                                                                                                          | `courbe-typst.ts`                              |
+| `figure`, `figure-a-completer`, `figure-de-travail`                                                                                             | `figure`                    | `figure-parser.ts`                                            | `FigureBlock.svelte`                                                                                                                     | `figure-typst.ts` (via registre)               |
+| `barres`, `circulaire`, `histogramme`, `frequences-cumulees`, `tableau-croise`, `loi`, `simulation`, `effectifs`, `nuage`, `boite-a-moustaches` | `stat-chart` (champ `kind`) | `stat-chart-parser.ts`                                        | `StatChart.svelte` (`BoxPlotChart.svelte` pour la boîte à moustaches, `BoxPlotPlacer.svelte` à construire)                               | `stat-chart-typst.ts`                          |
+| `qr`                                                                                                                                            | `qr`                        | `qr-parser.ts`                                                | `QrBlock.svelte`                                                                                                                         | `qr-typst.ts`                                  |
+| `scratch`                                                                                                                                       | `scratch`                   | `scratch-parser.ts`                                           | `ScratchBlock.svelte` (dessin : `utils/scratch-render.ts`)                                                                               | `scratch-typst.ts` (texte)                     |
+| `horloge`                                                                                                                                       | `horloge`                   | `horloge-parser.ts`                                           | `Horloge.svelte`                                                                                                                         | `horloge-typst.ts`                             |
+| `tortue`                                                                                                                                        | `tortue`                    | `tortue-parser.ts`                                            | `TortueProgramme.svelte` (éditeur `blockly/TortueEditeur.svelte`, chargé à la demande ; corrigé `TortueCorrige.svelte`)                  | `tortue-typst.ts`                              |
+| `calcul`                                                                                                                                        | `calcul`                    | `calcul-parser.ts`                                            | `CalculProgramme.svelte` (éditeur `blockly/CalculEditeur.svelte`, chargé à la demande ; corrigé `CalculCorrige.svelte`)                  | `calcul-typst.ts`                              |
+| `robot`                                                                                                                                         | `robot`                     | `robot-parser.ts`                                             | `RobotCode.svelte` (dessin `RobotQuadrillage.svelte` ; corrigé `RobotCorrige.svelte`)                                                    | `robot-typst.ts`                               |
+| `operation`                                                                                                                                     | `operation`                 | `operation-parser.ts`                                         | `Operation.svelte`                                                                                                                       | `operation-typst.ts`                           |
+| `collection`                                                                                                                                    | `collection`                | `collection-parser.ts`                                        | `Collection.svelte`                                                                                                                      | `collection-typst.ts`                          |
+| `monnaie`                                                                                                                                       | `monnaie`                   | `monnaie-parser.ts`                                           | `Monnaie.svelte`                                                                                                                         | `monnaie-typst.ts`                             |
+| `partage`                                                                                                                                       | `partage`                   | `partage-parser.ts`                                           | `Partage.svelte`                                                                                                                         | `partage-typst.ts`                             |
+| `schema-barres`                                                                                                                                 | `schema-barres`             | `schema-barres-parser.ts`                                     | `SchemaBarres.svelte`                                                                                                                    | `schema-barres-typst.ts`                       |
+| `cubes`, `solide`, `patron` (nœud `espace`, un genre par clôture)                                                                               | `espace`                    | `espace-parser.ts` (+ `solide-parser.ts`, `patron-parser.ts`) | `Espace.svelte` + `Cubes.svelte` / `CubesGeste.svelte` / `Solide.svelte` / `SolideGeste.svelte` / `Patron.svelte` / `PatronGeste.svelte` | `espace-typst.ts`                              |
+| `choix` (clôture ```` si un choix contient un bloc)                                                                                             | `choice`                    | `choix-parser.ts`                                             | `ChoiceBlock.svelte`                                                                                                                     | `typst-generator.ts` (« A) … »)                |
+| `ranger`                                                                                                                                        | `ranger`                    | `ranger-parser.ts`                                            | `RangerPlacer.svelte`                                                                                                                    | `typst-generator.ts` (`generateRangerTypst`)   |
+| `associer`                                                                                                                                      | `associer`                  | `associer-parser.ts`                                          | `AssocierPlacer.svelte`                                                                                                                  | `typst-generator.ts` (`generateAssocierTypst`) |
+| `trous`                                                                                                                                         | `trous`                     | `trous-parser.ts`                                             | `TrousEtiquettes.svelte`                                                                                                                 | `typst-generator.ts` (`generateTrousTypst`)    |
 
 Bloc ```choix (case « choix » d'une question, [questions.md](questions.md)) : réglages en tête
 (`plusieurs:`, `melanger:`, `case:` posée par le générateur), un choix par ligne `- …`, suite en
@@ -315,6 +321,78 @@ places numérotées « 1. », « 2. »…, aucun signe (une étape longue passe 
 la colonne, ← → d'une colonne à l'autre ; consigne lue « Étapes à remettre dans l'ordre » ; PDF :
 étiquettes l'une sous l'autre, puis places numérotées pleine largeur. Juge inchangé (l'étiquette posée,
 place par place) : n'écrire que des étapes qui ne peuvent pas permuter.
+
+Bloc ``associer (associer deux colonnes, [questions.md](questions.md)) —
+`__tests__/associer/associer-parser.test.ts`, `AssocierRelier.svelte.test.ts`,
+`AssocierEtiquettes.svelte.test.ts`, `associer-typst-compilation.test.ts`, `associer-courbe.test.ts`,
+`AssocierCourbe.svelte.test.ts` : réglage `geste: relier`
+(défaut, rien d'écrit) ou `geste: étiquettes` en tête (`gesture`, gardé dans l'énoncé de l'instance) ; une ligne `- élément -> étiquette` par élément (2 à 8, deux à
+deux différents), `- -> étiquette` pour un intrus ; étiquettes différentes de 3 à 10, une étiquette
+écrite plusieurs fois n'en fait qu'une (`labels`, `answers` = rang de la bonne étiquette de chaque
+élément). Sans aucun lien (`- élément ->` partout), le bloc se lit sans réponse : énoncé d'une instance
+ou geste libre ; des liens écrits et d'autres oubliés → erreur. `case:` posée par le générateur. Ordre
+des étiquettes vu par l'élève : `displayedAssocierLabels` (`utils/associer.ts`) — dans une question, tel
+quel ; hors question, mélange fixe tiré du texte (`textSeed` de `utils/ranger.ts`). Écran
+`AssocierPlacer.svelte`, aiguilleur selon le geste ; mêmes props et mêmes réponses (position affichée de
+l'étiquette de chaque élément). **Relier** (`AssocierRelier.svelte`) : éléments à gauche, un point au
+bout, étiquettes à droite, un point devant, deux colonnes même au téléphone (texte à la ligne, point
+centré sur sa case) ; traits dans un SVG posé par-dessus, entre les centres des points mesurés
+(`ResizeObserver`) ; glisser d'un point à l'autre (le trait suit le doigt) ou toucher une case puis une
+case de l'autre colonne, dans les deux sens ; un trait par élément (le nouveau remplace l'ancien),
+plusieurs vers une étiquette ; toucher un trait, ou un élément relié sans rien de pris, l'efface ;
+clavier ↑ ↓ dans une colonne, ← → vers l'autre, Entrée, Échap ; noms « Élément 1 sur 3, pas relié »,
+« Étiquette 2 sur 3 ». Corrigé : trait juste vert, faux rouge, bon trait en pointillés verts sous un
+élément faux (`expected`). **Étiquettes** (`AssocierEtiquettes.svelte`) : les étiquettes en haut,
+**toujours disponibles** (une étiquette sert à plusieurs éléments), puis une rangée « élément | place »
+par élément, deux colonnes égales même au téléphone ; glisser ou toucher l'étiquette puis la place ;
+glisser une place vers une autre l'y déplace (échange si elle est prise), vers les étiquettes la vide ;
+toucher une place remplie la vide ; clavier ← → dans les étiquettes, ↑ ↓ d'une place à l'autre et vers
+les étiquettes, Entrée, Échap ; noms « Étiquette 2 sur 3 », « Place de l'élément 1 sur 3, vide ».
+Corrigé : place verte ou rouge, « Correction :
+» et la bonne étiquette sous une place fausse (`expected`). PDF : deux colonnes à relier (« • » au bout
+de chaque élément et devant chaque étiquette). Éditeur riche : bloc de code `associer`. Comme ranger,
+absent de `SPECIAL_BLOCK_KINDS` ; dans un item de liste (énoncé d'une série d'automatismes), lu par
+`parseContentWithCodeBlocks` (deux colonnes, jamais du code). **Courbe dans un élément** (lot 2) : après
+`- `, un bloc ` ```courbe ` en retrait de 2 espaces (sur la ligne du tiret ou sous un texte), puis
+`-> étiquette` sur la dernière ligne de la suite, en retrait ; clôture ```` du bloc associer (sinon
+`ASSOCIER_FENCE_MESSAGE`, posé par `parseAssocierBlock` à l'aperçu et par `assignBlankIndices` au tirage ;
+`findAssociersToPlace` cherche les blocs du premier niveau sur les lignes intactes), comme ` ```choix `. L'élément garde son markdown
+sur plusieurs lignes (`associerItemHasBlock`) ; refus : autre bloc que courbe, courbe à `placer:` /
+`tracer:` (le générateur ignore alors la courbe à placer : le message est celui du bloc associer), bloc
+dans une étiquette ou un intrus, suite en retrait sans bloc (texte sur plusieurs lignes, réglage en
+retrait), lien absent ou pas en dernière ligne, plus de 6 éléments
+(`ASSOCIER_MAX_BLOCK_ITEMS`). Les erreurs propres de la courbe (fenêtre manquante…) s'affichent sur la
+courbe, pas dans le bloc associer. Instance : `serializeAssocierBlock` écrit la suite en retrait et un
+`->` vide en dernière ligne. Écran : `AssocierContenu.svelte` (courbe en petit, 130 à 180 px, sans
+`pointer-events` : le geste se fait sur la case). PDF : éléments numérotés « 1. » (tous, dès qu'un
+élément a un bloc), courbe en taille `petite`.
+
+Bloc ``trous (texte à trous à étiquettes, [questions.md](questions.md), chantier
+[`trous-etiquettes`](../archive/wip/trous-etiquettes-progress.md)) — `__tests__/trous/trous-parser.test.ts`,
+`trous-typst-compilation.test.ts`, `TrousEtiquettes.svelte.test.ts` : le texte, une ligne non vide par
+ligne affichée (lignes vides ignorées), en markdown en ligne (gras, formules, variables) ; chaque trou est
+sa bonne étiquette entre crochets, **hors formule** (`[arithmétique]`, `[$r$]` ; `$[0 ; 1]$` n'est pas
+un trou), coupé par `splitHoles` (`lines` : morceaux `text` / `hole`). Dernière ligne `intrus: a ; b`
+(séparateur `;` hors formule). Étiquettes différentes de 3 à 12 (`labels` : ordre de première
+apparition, intrus en dernier ; `answers` = rang de la bonne étiquette de chaque trou), 1 à 10 trous.
+Refus (messages au prof) : aucun trou, trou vide `[]`, `[` sans `]` (un intervalle s'écrit en
+formule), `[_]` ou `?` en formule (une autre case), un bloc ` ``` ` dans le texte, `;` hors formule
+dans une étiquette (le message propose l'intervalle en formule, `$[0 ; 1]$`), `intrus:` ailleurs qu'en dernière ligne, un intrus déjà étiquette d'un trou, un lien `[texte](adresse)`, un trou dans du gras ou de l'italique. `case:` posée par le générateur. **Forme
+d'instance** : trous vides `[]` et réserve dans l'ordre affiché en dernière ligne `étiquettes: …`
+(`serializeTrousBlock`) ; écrite par le prof, elle se lit sans réponse (geste libre ; refusée dans une
+question). Ordre de la réserve : `displayedTrousLabels` (`utils/trous.ts`, celui d'associer : tel quel
+dans une question, mélange fixe tiré du texte ailleurs). Écran `TrousEtiquettes.svelte` : la réserve en
+haut (étiquettes **toujours disponibles**), puis le texte, chaque trou une place **dans la ligne**, de la
+largeur de la plus longue étiquette (gabarit invisible : toutes les étiquettes empilées dans la place),
+qui revient à la ligne avec le texte ; la ponctuation qui suit un trou lui reste collée (`trousPieces`) ;
+geste, clavier et corrigé ceux d'`AssocierEtiquettes` (glisser ou toucher puis poser, échange,
+retrait ; ← → dans la réserve, ↓ vers le premier trou, ← → ↑ ↓ d'un trou à l'autre, ↑ du premier trou
+vers la réserve ; noms « Étiquette 2 sur 5 », « Trou 1 sur 4, vide » ; place verte ou rouge,
+« Correction : » et la bonne étiquette sous une place fausse). Un trou au milieu d'un gras ou d'un
+italique (`**a [x] b**`, `*a [x] b*`, repéré par `openEmphasis`) est refusé : chaque morceau étant
+rendu à part, les `*` s'afficheraient tels quels (l'italique `_…_` n'est pas repéré). PDF : réserve encadrée, texte non justifié, trous
+en pointillés numérotés (numéro en petit devant), jamais la réponse. Éditeur riche : bloc de code
+`trous`. Dans un item de liste (série d'automatismes), lu par `parseContentWithCodeBlocks`.
 
 La liste des genres statistiques est `STAT_CHART_KINDS` (`src/lib/ubumark/types/stat-chart.ts`).
 
@@ -714,7 +792,12 @@ pour `droite`, quadrillage ou non, sans `report` sur quadrillage (`LINE_GRID_TOO
 `PLAIN_PAPER_TOOLS` ; sans quadrillage, une palette sans `equerre`, `compas`, `report`, `rapporteur` ni `regle` est refusée), `verifier:` (obligatoire, une par ligne ; `CONSTRUCTION_CHECK_KINDS` : `droite_par P ; Q`,
 `carre A ; B`, `rectangle A ; B ; C` (sur papier uni, cotés : `carre A ; B ; C ; D`,
 `rectangle A ; B ; C ; D : BC = 3 cm`, chantier `regle-graduee`, PR 6 : quatre sommets, C et D absents de la
-figure, palette Segment · Équerre · Règle graduée exactement, seul dans la figure, quadrillage refusé),
+figure, palette Segment · Équerre · Règle graduée exactement, seul dans la figure, quadrillage refusé ;
+sans équerre, `rectangle A ; B ; C ; D : AB = 4 cm ; AC = 6 cm`, chantier `rectangle-sans-equerre` : le
+côté [AB] et la diagonale [AC] dans n'importe quel ordre (`BA`, `CA` admis), au mm près, le côté plus
+court que la diagonale, [AC] tracé dans la figure à la longueur écrite, B et D absents, palette Segment ·
+Compas · Règle graduée exactement, seul dans la figure, quadrillage refusé ; reconnu aux deux longueurs
+ou à une longueur nommée autre que [BC], `readDiagonalRectangle`),
 `symetrique par d` / `symetrique A ; B ; C par d` (`symétrique`
 accentué admis ; `d` = droite, segment ou point nommé, le centre d'une symétrie centrale) — un seul carré,
 rectangle ou symétrique, jamais mêlé à `droite_par` ; `point A' = <expression>`, outil point, une ligne par
@@ -734,8 +817,11 @@ Segment · Équerre (· Report) sur papier uni, Segment seul sur quadrillage, o�
 `AC = 3 carreaux` (`TRIANGLE_SQUARES_REGEX`, unité obligatoire, 1..50, `TriangleLength.squares`) ou par deux
 points ; ou, sur papier uni, en cm (`AC = 4 cm`, `TRIANGLE_RULED_REGEX` lue par `readLengthText`, au mm
 près, `TriangleLength` `{ length, unit }`, chantier `regle-graduee`, PR 4), palette Segment · Équerre ·
-Règle graduée ; refusés : l'hypoténuse, 90° avec un autre angle, `AC = u` sur quadrillage, les carreaux sans
-quadrillage ou hors du triangle rectangle, les cm sur quadrillage ou sans l'angle droit ;
+Règle graduée ; les cm aussi hors du triangle rectangle, sur papier uni (chantier `triangle-cote-cm`) :
+`triangle ABC : AC = 4 cm ; BC = 5 cm`, palette Segment · Compas · Règle graduée, et
+`triangle ABC : CAB = 50 ; AC = 4 cm`, palette Segment · Rapporteur · Règle graduée · Compas ; refusés :
+l'hypoténuse, 90° avec un autre angle, `AC = u` sur quadrillage, les carreaux sans quadrillage ou hors du
+triangle rectangle, les cm sur quadrillage ou mêlés à un segment à reporter ;
 `angle AOy = 50`, un point du côté donné, le sommet, le nom du côté à tracer, une mesure entière de 1 à 179
 (`°` admis), un angle à construire sur papier uni, seul, palette Rapporteur · Segment ; `mesure AOB`, trois
 points dont le sommet au milieu, un angle à mesurer sur papier uni, seul, le rapporteur seul (suivi de
@@ -743,11 +829,14 @@ points dont le sommet au milieu, un angle à mesurer sur papier uni, seul, le ra
 refusé ailleurs, sauf dans un triangle à angle donné (pas l'angle droit, à l'équerre) ou une bissectrice ;
 `segment AB = 6 cm` (aussi `5 cm 3 mm`, `5,3 cm`, `72 mm`, au millimètre près, plus de 0), A un point de la
 figure, B le nom de l'autre bout, un segment à tracer à la règle graduée sur papier uni, seul, palette
-Règle graduée · Segment ; suivi de `sur [Ax)`, le long de la demi-droite x d'origine A de la figure ; la
-règle graduée refusée ailleurs) et `case: N`, posée
+Règle graduée · Segment ; suivi de `sur [Ax)`, le long de la demi-droite x d'origine A de la figure ;
+`mesure AB` (n° 26, `SegmentMeasureCheck`, kind `mesure_segment`), deux points, un segment tracé à mesurer à la
+règle graduée sur papier uni, seul, la règle graduée seule, longueur en cm entiers (suivi de `en mm` : en mm
+entiers ; autre suite refusée ; `verifier: mesure_segment` refusé, on écrit `mesure AB`) ; la règle graduée
+refusée ailleurs) et `case: N`, posée
 par le générateur de questions. Le nœud est un nœud **`figure`** qui porte `construction`
 (`ConstructionSpec`, `types/construction.ts`) : partout où une figure s'affiche (écran, PDF, listes),
-le bloc s'affiche comme sa figure de départ. Le repérage est celui de ` ```figure `
+le bloc s'affiche comme sa figure de départ (au PDF, une figure à `mesure AB` est imprimée à l'échelle 1 unité = 1 cm quand elle tient dans la place disponible, sinon réduite comme les autres : `atRealScale`, `figure-typst.ts`). Le repérage est celui de ` ```figure `
 (`isFigureBlockStart` reconnaît les deux mots ; ` ```construction ` n'ouvre rien : le mot désigne les constructions animées, voir [CONTEXT.md](../../CONTEXT.md) « Figure à compléter ») ; l'éditeur riche rend le bloc à son mot
 (`figureFence`, `markdown-import.ts`). Jugement : [questions](questions.md) (case « figure »). Fiche
 de l'aide à l'écriture : `block-catalog/figure-a-completer.ts` (`/aide-ecriture/blocs/figure-a-completer`).
@@ -950,6 +1039,149 @@ petite, trotteuse ; ◀ ▶ d'une seconde) ; réponse `'47 25 40'`, attendue `'9
 trotteuse jugée à la seconde exacte ; phrases en plus : trotteuse pas posée, grande aiguille et trotteuse
 inversées. Masquée : `placer: ? s` (`maskedPlacerValue`), pour que la trotteuse reste à poser.
 
+**Programme tortue** (chantier [blockly](../archive/wip/blockly-progress.md), PR 4) —
+`src/lib/ubumark/__tests__/tortue/tortue-parser.test.ts` :
+
+````text
+```tortue
+attendu: répéter 4 [ avancer 3 ; tourner à droite 90 ]
+montrer: oui
+comparer: forme
+```
+````
+
+Toujours une question : le bloc porte sa case (`caseIndex`, posé par le générateur). `attendu:`
+(obligatoire) : programme de référence en notation texte ([blockly](blockly.md) § Programme
+tortue en réponse) ; il doit se lire, s'exécuter et tracer au moins un trait, sinon erreur
+d'auteur située. `montrer: oui | non` (défaut `non`) : la figure à reproduire (`spec.modele`,
+segments normalisés ; avec `montrer: oui`, 500 segments au plus, `TORTUE_FIGURE_MAX_SEGMENTS`,
+sinon l'énoncé masqué ne se relirait plus). `comparer: position | forme` (défaut `position`).
+`niveau: 4e | 3e` (défaut : sans niveau, `spec.niveau = 'base'`) : tortue avec variables
+(chantier `tortue-variables`) — blocs admis et notation de `attendu:` / `départ:` au niveau
+([blockly](blockly.md) § Tortue de 4e et 3e), lus après toutes les lignes (la clé peut venir après
+`attendu:`) ; refus dans l'ordre : variable lue jamais mise (`variableJamaisMise`, `attendu:`
+seulement : `départ:` peut lire une variable que l'élève mettra), bloc
+au-dessus du niveau (`messageNiveauTortue` : « « mettre … à » est un bloc de 4e (ajouter niveau:
+4e) », même sans niveau), programme illisible ; autre valeur refusée (« 4e ou 3e »).
+`blocs: N` (entier de 1 à 500, `TORTUE_BLOCS_MAX` ; défaut : sans limite, `spec.blocsMax`) : au
+plus N blocs, comptés par `nombreDeBlocsTortue` (au niveau) ; `attendu:` qui dépasse la limite refusé ; gardée dans
+l'énoncé masqué (consigne, pas réponse). Clés inconnues, valeurs
+hors liste, clé en double : refus. Masqué (évaluation notée, `maskTortue`) : `attendu: ?`, et
+avec `montrer: oui` une ligne `figure: x1 y1 x2 y2 ; …` (`figureText`) qui porte la figure
+sans le programme ; `figure:` écrite par un auteur est refusée. Dans un item de liste : nœud lu,
+sans case ; masqué quand même (cité ou en retrait, `attendu:` reste la réponse), et vu par
+`findUnmaskedAnswers`. Éditeur riche : bloc de code `tortue`, texte gardé. Écran (carte,
+verrouillage, corrigé) : [blockly](blockly.md) § L'écran d'une question tortue. PDF
+(`tortue-typst.ts`, `tortue-typst.test.ts`, compilé pour de vrai) : avec `montrer: oui`, la
+figure (`spec.modele`, ou `figure:` d'un énoncé masqué) sur un quadrillage recadré à un carreau
+autour d'elle et du départ (point noir), 0,5 cm le carreau, 14 cm au plus de large comme de haut, sans quadrillage au-delà de 40 carreaux ; puis le cadre
+« À faire sur Chiphre : programme la tortue avec les blocs, à l'écran. » (`TORTUE_A_FAIRE_SUR_CHIPHRE`).
+Sans `montrer:`, le cadre seul ; bloc en erreur : « Programme tortue indisponible ».
+`départ:` (avec ou sans accent) : un programme posé d'avance dans l'espace de blocs de l'élève, à
+modifier (BO « modifier ses paramètres ») ; il doit se lire, sinon erreur située ; jamais masqué
+(il ne dit pas la réponse). L'écran le pose dans l'espace de blocs quand la case est vide ; il ne
+devient la réponse qu'au premier changement ([blockly](blockly.md) § L'écran d'une question de calcul).
+
+**Programme de calcul** (5e, 4e, 3e ; chantier [blockly](../archive/wip/blockly-progress.md), PR 5a ;
+`niveau:` le 2026-11-16) — `src/lib/ubumark/__tests__/calcul/calcul-parser.test.ts`,
+`calcul-niveaux.test.ts` :
+
+````text
+```calcul
+attendu: afficher (nombre + 2) × 4
+essais: -3 ; 0 ; 2,5
+départ: afficher nombre
+```
+````
+
+Toujours une question, comme ``tortue (`caseIndex` posé par le générateur). `attendu:`
+(obligatoire) : programme de référence en notation texte ([blockly](blockly.md) § Programme de
+calcul en réponse) ; il doit se lire, et, pour **chaque** essai, marcher et afficher au moins un
+nombre, sinon erreur d'auteur située (« Avec le nombre 0 : Division par zéro… », « n'affiche
+rien avec le nombre −3 »). `essais:` : 1 à 20 nombres distincts (`;`, virgule décimale, `-` ou
+`−`), sinon `ESSAIS_PAR_DEFAUT`. `départ:` : comme pour ``tortue. `niveau:` (`5e`, `4e`, `3e` ;
+5e par défaut, `spec.niveau`) : les blocs admis ([blockly](blockly.md) § Niveaux 4e et 3e) ;
+`attendu:` et `départ:` doivent tenir dans le niveau, sinon refus qui nomme le bloc et le niveau
+à demander (« « mettre … à » est un bloc de 4e (ajouter niveau: 4e) ») ; chaque « si » de
+`attendu:` doit être vrai et faux au moins une fois sur les essais (« « si nombre > 100 » n'est
+jamais vrai sur les essais : ajouter à essais: … ») ; une variable lue jamais mise est refusée
+(« faute de frappe ? »). Réponse attendue : `4e | <essais> |
+<programme>` au-dessus de la 5e (`calcul-answer.ts`). Clés inconnues, en double,
+ligne hors `clé: valeur` : refus. Masqué : `attendu: ?` seul (essais et départ restent). Dans un
+item de liste ou un choix : nœud lu, sans case, signalé ; masqué quand même et vu par
+`findUnmaskedAnswers`. Éditeur riche : bloc de code `calcul`, texte gardé. Écran (carte, « Essayer
+avec », corrigé avec tableau nombre → résultat) : [blockly](blockly.md) § L'écran d'une question de
+calcul. PDF (`calcul-typst.ts`, `calcul-typst.test.ts`, compilé pour de vrai) : le cadre « À faire
+sur Chiphre : assemble le programme de calcul avec les blocs, à l'écran. »
+(`CALCUL_A_FAIRE_SUR_CHIPHRE`), ni référence ni départ ; bloc en erreur : « Programme de calcul
+indisponible ». Fiche du catalogue : `block-catalog/calcul.ts`.
+
+**Robot sur un quadrillage** (CE1-080, chantier [suite-fleches](../archive/wip/suite-fleches-progress.md),
+PR 1a : bloc et juge ; PR 1b : écran, corrigé, PDF) — `src/lib/ubumark/__tests__/robot/` (`robot-parser`,
+`robot-moteur`, `robot-typst`, `robot-catalogue`), `components/markdown/nodes/__tests__/RobotCode.svelte.test.ts` :
+
+````text
+```robot
+quadrillage: 8 x 5
+codage: avance-pivote
+départ: 2, 1, droite
+arrivée: 6, 4
+interdites: 4, 1 ; 4, 2
+produire: oui
+```
+````
+
+Un robot dans une case d'un quadrillage de cases, (1, 1) = case en bas à gauche. `quadrillage:`
+(obligatoire, 2 à 12 colonnes et lignes), `départ:` (obligatoire ; en `codage: avance-pivote`, le
+sens du robot en plus : haut, droite, bas, gauche ; refusé en `flèches`, le défaut), `arrivée:` (la
+case verte), `interdites:` (cases grises). Sans `produire:`, un bloc d'affichage, sans case. Avec
+`produire: oui`, une question (`findRobotsToProduce`, `caseIndex` posé par le générateur) :
+`arrivée:` obligatoire, et il faut un code de 15 instructions et 4 virages au plus jusqu'à elle
+(`plusCourtCode`, BO du CE1), sinon erreur d'auteur ; le générateur refait le tirage tant que la
+scène tirée est impossible (`robotSceneImpossible` : aucun code, départ ou arrivée sur une case
+grise, arrivée au départ ; toute autre erreur sort tout de suite), puis laisse passer le dernier,
+dont la case dit l'erreur ; `{{random:…}}` est refusé dans le bloc (le tirage ne serait pas le
+même que celui vérifié : une variable à la place). Refus : case hors du quadrillage, départ ou arrivée sur une case grise, arrivée au départ,
+clé inconnue ou en double, `case:` sans `produire: oui`. Moteur (`utils/robot-moteur.ts`, sans
+dépendance) : notation d'un code (`→ → ↑` ; `avance de 4, pivote à gauche, avance de 3`,
+`lireCode` / `ecrireCode`, flèches collées, « a » sans accent, NFD et point final tolérés, 15 instructions au plus, « avance de » 1 à 9), `simuler` (case par case,
+arrêt à la première case hors du quadrillage ou grise), `virages`, `plusCourtCode` (parcours en
+largeur, le moins de virages parmi les plus courts, la plus grande avance d'abord). Rien à masquer en évaluation : la scène ne dit
+pas le code. Dans un item de liste ou un choix : nœud lu, sans case, signalé. Éditeur riche : bloc
+de code `robot`, texte gardé.
+
+Écran (`RobotCode.svelte`) : sans `produire:`, le dessin seul (`RobotQuadrillage.svelte` : cases,
+cases grises, case verte, le robot sur son départ, son nez dans son sens en avance-pivote). À
+produire : sous le quadrillage, une réserve de cartes jamais épuisée (`←` `↑` `→` `↓` ; « avance
+de … », « pivote à gauche », « pivote à droite ») et la bande « Mon code ». Toucher une carte de la
+réserve l'ajoute au bout ; la glisser l'insère où on la lâche (avant ou après la carte sous le
+doigt) ; toucher une carte posée la retire, la glisser la déplace, la glisser sur la réserve la
+retire ; « Effacer la dernière », « Tout effacer ». « avance de » ouvre une rangée de chiffres 1 à 9
+(et « Retirer ») ; tant qu'un « avance de » attend son chiffre, la réponse de la case est vide, la
+carte reste posée (cartes gardées tant que la case dit la réponse du dernier geste) et l'élève lit
+« Choisis de combien de cases avance le robot. ». 15 cartes : la réserve se grise, « 15
+instructions au plus. ». Réponse de la case : `ecrireCode` du code. Pas de bouton « Essayer »
+(phase 0, Q4). Validé : cartes verrouillées, réserve cachée, trajet de l'élève vert ou rouge, une
+croix sur le bord où il sort ou bute, et, faux, le trajet d'un code juste en pointillés (la réponse
+attendue, sinon `spec.solution`). Clavier : ← → d'une carte à l'autre, Alt + ← → déplace la carte
+posée qui a le focus, Échap ferme les chiffres ; le focus ne se perd jamais (il suit la carte
+déplacée, passe à la voisine d'une carte retirée, au premier chiffre — ou au chiffre posé — quand la
+rangée s'ouvre, à la carte quand elle se ferme, à la réserve quand la bande se vide, à la carte posée
+quand la 15e grise la réserve) ; un clic clavier n'est jamais avalé par un glissement qui vient de
+finir. Dans une question (`FillBlanksInput`), le bloc repart de la case à chaque question
+(`{#key blanks}`) : un « avance de » sans chiffre (case vide) ne passe pas à la suivante ;
+noms accessibles (« Ajouter : flèche vers la droite », « Instruction 2 sur 5 : … »).
+
+Corrigé (`RobotCorrige.svelte`, par `BuildAnswer` kind `robot`) : le trajet de l'élève, pourquoi
+c'est faux (sortie, case grise, arrivée manquée), « Ton code : … », puis « Un code juste : … » — le
+CODE seul (`readExpectedRobotAnswer(expected).solution`), jamais la chaîne `<scène> | <code>` de la
+réponse attendue ; sans réponse, le trajet juste et ce code.
+
+PDF (`robot-typst.ts`) : le quadrillage en formes Typst natives (case verte à bord épais, lisible
+en noir et blanc ; réduit pour tenir dans 8 × 7 cm) ; à produire, « Écris le code : » et 15 cases
+vides en pointillés (8 par rangée en flèches, 3 cases larges en avance-pivote) ; jamais le code
+juste. Bloc en erreur : cadre « Robot indisponible ». Fiche du catalogue : `block-catalog/robot.ts`.
+
 **Figure partagée en parts égales** (chantier [fractions-a-colorier](../archive/wip/fractions-a-colorier-progress.md),
 PR 1 : affichage ; PR 2 : `colorier:` ; PR 3 : `unites:`) — `src/lib/ubumark/__tests__/partage/` :
 
@@ -1004,6 +1236,40 @@ _Plusieurs figures_ (`unites: N`, de 1 à 5 ; absent = 1) : N figures identiques
 > quand la page est trop étroite. Attendue : parts / parts d'UNE figure (`'7/4'`) ; `isColoringCorrect` borne
 > les rangs à 5 figures (la réponse attendue ne dit pas combien sont dessinées). Correction : « Tu as colorié
 > 5 parts ; il fallait en colorier 7 (7/4, chaque figure a 4 parts). », figures justes unités pleines d'abord.
+
+**Schéma en barres** (chantier [schema-barres](../archive/wip/schema-barres-progress.md), affichage seulement : aucun geste,
+aucune case) — `src/lib/ubumark/__tests__/schema-barres/` :
+
+````text
+```schema-barres
+Or : ? (4) ; 70 (2)
+Argent : ? (4)
+Bronze : ? (2,5) ; -80 (1,5)
+total : 320 €
+```
+````
+
+Une ligne `Nom : segments` = une barre, dans l'ordre du texte, alignées à gauche ; le nom (libre, peut être vide :
+`: ? ; ?`) est écrit à gauche, colonne alignée à droite. Segments séparés par `;` : `étiquette (longueur)` ou
+`étiquette` seule (longueur 1) ; longueur décimale à virgule ou à point, de 0,1 à 50, **écrite par le prof, jamais
+calculée** sur les nombres. Étiquette commençant par `-` : **partie manquante** (pointillés, sans fond, étiquette
+écrite sans le signe). `= texte` en fin de ligne : accolade horizontale sous la barre, de son début à la fin de son
+dernier segment plein. `total : texte` (casse indifférente) : accolade verticale à droite de toutes les barres (une
+barre ne peut pas s'appeler « total »). Au plus 6 barres et 12 segments par barre. Échelle commune : la plus longue
+barre (pointillés compris) occupe toute la largeur de dessin, une unité a la même largeur partout. Erreurs situées
+(« Ligne N : … » dans `errors: string[]`, `spec: null`) : ligne sans `:`, segment vide, longueur illisible / nulle /
+négative / hors bornes, parenthèse non fermée, aucune barre, trop de barres ou de segments, `total` répété ou vide,
+`=` vide, barre faite seulement de parties manquantes. Le parseur ne voit que le texte résolu (`{{a}}` déjà remplacé).
+Scène partagée `utils/schema-barres-scene.ts` (rectangles, accolades en lignes brisées, textes ; largeur d'un texte
+estimée à 9 unités par caractère ; 1 unité = 0,022 cm au PDF) ; écran : SVG `role="img"` réduit à la colonne ; colonne étroite (case choix sur téléphone, n° 34 des outils
+manquants) : barres raccourcies (`schemaBarresDrawWidth`, largeur de colonne mesurée) pour que le texte garde 12 px,
+jamais sous 120 unités ni sous la longueur où une étiquette sort de sa part ; PDF et grand écran inchangés ; traits
+`currentColor`, segments pleins sur `--color-muted` (aucune couleur d'accent), nom accessible « Schéma en barres : Or,
+Argent, Bronze » (les noms des barres, jamais les étiquettes) ; PDF : Typst natif (`rect`, `line`, `text`), noir sur
+blanc, pointillés pour la partie manquante, boîtes de texte élargies de 50 % pour ne jamais passer à la ligne. Bloc
+en erreur : messages pour le prof, cadre « Schéma en barres indisponible » pour l'élève (`SCHEMA_BARRES_UNAVAILABLE`).
+Éditeur riche : bloc de code `schema-barres`. Chat élève (rendu restreint) : jamais rendu (liste blanche de
+`restricted-rendering.ts`). Fiche du catalogue : `src/lib/block-catalog/schema-barres.ts`, vitrine `/demo/blocs`.
 
 **Assemblage de cubes** (chantier [solides](../archive/wip/solides-progress.md), lot 1 : affichage ; lot 2 : gestes ;
 [ADR 0034](../adr/0034-solides-trois-blocs-un-noeud-une-scene-cavaliere.md)) — `src/lib/ubumark/__tests__/espace/` :
@@ -1609,7 +1875,7 @@ Points à retenir :
     `givenViews` ; `CubesGeste` les dessine telles quelles) : tout assemblage qui a ces vues étant
     juste, les hauteurs ne pouvaient pas partir ; ` ```patron ` `completer:` → le patron amputé en
     grille, déjà tourné et retourné, et `completer: ? ?` (`task.masked` faces à poser,
-    `completerStart`) ; ` ```figure-a-completer ` → `verifier: ?` (sauf `verifier: mesure AOB`, laissé tel quel, ses points calculés réécrits en coordonnées : `maskMeasureFigure`) (`spec.masked`, l'outil ou la palette
+    `completerStart`) ; ` ```figure-a-completer ` → `verifier: ?` (sauf `verifier: mesure AOB` et `verifier: mesure AB`, laissés tels quels, leurs points calculés réécrits en coordonnées : `maskMeasureFigure`) (`spec.masked`, l'outil ou la palette
     déduite écrits en `outils:`). Pas masqués : `dessiner:` des cubes (la perspective est la figure), `designer:` du
     patron (la tâche, dans la consigne). Gardes : `questions/__tests__/masked-statement.test.ts` et
     `masked-statement-lot2.test.ts`, `FillBlanksInput-enonce-masque.svelte.test.ts` (même HTML

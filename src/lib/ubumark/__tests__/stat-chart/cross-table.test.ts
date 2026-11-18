@@ -9,10 +9,10 @@ import { describe, it, expect, vi } from 'vitest';
 import { parseStatChartContent } from '../../parser/stat-chart-parser';
 import { buildStatChartScene, type CrossTableScene } from '../../utils/stat-chart-scene';
 import { generateStatChartTypst } from '../../generators/stat-chart-typst';
-import * as crossTableModule from '$lib/statistics/cross-table';
+import * as crossTableModule from '#lib/statistics/cross-table.ts';
 
-vi.mock('$lib/statistics/cross-table', async (importOriginal) => {
-	const original = await importOriginal<typeof import('$lib/statistics/cross-table')>();
+vi.mock('#lib/statistics/cross-table.ts', async (importOriginal) => {
+	const original = await importOriginal<typeof import('#lib/statistics/cross-table.ts')>();
 	return { ...original, crossTable: vi.fn(original.crossTable) };
 });
 

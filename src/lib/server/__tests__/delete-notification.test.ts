@@ -11,7 +11,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 const serviceUpdate = vi.fn();
 const serviceFilters = vi.fn();
 
-vi.mock('$lib/server/serviceRoleClient', () => ({
+vi.mock('#lib/server/serviceRoleClient.ts', () => ({
 	createServiceRoleClient: () => ({
 		from: () => ({
 			update: (row: Record<string, unknown>) => {

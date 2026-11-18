@@ -1,0 +1,238 @@
+{
+	"id": "e52d93b4-0b93-48fc-aebf-9f3092dc0177",
+	"title": "Puissance d'une puissance (n entier relatif)",
+	"description": "(a^x)^n = a^(nx) avec n négatif, x négatif ; retrouver x connaissant a^(nx)",
+	"grades": ["T_TECHNO"],
+	"level": 2,
+	"delay": 45,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Écris sous la forme d'une seule puissance : $\\left({{a}}^{ {{m}} }\\right)^{ {{n}} }$.\n\n$\\left({{a}}^{ {{m}} }\\right)^{ {{n}} }=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2|3|5|1.5"
+				},
+				{
+					"name": "m",
+					"expression": "0.5|1.5|2|2.5"
+				},
+				{
+					"name": "n",
+					"expression": "-3|-2|-1"
+				}
+			],
+			"conditions": ["m*n != m+n"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}^{ {{eval:m*n;d}} }",
+					"requiredForm": "power"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $a>0$, tout réel $x$ et tout entier relatif $n$ : $\\left(a^x\\right)^n=a^{nx}$. On **multiplie** les exposants.",
+					"$\\left({{a}}^{ {{m}} }\\right)^{ {{n}} }={{a}}^{ {{m}}\\times({{n}}) }=\\textcolor{{{color:primary.0}}}{{{a}}^{ {{eval:m*n;d}} }}$."
+				]
+			}
+		},
+		{
+			"statement": "Écris sous la forme d'une seule puissance : $\\left({{a}}^{ {{m}} }\\right)^{ {{n}} }$.\n\n$\\left({{a}}^{ {{m}} }\\right)^{ {{n}} }=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2|3|5|1.5"
+				},
+				{
+					"name": "m",
+					"expression": "-0.5|-1.5|-2.5|-1"
+				},
+				{
+					"name": "n",
+					"expression": "-3|-2|2|3|4"
+				}
+			],
+			"conditions": ["m*n != m+n", "m*n != 1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}^{ {{eval:m*n;d}} }",
+					"requiredForm": "power"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $a>0$, tout réel $x$ et tout entier relatif $n$ : $\\left(a^x\\right)^n=a^{nx}$. On **multiplie** les exposants. Ces propriétés valent pour tous les réels $x$ et $y$, **positifs ou négatifs**, comme pour les puissances entières.",
+					"$\\left({{a}}^{ {{m}} }\\right)^{ {{n}} }={{a}}^{ ({{m}})\\times{{if:n<0|({{n}})|{{n}}}} }=\\textcolor{{{color:primary.0}}}{{{a}}^{ {{eval:m*n;d}} }}$ (règle des signes du produit)."
+				]
+			}
+		},
+		{
+			"statement": "Quel réel $x$ vérifie $\\left({{a}}^x\\right)^{ {{n}} }={{a}}^{ {{eval:m*n;d}} }$ ?\n\n$x=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2|3|5|1.5"
+				},
+				{
+					"name": "m",
+					"expression": "-1.5|-1|-0.5|0.5|1|1.5"
+				},
+				{
+					"name": "n",
+					"expression": "-3|-2|2|3"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{m}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $a>0$, tout réel $x$ et tout entier relatif $n$ : $\\left(a^x\\right)^n=a^{nx}$. On **multiplie** les exposants.",
+					"$\\left({{a}}^x\\right)^{ {{n}} }={{a}}^{ {{n}}x }$ : il faut ${{n}}x={{eval:m*n;d}}$, donc $x={{eval:m*n;d}}\\div{{if:n<0|({{n}})|{{n}}}}=\\textcolor{{{color:primary.0}}}{{{m}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "(2^1,5)^-2 = 2^-3",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"m": "1.5",
+				"n": "-2"
+			},
+			"answers": ["2^{-3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2^-0,5 (exposants ajoutés)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"m": "1.5",
+				"n": "-2"
+			},
+			"answers": ["2^{-0,5}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 2^3 (signe perdu)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"m": "1.5",
+				"n": "-2"
+			},
+			"answers": ["2^{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Forme : 1/8 au lieu d'une puissance",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"m": "1.5",
+				"n": "-2"
+			},
+			"answers": ["\\frac{1}{8}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "(3^-1,5)^-2 = 3^3",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"m": "-1.5",
+				"n": "-2"
+			},
+			"answers": ["3^{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3^-3 (règle des signes)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"m": "-1.5",
+				"n": "-2"
+			},
+			"answers": ["3^{-3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(5^-0,5)^4 = 5^-2",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"m": "-0.5",
+				"n": "4"
+			},
+			"answers": ["5^{-2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "(2^x)^-2 = 2^3 : x = −1,5",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"m": "-1.5",
+				"n": "-2"
+			},
+			"answers": ["-1,5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1,5 (signe)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"m": "-1.5",
+				"n": "-2"
+			},
+			"answers": ["1,5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 5 (3 − (−2))",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"m": "-1.5",
+				"n": "-2"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

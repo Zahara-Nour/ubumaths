@@ -15,12 +15,12 @@ import {
 	tableMock,
 	twoLevelExercise,
 	type TableMock
-} from '$lib/server/worksheets/__tests__/table-mock';
-import { copySeed } from '$lib/worksheets/student-copy';
+} from '#lib/server/worksheets/__tests__/table-mock.ts';
+import { copySeed } from '#lib/worksheets/student-copy.ts';
 
 const STUDENT = '550e8400-e29b-41d4-a716-446655440021';
 
-vi.mock('$lib/server/middleware/auth', () => ({
+vi.mock('#lib/server/middleware/auth.ts', () => ({
 	requireRole: async () => ({ user: { id: '550e8400-e29b-41d4-a716-446655440021' } })
 }));
 

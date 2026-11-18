@@ -21,7 +21,7 @@ import {
 import { TestData } from '../../helpers/database/test-data-factory';
 import { getPostgresClient } from '../../helpers/database/postgres-client';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 
 describe('Exercise Cleanup Triggers', () => {
 	let serviceClient: SupabaseClient<Database>;

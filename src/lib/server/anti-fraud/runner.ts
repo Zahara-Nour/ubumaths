@@ -43,7 +43,7 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 import type { ReviewEntry, AttemptEntry, JobReport, SignalResult } from './types';
 import {
 	composeSignals,
@@ -53,8 +53,8 @@ import {
 	detectNoAgain,
 	detectSrsVsQuizGap
 } from './detectors';
-import type { RunJobOptions } from '$lib/server/validation/anti-fraud';
-import { createServerLogger } from '$lib/utils/logger';
+import type { RunJobOptions } from '#lib/server/validation/anti-fraud.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/anti-fraud/runner');
 

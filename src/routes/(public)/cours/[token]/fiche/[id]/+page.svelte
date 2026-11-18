@@ -7,10 +7,10 @@
 	navigateur ; `variant="reader"` : voir et télécharger, jamais la correction.
 -->
 <script lang="ts">
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import * as Card from '$lib/components/ui/card';
-	import PdfPreview from '$lib/components/worksheets/PdfPreview.svelte';
-	import type { WorksheetWithRelations } from '$lib/types/worksheets';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import PdfPreview from '#lib/components/worksheets/PdfPreview.svelte';
+	import type { WorksheetWithRelations } from '#lib/types/worksheets.ts';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();

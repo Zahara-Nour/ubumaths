@@ -10,10 +10,10 @@
 
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAdmin } from '$lib/server/middleware/auth';
-import type { VipCardConfig } from '$lib/types/vip-card-admin';
-import { configToResponse } from '$lib/types/vip-card-admin';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireAdmin } from '#lib/server/middleware/auth.ts';
+import type { VipCardConfig } from '#lib/types/vip-card-admin.ts';
+import { configToResponse } from '#lib/types/vip-card-admin.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/admin/vip-cards/configs/[id]/activate/+server');
 

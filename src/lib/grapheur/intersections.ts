@@ -16,10 +16,10 @@
 import type { Point, Viewport } from './types';
 import type { AnalysisASTInfo, AnalysisInput } from './analysis';
 import { isInsideRestriction } from './restriction';
-import { subtract } from '$lib/mathAST/factory';
-import { compile } from '$lib/mathAST/eval/compile';
-import { findRoots } from '$lib/mathAST/analysis/roots';
-import type { MathNode } from '$lib/mathAST/types';
+import { subtract } from '#lib/mathAST/factory.ts';
+import { compile } from '#lib/mathAST/eval/compile.ts';
+import { findRoots } from '#lib/mathAST/analysis/roots.ts';
+import type { MathNode } from '#lib/mathAST/types.ts';
 
 // =============================================================================
 // Types

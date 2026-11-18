@@ -1,0 +1,438 @@
+{
+	"id": "5291dc9f-a66d-46fa-8f0a-ccbdca44f35f",
+	"title": "Lis la courbe des températures",
+	"description": "Relevé de la journée : la température à une heure donnée (BO : à 14 h), toutes les deux heures ou toutes les heures ; l'heure du relevé qui indique une température donnée",
+	"grades": ["CM1"],
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "On a relevé la température toutes les deux heures, de $8$ h à $18$ h.\n\n```courbe\nx: 6 ; 20\ny: 0 ; 30\ngrille: 2 ; 2\naxes: x = Heure (h) ; y = Température (°C)\ndonnées: (8 ; {{t0}}) ; (10 ; {{t1}}) ; (12 ; {{t2}}) ; (14 ; {{t3}}) ; (16 ; {{t4}}) ; (18 ; {{t5}})\ntaille: moyenne\n```\n\nQuelle température faisait-il à ${{eval:8+2*k}}$ h ?\n\n$?$ °C",
+			"variables": [
+				{
+					"name": "u0",
+					"expression": "2..5"
+				},
+				{
+					"name": "d1",
+					"expression": "1..3"
+				},
+				{
+					"name": "d2",
+					"expression": "1..3"
+				},
+				{
+					"name": "d3",
+					"expression": "0..2"
+				},
+				{
+					"name": "d4",
+					"expression": "1..2"
+				},
+				{
+					"name": "d5",
+					"expression": "1..2"
+				},
+				{
+					"name": "t0",
+					"expression": "eval:2*u0"
+				},
+				{
+					"name": "t1",
+					"expression": "eval:t0+2*d1"
+				},
+				{
+					"name": "t2",
+					"expression": "eval:t1+2*d2"
+				},
+				{
+					"name": "t3",
+					"expression": "eval:t2+2*d3"
+				},
+				{
+					"name": "t4",
+					"expression": "eval:t3-2*d4"
+				},
+				{
+					"name": "t5",
+					"expression": "eval:t4-2*d5"
+				},
+				{
+					"name": "k",
+					"expression": "0..5"
+				},
+				{
+					"name": "n",
+					"expression": "eval:(t0)*((k-1)*(k-2)*(k-3)*(k-4)*(k-5))/(-120)+(t1)*((k-0)*(k-2)*(k-3)*(k-4)*(k-5))/(24)+(t2)*((k-0)*(k-1)*(k-3)*(k-4)*(k-5))/(-12)+(t3)*((k-0)*(k-1)*(k-2)*(k-4)*(k-5))/(12)+(t4)*((k-0)*(k-1)*(k-2)*(k-3)*(k-5))/(-24)+(t5)*((k-0)*(k-1)*(k-2)*(k-3)*(k-4))/(120)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On part de ${{eval:8+2*k}}$ h sur l'axe horizontal, on monte jusqu'au point de la courbe, puis on lit la température sur l'axe vertical (de $2$ en $2$ °C).",
+					"À ${{eval:8+2*k}}$ h, il faisait $\\textcolor{{{color:primary.0}}}{{{n}}}$ °C."
+				]
+			}
+		},
+		{
+			"statement": "On a relevé la température toutes les heures, de $8$ h à $18$ h.\n\n```courbe\nx: 7 ; 19\ny: 0 ; 22\ngrille: 1 ; 1\naxes: x = Heure (h) ; y = Température (°C)\ndonnées: (8 ; {{t0}}) ; (9 ; {{t1}}) ; (10 ; {{t2}}) ; (11 ; {{t3}}) ; (12 ; {{t4}}) ; (13 ; {{t5}}) ; (14 ; {{t6}}) ; (15 ; {{t7}}) ; (16 ; {{t8}}) ; (17 ; {{t9}}) ; (18 ; {{t10}})\ntaille: moyenne\n```\n\nQuelle température faisait-il à ${{eval:8+k}}$ h ?\n\n$?$ °C",
+			"variables": [
+				{
+					"name": "t0",
+					"expression": "5..9"
+				},
+				{
+					"name": "d1",
+					"expression": "0..2"
+				},
+				{
+					"name": "d2",
+					"expression": "0..2"
+				},
+				{
+					"name": "d3",
+					"expression": "0..2"
+				},
+				{
+					"name": "d4",
+					"expression": "0..2"
+				},
+				{
+					"name": "d5",
+					"expression": "0..2"
+				},
+				{
+					"name": "d6",
+					"expression": "0..2"
+				},
+				{
+					"name": "d7",
+					"expression": "0..1"
+				},
+				{
+					"name": "d8",
+					"expression": "0..1"
+				},
+				{
+					"name": "d9",
+					"expression": "0..1"
+				},
+				{
+					"name": "d10",
+					"expression": "0..1"
+				},
+				{
+					"name": "t1",
+					"expression": "eval:t0+d1"
+				},
+				{
+					"name": "t2",
+					"expression": "eval:t1+d2"
+				},
+				{
+					"name": "t3",
+					"expression": "eval:t2+d3"
+				},
+				{
+					"name": "t4",
+					"expression": "eval:t3+d4"
+				},
+				{
+					"name": "t5",
+					"expression": "eval:t4+d5"
+				},
+				{
+					"name": "t6",
+					"expression": "eval:t5+d6"
+				},
+				{
+					"name": "t7",
+					"expression": "eval:t6-d7"
+				},
+				{
+					"name": "t8",
+					"expression": "eval:t7-d8"
+				},
+				{
+					"name": "t9",
+					"expression": "eval:t8-d9"
+				},
+				{
+					"name": "t10",
+					"expression": "eval:t9-d10"
+				},
+				{
+					"name": "k",
+					"expression": "1..10"
+				},
+				{
+					"name": "n",
+					"expression": "eval:(t0)*((k-1)*(k-2)*(k-3)*(k-4)*(k-5)*(k-6)*(k-7)*(k-8)*(k-9)*(k-10))/(3628800)+(t1)*((k-0)*(k-2)*(k-3)*(k-4)*(k-5)*(k-6)*(k-7)*(k-8)*(k-9)*(k-10))/(-362880)+(t2)*((k-0)*(k-1)*(k-3)*(k-4)*(k-5)*(k-6)*(k-7)*(k-8)*(k-9)*(k-10))/(80640)+(t3)*((k-0)*(k-1)*(k-2)*(k-4)*(k-5)*(k-6)*(k-7)*(k-8)*(k-9)*(k-10))/(-30240)+(t4)*((k-0)*(k-1)*(k-2)*(k-3)*(k-5)*(k-6)*(k-7)*(k-8)*(k-9)*(k-10))/(17280)+(t5)*((k-0)*(k-1)*(k-2)*(k-3)*(k-4)*(k-6)*(k-7)*(k-8)*(k-9)*(k-10))/(-14400)+(t6)*((k-0)*(k-1)*(k-2)*(k-3)*(k-4)*(k-5)*(k-7)*(k-8)*(k-9)*(k-10))/(17280)+(t7)*((k-0)*(k-1)*(k-2)*(k-3)*(k-4)*(k-5)*(k-6)*(k-8)*(k-9)*(k-10))/(-30240)+(t8)*((k-0)*(k-1)*(k-2)*(k-3)*(k-4)*(k-5)*(k-6)*(k-7)*(k-9)*(k-10))/(80640)+(t9)*((k-0)*(k-1)*(k-2)*(k-3)*(k-4)*(k-5)*(k-6)*(k-7)*(k-8)*(k-10))/(-362880)+(t10)*((k-0)*(k-1)*(k-2)*(k-3)*(k-4)*(k-5)*(k-6)*(k-7)*(k-8)*(k-9))/(3628800)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On part de ${{eval:8+k}}$ h sur l'axe horizontal, on monte jusqu'au point de la courbe, puis on lit la température sur l'axe vertical (de $1$ en $1$ °C).",
+					"À ${{eval:8+k}}$ h, il faisait $\\textcolor{{{color:primary.0}}}{{{n}}}$ °C."
+				]
+			}
+		},
+		{
+			"statement": "On a relevé la température toutes les deux heures, de $8$ h à $18$ h. Chaque point de la courbe est un relevé.\n\n```courbe\nx: 6 ; 20\ny: 0 ; 30\ngrille: 2 ; 2\naxes: x = Heure (h) ; y = Température (°C)\ndonnées: (8 ; {{t0}}) ; (10 ; {{t1}}) ; (12 ; {{t2}}) ; (14 ; {{t3}}) ; (16 ; {{t4}}) ; (18 ; {{t5}})\ntaille: moyenne\n```\n\nÀ quelle heure le relevé indique-t-il ${{c}}$ °C ?\n\n$?$ h",
+			"variables": [
+				{
+					"name": "u0",
+					"expression": "1..4"
+				},
+				{
+					"name": "d1",
+					"expression": "1..2"
+				},
+				{
+					"name": "d2",
+					"expression": "1..2"
+				},
+				{
+					"name": "d3",
+					"expression": "1..2"
+				},
+				{
+					"name": "d4",
+					"expression": "1..2"
+				},
+				{
+					"name": "d5",
+					"expression": "1..2"
+				},
+				{
+					"name": "t0",
+					"expression": "eval:2*u0"
+				},
+				{
+					"name": "t1",
+					"expression": "eval:t0+2*d1"
+				},
+				{
+					"name": "t2",
+					"expression": "eval:t1+2*d2"
+				},
+				{
+					"name": "t3",
+					"expression": "eval:t2+2*d3"
+				},
+				{
+					"name": "t4",
+					"expression": "eval:t3+2*d4"
+				},
+				{
+					"name": "t5",
+					"expression": "eval:t4+2*d5"
+				},
+				{
+					"name": "k",
+					"expression": "0..5"
+				},
+				{
+					"name": "c",
+					"expression": "eval:(t0)*((k-1)*(k-2)*(k-3)*(k-4)*(k-5))/(-120)+(t1)*((k-0)*(k-2)*(k-3)*(k-4)*(k-5))/(24)+(t2)*((k-0)*(k-1)*(k-3)*(k-4)*(k-5))/(-12)+(t3)*((k-0)*(k-1)*(k-2)*(k-4)*(k-5))/(12)+(t4)*((k-0)*(k-1)*(k-2)*(k-3)*(k-5))/(-24)+(t5)*((k-0)*(k-1)*(k-2)*(k-3)*(k-4))/(120)"
+				},
+				{
+					"name": "h",
+					"expression": "eval:8+2*k"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{h}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On part de ${{c}}$ °C sur l'axe vertical, on suit la ligne horizontale jusqu'au point de la courbe, puis on descend lire l'heure.",
+					"Le relevé de ${{c}}$ °C : à $\\textcolor{{{color:primary.0}}}{{{h}}}$ h."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "14 h : 18 °C",
+			"variationIndex": 0,
+			"variables": {
+				"u0": "3",
+				"d1": "2",
+				"d2": "3",
+				"d3": "1",
+				"d4": "2",
+				"d5": "1",
+				"t0": "6",
+				"t1": "10",
+				"t2": "16",
+				"t3": "18",
+				"t4": "14",
+				"t5": "12",
+				"k": "3",
+				"n": "18"
+			},
+			"answers": ["18"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le relevé de 12 h (16)",
+			"variationIndex": 0,
+			"variables": {
+				"u0": "3",
+				"d1": "2",
+				"d2": "3",
+				"d3": "1",
+				"d4": "2",
+				"d5": "1",
+				"t0": "6",
+				"t1": "10",
+				"t2": "16",
+				"t3": "18",
+				"t4": "14",
+				"t5": "12",
+				"k": "3",
+				"n": "18"
+			},
+			"answers": ["16"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Toutes les heures, 15 h : 16 °C",
+			"variationIndex": 1,
+			"variables": {
+				"t0": "7",
+				"d1": "1",
+				"d2": "2",
+				"d3": "2",
+				"d4": "1",
+				"d5": "2",
+				"d6": "2",
+				"d7": "1",
+				"d8": "0",
+				"d9": "1",
+				"d10": "1",
+				"t1": "8",
+				"t2": "10",
+				"t3": "12",
+				"t4": "13",
+				"t5": "15",
+				"t6": "17",
+				"t7": "16",
+				"t8": "16",
+				"t9": "15",
+				"t10": "14",
+				"k": "7",
+				"n": "16"
+			},
+			"answers": ["16"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le relevé de 14 h (17)",
+			"variationIndex": 1,
+			"variables": {
+				"t0": "7",
+				"d1": "1",
+				"d2": "2",
+				"d3": "2",
+				"d4": "1",
+				"d5": "2",
+				"d6": "2",
+				"d7": "1",
+				"d8": "0",
+				"d9": "1",
+				"d10": "1",
+				"t1": "8",
+				"t2": "10",
+				"t3": "12",
+				"t4": "13",
+				"t5": "15",
+				"t6": "17",
+				"t7": "16",
+				"t8": "16",
+				"t9": "15",
+				"t10": "14",
+				"k": "7",
+				"n": "16"
+			},
+			"answers": ["17"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "14 °C : à 12 h",
+			"variationIndex": 2,
+			"variables": {
+				"u0": "2",
+				"d1": "2",
+				"d2": "1",
+				"d3": "2",
+				"d4": "1",
+				"d5": "2",
+				"t0": "4",
+				"t1": "8",
+				"t2": "10",
+				"t3": "14",
+				"t4": "16",
+				"t5": "20",
+				"k": "2",
+				"c": "10",
+				"h": "12"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la température lue à la place de l'heure",
+			"variationIndex": 2,
+			"variables": {
+				"u0": "2",
+				"d1": "2",
+				"d2": "1",
+				"d3": "2",
+				"d4": "1",
+				"d5": "2",
+				"t0": "4",
+				"t1": "8",
+				"t2": "10",
+				"t3": "14",
+				"t4": "16",
+				"t5": "20",
+				"k": "2",
+				"c": "10",
+				"h": "12"
+			},
+			"answers": ["14"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

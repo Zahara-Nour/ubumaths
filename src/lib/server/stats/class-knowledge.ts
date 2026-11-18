@@ -1,11 +1,12 @@
 /**
  * Agrégations par point du programme (knowledge / FSRS) au niveau classe.
  *
- * 4 fonctions exposées :
+ * 3 fonctions exposées :
  *   - getClassCurriculumPointGrid          → Widget A (grille élève × point du programme)
  *   - getClassTopCurriculumPointsToRemediate → Widget E (top à remédier)
  *   - getStudentRetentionCurve      → Widget B (8 semaines, stability moyenne par branche)
- *   - getClassActivityHeatmap       → Widget C (30 jours × élèves, reviews/jour)
+ * (Widget C, activité élève × jour, remplacé par la grille de régularité :
+ *  `class-regularity.ts`, chantier `regularite`.)
  * (Widget D, histogramme des notes 1-4, retiré : deux boutons « Pas réussi /
  * Réussi » depuis le chantier `formes-de-serie`.)
  *
@@ -14,17 +15,17 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import { fetchInChunks } from '$lib/server/utils/chunked-in';
-import { keepLinksOfGrade } from '$lib/server/curriculum-grade';
-import { PROGRAMME_POINT_COLS, loadNodesWithAncestors } from '$lib/server/programme-tree';
-import { placeOfNode, type ProgrammePointRow } from '$lib/utils/programme-tree';
+import type { Database } from '#lib/types/database.ts';
+import { fetchInChunks } from '#lib/server/utils/chunked-in.ts';
+import { keepLinksOfGrade } from '#lib/server/curriculum-grade.ts';
+import { PROGRAMME_POINT_COLS, loadNodesWithAncestors } from '#lib/server/programme-tree.ts';
+import { placeOfNode, type ProgrammePointRow } from '#lib/utils/programme-tree.ts';
 import {
 	templateToBadge,
 	BADGE_PRIORITY,
 	type CurriculumPointBadge
-} from '$lib/server/srs/curriculum-point-badge';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/srs/curriculum-point-badge.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/stats/class-knowledge');
 
@@ -47,6 +48,13 @@ export interface ClassCurriculumPoint {
 	name: string;
 	/** `null` si le point n'a pas pu être placé dans l'arbre (nœud illisible). */
 	notion_name: string | null;
+}
+
+/** Point rangé dans l'arbre : sa notion et sa branche (`null` si nœud illisible). */
+export interface PlacedCurriculumPoint extends ClassCurriculumPoint {
+	/** Identifiant de la notion (`null` si nœud illisible) : deux notions peuvent porter le même nom. */
+	notion_id: string | null;
+	branch_name: string | null;
 }
 
 export interface ClassCurriculumPointGrid {
@@ -72,27 +80,12 @@ export interface RetentionPoint {
 	review_count: number;
 }
 
-export interface HeatmapCell {
-	student_id: string;
-	day: string;
-	review_count: number;
-	/** `null` : aucune question notée ce jour-là (cartes de cours seulement). */
-	success_pct: number | null;
-}
-
-export interface HeatmapStudent {
-	id: string;
-	display_name: string;
-	days_since_last_review: number | null;
-	is_alert: boolean;
-}
-
 // ===========================================================================
 // Points du programme : filtre et rangement dans l'arbre
 // ===========================================================================
 
 /** Point d'un niveau, non archivé : le seul qui a sa place dans l'analytique. */
-function isLivePoint(p: ProgrammePointRow): boolean {
+export function isLivePoint(p: ProgrammePointRow): boolean {
 	return p.grade !== null && p.archived_at === null;
 }
 
@@ -101,10 +94,10 @@ function isLivePoint(p: ProgrammePointRow): boolean {
  * Un point qu'on ne sait pas placer (nœud illisible) garde sa colonne, en
  * dernier et sans étiquette, plutôt que de disparaître en silence.
  */
-async function placeInTree(
+export async function placeInTree(
 	supabase: SB,
 	points: ProgrammePointRow[]
-): Promise<ClassCurriculumPoint[]> {
+): Promise<PlacedCurriculumPoint[]> {
 	const nodeIds = points.map((p) => p.node_id);
 	const nodes = await loadNodesWithAncestors(supabase, nodeIds);
 	const nodeById = new Map(nodes.map((n) => [n.id, n]));
@@ -129,7 +122,9 @@ async function placeInTree(
 	return placed.map(({ point, place }) => ({
 		id: point.id,
 		name: point.name,
-		notion_name: place?.notion.name ?? null
+		notion_id: place?.notion.id ?? null,
+		notion_name: place?.notion.name ?? null,
+		branch_name: place?.branch.name ?? null
 	}));
 }
 
@@ -273,7 +268,12 @@ export async function getClassCurriculumPointGrid(
 	}
 
 	if (pointById.size > 0) {
-		points = await placeInTree(supabase, [...pointById.values()]);
+		// La grille ne montre pas la branche : sa forme reste celle d'avant.
+		points = (await placeInTree(supabase, [...pointById.values()])).map((p) => ({
+			id: p.id,
+			name: p.name,
+			notion_name: p.notion_name
+		}));
 	}
 
 	// Deux `.in()` dans la même requête : seul `templateIds` est découpé.
@@ -498,144 +498,6 @@ export async function getStudentRetentionCurve(
 }
 
 // ===========================================================================
-// Widget C — Heatmap activité classe
-// ===========================================================================
-
-export interface ClassActivityHeatmap {
-	days: string[];
-	students: HeatmapStudent[];
-	cells: HeatmapCell[];
-}
-
-/**
- * Tentative sur une carte de cours : auto-évaluation en entraînement libre
- * (`student_self`) ou révision de la carte dans un paquet (modèle `course_card`).
- * Une révision est aussi « déclarée » (`student_self`, lieu `review`) depuis
- * l'ADR 0038 ; elle compte dans le taux de réussite, comme les anciennes `srs`.
- */
-function isCourseCardAttempt(a: {
-	source?: string;
-	place?: string | null;
-	question_templates: { type: string } | null;
-}): boolean {
-	if (a.question_templates?.type === 'course_card') return true;
-	return a.source === 'student_self' && a.place !== 'review';
-}
-
-export async function getClassActivityHeatmap(
-	supabase: SB,
-	classId: string,
-	days = 30,
-	alertThresholdDays = 5
-): Promise<ClassActivityHeatmap> {
-	const { data: members, error: membersErr } = await supabase
-		.from('class_members')
-		.select('student_id, profiles!class_members_student_id_fkey(id, firstname, lastname)')
-		.eq('class_id', classId)
-		.eq('status', 'active');
-
-	if (membersErr) {
-		logger.error('[class-knowledge] heatmap class_members lookup failed:', membersErr);
-		return { days: [], students: [], cells: [] };
-	}
-
-	type MemberRow = {
-		student_id: string;
-		profiles: { id: string; firstname: string | null; lastname: string | null } | null;
-	};
-	const memberRows = (members ?? []) as unknown as MemberRow[];
-
-	const studentIds = memberRows.map((m) => m.student_id);
-	if (studentIds.length === 0) return { days: [], students: [], cells: [] };
-
-	const cutoff = new Date(Date.now() - days * 24 * 3600 * 1000).toISOString();
-
-	const { data: attempts, error: attemptsError } = await supabase
-		.from('skill_attempts')
-		.select('student_id, created_at, success, source, place, question_templates(type)')
-		.in('student_id', studentIds)
-		.gte('created_at', cutoff);
-
-	// Une carte de chaleur vide dit « personne n'a rien fait cette semaine ».
-	// C'est un jugement, pas une absence de donnée.
-	if (attemptsError) {
-		logger.error('[getClassActivityHeatmap] Tentatives illisibles :', attemptsError);
-		throw new Error(attemptsError.message);
-	}
-
-	type AttRow = {
-		student_id: string;
-		created_at: string;
-		success: boolean | null;
-		source: string;
-		place: string | null;
-		question_templates: { type: string } | null;
-	};
-	const rows = (attempts ?? []) as AttRow[];
-
-	const dayKeys: string[] = [];
-	for (let i = 0; i < days; i += 1) {
-		dayKeys.push(toDayKey(new Date(Date.now() - (days - 1 - i) * 24 * 3600 * 1000)));
-	}
-
-	// Décision B1 (2026-09-28) : une carte de cours compte comme activité, pas
-	// dans le taux de réussite (auto-évaluation).
-	const cellMap = new Map<string, { count: number; gradedCount: number; successCount: number }>();
-	const lastReviewByStudent = new Map<string, string>();
-	for (const r of rows) {
-		const dayKey = toDayKey(new Date(r.created_at));
-		const key = `${r.student_id}:${dayKey}`;
-		const cell = cellMap.get(key) ?? { count: 0, gradedCount: 0, successCount: 0 };
-		cell.count += 1;
-		if (!isCourseCardAttempt(r)) {
-			cell.gradedCount += 1;
-			if (r.success) cell.successCount += 1;
-		}
-		cellMap.set(key, cell);
-
-		const last = lastReviewByStudent.get(r.student_id);
-		if (!last || r.created_at > last) lastReviewByStudent.set(r.student_id, r.created_at);
-	}
-
-	const nowMs = Date.now();
-	const studentsOut: HeatmapStudent[] = memberRows
-		.filter((m) => m.profiles)
-		.map((m) => {
-			const last = lastReviewByStudent.get(m.student_id);
-			const daysSince = last
-				? Math.floor((nowMs - new Date(last).getTime()) / (24 * 3600 * 1000))
-				: null;
-			return {
-				id: m.student_id,
-				display_name: formatName(m.profiles!.firstname, m.profiles!.lastname),
-				days_since_last_review: daysSince,
-				is_alert: daysSince === null || daysSince > alertThresholdDays
-			};
-		})
-		.sort((a, b) => a.display_name.localeCompare(b.display_name, 'fr'));
-
-	const cells: HeatmapCell[] = [];
-	for (const s of studentsOut) {
-		for (const day of dayKeys) {
-			const cell = cellMap.get(`${s.id}:${day}`) ?? { count: 0, gradedCount: 0, successCount: 0 };
-			cells.push({
-				student_id: s.id,
-				day,
-				review_count: cell.count,
-				success_pct:
-					cell.gradedCount > 0
-						? Math.round((cell.successCount / cell.gradedCount) * 100)
-						: cell.count > 0
-							? null
-							: 0
-			});
-		}
-	}
-
-	return { days: dayKeys, students: studentsOut, cells };
-}
-
-// ===========================================================================
 // Helpers internes
 // ===========================================================================
 
@@ -643,13 +505,6 @@ function formatName(first: string | null, last: string | null): string {
 	const f = (first ?? '').trim();
 	const l = (last ?? '').trim();
 	return [f, l].filter(Boolean).join(' ') || 'Élève sans nom';
-}
-
-function toDayKey(d: Date): string {
-	const y = d.getUTCFullYear();
-	const m = String(d.getUTCMonth() + 1).padStart(2, '0');
-	const day = String(d.getUTCDate()).padStart(2, '0');
-	return `${y}-${m}-${day}`;
 }
 
 function startOfWeekUTC(d: Date): Date {

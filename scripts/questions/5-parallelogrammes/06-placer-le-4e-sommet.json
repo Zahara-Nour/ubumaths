@@ -1,0 +1,155 @@
+{
+	"id": "fc22e0ae-99fb-472c-9c83-7667ab45e8e7",
+	"title": "Placer le 4e sommet d'un parallélogramme",
+	"description": "Trois sommets d'un parallélogramme sont donnés : placer le quatrième, sur quadrillage puis aux instruments sur papier uni",
+	"grades": ["5"],
+	"level": 6,
+	"delay": 180,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "$A$, $B$ et $C$ sont trois sommets du parallélogramme $ABCD$. Place le point $D$.\n\n```figure-a-completer\nfenetre: 0 ; 10 ; 0 ; 9\ngrille: 1\noutils: point\nverifier: point D = sommet(parallelogramme(A, B, C), 4)\n---\n{{if:k==1|A = point(2, 2, etiquette=\"bas-gauche\")\nB = point(7, 2, etiquette=\"bas-droite\")\nC = point(8, 6, etiquette=\"haut-droite\")\nsegment(A, B)\nsegment(B, C)|{{if:k==2|A = point(1, 5, etiquette=\"haut-gauche\")\nB = point(5, 1, etiquette=\"bas\")\nC = point(9, 4, etiquette=\"bas-droite\")\nsegment(A, B)\nsegment(B, C)|A = point(2, 1, etiquette=\"bas-gauche\")\nB = point(8, 3, etiquette=\"bas-droite\")\nC = point(7, 7, etiquette=\"haut-droite\")\nsegment(A, B)\nsegment(B, C)}}}}\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..3"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans le parallélogramme $ABCD$, les sommets se suivent dans cet ordre : $D$ est **opposé** à $B$, et les côtés opposés sont parallèles et de même longueur.",
+					"Pour aller de $B$ à $C$, on fait un certain déplacement ; on fait le **même** depuis $A$ pour arriver en $D$ (sur le quadrillage : on compte les carreaux).",
+					"On place $\\textcolor{{{color:primary.0}}}{\\text{D}}$ : alors $AD = BC$ et $(AD) \\parallel (BC)$."
+				]
+			}
+		},
+		{
+			"statement": "$A$, $B$ et $C$ sont trois sommets du parallélogramme $ABCD$. Construis le point $D$ avec tes instruments.\n\n```figure-a-completer\nfenetre: 0 ; 10 ; 0 ; 9\nverifier: point D = sommet(parallelogramme(A, B, C), 4)\n---\n{{if:k==1|A = point(2, 2, etiquette=\"bas-gauche\")\nB = point(7, 2, etiquette=\"bas-droite\")\nC = point(8, 6, etiquette=\"haut-droite\")\nsegment(A, B)\nsegment(B, C)|{{if:k==2|A = point(1, 5, etiquette=\"haut-gauche\")\nB = point(5, 1, etiquette=\"bas\")\nC = point(9, 4, etiquette=\"bas-droite\")\nsegment(A, B)\nsegment(B, C)|A = point(2, 1, etiquette=\"bas-gauche\")\nB = point(8, 3, etiquette=\"bas-droite\")\nC = point(7, 7, etiquette=\"haut-droite\")\nsegment(A, B)\nsegment(B, C)}}}}\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..3"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans le parallélogramme $ABCD$, les côtés opposés ont la même longueur : $AD = BC$ et $CD = AB$.",
+					"Au compas (ou au report), on reporte la longueur $BC$ à partir de $A$, puis la longueur $AB$ à partir de $C$.",
+					"Les deux arcs se coupent en deux points : $\\textcolor{{{color:primary.0}}}{\\text{D}}$ est celui qui est **de l'autre côté** de $(AC)$ par rapport à $B$ (l'autre donnerait un quadrilatère croisé)."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Quadrillage 1 : D juste",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["point(3;6)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Quadrillage 2 : D juste",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["point(5;8)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Quadrillage 3 : D juste",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["point(1;5)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ABDC (D = B + C − A)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["point(13;6)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : symétrique de B par A",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["point(-3;9)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : rien de placé",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"answers": [""],
+			"expected": {
+				"status": "empty"
+			}
+		},
+		{
+			"description": "Papier uni 1 : deux reports, D juste",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["report(2;2;7;2;8;6)|report(8;6;2;2;7;2)|point(3;6)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Papier uni 3 : deux reports, D juste",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["report(2;1;8;3;7;7)|report(7;7;2;1;8;3)|point(1;5)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : l'autre intersection (croisé)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["report(2;2;7;2;8;6)|report(8;6;2;2;7;2)|point(6.077;1.385)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : D placé à l'œil",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["point(5;8)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

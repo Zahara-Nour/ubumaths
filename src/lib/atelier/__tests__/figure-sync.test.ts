@@ -11,20 +11,20 @@
 import { describe, it, expect } from 'vitest';
 import { Atelier } from '../atelier.svelte';
 import { AtelierFigure, syncFigure } from '../figure-sync';
-import { GrapheurStore } from '$lib/stores/grapheur.svelte';
+import { GrapheurStore } from '#lib/stores/grapheur.svelte.ts';
 import { syncPlots } from '../plot-sync';
-import { isExplicitFunction } from '$lib/grapheur/types';
-import type { Figure } from '$lib/geometry-core/graph/figure';
-import type { GeoElement } from '$lib/geometry-core/types/elements';
-import { geoToNumber } from '$lib/geometry-core/compute/to-number';
-import { createTransformer } from '$lib/geometry-core/viewport/viewport';
+import { isExplicitFunction } from '#lib/grapheur/types.ts';
+import type { Figure } from '#lib/geometry-core/graph/figure.ts';
+import type { GeoElement } from '#lib/geometry-core/types/elements.ts';
+import { geoToNumber } from '#lib/geometry-core/compute/to-number.ts';
+import { createTransformer } from '#lib/geometry-core/viewport/viewport.ts';
 import {
 	functionToSVG,
 	implicitCurveToSVG,
 	lineToSVG,
 	pointToSVG,
 	quadraticCurveToSVG
-} from '$lib/geometry-core/rendering/svg-primitives';
+} from '#lib/geometry-core/rendering/svg-primitives.ts';
 
 // =============================================================================
 // Décor

@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import { Button } from '$lib/components/ui/button';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import * as Card from '$lib/components/ui/card';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Textarea } from '$lib/components/ui/textarea';
-	import { Separator } from '$lib/components/ui/separator';
-	import * as Alert from '$lib/components/ui/alert';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { Textarea } from '#lib/components/ui/textarea/index.ts';
+	import { Separator } from '#lib/components/ui/separator/index.ts';
+	import * as Alert from '#lib/components/ui/alert/index.ts';
 
 	let { data, form } = $props();
 

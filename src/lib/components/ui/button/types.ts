@@ -4,7 +4,7 @@
  */
 
 import type { HTMLAnchorAttributes, HTMLButtonAttributes } from 'svelte/elements';
-import type { WithElementRef } from '$lib/utils.js';
+import type { WithElementRef } from '#lib/utils.ts';
 
 export type ButtonVariant = 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link';
 export type ButtonSize = 'default' | 'sm' | 'lg' | 'icon' | 'icon-sm' | 'icon-lg';

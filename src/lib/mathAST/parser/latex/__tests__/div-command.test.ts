@@ -11,8 +11,8 @@ import { describe, it, expect } from 'vitest';
 import { parseLatex } from '../../index';
 import { evaluate } from '../../../eval';
 import { toLatex } from '../../../latex-generator';
-import { validateAnswer } from '$lib/utils/answer-validator';
-import type { QuestionInstance } from '$lib/questions/types';
+import { validateAnswer } from '#lib/utils/answer-validator.ts';
+import type { QuestionInstance } from '#lib/questions/types.ts';
 
 describe('parseLatex — \\div', () => {
 	it.each([

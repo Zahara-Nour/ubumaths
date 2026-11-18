@@ -5,9 +5,9 @@
 	 * individually. Renders at its natural size (measured for layout).
 	 */
 
-	import type { DebugStackFrame, DebugVariable } from '$lib/shared/python/debug/types';
-	import { Badge } from '$lib/components/ui/badge';
-	import { cn } from '$lib/utils';
+	import type { DebugStackFrame, DebugVariable } from '#lib/shared/python/debug/types.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { cn } from '#lib/utils.ts';
 	import { parseVariableValue, isHeapRef, formatInline, colorForHeapId } from './heap-utils';
 
 	interface Props {

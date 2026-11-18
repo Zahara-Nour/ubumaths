@@ -8,13 +8,13 @@
 	 * « Enregistrer » ; c'est le conteneur qui le retient dans ce navigateur.
 	 */
 	import Settings from '@lucide/svelte/icons/settings';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import * as RadioGroup from '$lib/components/ui/radio-group';
-	import { Label } from '$lib/components/ui/label';
-	import type { InputMode } from '$lib/atelier/input-mode';
-	import type { AngleUnit } from '$lib/atelier/angle-unit';
-	import type { PointDragMode } from '$lib/atelier/point-drag-mode';
-	import type { DomainMode } from '$lib/atelier/domain-mode';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import * as RadioGroup from '#lib/components/ui/radio-group/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import type { InputMode } from '#lib/atelier/input-mode.ts';
+	import type { AngleUnit } from '#lib/atelier/angle-unit.ts';
+	import type { PointDragMode } from '#lib/atelier/point-drag-mode.ts';
+	import type { DomainMode } from '#lib/atelier/domain-mode.ts';
 
 	interface Choice {
 		value: InputMode;
@@ -106,7 +106,7 @@
 			</button>
 		{/snippet}
 	</Dialog.Trigger>
-	<Dialog.Content class="max-w-lg">
+	<Dialog.Content class="max-h-[85dvh] max-w-lg overflow-y-auto">
 		<Dialog.Header>
 			<Dialog.Title>Réglages de l’atelier</Dialog.Title>
 			<Dialog.Description>Ils valent pour ce navigateur.</Dialog.Description>

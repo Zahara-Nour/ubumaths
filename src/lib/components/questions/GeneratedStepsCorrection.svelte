@@ -29,11 +29,11 @@
 	@module components/questions/GeneratedStepsCorrection
 -->
 <script lang="ts">
-	import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
-	import { MarkdownRenderer } from '$lib/components/markdown';
-	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
-	import VariationTable from '$lib/components/markdown/nodes/VariationTable.svelte';
-	import { signTableNode } from '$lib/ubumark/builders/sign-table';
+	import type { RenderedStep } from '#lib/mathAST/common/step-renderer-base.ts';
+	import { MarkdownRenderer } from '#lib/components/markdown/index.ts';
+	import InlineMarkdown from '#lib/components/markdown/InlineMarkdown.svelte';
+	import VariationTable from '#lib/components/markdown/nodes/VariationTable.svelte';
+	import { signTableNode } from '#lib/ubumark/builders/sign-table.ts';
 
 	interface Props {
 		steps: readonly RenderedStep[];

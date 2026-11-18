@@ -9,10 +9,11 @@ import { describe, it, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { page, userEvent } from 'vitest/browser';
 import CartQuestionCard from '../CartQuestionCard.svelte';
-import { PREVIEW_SEED } from '$lib/questions/cart-preview';
-import { generateInstance } from '$lib/questions/generator/instance-generator';
-import type { QuestionTemplate } from '$lib/questions/types';
-import type { SeriesItem } from '$lib/validation/series';
+import { PREVIEW_SEED } from '#lib/questions/cart-preview.ts';
+import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
+import type { QuestionTemplate } from '#lib/questions/types.ts';
+import type { SeriesItem } from '#lib/validation/series.ts';
+import type { QuestionTiming } from '#lib/types/evaluation-breakdown.ts';
 // Modèle réel relu (Entiers #139) : « Le double de … est … », avec un trou
 import fixture from '../../../../data/relecture/entiers/139.json';
 
@@ -27,7 +28,13 @@ const generated = generateInstance(TEMPLATE_WITH_ID, PREVIEW_SEED);
 const instance = generated.success ? generated.instance : undefined;
 
 async function renderCard(
-	overrides: { onUpdateDelay?: () => void; onRemove?: () => void; template?: boolean } = {}
+	overrides: {
+		onUpdateDelay?: (templateId: string, delay: number) => void;
+		onRemove?: () => void;
+		template?: boolean;
+		tooShort?: QuestionTiming | null;
+		observedDelay?: number | null;
+	} = {}
 ) {
 	return await render(CartQuestionCard, {
 		item: ITEM,
@@ -36,7 +43,9 @@ async function renderCard(
 		onIncrementQuantity: vi.fn(),
 		onDecrementQuantity: vi.fn(),
 		onUpdateDelay: overrides.onUpdateDelay ?? vi.fn(),
-		onRemove: overrides.onRemove ?? vi.fn()
+		onRemove: overrides.onRemove ?? vi.fn(),
+		tooShort: overrides.tooShort,
+		observedDelay: overrides.observedDelay
 	});
 }
 
@@ -160,5 +169,35 @@ describe('CartQuestionCard', () => {
 
 			await expect.element(button).toHaveStyle({ opacity: '1' });
 		});
+	});
+
+	it('durée signalée trop courte : la marque et la phrase sous les réglages', async () => {
+		const screen = await renderCard({
+			tooShort: { delaySeconds: 25, students: 6, unansweredInTime: 4, tooShort: true }
+		});
+		const mark = screen.container.querySelector('[data-duree-trop-courte]');
+		expect(mark?.textContent).toContain('Durée sans doute trop courte');
+		expect(mark?.textContent).toContain("4 élèves sur 6 n'ont rien répondu dans les 25\u00a0s");
+	});
+
+	it('sans signal : aucune marque', async () => {
+		const screen = await renderCard();
+		expect(screen.container.querySelector('[data-duree-trop-courte]')).toBeNull();
+	});
+
+	it('durée observée : la suggestion, et « Appliquer » règle la durée (A1)', async () => {
+		const onUpdateDelay = vi.fn();
+		const screen = await renderCard({ observedDelay: 40, onUpdateDelay });
+		const hint = screen.container.querySelector('[data-duree-observee]');
+		expect(hint?.textContent?.replace(/\s+/g, ' ')).toContain('Durée observée : 40 s');
+		await screen
+			.getByRole('button', { name: 'Appliquer la durée observée de 40 secondes' })
+			.click();
+		expect(onUpdateDelay).toHaveBeenCalledWith(ITEM.templateId, 40);
+	});
+
+	it('sans durée observée : aucune suggestion', async () => {
+		const screen = await renderCard();
+		expect(screen.container.querySelector('[data-duree-observee]')).toBeNull();
 	});
 });

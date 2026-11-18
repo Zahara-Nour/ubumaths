@@ -206,3 +206,33 @@ Le BO est en deux colonnes : « Seuls sont exigibles des élèves les contenus m
   - Fonctions affines, remobilisées de seconde (« travail succinct ») : représentation graphique, sens de variation, lien entre taux d'accroissement et coefficient directeur. — _BO 1re ES p.5-6_ (BO)
 - **1GEN-021** — Résoudre un problème de seuil dans le cas d'une croissance linéaire
   - Croissance linéaire. — _BO 1re ES p.6_ (BO)
+
+## Couverture en modèles de questions (prod, 2026-11-18)
+
+Chantier `questions-1gen` (démarche [couvrir-un-niveau.md](../../../../pratiques/couvrir-un-niveau.md)), du
+2026-11-17 au 2026-11-18 ; journal dans `docs/archive/wip/questions-1gen-progress.md`, fichiers des lots dans
+`scripts/questions/1gen-*`.
+
+- **74 modèles publiés** contenant le niveau `1_GEN` (19 de 1re générale seule, les autres partagés avec la 1re
+  spé, la 1re techno ou la Terminale techno) ; **64 points actifs sur 64** ont au moins un modèle publié (relevé
+  MCP du 2026-11-18). Un brouillon `1_GEN` reste hors chantier : c90fa022 (suites, partagé avec la 1re spé et la
+  1re techno).
+- **Existant** (#2744) : 12 modèles de 1re spé ou de 2de tagués d'un point 1GEN (dans la borne, sur le nœud du point,
+  ADR 0020) ; `1_GEN` retiré des niveaux de 7 modèles sans point honnête (cubiques, secteur d'un seul caractère,
+  signe d'une fonction affine, droite ou nuage hors du nœud) ; le tag 1GEN-022 de 1acb6d47 retiré (variations hors
+  borne).
+- **Lots écrits** : 1 suites géométriques à termes positifs (#2750, #2754), 2 représentations graphiques de suites et
+  d'affines (#2762, #2767), 3 fonctions x ↦ aˣ (#2773, #2778), 4 taux moyen, phénomènes exponentiels, seuils
+  (#2788, #2793), 6 statistiques à deux variables (#2802, #2804). Le lot 5 (second degré, dont 1GEN-022) a été
+  écrit par `questions-1techno`, en modèles communs `1_GEN` + `1_TECHNO`. Lot 7 : brouillon d2067413 (nuage de
+  points → arithmétique, géométrique ou ni l'un ni l'autre) publié tel quel pour 1GEN-031 (#2813) ; il fait
+  _reconnaître_ la suite sur son graphique plus que la _représenter_, couverture partielle assumée.
+- **Modèles communs** avec d'autres programmes (un tag par programme, ADR 0020) : chaque chantier écrit ses
+  modèles avec `grades` à son seul niveau, l'autre pose son tag et ajoute son niveau par `array_append` gardé, jamais
+  une affectation complète. Communs avec la 1re techno : suites géométriques (G1, G4, G5), représentations (R2 à
+  R4), statistiques (S2, S3, S4, S6), second degré ; avec la Terminale techno : aˣ à exposants positifs (E2) et
+  taux moyen.
+- **Choix de forme** (décisions de David) : 042 « réaliser la courbe » = placer les points d'un tableau de valeurs,
+  sans tracer la courbe ; 016 par association nuages ↔ formules ; 006 (tableur) en ` ```choix ` parmi quatre
+  formules, sans outil neuf ; 003 couvert par 49fac266 (ajustement affine) plutôt qu'un modèle de plus ; les
+  variations « partielles » des modèles de 1re spé reprises dans des modèles 1GEN neufs, jamais scindées en prod.

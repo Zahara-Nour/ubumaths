@@ -6,8 +6,8 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { getRemainingUsage } from '$lib/server/tutor/tutor-rate-limiter';
-import { requireAuth } from '$lib/server/middleware/auth';
+import { getRemainingUsage } from '#lib/server/tutor/tutor-rate-limiter.ts';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
 import { z } from 'zod';
 
 const querySchema = z.object({

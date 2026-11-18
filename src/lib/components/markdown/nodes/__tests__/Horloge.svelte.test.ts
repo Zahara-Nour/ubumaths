@@ -7,10 +7,10 @@ import { describe, it, expect, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import Horloge from '../Horloge.svelte';
 import MarkdownRenderer from '../../MarkdownRenderer.svelte';
-import MultipleChoiceInput from '$lib/components/question-inputs/MultipleChoiceInput.svelte';
-import { parseHorlogeContent } from '$lib/ubumark/parser/horloge-parser';
-import { HORLOGE_ARIA_LABEL, HORLOGE_UNAVAILABLE } from '$lib/ubumark/types/horloge';
-import type { ResolvedMarkdown } from '$lib/ubumark';
+import MultipleChoiceInput from '#lib/components/question-inputs/MultipleChoiceInput.svelte';
+import { parseHorlogeContent } from '#lib/ubumark/parser/horloge-parser.ts';
+import { HORLOGE_ARIA_LABEL, HORLOGE_UNAVAILABLE } from '#lib/ubumark/types/horloge.ts';
+import type { ResolvedMarkdown } from '#lib/ubumark/index.ts';
 
 let mains: HTMLElement[] = [];
 function mainElement(): HTMLElement {

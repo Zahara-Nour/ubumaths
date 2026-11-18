@@ -4,7 +4,7 @@
  * @vitest-environment node
  */
 import { describe, it, expect } from 'vitest';
-import { readApiErrorMessage } from '$lib/utils/errors';
+import { readApiErrorMessage } from '#lib/utils/errors.ts';
 
 function jsonResponse(body: unknown, status: number): Response {
 	return new Response(JSON.stringify(body), {

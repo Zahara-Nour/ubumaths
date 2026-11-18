@@ -35,12 +35,12 @@
 					"expression": "0..2"
 				},
 				{
-					"name": "e",
+					"name": "h",
 					"expression": "0..1"
 				},
 				{
 					"name": "k",
-					"expression": "eval:1+2*g+e"
+					"expression": "eval:1+2*g+h"
 				}
 			],
 			"conditions": [],
@@ -146,7 +146,7 @@
 			"variationIndex": 1,
 			"variables": {
 				"g": "0",
-				"e": "0",
+				"h": "0",
 				"k": "1"
 			},
 			"expected": {
@@ -159,7 +159,7 @@
 			"variationIndex": 1,
 			"variables": {
 				"g": "0",
-				"e": "0",
+				"h": "0",
 				"k": "1"
 			},
 			"expected": {
@@ -172,7 +172,7 @@
 			"variationIndex": 1,
 			"variables": {
 				"g": "2",
-				"e": "1",
+				"h": "1",
 				"k": "6"
 			},
 			"expected": {

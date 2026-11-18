@@ -24,8 +24,8 @@
  * - {{teacher_name}} - Teacher's name
  */
 
-import type { TemplatePlaceholder } from '$lib/types/worksheets';
-import { TYPST_LANGS } from '$lib/types/locale';
+import type { TemplatePlaceholder } from '#lib/types/worksheets.ts';
+import { TYPST_LANGS } from '#lib/types/locale.ts';
 import { labelPlaceholders } from '../labels';
 
 export interface DefaultTemplate {

@@ -19,25 +19,25 @@
 	- Auto-navigation to next pending report
 -->
 <script lang="ts">
-	import RestrictedRichText from '$lib/components/rich-text/RestrictedRichText.svelte';
-	import { lore } from '$lib/config/lore';
+	import RestrictedRichText from '#lib/components/rich-text/RestrictedRichText.svelte';
+	import { lore } from '#lib/config/lore.ts';
 	import type { PageData } from './$types';
 	import { goto } from '$app/navigation';
 	import { z } from 'zod';
-	import { Button } from '$lib/components/ui/button';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import * as Card from '$lib/components/ui/card';
-	import * as Tabs from '$lib/components/ui/tabs';
-	import VariationEditor from '$lib/components/exercises/VariationEditor.svelte';
-	import RichTextEditor from '$lib/components/rich-text/RichTextEditor.svelte';
-	import RichTextDisplay from '$lib/components/rich-text/RichTextDisplay.svelte';
-	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import * as Tabs from '#lib/components/ui/tabs/index.ts';
+	import VariationEditor from '#lib/components/exercises/VariationEditor.svelte';
+	import RichTextEditor from '#lib/components/rich-text/RichTextEditor.svelte';
+	import RichTextDisplay from '#lib/components/rich-text/RichTextDisplay.svelte';
+	import MarkdownRenderer from '#lib/components/markdown/MarkdownRenderer.svelte';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import { Check, X, Loader2, AlertTriangle, Eye, Pencil } from '@lucide/svelte';
-	import { assignmentPreviewHref } from '$lib/navigation/return-links';
-	import type { ExerciseVariation } from '$lib/exercises/types';
-	import { provideCapitalPairs } from '$lib/components/markdown/content-capital-pairs';
-	import { exerciseCapitalPairs } from '$lib/questions/capital-pairs';
+	import { assignmentPreviewHref } from '#lib/navigation/return-links.ts';
+	import type { ExerciseVariation } from '#lib/exercises/types.ts';
+	import { provideCapitalPairs } from '#lib/components/markdown/content-capital-pairs.ts';
+	import { exerciseCapitalPairs } from '#lib/questions/capital-pairs.ts';
 
 	// Types
 	interface ReportData {

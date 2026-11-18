@@ -66,6 +66,15 @@ import {
 	HORLOGE_VIEW
 } from '../../src/lib/ubumark/utils/horloge-scene';
 import { parseCourbeContent } from '../../src/lib/ubumark/parser/courbe-parser';
+import { parseSchemaBarresContent } from '../../src/lib/ubumark/parser/schema-barres-parser';
+import {
+	SCHEMA_BARRES_CM_PER_UNIT,
+	SCHEMA_BARRES_DASH,
+	SCHEMA_BARRES_FONT_SIZE,
+	SCHEMA_BARRES_STROKE,
+	buildSchemaBarresScene,
+	schemaBarresLabel
+} from '../../src/lib/ubumark/utils/schema-barres-scene';
 import {
 	COURBE_COLORS,
 	type CourbeColor,
@@ -445,6 +454,37 @@ function horloge(source: string): Bloc {
 		return `<svg class="h-cadran" role="img" aria-label="Horloge à aiguilles" viewBox="${-h} ${-h} ${2 * h} ${2 * h}" style="width:${taille}"><circle class="h-fond" r="${HORLOGE_VIEW.radius}" stroke-width="${HORLOGE_VIEW.rim}"/>${traits}${chiffres}${minutes}<line class="h-aiguille h-heures" x1="0" y1="0" x2="${s.hourHand.x}" y2="${s.hourHand.y}" stroke-width="${HORLOGE_STROKE.hourHand}"/><circle class="h-axe" r="${HORLOGE_STROKE.center}"/></svg>`;
 	});
 	return { html: figures(cadrans, legendes(spec.captions, spec.times.length)) };
+}
+
+// ---- Schéma en barres : balisage de SchemaBarres.svelte, même scène `buildSchemaBarresScene` ----
+
+function schemaBarres(source: string): Bloc {
+	const node = parseSchemaBarresContent(source);
+	if (!node.spec || node.errors.length > 0)
+		throw new Error('bloc schema-barres en erreur : ' + node.errors.join(' ; '));
+	const s = buildSchemaBarresScene(node.spec);
+	const tirets = SCHEMA_BARRES_DASH.join(' ');
+	const segments = s.rects
+		.map(
+			(r) =>
+				`<rect class="sb-segment${r.dashed ? ' sb-manquant' : ''}" x="${r.x}" y="${r.y}" width="${r.width}" height="${r.height}"${r.dashed ? ` stroke-dasharray="${tirets}"` : ''}/>`
+		)
+		.join('');
+	const accolades = s.braces
+		.map(
+			(b) =>
+				`<polyline class="sb-accolade" points="${b.points.map((q) => `${q.x},${q.y}`).join(' ')}"/>`
+		)
+		.join('');
+	const textes = s.texts
+		.map(
+			(t) =>
+				`<text class="sb-texte" x="${t.x}" y="${t.y}" text-anchor="${t.anchor}" dominant-baseline="central">${attr(t.text)}</text>`
+		)
+		.join('');
+	return {
+		html: `<svg class="sb-schema" role="img" aria-label="${attr(schemaBarresLabel(node.spec))}" viewBox="0 0 ${s.width} ${s.height}" style="width:${+(s.width * SCHEMA_BARRES_CM_PER_UNIT).toFixed(3)}cm" stroke-width="${SCHEMA_BARRES_STROKE}" stroke-linejoin="round" stroke-linecap="round" font-size="${SCHEMA_BARRES_FONT_SIZE}">${segments}${accolades}${textes}</svg>`
+	};
 }
 
 // ---- Courbe : balisage de Courbe.svelte, même scène `buildCourbeScene` ----
@@ -1579,6 +1619,7 @@ const DESSINS: Record<string, (source: string) => Bloc> = {
 	cubes,
 	collection,
 	horloge,
+	'schema-barres': schemaBarres,
 	courbe,
 	variation,
 	histogramme: (s) => statistique('histogramme', s),

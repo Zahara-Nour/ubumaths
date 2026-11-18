@@ -14,7 +14,7 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database, TablesUpdate } from '$lib/types/database';
+import type { Database, TablesUpdate } from '#lib/types/database.ts';
 import type {
 	ClassChapter,
 	ChapterDocument,
@@ -25,8 +25,8 @@ import type {
 	ChapterProgress,
 	ChapterSummary,
 	StudentChapterView
-} from '$lib/types/chapters';
-import { chapterIdOf } from '$lib/types/chapters';
+} from '#lib/types/chapters.ts';
+import { chapterIdOf } from '#lib/types/chapters.ts';
 import type {
 	CreateChapterInput,
 	UpdateChapterInput,
@@ -34,8 +34,8 @@ import type {
 	UpdateDocumentInput,
 	CreateChecklistItemInput,
 	UpdateChecklistItemInput
-} from '$lib/server/validation/chapters';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/validation/chapters.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 import { ownerColumn, ownerInsert, toOwner, type ContentOwner } from './content-owner';
 
 const logger = createServerLogger('server/chapters');

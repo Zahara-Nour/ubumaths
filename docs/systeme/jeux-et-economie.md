@@ -226,6 +226,11 @@ Les RPC de classement unifié sont dans `supabase/migrations/20260616230000_fix_
      (`credit-gidouilles.ts`), libellé « Révision du jour terminée », rendues par
      `POST /api/srs/review/submit` sous `review_gidouilles`. La séance réclamée n'est relâchée que
      si rien n'a été donné (ni XP ni gidouilles).
+   - **victoire dans la Descente de la Vistule** (décision de David du 2026-11-18) : 1 par Bête
+     ordinaire, 3 par grosse Bête, 0 pour le tutoriel, **4 au plus sur 24 heures glissantes**,
+     coupé au plafond ; la victoire compte toujours comme travail au-delà. Libellés « Descente :
+     victoire contre … », par `record_beast_victory` (`service_role` seul ; voir
+     [base-de-donnees.md](base-de-donnees.md)). Pas encore appelée par le code (chantier `navadra`).
 8. **Toute écriture de gidouilles passe par `gidouilles_activity`**, d'où le journal
    (`reward_events`) — sauf Navadra (voir plus haut) et les fonctions citées dans Doutes.
 
@@ -338,7 +343,9 @@ directe de l'élève est supprimée (`20261016090200`) ; EXECUTE est retiré à 
 les pages `dashboard/student/riddles/**` passent l'énigme par `toStudentRiddle`
 (`src/lib/types/riddle.ts`), qui ne garde de `answer` que le type de saisie et, pour un QCM, les
 choix. `RiddleCard` ne corrige donc plus dans le navigateur : le verdict vient de la route de
-soumission. Si l'envoi échoue, `onSubmit` rend `false` et la carte revient à la saisie. Test : `src/routes/(protected)/dashboard/student/riddles/__tests__/`.
+soumission. Si l'envoi échoue, `onSubmit` rend `false` et la carte revient à la saisie. Le gain du Palotin rendu
+par la soumission (`buddy_xp`) passe par `receiveBuddyGain` (cache du Palotin à jour, retour après
+une pause à fêter, [buddy-palotins.md](buddy-palotins.md)). Test : `src/routes/(protected)/dashboard/student/riddles/__tests__/`.
 
 ⚠️ **Réponse attendue et correction : `riddle_solutions`, plus `riddles`** (étape B, 2026-10-12).
 `riddles.answer` / `riddles.correction` n'existent plus (étape C, `20261016100800`) : les requêtes sur

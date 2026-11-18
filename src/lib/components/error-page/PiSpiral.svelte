@@ -7,8 +7,8 @@
 	elle tourne comme une seule couche déjà dessinée (`will-change`).
 -->
 <script lang="ts">
-	import { PI_DECIMALS } from '$lib/error-page/pi-decimals';
-	import { spiralGlyphs } from '$lib/error-page/pi-spiral';
+	import { PI_DECIMALS } from '#lib/error-page/pi-decimals.ts';
+	import { spiralGlyphs } from '#lib/error-page/pi-spiral.ts';
 
 	let { highlightPosition }: { highlightPosition: number | null } = $props();
 

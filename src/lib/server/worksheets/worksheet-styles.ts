@@ -14,16 +14,16 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import type { WorksheetTemplateRow } from '$lib/types/worksheets';
+import type { Database } from '#lib/types/database.ts';
+import type { WorksheetTemplateRow } from '#lib/types/worksheets.ts';
 import {
 	BUILT_IN_STYLE_OPTIONS,
 	isBuiltInStyle,
 	styleIdOf,
 	type StyleOption
-} from '$lib/typst/templates/styles';
-import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/typst/templates/styles.ts';
+import { createServiceRoleClient } from '#lib/server/serviceRoleClient.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/worksheets/worksheet-styles');
 

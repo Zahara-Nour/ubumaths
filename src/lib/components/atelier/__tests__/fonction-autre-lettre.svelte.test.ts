@@ -2,7 +2,7 @@
  * La carte d'une fonction définie avec une autre lettre que x : `f(t) = t^2`.
  *
  * Décision de David (2026-10-06) : la carte montre la lettre de l'élève, la
- * définition rangée reste en x (`$lib/atelier/letter.ts`).
+ * définition rangée reste en x (`#lib/atelier/letter.ts`).
  */
 
 import { describe, it, expect, vi } from 'vitest';
@@ -10,7 +10,7 @@ import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import type { MathfieldElement } from 'mathlive';
 import WithAtelier from './harness/WithAtelier.svelte';
-import { Atelier } from '$lib/atelier/atelier.svelte';
+import { Atelier } from '#lib/atelier/atelier.svelte.ts';
 import { onDesktopScreen } from './harness/desktop-screen';
 
 // À 414 px (la page des tests), « Mes objets » est replié : on teste les cartes sur bureau

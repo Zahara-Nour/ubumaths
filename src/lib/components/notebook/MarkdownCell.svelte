@@ -18,9 +18,9 @@
 	 * works via the renderer) and the parameterization Variable system.
 	 */
 
-	import type { NotebookCell } from '$lib/types/notebook';
-	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
-	import MarkdownEditor from '$lib/components/markdown/MarkdownEditor.svelte';
+	import type { NotebookCell } from '#lib/types/notebook.ts';
+	import MarkdownRenderer from '#lib/components/markdown/MarkdownRenderer.svelte';
+	import MarkdownEditor from '#lib/components/markdown/MarkdownEditor.svelte';
 
 	// Props
 	let {

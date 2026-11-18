@@ -5,13 +5,13 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
+import { requireRole } from '#lib/server/middleware/auth.ts';
 import {
 	assignExerciseSchema,
 	type AssignExerciseInput
-} from '$lib/server/validation/python-exercises';
-import { validateUuidParam } from '$lib/server/validation/params';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/validation/python-exercises.ts';
+import { validateUuidParam } from '#lib/server/validation/params.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/python-exercises/[id]/assign/+server');
 

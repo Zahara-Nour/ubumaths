@@ -12,7 +12,7 @@ import {
 	tableMock,
 	twoLevelExercise,
 	type TableMock
-} from '$lib/server/worksheets/__tests__/table-mock';
+} from '#lib/server/worksheets/__tests__/table-mock.ts';
 
 // ============================================================================
 // MOCKS
@@ -20,16 +20,16 @@ import {
 
 const visibility = vi.hoisted(() => ({ visible: true }));
 
-vi.mock('$lib/server/middleware/auth', () => ({
+vi.mock('#lib/server/middleware/auth.ts', () => ({
 	requireRole: async () => ({ user: { id: '550e8400-e29b-41d4-a716-446655440021' } })
 }));
-vi.mock('$lib/server/worksheets/assignment-access', () => ({
+vi.mock('#lib/server/worksheets/assignment-access.ts', () => ({
 	resolveAssignmentAccess: async () => ({ canRead: true, readOnly: false })
 }));
-vi.mock('$lib/server/worksheets/assignment-classes', () => ({
+vi.mock('#lib/server/worksheets/assignment-classes.ts', () => ({
 	fetchAssignmentClasses: async () => []
 }));
-vi.mock('$lib/server/worksheets/correction-visibility', () => ({
+vi.mock('#lib/server/worksheets/correction-visibility.ts', () => ({
 	getCorrectionVisibilityMap: async (_s: unknown, _a: unknown, ids: string[]) =>
 		new Map(ids.map((id) => [id, visibility.visible]))
 }));

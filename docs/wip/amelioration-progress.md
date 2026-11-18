@@ -2,9 +2,93 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-12, après #2577._
+_Mis à jour le 2026-11-13, après #2611 (PR 2 du n° 26)._
 
-- **État** : 0.82.0 en prod ; #2564, #2572, #2577 mergées, pas encore en prod ; piste « où les élèves bloquent » **reportée** (prod au 2026-11-11 : 101 traces, 2 élèves sur 82, 0 réponse enregistrée ; besoins P3, P4, P6, P7, P8, E4 déjà validés dans `formes-de-serie`) · **Prochaine action** : David choisit (n° 26 « mesurer en posant la règle » : à ouvrir, phase 0 d'abord ; montée ESLint typescript-eslint + eslint-plugin-svelte + globals, délai du job Lint relevé ; majeures #2075 brevo, #2074 blockly, #1667 SvelteKit 3 ; tri des journaux wip ; #1788 point 1) · **En attente de David** : fermer #2537 (refusé au mode auto) ; `git stash drop` de « deps-mineures-2537 avant rebase » (copie inutile) ; les 80 élèves sans trace sont-ils normaux ? · **Après le prochain `deploy:prod`** : lignes #2545, #2553, #2555, #2564, #2572, #2577 de `verifications-manuelles.md` · **Tranché** : INP = notre code corrigé ; cible = balise + `id` + `role`, jamais d'`aria-label` ; B et C de la piste 4 (c) écartés ; #1788 : point 3 laissé, point 1 plus tard ; version : 5 min, rechargement sur lien et Précédent / Suivant seulement, jamais sur `goto` ; typst.ts hors de Dependabot · **Pièges en cours** : monter un paquet de la config ESLint invalide tout le cache → Lint à froid > 30 min ; un `id` construit sur du texte saisi part dans `error_logs` ; module de `src/lib` qui agit au chargement hors de `scripts/side-effect-modules.ts` = absent du build ; `db:migrate` → `! pnpm db:migrate` · **Worktree / branche** : aucun
+- **État** : 0.82.0 en prod ; **n° 26 livré** (mesurer un segment en posant la règle) : #2606 + #2611 (énoncé PDF à 1 cm si la figure tient, sinon réduite) mergées ; ligne 26 de `outils-manquants.md` en « Livré », modèles CP-035 / CE1-044 aux sessions `questions-*` ; piste « où les élèves bloquent » **reportée** (prod au 2026-11-11 : 101 traces, 2 élèves sur 82) · **Prochaine action** : autres pistes, à choisir avec David : tri des journaux wip ; montées majeures : #2074 blockly remplacée par #2627 (chantier `blockly`, 2026-11-14), #2075 brevo (aucun gain, `brevo.ts` à réécrire) et #1667 SvelteKit 3 (alertes 96/97/100/101 sans effet chez nous) laissées ouvertes · **En attente de David** : le choix de la prochaine piste · **Après le prochain `deploy:prod`** : lignes #2545, #2553, #2555, #2564, #2572, #2577, #2606, #2611 de `verifications-manuelles.md` · **Tranché** : élève actif = réel, membre `active` d'une classe, hors-classe exclus ; INP = notre code corrigé ; cible = balise + `id` + `role`, jamais d'`aria-label` ; B et C de la piste 4 (c) écartés ; #1788 clos ; version : 5 min, rechargement sur lien et Précédent / Suivant seulement ; typst.ts hors de Dependabot ; comptes élèves inactifs gardés (scolarité + 5 ans) ; PDF de `mesure AB` : 1 cm si ça tient · **Pièges en cours** : monter un paquet de la config ESLint → Lint à froid ~28 min ; un `id` construit sur du texte saisi part dans `error_logs` ; module de `src/lib` qui agit au chargement hors de `scripts/side-effect-modules.ts` = absent du build ; `db:migrate` → `! pnpm db:migrate` ; cetz se vérifie par `scripts/fiches/compile-prod.mjs` (tests de compilation hors réseau, sans cetz) ; un commit de doc seule ne relance pas la CI · **Worktree / branche** : aucun
+
+## N° 26 — mesurer un segment en posant la règle : phase 0 (2026-11-12, validée)
+
+Ligne n° 26 de `outils-manquants.md` (CP-035, CE1-044). Aucun début ailleurs (vérifié le 2026-11-12 :
+branches, PR, journaux de `docs/wip`, `docs/archive/wip` et des worktrees). Aujourd'hui : modèles à règle
+**dessinée** sous le segment (CP lot B2 « Mesure avec la règle », 0 au début ; CE1 `01-mesure-a-la-regle`,
+départ 1 à 4, et « entre [_] et [_] cm »). Briques existantes : `mesure AOB` (angle tracé, l'élève pose le
+rapporteur et tape la mesure, `construction/measure.ts`) et la règle graduée posée (outil `regle`,
+`segment AB = 6 cm`, ADR 0036 : 1 unité de la figure = 1 cm).
+
+**Comportements proposés** (sur le modèle de `mesure AOB`) :
+
+- **Nominal** : `verifier: mesure AB` dans une ` ```figure-a-completer ` sur papier uni ; le segment [AB]
+  est tracé. Palette : Règle graduée seule. L'élève pose la règle (0 et direction aimantés aux points,
+  comme aujourd'hui) puis tape la longueur dans la case sous la figure (« Longueur du segment [AB] »,
+  unité affichée à côté). Juste : la longueur exacte, calculée sur la figure. La règle posée entre
+  dans la réponse mais n'est pas notée (comme les repères du rapporteur).
+- **Limite** : règle non posée et longueur juste → juste (on ne note que le nombre) ; plusieurs règles
+  posées → aucune incidence ; rien tapé → vide ; règle posée seule → « Tape la longueur du segment [AB]. »
+- **Erreur de l'élève** : « Le segment mesure 6 cm, pas 7 cm. » ; si la dernière règle posée longe [AB]
+  avec A sur une graduation autre que 0 et que le nombre tapé est la graduation lue en B → « Le 0 de la
+  règle doit être sur A : le segment mesure 6 cm, pas 7 cm. » (l'erreur type du CP).
+- **Erreurs de l'auteur** : quadrillage ; A ou B absent, invisible ou hors de la fenêtre ; [AB] non tracé ;
+  longueur pas entière dans l'unité de la case ; plus longue que la règle (`rulerLengthOf`) ; `outils:`.
+- **Correction** : la règle posée en A le long de [AB], 0 en A, et la longueur codée.
+
+**Questions** :
+
+- **Q1 — Écriture** : `mesure AB` (deux points = segment, trois = angle) ? Reco : oui.
+- **Q2 — Unité** : `mesure AB` en cm entiers (CP, CE1) ; `mesure AB en mm` pour les mm entiers (CE2 et
+  après) ? Reco : oui, cm entiers seuls d'abord, mm dans la même PR s'il ne coûte rien.
+- **Q3 — Message « le 0 doit être sur A »** (règle mal posée détectée) ? Reco : oui.
+- **Q4 — Énoncé PDF** : la figure imprimée a une largeur fixe (`FIGURE_WIDTH_CM`,
+  `figure-typst.ts:130`), donc 1 unité ≠ 1 cm sur papier : une vraie règle lirait une autre longueur.
+  (a) imprimer à l'échelle 1 unité = 1 cm quand la figure a un `mesure AB` (fenêtre ≤ largeur utile) ;
+  (b) imprimer la règle posée, comme le rapporteur posé ; (c) rien, l'énoncé PDF ne sert pas à mesurer.
+  Reco : (a) — c'est le geste réel ; risque : l'impression « ajuster à la page ».
+- **Q5 — Pas de variante « règle posée »** (règle déjà posée, à lire) : les modèles à règle dessinée la
+  couvrent déjà. Reco : pas de variante. Pas de « entre [_] et [_] cm » non plus (idem).
+- **Q6 — Modèles** : l'outil ici ; les modèles (un par niveau, CP-035 et CE1-044) aux sessions
+  `questions-*`, ligne dans « Contenu restant » de `outils-manquants.md`. Reco : oui.
+
+**Décisions de David (« je te suis », 2026-11-12)** : recos suivies — Q1 `mesure AB` ; Q2 cm entiers,
+`en mm` dans la même PR s'il ne coûte rien ; Q3 message « le 0 doit être sur A » ; Q4 (a) PDF à l'échelle
+1 unité = 1 cm (PR 2) ; Q5 ni variante « règle posée » ni « entre … et … » ; Q6 modèles aux sessions
+`questions-*`.
+
+Découpage prévu : une PR (parseur, juge, case, correction, doc `questions.md`/`ubumark.md`, tests rouges
+d'abord), une 2e si Q4 (a). Revue : `code-reviewer` en `model: opus` (correction des réponses).
+
+**PR 1 (#2606, mergée le 2026-11-12, CI verte)** : `mesure AB` / `mesure AB en mm` →
+`SegmentMeasureCheck` (kind `mesure_segment`, `verifier: mesure_segment` refusé) ; juge
+`construction/segment-measure.ts` ; case « Longueur du segment [AB] » sous la figure (réponse `…|mesure(6)`,
+comme l'angle) ; règle sans ‹ › ni clavier ; correction : règle posée en A + longueur écrite ; énoncé masqué :
+`mesure AB` reste, points calculés en coordonnées ; fiche « Mesurer un segment » du catalogue ; doc
+`questions.md`, `ubumark.md`. Tests rouges d'abord (juge, parseur ; masquage vérifié rouge sans le
+changement), puis verts : serveur 19 947, composants figure 90. `mesure AO` (ancien cas refusé du test de
+l'angle) est désormais un segment : remplacé par `mesure A`.
+
+**PR 2 (#2611, mergée le 2026-11-13, CI verte)** : énoncé PDF à l'échelle 1 unité = 1 cm. **Décision de David du 2026-11-12** (question posée : la figure à 1 cm, souvent 10 à 12 cm, ne tient pas dans une colonne de fiche de ~8,7 cm, et le générateur ne connaît pas la place) : **1 cm si ça tient, sinon réduite comme les autres figures**, jamais de débordement (écartés : erreur d'auteur au-delà de 8 cm ; toujours 1 cm quitte à déborder). `figure-typst.ts` : deux canevas, `#layout` + `measure` choisissent à la compilation (`atRealScale`). Tests rouges d'abord (4 sur 6), verts ; compilation réelle par `scripts/fiches/compile-prod.mjs` (A4 : [AB] = barre témoin de 6 cm ; 2 colonnes et colonne de 8 cm : réduite). Ligne 26 de `outils-manquants.md` passée en « Livré », modèles CP-035 / CE1-044 dans « Contenu restant aux sessions questions ».
+
+## Élèves actifs pour les mesures (#2598, mergée le 2026-11-12)
+
+- Origine : les mesures faites à la main sur `profiles` entier comptaient 82 élèves dont 2 actifs
+  (au passage d'année, l'archivage met les adhésions de 2025-2026 en `archived`).
+- **Phase 0 validée par David** : élève actif = élève réel (`is_test` faux, ajouté en cours de route,
+  validé) membre `active` d'au moins une classe ; élèves hors-classe **exclus** (cas réel : élève
+  approuvé jamais placé dans une classe — marginal, et indiscernable en base d'un ancien élève).
+  Fonction `active_student_ids()` (`security invoker`, réservée à `service_role`) ; question
+  d'accès : personne ne gagne rien. Définition dans `CONTEXT.md`.
+- Test `tests/integration/eleves-actifs.test.ts` : 7 rouges sans la migration (`PGRST202`), puis le
+  cas « élève de test » rouge sur la première version ; 9 verts (cas « archivé ici, actif là » ajouté
+  sur remarque de revue). Migration appliquée en local (psql sous verrou).
+- `security-auditor` : aucun finding bloquant (ACL vérifiée en local : `service_role` et `postgres`
+  seuls ; `security invoker`, `search_path` vide). `code-reviewer` : rien de bloquant.
+
+## Élèves actifs : rôle de lecture seule et types (#2600, mergée le 2026-11-12)
+
+- Après le `db:migrate` de #2598, l'outil Supabase en lecture seule (`supabase_read_only_user`) est
+  refusé (42501) : la phase 0 le donnait pour usager, à tort (il n'est pas `service_role`).
+  **David : ouvrir l'exécution à ce rôle** — il lit déjà toutes les tables, rien de gagné.
+- Migration `20261112154105` (GRANT seul, rollback en commentaire). Test : `postgres` local ne peut
+  pas `set role supabase_read_only_user` → on lit `has_function_privilege` ; rouge sans la
+  migration, 10 verts avec. `db:types` depuis la prod (la fonction y est) ; cast `as never` retiré.
 
 ## Lot mineur de Dependabot (#2577, mergée le 2026-11-12)
 
@@ -476,6 +560,12 @@ Relevé (code + prod en lecture seule) puis décisions de David :
   retirer seuls d'une classe par l'API ; aucun écran ne le permet. DROP POLICY : `db:migrate`
   seulement après accord explicite de David.
 - **Point 1** (fiche visible à trois endroits) : **plus tard**, reste dans #1788.
+- **Point 1, tranché le 2026-11-12 : rien à changer, #1788 fermée.** Relevé : ce ne sont pas des
+  copies mais des entrées vers la même page `/dashboard/student/worksheets/<affectation>` — Mon
+  travail (+ encart du tableau de bord) et « Toutes mes fiches » (automatiques), onglet Fiches du
+  chapitre (si rangée), cahier de texte (si citée par `[[worksheet:…]]`). Chaque entrée répond à
+  une question différente (à faire / dans le cours / quand). Écartés : situer la fiche sur sa page
+  (B), fondre « Toutes mes fiches » dans les chapitres (C), attendre des élèves réels (D).
 
 ## PR 5 — `students_can_leave` retirée (#2541, mergée le 2026-11-11)
 

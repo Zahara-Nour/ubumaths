@@ -13,10 +13,10 @@
  * @module atelier/natural-input
  */
 
-import { plain, type AtelierCommand } from '$lib/atelier/commands';
-import { normalizePasted } from '$lib/atelier/parse';
-import { parse as parseUnit } from '$lib/mathAST/units/parser';
-import { resolveUnit, UNIT_FAMILIES } from '$lib/mathAST/units/definitions';
+import { plain, type AtelierCommand } from '#lib/atelier/commands.ts';
+import { normalizePasted } from '#lib/atelier/parse.ts';
+import { parse as parseUnit } from '#lib/mathAST/units/parser.ts';
+import { resolveUnit, UNIT_FAMILIES } from '#lib/mathAST/units/definitions.ts';
 
 // Types
 

@@ -18,9 +18,9 @@ import {
 	type MeanScene
 } from '../../utils/stat-chart-scene';
 import { generateStatChartTypst } from '../../generators/stat-chart-typst';
-import { simulateRunningMean, simulateSamples } from '$lib/statistics/simulation';
-import { Fraction } from '$lib/statistics/fraction';
-import { createRandomSource } from '$lib/utils/random';
+import { simulateRunningMean, simulateSamples } from '#lib/statistics/simulation.ts';
+import { Fraction } from '#lib/statistics/fraction.ts';
+import { createRandomSource } from '#lib/utils/random.ts';
 
 // =============================================================================
 // Helpers

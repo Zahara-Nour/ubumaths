@@ -23,9 +23,12 @@ import {
 import { computePreciseBounds } from './rules/precise-bounds';
 import { signFromBounds } from './rules/literals';
 import { getVariables } from '../eval';
-import type { IntervalDomain } from '$lib/math/intervals/types';
-import { isNegativeInfinityEndpoint, isPositiveInfinityEndpoint } from '$lib/math/intervals';
-import { formatInterval } from '$lib/math/intervals';
+import type { IntervalDomain } from '#lib/math/intervals/types.ts';
+import {
+	isNegativeInfinityEndpoint,
+	isPositiveInfinityEndpoint
+} from '#lib/math/intervals/index.ts';
+import { formatInterval } from '#lib/math/intervals/index.ts';
 
 // =============================================================================
 // Type Cache

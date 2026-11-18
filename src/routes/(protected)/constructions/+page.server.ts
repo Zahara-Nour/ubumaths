@@ -5,8 +5,8 @@
 
 import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
-import { createServerLogger } from '$lib/utils/logger';
-import { canAuthorConstructions } from '$lib/server/constructions-access';
+import { createServerLogger } from '#lib/utils/logger.ts';
+import { canAuthorConstructions } from '#lib/server/constructions-access.ts';
 
 const logger = createServerLogger('(protected)/constructions/+page.server');
 

@@ -12,8 +12,8 @@
 
 import { describe, it, expect } from 'vitest';
 import { exerciseCapitalPairs } from '../capital-pairs';
-import { parseMarkdown } from '$lib/ubumark';
-import { generateTypst, processTableCellContent } from '$lib/ubumark/generators/typst-generator';
+import { parseMarkdown } from '#lib/ubumark/index.ts';
+import { generateTypst, processTableCellContent } from '#lib/ubumark/generators/typst-generator.ts';
 
 const PRIMED = "Montrer que ~A'B'=5~.";
 

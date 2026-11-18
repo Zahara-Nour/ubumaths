@@ -9,13 +9,13 @@ import {
 	buildSeriesItems,
 	drawSeriesQuestions,
 	DEFAULT_QUESTION_DELAY_SECONDS
-} from '$lib/questions/series-items';
-import type { GenerationResult, QuestionInstance, QuestionTemplate } from '$lib/questions/types';
-import type { SeriesItem } from '$lib/validation/series';
-import { generateInstance } from '$lib/questions/generator/instance-generator';
+} from '#lib/questions/series-items.ts';
+import type { GenerationResult, QuestionInstance, QuestionTemplate } from '#lib/questions/types.ts';
+import type { SeriesItem } from '#lib/validation/series.ts';
+import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
 
 // Générateur réel remplacé : on vérifie seulement ce que `buildSeriesItems` lui passe
-vi.mock('$lib/questions/generator/instance-generator', () => ({
+vi.mock('#lib/questions/generator/instance-generator.ts', () => ({
 	generateInstance: vi.fn(
 		(t: QuestionTemplate, seed?: number): GenerationResult =>
 			({

@@ -26,43 +26,45 @@
 -->
 
 <script lang="ts">
-	import type { QuestionInstance } from '$lib/questions/types';
-	import { getQuestionType } from '$lib/questions/types';
-	import type { AnswerData, QuestionStats } from '$lib/types/question-display';
+	import type { QuestionInstance } from '#lib/questions/types.ts';
+	import { getQuestionType, isCourseQuestion } from '#lib/questions/types.ts';
+	import type { AnswerData, QuestionStats } from '#lib/types/question-display.ts';
 	import {
 		validateAnswer,
 		validateAnswerDetailed,
 		type DetailedVerdict,
 		type StudentAnswer
-	} from '$lib/utils/answer-validator';
-	import { buildExpectedResult, showsInstructionOnly } from '$lib/questions/expected-result';
+	} from '#lib/utils/answer-validator.ts';
+	import { buildExpectedResult, showsInstructionOnly } from '#lib/questions/expected-result.ts';
 	import {
 		globalVerdictOf,
 		instructionOf,
 		trainingStatus
-	} from '$lib/questions/correction-card-verdict';
+	} from '#lib/questions/correction-card-verdict.ts';
 	import { computeBlankColors } from './blank-verdicts';
-	import { MarkdownRenderer } from '$lib/components/markdown';
-	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
-	import { templateGenericFunctions } from '$lib/questions/generic-functions';
-	import { provideCapitalPairs } from '$lib/components/markdown/content-capital-pairs';
+	import { MarkdownRenderer } from '#lib/components/markdown/index.ts';
+	import InlineMarkdown from '#lib/components/markdown/InlineMarkdown.svelte';
+	import { templateGenericFunctions } from '#lib/questions/generic-functions.ts';
+	import { provideCapitalPairs } from '#lib/components/markdown/content-capital-pairs.ts';
 	import {
 		digitGroupingOf,
 		provideDigitGrouping
-	} from '$lib/components/markdown/content-digit-grouping';
-	import { Button } from '$lib/components/ui/button';
-	import * as Card from '$lib/components/ui/card';
+	} from '#lib/components/markdown/content-digit-grouping.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
 	import { RotateCw, Check, X, AlertCircle, TriangleAlert } from '@lucide/svelte';
-	import { cn } from '$lib/utils';
-	import FlipCard from '$lib/components/FlipCard.svelte';
+	import { cn } from '#lib/utils.ts';
+	import FlipCard from '#lib/components/FlipCard.svelte';
 
 	// Input components
-	import FillBlanksInput from '$lib/components/question-inputs/FillBlanksInput.svelte';
-	import { toFrenchDecimal } from '$lib/utils/french-math';
+	import FillBlanksInput from '#lib/components/question-inputs/FillBlanksInput.svelte';
+	import { toFrenchDecimal } from '#lib/utils/french-math.ts';
 	import CourseCardBack from './CourseCardBack.svelte';
 	import CorrectionView from './CorrectionView.svelte';
 	import ExpectedResultView from './ExpectedResultView.svelte';
-	import { provideQuestionLexicon } from '$lib/components/markdown/lexicon-context';
+	import { provideQuestionLexicon } from '#lib/components/markdown/lexicon-context.ts';
+	import LexiconToggle from './LexiconToggle.svelte';
+	import LexiconOff from '#lib/components/markdown/LexiconOff.svelte';
 
 	// Props
 	interface Props {
@@ -109,8 +111,13 @@
 		flipOnSubmit = false
 	}: Props = $props();
 
-	// Mots cliquables dans l'énoncé et la correction
-	provideQuestionLexicon(() => instance.grades);
+	// Mots cliquables dans l'énoncé du recto ; le verso n'en a aucun (R2, `LexiconOff`)
+	// Question de cours : seuls les mots marqués `{.def}` (R4, chantier mots-cliquables)
+	provideQuestionLexicon(
+		() => instance.grades,
+		() => true,
+		() => isCourseQuestion(instance)
+	);
 
 	// ============================================================================
 	// STATE MANAGEMENT
@@ -368,10 +375,14 @@
 		{#snippet front()}
 			<div class="face relative h-full">
 				<!-- Recto allégé : ni titre, ni badge du type, ni sous-titre, ni encadré.
-				     Hauteur imposée : la carte défile, place réservée en bas au bouton de retournement
-				     (frère de la carte, il ne défile pas). -->
-				<Card.Root class={cn('face-card h-full', height && 'scrollable')}>
+				     Hauteur imposée : la carte défile. Carte retournable : place réservée en bas au
+				     bouton de retournement (frère de la carte, il ne défile pas). -->
+				<Card.Root
+					class={cn('face-card h-full', height && 'scrollable', flippable && 'reserve-bouton')}
+				>
 					<Card.Content class="space-y-6">
+						<!-- Bouton « Mots du dictionnaire » (R6), avant l'énoncé dans l'ordre de tabulation -->
+						<LexiconToggle class="float-right -mt-2 -mr-2 ml-2" />
 						{#if instance.exerciseInstruction}
 							<p class="text-base font-medium text-muted-foreground">
 								{instance.exerciseInstruction}
@@ -478,91 +489,96 @@
 
 		{#snippet back()}
 			<div class="face relative h-full">
-				<!-- Verso allégé : titre vert centré ; ni badge du type, ni intitulés, ni encadrés -->
-				<Card.Root class={cn('face-card h-full', height && 'scrollable')}>
-					<Card.Content class="space-y-6">
-						<p
-							class="text-center text-lg font-semibold text-green-600 dark:text-green-500"
-							data-verso-title
-						>
-							<!-- En-tête du résultat attendu ; « Correction » intitule la correction plus bas -->
-							{isCourseCard ? 'Verso' : 'Réponse'}
-						</p>
+				<!-- Verso : aucun mot du dictionnaire (R2, chantier mots-cliquables) -->
+				<LexiconOff>
+					<!-- Verso allégé : titre vert centré ; ni badge du type, ni intitulés, ni encadrés -->
+					<Card.Root
+						class={cn('face-card h-full', height && 'scrollable', flippable && 'reserve-bouton')}
+					>
+						<Card.Content class="space-y-6">
+							<p
+								class="text-center text-lg font-semibold text-green-600 dark:text-green-500"
+								data-verso-title
+							>
+								<!-- En-tête du résultat attendu ; « Correction » intitule la correction plus bas -->
+								{isCourseCard ? 'Verso' : 'Réponse'}
+							</p>
 
-						{#if isCourseCard}
-							<!-- Carte de cours : le verso EST la correction (source unique partagée) -->
-							<CourseCardBack correction={instance.correction} {genericFunctions} />
-						{:else}
-							<!-- Statut, consigne et résultat attendu : groupés, plus serrés que les sections -->
-							<div class="space-y-3">
-								{#if globalVerdict}
-									<p class="flex justify-center">
-										<span
-											class="verdict-badge verdict-{globalVerdict.kind}"
-											data-testid="global-verdict"
-											data-kind={globalVerdict.kind}
-										>
-											{#if globalVerdict.kind === 'correct'}
-												<Check class="h-3.5 w-3.5" aria-hidden="true" />
-											{:else if globalVerdict.kind === 'half'}
-												<TriangleAlert class="h-3.5 w-3.5" aria-hidden="true" />
-											{:else}
-												<X class="h-3.5 w-3.5" aria-hidden="true" />
-											{/if}
-											{globalVerdict.label}
-										</span>
-									</p>
-								{/if}
-								{#if instruction}
-									<!-- Consigne seule (Q104) : la formule à case est remplacée par la solution -->
-									<div class="text-muted-foreground" data-testid="instruction">
-										<MarkdownRenderer content={instruction} />
-									</div>
-								{/if}
-								<div class="correct-answer">
-									{#if expected && expected.lines.length > 0}
-										<!-- Résultat attendu (R9, ou R1-R7 après « Valider ») -->
-										<ExpectedResultView result={expected} class={expectedSizeClasses[size]} />
-									{:else}
-										<!--
-										Hors carte de cours, une question est classée `fill_in_blanks`.
-										Sans `blanks`, il n'y a aucune réponse structurée à afficher — sans ce
-										repli, la zone de réponse se rendait vide et muette.
-									-->
-										<p class="text-sm text-muted-foreground">
-											{correctionMarkdown
-												? "Cette question n'a pas de réponse structurée : voir l'explication ci-dessous."
-												: 'Aucune réponse enregistrée pour cette question.'}
+							{#if isCourseCard}
+								<!-- Carte de cours : le verso EST la correction (source unique partagée) -->
+								<CourseCardBack correction={instance.correction} {genericFunctions} />
+							{:else}
+								<!-- Statut, consigne et résultat attendu : groupés, plus serrés que les sections -->
+								<div class="space-y-3">
+									{#if globalVerdict}
+										<p class="flex justify-center">
+											<span
+												class="verdict-badge verdict-{globalVerdict.kind}"
+												data-testid="global-verdict"
+												data-kind={globalVerdict.kind}
+											>
+												{#if globalVerdict.kind === 'correct'}
+													<Check class="h-3.5 w-3.5" aria-hidden="true" />
+												{:else if globalVerdict.kind === 'half'}
+													<TriangleAlert class="h-3.5 w-3.5" aria-hidden="true" />
+												{:else}
+													<X class="h-3.5 w-3.5" aria-hidden="true" />
+												{/if}
+												{globalVerdict.label}
+											</span>
 										</p>
 									{/if}
-								</div>
-							</div>
-
-							{#if correctionMarkdown}
-								<!-- Filet et intitulé : la correction ne s'enchaîne pas au résultat attendu -->
-								<div>
-									<hr class="correction-separator" data-testid="correction-separator" />
-									<p class="correction-heading" data-testid="correction-heading">Correction</p>
-									<div class="correction-steps">
-										<!-- Concise par défaut, interrupteur « Voir le détail » (ADR 0017) -->
-										<CorrectionView markdown={correctionMarkdown} {genericFunctions} />
+									{#if instruction}
+										<!-- Consigne seule (Q104) : la formule à case est remplacée par la solution -->
+										<div class="text-muted-foreground" data-testid="instruction">
+											<MarkdownRenderer content={instruction} />
+										</div>
+									{/if}
+									<div class="correct-answer">
+										{#if expected && expected.lines.length > 0}
+											<!-- Résultat attendu (R9, ou R1-R7 après « Valider ») -->
+											<ExpectedResultView result={expected} class={expectedSizeClasses[size]} />
+										{:else}
+											<!--
+											Hors carte de cours, une question est classée `fill_in_blanks`.
+											Sans `blanks`, il n'y a aucune réponse structurée à afficher — sans ce
+											repli, la zone de réponse se rendait vide et muette.
+										-->
+											<p class="text-sm text-muted-foreground">
+												{correctionMarkdown
+													? "Cette question n'a pas de réponse structurée : voir l'explication ci-dessous."
+													: 'Aucune réponse enregistrée pour cette question.'}
+											</p>
+										{/if}
 									</div>
 								</div>
-							{/if}
-						{/if}
-					</Card.Content>
-				</Card.Root>
 
-				{#if flippable}
-					<button
-						class="flip-button"
-						onclick={handleFlip}
-						aria-label="Retour à la question"
-						title="Retour à la question"
-					>
-						<RotateCw class="h-5 w-5" />
-					</button>
-				{/if}
+								{#if correctionMarkdown}
+									<!-- Filet et intitulé : la correction ne s'enchaîne pas au résultat attendu -->
+									<div>
+										<hr class="correction-separator" data-testid="correction-separator" />
+										<p class="correction-heading" data-testid="correction-heading">Correction</p>
+										<div class="correction-steps">
+											<!-- Concise par défaut, interrupteur « Voir le détail » (ADR 0017) -->
+											<CorrectionView markdown={correctionMarkdown} {genericFunctions} />
+										</div>
+									</div>
+								{/if}
+							{/if}
+						</Card.Content>
+					</Card.Root>
+
+					{#if flippable}
+						<button
+							class="flip-button"
+							onclick={handleFlip}
+							aria-label="Retour à la question"
+							title="Retour à la question"
+						>
+							<RotateCw class="h-5 w-5" />
+						</button>
+					{/if}
+				</LexiconOff>
 			</div>
 		{/snippet}
 	</FlipCard>
@@ -583,7 +599,10 @@
 	.face :global(.face-card.scrollable) {
 		height: 100%;
 		overflow-y: auto;
-		/* Place du bouton de retournement sous la dernière ligne */
+	}
+
+	/* Place du bouton de retournement sous la dernière ligne, hauteur imposée ou non */
+	.face :global(.face-card.reserve-bouton) {
 		padding-bottom: calc(4rem * var(--font-scale, 1));
 	}
 

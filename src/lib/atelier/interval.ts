@@ -19,29 +19,29 @@
 
 import type { AtelierObject } from './types';
 import { MAX_INTERVAL_LENGTH } from './types';
-import type { Domain, Endpoint, Interval } from '$lib/mathAST/domain/types';
-import type { MathNode } from '$lib/mathAST/types';
-import { parseStudentDomain } from '$lib/mathAST/domain/validation/parse-student-domain';
-import { expandExcludedPoints } from '$lib/mathAST/domain/validation/compare-domains';
-import { computeDomain } from '$lib/mathAST/domain/compute';
+import type { Domain, Endpoint, Interval } from '#lib/mathAST/domain/types.ts';
+import type { MathNode } from '#lib/mathAST/types.ts';
+import { parseStudentDomain } from '#lib/mathAST/domain/validation/parse-student-domain.ts';
+import { expandExcludedPoints } from '#lib/mathAST/domain/validation/compare-domains.ts';
+import { computeDomain } from '#lib/mathAST/domain/compute.ts';
 import {
 	containsValue,
 	difference,
 	intersect,
 	isEmpty,
 	isUniversal
-} from '$lib/mathAST/domain/algebra';
-import { formatEndpointValue, formatInterval } from '$lib/mathAST/domain/format';
-import { bound, endpointToNumber } from '$lib/math/intervals';
-import { divide, number, subtract } from '$lib/mathAST/factory';
-import { polynomialCoefficients } from '$lib/mathAST/normal/canonical-form';
-import { computeNumericValue } from '$lib/mathAST/eval/numeric-value';
-import { exactValueToShow } from '$lib/mathAST/eval/exact-value';
-import type { CurvePiece } from '$lib/grapheur/restriction';
-import { evaluate } from '$lib/mathAST/eval';
-import { substitute } from '$lib/mathAST/eval/substitute';
+} from '#lib/mathAST/domain/algebra.ts';
+import { formatEndpointValue, formatInterval } from '#lib/mathAST/domain/format.ts';
+import { bound, endpointToNumber } from '#lib/math/intervals/index.ts';
+import { divide, number, subtract } from '#lib/mathAST/factory.ts';
+import { polynomialCoefficients } from '#lib/mathAST/normal/canonical-form.ts';
+import { computeNumericValue } from '#lib/mathAST/eval/numeric-value.ts';
+import { exactValueToShow } from '#lib/mathAST/eval/exact-value.ts';
+import type { CurvePiece } from '#lib/grapheur/restriction.ts';
+import { evaluate } from '#lib/mathAST/eval/index.ts';
+import { substitute } from '#lib/mathAST/eval/substitute.ts';
 import { constantOf } from './constant';
-import { toCustom } from '$lib/mathAST/custom-generator';
+import { toCustom } from '#lib/mathAST/custom-generator.ts';
 import {
 	astOf,
 	readingMode,

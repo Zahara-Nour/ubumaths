@@ -137,17 +137,27 @@ describe('parseBuddyPresence', () => {
 	};
 
 	it('réponse bien formée : rendue', () => {
-		const view = parseBuddyPresence({ buddy, streakLost: true, longAbsence: false });
+		const view = parseBuddyPresence({ buddy, returnAfterPause: true });
 		expect(view?.buddy?.palotin_type).toBe('cotice');
-		expect(view?.streakLost).toBe(true);
+		expect(view?.returnAfterPause).toBe(true);
 	});
 
 	it('sans Palotin : rendue avec `buddy` nul', () => {
-		expect(parseBuddyPresence({ buddy: null, streakLost: false, longAbsence: false })).toEqual({
+		expect(parseBuddyPresence({ buddy: null, returnAfterPause: false })).toEqual({
 			buddy: null,
-			streakLost: false,
-			longAbsence: false
+			returnAfterPause: false,
+			weekMoment: null
 		});
+	});
+
+	it('moment de la semaine transmis ; inconnu → mal formée (B2)', () => {
+		expect(
+			parseBuddyPresence({ buddy: null, returnAfterPause: false, weekMoment: 'active_weeks_5' })
+				?.weekMoment
+		).toBe('active_weeks_5');
+		expect(
+			parseBuddyPresence({ buddy: null, returnAfterPause: false, weekMoment: 'active_weeks_4' })
+		).toBeNull();
 	});
 
 	it('mal formée : null', () => {

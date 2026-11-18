@@ -35,16 +35,16 @@
 
 import { createClient } from '@supabase/supabase-js';
 import { config } from 'dotenv';
-import { createExerciseSchema } from '$lib/server/validation/exercises';
+import { createExerciseSchema } from '#lib/server/validation/exercises.ts';
 import {
 	validateCreateWorksheet,
 	validateCreateWorksheetExercise
-} from '$lib/server/validation/worksheets';
-import { createExercise } from '$lib/server/exercises';
-import { toQuestionTemplate } from '$lib/types/question-template';
-import { buildSerie, type SerieItem } from '$lib/worksheets/serie-automatismes';
-import type { QuestionTemplate } from '$lib/questions/types';
-import type { Database } from '$lib/types/database';
+} from '#lib/server/validation/worksheets.ts';
+import { createExercise } from '#lib/server/exercises.ts';
+import { toQuestionTemplate } from '#lib/types/question-template.ts';
+import { buildSerie, type SerieItem } from '#lib/worksheets/serie-automatismes.ts';
+import type { QuestionTemplate } from '#lib/questions/types.ts';
+import type { Database } from '#lib/types/database.ts';
 
 config({ path: '.env' });
 

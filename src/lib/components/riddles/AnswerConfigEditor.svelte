@@ -9,14 +9,14 @@
 -->
 
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import type { AnswerConfig, AnswerType } from '$lib/types/riddle';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import * as Card from '$lib/components/ui/card';
-	import { Switch } from '$lib/components/ui/switch';
+	import { lore } from '#lib/config/lore.ts';
+	import type { AnswerConfig, AnswerType } from '#lib/types/riddle.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Switch } from '#lib/components/ui/switch/index.ts';
 	import { Plus, X, CheckCircle2 } from '@lucide/svelte';
 	import { compactQcmChoices } from './qcm-choices';
 

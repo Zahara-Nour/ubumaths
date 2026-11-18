@@ -1,5 +1,5 @@
 <script lang="ts">
-	import '$lib/utils/mathlive-styles';
+	import '#lib/utils/mathlive-styles.ts';
 	/**
 	 * La carte d'une fonction : une seule ligne, `● f(x) = [champ]`.
 	 *
@@ -14,23 +14,23 @@
 	 * formule est calculée, et une icône de lien dit ce qu'elle suit.
 	 */
 	import { tick } from 'svelte';
-	import type { FunctionObject } from '$lib/atelier/types';
-	import { actionsFor, actionMovesFocus, type ObjectAction } from '$lib/atelier/actions';
-	import { useAtelier } from '$lib/atelier/context';
-	import { useGrapheurStore } from '$lib/stores/grapheur-context';
-	import { astOf } from '$lib/atelier/parse';
-	import { toLatex } from '$lib/mathAST/latex-generator';
+	import type { FunctionObject } from '#lib/atelier/types.ts';
+	import { actionsFor, actionMovesFocus, type ObjectAction } from '#lib/atelier/actions.ts';
+	import { useAtelier } from '#lib/atelier/context.ts';
+	import { useGrapheurStore } from '#lib/stores/grapheur-context.ts';
+	import { astOf } from '#lib/atelier/parse.ts';
+	import { toLatex } from '#lib/mathAST/latex-generator.ts';
 	import { convertLatexToMarkup, convertLatexToSpeakableText } from 'mathlive';
-	import { forMathlive } from '$lib/atelier/mathfield';
-	import { derivativeOf, displayName, reciprocalOf } from '$lib/atelier/names';
-	import { derivativeAstOf } from '$lib/atelier/engine';
-	import { INTERNAL_LETTER, renameVariableIn, typedLetterOf } from '$lib/atelier/letter';
-	import { intervalLabelOf } from '$lib/atelier/interval';
-	import { integralToggle, tangentToggle } from '$lib/atelier/curve-toggles';
-	import { tabulationDefaults } from '$lib/atelier/tabulate';
+	import { forMathlive } from '#lib/atelier/mathfield.ts';
+	import { derivativeOf, displayName, reciprocalOf } from '#lib/atelier/names.ts';
+	import { derivativeAstOf } from '#lib/atelier/engine.ts';
+	import { INTERNAL_LETTER, renameVariableIn, typedLetterOf } from '#lib/atelier/letter.ts';
+	import { intervalLabelOf } from '#lib/atelier/interval.ts';
+	import { integralToggle, tangentToggle } from '#lib/atelier/curve-toggles.ts';
+	import { tabulationDefaults } from '#lib/atelier/tabulate.ts';
 	import { EllipsisVertical, Eye, EyeOff, Link2 } from '@lucide/svelte';
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
-	import * as Dialog from '$lib/components/ui/dialog';
+	import * as DropdownMenu from '#lib/components/ui/dropdown-menu/index.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
 	import DefinitionField from './DefinitionField.svelte';
 	import CurveSettings from './CurveSettings.svelte';
 	import CurveStylePopover from './CurveStylePopover.svelte';

@@ -7,7 +7,7 @@
  * (RGPD art. 8). Le mot de passe n'y figure jamais : le parent vient de le choisir.
  */
 
-import { escapeHtml } from '$lib/utils/html-escape';
+import { escapeHtml } from '#lib/utils/html-escape.ts';
 import { getConsentLink, getSiteUrl } from './parental-consent';
 
 // Types

@@ -20,14 +20,14 @@
  * @module atelier/integrate-steps-check
  */
 
-import type { MathNode } from '$lib/mathAST/types';
+import type { MathNode } from '#lib/mathAST/types.ts';
 import type {
 	PedagogicalIntegrationRule,
 	PedagogicalIntegrationStep
-} from '$lib/mathAST/pedagogical-integration';
-import { compile } from '$lib/mathAST/eval/compile';
-import { getVariables } from '$lib/mathAST/eval/substitute';
-import { hideIndexedNames } from '$lib/mathAST/common/indexed-names';
+} from '#lib/mathAST/pedagogical-integration/index.ts';
+import { compile } from '#lib/mathAST/eval/compile.ts';
+import { getVariables } from '#lib/mathAST/eval/substitute.ts';
+import { hideIndexedNames } from '#lib/mathAST/common/indexed-names.ts';
 
 // =============================================================================
 // Constantes

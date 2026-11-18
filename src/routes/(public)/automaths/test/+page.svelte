@@ -2,36 +2,40 @@
 	import { page } from '$app/state';
 	import { goto, replaceState } from '$app/navigation';
 	import { onMount } from 'svelte';
-	import { buildSeriesItems } from '$lib/questions/series-items';
-	import { isCourseCard, seriesFormExcludesCourseCards } from '$lib/questions/course-card';
-	import { questionTemplatesCache } from '$lib/stores/questionTemplates.svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { buildSeriesItems } from '#lib/questions/series-items.ts';
+	import { isCourseCard, seriesFormExcludesCourseCards } from '#lib/questions/course-card.ts';
+	import { questionTemplatesCache } from '#lib/stores/questionTemplates.svelte.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import type { PageData } from './$types';
-	import type { SeriesItem } from '$lib/validation/series';
-	import type { ClassroomItem, TestMode, TestSession } from '$lib/types/test';
+	import type { SeriesItem } from '#lib/validation/series.ts';
+	import type { ClassroomItem, TestMode, TestSession } from '#lib/types/test.ts';
 	import { AlertCircle } from '@lucide/svelte';
-	import * as Card from '$lib/components/ui/card';
-	import { Button } from '$lib/components/ui/button';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
 
 	// Import test components
-	import ClassroomSeries from '$lib/components/test/ClassroomSeries.svelte';
-	import TestInteractive from '$lib/components/test/TestInteractive.svelte';
-	import TestCourse from '$lib/components/test/TestCourse.svelte';
-	import FlashSeries from '$lib/components/test/FlashSeries.svelte';
-	import TypingSeries from '$lib/components/test/TypingSeries.svelte';
-	import EvaluationResults from '$lib/components/test/EvaluationResults.svelte';
-	import { resolveTestLaunch } from '$lib/utils/test-launch';
-	import type { TestResult } from '$lib/types/test';
+	import ClassroomSeries from '#lib/components/test/ClassroomSeries.svelte';
+	import TestInteractive from '#lib/components/test/TestInteractive.svelte';
+	import TestCourse from '#lib/components/test/TestCourse.svelte';
+	import FlashSeries from '#lib/components/test/FlashSeries.svelte';
+	import TypingSeries from '#lib/components/test/TypingSeries.svelte';
+	import EvaluationResults from '#lib/components/test/EvaluationResults.svelte';
+	import { resolveTestLaunch } from '#lib/utils/test-launch.ts';
+	import type { TestResult } from '#lib/types/test.ts';
 	import type {
 		EvaluationStartResponse,
 		EvaluationSubmitResponse
-	} from '$lib/types/evaluation-attempt';
-	import { toSubmission, type Submission } from '$lib/questions/submission';
-	import { toDisplayInstance, unitKeysOf } from '$lib/questions/public-question';
-	import { receiveBuddyGain, type BuddyGainView } from '$lib/components/buddy/buddy-gain';
-	import { fetchMathouNews } from '$lib/components/mathoux/mathou-news';
-	import type { MathouNews } from '$lib/mathoux/news';
-	import { createTraceRecorder } from '$lib/questions/series-trace';
+	} from '#lib/types/evaluation-attempt.ts';
+	import { toSubmission, type Submission } from '#lib/questions/submission.ts';
+	import { toDisplayInstance, unitKeysOf } from '#lib/questions/public-question.ts';
+	import {
+		receiveBuddyGain,
+		seriesElapsedMs,
+		type BuddyGainView
+	} from '#lib/components/buddy/buddy-gain.ts';
+	import { fetchMathouNews } from '#lib/components/mathoux/mathou-news.ts';
+	import type { MathouNews } from '#lib/mathoux/news.ts';
+	import { createTraceRecorder } from '#lib/questions/series-trace.ts';
 
 	let { data }: { data: PageData } = $props();
 
@@ -91,7 +95,7 @@
 	 */
 	async function initializeTest() {
 		try {
-			const launch = resolveTestLaunch(new URL(page.url).searchParams);
+			const launch = resolveTestLaunch(new URL(page.url.href).searchParams);
 
 			if (launch.kind === 'error') {
 				throw new Error(launch.message);
@@ -421,7 +425,10 @@
 				},
 				body: JSON.stringify({
 					result,
-					items: testSession?.items || []
+					items: testSession?.items || [],
+					// Durée de la série : le serveur en tire son début (question longtemps
+					// ratée enfin réussie, fêtée une seule fois) sans lire l'heure du client
+					...(testSession ? { seriesElapsedMs: seriesElapsedMs(testSession.startTime) } : {})
 				})
 			});
 
@@ -447,7 +454,7 @@
 	onMount(async () => {
 		// Évaluation assignée : aucun modèle n'est chargé (le serveur tire les
 		// questions ; l'aperçu du prof les chargera lui-même)
-		if (!new URL(page.url).searchParams.has('assignment')) {
+		if (!new URL(page.url.href).searchParams.has('assignment')) {
 			// Modèles : cache de l'onglet, lu une fois (déjà là si on vient du catalogue
 			// ou du panier ; sinon lu maintenant, lien de série ouvert directement)
 			await questionTemplatesCache.fetchTemplates();

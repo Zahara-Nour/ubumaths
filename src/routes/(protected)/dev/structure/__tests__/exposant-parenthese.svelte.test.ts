@@ -13,13 +13,13 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 // Comme la page : polices et classes du rendu MathLive (le rendu local = celui de la CI)
-import '$lib/utils/mathlive-styles';
+import '#lib/utils/mathlive-styles.ts';
 import {
 	MARKER_PREFIX,
 	stripMarkers,
 	structureFromLatex,
 	type ExpressionStructure
-} from '$lib/mathAST/structure';
+} from '#lib/mathAST/structure/index.ts';
 import StructureFormula from '../StructureFormula.svelte';
 
 // Constantes

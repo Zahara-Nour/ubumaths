@@ -9,7 +9,7 @@
 import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import ChoiceList from '../ChoiceList.svelte';
-import type { ExpectedStatus } from '$lib/questions/expected-result';
+import type { ExpectedStatus } from '#lib/questions/expected-result.ts';
 
 type Item = { content: string; status?: ExpectedStatus; checked?: boolean };
 

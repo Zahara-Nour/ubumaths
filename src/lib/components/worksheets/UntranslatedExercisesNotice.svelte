@@ -14,9 +14,9 @@
 	 * <UntranslatedExercisesNotice exercises={worksheet.exercises ?? []} config={worksheet.config} />
 	 */
 
-	import { untranslatedExercises } from '$lib/exercises/translation-status';
-	import { worksheetLocale, type WorksheetConfig } from '$lib/types/worksheets';
-	import type { WorksheetExerciseWithExercise } from '$lib/types/worksheets';
+	import { untranslatedExercises } from '#lib/exercises/translation-status.ts';
+	import { worksheetLocale, type WorksheetConfig } from '#lib/types/worksheets.ts';
+	import type { WorksheetExerciseWithExercise } from '#lib/types/worksheets.ts';
 
 	let {
 		exercises = [],
@@ -40,7 +40,7 @@
 			{missing.length > 1 ? 'exercices sortiront' : 'exercice sortira'} en français
 		</p>
 		<p class="mt-1 text-muted-foreground">
-			Cette fiche est en anglais. Sans version anglaise, l'énoncé français est utilisé :
+			En anglais, un exercice sans version anglaise garde son énoncé français :
 			{missing.map((e) => e.title ?? 'sans titre').join(', ')}
 		</p>
 	</div>

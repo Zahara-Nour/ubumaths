@@ -13,9 +13,9 @@
 import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { resolve } from '$app/paths';
-import { requireRole } from '$lib/server/middleware/auth';
-import { validateUuidParam } from '$lib/server/validation/params';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { validateUuidParam } from '#lib/server/validation/params.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger(
 	'(protected)/dashboard/teacher/contenu/worksheets/exercice/[id]/+page.server'

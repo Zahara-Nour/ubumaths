@@ -19,13 +19,13 @@
 -->
 
 <script lang="ts">
-	import type { ResolvedMarkdown } from '$lib/ubumark';
-	import { MarkdownRenderer } from '$lib/components/markdown';
-	import type { GenericFunctionConfig } from '$lib/mathAST';
+	import type { ResolvedMarkdown } from '#lib/ubumark/index.ts';
+	import { MarkdownRenderer } from '#lib/components/markdown/index.ts';
+	import type { GenericFunctionConfig } from '#lib/mathAST/index.ts';
 	import { Check, X, Circle, CircleDot, Square, SquareCheck } from '@lucide/svelte';
-	import { cn } from '$lib/utils';
-	import { MULTIPLE_ANSWERS_INSTRUCTION } from '$lib/questions/feedback';
-	import { monnaieChoiceSize } from '$lib/ubumark/utils/monnaie-choix';
+	import { cn } from '#lib/utils.ts';
+	import { MULTIPLE_ANSWERS_INSTRUCTION } from '#lib/questions/feedback.ts';
+	import { monnaieChoiceSize } from '#lib/ubumark/utils/monnaie-choix.ts';
 
 	interface Choice {
 		/** Choice content as resolved markdown string */

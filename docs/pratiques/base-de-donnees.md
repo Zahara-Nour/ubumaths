@@ -65,8 +65,8 @@ pnpm db:status     # diagnostic : profiles manquants vs auth.users
 
 ```ts
 // ✅ import des types
-import type { Tables } from '$lib/types/database';
-import type { Profile, FriendProfile } from '$lib/types/database-helpers';
+import type { Tables } from '#lib/types/database.ts';
+import type { Profile, FriendProfile } from '#lib/types/database-helpers.ts';
 ```
 
 `database-helpers.ts` existe précisément pour survivre aux régénérations : tout type fait-main y vit.

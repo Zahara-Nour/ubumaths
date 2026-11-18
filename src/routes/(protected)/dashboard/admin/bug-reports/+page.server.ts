@@ -6,12 +6,12 @@
  */
 
 import type { PageServerLoad } from './$types';
-import type { BugReportWithAuthor } from '$lib/types/bug-reports';
-import { signBugReportScreenshots } from '$lib/server/bug-report-screenshots';
-import { attachReportErrors } from '$lib/server/bug-report-errors';
-import { requireAdmin } from '$lib/server/middleware/auth';
+import type { BugReportWithAuthor } from '#lib/types/bug-reports.ts';
+import { signBugReportScreenshots } from '#lib/server/bug-report-screenshots.ts';
+import { attachReportErrors } from '#lib/server/bug-report-errors.ts';
+import { requireAdmin } from '#lib/server/middleware/auth.ts';
 import { error } from '@sveltejs/kit';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('(protected)/dashboard/admin/bug-reports/+page.server');
 

@@ -1,13 +1,17 @@
 import type { PageServerLoad, Actions } from './$types';
 import { error, redirect, fail } from '@sveltejs/kit';
-import { validateUuidParam } from '$lib/server/validation/params';
-import { validateFormData, riddleFormSchema, parseRiddleAnswerField } from '$lib/server/validation';
-import { requireRoles } from '$lib/server/middleware/auth';
-import type { TablesUpdate } from '$lib/types/database';
-import { toJson } from '$lib/types/database-helpers';
-import { RIDDLE_COLUMNS, toDbRiddle } from '$lib/types/riddle';
-import { fetchRiddleSolutions, saveRiddleSolution } from '$lib/server/riddle-solutions';
-import { createServerLogger } from '$lib/utils/logger';
+import { validateUuidParam } from '#lib/server/validation/params.ts';
+import {
+	validateFormData,
+	riddleFormSchema,
+	parseRiddleAnswerField
+} from '#lib/server/validation/index.ts';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import type { TablesUpdate } from '#lib/types/database.ts';
+import { toJson } from '#lib/types/database-helpers.ts';
+import { RIDDLE_COLUMNS, toDbRiddle } from '#lib/types/riddle.ts';
+import { fetchRiddleSolutions, saveRiddleSolution } from '#lib/server/riddle-solutions.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger(
 	'(protected)/dashboard/teacher/contenu/enigmes/[id]/edit/+page.server'

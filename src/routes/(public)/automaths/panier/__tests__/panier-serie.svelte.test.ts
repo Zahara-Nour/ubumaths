@@ -10,22 +10,23 @@ import { page } from 'vitest/browser';
 vi.mock('$app/state', () => ({
 	page: { url: new URL('http://localhost/automaths/panier'), state: {} }
 }));
-vi.mock('$app/navigation', async (importOriginal) => ({
-	...(await importOriginal<typeof import('$app/navigation')>()),
-	goto: vi.fn(async () => {})
-}));
+vi.mock('$app/navigation', async () =>
+	(await import('#tests/helpers/app-navigation-mock.ts')).appNavigationMock({
+		goto: vi.fn(async () => {})
+	})
+);
 const toaster = vi.hoisted(() => ({
 	success: vi.fn(),
 	error: vi.fn(),
 	warning: vi.fn(),
 	info: vi.fn()
 }));
-vi.mock('$lib/stores/toaster.svelte', () => ({ toaster }));
+vi.mock('#lib/stores/toaster.svelte.ts', () => ({ toaster }));
 
 import Page from '../+page.svelte';
-import { questionTemplatesCache } from '$lib/stores/questionTemplates.svelte';
-import { questionCart } from '$lib/stores/questionCart.svelte';
-import { parseSeriesLink } from '$lib/validation/series';
+import { questionTemplatesCache } from '#lib/stores/questionTemplates.svelte.ts';
+import { questionCart } from '#lib/stores/questionCart.svelte.ts';
+import { parseSeriesLink } from '#lib/validation/series.ts';
 
 const TEMPLATE_ID = '11111111-1111-4111-8111-111111111111';
 

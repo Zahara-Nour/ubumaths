@@ -56,11 +56,13 @@ légales, `/a-propos`, `/upsilon`, page d'un terme du glossaire `/glossaire/[slu
 ### `JsonLd.svelte`
 
 Prend `data: Record<string, unknown>`, rend `{@html toJsonLdScript(data)}` dans `<svelte:head>`.
-Deux appelants :
+Trois appelants :
 
 - `src/routes/(public)/+page.svelte` : `WebSite` + `Organization` (nom, URL, logo) ;
 - `src/routes/(public)/shtam/[slug]/+page.svelte` : `SatiricalArticle` (titre tronqué à 110
-  caractères, date, auteur, éditeur, `isPartOf` le périodique Le Shtam).
+  caractères, date, auteur, éditeur, `isPartOf` le périodique Le Shtam) ;
+- `src/lib/components/kingdom-tour/AudienceView.svelte` : `FAQPage` (`faqJsonLd` de
+  `src/lib/kingdom-tour/views.ts`), pour une vue qui a une FAQ (`/parents`).
 
 ### Ce qui n'est pas dans `src/lib/seo/`
 

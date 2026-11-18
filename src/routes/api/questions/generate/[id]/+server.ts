@@ -7,12 +7,12 @@
 
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { generateInstance } from '$lib/questions';
-import { generateQuestionSchema } from '$lib/server/validation/questions';
-import { toQuestionTemplate } from '$lib/types/question-template';
-import { requireRoles } from '$lib/server/middleware/auth';
-import { validateUuidParam } from '$lib/server/validation/params';
-import { createServerLogger } from '$lib/utils/logger';
+import { generateInstance } from '#lib/questions/index.ts';
+import { generateQuestionSchema } from '#lib/server/validation/questions.ts';
+import { toQuestionTemplate } from '#lib/types/question-template.ts';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import { validateUuidParam } from '#lib/server/validation/params.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/questions/generate/[id]/+server');
 

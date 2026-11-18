@@ -50,11 +50,11 @@ import type {
 	CodeBlockNode,
 	TypstTranspilerOptions,
 	ResolvedTypstTranspilerOptions
-} from '$lib/exercises/types';
-import { getDimensionsForFormat } from '$lib/exercises/services/image-dimensions';
-import { expressionToRawLatex } from '$lib/components/markdown/utils/math-utils';
-import { unitWritingToTypst } from '$lib/mathAST/units/display';
-import { toLocaleDecimal } from '$lib/utils/french-math';
+} from '#lib/exercises/types.ts';
+import { getDimensionsForFormat } from '#lib/exercises/services/image-dimensions.ts';
+import { expressionToRawLatex } from '#lib/components/markdown/utils/math-utils.ts';
+import { unitWritingToTypst } from '#lib/mathAST/units/display.ts';
+import { toLocaleDecimal } from '#lib/utils/french-math.ts';
 import { generateVariationTableTypst } from './variation-table-typst';
 import { generateProbabilityTreeTypst } from './probability-tree-typst';
 import { generateTrigCircleTypst } from './trig-circle-typst';
@@ -64,14 +64,23 @@ import { generateCourbeTypst } from './courbe-typst';
 import { generateStatChartTypst } from './stat-chart-typst';
 import type { RangerNode } from '../types/ranger';
 import { displayedLabels } from '../utils/ranger';
+import type { AssocierNode } from '../types/associer';
+import { displayedAssocierLabels } from '../utils/associer';
+import { associerItemHasBlock } from '../parser/associer-parser';
+import type { TrousNode } from '../types/trous';
+import { displayedTrousLabels, TROUS_RESERVE_COLUMNS } from '../utils/trous';
 import { generateQrTypst } from './qr-typst';
 import { generateScratchTypst } from './scratch-typst';
 import { generateHorlogeTypst } from './horloge-typst';
+import { generateTortueTypst } from './tortue-typst';
+import { generateRobotTypst } from './robot-typst';
+import { generateCalculTypst } from './calcul-typst';
 import { generatePartageTypst } from './partage-typst';
 import { generateEspaceTypst } from './espace-typst';
 import { generateOperationTypst } from './operation-typst';
 import { generateCollectionTypst } from './collection-typst';
 import { generateMonnaieTypst } from './monnaie-typst';
+import { generateSchemaBarresTypst } from './schema-barres-typst';
 // Registre LÉGER : pas d'import de geometry-core ici (voir figure-typst-registry.ts)
 import { renderFigureTypst } from './figure-typst-registry';
 import { parseMarkdown } from '../parser/markdown-parser';
@@ -79,9 +88,9 @@ import type { VariationTableNode } from '../types/variation-table';
 import type { ProbabilityTreeNode } from '../types/probability-tree';
 import type { TrigCircleNode } from '../types/trig-circle';
 import type { NumberLineNode } from '../types/number-line';
-import { createLogger } from '$lib/utils/logger';
+import { createLogger } from '#lib/utils/logger.ts';
 import { detailKindLabel, type CalloutKind, type DetailKind } from '../utils/detail-kinds';
-import { urlToVirtualPath, isExternalUrl as checkExternalUrl } from '$lib/typst/image-loader';
+import { urlToVirtualPath, isExternalUrl as checkExternalUrl } from '#lib/typst/image-loader.ts';
 
 const logger = createLogger('typst-generator');
 
@@ -533,6 +542,8 @@ function generateBlock(node: BlockNode, options: ResolvedTypstTranspilerOptions)
 			return generateCollectionTypst(node);
 		case 'monnaie':
 			return generateMonnaieTypst(node);
+		case 'schema-barres':
+			return generateSchemaBarresTypst(node);
 		case 'choice':
 			// Bloc ```choix (case « choix ») : « A) … » par choix, chaque choix rendu en markdown
 			return node.choices
@@ -546,6 +557,19 @@ function generateBlock(node: BlockNode, options: ResolvedTypstTranspilerOptions)
 
 		case 'ranger':
 			return generateRangerTypst(node, options);
+		case 'associer':
+			return generateAssocierTypst(node, options);
+		case 'trous':
+			return generateTrousTypst(node, options);
+		case 'tortue':
+			// Programme tortue : la figure à reproduire (`montrer: oui`) et « À faire sur Chiphre »
+			return generateTortueTypst(node);
+		case 'calcul':
+			// Programme de calcul : « À faire sur Chiphre » (la consigne est dans l'énoncé)
+			return generateCalculTypst(node);
+		case 'robot':
+			// Robot : le quadrillage ; à produire, « Écris le code : » et 15 cases vides
+			return generateRobotTypst(node);
 
 		default:
 			return '';
@@ -3834,12 +3858,129 @@ export async function markdownToTypst(
 	options: TypstTranspilerOptions = {}
 ): Promise<string> {
 	// Dynamic import to avoid circular dependency issues
-	const { parseMarkdown } = await import('$lib/ubumark/parser/markdown-parser');
+	const { parseMarkdown } = await import('#lib/ubumark/parser/markdown-parser.ts');
 	// Rendu réel des blocs ```figure, chargé À LA DEMANDE (import dynamique : il
 	// n'entre pas dans le chunk des pages Markdown — voir figure-typst-registry.ts)
 	await import('./figure-typst-setup');
 	const ast = parseMarkdown(markdown);
 	return generateTypst(ast, options);
+}
+
+/**
+ * Une ligne d'ubumark (étiquette, élément) en Typst, dans le texte courant. Une ligne
+ * que le parseur ne lit pas en paragraphe (`+`, `-`, `1.` : une liste ; `> 0` : une
+ * citation) sort en chaîne Typst, telle qu'écrite — comme le repli d'`InlineMarkdown`.
+ */
+function inlineUbumarkTypst(text: string, options: ResolvedTypstTranspilerOptions): string {
+	const blocks = parseMarkdown(text).children;
+	const paragraph = blocks[0];
+	if (paragraph?.type === 'paragraph' && blocks.length === 1) {
+		return paragraph.children.map((child) => generateInline(child, options)).join('');
+	}
+	return `#"${text.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`;
+}
+
+/**
+ * Bloc ```associer : deux colonnes à relier au crayon. À gauche les éléments, un
+ * point « • » au bout de chacun ; à droite les étiquettes, dans l'ordre où l'élève
+ * les voit, un point devant chacune. Jamais la réponse (le corrigé d'une série
+ * d'automatismes remplace le bloc par la liste des bonnes associations).
+ */
+function generateAssocierTypst(
+	node: AssocierNode,
+	options: ResolvedTypstTranspilerOptions
+): string {
+	if (node.errors.length > 0) return '';
+	// Un élément contient un bloc (```courbe, lot 2) : éléments numérotés (le corrigé
+	// d'une série dit « 1 → étiquette »), courbe en petit
+	const numbered = node.items.some(associerItemHasBlock);
+	const items = node.items.map((item, k) => {
+		if (!numbered) return inlineUbumarkTypst(item, options);
+		const body = associerItemHasBlock(item)
+			? parseMarkdown(item)
+					.children.map((block) =>
+						generateBlock(
+							block.type === 'courbe' && block.spec
+								? { ...block, spec: { ...block.spec, size: 'petite' } }
+								: block,
+							options
+						)
+					)
+					.join('\n\n')
+			: inlineUbumarkTypst(item, options);
+		return `#grid(columns: 2, column-gutter: 0.4em, align: horizon, [*${k + 1}.*], [${body}])`;
+	});
+	const labels = displayedAssocierLabels(node).map((label) => inlineUbumarkTypst(label, options));
+	const rows = Math.max(items.length, labels.length);
+	const cells: string[] = [];
+	for (let k = 0; k < rows; k++) {
+		const item = items[k];
+		const label = labels[k];
+		cells.push(
+			item === undefined ? '[]' : `[${item}]`,
+			item === undefined ? '[]' : '[•]',
+			'[]',
+			label === undefined ? '[]' : '[•]',
+			label === undefined ? '[]' : `[${label}]`
+		);
+	}
+	return `#align(center, grid(columns: (auto, auto, 2.5cm, auto, auto), column-gutter: 0.4em, row-gutter: 0.9em, align: (right + horizon, center + horizon, center, center + horizon, left + horizon), ${cells.join(', ')}))`;
+}
+
+/** Largeur d'un trou (em) : celle de la plus longue étiquette, à peu près */
+function trousHoleWidth(labels: readonly string[]): number {
+	const visible = (label: string) =>
+		label
+			.replace(/\\[a-zA-Z]+/g, 'x')
+			.replace(/[$*_{}\\^]/g, '')
+			.trim().length;
+	const longest = Math.max(0, ...labels.map(visible));
+	return Math.min(14, Math.max(3, Math.ceil(longest * 0.6) + 1));
+}
+
+/**
+ * Un morceau de texte d'un bloc trous en Typst, ses espaces de bord gardés (le
+ * parseur les retirerait : « est » collerait au trou qui suit)
+ */
+function trousTextTypst(text: string, options: ResolvedTypstTranspilerOptions): string {
+	if (text.trim() === '') return text === '' ? '' : ' ';
+	const before = /^\s/.test(text) ? ' ' : '';
+	const after = /\s$/.test(text) ? ' ' : '';
+	return `${before}${inlineUbumarkTypst(text.trim(), options)}${after}`;
+}
+
+/**
+ * Bloc ```trous : la réserve encadrée (étiquettes dans l'ordre où l'élève les
+ * voit), puis le texte, chaque trou en pointillés de la largeur de la plus longue
+ * étiquette, numéroté (le corrigé d'une série d'automatismes dit « 1 → étiquette »).
+ * Jamais la réponse.
+ */
+function generateTrousTypst(node: TrousNode, options: ResolvedTypstTranspilerOptions): string {
+	if (node.errors.length > 0) return '';
+	const labels = displayedTrousLabels(node);
+	const reserve = labels
+		.map((label) => `trous-etiquette[${inlineUbumarkTypst(label, options)}]`)
+		.join(', ');
+	const lines = node.lines.map((line) =>
+		line
+			.map((segment) =>
+				segment.kind === 'text'
+					? trousTextTypst(segment.text, options)
+					: `#trous-trou(${segment.hole + 1});`
+			)
+			.join('')
+	);
+	return [
+		'#[',
+		// Pas de justification (les trous étireraient les espaces) ; de la place pour écrire
+		'#set par(justify: false, leading: 1.1em)',
+		'#let trous-etiquette(body) = box(stroke: 0.6pt, inset: (x: 6pt, y: 4pt), radius: 3pt, body)',
+		`#let trous-trou(numero) = box[#text(size: 0.7em, baseline: -0.3em)[#numero]#box(width: ${trousHoleWidth(labels)}em, repeat[.])]`,
+		`#block(width: 100%, stroke: 0.6pt, inset: 8pt, radius: 3pt, align(center, grid(columns: ${Math.min(labels.length, TROUS_RESERVE_COLUMNS)}, column-gutter: 0.8em, row-gutter: 0.5em, align: horizon, ${reserve})))`,
+		'',
+		lines.join('\n\n'),
+		']'
+	].join('\n');
 }
 
 /**

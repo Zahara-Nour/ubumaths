@@ -8,10 +8,10 @@ couvre:
   - 'src/lib/components/{test,assessments,series}/**'
   - src/lib/components/teacher/TestModeToggle.svelte
   - src/lib/stores/test-mode.svelte.ts
-  - 'src/lib/server/{evaluations,evaluation-attempts,evaluation-trace,series,series-lines,chapter-series,test-mode}.ts'
+  - 'src/lib/server/{evaluations,evaluation-attempts,evaluation-breakdown,evaluation-question-errors,evaluation-trace,series,series-lines,chapter-series,test-mode}.ts'
   - 'src/lib/server/validation/{evaluations,tests,parody-evaluations,grades,chapter-series}.ts'
-  - 'src/lib/types/{evaluation,evaluation-attempt,test,grades,skills}.ts'
-  - 'src/lib/utils/{test-launch,test-score,grades}.ts'
+  - 'src/lib/types/{evaluation,evaluation-attempt,evaluation-breakdown,duration-signals,test,grades,skills}.ts'
+  - 'src/lib/utils/{test-launch,test-score,grades,duration-signals}.ts'
 ---
 
 # Séries, contrôles, observations
@@ -58,6 +58,7 @@ par les séances dans [srs.md](srs.md).
 | `src/lib/types/evaluation-attempt.ts`                               | Ce qu'échangent navigateur et serveur : `EvaluationStartResponse`, `EvaluationSubmitResponse`, `CorrectedQuestion`.                                                                       |
 | `src/lib/server/series.ts`                                          | CRUD des séries ; traduit le verrou de la base (`SERIES_LOCKED_SQLSTATE` = `UBS01`).                                                                                                      |
 | `src/lib/server/evaluations.ts`                                     | Contrôles : création, réglages, statut, assignation, destinataires, résultats, statistiques.                                                                                              |
+| `src/lib/server/evaluation-breakdown.ts`                            | Bilan d'un contrôle par question et par notion (`getEvaluationBreakdown`, calcul pur `computeEvaluationBreakdown`) ; types dans `src/lib/types/evaluation-breakdown.ts`.                  |
 | `src/lib/server/evaluation-attempts.ts`                             | `startEvaluationAttempt`, `submitEvaluationAttempt`, `readSubmittedCopy` (ADR 0015).                                                                                                      |
 | `src/lib/server/grading-budget.ts`                                  | Budget de temps de la correction d'un envoi → [questions.md](questions.md).                                                                                                               |
 | `src/lib/server/chapter-series.ts`                                  | Série rattachée à un chapitre de « Mon cours » (forme flash ou entraînement, sans note).                                                                                                  |
@@ -77,6 +78,7 @@ pas des notes.
 | -------------------------------------------------------------------------------------- | ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `/automaths/test` (couverte par [questions.md](questions.md))                          | tous          | Page unique qui joue toutes les formes, libres ou contrôle.                                                                                                                        |
 | `POST /api/series`                                                                     | prof, admin   | Enregistrer le panier comme série. Liste et édition : `/dashboard/teacher/series`.                                                                                                 |
+| `GET /api/series/duration-signals?templates=<uuid,…>`                                  | prof, admin   | `{ signals, observed }` : durées sans doute trop courtes et durées observées des modèles du panier (1 à 100 UUID, Zod) ; des comptes, aucun nom.                                   |
 | `POST /api/tests/save`                                                                 | connecté      | Fin d'une série **libre** : gain du Palotin seulement, rien d'écrit. Refuse un contrôle.                                                                                           |
 | `/dashboard/teacher/assessments` (+ `new`, `[id]/edit`, `[id]/assign`, `[id]/results`) | prof, admin   | Créer depuis une série, régler (brouillon seulement), publier, assigner, résultats.                                                                                                |
 | `/dashboard/student/assessments` (+ `[id]/results`)                                    | élève         | Ses contrôles ; ses tentatives (`[id]` = identifiant de l'**assignation**). S'ouvre depuis « Mon travail » (« Tous mes contrôles »), y revient (`BackLink`).                       |
@@ -158,7 +160,9 @@ visiteur (`traceRecorder` nul) ; un prof n'écrit rien (la route l'ignore).
 du Palotin (Contrôle blanc, Course, Saisie — décision de David du 2026-11-11 ; jamais pour les flash-cards, que la page n'envoie plus). Hors cartes de cours, chaque réponse rapporte au Palotin
 (`addBuddyXpFromTest`, réponse `buddy_xp`) ; son thème, pour le bonus « nouveau thème », est la branche
 de l'arbre des notions où se range le point que valide la question (`fetchTemplateThemeIds`,
-`src/lib/server/buddy-themes.ts`, deux lectures pour la séance). Une fois le gain reçu (Contrôle blanc, Course, Saisie ; ni flash, ni
+`src/lib/server/buddy-themes.ts`, deux lectures pour la séance). Le corps porte aussi la durée de la
+série (`seriesElapsedMs`, 0 à 24 h) : le serveur en tire le début de la série pour fêter une question
+longtemps ratée enfin réussie (`buddy_xp.longStruggleWon`, voir `buddy-palotins.md`). Une fois le gain reçu (Contrôle blanc, Course, Saisie ; ni flash, ni
 évaluation, ni aperçu du prof), la page demande les nouveautés de la Chatterie
 (`fetchMathouNews`) et `TestResults` (`TypingSeries` en Saisie) les affiche sous le gain du Palotin (`MathouNewsCard`, jamais
 en évaluation) : voir [mathoux.md](mathoux.md#annonce-des-nouveautés-en-fin-de-séance-v12).
@@ -251,10 +255,117 @@ dupliquer (`duplicateSeries`). Même verrou sur le `series_id` d'un contrôle co
 ### Résultats
 
 Élève : `getStudentAssignments` (statut calculé par `getStudentStatus` : non commencé, en cours,
-terminé, expiré ; meilleure note `bestGrade`, Q36). Prof : `getEvaluationResults` (un élève par ligne
+terminé, expiré ; meilleure note `bestGrade`, Q36) ; la même fonction, appelée avec le client du prof,
+nourrit le bloc « Contrôles » du suivi d'un élève ([analytique-prof.md](analytique-prof.md#suivi-dun-élève-page-à-part)).
+La page des résultats a deux parents : la liste des contrôles, ou ce suivi (`?depuis=suivi&eleve=<uuid>`,
+`evaluationResultsReturn`). Prof : `getEvaluationResults` (un élève par ligne
 même s'il est assigné deux fois, toutes ses tentatives) et `computeEvaluationStatistics` (moyenne,
 min, max sur la meilleure note de chaque élève). Les résultats suivent le **mode test** : vrais
 élèves ou élèves de test, jamais les deux.
+
+**Bilan par question et par notion** (`getEvaluationBreakdown`, `EvaluationBreakdown.svelte`, sous
+les cartes de la page résultats) :
+
+- **Copie comptée** : la meilleure de chaque élève du tableau (même règle que `bestGrade` ; à note
+  égale, une copie avec réponses puis la plus récente), copies rendues seulement. Le mode test vient
+  des élèves passés par le loader (ceux de `getEvaluationResults`).
+- **Par question** : une ligne par modèle, dans l'ordre de la composition ; les tirages d'un même
+  modèle s'additionnent. Taux de réussite = points obtenus / réponses (1, ½ ou 0 par réponse) ;
+  répartition juste (1) / partiel (forme non optimale, ½) / faux (mauvaise forme comprise, 0) / sans réponse. Une
+  réponse d'un modèle sorti de la série reste comptée sous son modèle, en fin de liste.
+- **Par notion** : modèle → `question_template_points` → `curriculum_points.node_id`, remonté
+  jusqu'au nœud `notion` (branche › notion). Un modèle à plusieurs notions compte dans **chacune** ;
+  sans point (ou point posé sur une branche) → « Sans notion », en dernier. Tri du taux le plus
+  faible au plus fort.
+- **Copie en retard** (note 0, aucune réponse écrite) : hors du bilan, dite à part.
+- **Durée sans doute trop courte** (chantier `durees-trop-courtes`, besoin P7 ; `timingsOf`, champ
+  `timing` de chaque question) : sur les mêmes copies, un élève « n'a rien répondu dans le temps
+  imparti » quand sa réponse est « sans réponse » (règle `columnOf`) **et** que son `time_spent`
+  atteint la durée − 1 s (secondes entières déclarées ; un vide validé tôt ou sans durée déclarée ne
+  compte pas). Tiré plusieurs fois, il compte une fois, seulement s'il a manqué tous ses
+  tirages. La question porte la marque « Durée sans doute trop courte » et la phrase « 7 élèves sur
+  10 n'ont rien répondu dans les 20 s » à partir de **5 élèves**, **plus de la moitié** ; aucun nom.
+  Durée = celle de la ligne dans la composition (0 → 20 s, comme au tirage ; la série est verrouillée
+  dès la première séance). `timing` nul : Course aux nombres (chrono global), modèle hors de la série
+  ou supprimé, modèle sur **deux lignes à durées différentes** (durée de chaque élève non lisible
+  ici).
+- **Lecture** : client du prof, RLS existante (`test_answers_select_teacher`), réponses par pages de
+  1 000 (`max_rows`). Une lecture en échec rend `{ status: 'error' }` : la section le dit, la page
+  garde cartes et tableau.
+
+**Durée trop courte dans le panier et l'éditeur de série** (chantier `durees-trop-courtes`, PR 2 ;
+`getDurationSignals` dans `src/lib/server/stats/duration-signals.ts`) : même marque, posée par
+**modèle × durée**. Elle apparaît dans le panier (sous la durée d'une tuile, pour un prof ou un
+admin, lue par `GET /api/series/duration-signals` quand les modèles du panier changent) et dans
+l'éditeur de série (`/dashboard/teacher/series/[id]/edit`), qui affiche la durée de chaque ligne en
+lecture (elle se règle dans le panier, ou par la durée observée ci-dessous). Le composant est commun : `TooShortMark.svelte`
+(`src/lib/components/series/`), utilisé aussi par le bilan. Deux sources fusionnées par élève :
+
+- les **traces de Contrôle blanc** (`skill_attempts`, lieu `mock_test`), avec durée =
+  `allotted_ms` ; une trace est manquée si `end_reason = 'timeout'` et `part_verdicts` est nul (un
+  choix coché est une case) ; fin inconnue (« Terminer ») écartée ;
+- les **réponses des contrôles** de forme `interactive`, avec la règle du bilan.
+
+Un élève compte une fois par modèle × durée, et seulement s'il a manqué **tous** ses tirages. Seuils
+du bilan. Ne comptent que les traces et les copies **postérieures à la dernière modification du
+modèle** (`question_templates.updated_at`). Carte de cours écartée. Mode test du prof respecté
+(`profiles.is_test`). Lecture : client du prof, RLS existante (`skill_attempts_select_teacher`, aucun
+accès nouveau). Un échec ne retire que la marque.
+
+**Durée observée** (chantier `durees-ajustees`, besoin A1 ; `observedDurationsOf`, même lecture que la
+marque) : sous la durée d'une ligne, dans le panier et l'éditeur de série, « Durée observée : 35 s »
+et un bouton « Appliquer » (`ObservedDelayHint.svelte`, `src/lib/components/series/`). Rien ne change
+sans ce geste ; dans l'éditeur, la durée appliquée s'écrit à l'enregistrement (une série verrouillée
+n'y arrive pas : « Modifier » est masqué et la base refuse, UBS01). Règle, sur les mêmes tirages que
+la marque (élèves du prof, mode test, postérieurs à la modification du modèle, carte écartée), chaque
+tirage comptant, **durées allouées confondues** :
+
+- un tirage validé avant la fin **avec une réponse** (juste ou fausse) donne sa durée de réponse
+  (`response_ms` du Contrôle blanc, `time_spent` d'un contrôle) ; arrivé au bout du chrono (contrôle :
+  à la dernière seconde près ; Contrôle blanc : `end_reason = 'timeout'`), réponse commencée ou non,
+  il compte « au-delà » ; **passé à vide avant la fin** (passer ≠ avoir eu le temps) ou durée
+  inconnue : écarté ;
+- durée observée = la durée dans laquelle **80 %** des tirages ont été validés, **arrondie aux 5 s
+  supérieures**, bornée à 5-300 s (le réglage du panier) ; si les temps écoulés dépassent 20 %, le
+  chiffre n'est pas calculable (la marque « trop courte » prend le relais) ; au moins **5 élèves** ;
+- affichée seulement si elle s'écarte de la durée de la ligne (0 → 20 s) d'au moins **5 s et 25 %**,
+  dans un sens ou l'autre (`observedSuggestion`, `src/lib/types/duration-signals.ts`).
+
+**Erreurs d'une question** (chantier `erreurs-frequentes`, besoin P4 ; `getEvaluationQuestionErrors` dans
+`evaluation-question-errors.ts`, route `…/assessments/[id]/results/question-errors?template=<uuid>`) :
+chaque ligne « par question » du bilan se déplie ; les erreurs sont lues au premier dépliage. Le panneau est `QuestionErrorsPanel.svelte`, partagé avec l'onglet « Erreurs » du widget E de
+l'analytique ([analytique-prof.md](analytique-prof.md)), qui y fait passer aussi les traces de séries
+(verdict par case fourni : `computeQuestionErrors` ne recalcule que les réponses sans verdict).
+
+- **Mêmes copies que le bilan** (`bestCopies`, copies avec réponses tous modèles confondus), mêmes gardes
+  que la page (rôle, auteur du contrôle, mode test), client du prof sous la RLS existante.
+- **Réponses listées** : fausses, mauvaise forme, forme non optimale (une réponse fausse sans valeur
+  enregistrée comprise) ; justes jamais listées ; sans réponse comptées à part, **selon le statut seul**,
+  comme le bilan. Question non corrigée faute de temps : détail indisponible, jamais recalculé. Chacune rendue par `CorrectionCard` avec le verdict par case recalculé par le serveur
+  (`detailsWithinBudget`, détail « indisponible » possible), énoncé tiré lu dans
+  `test_answers.question_instance`, nom de l'élève en texte.
+- **Regroupement** : même énoncé tiré (sans position ni `generatedAt` / `seed`) **et** même réponse → un
+  groupe, avec les noms. Les tirages étant aléatoires, aucun regroupement entre énoncés différents.
+- **Erreurs par case** : question à au moins deux cases jugées, hors QCM, sur les réponses au détail
+  disponible (justes au dénominateur).
+- **Types d'erreur** (chantier `type-erreur`, PR 2 ; `answerErrorKinds` dans
+  `src/lib/questions/error-kinds.ts`, moteur `guessErrorKind` de mathAST) : chaque case **fausse** d'un
+  groupe porte son type quand il est reconnu (erreur de signe, puissance de 10 avec son facteur, inverse,
+  double, moitié, carré oublié, carré en trop), étiquette sous la liste des noms (« Case 2 : … » sur une
+  question à plusieurs cases). La question compte les cases fausses par type, chaque élève d'un groupe
+  compté une fois, d'un énoncé tiré à l'autre : « Types d'erreur : Erreur de signe : 4 · Non reconnue : 6 »,
+  ligne montrée seulement si un type au moins est reconnu. Pas de type : mauvaise forme (bonne valeur),
+  case déjà nommée par une remarque (%, unité, arrondi… ; le message global, agrégat ou phrase
+  générique, n'est pas lu), case hors écriture
+  mathématique (choix, geste, tableau de signes, figure), question à cases appariées librement
+  (`orderIndependent`), case jugée par ses règles seules (`rulesSuffice` : l'attendu n'est qu'un
+  exemple), ambiguïté ou attendu 0 / ±1 (règles du moteur). Côté élève (PR 3), le même
+  type se dit en phrase sous la réponse, à la correction ([questions.md](questions.md), résultat
+  attendu). Détail indisponible : seule une
+  question à une case se lit, d'après la valeur saisie. Traces de séries : leur verdict par case
+  (`part_verdicts`) ne garde aucune remarque, la règle « la remarque prime » n'y agit donc pas ; le
+  % et l'unité restent écartés par le moteur lui-même (attendu en pourcentage ou non numérique). Calculé à la lecture, jamais stocké ; la note ne
+  change pas.
 
 ## Les observations (compétences, famille B)
 
@@ -324,12 +435,13 @@ assignés (`src/lib/server/students.ts` et cinq pages prof).
 
 ## Tests
 
-- Unitaires serveur : `src/lib/server/__tests__/` (`evaluations`, `series`, `chapter-series`,
+- Unitaires serveur : `src/lib/server/__tests__/` (`evaluations`, `evaluation-breakdown`, `series`, `chapter-series`,
   `grading-budget`, `evaluation-attempts-srs`, `evaluation-curriculum-points`) ;
   `src/lib/server/validation/__tests__/evaluations.test.ts`.
 - Routes : `src/routes/api/evaluations/assignments/[id]/start/__tests__/start.test.ts`,
   `src/routes/api/evaluations/attempts/[id]/submit/__tests__/submit.test.ts`,
   `src/routes/api/tests/save/__tests__/`, `src/routes/api/series/__tests__/series-route.test.ts`,
+  `src/routes/(protected)/dashboard/teacher/assessments/[id]/results/__tests__/page.server.test.ts`,
   `src/routes/(public)/automaths/test/__tests__/evaluation-notee.svelte.test.ts`.
 - Composants : `src/lib/components/test/__tests__/`, `src/lib/components/assessments/__tests__/` ;
   utilitaires : `src/lib/utils/__tests__/test-launch.test.ts`, `test-score.test.ts`.
@@ -337,7 +449,7 @@ assignés (`src/lib/server/students.ts` et cinq pages prof).
   `evaluation-tentatives.test.ts`, `series-evaluations.test.ts`, `series-evaluations-code.test.ts`,
   `acces-evaluation-eleve-archive.test.ts`, `series-de-chapitre.test.ts`,
   `presques-evaluations-visiteur.test.ts`, `test-sessions-mode-flash.test.ts`,
-  `competence-referentiel.test.ts`.
+  `competence-referentiel.test.ts`, `bilan-controle.test.ts`.
 - **Sans test** : la saisie des observations, le dépôt de presques évaluations, le mode test.
 
 ## Décisions (ADR)
@@ -383,4 +495,4 @@ assignés (`src/lib/server/students.ts` et cinq pages prof).
 
 ---
 
-Vérifié contre le code le 2026-10-11 ; `GET /api/student/reports` le 2026-10-14 ; `notionLevel` le 2026-10-21 ; séries sans ancienne forme (lot 4a) le 2026-11-04 ; réactions du Palotin dans l'Entraînement le 2026-11-11 ; traces par question et fin de série réduite au gain (PR 4 `formes-de-serie`) le 2026-11-11.
+Vérifié contre le code le 2026-10-11 ; `GET /api/student/reports` le 2026-10-14 ; `notionLevel` le 2026-10-21 ; séries sans ancienne forme (lot 4a) le 2026-11-04 ; réactions du Palotin dans l'Entraînement le 2026-11-11 ; traces par question et fin de série réduite au gain (PR 4 `formes-de-serie`) le 2026-11-11 ; erreurs d'une question du bilan (`erreurs-frequentes`) le 2026-11-14 ; panneau partagé (PR 2) le 2026-11-14 ; durée sans doute trop courte (`durees-trop-courtes`, PR 1) le 2026-11-14, dans le panier et l'éditeur de série (PR 2) le 2026-11-14 ; durée observée (`durees-ajustees`) le 2026-11-15.

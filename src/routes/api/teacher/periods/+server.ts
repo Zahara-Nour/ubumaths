@@ -12,13 +12,13 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRoles } from '$lib/server/middleware/auth';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
 import {
 	getCurrentAcademicPeriod,
 	getSchoolYearPeriods,
 	getActiveSchoolYear
-} from '$lib/server/warnings';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/warnings.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/teacher/periods/+server');
 

@@ -8,10 +8,10 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { parseLatex } from '$lib/mathAST/parser';
-import { integrate } from '$lib/mathAST/integration';
-import { toLatex } from '$lib/mathAST/latex-generator';
-import { checkForm } from '$lib/mathAST/cosmetic-transforms';
+import { parseLatex } from '#lib/mathAST/parser/index.ts';
+import { integrate } from '#lib/mathAST/integration/index.ts';
+import { toLatex } from '#lib/mathAST/latex-generator.ts';
+import { checkForm } from '#lib/mathAST/cosmetic-transforms.ts';
 
 function primitive(input: string, variable = 'x'): string {
 	const result = integrate(parseLatex(input), { variable });

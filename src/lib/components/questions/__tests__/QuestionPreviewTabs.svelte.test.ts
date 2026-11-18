@@ -14,9 +14,9 @@ import { describe, it, expect, afterEach, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { flushSync, tick } from 'svelte';
 import QuestionPreviewTabs from '../QuestionPreviewTabs.svelte';
-import FlashSeries from '$lib/components/test/FlashSeries.svelte';
-import type { QuestionInstance } from '$lib/questions/types';
-import { resolvedMarkdown } from '$lib/ubumark';
+import FlashSeries from '#lib/components/test/FlashSeries.svelte';
+import type { QuestionInstance } from '#lib/questions/types.ts';
+import { resolvedMarkdown } from '#lib/ubumark/index.ts';
 
 const COURBE_EN_ERREUR = ['```courbe', 'x: -4 ; 6', 'y: -8 ; 12', 'f(x) = 2*(x+1', '```'].join(
 	'\n'

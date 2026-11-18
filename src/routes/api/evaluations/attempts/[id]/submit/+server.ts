@@ -17,16 +17,16 @@
 
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { uuidSchema } from '$lib/server/validation/common';
-import { submitAttemptSchema } from '$lib/server/validation/evaluations';
-import { EvaluationError } from '$lib/server/evaluations';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { uuidSchema } from '#lib/server/validation/common.ts';
+import { submitAttemptSchema } from '#lib/server/validation/evaluations.ts';
+import { EvaluationError } from '#lib/server/evaluations.ts';
 import {
 	AttemptAlreadySubmittedError,
 	submitEvaluationAttempt
-} from '$lib/server/evaluation-attempts';
-import { rateLimit } from '$lib/server/middleware/rateLimit';
-import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
+} from '#lib/server/evaluation-attempts.ts';
+import { rateLimit } from '#lib/server/middleware/rateLimit.ts';
+import { createServiceRoleClient } from '#lib/server/serviceRoleClient.ts';
 
 export const POST: RequestHandler = async ({ locals, params, request }) => {
 	const { user, profile } = await requireAuth(locals);

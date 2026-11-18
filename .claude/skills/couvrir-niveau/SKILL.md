@@ -23,7 +23,11 @@ Chantier de référence : le CP ([journal](../../../docs/wip/questions-progress.
    nombre de modèles ; modèles du niveau avec statut, nœud, tags.
 2. Bornes : `docs/systeme/programmes/bornes/` (le cycle du niveau).
 3. Vérifier chaque modèle existant contre les bornes (plages ET corrigé) ; modèles non tagués :
-   point du niveau, d'un niveau suivant, ou rien.
+   point du niveau, d'un niveau suivant, ou rien. Chercher aussi les modèles **de tous les niveaux**
+   (pas par mots-clés de titre) qu'on pourrait taguer au lieu d'en écrire : la 1re spé, la 2de, la Tle…
+   **Avant de proposer un tag**, vérifier en base les deux règles de l'ADR 0020 (doc, § 9) : **un seul
+   point par programme** sur un modèle, et le point **sur le nœud du modèle ou sur sa notion**
+   (`question_template_points_check_rules`). Un tag qui les viole est refusé à la migration.
 4. Classer chaque point sans modèle : **A** texte, **B** outil existant, **C** outil neuf,
    **D** non évaluable.
 5. Écrire tout cela dans le journal, puis **questions à David** (ordre des outils, corrections,

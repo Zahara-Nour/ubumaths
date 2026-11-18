@@ -1,7 +1,7 @@
 # 0038 — Le contenu d'une trace : la graine, la réponse par case, les temps
 
 - **Statut** : acceptée — mise en œuvre par le chantier `formes-de-serie` (journal :
-  [`docs/wip/formes-de-serie-progress.md`](../wip/formes-de-serie-progress.md))
+  [`docs/archive/wip/formes-de-serie-progress.md`](../archive/wip/formes-de-serie-progress.md))
 - **Date** : 2026-11-11 · **Décidée par** : David
 
 ## Contexte

@@ -10,14 +10,14 @@
 import { describe, test, expect } from 'vitest';
 import { compareQuantities, type ComparisonResult, type Tolerance } from '../quantity-comparison';
 import { parseLatexQuantity, parseUnitExpression } from '../parser';
-import { exactConversion } from '$lib/mathAST/units/exact';
+import { exactConversion } from '#lib/mathAST/units/exact.ts';
 import {
 	BASE_UNITS,
 	DERIVED_UNITS,
 	SI_PREFIXES,
 	SPECIAL_UNITS,
 	UNIT_ALIASES
-} from '$lib/mathAST/units/definitions';
+} from '#lib/mathAST/units/definitions.ts';
 
 // ============================================================================
 // TEST FIXTURES

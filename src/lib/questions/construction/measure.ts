@@ -14,7 +14,7 @@
  * @module questions/construction/measure
  */
 
-import type { MeasureCheck } from '$lib/ubumark/types/construction';
+import type { MeasureCheck } from '#lib/ubumark/types/construction.ts';
 import { isInFrame, isStraight, type StraightTrait } from './instruments';
 import type { ConstructionVerdict, Position } from './judge';
 import type { AngleCorrection } from './angle';

@@ -4,7 +4,7 @@
 
 	Les étapes d'une ligne de la console, dont le composant
 	(`GeneratedStepsCorrection`) n'est téléchargé qu'au premier dépliage
-	(`$lib/atelier/steps-loader`). Une fois chargé, il s'affiche aussitôt, sur
+	(`#lib/atelier/steps-loader.ts`). Une fois chargé, il s'affiche aussitôt, sur
 	toutes les lignes — y compris celles qui avaient échoué : `loaded` est
 	réactif, le « Réessayer » réussi d'une ligne les rétablit toutes.
 
@@ -13,9 +13,9 @@
 	  « Réessayer » ; la ligne de calcul reste affichée au-dessus.
 -->
 <script lang="ts">
-	import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
-	import { Button } from '$lib/components/ui/button';
-	import { stepsCorrection } from '$lib/atelier/steps-loader';
+	import type { RenderedStep } from '#lib/mathAST/common/step-renderer-base.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { stepsCorrection } from '#lib/atelier/steps-loader.ts';
 
 	interface Props {
 		steps: readonly RenderedStep[];

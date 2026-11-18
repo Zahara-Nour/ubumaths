@@ -7,7 +7,7 @@
  *
  * @module block-catalog/stat-chart
  */
-import { STAT_CHART_KINDS } from '$lib/ubumark/types/stat-chart';
+import { STAT_CHART_KINDS } from '#lib/ubumark/types/stat-chart.ts';
 import { fence } from './fence';
 import type { BlockCatalogEntry } from './types';
 

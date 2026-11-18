@@ -9,7 +9,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { Atelier } from '../atelier.svelte';
-import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
+import { WebReplEngine } from '#lib/mathAST/cli/web/web-repl-engine.ts';
 import { syncEngine, expressionOf } from '../engine';
 
 describe('report des objets vers le moteur', () => {

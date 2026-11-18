@@ -7,22 +7,22 @@
 
 <script lang="ts">
 	import type { PageData } from './$types';
-	import { Button } from '$lib/components/ui/button';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import { Input } from '$lib/components/ui/input';
-	import { Textarea } from '$lib/components/ui/textarea';
-	import { Label } from '$lib/components/ui/label';
-	import * as Tabs from '$lib/components/ui/tabs';
-	import * as Card from '$lib/components/ui/card';
-	import * as Collapsible from '$lib/components/ui/collapsible';
-	import { Badge } from '$lib/components/ui/badge';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
-	import TagsInput from '$lib/components/templates/TagsInput.svelte';
-	import { JsonEditor, ConstructionPlayer } from '$lib/constructions/components';
-	import { constructionScriptSchema } from '$lib/constructions/schemas';
-	import { convertInstrumenPoche } from '$lib/constructions/converter';
-	import { convertXmlToDsl } from '$lib/constructions-v2/converter';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Textarea } from '#lib/components/ui/textarea/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import * as Tabs from '#lib/components/ui/tabs/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import * as Collapsible from '#lib/components/ui/collapsible/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
+	import TagsInput from '#lib/components/templates/TagsInput.svelte';
+	import { JsonEditor, ConstructionPlayer } from '#lib/constructions/components/index.ts';
+	import { constructionScriptSchema } from '#lib/constructions/schemas.ts';
+	import { convertInstrumenPoche } from '#lib/constructions/converter.ts';
+	import { convertXmlToDsl } from '#lib/constructions-v2/converter.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import { goto } from '$app/navigation';
 	import {
 		Upload,

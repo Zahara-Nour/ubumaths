@@ -1,0 +1,202 @@
+{
+	"id": "01109f75-71fd-4d1f-b093-844c896f1984",
+	"title": "Utiliser une variable",
+	"description": "Écrire en blocs un programme qui range, modifie et affiche une variable.",
+	"grades": ["4"],
+	"level": 2,
+	"delay": 300,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Le nombre choisi est un nombre de cahiers à ${{a}}$ € l'un ; la livraison coûte ${{b}}$ €.\n\nCrée une variable **prix**. Le programme met dans prix le prix des cahiers, ajoute la livraison à prix, puis affiche prix.\n\n```calcul\nniveau: 4e\nattendu: mettre prix à nombre × {{a}} ; ajouter {{b}} à prix ; afficher prix\nessais: 1 ; 2 ; 5 ; 10\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..6"
+				},
+				{
+					"name": "b",
+					"expression": "3..9"
+				}
+			],
+			"conditions": [],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"« Mettre prix à nombre $\\times {{a}}$ » : prix contient le prix des cahiers.",
+					"« Ajouter ${{b}}$ à prix » : prix contient maintenant prix $+\\ {{b}}$ ; l'ancienne valeur est remplacée.",
+					"On termine par « afficher prix »."
+				]
+			}
+		},
+		{
+			"statement": "Écris un programme qui affiche, l'un après l'autre, les premiers nombres de la table de ${{a}}$ : ${{a}}$, ${{a2}}$, ${{a3}}$… Il en affiche autant que le nombre choisi (pour $3$, il affiche ${{a}}$, ${{a2}}$ et ${{a3}}$).\n\nUtilise une variable **total** qui vaut $0$ au départ.\n\n```calcul\nniveau: 4e\nattendu: mettre total à 0 ; répéter nombre [ ajouter {{a}} à total ; afficher total ]\nessais: 1 ; 3 ; 5\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "3..9"
+				},
+				{
+					"name": "a2",
+					"expression": "eval:2*a"
+				},
+				{
+					"name": "a3",
+					"expression": "eval:3*a"
+				}
+			],
+			"conditions": [],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"Au départ, total vaut $0$.",
+					"À chaque tour, on **ajoute ${{a}}$ à total**, puis on affiche total : ${{a}}$, puis ${{a2}}$, puis ${{a3}}$…",
+					"On répète « nombre choisi » fois : le bloc répéter accepte le nombre choisi comme nombre de tours."
+				]
+			}
+		},
+		{
+			"statement": "Une bactérie se divise en deux toutes les heures. Le nombre choisi est le nombre de bactéries au départ.\n\nAvec une variable **compte**, écris un programme qui affiche le nombre de bactéries au bout de ${{n}}$ heures.\n\n```calcul\nniveau: 4e\nattendu: mettre compte à nombre ; répéter {{n}} [ mettre compte à compte × 2 ] ; afficher compte\nessais: 1 ; 3 ; 10\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "3..6"
+				}
+			],
+			"conditions": [],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"Au départ, compte vaut le nombre choisi.",
+					"Chaque heure, le nombre de bactéries double : on met compte à compte $\\times 2$.",
+					"On répète ${{n}}$ fois, puis on affiche compte."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Prix : référence",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "5"
+			},
+			"answers": ["mettre prix à nombre × 3 ; ajouter 5 à prix ; afficher prix"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Prix : sans variable",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "5"
+			},
+			"answers": ["afficher nombre × 3 + 5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : affiche avant d'ajouter",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "5"
+			},
+			"answers": ["mettre prix à nombre × 3 ; afficher prix ; ajouter 5 à prix"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Table : référence",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"a2": "8",
+				"a3": "12"
+			},
+			"answers": ["mettre total à 0 ; répéter nombre [ ajouter 4 à total ; afficher total ]"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Table : avec un compteur",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"a2": "8",
+				"a3": "12"
+			},
+			"answers": ["mettre k à 0 ; répéter nombre [ ajouter 1 à k ; afficher k × 4 ]"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : affiche avant d'ajouter (commence à 0)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"a2": "8",
+				"a3": "12"
+			},
+			"answers": ["mettre total à 0 ; répéter nombre [ afficher total ; ajouter 4 à total ]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : affiche seulement le dernier",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"a2": "8",
+				"a3": "12"
+			},
+			"answers": ["mettre total à 0 ; répéter nombre [ ajouter 4 à total ] ; afficher total"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Bactéries : référence",
+			"variationIndex": 2,
+			"variables": {
+				"n": "4"
+			},
+			"answers": [
+				"mettre compte à nombre ; répéter 4 [ mettre compte à compte × 2 ] ; afficher compte"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Bactéries : × 16",
+			"variationIndex": 2,
+			"variables": {
+				"n": "4"
+			},
+			"answers": ["afficher nombre × 16"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ajoute 2 au lieu de doubler",
+			"variationIndex": 2,
+			"variables": {
+				"n": "4"
+			},
+			"answers": ["mettre compte à nombre ; répéter 4 [ ajouter 2 à compte ] ; afficher compte"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

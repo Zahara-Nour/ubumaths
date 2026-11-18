@@ -39,11 +39,11 @@ import {
 	excludedPoint,
 	bound
 } from '../factory';
-import { number, opposite } from '$lib/mathAST/factory';
+import { number, opposite } from '#lib/mathAST/factory.ts';
 import { formatDomainInterval, formatDomainCondition, formatDomainFull } from '../format';
 import { computeDomain } from '../compute';
 import { isInDomain, getDomainViolations } from '../validate';
-import { parseLatex } from '$lib/mathAST/parser';
+import { parseLatex } from '#lib/mathAST/parser/index.ts';
 import type { ConditionDomain } from '../types';
 
 // =============================================================================

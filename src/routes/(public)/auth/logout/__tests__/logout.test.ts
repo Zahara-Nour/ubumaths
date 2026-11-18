@@ -14,20 +14,20 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 const adminSignOut = vi.fn();
 
-vi.mock('$lib/server/adminElevation', async (importOriginal) => {
-	const actual = await importOriginal<typeof import('$lib/server/adminElevation')>();
+vi.mock('#lib/server/adminElevation.ts', async (importOriginal) => {
+	const actual = await importOriginal<typeof import('#lib/server/adminElevation.ts')>();
 	return {
 		...actual,
 		createAdminClient: vi.fn(() => ({ auth: { signOut: adminSignOut } }))
 	};
 });
 
-vi.mock('$lib/utils/logger', () => ({
+vi.mock('#lib/utils/logger.ts', () => ({
 	createServerLogger: () => ({ info: vi.fn(), warn: vi.fn(), error: vi.fn(), debug: vi.fn() })
 }));
 
 import { POST } from '../+server';
-import { ADMIN_ELEVATION_COOKIE, encodeElevationCookie } from '$lib/server/adminElevation';
+import { ADMIN_ELEVATION_COOKIE, encodeElevationCookie } from '#lib/server/adminElevation.ts';
 
 // ============================================================================
 // HELPERS

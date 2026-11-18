@@ -22,10 +22,10 @@ import {
 	isCourseCard,
 	seriesFormExcludesCourseCards
 } from '../course-card';
-import { questionTypeSchema } from '$lib/server/validation/questions';
-import { checkTemplate } from '$lib/questions/review/check-template';
-import { toTemplateInsertRow } from '$lib/questions/review/template-insert-row';
-import { templateMarkdown } from '$lib/ubumark';
+import { questionTypeSchema } from '#lib/server/validation/questions.ts';
+import { checkTemplate } from '#lib/questions/review/check-template.ts';
+import { toTemplateInsertRow } from '#lib/questions/review/template-insert-row.ts';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 
 // ============================================================================
 // FIXTURES

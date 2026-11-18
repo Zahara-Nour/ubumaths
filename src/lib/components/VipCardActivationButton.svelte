@@ -16,15 +16,15 @@
 -->
 
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import type { VipCard, VipCardInstance, StudentVipCards } from '$lib/types/vip-card';
-	import { getActionDescription } from '$lib/utils/vip-cards';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import { Button } from '$lib/components/ui/button';
+	import { lore } from '#lib/config/lore.ts';
+	import type { VipCard, VipCardInstance, StudentVipCards } from '#lib/types/vip-card.ts';
+	import { getActionDescription } from '#lib/utils/vip-cards.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import { Loader2, Sparkles } from '@lucide/svelte';
-	import { vipCardTemplates } from '$lib/stores/vipCardTemplates.svelte';
-	import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
-	import { syncVipCards } from '$lib/utils/cache-sync';
+	import { vipCardTemplates } from '#lib/stores/vipCardTemplates.svelte.ts';
+	import { studentCache } from '#lib/stores/studentDashboardCache.svelte.ts';
+	import { syncVipCards } from '#lib/utils/cache-sync.ts';
 
 	interface Props {
 		instanceId: string;

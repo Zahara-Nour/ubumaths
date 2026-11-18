@@ -10,8 +10,8 @@
  * @module mathAST/eval/evaluate-with-modifiers
  */
 
-import type { EvalModifiers } from '$lib/ubumark';
-import { parseLatex } from '$lib/mathAST/parser';
+import type { EvalModifiers } from '#lib/ubumark/index.ts';
+import { parseLatex } from '#lib/mathAST/parser/index.ts';
 import { evaluate, evaluateNodeToApproximatedNumber } from './evaluate';
 import { getVariables } from './substitute';
 import type { MathNode } from '../types';

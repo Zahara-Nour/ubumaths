@@ -9,11 +9,11 @@
  */
 
 import type { PageServerLoad } from './$types';
-import { requireRoles } from '$lib/server/middleware/auth';
-import { getProgrammeTreeKeeping } from '$lib/server/programme-tree';
-import type { ProgrammeBranch } from '$lib/utils/programme-tree';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import { getProgrammeTreeKeeping } from '#lib/server/programme-tree.ts';
+import type { ProgrammeBranch } from '#lib/utils/programme-tree.ts';
 import { error } from '@sveltejs/kit';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('(protected)/dashboard/teacher/avancement/+page.server');
 

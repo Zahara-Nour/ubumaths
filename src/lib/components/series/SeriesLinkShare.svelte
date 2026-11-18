@@ -15,20 +15,20 @@
 -->
 
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import QrCodeButton from '$lib/components/qr/QrCodeButton.svelte';
-	import { fetchShortLinkPath } from '$lib/qr/short-link';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import QrCodeButton from '#lib/components/qr/QrCodeButton.svelte';
+	import { fetchShortLinkPath } from '#lib/qr/short-link.ts';
 	import { Link } from '@lucide/svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import { buildSeriesLink, type SeriesItem } from '$lib/validation/series';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import { buildSeriesLink, type SeriesItem } from '#lib/validation/series.ts';
 	import {
 		COURSE_TIME_LIMIT_MAX_MINUTES,
 		COURSE_TIME_LIMIT_MIN_MINUTES
-	} from '$lib/types/evaluation';
-	import type { TestMode } from '$lib/types/test';
+	} from '#lib/types/evaluation.ts';
+	import type { TestMode } from '#lib/types/test.ts';
 
 	interface Props {
 		items: SeriesItem[];

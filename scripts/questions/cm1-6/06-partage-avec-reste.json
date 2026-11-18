@@ -1,0 +1,217 @@
+{
+	"id": "b3771f79-7df9-4a4a-b03b-5d8ae11ba6d1",
+	"title": "Problèmes de partage avec un reste",
+	"description": "Combien de boîtes pleines (le quotient), combien de boîtes pour tout ranger (le quotient + 1), combien en reste-t-il (le reste) : 59 pots par cartons de 8, 45 enfants en barques de 6",
+	"grades": ["CM1"],
+	"level": 13,
+	"delay": 90,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Un apiculteur a ${{eval:n*q+r}}$ pots de miel. Il les range dans des cartons de ${{n}}$ pots.\n\nCombien de cartons pleins peut-il remplir ?\n\nIl peut remplir $?$ cartons pleins.",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2..9"
+				},
+				{
+					"name": "q",
+					"expression": "2..{{eval:floor(98/n)}}"
+				},
+				{
+					"name": "r",
+					"expression": "1..{{eval:n-1}}"
+				}
+			],
+			"conditions": ["n * q + r <= 99"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:q}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On fait des paquets de ${{n}}$ pots : combien de fois ${{n}}$ dans ${{eval:n*q+r}}$ ?",
+					"$${{eval:n*q+r}} = {{n}} \\times {{q}} + {{r}}, \\quad {{r}} < {{n}}$$",
+					"Il peut remplir $\\textcolor{{{color:primary.0}}}{{{q}}}$ cartons pleins ; il reste ${{r}}$ {{if:r==1|pot|pots}}, pas assez pour un carton de plus.",
+					"On vérifie : ${{q}}$ cartons demandent ${{eval:n*q}}$ pots, et un carton de plus en demanderait ${{eval:n*q+n}}$, plus que les ${{eval:n*q+r}}$ pots."
+				]
+			}
+		},
+		{
+			"statement": "${{eval:n*q+r}}$ enfants doivent traverser le lac en barque. Chaque barque peut porter ${{n}}$ enfants.\n\nCombien faut-il de barques, au minimum, pour que **tous** les enfants traversent en même temps ?\n\nIl faut $?$ barques.",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2..9"
+				},
+				{
+					"name": "q",
+					"expression": "2..{{eval:floor(98/n)}}"
+				},
+				{
+					"name": "r",
+					"expression": "1..{{eval:n-1}}"
+				}
+			],
+			"conditions": ["n * q + r <= 99"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:q+1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On fait des groupes de ${{n}}$ enfants : combien de fois ${{n}}$ dans ${{eval:n*q+r}}$ ?",
+					"$${{eval:n*q+r}} = {{n}} \\times {{q}} + {{r}}, \\quad {{r}} < {{n}}$$",
+					"${{q}}$ barques sont pleines, et il reste ${{r}}$ {{if:r==1|enfant|enfants}} : il faut **une barque de plus** pour {{if:r==1|lui|eux}}. $${{q}} + 1 = \\textcolor{{{color:primary.0}}}{{{eval:q+1}}}$$",
+					"Il faut ${{eval:q+1}}$ barques.",
+					"On vérifie : ${{q}}$ barques ne portent que ${{eval:n*q}}$ enfants, moins que ${{eval:n*q+r}}$ ; ${{eval:q+1}}$ barques peuvent en porter ${{eval:n*q+n}}$."
+				]
+			}
+		},
+		{
+			"statement": "Hugo a ${{eval:n*q+r}}$ billes. Il les partage entre ses ${{n}}$ amis : chacun reçoit le même nombre de billes, le plus possible.\n\nCombien de billes reste-t-il à Hugo ?\n\nIl lui reste $?$ billes.",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2..9"
+				},
+				{
+					"name": "q",
+					"expression": "2..{{eval:floor(98/n)}}"
+				},
+				{
+					"name": "r",
+					"expression": "1..{{eval:n-1}}"
+				}
+			],
+			"conditions": ["n * q + r <= 99"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On partage ${{eval:n*q+r}}$ en ${{n}}$ parts égales, les plus grandes possible : on cherche ce qui reste.",
+					"$${{eval:n*q+r}} = {{n}} \\times {{q}} + {{r}}, \\quad {{r}} < {{n}}$$",
+					"Chaque ami reçoit ${{q}}$ billes, et il reste $\\textcolor{{{color:primary.0}}}{{{r}}}$ {{if:r==1|bille|billes}}.",
+					"Il reste ${{r}}$ {{if:r==1|bille|billes}} à Hugo.",
+					"On vérifie : le reste est plus petit que ${{n}}$ (sinon, on pourrait donner une bille de plus à chacun) et ${{n}} \\times {{q}} + {{r}} = {{eval:n*q+r}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "pleines : 59 pots par 8 → 7",
+			"variationIndex": 0,
+			"variables": {
+				"n": "8",
+				"q": "7",
+				"r": "3"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : pleines, une de trop (8)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "8",
+				"q": "7",
+				"r": "3"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : pleines, le reste (3)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "8",
+				"q": "7",
+				"r": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "tout ranger : 45 enfants par 6 → 8",
+			"variationIndex": 1,
+			"variables": {
+				"n": "6",
+				"q": "7",
+				"r": "3"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : tout ranger, le + 1 oublié (7)",
+			"variationIndex": 1,
+			"variables": {
+				"n": "6",
+				"q": "7",
+				"r": "3"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "reste : 38 billes entre 5 → 3",
+			"variationIndex": 2,
+			"variables": {
+				"n": "5",
+				"q": "7",
+				"r": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : reste, le quotient (7)",
+			"variationIndex": 2,
+			"variables": {
+				"n": "5",
+				"q": "7",
+				"r": "3"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "borne : 99 = 2 × 49 + 1, le reste 1",
+			"variationIndex": 2,
+			"variables": {
+				"n": "2",
+				"q": "49",
+				"r": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

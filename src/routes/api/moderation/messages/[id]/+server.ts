@@ -1,10 +1,10 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRoles } from '$lib/server/middleware/auth';
-import { deleteMessageSchema } from '$lib/server/validation/moderation';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import { deleteMessageSchema } from '#lib/server/validation/moderation.ts';
 import { z } from 'zod';
-import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServiceRoleClient } from '#lib/server/serviceRoleClient.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/moderation/messages/[id]/+server');
 

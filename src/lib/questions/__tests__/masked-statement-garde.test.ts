@@ -9,7 +9,7 @@
  */
 import { describe, it, expect } from 'vitest';
 import { findUnmaskedAnswers, maskGestureAnswers } from '../masked-statement';
-import '$lib/questions/construction/positions-setup';
+import '#lib/questions/construction/positions-setup.ts';
 
 // Functions
 function block(kind: string, ...lines: string[]): string {
@@ -121,6 +121,14 @@ describe('ce qui n’est pas une réponse à cacher', () => {
 		[
 			'angle à mesurer, rapporteur posé (lot 8)',
 			block('figure-a-completer', 'verifier: mesure AOB, rapporteur posé', '---', 'O = point(4, 3)')
+		],
+		[
+			'segment à mesurer (n° 26, la longueur se lit sur la figure)',
+			block('figure-a-completer', 'verifier: mesure AB', '---', 'A = point(2, 3)')
+		],
+		[
+			'segment à mesurer en mm (n° 26)',
+			block('figure-a-completer', 'verifier: mesure AB en mm', '---', 'A = point(2, 3)')
 		],
 		['énoncé sans bloc', 'Calcule 3 + 4.']
 	])('%s', (_name, source) => {

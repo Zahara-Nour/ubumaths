@@ -5,10 +5,10 @@
 import { describe, it, expect } from 'vitest';
 import { Figure } from '../figure';
 import { exact, numeric } from '../../types/geo-value';
-import { number, opposite } from '$lib/mathAST';
-import { numericNode } from '$lib/mathAST/common/numeric';
-import { evaluate } from '$lib/mathAST/eval';
-import { isZeroExpression } from '$lib/mathAST/normal';
+import { number, opposite } from '#lib/mathAST/index.ts';
+import { numericNode } from '#lib/mathAST/common/numeric.ts';
+import { evaluate } from '#lib/mathAST/eval/index.ts';
+import { isZeroExpression } from '#lib/mathAST/normal/index.ts';
 
 function pt(x: number, y: number) {
 	return { x: exact(numericNode(x)), y: exact(numericNode(y)) };
@@ -19,7 +19,7 @@ function npt(x: number, y: number) {
 }
 
 /** Evaluate a MathNode to a number. */
-function evalNode(node: import('$lib/mathAST/types').MathNode): number {
+function evalNode(node: import('#lib/mathAST/types.ts').MathNode): number {
 	const result = evaluate(node, { mode: 'decimal' });
 	if (result.status !== 'value') throw new Error(`eval failed: ${result.status}`);
 	return typeof result.value === 'number'

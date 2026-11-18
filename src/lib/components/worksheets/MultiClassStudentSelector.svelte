@@ -22,13 +22,13 @@
 	```
 -->
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import { Button } from '$lib/components/ui/button';
-	import * as Collapsible from '$lib/components/ui/collapsible';
-	import { Input } from '$lib/components/ui/input';
-	import { Separator } from '$lib/components/ui/separator';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { lore } from '#lib/config/lore.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Collapsible from '#lib/components/ui/collapsible/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Separator } from '#lib/components/ui/separator/index.ts';
+	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import {
 		ChevronDown,
 		ChevronRight,

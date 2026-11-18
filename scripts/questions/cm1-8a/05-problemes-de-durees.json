@@ -1,0 +1,622 @@
+{
+	"id": "68134013-62c4-4e4a-bea5-2e87fc4ba199",
+	"title": "Problèmes de durées",
+	"description": "Une ou deux étapes, à la minute, par instants intermédiaires : heure d'arrivée, heure de départ, trajet avec un arrêt, voyage qui passe minuit (jour et heure)",
+	"grades": ["CM1"],
+	"level": 5,
+	"delay": 180,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"zeros": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "{{if:k==1|Léa|{{if:k==2|Karim|{{if:k==3|Inès|Hugo}}}}}} part à {{if:a==0|${{h}}~\\text{h}$|${{h}}~\\text{h}~{{if:a<10|0{{a}}|{{a}}}}$}}. Son trajet dure {{if:n==0|${{c}}~\\text{min}$|{{if:c==0|${{n}}~\\text{h}$|${{n}}~\\text{h}~{{c}}~\\text{min}$}}}}. À quelle heure arrive-t-{{if:k==1|elle|{{if:k==2|il|{{if:k==3|elle|il}}}}}} ?\n\n{{if:k==1|Elle|{{if:k==2|Il|{{if:k==3|Elle|Il}}}}}} arrive à $?~\\text{h}~?$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..4"
+				},
+				{
+					"name": "h",
+					"expression": "6..15"
+				},
+				{
+					"name": "a",
+					"expression": "0..59"
+				},
+				{
+					"name": "n",
+					"expression": "0..2"
+				},
+				{
+					"name": "c",
+					"expression": "1..59"
+				},
+				{
+					"name": "hn",
+					"expression": "eval:h+n"
+				},
+				{
+					"name": "t1",
+					"expression": "eval:60*h+a+60*n+c"
+				},
+				{
+					"name": "hf",
+					"expression": "eval:floor(t1/60)"
+				},
+				{
+					"name": "mf",
+					"expression": "eval:mod(t1,60)"
+				},
+				{
+					"name": "m1",
+					"expression": "eval:60-a"
+				},
+				{
+					"name": "ac",
+					"expression": "eval:a+c"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{hf}}"
+				},
+				{
+					"expectedAnswer": "{{mf}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:n>0|D'abord les heures : {{if:a==0|${{h}}~\\text{h}$|${{h}}~\\text{h}~{{if:a<10|0{{a}}|{{a}}}}$}} $+ {{n}}~\\text{h}$ → {{if:a==0|${{hn}}~\\text{h}$|${{hn}}~\\text{h}~{{if:a<10|0{{a}}|{{a}}}}$}}.|Le trajet dure moins d'une heure.}}",
+					"{{if:ac>=60|Puis les minutes, en passant par l'heure pleine : de {{if:a==0|${{hn}}~\\text{h}$|${{hn}}~\\text{h}~{{if:a<10|0{{a}}|{{a}}}}$}} à ${{eval:hn+1}}~\\text{h}$, il y a ${{m1}}$ minutes ; il en reste ${{c}} - {{m1}} = {{mf}}$.|Puis les minutes : ${{a}} + {{c}} = {{mf}}$.}}",
+					"{{if:k==1|Elle|{{if:k==2|Il|{{if:k==3|Elle|Il}}}}}} arrive à $\\textcolor{{{color:primary.0}}}{{{hf}}~\\text{h}~{{if:mf<10|0{{mf}}|{{mf}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "{{if:k==1|Léa|{{if:k==2|Karim|{{if:k==3|Inès|Hugo}}}}}} arrive à {{if:mf==0|${{hf}}~\\text{h}$|${{hf}}~\\text{h}~{{if:mf<10|0{{mf}}|{{mf}}}}$}}. Son trajet a duré {{if:n==0|${{c}}~\\text{min}$|{{if:c==0|${{n}}~\\text{h}$|${{n}}~\\text{h}~{{c}}~\\text{min}$}}}}. À quelle heure est-{{if:k==1|elle|{{if:k==2|il|{{if:k==3|elle|il}}}}}} parti{{if:k==1|e|{{if:k==3|e|}}}} ?\n\n{{if:k==1|Elle|{{if:k==2|Il|{{if:k==3|Elle|Il}}}}}} est parti{{if:k==1|e|{{if:k==3|e|}}}} à $?~\\text{h}~?$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..4"
+				},
+				{
+					"name": "h",
+					"expression": "6..15"
+				},
+				{
+					"name": "a",
+					"expression": "0..59"
+				},
+				{
+					"name": "n",
+					"expression": "0..2"
+				},
+				{
+					"name": "c",
+					"expression": "1..59"
+				},
+				{
+					"name": "hn",
+					"expression": "eval:h+n"
+				},
+				{
+					"name": "t1",
+					"expression": "eval:60*h+a+60*n+c"
+				},
+				{
+					"name": "hf",
+					"expression": "eval:floor(t1/60)"
+				},
+				{
+					"name": "mf",
+					"expression": "eval:mod(t1,60)"
+				},
+				{
+					"name": "m1",
+					"expression": "eval:60-a"
+				},
+				{
+					"name": "ac",
+					"expression": "eval:a+c"
+				},
+				{
+					"name": "hr",
+					"expression": "eval:hf-n"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{h}}"
+				},
+				{
+					"expectedAnswer": "{{a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On part de l'arrivée et on recule.",
+					"{{if:n>0|D'abord les heures : {{if:mf==0|${{hf}}~\\text{h}$|${{hf}}~\\text{h}~{{if:mf<10|0{{mf}}|{{mf}}}}$}} $- {{n}}~\\text{h}$ → {{if:mf==0|${{hr}}~\\text{h}$|${{hr}}~\\text{h}~{{if:mf<10|0{{mf}}|{{mf}}}}$}}.|Le trajet a duré moins d'une heure.}}",
+					"{{if:ac>=60|Puis les minutes, en passant par l'heure pleine : de {{if:mf==0|${{hr}}~\\text{h}$|${{hr}}~\\text{h}~{{if:mf<10|0{{mf}}|{{mf}}}}$}} on recule de ${{mf}}$ minutes jusqu'à ${{hr}}~\\text{h}$ ; il reste ${{c}} - {{mf}} = {{eval:c-mf}}$ minutes à enlever : $60 - {{eval:c-mf}} = {{a}}$.|Puis les minutes : ${{mf}} - {{c}} = {{a}}$.}}",
+					"{{if:k==1|Elle|{{if:k==2|Il|{{if:k==3|Elle|Il}}}}}} est parti{{if:k==1|e|{{if:k==3|e|}}}} à $\\textcolor{{{color:primary.0}}}{{{h}}~\\text{h}~{{if:a<10|0{{a}}|{{a}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "{{if:k==1|Léa|{{if:k==2|Karim|{{if:k==3|Inès|Hugo}}}}}} part à vélo à {{if:a==0|${{h}}~\\text{h}$|${{h}}~\\text{h}~{{if:a<10|0{{a}}|{{a}}}}$}}. {{if:k==1|Elle|{{if:k==2|Il|{{if:k==3|Elle|Il}}}}}} roule ${{c1}}$ minutes, s'arrête ${{w}}$ minutes pour goûter, puis roule encore ${{c2}}$ minutes. À quelle heure arrive-t-{{if:k==1|elle|{{if:k==2|il|{{if:k==3|elle|il}}}}}} ?\n\n{{if:k==1|Elle|{{if:k==2|Il|{{if:k==3|Elle|Il}}}}}} arrive à $?~\\text{h}~?$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..4"
+				},
+				{
+					"name": "h",
+					"expression": "8..16"
+				},
+				{
+					"name": "a",
+					"expression": "0..59"
+				},
+				{
+					"name": "c1",
+					"expression": "25..55"
+				},
+				{
+					"name": "z",
+					"expression": "2..9"
+				},
+				{
+					"name": "w",
+					"expression": "eval:5*z"
+				},
+				{
+					"name": "c2",
+					"expression": "20..59"
+				},
+				{
+					"name": "t0",
+					"expression": "eval:60*h+a"
+				},
+				{
+					"name": "t1",
+					"expression": "eval:t0+c1"
+				},
+				{
+					"name": "t2",
+					"expression": "eval:t1+w"
+				},
+				{
+					"name": "t3",
+					"expression": "eval:t2+c2"
+				},
+				{
+					"name": "hf",
+					"expression": "eval:floor(t3/60)"
+				},
+				{
+					"name": "mf",
+					"expression": "eval:mod(t3,60)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{hf}}"
+				},
+				{
+					"expectedAnswer": "{{mf}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On avance d'instant en instant, en passant par l'heure pleine quand il le faut.",
+					"Après ${{c1}}$ minutes de route : {{if:mod(t1,60)==0|${{eval:floor(t1/60)}}~\\text{h}$|${{eval:floor(t1/60)}}~\\text{h}~{{if:mod(t1,60)<10|0{{eval:mod(t1,60)}}|{{eval:mod(t1,60)}}}}$}}{{if:floor(t1/60)>floor(t0/60)| (${{eval:60-mod(t0,60)}}$ min jusqu'à ${{eval:floor(t1/60)}}~\\text{h}$, puis ${{eval:mod(t1,60)}}$ min)|}}.",
+					"Après ${{w}}$ minutes d'arrêt : {{if:mod(t2,60)==0|${{eval:floor(t2/60)}}~\\text{h}$|${{eval:floor(t2/60)}}~\\text{h}~{{if:mod(t2,60)<10|0{{eval:mod(t2,60)}}|{{eval:mod(t2,60)}}}}$}}{{if:floor(t2/60)>floor(t1/60)| (${{eval:60-mod(t1,60)}}$ min jusqu'à ${{eval:floor(t2/60)}}~\\text{h}$, puis ${{eval:mod(t2,60)}}$ min)|}}.",
+					"Après ${{c2}}$ minutes de route : {{if:mod(t3,60)==0|${{eval:floor(t3/60)}}~\\text{h}$|${{eval:floor(t3/60)}}~\\text{h}~{{if:mod(t3,60)<10|0{{eval:mod(t3,60)}}|{{eval:mod(t3,60)}}}}$}}{{if:floor(t3/60)>floor(t2/60)| (${{eval:60-mod(t2,60)}}$ min jusqu'à ${{eval:floor(t3/60)}}~\\text{h}$, puis ${{eval:mod(t3,60)}}$ min)|}}.",
+					"{{if:k==1|Elle|{{if:k==2|Il|{{if:k==3|Elle|Il}}}}}} arrive à $\\textcolor{{{color:primary.0}}}{{{hf}}~\\text{h}~{{if:mf<10|0{{mf}}|{{mf}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Un car part le **{{if:jd==1|lundi|{{if:jd==2|mardi|{{if:jd==3|mercredi|{{if:jd==4|jeudi|vendredi}}}}}}}}** à {{if:a==0|${{hd}}~\\text{h}$|${{hd}}~\\text{h}~{{if:a<10|0{{a}}|{{a}}}}$}}. Le voyage dure {{if:n==0|${{c}}~\\text{min}$|{{if:c==0|${{n}}~\\text{h}$|${{n}}~\\text{h}~{{c}}~\\text{min}$}}}}.\n\nÀ quelle heure arrive-t-il ?\n\nIl arrive à $?~\\text{h}~?$.\n\nQuel jour arrive-t-il ?\n\n```choix\nmelanger: non\n- le {{if:jd==1|lundi|{{if:jd==2|mardi|{{if:jd==3|mercredi|{{if:jd==4|jeudi|vendredi}}}}}}}}\n- le {{if:jd==1|mardi|{{if:jd==2|mercredi|{{if:jd==3|jeudi|{{if:jd==4|vendredi|samedi}}}}}}}}\n- le {{if:jd==1|mercredi|{{if:jd==2|jeudi|{{if:jd==3|vendredi|{{if:jd==4|samedi|dimanche}}}}}}}}\n```",
+			"variables": [
+				{
+					"name": "jd",
+					"expression": "1..5"
+				},
+				{
+					"name": "hd",
+					"expression": "14..23"
+				},
+				{
+					"name": "z",
+					"expression": "0..11"
+				},
+				{
+					"name": "a",
+					"expression": "eval:5*z"
+				},
+				{
+					"name": "n",
+					"expression": "3..14"
+				},
+				{
+					"name": "y",
+					"expression": "0..11"
+				},
+				{
+					"name": "c",
+					"expression": "eval:5*y"
+				},
+				{
+					"name": "tt",
+					"expression": "eval:60*hd+a+60*n+c"
+				},
+				{
+					"name": "th",
+					"expression": "eval:floor(tt/60)"
+				},
+				{
+					"name": "mf",
+					"expression": "eval:mod(tt,60)"
+				},
+				{
+					"name": "hf",
+					"expression": "eval:mod(th,24)"
+				},
+				{
+					"name": "jr",
+					"expression": "eval:floor(th/24)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{hf}}"
+				},
+				{
+					"expectedAnswer": "{{mf}}"
+				},
+				{
+					"expectedAnswer": "{{jr}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On ajoute les heures, puis les minutes : {{if:a==0|${{hd}}~\\text{h}$|${{hd}}~\\text{h}~{{if:a<10|0{{a}}|{{a}}}}$}} + {{if:n==0|${{c}}~\\text{min}$|{{if:c==0|${{n}}~\\text{h}$|${{n}}~\\text{h}~{{c}}~\\text{min}$}}}} → {{if:mf==0|${{th}}~\\text{h}$|${{th}}~\\text{h}~{{if:mf<10|0{{mf}}|{{mf}}}}$}}.",
+					"{{if:th>=24|Un jour, c'est $24~\\text{h}$ : passé minuit, on recommence à $0~\\text{h}$. ${{th}} - 24 = {{hf}}$ : c'est le lendemain.|On ne passe pas minuit : c'est le même jour.}}",
+					"Le car arrive le {{if:jr==0|**{{if:jd==1|lundi|{{if:jd==2|mardi|{{if:jd==3|mercredi|{{if:jd==4|jeudi|vendredi}}}}}}}}**|**{{if:jd==1|mardi|{{if:jd==2|mercredi|{{if:jd==3|jeudi|{{if:jd==4|vendredi|samedi}}}}}}}}**}} à $\\textcolor{{{color:primary.0}}}{{{hf}}~\\text{h}~{{if:mf<10|0{{mf}}|{{mf}}}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "7 h 45 + 1 h 30 = 9 h 15",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"h": "7",
+				"a": "45",
+				"n": "1",
+				"c": "30",
+				"hn": "8",
+				"t1": "555",
+				"hf": "9",
+				"mf": "15",
+				"m1": "15",
+				"ac": "75"
+			},
+			"answers": ["9", "15"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 8 h 75",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"h": "7",
+				"a": "45",
+				"n": "1",
+				"c": "30",
+				"hn": "8",
+				"t1": "555",
+				"hf": "9",
+				"mf": "15",
+				"m1": "15",
+				"ac": "75"
+			},
+			"answers": ["8", "75"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : heure pleine oubliée, 8 h 15",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"h": "7",
+				"a": "45",
+				"n": "1",
+				"c": "30",
+				"hn": "8",
+				"t1": "555",
+				"hf": "9",
+				"mf": "15",
+				"m1": "15",
+				"ac": "75"
+			},
+			"answers": ["8", "15"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "9 h 10 + 25 min = 9 h 35",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"h": "9",
+				"a": "10",
+				"n": "0",
+				"c": "25",
+				"hn": "9",
+				"t1": "575",
+				"hf": "9",
+				"mf": "35",
+				"m1": "50",
+				"ac": "35"
+			},
+			"answers": ["9", "35"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "7 h 50 + 14 min = 8 h 04, écrit « 04 »",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4",
+				"h": "7",
+				"a": "50",
+				"n": "0",
+				"c": "14",
+				"hn": "7",
+				"t1": "484",
+				"hf": "8",
+				"mf": "4",
+				"m1": "10",
+				"ac": "64"
+			},
+			"answers": ["8", "04"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "7 h 50 + 14 min = 8 h 04, écrit « 4 »",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4",
+				"h": "7",
+				"a": "50",
+				"n": "0",
+				"c": "14",
+				"hn": "7",
+				"t1": "484",
+				"hf": "8",
+				"mf": "4",
+				"m1": "10",
+				"ac": "64"
+			},
+			"answers": ["8", "4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Départ : 9 h 15 − 1 h 30 = 7 h 45",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"h": "7",
+				"a": "45",
+				"n": "1",
+				"c": "30",
+				"hn": "8",
+				"t1": "555",
+				"hf": "9",
+				"mf": "15",
+				"m1": "15",
+				"ac": "75",
+				"hr": "8"
+			},
+			"answers": ["7", "45"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 8 h 45 (heure pleine oubliée en reculant)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"h": "7",
+				"a": "45",
+				"n": "1",
+				"c": "30",
+				"hn": "8",
+				"t1": "555",
+				"hf": "9",
+				"mf": "15",
+				"m1": "15",
+				"ac": "75",
+				"hr": "8"
+			},
+			"answers": ["8", "45"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : addition au lieu de soustraction, 10 h 45",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"h": "7",
+				"a": "45",
+				"n": "1",
+				"c": "30",
+				"hn": "8",
+				"t1": "555",
+				"hf": "9",
+				"mf": "15",
+				"m1": "15",
+				"ac": "75",
+				"hr": "8"
+			},
+			"answers": ["10", "45"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "14 h 50 + 35 + 20 + 40 = 16 h 25",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3",
+				"h": "14",
+				"a": "50",
+				"c1": "35",
+				"z": "4",
+				"w": "20",
+				"c2": "40",
+				"t0": "890",
+				"t1": "925",
+				"t2": "945",
+				"t3": "985",
+				"hf": "16",
+				"mf": "25"
+			},
+			"answers": ["16", "25"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : arrêt oublié, 16 h 5",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3",
+				"h": "14",
+				"a": "50",
+				"c1": "35",
+				"z": "4",
+				"w": "20",
+				"c2": "40",
+				"t0": "890",
+				"t1": "925",
+				"t2": "945",
+				"t3": "985",
+				"hf": "16",
+				"mf": "25"
+			},
+			"answers": ["16", "5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Lundi 21 h 15 + 14 h 30 = mardi 11 h 45",
+			"variationIndex": 3,
+			"variables": {
+				"jd": "1",
+				"hd": "21",
+				"z": "3",
+				"a": "15",
+				"n": "14",
+				"y": "6",
+				"c": "30",
+				"tt": "2145",
+				"th": "35",
+				"mf": "45",
+				"hf": "11",
+				"jr": "1"
+			},
+			"answers": ["11", "45", "1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 35 h 45 (minuit non passé)",
+			"variationIndex": 3,
+			"variables": {
+				"jd": "1",
+				"hd": "21",
+				"z": "3",
+				"a": "15",
+				"n": "14",
+				"y": "6",
+				"c": "30",
+				"tt": "2145",
+				"th": "35",
+				"mf": "45",
+				"hf": "11",
+				"jr": "1"
+			},
+			"answers": ["35", "45", "1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : bonne heure, mauvais jour (lundi)",
+			"variationIndex": 3,
+			"variables": {
+				"jd": "1",
+				"hd": "21",
+				"z": "3",
+				"a": "15",
+				"n": "14",
+				"y": "6",
+				"c": "30",
+				"tt": "2145",
+				"th": "35",
+				"mf": "45",
+				"hf": "11",
+				"jr": "1"
+			},
+			"answers": ["11", "45", "0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Jeudi 14 h + 5 h = jeudi 19 h",
+			"variationIndex": 3,
+			"variables": {
+				"jd": "4",
+				"hd": "14",
+				"z": "0",
+				"a": "0",
+				"n": "5",
+				"y": "0",
+				"c": "0",
+				"tt": "1140",
+				"th": "19",
+				"mf": "0",
+				"hf": "19",
+				"jr": "0"
+			},
+			"answers": ["19", "0", "0"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

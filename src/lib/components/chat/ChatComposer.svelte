@@ -17,10 +17,10 @@
 		- Disabled state while sending
 -->
 <script lang="ts">
-	import RichTextEditor from '$lib/components/rich-text/RichTextEditor.svelte';
-	import { Button } from '$lib/components/ui/button';
+	import RichTextEditor from '#lib/components/rich-text/RichTextEditor.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import { Paperclip, X } from '@lucide/svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 
 	// Component Props
 	interface Props {

@@ -18,11 +18,11 @@
 import type { PageServerLoad } from './$types';
 import { error, redirect } from '@sveltejs/kit';
 import { z } from 'zod';
-import { requireRole } from '$lib/server/middleware/auth';
-import { verifyTeacherStudent } from '$lib/server/middleware/student-access';
-import { isBrevoConfigured } from '$lib/server/email/brevo';
-import { createServerLogger } from '$lib/utils/logger';
-import { isChildAccountEmail } from '$lib/utils/child-account';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { verifyTeacherStudent } from '#lib/server/middleware/student-access.ts';
+import { isBrevoConfigured } from '#lib/server/email/brevo.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
+import { isChildAccountEmail } from '#lib/utils/child-account.ts';
 
 const logger = createServerLogger('(protected)/dashboard/teacher/welcome-email/+page.server');
 

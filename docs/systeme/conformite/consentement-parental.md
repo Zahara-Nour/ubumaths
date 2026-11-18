@@ -38,6 +38,16 @@ couvre:
 > adresse `@eleves.chiph.re` (compte d'un enfant inscrit par son parent, voir
 > [auth.md](../auth.md#le-domaine-fictif-eleveschiphre)) : le courriel de consentement part
 > toujours à l'adresse du parent.
+>
+> **Base locale (2026-11-17)** : sur la base Supabase locale, `sendEmail` n'envoie rien ; le
+> courriel est écrit dans `.captures/courriels/` (`src/lib/server/email/capture.ts`, détail dans
+> [environnement-de-dev.md](../../pratiques/environnement-de-dev.md#courriels-en-local--capturés-jamais-envoyés)).
+
+> **Carnet de liaison (2026-11-16, ADR 0040)** : quand le professeur active le carnet d'une
+> classe, l'adresse d'un consentement **accordé** (`granted`) devient une adresse confirmée du
+> carnet (`parent_contacts`, source `consent`) et reçoit le lien du carnet par Brevo
+> (`sendCarnetLinkEmail`). Une autre adresse ne reçoit d'abord qu'une confirmation. Détail :
+> [carnet-de-liaison.md](../carnet-de-liaison.md#les-envois).
 
 > Migrations citées : antérieures au baseline, archivées sous `supabase/migrations_archive/` ; le
 > schéma courant est dans `supabase/migrations/20260616220000_baseline_schema.sql`.
@@ -108,7 +118,7 @@ parental_consents (new)
 ├── consent_given_at: TIMESTAMPTZ
 ├── consent_ip: INET
 ├── consent_user_agent: TEXT
-├── email_count: INTEGER (max 5)
+├── email_count: INTEGER (max 5) — envoi réservé avant Brevo (mise à jour conditionnelle : un double clic → 409), rendu si Brevo refuse
 └── last_email_sent_at: TIMESTAMPTZ
 
 pending_students (modified)

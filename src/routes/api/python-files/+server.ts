@@ -6,13 +6,13 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAuth } from '$lib/server/middleware/auth';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
 import {
 	createPythonFileSchema,
 	listPythonFilesQuerySchema,
 	MAX_PYTHON_FILES_PER_USER
-} from '$lib/server/validation/python-files';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/validation/python-files.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/python-files/+server');
 

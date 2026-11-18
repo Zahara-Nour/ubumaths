@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import { goto } from '$app/navigation';
-	import { Button } from '$lib/components/ui/button';
-	import * as Tabs from '$lib/components/ui/tabs';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Tabs from '#lib/components/ui/tabs/index.ts';
 	import { Plus } from '@lucide/svelte';
-	import EvaluationCard from '$lib/components/assessments/EvaluationCard.svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import { refreshPageData, submitAction } from '$lib/utils/form-action';
+	import EvaluationCard from '#lib/components/assessments/EvaluationCard.svelte';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import { refreshPageData, submitAction } from '#lib/utils/form-action.ts';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();

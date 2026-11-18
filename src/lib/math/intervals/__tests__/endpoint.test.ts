@@ -12,7 +12,7 @@ import {
 	isPositiveInfinityEndpoint,
 	isNegativeInfinityEndpoint
 } from '../endpoint';
-import { compareNumericNodes as compareEndpoints } from '$lib/mathAST/eval/compare-numeric';
+import { compareNumericNodes as compareEndpoints } from '#lib/mathAST/eval/compare-numeric.ts';
 import {
 	number,
 	infinity,
@@ -22,9 +22,9 @@ import {
 	power,
 	piConstant,
 	euler
-} from '$lib/mathAST/factory';
-import { numericNode } from '$lib/mathAST/common/numeric';
-import type { MathNode } from '$lib/mathAST/types';
+} from '#lib/mathAST/factory.ts';
+import { numericNode } from '#lib/mathAST/common/numeric.ts';
+import type { MathNode } from '#lib/mathAST/types.ts';
 
 // Helpers to create endpoint values using MathNode
 function numericEndpoint(n: number): MathNode {

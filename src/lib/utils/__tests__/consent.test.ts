@@ -18,7 +18,7 @@ import {
 	canPerformAction,
 	requireConsent,
 	type RestrictedAction
-} from '$lib/server/middleware/consent';
+} from '#lib/server/middleware/consent.ts';
 
 describe('Parental Consent Utilities', () => {
 	// A3 (David, 2026-10-10) : la base fait foi — tout niveau est soumis SAUF 1re et

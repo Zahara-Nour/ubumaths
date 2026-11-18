@@ -6,7 +6,7 @@
  */
 
 import { z } from 'zod';
-import { toLatex, parseLatex } from '$lib/mathAST';
+import { toLatex, parseLatex } from '#lib/mathAST/index.ts';
 import { viewportSchema } from '../viewport/types';
 import type { GeoValue } from './geo-value';
 import { LABEL_POSITIONS } from './elements';

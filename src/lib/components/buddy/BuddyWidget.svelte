@@ -9,15 +9,15 @@
 -->
 
 <script lang="ts">
-	import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
-	import type { BuddyMessageContext } from '$lib/config/buddy-messages';
-	import type { BuddyExpression, BuddyState } from '$lib/types/buddy';
+	import { studentCache } from '#lib/stores/studentDashboardCache.svelte.ts';
+	import type { BuddyMessageContext } from '#lib/config/buddy-messages.ts';
+	import type { BuddyExpression, BuddyState, WeekMoment } from '#lib/types/buddy.ts';
 	import { buddyMessageEngine } from './buddy-message-engine';
 	import BuddyAvatar from './BuddyAvatar.svelte';
 	import BuddySpeechBubble from './BuddySpeechBubble.svelte';
 	import BuddyStatusPanel from './BuddyStatusPanel.svelte';
-	import { onMount } from 'svelte';
-	import { displayedConstance, utcDay } from '$lib/utils/buddy-constance';
+	import { onMount, untrack } from 'svelte';
+	import { displayedConstance, utcDay } from '#lib/utils/buddy-constance.ts';
 	import { page } from '$app/state';
 	import { BUBBLE_DURATION, GREETING_DELAY, LINK_BUBBLE_DURATION } from './buddy-timing';
 	import {
@@ -27,21 +27,28 @@
 	} from './chatterie-announcement';
 
 	interface Props {
-		streakLost?: boolean;
-		/** Retour après une longue absence : « tu m'as manqué » remplace la Constance perdue */
-		longAbsence?: boolean;
+		/** Retour après une pause à fêter (l'élève a travaillé depuis) ; peut arriver après le montage */
+		returnAfterPause?: boolean;
 		onChangePalotin?: () => void;
-		/** La réplique du retour (absence, Constance perdue) a été dite : ne plus la redire */
+		/** La réplique du retour a été dite : ne plus la redire */
 		onWelcomeBackSaid?: () => void;
+		/** Semaine qui devient active à fêter (B2) ; peut arriver après le montage */
+		weekMoment?: WeekMoment | null;
+		/** La réplique de la semaine a été dite : ne plus la redire */
+		onWeekMomentSaid?: () => void;
 		/** Palotin lu par la présence : repli quand le cache a expiré (TTL de 10 min) */
 		fallbackBuddy?: BuddyState | null;
 	}
 
+	const WELCOME_BACK_URL = '/api/student/buddy/welcome-back';
+	const WEEK_CELEBRATED_URL = '/api/student/buddy/week-celebrated';
+
 	let {
-		streakLost = false,
-		longAbsence = false,
+		returnAfterPause = false,
 		onChangePalotin,
 		onWelcomeBackSaid,
+		weekMoment = null,
+		onWeekMomentSaid,
 		fallbackBuddy = null
 	}: Props = $props();
 
@@ -58,8 +65,12 @@
 	let bubbleTimer: ReturnType<typeof setTimeout> | null = null;
 	let greetingTimer: ReturnType<typeof setTimeout> | null = null;
 	let nappingTimer: ReturnType<typeof setTimeout> | null = null;
-	// Réplique du retour : nettoyée au démontage (quitter l'accueil avant elle ne l'acquitte pas)
+	// Réplique de fête (retour, semaine) : nettoyée au démontage (quitter l'accueil avant elle ne l'acquitte pas)
 	let welcomeTimer: ReturnType<typeof setTimeout> | null = null;
+	/** Réplique de fête programmée (retour ou semaine) : une seule pour ce widget */
+	let returnScheduled = false;
+	/** Fin de la bulle de fête : salutation et annonce attendent jusque-là (horodatage, ms) */
+	let returnBubbleUntil = 0;
 
 	// Status panel
 	let showStatus = $state(false);
@@ -123,37 +134,59 @@
 	async function greetOrAnnounceChatterie(mountedAt: number, afterWelcomeBack: boolean) {
 		const announcement = await fetchChatterieAnnouncement();
 		if (!buddy) return;
-		// Après la réplique du retour (absence, Constance perdue), sa bulle passe d'abord, et pas de salutation
+		// Après la réplique du retour, sa bulle passe d'abord, et pas de salutation
 		const minDelay = afterWelcomeBack ? 1000 + BUBBLE_DURATION : GREETING_DELAY;
 		const wait = Math.max(0, minDelay - (Date.now() - mountedAt));
 		if (!announcement) {
 			if (afterWelcomeBack) return;
-			greetingTimer = setTimeout(() => showMessage('idle'), wait);
+			greetingTimer = setTimeout(() => {
+				// Retour fêté entre-temps : pas de salutation par-dessus
+				if (!returnScheduled) showMessage('idle');
+			}, wait);
 			return;
 		}
-		nappingTimer = setTimeout(() => {
+		const announce = () => {
+			// Retour fêté entre-temps (présence relue) : l'annonce attend la fin de sa bulle
+			const remaining = returnBubbleUntil - Date.now();
+			if (remaining > 0) {
+				nappingTimer = setTimeout(announce, remaining);
+				return;
+			}
 			speak(announcement.message, announcement.expression, CHATTERIE_LINK);
-		}, wait);
+		};
+		nappingTimer = setTimeout(announce, wait);
 	}
 
 	/**
-	 * Réplique du retour : « tu m'as manqué » après une longue absence, sinon
-	 * la Constance perdue. Une Constance perdue pendant l'absence reste remise
-	 * à zéro, mais sa réplique ne s'affiche pas : « tu m'as manqué » la remplace
-	 * (décision du 2026-10-21).
+	 * Fête le retour après une pause (R2) ou la semaine qui devient active (B2),
+	 * une seconde après (au montage, ou quand la présence relue après une
+	 * activité l'apporte), puis l'acquitte. Joyeux, sans durée ni nombre de
+	 * jours (chantier `regularite`, 2026-11-12). Une seule fête par widget.
 	 */
-	function welcomeBackContext(): BuddyMessageContext | null {
-		if (longAbsence) return 'long_absence';
-		return streakLost ? 'streak_lost' : null;
+	function scheduleCelebration(context: BuddyMessageContext, acknowledge: () => void) {
+		returnScheduled = true;
+		returnBubbleUntil = Date.now() + 1000 + BUBBLE_DURATION;
+		welcomeTimer = setTimeout(() => {
+			welcomeTimer = null;
+			showMessage(context);
+			acknowledge();
+		}, 1000);
 	}
 
 	/**
-	 * « Tu m'as manqué » est dit : le retour est fêté, le serveur l'efface. Après
-	 * la bulle seulement (un préchargement n'affiche rien, donc ne consomme rien) ;
-	 * en échec, la bulle reviendra au prochain chargement.
+	 * Le retour est fêté : le serveur l'efface. Après la bulle seulement (un
+	 * préchargement n'affiche rien, donc ne consomme rien) ; en échec, la bulle
+	 * reviendra au prochain chargement.
 	 */
 	function acknowledgeWelcomeBack() {
-		fetch('/api/student/buddy/welcome-back', { method: 'POST' }).catch(() => {});
+		fetch(WELCOME_BACK_URL, { method: 'POST' }).catch(() => {});
+		onWelcomeBackSaid?.();
+	}
+
+	/** La semaine est fêtée : le serveur la retient (même règle que le retour). */
+	function acknowledgeWeek() {
+		fetch(WEEK_CELEBRATED_URL, { method: 'POST' }).catch(() => {});
+		onWeekMomentSaid?.();
 	}
 
 	/** Sur la Chatterie elle-même, l'annonce n'a pas lieu d'être (et la page a déjà calculé). */
@@ -187,20 +220,30 @@
 		onChangePalotin?.();
 	}
 
+	// Retour à fêter, au montage ou plus tard (présence relue après une activité) : une fois
+	$effect(() => {
+		if (!returnAfterPause || !buddy) return;
+		untrack(() => {
+			if (!returnScheduled) scheduleCelebration('return_after_pause', acknowledgeWelcomeBack);
+		});
+	});
+
+	// Semaine à fêter, au montage ou plus tard : une fois, jamais après une autre fête
+	$effect(() => {
+		const moment = weekMoment;
+		if (!moment || !buddy) return;
+		untrack(() => {
+			if (!returnScheduled) scheduleCelebration(moment, acknowledgeWeek);
+		});
+	});
+
 	onMount(() => {
-		// Au montage : la réplique du retour (longue absence, sinon Constance perdue), puis les
+		// Au montage : la réplique du retour (programmée par l'effet ci-dessous), puis les
 		// nouveautés ou les Mathoux en sieste, sinon une salutation
 		if (buddy) {
-			const welcomeBack = welcomeBackContext();
-			if (welcomeBack) {
-				welcomeTimer = setTimeout(() => {
-					showMessage(welcomeBack);
-					if (welcomeBack === 'long_absence') acknowledgeWelcomeBack();
-					onWelcomeBackSaid?.();
-				}, 1000);
-			}
+			const welcomeBack = returnAfterPause || weekMoment !== null;
 			if (!isOnChatterie()) {
-				void greetOrAnnounceChatterie(Date.now(), welcomeBack !== null);
+				void greetOrAnnounceChatterie(Date.now(), welcomeBack);
 			} else if (!welcomeBack) {
 				greetingTimer = setTimeout(() => showMessage('idle'), GREETING_DELAY);
 			}

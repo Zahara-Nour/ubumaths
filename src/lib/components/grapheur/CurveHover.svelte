@@ -17,43 +17,43 @@
 	 * @component
 	 */
 
-	import { isInsideRestriction } from '$lib/grapheur/restriction';
-	import { useGrapheurStore } from '$lib/stores/grapheur-context';
+	import { isInsideRestriction } from '#lib/grapheur/restriction.ts';
+	import { useGrapheurStore } from '#lib/stores/grapheur-context.ts';
 
 	// L'instance de l'atelier qui nous contient, ou celle par défaut.
 	const grapheurStore = useGrapheurStore();
-	import type { CoordinateTransformer } from '$lib/grapheur/viewport';
-	import type { Point } from '$lib/geometry-core/viewport';
+	import type { CoordinateTransformer } from '#lib/grapheur/viewport.ts';
+	import type { Point } from '#lib/geometry-core/viewport/index.ts';
 	import type {
 		ExplicitFunction,
 		SequencePlottable,
 		SnappedPointType,
 		SnappedPoint
-	} from '$lib/grapheur/types';
-	import { isCobwebEnabled, isExplicitFunction, isSequence } from '$lib/grapheur/types';
+	} from '#lib/grapheur/types.ts';
+	import { isCobwebEnabled, isExplicitFunction, isSequence } from '#lib/grapheur/types.ts';
 	import {
 		computeSequenceTerms,
 		toComputeSpec,
 		type SequenceComputeSpec
-	} from '$lib/grapheur/sequence';
-	import { exactTermValue } from '$lib/grapheur/exact';
-	import { formatGraphValue } from '$lib/grapheur/format';
+	} from '#lib/grapheur/sequence.ts';
+	import { exactTermValue } from '#lib/grapheur/exact.ts';
+	import { formatGraphValue } from '#lib/grapheur/format.ts';
 	import {
 		isSameTarget,
 		type PinnedLabel,
 		type PinnedLabelTarget
-	} from '$lib/grapheur/pinned-labels';
+	} from '#lib/grapheur/pinned-labels.ts';
 	import GraphLabel, { type GraphLabelContent } from './GraphLabel.svelte';
-	import { createEvaluator } from '$lib/grapheur/evaluator';
-	import { analyzeAllFunctions, toAnalysisInputs } from '$lib/grapheur/analysis';
-	import { toLatex } from '$lib/mathAST/latex-generator';
-	import type { MathNode } from '$lib/mathAST/types';
+	import { createEvaluator } from '#lib/grapheur/evaluator.ts';
+	import { analyzeAllFunctions, toAnalysisInputs } from '#lib/grapheur/analysis.ts';
+	import { toLatex } from '#lib/mathAST/latex-generator.ts';
+	import type { MathNode } from '#lib/mathAST/types.ts';
 	import {
 		findAllIntersections,
 		deduplicateIntersections,
 		type IntersectionResult
-	} from '$lib/grapheur/intersections';
-	import { curveColorValue } from '$lib/grapheur/colors';
+	} from '#lib/grapheur/intersections.ts';
+	import { curveColorValue } from '#lib/grapheur/colors.ts';
 
 	// Props
 	let {

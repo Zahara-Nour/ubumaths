@@ -9,7 +9,7 @@
  * traverse, même si rien de ce qu'il exporte n'est utilisé.
  *
  * Mesuré le 2026-11-11 (chantier amelioration) : importer `parseMarkdown` par
- * `$lib/ubumark` embarquait l'intégration symbolique, `tidy`, les règles de
+ * `#lib/ubumark/index.ts` embarquait l'intégration symbolique, `tidy`, les règles de
  * motifs, les générateurs Typst… ~210 Ko gzip de trop sur 67 pages qui
  * affichent du markdown, ~60 Ko sur l'atelier.
  *
@@ -47,7 +47,6 @@ export const MODULES_WITH_SIDE_EFFECTS: ReadonlySet<string> = new Set([
 	'utils/logger.ts',
 	// Rien qu'un `import 'mathlive/static.css'` : les polices KaTeX de MathLive.
 	'utils/mathlive-styles.ts',
-	'workers/js-sandbox.worker.ts',
 	'workers/pyodide.worker.ts',
 	'worksheets/document/render-exercise.ts',
 	'zod-locale.ts',

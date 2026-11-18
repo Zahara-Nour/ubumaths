@@ -12,10 +12,10 @@
  * @module questions/combinatorial-notation
  */
 
-import { parseLatexSafe } from '$lib/mathAST/parser';
-import { findNodes } from '$lib/mathAST/transforms';
-import { isFunction } from '$lib/mathAST/guards';
-import type { MathNode } from '$lib/mathAST/types';
+import { parseLatexSafe } from '#lib/mathAST/parser/index.ts';
+import { findNodes } from '#lib/mathAST/transforms.ts';
+import { isFunction } from '#lib/mathAST/guards.ts';
+import type { MathNode } from '#lib/mathAST/types.ts';
 
 /** Fonctions de la notation : `n!` et `\binom{n}{k}` (cf. parser/factorial-notation) */
 const COMBINATORIAL_FUNCTIONS: ReadonlySet<string> = new Set(['factorial', 'binom']);

@@ -23,12 +23,12 @@
 -->
 
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import {
 		TUTOR_MAX_PER_EXERCISE,
 		TUTOR_MAX_PER_HOUR,
 		TUTOR_MAX_PER_DAY
-	} from '$lib/config/tutor-limits';
+	} from '#lib/config/tutor-limits.ts';
 
 	interface Props {
 		remaining: {

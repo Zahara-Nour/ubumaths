@@ -18,7 +18,7 @@ import {
 } from '../worksheet-copy';
 import { copyOrderSeed, copySeed } from '../student-copy';
 import { documentFromTeacherCopy } from '../document/teacher-adapter';
-import type { WorksheetRow } from '$lib/types/worksheets';
+import type { WorksheetRow } from '#lib/types/worksheets.ts';
 
 // ============================================================================
 // FIXTURES — forme réelle : positions qui redémarrent dans chaque section,

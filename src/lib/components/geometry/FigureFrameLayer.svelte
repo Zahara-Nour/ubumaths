@@ -13,17 +13,17 @@
 	grille (ou les graduations) disparaît plutôt que de figer l'onglet.
 -->
 <script lang="ts">
-	import type { Viewport } from '$lib/geometry-core/viewport/types';
-	import type { ContentLocale } from '$lib/types/locale';
-	import { buildFigureFrame } from '$lib/ubumark/utils/figure-scene';
-	import { frameToSvg } from '$lib/ubumark/utils/figure-svg';
+	import type { Viewport } from '#lib/geometry-core/viewport/types.ts';
+	import type { ContentLocale } from '#lib/types/locale.ts';
+	import { buildFigureFrame } from '#lib/ubumark/utils/figure-scene.ts';
+	import { frameToSvg } from '#lib/ubumark/utils/figure-svg.ts';
 	import {
 		FIGURE_LIMITS,
 		type FigureHeader,
 		type FigureSize,
 		type FigureStep,
 		type FigureWindow
-	} from '$lib/ubumark/types/figure';
+	} from '#lib/ubumark/types/figure.ts';
 
 	interface Props {
 		header: Pick<FigureHeader, 'axes' | 'grid' | 'ticks'>;

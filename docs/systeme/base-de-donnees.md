@@ -127,6 +127,13 @@ réintégration. `left_at` NULL = départ inconnu (les adhésions archivées ava
 le remplacer par un `coalesce`. L'élève archivé relit ce qu'il a reçu, ne reçoit plus rien. Test :
 `tests/integration/archived-member-stops-receiving.test.ts`.
 
+**Élèves actifs, pour les mesures** (migration `20261112144816`) : `active_student_ids()` rend les
+élèves réels (`is_test` faux) membres `active` d'au moins une classe — la définition d'« élève actif »
+de [CONTEXT.md](../../CONTEXT.md#les-personnes-et-les-frontières). Toute mesure sur les élèves part
+de là (`where student_id in (select student_id from public.active_student_ids())`), jamais de
+`profiles` entier : il mêle les comptes des années passées (adhésions archivées au passage
+d'année), les élèves hors-classe et les élèves de test. `security invoker`, exécution réservée à `service_role` (scripts serveur) et à `supabase_read_only_user` (l'outil Supabase en lecture seule, qui lit déjà toutes les tables ; migration `20261112154105`) — 42501 pour `anon` et `authenticated`. Test : `tests/integration/eleves-actifs.test.ts`.
+
 **Import d'élèves** : deux ordres possibles, à toujours considérer. Import puis connexion : la ligne
 `pending_students` est activée à la première connexion. Connexion avant import : il faut insérer
 directement dans `class_members`.
@@ -183,6 +190,21 @@ Deux référentiels, deux usages (la famille A, ex-`skills`, n'existe plus :
   (appelée par `run_cleanup_expired_data`, serveur seul) remet `answer_parts` et `part_verdicts` à
   NULL pour les traces créées avant le 1er août de l'année scolaire en cours (minuit, heure de
   Paris, `trace_answers_cutoff`) ; seule mise à jour de la ligne après son insertion.
+- **Régularité comptée en base** (`20261112210248`) : `class_regularity_weeks(p_class_id,
+p_first_day, p_min_traces)` rend, par élève `active` de la classe et par semaine (lundi), le
+  nombre de jours de Paris à au moins `p_min_traces` traces autonomes (`auto`/`srs`/`student_self`,
+  hors lieu `evaluation`, sans lieu compté) depuis `p_first_day`. `security invoker` : la RLS de
+  l'appelant s'applique (le professeur compte ce qu'il lit déjà, un élève ses seules traces) ;
+  exécution à `authenticated`, 42501 pour `anon`. Sert la grille de régularité du professeur
+  ([analytique-prof.md](analytique-prof.md), widget C). Test :
+  `tests/integration/regularite-comptee-en-base.test.ts`.
+- **Taux de réussite compté en base** (`20261114173810`) : `class_template_success(p_class_id,
+p_first_day)` rend, par élève `active` de la classe et par modèle (`template_id` non NULL), les
+  réponses prouvées faites et justes (sources `auto`/`teacher`, contrôles compris) et les réponses
+  déclarées faites (`srs`/`student_self`), depuis `p_first_day` (jour de Paris). `security invoker`
+  (RLS de l'appelant), exécution à `authenticated`, 42501 pour `anon`. Sert le widget « Taux de
+  réussite » de l'analytique ([analytique-prof.md](analytique-prof.md)), qui la lit par pages
+  (`max_rows`) ; tests : `tests/integration/taux-par-point-compte-en-base.test.ts`.
 - **Position d'affichage** : `display_order` est local à la fratrie ; un nœud créé sans position va en
   dernier (triggers `*_place_last`) ; `reorder_curriculum_points` / `_themes` / `_objectives` renumérotent 1..N et refusent une liste
   incomplète (en **INVOKER** pour que la RLS s'applique) ; plus aucun appelant depuis la C5 étape 3 :
@@ -287,6 +309,36 @@ fonctions `SECURITY DEFINER` qui refont les gardes élève. Pour le cours :
 `get_worksheet_by_share_token`, le style de la fiche, la mise en page d'un style de son auteur et
 les lignes des cadres de réponse de chaque exercice) ;
 `get_course_document_by_share_token`, qui rend le chemin du fichier, est réservée au `service_role`.
+
+**Carnet de liaison** ([ADR 0040](../adr/0040-carnet-de-liaison-lien-par-parent.md), migration
+`20261116133453`) : la page d'**un** parent sur **un** élève, sans compte. `class_carnet_settings`
+(activation et seuils par classe ; pas de ligne = désactivé), `parent_contacts` (deux adresses
+actives au plus, trigger `UBP01` ; une adresse refusée est effacée, son empreinte reste et interdit la
+ressaisie ; une adresse **retirée** par le professeur, état `removed`, migration `20261116204753`,
+est effacée aussi, ses liens révoqués par trigger, et seul le professeur la ressaisit), `parent_carnet_links` (un lien actif par adresse, stocké **haché**), `student_carnet_opt_outs`
+(partage coupé : un trigger révoque les liens), `parent_notifications` (courriels envoyés ; l'élève lit
+les siens). Le professeur lit adresses et état des liens, **jamais les colonnes `*_hash`** (droits par
+colonne) ; ni `anon` ni l'élève n'écrivent rien. Les fonctions qui reçoivent un lien
+(`get_carnet_by_token`, `confirm_parent_contact`, `refuse_parent_contact`, `set_parent_emails_stopped`,
+`issue_parent_carnet_link`) sont réservées au `service_role` et rendent la même réponse quelle que soit
+la cause d'un échec ; l'élève lit son carnet par `get_my_carnet`. Le contenu (`carnet_payload`,
+interne) suit la règle du jour actif de `class_regularity_weeks` : la changer aux deux endroits.
+Migration `20261116215952` (courriels d'exception, PR 4 du chantier) : `parent_exception_episodes`
+(une exception en cours par parent, signalée une fois ; **service role seul**, aucune policy),
+`parent_notifications.access_token_hash` (jeton propre à chaque courriel, haché : il ouvre le carnet
+et arrête les courriels tant que l'adresse a un lien actif ; colonne illisible par les comptes) et
+`parent_contacts.orphaned_since` (élève sans classe active : adresses effacées après 90 jours par
+`carnet_erase_orphan_contacts`). Fonctions du cron, toutes au `service_role` :
+`carnet_current_exceptions`, `carnet_sync_exception_episodes`, `carnet_exception_plan`,
+`carnet_quarterly_plan`, `carnet_erase_orphan_contacts` ; internes : `carnet_school_year`,
+`carnet_is_holiday`, `carnet_contact_by_token`. Une évaluation sans échéance non faite reste dans le
+carnet si elle date de l'année en cours (Q27). Migration `20261117113154` : `carnet_payload` et
+`carnet_current_exceptions` comptent depuis l'**arrivée** de l'élève dans une classe au carnet
+(`class_members.joined_at`, Q43), pas seulement depuis la rentrée. Migration `20261117222600` :
+la régularité de `carnet_payload` court depuis la semaine de la rentrée (53 semaines au plus ; 5
+sans année scolaire connue), les évaluations restent sur 5 semaines. Migration `20261117134539` :
+`carnet_erase_old_notifications` (cron, `service_role` seul) efface les lignes de
+`parent_notifications` de plus d'un an (Q42).
 
 `reconcileAutoCoverage()` (`src/lib/server/curriculum-coverage.ts`) recalcule les lignes `auto` de
 `journal_entry_points` depuis les activités, sans toucher aux lignes `manual` : la couverture
@@ -403,6 +455,9 @@ Répétition espacée FSRS greffée sur les modèles de questions. Détail : [sr
   `source_deck_id` = copie assignée par le professeur) → `srs_deck_sections`, `srs_cards`.
 - `srs_card_stats` : état FSRS par élève et carte, calculé en TypeScript (`src/lib/srs/fsrs.ts`).
 - `srs_deck_assignments`, `srs_review_sessions`, `srs_anti_fraud_flags` ([srs.md](srs.md), § anti-triche).
+- Statistiques d'un paquet : RPC `get_deck_stats` (SECURITY DEFINER, son compte ou prof / admin, paquet
+  lisible par l'appelant) ; « En cours » = `learning` + `relearning` depuis `20261115221544` (avant :
+  `learning` seul).
 
 Accès : l'élève gère ses paquets **non assignés et non automatiques** ; il ne crée ni ne transforme un
 paquet assigné, automatique ou copié (policies RESTRICTIVE `srs_decks_paquets_serveur_*`) — ces
@@ -556,6 +611,22 @@ par **l'élève seul** (ni prof ni admin, décision de David du 2026-11-06), cas
 `set_worn_avatar` (porte un avatar possédé, même hors vente ou retiré : `avatar_url` = son image ;
 NULL : la photo Google revient ; refus `not_owned`). Changer `image_path` met à jour les porteurs
 (trigger `sync_worn_avatar_image_trg`). Test : `tests/integration/boutique-avatars.test.ts`.
+La Descente de la Vistule, jeu de combats (migration `20261118060323`, chantier `navadra`) :
+`student_beasts` garde les Bêtes imprévues de l'élève (clé du bestiaire du code, `kind`
+`ordinary` / `big` / `tutorial` avec un seul tutoriel par élève, Province sensible, point du
+programme qui l'a fait naître en SET NULL, points de vie, arrivée, départ prévu `leaves_at` — NULL :
+reste jusqu'à sa défaite —, défaite et gidouilles versées) ; le carnet de voyage est la liste de ses
+Bêtes vaincues. `student_combat_moves` garde les coups et sorts gagnés en maîtrisant une notion
+(clé du code, notion en RESTRICT, annonce) ; les coups de départ ne sont pas écrits. Les deux sont
+lisibles par **l'élève seul** (ni prof ni admin, décision de David du 2026-11-18), écrites par le
+serveur seul, cascade depuis `profiles`. `record_beast_victory` (`service_role` seul, verrou de la
+ligne `profiles` puis de la Bête) refuse une Bête d'un autre élève (`P0002`), déjà vaincue ou repartie
+(`55000`), marque la défaite et verse 1 (ordinaire), 3 (grosse Bête) ou 0 (tutoriel), **4 au plus
+sur 24 heures glissantes**, coupé au plafond, libellé « Descente : victoire contre … ». Les réponses
+en combat sont des traces au lieu `descente`, que la policy d'insertion de l'élève refuse ; le
+prof (source `teacher`) et l'admin peuvent en écrire, comme pour `evaluation` (leurs policies ne
+filtrent pas le lieu). Pas encore dans l'export RGPD : il viendra avec le premier code qui lit ces tables (après
+`db:types`). Test : `tests/integration/descente-fondations.test.ts`.
 `student_last_visits` (migration `20261021210000`) garde le jour UTC du dernier passage de l'élève
 (dernière page vue hors API, `studentPresenceHandle`) et, depuis la migration `20261022100000`, le
 jour du retour à fêter (`welcome_back_on`), pour le Palotin triste après une longue absence. Lisible

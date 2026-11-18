@@ -1,0 +1,304 @@
+{
+	"id": "35ba6a94-7bcd-405d-89c2-cd68fd9beaf2",
+	"title": "Place les aiguilles (avec les secondes)",
+	"description": "Poser les trois aiguilles à la seconde près (9 h 25 min 40 s) sur un cadran à 12 chiffres, puis où seuls 12, 3, 6, 9 sont écrits ; une heure de l'après-midi (15 h 37 min 20 s)",
+	"grades": ["CM2"],
+	"level": 10,
+	"delay": 150,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"zeros": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Place les aiguilles : il est {{if:s==0|{{if:m==0|${{h}}~\\text{h}$|${{h}}~\\text{h}~{{if:m<10|0{{m}}|{{m}}}}~\\text{min}$}}|${{h}}~\\text{h}~{{if:m<10|0{{m}}|{{m}}}}~\\text{min}~{{if:s<10|0{{s}}|{{s}}}}~\\text{s}$}}.\n\n```horloge\nplacer: {{h}} h {{m}} min {{s}} s\nchiffres: tous\ngraduations: minutes\n```",
+			"variables": [
+				{
+					"name": "h",
+					"expression": "1..12"
+				},
+				{
+					"name": "m",
+					"expression": "0..59"
+				},
+				{
+					"name": "s",
+					"expression": "1..59"
+				},
+				{
+					"name": "q",
+					"expression": "eval:floor(m/5)"
+				},
+				{
+					"name": "r",
+					"expression": "eval:mod(m,5)"
+				},
+				{
+					"name": "qs",
+					"expression": "eval:floor(s/5)"
+				},
+				{
+					"name": "rs",
+					"expression": "eval:mod(s,5)"
+				}
+			],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"La grande aiguille montre les minutes, la petite l'heure, la trotteuse les secondes.",
+					"La grande aiguille : ${{m}}$ minute{{if:m>1|s|}}. On compte les grands repères de $5$ en $5$ depuis le $12$ : {{if:r>0|elle passe le repère du {{if:q==0|$12$|${{q}}$}} (${{eval:5*q}}$) et avance de ${{r}}$ petite{{if:r>1|s|}} graduation{{if:r>1|s|}}.|elle va sur le repère du {{if:q==0|$12$|${{q}}$}}.}}",
+					"La trotteuse : ${{s}}$ seconde{{if:s>1|s|}}. On compte les grands repères de $5$ en $5$ depuis le $12$ : {{if:rs>0|elle passe le repère du {{if:qs==0|$12$|${{qs}}$}} (${{eval:5*qs}}$) et avance de ${{rs}}$ petite{{if:rs>1|s|}} graduation{{if:rs>1|s|}}.|elle va sur le repère du {{if:qs==0|$12$|${{qs}}$}}.}}",
+					"{{if:m==0|La petite aiguille va pile sur le repère du ${{h}}$.|La petite aiguille va entre le repère du ${{h}}$ et celui du ${{eval:mod(h,12)+1}}$ : cette heure-là n'est pas encore passée.}}"
+				]
+			}
+		},
+		{
+			"statement": "Place les aiguilles : il est {{if:s==0|{{if:m==0|${{h}}~\\text{h}$|${{h}}~\\text{h}~{{if:m<10|0{{m}}|{{m}}}}~\\text{min}$}}|${{h}}~\\text{h}~{{if:m<10|0{{m}}|{{m}}}}~\\text{min}~{{if:s<10|0{{s}}|{{s}}}}~\\text{s}$}}.\n\n```horloge\nplacer: {{h}} h {{m}} min {{s}} s\nchiffres: quarts\ngraduations: minutes\n```",
+			"variables": [
+				{
+					"name": "h",
+					"expression": "1..12"
+				},
+				{
+					"name": "m",
+					"expression": "0..59"
+				},
+				{
+					"name": "s",
+					"expression": "1..59"
+				},
+				{
+					"name": "q",
+					"expression": "eval:floor(m/5)"
+				},
+				{
+					"name": "r",
+					"expression": "eval:mod(m,5)"
+				},
+				{
+					"name": "qs",
+					"expression": "eval:floor(s/5)"
+				},
+				{
+					"name": "rs",
+					"expression": "eval:mod(s,5)"
+				}
+			],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"Seuls le $12$, le $3$, le $6$ et le $9$ sont écrits : les autres repères se retrouvent entre eux. La petite aiguille montre les heures, la grande les minutes, la trotteuse (la plus fine) les secondes.",
+					"La grande aiguille : ${{m}}$ minute{{if:m>1|s|}}. On compte les grands repères de $5$ en $5$ depuis le $12$ : {{if:r>0|elle passe le repère du {{if:q==0|$12$|${{q}}$}} (${{eval:5*q}}$) et avance de ${{r}}$ petite{{if:r>1|s|}} graduation{{if:r>1|s|}}.|elle va sur le repère du {{if:q==0|$12$|${{q}}$}}.}}",
+					"La trotteuse : ${{s}}$ seconde{{if:s>1|s|}}. On compte les grands repères de $5$ en $5$ depuis le $12$ : {{if:rs>0|elle passe le repère du {{if:qs==0|$12$|${{qs}}$}} (${{eval:5*qs}}$) et avance de ${{rs}}$ petite{{if:rs>1|s|}} graduation{{if:rs>1|s|}}.|elle va sur le repère du {{if:qs==0|$12$|${{qs}}$}}.}}",
+					"{{if:m==0|La petite aiguille va pile sur le repère du ${{h}}$.|La petite aiguille va entre le repère du ${{h}}$ et celui du ${{eval:mod(h,12)+1}}$ : cette heure-là n'est pas encore passée.}}"
+				]
+			}
+		},
+		{
+			"statement": "Place les aiguilles : il est {{if:s==0|{{if:m==0|${{hh}}~\\text{h}$|${{hh}}~\\text{h}~{{if:m<10|0{{m}}|{{m}}}}~\\text{min}$}}|${{hh}}~\\text{h}~{{if:m<10|0{{m}}|{{m}}}}~\\text{min}~{{if:s<10|0{{s}}|{{s}}}}~\\text{s}$}}.\n\n```horloge\nplacer: {{hh}} h {{m}} min {{s}} s\nchiffres: tous\ngraduations: minutes\n```",
+			"variables": [
+				{
+					"name": "h",
+					"expression": "1..11"
+				},
+				{
+					"name": "hh",
+					"expression": "eval:h+12"
+				},
+				{
+					"name": "m",
+					"expression": "0..59"
+				},
+				{
+					"name": "s",
+					"expression": "1..59"
+				},
+				{
+					"name": "q",
+					"expression": "eval:floor(m/5)"
+				},
+				{
+					"name": "r",
+					"expression": "eval:mod(m,5)"
+				},
+				{
+					"name": "qs",
+					"expression": "eval:floor(s/5)"
+				},
+				{
+					"name": "rs",
+					"expression": "eval:mod(s,5)"
+				}
+			],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"Sur le cadran, on retrouve l'heure en enlevant $12$ : ${{hh}} - 12 = {{h}}$.",
+					"La grande aiguille montre les minutes, la petite l'heure, la trotteuse les secondes.",
+					"La grande aiguille : ${{m}}$ minute{{if:m>1|s|}}. On compte les grands repères de $5$ en $5$ depuis le $12$ : {{if:r>0|elle passe le repère du {{if:q==0|$12$|${{q}}$}} (${{eval:5*q}}$) et avance de ${{r}}$ petite{{if:r>1|s|}} graduation{{if:r>1|s|}}.|elle va sur le repère du {{if:q==0|$12$|${{q}}$}}.}}",
+					"La trotteuse : ${{s}}$ seconde{{if:s>1|s|}}. On compte les grands repères de $5$ en $5$ depuis le $12$ : {{if:rs>0|elle passe le repère du {{if:qs==0|$12$|${{qs}}$}} (${{eval:5*qs}}$) et avance de ${{rs}}$ petite{{if:rs>1|s|}} graduation{{if:rs>1|s|}}.|elle va sur le repère du {{if:qs==0|$12$|${{qs}}$}}.}}",
+					"{{if:m==0|La petite aiguille va pile sur le repère du ${{h}}$.|La petite aiguille va entre le repère du ${{h}}$ et celui du ${{eval:mod(h,12)+1}}$ : cette heure-là n'est pas encore passée.}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "9 h 25 min 40 s",
+			"variationIndex": 0,
+			"variables": {
+				"h": "9",
+				"m": "25",
+				"s": "40",
+				"q": "5",
+				"r": "0",
+				"qs": "8",
+				"rs": "0"
+			},
+			"answers": ["47 25 40"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : grande aiguille et trotteuse inversées",
+			"variationIndex": 0,
+			"variables": {
+				"h": "9",
+				"m": "25",
+				"s": "40",
+				"q": "5",
+				"r": "0",
+				"qs": "8",
+				"rs": "0"
+			},
+			"answers": ["48 40 25"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : trotteuse sur le 8 (8 s)",
+			"variationIndex": 0,
+			"variables": {
+				"h": "9",
+				"m": "25",
+				"s": "40",
+				"q": "5",
+				"r": "0",
+				"qs": "8",
+				"rs": "0"
+			},
+			"answers": ["47 25 8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : petite et grande inversées",
+			"variationIndex": 0,
+			"variables": {
+				"h": "9",
+				"m": "25",
+				"s": "40",
+				"q": "5",
+				"r": "0",
+				"qs": "8",
+				"rs": "0"
+			},
+			"answers": ["25 47 40"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Rien placé : case vide",
+			"variationIndex": 0,
+			"variables": {
+				"h": "9",
+				"m": "25",
+				"s": "40",
+				"q": "5",
+				"r": "0",
+				"qs": "8",
+				"rs": "0"
+			},
+			"answers": [""],
+			"expected": {
+				"status": "empty"
+			}
+		},
+		{
+			"description": "12-3-6-9 : 4 h 48 min 7 s",
+			"variationIndex": 1,
+			"variables": {
+				"h": "4",
+				"m": "48",
+				"s": "7",
+				"q": "9",
+				"r": "3",
+				"qs": "1",
+				"rs": "2"
+			},
+			"answers": ["24 48 7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 12-3-6-9, 4 h 48 min 7 s placé 5 h 48 min 7 s",
+			"variationIndex": 1,
+			"variables": {
+				"h": "4",
+				"m": "48",
+				"s": "7",
+				"q": "9",
+				"r": "3",
+				"qs": "1",
+				"rs": "2"
+			},
+			"answers": ["29 48 7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "15 h 37 min 20 s",
+			"variationIndex": 2,
+			"variables": {
+				"h": "3",
+				"hh": "15",
+				"m": "37",
+				"s": "20",
+				"q": "7",
+				"r": "2",
+				"qs": "4",
+				"rs": "0"
+			},
+			"answers": ["18 37 20"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 15 h 37 min 20 s, grande sur 15",
+			"variationIndex": 2,
+			"variables": {
+				"h": "3",
+				"hh": "15",
+				"m": "37",
+				"s": "20",
+				"q": "7",
+				"r": "2",
+				"qs": "4",
+				"rs": "0"
+			},
+			"answers": ["18 15 20"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

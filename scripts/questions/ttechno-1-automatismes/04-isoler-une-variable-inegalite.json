@@ -1,0 +1,302 @@
+{
+	"id": "3909b24a-9c44-4a8e-9110-0d6ff9732abc",
+	"title": "Isoler une variable dans une inégalité",
+	"description": "Exprimer une variable en fonction des autres dans une inégalité, en gardant ou en changeant le sens",
+	"grades": ["T_TECHNO"],
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"options": {
+		"constraints": {
+			"form": "warn"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Avec un budget de ${{c}}~\\unit{€}$, une association achète $x$ ballons à ${{a}}~\\unit{€}$ et $y$ filets à ${{b}}~\\unit{€}$ : ${{a}}x+{{b}}y\\leqslant {{c}}$.\n\nExprime $y$ en fonction de $x$.\n\n$?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "3..8"
+				},
+				{
+					"name": "c",
+					"expression": "40..120"
+				}
+			],
+			"conditions": ["a != b"],
+			"blanks": [
+				{
+					"expectedAnswer": "y\\leqslant {{eval:-(a)/(b)}}x{{eval:(c)/(b);+}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On isole le terme en $y$ : ${{b}}y\\leqslant {{c}}-{{a}}x$.",
+					"On divise par ${{b}}$, qui est **positif** : le sens de l'inégalité ne change pas.",
+					"$$\\textcolor{{{color:primary.0}}}{y\\leqslant {{eval:-(a)/(b)}}x{{eval:(c)/(b);+}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Les nombres $x$ et $y$ vérifient ${{a}}x-{{b}}y\\leqslant {{c}}$.\n\nExprime $y$ en fonction de $x$.\n\n$?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..6"
+				},
+				{
+					"name": "c",
+					"expression": "1..12"
+				}
+			],
+			"conditions": ["a != b"],
+			"blanks": [
+				{
+					"expectedAnswer": "y\\geqslant {{eval:(a)/(b)}}x{{eval:-(c)/(b);+}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On isole le terme en $y$ : $-{{b}}y\\leqslant {{c}}-{{a}}x$.",
+					"On divise par $-{{b}}$, qui est **négatif** : le sens de l'inégalité **change**.",
+					"$$\\textcolor{{{color:primary.0}}}{y\\geqslant {{eval:(a)/(b)}}x{{eval:-(c)/(b);+}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "{{if:w==0|Un appareil branché sous une tension $U$ (en volts) ne doit pas dépasser la puissance $P$ (en watts) : l'intensité $I$ vérifie $UI\\leqslant P$.|Un cycliste roule à la vitesse $v$ et ne doit pas parcourir plus que la distance $D$ : la durée $t$ du trajet vérifie $vt\\leqslant D$.}}\n\nToutes ces grandeurs sont strictement positives. Exprime ${{if:w==0|I|t}}$ en fonction des autres grandeurs.\n\n$?$",
+			"variables": [
+				{
+					"name": "w",
+					"expression": "0|1"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:w==0|I\\leqslant\\frac{P}{U}|t\\leqslant\\frac{D}{v}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On divise les deux membres par ${{if:w==0|U|v}}$, qui est **positif** : le sens de l'inégalité ne change pas.",
+					"$$\\textcolor{{{color:primary.0}}}{{{if:w==0|I\\leqslant\\dfrac{P}{U}|t\\leqslant\\dfrac{D}{v}}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3x + 5y ⩽ 60 : y ⩽ −3/5 x + 12",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "5",
+				"c": "60"
+			},
+			"answers": ["y\\leqslant -\\frac{3}{5}x+12"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Écrit avec \\le (clavier MathLive)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "5",
+				"c": "60"
+			},
+			"answers": ["y\\le -\\frac{3}{5}x+12"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Termes dans l'autre ordre",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "5",
+				"c": "60"
+			},
+			"answers": ["y\\leqslant 12-\\frac{3}{5}x"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Forme non réduite (60 − 3x)/5",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "5",
+				"c": "60"
+			},
+			"answers": ["y\\leqslant \\frac{60-3x}{5}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "Écrit à l'envers : juste, forme à améliorer (y non isolé à gauche)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "5",
+				"c": "60"
+			},
+			"answers": ["-\\frac{3}{5}x+12\\geqslant y"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "Erreur : sens changé",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "5",
+				"c": "60"
+			},
+			"answers": ["y\\geqslant -\\frac{3}{5}x+12"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : c non divisé",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "5",
+				"c": "60"
+			},
+			"answers": ["y\\leqslant -\\frac{3}{5}x+60"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : signe de x gardé",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "5",
+				"c": "60"
+			},
+			"answers": ["y\\leqslant \\frac{3}{5}x+12"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2x − 4y ⩽ 8 : y ⩾ x/2 − 2",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "4",
+				"c": "8"
+			},
+			"answers": ["y\\geqslant \\frac{1}{2}x-2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sens non changé",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "4",
+				"c": "8"
+			},
+			"answers": ["y\\leqslant \\frac{1}{2}x-2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : signe de c",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "4",
+				"c": "8"
+			},
+			"answers": ["y\\geqslant \\frac{1}{2}x+2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "UI ⩽ P : I ⩽ P/U",
+			"variationIndex": 2,
+			"variables": {
+				"w": "0"
+			},
+			"answers": ["I\\leqslant\\frac{P}{U}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : I ⩽ U/P",
+			"variationIndex": 2,
+			"variables": {
+				"w": "0"
+			},
+			"answers": ["I\\leqslant\\frac{U}{P}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : I ⩽ PU",
+			"variationIndex": 2,
+			"variables": {
+				"w": "0"
+			},
+			"answers": ["I\\leqslant PU"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "vt ⩽ D : t ⩽ D/v",
+			"variationIndex": 2,
+			"variables": {
+				"w": "1"
+			},
+			"answers": ["t\\leqslant\\frac{D}{v}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : t ⩾ D/v",
+			"variationIndex": 2,
+			"variables": {
+				"w": "1"
+			},
+			"answers": ["t\\geqslant\\frac{D}{v}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

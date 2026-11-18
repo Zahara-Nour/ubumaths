@@ -36,38 +36,39 @@
 -->
 
 <script lang="ts">
-	import { studentJournalHref } from '$lib/navigation/return-links';
-	import { lore } from '$lib/config/lore';
-	import { welcomeEmailState } from '$lib/utils/welcome-email-state';
-	import { GOOGLE_CLASSROOM_ENABLED } from '$lib/config/google-classroom';
+	import { studentFollowUpHref, studentJournalHref } from '#lib/navigation/return-links.ts';
+	import { lore } from '#lib/config/lore.ts';
+	import { welcomeEmailState } from '#lib/utils/welcome-email-state.ts';
+	import { GOOGLE_CLASSROOM_ENABLED } from '#lib/config/google-classroom.ts';
 	import type { PageData } from './$types';
-	import type { Tables } from '$lib/types/database';
-	import type { SchoolPeriod } from '$lib/utils/timetable';
-	import { getOrderedSchoolDays, type WeekConfig } from '$lib/utils/week-config';
-	import type { ScheduleFormData } from '$lib/components/ScheduleEntryModal.svelte';
+	import type { Tables } from '#lib/types/database.ts';
+	import type { SchoolPeriod } from '#lib/utils/timetable.ts';
+	import { getOrderedSchoolDays, type WeekConfig } from '#lib/utils/week-config.ts';
+	import type { ScheduleFormData } from '#lib/components/ScheduleEntryModal.svelte';
 
 	type ClassSchedule = Tables<'class_schedules'>;
 	import type { StudentWithEmailStatus } from './+page.server';
-	import * as Tabs from '$lib/components/ui/tabs';
-	import * as Card from '$lib/components/ui/card';
-	import UserAvatar from '$lib/components/UserAvatar.svelte';
-	import { Button } from '$lib/components/ui/button';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Label } from '$lib/components/ui/label';
-	import ClassStatsCard from '$lib/components/ClassStatsCard.svelte';
-	import ClassScheduleGrid from '$lib/components/ClassScheduleGrid.svelte';
-	import ScheduleEntryModal from '$lib/components/ScheduleEntryModal.svelte';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import * as Tabs from '#lib/components/ui/tabs/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import UserAvatar from '#lib/components/UserAvatar.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import ClassStatsCard from '#lib/components/ClassStatsCard.svelte';
+	import ClassScheduleGrid from '#lib/components/ClassScheduleGrid.svelte';
+	import ScheduleEntryModal from '#lib/components/ScheduleEntryModal.svelte';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import { enhance } from '$app/forms';
-	import { submitAction, refreshPageData } from '$lib/utils/form-action';
-	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
+	import { submitAction, refreshPageData } from '#lib/utils/form-action.ts';
+	import { teacherCache } from '#lib/stores/teacherDashboardCache.svelte.ts';
 	import {
 		Mail,
 		CheckCircle2,
 		ShieldCheck,
 		BookOpen,
 		Gauge,
+		BookHeart,
 		GraduationCap,
 		Loader2,
 		ScrollText,
@@ -620,6 +621,10 @@
 									<Gauge class="mr-2 h-4 w-4" />
 									Acquisition
 								</Button>
+								<Button variant="outline" href="/dashboard/teacher/classes/{classItem.id}/carnet">
+									<BookHeart class="mr-2 h-4 w-4" />
+									Carnet de liaison
+								</Button>
 							</div>
 						</div>
 					</div>
@@ -714,7 +719,13 @@
 												/>
 												<div>
 													<p class="font-medium text-foreground">
-														{getStudentDisplayName(student)}
+														<a
+															class="underline-offset-4 hover:underline"
+															href={studentFollowUpHref(student.id)}
+															title="Voir le suivi du {lore.entities.student}"
+														>
+															{getStudentDisplayName(student)}
+														</a>
 													</p>
 													{#if emailState.kind === 'parent-link'}
 														<p class="text-sm text-muted-foreground">
@@ -814,7 +825,13 @@
 									class="size-8"
 								/>
 								<p class="font-medium text-foreground">
-									{student.firstname}{student.lastname ? ` ${student.lastname}` : ''}
+									<a
+										class="underline-offset-4 hover:underline"
+										href={studentFollowUpHref(student.id)}
+										title="Voir le suivi du {lore.entities.student}"
+									>
+										{student.firstname}{student.lastname ? ` ${student.lastname}` : ''}
+									</a>
 								</p>
 							</div>
 							<Button

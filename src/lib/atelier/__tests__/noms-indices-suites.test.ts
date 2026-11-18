@@ -13,12 +13,12 @@
 
 import { describe, it, expect } from 'vitest';
 import { Atelier } from '../atelier.svelte';
-import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
+import { WebReplEngine } from '#lib/mathAST/cli/web/web-repl-engine.ts';
 import { runInput } from '../calcul';
 import { mergeInto } from '../merge';
 import { renamedOnReadMessage } from '../geometry';
 import { AtelierFigure, syncFigure } from '../figure-sync';
-import { geoToNumber } from '$lib/geometry-core/compute/to-number';
+import { geoToNumber } from '#lib/geometry-core/compute/to-number.ts';
 import type { AtelierState } from '../persistence';
 
 function session() {

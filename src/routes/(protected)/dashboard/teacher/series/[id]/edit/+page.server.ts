@@ -5,23 +5,35 @@
 
 import { error, fail } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
-import { requireRoles } from '$lib/server/middleware/auth';
-import { validateUuidParam } from '$lib/server/validation/params';
-import { updateSeriesSchema } from '$lib/server/validation/evaluations';
-import { getSeries, SeriesError, updateSeries } from '$lib/server/series';
-import type { SeriesItem } from '$lib/validation/series';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import { validateUuidParam } from '#lib/server/validation/params.ts';
+import { updateSeriesSchema } from '#lib/server/validation/evaluations.ts';
+import { getSeries, SeriesError, updateSeries } from '#lib/server/series.ts';
+import type { SeriesItem } from '#lib/validation/series.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
+import { getDurationSignals } from '#lib/server/stats/duration-signals.ts';
+import { getTeacherTestMode } from '#lib/server/test-mode.ts';
+import type { DurationSignalsResponse } from '#lib/types/duration-signals.ts';
 
 const logger = createServerLogger('series/edit');
 
 export const load: PageServerLoad = async ({ params, locals }) => {
-	await requireRoles(locals, ['teacher', 'admin']);
+	const { user } = await requireRoles(locals, ['teacher', 'admin']);
 	const id = validateUuidParam(params.id);
 
 	try {
 		const series = await getSeries(locals.supabase, id);
 		if (!series) throw error(404, 'Série introuvable');
-		return { series, templates: await loadPublishedTemplates(locals.supabase, series.items) };
+		const [templates, durationSignals] = await Promise.all([
+			loadPublishedTemplates(locals.supabase, series.items),
+			loadDurationSignals(locals.supabase, user.id, series.items)
+		]);
+		return {
+			series,
+			templates,
+			durationSignals: durationSignals?.signals ?? null,
+			observedDurations: durationSignals?.observed ?? null
+		};
 	} catch (e) {
 		if (e instanceof SeriesError) throw error(e.status, e.message);
 		throw e;
@@ -48,6 +60,25 @@ async function loadPublishedTemplates(
 		throw error(500, 'Impossible de charger la série');
 	}
 	return data ?? [];
+}
+
+/**
+ * Durées trop courtes (chantier `durees-trop-courtes`) et durées observées
+ * (chantier `durees-ajustees`) des modèles ; un échec rend null : ni marque ni
+ * suggestion, la page reste.
+ */
+async function loadDurationSignals(
+	supabase: App.Locals['supabase'],
+	userId: string,
+	items: readonly SeriesItem[]
+): Promise<DurationSignalsResponse | null> {
+	const isTestMode = await getTeacherTestMode(userId, supabase);
+	const result = await getDurationSignals(
+		supabase,
+		items.map((item) => item.templateId),
+		isTestMode
+	);
+	return result.status === 'ok' ? { signals: result.signals, observed: result.observed } : null;
 }
 
 /** Lignes sérialisées par la page */

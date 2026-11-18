@@ -1,0 +1,46 @@
+[
+	{
+		"id": "396c543f-01e9-4ba0-ba68-4bc49a86992c",
+		"noeudAvant": null,
+		"noeudApres": "Grandeurs et mesures > Périmètres",
+		"gradesAvant": ["CM1"],
+		"gradesApres": ["CM1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-075"]
+	},
+	{
+		"id": "3a6017c8-133c-4c1c-a0b9-d49e4cb5aeb0",
+		"noeudAvant": null,
+		"noeudApres": "Grandeurs et mesures > Périmètres",
+		"gradesAvant": ["CM1"],
+		"gradesApres": ["CM1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-074"]
+	},
+	{
+		"id": "a43667e9-410c-4a75-8536-590ec613f256",
+		"noeudAvant": "Grandeurs et mesures > Périmètres",
+		"noeudApres": "Grandeurs et mesures > Périmètres",
+		"gradesAvant": ["CE2"],
+		"gradesApres": ["CE2", "CM1"],
+		"statutAvant": "published",
+		"statutApres": "published",
+		"tagsAvant": ["CE2§CE2-042"],
+		"tagsApres": ["CE2§CE2-042", "CM1§CM1-073"]
+	},
+	{
+		"id": "d6633d24-6d18-43e1-9306-e556e777178d",
+		"noeudAvant": null,
+		"noeudApres": "Grandeurs et mesures > Périmètres",
+		"gradesAvant": ["CM1"],
+		"gradesApres": ["CM1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-075"]
+	}
+]

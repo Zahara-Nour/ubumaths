@@ -4,25 +4,25 @@
 
 import type { PageServerLoad, Actions } from './$types';
 import { error, fail } from '@sveltejs/kit';
-import { validateAnswer } from '$lib/utils/game/challenge-variables';
+import { validateAnswer } from '#lib/utils/game/challenge-variables.ts';
 import {
 	calculateDamage,
 	calculateXPReward,
 	calculatePrestigeReward,
 	calculatePyrsReward
-} from '$lib/utils/game/combat';
-import { selectSpellSchema, submitAnswerSchema } from '$lib/server/validation/navadra';
-import { validateUuidParam } from '$lib/server/validation/params';
+} from '#lib/utils/game/combat.ts';
+import { selectSpellSchema, submitAnswerSchema } from '#lib/server/validation/navadra.ts';
+import { validateUuidParam } from '#lib/server/validation/params.ts';
 import {
 	toGameMonster,
 	toGameSpell,
 	asCombatFlow,
 	toGamePlayer,
 	toGameChallenge
-} from '$lib/types/game';
-import type { GameSpell } from '$lib/types/game';
-import { toJson } from '$lib/types/database-helpers';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/types/game.ts';
+import type { GameSpell } from '#lib/types/game.ts';
+import { toJson } from '#lib/types/database-helpers.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('(protected)/dashboard/navadra/combat/[combatId]/+page.server');
 

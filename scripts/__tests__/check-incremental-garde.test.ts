@@ -68,7 +68,7 @@ beforeEach(() => {
 	writeFileSync(join(dir, 'pnpm-lock.yaml'), "lockfileVersion: '9.0'\n");
 	writeFileSync(join(dir, '.env'), 'PUBLIC_X=1\n');
 	mkdirSync(join(dir, '.svelte-kit'), { recursive: true });
-	writeFileSync(join(dir, '.svelte-kit/tsconfig.json'), '{}\n');
+	writeFileSync(join(dir, '.svelte-kit/.sync-sentinel'), '');
 
 	const bin = join(dir, 'bin');
 	mkdirSync(bin);

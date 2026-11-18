@@ -2,7 +2,7 @@
 	Filtres pour l'onglet Surveillance (V2.0 : seulement toggle "Inclure résolus").
 -->
 <script lang="ts">
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
+	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
 
 	interface Props {
 		showResolved: boolean;

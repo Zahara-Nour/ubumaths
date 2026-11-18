@@ -5,9 +5,9 @@
  * Reference: https://developers.google.com/identity/protocols/oauth2/web-server
  */
 
-import { getEnv } from '$lib/server/env';
+import { getEnv } from '#lib/server/env.ts';
 import { z } from 'zod';
-import type { GoogleOAuthTokenResponse, GoogleTokenInfo } from '$lib/types/google';
+import type { GoogleOAuthTokenResponse, GoogleTokenInfo } from '#lib/types/google.ts';
 
 /**
  * Google OAuth scopes required for Classroom integration

@@ -20,13 +20,13 @@
 import { error, json } from '@sveltejs/kit';
 import { z } from 'zod';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import { rateLimit } from '$lib/server/middleware/rateLimit';
-import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
-import { wearMathouDecoration, type DecorationOutcome } from '$lib/server/mathoux/decorations';
-import { refusalMessage, refusalStatus } from '$lib/server/mathoux/decoration-errors';
-import { MATHOU_DECORATION_IDS } from '$lib/mathoux/decorations';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { rateLimit } from '#lib/server/middleware/rateLimit.ts';
+import { createServiceRoleClient } from '#lib/server/serviceRoleClient.ts';
+import { wearMathouDecoration, type DecorationOutcome } from '#lib/server/mathoux/decorations.ts';
+import { refusalMessage, refusalStatus } from '#lib/server/mathoux/decoration-errors.ts';
+import { MATHOU_DECORATION_IDS } from '#lib/mathoux/decorations.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/student/mathoux/decorations/wear/+server');
 

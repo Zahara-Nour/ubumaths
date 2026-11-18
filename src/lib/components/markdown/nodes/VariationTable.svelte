@@ -23,7 +23,7 @@
 	@module components/markdown/nodes/VariationTable
 -->
 <script lang="ts">
-	import '$lib/utils/mathlive-styles';
+	import '#lib/utils/mathlive-styles.ts';
 	import 'mathlive';
 	import type { Snippet } from 'svelte';
 	import type {
@@ -35,11 +35,11 @@
 		VariationValue,
 		DomainPoint,
 		VariationMarker
-	} from '$lib/ubumark/types/variation-table';
+	} from '#lib/ubumark/types/variation-table.ts';
 	import {
 		variationRowForDisplay,
 		withImplicitEndpoints
-	} from '$lib/ubumark/parser/variation-table-parser';
+	} from '#lib/ubumark/parser/variation-table-parser.ts';
 
 	interface Props {
 		node: VariationTableNode;

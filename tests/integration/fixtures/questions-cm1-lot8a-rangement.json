@@ -1,0 +1,57 @@
+[
+	{
+		"id": "68134013-62c4-4e4a-bea5-2e87fc4ba199",
+		"noeudAvant": null,
+		"noeudApres": "Grandeurs et mesures > Durées > calcul de durées",
+		"gradesAvant": ["CM1"],
+		"gradesApres": ["CM1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-095"]
+	},
+	{
+		"id": "9e655e1a-c193-48d5-9190-64ae918e1a03",
+		"noeudAvant": null,
+		"noeudApres": "Grandeurs et mesures > Durées > lecture de l'heure",
+		"gradesAvant": ["CM1"],
+		"gradesApres": ["CM1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-092"]
+	},
+	{
+		"id": "cdec9199-5aa5-41bd-a571-1e94a08f7dba",
+		"noeudAvant": null,
+		"noeudApres": "Grandeurs et mesures > Durées > calcul de durées",
+		"gradesAvant": ["CM1"],
+		"gradesApres": ["CM1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-166"]
+	},
+	{
+		"id": "dd81eefb-121e-4f4c-8514-1d394265f7a1",
+		"noeudAvant": null,
+		"noeudApres": "Grandeurs et mesures > Durées > lecture de l'heure",
+		"gradesAvant": ["CM1"],
+		"gradesApres": ["CM1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-093"]
+	},
+	{
+		"id": "f3f00294-bee8-4d32-9a8b-f0218828dc76",
+		"noeudAvant": null,
+		"noeudApres": "Grandeurs et mesures > Durées > calcul de durées",
+		"gradesAvant": ["CM1"],
+		"gradesApres": ["CM1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-094"]
+	}
+]

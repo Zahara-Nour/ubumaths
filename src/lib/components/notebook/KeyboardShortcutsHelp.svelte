@@ -9,7 +9,7 @@
 	 * - Respects readonly mode
 	 */
 
-	import * as Tooltip from '$lib/components/ui/tooltip';
+	import * as Tooltip from '#lib/components/ui/tooltip/index.ts';
 	import { HelpCircle } from '@lucide/svelte';
 
 	// Props

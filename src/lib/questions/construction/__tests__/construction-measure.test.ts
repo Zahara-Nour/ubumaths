@@ -18,7 +18,7 @@ import {
 } from '../measure';
 import { solutionAngle, solutionLines } from '../drawing';
 import { serializeMeasuredAnswer, splitMeasuredAnswer, type DrawnRepere } from '../answer';
-import { readConstructionHeader } from '$lib/ubumark/parser/construction-parser';
+import { readConstructionHeader } from '#lib/ubumark/parser/construction-parser.ts';
 
 function checksOf(source: string) {
 	const { spec, errors } = readConstructionHeader(source);
@@ -74,7 +74,7 @@ describe('Lecture de « verifier: mesure AOB »', () => {
 	});
 
 	it.each([
-		['mesure AO', 'trois points'],
+		['mesure A', 'trois points'],
 		['mesure AOA', 'trois points différents'],
 		['mesure AOB = 50', 'trois points']
 	])('« %s » : refusé', (verifier, message) => {

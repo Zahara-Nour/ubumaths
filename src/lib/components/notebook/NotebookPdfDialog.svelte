@@ -16,12 +16,12 @@
 	  - student → hints OFF, checkbox disabled
 -->
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import { Button } from '$lib/components/ui/button';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
+	import { lore } from '#lib/config/lore.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
 	import { FileDown, Loader2 } from '@lucide/svelte';
-	import type { NotebookExportOptions } from '$lib/typst/generators/notebook-generator';
+	import type { NotebookExportOptions } from '#lib/typst/generators/notebook-generator.ts';
 
 	interface Props {
 		open: boolean;

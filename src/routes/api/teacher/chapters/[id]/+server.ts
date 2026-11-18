@@ -7,11 +7,11 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import { updateChapter, deleteChapter } from '$lib/server/chapters';
-import { updateChapterSchema } from '$lib/server/validation/chapters';
-import { uuidSchema } from '$lib/server/validation/common';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { updateChapter, deleteChapter } from '#lib/server/chapters.ts';
+import { updateChapterSchema } from '#lib/server/validation/chapters.ts';
+import { uuidSchema } from '#lib/server/validation/common.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/teacher/chapters/[id]/+server');
 

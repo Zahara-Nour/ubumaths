@@ -20,8 +20,8 @@ import type {
 	ValidationResult,
 	ValidationIssue,
 	ExerciseValidationConfig
-} from '$lib/shared/python';
-// Valeurs importées module par module, jamais par `$lib/shared/python` : le
+} from '#lib/shared/python/index.ts';
+// Valeurs importées module par module, jamais par `#lib/shared/python/index.ts` : le
 // barrel tire les exécuteurs et le store `pythonDebug.svelte.ts`, dont les
 // runes (`$state`) ne sont pas compilées dans un worker. Rollup les élaguait,
 // Rolldown (Vite 8) les garde → « $state is not defined » au chargement.
@@ -30,16 +30,16 @@ import {
 	LOADING_STAGES,
 	CONTEXT_CONFIG,
 	ERROR_MESSAGES
-} from '$lib/shared/python/config';
-import { LoadingStageIndex } from '$lib/shared/python/types';
-import { MAX_ATELIER_LISTS, toWorkerMessageSchema } from '$lib/shared/python/worker/messages';
-import { MAX_CATEGORIES, MAX_CATEGORY_LENGTH, MAX_LIST_VALUES } from '$lib/atelier/types';
+} from '#lib/shared/python/config.ts';
+import { LoadingStageIndex } from '#lib/shared/python/types.ts';
+import { MAX_ATELIER_LISTS, toWorkerMessageSchema } from '#lib/shared/python/worker/messages.ts';
+import { MAX_CATEGORIES, MAX_CATEGORY_LENGTH, MAX_LIST_VALUES } from '#lib/atelier/types.ts';
 import {
 	MAX_PYTHON_LIST_LENGTH,
 	MAX_PYTHON_NAME_LENGTH,
 	type PythonListReport
-} from '$lib/atelier/from-python';
-import { runExerciseValidation } from '$lib/shared/python/validation-core';
+} from '#lib/atelier/from-python.ts';
+import { runExerciseValidation } from '#lib/shared/python/validation-core/index.ts';
 
 // =============================================================================
 // Package Tracking for Lazy Loading
@@ -419,7 +419,7 @@ async function loadPyodideModule(): Promise<LoadPyodideFunc> {
  * Rapporte ce que le JSON ne dirait pas (booléen, grand entier, `nan`, autre
  * type, texte trop long, liste trop longue pour être parcourue), puis les valeurs (au plus `max_values`) ou, au-delà, les effectifs
  * (au plus `max_distinct` valeurs différentes). Les règles de l'atelier sont
- * appliquées ensuite, côté page (`$lib/atelier/from-python`, `offerOf`).
+ * appliquées ensuite, côté page (`#lib/atelier/from-python.ts`, `offerOf`).
  *
  * ⚠️ Limites assumées : l'opérateur morse (`(L := […])`) et `global L` dans une
  * fonction ne sont pas vus ; une affectation dans une branche NON exécutée
@@ -1812,7 +1812,7 @@ async function validateCode(code: string, config: ValidationConfig, id: string):
  * Validate Python exercise code with the orthogonal AST + behavior pipeline.
  *
  * Thin worker-side wrapper around the runtime-agnostic core in
- * `$lib/shared/python/validation-core`. Responsibilities kept here (transport):
+ * `#lib/shared/python/validation-core/index.ts`. Responsibilities kept here (transport):
  *   - guard on Pyodide readiness (`PYODIDE_NOT_READY`);
  *   - resolve the notebook checkpoint namespace via `getContextNamespace`;
  *   - post the result back to the main thread.

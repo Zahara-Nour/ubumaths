@@ -9,9 +9,9 @@
 -->
 
 <script lang="ts">
-	import * as Card from '$lib/components/ui/card';
-	import { Button } from '$lib/components/ui/button';
-	import { Badge } from '$lib/components/ui/badge';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
 	import {
 		FileEdit,
 		Users,
@@ -24,7 +24,7 @@
 		Send,
 		Timer
 	} from '@lucide/svelte';
-	import type { AssignmentWithDetails, EvaluationWithSeries } from '$lib/types/evaluation';
+	import type { AssignmentWithDetails, EvaluationWithSeries } from '#lib/types/evaluation.ts';
 	import {
 		countSeriesQuestions,
 		formatGrade,
@@ -32,8 +32,8 @@
 		getAttemptsRemaining,
 		getStatusColor,
 		getStatusLabel
-	} from '$lib/types/evaluation';
-	import { formatDeadline } from '$lib/utils/dates';
+	} from '#lib/types/evaluation.ts';
+	import { formatDeadline } from '#lib/utils/dates.ts';
 
 	interface Props {
 		evaluation: EvaluationWithSeries;

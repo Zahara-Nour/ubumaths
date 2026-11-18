@@ -42,8 +42,8 @@ import { formatEndpointValue as formatBound } from '../../domain/format';
 import { DomainUnresolvedError } from '../../domain/errors';
 import { studyDomain } from '../../domain/study';
 import { formatInterval } from '../../domain/format';
-import { endpointToNumber } from '$lib/math/intervals/endpoint';
-import type { Interval } from '$lib/math/intervals/types';
+import { endpointToNumber } from '#lib/math/intervals/endpoint.ts';
+import type { Interval } from '#lib/math/intervals/types.ts';
 import type { Domain } from '../../domain/types';
 import type { MathNode } from '../../types';
 import type {

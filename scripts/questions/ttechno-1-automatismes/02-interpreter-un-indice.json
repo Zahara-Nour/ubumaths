@@ -1,0 +1,259 @@
+{
+	"id": "4950a32e-7306-4466-bf04-c29bfe9a69b9",
+	"title": "Interpréter un indice de base 100",
+	"description": "Traduire un indice en taux d'évolution depuis l'année de base",
+	"grades": ["T_TECHNO"],
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "L'indice du prix d'un article en 2024, base $100$ en 2020, vaut ${{k}}$.\n\nDe quel pourcentage le prix a-t-il augmenté entre 2020 et 2024 ?\n\n$?~\\%$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "103.5|108|112.5|117|124|131.2"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:k-100;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un indice $I$ de base $100$ correspond à un taux d'évolution de $I-100$ pour cent depuis l'année de base.",
+					"${{k}}-100=\\textcolor{{{color:primary.0}}}{{{eval:k-100;d}}}$ : le prix a augmenté de ${{eval:k-100;d}}~\\%$."
+				]
+			}
+		},
+		{
+			"statement": "L'indice de la production d'une usine en 2024, base $100$ en 2020, vaut ${{k}}$.\n\nQuel est le taux d'évolution de la production entre 2020 et 2024 (positif pour une hausse, négatif pour une baisse) ?\n\n$?~\\%$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "96|91.5|87|82|78.4"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:k-100;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un indice $I$ de base $100$ correspond à un taux d'évolution de $I-100$ pour cent depuis l'année de base.",
+					"${{k}}-100=\\textcolor{{{color:primary.0}}}{{{eval:k-100;d}}}$ : la production a baissé de ${{eval:100-k;d}}~\\%$."
+				]
+			}
+		},
+		{
+			"statement": "L'indice du nombre de visiteurs d'un musée en 2024, base $100$ en 2019, vaut ${{eval:100+m*(1.5*s^2-3.5*s+1);d}}$.\n\nEntre 2019 et 2024, le nombre de visiteurs a connu…\n\n```choix\nmelanger: non\n- une hausse\n- une baisse\n- une stabilité\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0|0|1|1|2"
+				},
+				{
+					"name": "m",
+					"expression": "3|6|8|12|15|22"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{s}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un indice $I$ de base $100$ correspond à un taux d'évolution de $I-100$ pour cent depuis l'année de base.",
+					"Ici l'indice vaut ${{eval:100+m*(1.5*s^2-3.5*s+1);d}}$, {{if:s==0|plus que $100$ : c'est **une hausse**.|{{if:s==1|moins que $100$ : c'est **une baisse**.|exactement $100$ : c'est **une stabilité**.}}}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "112,5 → 12,5",
+			"variationIndex": 0,
+			"variables": {
+				"k": "112.5"
+			},
+			"answers": ["12,5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 112,5",
+			"variationIndex": 0,
+			"variables": {
+				"k": "112.5"
+			},
+			"answers": ["112,5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 0,125",
+			"variationIndex": 0,
+			"variables": {
+				"k": "112.5"
+			},
+			"answers": ["0,125"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "87 → −13",
+			"variationIndex": 1,
+			"variables": {
+				"k": "87"
+			},
+			"answers": ["-13"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signe perdu (13)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "87"
+			},
+			"answers": ["13"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 87",
+			"variationIndex": 1,
+			"variables": {
+				"k": "87"
+			},
+			"answers": ["87"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "choix : bonne réponse 0",
+			"variationIndex": 2,
+			"variables": {
+				"s": "0",
+				"m": "8"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "choix 1 refusé",
+			"variationIndex": 2,
+			"variables": {
+				"s": "0",
+				"m": "8"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "choix 2 refusé",
+			"variationIndex": 2,
+			"variables": {
+				"s": "0",
+				"m": "8"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "choix : bonne réponse 1",
+			"variationIndex": 2,
+			"variables": {
+				"s": "1",
+				"m": "12"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "choix 0 refusé",
+			"variationIndex": 2,
+			"variables": {
+				"s": "1",
+				"m": "12"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "choix 2 refusé",
+			"variationIndex": 2,
+			"variables": {
+				"s": "1",
+				"m": "12"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "choix : bonne réponse 2",
+			"variationIndex": 2,
+			"variables": {
+				"s": "2",
+				"m": "6"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "choix 0 refusé",
+			"variationIndex": 2,
+			"variables": {
+				"s": "2",
+				"m": "6"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "choix 1 refusé",
+			"variationIndex": 2,
+			"variables": {
+				"s": "2",
+				"m": "6"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

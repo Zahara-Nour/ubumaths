@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import { DocumentManager } from '$lib/components/documents';
+	import { lore } from '#lib/config/lore.ts';
+	import { DocumentManager } from '#lib/components/documents/index.ts';
 	import { FileText } from '@lucide/svelte';
 </script>
 

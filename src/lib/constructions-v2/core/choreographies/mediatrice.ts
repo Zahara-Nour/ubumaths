@@ -25,8 +25,8 @@
 import type { Voie, ChoreographyFn, ChoreographyResult, SubStep, TraceTag } from './types';
 import { droite, en, labelAux, nom, role, shownName } from './names';
 import { hasVisibleSegment, measureSegment, rulerStartsAtA } from './milieu';
-import type { Figure } from '$lib/geometry-core/graph/figure';
-import { isMidpoint } from '$lib/geometry-core/types/elements';
+import type { Figure } from '#lib/geometry-core/graph/figure.ts';
+import { isMidpoint } from '#lib/geometry-core/types/elements.ts';
 
 /**
  * Length of the segment-trace (math units). Matches the default `Ruler`

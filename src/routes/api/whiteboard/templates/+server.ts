@@ -16,18 +16,18 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAuth, requireRoles } from '$lib/server/middleware/auth';
+import { requireAuth, requireRoles } from '#lib/server/middleware/auth.ts';
 import {
 	listWhiteboardTemplatesQuerySchema,
 	createWhiteboardTemplateSchema
-} from '$lib/server/validation/whiteboard-templates';
+} from '#lib/server/validation/whiteboard-templates.ts';
 import {
 	toWhiteboardTemplateRow,
 	rowToTemplate,
 	rowToTemplateWithFavorite,
 	type WhiteboardTemplateWithFavorite
-} from '$lib/whiteboard/types/templates';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/whiteboard/types/templates.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/whiteboard/templates/+server');
 

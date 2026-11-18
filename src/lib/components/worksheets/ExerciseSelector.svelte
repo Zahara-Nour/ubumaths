@@ -16,7 +16,7 @@
 	Usage:
 	```svelte
 	<script lang="ts">
-	  import ExerciseSelector from '$lib/components/worksheets/ExerciseSelector.svelte';
+	  import ExerciseSelector from '#lib/components/worksheets/ExerciseSelector.svelte';
 
 	  let selectedIds = $state<string[]>([]);
 
@@ -33,17 +33,17 @@
 	```
 -->
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import { SvelteMap } from 'svelte/reactivity';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Label } from '$lib/components/ui/label';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import * as Card from '$lib/components/ui/card';
-	import { Separator } from '$lib/components/ui/separator';
-	import { Checkbox } from '$lib/components/ui/checkbox';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Separator } from '#lib/components/ui/separator/index.ts';
+	import { Checkbox } from '#lib/components/ui/checkbox/index.ts';
 	import {
 		Search,
 		Filter,
@@ -55,11 +55,11 @@
 		ChevronRight,
 		X
 	} from '@lucide/svelte';
-	import { formatGradeShort } from '$lib/utils/grades';
-	import type { GradeCode } from '$lib/types/grades';
-	import type { Exercise } from '$lib/exercises/types';
-	import { getExerciseContentSafe, EXERCISE_CATEGORIES } from '$lib/exercises/types';
-	import type { ExerciseCategory } from '$lib/exercises/types';
+	import { formatGradeShort } from '#lib/utils/grades.ts';
+	import type { GradeCode } from '#lib/types/grades.ts';
+	import type { Exercise } from '#lib/exercises/types.ts';
+	import { getExerciseContentSafe, EXERCISE_CATEGORIES } from '#lib/exercises/types.ts';
+	import type { ExerciseCategory } from '#lib/exercises/types.ts';
 	import ExercisePreview from './ExercisePreview.svelte';
 
 	// Types

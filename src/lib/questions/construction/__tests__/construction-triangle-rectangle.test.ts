@@ -20,13 +20,14 @@ import {
 	sideEyeballedFeedback,
 	vertexEyeballedFeedback,
 	wrongLengthFeedback,
-	wrongSquaresFeedback
+	wrongSquaresFeedback,
+	notJoinedFeedback
 } from '../triangle';
 import { isStraight, perpendicularThrough, type StraightTrait } from '../instruments';
 import { solutionLines, solutionTriangle } from '../drawing';
 import { serializeConstructionAnswer, type DrawnObject } from '../answer';
 import type { Position } from '../judge';
-import { readConstructionHeader } from '$lib/ubumark/parser/construction-parser';
+import { readConstructionHeader } from '#lib/ubumark/parser/construction-parser.ts';
 
 function checksOf(source: string) {
 	const { spec, errors } = readConstructionHeader(source);
@@ -454,7 +455,7 @@ describe('aide à l’écriture : les exemples du n° 20 se construisent', () =>
 		'Construire un triangle rectangle à l’équerre',
 		'Construire un triangle rectangle sur quadrillage'
 	])('%s', async (title) => {
-		const { figureACompleterEntry } = await import('$lib/block-catalog/figure-a-completer');
+		const { figureACompleterEntry } = await import('#lib/block-catalog/figure-a-completer.ts');
 		const example = figureACompleterEntry.examples.find((e) => e.title === title);
 		expect(example).toBeDefined();
 		const lines = (example?.source ?? '').split('\n');
@@ -465,8 +466,8 @@ describe('aide à l’écriture : les exemples du n° 20 se construisent', () =>
 
 describe('triangle rectangle : génération d’une question', () => {
 	it('une longueur en carreaux n’a aucun point à nommer', async () => {
-		const { generateInstance } = await import('$lib/questions/generator/instance-generator');
-		const { templateMarkdown } = await import('$lib/ubumark');
+		const { generateInstance } = await import('#lib/questions/generator/instance-generator.ts');
+		const { templateMarkdown } = await import('#lib/ubumark/index.ts');
 		const block = ['```figure-a-completer', SQUARES, '```'].join('\n');
 		const template = {
 			id: 'test-triangle-rectangle',
@@ -476,7 +477,7 @@ describe('triangle rectangle : génération d’une question', () => {
 			variations: [{ statement: templateMarkdown(`Construis le triangle.\n\n${block}`) }],
 			grades: ['CE2'],
 			level: 1
-		} as unknown as import('$lib/questions/types').QuestionTemplate;
+		} as unknown as import('#lib/questions/types.ts').QuestionTemplate;
 		const result = generateInstance(template, 42);
 		expect(result.success ? [] : result.errors).toEqual([]);
 	});
@@ -503,5 +504,21 @@ describe('triangle rectangle : revue', () => {
 			's = segment(A, B)'
 		]);
 		expect(() => assertChecks(source)).toThrow(/perpendiculaire.*sort de la fenêtre/);
+	});
+});
+
+describe('revue de #2665 : côtés qui ne se rejoignent pas, sans rapporteur', () => {
+	it('papier uni : [AC] au-delà de C sur la perpendiculaire, [BC] arrêté en C → « doivent se rejoindre »', () => {
+		expect(judge(RIGHT, [SQUARE_A, segment(A, { x: 3, y: 7 }), segment(B, C)])).toEqual({
+			status: 'incorrect',
+			feedback: notJoinedFeedback('A', 'B', 'C')
+		});
+	});
+
+	it('quadrillage : même message, pas le rapporteur', () => {
+		expect(judge(SQUARES, [segment(GA, { x: 2, y: 6 }), segment(GB, { x: 2, y: 5 })])).toEqual({
+			status: 'incorrect',
+			feedback: notJoinedFeedback('A', 'B', 'C')
+		});
 	});
 });

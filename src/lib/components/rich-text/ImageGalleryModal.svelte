@@ -16,9 +16,9 @@
 	/>
 -->
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import { Button } from '$lib/components/ui/button';
+	import { lore } from '#lib/config/lore.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import { Upload, ImageIcon, Loader2 } from '@lucide/svelte';
 	import type { GalleryImageInfo } from './types';
 

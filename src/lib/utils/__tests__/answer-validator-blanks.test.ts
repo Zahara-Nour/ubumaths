@@ -14,14 +14,14 @@
 
 import { describe, it, expect } from 'vitest';
 import { validateAnswer } from '../answer-validator';
-import { validateQuantityAnswer } from '$lib/questions/units/validator';
+import { validateQuantityAnswer } from '#lib/questions/units/validator.ts';
 import type {
 	QuestionInstance,
 	InstanceBlank,
 	PrecisionType,
 	RequiredForm
-} from '$lib/questions/types';
-import type { ResolvedMarkdown } from '$lib/ubumark';
+} from '#lib/questions/types.ts';
+import type { ResolvedMarkdown } from '#lib/ubumark/index.ts';
 
 // ============================================================================
 // HELPERS

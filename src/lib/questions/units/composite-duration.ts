@@ -25,7 +25,7 @@
 import { cleanStudentQuantityLatex } from './student-input';
 import { parseUnitExpression } from './parser';
 import { isDuration } from './operations';
-import { numberToLatexSafe } from '$lib/mathAST/common/numeric';
+import { numberToLatexSafe } from '#lib/mathAST/common/numeric.ts';
 
 // ============================================================================
 // TYPES

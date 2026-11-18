@@ -10,10 +10,10 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 const requireRolesMock = vi.fn();
 
-vi.mock('$lib/server/middleware/auth', () => ({
+vi.mock('#lib/server/middleware/auth.ts', () => ({
 	requireRoles: (...args: unknown[]) => requireRolesMock(...args)
 }));
-vi.mock('$lib/server/notifications', () => ({
+vi.mock('#lib/server/notifications.ts', () => ({
 	createSystemNotification: vi.fn().mockResolvedValue({ success: true })
 }));
 

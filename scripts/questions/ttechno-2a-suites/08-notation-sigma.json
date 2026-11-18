@@ -1,0 +1,367 @@
+{
+	"id": "752d26c9-a9ce-4ee8-ad6d-dcefa3ce578f",
+	"title": "Notation Σ",
+	"description": "Lire et calculer une somme écrite avec Σ (carrés, cubes, inverses), compter ses termes, écrire une somme avec Σ",
+	"grades": ["T_TECHNO"],
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Calcule $S=\\displaystyle\\sum_{k=1}^{ {{n}} }k^{ {{a}} }$.\n\n$S=?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "3..5"
+				},
+				{
+					"name": "a",
+					"expression": "2|3"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:{{if:a==2|n*(n+1)*(2*n+1)/6|(n*(n+1)/2)^2}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\displaystyle\\sum_{k=p}^{m}f(k)$ se lit « somme des $f(k)$ pour $k$ allant de $p$ à $m$ » : on remplace $k$ par chaque entier de $p$ à $m$ et on additionne.",
+					"$S=1^{ {{a}} }+2^{ {{a}} }+3^{ {{a}} }{{if:n==3||+4^{ {{a}} }}}{{if:n==5|+5^{ {{a}} }|}}=\\textcolor{{{color:primary.0}}}{{{eval:{{if:a==2|n*(n+1)*(2*n+1)/6|(n*(n+1)/2)^2}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Calcule $S=\\displaystyle\\sum_{k=1}^{ {{n}} }\\dfrac{1}{k}$. Donne la valeur exacte.\n\n$S=?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2|3|4"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:{{if:n==2|3/2|{{if:n==3|11/6|25/12}}}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\displaystyle\\sum_{k=p}^{m}f(k)$ se lit « somme des $f(k)$ pour $k$ allant de $p$ à $m$ » : on remplace $k$ par chaque entier de $p$ à $m$ et on additionne.",
+					"$S={{if:n==2|1+\\dfrac{1}{2}|{{if:n==3|1+\\dfrac{1}{2}+\\dfrac{1}{3}|1+\\dfrac{1}{2}+\\dfrac{1}{3}+\\dfrac{1}{4}}}}}=\\textcolor{{{color:primary.0}}}{{{eval:{{if:n==2|3/2|{{if:n==3|11/6|25/12}}}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Combien de termes la somme $\\displaystyle\\sum_{k={{p}}}^{ {{m}} }(k^2+1)$ compte-t-elle ?\n\n$?$ termes",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "0..5"
+				},
+				{
+					"name": "m",
+					"expression": "9..30"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:m-p+1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\displaystyle\\sum_{k=p}^{m}f(k)$ se lit « somme des $f(k)$ pour $k$ allant de $p$ à $m$ » : on remplace $k$ par chaque entier de $p$ à $m$ et on additionne.",
+					"$k$ prend toutes les valeurs entières de ${{p}}$ à ${{m}}$ : il y en a ${{m}}-{{p}}+1=\\textcolor{{{color:primary.0}}}{{{eval:m-p+1}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Quelle écriture est égale à $1+\\dfrac{1}{2}+\\dfrac{1}{3}+\\cdots+\\dfrac{1}{ {{n}} }$ ?\n\n```choix\nmelanger: non\n- $\\displaystyle\\sum_{k=1}^{ {{n}} }\\dfrac{1}{k}$\n- $\\displaystyle\\sum_{k=1}^{ {{n}} }k$\n- $\\displaystyle\\sum_{k=0}^{ {{n}} }\\dfrac{1}{k}$\n- $\\displaystyle\\sum_{k=1}^{ {{eval:n-1}} }\\dfrac{1}{k}$\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "6..20"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\displaystyle\\sum_{k=p}^{m}f(k)$ se lit « somme des $f(k)$ pour $k$ allant de $p$ à $m$ » : on remplace $k$ par chaque entier de $p$ à $m$ et on additionne.",
+					"Les termes sont les inverses $\\dfrac{1}{k}$ des entiers $k$ de $1$ à ${{n}}$ : $\\textcolor{{{color:primary.0}}}{\\displaystyle\\sum_{k=1}^{ {{n}} }\\dfrac{1}{k}}$. (Pour $k=0$, $\\dfrac{1}{0}$ n'existe pas.)"
+				]
+			}
+		},
+		{
+			"statement": "Quelle écriture est égale à $1^2+2^2+3^2+\\cdots+{{n}}^2$ ?\n\n```choix\nmelanger: non\n- $\\displaystyle\\sum_{k=1}^{ {{n}} }k^2$\n- $\\displaystyle\\sum_{k=1}^{ {{n}} }2k$\n- $\\displaystyle\\sum_{k=1}^{ {{eval:n^2}} }k$\n- $\\displaystyle\\left(\\sum_{k=1}^{ {{n}} }k\\right)^2$\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "6..20"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\displaystyle\\sum_{k=p}^{m}f(k)$ se lit « somme des $f(k)$ pour $k$ allant de $p$ à $m$ » : on remplace $k$ par chaque entier de $p$ à $m$ et on additionne.",
+					"Les termes sont les carrés $k^2$ des entiers $k$ de $1$ à ${{n}}$ : $\\textcolor{{{color:primary.0}}}{\\displaystyle\\sum_{k=1}^{ {{n}} }k^2}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Σ k², n = 4 : 30",
+			"variationIndex": 0,
+			"variables": {
+				"n": "4",
+				"a": "2"
+			},
+			"answers": ["30"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : (1+2+3+4)² (100)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "4",
+				"a": "2"
+			},
+			"answers": ["100"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : sans le carré (10)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "4",
+				"a": "2"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Σ k³, n = 3 : 36",
+			"variationIndex": 0,
+			"variables": {
+				"n": "3",
+				"a": "3"
+			},
+			"answers": ["36"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : dernier terme (27)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "3",
+				"a": "3"
+			},
+			"answers": ["27"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Σ 1/k, n = 3 : 11/6",
+			"variationIndex": 1,
+			"variables": {
+				"n": "3"
+			},
+			"answers": ["\\frac{11}{6}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3/6",
+			"variationIndex": 1,
+			"variables": {
+				"n": "3"
+			},
+			"answers": ["\\frac{3}{6}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1/6",
+			"variationIndex": 1,
+			"variables": {
+				"n": "3"
+			},
+			"answers": ["\\frac{1}{6}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Σ 1/k, n = 4 : 25/12",
+			"variationIndex": 1,
+			"variables": {
+				"n": "4"
+			},
+			"answers": ["\\frac{25}{12}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "k de 2 à 20 : 19",
+			"variationIndex": 2,
+			"variables": {
+				"p": "2",
+				"m": "20"
+			},
+			"answers": ["19"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 20 − 2 (18)",
+			"variationIndex": 2,
+			"variables": {
+				"p": "2",
+				"m": "20"
+			},
+			"answers": ["18"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 20",
+			"variationIndex": 2,
+			"variables": {
+				"p": "2",
+				"m": "20"
+			},
+			"answers": ["20"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "k de 0 à 12 : 13",
+			"variationIndex": 2,
+			"variables": {
+				"p": "0",
+				"m": "12"
+			},
+			"answers": ["13"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "choix : bonne réponse 0",
+			"variationIndex": 3,
+			"variables": {
+				"n": "10"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "choix 1 refusé",
+			"variationIndex": 3,
+			"variables": {
+				"n": "10"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "choix 2 refusé",
+			"variationIndex": 3,
+			"variables": {
+				"n": "10"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "choix 3 refusé",
+			"variationIndex": 3,
+			"variables": {
+				"n": "10"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "choix : bonne réponse 0",
+			"variationIndex": 4,
+			"variables": {
+				"n": "10"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "choix 1 refusé",
+			"variationIndex": 4,
+			"variables": {
+				"n": "10"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "choix 2 refusé",
+			"variationIndex": 4,
+			"variables": {
+				"n": "10"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "choix 3 refusé",
+			"variationIndex": 4,
+			"variables": {
+				"n": "10"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

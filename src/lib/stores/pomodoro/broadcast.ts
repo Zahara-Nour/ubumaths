@@ -11,7 +11,7 @@
  * for v1.5: less responsive but still correct.
  */
 
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 import type { PomodoroPhase, PomodoroSettings, PomodoroState } from './logic';
 
 const CHANNEL_NAME = 'chiphre:pomodoro:v1';

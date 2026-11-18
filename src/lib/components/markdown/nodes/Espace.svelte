@@ -12,7 +12,7 @@
 	@module components/markdown/nodes/Espace
 -->
 <script lang="ts">
-	import type { EspaceNode } from '$lib/ubumark/types/espace';
+	import type { EspaceNode } from '#lib/ubumark/types/espace.ts';
 	import Cubes from './Cubes.svelte';
 	import CubesGeste from './CubesGeste.svelte';
 	import PatronGeste from './PatronGeste.svelte';

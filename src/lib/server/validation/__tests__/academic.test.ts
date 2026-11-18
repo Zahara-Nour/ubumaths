@@ -14,7 +14,7 @@ import {
 	getPeriodsSchema,
 	getActiveYearSchema,
 	linkAssessmentsSchema
-} from '$lib/server/validation/academic';
+} from '#lib/server/validation/academic.ts';
 
 describe('Academic Validation Schemas', () => {
 	const validUuid = '550e8400-e29b-41d4-a716-446655440000';

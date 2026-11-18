@@ -11,7 +11,7 @@
  *     coché, il reste masqué (Q1).
  */
 import { describe, it, expect, vi } from 'vitest';
-import { createFakeSupabase } from '$lib/server/__tests__/helpers/fake-supabase';
+import { createFakeSupabase } from '#lib/server/__tests__/helpers/fake-supabase.ts';
 import {
 	answerProgramme,
 	pointIdsOf,
@@ -20,7 +20,7 @@ import {
 	P_FRACTION,
 	P_QUATRIEME,
 	P_TRIANGLE_ARCHIVE
-} from '$lib/server/__tests__/helpers/fake-programme';
+} from '#lib/server/__tests__/helpers/fake-programme.ts';
 import type { PageServerData } from '../$types';
 
 const USER_ID = '99999999-9999-4999-8999-999999999999';
@@ -28,21 +28,21 @@ const CLASS_ID = '11111111-1111-4111-8111-111111111111';
 const ENTRY_ID = '22222222-2222-4222-8222-222222222222';
 const DATE = '2026-10-21';
 
-vi.mock('$lib/server/middleware/auth', () => ({
+vi.mock('#lib/server/middleware/auth.ts', () => ({
 	requireRole: async () => ({ user: { id: '99999999-9999-4999-8999-999999999999' } })
 }));
-vi.mock('$lib/server/journal-homework', () => ({
+vi.mock('#lib/server/journal-homework.ts', () => ({
 	getHomeworkForEntry: async () => [],
 	prepareHomeworkForEntry: async () => ({ items: [], rejected: [] }),
 	setHomeworkForEntry: async () => ({ error: null })
 }));
-vi.mock('$lib/server/class-sessions', () => ({
+vi.mock('#lib/server/class-sessions.ts', () => ({
 	getUpcomingSessionDates: async () => ({ dates: [], hasSchedule: false })
 }));
-vi.mock('$lib/server/curriculum-coverage', () => ({
+vi.mock('#lib/server/curriculum-coverage.ts', () => ({
 	reconcileAutoCoverage: async () => ({ introuvables: [] })
 }));
-vi.mock('$lib/server/journal', () => ({
+vi.mock('#lib/server/journal.ts', () => ({
 	createJournalEntry: async () => ({ data: { id: '22222222-2222-4222-8222-222222222222' } }),
 	updateJournalEntry: async () => ({ data: null }),
 	deleteJournalEntry: async () => ({ error: null })

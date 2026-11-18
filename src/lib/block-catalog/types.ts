@@ -29,8 +29,14 @@ export type CatalogNodeType =
 	| 'espace'
 	| 'operation'
 	| 'ranger'
+	| 'associer'
+	| 'trous'
+	| 'tortue'
+	| 'calcul'
+	| 'robot'
 	| 'collection'
-	| 'monnaie';
+	| 'monnaie'
+	| 'schema-barres';
 
 /** Une ligne du tableau des réglages */
 export interface BlockSetting {

@@ -17,17 +17,17 @@
 	Migré depuis l'ancien dropdown de l'avatar (Phase 3 refonte sidebar).
 -->
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import type { PageData } from './$types';
-	import UserAvatar from '$lib/components/UserAvatar.svelte';
-	import { Button } from '$lib/components/ui/button';
-	import AvatarShopSection from '$lib/components/avatars/AvatarShopSection.svelte';
-	import AccountDeletionDialog from '$lib/components/account/AccountDeletionDialog.svelte';
-	import { theme } from '$lib/stores/theme.svelte';
-	import { fontSize } from '$lib/stores/fontSize.svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import { submitLogoutForm } from '$lib/utils/auth';
-	import { childLoginIdOf } from '$lib/utils/child-account';
+	import UserAvatar from '#lib/components/UserAvatar.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import AvatarShopSection from '#lib/components/avatars/AvatarShopSection.svelte';
+	import AccountDeletionDialog from '#lib/components/account/AccountDeletionDialog.svelte';
+	import { theme } from '#lib/stores/theme.svelte.ts';
+	import { fontSize } from '#lib/stores/fontSize.svelte.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import { submitLogoutForm } from '#lib/utils/auth.ts';
+	import { childLoginIdOf } from '#lib/utils/child-account.ts';
 	import { resolve } from '$app/paths';
 	import {
 		LogOut,
@@ -197,7 +197,7 @@
 		<div class="flex flex-wrap gap-3">
 			<!-- Compte Google seul : pas de mot de passe à changer. -->
 			{#if data.canChangePassword}
-				<Button variant="outline" href={`${resolve('/auth/update-password')}?depuis=profil`}>
+				<Button variant="outline" href={`${resolve('auth/update-password')}?depuis=profil`}>
 					<KeyRound class="mr-2 h-4 w-4" aria-hidden="true" />
 					Changer mon mot de passe
 				</Button>

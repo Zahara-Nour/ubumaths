@@ -6,15 +6,17 @@
 	Mode projection (anonymisation) reçu via prop pour cohérence page.
 -->
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import { ArrowUpDown, AlertCircle, RefreshCw, Clock, CheckCircle, Circle } from '@lucide/svelte';
-	import { Button } from '$lib/components/ui/button';
-	import { Skeleton } from '$lib/components/ui/skeleton';
-	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
-	import { Badge } from '$lib/components/ui/badge';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
-	import * as Card from '$lib/components/ui/card';
-	import type { CurriculumPointBadge } from '$lib/server/srs/curriculum-point-badge';
+	import { lore } from '#lib/config/lore.ts';
+	import { ArrowUpDown } from '@lucide/svelte';
+	import { badgeMeta } from './curriculum-point-badge-meta';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Skeleton } from '#lib/components/ui/skeleton/index.ts';
+	import InlineMarkdown from '#lib/components/markdown/InlineMarkdown.svelte';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { studentFollowUpHref } from '#lib/navigation/return-links.ts';
+	import type { CurriculumPointBadge } from '#lib/server/srs/curriculum-point-badge.ts';
 
 	interface ClassStudent {
 		id: string;
@@ -81,18 +83,6 @@
 			(a, b) => (stats[b.id]?.acquise_pct ?? 0) - (stats[a.id]?.acquise_pct ?? 0)
 		);
 	});
-
-	function badgeMeta(badge: CurriculumPointBadge) {
-		return (
-			{
-				a_remedier: { icon: AlertCircle, color: 'text-red-600', label: 'À remédier' },
-				a_renforcer: { icon: RefreshCw, color: 'text-amber-600', label: 'À renforcer' },
-				en_apprentissage: { icon: Clock, color: 'text-blue-600', label: 'En apprentissage' },
-				acquise_en_memoire: { icon: CheckCircle, color: 'text-emerald-600', label: 'Acquise' },
-				non_commencee: { icon: Circle, color: 'text-muted-foreground', label: 'Non commencée' }
-			} as const
-		)[badge];
-	}
 
 	function displayName(s: ClassStudent, idx: number): string {
 		return anonymized ? `${lore.entities.student} ${idx + 1}` : s.display_name;
@@ -174,7 +164,15 @@
 								<td
 									class="sticky left-0 z-10 max-w-[10rem] truncate bg-background px-2 py-2 font-medium"
 								>
-									{displayName(student, idx)}
+									<!-- Pas de lien en projection : le suivi afficherait le vrai nom (R2) -->
+									{#if anonymized}
+										{displayName(student, idx)}
+									{:else}
+										<a
+											class="underline-offset-4 hover:underline"
+											href={studentFollowUpHref(student.id, classId)}>{displayName(student, idx)}</a
+										>
+									{/if}
 								</td>
 								{#each orderedPoints as point (point.id)}
 									{@const badge = data.cells[`${student.id}:${point.id}`] ?? 'non_commencee'}

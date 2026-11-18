@@ -12,8 +12,8 @@
  */
 
 import type { PageServerLoad } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import { getStudentWorkInbox } from '$lib/server/student-inbox';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { getStudentWorkInbox } from '#lib/server/student-inbox.ts';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	const { user } = await requireRole(locals, 'student');

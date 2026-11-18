@@ -7,9 +7,9 @@
 
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRoles } from '$lib/server/middleware/auth';
-import { createSeriesSchema } from '$lib/server/validation/evaluations';
-import { createSeries, SeriesError } from '$lib/server/series';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import { createSeriesSchema } from '#lib/server/validation/evaluations.ts';
+import { createSeries, SeriesError } from '#lib/server/series.ts';
 
 export const POST: RequestHandler = async ({ locals, request }) => {
 	const { user } = await requireRoles(locals, ['teacher', 'admin']);

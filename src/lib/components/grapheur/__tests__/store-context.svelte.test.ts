@@ -9,8 +9,8 @@
 import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import ViewportControls from '../ViewportControls.svelte';
-import { GrapheurStore } from '$lib/stores/grapheur.svelte';
-import { grapheurContext } from '$lib/stores/grapheur-context';
+import { GrapheurStore } from '#lib/stores/grapheur.svelte.ts';
+import { grapheurContext } from '#lib/stores/grapheur-context.ts';
 
 describe('instance fournie par contexte', () => {
 	it('agit sur l’instance fournie, pas sur une autre', async () => {

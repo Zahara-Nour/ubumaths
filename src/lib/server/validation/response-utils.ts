@@ -13,7 +13,7 @@
 
 import { z } from 'zod';
 import { error } from '@sveltejs/kit';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/validation/response-utils');
 

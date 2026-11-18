@@ -105,6 +105,19 @@ import {
 	isHorlogeBlockStart
 } from './horloge-parser';
 import {
+	findTortueBlocks,
+	parseTortue,
+	parseTortueContent,
+	isTortueBlockStart
+} from './tortue-parser';
+import {
+	findCalculBlocks,
+	parseCalcul,
+	parseCalculContent,
+	isCalculBlockStart
+} from './calcul-parser';
+import { findRobotBlocks, parseRobot, parseRobotContent, isRobotBlockStart } from './robot-parser';
+import {
 	findPartageBlocks,
 	parsePartage,
 	parsePartageContent,
@@ -134,8 +147,16 @@ import {
 	parseMonnaieContent,
 	isMonnaieBlockStart
 } from './monnaie-parser';
+import {
+	findSchemaBarresBlocks,
+	parseSchemaBarres,
+	parseSchemaBarresContent,
+	isSchemaBarresBlockStart
+} from './schema-barres-parser';
 import { findChoiceBlocks, parseChoiceBlock } from './choix-parser';
 import { findRangerBlocks, parseRangerBlock } from './ranger-parser';
+import { findAssocierBlocks, parseAssocierBlock, parseAssocierContent } from './associer-parser';
+import { findTrousBlocks, parseTrousBlock, parseTrousContent } from './trous-parser';
 import {
 	findCourbeBlocks,
 	isCourbeBlockStart,
@@ -515,15 +536,23 @@ function parseBlocks(
 	const qrBlocks = findQrBlocks(lines);
 	const scratchBlocks = findScratchBlocks(lines);
 	const horlogeBlocks = findHorlogeBlocks(lines);
+	const tortueBlocks = findTortueBlocks(lines);
+	const calculBlocks = findCalculBlocks(lines);
+	const robotBlocks = findRobotBlocks(lines);
 	const partageBlocks = findPartageBlocks(lines);
 	const espaceBlocks = findEspaceBlocks(lines);
 	const operationBlocks = findOperationBlocks(lines);
 	const collectionBlocks = findCollectionBlocks(lines);
 	const monnaieBlocks = findMonnaieBlocks(lines);
+	const schemaBarresBlocks = findSchemaBarresBlocks(lines);
 	// Bloc ```choix (case « choix ») : ses choix restent du markdown, rendus un à un
 	const choiceBlocks = findChoiceBlocks(lines);
 	// Bloc ```ranger (étiquettes à ranger) : ses étiquettes restent du markdown
 	const rangerBlocks = findRangerBlocks(lines);
+	// Bloc ```associer (associer deux colonnes) : éléments et étiquettes restent du markdown
+	const associerBlocks = findAssocierBlocks(lines);
+	// Bloc ```trous (texte à trous à étiquettes) : le texte et les étiquettes restent du markdown
+	const trousBlocks = findTrousBlocks(lines);
 	type SpecialParse = (
 		source: string[],
 		start: number,
@@ -541,13 +570,19 @@ function parseBlocks(
 		{ ranges: qrBlocks, parse: parseQr, language: 'qr' },
 		{ ranges: scratchBlocks, parse: parseScratch, language: 'scratch' },
 		{ ranges: horlogeBlocks, parse: parseHorloge, language: 'horloge' },
+		{ ranges: tortueBlocks, parse: parseTortue, language: 'tortue' },
+		{ ranges: calculBlocks, parse: parseCalcul, language: 'calcul' },
+		{ ranges: robotBlocks, parse: parseRobot, language: 'robot' },
 		{ ranges: partageBlocks, parse: parsePartage, language: 'partage' },
 		{ ranges: espaceBlocks, parse: parseEspace, language: 'cubes' },
 		{ ranges: operationBlocks, parse: parseOperation, language: 'operation' },
 		{ ranges: collectionBlocks, parse: parseCollection, language: 'collection' },
 		{ ranges: monnaieBlocks, parse: parseMonnaie, language: 'monnaie' },
+		{ ranges: schemaBarresBlocks, parse: parseSchemaBarres, language: 'schema-barres' },
 		{ ranges: choiceBlocks, parse: parseChoiceBlock, language: 'choix' },
-		{ ranges: rangerBlocks, parse: parseRangerBlock, language: 'ranger' }
+		{ ranges: rangerBlocks, parse: parseRangerBlock, language: 'ranger' },
+		{ ranges: associerBlocks, parse: parseAssocierBlock, language: 'associer' },
+		{ ranges: trousBlocks, parse: parseTrousBlock, language: 'trous' }
 	];
 	const specialBlockAt = (index: number) => {
 		for (const { ranges, parse, language } of SPECIALS) {
@@ -612,13 +647,19 @@ function parseBlocks(
 			...qrBlocks,
 			...scratchBlocks,
 			...horlogeBlocks,
+			...tortueBlocks,
+			...calculBlocks,
+			...robotBlocks,
 			...partageBlocks,
 			...espaceBlocks,
 			...operationBlocks,
 			...collectionBlocks,
 			...monnaieBlocks,
+			...schemaBarresBlocks,
 			...choiceBlocks,
 			...rangerBlocks,
+			...associerBlocks,
+			...trousBlocks,
 			...courbeBlocks,
 			...figureBlocks,
 			...statChartBlocks
@@ -633,13 +674,19 @@ function parseBlocks(
 			...findQrBlocks(originalLines),
 			...findScratchBlocks(originalLines),
 			...findHorlogeBlocks(originalLines),
+			...findTortueBlocks(originalLines),
+			...findCalculBlocks(originalLines),
+			...findRobotBlocks(originalLines),
 			...findPartageBlocks(originalLines),
 			...findEspaceBlocks(originalLines),
 			...findOperationBlocks(originalLines),
 			...findCollectionBlocks(originalLines),
 			...findMonnaieBlocks(originalLines),
+			...findSchemaBarresBlocks(originalLines),
 			...findChoiceBlocks(originalLines),
 			...findRangerBlocks(originalLines),
+			...findAssocierBlocks(originalLines),
+			...findTrousBlocks(originalLines),
 			...originalCourbeBlocks,
 			...originalFigureBlocks,
 			...originalStatChartBlocks
@@ -1792,6 +1839,24 @@ const SPECIAL_BLOCK_KINDS = [
 		language: 'horloge'
 	},
 	{
+		is: isTortueBlockStart,
+		find: findTortueBlocks,
+		parse: parseTortue,
+		language: 'tortue'
+	},
+	{
+		is: isCalculBlockStart,
+		find: findCalculBlocks,
+		parse: parseCalcul,
+		language: 'calcul'
+	},
+	{
+		is: isRobotBlockStart,
+		find: findRobotBlocks,
+		parse: parseRobot,
+		language: 'robot'
+	},
+	{
 		is: isPartageBlockStart,
 		find: findPartageBlocks,
 		parse: parsePartage,
@@ -1820,6 +1885,12 @@ const SPECIAL_BLOCK_KINDS = [
 		find: findMonnaieBlocks,
 		parse: parseMonnaie,
 		language: 'monnaie'
+	},
+	{
+		is: isSchemaBarresBlockStart,
+		find: findSchemaBarresBlocks,
+		parse: parseSchemaBarres,
+		language: 'schema-barres'
 	}
 ] as const;
 
@@ -2047,6 +2118,18 @@ function parseContentWithCodeBlocks(
 		} else if (language === 'horloge') {
 			// Horloge dans un item de liste : toujours un nœud, même en erreur (Q48)
 			blocks.push(parseHorlogeContent(restoreMathPlaceholders(code, placeholders)));
+		} else if (language === 'tortue') {
+			// Programme tortue dans un item de liste : toujours un nœud, même en erreur (Q48) ;
+			// sans case (bloc en retrait), l'élève n'y répond pas
+			blocks.push(parseTortueContent(restoreMathPlaceholders(code, placeholders)));
+		} else if (language === 'calcul') {
+			// Programme de calcul dans un item de liste : toujours un nœud, même en erreur (Q48) ;
+			// sans case (bloc en retrait), l'élève n'y répond pas
+			blocks.push(parseCalculContent(restoreMathPlaceholders(code, placeholders)));
+		} else if (language === 'robot') {
+			// Robot dans un item de liste : toujours un nœud, même en erreur (Q48) ; sans case
+			// (bloc en retrait), l'élève n'y répond pas
+			blocks.push(parseRobotContent(restoreMathPlaceholders(code, placeholders)));
 		} else if (language === 'partage') {
 			// Partage dans un item de liste : toujours un nœud, même en erreur (Q48)
 			blocks.push(parsePartageContent(restoreMathPlaceholders(code, placeholders)));
@@ -2062,6 +2145,17 @@ function parseContentWithCodeBlocks(
 		} else if (language === 'monnaie') {
 			// Monnaie dans un item de liste : toujours un nœud, même en erreur (Q48)
 			blocks.push(parseMonnaieContent(restoreMathPlaceholders(code, placeholders)));
+		} else if (language === 'schema-barres') {
+			// Schéma en barres dans un item de liste : toujours un nœud, même en erreur (Q48)
+			blocks.push(parseSchemaBarresContent(restoreMathPlaceholders(code, placeholders)));
+		} else if (language === 'associer') {
+			// Éléments à associer dans un item de liste (énoncé d'une série d'automatismes,
+			// bloc sans case) : deux colonnes à relier, jamais du code
+			blocks.push(parseAssocierContent(restoreMathPlaceholders(code, placeholders)));
+		} else if (language === 'trous') {
+			// Texte à trous dans un item de liste (énoncé d'une série d'automatismes, bloc
+			// sans case) : le texte et sa réserve, jamais du code
+			blocks.push(parseTrousContent(restoreMathPlaceholders(code, placeholders)));
 		} else if (language === 'courbe') {
 			// Courbe dans un item de liste : toujours un nœud, même en erreur (Q48)
 			blocks.push(parseCourbeContent(restoreMathPlaceholders(code, placeholders)));

@@ -14,10 +14,10 @@
 		CONSTRAINT_IDS,
 		CONSTRAINT_LABELS,
 		constraintModeOptions
-	} from '$lib/questions/constraint-constants';
-	import * as Card from '$lib/components/ui/card';
-	import * as Collapsible from '$lib/components/ui/collapsible';
-	import { Label } from '$lib/components/ui/label';
+	} from '#lib/questions/constraint-constants.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import * as Collapsible from '#lib/components/ui/collapsible/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
 	import MySelect from './MySelect.svelte';
 	import MyCheckbox from './MyCheckbox.svelte';
 	import { ChevronDown } from '@lucide/svelte';

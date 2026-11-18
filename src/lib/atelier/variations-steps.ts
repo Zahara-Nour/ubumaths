@@ -14,26 +14,26 @@
  * @module atelier/variations-steps
  */
 
-import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
-import type { Domain } from '$lib/mathAST/domain/types';
+import type { RenderedStep } from '#lib/mathAST/common/step-renderer-base.ts';
+import type { Domain } from '#lib/mathAST/domain/types.ts';
 import type {
 	BoundaryLimit,
 	ExtremumType,
 	MonotonicInterval,
 	VariationResult
-} from '$lib/mathAST/variations/types';
-import { computeVariations } from '$lib/mathAST/variations';
-import { limitValueLatex, variationValueLatex } from '$lib/mathAST/variations/latex';
-import { displayedDerivatives } from '$lib/mathAST/variations/display';
-import { createSafeEvaluator } from '$lib/mathAST/eval/compile';
-import { endpointToNumber } from '$lib/math/intervals/endpoint';
-import { unresolvedDerivativeZerosMessage } from '$lib/mathAST/variations/format';
-import { inequalitySolutionLatex } from '$lib/mathAST/cli/commands/solve-latex';
-import { toLatex } from '$lib/mathAST/latex-generator';
-import { variationTableNode } from '$lib/ubumark/builders/variation-table';
-import type { VariationTableNode } from '$lib/ubumark/types/variation-table';
+} from '#lib/mathAST/variations/types.ts';
+import { computeVariations } from '#lib/mathAST/variations/index.ts';
+import { limitValueLatex, variationValueLatex } from '#lib/mathAST/variations/latex.ts';
+import { displayedDerivatives } from '#lib/mathAST/variations/display.ts';
+import { createSafeEvaluator } from '#lib/mathAST/eval/compile.ts';
+import { endpointToNumber } from '#lib/math/intervals/endpoint.ts';
+import { unresolvedDerivativeZerosMessage } from '#lib/mathAST/variations/format.ts';
+import { inequalitySolutionLatex } from '#lib/mathAST/cli/commands/solve-latex.ts';
+import { toLatex } from '#lib/mathAST/latex-generator.ts';
+import { variationTableNode } from '#lib/ubumark/builders/variation-table.ts';
+import type { VariationTableNode } from '#lib/ubumark/types/variation-table.ts';
 import { astOf } from './parse';
-import { studyDomain } from '$lib/mathAST/domain/study';
+import { studyDomain } from '#lib/mathAST/domain/study.ts';
 
 // =============================================================================
 // Types
