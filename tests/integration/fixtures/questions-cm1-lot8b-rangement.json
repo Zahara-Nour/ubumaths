@@ -1,0 +1,68 @@
+[
+	{
+		"id": "31d64c00-144e-4c0f-887f-475be9ac001e",
+		"noeudAvant": null,
+		"noeudApres": "Grandeurs et mesures > Aires > aires sur quadrillage",
+		"gradesAvant": ["CM1", "CM2"],
+		"gradesApres": ["CM1", "CM2"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-087", "CM2§CM2-072"]
+	},
+	{
+		"id": "4c1ce174-15a0-4613-9df1-d4674350459e",
+		"noeudAvant": null,
+		"noeudApres": "Grandeurs et mesures > Angles",
+		"gradesAvant": ["CM1", "CM2"],
+		"gradesApres": ["CM1", "CM2"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-090", "CM2§CM2-077"]
+	},
+	{
+		"id": "614048c9-0e96-4577-9bd4-ce4fe1467559",
+		"noeudAvant": null,
+		"noeudApres": "Grandeurs et mesures > Aires > unités et conversions",
+		"gradesAvant": ["CM1"],
+		"gradesApres": ["CM1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-088"]
+	},
+	{
+		"id": "8da9f669-17bd-46a5-a28a-098c13381fc8",
+		"noeudAvant": null,
+		"noeudApres": "Grandeurs et mesures > Angles",
+		"gradesAvant": ["CM1", "CM2"],
+		"gradesApres": ["CM1", "CM2"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-089", "CM2§CM2-076"]
+	},
+	{
+		"id": "97f2374b-6491-4d5d-b07e-be6e2640427d",
+		"noeudAvant": null,
+		"noeudApres": "Grandeurs et mesures > Angles > comparaison",
+		"gradesAvant": ["CM1", "CM2"],
+		"gradesApres": ["CM1", "CM2"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-091", "CM2§CM2-078"]
+	},
+	{
+		"id": "d623374d-4e14-4bfa-aa80-5a627ae44b7c",
+		"noeudAvant": null,
+		"noeudApres": "Grandeurs et mesures > Aires > aires sur quadrillage",
+		"gradesAvant": ["CM1", "CM2"],
+		"gradesApres": ["CM1", "CM2"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-086", "CM2§CM2-071"]
+	}
+]

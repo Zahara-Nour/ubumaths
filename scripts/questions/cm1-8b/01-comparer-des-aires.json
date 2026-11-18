@@ -1,4 +1,5 @@
 {
+	"id": "d623374d-4e14-4bfa-aa80-5a627ae44b7c",
 	"title": "Comparer les aires de deux figures",
 	"description": "Deux figures sur quadrillage : aires nettement différentes ; même aire après découpage et recollement ; la figure au plus long tour a la plus petite aire",
 	"grades": ["CM1", "CM2"],

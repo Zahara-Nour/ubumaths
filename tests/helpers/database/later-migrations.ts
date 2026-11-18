@@ -40,8 +40,12 @@ export const QUESTIONS_TSPE_APPRO11 =
 /** Sous-notion « Probabilités > Autres lois > loi de Poisson », lot 15 de terminale spé (approfondissements). */
 export const QUESTIONS_TSPE_APPRO15 =
 	'supabase/migrations/20261114111511_questions_tspe_approfondissements_15_rangement_tags.sql';
+/** Sous-notion « Grandeurs et mesures > Aires > aires sur quadrillage », lot 8b du CM1. */
+export const QUESTIONS_CM1_LOT8B =
+	'supabase/migrations/20261118071618_questions_cm1_lot8b_rangement_tags.sql';
 /** Du plus récent au plus ancien. */
 const LATER = [
+	QUESTIONS_CM1_LOT8B,
 	QUESTIONS_TSPE_APPRO15,
 	QUESTIONS_TSPE_APPRO11,
 	AUTOMATISMES_1SPE_POINT_2_496,
