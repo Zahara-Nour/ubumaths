@@ -136,6 +136,40 @@ describe('Catalogue Automaths — liste des notions (grand écran)', () => {
 		expect(lastUrl().searchParams.get('notion')).toBe('n-frac');
 	});
 
+	it('le bouton d’une branche annonce aussi son nombre de questions', async () => {
+		await render(Page);
+
+		await expect
+			.element(branchButton('Géométrie'))
+			.toHaveAccessibleName(/^Géométrie\s*, 1 question$/);
+	});
+
+	it('choisir une notion met le focus sur son titre (clavier, lecteur d’écran)', async () => {
+		await render(Page);
+
+		await notionButton('Fractions').click();
+
+		await expect.element(page.getByRole('heading', { level: 2, name: 'Fractions' })).toHaveFocus();
+	});
+
+	it('branche de la notion fermée à la main, puis autre notion : sa branche s’ouvre', async () => {
+		await render(Page);
+		await branchButton('Nombres et calculs').click();
+		await expect
+			.element(branchButton('Nombres et calculs'))
+			.toHaveAttribute('aria-expanded', 'false');
+
+		await branchButton('Géométrie').click();
+		await notionButton('Pythagore').click();
+		await branchButton('Nombres et calculs').click();
+		await notionButton('Addition').click();
+
+		await expect
+			.element(branchButton('Nombres et calculs'))
+			.toHaveAttribute('aria-expanded', 'true');
+		await expect.element(branchButton('Géométrie')).toHaveAttribute('aria-expanded', 'false');
+	});
+
 	it('les compteurs suivent le niveau ; une notion sans question au niveau est absente', async () => {
 		pageState.url = new URL('http://localhost:5175/automaths?niveau=CE1');
 

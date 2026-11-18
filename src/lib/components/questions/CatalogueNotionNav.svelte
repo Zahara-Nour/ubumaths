@@ -22,15 +22,25 @@
 		onselect: (notionId: string) => void;
 	} = $props();
 
-	// Branches ouvertes ou fermées à la main ; sinon, ouverte = celle de la notion affichée
-	let toggled = $state<Record<string, boolean>>({});
+	// Branches ouvertes ou fermées à la main, pour la notion affichée seulement :
+	// une autre notion affichée (clic, changement de niveau) repart de sa branche ouverte
+	let toggled = $state<{ notionId: string | undefined; open: Record<string, boolean> }>({
+		notionId: undefined,
+		open: {}
+	});
 
 	function isOpen(branch: CatalogueBranch): boolean {
-		return toggled[branch.id] ?? branch.notions.some((n) => n.id === selectedNotionId);
+		const manual = toggled.notionId === selectedNotionId ? toggled.open[branch.id] : undefined;
+		return manual ?? branch.notions.some((n) => n.id === selectedNotionId);
 	}
 
 	function toggleBranch(branch: CatalogueBranch) {
-		toggled[branch.id] = !isOpen(branch);
+		const open = toggled.notionId === selectedNotionId ? toggled.open : {};
+		toggled = { notionId: selectedNotionId, open: { ...open, [branch.id]: !isOpen(branch) } };
+	}
+
+	function questionCount(n: number): string {
+		return n === 1 ? '1 question' : `${n} questions`;
 	}
 
 	function branchCount(branch: CatalogueBranch): number {
@@ -57,6 +67,7 @@
 					<span class="text-xs font-normal text-muted-foreground" aria-hidden="true"
 						>{branchCount(branch)}</span
 					>
+					<span class="sr-only">, {questionCount(branchCount(branch))}</span>
 				</button>
 				{#if open}
 					<ul class="mt-1 mb-2 ml-6 space-y-0.5 border-l border-border pl-2">
@@ -74,7 +85,7 @@
 								>
 									<span class="flex-1">{notion.name}</span>
 									<span class="text-xs text-muted-foreground" aria-hidden="true">{count}</span>
-									<span class="sr-only">, {count === 1 ? '1 question' : `${count} questions`}</span>
+									<span class="sr-only">, {questionCount(count)}</span>
 								</button>
 							</li>
 						{/each}

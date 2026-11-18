@@ -2,10 +2,10 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, PR 3a commitée (pas encore poussée)._
+_Mis à jour le 2026-11-18, PR 3a revue et corrigée._
 
 - **État** : PR 1 (#2842) et PR 2 (#2847) mergées. PR 3a vue « Notions » codée et commitée sur `feat/automaths-navigation` (commit `364e64fb8`) : 47 tests verts, `check:incremental` 0 erreur, cliquet tenu, doc `questions.md` à jour. **Pas encore poussée, pas de PR.**
-- **Prochaine action** : revue `code-reviewer` (Sonnet) du commit `364e64fb8` (lancée ; à relancer si son résultat est perdu), corriger, puis `git pull --rebase` (branche en retard de 4 sur `origin/main`), push, PR, CI, merge. Ensuite PR 3b vue « Programme » (points 8-13, lecture A), puis PR 4 « Ma série ».
+- **Prochaine action** : PR 3a poussée (voir `gh pr list --search head:feat/automaths-navigation`) : suivre la CI, merger si verte. Ensuite PR 3b vue « Programme » (points 8-13, lecture A), puis PR 4 « Ma série ».
 - **En attente de David** : rien.
 - **Pièges en cours** : `getByRole('navigation', { name: 'Notions' })` attrape « Sous-notions » → `exact: true` ; la page défile dans un conteneur interne (pas `window`) ; la tuile reste la flash-card ; un point posé sur une notion peut n'avoir aucune question en propre (4-003) → lecture A : questions rattachées, sinon celles du nœud ; un test qui rend la page vide `sessionStorage` ; carte asserte avec la fixture `data/relecture/entiers/139.json`.
 - **Worktree / branche** : `../ubumaths-wt-automaths`, `feat/automaths-navigation` ; serveur de test sur le port 5176.
@@ -111,3 +111,4 @@ Lecture des questions sous un point : **A** — les questions rattachées au poi
 - Tests : `catalogue-navigation` (10) + anciens tests adaptés (helpers `catalogue-helpers.ts`) ; rouges sur l'ancienne page (13/15), 47 verts.
 - Piège de test : `getByRole('navigation', { name: 'Notions' })` attrape aussi « Sous-notions » → `exact: true`. `getByText('2 questions')` attrapait le titre de section → `exact: true`.
 - Vu en dev (grand écran, base locale) : pastille → section juste sous les pastilles ; changer de notion après avoir descendu → remonte en haut. Largeur téléphone non vérifiable dans Chrome (largeur minimale de fenêtre) : couverte par les tests à 390 px.
+- Revue `code-reviewer` (Sonnet) : aucun bloquant. Corrigés : second calage après le défilement d'une pastille (cartes qui grandissent), réserve de hauteur selon 1/2/3 colonnes, focus sur le titre de la notion choisie, défilement après fermeture du panneau (`tick`), compteur lu sur le bouton de branche, branches ouvertes à la main remises à zéro au changement de notion, `prefers-reduced-motion`. Écartés : adresse qui garde la notion de repli (comportement validé en PR 1) ; ~111 aperçus calculés d'un coup sur la dernière pastille d'une grosse notion (non mesuré, à voir en vrai).

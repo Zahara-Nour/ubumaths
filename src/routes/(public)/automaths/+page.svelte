@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount, tick } from 'svelte';
 	import { page } from '$app/state';
 	import { replaceState } from '$app/navigation';
 	import { resolve } from '$app/paths';
@@ -120,14 +120,18 @@
 		return new URLSearchParams();
 	}
 
-	function handleNotionSelect(notionId: string) {
+	async function handleNotionSelect(notionId: string) {
 		chosenNotionId = notionId;
 		notionSheetOpen = false;
 		writeChoicesToUrl();
+		// Panneau refermé et notion rendue avant de défiler (le panneau bloque le défilement)
+		await tick();
 		// Choisie après avoir descendu : on remonte au début de la notion
 		if (notionTop && notionTop.getBoundingClientRect().top < 0) {
 			notionTop.scrollIntoView({ block: 'start' });
 		}
+		// Clavier, lecteur d'écran : le focus passe au titre de la notion choisie
+		document.getElementById('notion-titre')?.focus({ preventScroll: true });
 	}
 
 	/**
