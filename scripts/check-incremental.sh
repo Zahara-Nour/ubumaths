@@ -130,11 +130,20 @@ sentinel=.svelte-kit/.sync-sentinel
 shopt -s nullglob
 watch=(src/routes vite.config.ts src/env.ts .env .env.*)
 shopt -u nullglob
+# Kit 3 écrit aussi node_modules/$app/tsconfig.json (étendu par tsconfig.json) :
+# après un `pnpm install` qui l'a effacé, la sentinelle seule ne verrait rien.
 if [ "${need_sync:-0}" = "1" ] || [ ! -f "$sentinel" ] || \
+	[ ! -f "node_modules/\$app/tsconfig.json" ] || \
 	[ -n "$(find "${watch[@]}" -type f -newer "$sentinel" 2>/dev/null | head -1)" ]; then
 	# Dire pourquoi un sync a lieu : il invalide le cache incrémental.
 	echo "ℹ️  Routes ou config modifiées → svelte-kit sync : cache invalidé."
-	npx svelte-kit sync >/dev/null 2>&1
+	# Un sync raté (ex. variable obligatoire de src/env.ts absente) ne pose pas la
+	# sentinelle, sinon les lancements suivants le sauteraient : on l'affiche et on s'arrête.
+	if ! sync_out=$(npx svelte-kit sync 2>&1); then
+		echo "$sync_out" >&2
+		echo "⛔ svelte-kit sync a échoué (ci-dessus)." >&2
+		exit 1
+	fi
 	mkdir -p .svelte-kit && touch "$sentinel"
 fi
 
