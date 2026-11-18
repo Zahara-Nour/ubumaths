@@ -1,4 +1,5 @@
 {
+	"id": "22bbd82a-96b6-4fd5-b536-fa49014ae306",
 	"title": "Logarithme d'une puissance",
 	"description": "log(aⁿ) = n log a (n entier naturel) : formule ; compléter ; log 8 en fonction de log 2 ; valeur approchée ; nombre de chiffres de 2ⁿ",
 	"grades": ["T_TECHNO"],

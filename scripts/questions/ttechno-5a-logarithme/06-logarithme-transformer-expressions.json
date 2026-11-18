@@ -1,4 +1,5 @@
 {
+	"id": "af24839d-880d-46a5-a909-a3ef9283340c",
 	"title": "Transformer des expressions avec le logarithme décimal",
 	"description": "log(2ᵖ3^q) en fonction de log 2 et log 3 ; log a + log b − log c = log n ; expressions littérales : log(10ᵏx), log(xⁿ) + log(xᵐ), log(10ᵏ/xⁿ)",
 	"grades": ["T_TECHNO"],
