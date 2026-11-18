@@ -8,18 +8,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après #2844 (lot 5 migré)._
+_Mis à jour le 2026-11-18, lot 6 en cours (avant sa PR)._
 
-- **État** : lots 1 à 4 clos. Lot 5 : 4 communs posés en 1re techno (publiés) ; N1-N3 rangés et tagués, encore
-  brouillons ; page à cocher https://claude.ai/artifact/J6RYqzmQ9nrqviUoQXVBYn (`verdicts`, vide). Reste le lot 6
-  (probabilités).
-- **Prochaine action** : lire et compter les verdicts ; 3 « ok » → David `pnpm tsx scripts/questions/publier-lot.ts
---dir scripts/questions/1techno-5` (simulation puis `--publier` ; le classifieur me refuse la simulation). Prévenir
-  questions-1gen (4 de ses modèles portent désormais `1_TECHNO` + un tag 1TECHNO). Ensuite phase 0 du lot 6.
-- **En attente de David** : relecture des 3 modèles neufs sur la page à cocher.
-- **Pièges en cours** : `db:migrate` pousse tout ce qui attend ; « inserted before » → `--dry-run --include-all` ;
-  `Doc-inchangée:` dans un COMMIT (≤ 100 caractères par ligne).
-- **Worktree / branche** : aucun (lot 5 mergé, worktree retiré).
+- **État** : lots 1 à 5 clos. Lot 6 (§ 30-31) : phase 0 validée, P1-P5 écrits
+  (`scripts/questions/1techno-6`), simulation verte, rendus vérifiés (Chrome), PR des fichiers ouverte.
+- **Prochaine action** : rendus de P1-P5 par David → fermer l'aperçu → PR des fichiers → David `create-questions
+--publier` → migration de rangement + retrait de 137 et `1_TECHNO` de 97b3a376 (destructif : mesurer l'usage, go).
+- **En attente de David** : rien avant le merge ; ensuite `create-questions --publier` (lot 6).
+- **Pièges en cours** : dépôt principal sale (fichiers d'autres sessions) → commit de journal 827809b06 resté local sur
+  `main`, repris sur la branche ; questions-1gen à prévenir (4 communs). `Doc-inchangée:` dans un COMMIT.
+- **Worktree / branche** : `../ubumaths-wt-questions-1techno`, `feat/questions-1techno-lot6`.
 
 ## 1. Relevé (prod, 2026-11-17)
 
@@ -924,3 +922,30 @@ technologique ne recevront plus 97b3a376, remplacé par P4.
 
 - **Q-L6a** : P5 montre les données brutes dans un tableau simple (une ligne par individu). Reco : oui, 12 à 20
   lignes, pour que le comptage reste faisable.
+
+## 31. Lot 6 — écriture (2026-11-18)
+
+David : « je suis tes recos » (phase 0 et Q-L6a validées). Script `docs/wip/questions/lot-1techno-6.py` →
+`scripts/questions/1techno-6/` (P1 5 variations, P2 4, P3 4, P4 5 dont v4-v5 = v1-v2 de 97b3a376 reprises telles
+quelles, P5 3 ; 43 specs). Le bloc `loi` n'est utilisé par aucun modèle en prod : tableaux Markdown (comme 448894f3).
+P5 : 12 individus tirés par deux variables 0/1 chacun, effectifs par produits, texte par `{{if:x == 1|…|…}}`.
+`create-questions` en simulation : 5 « à créer », tout vert. `question:specs --apercu 40` : d'abord `\textcolor` hors
+`$` (P1 v3-v4) corrigé, et décimaux « 0.4 » du corrigé de P1 v2 écrits `0{,}4` ; ensuite tous importables. 1288
+formules passées à `validateLatex` + compte d'accolades : 0 problème. 80 blocs `tableau-croise` passés à
+`parseStatChartContent` : 0 erreur, cases masquées lues. Essai en base locale (copie scratchpad, ids locaux hors
+dépôt) ; aperçu Tailscale sur 5179 (5176-5178 pris par d'autres worktrees).
+
+### Lot 5 — publié (2026-11-18)
+
+Verdicts des neufs : 3 « ok » sur 3, sans commentaire (N1, N2, N3). David a lancé `publier-lot.ts` (simulation puis
+`--publier`). Vérifié MCP : d0eb1666, fc84a1c8, 8d2047fe `published`, `{1_TECHNO}`, rangés. **Lot 5 clos.**
+
+### Lot 6 — rendus (2026-11-18)
+
+David a choisi que je vérifie les rendus moi-même (Chrome, `127.0.0.1:5179` sur la base locale, sans Tailscale ;
+graines par variation calculées par `generateInstance`). Vus : P1 (choix, arbre, valeur numérique), P2 (tableau de la
+loi), P4 (tableau à quatre valeurs et sa correction), P5 (données brutes, tableau croisé masqué, correction). La frappe
+dans MathLive ne passe pas par l'automate : validation des réponses laissée aux specs. **Défaut corrigé** : le coin du
+tableau croisé s'écrit avec **une** barre oblique inverse (`coin: Sexe \ Régime`, cf. `cross-table.test.ts`) ;
+deux affichent « Sexe \\ Régime ». Le modèle de 2de 89e928a4 (en prod, recopié) a ce défaut : signalé à David.
+Aperçu fermé, serveur 5179 arrêté, Tailscale :443/:8443 retirés.
