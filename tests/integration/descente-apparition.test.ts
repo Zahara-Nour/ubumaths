@@ -34,6 +34,7 @@ import {
 } from '../helpers/database/trigger-test-helpers';
 import { DEFAULT_TEST_PASSWORD } from '../helpers/database/supabase-client';
 import { TestData } from '../helpers/database/test-data-factory';
+import { getPostgresClient } from '../helpers/database/postgres-client';
 import { createFakeTemplate } from '../helpers/competence-referentiel.helpers';
 import { spawnBeasts } from '$lib/server/descente/spawn';
 
@@ -61,6 +62,7 @@ const service = createServiceRoleClient();
 let student: Student;
 let other: Student;
 const points: Record<string, string> = {};
+const templateIds: string[] = [];
 
 // Functions
 async function clientFor(email: string): Promise<Client> {
@@ -133,6 +135,7 @@ async function remediationPoint(
 	if (pointError || !point) throw new Error(`décor : point ${label} : ${pointError?.message}`);
 
 	const templateId = await createFakeTemplate(service, student.id);
+	templateIds.push(templateId);
 	const updated = await service
 		.from('question_templates')
 		.update({
@@ -238,7 +241,23 @@ describe('Descente : apparition des Bêtes aux droits de l’élève', () => {
 		points.draft = await remediationPoint('brouillon', functions, ONE_BLANK, 'draft');
 	});
 
+	// Le décor ajouté au référentiel (notions, points, modèles) doit partir : les tests du
+	// seed comparent l'arbre et les points à leurs fixtures
 	afterAll(async () => {
+		const pg = await getPostgresClient();
+		const run = (sql: string, params: unknown[]) => pg.query(sql, params).catch(() => undefined);
+		await run(
+			'delete from public.student_point_state where point_id in (select id from public.curriculum_points where code like $1)',
+			[`${TAG}%`]
+		);
+		await run('delete from public.question_template_points where template_id = any($1::uuid[])', [
+			templateIds
+		]);
+		await run('delete from public.question_templates where id = any($1::uuid[])', [templateIds]);
+		await run('delete from public.curriculum_points where code like $1', [`${TAG}%`]);
+		await run("delete from public.classification_nodes where kind = 'notion' and name like $1", [
+			`${TAG}%`
+		]);
 		await cleanupAllTestData();
 	});
 
