@@ -25,7 +25,7 @@ _Mis à jour le 2026-11-18, phase 0 du lot 4 validée._
 - **143 points** `1_TECHNO` : 26 STD2A (hors STMG), **117 pour la STMG**. **35** ont au moins un modèle
   (tous dans le périmètre STMG), **82** aucun.
 - **64 modèles** portent `1_TECHNO` ou un tag 1TECHNO ; tous rangés sur un nœud. 3 brouillons (0495289a,
-  c90fa022, d2067413), le reste publié. Presque tous sont des modèles de 1re spé / 1re générale tagués
+  c90fa022, d2067413 — ce dernier publié le 2026-11-18 par questions-1gen, Q24), le reste publié. Presque tous sont des modèles de 1re spé / 1re générale tagués
   d'un point jumeau (ADR 0020, un tag par programme).
 - 7 modèles ont `1_TECHNO` dans `grades` sans aucun tag 1TECHNO : 5397c20f (1SPE-432), f5585668 (2-314),
   0f673c27 (2-328), 7f82d15a (2-349), 95ee57c8 (2-448), 9852d62c (5-113), 1c86d122 (5-135).
