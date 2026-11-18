@@ -38,6 +38,8 @@ couvre:
 > [jeux-et-economie.md](jeux-et-economie.md) ; `api/admin/anti-fraud`,
 > `api/teacher/classes/[classId]/anti-fraud` → [srs.md](srs.md) ;
 > `api/teacher/classes/[classId]/analytics` et la page `analytics` → [analytique-prof.md](analytique-prof.md) ;
+> la page `classes/[classId]/carnet` et le bouton « Carnet de liaison » de la liste des classes →
+> [carnet-de-liaison.md](carnet-de-liaison.md) ;
 > `api/admin/elevate`, `api/admin/users/[id]/status`, `api/admin/users/[id]/password` → [auth.md](auth.md) ;
 > `dashboard/teacher/settings/google` → [outils-prof.md](outils-prof.md) ; `api/admin/health-stats`
 > et les widgets admin → [tableaux-de-bord-et-navigation.md](tableaux-de-bord-et-navigation.md).

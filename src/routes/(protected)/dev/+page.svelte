@@ -3,7 +3,7 @@
 	Chaque page déplacée sous `/dev` s'ajoute à `DEV_PAGES`.
 -->
 <script lang="ts">
-	import PageIndex, { type IndexedPage } from '$lib/components/PageIndex.svelte';
+	import PageIndex, { type IndexedPage } from '#lib/components/PageIndex.svelte';
 
 	const DEV_PAGES: IndexedPage[] = [
 		{

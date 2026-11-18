@@ -7,14 +7,14 @@
  * est confié à `buildProgrammeTree`.
  */
 
-import type { ClassificationNode } from '$lib/types/database-helpers';
-import { buildProgrammeMap, type MapBranch, type MapPointRow } from '$lib/utils/programme-map';
+import type { ClassificationNode } from '#lib/types/database-helpers.ts';
+import { buildProgrammeMap, type MapBranch, type MapPointRow } from '#lib/utils/programme-map.ts';
 import {
 	buildProgrammeTree,
 	hideArchivedPoints,
 	type ProgrammeBranch,
 	type ProgrammePointRow
-} from '$lib/utils/programme-tree';
+} from '#lib/utils/programme-tree.ts';
 
 /** Colonnes d'un point du programme (projection unique, lecture et écriture). */
 export const PROGRAMME_POINT_COLS =

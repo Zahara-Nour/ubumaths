@@ -18,14 +18,14 @@
 		- Handle friend selection
 -->
 <script lang="ts">
-	import * as Dialog from '$lib/components/ui/dialog';
-	import { Input } from '$lib/components/ui/input';
-	import { Button } from '$lib/components/ui/button';
-	import OnlineStatus from '$lib/components/OnlineStatus.svelte';
-	import UserAvatar from '$lib/components/UserAvatar.svelte';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import OnlineStatus from '#lib/components/OnlineStatus.svelte';
+	import UserAvatar from '#lib/components/UserAvatar.svelte';
 	import { Search, MessageSquare } from '@lucide/svelte';
 	import type { SupabaseClient } from '@supabase/supabase-js';
-	import { presenceManager } from '$lib/stores/presence.svelte';
+	import { presenceManager } from '#lib/stores/presence.svelte.ts';
 
 	// Component Props
 	interface Props {

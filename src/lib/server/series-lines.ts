@@ -9,8 +9,8 @@
  * @module server/series-lines
  */
 
-import { seriesItemsSchema, type SeriesItem } from '$lib/validation/series';
-import { createServerLogger } from '$lib/utils/logger';
+import { seriesItemsSchema, type SeriesItem } from '#lib/validation/series.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/series-lines');
 

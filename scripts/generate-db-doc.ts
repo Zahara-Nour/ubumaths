@@ -81,6 +81,7 @@ export const DOMAINS: Domain[] = [
 			'parent_contacts',
 			'parent_carnet_links',
 			'parent_notifications',
+			'parent_exception_episodes',
 			'class_carnet_settings',
 			'student_carnet_opt_outs',
 			'terms_acceptances',
@@ -163,7 +164,9 @@ export const DOMAINS: Domain[] = [
 			'student_mathou_decorations',
 			'student_last_visits',
 			'avatar_catalog',
-			'student_avatars'
+			'student_avatars',
+			'student_beasts',
+			'student_combat_moves'
 		]
 	},
 	{

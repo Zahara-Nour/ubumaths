@@ -30,8 +30,8 @@ import {
 	type PointProgress
 } from '../collection-logic';
 import { MATHOU_NAMES } from '../mathou-noms';
-import { resolveTestLaunch } from '$lib/utils/test-launch';
-import { buildSeriesLink } from '$lib/validation/series';
+import { resolveTestLaunch } from '#lib/utils/test-launch.ts';
+import { buildSeriesLink } from '#lib/validation/series.ts';
 
 // =============================================================================
 // Décor : deux branches, trois notions, une sous-notion

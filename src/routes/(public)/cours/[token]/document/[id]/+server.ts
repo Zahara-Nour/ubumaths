@@ -13,14 +13,14 @@
 import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
-import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
+import { createServiceRoleClient } from '#lib/server/serviceRoleClient.ts';
 import {
 	courseShareTokenSchema,
 	INVALID_COURSE_LINK,
 	resolveCourseDocumentByShareToken,
 	safeExternalUrl
-} from '$lib/server/course-share-tokens';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/course-share-tokens.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('(public)/cours/[token]/document/[id]/+server');
 

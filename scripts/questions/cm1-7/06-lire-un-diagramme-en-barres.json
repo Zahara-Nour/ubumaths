@@ -1,0 +1,432 @@
+{
+	"id": "cc52549c-ff47-432a-8486-5256fb79c31c",
+	"title": "Lis le diagramme en barres (axe de 10, 20, 25 ou 50)",
+	"description": "Livres prêtés chaque mois : lire une barre sur un axe gradué de 10 en 10, de 25 en 25, de 50 en 50, puis une barre entre deux traits (axe de 20 en 20)",
+	"grades": ["CM1"],
+	"level": 5,
+	"delay": 90,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Ce diagramme donne le nombre de livres prêtés par la bibliothèque, chaque mois.\n\n```barres\ntitre: Livres prêtés\naxes: Mois ; Livres\nJanvier = {{a1}}\nFévrier = {{a2}}\nMars = {{a3}}\nAvril = {{a4}}\nMai = {{a5}}\naxe: 0 à 100, de 10 en 10\n```\n\nCombien de livres ont été prêtés en {{if:k==0|janvier|{{if:k==1|février|{{if:k==2|mars|{{if:k==3|avril|mai}}}}}}}} ?\n\n$?$ livres",
+			"variables": [
+				{
+					"name": "u1",
+					"expression": "1..10"
+				},
+				{
+					"name": "u2",
+					"expression": "1..10"
+				},
+				{
+					"name": "u3",
+					"expression": "1..10"
+				},
+				{
+					"name": "u4",
+					"expression": "1..10"
+				},
+				{
+					"name": "u5",
+					"expression": "1..10"
+				},
+				{
+					"name": "a1",
+					"expression": "eval:10*u1+0"
+				},
+				{
+					"name": "a2",
+					"expression": "eval:10*u2+0"
+				},
+				{
+					"name": "a3",
+					"expression": "eval:10*u3+0"
+				},
+				{
+					"name": "a4",
+					"expression": "eval:10*u4+0"
+				},
+				{
+					"name": "a5",
+					"expression": "eval:10*u5+0"
+				},
+				{
+					"name": "k",
+					"expression": "0..4"
+				},
+				{
+					"name": "n",
+					"expression": "eval:(a1)*((k-1)*(k-2)*(k-3)*(k-4))/(24)+(a2)*((k-0)*(k-2)*(k-3)*(k-4))/(-6)+(a3)*((k-0)*(k-1)*(k-3)*(k-4))/(4)+(a4)*((k-0)*(k-1)*(k-2)*(k-4))/(-6)+(a5)*((k-0)*(k-1)*(k-2)*(k-3))/(24)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche la barre « {{if:k==0|Janvier|{{if:k==1|Février|{{if:k==2|Mars|{{if:k==3|Avril|Mai}}}}}}}} », puis on suit son haut jusqu'à l'axe vertical.",
+					"L'axe est gradué de $10$ en $10$ : chaque trait compte pour $10$ livres.",
+					"En {{if:k==0|janvier|{{if:k==1|février|{{if:k==2|mars|{{if:k==3|avril|mai}}}}}}}} : $\\textcolor{{{color:primary.0}}}{{{n}}}$ livres."
+				]
+			}
+		},
+		{
+			"statement": "Ce diagramme donne le nombre de livres prêtés par la bibliothèque, chaque mois.\n\n```barres\ntitre: Livres prêtés\naxes: Mois ; Livres\nJanvier = {{a1}}\nFévrier = {{a2}}\nMars = {{a3}}\nAvril = {{a4}}\nMai = {{a5}}\naxe: 0 à 250, de 25 en 25\n```\n\nCombien de livres ont été prêtés en {{if:k==0|janvier|{{if:k==1|février|{{if:k==2|mars|{{if:k==3|avril|mai}}}}}}}} ?\n\n$?$ livres",
+			"variables": [
+				{
+					"name": "u1",
+					"expression": "1..10"
+				},
+				{
+					"name": "u2",
+					"expression": "1..10"
+				},
+				{
+					"name": "u3",
+					"expression": "1..10"
+				},
+				{
+					"name": "u4",
+					"expression": "1..10"
+				},
+				{
+					"name": "u5",
+					"expression": "1..10"
+				},
+				{
+					"name": "a1",
+					"expression": "eval:25*u1+0"
+				},
+				{
+					"name": "a2",
+					"expression": "eval:25*u2+0"
+				},
+				{
+					"name": "a3",
+					"expression": "eval:25*u3+0"
+				},
+				{
+					"name": "a4",
+					"expression": "eval:25*u4+0"
+				},
+				{
+					"name": "a5",
+					"expression": "eval:25*u5+0"
+				},
+				{
+					"name": "k",
+					"expression": "0..4"
+				},
+				{
+					"name": "n",
+					"expression": "eval:(a1)*((k-1)*(k-2)*(k-3)*(k-4))/(24)+(a2)*((k-0)*(k-2)*(k-3)*(k-4))/(-6)+(a3)*((k-0)*(k-1)*(k-3)*(k-4))/(4)+(a4)*((k-0)*(k-1)*(k-2)*(k-4))/(-6)+(a5)*((k-0)*(k-1)*(k-2)*(k-3))/(24)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche la barre « {{if:k==0|Janvier|{{if:k==1|Février|{{if:k==2|Mars|{{if:k==3|Avril|Mai}}}}}}}} », puis on suit son haut jusqu'à l'axe vertical.",
+					"L'axe est gradué de $25$ en $25$ : chaque trait compte pour $25$ livres.",
+					"En {{if:k==0|janvier|{{if:k==1|février|{{if:k==2|mars|{{if:k==3|avril|mai}}}}}}}} : $\\textcolor{{{color:primary.0}}}{{{n}}}$ livres."
+				]
+			}
+		},
+		{
+			"statement": "Ce diagramme donne le nombre de livres prêtés par la bibliothèque, chaque mois.\n\n```barres\ntitre: Livres prêtés\naxes: Mois ; Livres\nJanvier = {{a1}}\nFévrier = {{a2}}\nMars = {{a3}}\nAvril = {{a4}}\nMai = {{a5}}\naxe: 0 à 500, de 50 en 50\n```\n\nCombien de livres ont été prêtés en {{if:k==0|janvier|{{if:k==1|février|{{if:k==2|mars|{{if:k==3|avril|mai}}}}}}}} ?\n\n$?$ livres",
+			"variables": [
+				{
+					"name": "u1",
+					"expression": "1..10"
+				},
+				{
+					"name": "u2",
+					"expression": "1..10"
+				},
+				{
+					"name": "u3",
+					"expression": "1..10"
+				},
+				{
+					"name": "u4",
+					"expression": "1..10"
+				},
+				{
+					"name": "u5",
+					"expression": "1..10"
+				},
+				{
+					"name": "a1",
+					"expression": "eval:50*u1+0"
+				},
+				{
+					"name": "a2",
+					"expression": "eval:50*u2+0"
+				},
+				{
+					"name": "a3",
+					"expression": "eval:50*u3+0"
+				},
+				{
+					"name": "a4",
+					"expression": "eval:50*u4+0"
+				},
+				{
+					"name": "a5",
+					"expression": "eval:50*u5+0"
+				},
+				{
+					"name": "k",
+					"expression": "0..4"
+				},
+				{
+					"name": "n",
+					"expression": "eval:(a1)*((k-1)*(k-2)*(k-3)*(k-4))/(24)+(a2)*((k-0)*(k-2)*(k-3)*(k-4))/(-6)+(a3)*((k-0)*(k-1)*(k-3)*(k-4))/(4)+(a4)*((k-0)*(k-1)*(k-2)*(k-4))/(-6)+(a5)*((k-0)*(k-1)*(k-2)*(k-3))/(24)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche la barre « {{if:k==0|Janvier|{{if:k==1|Février|{{if:k==2|Mars|{{if:k==3|Avril|Mai}}}}}}}} », puis on suit son haut jusqu'à l'axe vertical.",
+					"L'axe est gradué de $50$ en $50$ : chaque trait compte pour $50$ livres.",
+					"En {{if:k==0|janvier|{{if:k==1|février|{{if:k==2|mars|{{if:k==3|avril|mai}}}}}}}} : $\\textcolor{{{color:primary.0}}}{{{n}}}$ livres."
+				]
+			}
+		},
+		{
+			"statement": "Ce diagramme donne le nombre de livres prêtés par la bibliothèque, chaque mois.\n\n```barres\ntitre: Livres prêtés\naxes: Mois ; Livres\nJanvier = {{a1}}\nFévrier = {{a2}}\nMars = {{a3}}\nAvril = {{a4}}\nMai = {{a5}}\naxe: 0 à 200, de 20 en 20\n```\n\nCombien de livres ont été prêtés en {{if:k==0|janvier|{{if:k==1|février|{{if:k==2|mars|{{if:k==3|avril|mai}}}}}}}} ?\n\n$?$ livres",
+			"variables": [
+				{
+					"name": "u1",
+					"expression": "1..9"
+				},
+				{
+					"name": "u2",
+					"expression": "1..9"
+				},
+				{
+					"name": "u3",
+					"expression": "1..9"
+				},
+				{
+					"name": "u4",
+					"expression": "1..9"
+				},
+				{
+					"name": "u5",
+					"expression": "1..9"
+				},
+				{
+					"name": "a1",
+					"expression": "eval:20*u1+10"
+				},
+				{
+					"name": "a2",
+					"expression": "eval:20*u2+10"
+				},
+				{
+					"name": "a3",
+					"expression": "eval:20*u3+10"
+				},
+				{
+					"name": "a4",
+					"expression": "eval:20*u4+10"
+				},
+				{
+					"name": "a5",
+					"expression": "eval:20*u5+10"
+				},
+				{
+					"name": "k",
+					"expression": "0..4"
+				},
+				{
+					"name": "n",
+					"expression": "eval:(a1)*((k-1)*(k-2)*(k-3)*(k-4))/(24)+(a2)*((k-0)*(k-2)*(k-3)*(k-4))/(-6)+(a3)*((k-0)*(k-1)*(k-3)*(k-4))/(4)+(a4)*((k-0)*(k-1)*(k-2)*(k-4))/(-6)+(a5)*((k-0)*(k-1)*(k-2)*(k-3))/(24)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche la barre « {{if:k==0|Janvier|{{if:k==1|Février|{{if:k==2|Mars|{{if:k==3|Avril|Mai}}}}}}}} », puis on suit son haut jusqu'à l'axe vertical.",
+					"L'axe est gradué de $20$ en $20$ ; le haut de la barre tombe au milieu, entre deux traits : la moitié de $20$, c'est $10$.",
+					"En {{if:k==0|janvier|{{if:k==1|février|{{if:k==2|mars|{{if:k==3|avril|mai}}}}}}}} : $\\textcolor{{{color:primary.0}}}{{{n}}}$ livres."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "De 10 en 10 : mars, 90",
+			"variationIndex": 0,
+			"variables": {
+				"u1": "4",
+				"u2": "7",
+				"u3": "9",
+				"u4": "3",
+				"u5": "6",
+				"a1": "40",
+				"a2": "70",
+				"a3": "90",
+				"a4": "30",
+				"a5": "60",
+				"k": "2",
+				"n": "90"
+			},
+			"answers": ["90"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : les traits comptés (9)",
+			"variationIndex": 0,
+			"variables": {
+				"u1": "4",
+				"u2": "7",
+				"u3": "9",
+				"u4": "3",
+				"u5": "6",
+				"a1": "40",
+				"a2": "70",
+				"a3": "90",
+				"a4": "30",
+				"a5": "60",
+				"k": "2",
+				"n": "90"
+			},
+			"answers": ["9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "De 25 en 25 : février, 175",
+			"variationIndex": 1,
+			"variables": {
+				"u1": "4",
+				"u2": "7",
+				"u3": "9",
+				"u4": "3",
+				"u5": "6",
+				"a1": "100",
+				"a2": "175",
+				"a3": "225",
+				"a4": "75",
+				"a5": "150",
+				"k": "1",
+				"n": "175"
+			},
+			"answers": ["175"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : traits comptés de 10 en 10 (70)",
+			"variationIndex": 1,
+			"variables": {
+				"u1": "4",
+				"u2": "7",
+				"u3": "9",
+				"u4": "3",
+				"u5": "6",
+				"a1": "100",
+				"a2": "175",
+				"a3": "225",
+				"a4": "75",
+				"a5": "150",
+				"k": "1",
+				"n": "175"
+			},
+			"answers": ["70"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "De 50 en 50 : mai, 300",
+			"variationIndex": 2,
+			"variables": {
+				"u1": "4",
+				"u2": "7",
+				"u3": "9",
+				"u4": "3",
+				"u5": "6",
+				"a1": "200",
+				"a2": "350",
+				"a3": "450",
+				"a4": "150",
+				"a5": "300",
+				"k": "4",
+				"n": "300"
+			},
+			"answers": ["300"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Entre deux traits : janvier, 90",
+			"variationIndex": 3,
+			"variables": {
+				"u1": "4",
+				"u2": "7",
+				"u3": "9",
+				"u4": "3",
+				"u5": "6",
+				"a1": "90",
+				"a2": "150",
+				"a3": "190",
+				"a4": "70",
+				"a5": "130",
+				"k": "0",
+				"n": "90"
+			},
+			"answers": ["90"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le trait du dessous (80)",
+			"variationIndex": 3,
+			"variables": {
+				"u1": "4",
+				"u2": "7",
+				"u3": "9",
+				"u4": "3",
+				"u5": "6",
+				"a1": "90",
+				"a2": "150",
+				"a3": "190",
+				"a4": "70",
+				"a5": "130",
+				"k": "0",
+				"n": "90"
+			},
+			"answers": ["80"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -10,8 +10,8 @@
  */
 
 import type { SubmittedAnswer } from './grading';
-import type { TestAnswerResult } from '$lib/types/test';
-import { MAX_SERIES_QUESTIONS } from '$lib/validation/series';
+import type { TestAnswerResult } from '#lib/types/test.ts';
+import { MAX_SERIES_QUESTIONS } from '#lib/validation/series.ts';
 
 // Constantes (partagées avec le schéma Zod de l'envoi)
 /** Réponses d'une copie : borne des séries enregistrées */

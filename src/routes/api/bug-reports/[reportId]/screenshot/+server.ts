@@ -13,11 +13,14 @@
 
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { MAX_IMAGE_SIZE_BYTES, validateFileSignature } from '$lib/server/validation/image-upload';
-import { DISPLAY_SIGNED_URL_TTL } from '$lib/server/bug-report-screenshots';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import {
+	MAX_IMAGE_SIZE_BYTES,
+	validateFileSignature
+} from '#lib/server/validation/image-upload.ts';
+import { DISPLAY_SIGNED_URL_TTL } from '#lib/server/bug-report-screenshots.ts';
 import { z } from 'zod';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/bug-reports/[reportId]/screenshot/+server');
 

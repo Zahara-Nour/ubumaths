@@ -8,7 +8,7 @@
  * happens server-side via requireConsent() middleware.
  */
 
-import type { ConsentStatus } from '$lib/utils/consent';
+import type { ConsentStatus } from '#lib/utils/consent.ts';
 
 /**
  * Default consent status for users who don't need consent

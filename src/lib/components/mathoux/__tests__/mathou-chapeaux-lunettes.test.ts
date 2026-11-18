@@ -13,7 +13,7 @@ import {
 } from '../mathou-chapeaux-lunettes';
 import { pearGeometry } from '../mathou-dessin';
 import { MATHOU_STAGES } from '../mathou-races';
-import { MATHOU_GLASSES_IDS, MATHOU_HAT_IDS } from '$lib/mathoux/decorations';
+import { MATHOU_GLASSES_IDS, MATHOU_HAT_IDS } from '#lib/mathoux/decorations.ts';
 
 describe('mathou-chapeaux-lunettes', () => {
 	it('les dix dessins retenus, à l’échelle du matou', () => {

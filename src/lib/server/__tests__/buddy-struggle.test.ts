@@ -4,7 +4,7 @@
  * le premier de ces échecs au moins 7 jours avant (dates de Paris) (U2, U3, U4).
  */
 import { describe, expect, it } from 'vitest';
-import { isLongStruggleWon, type StruggleTrace } from '$lib/server/buddy-struggle';
+import { isLongStruggleWon, type StruggleTrace } from '#lib/server/buddy-struggle.ts';
 
 // Constantes
 /** Début de la série : le 20 octobre 2026, 10 h à Paris */

@@ -9,7 +9,7 @@
  */
 import { describe, it, expect } from 'vitest';
 import { findUnmaskedAnswers, maskGestureAnswers } from '../masked-statement';
-import '$lib/questions/construction/positions-setup';
+import '#lib/questions/construction/positions-setup.ts';
 
 // Functions
 function block(kind: string, ...lines: string[]): string {

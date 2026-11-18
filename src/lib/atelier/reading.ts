@@ -13,9 +13,9 @@
  * @module atelier/reading
  */
 
-import type { MathNode } from '$lib/mathAST/types';
-import { getVariables } from '$lib/mathAST/eval/substitute';
-import { evaluateAt } from '$lib/grapheur/evaluator';
+import type { MathNode } from '#lib/mathAST/types.ts';
+import { getVariables } from '#lib/mathAST/eval/substitute.ts';
+import { evaluateAt } from '#lib/grapheur/evaluator.ts';
 import { astOf } from './parse';
 import type { CalcResult } from './calcul';
 

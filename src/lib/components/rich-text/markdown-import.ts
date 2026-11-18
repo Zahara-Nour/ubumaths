@@ -9,9 +9,9 @@
  */
 
 import type { JSONContent } from '@tiptap/core';
-import { parseMarkdown } from '$lib/ubumark/parser/markdown-parser';
-import { parseCustomSafe, toLatex } from '$lib/mathAST';
-import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
+import { parseMarkdown } from '#lib/ubumark/parser/markdown-parser.ts';
+import { parseCustomSafe, toLatex } from '#lib/mathAST/index.ts';
+import type { GenericFunctionConfig } from '#lib/mathAST/parser/types.ts';
 import type {
 	DocumentNode,
 	BlockNode,
@@ -34,8 +34,8 @@ import type {
 	MentionNode,
 	VariationTableNode,
 	ProbabilityTreeNode
-} from '$lib/ubumark/types';
-import type { FigureNode } from '$lib/ubumark/types/figure';
+} from '#lib/ubumark/types/index.ts';
+import type { FigureNode } from '#lib/ubumark/types/figure.ts';
 
 // ============================================================================
 // TEMPLATE DETECTION REGEX (same as template-extensions.ts)

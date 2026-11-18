@@ -1,20 +1,23 @@
 <!--
 	Carnet de liaison (ADR 0040) — le contenu, le même pour le parent et pour
-	l'élève (Q15) : régularité des 5 dernières semaines (palier, jamais le
-	nombre exact ni les jours, Q25), révisions en retard, évaluations faites ou
-	non (JAMAIS la note), liens du cahier et du cours de la classe.
+	l'élève (Q15) : régularité en une rangée de cases, une par semaine, comme une
+	ligne de la grille du professeur (`RegularityTable`, chantier
+	`carnet-heatmap`) : un palier, jamais le nombre exact ni les jours (Q25) ;
+	révisions en retard, évaluations faites ou non (JAMAIS la note), liens du
+	cahier et du cours de la classe.
 
 	Liens de la classe en `noreferrer` : la page du carnet a le jeton dans son
 	adresse, et une navigation vers le même site envoie l'adresse complète.
 
 	Ton neutre (B2) : pas de rouge, pas d'alarme. Le carnet arrive déjà filtré
-	par le serveur (`$lib/validation/carnet`) ; ne rien y ajouter ici.
+	par le serveur (`#lib/validation/carnet.ts`) ; ne rien y ajouter ici.
 -->
 <script lang="ts">
 	import { resolve } from '$app/paths';
-	import * as Card from '$lib/components/ui/card';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import RegularityTable from '#lib/components/teacher/analytics/RegularityTable.svelte';
 	import { BookOpen, CalendarCheck, NotebookText, RotateCcw } from '@lucide/svelte';
-	import type { Carnet, CarnetEvaluation, CarnetLevel, CarnetWeek } from '$lib/validation/carnet';
+	import type { Carnet, CarnetEvaluation, CarnetLevel } from '#lib/validation/carnet.ts';
 
 	// Types
 
@@ -24,21 +27,8 @@
 
 	// Constantes
 
-	/** Nombre de barres pleines sur trois, par palier */
-	const LEVEL_BARS: Record<CarnetLevel, number> = { '0': 0, '1': 1, '2-3': 2, '4+': 3 };
-
-	const LEVEL_LABELS: Record<CarnetLevel, string> = {
-		'0': 'aucun jour de travail',
-		'1': '1 jour de travail',
-		'2-3': '2 à 3 jours de travail',
-		'4+': '4 jours de travail ou plus'
-	};
-
-	const WEEK_FORMAT = new Intl.DateTimeFormat('fr-FR', {
-		day: 'numeric',
-		month: 'short',
-		timeZone: 'UTC'
-	});
+	/** Palier du carnet → intensité de la case de `RegularityTable` */
+	const LEVEL_TIERS: Record<CarnetLevel, 0 | 1 | 2 | 3> = { '0': 0, '1': 1, '2-3': 2, '4+': 3 };
 
 	const DEADLINE_FORMAT = new Intl.DateTimeFormat('fr-FR', {
 		weekday: 'short',
@@ -51,8 +41,12 @@
 
 	let { carnet }: Props = $props();
 
-	/** La plus récente en haut : c'est celle qu'on vient voir */
-	const weeks = $derived([...carnet.weeks].reverse());
+	/** La plus ancienne à gauche, comme la grille du professeur */
+	const weeks = $derived(carnet.weeks.map((w) => ({ start: w.week_start, holiday: w.holiday })));
+	/** Une seule rangée : celle de l'élève (son prénom est en titre de page) */
+	const rows = $derived([
+		{ id: 'carnet', display_name: '', tiers: carnet.weeks.map((w) => LEVEL_TIERS[w.level]) }
+	]);
 
 	const now = Date.now();
 
@@ -83,17 +77,6 @@
 		return new Date(e.deadline).getTime() > now;
 	}
 
-	function weekLabel(week: CarnetWeek, index: number): string {
-		if (index === 0) return 'Cette semaine';
-		return `Semaine du ${WEEK_FORMAT.format(new Date(`${week.week_start}T00:00:00Z`))}`;
-	}
-
-	function levelText(week: CarnetWeek, index: number): string {
-		if (week.level === '0' && index === 0) return 'Pas encore de travail cette semaine';
-		const text = LEVEL_LABELS[week.level];
-		return text.charAt(0).toUpperCase() + text.slice(1);
-	}
-
 	function evaluationTitle(e: CarnetEvaluation): string {
 		return e.title?.trim() || 'Évaluation';
 	}
@@ -115,25 +98,7 @@
 			{#if weeks.length === 0}
 				<p class="text-sm text-muted-foreground">Pas encore de travail cette semaine.</p>
 			{:else}
-				<ul class="divide-y divide-border">
-					{#each weeks as week, i (week.week_start)}
-						{@const bars = LEVEL_BARS[week.level]}
-						<li class="flex flex-wrap items-center gap-x-3 gap-y-1 py-2" data-level={week.level}>
-							<span class="w-36 shrink-0 text-sm font-medium">
-								{weekLabel(week, i)}
-								{#if week.holiday}
-									<span class="ml-1 text-xs font-normal text-muted-foreground">(vacances)</span>
-								{/if}
-							</span>
-							<span class="flex gap-1" aria-hidden="true">
-								{#each [1, 2, 3] as n (n)}
-									<span class="bar" class:filled={n <= bars}></span>
-								{/each}
-							</span>
-							<span class="text-sm text-muted-foreground">{levelText(week, i)}</span>
-						</li>
-					{/each}
-				</ul>
+				<RegularityTable {weeks} students={rows} showNames={false} unit="travail" scrollToEnd />
 			{/if}
 		</Card.Content>
 	</Card.Root>
@@ -228,11 +193,11 @@
 					{#each links as link (`${link.kind}-${link.token}`)}
 						<li>
 							{#if link.kind === 'cahier'}
-								<a href={resolve(`/cahier/${link.token}`)} rel="noreferrer" class="link"
+								<a href={resolve(`cahier/${link.token}`)} rel="noreferrer" class="link"
 									>{link.label}</a
 								>
 							{:else}
-								<a href={resolve(`/cours/${link.token}`)} rel="noreferrer" class="link"
+								<a href={resolve(`cours/${link.token}`)} rel="noreferrer" class="link"
 									>{link.label}</a
 								>
 							{/if}
@@ -245,17 +210,6 @@
 </div>
 
 <style>
-	/* Une seule couleur (l'accent) ; une barre vide reste discrète, jamais rouge */
-	.bar {
-		display: inline-block;
-		width: 1.25rem;
-		height: 0.5rem;
-		border-radius: 9999px;
-		background: var(--color-muted);
-	}
-	.bar.filled {
-		background: var(--color-primary);
-	}
 	.link {
 		font-size: 0.875rem;
 		color: var(--color-primary);

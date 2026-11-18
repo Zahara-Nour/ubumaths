@@ -5,25 +5,25 @@
 -->
 
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import type { PageData } from './$types';
 	import {
 		getDifficultyLabel,
 		getDifficultyColor,
 		formatAttemptNumber,
 		calculateGidouilles
-	} from '$lib/types/riddle';
-	import { Button } from '$lib/components/ui/button';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Textarea } from '$lib/components/ui/textarea';
-	import * as Card from '$lib/components/ui/card';
-	import UserAvatar from '$lib/components/UserAvatar.svelte';
-	import * as Alert from '$lib/components/ui/alert';
-	import { MarkdownRenderer } from '$lib/components/markdown';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	} from '#lib/types/riddle.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { Textarea } from '#lib/components/ui/textarea/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import UserAvatar from '#lib/components/UserAvatar.svelte';
+	import * as Alert from '#lib/components/ui/alert/index.ts';
+	import { MarkdownRenderer } from '#lib/components/markdown/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import { goto } from '$app/navigation';
-	import { submitAction } from '$lib/utils/form-action';
+	import { submitAction } from '#lib/utils/form-action.ts';
 	import { CheckCircle2, XCircle, AlertTriangle } from '@lucide/svelte';
 	import { formatDistanceToNow } from 'date-fns';
 	import { fr } from 'date-fns/locale';

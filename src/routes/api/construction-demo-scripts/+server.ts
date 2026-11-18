@@ -11,9 +11,9 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
-import { requireRoles } from '$lib/server/middleware/auth';
-import { DEMO_SCRIPT_AUTHOR_ROLES } from '$lib/server/constructions-access';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import { DEMO_SCRIPT_AUTHOR_ROLES } from '#lib/server/constructions-access.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/construction-demo-scripts/+server');
 

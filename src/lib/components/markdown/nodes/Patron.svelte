@@ -18,18 +18,18 @@
 	@module components/markdown/nodes/Patron
 -->
 <script lang="ts">
-	import { ESPACE_UNAVAILABLE, type EspaceNode } from '$lib/ubumark/types/espace';
-	import { ESPACE_MARGIN, ESPACE_STROKE } from '$lib/ubumark/utils/espace-scene';
+	import { ESPACE_UNAVAILABLE, type EspaceNode } from '#lib/ubumark/types/espace.ts';
+	import { ESPACE_MARGIN, ESPACE_STROKE } from '#lib/ubumark/utils/espace-scene.ts';
 	import {
 		SOLIDE_DASH,
 		SOLIDE_DOT_RADIUS,
 		SOLIDE_LABEL_SIZE
-	} from '$lib/ubumark/utils/espace-solides';
+	} from '#lib/ubumark/utils/espace-solides.ts';
 	import {
 		PATRON_FOLD_STROKE,
 		buildPatronScene,
 		patronLabel
-	} from '$lib/ubumark/utils/espace-patrons';
+	} from '#lib/ubumark/utils/espace-patrons.ts';
 	import { readAuthoringErrors } from '../authoring-errors';
 
 	interface Props {

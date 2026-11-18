@@ -12,7 +12,7 @@
  * empty string in every format.
  */
 
-import type { MathCompetenceLevel } from '$lib/types/skills';
+import type { MathCompetenceLevel } from '#lib/types/skills.ts';
 
 export type NiveauFormat = 'numeric' | 'label' | 'short';
 

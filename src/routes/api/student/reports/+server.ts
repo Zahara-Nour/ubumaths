@@ -35,15 +35,15 @@
 
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
+import { requireRole } from '#lib/server/middleware/auth.ts';
 import {
 	validateStudentReportsQuery,
 	studentReportsListResponseSchema
-} from '$lib/server/validation/worksheets';
-import { validateJsonResponse } from '$lib/server/validation/response-utils';
-import type { StudentErrorReportWithDisplay } from '$lib/types/worksheets';
-import { fetchCopyNumbering } from '$lib/server/worksheets/display-number';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/validation/worksheets.ts';
+import { validateJsonResponse } from '#lib/server/validation/response-utils.ts';
+import type { StudentErrorReportWithDisplay } from '#lib/types/worksheets.ts';
+import { fetchCopyNumbering } from '#lib/server/worksheets/display-number.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/student/reports/+server');
 

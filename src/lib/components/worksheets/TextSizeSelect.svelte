@@ -4,8 +4,8 @@
   (enregistrer le réglage de l'élève, ou seulement régénérer l'aperçu).
 -->
 <script lang="ts">
-	import MySelect from '$lib/components/MySelect.svelte';
-	import { TEXT_SIZE_OPTIONS, textSizeOf, type TextSize } from '$lib/typst/text-size';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import { TEXT_SIZE_OPTIONS, textSizeOf, type TextSize } from '#lib/typst/text-size.ts';
 
 	interface Props {
 		value: TextSize;

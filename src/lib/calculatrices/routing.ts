@@ -4,7 +4,7 @@
  * (adresse inconnue → 404).
  */
 
-import type { GradeCode } from '$lib/types/grades';
+import type { GradeCode } from '#lib/types/grades.ts';
 import {
 	NO_GUIDE_REASONS,
 	gradeFromSlug,

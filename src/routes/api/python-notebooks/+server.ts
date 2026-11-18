@@ -6,13 +6,13 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { createNotebookSchema } from '$lib/server/validation/notebooks';
-import { uuidSchema } from '$lib/server/validation/common';
-import type { NotebookContent } from '$lib/types/notebook';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { createNotebookSchema } from '#lib/server/validation/notebooks.ts';
+import { uuidSchema } from '#lib/server/validation/common.ts';
+import type { NotebookContent } from '#lib/types/notebook.ts';
 import { z } from 'zod';
-import { toJson } from '$lib/types/database-helpers';
-import { createServerLogger } from '$lib/utils/logger';
+import { toJson } from '#lib/types/database-helpers.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/python-notebooks/+server');
 

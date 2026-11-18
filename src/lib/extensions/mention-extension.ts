@@ -19,8 +19,11 @@ import { Node, mergeAttributes } from '@tiptap/core';
 import Suggestion from '@tiptap/suggestion';
 import { Plugin, PluginKey } from '@tiptap/pm/state';
 import { NodeSelection } from '@tiptap/pm/state';
-import { searchUsers, type MentionUser } from '$lib/stores/mentions.svelte';
-import { createSuggestionRenderer, type SuggestionItem } from '$lib/extensions/suggestion-renderer';
+import { searchUsers, type MentionUser } from '#lib/stores/mentions.svelte.ts';
+import {
+	createSuggestionRenderer,
+	type SuggestionItem
+} from '#lib/extensions/suggestion-renderer.ts';
 
 // ============================================================================
 // KEYBOARD NAVIGATION PLUGIN

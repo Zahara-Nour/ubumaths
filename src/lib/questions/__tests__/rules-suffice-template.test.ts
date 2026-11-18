@@ -9,7 +9,7 @@ import { validateTemplate } from '../validators/template-validator';
 import { questionTemplateSchema } from '../template-schema';
 import { runTestSpec } from '../test-spec-runner';
 import type { QuestionTemplate, QuestionVariation, ValidationRule } from '../types';
-import { templateMarkdown } from '$lib/ubumark';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 
 // ============================================================================
 // HELPERS

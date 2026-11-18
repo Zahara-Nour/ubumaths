@@ -10,13 +10,13 @@
 
 import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { templateToBadge } from '$lib/server/srs/curriculum-point-badge';
-import { keepLinksOfGrade } from '$lib/server/curriculum-grade';
-import { loadNodesWithAncestors } from '$lib/server/programme-tree';
-import { placeOfNode } from '$lib/utils/programme-tree';
-import type { ClassificationNode } from '$lib/types/database-helpers';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { templateToBadge } from '#lib/server/srs/curriculum-point-badge.ts';
+import { keepLinksOfGrade } from '#lib/server/curriculum-grade.ts';
+import { loadNodesWithAncestors } from '#lib/server/programme-tree.ts';
+import { placeOfNode } from '#lib/utils/programme-tree.ts';
+import type { ClassificationNode } from '#lib/types/database-helpers.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('(protected)/dashboard/revisions/decks/programme/+page.server');
 

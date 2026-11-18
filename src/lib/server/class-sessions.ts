@@ -5,7 +5,7 @@
  * Turns a class into the list of dates it actually meets: its timetable
  * (`class_schedules`) minus its school's holiday periods (`school_holidays`,
  * reached through `school_years`), fed to the pure calendar in
- * `$lib/utils/class-sessions`.
+ * `#lib/utils/class-sessions.ts`.
  *
  * Used by the cahier de texte to constrain homework deadlines — a deadline is a
  * day the class meets, so it must be picked from this list, and re-checked
@@ -15,7 +15,7 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 import {
 	computeSessionDates,
 	DEFAULT_SESSION_LIMIT,
@@ -23,8 +23,8 @@ import {
 	toIsoDate,
 	type HolidayPeriod,
 	type SessionDatesOptions
-} from '$lib/utils/class-sessions';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/utils/class-sessions.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/class-sessions');
 

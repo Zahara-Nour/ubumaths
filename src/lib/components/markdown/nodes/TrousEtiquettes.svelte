@@ -26,8 +26,8 @@
 	@module components/markdown/nodes/TrousEtiquettes
 -->
 <script lang="ts">
-	import type { TrousNode } from '$lib/ubumark/types/trous';
-	import { displayedTrousLabels, trousPieces, trousPlacedOf } from '$lib/ubumark/utils/trous';
+	import type { TrousNode } from '#lib/ubumark/types/trous.ts';
+	import { displayedTrousLabels, trousPieces, trousPlacedOf } from '#lib/ubumark/utils/trous.ts';
 	import InlineMarkdown from '../InlineMarkdown.svelte';
 	import type { BuildCase } from './CollectionConstruire.svelte';
 

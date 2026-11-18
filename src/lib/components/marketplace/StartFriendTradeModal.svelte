@@ -14,17 +14,17 @@
 		- userId: string - Current authenticated user ID
 -->
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import UserAvatar from '$lib/components/UserAvatar.svelte';
-	import { Input } from '$lib/components/ui/input';
-	import { Button } from '$lib/components/ui/button';
-	import OnlineStatus from '$lib/components/OnlineStatus.svelte';
+	import { lore } from '#lib/config/lore.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import UserAvatar from '#lib/components/UserAvatar.svelte';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import OnlineStatus from '#lib/components/OnlineStatus.svelte';
 	import { Search, ArrowLeftRight, UserPlus, Loader2 } from '@lucide/svelte';
 	import type { SupabaseClient } from '@supabase/supabase-js';
-	import { presenceManager } from '$lib/stores/presence.svelte';
-	import { marketplaceStore } from '$lib/stores/marketplace.svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { presenceManager } from '#lib/stores/presence.svelte.ts';
+	import { marketplaceStore } from '#lib/stores/marketplace.svelte.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import { goto } from '$app/navigation';
 
 	// Component Props

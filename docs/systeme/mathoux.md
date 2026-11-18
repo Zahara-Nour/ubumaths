@@ -343,7 +343,7 @@ de perles.
   partiel, contraintes CHECK : chaque colonne n'accepte que les clés de son emplacement).
   `buy_mathou_decoration` pose à l'emplacement de la clé ; `set_mathou_collar` (service seul) pose,
   déplace ou retire ; `set_mathou_decoration` refuse un collier.
-- **Code** : `MATHOU_COLLARS` / `MATHOU_COLLAR_IDS` dans `$lib/mathoux/decorations.ts` (égalité avec
+- **Code** : `MATHOU_COLLARS` / `MATHOU_COLLAR_IDS` dans `#lib/mathoux/decorations.ts` (égalité avec
   la base vérifiée par `tests/integration/mathoux-colliers.test.ts`) ; `readOwnedDecorations` rend
   les deux sortes d'achats ; `readMathouMemory` lit `collar`, `Mathou.collar` le porte jusqu'au
   dessin (Chatterie, vue prof, carte de fin de séance).
@@ -381,7 +381,7 @@ Lot D des accessoires, décisions de David du 2026-10-25
   catalogue ; `mathou_decoration_slot` rend aussi `eyes` / `head` ; `student_mathoux.glasses` et
   `.hat` (mêmes garanties que `collar`) ; `buy_mathou_decoration` pose à l'emplacement de la clé ;
   `set_mathou_glasses` et `set_mathou_hat` (service seul) posent, déplacent ou retirent.
-- **Code** : `MATHOU_GLASSES` / `MATHOU_HATS` (et leurs `_IDS`) dans `$lib/mathoux/decorations.ts`
+- **Code** : `MATHOU_GLASSES` / `MATHOU_HATS` (et leurs `_IDS`) dans `#lib/mathoux/decorations.ts`
   (égalité avec la base vérifiée par `tests/integration/mathoux-lunettes-chapeaux.test.ts`) ;
   `readMathouMemory` lit `glasses` et `hat`, `Mathou.glasses` / `.hat` les portent jusqu'au dessin.
 - **Routes** : l'achat par `…/decorations/buy` ; la pose par `…/decorations/wear-glasses`

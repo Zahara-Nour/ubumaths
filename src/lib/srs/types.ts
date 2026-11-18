@@ -16,8 +16,8 @@
  * - Tracks Difficulty, Stability, Retrievability (DSR model)
  */
 
-import type { QuestionInstance } from '$lib/questions/types';
-import type { TemplateMarkdown } from '$lib/ubumark';
+import type { QuestionInstance } from '#lib/questions/types.ts';
+import type { TemplateMarkdown } from '#lib/ubumark/index.ts';
 
 // ============================================================================
 // DECK TYPES

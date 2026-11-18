@@ -1,7 +1,7 @@
 <script lang="ts">
-	import GeometryCanvas from '$lib/components/geometry/GeometryCanvas.svelte';
-	import { runDsl } from '$lib/geometry-core/dsl';
-	import type { Figure } from '$lib/geometry-core/graph/figure';
+	import GeometryCanvas from '#lib/components/geometry/GeometryCanvas.svelte';
+	import { runDsl } from '#lib/geometry-core/dsl/index.ts';
+	import type { Figure } from '#lib/geometry-core/graph/figure.ts';
 
 	interface Props {
 		dsl: string;

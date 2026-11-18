@@ -1,0 +1,447 @@
+{
+	"id": "f3f00294-bee8-4d32-9a8b-f0218828dc76",
+	"title": "Combien de temps a-t-il duré ? (heures et minutes)",
+	"description": "Durée entre deux horloges à la minute près : 8 h 52 → 9 h 17 ; 8 h 52 → 11 h 37 ; l'après-midi sur un cadran de 24 h",
+	"grades": ["CM1"],
+	"level": 6,
+	"delay": 120,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"zeros": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "{{if:k==1|La sortie au musée|{{if:k==2|La séance de cinéma|{{if:k==3|Le match|La randonnée}}}}}} commence et finit aux heures montrées. Combien de temps a-t-{{if:k==3|il|elle}} duré ?\n\n```horloge\nheure: {{if:a==0|{{h}} h|{{h}} h {{a}}}} ; {{if:b==0|{{eval:h+1}} h|{{eval:h+1}} h {{b}}}}\nchiffres: tous\ngraduations: minutes\nlégendes: Début ; Fin\n```\n\nDurée : $?~\\text{min}$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..4"
+				},
+				{
+					"name": "h",
+					"expression": "1..11"
+				},
+				{
+					"name": "a",
+					"expression": "31..59"
+				},
+				{
+					"name": "b",
+					"expression": "1..29"
+				},
+				{
+					"name": "m1",
+					"expression": "eval:60-a"
+				},
+				{
+					"name": "d",
+					"expression": "eval:60-a+b"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Début : {{if:a==0|${{h}}~\\text{h}$|${{h}}~\\text{h}~{{if:a<10|0{{a}}|{{a}}}}$}}. Fin : {{if:b==0|${{eval:h+1}}~\\text{h}$|${{eval:h+1}}~\\text{h}~{{if:b<10|0{{b}}|{{b}}}}$}}.",
+					"De {{if:a==0|${{h}}~\\text{h}$|${{h}}~\\text{h}~{{if:a<10|0{{a}}|{{a}}}}$}} à ${{eval:h+1}}~\\text{h}$ : $60 - {{a}} = {{m1}}$ minutes. Puis de ${{eval:h+1}}~\\text{h}$ à {{if:b==0|${{eval:h+1}}~\\text{h}$|${{eval:h+1}}~\\text{h}~{{if:b<10|0{{b}}|{{b}}}}$}} : ${{b}}$ minutes.",
+					"${{m1}} + {{b}} = {{d}}$ : cela fait $\\textcolor{{{color:primary.0}}}{{{d}}~\\text{min}}$."
+				]
+			}
+		},
+		{
+			"statement": "{{if:k==1|La sortie au musée|{{if:k==2|La séance de cinéma|{{if:k==3|Le match|La randonnée}}}}}} commence et finit aux heures montrées. Combien de temps a-t-{{if:k==3|il|elle}} duré ?\n\n```horloge\nheure: {{if:a==0|{{h}} h|{{h}} h {{a}}}} ; {{if:mf==0|{{hf}} h|{{hf}} h {{mf}}}}\nchiffres: tous\ngraduations: minutes\nlégendes: Début ; Fin\n```\n\nDurée : $?~\\text{h}~?~\\text{min}$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..4"
+				},
+				{
+					"name": "h",
+					"expression": "7..14"
+				},
+				{
+					"name": "a",
+					"expression": "1..59"
+				},
+				{
+					"name": "n",
+					"expression": "1..3"
+				},
+				{
+					"name": "c",
+					"expression": "1..59"
+				},
+				{
+					"name": "d",
+					"expression": "eval:60*n+c"
+				},
+				{
+					"name": "t1",
+					"expression": "eval:60*h+a+d"
+				},
+				{
+					"name": "hf",
+					"expression": "eval:floor(t1/60)"
+				},
+				{
+					"name": "mf",
+					"expression": "eval:mod(t1,60)"
+				},
+				{
+					"name": "m1",
+					"expression": "eval:60-a"
+				},
+				{
+					"name": "hp",
+					"expression": "eval:hf-h-1"
+				},
+				{
+					"name": "s",
+					"expression": "eval:m1+mf"
+				},
+				{
+					"name": "dh",
+					"expression": "eval:hp+floor(s/60)"
+				},
+				{
+					"name": "dm",
+					"expression": "eval:mod(s,60)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				},
+				{
+					"expectedAnswer": "{{c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Début : {{if:a==0|${{h}}~\\text{h}$|${{h}}~\\text{h}~{{if:a<10|0{{a}}|{{a}}}}$}}. Fin : {{if:mf==0|${{hf}}~\\text{h}$|${{hf}}~\\text{h}~{{if:mf<10|0{{mf}}|{{mf}}}}$}}.",
+					"On avance d'instant en instant, sans poser de soustraction.",
+					"De {{if:a==0|${{h}}~\\text{h}$|${{h}}~\\text{h}~{{if:a<10|0{{a}}|{{a}}}}$}} à ${{eval:h+1}}~\\text{h}$ : $60 - {{a}} = {{m1}}$ minutes.",
+					"{{if:hp>0|De ${{eval:h+1}}~\\text{h}$ à ${{hf}}~\\text{h}$ : ${{hp}}~\\text{h}$.|}}{{if:mf>0| De ${{hf}}~\\text{h}$ à {{if:mf==0|${{hf}}~\\text{h}$|${{hf}}~\\text{h}~{{if:mf<10|0{{mf}}|{{mf}}}}$}} : ${{mf}}$ minutes.|}}",
+					"{{if:s>=60|Les minutes : ${{m1}} + {{mf}} = {{s}}$, soit $1~\\text{h}~{{eval:s-60}}~\\text{min}$. |}}En tout : $\\textcolor{{{color:primary.0}}}{{{dh}}~\\text{h}~{{dm}}~\\text{min}}$."
+				]
+			}
+		},
+		{
+			"statement": "{{if:k==1|La sortie au musée|{{if:k==2|La séance de cinéma|{{if:k==3|Le match|La randonnée}}}}}} commence et finit aux heures montrées. Combien de temps a-t-{{if:k==3|il|elle}} duré ?\n\n```horloge\nheure: {{if:a==0|{{h}} h|{{h}} h {{a}}}} ; {{if:mf==0|{{hf}} h|{{hf}} h {{mf}}}}\nchiffres: tous\ngraduations: minutes\ncadran: 24\nlégendes: Début ; Fin\n```\n\nDurée : $?~\\text{h}~?~\\text{min}$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..4"
+				},
+				{
+					"name": "h",
+					"expression": "13..19"
+				},
+				{
+					"name": "a",
+					"expression": "1..59"
+				},
+				{
+					"name": "n",
+					"expression": "1..2"
+				},
+				{
+					"name": "c",
+					"expression": "1..59"
+				},
+				{
+					"name": "d",
+					"expression": "eval:60*n+c"
+				},
+				{
+					"name": "t1",
+					"expression": "eval:60*h+a+d"
+				},
+				{
+					"name": "hf",
+					"expression": "eval:floor(t1/60)"
+				},
+				{
+					"name": "mf",
+					"expression": "eval:mod(t1,60)"
+				},
+				{
+					"name": "m1",
+					"expression": "eval:60-a"
+				},
+				{
+					"name": "hp",
+					"expression": "eval:hf-h-1"
+				},
+				{
+					"name": "s",
+					"expression": "eval:m1+mf"
+				},
+				{
+					"name": "dh",
+					"expression": "eval:hp+floor(s/60)"
+				},
+				{
+					"name": "dm",
+					"expression": "eval:mod(s,60)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				},
+				{
+					"expectedAnswer": "{{c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Début : {{if:a==0|${{h}}~\\text{h}$|${{h}}~\\text{h}~{{if:a<10|0{{a}}|{{a}}}}$}}. Fin : {{if:mf==0|${{hf}}~\\text{h}$|${{hf}}~\\text{h}~{{if:mf<10|0{{mf}}|{{mf}}}}$}}.",
+					"On avance d'instant en instant, sans poser de soustraction.",
+					"De {{if:a==0|${{h}}~\\text{h}$|${{h}}~\\text{h}~{{if:a<10|0{{a}}|{{a}}}}$}} à ${{eval:h+1}}~\\text{h}$ : $60 - {{a}} = {{m1}}$ minutes.",
+					"{{if:hp>0|De ${{eval:h+1}}~\\text{h}$ à ${{hf}}~\\text{h}$ : ${{hp}}~\\text{h}$.|}}{{if:mf>0| De ${{hf}}~\\text{h}$ à {{if:mf==0|${{hf}}~\\text{h}$|${{hf}}~\\text{h}~{{if:mf<10|0{{mf}}|{{mf}}}}$}} : ${{mf}}$ minutes.|}}",
+					"{{if:s>=60|Les minutes : ${{m1}} + {{mf}} = {{s}}$, soit $1~\\text{h}~{{eval:s-60}}~\\text{min}$. |}}En tout : $\\textcolor{{{color:primary.0}}}{{{dh}}~\\text{h}~{{dm}}~\\text{min}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "8 h 52 → 9 h 17 = 25 min",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"h": "8",
+				"a": "52",
+				"b": "17",
+				"m1": "8",
+				"d": "25"
+			},
+			"answers": ["25"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 917 − 852 = 65",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"h": "8",
+				"a": "52",
+				"b": "17",
+				"m1": "8",
+				"d": "25"
+			},
+			"answers": ["65"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 52 − 17 = 35",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"h": "8",
+				"a": "52",
+				"b": "17",
+				"m1": "8",
+				"d": "25"
+			},
+			"answers": ["35"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "8 h 57 → 9 h 05 = 8 min, écrit « 08 »",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"h": "8",
+				"a": "57",
+				"b": "5",
+				"m1": "3",
+				"d": "8"
+			},
+			"answers": ["08"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "BO : 8 h 52 → 11 h 37 = 2 h 45 min",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"h": "8",
+				"a": "52",
+				"n": "2",
+				"c": "45",
+				"d": "165",
+				"t1": "697",
+				"hf": "11",
+				"mf": "37",
+				"m1": "8",
+				"hp": "2",
+				"s": "45",
+				"dh": "2",
+				"dm": "45"
+			},
+			"answers": ["2", "45"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : soustraction décimale, 2 h 85",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"h": "8",
+				"a": "52",
+				"n": "2",
+				"c": "45",
+				"d": "165",
+				"t1": "697",
+				"hf": "11",
+				"mf": "37",
+				"m1": "8",
+				"hp": "2",
+				"s": "45",
+				"dh": "2",
+				"dm": "45"
+			},
+			"answers": ["2", "85"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 11 − 8 = 3 h, 52 − 37 = 15 min",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"h": "8",
+				"a": "52",
+				"n": "2",
+				"c": "45",
+				"d": "165",
+				"t1": "697",
+				"hf": "11",
+				"mf": "37",
+				"m1": "8",
+				"hp": "2",
+				"s": "45",
+				"dh": "2",
+				"dm": "45"
+			},
+			"answers": ["3", "15"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 3 h 45 (heure entamée comptée)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"h": "8",
+				"a": "52",
+				"n": "2",
+				"c": "45",
+				"d": "165",
+				"t1": "697",
+				"hf": "11",
+				"mf": "37",
+				"m1": "8",
+				"hp": "2",
+				"s": "45",
+				"dh": "2",
+				"dm": "45"
+			},
+			"answers": ["3", "45"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "9 h 10 → 10 h 25 = 1 h 15 min (sans passer l'heure en minutes)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "4",
+				"h": "9",
+				"a": "10",
+				"n": "1",
+				"c": "15",
+				"d": "75",
+				"t1": "625",
+				"hf": "10",
+				"mf": "25",
+				"m1": "50",
+				"hp": "0",
+				"s": "75",
+				"dh": "1",
+				"dm": "15"
+			},
+			"answers": ["1", "15"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Cadran de 24 h : 15 h 40 → 17 h 05 = 1 h 25 min",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3",
+				"h": "15",
+				"a": "40",
+				"n": "1",
+				"c": "25",
+				"d": "85",
+				"t1": "1025",
+				"hf": "17",
+				"mf": "5",
+				"m1": "20",
+				"hp": "1",
+				"s": "25",
+				"dh": "1",
+				"dm": "25"
+			},
+			"answers": ["1", "25"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1705 − 1540 = 1 h 65",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3",
+				"h": "15",
+				"a": "40",
+				"n": "1",
+				"c": "25",
+				"d": "85",
+				"t1": "1025",
+				"hf": "17",
+				"mf": "5",
+				"m1": "20",
+				"hp": "1",
+				"s": "25",
+				"dh": "1",
+				"dm": "25"
+			},
+			"answers": ["1", "65"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

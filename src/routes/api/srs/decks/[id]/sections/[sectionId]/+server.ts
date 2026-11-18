@@ -10,11 +10,11 @@
 
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { updateSectionSchema } from '$lib/server/validation/srs';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { updateSectionSchema } from '#lib/server/validation/srs.ts';
 import { z } from 'zod';
-import type { TablesUpdate } from '$lib/types/database';
-import { createServerLogger } from '$lib/utils/logger';
+import type { TablesUpdate } from '#lib/types/database.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/srs/decks/[id]/sections/[sectionId]/+server');
 

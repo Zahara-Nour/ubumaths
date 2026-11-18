@@ -5,13 +5,17 @@
 -->
 
 <script lang="ts">
-	import type { DbRiddleAttempt, StudentRiddle } from '$lib/types/riddle';
-	import { getDifficultyLabel, getDifficultyColor, calculateGidouilles } from '$lib/types/riddle';
-	import { Button } from '$lib/components/ui/button';
-	import { Badge } from '$lib/components/ui/badge';
-	import * as Card from '$lib/components/ui/card';
+	import type { DbRiddleAttempt, StudentRiddle } from '#lib/types/riddle.ts';
+	import {
+		getDifficultyLabel,
+		getDifficultyColor,
+		calculateGidouilles
+	} from '#lib/types/riddle.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
 	import { Sparkles, Trophy, Calendar, ArrowRight, History } from '@lucide/svelte';
-	import { MarkdownRenderer } from '$lib/components/markdown';
+	import { MarkdownRenderer } from '#lib/components/markdown/index.ts';
 	import { format } from 'date-fns';
 	import { fr } from 'date-fns/locale';
 

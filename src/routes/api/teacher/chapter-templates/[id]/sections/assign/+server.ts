@@ -8,10 +8,10 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import { requireOwnedTemplate } from '$lib/server/template-guard';
-import { assignToSection } from '$lib/server/chapter-sections';
-import { assignToSectionSchema } from '$lib/server/validation/chapter-sections';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { requireOwnedTemplate } from '#lib/server/template-guard.ts';
+import { assignToSection } from '#lib/server/chapter-sections.ts';
+import { assignToSectionSchema } from '#lib/server/validation/chapter-sections.ts';
 
 export const POST: RequestHandler = async ({ locals, params, request }) => {
 	const { user } = await requireRole(locals, 'teacher');

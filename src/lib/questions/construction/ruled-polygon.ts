@@ -19,7 +19,7 @@
  * @module questions/construction/ruled-polygon
  */
 
-import type { RuledPolygonCheck } from '$lib/ubumark/types/construction';
+import type { RuledPolygonCheck } from '#lib/ubumark/types/construction.ts';
 import type { DrawnLine, DrawnObject, DrawnRegle } from './answer';
 import {
 	basePointsOf,

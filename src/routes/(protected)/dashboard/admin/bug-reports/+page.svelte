@@ -6,17 +6,17 @@
 	 * Supports batch operations (status change, delete) with selection.
 	 */
 	import { goto, invalidateAll } from '$app/navigation';
-	import * as Card from '$lib/components/ui/card';
-	import { Button } from '$lib/components/ui/button';
-	import BugReportList from '$lib/components/bug-reports/BugReportList.svelte';
-	import BugReportStatusBadge from '$lib/components/bug-reports/BugReportStatusBadge.svelte';
-	import ExportClaudeCodeButton from '$lib/components/bug-reports/ExportClaudeCodeButton.svelte';
-	import BugReportsConfigCard from '$lib/components/bug-reports/BugReportsConfigCard.svelte';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import { Textarea } from '$lib/components/ui/textarea';
-	import { Label } from '$lib/components/ui/label';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import BugReportList from '#lib/components/bug-reports/BugReportList.svelte';
+	import BugReportStatusBadge from '#lib/components/bug-reports/BugReportStatusBadge.svelte';
+	import ExportClaudeCodeButton from '#lib/components/bug-reports/ExportClaudeCodeButton.svelte';
+	import BugReportsConfigCard from '#lib/components/bug-reports/BugReportsConfigCard.svelte';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import { Textarea } from '#lib/components/ui/textarea/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import { formatDistanceToNow } from 'date-fns';
 	import { fr } from 'date-fns/locale';
 	import { fly } from 'svelte/transition';
@@ -25,14 +25,14 @@
 		BugReportStatus,
 		BugReportCategory,
 		BugReportSeverity
-	} from '$lib/types/bug-reports';
+	} from '#lib/types/bug-reports.ts';
 	import {
 		BUG_REPORT_CATEGORY_LABELS,
 		BUG_REPORT_CATEGORY_ICONS,
 		BUG_REPORT_STATUS_LABELS,
 		BUG_REPORT_SEVERITY_LABELS,
 		BUG_REPORT_SEVERITY_COLORS
-	} from '$lib/types/bug-reports';
+	} from '#lib/types/bug-reports.ts';
 
 	// Typed accessors: DB rows return string for enum columns; cast safely at one place
 	function getCategoryIcon(category: string): string {

@@ -1,17 +1,17 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAuth } from '$lib/server/middleware/auth';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
 // Supabase client is now accessed via locals.supabase
-import { updateListingSchema } from '$lib/server/marketplace/validation';
+import { updateListingSchema } from '#lib/server/marketplace/validation.ts';
 import {
 	unlockCardsForEntity,
 	isMarketplaceEnabled,
 	enrichWithParticipants
-} from '$lib/server/marketplace/helpers';
+} from '#lib/server/marketplace/helpers.ts';
 // TODO: Implement cache invalidation
-// import { invalidateListingCaches } from '$lib/server/marketplace/cache-manager';
+// import { invalidateListingCaches } from '#lib/server/marketplace/cache-manager';
 import { z } from 'zod';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/marketplace/listings/[id]/+server');
 

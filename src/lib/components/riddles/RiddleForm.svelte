@@ -19,21 +19,21 @@
 -->
 
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import type {
 		DbRiddle,
 		CreateRiddleData,
 		RiddleDifficulty,
 		AnswerConfig
-	} from '$lib/types/riddle';
-	import { calculateGidouilles } from '$lib/types/riddle';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
-	import * as Card from '$lib/components/ui/card';
-	import { Badge } from '$lib/components/ui/badge';
-	import RichTextEditor from '$lib/components/rich-text/RichTextEditor.svelte';
-	import AnswerConfigEditor from '$lib/components/riddles/AnswerConfigEditor.svelte';
+	} from '#lib/types/riddle.ts';
+	import { calculateGidouilles } from '#lib/types/riddle.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import RichTextEditor from '#lib/components/rich-text/RichTextEditor.svelte';
+	import AnswerConfigEditor from '#lib/components/riddles/AnswerConfigEditor.svelte';
 	import { Lightbulb, Image as ImageIcon, Save, X } from '@lucide/svelte';
 
 	// Props

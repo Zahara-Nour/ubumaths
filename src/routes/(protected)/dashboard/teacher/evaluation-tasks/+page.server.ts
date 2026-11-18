@@ -11,7 +11,7 @@
 
 import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
-import { requireRole } from '$lib/server/middleware/auth';
+import { requireRole } from '#lib/server/middleware/auth.ts';
 
 export interface EvaluationTaskListItem {
 	id: string;

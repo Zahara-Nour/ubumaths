@@ -10,14 +10,14 @@
 
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import type { CardState, DueCardsResponse, DueReviewCard } from '$lib/srs/types';
-import { generateSRSInstance } from '$lib/srs/generator';
-import { dueCardsQuerySchema } from '$lib/server/validation/srs';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { asCardState } from '$lib/srs/types';
-import { templateMarkdown } from '$lib/ubumark/types/template';
-import { toQuestionTemplate } from '$lib/types/question-template';
-import { createServerLogger } from '$lib/utils/logger';
+import type { CardState, DueCardsResponse, DueReviewCard } from '#lib/srs/types.ts';
+import { generateSRSInstance } from '#lib/srs/generator.ts';
+import { dueCardsQuerySchema } from '#lib/server/validation/srs.ts';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { asCardState } from '#lib/srs/types.ts';
+import { templateMarkdown } from '#lib/ubumark/types/template.ts';
+import { toQuestionTemplate } from '#lib/types/question-template.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/srs/review/due/+server');
 

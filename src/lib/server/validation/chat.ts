@@ -3,7 +3,7 @@
  */
 
 import { z } from 'zod';
-import { personalities, type PersonalityKey } from '$lib/config/personalities';
+import { personalities, type PersonalityKey } from '#lib/config/personalities.ts';
 
 // ============================================================================
 // MESSAGE CONTENT SCHEMAS

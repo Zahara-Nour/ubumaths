@@ -21,16 +21,16 @@
  * @module questions/vectors/vector-answer
  */
 
-import type { ValidationStatus, VectorMode } from '$lib/questions/types';
-import type { MathNode } from '$lib/mathAST/types';
-import { parseLatexSafe } from '$lib/mathAST/parser';
-import { equivalenceForms } from '$lib/mathAST/normal/normalize';
-import { multiply, subtract } from '$lib/mathAST/factory';
-import { mapNode } from '$lib/mathAST/transforms';
-import { getVariables } from '$lib/mathAST/eval/substitute';
-import { makeAbortChecker } from '$lib/mathAST/common/abort';
-import { stripLatexSpacing } from '$lib/math';
-import { isAnswerTooComplex } from '$lib/questions/answer-complexity';
+import type { ValidationStatus, VectorMode } from '#lib/questions/types.ts';
+import type { MathNode } from '#lib/mathAST/types.ts';
+import { parseLatexSafe } from '#lib/mathAST/parser/index.ts';
+import { equivalenceForms } from '#lib/mathAST/normal/normalize.ts';
+import { multiply, subtract } from '#lib/mathAST/factory.ts';
+import { mapNode } from '#lib/mathAST/transforms.ts';
+import { getVariables } from '#lib/mathAST/eval/substitute.ts';
+import { makeAbortChecker } from '#lib/mathAST/common/abort.ts';
+import { stripLatexSpacing } from '#lib/math/index.ts';
+import { isAnswerTooComplex } from '#lib/questions/answer-complexity.ts';
 
 // Types
 export interface VectorVerdict {

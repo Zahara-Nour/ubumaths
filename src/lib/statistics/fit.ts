@@ -5,7 +5,7 @@
  * (`.linreg` / `.ajustement`) l'appellent. Déplacé de `atelier/stats.ts`
  * (chantier outils statistiques, lot 1).
  *
- * ⚠️ Aucun import `$lib` : voir `statistics/describe`.
+ * ⚠️ Aucun import `#lib` : voir `statistics/describe`.
  *
  * @module statistics/fit
  */

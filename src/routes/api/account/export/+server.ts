@@ -19,12 +19,41 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { rateLimit } from '$lib/server/middleware/rateLimit';
-import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { rateLimit } from '#lib/server/middleware/rateLimit.ts';
+import { createServiceRoleClient } from '#lib/server/serviceRoleClient.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/account/export');
+
+/** Plafond `max_rows` de PostgREST (supabase/config.toml) : taille d'une page. */
+const PAGE_SIZE = 1000;
+
+/** Colonnes des Bêtes exportées (La Descente de la Vistule). */
+const BEAST_COLUMNS =
+	'beast_key, kind, province, point_id, max_hp, hp, appeared_at, leaves_at, defeated_at, rewarded_gidouilles';
+
+/**
+ * Toutes les lignes d'une lecture, page par page : le plafond de 1 000 lignes de
+ * PostgREST tronquerait l'export en silence. `fetchPage` doit trier de façon stable.
+ * Les Bêtes (environ trois par jour de jeu) le dépassent en un an ; les coups gagnés
+ * n'ont aucune borne en base.
+ */
+async function readAllPages<Row>(
+	fetchPage: (
+		from: number,
+		to: number
+	) => PromiseLike<{ data: Row[] | null; error: { message: string } | null }>
+): Promise<{ data: Row[]; error: { message: string } | null }> {
+	const rows: Row[] = [];
+	for (let from = 0; ; from += PAGE_SIZE) {
+		const { data, error: readError } = await fetchPage(from, from + PAGE_SIZE - 1);
+		if (readError) return { data: [], error: readError };
+		const page = data ?? [];
+		rows.push(...page);
+		if (page.length < PAGE_SIZE) return { data: rows, error: null };
+	}
+}
 
 // Rate limit: 1 export per hour per user
 const RATE_LIMIT_MAX = 1;
@@ -64,6 +93,8 @@ export const GET: RequestHandler = async ({ locals }) => {
 			mathouxResult,
 			mathouDecorationsResult,
 			avatarsResult,
+			beastsResult,
+			combatMovesResult,
 			buddyResult,
 			lastVisitResult
 		] = await Promise.all([
@@ -217,6 +248,28 @@ export const GET: RequestHandler = async ({ locals }) => {
 				.select('avatar_key, price_paid, purchased_at')
 				.eq('student_id', userId),
 
+			// Jeux — La Descente de la Vistule : Bêtes de l'élève (vivantes, reparties,
+			// vaincues : le carnet), lisibles par lui seul
+			readAllPages((from, to) =>
+				supabase
+					.from('student_beasts')
+					.select(BEAST_COLUMNS)
+					.eq('student_id', userId)
+					.order('appeared_at')
+					.order('id')
+					.range(from, to)
+			),
+
+			// Jeux — La Descente : coups et sorts gagnés, lus par pages eux aussi
+			readAllPages((from, to) =>
+				supabase
+					.from('student_combat_moves')
+					.select('move_key, notion_id, earned_at, announced_at')
+					.eq('student_id', userId)
+					.order('move_key')
+					.range(from, to)
+			),
+
 			// Jeux — le Palotin de l'élève (une ligne par élève ; décision de David, 2026-10-18)
 			supabase
 				.from('student_buddies')
@@ -260,6 +313,14 @@ export const GET: RequestHandler = async ({ locals }) => {
 
 		if (avatarsResult.error) {
 			throw new Error(`student_avatars illisible : ${avatarsResult.error.message}`);
+		}
+
+		if (beastsResult.error) {
+			throw new Error(`student_beasts illisible : ${beastsResult.error.message}`);
+		}
+
+		if (combatMovesResult.error) {
+			throw new Error(`student_combat_moves illisible : ${combatMovesResult.error.message}`);
 		}
 
 		if (buddyResult.error) {
@@ -358,6 +419,10 @@ export const GET: RequestHandler = async ({ locals }) => {
 				mathoux: mathouxResult.data || [],
 				mathou_decorations: mathouDecorationsResult.data || [],
 				avatars: avatarsResult.data || [],
+				descente: {
+					beasts: beastsResult.data,
+					combat_moves: combatMovesResult.data
+				},
 				palotin: buddyResult.data || null,
 				dernier_passage: lastVisitResult.data?.last_visit_date ?? null,
 				retour_a_feter: lastVisitResult.data?.welcome_back_on ?? null,

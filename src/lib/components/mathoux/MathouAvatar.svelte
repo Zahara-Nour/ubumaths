@@ -60,7 +60,7 @@
 		MathouDecorationId,
 		MathouGlassesId,
 		MathouHatId
-	} from '$lib/mathoux/decorations';
+	} from '#lib/mathoux/decorations.ts';
 
 	// Types
 	interface Props {

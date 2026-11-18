@@ -31,16 +31,16 @@
 -->
 
 <script lang="ts">
-	import type { QuestionInstance } from '$lib/questions/types';
-	import { getQuestionType, QUESTION_TYPE_LABELS } from '$lib/questions/types';
-	import { Badge } from '$lib/components/ui/badge';
-	import * as Card from '$lib/components/ui/card';
-	import * as Collapsible from '$lib/components/ui/collapsible';
-	import { Button } from '$lib/components/ui/button';
-	import { MarkdownRenderer } from '$lib/components/markdown';
-	import { templateGenericFunctions } from '$lib/questions/generic-functions';
-	import { provideCapitalPairs } from '$lib/components/markdown/content-capital-pairs';
-	import { detailedCorrection } from '$lib/questions/correction-detail';
+	import type { QuestionInstance } from '#lib/questions/types.ts';
+	import { getQuestionType, QUESTION_TYPE_LABELS } from '#lib/questions/types.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import * as Collapsible from '#lib/components/ui/collapsible/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { MarkdownRenderer } from '#lib/components/markdown/index.ts';
+	import { templateGenericFunctions } from '#lib/questions/generic-functions.ts';
+	import { provideCapitalPairs } from '#lib/components/markdown/content-capital-pairs.ts';
+	import { detailedCorrection } from '#lib/questions/correction-detail.ts';
 	import {
 		ChevronDown,
 		ChevronRight,
@@ -50,7 +50,7 @@
 		Info,
 		FileText
 	} from '@lucide/svelte';
-	import { cn } from '$lib/utils';
+	import { cn } from '#lib/utils.ts';
 
 	// ============================================================================
 	// PROPS

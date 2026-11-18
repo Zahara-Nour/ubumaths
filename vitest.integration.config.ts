@@ -20,7 +20,7 @@ export default defineConfig(({ mode }) => {
 	Object.assign(process.env, env);
 
 	return {
-		plugins: [sveltekit()], // Enable $lib alias resolution
+		plugins: [sveltekit()], // #lib et #tests : imports de sous-chemin (package.json)
 		test: {
 			...dbTestConfig,
 			name: 'integration',

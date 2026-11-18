@@ -1,9 +1,9 @@
 import { error, fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
-import { validateTimetable, type SchoolTimetable } from '$lib/utils/timetable';
-import { validateUuidParam } from '$lib/server/validation/params';
-import { requireAdmin } from '$lib/server/middleware/auth';
-import { assertTypedConfirmation } from '$lib/server/confirmAction';
+import { validateTimetable, type SchoolTimetable } from '#lib/utils/timetable.ts';
+import { validateUuidParam } from '#lib/server/validation/params.ts';
+import { requireAdmin } from '#lib/server/middleware/auth.ts';
+import { assertTypedConfirmation } from '#lib/server/confirmAction.ts';
 import {
 	createSchoolYearSchema,
 	updateSchoolYearSchema,
@@ -16,9 +16,9 @@ import {
 	updateSchoolHolidaySchema,
 	deleteSchoolHolidaySchema,
 	duplicateSchoolYearSchema
-} from '$lib/server/validation/academic';
-import { createServerLogger } from '$lib/utils/logger';
-import { schoolYearConflictMessage } from '$lib/server/school-year-errors';
+} from '#lib/server/validation/academic.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
+import { schoolYearConflictMessage } from '#lib/server/school-year-errors.ts';
 
 const logger = createServerLogger(
 	'(protected)/dashboard/admin/schools/[schoolId]/organisation/+page.server'

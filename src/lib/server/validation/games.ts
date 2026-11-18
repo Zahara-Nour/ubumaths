@@ -5,7 +5,7 @@
  */
 
 import { z } from 'zod';
-import { GAME_LEADERBOARD_GAMES, GAME_LEADERBOARD_SCOPES } from '$lib/games/leaderboards';
+import { GAME_LEADERBOARD_GAMES, GAME_LEADERBOARD_SCOPES } from '#lib/games/leaderboards.ts';
 
 // ============================================================================
 // 2048 GAME SCHEMAS
@@ -173,7 +173,7 @@ export const getMathemoScoreResponseSchema = z.object({
 // ============================================================================
 // UNIFIED GAME LEADERBOARDS (3 scopes: class / grade / school)
 // ============================================================================
-// Value tuples live in $lib/games/leaderboards (client-safe, shared with the UI).
+// Value tuples live in #lib/games/leaderboards (client-safe, shared with the UI).
 
 /**
  * Schema for the unified leaderboard page query params.

@@ -1,0 +1,46 @@
+[
+	{
+		"id": "25991652-9717-4890-bf23-68ee672a913b",
+		"noeudAvant": null,
+		"noeudApres": "Algorithmique > Variables et instructions > variables et affectation",
+		"gradesAvant": ["4"],
+		"gradesApres": ["4"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["4§4-067"]
+	},
+	{
+		"id": "81bacf03-66b8-44b0-bb37-a6703fe77edd",
+		"noeudAvant": null,
+		"noeudApres": "Algorithmique > Variables et instructions",
+		"gradesAvant": ["4"],
+		"gradesApres": ["4"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["4§4-068"]
+	},
+	{
+		"id": "a0b27395-9cd5-4b02-8118-d0c124f68e5d",
+		"noeudAvant": null,
+		"noeudApres": "Algorithmique > Variables et instructions > variables et affectation",
+		"gradesAvant": ["3"],
+		"gradesApres": ["3"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["3§3-047"]
+	},
+	{
+		"id": "d64ddd78-fd78-4e81-b41a-db25ce687111",
+		"noeudAvant": null,
+		"noeudApres": "Algorithmique > Variables et instructions",
+		"gradesAvant": ["3"],
+		"gradesApres": ["3"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["3§3-051"]
+	}
+]

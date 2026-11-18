@@ -9,7 +9,7 @@
  * traverse, même si rien de ce qu'il exporte n'est utilisé.
  *
  * Mesuré le 2026-11-11 (chantier amelioration) : importer `parseMarkdown` par
- * `$lib/ubumark` embarquait l'intégration symbolique, `tidy`, les règles de
+ * `#lib/ubumark/index.ts` embarquait l'intégration symbolique, `tidy`, les règles de
  * motifs, les générateurs Typst… ~210 Ko gzip de trop sur 67 pages qui
  * affichent du markdown, ~60 Ko sur l'atelier.
  *

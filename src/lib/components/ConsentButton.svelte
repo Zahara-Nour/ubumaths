@@ -22,9 +22,9 @@
 	```
 -->
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button';
-	import * as Tooltip from '$lib/components/ui/tooltip';
-	import { consent } from '$lib/stores/consent.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Tooltip from '#lib/components/ui/tooltip/index.ts';
+	import { consent } from '#lib/stores/consent.svelte.ts';
 	import type { Snippet } from 'svelte';
 	import type { HTMLButtonAttributes } from 'svelte/elements';
 

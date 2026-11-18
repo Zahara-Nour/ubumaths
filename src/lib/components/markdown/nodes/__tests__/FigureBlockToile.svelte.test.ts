@@ -7,7 +7,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import FigureBlock from '../FigureBlock.svelte';
-import { parseFigureContent } from '$lib/ubumark/parser/figure-parser';
+import { parseFigureContent } from '#lib/ubumark/parser/figure-parser.ts';
 
 // Fenêtre -5..5 en taille moyenne (400 px) : 40 px par unité, A(1, 1) en (240, 160)
 const HEADER = 'fenetre: -5 ; 5 ; -5 ; 5\ntaille: moyenne\ndescription: Le point A.';

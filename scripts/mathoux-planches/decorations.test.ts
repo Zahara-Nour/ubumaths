@@ -11,14 +11,14 @@ import { describe, expect, it } from 'vitest';
 import { render } from 'svelte/server';
 import { writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import MathouAvatar from '$lib/components/mathoux/MathouAvatar.svelte';
+import MathouAvatar from '#lib/components/mathoux/MathouAvatar.svelte';
 import {
 	MATHOU_RACES,
 	CHAT_NOIR,
 	type MathouPattern,
 	type MathouStage
-} from '$lib/components/mathoux/mathou-races';
-import { pearGeometry } from '$lib/components/mathoux/mathou-dessin';
+} from '#lib/components/mathoux/mathou-races.ts';
+import { pearGeometry } from '#lib/components/mathoux/mathou-dessin.ts';
 
 // Types
 interface Decoration {

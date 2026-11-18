@@ -8,13 +8,13 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-vi.mock('$lib/server/middleware/auth', () => ({ requireRole: vi.fn() }));
-vi.mock('$lib/server/mathoux/collection', () => ({ loadMathouCollectionWithNews: vi.fn() }));
+vi.mock('#lib/server/middleware/auth.ts', () => ({ requireRole: vi.fn() }));
+vi.mock('#lib/server/mathoux/collection.ts', () => ({ loadMathouCollectionWithNews: vi.fn() }));
 
-import { requireRole } from '$lib/server/middleware/auth';
-import { loadMathouCollectionWithNews } from '$lib/server/mathoux/collection';
-import { mathouxSummarySchema } from '$lib/mathoux/summary';
-import type { MathouNews } from '$lib/mathoux/news';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { loadMathouCollectionWithNews } from '#lib/server/mathoux/collection.ts';
+import { mathouxSummarySchema } from '#lib/mathoux/summary.ts';
+import type { MathouNews } from '#lib/mathoux/news.ts';
 import { GET } from '../+server';
 
 const SUPABASE = { from: vi.fn() };

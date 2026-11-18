@@ -8,8 +8,8 @@
  */
 import { describe, expect, it } from 'vitest';
 import { generateWorksheetTypst } from '../worksheet-generator';
-import { generateStudentWorksheetTypst } from '$lib/worksheets/student-worksheet-typst';
-import { answerFrameLinesToCm } from '$lib/worksheets/document/answer-frame-lines';
+import { generateStudentWorksheetTypst } from '#lib/worksheets/student-worksheet-typst.ts';
+import { answerFrameLinesToCm } from '#lib/worksheets/document/answer-frame-lines.ts';
 import type {
 	AnswerFrameLines,
 	InstanceData,
@@ -17,7 +17,7 @@ import type {
 	StudentWorksheetView,
 	WorksheetConfig,
 	WorksheetRow
-} from '$lib/types/worksheets';
+} from '#lib/types/worksheets.ts';
 
 const STATEMENT = ['1. QUESTIONUN', '2. QUESTIONDEUX', '', 'FINENONCE'].join('\n');
 /** Deux réponses courtes : deux petits cadres (3 lignes) */

@@ -12,13 +12,13 @@ import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { page } from 'vitest/browser';
 import ReviewSession from '../ReviewSession.svelte';
-import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
-import { toaster } from '$lib/stores/toaster.svelte';
-import type { BuddyState } from '$lib/types/buddy';
+import { studentCache } from '#lib/stores/studentDashboardCache.svelte.ts';
+import { toaster } from '#lib/stores/toaster.svelte.ts';
+import type { BuddyState } from '#lib/types/buddy.ts';
 import {
 	registerSeanceReactionHandler,
 	type SeanceReaction
-} from '$lib/components/buddy/seance-reactions';
+} from '#lib/components/buddy/seance-reactions.ts';
 
 const source = { kind: 'chapter', chapterId: 'c1' } as const;
 const texte = (container: HTMLElement) => container.textContent!.replace(/\s+/g, ' ').trim();

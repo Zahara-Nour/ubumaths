@@ -4,7 +4,7 @@
 
 	Manages a complete SRS review session for a deck — or for the COMPUTED
 	revision deck of a chapter (`source.kind === 'chapter'`, étape 3 des
-	questions de cours). La source (`$lib/srs/review-source`) fixe les adresses
+	questions de cours). La source (`#lib/srs/review-source.ts`) fixe les adresses
 	et traduit les cartes du serveur ; l'écran est le même.
 
 	Features:
@@ -25,28 +25,28 @@
 
 <script lang="ts">
 	import { onDestroy, onMount } from 'svelte';
-	import FlashCard from '$lib/components/questions/FlashCard.svelte';
+	import FlashCard from '#lib/components/questions/FlashCard.svelte';
 	import CustomFlashCard from './CustomFlashCard.svelte';
-	import SelfAssessButtons from '$lib/components/questions/SelfAssessButtons.svelte';
-	import { Button } from '$lib/components/ui/button';
-	import * as Card from '$lib/components/ui/card';
-	import { Progress } from '$lib/components/ui/progress';
+	import SelfAssessButtons from '#lib/components/questions/SelfAssessButtons.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Progress } from '#lib/components/ui/progress/index.ts';
 	import { CheckCircle2, Trophy, ArrowLeft, RotateCcw } from '@lucide/svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import {
 		dueUrl,
 		submitRequest,
 		toSessionPayload,
 		type ReviewSource,
 		type SessionCard
-	} from '$lib/srs/review-source';
-	import BuddyGainCard from '$lib/components/buddy/BuddyGainCard.svelte';
-	import MathouNewsCard from '$lib/components/mathoux/MathouNewsCard.svelte';
-	import { fetchMathouNews } from '$lib/components/mathoux/mathou-news';
-	import type { MathouNews } from '$lib/mathoux/news';
-	import { receiveBuddyGain, type BuddyGainView } from '$lib/components/buddy/buddy-gain';
-	import { createSeanceReactions } from '$lib/components/buddy/seance-reactions';
-	import { isCourseCard } from '$lib/questions/types';
+	} from '#lib/srs/review-source.ts';
+	import BuddyGainCard from '#lib/components/buddy/BuddyGainCard.svelte';
+	import MathouNewsCard from '#lib/components/mathoux/MathouNewsCard.svelte';
+	import { fetchMathouNews } from '#lib/components/mathoux/mathou-news.ts';
+	import type { MathouNews } from '#lib/mathoux/news.ts';
+	import { receiveBuddyGain, type BuddyGainView } from '#lib/components/buddy/buddy-gain.ts';
+	import { createSeanceReactions } from '#lib/components/buddy/seance-reactions.ts';
+	import { isCourseCard } from '#lib/questions/types.ts';
 
 	interface Props {
 		/**

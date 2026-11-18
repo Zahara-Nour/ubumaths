@@ -25,9 +25,9 @@ import { areEquivalent } from '../../../equivalence';
 import { evaluateNumeric } from '../../../common/numeric';
 import { MathAST } from '../../../factory';
 import type { MathNode } from '../../../types';
-import { expressionToLatex } from '$lib/components/markdown/utils/math-utils';
-import { parseMarkdown } from '$lib/ubumark/parser/markdown-parser';
-import { generateTypst } from '$lib/ubumark/generators/typst-generator';
+import { expressionToLatex } from '#lib/components/markdown/utils/math-utils.ts';
+import { parseMarkdown } from '#lib/ubumark/parser/markdown-parser.ts';
+import { generateTypst } from '#lib/ubumark/generators/typst-generator.ts';
 
 const CUSTOM_PARSERS = [
 	['Pratt', parseCustomPrattSafeRaw],

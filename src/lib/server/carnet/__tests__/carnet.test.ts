@@ -8,9 +8,8 @@
  *  - un jeton mal formé n'atteint jamais la base ;
  *  - la base rend `null` (lien mort, carnet fermé) → `null`, sans distinguer ;
  *  - un carnet mal formé ou une erreur de la base → exception (500), jamais un
- *    carnet à moitié rendu ;
- *  - confirmer une adresse émet un lien neuf (empreinte + 31 août) et rend le
- *    jeton en clair, une seule fois.
+ *    carnet à moitié rendu.
+ * Confirmer une adresse et envoyer son lien : `envois.test.ts`.
  *
  * Le comportement des fonctions SQL est prouvé par
  * `tests/integration/carnet-de-liaison.test.ts`.
@@ -20,7 +19,7 @@ import { createHash } from 'node:crypto';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 const rpc = vi.fn();
-vi.mock('$lib/server/serviceRoleClient', () => ({
+vi.mock('#lib/server/serviceRoleClient.ts', () => ({
 	createServiceRoleClient: () => ({ rpc })
 }));
 
@@ -30,7 +29,6 @@ const {
 	hashCarnetToken,
 	readCarnetByToken,
 	readMyCarnet,
-	confirmParentContact,
 	refuseParentContact,
 	setParentEmailsStopped
 } = await import('../carnet');
@@ -143,60 +141,6 @@ describe('readMyCarnet (porte de l’élève)', () => {
 	it('pas un élève → null', async () => {
 		const own = vi.fn().mockResolvedValue({ data: null, error: null });
 		expect(await readMyCarnet({ rpc: own } as never)).toBeNull();
-	});
-});
-
-describe('confirmParentContact', () => {
-	it('jeton mal formé → null, sans appeler la base', async () => {
-		expect(await confirmParentContact('x')).toBeNull();
-		expect(rpc).not.toHaveBeenCalled();
-	});
-
-	it('confirmation refusée (déjà utilisée, échue) → null, aucun lien émis', async () => {
-		rpc.mockResolvedValue({ data: null, error: null });
-		expect(await confirmParentContact(JETON)).toBeNull();
-		expect(rpc).toHaveBeenCalledTimes(1);
-	});
-
-	it('confirmée → émet un lien neuf (empreinte seule, 31 août) et rend le jeton en clair', async () => {
-		const contact = '11111111-1111-4111-8111-111111111111';
-		rpc
-			.mockResolvedValueOnce({ data: { contact_id: contact, student_id: 'x' }, error: null })
-			.mockResolvedValueOnce({ data: true, error: null });
-
-		const resultat = await confirmParentContact(JETON);
-
-		expect(rpc).toHaveBeenNthCalledWith(1, 'confirm_parent_contact', { p_token: JETON });
-		const [nom, args] = rpc.mock.calls[1];
-		expect(nom).toBe('issue_parent_carnet_link');
-		expect(args.p_contact_id).toBe(contact);
-		expect(resultat?.carnetToken).toMatch(/^[A-Za-z0-9_-]{43}$/);
-		// La base ne voit jamais le jeton du carnet en clair
-		expect(args.p_token_hash).toBe(hashCarnetToken(resultat?.carnetToken ?? ''));
-		expect(JSON.stringify(args)).not.toContain(resultat?.carnetToken);
-		expect(new Date(args.p_expires_at).getUTCMonth()).toBe(7); // août
-	});
-
-	it('confirmée mais partage coupé → adresse confirmée, aucun lien', async () => {
-		rpc
-			.mockResolvedValueOnce({
-				data: { contact_id: '22222222-2222-4222-8222-222222222222', student_id: 's' },
-				error: null
-			})
-			.mockResolvedValueOnce({ data: false, error: null });
-		expect(await confirmParentContact(JETON)).toEqual({ carnetToken: null });
-	});
-});
-
-describe('confirmParentContact — émission en échec', () => {
-	it('adresse confirmée mais lien non émis (erreur) → confirmée sans lien, pas une 500', async () => {
-		rpc
-			.mockResolvedValueOnce({
-				data: { contact_id: '22222222-2222-4222-8222-222222222222', student_id: 's' },
-				error: null
-			})
-			.mockResolvedValueOnce({ data: null, error: { message: 'boom' } });
-		expect(await confirmParentContact(JETON)).toEqual({ carnetToken: null });
 	});
 });
 

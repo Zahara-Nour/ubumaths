@@ -15,16 +15,22 @@
  * @module questions/generator/condition-evaluator
  */
 
-import type { ResolvedVariable } from '$lib/ubumark/types/parameterization';
-import type { EvalBindings } from '$lib/mathAST/eval/types';
-import type { MathNode } from '$lib/mathAST/types';
-import { parseCustom } from '$lib/mathAST/parser/custom';
-import { substitute } from '$lib/mathAST/eval/substitute';
-import { evaluate, evaluateNodeToApproximatedNumber } from '$lib/mathAST/eval/evaluate';
-import { isEvalValue } from '$lib/mathAST/eval/types';
-import { isRelation, isLogical, isLogicalNot, isBoolean, isDelimiter } from '$lib/mathAST/guards';
-import { braceWrap } from '$lib/ubumark/parameterization/resolver/variable-resolver';
-import { barePiRefusal } from '$lib/ubumark/parameterization/validator/bare-pi';
+import type { ResolvedVariable } from '#lib/ubumark/types/parameterization.ts';
+import type { EvalBindings } from '#lib/mathAST/eval/types.ts';
+import type { MathNode } from '#lib/mathAST/types.ts';
+import { parseCustom } from '#lib/mathAST/parser/custom/index.ts';
+import { substitute } from '#lib/mathAST/eval/substitute.ts';
+import { evaluate, evaluateNodeToApproximatedNumber } from '#lib/mathAST/eval/evaluate.ts';
+import { isEvalValue } from '#lib/mathAST/eval/types.ts';
+import {
+	isRelation,
+	isLogical,
+	isLogicalNot,
+	isBoolean,
+	isDelimiter
+} from '#lib/mathAST/guards.ts';
+import { braceWrap } from '#lib/ubumark/parameterization/resolver/variable-resolver.ts';
+import { barePiRefusal } from '#lib/ubumark/parameterization/validator/bare-pi.ts';
 
 /**
  * Build EvalBindings from resolved variables.

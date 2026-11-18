@@ -20,17 +20,17 @@
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { isTeacherContext, isStudentContext } from '$lib/types/cache-context';
-import type { TeacherCacheContext, StudentCacheContext } from '$lib/types/cache-context';
-import type { StudentVipCards } from '$lib/types/vip-card';
-import type { StudentWarningCounts } from '$lib/server/warnings';
+import { isTeacherContext, isStudentContext } from '#lib/types/cache-context.ts';
+import type { TeacherCacheContext, StudentCacheContext } from '#lib/types/cache-context.ts';
+import type { StudentVipCards } from '#lib/types/vip-card.ts';
+import type { StudentWarningCounts } from '#lib/server/warnings.ts';
 
 // ============================================================================
 // TEST SETUP
 // ============================================================================
 
 // Mock the cache stores
-vi.mock('$lib/stores/teacherDashboardCache.svelte', () => ({
+vi.mock('#lib/stores/teacherDashboardCache.svelte.ts', () => ({
 	teacherCache: {
 		updateVipCardsOptimistic: vi.fn(),
 		updateGidouillesOptimistic: vi.fn(),
@@ -42,7 +42,7 @@ vi.mock('$lib/stores/teacherDashboardCache.svelte', () => ({
 	}
 }));
 
-vi.mock('$lib/stores/studentDashboardCache.svelte', () => ({
+vi.mock('#lib/stores/studentDashboardCache.svelte.ts', () => ({
 	studentCache: {
 		updateVipCardsOptimistic: vi.fn(),
 		updateGidouillesOptimistic: vi.fn(),
@@ -57,8 +57,8 @@ vi.mock('$lib/stores/studentDashboardCache.svelte', () => ({
 }));
 
 // Import after mocking
-import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
-import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
+import { teacherCache } from '#lib/stores/teacherDashboardCache.svelte.ts';
+import { studentCache } from '#lib/stores/studentDashboardCache.svelte.ts';
 import {
 	syncVipCards,
 	syncGidouilles,

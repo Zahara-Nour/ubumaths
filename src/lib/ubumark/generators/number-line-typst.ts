@@ -27,9 +27,9 @@ import {
 	bracketPoints,
 	segmentLevels
 } from '../utils/number-line-render';
-import { authorColorTypst, resolveAuthorColor } from '$lib/theme/author-color';
+import { authorColorTypst, resolveAuthorColor } from '#lib/theme/author-color.ts';
 import { convertLatexToTypstMath } from './typst-generator';
-import { toLocaleDecimal } from '$lib/utils/french-math';
+import { toLocaleDecimal } from '#lib/utils/french-math.ts';
 
 // ============================================================================
 // CONFIGURATION

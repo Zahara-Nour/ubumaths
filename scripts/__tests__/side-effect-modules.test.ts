@@ -59,8 +59,8 @@ describe('findTopLevelEffects', () => {
 
 describe('findBareImports', () => {
 	it('rend la cible des imports nus, pas celle des imports nommés', () => {
-		const src = ["import '$lib/utils/mathlive-styles';", "import { x } from './x';"].join('\n');
-		expect(findBareImports(src)).toEqual(['$lib/utils/mathlive-styles']);
+		const src = ["import '#lib/utils/mathlive-styles.ts';", "import { x } from './x';"].join('\n');
+		expect(findBareImports(src)).toEqual(['#lib/utils/mathlive-styles.ts']);
 	});
 });
 
@@ -94,7 +94,7 @@ describe('la liste face au code', () => {
 	}, 30_000);
 
 	it('contient chaque module de src/lib visé par un import nu, .svelte et routes compris', () => {
-		// `import '$lib/utils/mathlive-styles'` est écrit dans des composants : un
+		// `import '#lib/utils/mathlive-styles.ts'` est écrit dans des composants : un
 		// module ainsi importé n'a aucun export utilisé, le build le retirerait.
 		const missing = listBareImportTargets(SRC).filter(
 			(path) => !MODULES_WITH_SIDE_EFFECTS.has(path)

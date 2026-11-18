@@ -37,9 +37,9 @@ const cellOutputSchema = z.discriminatedUnion('output_type', [
 ]);
 
 // Checkpoint validation config — discriminated on `mode`. Mirrors the
-// `CheckpointConfig` type in $lib/types/notebook.ts and the worker-side
+// `CheckpointConfig` type in #lib/types/notebook.ts and the worker-side
 // `BehaviorCheck` (assert / unit_test / variable_check) shapes in
-// $lib/shared/python/types.ts. Kept loose on `args` / `expected` /
+// #lib/shared/python/types.ts. Kept loose on `args` / `expected` /
 // `expected_vars` so the teacher can drop in any JSON; the worker's
 // own Zod schema in shared/python/worker/messages.ts is the strict
 // gate before execution.

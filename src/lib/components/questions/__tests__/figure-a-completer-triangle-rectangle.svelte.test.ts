@@ -12,9 +12,9 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import FlashCard from '../FlashCard.svelte';
-import { generateInstance } from '$lib/questions/generator/instance-generator';
-import type { QuestionInstance, QuestionTemplate } from '$lib/questions/types';
-import { templateMarkdown } from '$lib/ubumark';
+import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
+import type { QuestionInstance, QuestionTemplate } from '#lib/questions/types.ts';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 
 // Papier uni : fenêtre 0..12 × 0..8 ; A(3 ; 2), B(9 ; 2) ; u de longueur 4 → C(3 ; 6)
 const PLAIN = [

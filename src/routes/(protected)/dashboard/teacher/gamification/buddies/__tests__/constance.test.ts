@@ -8,10 +8,10 @@
  * remise à zéro.
  */
 import { describe, it, expect, vi } from 'vitest';
-import { createFakeSupabase, type Call } from '$lib/server/__tests__/helpers/fake-supabase';
-import { utcDay, weekStartOf } from '$lib/utils/buddy-constance';
+import { createFakeSupabase, type Call } from '#lib/server/__tests__/helpers/fake-supabase.ts';
+import { utcDay, weekStartOf } from '#lib/utils/buddy-constance.ts';
 
-vi.mock('$lib/server/middleware/auth', () => ({ requireRole: vi.fn(async () => ({})) }));
+vi.mock('#lib/server/middleware/auth.ts', () => ({ requireRole: vi.fn(async () => ({})) }));
 
 import { load } from '../+page.server';
 

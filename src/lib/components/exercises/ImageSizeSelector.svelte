@@ -14,11 +14,11 @@
 	@see src/lib/exercises/services/image-dimensions.ts
 -->
 <script lang="ts">
-	import { Label } from '$lib/components/ui/label';
-	import { Input } from '$lib/components/ui/input';
-	import * as RadioGroup from '$lib/components/ui/radio-group';
-	import type { ImageSizeClass } from '$lib/ubumark';
-	import { DEFAULT_IMAGE_SIZE_MAPPINGS } from '$lib/ubumark';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import * as RadioGroup from '#lib/components/ui/radio-group/index.ts';
+	import type { ImageSizeClass } from '#lib/ubumark/index.ts';
+	import { DEFAULT_IMAGE_SIZE_MAPPINGS } from '#lib/ubumark/index.ts';
 
 	// Types
 	interface SizeOption {

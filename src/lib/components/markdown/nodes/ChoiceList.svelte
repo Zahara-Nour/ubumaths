@@ -18,10 +18,10 @@
 	import { Circle, CircleDot, Square, SquareCheck } from '@lucide/svelte';
 	import MarkdownRenderer from '../MarkdownRenderer.svelte';
 	import InlineMarkdown from '../InlineMarkdown.svelte';
-	import { parseMarkdown } from '$lib/ubumark';
-	import { monnaieChoiceSize } from '$lib/ubumark/utils/monnaie-choix';
-	import { choiceLetter } from '$lib/questions/choices';
-	import type { ExpectedStatus } from '$lib/questions/expected-result';
+	import { parseMarkdown } from '#lib/ubumark/index.ts';
+	import { monnaieChoiceSize } from '#lib/ubumark/utils/monnaie-choix.ts';
+	import { choiceLetter } from '#lib/questions/choices.ts';
+	import type { ExpectedStatus } from '#lib/questions/expected-result.ts';
 
 	interface Item {
 		/** Markdown du choix */

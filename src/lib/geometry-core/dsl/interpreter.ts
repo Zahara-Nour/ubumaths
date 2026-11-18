@@ -55,10 +55,10 @@ import { MacroRegistry } from './macro-registry';
 import { STDLIB_MACROS } from './stdlib';
 import { parse } from './parser';
 import { isMathPureExpr } from './math-pure-expr';
-import { parseCustom, getVariables, substitute } from '$lib/mathAST';
-import { numericNode } from '$lib/mathAST/common/numeric';
-import type { MathNode } from '$lib/mathAST';
-import { compile } from '$lib/mathAST/eval/compile';
+import { parseCustom, getVariables, substitute } from '#lib/mathAST/index.ts';
+import { numericNode } from '#lib/mathAST/common/numeric.ts';
+import type { MathNode } from '#lib/mathAST/index.ts';
+import { compile } from '#lib/mathAST/eval/compile.ts';
 import { applyAngleMode, type AngleMode } from './apply-angle-mode';
 
 /** Check if a resolved value is a vector element reference. */

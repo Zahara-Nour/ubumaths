@@ -15,13 +15,13 @@
 import { error, fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 import { z } from 'zod';
-import { AGE_QUESTION_GRADE } from '$lib/utils/age-declaration';
-import { requireRole, requireRoles } from '$lib/server/middleware/auth';
-import { verifyTeacherStudent } from '$lib/server/middleware/student-access';
-import { requiresParentalConsent } from '$lib/utils/consent';
-import { isBrevoConfigured } from '$lib/server/email/brevo';
-import { closePendingConsentRequest } from '$lib/server/parental-consent-requests';
-import { createServerLogger } from '$lib/utils/logger';
+import { AGE_QUESTION_GRADE } from '#lib/utils/age-declaration.ts';
+import { requireRole, requireRoles } from '#lib/server/middleware/auth.ts';
+import { verifyTeacherStudent } from '#lib/server/middleware/student-access.ts';
+import { requiresParentalConsent } from '#lib/utils/consent.ts';
+import { isBrevoConfigured } from '#lib/server/email/brevo.ts';
+import { closePendingConsentRequest } from '#lib/server/parental-consent-requests.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('(protected)/dashboard/teacher/consent/+page.server');
 

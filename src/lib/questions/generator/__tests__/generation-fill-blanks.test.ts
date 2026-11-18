@@ -16,8 +16,8 @@ import { describe, it, expect } from 'vitest';
 import { generateInstance } from '../instance-generator';
 import type { QuestionTemplate, QuestionVariation } from '../../types';
 import { getQuestionType } from '../../types';
-import { templateMarkdown } from '$lib/ubumark';
-import { validateAnswer } from '$lib/utils/answer-validator';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
+import { validateAnswer } from '#lib/utils/answer-validator.ts';
 
 /**
  * Helper to create a minimal fill-in-blanks template

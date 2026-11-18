@@ -42,7 +42,7 @@ const service = vi.hoisted(() => {
 	return { results, deckResults, select, insert, deckInsert, from };
 });
 
-vi.mock('$lib/server/serviceRoleClient', () => ({
+vi.mock('#lib/server/serviceRoleClient.ts', () => ({
 	createServiceRoleClient: () => ({ from: service.from })
 }));
 

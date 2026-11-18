@@ -4,13 +4,13 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import type { ProgrammePointRow } from '$lib/utils/programme-tree';
-import type { PlacedCurriculumPoint } from '$lib/server/stats/class-knowledge';
+import type { ProgrammePointRow } from '#lib/utils/programme-tree.ts';
+import type { PlacedCurriculumPoint } from '#lib/server/stats/class-knowledge.ts';
 
 const { placeInTree } = vi.hoisted(() => ({ placeInTree: vi.fn() }));
 
-vi.mock('$lib/server/stats/class-knowledge', async (importOriginal) => {
-	const original = await importOriginal<typeof import('$lib/server/stats/class-knowledge')>();
+vi.mock('#lib/server/stats/class-knowledge.ts', async (importOriginal) => {
+	const original = await importOriginal<typeof import('#lib/server/stats/class-knowledge.ts')>();
 	return { ...original, placeInTree };
 });
 

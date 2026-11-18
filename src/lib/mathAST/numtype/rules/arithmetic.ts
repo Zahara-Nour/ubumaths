@@ -45,7 +45,7 @@ import {
 	negateBounds,
 	multiplyBounds,
 	divideBounds
-} from '$lib/math/intervals';
+} from '#lib/math/intervals/index.ts';
 import { signFromBounds } from './literals';
 
 // =============================================================================

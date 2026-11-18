@@ -15,10 +15,13 @@
 
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRoles } from '$lib/server/middleware/auth';
-import { templateTagSchema, templateTagListQuerySchema } from '$lib/server/validation/curriculum';
-import { curriculumDbError } from '$lib/server/curriculum';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import {
+	templateTagSchema,
+	templateTagListQuerySchema
+} from '#lib/server/validation/curriculum.ts';
+import { curriculumDbError } from '#lib/server/curriculum.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/teacher/curriculum/template-tags/+server');
 

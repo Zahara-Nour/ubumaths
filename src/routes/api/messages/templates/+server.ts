@@ -8,13 +8,13 @@
  */
 
 import { json, error } from '@sveltejs/kit';
-import { requireAuth, requireRoles } from '$lib/server/middleware/auth';
+import { requireAuth, requireRoles } from '#lib/server/middleware/auth.ts';
 import type { RequestHandler } from './$types';
-import { validateTemplate } from '$lib/templates/templateEngine';
-import type { MessageTemplateInput } from '$lib/types/messageTemplates';
-import { createMessageTemplateSchema, validateRequest } from '$lib/server/validation';
-import { toJson } from '$lib/types/database-helpers';
-import { createServerLogger } from '$lib/utils/logger';
+import { validateTemplate } from '#lib/templates/templateEngine.ts';
+import type { MessageTemplateInput } from '#lib/types/messageTemplates.ts';
+import { createMessageTemplateSchema, validateRequest } from '#lib/server/validation/index.ts';
+import { toJson } from '#lib/types/database-helpers.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/messages/templates/+server');
 

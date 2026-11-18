@@ -23,17 +23,17 @@
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { createClient } from '@supabase/supabase-js';
-import { PUBLIC_SUPABASE_URL } from '$env/static/public';
-import { SUPABASE_SERVICE_ROLE_KEY } from '$env/static/private';
-import { assignDeckSchema, uuidParamSchema } from '$lib/server/validation/srs';
-import { requireRole } from '$lib/server/middleware/auth';
+import { PUBLIC_SUPABASE_URL } from '$app/env/public';
+import { SUPABASE_SERVICE_ROLE_KEY } from '$app/env/private';
+import { assignDeckSchema, uuidParamSchema } from '#lib/server/validation/srs.ts';
+import { requireRole } from '#lib/server/middleware/auth.ts';
 import {
 	indexCopiedSections,
 	planDeckCopies,
 	planSectionCopies,
 	resolveCardSection
-} from '$lib/server/srs/deck-copy';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/srs/deck-copy.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/srs/decks/[id]/assign/+server');
 

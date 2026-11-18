@@ -13,7 +13,7 @@
 
 import { describe, it, expect, beforeAll, afterAll, beforeEach, vi } from 'vitest';
 import type { SupabaseClient, User } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 
 import { actions } from '../../src/routes/(protected)/dashboard/teacher/cahier-texte/[classId]/[date]/+page.server';
 import {

@@ -9,17 +9,17 @@
 	@module components/cours/ChapterCard
 -->
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import type {
 		ChapterSummary,
 		ChapterProgress,
 		ChapterColor,
 		ChapterIcon
-	} from '$lib/types/chapters';
-	import * as Card from '$lib/components/ui/card';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Progress } from '$lib/components/ui/progress';
-	import { cn } from '$lib/utils';
+	} from '#lib/types/chapters.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { Progress } from '#lib/components/ui/progress/index.ts';
+	import { cn } from '#lib/utils.ts';
 	import {
 		FileText,
 		BookOpen,

@@ -202,6 +202,10 @@ export const SITEMAP_EXCLUSIONS: SitemapExclusion[] = [
 		reason: 'confirmation de l’adresse d’un parent, ouverte par son courriel'
 	},
 	{
+		pattern: '/carnet/lien-perdu',
+		reason: 'carnet de liaison : un parent redemande son lien, en noindex'
+	},
+	{
 		pattern: '/figures/[id]',
 		reason: 'figure géométrique partagée par lien, en noindex (ADR 0027)'
 	},

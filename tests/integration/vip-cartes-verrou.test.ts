@@ -39,11 +39,11 @@ import {
 import { DEFAULT_TEST_PASSWORD } from '../helpers/database/supabase-client';
 import { getPostgresClient } from '../helpers/database/postgres-client';
 import { TestData } from '../helpers/database/test-data-factory';
-import type { Database, Json } from '$lib/types/database';
+import type { Database, Json } from '#lib/types/database.ts';
 
-// Les routes appellent `createServiceRoleClient()` de `$lib` : on lui substitue
+// Les routes appellent `createServiceRoleClient()` de `#lib` : on lui substitue
 // le client service de la base LOCALE, jamais celui de l'environnement.
-vi.mock('$lib/server/serviceRoleClient', async () => {
+vi.mock('#lib/server/serviceRoleClient.ts', async () => {
 	const helpers = await import('../helpers/database/trigger-test-helpers');
 	return { createServiceRoleClient: helpers.createServiceRoleClient };
 });
@@ -52,8 +52,8 @@ vi.mock('$lib/server/serviceRoleClient', async () => {
 // le drapeau est levé, la route lit le modèle comme activé alors que la base
 // le sait désactivé. Seule la base peut alors refuser — après `use_vip_card`.
 const lectureObsolete = vi.hoisted(() => ({ active: false }));
-vi.mock('$lib/server/vip-card-queries', async (importOriginal) => {
-	const original = await importOriginal<typeof import('$lib/server/vip-card-queries')>();
+vi.mock('#lib/server/vip-card-queries.ts', async (importOriginal) => {
+	const original = await importOriginal<typeof import('#lib/server/vip-card-queries.ts')>();
 	const activer = <T extends { is_enabled?: boolean | null }>(t: T): T =>
 		lectureObsolete.active ? { ...t, is_enabled: true } : t;
 	return {

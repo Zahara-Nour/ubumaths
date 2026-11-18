@@ -5,14 +5,14 @@
 -->
 
 <script lang="ts">
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import { lore } from '$lib/config/lore';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import { lore } from '#lib/config/lore.ts';
 	import type { PageData } from './$types';
-	import RiddleCard from '$lib/components/riddles/RiddleCard.svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import RiddleCard from '#lib/components/riddles/RiddleCard.svelte';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import { goto as _goto } from '$app/navigation';
-	import { syncGidouilles } from '$lib/utils/cache-sync';
-	import { receiveBuddyGain } from '$lib/components/buddy/buddy-gain';
+	import { syncGidouilles } from '#lib/utils/cache-sync.ts';
+	import { receiveBuddyGain } from '#lib/components/buddy/buddy-gain.ts';
 
 	let { data }: { data: PageData } = $props();
 

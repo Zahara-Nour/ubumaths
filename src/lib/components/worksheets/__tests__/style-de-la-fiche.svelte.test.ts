@@ -12,8 +12,8 @@ import { render } from 'vitest-browser-svelte';
 import { page } from 'vitest/browser';
 import MetadataCards from '../MetadataCards.svelte';
 import NewWorksheetPage from '../../../../routes/(protected)/dashboard/teacher/contenu/worksheets/new/+page.svelte';
-import { BUILT_IN_STYLE_OPTIONS } from '$lib/typst/templates/styles';
-import type { WorksheetWithRelations } from '$lib/types/worksheets';
+import { BUILT_IN_STYLE_OPTIONS } from '#lib/typst/templates/styles.ts';
+import type { WorksheetWithRelations } from '#lib/types/worksheets.ts';
 
 const PROF_STYLE = {
 	id: '6f1c2a4e-0000-4000-8000-00000000abcd',

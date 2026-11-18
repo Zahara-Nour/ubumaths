@@ -1,7 +1,7 @@
 import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
-import { getTeacherClassesWithStudents } from '$lib/server/students';
-import { createServerLogger } from '$lib/utils/logger';
+import { getTeacherClassesWithStudents } from '#lib/server/students.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('(protected)/dashboard/teacher/moderation/gestion/+page.server');
 

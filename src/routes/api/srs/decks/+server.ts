@@ -11,16 +11,16 @@
 
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { DEFAULT_DESIRED_RETENTION, DEFAULT_MAXIMUM_INTERVAL } from '$lib/srs/config';
+import { DEFAULT_DESIRED_RETENTION, DEFAULT_MAXIMUM_INTERVAL } from '#lib/srs/config.ts';
 import {
 	createDeckSchema,
 	listDecksQuerySchema,
 	deckListResponseSchema,
 	createDeckResponseSchema
-} from '$lib/server/validation/srs';
-import { validateJsonResponse } from '$lib/server/validation/response-utils';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/validation/srs.ts';
+import { validateJsonResponse } from '#lib/server/validation/response-utils.ts';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/srs/decks/+server');
 

@@ -1,18 +1,21 @@
 import { json } from '@sveltejs/kit';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { RequestHandler } from './$types';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { validateSaveTest } from '$lib/server/validation/tests';
-import { addBuddyXpFromTest, type BuddyXpFromExerciseResult } from '$lib/server/buddy-xp-service';
-import { fetchTemplateThemeIds } from '$lib/server/buddy-themes';
-import { loadLongStruggleWon } from '$lib/server/buddy-struggle';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { validateSaveTest } from '#lib/server/validation/tests.ts';
+import {
+	addBuddyXpFromTest,
+	type BuddyXpFromExerciseResult
+} from '#lib/server/buddy-xp-service.ts';
+import { fetchTemplateThemeIds } from '#lib/server/buddy-themes.ts';
+import { loadLongStruggleWon } from '#lib/server/buddy-struggle.ts';
 import {
 	CourseCardLookupError,
 	fetchCourseCardTemplateIds
-} from '$lib/server/course-card-attempts';
-import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
-import { createServerLogger } from '$lib/utils/logger';
-import type { Database } from '$lib/types/database';
+} from '#lib/server/course-card-attempts.ts';
+import { createServiceRoleClient } from '#lib/server/serviceRoleClient.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
+import type { Database } from '#lib/types/database.ts';
 
 const logger = createServerLogger('api/tests/save/+server');
 

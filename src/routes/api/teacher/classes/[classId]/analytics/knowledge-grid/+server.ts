@@ -7,12 +7,12 @@
 
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireTeacherOfClass } from '$lib/server/stats/teacher-class-auth';
+import { requireTeacherOfClass } from '#lib/server/stats/teacher-class-auth.ts';
 import {
 	classIdParamSchema,
 	knowledgeGridQuerySchema
-} from '$lib/server/validation/teacher-analytics';
-import { getClassCurriculumPointGrid } from '$lib/server/stats';
+} from '#lib/server/validation/teacher-analytics.ts';
+import { getClassCurriculumPointGrid } from '#lib/server/stats/index.ts';
 
 export const GET: RequestHandler = async ({ params, url, locals }) => {
 	const paramCheck = classIdParamSchema.safeParse(params);

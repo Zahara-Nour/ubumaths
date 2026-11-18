@@ -25,8 +25,8 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { createClient } from '@supabase/supabase-js';
 import { config } from 'dotenv';
-import { validateCreateWorksheetSection } from '$lib/server/validation/worksheets';
-import type { Database, Json } from '$lib/types/database';
+import { validateCreateWorksheetSection } from '#lib/server/validation/worksheets.ts';
+import type { Database, Json } from '#lib/types/database.ts';
 
 config({ path: '.env' });
 

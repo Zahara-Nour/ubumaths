@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/env');
 
@@ -296,7 +296,7 @@ export function initEnv(): Env {
  *
  * @example
  * ```typescript
- * import { getEnv } from '$lib/server/env';
+ * import { getEnv } from '#lib/server/env.ts';
  *
  * const env = getEnv();
  * console.log(env.GROQ_API_KEY); // Type-safe, guaranteed to exist if required

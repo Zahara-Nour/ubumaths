@@ -12,7 +12,7 @@
 import { describe, it, expect } from 'vitest';
 import { runTestSpec, runAllTestSpecs } from '../test-spec-runner';
 import type { QuestionTemplate, TestSpec } from '../types';
-import { templateMarkdown } from '$lib/ubumark';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 
 function makeTemplate(overrides?: Partial<QuestionTemplate>): QuestionTemplate {
 	return {

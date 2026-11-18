@@ -10,9 +10,9 @@
 
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRoles } from '$lib/server/middleware/auth';
-import { createShortLink, ShortLinkError } from '$lib/server/short-links';
-import { createShortLinkSchema, shortLinkPath } from '$lib/validation/short-link';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import { createShortLink, ShortLinkError } from '#lib/server/short-links.ts';
+import { createShortLinkSchema, shortLinkPath } from '#lib/validation/short-link.ts';
 
 export const POST: RequestHandler = async ({ locals, request }) => {
 	await requireRoles(locals, ['teacher', 'admin']);

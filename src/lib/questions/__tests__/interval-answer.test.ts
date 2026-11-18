@@ -10,7 +10,7 @@ import {
 	readExpectedIntervals,
 	expectedIntervalsLatex,
 	INTERVAL_FEEDBACK
-} from '$lib/questions/intervals/interval-answer';
+} from '#lib/questions/intervals/interval-answer.ts';
 
 const SOLUTION = ']-\\infty;-2[\\cup]3;+\\infty[';
 

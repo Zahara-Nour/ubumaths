@@ -3,12 +3,14 @@
  */
 
 export { definirBlocsTortue, COULEUR_TORTUE } from './blocs';
-export { TORTUE_TOOLBOX } from './toolbox';
+export { TORTUE_TOOLBOX, toolboxTortue } from './toolbox';
 export { imageAnimation, rythmeAnimation, DUREE_ETAPE_MS, PAUSE_DEPART_MS } from './animation';
 export {
 	executerTortue,
 	messageErreurTortue,
 	LIMITE_PAS,
+	NIVEAUX_TORTUE,
+	type NiveauTortue,
 	type EtapeTortue,
 	type EtatTortue,
 	type ErreurTortue,
@@ -31,6 +33,12 @@ export {
 	type EtatLu,
 	type TexteLu
 } from './notation';
+export {
+	etatVersTexteTortue,
+	messageNiveauTortue,
+	nombreDeBlocsTortue,
+	texteVersEtatTortue
+} from './niveaux';
 export {
 	jugerProgrammeTortue,
 	lireProgrammeTortue,

@@ -13,10 +13,10 @@
 
 import { describe, it, expect } from 'vitest';
 import { Atelier } from '../atelier.svelte';
-import { GrapheurStore } from '$lib/stores/grapheur.svelte';
+import { GrapheurStore } from '#lib/stores/grapheur.svelte.ts';
 import { syncPlots } from '../plot-sync';
-import { isExplicitFunction } from '$lib/grapheur/types';
-import { getVariables } from '$lib/mathAST/eval/substitute';
+import { isExplicitFunction } from '#lib/grapheur/types.ts';
+import { getVariables } from '#lib/mathAST/eval/substitute.ts';
 
 /**
  * Ce qu'il faut vraiment vérifier : la courbe n'a **aucune variable libre** en
@@ -119,7 +119,7 @@ describe('une dérivée illisible le dit en français', () => {
 	 */
 	it('refuse la dérivée d’un objet en erreur', async () => {
 		const { runInput } = await import('../calcul');
-		const { WebReplEngine } = await import('$lib/mathAST/cli/web/web-repl-engine');
+		const { WebReplEngine } = await import('#lib/mathAST/cli/web/web-repl-engine.ts');
 		const session = { atelier: new Atelier(), engine: new WebReplEngine() };
 		session.atelier.create({ kind: 'function', name: 'k', definition: 'x^^2' }, 'text');
 
@@ -131,7 +131,7 @@ describe('une dérivée illisible le dit en français', () => {
 
 	it('mais calcule celle d’un objet en attente d’un paramètre', async () => {
 		const { runInput } = await import('../calcul');
-		const { WebReplEngine } = await import('$lib/mathAST/cli/web/web-repl-engine');
+		const { WebReplEngine } = await import('#lib/mathAST/cli/web/web-repl-engine.ts');
 		const session = { atelier: new Atelier(), engine: new WebReplEngine() };
 		session.atelier.create({ kind: 'function', name: 'k', definition: 'b*x' }, 'text');
 
@@ -143,7 +143,7 @@ describe('une dérivée illisible le dit en français', () => {
 
 	it('mais laisse passer la dérivée d’un objet sain', async () => {
 		const { runInput } = await import('../calcul');
-		const { WebReplEngine } = await import('$lib/mathAST/cli/web/web-repl-engine');
+		const { WebReplEngine } = await import('#lib/mathAST/cli/web/web-repl-engine.ts');
 		const session = { atelier: new Atelier(), engine: new WebReplEngine() };
 		session.atelier.create({ kind: 'function', name: 'f', definition: 'x^2-3x+1' }, 'text');
 

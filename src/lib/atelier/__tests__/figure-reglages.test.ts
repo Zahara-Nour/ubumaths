@@ -11,12 +11,12 @@
 import { describe, it, expect } from 'vitest';
 import { Atelier } from '../atelier.svelte';
 import { AtelierFigure, syncFigure } from '../figure-sync';
-import type { Figure } from '$lib/geometry-core/graph/figure';
-import type { GeoElement } from '$lib/geometry-core/types/elements';
-import { resolveScreenStyle } from '$lib/geometry-core/rendering/svg-primitives';
-import { exportToSVG } from '$lib/geometry-core/rendering/export-svg';
-import { exportToTikZ } from '$lib/geometry-core/rendering/export-tikz';
-import { exportToTypst } from '$lib/geometry-core/rendering/export-typst';
+import type { Figure } from '#lib/geometry-core/graph/figure.ts';
+import type { GeoElement } from '#lib/geometry-core/types/elements.ts';
+import { resolveScreenStyle } from '#lib/geometry-core/rendering/svg-primitives.ts';
+import { exportToSVG } from '#lib/geometry-core/rendering/export-svg.ts';
+import { exportToTikZ } from '#lib/geometry-core/rendering/export-tikz.ts';
+import { exportToTypst } from '#lib/geometry-core/rendering/export-typst.ts';
 
 // =============================================================================
 // Outils

@@ -40,7 +40,7 @@ export function findTopLevelEffects(source: string): string[] {
 
 /**
  * Les modules `.ts` de `libDir` qui agissent au chargement, relatifs à `libDir`.
- * Hors tests, `.d.ts` et `server/` : SvelteKit interdit `$lib/server` au client.
+ * Hors tests, `.d.ts` et `server/` : SvelteKit interdit `#lib/server` au client.
  */
 export function listModulesWithTopLevelEffects(libDir: string): string[] {
 	const found: string[] = [];
@@ -82,7 +82,7 @@ export function listBareImportTargets(srcDir: string): string[] {
 	const targets = new Set<string>();
 	const resolveTarget = (from: string, spec: string): string | null => {
 		let base: string;
-		if (spec.startsWith('$lib/')) base = join(libDir, spec.slice(5));
+		if (spec.startsWith('#lib/')) base = join(libDir, spec.slice(5));
 		else if (spec.startsWith('.')) base = resolve(dirname(from), spec);
 		else return null;
 		for (const candidate of [base, `${base}.ts`, join(base, 'index.ts')]) {

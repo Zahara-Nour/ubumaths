@@ -10,7 +10,7 @@
  * @module grapheur/asymptote-labels
  */
 
-import type { CoordinateTransformer } from '$lib/geometry-core/viewport';
+import type { CoordinateTransformer } from '#lib/geometry-core/viewport/index.ts';
 import type { FunctionAnalysis } from './types';
 
 // =============================================================================

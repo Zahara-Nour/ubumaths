@@ -23,8 +23,8 @@
 -->
 <script lang="ts">
 	import type { Snippet } from 'svelte';
-	import type { TableCellNode } from '$lib/ubumark';
-	import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
+	import type { TableCellNode } from '#lib/ubumark/index.ts';
+	import type { GenericFunctionConfig } from '#lib/mathAST/parser/types.ts';
 	import { escapeHtml } from '../utils';
 	import MathInline from './MathInline.svelte';
 

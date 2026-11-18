@@ -28,9 +28,9 @@
  * @module questions/error-kinds
  */
 
-import { guessErrorKind, type ErrorGuess, type ErrorKind } from '$lib/mathAST/error-kind';
-import type { CorrectedDetail } from '$lib/types/evaluation-attempt';
-import type { BlankVerdict } from '$lib/utils/answer-validator';
+import { guessErrorKind, type ErrorGuess, type ErrorKind } from '#lib/mathAST/error-kind.ts';
+import type { CorrectedDetail } from '#lib/types/evaluation-attempt.ts';
+import type { BlankVerdict } from '#lib/utils/answer-validator.ts';
 import { rulesDecide } from './rules-suffice';
 import type { InstanceBlank, QuestionInstance, ValidationStatus } from './types';
 

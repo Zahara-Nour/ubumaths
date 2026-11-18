@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
 </script>
 
 <svelte:head>
@@ -19,7 +19,7 @@
 
 	<div class="grid grid-cols-1 gap-4 md:grid-cols-2">
 		<a
-			href={resolve('/aide-ecriture/geometrie/sliders/limacon')}
+			href={resolve('aide-ecriture/geometrie/sliders/limacon')}
 			class="rounded-lg border p-4 hover:bg-muted"
 		>
 			<h2 class="font-bold">Limacon de Pascal</h2>
@@ -29,7 +29,7 @@
 			</p>
 		</a>
 		<a
-			href={resolve('/aide-ecriture/geometrie/sliders/epicycloide')}
+			href={resolve('aide-ecriture/geometrie/sliders/epicycloide')}
 			class="rounded-lg border p-4 hover:bg-muted"
 		>
 			<h2 class="font-bold">Rotation autour d'un point mobile</h2>
@@ -38,7 +38,7 @@
 			</p>
 		</a>
 		<a
-			href={resolve('/aide-ecriture/geometrie/sliders/conchoide')}
+			href={resolve('aide-ecriture/geometrie/sliders/conchoide')}
 			class="rounded-lg border p-4 hover:bg-muted"
 		>
 			<h2 class="font-bold">Conchoide de Nicomede</h2>
@@ -47,7 +47,7 @@
 			</p>
 		</a>
 		<a
-			href={resolve('/aide-ecriture/geometrie/sliders/spirographe')}
+			href={resolve('aide-ecriture/geometrie/sliders/spirographe')}
 			class="rounded-lg border p-4 hover:bg-muted"
 		>
 			<h2 class="font-bold">Spirographe</h2>
@@ -56,21 +56,21 @@
 			</p>
 		</a>
 		<a
-			href={resolve('/aide-ecriture/geometrie/sliders/rosace')}
+			href={resolve('aide-ecriture/geometrie/sliders/rosace')}
 			class="rounded-lg border p-4 hover:bg-muted"
 		>
 			<h2 class="font-bold">Rosace dynamique</h2>
 			<p class="text-sm text-muted-foreground">Intersection de deux cercles avec rayon variable.</p>
 		</a>
 		<a
-			href={resolve('/aide-ecriture/geometrie/sliders/cercle')}
+			href={resolve('aide-ecriture/geometrie/sliders/cercle')}
 			class="rounded-lg border p-4 hover:bg-muted"
 		>
 			<h2 class="font-bold">Cercle dynamique</h2>
 			<p class="text-sm text-muted-foreground">Rayon variable avec carre inscrit.</p>
 		</a>
 		<a
-			href={resolve('/aide-ecriture/geometrie/sliders/homothetie')}
+			href={resolve('aide-ecriture/geometrie/sliders/homothetie')}
 			class="rounded-lg border p-4 hover:bg-muted"
 		>
 			<h2 class="font-bold">Homothetie variable</h2>
@@ -79,7 +79,7 @@
 			</p>
 		</a>
 		<a
-			href={resolve('/aide-ecriture/geometrie/sliders/similitude')}
+			href={resolve('aide-ecriture/geometrie/sliders/similitude')}
 			class="rounded-lg border p-4 hover:bg-muted"
 		>
 			<h2 class="font-bold">Similitude (rotation + homothetie)</h2>
@@ -88,7 +88,7 @@
 			</p>
 		</a>
 		<a
-			href={resolve('/aide-ecriture/geometrie/sliders/koch')}
+			href={resolve('aide-ecriture/geometrie/sliders/koch')}
 			class="rounded-lg border p-4 hover:bg-muted"
 		>
 			<h2 class="font-bold">Flocon de Von Koch</h2>
@@ -97,7 +97,7 @@
 			</p>
 		</a>
 		<a
-			href={resolve('/aide-ecriture/geometrie/sliders/integrale')}
+			href={resolve('aide-ecriture/geometrie/sliders/integrale')}
 			class="rounded-lg border p-4 hover:bg-muted"
 		>
 			<h2 class="font-bold">Integrale dynamique</h2>
@@ -106,7 +106,7 @@
 			</p>
 		</a>
 		<a
-			href={resolve('/aide-ecriture/geometrie/sliders/aire')}
+			href={resolve('aide-ecriture/geometrie/sliders/aire')}
 			class="rounded-lg border p-4 hover:bg-muted"
 		>
 			<h2 class="font-bold">Aire geometrique vs integrale</h2>
@@ -116,7 +116,7 @@
 			</p>
 		</a>
 		<a
-			href={resolve('/aide-ecriture/geometrie/sliders/aire-entre')}
+			href={resolve('aide-ecriture/geometrie/sliders/aire-entre')}
 			class="rounded-lg border p-4 hover:bg-muted"
 		>
 			<h2 class="font-bold">Aire entre deux courbes</h2>
@@ -126,7 +126,7 @@
 			</p>
 		</a>
 		<a
-			href={resolve('/aide-ecriture/geometrie/sliders/integrale-improper')}
+			href={resolve('aide-ecriture/geometrie/sliders/integrale-improper')}
 			class="rounded-lg border p-4 hover:bg-muted"
 		>
 			<h2 class="font-bold">Integrales generalisees (bornes infinies)</h2>

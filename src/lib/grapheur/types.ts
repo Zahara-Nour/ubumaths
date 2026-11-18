@@ -5,12 +5,12 @@
  * are re-exported from geometry-core/viewport. Grapheur-specific types stay here.
  */
 
-import type { MathNode } from '$lib/mathAST/types';
-import type { LineStyle } from '$lib/geometry-core/viewport';
-import type { SequenceMode } from '$lib/grapheur/sequence';
-import type { Restriction } from '$lib/grapheur/restriction';
+import type { MathNode } from '#lib/mathAST/types.ts';
+import type { LineStyle } from '#lib/geometry-core/viewport/index.ts';
+import type { SequenceMode } from '#lib/grapheur/sequence.ts';
+import type { Restriction } from '#lib/grapheur/restriction.ts';
 
-export type { SequenceMode, SequenceTerm } from '$lib/grapheur/sequence';
+export type { SequenceMode, SequenceTerm } from '#lib/grapheur/sequence.ts';
 
 // =============================================================================
 // Re-exports from geometry-core (shared types)
@@ -24,14 +24,14 @@ export type {
 	LineStyle,
 	LineWidthOption,
 	ViewportInput
-} from '$lib/geometry-core/viewport';
+} from '#lib/geometry-core/viewport/index.ts';
 
 export {
 	LINE_STYLES,
 	LINE_WIDTHS,
 	LINE_STYLE_DASHARRAY,
 	viewportSchema
-} from '$lib/geometry-core/viewport';
+} from '#lib/geometry-core/viewport/index.ts';
 
 // =============================================================================
 // Plottable Types (grapheur-specific)

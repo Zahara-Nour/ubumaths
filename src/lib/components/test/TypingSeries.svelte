@@ -30,23 +30,23 @@
 
 <script lang="ts">
 	import { tick } from 'svelte';
-	import FlashCard from '$lib/components/questions/FlashCard.svelte';
-	import SelfAssessButtons from '$lib/components/questions/SelfAssessButtons.svelte';
-	import BuddyGainCard from '$lib/components/buddy/BuddyGainCard.svelte';
-	import MathouNewsCard from '$lib/components/mathoux/MathouNewsCard.svelte';
-	import { Button } from '$lib/components/ui/button';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import * as Card from '$lib/components/ui/card';
-	import { Progress } from '$lib/components/ui/progress';
-	import { computeTestScore } from '$lib/utils/test-score';
-	import { isCourseCard } from '$lib/questions/course-card';
-	import type { QuestionInstance } from '$lib/questions/types';
-	import type { AnswerData } from '$lib/types/question-display';
-	import type { TestAnswerResult, TestResult } from '$lib/types/test';
-	import type { BuddyGainView } from '$lib/components/buddy/buddy-gain';
-	import type { MathouNews } from '$lib/mathoux/news';
+	import FlashCard from '#lib/components/questions/FlashCard.svelte';
+	import SelfAssessButtons from '#lib/components/questions/SelfAssessButtons.svelte';
+	import BuddyGainCard from '#lib/components/buddy/BuddyGainCard.svelte';
+	import MathouNewsCard from '#lib/components/mathoux/MathouNewsCard.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Progress } from '#lib/components/ui/progress/index.ts';
+	import { computeTestScore } from '#lib/utils/test-score.ts';
+	import { isCourseCard } from '#lib/questions/course-card.ts';
+	import type { QuestionInstance } from '#lib/questions/types.ts';
+	import type { AnswerData } from '#lib/types/question-display.ts';
+	import type { TestAnswerResult, TestResult } from '#lib/types/test.ts';
+	import type { BuddyGainView } from '#lib/components/buddy/buddy-gain.ts';
+	import type { MathouNews } from '#lib/mathoux/news.ts';
 	import { ArrowLeft, ArrowRight, LogIn, RefreshCw, RotateCcw } from '@lucide/svelte';
-	import { buildSeriesTrace, type TraceRecorder } from '$lib/questions/series-trace';
+	import { buildSeriesTrace, type TraceRecorder } from '#lib/questions/series-trace.ts';
 
 	// Types
 	interface Props {

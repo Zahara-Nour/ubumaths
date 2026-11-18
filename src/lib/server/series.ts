@@ -8,12 +8,12 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database, Tables } from '$lib/types/database';
-import { toJson } from '$lib/types/database-helpers';
-import type { DbSeries, SeriesWithUsage } from '$lib/types/evaluation';
-import { readStoredSeriesMany } from '$lib/server/series-lines';
-import type { CreateSeriesInput, UpdateSeriesInput } from '$lib/server/validation/evaluations';
-import { createServerLogger } from '$lib/utils/logger';
+import type { Database, Tables } from '#lib/types/database.ts';
+import { toJson } from '#lib/types/database-helpers.ts';
+import type { DbSeries, SeriesWithUsage } from '#lib/types/evaluation.ts';
+import { readStoredSeriesMany } from '#lib/server/series-lines.ts';
+import type { CreateSeriesInput, UpdateSeriesInput } from '#lib/server/validation/evaluations.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/series');
 

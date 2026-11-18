@@ -23,7 +23,7 @@ import {
 	getGradeRange,
 	clearGradeCache
 } from '../grades';
-import { GRADE_CODES, GRADES, type GradeCode } from '$lib/types/grades';
+import { GRADE_CODES, GRADES, type GradeCode } from '#lib/types/grades.ts';
 
 // ============================================================================
 // TEST SETUP

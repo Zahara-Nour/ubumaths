@@ -31,37 +31,37 @@
  * @module questions/generator/assign-blank-indices
  */
 
-import { parseOperationContent } from '$lib/ubumark/parser/operation-parser';
-import { findFigureBlocks } from '$lib/ubumark/parser/figure-parser';
-import { findBuildCollections } from '$lib/ubumark/parser/collection-parser';
-import { findBuildMonnaies } from '$lib/ubumark/parser/monnaie-parser';
-import { findLinesToPlace, isLineToRepresent } from '$lib/ubumark/parser/number-line-parser';
-import { findHorlogesToPlace } from '$lib/ubumark/parser/horloge-parser';
-import { findBarsToPlace, findBoxPlotsToPlace } from '$lib/ubumark/parser/stat-chart-parser';
-import { findRangersToPlace } from '$lib/ubumark/parser/ranger-parser';
+import { parseOperationContent } from '#lib/ubumark/parser/operation-parser.ts';
+import { findFigureBlocks } from '#lib/ubumark/parser/figure-parser.ts';
+import { findBuildCollections } from '#lib/ubumark/parser/collection-parser.ts';
+import { findBuildMonnaies } from '#lib/ubumark/parser/monnaie-parser.ts';
+import { findLinesToPlace, isLineToRepresent } from '#lib/ubumark/parser/number-line-parser.ts';
+import { findHorlogesToPlace } from '#lib/ubumark/parser/horloge-parser.ts';
+import { findBarsToPlace, findBoxPlotsToPlace } from '#lib/ubumark/parser/stat-chart-parser.ts';
+import { findRangersToPlace } from '#lib/ubumark/parser/ranger-parser.ts';
 import {
 	ASSOCIER_FENCE_MESSAGE,
 	associerItemHasBlock,
 	findAssociersToPlace,
 	parseAssocierContent
-} from '$lib/ubumark/parser/associer-parser';
-import { findTrousToPlace } from '$lib/ubumark/parser/trous-parser';
-import { findPartagesToColorier } from '$lib/ubumark/parser/partage-parser';
+} from '#lib/ubumark/parser/associer-parser.ts';
+import { findTrousToPlace } from '#lib/ubumark/parser/trous-parser.ts';
+import { findPartagesToColorier } from '#lib/ubumark/parser/partage-parser.ts';
 import {
 	findCubesToBuild,
 	findPatronsToBuild,
 	findSolidesToBuild
-} from '$lib/ubumark/parser/espace-parser';
-import { findCourbesToPlace } from '$lib/ubumark/parser/courbe-parser';
-import { findTrigCirclesToPlace } from '$lib/ubumark/parser/trig-circle-parser';
-import { findTortuesToProgram } from '$lib/ubumark/parser/tortue-parser';
-import { findCalculsToProgram } from '$lib/ubumark/parser/calcul-parser';
-import { findRobotsToProduce } from '$lib/ubumark/parser/robot-parser';
-import { findVariationsToFill } from '$lib/ubumark/parser/variation-table-parser';
-import { NESTED_PREFIX } from '$lib/ubumark/parser/nested-line';
+} from '#lib/ubumark/parser/espace-parser.ts';
+import { findCourbesToPlace } from '#lib/ubumark/parser/courbe-parser.ts';
+import { findTrigCirclesToPlace } from '#lib/ubumark/parser/trig-circle-parser.ts';
+import { findTortuesToProgram } from '#lib/ubumark/parser/tortue-parser.ts';
+import { findCalculsToProgram } from '#lib/ubumark/parser/calcul-parser.ts';
+import { findRobotsToProduce } from '#lib/ubumark/parser/robot-parser.ts';
+import { findVariationsToFill } from '#lib/ubumark/parser/variation-table-parser.ts';
+import { NESTED_PREFIX } from '#lib/ubumark/parser/nested-line.ts';
 import { buildCaseCount } from './build-answer';
 import { buildKindName, type BuildKind } from '../types';
-import { operationCaseCount } from '$lib/ubumark/utils/operation-division-answer';
+import { operationCaseCount } from '#lib/ubumark/utils/operation-division-answer.ts';
 import {
 	CHOICE_BLOCK_NESTED_MESSAGE,
 	CHOICE_BLOCK_UNCLOSED_MESSAGE,
@@ -70,7 +70,7 @@ import {
 	isChoiceBlockStart,
 	isNestedChoiceBlockStart,
 	parseChoiceBody
-} from '$lib/ubumark/parser/choix-parser';
+} from '#lib/ubumark/parser/choix-parser.ts';
 
 /** Type d'une case : formule, texte, ou case « choix » (bloc ```choix) */
 export type AssignedBlankType = 'math' | 'text' | 'choice';

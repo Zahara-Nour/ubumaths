@@ -7,10 +7,10 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { GET } from '../leaderboard/+server';
-import * as service from '$lib/server/achievements/service';
+import * as service from '#lib/server/achievements/service.ts';
 
 // Mock dependencies
-vi.mock('$lib/server/achievements/service');
+vi.mock('#lib/server/achievements/service.ts');
 
 describe('GET /api/achievements/leaderboard', () => {
 	let mockLocals: { supabase: unknown };

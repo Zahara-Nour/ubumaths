@@ -19,9 +19,12 @@ import type {
 } from '../../types';
 import type { MathType, ParityInfo, SignInfo, TypeContext } from '../types';
 import { REAL_TYPE, UNKNOWN_TYPE } from '../types';
-import type { IntervalDomain } from '$lib/math/intervals/types';
-import { intervalSet, closedInterval } from '$lib/math/intervals';
-import { isNegativeInfinityEndpoint, isPositiveInfinityEndpoint } from '$lib/math/intervals';
+import type { IntervalDomain } from '#lib/math/intervals/types.ts';
+import { intervalSet, closedInterval } from '#lib/math/intervals/index.ts';
+import {
+	isNegativeInfinityEndpoint,
+	isPositiveInfinityEndpoint
+} from '#lib/math/intervals/index.ts';
 import { compareNumericNodes } from '../../eval/compare-numeric';
 import { number, variable } from '../../factory';
 import { numericNode } from '../../common/numeric';

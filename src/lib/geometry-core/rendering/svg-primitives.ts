@@ -6,7 +6,7 @@
  * cannot be resolved.
  */
 
-import { colorForPrint, colorForScreen, namedColorScreen } from '$lib/theme/named-colors';
+import { colorForPrint, colorForScreen, namedColorScreen } from '#lib/theme/named-colors.ts';
 import { curveColorValue, isCurveColor, isValidColor } from './colors';
 import type { Figure, FigureDefaults } from '../graph/figure';
 import type { CoordinateTransformer } from '../viewport/viewport';
@@ -1459,8 +1459,8 @@ import type { Viewport, SampledCurve, Point } from '../viewport/types';
 import { sampleWithDerivative } from '../viewport/sampler';
 import { curveToSVGPath } from '../rendering/bezier';
 import { marchingSquares } from './marching-squares';
-import { isPiecewise, extractPiecewiseBoundaries } from '$lib/mathAST';
-import type { PiecewiseBoundary } from '$lib/mathAST';
+import { isPiecewise, extractPiecewiseBoundaries } from '#lib/mathAST/index.ts';
+import type { PiecewiseBoundary } from '#lib/mathAST/index.ts';
 
 /** Number of sample points for function curve rendering. */
 const FUNCTION_SAMPLE_POINTS = 300;

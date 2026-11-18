@@ -11,7 +11,7 @@ import { buildExpectedResult, showsInstructionOnly } from '../expected-result';
 import { instructionOf } from '../correction-card-verdict';
 import { generateInstance } from '../generator/instance-generator';
 import type { QuestionInstance, QuestionTemplate } from '../types';
-import { templateMarkdown } from '$lib/ubumark';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 
 const MONNAIE = ['Paie le ballon à 35 €.', '', '```monnaie', 'construire: 35', '```'].join('\n');
 const COLLECTION = ['Construis 34.', '', '```collection', 'construire: 34', '```'].join('\n');

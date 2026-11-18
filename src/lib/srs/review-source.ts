@@ -12,8 +12,8 @@
  */
 
 import { z } from 'zod';
-import type { QuestionInstance } from '$lib/questions/types';
-import { templateMarkdown, type TemplateMarkdown } from '$lib/ubumark/types/template';
+import type { QuestionInstance } from '#lib/questions/types.ts';
+import { templateMarkdown, type TemplateMarkdown } from '#lib/ubumark/types/template.ts';
 
 // Types
 export type ReviewSource =

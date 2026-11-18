@@ -13,13 +13,13 @@
 
 import type { PageServerLoad, Actions } from './$types';
 import { error, fail } from '@sveltejs/kit';
-import { requireRole } from '$lib/server/middleware/auth';
-import { getChapterWithContent, toggleChecklistItem } from '$lib/server/chapters';
-import { buildChapterPlan, type WorksheetPlacement } from '$lib/server/chapter-plan';
-import { toggleChecklistSchema } from '$lib/server/validation/chapters';
-import { listChapterSeries } from '$lib/server/chapter-series';
-import { summarizeChapterDecks, type ChapterDeckSummary } from '$lib/server/srs/chapter-deck';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { getChapterWithContent, toggleChecklistItem } from '#lib/server/chapters.ts';
+import { buildChapterPlan, type WorksheetPlacement } from '#lib/server/chapter-plan.ts';
+import { toggleChecklistSchema } from '#lib/server/validation/chapters.ts';
+import { listChapterSeries } from '#lib/server/chapter-series.ts';
+import { summarizeChapterDecks, type ChapterDeckSummary } from '#lib/server/srs/chapter-deck.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('(protected)/dashboard/student/cours/[chapterId]/+page.server');
 

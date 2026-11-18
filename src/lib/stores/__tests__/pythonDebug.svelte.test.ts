@@ -12,8 +12,8 @@
 
 import { describe, it, expect, beforeEach } from 'vitest';
 import { debugStore } from '../pythonDebug.svelte';
-import type { DebugSnapshot } from '$lib/shared/python/debug/types';
-import { DEBUG_CONFIG } from '$lib/shared/python/debug/types';
+import type { DebugSnapshot } from '#lib/shared/python/debug/types.ts';
+import { DEBUG_CONFIG } from '#lib/shared/python/debug/types.ts';
 
 // =============================================================================
 // Test Setup

@@ -6,7 +6,7 @@
  * Each answer maps to one Palotin. Highest score wins.
  */
 
-import type { PalotinType } from '$lib/config/buddy-messages';
+import type { PalotinType } from '#lib/config/buddy-messages.ts';
 
 export interface QuizQuestion {
 	question: string;

@@ -16,7 +16,7 @@
 	`natural-input.ts`, testée sans navigateur.
 -->
 <script lang="ts">
-	import '$lib/utils/mathlive-styles';
+	import '#lib/utils/mathlive-styles.ts';
 	import 'mathlive';
 	import { onMount } from 'svelte';
 	import { on } from 'svelte/events';
@@ -31,8 +31,8 @@
 		wordAtCaret,
 		type CommandWord,
 		type Proposal
-	} from '$lib/atelier/natural-input';
-	import { CALC_LAYOUT, commandsLayout } from '$lib/atelier/virtual-keyboard';
+	} from '#lib/atelier/natural-input.ts';
+	import { CALC_LAYOUT, commandsLayout } from '#lib/atelier/virtual-keyboard.ts';
 
 	// Types
 	interface Props {

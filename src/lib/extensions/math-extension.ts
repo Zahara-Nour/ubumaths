@@ -32,7 +32,7 @@
 import { Node, mergeAttributes, InputRule } from '@tiptap/core';
 import type { NodeViewRendererProps } from '@tiptap/core';
 import { Plugin, PluginKey, Selection, NodeSelection, TextSelection } from '@tiptap/pm/state';
-import { parseCustomSafe, toLatex, parseLatexSafe, toCustom } from '$lib/mathAST';
+import { parseCustomSafe, toLatex, parseLatexSafe, toCustom } from '#lib/mathAST/index.ts';
 import {
 	ajouterLigne,
 	aRelationARanger,

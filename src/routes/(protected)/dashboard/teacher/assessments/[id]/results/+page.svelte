@@ -1,12 +1,12 @@
 <script lang="ts">
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import { lore } from '$lib/config/lore';
-	import * as Card from '$lib/components/ui/card';
-	import EvaluationResultsTable from '$lib/components/assessments/EvaluationResultsTable.svelte';
-	import EvaluationBreakdown from '$lib/components/assessments/EvaluationBreakdown.svelte';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import { lore } from '#lib/config/lore.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import EvaluationResultsTable from '#lib/components/assessments/EvaluationResultsTable.svelte';
+	import EvaluationBreakdown from '#lib/components/assessments/EvaluationBreakdown.svelte';
 	import { TrendingUp, Users, CheckCircle2, Clock, AlertCircle } from '@lucide/svelte';
-	import { formatGrade, formLabel } from '$lib/types/evaluation';
-	import { evaluationResultsReturn } from '$lib/navigation/return-links';
+	import { formatGrade, formLabel } from '#lib/types/evaluation.ts';
+	import { evaluationResultsReturn } from '#lib/navigation/return-links.ts';
 	import { page } from '$app/state';
 	import type { PageData } from './$types';
 

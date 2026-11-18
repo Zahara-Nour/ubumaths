@@ -12,12 +12,12 @@
  * @module mathAST/variations/monotonicity
  */
 
-import type { Interval } from '$lib/math/intervals/types';
+import type { Interval } from '#lib/math/intervals/types.ts';
 import type { Sign, SignedInterval, SignAnalysisResult } from '../sign/types';
 import type { Monotonicity, MonotonicInterval } from './types';
 import type { MathNode } from '../types';
-import { endpointToNumber } from '$lib/math/intervals/endpoint';
-import { interval as makeInterval } from '$lib/math/intervals/factory';
+import { endpointToNumber } from '#lib/math/intervals/endpoint.ts';
+import { interval as makeInterval } from '#lib/math/intervals/factory.ts';
 import { abscissaToShow } from './critical-points';
 import { tidyPeriodicMember } from '../common/periodic-member';
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';

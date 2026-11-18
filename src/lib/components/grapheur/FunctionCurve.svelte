@@ -9,14 +9,14 @@
 	 * @component
 	 */
 
-	import type { ExplicitFunction, Viewport, Point } from '$lib/grapheur/types';
-	import { LINE_STYLE_DASHARRAY } from '$lib/grapheur/types';
-	import type { CoordinateTransformer } from '$lib/grapheur/viewport';
-	import { bindParameters, cachedEvaluator, sampleCached } from '$lib/grapheur/analysis';
-	import { endpointMarkers, pieceViewports } from '$lib/grapheur/restriction';
-	import type { VariableBindings } from '$lib/grapheur/evaluator';
-	import { curveToSVGPath, curveToPolylinePath } from '$lib/grapheur/bezier';
-	import { curveColorValue } from '$lib/grapheur/colors';
+	import type { ExplicitFunction, Viewport, Point } from '#lib/grapheur/types.ts';
+	import { LINE_STYLE_DASHARRAY } from '#lib/grapheur/types.ts';
+	import type { CoordinateTransformer } from '#lib/grapheur/viewport.ts';
+	import { bindParameters, cachedEvaluator, sampleCached } from '#lib/grapheur/analysis.ts';
+	import { endpointMarkers, pieceViewports } from '#lib/grapheur/restriction.ts';
+	import type { VariableBindings } from '#lib/grapheur/evaluator.ts';
+	import { curveToSVGPath, curveToPolylinePath } from '#lib/grapheur/bezier.ts';
+	import { curveColorValue } from '#lib/grapheur/colors.ts';
 
 	// Props
 	let {

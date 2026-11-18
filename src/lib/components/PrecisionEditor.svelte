@@ -16,12 +16,12 @@
 -->
 
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import type { PrecisionType } from '$lib/questions/types';
-	import { Label } from '$lib/components/ui/label';
-	import { Input } from '$lib/components/ui/input';
-	import * as Card from '$lib/components/ui/card';
-	import { Badge } from '$lib/components/ui/badge';
+	import { lore } from '#lib/config/lore.ts';
+	import type { PrecisionType } from '#lib/questions/types.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
 
 	interface Props {
 		precision?: PrecisionType;

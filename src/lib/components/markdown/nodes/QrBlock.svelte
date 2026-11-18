@@ -17,9 +17,9 @@
 	@module components/markdown/nodes/QrBlock
 -->
 <script lang="ts">
-	import type { QrNode } from '$lib/ubumark/types/qr';
-	import { QR_UNAVAILABLE } from '$lib/ubumark/types/qr';
-	import { SITE_URL } from '$lib/seo/site';
+	import type { QrNode } from '#lib/ubumark/types/qr.ts';
+	import { QR_UNAVAILABLE } from '#lib/ubumark/types/qr.ts';
+	import { SITE_URL } from '#lib/seo/site.ts';
 	import { readAuthoringErrors } from '../authoring-errors';
 
 	interface Props {
@@ -40,7 +40,7 @@
 	/** L'adresse affichée, sans le schéma */
 	let shownUrl = $derived(node.url?.replace(/^https:\/\//, '') ?? '');
 
-	const qrModule = import('$lib/qr/qr-code');
+	const qrModule = import('#lib/qr/qr-code.ts');
 </script>
 
 {#snippet failure(messages: string[])}

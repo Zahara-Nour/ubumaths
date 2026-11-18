@@ -21,11 +21,11 @@
 <script lang="ts">
 	import { goto, invalidateAll } from '$app/navigation';
 	import { ShieldCheck } from '@lucide/svelte';
-	import MyPasswordInput from '$lib/components/MyPasswordInput.svelte';
-	import { Button } from '$lib/components/ui/button';
-	import { Label } from '$lib/components/ui/label';
-	import * as Card from '$lib/components/ui/card';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import MyPasswordInput from '#lib/components/MyPasswordInput.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();

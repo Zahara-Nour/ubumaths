@@ -26,7 +26,7 @@
 	@module components/markdown/nodes/RobotCode
 -->
 <script module lang="ts">
-	import { ROBOT_MAX_INSTRUCTIONS as MAX } from '$lib/ubumark/types/robot';
+	import { ROBOT_MAX_INSTRUCTIONS as MAX } from '#lib/ubumark/types/robot.ts';
 
 	export const ROBOT_TROP_DE_CARTES = `${MAX} instructions au plus.`;
 	export const ROBOT_CHIFFRE_MANQUANT = 'Choisis de combien de cases avance le robot.';
@@ -34,8 +34,8 @@
 
 <script lang="ts">
 	import { tick } from 'svelte';
-	import { readExpectedRobotAnswer } from '$lib/ubumark/utils/robot-answer';
-	import { ecrireCode, lireCode, simuler } from '$lib/ubumark/utils/robot-moteur';
+	import { readExpectedRobotAnswer } from '#lib/ubumark/utils/robot-answer.ts';
+	import { ecrireCode, lireCode, simuler } from '#lib/ubumark/utils/robot-moteur.ts';
 	import {
 		ROBOT_MAX_AVANCE,
 		ROBOT_MAX_INSTRUCTIONS,
@@ -43,7 +43,7 @@
 		type Instruction,
 		type RobotNode,
 		type Sens
-	} from '$lib/ubumark/types/robot';
+	} from '#lib/ubumark/types/robot.ts';
 	import { readAuthoringErrors } from '../authoring-errors';
 	import type { BuildCase } from './CollectionConstruire.svelte';
 	import RobotQuadrillage from './RobotQuadrillage.svelte';

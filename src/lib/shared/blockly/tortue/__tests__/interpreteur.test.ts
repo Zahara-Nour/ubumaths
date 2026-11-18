@@ -168,10 +168,17 @@ describe('executerTortue — limites', () => {
 		expect(executerTortue(espace()).ok).toBe(true);
 	});
 
-	it('répétitions négatives : comptent pour 0', () => {
-		const resultat = executerTortue(espace([repeter(-3, [avancer(1)])]));
-		expect(resultat.ok).toBe(true);
-		expect(resultat.segments).toEqual([]);
+	it('répétition calculée négative ou non entière : arrêt (correctif tortue-nombres)', () => {
+		expect(executerTortue(espace([repeter(-3, [avancer(1)])]))).toMatchObject({
+			ok: false,
+			erreur: { type: 'tours-non-entier', valeur: -3 },
+			segments: []
+		});
+		expect(executerTortue(espace([repeter(2.5, [avancer(1)])]))).toMatchObject({
+			ok: false,
+			erreur: { type: 'tours-non-entier', valeur: 2.5 }
+		});
+		expect(executerTortue(espace([repeter(0, [avancer(1)])])).ok).toBe(true);
 	});
 
 	it('avancer de 0 : aucun segment', () => {

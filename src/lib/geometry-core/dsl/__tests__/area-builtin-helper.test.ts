@@ -26,7 +26,9 @@ import type { GeoFunction, GeoIntegralArea } from '../../types/elements';
  */
 function setupFigure(setupScript: string) {
 	const { figure, symbols } = runDsl(setupScript);
-	const getFn = (name: string): { id: string; expression: import('$lib/mathAST').MathNode } => {
+	const getFn = (
+		name: string
+	): { id: string; expression: import('#lib/mathAST/index.ts').MathNode } => {
 		const sym = symbols.get(name);
 		if (!sym?.figureId) throw new Error(`setupFigure: missing symbol "${name}"`);
 		const el = figure.getElementById(sym.figureId);

@@ -4,29 +4,40 @@
   Bac à sable public de la tortue (`/tortue`) : blocs tortue, quadrillage animé, aperçu Python
   replié. Rien n'est enregistré. Les blocs sont exécutés par `executerTortue` (ADR 0039) :
   aucun JavaScript n'est exécuté ici, le code Python n'est qu'un aperçu.
+
+  Niveau (sélecteur « Blocs : base · 4e · 3e » de la page, chantier `tortue-variables`, Q6) : la
+  boîte à outils change, les blocs posés restent ; un bloc au-dessus du niveau est refusé au
+  lancer. L'aperçu Python reste au niveau de base (les blocs de calcul n'ont pas de générateur).
 -->
 <script lang="ts">
 	import type * as Blockly from 'blockly';
 	import * as BlocklyCore from 'blockly';
-	import { onDestroy } from 'svelte';
+	import { onDestroy, untrack } from 'svelte';
 	import { Play, FastForward, Trash2 } from '@lucide/svelte';
-	import { Button } from '$lib/components/ui/button';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import BlocklyWorkspace from './BlocklyWorkspace.svelte';
 	import TortueCanvas from './TortueCanvas.svelte';
 	import {
-		TORTUE_TOOLBOX,
+		toolboxTortue,
 		executerTortue,
 		imageAnimation,
 		rythmeAnimation,
 		PAUSE_DEPART_MS,
 		messageErreurTortue,
+		type NiveauTortue,
 		type ResultatTortue
-	} from '$lib/shared/blockly/tortue';
-	import { generateCode } from '$lib/shared/blockly/generators';
+	} from '#lib/shared/blockly/tortue/index.ts';
+	import { surveillerNomsDeVariables } from '#lib/shared/blockly/calcul/blocs.ts';
+	import { generateCode } from '#lib/shared/blockly/generators/index.ts';
 
 	// =============================================================================
 	// Types
 	// =============================================================================
+
+	interface Props {
+		/** Blocs proposés et exécutés (sans niveau par défaut) */
+		niveau?: NiveauTortue;
+	}
 
 	type Onglet = 'blocs' | 'tortue';
 
@@ -38,6 +49,12 @@
 		{ valeur: 'blocs', libelle: 'Blocs' },
 		{ valeur: 'tortue', libelle: 'Tortue' }
 	];
+
+	// =============================================================================
+	// Props
+	// =============================================================================
+
+	let { niveau = 'base' }: Props = $props();
 
 	// =============================================================================
 	// Variables
@@ -61,6 +78,15 @@
 
 	let python = $state('');
 
+	/** Boîte à outils de l'espace de travail : celle du niveau de départ */
+	const toolbox = untrack(() => toolboxTortue(niveau));
+
+	/** Niveau de la boîte à outils affichée */
+	let niveauAffiche: NiveauTortue = untrack(() => niveau);
+
+	/** Nom de variable refusé à sa création ou à son renommage (message) ; null sinon */
+	let nomRefuse = $state<string | null>(null);
+
 	// =============================================================================
 	// État dérivé
 	// =============================================================================
@@ -82,6 +108,30 @@
 	});
 
 	// =============================================================================
+	// Effets
+	// =============================================================================
+
+	// Noms de variables refusés dès leur création (4e / 3e)
+	$effect(() => {
+		const espace = workspace;
+		if (!espace) return;
+		return surveillerNomsDeVariables(espace, (refus) => (nomRefuse = refus));
+	});
+
+	// Niveau changé : la boîte à outils suit, les blocs restent
+	$effect(() => {
+		const espace = workspace;
+		const voulu = niveau;
+		if (!espace || voulu === niveauAffiche) return;
+		niveauAffiche = voulu;
+		espace.updateToolbox(
+			toolboxTortue(voulu) as unknown as Blockly.utils.toolbox.ToolboxDefinition
+		);
+		// Le dernier lancer était au niveau d'avant : il ne vaut plus
+		untrack(remettreAZero);
+	});
+
+	// =============================================================================
 	// Fonctions
 	// =============================================================================
 
@@ -99,7 +149,7 @@
 	function lancer(): void {
 		if (!workspace) return;
 		arreterAnimation();
-		const nouveau = executerTortue(BlocklyCore.serialization.workspaces.save(workspace));
+		const nouveau = executerTortue(BlocklyCore.serialization.workspaces.save(workspace), niveau);
 		resultat = nouveau;
 		// Sur téléphone, on montre le tracé : l'animation se joue sous les yeux de l'élève
 		onglet = 'tortue';
@@ -132,14 +182,19 @@
 	}
 
 	function effacer(): void {
+		nomRefuse = null;
 		workspace?.clear();
 		remettreAZero();
 	}
 
 	/** Toute modification des blocs arrête l'animation et vide le quadrillage. */
-	function handleChange(): void {
+	function handleChange(event: Blockly.Events.Abstract): void {
 		remettreAZero();
 		if (!workspace) return;
+		// L'élève passe aux blocs : le nom refusé n'est plus d'actualité
+		if (event instanceof BlocklyCore.Events.BlockBase) nomRefuse = null;
+		// Aperçu Python au niveau de base seulement : rien à générer au-delà
+		if (niveau !== 'base') return;
 		const genere = generateCode(workspace, 'python');
 		python = genere.success ? genere.code : '';
 	}
@@ -197,7 +252,7 @@
 				? ''
 				: 'hidden'}"
 		>
-			<BlocklyWorkspace bind:workspace toolbox={TORTUE_TOOLBOX} onchange={handleChange} />
+			<BlocklyWorkspace bind:workspace {toolbox} onchange={handleChange} />
 		</div>
 
 		<div
@@ -217,12 +272,18 @@
 				{message?.texte ?? ''}
 			</p>
 
-			<details class="rounded-md border border-border">
-				<summary class="cursor-pointer px-3 py-2 text-sm font-medium">Voir en Python</summary>
-				<pre class="overflow-x-auto border-t border-border px-3 py-2 text-sm"><code
-						>{python || '# Pose des blocs pour voir le programme en Python.'}</code
-					></pre>
-			</details>
+			{#if niveau === 'base'}
+				<details class="rounded-md border border-border">
+					<summary class="cursor-pointer px-3 py-2 text-sm font-medium">Voir en Python</summary>
+					<pre class="overflow-x-auto border-t border-border px-3 py-2 text-sm"><code
+							>{python || '# Pose des blocs pour voir le programme en Python.'}</code
+						></pre>
+				</details>
+			{/if}
 		</div>
 	</div>
+
+	{#if nomRefuse}
+		<p class="tortue-nom-refuse text-sm text-destructive" role="alert">{nomRefuse}</p>
+	{/if}
 </div>

@@ -35,8 +35,8 @@ import { geoMul, geoAdd } from '../compute/geo-arithmetic';
 import type { GeoValue } from '../types/geo-value';
 import { numeric } from '../types/geo-value';
 import { geoToNumber } from '../compute/to-number';
-import type { CompiledFn } from '$lib/mathAST/eval/compile';
-import { number as mathNumber } from '$lib/mathAST/factory';
+import type { CompiledFn } from '#lib/mathAST/eval/compile.ts';
+import { number as mathNumber } from '#lib/mathAST/factory.ts';
 
 export interface TransformResult {
 	figureId: string;

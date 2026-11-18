@@ -18,10 +18,10 @@ import PalotinPresence from '../PalotinPresence.svelte';
 import { LAST_PASSAGE_KEY, notifyBuddyActivity } from '../palotin-presence';
 import { playSeanceReaction, SEANCE_PASSAGE_DURATION } from '../seance-reactions';
 import { afterNavigate } from '$app/navigation';
-import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
-import { buddyMessages } from '$lib/config/buddy-messages';
-import type { BuddyState, WeekMoment } from '$lib/types/buddy';
-import { NO_NEWS, newsSummaryPhrase, type MathouNews } from '$lib/mathoux/news';
+import { studentCache } from '#lib/stores/studentDashboardCache.svelte.ts';
+import { buddyMessages } from '#lib/config/buddy-messages.ts';
+import type { BuddyState, WeekMoment } from '#lib/types/buddy.ts';
+import { NO_NEWS, newsSummaryPhrase, type MathouNews } from '#lib/mathoux/news.ts';
 
 // Page courante simulée
 const pageState = vi.hoisted(() => ({ url: new URL('http://localhost:5175/dashboard') }));

@@ -11,14 +11,14 @@ import { render } from 'vitest-browser-svelte';
 import { page } from 'vitest/browser';
 
 const templatePreview = vi.hoisted(() => vi.fn());
-vi.mock('$lib/questions/catalogue', async (importOriginal) => {
-	const original = await importOriginal<typeof import('$lib/questions/catalogue')>();
+vi.mock('#lib/questions/catalogue.ts', async (importOriginal) => {
+	const original = await importOriginal<typeof import('#lib/questions/catalogue.ts')>();
 	templatePreview.mockImplementation(original.templatePreview);
 	return { ...original, templatePreview };
 });
 
 import Page from '../+page.svelte';
-import { questionTemplatesCache } from '$lib/stores/questionTemplates.svelte';
+import { questionTemplatesCache } from '#lib/stores/questionTemplates.svelte.ts';
 
 function modele(id: string, nodeId: string) {
 	return {

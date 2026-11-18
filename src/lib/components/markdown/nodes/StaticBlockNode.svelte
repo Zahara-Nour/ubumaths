@@ -14,7 +14,7 @@
 	@module components/markdown/nodes/StaticBlockNode
 -->
 <script lang="ts">
-	import type { BlockNode } from '$lib/ubumark';
+	import type { BlockNode } from '#lib/ubumark/index.ts';
 	import HorizontalRule from './HorizontalRule.svelte';
 	import ListNode from './ListNode.svelte';
 	import TableNode from './TableNode.svelte';

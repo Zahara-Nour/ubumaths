@@ -16,7 +16,7 @@
  */
 
 import { z } from 'zod';
-import { WEEK_MOMENTS, type BuddyState, type WeekMoment } from '$lib/types/buddy';
+import { WEEK_MOMENTS, type BuddyState, type WeekMoment } from '#lib/types/buddy.ts';
 
 // Types
 export type PalotinZone = 'maison' | 'passage' | 'seance';

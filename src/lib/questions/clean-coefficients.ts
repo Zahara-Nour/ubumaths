@@ -40,11 +40,11 @@ import {
 	toLatex,
 	type GenericFunctionConfig,
 	type MathNode
-} from '$lib/mathAST';
-import type { CapitalPairs } from '$lib/mathAST/parser/types';
-import { coefficientCleanupSteps } from '$lib/mathAST/cosmetic-transforms';
-import { mapNode, mapNodeTopDown } from '$lib/mathAST/transforms';
-import { positive, variable } from '$lib/mathAST/factory';
+} from '#lib/mathAST/index.ts';
+import type { CapitalPairs } from '#lib/mathAST/parser/types.ts';
+import { coefficientCleanupSteps } from '#lib/mathAST/cosmetic-transforms.ts';
+import { mapNode, mapNodeTopDown } from '#lib/mathAST/transforms.ts';
+import { positive, variable } from '#lib/mathAST/factory.ts';
 
 // Constantes
 

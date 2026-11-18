@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
-	import type { VipCardAction, VipCardRarity } from '$lib/types/vip-card';
-	import { type WarningType, WARNING_TYPE_LABELS } from '$lib/types/warnings';
-	import { getRarityPoints } from '$lib/types/vip-card';
+	import { lore } from '#lib/config/lore.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
+	import type { VipCardAction, VipCardRarity } from '#lib/types/vip-card.ts';
+	import { type WarningType, WARNING_TYPE_LABELS } from '#lib/types/warnings.ts';
+	import { getRarityPoints } from '#lib/types/vip-card.ts';
 
 	interface Props {
 		value: VipCardAction | null;

@@ -20,7 +20,7 @@
  *   createContext,
  *   DEFAULT_CANVAS_CONFIG,
  *   type ConstructionScript
- * } from '$lib/constructions';
+ * } from '#lib/constructions/index.ts';
  *
  * // Validate a construction script
  * const result = validateConstructionScript(jsonData);

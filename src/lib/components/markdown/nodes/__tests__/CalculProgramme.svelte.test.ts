@@ -1,5 +1,5 @@
 /**
- * Programme de calcul à l'écran (chantier `docs/wip/blockly-progress.md`, PR 5b)
+ * Programme de calcul à l'écran (chantier `docs/archive/wip/blockly-progress.md`, PR 5b)
  *
  * Phase 0 (PR 5, Q4) : blocs + « Essayer avec » + Lancer + affichages ; programme vide → réponse
  * vide ; trop long → refusé avant l'envoi ; `départ:` posé dans l'espace de travail ; corrigé =
@@ -15,14 +15,14 @@ import { page, userEvent } from 'vitest/browser';
 import CalculProgramme from '../CalculProgramme.svelte';
 import CalculCorrige from '../CalculCorrige.svelte';
 import TortueProgramme from '../TortueProgramme.svelte';
-import FillBlanksInput from '$lib/components/question-inputs/FillBlanksInput.svelte';
-import { parseCalculContent } from '$lib/ubumark/parser/calcul-parser';
-import { parseTortueContent } from '$lib/ubumark/parser/tortue-parser';
-import { texteVersEtatCalcul } from '$lib/shared/blockly/calcul/notation';
-import { LONGUEUR_MAX_PROGRAMME } from '$lib/shared/blockly/tortue/notation';
-import { generateInstance } from '$lib/questions/generator/instance-generator';
-import { templateMarkdown } from '$lib/ubumark';
-import type { QuestionTemplate } from '$lib/questions/types';
+import FillBlanksInput from '#lib/components/question-inputs/FillBlanksInput.svelte';
+import { parseCalculContent } from '#lib/ubumark/parser/calcul-parser.ts';
+import { parseTortueContent } from '#lib/ubumark/parser/tortue-parser.ts';
+import { texteVersEtatCalcul } from '#lib/shared/blockly/calcul/notation.ts';
+import { LONGUEUR_MAX_PROGRAMME } from '#lib/shared/blockly/tortue/notation.ts';
+import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
+import type { QuestionTemplate } from '#lib/questions/types.ts';
 
 let mains: HTMLElement[] = [];
 function mainElement(): HTMLElement {

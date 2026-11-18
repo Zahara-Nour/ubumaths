@@ -6,7 +6,7 @@ import { describe, it, expect } from 'vitest';
 import { parseCourbeContent } from '../../parser/courbe-parser';
 import { parseStatChartContent } from '../../parser/stat-chart-parser';
 import { generateCourbeTypst } from '../../generators/courbe-typst';
-import { NAMED_COLOR_PRINT } from '$lib/theme/named-colors';
+import { NAMED_COLOR_PRINT } from '#lib/theme/named-colors.ts';
 
 const WINDOW = 'x: -2 ; 2\ny: -2 ; 2';
 

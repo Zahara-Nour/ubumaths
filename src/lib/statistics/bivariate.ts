@@ -9,7 +9,7 @@
  * `fitAffine` (`fit.ts`) reste la source de l'atelier ; ce module sert les
  * blocs, qui affichent des valeurs arrondies.
  *
- * ⚠️ Aucun import `$lib` : voir `statistics/describe`.
+ * ⚠️ Aucun import `#lib` : voir `statistics/describe`.
  *
  * @module statistics/bivariate
  */

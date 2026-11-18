@@ -120,18 +120,31 @@ fi
 # svelte-check's incremental cache. On the old 8 GB laptop that cost ~2x time and
 # memory (72s/1.6GB vs 37s/0.8GB); on the Mac mini (2026-09-29) it is marginal:
 # 47 s vs 44 s, both at 2.9 GB RSS. Syncing is still skipped when useless: only sync when routes / svelte config / env actually changed
-# since the last sync, detected against a file the sync ALWAYS rewrites
-# (.svelte-kit/tsconfig.json). Editing lib/component code needs no sync → fast path.
+# since the last sync, detected against a sentinel touched right after each sync
+# (SvelteKit 3 no longer writes .svelte-kit/tsconfig.json, and its own files are
+# written only when they change). Editing lib/component code needs no sync → fast path.
+# Watched: routes, the SvelteKit config (plugin options in vite.config.ts), the
+# env declarations (src/env.ts → types of $app/env/*) and the .env files.
 # Blind spot: route DELETIONS/renames leave no "newer" file → use FRESH=1 then.
-sentinel=.svelte-kit/tsconfig.json
+sentinel=.svelte-kit/.sync-sentinel
 shopt -s nullglob
-watch=(src/routes svelte.config.* .env .env.*)
+watch=(src/routes vite.config.ts src/env.ts .env .env.*)
 shopt -u nullglob
+# Kit 3 écrit aussi node_modules/$app/tsconfig.json (étendu par tsconfig.json) :
+# après un `pnpm install` qui l'a effacé, la sentinelle seule ne verrait rien.
 if [ "${need_sync:-0}" = "1" ] || [ ! -f "$sentinel" ] || \
+	[ ! -f "node_modules/\$app/tsconfig.json" ] || \
 	[ -n "$(find "${watch[@]}" -type f -newer "$sentinel" 2>/dev/null | head -1)" ]; then
 	# Dire pourquoi un sync a lieu : il invalide le cache incrémental.
 	echo "ℹ️  Routes ou config modifiées → svelte-kit sync : cache invalidé."
-	npx svelte-kit sync >/dev/null 2>&1
+	# Un sync raté (ex. variable obligatoire de src/env.ts absente) ne pose pas la
+	# sentinelle, sinon les lancements suivants le sauteraient : on l'affiche et on s'arrête.
+	if ! sync_out=$(npx svelte-kit sync 2>&1); then
+		echo "$sync_out" >&2
+		echo "⛔ svelte-kit sync a échoué (ci-dessus)." >&2
+		exit 1
+	fi
+	mkdir -p .svelte-kit && touch "$sentinel"
 fi
 
 # Heap cap = 4096 MiB. `--max-old-space-size` caps the V8 HEAP, not the process.

@@ -1,6 +1,6 @@
 """Écrit les 9 premiers modèles Blockly de 4e et de 3e dans scripts/questions/blockly-4e-3e/.
 
-Lot porté par le chantier `blockly` (journal docs/wip/blockly-progress.md § PR C, validé par
+Lot porté par le chantier `blockly` (journal docs/archive/wip/blockly-progress.md § PR C, validé par
 David le 2026-11-16) ; un point par modèle (ADR 0020) ; l'élève ÉCRIT le programme en blocs (les
 modèles déjà en prod sur ces points le font LIRE) :
 

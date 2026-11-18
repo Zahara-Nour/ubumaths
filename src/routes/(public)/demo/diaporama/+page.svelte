@@ -6,24 +6,24 @@
 	fragments, transitions, développement qui avance tout seul, formules
 	ubumark, Python, cercle trigonométrique, figure manipulable, minuteur de
 	questions, annotations, tableau blanc, fin. Le banc d'essai complet de
-	`$lib/slides` reste sur `/dev/diaporama` (chantier demo-debug, PR 6i).
+	`#lib/slides/index.ts` reste sur `/dev/diaporama` (chantier demo-debug, PR 6i).
 
 	Pas d'adresse par diapositive (`hash: false`) : le diaporama vit dans la
 	page, dans un cadre ; F ou le bouton le passent en plein écran.
 -->
 <script lang="ts">
-	import { demoSeo } from '$lib/seo/demo-pages';
-	import SeoHead from '$lib/seo/SeoHead.svelte';
-	import { browser } from '$app/environment';
+	import { demoSeo } from '#lib/seo/demo-pages.ts';
+	import SeoHead from '#lib/seo/SeoHead.svelte';
+	import { browser } from '$app/env';
 	import { resolve } from '$app/paths';
 	import { Maximize, Minimize } from '@lucide/svelte';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import GeometryCanvas from '$lib/components/geometry/GeometryCanvas.svelte';
-	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
-	import FlashCard from '$lib/components/questions/FlashCard.svelte';
-	import { TILE_CARD_HEIGHT } from '$lib/components/questions/tile-card';
-	import { Button } from '$lib/components/ui/button';
-	import { runDsl } from '$lib/geometry-core/dsl';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import GeometryCanvas from '#lib/components/geometry/GeometryCanvas.svelte';
+	import MarkdownRenderer from '#lib/components/markdown/MarkdownRenderer.svelte';
+	import FlashCard from '#lib/components/questions/FlashCard.svelte';
+	import { TILE_CARD_HEIGHT } from '#lib/components/questions/tile-card.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { runDsl } from '#lib/geometry-core/dsl/index.ts';
 	import {
 		AnnotatableSlide,
 		Deck,
@@ -31,7 +31,7 @@
 		UbuMarkSlide,
 		WhiteboardSlide,
 		type DeckConfig
-	} from '$lib/slides';
+	} from '#lib/slides/index.ts';
 	import { demoInstances } from '../questions/questions';
 	import ChronoBar from './ChronoBar.svelte';
 	import {
@@ -262,11 +262,10 @@
 				<Slide background={DARK}>
 					<h2 class="mb-6 font-bold">À vous de jouer</h2>
 					<div class="flex flex-wrap justify-center gap-4">
-						<Button href={resolve('/demo')} variant="secondary" size="lg"
+						<Button href={resolve('demo')} variant="secondary" size="lg"
 							>Les autres démonstrations</Button
 						>
-						<Button href={resolve('/atelier')} variant="secondary" size="lg"
-							>Ouvrir l'Atelier</Button
+						<Button href={resolve('atelier')} variant="secondary" size="lg">Ouvrir l'Atelier</Button
 						>
 					</div>
 				</Slide>

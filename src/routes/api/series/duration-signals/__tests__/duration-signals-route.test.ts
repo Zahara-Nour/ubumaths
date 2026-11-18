@@ -3,11 +3,11 @@
  */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { GET } from '../+server';
-import { createFakeSupabase } from '$lib/server/__tests__/helpers/fake-supabase';
-import { getDurationSignals } from '$lib/server/stats/duration-signals';
+import { createFakeSupabase } from '#lib/server/__tests__/helpers/fake-supabase.ts';
+import { getDurationSignals } from '#lib/server/stats/duration-signals.ts';
 
-vi.mock('$lib/server/stats/duration-signals', () => ({ getDurationSignals: vi.fn() }));
-vi.mock('$lib/server/test-mode', () => ({ getTeacherTestMode: vi.fn(async () => true) }));
+vi.mock('#lib/server/stats/duration-signals.ts', () => ({ getDurationSignals: vi.fn() }));
+vi.mock('#lib/server/test-mode.ts', () => ({ getTeacherTestMode: vi.fn(async () => true) }));
 
 // Constantes
 const TEACHER = '22222222-2222-4222-8222-222222222222';

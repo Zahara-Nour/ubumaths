@@ -4,8 +4,8 @@
 	César par colonne. La longueur proposée reste modifiable à la main.
 -->
 <script lang="ts">
-	import MySelect from '$lib/components/MySelect.svelte';
-	import { Button } from '$lib/components/ui/button';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import {
 		FRENCH_IC,
 		MAX_KEY_LENGTH,
@@ -14,8 +14,8 @@
 		crackVigenere,
 		kasiski,
 		suggestKeyLength
-	} from '$lib/ciphers/vigenere';
-	import { lettersOnly } from '$lib/ciphers/alphabet';
+	} from '#lib/ciphers/vigenere.ts';
+	import { lettersOnly } from '#lib/ciphers/alphabet.ts';
 
 	// Constantes
 	const SHOWN_REPEATS = 12;

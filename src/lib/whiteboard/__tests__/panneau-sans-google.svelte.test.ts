@@ -12,7 +12,7 @@ import { render } from 'vitest-browser-svelte';
 import { page } from 'vitest/browser';
 import FileDrawer from '../components/FileDrawer.svelte';
 import { whiteboardStore } from '../stores/whiteboard.svelte';
-import { GOOGLE_CLASSROOM_ENABLED } from '$lib/config/google-classroom';
+import { GOOGLE_CLASSROOM_ENABLED } from '#lib/config/google-classroom.ts';
 
 afterEach(() => {
 	whiteboardStore.setFileDrawerVisible(false);

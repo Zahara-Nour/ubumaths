@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import { Button } from '$lib/components/ui/button';
-	import * as Dialog from '$lib/components/ui/dialog';
+	import { lore } from '#lib/config/lore.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
 	import { Loader2, AlertTriangle } from '@lucide/svelte';
-	import type { StudentErrorReportWithDisplay } from '$lib/types/worksheets';
+	import type { StudentErrorReportWithDisplay } from '#lib/types/worksheets.ts';
 
 	// Props
 	let {

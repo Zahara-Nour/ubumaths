@@ -10,13 +10,16 @@
 
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRoles } from '$lib/server/middleware/auth';
-import { createActivitySchema, activityListQuerySchema } from '$lib/server/validation/curriculum';
-import { curriculumDbError } from '$lib/server/curriculum';
-import { reconcileAutoCoverage } from '$lib/server/curriculum-coverage';
-import type { JournalEntryActivity } from '$lib/types/database-helpers';
-import type { TablesInsert } from '$lib/types/database';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import {
+	createActivitySchema,
+	activityListQuerySchema
+} from '#lib/server/validation/curriculum.ts';
+import { curriculumDbError } from '#lib/server/curriculum.ts';
+import { reconcileAutoCoverage } from '#lib/server/curriculum-coverage.ts';
+import type { JournalEntryActivity } from '#lib/types/database-helpers.ts';
+import type { TablesInsert } from '#lib/types/database.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/teacher/curriculum/activities/+server');
 

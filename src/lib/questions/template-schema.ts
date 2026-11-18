@@ -14,7 +14,7 @@
  */
 
 import { z } from 'zod';
-import { SUPERFLU_RULE_IDS, bySuperfluRule } from '$lib/mathAST/superflu/rules';
+import { SUPERFLU_RULE_IDS, bySuperfluRule } from '#lib/mathAST/superflu/rules.ts';
 import { findRulesSufficeBlanksWithoutRules } from './rules-suffice';
 import { answerAssumptionsSchema, refineAssumptionCollisions } from './answer-assumptions';
 import {

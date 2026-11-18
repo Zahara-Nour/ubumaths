@@ -16,7 +16,7 @@
  *
  * @example
  * ```typescript
- * import { convertInstrumenPoche } from '$lib/constructions/converter';
+ * import { convertInstrumenPoche } from '#lib/constructions/converter.ts';
  *
  * const xmlContent = '<INSTRUMENPOCHE>...</INSTRUMENPOCHE>';
  * const result = await convertInstrumenPoche(xmlContent, {

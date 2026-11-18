@@ -3,9 +3,9 @@
 	QuestionCard (`bind:values`) — le parent renvoie la valeur saisie au bloc
 -->
 <script lang="ts">
-	import FillBlanksInput from '$lib/components/question-inputs/FillBlanksInput.svelte';
-	import type { InstanceBlank } from '$lib/questions/types';
-	import type { ResolvedMarkdown } from '$lib/ubumark';
+	import FillBlanksInput from '#lib/components/question-inputs/FillBlanksInput.svelte';
+	import type { InstanceBlank } from '#lib/questions/types.ts';
+	import type { ResolvedMarkdown } from '#lib/ubumark/index.ts';
 
 	interface Props {
 		statement: ResolvedMarkdown;

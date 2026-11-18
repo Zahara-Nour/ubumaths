@@ -14,13 +14,13 @@
 	 */
 
 	import { onMount, onDestroy } from 'svelte';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import type { EditorView } from '@codemirror/view';
 	import type { Extension } from '@codemirror/state';
 	import type { CompletionContext, CompletionResult, Completion } from '@codemirror/autocomplete';
-	import { pythonStore, type EditorTheme } from '$lib/stores/pythonPlayground.svelte';
-	import { theme as appTheme } from '$lib/stores/theme.svelte';
-	import type { CompletionItem, CompletionProvider } from '$lib/shared/python';
+	import { pythonStore, type EditorTheme } from '#lib/stores/pythonPlayground.svelte.ts';
+	import { theme as appTheme } from '#lib/stores/theme.svelte.ts';
+	import type { CompletionItem, CompletionProvider } from '#lib/shared/python/index.ts';
 	import { loadThemeExtension, resolveEffectiveTheme } from './editor-theme';
 
 	// Props
@@ -261,7 +261,7 @@
 			const errorLineMark = Decoration.line({ class: 'cm-errorLine' });
 
 			// Error gutter marker (red dot) - imported from shared module
-			const { ErrorGutterMarker } = await import('$lib/utils/codemirror-error-marker');
+			const { ErrorGutterMarker } = await import('#lib/utils/codemirror-error-marker.ts');
 			const errorMarker = new ErrorGutterMarker();
 
 			// State field to track error line and compute decorations
@@ -324,7 +324,7 @@
 			const debugLineMark = Decoration.line({ class: 'cm-debugLine' });
 
 			// Debug gutter marker (arrow) - imported from shared module
-			const { DebugGutterMarker } = await import('$lib/utils/codemirror-debug-marker');
+			const { DebugGutterMarker } = await import('#lib/utils/codemirror-debug-marker.ts');
 			const debugMarker = new DebugGutterMarker();
 
 			// State field to track debug line and compute decorations
@@ -383,7 +383,7 @@
 			// Create breakpoint gutter system (clickable: toggle on mousedown)
 			const breakpointEffect = StateEffect.define<number[]>();
 
-			const { BreakpointGutterMarker } = await import('$lib/utils/codemirror-breakpoint-marker');
+			const { BreakpointGutterMarker } = await import('#lib/utils/codemirror-breakpoint-marker.ts');
 			const breakpointGutterMarker = new BreakpointGutterMarker();
 
 			const breakpointsFieldDef = StateField.define<number[]>({

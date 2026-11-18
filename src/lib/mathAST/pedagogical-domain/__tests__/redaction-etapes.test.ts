@@ -19,9 +19,9 @@ import {
 	PedagogicalDomainRenderer
 } from '../index';
 import type { PedagogicalDomainSchoolLevel } from '../types';
-import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
-import type { MathNode } from '$lib/mathAST/types';
-import type { Domain } from '$lib/mathAST/domain';
+import type { RenderedStep } from '#lib/mathAST/common/step-renderer-base.ts';
+import type { MathNode } from '#lib/mathAST/types.ts';
+import type { Domain } from '#lib/mathAST/domain/index.ts';
 import { domainToLatex } from '../renderer';
 
 // =============================================================================

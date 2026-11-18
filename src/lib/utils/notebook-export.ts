@@ -3,7 +3,7 @@
  * Generates Jupyter-compatible notebooks for download and external use
  */
 
-import type { NotebookContent, NotebookCell, CellOutput } from '$lib/types/notebook';
+import type { NotebookContent, NotebookCell, CellOutput } from '#lib/types/notebook.ts';
 
 /**
  * Jupyter notebook format types (nbformat v4)

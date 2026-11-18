@@ -17,7 +17,7 @@
  * @module ubumark/generators/qr-typst
  */
 
-import { encodeQr, qrSvg } from '$lib/qr/qr-code';
+import { encodeQr, qrSvg } from '#lib/qr/qr-code.ts';
 import { QR_UNAVAILABLE, type QrNode } from '../types/qr';
 
 // ============================================================================

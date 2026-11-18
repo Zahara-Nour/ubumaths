@@ -5,15 +5,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-16, après #2726 (fichiers du lot 6 bis mergés)._
+_Mis à jour le 2026-11-18, après #2824 et le `db:migrate` du lot 8c (§ 23 quinquies)._
 
-- **État** : lots 0 à 6 publiés (102 points sur 171) ; lot 6 bis (7 modèles, 001, 002, 131, 143, 010, 024, 048)
-  validé (§ 17 bis) et écrit, specs et aperçu local verts.
-- **Prochaine action** : David lance `create-questions --dir scripts/questions/cm1-6bis
---publier` ; ids commités ; migration nœud + tags ; page à cocher ; publication. Puis lot 6 ter « algèbre » (062-066).
-- **En attente de David** : `create-questions --publier` après le merge.
-- **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance (une autre session peut l'avoir fait avant : vérifier au MCP) ; `db:migrate` depuis un worktree : copier d'abord le lien `../ubumaths/supabase/.temp/` ; `create-questions` = `pnpm tsx scripts/create-questions.ts …`, refuse `theme`/`domain`/`subdomain` (ADR 0035) et les homonymes titre + niveau ; horodatage = `pnpm migration:horodatage`, puis `pnpm check:migrations --pr <n>` **juste avant le merge** ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule et le type `content` ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` ; **jamais de `{{if}}` dans une réponse attendue** ; un brouillon sans nœud ne peut pas être tagué (trigger) ; aperçu : corrigé derrière « Voir la correction » (Playwright à 390 px). Les ids écrits par `--publier` depuis le dépôt principal y restent en fichiers modifiés : les commiter sur la branche du lot, puis les restaurer dans le dépôt principal (identiques à `origin/main`).
-- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, HEAD détachée sur `origin/main`.
+- **État** : lots 0 à 8b publiés, **137 points du CM1 sur 171** (CM2 : 92 sur 158). Lot 8c : 7 brouillons en prod,
+  rangés et tagués en prod (#2824, `db:migrate` fait) ; page à cocher publiée
+  (https://claude.ai/artifact/Snbe4QU13vJmw7qSfzQzS9).
+- **Prochaine action** : lire et compter les verdicts (`ArtifactData list verdicts`) ; si 7 « OK » :
+  `publier-lot --dir scripts/questions/cm1-8c` (simulation), puis David lance `--publier`. Ensuite 8d figures à
+  compléter, 8e, 9 (§ 20).
+- **En attente de David** : ses verdicts sur la page à cocher.
+- **Pièges en cours** : lancer `create-questions --publier` et `db:migrate` **depuis le worktree** (lien
+  `supabase/.temp/` copié) ; `db:migrate` « inserted before » → `--dry-run --include-all` puis `--include-all` ;
+  titre homonyme d'un autre niveau → `create-questions` refuse (renommer) ; commitlint refuse le type `content` ;
+  le mode auto refuse `publier-lot` et `garde-niveaux-tags` : David les lance ; `sonde-figures` ne voit pas les
+  dessins d'une case choix (aperçu) ; ports 5176, 5177 pris par d'autres sessions.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, détaché sur `main`, aucune branche ouverte.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -1294,3 +1300,605 @@ niveaux 4 et 5, le CM2 laissé à 2 et 3 (écart connu, pas corrigé).
   principale sautée.
 - `types:cliquet` tenu ; `security-auditor` : aucun finding (diff avec la migration du lot 6 : préfixe des tables
   temporaires, comptes, données ; état « avant » remesuré au MCP).
+- #2729 mergée (CI verte, `check:migrations --pr 2729` passé ; merge retardé par un `deploy:prod` en cours), branche
+  supprimée. `db:migrate` : à lancer par David.
+
+### 17 quinquies. Lot 6 bis — migration passée, page à cocher (2026-11-16)
+
+- `20261116193751_questions_cm1_lot6bis_rangement_tags` trouvée dans `schema_migrations` en prod (passée par une
+  autre session). Vérifié au MCP : 7 brouillons CM1, chacun avec un nœud et son tag (CM1-001, 002, 010, 024, 048, 131,
+  143).
+- `page-a-cocher.ts --dir scripts/questions/cm1-6bis` : 7 fiches (22 exemples), aucune alerte. Page :
+  https://claude.ai/artifact/WZXanUL8XBoMJYNvJZPcFm (`verdicts`, capacité `db`, vide).
+
+### 17 sexies. Lot 6 bis — publication (2026-11-16)
+
+- Page à cocher : 7 « OK » sur 7, aucun commentaire. `publier-lot` en simulation : 7/7 ; `garde-niveaux-tags` :
+  aucun niveau manquant ; `--publier` lancé par David ; vérifié au MCP : 7 publiés. Vérification manuelle notée
+  (numération au CM1, #2726, #2729).
+- **Lot 6 bis clos.** Recompte : 109 points couverts sur 171 (102 + 001, 002, 010, 024, 048, 131, 143).
+
+## 18. Lot 6 ter — algèbre : phase 0 (à valider, 2026-11-16)
+
+Relevé MCP du 2026-11-16 : 062, 063, 064, 065, 066 n'ont aucun modèle. Leurs nœuds, sous « Algèbre › Premiers pas
+algébriques » : 062 et 063 → **nombre inconnu** (6 modèles de 6e, 6-142, schémas en barres, niveaux 1 et 2) ;
+064 → **programmes de calcul** (2 modèles de CM2, niveau 1 : `98f54315` exécuter, trois étapes, mots ou Scratch ;
+`42881663` le nombre de départ) ; 065 et 066 → **suites de motifs** (1 modèle de 6e, `39bafe0e`, motif d'allumettes
+dessiné en ` ```figure `). Aucun nœud à créer.
+
+Bornes (`cycle3.json`, exemples de réussite CM1 2025 p.13-14, relus dans le PDF) : 062, balances (k crayons
+identiques = 250 g ; 3 paires de ciseaux + 140 g = 500 g) et « Rose a choisi N, 3 × (2 + N) = 27 » ; 063, « en
+ajoutant 7 au triple du nombre de Mia, on trouve 100 », appuyé sur un schéma en barres ; 064, **au plus deux étapes**,
+nombre de départ entier, en mots (ajouter 2, puis multiplier par 4) ou en Scratch ; 065, **les trois termes
+suivants** de 3 ; 7 ; 11 (+4), 4 ; 12 ; 36 (×3), 80 ; 85 ; 83 ; 88 (+5 −2), 1 ; 2 ; 6 ; 7 (+1 +4), et formuler la
+règle ; 066, nombre d'éléments aux **trois étapes suivantes** (cœurs : 3, 6, 9 ; ronds : + le numéro de l'étape),
+règle dite à partir de l'étape précédente.
+
+Outils, tous en prod : balance dessinée en ` ```figure ` (patron CP `5592a129`, `cp-b3/07-balance.json`, à
+l'équilibre ici), ` ```schema-barres `, ` ```scratch ` (CM2 `98f54315`), case « choix » (lot 6 bis, 048), motifs en
+` ```figure ` (patron 6e `39bafe0e`). Classe A ou B pour les cinq points : rien à créer.
+
+| #    | Point   | Sous-notion          | Modèle                                        | Variations, plages                                                                                                                                                                                                               |
+| ---- | ------- | -------------------- | --------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 6t-1 | CM1-062 | nombre inconnu       | Balance : la masse d'un objet                 | Balance à l'équilibre dessinée. V1 k objets identiques = M g (k de 2 à 6, un objet de 5 à 60 g) ; V2 k objets + a g = M g (k de 2 à 4, comme les ciseaux) ; V3 k objets = deux masses (a g et b g) ; une case, en g              |
+| 6t-2 | CM1-062 | nombre inconnu       | Trouver le nombre choisi                      | V1 « Rose a choisi N ; k × (a + N) = r » (k de 2 à 5) ; V2 « N × k + a = r » ; V3 symboles : ▲ + ▲ + ▲ = s, puis ▲ + ● = t, valeur de ● ; N, ▲, ● entiers de 1 à 50 ; une case                                                   |
+| 6t-3 | CM1-063 | nombre inconnu       | Schéma en barres : le nombre choisi           | V1 le triple (k de 2 à 5) plus b donne r (r ≤ 200) ; V2 k fois le nombre moins b donne r ; V3 deux enfants ont T billes, l'un k fois plus que l'autre ; V4 somme et écart (T ≤ 200) ; schéma en barres dessiné (voir question 2) |
+| 6t-4 | CM1-064 | programmes de calcul | Exécuter un programme de calcul (deux étapes) | V1 ajouter a, puis multiplier par b (l'exemple du BO) ; V2 multiplier par a, puis ajouter b ; V3 multiplier par a, puis retirer b ; V4 le même en Scratch (deux instructions) ; départ de 2 à 20 ; une case                      |
+| 6t-5 | CM1-065 | suites de motifs     | Suite de nombres : les trois termes suivants  | Cinq termes donnés (quatre pour ×). V1 + a (a de 2 à 12) ; V2 × k (k = 2 ou 3, départ de 1 à 5) ; V3 + a − b en alternance (a > b) ; V4 + a + b en alternance ; termes ≤ 999 999 ; trois cases                                   |
+| 6t-6 | CM1-065 | suites de motifs     | Suite de nombres : choisir la règle           | Les mêmes quatre suites ; case « choix », quatre règles en phrases (« on ajoute 4 à chaque fois », « on multiplie par 3 », « on ajoute 5, puis on retire 2 », « on ajoute 4, puis on retire 1 »…), une seule juste               |
+| 6t-7 | CM1-066 | suites de motifs     | Motif évolutif : les trois étapes suivantes   | Trois étapes dessinées. V1 colonnes de k jetons (+ k, comme les cœurs, k de 2 à 4) ; V2 escalier de ronds (1, 3, 6 : + le numéro de l'étape) ; V3 carrés d'allumettes accolés (4, 7, 10) ; trois cases (étapes 4, 5, 6)          |
+| 6t-8 | CM1-066 | suites de motifs     | Motif évolutif : choisir la règle             | Les mêmes motifs ; case « choix » : « à chaque étape, on ajoute k », « on ajoute le numéro de l'étape », « on double »…, une seule juste                                                                                         |
+
+Forme commune : réponses entières, une case par nombre. Corrigé : l'opération inverse pas à pas (on retire, puis on
+partage), une vérification qui remet le nombre trouvé dans l'énoncé ; pour les suites et les motifs, les flèches de
+la règle écrites en ligne (« 15 + 4 = 19 »). Specs d'erreurs typiques : M ÷ k sans retirer a ; 27 ÷ 3 = 9 rendu pour N
+(le 2 oublié) ; 100 ÷ 3 ; une seule des deux règles d'une suite alternée appliquée à chaque fois ; + 2 au lieu de
+
+- le numéro de l'étape ; dans un programme, les étapes faites dans l'autre ordre.
+
+Questions :
+
+1. **Découpage** : un lot de 8 modèles (ci-dessus), une PR de fichiers et une migration ? Reco : **oui**.
+2. **Schéma en barres de 6t-3 dans l'énoncé** (avec « ? »), et pas seulement dans le corrigé comme au lot 6 : ici le
+   point est de « s'appuyer sur un schéma », et l'exemple du BO le dessine. Reco : **dans l'énoncé et dans le
+   corrigé**, comme les patrons de 6e.
+3. **« Formuler la règle » en case « choix »** (6t-6, 6t-8), puisqu'une phrase libre ne se corrige pas : reco **oui**.
+   Sinon, la règle reste dans le seul corrigé, et 6t-6 et 6t-8 disparaissent.
+4. **Niveaux** : les modèles du CM1 prennent le **niveau 1** de leur nœud, à côté des modèles de 6e et de CM2 qui y
+   sont déjà (plusieurs modèles partagent déjà le niveau 1), sans renuméroter personne. Reco : **oui**.
+5. **065 (suites de nombres) sous « suites de motifs »**, le nœud de son point, sans créer de sous-notion « suites de
+   nombres ». Reco : **oui** (le nom du nœud se discute à part, s'il le faut).
+
+**Question d'accès** : brouillons, puis migration nœud + tag → **personne** ne gagne d'accès.
+
+### 18 bis. Lot 6 ter : réponse de David (2026-11-16)
+
+« je te suis », en réponse aux cinq recommandations du § 18 : 1. **un seul lot** de 8 modèles ; 2. schéma en barres
+de 6t-3 **dans l'énoncé et dans le corrigé** ; 3. « formuler la règle » en **case « choix »** (6t-6, 6t-8) ; 4. **niveau 1** dans chaque nœud, sans renuméroter personne ; 5. 065 rangé sous **« suites de motifs »**, aucun nœud
+créé.
+
+### 18 ter. Lot 6 ter — écriture (2026-11-16)
+
+- Script `docs/wip/questions/lot-cm1-6ter.py` → `scripts/questions/cm1-6ter/` (8 JSON, 30 variations, niveau 1
+  partout). Patrons : balance CP `5592a129` (refaite à l'équilibre, fléau horizontal, billes bleues, masses en
+  rectangles jaunes ; la masse de gauche posée juste après les billes), schémas en barres de 6e `399342ff` et
+  `d79ea0bc`, Scratch du CM2 `98f54315`, motifs de 6e `39bafe0e`.
+- 6t-3 V2 (« k fois, moins b ») : deux barres, les k parts au-dessus, en dessous r puis b en pointillés (`-b`),
+  longueurs `2k` et `2k − 1 ; 1`. 6t-5 : une case par nombre, avec son rang (« 7e nombre »), parce que trois cases sur
+  une ligne passent à la ligne avec un « ; » seul à 390 px. 6t-2 V3 : symboles `{\square}`, `{\triangle}`.
+- Leurres des « choix » : une règle vraie au premier pas seulement (× k : « on ajoute u(k − 1) », escalier : « on
+  ajoute 2 »), l'alternance à l'envers, la somme des deux pas « à chaque fois », 4 allumettes par carré, 3 par
+  triangle.
+- `question:specs` 300 tirages par variation : 9 000 / 9 000, 62 specs vertes ; `sonde-figures` : 0 problème ;
+  schémas en barres passés à `parseSchemaBarresContent` et formules à `validateLatex` (sonde jetable) : 0 problème ;
+  `create-questions` en simulation (prod) : 8 « à créer ».
+- Base locale (copie du dossier, `.env.local`), **sous le verrou `supabase`** (`scripts/with-db-lock.sh`) : une autre
+  session a remis la base à zéro juste après ma première création, mes 8 brouillons ont disparu sans un mot. Aperçu
+  admin à 390 px (Playwright, onglet « Flash-card » puis « Voir la correction ») : balances, schémas, Scratch, suites,
+  motifs et choix rendus correctement. Piège zsh : `$ids` ne se découpe pas, écrire `${=ids}`.
+
+### 18 quater. Lot 6 ter — création en prod et rangement (2026-11-17)
+
+- #2734 mergée. `create-questions --dir scripts/questions/cm1-6ter --publier` lancé par David : 8 brouillons CM1
+  (vérifiés au MCP : draft, niveau 1, sans nœud ni tag) ; ids commités sur `feat/questions-cm1-lot6ter-rangement`.
+- Relevé `etat-prod-2026-11-17-cm1-6ter/` (`releve-prod-cm1.ts`), script `lot-cm1-6ter-rangement.py` (gabarit 6 bis)
+  → migration `20261117113333_questions_cm1_lot6ter_rangement_tags` + fixture : 8 rangés sous « Algèbre › Premiers pas
+  algébriques » (nombre inconnu : b28c7f78, 98f558e4 → 062, c4011427 → 063 ; programmes de calcul : 2d7d0e63 → 064 ;
+  suites de motifs : b47f2699, e59976bf → 065, 37dd213b, ac5fcd5c → 066), 8 tags posés, aucun niveau ni statut
+  changé.
+- Test `questions-cm1-lot6ter-rangement-tags.test.ts` : 20/20 vert ; corps neutralisé (`select 1;`) : 9 échecs + suite
+  principale sautée. `types:cliquet` tenu ; `security-auditor` : aucun finding (diff avec la 6 bis : données,
+  compteurs, préfixe `_qcm1l6t_` ; état « avant » remesuré au MCP).
+- #2740 mergée (CI verte, `check:migrations --pr 2740` passé ; conflit sur « Reprendre ici » seulement), branche
+  supprimée.
+
+### 18 quinquies. Lot 6 ter — migration passée, page à cocher (2026-11-17)
+
+- `db:migrate` lancé par David. Vérifié au MCP : `20261117113333` dans `schema_migrations` ; 8 brouillons CM1, chacun
+  sur son nœud avec son tag (062 ×2, 063, 064, 065 ×2, 066 ×2).
+- `page-a-cocher.ts --dir scripts/questions/cm1-6ter` : 8 fiches (30 exemples), une alerte (bloc `scratch` de
+  2d7d0e63 non dessiné : déjà vu dans l'aperçu admin à 390 px, § 18 ter). Page :
+  https://claude.ai/artifact/XiA4snkC73LZt3Ktvsny5Q (`verdicts`, capacité `db`, vide).
+
+### 18 sexies. Lot 6 ter — publié (2026-11-17)
+
+- Page à cocher : 8 « OK » sur 8, aucun commentaire. `publier-lot --dir scripts/questions/cm1-6ter` (simulation),
+  `garde-niveaux-tags` et `--publier` lancés par David (le mode auto refuse ces scripts). Vérifié au MCP : 8 modèles
+  `published`.
+
+## 19. Lot 7 — données : phase 0 (à valider, 2026-11-17)
+
+Recompte MCP du 2026-11-17 : **114 points sur 171**, tous publiés (109 + 062 à 066).
+
+Points du lot (12) : 120, 121, 169 (tableau simple), 137, 170 (double entrée), 138, 171, 135 (diagramme en barres),
+139, 172, 136 (courbe, repère), 122 (problèmes). **135 et 136 passent de C à B** : barres à construire et
+`axe: à choisir` sont en prod (#1846 et suivantes, patron CE2 `3a8899e8`), le repère à points à placer aussi
+(` ```courbe placer:`, #2096, patron 5e `324e90e2`) ; la courbe de données se dessine par ` ```courbe données:`.
+Aucun modèle du CM2 sur ces points.
+
+Nœuds (« Statistiques › Représenter des données »), tous existants : **tableaux** (120, 121, 169), **tableau à
+double entrée** (137, 170), **diagrammes en barres** (135, 138, 171), **courbes et repères** (136, 139, 172) ; 122
+est sur la notion elle-même, comme les deux modèles CE2-076. Aucun nœud à créer.
+
+Patrons : `scripts/questions/ce2-7c/` (8 modèles CE2, tous publiés), `5-statistiques/09` et `10` (lire, interpréter
+un graphique), `5-reperage/08` (placer des points). Bornes `cycle3.json` : 122, supports tableau simple ou double,
+barres, courbe, **pas de diagramme circulaire** ; 135, échelle adaptée aux données ; 136, points éventuellement
+reliés, échelle adaptée ; champ numérique du CM1 (entiers jusqu'à 999 999, décimaux).
+
+| #    | Point   | Sous-notion             | Modèle                                       | Variations, plages                                                                                                                                                                                     |
+| ---- | ------- | ----------------------- | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 7-1  | CM1-120 | tableaux                | Ranger un relevé dans un tableau             | V1 liste de 24 à 30 réponses, 4 ou 5 modalités, colonne des effectifs + Total ; V2 relevé de deux caractères (fille / garçon × sport) → tableau à double entrée à remplir                              |
+| 7-2  | CM1-121 | tableaux                | Lire un tableau à simple entrée              | V1 la population d'une ville (5 villes, 10 000 à 999 999) ; V2 la ville qui a N habitants (choix) ; V3 longueurs de fleuves ou altitudes (km, m)                                                       |
+| 7-3  | CM1-169 | tableaux                | Interpréter un tableau à simple entrée       | V1 la ville la plus, la moins peuplée (choix) ; V2 combien d'habitants de plus ; V3 combien de villes dépassent N ; mêmes tableaux qu'en 7-2                                                           |
+| 7-4  | CM1-137 | tableau à double entrée | Lire un tableau à double entrée              | Sports × filles / garçons (4 ou 5 lignes) ; V1 une case (« combien de garçons font de la natation ? ») ; V2 la case d'un total ; nombres ≤ 999                                                         |
+| 7-5  | CM1-170 | tableau à double entrée | Interpréter un tableau à double entrée       | V1 le sport qui attire le plus de filles (choix) ; V2 combien de garçons de plus que de filles dans un sport ; V3 le total d'un sport ; V4 le total général                                            |
+| 7-6  | CM1-138 | diagrammes en barres    | Lire un diagramme en barres                  | Livres prêtés par mois ; V1 axe de 10 en 10 ; V2 de 20 en 20 ou de 25 en 25 ; V3 de 50 en 50 ; V4 une barre entre deux traits (la moitié d'une graduation)                                             |
+| 7-7  | CM1-171 | diagrammes en barres    | Interpréter un diagramme en barres           | V1 combien de livres de plus en mars qu'en février ; V2 le mois où l'on a le plus prêté (choix) ; V3 combien en tout sur trois mois ; V4 combien de mois au-dessus de N                                |
+| 7-8  | CM1-135 | diagrammes en barres    | Construire un diagramme en barres            | Tableau des effectifs donné, `axe: à choisir` puis `placer: toutes` ; données jusqu'à 100 (voir question 3) ; V1 échelle 2, V2 échelle 5, V3 échelle 10                                                |
+| 7-9  | CM1-139 | courbes et repères      | Lire une courbe                              | Température heure par heure (8 h à 18 h), axe de 2 en 2 °C ; V1 « quelle température à 14 h ? » ; V2 « à quelle heure faisait-il N °C ? » (une seule heure possible)                                   |
+| 7-10 | CM1-172 | courbes et repères      | Interpréter une courbe                       | Même courbe ; V1 à quelle heure la température est la plus haute ; V2 la plus basse ; V3 l'écart entre la plus haute et la plus basse ; V4 entre quelles heures elle baisse                            |
+| 7-11 | CM1-136 | courbes et repères      | Placer les points d'un relevé dans un repère | Relevé de 5 valeurs, axes donnés ; V1 taille d'une plante semaine par semaine (cm, axe de 2 en 2) ; V2 température heure par heure (axe de 1 en 1) ; V3 poids d'un chiot mois par mois (axe de 5 en 5) |
+| 7-12 | CM1-122 | Représenter des données | Problèmes : tableaux                         | V1 tableau de prix (entrées de cinéma, adulte / enfant), le coût d'une famille, deux étapes ; V2 double entrée, une différence puis un total ; V3 la ligne cachée par le total                         |
+| 7-13 | CM1-122 | Représenter des données | Problèmes : diagramme en barres et courbe    | V1 barres, le total puis le partage en parts égales ; V2 barres, le mois manquant par le total de l'année ; V3 courbe, la hausse entre deux heures puis la prévision « si elle monte encore de… »      |
+
+Forme commune : une case par réponse, l'unité après la case ; les questions « lequel » en case « choix », comme au
+CE2 ; aucun nombre lu entre deux traits sauf la moitié (7-6 V4). Corrigé : où lire (ligne, colonne ; le haut de la
+barre ; le point de la courbe), puis le calcul s'il y en a un. Specs d'erreurs typiques : ligne et colonne
+inversées, le total pris pour une case, la graduation comptée pour 1, l'écart lu au lieu de la valeur, l'heure et la
+température échangées, la plus grande hausse confondue avec la valeur la plus haute.
+
+Questions :
+
+1. **Découpage** : un lot de 13 modèles, une PR de fichiers et une migration ; ou deux lots, 7a tableaux (7-1 à 7-5,
+   7-12) et 7b graphiques (7-6 à 7-11, 7-13) ? Reco : **un seul lot**, tous les patrons sont là.
+2. **Villes de 7-2 et 7-3** : le BO cite Lyon. Des populations tirées au hasard sur de vraies villes donneraient des
+   faits faux. Reco : **des villes inventées** (noms de villes du Royaume, ou « Alphaville », « Bétaville », comme au
+   CE2) ; sinon de vraies villes avec leurs populations réelles, figées, sans variable.
+3. **Échelle adaptée de 7-8** : `axe: à choisir` ne propose que 1, 2, 5 et 10 par graduation, avec des données
+   jusqu'à 100 : c'est déjà l'échelle du CE2 (`3a8899e8`). Reco : **écrire 7-8 dans ces limites maintenant**, et
+   noter dans `outils-manquants.md` les échelles 20, 25, 50, 100 (données jusqu'à 1 000) pour un modèle CM1 plus
+   tard ; sinon créer l'outil d'abord.
+4. **Repère de 7-11** : axes et graduations **donnés** (l'élève place les points), l'échelle n'est pas à choisir ;
+   choisir l'échelle d'un repère n'existe pas comme geste. Reco : **oui, axes donnés**.
+5. **Niveaux** : chaque modèle CM1 prend le niveau qui suit celui du modèle CE2 de même geste dans son nœud,
+   partagé s'il le faut, sans renuméroter personne ; relevés une nouvelle fois juste avant la création. Reco : **oui**.
+
+**Question d'accès** : brouillons, puis migration nœud + tag → **personne** ne gagne d'accès.
+
+### 19 bis. Lot 7 : réponse de David (2026-11-17)
+
+Les cinq recommandations du § 19 : 1. **un seul lot** de 13 modèles ; 2. **villes inventées** (7-2, 7-3) ; 3. 7-8
+écrit **dans les limites de `axe: à choisir`** (1, 2, 5, 10, données ≤ 100), échelles 20 à 100 notées au n° 36 de
+`outils-manquants.md` ; 4. repère de 7-11 à **axes donnés** ; 5. **niveaux** : celui qui suit le modèle CE2 de même
+geste dans le nœud, partagé, sans renuméroter.
+
+### 19 ter. Lot 7 — écriture (2026-11-17)
+
+- Script `docs/wip/questions/lot-cm1-7.py` → `scripts/questions/cm1-7/` (13 JSON, 40 variations). Niveaux : tableaux
+  4, 4, 5 ; double entrée 6, 7 ; barres 5, 6, 7 ; courbes 1, 2, 3 (comme les modèles de 5e, pas de CE2) ; problèmes
+  3, 3 (notion « Représenter des données »). Villes inventées (Brumeval, Castelroc, Pontaval, Mirelande,
+  Sablonnière), sommets inventés.
+- « Le plus », « le moins » : la donnée gagnante est posée au rang k par un polynôme de Lagrange (`posee`), la réponse
+  attendue est `{{k}}` (ni `{{if}}`, ni condition d'unicité). Courbes : montée puis baisse (09 V2), montée continue
+  (09 V3 : une température = une heure), un seul sommet ou creux en `2*(w ∓ s*abs(j-k))` (10 V1, V2) — les premiers
+  tirages au hasard dessinaient des pics invraisemblables (vu dans l'aperçu).
+- ⚠️ **` ```tableau-croise ` affiche ses totaux par défaut** (`showTotals: true`, depuis `238ec6bc6a`) : `totaux: non`
+  écrit partout où le total donnerait la réponse (04 V1, V3 ; 05 ; 12 V2, V3). **En prod**, le total donne la réponse
+  dans 4 variations publiées : CE2 `f0f681c4` V1 (le jour où il y a le plus de personnes), V2 (le moins), V3 (combien
+  en tout un jour) ; CE1 `29edb833` V2 (le jour où il y a le plus d'élèves). Non corrigé ici : signalé à David.
+- `question:specs` 300 tirages par variation : 12 000 / 12 000, 75 specs vertes ; sonde jetable (parseurs
+  ` ```barres `, ` ```tableau-croise `, ` ```courbe ` sur chaque tirage, témoin rouge vérifié) : 9 291 blocs, 0 problème ;
+  `create-questions` en simulation (prod) : 13 « à créer ».
+- Base locale (copie du dossier), aperçu admin à 390 px (Playwright, port 5178), les 40 variations vues. Une autre
+  session a remis la base locale à zéro pendant les captures : créer **et** capturer dans une seule commande sous
+  `scripts/with-db-lock.sh`.
+- #2751 mergée (CI verte), branche supprimée.
+
+### 19 quater. Lot 7 — création en prod et rangement (2026-11-17)
+
+- `create-questions --dir scripts/questions/cm1-7 --publier` lancé par David (un premier « publié » ne l'avait pas
+  créé : rien au MCP) : 13 brouillons CM1 (vérifiés au MCP : draft, niveau 1, sans nœud ni tag). Ids écrits dans le
+  dépôt principal, reportés et commités sur `feat/questions-cm1-lot7-rangement`.
+- Relevé `etat-prod-2026-11-17-cm1-7/` (`releve-prod-cm1.ts`), script `lot-cm1-7-rangement.py` (gabarit 6 ter) →
+  migration `20261117165426_questions_cm1_lot7_rangement_tags` + fixture : 13 rangés sous « Statistiques ›
+  Représenter des données » (tableaux : 1e1e0342 → 120, f5742b78 → 121, 40dcbbcc → 169 ; double entrée : 62389b29 →
+  137, e1d59914 → 170 ; barres : cc52549c → 138, c245f0cc → 171, 01b73ca2 → 135 ; courbes et repères : 5291dc9f →
+  139, da976537 → 172, a434bd68 → 136 ; la notion elle-même : ae74fe73, f1f7b2d1 → 122), 13 tags posés, aucun niveau
+  ni statut changé.
+- Test `questions-cm1-lot7-rangement-tags.test.ts` : 20/20 vert (relancé après le commit) ; corps neutralisé
+  (`select 1;`) : 9 échecs + suite principale sautée. `types:cliquet` tenu ; `security-auditor` : aucun finding
+  (diff avec la 6 ter : données, compteurs, préfixe `_qcm1l7_` ; rangement sur la notion pour CM1-122 vérifié ;
+  état « avant » remesuré au MCP).
+- PR #2759 ouverte.
+- #2759 mergée (CI verte après `Doc-inchangée:` dans un commit, `check:migrations --pr 2759` passé), branche
+  supprimée.
+
+### 19 quinquies. Lot 7 — migration passée, page à cocher (2026-11-17)
+
+- `db:migrate` lancé par David. Vérifié au MCP : `20261117165426` dans `schema_migrations` ; 13 brouillons CM1,
+  chacun sur son nœud avec son tag (tableaux 120, 121, 169 ; double entrée 137, 170 ; barres 138, 171, 135 ; courbes
+  et repères 139, 172, 136 ; notion « Représenter des données » 122 ×2).
+- `page-a-cocher.ts --dir scripts/questions/cm1-7` : 13 fiches (38 exemples), aucune alerte. Page :
+  https://claude.ai/artifact/94MF9SuHHDq8Jaa9hkBSLq (`verdicts`, capacité `db`, vide).
+
+### 19 sexies. Totaux masqués dans 4 variations CE1 / CE2 publiées (2026-11-17)
+
+- Décision de David (« je te suis ») : `totaux: non` dans les 4 variations où la ligne Total, affichée par défaut
+  depuis `238ec6bc6a`, donnait la réponse : CE2 `f0f681c4` V1 (le jour où il y en a le plus), V2 (le moins), V3
+  (combien un jour) ; CE1 `29edb833` V2 (le jour où il y en a le plus). Rien d'autre ne change : les corrigés
+  additionnaient déjà eux-mêmes ; la V1 de `29edb833` garde `totaux: oui` (écrit exprès, même question à lire).
+- Modèles publiés : `update-published-questions.ts`, lot `totaux-ce` (instantané
+  `scripts/questions/ce-totaux-existants/`). Simulation : variations seules, specs 10/10 et 9/9, 400 tirages.
+- #2769 mergée (CI verte), branche supprimée. Écriture en prod : à lancer par David.
+
+### 19 septies. Lot 7 — publié (2026-11-17)
+
+- Page à cocher : 13 « OK » sur 13, aucun commentaire. `publier-lot --dir scripts/questions/cm1-7` (simulation),
+  `garde-niveaux-tags` et `--publier` lancés par David. Vérifié au MCP : 13 modèles `published`.
+- Recompte MCP : **126 points du CM1 sur 171** ont un modèle publié (114 + les 12 du lot).
+
+### 19 octies. Totaux masqués — écrits en prod (2026-11-17)
+
+- `update-published-questions.ts --lot totaux-ce --publier` lancé par David. Vérifié au MCP : CE2 `f0f681c4`
+  V1 à V3 en `totaux: non` ; CE1 `29edb833` V2 en `totaux: non`, V1 et V3 en `totaux: oui` (comme l'instantané
+  `scripts/questions/ce-totaux-existants/`). Les deux modèles restent `published`.
+
+## 20. Relevé des 45 points restants (MCP, 2026-11-17)
+
+Recompte MCP : **45 points sans modèle publié** (126 sur 171 couverts), aucun brouillon en attente. Deux outils
+classés C au § 3 sont désormais en prod, ce qui fait passer 5 points en B :
+
+- **horloge à placer** (` ```horloge ` + `placer`, CE1 `d478935f`, CE2 `c06fe751`) → 093 en vrai geste ;
+- **figure à compléter** avec les contrôles symétrique (CE2 `49b8dc0b`, 6e `59694d66`), perpendiculaire (6e
+  `59694d66`, 5e `9dc37ad2`), parallèle (CE2 `5d869c65`, 5e `fbe65ad1`) → 107, 108, 167, 168.
+
+Découpage proposé (38 points évaluables + 7 D) :
+
+| Lot | Thème                          | Points                                                    | Patrons en prod                    |
+| --- | ------------------------------ | --------------------------------------------------------- | ---------------------------------- |
+| 8a  | heures et durées               | 092, 093, 094, 166, 095                                   | 7 modèles CE2 à horloge            |
+| 8b  | aires et angles                | 086, 087, 088 ; 089, 090, 091 (sans degré)                | angles CE1 / CE2, aires 6e         |
+| 8c  | géométrie plane                | 098 (codes), 099 (cercle), 100, 101, 102, 103, 106 (axes) | axes CE2 `b307a9f9`, `79e8e279`    |
+| 8d  | figures à compléter            | 107, 108, 167, 168                                        | ci-dessus                          |
+| 8e  | solides, déplacements          | 109, 110-113, 115 (patrons du cube), 117, 118 (robot)     | patrons CE2 `11ebf9fe`, `c8c9746a` |
+| 9   | probabilités, proportionnalité | 123-128 ; 129, 130                                        | 6e, 5e                             |
+
+**D (sans modèle, décidé au § 4 bis)** : 140, 097, 104, 105, 114, 116, 119.
+
+Questions à David : découpage et ordre (reco : 8a d'abord, patrons CE2 prêts) ; 093 en horloge à placer et 107,
+108, 167, 168 en figure à compléter (B), plus en C.
+
+### 20 bis. Découpage : réponse de David (2026-11-17)
+
+« oui » : découpage du § 20 (8a heures et durées → 8b aires et angles → 8c géométrie plane → 8d figures à compléter →
+8e solides, déplacements → 9 probabilités, proportionnalité) ; 093 en horloge à placer ; 107, 108, 167, 168 en figure
+à compléter.
+
+## 21. Lot 8a — heures et durées : phase 0 (à valider, 2026-11-17)
+
+Points : 092, 093, 094, 166, 095. Aucun modèle CM1 ni CM2 sur ces points. Nœuds existants (« Durées ») : **lecture
+de l'heure** (092, 093) et **calcul de durées** (094, 166, 095), comme les modèles CE2. Patrons : `scripts/questions/
+ce2-7b/` (01, 03, 05, 07 : lire, placer, durée entre deux horloges, comparer) et `ce2-6b/` (12, 13 : problèmes à une
+et deux étapes), tous publiés. Bornes `cycle3.json` : heures et minutes, pas de secondes ; 094 « de 8 h 52 min à
+11 h 37 min » ; 095 une ou deux étapes, instants intermédiaires, pas de calcul posé en base soixante, unités jour,
+heure, minute.
+
+**Ce qui distingue le CM1 du CE2** : le CE2 lit déjà à la minute près sur un cadran à 12 chiffres, et ses durées
+restent à 5 min près, dans 2 h 20 (`ce2-7b/05`). Le CM1 lit un **cadran moins aidé** (`chiffres: quarts`, puis
+`aucun`), et ses durées sont **à la minute près, en heures et minutes, avec passage d'une ou plusieurs heures**.
+
+| #    | Point   | Sous-notion        | Modèle                               | Variations, plages                                                                                                                                                                                                          |
+| ---- | ------- | ------------------ | ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 8a-1 | CM1-092 | lecture de l'heure | Quelle heure est-il ? (cadran nu)    | V1 `chiffres: quarts`, à la minute ; V2 `chiffres: aucun`, à la minute ; V3 « c'est l'après-midi », `chiffres: quarts`, réponse 13 h à 23 h 59                                                                              |
+| 8a-2 | CM1-093 | lecture de l'heure | Place les aiguilles (cadran nu)      | V1 `placer:` à la minute, `chiffres: quarts` ; V2 heure de l'après-midi écrite 13 h à 23 h (« 15 h 37 ») ; V3 `chiffres: aucun`                                                                                             |
+| 8a-3 | CM1-094 | calcul de durées   | Durée entre deux horloges (h et min) | V1 moins d'une heure, à cheval sur l'heure, à la minute (8 h 52 → 9 h 17) : réponse en min ; V2 de 1 h à 3 h 59 (8 h 52 → 11 h 37) : h et min ; V3 l'après-midi, `cadran: 24`                                               |
+| 8a-4 | CM1-166 | calcul de durées   | Quelle durée est la plus longue ?    | Deux activités, deux paires d'horloges, durées en h et min à la minute ; V1 écart de 1 à 9 min ; V2 « elles durent autant » possible. Case « choix » à trois issues                                                         |
+| 8a-5 | CM1-095 | calcul de durées   | Problèmes de durées                  | V1 heure d'arrivée (départ + durée h min, à la minute) ; V2 heure de départ (arrivée − durée) ; V3 deux étapes (trajet, arrêt, trajet) ; V4 jours et heures (départ lundi 21 h, 14 h de trajet : quel jour, quelle heure ?) |
+
+Forme commune : une case par nombre, l'unité après la case (`$?~\text{h}~?~\text{min}$`), comme au CE2 ; 166 en case
+« choix » (« le film », « le match », « ils durent autant »). Corrigé : l'axe des instants intermédiaires (« de 8 h 52
+à 9 h : 8 min ; de 9 h à 11 h : 2 h ; de 11 h à 11 h 37 : 37 min »), jamais une soustraction posée en base soixante.
+Specs d'erreurs typiques : aiguilles échangées (lire la petite comme la grande), l'heure suivante lue trop tôt (8 h 55
+lu 9 h 55), soustraction décimale (11,37 − 8,52 → 2 h 85), minutes au-delà de 59, 12 h ajoutée à tort.
+
+Questions :
+
+1. **Cadran nu** (8a-1, 8a-2) : `chiffres: quarts` puis `aucun` pour distinguer le CM1 du CE2, qui lit déjà à la
+   minute près. Reco : **oui**.
+2. **Jours et heures** (8a-5 V4) : le BO cite l'unité « jour » ; une variation qui passe minuit (jour de la semaine
+   - heure). Reco : **oui**, une variation.
+3. **166** : case « choix » à trois issues, dont « ils durent autant ». Reco : **oui**.
+4. **Niveaux** : même règle qu'au lot 7, le niveau qui suit le modèle CE2 de même geste dans le nœud, partagé, sans
+   renuméroter ; relevés de nouveau juste avant la création. Reco : **oui**.
+
+**Question d'accès** : brouillons, puis migration nœud + tag → **personne** ne gagne d'accès.
+
+### 21 bis. Lot 8a : réponse de David (2026-11-17)
+
+« je te suis » : les quatre recommandations du § 21. 1. **cadran nu** (`chiffres: quarts`, puis `aucun`) pour lire et
+placer ; 2. une variation **jours et heures** (8a-5 V4) ; 3. 166 en case « choix » à **trois issues** ; 4. **niveaux** :
+celui qui suit le modèle CE2 de même geste dans le nœud, partagé, sans renuméroter.
+
+### 21 ter. Lot 8a — écriture (2026-11-17)
+
+- Script `docs/wip/questions/lot-cm1-8a.py` → `scripts/questions/cm1-8a/` (5 JSON, 15 variations). Niveaux : lecture
+  de l'heure 6 (lire, après CE2 `0d41a45e` 5) et 8 (placer, après CE2 `c06fe751` 7) ; calcul de durées 6 (durée entre
+  deux horloges, après CE2 `4c75f053` 5), 8 (comparer, après CE2 `19c370bd` 7), 5 (problèmes, après CE2 `ba8f2f75`
+  4). À relever de nouveau avant la création en prod.
+- Minutes écrites sur deux chiffres (`8 h 04`, forme `{{if:m<10|0{{m}}|{{m}}}}` du modèle 6e `6-grandeurs/12`) ;
+  ⚠️ **« 04 » tapé dans une case était jugé « forme non optimale » (½ point)** par la règle de superflu `zeros`, même
+  avec une réponse attendue `04` : `options.constraints.zeros: off` sur les 5 modèles (comme `ce1-4/02`), spec « 04 »
+  verte. Les modèles CE2 d'horloge écrivent « 9 h 5 » et gardent la règle : un élève qui tape « 05 » y a ½ point.
+- Corrigés par instants intermédiaires (heure pleine, heures entières, minutes), jamais de soustraction en base
+  soixante ; la V3 des problèmes signale chaque passage d'heure pleine (`passe`). V4 : le car passe minuit ou non
+  (`jr` = 0 ou 1) ; le 3e jour proposé n'est jamais le bon (leurre).
+- `question:specs` 300 tirages par variation : 4 500 / 4 500, 56 specs vertes ; `sonde-horloges` : 1 200 blocs,
+  0 problème ; `create-questions` en simulation (prod) : 5 « à créer ».
+- Base locale (copie du dossier, `.env.local`, sous `scripts/with-db-lock.sh`), aperçu admin à 390 px (Playwright,
+  port 5178) : les 15 variations vues, cadrans nus, horloge à placer, quatre horloges légendées, cases + choix du jour.
+
+### 21 quater. Lot 8a — fichiers mergés (2026-11-17)
+
+- #2782 mergée (CI verte), branche supprimée ; worktree détaché sur `main`.
+
+### 21 quinquies. Lot 8a — création en prod et rangement (2026-11-17)
+
+- #2782 mergée. `create-questions --dir scripts/questions/cm1-8a --publier` lancé (ids écrits dans le worktree) : 5 brouillons CM1
+  (relevé : draft, niveaux 6, 8, 6, 8, 5 comme écrits, sans nœud ni tag). Ids commités sur
+  `feat/questions-cm1-lot8a-rangement`.
+- Relevé `etat-prod-2026-11-17-cm1-8a/` (`releve-prod-cm1.ts`), script `lot-cm1-8a-rangement.py` (gabarit 7) →
+  migration `20261117210204_questions_cm1_lot8a_rangement_tags` + fixture : 5 rangés sous « Grandeurs et mesures ›
+  Durées » (lecture de l'heure : 9e655e1a → 092, dd81eefb → 093 ; calcul de durées : f3f00294 → 094, cdec9199 →
+  166, 68134013 → 095), 5 tags posés, aucun niveau ni statut changé.
+- Test `questions-cm1-lot8a-rangement-tags.test.ts` : 20/20 vert ; corps neutralisé (`select 1;`) : 9 échecs + suite
+  principale sautée. `types:cliquet` tenu ; `security-auditor` : aucun finding (diff avec le lot 7 : données,
+  compteurs, préfixe `_qcm1l8a_` ; état « avant » remesuré au MCP).
+
+### 21 sexies. Lot 8a — rangement mergé (2026-11-17)
+
+- #2785 mergée (CI verte, `check:migrations --pr 2785` passé), branche supprimée ; worktree détaché sur `main`.
+- MCP : `20261117210204` est la seule migration en attente (les 72 depuis le 2026-11-11 sont passées).
+
+### 21 septies. Lot 8a — migration passée, page à cocher (2026-11-17)
+
+- Vérifié au MCP : `20261117210204` dans `schema_migrations` ; 5 brouillons CM1 sous « Durées », chacun avec son tag
+  (lecture de l'heure : 9e655e1a → 092, dd81eefb → 093 ; calcul de durées : f3f00294 → 094, cdec9199 → 166,
+  68134013 → 095).
+- `page-a-cocher.ts --dir scripts/questions/cm1-8a` : 5 fiches (15 exemples), aucune alerte. Page :
+  https://claude.ai/artifact/XV275GWdRMSihZBrJKzUw1 (`verdicts`, capacité `db`, vide).
+
+### 21 octies. Lot 8a — publié (2026-11-17)
+
+- Page à cocher : 5 « OK » sur 5, aucun commentaire. `garde-niveaux-tags`, `publier-lot --dir scripts/questions/cm1-8a`
+  (simulation) et `--publier` lancés par David. Vérifié au MCP : 5 modèles `published`.
+- Recompte MCP : **131 points du CM1 sur 171** ont un modèle publié (126 + les 5 du lot).
+- Reco proposée à David (sans réponse) : corriger `zeros` dans les modèles CE1 / CE2 publiés où l'élève TAPE des
+  minutes (12 modèles à horloge, aucun en `zeros: off` ; trier : pas « Place les aiguilles » ni les QCM), lot
+  `update-published-questions` comme `totaux-ce`, spec « 05 » = point entier ; ne pas réécrire l'affichage « 9 h 5 ».
+  Puis 8b.
+
+### 21 neuvies. Horloges CE : « 05 » au point entier (2026-11-17)
+
+- Go de David (« oui ») sur la reco du § 21 octies. Tri par sonde (600 tirages par modèle, réponse attendue préfixée
+  d'un 0) des 12 modèles CE1 / CE2 publiés à horloge : seuls **2** ont une case où l'élève écrit une HEURE et où
+  « 05 » valait ½ point (`zeros`) : CE2 `0d41a45e` « Quelle heure est-il ? (heures et minutes) » V1 à V3, CE2
+  `71741618` « Dire l'heure et l'écrire en chiffres » V2, V3. Hors champ : cases de choix, heure seule, durées en
+  minutes (« 05 min » reste ½ point) ; durées « ? h ? min » (`4c75f053` V4, `2370bc8d` V2) laissées telles quelles.
+- `options.constraints.zeros: off` sur les 2 modèles (l'heure « 07 » a aussi le point entier) ; 8 specs (« 05 »,
+  « 04 », « 00 », « 07 », « 08 » au point entier ; « 5 » juste aussi). Preuve rouge : sans l'option, 6 specs en
+  `unoptimal_form zeros` ; avec, 18/18 et 18/18.
+- Lot `horloges-ce-zeros` de `update-published-questions.ts` (instantané `scripts/questions/ce-horloges-zeros/`,
+  commit à part). Simulation en prod : `options` et `testSpecs` seuls. Écriture en prod : à lancer par David.
+- #2792 mergée (CI verte), branche supprimée ; worktree détaché sur `main`. `--publier` lancé par David ; vérifié au
+  MCP : `0d41a45e` et `71741618` `published`, `options.constraints.zeros: off`, 18 specs chacun.
+
+## 22. Lot 8b — aires et angles : phase 0 (à valider, 2026-11-17)
+
+Relevé MCP : aucun modèle sur 086 à 091, **ni sur leurs jumeaux CM2** (071, 072, 076, 077, 078, mêmes intitulés),
+aucun brouillon. **Aucun modèle d'aire sur quadrillage, à aucun niveau** : les « aires 6e » du § 20 sont des calculs
+par formule, interdits au CM1 (bornes). Patrons réels : CE1 `bbb43bf4` « Angle droit, aigu ou obtus ? »
+(`ce1-9/09`, bloc `figure` + `grille: oui` + `angle()` + `choix`) ; polygones coloriés (`polygone(…, remplissage=…)`)
+déjà en prod. Les 6 points sont en **B** (bloc `figure` seul, rien à créer).
+
+Rangement : 086, 087, 089, 090 sont sur les notions **Aires** et **Angles** ; 088 sur la sous-notion **unités et
+conversions** (d'Aires) ; 091 sur **comparaison** (d'Angles). Les sous-notions d'Aires sont toutes « par formule »
+(carré, rectangle, disque…) : aucune ne va aux aires sur quadrillage.
+
+Bornes (cycle3) : 086 sans mesure (superposition, découpage-recollement) ; 087 unité fournie, carreaux entiers et
+demi-carreaux ; 088 le cm² seul ; 089 sommet, côtés, angle droit, aigu, obtus ; 090 notations â, ABC chapeau, Â ;
+091 sans mesure, pas de degré.
+
+| #   | Point | Modèle (titre)                     | Variations                                                                                                                                                         | Réponse                 | Rangement             |
+| --- | ----- | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------- | --------------------- |
+| 1   | 086   | Comparer les aires de deux figures | V1 aires nettement différentes ; V2 même aire, formes différentes (l'une est l'autre découpée et recollée) ; V3 la figure au plus grand tour a la plus petite aire | choix : A, B, égales    | Aires                 |
+| 2   | 087   | Aire en carreaux                   | V1 polygone en carreaux entiers (6 à 20) ; V2 avec des demi-carreaux ; V3 unité fournie = un domino de 2 carreaux                                                  | nombre d'unités         | Aires                 |
+| 3   | 088   | Aire en centimètres carrés         | V1 carreaux de 1 cm entiers ; V2 avec des demi-carreaux ; V3 deux figures, « combien de cm² de plus ? »                                                            | nombre, « cm² » affiché | unités et conversions |
+| 4   | 089   | Sommet, côtés et nature d'un angle | V1 nommer le sommet ; V2 nommer les deux côtés ; V3 droit, aigu ou obtus (sans quadrillage, côtés de longueurs différentes)                                        | lettre ; choix          | Angles                |
+| 5   | 090   | Noter un angle                     | V1 angle marqué → sa notation parmi 3 ($\widehat{ABC}$, $\widehat{BAC}$, $\widehat{ACB}$) ; V2 notation → sommet ; V3 notation → quel angle marqué (couleurs)      | choix ; lettre          | Angles                |
+| 6   | 091   | Comparer deux angles               | V1 deux angles, côtés courts au plus grand (piège) ; V2 comparer à l'angle droit ; V3 ranger trois angles                                                          | choix                   | comparaison           |
+
+Corrigés : 086 superposition / découpage-recollement, puis compte des carreaux pour vérifier ; 087-088 compte par
+lignes, deux demi-carreaux font un carreau ; 089-091 avec le coin de l'équerre comme gabarit.
+
+**Question d'accès** (migration nœud + tag) : personne ne pourra lire quelque chose qu'il ne pouvait pas lire
+avant. Les modèles publiés sont lus comme les autres ; la migration ne fait que les ranger et les taguer.
+
+**Questions à David** :
+
+1. Les 6 modèles et leurs variations : OK ?
+2. Aires sur quadrillage (modèles 1 et 2) : les ranger directement sous **Aires**, ou créer une sous-notion
+   « aires sur quadrillage » (pour CM1, CM2, et plus tard le CE2 s'il en a) ? Reco : la sous-notion, sinon les
+   modèles « par formule » et « par comptage » se mélangent sous Aires.
+3. Jumeaux CM2 (mêmes intitulés, aucun modèle) : niveaux « CM1 et CM2 » et tags sur les deux points ? Reco :
+   oui pour 086, 087, 089, 090, 091 (c'est le même attendu au CM2) ; non pour 088 (le CM2 ajoute dm² et m²).
+
+### 22 bis. Lot 8b : décisions (David, 2026-11-18)
+
+- « go » sur les 6 modèles du § 22.
+- Rangement : **nouvelle sous-notion « aires sur quadrillage »** sous Aires (modèles 1 et 2) ; créée par la
+  migration nœud + tag.
+- Jumeaux CM2 : niveaux **CM1 et CM2**, tag sur les deux points pour 086/071, 087/072, 089/076, 090/077, 091/078 ;
+  le 088 (cm²) reste CM1 seul.
+
+### 22 ter. Lot 8b — écrit (2026-11-18)
+
+- Script `docs/wip/questions/lot-cm1-8b.py` → `scripts/questions/cm1-8b/` (6 modèles, niveaux 1, 2, 1, 1, 2, 1 ;
+  grades CM1 + CM2 sauf 03, CM1 seul). Formes sur quadrillage en catalogue (aire et carreaux entiers / demi-carreaux
+  calculés et vérifiés par le script) ; angles par `point(S, longueur=…, angle=…)`, marques `angle()` saillantes.
+- `question:specs` : 6/6 importables, 48 specs ; `sonde-figures` 300 tirages par modèle, 0 problème.
+- Pièges vus : une `validationRules` custom dont l'expression contient un `{{if:}}` imbriqué rend la bonne réponse
+  fausse (retirée) ; couleur d'un corrigé hors `$` refusée par `question:specs` ; deux figures côte à côte
+  (fenêtre 19 × 7) donnent des carreaux de 13 px à 390 px → **figures empilées** (A en haut, B en bas ; angles
+  l'un au-dessus de l'autre).
+- Base locale (copies à une variation par modèle, 18 brouillons d'essai) : les 18 variations vues à 390 px
+  (Playwright, port 5177), sans défilement horizontal, réponses attendues justes. Reste : noms des points petits
+  (8 px), sans option de taille → `outils-manquants.md` n° 37.
+- PR #2803 (fichiers seuls, revue : aucune, contenu). 1re CI rouge : `student-answer-safety` abîmait deux réponses
+  attendues en `{{if:}}` imbriqué sur 8 et 10 niveaux → variable calculée `n` (indicatrices, helper `table`) ; CI
+  verte, mergée le 2026-11-18.
+- `--publier` (2026-11-18) refusé : homonyme « Le vocabulaire des angles », niveau 1, déjà en base pour la **6e**
+  (`c8741112`, lot 11a : angle plat, adjacents, opposés, supplémentaire — autre contenu). **David : renommer le
+  modèle CM1** → « Sommet, côtés et nature d'un angle » (JSON, générateur, tableau du découpage).
+
+### 22 quater. Lot 8b — création en prod et rangement (2026-11-18)
+
+- #2806 mergée (renommage). `create-questions --dir scripts/questions/cm1-8b --publier` lancé depuis le worktree :
+  6 brouillons (d623374d, 31d64c00, 614048c9, 8da9f669, 4c1ce174, 97f2374b), ids commités sur
+  `feat/questions-cm1-lot8b-rangement`.
+- Relevé `etat-prod-2026-11-18-cm1-8b/` (6 draft, sans nœud ni tag ; « aires sur quadrillage » absente), script
+  `lot-cm1-8b-rangement.py` (gabarit 8a + sous-notion neuve façon TSPE 11) → migration
+  `20261118071618_questions_cm1_lot8b_rangement_tags` + fixture : sous-notion « aires sur quadrillage » créée en fin
+  d'Aires (d623374d, 31d64c00) ; 614048c9 → unités et conversions ; 8da9f669, 4c1ce174 → Angles ; 97f2374b →
+  comparaison ; 11 tags posés (CM1-086 à 091, CM2-071, 072, 076, 077, 078), aucun niveau ni statut changé.
+- Test `questions-cm1-lot8b-rangement-tags.test.ts` : 23/23 vert ; corps neutralisé (`select 1;`) : 14 échecs,
+  8 sautés. `types:cliquet` tenu.
+- `security-auditor` : aucun finding bloquant (état « avant » remesuré au MCP). Non bloquant : la garde du rollback ne
+  regarde pas `exercise_classifications`, `student_mathoux`, `student_combat_moves` (clés RESTRICT : échec net, rien
+  perdu) → à ajouter au générateur pour les prochains lots à sous-notion neuve.
+- 1re CI rouge : la sous-notion neuve change l'arbre → `arbre-notions-seed.json`, `seed-classification-nodes` (484),
+  `later-migrations.ts` (`QUESTIONS_CM1_LOT8B`), comme la TSPE 15. CI verte, #2812 mergée, `check:migrations` passé.
+- Base locale en retard (10 migrations ; `5_lot11_blockly` d'une autre session refuse de s'y rejouer) : non touchée.
+
+### 22 quinquies. Lot 8b — migration passée, page à cocher (2026-11-18)
+
+- `db:migrate --include-all` lancé par David depuis le worktree (`074731` du CM2 lot 10 déjà jouée avant). Vérifié
+  au MCP : `20261118071618` jouée ; « aires sur quadrillage » position 7 sous Aires ; 6 brouillons sur leur nœud,
+  11 tags, `updated_at` inchangé.
+- `page-a-cocher.ts --dir scripts/questions/cm1-8b` : 6 fiches (18 exemples), aucune alerte. Page :
+  https://claude.ai/artifact/W1USbwFanqqcyE3o9t4afJ (`verdicts`, capacité `db`, vide).
+
+### 22 sexies. Lot 8b — publié (2026-11-18)
+
+- Page à cocher : 6 « OK » sur 6, aucun commentaire. `garde-niveaux-tags`, `publier-lot --dir scripts/questions/cm1-8b`
+  (simulation) et `--publier` lancés par David. Vérifié au MCP : 6 modèles `published`.
+- Recompte MCP : **137 points du CM1 sur 171** ont un modèle publié (131 + 6) ; CM2 : 92 sur 158.
+
+## 23. Lot 8c — géométrie plane : phase 0 (à valider, 2026-11-18)
+
+Relevé MCP : aucun modèle, ni brouillon, sur 098, 099, 100, 101, 102, 103, 106, **ni sur leurs jumeaux CM2**
+(088 codes, 089 perpendiculaires, 090 parallèles, 091 cercle, 092 figures, 093 propriétés ; le CM2 n'a pas de point
+« axes de symétrie »). Les 7 points sont en **B** : le bloc `figure` a tout ce qu'il faut (`arc`, `angle(…,
+marque="carre")`, `marque_segment(…, traits=2)`, `perpendiculaire`, `parallele`, figures dans un ` ```choix `).
+
+Chaque point est déjà posé sur un nœud ; le modèle se range sur ce nœud (règles de l'ADR 0020 tenues) :
+098, 102, 103 → **propriétés** (Figures planes) ; 099 → **cercle** ; 100, 101 → **perpendiculaires et parallèles** ;
+106 → **Symétrie axiale** (notion).
+
+Patrons en prod : CE2 `77728742` (code des longueurs), `29c06264` (code de l'angle droit), `c2eb20cb` (quelle est
+cette figure ?), `949dd113` (propriétés carré, rectangle, losange), `79e8e279` et `b307a9f9` (axes) ; 6e `b8939937`
+(cercle, disque, rayon, diamètre, corde).
+
+Bornes (cycle3) : 098 codes de l'angle droit et des longueurs égales (pas d'angles égaux ni ⊥, //, qui sont CM2) ;
+099 disque, cercle, centre, rayon, diamètre, corde, arc ; 100, 101 sans borne propre ; 102 triangle, triangle
+rectangle, isocèle, équilatéral, quadrilatère, carré, rectangle, losange (**pas** de trapèze, pentagone, hexagone) ;
+103 mêmes figures, côtés opposés parallèles, longueurs et angles égaux ; 106 sans borne propre.
+
+| #   | Point | Modèle (titre)                                 | Variations                                                                                                                                                                                                                                        | Réponse        | Rangement                      | Niv. |
+| --- | ----- | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------- | ------------------------------ | ---- |
+| 1   | 098   | Lire les codes d'une figure                    | V1 figure à 4 côtés, un angle droit codé → quel angle est droit ? ; V2 deux paires de côtés codées (un trait, deux traits), [AB] = 5 cm → combien mesure [CD] ? (piège : l'autre paire) ; V3 quelle phrase disent les codes ?                     | choix ; nombre | propriétés                     | 3    |
+| 2   | 099   | Cercle, disque, rayon, diamètre, corde, arc    | V1 un trait coloré sur un cercle de centre O → son nom (rayon, diamètre, corde, arc) ; V2 cercle ou disque ? ; V3 cercle de centre O, rayon 3 cm, et OA, OB, OC donnés → quel point est sur le cercle ? ; V4 rayon ↔ diamètre (entiers, 2 à 9 cm) | choix ; nombre | cercle                         | 1    |
+| 3   | 100   | Ces droites sont-elles perpendiculaires ?      | V1 deux droites qui se coupent : perpendiculaires ou non (non : au moins 15° d'écart avec l'angle droit) ; V2 trois dessins → lequel montre des perpendiculaires ? ; V3 quatre droites (d1)…(d4) → laquelle est perpendiculaire à (d1) ?          | choix          | perpendiculaires et parallèles | 1    |
+| 4   | 101   | Ces droites sont-elles parallèles ?            | V1 deux droites : parallèles ou non (non : écart qui se resserre nettement) ; V2 trois dessins → lequel ? ; V3 quatre droites → laquelle est parallèle à (d1) ? (piège : une presque parallèle)                                                   | choix          | perpendiculaires et parallèles | 2    |
+| 5   | 102   | Quelle est cette figure ? (avec sa définition) | V1 figure codée (pas en vraie grandeur) → son nom le plus précis ; V2 une définition (« un quadrilatère qui a 4 angles droits ») → son nom ; V3 pièges : carré posé sur la pointe, triangle équilatéral pointe en bas                             | choix          | propriétés                     | 1    |
+| 6   | 103   | Propriétés des figures usuelles                | V1 quelle phrase est vraie ? (côtés opposés parallèles, côtés égaux, angles droits) ; V2 rectangle ou losange ABCD nommé → quel côté est parallèle à [AB] ? ; V3 triangle isocèle en A ou équilatéral → quel côté a la même longueur que [AB] ?   | choix          | propriétés                     | 2    |
+| 7   | 106   | Les axes de symétrie des figures usuelles      | V1 combien d'axes ? (carré 4, rectangle 2, losange 2, équilatéral 3, isocèle 1, quadrilatère quelconque 0) ; V2 quelle figure n'a aucun axe ? ; V3 la diagonale d'un rectangle est-elle un axe ? (piège classique ; le carré pour le « oui »)     | nombre ; choix | Symétrie axiale                | 3    |
+
+Corrigés : 098 « un petit carré = angle droit ; même nombre de traits = même longueur » ; 099 le centre, le rayon
+du centre au cercle, le diamètre = deux rayons, la corde relie deux points du cercle, l'arc est un morceau du cercle ;
+100-101 avec l'équerre (le coin) ou en mesurant l'écart à deux endroits ; 102-103 par la définition (côtés, angles) ;
+106 par pliage (les deux moitiés se superposent). Le cercle (une infinité d'axes) est laissé de côté au 106.
+
+**Question d'accès** (migration nœud + tag) : personne ne pourra lire quelque chose qu'il ne pouvait pas lire
+avant. Les modèles publiés sont lus comme les autres ; la migration ne fait que les ranger et les taguer, sur des
+nœuds qui existent déjà (pas de sous-notion neuve).
+
+**Questions à David** :
+
+1. Les 7 modèles et leurs variations : OK ?
+2. Jumeaux CM2 : niveaux « CM1 et CM2 » et tag sur les deux points pour 099/091, 100/089, 101/090 (mêmes intitulés) ?
+   Et CM1 seul pour 098, 102, 103 (le CM2 ajoute angles égaux, ⊥, // ; trapèze, pentagone, hexagone) ? Reco : oui
+   (même règle qu'au 8b pour le cm²).
+3. Écrire des modèles CM1 plutôt que d'ajouter le CM1 aux modèles CE2 (codes, axes) et 6e (cercle) qui existent ?
+   Reco : écrire. Les CE2 ne voient qu'un code à la fois et pas les triangles ; le 6e prend des rayons à virgule et
+   n'a pas l'arc.
+
+### 23 bis. Lot 8c : décisions (David, 2026-11-18)
+
+« ok » sur les trois questions du § 23 :
+
+- les 7 modèles et leurs variations ;
+- niveaux **CM1 et CM2**, tag sur les deux points pour 099/091, 100/089, 101/090 ; **CM1 seul** pour 098, 102, 103, 106 ;
+- modèles CM1 écrits (pas de CM1 ajouté aux modèles CE2 et 6e existants).
+
+### 23 ter. Lot 8c — écrit (2026-11-18)
+
+- Script `docs/wip/questions/lot-cm1-8c.py` → `scripts/questions/cm1-8c/` (7 modèles, niveaux 3, 1, 1, 2, 1, 2, 3 ;
+  grades CM1 + CM2 pour 02, 03, 04, CM1 seul sinon). Figures en catalogue, vérifiées par le script (angles droits
+  codés exacts, autres angles à plus de 14° de l'angle droit, côtés codés égaux, côtés non codés nettement
+  différents).
+- `question:specs` : 7/7 importables, 56 specs ; `sonde-figures` 300 tirages par modèle, 0 problème (elle ne sonde
+  pas les dessins d'une case choix : vus dans l'aperçu). Simulation `create-questions` contre la prod : 7 « à
+  créer », aucun homonyme.
+- Base locale (copies à une variation par modèle, 22 brouillons d'essai) : les 22 variations vues à 390 px
+  (Playwright, port 5178), sans défilement horizontal ni erreur de console.
+
+### 23 quater. Lot 8c — création en prod et rangement (2026-11-18)
+
+- #2823 mergée. `create-questions --dir scripts/questions/cm1-8c --publier` lancé par David depuis le worktree :
+  7 brouillons (6108cc4c, f988f07a, 54c0f87f, 265ed3cc, 273dce6f, 20907b18, f521ccf8), ids commités sur
+  `feat/questions-cm1-lot8c-rangement`.
+- Relevé `etat-prod-2026-11-18-cm1-8c/` (7 draft, sans nœud ni tag), script `lot-cm1-8c-rangement.py` (gabarit 8a) →
+  migration `20261118115830_questions_cm1_lot8c_rangement_tags` + fixture : 6108cc4c, 273dce6f, 20907b18 →
+  propriétés ; f988f07a → cercle ; 54c0f87f, 265ed3cc → perpendiculaires et parallèles ; f521ccf8 → Symétrie
+  axiale ; 10 tags posés (CM1-098 à 103, 106 ; CM2-091, 089, 090), aucun niveau ni statut changé, aucun nœud créé.
+- Test `questions-cm1-lot8c-rangement-tags.test.ts` : 20/20 vert ; corps neutralisé (`select 1;`) : 9 échecs,
+  7 sautés. `types:cliquet` tenu.
+- `security-auditor` : aucun finding bloquant (état « avant » remesuré au MCP : 7 draft, nœud null, 0 tag ; seule
+  migration en attente). Non bloquant : verrou bref du `disable trigger` (comme au 8a).
+
+### 23 quinquies. Lot 8c — migration passée, page à cocher (2026-11-18)
+
+- `db:migrate` lancé par David depuis le worktree (seule migration en attente). Vérifié au MCP : `20261118115830`
+  jouée ; 7 brouillons sur leur nœud, 10 tags, `updated_at` inchangé.
+- `page-a-cocher.ts --dir scripts/questions/cm1-8c` : 7 fiches (21 exemples), aucune alerte. Page :
+  https://claude.ai/artifact/Snbe4QU13vJmw7qSfzQzS9 (`verdicts`, capacité `db`, vide).

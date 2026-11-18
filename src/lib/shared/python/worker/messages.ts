@@ -6,8 +6,8 @@
  */
 
 import { z } from 'zod';
-import { MAX_CATEGORIES, MAX_CATEGORY_LENGTH, MAX_LIST_VALUES } from '$lib/atelier/types';
-import { MAX_PYTHON_NAME_LENGTH } from '$lib/atelier/from-python';
+import { MAX_CATEGORIES, MAX_CATEGORY_LENGTH, MAX_LIST_VALUES } from '#lib/atelier/types.ts';
+import { MAX_PYTHON_NAME_LENGTH } from '#lib/atelier/from-python.ts';
 
 // =============================================================================
 // Base Schemas
@@ -704,7 +704,7 @@ const pythonEntrySchema = z.union([z.number(), z.string().max(MAX_CATEGORY_LENGT
 
 /**
  * « Ouvrir dans l'atelier » : les listes que le programme a affectées
- * (`$lib/atelier/from-python`, `PythonListReport`), bornées aux plafonds de
+ * (`#lib/atelier/from-python.ts`, `PythonListReport`), bornées aux plafonds de
  * l'atelier — ce que le worker envoie vient d'un programme de l'élève.
  */
 export const atelierListsMessageSchema = z.object({

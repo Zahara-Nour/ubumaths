@@ -15,12 +15,12 @@
  * @module questions/generator/correction-resolver
  */
 
-import type { RandomSource } from '$lib/utils/random';
-import type { GenericFunctionConfig } from '$lib/mathAST';
-import type { CapitalPairs } from '$lib/mathAST/parser/types';
+import type { RandomSource } from '#lib/utils/random.ts';
+import type { GenericFunctionConfig } from '#lib/mathAST/index.ts';
+import type { CapitalPairs } from '#lib/mathAST/parser/types.ts';
 import type { ResolvedVariable, InstanceBlank } from '../types';
-import type { TemplateMarkdown, ResolvedMarkdown } from '$lib/ubumark';
-import { templateMarkdown, resolvedMarkdown } from '$lib/ubumark';
+import type { TemplateMarkdown, ResolvedMarkdown } from '#lib/ubumark/index.ts';
+import { templateMarkdown, resolvedMarkdown } from '#lib/ubumark/index.ts';
 import { resolveMarkdownContent, resolveVariableConditionals } from './content-resolver';
 import { parseChoiceAnswer } from '../choice-case';
 

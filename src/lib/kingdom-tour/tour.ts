@@ -12,8 +12,8 @@
  * @module kingdom-tour/tour
  */
 
-import type { RequiredForm, ValidationStatus } from '$lib/questions/types';
-import { lore } from '$lib/config/lore';
+import type { RequiredForm, ValidationStatus } from '#lib/questions/types.ts';
+import { lore } from '#lib/config/lore.ts';
 
 // Types
 

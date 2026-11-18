@@ -2,7 +2,7 @@
 	Diaporama (`/dev/diaporama`)
 	============================
 
-	Banc d'essai de `$lib/slides`. Fusion des trois anciennes pages publiques
+	Banc d'essai de `#lib/slides/index.ts`. Fusion des trois anciennes pages publiques
 	`/slides/demo` (plein écran), `/slides/demo-embedded` (dans un cadre, taille
 	réglable) et `/slides/test-transitions` : les diapositives sont écrites une
 	fois (`DemoDeck`), seul l'affichage change.
@@ -12,7 +12,7 @@
 	plein écran est un conteneur fixe par-dessus la page.
 -->
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import DemoDeck from './DemoDeck.svelte';
 	import TransitionsDeck from './TransitionsDeck.svelte';
 
@@ -53,7 +53,7 @@
 	<header class="space-y-2">
 		<h1 class="text-3xl font-bold">Diaporama</h1>
 		<p class="text-muted-foreground">
-			Les diapositives de démonstration de <code>$lib/slides</code>, en plein écran ou dans un cadre
+			Les diapositives de démonstration de <code>#lib/slides</code>, en plein écran ou dans un cadre
 			de taille réglable, et une diapositive par transition.
 		</p>
 	</header>

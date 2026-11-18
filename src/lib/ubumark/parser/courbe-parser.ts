@@ -71,14 +71,14 @@ import type {
 	CourbeWindow
 } from '../types/courbe';
 import { COURBE_LIMITS, COURBE_SIZES, courbeRangeProblem } from '../types/courbe';
-import { resolveNamedColor } from '$lib/theme/named-colors';
-import type { MathNode } from '$lib/mathAST/types';
-import { parseCustom } from '$lib/mathAST/parser/custom';
-import { compile } from '$lib/mathAST/eval/compile';
-import { transformAST } from '$lib/mathAST/visitor';
-import { variable } from '$lib/mathAST/factory';
-import { differentiate } from '$lib/mathAST/differentiation';
-import { computeSequenceTerms, PREV_TERM_VARIABLE } from '$lib/grapheur/sequence';
+import { resolveNamedColor } from '#lib/theme/named-colors.ts';
+import type { MathNode } from '#lib/mathAST/types.ts';
+import { parseCustom } from '#lib/mathAST/parser/custom/index.ts';
+import { compile } from '#lib/mathAST/eval/compile.ts';
+import { transformAST } from '#lib/mathAST/visitor.ts';
+import { variable } from '#lib/mathAST/factory.ts';
+import { differentiate } from '#lib/mathAST/differentiation/index.ts';
+import { computeSequenceTerms, PREV_TERM_VARIABLE } from '#lib/grapheur/sequence.ts';
 import { isGridNode, isInWindow, courbeGridSteps } from '../utils/courbe-placer';
 import { lineCoefficients, lineNodes } from '../utils/courbe-tracer';
 import { vectorProblem } from '../utils/courbe-vecteur';

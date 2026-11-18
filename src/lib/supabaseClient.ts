@@ -30,8 +30,8 @@
  * See the official guide: https://supabase.com/docs/systeme/auth/server-side/sveltekit
  */
 import { createClient } from '@supabase/supabase-js';
-import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
-import type { Database } from '$lib/types/database';
+import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$app/env/public';
+import type { Database } from '#lib/types/database.ts';
 
 // ⚠️ DEPRECATED - See comment above before using
 export const supabase = createClient<Database>(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY);

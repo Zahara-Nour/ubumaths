@@ -15,10 +15,10 @@
 	- Shows error for students without consent (read-only mode)
 -->
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import * as Alert from '$lib/components/ui/alert';
+	import { lore } from '#lib/config/lore.ts';
+	import * as Alert from '#lib/components/ui/alert/index.ts';
 	import { Clock, ShieldAlert } from '@lucide/svelte';
-	import type { ConsentStatus } from '$lib/utils/consent';
+	import type { ConsentStatus } from '#lib/utils/consent.ts';
 
 	interface Props {
 		consentStatus: ConsentStatus;

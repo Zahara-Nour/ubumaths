@@ -1,0 +1,372 @@
+{
+	"id": "0d011693-ed91-424e-b869-2947404bdd3a",
+	"title": "Relations entre fractions usuelles",
+	"description": "Un demi, un quart, trois quarts en fractions décimales (3/4 = ?/100) ; unité, dixième, centième en millièmes ; sommes et différences en quarts (1 − 3/4 = ?/4)",
+	"grades": ["CM2"],
+	"level": 9,
+	"delay": 20,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Complète.\n\n$$\\frac{{{p}}}{{{q}}} = \\frac{?}{{{D}}}$$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..7"
+				},
+				{
+					"name": "p",
+					"expression": "{{if:k==1|1|{{if:k==2|1|{{if:k==3|1|{{if:k==4|1|{{if:k==5|1|{{if:k==6|3|3}}}}}}}}}}}}"
+				},
+				{
+					"name": "q",
+					"expression": "{{if:k==1|2|{{if:k==2|2|{{if:k==3|2|{{if:k==4|4|{{if:k==5|4|{{if:k==6|4|4}}}}}}}}}}}}"
+				},
+				{
+					"name": "D",
+					"expression": "{{if:k==1|10|{{if:k==2|100|{{if:k==3|1\\,000|{{if:k==4|100|{{if:k==5|1\\,000|{{if:k==6|100|1\\,000}}}}}}}}}}}}"
+				},
+				{
+					"name": "r",
+					"expression": "{{if:k==1|5|{{if:k==2|50|{{if:k==3|500|{{if:k==4|25|{{if:k==5|250|{{if:k==6|75|750}}}}}}}}}}}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:k==1|Un demi, c'est cinq dixièmes : $\\frac{1}{2} = \\frac{\\textcolor{{{color:primary.0}}}{5}}{10}$.|{{if:k==2|Un demi, c'est cinquante centièmes : $\\frac{1}{2} = \\frac{\\textcolor{{{color:primary.0}}}{50}}{100}$.|{{if:k==3|Un demi, c'est cinq cents millièmes : $\\frac{1}{2} = \\frac{\\textcolor{{{color:primary.0}}}{500}}{1\\,000}$.|{{if:k==4|Un quart, c'est vingt-cinq centièmes (la moitié de cinquante centièmes) : $\\frac{1}{4} = \\frac{\\textcolor{{{color:primary.0}}}{25}}{100}$.|{{if:k==5|Un quart, c'est deux cent cinquante millièmes (la moitié de cinq cents millièmes) : $\\frac{1}{4} = \\frac{\\textcolor{{{color:primary.0}}}{250}}{1\\,000}$.|{{if:k==6|Trois quarts, c'est trois fois vingt-cinq centièmes : $\\frac{3}{4} = \\frac{\\textcolor{{{color:primary.0}}}{75}}{100}$.|Trois quarts, c'est trois fois deux cent cinquante millièmes : $\\frac{3}{4} = \\frac{\\textcolor{{{color:primary.0}}}{750}}{1\\,000}$.}}}}}}}}}}}}"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\nDans {{mot}}, il y a $?$ {{vise}}.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..6"
+				},
+				{
+					"name": "mot",
+					"expression": "{{if:k==1|une unité|{{if:k==2|une unité|{{if:k==3|une unité|{{if:k==4|un dixième|{{if:k==5|un dixième|un centième}}}}}}}}}}"
+				},
+				{
+					"name": "vise",
+					"expression": "{{if:k==1|dixièmes|{{if:k==2|centièmes|{{if:k==3|millièmes|{{if:k==4|centièmes|{{if:k==5|millièmes|millièmes}}}}}}}}}}"
+				},
+				{
+					"name": "r",
+					"expression": "{{if:k==1|10|{{if:k==2|100|{{if:k==3|1 000|{{if:k==4|10|{{if:k==5|100|10}}}}}}}}}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:k==1|Une unité partagée en dix parts égales : dix dixièmes.|{{if:k==2|Une unité, c'est dix dixièmes, et chaque dixième, dix centièmes : cent centièmes.|{{if:k==3|Une unité, c'est cent centièmes, et chaque centième, dix millièmes : mille millièmes.|{{if:k==4|Un dixième partagé en dix parts égales : dix centièmes.|{{if:k==5|Un dixième, c'est dix centièmes, et chaque centième, dix millièmes : cent millièmes.|Un centième partagé en dix parts égales : dix millièmes.}}}}}}}}}}",
+					"Dans {{mot}}, il y a $\\textcolor{{{color:primary.0}}}{{{r}}}$ {{vise}}."
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n$$\\frac{{{a}}}{{{b}}} {{op}} \\frac{{{c}}}{{{d}}} = \\frac{?}{4}$$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..4"
+				},
+				{
+					"name": "a",
+					"expression": "{{if:k==1|3|{{if:k==2|1|{{if:k==3|3|3}}}}}}"
+				},
+				{
+					"name": "b",
+					"expression": "{{if:k==1|4|{{if:k==2|2|{{if:k==3|4|4}}}}}}"
+				},
+				{
+					"name": "op",
+					"expression": "{{if:k==1|+|{{if:k==2|+|{{if:k==3|-|-}}}}}}"
+				},
+				{
+					"name": "c",
+					"expression": "{{if:k==1|1|{{if:k==2|1|{{if:k==3|1|1}}}}}}"
+				},
+				{
+					"name": "d",
+					"expression": "{{if:k==1|4|{{if:k==2|4|{{if:k==3|2|4}}}}}}"
+				},
+				{
+					"name": "r",
+					"expression": "{{if:k==1|4|{{if:k==2|3|{{if:k==3|1|2}}}}}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:k==1|Trois quarts et un quart font quatre quarts, c'est-à-dire une unité.|{{if:k==2|Un demi, c'est deux quarts ; deux quarts et un quart font trois quarts.|{{if:k==3|Un demi, c'est deux quarts ; trois quarts moins deux quarts, il reste un quart.|Trois quarts moins un quart, il reste deux quarts (un demi).}}}}}}",
+					"$$\\frac{{{a}}}{{{b}}} {{op}} \\frac{{{c}}}{{{d}}} = \\frac{\\textcolor{{{color:primary.0}}}{{{r}}}}{4}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n$$1 - \\frac{{{p}}}{{{q}}} = \\frac{?}{4}$$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..3"
+				},
+				{
+					"name": "p",
+					"expression": "{{if:k==1|3|{{if:k==2|1|1}}}}"
+				},
+				{
+					"name": "q",
+					"expression": "{{if:k==1|4|{{if:k==2|4|2}}}}"
+				},
+				{
+					"name": "r",
+					"expression": "{{if:k==1|1|{{if:k==2|3|2}}}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:k==1|Une unité, c'est quatre quarts ; on en enlève trois, il en reste un.|{{if:k==2|Une unité, c'est quatre quarts ; on en enlève un, il en reste trois.|Une unité, c'est quatre quarts, et un demi, deux quarts : il en reste deux.}}}}",
+					"$$1 - \\frac{{{p}}}{{{q}}} = \\frac{\\textcolor{{{color:primary.0}}}{{{r}}}}{4}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3/4 = ?/100 : 75",
+			"variationIndex": 0,
+			"variables": {
+				"k": "6",
+				"p": "3",
+				"q": "4",
+				"D": "100",
+				"r": "75"
+			},
+			"answers": ["75"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3/4 = 34/100 (chiffres recopiés)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "6",
+				"p": "3",
+				"q": "4",
+				"D": "100",
+				"r": "75"
+			},
+			"answers": ["34"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1/4 = ?/1 000 : 250",
+			"variationIndex": 0,
+			"variables": {
+				"k": "5",
+				"p": "1",
+				"q": "4",
+				"D": "1\\,000",
+				"r": "250"
+			},
+			"answers": ["250"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1/4 = 25/1 000",
+			"variationIndex": 0,
+			"variables": {
+				"k": "5",
+				"p": "1",
+				"q": "4",
+				"D": "1\\,000",
+				"r": "250"
+			},
+			"answers": ["25"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1/2 = ?/100 : 50",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"p": "1",
+				"q": "2",
+				"D": "100",
+				"r": "50"
+			},
+			"answers": ["50"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1/2 = 5/100",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"p": "1",
+				"q": "2",
+				"D": "100",
+				"r": "50"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Un dixième = 100 millièmes",
+			"variationIndex": 1,
+			"variables": {
+				"k": "5",
+				"mot": "un dixième",
+				"vise": "millièmes",
+				"r": "100"
+			},
+			"answers": ["100"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un dixième = 10 millièmes",
+			"variationIndex": 1,
+			"variables": {
+				"k": "5",
+				"mot": "un dixième",
+				"vise": "millièmes",
+				"r": "100"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Une unité = 1 000 millièmes",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"mot": "une unité",
+				"vise": "millièmes",
+				"r": "1 000"
+			},
+			"answers": ["1 000"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "3/4 − 1/2 = 1/4",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3",
+				"a": "3",
+				"b": "4",
+				"op": "-",
+				"c": "1",
+				"d": "2",
+				"r": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3/4 − 1/2 = 2/4 (num. soustraits)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3",
+				"a": "3",
+				"b": "4",
+				"op": "-",
+				"c": "1",
+				"d": "2",
+				"r": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1/2 + 1/4 = 3/4",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2",
+				"a": "1",
+				"b": "2",
+				"op": "+",
+				"c": "1",
+				"d": "4",
+				"r": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "1 − 3/4 = 1/4",
+			"variationIndex": 3,
+			"variables": {
+				"k": "1",
+				"p": "3",
+				"q": "4",
+				"r": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 − 3/4 = 3/4",
+			"variationIndex": 3,
+			"variables": {
+				"k": "1",
+				"p": "3",
+				"q": "4",
+				"r": "1"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

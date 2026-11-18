@@ -7,9 +7,9 @@ import { describe, it, expect, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import Partage from '../Partage.svelte';
 import MarkdownRenderer from '../../MarkdownRenderer.svelte';
-import { parsePartageContent } from '$lib/ubumark/parser/partage-parser';
-import { PARTAGE_UNAVAILABLE } from '$lib/ubumark/types/partage';
-import type { ResolvedMarkdown } from '$lib/ubumark';
+import { parsePartageContent } from '#lib/ubumark/parser/partage-parser.ts';
+import { PARTAGE_UNAVAILABLE } from '#lib/ubumark/types/partage.ts';
+import type { ResolvedMarkdown } from '#lib/ubumark/index.ts';
 
 let mains: HTMLElement[] = [];
 function mainElement(): HTMLElement {

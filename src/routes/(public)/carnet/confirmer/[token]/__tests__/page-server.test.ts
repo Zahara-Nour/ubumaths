@@ -6,8 +6,8 @@
  *  - l'affichage n'appelle PAS la base : un antivirus de messagerie qui ouvre
  *    le lien ne consomme ni la confirmation ni le refus (tout passe par un
  *    bouton, donc un POST) ;
- *  - confirmer → lien émis → redirection vers le carnet (le parent l'a sous
- *    les yeux, une fois) ;
+ *  - confirmer → lien émis et ENVOYÉ par courriel, jamais montré ni rendu par
+ *    redirection (Q26 : un antivirus qui clique n'emporte rien) ;
  *  - confirmation refusée (utilisée, échue, inconnue) → la même réponse ;
  *  - « Je ne suis pas le parent » → l'adresse est effacée ;
  *  - limite de débit par IP avant chaque geste ; `noindex`.
@@ -17,21 +17,22 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 const confirm = vi.fn();
 const refuse = vi.fn();
-vi.mock('$lib/server/carnet/carnet', async (importOriginal) => ({
-	...(await importOriginal<typeof import('$lib/server/carnet/carnet')>()),
-	confirmParentContact: (...a: unknown[]) => confirm(...a),
+vi.mock('#lib/server/carnet/carnet.ts', async (importOriginal) => ({
+	...(await importOriginal<typeof import('#lib/server/carnet/carnet.ts')>()),
 	refuseParentContact: (...a: unknown[]) => refuse(...a)
+}));
+vi.mock('#lib/server/carnet/envois.ts', () => ({
+	confirmContactAndSendLink: (...a: unknown[]) => confirm(...a)
 }));
 
 const rateLimit = vi.fn();
-vi.mock('$lib/server/middleware/rateLimit', () => ({
+vi.mock('#lib/server/middleware/rateLimit.ts', () => ({
 	rateLimit: (...a: unknown[]) => rateLimit(...a)
 }));
 
 const { load, actions } = await import('../+page.server');
 
 const JETON = 'B'.repeat(43);
-const CARNET = 'C'.repeat(43);
 
 type LoadEvent = Parameters<typeof load>[0];
 type ActionEvent = Parameters<(typeof actions)['confirm']>[0];
@@ -81,19 +82,19 @@ describe('load', () => {
 });
 
 describe('confirm', () => {
-	it('confirmée → redirection vers le carnet neuf', async () => {
-		confirm.mockResolvedValue({ carnetToken: CARNET });
+	it('confirmée → « lien envoyé », sans redirection ni jeton du carnet (Q26)', async () => {
+		confirm.mockResolvedValue({ linkSent: true });
 		const { ev } = evenement<ActionEvent>(JETON);
 		expect(await issue(actions.confirm(ev))).toEqual({
-			status: 303,
-			location: `/carnet/${CARNET}?bienvenue`
+			status: 200,
+			data: { outcome: 'link_sent' }
 		});
 		expect(confirm).toHaveBeenCalledWith(JETON);
 		expect(rateLimit).toHaveBeenCalledWith(expect.stringContaining('198.51.100.7'), 10, 60_000);
 	});
 
-	it('confirmée sans lien (partage coupé) → confirmée, sans carnet', async () => {
-		confirm.mockResolvedValue({ carnetToken: null });
+	it('confirmée sans lien (partage coupé, Brevo en échec) → confirmée, sans lien', async () => {
+		confirm.mockResolvedValue({ linkSent: false });
 		const { ev } = evenement<ActionEvent>(JETON);
 		expect(await issue(actions.confirm(ev))).toEqual({
 			status: 200,

@@ -5,7 +5,7 @@
 -->
 
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import type { PageData } from './$types';
 	import {
 		asRiddleDifficulty,
@@ -13,12 +13,12 @@
 		getDifficultyColor,
 		formatAttemptNumber,
 		calculateGidouilles
-	} from '$lib/types/riddle';
-	import { Button } from '$lib/components/ui/button';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import { Badge } from '$lib/components/ui/badge';
-	import * as Card from '$lib/components/ui/card';
-	import UserAvatar from '$lib/components/UserAvatar.svelte';
+	} from '#lib/types/riddle.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import UserAvatar from '#lib/components/UserAvatar.svelte';
 	import { Clock, FileCheck } from '@lucide/svelte';
 	import { formatDistanceToNow } from 'date-fns';
 	import { fr } from 'date-fns/locale';

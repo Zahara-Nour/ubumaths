@@ -14,7 +14,7 @@ import {
 	BACKUP_FORMAT,
 	MAX_BACKUP_SIZE_BYTES,
 	type ExerciseBackup
-} from '$lib/server/validation/backup';
+} from '#lib/server/validation/backup.ts';
 
 // ============================================================================
 // VALIDATION TESTS

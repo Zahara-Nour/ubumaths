@@ -21,7 +21,7 @@ import StarterKit from '@tiptap/starter-kit';
 import { findSuggestionMatch } from '@tiptap/suggestion';
 import { ResourceLink, toSuggestionItem, createDebouncedSearch } from '../resource-link-extension';
 import { createSuggestionRenderer } from '../suggestion-renderer';
-import { parseResourceQuery } from '$lib/resources/prefixes';
+import { parseResourceQuery } from '#lib/resources/prefixes.ts';
 
 // ============================================================================
 // TEST UTILITIES

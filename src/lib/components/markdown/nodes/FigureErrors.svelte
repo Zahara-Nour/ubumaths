@@ -11,7 +11,7 @@
 	@module components/markdown/nodes/FigureErrors
 -->
 <script lang="ts">
-	import type { FigureIssue } from '$lib/ubumark/types/figure';
+	import type { FigureIssue } from '#lib/ubumark/types/figure.ts';
 
 	interface Props {
 		errors: FigureIssue[];

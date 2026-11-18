@@ -15,7 +15,7 @@
  *
  * @example Basic usage
  * ```typescript
- * import { applyDisplayTransforms, GLOBAL_DISPLAY_DEFAULTS } from '$lib/ubumark/parameterization';
+ * import { applyDisplayTransforms, GLOBAL_DISPLAY_DEFAULTS } from '#lib/ubumark/parameterization/index.ts';
  *
  * const latex = 'a + b + c';
  * const options = { ...GLOBAL_DISPLAY_DEFAULTS, shuffleTerms: true };
@@ -33,12 +33,12 @@ import {
 	unflattenProduct,
 	mapNode,
 	stripUnnecessaryBrackets
-} from '$lib/mathAST';
-import { parseCustom } from '$lib/mathAST/parser/custom';
-import { removeNullTermsAST } from '$lib/mathAST/transforms';
-import type { MathNode } from '$lib/mathAST';
+} from '#lib/mathAST/index.ts';
+import { parseCustom } from '#lib/mathAST/parser/custom/index.ts';
+import { removeNullTermsAST } from '#lib/mathAST/transforms.ts';
+import type { MathNode } from '#lib/mathAST/index.ts';
 import type { DisplayOptions } from './display-options';
-import { shuffled, type RandomSource } from '$lib/utils/random';
+import { shuffled, type RandomSource } from '#lib/utils/random.ts';
 
 // ============================================================================
 // EXPRESSION SHUFFLERS

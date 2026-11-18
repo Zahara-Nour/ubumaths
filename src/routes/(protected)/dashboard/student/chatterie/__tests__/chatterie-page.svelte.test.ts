@@ -8,10 +8,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { page } from 'vitest/browser';
-import type { Mathou, MathouCollection } from '$lib/mathoux/collection-logic';
-import { buildSeriesLink, type SeriesItem } from '$lib/validation/series';
-import { consent } from '$lib/stores/consent.svelte';
-import type { MathouCatalogId } from '$lib/mathoux/decorations';
+import type { Mathou, MathouCollection } from '#lib/mathoux/collection-logic.ts';
+import { buildSeriesLink, type SeriesItem } from '#lib/validation/series.ts';
+import { consent } from '#lib/stores/consent.svelte.ts';
+import type { MathouCatalogId } from '#lib/mathoux/decorations.ts';
 import ChatteriePage from '../+page.svelte';
 
 vi.mock('$app/navigation', () => ({ invalidateAll: vi.fn(async () => {}) }));

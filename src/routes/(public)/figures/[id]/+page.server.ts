@@ -8,12 +8,12 @@
 
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { figureIdSchema } from '$lib/server/validation/geometry-figures';
+import { figureIdSchema } from '#lib/server/validation/geometry-figures.ts';
 import {
 	FIGURE_NOT_FOUND_MESSAGE,
 	GeometryFigureError,
 	getPublicGeometryFigure
-} from '$lib/server/geometry-figures';
+} from '#lib/server/geometry-figures.ts';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
 	const id = figureIdSchema.safeParse(params.id);

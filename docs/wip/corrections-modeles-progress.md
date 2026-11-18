@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-16, après l'état des lieux._
+_Mis à jour le 2026-11-17, à la reprise._
 
-- **État** : phase 0, état des lieux fait (§ Étude), aucun code · **Prochaine action** : réponses de David aux Q1–Q5, puis découpage · **En attente de David** : Q1 à Q5 ci-dessous · **Pièges en cours** : ne pas refaire ce que l'ADR 0017 et Q91–Q101 ont déjà tranché ; le dire si une proposition y revient · **Worktree / branche** : aucun (étude seulement) ; au premier code → `ubumaths-wt-corrections-modeles`
+- **État** : phase 0 ; page de démonstration `/dev/corrections` (14 modèles × Flash-cards / Saisie / fin de série) sur la branche `feat/corrections-demo`, commitée et poussée, **sans PR** (serveur `pnpm dev --port 5176 --strictPort` depuis le worktree) · **Prochaine action** : recueillir les retours de David sur la page (§ Retours ; RC1 → chantier `mots-cliquables`), puis choisir quoi reprendre de TinyMath et répondre aux Q1–Q5 · **En attente de David** : Q1 à Q5 ci-dessous · **Pièges en cours** : ne pas refaire ce que l'ADR 0017 et Q91–Q101 ont déjà tranché ; le dire si une proposition y revient ; le journal vit sur `main` (l'exemplaire de la branche est périmé) · **Worktree / branche** : `ubumaths-wt-corrections-modeles` · `feat/corrections-demo`
 
 ## Origine
 
@@ -85,8 +85,31 @@ détaillée. Ce chantier ne se contente pas de marquer les 30 cartes : il repren
     ne lit que `statement`, `blanks`, `expressions`) ; (2) **le bouton de retournement de `CorrectionCard`
     est toujours là**, verso « Aucune correction disponible. » sans correction écrite (51 modèles publiés) ;
     `FlashCard` : `flippable` vaut `true` par défaut, son verso a toujours le résultat attendu.
+- [x] **Par situation** (termes de `CONTEXT.md`, relevé du 2026-11-16) :
+  - `FlashCard` (recto = question ; verso = « Réponse », résultat attendu, « Correction », correction écrite) :
+    **Flash-cards**, **révision SRS**, **Saisie** (retournée après « Valider », `TypingSeries.svelte:286`),
+    grilles **En classe** (`startFlipped`, sans retournement).
+  - `CorrectionCard` (recto = statut + résultat attendu ; verso = « Correction ») : fin de **Contrôle blanc**
+    et de **Course aux nombres** (`TestResults`), résultats d'un **contrôle** (`EvaluationResults`,
+    `QuestionErrorsPanel`).
+  - **Carte de cours** (`course_card`) : pas de résultat attendu (`expected-result.ts:974`) ; verso =
+    `CourseCardBack`. **Question de cours** = marqueur (carte, QCM, vrai/faux) ; un QCM de cours se
+    corrige comme toute case choix.
+- [x] **Par case** (rapport d'agent sur `expected-result.ts`, `ExpectedResultView`) : rendu dédié pour
+      chaque sorte (formule R1 `≠`/`=`, énoncé rempli + « Ta réponse », choix, figure à compléter, figure
+      de travail, tableaux, placer, ranger/associer/trous, construire, programmer). Repli texte seul
+      (`expected-only`) pour un bloc mal formé. **Non vérifié** : `BuildAnswer` ne rend rien pour un bloc
+      ranger/associer/trous/cubes/patron/solide en erreur (pas de `{:else}`).
+  - Prod (publiés) : choix 749, courbe 124 (affichage compris), ranger 85, espace 32, figure à compléter
+    21, trig 20, diagramme 18, monnaie 18, horloge 13, partage 9, collection 7, tortue 4, robot 2 ; le reste
+    = cases MathLive.
 - [x] **Cartes de cours** : déjà tranché par **Q96** (concise = la réponse de cours ; détail = explication,
       exemple, contre-exemple, lien avec la méthode). Reste à **marquer** les cartes, rien à décider.
+
+## Retours de David sur `/dev/corrections`
+
+- **RC1 (2026-11-16)** : les mots soulignés alourdissent la lecture → chantier
+  [`mots-cliquables`](../archive/wip/mots-cliquables-progress.md) (mots récents seulement, rien dans la correction).
 
 ## Questions de phase 0 (en attente de David)
 
@@ -105,6 +128,7 @@ détaillée. Ce chantier ne se contente pas de marquer les 30 cartes : il repren
 
 ## Journal
 
+- 2026-11-16 : situations et cases relevées ; page `/dev/corrections` ; RC1 → chantier `mots-cliquables`.
 - 2026-11-16 : état des lieux (prod, code, mathAST) ; lot 2 réduit à l'aperçu prof (D10) ; Q4–Q5 ajoutées.
 - 2026-11-16 : lecture de l'affichage des corrections de TinyMath (§ Étude).
 - 2026-11-16 : chantier ouvert à la demande de David ; renvoi depuis `cours-suites` (retour A1 (2)).

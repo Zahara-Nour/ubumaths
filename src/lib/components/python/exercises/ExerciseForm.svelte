@@ -1,5 +1,5 @@
 <script lang="ts" module>
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	// Re-export the form-state helpers so existing consumers
 	// (`import { emptyExerciseForm } from '.../ExerciseForm.svelte'`) still
 	// resolve. The actual definitions live in `form-mapping.ts` to keep them
@@ -29,23 +29,26 @@
 	 */
 
 	import { onMount, onDestroy } from 'svelte';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import type { SupabaseClient } from '@supabase/supabase-js';
 	// Aliased to avoid a name clash with the `<script module>` re-exports above
 	// (which expose these types to external consumers).
 	import type { ExerciseFormState as FormState, Level as FormLevel } from './form-mapping';
-	import PythonEditor from '$lib/components/python/PythonEditor.svelte';
-	import LockedPythonEditor from '$lib/components/python/LockedPythonEditor.svelte';
-	import ExerciseRichTextEditor from '$lib/components/exercises/ExerciseRichTextEditor.svelte';
-	import { parseTemplate } from '$lib/utils/locked-zones';
+	import PythonEditor from '#lib/components/python/PythonEditor.svelte';
+	import LockedPythonEditor from '#lib/components/python/LockedPythonEditor.svelte';
+	import ExerciseRichTextEditor from '#lib/components/exercises/ExerciseRichTextEditor.svelte';
+	import { parseTemplate } from '#lib/utils/locked-zones.ts';
 	import ExerciseValidationResult from './ExerciseValidationResult.svelte';
 	import ExerciseStrategyEditor from './ExerciseStrategyEditor.svelte';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import TagBadgeSelector from '$lib/components/TagBadgeSelector.svelte';
-	import { PlaygroundExecutor, type ExerciseValidationResult as Result } from '$lib/shared/python';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import TagBadgeSelector from '#lib/components/TagBadgeSelector.svelte';
+	import {
+		PlaygroundExecutor,
+		type ExerciseValidationResult as Result
+	} from '#lib/shared/python/index.ts';
 	import { CheckCircle2, AlertTriangle, Loader2 } from '@lucide/svelte';
 
 	type Props = {

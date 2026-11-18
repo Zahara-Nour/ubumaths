@@ -12,16 +12,16 @@
 
 	import { resolve } from '$app/paths';
 	import { Cat } from '@lucide/svelte';
-	import { Button } from '$lib/components/ui/button';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import MathouAvatar from './MathouAvatar.svelte';
 	import { MATHOU_RACES } from './mathou-races';
-	import gidouilleImage from '$lib/assets/images/gidouille.png';
+	import gidouilleImage from '#lib/assets/images/gidouille.png';
 	import {
 		MATHOU_COLLARS,
 		MATHOU_DECORATIONS,
 		MATHOU_GLASSES,
 		MATHOU_HATS
-	} from '$lib/mathoux/decorations';
+	} from '#lib/mathoux/decorations.ts';
 
 	// Constantes
 	// Le Mathou d'exemple : un matou noir uni, où chaque décoration se voit bien
@@ -126,7 +126,7 @@
 		{/each}
 	</ul>
 
-	<Button href={resolve('/dashboard/student/chatterie')} variant="outline">
+	<Button href={resolve('dashboard/student/chatterie')} variant="outline">
 		Décorer mes Mathoux
 	</Button>
 </section>

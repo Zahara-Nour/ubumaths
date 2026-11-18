@@ -9,7 +9,7 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { parseOperationContent } from '$lib/ubumark/parser/operation-parser';
+import { parseOperationContent } from '#lib/ubumark/parser/operation-parser.ts';
 import {
 	buildOperationScene,
 	operationResult,
@@ -17,9 +17,9 @@ import {
 	type OperationMark,
 	type OperationResultCell,
 	type OperationScene
-} from '$lib/ubumark/utils/operation-scene';
-import { operationExpectedAnswer } from '$lib/ubumark/utils/operation-answer';
-import { generateOperationTypst } from '$lib/ubumark/generators/operation-typst';
+} from '#lib/ubumark/utils/operation-scene.ts';
+import { operationExpectedAnswer } from '#lib/ubumark/utils/operation-answer.ts';
+import { generateOperationTypst } from '#lib/ubumark/generators/operation-typst.ts';
 
 function parse(...lines: string[]) {
 	return parseOperationContent(lines.join('\n'));

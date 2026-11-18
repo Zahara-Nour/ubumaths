@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	/**
 	 * PythonMigrationPrompt - Prompt to migrate local code to cloud
 	 *
@@ -8,10 +8,10 @@
 	 */
 
 	// Imports
-	import { Button } from '$lib/components/ui/button';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import { Cloud, X } from '@lucide/svelte';
-	import { pythonStore } from '$lib/stores/pythonPlayground.svelte';
-	import { browser } from '$app/environment';
+	import { pythonStore } from '#lib/stores/pythonPlayground.svelte.ts';
+	import { browser } from '$app/env';
 
 	// Props
 	let {

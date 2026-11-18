@@ -16,9 +16,9 @@
 		- Responsive design
 -->
 <script lang="ts">
-	import * as Table from '$lib/components/ui/table';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Button } from '$lib/components/ui/button';
+	import * as Table from '#lib/components/ui/table/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import { ChevronLeft, ChevronRight } from '@lucide/svelte';
 	import { formatDistanceToNow } from 'date-fns';
 	import { fr } from 'date-fns/locale';

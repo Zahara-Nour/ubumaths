@@ -10,14 +10,17 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 // Le client service_role ne doit JAMAIS écrire dans ces cas : on compte ses appels
 const serviceFrom = vi.hoisted(() => vi.fn());
-vi.mock('$lib/server/serviceRoleClient', () => ({
+vi.mock('#lib/server/serviceRoleClient.ts', () => ({
 	createServiceRoleClient: () => ({ from: serviceFrom })
 }));
 
-vi.mock('$lib/server/rateLimiter', () => import('$lib/server/__tests__/helpers/fake-rate-limiter'));
+vi.mock(
+	'#lib/server/rateLimiter.ts',
+	() => import('#lib/server/__tests__/helpers/fake-rate-limiter.ts')
+);
 
 import { POST } from '../+server';
-import { createFakeSupabase, called } from '$lib/server/__tests__/helpers/fake-supabase';
+import { createFakeSupabase, called } from '#lib/server/__tests__/helpers/fake-supabase.ts';
 
 const STUDENT = '11111111-1111-4111-8111-111111111111';
 const TEACHER = '22222222-2222-4222-8222-222222222222';

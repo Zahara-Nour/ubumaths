@@ -26,7 +26,7 @@
 
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
+import { requireRole } from '#lib/server/middleware/auth.ts';
 
 /**
  * Check Google Classroom connection status

@@ -10,13 +10,13 @@
  * @module ubumark/builders/sign-table
  */
 
-import type { SignTableGrid } from '$lib/mathAST/pedagogical-solve/sign-table-grid';
+import type { SignTableGrid } from '#lib/mathAST/pedagogical-solve/sign-table-grid.ts';
 import type {
 	DomainPoint,
 	SignRow,
 	SignValue,
 	VariationTableNode
-} from '$lib/ubumark/types/variation-table';
+} from '#lib/ubumark/types/variation-table.ts';
 
 /**
  * Le nœud de tableau de signes correspondant à une grille.

@@ -2,7 +2,7 @@
 // Un enfant inscrit par son parent a une adresse fictive : on ne lui écrit jamais,
 // le contact passe par le parent (page des consentements).
 
-import { childLoginIdOf } from '$lib/utils/child-account';
+import { childLoginIdOf } from '#lib/utils/child-account.ts';
 
 export type WelcomeEmailState =
 	| { kind: 'parent-link'; loginId: string }

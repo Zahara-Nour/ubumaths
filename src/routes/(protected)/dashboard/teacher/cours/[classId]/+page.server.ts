@@ -8,34 +8,34 @@
 
 import type { PageServerLoad, Actions } from './$types';
 import { error, fail } from '@sveltejs/kit';
-import { requireRole } from '$lib/server/middleware/auth';
+import { requireRole } from '#lib/server/middleware/auth.ts';
 import {
 	getTeacherChapters,
 	createChapter,
 	updateChapter,
 	deleteChapter,
 	reorderChapters
-} from '$lib/server/chapters';
+} from '#lib/server/chapters.ts';
 import {
 	listChapterTemplates,
 	instantiateTemplate,
 	TemplateUnusableError
-} from '$lib/server/chapter-templates';
+} from '#lib/server/chapter-templates.ts';
 import {
 	createChapterSchema,
 	updateChapterSchema,
 	reorderChaptersSchema
-} from '$lib/server/validation/chapters';
-import { instantiateTemplateSchema } from '$lib/server/validation/chapter-templates';
-import type { ChapterSummary } from '$lib/types/chapters';
-import type { TemplateSummary } from '$lib/types/chapter-templates';
+} from '#lib/server/validation/chapters.ts';
+import { instantiateTemplateSchema } from '#lib/server/validation/chapter-templates.ts';
+import type { ChapterSummary } from '#lib/types/chapters.ts';
+import type { TemplateSummary } from '#lib/types/chapter-templates.ts';
 import { z } from 'zod';
 import {
 	getActiveCourseShareToken,
 	revokeCourseShareToken,
 	rotateCourseShareToken
-} from '$lib/server/course-share-tokens';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/course-share-tokens.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('(protected)/dashboard/teacher/cours/[classId]/+page.server');
 

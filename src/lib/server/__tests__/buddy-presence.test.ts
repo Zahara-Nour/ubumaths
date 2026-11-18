@@ -14,15 +14,15 @@ const queries = vi.hoisted(() => ({
 	isWelcomeBackPending: vi.fn(),
 	resetLostConstance: vi.fn()
 }));
-vi.mock('$lib/server/buddy-queries', () => queries);
+vi.mock('#lib/server/buddy-queries.ts', () => queries);
 const weeks = vi.hoisted(() => ({ loadWeekMoment: vi.fn() }));
-vi.mock('$lib/server/buddy-weeks', () => weeks);
-vi.mock('$lib/utils/logger', () => ({
+vi.mock('#lib/server/buddy-weeks.ts', () => weeks);
+vi.mock('#lib/utils/logger.ts', () => ({
 	createServerLogger: () => ({ info: vi.fn(), error: vi.fn(), warn: vi.fn(), debug: vi.fn() })
 }));
 
 import { loadBuddyPresence } from '../buddy-presence';
-import { utcDay, weekStartOf } from '$lib/utils/buddy-constance';
+import { utcDay, weekStartOf } from '#lib/utils/buddy-constance.ts';
 
 // Constantes
 const STUDENT = '11111111-1111-4111-8111-111111111111';

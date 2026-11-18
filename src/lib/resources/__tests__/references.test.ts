@@ -13,7 +13,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { parseMarkdown } from '$lib/ubumark/parser/markdown-parser';
+import { parseMarkdown } from '#lib/ubumark/parser/markdown-parser.ts';
 import { extractResourceReferences, referenceIdsOfKind, referencesToLabels } from '../references';
 import { RESOURCE_KINDS } from '../kinds';
 

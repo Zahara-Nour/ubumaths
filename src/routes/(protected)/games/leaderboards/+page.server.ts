@@ -13,9 +13,9 @@
 
 import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
-import { gameLeaderboardQuerySchema } from '$lib/server/validation/games';
-import type { GameLeaderboardRow, MinesweeperLeaderboardRow } from '$lib/types/database-helpers';
-import { createServerLogger } from '$lib/utils/logger';
+import { gameLeaderboardQuerySchema } from '#lib/server/validation/games.ts';
+import type { GameLeaderboardRow, MinesweeperLeaderboardRow } from '#lib/types/database-helpers.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('(protected)/games/leaderboards/+page.server');
 

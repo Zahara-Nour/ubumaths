@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { Button } from '$lib/components/ui/button';
-	import * as Card from '$lib/components/ui/card';
-	import * as Tabs from '$lib/components/ui/tabs';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import * as Tabs from '#lib/components/ui/tabs/index.ts';
 	import { AlertCircle, Loader2 } from '@lucide/svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import StudentReportCard from './StudentReportCard.svelte';
 	import CancelReportDialog from './CancelReportDialog.svelte';
-	import type { StudentErrorReportWithDisplay, ErrorReportStatus } from '$lib/types/worksheets';
+	import type { StudentErrorReportWithDisplay, ErrorReportStatus } from '#lib/types/worksheets.ts';
 
 	// Props
 	let {

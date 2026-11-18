@@ -29,7 +29,7 @@
  * @module questions/construction/line
  */
 
-import { bissectriceOf, type LineCheck } from '$lib/ubumark/types/construction';
+import { bissectriceOf, type LineCheck } from '#lib/ubumark/types/construction.ts';
 import type { DrawnLine, DrawnObject, DrawnRepere } from './answer';
 import {
 	angleSideVertex,

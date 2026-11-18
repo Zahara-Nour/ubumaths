@@ -3,7 +3,7 @@
  * =====================================================================
  *
  * Les tests unitaires simulent la base ; ici, les fonctions de
- * `$lib/server/series` et `$lib/server/evaluations` tournent avec les clients
+ * `#lib/server/series.ts` et `#lib/server/evaluations.ts` tournent avec les clients
  * RÉELS du prof et
  * des élèves. Ce que la RLS décide :
  *
@@ -26,7 +26,7 @@
 
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 import { cleanupAllTestData } from '../helpers/database/trigger-test-helpers';
 import { DEFAULT_TEST_PASSWORD } from '../helpers/database/supabase-client';
 import { TestData } from '../helpers/database/test-data-factory';
@@ -37,14 +37,14 @@ import {
 	getTeacherSeries,
 	SERIES_LOCKED_UPDATE_MESSAGE,
 	updateSeries
-} from '$lib/server/series';
+} from '#lib/server/series.ts';
 import {
 	countAttempts,
 	getAssignmentWithEvaluation,
 	getEvaluationResults,
 	getStudentAssignments,
 	validateAttempt
-} from '$lib/server/evaluations';
+} from '#lib/server/evaluations.ts';
 
 // Types
 type Client = SupabaseClient<Database>;

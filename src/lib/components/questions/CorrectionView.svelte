@@ -18,10 +18,10 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { ChevronDown } from '@lucide/svelte';
-	import { MarkdownRenderer } from '$lib/components/markdown';
-	import type { GenericFunctionConfig } from '$lib/mathAST';
-	import { readAuthoringErrors } from '$lib/components/markdown/authoring-errors';
-	import { splitCorrectionDetail } from '$lib/questions/correction-detail';
+	import { MarkdownRenderer } from '#lib/components/markdown/index.ts';
+	import type { GenericFunctionConfig } from '#lib/mathAST/index.ts';
+	import { readAuthoringErrors } from '#lib/components/markdown/authoring-errors.ts';
+	import { splitCorrectionDetail } from '#lib/questions/correction-detail.ts';
 	import { readDetailPreference, writeDetailPreference } from './correction-view-preference';
 
 	interface Props {

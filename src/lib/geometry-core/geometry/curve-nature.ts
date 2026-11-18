@@ -12,10 +12,13 @@
  * @module geometry/curve-nature
  */
 
-import { compile, getVariables, isRelation, subtract } from '$lib/mathAST';
-import type { MathNode } from '$lib/mathAST';
-import { extractAffineCombination, extractQuadraticCombination } from '$lib/mathAST/analysis';
-import { canonicalForm } from '$lib/mathAST/normal/canonical-form';
+import { compile, getVariables, isRelation, subtract } from '#lib/mathAST/index.ts';
+import type { MathNode } from '#lib/mathAST/index.ts';
+import {
+	extractAffineCombination,
+	extractQuadraticCombination
+} from '#lib/mathAST/analysis/index.ts';
+import { canonicalForm } from '#lib/mathAST/normal/canonical-form.ts';
 import { classifyConic, degenerateConicKind } from './conic-classify';
 
 // =============================================================================

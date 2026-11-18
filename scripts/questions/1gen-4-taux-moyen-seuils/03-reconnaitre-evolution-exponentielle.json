@@ -1,0 +1,405 @@
+{
+	"id": "6c83bcee-0c52-4879-bc80-355d0af6ad7f",
+	"title": "Reconnaître une évolution exponentielle",
+	"description": "Linéaire ou exponentielle (tableau, phrase) ; croissance ou décroissance ; discret ou continu",
+	"grades": ["1_GEN"],
+	"level": 1,
+	"delay": 40,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Une grandeur $y$ a été relevée à intervalles réguliers :\n\n| $x$ | $0$ | $1$ | $2$ | $3$ | $4$ |\n| --- | --- | --- | --- | --- | --- |\n| $y$ | ${{eval:a+r*0;d}}$ | ${{eval:a+r*1;d}}$ | ${{eval:a+r*2;d}}$ | ${{eval:a+r*3;d}}$ | ${{eval:a+r*4;d}}$ |\n\nCes valeurs correspondent-elles à…\n\n```choix\nmelanger: non\n- une évolution linéaire\n- une évolution exponentielle\n- ni l'une ni l'autre\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "20..40"
+				},
+				{
+					"name": "r",
+					"expression": "-4|-3|3|5|8|12"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À pas constant, une évolution est **linéaire** si les **différences** entre deux valeurs successives sont constantes ; elle est **exponentielle** si les **quotients** sont constants.",
+					"Les différences valent toutes ${{r}}$ : l'évolution est $\\textcolor{{{color:primary.0}}}{\\text{linéaire}}$. (Les quotients, eux, ne sont pas constants.)"
+				]
+			}
+		},
+		{
+			"statement": "Une grandeur $y$ a été relevée à intervalles réguliers :\n\n| $x$ | $0$ | $1$ | $2$ | $3$ | $4$ |\n| --- | --- | --- | --- | --- | --- |\n| $y$ | ${{eval:a*q^0;d}}$ | ${{eval:a*q^1;d}}$ | ${{eval:a*q^2;d}}$ | ${{eval:a*q^3;d}}$ | ${{eval:a*q^4;d}}$ |\n\nCes valeurs correspondent-elles à…\n\n```choix\nmelanger: non\n- une évolution linéaire\n- une évolution exponentielle\n- ni l'une ni l'autre\n```",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "2|1.5|0.5"
+				},
+				{
+					"name": "m",
+					"expression": "1|2"
+				},
+				{
+					"name": "a",
+					"expression": "eval:16*m"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À pas constant, une évolution est **linéaire** si les **différences** entre deux valeurs successives sont constantes ; elle est **exponentielle** si les **quotients** sont constants.",
+					"Chaque valeur s'obtient en multipliant la précédente par ${{q}}$ : les quotients sont constants, l'évolution est $\\textcolor{{{color:primary.0}}}{\\text{exponentielle}}$. (Les différences, elles, ne sont pas constantes.)"
+				]
+			}
+		},
+		{
+			"statement": "Une grandeur $y$ a été relevée à intervalles réguliers :\n\n| $x$ | $0$ | $1$ | $2$ | $3$ | $4$ |\n| --- | --- | --- | --- | --- | --- |\n| $y$ | ${{eval:a+b*0*(0+1)/2;d}}$ | ${{eval:a+b*1*(1+1)/2;d}}$ | ${{eval:a+b*2*(2+1)/2;d}}$ | ${{eval:a+b*3*(3+1)/2;d}}$ | ${{eval:a+b*4*(4+1)/2;d}}$ |\n\nCes valeurs correspondent-elles à…\n\n```choix\nmelanger: non\n- une évolution linéaire\n- une évolution exponentielle\n- ni l'une ni l'autre\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..3"
+				}
+			],
+			"conditions": ["a != b"],
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À pas constant, une évolution est **linéaire** si les **différences** entre deux valeurs successives sont constantes ; elle est **exponentielle** si les **quotients** sont constants.",
+					"Les différences valent ${{b}}$, ${{eval:2*b}}$, ${{eval:3*b}}$, ${{eval:4*b}}$ : elles ne sont pas constantes. Les quotients non plus : $\\dfrac{ {{eval:a+b}} }{ {{a}} }\\neq\\dfrac{ {{eval:a+3*b}} }{ {{eval:a+b}} }$.",
+					"L'évolution n'est $\\textcolor{{{color:primary.0}}}{\\text{ni linéaire, ni exponentielle}}$."
+				]
+			}
+		},
+		{
+			"statement": "La population d'un village augmente de ${{p}}~\\%$ par an.\n\nSon évolution est-elle…\n\n```choix\nmelanger: non\n- une évolution linéaire\n- une évolution exponentielle\n```",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "2|3|4|5"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Ajouter (ou retirer) la même quantité à chaque période donne une évolution **linéaire** ; multiplier par le même nombre (augmenter ou diminuer d'un même pourcentage, diviser par $2$…) donne une évolution **exponentielle**.",
+					"Augmenter de ${{p}}~\\%$, c'est multiplier par ${{eval:1+p/100;d}}$ chaque année : l'évolution est $\\textcolor{{{color:primary.0}}}{\\text{exponentielle}}$."
+				]
+			}
+		},
+		{
+			"statement": "La population d'un village augmente de ${{p}}$ habitants par an.\n\nSon évolution est-elle…\n\n```choix\nmelanger: non\n- une évolution linéaire\n- une évolution exponentielle\n```",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "20|30|50|80"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Ajouter (ou retirer) la même quantité à chaque période donne une évolution **linéaire** ; multiplier par le même nombre (augmenter ou diminuer d'un même pourcentage, diviser par $2$…) donne une évolution **exponentielle**.",
+					"On ajoute ${{p}}$ habitants chaque année : l'évolution est $\\textcolor{{{color:primary.0}}}{\\text{linéaire}}$."
+				]
+			}
+		},
+		{
+			"statement": "La masse d'un élément radioactif est divisée par $2$ toutes les ${{h}}$ heures.\n\nSon évolution est-elle…\n\n```choix\nmelanger: non\n- une évolution linéaire\n- une évolution exponentielle\n```",
+			"variables": [
+				{
+					"name": "h",
+					"expression": "3|8|12|24"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Ajouter (ou retirer) la même quantité à chaque période donne une évolution **linéaire** ; multiplier par le même nombre (augmenter ou diminuer d'un même pourcentage, diviser par $2$…) donne une évolution **exponentielle**.",
+					"Toutes les ${{h}}$ heures, la masse est multipliée par $0{,}5$ : l'évolution est $\\textcolor{{{color:primary.0}}}{\\text{exponentielle}}$."
+				]
+			}
+		},
+		{
+			"statement": "Une quantité est multipliée par ${{q}}$ chaque heure.\n\nS'agit-il…\n\n```choix\nmelanger: non\n- d'une croissance exponentielle\n- d'une décroissance exponentielle\n```",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "0.6|0.7|0.8|0.9|1.1|1.2|1.5|2"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1-min(floor(q),1)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Multiplier à chaque période par un nombre $q>1$ fait croître la quantité ; par un nombre $0<q<1$, la fait décroître.",
+					"Ici $q={{q}}$ {{if:q>1|est supérieur à $1$ : c'est une croissance exponentielle|est compris entre $0$ et $1$ : c'est une décroissance exponentielle}}."
+				]
+			}
+		},
+		{
+			"statement": "On étudie le nombre de bactéries d'une culture, qui double toutes les heures. On s'intéresse à ce nombre {{if:c>0|à chaque heure entière $n=0$, $1$, $2$…|à tout instant $t\\geqslant0$, en heures}}.\n\nQuel modèle convient ?\n\n```choix\nmelanger: non\n- une suite géométrique (phénomène discret)\n- une fonction $t\\mapsto k\\times a^t$ (phénomène continu)\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "0|1"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1-c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une grandeur observée à des instants séparés (chaque heure entière) est un phénomène **discret**, modélisé par une suite géométrique. Une grandeur observée à tout instant est un phénomène **continu**, modélisé par une fonction $t\\mapsto k\\times a^t$.",
+					"Ici, on observe le nombre {{if:c>0|à chaque heure entière : phénomène discret, suite géométrique|à tout instant : phénomène continu, fonction $t\\mapsto k\\times a^t$}}."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Tableau linéaire",
+			"variationIndex": 0,
+			"variables": {
+				"a": "30",
+				"r": "5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : linéaire pris pour exponentiel",
+			"variationIndex": 0,
+			"variables": {
+				"a": "30",
+				"r": "5"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Tableau exponentiel (×1,5)",
+			"variationIndex": 1,
+			"variables": {
+				"q": "1.5",
+				"m": "1",
+				"a": "16"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : exponentiel pris pour linéaire",
+			"variationIndex": 1,
+			"variables": {
+				"q": "1.5",
+				"m": "1",
+				"a": "16"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Ni l'un ni l'autre",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : « exponentielle » parce que ça croît vite",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "+3 % par an : exponentielle",
+			"variationIndex": 3,
+			"variables": {
+				"p": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : +3 % pris pour linéaire",
+			"variationIndex": 3,
+			"variables": {
+				"p": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "+50 habitants par an : linéaire",
+			"variationIndex": 4,
+			"variables": {
+				"p": "50"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : +50 habitants pris pour exponentiel",
+			"variationIndex": 4,
+			"variables": {
+				"p": "50"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Divisée par 2 : exponentielle",
+			"variationIndex": 5,
+			"variables": {
+				"h": "8"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : divisée par 2 prise pour linéaire",
+			"variationIndex": 5,
+			"variables": {
+				"h": "8"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "×1,2 : croissance",
+			"variationIndex": 6,
+			"variables": {
+				"q": "1.2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "×0,8 : décroissance",
+			"variationIndex": 6,
+			"variables": {
+				"q": "0.8"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ×0,8 pris pour une croissance",
+			"variationIndex": 6,
+			"variables": {
+				"q": "0.8"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Heures entières : discret",
+			"variationIndex": 7,
+			"variables": {
+				"c": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Tout instant : continu",
+			"variationIndex": 7,
+			"variables": {
+				"c": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : tout instant pris pour discret",
+			"variationIndex": 7,
+			"variables": {
+				"c": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

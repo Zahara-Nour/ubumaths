@@ -32,7 +32,7 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 import type {
 	ExerciseAssignment,
 	ExerciseCompletion,
@@ -47,11 +47,11 @@ import type {
 	PaginatedResponse,
 	DistributionMode,
 	ExerciseCategory
-} from '$lib/exercises/types';
-import type { GradeCode } from '$lib/types/grades';
-import { validateAssignmentData } from '$lib/exercises/types';
-import { validateSearchQuery } from '$lib/utils/search';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/exercises/types.ts';
+import type { GradeCode } from '#lib/types/grades.ts';
+import { validateAssignmentData } from '#lib/exercises/types.ts';
+import { validateSearchQuery } from '#lib/utils/search.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/exercise-assignments');
 

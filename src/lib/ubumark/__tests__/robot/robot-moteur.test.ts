@@ -10,8 +10,8 @@ import {
 	plusCourtCode,
 	simuler,
 	virages
-} from '$lib/ubumark/utils/robot-moteur';
-import type { RobotScene } from '$lib/ubumark/types/robot';
+} from '#lib/ubumark/utils/robot-moteur.ts';
+import type { RobotScene } from '#lib/ubumark/types/robot.ts';
 
 const FLECHES: RobotScene = {
 	colonnes: 8,

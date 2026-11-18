@@ -18,12 +18,12 @@
 		- Loading state during submission
 -->
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import { Button } from '$lib/components/ui/button';
-	import { Textarea } from '$lib/components/ui/textarea';
-	import { Label } from '$lib/components/ui/label';
-	import * as RadioGroup from '$lib/components/ui/radio-group';
+	import { lore } from '#lib/config/lore.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Textarea } from '#lib/components/ui/textarea/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import * as RadioGroup from '#lib/components/ui/radio-group/index.ts';
 	import { Flag, AlertTriangle } from '@lucide/svelte';
 
 	// Component Props

@@ -14,7 +14,7 @@
 	 *      only verdict + lock icon.
 	 */
 
-	import type { ExerciseValidationResult } from '$lib/shared/python';
+	import type { ExerciseValidationResult } from '#lib/shared/python/index.ts';
 	import { CheckCircle2, XCircle, AlertTriangle, Loader2, Lock } from '@lucide/svelte';
 
 	type Props = {

@@ -27,14 +27,14 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAuth } from '$lib/server/middleware/auth';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
 import { z } from 'zod';
-import type { VipCardAction } from '$lib/types/vip-card';
-import { getTemplateById } from '$lib/server/vip-card-queries';
-import { verifyTeacherStudentWithRole } from '$lib/server/middleware/student-access';
-import { validateActivationContext } from '$lib/server/vip-card-context';
-import { asStudentVipCards } from '$lib/types/vip-card';
-import { createServerLogger } from '$lib/utils/logger';
+import type { VipCardAction } from '#lib/types/vip-card.ts';
+import { getTemplateById } from '#lib/server/vip-card-queries.ts';
+import { verifyTeacherStudentWithRole } from '#lib/server/middleware/student-access.ts';
+import { validateActivationContext } from '#lib/server/vip-card-context.ts';
+import { asStudentVipCards } from '#lib/types/vip-card.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/vip-cards/activate-add-gidouilles/+server');
 

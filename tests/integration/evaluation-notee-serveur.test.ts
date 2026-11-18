@@ -2,7 +2,7 @@
  * Évaluation notée, corrigée par le serveur (chantier 5, PR B) — intégration
  * ==========================================================================
  *
- * `$lib/server/evaluation-attempts` face à la VRAIE base : lectures de droits
+ * `#lib/server/evaluation-attempts.ts` face à la VRAIE base : lectures de droits
  * sous RLS (client de l'élève), écritures en service_role (Q38), avec de VRAIS
  * modèles publiés (TinyMath #314, QCM migré en case choix, et #142, question à case), posés dans
  * des catégories propres au test.
@@ -23,7 +23,7 @@
 import { readFileSync } from 'node:fs';
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
-import type { Database, Json } from '$lib/types/database';
+import type { Database, Json } from '#lib/types/database.ts';
 import { cleanupAllTestData } from '../helpers/database/trigger-test-helpers';
 import { DEFAULT_TEST_PASSWORD } from '../helpers/database/supabase-client';
 import { TestData } from '../helpers/database/test-data-factory';
@@ -34,28 +34,28 @@ import {
 	submitEvaluationAttempt,
 	type AttemptActors,
 	type StartResult
-} from '$lib/server/evaluation-attempts';
+} from '#lib/server/evaluation-attempts.ts';
 import {
 	getEvaluationResults,
 	getStudentAssignments,
 	getEvaluation
-} from '$lib/server/evaluations';
-import { EvaluationError } from '$lib/server/evaluations';
-import { generateInstance } from '$lib/questions/generator/instance-generator';
-import { toQuestionTemplate, type QuestionTemplateRow } from '$lib/types/question-template';
-import type { QuestionInstance } from '$lib/questions/types';
-import { parseChoiceAnswer } from '$lib/questions/choice-case';
+} from '#lib/server/evaluations.ts';
+import { EvaluationError } from '#lib/server/evaluations.ts';
+import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
+import { toQuestionTemplate, type QuestionTemplateRow } from '#lib/types/question-template.ts';
+import type { QuestionInstance } from '#lib/questions/types.ts';
+import { parseChoiceAnswer } from '#lib/questions/choice-case.ts';
 import {
 	gradeQuestion,
 	statusFromBlankStatuses,
 	type SubmittedAnswer
-} from '$lib/questions/grading';
-import { isAnswerTooComplex } from '$lib/questions/answer-complexity';
-import { submitAttemptSchema } from '$lib/server/validation/evaluations';
+} from '#lib/questions/grading.ts';
+import { isAnswerTooComplex } from '#lib/questions/answer-complexity.ts';
+import { submitAttemptSchema } from '#lib/server/validation/evaluations.ts';
 import {
 	GRADING_BUDGET_EXCEEDED_FEEDBACK,
 	SUBMISSION_GRADING_BUDGET_MS
-} from '$lib/server/grading-budget';
+} from '#lib/server/grading-budget.ts';
 
 // Types
 type Client = SupabaseClient<Database>;

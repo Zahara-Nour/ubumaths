@@ -11,7 +11,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { legacyDecimalCommas } from '$lib/mathAST/parser/custom/legacy-decimal-commas';
+import { legacyDecimalCommas } from '#lib/mathAST/parser/custom/legacy-decimal-commas.ts';
 import { Atelier } from '../atelier.svelte';
 import { astOf } from '../parse';
 

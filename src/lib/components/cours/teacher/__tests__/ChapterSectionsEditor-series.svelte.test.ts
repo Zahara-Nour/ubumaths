@@ -10,7 +10,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
-import type { ChapterSection, ChapterSeries } from '$lib/types/chapters';
+import type { ChapterSection, ChapterSeries } from '#lib/types/chapters.ts';
 import ChapterSectionsEditor from '../ChapterSectionsEditor.svelte';
 
 const CHAPITRE = '11111111-1111-4111-8111-111111111111';

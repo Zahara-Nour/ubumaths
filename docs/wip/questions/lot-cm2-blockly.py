@@ -1,6 +1,6 @@
 """Écrit le modèle du lot « Blockly » du CM2 dans scripts/questions/CM2-blockly/.
 
-Lot porté par le chantier `blockly` (journal docs/wip/blockly-progress.md § Lot CM2, David le
+Lot porté par le chantier `blockly` (journal docs/archive/wip/blockly-progress.md § Lot CM2, David le
 2026-11-15 : « je te suis ») ; un point par modèle (ADR 0020) :
 
 | #  | Point   | Titre                                      | Geste                 | Niveau |

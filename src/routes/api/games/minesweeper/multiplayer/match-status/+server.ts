@@ -5,8 +5,8 @@
 
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import { sanitizeRPCError } from '$lib/server/utils/error-handler';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { sanitizeRPCError } from '#lib/server/utils/error-handler.ts';
 
 /**
  * GET /api/games/minesweeper/multiplayer/match-status

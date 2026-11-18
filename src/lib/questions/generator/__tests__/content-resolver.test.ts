@@ -14,7 +14,7 @@ import {
 	resolveExpression,
 	resolveVariableConditionals
 } from '../content-resolver';
-import { templateMarkdown } from '$lib/ubumark';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 import type { ResolvedVariable } from '../../types';
 
 describe('Content Resolver', () => {

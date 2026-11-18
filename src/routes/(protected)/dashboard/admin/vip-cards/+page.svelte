@@ -1,27 +1,27 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import { Button } from '$lib/components/ui/button';
-	import * as Tabs from '$lib/components/ui/tabs';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import VipCardPreview from '$lib/components/vip-cards/VipCardPreview.svelte';
-	import VipCardTemplateEditor from '$lib/components/vip-cards/VipCardTemplateEditor.svelte';
-	import VipCardImageUploader from '$lib/components/vip-cards/VipCardImageUploader.svelte';
-	import VipCardConfigList from '$lib/components/vip-cards/VipCardConfigList.svelte';
-	import VipCardConfigEditor from '$lib/components/vip-cards/VipCardConfigEditor.svelte';
-	import TypedConfirmDialog from '$lib/components/admin/TypedConfirmDialog.svelte';
+	import { lore } from '#lib/config/lore.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Tabs from '#lib/components/ui/tabs/index.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import VipCardPreview from '#lib/components/vip-cards/VipCardPreview.svelte';
+	import VipCardTemplateEditor from '#lib/components/vip-cards/VipCardTemplateEditor.svelte';
+	import VipCardImageUploader from '#lib/components/vip-cards/VipCardImageUploader.svelte';
+	import VipCardConfigList from '#lib/components/vip-cards/VipCardConfigList.svelte';
+	import VipCardConfigEditor from '#lib/components/vip-cards/VipCardConfigEditor.svelte';
+	import TypedConfirmDialog from '#lib/components/admin/TypedConfirmDialog.svelte';
 	import { Trash2 } from '@lucide/svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import { rarityLabel } from '$lib/components/vip-cards/utils';
-	import type { Database } from '$lib/types/database';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import { rarityLabel } from '#lib/components/vip-cards/utils.ts';
+	import type { Database } from '#lib/types/database.ts';
 	import type { PageData } from './$types';
-	import { responseToTemplate } from '$lib/types/vip-card-admin';
-	import type { TemplateResponse } from '$lib/types/vip-card-admin';
+	import { responseToTemplate } from '#lib/types/vip-card-admin.ts';
+	import type { TemplateResponse } from '#lib/types/vip-card-admin.ts';
 	import {
 		updateTemplate,
 		addTemplate,
 		type VipCardTemplate
-	} from '$lib/stores/vipCardTemplates.svelte';
-	import type { VipCardAction } from '$lib/types/vip-card';
+	} from '#lib/stores/vipCardTemplates.svelte.ts';
+	import type { VipCardAction } from '#lib/types/vip-card.ts';
 
 	type VipCardConfig = Database['public']['Tables']['vip_card_config']['Row'];
 

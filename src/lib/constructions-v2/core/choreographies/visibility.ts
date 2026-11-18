@@ -26,7 +26,7 @@
  * structural plumbing, not pedagogical content.
  */
 
-import type { Figure } from '$lib/geometry-core/graph/figure';
+import type { Figure } from '#lib/geometry-core/graph/figure.ts';
 import type { ChoreographyProduced, DecoratorTriple, TraceTag, Visibilite } from './types';
 
 /** Final-state style applied to `traces` whenever they are visible. */

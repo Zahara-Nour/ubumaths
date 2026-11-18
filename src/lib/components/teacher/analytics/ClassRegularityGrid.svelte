@@ -4,9 +4,9 @@
 	clavier) est dans `RegularityTable`.
 -->
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import { Skeleton } from '$lib/components/ui/skeleton';
-	import * as Card from '$lib/components/ui/card';
+	import { lore } from '#lib/config/lore.ts';
+	import { Skeleton } from '#lib/components/ui/skeleton/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
 	import RegularityTable from './RegularityTable.svelte';
 
 	// Types

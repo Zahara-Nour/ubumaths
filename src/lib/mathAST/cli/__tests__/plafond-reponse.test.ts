@@ -4,7 +4,7 @@
  * règle « calcul puis mesure », David, 2026-11-01) ; une écriture gardée répond par elle-même.
  */
 import { describe, expect, it } from 'vitest';
-import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
+import { WebReplEngine } from '#lib/mathAST/cli/web/web-repl-engine.ts';
 
 function run(line: string, mode: 'exact' | 'decimal' = 'exact') {
 	const engine = new WebReplEngine();

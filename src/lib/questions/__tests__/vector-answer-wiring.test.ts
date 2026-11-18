@@ -11,10 +11,10 @@ import { questionTemplateSchema, blankSchema, blankDefaultsSchema } from '../tem
 import { runTestSpec } from '../test-spec-runner';
 import { gradeQuestion } from '../grading';
 import { toPublicQuestion } from '../public-question';
-import { validateAnswer, validateBlanksDetailed } from '$lib/utils/answer-validator';
-import { computeBlankVerdicts } from '$lib/components/questions/blank-verdicts';
+import { validateAnswer, validateBlanksDetailed } from '#lib/utils/answer-validator.ts';
+import { computeBlankVerdicts } from '#lib/components/questions/blank-verdicts.ts';
 import type { InstanceBlank, QuestionInstance, QuestionTemplate, VectorMode } from '../types';
-import { templateMarkdown, type ResolvedMarkdown } from '$lib/ubumark';
+import { templateMarkdown, type ResolvedMarkdown } from '#lib/ubumark/index.ts';
 
 // Fixtures
 const U = '(2;-3)';

@@ -6,8 +6,8 @@
  */
 import { describe, it, expect } from 'vitest';
 import { specVerdicts } from './spec-verdicts.helper';
-import { parseLatex, toLatex } from '$lib/mathAST';
-import { removeMultOperatorAST } from '$lib/mathAST/cosmetic-transforms';
+import { parseLatex, toLatex } from '#lib/mathAST/index.ts';
+import { removeMultOperatorAST } from '#lib/mathAST/cosmetic-transforms.ts';
 
 function removed(latex: string): string {
 	return toLatex(removeMultOperatorAST(parseLatex(latex)));

@@ -6,8 +6,8 @@
 
 	USAGE:
 	```typescript
-	import { modalStack } from '$lib/stores/modalStack.svelte';
-	import ExampleModal from '$lib/components/modals/ExampleModal.svelte';
+	import { modalStack } from '#lib/stores/modalStack.svelte.ts';
+	import ExampleModal from '#lib/components/modals/ExampleModal.svelte';
 
 	modalStack.push({
 		component: ExampleModal,
@@ -27,9 +27,9 @@
 -->
 
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import * as Card from '$lib/components/ui/card';
-	import { Button } from '$lib/components/ui/button';
+	import { lore } from '#lib/config/lore.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import { X } from '@lucide/svelte';
 
 	interface Props {

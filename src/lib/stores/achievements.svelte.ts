@@ -5,7 +5,7 @@
  * Manages achievement state, caching, and notifications for the client.
  *
  * Usage:
- * import { achievementsStore } from '$lib/stores/achievements.svelte';
+ * import { achievementsStore } from '#lib/stores/achievements.svelte.ts';
  *
  * // Initialize (once, typically in layout)
  * achievementsStore.init();
@@ -32,7 +32,7 @@ import type {
 	AchievementProgress,
 	AchievementContext,
 	AchievementWithProgress
-} from '$lib/types/achievements';
+} from '#lib/types/achievements.ts';
 
 // Toast notification type for achievement unlocks
 interface AchievementToast {

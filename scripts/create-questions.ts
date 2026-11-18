@@ -36,9 +36,9 @@
  */
 import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import type { QuestionTemplate } from '$lib/questions/types';
-import { checkTemplate } from '$lib/questions/review/check-template';
-import { toTemplateInsertRow } from '$lib/questions/review/template-insert-row';
+import type { QuestionTemplate } from '#lib/questions/types.ts';
+import { checkTemplate } from '#lib/questions/review/check-template.ts';
+import { toTemplateInsertRow } from '#lib/questions/review/template-insert-row.ts';
 import { argValue, createScriptClient, findReviewerId, hasFlag } from './relecture/common';
 import {
 	readTemplateFile,

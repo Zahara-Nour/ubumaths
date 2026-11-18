@@ -7,11 +7,11 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import type { BuddyState, BuddyXpGainResult } from '$lib/types/buddy';
+import type { Database } from '#lib/types/database.ts';
+import type { BuddyState, BuddyXpGainResult } from '#lib/types/buddy.ts';
 import { calculateXpGain, calculateConstanceBonus, XP_SOURCES } from './buddy-xp';
-import { isDayCounted, utcDay } from '$lib/utils/buddy-constance';
-import { createServerLogger } from '$lib/utils/logger';
+import { isDayCounted, utcDay } from '#lib/utils/buddy-constance.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 import {
 	getStudentBuddy,
 	addBuddyXp,

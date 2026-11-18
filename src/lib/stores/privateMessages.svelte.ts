@@ -1,5 +1,5 @@
-import { toaster } from '$lib/stores/toaster.svelte';
-import type { Database } from '$lib/types/database';
+import { toaster } from '#lib/stores/toaster.svelte.ts';
+import type { Database } from '#lib/types/database.ts';
 
 /**
  * Private Messages Store

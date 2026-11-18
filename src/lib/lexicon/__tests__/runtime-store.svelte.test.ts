@@ -4,10 +4,12 @@
  */
 
 import { describe, expect, it, vi } from 'vitest';
-import type { MathTerm } from '$lib/dictionary/model';
+import type { MathTerm } from '#lib/dictionary/model.ts';
 
 const fetchDictionary = vi.fn<() => Promise<MathTerm[]>>();
-vi.mock('$lib/dictionary/fetch-dictionary', () => ({ fetchDictionary: () => fetchDictionary() }));
+vi.mock('#lib/dictionary/fetch-dictionary.ts', () => ({
+	fetchDictionary: () => fetchDictionary()
+}));
 
 const { lexiconRuntime, loadLexiconRuntime, refreshLexiconRuntime } =
 	await import('../runtime-store.svelte');

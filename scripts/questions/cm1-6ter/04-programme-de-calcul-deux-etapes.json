@@ -1,0 +1,239 @@
+{
+	"id": "2d7d0e63-fd5b-4a30-b7d8-e9adeeb51a30",
+	"title": "Exécuter un programme de calcul (deux étapes)",
+	"description": "Appliquer à un nombre entier un programme de deux étapes, écrit en mots ou avec Scratch",
+	"grades": ["CM1"],
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Voici un programme de calcul :\n\n- choisir un nombre entier ;\n- ajouter ${{a}}$ au nombre choisi ;\n- multiplier le résultat par ${{b}}$ ;\n- écrire le nombre obtenu.\n\nOn choisit le nombre ${{n}}$. Quel nombre le programme écrit-il ?\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2..20"
+				},
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(n+a)*b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Dans l'ordre.** La deuxième étape s'applique au résultat de la première.",
+					"${{n}} + {{a}} = {{eval:n+a}}$",
+					"${{eval:n+a}} \\times {{b}} = \\textcolor{{{color:primary.0}}}{{{eval:(n+a)*b}}}$ : le programme écrit $\\textcolor{{{color:primary.0}}}{{{eval:(n+a)*b}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Voici un programme de calcul :\n\n- choisir un nombre entier ;\n- multiplier le nombre choisi par ${{a}}$ ;\n- ajouter ${{b}}$ au résultat ;\n- écrire le nombre obtenu.\n\nOn choisit le nombre ${{n}}$. Quel nombre le programme écrit-il ?\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2..20"
+				},
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..30"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n*a+b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Dans l'ordre.** La deuxième étape s'applique au résultat de la première.",
+					"${{n}} \\times {{a}} = {{eval:n*a}}$",
+					"${{eval:n*a}} + {{b}} = \\textcolor{{{color:primary.0}}}{{{eval:n*a+b}}}$ : le programme écrit $\\textcolor{{{color:primary.0}}}{{{eval:n*a+b}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Voici un programme de calcul :\n\n- choisir un nombre entier ;\n- multiplier le nombre choisi par ${{a}}$ ;\n- retirer ${{b}}$ au résultat ;\n- écrire le nombre obtenu.\n\nOn choisit le nombre ${{n}}$. Quel nombre le programme écrit-il ?\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2..20"
+				},
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..20"
+				}
+			],
+			"conditions": ["n*a>b", "n>b"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n*a-b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Dans l'ordre.** La deuxième étape s'applique au résultat de la première.",
+					"${{n}} \\times {{a}} = {{eval:n*a}}$",
+					"${{eval:n*a}} - {{b}} = \\textcolor{{{color:primary.0}}}{{{eval:n*a-b}}}$ : le programme écrit $\\textcolor{{{color:primary.0}}}{{{eval:n*a-b}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Voici un programme de calcul écrit avec Scratch.\n\n```scratch\nquand le drapeau vert pressé\ndemander [Choisis un nombre.] et attendre\nmettre [nombre v] à ((réponse) + ({{a}}))\nmettre [nombre v] à ((nombre) * ({{b}}))\ndire (nombre)\n```\n\nOn tape ${{n}}$. Quel nombre le lutin dit-il ?\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2..20"
+				},
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(n+a)*b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Une instruction après l'autre.** La variable « nombre » prend d'abord la réponse plus ${{a}}$, puis cette valeur multipliée par ${{b}}$.",
+					"${{n}} + {{a}} = {{eval:n+a}}$",
+					"${{eval:n+a}} \\times {{b}} = \\textcolor{{{color:primary.0}}}{{{eval:(n+a)*b}}}$ : le lutin dit $\\textcolor{{{color:primary.0}}}{{{eval:(n+a)*b}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "5 : + 2 puis × 4 = 28",
+			"variationIndex": 0,
+			"variables": {
+				"n": "5",
+				"a": "2",
+				"b": "4"
+			},
+			"answers": ["28"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 13 (5 + 2 × 4)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "5",
+				"a": "2",
+				"b": "4"
+			},
+			"answers": ["13"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "7 : × 3 puis + 10 = 31",
+			"variationIndex": 1,
+			"variables": {
+				"n": "7",
+				"a": "3",
+				"b": "10"
+			},
+			"answers": ["31"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 51 (ajouté d'abord)",
+			"variationIndex": 1,
+			"variables": {
+				"n": "7",
+				"a": "3",
+				"b": "10"
+			},
+			"answers": ["51"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "9 : × 4 puis − 5 = 31",
+			"variationIndex": 2,
+			"variables": {
+				"n": "9",
+				"a": "4",
+				"b": "5"
+			},
+			"answers": ["31"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 16 (retiré d'abord)",
+			"variationIndex": 2,
+			"variables": {
+				"n": "9",
+				"a": "4",
+				"b": "5"
+			},
+			"answers": ["16"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Scratch, 6 : + 3 puis × 5 = 45",
+			"variationIndex": 3,
+			"variables": {
+				"n": "6",
+				"a": "3",
+				"b": "5"
+			},
+			"answers": ["45"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 21 (6 + 3 × 5)",
+			"variationIndex": 3,
+			"variables": {
+				"n": "6",
+				"a": "3",
+				"b": "5"
+			},
+			"answers": ["21"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

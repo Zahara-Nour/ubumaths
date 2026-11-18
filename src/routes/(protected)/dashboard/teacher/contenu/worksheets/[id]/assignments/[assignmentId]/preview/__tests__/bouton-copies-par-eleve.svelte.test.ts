@@ -9,7 +9,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { page } from 'vitest/browser';
 
-vi.mock('$lib/typst/pdf-generator', () => ({
+vi.mock('#lib/typst/pdf-generator.ts', () => ({
 	generateAndDownloadPdf: async () => ({ success: true })
 }));
 

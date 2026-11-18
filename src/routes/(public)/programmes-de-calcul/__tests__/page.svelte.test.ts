@@ -1,5 +1,5 @@
 /**
- * Bac à sable public des programmes de calcul (chantier `docs/wip/blockly-progress.md`, section
+ * Bac à sable public des programmes de calcul (chantier `docs/archive/wip/blockly-progress.md`, section
  * « Bac à sable des programmes de calcul », phase 0 validée le 2026-11-15).
  *
  * Sans connexion, rien d'enregistré, rien de jugé : l'élève assemble un programme, l'essaie sur un
@@ -12,7 +12,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { page, userEvent } from 'vitest/browser';
 import { render } from 'vitest-browser-svelte';
 import Page from '../+page.svelte';
-import { texteVersEtatCalcul } from '$lib/shared/blockly/calcul/notation';
+import { texteVersEtatCalcul } from '#lib/shared/blockly/calcul/notation.ts';
 
 let mains: HTMLElement[] = [];
 function mainElement(): HTMLElement {

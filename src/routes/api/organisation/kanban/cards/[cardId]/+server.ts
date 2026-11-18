@@ -11,12 +11,12 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { parseKanbanId, updateCardSchema } from '$lib/server/validation/kanban';
-import { getCardColumnId, getColumnBoardId, rateLimitResponse } from '$lib/server/kanban';
-import { checkKanbanCardMutationRateLimit } from '$lib/server/rateLimiter';
-import type { KanbanCard } from '$lib/types/database-helpers';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { parseKanbanId, updateCardSchema } from '#lib/server/validation/kanban.ts';
+import { getCardColumnId, getColumnBoardId, rateLimitResponse } from '#lib/server/kanban.ts';
+import { checkKanbanCardMutationRateLimit } from '#lib/server/rateLimiter.ts';
+import type { KanbanCard } from '#lib/types/database-helpers.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/organisation/kanban/cards/[cardId]/+server');
 

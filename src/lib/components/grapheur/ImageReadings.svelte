@@ -11,16 +11,16 @@
 	 *
 	 * @component
 	 */
-	import { useGrapheurStore } from '$lib/stores/grapheur-context';
-	import type { CoordinateTransformer } from '$lib/grapheur/viewport';
-	import { isExplicitFunction } from '$lib/grapheur/types';
-	import { curveColorValue } from '$lib/grapheur/colors';
+	import { useGrapheurStore } from '#lib/stores/grapheur-context.ts';
+	import type { CoordinateTransformer } from '#lib/grapheur/viewport.ts';
+	import { isExplicitFunction } from '#lib/grapheur/types.ts';
+	import { curveColorValue } from '#lib/grapheur/colors.ts';
 	import {
 		readingAt,
 		readingGeometry,
 		readingNumber,
 		type ReadingPoint
-	} from '$lib/grapheur/image-reading';
+	} from '#lib/grapheur/image-reading.ts';
 	import GraphLabel from './GraphLabel.svelte';
 
 	let {

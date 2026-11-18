@@ -4,10 +4,10 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { parseEspaceContent } from '$lib/ubumark/parser/espace-parser';
-import type { PatronSpec } from '$lib/ubumark/types/espace';
-import { CUBE_NETS, gridOf, patronNet } from '$lib/ubumark/utils/espace-patrons';
-import { solideTopology } from '$lib/ubumark/utils/espace-solides';
+import { parseEspaceContent } from '#lib/ubumark/parser/espace-parser.ts';
+import type { PatronSpec } from '#lib/ubumark/types/espace.ts';
+import { CUBE_NETS, gridOf, patronNet } from '#lib/ubumark/utils/espace-patrons.ts';
+import { solideTopology } from '#lib/ubumark/utils/espace-solides.ts';
 import {
 	NOTHING_PLACED,
 	NOTHING_TOUCHED,
@@ -26,7 +26,7 @@ import {
 	isPatronAnswerCorrect,
 	readCompleterAnswer,
 	readFacesAnswer
-} from '$lib/ubumark/utils/patron-gestes';
+} from '#lib/ubumark/utils/patron-gestes.ts';
 
 const parse = (...lines: string[]) => parseEspaceContent(lines.join('\n'), 'patron');
 const messages = (...lines: string[]) => parse(...lines).errors.join(' | ');

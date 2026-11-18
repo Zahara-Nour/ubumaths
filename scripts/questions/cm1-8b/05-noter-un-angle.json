@@ -1,0 +1,160 @@
+{
+	"id": "4c1ce174-15a0-4613-9df1-d4674350459e",
+	"title": "Noter un angle",
+	"description": "Notation à chapeau dans un triangle : noter l'angle marqué ; trouver le sommet d'un angle noté ; retrouver l'angle noté parmi trois angles de couleur",
+	"grades": ["CM1", "CM2"],
+	"level": 2,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Comment se note l'angle marqué en rouge ?\n\n```figure\nfenetre: -4.5 ; 4.5 ; -4 ; 4\ngrille: non\ndescription: Un triangle aux sommets nommés ; un de ses angles est marqué en rouge.\n---\n{{if:k==1|{{if:v==0|A = point(-3, -2, etiquette=\"bas-gauche\")\nB = point(3, -2, etiquette=\"bas-droite\")\nC = point(0, 3, etiquette=\"haut\")\npolygone(A, B, C, couleur=\"noir\", epaisseur=2)\nangle(B, A, C, couleur=\"rouge\", remplissage=\"rouge\", arcRadiusPx=32)|{{if:v==1|A = point(-3, -2, etiquette=\"bas-gauche\")\nB = point(3, -2, etiquette=\"bas-droite\")\nC = point(0, 3, etiquette=\"haut\")\npolygone(A, B, C, couleur=\"noir\", epaisseur=2)\nangle(A, B, C, couleur=\"rouge\", remplissage=\"rouge\", arcRadiusPx=32)|A = point(-3, -2, etiquette=\"bas-gauche\")\nB = point(3, -2, etiquette=\"bas-droite\")\nC = point(0, 3, etiquette=\"haut\")\npolygone(A, B, C, couleur=\"noir\", epaisseur=2)\nangle(A, C, B, couleur=\"rouge\", remplissage=\"rouge\", arcRadiusPx=32)}}}}|{{if:k==2|{{if:v==0|M = point(-3.5, -1.5, etiquette=\"gauche\")\nN = point(3, -2.5, etiquette=\"bas-droite\")\nP = point(1, 3, etiquette=\"haut\")\npolygone(M, N, P, couleur=\"noir\", epaisseur=2)\nangle(N, M, P, couleur=\"rouge\", remplissage=\"rouge\", arcRadiusPx=32)|{{if:v==1|M = point(-3.5, -1.5, etiquette=\"gauche\")\nN = point(3, -2.5, etiquette=\"bas-droite\")\nP = point(1, 3, etiquette=\"haut\")\npolygone(M, N, P, couleur=\"noir\", epaisseur=2)\nangle(M, N, P, couleur=\"rouge\", remplissage=\"rouge\", arcRadiusPx=32)|M = point(-3.5, -1.5, etiquette=\"gauche\")\nN = point(3, -2.5, etiquette=\"bas-droite\")\nP = point(1, 3, etiquette=\"haut\")\npolygone(M, N, P, couleur=\"noir\", epaisseur=2)\nangle(M, P, N, couleur=\"rouge\", remplissage=\"rouge\", arcRadiusPx=32)}}}}|{{if:k==3|{{if:v==0|R = point(-2.5, 2.5, etiquette=\"haut-gauche\")\nS = point(-3, -2.5, etiquette=\"bas-gauche\")\nT = point(3.5, -0.5, etiquette=\"droite\")\npolygone(R, S, T, couleur=\"noir\", epaisseur=2)\nangle(S, R, T, couleur=\"rouge\", remplissage=\"rouge\", arcRadiusPx=32)|{{if:v==1|R = point(-2.5, 2.5, etiquette=\"haut-gauche\")\nS = point(-3, -2.5, etiquette=\"bas-gauche\")\nT = point(3.5, -0.5, etiquette=\"droite\")\npolygone(R, S, T, couleur=\"noir\", epaisseur=2)\nangle(R, S, T, couleur=\"rouge\", remplissage=\"rouge\", arcRadiusPx=32)|R = point(-2.5, 2.5, etiquette=\"haut-gauche\")\nS = point(-3, -2.5, etiquette=\"bas-gauche\")\nT = point(3.5, -0.5, etiquette=\"droite\")\npolygone(R, S, T, couleur=\"noir\", epaisseur=2)\nangle(R, T, S, couleur=\"rouge\", remplissage=\"rouge\", arcRadiusPx=32)}}}}|{{if:v==0|F = point(-3.5, 1, etiquette=\"gauche\")\nG = point(2, -3, etiquette=\"bas\")\nH = point(3, 3, etiquette=\"haut-droite\")\npolygone(F, G, H, couleur=\"noir\", epaisseur=2)\nangle(G, F, H, couleur=\"rouge\", remplissage=\"rouge\", arcRadiusPx=32)|{{if:v==1|F = point(-3.5, 1, etiquette=\"gauche\")\nG = point(2, -3, etiquette=\"bas\")\nH = point(3, 3, etiquette=\"haut-droite\")\npolygone(F, G, H, couleur=\"noir\", epaisseur=2)\nangle(F, G, H, couleur=\"rouge\", remplissage=\"rouge\", arcRadiusPx=32)|F = point(-3.5, 1, etiquette=\"gauche\")\nG = point(2, -3, etiquette=\"bas\")\nH = point(3, 3, etiquette=\"haut-droite\")\npolygone(F, G, H, couleur=\"noir\", epaisseur=2)\nangle(F, H, G, couleur=\"rouge\", remplissage=\"rouge\", arcRadiusPx=32)}}}}}}}}}}\n```\n\n```choix\nmelanger: non\n- ${{if:k==1|\\widehat{BAC}|{{if:k==2|\\widehat{NMP}|{{if:k==3|\\widehat{SRT}|\\widehat{GFH}}}}}}}$\n- ${{if:k==1|\\widehat{ABC}|{{if:k==2|\\widehat{MNP}|{{if:k==3|\\widehat{RST}|\\widehat{FGH}}}}}}}$\n- ${{if:k==1|\\widehat{ACB}|{{if:k==2|\\widehat{MPN}|{{if:k==3|\\widehat{RTS}|\\widehat{FHG}}}}}}}$\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..4"
+				},
+				{
+					"name": "v",
+					"expression": "0..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{v}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On note un angle avec trois lettres sous un chapeau : la lettre du **sommet** au milieu, une lettre de chaque côté.",
+					"Le sommet de l'angle rouge est le point ${{if:v==0|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}|{{if:v==1|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}}}}}$.",
+					"L'angle se note $\\textcolor{{{color:primary.0}}}{{{if:k==1|{{if:v==0|\\widehat{BAC}|{{if:v==1|\\widehat{ABC}|\\widehat{ACB}}}}}|{{if:k==2|{{if:v==0|\\widehat{NMP}|{{if:v==1|\\widehat{MNP}|\\widehat{MPN}}}}}|{{if:k==3|{{if:v==0|\\widehat{SRT}|{{if:v==1|\\widehat{RST}|\\widehat{RTS}}}}}|{{if:v==0|\\widehat{GFH}|{{if:v==1|\\widehat{FGH}|\\widehat{FHG}}}}}}}}}}}}$ (ou ${{if:k==1|{{if:v==0|\\widehat{A}|{{if:v==1|\\widehat{B}|\\widehat{C}}}}}|{{if:k==2|{{if:v==0|\\widehat{M}|{{if:v==1|\\widehat{N}|\\widehat{P}}}}}|{{if:k==3|{{if:v==0|\\widehat{R}|{{if:v==1|\\widehat{S}|\\widehat{T}}}}}|{{if:v==0|\\widehat{F}|{{if:v==1|\\widehat{G}|\\widehat{H}}}}}}}}}}}$, quand il n'y a qu'un angle en ce point)."
+				]
+			}
+		},
+		{
+			"statement": "Quel est le sommet de l'angle ${{if:k==1|{{if:v==0|\\widehat{BAC}|{{if:v==1|\\widehat{ABC}|\\widehat{ACB}}}}}|{{if:k==2|{{if:v==0|\\widehat{NMP}|{{if:v==1|\\widehat{MNP}|\\widehat{MPN}}}}}|{{if:k==3|{{if:v==0|\\widehat{SRT}|{{if:v==1|\\widehat{RST}|\\widehat{RTS}}}}}|{{if:v==0|\\widehat{GFH}|{{if:v==1|\\widehat{FGH}|\\widehat{FHG}}}}}}}}}}}$ ?\n\n```figure\nfenetre: -4.5 ; 4.5 ; -4 ; 4\ngrille: non\ndescription: Un triangle aux sommets nommés.\n---\n{{if:k==1|A = point(-3, -2, etiquette=\"bas-gauche\")\nB = point(3, -2, etiquette=\"bas-droite\")\nC = point(0, 3, etiquette=\"haut\")\npolygone(A, B, C, couleur=\"noir\", epaisseur=2)|{{if:k==2|M = point(-3.5, -1.5, etiquette=\"gauche\")\nN = point(3, -2.5, etiquette=\"bas-droite\")\nP = point(1, 3, etiquette=\"haut\")\npolygone(M, N, P, couleur=\"noir\", epaisseur=2)|{{if:k==3|R = point(-2.5, 2.5, etiquette=\"haut-gauche\")\nS = point(-3, -2.5, etiquette=\"bas-gauche\")\nT = point(3.5, -0.5, etiquette=\"droite\")\npolygone(R, S, T, couleur=\"noir\", epaisseur=2)|F = point(-3.5, 1, etiquette=\"gauche\")\nG = point(2, -3, etiquette=\"bas\")\nH = point(3, 3, etiquette=\"haut-droite\")\npolygone(F, G, H, couleur=\"noir\", epaisseur=2)}}}}}}\n```\n\n```choix\nmelanger: non\n- le point {{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}\n- le point {{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}\n- le point {{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..4"
+				},
+				{
+					"name": "v",
+					"expression": "0..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{v}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On note un angle avec trois lettres sous un chapeau : la lettre du **sommet** au milieu, une lettre de chaque côté.",
+					"Dans ${{if:k==1|{{if:v==0|\\widehat{BAC}|{{if:v==1|\\widehat{ABC}|\\widehat{ACB}}}}}|{{if:k==2|{{if:v==0|\\widehat{NMP}|{{if:v==1|\\widehat{MNP}|\\widehat{MPN}}}}}|{{if:k==3|{{if:v==0|\\widehat{SRT}|{{if:v==1|\\widehat{RST}|\\widehat{RTS}}}}}|{{if:v==0|\\widehat{GFH}|{{if:v==1|\\widehat{FGH}|\\widehat{FHG}}}}}}}}}}}$, la lettre du milieu est ${{if:v==0|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}|{{if:v==1|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}}}}}$.",
+					"Le sommet est le point $\\textcolor{{{color:primary.0}}}{{{if:v==0|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}|{{if:v==1|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Quel angle est l'angle ${{if:k==1|{{if:v==0|\\widehat{BAC}|{{if:v==1|\\widehat{ABC}|\\widehat{ACB}}}}}|{{if:k==2|{{if:v==0|\\widehat{NMP}|{{if:v==1|\\widehat{MNP}|\\widehat{MPN}}}}}|{{if:k==3|{{if:v==0|\\widehat{SRT}|{{if:v==1|\\widehat{RST}|\\widehat{RTS}}}}}|{{if:v==0|\\widehat{GFH}|{{if:v==1|\\widehat{FGH}|\\widehat{FHG}}}}}}}}}}}$ ?\n\n```figure\nfenetre: -4.5 ; 4.5 ; -4 ; 4\ngrille: non\ndescription: Un triangle aux sommets nommés ; ses trois angles sont marqués en bleu, en rouge et en vert.\n---\n{{if:k==1|A = point(-3, -2, etiquette=\"bas-gauche\")\nB = point(3, -2, etiquette=\"bas-droite\")\nC = point(0, 3, etiquette=\"haut\")\npolygone(A, B, C, couleur=\"noir\", epaisseur=2)\nangle(B, A, C, couleur=\"bleu\", remplissage=\"bleu\", arcRadiusPx=32)\nangle(A, B, C, couleur=\"rouge\", remplissage=\"rouge\", arcRadiusPx=32)\nangle(A, C, B, couleur=\"vert\", remplissage=\"vert\", arcRadiusPx=32)|{{if:k==2|M = point(-3.5, -1.5, etiquette=\"gauche\")\nN = point(3, -2.5, etiquette=\"bas-droite\")\nP = point(1, 3, etiquette=\"haut\")\npolygone(M, N, P, couleur=\"noir\", epaisseur=2)\nangle(N, M, P, couleur=\"bleu\", remplissage=\"bleu\", arcRadiusPx=32)\nangle(M, N, P, couleur=\"rouge\", remplissage=\"rouge\", arcRadiusPx=32)\nangle(M, P, N, couleur=\"vert\", remplissage=\"vert\", arcRadiusPx=32)|{{if:k==3|R = point(-2.5, 2.5, etiquette=\"haut-gauche\")\nS = point(-3, -2.5, etiquette=\"bas-gauche\")\nT = point(3.5, -0.5, etiquette=\"droite\")\npolygone(R, S, T, couleur=\"noir\", epaisseur=2)\nangle(S, R, T, couleur=\"bleu\", remplissage=\"bleu\", arcRadiusPx=32)\nangle(R, S, T, couleur=\"rouge\", remplissage=\"rouge\", arcRadiusPx=32)\nangle(R, T, S, couleur=\"vert\", remplissage=\"vert\", arcRadiusPx=32)|F = point(-3.5, 1, etiquette=\"gauche\")\nG = point(2, -3, etiquette=\"bas\")\nH = point(3, 3, etiquette=\"haut-droite\")\npolygone(F, G, H, couleur=\"noir\", epaisseur=2)\nangle(G, F, H, couleur=\"bleu\", remplissage=\"bleu\", arcRadiusPx=32)\nangle(F, G, H, couleur=\"rouge\", remplissage=\"rouge\", arcRadiusPx=32)\nangle(F, H, G, couleur=\"vert\", remplissage=\"vert\", arcRadiusPx=32)}}}}}}\n```\n\n```choix\nmelanger: non\n- l'angle bleu\n- l'angle rouge\n- l'angle vert\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..4"
+				},
+				{
+					"name": "v",
+					"expression": "0..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{v}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On note un angle avec trois lettres sous un chapeau : la lettre du **sommet** au milieu, une lettre de chaque côté.",
+					"Dans ${{if:k==1|{{if:v==0|\\widehat{BAC}|{{if:v==1|\\widehat{ABC}|\\widehat{ACB}}}}}|{{if:k==2|{{if:v==0|\\widehat{NMP}|{{if:v==1|\\widehat{MNP}|\\widehat{MPN}}}}}|{{if:k==3|{{if:v==0|\\widehat{SRT}|{{if:v==1|\\widehat{RST}|\\widehat{RTS}}}}}|{{if:v==0|\\widehat{GFH}|{{if:v==1|\\widehat{FGH}|\\widehat{FHG}}}}}}}}}}}$, la lettre du milieu est ${{if:v==0|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}|{{if:v==1|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}}}}}$ : c'est le sommet.",
+					"C'est l'angle {{if:v==0|**bleu**|{{if:v==1|**rouge**|**vert**}}}}, marqué au point $\\textcolor{{{color:primary.0}}}{{{if:v==0|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}|{{if:v==1|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}}}}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Angle en B : ABC",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"v": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : BAC (sommet en tête)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"v": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "MNP : sommet N",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"v": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : première lettre (M)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"v": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "RTS : angle vert (en T)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3",
+				"v": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : angle en R (bleu)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3",
+				"v": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

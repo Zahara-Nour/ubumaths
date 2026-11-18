@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { marketplaceStore } from '$lib/stores/marketplace.svelte';
-	import * as Tabs from '$lib/components/ui/tabs';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Button } from '$lib/components/ui/button';
-	import ConsentButton from '$lib/components/ConsentButton.svelte';
+	import { marketplaceStore } from '#lib/stores/marketplace.svelte.ts';
+	import * as Tabs from '#lib/components/ui/tabs/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import ConsentButton from '#lib/components/ConsentButton.svelte';
 	import {
 		Plus,
 		ShoppingBag,
@@ -13,17 +13,17 @@
 		RefreshCw,
 		CircleUserRound
 	} from '@lucide/svelte';
-	import gidouilleImage from '$lib/assets/images/gidouille.png';
-	import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
+	import gidouilleImage from '#lib/assets/images/gidouille.png';
+	import { studentCache } from '#lib/stores/studentDashboardCache.svelte.ts';
 
 	// Import components
-	import MarketplaceListings from '$lib/components/marketplace/MarketplaceListings.svelte';
-	import MyListings from '$lib/components/marketplace/MyListings.svelte';
-	import StudentActivityFeed from '$lib/components/marketplace/StudentActivityFeed.svelte';
-	import CreateListingModal from '$lib/components/marketplace/CreateListingModal.svelte';
-	import VipCardShopSection from '$lib/components/vip-cards/VipCardShopSection.svelte';
-	import MathouDecorationsShowcase from '$lib/components/mathoux/MathouDecorationsShowcase.svelte';
-	import AvatarShopSection from '$lib/components/avatars/AvatarShopSection.svelte';
+	import MarketplaceListings from '#lib/components/marketplace/MarketplaceListings.svelte';
+	import MyListings from '#lib/components/marketplace/MyListings.svelte';
+	import StudentActivityFeed from '#lib/components/marketplace/StudentActivityFeed.svelte';
+	import CreateListingModal from '#lib/components/marketplace/CreateListingModal.svelte';
+	import VipCardShopSection from '#lib/components/vip-cards/VipCardShopSection.svelte';
+	import MathouDecorationsShowcase from '#lib/components/mathoux/MathouDecorationsShowcase.svelte';
+	import AvatarShopSection from '#lib/components/avatars/AvatarShopSection.svelte';
 
 	// Props from server
 	let { data } = $props();

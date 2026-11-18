@@ -37,9 +37,11 @@ on:
       # jeu de référence figé du dictionnaire, lu par la suite
       - 'tests/fixtures/lexique/dictionnaire-reference.ts'
       - 'tests/fixtures/lexique/mots-lecture-2026-10-11.ts'
+      - 'tests/fixtures/lexique/verbes-consigne-2026-11-16.ts'
       - 'vitest.integration.config.ts'
       - 'vitest.base.config.ts'
-      - 'svelte.config.js'
+      - 'vite.config.ts'
+      - 'src/env.ts'
       - '.github/workflows/nightly-integration.yml'
       - '.github/ci.env'
       - 'scripts/with-db-lock.sh'
@@ -51,8 +53,12 @@ on:
       # src/lib : dossiers atteints par la suite
       - 'src/lib/dictionary/**'
       - 'src/lib/math/**'
+      # Passage quotidien du carnet de liaison (courriels, forme du carnet)
+      - 'src/lib/email-templates/**'
+      - 'src/lib/validation/carnet.ts'
       - 'src/lib/mathAST/**'
       - 'src/lib/mathoux/**'
+      - 'src/lib/descente/**'
       - 'src/lib/programmes/**'
       - 'src/lib/questions/**'
       - 'src/lib/resources/**'
@@ -74,6 +80,7 @@ on:
       # programme de calcul et lecture commune des blocs : jugés par answer-validator
       - 'src/lib/shared/blockly/calcul/**'
       - 'src/lib/shared/blockly/lecture.ts'
+      - 'src/lib/shared/blockly/nombres.ts'
       - 'src/lib/seo/site.ts'
       - 'src/lib/utils/**'
       # src/lib : fichiers atteints ponctuellement

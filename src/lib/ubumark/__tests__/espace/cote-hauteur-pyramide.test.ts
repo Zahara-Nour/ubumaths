@@ -8,17 +8,17 @@
  * milieu de la hauteur vers la droite, le texte au bout, hors du solide.
  */
 import { describe, expect, it } from 'vitest';
-import { parseEspaceContent } from '$lib/ubumark/parser/espace-parser';
-import type { SolideSpec } from '$lib/ubumark/types/espace';
-import type { EspacePoint } from '$lib/ubumark/utils/espace-scene';
-import { ESPACE_STROKE } from '$lib/ubumark/utils/espace-scene';
+import { parseEspaceContent } from '#lib/ubumark/parser/espace-parser.ts';
+import type { SolideSpec } from '#lib/ubumark/types/espace.ts';
+import type { EspacePoint } from '#lib/ubumark/utils/espace-scene.ts';
+import { ESPACE_STROKE } from '#lib/ubumark/utils/espace-scene.ts';
 import {
 	buildSolideScene,
 	labelBox,
 	solideLineStroke,
 	type SolideLabel,
 	type SolideScene
-} from '$lib/ubumark/utils/espace-solides';
+} from '#lib/ubumark/utils/espace-solides.ts';
 
 // ============================================================================
 // OUTILS

@@ -4,7 +4,7 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { parseSchemaBarresContent } from '$lib/ubumark/parser/schema-barres-parser';
+import { parseSchemaBarresContent } from '#lib/ubumark/parser/schema-barres-parser.ts';
 import {
 	SCHEMA_BARRES_DRAW_WIDTH,
 	SCHEMA_BARRES_FONT_SIZE,
@@ -14,7 +14,7 @@ import {
 	buildSchemaBarresScene,
 	schemaBarresDrawWidth,
 	schemaBarresLabel
-} from '$lib/ubumark/utils/schema-barres-scene';
+} from '#lib/ubumark/utils/schema-barres-scene.ts';
 
 function scene(...lines: string[]) {
 	const node = parseSchemaBarresContent(lines.join('\n'));

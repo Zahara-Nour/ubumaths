@@ -3,7 +3,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { rewriteBarePi } from '$lib/ubumark/parameterization/validator/bare-pi';
+import { rewriteBarePi } from '#lib/ubumark/parameterization/validator/bare-pi.ts';
 
 describe('rewriteBarePi : calculs réécrits', () => {
 	it.each([

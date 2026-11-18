@@ -4,8 +4,8 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { parseMonnaieContent } from '$lib/ubumark/parser/monnaie-parser';
-import { generateMonnaieTypst } from '$lib/ubumark/generators/monnaie-typst';
+import { parseMonnaieContent } from '#lib/ubumark/parser/monnaie-parser.ts';
+import { generateMonnaieTypst } from '#lib/ubumark/generators/monnaie-typst.ts';
 import {
 	addToBuild,
 	BUILD_LIMITS,
@@ -19,8 +19,8 @@ import {
 	removeFromBuild,
 	reserveScene,
 	solutionBuild
-} from '$lib/ubumark/utils/monnaie-construire';
-import { MONNAIE_UNAVAILABLE, type MonnaieNode } from '$lib/ubumark/types/monnaie';
+} from '#lib/ubumark/utils/monnaie-construire.ts';
+import { MONNAIE_UNAVAILABLE, type MonnaieNode } from '#lib/ubumark/types/monnaie.ts';
 
 const parse = (...lines: string[]) => parseMonnaieContent(lines.join('\n'));
 const messages = (node: MonnaieNode) => node.errors.map((e) => e.message);
@@ -198,7 +198,7 @@ describe('construire: — PDF (Q9)', () => {
 // Revue de la PR 2 : les blocs à lire ne changent pas
 describe('```monnaie à lire : inchangé', () => {
 	it('bloc non fermé : un paragraphe « Construire… » ou « Réserve… » reste du texte', async () => {
-		const { parseMarkdown } = await import('$lib/ubumark');
+		const { parseMarkdown } = await import('#lib/ubumark/index.ts');
 		for (const text of ['Construire une maison coûte cher.', 'Réserve ta place.']) {
 			// Un ``` plus loin : le bloc passerait pour fermé s'il avalait le paragraphe
 			const doc = parseMarkdown(

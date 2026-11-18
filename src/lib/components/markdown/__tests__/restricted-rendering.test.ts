@@ -6,8 +6,8 @@
  * échappé au retrait des langues de bloc de code).
  */
 import { describe, it, expect } from 'vitest';
-import { parseMarkdown } from '$lib/ubumark';
-import type { BlockNode, DocumentNode } from '$lib/ubumark';
+import { parseMarkdown } from '#lib/ubumark/index.ts';
+import type { BlockNode, DocumentNode } from '#lib/ubumark/index.ts';
 import {
 	CAHIER_BLOCK_PLACEHOLDER,
 	neutralizeUnsafeBlocks,

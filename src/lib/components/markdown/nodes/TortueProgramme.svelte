@@ -2,7 +2,7 @@
 	TortueProgramme.svelte
 	======================
 
-	Bloc ```tortue (chantier `blockly`, PR 4b ; journal `docs/wip/blockly-progress.md`) : l'élève
+	Bloc ```tortue (chantier `blockly`, PR 4b ; journal `docs/archive/wip/blockly-progress.md`) : l'élève
 	assemble des blocs tortue, sa réponse est son programme écrit en texte (`etatVersTexte`),
 	jugé sur le tracé par le serveur.
 
@@ -17,21 +17,21 @@
 	- Après la validation : blocs verrouillés, tracé de l'élève vert ou rouge, l'attendu en
 	  pointillés quand il est connu (jamais dans une évaluation notée : `attendu: ?`).
 	- Hors question (aperçu de l'éditeur, cours) : le geste libre, rien de jugé.
+	- `niveau: 4e | 3e` (chantier `tortue-variables`) : les blocs proposés, la notation de la
+	  réponse et le compte des blocs sont ceux du niveau.
 
 	@module components/markdown/nodes/TortueProgramme
 -->
 <script lang="ts">
 	import { onMount, type Component } from 'svelte';
-	import TortueCanvas from '$lib/components/blockly/TortueCanvas.svelte';
-	import {
-		LONGUEUR_MAX_PROGRAMME,
-		nombreDeBlocs,
-		type TexteLu
-	} from '$lib/shared/blockly/tortue/notation';
-	import { lireProgrammeTortue } from '$lib/shared/blockly/tortue/jugement';
-	import type { Segment } from '$lib/shared/blockly/tortue/segments';
-	import { readExpectedTortueAnswer } from '$lib/ubumark/utils/tortue-answer';
-	import { TORTUE_UNAVAILABLE, type TortueNode } from '$lib/ubumark/types/tortue';
+	import TortueCanvas from '#lib/components/blockly/TortueCanvas.svelte';
+	import { LONGUEUR_MAX_PROGRAMME, type TexteLu } from '#lib/shared/blockly/tortue/notation.ts';
+	import { nombreDeBlocsTortue } from '#lib/shared/blockly/tortue/niveaux.ts';
+	import type { NiveauTortue } from '#lib/shared/blockly/tortue/interpreteur.ts';
+	import { lireProgrammeTortue } from '#lib/shared/blockly/tortue/jugement.ts';
+	import type { Segment } from '#lib/shared/blockly/tortue/segments.ts';
+	import { readExpectedTortueAnswer } from '#lib/ubumark/utils/tortue-answer.ts';
+	import { TORTUE_UNAVAILABLE, type TortueNode } from '#lib/ubumark/types/tortue.ts';
 	import { readAuthoringErrors } from '../authoring-errors';
 	import type { BuildCase } from './CollectionConstruire.svelte';
 
@@ -41,6 +41,7 @@
 
 	interface EditeurProps {
 		programme: string;
+		niveau?: NiveauTortue;
 		readonly?: boolean;
 		modele?: readonly Segment[] | null;
 		attendu?: readonly Segment[] | null;
@@ -113,18 +114,19 @@
 		return spec?.depart ?? '';
 	});
 
+	let niveau = $derived(spec?.niveau ?? 'base');
 	let blocsMax = $derived(spec?.blocsMax ?? null);
-	let blocsComptes = $derived(blocsPoses === undefined ? nombreDeBlocs(programme) : blocsPoses);
+	let blocsComptes = $derived(
+		blocsPoses === undefined ? nombreDeBlocsTortue(programme, niveau) : blocsPoses
+	);
 
 	/** L'attendu, après la validation seulement : la réponse attendue, sinon le bloc */
 	let attendu = $derived.by((): Segment[] | null => {
 		if (verdict === null) return null;
-		const reference =
-			(expected !== undefined ? readExpectedTortueAnswer(expected)?.attendu : undefined) ??
-			spec?.attendu ??
-			null;
+		const attendue = expected !== undefined ? readExpectedTortueAnswer(expected) : null;
+		const reference = attendue?.attendu ?? spec?.attendu ?? null;
 		if (reference === null) return null;
-		const lu = lireProgrammeTortue(reference);
+		const lu = lireProgrammeTortue(reference, attendue?.niveau ?? niveau);
 		return lu.ok ? lu.segments : null;
 	});
 
@@ -134,7 +136,7 @@
 
 	function handleProgramme(lu: TexteLu): void {
 		let valeur = '';
-		blocsPoses = lu.ok ? nombreDeBlocs(lu.texte) : null;
+		blocsPoses = lu.ok ? nombreDeBlocsTortue(lu.texte, niveau) : null;
 		if (!lu.ok) refus = lu.message;
 		else if (lu.texte.length > LONGUEUR_MAX_PROGRAMME) refus = PROGRAMME_TROP_LONG;
 		else {
@@ -146,7 +148,7 @@
 	}
 
 	onMount(() => {
-		import('$lib/components/blockly/TortueEditeur.svelte')
+		import('#lib/components/blockly/TortueEditeur.svelte')
 			.then((module) => (Editeur = module.default))
 			.catch(() => (chargementRate = true));
 	});
@@ -198,6 +200,7 @@
 		{#if Editeur}
 			<Editeur
 				{programme}
+				{niveau}
 				readonly={verrouille}
 				{modele}
 				{attendu}

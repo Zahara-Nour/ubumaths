@@ -9,10 +9,10 @@ import {
 	getErrorOccurrences,
 	resolveErrorBySignature,
 	type ErrorFilters
-} from '$lib/server/errorMonitoring';
-import { bulkResolveErrorsSchema } from '$lib/server/validation/errors';
-import { requireAdmin } from '$lib/server/middleware/auth';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/errorMonitoring.ts';
+import { bulkResolveErrorsSchema } from '#lib/server/validation/errors.ts';
+import { requireAdmin } from '#lib/server/middleware/auth.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/errors/bulk-resolve/+server');
 

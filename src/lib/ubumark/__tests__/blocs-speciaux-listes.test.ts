@@ -8,7 +8,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { parseMarkdown, type BlockNode, type ListNode } from '$lib/ubumark';
+import { parseMarkdown, type BlockNode, type ListNode } from '#lib/ubumark/index.ts';
 
 const indent = (lines: string[]) => lines.map((l) => (l ? `   ${l}` : l));
 

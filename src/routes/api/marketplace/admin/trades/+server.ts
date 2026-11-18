@@ -1,8 +1,8 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRoles } from '$lib/server/middleware/auth';
-import { adminTradesQuerySchema } from '$lib/server/marketplace/validation';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import { adminTradesQuerySchema } from '#lib/server/marketplace/validation.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/marketplace/admin/trades/+server');
 

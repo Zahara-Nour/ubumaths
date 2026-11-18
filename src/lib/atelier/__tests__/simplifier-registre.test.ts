@@ -10,9 +10,9 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
-import { displayUnitsInLatex } from '$lib/mathAST/units/display';
-import { degreeSignWritten } from '$lib/mathAST/cli/core/degrees';
+import { WebReplEngine } from '#lib/mathAST/cli/web/web-repl-engine.ts';
+import { displayUnitsInLatex } from '#lib/mathAST/units/display.ts';
+import { degreeSignWritten } from '#lib/mathAST/cli/core/degrees.ts';
 import { simplifySteps } from '../simplify-steps';
 import { Atelier } from '../atelier.svelte';
 import { runInput } from '../calcul';

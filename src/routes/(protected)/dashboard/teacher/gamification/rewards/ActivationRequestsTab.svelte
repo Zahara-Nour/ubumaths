@@ -14,17 +14,17 @@
 -->
 
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import * as Table from '$lib/components/ui/table';
-	import * as Card from '$lib/components/ui/card';
-	import { Badge } from '$lib/components/ui/badge';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { lore } from '#lib/config/lore.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import * as Table from '#lib/components/ui/table/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import { invalidateAll } from '$app/navigation';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
-	import ConfirmDialog from '$lib/components/ui/confirm-dialog/ConfirmDialog.svelte';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
+	import ConfirmDialog from '#lib/components/ui/confirm-dialog/ConfirmDialog.svelte';
 	import {
 		Search,
 		CheckCircle,
@@ -39,8 +39,8 @@
 		vipCardTemplates,
 		getTemplateById,
 		getEnabledTemplates
-	} from '$lib/stores/vipCardTemplates.svelte';
-	import { getActionDescription } from '$lib/utils/vip-cards';
+	} from '#lib/stores/vipCardTemplates.svelte.ts';
+	import { getActionDescription } from '#lib/utils/vip-cards.ts';
 
 	// Exported type for use by parent component
 	export interface ActivationRequest {

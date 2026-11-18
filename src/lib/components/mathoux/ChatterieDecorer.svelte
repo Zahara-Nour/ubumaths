@@ -19,13 +19,13 @@
 	 */
 
 	import { invalidateAll } from '$app/navigation';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import { Button } from '$lib/components/ui/button';
-	import { consent } from '$lib/stores/consent.svelte';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { consent } from '#lib/stores/consent.svelte.ts';
 	import MathouAvatar from './MathouAvatar.svelte';
-	import gidouilleImage from '$lib/assets/images/gidouille.png';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import { syncGidouilles } from '$lib/utils/cache-sync';
+	import gidouilleImage from '#lib/assets/images/gidouille.png';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import { syncGidouilles } from '#lib/utils/cache-sync.ts';
 	import {
 		MATHOU_COLLARS,
 		MATHOU_DECORATIONS,
@@ -33,9 +33,9 @@
 		MATHOU_HATS,
 		type MathouCatalogId,
 		type MathouDecorationInfo
-	} from '$lib/mathoux/decorations';
-	import type { Mathou } from '$lib/mathoux/collection-logic';
-	import { capitalize } from '$lib/mathoux/news';
+	} from '#lib/mathoux/decorations.ts';
+	import type { Mathou } from '#lib/mathoux/collection-logic.ts';
+	import { capitalize } from '#lib/mathoux/news.ts';
 
 	// Types
 	interface Props {

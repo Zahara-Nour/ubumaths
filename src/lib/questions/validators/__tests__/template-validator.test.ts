@@ -9,7 +9,7 @@
 import { describe, it, expect } from 'vitest';
 import { validateTemplate } from '../template-validator';
 import type { QuestionTemplate } from '../../types';
-import { templateMarkdown } from '$lib/ubumark';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 
 describe('validateTemplate - Valid Templates', () => {
 	it('should validate simple fill_in_blanks template', () => {

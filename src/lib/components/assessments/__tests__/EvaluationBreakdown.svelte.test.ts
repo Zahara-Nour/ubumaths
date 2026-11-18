@@ -10,7 +10,7 @@ import type {
 	BreakdownTally,
 	EvaluationBreakdown as Breakdown,
 	QuestionTiming
-} from '$lib/types/evaluation-breakdown';
+} from '#lib/types/evaluation-breakdown.ts';
 
 function tally(overrides: Partial<BreakdownTally> = {}): BreakdownTally {
 	return {

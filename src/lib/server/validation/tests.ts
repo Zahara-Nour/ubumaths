@@ -4,8 +4,8 @@
  */
 
 import { z } from 'zod';
-import { isCourseCard } from '$lib/questions/types';
-import { seriesItemsSchema } from '$lib/validation/series';
+import { isCourseCard } from '#lib/questions/types.ts';
+import { seriesItemsSchema } from '#lib/validation/series.ts';
 import { uuidSchema } from './common';
 
 // ============================================================================
@@ -30,7 +30,7 @@ const MAX_ANSWER_PARTS = 50;
 
 /**
  * Instance de question, forme RÉELLE produite par `generateInstance`
- * (`QuestionInstance`, `$lib/questions/types.ts`).
+ * (`QuestionInstance`, `#lib/questions/types.ts`).
  *
  * Ne retient que ce que la route exploite : `templateId` (référentiel, FSRS,
  * paquet Programme) et ce qu'elle archive dans `test_answers.question_instance`
@@ -73,7 +73,7 @@ const answerValueSchema = z.union([
 ]);
 
 /**
- * Réponse de l'élève, forme `AnswerData` (`$lib/types/question-display.ts`)
+ * Réponse de l'élève, forme `AnswerData` (`#lib/types/question-display.ts`)
  * émise par `QuestionCard`.
  *
  * - `value` absente : QCM validé sans choix (`selectedChoices[0]` indéfini,

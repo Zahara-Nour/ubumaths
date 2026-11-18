@@ -6,8 +6,8 @@
  * Sans dépendance à Blockly : s'exécute aussi sous Node (correction).
  */
 
-import { executerTortue, messageErreurTortue } from './interpreteur';
-import { nombreDeBlocs, texteVersEtat } from './notation';
+import { executerTortue, messageErreurTortue, type NiveauTortue } from './interpreteur';
+import { nombreDeBlocsTortue, texteVersEtatTortue } from './niveaux';
 import { memesFormes, memesTraces, type Segment } from './segments';
 
 // =============================================================================
@@ -38,11 +38,14 @@ export const COMPARAISONS_TORTUE: readonly ComparaisonTortue[] = ['position', 'f
 // Fonctions
 // =============================================================================
 
-/** Lit et exécute un programme écrit ; rend ses segments, ou le message de l'erreur. */
-export function lireProgrammeTortue(texte: string): ProgrammeLu {
-	const lu = texteVersEtat(texte);
+/**
+ * Lit et exécute un programme écrit, avec les blocs du niveau (sans niveau par défaut) ; rend ses
+ * segments, ou le message de l'erreur.
+ */
+export function lireProgrammeTortue(texte: string, niveau: NiveauTortue = 'base'): ProgrammeLu {
+	const lu = texteVersEtatTortue(texte, niveau);
 	if (!lu.ok) return lu;
-	const resultat = executerTortue(lu.etat);
+	const resultat = executerTortue(lu.etat, niveau);
 	if (!resultat.ok) return { ok: false, message: messageErreurTortue(resultat.erreur) };
 	return { ok: true, segments: resultat.segments };
 }
@@ -56,29 +59,35 @@ export function messageTropDeBlocs(nombre: number, maximum: number): string {
  * Le programme dépasse-t-il le nombre maximal de blocs ? Rend le message, ou null (dans la
  * limite, sans limite, ou illisible : sa lecture dit pourquoi).
  */
-export function depassementDeBlocs(reponse: string, maximum: number | null): string | null {
+export function depassementDeBlocs(
+	reponse: string,
+	maximum: number | null,
+	niveau: NiveauTortue = 'base'
+): string | null {
 	if (maximum === null) return null;
-	const nombre = nombreDeBlocs(reponse);
+	const nombre = nombreDeBlocsTortue(reponse, niveau);
 	if (nombre === null || nombre <= maximum) return null;
 	return messageTropDeBlocs(nombre, maximum);
 }
 
 /**
- * Juge le programme de l'élève contre le programme attendu. `blocsMax` (`blocs:`) : au-delà, faux
- * avec le message, même si le tracé est juste. Ne lève jamais.
+ * Juge le programme de l'élève contre le programme attendu, avec les blocs du niveau de la
+ * question (sans niveau par défaut : un bloc au-dessus est refusé). `blocsMax` (`blocs:`) :
+ * au-delà, faux avec le message, même si le tracé est juste. Ne lève jamais.
  */
 export function jugerProgrammeTortue(
 	reponse: string,
 	attendu: string,
 	comparaison: ComparaisonTortue,
-	blocsMax: number | null = null
+	blocsMax: number | null = null,
+	niveau: NiveauTortue = 'base'
 ): VerdictTortue {
 	if (reponse.trim() === '') return { juste: false };
-	const eleve = lireProgrammeTortue(reponse);
+	const eleve = lireProgrammeTortue(reponse, niveau);
 	if (!eleve.ok) return { juste: false, message: eleve.message };
-	const tropDeBlocs = depassementDeBlocs(reponse, blocsMax);
+	const tropDeBlocs = depassementDeBlocs(reponse, blocsMax, niveau);
 	if (tropDeBlocs !== null) return { juste: false, message: tropDeBlocs };
-	const reference = lireProgrammeTortue(attendu);
+	const reference = lireProgrammeTortue(attendu, niveau);
 	// Un attendu illisible est refusé à la publication ; ici, jamais juste
 	if (!reference.ok || reference.segments.length === 0) return { juste: false };
 	const memes = comparaison === 'forme' ? memesFormes : memesTraces;

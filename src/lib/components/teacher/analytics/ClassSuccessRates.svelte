@@ -5,12 +5,12 @@
 	Cf. `docs/systeme/analytique-prof.md`.
 -->
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import { ChevronRight } from '@lucide/svelte';
-	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
-	import { Skeleton } from '$lib/components/ui/skeleton';
-	import * as Card from '$lib/components/ui/card';
-	import { Progress } from '$lib/components/ui/progress';
+	import InlineMarkdown from '#lib/components/markdown/InlineMarkdown.svelte';
+	import { Skeleton } from '#lib/components/ui/skeleton/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Progress } from '#lib/components/ui/progress/index.ts';
 
 	// Types
 

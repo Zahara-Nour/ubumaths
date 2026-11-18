@@ -14,16 +14,16 @@ import { describe, it, expect } from 'vitest';
 import { generateInstance } from '../generator/instance-generator';
 import { toPublicQuestion } from '../public-question';
 import { maskGestureAnswers } from '../masked-statement';
-import { hasMaskedValue } from '$lib/ubumark/utils/masked-value';
+import { hasMaskedValue } from '#lib/ubumark/utils/masked-value.ts';
 import type { QuestionInstance, QuestionTemplate } from '../types';
-import { templateMarkdown } from '$lib/ubumark';
-import { parseNumberLineContent } from '$lib/ubumark/parser/number-line-parser';
-import { parseCourbeContent } from '$lib/ubumark/parser/courbe-parser';
-import { parseHorlogeContent } from '$lib/ubumark/parser/horloge-parser';
-import { parseCollectionContent } from '$lib/ubumark/parser/collection-parser';
-import { parseMonnaieContent } from '$lib/ubumark/parser/monnaie-parser';
-import { parsePartageContent } from '$lib/ubumark/parser/partage-parser';
-import { parseStatChartContent } from '$lib/ubumark/parser/stat-chart-parser';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
+import { parseNumberLineContent } from '#lib/ubumark/parser/number-line-parser.ts';
+import { parseCourbeContent } from '#lib/ubumark/parser/courbe-parser.ts';
+import { parseHorlogeContent } from '#lib/ubumark/parser/horloge-parser.ts';
+import { parseCollectionContent } from '#lib/ubumark/parser/collection-parser.ts';
+import { parseMonnaieContent } from '#lib/ubumark/parser/monnaie-parser.ts';
+import { parsePartageContent } from '#lib/ubumark/parser/partage-parser.ts';
+import { parseStatChartContent } from '#lib/ubumark/parser/stat-chart-parser.ts';
 
 // Constantes
 const META = { position: 0, delaySeconds: 20 };

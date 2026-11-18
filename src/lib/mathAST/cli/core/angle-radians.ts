@@ -19,7 +19,7 @@ import { format as formatUnit } from '../../units';
 import { divide, multiply, number as mathNumber, parentheses, piConstant } from '../../factory';
 import { transformAST } from '../../visitor';
 import { findNodes } from '../../transforms';
-import { simplifyExact } from '$lib/geometry-core/compute/geo-arithmetic';
+import { simplifyExact } from '#lib/geometry-core/compute/geo-arithmetic.ts';
 import { nodesEqual } from '../../normal/hash';
 
 /** Les fonctions qui prennent un angle et rendent un nombre. */

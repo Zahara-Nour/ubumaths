@@ -6,11 +6,11 @@
  * et les intervalles de la première révision d'une carte neuve, calculés par le
  * vrai FSRS (chantier demo-debug, PR 6g).
  */
-import { createDefaultFSRS } from '$lib/srs/fsrs';
-import type { QuestionInstance } from '$lib/questions/types';
-import type { GradeCode } from '$lib/types/grades';
-import type { ClassroomItem } from '$lib/types/test';
-import { resolvedMarkdown } from '$lib/ubumark';
+import { createDefaultFSRS } from '#lib/srs/fsrs.ts';
+import type { QuestionInstance } from '#lib/questions/types.ts';
+import type { GradeCode } from '#lib/types/grades.ts';
+import type { ClassroomItem } from '#lib/types/test.ts';
+import { resolvedMarkdown } from '#lib/ubumark/index.ts';
 
 // Types
 interface DemoQuestion {

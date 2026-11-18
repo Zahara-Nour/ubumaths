@@ -16,7 +16,8 @@ describe('parseTortueContent', () => {
 			comparer: 'position',
 			modele: null,
 			depart: null,
-			blocsMax: null
+			blocsMax: null,
+			niveau: 'base'
 		});
 	});
 

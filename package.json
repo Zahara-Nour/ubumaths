@@ -1,8 +1,12 @@
 {
 	"name": "chiphre",
 	"private": true,
-	"version": "0.91.0",
+	"version": "0.95.0",
 	"type": "module",
+	"imports": {
+		"#lib/*": "./src/lib/*",
+		"#tests/*": "./tests/*"
+	},
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/Zahara-Nour/ubumaths.git"
@@ -69,6 +73,7 @@
 		"check:await-render": "tsx scripts/check-await-render.ts",
 		"check:integration-paths": "tsx scripts/check-integration-paths.ts",
 		"check:migrations": "bash scripts/garde-migrations-horodatage.sh",
+		"migrer:diese": "tsx scripts/migrer-diese.ts",
 		"migration:horodatage": "bash scripts/garde-migrations-horodatage.sh --prochain",
 		"check:ubumark": "tsx scripts/check-ubumark.ts",
 		"fiche:verifier": "bash scripts/fiches/verifier-fiche.sh",
@@ -110,8 +115,9 @@
 		"@lucide/svelte": "^1.70.0",
 		"@myriaddreamin/typst-ts-web-compiler": "0.6.1-rc5",
 		"@playwright/test": "^1.65.0",
-		"@sveltejs/adapter-vercel": "^6.3.5",
-		"@sveltejs/kit": "^2.69.1",
+		"@sveltejs/adapter-vercel": "^7.0.3",
+		"@sveltejs/kit": "^3.2.0",
+		"@sveltejs/load-config": "^0.2.2",
 		"@sveltejs/mcp": "0.1.30",
 		"@sveltejs/vite-plugin-svelte": "^7.3.1",
 		"@tailwindcss/forms": "^0.5.11",
@@ -160,7 +166,7 @@
 		"tailwindcss": "^4.3.5",
 		"ts-fsrs": "6.0.0",
 		"tsx": "^4.23.15",
-		"typescript": "^5.9.3",
+		"typescript": "^6.0.3",
 		"typescript-eslint": "^8.72.1",
 		"vite": "^8.3.6",
 		"vitest": "^4.1.12",

@@ -4,7 +4,7 @@
  * Programme de 1re spécialité (`1SPE-156` à `1SPE-166`) : loi, espérance,
  * variance (formule de König-Huygens, en calcul exact), écart type.
  *
- * ⚠️ Aucun import `$lib` : voir `statistics/describe`.
+ * ⚠️ Aucun import `#lib` : voir `statistics/describe`.
  *
  * @module statistics/random-variable
  */

@@ -2,7 +2,7 @@
  * Bloc ```calcul → Typst : le texte produit, et une compilation RÉELLE par le compilateur
  * typst.ts (celui de la production, en WebAssembly).
  *
- * Phase 0 (chantier `docs/wip/blockly-progress.md`, PR 5, Q4) : PDF = consigne + « À faire sur
+ * Phase 0 (chantier `docs/archive/wip/blockly-progress.md`, PR 5, Q4) : PDF = consigne + « À faire sur
  * Chiphre ». Ni le programme de référence, ni celui de départ (la fiche ne dit pas la réponse).
  *
  * Témoin : un document cassé est refusé, sinon ce test ne prouverait rien.
@@ -12,10 +12,10 @@ import { describe, it, expect, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { loadFonts } from '@myriaddreamin/typst.ts/options.init';
-import { parseMarkdown } from '$lib/ubumark';
-import { generateTypst } from '$lib/ubumark/generators/typst-generator';
-import { CALCUL_A_FAIRE_SUR_CHIPHRE } from '$lib/ubumark/generators/calcul-typst';
-import { CALCUL_UNAVAILABLE } from '$lib/ubumark/types/calcul';
+import { parseMarkdown } from '#lib/ubumark/index.ts';
+import { generateTypst } from '#lib/ubumark/generators/typst-generator.ts';
+import { CALCUL_A_FAIRE_SUR_CHIPHRE } from '#lib/ubumark/generators/calcul-typst.ts';
+import { CALCUL_UNAVAILABLE } from '#lib/ubumark/types/calcul.ts';
 
 const bloc = (...lines: string[]) => ['```calcul', 'case: 0', ...lines, '```'].join('\n');
 

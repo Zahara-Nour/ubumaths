@@ -12,7 +12,7 @@
  *
  * Module sans dépendance : le générateur Typst l'importe sans tirer d'icônes.
  */
-import type { WorksheetType } from '$lib/types/worksheets';
+import type { WorksheetType } from '#lib/types/worksheets.ts';
 
 export const WORKSHEET_TYPE_LABELS: Record<WorksheetType, string> = {
 	worksheet: "Fiche d'exercices",

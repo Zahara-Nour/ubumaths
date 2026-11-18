@@ -1,9 +1,9 @@
 import type { RequestHandler } from './$types';
 import { error, json } from '@sveltejs/kit';
 import { z } from 'zod';
-import { requireRole } from '$lib/server/middleware/auth';
-import { sanitizeRPCError, sanitizePostgresError } from '$lib/server/utils/error-handler';
-import { useHintResultSchema } from '$lib/server/validation/minesweeper-rpc';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { sanitizeRPCError, sanitizePostgresError } from '#lib/server/utils/error-handler.ts';
+import { useHintResultSchema } from '#lib/server/validation/minesweeper-rpc.ts';
 
 /**
  * Type definition for use_hint RPC function return value

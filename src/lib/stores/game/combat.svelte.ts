@@ -2,7 +2,7 @@
 // Author: Claude Code
 // Date: 2025-10-15
 
-import type { GameCombat, CombatTurn, GameMonster } from '$lib/types/game';
+import type { GameCombat, CombatTurn, GameMonster } from '#lib/types/game.ts';
 
 class CombatStore {
 	private _combat = $state<GameCombat | null>(null);

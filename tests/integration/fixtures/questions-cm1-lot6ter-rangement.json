@@ -1,0 +1,90 @@
+[
+	{
+		"id": "2d7d0e63-fd5b-4a30-b7d8-e9adeeb51a30",
+		"noeudAvant": null,
+		"noeudApres": "Algèbre > Premiers pas algébriques > programmes de calcul",
+		"gradesAvant": ["CM1"],
+		"gradesApres": ["CM1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-064"]
+	},
+	{
+		"id": "37dd213b-d85f-4774-8e78-b04bd92f774a",
+		"noeudAvant": null,
+		"noeudApres": "Algèbre > Premiers pas algébriques > suites de motifs",
+		"gradesAvant": ["CM1"],
+		"gradesApres": ["CM1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-066"]
+	},
+	{
+		"id": "98f558e4-3361-42df-9bee-5e5837100e74",
+		"noeudAvant": null,
+		"noeudApres": "Algèbre > Premiers pas algébriques > nombre inconnu",
+		"gradesAvant": ["CM1"],
+		"gradesApres": ["CM1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-062"]
+	},
+	{
+		"id": "ac5fcd5c-d87c-4bea-9ab2-349b4855d955",
+		"noeudAvant": null,
+		"noeudApres": "Algèbre > Premiers pas algébriques > suites de motifs",
+		"gradesAvant": ["CM1"],
+		"gradesApres": ["CM1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-066"]
+	},
+	{
+		"id": "b28c7f78-5841-4098-955e-16a3df8dca48",
+		"noeudAvant": null,
+		"noeudApres": "Algèbre > Premiers pas algébriques > nombre inconnu",
+		"gradesAvant": ["CM1"],
+		"gradesApres": ["CM1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-062"]
+	},
+	{
+		"id": "b47f2699-d908-49bb-aa13-d4ba6ccc350d",
+		"noeudAvant": null,
+		"noeudApres": "Algèbre > Premiers pas algébriques > suites de motifs",
+		"gradesAvant": ["CM1"],
+		"gradesApres": ["CM1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-065"]
+	},
+	{
+		"id": "c4011427-3b47-4837-9c98-2fe4b0b93cb1",
+		"noeudAvant": null,
+		"noeudApres": "Algèbre > Premiers pas algébriques > nombre inconnu",
+		"gradesAvant": ["CM1"],
+		"gradesApres": ["CM1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-063"]
+	},
+	{
+		"id": "e59976bf-d175-4d13-adf4-8952015a1606",
+		"noeudAvant": null,
+		"noeudApres": "Algèbre > Premiers pas algébriques > suites de motifs",
+		"gradesAvant": ["CM1"],
+		"gradesApres": ["CM1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-065"]
+	}
+]

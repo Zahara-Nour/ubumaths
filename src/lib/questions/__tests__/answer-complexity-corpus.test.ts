@@ -17,7 +17,7 @@
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { describe, it, expect } from 'vitest';
-import { draftTemplate, parseReviewFile } from '$lib/questions/review/review-file';
+import { draftTemplate, parseReviewFile } from '#lib/questions/review/review-file.ts';
 import { generateInstance } from '../generator/instance-generator';
 import {
 	ANSWER_COMPLEXITY_LIMITS,

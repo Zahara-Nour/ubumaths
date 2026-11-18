@@ -8,7 +8,7 @@
 
 	import type { Timeline } from '../core/timeline.svelte';
 	import type { ConstructionEngine } from '../core/engine.svelte';
-	import { Button } from '$lib/components/ui/button';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import Play from '@lucide/svelte/icons/play';
 	import Pause from '@lucide/svelte/icons/pause';
 	import RotateCcw from '@lucide/svelte/icons/rotate-ccw';

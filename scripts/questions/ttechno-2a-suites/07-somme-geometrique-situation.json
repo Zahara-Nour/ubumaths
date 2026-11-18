@@ -1,0 +1,305 @@
+{
+	"id": "5ec00b89-1cb5-45b5-a781-cda1d051e359",
+	"title": "Somme géométrique en situation",
+	"description": "Reconnaître qu'un total relève d'une somme de termes consécutifs d'une suite géométrique (versements réguliers à intérêts composés, production en baisse), puis la calculer",
+	"grades": ["T_TECHNO"],
+	"level": 3,
+	"delay": 120,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Chaque 1er janvier, Hugo verse ${{v}}~\\unit{€}$ sur un compte rémunéré à ${{t}}~\\%$ par an, à intérêts composés. Il fait son premier versement le 1er janvier 2025.\n\nQuelle somme y a-t-il sur le compte juste après son ${{n}}^{\\text{e}}$ versement ? Arrondis à l'euro.\n\n$?~\\unit{€}$",
+			"variables": [
+				{
+					"name": "v",
+					"expression": "500|1000|1200|1500|2000"
+				},
+				{
+					"name": "t",
+					"expression": "1|2|3|4|5"
+				},
+				{
+					"name": "n",
+					"expression": "5..10"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:round(v*((1+t/100)^n-1)/(t/100))}}",
+					"precision": {
+						"type": "decimal",
+						"digits": 0
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un versement placé depuis $k$ années vaut ${{v}}\\times{{eval:1+t/100;d}}^k$ (il est multiplié par ${{eval:1+t/100;d}}$ chaque année).",
+					"Juste après le ${{n}}^{\\text{e}}$ versement, le compte contient ${{v}}+{{v}}\\times{{eval:1+t/100;d}}+\\cdots+{{v}}\\times{{eval:1+t/100;d}}^{ {{eval:n-1}} }$ : la somme de ${{n}}$ termes d'une suite géométrique de premier terme ${{v}}$ et de raison ${{eval:1+t/100;d}}$.",
+					"Pour $q\\neq1$ : $1+q+q^2+\\cdots+q^{n-1}=\\dfrac{1-q^n}{1-q}$, donc la somme de $n$ termes consécutifs d'une suite géométrique de premier terme $u$ et de raison $q$ vaut $u\\times\\dfrac{1-q^n}{1-q}$.",
+					"$S={{v}}\\times\\dfrac{1-{{eval:1+t/100;d}}^{ {{n}} }}{1-{{eval:1+t/100;d}}}\\approx\\textcolor{{{color:primary.0}}}{{{eval:round(v*((1+t/100)^n-1)/(t/100))}}}~\\unit{€}$."
+				]
+			}
+		},
+		{
+			"statement": "Une carrière extrait ${{p}}$ tonnes de pierre la première année, puis chaque année ${{t}}~\\%$ de moins que l'année précédente.\n\nQuelle quantité de pierre aura-t-elle extraite en tout au bout de ${{n}}$ années ? Arrondis à la tonne.\n\n$?$ tonnes",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "2000|3000|4000|5000"
+				},
+				{
+					"name": "t",
+					"expression": "5|10|15|20"
+				},
+				{
+					"name": "n",
+					"expression": "5..10"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:round(p*(1-(1-t/100)^n)/(t/100))}}",
+					"precision": {
+						"type": "decimal",
+						"digits": 0
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'extraction de l'année $k$ est $u_k$ : suite géométrique de premier terme $u_1={{p}}$ et de raison $1-\\dfrac{ {{t}} }{100}={{eval:1-t/100;d}}$.",
+					"Le total est la somme $u_1+u_2+\\cdots+u_{ {{n}} }$ de ${{n}}$ termes. Pour $q\\neq1$ : $1+q+q^2+\\cdots+q^{n-1}=\\dfrac{1-q^n}{1-q}$, donc la somme de $n$ termes consécutifs d'une suite géométrique de premier terme $u$ et de raison $q$ vaut $u\\times\\dfrac{1-q^n}{1-q}$.",
+					"$S={{p}}\\times\\dfrac{1-{{eval:1-t/100;d}}^{ {{n}} }}{1-{{eval:1-t/100;d}}}\\approx\\textcolor{{{color:primary.0}}}{{{eval:round(p*(1-(1-t/100)^n)/(t/100))}}}$ tonnes."
+				]
+			}
+		},
+		{
+			"statement": "Une boulangerie a vendu ${{p}}$ galettes la première année, puis chaque année ${{t}}~\\%$ de plus que l'année précédente. On note $u_k$ le nombre de galettes vendues l'année $k$ (donc $u_1={{p}}$).\n\n{{if:w==0|Combien de galettes la boulangerie vendra-t-elle **pendant l'année** ${{n}}$ ?|Combien de galettes la boulangerie aura-t-elle vendues **en tout pendant les ${{n}}$ premières années** ?}}\n\nPour répondre, on calcule…\n\n```choix\nmelanger: non\n- le terme $u_{ {{n}} }$\n- la somme $u_1+u_2+\\cdots+u_{ {{n}} }$\n- le produit $u_1\\times u_2\\times\\cdots\\times u_{ {{n}} }$\n```",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "400..900"
+				},
+				{
+					"name": "t",
+					"expression": "2|4|5|8|10"
+				},
+				{
+					"name": "n",
+					"expression": "5..10"
+				},
+				{
+					"name": "w",
+					"expression": "0|1"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{w}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$(u_k)$ est géométrique de premier terme $u_1={{p}}$ et de raison ${{eval:1+t/100;d}}$.",
+					"{{if:w==0|On demande la vente d'**une seule** année, la ${{n}}^{\\text{e}}$ : c'est le terme $u_{ {{n}} }$.|On demande un **total** sur les années $1$ à ${{n}}$ : c'est la somme $u_1+u_2+\\cdots+u_{ {{n}} }$, qui compte ${{n}}$ termes.}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "1 000 €, 2 %, 5 versements : 5 204",
+			"variationIndex": 0,
+			"variables": {
+				"v": "1000",
+				"t": "2",
+				"n": "5"
+			},
+			"answers": ["5204"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sans intérêts (5 000)",
+			"variationIndex": 0,
+			"variables": {
+				"v": "1000",
+				"t": "2",
+				"n": "5"
+			},
+			"answers": ["5000"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : dernier versement placé 5 ans (1 104)",
+			"variationIndex": 0,
+			"variables": {
+				"v": "1000",
+				"t": "2",
+				"n": "5"
+			},
+			"answers": ["1104"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 6 termes (6 308)",
+			"variationIndex": 0,
+			"variables": {
+				"v": "1000",
+				"t": "2",
+				"n": "5"
+			},
+			"answers": ["6308"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "4 000 t, −10 %, 5 ans : 16 380",
+			"variationIndex": 1,
+			"variables": {
+				"p": "4000",
+				"t": "10",
+				"n": "5"
+			},
+			"answers": ["16\\,380"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "16380 sans espace : forme à améliorer",
+			"variationIndex": 1,
+			"variables": {
+				"p": "4000",
+				"t": "10",
+				"n": "5"
+			},
+			"answers": ["16380"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["spaces"]
+			}
+		},
+		{
+			"description": "Erreur : sans la baisse (20 000)",
+			"variationIndex": 1,
+			"variables": {
+				"p": "4000",
+				"t": "10",
+				"n": "5"
+			},
+			"answers": ["20\\,000"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : dernier terme (2 624)",
+			"variationIndex": 1,
+			"variables": {
+				"p": "4000",
+				"t": "10",
+				"n": "5"
+			},
+			"answers": ["2624"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "choix : bonne réponse 0",
+			"variationIndex": 2,
+			"variables": {
+				"p": "500",
+				"t": "5",
+				"n": "6",
+				"w": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "choix 1 refusé",
+			"variationIndex": 2,
+			"variables": {
+				"p": "500",
+				"t": "5",
+				"n": "6",
+				"w": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "choix 2 refusé",
+			"variationIndex": 2,
+			"variables": {
+				"p": "500",
+				"t": "5",
+				"n": "6",
+				"w": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "choix : bonne réponse 1",
+			"variationIndex": 2,
+			"variables": {
+				"p": "500",
+				"t": "5",
+				"n": "6",
+				"w": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "choix 0 refusé",
+			"variationIndex": 2,
+			"variables": {
+				"p": "500",
+				"t": "5",
+				"n": "6",
+				"w": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "choix 2 refusé",
+			"variationIndex": 2,
+			"variables": {
+				"p": "500",
+				"t": "5",
+				"n": "6",
+				"w": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

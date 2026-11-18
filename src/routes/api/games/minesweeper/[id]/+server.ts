@@ -1,9 +1,9 @@
 import type { RequestHandler } from './$types';
 import { error, json } from '@sveltejs/kit';
-import { requireRoles } from '$lib/server/middleware/auth';
-import { saveGameSchema, validateGridState } from '$lib/server/validation/minesweeper';
-import { sanitizePostgresError } from '$lib/server/utils/error-handler';
-import { validateUuidParam } from '$lib/server/validation/params';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import { saveGameSchema, validateGridState } from '#lib/server/validation/minesweeper.ts';
+import { sanitizePostgresError } from '#lib/server/utils/error-handler.ts';
+import { validateUuidParam } from '#lib/server/validation/params.ts';
 
 /**
  * Save Minesweeper game progress

@@ -12,7 +12,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { page, userEvent } from 'vitest/browser';
 import EvaluationConfigForm from '../EvaluationConfigForm.svelte';
-import type { EvaluationSettingsInput } from '$lib/types/evaluation';
+import type { EvaluationSettingsInput } from '#lib/types/evaluation.ts';
 
 type OnSubmit = (settings: EvaluationSettingsInput) => void;
 

@@ -22,10 +22,10 @@
 -->
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import { Button } from '$lib/components/ui/button';
-	import { Badge } from '$lib/components/ui/badge';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
 	import { Eye, EyeOff } from '@lucide/svelte';
-	import type { ChapterContentType } from '$lib/types/chapters';
+	import type { ChapterContentType } from '#lib/types/chapters.ts';
 
 	interface Props {
 		contentType: ChapterContentType;

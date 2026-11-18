@@ -11,10 +11,10 @@
 import { error, json } from '@sveltejs/kit';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { RequestHandler } from './$types';
-import type { Database } from '$lib/types/database';
-import { requireAdmin } from '$lib/server/middleware/auth';
-import { dictionaryEntryInputSchema } from '$lib/dictionary/entry-schema';
-import { createEntry, inputProblem, loadAdminDictionary } from '$lib/server/dictionary/admin';
+import type { Database } from '#lib/types/database.ts';
+import { requireAdmin } from '#lib/server/middleware/auth.ts';
+import { dictionaryEntryInputSchema } from '#lib/dictionary/entry-schema.ts';
+import { createEntry, inputProblem, loadAdminDictionary } from '#lib/server/dictionary/admin.ts';
 
 export const GET: RequestHandler = async ({ locals }) => {
 	const { supabase } = await requireAdmin(locals);

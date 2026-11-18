@@ -23,22 +23,22 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 import {
 	computePointBadges,
 	worstBadge,
 	type CurriculumPointBadge
-} from '$lib/server/srs/curriculum-point-badge';
-import { getProgrammeTree } from '$lib/server/programme-tree';
+} from '#lib/server/srs/curriculum-point-badge.ts';
+import { getProgrammeTree } from '#lib/server/programme-tree.ts';
 import {
 	notionLevel,
 	isCompetenceObserved,
 	type MathCompetenceCode,
 	type MathCompetenceLevel
-} from '$lib/types/skills';
-import { isValidGradeCode } from '$lib/utils/grades';
-import { createServerLogger } from '$lib/utils/logger';
-import type { ProgrammePointView } from '$lib/utils/programme-tree';
+} from '#lib/types/skills.ts';
+import { isValidGradeCode } from '#lib/utils/grades.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
+import type { ProgrammePointView } from '#lib/utils/programme-tree.ts';
 
 const logger = createServerLogger('server/progression/student-progression');
 
@@ -159,7 +159,7 @@ const EMPTY_NOTION_STATS: NotionsStats = {
 /**
  * Compte les notions par niveau atteint.
  *
- * Le niveau vient de `notionLevel()` (`$lib/types/skills`), partagée avec l'UI :
+ * Le niveau vient de `notionLevel()` (`#lib/types/skills.ts`), partagée avec l'UI :
  * c'est ce partage qui empêche la tuile et la page de diverger.
  */
 export function aggregateNotionStats(notions: NotionSummary[]): NotionsStats {

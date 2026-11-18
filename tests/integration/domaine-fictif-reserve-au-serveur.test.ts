@@ -26,7 +26,7 @@ import {
 	createTestSupabaseClient
 } from '../helpers/database/trigger-test-helpers';
 import { getPostgresClient } from '../helpers/database/postgres-client';
-import { CHILD_ACCOUNT_DOMAIN } from '$lib/utils/child-account';
+import { CHILD_ACCOUNT_DOMAIN } from '#lib/utils/child-account.ts';
 
 // ============================================================================
 // HELPERS

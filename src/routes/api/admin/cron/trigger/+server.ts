@@ -12,17 +12,17 @@
 
 import { json, error, isHttpError } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAdmin } from '$lib/server/middleware/auth';
-import { assertTypedConfirmation } from '$lib/server/confirmAction';
-import { getEnv } from '$lib/server/env';
+import { requireAdmin } from '#lib/server/middleware/auth.ts';
+import { assertTypedConfirmation } from '#lib/server/confirmAction.ts';
+import { getEnv } from '#lib/server/env.ts';
 import {
 	cronTriggerBodySchema,
 	CRON_TRIGGER_CONFIRM_KEYWORD,
 	type CronTriggerResponse
-} from '$lib/server/validation/cron';
-import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
-import { checkEndpointRateLimit } from '$lib/server/rateLimiter';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/validation/cron.ts';
+import { createServiceRoleClient } from '#lib/server/serviceRoleClient.ts';
+import { checkEndpointRateLimit } from '#lib/server/rateLimiter.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/admin/cron/trigger/+server');
 

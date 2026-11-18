@@ -8,9 +8,9 @@ import { describe, it, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { flushSync, tick } from 'svelte';
 import FlashSeries from '../FlashSeries.svelte';
-import type { QuestionInstance } from '$lib/questions/types';
-import type { TestResult } from '$lib/types/test';
-import { resolvedMarkdown } from '$lib/ubumark';
+import type { QuestionInstance } from '#lib/questions/types.ts';
+import type { TestResult } from '#lib/types/test.ts';
+import { resolvedMarkdown } from '#lib/ubumark/index.ts';
 
 const FOUND = 'Réussi';
 const NOT_FOUND = 'Pas réussi';

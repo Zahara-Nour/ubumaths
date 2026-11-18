@@ -19,9 +19,9 @@
  * @module worksheets/student-copies
  */
 
-import type { StudentWorksheetView } from '$lib/types/worksheets';
+import type { StudentWorksheetView } from '#lib/types/worksheets.ts';
 import { generateStudentWorksheetTypst } from './student-worksheet-typst';
-import type { TextSize } from '$lib/typst/text-size';
+import type { TextSize } from '#lib/typst/text-size.ts';
 
 // ============================================================================
 // TYPES

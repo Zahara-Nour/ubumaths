@@ -3,7 +3,7 @@
  * ======================
  *
  * Question « programme de calcul » (5e ; chantier `blockly`, PR 5 ; journal
- * `docs/wip/blockly-progress.md`) : l'élève assemble des blocs de calcul, sa réponse est son
+ * `docs/archive/wip/blockly-progress.md`) : l'élève assemble des blocs de calcul, sa réponse est son
  * programme, jugé sur ce qu'il affiche pour chaque nombre d'essai.
  *
  * ```calcul
@@ -16,7 +16,7 @@
  */
 
 import type { BaseNode } from './ast';
-import type { NiveauCalcul } from '$lib/shared/blockly/calcul/interpreteur';
+import type { NiveauCalcul } from '#lib/shared/blockly/calcul/interpreteur.ts';
 
 // ============================================================================
 // VALEURS

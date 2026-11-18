@@ -19,7 +19,7 @@
 
 import { COURBE_COLORS, type CourbeSize } from '../types/courbe';
 import { PIE_COLOR_SEQUENCE, type StatChartNode } from '../types/stat-chart';
-import { namedColorTable, namedColorTypst } from '$lib/theme/named-colors';
+import { namedColorTable, namedColorTypst } from '#lib/theme/named-colors.ts';
 import { WIDTH_CM } from './courbe-typst';
 import { STAT_TEXT } from '../utils/stat-chart-text';
 import {

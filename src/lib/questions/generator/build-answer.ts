@@ -26,45 +26,45 @@
  */
 
 import type { BuildKind } from '../types';
-import { parseCollectionContent } from '$lib/ubumark/parser/collection-parser';
-import { parseMonnaieContent } from '$lib/ubumark/parser/monnaie-parser';
-import { amountAnswer, toCents } from '$lib/ubumark/utils/monnaie-valeurs';
-import { parseNumberLineContent } from '$lib/ubumark/parser/number-line-parser';
-import { parseHorlogeContent } from '$lib/ubumark/parser/horloge-parser';
-import { parseStatChartContent } from '$lib/ubumark/parser/stat-chart-parser';
-import { parseRangerContent } from '$lib/ubumark/parser/ranger-parser';
-import { missingLabelMessage, parseAssocierContent } from '$lib/ubumark/parser/associer-parser';
-import { emptyHoleMessage, parseTrousContent } from '$lib/ubumark/parser/trous-parser';
-import { adaptedScale, barsCaseCount } from '$lib/ubumark/utils/barres-placer';
+import { parseCollectionContent } from '#lib/ubumark/parser/collection-parser.ts';
+import { parseMonnaieContent } from '#lib/ubumark/parser/monnaie-parser.ts';
+import { amountAnswer, toCents } from '#lib/ubumark/utils/monnaie-valeurs.ts';
+import { parseNumberLineContent } from '#lib/ubumark/parser/number-line-parser.ts';
+import { parseHorlogeContent } from '#lib/ubumark/parser/horloge-parser.ts';
+import { parseStatChartContent } from '#lib/ubumark/parser/stat-chart-parser.ts';
+import { parseRangerContent } from '#lib/ubumark/parser/ranger-parser.ts';
+import { missingLabelMessage, parseAssocierContent } from '#lib/ubumark/parser/associer-parser.ts';
+import { emptyHoleMessage, parseTrousContent } from '#lib/ubumark/parser/trous-parser.ts';
+import { adaptedScale, barsCaseCount } from '#lib/ubumark/utils/barres-placer.ts';
 import {
 	boxesToPlace,
 	boxPlotCaseCount,
 	boxValueAnswer,
 	CASES_PER_BOX
-} from '$lib/ubumark/utils/boxplot-placer';
-import { RANGER_MIN_LABELS_IN_QUESTION } from '$lib/ubumark/utils/ranger';
-import { parsePartageContent } from '$lib/ubumark/parser/partage-parser';
-import { expectedColoringAnswer } from '$lib/ubumark/utils/partage-colorier';
-import { parseEspaceContent } from '$lib/ubumark/parser/espace-parser';
-import { expectedCubesAnswer } from '$lib/ubumark/utils/cubes-gestes';
-import { expectedPatronAnswer } from '$lib/ubumark/utils/patron-gestes';
-import { expectedSolideAnswer } from '$lib/ubumark/utils/solide-gestes';
-import { timeText } from '$lib/ubumark/utils/horloge-placer';
-import { indexOfValue, placerAnswer } from '$lib/ubumark/utils/number-line-placer';
-import { expectedInterval, representerAnswer } from '$lib/ubumark/utils/number-line-representer';
-import { numVal } from '$lib/ubumark/utils/number-line-render';
-import { parseCourbeContent } from '$lib/ubumark/parser/courbe-parser';
-import { pointAnswer } from '$lib/ubumark/utils/courbe-placer';
-import { vectorExpected } from '$lib/ubumark/utils/courbe-vecteur';
-import { parseTrigCircleContent } from '$lib/ubumark/parser/trig-circle-parser';
-import { expectedStepAnswer, stepOfRadians } from '$lib/ubumark/utils/trig-placer';
-import { hasMaskedValue } from '$lib/ubumark/utils/masked-value';
-import { parseTortueContent } from '$lib/ubumark/parser/tortue-parser';
-import { expectedTortueAnswer } from '$lib/ubumark/utils/tortue-answer';
-import { parseCalculContent } from '$lib/ubumark/parser/calcul-parser';
-import { expectedCalculAnswer } from '$lib/ubumark/utils/calcul-answer';
-import { parseRobotContent } from '$lib/ubumark/parser/robot-parser';
-import { expectedRobotAnswer } from '$lib/ubumark/utils/robot-answer';
+} from '#lib/ubumark/utils/boxplot-placer.ts';
+import { RANGER_MIN_LABELS_IN_QUESTION } from '#lib/ubumark/utils/ranger.ts';
+import { parsePartageContent } from '#lib/ubumark/parser/partage-parser.ts';
+import { expectedColoringAnswer } from '#lib/ubumark/utils/partage-colorier.ts';
+import { parseEspaceContent } from '#lib/ubumark/parser/espace-parser.ts';
+import { expectedCubesAnswer } from '#lib/ubumark/utils/cubes-gestes.ts';
+import { expectedPatronAnswer } from '#lib/ubumark/utils/patron-gestes.ts';
+import { expectedSolideAnswer } from '#lib/ubumark/utils/solide-gestes.ts';
+import { timeText } from '#lib/ubumark/utils/horloge-placer.ts';
+import { indexOfValue, placerAnswer } from '#lib/ubumark/utils/number-line-placer.ts';
+import { expectedInterval, representerAnswer } from '#lib/ubumark/utils/number-line-representer.ts';
+import { numVal } from '#lib/ubumark/utils/number-line-render.ts';
+import { parseCourbeContent } from '#lib/ubumark/parser/courbe-parser.ts';
+import { pointAnswer } from '#lib/ubumark/utils/courbe-placer.ts';
+import { vectorExpected } from '#lib/ubumark/utils/courbe-vecteur.ts';
+import { parseTrigCircleContent } from '#lib/ubumark/parser/trig-circle-parser.ts';
+import { expectedStepAnswer, stepOfRadians } from '#lib/ubumark/utils/trig-placer.ts';
+import { hasMaskedValue } from '#lib/ubumark/utils/masked-value.ts';
+import { parseTortueContent } from '#lib/ubumark/parser/tortue-parser.ts';
+import { expectedTortueAnswer } from '#lib/ubumark/utils/tortue-answer.ts';
+import { parseCalculContent } from '#lib/ubumark/parser/calcul-parser.ts';
+import { expectedCalculAnswer } from '#lib/ubumark/utils/calcul-answer.ts';
+import { parseRobotContent } from '#lib/ubumark/parser/robot-parser.ts';
+import { expectedRobotAnswer } from '#lib/ubumark/utils/robot-answer.ts';
 
 // Constantes
 
@@ -126,14 +126,19 @@ export function buildAnswerOf(
 	// `?` : forme réservée à l'énoncé envoyé pendant une évaluation (rien à attendre)
 	if (MASKABLE_KINDS.has(kind) && hasMaskedValue(source)) return { errors: [MASKED_IN_TEMPLATE] };
 	if (kind === 'tortue') {
-		// Programme tortue : la comparaison, le nombre maximal de blocs (`blocs:`) et le programme
-		// de référence (`attendu:`)
+		// Programme tortue : le niveau (`niveau:`), la comparaison, le nombre maximal de blocs
+		// (`blocs:`) et le programme de référence (`attendu:`)
 		const node = parseTortueContent(source);
 		if (node.caseIndex !== undefined) return { errors: [CASE_IS_AUTOMATIC] };
 		if (node.errors.length > 0) return { errors: node.errors.map((e) => e.message) };
 		if (node.spec?.attendu == null) return { errors: ['attendu: absent'] };
 		return {
-			answer: expectedTortueAnswer(node.spec.comparer, node.spec.attendu, node.spec.blocsMax)
+			answer: expectedTortueAnswer(
+				node.spec.comparer,
+				node.spec.attendu,
+				node.spec.blocsMax,
+				node.spec.niveau
+			)
 		};
 	}
 	if (kind === 'calcul') {

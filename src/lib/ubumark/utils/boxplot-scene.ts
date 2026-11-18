@@ -16,7 +16,7 @@
  */
 
 import type { StatChartSpec } from '../types/stat-chart';
-import type { ContentLocale } from '$lib/types/locale';
+import type { ContentLocale } from '#lib/types/locale.ts';
 import { COURBE_PIXEL_WIDTH } from './courbe-scene';
 import { STAT_TEXT } from './stat-chart-text';
 // ⚠️ Import circulaire (stat-chart-scene appelle `buildBoxPlotScene`) : sans

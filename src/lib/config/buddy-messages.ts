@@ -4,7 +4,7 @@
  * Generated via ChatGPT with personality-specific prompts (see docs/systeme/buddy-palotins.md).
  */
 
-import { lore } from '$lib/config/lore';
+import { lore } from '#lib/config/lore.ts';
 
 export type BuddyMessageContext =
 	| 'correct'

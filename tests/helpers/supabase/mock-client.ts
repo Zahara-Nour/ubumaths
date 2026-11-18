@@ -41,7 +41,7 @@
 
 import { vi, type Mock } from 'vitest';
 import type { SupabaseClient, User, Session } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 
 // ============================================================================
 // TYPE DEFINITIONS

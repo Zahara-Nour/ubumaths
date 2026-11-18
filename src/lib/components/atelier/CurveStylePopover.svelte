@@ -12,10 +12,10 @@
 	 * Une courbe jamais tracée n'a pas encore de couleur : la fenêtre propose
 	 * de la tracer, plutôt que des réglages qui ne se verraient nulle part.
 	 */
-	import * as Popover from '$lib/components/ui/popover';
-	import type { FunctionObject, SequenceObject } from '$lib/atelier/types';
-	import { displayName } from '$lib/atelier/names';
-	import { curveColorValue } from '$lib/grapheur/colors';
+	import * as Popover from '#lib/components/ui/popover/index.ts';
+	import type { FunctionObject, SequenceObject } from '#lib/atelier/types.ts';
+	import { displayName } from '#lib/atelier/names.ts';
+	import { curveColorValue } from '#lib/grapheur/colors.ts';
 	import CurveStyleSettings from './CurveStyleSettings.svelte';
 
 	interface Props {

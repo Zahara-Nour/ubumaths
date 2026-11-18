@@ -12,7 +12,7 @@
  */
 import { copyFileSync, existsSync, mkdirSync } from 'node:fs';
 import { basename, extname, join } from 'node:path';
-import { urlToVirtualPath } from '$lib/typst/image-loader';
+import { urlToVirtualPath } from '#lib/typst/image-loader.ts';
 
 /**
  * `aConvertir` : image locale dont le format n'est pas celui du chemin virtuel (un

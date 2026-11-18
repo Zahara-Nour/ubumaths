@@ -32,8 +32,12 @@ import type {
 	BuildKind
 } from '../types';
 import { buildKindName, getQuestionType, isPlaceKind } from '../types';
-import type { ResolvedMarkdown, TemplateMarkdown } from '$lib/ubumark';
-import { templateMarkdown, resolvedMarkdown, detectCircularDependencies } from '$lib/ubumark';
+import type { ResolvedMarkdown, TemplateMarkdown } from '#lib/ubumark/index.ts';
+import {
+	templateMarkdown,
+	resolvedMarkdown,
+	detectCircularDependencies
+} from '#lib/ubumark/index.ts';
 import { validateTemplate } from '../validators/template-validator';
 import { resolveVariables } from './variable-resolver';
 import {
@@ -45,87 +49,87 @@ import {
 } from './content-resolver';
 import { shuffleChoices } from './choice-shuffler';
 import { assignBlankIndices } from './assign-blank-indices';
-import { parseOperationContent } from '$lib/ubumark/parser/operation-parser';
-import { isRuledPolygonCheck } from '$lib/ubumark/types/construction';
-import { hasCollectionToBuild } from '$lib/ubumark/parser/collection-parser';
-import { hasMonnaieToBuild } from '$lib/ubumark/parser/monnaie-parser';
-import { hasLineToPlace } from '$lib/ubumark/parser/number-line-parser';
-import { hasHorlogeToPlace } from '$lib/ubumark/parser/horloge-parser';
-import { hasStatChartToPlace } from '$lib/ubumark/parser/stat-chart-parser';
-import { hasCourbeToPlace } from '$lib/ubumark/parser/courbe-parser';
-import { hasTrigCircleToPlace } from '$lib/ubumark/parser/trig-circle-parser';
-import { hasTortueToProgram } from '$lib/ubumark/parser/tortue-parser';
-import { readExpectedTortueAnswer } from '$lib/ubumark/utils/tortue-answer';
-import { hasCalculToProgram } from '$lib/ubumark/parser/calcul-parser';
-import { readExpectedCalculAnswer } from '$lib/ubumark/utils/calcul-answer';
+import { parseOperationContent } from '#lib/ubumark/parser/operation-parser.ts';
+import { isDiagonalRectangleCheck, isRuledPolygonCheck } from '#lib/ubumark/types/construction.ts';
+import { hasCollectionToBuild } from '#lib/ubumark/parser/collection-parser.ts';
+import { hasMonnaieToBuild } from '#lib/ubumark/parser/monnaie-parser.ts';
+import { hasLineToPlace } from '#lib/ubumark/parser/number-line-parser.ts';
+import { hasHorlogeToPlace } from '#lib/ubumark/parser/horloge-parser.ts';
+import { hasStatChartToPlace } from '#lib/ubumark/parser/stat-chart-parser.ts';
+import { hasCourbeToPlace } from '#lib/ubumark/parser/courbe-parser.ts';
+import { hasTrigCircleToPlace } from '#lib/ubumark/parser/trig-circle-parser.ts';
+import { hasTortueToProgram } from '#lib/ubumark/parser/tortue-parser.ts';
+import { readExpectedTortueAnswer } from '#lib/ubumark/utils/tortue-answer.ts';
+import { hasCalculToProgram } from '#lib/ubumark/parser/calcul-parser.ts';
+import { readExpectedCalculAnswer } from '#lib/ubumark/utils/calcul-answer.ts';
 import {
 	findRobotsToProduce,
 	hasRobotToProduce,
 	parseRobotContent
-} from '$lib/ubumark/parser/robot-parser';
-import { readExpectedRobotAnswer } from '$lib/ubumark/utils/robot-answer';
-import { hasVariationToFill } from '$lib/ubumark/parser/variation-table-parser';
+} from '#lib/ubumark/parser/robot-parser.ts';
+import { readExpectedRobotAnswer } from '#lib/ubumark/utils/robot-answer.ts';
+import { hasVariationToFill } from '#lib/ubumark/parser/variation-table-parser.ts';
 import {
 	readSignTableCases,
 	signTableAnswerLatex,
 	signTableCaseIndices,
 	type SignTableAnswer
 } from '../sign-table-case';
-import { barsCaseCount } from '$lib/ubumark/utils/barres-placer';
-import { boxPlotCaseCount } from '$lib/ubumark/utils/boxplot-placer';
+import { barsCaseCount } from '#lib/ubumark/utils/barres-placer.ts';
+import { boxPlotCaseCount } from '#lib/ubumark/utils/boxplot-placer.ts';
 import {
 	findRangersToPlace,
 	hasRangerToPlace,
 	parseRangerContent,
 	replaceRangerBlocks,
 	serializeRangerBlock
-} from '$lib/ubumark/parser/ranger-parser';
-import { rangerOrder } from '$lib/ubumark/utils/ranger';
+} from '#lib/ubumark/parser/ranger-parser.ts';
+import { rangerOrder } from '#lib/ubumark/utils/ranger.ts';
 import {
 	findAssociersToPlace,
 	hasAssocierToPlace,
 	parseAssocierContent,
 	replaceAssocierBlocks,
 	serializeAssocierBlock
-} from '$lib/ubumark/parser/associer-parser';
+} from '#lib/ubumark/parser/associer-parser.ts';
 import {
 	findTrousToPlace,
 	hasTrousToPlace,
 	parseTrousContent,
 	replaceTrousBlocks,
 	serializeTrousBlock
-} from '$lib/ubumark/parser/trous-parser';
-import type { TrousSegment } from '$lib/ubumark/types/trous';
-import { hasPartageToColorier } from '$lib/ubumark/parser/partage-parser';
+} from '#lib/ubumark/parser/trous-parser.ts';
+import type { TrousSegment } from '#lib/ubumark/types/trous.ts';
+import { hasPartageToColorier } from '#lib/ubumark/parser/partage-parser.ts';
 import {
 	hasCubesToBuild,
 	hasPatronsToBuild,
 	hasSolidesToBuild
-} from '$lib/ubumark/parser/espace-parser';
-import type { RangerSign } from '$lib/ubumark/types/ranger';
-import type { AssocierGesture } from '$lib/ubumark/types/associer';
+} from '#lib/ubumark/parser/espace-parser.ts';
+import type { RangerSign } from '#lib/ubumark/types/ranger.ts';
+import type { AssocierGesture } from '#lib/ubumark/types/associer.ts';
 import { buildAnswerOf, MASKED_IN_TEMPLATE } from './build-answer';
-import { parseMarkdown } from '$lib/ubumark/parser/markdown-parser';
-import { operationExpectedAnswer } from '$lib/ubumark/utils/operation-answer';
-import { divisionExpectedAnswers } from '$lib/ubumark/utils/operation-division-answer';
+import { parseMarkdown } from '#lib/ubumark/parser/markdown-parser.ts';
+import { operationExpectedAnswer } from '#lib/ubumark/utils/operation-answer.ts';
+import { divisionExpectedAnswers } from '#lib/ubumark/utils/operation-division-answer.ts';
 import {
 	WORK_FIGURE_ALONE_MESSAGE,
 	readConstructionHeader
-} from '$lib/ubumark/parser/construction-parser';
-import { parseFigureContent } from '$lib/ubumark/parser/figure-parser';
+} from '#lib/ubumark/parser/construction-parser.ts';
+import { parseFigureContent } from '#lib/ubumark/parser/figure-parser.ts';
 import {
 	parseChoiceBody,
 	replaceChoiceBlocks,
 	serializeChoiceBlock,
 	type ChoiceBlockSpec
-} from '$lib/ubumark/parser/choix-parser';
+} from '#lib/ubumark/parser/choix-parser.ts';
 import { formatChoiceAnswer, readExpectedChoices } from '../choice-case';
-import { toFrenchDecimal } from '$lib/utils/french-math';
-import { normalizeExpression, detectExpressionType } from '$lib/ubumark/parameterization';
+import { toFrenchDecimal } from '#lib/utils/french-math.ts';
+import { normalizeExpression, detectExpressionType } from '#lib/ubumark/parameterization/index.ts';
 import {
 	applyRemoveSpaces,
 	AuthorExpressionError
-} from '$lib/ubumark/parameterization/resolver/variable-resolver';
+} from '#lib/ubumark/parameterization/resolver/variable-resolver.ts';
 import { resolveVariableConditionals } from './variable-conditionals';
 import { buildCorrectionContext, resolveCorrectionContent } from './correction-resolver';
 import { generateCorrection } from './correction-generator';
@@ -136,8 +140,8 @@ import { expectedIntervalsLatex } from '../intervals/interval-answer';
 import { expectedVectorLatex } from '../vectors/vector-answer';
 import { expectedMatrixLatex } from '../matrices/matrix-answer';
 import { evaluateConditions } from './condition-evaluator';
-import { createRandomSource, randomIndex, type RandomSource } from '$lib/utils/random';
-import { expectedInRequiredUnit } from '$lib/questions/units/required-unit';
+import { createRandomSource, randomIndex, type RandomSource } from '#lib/utils/random.ts';
+import { expectedInRequiredUnit } from '#lib/questions/units/required-unit.ts';
 
 // ============================================================================
 // SHARED DEFAULTS MERGING
@@ -900,18 +904,21 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 							? []
 							: isRuledPolygonCheck(check)
 								? check.points.slice(0, 2)
-								: check.kind === 'segment'
-									? [check.point]
-									: check.kind === 'symetrique'
-										? [...(check.points ?? []), check.by]
-										: check.kind === 'triangle'
-											? [
-													check.points[0],
-													check.points[1],
-													// En carreaux (n° 20), rien à nommer
-													...check.lengths.flatMap((l) => ('source' in l ? l.source : []))
-												]
-											: check.points;
+								: // Rectangle sans équerre : A et C (la diagonale), B et D sont à construire
+									isDiagonalRectangleCheck(check)
+									? [check.points[0], check.points[2]]
+									: check.kind === 'segment'
+										? [check.point]
+										: check.kind === 'symetrique'
+											? [...(check.points ?? []), check.by]
+											: check.kind === 'triangle'
+												? [
+														check.points[0],
+														check.points[1],
+														// En carreaux (n° 20), rien à nommer
+														...check.lengths.flatMap((l) => ('source' in l ? l.source : []))
+													]
+												: check.points;
 					for (const name of names) {
 						if (!named.has(name)) {
 							errors.push({

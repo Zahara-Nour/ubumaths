@@ -6,11 +6,11 @@
 
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { markExerciseAsViewed } from '$lib/server/exercise-assignments';
-import { validateViewExercise } from '$lib/server/validation';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { validateUuidParam } from '$lib/server/validation/params';
-import { createServerLogger } from '$lib/utils/logger';
+import { markExerciseAsViewed } from '#lib/server/exercise-assignments.ts';
+import { validateViewExercise } from '#lib/server/validation/index.ts';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { validateUuidParam } from '#lib/server/validation/params.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/exercises/[id]/view/+server');
 

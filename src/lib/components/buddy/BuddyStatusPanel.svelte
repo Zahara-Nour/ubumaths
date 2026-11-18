@@ -7,19 +7,19 @@
 -->
 
 <script lang="ts">
-	import type { BuddyState } from '$lib/types/buddy';
-	import { xpProgress, MAX_LEVEL } from '$lib/utils/buddy-xp';
-	import { Progress } from '$lib/components/ui/progress';
-	import { Button } from '$lib/components/ui/button';
+	import type { BuddyState } from '#lib/types/buddy.ts';
+	import { xpProgress, MAX_LEVEL } from '#lib/utils/buddy-xp.ts';
+	import { Progress } from '#lib/components/ui/progress/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import { Flame, Star, ArrowRightLeft, X } from '@lucide/svelte';
 	import { fade } from 'svelte/transition';
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import {
 		CONSTANCE_DAYS_PER_WEEK,
 		displayedConstance,
 		displayedDaysThisWeek,
 		utcDay
-	} from '$lib/utils/buddy-constance';
+	} from '#lib/utils/buddy-constance.ts';
 
 	interface Props {
 		buddy: BuddyState;

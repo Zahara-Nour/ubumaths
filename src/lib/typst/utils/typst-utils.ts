@@ -8,14 +8,14 @@
  * @module typst/utils
  */
 
-import type { WorksheetType } from '$lib/types/worksheets';
-import { WORKSHEET_TYPE_LABELS } from '$lib/utils/worksheet-type-labels';
+import type { WorksheetType } from '#lib/types/worksheets.ts';
+import { WORKSHEET_TYPE_LABELS } from '#lib/utils/worksheet-type-labels.ts';
 
 /**
  * Escape special Typst characters in text
  * Re-exports from ubumark/generators for convenience
  */
-export { escapeTypst, escapeTypstBrackets } from '$lib/ubumark/generators';
+export { escapeTypst, escapeTypstBrackets } from '#lib/ubumark/generators/index.ts';
 
 /**
  * Format a number according to numbering style

@@ -9,28 +9,28 @@
  *
  * Jetons : 32 octets aléatoires (CSPRNG) en base64url, jamais stockés en clair
  * — la base ne garde que leur empreinte sha256 (Q22). Un lien perdu ne se
- * renvoie pas : on en émet un neuf.
+ * renvoie pas : on en émet un neuf. Confirmer une adresse, émettre et envoyer
+ * les liens : `./envois`.
  *
  * Ce que le carnet montre (question d'accès Q16) : le prénom, le palier de
  * régularité de 5 semaines, le nombre de révisions en retard, les évaluations
  * (faites ou non, SANS note), les liens du cahier et du cours. Le schéma Zod
- * (`$lib/validation/carnet`) RETIRE toute autre clé : une colonne ajoutée par
+ * (`#lib/validation/carnet.ts`) RETIRE toute autre clé : une colonne ajoutée par
  * erreur côté SQL ne descend pas jusqu'à la page.
  */
 
 import { createHash, randomBytes } from 'node:crypto';
 import { z } from 'zod';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
-import { endOfSchoolYear } from '$lib/server/journal-share-tokens';
-import { createServerLogger } from '$lib/utils/logger';
+import type { Database } from '#lib/types/database.ts';
+import { createServiceRoleClient } from '#lib/server/serviceRoleClient.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 import {
 	parentCarnetSchema,
 	studentCarnetSchema,
 	type ParentCarnet,
 	type StudentCarnet
-} from '$lib/validation/carnet';
+} from '#lib/validation/carnet.ts';
 
 // Types
 
@@ -46,8 +46,6 @@ export const INVALID_CARNET_LINK =
 
 /** 32 octets en base64url = 43 caractères (la base accepte 32 à 128). */
 export const carnetTokenSchema = z.string().regex(/^[A-Za-z0-9_-]{43}$/);
-
-const confirmedSchema = z.object({ contact_id: z.string().uuid() });
 
 // Functions
 
@@ -93,42 +91,6 @@ export async function readMyCarnet(supabase: SB): Promise<StudentCarnet | null> 
 	}
 	if (data === null) return null;
 	return parseOrThrow(studentCarnetSchema, data, 'get_my_carnet');
-}
-
-/**
- * Confirmer une adresse (A2) puis émettre son lien. Rend le jeton du carnet EN
- * CLAIR — la seule fois qu'il existe hors du courriel — ou `carnetToken: null`
- * si le partage est coupé ou si l'émission échoue (adresse confirmée, aucun lien). `null` = confirmation
- * refusée (déjà utilisée, échue, inconnue).
- */
-export async function confirmParentContact(
-	token: string
-): Promise<{ carnetToken: string | null } | null> {
-	if (!carnetTokenSchema.safeParse(token).success) return null;
-
-	const service = createServiceRoleClient();
-	const { data, error } = await service.rpc('confirm_parent_contact', { p_token: token });
-	if (error) {
-		logger.error('[confirm_parent_contact]', error);
-		throw new Error('Confirmation indisponible');
-	}
-	if (data === null) return null;
-	const { contact_id } = parseOrThrow(confirmedSchema, data, 'confirm_parent_contact');
-
-	const carnetToken = generateCarnetToken();
-	const { data: issued, error: issueError } = await service.rpc('issue_parent_carnet_link', {
-		p_contact_id: contact_id,
-		p_token_hash: hashCarnetToken(carnetToken),
-		p_expires_at: endOfSchoolYear().toISOString()
-	});
-	if (issueError) {
-		// L'adresse est DÉJÀ confirmée (le jeton de confirmation est consommé) :
-		// une 500 laisserait le parent devant « lien déjà utilisé » au second
-		// essai. On dit « confirmée » ; le professeur enverra un nouveau lien (D2).
-		logger.error('[issue_parent_carnet_link]', issueError);
-		return { carnetToken: null };
-	}
-	return { carnetToken: issued === true ? carnetToken : null };
 }
 
 /** « Je ne suis pas le parent de cet élève » (A5). `false` = jeton inconnu ou déjà traité. */

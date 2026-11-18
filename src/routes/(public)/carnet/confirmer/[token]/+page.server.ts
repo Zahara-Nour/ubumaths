@@ -6,19 +6,17 @@
  * affichage ne doit ni confirmer l'adresse ni la refuser. Les deux gestes
  * passent par un bouton (POST).
  *
- * Confirmer émet le lien du carnet et y mène aussitôt : la personne qui a reçu
- * le courriel l'a sous les yeux, une seule fois (le jeton n'est pas stocké en
- * clair). Rien ici ne dit de quel élève il s'agit ni si le lien a existé.
+ * Confirmer émet le lien du carnet et l'ENVOIE par courriel (Q26) : la page ne
+ * le montre pas. Un antivirus de messagerie qui exécute un vrai navigateur peut
+ * cliquer « Confirmer » ; il n'emporte alors rien, et le parent reçoit son lien
+ * dans sa boîte. Rien ici ne dit de quel élève il s'agit ni si le lien a existé.
  */
 
-import { error, fail, redirect } from '@sveltejs/kit';
+import { error, fail } from '@sveltejs/kit';
 import type { Actions, PageServerLoad, RequestEvent } from './$types';
-import {
-	carnetTokenSchema,
-	confirmParentContact,
-	refuseParentContact
-} from '$lib/server/carnet/carnet';
-import { rateLimit } from '$lib/server/middleware/rateLimit';
+import { carnetTokenSchema, refuseParentContact } from '#lib/server/carnet/carnet.ts';
+import { confirmContactAndSendLink } from '#lib/server/carnet/envois.ts';
+import { rateLimit } from '#lib/server/middleware/rateLimit.ts';
 
 // Constantes
 
@@ -49,11 +47,10 @@ export const load: PageServerLoad = async ({ params, setHeaders }) => {
 export const actions: Actions = {
 	confirm: async (event) => {
 		const token = await guardedToken(event);
-		const result = token ? await confirmParentContact(token) : null;
+		const result = token ? await confirmContactAndSendLink(token) : null;
 		if (!result) return fail(410, { outcome: 'invalid' as const });
-		if (result.carnetToken) throw redirect(303, `/carnet/${result.carnetToken}?bienvenue`);
-		// Adresse confirmée sans lien (partage coupé, émission en échec).
-		return { outcome: 'confirmed' as const };
+		// Adresse confirmée ; lien parti par courriel, ou non (partage coupé, Brevo en échec).
+		return { outcome: result.linkSent ? ('link_sent' as const) : ('confirmed' as const) };
 	},
 
 	refuse: async (event) => {

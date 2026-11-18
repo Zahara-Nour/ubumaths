@@ -10,20 +10,20 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 const TEACHER_ID = '550e8400-e29b-41d4-a716-446655440001';
 const EXERCISE_ID = '550e8400-e29b-41d4-a716-446655440003';
 
-vi.mock('$lib/server/middleware/auth', () => ({
+vi.mock('#lib/server/middleware/auth.ts', () => ({
 	requireRoles: vi.fn().mockResolvedValue({
 		user: { id: '550e8400-e29b-41d4-a716-446655440001' },
 		profile: { role: 'teacher' }
 	})
 }));
 
-vi.mock('$lib/server/exercises', async (importOriginal) => ({
-	...(await importOriginal<typeof import('$lib/server/exercises')>()),
+vi.mock('#lib/server/exercises.ts', async (importOriginal) => ({
+	...(await importOriginal<typeof import('#lib/server/exercises.ts')>()),
 	getTeacherExercises: vi.fn(),
 	deleteExercise: vi.fn()
 }));
 
-const { deleteExercise, EXERCISE_NOT_DELETED } = await import('$lib/server/exercises');
+const { deleteExercise, EXERCISE_NOT_DELETED } = await import('#lib/server/exercises.ts');
 const { actions } = await import('../+page.server');
 
 type DeleteAction = (event: unknown) => Promise<unknown>;

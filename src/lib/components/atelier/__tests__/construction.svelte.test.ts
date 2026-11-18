@@ -13,9 +13,9 @@ import type { MathfieldElement } from 'mathlive';
 import AtelierContainer from '../AtelierContainer.svelte';
 import WithAtelier from './harness/WithAtelier.svelte';
 import WithFigure from './harness/WithFigure.svelte';
-import { Atelier } from '$lib/atelier/atelier.svelte';
-import { figureNatureOf, figureSummaryOf } from '$lib/atelier/card-state';
-import { isCurve, isPoint } from '$lib/atelier/types';
+import { Atelier } from '#lib/atelier/atelier.svelte.ts';
+import { figureNatureOf, figureSummaryOf } from '#lib/atelier/card-state.ts';
+import { isCurve, isPoint } from '#lib/atelier/types.ts';
 
 // =============================================================================
 // Décor

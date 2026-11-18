@@ -2,16 +2,16 @@
  * Worksheet API validation schemas
  *
  * Comprehensive Zod validation for all worksheet-related API endpoints.
- * Based on types from $lib/types/worksheets.ts
+ * Based on types from #lib/types/worksheets.ts
  */
 
 import { z } from 'zod';
 import { uuidSchema } from './common';
 import { exerciseHintSchema, exerciseTranslationsSchema } from './exercises';
 import { gradeCodeSchema } from './grades';
-import { CONTENT_LOCALES } from '$lib/types/locale';
-import { capitalPairsSchema } from '$lib/questions/capital-pairs';
-import { TEXT_SIZES } from '$lib/typst/text-size';
+import { CONTENT_LOCALES } from '#lib/types/locale.ts';
+import { capitalPairsSchema } from '#lib/questions/capital-pairs.ts';
+import { TEXT_SIZES } from '#lib/typst/text-size.ts';
 import {
 	ANSWER_FRAME_MAX_LINES,
 	ANSWER_FRAME_MAX_QUESTIONS,
@@ -19,7 +19,7 @@ import {
 	CALCULATOR_RULES,
 	WORKSHEET_TYPES,
 	isIsoDate
-} from '$lib/types/worksheets';
+} from '#lib/types/worksheets.ts';
 
 // ============================================================================
 // ENUM SCHEMAS

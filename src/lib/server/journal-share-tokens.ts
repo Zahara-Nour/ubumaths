@@ -14,9 +14,9 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import { generateShareTokenString } from '$lib/server/exercise-share-tokens';
-import { createServerLogger } from '$lib/utils/logger';
+import type { Database } from '#lib/types/database.ts';
+import { generateShareTokenString } from '#lib/server/exercise-share-tokens.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/journal-share-tokens');
 

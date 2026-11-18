@@ -16,14 +16,24 @@
  * - BREVO_API_KEY: API key from Brevo dashboard
  * - BREVO_SENDER_EMAIL: Verified sender email (e.g., noreply@ubumaths.fr)
  * - BREVO_SENDER_NAME: Sender display name (e.g., Chiphre)
+ *
+ * Sur la base locale, rien ne part : les courriels sont capturés dans un
+ * dossier (voir `capture.ts`, `EMAIL_ENVOI_REEL=1` pour envoyer quand même).
  */
 
 import * as Brevo from '@getbrevo/brevo';
-import { env } from '$env/dynamic/private';
-import { createServerLogger } from '$lib/utils/logger';
-import { isChildAccountEmail } from '$lib/utils/child-account';
-import type { ChildRegistrationEmailData } from '$lib/email-templates/child-registration';
-import type { ChildPasswordResetEmailData } from '$lib/email-templates/child-password-reset';
+import * as env from '$app/env/private';
+import { createServerLogger } from '#lib/utils/logger.ts';
+import { isChildAccountEmail } from '#lib/utils/child-account.ts';
+import { captureEmail, isEmailCaptureActive } from './capture';
+import type { ChildRegistrationEmailData } from '#lib/email-templates/child-registration.ts';
+import type { ChildPasswordResetEmailData } from '#lib/email-templates/child-password-reset.ts';
+import type {
+	CarnetConfirmationEmailData,
+	CarnetExceptionEmailData,
+	CarnetLinkEmailData,
+	CarnetQuarterlyEmailData
+} from '#lib/email-templates/carnet.ts';
 
 const logger = createServerLogger('server/email/brevo');
 
@@ -81,12 +91,34 @@ export async function sendEmail(
 	subject: string,
 	htmlContent: string,
 	textContent?: string,
-	replyTo?: string
+	replyTo?: string,
+	headers?: Record<string, string>
 ): Promise<EmailSendResult> {
 	// L'adresse d'un enfant inscrit par son parent est fictive : rien ne doit y partir.
 	if (isChildAccountEmail(to)) {
 		logger.warn('[Brevo] Envoi refusé : adresse du domaine fictif');
 		return { success: false, error: 'Adresse fictive : aucun courriel envoyé' };
+	}
+
+	// Base locale : le courriel est écrit dans un dossier, rien ne part (capture.ts).
+	if (isEmailCaptureActive()) {
+		try {
+			const captured = await captureEmail({
+				to,
+				subject,
+				html: htmlContent,
+				text: textContent,
+				headers
+			});
+			logger.info(`[Courriel capturé] ${captured.file}`);
+			return { success: true, messageId: `capture:${captured.file}` };
+		} catch (error) {
+			logger.error(
+				'[Courriel] Capture impossible :',
+				error instanceof Error ? error.message : 'erreur inconnue'
+			);
+			return { success: false, error: 'Capture du courriel impossible' };
+		}
 	}
 
 	try {
@@ -107,6 +139,10 @@ export async function sendEmail(
 			sendSmtpEmail.replyTo = { email: replyTo };
 		}
 
+		if (headers) {
+			sendSmtpEmail.headers = headers;
+		}
+
 		const response = await client.sendTransacEmail(sendSmtpEmail);
 
 		return {
@@ -114,7 +150,15 @@ export async function sendEmail(
 			messageId: response.body?.messageId
 		};
 	} catch (error) {
-		logger.error('[Brevo] Email send error:', error);
+		// Ni l'objet d'erreur entier : celui de Brevo garde la requête, donc le
+		// corps du courriel et les liens à jeton qu'il contient (carnet,
+		// consentement). Le message et le code suffisent.
+		const statusCode = (error as { statusCode?: number } | null)?.statusCode;
+		logger.error(
+			'[Brevo] Email send error:',
+			error instanceof Error ? error.message : 'erreur inconnue',
+			statusCode ?? ''
+		);
 
 		if (error instanceof Error) {
 			return {
@@ -144,7 +188,7 @@ export async function sendWelcomeEmail(
 	replyToEmail?: string
 ): Promise<EmailSendResult> {
 	const { WELCOME_EMAIL_SUBJECT, getWelcomeEmailHtml, getWelcomeEmailText } =
-		await import('$lib/email-templates/welcome');
+		await import('#lib/email-templates/welcome.ts');
 
 	return sendEmail(
 		toEmail,
@@ -177,7 +221,7 @@ export async function sendConsentEmail(
 	replyToEmail?: string
 ): Promise<EmailSendResult> {
 	const { CONSENT_EMAIL_SUBJECT, getConsentEmailHtml, getConsentEmailText } =
-		await import('$lib/email-templates/parental-consent');
+		await import('#lib/email-templates/parental-consent.ts');
 
 	return sendEmail(
 		toEmail,
@@ -200,7 +244,7 @@ export async function sendChildRegistrationEmail(
 		getChildRegistrationSubject,
 		getChildRegistrationEmailHtml,
 		getChildRegistrationEmailText
-	} = await import('$lib/email-templates/child-registration');
+	} = await import('#lib/email-templates/child-registration.ts');
 
 	return sendEmail(
 		toEmail,
@@ -222,7 +266,7 @@ export async function sendChildPasswordResetEmail(
 		getChildPasswordResetSubject,
 		getChildPasswordResetEmailHtml,
 		getChildPasswordResetEmailText
-	} = await import('$lib/email-templates/child-password-reset');
+	} = await import('#lib/email-templates/child-password-reset.ts');
 
 	return sendEmail(
 		toEmail,
@@ -232,10 +276,101 @@ export async function sendChildPasswordResetEmail(
 	);
 }
 
+/** Carnet de liaison : confirmation d'une adresse saisie (A2, Q18). */
+export async function sendCarnetConfirmationEmail(
+	toEmail: string,
+	data: CarnetConfirmationEmailData
+): Promise<EmailSendResult> {
+	const {
+		getCarnetConfirmationSubject,
+		getCarnetConfirmationEmailHtml,
+		getCarnetConfirmationEmailText
+	} = await import('#lib/email-templates/carnet.ts');
+
+	return sendEmail(
+		toEmail,
+		getCarnetConfirmationSubject(data),
+		getCarnetConfirmationEmailHtml(data),
+		getCarnetConfirmationEmailText(data)
+	);
+}
+
+/** Carnet de liaison : le lien du carnet, vers une adresse confirmée seulement (A1, Q26). */
+export async function sendCarnetLinkEmail(
+	toEmail: string,
+	data: CarnetLinkEmailData
+): Promise<EmailSendResult> {
+	const { getCarnetLinkSubject, getCarnetLinkEmailHtml, getCarnetLinkEmailText } =
+		await import('#lib/email-templates/carnet.ts');
+
+	return sendEmail(
+		toEmail,
+		getCarnetLinkSubject(data),
+		getCarnetLinkEmailHtml(data),
+		getCarnetLinkEmailText(data)
+	);
+}
+
+/**
+ * En-tête `List-Unsubscribe` des courriels du carnet (E5) : la messagerie
+ * propose « Se désabonner », qui ouvre le bas du carnet (bouton « Ne plus
+ * recevoir »). Pas de `List-Unsubscribe-Post` : SvelteKit refuse, avant tout
+ * hook, un POST de formulaire sans en-tête `Origin` de notre site (le clic
+ * « un seul geste » des messageries).
+ */
+function carnetUnsubscribeHeaders(stopLink: string): Record<string, string> {
+	return { 'List-Unsubscribe': `<${stopLink}>` };
+}
+
+/** Carnet de liaison : courriel d'exception, vers une adresse confirmée (E1, E5, Q38). */
+export async function sendCarnetExceptionEmail(
+	toEmail: string,
+	data: CarnetExceptionEmailData
+): Promise<EmailSendResult> {
+	const {
+		getCarnetExceptionSubject,
+		getCarnetExceptionEmailHtml,
+		getCarnetExceptionEmailText,
+		getCarnetStopLink
+	} = await import('#lib/email-templates/carnet.ts');
+
+	return sendEmail(
+		toEmail,
+		getCarnetExceptionSubject(data),
+		getCarnetExceptionEmailHtml(data),
+		getCarnetExceptionEmailText(data),
+		undefined,
+		carnetUnsubscribeHeaders(getCarnetStopLink(data.token))
+	);
+}
+
+/** Carnet de liaison : message de fin de trimestre (E4, Q34). */
+export async function sendCarnetQuarterlyEmail(
+	toEmail: string,
+	data: CarnetQuarterlyEmailData
+): Promise<EmailSendResult> {
+	const {
+		getCarnetQuarterlySubject,
+		getCarnetQuarterlyEmailHtml,
+		getCarnetQuarterlyEmailText,
+		getCarnetStopLink
+	} = await import('#lib/email-templates/carnet.ts');
+
+	return sendEmail(
+		toEmail,
+		getCarnetQuarterlySubject(data),
+		getCarnetQuarterlyEmailHtml(data),
+		getCarnetQuarterlyEmailText(data),
+		undefined,
+		carnetUnsubscribeHeaders(getCarnetStopLink(data.token))
+	);
+}
+
 /**
  * Check if Brevo is properly configured
  * Useful for graceful degradation or admin checks
  */
 export function isBrevoConfigured(): boolean {
-	return !!env.BREVO_API_KEY;
+	// En local, la capture tient lieu de service : les pages d'envoi restent utilisables.
+	return !!env.BREVO_API_KEY || isEmailCaptureActive();
 }

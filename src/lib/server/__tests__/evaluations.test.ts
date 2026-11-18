@@ -14,7 +14,7 @@ import {
 	validateAttempt
 } from '../evaluations';
 import { called, createFakeSupabase, type Result } from './helpers/fake-supabase';
-import type { DbSeries } from '$lib/types/evaluation';
+import type { DbSeries } from '#lib/types/evaluation.ts';
 
 const TEACHER = '1a2b3c4d-1111-4111-8111-111111111111';
 const STUDENT = '7a8b9c0d-7777-4777-8777-777777777777';

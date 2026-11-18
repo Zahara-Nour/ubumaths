@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
-	import { Textarea } from '$lib/components/ui/textarea';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import { Textarea } from '#lib/components/ui/textarea/index.ts';
 	import { Upload, FileText, X, Loader2 } from '@lucide/svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import { GRADE_OPTIONS, type GradeCode } from '$lib/types/grades';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import { GRADE_OPTIONS, type GradeCode } from '#lib/types/grades.ts';
 
 	interface Props {
 		onUploadComplete?: (documentId: string) => void;

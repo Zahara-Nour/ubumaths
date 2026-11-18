@@ -4,14 +4,14 @@
 		splitStatementAndSolution,
 		type TranspileResult,
 		type SplitResult
-	} from '$lib/ubumark/importers/latex';
-	import ExerciseDisplay from '$lib/components/exercises/ExerciseDisplay.svelte';
-	import { MarkdownRenderer } from '$lib/components/markdown';
-	import LaTeXEditor from '$lib/components/LaTeXEditor.svelte';
-	import * as Tabs from '$lib/components/ui/tabs';
-	import { Button } from '$lib/components/ui/button';
-	import { Badge } from '$lib/components/ui/badge';
-	import type { Exercise } from '$lib/exercises/types';
+	} from '#lib/ubumark/importers/latex/index.ts';
+	import ExerciseDisplay from '#lib/components/exercises/ExerciseDisplay.svelte';
+	import { MarkdownRenderer } from '#lib/components/markdown/index.ts';
+	import LaTeXEditor from '#lib/components/LaTeXEditor.svelte';
+	import * as Tabs from '#lib/components/ui/tabs/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import type { Exercise } from '#lib/exercises/types.ts';
 
 	// ============================================================================
 	// STATE

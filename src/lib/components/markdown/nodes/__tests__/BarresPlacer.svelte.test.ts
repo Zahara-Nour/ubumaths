@@ -9,13 +9,13 @@ import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import BarresPlacer from '../BarresPlacer.svelte';
 import MarkdownRenderer from '../../MarkdownRenderer.svelte';
-import FillBlanksInput from '$lib/components/question-inputs/FillBlanksInput.svelte';
-import BuildAnswer from '$lib/components/questions/BuildAnswer.svelte';
-import { parseStatChartContent } from '$lib/ubumark/parser/stat-chart-parser';
-import type { ResolvedMarkdown } from '$lib/ubumark';
-import type { InstanceBlank, QuestionTemplate } from '$lib/questions/types';
-import { generateInstance } from '$lib/questions/generator/instance-generator';
-import { templateMarkdown } from '$lib/ubumark';
+import FillBlanksInput from '#lib/components/question-inputs/FillBlanksInput.svelte';
+import BuildAnswer from '#lib/components/questions/BuildAnswer.svelte';
+import { parseStatChartContent } from '#lib/ubumark/parser/stat-chart-parser.ts';
+import type { ResolvedMarkdown } from '#lib/ubumark/index.ts';
+import type { InstanceBlank, QuestionTemplate } from '#lib/questions/types.ts';
+import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 
 let mains: HTMLElement[] = [];
 function mainElement(): HTMLElement {

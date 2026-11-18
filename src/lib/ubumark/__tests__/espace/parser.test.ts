@@ -2,9 +2,9 @@
  * Bloc ```cubes : lecture du texte (parseur)
  */
 import { describe, expect, it } from 'vitest';
-import { parseMarkdown } from '$lib/ubumark';
-import { parseEspaceContent } from '$lib/ubumark/parser/espace-parser';
-import type { CubesSpec, EspaceNode } from '$lib/ubumark/types/espace';
+import { parseMarkdown } from '#lib/ubumark/index.ts';
+import { parseEspaceContent } from '#lib/ubumark/parser/espace-parser.ts';
+import type { CubesSpec, EspaceNode } from '#lib/ubumark/types/espace.ts';
 
 const read = (...lines: string[]) => parseEspaceContent(lines.join('\n'));
 const heights = (...lines: string[]) => {

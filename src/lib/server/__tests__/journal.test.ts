@@ -19,7 +19,7 @@
 
 import { describe, it, expect, vi } from 'vitest';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 import * as journal from '../journal';
 import type { CreateJournalEntryInput, UpdateJournalEntryInput } from '../validation/journal';
 

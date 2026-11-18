@@ -4,15 +4,15 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { parsePartageContent } from '$lib/ubumark/parser/partage-parser';
-import { buildPartageScenes, partageFigureLabel } from '$lib/ubumark/utils/partage-scene';
+import { parsePartageContent } from '#lib/ubumark/parser/partage-parser.ts';
+import { buildPartageScenes, partageFigureLabel } from '#lib/ubumark/utils/partage-scene.ts';
 import {
 	coloringMistakes,
 	expectedColoringAnswer,
 	isColoringCorrect
-} from '$lib/ubumark/utils/partage-colorier';
-import { generatePartageTypst } from '$lib/ubumark/generators/partage-typst';
-import { partageSpecTotal, type PartageSpec } from '$lib/ubumark/types/partage';
+} from '#lib/ubumark/utils/partage-colorier.ts';
+import { generatePartageTypst } from '#lib/ubumark/generators/partage-typst.ts';
+import { partageSpecTotal, type PartageSpec } from '#lib/ubumark/types/partage.ts';
 
 const parse = (...lines: string[]) => parsePartageContent(lines.join('\n'));
 const messages = (...lines: string[]) => parse(...lines).errors.join(' | ');

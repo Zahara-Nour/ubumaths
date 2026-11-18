@@ -30,8 +30,8 @@ import { mapDbTemplateToForm, type GradeLevel, type QuestionTemplate } from '../
 import {
 	createQuestionTemplateSchema,
 	updateQuestionTemplateSchema
-} from '$lib/server/validation/questions';
-import { templateMarkdown } from '$lib/ubumark';
+} from '#lib/server/validation/questions.ts';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 
 // ============================================================================
 // FIXTURES

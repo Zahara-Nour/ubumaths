@@ -13,14 +13,14 @@
  *   Zod schemas. Keep these in sync with `src/lib/server/validation/kanban.ts`.
  */
 
-import { toaster } from '$lib/stores/toaster.svelte';
+import { toaster } from '#lib/stores/toaster.svelte.ts';
 import type {
 	KanbanBoard,
 	KanbanColumn,
 	KanbanCard,
 	KanbanTag,
 	KanbanTagColor
-} from '$lib/types/database-helpers';
+} from '#lib/types/database-helpers.ts';
 
 // ----------------------------------------------------------------------------
 // Patch payload types (mirror Zod schemas)

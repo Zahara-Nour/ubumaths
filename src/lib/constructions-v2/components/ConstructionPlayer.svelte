@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { onDestroy, untrack } from 'svelte';
-	import { parseDsl } from '$lib/geometry-core/dsl';
-	import { DslRuntimeError } from '$lib/geometry-core/dsl/errors';
-	import type { DslRuntimeErrorDetails } from '$lib/geometry-core/dsl/errors';
-	import { Figure } from '$lib/geometry-core/graph/figure';
+	import { parseDsl } from '#lib/geometry-core/dsl/index.ts';
+	import { DslRuntimeError } from '#lib/geometry-core/dsl/errors.ts';
+	import type { DslRuntimeErrorDetails } from '#lib/geometry-core/dsl/errors.ts';
+	import { Figure } from '#lib/geometry-core/graph/figure.ts';
 	import { ConstructionExecutor } from '../core/executor';
 	import type {
 		InstrumentType,

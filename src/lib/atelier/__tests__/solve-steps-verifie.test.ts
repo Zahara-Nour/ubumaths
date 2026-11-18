@@ -9,10 +9,13 @@
 import { describe, expect, it } from 'vitest';
 import { solveSteps } from '../solve-steps';
 import { conclusionAgrees } from '../solve-steps-check';
-import { generateEquationSteps, generateInequalitySteps } from '$lib/mathAST/pedagogical-solve';
-import { parseLatex } from '$lib/mathAST/parser';
-import { isRelation } from '$lib/mathAST/guards';
-import type { RelationNode } from '$lib/mathAST/types';
+import {
+	generateEquationSteps,
+	generateInequalitySteps
+} from '#lib/mathAST/pedagogical-solve/index.ts';
+import { parseLatex } from '#lib/mathAST/parser/index.ts';
+import { isRelation } from '#lib/mathAST/guards.ts';
+import type { RelationNode } from '#lib/mathAST/types.ts';
 
 function rel(latex: string): RelationNode {
 	const node = parseLatex(latex);
@@ -80,7 +83,7 @@ describe('conclusionAgrees — le garde-fou', () => {
 
 describe('garde-fou — un ÉCHEC du moteur ne confirme pas « S = ∅ »', () => {
 	it('x|x| = 4 : le moteur ne sait pas (status no-solution + error), ∅ refusé', async () => {
-		const { solve } = await import('$lib/mathAST/solve');
+		const { solve } = await import('#lib/mathAST/solve/index.ts');
 		const equation = rel('x\\left|x\\right|=4');
 		// Le décor : le moteur échoue, avec le statut d'une absence de solution
 		const engine = solve(equation, { variable: 'x' });

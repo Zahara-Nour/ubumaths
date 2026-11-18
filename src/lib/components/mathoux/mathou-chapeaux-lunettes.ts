@@ -20,7 +20,7 @@
  * remplace la couronne ; en sieste, ni lunettes ni chapeau (bonnet de nuit).
  */
 
-import type { MathouGlassesId, MathouHatId } from '$lib/mathoux/decorations';
+import type { MathouGlassesId, MathouHatId } from '#lib/mathoux/decorations.ts';
 import type { DecorationShape } from './mathou-decorations';
 import { CREAM, INK, RED, type PearGeometry } from './mathou-dessin';
 

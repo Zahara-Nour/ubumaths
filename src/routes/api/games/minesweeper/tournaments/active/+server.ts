@@ -1,10 +1,10 @@
 import type { RequestHandler } from './$types';
 import { error, json } from '@sveltejs/kit';
-import { requireRole } from '$lib/server/middleware/auth';
-import { listActiveTournamentsSchema } from '$lib/server/validation/minesweeper-tournament';
-import { sanitizePostgresError } from '$lib/server/utils/error-handler';
-import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { listActiveTournamentsSchema } from '#lib/server/validation/minesweeper-tournament.ts';
+import { sanitizePostgresError } from '#lib/server/utils/error-handler.ts';
+import { createServiceRoleClient } from '#lib/server/serviceRoleClient.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/games/minesweeper/tournaments/active/+server');
 

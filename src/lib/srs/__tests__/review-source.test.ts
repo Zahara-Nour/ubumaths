@@ -16,8 +16,8 @@ import {
 	type SessionCard
 } from '../review-source';
 import type { ChapterDueResponse, DueCardsResponse, DueReviewCardStats } from '../types';
-import type { QuestionInstance } from '$lib/questions/types';
-import { templateMarkdown } from '$lib/ubumark/types/template';
+import type { QuestionInstance } from '#lib/questions/types.ts';
+import { templateMarkdown } from '#lib/ubumark/types/template.ts';
 
 const deck: ReviewSource = { kind: 'deck', deckId: 'd1', states: 'review', all: true };
 const chapter: ReviewSource = { kind: 'chapter', chapterId: 'c1' };

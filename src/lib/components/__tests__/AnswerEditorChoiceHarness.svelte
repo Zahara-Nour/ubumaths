@@ -4,8 +4,8 @@
 -->
 <script lang="ts">
 	import AnswerEditor from '../AnswerEditor.svelte';
-	import type { TemplateBlank } from '$lib/questions/types';
-	import { templateMarkdown, type TemplateMarkdown } from '$lib/ubumark';
+	import type { TemplateBlank } from '#lib/questions/types.ts';
+	import { templateMarkdown, type TemplateMarkdown } from '#lib/ubumark/index.ts';
 
 	interface Props {
 		initialStatement?: string;

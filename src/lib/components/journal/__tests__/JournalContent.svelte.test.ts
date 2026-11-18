@@ -11,9 +11,9 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import JournalContent from '../JournalContent.svelte';
-import { resolveResource } from '$lib/resources';
-import { PUBLIC_SUPABASE_URL } from '$env/static/public';
-import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
+import { resolveResource } from '#lib/resources/index.ts';
+import { PUBLIC_SUPABASE_URL } from '$app/env/public';
+import MarkdownRenderer from '#lib/components/markdown/MarkdownRenderer.svelte';
 
 const FICHE = '664fee6b-c9d0-4406-a9eb-9e0655c2b1ac';
 const JETON = 'jeton-de-partage-0123456789abcdef';

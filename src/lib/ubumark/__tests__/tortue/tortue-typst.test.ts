@@ -2,7 +2,7 @@
  * Bloc ```tortue → Typst : le texte produit, et une compilation RÉELLE par le compilateur
  * typst.ts (celui de la production, en WebAssembly).
  *
- * Phase 0 (chantier `docs/wip/blockly-progress.md`, PR 4) : consigne + figure modèle +
+ * Phase 0 (chantier `docs/archive/wip/blockly-progress.md`, PR 4) : consigne + figure modèle +
  * « À faire sur Chiphre ». Sans `montrer: oui`, aucune figure (elle dirait la réponse).
  *
  * Témoin : un document cassé est refusé, sinon ce test ne prouverait rien.
@@ -12,10 +12,10 @@ import { describe, it, expect, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { loadFonts } from '@myriaddreamin/typst.ts/options.init';
-import { parseMarkdown } from '$lib/ubumark';
-import { generateTypst } from '$lib/ubumark/generators/typst-generator';
-import { TORTUE_A_FAIRE_SUR_CHIPHRE } from '$lib/ubumark/generators/tortue-typst';
-import { TORTUE_UNAVAILABLE } from '$lib/ubumark/types/tortue';
+import { parseMarkdown } from '#lib/ubumark/index.ts';
+import { generateTypst } from '#lib/ubumark/generators/typst-generator.ts';
+import { TORTUE_A_FAIRE_SUR_CHIPHRE } from '#lib/ubumark/generators/tortue-typst.ts';
+import { TORTUE_UNAVAILABLE } from '#lib/ubumark/types/tortue.ts';
 
 const bloc = (...lines: string[]) => ['```tortue', 'case: 0', ...lines, '```'].join('\n');
 

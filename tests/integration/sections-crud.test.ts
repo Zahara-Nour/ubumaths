@@ -29,7 +29,7 @@
 import { describe, it, expect, beforeAll, afterAll, beforeEach, vi } from 'vitest';
 import { present } from '../helpers/present';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 import type { User } from '@supabase/supabase-js';
 
 import { GET, POST } from '../../src/routes/api/srs/decks/[id]/sections/+server';

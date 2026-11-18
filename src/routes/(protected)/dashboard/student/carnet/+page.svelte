@@ -7,10 +7,14 @@
 	partage est arrêté, et les courriels envoyés à ses parents (date, motif).
 -->
 <script lang="ts">
-	import * as Card from '$lib/components/ui/card';
-	import CarnetView from '$lib/components/carnet/CarnetView.svelte';
-	import { Eye, Mail } from '@lucide/svelte';
-	import type { PageData } from './$types';
+	import { enhance } from '$app/forms';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import CarnetView from '#lib/components/carnet/CarnetView.svelte';
+	import { Eye, Mail, UserPlus } from '@lucide/svelte';
+	import type { ActionData, PageData } from './$types';
 
 	// Constantes
 
@@ -35,7 +39,13 @@
 
 	// Variables
 
-	let { data }: { data: PageData } = $props();
+	let { data, form }: { data: PageData; form: ActionData } = $props();
+
+	let pending = $state(false);
+
+	const canAddParent = $derived(
+		!!data.carnet && data.carnet.shared && !data.carnet.opted_out && data.carnet.parents < 2
+	);
 
 	// Functions
 
@@ -45,6 +55,14 @@
 			return motifs ? `Alerte : ${motifs}` : 'Alerte';
 		}
 		return KIND_LABELS[kind] ?? 'Courriel';
+	}
+
+	function submitting() {
+		pending = true;
+		return async ({ update }: { update: (opts?: { reset?: boolean }) => Promise<void> }) => {
+			await update({ reset: true });
+			pending = false;
+		};
 	}
 </script>
 
@@ -80,6 +98,50 @@
 		</div>
 
 		<CarnetView carnet={data.carnet} />
+
+		{#if canAddParent}
+			<Card.Root>
+				<Card.Header>
+					<Card.Title class="flex items-center gap-2 text-lg">
+						<UserPlus class="size-5 text-muted-foreground" aria-hidden="true" />
+						Ajouter l'adresse d'un parent
+					</Card.Title>
+				</Card.Header>
+				<Card.Content class="space-y-3">
+					<p class="text-sm text-muted-foreground">
+						Ton parent reçoit d'abord un courriel pour confirmer son adresse ; le lien du carnet
+						part après sa confirmation. Deux parents au plus.
+					</p>
+					<form
+						method="POST"
+						action="?/addParent"
+						use:enhance={submitting}
+						class="flex flex-col gap-2 sm:flex-row sm:items-end"
+					>
+						<div class="flex-1 space-y-1.5">
+							<Label for="carnet-parent-email">Adresse de ton parent</Label>
+							<Input
+								id="carnet-parent-email"
+								name="email"
+								type="email"
+								autocomplete="off"
+								required
+								maxlength={254}
+							/>
+						</div>
+						<Button type="submit" disabled={pending}>Envoyer la confirmation</Button>
+					</form>
+					{#if form?.message}
+						<p
+							role={form.sent ? 'status' : 'alert'}
+							class={form.sent ? 'text-sm' : 'text-sm text-destructive'}
+						>
+							{form.message}
+						</p>
+					{/if}
+				</Card.Content>
+			</Card.Root>
+		{/if}
 
 		<Card.Root>
 			<Card.Header>

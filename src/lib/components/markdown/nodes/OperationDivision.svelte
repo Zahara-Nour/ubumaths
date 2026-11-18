@@ -22,12 +22,15 @@
 -->
 <script lang="ts">
 	import { untrack } from 'svelte';
-	import { OPERATION_DIVISION_ARIA_LABEL, type OperationNode } from '$lib/ubumark/types/operation';
+	import {
+		OPERATION_DIVISION_ARIA_LABEL,
+		type OperationNode
+	} from '#lib/ubumark/types/operation.ts';
 	import {
 		buildDivisionScene,
 		type DivisionCell,
 		type DivisionScene
-	} from '$lib/ubumark/utils/operation-division-scene';
+	} from '#lib/ubumark/utils/operation-division-scene.ts';
 	import {
 		quotientFromAnswer,
 		readQuotientAnswer,
@@ -36,7 +39,7 @@
 		wrongQuotientComma,
 		wrongQuotientDigits,
 		wrongRemainderDigits
-	} from '$lib/ubumark/utils/operation-division-answer';
+	} from '#lib/ubumark/utils/operation-division-answer.ts';
 	import Self from './OperationDivision.svelte';
 
 	/** Une case de la question portée par la potence */

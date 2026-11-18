@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { parseCustom } from '$lib/mathAST/parser/custom';
-import { toCustom } from '$lib/mathAST/custom-generator';
+import { parseCustom } from '#lib/mathAST/parser/custom/index.ts';
+import { toCustom } from '#lib/mathAST/custom-generator.ts';
 import { substitute } from '../substitute';
 
 describe('substitute - implicit multiplication fix', () => {

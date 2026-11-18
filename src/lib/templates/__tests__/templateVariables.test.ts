@@ -27,7 +27,7 @@ import {
 	formatVariableName,
 	extractVariableName
 } from '../templateVariables';
-import type { TriggerType } from '$lib/types/messageTemplates';
+import type { TriggerType } from '#lib/types/messageTemplates.ts';
 
 // ============================================================================
 // GLOBAL VARIABLES TESTS

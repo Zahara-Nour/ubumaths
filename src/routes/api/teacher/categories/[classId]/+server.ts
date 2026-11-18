@@ -18,9 +18,9 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import { uuidSchema } from '$lib/server/validation';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { uuidSchema } from '#lib/server/validation/index.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/teacher/categories/[classId]/+server');
 

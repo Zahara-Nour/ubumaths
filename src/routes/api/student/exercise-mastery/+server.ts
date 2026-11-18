@@ -21,9 +21,9 @@
 
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import type { ExerciseMasteryListResponse, MasteryStatus } from '$lib/types/exercise-mastery';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import type { ExerciseMasteryListResponse, MasteryStatus } from '#lib/types/exercise-mastery.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/student/exercise-mastery/+server');
 

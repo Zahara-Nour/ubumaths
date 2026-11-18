@@ -29,12 +29,12 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { deleteAccountSchema } from '$lib/server/validation/account';
-import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
-import { removeAccountFiles } from '$lib/server/deleted-account-files';
-import { createServerLogger } from '$lib/utils/logger';
-import { rateLimit } from '$lib/server/middleware/rateLimit';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { deleteAccountSchema } from '#lib/server/validation/account.ts';
+import { createServiceRoleClient } from '#lib/server/serviceRoleClient.ts';
+import { removeAccountFiles } from '#lib/server/deleted-account-files.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
+import { rateLimit } from '#lib/server/middleware/rateLimit.ts';
 
 const logger = createServerLogger('api/account/delete');
 

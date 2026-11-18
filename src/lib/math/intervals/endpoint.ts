@@ -5,13 +5,13 @@
  * infinity checks and numeric conversion.
  */
 
-import { evaluate } from '$lib/mathAST/eval';
+import { evaluate } from '#lib/mathAST/eval/index.ts';
 import {
 	isInfinity as mathASTIsInfinity,
 	isPositiveInfinity as mathASTIsPositiveInfinity,
 	isNegativeInfinity as mathASTIsNegativeInfinity
-} from '$lib/mathAST/guards';
-import type { MathNode } from '$lib/mathAST/types';
+} from '#lib/mathAST/guards.ts';
+import type { MathNode } from '#lib/mathAST/types.ts';
 
 // =============================================================================
 // Infinity Checks

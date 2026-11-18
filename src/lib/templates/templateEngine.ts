@@ -14,7 +14,7 @@ import type {
 	TemplateValidationError,
 	TemplateValidationWarning,
 	Placeholder
-} from '$lib/types/messageTemplates';
+} from '#lib/types/messageTemplates.ts';
 import {
 	getVariablesForTrigger,
 	getUserInputVariables,

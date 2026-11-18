@@ -20,12 +20,12 @@
 	@module components/markdown/nodes/MonnaieConstruire
 -->
 <script lang="ts">
-	import type { MonnaieSet, MonnaieSpec } from '$lib/ubumark/types/monnaie';
+	import type { MonnaieSet, MonnaieSpec } from '#lib/ubumark/types/monnaie.ts';
 	import {
 		findMonnaieItemAt,
 		MONNAIE_VIEW,
 		type MonnaieItem
-	} from '$lib/ubumark/utils/monnaie-scene';
+	} from '#lib/ubumark/utils/monnaie-scene.ts';
 	import {
 		addToBuild,
 		buildAnswer,
@@ -37,10 +37,10 @@
 		removeFromBuild,
 		reserveScene,
 		solutionBuild
-	} from '$lib/ubumark/utils/monnaie-construire';
+	} from '#lib/ubumark/utils/monnaie-construire.ts';
 	import { scenePointOf } from './scene-marks.svelte';
 	import MonnaieObjets from './MonnaieObjets.svelte';
-	import { amountWords, denominationName, toCents } from '$lib/ubumark/utils/monnaie-valeurs';
+	import { amountWords, denominationName, toCents } from '#lib/ubumark/utils/monnaie-valeurs.ts';
 	import type { BuildCase } from './CollectionConstruire.svelte';
 
 	interface Props {

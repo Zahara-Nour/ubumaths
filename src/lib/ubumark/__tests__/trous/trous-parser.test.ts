@@ -16,9 +16,9 @@ import {
 	parseTrousContent,
 	replaceTrousBlocks,
 	serializeTrousBlock
-} from '$lib/ubumark/parser/trous-parser';
-import { displayedTrousLabels, trousPieces } from '$lib/ubumark/utils/trous';
-import { parseMarkdown } from '$lib/ubumark';
+} from '#lib/ubumark/parser/trous-parser.ts';
+import { displayedTrousLabels, trousPieces } from '#lib/ubumark/utils/trous.ts';
+import { parseMarkdown } from '#lib/ubumark/index.ts';
 
 const block = (...body: string[]) => ['```trous', ...body, '```'].join('\n');
 

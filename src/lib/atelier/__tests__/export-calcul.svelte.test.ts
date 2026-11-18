@@ -10,7 +10,7 @@
 import { describe, it, expect } from 'vitest';
 import { Atelier } from '../atelier.svelte';
 import { CalcDesk, type Entry } from '../desk.svelte';
-import { parseMarkdown } from '$lib/ubumark/parser';
+import { parseMarkdown } from '#lib/ubumark/parser/index.ts';
 import { historyToJson, historyToUbumark, exportFileName } from '../history-export';
 
 // =============================================================================

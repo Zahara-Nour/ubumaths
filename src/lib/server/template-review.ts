@@ -11,8 +11,8 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import type { QuestionTemplateRow } from '$lib/types/question-template';
+import type { Database } from '#lib/types/database.ts';
+import type { QuestionTemplateRow } from '#lib/types/question-template.ts';
 import type {
 	SeriesLine,
 	SheetPoint,
@@ -20,9 +20,9 @@ import type {
 	TemplateSummary,
 	TreeNodeRow,
 	Verdict
-} from '$lib/questions/template-review';
-import { POINT_BOUNDS } from '$lib/server/point-bounds';
-import { parseStoredSeries } from '$lib/server/series-lines';
+} from '#lib/questions/template-review.ts';
+import { POINT_BOUNDS } from '#lib/server/point-bounds.ts';
+import { parseStoredSeries } from '#lib/server/series-lines.ts';
 
 // Types
 

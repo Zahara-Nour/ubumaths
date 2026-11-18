@@ -27,21 +27,21 @@
  * - 429: rate limited
  */
 
-import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
+import { createServiceRoleClient } from '#lib/server/serviceRoleClient.ts';
 import { json, error } from '@sveltejs/kit';
-import { dev } from '$app/environment';
+import { dev } from '$app/env';
 import type { RequestHandler } from './$types';
-import { adminElevateSchema } from '$lib/server/validation/admin-elevation';
+import { adminElevateSchema } from '#lib/server/validation/admin-elevation.ts';
 import {
 	ADMIN_ELEVATION_COOKIE,
 	createEphemeralAuthClient,
 	encodeElevationCookie
-} from '$lib/server/adminElevation';
+} from '#lib/server/adminElevation.ts';
 import {
 	checkElevationRateLimitByIP,
 	checkElevationRateLimitByEmail
-} from '$lib/server/rateLimiter';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/rateLimiter.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/admin/elevate');
 

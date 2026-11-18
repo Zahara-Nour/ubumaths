@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	/**
 	 * LockedPythonEditor — CodeMirror editor for "fill in the blanks"
 	 * Python exercises.
@@ -23,12 +23,12 @@
 	 */
 
 	import { onMount, onDestroy } from 'svelte';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import type { EditorView } from '@codemirror/view';
 	import type { Extension, EditorState as EditorStateType } from '@codemirror/state';
-	import { renderDefaults, reconstructCode, type ParseError } from '$lib/utils/locked-zones';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import { theme as appTheme } from '$lib/stores/theme.svelte';
+	import { renderDefaults, reconstructCode, type ParseError } from '#lib/utils/locked-zones.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import { theme as appTheme } from '#lib/stores/theme.svelte.ts';
 	import { loadThemeExtension, resolveEffectiveTheme } from './editor-theme';
 
 	let {

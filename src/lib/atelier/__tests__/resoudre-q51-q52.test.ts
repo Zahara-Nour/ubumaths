@@ -17,11 +17,14 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
+import type { RenderedStep } from '#lib/mathAST/common/step-renderer-base.ts';
 import { solveSteps } from '../solve-steps';
-import { parseLatex } from '$lib/mathAST/parser';
-import { isRelation } from '$lib/mathAST/guards';
-import { generateEquationSteps, UndevelopedLinearForm } from '$lib/mathAST/pedagogical-solve';
+import { parseLatex } from '#lib/mathAST/parser/index.ts';
+import { isRelation } from '#lib/mathAST/guards.ts';
+import {
+	generateEquationSteps,
+	UndevelopedLinearForm
+} from '#lib/mathAST/pedagogical-solve/index.ts';
 
 // =============================================================================
 // Décor

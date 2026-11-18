@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { Figure } from '$lib/geometry-core/graph/figure';
-	import type { GeoElement } from '$lib/geometry-core/types/elements';
-	import { isPointElement, isLineLike, isCircle } from '$lib/geometry-core/types/elements';
-	import { colorForScreen, resolveNamedColor, type NamedColor } from '$lib/theme/named-colors';
+	import { Figure } from '#lib/geometry-core/graph/figure.ts';
+	import type { GeoElement } from '#lib/geometry-core/types/elements.ts';
+	import { isPointElement, isLineLike, isCircle } from '#lib/geometry-core/types/elements.ts';
+	import { colorForScreen, resolveNamedColor, type NamedColor } from '#lib/theme/named-colors.ts';
 
 	/** Noms de la palette commune des figures : la figure garde le NOM, qui suit le thème */
 	const COLOR_PALETTE: readonly NamedColor[] = [

@@ -6,7 +6,7 @@
 import { describe, it, expect } from 'vitest';
 import { ConstructionExecutor } from '../executor';
 import type { SubStep } from '../choreographies/types';
-import { geoToNumber } from '$lib/geometry-core/compute/to-number';
+import { geoToNumber } from '#lib/geometry-core/compute/to-number.ts';
 
 /** Charge le script et rend les sous-étapes chorégraphiées, dans l'ordre. */
 function subSteps(lines: string[]): { exec: ConstructionExecutor; steps: SubStep[] } {

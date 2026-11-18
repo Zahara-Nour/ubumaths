@@ -12,7 +12,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { page } from 'vitest/browser';
 import ExerciseList from '../ExerciseList.svelte';
-import type { AnswerFrameLines, WorksheetExerciseWithExercise } from '$lib/types/worksheets';
+import type { AnswerFrameLines, WorksheetExerciseWithExercise } from '#lib/types/worksheets.ts';
 
 const FICHE = '808e2eee-162a-4493-81f6-8a945c81db3c';
 const EXO = '02a099dd-ff75-4a75-835b-056cd3565f8f';

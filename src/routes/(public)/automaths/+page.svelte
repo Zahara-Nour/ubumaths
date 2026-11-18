@@ -3,20 +3,20 @@
 	import { page } from '$app/state';
 	import { replaceState } from '$app/navigation';
 	import { resolve } from '$app/paths';
-	import SeoHead from '$lib/seo/SeoHead.svelte';
-	import * as Tabs from '$lib/components/ui/tabs';
-	import * as Accordion from '$lib/components/ui/accordion';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
-	import CatalogueGallery from '$lib/components/questions/CatalogueGallery.svelte';
-	import CartFloatingButton from '$lib/components/CartFloatingButton.svelte';
-	import { questionTemplatesCache } from '$lib/stores/questionTemplates.svelte';
+	import SeoHead from '#lib/seo/SeoHead.svelte';
+	import * as Tabs from '#lib/components/ui/tabs/index.ts';
+	import * as Accordion from '#lib/components/ui/accordion/index.ts';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
+	import CatalogueGallery from '#lib/components/questions/CatalogueGallery.svelte';
+	import CartFloatingButton from '#lib/components/CartFloatingButton.svelte';
+	import { questionTemplatesCache } from '#lib/stores/questionTemplates.svelte.ts';
 	import {
 		buildCatalogue,
 		filterTemplatesByGrade,
 		type CatalogueRubric
-	} from '$lib/questions/catalogue';
-	import { GRADE_CODES, GRADES, isGradeCode, type GradeCode } from '$lib/types/grades';
+	} from '#lib/questions/catalogue.ts';
+	import { GRADE_CODES, GRADES, isGradeCode, type GradeCode } from '#lib/types/grades.ts';
 
 	// Valeur d'accordéon de la rubrique « Général » (elle n'a pas de nœud)
 	const GENERAL_RUBRIC_VALUE = 'general';
@@ -80,12 +80,12 @@
 
 	/** Écrit le filtre dans l'adresse, sans nouvelle entrée d'historique */
 	function writeGradeFilterToUrl() {
-		const url = new URL(page.url);
+		const url = new URL(page.url.href);
 		if (chosenGrade) url.searchParams.set(GRADE_PARAM, chosenGrade);
 		else url.searchParams.delete(GRADE_PARAM);
 		if (chosenGrade && withLowerGrades) url.searchParams.set(LOWER_GRADES_PARAM, '1');
 		else url.searchParams.delete(LOWER_GRADES_PARAM);
-		replaceState(`${resolve('/automaths')}${url.search}`, page.state);
+		replaceState(`${resolve('automaths')}${url.search}`, page.state);
 	}
 
 	function handleGradeChange(value: string) {
