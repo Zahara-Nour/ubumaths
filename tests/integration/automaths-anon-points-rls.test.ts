@@ -112,6 +112,57 @@ describe('RLS — /automaths, lecture anonyme des points des modèles', () => {
 		expect(data).toEqual([]);
 	});
 
+	it('un embed vers les modèles ne fait remonter aucun lien de brouillon', async () => {
+		const { data, error } = await anonClient()
+			.from('question_template_points')
+			.select('template_id, question_templates(id, status)')
+			.in('template_id', [PUBLISHED_ID, DRAFT_ID]);
+
+		expect(error).toBeNull();
+		expect(data?.map((l) => l.template_id)).toEqual([PUBLISHED_ID]);
+	});
+
+	it('anon ne lit pas la date de rattachement (colonnes du lien seulement)', async () => {
+		const { data, error } = await anonClient()
+			.from('question_template_points')
+			.select('created_at')
+			.eq('template_id', PUBLISHED_ID);
+
+		expect(data ?? []).toEqual([]);
+		expect(error?.code).toBe('42501');
+	});
+
+	it('anon ne peut pas modifier un lien', async () => {
+		await anonClient()
+			.from('question_template_points')
+			.update({ template_id: DRAFT_ID })
+			.eq('template_id', PUBLISHED_ID);
+
+		const { data } = await service
+			.from('question_template_points')
+			.select('template_id')
+			.eq('template_id', PUBLISHED_ID);
+		expect(data).toHaveLength(1);
+	});
+
+	it('modèle publié repassé en brouillon : son lien disparaît', async () => {
+		await service.from('question_templates').update({ status: 'draft' }).eq('id', PUBLISHED_ID);
+		try {
+			const { data, error } = await anonClient()
+				.from('question_template_points')
+				.select('template_id')
+				.eq('template_id', PUBLISHED_ID);
+
+			expect(error).toBeNull();
+			expect(data).toEqual([]);
+		} finally {
+			await service
+				.from('question_templates')
+				.update({ status: 'published' })
+				.eq('id', PUBLISHED_ID);
+		}
+	});
+
 	it('un visiteur anonyme ne peut ni créer ni retirer un lien', async () => {
 		const { error: insertError } = await anonClient()
 			.from('question_template_points')

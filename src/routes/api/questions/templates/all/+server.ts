@@ -120,11 +120,20 @@ export const GET: RequestHandler = async ({ setHeaders }) => {
 		throw error(500, 'Impossible de charger les modèles');
 	}
 
-	const pointNames = await readPointNames(supabase);
+	// Colonnes jointes en une chaîne : PostgREST ne type pas les lignes, on lit l'id à la main
+	const publishedIds = new Set(templates.flatMap((row: unknown) => rowId(row) ?? []));
+	const pointNames = await readPointNames(supabase, publishedIds);
 
 	setHeaders({ 'cache-control': CACHE_CONTROL });
 	return json({ templates, nodes, pointNames });
 };
+
+/** `id` d'une ligne lue, ou `null` */
+function rowId(row: unknown): string | null {
+	return typeof row === 'object' && row !== null && 'id' in row && typeof row.id === 'string'
+		? row.id
+		: null;
+}
 
 /**
  * Intitulés des points non archivés de chaque modèle publié (la RLS d'`anon`
@@ -132,7 +141,8 @@ export const GET: RequestHandler = async ({ setHeaders }) => {
  * intitulé, la recherche porte alors sur les titres et les notions seulement.
  */
 async function readPointNames(
-	supabase: ReturnType<typeof createAnonymousSupabase>
+	supabase: ReturnType<typeof createAnonymousSupabase>,
+	publishedIds: ReadonlySet<string>
 ): Promise<PointNames> {
 	try {
 		const [links, points] = await Promise.all([
@@ -141,7 +151,9 @@ async function readPointNames(
 					supabase
 						.from('question_template_points')
 						.select('template_id, point_id')
+						// Tri stable (clé du lien) : `readAllRows` lit page par page
 						.order('template_id')
+						.order('point_id')
 						.range(from, to),
 				'des points des modèles'
 			),
@@ -159,8 +171,10 @@ async function readPointNames(
 		const nameById = new Map(points.map((p) => [p.id, p.name]));
 		const pointNames: PointNames = {};
 		for (const link of links) {
+			// La RLS ne rend que les liens des publiés ; le filtre le garantit aussi
+			// si la lecture passait un jour par un autre client
 			const name = nameById.get(link.point_id);
-			if (!name) continue;
+			if (!name || !publishedIds.has(link.template_id)) continue;
 			(pointNames[link.template_id] ??= []).push(name);
 		}
 		return pointNames;

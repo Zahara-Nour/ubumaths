@@ -26,6 +26,8 @@ vi.mock('$app/navigation', async () =>
 import Page from '../+page.svelte';
 import { questionTemplatesCache } from '#lib/stores/questionTemplates.svelte.ts';
 import { questionCart } from '#lib/stores/questionCart.svelte.ts';
+// Modèle réel relu (Entiers #139) : son aperçu se calcule, sa carte s'affiche
+import fixture from '../../../../../data/relecture/entiers/139.json';
 
 const NODES = [
 	{ id: 'b-nombres', kind: 'branch', name: 'Nombres et calculs', parent_id: null, position: 0 },
@@ -111,6 +113,53 @@ describe('Catalogue Automaths — recherche', () => {
 			.toBeVisible();
 		expect(page.getByRole('combobox', { name: /^Branche/ }).elements()).toHaveLength(0);
 		expect(page.getByRole('tab').elements()).toHaveLength(0);
+	});
+
+	it('un groupe de résultats se replie et se rouvre d’un clic', async () => {
+		await render(Page);
+		await searchBox().fill('fraction');
+		const groupe = page.getByRole('button', {
+			name: /Nombres et calculs › Fractions › simplifier/
+		});
+		await expect.element(groupe).toHaveAttribute('aria-expanded', 'true');
+
+		await groupe.click();
+		await expect.element(groupe).toHaveAttribute('aria-expanded', 'false');
+
+		await groupe.click();
+		await expect.element(groupe).toHaveAttribute('aria-expanded', 'true');
+	});
+
+	it('plus de 60 cartes : le groupe replié s’ouvre d’un clic, avec ses cartes', async () => {
+		questionTemplatesCache.clear();
+		const beaucoup = [
+			...Array.from({ length: 61 }, (_, i) =>
+				modele(`f-${i}`, 's-simplifier', ['5'], `Fraction numéro ${i}`)
+			),
+			{
+				...fixture.template,
+				id: 'pyth-frac',
+				title: 'Fraction de longueur',
+				classification_node_id: 'n-pyth',
+				grades: ['4'],
+				status: 'published'
+			}
+		];
+		vi.stubGlobal(
+			'fetch',
+			async () => new Response(JSON.stringify({ templates: beaucoup, nodes: NODES }))
+		);
+		await questionTemplatesCache.fetchTemplates();
+		vi.unstubAllGlobals();
+		await render(Page);
+
+		await searchBox().fill('fraction');
+		const replie = page.getByRole('button', { name: /Géométrie › Pythagore/ });
+		await expect.element(replie).toHaveAttribute('aria-expanded', 'false');
+
+		await replie.click();
+
+		await expect.element(page.getByText('Fraction de longueur')).toBeVisible();
 	});
 
 	it('une seule lettre : pas de recherche, les onglets restent', async () => {

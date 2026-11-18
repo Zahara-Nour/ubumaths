@@ -78,7 +78,9 @@
 	// Groupes de résultats dépliés : les premiers (60 cartes au plus), puis ce
 	// que le prof ouvre ou ferme ; une nouvelle recherche repart des premiers
 	let defaultOpenGroups = $derived(searchResult ? initiallyOpenGroups(searchResult.groups) : []);
-	let toggledGroups = $state<{ result: typeof searchResult; open: string[] } | null>(null);
+	// `$state.raw` : un `$state` profond rendrait un proxy du résultat, jamais
+	// égal (===) au résultat courant, et le clic sur un groupe resterait sans effet
+	let toggledGroups = $state.raw<{ result: typeof searchResult; open: string[] } | null>(null);
 	let openSearchGroups = $derived(
 		toggledGroups && toggledGroups.result === searchResult ? toggledGroups.open : defaultOpenGroups
 	);
@@ -159,12 +161,20 @@
 		}
 	}
 
+	/** Frappe en attente appliquée tout de suite (changement de filtre pendant le délai) */
+	function flushPendingSearch() {
+		clearTimeout(searchTimer);
+		searchQuery = searchInput;
+	}
+
 	function handleGradeChange(value: string) {
+		flushPendingSearch();
 		chosenGrade = isGradeCode(value) ? value : null;
 		writeChoicesToUrl();
 	}
 
 	function handleLowerGradesChange(checked: boolean) {
+		flushPendingSearch();
 		withLowerGrades = checked;
 		writeChoicesToUrl();
 	}
@@ -223,6 +233,8 @@
 			rememberSearch(page.url.search);
 		}
 		void questionTemplatesCache.fetchTemplates();
+		// Page quittée pendant le délai de frappe : l'adresse d'une autre page reste intacte
+		return () => clearTimeout(searchTimer);
 	});
 </script>
 

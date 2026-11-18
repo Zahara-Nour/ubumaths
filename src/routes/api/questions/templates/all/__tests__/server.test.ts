@@ -18,7 +18,9 @@ const nodes = [{ id: 'b1', kind: 'branch', name: 'Nombres', parent_id: null, pos
 const liens = [
 	{ template_id: 'm1', point_id: 'p1' },
 	{ template_id: 'm1', point_id: 'p2' },
-	{ template_id: 'm2', point_id: 'p-archive' }
+	{ template_id: 'm2', point_id: 'p-archive' },
+	// Modèle absent de la liste des publiés : son lien n'est jamais rendu
+	{ template_id: 'brouillon', point_id: 'p1' }
 ];
 const points = [
 	{ id: 'p1', name: 'Utiliser la double distributivité' },
@@ -43,7 +45,7 @@ function requete(table: string, lignes: unknown[]) {
 			filtres.push([table, `is:${colonne}`, valeur]),
 			query
 		),
-		order: () => query,
+		order: (colonne: string) => (filtres.push([table, 'order', colonne]), query),
 		range: async (from: number, to: number) =>
 			tableEnEchec === table
 				? { data: null, error: { message: 'base indisponible' } }
@@ -118,6 +120,29 @@ describe('GET /api/questions/templates/all', () => {
 		expect(pointNames).toEqual({
 			m1: ['Utiliser la double distributivité', 'Réduire une expression']
 		});
+	});
+
+	it('liens lus page par page dans un ordre stable (clé du lien : modèle puis point)', async () => {
+		const { event } = evenement();
+
+		await GET(event as never);
+
+		const tris = filtres.filter(([t, op]) => t === 'question_template_points' && op === 'order');
+		// Chaque page lue porte le même tri (`readAllRows` relit jusqu'à une page incomplète)
+		expect(tris.length).toBeGreaterThan(0);
+		for (let i = 0; i < tris.length; i += 2) {
+			expect([tris[i][2], tris[i + 1]?.[2]]).toEqual(['template_id', 'point_id']);
+		}
+	});
+
+	it('lien d’un modèle absent de la liste des publiés : jamais rendu', async () => {
+		const { event } = evenement();
+
+		const { pointNames } = (await (await GET(event as never)).json()) as {
+			pointNames: Record<string, string[]>;
+		};
+
+		expect(Object.keys(pointNames)).toEqual(['m1']);
 	});
 
 	it.each(['question_template_points', 'curriculum_points'])(

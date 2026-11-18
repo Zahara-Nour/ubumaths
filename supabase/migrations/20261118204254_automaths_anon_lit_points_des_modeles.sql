@@ -11,8 +11,10 @@
 -- QUESTION D'ACCÈS (tranchée par David le 2026-11-18) : un visiteur sans compte
 -- pourra lire à quel point du programme est rattachée une question PUBLIÉE.
 -- Les intitulés des points (`curriculum_points`) étaient déjà lisibles en
--- anonyme ; les questions publiées aussi. Les liens des brouillons et des
--- archives restent invisibles. Aucune donnée d'élève n'est concernée.
+-- anonyme ; les questions publiées aussi. Les liens des brouillons (seul autre
+-- statut, `question_templates_status_check`) restent invisibles. Aucune donnée
+-- d'élève n'est concernée. Lecture limitée aux deux colonnes du lien (pas
+-- `created_at`).
 --
 -- La policy lit `question_templates` sous la RLS de `anon`, dont la seule
 -- policy est `status = 'published'` (sans lecture de `profiles`, cf. incident
@@ -22,10 +24,10 @@
 --
 -- ROLLBACK :
 --   drop policy if exists "Anon lit les points des modeles publies" on public.question_template_points;
---   revoke select on public.question_template_points from anon;
+--   revoke select (template_id, point_id) on public.question_template_points from anon;
 -- ============================================================================
 
-grant select on public.question_template_points to anon;
+grant select (template_id, point_id) on public.question_template_points to anon;
 
 drop policy if exists "Anon lit les points des modeles publies" on public.question_template_points;
 
@@ -43,4 +45,4 @@ create policy "Anon lit les points des modeles publies"
 	);
 
 comment on policy "Anon lit les points des modeles publies" on public.question_template_points is
-	'Recherche du catalogue Automaths (page publique) : lien question publiée → point du programme. Brouillons et archives exclus.';
+	'Recherche du catalogue Automaths (page publique) : lien question publiée → point du programme. Brouillons exclus.';

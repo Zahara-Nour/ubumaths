@@ -82,6 +82,10 @@ describe('normalizeForSearch', () => {
 		);
 	});
 
+	it('écrit les exposants en chiffres : « x² » se trouve par « x2 »', () => {
+		expect(normalizeForSearch('Développer (x+1)²')).toBe('developper x 1 2');
+	});
+
 	it('écrit « œ » et « æ » en deux lettres', () => {
 		expect(normalizeForSearch('Cœur ex æquo')).toBe('coeur ex aequo');
 	});

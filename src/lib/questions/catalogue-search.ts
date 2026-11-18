@@ -70,14 +70,17 @@ let haystacks = new WeakMap<QuestionTemplate, string>();
  * ni lettre ni chiffre devient une espace, espaces réduites.
  */
 export function normalizeForSearch(text: string): string {
-	return text
-		.toLowerCase()
-		.replace(/œ/g, 'oe')
-		.replace(/æ/g, 'ae')
-		.normalize('NFD')
-		.replace(/\p{M}/gu, '')
-		.replace(/[^\p{L}\p{N}]+/gu, ' ')
-		.trim();
+	return (
+		text
+			.toLowerCase()
+			.replace(/œ/g, 'oe')
+			.replace(/æ/g, 'ae')
+			// NFKD : accents détachés, et « ² » écrit « 2 »
+			.normalize('NFKD')
+			.replace(/\p{M}/gu, '')
+			.replace(/[^\p{L}\p{N}]+/gu, ' ')
+			.trim()
+	);
 }
 
 /** Texte cherché d'un modèle (calculé une fois par objet modèle) */
