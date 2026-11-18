@@ -2,7 +2,7 @@
 générale (enseignement scientifique, module spécifique) dans
 scripts/questions/1gen-4-taux-moyen-seuils/.
 
-Phase 0 validée par David le 2026-11-17 (Q13 à Q16, journal docs/wip/questions-1gen-progress.md
+Phase 0 validée par David le 2026-11-17 (Q13 à Q16, journal docs/archive/wip/questions-1gen-progress.md
 § 14). Nœud et tag posés par la migration :
 
 | #  | Point    | Nœud                                     | Niveau | Réponse            |

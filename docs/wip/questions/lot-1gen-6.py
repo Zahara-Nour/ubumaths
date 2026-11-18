@@ -1,7 +1,7 @@
 """Écrit les 7 modèles du lot 6 « statistiques à deux variables » de la 1re générale
 (enseignement scientifique, module spécifique) dans scripts/questions/1gen-6-statistiques-deux-variables/.
 
-Phase 0 validée par David le 2026-11-18 (Q20 à Q23, journal docs/wip/questions-1gen-progress.md § 23) :
+Phase 0 validée par David le 2026-11-18 (Q20 à Q23, journal docs/archive/wip/questions-1gen-progress.md § 23) :
 
 | #  | Point    | Nœud (posé par la migration)                          | Niveau | Réponse              |
 | S1 | 1GEN-001 | Statistiques › Tableaux croisés                       | 2 | case (%, effectif), choix |

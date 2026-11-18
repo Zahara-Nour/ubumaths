@@ -1,7 +1,7 @@
 """Écrit les 7 modèles du lot 3 « fonctions x ↦ aˣ » de la 1re générale (enseignement
 scientifique, module spécifique) dans scripts/questions/1gen-3-fonctions-exponentielles/.
 
-Phase 0 validée par David le 2026-11-17 (Q13 à Q16, journal docs/wip/questions-1gen-progress.md
+Phase 0 validée par David le 2026-11-17 (Q13 à Q16, journal docs/archive/wip/questions-1gen-progress.md
 § 14). Tous les modèles vont sur le nœud « Fonctions › Fonction exponentielle › fonctions x ↦ aˣ »
 (posé par la migration, avec le tag) :
 
