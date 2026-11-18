@@ -1,23 +1,19 @@
 # Chantier « questions-1gen » — couvrir les maths de l'enseignement scientifique de 1re
 
-> Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) (skill `couvrir-niveau`).
+> Démarche : [couvrir-un-niveau.md](../../pratiques/couvrir-un-niveau.md) (skill `couvrir-niveau`).
 > Niveau : `1_GEN`, « module spécifique » de mathématiques intégré à l'enseignement scientifique de 1re générale
 > (BO n° 14 du 2026-04-02). Bornes : `docs/systeme/programmes/bornes/lycee/1gen.json` → `["1_GEN"].points`,
 > lecture et décisions l1g-1, l1g-2 dans `1gen.md` et `questions-2de-1gen.json`.
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, Q24 tranchée (§ 27)._
+_Mis à jour le 2026-11-18 : **chantier clos**._
 
-- **État** : lots 1 à 6 publiés. Lot 7 = publier le brouillon d2067413 (1GEN-031) : exporté, contrôlé, joué en
-  local ; page à cocher publiée, 0 verdict ; simulation `publier-lot.ts` 1/1.
-- **Prochaine action** : verdict de David, puis `--publier` par David (`!`), relire `published` au MCP, prévenir
-  questions-1techno ; puis clore le chantier (recompter le découpage du § 4 contre les PR mergées, versement, archive).
-- **En attente de David** : verdict sur la page à cocher du lot 7 ; supprimer `feat/questions-1gen-lot6`
-  (`git branch -D`, entièrement dans main).
-- **Pièges en cours** : rollbacks des lots 3 et 4 bloqués par celui de questions-ttechno (§ 25) ; publication en
-  prod = commande `!` de David ; worktree neuf → `pnpm exec svelte-kit sync` avant un script qui importe `$lib`.
-- **Worktree / branche** : `../ubumaths-wt-questions-1gen`, `feat/questions-1gen-lot7`.
+- **État** : lots 1 à 7 publiés (lot 5 par questions-1techno) ; relevé MCP de clôture : 74 modèles publiés
+  contenant `1_GEN`, **64 points actifs sur 64** avec au moins un modèle publié ; découpage du § 4 recompté contre
+  les PR mergées (§ 28).
+- **Durable versé** dans `docs/systeme/programmes/bornes/lycee/1gen.md`, « Couverture en modèles de questions ».
+- Fichiers des lots laissés dans `scripts/questions/1gen-*` (ids des modèles, corrections futures).
 
 ## 1. Relevé (prod, 2026-11-17)
 
@@ -1007,3 +1003,14 @@ assumée).
   (aucun point 1SPE malgré `1_SPE` dans `grades` : hors chantier, non bloquant). https://claude.ai/artifact/QANSq7PUZ11zjrXru8fmYj
   (capacité `db`, 0 verdict à la publication).
 - `publier-lot.ts` (simulation) : 1 brouillon passe ; `garde-niveaux-tags` : aucun niveau manquant.
+- **Publication (2026-11-18)** : verdict « ok » de David sur la page à cocher ; `publier-lot.ts --publier` lancé par
+  David ; d2067413 relu `published` au MCP. questions-1techno prévenue (il n'est plus parmi ses brouillons).
+
+## 28. Clôture (2026-11-18)
+
+- Découpage du § 4 recompté contre les PR : lots 1 (#2750, #2754), 2 (#2762, #2767), 3 (#2773, #2778), 4 (#2788,
+  #2793), 6 (#2802, #2804) mergés ; lot 5 écrit par questions-1techno ; lot 7 (#2813). Tags de l'existant : #2744.
+- Relevé MCP : les 40 points des lots 1 à 7 ont chacun un modèle publié ; sur tout le niveau, 64 points actifs,
+  0 sans modèle publié. 74 modèles publiés contenant `1_GEN` (19 de 1re générale seule), 1 brouillon hors chantier
+  (c90fa022).
+- Branche `feat/questions-1gen-lot6` supprimée (go de David).
