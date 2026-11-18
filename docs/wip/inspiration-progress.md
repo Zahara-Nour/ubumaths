@@ -4,7 +4,7 @@
 
 _Mis à jour le 2026-11-18, après l'étude des 9 propositions avec David._
 
-- **État** : une autre plateforme d'exercices étudiée ; 9 propositions passées une par une avec David. **4 retenues** (2, 3, 4, 5), **3 gardées pour plus tard** (7, 8, 9), **2 mises de côté** (1, 6). Rien de codé.
+- **État** : une autre plateforme d'exercices étudiée ; 9 propositions passées une par une avec David. **4 retenues** (2, 3, 4, 5), **3 gardées pour plus tard** (7, 8, 9), **2 mises de côté** (1, 6). Une 10e ajoutée par David (course de chevaux en réseau), pas encore discutée. Rien de codé.
 - **Prochaine action** : choisir avec David laquelle des 4 retenues ouvre un chantier (chacun = son worktree, sa phase 0 en français avant de coder).
 - **En attente de David** : ce choix.
 - **Pièges en cours** : le bouton « Export PDF » de `/automaths/panier` n'est qu'une alerte « Fonctionnalité à venir » (`handleExportPDF`) : il n'existe aucun PDF de série.
@@ -48,6 +48,14 @@ _Mis à jour le 2026-11-18, après l'étude des 9 propositions avec David._
 **8. Sujets du brevet et du bac.** Version officielle d'abord, rangée en exercices avec une source « Brevet » / « Bac » (CONTEXT.md, ADR 0019) ; version aux nombres tirés au hasard exercice par exercice, là où c'est simple. Surtout du contenu à écrire. **Droit de reprise des sujets à vérifier** avant toute publication.
 
 **9. QCM Cam (sondage par cartes imprimées et caméra, façon Plickers).** Gros chantier. Si un jour : version où l'image reste dans le téléphone et **rien n'est enregistré**.
+
+### À étudier (apportée par David le 2026-11-18)
+
+**10. Course de chevaux en réseau.** Souvenir de David, site oublié : plusieurs joueurs en même temps, chacun a un cheval ; chaque bonne réponse le fait avancer ; le premier arrivé gagne. Pas encore discutée.
+
+- Chiphre a déjà du multijoueur en temps réel : le démineur en match (`src/lib/stores/multiplayer.svelte.ts`, un canal Supabase par match ; `docs/systeme/jeux-et-economie.md`, `docs/systeme/realtime.md`). Base possible.
+- Les questions viendraient d'une série (mêmes questions pour tous, cf. proposition 5).
+- Qui joue avec qui : jamais au-delà de l'école (frontière sociale, CLAUDE.md) ; en classe, lancée par le prof ?
 
 ### Mises de côté
 
