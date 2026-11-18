@@ -164,7 +164,9 @@ export const DOMAINS: Domain[] = [
 			'student_mathou_decorations',
 			'student_last_visits',
 			'avatar_catalog',
-			'student_avatars'
+			'student_avatars',
+			'student_beasts',
+			'student_combat_moves'
 		]
 	},
 	{

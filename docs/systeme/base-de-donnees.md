@@ -611,6 +611,22 @@ par **l'élève seul** (ni prof ni admin, décision de David du 2026-11-06), cas
 `set_worn_avatar` (porte un avatar possédé, même hors vente ou retiré : `avatar_url` = son image ;
 NULL : la photo Google revient ; refus `not_owned`). Changer `image_path` met à jour les porteurs
 (trigger `sync_worn_avatar_image_trg`). Test : `tests/integration/boutique-avatars.test.ts`.
+La Descente de la Vistule, jeu de combats (migration `20261118060323`, chantier `navadra`) :
+`student_beasts` garde les Bêtes imprévues de l'élève (clé du bestiaire du code, `kind`
+`ordinary` / `big` / `tutorial` avec un seul tutoriel par élève, Province sensible, point du
+programme qui l'a fait naître en SET NULL, points de vie, arrivée, départ prévu `leaves_at` — NULL :
+reste jusqu'à sa défaite —, défaite et gidouilles versées) ; le carnet de voyage est la liste de ses
+Bêtes vaincues. `student_combat_moves` garde les coups et sorts gagnés en maîtrisant une notion
+(clé du code, notion en RESTRICT, annonce) ; les coups de départ ne sont pas écrits. Les deux sont
+lisibles par **l'élève seul** (ni prof ni admin, décision de David du 2026-11-18), écrites par le
+serveur seul, cascade depuis `profiles`. `record_beast_victory` (`service_role` seul, verrou de la
+ligne `profiles` puis de la Bête) refuse une Bête d'un autre élève (`P0002`), déjà vaincue ou repartie
+(`55000`), marque la défaite et verse 1 (ordinaire), 3 (grosse Bête) ou 0 (tutoriel), **4 au plus
+sur 24 heures glissantes**, coupé au plafond, libellé « Descente : victoire contre … ». Les réponses
+en combat sont des traces au lieu `descente`, que la policy d'insertion de l'élève refuse ; le
+prof (source `teacher`) et l'admin peuvent en écrire, comme pour `evaluation` (leurs policies ne
+filtrent pas le lieu). Pas encore dans l'export RGPD : il viendra avec le premier code qui lit ces tables (après
+`db:types`). Test : `tests/integration/descente-fondations.test.ts`.
 `student_last_visits` (migration `20261021210000`) garde le jour UTC du dernier passage de l'élève
 (dernière page vue hors API, `studentPresenceHandle`) et, depuis la migration `20261022100000`, le
 jour du retour à fêter (`welcome_back_on`), pour le Palotin triste après une longue absence. Lisible

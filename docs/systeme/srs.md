@@ -193,7 +193,8 @@ et fin calculées par `evaluationTraceOf` ([evaluations.md](evaluations.md), env
 
 **Contenu d'une trace posée par `api/skill-attempts`** (ADR 0038) : le **lieu** est exigé
 (`flash_cards`, `typing` = Saisie, `mock_test` = Contrôle blanc, `number_race` = Course aux nombres ;
-jamais `evaluation` ni `review`, écrits par le serveur), la **graine** est facultative ; durée de
+jamais `evaluation`, `review` ni `descente` — combat de la Descente de la Vistule —, écrits par le
+serveur ; la policy d'insertion de l'élève refuse `evaluation` et `descente`), la **graine** est facultative ; durée de
 réponse, durée allouée et fin (`validated` / `timeout`) seulement en formes chronométrées
 (`mock_test`, `number_race`) ; réponse case par case (`answer_parts`) et verdict par case
 (`part_verdicts`) seulement là où l'on tape (`typing`, `mock_test`, `number_race`), autant de verdicts
