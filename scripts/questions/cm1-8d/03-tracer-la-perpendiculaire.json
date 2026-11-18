@@ -1,4 +1,5 @@
 {
+	"id": "66b4d4ed-f238-4075-b339-5c09c1e89592",
 	"title": "Tracer la perpendiculaire à une droite par un point",
 	"description": "Sur quadrillage, à l'équerre ou en comptant les carreaux : droite horizontale ou verticale, en diagonale, oblique ; point hors de la droite ou sur la droite",
 	"grades": ["CM1", "CM2"],
