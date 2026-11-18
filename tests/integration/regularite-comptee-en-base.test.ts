@@ -28,13 +28,13 @@ import { TestData } from '../helpers/database/test-data-factory';
 import { createFakeTemplate } from '../helpers/competence-referentiel.helpers';
 
 // `buddy-weeks` charge le client service : le brancher sur la base LOCALE
-vi.mock('$lib/server/serviceRoleClient', async () => {
+vi.mock('#lib/server/serviceRoleClient.ts', async () => {
 	const helpers = await import('../helpers/database/trigger-test-helpers');
 	return { createServiceRoleClient: helpers.createServiceRoleClient };
 });
 
-import { activeDaysOf } from '$lib/server/buddy-weeks';
-import { MIN_TRACES_PER_ACTIVE_DAY, weekStartOf } from '$lib/server/stats/class-regularity';
+import { activeDaysOf } from '#lib/server/buddy-weeks.ts';
+import { MIN_TRACES_PER_ACTIVE_DAY, weekStartOf } from '#lib/server/stats/class-regularity.ts';
 
 // Types
 interface WeekRow {

@@ -1,19 +1,19 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import { invalidateAll } from '$app/navigation';
-	import { Button } from '$lib/components/ui/button';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
-	import { Textarea } from '$lib/components/ui/textarea';
-	import { Checkbox } from '$lib/components/ui/checkbox';
-	import * as Tabs from '$lib/components/ui/tabs';
-	import * as Card from '$lib/components/ui/card';
-	import { Badge } from '$lib/components/ui/badge';
-	import ConfirmDialog from '$lib/components/ui/confirm-dialog/ConfirmDialog.svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import { formatUserError } from '$lib/utils/errors';
-	import { formatDeadlineFull } from '$lib/utils/dates';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import { Textarea } from '#lib/components/ui/textarea/index.ts';
+	import { Checkbox } from '#lib/components/ui/checkbox/index.ts';
+	import * as Tabs from '#lib/components/ui/tabs/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import ConfirmDialog from '#lib/components/ui/confirm-dialog/ConfirmDialog.svelte';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import { formatUserError } from '#lib/utils/errors.ts';
+	import { formatDeadlineFull } from '#lib/utils/dates.ts';
 	import { Users, User, Globe, X, Calendar } from '@lucide/svelte';
 	import type { PageData } from './$types';
 

@@ -4,7 +4,7 @@
  * Le k qui vérifie « P(X ⋄ k) ⩽ α » ou « ⩾ α » (surréservation, Q140 ; loi
  * géométrique : manche 14), en valeurs EXACTES (entiers BigInt).
  *
- * ⚠️ Pas d'import `$lib` dans ce module (cf. v1) : chemins relatifs.
+ * ⚠️ Pas d'import `#lib` dans ce module (cf. v1) : chemins relatifs.
  *
  * @module statistics/threshold
  */

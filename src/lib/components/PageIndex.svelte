@@ -11,7 +11,7 @@
 </script>
 
 <script lang="ts">
-	import { resolvePath } from '$lib/navigation/resolve-path';
+	import { resolvePath } from '#lib/navigation/resolve-path.ts';
 
 	let { title, intro, pages }: { title: string; intro: string; pages: IndexedPage[] } = $props();
 </script>

@@ -4,8 +4,8 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { parseMarkdown, type BlockNode, type ListNode } from '$lib/ubumark';
-import type { SchemaBarresNode } from '$lib/ubumark/types/schema-barres';
+import { parseMarkdown, type BlockNode, type ListNode } from '#lib/ubumark/index.ts';
+import type { SchemaBarresNode } from '#lib/ubumark/types/schema-barres.ts';
 
 const children = (...lines: string[]) => parseMarkdown(lines.join('\n')).children as BlockNode[];
 

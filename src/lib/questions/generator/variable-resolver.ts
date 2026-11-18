@@ -22,9 +22,9 @@ import type { QuestionVariable, ResolvedVariable } from '../types';
 import {
 	resolveVariables as sharedResolveVariables,
 	resolveExpression as sharedResolveExpression
-} from '$lib/ubumark';
-import type { RandomSource } from '$lib/utils/random';
-import type { DurationWriting } from '$lib/mathAST/tidy';
+} from '#lib/ubumark/index.ts';
+import type { RandomSource } from '#lib/utils/random.ts';
+import type { DurationWriting } from '#lib/mathAST/tidy/index.ts';
 import { resolveVariableConditionals } from './variable-conditionals';
 
 /**

@@ -8,10 +8,10 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { setTeacherTestMode } from '$lib/server/test-mode';
-import { testModeSchema } from '$lib/server/validation/common';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { createServerLogger } from '$lib/utils/logger';
+import { setTeacherTestMode } from '#lib/server/test-mode.ts';
+import { testModeSchema } from '#lib/server/validation/common.ts';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/test-mode/+server');
 

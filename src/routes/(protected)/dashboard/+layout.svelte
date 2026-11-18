@@ -37,38 +37,38 @@
 	import { page } from '$app/state';
 	import { navigating } from '$app/state';
 	import { Sun, Moon, Minus, Plus, Maximize, Minimize, Menu } from '@lucide/svelte';
-	import { getNavLinks, getZoneTitle, isNavLinkActive } from '$lib/config/dashboard-nav';
-	import { submitLogoutForm } from '$lib/utils/auth';
+	import { getNavLinks, getZoneTitle, isNavLinkActive } from '#lib/config/dashboard-nav.ts';
+	import { submitLogoutForm } from '#lib/utils/auth.ts';
 	import { resolve } from '$app/paths';
-	import { resolvePath } from '$lib/navigation/resolve-path';
-	import { Button } from '$lib/components/ui/button';
-	import UserAvatar from '$lib/components/UserAvatar.svelte';
-	import { theme } from '$lib/stores/theme.svelte';
-	import { fontSize } from '$lib/stores/fontSize.svelte';
-	import { notificationStore } from '$lib/stores/notifications.svelte';
-	import { notificationsRealtimeManager } from '$lib/stores/notificationsRealtime.svelte';
-	import { activityStore } from '$lib/stores/activity.svelte';
-	import gidouille from '$lib/assets/images/gidouille.png';
-	import AlmanachHeaderDate from '$lib/components/almanach/AlmanachHeaderDate.svelte';
-	import NotificationBanner from '$lib/components/notifications/NotificationBanner.svelte';
-	import NotificationDropdown from '$lib/components/notifications/NotificationDropdown.svelte';
-	import SkeletonPage from '$lib/components/skeleton/SkeletonPage.svelte';
-	import SkeletonDashboard from '$lib/components/skeleton/SkeletonDashboard.svelte';
-	import SkeletonList from '$lib/components/skeleton/SkeletonList.svelte';
-	import SkeletonForm from '$lib/components/skeleton/SkeletonForm.svelte';
-	import { getSkeletonType } from '$lib/utils/skeleton-detector';
-	import TestModeToggle from '$lib/components/teacher/TestModeToggle.svelte';
-	import MobileNavDrawer, { type NavItem } from '$lib/components/navigation/MobileNavDrawer.svelte';
-	import BugReportFAB from '$lib/components/bug-reports/BugReportFAB.svelte';
-	import BugReportDialog from '$lib/components/bug-reports/BugReportDialog.svelte';
-	import FreezeReportPrompt from '$lib/components/bug-reports/FreezeReportPrompt.svelte';
+	import { resolvePath } from '#lib/navigation/resolve-path.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import UserAvatar from '#lib/components/UserAvatar.svelte';
+	import { theme } from '#lib/stores/theme.svelte.ts';
+	import { fontSize } from '#lib/stores/fontSize.svelte.ts';
+	import { notificationStore } from '#lib/stores/notifications.svelte.ts';
+	import { notificationsRealtimeManager } from '#lib/stores/notificationsRealtime.svelte.ts';
+	import { activityStore } from '#lib/stores/activity.svelte.ts';
+	import gidouille from '#lib/assets/images/gidouille.png';
+	import AlmanachHeaderDate from '#lib/components/almanach/AlmanachHeaderDate.svelte';
+	import NotificationBanner from '#lib/components/notifications/NotificationBanner.svelte';
+	import NotificationDropdown from '#lib/components/notifications/NotificationDropdown.svelte';
+	import SkeletonPage from '#lib/components/skeleton/SkeletonPage.svelte';
+	import SkeletonDashboard from '#lib/components/skeleton/SkeletonDashboard.svelte';
+	import SkeletonList from '#lib/components/skeleton/SkeletonList.svelte';
+	import SkeletonForm from '#lib/components/skeleton/SkeletonForm.svelte';
+	import { getSkeletonType } from '#lib/utils/skeleton-detector.ts';
+	import TestModeToggle from '#lib/components/teacher/TestModeToggle.svelte';
+	import MobileNavDrawer, { type NavItem } from '#lib/components/navigation/MobileNavDrawer.svelte';
+	import BugReportFAB from '#lib/components/bug-reports/BugReportFAB.svelte';
+	import BugReportDialog from '#lib/components/bug-reports/BugReportDialog.svelte';
+	import FreezeReportPrompt from '#lib/components/bug-reports/FreezeReportPrompt.svelte';
 	import {
 		setFreezePromptCallback,
 		setAutoReportCallback,
 		getFreezeDetectionContext
-	} from '$lib/utils/freezeDetection';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import { bugReportsConfigStore } from '$lib/stores/bugReportsConfig.svelte';
+	} from '#lib/utils/freezeDetection.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import { bugReportsConfigStore } from '#lib/stores/bugReportsConfig.svelte.ts';
 
 	import type { Snippet } from 'svelte';
 
@@ -104,14 +104,14 @@
 		data.profile.role === 'admin' || adminElevationActive ? 'admin' : data.profile.role
 	);
 
-	// Navigation links — extracted to $lib/config/dashboard-nav.ts for testability
+	// Navigation links — extracted to #lib/config/dashboard-nav.ts for testability
 	let allLinks = $derived(
 		getNavLinks(navRole, data.pendingVipRequestsCount, data.marketplaceEnabled)
 	);
 	let mainLinks = $derived(allLinks.filter((l) => !l.footer));
 	let footerLinks = $derived(allLinks.filter((l) => l.footer));
 
-	// Lien surligné de la barre latérale (règles dans $lib/config/dashboard-nav.ts)
+	// Lien surligné de la barre latérale (règles dans #lib/config/dashboard-nav.ts)
 	function isActive(href: string) {
 		return isNavLinkActive(href, page.url.pathname);
 	}

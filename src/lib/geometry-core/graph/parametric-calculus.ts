@@ -19,7 +19,7 @@
  *   - centre = γ(t0) + n̂ / κ ;  rayon = 1 / |κ|
  */
 
-import type { CompiledFn } from '$lib/mathAST/eval/compile';
+import type { CompiledFn } from '#lib/mathAST/eval/compile.ts';
 
 const SPEED_EPS_SQ = 1e-20; // ‖γ'‖² below this → degenerate
 const KAPPA_EPS = 1e-10; // |κ| below this → straight line (no osculating circle)

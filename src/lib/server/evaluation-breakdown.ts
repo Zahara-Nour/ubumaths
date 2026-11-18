@@ -30,7 +30,7 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 import {
 	BREAKDOWN_ERROR_MESSAGE,
 	DELETED_TEMPLATE_LABEL,
@@ -43,10 +43,10 @@ import {
 	type NotionBreakdown,
 	type QuestionBreakdown,
 	type QuestionTiming
-} from '$lib/types/evaluation-breakdown';
-import type { EvaluationForm } from '$lib/types/evaluation';
-import { DEFAULT_QUESTION_DELAY_SECONDS } from '$lib/questions/series-items';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/types/evaluation-breakdown.ts';
+import type { EvaluationForm } from '#lib/types/evaluation.ts';
+import { DEFAULT_QUESTION_DELAY_SECONDS } from '#lib/questions/series-items.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 // Types
 

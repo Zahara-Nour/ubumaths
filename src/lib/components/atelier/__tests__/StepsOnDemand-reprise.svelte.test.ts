@@ -6,15 +6,15 @@
 
 import { describe, it, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
-import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
-import GeneratedStepsCorrection from '$lib/components/questions/GeneratedStepsCorrection.svelte';
+import type { RenderedStep } from '#lib/mathAST/common/step-renderer-base.ts';
+import GeneratedStepsCorrection from '#lib/components/questions/GeneratedStepsCorrection.svelte';
 
 const importer = vi.hoisted(() => ({
 	next: (() => Promise.reject(new Error('réseau coupé'))) as () => Promise<unknown>
 }));
 
-vi.mock('$lib/atelier/steps-loader', async () => {
-	const { lazyLoader } = await import('$lib/utils/lazy-loader.svelte');
+vi.mock('#lib/atelier/steps-loader.ts', async () => {
+	const { lazyLoader } = await import('#lib/utils/lazy-loader.svelte.ts');
 	return { stepsCorrection: lazyLoader(() => importer.next()) };
 });
 

@@ -25,10 +25,10 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import { decryptToken } from '$lib/server/google/encryption';
-import { revokeAccess } from '$lib/server/google/oauth';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { decryptToken } from '#lib/server/google/encryption.ts';
+import { revokeAccess } from '#lib/server/google/oauth.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/google/auth/disconnect/+server');
 

@@ -41,7 +41,7 @@ import { anglesAsTyped, remarkableValuesInTrigonometry } from '../core/angle-rad
 import { parameterSolveRefusal } from '../core/parameter-refusal';
 import { hasDecimalLiteral } from '../../tidy/decimal';
 // La virgule décimale lue comme dans l'Atelier (registre-reference, PR 2c, Q3)
-import { decimalCommaInput } from '$lib/atelier/decimal-comma';
+import { decimalCommaInput } from '#lib/atelier/decimal-comma.ts';
 import { solveInequality } from '../../solve/inequality';
 import { formatInterval } from '../../domain/format';
 import { parse } from '../core/pipeline';

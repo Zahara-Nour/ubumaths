@@ -5,13 +5,13 @@
 -->
 
 <script lang="ts">
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
 	import type { PageData } from './$types';
-	import { Badge } from '$lib/components/ui/badge';
-	import * as Card from '$lib/components/ui/card';
-	import UserAvatar from '$lib/components/UserAvatar.svelte';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import UserAvatar from '#lib/components/UserAvatar.svelte';
 	import { Trophy, Crown } from '@lucide/svelte';
-	import { cn } from '$lib/utils';
+	import { cn } from '#lib/utils.ts';
 
 	let { data }: { data: PageData } = $props();
 

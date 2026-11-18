@@ -20,16 +20,16 @@
 	 */
 
 	import { resolve } from '$app/paths';
-	import { Button } from '$lib/components/ui/button';
-	import MathouAvatar from '$lib/components/mathoux/MathouAvatar.svelte';
-	import { getMathouRace } from '$lib/components/mathoux/mathou-races';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import MathouAvatar from '#lib/components/mathoux/MathouAvatar.svelte';
+	import { getMathouRace } from '#lib/components/mathoux/mathou-races.ts';
 	import {
 		starGradeLabel,
 		trainingQuery,
 		type Mathou,
 		type MathouGrowth,
 		type MathouRaceGroup
-	} from '$lib/mathoux/collection-logic';
+	} from '#lib/mathoux/collection-logic.ts';
 
 	// La révision espacée du programme : c'est elle qui fait tomber les cartes dues.
 	const REVISION_HREF = 'dashboard/revisions/decks/programme';

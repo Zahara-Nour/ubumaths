@@ -15,20 +15,20 @@
 	@module components/markdown/nodes/CalculCorrige
 -->
 <script lang="ts">
-	import { executerCalcul } from '$lib/shared/blockly/calcul/interpreteur';
+	import { executerCalcul } from '#lib/shared/blockly/calcul/interpreteur.ts';
 	import {
 		ecrireNombreCalcul,
 		reecrireCalcul,
 		texteVersEtatCalcul
-	} from '$lib/shared/blockly/calcul/notation';
+	} from '#lib/shared/blockly/calcul/notation.ts';
 	import {
 		jugerProgrammeCalcul,
 		lireProgrammeCalcul,
 		memesAffichages,
 		RIEN_AFFICHE
-	} from '$lib/shared/blockly/calcul/jugement';
-	import { readExpectedCalculAnswer } from '$lib/ubumark/utils/calcul-answer';
-	import { CALCUL_UNAVAILABLE, type CalculNode } from '$lib/ubumark/types/calcul';
+	} from '#lib/shared/blockly/calcul/jugement.ts';
+	import { readExpectedCalculAnswer } from '#lib/ubumark/utils/calcul-answer.ts';
+	import { CALCUL_UNAVAILABLE, type CalculNode } from '#lib/ubumark/types/calcul.ts';
 
 	// =============================================================================
 	// Types

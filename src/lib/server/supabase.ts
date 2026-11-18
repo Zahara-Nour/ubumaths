@@ -19,8 +19,8 @@
 import { createServerClient } from '@supabase/ssr';
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$app/env/public';
 import type { Handle } from '@sveltejs/kit/hooks';
-import { createServerLogger } from '$lib/utils/logger';
-import { capSessionCookieOptions } from '$lib/utils/session-cookies';
+import { createServerLogger } from '#lib/utils/logger.ts';
+import { capSessionCookieOptions } from '#lib/utils/session-cookies.ts';
 
 const logger = createServerLogger('server/supabase.ts');
 

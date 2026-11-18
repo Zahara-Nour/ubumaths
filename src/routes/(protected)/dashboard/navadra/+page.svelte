@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { playerStore } from '$lib/stores/game/player.svelte';
-	import { spellsStore } from '$lib/stores/game/spells.svelte';
+	import { playerStore } from '#lib/stores/game/player.svelte.ts';
+	import { spellsStore } from '#lib/stores/game/spells.svelte.ts';
 	import { resolve } from '$app/paths';
 
 	// Game stats

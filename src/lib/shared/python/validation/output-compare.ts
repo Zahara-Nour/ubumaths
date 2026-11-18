@@ -15,7 +15,11 @@
  * No Pyodide dependency: callable from anywhere (worker, main thread, tests).
  */
 
-import type { OutputComparison, TextComparison, NumericComparison } from '$lib/shared/python';
+import type {
+	OutputComparison,
+	TextComparison,
+	NumericComparison
+} from '#lib/shared/python/index.ts';
 
 export interface CompareResult {
 	passed: boolean;

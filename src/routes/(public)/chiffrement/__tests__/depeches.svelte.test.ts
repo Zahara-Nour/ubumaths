@@ -6,9 +6,9 @@ import { page } from 'vitest/browser';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import Depeches from '../depeches/+page.svelte';
-import { lettersOnly } from '$lib/ciphers/alphabet';
-import { HINTS_KEY, PROGRESS_KEY } from '$lib/ciphers/dispatch-progress';
-import { DISPATCHES } from '$lib/ciphers/dispatches';
+import { lettersOnly } from '#lib/ciphers/alphabet.ts';
+import { HINTS_KEY, PROGRESS_KEY } from '#lib/ciphers/dispatch-progress.ts';
+import { DISPATCHES } from '#lib/ciphers/dispatches.ts';
 
 function text(container: HTMLElement, testid: string): string {
 	return container.querySelector(`[data-testid="${testid}"]`)?.textContent ?? '';

@@ -7,10 +7,10 @@
  * G(2,2,2) H(0,2,2) — AB vers la droite, AD vers le fond, AE vers le haut.
  */
 import { describe, expect, it } from 'vitest';
-import { generateEspaceTypst } from '$lib/ubumark/generators/espace-typst';
-import { parseEspaceContent } from '$lib/ubumark/parser/espace-parser';
-import type { SolideSpec } from '$lib/ubumark/types/espace';
-import { buildSolideScene, solideArrowBetween } from '$lib/ubumark/utils/espace-solides';
+import { generateEspaceTypst } from '#lib/ubumark/generators/espace-typst.ts';
+import { parseEspaceContent } from '#lib/ubumark/parser/espace-parser.ts';
+import type { SolideSpec } from '#lib/ubumark/types/espace.ts';
+import { buildSolideScene, solideArrowBetween } from '#lib/ubumark/utils/espace-solides.ts';
 import {
 	BOTH_MISSING,
 	END_MISSING,
@@ -26,7 +26,7 @@ import {
 	solidePointAt,
 	solideSolutionVector,
 	solideVectorMistake
-} from '$lib/ubumark/utils/solide-gestes';
+} from '#lib/ubumark/utils/solide-gestes.ts';
 
 const CUBE = ['forme: cube 2', 'sommets: A B C D E F G H'];
 

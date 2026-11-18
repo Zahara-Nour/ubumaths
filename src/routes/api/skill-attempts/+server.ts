@@ -37,9 +37,9 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { skillAttemptInputSchema } from '$lib/server/validation/skill-attempts';
-import { recordStudentAttempt } from '$lib/server/skill-attempts/record-attempt';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { skillAttemptInputSchema } from '#lib/server/validation/skill-attempts.ts';
+import { recordStudentAttempt } from '#lib/server/skill-attempts/record-attempt.ts';
 
 // ============================================================================
 // POST /api/skill-attempts

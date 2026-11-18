@@ -2,8 +2,8 @@
  * Mots du jeu Mathémo, tirés du dictionnaire mathématique (lu en base, ADR 0022).
  * Le serveur n'envoie que les mots jouables, réduits à ce que le jeu lit.
  */
-import { canRead, type MathTerm } from '$lib/dictionary/model';
-import type { GradeCode } from '$lib/types/grades';
+import { canRead, type MathTerm } from '#lib/dictionary/model.ts';
+import type { GradeCode } from '#lib/types/grades.ts';
 
 /** Ce que le jeu lit d'une entrée : son nom, son niveau, ses filières partagées. */
 export type MathemoTerm = Pick<MathTerm, 'term' | 'grade' | 'sharedWith'>;

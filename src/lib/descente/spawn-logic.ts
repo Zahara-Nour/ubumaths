@@ -18,12 +18,12 @@
  *     reste 7 jours et ne compte pas dans les 5 ;
  *   - le tutoriel ne compte pour rien ici.
  *
- * Le serveur (`$lib/server/descente/spawn.ts`) lit la base, appelle ces fonctions
+ * Le serveur (`#lib/server/descente/spawn.ts`) lit la base, appelle ces fonctions
  * et écrit les Bêtes. Deux visites simultanées peuvent en créer quelques-unes de
  * trop, une fois : accepté (question E) ; la carte redescend d'elle-même sous 5.
  */
 
-import type { ProvinceId } from '$lib/kingdom-tour/tour';
+import type { ProvinceId } from '#lib/kingdom-tour/tour.ts';
 import { BESTIARY } from './bestiary';
 
 // ============================================================================

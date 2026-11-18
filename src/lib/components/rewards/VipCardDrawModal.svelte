@@ -28,17 +28,17 @@
 -->
 
 <script lang="ts">
-	import { modalStack } from '$lib/stores/modalStack.svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import { syncVipCards, syncGidouilles } from '$lib/utils/cache-sync';
-	import type { CacheContext } from '$lib/types/cache-context';
-	import type { VipCard, StudentVipCards } from '$lib/types/vip-card';
+	import { modalStack } from '#lib/stores/modalStack.svelte.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import { syncVipCards, syncGidouilles } from '#lib/utils/cache-sync.ts';
+	import type { CacheContext } from '#lib/types/cache-context.ts';
+	import type { VipCard, StudentVipCards } from '#lib/types/vip-card.ts';
 	import {
 		vipCardTemplates,
 		getTemplateById,
 		templateToVipCard
-	} from '$lib/stores/vipCardTemplates.svelte';
-	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
+	} from '#lib/stores/vipCardTemplates.svelte.ts';
+	import { teacherCache } from '#lib/stores/teacherDashboardCache.svelte.ts';
 	import VipCardMultiHoloReveal from './VipCardMultiHoloReveal.svelte';
 	import VipCardBatchReveal from './VipCardBatchReveal.svelte';
 	import { onMount } from 'svelte';
@@ -52,7 +52,7 @@
 		usedCardInstanceId?: string; // Card instance ID that was consumed (for cache removal)
 		studentName?: string;
 		classId?: string; // Optional: for cache optimistic updates
-		filters?: import('$lib/types/vip-card').DrawCardsFilters; // Optional: filters for draw_cards action
+		filters?: import('#lib/types/vip-card.ts').DrawCardsFilters; // Optional: filters for draw_cards action
 	}
 
 	let {

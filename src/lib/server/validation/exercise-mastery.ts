@@ -6,7 +6,7 @@
 
 import { z } from 'zod';
 import { uuidSchema } from './common';
-import { MASTERY_STATUSES } from '$lib/types/exercise-mastery';
+import { MASTERY_STATUSES } from '#lib/types/exercise-mastery.ts';
 
 // ============================================================================
 // MASTERY STATUS SCHEMA

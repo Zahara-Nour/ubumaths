@@ -14,10 +14,10 @@
 import { describe, expect, it, vi } from 'vitest';
 import { resolveWorksheetByShareToken } from '../journal-share-tokens';
 import { resolveCourseWorksheetByShareToken } from '../course-share-tokens';
-import { buildWorksheetCopy } from '$lib/worksheets/worksheet-copy';
-import { generateWorksheetTypst } from '$lib/typst/generators/worksheet-generator';
-import { answerFrameLinesToCm } from '$lib/worksheets/document/answer-frame-lines';
-import type { WorksheetWithRelations } from '$lib/types/worksheets';
+import { buildWorksheetCopy } from '#lib/worksheets/worksheet-copy.ts';
+import { generateWorksheetTypst } from '#lib/typst/generators/worksheet-generator.ts';
+import { answerFrameLinesToCm } from '#lib/worksheets/document/answer-frame-lines.ts';
+import type { WorksheetWithRelations } from '#lib/types/worksheets.ts';
 
 // ============================================================================
 // CONSTANTES

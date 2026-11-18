@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { privateMessages } from '$lib/stores/privateMessages.svelte';
-	import { Button } from '$lib/components/ui/button';
+	import { privateMessages } from '#lib/stores/privateMessages.svelte.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import { Loader2, FileEdit, Trash2, PencilLine } from '@lucide/svelte';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';

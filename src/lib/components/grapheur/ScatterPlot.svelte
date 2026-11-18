@@ -6,9 +6,9 @@
 	 * « rangs ») : là l'abscisse EST le rang et l'ordonnée vient d'une formule.
 	 * Ici les deux coordonnées sont des données que l'élève a saisies.
 	 */
-	import type { ScatterPlottable } from '$lib/grapheur/types';
-	import type { CoordinateTransformer } from '$lib/geometry-core/viewport';
-	import { curveColorValue } from '$lib/grapheur/colors';
+	import type { ScatterPlottable } from '#lib/grapheur/types.ts';
+	import type { CoordinateTransformer } from '#lib/geometry-core/viewport/index.ts';
+	import { curveColorValue } from '#lib/grapheur/colors.ts';
 
 	let {
 		scatter,

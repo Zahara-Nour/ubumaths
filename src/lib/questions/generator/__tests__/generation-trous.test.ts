@@ -14,12 +14,12 @@ import { generateInstance } from '../instance-generator';
 import { assignBlankIndices } from '../assign-blank-indices';
 import { validateTemplate } from '../../validators/template-validator';
 import type { QuestionInstance, QuestionTemplate, QuestionVariation } from '../../types';
-import { templateMarkdown } from '$lib/ubumark';
-import { parseMarkdown } from '$lib/ubumark';
-import { validateAnswer } from '$lib/utils/answer-validator';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
+import { parseMarkdown } from '#lib/ubumark/index.ts';
+import { validateAnswer } from '#lib/utils/answer-validator.ts';
 import { buildExpectedResult } from '../../expected-result';
 import { toPublicQuestion } from '../../public-question';
-import type { TrousNode } from '$lib/ubumark/types/trous';
+import type { TrousNode } from '#lib/ubumark/types/trous.ts';
 import { findUnmaskedAnswers } from '../../masked-statement';
 
 function template(

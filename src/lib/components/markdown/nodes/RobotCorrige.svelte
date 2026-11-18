@@ -20,9 +20,9 @@
 		ROBOT_INTERDITE,
 		ROBOT_SORTIE,
 		readExpectedRobotAnswer
-	} from '$lib/ubumark/utils/robot-answer';
-	import { ecrireCode, lireCode, simuler } from '$lib/ubumark/utils/robot-moteur';
-	import { ROBOT_UNAVAILABLE, type RobotNode } from '$lib/ubumark/types/robot';
+	} from '#lib/ubumark/utils/robot-answer.ts';
+	import { ecrireCode, lireCode, simuler } from '#lib/ubumark/utils/robot-moteur.ts';
+	import { ROBOT_UNAVAILABLE, type RobotNode } from '#lib/ubumark/types/robot.ts';
 	import RobotQuadrillage from './RobotQuadrillage.svelte';
 
 	interface Props {

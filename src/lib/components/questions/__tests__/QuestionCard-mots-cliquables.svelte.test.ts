@@ -9,12 +9,12 @@ import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import QuestionCard from '../QuestionCard.svelte';
 import ReaderGradeHarness from './ReaderGradeHarness.svelte';
-import { generateInstance } from '$lib/questions/generator/instance-generator';
-import type { QuestionInstance, QuestionTemplate } from '$lib/questions/types';
-import { templateMarkdown } from '$lib/ubumark';
+import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
+import type { QuestionInstance, QuestionTemplate } from '#lib/questions/types.ts';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 
 // Le dictionnaire arrive de /api/dictionnaire (ADR 0022) : ici, le jeu de référence figé
-vi.mock('$lib/dictionary/fetch-dictionary', async () => {
+vi.mock('#lib/dictionary/fetch-dictionary.ts', async () => {
 	const { REFERENCE_DICTIONARY: entries } =
 		await import('../../../../../tests/fixtures/lexique/dictionnaire-reference');
 	return { fetchDictionary: async () => entries };

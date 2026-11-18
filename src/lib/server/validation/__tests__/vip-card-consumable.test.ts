@@ -12,8 +12,8 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import type { Database } from '$lib/types/database';
-import { useCardSchema } from '$lib/server/validation/vip-cards';
+import type { Database } from '#lib/types/database.ts';
+import { useCardSchema } from '#lib/server/validation/vip-cards.ts';
 
 // ============================================================================
 // MOCK SETUP

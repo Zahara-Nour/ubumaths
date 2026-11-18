@@ -6,7 +6,7 @@
  * (variable qui porte la couleur) ou dans le corrigé.
  */
 import { describe, it, expect } from 'vitest';
-import type { QuestionTemplate } from '$lib/questions/types';
+import type { QuestionTemplate } from '#lib/questions/types.ts';
 import { findTextcolorOutsideMath, formatTextcolorReport } from '../textcolor-hors-maths';
 
 function modele(statement: string, steps: string[] = [], extra: Record<string, unknown> = {}) {

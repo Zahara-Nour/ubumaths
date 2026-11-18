@@ -8,8 +8,8 @@
  * via `toTemplatePutBody`, et la route les vide comme avant.
  */
 import { describe, it, expect } from 'vitest';
-import { toTemplatePutBody } from '$lib/questions/template-put-body';
-import { templateMarkdown } from '$lib/ubumark/types/template';
+import { toTemplatePutBody } from '#lib/questions/template-put-body.ts';
+import { templateMarkdown } from '#lib/ubumark/types/template.ts';
 import { callPut, fakeDb, FIXTURE } from './fake-templates-db';
 
 describe('toTemplatePutBody', () => {

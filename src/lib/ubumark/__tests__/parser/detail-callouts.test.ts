@@ -4,8 +4,8 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { parseMarkdown } from '$lib/ubumark';
-import type { BlockquoteNode, InlineNode, ParagraphNode } from '$lib/ubumark';
+import { parseMarkdown } from '#lib/ubumark/index.ts';
+import type { BlockquoteNode, InlineNode, ParagraphNode } from '#lib/ubumark/index.ts';
 
 function firstBlock(md: string) {
 	return parseMarkdown(md).children[0];

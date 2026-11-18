@@ -12,7 +12,7 @@ import { dbTestConfig } from './vitest.base.config';
  * connexion directe au port 54322 (SUPABASE_DB_*) : il lui faut une base
  * migrée (`supabase db start`), ni GoTrue, ni PostgREST, ni clés d'API.
  *
- * Pas de plugin sveltekit (le test n'importe aucun `$lib`) ni de
+ * Pas de plugin sveltekit (le test n'importe aucun `#lib`) ni de
  * `global-setup` de la suite d'intégration : celui-ci supprime les comptes
  * prof, ce dont ce test n'a aucun besoin.
  *

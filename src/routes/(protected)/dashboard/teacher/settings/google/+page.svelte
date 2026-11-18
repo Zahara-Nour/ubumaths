@@ -37,15 +37,15 @@
 -->
 
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
-	import { Button } from '$lib/components/ui/button';
-	import * as Card from '$lib/components/ui/card';
-	import { Badge } from '$lib/components/ui/badge';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import { googleOAuthErrorMessage } from '$lib/utils/google-oauth-error';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import { googleOAuthErrorMessage } from '#lib/utils/google-oauth-error.ts';
 
 	// ============================================================================
 	// Types

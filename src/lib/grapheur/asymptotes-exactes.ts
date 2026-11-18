@@ -13,9 +13,9 @@
  * @module grapheur/asymptotes-exactes
  */
 
-import type { MathNode } from '$lib/mathAST/types';
-import { toLatex } from '$lib/mathAST/latex-generator';
-import { rationalQuotient } from '$lib/mathAST/normal/rational-quotient';
+import type { MathNode } from '#lib/mathAST/types.ts';
+import { toLatex } from '#lib/mathAST/latex-generator.ts';
+import { rationalQuotient } from '#lib/mathAST/normal/rational-quotient.ts';
 import type { HorizontalAsymptote, ObliqueAsymptote, PolynomialAsymptote } from './types';
 
 /** Les trois familles d'asymptotes que la division euclidienne tranche d'un coup. */

@@ -15,10 +15,10 @@ import type {
 	ConditionDomain
 } from './types';
 import { ZERO_TOLERANCE } from '../common';
-import { subtract, divide } from '$lib/mathAST/factory';
+import { subtract, divide } from '#lib/mathAST/factory.ts';
 import { numericNode } from '../common/numeric';
 import { tidyPeriodicMember } from '../common/periodic-member';
-import type { Endpoint, IntervalDomain } from '$lib/math/intervals/types';
+import type { Endpoint, IntervalDomain } from '#lib/math/intervals/types.ts';
 import {
 	isEmptyInterval as intervalsIsEmpty,
 	isUniversalInterval as intervalsIsUniversal,
@@ -26,8 +26,8 @@ import {
 	union as intervalsUnion,
 	complement as intervalsComplement,
 	difference as intervalsDifference
-} from '$lib/math/intervals/algebra';
-import { realLine } from '$lib/math/intervals/factory';
+} from '#lib/math/intervals/algebra.ts';
+import { realLine } from '#lib/math/intervals/factory.ts';
 import {
 	EMPTY_SET,
 	UNIVERSAL_SET,
@@ -41,7 +41,7 @@ import {
 	closedInterval
 } from './factory';
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
-import { endpointToNumber } from '$lib/math/intervals/endpoint';
+import { endpointToNumber } from '#lib/math/intervals/endpoint.ts';
 import { compareNumericNodes } from '../eval/compare-numeric';
 
 // =============================================================================

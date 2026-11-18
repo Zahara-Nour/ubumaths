@@ -12,9 +12,9 @@ import { describe, it, expect } from 'vitest';
 import { parseStatChartContent } from '../../parser/stat-chart-parser';
 import { buildStatChartScene, type LawScene } from '../../utils/stat-chart-scene';
 import { generateStatChartTypst } from '../../generators/stat-chart-typst';
-import { binomialDistribution, binomialProbability } from '$lib/statistics/binomial';
-import { roundExact } from '$lib/statistics/rounding';
-import { Fraction } from '$lib/statistics/fraction';
+import { binomialDistribution, binomialProbability } from '#lib/statistics/binomial.ts';
+import { roundExact } from '#lib/statistics/rounding.ts';
+import { Fraction } from '#lib/statistics/fraction.ts';
 
 // =============================================================================
 // Helpers

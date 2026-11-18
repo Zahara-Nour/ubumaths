@@ -7,7 +7,7 @@
  * au compte de l'enfant (R2). Le jeton est le nôtre (`createChildResetToken`), valable 1 heure.
  */
 
-import { escapeHtml } from '$lib/utils/html-escape';
+import { escapeHtml } from '#lib/utils/html-escape.ts';
 import { getSiteUrl } from './parental-consent';
 
 // Types

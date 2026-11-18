@@ -47,8 +47,8 @@ import type {
 	NumberLineParseResult,
 	NumberLineBlockRange
 } from '../types/number-line';
-import { parseCustom } from '$lib/mathAST/parser/custom';
-import { evaluateNodeToApproximatedNumber } from '$lib/mathAST/eval/evaluate';
+import { parseCustom } from '#lib/mathAST/parser/custom/index.ts';
+import { evaluateNodeToApproximatedNumber } from '#lib/mathAST/eval/evaluate.ts';
 import { specialBlockEnd } from './unclosed-block';
 import { isMaskedValue } from '../utils/masked-value';
 

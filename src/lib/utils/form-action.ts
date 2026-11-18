@@ -33,7 +33,7 @@
 import { deserialize } from '$app/forms';
 import { invalidateAll } from '$app/navigation';
 import type { ActionResult } from '$app/forms';
-import { toaster } from '$lib/stores/toaster.svelte';
+import { toaster } from '#lib/stores/toaster.svelte.ts';
 
 // ============================================================================
 // TYPES

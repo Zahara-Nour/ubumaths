@@ -8,8 +8,8 @@
  * trouvé » le soir = la journée compte comme « trouvé », une seule révision.
  */
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { FSRS } from '$lib/srs/fsrs';
-import { Grade, type CardStats } from '$lib/srs/types';
+import { FSRS } from '#lib/srs/fsrs.ts';
+import { Grade, type CardStats } from '#lib/srs/types.ts';
 import { reviewBestOfDay } from '../best-of-day';
 
 const fsrs = new FSRS();

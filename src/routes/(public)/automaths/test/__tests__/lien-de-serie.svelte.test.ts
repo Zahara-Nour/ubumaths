@@ -8,8 +8,12 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { page } from 'vitest/browser';
-import { ANCIEN_LIEN_MESSAGE, SERIES_LINK_PARAM, encodeSeriesParam } from '$lib/validation/series';
-import { questionTemplatesCache } from '$lib/stores/questionTemplates.svelte';
+import {
+	ANCIEN_LIEN_MESSAGE,
+	SERIES_LINK_PARAM,
+	encodeSeriesParam
+} from '#lib/validation/series.ts';
+import { questionTemplatesCache } from '#lib/stores/questionTemplates.svelte.ts';
 
 const goto = vi.hoisted(() => vi.fn(async () => {}));
 const url = vi.hoisted(() => ({ current: new URL('http://localhost/automaths/test') }));
@@ -21,7 +25,7 @@ vi.mock('$app/state', () => ({
 	}
 }));
 vi.mock('$app/navigation', async () =>
-	(await import('$tests/helpers/app-navigation-mock')).appNavigationMock({ goto })
+	(await import('#tests/helpers/app-navigation-mock.ts')).appNavigationMock({ goto })
 );
 
 import Page from '../+page.svelte';

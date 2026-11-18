@@ -23,17 +23,17 @@
 
 <script lang="ts">
 	import { onMount, tick } from 'svelte';
-	import FlashCard from '$lib/components/questions/FlashCard.svelte';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import { Button } from '$lib/components/ui/button';
-	import * as Card from '$lib/components/ui/card';
-	import { Progress } from '$lib/components/ui/progress';
+	import FlashCard from '#lib/components/questions/FlashCard.svelte';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Progress } from '#lib/components/ui/progress/index.ts';
 	import { ArrowRight, Heart, Shield, Swords } from '@lucide/svelte';
-	import type { ProvinceId } from '$lib/kingdom-tour/tour';
-	import { PROVINCES } from '$lib/kingdom-tour/tour';
-	import type { QuestionInstance } from '$lib/questions/types';
-	import type { AnswerData } from '$lib/types/question-display';
-	import { STARTING_MOVES, type CombatMove } from '$lib/descente/moves';
+	import type { ProvinceId } from '#lib/kingdom-tour/tour.ts';
+	import { PROVINCES } from '#lib/kingdom-tour/tour.ts';
+	import type { QuestionInstance } from '#lib/questions/types.ts';
+	import type { AnswerData } from '#lib/types/question-display.ts';
+	import { STARTING_MOVES, type CombatMove } from '#lib/descente/moves.ts';
 	import {
 		afterAttack,
 		afterDodge,
@@ -44,13 +44,13 @@
 		STARTING_HEARTS,
 		type CombatState,
 		type OpenedCombat
-	} from '$lib/descente/combat-rules';
+	} from '#lib/descente/combat-rules.ts';
 	import {
 		claimVictory,
 		requestQuestion,
 		sendAnswer,
 		type CombatPurpose
-	} from '$lib/descente/combat-client';
+	} from '#lib/descente/combat-client.ts';
 
 	// Types
 	interface Props {

@@ -8,15 +8,15 @@
 	 * sont affichées par la page : sélecteur, onglet, rubrique). Un clic sur la tuile ne fait rien. En dessous, le
 	 * bouton d'ajout au panier (la grille n'a ni durée ni répétitions).
 	 */
-	import { Badge } from '$lib/components/ui/badge';
-	import { Button } from '$lib/components/ui/button';
-	import FlashCard from '$lib/components/questions/FlashCard.svelte';
-	import { MarkdownRenderer } from '$lib/components/markdown';
-	import { convertLegacyLatexToMarkdown } from '$lib/utils/latex-syntax-adapter';
-	import { TILE_CARD_HEIGHT } from '$lib/components/questions/tile-card';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import FlashCard from '#lib/components/questions/FlashCard.svelte';
+	import { MarkdownRenderer } from '#lib/components/markdown/index.ts';
+	import { convertLegacyLatexToMarkdown } from '#lib/utils/latex-syntax-adapter.ts';
+	import { TILE_CARD_HEIGHT } from '#lib/components/questions/tile-card.ts';
 	import { Plus, Check } from '@lucide/svelte';
-	import { questionCart } from '$lib/stores/questionCart.svelte';
-	import type { QuestionInstance, QuestionTemplate } from '$lib/questions/types';
+	import { questionCart } from '#lib/stores/questionCart.svelte.ts';
+	import type { QuestionInstance, QuestionTemplate } from '#lib/questions/types.ts';
 
 	let {
 		template,

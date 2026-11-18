@@ -11,24 +11,24 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 const addBuddyXpFromTest = vi.hoisted(() =>
-	vi.fn<typeof import('$lib/server/buddy-xp-service').addBuddyXpFromTest>()
+	vi.fn<typeof import('#lib/server/buddy-xp-service.ts').addBuddyXpFromTest>()
 );
 const loadLongStruggleWon = vi.hoisted(() =>
-	vi.fn<typeof import('$lib/server/buddy-struggle').loadLongStruggleWon>()
+	vi.fn<typeof import('#lib/server/buddy-struggle.ts').loadLongStruggleWon>()
 );
 
-vi.mock('$lib/server/buddy-xp-service', () => ({ addBuddyXpFromTest }));
-vi.mock('$lib/server/buddy-struggle', () => ({ loadLongStruggleWon }));
-vi.mock('$lib/server/buddy-themes', () => ({ fetchTemplateThemeIds: async () => new Map() }));
-vi.mock('$lib/server/serviceRoleClient', () => ({ createServiceRoleClient: () => ({}) }));
-vi.mock('$lib/server/course-card-attempts', () => ({
+vi.mock('#lib/server/buddy-xp-service.ts', () => ({ addBuddyXpFromTest }));
+vi.mock('#lib/server/buddy-struggle.ts', () => ({ loadLongStruggleWon }));
+vi.mock('#lib/server/buddy-themes.ts', () => ({ fetchTemplateThemeIds: async () => new Map() }));
+vi.mock('#lib/server/serviceRoleClient.ts', () => ({ createServiceRoleClient: () => ({}) }));
+vi.mock('#lib/server/course-card-attempts.ts', () => ({
 	CourseCardLookupError: class extends Error {},
 	fetchCourseCardTemplateIds: async () => cartesDeCours
 }));
 
 import { POST } from '../+server';
 
-vi.mock('$lib/server/middleware/auth', () => ({
+vi.mock('#lib/server/middleware/auth.ts', () => ({
 	requireAuth: async (locals: { safeGetSession: () => Promise<{ user: unknown }> }) => {
 		const { user } = await locals.safeGetSession();
 		if (!user) throw (await import('@sveltejs/kit')).error(401, 'Non autorisé');

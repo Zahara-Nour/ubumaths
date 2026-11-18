@@ -9,7 +9,7 @@
  * @module ubumark/utils/ranger
  */
 
-import { createRandomSource, shuffled, type RandomSource } from '$lib/utils/random';
+import { createRandomSource, shuffled, type RandomSource } from '#lib/utils/random.ts';
 import type { RangerSpec } from '../types/ranger';
 
 // Constantes

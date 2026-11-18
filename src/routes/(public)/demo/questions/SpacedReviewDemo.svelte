@@ -7,11 +7,11 @@
 	boutons montre la vraie prochaine date d'une carte neuve, calculée par FSRS (PR 6g).
 -->
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button';
-	import * as Card from '$lib/components/ui/card';
-	import { Progress } from '$lib/components/ui/progress';
-	import FlashCard from '$lib/components/questions/FlashCard.svelte';
-	import SelfAssessButtons from '$lib/components/questions/SelfAssessButtons.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Progress } from '#lib/components/ui/progress/index.ts';
+	import FlashCard from '#lib/components/questions/FlashCard.svelte';
+	import SelfAssessButtons from '#lib/components/questions/SelfAssessButtons.svelte';
 	import { RotateCcw } from '@lucide/svelte';
 	import { demoInstances, firstReviewIntervals } from './questions';
 

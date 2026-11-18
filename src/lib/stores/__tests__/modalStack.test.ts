@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { modalStack } from '$lib/stores/modalStack.svelte';
+import { modalStack } from '#lib/stores/modalStack.svelte.ts';
 import type { Component } from 'svelte';
 
 // Mock component for testing

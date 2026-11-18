@@ -8,7 +8,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { formatNiveau } from '$lib/competences/niveau-format';
+import { formatNiveau } from '#lib/competences/niveau-format.ts';
 import { getSocleCodes, formatSocleCell } from '../socle-mapping';
 import { buildCompetencesCsv, type ExportCompetence, type ExportStudentRow } from '../export-csv';
 

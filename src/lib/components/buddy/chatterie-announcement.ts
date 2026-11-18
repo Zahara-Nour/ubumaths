@@ -12,10 +12,10 @@
  */
 
 import { resolve } from '$app/paths';
-import type { BuddyExpression } from '$lib/types/buddy';
-import { nappingPhrase } from '$lib/mathoux/collection-logic';
-import { mathouxSummarySchema } from '$lib/mathoux/summary';
-import { newsSummaryPhrase } from '$lib/mathoux/news';
+import type { BuddyExpression } from '#lib/types/buddy.ts';
+import { nappingPhrase } from '#lib/mathoux/collection-logic.ts';
+import { mathouxSummarySchema } from '#lib/mathoux/summary.ts';
+import { newsSummaryPhrase } from '#lib/mathoux/news.ts';
 
 // Types
 export interface ChatterieAnnouncement {

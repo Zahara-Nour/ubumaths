@@ -20,9 +20,9 @@
 -->
 
 <script lang="ts">
-	import { pomodoroStore } from '$lib/stores/pomodoro/pomodoro.svelte';
-	import { playBell, showPhaseNotification } from '$lib/stores/pomodoro/effects';
-	import type { PomodoroPhase } from '$lib/stores/pomodoro/logic';
+	import { pomodoroStore } from '#lib/stores/pomodoro/pomodoro.svelte.ts';
+	import { playBell, showPhaseNotification } from '#lib/stores/pomodoro/effects.ts';
+	import type { PomodoroPhase } from '#lib/stores/pomodoro/logic.ts';
 
 	const PHASE_ANNOUNCEMENTS: Record<PomodoroPhase, string> = {
 		work: 'Pomodoro de travail commencé',

@@ -4,8 +4,8 @@
 	 * Educational math game where players combine powers of 2
 	 */
 	import Game2048 from './Game2048.svelte';
-	import * as Card from '$lib/components/ui/card';
-	import { Button } from '$lib/components/ui/button';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import { Trophy } from '@lucide/svelte';
 	import type { PageData } from './$types';
 

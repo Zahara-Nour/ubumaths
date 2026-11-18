@@ -14,7 +14,7 @@
 	import * as BlocklyCore from 'blockly';
 	import { onDestroy, untrack } from 'svelte';
 	import { Play, FastForward, Trash2 } from '@lucide/svelte';
-	import { Button } from '$lib/components/ui/button';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import BlocklyWorkspace from './BlocklyWorkspace.svelte';
 	import TortueCanvas from './TortueCanvas.svelte';
 	import {
@@ -26,9 +26,9 @@
 		messageErreurTortue,
 		type NiveauTortue,
 		type ResultatTortue
-	} from '$lib/shared/blockly/tortue';
-	import { surveillerNomsDeVariables } from '$lib/shared/blockly/calcul/blocs';
-	import { generateCode } from '$lib/shared/blockly/generators';
+	} from '#lib/shared/blockly/tortue/index.ts';
+	import { surveillerNomsDeVariables } from '#lib/shared/blockly/calcul/blocs.ts';
+	import { generateCode } from '#lib/shared/blockly/generators/index.ts';
 
 	// =============================================================================
 	// Types

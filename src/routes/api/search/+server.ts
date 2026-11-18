@@ -11,10 +11,10 @@
 
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRoles } from '$lib/server/middleware/auth';
-import { rateLimit } from '$lib/server/middleware/rateLimit';
-import { searchQuerySchema } from '$lib/server/validation/search';
-import { searchResources } from '$lib/server/search';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import { rateLimit } from '#lib/server/middleware/rateLimit.ts';
+import { searchQuerySchema } from '#lib/server/validation/search.ts';
+import { searchResources } from '#lib/server/search.ts';
 
 export const GET: RequestHandler = async ({ url, locals }) => {
 	const { user } = await requireRoles(locals, ['teacher', 'admin']);

@@ -17,7 +17,7 @@ import {
 	parseUnitExpression,
 	readsAsNumber
 } from './parser';
-import { unitWritingProblem } from '$lib/mathAST/units/parser';
+import { unitWritingProblem } from '#lib/mathAST/units/parser.ts';
 import {
 	UNIT_FEEDBACK,
 	ambiguousUnitMessage,
@@ -34,15 +34,15 @@ import {
 } from './composite-duration';
 import { compareQuantities, type Tolerance } from './quantity-comparison';
 import { isDuration, unitsAreCompatible } from './operations';
-import type { PrecisionType } from '$lib/questions/types';
+import type { PrecisionType } from '#lib/questions/types.ts';
 import type { Unit } from './types';
-import { convertAffine } from '$lib/mathAST/units/conversion';
+import { convertAffine } from '#lib/mathAST/units/conversion.ts';
 import {
 	judgeRounding,
 	roundToPrecision,
 	roundingFeedback,
 	type RoundingVerdict
-} from '$lib/questions/rounding';
+} from '#lib/questions/rounding.ts';
 
 // ============================================================================
 // TYPES

@@ -76,7 +76,7 @@ Détails qui comptent :
   `vite.config.ts` (server + client), jamais l'intégration.
 - **Couverture** : le bloc `coverage` de `vite.config.ts` est **inerte** — `@vitest/coverage-v8`
   n'est pas installé, aucun script ni job ne la lance.
-- **Alias** : les helpers s'importent par `$tests/helpers` (alias des options de `sveltekit()` dans `vite.config.ts`), jamais
+- **Alias** : les helpers s'importent par `#tests/helpers/index.ts` (import de sous-chemin, cf. [svelte-typescript.md](svelte-typescript.md#imports-lib-et-tests)), jamais
   `'tests/helpers'`. La suite d'intégration importe en relatif (`../helpers/database/…`).
 
 ---

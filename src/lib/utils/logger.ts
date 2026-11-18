@@ -480,7 +480,7 @@ function formatServerMessage(
  *
  * @example
  * ```ts
- * import { createServerLogger } from '$lib/utils/logger';
+ * import { createServerLogger } from '#lib/utils/logger.ts';
  *
  * const logger = createServerLogger('api/users/+server.ts');
  *

@@ -14,10 +14,10 @@
 
 import { redirect, error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { validateUuidParam } from '$lib/server/validation/params';
-import type { CheckpointStatus, NotebookCell, CheckpointCell } from '$lib/types/notebook';
-import type { CheckpointDetail } from '$lib/types/database-helpers';
-import { createServerLogger } from '$lib/utils/logger';
+import { validateUuidParam } from '#lib/server/validation/params.ts';
+import type { CheckpointStatus, NotebookCell, CheckpointCell } from '#lib/types/notebook.ts';
+import type { CheckpointDetail } from '#lib/types/database-helpers.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('(protected)/python-notebook/[id]/results/+page.server');
 

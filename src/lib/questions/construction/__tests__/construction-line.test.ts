@@ -32,7 +32,7 @@ import {
 } from '../instruments';
 import { addTap, solutionLines, solutionCodages, type Drawing } from '../drawing';
 import { serializeConstructionAnswer, type DrawnObject } from '../answer';
-import { readConstructionHeader } from '$lib/ubumark/parser/construction-parser';
+import { readConstructionHeader } from '#lib/ubumark/parser/construction-parser.ts';
 
 function checksOf(source: string) {
 	const { spec, errors } = readConstructionHeader(source);

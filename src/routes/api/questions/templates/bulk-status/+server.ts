@@ -15,9 +15,9 @@
 
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAdmin } from '$lib/server/middleware/auth';
-import { bulkTemplateStatusSchema } from '$lib/server/validation/questions';
-import { publishTemplates, unpublishTemplates } from '$lib/server/questions-bulk-status';
+import { requireAdmin } from '#lib/server/middleware/auth.ts';
+import { bulkTemplateStatusSchema } from '#lib/server/validation/questions.ts';
+import { publishTemplates, unpublishTemplates } from '#lib/server/questions-bulk-status.ts';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 	// Prof en mode administration, ou vrai compte admin : la RLS réserve l'écriture à l'admin

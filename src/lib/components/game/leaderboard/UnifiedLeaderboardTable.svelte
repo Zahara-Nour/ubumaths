@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import * as Avatar from '$lib/components/ui/avatar';
-	import { Badge } from '$lib/components/ui/badge';
-	import type { GameLeaderboardRow } from '$lib/types/database-helpers';
+	import { lore } from '#lib/config/lore.ts';
+	import * as Avatar from '#lib/components/ui/avatar/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import type { GameLeaderboardRow } from '#lib/types/database-helpers.ts';
 
 	let { rows }: { rows: GameLeaderboardRow[] } = $props();
 

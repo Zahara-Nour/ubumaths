@@ -24,44 +24,44 @@
 -->
 
 <script lang="ts">
-	import type { TestAnswerResult } from '$lib/types/test';
-	import { getQuestionType, isCourseQuestion } from '$lib/questions/types';
-	import { buildExpectedResult, showsInstructionOnly } from '$lib/questions/expected-result';
+	import type { TestAnswerResult } from '#lib/types/test.ts';
+	import { getQuestionType, isCourseQuestion } from '#lib/questions/types.ts';
+	import { buildExpectedResult, showsInstructionOnly } from '#lib/questions/expected-result.ts';
 	import {
 		filledMarkdown,
 		expectedOnlyMarkdown,
 		solutionMarkdown
-	} from '$lib/questions/expected-result-markdown';
+	} from '#lib/questions/expected-result-markdown.ts';
 	import {
 		globalVerdictOf,
 		instructionOf,
 		studentAnswerFromAnswerData,
 		trainingStatus
-	} from '$lib/questions/correction-card-verdict';
-	import { validateAnswerDetailed, type DetailedVerdict } from '$lib/utils/answer-validator';
+	} from '#lib/questions/correction-card-verdict.ts';
+	import { validateAnswerDetailed, type DetailedVerdict } from '#lib/utils/answer-validator.ts';
 	import {
 		hasConstructionPositions,
 		loadConstructionPositions
-	} from '$lib/questions/construction/positions';
-	import type { CorrectedDetail } from '$lib/types/evaluation-attempt';
-	import { MarkdownRenderer } from '$lib/components/markdown';
-	import { templateGenericFunctions } from '$lib/questions/generic-functions';
-	import { provideCapitalPairs } from '$lib/components/markdown/content-capital-pairs';
+	} from '#lib/questions/construction/positions.ts';
+	import type { CorrectedDetail } from '#lib/types/evaluation-attempt.ts';
+	import { MarkdownRenderer } from '#lib/components/markdown/index.ts';
+	import { templateGenericFunctions } from '#lib/questions/generic-functions.ts';
+	import { provideCapitalPairs } from '#lib/components/markdown/content-capital-pairs.ts';
 	import {
 		digitGroupingOf,
 		provideDigitGrouping
-	} from '$lib/components/markdown/content-digit-grouping';
-	import * as Card from '$lib/components/ui/card';
-	import { Badge } from '$lib/components/ui/badge';
+	} from '#lib/components/markdown/content-digit-grouping.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
 	import { RotateCw, Check, X, TriangleAlert } from '@lucide/svelte';
-	import { cn } from '$lib/utils';
+	import { cn } from '#lib/utils.ts';
 	import GeneratedStepsCorrection from './GeneratedStepsCorrection.svelte';
 	import ExpectedResultView from './ExpectedResultView.svelte';
 	import CorrectionView from './CorrectionView.svelte';
-	import { provideChoiceCaseResults } from '$lib/components/markdown/choice-case-results';
-	import { provideQuestionLexicon } from '$lib/components/markdown/lexicon-context';
+	import { provideChoiceCaseResults } from '#lib/components/markdown/choice-case-results.ts';
+	import { provideQuestionLexicon } from '#lib/components/markdown/lexicon-context.ts';
 	import LexiconToggle from './LexiconToggle.svelte';
-	import LexiconOff from '$lib/components/markdown/LexiconOff.svelte';
+	import LexiconOff from '#lib/components/markdown/LexiconOff.svelte';
 
 	// Props
 	interface Props {

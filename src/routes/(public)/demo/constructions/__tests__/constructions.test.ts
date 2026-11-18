@@ -5,8 +5,8 @@
  * pas la vitrine en silence.
  */
 import { describe, expect, it } from 'vitest';
-import { ConstructionExecutor } from '$lib/constructions-v2/core/executor';
-import { geoToNumber } from '$lib/geometry-core/compute/to-number';
+import { ConstructionExecutor } from '#lib/constructions-v2/core/executor.ts';
+import { geoToNumber } from '#lib/geometry-core/compute/to-number.ts';
 import { DEMO_CONSTRUCTIONS } from '../constructions';
 
 describe('DEMO_CONSTRUCTIONS', () => {

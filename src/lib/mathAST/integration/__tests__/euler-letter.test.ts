@@ -20,9 +20,9 @@ import { checkForm } from '../../cosmetic-transforms';
 import { findNodes } from '../../transforms';
 import { isVariable } from '../../guards';
 import type { MathNode } from '../../types';
-import { runInput, type CalcSession } from '$lib/atelier/calcul';
-import { Atelier } from '$lib/atelier/atelier.svelte';
-import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
+import { runInput, type CalcSession } from '#lib/atelier/calcul.ts';
+import { Atelier } from '#lib/atelier/atelier.svelte.ts';
+import { WebReplEngine } from '#lib/mathAST/cli/web/web-repl-engine.ts';
 
 const POINTS = [-1.3, -0.4, 0.35, 0.9, 1.7];
 

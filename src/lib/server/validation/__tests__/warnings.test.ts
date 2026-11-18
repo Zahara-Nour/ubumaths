@@ -3,7 +3,7 @@ import {
 	warningTypeSchema,
 	addWarningSchema,
 	getWarningsSchema
-} from '$lib/server/validation/warnings';
+} from '#lib/server/validation/warnings.ts';
 
 describe('Warnings Validation Schemas', () => {
 	const validUuid = '550e8400-e29b-41d4-a716-446655440000';

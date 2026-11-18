@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { cn } from '$lib/utils';
+	import { cn } from '#lib/utils.ts';
 
 	// Long press configuration
 	const LONG_PRESS_DURATION = 400; // ms

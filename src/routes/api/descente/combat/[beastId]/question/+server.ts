@@ -12,11 +12,11 @@
 
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import { validateUuidParam } from '$lib/server/validation/params';
-import { combatQuestionSchema } from '$lib/server/validation/descente';
-import { drawCombatQuestion } from '$lib/server/descente/combat';
-import { combatErrorResponse } from '$lib/server/descente/combat-http';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { validateUuidParam } from '#lib/server/validation/params.ts';
+import { combatQuestionSchema } from '#lib/server/validation/descente.ts';
+import { drawCombatQuestion } from '#lib/server/descente/combat.ts';
+import { combatErrorResponse } from '#lib/server/descente/combat-http.ts';
 
 export const POST: RequestHandler = async ({ params, request, locals }) => {
 	const beastId = validateUuidParam(params.beastId, 'beastId');

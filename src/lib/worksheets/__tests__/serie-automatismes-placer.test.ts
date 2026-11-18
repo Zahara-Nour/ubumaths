@@ -11,13 +11,13 @@
  * Une case par point à placer. Refusé, message à l'appui : bloc en retrait ou cité.
  */
 import { describe, it, expect } from 'vitest';
-import type { QuestionTemplate } from '$lib/questions/types';
+import type { QuestionTemplate } from '#lib/questions/types.ts';
 import { buildSerie } from '../serie-automatismes';
-import { parseCourbeContent } from '$lib/ubumark/parser/courbe-parser';
-import { parseNumberLineContent } from '$lib/ubumark/parser/number-line-parser';
-import type { CourbeNode } from '$lib/ubumark/types/courbe';
-import type { NumberLineNode } from '$lib/ubumark/types/number-line';
-import { numVal } from '$lib/ubumark/utils/number-line-render';
+import { parseCourbeContent } from '#lib/ubumark/parser/courbe-parser.ts';
+import { parseNumberLineContent } from '#lib/ubumark/parser/number-line-parser.ts';
+import type { CourbeNode } from '#lib/ubumark/types/courbe.ts';
+import type { NumberLineNode } from '#lib/ubumark/types/number-line.ts';
+import { numVal } from '#lib/ubumark/utils/number-line-render.ts';
 
 /** Un modèle d'une variation, énoncé donné, variables a = 2 et b = -3 */
 function modele(id: string, statement: string, blanks?: { expectedAnswer: string }[]) {

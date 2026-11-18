@@ -1,16 +1,16 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import { onMount } from 'svelte';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import * as Tabs from '$lib/components/ui/tabs';
-	import { Label } from '$lib/components/ui/label';
-	import { Badge } from '$lib/components/ui/badge';
-	import VariableAutocomplete from '$lib/components/templates/VariableAutocomplete.svelte';
-	import TagsInput from '$lib/components/templates/TagsInput.svelte';
-	import FiltersHelp from '$lib/components/templates/FiltersHelp.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import * as Tabs from '#lib/components/ui/tabs/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import VariableAutocomplete from '#lib/components/templates/VariableAutocomplete.svelte';
+	import TagsInput from '#lib/components/templates/TagsInput.svelte';
+	import FiltersHelp from '#lib/components/templates/FiltersHelp.svelte';
 	import {
 		Loader2,
 		Plus,
@@ -26,17 +26,17 @@
 		ChevronUp,
 		Eye
 	} from '@lucide/svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import type {
 		MessageTemplate,
 		MessageTemplateInput as _MessageTemplateInput,
 		TriggerType
-	} from '$lib/types/messageTemplates';
-	import type { Json } from '$lib/types/database';
-	import { getVariablesForTrigger } from '$lib/templates/templateVariables';
-	import { renderTemplate } from '$lib/templates/templateEngine';
-	import { cn } from '$lib/utils';
-	import { sanitizeHtml } from '$lib/utils/sanitize';
+	} from '#lib/types/messageTemplates.ts';
+	import type { Json } from '#lib/types/database.ts';
+	import { getVariablesForTrigger } from '#lib/templates/templateVariables.ts';
+	import { renderTemplate } from '#lib/templates/templateEngine.ts';
+	import { cn } from '#lib/utils.ts';
+	import { sanitizeHtml } from '#lib/utils/sanitize.ts';
 
 	// Types
 	interface TemplateVersion {

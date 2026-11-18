@@ -14,7 +14,7 @@ import type {
 	WorksheetConfig,
 	WorksheetRow,
 	WorksheetTemplateRow
-} from '$lib/types/worksheets';
+} from '#lib/types/worksheets.ts';
 
 const FR = 'Chaque élève a sa propre version : consulte ta correction personnelle.';
 const EN = 'Each student has their own version: check your personal correction.';

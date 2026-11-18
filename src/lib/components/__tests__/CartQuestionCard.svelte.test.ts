@@ -9,11 +9,11 @@ import { describe, it, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { page, userEvent } from 'vitest/browser';
 import CartQuestionCard from '../CartQuestionCard.svelte';
-import { PREVIEW_SEED } from '$lib/questions/cart-preview';
-import { generateInstance } from '$lib/questions/generator/instance-generator';
-import type { QuestionTemplate } from '$lib/questions/types';
-import type { SeriesItem } from '$lib/validation/series';
-import type { QuestionTiming } from '$lib/types/evaluation-breakdown';
+import { PREVIEW_SEED } from '#lib/questions/cart-preview.ts';
+import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
+import type { QuestionTemplate } from '#lib/questions/types.ts';
+import type { SeriesItem } from '#lib/validation/series.ts';
+import type { QuestionTiming } from '#lib/types/evaluation-breakdown.ts';
 // Modèle réel relu (Entiers #139) : « Le double de … est … », avec un trou
 import fixture from '../../../../data/relecture/entiers/139.json';
 

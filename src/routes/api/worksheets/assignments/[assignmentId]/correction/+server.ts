@@ -21,25 +21,25 @@
 
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAuth } from '$lib/server/middleware/auth';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
 import { z } from 'zod';
-import { sanitizeForFileName } from '$lib/worksheets/pdf-file-name';
-import { generateWorksheetTypst } from '$lib/typst/generators';
-import { canAccessCorrections } from '$lib/server/worksheets/correction-release';
+import { sanitizeForFileName } from '#lib/worksheets/pdf-file-name.ts';
+import { generateWorksheetTypst } from '#lib/typst/generators/index.ts';
+import { canAccessCorrections } from '#lib/server/worksheets/correction-release.ts';
 import {
 	fetchAssignmentClasses,
 	formatClassNames
-} from '$lib/server/worksheets/assignment-classes';
-import { worksheetLocale } from '$lib/types/worksheets';
-import type { WorksheetAssignmentRow } from '$lib/types/worksheets';
+} from '#lib/server/worksheets/assignment-classes.ts';
+import { worksheetLocale } from '#lib/types/worksheets.ts';
+import type { WorksheetAssignmentRow } from '#lib/types/worksheets.ts';
 import {
 	assignmentCopyScope,
 	buildWorksheetCopy,
 	hasPerStudentCopies,
 	type WorksheetForCopy
-} from '$lib/worksheets/worksheet-copy';
-import { isStudentOfAssignment } from '$lib/server/worksheets/assignment-recipients';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/worksheets/worksheet-copy.ts';
+import { isStudentOfAssignment } from '#lib/server/worksheets/assignment-recipients.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/worksheets/assignments/[assignmentId]/correction/+server');
 

@@ -14,14 +14,14 @@ import { describe, expect, it } from 'vitest';
 import { generateWorksheetTypst } from '../worksheet-generator';
 import { DEFAULT_TEMPLATES } from '../../templates/default-templates';
 import { exerciseBadge } from '../../worksheet-palette';
-import { generateStudentWorksheetTypst } from '$lib/worksheets/student-worksheet-typst';
+import { generateStudentWorksheetTypst } from '#lib/worksheets/student-worksheet-typst.ts';
 import type {
 	InstanceData,
 	StudentWorksheetView,
 	WorksheetConfig,
 	WorksheetRow,
 	WorksheetTemplateRow
-} from '$lib/types/worksheets';
+} from '#lib/types/worksheets.ts';
 
 const NOTICE = 'Chaque élève a sa propre version : consulte ta correction personnelle.';
 const TWO_COLUMNS = /columns(\(|:\s*)2/;

@@ -41,7 +41,7 @@
 
 <script lang="ts">
 	import { onMount, untrack } from 'svelte';
-	import { cn } from '$lib/utils';
+	import { cn } from '#lib/utils.ts';
 
 	interface Props {
 		mode?: 'countdown' | 'stopwatch';

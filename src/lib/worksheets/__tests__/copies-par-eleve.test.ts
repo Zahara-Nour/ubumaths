@@ -23,7 +23,7 @@ import {
 	type StudentCopyView
 } from '../student-copies';
 import { generateStudentWorksheetTypst } from '../student-worksheet-typst';
-import { BUILT_IN_STYLES } from '$lib/typst/templates/styles';
+import { BUILT_IN_STYLES } from '#lib/typst/templates/styles.ts';
 
 const ONDINE: CopyRecipient = {
 	id: '550e8400-e29b-41d4-a716-446655440601',

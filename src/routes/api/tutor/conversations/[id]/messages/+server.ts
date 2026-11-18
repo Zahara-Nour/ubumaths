@@ -8,9 +8,9 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
-import { getTutorMessagesQuerySchema } from '$lib/server/validation/chat';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { createServerLogger } from '$lib/utils/logger';
+import { getTutorMessagesQuerySchema } from '#lib/server/validation/chat.ts';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/tutor/conversations/[id]/messages/+server');
 

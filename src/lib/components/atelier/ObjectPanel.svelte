@@ -6,9 +6,9 @@
 	 * partagé visible, et c'est sur ses objets que les actions s'attachent. Les
 	 * vues (Calcul, Graphe, Données) n'en sont que des projections.
 	 */
-	import { useAtelier } from '$lib/atelier/context';
-	import type { AtelierObject, ObjectKind } from '$lib/atelier/types';
-	import type { ObjectAction } from '$lib/atelier/actions';
+	import { useAtelier } from '#lib/atelier/context.ts';
+	import type { AtelierObject, ObjectKind } from '#lib/atelier/types.ts';
+	import type { ObjectAction } from '#lib/atelier/actions.ts';
 	import ChevronDown from '@lucide/svelte/icons/chevron-down';
 	import PanelLeftClose from '@lucide/svelte/icons/panel-left-close';
 	import PanelLeftOpen from '@lucide/svelte/icons/panel-left-open';

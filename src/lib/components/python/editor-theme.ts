@@ -13,7 +13,7 @@
  */
 
 import type { Extension } from '@codemirror/state';
-import type { EditorTheme } from '$lib/stores/pythonPlayground.svelte';
+import type { EditorTheme } from '#lib/stores/pythonPlayground.svelte.ts';
 
 /** Theme used when `editorTheme === 'default'` and the app is in dark mode. */
 export const DEFAULT_DARK_THEME: EditorTheme = 'oneDark';

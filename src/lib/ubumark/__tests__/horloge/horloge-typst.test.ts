@@ -4,11 +4,11 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { parseMarkdown } from '$lib/ubumark';
-import { generateTypst } from '$lib/ubumark/generators/typst-generator';
-import { generateHorlogeTypst } from '$lib/ubumark/generators/horloge-typst';
-import { parseHorlogeContent } from '$lib/ubumark/parser/horloge-parser';
-import { HORLOGE_UNAVAILABLE } from '$lib/ubumark/types/horloge';
+import { parseMarkdown } from '#lib/ubumark/index.ts';
+import { generateTypst } from '#lib/ubumark/generators/typst-generator.ts';
+import { generateHorlogeTypst } from '#lib/ubumark/generators/horloge-typst.ts';
+import { parseHorlogeContent } from '#lib/ubumark/parser/horloge-parser.ts';
+import { HORLOGE_UNAVAILABLE } from '#lib/ubumark/types/horloge.ts';
 
 const typst = (...lines: string[]) => generateHorlogeTypst(parseHorlogeContent(lines.join('\n')));
 const count = (text: string, pattern: RegExp) => (text.match(pattern) ?? []).length;

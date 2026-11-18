@@ -21,9 +21,9 @@
  */
 
 import type { LayoutServerLoad } from './$types';
-import { asVipCardAction } from '$lib/types/vip-card';
-import type { VipCardTemplate } from '$lib/stores/vipCardTemplates.svelte';
-import { createServerLogger } from '$lib/utils/logger';
+import { asVipCardAction } from '#lib/types/vip-card.ts';
+import type { VipCardTemplate } from '#lib/stores/vipCardTemplates.svelte.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('+layout.server');
 

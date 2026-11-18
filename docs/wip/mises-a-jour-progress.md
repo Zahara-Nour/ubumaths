@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après #2825._
+_Mis à jour le 2026-11-18, PR 3 en cours (branche `chore/lib-diese`)._
 
-- **État** : SvelteKit 3.2.0 + adapter-vercel 7.0.3 mergés (#2825, CI verte 16 contrôles), après kit 2.70.4 (#2814) et TypeScript 6.0.3 (#2821). Rien n'est encore en prod. Constats de kit 3 : section « PR 2b — SvelteKit 3 ». Vérifications à l'œil : `verifications-manuelles.md` (#2825).
-- **Prochaine action** : PR 3, `$lib` → `#lib` (≈ 14 600 imports, mécanique) puis retrait de l'option `alias` (`kitAlias` dans `vitest.base.config.ts`). Ensuite les dépréciations laissées (`error(N, { message })`, `pushState`/`replaceState`, `invalidateAll`, `json()`), puis les autres majeures (vitest 5, ESLint 10…).
-- **En attente de David** : `deploy:prod` pour livrer #2814, #2821 et #2825, quand il le voudra (puis les vérifications de #2825).
-- **Pièges en cours** : `$env/*` n'expose plus que ce que déclare `src/env.ts` ; `vi.mock('$app/navigation')` avec `importOriginal` fige la suite client → `appNavigationMock` ; suite client en local avec `CI=true` ; `check:incremental` (tsgo) ne vérifie pas TS 6, seul `pnpm check`. `minimumReleaseAge` 3 j.
-- **Worktree / branche** : aucun (worktree `mises-a-jour` supprimé après #2825).
+- **État** : PR 3 (`$lib` → `#lib`, `$tests` → `#tests`, option `alias` retirée) écrite dans le worktree `ubumaths-wt-mises-a-jour` ; typecheck 0 erreur ; suites serveur (67 580) et client (4 971) vertes, hors 4 tests de délai qui repassent seuls. Rien de #2814/#2821/#2825 n'est encore en prod.
+- **Prochaine action** : ouvrir la PR, CI, merge. Ensuite les dépréciations laissées (`error(N, { message })`, `pushState`/`replaceState`, `invalidateAll`, `json()`), puis les autres majeures (vitest 5, ESLint 10…).
+- **En attente de David** : `deploy:prod` pour livrer #2814, #2821, #2825 (et la PR 3), quand il le voudra (puis les vérifications de #2825).
+- **Pièges en cours** : `#lib` exige l'extension écrite (`.ts`, `.svelte.ts`, `/index.ts`) ; `paths` du `tsconfig.json` nécessaires au typecheck incrémental ; `$env/*` n'expose plus que `src/env.ts` ; `appNavigationMock` ; suite client en local avec `CI=true` ; `check:incremental` (tsgo) ne vérifie pas TS 6. `minimumReleaseAge` 3 j.
+- **Worktree / branche** : `../ubumaths-wt-mises-a-jour` · `chore/lib-diese`.
 
 ## Origine
 
@@ -85,6 +85,15 @@ Constats dans le code de kit 3.2.0 (pas dans le guide) :
 - **`fail()` répond avec son vrai statut** : `form-action.ts` lisait déjà le corps (en-tête corrigé) ; le combat Navadra (`response.ok`) affichera « Erreur lors de la validation » au lieu de « Réponse incorrecte » sur un refus — mieux.
 - **CSRF** : un POST/PUT/PATCH/DELETE **sans `Content-Type`** d'une autre origine (ou sans `Origin`) est refusé. Crons Vercel en GET, aucun script ne poste vers l'appli → rien ne casse ; à faire relire par `security-auditor`.
 - `tsconfig.json` étend `$app/tsconfig` (`node_modules/$app/`, écrit par `svelte-kit sync`) ; `.svelte-kit/tsconfig.json` n'existe plus → sentinelle `.svelte-kit/.sync-sentinel` dans `check-incremental.sh`.
+
+## PR 3 — `#lib` (2026-11-18)
+
+- **Transformation** : script maison (pas `sv migrate`, qui reformate chaque fichier), même règle que l'outil : `'$lib/x'` → `'#lib/x.ts'` (ou `.js`, `/index.ts`, `/index.js`, selon le fichier qui existe ; chemin déjà complet, `?raw`/`?inline` : inchangé), `$tests` de même ; les mentions en commentaire passent à `#lib` sans extension. ≈ 4 250 fichiers. `#lib/utils.js` des composants shadcn → `utils.ts`. Docs vivantes (`docs/pratiques`, `docs/systeme`, `CLAUDE.md`, agents) passées aussi ; `docs/archive`, journaux wip et migrations SQL laissés.
+- `package.json` : `"imports": { "#lib/*": "./src/lib/*", "#tests/*": "./tests/*" }` ; `kitAlias` et l'option `alias` de `sveltekit()` retirés (`vite.config.ts`, `vitest.integration.config.ts`).
+- **Typecheck incrémental** : sans `paths` dans `tsconfig.json`, tsgo ne relie pas `#lib/…/X.svelte` au composant (le `rootDirs` de `.svelte-kit/.svelte-check` ne s'applique pas aux imports de sous-chemin) → type générique `*.svelte`, 178 erreurs (props en `any`). `paths` `#lib/*` et `#tests/*` ajoutés : 0 erreur.
+- **Piège du script** : le littéral `'$lib/'` (préfixe testé par `startsWith`) est devenu `'#lib//index.ts'` → 4 gardes qui suivent les imports (`find-top-level-effects`, `chaque-page-a-un-titre`, `sans-blockly`, `workers-sans-runes`) devenaient aveugles ; seule `chaque-page-a-un-titre` a échoué. Corrigé ; `listBareImportTargets` retrouve bien `utils/mathlive-styles.ts` & co.
+- **Revue (`code-reviewer` Opus)** : deux autres gardes vertes à vide, corrigées. `sans-blockly` cherchait `x.ts.ts` (8 fichiers suivis au lieu de 603) ; la garde de poids de `figure-typst-setup` ne voyait plus `figure-typst.ts'`. `components.json` (shadcn) est passé à `#lib`. Les `paths` rendent TS tolérant à l'extension oubliée, d'où la nouvelle garde `scripts/__tests__/imports-lib-avec-extension.test.ts`, vérifiée rouge en retirant une extension.
+- `check-integration-paths` : filtre esbuild `^#lib`. `tsx` résout `#lib` sans rien (Node lit `package.json`).
 
 ## Autres versions en retard (pnpm outdated, 2026-11-18)
 

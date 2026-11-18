@@ -13,9 +13,9 @@
 -->
 <script lang="ts">
 	import { BookOpen } from '@lucide/svelte';
-	import { readLexiconCardTerms } from '$lib/components/markdown/lexicon-context';
-	import { lexiconShown, setLexiconShown } from '$lib/lexicon/visibility.svelte';
-	import { cn } from '$lib/utils';
+	import { readLexiconCardTerms } from '#lib/components/markdown/lexicon-context.ts';
+	import { lexiconShown, setLexiconShown } from '#lib/lexicon/visibility.svelte.ts';
+	import { cn } from '#lib/utils.ts';
 
 	interface Props {
 		/** Placement dans la carte */

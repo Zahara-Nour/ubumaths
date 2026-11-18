@@ -128,10 +128,10 @@ import {
 	type TransformAccessors
 } from '../geometry/affine-transform';
 import { classifyConic } from '../geometry/conic-classify';
-import type { MathNode } from '$lib/mathAST/types';
-import type { CompiledFn } from '$lib/mathAST/eval/compile';
-import { compile } from '$lib/mathAST/eval/compile';
-import { differentiate } from '$lib/mathAST/differentiation';
+import type { MathNode } from '#lib/mathAST/types.ts';
+import type { CompiledFn } from '#lib/mathAST/eval/compile.ts';
+import { compile } from '#lib/mathAST/eval/compile.ts';
+import { differentiate } from '#lib/mathAST/differentiation/index.ts';
 import {
 	subtract,
 	implicitMultiply,
@@ -140,14 +140,14 @@ import {
 	variable,
 	relation,
 	abs as mathAbs
-} from '$lib/mathAST/factory';
-import { toCustom } from '$lib/mathAST/custom-generator';
-import { isZeroExpression } from '$lib/mathAST/normal';
-import { integrateDefinite, numericIntegrate } from '$lib/mathAST/integration';
-import { improperIntegrate, PROBE_T_MAX } from '$lib/mathAST/integration/improper';
-import { findRoots } from '$lib/mathAST/analysis/roots';
-import type { Discontinuity } from '$lib/mathAST/analysis';
-import { classifyDiscontinuitiesForRange } from '$lib/mathAST/analysis/singularity-warn';
+} from '#lib/mathAST/factory.ts';
+import { toCustom } from '#lib/mathAST/custom-generator.ts';
+import { isZeroExpression } from '#lib/mathAST/normal/index.ts';
+import { integrateDefinite, numericIntegrate } from '#lib/mathAST/integration/index.ts';
+import { improperIntegrate, PROBE_T_MAX } from '#lib/mathAST/integration/improper.ts';
+import { findRoots } from '#lib/mathAST/analysis/roots.ts';
+import type { Discontinuity } from '#lib/mathAST/analysis/index.ts';
+import { classifyDiscontinuitiesForRange } from '#lib/mathAST/analysis/singularity-warn.ts';
 import { UndoManager } from './undo-redo';
 import type { Delta } from './undo-redo';
 import { computeElementPosition, resolveScalarParam, buildCurveBindings } from './compute-position';

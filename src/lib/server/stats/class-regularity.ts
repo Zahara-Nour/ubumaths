@@ -19,9 +19,9 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import { schoolDay } from '$lib/server/course-card-attempts';
-import { createServerLogger } from '$lib/utils/logger';
+import type { Database } from '#lib/types/database.ts';
+import { schoolDay } from '#lib/server/course-card-attempts.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 // Types
 

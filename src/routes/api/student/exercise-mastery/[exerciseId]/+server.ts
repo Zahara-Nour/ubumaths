@@ -29,13 +29,13 @@
 
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
+import { requireRole } from '#lib/server/middleware/auth.ts';
 import {
 	validateExerciseIdParam,
 	validateUpdateMastery
-} from '$lib/server/validation/exercise-mastery';
-import type { ExerciseMasteryUpdateResponse, MasteryStatus } from '$lib/types/exercise-mastery';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/validation/exercise-mastery.ts';
+import type { ExerciseMasteryUpdateResponse, MasteryStatus } from '#lib/types/exercise-mastery.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/student/exercise-mastery/[exerciseId]/+server');
 

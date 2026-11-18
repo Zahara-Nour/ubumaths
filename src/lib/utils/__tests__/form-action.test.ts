@@ -13,7 +13,7 @@ vi.mock('$app/navigation', () => ({
 	invalidateAll: () => invalidateAllMock()
 }));
 
-vi.mock('$lib/stores/toaster.svelte', () => ({
+vi.mock('#lib/stores/toaster.svelte.ts', () => ({
 	toaster: { warning: (m: string) => toasterWarning(m) }
 }));
 

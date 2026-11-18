@@ -19,14 +19,14 @@
 -->
 
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import * as Card from '$lib/components/ui/card';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
+	import { lore } from '#lib/config/lore.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
 	import { Eye, BrainCircuit, Timer, Rocket, Layers, Keyboard } from '@lucide/svelte';
-	import type { TestMode } from '$lib/types/test';
+	import type { TestMode } from '#lib/types/test.ts';
 
 	// Props
 	interface Props {

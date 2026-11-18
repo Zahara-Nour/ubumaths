@@ -2,7 +2,7 @@
  * Bloc ```figure → Typst : point d'entrée LÉGER du générateur
  * ===========================================================
  *
- * `typst-generator.ts` est réexporté par le baril `$lib/ubumark`, importé par
+ * `typst-generator.ts` est réexporté par le baril `#lib/ubumark/index.ts`, importé par
  * le rendu Markdown de TOUTES les pages. S'il importait `figure-typst.ts`
  * (interpréteur du DSL de geometry-core), rollup rangerait ce code — atteignable
  * statiquement — dans le chunk des pages Markdown (mesuré le 2026-10-01 :

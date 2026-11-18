@@ -8,9 +8,9 @@ import { describe, it, expect, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import SchemaBarres from '../SchemaBarres.svelte';
 import MarkdownRenderer from '../../MarkdownRenderer.svelte';
-import { parseSchemaBarresContent } from '$lib/ubumark/parser/schema-barres-parser';
-import { SCHEMA_BARRES_UNAVAILABLE } from '$lib/ubumark/types/schema-barres';
-import type { ResolvedMarkdown } from '$lib/ubumark';
+import { parseSchemaBarresContent } from '#lib/ubumark/parser/schema-barres-parser.ts';
+import { SCHEMA_BARRES_UNAVAILABLE } from '#lib/ubumark/types/schema-barres.ts';
+import type { ResolvedMarkdown } from '#lib/ubumark/index.ts';
 
 let mains: HTMLElement[] = [];
 function mainElement(): HTMLElement {

@@ -9,8 +9,8 @@
  * quadrillage et 15 cases à l'énoncé, un code juste au corrigé.
  */
 import { describe, it, expect } from 'vitest';
-import type { QuestionTemplate } from '$lib/questions/types';
-import { templateMarkdown } from '$lib/ubumark';
+import type { QuestionTemplate } from '#lib/questions/types.ts';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 import { buildSerie } from '../serie-automatismes';
 
 function modele(id: string, statement: string): QuestionTemplate {

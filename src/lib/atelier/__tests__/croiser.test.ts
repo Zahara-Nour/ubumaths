@@ -6,12 +6,12 @@
 
 import { describe, it, expect } from 'vitest';
 import { Atelier } from '../atelier.svelte';
-import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
+import { WebReplEngine } from '#lib/mathAST/cli/web/web-repl-engine.ts';
 import { runInput, type CalcSession } from '../calcul';
 import { commandCatalog } from '../commands';
 import { actionsFor } from '../actions';
 import { CalcDesk } from '../desk.svelte';
-import type { CrossTableScene } from '$lib/ubumark/utils/stat-chart-scene';
+import type { CrossTableScene } from '#lib/ubumark/utils/stat-chart-scene.ts';
 
 function session(lists: Record<string, string>): CalcSession {
 	const atelier = new Atelier();

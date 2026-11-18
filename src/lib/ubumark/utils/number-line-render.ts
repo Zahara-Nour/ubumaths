@@ -12,11 +12,11 @@ import type {
 	NumberLineConfig,
 	NumberLineNode,
 	NumberLineSegment
-} from '$lib/ubumark/types/number-line';
-import { resolveAuthorColor, type AuthorColor } from '$lib/theme/author-color';
-import { evaluateNodeToApproximatedNumber } from '$lib/mathAST/eval/evaluate';
-import { toLatex } from '$lib/mathAST/latex-generator';
-import { compareNumericNodes } from '$lib/mathAST/eval/compare-numeric';
+} from '#lib/ubumark/types/number-line.ts';
+import { resolveAuthorColor, type AuthorColor } from '#lib/theme/author-color.ts';
+import { evaluateNodeToApproximatedNumber } from '#lib/mathAST/eval/evaluate.ts';
+import { toLatex } from '#lib/mathAST/latex-generator.ts';
+import { compareNumericNodes } from '#lib/mathAST/eval/compare-numeric.ts';
 
 // =========================================================================
 // LAYOUT CONSTANTS

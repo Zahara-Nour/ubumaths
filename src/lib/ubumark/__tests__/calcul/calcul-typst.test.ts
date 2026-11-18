@@ -12,10 +12,10 @@ import { describe, it, expect, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { loadFonts } from '@myriaddreamin/typst.ts/options.init';
-import { parseMarkdown } from '$lib/ubumark';
-import { generateTypst } from '$lib/ubumark/generators/typst-generator';
-import { CALCUL_A_FAIRE_SUR_CHIPHRE } from '$lib/ubumark/generators/calcul-typst';
-import { CALCUL_UNAVAILABLE } from '$lib/ubumark/types/calcul';
+import { parseMarkdown } from '#lib/ubumark/index.ts';
+import { generateTypst } from '#lib/ubumark/generators/typst-generator.ts';
+import { CALCUL_A_FAIRE_SUR_CHIPHRE } from '#lib/ubumark/generators/calcul-typst.ts';
+import { CALCUL_UNAVAILABLE } from '#lib/ubumark/types/calcul.ts';
 
 const bloc = (...lines: string[]) => ['```calcul', 'case: 0', ...lines, '```'].join('\n');
 

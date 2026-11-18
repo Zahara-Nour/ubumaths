@@ -8,7 +8,7 @@
  */
 
 import { error } from '@sveltejs/kit';
-import { hasValidConsent, type ConsentProfile } from '$lib/utils/consent';
+import { hasValidConsent, type ConsentProfile } from '#lib/utils/consent.ts';
 
 /**
  * Actions restricted for students without consent.

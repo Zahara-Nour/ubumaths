@@ -15,20 +15,20 @@
 -->
 
 <script lang="ts">
-	import type { QuestionVariable, PrecisionType } from '$lib/questions/types';
-	import type { TemplateMarkdown } from '$lib/ubumark';
-	import * as Card from '$lib/components/ui/card';
-	import * as Collapsible from '$lib/components/ui/collapsible';
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
+	import type { QuestionVariable, PrecisionType } from '#lib/questions/types.ts';
+	import type { TemplateMarkdown } from '#lib/ubumark/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import * as Collapsible from '#lib/components/ui/collapsible/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
 	import VariableEditor from './VariableEditor.svelte';
-	import { MarkdownEditor } from '$lib/components/markdown';
+	import { MarkdownEditor } from '#lib/components/markdown/index.ts';
 	import MySelect from './MySelect.svelte';
 	import MyCheckbox from './MyCheckbox.svelte';
 	import PrecisionEditor from './PrecisionEditor.svelte';
 	import { ChevronDown, CircleQuestionMark } from '@lucide/svelte';
-	import { ACCEPTABLE_PLACEHOLDER, REQUIRED_FORM_OPTIONS } from '$lib/questions/form-options';
-	import type { CalculusEditorState } from '$lib/questions/calculus/calculus-editor';
+	import { ACCEPTABLE_PLACEHOLDER, REQUIRED_FORM_OPTIONS } from '#lib/questions/form-options.ts';
+	import type { CalculusEditorState } from '#lib/questions/calculus/calculus-editor.ts';
 
 	interface Props {
 		open: boolean;

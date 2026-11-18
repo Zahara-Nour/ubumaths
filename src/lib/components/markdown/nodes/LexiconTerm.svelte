@@ -20,10 +20,10 @@
 <script lang="ts">
 	import { untrack, type Snippet } from 'svelte';
 	import { resolve } from '$app/paths';
-	import * as Popover from '$lib/components/ui/popover';
-	import { lexiconRuntime } from '$lib/lexicon/runtime-store.svelte';
-	import { lexiconShown } from '$lib/lexicon/visibility.svelte';
-	import { canHover } from '$lib/lexicon/can-hover.svelte';
+	import * as Popover from '#lib/components/ui/popover/index.ts';
+	import { lexiconRuntime } from '#lib/lexicon/runtime-store.svelte.ts';
+	import { lexiconShown } from '#lib/lexicon/visibility.svelte.ts';
+	import { canHover } from '#lib/lexicon/can-hover.svelte.ts';
 	import InlineMarkdown from '../InlineMarkdown.svelte';
 	import { provideLexicon, readLexicon, readLexiconCardTerms } from '../lexicon-context';
 	import { keepOutsideFocus } from '../outside-focus';

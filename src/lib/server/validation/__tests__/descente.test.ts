@@ -2,7 +2,7 @@
 
 import { describe, expect, test } from 'vitest';
 import { combatAnswerSchema, combatQuestionSchema, provinceSchema } from '../descente';
-import { PROVINCE_IDS } from '$lib/descente/moves';
+import { PROVINCE_IDS } from '#lib/descente/moves.ts';
 
 const TEMPLATE = '11111111-1111-4111-8111-111111111111';
 

@@ -6,12 +6,12 @@
 import { describe, it, expect, vi } from 'vitest';
 import { runCarnetDaily } from '../courriels';
 
-vi.mock('$lib/server/email/brevo', () => ({
+vi.mock('#lib/server/email/brevo.ts', () => ({
 	sendCarnetExceptionEmail: vi.fn(),
 	sendCarnetQuarterlyEmail: vi.fn()
 }));
 vi.mock('../envois', () => ({ sendClassMissingLinks: vi.fn() }));
-vi.mock('$lib/server/serviceRoleClient', () => ({ createServiceRoleClient: vi.fn() }));
+vi.mock('#lib/server/serviceRoleClient.ts', () => ({ createServiceRoleClient: vi.fn() }));
 
 type Reponse = { data: unknown; error: { message: string } | null };
 

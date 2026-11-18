@@ -1,19 +1,19 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAuth } from '$lib/server/middleware/auth';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
 // Supabase client is now accessed via locals.supabase
-import { createTradeSchema } from '$lib/server/marketplace/validation';
-import { dailyTradeLimitSchema } from '$lib/server/validation/marketplace-rpc';
+import { createTradeSchema } from '#lib/server/marketplace/validation.ts';
+import { dailyTradeLimitSchema } from '#lib/server/validation/marketplace-rpc.ts';
 import {
 	validateCardOwnership,
 	isMarketplaceEnabled,
 	verifyFriendship,
 	createMarketplaceNotification,
 	getStudentGidouilles
-} from '$lib/server/marketplace/helpers';
-import { requireConsent, hasConsentFields } from '$lib/server/middleware/consent';
+} from '#lib/server/marketplace/helpers.ts';
+import { requireConsent, hasConsentFields } from '#lib/server/middleware/consent.ts';
 import { z } from 'zod';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/marketplace/trades/+server');
 

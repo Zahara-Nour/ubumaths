@@ -9,8 +9,8 @@
  * (docs/systeme/buddy-palotins.md).
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { isWelcomeBackDue } from '$lib/utils/buddy-absence';
-import { utcDay } from '$lib/utils/buddy-constance';
+import { isWelcomeBackDue } from '#lib/utils/buddy-absence.ts';
+import { utcDay } from '#lib/utils/buddy-constance.ts';
 
 // Client service factice : `rpc` et une chaîne `from()` qui note ses appels
 const service = vi.hoisted(() => {
@@ -33,7 +33,7 @@ const service = vi.hoisted(() => {
 		}
 	};
 });
-vi.mock('$lib/server/serviceRoleClient', () => ({
+vi.mock('#lib/server/serviceRoleClient.ts', () => ({
 	createServiceRoleClient: () => service
 }));
 

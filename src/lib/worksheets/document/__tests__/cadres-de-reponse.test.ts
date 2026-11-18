@@ -8,7 +8,7 @@
  * de la même variante, découpé de la même façon.
  */
 import { describe, expect, it } from 'vitest';
-import { parseMarkdown } from '$lib/ubumark';
+import { parseMarkdown } from '#lib/ubumark/index.ts';
 import {
 	ANSWER_FRAME_HEIGHT_CM,
 	EXERCISE_FRAME_MAX_CM,
@@ -20,8 +20,8 @@ import {
 	questionItems
 } from '../answer-frames';
 import { resolveAnswerFrames } from '../answer-frame-lines';
-import { EXERCISE_FRAME_HEIGHTS_CM } from '$lib/types/worksheets';
-import type { ParagraphNode } from '$lib/ubumark/types';
+import { EXERCISE_FRAME_HEIGHTS_CM } from '#lib/types/worksheets.ts';
+import type { ParagraphNode } from '#lib/ubumark/types/index.ts';
 
 const PARTS = [
 	'**Partie A**',

@@ -8,7 +8,7 @@
  */
 
 import { z } from 'zod';
-import { GRADE_CODES } from '$lib/types/grades';
+import { GRADE_CODES } from '#lib/types/grades.ts';
 
 // Grade validation schema - uses centralized GRADE_CODES from unified grade system
 const gradeCodeSchema = z.enum(GRADE_CODES);

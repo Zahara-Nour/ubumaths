@@ -21,10 +21,10 @@
 
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { removeWarningsBulkSchema } from '$lib/server/validation/warnings';
-import { removeWarningsBulk } from '$lib/server/warnings';
-import { requireRoles } from '$lib/server/middleware/auth';
-import { createServerLogger } from '$lib/utils/logger';
+import { removeWarningsBulkSchema } from '#lib/server/validation/warnings.ts';
+import { removeWarningsBulk } from '#lib/server/warnings.ts';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/warnings/remove-bulk/+server');
 

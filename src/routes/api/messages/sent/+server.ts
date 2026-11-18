@@ -3,10 +3,10 @@ import type { RequestHandler } from './$types';
 import {
 	sentMessagesResponseSchema,
 	sentMessagesQuerySchema
-} from '$lib/server/validation/messages';
-import { validateJsonResponse } from '$lib/server/validation/response-utils';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/validation/messages.ts';
+import { validateJsonResponse } from '#lib/server/validation/response-utils.ts';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/messages/sent/+server');
 

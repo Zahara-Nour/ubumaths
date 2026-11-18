@@ -17,9 +17,9 @@ import { userEvent } from 'vitest/browser';
 import type { MathfieldElement } from 'mathlive';
 import WithAtelier from './harness/WithAtelier.svelte';
 import AtelierContainer from '../AtelierContainer.svelte';
-import { Atelier } from '$lib/atelier/atelier.svelte';
-import { actionsFor, partnersOf } from '$lib/atelier/actions';
-import { isSequence, isValue } from '$lib/atelier/types';
+import { Atelier } from '#lib/atelier/atelier.svelte.ts';
+import { actionsFor, partnersOf } from '#lib/atelier/actions.ts';
+import { isSequence, isValue } from '#lib/atelier/types.ts';
 import { cardOf, chooseObjectAction, menuItemOf, openCardMenu } from './harness/function-card';
 import { onDesktopScreen } from './harness/desktop-screen';
 

@@ -27,9 +27,9 @@
 	import { prefersReducedMotion } from 'svelte/motion';
 	import { page } from '$app/state';
 	import { afterNavigate } from '$app/navigation';
-	import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
-	import type { BuddyMessageContext, PalotinType } from '$lib/config/buddy-messages';
-	import type { BuddyExpression, BuddyState, WeekMoment } from '$lib/types/buddy';
+	import { studentCache } from '#lib/stores/studentDashboardCache.svelte.ts';
+	import type { BuddyMessageContext, PalotinType } from '#lib/config/buddy-messages.ts';
+	import type { BuddyExpression, BuddyState, WeekMoment } from '#lib/types/buddy.ts';
 	import { buddyMessageEngine } from './buddy-message-engine';
 	import { BUBBLE_DURATION, LINK_BUBBLE_DURATION } from './buddy-timing';
 	import {

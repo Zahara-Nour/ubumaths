@@ -11,7 +11,7 @@
  */
 
 import type { Page } from '@playwright/test';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 
 type Exercise = Database['public']['Tables']['exercises']['Row'];
 type ExerciseInsert = Database['public']['Tables']['exercises']['Insert'];

@@ -7,7 +7,7 @@ import { sveltekit } from '@sveltejs/kit/vite';
 import { readFileSync } from 'fs';
 import { Features } from 'lightningcss';
 import { visualizer } from 'rollup-plugin-visualizer';
-import { baseTestConfig, kitAlias } from './vitest.base.config';
+import { baseTestConfig } from './vitest.base.config';
 import { moduleSideEffects } from './scripts/side-effect-modules';
 
 // Read version from package.json at build time
@@ -81,12 +81,8 @@ export default defineConfig(async ({ mode, isSsrBuild }): Promise<ViteUserConfig
 				csrf: {
 					// trustedOrigins: ['https://mobile-app.chiph.re']
 				},
-				// SvelteKit 3 ne fournit plus `$lib` (remplacé par `#lib`, import de sous-chemin) :
-				// on le déclare ici, option dépréciée mais acceptée, le temps de migrer les
-				// ~14 600 imports dans une PR à part (journal `docs/wip/mises-a-jour-progress.md`).
-				alias: kitAlias,
 				// Onglet resté ouvert pendant un déploiement : `updated.current` passe à vrai, et le
-				// prochain lien charge la page en entier (`+layout.svelte`, `$lib/utils/app-version`)
+				// prochain lien charge la page en entier (`+layout.svelte`, `#lib/utils/app-version.ts`)
 				version: { pollInterval: 5 * 60 * 1000 }
 			}),
 

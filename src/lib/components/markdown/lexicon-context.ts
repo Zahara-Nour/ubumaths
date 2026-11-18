@@ -14,11 +14,11 @@
  */
 
 import { getContext, hasContext, setContext } from 'svelte';
-import type { GradeCode } from '$lib/types/grades';
-import { questionReadingGrades } from '$lib/lexicon/grade';
-import type { LinkOptions } from '$lib/lexicon/linker';
-import { readReaderGrade } from '$lib/lexicon/reader-grade';
-import { createCardTerms, type LexiconCardTerms } from '$lib/lexicon/card-terms.svelte';
+import type { GradeCode } from '#lib/types/grades.ts';
+import { questionReadingGrades } from '#lib/lexicon/grade.ts';
+import type { LinkOptions } from '#lib/lexicon/linker.ts';
+import { readReaderGrade } from '#lib/lexicon/reader-grade.ts';
+import { createCardTerms, type LexiconCardTerms } from '#lib/lexicon/card-terms.svelte.ts';
 
 const LEXICON_KEY = Symbol('markdown-lexicon');
 

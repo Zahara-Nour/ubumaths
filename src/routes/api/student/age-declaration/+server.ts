@@ -20,11 +20,11 @@
 import { error, json } from '@sveltejs/kit';
 import { z } from 'zod';
 import type { RequestHandler } from './$types';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
-import { AGE_QUESTION_GRADE } from '$lib/utils/age-declaration';
-import type { AgeDeclaration } from '$lib/types/database-helpers';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { createServiceRoleClient } from '#lib/server/serviceRoleClient.ts';
+import { AGE_QUESTION_GRADE } from '#lib/utils/age-declaration.ts';
+import type { AgeDeclaration } from '#lib/types/database-helpers.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/student/age-declaration/+server');
 

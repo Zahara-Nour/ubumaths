@@ -1,11 +1,11 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAdmin } from '$lib/server/middleware/auth';
+import { requireAdmin } from '#lib/server/middleware/auth.ts';
 import {
 	annuaireSearchQuerySchema,
 	annuaireResponseSchema,
 	type AnnuaireSchool
-} from '$lib/server/validation/schools';
+} from '#lib/server/validation/schools.ts';
 
 /**
  * Proxy to the national "Annuaire de l'éducation nationale" open dataset

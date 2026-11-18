@@ -5,11 +5,11 @@ import {
 	isTermVisibleTo,
 	resolveGradedField,
 	type MathTerm
-} from '$lib/dictionary/model';
+} from '#lib/dictionary/model.ts';
 import { REFERENCE_DICTIONARY } from '../../../../tests/fixtures/lexique/dictionnaire-reference';
 import { readFileSync } from 'node:fs';
-import { GRADE_CODES, GRADES, type GradeCode } from '$lib/types/grades';
-import { hasAccessToGrade } from '$lib/utils/grades';
+import { GRADE_CODES, GRADES, type GradeCode } from '#lib/types/grades.ts';
+import { hasAccessToGrade } from '#lib/utils/grades.ts';
 
 /**
  * Niveaux validés par David (lot 0b, 2026-10-09) : copie figée de docs/wip/lexique/lot0b-niveaux.md,

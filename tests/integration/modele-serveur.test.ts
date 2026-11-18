@@ -16,7 +16,7 @@
  */
 import { describe, it, expect, beforeAll, afterAll, vi } from 'vitest';
 import type { SupabaseClient, User } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 import {
 	createServiceRoleClient,
 	cleanupAllTestData
@@ -29,8 +29,8 @@ import {
 	listSections,
 	renameSection,
 	placeInSection
-} from '$lib/server/chapter-sections';
-import { listTemplateContent, retireTemplateElement } from '$lib/server/template-content';
+} from '#lib/server/chapter-sections.ts';
+import { listTemplateContent, retireTemplateElement } from '#lib/server/template-content.ts';
 import {
 	createTemplateFromChapter,
 	deleteChapterTemplate,
@@ -38,7 +38,7 @@ import {
 	instantiateTemplate,
 	TemplateInUseError,
 	TemplateUnusableError
-} from '$lib/server/chapter-templates';
+} from '#lib/server/chapter-templates.ts';
 import { POST as templateUploadUrl } from '../../src/routes/api/teacher/chapter-templates/[id]/document-upload-url/+server';
 import { POST as templateDocuments } from '../../src/routes/api/teacher/chapter-templates/[id]/documents/+server';
 import { GET as serveDocument } from '../../src/routes/api/documents/[id]/+server';
@@ -47,7 +47,7 @@ import { actions as chapterActions } from '../../src/routes/(protected)/dashboar
 
 // Le client service des modules serveur lit process.env (qui peut viser la prod
 // via .env) : on le branche explicitement sur la base LOCALE de test.
-vi.mock('$lib/server/serviceRoleClient', async () => {
+vi.mock('#lib/server/serviceRoleClient.ts', async () => {
 	const helpers = await import('../helpers/database/trigger-test-helpers');
 	return { createServiceRoleClient: helpers.createServiceRoleClient };
 });

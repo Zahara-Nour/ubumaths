@@ -25,17 +25,17 @@
 	import { page } from '$app/state';
 	import { slide } from 'svelte/transition';
 	import type { ActionData } from './$types';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
-	import * as Card from '$lib/components/ui/card';
-	import * as Alert from '$lib/components/ui/alert';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import * as Alert from '#lib/components/ui/alert/index.ts';
 	import { Loader2 } from '@lucide/svelte';
-	import MyPasswordInput from '$lib/components/MyPasswordInput.svelte';
-	import { GOOGLE_LOGIN_ENABLED } from '$lib/config/google-login';
+	import MyPasswordInput from '#lib/components/MyPasswordInput.svelte';
+	import { GOOGLE_LOGIN_ENABLED } from '#lib/config/google-login.ts';
 
 	// Feature flag: Google OAuth login button (single source of truth in
-	// $lib/config/google-login, also enforced server-side in the googleSignIn action
+	// #lib/config/google-login, also enforced server-side in the googleSignIn action
 	// and /auth/callback). Disabled after the school change (@voltairedoha.com gone).
 
 	// Form action result (contains error if login failed)

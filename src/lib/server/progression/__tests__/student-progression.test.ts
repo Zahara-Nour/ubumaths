@@ -14,7 +14,7 @@
  */
 
 import { describe, it, expect, vi } from 'vitest';
-import { createFakeSupabase, type Call } from '$lib/server/__tests__/helpers/fake-supabase';
+import { createFakeSupabase, type Call } from '#lib/server/__tests__/helpers/fake-supabase.ts';
 import {
 	answerProgramme,
 	P_ADDITION,
@@ -23,7 +23,7 @@ import {
 	P_FRACTION,
 	P_QUATRIEME,
 	P_TRIANGLE_ARCHIVE
-} from '$lib/server/__tests__/helpers/fake-programme';
+} from '#lib/server/__tests__/helpers/fake-programme.ts';
 import {
 	aggregateNotionStats,
 	getNotionsProgression,

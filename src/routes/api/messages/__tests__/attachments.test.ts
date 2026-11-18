@@ -9,16 +9,16 @@ import { GET } from '../attachments/[attachmentId]/+server';
 import {
 	createAttachmentUploadUrl,
 	getAttachmentDownloadUrl
-} from '$lib/server/message-attachments';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { requireConsent } from '$lib/server/middleware/consent';
+} from '#lib/server/message-attachments.ts';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { requireConsent } from '#lib/server/middleware/consent.ts';
 import { error } from '@sveltejs/kit';
 
-vi.mock('$lib/server/middleware/auth', () => ({ requireAuth: vi.fn() }));
-vi.mock('$lib/server/middleware/consent', () => ({ requireConsent: vi.fn() }));
-vi.mock('$lib/server/serviceRoleClient', () => ({ createServiceRoleClient: () => ({}) }));
-vi.mock('$lib/server/message-attachments', async (importOriginal) => {
-	const original = await importOriginal<typeof import('$lib/server/message-attachments')>();
+vi.mock('#lib/server/middleware/auth.ts', () => ({ requireAuth: vi.fn() }));
+vi.mock('#lib/server/middleware/consent.ts', () => ({ requireConsent: vi.fn() }));
+vi.mock('#lib/server/serviceRoleClient.ts', () => ({ createServiceRoleClient: () => ({}) }));
+vi.mock('#lib/server/message-attachments.ts', async (importOriginal) => {
+	const original = await importOriginal<typeof import('#lib/server/message-attachments.ts')>();
 	return {
 		...original,
 		createAttachmentUploadUrl: vi.fn(),

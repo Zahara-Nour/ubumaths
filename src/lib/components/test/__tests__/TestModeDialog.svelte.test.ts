@@ -9,7 +9,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { flushSync, tick } from 'svelte';
 import TestModeDialog from '../TestModeDialog.svelte';
-import type { TestMode } from '$lib/types/test';
+import type { TestMode } from '#lib/types/test.ts';
 
 function findButton(label: string): HTMLButtonElement | undefined {
 	return [...document.body.querySelectorAll<HTMLButtonElement>('button')].find((candidate) =>

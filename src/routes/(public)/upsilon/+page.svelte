@@ -1,7 +1,7 @@
 <script lang="ts">
-	import SeoHead from '$lib/seo/SeoHead.svelte';
+	import SeoHead from '#lib/seo/SeoHead.svelte';
 	import { Calculator, Maximize2, Minimize2, ExternalLink } from '@lucide/svelte';
-	import { theme } from '$lib/stores/theme.svelte';
+	import { theme } from '#lib/stores/theme.svelte.ts';
 
 	let isLoaded = $state(false);
 	let isFullscreen = $state(false);

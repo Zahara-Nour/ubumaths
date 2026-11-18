@@ -43,11 +43,11 @@
 
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import type { StudentWarnings } from '$lib/types/student-cache';
-import type { Warning, WarningType, StudentWarningCounts } from '$lib/server/warnings';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import type { StudentWarnings } from '#lib/types/student-cache.ts';
+import type { Warning, WarningType, StudentWarningCounts } from '#lib/server/warnings.ts';
 import { z } from 'zod';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/student/warnings/[periodId]/+server');
 

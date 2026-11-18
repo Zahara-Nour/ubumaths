@@ -23,11 +23,11 @@
 
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import { rewardJournalQuerySchema } from '$lib/server/validation/reward-journal';
-import { attachGidouillesBalances } from '$lib/server/reward-journal-balance';
-import type { RewardEvent, RewardJournalResponse } from '$lib/types/reward-journal';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { rewardJournalQuerySchema } from '#lib/server/validation/reward-journal.ts';
+import { attachGidouillesBalances } from '#lib/server/reward-journal-balance.ts';
+import type { RewardEvent, RewardJournalResponse } from '#lib/types/reward-journal.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/rewards/journal/+server');
 

@@ -15,12 +15,12 @@
 
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAuth } from '$lib/server/middleware/auth';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
 import { z } from 'zod';
-import { CORRECTION_RELEASE_MODES, ASSIGNMENT_STATUSES } from '$lib/types/worksheets';
-import { getCorrectionReleaseStatus } from '$lib/server/worksheets/correction-release';
-import { guidanceLevelSchema } from '$lib/server/validation/worksheets';
-import { createServerLogger } from '$lib/utils/logger';
+import { CORRECTION_RELEASE_MODES, ASSIGNMENT_STATUSES } from '#lib/types/worksheets.ts';
+import { getCorrectionReleaseStatus } from '#lib/server/worksheets/correction-release.ts';
+import { guidanceLevelSchema } from '#lib/server/validation/worksheets.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/worksheets/[id]/assignments/+server');
 

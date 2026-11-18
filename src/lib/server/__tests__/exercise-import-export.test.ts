@@ -17,12 +17,12 @@ import {
 	importExercisesFromJSON,
 	DUPLICATE_SCAN_PAGE_SIZE
 } from '../exercise-import-export';
-import { validateExerciseExport } from '$lib/exercises/validation';
-import type { Exercise } from '$lib/exercises/types';
+import { validateExerciseExport } from '#lib/exercises/validation.ts';
+import type { Exercise } from '#lib/exercises/types.ts';
 
 // Stub tag-resolution helpers: importExerciseFromJSON calls createExercise()
 // which uses syncResourceTags + syncResourceTags after the DB insert.
-vi.mock('$lib/server/resource-tags', () => ({
+vi.mock('#lib/server/resource-tags.ts', () => ({
 	syncResourceTags: vi.fn().mockResolvedValue(undefined),
 	fetchResourceTagNames: vi.fn().mockResolvedValue([]),
 	fetchTagNamesForResources: vi.fn().mockResolvedValue(new Map()),

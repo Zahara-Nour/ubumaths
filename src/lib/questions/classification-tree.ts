@@ -11,7 +11,7 @@
  * - le filtre de la liste admin : `filterNodeIds`.
  */
 
-import type { ClassificationNode, ClassificationNodeKind } from '$lib/types/database-helpers';
+import type { ClassificationNode, ClassificationNodeKind } from '#lib/types/database-helpers.ts';
 
 // ============================================================================
 // TYPES

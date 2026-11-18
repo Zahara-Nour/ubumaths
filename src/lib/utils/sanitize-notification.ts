@@ -9,7 +9,7 @@
  * - Protects against database manipulation, migration bugs, or server bypass
  *
  * CONFIGURATION:
- * - Uses shared config from `$lib/utils/sanitize-configs.ts`
+ * - Uses shared config from `#lib/utils/sanitize-configs.ts`
  * - IDENTICAL to server configuration (13 tags, 0 attributes)
  * - Single source of truth prevents configuration drift
  *
@@ -22,13 +22,13 @@
  * USAGE:
  * ```svelte
  * <script>
- *   import { sanitizeNotificationHtml } from '$lib/utils/sanitize-notification';
+ *   import { sanitizeNotificationHtml } from '#lib/utils/sanitize-notification.ts';
  * </script>
  *
  * {@html sanitizeNotificationHtml(notification.message)}
  * ```
  *
- * NOTE: Do NOT use generic `sanitizeHtml()` from `$lib/utils/sanitize.ts`
+ * NOTE: Do NOT use generic `sanitizeHtml()` from `#lib/utils/sanitize.ts`
  * for notifications. That sanitizer allows 47 tags and 12 attributes (too permissive).
  */
 

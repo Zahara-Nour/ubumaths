@@ -11,7 +11,7 @@
  */
 
 import type { StudentVipCards } from './vip-card';
-import type { Warning, StudentWarningCounts } from '$lib/server/warnings';
+import type { Warning, StudentWarningCounts } from '#lib/server/warnings.ts';
 import type { Database } from './database';
 import type { SvelteMap } from 'svelte/reactivity';
 

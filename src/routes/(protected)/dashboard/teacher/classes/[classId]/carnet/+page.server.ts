@@ -14,16 +14,16 @@
  *
  * Lectures par le client du professeur (RLS + droits par colonne : jamais les
  * empreintes). Écritures sur les adresses et les liens par le serveur
- * (`$lib/server/carnet/envois`, service role), APRÈS la garde de rôle et la
+ * (`#lib/server/carnet/envois.ts`, service role), APRÈS la garde de rôle et la
  * vérification que l'élève visé est un membre actif de CETTE classe.
  */
 
 import { error, fail } from '@sveltejs/kit';
 import { z } from 'zod';
 import type { Actions, PageServerLoad, RequestEvent } from './$types';
-import { requireTeacherOfClass } from '$lib/server/stats/teacher-class-auth';
-import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
-import { isBrevoConfigured } from '$lib/server/email/brevo';
+import { requireTeacherOfClass } from '#lib/server/stats/teacher-class-auth.ts';
+import { createServiceRoleClient } from '#lib/server/serviceRoleClient.ts';
+import { isBrevoConfigured } from '#lib/server/email/brevo.ts';
 import {
 	addParentContact,
 	missingLinksCount,
@@ -36,8 +36,8 @@ import {
 	type AddContactOutcome,
 	type ConfirmationOutcome,
 	type LinkOutcome
-} from '$lib/server/carnet/envois';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/carnet/envois.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 // Types
 

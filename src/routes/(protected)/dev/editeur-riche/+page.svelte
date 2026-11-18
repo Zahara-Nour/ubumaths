@@ -1,14 +1,14 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import RichTextEditor from '$lib/components/rich-text/RichTextEditor.svelte';
-	import RichTextDisplay from '$lib/components/rich-text/RichTextDisplay.svelte';
-	import { Button } from '$lib/components/ui/button';
-	import * as Card from '$lib/components/ui/card';
-	import * as Tabs from '$lib/components/ui/tabs';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Separator } from '$lib/components/ui/separator';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
+	import { lore } from '#lib/config/lore.ts';
+	import RichTextEditor from '#lib/components/rich-text/RichTextEditor.svelte';
+	import RichTextDisplay from '#lib/components/rich-text/RichTextDisplay.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import * as Tabs from '#lib/components/ui/tabs/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { Separator } from '#lib/components/ui/separator/index.ts';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
 	import {
 		Copy,
 		Check,
@@ -22,9 +22,9 @@
 		MessageSquare
 	} from '@lucide/svelte';
 	import Messagerie from './Messagerie.svelte';
-	import { markdownToTipTap } from '$lib/components/rich-text/markdown-import';
-	import { tipTapToMarkdown } from '$lib/components/rich-text/markdown-export';
-	import type { MathTemplateLevel, RichTextMode } from '$lib/components/rich-text/types';
+	import { markdownToTipTap } from '#lib/components/rich-text/markdown-import.ts';
+	import { tipTapToMarkdown } from '#lib/components/rich-text/markdown-export.ts';
+	import type { MathTemplateLevel, RichTextMode } from '#lib/components/rich-text/types.ts';
 
 	// ============================================
 	// Side-by-side comparison state
@@ -1925,7 +1925,7 @@ Le plus petit titre.`
 						<Card.Content>
 							<pre class="overflow-x-auto rounded bg-muted p-4 text-xs"><code
 									>&lt;script lang="ts"&gt;
-  import RichTextEditor from '$lib/components/rich-text/RichTextEditor.svelte';
+  import RichTextEditor from '#lib/components/rich-text/RichTextEditor.svelte';
 
   let description = $state('');
   let jsonContent = $state&lt;unknown&gt;(null);
@@ -1968,7 +1968,7 @@ Le plus petit titre.`
 						<Card.Content>
 							<pre class="overflow-x-auto rounded bg-muted p-4 text-xs"><code
 									>&lt;script lang="ts"&gt;
-  import RichTextEditor from '$lib/components/rich-text/RichTextEditor.svelte';
+  import RichTextEditor from '#lib/components/rich-text/RichTextEditor.svelte';
 
   async function handleSend(content: unknown) &#123;
     // content = JSON TipTap/ProseMirror

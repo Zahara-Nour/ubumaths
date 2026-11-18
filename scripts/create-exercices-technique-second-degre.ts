@@ -30,10 +30,10 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { createClient } from '@supabase/supabase-js';
 import { config } from 'dotenv';
-import { createExerciseSchema } from '$lib/server/validation/exercises';
-import { createExercise } from '$lib/server/exercises';
-import { isFullyTranslated } from '$lib/exercises/translation-status';
-import type { Database } from '$lib/types/database';
+import { createExerciseSchema } from '#lib/server/validation/exercises.ts';
+import { createExercise } from '#lib/server/exercises.ts';
+import { isFullyTranslated } from '#lib/exercises/translation-status.ts';
+import type { Database } from '#lib/types/database.ts';
 
 config({ path: '.env' });
 

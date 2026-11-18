@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type { GameSpell } from '$lib/types/game';
-	import { getSpellIconUrl } from '$lib/utils/game/assets';
+	import type { GameSpell } from '#lib/types/game.ts';
+	import { getSpellIconUrl } from '#lib/utils/game/assets.ts';
 
 	interface Props {
 		spells: GameSpell[];

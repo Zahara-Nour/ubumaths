@@ -9,20 +9,20 @@
 -->
 
 <script lang="ts">
-	import FlashCard from '$lib/components/questions/FlashCard.svelte';
-	import type { QuestionInstance } from '$lib/questions/types';
-	import { getQuestionType } from '$lib/questions/types';
-	import type { AnswerData, QuestionStats } from '$lib/types/question-display';
-	import { Button } from '$lib/components/ui/button';
-	import * as Card from '$lib/components/ui/card';
-	import * as Tabs from '$lib/components/ui/tabs';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Label } from '$lib/components/ui/label';
-	import { Separator } from '$lib/components/ui/separator';
-	import { Input } from '$lib/components/ui/input';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
-	import { resolvedMarkdown } from '$lib/ubumark';
+	import FlashCard from '#lib/components/questions/FlashCard.svelte';
+	import type { QuestionInstance } from '#lib/questions/types.ts';
+	import { getQuestionType } from '#lib/questions/types.ts';
+	import type { AnswerData, QuestionStats } from '#lib/types/question-display.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import * as Tabs from '#lib/components/ui/tabs/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import { Separator } from '#lib/components/ui/separator/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
+	import { resolvedMarkdown } from '#lib/ubumark/index.ts';
 	import { RefreshCw, Copy, Check } from '@lucide/svelte';
 	import { browser } from '$app/env';
 

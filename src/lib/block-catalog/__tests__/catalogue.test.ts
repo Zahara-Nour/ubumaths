@@ -3,9 +3,9 @@
  * erreur typique produit bien le message annoncé.
  */
 import { describe, it, expect } from 'vitest';
-import { parseMarkdown } from '$lib/ubumark';
+import { parseMarkdown } from '#lib/ubumark/index.ts';
 import { BLOCK_CATALOG } from '..';
-import { checkScratchProgram } from '$lib/ubumark/utils/scratch-check';
+import { checkScratchProgram } from '#lib/ubumark/utils/scratch-check.ts';
 
 /** Le seul bloc du document, et ses messages d'erreur */
 function parseSingleBlock(source: string): { type: string; messages: string[] } {

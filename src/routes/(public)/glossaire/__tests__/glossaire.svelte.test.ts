@@ -7,7 +7,7 @@ import { page } from 'vitest/browser';
 import { describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { REFERENCE_DICTIONARY } from '../../../../../tests/fixtures/lexique/dictionnaire-reference';
-import { termKey, type GlossarySlugs } from '$lib/dictionary/glossary-page';
+import { termKey, type GlossarySlugs } from '#lib/dictionary/glossary-page.ts';
 import Glossaire from '../+page.svelte';
 import type { PageData } from '../$types';
 

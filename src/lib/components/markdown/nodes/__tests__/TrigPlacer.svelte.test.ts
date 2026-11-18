@@ -10,13 +10,13 @@ import { userEvent } from 'vitest/browser';
 import TrigCircle from '../TrigCircle.svelte';
 import TrigPlacer from '../TrigPlacer.svelte';
 import MarkdownRenderer from '../../MarkdownRenderer.svelte';
-import FillBlanksInput from '$lib/components/question-inputs/FillBlanksInput.svelte';
-import BuildAnswer from '$lib/components/questions/BuildAnswer.svelte';
-import { generateInstance } from '$lib/questions/generator/instance-generator';
-import type { QuestionTemplate } from '$lib/questions/types';
-import { templateMarkdown, type ResolvedMarkdown } from '$lib/ubumark';
-import { parseTrigCircleContent } from '$lib/ubumark/parser/trig-circle-parser';
-import { TRIG_RADIUS, TRIG_SVG_SIZE } from '$lib/ubumark/utils/trig-placer';
+import FillBlanksInput from '#lib/components/question-inputs/FillBlanksInput.svelte';
+import BuildAnswer from '#lib/components/questions/BuildAnswer.svelte';
+import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
+import type { QuestionTemplate } from '#lib/questions/types.ts';
+import { templateMarkdown, type ResolvedMarkdown } from '#lib/ubumark/index.ts';
+import { parseTrigCircleContent } from '#lib/ubumark/parser/trig-circle-parser.ts';
+import { TRIG_RADIUS, TRIG_SVG_SIZE } from '#lib/ubumark/utils/trig-placer.ts';
 
 let mains: HTMLElement[] = [];
 function mainElement(): HTMLElement {

@@ -4,13 +4,13 @@
  * lui ; journal `docs/archive/wip/blockly-progress.md`, piège de la PR 5a).
  */
 import { describe, it, expect } from 'vitest';
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, statSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 
 const RACINE = resolve('src/lib/shared/blockly/calcul');
 const IMPORT = /^\s*(?:import|export)\s[^;]*?from\s+'([^']+)'/gms;
 
-/** Modules importés (relatifs suivis, `$lib/` compris), à partir d'un fichier */
+/** Modules importés (relatifs suivis, `#lib/` compris), à partir d'un fichier */
 function importsDe(fichier: string, vus = new Set<string>()): string[] {
 	if (vus.has(fichier)) return [];
 	vus.add(fichier);
@@ -20,10 +20,15 @@ function importsDe(fichier: string, vus = new Set<string>()): string[] {
 		trouves.push(cible);
 		const local = cible.startsWith('.')
 			? resolve(dirname(fichier), cible)
-			: cible.startsWith('$lib/')
+			: cible.startsWith('#lib/')
 				? resolve('src/lib', cible.slice(5))
 				: null;
-		const fichierLocal = local && [`${local}.ts`, `${local}/index.ts`].find((f) => existsSync(f));
+		// `#lib/…` porte son extension : le chemin lui-même est le premier candidat.
+		const fichierLocal =
+			local &&
+			[local, `${local}.ts`, `${local}/index.ts`].find(
+				(f) => existsSync(f) && statSync(f).isFile()
+			);
 		if (fichierLocal) trouves.push(...importsDe(fichierLocal, vus));
 	}
 	return trouves;
@@ -34,7 +39,9 @@ describe('programme de calcul : la correction sans Blockly', () => {
 		const imports = importsDe(resolve(RACINE, f));
 		expect(imports.length).toBeGreaterThan(0);
 		expect(
-			imports.filter((i) => i === 'blockly' || i.startsWith('blockly/') || i.endsWith('/blocs'))
+			imports.filter(
+				(i) => i === 'blockly' || i.startsWith('blockly/') || /\/blocs(\.ts)?$/.test(i)
+			)
 		).toEqual([]);
 	});
 

@@ -14,19 +14,19 @@
 
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import type { ChapterDueCard, ChapterDueResponse } from '$lib/srs/types';
-import { requireRole } from '$lib/server/middleware/auth';
-import { chapterDeckParamsSchema } from '$lib/server/validation/srs';
+import type { ChapterDueCard, ChapterDueResponse } from '#lib/srs/types.ts';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { chapterDeckParamsSchema } from '#lib/server/validation/srs.ts';
 import {
 	loadChapterDeck,
 	loadDeckStats,
 	selectChapterSession,
 	type ChapterDeck,
 	type DeckCardStatsRow
-} from '$lib/server/srs/chapter-deck';
-import { generateSRSInstance } from '$lib/srs/generator';
-import { toQuestionTemplate } from '$lib/types/question-template';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/srs/chapter-deck.ts';
+import { generateSRSInstance } from '#lib/srs/generator.ts';
+import { toQuestionTemplate } from '#lib/types/question-template.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/srs/chapters/[chapterId]/due/+server');
 

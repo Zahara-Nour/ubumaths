@@ -25,17 +25,17 @@
 
 <script lang="ts">
 	import { tick } from 'svelte';
-	import FlashCard from '$lib/components/questions/FlashCard.svelte';
-	import SelfAssessButtons from '$lib/components/questions/SelfAssessButtons.svelte';
-	import { Button } from '$lib/components/ui/button';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import * as Card from '$lib/components/ui/card';
-	import { Progress } from '$lib/components/ui/progress';
-	import { computeTestScore } from '$lib/utils/test-score';
-	import type { QuestionInstance } from '$lib/questions/types';
-	import type { TestAnswerResult, TestResult } from '$lib/types/test';
+	import FlashCard from '#lib/components/questions/FlashCard.svelte';
+	import SelfAssessButtons from '#lib/components/questions/SelfAssessButtons.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Progress } from '#lib/components/ui/progress/index.ts';
+	import { computeTestScore } from '#lib/utils/test-score.ts';
+	import type { QuestionInstance } from '#lib/questions/types.ts';
+	import type { TestAnswerResult, TestResult } from '#lib/types/test.ts';
 	import { ArrowLeft, LogIn, RefreshCw, RotateCcw } from '@lucide/svelte';
-	import { buildSeriesTrace, type TraceRecorder } from '$lib/questions/series-trace';
+	import { buildSeriesTrace, type TraceRecorder } from '#lib/questions/series-trace.ts';
 
 	// Types
 	interface Props {

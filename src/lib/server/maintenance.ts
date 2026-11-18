@@ -3,9 +3,9 @@ import { redirect } from '@sveltejs/kit';
 import { createHash, timingSafeEqual } from 'node:crypto';
 import { building, dev } from '$app/env';
 import * as env from '$app/env/private';
-import avatarPereUbu from '$lib/assets/images/avatar-pereubu.png?inline';
-import { frenchOrdinal, PI_STATUS_OCCURRENCES } from '$lib/error-page/pi-status';
-import { piSpiralSvg } from '$lib/error-page/pi-spiral-svg';
+import avatarPereUbu from '#lib/assets/images/avatar-pereubu.png?inline';
+import { frenchOrdinal, PI_STATUS_OCCURRENCES } from '#lib/error-page/pi-status.ts';
+import { piSpiralSvg } from '#lib/error-page/pi-spiral-svg.ts';
 
 /**
  * Maintenance mode — serves a self-contained 503 page while the app is being

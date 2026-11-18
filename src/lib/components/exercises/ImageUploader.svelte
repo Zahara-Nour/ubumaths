@@ -15,10 +15,10 @@
 	@see src/routes/api/exercises/images/+server.ts
 -->
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button';
-	import { Progress } from '$lib/components/ui/progress';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Progress } from '#lib/components/ui/progress/index.ts';
 	import { Upload, X, Image, Loader2, AlertCircle, CheckCircle } from '@lucide/svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 
 	// Types
 	interface UploadResult {

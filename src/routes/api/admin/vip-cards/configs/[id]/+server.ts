@@ -12,13 +12,13 @@
 import { error, json } from '@sveltejs/kit';
 import { z } from 'zod';
 import type { RequestHandler } from './$types';
-import { requireAdmin } from '$lib/server/middleware/auth';
-import { assertTypedConfirmation } from '$lib/server/confirmAction';
-import { updateConfigSchema } from '$lib/server/validation/vip-card-admin';
-import type { VipCardConfig } from '$lib/types/vip-card-admin';
-import { configToResponse } from '$lib/types/vip-card-admin';
-import type { TablesUpdate } from '$lib/types/database';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireAdmin } from '#lib/server/middleware/auth.ts';
+import { assertTypedConfirmation } from '#lib/server/confirmAction.ts';
+import { updateConfigSchema } from '#lib/server/validation/vip-card-admin.ts';
+import type { VipCardConfig } from '#lib/types/vip-card-admin.ts';
+import { configToResponse } from '#lib/types/vip-card-admin.ts';
+import type { TablesUpdate } from '#lib/types/database.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/admin/vip-cards/configs/[id]/+server');
 

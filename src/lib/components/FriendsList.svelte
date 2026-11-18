@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import { friendsManager } from '$lib/stores/friends.svelte';
+	import { lore } from '#lib/config/lore.ts';
+	import { friendsManager } from '#lib/stores/friends.svelte.ts';
 	import OnlineStatus from './OnlineStatus.svelte';
-	import UserAvatar from '$lib/components/UserAvatar.svelte';
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
+	import UserAvatar from '#lib/components/UserAvatar.svelte';
+	import * as DropdownMenu from '#lib/components/ui/dropdown-menu/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
 	import { MoreVertical, Search, User } from '@lucide/svelte';
 
 	let searchQuery = $state('');

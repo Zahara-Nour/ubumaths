@@ -13,9 +13,9 @@
 	@module components/programme/OfficialProgrammeView
 -->
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button';
-	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
-	import type { OfficialProgramme } from '$lib/programmes/official-programmes';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import MarkdownRenderer from '#lib/components/markdown/MarkdownRenderer.svelte';
+	import type { OfficialProgramme } from '#lib/programmes/official-programmes.ts';
 	import { Download, ExternalLink } from '@lucide/svelte';
 
 	interface Props {

@@ -8,7 +8,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { parseStudentDomain, parseStudentDomainPieces, domainsAreEqual } from '../validation';
-import { compareNumericNodes } from '$lib/mathAST/eval/compare-numeric';
+import { compareNumericNodes } from '#lib/mathAST/eval/compare-numeric.ts';
 import { bound } from '../factory';
 import type { Domain } from '../types';
 import type { MathNode } from '../../types';

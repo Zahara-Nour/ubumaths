@@ -1,5 +1,5 @@
 <script lang="ts">
-	import SeoHead from '$lib/seo/SeoHead.svelte';
+	import SeoHead from '#lib/seo/SeoHead.svelte';
 	/**
 	 * `/grapheur` — l'atelier, ouvert sur le graphique.
 	 *
@@ -16,10 +16,10 @@
 	import { page } from '$app/state';
 	import { replaceState } from '$app/navigation';
 	import { resolve } from '$app/paths';
-	import AtelierContainer from '$lib/components/atelier/AtelierContainer.svelte';
-	import { Atelier } from '$lib/atelier/atelier.svelte';
-	import { openLink } from '$lib/atelier/grapheur-link';
-	import type { AtelierState } from '$lib/atelier/persistence';
+	import AtelierContainer from '#lib/components/atelier/AtelierContainer.svelte';
+	import { Atelier } from '#lib/atelier/atelier.svelte.ts';
+	import { openLink } from '#lib/atelier/grapheur-link.ts';
+	import type { AtelierState } from '#lib/atelier/persistence.ts';
 
 	interface Opened {
 		atelier: Atelier;

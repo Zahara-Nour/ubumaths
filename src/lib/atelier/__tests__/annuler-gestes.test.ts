@@ -13,7 +13,7 @@
 import { describe, it, expect } from 'vitest';
 import { Atelier, OUTSIDE_STEP_LABEL } from '../atelier.svelte';
 import { runInput, type CalcSession } from '../calcul';
-import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
+import { WebReplEngine } from '#lib/mathAST/cli/web/web-repl-engine.ts';
 import { atelierFromCurves } from '../grapheur-link';
 
 function withFunction(): Atelier {

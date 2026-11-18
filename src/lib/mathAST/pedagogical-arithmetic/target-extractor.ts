@@ -52,7 +52,7 @@ import type {
 	QuestionInstance,
 	RequiredForm,
 	ValidationRule
-} from '$lib/questions/types';
+} from '#lib/questions/types.ts';
 import type { PedagogicalTarget, TargetForm } from '../pedagogical-evaluate/types';
 import { classifyAnswerFormat } from './answer-format-parser';
 

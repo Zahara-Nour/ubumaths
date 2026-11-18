@@ -21,8 +21,8 @@ import {
 	TRIGGERS
 } from 'svelte-dnd-action';
 import ExerciseList from '../ExerciseList.svelte';
-import { lore } from '$lib/config/lore';
-import type { WorksheetExerciseWithExercise, WorksheetSectionRow } from '$lib/types/worksheets';
+import { lore } from '#lib/config/lore.ts';
+import type { WorksheetExerciseWithExercise, WorksheetSectionRow } from '#lib/types/worksheets.ts';
 
 const FICHE = '808e2eee-162a-4493-81f6-8a945c81db3c';
 const QUAND = '2026-10-16T08:00:00.000Z';

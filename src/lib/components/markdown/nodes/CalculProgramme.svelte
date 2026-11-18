@@ -21,9 +21,9 @@
 -->
 <script lang="ts">
 	import { onMount, type Component } from 'svelte';
-	import { LONGUEUR_MAX_PROGRAMME, type TexteLu } from '$lib/shared/blockly/tortue/notation';
-	import { CALCUL_UNAVAILABLE, type CalculNode } from '$lib/ubumark/types/calcul';
-	import type { NiveauCalcul } from '$lib/shared/blockly/calcul/interpreteur';
+	import { LONGUEUR_MAX_PROGRAMME, type TexteLu } from '#lib/shared/blockly/tortue/notation.ts';
+	import { CALCUL_UNAVAILABLE, type CalculNode } from '#lib/ubumark/types/calcul.ts';
+	import type { NiveauCalcul } from '#lib/shared/blockly/calcul/interpreteur.ts';
 	import { readAuthoringErrors } from '../authoring-errors';
 	import type { BuildCase } from './CollectionConstruire.svelte';
 
@@ -111,7 +111,7 @@
 	}
 
 	onMount(() => {
-		import('$lib/components/blockly/CalculEditeur.svelte')
+		import('#lib/components/blockly/CalculEditeur.svelte')
 			.then((module) => (Editeur = module.default))
 			.catch(() => (chargementRate = true));
 	});

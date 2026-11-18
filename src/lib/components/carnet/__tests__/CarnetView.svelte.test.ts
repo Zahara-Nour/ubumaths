@@ -11,7 +11,7 @@
 import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import CarnetView from '../CarnetView.svelte';
-import type { Carnet } from '$lib/validation/carnet';
+import type { Carnet } from '#lib/validation/carnet.ts';
 
 function carnet(extra: Partial<Carnet> = {}): Carnet {
 	return {

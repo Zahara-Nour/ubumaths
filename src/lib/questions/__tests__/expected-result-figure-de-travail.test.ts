@@ -8,11 +8,11 @@
  * gris, sans verdict ; vide → « aucun tracé ». Jamais parmi les réponses attendues.
  */
 import { describe, it, expect } from 'vitest';
-import '$lib/questions/construction/positions-setup';
+import '#lib/questions/construction/positions-setup.ts';
 import { buildExpectedResult, withoutFigureCases } from '../expected-result';
 import { generateInstance } from '../generator/instance-generator';
 import type { QuestionInstance, QuestionTemplate } from '../types';
-import { templateMarkdown } from '$lib/ubumark';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 
 // Constantes
 const WORK = [

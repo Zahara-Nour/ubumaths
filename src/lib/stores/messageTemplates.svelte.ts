@@ -10,8 +10,8 @@ import type {
 	MessageTemplateInput,
 	TriggerType,
 	RenderedTemplate
-} from '$lib/types/messageTemplates';
-import { renderTemplate } from '$lib/templates/templateEngine';
+} from '#lib/types/messageTemplates.ts';
+import { renderTemplate } from '#lib/templates/templateEngine.ts';
 
 interface MessageTemplatesState {
 	templates: MessageTemplate[];

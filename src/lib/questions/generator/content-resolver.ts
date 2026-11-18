@@ -16,15 +16,20 @@
 
 import { resolveVariableConditionals } from './variable-conditionals';
 import type { ResolvedVariable } from '../types';
-import type { TemplateMarkdown, ResolvedMarkdown } from '$lib/ubumark';
-import { resolvedMarkdown } from '$lib/ubumark';
+import type { TemplateMarkdown, ResolvedMarkdown } from '#lib/ubumark/index.ts';
+import { resolvedMarkdown } from '#lib/ubumark/index.ts';
 import { resolveVariableExpression } from './variable-resolver';
 import { resolveColorReferences } from '../parser/color-parser';
-import type { RandomSource } from '$lib/utils/random';
-import type { DurationWriting } from '$lib/mathAST/tidy';
-import { parseCustomSafe, toLatex, type GenericFunctionConfig, type MathNode } from '$lib/mathAST';
-import type { CapitalPairs } from '$lib/mathAST/parser/types';
-import { parse as parseUnit } from '$lib/mathAST/units/parser';
+import type { RandomSource } from '#lib/utils/random.ts';
+import type { DurationWriting } from '#lib/mathAST/tidy/index.ts';
+import {
+	parseCustomSafe,
+	toLatex,
+	type GenericFunctionConfig,
+	type MathNode
+} from '#lib/mathAST/index.ts';
+import type { CapitalPairs } from '#lib/mathAST/parser/types.ts';
+import { parse as parseUnit } from '#lib/mathAST/units/parser.ts';
 import { cleanCoefficientsAst, latexRelationsToCustom } from '../clean-coefficients';
 
 export { resolveVariableConditionals };

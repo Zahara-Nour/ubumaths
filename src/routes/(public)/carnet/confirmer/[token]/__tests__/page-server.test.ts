@@ -17,16 +17,16 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 const confirm = vi.fn();
 const refuse = vi.fn();
-vi.mock('$lib/server/carnet/carnet', async (importOriginal) => ({
-	...(await importOriginal<typeof import('$lib/server/carnet/carnet')>()),
+vi.mock('#lib/server/carnet/carnet.ts', async (importOriginal) => ({
+	...(await importOriginal<typeof import('#lib/server/carnet/carnet.ts')>()),
 	refuseParentContact: (...a: unknown[]) => refuse(...a)
 }));
-vi.mock('$lib/server/carnet/envois', () => ({
+vi.mock('#lib/server/carnet/envois.ts', () => ({
 	confirmContactAndSendLink: (...a: unknown[]) => confirm(...a)
 }));
 
 const rateLimit = vi.fn();
-vi.mock('$lib/server/middleware/rateLimit', () => ({
+vi.mock('#lib/server/middleware/rateLimit.ts', () => ({
 	rateLimit: (...a: unknown[]) => rateLimit(...a)
 }));
 

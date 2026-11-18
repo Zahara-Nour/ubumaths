@@ -4,7 +4,7 @@
  * Chiffres, points et traits gardent leur taille ; seul l'écart entre graduations se resserre.
  */
 import { describe, it, expect } from 'vitest';
-import { parseNumberLineContent } from '$lib/ubumark/parser/number-line-parser';
+import { parseNumberLineContent } from '#lib/ubumark/parser/number-line-parser.ts';
 import {
 	NL_LAYOUT,
 	NL_PHONE_WIDTH,
@@ -14,7 +14,7 @@ import {
 	phoneGapWarning,
 	valueToX,
 	xToValue
-} from '$lib/ubumark/utils/number-line-render';
+} from '#lib/ubumark/utils/number-line-render.ts';
 
 function config(...lines: string[]) {
 	const { node, errors } = parseNumberLineContent(lines);

@@ -4,8 +4,8 @@
  */
 
 import type { PageServerLoad } from './$types';
-import { getErrorStats, getErrorOccurrences } from '$lib/server/errorMonitoring';
-import { requireAdmin } from '$lib/server/middleware/auth';
+import { getErrorStats, getErrorOccurrences } from '#lib/server/errorMonitoring.ts';
+import { requireAdmin } from '#lib/server/middleware/auth.ts';
 
 export const load: PageServerLoad = async ({ locals, url }) => {
 	// Admin gate (admin login OR step-up elevation)

@@ -11,17 +11,17 @@
 	 *
 	 * @component
 	 */
-	import { useGrapheurStore } from '$lib/stores/grapheur-context';
-	import type { CoordinateTransformer } from '$lib/grapheur/viewport';
-	import { computeGridStep } from '$lib/geometry-core/viewport';
-	import { isExplicitFunction } from '$lib/grapheur/types';
-	import { curveColorValue } from '$lib/grapheur/colors';
+	import { useGrapheurStore } from '#lib/stores/grapheur-context.ts';
+	import type { CoordinateTransformer } from '#lib/grapheur/viewport.ts';
+	import { computeGridStep } from '#lib/geometry-core/viewport/index.ts';
+	import { isExplicitFunction } from '#lib/grapheur/types.ts';
+	import { curveColorValue } from '#lib/grapheur/colors.ts';
 	import {
 		readingAt,
 		readingNumber,
 		readingSentence,
 		snapReading
-	} from '$lib/grapheur/image-reading';
+	} from '#lib/grapheur/image-reading.ts';
 
 	let {
 		transformer,

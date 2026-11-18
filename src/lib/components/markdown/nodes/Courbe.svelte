@@ -16,7 +16,7 @@
 	@module components/markdown/nodes/Courbe
 -->
 <script module lang="ts">
-	import type { CourbeColor } from '$lib/ubumark/types/courbe';
+	import type { CourbeColor } from '#lib/ubumark/types/courbe.ts';
 
 	/** Point posé par-dessus la figure (repère à points à placer) : disque coloré et nom */
 	export interface CourbeMark {
@@ -46,9 +46,13 @@
 		COURBE_DATA_COLOR,
 		type CourbeLabel,
 		type CourbeNode
-	} from '$lib/ubumark/types/courbe';
-	import { namedColorScreen, namedColorTable } from '$lib/theme/named-colors';
-	import { buildCourbeScene, COURBE_PAD, type ScenePoint } from '$lib/ubumark/utils/courbe-scene';
+	} from '#lib/ubumark/types/courbe.ts';
+	import { namedColorScreen, namedColorTable } from '#lib/theme/named-colors.ts';
+	import {
+		buildCourbeScene,
+		COURBE_PAD,
+		type ScenePoint
+	} from '#lib/ubumark/utils/courbe-scene.ts';
 	import CourbePlacer from './CourbePlacer.svelte';
 	import type { BuildCase } from './CollectionConstruire.svelte';
 	import { readContentLocale } from '../content-locale';

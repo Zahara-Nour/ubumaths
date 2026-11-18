@@ -16,19 +16,19 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { tradeRealtimeStore } from '$lib/stores/tradeRealtime.svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
-	import { Button } from '$lib/components/ui/button';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
+	import { tradeRealtimeStore } from '#lib/stores/tradeRealtime.svelte.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import { studentCache } from '#lib/stores/studentDashboardCache.svelte.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
 	import { MessageCircle, X, Check, Pencil } from '@lucide/svelte';
 
 	// Components
-	import TradeOfferPanel from '$lib/components/marketplace/trade/TradeOfferPanel.svelte';
-	import TradeConfirmationModal from '$lib/components/marketplace/trade/TradeConfirmationModal.svelte';
-	import TradeChatDrawer from '$lib/components/marketplace/trade/TradeChatDrawer.svelte';
-	import TradePresenceIndicator from '$lib/components/marketplace/trade/TradePresenceIndicator.svelte';
-	import IdleWarningModal from '$lib/components/marketplace/trade/IdleWarningModal.svelte';
+	import TradeOfferPanel from '#lib/components/marketplace/trade/TradeOfferPanel.svelte';
+	import TradeConfirmationModal from '#lib/components/marketplace/trade/TradeConfirmationModal.svelte';
+	import TradeChatDrawer from '#lib/components/marketplace/trade/TradeChatDrawer.svelte';
+	import TradePresenceIndicator from '#lib/components/marketplace/trade/TradePresenceIndicator.svelte';
+	import IdleWarningModal from '#lib/components/marketplace/trade/IdleWarningModal.svelte';
 
 	// Props from server (includes parent layout data: user, supabase)
 	let { data } = $props();

@@ -15,10 +15,10 @@ import {
 	parseAssocierContent,
 	replaceAssocierBlocks,
 	serializeAssocierBlock
-} from '$lib/ubumark/parser/associer-parser';
-import { displayedAssocierLabels, displayedOrder } from '$lib/ubumark/utils/associer';
-import { parseMarkdown } from '$lib/ubumark';
-import { generateTypst } from '$lib/ubumark/generators/typst-generator';
+} from '#lib/ubumark/parser/associer-parser.ts';
+import { displayedAssocierLabels, displayedOrder } from '#lib/ubumark/utils/associer.ts';
+import { parseMarkdown } from '#lib/ubumark/index.ts';
+import { generateTypst } from '#lib/ubumark/generators/typst-generator.ts';
 
 const block = (...body: string[]) => ['```associer', ...body, '```'].join('\n');
 

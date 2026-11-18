@@ -12,7 +12,7 @@
  * tirets, 40 caractères au plus) ; le nom et l'allure vivent ici.
  */
 
-import type { ProvinceId } from '$lib/kingdom-tour/tour';
+import type { ProvinceId } from '#lib/kingdom-tour/tour.ts';
 
 export interface BeastEntry {
 	/** Clé en base : jamais changée une fois qu'un élève l'a rencontrée */

@@ -1,5 +1,5 @@
 <script lang="ts" module>
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	function getDateFromPeriod(period: string): string {
 		let dateFrom = new Date();
 
@@ -31,18 +31,18 @@
 		CardDescription,
 		CardHeader,
 		CardTitle
-	} from '$lib/components/ui/card';
-	import { Button } from '$lib/components/ui/button';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Tabs, TabsContent, TabsList, TabsTrigger } from '$lib/components/ui/tabs';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import MarketplaceStats from '$lib/components/marketplace/teacher/MarketplaceStats.svelte';
-	import TradeHistoryTable from '$lib/components/marketplace/teacher/TradeHistoryTable.svelte';
-	import ActivityFeed from '$lib/components/marketplace/teacher/ActivityFeed.svelte';
-	import ListingsMonitor from '$lib/components/marketplace/teacher/ListingsMonitor.svelte';
-	import MarketplaceAnalytics from '$lib/components/marketplace/teacher/MarketplaceAnalytics.svelte';
-	import MarketplaceSettings from '$lib/components/marketplace/MarketplaceSettings.svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	} from '#lib/components/ui/card/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { Tabs, TabsContent, TabsList, TabsTrigger } from '#lib/components/ui/tabs/index.ts';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import MarketplaceStats from '#lib/components/marketplace/teacher/MarketplaceStats.svelte';
+	import TradeHistoryTable from '#lib/components/marketplace/teacher/TradeHistoryTable.svelte';
+	import ActivityFeed from '#lib/components/marketplace/teacher/ActivityFeed.svelte';
+	import ListingsMonitor from '#lib/components/marketplace/teacher/ListingsMonitor.svelte';
+	import MarketplaceAnalytics from '#lib/components/marketplace/teacher/MarketplaceAnalytics.svelte';
+	import MarketplaceSettings from '#lib/components/marketplace/MarketplaceSettings.svelte';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import {
 		RefreshCw,
 		Settings,

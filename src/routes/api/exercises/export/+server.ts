@@ -5,16 +5,16 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { getExercise } from '$lib/server/exercises';
-import type { Exercise } from '$lib/exercises/types';
+import { getExercise } from '#lib/server/exercises.ts';
+import type { Exercise } from '#lib/exercises/types.ts';
 import type { ZodIssue } from 'zod';
 import {
 	exportExerciseToJSON,
 	exportExerciseToMarkdown,
 	generateExportFilename
-} from '$lib/server/exercise-import-export';
-import { validateExportExercises } from '$lib/server/validation';
-import { requireRole } from '$lib/server/middleware/auth';
+} from '#lib/server/exercise-import-export.ts';
+import { validateExportExercises } from '#lib/server/validation/index.ts';
+import { requireRole } from '#lib/server/middleware/auth.ts';
 
 /**
  * POST /api/exercises/export

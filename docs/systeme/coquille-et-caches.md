@@ -228,7 +228,7 @@ notifications, le temps réel relance ensuite la lecture ([realtime.md](realtime
 - **`/dashboard/teacher/recherche`** : recherche globale. Requête dans l'URL (`?q=`, `?kinds=`,
   `?tags=`), formulaire `GET`, aucune lecture côté client. Moins de 2 caractères et aucun tag :
   pas de recherche. 50 résultats au plus, 10 tags au plus, 100 caractères au plus. Les liens
-  viennent du registre `$lib/resources`. Moteur : `searchResources` ([serveur.md](serveur.md)).
+  viennent du registre `#lib/resources/index.ts`. Moteur : `searchResources` ([serveur.md](serveur.md)).
 - **`/dashboard/teacher/wheel`** : roue de la fortune plein écran. Classes actives avec leurs
   élèves (`getTeacherClassesWithStudents`), choix de la classe, gidouilles offertes au gagnant
   (10 par défaut) par `/api/teacher/rewards/update-student`, puis `invalidateAll()`.

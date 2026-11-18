@@ -8,8 +8,8 @@
 
 	import type { Timeline } from '../core/timeline.svelte';
 	import { formatPlaybackRate } from '../core/timeline.svelte';
-	import { Button } from '$lib/components/ui/button';
-	import { cn } from '$lib/utils';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { cn } from '#lib/utils.ts';
 
 	// Types
 	interface Props {

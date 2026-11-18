@@ -12,7 +12,7 @@ import { render } from 'vitest-browser-svelte';
 import { page } from 'vitest/browser';
 
 import Page from '../+page.svelte';
-import { questionTemplatesCache } from '$lib/stores/questionTemplates.svelte';
+import { questionTemplatesCache } from '#lib/stores/questionTemplates.svelte.ts';
 
 const NODES = [
 	{ id: 'b', kind: 'branch', name: 'Nombres et calculs', parent_id: null, position: 0 },

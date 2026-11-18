@@ -14,7 +14,7 @@
 	Usage:
 	```svelte
 	<script lang="ts">
-	  import TagBadgeSelector from '$lib/components/TagBadgeSelector.svelte';
+	  import TagBadgeSelector from '#lib/components/TagBadgeSelector.svelte';
 
 	  let selectedTags = $state<string[]>(['algèbre', 'équations']);
 	</script>
@@ -23,13 +23,13 @@
 	```
 -->
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import * as Dialog from '$lib/components/ui/dialog';
+	import { lore } from '#lib/config/lore.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
 	import { X, Plus, Loader2 } from '@lucide/svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 
 	// Types
 	interface Tag {

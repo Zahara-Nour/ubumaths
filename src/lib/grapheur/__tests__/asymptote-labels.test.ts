@@ -10,7 +10,7 @@
 import { describe, it, expect } from 'vitest';
 import { placeAsymptoteLabels, plainTextOf } from '../asymptote-labels';
 import type { FunctionAnalysis } from '../types';
-import { DEFAULT_VIEWPORT, createTransformer } from '$lib/geometry-core/viewport';
+import { DEFAULT_VIEWPORT, createTransformer } from '#lib/geometry-core/viewport/index.ts';
 
 const SIZE = { width: 600, height: 600 };
 const transformer = createTransformer(DEFAULT_VIEWPORT, SIZE.width, SIZE.height);

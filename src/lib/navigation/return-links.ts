@@ -6,8 +6,8 @@
  * le dit dans son adresse, par `?depuis=`. La valeur vient de l'URL : seule une
  * origine connue est retenue, sinon la page parente par défaut.
  */
-import { lore } from '$lib/config/lore';
-import { exerciseAnchorHash } from '$lib/worksheets/exercise-anchor';
+import { lore } from '#lib/config/lore.ts';
+import { exerciseAnchorHash } from '#lib/worksheets/exercise-anchor.ts';
 import type { ReadonlyURLSearchParams } from '$app/state';
 
 export const FROM_PARAM = 'depuis';

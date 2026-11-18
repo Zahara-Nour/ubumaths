@@ -54,7 +54,7 @@
 
 import type { MathNode } from '../types';
 import type { Domain, IntervalSet } from '../domain/types';
-import type { Interval } from '$lib/math/intervals/types';
+import type { Interval } from '#lib/math/intervals/types.ts';
 import type {
 	SignedInterval,
 	ZeroInfo,
@@ -75,8 +75,8 @@ import {
 	closedEndpoint,
 	negInfinityEndpoint,
 	posInfinityEndpoint
-} from '$lib/math/intervals/factory';
-import { endpointToNumber } from '$lib/math/intervals/endpoint';
+} from '#lib/math/intervals/factory.ts';
+import { endpointToNumber } from '#lib/math/intervals/endpoint.ts';
 import { shouldIncludeStep } from '../common/verbosity';
 import { expandOddRootPowers } from '../common/odd-root-power';
 import { expandFunctionPowers } from '../common/function-power';

@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import { privateMessages } from '$lib/stores/privateMessages.svelte';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
-	import RichTextEditor from '$lib/components/rich-text/RichTextEditor.svelte';
-	import MySelect from '$lib/components/MySelect.svelte';
+	import { lore } from '#lib/config/lore.ts';
+	import { privateMessages } from '#lib/stores/privateMessages.svelte.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import RichTextEditor from '#lib/components/rich-text/RichTextEditor.svelte';
+	import MySelect from '#lib/components/MySelect.svelte';
 	import {
 		Loader2,
 		Send,
@@ -20,14 +20,14 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import { uploadMultipleMessageAttachments } from '$lib/utils/file-upload';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import { uploadMultipleMessageAttachments } from '#lib/utils/file-upload.ts';
 	import {
 		MESSAGE_ATTACHMENT_ACCEPT,
 		MESSAGE_ATTACHMENT_MAX_COUNT,
 		messageAttachmentRefusal
-	} from '$lib/utils/message-attachment-rules';
-	import UserAvatar from '$lib/components/UserAvatar.svelte';
+	} from '#lib/utils/message-attachment-rules.ts';
+	import UserAvatar from '#lib/components/UserAvatar.svelte';
 
 	// Props
 	let { data } = $props();

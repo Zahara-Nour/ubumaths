@@ -200,7 +200,7 @@ export interface TestCaseResult {
  */
 /**
  * Numeric tolerance for unit_test float comparisons. See UnitTestTolerance
- * in $lib/types/python-exercises.ts for the full doc — kept in sync here
+ * in #lib/types/python-exercises.ts for the full doc — kept in sync here
  * to avoid pulling server-only types into the worker bundle.
  */
 export interface UnitTestTolerance {
@@ -667,7 +667,7 @@ export interface DebugFinishedMessage {
 export interface AtelierListsMessage {
 	type: 'atelier-lists';
 	id: string;
-	lists: import('$lib/atelier/from-python').PythonListReport[];
+	lists: import('#lib/atelier/from-python.ts').PythonListReport[];
 }
 
 /**

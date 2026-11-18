@@ -10,12 +10,12 @@
 
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAuth } from '$lib/server/middleware/auth';
-import type { TablesUpdate } from '$lib/types/database';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import type { TablesUpdate } from '#lib/types/database.ts';
 import {
 	batchUpdateBugReportsSchema,
 	batchDeleteBugReportsSchema
-} from '$lib/server/validation/bug-reports';
+} from '#lib/server/validation/bug-reports.ts';
 
 // =============================================================================
 // PATCH /api/bug-reports/batch - Batch update status

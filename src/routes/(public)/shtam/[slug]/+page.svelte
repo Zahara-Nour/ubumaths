@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
-	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
-	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
+	import InlineMarkdown from '#lib/components/markdown/InlineMarkdown.svelte';
+	import MarkdownRenderer from '#lib/components/markdown/MarkdownRenderer.svelte';
 	import ShtamFooter from '../ShtamFooter.svelte';
-	import QrCodeButton from '$lib/components/qr/QrCodeButton.svelte';
-	import SeoHead from '$lib/seo/SeoHead.svelte';
-	import JsonLd from '$lib/seo/JsonLd.svelte';
+	import QrCodeButton from '#lib/components/qr/QrCodeButton.svelte';
+	import SeoHead from '#lib/seo/SeoHead.svelte';
+	import JsonLd from '#lib/seo/JsonLd.svelte';
 	import {
 		DEFAULT_OG_IMAGE,
 		SITE_LOGO,
@@ -13,7 +13,7 @@
 		SITE_URL,
 		absoluteUrl,
 		toPlainText
-	} from '$lib/seo/site';
+	} from '#lib/seo/site.ts';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();

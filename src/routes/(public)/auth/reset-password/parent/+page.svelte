@@ -8,11 +8,11 @@
 	import { enhance } from '$app/forms';
 	import { resolve } from '$app/paths';
 	import type { ActionData, PageData } from './$types';
-	import { Button } from '$lib/components/ui/button';
-	import { Label } from '$lib/components/ui/label';
-	import * as Card from '$lib/components/ui/card';
-	import * as Alert from '$lib/components/ui/alert';
-	import MyPasswordInput from '$lib/components/MyPasswordInput.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import * as Alert from '#lib/components/ui/alert/index.ts';
+	import MyPasswordInput from '#lib/components/MyPasswordInput.svelte';
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
 

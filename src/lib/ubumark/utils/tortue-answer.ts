@@ -12,13 +12,13 @@
  * @module ubumark/utils/tortue-answer
  */
 
-import type { NiveauTortue } from '$lib/shared/blockly/tortue/interpreteur';
+import type { NiveauTortue } from '#lib/shared/blockly/tortue/interpreteur.ts';
 import {
 	COMPARAISONS_TORTUE,
 	jugerProgrammeTortue,
 	type ComparaisonTortue,
 	type VerdictTortue
-} from '$lib/shared/blockly/tortue/jugement';
+} from '#lib/shared/blockly/tortue/jugement.ts';
 
 const SEPARATEUR = ' | ';
 

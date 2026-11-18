@@ -14,7 +14,7 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 import * as templates from '../chapter-templates';
 import * as validation from '../validation/chapter-templates';
 import type {
@@ -23,12 +23,12 @@ import type {
 	UpdateChapterTemplateInput,
 	InstantiateTemplateInput
 } from '../validation/chapter-templates';
-import type { GradeCode } from '$lib/types/grades';
+import type { GradeCode } from '#lib/types/grades.ts';
 import type {
 	DbChapterTemplate,
 	DbChapterTemplateInstantiation
-} from '$lib/types/chapter-templates';
-import { dbTemplateToApp, dbInstantiationToApp } from '$lib/types/chapter-templates';
+} from '#lib/types/chapter-templates.ts';
+import { dbTemplateToApp, dbInstantiationToApp } from '#lib/types/chapter-templates.ts';
 
 // ============================================================================
 // MOCK SETUP

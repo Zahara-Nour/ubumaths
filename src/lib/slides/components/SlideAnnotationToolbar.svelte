@@ -8,7 +8,7 @@
 	 * @module slides/components/SlideAnnotationToolbar
 	 */
 
-	import { Button } from '$lib/components/ui/button';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import {
 		Pen,
 		Highlighter,

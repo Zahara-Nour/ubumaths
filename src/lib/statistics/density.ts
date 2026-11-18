@@ -6,7 +6,7 @@
  * calcule en fractions EXACTES (longueur / (b − a)) ; l'exponentielle en
  * flottants (`Math.exp`), arrondis une seule fois à l'affichage.
  *
- * ⚠️ Pas d'import `$lib` dans ce module (cf. v1) : chemins relatifs.
+ * ⚠️ Pas d'import `#lib` dans ce module (cf. v1) : chemins relatifs.
  *
  * @module statistics/density
  */

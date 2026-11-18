@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	/**
 	 * TemplatePickerModal - Dialog for selecting and creating whiteboard templates
 	 *
@@ -11,13 +11,13 @@
 	 * - Customization dialog before applying a template
 	 */
 
-	import * as Dialog from '$lib/components/ui/dialog';
-	import * as Tabs from '$lib/components/ui/tabs';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
-	import { Textarea } from '$lib/components/ui/textarea';
-	import MySelect from '$lib/components/MySelect.svelte';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import * as Tabs from '#lib/components/ui/tabs/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import { Textarea } from '#lib/components/ui/textarea/index.ts';
+	import MySelect from '#lib/components/MySelect.svelte';
 	import {
 		Loader2,
 		FileText,
@@ -40,7 +40,7 @@
 		type TemplatePageData
 	} from '../types/templates';
 	import { PAGE_FORMATS, type BackgroundStyle, type PageFormatKey } from '../types/document';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 
 	// ==========================================================================
 	// Props

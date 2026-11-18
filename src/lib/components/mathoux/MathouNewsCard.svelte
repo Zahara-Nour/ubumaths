@@ -25,7 +25,7 @@
 		newsItemPhrase,
 		type MathouNews,
 		type MathouNewsKind
-	} from '$lib/mathoux/news';
+	} from '#lib/mathoux/news.ts';
 	import type { MathouReaction } from './mathou-races';
 
 	// Types

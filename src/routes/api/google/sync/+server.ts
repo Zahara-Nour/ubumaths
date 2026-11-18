@@ -30,11 +30,11 @@
  */
 
 import { json, error } from '@sveltejs/kit';
-import { assertGoogleClassroomEnabled } from '$lib/server/google/feature-guard';
+import { assertGoogleClassroomEnabled } from '#lib/server/google/feature-guard.ts';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import { fullSync } from '$lib/server/google/sync';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { fullSync } from '#lib/server/google/sync.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/google/sync/+server');
 

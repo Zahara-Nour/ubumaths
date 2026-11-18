@@ -8,8 +8,8 @@
  */
 
 import { json } from '@sveltejs/kit';
-import { CombatError } from '$lib/server/descente/combat';
-import { createServerLogger } from '$lib/utils/logger';
+import { CombatError } from '#lib/server/descente/combat.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/descente/combat-http');
 

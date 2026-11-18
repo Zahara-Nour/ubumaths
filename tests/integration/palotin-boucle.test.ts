@@ -32,26 +32,26 @@ import {
 } from '../helpers/database/trigger-test-helpers';
 import { DEFAULT_TEST_PASSWORD } from '../helpers/database/supabase-client';
 import { TestData } from '../helpers/database/test-data-factory';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 import {
 	REVIEW_REWARD_CARDS_ANY_DECK,
 	REVIEW_REWARD_CARDS_EMPTIED_DECK,
 	XP_SOURCES
-} from '$lib/utils/buddy-xp';
+} from '#lib/utils/buddy-xp.ts';
 
 // `add_buddy_xp` et la lecture des cartes de cours partent au client service :
 // le brancher sur la base LOCALE.
-vi.mock('$lib/server/serviceRoleClient', async () => {
+vi.mock('#lib/server/serviceRoleClient.ts', async () => {
 	const helpers = await import('../helpers/database/trigger-test-helpers');
 	return { createServiceRoleClient: helpers.createServiceRoleClient };
 });
 
 import { POST as testsSaveRoute } from '../../src/routes/api/tests/save/+server';
 import { POST as reviewSubmitRoute } from '../../src/routes/api/srs/review/submit/+server';
-import { addExploredThemes } from '$lib/server/buddy-queries';
-import { addBuddyXpFromTest } from '$lib/server/buddy-xp-service';
+import { addExploredThemes } from '#lib/server/buddy-queries.ts';
+import { addBuddyXpFromTest } from '#lib/server/buddy-xp-service.ts';
 import { GET as presenceRoute } from '../../src/routes/api/student/buddy/presence/+server';
-import { utcDay, weekStartOf } from '$lib/utils/buddy-constance';
+import { utcDay, weekStartOf } from '#lib/utils/buddy-constance.ts';
 
 // Types
 type Person = { id: string; client: SupabaseClient<Database> };

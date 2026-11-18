@@ -1,8 +1,8 @@
 <script lang="ts">
-	import SeoHead from '$lib/seo/SeoHead.svelte';
+	import SeoHead from '#lib/seo/SeoHead.svelte';
 	import { resolve } from '$app/paths';
-	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
-	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
+	import InlineMarkdown from '#lib/components/markdown/InlineMarkdown.svelte';
+	import MarkdownRenderer from '#lib/components/markdown/MarkdownRenderer.svelte';
 	import ShtamFooter from './ShtamFooter.svelte';
 	import ShtamFullArticle from './ShtamFullArticle.svelte';
 	import type { PageProps } from './$types';

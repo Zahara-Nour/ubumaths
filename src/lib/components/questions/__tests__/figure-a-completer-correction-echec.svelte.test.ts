@@ -6,13 +6,13 @@
 import { describe, it, expect, afterEach, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import CorrectionCard from '../CorrectionCard.svelte';
-import { generateInstance } from '$lib/questions/generator/instance-generator';
-import type { QuestionInstance, QuestionTemplate } from '$lib/questions/types';
-import type { TestAnswerResult } from '$lib/types/test';
-import { templateMarkdown } from '$lib/ubumark';
+import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
+import type { QuestionInstance, QuestionTemplate } from '#lib/questions/types.ts';
+import type { TestAnswerResult } from '#lib/types/test.ts';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 
-vi.mock('$lib/questions/construction/positions', async (importOriginal) => ({
-	...(await importOriginal<typeof import('$lib/questions/construction/positions')>()),
+vi.mock('#lib/questions/construction/positions.ts', async (importOriginal) => ({
+	...(await importOriginal<typeof import('#lib/questions/construction/positions.ts')>()),
 	loadConstructionPositions: () => Promise.reject(new Error('chunk introuvable'))
 }));
 

@@ -1,9 +1,9 @@
 import type { PageServerLoad, Actions } from './$types';
 import { redirect, fail } from '@sveltejs/kit';
 import { z } from 'zod';
-import { WORKSHEET_TYPES } from '$lib/types/worksheets';
-import { requireRoles } from '$lib/server/middleware/auth';
-import { createServerLogger } from '$lib/utils/logger';
+import { WORKSHEET_TYPES } from '#lib/types/worksheets.ts';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('(protected)/dashboard/teacher/contenu/worksheets/+page.server');
 

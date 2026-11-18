@@ -9,11 +9,11 @@
  */
 
 import { describe, it, expect, vi } from 'vitest';
-import { createFakeSupabase } from '$lib/server/__tests__/helpers/fake-supabase';
+import { createFakeSupabase } from '#lib/server/__tests__/helpers/fake-supabase.ts';
 
 const auth = vi.hoisted(() => ({ grade: null as string | null }));
 
-vi.mock('$lib/server/middleware/auth', () => ({
+vi.mock('#lib/server/middleware/auth.ts', () => ({
 	requireAuth: async () => ({
 		user: { id: 'eleve-1' },
 		profile: { id: 'eleve-1', grade: auth.grade }

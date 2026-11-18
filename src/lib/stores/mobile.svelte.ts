@@ -13,7 +13,7 @@
  * Usage:
  * ```svelte
  * <script>
- *   import { mobileStore } from '$lib/stores/mobile.svelte';
+ *   import { mobileStore } from '#lib/stores/mobile.svelte.ts';
  * </script>
  *
  * <!-- Access properties directly for reactivity (no destructuring!) -->

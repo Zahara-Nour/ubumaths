@@ -1,9 +1,9 @@
 <script lang="ts">
-	import CipherOutput from '$lib/components/ciphers/CipherOutput.svelte';
-	import CipherWorkbench from '$lib/components/ciphers/CipherWorkbench.svelte';
-	import { attempt } from '$lib/ciphers/outcome';
-	import { POLYBIUS_GRID, polybiusDecrypt, polybiusEncrypt } from '$lib/ciphers/polybius';
-	import SeoHead from '$lib/seo/SeoHead.svelte';
+	import CipherOutput from '#lib/components/ciphers/CipherOutput.svelte';
+	import CipherWorkbench from '#lib/components/ciphers/CipherWorkbench.svelte';
+	import { attempt } from '#lib/ciphers/outcome.ts';
+	import { POLYBIUS_GRID, polybiusDecrypt, polybiusEncrypt } from '#lib/ciphers/polybius.ts';
+	import SeoHead from '#lib/seo/SeoHead.svelte';
 
 	// Constantes
 	const PLAIN = 'Bougrelas est vivant';

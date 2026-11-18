@@ -36,14 +36,14 @@
      - Updated props flow to this component → Login button appears
 -->
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import { Button } from '$lib/components/ui/button';
-	import UserAvatar from '$lib/components/UserAvatar.svelte';
-	import * as Sheet from '$lib/components/ui/sheet';
-	import { theme } from '$lib/stores/theme.svelte';
-	import { fontSize } from '$lib/stores/fontSize.svelte';
+	import { lore } from '#lib/config/lore.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import UserAvatar from '#lib/components/UserAvatar.svelte';
+	import * as Sheet from '#lib/components/ui/sheet/index.ts';
+	import { theme } from '#lib/stores/theme.svelte.ts';
+	import { fontSize } from '#lib/stores/fontSize.svelte.ts';
 	import type { User } from '@supabase/supabase-js';
-	import type { Profile } from '$lib/types/database-helpers';
+	import type { Profile } from '#lib/types/database-helpers.ts';
 	import type { LucideIcon } from '@lucide/svelte';
 	import {
 		Menu,
@@ -69,11 +69,11 @@
 		PenTool,
 		Laugh
 	} from '@lucide/svelte';
-	import gidouille from '$lib/assets/images/gidouille.png';
+	import gidouille from '#lib/assets/images/gidouille.png';
 	import { resolve } from '$app/paths';
-	import { resolvePath } from '$lib/navigation/resolve-path';
+	import { resolvePath } from '#lib/navigation/resolve-path.ts';
 	import { page } from '$app/state';
-	import { submitLogoutForm } from '$lib/utils/auth';
+	import { submitLogoutForm } from '#lib/utils/auth.ts';
 
 	// Fullscreen state
 	let isFullscreen = $state(false);

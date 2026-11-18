@@ -21,7 +21,7 @@ import {
 	type ConstructionCheck,
 	type DroiteParCheck,
 	type PolygonCheck
-} from '$lib/ubumark/types/construction';
+} from '#lib/ubumark/types/construction.ts';
 import {
 	isDrawnLine,
 	parseConstructionAnswer,

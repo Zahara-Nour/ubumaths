@@ -16,10 +16,10 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAuth, requireRoles } from '$lib/server/middleware/auth';
-import { templateIdParamSchema } from '$lib/server/validation/whiteboard-templates';
-import { toWhiteboardTemplateRow, rowToTemplate } from '$lib/whiteboard/types/templates';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireAuth, requireRoles } from '#lib/server/middleware/auth.ts';
+import { templateIdParamSchema } from '#lib/server/validation/whiteboard-templates.ts';
+import { toWhiteboardTemplateRow, rowToTemplate } from '#lib/whiteboard/types/templates.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/whiteboard/templates/[id]/+server');
 

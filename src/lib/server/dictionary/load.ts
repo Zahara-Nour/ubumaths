@@ -21,11 +21,11 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import type { MathTerm } from '$lib/dictionary/model';
-import { DICTIONARY_COLUMNS, rowToTerm } from '$lib/dictionary/entry-schema';
-import { termKey, type GlossaryAddress } from '$lib/dictionary/glossary-page';
-import { createServerLogger } from '$lib/utils/logger';
+import type { Database } from '#lib/types/database.ts';
+import type { MathTerm } from '#lib/dictionary/model.ts';
+import { DICTIONARY_COLUMNS, rowToTerm } from '#lib/dictionary/entry-schema.ts';
+import { termKey, type GlossaryAddress } from '#lib/dictionary/glossary-page.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/dictionary/load');
 

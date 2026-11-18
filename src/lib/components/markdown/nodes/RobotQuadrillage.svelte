@@ -15,7 +15,7 @@
 	@module components/markdown/nodes/RobotQuadrillage
 -->
 <script lang="ts">
-	import type { Case, RobotScene, Sens } from '$lib/ubumark/types/robot';
+	import type { Case, RobotScene, Sens } from '#lib/ubumark/types/robot.ts';
 
 	interface Props {
 		scene: RobotScene;

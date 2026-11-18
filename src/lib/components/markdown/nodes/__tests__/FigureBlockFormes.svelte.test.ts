@@ -7,7 +7,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import FigureBlock from '../FigureBlock.svelte';
-import { parseFigureContent } from '$lib/ubumark/parser/figure-parser';
+import { parseFigureContent } from '#lib/ubumark/parser/figure-parser.ts';
 
 const SOURCE = `fenetre: 0 ; 5 ; 0 ; 3
 ---

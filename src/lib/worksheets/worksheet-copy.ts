@@ -12,17 +12,17 @@
  * @module worksheets/worksheet-copy
  */
 
-import type { ContentLocale } from '$lib/types/locale';
-import type { Exercise, ExerciseVariation, SharedExerciseDefaults } from '$lib/exercises/types';
-import { exerciseCapitalPairs } from '$lib/questions/capital-pairs';
-import { createRandomSource, shuffled } from '$lib/utils/random';
+import type { ContentLocale } from '#lib/types/locale.ts';
+import type { Exercise, ExerciseVariation, SharedExerciseDefaults } from '#lib/exercises/types.ts';
+import { exerciseCapitalPairs } from '#lib/questions/capital-pairs.ts';
+import { createRandomSource, shuffled } from '#lib/utils/random.ts';
 import {
 	asWorksheetConfig,
 	localizedText,
 	type InstanceData,
 	type InstanceSection,
 	type WorksheetWithRelations
-} from '$lib/types/worksheets';
+} from '#lib/types/worksheets.ts';
 import { toAnswerFrameLines } from './document/answer-frame-lines';
 import {
 	groupExercisesForDisplay,

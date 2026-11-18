@@ -11,18 +11,18 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 const applyFsrsReview = vi.hoisted(() => vi.fn());
-vi.mock('$lib/server/srs/fsrs-actions', () => ({ applyFsrsReview }));
-vi.mock('$lib/server/srs/programme-deck', () => ({ ensureProgrammeDeckCard: vi.fn() }));
+vi.mock('#lib/server/srs/fsrs-actions.ts', () => ({ applyFsrsReview }));
+vi.mock('#lib/server/srs/programme-deck.ts', () => ({ ensureProgrammeDeckCard: vi.fn() }));
 const addBuddyXpFromTest = vi.hoisted(() => vi.fn(async () => null));
-vi.mock('$lib/server/buddy-xp-service', () => ({ addBuddyXpFromTest }));
-vi.mock('$lib/server/serviceRoleClient', () => ({
+vi.mock('#lib/server/buddy-xp-service.ts', () => ({ addBuddyXpFromTest }));
+vi.mock('#lib/server/serviceRoleClient.ts', () => ({
 	createServiceRoleClient: () => ({
 		from: () => ({ select: () => ({ in: async () => ({ data: [], error: null }) }) })
 	})
 }));
 
 import { POST } from '../+server';
-import { createFakeSupabase } from '$lib/server/__tests__/helpers/fake-supabase';
+import { createFakeSupabase } from '#lib/server/__tests__/helpers/fake-supabase.ts';
 
 const STUDENT = '11111111-1111-4111-8111-111111111111';
 const TEACHER = '22222222-2222-4222-8222-222222222222';

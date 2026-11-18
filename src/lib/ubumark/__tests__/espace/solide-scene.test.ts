@@ -2,14 +2,14 @@
  * Bloc ```solide : la scène (calcul pur, partagé écran / PDF) — chantier `solides`, § 8
  */
 import { describe, expect, it } from 'vitest';
-import { parseEspaceContent } from '$lib/ubumark/parser/espace-parser';
-import type { SolideSpec } from '$lib/ubumark/types/espace';
+import { parseEspaceContent } from '#lib/ubumark/parser/espace-parser.ts';
+import type { SolideSpec } from '#lib/ubumark/types/espace.ts';
 import {
 	SOLIDE_SIZE,
 	buildSolideScene,
 	solideLabel,
 	type SolideLine
-} from '$lib/ubumark/utils/espace-solides';
+} from '#lib/ubumark/utils/espace-solides.ts';
 
 const specOf = (...lines: string[]) => {
 	const node = parseEspaceContent(lines.join('\n'), 'solide');

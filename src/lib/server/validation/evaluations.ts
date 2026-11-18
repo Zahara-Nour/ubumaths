@@ -2,22 +2,22 @@
  * Séries et évaluations : schémas Zod (chantier 4).
  *
  * Les bornes de la composition (modèles) sont partagées avec le navigateur :
- * `$lib/validation/series`.
+ * `#lib/validation/series.ts`.
  */
 
 import { z } from 'zod';
 import { gradeSchema, uuidSchema } from './common';
-import { savedSeriesItemsSchema } from '$lib/validation/series';
+import { savedSeriesItemsSchema } from '#lib/validation/series.ts';
 import {
 	MAX_ANSWER_LENGTH,
 	MAX_ANSWER_PARTS,
 	MAX_ANSWER_SECONDS as MAX_SECONDS,
 	MAX_ATTEMPT_ANSWERS
-} from '$lib/questions/submission';
+} from '#lib/questions/submission.ts';
 import {
 	COURSE_TIME_LIMIT_MAX_MINUTES,
 	COURSE_TIME_LIMIT_MIN_MINUTES
-} from '$lib/types/evaluation';
+} from '#lib/types/evaluation.ts';
 
 // ============================================================================
 // SÉRIES (B11, B12)
@@ -199,7 +199,7 @@ export const classIdsFieldSchema = z
 // ENVOI D'UNE TENTATIVE (chantier 5, C10)
 // ============================================================================
 
-// Bornes partagées avec la page, qui tronque avant d'envoyer ($lib/questions/submission)
+// Bornes partagées avec la page, qui tronque avant d'envoyer (#lib/questions/submission)
 const answerPartSchema = z.string().max(MAX_ANSWER_LENGTH, 'Réponse trop longue');
 
 /**

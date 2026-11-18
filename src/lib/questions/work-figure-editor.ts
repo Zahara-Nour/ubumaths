@@ -11,9 +11,9 @@
  */
 
 import { assignBlankIndices } from './generator/assign-blank-indices';
-import { readConstructionHeader } from '$lib/ubumark/parser/construction-parser';
-import { parseFigureContent } from '$lib/ubumark/parser/figure-parser';
-import type { ConstructionTool } from '$lib/ubumark/types/construction';
+import { readConstructionHeader } from '#lib/ubumark/parser/construction-parser.ts';
+import { parseFigureContent } from '#lib/ubumark/parser/figure-parser.ts';
+import type { ConstructionTool } from '#lib/ubumark/types/construction.ts';
 
 // Types
 /** Ce que dit la carte d'une figure de travail */

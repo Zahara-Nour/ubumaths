@@ -26,7 +26,7 @@ import {
 	BADGE_PRIORITY,
 	type CurriculumPointBadge
 } from '../curriculum-point-badge';
-import { IN_CHUNK_SIZE } from '$lib/server/utils/chunked-in';
+import { IN_CHUNK_SIZE } from '#lib/server/utils/chunked-in.ts';
 
 // ============================================================================
 // templateToBadge — règle de mapping pour 1 template

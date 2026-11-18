@@ -9,7 +9,7 @@
 
 import type { Provenance } from './parse';
 import { astOf, readNumber, referencesOf } from './parse';
-import { evaluate } from '$lib/mathAST/eval/evaluate';
+import { evaluate } from '#lib/mathAST/eval/evaluate.ts';
 
 /**
  * La valeur d'une CONSTANTE, ou `null` si la définition cite d'autres objets.

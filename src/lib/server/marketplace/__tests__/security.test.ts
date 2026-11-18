@@ -11,8 +11,8 @@
  */
 
 import { describe, test, expect, beforeEach, vi } from 'vitest';
-import { createMockSupabase } from '$tests/helpers';
-import { createTestUser, simulateConcurrentOperations } from '$tests/helpers/fixtures';
+import { createMockSupabase } from '#tests/helpers/index.ts';
+import { createTestUser, simulateConcurrentOperations } from '#tests/helpers/fixtures/index.ts';
 
 // Type definitions for RPC parameters and responses
 interface AcceptProposalAtomicParams {

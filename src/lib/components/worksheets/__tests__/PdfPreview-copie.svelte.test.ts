@@ -9,7 +9,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { page } from 'vitest/browser';
-import type { InstanceData, WorksheetWithRelations } from '$lib/types/worksheets';
+import type { InstanceData, WorksheetWithRelations } from '#lib/types/worksheets.ts';
 import PdfPreview from '../PdfPreview.svelte';
 
 // ============================================================================
@@ -24,14 +24,14 @@ const captured = vi.hoisted(() => ({
 
 // Le « Typst » factice est le texte des énoncés : le SVG de l'aperçu le montre,
 // le test lit donc ce qui est RENDU, pas seulement la copie calculée.
-vi.mock('$lib/typst/generators', () => ({
+vi.mock('#lib/typst/generators/index.ts', () => ({
 	generateWorksheetTypst: (options: { instance: InstanceData }) => {
 		captured.instances.push(options.instance);
 		return options.instance.exercises.map((exercise) => exercise.statement).join(' | ');
 	}
 }));
 
-vi.mock('$lib/typst/compiler', () => ({
+vi.mock('#lib/typst/compiler/index.ts', () => ({
 	getTypstCompiler: async () => ({
 		svg: async ({ mainContent }: { mainContent: string }) => {
 			if (captured.gate) await captured.gate;

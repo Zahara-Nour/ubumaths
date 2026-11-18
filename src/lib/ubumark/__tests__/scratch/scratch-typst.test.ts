@@ -3,8 +3,8 @@
  * décidé le 2026-11-01) ; le dessin au PDF viendra au palier 2.
  */
 import { describe, expect, it } from 'vitest';
-import { parseMarkdown } from '$lib/ubumark';
-import { generateTypst } from '$lib/ubumark/generators/typst-generator';
+import { parseMarkdown } from '#lib/ubumark/index.ts';
+import { generateTypst } from '#lib/ubumark/generators/typst-generator.ts';
 
 const typst = (...lines: string[]) => generateTypst(parseMarkdown(lines.join('\n')));
 

@@ -23,7 +23,7 @@ import {
 	SHADOW_PLACEHOLDER_ITEM_ID,
 	TRIGGERS
 } from 'svelte-dnd-action';
-import type { ChapterDocument, ChapterSection } from '$lib/types/chapters';
+import type { ChapterDocument, ChapterSection } from '#lib/types/chapters.ts';
 import ChapterSectionsEditor from '../ChapterSectionsEditor.svelte';
 
 const CHAPITRE = '11111111-1111-4111-8111-111111111111';

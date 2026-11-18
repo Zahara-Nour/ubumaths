@@ -4,7 +4,7 @@
  * Export teacher-specific chapter management components.
  *
  * @example
- * import { ChapterSectionsEditor, StudentProgressTable, DocumentUpload } from '$lib/components/cours/teacher';
+ * import { ChapterSectionsEditor, StudentProgressTable, DocumentUpload } from '#lib/components/cours/teacher/index.ts';
  */
 
 export { default as ChapterSectionsEditor } from './ChapterSectionsEditor.svelte';

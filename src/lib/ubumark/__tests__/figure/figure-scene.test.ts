@@ -7,8 +7,8 @@
 import { describe, it, expect } from 'vitest';
 import { parseFigureContent } from '../../parser/figure-parser';
 import { buildFigureScene } from '../../utils/figure-scene';
-import { resolveMarkdownContent } from '$lib/questions/generator/content-resolver';
-import { templateMarkdown } from '$lib/ubumark';
+import { resolveMarkdownContent } from '#lib/questions/generator/content-resolver.ts';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 
 function scene(body: string, header = 'fenetre: -1 ; 8 ; -1 ; 6') {
 	return buildFigureScene(parseFigureContent(`${header}\n---\n${body}`));

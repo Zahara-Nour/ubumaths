@@ -5,12 +5,12 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import { page } from '$app/state';
-	import { Button } from '$lib/components/ui/button';
-	import { Label } from '$lib/components/ui/label';
-	import * as Tabs from '$lib/components/ui/tabs';
-	import { Textarea } from '$lib/components/ui/textarea';
-	import type { CipherOutcome } from '$lib/ciphers/outcome';
-	import { readDecryptParam } from '$lib/ciphers/tool-link';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import * as Tabs from '#lib/components/ui/tabs/index.ts';
+	import { Textarea } from '#lib/components/ui/textarea/index.ts';
+	import type { CipherOutcome } from '#lib/ciphers/outcome.ts';
+	import { readDecryptParam } from '#lib/ciphers/tool-link.ts';
 	import CipherOutput from './CipherOutput.svelte';
 
 	// Types

@@ -21,8 +21,8 @@
 
 import { z } from 'zod';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import { AVATAR_FAMILY_IDS, type AvatarShop, type ShopAvatar } from '$lib/avatars/shop';
+import type { Database } from '#lib/types/database.ts';
+import { AVATAR_FAMILY_IDS, type AvatarShop, type ShopAvatar } from '#lib/avatars/shop.ts';
 
 // Types
 type SB = SupabaseClient<Database>;

@@ -14,12 +14,12 @@ import { render } from 'vitest-browser-svelte';
 import { page } from 'vitest/browser';
 import TortueProgramme from '../TortueProgramme.svelte';
 import TortueCorrige from '../TortueCorrige.svelte';
-import FillBlanksInput from '$lib/components/question-inputs/FillBlanksInput.svelte';
-import { parseTortueContent } from '$lib/ubumark/parser/tortue-parser';
-import { texteVersEtat, LONGUEUR_MAX_PROGRAMME } from '$lib/shared/blockly/tortue/notation';
-import { generateInstance } from '$lib/questions/generator/instance-generator';
-import { templateMarkdown } from '$lib/ubumark';
-import type { QuestionTemplate } from '$lib/questions/types';
+import FillBlanksInput from '#lib/components/question-inputs/FillBlanksInput.svelte';
+import { parseTortueContent } from '#lib/ubumark/parser/tortue-parser.ts';
+import { texteVersEtat, LONGUEUR_MAX_PROGRAMME } from '#lib/shared/blockly/tortue/notation.ts';
+import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
+import type { QuestionTemplate } from '#lib/questions/types.ts';
 
 let mains: HTMLElement[] = [];
 function mainElement(): HTMLElement {

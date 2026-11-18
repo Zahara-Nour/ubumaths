@@ -27,7 +27,7 @@
  */
 
 import type { QuestionTemplate } from '../../types';
-import { templateMarkdown } from '$lib/ubumark';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 
 /**
  * Demo question : `2 + 3 × 4 + 5 × 6 = ?` for primaire (CM2).

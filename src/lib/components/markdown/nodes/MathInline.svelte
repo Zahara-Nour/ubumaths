@@ -19,7 +19,7 @@
 	@see ExerciseDisplay.svelte for rendering context
 -->
 <script lang="ts">
-	import '$lib/utils/mathlive-styles';
+	import '#lib/utils/mathlive-styles.ts';
 	import 'mathlive';
 	import { expressionToLatex } from '../utils/math-utils';
 	import { readContentLocale } from '../content-locale';
@@ -31,7 +31,7 @@
 		readProjectMediaOnly,
 		readRestrictedRendering
 	} from '../restricted-rendering';
-	import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
+	import type { GenericFunctionConfig } from '#lib/mathAST/parser/types.ts';
 
 	interface Props {
 		expression: string;

@@ -18,11 +18,11 @@ const pageState = vi.hoisted(() => ({
 const replaceState = vi.hoisted(() => vi.fn());
 vi.mock('$app/state', () => ({ page: pageState }));
 vi.mock('$app/navigation', async () =>
-	(await import('$tests/helpers/app-navigation-mock')).appNavigationMock({ replaceState })
+	(await import('#tests/helpers/app-navigation-mock.ts')).appNavigationMock({ replaceState })
 );
 
 import Page from '../+page.svelte';
-import { questionTemplatesCache } from '$lib/stores/questionTemplates.svelte';
+import { questionTemplatesCache } from '#lib/stores/questionTemplates.svelte.ts';
 
 const NODES = [
 	{ id: 'b-nombres', kind: 'branch', name: 'Nombres et calculs', parent_id: null, position: 0 },

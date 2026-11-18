@@ -10,22 +10,22 @@
 	Composant contrôlé : chaque changement remonte par `onchange(clé, valeur)`.
 -->
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import { Input } from '$lib/components/ui/input';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
-	import { ANSWER_FRAME_MODES, CALCULATOR_RULES, isIsoDate } from '$lib/types/worksheets';
+	import { lore } from '#lib/config/lore.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
+	import { ANSWER_FRAME_MODES, CALCULATOR_RULES, isIsoDate } from '#lib/types/worksheets.ts';
 	import type {
 		AnswerFrameMode,
 		CalculatorRule,
 		WorksheetConfig,
 		WorksheetType
-	} from '$lib/types/worksheets';
+	} from '#lib/types/worksheets.ts';
 	import {
 		TYPE_OPTION_KEYS,
 		type TypeOptionKey,
 		type WorksheetOptionKey
-	} from '$lib/worksheets/worksheet-header';
+	} from '#lib/worksheets/worksheet-header.ts';
 
 	interface Props {
 		type: WorksheetType;

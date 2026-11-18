@@ -2,8 +2,8 @@
  * Verdict du moteur de questions (runAllTestSpecs) pour une case unique :
  * énoncé, attendu, réponses → statut de chaque réponse.
  */
-import { runAllTestSpecs } from '$lib/questions/test-spec-runner';
-import type { QuestionTemplate } from '$lib/questions/types';
+import { runAllTestSpecs } from '#lib/questions/test-spec-runner.ts';
+import type { QuestionTemplate } from '#lib/questions/types.ts';
 
 export interface SpecVerdict {
 	status: string;

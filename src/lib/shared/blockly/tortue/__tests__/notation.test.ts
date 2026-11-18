@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { executerTortue } from '../interpreteur';
 import { etatVersTexte, LONGUEUR_MAX_PROGRAMME, nombreDeBlocs, texteVersEtat } from '../notation';
-import { MAX_ANSWER_LENGTH } from '$lib/questions/submission';
+import { MAX_ANSWER_LENGTH } from '#lib/questions/submission.ts';
 
 // =============================================================================
 // Aides

@@ -23,9 +23,9 @@ import {
 	fetchHealthStats,
 	getCachedHealthStats,
 	setCachedHealthStats
-} from '$lib/server/healthStats';
-import { requireAdmin } from '$lib/server/middleware/auth';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/healthStats.ts';
+import { requireAdmin } from '#lib/server/middleware/auth.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/admin/health-stats/+server');
 

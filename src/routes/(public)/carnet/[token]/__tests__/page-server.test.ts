@@ -17,19 +17,19 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 const readCarnet = vi.fn();
 const setStopped = vi.fn();
-vi.mock('$lib/server/carnet/carnet', async (importOriginal) => ({
-	...(await importOriginal<typeof import('$lib/server/carnet/carnet')>()),
+vi.mock('#lib/server/carnet/carnet.ts', async (importOriginal) => ({
+	...(await importOriginal<typeof import('#lib/server/carnet/carnet.ts')>()),
 	readCarnetByToken: (...a: unknown[]) => readCarnet(...a),
 	setParentEmailsStopped: (...a: unknown[]) => setStopped(...a)
 }));
 
 const rateLimit = vi.fn();
-vi.mock('$lib/server/middleware/rateLimit', () => ({
+vi.mock('#lib/server/middleware/rateLimit.ts', () => ({
 	rateLimit: (...a: unknown[]) => rateLimit(...a)
 }));
 
 const { load, actions } = await import('../+page.server');
-const { INVALID_CARNET_LINK } = await import('$lib/server/carnet/carnet');
+const { INVALID_CARNET_LINK } = await import('#lib/server/carnet/carnet.ts');
 
 const JETON = 'A'.repeat(43);
 

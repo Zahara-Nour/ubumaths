@@ -1,5 +1,5 @@
 import type { LayoutServerLoad } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
+import { requireRole } from '#lib/server/middleware/auth.ts';
 
 export const load: LayoutServerLoad = async ({ locals }) => {
 	await requireRole(locals, 'teacher');

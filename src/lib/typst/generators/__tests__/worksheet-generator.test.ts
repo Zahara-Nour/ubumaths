@@ -16,7 +16,7 @@ import type {
 	InstanceData,
 	WorksheetConfig,
 	WorksheetTemplateRow
-} from '$lib/types/worksheets';
+} from '#lib/types/worksheets.ts';
 
 // Test fixtures
 const createMockWorksheet = (overrides?: Partial<WorksheetRow>): WorksheetRow => ({

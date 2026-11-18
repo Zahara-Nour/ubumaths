@@ -17,7 +17,7 @@ import {
 	setQuestionLines,
 	toAnswerFrameLines
 } from '../answer-frame-lines';
-import type { AnswerFrameEstimate } from '$lib/types/worksheets';
+import type { AnswerFrameEstimate } from '#lib/types/worksheets.ts';
 
 /** Trois questions : petite, moyenne, grande ; cadre unique de 7 cm */
 const ESTIMATE: AnswerFrameEstimate = {
@@ -146,7 +146,7 @@ describe('écran : lignes et modifications', () => {
 
 describe('copie du prof : la colonne suit l’exercice jusqu’au PDF', () => {
 	it('buildWorksheetCopy garde `answer_frame_lines` de chaque exercice de la fiche', async () => {
-		const { buildWorksheetCopy } = await import('$lib/worksheets/worksheet-copy');
+		const { buildWorksheetCopy } = await import('#lib/worksheets/worksheet-copy.ts');
 		const copy = buildWorksheetCopy(
 			{
 				id: 'w',

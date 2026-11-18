@@ -4,10 +4,10 @@
 	n'est qu'une substitution.
 -->
 <script lang="ts">
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
-	import { CipherInputError } from '$lib/ciphers/errors';
-	import { rsaCrack, rsaLetterTable } from '$lib/ciphers/rsa';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import { CipherInputError } from '#lib/ciphers/errors.ts';
+	import { rsaCrack, rsaLetterTable } from '#lib/ciphers/rsa.ts';
 
 	// Constantes
 	/** Au-delà, la factorisation par divisions successives n'est plus « de poche » */

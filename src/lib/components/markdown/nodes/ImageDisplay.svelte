@@ -16,15 +16,15 @@
 	@see image-dimensions.ts for dimension calculations
 -->
 <script lang="ts">
-	import type { ImageSizeClass, ImageAlignment } from '$lib/ubumark';
+	import type { ImageSizeClass, ImageAlignment } from '#lib/ubumark/index.ts';
 	import {
 		getDimensionsForFormat,
 		shouldUseFigureEnvironment
-	} from '$lib/exercises/services/image-dimensions';
+	} from '#lib/exercises/services/image-dimensions.ts';
 	import { escapeHtml } from '../utils';
 	import { PUBLIC_SUPABASE_URL } from '$app/env/public';
-	import { getQuestionImageUrl } from '$lib/questions/constants';
-	import { sanitizeUrl } from '$lib/utils/sanitize';
+	import { getQuestionImageUrl } from '#lib/questions/constants.ts';
+	import { sanitizeUrl } from '#lib/utils/sanitize.ts';
 	import {
 		isProjectStorageImage,
 		readProjectMediaOnly,

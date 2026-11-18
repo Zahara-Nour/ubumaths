@@ -18,8 +18,8 @@ import {
 	exponentialProbability,
 	uniformDensityMoments,
 	uniformDensityProbability
-} from '$lib/statistics/density';
-import { Fraction } from '$lib/statistics/fraction';
+} from '#lib/statistics/density.ts';
+import { Fraction } from '#lib/statistics/fraction.ts';
 
 // =============================================================================
 // Helpers

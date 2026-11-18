@@ -32,7 +32,7 @@ import {
 	parseCalloutKind,
 	parseDetailKind,
 	isLexiconMarkWord
-} from '$lib/ubumark/utils/detail-kinds';
+} from '#lib/ubumark/utils/detail-kinds.ts';
 
 // ============================================================================
 // TYPES

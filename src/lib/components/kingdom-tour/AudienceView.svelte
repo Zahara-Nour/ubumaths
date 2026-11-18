@@ -2,14 +2,14 @@
 	/**
 	 * Une vue de présentation (élèves, parents ou professeurs) : Père Ubu et un titre, puis
 	 * des blocs courts, une démonstration en direct, les portes d'entrée. Le contenu vit dans
-	 * `$lib/kingdom-tour/views`.
+	 * `#lib/kingdom-tour/views.ts`.
 	 *
 	 * Lisible sans JavaScript : la roue des publics s'y ajoute en bas à droite, et les mêmes
 	 * choix restent en liens ordinaires au pied de la page. Les questions fréquentes (parents)
 	 * sont des `<details>` natifs : repliées, mais leurs réponses restent dans la page, et
 	 * reprises en données structurées FAQPage.
 	 */
-	import { resolvePath } from '$lib/navigation/resolve-path';
+	import { resolvePath } from '#lib/navigation/resolve-path.ts';
 	import {
 		BookOpen,
 		Calculator,
@@ -31,15 +31,15 @@
 		Terminal,
 		Trophy
 	} from '@lucide/svelte';
-	import type { MonthPalette } from '$lib/almanach/palettes';
-	import AudienceWheel from '$lib/components/kingdom-tour/AudienceWheel.svelte';
-	import CipherDemo from '$lib/components/kingdom-tour/CipherDemo.svelte';
-	import FormDemo from '$lib/components/kingdom-tour/FormDemo.svelte';
-	import PereUbuFigure from '$lib/components/kingdom-tour/PereUbuFigure.svelte';
-	import { AUDIENCES } from '$lib/kingdom-tour/audiences';
-	import { faqJsonLd, type AudienceView, type ViewIcon } from '$lib/kingdom-tour/views';
-	import JsonLd from '$lib/seo/JsonLd.svelte';
-	import SeoHead from '$lib/seo/SeoHead.svelte';
+	import type { MonthPalette } from '#lib/almanach/palettes.ts';
+	import AudienceWheel from '#lib/components/kingdom-tour/AudienceWheel.svelte';
+	import CipherDemo from '#lib/components/kingdom-tour/CipherDemo.svelte';
+	import FormDemo from '#lib/components/kingdom-tour/FormDemo.svelte';
+	import PereUbuFigure from '#lib/components/kingdom-tour/PereUbuFigure.svelte';
+	import { AUDIENCES } from '#lib/kingdom-tour/audiences.ts';
+	import { faqJsonLd, type AudienceView, type ViewIcon } from '#lib/kingdom-tour/views.ts';
+	import JsonLd from '#lib/seo/JsonLd.svelte';
+	import SeoHead from '#lib/seo/SeoHead.svelte';
 
 	// Types
 

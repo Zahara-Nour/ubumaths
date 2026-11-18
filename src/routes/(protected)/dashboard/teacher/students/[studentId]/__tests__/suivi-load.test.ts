@@ -4,23 +4,23 @@
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-vi.mock('$lib/server/middleware/auth', () => ({ requireRole: vi.fn() }));
-vi.mock('$lib/server/middleware/student-access', () => ({ verifyTeacherStudent: vi.fn() }));
-vi.mock('$lib/server/stats/student-follow-up', () => ({
+vi.mock('#lib/server/middleware/auth.ts', () => ({ requireRole: vi.fn() }));
+vi.mock('#lib/server/middleware/student-access.ts', () => ({ verifyTeacherStudent: vi.fn() }));
+vi.mock('#lib/server/stats/student-follow-up.ts', () => ({
 	getStudentPointFollowUp: vi.fn(),
 	getStudentEvaluations: vi.fn(),
 	getStudentRegularity: vi.fn(),
 	getStudentCompetences: vi.fn()
 }));
 
-import { requireRole } from '$lib/server/middleware/auth';
-import { verifyTeacherStudent } from '$lib/server/middleware/student-access';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { verifyTeacherStudent } from '#lib/server/middleware/student-access.ts';
 import {
 	getStudentCompetences,
 	getStudentEvaluations,
 	getStudentPointFollowUp,
 	getStudentRegularity
-} from '$lib/server/stats/student-follow-up';
+} from '#lib/server/stats/student-follow-up.ts';
 import { load } from '../+page.server';
 
 const STUDENT_ID = '7d3f6c2e-1b4a-4c8d-9e0f-123456789abc';

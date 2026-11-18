@@ -6,10 +6,10 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
-import { requireRoles } from '$lib/server/middleware/auth';
-import { CONSTRUCTION_AUTHOR_ROLES } from '$lib/server/constructions-access';
-import { convertInstrumenPoche } from '$lib/constructions/converter';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import { CONSTRUCTION_AUTHOR_ROLES } from '#lib/server/constructions-access.ts';
+import { convertInstrumenPoche } from '#lib/constructions/converter.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/constructions/convert/+server');
 

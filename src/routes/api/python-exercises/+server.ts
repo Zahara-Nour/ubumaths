@@ -6,22 +6,22 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAuth, requireRole } from '$lib/server/middleware/auth';
+import { requireAuth, requireRole } from '#lib/server/middleware/auth.ts';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import {
 	createExerciseSchema,
 	listExercisesQuerySchema,
 	type CreateExerciseInput
-} from '$lib/server/validation/python-exercises';
-import type { PythonExercise, PythonExerciseStudentView } from '$lib/types/python-exercises';
-import type { Database } from '$lib/types/database';
-import { toJson } from '$lib/types/database-helpers';
+} from '#lib/server/validation/python-exercises.ts';
+import type { PythonExercise, PythonExerciseStudentView } from '#lib/types/python-exercises.ts';
+import type { Database } from '#lib/types/database.ts';
+import { toJson } from '#lib/types/database-helpers.ts';
 import {
 	fetchResourceIdsByAnyTag,
 	fetchTagNamesForResources,
 	syncResourceTags
-} from '$lib/server/resource-tags';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/resource-tags.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/python-exercises/+server');
 

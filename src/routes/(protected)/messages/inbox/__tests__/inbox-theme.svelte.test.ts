@@ -7,11 +7,11 @@
  */
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
-import type { PrivateMessage } from '$lib/stores/privateMessages.svelte';
+import type { PrivateMessage } from '#lib/stores/privateMessages.svelte.ts';
 
 const goto = vi.hoisted(() => vi.fn(async () => {}));
 vi.mock('$app/navigation', async () =>
-	(await import('$tests/helpers/app-navigation-mock')).appNavigationMock({ goto })
+	(await import('#tests/helpers/app-navigation-mock.ts')).appNavigationMock({ goto })
 );
 
 const store = vi.hoisted(() => ({
@@ -23,7 +23,7 @@ const store = vi.hoisted(() => ({
 	updateStatus: vi.fn(async () => {}),
 	deleteMessage: vi.fn(async () => {})
 }));
-vi.mock('$lib/stores/privateMessages.svelte', () => ({ privateMessages: store }));
+vi.mock('#lib/stores/privateMessages.svelte.ts', () => ({ privateMessages: store }));
 
 import Page from '../+page.svelte';
 

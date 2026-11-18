@@ -4,7 +4,7 @@
  */
 
 import { dev } from '$app/env';
-import { listModels } from '$lib/calculatrices/page-data';
+import { listModels } from '#lib/calculatrices/page-data.ts';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = () => ({ models: listModels({ includeUnverified: dev }) });

@@ -9,7 +9,7 @@
 import type { MathNode, MathNodeType, RelationType } from '../types';
 import type { SignedTerm } from '../flatten';
 import type { NumericType } from '../numtype/types';
-import type { IntervalDomain } from '$lib/math/intervals';
+import type { IntervalDomain } from '#lib/math/intervals/index.ts';
 
 // =============================================================================
 // Pattern Constraints

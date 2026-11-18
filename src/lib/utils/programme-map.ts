@@ -9,18 +9,18 @@
  * leur sous-notion.
  *
  * Ce module ne lit rien : il range des lignes déjà lues
- * (cf. `getProgrammeMap` dans `$lib/server/programme-tree`).
+ * (cf. `getProgrammeMap` dans `#lib/server/programme-tree.ts`).
  *
  * Ordre : nœuds dans l'ordre de l'arbre (`position`, puis nom) ; points dans
  * l'ordre du BO (`display_order`, puis code).
  */
 
-import type { Tables } from '$lib/types/database';
+import type { Tables } from '#lib/types/database.ts';
 import type {
 	ClassificationNode,
 	CurriculumExigence,
 	CurriculumPointKind
-} from '$lib/types/database-helpers';
+} from '#lib/types/database-helpers.ts';
 
 // ---------------------------------------------------------------------------
 // Types

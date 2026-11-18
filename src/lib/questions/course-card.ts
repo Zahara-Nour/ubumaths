@@ -18,7 +18,7 @@
 
 import { isCourseCard } from './types';
 import type { QuestionCorrection, QuestionInstance, ResolvedCorrection } from './types';
-import type { TestMode } from '$lib/types/test';
+import type { TestMode } from '#lib/types/test.ts';
 
 // ============================================================================
 // TYPES

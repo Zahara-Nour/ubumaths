@@ -10,7 +10,7 @@
  * ```
  *
  * - `attendu:` (obligatoire) : le programme de référence, en notation texte
- *   (`$lib/shared/blockly/calcul/notation.ts`) ; il doit se lire, s'exécuter et afficher
+ *   (`#lib/shared/blockly/calcul/notation.ts`) ; il doit se lire, s'exécuter et afficher
  *   quelque chose pour chaque essai, sinon l'élève serait toujours jugé faux.
  * - `essais:` (défaut −3 ; 0 ; 1 ; 2 ; 5 ; 10 ; 0,5) : les nombres sur lesquels les deux
  *   programmes sont rejoués.
@@ -32,19 +32,19 @@ import {
 	branchesNonParcourues,
 	NIVEAUX_CALCUL,
 	type NiveauCalcul
-} from '$lib/shared/blockly/calcul/interpreteur';
+} from '#lib/shared/blockly/calcul/interpreteur.ts';
 import {
 	ESSAIS_PAR_DEFAUT,
 	lireEssais,
 	lireProgrammeCalcul
-} from '$lib/shared/blockly/calcul/jugement';
+} from '#lib/shared/blockly/calcul/jugement.ts';
 import {
 	conditionsDuProgramme,
 	ecrireNombreCalcul,
 	messageNiveau,
 	texteVersEtatCalcul,
 	variableJamaisMise
-} from '$lib/shared/blockly/calcul/notation';
+} from '#lib/shared/blockly/calcul/notation.ts';
 import type { CalculBlockRange, CalculIssue, CalculNode } from '../types/calcul';
 
 // ============================================================================

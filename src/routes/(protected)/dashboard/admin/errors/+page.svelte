@@ -1,17 +1,17 @@
 <!-- eslint-disable custom/require-zod-validation -->
 <script lang="ts">
 	import { goto, invalidateAll } from '$app/navigation';
-	import { Button } from '$lib/components/ui/button';
-	import * as Card from '$lib/components/ui/card';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Label } from '$lib/components/ui/label';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import { Input } from '$lib/components/ui/input';
-	import { Separator } from '$lib/components/ui/separator';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import { Textarea } from '$lib/components/ui/textarea';
-	import * as Alert from '$lib/components/ui/alert';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Separator } from '#lib/components/ui/separator/index.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import { Textarea } from '#lib/components/ui/textarea/index.ts';
+	import * as Alert from '#lib/components/ui/alert/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 
 	let { data } = $props();
 

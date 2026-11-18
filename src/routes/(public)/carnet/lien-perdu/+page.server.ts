@@ -14,9 +14,9 @@
 import { fail } from '@sveltejs/kit';
 import { z } from 'zod';
 import type { Actions, PageServerLoad } from './$types';
-import { rateLimit } from '$lib/server/middleware/rateLimit';
-import { runAfterResponse } from '$lib/server/after-response';
-import { hashParentEmail, parentEmailSchema, resendLostLinks } from '$lib/server/carnet/envois';
+import { rateLimit } from '#lib/server/middleware/rateLimit.ts';
+import { runAfterResponse } from '#lib/server/after-response.ts';
+import { hashParentEmail, parentEmailSchema, resendLostLinks } from '#lib/server/carnet/envois.ts';
 
 // Constantes
 

@@ -13,8 +13,8 @@
 	@see types.ts BlockquoteNode for the AST node type
 -->
 <script lang="ts">
-	import type { BlockNode, CalloutKind, InlineNode, ListItemNode } from '$lib/ubumark';
-	import { detailKindLabel } from '$lib/ubumark';
+	import type { BlockNode, CalloutKind, InlineNode, ListItemNode } from '#lib/ubumark/index.ts';
+	import { detailKindLabel } from '#lib/ubumark/index.ts';
 	import { readContentLocale } from '../content-locale';
 	import { CALLOUT_CLASSES, CALLOUT_LABEL_CLASSES } from '../detail-styles';
 	import ParagraphNode from './ParagraphNode.svelte';

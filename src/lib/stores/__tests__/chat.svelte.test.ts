@@ -20,7 +20,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { chatStore } from '../chat.svelte';
 import { supabaseRealtimeManager } from '../supabaseRealtime.svelte';
 import type { SupabaseClient, RealtimeChannel } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 
 // ============================================================================
 // TEST SETUP

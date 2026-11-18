@@ -28,20 +28,20 @@
  * @module questions/equations/equation-answer
  */
 
-import type { ValidationStatus, RequiredForm, EquationForm } from '$lib/questions/types';
-import type { MathNode, RelationNode } from '$lib/mathAST/types';
-import type { AlgebraicCoefficient, NormalTerm } from '$lib/mathAST/normal/types';
-import { parseLatexSafe } from '$lib/mathAST/parser';
-import { normalize } from '$lib/mathAST/normal';
-import { algebraicEquals, mulAlgebraic, negAlgebraic } from '$lib/mathAST/normal/algebraic';
-import { getMonomialSignature } from '$lib/mathAST/normal/term';
-import { subtract, variable } from '$lib/mathAST/factory';
-import { flattenSumShallow } from '$lib/mathAST/flatten';
-import { mapNode } from '$lib/mathAST/transforms';
-import { getVariables } from '$lib/mathAST/eval/substitute';
-import { makeAbortChecker } from '$lib/mathAST/common/abort';
-import { stripLatexSpacing } from '$lib/math';
-import { isAnswerTooComplex } from '$lib/questions/answer-complexity';
+import type { ValidationStatus, RequiredForm, EquationForm } from '#lib/questions/types.ts';
+import type { MathNode, RelationNode } from '#lib/mathAST/types.ts';
+import type { AlgebraicCoefficient, NormalTerm } from '#lib/mathAST/normal/types.ts';
+import { parseLatexSafe } from '#lib/mathAST/parser/index.ts';
+import { normalize } from '#lib/mathAST/normal/index.ts';
+import { algebraicEquals, mulAlgebraic, negAlgebraic } from '#lib/mathAST/normal/algebraic.ts';
+import { getMonomialSignature } from '#lib/mathAST/normal/term.ts';
+import { subtract, variable } from '#lib/mathAST/factory.ts';
+import { flattenSumShallow } from '#lib/mathAST/flatten.ts';
+import { mapNode } from '#lib/mathAST/transforms.ts';
+import { getVariables } from '#lib/mathAST/eval/substitute.ts';
+import { makeAbortChecker } from '#lib/mathAST/common/abort.ts';
+import { stripLatexSpacing } from '#lib/math/index.ts';
+import { isAnswerTooComplex } from '#lib/questions/answer-complexity.ts';
 
 // Types
 export interface EquationVerdict {

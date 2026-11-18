@@ -14,9 +14,9 @@
 	 * <UntranslatedExercisesNotice exercises={worksheet.exercises ?? []} config={worksheet.config} />
 	 */
 
-	import { untranslatedExercises } from '$lib/exercises/translation-status';
-	import { worksheetLocale, type WorksheetConfig } from '$lib/types/worksheets';
-	import type { WorksheetExerciseWithExercise } from '$lib/types/worksheets';
+	import { untranslatedExercises } from '#lib/exercises/translation-status.ts';
+	import { worksheetLocale, type WorksheetConfig } from '#lib/types/worksheets.ts';
+	import type { WorksheetExerciseWithExercise } from '#lib/types/worksheets.ts';
 
 	let {
 		exercises = [],

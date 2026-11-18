@@ -6,9 +6,9 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { parseLatex } from '$lib/mathAST/parser';
+import { parseLatex } from '#lib/mathAST/parser/index.ts';
 import { generatePedagogicalDomainSteps, PedagogicalDomainRenderer } from '../index';
-import type { PedagogicalRenderOptions } from '$lib/mathAST/common/step-renderer-base';
+import type { PedagogicalRenderOptions } from '#lib/mathAST/common/step-renderer-base.ts';
 
 const RENDER_OPTIONS_LYCEE: PedagogicalRenderOptions = {
 	schoolLevel: 'lycee',

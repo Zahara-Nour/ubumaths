@@ -12,7 +12,7 @@
 
 import { json, redirect } from '@sveltejs/kit';
 import type { Handle } from '@sveltejs/kit/hooks';
-import { mustChangePassword } from '$lib/server/child-password';
+import { mustChangePassword } from '#lib/server/child-password.ts';
 
 // Constantes
 

@@ -11,13 +11,13 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database, Json } from '$lib/types/database';
+import type { Database, Json } from '#lib/types/database.ts';
 import { createSystemNotification } from './notifications';
 import { dev } from '$app/env';
 import { createServiceRoleClient } from './serviceRoleClient';
-import { escapeHtml } from '$lib/utils/html-escape';
-import { createServerLogger } from '$lib/utils/logger';
-import { redactSecretUrl } from '$lib/utils/analytics-redact';
+import { escapeHtml } from '#lib/utils/html-escape.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
+import { redactSecretUrl } from '#lib/utils/analytics-redact.ts';
 
 const logger = createServerLogger('server/errorMonitoring');
 

@@ -13,11 +13,11 @@
 
 import { describe, it, expect } from 'vitest';
 import { variationTableNode } from '../variation-table';
-import { computeVariations } from '$lib/mathAST/variations';
-import { parseCustomSafe } from '$lib/mathAST/parser/custom';
-import { parseStudentDomain } from '$lib/mathAST/domain/validation/parse-student-domain';
-import type { MathNode } from '$lib/mathAST/types';
-import type { SignRow, VariationRow } from '$lib/ubumark/types/variation-table';
+import { computeVariations } from '#lib/mathAST/variations/index.ts';
+import { parseCustomSafe } from '#lib/mathAST/parser/custom/index.ts';
+import { parseStudentDomain } from '#lib/mathAST/domain/validation/parse-student-domain.ts';
+import type { MathNode } from '#lib/mathAST/types.ts';
+import type { SignRow, VariationRow } from '#lib/ubumark/types/variation-table.ts';
 
 function ast(source: string): MathNode {
 	const parsed = parseCustomSafe(source);

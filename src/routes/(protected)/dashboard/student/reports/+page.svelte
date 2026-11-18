@@ -1,5 +1,5 @@
 <script lang="ts">
-	import StudentReportsPanel from '$lib/components/worksheets/student/StudentReportsPanel.svelte';
+	import StudentReportsPanel from '#lib/components/worksheets/student/StudentReportsPanel.svelte';
 </script>
 
 <svelte:head>

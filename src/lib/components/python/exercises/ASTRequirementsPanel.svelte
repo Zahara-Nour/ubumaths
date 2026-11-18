@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	/**
 	 * Editor for the `ast_requirements` array of a python exercise validation
 	 * config. Receives `requirements` as a regular prop and notifies the
@@ -14,10 +14,10 @@
 	 * and the "Add" / "Remove" controls.
 	 */
 
-	import type { ASTRequirement, ASTRequirementType } from '$lib/shared/python';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
+	import type { ASTRequirement, ASTRequirementType } from '#lib/shared/python/index.ts';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
 	import { Plus, Trash2 } from '@lucide/svelte';
 
 	type Props = {

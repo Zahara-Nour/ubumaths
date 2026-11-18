@@ -23,8 +23,8 @@
  * @module questions/construction/symmetry
  */
 
-import type { SymetriqueCheck } from '$lib/ubumark/types/construction';
-import type { FigureStep, FigureWindow } from '$lib/ubumark/types/figure';
+import type { SymetriqueCheck } from '#lib/ubumark/types/construction.ts';
+import type { FigureStep, FigureWindow } from '#lib/ubumark/types/figure.ts';
 import type { DrawnLine } from './answer';
 import { isInFrame, lineCrossesFrame, type Trait } from './instruments';
 import type { ConstructionVerdict, Position } from './judge';

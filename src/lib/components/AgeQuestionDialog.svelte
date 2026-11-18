@@ -8,10 +8,10 @@
 	revient au prochain chargement de l'espace élève, sans bloquer l'accès.
 -->
 <script lang="ts">
-	import * as Dialog from '$lib/components/ui/dialog';
-	import { Button } from '$lib/components/ui/button';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import { AGE_DECLARATION_ENDPOINT, shouldAskAgeQuestion } from '$lib/utils/age-declaration';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import { AGE_DECLARATION_ENDPOINT, shouldAskAgeQuestion } from '#lib/utils/age-declaration.ts';
 
 	interface Props {
 		role: string | null;

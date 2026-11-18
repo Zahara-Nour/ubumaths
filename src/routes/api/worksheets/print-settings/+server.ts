@@ -15,13 +15,13 @@
 
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRoles } from '$lib/server/middleware/auth';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
 import {
 	printSettingsQuerySchema,
 	printSettingsUpdateSchema
-} from '$lib/server/validation/worksheets';
-import { loadTextSize, saveTextSize } from '$lib/server/worksheets/print-settings';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/validation/worksheets.ts';
+import { loadTextSize, saveTextSize } from '#lib/server/worksheets/print-settings.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/worksheets/print-settings/+server');
 

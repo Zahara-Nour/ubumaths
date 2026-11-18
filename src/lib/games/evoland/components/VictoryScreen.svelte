@@ -6,7 +6,7 @@
 	 */
 
 	import { evolandStore } from '../stores/evoland.svelte';
-	import { Button } from '$lib/components/ui/button';
+	import { Button } from '#lib/components/ui/button/index.ts';
 
 	function handleContinue() {
 		evolandStore.goToTitle();

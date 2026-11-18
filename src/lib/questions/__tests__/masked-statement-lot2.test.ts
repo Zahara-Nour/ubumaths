@@ -17,13 +17,13 @@ import { describe, it, expect } from 'vitest';
 import { generateInstance } from '../generator/instance-generator';
 import { toPublicQuestion } from '../public-question';
 import type { QuestionInstance, QuestionTemplate } from '../types';
-import { templateMarkdown } from '$lib/ubumark';
-import '$lib/questions/construction/positions-setup';
-import { parseEspaceContent } from '$lib/ubumark/parser/espace-parser';
-import { readConstructionHeader } from '$lib/ubumark/parser/construction-parser';
-import { sideColumns } from '$lib/ubumark/utils/cubes-gestes';
-import { completerStart } from '$lib/ubumark/utils/patron-gestes';
-import type { CubesSpec, PatronSpec } from '$lib/ubumark/types/espace';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
+import '#lib/questions/construction/positions-setup.ts';
+import { parseEspaceContent } from '#lib/ubumark/parser/espace-parser.ts';
+import { readConstructionHeader } from '#lib/ubumark/parser/construction-parser.ts';
+import { sideColumns } from '#lib/ubumark/utils/cubes-gestes.ts';
+import { completerStart } from '#lib/ubumark/utils/patron-gestes.ts';
+import type { CubesSpec, PatronSpec } from '#lib/ubumark/types/espace.ts';
 
 // Constantes
 const META = { position: 0, delaySeconds: 20 };

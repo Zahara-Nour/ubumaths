@@ -7,7 +7,7 @@ import {
 	type DurationDraw,
 	type MockTestTraceRow
 } from '../duration-signals';
-import { observedSuggestion, tooShortAt } from '$lib/types/duration-signals';
+import { observedSuggestion, tooShortAt } from '#lib/types/duration-signals.ts';
 
 // Constantes
 const T1 = '11111111-1111-4111-8111-111111111111';

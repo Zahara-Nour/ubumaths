@@ -32,16 +32,16 @@
  */
 
 import type { LayoutServerLoad } from './$types';
-import type { ClassWithData } from '$lib/server/students';
-import type { Database } from '$lib/types/database';
+import type { ClassWithData } from '#lib/server/students.ts';
+import type { Database } from '#lib/types/database.ts';
 import { error } from '@sveltejs/kit';
-import { getTeacherClassesWithCounts } from '$lib/server/students';
+import { getTeacherClassesWithCounts } from '#lib/server/students.ts';
 import {
 	getCurrentAcademicPeriod,
 	getActiveSchoolYear,
 	getSchoolYearPeriods
-} from '$lib/server/warnings';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/warnings.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('(protected)/dashboard/teacher/+layout.server');
 

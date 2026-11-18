@@ -14,8 +14,8 @@
 	converties le 2026-11-08 ; une balise est du texte.
 -->
 <script lang="ts">
-	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
-	import type { InternalLinkReader } from '$lib/components/markdown/internal-link-context';
+	import MarkdownRenderer from '#lib/components/markdown/MarkdownRenderer.svelte';
+	import type { InternalLinkReader } from '#lib/components/markdown/internal-link-context.ts';
 
 	interface Props {
 		/** Contenu tel qu'en base, en ubumark. */

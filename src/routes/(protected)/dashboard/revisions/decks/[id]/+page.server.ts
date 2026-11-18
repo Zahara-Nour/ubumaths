@@ -11,7 +11,7 @@
 import type { PageServerLoad } from './$types';
 import { error, redirect } from '@sveltejs/kit';
 import { UNASSIGNED_KEY } from './constants';
-import { requireAuth } from '$lib/server/middleware/auth';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
 
 export interface DeckSection {
 	id: string;

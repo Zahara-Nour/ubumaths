@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { getAvailableFilters } from '$lib/templates/advancedEngine';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import { Button } from '$lib/components/ui/button';
-	import { Badge } from '$lib/components/ui/badge';
+	import { getAvailableFilters } from '#lib/templates/advancedEngine.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
 	import { HelpCircle, Zap } from '@lucide/svelte';
 
 	// Props

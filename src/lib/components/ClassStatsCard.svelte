@@ -11,8 +11,8 @@
 -->
 
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import { Button } from '$lib/components/ui/button';
+	import { lore } from '#lib/config/lore.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import { CalendarClock, Users } from '@lucide/svelte';
 
 	interface Props {

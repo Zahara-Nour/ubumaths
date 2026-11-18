@@ -21,16 +21,16 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import { FSRS } from '$lib/srs/fsrs';
-import { Grade } from '$lib/srs/types';
-import { ensureProgrammeDeckCard } from '$lib/server/srs/programme-deck';
-import { entersProgrammeDeck } from '$lib/server/srs/programme-deck-rule';
-import { applyFsrsReview } from '$lib/server/srs/fsrs-actions';
-import { attemptSourceForTemplate } from '$lib/server/course-card-attempts';
-import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
-import type { PhaseBlocage } from '$lib/types/skills';
-import { createServerLogger } from '$lib/utils/logger';
+import type { Database } from '#lib/types/database.ts';
+import { FSRS } from '#lib/srs/fsrs.ts';
+import { Grade } from '#lib/srs/types.ts';
+import { ensureProgrammeDeckCard } from '#lib/server/srs/programme-deck.ts';
+import { entersProgrammeDeck } from '#lib/server/srs/programme-deck-rule.ts';
+import { applyFsrsReview } from '#lib/server/srs/fsrs-actions.ts';
+import { attemptSourceForTemplate } from '#lib/server/course-card-attempts.ts';
+import { createServiceRoleClient } from '#lib/server/serviceRoleClient.ts';
+import type { PhaseBlocage } from '#lib/types/skills.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 // Types
 type SB = SupabaseClient<Database>;

@@ -26,8 +26,8 @@ import { numericNode } from '../common/numeric';
 // Direct import (bypassing the limits barrel) to avoid a Rollup chunk-cycle
 // warning between `limits/index.ts` and `limits/evaluate.ts`.
 import { evaluateLimit } from '../limits/evaluate';
-import { getEndpoints, buildInterval } from '$lib/math/intervals';
-import { endpointToNumber } from '$lib/math/intervals/endpoint';
+import { getEndpoints, buildInterval } from '#lib/math/intervals/index.ts';
+import { endpointToNumber } from '#lib/math/intervals/endpoint.ts';
 import { tryConvertConditionToInterval } from './algebra';
 import { differentiate } from '../differentiation';
 import { evaluate, substitute } from '../eval';

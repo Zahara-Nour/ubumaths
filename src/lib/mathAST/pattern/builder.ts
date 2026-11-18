@@ -59,7 +59,7 @@ import type {
 	RuleOptions,
 	MatchBindings
 } from './types';
-import type { IntervalDomain } from '$lib/math/intervals';
+import type { IntervalDomain } from '#lib/math/intervals/index.ts';
 import {
 	positiveReals,
 	nonNegativeReals,
@@ -69,7 +69,7 @@ import {
 	realLine,
 	lessThanOrEqualInterval,
 	lessThanInterval
-} from '$lib/math/intervals';
+} from '#lib/math/intervals/index.ts';
 import type { NumericType } from '../numtype/types';
 
 // =============================================================================

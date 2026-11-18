@@ -26,11 +26,11 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import { verifyTeacherStudentWithRole } from '$lib/server/middleware/student-access';
-import { studentIdSchema, achievementIdSchema } from '$lib/server/validation/achievements';
-import { getStudentProgress, AchievementServiceError } from '$lib/server/achievements/service';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { verifyTeacherStudentWithRole } from '#lib/server/middleware/student-access.ts';
+import { studentIdSchema, achievementIdSchema } from '#lib/server/validation/achievements.ts';
+import { getStudentProgress, AchievementServiceError } from '#lib/server/achievements/service.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger(
 	'api/achievements/student/[studentId]/progress/[achievementId]/+server'

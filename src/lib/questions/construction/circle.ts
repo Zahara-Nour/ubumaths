@@ -44,8 +44,8 @@ import {
 	centeredCircleOf,
 	type CenteredCircle,
 	type CircleCheck
-} from '$lib/ubumark/types/construction';
-import type { LengthUnit } from '$lib/ubumark/types/construction';
+} from '#lib/ubumark/types/construction.ts';
+import type { LengthUnit } from '#lib/ubumark/types/construction.ts';
 import type { DrawnCircle, DrawnLine, DrawnObject, DrawnRegle } from './answer';
 import { basePointsOf, constructionOf, isInFrame, rulerGraduationOf } from './instruments';
 import type { ConstructionVerdict, Position } from './judge';

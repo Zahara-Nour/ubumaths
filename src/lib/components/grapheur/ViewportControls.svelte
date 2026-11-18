@@ -13,11 +13,11 @@
 	 */
 
 	import { onMount } from 'svelte';
-	import { useGrapheurStore } from '$lib/stores/grapheur-context';
+	import { useGrapheurStore } from '#lib/stores/grapheur-context.ts';
 
 	// L'instance de l'atelier qui nous contient, ou celle par défaut.
 	const grapheurStore = useGrapheurStore();
-	import { Button } from '$lib/components/ui/button';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import {
 		ZoomIn,
 		ZoomOut,

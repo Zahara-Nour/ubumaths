@@ -11,7 +11,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { actions as createActions } from '../new/+page.server';
 import { actions as editActions } from '../[id]/edit/+page.server';
 
-vi.mock('$lib/server/middleware/auth', () => ({
+vi.mock('#lib/server/middleware/auth.ts', () => ({
 	requireRoles: vi.fn(async () => ({ user: { id: TEACHER_ID }, profile: { role: 'teacher' } }))
 }));
 

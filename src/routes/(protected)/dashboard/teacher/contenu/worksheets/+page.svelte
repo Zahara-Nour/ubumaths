@@ -1,17 +1,17 @@
 <script lang="ts">
-	import { WORKSHEET_TYPE_LABELS, WORKSHEET_TYPE_OPTIONS } from '$lib/utils/worksheet-constants';
-	import { lore } from '$lib/config/lore';
+	import { WORKSHEET_TYPE_LABELS, WORKSHEET_TYPE_OPTIONS } from '#lib/utils/worksheet-constants.ts';
+	import { lore } from '#lib/config/lore.ts';
 	import { goto, invalidateAll } from '$app/navigation';
 	import { page } from '$app/state';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
-	import * as Card from '$lib/components/ui/card';
-	import * as Table from '$lib/components/ui/table';
-	import ConfirmDialog from '$lib/components/ui/confirm-dialog/ConfirmDialog.svelte';
-	import { Badge } from '$lib/components/ui/badge';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import * as Table from '#lib/components/ui/table/index.ts';
+	import ConfirmDialog from '#lib/components/ui/confirm-dialog/ConfirmDialog.svelte';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import {
 		Plus,
 		Copy,
@@ -24,9 +24,9 @@
 		Loader2
 	} from '@lucide/svelte';
 	import type { PageData } from './$types';
-	import type { WorksheetType, WorksheetStatus } from '$lib/types/worksheets';
-	import { formatGradeShort } from '$lib/utils/grades';
-	import type { GradeCode } from '$lib/types/grades';
+	import type { WorksheetType, WorksheetStatus } from '#lib/types/worksheets.ts';
+	import { formatGradeShort } from '#lib/utils/grades.ts';
+	import type { GradeCode } from '#lib/types/grades.ts';
 
 	let { data }: { data: PageData } = $props();
 

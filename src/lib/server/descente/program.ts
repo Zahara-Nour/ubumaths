@@ -12,11 +12,11 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import type { ProvinceId } from '$lib/kingdom-tour/tour';
-import { fetchInChunks } from '$lib/server/utils/chunked-in';
-import { isCombatTemplate } from '$lib/descente/combat-templates';
-import { provinceOfBranch } from '$lib/descente/provinces';
+import type { Database } from '#lib/types/database.ts';
+import type { ProvinceId } from '#lib/kingdom-tour/tour.ts';
+import { fetchInChunks } from '#lib/server/utils/chunked-in.ts';
+import { isCombatTemplate } from '#lib/descente/combat-templates.ts';
+import { provinceOfBranch } from '#lib/descente/provinces.ts';
 
 // Types
 type SB = SupabaseClient<Database>;

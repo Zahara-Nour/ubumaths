@@ -12,11 +12,11 @@
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import type { BuddyState, BuddyXpGainResult } from '$lib/types/buddy';
-import { XP_SOURCES } from '$lib/utils/buddy-xp';
+import type { Database } from '#lib/types/database.ts';
+import type { BuddyState, BuddyXpGainResult } from '#lib/types/buddy.ts';
+import { XP_SOURCES } from '#lib/utils/buddy-xp.ts';
 import type { WorkedDayResult } from '../buddy-queries';
-import { weekStartOf } from '$lib/utils/buddy-constance';
+import { weekStartOf } from '#lib/utils/buddy-constance.ts';
 
 const getStudentBuddy = vi.hoisted(() =>
 	vi.fn<(supabase: unknown, studentId: string) => Promise<BuddyState | null>>()

@@ -18,11 +18,11 @@
 -->
 
 <script lang="ts">
-	import { MarkdownRenderer } from '$lib/components/markdown';
-	import * as Card from '$lib/components/ui/card';
+	import { MarkdownRenderer } from '#lib/components/markdown/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
 	import { RotateCw } from '@lucide/svelte';
-	import { cn } from '$lib/utils';
-	import type { TemplateMarkdown } from '$lib/ubumark';
+	import { cn } from '#lib/utils.ts';
+	import type { TemplateMarkdown } from '#lib/ubumark/index.ts';
 
 	interface Props {
 		frontContent: TemplateMarkdown;

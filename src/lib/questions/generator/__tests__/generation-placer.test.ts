@@ -12,10 +12,10 @@ import { generateInstance } from '../instance-generator';
 import { assignBlankIndices } from '../assign-blank-indices';
 import { validateTemplate } from '../../validators/template-validator';
 import type { QuestionTemplate, QuestionVariation } from '../../types';
-import { templateMarkdown } from '$lib/ubumark';
-import { validateAnswer } from '$lib/utils/answer-validator';
-import { parseNumberLineContent } from '$lib/ubumark/parser/number-line-parser';
-import { graduationCount, placerAnswer } from '$lib/ubumark/utils/number-line-placer';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
+import { validateAnswer } from '#lib/utils/answer-validator.ts';
+import { parseNumberLineContent } from '#lib/ubumark/parser/number-line-parser.ts';
+import { graduationCount, placerAnswer } from '#lib/ubumark/utils/number-line-placer.ts';
 
 function template(variation: Omit<QuestionVariation, 'statement'> & { statement: string }) {
 	return {

@@ -1,11 +1,15 @@
 import type { PageServerLoad, Actions } from './$types';
-import type { GradeCode } from '$lib/types/grades';
-import type { ExerciseCategory } from '$lib/exercises/types';
+import type { GradeCode } from '#lib/types/grades.ts';
+import type { ExerciseCategory } from '#lib/exercises/types.ts';
 import { error, redirect, fail } from '@sveltejs/kit';
 import { z } from 'zod';
-import { getTeacherExercises, deleteExercise, EXERCISE_NOT_DELETED } from '$lib/server/exercises';
-import { requireRoles } from '$lib/server/middleware/auth';
-import { createServerLogger } from '$lib/utils/logger';
+import {
+	getTeacherExercises,
+	deleteExercise,
+	EXERCISE_NOT_DELETED
+} from '#lib/server/exercises.ts';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('(protected)/dashboard/teacher/contenu/exercices/+page.server');
 

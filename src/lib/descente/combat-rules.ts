@@ -20,7 +20,7 @@
  * `afterDodge`. Une page fermée abandonne le combat sans rien perdre.
  */
 
-import type { ProvinceId } from '$lib/kingdom-tour/tour';
+import type { ProvinceId } from '#lib/kingdom-tour/tour.ts';
 
 // Types
 export type CombatBeastKind = 'ordinary' | 'big' | 'tutorial';

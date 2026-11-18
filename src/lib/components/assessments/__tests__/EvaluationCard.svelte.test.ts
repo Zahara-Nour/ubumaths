@@ -6,7 +6,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import EvaluationCard from '../EvaluationCard.svelte';
-import type { AssignmentWithDetails, EvaluationWithSeries } from '$lib/types/evaluation';
+import type { AssignmentWithDetails, EvaluationWithSeries } from '#lib/types/evaluation.ts';
 
 const evaluation: EvaluationWithSeries = {
 	id: 'e',

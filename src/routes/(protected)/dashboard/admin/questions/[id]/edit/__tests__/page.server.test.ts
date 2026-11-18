@@ -9,7 +9,7 @@
  */
 import { describe, it, expect } from 'vitest';
 import { load } from '../+page.server';
-import { createFakeSupabase, type Call } from '$lib/server/__tests__/helpers/fake-supabase';
+import { createFakeSupabase, type Call } from '#lib/server/__tests__/helpers/fake-supabase.ts';
 import type { PageServerData } from '../$types';
 
 // ============================================================================

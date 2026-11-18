@@ -2,14 +2,14 @@
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 	import { ChevronDown, FileDown, TriangleAlert } from '@lucide/svelte';
-	import { Button } from '$lib/components/ui/button';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import SeoHead from '$lib/seo/SeoHead.svelte';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import GuideTaskCard from '$lib/components/calculatrices/GuideTaskCard.svelte';
-	import * as Collapsible from '$lib/components/ui/collapsible';
-	import { Badge } from '$lib/components/ui/badge';
-	import { GRADE_LABELS } from '$lib/calculatrices/levels';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import SeoHead from '#lib/seo/SeoHead.svelte';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import GuideTaskCard from '#lib/components/calculatrices/GuideTaskCard.svelte';
+	import * as Collapsible from '#lib/components/ui/collapsible/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { GRADE_LABELS } from '#lib/calculatrices/levels.ts';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -27,8 +27,8 @@
 		isGeneratingPdf = true;
 		try {
 			const [{ generateGuideTypst }, { generateAndDownloadPdf }] = await Promise.all([
-				import('$lib/calculatrices/typst'),
-				import('$lib/typst/pdf-generator')
+				import('#lib/calculatrices/typst.ts'),
+				import('#lib/typst/pdf-generator.ts')
 			]);
 			const guide = data.guide;
 			const result = await generateAndDownloadPdf(

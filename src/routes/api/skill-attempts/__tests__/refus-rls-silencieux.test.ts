@@ -15,10 +15,10 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 const applyFsrsReview = vi.hoisted(() => vi.fn());
 const ensureProgrammeDeckCard = vi.hoisted(() => vi.fn());
 
-vi.mock('$lib/server/srs/fsrs-actions', () => ({ applyFsrsReview }));
-vi.mock('$lib/server/srs/programme-deck', () => ({ ensureProgrammeDeckCard }));
+vi.mock('#lib/server/srs/fsrs-actions.ts', () => ({ applyFsrsReview }));
+vi.mock('#lib/server/srs/programme-deck.ts', () => ({ ensureProgrammeDeckCard }));
 // Le serveur lit le modèle avec ses propres droits (brouillons compris)
-vi.mock('$lib/server/serviceRoleClient', () => ({
+vi.mock('#lib/server/serviceRoleClient.ts', () => ({
 	createServiceRoleClient: () => ({
 		from: () => ({
 			select: () => ({
@@ -32,7 +32,7 @@ vi.mock('$lib/server/serviceRoleClient', () => ({
 		})
 	})
 }));
-vi.mock('$lib/server/middleware/auth', () => ({
+vi.mock('#lib/server/middleware/auth.ts', () => ({
 	requireAuth: async () => ({ user: { id: STUDENT_ID }, profile: { role: 'student' } })
 }));
 

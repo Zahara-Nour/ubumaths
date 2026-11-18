@@ -14,7 +14,7 @@ import {
 	countListItems,
 	flattenList
 } from '../../parser/list-parser';
-import { parseMarkdown, type ListNode } from '$lib/ubumark';
+import { parseMarkdown, type ListNode } from '#lib/ubumark/index.ts';
 
 describe('isListItem', () => {
 	it('should identify ordered list items with dot', () => {

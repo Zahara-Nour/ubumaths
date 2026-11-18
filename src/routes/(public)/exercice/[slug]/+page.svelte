@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	/**
 	 * Public Exercise Viewer
 	 *
@@ -13,25 +13,25 @@
 	 */
 	import { browser } from '$app/env';
 	import { page } from '$app/state';
-	import * as Card from '$lib/components/ui/card';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import { Button } from '$lib/components/ui/button';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import { Slider } from '$lib/components/ui/slider';
-	import ExerciseDisplay from '$lib/components/exercises/ExerciseDisplay.svelte';
-	import { isVariationsExercise, getExerciseContentSafe } from '$lib/exercises/types';
-	import { generateExerciseInstance } from '$lib/exercises/generator/instance-generator';
-	import { formatGradeForDisplay } from '$lib/utils/grades';
-	import type { GradeCode } from '$lib/types/grades';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import { generateExerciseTypst } from '$lib/exercises/typst/exercise-typst-generator';
-	import { getTypstService, PRIORITY } from '$lib/typst/service';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import { Slider } from '#lib/components/ui/slider/index.ts';
+	import ExerciseDisplay from '#lib/components/exercises/ExerciseDisplay.svelte';
+	import { isVariationsExercise, getExerciseContentSafe } from '#lib/exercises/types.ts';
+	import { generateExerciseInstance } from '#lib/exercises/generator/instance-generator.ts';
+	import { formatGradeForDisplay } from '#lib/utils/grades.ts';
+	import type { GradeCode } from '#lib/types/grades.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import { generateExerciseTypst } from '#lib/exercises/typst/exercise-typst-generator.ts';
+	import { getTypstService, PRIORITY } from '#lib/typst/service/index.ts';
 	import type { PageData } from './$types';
 
 	// Tutor components
-	import TutorChat from '$lib/components/tutor/TutorChat.svelte';
-	import TutorFAB from '$lib/components/student/worksheets/TutorFAB.svelte';
-	import TutorDrawer from '$lib/components/student/worksheets/TutorDrawer.svelte';
+	import TutorChat from '#lib/components/tutor/TutorChat.svelte';
+	import TutorFAB from '#lib/components/student/worksheets/TutorFAB.svelte';
+	import TutorDrawer from '#lib/components/student/worksheets/TutorDrawer.svelte';
 
 	// Icons
 	import Check from '@lucide/svelte/icons/check';

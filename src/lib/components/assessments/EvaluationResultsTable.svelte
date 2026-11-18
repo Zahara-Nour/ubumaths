@@ -9,15 +9,15 @@
 -->
 
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import * as Table from '$lib/components/ui/table';
-	import { Badge } from '$lib/components/ui/badge';
+	import { lore } from '#lib/config/lore.ts';
+	import * as Table from '#lib/components/ui/table/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
 	import {
 		formatGrade,
 		getStatusColor,
 		getStatusLabel,
 		type EvaluationResult
-	} from '$lib/types/evaluation';
+	} from '#lib/types/evaluation.ts';
 
 	interface Props {
 		results: EvaluationResult[];

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	/**
 	 * Student Chapters List Page
 	 * ==========================
@@ -9,9 +9,9 @@
 	 */
 
 	import { navigating } from '$app/state';
-	import * as Card from '$lib/components/ui/card';
-	import { Badge } from '$lib/components/ui/badge';
-	import { ChapterCard } from '$lib/components/cours';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { ChapterCard } from '#lib/components/cours/index.ts';
 	import { Book, FolderOpen, GraduationCap } from '@lucide/svelte';
 	import type { PageData } from './$types';
 

@@ -20,8 +20,8 @@
  * @module ubumark/generators/protractor-typst
  */
 
-import { PROTRACTOR_RADIUS } from '$lib/constructions-v2/constants';
-import type { Protractor } from '$lib/questions/construction/drawing';
+import { PROTRACTOR_RADIUS } from '#lib/constructions-v2/constants.ts';
+import type { Protractor } from '#lib/questions/construction/drawing.ts';
 
 /** Mesures du dessin de l'écran, en unités de référence (pixels / 40) */
 const REF = {

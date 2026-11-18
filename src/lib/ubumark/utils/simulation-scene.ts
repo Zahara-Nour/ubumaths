@@ -11,10 +11,10 @@
  * @module ubumark/utils/simulation-scene
  */
 
-import type { ContentLocale } from '$lib/types/locale';
-import { groupNumberText } from '$lib/mathAST/digit-grouping';
+import type { ContentLocale } from '#lib/types/locale.ts';
+import { groupNumberText } from '#lib/mathAST/digit-grouping.ts';
 import type { StatChartDatum, StatChartSpec } from '../types/stat-chart';
-import { computeGridStep } from '$lib/geometry-core/viewport/grid';
+import { computeGridStep } from '#lib/geometry-core/viewport/grid.ts';
 import { COURBE_PIXEL_WIDTH, formatTick } from './courbe-scene';
 import {
 	STAT_CHART_ASPECT_RATIO,

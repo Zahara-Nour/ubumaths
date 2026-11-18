@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { resolvePath } from '$lib/navigation/resolve-path';
+	import { resolvePath } from '#lib/navigation/resolve-path.ts';
 	import {
 		Home,
 		Gamepad2,
@@ -16,7 +16,7 @@
 		KeyRound
 	} from '@lucide/svelte';
 	import type { LucideIcon } from '@lucide/svelte';
-	import type { Tables } from '$lib/types/database';
+	import type { Tables } from '#lib/types/database.ts';
 
 	type NavSection = 'serious' | 'fun';
 	type NavItem = {

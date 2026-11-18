@@ -2,7 +2,7 @@ import { appendFile, mkdtemp, readFile, readdir, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { CHILD_ACCOUNT_DOMAIN } from '$lib/utils/child-account';
+import { CHILD_ACCOUNT_DOMAIN } from '#lib/utils/child-account.ts';
 
 // Capture des courriels en local : base locale → rien ne part chez Brevo,
 // chaque courriel est écrit dans un dossier (tests Playwright, relecture).

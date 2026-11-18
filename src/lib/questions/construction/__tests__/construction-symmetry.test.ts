@@ -25,7 +25,7 @@ import {
 	SYMMETRY_SLID_FEEDBACK
 } from '../symmetry';
 import { solutionLines } from '../drawing';
-import { readConstructionHeader } from '$lib/ubumark/parser/construction-parser';
+import { readConstructionHeader } from '#lib/ubumark/parser/construction-parser.ts';
 
 function checksOf(source: string) {
 	const { spec, errors } = readConstructionHeader(source);

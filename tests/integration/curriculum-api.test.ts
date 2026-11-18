@@ -17,11 +17,11 @@
 
 import { describe, it, expect, beforeAll, afterAll, beforeEach, vi } from 'vitest';
 import type { SupabaseClient, User } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 
 import { PATCH as pointPATCH } from '../../src/routes/api/teacher/curriculum/points/[pointId]/+server';
 import { load as programmeLoad } from '../../src/routes/(protected)/dashboard/teacher/programme/+page.server';
-import { getProgrammeTree } from '$lib/server/programme-tree';
+import { getProgrammeTree } from '#lib/server/programme-tree.ts';
 
 import {
 	createServiceRoleClient,

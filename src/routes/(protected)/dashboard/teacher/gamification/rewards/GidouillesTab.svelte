@@ -12,22 +12,22 @@
 -->
 
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import { Button } from '$lib/components/ui/button';
-	import * as Tabs from '$lib/components/ui/tabs';
-	import * as Tooltip from '$lib/components/ui/tooltip';
+	import { lore } from '#lib/config/lore.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Tabs from '#lib/components/ui/tabs/index.ts';
+	import * as Tooltip from '#lib/components/ui/tooltip/index.ts';
 	import { Loader2 } from '@lucide/svelte';
-	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import { getStudentCardCounts } from '$lib/utils/vip-cards';
+	import { teacherCache } from '#lib/stores/teacherDashboardCache.svelte.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import { getStudentCardCounts } from '#lib/utils/vip-cards.ts';
 	import {
 		vipCardTemplates,
 		getTemplateById,
 		getEnabledTemplates
-	} from '$lib/stores/vipCardTemplates.svelte';
-	import VipCardSelector from '$lib/components/VipCardSelector.svelte';
+	} from '#lib/stores/vipCardTemplates.svelte.ts';
+	import VipCardSelector from '#lib/components/VipCardSelector.svelte';
 	import StudentRewardRow from './StudentRewardRow.svelte';
-	import gidouilleImg from '$lib/assets/images/gidouille.png';
+	import gidouilleImg from '#lib/assets/images/gidouille.png';
 
 	interface ClassItem {
 		id: string;

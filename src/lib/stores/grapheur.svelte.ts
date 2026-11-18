@@ -8,9 +8,9 @@
  * @module stores/grapheur
  */
 
-import { parseFunction } from '$lib/grapheur/evaluator';
-import { DEFAULT_VIEWPORT, panViewport, zoomViewport } from '$lib/grapheur/viewport';
-import { getNextSlot } from '$lib/grapheur/colors';
+import { parseFunction } from '#lib/grapheur/evaluator.ts';
+import { DEFAULT_VIEWPORT, panViewport, zoomViewport } from '#lib/grapheur/viewport.ts';
+import { getNextSlot } from '#lib/grapheur/colors.ts';
 import type {
 	Plottable,
 	ExplicitFunction,
@@ -22,27 +22,27 @@ import type {
 	SnappedPoint,
 	Parameter,
 	ScatterPlottable
-} from '$lib/grapheur/types';
+} from '#lib/grapheur/types.ts';
 import {
 	DEFAULT_PARAMETER_MAX,
 	DEFAULT_PARAMETER_MIN,
 	isSequence,
 	nextParameterName,
 	RESERVED_PARAMETER_NAMES
-} from '$lib/grapheur/types';
+} from '#lib/grapheur/types.ts';
 import {
 	DEFAULT_COBWEB_STEPS,
 	nextSequenceName,
 	parseSequence,
 	DEFAULT_FIRST_TERM_MIN,
 	DEFAULT_FIRST_TERM_MAX
-} from '$lib/grapheur/sequence';
+} from '#lib/grapheur/sequence.ts';
 import {
 	clearLabelsOf,
 	cyclePinnedLabels,
 	type PinnedLabel,
 	type PinnedLabelTarget
-} from '$lib/grapheur/pinned-labels';
+} from '#lib/grapheur/pinned-labels.ts';
 
 /**
  * Délai de fin d'un geste bref (cran de molette, appui sur un bouton ou une

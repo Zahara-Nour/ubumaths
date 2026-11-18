@@ -16,7 +16,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, it, expect } from 'vitest';
 import { POST } from '../+server';
-import { publishTemplates } from '$lib/server/questions-bulk-status';
+import { publishTemplates } from '#lib/server/questions-bulk-status.ts';
 
 // ============================================================================
 // TYPES

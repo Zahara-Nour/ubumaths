@@ -9,8 +9,8 @@ import { describe, it, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { page } from 'vitest/browser';
 import QuestionTemplateForm from '../QuestionTemplateForm.svelte';
-import { templateMarkdown } from '$lib/ubumark';
-import type { BlankDefaults, QuestionTemplate } from '$lib/questions/types';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
+import type { BlankDefaults, QuestionTemplate } from '#lib/questions/types.ts';
 
 type SavedTemplate = Omit<QuestionTemplate, 'id' | 'created_at' | 'updated_at' | 'created_by'>;
 

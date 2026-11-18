@@ -15,11 +15,11 @@
  *   falls back to `draft` (the template stays out of the students' reach) and
  *   an unknown grade is dropped rather than smuggled into `GradeLevel[]`.
  */
-import type { QuestionTemplate, QuestionVariation, TestSpec } from '$lib/questions/types';
-import type { DisplayOptions } from '$lib/questions/types';
-import type { GradeLevel } from '$lib/questions/types';
-import { isGradeCode } from '$lib/types/grades';
-import type { Json } from '$lib/types/database';
+import type { QuestionTemplate, QuestionVariation, TestSpec } from '#lib/questions/types.ts';
+import type { DisplayOptions } from '#lib/questions/types.ts';
+import type { GradeLevel } from '#lib/questions/types.ts';
+import { isGradeCode } from '#lib/types/grades.ts';
+import type { Json } from '#lib/types/database.ts';
 
 /** Row shape shared by every `question_templates` select (`select('*')`). */
 export interface QuestionTemplateRow {

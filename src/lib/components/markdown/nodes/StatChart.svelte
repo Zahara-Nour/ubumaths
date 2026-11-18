@@ -17,18 +17,18 @@
 	@module components/markdown/nodes/StatChart
 -->
 <script lang="ts">
-	import { COURBE_COLORS } from '$lib/ubumark/types/courbe';
-	import { PIE_COLOR_SEQUENCE, type StatChartNode } from '$lib/ubumark/types/stat-chart';
-	import { namedColorScreen, namedColorTable } from '$lib/theme/named-colors';
+	import { COURBE_COLORS } from '#lib/ubumark/types/courbe.ts';
+	import { PIE_COLOR_SEQUENCE, type StatChartNode } from '#lib/ubumark/types/stat-chart.ts';
+	import { namedColorScreen, namedColorTable } from '#lib/theme/named-colors.ts';
 	import {
 		PIE_MARKER_PX,
 		STAT_CHART_CHAR_PX,
 		buildStatChartScene,
 		type ScenePoint,
 		type StatChartScene
-	} from '$lib/ubumark/utils/stat-chart-scene';
+	} from '#lib/ubumark/utils/stat-chart-scene.ts';
 	import { readContentLocale } from '../content-locale';
-	import { STAT_TEXT } from '$lib/ubumark/utils/stat-chart-text';
+	import { STAT_TEXT } from '#lib/ubumark/utils/stat-chart-text.ts';
 	import StatChart from './StatChart.svelte';
 	import BarresPlacer from './BarresPlacer.svelte';
 	import BoxPlotChart from './BoxPlotChart.svelte';

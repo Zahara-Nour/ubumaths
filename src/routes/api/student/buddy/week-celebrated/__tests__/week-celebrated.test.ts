@@ -5,14 +5,14 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-vi.mock('$lib/server/middleware/auth', () => ({ requireRole: vi.fn() }));
-vi.mock('$lib/server/buddy-weeks', () => ({ markWeekCelebrated: vi.fn() }));
-vi.mock('$lib/utils/logger', () => ({
+vi.mock('#lib/server/middleware/auth.ts', () => ({ requireRole: vi.fn() }));
+vi.mock('#lib/server/buddy-weeks.ts', () => ({ markWeekCelebrated: vi.fn() }));
+vi.mock('#lib/utils/logger.ts', () => ({
 	createServerLogger: () => ({ info: vi.fn(), error: vi.fn(), warn: vi.fn(), debug: vi.fn() })
 }));
 
-import { requireRole } from '$lib/server/middleware/auth';
-import { markWeekCelebrated } from '$lib/server/buddy-weeks';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { markWeekCelebrated } from '#lib/server/buddy-weeks.ts';
 import { POST } from '../+server';
 
 const locals = { supabase: {} } as unknown as App.Locals;

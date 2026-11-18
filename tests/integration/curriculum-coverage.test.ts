@@ -19,7 +19,7 @@
 import { describe, it, expect, beforeAll, afterAll, beforeEach, vi } from 'vitest';
 import { present } from '../helpers/present';
 import type { SupabaseClient, User } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 
 import {
 	GET as tagsGET,
@@ -37,8 +37,8 @@ import {
 	DELETE as covDELETE
 } from '../../src/routes/api/teacher/curriculum/coverage/+server';
 
-import { reconcileAutoCoverage } from '$lib/server/curriculum-coverage';
-import { fetchWorksheetCitations } from '$lib/server/worksheets/citations';
+import { reconcileAutoCoverage } from '#lib/server/curriculum-coverage.ts';
+import { fetchWorksheetCitations } from '#lib/server/worksheets/citations.ts';
 import {
 	createServiceRoleClient,
 	createAuthenticatedClient,

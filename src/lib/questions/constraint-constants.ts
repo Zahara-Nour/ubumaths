@@ -1,6 +1,6 @@
 import type { ConfigurableConstraintId, ConstraintId } from './types';
 import { DEFAULT_CONSTRAINT_MODE, DEFAULT_FORM_CONSTRAINT_MODE } from './types';
-import { SUPERFLU_RULE_IDS, bySuperfluRule } from '$lib/mathAST/superflu/rules';
+import { SUPERFLU_RULE_IDS, bySuperfluRule } from '#lib/mathAST/superflu/rules.ts';
 
 /** Contraintes réglables par modèle (`rounding`, toujours exigée, n'en est pas) */
 export const CONSTRAINT_IDS: ConfigurableConstraintId[] = [

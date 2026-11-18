@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { extractMath } from '$lib/ubumark/parser/math-extractor';
-import { expressionToLatex } from '$lib/components/markdown/utils/math-utils';
-import { findBareGreekNames } from '$lib/exercises/bare-greek-warnings';
+import { extractMath } from '#lib/ubumark/parser/math-extractor.ts';
+import { expressionToLatex } from '#lib/components/markdown/utils/math-utils.ts';
+import { findBareGreekNames } from '#lib/exercises/bare-greek-warnings.ts';
 import {
 	ARTICLE_SOURCES,
 	findPublishedArticle,

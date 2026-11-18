@@ -20,12 +20,12 @@
  * (ADR 0035).
  */
 
-import { generateInstance } from '$lib/questions/generator/instance-generator';
-import { PREVIEW_SEED } from '$lib/questions/cart-preview';
-import type { QuestionInstance, QuestionTemplate } from '$lib/questions/types';
-import { compareNodes, placeOfNode, type TreeNode } from '$lib/questions/classification-tree';
-import type { GradeCode } from '$lib/types/grades';
-import { getAccessibleGrades } from '$lib/utils/grades';
+import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
+import { PREVIEW_SEED } from '#lib/questions/cart-preview.ts';
+import type { QuestionInstance, QuestionTemplate } from '#lib/questions/types.ts';
+import { compareNodes, placeOfNode, type TreeNode } from '#lib/questions/classification-tree.ts';
+import type { GradeCode } from '#lib/types/grades.ts';
+import { getAccessibleGrades } from '#lib/utils/grades.ts';
 
 // ============================================================================
 // TYPES

@@ -10,10 +10,10 @@
  * doublerait. Elle est alors perdue et le combat continue.
  */
 
-import type { ProvinceId } from '$lib/kingdom-tour/tour';
-import type { QuestionInstance } from '$lib/questions/types';
-import type { AnswerData } from '$lib/types/question-display';
-import { buildSeriesTrace } from '$lib/questions/series-trace';
+import type { ProvinceId } from '#lib/kingdom-tour/tour.ts';
+import type { QuestionInstance } from '#lib/questions/types.ts';
+import type { AnswerData } from '#lib/types/question-display.ts';
+import { buildSeriesTrace } from '#lib/questions/series-trace.ts';
 
 // Types
 export type CombatPurpose = 'attack' | 'dodge';

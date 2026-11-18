@@ -18,8 +18,8 @@ import {
 	firstHiddenTime,
 	isPaintAfterHidden,
 	type VisibilityEntry
-} from '$lib/utils/web-vitals-visibilite';
-import { createInpTracker, type InteractionEntry } from '$lib/utils/inp-tracker';
+} from '#lib/utils/web-vitals-visibilite.ts';
+import { createInpTracker, type InteractionEntry } from '#lib/utils/inp-tracker.ts';
 
 // =====================================================
 // TYPES

@@ -8,9 +8,9 @@ import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import { flushSync, tick } from 'svelte';
 import ClassroomSeries from '../ClassroomSeries.svelte';
-import type { ClassroomItem } from '$lib/types/test';
-import type { QuestionInstance } from '$lib/questions/types';
-import { resolvedMarkdown } from '$lib/ubumark';
+import type { ClassroomItem } from '#lib/types/test.ts';
+import type { QuestionInstance } from '#lib/questions/types.ts';
+import { resolvedMarkdown } from '#lib/ubumark/index.ts';
 
 function makeInstance(statement: string): QuestionInstance {
 	return {

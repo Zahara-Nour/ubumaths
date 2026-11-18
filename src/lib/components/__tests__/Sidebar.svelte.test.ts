@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { Home } from '@lucide/svelte';
 import Sidebar from '../Sidebar.svelte';
-import type { Tables } from '$lib/types/database';
+import type { Tables } from '#lib/types/database.ts';
 
 // Test fixture — only `role` is read by Sidebar's filter logic.
 // Other required columns of `profiles` are omitted intentionally.

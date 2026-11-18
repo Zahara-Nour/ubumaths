@@ -11,7 +11,7 @@
  * d'autres coups en maîtrisant une notion vient avec l'étape 5 (question G).
  */
 
-import type { ProvinceId } from '$lib/kingdom-tour/tour';
+import type { ProvinceId } from '#lib/kingdom-tour/tour.ts';
 
 // Types
 export interface CombatMove {

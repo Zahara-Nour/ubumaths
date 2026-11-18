@@ -8,9 +8,9 @@
 -->
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import { Button } from '$lib/components/ui/button';
-	import * as Card from '$lib/components/ui/card';
-	import CarnetView from '$lib/components/carnet/CarnetView.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import CarnetView from '#lib/components/carnet/CarnetView.svelte';
 	import { Mail } from '@lucide/svelte';
 	import type { PageData } from './$types';
 

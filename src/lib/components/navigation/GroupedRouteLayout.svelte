@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { cn } from '$lib/utils.js';
+	import { cn } from '#lib/utils.ts';
 	import type { Component, Snippet } from 'svelte';
 
 	type Tab = {

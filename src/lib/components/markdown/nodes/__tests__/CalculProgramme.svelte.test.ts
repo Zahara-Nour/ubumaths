@@ -15,14 +15,14 @@ import { page, userEvent } from 'vitest/browser';
 import CalculProgramme from '../CalculProgramme.svelte';
 import CalculCorrige from '../CalculCorrige.svelte';
 import TortueProgramme from '../TortueProgramme.svelte';
-import FillBlanksInput from '$lib/components/question-inputs/FillBlanksInput.svelte';
-import { parseCalculContent } from '$lib/ubumark/parser/calcul-parser';
-import { parseTortueContent } from '$lib/ubumark/parser/tortue-parser';
-import { texteVersEtatCalcul } from '$lib/shared/blockly/calcul/notation';
-import { LONGUEUR_MAX_PROGRAMME } from '$lib/shared/blockly/tortue/notation';
-import { generateInstance } from '$lib/questions/generator/instance-generator';
-import { templateMarkdown } from '$lib/ubumark';
-import type { QuestionTemplate } from '$lib/questions/types';
+import FillBlanksInput from '#lib/components/question-inputs/FillBlanksInput.svelte';
+import { parseCalculContent } from '#lib/ubumark/parser/calcul-parser.ts';
+import { parseTortueContent } from '#lib/ubumark/parser/tortue-parser.ts';
+import { texteVersEtatCalcul } from '#lib/shared/blockly/calcul/notation.ts';
+import { LONGUEUR_MAX_PROGRAMME } from '#lib/shared/blockly/tortue/notation.ts';
+import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
+import type { QuestionTemplate } from '#lib/questions/types.ts';
 
 let mains: HTMLElement[] = [];
 function mainElement(): HTMLElement {

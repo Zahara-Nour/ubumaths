@@ -8,9 +8,9 @@
  */
 
 import { describe, it, expect, vi } from 'vitest';
-import { readStoredSeriesMany } from '$lib/server/series-lines';
+import { readStoredSeriesMany } from '#lib/server/series-lines.ts';
 
-vi.mock('$lib/utils/logger', () => ({
+vi.mock('#lib/utils/logger.ts', () => ({
 	createServerLogger: () => ({ error: vi.fn(), warn: vi.fn(), info: vi.fn(), debug: vi.fn() })
 }));
 

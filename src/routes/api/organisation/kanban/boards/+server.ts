@@ -9,12 +9,12 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { createBoardSchema, listBoardsQuerySchema } from '$lib/server/validation/kanban';
-import { getAccessibleBoards, isClassTeacher, rateLimitResponse } from '$lib/server/kanban';
-import { checkKanbanBoardCreateRateLimit } from '$lib/server/rateLimiter';
-import type { KanbanBoard, KanbanBoardInsert } from '$lib/types/database-helpers';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { createBoardSchema, listBoardsQuerySchema } from '#lib/server/validation/kanban.ts';
+import { getAccessibleBoards, isClassTeacher, rateLimitResponse } from '#lib/server/kanban.ts';
+import { checkKanbanBoardCreateRateLimit } from '#lib/server/rateLimiter.ts';
+import type { KanbanBoard, KanbanBoardInsert } from '#lib/types/database-helpers.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/organisation/kanban/boards/+server');
 

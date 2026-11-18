@@ -16,8 +16,8 @@ import {
 	INVALID_CARNET_LINK,
 	readCarnetByToken,
 	setParentEmailsStopped
-} from '$lib/server/carnet/carnet';
-import { rateLimit } from '$lib/server/middleware/rateLimit';
+} from '#lib/server/carnet/carnet.ts';
+import { rateLimit } from '#lib/server/middleware/rateLimit.ts';
 
 // Constantes
 

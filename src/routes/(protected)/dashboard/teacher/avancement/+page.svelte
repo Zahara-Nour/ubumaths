@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	/**
 	 * Teacher — Avancement du programme (coverage heatmap).
 	 *
@@ -10,12 +10,12 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import { resolve } from '$app/paths';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
 	import { Gauge, ChevronRight, ChevronDown } from '@lucide/svelte';
 	import type { PageData } from './$types';
-	import ProgrammePointLabel from '$lib/components/programme/ProgrammePointLabel.svelte';
-	import { coverageStats } from '$lib/utils/programme-tree';
+	import ProgrammePointLabel from '#lib/components/programme/ProgrammePointLabel.svelte';
+	import { coverageStats } from '#lib/utils/programme-tree.ts';
 
 	type Branch = PageData['tree'][number];
 	type Notion = Branch['notions'][number];

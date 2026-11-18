@@ -21,12 +21,12 @@
 	@module components/markdown/nodes/CubesGeste
 -->
 <script lang="ts">
-	import type { CubesSpec, CubesView, EspaceNode } from '$lib/ubumark/types/espace';
+	import type { CubesSpec, CubesView, EspaceNode } from '#lib/ubumark/types/espace.ts';
 	import {
 		ESPACE_CM_PER_UNIT,
 		ESPACE_MARGIN,
 		ESPACE_STROKE
-	} from '$lib/ubumark/utils/espace-scene';
+	} from '#lib/ubumark/utils/espace-scene.ts';
 	import {
 		OTHER_SOLUTIONS,
 		drawingAnswer,
@@ -39,7 +39,7 @@
 		retrouverHasOtherSolutions,
 		retrouverMistakes,
 		viewGrid
-	} from '$lib/ubumark/utils/cubes-gestes';
+	} from '#lib/ubumark/utils/cubes-gestes.ts';
 	import Cubes from './Cubes.svelte';
 	import type { BuildCase } from './CollectionConstruire.svelte';
 

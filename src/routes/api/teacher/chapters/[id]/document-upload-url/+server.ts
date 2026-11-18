@@ -12,10 +12,10 @@
 
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import { uuidSchema } from '$lib/server/validation/common';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { uuidSchema } from '#lib/server/validation/common.ts';
 import { z } from 'zod';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/teacher/chapters/[id]/document-upload-url/+server');
 

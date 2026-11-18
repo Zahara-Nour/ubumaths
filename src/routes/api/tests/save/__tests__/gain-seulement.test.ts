@@ -13,22 +13,22 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 const applyFsrsReview = vi.hoisted(() => vi.fn());
 const ensureProgrammeDeckCard = vi.hoisted(() => vi.fn());
 
-vi.mock('$lib/server/srs/fsrs-actions', () => ({ applyFsrsReview }));
-vi.mock('$lib/server/srs/programme-deck', () => ({ ensureProgrammeDeckCard }));
+vi.mock('#lib/server/srs/fsrs-actions.ts', () => ({ applyFsrsReview }));
+vi.mock('#lib/server/srs/programme-deck.ts', () => ({ ensureProgrammeDeckCard }));
 // Typé avec la vraie signature : les tests lisent ses arguments (les réponses).
 const addBuddyXpFromTest = vi.hoisted(() =>
-	vi.fn<typeof import('$lib/server/buddy-xp-service').addBuddyXpFromTest>(async () => null)
+	vi.fn<typeof import('#lib/server/buddy-xp-service.ts').addBuddyXpFromTest>(async () => null)
 );
-vi.mock('$lib/server/buddy-xp-service', () => ({ addBuddyXpFromTest }));
+vi.mock('#lib/server/buddy-xp-service.ts', () => ({ addBuddyXpFromTest }));
 // Le serveur lit la nature des modèles avec ses propres droits (brouillons
 // compris) ; `lectureModeles` compte ses lectures.
-vi.mock('$lib/server/serviceRoleClient', () => ({
+vi.mock('#lib/server/serviceRoleClient.ts', () => ({
 	createServiceRoleClient: () => ({ from: () => ({ select: () => ({ in: lireModeles(true) }) }) })
 }));
 
 import { POST } from '../+server';
 
-vi.mock('$lib/server/middleware/auth', () => ({
+vi.mock('#lib/server/middleware/auth.ts', () => ({
 	// Garde commune simulée : la session vient de `locals.safeGetSession`
 	requireAuth: async (locals: { safeGetSession: () => Promise<{ user: unknown }> }) => {
 		const { user } = await locals.safeGetSession();

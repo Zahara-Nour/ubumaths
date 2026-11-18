@@ -1,7 +1,7 @@
 /**
  * Modèle du dictionnaire mathématique (ADR 0022) : types d'une entrée et règles
  * de lecture par niveau. Les entrées viennent de la base (`dictionary_entries`),
- * lues par `$lib/server/dictionary`.
+ * lues par `#lib/server/dictionary`.
  *
  * Chaque définition est rangée à un niveau : la première au niveau du terme,
  * les suivantes à des niveaux plus avancés. Un lecteur voit ce qui est rangé à
@@ -11,8 +11,8 @@
  * @module dictionary/model
  */
 
-import type { GradeCode } from '$lib/types/grades';
-import { hasAccessToGrade } from '$lib/utils/grades';
+import type { GradeCode } from '#lib/types/grades.ts';
+import { hasAccessToGrade } from '#lib/utils/grades.ts';
 
 // ---------------------------------------------------------------------------
 // Graded content types

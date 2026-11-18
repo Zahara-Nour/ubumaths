@@ -11,7 +11,7 @@ import { describe, it, expect } from 'vitest';
 import { convertLatexToMarkup } from 'mathlive/ssr';
 import { parseMarkdown } from '../../parser/markdown-parser';
 import { generateTypst } from '../typst-generator';
-import { expressionToLatex } from '$lib/components/markdown/utils/math-utils';
+import { expressionToLatex } from '#lib/components/markdown/utils/math-utils.ts';
 
 const SOURCE = 'Vitesse : ~3[m.s^{-1}]~, distance : ~90[km/h]~, longueur $2~\\unit{cm}$.';
 

@@ -6,10 +6,10 @@
 
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { getUnreadCount } from '$lib/server/notifications';
-import { unreadNotificationsCountResponseSchema } from '$lib/server/validation/notifications';
-import { validateJsonResponse } from '$lib/server/validation/response-utils';
-import { requireAuth } from '$lib/server/middleware/auth';
+import { getUnreadCount } from '#lib/server/notifications.ts';
+import { unreadNotificationsCountResponseSchema } from '#lib/server/validation/notifications.ts';
+import { validateJsonResponse } from '#lib/server/validation/response-utils.ts';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
 
 export const GET: RequestHandler = async ({ locals }) => {
 	const { user } = await requireAuth(locals);

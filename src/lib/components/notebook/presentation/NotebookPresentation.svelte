@@ -7,7 +7,7 @@
 	 * foreign student notebook to another one must not carry the lock over.
 	 *
 	 * Renders the notebook as a full-screen cell-by-cell slideshow built on
-	 * UbuSlides (`$lib/slides`). Approach A: `scaleContent: false` so each
+	 * UbuSlides (`#lib/slides/index.ts`). Approach A: `scaleContent: false` so each
 	 * slide fills the container with natural CSS sizing and scrolls on
 	 * overflow — matches the "live coding fits any output" need over the
 	 * "cinema cabaret" aesthetic.
@@ -25,15 +25,15 @@
 	 */
 	import { onDestroy, onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { Deck, Slide, UbuMarkSlide } from '$lib/slides';
-	import { NotebookStore } from '$lib/stores/notebookStore.svelte';
-	import { Button } from '$lib/components/ui/button';
+	import { Deck, Slide, UbuMarkSlide } from '#lib/slides/index.ts';
+	import { NotebookStore } from '#lib/stores/notebookStore.svelte.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import { ArrowLeft, Loader2 } from '@lucide/svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import NotebookCodeSlide from '$lib/components/notebook/presentation/NotebookCodeSlide.svelte';
-	import NotebookCheckpointSlide from '$lib/components/notebook/presentation/NotebookCheckpointSlide.svelte';
-	import type { CheckpointCell } from '$lib/types/notebook';
-	import { provideRestrictedRendering } from '$lib/components/markdown/restricted-rendering';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import NotebookCodeSlide from '#lib/components/notebook/presentation/NotebookCodeSlide.svelte';
+	import NotebookCheckpointSlide from '#lib/components/notebook/presentation/NotebookCheckpointSlide.svelte';
+	import type { CheckpointCell } from '#lib/types/notebook.ts';
+	import { provideRestrictedRendering } from '#lib/components/markdown/restricted-rendering.ts';
 
 	interface Props {
 		notebookId: string;

@@ -4,7 +4,7 @@
  */
 
 import { exportToIpynb, downloadIpynb } from './notebook-export';
-import type { NotebookContent } from '$lib/types/notebook';
+import type { NotebookContent } from '#lib/types/notebook.ts';
 
 // Example 1: Export notebook to JSON string
 function example1() {

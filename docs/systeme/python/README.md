@@ -208,7 +208,7 @@ Bouton **PDF** dans la toolbar → modal d'options → téléchargement.
 
 ### V2 — Mode présentation via UbuSlides (2026-06)
 
-Route `/python-notebook/[id]/present` → plein écran cellule-par-cellule via `Deck` du module `$lib/slides`. Bouton **Présentation** dans la toolbar.
+Route `/python-notebook/[id]/present` → plein écran cellule-par-cellule via `Deck` du module `#lib/slides/index.ts`. Bouton **Présentation** dans la toolbar.
 
 | Type cellule | Slide                                                                                   |
 | ------------ | --------------------------------------------------------------------------------------- |
@@ -280,7 +280,7 @@ Notebooks marqués `is_template = true` — réutilisables via clonage.
 
 ### V2 — MarkdownEditor upgrade (2026-06)
 
-Édition des cellules markdown via `$lib/components/markdown/MarkdownEditor`.
+Édition des cellules markdown via `#lib/components/markdown/MarkdownEditor`.
 
 - **Toolbar markdown** (bold, italic, headings, lists, tables, math)
 - **Live preview** dans un split-view (raw à gauche, rendu à droite)

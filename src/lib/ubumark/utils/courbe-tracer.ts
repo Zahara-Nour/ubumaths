@@ -20,10 +20,10 @@
  * @module ubumark/utils/courbe-tracer
  */
 
-import { parseCustom } from '$lib/mathAST/parser/custom';
-import { compile } from '$lib/mathAST/eval/compile';
-import { tidy } from '$lib/mathAST/tidy';
-import { toLatex } from '$lib/mathAST/latex-generator';
+import { parseCustom } from '#lib/mathAST/parser/custom/index.ts';
+import { compile } from '#lib/mathAST/eval/compile.ts';
+import { tidy } from '#lib/mathAST/tidy/index.ts';
+import { toLatex } from '#lib/mathAST/latex-generator.ts';
 import type { CourbeWindow } from '../types/courbe';
 import {
 	courbeGridSteps,

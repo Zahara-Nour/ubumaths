@@ -14,8 +14,8 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { tradeRealtimeStore } from '../tradeRealtime.svelte';
 import { supabaseRealtimeManager } from '../supabaseRealtime.svelte';
 import type { SupabaseClient, RealtimeChannel } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import type { MarketplaceTrade } from '$lib/types/marketplace';
+import type { Database } from '#lib/types/database.ts';
+import type { MarketplaceTrade } from '#lib/types/marketplace.ts';
 
 // ============================================================================
 // TYPES

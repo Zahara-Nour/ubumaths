@@ -27,7 +27,7 @@
 
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 import {
 	createServiceRoleClient,
 	cleanupAllTestData
@@ -42,7 +42,7 @@ import {
 	openCombat,
 	recordCombatAnswer,
 	type CombatAnswerInput
-} from '$lib/server/descente/combat';
+} from '#lib/server/descente/combat.ts';
 
 // Types
 type Client = SupabaseClient<Database>;

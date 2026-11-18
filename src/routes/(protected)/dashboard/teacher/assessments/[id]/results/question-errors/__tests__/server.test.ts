@@ -3,7 +3,7 @@
  * résultats (rôle, auteur), Zod sur `template`, contrôle absent.
  */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import type { EvaluationQuestionErrors } from '$lib/types/evaluation-breakdown';
+import type { EvaluationQuestionErrors } from '#lib/types/evaluation-breakdown.ts';
 
 const EVALUATION = '8b9c0d1e-8888-4888-8888-888888888888';
 const TEACHER = '1a2b3c4d-1111-4111-8111-111111111111';
@@ -17,7 +17,7 @@ const mocks = vi.hoisted(() => ({
 	errors: vi.fn()
 }));
 
-vi.mock('$lib/server/middleware/auth', () => ({
+vi.mock('#lib/server/middleware/auth.ts', () => ({
 	requireRoles: async (_locals: unknown, roles: string[]) => {
 		const role = mocks.role();
 		if (!roles.includes(role.profile.role)) {
@@ -27,12 +27,12 @@ vi.mock('$lib/server/middleware/auth', () => ({
 		return role;
 	}
 }));
-vi.mock('$lib/server/test-mode', () => ({ getTeacherTestMode: mocks.testMode }));
-vi.mock('$lib/server/evaluation-question-errors', () => ({
+vi.mock('#lib/server/test-mode.ts', () => ({ getTeacherTestMode: mocks.testMode }));
+vi.mock('#lib/server/evaluation-question-errors.ts', () => ({
 	getEvaluationQuestionErrors: mocks.errors
 }));
-vi.mock('$lib/server/evaluations', async (importOriginal) => {
-	const original = await importOriginal<typeof import('$lib/server/evaluations')>();
+vi.mock('#lib/server/evaluations.ts', async (importOriginal) => {
+	const original = await importOriginal<typeof import('#lib/server/evaluations.ts')>();
 	return { ...original, getEvaluation: mocks.evaluation, getEvaluationResults: mocks.results };
 });
 

@@ -7,9 +7,9 @@ import { error, json } from '@sveltejs/kit';
 import { z } from 'zod';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { RequestHandler } from './$types';
-import type { Database } from '$lib/types/database';
-import { requireAdmin } from '$lib/server/middleware/auth';
-import { loadVersions } from '$lib/server/dictionary/admin';
+import type { Database } from '#lib/types/database.ts';
+import { requireAdmin } from '#lib/server/middleware/auth.ts';
+import { loadVersions } from '#lib/server/dictionary/admin.ts';
 
 export const GET: RequestHandler = async ({ locals, params }) => {
 	const { supabase } = await requireAdmin(locals);
