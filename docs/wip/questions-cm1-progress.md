@@ -5,19 +5,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après #2855 (fichiers du lot 8e)._
+_Mis à jour le 2026-11-18, rangement du lot 8e écrit (§ 25 quinquies), PR à ouvrir._
 
-- **État** : lots 0 à 8d publiés, **148 points du CM1 sur 171** ; phase 0 des lots 8e et 8f validée (§ 25, 25 bis) ;
-  fichiers du 8e mergés (#2855, § 25 quater), pas encore créés en prod.
-- **Prochaine action** : David lance `pnpm create-questions --dir scripts/questions/cm1-8e --publier` depuis le
-  worktree ; puis relevé + migration nœud + tag (01 → CM1-109 + CM2-098, 02 → CM1-110 + CM2-099, 03 → 111,
-  04 → 112, 05 → 113 ; nœud Solides › propriétés) sur `feat/questions-cm1-lot8e-rangement`. Ensuite le lot 8f
-  (modèles 8 à 14 du § 25), puis 9.
-- **En attente de David** : la commande `create-questions --publier` du 8e.
-- **Pièges en cours** : lancer `create-questions --publier` et `db:migrate` **depuis le worktree** (lien
-  `supabase/.temp/` copié) — et celui du **bon** chantier ; commitlint refuse le type `content` et un corps > 100
-  caractères par ligne ; le mode auto refuse `publier-lot` (même en simulation) et `garde-niveaux-tags` : David les
-  lance ; ports 5175, 5177, 5178 pris ; 17 copies `[essai 8e]` en base locale ; niveau = rang dans le nœud ;
+- **État** : lots 0 à 8d publiés, **148 points du CM1 sur 171** ; lot 8e : fichiers mergés (#2855), 5 brouillons
+  créés en prod, migration de rangement écrite et testée sur `feat/questions-cm1-lot8e-rangement` (§ 25 quinquies).
+- **Prochaine action** : PR du rangement (audit de sécurité), CI, merge ; David lance `pnpm db:migrate` depuis le
+  worktree ; vérification au MCP ; page à cocher ; `publier-lot` (David). Ensuite le lot 8f (modèles 8 à 14 du
+  § 25), puis 9.
+- **En attente de David** : rien avant le merge.
+- **Pièges en cours** : création en prod = `pnpm tsx scripts/create-questions.ts --dir … --publier` (pas de script
+  `pnpm create-questions`) ; la lancer, comme `db:migrate`, **depuis le worktree** (lien `supabase/.temp/` copié) ;
+  commitlint refuse le type `content` et un corps > 100 caractères par ligne ; le mode auto refuse `publier-lot`
+  et `garde-niveaux-tags` : David les lance ; ports 5175, 5177, 5178 pris ; 17 copies `[essai 8e]` en base locale ;
   `ci-lint-fichiers.test.ts` dépasse parfois ses 5 s en CI (relancer le job).
 - **Worktree / branche** : `../ubumaths-wt-questions-cm1`, branche `feat/questions-cm1-lot8e-rangement`.
 
@@ -2114,3 +2113,14 @@ reste en D ; niveaux **CM1 et CM2** et tag des deux points (109/098, 110/099, 11
 
 - #2855 mergée. Premier passage de la CI rouge : `scripts/__tests__/ci-lint-fichiers.test.ts` hors délai (9,7 s pour
   5 s), sans rapport avec le lot ; vert à la relance du job.
+
+### 25 quinquies. Lot 8e — création en prod et rangement (2026-11-18)
+
+- `create-questions.ts --dir scripts/questions/cm1-8e --publier` lancé par David depuis le worktree : 5 brouillons
+  (b80d1619, af2d7e03, 281ad02d, b423785d, f83c0424), vérifiés au MCP (draft, sans nœud, 0 tag), ids commités.
+- Relevé `etat-prod-2026-11-18-cm1-8e/` (5 modèles, 0 tag ; les 7 points sur Géométrie > Solides > propriétés),
+  script `lot-cm1-8e-rangement.py` (gabarit 8d) → migration `20261118223150_questions_cm1_lot8e_rangement_tags`
+  - fixture : 5 modèles rangés sur Solides > propriétés, 7 tags posés (CM1-109 à 113 ; CM2-098, 099), aucun
+    niveau ni statut changé, aucun nœud créé. Diff avec le 8d limité aux données du lot.
+- Test `questions-cm1-lot8e-rangement-tags.test.ts` : 20/20 vert ; corps neutralisé (`select 1;`) : 9 échecs,
+  7 sautés. `types:cliquet` tenu. Seule migration en attente (`migration list --linked`).
