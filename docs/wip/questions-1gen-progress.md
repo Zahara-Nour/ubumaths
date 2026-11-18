@@ -938,3 +938,25 @@ bien, énoncé, choix et formule colorée) ; nuages de S3 (droite, U) lisibles.
   de ces estimations est une interpolation ? ».
 - **S6** : la droite au jugé est déclinée en trois variations (bonne droite en d₁, d₂, d₃) ; a et b de Mayer
   entiers ou à une décimale (b = ȳ₁ − 2,5a à 8 points).
+
+## 25. Lot 6 : en prod, rangement et tags (2026-11-18)
+
+David a lancé `create-questions --publier` après #2802 : 7 brouillons, `grades` `['1_GEN']`, sans nœud, 0 tag (relu
+au MCP). Ids en tête des fichiers.
+
+| Modèle | id                                     | Point    | Nœud                                                            |
+| ------ | -------------------------------------- | -------- | --------------------------------------------------------------- |
+| S1     | `9bedbaf4-d5d1-4464-947d-19b8946452ab` | 1GEN-001 | Statistiques > Tableaux croisés                                 |
+| S2     | `f3cb0c7a-5fa9-4578-ba55-769581dcc64b` | 1GEN-002 | Statistiques > Statistique à deux variables > nuage de points   |
+| S3     | `7461bb44-6811-4f56-9397-6fb3ff82c1b9` | 1GEN-002 | Statistiques > Statistique à deux variables > nuage de points   |
+| S4     | `4f328c8c-16c8-40b0-b192-bc2eaa94a867` | 1GEN-004 | Statistiques > Statistique à deux variables > point moyen       |
+| S5     | `ef8ade24-f79c-4bd8-b51c-77852ed0496c` | 1GEN-005 | Statistiques > Statistique à deux variables > ajustement affine |
+| S6     | `3fec6b41-b401-430b-b602-017bd51e5f10` | 1GEN-007 | Statistiques > Statistique à deux variables > ajustement affine |
+| S7     | `2e898e54-bad7-4a92-b5ca-5d40561ca24d` | 1GEN-006 | Statistiques > Représenter des données                          |
+
+- Migration `20261118054706_questions_1gen_lot6_rangement_tags.sql` : les 7 sur leur nœud, un point 1GEN chacun ;
+  49fac266 (publié) gagne `1_GEN` (`array_append` gardé) et 1GEN-003. Tout ou rien des 7 neufs ; sans eux (base
+  locale, qui a une copie de 49fac266), elle ne touche rien. Test : 14 / 14 vert, 9 rouges sans le corps.
+- `security-auditor` : aucun finding bloquant ni important. Faible 1 corrigé (la garde refuse un 49fac266 qui
+  porterait déjà `1_GEN`, sinon le rollback l'effacerait). Faible 2 : le tout ou rien repose sur la transaction
+  implicite de `db push` (gabarit éprouvé) ; revérifier `tgenabled = 'O'` après `db:migrate`.

@@ -313,16 +313,16 @@ describe('Questions 1GEN, lot 6 : les branches d’échec de la migration', () =
 		});
 	});
 
-	it('1_GEN déjà présent dans les niveaux du publié : pas de doublon', async () => {
+	it('1_GEN déjà ajouté à la main au publié fait échouer la migration (rollback sûr)', async () => {
 		await enTransaction(async () => {
 			await poserEtatProd(pg, auteur);
 			await pg.query(
 				`update public.question_templates set grades = array_append(grades, '1_GEN') where id = $1`,
 				[PUBLIE.id]
 			);
-			await pg.query(readFileSync(MIGRATION, 'utf-8'));
-			const etat = await lireEtat(pg);
-			expect(etat.niveaux.get(PUBLIE.id)).toEqual([...PUBLIE.niveaux, '1_GEN']);
+			await expect(pg.query(readFileSync(MIGRATION, 'utf-8'))).rejects.toThrow(
+				/49fac266 a changé depuis le relevé/
+			);
 		});
 	});
 

@@ -145,7 +145,8 @@ end $resolution$;
 -- ---- 3. Gardes ---------------------------------------------------------------------
 -- Présence TOUT ou RIEN des 7 neufs. Sans eux (base locale, où 49fac266 peut exister seul), la
 -- migration ne touche RIEN, pas même 49fac266 : le lot est vidé. Avec eux, 49fac266 est exigé.
--- Puis : neufs sans nœud ni tag ; 49fac266 sur le nœud de son point, sans point 1GEN.
+-- Puis : neufs sans nœud ni tag ; 49fac266 sur le nœud de son point, sans niveau 1_GEN ni point
+-- 1GEN (sinon le rollback, qui retire 1_GEN sans condition, effacerait un ajout fait à la main).
 do $garde$
 declare v_neufs integer; v_publie_present integer; v_ranges integer; v_tags integer; v_publie integer;
 begin
@@ -178,11 +179,12 @@ begin
 	  join public.question_templates q on q.id = r.id
 	 where not r.neuf
 	   and (q.classification_node_id is distinct from r.noeud
+	        or '1_GEN' = any(q.grades)
 	        or exists (select 1 from public.question_template_points t
 	                     join public.curriculum_points p on p.id = t.point_id
 	                    where t.template_id = q.id and p.grade = '1_GEN'));
 	if v_publie <> 0 then
-		raise exception '49fac266 a changé depuis le relevé (nœud déplacé ou point 1GEN déjà posé)';
+		raise exception '49fac266 a changé depuis le relevé (nœud déplacé, niveau 1_GEN ou point 1GEN déjà posé)';
 	end if;
 end $garde$;
 
