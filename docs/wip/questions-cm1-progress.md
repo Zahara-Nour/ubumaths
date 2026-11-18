@@ -5,20 +5,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, lot 8c en cours de rangement (§ 23 quater)._
+_Mis à jour le 2026-11-18, après #2824 (migration de rangement du lot 8c, § 23 quater)._
 
-- **État** : lots 0 à 8b publiés, **137 points du CM1 sur 171** (CM2 : 92 sur 158). Lot 8c : 7 brouillons en prod
-  (#2823 + `--publier` de David) ; migration de rangement `20261118115830_questions_cm1_lot8c_rangement_tags` écrite,
-  test 20/20 vert (rouge sans elle), sur la branche `feat/questions-cm1-lot8c-rangement` (poussée, **PR pas ouverte**).
-- **Prochaine action** : PR de la migration (`security-auditor` : aucun finding bloquant), CI, `check:migrations --pr`, merge, `db:migrate` (David, depuis le worktree), vérif MCP,
-  page à cocher, publication. Ensuite 8d figures à compléter, 8e, 9 (§ 20).
-- **En attente de David** : rien avant le merge de la migration.
+- **État** : lots 0 à 8b publiés, **137 points du CM1 sur 171** (CM2 : 92 sur 158). Lot 8c : 7 brouillons en prod,
+  migration `20261118115830_questions_cm1_lot8c_rangement_tags` mergée (#2824), **pas encore jouée en prod**.
+- **Prochaine action** : David lance `db:migrate` depuis le worktree (`migration list --linked` avant : seule en
+  attente) ; puis vérif MCP (7 nœuds, 10 tags, `updated_at` inchangé), page à cocher, publication. Ensuite 8d
+  figures à compléter, 8e, 9 (§ 20).
+- **En attente de David** : `db:migrate`.
 - **Pièges en cours** : lancer `create-questions --publier` et `db:migrate` **depuis le worktree** (lien
   `supabase/.temp/` copié) ; `db:migrate` « inserted before » → `--dry-run --include-all` puis `--include-all` ;
   titre homonyme d'un autre niveau → `create-questions` refuse (renommer) ; commitlint refuse le type `content` ;
   le mode auto refuse `publier-lot` et `garde-niveaux-tags` : David les lance ; `sonde-figures` ne voit pas les
   dessins d'une case choix (aperçu) ; ports 5176, 5177 pris par d'autres sessions.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, branche `feat/questions-cm1-lot8c-rangement`.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, détaché sur `main`, aucune branche ouverte.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
