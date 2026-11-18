@@ -9,8 +9,8 @@ _Mis à jour le 2026-11-18, migration du lot 4 écrite (§ 31), PR à ouvrir._
 
 - **État** : lot 4 en prod en brouillon (5e810e16 M1 037, 7a37a3e1 M2 039, sans nœud ni tag) ; migration
   `20261118104421` + test (9 verts, 5 rouges sans) commités sur `feat/questions-ttechno-lot4-rangement`, pas
-  poussés ; `security-auditor` lancé, verdict non encore noté au § 31.
-- **Prochaine action** : relancer `security-auditor` si son verdict n'est pas au § 31 ; push, PR, CI verte →
+  poussés ; `security-auditor` sans finding (§ 31).
+- **Prochaine action** : push, PR, CI verte →
   merge → `check:migrations --pr <n>` avant le merge ; `migration list --linked` ; `db:migrate` depuis le dépôt
   principal ; vérif MCP ; page à cocher ; publication par David.
 - **En attente de David** : rien.
@@ -758,3 +758,5 @@ David a lancé `create-questions --publier` : 2 brouillons (5e810e16 M1, 7a37a3e
 - Test `tests/integration/questions-ttechno-lot4-rangement-tags.test.ts` : 9 verts (encore 9 après le commit) ;
   corps retiré (en-tête et rollback gardés) → 5 rouges ; fichier restauré d'une copie, identique.
   `types:cliquet` tenu.
+- `security-auditor` : aucun finding (diff avec le lot 3b = en-tête, ids, codes, gardes « 0 ou 2 », table
+  temporaire ; rollback miroir ; aucune policy, aucun GRANT, aucune table d'élève ; état prod mesuré conforme).
