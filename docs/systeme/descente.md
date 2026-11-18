@@ -6,15 +6,15 @@ couvre:
 
 # La Descente de la Vistule — le jeu de combats
 
-> Vérifié contre le code le 2026-11-18 (étape 2 : apparition des Bêtes). Conception et
+> Vérifié contre le code le 2026-11-18 (étape 2 : apparition des Bêtes ; étape 3 : combat de la recrue). Conception et
 > décisions de David : [navadra-progress.md](../wip/navadra-progress.md) (§ « Tranché », phases 0
 > de la v1 et de l'étape 2). Vocabulaire : [CONTEXT.md](../../CONTEXT.md) (Bête imprévue,
 > coup / sort, carnet de voyage).
 
 L'élève combat des **Bêtes imprévues** nées de ses besoins ; chaque coup ou sort se valide par une
-question. Le jeu se construit par étapes (une PR par étape) : seules les fondations en base
-(étape 1) et l'apparition des Bêtes (étape 2) existent ; **aucune page ne les appelle encore**
-(carte et entrée de menu à l'étape 4).
+question. Le jeu se construit par étapes (une PR par étape) : fondations en base (étape 1),
+apparition des Bêtes (étape 2), combat de la recrue (étape 3). **Aucune page n'y mène encore**
+(carte et entrée de menu à l'étape 4) : sans appel à l'apparition, aucune Bête n'existe en prod.
 
 ## Base (étape 1)
 
@@ -39,7 +39,7 @@ l'ouverture de la carte. Pas de tâche planifiée : chaque visite **rattrape** l
 | Reste du temps | gardé : la k-ième Bête due est datée de la dernière apparition + k × 8 h              |
 | Départ         | 3 jours ; jamais pour un point à remédier (reste jusqu'à sa défaite)                  |
 | Grosse Bête    | une tous les 7 jours, la première 7 jours après l'arrivée ; reste 7 jours, hors des 5 |
-| Points de vie  | 100 / 300, **provisoires** (réglés à l'étape 3)                                       |
+| Points de vie  | 120 (ordinaire) / 360 (grosse), réglés à l'étape 3 (voir combat)                      |
 | Tutoriel       | ne compte pour rien dans l'apparition                                                 |
 
 **D'où naît une Bête** (`spawn-logic.ts`) : d'un point du parcours de l'élève, par priorité :
@@ -59,10 +59,50 @@ Provinces) ; une branche inconnue ne fait naître aucune Bête et se trace au jo
 **Bestiaire** (`bestiary.ts`) : **provisoire**, trois Bêtes par Province ; les vraies fiches sont à
 valider avant l'étape 4. La base ne garde que la clé.
 
+## Combat de la recrue (étape 3)
+
+Page `/dashboard/student/descente/combat/[beastId]` (`CombatArena.svelte`), élève seul. Règles
+pures : `combat-rules.ts` ; coups : `moves.ts` ; serveur : `src/lib/server/descente/combat.ts` ;
+appels de la page : `combat-client.ts`.
+
+| Règle       | Valeur                                                                             |
+| ----------- | ---------------------------------------------------------------------------------- |
+| Tour        | 3 coups de l'élève, puis la riposte : une question d'esquive                       |
+| Coups       | un par Province (`STARTING_MOVES`, **noms provisoires**) ; le même plusieurs fois  |
+| Dégâts      | coup réussi : 20 sur la Province sensible, 8 ailleurs ; coup raté : rien           |
+| Cœurs       | 3 ; une esquive ratée en coûte un ; plus de cœur : défaite, sans aucun coût        |
+| Grosse Bête | se replie après 4 tours, garde ses blessures ; ordinaires : pas de limite de tours |
+| Ouverture   | une Bête ordinaire blessée repart en pleine forme ; à 0 sans défaite, pas remise   |
+| Coup fermé  | Province sans point jouable à **son** niveau (le coup sensible reste ouvert)       |
+
+**Questions** (`drawCombatQuestion`) : esquive ou coup sensible → un modèle du point de la Bête
+(à défaut, un autre point de sa Province, à son niveau) ; autre coup → un point de son niveau dans
+la Province du coup, non acquis d'abord. Le serveur génère l'instance et la **revérifie**
+(`isCombatInstance` : une seule case tapée ou un QCM, sans geste, ni carte de cours) ; sinon il en
+tire une autre (8 essais). Les modèles déjà posés dans le combat passent en dernier.
+
+**Réponses** (`recordCombatAnswer`) : comptées comme partout (`recordStudentAttempt` : FSRS, trace
+`auto` au lieu `descente` écrite au client service, deck Programme, suivi des points) ; puis le
+serveur retire les dégâts (écriture conditionnée aux PV lus, refaite si deux réponses se croisent).
+À 0 : `record_beast_victory`. Une trace non écrite n'arrête pas le combat (`recorded: false`) ;
+une victoire non enregistrée se renvoie (`claimBeastVictory`, route `…/victory`).
+
+**Routes** (`src/routes/api/descente/combat/[beastId]/`, Zod `validation/descente.ts`) :
+`question`, `answer`, `victory` ; refus en 404 / 409 `{ error: <code> }` (`combat-http.ts`).
+La page renvoie une réponse sur une panne du serveur (5xx, 429, 408), jamais après une coupure
+réseau (doublon de trace et de dégâts).
+
+**Triche** : correction côté client (ADR 0001). Le serveur ne vérifie pas que le modèle répondu
+est celui qu'il a tiré, ni la Province d'un coup : une réponse forgée ne fait rien de plus qu'une
+trace forgée par `api/skill-attempts` ; les gidouilles restent plafonnées.
+
+Preuves : `tests/integration/descente-combat.test.ts` ; `combat-rules`, `combat-client`,
+`combat-templates` (unitaires) ; `CombatArena.svelte.test.ts`.
+
 ## Droits et pièges
 
 - Lectures au client de l'élève (RLS) ; écriture au client service, après
-  `assertSessionStudent` ; le niveau est lu dans le profil, jamais reçu de l'appelant.
+  `assertSessionStudent` (`program.ts`, partagé par l'apparition et le combat) ; le niveau est lu dans le profil, jamais reçu de l'appelant.
 - ⚠️ Un refus RLS sur les Bêtes vivantes ferait croire la carte vide (plus de 5 Bêtes) : prouvé en
   intégration (`tests/integration/descente-apparition.test.ts`, carte pleine et Bête repartie).
 - Deux visites simultanées peuvent créer quelques Bêtes de trop, une fois : accepté par David.

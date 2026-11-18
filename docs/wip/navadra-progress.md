@@ -2,10 +2,10 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, phase 0 de l'étape 3 posée._
+_Mis à jour le 2026-11-18, étape 3 codée (PR à ouvrir)._
 
-- **État** : étapes 1 (#2808, #2810) et 2 (#2817) mergées. Étape 3 (combat de la recrue) : phase 0 validée (« je te suis »), code en cours.
-- **Prochaine action** : coder l'étape 3 une fois la phase 0 validée (tests d'abord).
+- **État** : étapes 1 (#2808, #2810) et 2 (#2817) mergées. Étape 3 (combat de la recrue) : codée sur `feat/navadra-combat`, tests verts (unitaires, composant, intégration).
+- **Prochaine action** : revues (code + sécurité), PR, CI, merge ; puis étape 4 (carte, entrée de menu, carnet), précédée des vraies fiches du bestiaire et des vrais noms des 6 coups.
 - **En attente de David** : rien.
 - **Façon de poser** : en mots simples, avec un exemple, sans noms de tables ni de colonnes.
 - **Pièges en cours** :
@@ -56,6 +56,14 @@ David a validé toutes les recommandations (« je te suis »), A à G comprises.
 - **E. Question d'esquive tirée du point de la Bête** (recommandation) : même si l'élève choisit d'autres Provinces, il travaille la notion visée au moins une fois par tour.
 - **F. Noms des 6 coups de départ.** Recommandation : des **noms provisoires dans le code** (« Coup de Nombrilie »…), écrits et validés avec les fiches du bestiaire, avant l'étape 4.
 - **G. Coups gagnés en maîtrisant une notion (5a).** Le découpage ne les place dans aucune étape. Pour la recrue, un coup gagné ne ferait rien de plus qu'un coup de départ. Recommandation : **l'étape 3 ne livre que les 6 coups de départ** ; gagner des coups et sorts (et l'annonce) vient avec l'étape 5 (apprenti), où les sorts ont des effets différents.
+
+### Étape 3 : ce qui a été codé (2026-11-18)
+
+- Règles pures `combat-rules.ts` (tour, cœurs, dégâts 20 / 8, repli de la grosse Bête après 4 tours) ; PV 120 / 360 (`spawn-logic.ts`) ; coups de départ `moves.ts` (noms provisoires).
+- Serveur `combat.ts` : `openCombat`, `drawCombatQuestion` (revérifie la question tirée : `isCombatInstance`), `recordCombatAnswer`, `claimBeastVictory`. Lectures partagées avec l'apparition déplacées dans `program.ts`.
+- **Cœur commun extrait** : `src/lib/server/skill-attempts/record-attempt.ts` (`recordStudentAttempt`), utilisé par `api/skill-attempts` et par le combat (trace `descente` au client service) : une réponse en combat compte exactement comme ailleurs (FSRS, suivi, Programme).
+- Routes `api/descente/combat/[beastId]/{question,answer,victory}` ; page `/dashboard/student/descente/combat/[beastId]` (`CombatArena.svelte`). « Quitter » mène à `/dashboard/student/descente`, **qui n'existe qu'à l'étape 4**.
+- Choix techniques non posés à David (sans effet visible) : le serveur ne vérifie pas que le modèle répondu est celui qu'il a tiré (une réponse forgée ne fait rien de plus qu'une trace forgée par `api/skill-attempts`) ; tour et cœurs tenus par la page, PV par le serveur.
 
 ## Phase 0 de l'étape 2 : apparition des Bêtes (validée par David le 2026-11-18)
 
