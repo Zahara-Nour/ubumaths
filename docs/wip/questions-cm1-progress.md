@@ -5,18 +5,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après #2846 (page à cocher du 8d publiée)._
+_Mis à jour le 2026-11-18, après la publication du lot 8d._
 
-- **État** : lots 0 à 8c publiés, **144 points du CM1 sur 171** ; lot 8d en prod en brouillons, rangés et tagués
-  (#2840, migration jouée) ; page à cocher https://claude.ai/artifact/3DT2a4R51Ef71YbezaxTcR (§ 24 sexies).
-- **Prochaine action** : lire les verdicts (`ArtifactData list verdicts`, compter 4) ; « À revoir » → corriger ;
-  puis `publier-lot --dir scripts/questions/cm1-8d` en simulation, David lance `--publier` et `garde-niveaux-tags` ;
-  puis 8e, 9 (§ 20).
-- **En attente de David** : relecture de la page à cocher du 8d.
+- **État** : lots 0 à 8d publiés, **148 points du CM1 sur 171** (CM2 : 108 sur 158) ; aucun brouillon en attente.
+- **Prochaine action** : lot 8e (solides, déplacements : 109, 110-113, 115, 117, 118 ; § 20), phase 0 (relevé
+  MCP, patrons CE2 `11ebf9fe`, `c8c9746a`), à valider par David ; puis 9 (probabilités, proportionnalité).
+- **En attente de David** : rien.
 - **Pièges en cours** : lancer `create-questions --publier` et `db:migrate` **depuis le worktree** (lien
   `supabase/.temp/` copié) — et celui du **bon** chantier (un `--publier` du CM2 11a a été lancé ici) ; commitlint
-  refuse le type `content` et un corps > 100 caractères par ligne ; le mode auto refuse `publier-lot` et
-  `garde-niveaux-tags` : David les lance ; ports 5176, 5177 pris ; imports en `#lib/x.ts`.
+  refuse le type `content` et un corps > 100 caractères par ligne ; le mode auto refuse `publier-lot` (même en
+  simulation) et `garde-niveaux-tags` : David les lance ; ports 5176, 5177 pris ; imports en `#lib/x.ts`.
 - **Worktree / branche** : `../ubumaths-wt-questions-cm1`, détaché sur `main`, aucune branche ouverte.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
@@ -2019,3 +2017,10 @@ avant. La migration ne fait que ranger et taguer les modèles, sur des nœuds qu
 - Page `page-a-cocher.ts --dir scripts/questions/cm1-8d` : 4 fiches (13 exemples), aucune alerte ; vue à 390 et
   1200 px, sans défilement horizontal ni erreur de console. Publiée :
   https://claude.ai/artifact/3DT2a4R51Ef71YbezaxTcR (`verdicts`, capacité `db`, vide).
+
+### 24 septies. Lot 8d — publié (2026-11-18)
+
+- Page à cocher : 4 « OK » sur 4, aucun commentaire. `publier-lot --dir scripts/questions/cm1-8d` (simulation, puis
+  `--publier`) et `garde-niveaux-tags` lancés par David (le mode auto refuse même la simulation). Vérifié au MCP :
+  4 modèles `published`.
+- Recompte MCP (points non archivés ayant un modèle publié) : **CM1 148/171** (144 + 4) ; CM2 108/158.
