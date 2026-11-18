@@ -6,13 +6,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après #2837 (fichiers du lot 11a)._
+_Mis à jour le 2026-11-18, après #2841 (nœud + tag du lot 11a)._
 
-- **État** : lots 0 à 10 publiés ; lot 11a (problèmes en une étape, 7 modèles) en fichiers sur `main` (#2837, § 17.2), pas en base. Restent ensuite les lots 11b à 19 du § 14.
-- **Prochaine action** : David crée les brouillons (dépôt principal) ; puis ids reportés sur une branche, migration nœud + tag (parties-tout, comparaison ×2, multiplicatifs, nombre inconnu, caractérisation, quatrième proportionnelle).
-- **En attente de David** : `pnpm tsx scripts/create-questions.ts --dir scripts/questions/cm2-11a --publier`. ⛔ Jamais `--mettre-a-jour` de `cm2-7b` avec des fichiers d'avant #2770 (ids CM1).
-- **Pièges en cours** : `pnpm migration:horodatage` = heure réelle UTC ; `db:migrate` refuse une migration plus ancienne que la dernière jouée → `--dry-run --include-all`, liste relue, puis `--include-all`. Worktree neuf : copier `supabase/.temp/` du dépôt principal, puis `pnpm exec svelte-kit sync`. `Doc-inchangée:` dans un COMMIT. `git commit -m … -- <fichiers>`. Stash du dépôt principal « cm2-9 ids » : copie identique de ce qui est mergé, à supprimer (David).
-- **Worktree / branche** : aucun.
+- **État** : lots 0 à 10 publiés ; lot 11a : 7 brouillons en prod, ids et migration `20261118194448` mergés (#2841, § 17.3),
+  migration **pas encore jouée**. Restent ensuite les lots 11b à 19 du § 14.
+- **Prochaine action** : `db:migrate` du lot 11a, puis MCP (7 rangés, un tag chacun), page à cocher, verdicts, `publier-lot`.
+- **En attente de David** : `20261118192953` (questions-cm1, lot 8d) est en attente avant la nôtre — `db:migrate` les
+  jouerait ensemble : la session questions-cm1 la joue, ou David dit de jouer les deux. Fichiers `cm2-11a/*.json` modifiés
+  dans `ubumaths-wt-questions-cm1` (ids, copie de ce qui est mergé) : à annuler là-bas (David).
+- **Pièges en cours** : lancer `create-questions` depuis le dépôt principal (au lot 11a, lancé du worktree cm1 : ids
+  écrits là-bas). `Doc-inchangée:` dans un COMMIT, pas dans la PR. `migration:horodatage` = heure réelle UTC. `git commit
+-m … -- <fichiers>`. Stash « cm2-9 ids » du dépôt principal : à supprimer (David).
+- **Worktree / branche** : `ubumaths-wt-questions-cm2` (`feat/questions-cm2-lot11a-tags`, mergée), gardé pour `db:migrate`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
