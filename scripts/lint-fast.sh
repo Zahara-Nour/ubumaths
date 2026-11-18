@@ -50,8 +50,8 @@ echo "$FILES" | xargs npx oxlint || EXIT=$?
 # eslint : les règles d'erreur de la config complète, sans service TypeScript.
 echo "$FILES" | xargs npx eslint --quiet --config eslint.fast.config.js || EXIT=$?
 
-# Parité des variables d'environnement : une clé importée de `$env/static` mais
-# absente de `.github/ci.env` rend le typecheck vert en local et rouge en CI.
+# Parité des variables d'environnement : une clé obligatoire de `src/env.ts` mais
+# absente de `.github/ci.env` rend les tests verts en local et rouges en CI.
 node scripts/check-env-parity.mjs || EXIT=$?
 # vitest-browser-svelte 3 : un `render` sans `await` monte quand même le
 # composant, donc aucun test ne rougit. Lancée seulement si un test client a
