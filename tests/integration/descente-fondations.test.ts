@@ -54,6 +54,8 @@ const RPC = 'record_beast_victory';
 const PERMISSION_DENIED = '42501';
 const CHECK_VIOLATION = '23514';
 const UNIQUE_VIOLATION = '23505';
+const NOT_FOUND = 'P0002';
+const ALREADY_DONE = '55000';
 const PREFIX = 'Descente : ';
 const TAG = `zz-descente-${crypto.randomUUID().slice(0, 8)}`;
 
@@ -204,6 +206,25 @@ describe('La Descente de la Vistule : fondations', () => {
 		const branchId = await seedNode('branch', `${TAG} branche`, null);
 		notionId = await seedNode('notion', `${TAG} notion`, branchId);
 
+		// A dans une classe : le prof est le sien (is_my_student). Une future policy « le prof
+		// lit les Bêtes de ses élèves » ferait échouer les tests de lecture du prof.
+		const pg = await getPostgresClient();
+		const {
+			rows: [cls]
+		} = await pg.query(
+			'insert into public.classes (name, join_code) values ($1, $2) returning id',
+			[
+				`${TAG} classe`,
+				TAG.replace(/[^a-z0-9]/gi, '')
+					.toUpperCase()
+					.slice(0, 12)
+			]
+		);
+		await pg.query(
+			`insert into public.class_members (class_id, student_id, status) values ($1, $2, 'active')`,
+			[cls.id, studentA.id]
+		);
+
 		beastAId = await seedBeast(studentA.id);
 		beastBId = await seedBeast(studentB.id);
 
@@ -223,6 +244,15 @@ describe('La Descente de la Vistule : fondations', () => {
 					(select id from public.classification_nodes where name like $1)`,
 				[`${TAG}%`]
 			)
+			.catch(() => undefined);
+		await pg
+			.query(
+				'delete from public.class_members where class_id in (select id from public.classes where name like $1)',
+				[`${TAG}%`]
+			)
+			.catch(() => undefined);
+		await pg
+			.query('delete from public.classes where name like $1', [`${TAG}%`])
 			.catch(() => undefined);
 		for (const kind of ['notion', 'branch']) {
 			await pg
@@ -244,7 +274,15 @@ describe('La Descente de la Vistule : fondations', () => {
 			expect(await readBeastOwners(studentB.client)).toEqual([studentB.id]);
 		});
 
-		it('le prof ne lit aucune Bête', async () => {
+		it("le décor est juste : A est bien l'élève du prof", async () => {
+			const { data, error } = await teacherClient.rpc('is_my_student', {
+				p_student_id: studentA.id
+			});
+			expect(error).toBeNull();
+			expect(data).toBe(true);
+		});
+
+		it('le prof ne lit aucune Bête, pas même celle de son élève', async () => {
 			expect(await readBeastOwners(teacherClient)).toEqual([]);
 		});
 
@@ -264,7 +302,7 @@ describe('La Descente de la Vistule : fondations', () => {
 			expect(await readMoveOwners(studentA.client)).toEqual([studentA.id]);
 		});
 
-		it('le prof et l’admin ne lisent aucun coup', async () => {
+		it('le prof et l’admin ne lisent aucun coup, pas même ceux de son élève', async () => {
 			expect(await readMoveOwners(teacherClient)).toEqual([]);
 			expect(await readMoveOwners(adminClient)).toEqual([]);
 		});
@@ -451,7 +489,7 @@ describe('La Descente de la Vistule : fondations', () => {
 			await victory(student.id, beastId);
 			const before = await balanceOf(student.id);
 			const { error } = await victory(student.id, beastId);
-			expect(error).not.toBeNull();
+			expect(error?.code).toBe(ALREADY_DONE);
 			expect(await balanceOf(student.id)).toBe(before);
 			expect(await activityOf(student.id)).toHaveLength(1);
 		});
@@ -460,8 +498,10 @@ describe('La Descente de la Vistule : fondations', () => {
 			const thief = await newStudent();
 			const victim = await newStudent();
 			const beastId = await seedBeast(victim.id);
+			const before = await balanceOf(thief.id);
 			const { error } = await victory(thief.id, beastId);
-			expect(error).not.toBeNull();
+			expect(error?.code).toBe(NOT_FOUND);
+			expect(await balanceOf(thief.id)).toBe(before);
 			expect(await activityOf(thief.id)).toEqual([]);
 			expect((await beastOf(beastId))?.defeated_at).toBeNull();
 		});
@@ -470,8 +510,10 @@ describe('La Descente de la Vistule : fondations', () => {
 			const student = await newStudent();
 			const past = new Date(Date.now() - 3600_000).toISOString();
 			const beastId = await seedBeast(student.id, { leaves_at: past });
+			const before = await balanceOf(student.id);
 			const { error } = await victory(student.id, beastId);
-			expect(error).not.toBeNull();
+			expect(error?.code).toBe(ALREADY_DONE);
+			expect(await balanceOf(student.id)).toBe(before);
 			expect(await activityOf(student.id)).toEqual([]);
 			expect((await beastOf(beastId))?.defeated_at).toBeNull();
 		});
@@ -508,6 +550,30 @@ describe('La Descente de la Vistule : fondations', () => {
 			expect(result).toEqual({ paid: 1, cap_reached: false });
 		});
 
+		it('deux victoires simultanées sur la même Bête : payée une seule fois', async () => {
+			const student = await newStudent();
+			const beastId = await seedBeast(student.id);
+			const before = await balanceOf(student.id);
+			const outcomes = await Promise.all([
+				victory(student.id, beastId),
+				victory(student.id, beastId)
+			]);
+			expect(outcomes.map((o) => o.error?.code ?? null).sort()).toEqual([ALREADY_DONE, null]);
+			expect(await balanceOf(student.id)).toBe(before + 1);
+			expect(await activityOf(student.id)).toHaveLength(1);
+		});
+
+		it('deux victoires simultanées quand il reste 1 sous le plafond : 1 versée en tout', async () => {
+			const student = await newStudent();
+			for (let i = 0; i < 3; i += 1) await victory(student.id, await seedBeast(student.id));
+			const beastIds = [await seedBeast(student.id), await seedBeast(student.id)];
+			const before = await balanceOf(student.id);
+			const [first, second] = await Promise.all(beastIds.map((id) => victory(student.id, id)));
+			expect([first.result?.paid, second.result?.paid].sort()).toEqual([0, 1]);
+			expect(await balanceOf(student.id)).toBe(before + 1);
+			expect((await activityOf(student.id)).map((a) => a.delta)).toEqual([1, 1, 1, 1]);
+		});
+
 		it('un nom de Bête vide ou trop long reste borné', async () => {
 			const student = await newStudent();
 			await victory(student.id, await seedBeast(student.id), '   ');
@@ -519,7 +585,12 @@ describe('La Descente de la Vistule : fondations', () => {
 	});
 
 	describe('réponses en combat : traces au lieu « descente »', () => {
-		async function insertTrace(client: SupabaseClient, studentId: string, templateId: string) {
+		async function insertTrace(
+			client: SupabaseClient,
+			studentId: string,
+			templateId: string,
+			place = 'descente'
+		) {
 			const { data, error } = await client
 				.from('skill_attempts')
 				.insert({
@@ -527,7 +598,7 @@ describe('La Descente de la Vistule : fondations', () => {
 					template_id: templateId,
 					success: true,
 					source: 'auto',
-					place: 'descente'
+					place
 				})
 				.select('id');
 			return { rows: (data ?? []) as { id: string }[], code: error?.code ?? null };
@@ -545,6 +616,10 @@ describe('La Descente de la Vistule : fondations', () => {
 				[student.id]
 			);
 			expect(inDb).toHaveLength(0);
+			// Contrôle : le même élève, le même modèle, un autre lieu passe — le refus vient du lieu
+			const control = await insertTrace(student.client, student.id, templateId, 'flash_cards');
+			expect(control.code).toBeNull();
+			expect(control.rows).toHaveLength(1);
 		});
 
 		it('le serveur écrit la trace « descente »', async () => {

@@ -623,8 +623,9 @@ serveur seul, cascade depuis `profiles`. `record_beast_victory` (`service_role` 
 ligne `profiles` puis de la Bête) refuse une Bête d'un autre élève (`P0002`), déjà vaincue ou repartie
 (`55000`), marque la défaite et verse 1 (ordinaire), 3 (grosse Bête) ou 0 (tutoriel), **4 au plus
 sur 24 heures glissantes**, coupé au plafond, libellé « Descente : victoire contre … ». Les réponses
-en combat sont des traces au lieu `descente`, que la policy d'insertion de l'élève refuse (serveur
-seul). Pas encore dans l'export RGPD : il viendra avec le premier code qui lit ces tables (après
+en combat sont des traces au lieu `descente`, que la policy d'insertion de l'élève refuse ; le
+prof (source `teacher`) et l'admin peuvent en écrire, comme pour `evaluation` (leurs policies ne
+filtrent pas le lieu). Pas encore dans l'export RGPD : il viendra avec le premier code qui lit ces tables (après
 `db:types`). Test : `tests/integration/descente-fondations.test.ts`.
 `student_last_visits` (migration `20261021210000`) garde le jour UTC du dernier passage de l'élève
 (dernière page vue hors API, `studentPresenceHandle`) et, depuis la migration `20261022100000`, le

@@ -49,12 +49,18 @@
 --       and task_id is null
 --       and place is distinct from 'evaluation'
 --     );
---   delete from public.skill_attempts where place = 'descente';  -- (aucune avant le code de l'étape 3)
+--   comment on policy "skill_attempts_insert_own_student" on public.skill_attempts is
+--     'L''élève insère ses propres traces en source auto/srs/student_self, jamais une trace de contrôle (place = evaluation : écrite par le serveur, ADR 0038). Famille B reste réservée au prof (skill_attempts_insert_teacher).';
+--   ⚠️ la ligne suivante EFFACE des réponses d'élèves dès que l'étape 3 écrit des traces
+--   « descente » : migration destructive, arrêt et go de David avant de la jouer.
+--   delete from public.skill_attempts where place = 'descente';
 --   alter table public.skill_attempts drop constraint chk_trace_place_values;
 --   alter table public.skill_attempts add constraint chk_trace_place_values check (
 --     place is null
 --     or place in ('flash_cards', 'typing', 'mock_test', 'number_race', 'review', 'evaluation')
 --   );
+--   comment on column public.skill_attempts.place is
+--     'Lieu de la réponse : flash_cards, typing (Saisie), mock_test (Contrôle blanc), number_race (Course aux nombres), review (révision), evaluation (contrôle). NULL : trace antérieure à l''ADR 0038.';
 --   drop function if exists public.record_beast_victory(uuid, uuid, text);
 --   drop table if exists public.student_combat_moves;
 --   drop table if exists public.student_beasts;
@@ -209,9 +215,12 @@ declare
 	v_name text;
 	v_class_id uuid;
 begin
+	-- Messages d'erreur sans accent, à dessein : PostgREST tronque un message accentué
+	-- (« B » pour « Bête ») et rend une erreur 500 sans code SQLSTATE au client.
+
 	-- Serveur seul (en plus des droits d'exécution, retirés à tous sauf service_role)
 	if coalesce((select auth.role()), '') <> 'service_role' then
-		raise exception 'Non autorisé : victoire enregistrée par le serveur seul'
+		raise exception 'Non autorise : victoire enregistree par le serveur seul'
 			using errcode = '42501';
 	end if;
 
@@ -220,7 +229,7 @@ begin
 	where p.id = p_student_id and p.role = 'student'
 	for update;
 	if not found then
-		raise exception 'Élève introuvable : %', p_student_id using errcode = 'P0002';
+		raise exception 'Eleve introuvable : %', p_student_id using errcode = 'P0002';
 	end if;
 
 	select b.kind, b.defeated_at, b.leaves_at into v_beast
@@ -228,13 +237,13 @@ begin
 	where b.id = p_beast_id and b.student_id = p_student_id
 	for update;
 	if not found then
-		raise exception 'Bête introuvable pour cet élève : %', p_beast_id using errcode = 'P0002';
+		raise exception 'Bete introuvable pour cet eleve : %', p_beast_id using errcode = 'P0002';
 	end if;
 	if v_beast.defeated_at is not null then
-		raise exception 'Bête déjà vaincue : %', p_beast_id using errcode = '55000';
+		raise exception 'Bete deja vaincue : %', p_beast_id using errcode = '55000';
 	end if;
 	if v_beast.leaves_at is not null and v_beast.leaves_at <= now() then
-		raise exception 'Bête repartie : %', p_beast_id using errcode = '55000';
+		raise exception 'Bete repartie : %', p_beast_id using errcode = '55000';
 	end if;
 
 	v_reward := case v_beast.kind when 'ordinary' then 1 when 'big' then 3 else 0 end;

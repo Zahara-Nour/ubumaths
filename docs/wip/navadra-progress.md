@@ -4,13 +4,14 @@
 
 _Mis à jour le 2026-11-18 : étape 1 (fondations en base) écrite, PR à ouvrir._
 
-- **État** : phase 0 de la v1 validée (§ « Phase 0 de la v1 », 8 étapes). **Étape 1 en cours** : migration `20261118060323_descente_fondations.sql` + `tests/integration/descente-fondations.test.ts` (29 tests, rouges sans la migration, verts avec).
+- **État** : phase 0 de la v1 validée (§ « Phase 0 de la v1 », 8 étapes). **Étape 1 en cours** : migration `20261118060323_descente_fondations.sql` + `tests/integration/descente-fondations.test.ts` (32 tests, rouges sans la migration, verts avec ; relus par `code-reviewer` et `security-auditor`, sans bloquant).
 - **Tranché le 2026-11-18** (§ « Tranché ») : question d'accès de l'étape 1 et barème des gidouilles (1 / 3 / 0, plafond 4 sur 24 h).
 - **Prochaine action** : PR de l'étape 1 → `code-reviewer` + `security-auditor` → CI verte → merge → `db:migrate` (4 conditions de `CLAUDE.md`) → `db:types`. Puis étape 2 (apparition des Bêtes), qui ajoutera aussi les deux tables à l'export RGPD.
 - **En attente de David** : rien.
 - **Façon de poser** : en mots simples, avec un exemple, sans noms de tables ni de colonnes.
 - **Pièges en cours** :
   - Base locale : `supabase migration up --local` bute sur une migration de rangement déjà jouée (contenu copié de la prod) ; appliquer le seul fichier par `psql -1` sous `scripts/with-db-lock.sh`, puis `notify pgrst, 'reload schema'`.
+  - **PostgREST tronque un message d'erreur SQL accentué** et rend un 500 sans code : `raise exception` sans accent dans les fonctions appelées par l'API.
   - Code et migration en deux PR : rien dans `src/` ne lit les tables avant `db:types`.
   - L'analyse du jeu d'origine est dans `extern/navadra-jeu/CLAUDE.md`, **non versionné**.
   - Le Compendium n'interdit que les **mots** anglais affichés (XP, boss, score…), pas les mécaniques.
