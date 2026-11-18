@@ -6,11 +6,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après le `db:migrate` du lot 9 (joué hors de cette session)._
+_Mis à jour le 2026-11-18, après la publication du lot 9._
 
-- **État** : lots 0 à 8 publiés ; lot 9 (partages) : 5 brouillons rangés et tagués en prod (MCP), page à cocher publiée (§ 15.3).
-- **Prochaine action** : lire et compter les verdicts (`ArtifactData list verdicts`) ; 5 OK → `publier-lot --dir scripts/questions/cm2-9` en simulation, puis David `--publier`.
-- **En attente de David** : relecture de la page https://claude.ai/artifact/6zsvpGYUozHpvSfTcTUhKx. ⛔ Jamais `--mettre-a-jour` de `cm2-7b` avec des fichiers d'avant #2770 (ids CM1).
+- **État** : lots 0 à 9 publiés (lot 9 partages : 5 modèles, § 15.3). Reste 71 points : lots 10 à 19 (§ 14, ordre § 14.1).
+- **Prochaine action** : phase 0 du lot 10, heures et durées (082, 083, 084, 153, 085) : relevé MCP, tableau des modèles, questions à trancher.
+- **En attente de David** : rien. ⛔ Jamais `--mettre-a-jour` de `cm2-7b` avec des fichiers d'avant #2770 (ids CM1).
 - **Pièges en cours** : `pnpm migration:horodatage` = heure réelle UTC ; `db:migrate` refuse une migration plus ancienne que la dernière jouée → `--dry-run --include-all`, liste relue, puis `--include-all`. Worktree neuf : copier `supabase/.temp/` du dépôt principal, puis `pnpm exec svelte-kit sync`. `Doc-inchangée:` dans un COMMIT. `git commit -m … -- <fichiers>`. Stash du dépôt principal « cm2-9 ids » : copie identique de ce qui est mergé, à supprimer (David).
 - **Worktree / branche** : aucun (#2794 mergée, worktree retiré).
 
@@ -958,3 +958,5 @@ de 30 ; (b) un seul lot de 5 modèles. Tableau du § 15 gardé.
   attente). MCP : 5 brouillons rangés (4 sur « définition », 143 sur « écritures »), un tag chacun (CM2-131, 132,
   136, 137, 143), `updated_at` = création. Page à cocher publiée (5 fiches, aucune alerte, figures dessinées) :
   https://claude.ai/artifact/6zsvpGYUozHpvSfTcTUhKx ; `verdicts` vide au départ.
+- 2026-11-18 : 5 verdicts « OK » sur 5 (base relue) ; `publier-lot` en simulation : 5 brouillons passent ;
+  `--publier` lancé par David ; MCP : 5 `published`. **Lot 9 clos.**
