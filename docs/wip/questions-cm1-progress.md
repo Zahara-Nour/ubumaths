@@ -9,8 +9,8 @@ _Mis à jour le 2026-11-18, après #2803 (§ 22 ter)._
 
 - **État** : lots 0 à 8a publiés, 131 points sur 171. Lot 8b écrit (6 modèles), fichiers mergés (#2803). Restent 8c, 8d,
   8e, 9 (§ 20, découpage validé § 20 bis).
-- **Prochaine action** : David lance `create-questions --dir scripts/questions/cm1-8b
---publier` ; ensuite migration nœud + tag (sous-notion neuve « aires sur quadrillage » sous Aires ; tags CM1 et
+- **Prochaine action** : merger la PR du renommage de 8b-04 (homonyme 6e `c8741112`), puis David lance
+  `create-questions --dir scripts/questions/cm1-8b --publier` **depuis le worktree** ; ensuite migration nœud + tag (sous-notion neuve « aires sur quadrillage » sous Aires ; tags CM1 et
   CM2, § 22 bis), page à cocher, publication.
 - **En attente de David** : la création en prod des 6 brouillons.
 - **Pièges en cours** : `create-questions --publier` lancé depuis le dépôt principal écrit les ids dans SES fichiers :
@@ -1729,7 +1729,7 @@ demi-carreaux ; 088 le cm² seul ; 089 sommet, côtés, angle droit, aigu, obtus
 | 1   | 086   | Comparer les aires de deux figures | V1 aires nettement différentes ; V2 même aire, formes différentes (l'une est l'autre découpée et recollée) ; V3 la figure au plus grand tour a la plus petite aire | choix : A, B, égales    | Aires                 |
 | 2   | 087   | Aire en carreaux                   | V1 polygone en carreaux entiers (6 à 20) ; V2 avec des demi-carreaux ; V3 unité fournie = un domino de 2 carreaux                                                  | nombre d'unités         | Aires                 |
 | 3   | 088   | Aire en centimètres carrés         | V1 carreaux de 1 cm entiers ; V2 avec des demi-carreaux ; V3 deux figures, « combien de cm² de plus ? »                                                            | nombre, « cm² » affiché | unités et conversions |
-| 4   | 089   | Le vocabulaire des angles          | V1 nommer le sommet ; V2 nommer les deux côtés ; V3 droit, aigu ou obtus (sans quadrillage, côtés de longueurs différentes)                                        | lettre ; choix          | Angles                |
+| 4   | 089   | Sommet, côtés et nature d'un angle | V1 nommer le sommet ; V2 nommer les deux côtés ; V3 droit, aigu ou obtus (sans quadrillage, côtés de longueurs différentes)                                        | lettre ; choix          | Angles                |
 | 5   | 090   | Noter un angle                     | V1 angle marqué → sa notation parmi 3 ($\widehat{ABC}$, $\widehat{BAC}$, $\widehat{ACB}$) ; V2 notation → sommet ; V3 notation → quel angle marqué (couleurs)      | choix ; lettre          | Angles                |
 | 6   | 091   | Comparer deux angles               | V1 deux angles, côtés courts au plus grand (piège) ; V2 comparer à l'angle droit ; V3 ranger trois angles                                                          | choix                   | comparaison           |
 
@@ -1769,6 +1769,9 @@ avant. Les modèles publiés sont lus comme les autres ; la migration ne fait qu
 - Base locale (copies à une variation par modèle, 18 brouillons d'essai) : les 18 variations vues à 390 px
   (Playwright, port 5177), sans défilement horizontal, réponses attendues justes. Reste : noms des points petits
   (8 px), sans option de taille → `outils-manquants.md` n° 37.
+- `--publier` (2026-11-18) refusé : homonyme « Le vocabulaire des angles », niveau 1, déjà en base pour la **6e**
+  (`c8741112`, lot 11a : angle plat, adjacents, opposés, supplémentaire — autre contenu). **David : renommer le
+  modèle CM1** → « Sommet, côtés et nature d'un angle » (JSON, générateur, tableau du découpage).
 - PR #2803 (fichiers seuls, revue : aucune, contenu). 1re CI rouge : `student-answer-safety` abîmait deux réponses
   attendues en `{{if:}}` imbriqué sur 8 et 10 niveaux → variable calculée `n` (indicatrices, helper `table`) ; CI
   verte, mergée le 2026-11-18.

@@ -474,7 +474,7 @@ def bouts(n):
 
 
 # ======================================================================================
-# 04. Le vocabulaire des angles (CM1-089 / CM2-076)
+# 04. Sommet, côtés et nature d'un angle (CM1-089 / CM2-076)
 # ======================================================================================
 
 ANGLE_NOMME = ('\n'.join([
@@ -531,7 +531,7 @@ V3 = variation(
      + '$.'])
 vs = [V1, V2, V3]
 ecrire('04-vocabulaire-des-angles', modele(
-    'Le vocabulaire des angles',
+    "Sommet, côtés et nature d'un angle",
     'Nommer le sommet et les côtés d\'un angle ; dire s\'il est aigu, droit ou obtus (sans'
     ' quadrillage, côtés de longueurs différentes)',
     1, vs,

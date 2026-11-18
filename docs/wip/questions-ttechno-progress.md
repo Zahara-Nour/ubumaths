@@ -5,15 +5,17 @@ Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) · bornes 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après la publication du lot 2b._
+_Mis à jour le 2026-11-18, après #2800 (lot 3, tags)._
 
-- **État** : lots 0, 1, 2a et 2b en prod et **publiés** (2b : 3 modèles, § 19).
-- **Prochaine action** : tags des modèles de `questions-1gen` — E1–E4 (lot 3, § 15) à lire contre nos bornes puis
-  taguer avec T1–T2 du lot 4 (défaut : un seul lot de tags), une fois leurs ids reçus.
-- **En attente de David** : tags E1–E4 maintenant ou avec le lot 4 (défaut : avec le lot 4).
-- **`questions-1gen`** : lot 3 (aˣ) **publié** ; lot 4 (T1 → 035, T2 → 038) en cours d'écriture chez eux, ids promis.
+- **État** : lots 0, 1, 2a, 2b publiés ; lot 3 (tags TTECHNO sur 6 modèles de `questions-1gen` : E1–E4, T1–T2)
+  **en prod** (#2800, `db:migrate` fait, § 21). Les 6 sont publiés : visibles en Tle techno dès maintenant.
+- **Prochaine action** : écrire les compléments du lot 3 (§ 8 bis) : 034, 078, 079 à exposants négatifs (079 avec
+  n relatif) ; a⁻ˣ = 1/aˣ (031) ; sens et allure sur ℝ (x < 0, 032 / 033) ; 036, 080 (k·aˣ, k < 0). Phase 0 d'abord.
+- **En attente de David** : rien.
 - **Pièges en cours** : un point TTECHNO par modèle (trigger) ; `grades` en `array_append` seulement ;
-  `publier-lot.ts`, `garde-niveaux-tags.ts`, `create-questions --publier` visent la prod : David les lance (`!`).
+  `publier-lot.ts`, `garde-niveaux-tags.ts`, `create-questions --publier` visent la prod : David les lance (`!`) ;
+  `Doc-inchangée:` dans un COMMIT de la PR (la garde CI le lit là, pas dans la PR) ; les rollbacks de
+  `questions-1gen` (20261117191427, 20261117222809) retirent le nœud : jouer d'abord celui du lot 3.
 - **Worktree / branche** : aucun.
 
 ## 1. Périmètre
@@ -521,3 +523,18 @@ Tle STMG dès `db:migrate` (même cas que le lot 0, question d'accès Q2). Page 
 
 Prochaine étape : une migration de tags pour les 6 (E1–E4 publiés, T1–T2 brouillons), gabarit lot 0. Avant le
 SQL : question d'accès et verdict sur E2 var. 3, posés à David.
+
+**T1 / T2 publiés** (message de `questions-1gen`, statut relu par MCP le 2026-11-18).
+
+## 21. Lot 3 : tags sur les 6 modèles de `questions-1gen` (2026-11-18)
+
+- Décisions de David : les 6 ouverts aux élèves de Tle techno (question d'accès) ; E2 var. 3 (aˣ × bˣ = (ab)ˣ)
+  taguée telle quelle (« par extension des puissances entières »).
+- Relevé MCP : les 6 rangés sur le nœud même de leur point TTECHNO, `grades ['1_GEN']`, un tag 1GEN chacun.
+- Migration `20261118052320_questions_ttechno_lot3_tags` (gabarit lot 0) : 6 tags + `array_append('T_TECHNO')`,
+  `updated_at` préservé. Test `tests/integration/questions-ttechno-lot3-tags.test.ts` : 14 verts ; corps retiré → 7
+  rouges, suite principale bloquée ; restauré d'une copie, identique. `security-auditor` : aucun bloquant.
+- CI : garde « doc à jour » rouge (la ligne `Doc-inchangée:` n'était que dans la PR) → commit vide qui la porte.
+- #2800 mergée, `check:migrations` vert, `migration list --linked` : seule 20261118052320 en attente ; `db:migrate`
+  depuis le dépôt principal. Prod vérifiée : 6 publiés, `{1_GEN,T_TECHNO}`, tags 1GEN + TTECHNO, `updated_at`
+  inchangés, trigger réactivé.

@@ -1,16 +1,16 @@
 ---
-status: en-cours
+status: clos
 ---
 
 # Heatmap de régularité dans le carnet de liaison — journal du chantier
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après #2797 et le `db:migrate`._
+_Mis à jour le 2026-11-18, chantier clos._
 
-- **État** : tout est en prod. Code #2786 (v0.94.0) et `carnet_payload` de #2797 (migration `20261117222600` jouée en prod par le `db push` d'une autre session, vérifié par le MCP le 2026-11-18).
-- **Prochaine action** : vérification manuelle par David (ligne du 2026-11-18 dans `verifications-manuelles.md`), puis clôture (versement dans `docs/systeme/`, archivage du journal).
-- **En attente de David** : la vérification manuelle sur téléphone et ordinateur, avec le lien de parent et un compte élève.
+- **État** : clos. #2786 (affichage, v0.94.0) et #2797 (`carnet_payload` depuis la rentrée, migration en prod) livrés ; vérification manuelle faite par David le 2026-11-18 (page du parent et « Mon carnet », serveur Tailscale sur la base locale).
+- **Prochaine action** : aucune. Doc durable : `docs/systeme/carnet-de-liaison.md`.
+- **En attente de David** : rien.
 - **Pièges en cours** : aucun.
 - **Worktree / branche** : supprimés.
 
@@ -108,3 +108,4 @@ au merge (`db:migrate`) alors que le code en prod (Zod `.max(5)`) n'est livré q
 - 2026-11-17 : PR 1 #2786 mergée (CI verte, `code-reviewer` : rien de bloquant).
 - 2026-11-17 : PR 2. **L3, prémisse corrigée** : `carnet_school_year` ne rend jamais une rentrée nulle (à défaut, le 1er septembre écoulé, sans année) ; la décision « année inconnue → 5 semaines » est appliquée sur `year_id` nul (classe sans école ou école sans année active), comme l'alerte d'inactivité. Évaluations : `v_start` (5 semaines) inchangé, régularité sur `v_weeks_start`. e2e : le compte de cases suit l'arrivée de A (il y a 30 jours : 5 ou 6 selon le jour).
 - 2026-11-18 : #2797 mergée (CI verte ; `code-reviewer` : e2e fragile en septembre corrigé, rentrée lue dans le décor ; `security-auditor` : rien de bloquant). `db:migrate` laissé à David (autre migration en attente).
+- 2026-11-18 : migration trouvée déjà en prod (`db push` d'une autre session), vérifiée par le MCP. Vérification manuelle de David OK (lien de parent et « Mon carnet », téléphone et ordinateur). Chantier clos, journal archivé.
