@@ -1,4 +1,5 @@
 {
+	"id": "531a7080-9b20-46be-a614-7104d5401451",
 	"title": "Dérivée d'une somme",
 	"description": "Dériver terme à terme une somme de x³, x², x et d'une constante (coefficients 1)",
 	"grades": ["1_TECHNO"],

@@ -1,4 +1,5 @@
 {
+	"id": "14b60caa-e18e-46d8-9ff6-3889fd9de40e",
 	"title": "Sens de variation d'une fonction polynôme de degré au plus 3",
 	"description": "Signe de la dérivée (affine, ou factorisée de racines données ou évidentes), puis variations",
 	"grades": ["1_TECHNO"],

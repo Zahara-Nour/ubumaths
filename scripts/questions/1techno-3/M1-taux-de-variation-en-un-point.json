@@ -1,4 +1,5 @@
 {
+	"id": "06bee149-e006-4b9f-8f0b-1e21ace0a1cf",
 	"title": "Taux de variation en un point",
 	"description": "Taux de variation de x ↦ x² (ou x² + bx) entre a et a + h : développer, simplifier par h",
 	"grades": ["1_TECHNO"],
