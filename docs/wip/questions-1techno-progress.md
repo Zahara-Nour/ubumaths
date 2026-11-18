@@ -10,13 +10,14 @@
 
 _Mis à jour le 2026-11-18, pendant le lot 5 (aucune PR encore)._
 
-- **État** : lot 5 : N1-N3 écrits, rendus validés par David ; 4 communs « ok » (page à cocher). PR des fichiers
-  ouverte.
-- **Prochaine action** : CI verte → merge ; David `create-questions --dir scripts/questions/1techno-5 --publier` (depuis
-  `main`) ; commiter les ids ; prévenir questions-1gen ; migration (nœud + tag de N1-N3 ; `1_TECHNO` + tag des communs).
-- **En attente de David** : `create-questions --publier` après le merge.
-- **Pièges en cours** : `db:migrate` pousse tout ce qui attend ; questions-1gen pas encore prévenue.
-- **Worktree / branche** : `ubumaths-wt-questions-1techno`, `feat/questions-1techno-lot5`.
+- **État** : lot 5 : N1-N3 brouillons en prod (d0eb1666, fc84a1c8, 8d2047fe) ; deux migrations écrites, testées et
+  auditées (communs `202805`, rangement `203102`) ; PR de migration ouverte.
+- **Prochaine action** : CI verte → `check:migrations --pr` → merge → `migration list --linked` (seules les deux) →
+  `db:migrate` depuis le worktree → vérif MCP → page à cocher de N1-N3 (verdicts) → publication.
+- **En attente de David** : rien avant la page à cocher de N1-N3.
+- **Pièges en cours** : `db:migrate` pousse tout ce qui attend ; dépôt principal : 6 fichiers ttechno modifiés bloquent
+  `git pull` ; questions-1gen pas prévenue (session fermée ; on n'ajoute que `1_TECHNO` et un tag, accord du 2026-11-17).
+- **Worktree / branche** : `ubumaths-wt-questions-1techno`, `feat/questions-1techno-lot5-migration`.
 
 ## 1. Relevé (prod, 2026-11-17)
 
@@ -846,3 +847,26 @@ Verdicts des communs : 4 « ok » sur 4, sans commentaire (collection `verdicts`
 
 Rendus de N1-N3 (aperçu Tailscale) : David, « je valide les rendus ». Aperçu fermé (`tailscale serve --https=443 off` et
 `--https=8443 off` ; le :10000 → 5175 n'est pas à ce chantier), 5176 arrêté.
+
+### Lot 5 — fichiers mergés, migration des communs (2026-11-18)
+
+PR #2843 (fichiers) mergée, CI verte. Le dépôt principal porte 6 fichiers modifiés de
+`scripts/questions/ttechno-5a-logarithme/` (pas à ce chantier) : `git pull` impossible, David prévenu ; la suite se fait
+dans le worktree, branche `feat/questions-1techno-lot5-migration`. Migration
+`20261118202805_questions_1techno_lot5_communs_tags` (gabarit du lot G) : `1_TECHNO` ajouté + tag 1TECHNO sur 7461bb44
+(082), f3cb0c7a (085), 4f328c8c (084), 3fec6b41 (087). Test
+`tests/integration/questions-1techno-lot5-communs-tags.test.ts` : corps vidé → 6 rouges et le bloc nominal ne démarre
+pas ; migration rendue → 12 verts. Reste : ids de N1-N3 (David, `create-questions --publier` depuis le worktree), leur
+migration de rangement, audit de sécurité.
+
+### Lot 5 — brouillons en prod, migration de rangement, audit (2026-11-18)
+
+David a lancé `create-questions --publier` depuis le worktree : N1 `d0eb1666-9852-4bc5-8f7f-a0b4db23dcc3`, N2
+`fc84a1c8-f0fd-45c5-bf58-40009ac00efa`, N3 `8d2047fe-91f1-47fa-888e-aeb296f2434b` ; brouillons `{1_TECHNO}`, sans nœud
+ni tag (vérifié MCP), les 7 points visés à 0 modèle. Migration `20261118203102_questions_1techno_lot5_rangement_tags`
+(gabarit du lot 4, sans point jumeau) ; test `questions-1techno-lot5-rangement-tags.test.ts` : corps vidé → 4 rouges et le
+bloc nominal ne démarre pas ; migration rendue → 10 verts. `security-auditor` sur les deux migrations : aucun bloquant
+(faible : `lock_timeout` sans effet sous `db push`, comme les gabarits ; info : pas de verrou consultatif dans celle des
+communs, fidèle au lot G).
+
+CI de #2844 : garde « doc à jour » rouge (`Doc-inchangée:` doit être dans un commit, pas dans la PR) → commit avec la ligne.

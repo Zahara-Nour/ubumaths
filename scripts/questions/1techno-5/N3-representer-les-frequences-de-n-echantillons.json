@@ -1,4 +1,5 @@
 {
+	"id": "8d2047fe-91f1-47fa-888e-aeb296f2434b",
 	"title": "Représenter les fréquences des 1 dans N échantillons",
 	"description": "Nuage (j ; fréquence) de 500 échantillons de Bernoulli : valeur autour de laquelle les points se concentrent, instruction qui donne le nuage ou l'histogramme, effet d'une taille plus grande",
 	"grades": ["1_TECHNO"],
