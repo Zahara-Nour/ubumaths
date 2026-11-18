@@ -5,20 +5,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après #2838 (fichiers du lot 8d mergés)._
+_Mis à jour le 2026-11-18, après #2846 (page à cocher du 8d publiée)._
 
-- **État** : lots 0 à 8c publiés, **144 points du CM1 sur 171** ; lot 8d écrit et mergé (#2838), pas encore en prod.
-- **Prochaine action** : David lance, depuis le worktree,
-  `pnpm tsx scripts/create-questions.ts --dir scripts/questions/cm1-8d --publier` (4 brouillons) ; puis ids commités
-  sur `feat/questions-cm1-lot8d-rangement`, migration nœud + tags (107, 108 → Symétrie axiale ; 167, 168 →
-  perpendiculaires et parallèles ; 6 tags : CM1-107, 108, 167, 168, CM2-154, 155) ; puis 8e, 9 (§ 20).
-- **En attente de David** : `create-questions --publier` du 8d.
+- **État** : lots 0 à 8c publiés, **144 points du CM1 sur 171** ; lot 8d en prod en brouillons, rangés et tagués
+  (#2840, migration jouée) ; page à cocher https://claude.ai/artifact/3DT2a4R51Ef71YbezaxTcR (§ 24 sexies).
+- **Prochaine action** : lire les verdicts (`ArtifactData list verdicts`, compter 4) ; « À revoir » → corriger ;
+  puis `publier-lot --dir scripts/questions/cm1-8d` en simulation, David lance `--publier` et `garde-niveaux-tags` ;
+  puis 8e, 9 (§ 20).
+- **En attente de David** : relecture de la page à cocher du 8d.
 - **Pièges en cours** : lancer `create-questions --publier` et `db:migrate` **depuis le worktree** (lien
-  `supabase/.temp/` copié) ; `db:migrate` « inserted before » → `--dry-run --include-all` puis `--include-all` ;
-  titre homonyme d'un autre niveau → `create-questions` refuse (renommer) ; commitlint refuse le type `content` ;
-  le mode auto refuse `publier-lot` et `garde-niveaux-tags` : David les lance ; `sonde-figures` ne voit pas les
-  dessins d'une case choix (aperçu) ; ports 5176, 5177 pris par d'autres sessions ; depuis #2826, imports en
-  `#lib/x.ts` (extension écrite).
+  `supabase/.temp/` copié) — et celui du **bon** chantier (un `--publier` du CM2 11a a été lancé ici) ; commitlint
+  refuse le type `content` et un corps > 100 caractères par ligne ; le mode auto refuse `publier-lot` et
+  `garde-niveaux-tags` : David les lance ; ports 5176, 5177 pris ; imports en `#lib/x.ts`.
 - **Worktree / branche** : `../ubumaths-wt-questions-cm1`, détaché sur `main`, aucune branche ouverte.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
@@ -2008,3 +2006,16 @@ avant. La migration ne fait que ranger et taguer les modèles, sur des nœuds qu
   7 sautés. `types:cliquet` tenu.
 - `security-auditor` : aucun finding, ni bloquant ni non bloquant. Diff avec le 8c limité aux données du lot ;
   l'état « avant » remesuré au MCP (4 draft, nœud null, 0 tag) ; c'est la seule migration en attente. PR #2840.
+
+### 24 sexies. Lot 8d — migration passée, outil, page à cocher (2026-11-18)
+
+- #2840 mergée ; `db:migrate` lancé par David depuis le worktree (seule migration en attente). Vérifié au MCP :
+  `20261118192953` jouée ; 4 brouillons sur leur nœud, 6 tags, `updated_at` inchangé (heure de création).
+- La page à cocher ne dessinait pas les blocs `figure-a-completer` (source seule). David : « oui » à la reco →
+  **#2846** : la figure de départ, et à part la construction juste en vert (`solutionLines`, `solutionPoints`
+  de la correction de l'appli) pour droite à construire, `symetrique par d`, `point A' = …` ; autre vérification :
+  figure seule et alerte. Au passage, les specs sans espace (`segment(…)|segment(…)`) débordaient à 390 px : coupées.
+  `code-reviewer` : aucun bug ; assertions renforcées (solution placée par rapport à A et à l'axe).
+- Page `page-a-cocher.ts --dir scripts/questions/cm1-8d` : 4 fiches (13 exemples), aucune alerte ; vue à 390 et
+  1200 px, sans défilement horizontal ni erreur de console. Publiée :
+  https://claude.ai/artifact/3DT2a4R51Ef71YbezaxTcR (`verdicts`, capacité `db`, vide).
