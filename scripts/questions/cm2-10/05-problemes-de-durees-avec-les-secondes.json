@@ -1,4 +1,5 @@
 {
+	"id": "2fda6db8-bec6-4f10-bbef-942d2da65bb5",
 	"title": "Problèmes de durées (h, min, s, jours)",
 	"description": "Une ou plusieurs étapes, par instants intermédiaires : heure d'arrivée d'une course à la seconde, secondes en minutes, relais en trois étapes, traversée sur plusieurs jours, heures en jours",
 	"grades": ["CM2"],

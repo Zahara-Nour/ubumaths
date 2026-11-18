@@ -1031,3 +1031,15 @@ ceux pris : lire 9, placer 10 ; durée 9, comparer 10, problèmes 11 ; (e) un se
 - Base locale (copie du dossier dans le scratchpad, `.env.local`, sous `with-db-lock.sh`) : 5 brouillons ; aperçu admin
   à 390 px (Playwright, port 5178) : trotteuse dessinée (lire), trois aiguilles à poser avec l'étiquette « trotteuse »
   (placer), deux et quatre horloges légendées, cases h / min / s.
+
+### 16.3 Lot 10 : brouillons, rangement (2026-11-18)
+
+- David : `create-questions --dir scripts/questions/cm2-10 --publier` (dépôt principal) → `16d78592` (082, niv. 9),
+  `35ba6a94` (083, 10), `99f80f5e` (084, 9), `57846784` (153, 10), `2fda6db8` (085, 11) ; ids commités sur
+  `feat/questions-cm2-lot10-rangement`. MCP : 5 brouillons [CM2] sans nœud ni tag, `updated_at` = création ; les 5
+  points sur « Grandeurs et mesures > Durées » (082, 083 : « lecture de l'heure » ; 084, 153, 085 : « calcul de durées »).
+- Migration `20261118074731_questions_cm2_lot10_rangement_tags.sql`, copie du lot 9 (script, aucun reste du lot 9 au
+  grep). Test `questions-cm2-lot10-rangement-tags` : 9 verts ; corps remplacé par `select 1;` → 5 rouges ; fichier
+  restauré depuis sa copie (`cmp`).
+- `security-auditor` : aucun finding (diff au gabarit du lot 9 : ids, codes, chemins, table temporaire et commentaires
+  seuls ; 5 ids concordants partout ; apostrophe doublée ; aucun changement d'accès).
