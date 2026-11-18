@@ -12,11 +12,12 @@ _Mis à jour le 2026-11-18, après #2856 (fichiers du lot 6)._
 
 - **État** : lots 1 à 5 clos. Lot 6 (§ 30-31) : phase 0 validée, P1-P5 écrits
   (`scripts/questions/1techno-6`), simulation verte, rendus vérifiés (Chrome), PR #2856 mergée.
-- **Prochaine action** : rendus de P1-P5 par David → fermer l'aperçu → PR des fichiers → David `create-questions
---publier` → migration de rangement + retrait de 137 et `1_TECHNO` de 97b3a376 (destructif : mesurer l'usage, go).
+- **Prochaine action** : David `create-questions --dir scripts/questions/1techno-6 --publier` depuis le worktree
+  (ids écrits dans les fichiers) → migration de rangement + retrait de 137 et `1_TECHNO` de 97b3a376 (gabarit lot 2 ;
+  usage mesuré : 0) → test rouge/vert → `security-auditor` → go de David (destructif) → PR.
 - **En attente de David** : `create-questions --publier` (lot 6) ; go pour la partie destructive (97b3a376).
-- **Pièges en cours** : dépôt principal sale (fichiers d'autres sessions) → commit de journal 827809b06 resté local sur
-  `main`, repris sur la branche ; questions-1gen à prévenir (4 communs). `Doc-inchangée:` dans un COMMIT.
+- **Pièges en cours** : dépôt principal sale (fichiers d'autres sessions) → commit 827809b06 local sur `main` = 4606c8101
+  déjà poussé ; questions-1gen à prévenir (4 communs). `Doc-inchangée:` dans un COMMIT.
 - **Worktree / branche** : `../ubumaths-wt-questions-1techno`, `feat/questions-1techno-lot6-migration` (créée, journal seul).
 
 ## 1. Relevé (prod, 2026-11-17)
