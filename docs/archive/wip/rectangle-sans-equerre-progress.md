@@ -1,23 +1,18 @@
 # Chantier « rectangle-sans-equerre » — construire un rectangle sans équerre (4-038)
 
-> Outil manquant n° 37 de [`outils-manquants.md`](outils-manquants.md). Point servi : 4-038 « Construire des
+> Outil manquant n° 37 de [`outils-manquants.md`](../../wip/outils-manquants.md). Point servi : 4-038 « Construire des
 > rectangles sans équerre » (`cycle4.json`, aucune borne écrite). Né du chantier
-> [`questions-4`](questions-4-progress.md) § 54.
+> [`questions-4`](../../wip/questions-4-progress.md) § 54.
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après #2795._
+_Mis à jour le 2026-11-18, chantier clos._
 
-- **État** : brouillon 4-038 **`a95aedfd`** en prod, rangé sous Géométrie > Figures planes > triangles et
-  tagué 4-038 (#2795, `db:migrate` fait, relu au MCP). Page à cocher publiée (§ 9). PR de l'`id` dans le
-  JSON en cours.
-- **Prochaine action** : lire les verdicts de la page à cocher ; tout « ok » → `publier-lot.ts --dir
-scripts/questions/4-lot-11` en simulation, puis `--publier` par David ; puis clôture de `questions-4`
-  (4-026 reste en D).
-- **En attente de David** : relecture sur la page à cocher (jouer la figure dans l'aperçu admin).
-- **Pièges en cours** : ne pas toucher à `ruled-polygon.ts`. Push : ne pas filtrer sa sortie par
-  `grep -E "->…"` (ugrep plante). Worktree : `supabase/.temp` copié du dépôt principal pour `db:migrate`.
-- **Worktree / branche** : `../ubumaths-wt-rectangle-sans-equerre`, `chore/rectangle-sans-equerre-id`.
+- **État** : **clos**. Outil (#2781, en prod depuis v0.94.0), modèle 4-038 `a95aedfd` (#2791), nœud et tag
+  (#2795), `id` dans le JSON (#2799) ; verdict « ok » sur la page à cocher, **publié** le 2026-11-18.
+- **Prochaine action** : aucune ici ; clôture de `questions-4` (4-026 reste en D).
+- **En attente de David** : rien. **Pièges** : ne pas toucher à `ruled-polygon.ts`.
+- **Worktree / branche** : retirés.
 
 ## 1. Ce qui existe (lecture du code, 2026-11-17)
 
@@ -291,3 +286,12 @@ Le modèle du § 6.2 tel quel ; Q6 [AC] horizontale ; Q7 niveau 3.
 - `id` du brouillon ajouté au JSON du lot (oublié dans #2795) : PR 4.
 - Page à cocher : https://claude.ai/artifact/TohLeMRwgMmDUj8Lg5jxy3 (capacités `db` + `user`, `verdicts`
   vide) ; alerte attendue : bloc `figure-a-completer` non dessiné, à jouer dans l'aperçu admin.
+
+## 10. Publication et clôture (2026-11-18)
+
+- #2799 (`id` du brouillon dans le JSON du lot) : mergée.
+- Page à cocher : un verdict, « ok », sans commentaire.
+- `publier-lot.ts --dir scripts/questions/4-lot-11` : simulation (1 brouillon passe le contrôle), puis
+  `--publier` lancé par David : 1/1 publié, statut relu en base.
+- Versement : la doc durable est déjà dans `docs/systeme/questions.md` et `docs/systeme/ubumark.md` (PR 1) ;
+  ligne 37 de `outils-manquants.md` versée dans « fait » ; journal archivé.

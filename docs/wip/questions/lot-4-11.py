@@ -1,6 +1,6 @@
 """Écrit le modèle du lot 11 de la 4e (4-038, rectangle sans équerre) dans scripts/questions/4-lot-11/.
 
-Phase 0 validée par David le 2026-11-17 (journal `docs/wip/rectangle-sans-equerre-progress.md` § 6) :
+Phase 0 validée par David le 2026-11-17 (journal `docs/archive/wip/rectangle-sans-equerre-progress.md` § 6) :
 
 | # | Point | Titre                                | Catégorie, niveau                          |
 | 1 | 4-038 | Construire un rectangle sans équerre | Géométrie › Figures planes › triangles, 3  |

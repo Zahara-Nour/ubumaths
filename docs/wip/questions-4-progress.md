@@ -5,13 +5,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, lot 10 publié, outil de 4-038 décidé._
+_Mis à jour le 2026-11-18, 4-038 publié._
 
-- **État** : lots 1 à 10 publiés. Relevé prod du 2026-11-17 (MCP) : **80 points de 4e sur 82** ont un modèle
-  publié ; sans modèle : 4-026 (classe D, non évaluable) et 4-038 (outil manquant, `outils-manquants.md`
-  n° 37, rattaché à la 6e).
-- **Prochaine action** : attendre l'outil du chantier `rectangle-sans-equerre` (§ 54), puis un lot d'un modèle
-  pour 4-038, puis la clôture (versement dans `docs/systeme/`, archivage du journal).
+- **État** : lots 1 à 11 publiés. **81 points de 4e sur 82** ont un modèle publié ; seul 4-026 (classe D,
+  non évaluable) n'en a pas. 4-038 : modèle `a95aedfd` (lot 11, chantier `rectangle-sans-equerre`, clos),
+  publié le 2026-11-18.
+- **Prochaine action** : la clôture (versement dans `docs/systeme/`, archivage du journal).
 - **En attente de David** : rien.
 - **Pièges en cours** : aucun propre au chantier.
 - **Worktree / branche** : `../ubumaths-wt-questions-4` (HEAD détachée sur `origin/main`), aucune branche en cours.
@@ -1268,7 +1267,7 @@ le trou noté pour le chantier d'outils.
 ## 54. Outil de 4-038 : chantier `rectangle-sans-equerre` (2026-11-17)
 
 - Lecture du code : aimantation aux intersections et « point construit » existent ; manquent une forme de
-  `verifier: rectangle` sans équerre et son juge (détail : `rectangle-sans-equerre-progress.md` § 1).
+  `verifier: rectangle` sans équerre et son juge (détail : `docs/archive/wip/rectangle-sans-equerre-progress.md` § 1).
 - Décisions de David (« je te suis ») : un côté et une diagonale ; palette Segment · Compas · Règle graduée ;
   juger le résultat, sommets construits ; chantier à part (outil), puis le modèle ici, puis la clôture.
   Rattachement à la 6e (§ 50.1) caduc : l'outil se fait pour la 4e.
