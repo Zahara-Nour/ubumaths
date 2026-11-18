@@ -1,4 +1,5 @@
 {
+	"id": "9834f4cd-4e57-451d-bfc3-a0a8780cc423",
 	"title": "Logarithme d'un produit",
 	"description": "log(ab) = log a + log b : formule ; log a + log b sans calculatrice (produit puissance de 10) ; regrouper en log(n) ; log(a × 10^k) ; valeurs approchées",
 	"grades": ["T_TECHNO"],

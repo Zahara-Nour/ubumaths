@@ -1,4 +1,5 @@
 {
+	"id": "ceeba3f8-f169-4736-83bf-21b7d49f6303",
 	"title": "Logarithme d'un quotient",
 	"description": "log(a/b) = log a − log b : formule ; log(1/a) = −log a ; regrouper en log(n) ; valeurs approchées de log(1/a) et log(10ᵏ/a)",
 	"grades": ["T_TECHNO"],

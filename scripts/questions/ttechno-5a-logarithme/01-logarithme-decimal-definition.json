@@ -1,4 +1,5 @@
 {
+	"id": "dc269779-aaa4-44af-8e02-e17a55417c65",
 	"title": "Logarithme décimal : définition",
 	"description": "log(10ⁿ) = n ; log de 100, 0,01… sans calculatrice ; 10ˣ = b donne x = log(b) ; 10^(log b) = b ; calculatrice ; nombre de chiffres d'un entier",
 	"grades": ["T_TECHNO"],
