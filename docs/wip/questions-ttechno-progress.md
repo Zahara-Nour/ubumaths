@@ -5,14 +5,13 @@ Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) · bornes 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après #2820 (lot 4 migré)._
+_Mis à jour le 2026-11-18, après la publication du lot 4._
 
-- **État** : lots 0 à 3b publiés ; lot 4 (5e810e16 M1 037, 7a37a3e1 M2 039) en prod en brouillon, rangé sur
-  « fonctions x ↦ aˣ » et tagué (#2820 migrée, vérifié MCP) ; aucun worktree ouvert.
-- **Prochaine action** : lire les verdicts de la page à cocher du lot 4
-  (https://claude.ai/artifact/4sxC6vTuygGLBECtmuznzv) ; puis `publier-lot.ts --dir scripts/questions/ttechno-4-fonctions`
-  (simulation, puis `--publier` par David) ; puis bilan des points restants (042, 082, 083 : lot 5, logarithme).
-- **En attente de David** : verdicts de la page à cocher du lot 4.
+- **État** : lots 0 à 4 publiés (lot 4 : 5e810e16 → 037, 7a37a3e1 → 039, vérifié MCP) ; aucun worktree ouvert.
+  Bilan MCP (§ 33) : 28 points STMG encore sans modèle publié, tous prévus aux lots 5 à 8 (017, 019 : rien, Q17).
+- **Prochaine action** : phase 0 du lot 5, logarithme décimal (040, 041, 042, 082, 083, 043, 084, 085, 044) :
+  relevé MCP de l'existant (calques ln à réécrire en base 10, Q3), proposition, questions à David.
+- **En attente de David** : rien avant la phase 0 du lot 5.
 - **Pièges en cours** : un point TTECHNO par modèle (trigger) ; tag = nœud DU POINT (relevé MCP, pas le journal) ;
   `publier-lot.ts`, `create-questions --publier` visent la prod : David les lance (`!`) depuis le dépôt principal ;
   `db:migrate` pousse toutes les migrations en attente ; worktree neuf → `svelte-kit sync`.
@@ -769,3 +768,17 @@ David a lancé `create-questions --publier` : 2 brouillons (5e810e16 M1, 7a37a3e
 - Page à cocher : https://claude.ai/artifact/4sxC6vTuygGLBECtmuznzv (2 fiches : 5e810e16 TTECHNO-037, 6 exemples ;
   7a37a3e1 TTECHNO-039, 5 exemples ; aucune alerte ; nœud lu en base : « fonctions x ↦ aˣ » ; `verdicts` vide).
   Rendu à 390 px non vérifié.
+
+## 33. Lot 4 : publication et bilan (2026-11-18)
+
+- Page à cocher relue : 2 verdicts sur 2 « ok », sans commentaire.
+- `publier-lot.ts --dir scripts/questions/ttechno-4-fonctions` : simulation verte (2 brouillons), puis `--publier`
+  par David ; statut relu en base (MCP) : 2/2 `published`, `{T_TECHNO}` (5e810e16, 7a37a3e1).
+- **Bilan MCP** (points TTECHNO non archivés sans aucun modèle publié tagué) : 45 sur 92, dont les 17 STD2A hors
+  périmètre (001–014, 070–072). Restent **28 points STMG** :
+  - 017, 019 : rien à écrire (Q17, couverts de fait par 026 / 027) ;
+  - **lot 5, logarithme décimal** (9) : 040, 041, 042, 082, 083, 043, 084, 085, 044 ;
+  - **lot 6, fonction inverse** (4) : 045, 086, 049, 087 ;
+  - **lot 7, deux variables** (6) : 050, 051, 052, 088, 053, 054 ;
+  - **lot 8, loi binomiale** (7) : 057, 060, 061, 067, 069, 090, 091.
+    045, 049, 057, 060, 061, 087 étaient des jumeaux « a priori » (§ 3) que le lot 0 n'a pas retenus.
