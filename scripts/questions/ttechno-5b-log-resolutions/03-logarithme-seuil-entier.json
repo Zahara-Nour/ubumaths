@@ -1,4 +1,5 @@
 {
+	"id": "becf24bc-f837-484e-b8bb-ac99d05492a4",
 	"title": "Seuil : plus petit entier n tel que aⁿ < b (logarithme décimal)",
 	"description": "qⁿ < 10⁻ᵗ ; capital qui double (nombre d'années) ; dépréciation d'une machine ; aⁿ > 10ᵏ ; inconnue entière, résolution par log",
 	"grades": ["T_TECHNO"],
