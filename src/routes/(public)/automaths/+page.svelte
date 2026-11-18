@@ -10,12 +10,15 @@
 	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
 	import CatalogueGallery from '#lib/components/questions/CatalogueGallery.svelte';
 	import CartFloatingButton from '#lib/components/CartFloatingButton.svelte';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import { questionTemplatesCache } from '#lib/stores/questionTemplates.svelte.ts';
 	import {
 		buildCatalogue,
 		filterTemplatesByGrade,
 		type CatalogueRubric
 	} from '#lib/questions/catalogue.ts';
+	import { initiallyOpenGroups, searchCatalogue } from '#lib/questions/catalogue-search.ts';
 	import { GRADE_CODES, GRADES, isGradeCode, type GradeCode } from '#lib/types/grades.ts';
 
 	// Valeur d'accordéon de la rubrique « Général » (elle n'a pas de nœud)
@@ -27,6 +30,9 @@
 	const GRADE_PARAM = 'niveau';
 	const LOWER_GRADES_PARAM = 'inferieurs';
 	const NOTION_PARAM = 'notion';
+	const SEARCH_PARAM = 'q';
+	// Délai entre la frappe et la recherche (les cartes ne se recalculent pas à chaque lettre)
+	const SEARCH_DELAY_MS = 200;
 	// Dernière adresse du catalogue, retenue le temps de la visite (onglet) :
 	// revenu sans paramètre (retour du panier), on la reprend
 	const MEMORY_KEY = 'chiphre_automaths_adresse';
@@ -52,6 +58,30 @@
 	let catalogue = $derived(buildCatalogue(filteredTemplates, questionTemplatesCache.nodes));
 	let hasAnyTemplate = $derived(questionTemplatesCache.templates.length > 0);
 	let branchItems = $derived(catalogue.branches.map((b) => ({ value: b.id, label: b.name })));
+
+	// Recherche : texte du champ, et texte cherché (après le délai de frappe)
+	const initialSearch = initialParams.get(SEARCH_PARAM) ?? '';
+	let searchInput = $state(initialSearch);
+	let searchQuery = $state(initialSearch);
+	let searchTimer: ReturnType<typeof setTimeout> | undefined;
+	let searchField = $state<HTMLInputElement | null>(null);
+
+	// `null` : moins de 2 lettres, le catalogue se parcourt par notions
+	let searchResult = $derived(
+		searchCatalogue(
+			filteredTemplates,
+			questionTemplatesCache.nodes,
+			questionTemplatesCache.pointNames,
+			searchQuery
+		)
+	);
+	// Groupes de résultats dépliés : les premiers (60 cartes au plus), puis ce
+	// que le prof ouvre ou ferme ; une nouvelle recherche repart des premiers
+	let defaultOpenGroups = $derived(searchResult ? initiallyOpenGroups(searchResult.groups) : []);
+	let toggledGroups = $state<{ result: typeof searchResult; open: string[] } | null>(null);
+	let openSearchGroups = $derived(
+		toggledGroups && toggledGroups.result === searchResult ? toggledGroups.open : defaultOpenGroups
+	);
 
 	// Notion choisie (celle de l'adresse au chargement)
 	let chosenNotionId = $state<string | undefined>(initialParams.get(NOTION_PARAM) ?? undefined);
@@ -114,6 +144,8 @@
 		if (chosenGrade) params.set(GRADE_PARAM, chosenGrade);
 		if (chosenGrade && withLowerGrades) params.set(LOWER_GRADES_PARAM, '1');
 		if (selectedNotion) params.set(NOTION_PARAM, selectedNotion.id);
+		const query = searchQuery.trim();
+		if (query) params.set(SEARCH_PARAM, query);
 		const search = params.size > 0 ? `?${params.toString()}` : '';
 		replaceState(`${resolve('automaths')}${search}`, page.state);
 		rememberSearch(search);
@@ -137,6 +169,51 @@
 		writeChoicesToUrl();
 	}
 
+	function handleSearchInput() {
+		clearTimeout(searchTimer);
+		searchTimer = setTimeout(() => {
+			searchQuery = searchInput;
+			writeChoicesToUrl();
+		}, SEARCH_DELAY_MS);
+	}
+
+	/** Efface la recherche : retour à la notion où l'on était */
+	function clearSearch() {
+		clearTimeout(searchTimer);
+		searchInput = '';
+		searchQuery = '';
+		writeChoicesToUrl();
+	}
+
+	function handleSearchKeydown(event: KeyboardEvent) {
+		if (event.key === 'Escape' && searchInput) {
+			event.preventDefault();
+			clearSearch();
+		}
+	}
+
+	/** « / » met le curseur dans la recherche, sauf si l'on tape déjà ailleurs */
+	function handleWindowKeydown(event: KeyboardEvent) {
+		if (event.key !== '/' || event.ctrlKey || event.metaKey || event.altKey) return;
+		const target = event.target;
+		if (
+			target instanceof HTMLElement &&
+			(target.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName))
+		) {
+			return;
+		}
+		event.preventDefault();
+		searchField?.focus();
+	}
+
+	function handleSearchGroupsChange(open: string[]) {
+		toggledGroups = { result: searchResult, open };
+	}
+
+	function questionCount(n: number): string {
+		return n === 1 ? '1 question' : `${n} questions`;
+	}
+
 	onMount(() => {
 		// Dernière adresse de la visite reprise : l'adresse affichée la montre.
 		// Arrivée par un lien avec paramètres : c'est elle que la visite retient.
@@ -148,6 +225,8 @@
 		void questionTemplatesCache.fetchTemplates();
 	});
 </script>
+
+<svelte:window onkeydown={handleWindowKeydown} />
 
 <SeoHead
 	title="Automaths - Banque de questions | Chiphre"
@@ -188,8 +267,30 @@
 			</div>
 		</div>
 	{:else}
+		<!-- Recherche : pas de curseur automatique (clavier du téléphone) ; « / » l'y met -->
+		<div class="relative mb-4 max-w-xl" role="search">
+			<Input
+				bind:ref={searchField}
+				type="search"
+				bind:value={searchInput}
+				oninput={handleSearchInput}
+				onkeydown={handleSearchKeydown}
+				placeholder="Chercher une question : « distributivité », « aire du disque »…"
+				aria-label="Chercher une question"
+				class="pr-10 [&::-webkit-search-cancel-button]:hidden"
+			/>
+			{#if searchInput}
+				<button
+					type="button"
+					class="absolute top-1/2 right-2 -translate-y-1/2 rounded px-2 text-muted-foreground hover:text-foreground"
+					aria-label="Effacer la recherche"
+					onclick={clearSearch}>✕</button
+				>
+			{/if}
+		</div>
+
 		<div class="mb-6 flex flex-wrap items-center gap-x-8 gap-y-4">
-			{#if selectedBranch}
+			{#if selectedBranch && !searchResult}
 				<!-- Branche -->
 				<div class="flex items-center gap-4">
 					<label for="branch-select" class="shrink-0 text-sm font-medium whitespace-nowrap"
@@ -229,13 +330,52 @@
 			</div>
 		</div>
 
-		{#if catalogue.branches.length === 0 && catalogue.unclassified.length === 0}
+		{#if searchResult}
+			<!-- Résultats de la recherche, à la place du menu Branche et des onglets -->
+			{#if searchResult.total === 0}
+				<div class="space-y-4 rounded-lg border border-dashed p-12 text-center">
+					<p class="text-muted-foreground">Aucune question pour « {searchQuery.trim()} »</p>
+					{#if chosenGrade}
+						<Button variant="outline" onclick={() => handleGradeChange(ALL_GRADES_VALUE)}
+							>Chercher dans tous les niveaux</Button
+						>
+					{/if}
+				</div>
+			{:else}
+				<p class="mb-4 text-sm text-muted-foreground" aria-live="polite">
+					{questionCount(searchResult.total)}
+				</p>
+				<Accordion.Root
+					type="multiple"
+					value={openSearchGroups}
+					onValueChange={handleSearchGroupsChange}
+					class="space-y-4"
+				>
+					{#each searchResult.groups as group (group.id)}
+						<Accordion.Item value={group.id} class="rounded-lg border !border-b-0 bg-background">
+							<Accordion.Trigger class="px-4 hover:bg-muted/50 hover:no-underline">
+								<span class="font-medium text-foreground">
+									{group.path.join(' › ')}
+									<span class="font-normal text-muted-foreground"> · {group.templates.length}</span>
+								</span>
+							</Accordion.Trigger>
+							<Accordion.Content class="px-4 pt-2 pb-4">
+								<!-- Aperçus calculés seulement pour les groupes dépliés -->
+								{#if openSearchGroups.includes(group.id)}
+									<CatalogueGallery templates={group.templates} />
+								{/if}
+							</Accordion.Content>
+						</Accordion.Item>
+					{/each}
+				</Accordion.Root>
+			{/if}
+		{:else if catalogue.branches.length === 0 && catalogue.unclassified.length === 0}
 			<p class="rounded-lg border border-dashed p-12 text-center text-muted-foreground">
 				Aucune question pour ce niveau.
 			</p>
 		{/if}
 
-		{#if selectedBranch}
+		{#if selectedBranch && !searchResult}
 			<!-- Notions -->
 			<Tabs.Root value={selectedNotion?.id} onValueChange={handleNotionChange}>
 				<Tabs.List class="mb-6 flex-wrap border border-border !bg-transparent">
@@ -282,7 +422,7 @@
 			</Tabs.Root>
 		{/if}
 
-		{#if catalogue.unclassified.length > 0}
+		{#if catalogue.unclassified.length > 0 && !searchResult}
 			<!-- Modèles hors de l'arbre lu : ne devrait pas arriver, jamais perdus pour autant.
 			     Repliés : leurs aperçus ne se calculent qu'à l'ouverture. -->
 			<Accordion.Root type="multiple" bind:value={openUnclassified} class="mt-10">
