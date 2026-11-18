@@ -12,6 +12,8 @@ import { join } from 'node:path';
 const RACINE = process.cwd();
 const DOSSIERS = { lib: 'src/lib', tests: 'tests' } as const;
 const CODE = /\.(ts|js|mjs|svelte)$/;
+// Le test de `pnpm migrer:diese` cite des imports fictifs dans ses exemples.
+const EXCLUS = new Set(['scripts/__tests__/migrer-diese.test.ts']);
 // Chaîne entre guillemets simples ou doubles, après from / import( / vi.mock( …
 const SPEC =
 	/(?:from\s+|import\s*\(\s*|import\s+|mock\(\s*|importActual\(\s*)['"]#(lib|tests)\/([^'"?]+)(?:\?[^'"]*)?['"]/g;
@@ -22,7 +24,7 @@ function fichiers(): string[] {
 		encoding: 'utf8'
 	})
 		.split('\n')
-		.filter((f) => CODE.test(f) && existsSync(join(RACINE, f)));
+		.filter((f) => CODE.test(f) && !EXCLUS.has(f) && existsSync(join(RACINE, f)));
 }
 
 describe('imports #lib / #tests', () => {
