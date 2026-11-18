@@ -44,8 +44,10 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       # Mêmes clés que le job `Lint` de quality.yml : les PR restaurent ce cache.
+      # restore + save séparés : le cache s'enregistre même si main a une erreur
+      # ESLint (`actions/cache` seul n'enregistre qu'après un job réussi).
       - name: Restore ESLint cache
-        uses: actions/cache@v6
+        uses: actions/cache/restore@v6
         with:
           path: .eslintcache
           key: eslint-content-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', 'eslint.config.*') }}-${{ github.sha }}
@@ -55,3 +57,10 @@ jobs:
 
       - name: Run ESLint
         run: pnpm eslint . --cache --cache-strategy content
+
+      - name: Save ESLint cache
+        if: always()
+        uses: actions/cache/save@v6
+        with:
+          path: .eslintcache
+          key: eslint-content-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', 'eslint.config.*') }}-${{ github.sha }}

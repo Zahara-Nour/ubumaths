@@ -84,10 +84,12 @@ Un fichier qui perd des erreurs fait aussi échouer : `pnpm types:cliquet --maj`
 TypeScript (`eslint.fast.config.js`), plus oxlint, la parité des variables d'environnement avec
 `.github/ci.env` et la garde des `render` attendus. Eslint complet : 530 s en local.
 
-**ESLint en CI** : sur une PR, le job Lint ne relit que les fichiers de code de la PR
-(`scripts/ci-lint-fichiers.sh`) — les règles d'erreur ne lisent qu'un fichier à la fois, et tout
-l'arbre prenait 19 à 24 min par PR. Il relit tout l'arbre quand la PR touche la config ESLint, une
-règle maison, les dépendances, `.gitignore`, `svelte.config` ou un `tsconfig`. Le filet :
+**ESLint en CI** : sur une PR, le job Lint ne relit que les fichiers de code de la PR, plus les
+`.svelte` qui importent un module qu'elle modifie ou supprime (`scripts/ci-lint-fichiers.sh`) ; tout
+l'arbre prenait 19 à 24 min par PR. Les règles d'erreur ne lisent qu'un fichier, sauf
+`svelte/no-unused-props`, qui lit le type des props, d'où ces importeurs. Il relit tout l'arbre quand
+la PR touche la config ESLint, une règle maison, les dépendances, `.gitignore`, `vite.config`, un
+`tsconfig`, un `.d.ts` ou `.nvmrc`, ou plus de 300 fichiers de code. Le filet :
 `lint-nocturne.yml` relit tout l'arbre chaque nuit sur `main` et y enregistre le cache ESLint que
 les PR restaurent (`main` ne lance pas le Lint sur push).
 

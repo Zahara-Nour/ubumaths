@@ -40,23 +40,41 @@ function git(...args: string[]): void {
 	if (r.status !== 0) throw new Error(`git ${args.join(' ')} → ${r.status}\n${r.stderr}`);
 }
 
-function ecrire(fichier: string): void {
+function ecrire(fichier: string, contenu = `${fichier}\n`): void {
 	mkdirSync(join(racine, dirname(fichier)), { recursive: true });
-	writeFileSync(join(racine, fichier), `${fichier}\n`);
+	writeFileSync(join(racine, fichier), contenu);
 	git('add', '-f', fichier);
 }
 
+// Composants déjà sur main, qui importent des modules (règle svelte/no-unused-props :
+// le type des props peut venir d'un .ts importé).
 function initialiser(): void {
 	git('init', '-q', '-b', 'main');
 	ecrire('src/app.ts');
 	ecrire('src/vieux.ts');
+	ecrire('src/lib/types/carte.ts');
+	ecrire('src/lib/ui/bouton/index.ts');
+	ecrire(
+		'src/lib/Carte.svelte',
+		'<script lang="ts">import type { P } from \'#lib/types/carte.ts\';</script>\n'
+	);
+	ecrire(
+		'src/lib/Voisin.svelte',
+		'<script lang="ts">import type { P } from \'./types/carte\';</script>\n'
+	);
+	ecrire(
+		'src/lib/Bouton.svelte',
+		'<script lang="ts">import { B } from \'#lib/ui/bouton/index.ts\';</script>\n'
+	);
+	ecrire('src/lib/Vieux.svelte', '<script lang="ts">import { v } from \'../vieux.ts\';</script>\n');
+	ecrire('src/lib/Seul.svelte', '<p>rien</p>\n');
 	git('commit', '-q', '-m', 'init');
 }
 
 /** Une PR qui change `fichiers`, mergée dans main par un commit de merge (comme la CI). */
 function pr(fichiers: string[], supprimes: string[] = []): void {
 	git('switch', '-q', '-c', 'feat/x');
-	for (const f of fichiers) ecrire(f);
+	for (const f of fichiers) ecrire(f, `${f} (PR)\n`);
 	for (const f of supprimes) git('rm', '-q', f);
 	git('commit', '-q', '-m', 'pr');
 	git('switch', '-q', 'main');
@@ -83,9 +101,26 @@ afterEach(() => {
 });
 
 describe('ci-lint-fichiers', () => {
-	it('PR de code : seulement ses fichiers de code, ni supprimés ni ceux de main', () => {
-		pr(['src/a.ts', 'src/B.svelte', 'scripts/c.mjs', 'docs/d.md', 'src/e.json'], ['src/vieux.ts']);
+	it('PR de code : ses fichiers de code, ni supprimés ni ceux de main', () => {
+		pr(['src/a.ts', 'src/B.svelte', 'scripts/c.mjs', 'docs/d.md', 'src/e.json']);
 		expect(liste().sort()).toEqual(['scripts/c.mjs', 'src/B.svelte', 'src/a.ts']);
+	});
+
+	it('module modifié ou supprimé : les .svelte qui l’importent, pas les autres', () => {
+		pr(['src/lib/types/carte.ts', 'src/lib/ui/bouton/index.ts'], ['src/vieux.ts']);
+		expect(liste().sort()).toEqual([
+			'src/lib/Bouton.svelte',
+			'src/lib/Carte.svelte',
+			'src/lib/Vieux.svelte',
+			'src/lib/Voisin.svelte',
+			'src/lib/types/carte.ts',
+			'src/lib/ui/bouton/index.ts'
+		]);
+	});
+
+	it('chemin accentué : sorti tel quel', () => {
+		pr(['src/lib/données.ts']);
+		expect(liste()).toEqual(['src/lib/données.ts']);
 	});
 
 	it('PR sans code : rien à relire', () => {
@@ -102,7 +137,10 @@ describe('ci-lint-fichiers', () => {
 			'pnpm-lock.yaml',
 			'.gitignore',
 			'svelte.config.js',
-			'tsconfig.json'
+			'vite.config.ts',
+			'tsconfig.json',
+			'src/app.d.ts',
+			'.nvmrc'
 		]) {
 			rmSync(racine, { recursive: true, force: true });
 			mkdirSync(racine);
