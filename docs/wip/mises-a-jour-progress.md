@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après #2814._
+_Mis à jour le 2026-11-18, PR 2a en cours._
 
-- **État** : PR 1 mergée (#2814) : SvelteKit 2.70.4, ferme les 2 alertes qui nous concernent. Pas encore en prod.
-- **Prochaine action** : PR 2, SvelteKit 3 + adapter-vercel 7 : nouveau worktree, lire les changements cassants de la 3.0 d'abord, vérifier les 2 faibles (`use:enhance`, pages prérendues).
+- **État** : #2814 mergée (kit 2.70.4, pas encore en prod). Étude de SvelteKit 3 faite (section « Étude SvelteKit 3 ») ; découpage validé 2a / 2b / plus tard. PR 2a (TypeScript 6.0.3 seul) en cours.
+- **Prochaine action** : finir 2a (`pnpm check`, `types:cliquet`, `lint` complet sous TS 6), PR, merge ; puis 2b.
 - **En attente de David** : `deploy:prod` pour livrer #2814, quand il le voudra.
-- **Pièges en cours** : dépendances retenues exprès (mémoire `project_dependances-epinglees`) ; `minimumReleaseAge` 3 j, ne jamais le contourner.
-- **Worktree / branche** : aucun (supprimés après #2814).
+- **Pièges en cours** : `check:incremental` tourne sous tsgo (TS 7) : il NE vérifie PAS TS 6, seul `pnpm check` le fait. Dépendances retenues exprès (mémoire `project_dependances-epinglees`) ; `minimumReleaseAge` 3 j, ne jamais le contourner.
+- **Worktree / branche** : `../ubumaths-wt-mises-a-jour` · `chore/typescript-6`.
 
 ## Origine
 
@@ -17,6 +17,8 @@ Après le `deploy:prod` v0.95.0 (2026-11-18), GitHub signale 11 failles dans les
 ## Décisions de David
 
 - 2026-11-18 : **choix 1** — SvelteKit 2.70.4 d'abord (ferme les 2 alertes qui nous concernent), SvelteKit 3 ensuite dans une PR à part. Autres montées hors du chantier (lot mensuel de Dependabot).
+
+- 2026-11-18 : **découpage de SvelteKit 3 validé** (« oui ») : 2a = TypeScript 6 seul, sur kit 2 ; 2b = kit 3.2.0 + adapter-vercel 7.0.3 (versions mûres), outil `npx sv migrate sveltekit-3` + corrections à la main, revues `code-reviewer` + `security-auditor` ; si `$lib` reste accepté, `$lib` → `#lib` dans une PR mécanique à part ; les dépréciations (json, invalidateAll, $env, pushState, goto) plus tard.
 
 ## Relevé des alertes (2026-11-18)
 
@@ -33,6 +35,28 @@ SvelteKit installé : 2.70.3. Dernières versions : 2.70.4 (2026-11-05), 3.3.1 (
 | grave      | picomatch 4.0.7 (ReDoS sur des motifs de fichiers)      | aucune version | non : outil de construction seulement (vite → tinyglobby), motifs écrits par nous |
 
 Les « ×2 » = la même faille comptée deux fois (dépendance de dev et d'exécution).
+
+## Étude SvelteKit 3 (2026-11-18)
+
+Source : https://svelte.dev/docs/kit/migrating-to-sveltekit-3. Comptes faits par grep dans `src` + `tests`.
+
+**Les 2 faibles ne nous concernent pas** : aucun formulaire `use:enhance` ne poste vers une autre page (43 fichiers, tous `?/…`, y compris les 2 `action={…}` dynamiques) ; une seule page prérendue (`/demo`).
+
+**Obligatoire en 3.0 :**
+
+- TypeScript 6 (5.9.3 → 6.0.3 ; typescript-eslint 8.71.0 l'accepte, `<6.1.0` ; svelte-check aussi). Node 22.17+ : OK.
+- `svelte.config.js` plus lu : adaptateur, `csrf`, alias `$tests`, `version.pollInterval` → options du plugin `sveltekit()` dans `vite.config.ts`.
+- `$lib` → `#lib` + extensions explicites : 4 088 fichiers, 14 600 imports (outil de migration). Retiré ou seulement déprécié : à vérifier.
+- `$app/stores` retiré : 22 fichiers → `$app/state`. `$app/environment` → `$app/env` : 86 fichiers.
+- `error(NNN, { message })` : 2ᵉ argument = chaîne : 36 appels, 6 fichiers (`csrfHandle`, `consent`, chat, documents, upload, test des messages).
+- `handleError` reçoit aussi les `error(...)` voulus : `hooks.client.ts`, bruit possible dans le suivi des erreurs.
+- CSRF toujours actif, requête d'une autre origine sans `Content-Type` refusée : à confronter à notre `csrfHandle` (retour OAuth Google). Sécurité → `security-auditor`.
+- Cookies : `cookie` v2, `path` par défaut `/` ; nous passons `path: '/'` presque partout, vérifier les `cookieOptions` de Google.
+- `App.Error` a toujours `status` (`app.d.ts`). adapter-vercel 7 : plus d'`edge` (nous : `nodejs22.x`, rien).
+
+**Seulement déprécié (plus tard)** : `json()`/`text()` de kit (368 fichiers), `invalidateAll` (54), `$env/*` (18), `pushState`/`replaceState` (15), `goto` avec options (10).
+
+**Rien chez nous** : `$service-worker`, remote functions, `instanceof HttpError`, `data-sveltekit-*="off"`, `preloadData`, `getRequest`, `src/params`.
 
 ## Autres versions en retard (pnpm outdated, 2026-11-18)
 
