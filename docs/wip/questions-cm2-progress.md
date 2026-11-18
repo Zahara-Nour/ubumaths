@@ -1242,3 +1242,18 @@ choix, qui est le cœur du problème ? Reco : **oui**, et le dire dans le corrig
 Recommandations suivies : (a) 064 en case choix `plusieurs: oui` (cocher toutes les solutions) ; (b) 062 sans les
 dominos ; (c) 064 au niveau 1 de « Préalgorithmique » ; (d) 063 V2, les deux sens de pose des torchons, dit au
 corrigé ; (e) un seul lot de 5 modèles. Tableau du § 18 gardé.
+
+### 18.2 Lot 11b : écriture (2026-11-18)
+
+- `docs/wip/questions/lot-cm2-11b.py` → `scripts/questions/cm2-11b/` (5 modèles, 15 variations, sans `theme` / `domain` /
+  `subdomain`) ; niveaux 12, 13 (en deux étapes ou plus), 3 (produits cartésiens), 2 (optimisation), 1 (Préalgorithmique).
+- `question:specs --instances 300` : 49 specs vertes, 4 500 tirages réussis, aucun `\textcolor` hors `$` ; sonde des
+  ` ```schema-barres ` des corrigés : 171 blocs, 0 problème ; `create-questions` en simulation (prod) : 5 à créer, 0 en base.
+- Case choix `plusieurs: oui` (064) : attendu calculé, un choix faux rend l'indice du premier choix vrai (`f`), un indice
+  répété compte une fois ; un oubli = ½ point (`unoptimal_form`), un choix faux coché = faux.
+- **Écarts à la phase 0** : 119 V1, le billet est toujours de 50 € ; 060 V1, toujours 20 € ; 062 V1, le corrigé liste les 8
+  suites (et les prolonge pour 4 lancers) ; 064 V1, aire de 80 à 99 cm², 9 largeurs proposées (1 à 9 cm, au moins 4
+  rectangles) ; V2, 90 à 98 œufs, 0 à 9 boîtes de 10 ; V3, 20 à 45 élèves, groupes de 3 à 15 (au moins 2 tailles,
+  34, 38, 42 exclus). Lettres `e` (Euler) remplacées : `g` (écart), `q` (équerres).
+- Base locale (copie du dossier dans le scratchpad, `.env.local`, sous `with-db-lock.sh`) : 5 brouillons ; aperçu admin à
+  390 px (Playwright, port 5179) : 9 choix lisibles (A à I), fractions et énoncés corrects.
