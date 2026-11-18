@@ -2120,7 +2120,7 @@ reste en D ; niveaux **CM1 et CM2** et tag des deux points (109/098, 110/099, 11
   (b80d1619, af2d7e03, 281ad02d, b423785d, f83c0424), vérifiés au MCP (draft, sans nœud, 0 tag), ids commités.
 - Relevé `etat-prod-2026-11-18-cm1-8e/` (5 modèles, 0 tag ; les 7 points sur Géométrie > Solides > propriétés),
   script `lot-cm1-8e-rangement.py` (gabarit 8d) → migration `20261118223150_questions_cm1_lot8e_rangement_tags`
-  - fixture : 5 modèles rangés sur Solides > propriétés, 7 tags posés (CM1-109 à 113 ; CM2-098, 099), aucun
-    niveau ni statut changé, aucun nœud créé. Diff avec le 8d limité aux données du lot.
+  et fixture : 5 modèles rangés sur Solides > propriétés, 7 tags posés (CM1-109 à 113 ; CM2-098, 099), aucun
+  niveau ni statut changé, aucun nœud créé. Diff avec le 8d limité aux données du lot.
 - Test `questions-cm1-lot8e-rangement-tags.test.ts` : 20/20 vert ; corps neutralisé (`select 1;`) : 9 échecs,
   7 sautés. `types:cliquet` tenu. Seule migration en attente (`migration list --linked`).
