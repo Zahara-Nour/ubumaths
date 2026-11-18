@@ -1149,3 +1149,17 @@ de 7 modèles. Tableau du § 17 gardé.
   390 px (Playwright, port 5179) : deux balances lisibles, □ et △ rendus, case « choix » Oui / Non, grands nombres
   groupés (7 224 286), fractions.
 - #2837 (fichiers) : CI verte au premier passage, mergée.
+
+### 17.3 Lot 11a : brouillons, rangement (2026-11-18)
+
+- David : `create-questions --dir scripts/questions/cm2-11a --publier`, lancé **depuis le worktree
+  `ubumaths-wt-questions-cm1`** (ids écrits là, pas dans le dépôt principal) → `f0f354c8` (058, parties-tout, niv. 25),
+  `fd017309` (058, comparaison, 6), `454c54ac` (059, 14), `ac39b933` (061, 7), `d962df2c` (066, 1), `90d6612d` (115, 1),
+  `5343077e` (116, 1). Fichiers copiés sur `feat/questions-cm2-lot11a-tags` (identiques à `main` à la ligne `id` près).
+  MCP : 7 brouillons [CM2] sans nœud ni tag, `updated_at` = création.
+- CM2-058 est posé sur la notion « Problèmes arithmétiques », CM2-116 sur la notion « Situations de proportionnalité » :
+  la règle des tags accepte un point sur le nœud du modèle **ou sur sa notion** ; la résolution de la migration suit la
+  même règle (seul écart au gabarit du lot 10).
+- Migration `20261118194448_questions_cm2_lot11a_rangement_tags.sql`, copie du lot 10 (script, aucun reste du lot 10).
+  Test `questions-cm2-lot11a-rangement-tags` : 9 verts ; corps remplacé par `select 1;` → 5 rouges ; fichier restauré
+  depuis sa copie (`cmp`).
