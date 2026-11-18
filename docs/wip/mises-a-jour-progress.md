@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, PR 3 en cours (branche `chore/lib-diese`)._
+_Mis à jour le 2026-11-18, après #2826._
 
-- **État** : PR 3 (`$lib` → `#lib`, `$tests` → `#tests`, option `alias` retirée) écrite dans le worktree `ubumaths-wt-mises-a-jour` ; typecheck 0 erreur ; suites serveur (67 580) et client (4 971) vertes, hors 4 tests de délai qui repassent seuls. Rien de #2814/#2821/#2825 n'est encore en prod.
-- **Prochaine action** : ouvrir la PR, CI, merge. Ensuite les dépréciations laissées (`error(N, { message })`, `pushState`/`replaceState`, `invalidateAll`, `json()`), puis les autres majeures (vitest 5, ESLint 10…).
-- **En attente de David** : `deploy:prod` pour livrer #2814, #2821, #2825 (et la PR 3), quand il le voudra (puis les vérifications de #2825).
-- **Pièges en cours** : `#lib` exige l'extension écrite (`.ts`, `.svelte.ts`, `/index.ts`) ; `paths` du `tsconfig.json` nécessaires au typecheck incrémental ; `$env/*` n'expose plus que `src/env.ts` ; `appNavigationMock` ; suite client en local avec `CI=true` ; `check:incremental` (tsgo) ne vérifie pas TS 6. `minimumReleaseAge` 3 j.
-- **Worktree / branche** : `../ubumaths-wt-mises-a-jour` · `chore/lib-diese`.
+- **État** : `$lib` → `#lib` mergé (#2826, CI verte 16 contrôles), après kit 2.70.4 (#2814), TypeScript 6.0.3 (#2821), SvelteKit 3.2.0 (#2825). Rien de ces quatre PR n'est encore en prod. Constats : sections « PR 2b » et « PR 3 ».
+- **Prochaine action** : dépréciations de kit 3 laissées (`json()`/`text()` ≈ 368 fichiers, `invalidateAll` 54, `error(N, { message })` 36, `pushState`/`replaceState` 15, `goto` avec options 10), une ou plusieurs PR mécaniques ; puis clore le chantier (versement). Les autres majeures (vitest 5, ESLint 10…) sont HORS chantier (décision du 2026-11-18 : lot mensuel de Dependabot).
+- **En attente de David** : `deploy:prod` pour livrer #2814, #2821, #2825, #2826 (puis les vérifications de #2825) ; et le choix : dépréciations tout de suite, ou après le déploiement.
+- **Pièges en cours** : `#lib` exige l'extension écrite (garde `imports-lib-avec-extension`) ; `paths` du `tsconfig.json` nécessaires au typecheck incrémental ; `$env/*` n'expose plus que `src/env.ts` ; `appNavigationMock` ; suite client en local avec `CI=true` ; une suite complète en local fait tomber 3-4 tests de délai (verts seuls).
+- **Worktree / branche** : aucun (worktree `mises-a-jour` supprimé après #2826).
 
 ## Origine
 
