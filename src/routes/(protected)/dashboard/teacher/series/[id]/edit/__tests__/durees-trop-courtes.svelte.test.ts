@@ -6,10 +6,11 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 
-vi.mock('$app/navigation', async (importOriginal) => ({
-	...(await importOriginal<typeof import('$app/navigation')>()),
-	goto: vi.fn(async () => {})
-}));
+vi.mock('$app/navigation', async () =>
+	(await import('$tests/helpers/app-navigation-mock')).appNavigationMock({
+		goto: vi.fn(async () => {})
+	})
+);
 const { submitAction } = vi.hoisted(() => ({
 	submitAction: vi.fn(async (_action: string, _form: FormData) => ({ ok: true }))
 }));

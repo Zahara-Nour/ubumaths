@@ -19,11 +19,12 @@ import { page } from 'vitest/browser';
 import { tick } from 'svelte';
 
 const invalidateAll = vi.hoisted(() => vi.fn(async () => {}));
-vi.mock('$app/navigation', async (importOriginal) => ({
-	...(await importOriginal<typeof import('$app/navigation')>()),
-	goto: vi.fn(async () => {}),
-	invalidateAll
-}));
+vi.mock('$app/navigation', async () =>
+	(await import('$tests/helpers/app-navigation-mock')).appNavigationMock({
+		goto: vi.fn(async () => {}),
+		invalidateAll
+	})
+);
 
 const toaster = vi.hoisted(() => ({
 	success: vi.fn(),

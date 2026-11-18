@@ -6,10 +6,11 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 
-vi.mock('$app/navigation', async (importOriginal) => ({
-	...(await importOriginal<typeof import('$app/navigation')>()),
-	goto: vi.fn(async () => {})
-}));
+vi.mock('$app/navigation', async () =>
+	(await import('$tests/helpers/app-navigation-mock')).appNavigationMock({
+		goto: vi.fn(async () => {})
+	})
+);
 vi.mock('$lib/stores/toaster.svelte', () => ({
 	toaster: { success: vi.fn(), error: vi.fn(), warning: vi.fn(), info: vi.fn() }
 }));

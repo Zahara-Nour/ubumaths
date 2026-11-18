@@ -21,11 +21,12 @@ vi.mock('$app/state', () => ({
 		}
 	}
 }));
-vi.mock('$app/navigation', async (importOriginal) => ({
-	...(await importOriginal<typeof import('$app/navigation')>()),
-	goto: vi.fn(async () => {}),
-	replaceState: vi.fn()
-}));
+vi.mock('$app/navigation', async () =>
+	(await import('$tests/helpers/app-navigation-mock')).appNavigationMock({
+		goto: vi.fn(async () => {}),
+		replaceState: vi.fn()
+	})
+);
 
 import Page from '../+page.svelte';
 import { goto, replaceState } from '$app/navigation';

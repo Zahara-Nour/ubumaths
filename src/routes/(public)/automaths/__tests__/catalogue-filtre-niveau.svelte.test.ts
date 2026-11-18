@@ -17,10 +17,9 @@ const pageState = vi.hoisted(() => ({
 }));
 const replaceState = vi.hoisted(() => vi.fn());
 vi.mock('$app/state', () => ({ page: pageState }));
-vi.mock('$app/navigation', async (importOriginal) => ({
-	...(await importOriginal<typeof import('$app/navigation')>()),
-	replaceState
-}));
+vi.mock('$app/navigation', async () =>
+	(await import('$tests/helpers/app-navigation-mock')).appNavigationMock({ replaceState })
+);
 
 import Page from '../+page.svelte';
 import { questionTemplatesCache } from '$lib/stores/questionTemplates.svelte';
