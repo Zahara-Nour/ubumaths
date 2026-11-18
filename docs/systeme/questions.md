@@ -192,8 +192,15 @@ Seul `series.ts` concerne les questions : composition d'une série (`seriesItemS
   rangement le font bouger aussi). Reprise des verdicts des anciennes pages à cocher :
   `scripts/questions/reprise-verdicts.ts` (simulation par défaut, `--ecrire`).
 - Automaths : catalogue rangé dans le navigateur selon l'**arbre des notions**
-  (`src/lib/questions/catalogue.ts` : `buildCatalogue`) — sélecteur de branche, onglets de notion,
-  rubriques de sous-notion, dans l'ordre de l'arbre (`position`, puis nom), puis par niveau et titre.
+  (`src/lib/questions/catalogue.ts` : `buildCatalogue`) — branches, notions et sous-notions
+  (rubriques) dans l'ordre de l'arbre (`position`, puis nom), puis par niveau et titre. **Navigation**
+  (PR 3a, phase 0 du 2026-11-18) : liste des branches et notions à compteurs
+  (`CatalogueNotionNav`, `notionTemplateCount`), colonne de gauche sur grand écran (`lg`), panneau
+  du bas sur téléphone (bouton « Notion : … · n ») ; seule la branche de la notion affichée est
+  dépliée au départ. La notion (`CatalogueNotionSections`) montre ses sous-notions toutes dépliées,
+  avec des pastilles à compteurs collées en haut qui y descendent (les sections du dessus sont
+  d'abord calculées, pour que la cible ne glisse pas). Cartes plus basses sur téléphone (9rem au
+  lieu de 12rem, variable `--catalogue-card-height` posée par `CatalogueGallery`).
   Les modèles posés sur la notion elle-même forment la rubrique « Général », en tête ; une branche,
   notion ou sous-notion sans modèle publié n'apparaît pas ; un modèle hors de l'arbre lu va dans
   « Non classés » (jamais perdu). **Filtre par niveau** (`filterTemplatesByGrade`, appliqué avant le
@@ -209,15 +216,15 @@ Seul `series.ts` concerne les questions : composition d'une série (`seriesItemS
   de notion et de sous-notion (pas la branche : « calcul » ramenait « Nombres et calculs » entier)
   et les intitulés des points du programme du modèle (`pointNames`) ; sans accents ni majuscules,
   tous les mots, chacun au **début d'un mot** (« aire » ne trouve pas « linéaire ») ; dès 2 lettres,
-  200 ms après la frappe. Les résultats (filtrés par le niveau) remplacent menu Branche et onglets,
+  200 ms après la frappe. Les résultats (filtrés par le niveau) remplacent la liste des notions,
   groupés par sous-notion dans l'ordre de l'arbre (« Branche › Notion › sous-notion · n ») avec un
   compteur ; les premiers groupes sont dépliés jusqu'à 60 cartes (`initiallyOpenGroups`), les
   suivants repliés (aperçus calculés à l'ouverture). Aucun résultat avec un niveau → « Chercher
   dans tous les niveaux ». Croix ou Échap → retour à la notion. La recherche est dans l'adresse
   (`?q=…`) et retenue avec elle. La tuile ne montre plus l'ancien sous-domaine. Le panier et les
-  séries désignent le **modèle** par son id (ADR 0035). Les aperçus (graine `PREVIEW_SEED`) ne sont calculés que pour la rubrique
-  dépliée (`CatalogueGallery`, montée par un `{#if}` : l'accordéon et les onglets de bits-ui
-  gardent le contenu fermé dans le DOM), une fois par modèle (`templatePreview`), et réutilisés par le
+  séries désignent le **modèle** par son id (ADR 0035). Les aperçus (graine `PREVIEW_SEED`) ne sont calculés qu'à l'approche de
+  leur section (`LazyCatalogueGallery` : `IntersectionObserver`, 800 px d'avance, montée définitive)
+  ou pour un groupe de résultats déplié (`CatalogueGallery`), une fois par modèle (`templatePreview`), et réutilisés par le
   panier. Avant (novembre 2026), le serveur calculait les 1 912 aperçus à chaque visite : 7 à 11 s.
   `QuestionPreviewCard` (tuile du catalogue = la flash-card, plus « Ajouter au panier », puis
   « Dans le panier » qui retire la question entière, répétitions et durée comprises),

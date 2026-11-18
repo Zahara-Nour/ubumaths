@@ -4,7 +4,7 @@
  *
  * Phase 0 validée par David le 2026-11-18 : champ en haut, sans curseur
  * automatique, « / » y met le curseur ; dès 2 lettres les résultats remplacent
- * le menu Branche et les onglets, groupés par sous-notion avec leur chemin, et
+ * la liste des notions, groupés par sous-notion avec leur chemin, et
  * un compteur ; le niveau filtre aussi ; aucun résultat avec un niveau →
  * « Chercher dans tous les niveaux » ; effacer (croix ou Échap) → retour à la
  * notion ; recherche dans l'adresse (`?q=…`).
@@ -24,6 +24,7 @@ vi.mock('$app/navigation', async () =>
 );
 
 import Page from '../+page.svelte';
+import { notionButton, useWideScreen } from './catalogue-helpers.ts';
 import { questionTemplatesCache } from '#lib/stores/questionTemplates.svelte.ts';
 import { questionCart } from '#lib/stores/questionCart.svelte.ts';
 // Modèle réel relu (Entiers #139) : son aperçu se calcule, sa carte s'affiche
@@ -83,6 +84,7 @@ function searchBox() {
 
 describe('Catalogue Automaths — recherche', () => {
 	beforeEach(async () => {
+		await useWideScreen();
 		replaceState.mockClear();
 		sessionStorage.clear();
 		questionCart.clearCart();
@@ -102,17 +104,18 @@ describe('Catalogue Automaths — recherche', () => {
 		await expect.element(searchBox()).toHaveValue('');
 	});
 
-	it('dès 2 lettres : résultats groupés par sous-notion, à la place du menu Branche et des onglets', async () => {
+	it('dès 2 lettres : résultats groupés par sous-notion, à la place de la liste des notions', async () => {
 		await render(Page);
 
 		await searchBox().fill('fraction');
 
-		await expect.element(page.getByText('2 questions')).toBeVisible();
+		await expect.element(page.getByText('2 questions', { exact: true })).toBeVisible();
 		await expect
 			.element(page.getByRole('heading', { name: /Nombres et calculs › Fractions › simplifier/ }))
 			.toBeVisible();
-		expect(page.getByRole('combobox', { name: /^Branche/ }).elements()).toHaveLength(0);
-		expect(page.getByRole('tab').elements()).toHaveLength(0);
+		expect(page.getByRole('navigation', { name: 'Notions', exact: true }).elements()).toHaveLength(
+			0
+		);
 	});
 
 	it('un groupe de résultats se replie et se rouvre d’un clic', async () => {
@@ -162,12 +165,12 @@ describe('Catalogue Automaths — recherche', () => {
 		await expect.element(page.getByText('Fraction de longueur')).toBeVisible();
 	});
 
-	it('une seule lettre : pas de recherche, les onglets restent', async () => {
+	it('une seule lettre : pas de recherche, la liste des notions reste', async () => {
 		await render(Page);
 
 		await searchBox().fill('f');
 
-		await expect.element(page.getByRole('tab', { name: 'Addition' })).toBeVisible();
+		await expect.element(notionButton('Addition')).toBeVisible();
 	});
 
 	it('cherche aussi dans les intitulés des points du programme', async () => {
@@ -206,7 +209,7 @@ describe('Catalogue Automaths — recherche', () => {
 	it('la recherche s’écrit dans l’adresse, et une adresse ?q= la reprend', async () => {
 		await render(Page);
 		await searchBox().fill('fraction');
-		await expect.element(page.getByText('2 questions')).toBeVisible();
+		await expect.element(page.getByText('2 questions', { exact: true })).toBeVisible();
 		expect(lastUrl().searchParams.get('q')).toBe('fraction');
 	});
 
@@ -227,9 +230,7 @@ describe('Catalogue Automaths — recherche', () => {
 
 		await page.getByRole('button', { name: 'Effacer la recherche' }).click();
 
-		await expect
-			.element(page.getByRole('tab', { name: 'Fractions' }))
-			.toHaveAttribute('aria-selected', 'true');
+		await expect.element(notionButton('Fractions')).toHaveAttribute('aria-current', 'true');
 		expect(lastUrl().searchParams.get('q')).toBeNull();
 		expect(lastUrl().searchParams.get('notion')).toBe('n-frac');
 	});
@@ -242,6 +243,6 @@ describe('Catalogue Automaths — recherche', () => {
 		await userEvent.keyboard('{Escape}');
 
 		await expect.element(searchBox()).toHaveValue('');
-		await expect.element(page.getByRole('tab', { name: 'Addition' })).toBeVisible();
+		await expect.element(notionButton('Addition')).toBeVisible();
 	});
 });

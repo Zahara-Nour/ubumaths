@@ -161,6 +161,11 @@ export function buildCatalogue(
 	return { branches, unclassified };
 }
 
+/** Nombre de questions d'une notion, toutes rubriques comprises */
+export function notionTemplateCount(notion: CatalogueNotion): number {
+	return notion.rubrics.reduce((sum, rubric) => sum + rubric.templates.length, 0);
+}
+
 /**
  * Modèles d'un niveau : ce niveau seul, ou avec les niveaux inférieurs (arbre
  * des prérequis : la 1re techno descend par la 2de, pas par la 1re spé).

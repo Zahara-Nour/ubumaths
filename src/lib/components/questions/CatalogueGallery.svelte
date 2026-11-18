@@ -2,9 +2,8 @@
 	CatalogueGallery — cartes d'une rubrique du catalogue Automaths
 	===============================================================
 
-	Montée par le catalogue seulement quand la rubrique est dépliée (bits-ui rend
-	aussi le contenu fermé, masqué par `hidden` : la page conditionne le montage).
-	Les aperçus ne sont calculés que pour elle, après un
+	Montée seulement quand sa section approche de l'écran (LazyCatalogueGallery)
+	ou quand un groupe de résultats est déplié. Les aperçus ne sont calculés que pour elle, après un
 	premier affichage « Chargement… », et retenus par `templatePreview` (une
 	rubrique rouverte ne recalcule rien). Un modèle sans aperçu est omis ; une
 	rubrique sans aucun aperçu le dit.
@@ -52,7 +51,8 @@
 {:else if cards.length === 0}
 	<p class="text-sm text-muted-foreground">Aucun aperçu disponible pour cette rubrique.</p>
 {:else}
-	<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+	<!-- Cartes plus basses sur téléphone seulement -->
+	<div class="grid gap-4 max-sm:[--catalogue-card-height:9rem] sm:grid-cols-2 lg:grid-cols-3">
 		{#each cards as card (card.template.id)}
 			<QuestionPreviewCard template={card.template} preview={card.preview} />
 		{/each}
