@@ -6,7 +6,7 @@
  * d'une liste à l'autre. Sans l'option, rien ne change.
  */
 import { describe, expect, it } from 'vitest';
-import { parseMarkdown } from '$lib/ubumark';
+import { parseMarkdown } from '#lib/ubumark/index.ts';
 import { TYPST_BREAK_MARKER, generateTypst } from '../typst-generator';
 
 const SOURCE = [

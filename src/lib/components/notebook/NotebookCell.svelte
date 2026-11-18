@@ -10,14 +10,14 @@
 	 * - Click to select
 	 */
 
-	import type { NotebookCell, CheckpointCell as CheckpointCellType } from '$lib/types/notebook';
-	import type { NotebookStore } from '$lib/stores/notebookStore.svelte';
+	import type { NotebookCell, CheckpointCell as CheckpointCellType } from '#lib/types/notebook.ts';
+	import type { NotebookStore } from '#lib/stores/notebookStore.svelte.ts';
 	import CellGutter from './CellGutter.svelte';
 	import CodeCell from './CodeCell.svelte';
 	import MarkdownCell from './MarkdownCell.svelte';
 	import CheckpointCell from './CheckpointCell.svelte';
 	import CheckpointEditor from './CheckpointEditor.svelte';
-	import { Button } from '$lib/components/ui/button';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import { Trash2, GripVertical } from '@lucide/svelte';
 
 	// Props

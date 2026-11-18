@@ -9,7 +9,7 @@
 		TOO_SHORT_LABEL,
 		tooShortSentence,
 		type QuestionTiming
-	} from '$lib/types/evaluation-breakdown';
+	} from '#lib/types/evaluation-breakdown.ts';
 
 	let { timing, class: className = '' }: { timing: QuestionTiming | null; class?: string } =
 		$props();

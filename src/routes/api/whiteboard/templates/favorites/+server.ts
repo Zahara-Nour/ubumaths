@@ -17,9 +17,9 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { templateFavoriteSchema } from '$lib/server/validation/whiteboard-templates';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { templateFavoriteSchema } from '#lib/server/validation/whiteboard-templates.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/whiteboard/templates/favorites/+server');
 

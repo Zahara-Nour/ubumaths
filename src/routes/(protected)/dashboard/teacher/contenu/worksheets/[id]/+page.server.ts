@@ -1,8 +1,8 @@
 import type { PageServerLoad } from './$types';
 import { redirect, error } from '@sveltejs/kit';
 import { z } from 'zod';
-import { fetchWorksheetCitations } from '$lib/server/worksheets/citations';
-import { listWorksheetStyles } from '$lib/server/worksheets/worksheet-styles';
+import { fetchWorksheetCitations } from '#lib/server/worksheets/citations.ts';
+import { listWorksheetStyles } from '#lib/server/worksheets/worksheet-styles.ts';
 
 // UUID validation schema
 const uuidSchema = z.string().uuid();

@@ -8,7 +8,7 @@
 import { describe, it, expect } from 'vitest';
 import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { GRADE_CODES } from '$lib/types/grades';
+import { GRADE_CODES } from '#lib/types/grades.ts';
 import { OFFICIAL_PROGRAMMES } from '../official-programmes';
 
 describe('OFFICIAL_PROGRAMMES', () => {

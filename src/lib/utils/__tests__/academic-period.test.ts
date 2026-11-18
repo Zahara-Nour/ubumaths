@@ -11,8 +11,8 @@ import {
 	getPeriodName,
 	isDateInPeriod,
 	getPeriodsForYear
-} from '$lib/utils/academic-period';
-import type { Database } from '$lib/types/database';
+} from '#lib/utils/academic-period.ts';
+import type { Database } from '#lib/types/database.ts';
 
 type AcademicPeriod = Database['public']['Tables']['academic_periods']['Row'];
 

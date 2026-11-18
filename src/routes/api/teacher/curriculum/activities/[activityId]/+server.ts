@@ -10,10 +10,10 @@
 
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRoles } from '$lib/server/middleware/auth';
-import { curriculumDbError } from '$lib/server/curriculum';
-import { reconcileAutoCoverage } from '$lib/server/curriculum-coverage';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import { curriculumDbError } from '#lib/server/curriculum.ts';
+import { reconcileAutoCoverage } from '#lib/server/curriculum-coverage.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/teacher/curriculum/activities/[activityId]/+server');
 

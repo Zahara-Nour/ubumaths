@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { CHILD_ACCOUNT_DOMAIN } from '$lib/utils/child-account';
+import { CHILD_ACCOUNT_DOMAIN } from '#lib/utils/child-account.ts';
 
 const sendTransacEmail = vi.fn(async () => ({ body: { messageId: 'm1' } }));
 

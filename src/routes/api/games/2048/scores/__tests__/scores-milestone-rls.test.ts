@@ -15,18 +15,18 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-vi.mock('$lib/server/middleware/auth', async (importActual) =>
-	(await import('$tests/helpers/garde-auth-locals')).gardeAuthDepuisLocals(importActual)
+vi.mock('#lib/server/middleware/auth.ts', async (importActual) =>
+	(await import('#tests/helpers/garde-auth-locals.ts')).gardeAuthDepuisLocals(importActual)
 );
 
 // Capture per-test via the mocked factory
 let serviceRoleMock: ReturnType<typeof createTrackerClient>;
 
-vi.mock('$lib/server/serviceRoleClient', () => ({
+vi.mock('#lib/server/serviceRoleClient.ts', () => ({
 	createServiceRoleClient: () => serviceRoleMock
 }));
 
-vi.mock('$lib/server/middleware/consent', () => ({
+vi.mock('#lib/server/middleware/consent.ts', () => ({
 	requireConsent: vi.fn()
 }));
 

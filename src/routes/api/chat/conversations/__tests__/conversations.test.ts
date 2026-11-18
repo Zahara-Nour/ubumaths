@@ -6,7 +6,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { GET, POST } from '../+server';
 
 // Garde commune simulée : 401 sans session, sinon un profil élève
-vi.mock('$lib/server/middleware/auth', () => ({
+vi.mock('#lib/server/middleware/auth.ts', () => ({
 	requireAuth: async (locals: { user: { id: string } | null }) => {
 		if (!locals.user) {
 			throw Object.assign(new Error('Non autorisé - Authentification requise'), { status: 401 });

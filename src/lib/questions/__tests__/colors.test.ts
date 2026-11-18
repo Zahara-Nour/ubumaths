@@ -4,7 +4,7 @@
 
 import { describe, it, expect, vi } from 'vitest';
 import { COLOR_PALETTES, getColor, getColorByIndex, getRandomColor, getAllColors } from '../colors';
-import { createRandomSource } from '$lib/utils/random';
+import { createRandomSource } from '#lib/utils/random.ts';
 
 describe('COLOR_PALETTES', () => {
 	it('should define primary palette with 8 colors', () => {

@@ -15,7 +15,7 @@ import {
 	seededRandom,
 	shiftBox,
 	type ScatterOptions
-} from '$lib/ubumark/utils/scene-commune';
+} from '#lib/ubumark/utils/scene-commune.ts';
 
 // ============================================================================
 // CONSTANTES

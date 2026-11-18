@@ -6,13 +6,13 @@
 
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { Button } from '$lib/components/ui/button';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import { Badge } from '$lib/components/ui/badge';
-	import * as Card from '$lib/components/ui/card';
-	import * as Tabs from '$lib/components/ui/tabs';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import * as Tabs from '#lib/components/ui/tabs/index.ts';
 	import { Plus, Calendar, Users, Trophy, Clock } from '@lucide/svelte';
-	import { DIFFICULTY_LABELS, type TournamentStatus } from '$lib/types/minesweeper';
+	import { DIFFICULTY_LABELS, type TournamentStatus } from '#lib/types/minesweeper.ts';
 	import type { PageData } from './$types';
 	import type { TournamentWithCount } from './+page.server';
 

@@ -9,9 +9,9 @@
 
 import { describe, it, expect } from 'vitest';
 import { shuffleChoices, type ShuffledChoice } from '../choice-shuffler';
-import { createRandomSource } from '$lib/utils/random';
-import type { ResolvedMarkdown } from '$lib/ubumark';
-import { resolvedMarkdown } from '$lib/ubumark';
+import { createRandomSource } from '#lib/utils/random.ts';
+import type { ResolvedMarkdown } from '#lib/ubumark/index.ts';
+import { resolvedMarkdown } from '#lib/ubumark/index.ts';
 
 // Helper to create resolved markdown content
 function markdownChoice(content: string): ResolvedMarkdown {

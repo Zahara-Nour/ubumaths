@@ -1,9 +1,9 @@
 import type { RequestHandler } from './$types';
 import { error, json } from '@sveltejs/kit';
-import { requireAuth, requireRoles } from '$lib/server/middleware/auth';
-import { createTournamentSchema } from '$lib/server/validation/minesweeper-tournament';
-import { sanitizeRPCError, sanitizePostgresError } from '$lib/server/utils/error-handler';
-import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
+import { requireAuth, requireRoles } from '#lib/server/middleware/auth.ts';
+import { createTournamentSchema } from '#lib/server/validation/minesweeper-tournament.ts';
+import { sanitizeRPCError, sanitizePostgresError } from '#lib/server/utils/error-handler.ts';
+import { createServiceRoleClient } from '#lib/server/serviceRoleClient.ts';
 
 /**
  * List tournaments for the authenticated user

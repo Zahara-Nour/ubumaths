@@ -14,7 +14,7 @@
  * croissant, un peu plus petit.
  */
 
-import type { MathouDecorationId } from '$lib/mathoux/decorations';
+import type { MathouDecorationId } from '#lib/mathoux/decorations.ts';
 import type { MathouPattern } from './mathou-races';
 import { CREAM, INK, RED, type PearGeometry } from './mathou-dessin';
 

@@ -3,10 +3,10 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { parseMarkdown, type ListNode } from '$lib/ubumark';
-import { parseOperationContent } from '$lib/ubumark/parser/operation-parser';
-import { resolveText } from '$lib/ubumark/parameterization/resolver/text-resolver';
-import type { OperationNode } from '$lib/ubumark/types/operation';
+import { parseMarkdown, type ListNode } from '#lib/ubumark/index.ts';
+import { parseOperationContent } from '#lib/ubumark/parser/operation-parser.ts';
+import { resolveText } from '#lib/ubumark/parameterization/resolver/text-resolver.ts';
+import type { OperationNode } from '#lib/ubumark/types/operation.ts';
 
 const doc = (...lines: string[]) => parseMarkdown(lines.join('\n')).children;
 

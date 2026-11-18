@@ -14,12 +14,12 @@
  */
 import { fail } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
-import { createServerLogger } from '$lib/utils/logger';
-import { childResetLinkSchema, parentSetChildPasswordSchema } from '$lib/server/validation/auth';
-import { validateFormData } from '$lib/server/validation/common';
-import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
-import { setChildPasswordFromToken } from '$lib/server/child-password';
-import { checkPasswordResetRateLimitByIP } from '$lib/server/rateLimiter';
+import { createServerLogger } from '#lib/utils/logger.ts';
+import { childResetLinkSchema, parentSetChildPasswordSchema } from '#lib/server/validation/auth.ts';
+import { validateFormData } from '#lib/server/validation/common.ts';
+import { createServiceRoleClient } from '#lib/server/serviceRoleClient.ts';
+import { setChildPasswordFromToken } from '#lib/server/child-password.ts';
+import { checkPasswordResetRateLimitByIP } from '#lib/server/rateLimiter.ts';
 
 const logger = createServerLogger('auth/reset-password/parent/+page.server.ts');
 

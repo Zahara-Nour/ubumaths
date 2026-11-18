@@ -13,7 +13,7 @@
  *     tagué, il reste masqué (Q1).
  */
 import { describe, it, expect, vi } from 'vitest';
-import { createFakeSupabase } from '$lib/server/__tests__/helpers/fake-supabase';
+import { createFakeSupabase } from '#lib/server/__tests__/helpers/fake-supabase.ts';
 import {
 	answerProgramme,
 	pointIdsOf,
@@ -23,7 +23,7 @@ import {
 	P_FRACTION,
 	P_QUATRIEME,
 	P_TRIANGLE_ARCHIVE
-} from '$lib/server/__tests__/helpers/fake-programme';
+} from '#lib/server/__tests__/helpers/fake-programme.ts';
 import type { PageServerData } from '../$types';
 
 const USER_ID = '99999999-9999-4999-8999-999999999999';
@@ -31,7 +31,7 @@ const EXERCISE_ID = '33333333-3333-4333-8333-333333333333';
 
 const exercise = { grades: ['5'] as string[] };
 
-vi.mock('$lib/server/exercises', () => ({
+vi.mock('#lib/server/exercises.ts', () => ({
 	getExercise: async () => ({
 		data: { id: EXERCISE_ID, created_by: USER_ID, grades: exercise.grades },
 		error: null

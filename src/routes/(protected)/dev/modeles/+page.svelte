@@ -16,18 +16,18 @@
 	import { SvelteURLSearchParams } from 'svelte/reactivity';
 	import { page } from '$app/state';
 	import type { PageData } from './$types';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
 	import {
 		MAX_POINT_INPUT,
 		MAX_TITLE_SEARCH,
 		parsePointCode
-	} from '$lib/questions/template-review';
-	import ReviewTree from '$lib/components/dev/ReviewTree.svelte';
-	import TemplateReviewSheet from '$lib/components/dev/TemplateReviewSheet.svelte';
+	} from '#lib/questions/template-review.ts';
+	import ReviewTree from '#lib/components/dev/ReviewTree.svelte';
+	import TemplateReviewSheet from '#lib/components/dev/TemplateReviewSheet.svelte';
 
 	// Constantes
 	const MAX_UNFOLD = 20;

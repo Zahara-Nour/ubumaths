@@ -6,8 +6,8 @@
 	 * Shows [In X] for code cells with different states
 	 */
 
-	import type { CellExecutionState, CellType } from '$lib/types/notebook';
-	import { Button } from '$lib/components/ui/button';
+	import type { CellExecutionState, CellType } from '#lib/types/notebook.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import { Play, Square } from '@lucide/svelte';
 
 	// Props

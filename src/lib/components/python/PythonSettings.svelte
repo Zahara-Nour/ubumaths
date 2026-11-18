@@ -9,17 +9,17 @@
 	 */
 
 	// Imports
-	import * as Dialog from '$lib/components/ui/dialog';
-	import { Button } from '$lib/components/ui/button';
-	import { Label } from '$lib/components/ui/label';
-	import { Switch } from '$lib/components/ui/switch';
-	import MySelect from '$lib/components/MySelect.svelte';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import { Switch } from '#lib/components/ui/switch/index.ts';
+	import MySelect from '#lib/components/MySelect.svelte';
 	import { Settings, Minus, Plus, Palette, Type, GraduationCap } from '@lucide/svelte';
 	import {
 		pythonStore,
 		EDITOR_THEMES,
 		type EditorTheme
-	} from '$lib/stores/pythonPlayground.svelte';
+	} from '#lib/stores/pythonPlayground.svelte.ts';
 
 	// Props
 	let { open = $bindable(false) }: { open: boolean } = $props();

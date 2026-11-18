@@ -17,32 +17,32 @@
 	```
 -->
 <script lang="ts">
-	import * as Card from '$lib/components/ui/card';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Separator } from '$lib/components/ui/separator';
-	import { Input } from '$lib/components/ui/input';
-	import { Textarea } from '$lib/components/ui/textarea';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import { worksheetLocale } from '$lib/types/worksheets';
-	import WorksheetTypeOptions from '$lib/components/worksheets/WorksheetTypeOptions.svelte';
-	import GradeBadgeSelector from '$lib/components/GradeBadgeSelector.svelte';
-	import TagBadgeSelector from '$lib/components/TagBadgeSelector.svelte';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { Separator } from '#lib/components/ui/separator/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Textarea } from '#lib/components/ui/textarea/index.ts';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import { worksheetLocale } from '#lib/types/worksheets.ts';
+	import WorksheetTypeOptions from '#lib/components/worksheets/WorksheetTypeOptions.svelte';
+	import GradeBadgeSelector from '#lib/components/GradeBadgeSelector.svelte';
+	import TagBadgeSelector from '#lib/components/TagBadgeSelector.svelte';
 	import { Loader2, Check, X, Settings } from '@lucide/svelte';
 	import {
 		WORKSHEET_TYPE_LABELS,
 		WORKSHEET_TYPE_OPTIONS,
 		formatDuration
-	} from '$lib/utils/worksheet-constants';
-	import { formatGradeShort } from '$lib/utils/grades';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import type { WorksheetWithRelations, WorksheetConfig } from '$lib/types/worksheets';
-	import type { GradeCode } from '$lib/types/grades';
+	} from '#lib/utils/worksheet-constants.ts';
+	import { formatGradeShort } from '#lib/utils/grades.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import type { WorksheetWithRelations, WorksheetConfig } from '#lib/types/worksheets.ts';
+	import type { GradeCode } from '#lib/types/grades.ts';
 	import {
 		BUILT_IN_STYLE_OPTIONS,
 		DEFAULT_STYLE_ID,
 		styleIdOf,
 		type StyleOption
-	} from '$lib/typst/templates/styles';
+	} from '#lib/typst/templates/styles.ts';
 
 	// Props - controlled component pattern
 	interface Props {

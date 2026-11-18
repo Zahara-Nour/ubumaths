@@ -1,9 +1,9 @@
 import type { RequestHandler } from './$types';
 import { error, json } from '@sveltejs/kit';
 import { z } from 'zod';
-import { requireRole } from '$lib/server/middleware/auth';
-import { completeTournamentGameSchema } from '$lib/server/validation/minesweeper-tournament';
-import { sanitizeRPCError, sanitizePostgresError } from '$lib/server/utils/error-handler';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { completeTournamentGameSchema } from '#lib/server/validation/minesweeper-tournament.ts';
+import { sanitizeRPCError, sanitizePostgresError } from '#lib/server/utils/error-handler.ts';
 
 /**
  * UUID schema for path parameters

@@ -8,7 +8,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { tableMock, type TableMock } from '$lib/server/worksheets/__tests__/table-mock';
+import { tableMock, type TableMock } from '#lib/server/worksheets/__tests__/table-mock.ts';
 
 const FICHE = '550e8400-e29b-41d4-a716-446655440000';
 const PROF = '550e8400-e29b-41d4-a716-446655440001';

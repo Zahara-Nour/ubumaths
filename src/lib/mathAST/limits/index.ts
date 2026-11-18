@@ -7,8 +7,8 @@
  *
  * @example
  * ```typescript
- * import { evaluateLimit, findKnownLimit } from '$lib/mathAST/limits';
- * import { divide, func, variable, number } from '$lib/mathAST/factory';
+ * import { evaluateLimit, findKnownLimit } from '#lib/mathAST/limits/index.ts';
+ * import { divide, func, variable, number } from '#lib/mathAST/factory.ts';
  *
  * // Evaluate sin(x)/x as x → 0
  * const expr = divide(func('sin', [variable('x')]), variable('x'));

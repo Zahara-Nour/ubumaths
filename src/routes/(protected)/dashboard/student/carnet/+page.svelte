@@ -8,11 +8,11 @@
 -->
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import { Button } from '$lib/components/ui/button';
-	import * as Card from '$lib/components/ui/card';
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
-	import CarnetView from '$lib/components/carnet/CarnetView.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import CarnetView from '#lib/components/carnet/CarnetView.svelte';
 	import { Eye, Mail, UserPlus } from '@lucide/svelte';
 	import type { ActionData, PageData } from './$types';
 

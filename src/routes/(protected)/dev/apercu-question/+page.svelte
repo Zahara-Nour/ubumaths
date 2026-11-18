@@ -7,10 +7,10 @@
 -->
 
 <script lang="ts">
-	import type { QuestionInstance } from '$lib/questions/types';
-	import QuestionPreviewBaseCard from '$lib/components/questions/QuestionPreviewBaseCard.svelte';
-	import * as Card from '$lib/components/ui/card';
-	import { resolvedMarkdown } from '$lib/ubumark';
+	import type { QuestionInstance } from '#lib/questions/types.ts';
+	import QuestionPreviewBaseCard from '#lib/components/questions/QuestionPreviewBaseCard.svelte';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { resolvedMarkdown } from '#lib/ubumark/index.ts';
 
 	// ============================================================================
 	// SAMPLE DATA

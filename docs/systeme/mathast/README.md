@@ -27,7 +27,7 @@ Deux usages portent tout le reste :
   atelier, grapheur et géométrie.
 
 Bibliothèque pure : ni base de données, ni réseau, ni `eval` JavaScript. Consommateurs
-principaux (imports de `$lib/mathAST` hors du module) : `src/lib/atelier/`,
+principaux (imports de `#lib/mathAST/index.ts` hors du module) : `src/lib/atelier/`,
 `src/lib/questions/`, `src/lib/geometry-core/`, `src/lib/math/`,
 `src/lib/components/markdown/`, `src/lib/ubumark/`,
 `src/lib/grapheur/`.
@@ -57,7 +57,7 @@ test, ~14 000 cas (`it(`/`test(`).
 | `latex-generator.ts`                    | `toLatex`, `LatexGenerator` (options `renderMetadata`, `preserveHoles`) ; `\times` d'un produit implicite qui ne se relirait pas (`3 \times 3x^2`, `x \times 3^x`, `juxtaposesDigits`)                                                                                                                                                                                                          |
 | `custom-generator.ts`                   | `toCustom`, `CustomGenerator` (syntaxe maison)                                                                                                                                                                                                                                                                                                                                                  |
 | `pretty-print.ts`                       | `prettyPrint` (débogage)                                                                                                                                                                                                                                                                                                                                                                        |
-| `index.ts`                              | point d'entrée `$lib/mathAST`                                                                                                                                                                                                                                                                                                                                                                   |
+| `index.ts`                              | point d'entrée `#lib/mathAST/index.ts`                                                                                                                                                                                                                                                                                                                                                          |
 
 ### Sous-dossiers
 

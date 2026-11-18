@@ -11,11 +11,11 @@
 -->
 
 <script lang="ts">
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
-	import ReviewSession from '$lib/components/srs/ReviewSession.svelte';
-	import { studySessionReturnHref } from '$lib/navigation/return-links';
+	import ReviewSession from '#lib/components/srs/ReviewSession.svelte';
+	import { studySessionReturnHref } from '#lib/navigation/return-links.ts';
 
 	const deckId = $derived(page.params.id);
 	const states = $derived(page.url.searchParams.get('states') ?? undefined);

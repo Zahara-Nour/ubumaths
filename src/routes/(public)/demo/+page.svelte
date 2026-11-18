@@ -6,9 +6,9 @@
 	PR 7). Page carrefour : pas de lien de retour. Les jeux vivent dans `/games`.
 -->
 <script lang="ts">
-	import { DEMO_HUB, DEMO_PAGES } from '$lib/seo/demo-pages';
-	import SeoHead from '$lib/seo/SeoHead.svelte';
-	import { resolvePath } from '$lib/navigation/resolve-path';
+	import { DEMO_HUB, DEMO_PAGES } from '#lib/seo/demo-pages.ts';
+	import SeoHead from '#lib/seo/SeoHead.svelte';
+	import { resolvePath } from '#lib/navigation/resolve-path.ts';
 	import { ArrowRight } from '@lucide/svelte';
 </script>
 

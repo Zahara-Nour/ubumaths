@@ -40,7 +40,7 @@ const anonFrom = vi.fn((table: string) =>
 	requete(table, table === 'classification_nodes' ? nodes : rows)
 );
 
-vi.mock('$lib/server/anonymous-supabase', () => ({
+vi.mock('#lib/server/anonymous-supabase.ts', () => ({
 	createAnonymousSupabase: () => ({ from: anonFrom })
 }));
 

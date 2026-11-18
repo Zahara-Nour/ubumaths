@@ -44,60 +44,60 @@
  * @module questions/masked-statement
  */
 
-import { findLinesToPlace } from '$lib/ubumark/parser/number-line-parser';
-import { findCourbesToPlace } from '$lib/ubumark/parser/courbe-parser';
-import { findTrigCirclesToPlace } from '$lib/ubumark/parser/trig-circle-parser';
+import { findLinesToPlace } from '#lib/ubumark/parser/number-line-parser.ts';
+import { findCourbesToPlace } from '#lib/ubumark/parser/courbe-parser.ts';
+import { findTrigCirclesToPlace } from '#lib/ubumark/parser/trig-circle-parser.ts';
 import {
 	figureText,
 	findTortuesToProgram,
 	parseTortueContent
-} from '$lib/ubumark/parser/tortue-parser';
-import { findCalculsToProgram } from '$lib/ubumark/parser/calcul-parser';
+} from '#lib/ubumark/parser/tortue-parser.ts';
+import { findCalculsToProgram } from '#lib/ubumark/parser/calcul-parser.ts';
 import {
 	findHorlogesToPlace,
 	isMaskedPlacerValue,
 	maskedPlacerValue
-} from '$lib/ubumark/parser/horloge-parser';
-import { findBuildCollections } from '$lib/ubumark/parser/collection-parser';
-import { defaultReserve, findBuildMonnaies } from '$lib/ubumark/parser/monnaie-parser';
-import { fromCents, isCents, readAmount, toCents } from '$lib/ubumark/utils/monnaie-valeurs';
-import { findPartagesToColorier } from '$lib/ubumark/parser/partage-parser';
+} from '#lib/ubumark/parser/horloge-parser.ts';
+import { findBuildCollections } from '#lib/ubumark/parser/collection-parser.ts';
+import { defaultReserve, findBuildMonnaies } from '#lib/ubumark/parser/monnaie-parser.ts';
+import { fromCents, isCents, readAmount, toCents } from '#lib/ubumark/utils/monnaie-valeurs.ts';
+import { findPartagesToColorier } from '#lib/ubumark/parser/partage-parser.ts';
 import {
 	findBarsToPlace,
 	findBoxPlotsToPlace,
 	parseStatChartContent
-} from '$lib/ubumark/parser/stat-chart-parser';
-import { findChoiceBlocks } from '$lib/ubumark/parser/choix-parser';
-import { findAssociersToPlace, parseAssocierBody } from '$lib/ubumark/parser/associer-parser';
-import { findTrousToPlace, trousHasFilledHole } from '$lib/ubumark/parser/trous-parser';
+} from '#lib/ubumark/parser/stat-chart-parser.ts';
+import { findChoiceBlocks } from '#lib/ubumark/parser/choix-parser.ts';
+import { findAssociersToPlace, parseAssocierBody } from '#lib/ubumark/parser/associer-parser.ts';
+import { findTrousToPlace, trousHasFilledHole } from '#lib/ubumark/parser/trous-parser.ts';
 import {
 	findCubesToBuild,
 	findPatronsToBuild,
 	parseEspaceContent
-} from '$lib/ubumark/parser/espace-parser';
-import { readConstructionHeader } from '$lib/ubumark/parser/construction-parser';
+} from '#lib/ubumark/parser/espace-parser.ts';
+import { readConstructionHeader } from '#lib/ubumark/parser/construction-parser.ts';
 import {
 	constructionPositions,
 	constructionShapes,
 	hasConstructionPositions
-} from '$lib/questions/construction/positions';
+} from '#lib/questions/construction/positions.ts';
 import {
 	findVariationsToFill,
 	variationRowForDisplay,
 	withImplicitEndpoints,
 	type VariationToFill
-} from '$lib/ubumark/parser/variation-table-parser';
-import type { VariationTableNode } from '$lib/ubumark/types/variation-table';
-import { unnestedLine } from '$lib/ubumark/parser/nested-line';
+} from '#lib/ubumark/parser/variation-table-parser.ts';
+import type { VariationTableNode } from '#lib/ubumark/types/variation-table.ts';
+import { unnestedLine } from '#lib/ubumark/parser/nested-line.ts';
 import {
 	isMaskedVectorValue,
 	isCombinationVectorValue,
 	isVectorValue,
 	MASKED_VALUE,
 	maskVectorValue
-} from '$lib/ubumark/utils/masked-value';
-import { sideColumns } from '$lib/ubumark/utils/espace-scene';
-import { transformGrid, trimGrid } from '$lib/ubumark/utils/espace-patrons';
+} from '#lib/ubumark/utils/masked-value.ts';
+import { sideColumns } from '#lib/ubumark/utils/espace-scene.ts';
+import { transformGrid, trimGrid } from '#lib/ubumark/utils/espace-patrons.ts';
 
 // Types
 interface FoundBlock {

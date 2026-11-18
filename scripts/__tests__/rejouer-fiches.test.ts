@@ -7,8 +7,8 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { FSRS } from '$lib/srs/fsrs';
-import { Grade, type CardStats } from '$lib/srs/types';
+import { FSRS } from '#lib/srs/fsrs.ts';
+import { Grade, type CardStats } from '#lib/srs/types.ts';
 import { rejouerFiche, type FicheLue } from '../srs/rejouer-fiches-calcul';
 
 // =============================================================================

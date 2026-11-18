@@ -19,12 +19,12 @@ import type {
 	GenerationResult
 } from '../types';
 import { generateInstance } from './instance-generator';
-import { getVariableNames, templateMarkdown } from '$lib/ubumark';
+import { getVariableNames, templateMarkdown } from '#lib/ubumark/index.ts';
 import {
 	normalizeExpression,
 	tokenize,
 	parseEvalExpressionWithModifiers
-} from '$lib/ubumark/parameterization';
+} from '#lib/ubumark/parameterization/index.ts';
 
 /**
  * Merge shared defaults with variation-specific values.

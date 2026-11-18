@@ -2,12 +2,12 @@
  * Bloc ```patron → Typst (texte produit) — chantier `solides`, lot 4
  */
 import { describe, expect, it } from 'vitest';
-import { parseMarkdown } from '$lib/ubumark';
-import { generateTypst } from '$lib/ubumark/generators/typst-generator';
-import { generateEspaceTypst } from '$lib/ubumark/generators/espace-typst';
-import { parseEspaceContent } from '$lib/ubumark/parser/espace-parser';
-import { ESPACE_UNAVAILABLE, type PatronSpec } from '$lib/ubumark/types/espace';
-import { buildPatronScene } from '$lib/ubumark/utils/espace-patrons';
+import { parseMarkdown } from '#lib/ubumark/index.ts';
+import { generateTypst } from '#lib/ubumark/generators/typst-generator.ts';
+import { generateEspaceTypst } from '#lib/ubumark/generators/espace-typst.ts';
+import { parseEspaceContent } from '#lib/ubumark/parser/espace-parser.ts';
+import { ESPACE_UNAVAILABLE, type PatronSpec } from '#lib/ubumark/types/espace.ts';
+import { buildPatronScene } from '#lib/ubumark/utils/espace-patrons.ts';
 
 const typst = (...lines: string[]) =>
 	generateEspaceTypst(parseEspaceContent(lines.join('\n'), 'patron'));

@@ -8,14 +8,14 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
-import { requireAuth, requireRoles } from '$lib/server/middleware/auth';
+import { requireAuth, requireRoles } from '#lib/server/middleware/auth.ts';
 import {
 	CONSTRUCTION_AUTHOR_ROLES,
 	CONSTRUCTION_COLUMNS,
 	canAuthorConstructions
-} from '$lib/server/constructions-access';
-import { constructionScriptSchema } from '$lib/constructions';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/constructions-access.ts';
+import { constructionScriptSchema } from '#lib/constructions/index.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/constructions/[id]/+server');
 

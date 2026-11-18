@@ -1,10 +1,10 @@
 <script lang="ts">
-	import SeoHead from '$lib/seo/SeoHead.svelte';
-	import PythonPlayground from '$lib/components/python/PythonPlayground.svelte';
-	import { pythonStore } from '$lib/stores/pythonPlayground.svelte';
+	import SeoHead from '#lib/seo/SeoHead.svelte';
+	import PythonPlayground from '#lib/components/python/PythonPlayground.svelte';
+	import { pythonStore } from '#lib/stores/pythonPlayground.svelte.ts';
 	import { onMount } from 'svelte';
 	import { browser } from '$app/env';
-	import { ConfirmDialog } from '$lib/components/ui/confirm-dialog';
+	import { ConfirmDialog } from '#lib/components/ui/confirm-dialog/index.ts';
 
 	// Props from page server
 	let { data } = $props();

@@ -11,7 +11,7 @@ import { describe, it, expect, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import BlankInput from '../BlankInput.svelte';
 import MathPrompt from '../MathPrompt.svelte';
-import type { InputState } from '$lib/ubumark';
+import type { InputState } from '#lib/ubumark/index.ts';
 
 let mains: HTMLElement[] = [];
 function mainElement(): HTMLElement {

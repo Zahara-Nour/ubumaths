@@ -17,10 +17,10 @@
 	@module components/markdown/nodes/TortueCorrige
 -->
 <script lang="ts">
-	import TortueCanvas from '$lib/components/blockly/TortueCanvas.svelte';
-	import { depassementDeBlocs, lireProgrammeTortue } from '$lib/shared/blockly/tortue/jugement';
-	import { readExpectedTortueAnswer } from '$lib/ubumark/utils/tortue-answer';
-	import { TORTUE_UNAVAILABLE, type TortueNode } from '$lib/ubumark/types/tortue';
+	import TortueCanvas from '#lib/components/blockly/TortueCanvas.svelte';
+	import { depassementDeBlocs, lireProgrammeTortue } from '#lib/shared/blockly/tortue/jugement.ts';
+	import { readExpectedTortueAnswer } from '#lib/ubumark/utils/tortue-answer.ts';
+	import { TORTUE_UNAVAILABLE, type TortueNode } from '#lib/ubumark/types/tortue.ts';
 
 	interface Props {
 		node: TortueNode;

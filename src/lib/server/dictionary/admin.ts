@@ -16,17 +16,17 @@
 
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { z } from 'zod';
-import type { Database, Json } from '$lib/types/database';
-import { newProblems, type CheckedEntry } from '$lib/dictionary/consistency';
-import type { AdminDictionaryRow, DictionaryVersion } from '$lib/dictionary/admin-draft';
+import type { Database, Json } from '#lib/types/database.ts';
+import { newProblems, type CheckedEntry } from '#lib/dictionary/consistency.ts';
+import type { AdminDictionaryRow, DictionaryVersion } from '#lib/dictionary/admin-draft.ts';
 import {
 	DICTIONARY_COLUMNS,
 	rowToTerm,
 	type DictionaryEntryInput,
 	type DictionaryRow
-} from '$lib/dictionary/entry-schema';
+} from '#lib/dictionary/entry-schema.ts';
 import { forgetDictionary } from './load';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/dictionary/admin');
 

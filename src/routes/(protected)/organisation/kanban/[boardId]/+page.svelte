@@ -28,7 +28,7 @@
 -->
 
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import {
 		dndzone,
 		SHADOW_PLACEHOLDER_ITEM_ID,
@@ -40,19 +40,19 @@
 	import { resolve } from '$app/paths';
 	import { Plus, Users, User } from '@lucide/svelte';
 	import { Filter, Tag } from '@lucide/svelte';
-	import { Button } from '$lib/components/ui/button';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Input } from '$lib/components/ui/input';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import { getPositionBetween } from '$lib/utils/fractional-indexing';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import { getPositionBetween } from '#lib/utils/fractional-indexing.ts';
 	import type {
 		KanbanCard,
 		KanbanColumn,
 		KanbanTag,
 		KanbanTagColor,
 		KanbanBoardMember
-	} from '$lib/types/database-helpers';
+	} from '#lib/types/database-helpers.ts';
 
 	import KanbanColumnComp from './KanbanColumn.svelte';
 	import CardEditDialog from './CardEditDialog.svelte';

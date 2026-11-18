@@ -14,11 +14,11 @@
 	@module components/cours/ChapterSeriesCard
 -->
 <script lang="ts">
-	import { resolvePath } from '$lib/navigation/resolve-path';
-	import * as Card from '$lib/components/ui/card';
-	import { Badge } from '$lib/components/ui/badge';
+	import { resolvePath } from '#lib/navigation/resolve-path.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
 	import { Layers } from '@lucide/svelte';
-	import type { ChapterSeries } from '$lib/types/chapters';
+	import type { ChapterSeries } from '#lib/types/chapters.ts';
 
 	interface Props {
 		/** Ce que la carte affiche — le lien du cours (ADR 0025) n'a rien de plus. */

@@ -16,7 +16,7 @@ Props :
 -->
 <script lang="ts">
 	import { ArrowLeft, X } from '@lucide/svelte';
-	import { cn } from '$lib/utils.js';
+	import { cn } from '#lib/utils.ts';
 
 	let {
 		href,

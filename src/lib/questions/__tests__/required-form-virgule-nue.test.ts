@@ -10,7 +10,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { checkRequiredForm } from '../required-form-validator';
-import { validateAnswer } from '$lib/utils/answer-validator';
+import { validateAnswer } from '#lib/utils/answer-validator.ts';
 import type { QuestionInstance } from '../types';
 
 const formOk = (answer: string, pattern: string) =>

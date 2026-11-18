@@ -11,15 +11,15 @@
 import { describe, it, expect, afterEach, beforeEach, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import AtelierContainer from '../AtelierContainer.svelte';
-import { Atelier } from '$lib/atelier/atelier.svelte';
-import { CalcDesk } from '$lib/atelier/desk.svelte';
+import { Atelier } from '#lib/atelier/atelier.svelte.ts';
+import { CalcDesk } from '#lib/atelier/desk.svelte.ts';
 import {
 	MAX_ATELIER_FILE_BYTES,
 	MAX_ATELIER_FILE_LENGTH,
 	atelierFileToJson
-} from '$lib/atelier/atelier-file';
-import { CALC_HISTORY_STORAGE_KEY, saveCalcHistory } from '$lib/atelier/history-storage';
-import { SET_ASIDE_STORAGE_KEY } from '$lib/atelier/persistence';
+} from '#lib/atelier/atelier-file.ts';
+import { CALC_HISTORY_STORAGE_KEY, saveCalcHistory } from '#lib/atelier/history-storage.ts';
+import { SET_ASIDE_STORAGE_KEY } from '#lib/atelier/persistence.ts';
 
 // =============================================================================
 // Décor

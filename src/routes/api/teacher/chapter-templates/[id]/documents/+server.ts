@@ -12,14 +12,17 @@
 
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import { requireOwnedTemplate } from '$lib/server/template-guard';
-import { insertDocument, type SectionPlacement } from '$lib/server/chapters';
-import { nextSectionOrder } from '$lib/server/chapter-sections';
-import { removeFileIfUnused } from '$lib/server/template-content';
-import { isPathInFolder, registerDocumentSchema } from '$lib/server/validation/chapter-documents';
-import { ownerStoragePrefix } from '$lib/server/content-owner';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { requireOwnedTemplate } from '#lib/server/template-guard.ts';
+import { insertDocument, type SectionPlacement } from '#lib/server/chapters.ts';
+import { nextSectionOrder } from '#lib/server/chapter-sections.ts';
+import { removeFileIfUnused } from '#lib/server/template-content.ts';
+import {
+	isPathInFolder,
+	registerDocumentSchema
+} from '#lib/server/validation/chapter-documents.ts';
+import { ownerStoragePrefix } from '#lib/server/content-owner.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/teacher/chapter-templates/[id]/documents/+server');
 

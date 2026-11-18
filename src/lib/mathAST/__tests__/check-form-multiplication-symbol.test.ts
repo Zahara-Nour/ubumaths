@@ -11,8 +11,8 @@
 
 import { describe, it, expect } from 'vitest';
 import { checkForm } from '../cosmetic-transforms';
-import { runAllTestSpecs } from '$lib/questions/test-spec-runner';
-import type { QuestionTemplate } from '$lib/questions/types';
+import { runAllTestSpecs } from '#lib/questions/test-spec-runner.ts';
+import type { QuestionTemplate } from '#lib/questions/types.ts';
 import decomposition from './fixtures/david-15-decomposition.json';
 
 const B = String.fromCharCode(92);

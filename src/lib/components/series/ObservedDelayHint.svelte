@@ -4,9 +4,9 @@
 	 * `durees-ajustees`, A1) : panier et éditeur de série. Rien sans suggestion.
 	 * Rien ne change sans le geste du prof (« Appliquer »).
 	 */
-	import { Button } from '$lib/components/ui/button';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import { Gauge } from '@lucide/svelte';
-	import { OBSERVED_LABEL } from '$lib/types/duration-signals';
+	import { OBSERVED_LABEL } from '#lib/types/duration-signals.ts';
 
 	let {
 		seconds,

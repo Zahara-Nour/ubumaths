@@ -38,14 +38,14 @@ import { join, resolve } from 'node:path';
 import { createClient } from '@supabase/supabase-js';
 import { config } from 'dotenv';
 import { z } from 'zod';
-import { createExerciseSchema } from '$lib/server/validation/exercises';
+import { createExerciseSchema } from '#lib/server/validation/exercises.ts';
 import {
 	validateCreateWorksheet,
 	validateCreateWorksheetExercise,
 	validateCreateWorksheetSection
-} from '$lib/server/validation/worksheets';
-import { createExercise } from '$lib/server/exercises';
-import type { Database } from '$lib/types/database';
+} from '#lib/server/validation/worksheets.ts';
+import { createExercise } from '#lib/server/exercises.ts';
+import type { Database } from '#lib/types/database.ts';
 
 config({ path: '.env' });
 

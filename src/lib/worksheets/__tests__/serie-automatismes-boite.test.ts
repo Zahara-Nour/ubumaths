@@ -9,12 +9,12 @@
  * maximum). Une boîte en retrait ou citée est déjà refusée par le générateur.
  */
 import { describe, it, expect } from 'vitest';
-import type { QuestionTemplate } from '$lib/questions/types';
+import type { QuestionTemplate } from '#lib/questions/types.ts';
 import { buildSerie } from '../serie-automatismes';
-import { parseStatChartContent } from '$lib/ubumark/parser/stat-chart-parser';
-import { generateStatChartTypst } from '$lib/ubumark/generators/stat-chart-typst';
-import type { StatChartNode } from '$lib/ubumark/types/stat-chart';
-import { generateInstance } from '$lib/questions/generator/instance-generator';
+import { parseStatChartContent } from '#lib/ubumark/parser/stat-chart-parser.ts';
+import { generateStatChartTypst } from '#lib/ubumark/generators/stat-chart-typst.ts';
+import type { StatChartNode } from '#lib/ubumark/types/stat-chart.ts';
+import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
 
 /** Un modèle d'une variation, énoncé donné, variables q = 8 et m = 12 */
 function modele(id: string, statement: string, blanks?: unknown[]): QuestionTemplate {

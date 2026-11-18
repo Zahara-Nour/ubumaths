@@ -11,20 +11,20 @@
 -->
 
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import { goto } from '$app/navigation';
 	import { invalidate } from '$app/navigation';
-	import { Button } from '$lib/components/ui/button';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import * as Card from '$lib/components/ui/card';
-	import { Input } from '$lib/components/ui/input';
-	import { Textarea } from '$lib/components/ui/textarea';
-	import { Label } from '$lib/components/ui/label';
-	import { Badge } from '$lib/components/ui/badge';
-	import CustomCardEditor from '$lib/components/srs/CustomCardEditor.svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Textarea } from '#lib/components/ui/textarea/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import CustomCardEditor from '#lib/components/srs/CustomCardEditor.svelte';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import { Save, Plus, Trash2, Sparkles, BookOpen } from '@lucide/svelte';
-	import type { TemplateMarkdown } from '$lib/ubumark';
+	import type { TemplateMarkdown } from '#lib/ubumark/index.ts';
 
 	interface DeckCard {
 		id: string;

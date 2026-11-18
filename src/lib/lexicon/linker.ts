@@ -15,9 +15,9 @@
  * @module lexicon/linker
  */
 
-import { gradeMetBy, isTermVisibleTo, type MathTerm } from '$lib/dictionary/model';
-import { GRADES, type GradeCode } from '$lib/types/grades';
-import type { DocumentNode, LexiconMark, TermRange, TextNode } from '$lib/ubumark';
+import { gradeMetBy, isTermVisibleTo, type MathTerm } from '#lib/dictionary/model.ts';
+import { GRADES, type GradeCode } from '#lib/types/grades.ts';
+import type { DocumentNode, LexiconMark, TermRange, TextNode } from '#lib/ubumark/index.ts';
 
 // ---------------------------------------------------------------------------
 // Entrées

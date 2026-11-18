@@ -11,7 +11,7 @@ import { mount, unmount, tick } from 'svelte';
 import { Atelier } from '../atelier.svelte';
 import { CalcDesk } from '../desk.svelte';
 import { STEPS_VERBOSITY_KEY } from '../steps-summary';
-import CalculView from '$lib/components/atelier/CalculView.svelte';
+import CalculView from '#lib/components/atelier/CalculView.svelte';
 import { stepsCorrection } from '../steps-loader';
 
 // Le composant des étapes se charge au premier dépliage : chargé d'avance, le

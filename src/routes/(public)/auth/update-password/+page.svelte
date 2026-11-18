@@ -16,13 +16,13 @@
 		calculatePasswordStrength,
 		getStrengthBarWidth,
 		getStrengthBarColor
-	} from '$lib/utils/passwordStrength';
-	import { Button } from '$lib/components/ui/button';
-	import { Label } from '$lib/components/ui/label';
-	import * as Card from '$lib/components/ui/card';
-	import * as Alert from '$lib/components/ui/alert';
-	import MyPasswordInput from '$lib/components/MyPasswordInput.svelte';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
+	} from '#lib/utils/passwordStrength.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import * as Alert from '#lib/components/ui/alert/index.ts';
+	import MyPasswordInput from '#lib/components/MyPasswordInput.svelte';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
 
 	// Form action result
 	let { data, form }: { data: PageData; form: ActionData } = $props();

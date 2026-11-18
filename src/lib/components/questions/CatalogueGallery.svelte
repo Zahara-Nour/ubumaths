@@ -10,9 +10,9 @@
 	rubrique sans aucun aperçu le dit.
 -->
 <script lang="ts">
-	import QuestionPreviewCard from '$lib/components/QuestionPreviewCard.svelte';
-	import { templatePreview } from '$lib/questions/catalogue';
-	import type { QuestionInstance, QuestionTemplate } from '$lib/questions/types';
+	import QuestionPreviewCard from '#lib/components/QuestionPreviewCard.svelte';
+	import { templatePreview } from '#lib/questions/catalogue.ts';
+	import type { QuestionInstance, QuestionTemplate } from '#lib/questions/types.ts';
 
 	// Types
 	interface CardData {

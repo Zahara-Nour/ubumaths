@@ -18,8 +18,8 @@
  * `ranger`, `figure-a-completer`, ou bloc encore inconnu ici) écarte le modèle.
  */
 
-import { isCourseCard } from '$lib/questions/course-card';
-import type { QuestionInstance } from '$lib/questions/types';
+import { isCourseCard } from '#lib/questions/course-card.ts';
+import type { QuestionInstance } from '#lib/questions/types.ts';
 
 /** Blocs admis dans un sujet de combat : le QCM, et des affichages sans geste. */
 const ALLOWED_FENCES: ReadonlySet<string> = new Set([

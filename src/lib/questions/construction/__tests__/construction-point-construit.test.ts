@@ -24,7 +24,7 @@ import {
 	type Trait
 } from '../instruments';
 import { serializeConstructionAnswer, type DrawnObject } from '../answer';
-import { readConstructionHeader } from '$lib/ubumark/parser/construction-parser';
+import { readConstructionHeader } from '#lib/ubumark/parser/construction-parser.ts';
 
 function judge(source: string, objects: DrawnObject[]) {
 	const { spec, errors } = readConstructionHeader(source);

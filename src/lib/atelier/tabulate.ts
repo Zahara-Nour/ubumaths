@@ -18,8 +18,8 @@ import { displayName, nextName, reciprocalOf } from './names';
 import { dependsOnMessage, parametersOf } from './types';
 import { intervalDomainOf } from './interval';
 import { INTERNAL_LETTER } from './letter';
-import { readListValue } from '$lib/statistics/read-value';
-import { toCustom } from '$lib/mathAST/custom-generator';
+import { readListValue } from '#lib/statistics/read-value.ts';
+import { toCustom } from '#lib/mathAST/custom-generator.ts';
 import { decimalCommaText } from './decimal-comma';
 
 // =============================================================================

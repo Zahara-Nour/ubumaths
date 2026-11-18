@@ -8,7 +8,7 @@ import type {
 	GameMonster,
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	GamePlayer // For future player calculations
-} from '$lib/types/game';
+} from '#lib/types/game.ts';
 
 /**
  * Calculate damage dealt by a spell

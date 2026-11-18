@@ -6,8 +6,8 @@ import { describe, it, expect } from 'vitest';
 import { parse } from '../parser';
 import { interpret } from '../interpreter';
 import { marchingSquares } from '../../rendering/marching-squares';
-import { compile, parseCustom, subtract } from '$lib/mathAST';
-import type { MathNode } from '$lib/mathAST';
+import { compile, parseCustom, subtract } from '#lib/mathAST/index.ts';
+import type { MathNode } from '#lib/mathAST/index.ts';
 
 function run(script: string) {
 	const program = parse(script);

@@ -10,7 +10,7 @@
 	@module components/markdown/nodes/AssocierPlacer
 -->
 <script lang="ts">
-	import type { AssocierNode } from '$lib/ubumark/types/associer';
+	import type { AssocierNode } from '#lib/ubumark/types/associer.ts';
 	import AssocierEtiquettes from './AssocierEtiquettes.svelte';
 	import AssocierRelier from './AssocierRelier.svelte';
 	import type { BuildCase } from './CollectionConstruire.svelte';

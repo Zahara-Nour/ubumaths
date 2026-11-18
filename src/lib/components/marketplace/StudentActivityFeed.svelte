@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { marketplaceStore } from '$lib/stores/marketplace.svelte';
-	import type { MarketplaceProposal, MarketplaceTrade } from '$lib/types/marketplace';
-	import * as Card from '$lib/components/ui/card';
-	import { Button } from '$lib/components/ui/button';
-	import { Badge } from '$lib/components/ui/badge';
+	import { marketplaceStore } from '#lib/stores/marketplace.svelte.ts';
+	import type { MarketplaceProposal, MarketplaceTrade } from '#lib/types/marketplace.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
 	import { Clock, CheckCircle, XCircle, Plus, Loader2, MessageSquare } from '@lucide/svelte';
 	import { formatDistanceToNow } from 'date-fns';
 	import { fr } from 'date-fns/locale';

@@ -16,10 +16,10 @@
 
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import { changeStudentPalotin } from '$lib/server/buddy-queries';
-import { changeBuddySchema } from '$lib/server/validation/buddy';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { changeStudentPalotin } from '#lib/server/buddy-queries.ts';
+import { changeBuddySchema } from '#lib/server/validation/buddy.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/student/buddy/change/+server');
 

@@ -24,9 +24,9 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import type { SeriesItem } from '$lib/validation/series';
-import { readStoredSeriesMany } from '$lib/server/series-lines';
+import type { Database } from '#lib/types/database.ts';
+import type { SeriesItem } from '#lib/validation/series.ts';
+import { readStoredSeriesMany } from '#lib/server/series-lines.ts';
 
 // Types
 type SB = SupabaseClient<Database>;

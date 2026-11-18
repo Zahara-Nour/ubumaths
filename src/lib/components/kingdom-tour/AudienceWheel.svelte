@@ -10,10 +10,10 @@
 	 * ailleurs la referment ; fermée, ses liens sont inertes. Sans JavaScript, le bouton ne
 	 * s'ouvre pas : chaque vue garde aussi ses liens dans la page.
 	 */
-	import { resolvePath } from '$lib/navigation/resolve-path';
+	import { resolvePath } from '#lib/navigation/resolve-path.ts';
 	import { Backpack, HeartHandshake, Presentation } from '@lucide/svelte';
-	import { AUDIENCES, type AudienceId } from '$lib/kingdom-tour/audiences';
-	import { driftAt, driftGeometry, type DriftGeometry } from '$lib/kingdom-tour/drift';
+	import { AUDIENCES, type AudienceId } from '#lib/kingdom-tour/audiences.ts';
+	import { driftAt, driftGeometry, type DriftGeometry } from '#lib/kingdom-tour/drift.ts';
 
 	// Types
 

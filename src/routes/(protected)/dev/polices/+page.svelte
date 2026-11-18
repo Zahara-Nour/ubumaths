@@ -1,12 +1,16 @@
 <script lang="ts">
-	import '$lib/utils/mathlive-styles';
+	import '#lib/utils/mathlive-styles.ts';
 	import { onMount } from 'svelte';
 	import { browser } from '$app/env';
-	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
-	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
-	import { Button } from '$lib/components/ui/button';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import { switchMathFonts, getCurrentFontSet, type MathFontSet } from '$lib/utils/mathlive-fonts';
+	import InlineMarkdown from '#lib/components/markdown/InlineMarkdown.svelte';
+	import MarkdownRenderer from '#lib/components/markdown/MarkdownRenderer.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import {
+		switchMathFonts,
+		getCurrentFontSet,
+		type MathFontSet
+	} from '#lib/utils/mathlive-fonts.ts';
 	import demoExercises from './exercices-demo.json';
 	import { downloadExercisePdf, type PdfFontSet } from './shantell-pdf';
 

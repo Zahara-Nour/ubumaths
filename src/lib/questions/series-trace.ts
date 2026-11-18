@@ -32,9 +32,9 @@
  * échappé partout où il sera relu.
  */
 
-import { computeBlankColors } from '$lib/components/questions/blank-verdicts';
-import { getQuestionType, type QuestionInstance } from '$lib/questions/types';
-import type { AnswerData } from '$lib/types/question-display';
+import { computeBlankColors } from '#lib/components/questions/blank-verdicts.ts';
+import { getQuestionType, type QuestionInstance } from '#lib/questions/types.ts';
+import type { AnswerData } from '#lib/types/question-display.ts';
 
 // Types
 /** Lieux d'une série libre qui laissent une trace par cette voie */

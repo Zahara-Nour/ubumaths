@@ -17,12 +17,12 @@ import type {
 	ParagraphNode,
 	TableNode,
 	InputState
-} from '$lib/ubumark';
-import { parseMarkdown } from '$lib/ubumark';
-import type { InstanceBlank, QuestionInstance } from '$lib/questions/types';
-import { hasPrompts } from '$lib/components/markdown/utils/math-utils';
-import type { CapitalPairs } from '$lib/mathAST/parser/types';
-import { toFrenchDecimal } from '$lib/utils/french-math';
+} from '#lib/ubumark/index.ts';
+import { parseMarkdown } from '#lib/ubumark/index.ts';
+import type { InstanceBlank, QuestionInstance } from '#lib/questions/types.ts';
+import { hasPrompts } from '#lib/components/markdown/utils/math-utils.ts';
+import type { CapitalPairs } from '#lib/mathAST/parser/types.ts';
+import { toFrenchDecimal } from '#lib/utils/french-math.ts';
 
 type Expression = NonNullable<QuestionInstance['expressions']>[number];
 

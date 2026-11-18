@@ -11,7 +11,11 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { page } from 'vitest/browser';
-import { ANCIEN_LIEN_MESSAGE, SERIES_LINK_PARAM, encodeSeriesParam } from '$lib/validation/series';
+import {
+	ANCIEN_LIEN_MESSAGE,
+	SERIES_LINK_PARAM,
+	encodeSeriesParam
+} from '#lib/validation/series.ts';
 
 const url = vi.hoisted(() => ({ current: new URL('http://localhost/automaths/panier') }));
 vi.mock('$app/state', () => ({
@@ -27,7 +31,7 @@ const navigation = vi.hoisted(() => ({
 	replaceState: vi.fn()
 }));
 vi.mock('$app/navigation', async () =>
-	(await import('$tests/helpers/app-navigation-mock')).appNavigationMock({ ...navigation })
+	(await import('#tests/helpers/app-navigation-mock.ts')).appNavigationMock({ ...navigation })
 );
 const toaster = vi.hoisted(() => ({
 	success: vi.fn(),
@@ -35,11 +39,11 @@ const toaster = vi.hoisted(() => ({
 	warning: vi.fn(),
 	info: vi.fn()
 }));
-vi.mock('$lib/stores/toaster.svelte', () => ({ toaster }));
+vi.mock('#lib/stores/toaster.svelte.ts', () => ({ toaster }));
 
 import Page from '../+page.svelte';
-import { questionTemplatesCache } from '$lib/stores/questionTemplates.svelte';
-import { questionCart } from '$lib/stores/questionCart.svelte';
+import { questionTemplatesCache } from '#lib/stores/questionTemplates.svelte.ts';
+import { questionCart } from '#lib/stores/questionCart.svelte.ts';
 
 const MINE = '11111111-1111-4111-8111-111111111111';
 const SHARED = '22222222-2222-4222-8222-222222222222';

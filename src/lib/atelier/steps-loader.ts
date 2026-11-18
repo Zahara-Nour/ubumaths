@@ -11,8 +11,8 @@
  * sans passer par « Chargement des étapes… ».
  */
 
-import { lazyLoader } from '$lib/utils/lazy-loader.svelte';
+import { lazyLoader } from '#lib/utils/lazy-loader.svelte.ts';
 
 export const stepsCorrection = lazyLoader(
-	async () => (await import('$lib/components/questions/GeneratedStepsCorrection.svelte')).default
+	async () => (await import('#lib/components/questions/GeneratedStepsCorrection.svelte')).default
 );

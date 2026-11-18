@@ -5,9 +5,9 @@
 -->
 
 <script lang="ts">
-	import CombatArena from '$lib/components/descente/CombatArena.svelte';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import * as Card from '$lib/components/ui/card';
+	import CombatArena from '#lib/components/descente/CombatArena.svelte';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import * as Card from '#lib/components/ui/card/index.ts';
 	import type { PageProps } from './$types';
 
 	// Constantes

@@ -29,17 +29,17 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import type { QuestionInstance, QuestionTemplate } from '$lib/questions/types';
-import type { CorrectedDetail } from '$lib/types/evaluation-attempt';
-import { toQuestionTemplate, type QuestionTemplateRow } from '$lib/types/question-template';
-import { generateInstance } from '$lib/questions/generator/instance-generator';
+import type { Database } from '#lib/types/database.ts';
+import type { QuestionInstance, QuestionTemplate } from '#lib/questions/types.ts';
+import type { CorrectedDetail } from '#lib/types/evaluation-attempt.ts';
+import { toQuestionTemplate, type QuestionTemplateRow } from '#lib/types/question-template.ts';
+import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
 import {
 	POINT_ERRORS_MESSAGE,
 	POINT_ERRORS_TRACE_CAP,
 	type ClassPointErrors,
 	type PointTemplateErrors
-} from '$lib/types/point-errors';
+} from '#lib/types/point-errors.ts';
 import {
 	computeQuestionErrors,
 	displayName,
@@ -54,7 +54,7 @@ import {
 	type SessionRow
 } from '../evaluation-breakdown';
 import type { DetailBudget } from '../corrected-detail';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 // Types
 

@@ -10,11 +10,11 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRoles } from '$lib/server/middleware/auth';
-import { previewTemplate } from '$lib/templates/templateEngine';
-import { previewTemplateSchema } from '$lib/server/validation/message-templates';
-import { validateUuidParam } from '$lib/server/validation/params';
-import { toMessageTemplate } from '$lib/types/messageTemplates';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import { previewTemplate } from '#lib/templates/templateEngine.ts';
+import { previewTemplateSchema } from '#lib/server/validation/message-templates.ts';
+import { validateUuidParam } from '#lib/server/validation/params.ts';
+import { toMessageTemplate } from '#lib/types/messageTemplates.ts';
 
 // =====================================================
 // POST - Generate preview

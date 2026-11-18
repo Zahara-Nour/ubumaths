@@ -12,8 +12,8 @@ import '../positions-setup';
 import { constructionExpected, constructionPositions, constructionShapes } from '../positions';
 import { ConstructionAuthorError, assertConstructionChecks, judgeConstruction } from '../judge';
 import { measureWrongScaleFeedback, posedProtractorOf, wrongMeasureFeedback } from '../measure';
-import { readConstructionHeader } from '$lib/ubumark/parser/construction-parser';
-import type { MeasureCheck } from '$lib/ubumark/types/construction';
+import { readConstructionHeader } from '#lib/ubumark/parser/construction-parser.ts';
+import type { MeasureCheck } from '#lib/ubumark/types/construction.ts';
 
 function checksOf(source: string) {
 	const { spec, errors } = readConstructionHeader(source);

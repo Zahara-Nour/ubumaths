@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import { Button } from '$lib/components/ui/button';
+	import { lore } from '#lib/config/lore.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import { AlertCircle, Check, Sparkles } from '@lucide/svelte';
-	import gidouilleImage from '$lib/assets/images/gidouille.png';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import type { VipCard } from '$lib/types/vip-card';
-	import { RARITY_ACCENT_COLORS, RARITY_LABELS } from '$lib/constants/vip-card-ui';
+	import gidouilleImage from '#lib/assets/images/gidouille.png';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import type { VipCard } from '#lib/types/vip-card.ts';
+	import { RARITY_ACCENT_COLORS, RARITY_LABELS } from '#lib/constants/vip-card-ui.ts';
 
 	interface Props {
 		open: boolean;

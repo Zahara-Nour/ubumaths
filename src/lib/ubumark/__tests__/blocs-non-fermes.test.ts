@@ -10,7 +10,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { parseMarkdown, type BlockNode, type ListNode } from '$lib/ubumark';
+import { parseMarkdown, type BlockNode, type ListNode } from '#lib/ubumark/index.ts';
 import { generateTypst } from '../generators/typst-generator';
 
 // =============================================================================

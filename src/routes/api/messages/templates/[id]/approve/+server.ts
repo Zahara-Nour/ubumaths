@@ -8,10 +8,10 @@
  */
 
 import { json, error } from '@sveltejs/kit';
-import { requireAdmin } from '$lib/server/middleware/auth';
+import { requireAdmin } from '#lib/server/middleware/auth.ts';
 import type { RequestHandler } from './$types';
-import { approveTemplateSchema } from '$lib/server/validation/message-templates';
-import { createServerLogger } from '$lib/utils/logger';
+import { approveTemplateSchema } from '#lib/server/validation/message-templates.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/messages/templates/[id]/approve/+server');
 

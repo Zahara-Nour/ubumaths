@@ -9,7 +9,7 @@
 import { describe, expect, it } from 'vitest';
 import { sanitizeHtml, sanitizePlainText } from '../sanitize';
 import { sanitizeNotificationHtml as sanitizeNotificationClient } from '../sanitize-notification';
-import { sanitizeNotificationHtml as sanitizeNotificationServer } from '$lib/server/sanitization';
+import { sanitizeNotificationHtml as sanitizeNotificationServer } from '#lib/server/sanitization.ts';
 import {
 	ALLOWED_RICH_CONTENT,
 	describeAttackSuite,

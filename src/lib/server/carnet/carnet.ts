@@ -15,22 +15,22 @@
  * Ce que le carnet montre (question d'accès Q16) : le prénom, le palier de
  * régularité de 5 semaines, le nombre de révisions en retard, les évaluations
  * (faites ou non, SANS note), les liens du cahier et du cours. Le schéma Zod
- * (`$lib/validation/carnet`) RETIRE toute autre clé : une colonne ajoutée par
+ * (`#lib/validation/carnet.ts`) RETIRE toute autre clé : une colonne ajoutée par
  * erreur côté SQL ne descend pas jusqu'à la page.
  */
 
 import { createHash, randomBytes } from 'node:crypto';
 import { z } from 'zod';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
-import { createServerLogger } from '$lib/utils/logger';
+import type { Database } from '#lib/types/database.ts';
+import { createServiceRoleClient } from '#lib/server/serviceRoleClient.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 import {
 	parentCarnetSchema,
 	studentCarnetSchema,
 	type ParentCarnet,
 	type StudentCarnet
-} from '$lib/validation/carnet';
+} from '#lib/validation/carnet.ts';
 
 // Types
 

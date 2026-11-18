@@ -29,28 +29,28 @@ import type {
 	DisplayOptions,
 	TemplateMarkdown,
 	ResolvedMarkdown
-} from '$lib/ubumark';
-import type { AnswerAssumptions } from '$lib/math';
+} from '#lib/ubumark/index.ts';
+import type { AnswerAssumptions } from '#lib/math/index.ts';
 
 // Re-export shared types for convenience
 export type NumberOrVariable = SharedNumberOrVariable;
 export type Exclusion = SharedExclusion;
-export type { DisplayOptions } from '$lib/ubumark';
+export type { DisplayOptions } from '#lib/ubumark/index.ts';
 
 // ============================================================================
 // GRADE LEVELS (re-exported from unified system)
 // ============================================================================
 
 // Import from unified grade system - single source of truth
-import { type GradeCode } from '$lib/types/grades';
-export { GRADE_CODES, GRADES, type GradeCode } from '$lib/types/grades';
+import { type GradeCode } from '#lib/types/grades.ts';
+export { GRADE_CODES, GRADES, type GradeCode } from '#lib/types/grades.ts';
 
 // Import from mathAST pedagogical layer (used by Mode B `generatedSteps`)
-import type { RenderedStep, SchoolLevel } from '$lib/mathAST/common/step-renderer-base';
-import type { CapitalPairs } from '$lib/mathAST/parser/types';
-import type { SuperfluRuleId } from '$lib/mathAST/superflu/rules';
-import type { ConstructionCheck } from '$lib/ubumark/types/construction';
-import type { HiddenCellKind } from '$lib/ubumark/types/variation-table';
+import type { RenderedStep, SchoolLevel } from '#lib/mathAST/common/step-renderer-base.ts';
+import type { CapitalPairs } from '#lib/mathAST/parser/types.ts';
+import type { SuperfluRuleId } from '#lib/mathAST/superflu/rules.ts';
+import type { ConstructionCheck } from '#lib/ubumark/types/construction.ts';
+import type { HiddenCellKind } from '#lib/ubumark/types/variation-table.ts';
 
 /**
  * French educational grade levels

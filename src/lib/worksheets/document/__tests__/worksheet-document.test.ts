@@ -10,13 +10,13 @@ import { describe, it, expect } from 'vitest';
 import { documentFromTeacherCopy } from '../teacher-adapter';
 import { documentFromStudentView } from '../student-adapter';
 import { EXERCISE_LAYOUTS, renderExercises, renderPrintedCorrection } from '../render-exercise';
-import { TYPST_BREAK_MARKER } from '$lib/ubumark/generators/typst-generator';
+import { TYPST_BREAK_MARKER } from '#lib/ubumark/generators/typst-generator.ts';
 import type {
 	InstanceData,
 	StudentWorksheetView,
 	WorksheetConfig,
 	WorksheetRow
-} from '$lib/types/worksheets';
+} from '#lib/types/worksheets.ts';
 
 // Anciennes clés (numérotation, corrigé concis) : en base mais plus lues (ADR 0030)
 const CONFIG = {

@@ -2,8 +2,8 @@
  * Bloc ```patron : pliage, dépliage, scène (calcul pur) — chantier `solides`, § 9
  */
 import { describe, expect, it } from 'vitest';
-import { parseEspaceContent } from '$lib/ubumark/parser/espace-parser';
-import type { PatronSpec } from '$lib/ubumark/types/espace';
+import { parseEspaceContent } from '#lib/ubumark/parser/espace-parser.ts';
+import type { PatronSpec } from '#lib/ubumark/types/espace.ts';
 import {
 	CUBE_NETS,
 	FALSE_CUBE_NETS,
@@ -13,7 +13,7 @@ import {
 	patronLabel,
 	patronNet,
 	transformGrid
-} from '$lib/ubumark/utils/espace-patrons';
+} from '#lib/ubumark/utils/espace-patrons.ts';
 
 const specOf = (...lines: string[]) => {
 	const node = parseEspaceContent(lines.join('\n'), 'patron');

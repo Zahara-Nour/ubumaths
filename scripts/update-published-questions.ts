@@ -37,12 +37,12 @@ import { execFileSync } from 'node:child_process';
 import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import type { QuestionTemplate } from '$lib/questions/types';
-import { checkTemplate } from '$lib/questions/review/check-template';
-import { runAllTestSpecs } from '$lib/questions/test-spec-runner';
-import { toQuestionTemplate } from '$lib/types/question-template';
-import { toJson } from '$lib/types/database-helpers';
-import type { TablesUpdate } from '$lib/types/database';
+import type { QuestionTemplate } from '#lib/questions/types.ts';
+import { checkTemplate } from '#lib/questions/review/check-template.ts';
+import { runAllTestSpecs } from '#lib/questions/test-spec-runner.ts';
+import { toQuestionTemplate } from '#lib/types/question-template.ts';
+import { toJson } from '#lib/types/database-helpers.ts';
+import type { TablesUpdate } from '#lib/types/database.ts';
 import { argValue, createScriptClient, hasFlag } from './relecture/common';
 import { canonique, sharedAEcrire } from './relecture/shared-clean-coefficients';
 

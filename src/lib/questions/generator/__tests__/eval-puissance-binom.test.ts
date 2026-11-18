@@ -7,7 +7,7 @@ import { describe, it, expect } from 'vitest';
 import { generateInstance } from '../instance-generator';
 import { evaluateConditions } from '../condition-evaluator';
 import type { QuestionTemplate, QuestionVariation, ResolvedVariable } from '../../types';
-import { templateMarkdown } from '$lib/ubumark';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 
 function makeTemplate(variation: Partial<QuestionVariation>): QuestionTemplate {
 	return {

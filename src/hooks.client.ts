@@ -9,8 +9,8 @@
  */
 
 import { browser } from '$app/env';
-import { initErrorMonitoring, initWebVitals } from '$lib/utils/errorMonitoring';
-import { initFreezeDetection } from '$lib/utils/freezeDetection';
+import { initErrorMonitoring, initWebVitals } from '#lib/utils/errorMonitoring.ts';
+import { initFreezeDetection } from '#lib/utils/freezeDetection.ts';
 import type { HandleClientError } from '@sveltejs/kit/hooks';
 
 // Initialize all client-side monitoring when browser is ready

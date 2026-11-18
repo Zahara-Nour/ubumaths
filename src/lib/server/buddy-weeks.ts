@@ -21,9 +21,9 @@
  * jour (T3).
  */
 
-import { readAllRows } from '$lib/server/read-all-rows';
-import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
-import { schoolDay } from '$lib/server/course-card-attempts';
+import { readAllRows } from '#lib/server/read-all-rows.ts';
+import { createServiceRoleClient } from '#lib/server/serviceRoleClient.ts';
+import { schoolDay } from '#lib/server/course-card-attempts.ts';
 import {
 	AUTONOMOUS_SOURCES,
 	MIN_TRACES_PER_ACTIVE_DAY,
@@ -32,9 +32,9 @@ import {
 	regularityFirstDay,
 	weekStartOf,
 	type RegularityTrace
-} from '$lib/server/stats/class-regularity';
-import { createServerLogger } from '$lib/utils/logger';
-import type { WeekMoment } from '$lib/types/buddy';
+} from '#lib/server/stats/class-regularity.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
+import type { WeekMoment } from '#lib/types/buddy.ts';
 
 // Types
 export type { WeekMoment };

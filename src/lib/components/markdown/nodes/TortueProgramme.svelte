@@ -24,14 +24,14 @@
 -->
 <script lang="ts">
 	import { onMount, type Component } from 'svelte';
-	import TortueCanvas from '$lib/components/blockly/TortueCanvas.svelte';
-	import { LONGUEUR_MAX_PROGRAMME, type TexteLu } from '$lib/shared/blockly/tortue/notation';
-	import { nombreDeBlocsTortue } from '$lib/shared/blockly/tortue/niveaux';
-	import type { NiveauTortue } from '$lib/shared/blockly/tortue/interpreteur';
-	import { lireProgrammeTortue } from '$lib/shared/blockly/tortue/jugement';
-	import type { Segment } from '$lib/shared/blockly/tortue/segments';
-	import { readExpectedTortueAnswer } from '$lib/ubumark/utils/tortue-answer';
-	import { TORTUE_UNAVAILABLE, type TortueNode } from '$lib/ubumark/types/tortue';
+	import TortueCanvas from '#lib/components/blockly/TortueCanvas.svelte';
+	import { LONGUEUR_MAX_PROGRAMME, type TexteLu } from '#lib/shared/blockly/tortue/notation.ts';
+	import { nombreDeBlocsTortue } from '#lib/shared/blockly/tortue/niveaux.ts';
+	import type { NiveauTortue } from '#lib/shared/blockly/tortue/interpreteur.ts';
+	import { lireProgrammeTortue } from '#lib/shared/blockly/tortue/jugement.ts';
+	import type { Segment } from '#lib/shared/blockly/tortue/segments.ts';
+	import { readExpectedTortueAnswer } from '#lib/ubumark/utils/tortue-answer.ts';
+	import { TORTUE_UNAVAILABLE, type TortueNode } from '#lib/ubumark/types/tortue.ts';
 	import { readAuthoringErrors } from '../authoring-errors';
 	import type { BuildCase } from './CollectionConstruire.svelte';
 
@@ -148,7 +148,7 @@
 	}
 
 	onMount(() => {
-		import('$lib/components/blockly/TortueEditeur.svelte')
+		import('#lib/components/blockly/TortueEditeur.svelte')
 			.then((module) => (Editeur = module.default))
 			.catch(() => (chargementRate = true));
 	});

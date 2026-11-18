@@ -5,9 +5,9 @@
 -->
 
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import { Textarea } from '$lib/components/ui/textarea';
-	import { Label } from '$lib/components/ui/label';
+	import { lore } from '#lib/config/lore.ts';
+	import { Textarea } from '#lib/components/ui/textarea/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
 	import { Info } from '@lucide/svelte';
 
 	interface Props {

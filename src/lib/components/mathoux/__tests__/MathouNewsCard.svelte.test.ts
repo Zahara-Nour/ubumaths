@@ -7,7 +7,7 @@
 import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import MathouNewsCard from '../MathouNewsCard.svelte';
-import type { MathouNews, MathouNewsItem } from '$lib/mathoux/news';
+import type { MathouNews, MathouNewsItem } from '#lib/mathoux/news.ts';
 
 function item(notionId: string, over: Partial<MathouNewsItem> = {}): MathouNewsItem {
 	return {

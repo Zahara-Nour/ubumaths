@@ -2004,7 +2004,7 @@ Ces deux symboles peuvent **coexister visuellement** : la spirale ubuesque et la
 
 ### Iconographie
 
-À constituer en kit graphique réutilisable (SVG dans `$lib/assets/icons/ubu/`) :
+À constituer en kit graphique réutilisable (SVG dans `#lib/assets/icons/ubu/`) :
 
 #### Icônes ubuesques principales
 

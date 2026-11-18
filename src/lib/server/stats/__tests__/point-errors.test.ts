@@ -10,8 +10,8 @@ import {
 	type SeriesTraceRow
 } from '../point-errors';
 import type { QuestionErrorAnswer } from '../../evaluation-question-errors';
-import { POINT_ERRORS_MESSAGE, POINT_ERRORS_TRACE_CAP } from '$lib/types/point-errors';
-import type { QuestionInstance } from '$lib/questions/types';
+import { POINT_ERRORS_MESSAGE, POINT_ERRORS_TRACE_CAP } from '#lib/types/point-errors.ts';
+import type { QuestionInstance } from '#lib/questions/types.ts';
 import {
 	called,
 	createFakeSupabase,

@@ -12,8 +12,8 @@
  */
 import { describe, it, expect } from 'vitest';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import type { SeriesItem } from '$lib/validation/series';
+import type { Database } from '#lib/types/database.ts';
+import type { SeriesItem } from '#lib/validation/series.ts';
 import {
 	CHAPTER_SESSION_NEW_LIMIT,
 	MAX_DECK_TEMPLATES,

@@ -26,14 +26,14 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { copierImagesLocales } from './images-locales';
-import { WorksheetGenerator } from '$lib/typst/generators/worksheet-generator';
-import { STUDENT_STYLE_TEMPLATE } from '$lib/typst/templates/default-templates';
+import { WorksheetGenerator } from '#lib/typst/generators/worksheet-generator.ts';
+import { STUDENT_STYLE_TEMPLATE } from '#lib/typst/templates/default-templates.ts';
 import type {
 	InstanceData,
 	WorksheetConfig,
 	WorksheetRow,
 	WorksheetTemplateRow
-} from '$lib/types/worksheets';
+} from '#lib/types/worksheets.ts';
 
 type Plan = {
 	sections: { id: string; title: string; position: number; en: string }[];

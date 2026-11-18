@@ -13,7 +13,7 @@ import { z } from 'zod';
 
 /**
  * Valid values for `skill_attempts.phase_blocage` (DB CHECK constraint).
- * Mirrors the PhaseBlocage union in $lib/types/skills.ts.
+ * Mirrors the PhaseBlocage union in #lib/types/skills.ts.
  */
 export const phaseBlocageSchema = z.enum([
 	'comprendre',

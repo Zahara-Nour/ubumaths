@@ -1,17 +1,17 @@
 <script lang="ts">
-	import { notificationStore } from '$lib/stores/notifications.svelte';
+	import { notificationStore } from '#lib/stores/notifications.svelte.ts';
 	import {
 		NOTIFICATION_TYPE_ICONS,
 		NOTIFICATION_PRIORITY_COLORS,
 		formatCreatorName,
 		getRelativeTime,
 		type NotificationWithDetails
-	} from '$lib/types/notification';
-	import { Button } from '$lib/components/ui/button';
-	import * as Popover from '$lib/components/ui/popover';
+	} from '#lib/types/notification.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Popover from '#lib/components/ui/popover/index.ts';
 	import { Bell } from '@lucide/svelte';
 	import { goto } from '$app/navigation';
-	import { gotoNotification } from '$lib/navigation/goto-notification';
+	import { gotoNotification } from '#lib/navigation/goto-notification.ts';
 
 	// Get top 5 notifications for dropdown
 	const MAX_DROPDOWN_NOTIFICATIONS = 5;

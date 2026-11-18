@@ -1,6 +1,6 @@
 import type { PageServerLoad } from './$types';
 import { redirect } from '@sveltejs/kit';
-import { listWorksheetStyles } from '$lib/server/worksheets/worksheet-styles';
+import { listWorksheetStyles } from '#lib/server/worksheets/worksheet-styles.ts';
 
 /**
  * Load page data for creating new worksheet

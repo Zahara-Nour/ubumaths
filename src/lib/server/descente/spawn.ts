@@ -3,7 +3,7 @@
  * ==========================================================
  *
  * Appelé quand l'élève ouvre la carte (étape 4) : rattrape le temps passé et fait
- * naître ses Bêtes. Règles et choix : `$lib/descente/spawn-logic.ts` ; phase 0 de
+ * naître ses Bêtes. Règles et choix : `#lib/descente/spawn-logic.ts` ; phase 0 de
  * l'étape 2 dans docs/wip/navadra-progress.md (validée le 2026-11-18).
  *
  * Lectures au client de L'ÉLÈVE (RLS) : ses Bêtes (« Students can view their own
@@ -25,11 +25,11 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import type { ProvinceId } from '$lib/kingdom-tour/tour';
-import { computePointBadges } from '$lib/server/srs/curriculum-point-badge';
-import { fetchInChunks } from '$lib/server/utils/chunked-in';
-import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
+import type { Database } from '#lib/types/database.ts';
+import type { ProvinceId } from '#lib/kingdom-tour/tour.ts';
+import { computePointBadges } from '#lib/server/srs/curriculum-point-badge.ts';
+import { fetchInChunks } from '#lib/server/utils/chunked-in.ts';
+import { createServiceRoleClient } from '#lib/server/serviceRoleClient.ts';
 import {
 	assertSessionStudent,
 	loadGrade,
@@ -39,7 +39,7 @@ import {
 	loadTree,
 	provinceOfPoint,
 	type GradePoint
-} from '$lib/server/descente/program';
+} from '#lib/server/descente/program.ts';
 import {
 	chooseBeasts,
 	spawnQuota,
@@ -49,8 +49,8 @@ import {
 	type NewBeast,
 	type SpawnCandidate,
 	type SpawnState
-} from '$lib/descente/spawn-logic';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/descente/spawn-logic.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 // ============================================================================
 // Types

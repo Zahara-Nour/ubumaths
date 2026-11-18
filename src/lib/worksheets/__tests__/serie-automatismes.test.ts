@@ -10,18 +10,18 @@
  *  - erreur (modèle absent, génération en échec, marqueur non résolu) → exception, rien d'écrit.
  */
 import { describe, it, expect } from 'vitest';
-import type { QuestionTemplate } from '$lib/questions/types';
+import type { QuestionTemplate } from '#lib/questions/types.ts';
 import { buildSerie, BLANK_TEXT } from '../serie-automatismes';
-import { correctionForPrint } from '$lib/questions/correction-detail';
+import { correctionForPrint } from '#lib/questions/correction-detail.ts';
 import { questionItems } from '../document/answer-frames';
-import { parseMarkdown, type ListNode } from '$lib/ubumark';
-import { serializeTemplateChoiceBlock } from '$lib/ubumark/parser/choix-parser';
+import { parseMarkdown, type ListNode } from '#lib/ubumark/index.ts';
+import { serializeTemplateChoiceBlock } from '#lib/ubumark/parser/choix-parser.ts';
 import {
 	expressionToRawLatex,
 	genericFunctionsConfig
-} from '$lib/components/markdown/utils/math-utils';
-import { parseCustomSafe } from '$lib/mathAST/parser/custom';
-import { toLatex } from '$lib/mathAST';
+} from '#lib/components/markdown/utils/math-utils.ts';
+import { parseCustomSafe } from '#lib/mathAST/parser/custom/index.ts';
+import { toLatex } from '#lib/mathAST/index.ts';
 
 const base = {
 	title: 't',

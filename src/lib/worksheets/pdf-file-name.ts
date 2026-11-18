@@ -6,7 +6,7 @@
  * @module worksheets/pdf-file-name
  */
 
-import type { ContentLocale } from '$lib/types/locale';
+import type { ContentLocale } from '#lib/types/locale.ts';
 
 /**
  * Nom de fichier lisible à partir d'un titre (fiche, élève, classe)

@@ -5,12 +5,17 @@
 -->
 <script lang="ts">
 	import { onMount, tick } from 'svelte';
-	import { resolvePath } from '$lib/navigation/resolve-path';
-	import { Button } from '$lib/components/ui/button';
-	import { Label } from '$lib/components/ui/label';
-	import { Textarea } from '$lib/components/ui/textarea';
-	import { lettersOnly } from '$lib/ciphers/alphabet';
-	import { loadHints, loadProgress, saveHints, saveProgress } from '$lib/ciphers/dispatch-progress';
+	import { resolvePath } from '#lib/navigation/resolve-path.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import { Textarea } from '#lib/components/ui/textarea/index.ts';
+	import { lettersOnly } from '#lib/ciphers/alphabet.ts';
+	import {
+		loadHints,
+		loadProgress,
+		saveHints,
+		saveProgress
+	} from '#lib/ciphers/dispatch-progress.ts';
 	import {
 		CIPHER_PATHS,
 		DISPATCHES,
@@ -18,9 +23,9 @@
 		dispatchCiphertext,
 		isUnlocked,
 		type Dispatch
-	} from '$lib/ciphers/dispatches';
-	import { decryptQuery } from '$lib/ciphers/tool-link';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	} from '#lib/ciphers/dispatches.ts';
+	import { decryptQuery } from '#lib/ciphers/tool-link.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 
 	// Types
 	type Feedback = { kind: 'wrong'; given: number; expected: number; attempt: number } | null;

@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { resolvePath } from '$lib/navigation/resolve-path';
-	import * as Sheet from '$lib/components/ui/sheet';
-	import { theme } from '$lib/stores/theme.svelte';
-	import { fontSize } from '$lib/stores/fontSize.svelte';
+	import { resolvePath } from '#lib/navigation/resolve-path.ts';
+	import * as Sheet from '#lib/components/ui/sheet/index.ts';
+	import { theme } from '#lib/stores/theme.svelte.ts';
+	import { fontSize } from '#lib/stores/fontSize.svelte.ts';
 	import { Sun, Moon, Minus, Plus } from '@lucide/svelte';
 	import type { LucideIcon } from '@lucide/svelte';
 

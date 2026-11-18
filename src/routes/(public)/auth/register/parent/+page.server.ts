@@ -10,7 +10,7 @@
  * 2. Code de classe vérifié (RPC service) AVANT toute création, puis plafond de la classe
  *    (5 inscriptions / 24 h, seau atomique).
  * 3. Compte de l'enfant créé par le serveur, identifiant `prenom` + 3 chiffres
- *    (`$lib/server/child-registration`) → profil approuvé dans la classe ; lecture seule
+ *    (`#lib/server/child-registration.ts`) → profil approuvé dans la classe ; lecture seule
  *    tant que le consentement manque.
  * 4. Demande au parent créée, UN courriel : identifiant + lien unique.
  * 5. L'écran affiche l'identifiant. Courriel en échec → le compte existe, le prof renverra
@@ -21,22 +21,22 @@
  */
 import { fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 import {
 	checkChildSignupRateLimitByClass,
 	checkChildSignupRateLimitByParentEmail,
 	checkSignupRateLimitByIP
-} from '$lib/server/rateLimiter';
-import { validateFormData, parentRegisterFormSchema } from '$lib/server/validation';
-import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
+} from '#lib/server/rateLimiter.ts';
+import { validateFormData, parentRegisterFormSchema } from '#lib/server/validation/index.ts';
+import { createServiceRoleClient } from '#lib/server/serviceRoleClient.ts';
 import {
 	createChildAccount,
 	createParentRequest,
 	deleteChildAccount,
 	markParentEmailSent
-} from '$lib/server/child-registration';
-import { sendChildRegistrationEmail } from '$lib/server/email/brevo';
-import { requiresParentalConsent } from '$lib/utils/consent';
+} from '#lib/server/child-registration.ts';
+import { sendChildRegistrationEmail } from '#lib/server/email/brevo.ts';
+import { requiresParentalConsent } from '#lib/utils/consent.ts';
 
 // Constantes
 

@@ -10,22 +10,22 @@
 
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import type { QuestionTemplate } from '$lib/questions/types';
-import { getQuestionType } from '$lib/questions/types';
-import { choiceAnswerCountErrors } from '$lib/questions/validators/choice-answer-count';
-import { classificationNodeErrorMessage } from '$lib/server/classification-node-error';
+import type { QuestionTemplate } from '#lib/questions/types.ts';
+import { getQuestionType } from '#lib/questions/types.ts';
+import { choiceAnswerCountErrors } from '#lib/questions/validators/choice-answer-count.ts';
+import { classificationNodeErrorMessage } from '#lib/server/classification-node-error.ts';
 import {
 	createQuestionTemplateSchema,
 	validateRequest,
 	createQuestionTemplateResponseSchema,
 	listQuestionsQuerySchema,
 	questionTemplatesListResponseSchema
-} from '$lib/server/validation';
-import { validateJsonResponse } from '$lib/server/validation/response-utils';
-import { requireAdmin, requireRoles } from '$lib/server/middleware/auth';
-import { toJson } from '$lib/types/database-helpers';
-import { templatePublicationErrors } from '$lib/server/template-publication';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/validation/index.ts';
+import { validateJsonResponse } from '#lib/server/validation/response-utils.ts';
+import { requireAdmin, requireRoles } from '#lib/server/middleware/auth.ts';
+import { toJson } from '#lib/types/database-helpers.ts';
+import { templatePublicationErrors } from '#lib/server/template-publication.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/questions/templates/+server');
 

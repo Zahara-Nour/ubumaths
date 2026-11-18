@@ -9,7 +9,7 @@
 // chaque test installe d'abord un client factice dans l'état privé du store.
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 
 vi.mock('$app/env', () => ({
 	browser: false,

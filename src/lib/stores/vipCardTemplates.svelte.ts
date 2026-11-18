@@ -5,8 +5,13 @@
  */
 
 import { writable } from 'svelte/store';
-import type { VipCard, VipCardAction, VipCardCategory, VipCardRarity } from '$lib/types/vip-card';
-import type { Database } from '$lib/types/database';
+import type {
+	VipCard,
+	VipCardAction,
+	VipCardCategory,
+	VipCardRarity
+} from '#lib/types/vip-card.ts';
+import type { Database } from '#lib/types/database.ts';
 
 // Template type from database with properly typed action field
 type VipCardTemplateRow = Database['public']['Tables']['vip_card_templates']['Row'];

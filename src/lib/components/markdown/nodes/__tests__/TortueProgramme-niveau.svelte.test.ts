@@ -11,8 +11,8 @@ import { render } from 'vitest-browser-svelte';
 import { page } from 'vitest/browser';
 import TortueProgramme from '../TortueProgramme.svelte';
 import TortueCorrige from '../TortueCorrige.svelte';
-import { parseTortueContent } from '$lib/ubumark/parser/tortue-parser';
-import { texteVersEtatTortue } from '$lib/shared/blockly/tortue/niveaux';
+import { parseTortueContent } from '#lib/ubumark/parser/tortue-parser.ts';
+import { texteVersEtatTortue } from '#lib/shared/blockly/tortue/niveaux.ts';
 
 let mains: HTMLElement[] = [];
 function mainElement(): HTMLElement {

@@ -11,16 +11,16 @@
 
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRoles } from '$lib/server/middleware/auth';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
 import {
 	coveragePointSchema,
 	coverageListQuerySchema,
 	coveragePointQuerySchema
-} from '$lib/server/validation/curriculum';
-import { curriculumDbError } from '$lib/server/curriculum';
-import { readPointStatus } from '$lib/server/curriculum-point-status';
-import type { JournalEntryPoint } from '$lib/types/database-helpers';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/validation/curriculum.ts';
+import { curriculumDbError } from '#lib/server/curriculum.ts';
+import { readPointStatus } from '#lib/server/curriculum-point-status.ts';
+import type { JournalEntryPoint } from '#lib/types/database-helpers.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/teacher/curriculum/coverage/+server');
 

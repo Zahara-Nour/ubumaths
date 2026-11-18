@@ -14,7 +14,7 @@
  * (D9). La fiche désigne son style par `style_id` (`styleIdOf`).
  */
 
-import type { DocumentForm } from '$lib/worksheets/document/types';
+import type { DocumentForm } from '#lib/worksheets/document/types.ts';
 import type { TextSize } from '../text-size';
 import {
 	CORRECTIONS_PART,

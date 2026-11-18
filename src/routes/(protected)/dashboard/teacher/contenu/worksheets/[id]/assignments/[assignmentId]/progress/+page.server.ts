@@ -17,13 +17,13 @@
 import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
 import { z } from 'zod';
-import { requireRoles } from '$lib/server/middleware/auth';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
 import {
 	fetchAssignmentClasses,
 	formatClassNames
-} from '$lib/server/worksheets/assignment-classes';
-import type { MasteryStatus } from '$lib/types/exercise-mastery';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/worksheets/assignment-classes.ts';
+import type { MasteryStatus } from '#lib/types/exercise-mastery.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger(
 	'(protected)/dashboard/teacher/contenu/worksheets/[id]/assignments/[assignmentId]/progress/+page.server'

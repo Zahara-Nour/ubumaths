@@ -4,7 +4,11 @@
 		"sourceMap": true,
 		"strict": true,
 		"incremental": true,
-		"tsBuildInfoFile": ".svelte-kit/tsconfig.tsbuildinfo"
+		"tsBuildInfoFile": ".svelte-kit/tsconfig.tsbuildinfo",
+		"paths": {
+			"#lib/*": ["./src/lib/*"],
+			"#tests/*": ["./tests/*"]
+		}
 	},
 	"include": ["src", "vite.config.ts", "playwright.config.ts", "tests"]
 }

@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { marketplaceStore } from '$lib/stores/marketplace.svelte';
-	import type { MarketplaceTrade } from '$lib/types/marketplace';
-	import * as Card from '$lib/components/ui/card';
-	import * as Tabs from '$lib/components/ui/tabs';
-	import { Button } from '$lib/components/ui/button';
-	import { Badge } from '$lib/components/ui/badge';
-	import SkeletonList from '$lib/components/skeleton/SkeletonList.svelte';
-	import UserAvatar from '$lib/components/UserAvatar.svelte';
+	import { marketplaceStore } from '#lib/stores/marketplace.svelte.ts';
+	import type { MarketplaceTrade } from '#lib/types/marketplace.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import * as Tabs from '#lib/components/ui/tabs/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import SkeletonList from '#lib/components/skeleton/SkeletonList.svelte';
+	import UserAvatar from '#lib/components/UserAvatar.svelte';
 	import {
 		ArrowLeftRight,
 		Clock,

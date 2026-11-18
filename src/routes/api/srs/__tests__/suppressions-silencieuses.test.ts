@@ -15,7 +15,7 @@ import { describe, it, expect, vi } from 'vitest';
 // MOCKS
 // ============================================================================
 
-vi.mock('$lib/server/middleware/auth', () => ({
+vi.mock('#lib/server/middleware/auth.ts', () => ({
 	requireAuth: vi.fn().mockResolvedValue({ user: { id: 'proprietaire' }, profile: {} })
 }));
 

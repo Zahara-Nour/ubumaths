@@ -19,7 +19,7 @@
  *   // Schemas
  *   executeCodeRequestSchema,
  *   validationConfigSchema
- * } from '$lib/shared/python';
+ * } from '#lib/shared/python/index.ts';
  * ```
  */
 

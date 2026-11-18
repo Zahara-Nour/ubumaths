@@ -15,19 +15,19 @@
 
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import type { CardStats } from '$lib/srs/types';
-import { FSRS } from '$lib/srs/fsrs';
-import { submitReviewSchema } from '$lib/server/validation/srs';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { requireConsent } from '$lib/server/middleware/consent';
-import { ensureProgrammeDeckCard } from '$lib/server/srs/programme-deck';
-import { entersProgrammeDeck } from '$lib/server/srs/programme-deck-rule';
-import { applyFsrsReview } from '$lib/server/srs/fsrs-actions';
-import { recordSrsReviewAttempt } from '$lib/server/srs/srs-attempt';
-import { rewardFinishedReviewSession } from '$lib/server/srs/review-session-reward';
-import { recordReviewSessionCard } from '$lib/server/srs/review-session-stats';
-import type { BuddyXpFromExerciseResult } from '$lib/server/buddy-xp-service';
-import { createServerLogger } from '$lib/utils/logger';
+import type { CardStats } from '#lib/srs/types.ts';
+import { FSRS } from '#lib/srs/fsrs.ts';
+import { submitReviewSchema } from '#lib/server/validation/srs.ts';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { requireConsent } from '#lib/server/middleware/consent.ts';
+import { ensureProgrammeDeckCard } from '#lib/server/srs/programme-deck.ts';
+import { entersProgrammeDeck } from '#lib/server/srs/programme-deck-rule.ts';
+import { applyFsrsReview } from '#lib/server/srs/fsrs-actions.ts';
+import { recordSrsReviewAttempt } from '#lib/server/srs/srs-attempt.ts';
+import { rewardFinishedReviewSession } from '#lib/server/srs/review-session-reward.ts';
+import { recordReviewSessionCard } from '#lib/server/srs/review-session-stats.ts';
+import type { BuddyXpFromExerciseResult } from '#lib/server/buddy-xp-service.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/srs/review/submit/+server');
 

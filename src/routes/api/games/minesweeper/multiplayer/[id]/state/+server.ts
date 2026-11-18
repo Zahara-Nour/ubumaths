@@ -8,11 +8,11 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import { realtimeStateUpdateSchema } from '$lib/server/validation/minesweeper-multiplayer';
-import { sanitizeRPCError } from '$lib/server/utils/error-handler';
-import { validateUuidParam } from '$lib/server/validation/params';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { realtimeStateUpdateSchema } from '#lib/server/validation/minesweeper-multiplayer.ts';
+import { sanitizeRPCError } from '#lib/server/utils/error-handler.ts';
+import { validateUuidParam } from '#lib/server/validation/params.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/games/minesweeper/multiplayer/[id]/state/+server');
 

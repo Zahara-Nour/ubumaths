@@ -8,7 +8,7 @@ import {
 	expectedCalculAnswer,
 	readExpectedCalculAnswer
 } from '../../utils/calcul-answer';
-import { ESSAIS_PAR_DEFAUT } from '$lib/shared/blockly/calcul/jugement';
+import { ESSAIS_PAR_DEFAUT } from '#lib/shared/blockly/calcul/jugement.ts';
 
 const BO = 'attendu: afficher (nombre + 2) × 4';
 

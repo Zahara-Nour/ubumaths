@@ -11,13 +11,13 @@
  * @module ubumark/utils/calcul-answer
  */
 
-import { NIVEAUX_CALCUL, type NiveauCalcul } from '$lib/shared/blockly/calcul/interpreteur';
+import { NIVEAUX_CALCUL, type NiveauCalcul } from '#lib/shared/blockly/calcul/interpreteur.ts';
 import {
 	ecrireEssais,
 	jugerProgrammeCalcul,
 	lireEssais,
 	type VerdictCalcul
-} from '$lib/shared/blockly/calcul/jugement';
+} from '#lib/shared/blockly/calcul/jugement.ts';
 
 const SEPARATEUR = ' | ';
 

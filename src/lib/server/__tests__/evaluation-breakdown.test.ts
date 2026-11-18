@@ -14,7 +14,7 @@ import {
 	DELETED_TEMPLATE_LABEL,
 	NO_NOTION_LABEL,
 	UNKNOWN_TEMPLATE_LABEL
-} from '$lib/types/evaluation-breakdown';
+} from '#lib/types/evaluation-breakdown.ts';
 import { called, createFakeSupabase, type Call, type Result } from './helpers/fake-supabase';
 
 const EVALUATION = '8b9c0d1e-8888-4888-8888-888888888888';

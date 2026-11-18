@@ -21,36 +21,36 @@
  * analysés : le rapport compte les specs et les tirages.
  */
 
-import type { QuestionTemplate } from '$lib/questions/types';
-import { validateTemplate } from '$lib/questions/validators/template-validator';
-import { questionTemplateSchema } from '$lib/questions/template-schema';
-import { runAllTestSpecs, type TestSpecResult } from '$lib/questions/test-spec-runner';
-import { generateInstance } from '$lib/questions/generator/instance-generator';
-import { calculusFinalAnswerLatex } from '$lib/questions/generator/correction-generator';
-import { requiredFormVerdict } from '$lib/questions/required-form-validator';
-import { readingOf } from '$lib/questions/formula-reading';
-import type { QuestionInstance } from '$lib/questions/types';
-import { isBlankValueCorrect } from '$lib/utils/answer-validator';
+import type { QuestionTemplate } from '#lib/questions/types.ts';
+import { validateTemplate } from '#lib/questions/validators/template-validator.ts';
+import { questionTemplateSchema } from '#lib/questions/template-schema.ts';
+import { runAllTestSpecs, type TestSpecResult } from '#lib/questions/test-spec-runner.ts';
+import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
+import { calculusFinalAnswerLatex } from '#lib/questions/generator/correction-generator.ts';
+import { requiredFormVerdict } from '#lib/questions/required-form-validator.ts';
+import { readingOf } from '#lib/questions/formula-reading.ts';
+import type { QuestionInstance } from '#lib/questions/types.ts';
+import { isBlankValueCorrect } from '#lib/utils/answer-validator.ts';
 import {
 	findUnparenthesizedNegatives,
 	type VariableDraw
-} from '$lib/questions/validators/negative-substitution';
+} from '#lib/questions/validators/negative-substitution.ts';
 import {
 	constructionExpected,
 	constructionPositions,
 	constructionShapes
-} from '$lib/questions/construction/positions';
+} from '#lib/questions/construction/positions.ts';
 import {
 	assertConstructionChecks,
 	ConstructionAuthorError
-} from '$lib/questions/construction/judge';
+} from '#lib/questions/construction/judge.ts';
 // Inscrit le calcul des positions (geometry-core) dont la garde des figures a besoin
-import '$lib/questions/construction/positions-setup';
+import '#lib/questions/construction/positions-setup.ts';
 import {
 	courseCardFront,
 	hasCourseCardBackContent,
 	isCourseCard
-} from '$lib/questions/course-card';
+} from '#lib/questions/course-card.ts';
 
 // ============================================================================
 // TYPES

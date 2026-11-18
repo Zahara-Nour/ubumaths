@@ -15,8 +15,8 @@
 import { describe, it, expect } from 'vitest';
 import { Figure } from '../../graph/figure';
 import { numeric, type ScalarParam } from '../../types/geo-value';
-import { parseCustom, compile } from '$lib/mathAST';
-import { differentiate } from '$lib/mathAST/differentiation';
+import { parseCustom, compile } from '#lib/mathAST/index.ts';
+import { differentiate } from '#lib/mathAST/differentiation/index.ts';
 import type { GeoParametricCurve } from '../../types/elements';
 import type { Viewport } from '../../viewport/types';
 import { exportToTikZ } from '../export-tikz';

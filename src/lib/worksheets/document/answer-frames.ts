@@ -34,16 +34,16 @@
  * @module worksheets/document/answer-frames
  */
 
-import { parseMarkdown } from '$lib/ubumark';
-import { associerItemHasBlock } from '$lib/ubumark/parser/associer-parser';
-import { TROUS_RESERVE_COLUMNS } from '$lib/ubumark/utils/trous';
-import type { ASTNode, DocumentNode, InlineNode, ListItemNode } from '$lib/ubumark/types';
+import { parseMarkdown } from '#lib/ubumark/index.ts';
+import { associerItemHasBlock } from '#lib/ubumark/parser/associer-parser.ts';
+import { TROUS_RESERVE_COLUMNS } from '#lib/ubumark/utils/trous.ts';
+import type { ASTNode, DocumentNode, InlineNode, ListItemNode } from '#lib/ubumark/types/index.ts';
 import {
 	ANSWER_FRAME_MAX_QUESTIONS,
 	type AnswerFrameEstimate,
 	type AnswerFrameSize,
 	type ExerciseFrameCm
-} from '$lib/types/worksheets';
+} from '#lib/types/worksheets.ts';
 
 // ============================================================================
 // CONSTANTES

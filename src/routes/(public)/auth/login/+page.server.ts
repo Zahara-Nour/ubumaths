@@ -18,7 +18,7 @@
  *
  * AUTHENTICATION METHODS:
  * 1. Google OAuth - Initiates OAuth flow with Google provider
- * 2. Email (or child login id, see $lib/utils/child-account)/Password
+ * 2. Email (or child login id, see #lib/utils/child-account)/Password
  *
  * FLOW (Email/Password):
  * 1. User submits form (POST to /login?/login)
@@ -41,15 +41,15 @@ import { redirect, fail } from '@sveltejs/kit';
 import { dev } from '$app/env';
 import { PUBLIC_SUPABASE_URL } from '$app/env/public';
 import type { Actions, PageServerLoad } from './$types';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 import {
 	checkLoginRateLimitByIP,
 	checkLoginRateLimitByEmail,
 	checkOAuthRateLimitByIP
-} from '$lib/server/rateLimiter';
-import { skipsLoginRateLimit } from '$lib/server/local-login-rate-limit';
-import { validateFormData, loginFormSchema } from '$lib/server/validation';
-import { GOOGLE_LOGIN_ENABLED } from '$lib/config/google-login';
+} from '#lib/server/rateLimiter.ts';
+import { skipsLoginRateLimit } from '#lib/server/local-login-rate-limit.ts';
+import { validateFormData, loginFormSchema } from '#lib/server/validation/index.ts';
+import { GOOGLE_LOGIN_ENABLED } from '#lib/config/google-login.ts';
 
 const logger = createServerLogger('login/+page.server.ts');
 

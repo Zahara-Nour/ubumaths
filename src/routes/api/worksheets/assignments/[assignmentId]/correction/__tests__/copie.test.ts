@@ -19,19 +19,19 @@ import {
 	tableMock,
 	twoLevelExercise,
 	type TableMock
-} from '$lib/server/worksheets/__tests__/table-mock';
+} from '#lib/server/worksheets/__tests__/table-mock.ts';
 import {
 	assignmentCopyScope,
 	buildWorksheetCopy,
 	resolveWorksheetExerciseCopy,
 	type WorksheetForCopy
-} from '$lib/worksheets/worksheet-copy';
-import type { InstanceData } from '$lib/types/worksheets';
+} from '#lib/worksheets/worksheet-copy.ts';
+import type { InstanceData } from '#lib/types/worksheets.ts';
 
 // Le rendu Typst réel est passé, la copie qu'il reçoit est captée
 const rendered = vi.hoisted(() => ({ instances: [] as InstanceData[] }));
-vi.mock('$lib/typst/generators', async (importOriginal) => {
-	const original = await importOriginal<typeof import('$lib/typst/generators')>();
+vi.mock('#lib/typst/generators/index.ts', async (importOriginal) => {
+	const original = await importOriginal<typeof import('#lib/typst/generators/index.ts')>();
 	return {
 		...original,
 		generateWorksheetTypst: (options: Parameters<typeof original.generateWorksheetTypst>[0]) => {
@@ -41,7 +41,7 @@ vi.mock('$lib/typst/generators', async (importOriginal) => {
 	};
 });
 
-vi.mock('$lib/server/worksheets/assignment-classes', () => ({
+vi.mock('#lib/server/worksheets/assignment-classes.ts', () => ({
 	fetchAssignmentClasses: async () => [],
 	formatClassNames: () => null
 }));

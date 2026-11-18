@@ -5,9 +5,9 @@
  */
 import { describe, it, expect } from 'vitest';
 import { toSubmission } from '../submission';
-import { submitAttemptSchema } from '$lib/server/validation/evaluations';
-import type { TestAnswerResult } from '$lib/types/test';
-import type { QuestionInstance } from '$lib/questions/types';
+import { submitAttemptSchema } from '#lib/server/validation/evaluations.ts';
+import type { TestAnswerResult } from '#lib/types/test.ts';
+import type { QuestionInstance } from '#lib/questions/types.ts';
 
 function answer(
 	value: TestAnswerResult['userAnswer'] extends infer A ? A : never

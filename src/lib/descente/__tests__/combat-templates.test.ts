@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'vitest';
 import { isCombatInstance, isCombatTemplate } from '../combat-templates';
-import { generateInstance } from '$lib/questions/generator/instance-generator';
-import { templateMarkdown } from '$lib/ubumark';
+import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 import { BRANCH_PROVINCES, provinceOfBranch } from '../provinces';
 
 const oneBlank = [{ expectedAnswer: '{{eval:a*60+b}}' }];

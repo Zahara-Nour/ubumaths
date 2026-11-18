@@ -7,9 +7,9 @@
 
 import { describe, it, expect } from 'vitest';
 import { validateQuantityAnswer } from '../validator';
-import { blankStatuses, validateAnswer } from '$lib/utils/answer-validator';
-import type { PrecisionType, QuestionInstance } from '$lib/questions/types';
-import type { ResolvedMarkdown } from '$lib/ubumark';
+import { blankStatuses, validateAnswer } from '#lib/utils/answer-validator.ts';
+import type { PrecisionType, QuestionInstance } from '#lib/questions/types.ts';
+import type { ResolvedMarkdown } from '#lib/ubumark/index.ts';
 
 const HUNDREDTH: PrecisionType = { type: 'decimal', digits: 2 };
 

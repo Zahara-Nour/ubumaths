@@ -8,8 +8,8 @@
  * @module server/programmes/transcriptions
  */
 
-import type { GradeCode } from '$lib/types/grades';
-import { OFFICIAL_PROGRAMMES } from '$lib/programmes/official-programmes';
+import type { GradeCode } from '#lib/types/grades.ts';
+import { OFFICIAL_PROGRAMMES } from '#lib/programmes/official-programmes.ts';
 
 // Constantes
 

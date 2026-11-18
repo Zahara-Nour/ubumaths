@@ -14,17 +14,17 @@
 
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAuth } from '$lib/server/middleware/auth';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
 import { z } from 'zod';
-import type { TablesUpdate } from '$lib/types/database';
+import type { TablesUpdate } from '#lib/types/database.ts';
 import {
 	releaseCorrections,
 	revokeCorrections,
 	getCorrectionReleaseStatus
-} from '$lib/server/worksheets/correction-release';
-import { CORRECTION_RELEASE_MODES } from '$lib/types/worksheets';
-import { guidanceLevelSchema } from '$lib/server/validation/worksheets';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/worksheets/correction-release.ts';
+import { CORRECTION_RELEASE_MODES } from '#lib/types/worksheets.ts';
+import { guidanceLevelSchema } from '#lib/server/validation/worksheets.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/worksheets/assignments/[assignmentId]/+server');
 

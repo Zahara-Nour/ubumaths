@@ -30,7 +30,7 @@ import {
 	type AnswerFrameMode,
 	type AnswerFrameSize,
 	type PrintedAnswerFrames
-} from '$lib/types/worksheets';
+} from '#lib/types/worksheets.ts';
 
 // ============================================================================
 // CONSTANTES

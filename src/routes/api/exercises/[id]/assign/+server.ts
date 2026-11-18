@@ -11,20 +11,20 @@ import {
 	createExerciseAssignment,
 	createBulkAssignments,
 	getAssignmentsForExercise
-} from '$lib/server/exercise-assignments';
+} from '#lib/server/exercise-assignments.ts';
 import type {
 	CreateExerciseAssignment,
 	BulkAssignmentData,
 	TeacherAssignmentFilters
-} from '$lib/exercises/types';
+} from '#lib/exercises/types.ts';
 import {
 	validateBulkAssign,
 	validateSingleAssign,
 	validateAssignmentQuery
-} from '$lib/server/validation';
-import { requireRole } from '$lib/server/middleware/auth';
-import { validateUuidParam } from '$lib/server/validation/params';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/validation/index.ts';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { validateUuidParam } from '#lib/server/validation/params.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/exercises/[id]/assign/+server');
 

@@ -10,8 +10,8 @@ Props :
 - active : la Province lue, teintée sur la carte (`null` : aucune)
 -->
 <script lang="ts">
-	import { resolvePath } from '$lib/navigation/resolve-path';
-	import { CITIES, cityPath } from '$lib/kingdom-tour/cities';
+	import { resolvePath } from '#lib/navigation/resolve-path.ts';
+	import { CITIES, cityPath } from '#lib/kingdom-tour/cities.ts';
 	import {
 		CITY_LABELS,
 		KINGDOM_MAP,
@@ -20,8 +20,8 @@ Props :
 		PROVINCE_AREAS,
 		PROVINCE_LABELS,
 		type KingdomLabel
-	} from '$lib/kingdom-tour/kingdom-map';
-	import { PROVINCES, type ProvinceId } from '$lib/kingdom-tour/tour';
+	} from '#lib/kingdom-tour/kingdom-map.ts';
+	import { PROVINCES, type ProvinceId } from '#lib/kingdom-tour/tour.ts';
 
 	// Constantes
 

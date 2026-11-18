@@ -858,8 +858,8 @@ Aucun test ne compile un vrai PDF dans la CI : la compilation se vérifie par `p
 5. ~~`CorrectionManager.svelte` charge typst.ts sans version~~ : **corrigé** (K11) : il passe par
    `compileToPdf` du compilateur partagé. Garde : `src/lib/__tests__/cdn-versions-epinglees.test.ts`
    (toute URL jsDelivr ou unpkg de `src/` nomme une version).
-6. ~~Ré-exports dépréciés encore importés~~ : **corrigé** (K11) : `$lib/worksheets/typst-compiler`,
-   `typst-generator` et `default-templates` retirés, les appelants importent `$lib/typst`.
+6. ~~Ré-exports dépréciés encore importés~~ : **corrigé** (K11) : `#lib/worksheets/typst-compiler`,
+   `typst-generator` et `default-templates` retirés, les appelants importent `#lib/typst/index.ts`.
 7. ~~`available_from` nul refusé par la réponse de l'API élève~~ : **corrigé** (L17, 2026-11-01) :
    `studentWorksheetDetailResponseSchema` et `studentWorksheetListItemSchema` acceptent `null`
    (« disponible tout de suite »). Test : `src/lib/server/validation/__tests__/worksheet-type.test.ts`.

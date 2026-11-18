@@ -28,7 +28,7 @@
  * @module questions/construction/point
  */
 
-import type { ConstructionCheck, PointCheck } from '$lib/ubumark/types/construction';
+import type { ConstructionCheck, PointCheck } from '#lib/ubumark/types/construction.ts';
 import { isDrawnPoint, type DrawnObject } from './answer';
 import { basePointsOf, constructionOf, intersectTraits, isInFrame } from './instruments';
 import { mediatriceSupportError } from './line';

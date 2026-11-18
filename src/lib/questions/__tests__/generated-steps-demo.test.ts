@@ -11,7 +11,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { generateInstance } from '../generator/instance-generator';
-import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
+import type { RenderedStep } from '#lib/mathAST/common/step-renderer-base.ts';
 import {
 	additionGroupingDemo,
 	arithmeticFromBlankDemo,

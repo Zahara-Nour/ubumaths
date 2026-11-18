@@ -13,8 +13,8 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 // Comme la page : polices et classes du rendu MathLive
-import '$lib/utils/mathlive-styles';
-import { MARKER_PREFIX, stripMarkers, structureFromLatex } from '$lib/mathAST/structure';
+import '#lib/utils/mathlive-styles.ts';
+import { MARKER_PREFIX, stripMarkers, structureFromLatex } from '#lib/mathAST/structure/index.ts';
 import StructureFieldHarness from './StructureFieldHarness.svelte';
 
 // Types

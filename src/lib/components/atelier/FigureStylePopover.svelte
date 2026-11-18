@@ -10,11 +10,11 @@
 	 * de couleur la montre (`figureDefaultColor`, celle qui est peinte), et rien
 	 * n'est coché dans les couleurs.
 	 */
-	import * as Popover from '$lib/components/ui/popover';
-	import { isPoint, type CurveObject, type PointObject } from '$lib/atelier/types';
-	import { displayName } from '$lib/atelier/names';
-	import { figureDefaultColor } from '$lib/atelier/figure-sync';
-	import { curveColorValue } from '$lib/grapheur/colors';
+	import * as Popover from '#lib/components/ui/popover/index.ts';
+	import { isPoint, type CurveObject, type PointObject } from '#lib/atelier/types.ts';
+	import { displayName } from '#lib/atelier/names.ts';
+	import { figureDefaultColor } from '#lib/atelier/figure-sync.ts';
+	import { curveColorValue } from '#lib/grapheur/colors.ts';
 	import FigureStyleSettings from './FigureStyleSettings.svelte';
 
 	interface Props {

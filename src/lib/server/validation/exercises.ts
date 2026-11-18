@@ -2,13 +2,13 @@
  * Exercise API validation schemas
  *
  * Comprehensive Zod validation for all exercise-related API endpoints.
- * Re-exports existing validation from $lib/exercises/validation.ts and adds
+ * Re-exports existing validation from #lib/exercises/validation.ts and adds
  * additional schemas for API endpoints.
  */
 
 import { z } from 'zod';
 import { gradeCodeSchema, gradeFlexibleSchema } from './grades';
-import { SEARCH_INDEXED_REQUIRES_PUBLIC_MESSAGE } from '$lib/server/exercise-search-indexed';
+import { SEARCH_INDEXED_REQUIRES_PUBLIC_MESSAGE } from '#lib/server/exercise-search-indexed.ts';
 
 // ============================================================================
 // RE-EXPORT EXISTING VALIDATION
@@ -30,7 +30,7 @@ export {
 	type ValidatedExerciseExport,
 	type ValidatedExerciseFrontmatter,
 	type ValidatedTemplateCreate
-} from '$lib/exercises/validation';
+} from '#lib/exercises/validation.ts';
 
 // ============================================================================
 // API ENDPOINT SCHEMAS

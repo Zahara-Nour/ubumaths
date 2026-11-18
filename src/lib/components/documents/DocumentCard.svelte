@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import { Button } from '$lib/components/ui/button';
-	import { Badge } from '$lib/components/ui/badge';
-	import * as Card from '$lib/components/ui/card';
+	import { lore } from '#lib/config/lore.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
 	import { FileText, Trash2, ToggleLeft, ToggleRight, Edit } from '@lucide/svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import type { GradeCode } from '$lib/types/grades';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import type { GradeCode } from '#lib/types/grades.ts';
 
 	interface Document {
 		id: string;

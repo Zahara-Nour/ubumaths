@@ -7,9 +7,9 @@ import { describe, it, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { page } from 'vitest/browser';
 import TestCourse from '../TestCourse.svelte';
-import type { TestResult, TestSession } from '$lib/types/test';
-import type { QuestionInstance } from '$lib/questions/types';
-import { resolvedMarkdown } from '$lib/ubumark';
+import type { TestResult, TestSession } from '#lib/types/test.ts';
+import type { QuestionInstance } from '#lib/questions/types.ts';
+import { resolvedMarkdown } from '#lib/ubumark/index.ts';
 
 function session(): TestSession {
 	return {

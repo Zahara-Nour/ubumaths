@@ -12,7 +12,7 @@ import {
 	streakFirstDay,
 	weekMomentFor,
 	weekToMark
-} from '$lib/server/buddy-weeks';
+} from '#lib/server/buddy-weeks.ts';
 
 // Constantes
 /** Lundis de septembre-octobre 2026 */

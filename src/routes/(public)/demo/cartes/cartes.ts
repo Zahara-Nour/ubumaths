@@ -5,7 +5,7 @@
  * page ne lit ni la base ni le stockage, un visiteur la voit sans compte
  * (chantier demo-debug, PR 6c). Textes repris du catalogue de la prod.
  */
-import type { VipCard } from '$lib/types/vip-card';
+import type { VipCard } from '#lib/types/vip-card.ts';
 
 export const DEMO_CARDS: VipCard[] = [
 	{

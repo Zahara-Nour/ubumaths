@@ -14,9 +14,9 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAdmin } from '$lib/server/middleware/auth';
-import { cronJobsQuerySchema, type CronJobsResponse } from '$lib/server/validation/cron';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireAdmin } from '#lib/server/middleware/auth.ts';
+import { cronJobsQuerySchema, type CronJobsResponse } from '#lib/server/validation/cron.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/admin/cron/jobs/+server');
 

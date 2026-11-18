@@ -11,9 +11,9 @@
 	 * - Autocompletion via executor
 	 */
 
-	import type { NotebookCell } from '$lib/types/notebook';
-	import type { NotebookStore } from '$lib/stores/notebookStore.svelte';
-	import PythonEditor from '$lib/components/python/PythonEditor.svelte';
+	import type { NotebookCell } from '#lib/types/notebook.ts';
+	import type { NotebookStore } from '#lib/stores/notebookStore.svelte.ts';
+	import PythonEditor from '#lib/components/python/PythonEditor.svelte';
 	import CellOutputs from './CellOutputs.svelte';
 
 	// Props

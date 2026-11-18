@@ -15,11 +15,11 @@
 
 import { describe, it, expect } from 'vitest';
 import { generateCorrection } from '../correction-generator';
-import { resolvedMarkdown } from '$lib/ubumark';
-import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
+import { resolvedMarkdown } from '#lib/ubumark/index.ts';
+import type { RenderedStep } from '#lib/mathAST/common/step-renderer-base.ts';
 import type { GeneratedStepsOptions, QuestionInstance } from '../../types';
-import type { GradeCode } from '$lib/types/grades';
-import { expandExpression } from '$lib/atelier/expand';
+import type { GradeCode } from '#lib/types/grades.ts';
+import { expandExpression } from '#lib/atelier/expand.ts';
 
 // =============================================================================
 // Helpers

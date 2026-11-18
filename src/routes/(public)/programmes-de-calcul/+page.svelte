@@ -9,9 +9,9 @@
 -->
 <script lang="ts">
 	import { resolve } from '$app/paths';
-	import CalculEditeur from '$lib/components/blockly/CalculEditeur.svelte';
-	import { Button } from '$lib/components/ui/button';
-	import { NIVEAUX_CALCUL, type NiveauCalcul } from '$lib/shared/blockly/calcul/interpreteur';
+	import CalculEditeur from '#lib/components/blockly/CalculEditeur.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { NIVEAUX_CALCUL, type NiveauCalcul } from '#lib/shared/blockly/calcul/interpreteur.ts';
 
 	let niveau = $state<NiveauCalcul>('5e');
 </script>

@@ -21,11 +21,11 @@
 	@module components/questions/SignTableAnswer
 -->
 <script lang="ts">
-	import VariationTable from '$lib/components/markdown/nodes/VariationTable.svelte';
-	import { parseVariationTableContent } from '$lib/ubumark/parser/variation-table-parser';
-	import type { HiddenCell, HiddenCellKind } from '$lib/ubumark/types/variation-table';
-	import type { ExpectedSignCell } from '$lib/questions/expected-result';
-	import { EXPECTED_STATUS_LABEL } from '$lib/questions/expected-result-markdown';
+	import VariationTable from '#lib/components/markdown/nodes/VariationTable.svelte';
+	import { parseVariationTableContent } from '#lib/ubumark/parser/variation-table-parser.ts';
+	import type { HiddenCell, HiddenCellKind } from '#lib/ubumark/types/variation-table.ts';
+	import type { ExpectedSignCell } from '#lib/questions/expected-result.ts';
+	import { EXPECTED_STATUS_LABEL } from '#lib/questions/expected-result-markdown.ts';
 
 	interface Props {
 		/** Texte du bloc ```variation, sans `case:` */

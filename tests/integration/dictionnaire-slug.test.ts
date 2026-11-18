@@ -15,9 +15,9 @@
  */
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import type { DictionaryEntryInput } from '$lib/dictionary/entry-schema';
-import { createEntry, updateEntry } from '$lib/server/dictionary/admin';
+import type { Database } from '#lib/types/database.ts';
+import type { DictionaryEntryInput } from '#lib/dictionary/entry-schema.ts';
+import { createEntry, updateEntry } from '#lib/server/dictionary/admin.ts';
 import { cleanupAllTestData } from '../helpers/database/trigger-test-helpers';
 import { DEFAULT_TEST_PASSWORD } from '../helpers/database/supabase-client';
 import { getPostgresClient } from '../helpers/database/postgres-client';

@@ -10,15 +10,15 @@ import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import { flushSync, tick } from 'svelte';
 import type { MathfieldElement } from 'mathlive';
-import type { QuestionInstance } from '$lib/questions/types';
-import type { OpenedCombat } from '$lib/descente/combat-rules';
-import { resolvedMarkdown } from '$lib/ubumark';
+import type { QuestionInstance } from '#lib/questions/types.ts';
+import type { OpenedCombat } from '#lib/descente/combat-rules.ts';
+import { resolvedMarkdown } from '#lib/ubumark/index.ts';
 
 // Mocks
 const requestQuestion = vi.fn();
 const sendAnswer = vi.fn();
 const claimVictory = vi.fn();
-vi.mock('$lib/descente/combat-client', () => ({ requestQuestion, sendAnswer, claimVictory }));
+vi.mock('#lib/descente/combat-client.ts', () => ({ requestQuestion, sendAnswer, claimVictory }));
 
 const { default: CombatArena } = await import('../CombatArena.svelte');
 

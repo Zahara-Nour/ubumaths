@@ -10,7 +10,7 @@
  *
  * ```ts
  * vi.mock('$app/navigation', async () =>
- *   (await import('$tests/helpers/app-navigation-mock')).appNavigationMock({ goto })
+ *   (await import('#tests/helpers/app-navigation-mock.ts')).appNavigationMock({ goto })
  * );
  * ```
  */

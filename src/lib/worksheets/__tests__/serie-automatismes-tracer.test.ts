@@ -7,11 +7,11 @@
  * Refusés, message à l'appui : droite verticale, vecteur à tracer, droite masquée (`tracer: ?`), repère en retrait ou cité.
  */
 import { describe, it, expect } from 'vitest';
-import type { QuestionTemplate } from '$lib/questions/types';
+import type { QuestionTemplate } from '#lib/questions/types.ts';
 import { buildSerie } from '../serie-automatismes';
-import { parseCourbeContent } from '$lib/ubumark/parser/courbe-parser';
-import { compile } from '$lib/mathAST/eval/compile';
-import type { CourbeNode } from '$lib/ubumark/types/courbe';
+import { parseCourbeContent } from '#lib/ubumark/parser/courbe-parser.ts';
+import { compile } from '#lib/mathAST/eval/compile.ts';
+import type { CourbeNode } from '#lib/ubumark/types/courbe.ts';
 
 /** Un modèle d'une variation, énoncé donné, variables m = 2 et p = -1 */
 function modele(id: string, statement: string): QuestionTemplate {

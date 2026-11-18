@@ -5,9 +5,9 @@
 
 import { describe, it, expect } from 'vitest';
 import { generateInstance } from '../generator/instance-generator';
-import { validateAnswer } from '$lib/utils/answer-validator';
+import { validateAnswer } from '#lib/utils/answer-validator.ts';
 import type { QuestionTemplate, ValidationRule } from '../types';
-import { templateMarkdown } from '$lib/ubumark';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 
 function template(rules: ValidationRule[]): QuestionTemplate {
 	return {

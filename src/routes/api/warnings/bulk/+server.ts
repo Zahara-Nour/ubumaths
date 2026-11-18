@@ -22,10 +22,10 @@
 
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { addWarningsBulkSchema } from '$lib/server/validation/warnings';
-import { addWarningsBulk } from '$lib/server/warnings';
-import { requireRoles } from '$lib/server/middleware/auth';
-import { createServerLogger } from '$lib/utils/logger';
+import { addWarningsBulkSchema } from '#lib/server/validation/warnings.ts';
+import { addWarningsBulk } from '#lib/server/warnings.ts';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/warnings/bulk/+server');
 

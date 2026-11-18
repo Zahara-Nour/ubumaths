@@ -12,8 +12,8 @@ import { parseFigureContent } from '../../parser/figure-parser';
 import { buildFigureScene } from '../../utils/figure-scene';
 import { figureToSvg } from '../../utils/figure-svg';
 import { generateFigureTypst } from '../../generators/figure-typst';
-import { parseMarkdown, generateTypst } from '$lib/ubumark';
-import '$lib/ubumark/generators/figure-typst-setup';
+import { parseMarkdown, generateTypst } from '#lib/ubumark/index.ts';
+import '#lib/ubumark/generators/figure-typst-setup.ts';
 
 const SOURCE = `fenetre: -1 ; 8 ; -1 ; 6
 taille: moyenne

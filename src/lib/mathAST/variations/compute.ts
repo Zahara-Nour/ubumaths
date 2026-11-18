@@ -46,8 +46,8 @@ import {
 import { findExtrema, classifyGlobalExtrema } from './extrema';
 import { computeBoundaryLimits } from './boundary-limits';
 import { compile } from '../eval/compile';
-import { endpointToNumber } from '$lib/math/intervals/endpoint';
-import { interval, openEndpoint } from '$lib/math/intervals/factory';
+import { endpointToNumber } from '#lib/math/intervals/endpoint.ts';
+import { interval, openEndpoint } from '#lib/math/intervals/factory.ts';
 import { toCustom } from '../custom-generator';
 import { shouldIncludeStep } from '../common/verbosity';
 import type { Verbosity } from '../common/verbosity';

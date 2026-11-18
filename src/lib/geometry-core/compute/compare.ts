@@ -23,8 +23,8 @@
 import type { GeoValue } from '../types/geo-value';
 import { isExact } from '../types/geo-value';
 import { geoToNumber } from './to-number';
-import { subtract } from '$lib/mathAST';
-import { isZeroExpression } from '$lib/mathAST/normal';
+import { subtract } from '#lib/mathAST/index.ts';
+import { isZeroExpression } from '#lib/mathAST/normal/index.ts';
 
 const RELATIVE_TOLERANCE = 1e-12;
 const ABSOLUTE_ZERO_TOLERANCE = 1e-15;

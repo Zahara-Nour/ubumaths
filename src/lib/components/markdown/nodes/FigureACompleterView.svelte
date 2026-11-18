@@ -48,21 +48,21 @@
 	@module components/markdown/nodes/FigureACompleterView
 -->
 <script lang="ts">
-	import type { FigureNode } from '$lib/ubumark/types/figure';
-	import type { FigureScene } from '$lib/ubumark/utils/figure-scene';
-	import { createTransformer } from '$lib/geometry-core/viewport/viewport';
+	import type { FigureNode } from '#lib/ubumark/types/figure.ts';
+	import type { FigureScene } from '#lib/ubumark/utils/figure-scene.ts';
+	import { createTransformer } from '#lib/geometry-core/viewport/viewport.ts';
 	// Inscrit aussi le calcul des positions du juge (effet de bord voulu, cf. positions.ts)
 	import {
 		allNamedPointPositions,
 		figureShapes,
 		namedPointPositions
-	} from '$lib/questions/construction/positions-setup';
+	} from '#lib/questions/construction/positions-setup.ts';
 	import {
 		CHECK_TOOL,
 		INSTRUMENT_TOOLS,
 		isDiagonalRectangleCheck,
 		type ConstructionTool
-	} from '$lib/ubumark/types/construction';
+	} from '#lib/ubumark/types/construction.ts';
 	import {
 		intersectionsOf,
 		isInFrame,
@@ -76,7 +76,7 @@
 		type SnapTargets,
 		type StraightTrait,
 		type Trait
-	} from '$lib/questions/construction/instruments';
+	} from '#lib/questions/construction/instruments.ts';
 	import {
 		isDrawnCircle,
 		isDrawnLine,
@@ -89,13 +89,13 @@
 		splitMeasuredAnswer,
 		type DrawnLine,
 		type DrawnRegle
-	} from '$lib/questions/construction/answer';
-	import type { Position } from '$lib/questions/construction/judge';
+	} from '#lib/questions/construction/answer.ts';
+	import type { Position } from '#lib/questions/construction/judge.ts';
 	import {
 		constructionExpected,
 		constructionPositions
-	} from '$lib/questions/construction/positions';
-	import type { ExpectedPoints, PointSolution } from '$lib/questions/construction/point';
+	} from '#lib/questions/construction/positions.ts';
+	import type { ExpectedPoints, PointSolution } from '#lib/questions/construction/point.ts';
 	import {
 		SNAP_RADIUS_PX,
 		addTap,
@@ -126,15 +126,15 @@
 		type ConstructionAnswerInput,
 		type Drawing,
 		type Protractor as PosedProtractor
-	} from '$lib/questions/construction/drawing';
-	import { PROTRACTOR_RADIUS } from '$lib/constructions-v2/constants';
-	import { protractorRadiusOf } from '$lib/questions/construction/angle';
-	import { posedProtractorOf } from '$lib/questions/construction/measure';
-	import Protractor from '$lib/constructions-v2/instruments/components/Protractor.svelte';
-	import Ruler from '$lib/constructions-v2/instruments/components/Ruler.svelte';
-	import { formatLength, rulerLengthOf } from '$lib/questions/construction/segment-length';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
+	} from '#lib/questions/construction/drawing.ts';
+	import { PROTRACTOR_RADIUS } from '#lib/constructions-v2/constants.ts';
+	import { protractorRadiusOf } from '#lib/questions/construction/angle.ts';
+	import { posedProtractorOf } from '#lib/questions/construction/measure.ts';
+	import Protractor from '#lib/constructions-v2/instruments/components/Protractor.svelte';
+	import Ruler from '#lib/constructions-v2/instruments/components/Ruler.svelte';
+	import { formatLength, rulerLengthOf } from '#lib/questions/construction/segment-length.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
 	import FigureBlockView from './FigureBlockView.svelte';
 
 	interface Props {

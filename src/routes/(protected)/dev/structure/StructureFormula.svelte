@@ -22,7 +22,7 @@
 		MARKER_PREFIX,
 		type ExpressionStructure,
 		type StructureNode
-	} from '$lib/mathAST/structure';
+	} from '#lib/mathAST/structure/index.ts';
 
 	// Types
 	interface Props {

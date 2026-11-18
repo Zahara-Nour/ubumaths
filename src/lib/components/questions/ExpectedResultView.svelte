@@ -24,8 +24,8 @@
 -->
 <script lang="ts">
 	import { Check, X, TriangleAlert, Info } from '@lucide/svelte';
-	import { MarkdownRenderer } from '$lib/components/markdown';
-	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
+	import { MarkdownRenderer } from '#lib/components/markdown/index.ts';
+	import InlineMarkdown from '#lib/components/markdown/InlineMarkdown.svelte';
 	import FigureAnswer from './FigureAnswer.svelte';
 	import BuildAnswer from './BuildAnswer.svelte';
 	import SignTableAnswer from './SignTableAnswer.svelte';
@@ -34,7 +34,7 @@
 		ExpectedFill,
 		ExpectedResult,
 		ExpectedStatus
-	} from '$lib/questions/expected-result';
+	} from '#lib/questions/expected-result.ts';
 	import {
 		EXPECTED_STATUS_LABEL,
 		alignedComparisonMarkdown,
@@ -43,7 +43,7 @@
 		filledMarkdown,
 		remarkSegments,
 		solutionMarkdown
-	} from '$lib/questions/expected-result-markdown';
+	} from '#lib/questions/expected-result-markdown.ts';
 
 	interface Props {
 		result: ExpectedResult;

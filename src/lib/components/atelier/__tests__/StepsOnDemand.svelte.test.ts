@@ -9,8 +9,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import type { Component } from 'svelte';
-import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
-import GeneratedStepsCorrection from '$lib/components/questions/GeneratedStepsCorrection.svelte';
+import type { RenderedStep } from '#lib/mathAST/common/step-renderer-base.ts';
+import GeneratedStepsCorrection from '#lib/components/questions/GeneratedStepsCorrection.svelte';
 
 type StepsComponent = Component<{ steps: readonly RenderedStep[] }>;
 
@@ -19,7 +19,7 @@ const fake = vi.hoisted(() => ({
 	load: (() => Promise.reject(new Error('non piloté'))) as () => Promise<unknown>
 }));
 
-vi.mock('$lib/atelier/steps-loader', () => ({ stepsCorrection: fake }));
+vi.mock('#lib/atelier/steps-loader.ts', () => ({ stepsCorrection: fake }));
 
 const { default: StepsOnDemand } = await import('../StepsOnDemand.svelte');
 

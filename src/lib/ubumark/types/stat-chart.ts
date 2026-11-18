@@ -16,9 +16,9 @@
 
 import type { BaseNode } from './ast';
 import type { CourbeColor, CourbeSize } from './courbe';
-import type { NamedColor } from '$lib/theme/named-colors';
-import type { LawIndicator } from '$lib/statistics/format';
-import type { VariableChange } from '$lib/statistics/variable-change';
+import type { NamedColor } from '#lib/theme/named-colors.ts';
+import type { LawIndicator } from '#lib/statistics/format.ts';
+import type { VariableChange } from '#lib/statistics/variable-change.ts';
 
 // ============================================================================
 // VALEURS

@@ -11,7 +11,7 @@
  */
 
 import type { QuestionTiming } from './evaluation-breakdown';
-import { DEFAULT_QUESTION_DELAY_SECONDS } from '$lib/questions/series-items';
+import { DEFAULT_QUESTION_DELAY_SECONDS } from '#lib/questions/series-items.ts';
 
 // Types
 

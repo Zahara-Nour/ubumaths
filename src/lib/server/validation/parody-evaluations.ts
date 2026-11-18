@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { GRADE_CODES } from '$lib/types/grades';
+import { GRADE_CODES } from '#lib/types/grades.ts';
 
 /**
  * Validation schemas for parody_evaluations server actions.

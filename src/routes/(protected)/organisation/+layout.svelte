@@ -11,7 +11,7 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import { page } from '$app/state';
-	import { resolvePath } from '$lib/navigation/resolve-path';
+	import { resolvePath } from '#lib/navigation/resolve-path.ts';
 	import { LayoutDashboard } from '@lucide/svelte';
 
 	let { children }: { children: Snippet } = $props();

@@ -7,7 +7,7 @@
  * USAGE:
  * ```svelte
  * <script>
- * import { bugReportsConfigStore } from '$lib/stores/bugReportsConfig.svelte';
+ * import { bugReportsConfigStore } from '#lib/stores/bugReportsConfig.svelte.ts';
  *
  * // Load config on mount
  * onMount(() => bugReportsConfigStore.load());
@@ -21,8 +21,8 @@
  */
 
 import { browser } from '$app/env';
-import type { BugReportsConfig } from '$lib/types/bug-reports';
-import { DEFAULT_BUG_REPORTS_CONFIG } from '$lib/types/bug-reports';
+import type { BugReportsConfig } from '#lib/types/bug-reports.ts';
+import { DEFAULT_BUG_REPORTS_CONFIG } from '#lib/types/bug-reports.ts';
 
 // =============================================================================
 // Reactive State

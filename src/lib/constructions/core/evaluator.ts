@@ -9,10 +9,10 @@
  * @module constructions/core/evaluator
  */
 
-import { parseLatexSafe } from '$lib/mathAST/parser';
-import { getVariables } from '$lib/mathAST/eval/substitute';
-import { evaluate } from '$lib/mathAST/eval/evaluate';
-import type { MathNode } from '$lib/mathAST/types';
+import { parseLatexSafe } from '#lib/mathAST/parser/index.ts';
+import { getVariables } from '#lib/mathAST/eval/substitute.ts';
+import { evaluate } from '#lib/mathAST/eval/evaluate.ts';
+import type { MathNode } from '#lib/mathAST/types.ts';
 import type { Expr, ParameterValues, Position } from '../types';
 import { PARAM_REF_PATTERN } from '../constants';
 

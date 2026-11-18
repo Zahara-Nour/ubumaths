@@ -19,17 +19,17 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';
-	import { rewardJournalStore } from '$lib/stores/rewardJournal.svelte';
-	import RewardEventCard from '$lib/components/rewards/RewardEventCard.svelte';
-	import RewardJournalFilters from '$lib/components/rewards/RewardJournalFilters.svelte';
-	import { Button } from '$lib/components/ui/button';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import { studentJournalReturn } from '$lib/navigation/return-links';
-	import { Skeleton } from '$lib/components/ui/skeleton';
-	import * as Card from '$lib/components/ui/card';
-	import UserAvatar from '$lib/components/UserAvatar.svelte';
+	import { rewardJournalStore } from '#lib/stores/rewardJournal.svelte.ts';
+	import RewardEventCard from '#lib/components/rewards/RewardEventCard.svelte';
+	import RewardJournalFilters from '#lib/components/rewards/RewardJournalFilters.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import { studentJournalReturn } from '#lib/navigation/return-links.ts';
+	import { Skeleton } from '#lib/components/ui/skeleton/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import UserAvatar from '#lib/components/UserAvatar.svelte';
 	import { RefreshCw, ChevronDown, AlertCircle, Inbox } from '@lucide/svelte';
-	import type { RewardType } from '$lib/types/reward-journal';
+	import type { RewardType } from '#lib/types/reward-journal.ts';
 	import type { PageData } from './$types';
 
 	// Props from server load

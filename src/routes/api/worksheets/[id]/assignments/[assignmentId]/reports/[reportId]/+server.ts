@@ -9,23 +9,23 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRoles } from '$lib/server/middleware/auth';
-import { fetchCopyNumbering } from '$lib/server/worksheets/display-number';
-import { isStudentOfAssignment } from '$lib/server/worksheets/assignment-recipients';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import { fetchCopyNumbering } from '#lib/server/worksheets/display-number.ts';
+import { isStudentOfAssignment } from '#lib/server/worksheets/assignment-recipients.ts';
 import {
 	validateErrorReportParams,
 	validateReviewErrorReport,
 	reviewErrorReportResponseSchema,
 	getErrorReportDetailResponseSchema
-} from '$lib/server/validation/worksheets';
-import { validateJsonResponse } from '$lib/server/validation/response-utils';
+} from '#lib/server/validation/worksheets.ts';
+import { validateJsonResponse } from '#lib/server/validation/response-utils.ts';
 import {
 	notifyErrorReportValidated,
 	notifyErrorReportRejected
-} from '$lib/server/auto-notifications';
-import type { TeacherErrorReportView, ErrorReportStatus } from '$lib/types/worksheets';
-import { toJson } from '$lib/types/database-helpers';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/auto-notifications.ts';
+import type { TeacherErrorReportView, ErrorReportStatus } from '#lib/types/worksheets.ts';
+import { toJson } from '#lib/types/database-helpers.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger(
 	'api/worksheets/[id]/assignments/[assignmentId]/reports/[reportId]/+server'

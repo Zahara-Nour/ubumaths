@@ -3,7 +3,7 @@
  * =========================================================
  *
  * Phase 0 de l'étape 3, validée par David le 2026-11-18
- * (docs/wip/navadra-progress.md). Règles pures : `$lib/descente/combat-rules.ts`.
+ * (docs/wip/navadra-progress.md). Règles pures : `#lib/descente/combat-rules.ts`.
  *
  * Le serveur tient les points de vie de la Bête ; la page tient le tour, les
  * coups du tour et les cœurs (une page fermée abandonne le combat sans rien
@@ -30,22 +30,22 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import type { ProvinceId } from '$lib/kingdom-tour/tour';
-import type { QuestionInstance } from '$lib/questions/types';
-import { generateInstance } from '$lib/questions';
-import { toQuestionTemplate } from '$lib/types/question-template';
-import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
-import { recordStudentAttempt } from '$lib/server/skill-attempts/record-attempt';
-import { BESTIARY } from '$lib/descente/bestiary';
-import { isCombatInstance } from '$lib/descente/combat-templates';
+import type { Database } from '#lib/types/database.ts';
+import type { ProvinceId } from '#lib/kingdom-tour/tour.ts';
+import type { QuestionInstance } from '#lib/questions/types.ts';
+import { generateInstance } from '#lib/questions/index.ts';
+import { toQuestionTemplate } from '#lib/types/question-template.ts';
+import { createServiceRoleClient } from '#lib/server/serviceRoleClient.ts';
+import { recordStudentAttempt } from '#lib/server/skill-attempts/record-attempt.ts';
+import { BESTIARY } from '#lib/descente/bestiary.ts';
+import { isCombatInstance } from '#lib/descente/combat-templates.ts';
 import {
 	hitDamage,
 	hpAfterHit,
 	type CombatBeastKind,
 	type OpenedCombat
-} from '$lib/descente/combat-rules';
-import { isProvinceId, PROVINCE_IDS } from '$lib/descente/moves';
+} from '#lib/descente/combat-rules.ts';
+import { isProvinceId, PROVINCE_IDS } from '#lib/descente/moves.ts';
 import {
 	assertSessionStudent,
 	loadGrade,
@@ -54,8 +54,8 @@ import {
 	loadTree,
 	provinceOfPoint,
 	type GradePoint
-} from '$lib/server/descente/program';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/descente/program.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 // ============================================================================
 // Types
@@ -63,7 +63,7 @@ import { createServerLogger } from '$lib/utils/logger';
 
 type SB = SupabaseClient<Database>;
 
-export type { CombatBeast, OpenedCombat } from '$lib/descente/combat-rules';
+export type { CombatBeast, OpenedCombat } from '#lib/descente/combat-rules.ts';
 
 export type CombatPurpose = 'attack' | 'dodge';
 

@@ -6,9 +6,9 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { joinQueueSchema } from '$lib/server/validation/minesweeper-multiplayer';
-import { requireRole } from '$lib/server/middleware/auth';
-import { sanitizeRPCError } from '$lib/server/utils/error-handler';
+import { joinQueueSchema } from '#lib/server/validation/minesweeper-multiplayer.ts';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { sanitizeRPCError } from '#lib/server/utils/error-handler.ts';
 
 /**
  * POST /api/games/minesweeper/multiplayer/queue

@@ -23,8 +23,8 @@ import {
 } from './types';
 import { MAX_TITLE_LENGTH } from './grid';
 import { validateName } from './names';
-import { groupNumberText } from '$lib/mathAST/digit-grouping';
-import { readListValue } from '$lib/statistics/read-value';
+import { groupNumberText } from '#lib/mathAST/digit-grouping.ts';
+import { readListValue } from '#lib/statistics/read-value.ts';
 
 // =============================================================================
 // Types

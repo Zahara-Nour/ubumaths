@@ -12,7 +12,7 @@
  */
 
 import { z } from 'zod';
-import type { TestMode } from '$lib/types/test';
+import type { TestMode } from '#lib/types/test.ts';
 import type { ReadonlyURLSearchParams } from '$app/state';
 
 /** Nombre de lignes d'une série */

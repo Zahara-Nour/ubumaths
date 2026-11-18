@@ -18,7 +18,7 @@
  *
  * USAGE:
  * ```typescript
- * import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
+ * import { teacherCache } from '#lib/stores/teacherDashboardCache.svelte.ts';
  *
  * // Get rewards with auto-fetch
  * const rewards = await teacherCache.getStudentRewards(classId);
@@ -43,10 +43,10 @@ import type {
 	CachedClass,
 	CachedSchool,
 	CacheStats
-} from '$lib/types/teacher-cache';
-import type { StudentVipCards } from '$lib/types/vip-card';
-import type { ClassWithData } from '$lib/server/students';
-import { createLogger } from '$lib/utils/logger';
+} from '#lib/types/teacher-cache.ts';
+import type { StudentVipCards } from '#lib/types/vip-card.ts';
+import type { ClassWithData } from '#lib/server/students.ts';
+import { createLogger } from '#lib/utils/logger.ts';
 import { browser } from '$app/env';
 import { SvelteMap } from 'svelte/reactivity';
 

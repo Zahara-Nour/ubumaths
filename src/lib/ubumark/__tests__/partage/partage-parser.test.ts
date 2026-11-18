@@ -3,10 +3,10 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { parseMarkdown, type ListNode } from '$lib/ubumark';
-import { findPartageBlocks, parsePartageContent } from '$lib/ubumark/parser/partage-parser';
-import { partageTotal } from '$lib/ubumark/types/partage';
-import type { PartageNode } from '$lib/ubumark/types/partage';
+import { parseMarkdown, type ListNode } from '#lib/ubumark/index.ts';
+import { findPartageBlocks, parsePartageContent } from '#lib/ubumark/parser/partage-parser.ts';
+import { partageTotal } from '#lib/ubumark/types/partage.ts';
+import type { PartageNode } from '#lib/ubumark/types/partage.ts';
 
 const doc = (...lines: string[]) => parseMarkdown(lines.join('\n')).children;
 

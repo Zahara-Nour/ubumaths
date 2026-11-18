@@ -7,12 +7,12 @@
  */
 
 import { describe, it, expect, afterAll } from 'vitest';
-import { Atelier } from '$lib/atelier/atelier.svelte';
-import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
-import type { CalcSession } from '$lib/atelier/calcul';
+import { Atelier } from '#lib/atelier/atelier.svelte.ts';
+import { WebReplEngine } from '#lib/mathAST/cli/web/web-repl-engine.ts';
+import type { CalcSession } from '#lib/atelier/calcul.ts';
 import { DEFINITE_CASES, FAST_REFUSAL_INPUTS, PRIMITIVE_CASES } from './primitives-corpus';
-import { parseLatex } from '$lib/mathAST/parser';
-import { integrate } from '$lib/mathAST/integration/integrate';
+import { parseLatex } from '#lib/mathAST/parser/index.ts';
+import { integrate } from '#lib/mathAST/integration/integrate.ts';
 import { judgeDefinite, judgePrimitive, stepChecks, type Verdict } from './primitives-oracle';
 import { KNOWN_FORM_DIFF, KNOWN_WRONG } from './primitives-known';
 

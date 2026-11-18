@@ -12,7 +12,7 @@ import { render } from 'vitest-browser-svelte';
 import { page } from 'vitest/browser';
 import AtelierContainer from '../AtelierContainer.svelte';
 import AtelierSilhouette from '../AtelierSilhouette.svelte';
-import { Atelier } from '$lib/atelier/atelier.svelte';
+import { Atelier } from '#lib/atelier/atelier.svelte.ts';
 
 // =============================================================================
 // Constantes

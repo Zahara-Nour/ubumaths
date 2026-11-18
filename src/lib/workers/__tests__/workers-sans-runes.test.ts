@@ -29,7 +29,7 @@ const IMPORT_DYNAMIQUE = /\bimport\s*\(\s*['"]([^'"]+)['"]\s*\)/g;
 
 function resoudre(depuis: string, specifier: string): string | null {
 	let base: string;
-	if (specifier.startsWith('$lib/')) base = join(LIB, specifier.slice('$lib/'.length));
+	if (specifier.startsWith('#lib/')) base = join(LIB, specifier.slice('#lib/'.length));
 	else if (specifier.startsWith('.')) base = resolve(dirname(depuis), specifier);
 	else return null; // paquet de node_modules : hors périmètre
 	const candidats = [

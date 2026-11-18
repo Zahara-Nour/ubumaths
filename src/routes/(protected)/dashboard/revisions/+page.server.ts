@@ -10,8 +10,8 @@
 
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { summarizeChapterDecks, type ChapterDeckSummary } from '$lib/server/srs/chapter-deck';
-import { createServerLogger } from '$lib/utils/logger';
+import { summarizeChapterDecks, type ChapterDeckSummary } from '#lib/server/srs/chapter-deck.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('(protected)/dashboard/revisions/+page.server');
 

@@ -13,15 +13,15 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-vi.mock('$lib/server/middleware/auth', () => ({ requireRole: vi.fn() }));
-vi.mock('$lib/server/middleware/consent', () => ({ requireConsent: vi.fn() }));
-vi.mock('$lib/server/middleware/rateLimit', () => ({ rateLimit: vi.fn() }));
-vi.mock('$lib/server/serviceRoleClient', () => ({ createServiceRoleClient: vi.fn() }));
+vi.mock('#lib/server/middleware/auth.ts', () => ({ requireRole: vi.fn() }));
+vi.mock('#lib/server/middleware/consent.ts', () => ({ requireConsent: vi.fn() }));
+vi.mock('#lib/server/middleware/rateLimit.ts', () => ({ rateLimit: vi.fn() }));
+vi.mock('#lib/server/serviceRoleClient.ts', () => ({ createServiceRoleClient: vi.fn() }));
 
-import { requireRole } from '$lib/server/middleware/auth';
-import { requireConsent } from '$lib/server/middleware/consent';
-import { rateLimit } from '$lib/server/middleware/rateLimit';
-import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { requireConsent } from '#lib/server/middleware/consent.ts';
+import { rateLimit } from '#lib/server/middleware/rateLimit.ts';
+import { createServiceRoleClient } from '#lib/server/serviceRoleClient.ts';
 import { POST as buy } from '../buy/+server';
 import { POST as wear } from '../wear/+server';
 import { POST as wearCollar } from '../wear-collar/+server';

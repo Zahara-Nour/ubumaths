@@ -24,23 +24,23 @@
 	- onCancel?: callback for cancel
 -->
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import { Button } from '$lib/components/ui/button';
-	import * as Card from '$lib/components/ui/card';
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
-	import { Textarea } from '$lib/components/ui/textarea';
-	import * as Alert from '$lib/components/ui/alert';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
-	import MultiClassStudentSelector from '$lib/components/worksheets/MultiClassStudentSelector.svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { lore } from '#lib/config/lore.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import { Textarea } from '#lib/components/ui/textarea/index.ts';
+	import * as Alert from '#lib/components/ui/alert/index.ts';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
+	import MultiClassStudentSelector from '#lib/components/worksheets/MultiClassStudentSelector.svelte';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import { Loader2, Users, Calendar, Monitor, Info } from '@lucide/svelte';
 	import type {
 		WorksheetAssignmentInsert,
 		WorksheetAssignmentWithRelations
-	} from '$lib/types/worksheets';
-	import { GUIDANCE_LEVEL_ITEMS, readGuidanceLevel } from '$lib/worksheets/worksheet-copy';
+	} from '#lib/types/worksheets.ts';
+	import { GUIDANCE_LEVEL_ITEMS, readGuidanceLevel } from '#lib/worksheets/worksheet-copy.ts';
 
 	// ============================================================================
 	// TYPES

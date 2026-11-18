@@ -3,6 +3,10 @@
 	"private": true,
 	"version": "0.95.0",
 	"type": "module",
+	"imports": {
+		"#lib/*": "./src/lib/*",
+		"#tests/*": "./tests/*"
+	},
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/Zahara-Nour/ubumaths.git"

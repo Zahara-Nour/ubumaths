@@ -30,7 +30,7 @@ let mockSupabase: {
 let mockRateLimitFn: ReturnType<typeof vi.fn>;
 
 // Mock logger
-vi.mock('$lib/utils/logger', () => ({
+vi.mock('#lib/utils/logger.ts', () => ({
 	createServerLogger: () => ({
 		info: vi.fn(),
 		error: vi.fn(),
@@ -41,7 +41,7 @@ vi.mock('$lib/utils/logger', () => ({
 }));
 
 // Mock auth middleware
-vi.mock('$lib/server/middleware/auth', () => ({
+vi.mock('#lib/server/middleware/auth.ts', () => ({
 	requireAuth: vi.fn().mockResolvedValue({
 		user: { id: 'user-123', email: 'test@example.com' }
 	})
@@ -49,16 +49,16 @@ vi.mock('$lib/server/middleware/auth', () => ({
 
 // Client service : seul lecteur du jour du dernier passage (aucune policy)
 const serviceClient = vi.hoisted(() => ({ current: null as unknown }));
-vi.mock('$lib/server/serviceRoleClient', () => ({
+vi.mock('#lib/server/serviceRoleClient.ts', () => ({
 	createServiceRoleClient: () => serviceClient.current
 }));
 
 // Mock rate limiter
-vi.mock('$lib/server/middleware/rateLimit', () => ({
+vi.mock('#lib/server/middleware/rateLimit.ts', () => ({
 	rateLimit: vi.fn()
 }));
 
-import * as rateLimit from '$lib/server/middleware/rateLimit';
+import * as rateLimit from '#lib/server/middleware/rateLimit.ts';
 
 // ============================================================================
 // MOCK DATA

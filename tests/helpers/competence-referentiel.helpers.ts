@@ -16,7 +16,7 @@ import { deleteTestAuthUsers } from './database/postgres-client';
 import { TestData } from './database/test-data-factory';
 import { createAuthenticatedClient } from './database/supabase-client';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 
 // ---------------------------------------------------------------------------
 // Type aliases for the new tables (not yet in generated database.ts)

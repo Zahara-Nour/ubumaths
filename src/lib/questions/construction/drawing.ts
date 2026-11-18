@@ -28,8 +28,8 @@ import {
 	isRuledPolygonCheck,
 	type ConstructionCheck,
 	type ConstructionTool
-} from '$lib/ubumark/types/construction';
-import type { FigureStep } from '$lib/ubumark/types/figure';
+} from '#lib/ubumark/types/construction.ts';
+import type { FigureStep } from '#lib/ubumark/types/figure.ts';
 import {
 	CONSTRUCTION_ANSWER_LIMITS,
 	isDrawnLine,

@@ -31,7 +31,7 @@
 		HORLOGE_SIZE_CM,
 		type HorlogeNode,
 		type HorlogeTime
-	} from '$lib/ubumark/types/horloge';
+	} from '#lib/ubumark/types/horloge.ts';
 	import {
 		buildHorlogeScene,
 		handTip,
@@ -40,7 +40,7 @@
 		HORLOGE_STROKE,
 		HORLOGE_VIEW,
 		type HorlogeScene
-	} from '$lib/ubumark/utils/horloge-scene';
+	} from '#lib/ubumark/utils/horloge-scene.ts';
 	import {
 		HAND_TICKS,
 		handsAnswer,
@@ -49,7 +49,7 @@
 		tickAngle,
 		tickOfAngle,
 		type HorlogeHands
-	} from '$lib/ubumark/utils/horloge-placer';
+	} from '#lib/ubumark/utils/horloge-placer.ts';
 	import type { BuildCase } from './CollectionConstruire.svelte';
 
 	type Hand = 'hour' | 'minute' | 'second';

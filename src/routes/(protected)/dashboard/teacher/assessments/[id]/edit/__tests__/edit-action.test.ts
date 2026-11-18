@@ -4,7 +4,7 @@
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { actions } from '../+page.server';
-import { createFakeSupabase } from '$lib/server/__tests__/helpers/fake-supabase';
+import { createFakeSupabase } from '#lib/server/__tests__/helpers/fake-supabase.ts';
 
 const TEACHER = '22222222-2222-4222-8222-222222222222';
 const EVALUATION = '55555555-5555-4555-8555-555555555555';

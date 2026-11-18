@@ -1,11 +1,11 @@
 <script lang="ts">
-	import type { TemplateVariable, TriggerType } from '$lib/types/messageTemplates';
-	import { getVariablesForTrigger } from '$lib/templates/templateVariables';
-	import { getAvailableFilters } from '$lib/templates/advancedEngine';
-	import * as Popover from '$lib/components/ui/popover';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import { Badge } from '$lib/components/ui/badge';
+	import type { TemplateVariable, TriggerType } from '#lib/types/messageTemplates.ts';
+	import { getVariablesForTrigger } from '#lib/templates/templateVariables.ts';
+	import { getAvailableFilters } from '#lib/templates/advancedEngine.ts';
+	import * as Popover from '#lib/components/ui/popover/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
 	import { Hash, Zap } from '@lucide/svelte';
 
 	// Props

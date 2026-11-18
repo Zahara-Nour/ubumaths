@@ -10,12 +10,12 @@
 -->
 
 <script lang="ts">
-	import type { ResolvedCorrection } from '$lib/questions/types';
-	import { courseCardBackParts } from '$lib/questions/course-card';
-	import type { GenericFunctionConfig } from '$lib/mathAST';
+	import type { ResolvedCorrection } from '#lib/questions/types.ts';
+	import { courseCardBackParts } from '#lib/questions/course-card.ts';
+	import type { GenericFunctionConfig } from '#lib/mathAST/index.ts';
 	import CorrectionView from './CorrectionView.svelte';
 	import GeneratedStepsCorrection from './GeneratedStepsCorrection.svelte';
-	import { provideLexicon } from '$lib/components/markdown/lexicon-context';
+	import { provideLexicon } from '#lib/components/markdown/lexicon-context.ts';
 
 	interface Props {
 		correction: ResolvedCorrection | undefined;

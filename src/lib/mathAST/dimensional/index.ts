@@ -6,8 +6,8 @@
  *
  * @example
  * ```typescript
- * import { analyzeDimensions, isDimensionallyValid } from '$lib/mathAST/dimensional';
- * import { quantity, add } from '$lib/mathAST';
+ * import { analyzeDimensions, isDimensionallyValid } from '#lib/mathAST/dimensional/index.ts';
+ * import { quantity, add } from '#lib/mathAST/index.ts';
  *
  * // Valid: adding meters
  * const validExpr = add(quantity('5', 'm'), quantity('3', 'm'));
@@ -101,7 +101,7 @@ import {
  *
  * @example
  * ```typescript
- * import { DimensionalAnalysis } from '$lib/mathAST/dimensional';
+ * import { DimensionalAnalysis } from '#lib/mathAST/dimensional/index.ts';
  *
  * const result = DimensionalAnalysis.analyze(expression);
  * const isValid = DimensionalAnalysis.isValid(expression);

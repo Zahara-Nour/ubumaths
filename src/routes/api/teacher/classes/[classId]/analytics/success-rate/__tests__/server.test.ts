@@ -11,8 +11,8 @@ const { requireTeacherOfClass, getClassSuccessRates } = vi.hoisted(() => ({
 	getClassSuccessRates: vi.fn()
 }));
 
-vi.mock('$lib/server/stats/teacher-class-auth', () => ({ requireTeacherOfClass }));
-vi.mock('$lib/server/stats', () => ({ getClassSuccessRates }));
+vi.mock('#lib/server/stats/teacher-class-auth.ts', () => ({ requireTeacherOfClass }));
+vi.mock('#lib/server/stats/index.ts', () => ({ getClassSuccessRates }));
 
 import { GET } from '../+server';
 

@@ -14,9 +14,9 @@
 
 import { error, fail } from '@sveltejs/kit';
 import type { Actions, PageServerLoad, RequestEvent } from './$types';
-import { carnetTokenSchema, refuseParentContact } from '$lib/server/carnet/carnet';
-import { confirmContactAndSendLink } from '$lib/server/carnet/envois';
-import { rateLimit } from '$lib/server/middleware/rateLimit';
+import { carnetTokenSchema, refuseParentContact } from '#lib/server/carnet/carnet.ts';
+import { confirmContactAndSendLink } from '#lib/server/carnet/envois.ts';
+import { rateLimit } from '#lib/server/middleware/rateLimit.ts';
 
 // Constantes
 

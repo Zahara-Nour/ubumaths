@@ -22,7 +22,7 @@
  * ```
  */
 
-import { createLogger } from '$lib/utils/logger';
+import { createLogger } from '#lib/utils/logger.ts';
 
 const logger = createLogger('typst-image-loader');
 

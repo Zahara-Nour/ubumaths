@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
-	import { resolvePath } from '$lib/navigation/resolve-path';
-	import SeoHead from '$lib/seo/SeoHead.svelte';
+	import { resolvePath } from '#lib/navigation/resolve-path.ts';
+	import SeoHead from '#lib/seo/SeoHead.svelte';
 
 	// Constantes
 	const COLLEGE_CIPHERS = [

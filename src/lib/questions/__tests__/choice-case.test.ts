@@ -19,8 +19,8 @@ import {
 } from '../choice-case';
 import { toDisplayInstance, toPublicQuestion } from '../public-question';
 import type { QuestionInstance, QuestionTemplate } from '../types';
-import { templateMarkdown } from '$lib/ubumark';
-import { validateAnswer, validateAnswerDetailed } from '$lib/utils/answer-validator';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
+import { validateAnswer, validateAnswerDetailed } from '#lib/utils/answer-validator.ts';
 
 // Fixtures
 function template(statement: string, expected: string[]): QuestionTemplate {

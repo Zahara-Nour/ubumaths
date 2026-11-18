@@ -5,10 +5,10 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { logError, getUserContext, type LogErrorData } from '$lib/server/errorMonitoring';
-import { logErrorSchema } from '$lib/server/validation/errors';
-import { rateLimit } from '$lib/server/middleware/rateLimit';
-import { createServerLogger } from '$lib/utils/logger';
+import { logError, getUserContext, type LogErrorData } from '#lib/server/errorMonitoring.ts';
+import { logErrorSchema } from '#lib/server/validation/errors.ts';
+import { rateLimit } from '#lib/server/middleware/rateLimit.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/errors/log/+server');
 

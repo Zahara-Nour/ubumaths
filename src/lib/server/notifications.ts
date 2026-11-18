@@ -7,7 +7,7 @@
 
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { fetchStaffDirectory, indexStaffById } from './staff-directory';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 import type {
 	CreateNotificationData,
 	CreateSystemNotificationData,
@@ -17,10 +17,10 @@ import type {
 	NotificationPriority,
 	NotificationTargetType,
 	SystemEventType
-} from '$lib/types/notification';
-import { escapeHtml } from '$lib/utils/html-escape';
+} from '#lib/types/notification.ts';
+import { escapeHtml } from '#lib/utils/html-escape.ts';
 import { createServiceRoleClient } from './serviceRoleClient';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/notifications');
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	/**
 	 * CheckpointCell — Student-facing view of a checkpoint cell.
 	 *
@@ -14,9 +14,9 @@
 	 * preceding code cells, then clicks "Vérifier".
 	 */
 
-	import type { CheckpointCell } from '$lib/types/notebook';
-	import type { NotebookStore } from '$lib/stores/notebookStore.svelte';
-	import { Button } from '$lib/components/ui/button';
+	import type { CheckpointCell } from '#lib/types/notebook.ts';
+	import type { NotebookStore } from '#lib/stores/notebookStore.svelte.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import {
 		Loader2,
 		CheckCircle2,

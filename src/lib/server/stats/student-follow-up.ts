@@ -15,18 +15,18 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import { fetchInChunks } from '$lib/server/utils/chunked-in';
-import { keepLinksOfGrade } from '$lib/server/curriculum-grade';
-import { PROGRAMME_POINT_COLS } from '$lib/server/programme-tree';
-import { readInBatches } from '$lib/server/evaluation-breakdown';
-import type { ProgrammePointRow } from '$lib/utils/programme-tree';
+import type { Database } from '#lib/types/database.ts';
+import { fetchInChunks } from '#lib/server/utils/chunked-in.ts';
+import { keepLinksOfGrade } from '#lib/server/curriculum-grade.ts';
+import { PROGRAMME_POINT_COLS } from '#lib/server/programme-tree.ts';
+import { readInBatches } from '#lib/server/evaluation-breakdown.ts';
+import type { ProgrammePointRow } from '#lib/utils/programme-tree.ts';
 import {
 	templateToBadge,
 	BADGE_PRIORITY,
 	type CurriculumPointBadge
-} from '$lib/server/srs/curriculum-point-badge';
-import { isLivePoint, placeInTree } from '$lib/server/stats/class-knowledge';
+} from '#lib/server/srs/curriculum-point-badge.ts';
+import { isLivePoint, placeInTree } from '#lib/server/stats/class-knowledge.ts';
 import {
 	AUTONOMOUS_SOURCES,
 	buildRegularityGrid,
@@ -36,12 +36,12 @@ import {
 	type RegularityTier,
 	type RegularityTrace,
 	type RegularityWeek
-} from '$lib/server/stats/class-regularity';
-import { schoolDay } from '$lib/server/course-card-attempts';
-import { getStudentAssignments } from '$lib/server/evaluations';
-import type { StudentEvaluationStatus } from '$lib/types/evaluation';
-import type { MathCompetenceLevel } from '$lib/types/skills';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/stats/class-regularity.ts';
+import { schoolDay } from '#lib/server/course-card-attempts.ts';
+import { getStudentAssignments } from '#lib/server/evaluations.ts';
+import type { StudentEvaluationStatus } from '#lib/types/evaluation.ts';
+import type { MathCompetenceLevel } from '#lib/types/skills.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/stats/student-follow-up');
 

@@ -5,8 +5,8 @@
 
 import { describe, expect, test, vi } from 'vitest';
 import { claimVictory, requestQuestion, sendAnswer } from '../combat-client';
-import type { QuestionInstance } from '$lib/questions/types';
-import type { AnswerData } from '$lib/types/question-display';
+import type { QuestionInstance } from '#lib/questions/types.ts';
+import type { AnswerData } from '#lib/types/question-display.ts';
 
 const BEAST = '44444444-4444-4444-8444-444444444444';
 const TEMPLATE = '11111111-1111-4111-8111-111111111111';

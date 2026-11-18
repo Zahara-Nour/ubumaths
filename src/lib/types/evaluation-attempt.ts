@@ -4,11 +4,11 @@
  * questions publiques ; la correction complète n'arrive qu'avec la note.
  */
 
-import type { SeriesItem } from '$lib/validation/series';
-import type { PublicQuestion } from '$lib/questions/public-question';
-import type { QuestionPoints } from '$lib/questions/grading';
-import type { QuestionInstance, ValidationStatus } from '$lib/questions/types';
-import type { DetailedVerdict } from '$lib/utils/answer-validator';
+import type { SeriesItem } from '#lib/validation/series.ts';
+import type { PublicQuestion } from '#lib/questions/public-question.ts';
+import type { QuestionPoints } from '#lib/questions/grading.ts';
+import type { QuestionInstance, ValidationStatus } from '#lib/questions/types.ts';
+import type { DetailedVerdict } from '#lib/utils/answer-validator.ts';
 
 export interface EvaluationStartSummary {
 	id: string;

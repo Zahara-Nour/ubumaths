@@ -12,7 +12,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { page } from 'vitest/browser';
 import { render } from 'vitest-browser-svelte';
 import Page from '../+page.svelte';
-import { texteVersEtatTortue } from '$lib/shared/blockly/tortue/niveaux';
+import { texteVersEtatTortue } from '#lib/shared/blockly/tortue/niveaux.ts';
 
 let mains: HTMLElement[] = [];
 function mainElement(): HTMLElement {

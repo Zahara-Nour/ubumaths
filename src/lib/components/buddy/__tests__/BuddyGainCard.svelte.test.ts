@@ -14,10 +14,10 @@ import BuddyGainCard from '../BuddyGainCard.svelte';
 import BuddyStatusPanel from '../BuddyStatusPanel.svelte';
 import { parseBuddyGain, receiveBuddyGain, seriesElapsedMs, toBuddyGainView } from '../buddy-gain';
 import { registerBuddyActivityListener } from '../palotin-presence';
-import { buddyMessages } from '$lib/config/buddy-messages';
-import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
-import type { BuddyState } from '$lib/types/buddy';
-import { utcDay, weekStartOf } from '$lib/utils/buddy-constance';
+import { buddyMessages } from '#lib/config/buddy-messages.ts';
+import { studentCache } from '#lib/stores/studentDashboardCache.svelte.ts';
+import type { BuddyState } from '#lib/types/buddy.ts';
+import { utcDay, weekStartOf } from '#lib/utils/buddy-constance.ts';
 
 // Constantes
 /** Lundi de la semaine en cours (UTC) et celui d'il y a deux semaines. */

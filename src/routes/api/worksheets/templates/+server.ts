@@ -6,16 +6,16 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRoles } from '$lib/server/middleware/auth';
-import { insertTemplateWithStyle } from '$lib/server/worksheets/worksheet-styles';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import { insertTemplateWithStyle } from '#lib/server/worksheets/worksheet-styles.ts';
 import {
 	validateListTemplatesQuery,
 	validateCreateTemplate,
 	templateListResponseSchema,
 	createTemplateResponseSchema
-} from '$lib/server/validation/worksheets';
-import { validateJsonResponse } from '$lib/server/validation/response-utils';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/validation/worksheets.ts';
+import { validateJsonResponse } from '#lib/server/validation/response-utils.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/worksheets/templates/+server');
 

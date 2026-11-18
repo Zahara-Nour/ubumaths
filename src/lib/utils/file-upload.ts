@@ -7,11 +7,11 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { generateUniqueFilename } from '$lib/utils/filename';
+import { generateUniqueFilename } from '#lib/utils/filename.ts';
 import {
 	MESSAGE_ATTACHMENT_BUCKET,
 	messageAttachmentRefusal
-} from '$lib/utils/message-attachment-rules';
+} from '#lib/utils/message-attachment-rules.ts';
 
 export const MAX_FILE_SIZE = 1048576; // 1MB in bytes
 

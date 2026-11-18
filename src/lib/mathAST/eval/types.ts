@@ -9,7 +9,7 @@
 import type { MathNode } from '../types';
 // Rational type removed - no longer needed after refactoring
 import type { FunctionBindings } from './function-bindings';
-import type { PrecisionType } from '$lib/questions/types';
+import type { PrecisionType } from '#lib/questions/types.ts';
 
 // =============================================================================
 // Binding Types

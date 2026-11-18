@@ -12,11 +12,11 @@
 
 <script lang="ts">
 	import { ChevronDown, ChevronUp } from '@lucide/svelte';
-	import { Button } from '$lib/components/ui/button';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
-	import { pomodoroStore } from '$lib/stores/pomodoro/pomodoro.svelte';
-	import { requestNotificationPermission } from '$lib/stores/pomodoro/effects';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
+	import { pomodoroStore } from '#lib/stores/pomodoro/pomodoro.svelte.ts';
+	import { requestNotificationPermission } from '#lib/stores/pomodoro/effects.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 
 	// ---------------------------------------------------------------------------
 	// Collapse state

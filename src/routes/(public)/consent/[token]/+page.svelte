@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import { enhance } from '$app/forms';
 	import { resolve } from '$app/paths';
-	import { Button } from '$lib/components/ui/button';
-	import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Card, CardContent, CardHeader, CardTitle } from '#lib/components/ui/card/index.ts';
+	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
 	import { AlertCircle, CheckCircle2, Clock, GraduationCap, School, User } from '@lucide/svelte';
 
 	let { data, form } = $props();

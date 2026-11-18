@@ -5,7 +5,7 @@
  * serveur, et ce test vérifie ce qu'ils renvoient.
  */
 import { describe, expect, it } from 'vitest';
-import { GRADE_CODES } from '$lib/types/grades';
+import { GRADE_CODES } from '#lib/types/grades.ts';
 import { GRADE_SLUGS } from '../levels';
 import { MODELS } from '../models';
 import { guidePage, listModels, modelPage } from '../page-data';

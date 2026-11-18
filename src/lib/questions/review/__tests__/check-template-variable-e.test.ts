@@ -9,8 +9,8 @@
 
 import { describe, it, expect } from 'vitest';
 import { checkTemplate } from '../check-template';
-import type { QuestionTemplate, QuestionVariable } from '$lib/questions/types';
-import { templateMarkdown } from '$lib/ubumark';
+import type { QuestionTemplate, QuestionVariable } from '#lib/questions/types.ts';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 
 // ============================================================================
 // FIXTURES

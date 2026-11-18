@@ -7,10 +7,10 @@
 import { error, json } from '@sveltejs/kit';
 import { z } from 'zod';
 import type { RequestHandler } from './$types';
-import { requireRoles } from '$lib/server/middleware/auth';
-import { getDurationSignals } from '$lib/server/stats/duration-signals';
-import { getTeacherTestMode } from '$lib/server/test-mode';
-import { DURATION_SIGNALS_MAX_TEMPLATES } from '$lib/types/duration-signals';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import { getDurationSignals } from '#lib/server/stats/duration-signals.ts';
+import { getTeacherTestMode } from '#lib/server/test-mode.ts';
+import { DURATION_SIGNALS_MAX_TEMPLATES } from '#lib/types/duration-signals.ts';
 
 // Constantes
 /** UUID (36) + virgule : l'adresse reste bornée avant le découpage */

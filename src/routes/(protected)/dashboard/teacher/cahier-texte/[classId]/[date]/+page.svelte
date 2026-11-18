@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	/**
 	 * Teacher Class Journal Entry Editor Page
 	 * ========================================
@@ -14,18 +14,18 @@
 	import { enhance } from '$app/forms';
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
-	import { Button } from '$lib/components/ui/button';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import * as Card from '$lib/components/ui/card';
-	import { Label } from '$lib/components/ui/label';
-	import { Input } from '$lib/components/ui/input';
-	import { Separator } from '$lib/components/ui/separator';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import { Badge } from '$lib/components/ui/badge';
-	import RichTextEditor from '$lib/components/rich-text/RichTextEditor.svelte';
-	import ConfirmDialog from '$lib/components/ui/confirm-dialog/ConfirmDialog.svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Separator } from '#lib/components/ui/separator/index.ts';
+	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import RichTextEditor from '#lib/components/rich-text/RichTextEditor.svelte';
+	import ConfirmDialog from '#lib/components/ui/confirm-dialog/ConfirmDialog.svelte';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import {
 		BookOpen,
 		Save,
@@ -41,7 +41,7 @@
 		Plus
 	} from '@lucide/svelte';
 	import type { PageData, ActionData } from './$types';
-	import ProgrammePointLabel from '$lib/components/programme/ProgrammePointLabel.svelte';
+	import ProgrammePointLabel from '#lib/components/programme/ProgrammePointLabel.svelte';
 
 	interface Props {
 		data: PageData;

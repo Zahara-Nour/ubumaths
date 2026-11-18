@@ -183,7 +183,7 @@ sont de vraies pages.
 | `/aide-ecriture/blocs/<bloc>` | prof (`/aide-ecriture`)                    | `/aide-ecriture/blocs`                                 | Fiche d'un bloc : réglages, exemples à copier, erreurs fréquentes, zone « Essayer »                                                                                  | Aide à l'écriture     |
 | `/dev/cadres`                 | admin (`/dev`)                             | `/dev`                                                 | Cadres arrondis autour d'une formule : `\htmlStyle` (`colorLatex`) contre `\enclose{roundedbox}`                                                                     | Mise au point, gardée |
 | `/dev/polices`                | admin (`/dev`)                             | `/dev`                                                 | Bascule des polices de formules KaTeX ↔ Shantell (`mathlive-fonts.ts`)                                                                                               | Mise au point, gardée |
-| `/dev/structure`              | admin (`/dev`)                             | `/dev`                                                 | « Structure d'une expression » au survol (`$lib/mathAST/structure`)                                                                                                  | **Chantier vivant**   |
+| `/dev/structure`              | admin (`/dev`)                             | `/dev`                                                 | « Structure d'une expression » au survol (`#lib/mathAST/structure/index.ts`)                                                                                         | **Chantier vivant**   |
 | `/demo/structure`             | tous                                       | `/demo`, sitemap                                       | Vitrine : la formule de `/dev/structure` seule, 6 exemples, réglages par défaut                                                                                      | Vitrine               |
 | `/demo/cercle-trigo`          | tous                                       | `/demo`, sitemap                                       | Vitrine : 4 exemples du bloc `trig` (exploration, π/6, cos x = 1/2, cos x > 1/2), sans le texte du bloc                                                              | Vitrine               |
 | `/demo/blocs`                 | tous                                       | `/demo`, sitemap                                       | Vitrine : 10 blocs du catalogue rangés par niveau (primaire, collège, lycée), texte du prof replié                                                                   | Vitrine               |
@@ -204,12 +204,12 @@ Précisions :
   `{ type: 'ubumaths-theme', dark }`, origine du site) à chaque changement ; `simulator.html`
   l'écoute. Plein écran par bouton, sortie par Échap. Licence affichée : CC BY-NC-SA 4.0.
 - **`/dev/structure`** (ex-`/test-structure`) : une seule formule, le **champ de formule** `StructureField`
-  (`$lib/components/structure/`, réglages structure, lecture et déplacer tous allumés) : on la
+  (`#lib/components/structure/`, réglages structure, lecture et déplacer tous allumés) : on la
   survole (encadré de la sous-expression, lecture en français, mots du dictionnaire cliquables,
   message « 6e ou avant »), on l'écrit d'un clic court, on déplace un terme, un facteur ou un
   membre d'égalité par appui puis mouvement, « Annuler » revient en arrière. Dans la route :
   `StructureFormula.svelte` (formules du corpus, survol seul) ; à côté du champ,
-  `$lib/components/structure/structure-lexicon.svelte.ts` (fiches du dictionnaire au niveau de
+  `#lib/components/structure/structure-lexicon.svelte.ts` (fiches du dictionnaire au niveau de
   l'élève, 5e pour un visiteur), partagé avec la vitrine. Spécification et
   décisions : [mathast/structure-expression.md](mathast/structure-expression.md). Le moteur est
   décrit dans [mathast/README.md](mathast/README.md). Deux majuscules collées se lisent comme une
@@ -274,7 +274,7 @@ il y ajoute la vérification des instructions (`checkScratchProgram`), faite hor
   Au lycée, Pour le plaisir), titre, texte et script replié sous « Voir le script ». Scripts dans
   `figures.ts`, repris des pages d'aide `/aide-ecriture/geometrie/…`, sauf l'épicycloïde, écrite
   pour la vitrine (courbe paramétrée jusqu'au curseur t, petit cercle qui roule) ; le flocon de
-  Koch vient de `$lib/components/geometry/koch-dsl.ts`, partagé avec l'aide. Un test construit
+  Koch vient de `#lib/components/geometry/koch-dsl.ts`, partagé avec l'aide. Un test construit
   chaque figure. Textes rendus par le serveur, figures montées dans le navigateur
   (`DemoFigureCard.svelte`) et réduites à la largeur disponible, l'échelle suivant (la toile de
   `GeometryCanvas` a une largeur fixe).
@@ -290,9 +290,9 @@ il y ajoute la vérification des instructions (`checkScratchProgram`), faite hor
 - **`/demo/questions`** (vitrine, PR 6g) : la même série de 4 questions (écrites dans
   `questions.ts`, sans base) sous ses six formes, en onglets, avec une phrase « qui, quand » par
   forme : En classe, Contrôle blanc, Flash-cards, Saisie et Course aux nombres sont les vrais composants
-  d'Automaths (`$lib/components/test/`) ; les révisions espacées sont simulées
+  d'Automaths (`#lib/components/test/`) ; les révisions espacées sont simulées
   (`SpacedReviewDemo.svelte` : carte, deux boutons « Pas réussi / Réussi » et la prochaine date d'une carte neuve, calculée
-  par `$lib/srs/fsrs`). Rien n'est enregistré : la fin de série n'appelle rien, et le bandeau
+  par `#lib/srs/fsrs.ts`). Rien n'est enregistré : la fin de série n'appelle rien, et le bandeau
   « Connecte-toi… » du Contrôle blanc, des Flash-cards et de la Saisie est coupé par `loginNote={false}`. Les boutons
   « Retour au panier » mènent à `/automaths/panier`.
 - **`/demo/editeur`** (vitrine, PR 6h) : un seul `RichTextEditor` (`preset="standard"`) dont le
@@ -332,7 +332,7 @@ il y ajoute la vérification des instructions (`checkScratchProgram`), faite hor
 ### Pièges
 
 - **`/dev/structure` lit un fichier de test** :
-  `$lib/mathAST/structure/__tests__/fixtures/corpus-saisies.txt?raw`. Modifier ce corpus change
+  `#lib/mathAST/structure/__tests__/fixtures/corpus-saisies.txt?raw`. Modifier ce corpus change
   la page ; le supprimer casse le build.
 - **`/dev/polices` ne rétablit pas les polices en partant.** `switchMathFonts('shantell')` pose un
   `<link>` dans `<head>` et change `MathfieldElement.fontsDirectory` ; la page n'a ni `onDestroy`
@@ -442,7 +442,7 @@ faute d'y être.
 | Fichier                                   | Ce qu'il fait                                                                    | Appelants                                       |
 | ----------------------------------------- | -------------------------------------------------------------------------------- | ----------------------------------------------- |
 | `src/lib/utils.ts`                        | `cn()` (clsx + tailwind-merge), types `With…` de shadcn, `fixUrl`, `flyAndScale` | `cn` : 219 fichiers ; `fixUrl` : 3 pages Google |
-| `src/lib/index.ts`                        | Fichier du gabarit SvelteKit, un commentaire seul                                | aucun (`from '$lib'` : 0)                       |
+| `src/lib/index.ts`                        | Fichier du gabarit SvelteKit, un commentaire seul                                | aucun (`from '#lib'` : 0)                       |
 | `src/lib/supabaseClient.ts`               | Client Supabase singleton, **déprécié** (non SSR) selon son en-tête              | `supabase-test.ts` seulement                    |
 | `src/lib/supabase-test.ts`                | `testSupabaseConnection()` : trois requêtes de diagnostic dans le journal        | aucun                                           |
 | `src/lib/constants/deadlines.ts`          | Constantes d'échéance et de pagination                                           | `DEADLINE_WARNING_DAYS` : `dates.ts`            |

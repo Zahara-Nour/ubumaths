@@ -15,7 +15,7 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database, TablesUpdate } from '$lib/types/database';
+import type { Database, TablesUpdate } from '#lib/types/database.ts';
 import type {
 	ClassJournalEntry,
 	JournalEntryWithClass,
@@ -23,13 +23,13 @@ import type {
 	JournalWeekView,
 	JournalWeekDay,
 	JournalStatistics
-} from '$lib/types/journal';
+} from '#lib/types/journal.ts';
 import type {
 	CreateJournalEntryInput,
 	UpdateJournalEntryInput
-} from '$lib/server/validation/journal';
-import { getOrderedSchoolDays, type WeekConfig } from '$lib/utils/week-config';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/validation/journal.ts';
+import { getOrderedSchoolDays, type WeekConfig } from '#lib/utils/week-config.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/journal');
 

@@ -16,7 +16,7 @@
  *
  * USAGE:
  * ```typescript
- * import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
+ * import { studentCache } from '#lib/stores/studentDashboardCache.svelte.ts';
  *
  * // Get rewards with auto-fetch
  * const rewards = await studentCache.getRewards();
@@ -38,11 +38,11 @@ import type {
 	CachedWarnings,
 	CachedBuddy,
 	CacheStats
-} from '$lib/types/student-cache';
-import type { BuddyState } from '$lib/types/buddy';
-import type { StudentVipCards } from '$lib/types/vip-card';
-import type { StudentWarningCounts } from '$lib/server/warnings';
-import { createLogger } from '$lib/utils/logger';
+} from '#lib/types/student-cache.ts';
+import type { BuddyState } from '#lib/types/buddy.ts';
+import type { StudentVipCards } from '#lib/types/vip-card.ts';
+import type { StudentWarningCounts } from '#lib/server/warnings.ts';
+import { createLogger } from '#lib/utils/logger.ts';
 import { browser } from '$app/env';
 import { SvelteMap } from 'svelte/reactivity';
 
@@ -678,7 +678,7 @@ export class StudentDashboardCache {
 	 * };
 	 *
 	 * // +layout.svelte
-	 * import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
+	 * import { studentCache } from '#lib/stores/studentDashboardCache.svelte.ts';
 	 * import { onMount } from 'svelte';
 	 *
 	 * let { data } = $props();

@@ -14,10 +14,10 @@ import {
 	parseAssocierContent,
 	replaceAssocierBlocks,
 	serializeAssocierBlock
-} from '$lib/ubumark/parser/associer-parser';
-import { parseMarkdown } from '$lib/ubumark';
-import { generateTypst } from '$lib/ubumark/generators/typst-generator';
-import type { AssocierNode } from '$lib/ubumark/types/associer';
+} from '#lib/ubumark/parser/associer-parser.ts';
+import { parseMarkdown } from '#lib/ubumark/index.ts';
+import { generateTypst } from '#lib/ubumark/generators/typst-generator.ts';
+import type { AssocierNode } from '#lib/ubumark/types/associer.ts';
 
 const COURBES = [
 	'- ```courbe',

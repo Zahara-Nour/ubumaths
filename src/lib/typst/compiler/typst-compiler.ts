@@ -6,7 +6,7 @@
  *
  * Usage:
  * ```typescript
- * import { getTypstCompiler, compileToSvg, compileToPdf } from '$lib/typst/compiler';
+ * import { getTypstCompiler, compileToSvg, compileToPdf } from '#lib/typst/compiler/index.ts';
  *
  * // Get the compiler instance (loads if needed)
  * const typst = await getTypstCompiler();

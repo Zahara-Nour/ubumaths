@@ -21,15 +21,15 @@
 	</script>
 -->
 <script lang="ts">
-	import '$lib/utils/mathlive-styles';
-	import { lore } from '$lib/config/lore';
+	import '#lib/utils/mathlive-styles.ts';
+	import { lore } from '#lib/config/lore.ts';
 	import { onMount } from 'svelte';
 	import { Editor } from '@tiptap/core';
-	import { Button } from '$lib/components/ui/button';
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
-	import { getListColumns } from '$lib/extensions/list-columns-extension';
-	import * as Tabs from '$lib/components/ui/tabs';
-	import { Input } from '$lib/components/ui/input';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as DropdownMenu from '#lib/components/ui/dropdown-menu/index.ts';
+	import { getListColumns } from '#lib/extensions/list-columns-extension.ts';
+	import * as Tabs from '#lib/components/ui/tabs/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
 	import {
 		Bold,
 		Italic,
@@ -78,13 +78,13 @@
 		LoaderCircle,
 		QrCode
 	} from '@lucide/svelte';
-	import { QR_TEMPLATE } from '$lib/ubumark/parser/qr-parser';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import ImageAttributePanel from '$lib/components/exercises/ImageAttributePanel.svelte';
+	import { QR_TEMPLATE } from '#lib/ubumark/parser/qr-parser.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import ImageAttributePanel from '#lib/components/exercises/ImageAttributePanel.svelte';
 	import ImageGalleryModal from './ImageGalleryModal.svelte';
 	import type { GalleryImageInfo } from './types';
-	import { parseMarkdown } from '$lib/ubumark/parser';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { parseMarkdown } from '#lib/ubumark/parser/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import { browser } from '$app/env';
 	// Import NU : côté serveur, `mathlive` résout vers `mathlive-ssr`, qui n'exporte pas
 	// `MathfieldElement` — un import nommé casserait le rendu serveur en build (garde :
@@ -103,9 +103,9 @@
 	import { createEditorExtensions, getEditorProps } from './editor-config';
 	import { tipTapToMarkdown } from './markdown-export';
 	import { markdownToTipTap } from './markdown-import';
-	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
+	import MarkdownRenderer from '#lib/components/markdown/MarkdownRenderer.svelte';
 	import MarkdownCodeEditor from './MarkdownCodeEditor.svelte';
-	import type { MarkdownDisplayMode } from '$lib/components/markdown/types';
+	import type { MarkdownDisplayMode } from '#lib/components/markdown/types.ts';
 	import type {
 		RichTextMode,
 		MathTemplateLevel,
@@ -113,7 +113,7 @@
 		EditorPreset,
 		ImageUploadConfig
 	} from './types';
-	import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
+	import type { GenericFunctionConfig } from '#lib/mathAST/parser/types.ts';
 
 	// Component Props
 	interface Props {

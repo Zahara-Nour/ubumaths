@@ -12,9 +12,9 @@
 
 	import { resolve } from '$app/paths';
 	import { ChevronDown, ChevronUp } from '@lucide/svelte';
-	import * as Card from '$lib/components/ui/card';
-	import { lore } from '$lib/config/lore';
-	import { memoryCountsPhrase } from '$lib/mathoux/collection-logic';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { lore } from '#lib/config/lore.ts';
+	import { memoryCountsPhrase } from '#lib/mathoux/collection-logic.ts';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();

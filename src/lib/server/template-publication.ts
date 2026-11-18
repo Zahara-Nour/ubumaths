@@ -16,9 +16,9 @@
  * les raisons résumées de `checkTemplate`.
  */
 
-import type { QuestionTemplate } from '$lib/questions/types';
-import { detectCircularDependencies } from '$lib/questions';
-import { checkTemplate } from '$lib/questions/review/check-template';
+import type { QuestionTemplate } from '#lib/questions/types.ts';
+import { detectCircularDependencies } from '#lib/questions/index.ts';
+import { checkTemplate } from '#lib/questions/review/check-template.ts';
 
 // ============================================================================
 // FUNCTIONS

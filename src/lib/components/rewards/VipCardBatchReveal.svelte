@@ -23,8 +23,8 @@
 
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import type { VipCard } from '$lib/types/vip-card';
-	import { cn } from '$lib/utils';
+	import type { VipCard } from '#lib/types/vip-card.ts';
+	import { cn } from '#lib/utils.ts';
 
 	interface Props {
 		cards: Array<{

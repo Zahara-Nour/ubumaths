@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { journalContentPreview } from '$lib/journal/content';
-	import { lore } from '$lib/config/lore';
+	import { journalContentPreview } from '#lib/journal/content.ts';
+	import { lore } from '#lib/config/lore.ts';
 	/**
 	 * Student Class Journal (Cahier de Texte) Page
 	 * =============================================
@@ -14,13 +14,13 @@
 
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { Button } from '$lib/components/ui/button';
-	import * as Card from '$lib/components/ui/card';
-	import { Badge } from '$lib/components/ui/badge';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import { JournalDatePicker, HomeworkCard } from '$lib/components/journal';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import { JournalDatePicker, HomeworkCard } from '#lib/components/journal/index.ts';
 	import { BookOpen, Calendar, ClipboardList, ChevronRight } from '@lucide/svelte';
-	import { GRADES, type GradeCode } from '$lib/types/grades';
+	import { GRADES, type GradeCode } from '#lib/types/grades.ts';
 	import type { PageData } from './$types';
 
 	interface Props {

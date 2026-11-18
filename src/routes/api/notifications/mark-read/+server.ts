@@ -6,10 +6,10 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { markAsRead } from '$lib/server/notifications';
-import { markNotificationReadSchema, validateRequest } from '$lib/server/validation';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { checkNotificationMarkRateLimit } from '$lib/server/rateLimiter';
+import { markAsRead } from '#lib/server/notifications.ts';
+import { markNotificationReadSchema, validateRequest } from '#lib/server/validation/index.ts';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { checkNotificationMarkRateLimit } from '#lib/server/rateLimiter.ts';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 	const { user } = await requireAuth(locals);

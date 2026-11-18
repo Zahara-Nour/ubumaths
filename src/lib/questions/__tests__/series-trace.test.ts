@@ -7,7 +7,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { buildSeriesTrace, createTraceRecorder } from '../series-trace';
 import type { QuestionInstance } from '../types';
-import type { AnswerData } from '$lib/types/question-display';
+import type { AnswerData } from '#lib/types/question-display.ts';
 
 // Constantes
 const MODELE = '22222222-2222-4222-8222-222222222222';

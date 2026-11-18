@@ -546,7 +546,7 @@ connexion : aucune session n'est créée.
 session, profil et statut. Pour un rôle :
 
 ```typescript
-import { requireRole } from '$lib/server/auth';
+import { requireRole } from '#lib/server/auth.ts';
 
 export const load = async ({ locals }) => {
 	requireRole(locals.profile, 'teacher'); // 403 sinon
@@ -561,7 +561,7 @@ chaque action refait sa garde (`requireRole(locals, …)` du middleware).
 **Une API** (`+server.ts`) : rien ne la garde par défaut, elle se garde elle-même :
 
 ```typescript
-import { requireRole, requireAdmin } from '$lib/server/middleware/auth';
+import { requireRole, requireAdmin } from '#lib/server/middleware/auth.ts';
 
 export const POST: RequestHandler = async ({ locals, request }) => {
 	const { user, profile } = await requireRole(locals, 'teacher'); // 401 / 403
@@ -570,8 +570,8 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 };
 ```
 
-Attention aux deux modules homonymes : `$lib/server/auth` (pages, prend `user`/`profile`,
-**redirige**) et `$lib/server/middleware/auth` (API, prend `locals`, **relit le profil**, rend
+Attention aux deux modules homonymes : `#lib/server/auth.ts` (pages, prend `user`/`profile`,
+**redirige**) et `#lib/server/middleware/auth.ts` (API, prend `locals`, **relit le profil**, rend
 401/403). Toujours vérifier lequel est importé.
 
 **Une route admin** : sous `/dashboard/admin/` ou `/api/admin/` (sinon le handle d'élévation

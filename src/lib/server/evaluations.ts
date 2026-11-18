@@ -10,7 +10,7 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database, Tables } from '$lib/types/database';
+import type { Database, Tables } from '#lib/types/database.ts';
 import type {
 	AssignmentWithDetails,
 	AttemptSummary,
@@ -21,14 +21,14 @@ import type {
 	EvaluationStatistics,
 	EvaluationStatus,
 	EvaluationWithSeries
-} from '$lib/types/evaluation';
-import { getAttemptsRemaining, getStudentStatus, isEvaluationForm } from '$lib/types/evaluation';
-import { isDeadlinePassed } from '$lib/utils/dates';
-import { SeriesError, toDbSeriesMany } from '$lib/server/series';
-import { savedSeriesItemsSchema } from '$lib/validation/series';
-import { parseStoredSeries } from '$lib/server/series-lines';
-import type { EvaluationSettings } from '$lib/server/validation/evaluations';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/types/evaluation.ts';
+import { getAttemptsRemaining, getStudentStatus, isEvaluationForm } from '#lib/types/evaluation.ts';
+import { isDeadlinePassed } from '#lib/utils/dates.ts';
+import { SeriesError, toDbSeriesMany } from '#lib/server/series.ts';
+import { savedSeriesItemsSchema } from '#lib/validation/series.ts';
+import { parseStoredSeries } from '#lib/server/series-lines.ts';
+import type { EvaluationSettings } from '#lib/server/validation/evaluations.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/evaluations');
 

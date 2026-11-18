@@ -9,18 +9,18 @@
  *   · « Ce que je sais faire »        → programme de son niveau, par branche > notion
  *   · « Ma façon de faire des maths » → les 6 compétences transversales du socle
  *
- * Les deux jeux de chiffres viennent de `$lib/server/progression`, la même
+ * Les deux jeux de chiffres viennent de `#lib/server/progression`, la même
  * source que la tuile du dashboard : c'est ce qui les empêche de diverger.
  *
  * Spec : docs/archive/wip/progression-eleve-progress.md §D
  */
 
 import type { PageServerLoad } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
+import { requireRole } from '#lib/server/middleware/auth.ts';
 import {
 	getNotionsProgression,
 	getCompetencesProgression
-} from '$lib/server/progression/student-progression';
+} from '#lib/server/progression/student-progression.ts';
 
 /**
  * Onglets adressables par `?onglet=` — les anciennes URL redirigent dessus.

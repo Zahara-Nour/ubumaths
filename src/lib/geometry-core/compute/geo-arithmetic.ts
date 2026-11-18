@@ -9,10 +9,10 @@ import type { GeoValue } from '../types/geo-value';
 import { exact, numeric, isExact } from '../types/geo-value';
 import { geoToNumber } from './to-number';
 import { geoIsZero } from './compare';
-import { add, subtract, multiply, divide, fraction, sqrt, opposite } from '$lib/mathAST';
-import { numericNode } from '$lib/mathAST/common/numeric';
-import { evaluate } from '$lib/mathAST/eval';
-import type { MathNode } from '$lib/mathAST/types';
+import { add, subtract, multiply, divide, fraction, sqrt, opposite } from '#lib/mathAST/index.ts';
+import { numericNode } from '#lib/mathAST/common/numeric.ts';
+import { evaluate } from '#lib/mathAST/eval/index.ts';
+import type { MathNode } from '#lib/mathAST/types.ts';
 
 /**
  * Simplify a MathNode via exact evaluation.

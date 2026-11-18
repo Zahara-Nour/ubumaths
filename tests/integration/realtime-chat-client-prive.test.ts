@@ -28,15 +28,15 @@ import {
 } from '../helpers/database/trigger-test-helpers';
 import { createAuthenticatedClient } from '../helpers/database/supabase-client';
 import { TestData } from '../helpers/database/test-data-factory';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 
 // ============================================================================
 // TYPES
 // ============================================================================
 
 type Client = SupabaseClient<Database>;
-type ModuleChat = typeof import('$lib/stores/chat.svelte');
-type ModuleRealtime = typeof import('$lib/stores/supabaseRealtime.svelte');
+type ModuleChat = typeof import('#lib/stores/chat.svelte.ts');
+type ModuleRealtime = typeof import('#lib/stores/supabaseRealtime.svelte.ts');
 
 interface Session {
 	client: Client;
@@ -76,8 +76,8 @@ const ARMEMENT_POSTGRES_MS = 20_000;
 async function ouvrirSession(email: string, userId: string): Promise<Session> {
 	const client = await createAuthenticatedClient(email);
 	vi.resetModules();
-	const { chatStore } = await import('$lib/stores/chat.svelte');
-	const { supabaseRealtimeManager } = await import('$lib/stores/supabaseRealtime.svelte');
+	const { chatStore } = await import('#lib/stores/chat.svelte.ts');
+	const { supabaseRealtimeManager } = await import('#lib/stores/supabaseRealtime.svelte.ts');
 	supabaseRealtimeManager.init(client, userId);
 	chatStore.init(client, userId, { full_name: null, avatar_url: null });
 

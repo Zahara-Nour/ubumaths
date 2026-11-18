@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { cn } from '$lib/utils';
-	import type { BugReportStatus } from '$lib/types/bug-reports';
-	import { BUG_REPORT_STATUS_LABELS, BUG_REPORT_STATUS_COLORS } from '$lib/types/bug-reports';
+	import { cn } from '#lib/utils.ts';
+	import type { BugReportStatus } from '#lib/types/bug-reports.ts';
+	import { BUG_REPORT_STATUS_LABELS, BUG_REPORT_STATUS_COLORS } from '#lib/types/bug-reports.ts';
 
 	interface Props {
 		status: BugReportStatus;

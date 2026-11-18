@@ -26,24 +26,24 @@
 	import * as BlocklyCore from 'blockly';
 	import { untrack } from 'svelte';
 	import { Play, Trash2 } from '@lucide/svelte';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
 	import BlocklyWorkspace from './BlocklyWorkspace.svelte';
-	import { toolboxCalcul } from '$lib/shared/blockly/calcul/toolbox';
-	import { surveillerNomsDeVariables } from '$lib/shared/blockly/calcul/blocs';
+	import { toolboxCalcul } from '#lib/shared/blockly/calcul/toolbox.ts';
+	import { surveillerNomsDeVariables } from '#lib/shared/blockly/calcul/blocs.ts';
 	import {
 		executerCalcul,
 		messageErreurCalcul,
 		type NiveauCalcul,
 		type ResultatCalcul
-	} from '$lib/shared/blockly/calcul/interpreteur';
+	} from '#lib/shared/blockly/calcul/interpreteur.ts';
 	import {
 		ecrireNombreCalcul,
 		etatVersTexteCalcul,
 		texteVersEtatCalcul
-	} from '$lib/shared/blockly/calcul/notation';
-	import { lireEssais } from '$lib/shared/blockly/calcul/jugement';
-	import type { TexteLu } from '$lib/shared/blockly/tortue/notation';
+	} from '#lib/shared/blockly/calcul/notation.ts';
+	import { lireEssais } from '#lib/shared/blockly/calcul/jugement.ts';
+	import type { TexteLu } from '#lib/shared/blockly/tortue/notation.ts';
 
 	// =============================================================================
 	// Types

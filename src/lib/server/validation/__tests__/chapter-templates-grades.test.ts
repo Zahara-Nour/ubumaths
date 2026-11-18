@@ -9,8 +9,8 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { createChapterTemplateSchema } from '$lib/server/validation/chapter-templates';
-import { GRADE_CODES } from '$lib/types/grades';
+import { createChapterTemplateSchema } from '#lib/server/validation/chapter-templates.ts';
+import { GRADE_CODES } from '#lib/types/grades.ts';
 
 const template = (grades: string[]) => ({ title: 'Fractions', grades });
 

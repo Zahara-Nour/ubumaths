@@ -13,23 +13,23 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database, TablesUpdate } from '$lib/types/database';
+import type { Database, TablesUpdate } from '#lib/types/database.ts';
 import type {
 	ChapterTemplate,
 	ChapterTemplateInstantiation,
 	TemplateSummary,
 	InstantiationWithStatus,
 	DbChapterTemplate
-} from '$lib/types/chapter-templates';
-import { dbTemplateToApp, dbInstantiationToApp } from '$lib/types/chapter-templates';
+} from '#lib/types/chapter-templates.ts';
+import { dbTemplateToApp, dbInstantiationToApp } from '#lib/types/chapter-templates.ts';
 import type {
 	CreateChapterTemplateInput,
 	CreateTemplateFromChapterInput,
 	UpdateChapterTemplateInput,
 	InstantiateTemplateInput,
 	ListTemplatesQuery
-} from '$lib/server/validation/chapter-templates';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/validation/chapter-templates.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 import { CHAPTER_DOCUMENTS_BUCKET, ownerStoragePrefix } from './content-owner';
 import {
 	copyStoredFile,

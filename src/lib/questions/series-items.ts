@@ -11,11 +11,11 @@
  * était sautée ou qu'une génération échouait.
  */
 
-import { generateInstance } from '$lib/questions/generator/instance-generator';
-import { excludeCourseCards as withoutCourseCards } from '$lib/questions/course-card';
-import type { GenerationResult, QuestionTemplate } from '$lib/questions/types';
-import type { SeriesItem } from '$lib/validation/series';
-import type { ClassroomItem } from '$lib/types/test';
+import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
+import { excludeCourseCards as withoutCourseCards } from '#lib/questions/course-card.ts';
+import type { GenerationResult, QuestionTemplate } from '#lib/questions/types.ts';
+import type { SeriesItem } from '#lib/validation/series.ts';
+import type { ClassroomItem } from '#lib/types/test.ts';
 
 // ============================================================================
 // TYPES

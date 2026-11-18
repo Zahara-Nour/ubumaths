@@ -5,9 +5,9 @@
 	 * Syncs scores to server for authenticated students
 	 * Integrates VIP card powers (Undo, Bomb, Freeze Spawn)
 	 */
-	import { cn } from '$lib/utils';
-	import { Button } from '$lib/components/ui/button';
-	import * as Dialog from '$lib/components/ui/dialog';
+	import { cn } from '#lib/utils.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
 	import Tile2048 from './Tile2048.svelte';
 	import GhostTile2048 from './GhostTile2048.svelte';
 	import Game2048Controls from './Game2048Controls.svelte';
@@ -28,8 +28,8 @@
 		addTileAt
 	} from './game-logic';
 	import type { GameState, Direction, Tile, GhostTile, VipCardUsage, VisionPreview } from './types';
-	import type { StudentVipCards } from '$lib/types/vip-card';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import type { StudentVipCards } from '#lib/types/vip-card.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import { browser } from '$app/env';
 
 	// VIP card IDs

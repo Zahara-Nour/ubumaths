@@ -389,7 +389,7 @@ couvert` dans un **commit** de la PR, pas dans son corps.
 - Garde « déjà tagué » d'une migration de rangement : un trigger interdit un tag sur un modèle sans
   nœud (« il ne peut pas perdre son rangement »), donc l'état « tagué sans nœud » ne se fabrique pas ;
   un modèle tagué à la main est arrêté par la garde « déjà rangé » (test de #2279).
-- Worktree neuf : `pnpm exec svelte-kit sync` avant `question:specs` (`$lib` introuvable).
+- Worktree neuf : `pnpm exec svelte-kit sync` avant `question:specs` (`#lib` introuvable).
 - **Réponse attendue trop imbriquée** : la liste blanche des réponses (`student-answer-safety.render.test.ts`,
   CI) passe chaque `expectedAnswer` du dépôt et plafonne la profondeur des accolades (12) : un `{{if:}}`
   imbriqué sur plus de ~6 cas la dépasse. Calculer la réponse par `eval` (`floor`, indicatrices) et garder les

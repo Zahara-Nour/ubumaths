@@ -14,9 +14,9 @@
  * succès silencieux.
  */
 
-import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
-import type { Tables } from '$lib/types/database';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServiceRoleClient } from '#lib/server/serviceRoleClient.ts';
+import type { Tables } from '#lib/types/database.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 // Types
 export interface ReviewedCard {

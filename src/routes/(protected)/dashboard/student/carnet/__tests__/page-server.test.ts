@@ -14,27 +14,27 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 const requireRole = vi.fn();
-vi.mock('$lib/server/middleware/auth', () => ({
+vi.mock('#lib/server/middleware/auth.ts', () => ({
 	requireRole: (...a: unknown[]) => requireRole(...a)
 }));
 
 const readMyCarnet = vi.fn();
-vi.mock('$lib/server/carnet/carnet', () => ({
+vi.mock('#lib/server/carnet/carnet.ts', () => ({
 	readMyCarnet: (...a: unknown[]) => readMyCarnet(...a)
 }));
 
 const addParentContact = vi.fn();
-vi.mock('$lib/server/carnet/envois', async (importOriginal) => ({
-	...(await importOriginal<typeof import('$lib/server/carnet/envois')>()),
+vi.mock('#lib/server/carnet/envois.ts', async (importOriginal) => ({
+	...(await importOriginal<typeof import('#lib/server/carnet/envois.ts')>()),
 	addParentContact: (...a: unknown[]) => addParentContact(...a)
 }));
 
 const rateLimit = vi.fn();
-vi.mock('$lib/server/middleware/rateLimit', () => ({
+vi.mock('#lib/server/middleware/rateLimit.ts', () => ({
 	rateLimit: (...a: unknown[]) => rateLimit(...a)
 }));
 
-vi.mock('$lib/server/staff-directory', () => ({
+vi.mock('#lib/server/staff-directory.ts', () => ({
 	fetchStaffDirectory: async () => [
 		{ id: 'a', role: 'admin', full_name: 'Admin Fictif' },
 		{ id: 't', role: 'teacher', full_name: 'Prof Fictif' }
@@ -43,7 +43,7 @@ vi.mock('$lib/server/staff-directory', () => ({
 }));
 
 const serviceRole = vi.fn();
-vi.mock('$lib/server/serviceRoleClient', () => ({
+vi.mock('#lib/server/serviceRoleClient.ts', () => ({
 	createServiceRoleClient: () => serviceRole()
 }));
 

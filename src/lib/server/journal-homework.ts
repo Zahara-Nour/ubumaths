@@ -14,15 +14,15 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import type { JournalHomeworkItem } from '$lib/types/journal';
-import { computeSessionDates, isSessionDate } from '$lib/utils/class-sessions';
+import type { Database } from '#lib/types/database.ts';
+import type { JournalHomeworkItem } from '#lib/types/journal.ts';
+import { computeSessionDates, isSessionDate } from '#lib/utils/class-sessions.ts';
 import {
 	getClassSessionCalendar,
 	toSessionOptions,
 	type ClassSessionCalendar
 } from './class-sessions';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/journal-homework');
 

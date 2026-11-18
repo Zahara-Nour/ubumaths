@@ -8,7 +8,7 @@
  * « Non rangé » sous son programme. Chantier revue-modeles (phase 0 du 2026-10-28).
  */
 
-import { GRADES, isGradeCode } from '$lib/types/grades';
+import { GRADES, isGradeCode } from '#lib/types/grades.ts';
 
 // Types
 

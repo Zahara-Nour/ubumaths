@@ -13,7 +13,7 @@ import {
 	escapeStudentText,
 	exceedsMathNestingLimits
 } from '../student-answer-safety';
-import { parseMarkdown } from '$lib/ubumark';
+import { parseMarkdown } from '#lib/ubumark/index.ts';
 
 // Fixtures
 const HOSTILE_LATEX = [

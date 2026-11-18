@@ -27,7 +27,7 @@
 
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 import {
 	createServiceRoleClient,
 	cleanupAllTestData
@@ -36,7 +36,7 @@ import { DEFAULT_TEST_PASSWORD } from '../helpers/database/supabase-client';
 import { TestData } from '../helpers/database/test-data-factory';
 import { getPostgresClient } from '../helpers/database/postgres-client';
 import { createFakeTemplate } from '../helpers/competence-referentiel.helpers';
-import { spawnBeasts } from '$lib/server/descente/spawn';
+import { spawnBeasts } from '#lib/server/descente/spawn.ts';
 
 // Types
 type Client = SupabaseClient<Database>;

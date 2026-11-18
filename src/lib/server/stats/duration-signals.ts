@@ -37,9 +37,9 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import { isCourseCard } from '$lib/questions/types';
-import { TOO_SHORT_MIN_STUDENTS, type QuestionTiming } from '$lib/types/evaluation-breakdown';
+import type { Database } from '#lib/types/database.ts';
+import { isCourseCard } from '#lib/questions/types.ts';
+import { TOO_SHORT_MIN_STUDENTS, type QuestionTiming } from '#lib/types/evaluation-breakdown.ts';
 import {
 	DURATION_SIGNALS_MESSAGE,
 	OBSERVED_MAX_SECONDS,
@@ -49,7 +49,7 @@ import {
 	type DurationSignals,
 	type DurationSignalsResult,
 	type ObservedDurations
-} from '$lib/types/duration-signals';
+} from '#lib/types/duration-signals.ts';
 import {
 	BreakdownReadError,
 	bestCopies,
@@ -61,7 +61,7 @@ import {
 	type SessionRow
 } from '../evaluation-breakdown';
 import { readStoredSeriesMany } from '../series-lines';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 // Types
 

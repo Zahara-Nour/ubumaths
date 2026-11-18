@@ -20,7 +20,7 @@
  */
 
 import { getContext, hasContext, setContext } from 'svelte';
-import type { CapitalPairs } from '$lib/mathAST/parser/types';
+import type { CapitalPairs } from '#lib/mathAST/parser/types.ts';
 
 const CAPITAL_PAIRS_KEY = Symbol('markdown-capital-pairs');
 

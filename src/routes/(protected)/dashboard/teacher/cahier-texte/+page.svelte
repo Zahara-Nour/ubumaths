@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	/**
 	 * Teacher Class Journal (Cahier de Texte) Main Page
 	 * ==================================================
@@ -13,16 +13,16 @@
 
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { Button } from '$lib/components/ui/button';
-	import * as Card from '$lib/components/ui/card';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import JournalWeekGrid from '$lib/components/journal/JournalWeekGrid.svelte';
-	import JournalDatePicker from '$lib/components/journal/JournalDatePicker.svelte';
-	import QrCodeButton from '$lib/components/qr/QrCodeButton.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import JournalWeekGrid from '#lib/components/journal/JournalWeekGrid.svelte';
+	import JournalDatePicker from '#lib/components/journal/JournalDatePicker.svelte';
+	import QrCodeButton from '#lib/components/qr/QrCodeButton.svelte';
 	import { BookOpen, GraduationCap, Calendar, Link2, Copy, Check } from '@lucide/svelte';
 	import { enhance } from '$app/forms';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import { GRADES, type GradeCode } from '$lib/types/grades';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import { GRADES, type GradeCode } from '#lib/types/grades.ts';
 	import type { PageData } from './$types';
 
 	interface Props {

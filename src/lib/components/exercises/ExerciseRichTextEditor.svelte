@@ -28,11 +28,11 @@
 	/>
 -->
 <script lang="ts">
-	import RichTextEditor from '$lib/components/rich-text/RichTextEditor.svelte';
-	import { uploadExerciseImage, listExerciseImages } from '$lib/exercises/services/image-upload';
+	import RichTextEditor from '#lib/components/rich-text/RichTextEditor.svelte';
+	import { uploadExerciseImage, listExerciseImages } from '#lib/exercises/services/image-upload.ts';
 	import type { SupabaseClient } from '@supabase/supabase-js';
-	import type { ImageUploadConfig, GalleryImageInfo } from '$lib/components/rich-text/types';
-	import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
+	import type { ImageUploadConfig, GalleryImageInfo } from '#lib/components/rich-text/types.ts';
+	import type { GenericFunctionConfig } from '#lib/mathAST/parser/types.ts';
 
 	interface Props {
 		/** Markdown content (bindable) */

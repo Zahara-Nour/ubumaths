@@ -6,9 +6,9 @@
 -->
 <script lang="ts">
 	import { browser } from '$app/env';
-	import GeometryCanvas from '$lib/components/geometry/GeometryCanvas.svelte';
-	import * as Card from '$lib/components/ui/card';
-	import { runDsl } from '$lib/geometry-core/dsl';
+	import GeometryCanvas from '#lib/components/geometry/GeometryCanvas.svelte';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { runDsl } from '#lib/geometry-core/dsl/index.ts';
 	import type { DemoFigure } from './figures';
 
 	// Types

@@ -11,7 +11,7 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database, Json } from '$lib/types/database';
+import type { Database, Json } from '#lib/types/database.ts';
 import {
 	type ExerciseBackup,
 	type ExerciseBackupRecord,
@@ -25,10 +25,10 @@ import {
 	BACKUP_FORMAT,
 	validateBackup,
 	validateRestoreOptions
-} from '$lib/server/validation/backup';
-import { fetchTagNamesForResources, syncResourceTags } from '$lib/server/resource-tags';
-import { consistentSearchIndexed } from '$lib/server/exercise-search-indexed';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/validation/backup.ts';
+import { fetchTagNamesForResources, syncResourceTags } from '#lib/server/resource-tags.ts';
+import { consistentSearchIndexed } from '#lib/server/exercise-search-indexed.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/admin/exercise-backup');
 

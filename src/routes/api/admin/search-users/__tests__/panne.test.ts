@@ -13,7 +13,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import {
 	createWriteVerdictSupabase,
 	expectHttpStatus
-} from '$tests/helpers/write-verdict-supabase';
+} from '#tests/helpers/write-verdict-supabase.ts';
 
 const ADMIN_ID = '550e8400-e29b-41d4-a716-446655440001';
 

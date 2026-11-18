@@ -7,9 +7,9 @@
 
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { requireTeacherOfClass } from '$lib/server/stats/teacher-class-auth';
-import { getProgrammeTree } from '$lib/server/programme-tree';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireTeacherOfClass } from '#lib/server/stats/teacher-class-auth.ts';
+import { getProgrammeTree } from '#lib/server/programme-tree.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger(
 	'(protected)/dashboard/teacher/classes/[classId]/analytics/+page.server'

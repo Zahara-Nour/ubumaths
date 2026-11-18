@@ -4,7 +4,7 @@ import {
 	NUMBERING_SCHEMES,
 	type ListNumberingConfig,
 	type SchemeId
-} from '$lib/types/list-numbering';
+} from '#lib/types/list-numbering.ts';
 
 /**
  * List Numbering Store

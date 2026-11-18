@@ -19,10 +19,10 @@
 -->
 
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import * as Card from '$lib/components/ui/card';
-	import { Badge } from '$lib/components/ui/badge';
-	import { buttonVariants } from '$lib/components/ui/button/button.svelte';
+	import { lore } from '#lib/config/lore.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { buttonVariants } from '#lib/components/ui/button/button.svelte';
 	import {
 		ClipboardList,
 		BookOpen,
@@ -33,13 +33,13 @@
 		Clock,
 		NotebookPen
 	} from '@lucide/svelte';
-	import { resolvePath } from '$lib/navigation/resolve-path';
+	import { resolvePath } from '#lib/navigation/resolve-path.ts';
 	import { formatDistanceToNow } from 'date-fns';
 	import { fr } from 'date-fns/locale';
-	import { formatDeadline } from '$lib/utils/dates';
-	import { cn } from '$lib/utils';
-	import type { WorkItem, WorkSource } from '$lib/types/student-inbox';
-	import { formatGrade } from '$lib/types/evaluation';
+	import { formatDeadline } from '#lib/utils/dates.ts';
+	import { cn } from '#lib/utils.ts';
+	import type { WorkItem, WorkSource } from '#lib/types/student-inbox.ts';
+	import { formatGrade } from '#lib/types/evaluation.ts';
 
 	interface Props {
 		item: WorkItem;

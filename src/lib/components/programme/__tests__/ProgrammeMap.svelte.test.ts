@@ -12,8 +12,8 @@ import { render } from 'vitest-browser-svelte';
 import { tick } from 'svelte';
 
 import ProgrammeMap from '../ProgrammeMap.svelte';
-import { buildProgrammeMap, type MapPointRow } from '$lib/utils/programme-map';
-import type { ClassificationNode } from '$lib/types/database-helpers';
+import { buildProgrammeMap, type MapPointRow } from '#lib/utils/programme-map.ts';
+import type { ClassificationNode } from '#lib/types/database-helpers.ts';
 
 const STAMP = '2026-10-23T00:00:00Z';
 

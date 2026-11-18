@@ -6,7 +6,7 @@
 	Full-screen chat window with conversations and messaging.
 -->
 <script lang="ts">
-	import ChatWindow from '$lib/components/chat/ChatWindow.svelte';
+	import ChatWindow from '#lib/components/chat/ChatWindow.svelte';
 
 	let { data } = $props();
 </script>

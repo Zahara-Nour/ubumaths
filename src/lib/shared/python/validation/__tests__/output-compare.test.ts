@@ -7,7 +7,11 @@
 
 import { describe, expect, it } from 'vitest';
 import { compareOutputs } from '../output-compare';
-import type { ExactComparison, TextComparison, NumericComparison } from '$lib/shared/python';
+import type {
+	ExactComparison,
+	TextComparison,
+	NumericComparison
+} from '#lib/shared/python/index.ts';
 
 const exact: ExactComparison = { kind: 'exact' };
 

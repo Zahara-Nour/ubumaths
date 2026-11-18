@@ -13,7 +13,7 @@
  * error handling. Architecture : docs/systeme/realtime.md.
  */
 
-import { toaster } from '$lib/stores/toaster.svelte';
+import { toaster } from '#lib/stores/toaster.svelte.ts';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { RealtimeChannel } from '@supabase/supabase-js';
 import {
@@ -21,7 +21,7 @@ import {
 	completeMatchResponseSchema,
 	realtimeGameStateSchema,
 	realtimeMatchUpdateSchema
-} from '$lib/client/validation/multiplayer-responses';
+} from '#lib/client/validation/multiplayer-responses.ts';
 
 // ============================================================================
 // Types

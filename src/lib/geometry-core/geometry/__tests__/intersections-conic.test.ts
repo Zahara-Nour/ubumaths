@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { numericNode } from '$lib/mathAST/common/numeric';
+import { numericNode } from '#lib/mathAST/common/numeric.ts';
 import { intersectLQ, intersectQQ } from '../intersections';
 import { intersectLC } from '../intersections';
 import { exact } from '../../types/geo-value';

@@ -6,7 +6,7 @@ import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import Page from '../+page.svelte';
 import type { PageData } from '../$types';
-import type { StudentCarnet } from '$lib/validation/carnet';
+import type { StudentCarnet } from '#lib/validation/carnet.ts';
 
 function donnees(
 	partage: Partial<StudentCarnet>,

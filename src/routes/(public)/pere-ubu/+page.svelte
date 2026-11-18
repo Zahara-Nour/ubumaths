@@ -1,9 +1,9 @@
 <script lang="ts">
-	import SeoHead from '$lib/seo/SeoHead.svelte';
-	import ChatBot from '$lib/components/ChatBot.svelte';
+	import SeoHead from '#lib/seo/SeoHead.svelte';
+	import ChatBot from '#lib/components/ChatBot.svelte';
 	import { ArrowLeft } from '@lucide/svelte';
-	import { Button } from '$lib/components/ui/button';
-	import pereUbuImage from '$lib/assets/images/pereubu.png';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import pereUbuImage from '#lib/assets/images/pereubu.png';
 	import { resolve } from '$app/paths';
 	import type { PageData } from './$types';
 

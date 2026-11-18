@@ -5,7 +5,7 @@
  * préparation.
  */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import type { PythonNotebook } from '$lib/types/notebook';
+import type { PythonNotebook } from '#lib/types/notebook.ts';
 
 const generatePdfFromTypst = vi.hoisted(() =>
 	vi.fn(async () => ({ success: true as const, data: new Uint8Array([1]) }))

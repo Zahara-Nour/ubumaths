@@ -44,7 +44,7 @@ import {
 	NotebookText
 } from '@lucide/svelte';
 import type { LucideIcon } from '@lucide/svelte';
-import { lore } from '$lib/config/lore';
+import { lore } from '#lib/config/lore.ts';
 
 export type DashboardNavLink = {
 	href: string;

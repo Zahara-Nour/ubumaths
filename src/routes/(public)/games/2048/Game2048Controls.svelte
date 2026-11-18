@@ -5,10 +5,10 @@
 	 * Row 1: Undo, Bomb(1), Bomb(2), Bomb(3), Freeze Spawn
 	 * Row 2: Fusion, Joker, Vision, Multi x1.5, Multi x2
 	 */
-	import * as Tooltip from '$lib/components/ui/tooltip';
-	import { cn } from '$lib/utils';
-	import gidouilleImg from '$lib/assets/images/gidouille.png';
-	import { storageUrl } from '$lib/utils/storage';
+	import * as Tooltip from '#lib/components/ui/tooltip/index.ts';
+	import { cn } from '#lib/utils.ts';
+	import gidouilleImg from '#lib/assets/images/gidouille.png';
+	import { storageUrl } from '#lib/utils/storage.ts';
 
 	const powerImg = (id: string) => storageUrl('vip-card-images', `${id}@0.5x.webp`);
 

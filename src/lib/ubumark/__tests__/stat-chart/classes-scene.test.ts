@@ -14,11 +14,11 @@ import {
 	type CumulativeScene,
 	type HistogramScene
 } from '../../utils/stat-chart-scene';
-import * as classesModule from '$lib/statistics/classes';
+import * as classesModule from '#lib/statistics/classes.ts';
 import type { StatChartKind } from '../../types/stat-chart';
 
-vi.mock('$lib/statistics/classes', async (importOriginal) => {
-	const original = await importOriginal<typeof import('$lib/statistics/classes')>();
+vi.mock('#lib/statistics/classes.ts', async (importOriginal) => {
+	const original = await importOriginal<typeof import('#lib/statistics/classes.ts')>();
 	return {
 		...original,
 		summarizeClasses: vi.fn(original.summarizeClasses),

@@ -24,8 +24,8 @@
 	@module components/markdown/nodes/RangerPlacer
 -->
 <script lang="ts">
-	import type { RangerNode } from '$lib/ubumark/types/ranger';
-	import { displayedLabels, placedOfAnswer } from '$lib/ubumark/utils/ranger';
+	import type { RangerNode } from '#lib/ubumark/types/ranger.ts';
+	import { displayedLabels, placedOfAnswer } from '#lib/ubumark/utils/ranger.ts';
 	import InlineMarkdown from '../InlineMarkdown.svelte';
 	import type { BuildCase } from './CollectionConstruire.svelte';
 

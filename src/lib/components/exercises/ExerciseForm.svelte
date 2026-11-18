@@ -1,38 +1,38 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
-	import * as Card from '$lib/components/ui/card';
-	import * as Tabs from '$lib/components/ui/tabs';
-	import * as Collapsible from '$lib/components/ui/collapsible';
+	import { lore } from '#lib/config/lore.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import * as Tabs from '#lib/components/ui/tabs/index.ts';
+	import * as Collapsible from '#lib/components/ui/collapsible/index.ts';
 	import ExerciseResourceEditor from './ExerciseResourceEditor.svelte';
 	import VariationEditor from './VariationEditor.svelte';
 	import BareGreekWarning from './BareGreekWarning.svelte';
 	import ExerciseVisibilityFields from './ExerciseVisibilityFields.svelte';
-	import { hasEnglishStatement } from '$lib/exercises/translation-draft';
+	import { hasEnglishStatement } from '#lib/exercises/translation-draft.ts';
 	import LaTeXImportDialog from './LaTeXImportDialog.svelte';
 	import GenericFunctionInput from './GenericFunctionInput.svelte';
-	import GradeBadgeSelector from '$lib/components/GradeBadgeSelector.svelte';
-	import TagBadgeSelector from '$lib/components/TagBadgeSelector.svelte';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import type { Database } from '$lib/types/database';
+	import GradeBadgeSelector from '#lib/components/GradeBadgeSelector.svelte';
+	import TagBadgeSelector from '#lib/components/TagBadgeSelector.svelte';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import type { Database } from '#lib/types/database.ts';
 	import type { SupabaseClient } from '@supabase/supabase-js';
-	import type { TranspileWarning } from '$lib/ubumark/importers/latex';
-	import type { GradeCode } from '$lib/types/grades';
+	import type { TranspileWarning } from '#lib/ubumark/importers/latex/index.ts';
+	import type { GradeCode } from '#lib/types/grades.ts';
 	import type {
 		ExerciseResource,
 		ExerciseVariation,
 		SharedExerciseDefaults,
 		Exercise,
 		ExerciseCategory
-	} from '$lib/exercises/types';
-	import { EXERCISE_CATEGORIES } from '$lib/exercises/types';
-	import type { Variable } from '$lib/ubumark';
+	} from '#lib/exercises/types.ts';
+	import { EXERCISE_CATEGORIES } from '#lib/exercises/types.ts';
+	import type { Variable } from '#lib/ubumark/index.ts';
 	import { Save, Loader2 } from '@lucide/svelte';
-	import { provideCapitalPairs } from '$lib/components/markdown/content-capital-pairs';
-	import { exerciseCapitalPairs } from '$lib/questions/capital-pairs';
+	import { provideCapitalPairs } from '#lib/components/markdown/content-capital-pairs.ts';
+	import { exerciseCapitalPairs } from '#lib/questions/capital-pairs.ts';
 
 	type ExerciseInsert = Database['public']['Tables']['exercises']['Insert'];
 
@@ -83,7 +83,7 @@
 
 	/**
 	 * Generic function names for math expression parsing.
-	 * Now properly typed via Exercise interface from $lib/exercises/types.
+	 * Now properly typed via Exercise interface from #lib/exercises/types.
 	 */
 	let genericFunctions = $state<string[]>(initialExercise?.generic_functions ?? []);
 

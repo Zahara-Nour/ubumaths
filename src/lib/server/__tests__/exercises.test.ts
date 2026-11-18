@@ -17,18 +17,18 @@ import {
 	getTeacherExercises,
 	EXERCISE_NOT_DELETED
 } from '../exercises';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 
 // Stub the tag-resolution helpers so tests don't need to mock junction queries.
 // Individual tests that need specific return values can override via mockResolvedValueOnce.
-vi.mock('$lib/server/resource-tags', () => ({
+vi.mock('#lib/server/resource-tags.ts', () => ({
 	syncResourceTags: vi.fn().mockResolvedValue(undefined),
 	fetchResourceTagNames: vi.fn().mockResolvedValue([]),
 	fetchTagNamesForResources: vi.fn().mockResolvedValue(new Map()),
 	fetchResourceIdsByAnyTag: vi.fn().mockResolvedValue([])
 }));
 
-import { fetchResourceIdsByAnyTag, fetchResourceTagNames } from '$lib/server/resource-tags';
+import { fetchResourceIdsByAnyTag, fetchResourceTagNames } from '#lib/server/resource-tags.ts';
 
 type ExerciseRow = Database['public']['Tables']['exercises']['Row'];
 

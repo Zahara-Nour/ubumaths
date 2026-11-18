@@ -19,7 +19,7 @@
 	 */
 
 	import { resolve } from '$app/paths';
-	import type { WorksheetCitationsReport } from '$lib/types/worksheets';
+	import type { WorksheetCitationsReport } from '#lib/types/worksheets.ts';
 
 	let {
 		report,

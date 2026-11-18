@@ -33,12 +33,12 @@
 
 import { z } from 'zod';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
-import { sendCarnetExceptionEmail, sendCarnetQuarterlyEmail } from '$lib/server/email/brevo';
-import type { EmailSendResult } from '$lib/server/email/brevo';
-import type { CarnetExceptionReason } from '$lib/email-templates/carnet';
-import { createServerLogger } from '$lib/utils/logger';
+import type { Database } from '#lib/types/database.ts';
+import { createServiceRoleClient } from '#lib/server/serviceRoleClient.ts';
+import { sendCarnetExceptionEmail, sendCarnetQuarterlyEmail } from '#lib/server/email/brevo.ts';
+import type { EmailSendResult } from '#lib/server/email/brevo.ts';
+import type { CarnetExceptionReason } from '#lib/email-templates/carnet.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 import { generateCarnetToken, hashCarnetToken } from './carnet';
 import { sendClassMissingLinks } from './envois';
 

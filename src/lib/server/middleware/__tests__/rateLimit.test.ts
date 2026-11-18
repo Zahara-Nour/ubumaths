@@ -12,9 +12,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { isHttpError } from '@sveltejs/kit';
 
-vi.mock('$lib/server/rateLimiter', () => ({ checkEndpointRateLimit: vi.fn() }));
+vi.mock('#lib/server/rateLimiter.ts', () => ({ checkEndpointRateLimit: vi.fn() }));
 
-const { checkEndpointRateLimit } = await import('$lib/server/rateLimiter');
+const { checkEndpointRateLimit } = await import('#lib/server/rateLimiter.ts');
 const { rateLimit } = await import('../rateLimit');
 
 beforeEach(() => {

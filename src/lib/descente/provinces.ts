@@ -12,7 +12,7 @@
  * fait naître aucune Bête : `provinceOfBranch` rend `null` et l'appelant le trace.
  */
 
-import type { ProvinceId } from '$lib/kingdom-tour/tour';
+import type { ProvinceId } from '#lib/kingdom-tour/tour.ts';
 
 export const BRANCH_PROVINCES: Readonly<Record<string, ProvinceId>> = {
 	'Nombres et calculs': 'nombrilie',

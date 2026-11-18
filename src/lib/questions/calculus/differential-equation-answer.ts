@@ -22,9 +22,9 @@
  * @module questions/calculus/differential-equation-answer
  */
 
-import type { MathNode } from '$lib/mathAST/types';
-import type { CalculusBlankFields, SolutionMode } from '$lib/questions/types';
-import { getVariables, substitute } from '$lib/mathAST/eval/substitute';
+import type { MathNode } from '#lib/mathAST/types.ts';
+import type { CalculusBlankFields, SolutionMode } from '#lib/questions/types.ts';
+import { getVariables, substitute } from '#lib/mathAST/eval/substitute.ts';
 import {
 	type CalculusVerdict,
 	type ExpectedCheck,

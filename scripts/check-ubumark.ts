@@ -14,25 +14,25 @@
  */
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
-import { extractMath } from '$lib/ubumark/parser/math-extractor';
-import { expressionToLatex } from '$lib/components/markdown/utils/math-utils';
-import { findBareGreekNames } from '$lib/exercises/bare-greek-warnings';
-import { parseMarkdown } from '$lib/ubumark';
-import type { CourbeNode } from '$lib/ubumark/types/courbe';
-import { buildCourbeScene } from '$lib/ubumark/utils/courbe-scene';
-import type { FigureNode } from '$lib/ubumark/types/figure';
-import { buildFigureScene } from '$lib/ubumark/utils/figure-scene';
-import type { HorlogeNode } from '$lib/ubumark/types/horloge';
-import type { TortueNode } from '$lib/ubumark/types/tortue';
-import type { CalculNode } from '$lib/ubumark/types/calcul';
-import type { RobotNode } from '$lib/ubumark/types/robot';
-import type { OperationNode } from '$lib/ubumark/types/operation';
-import type { CollectionNode } from '$lib/ubumark/types/collection';
-import type { MonnaieNode } from '$lib/ubumark/types/monnaie';
-import type { PartageNode } from '$lib/ubumark/types/partage';
-import type { EspaceNode } from '$lib/ubumark/types/espace';
-import type { ScratchNode } from '$lib/ubumark/types/scratch';
-import { checkScratchProgram } from '$lib/ubumark/utils/scratch-check';
+import { extractMath } from '#lib/ubumark/parser/math-extractor.ts';
+import { expressionToLatex } from '#lib/components/markdown/utils/math-utils.ts';
+import { findBareGreekNames } from '#lib/exercises/bare-greek-warnings.ts';
+import { parseMarkdown } from '#lib/ubumark/index.ts';
+import type { CourbeNode } from '#lib/ubumark/types/courbe.ts';
+import { buildCourbeScene } from '#lib/ubumark/utils/courbe-scene.ts';
+import type { FigureNode } from '#lib/ubumark/types/figure.ts';
+import { buildFigureScene } from '#lib/ubumark/utils/figure-scene.ts';
+import type { HorlogeNode } from '#lib/ubumark/types/horloge.ts';
+import type { TortueNode } from '#lib/ubumark/types/tortue.ts';
+import type { CalculNode } from '#lib/ubumark/types/calcul.ts';
+import type { RobotNode } from '#lib/ubumark/types/robot.ts';
+import type { OperationNode } from '#lib/ubumark/types/operation.ts';
+import type { CollectionNode } from '#lib/ubumark/types/collection.ts';
+import type { MonnaieNode } from '#lib/ubumark/types/monnaie.ts';
+import type { PartageNode } from '#lib/ubumark/types/partage.ts';
+import type { EspaceNode } from '#lib/ubumark/types/espace.ts';
+import type { ScratchNode } from '#lib/ubumark/types/scratch.ts';
+import { checkScratchProgram } from '#lib/ubumark/utils/scratch-check.ts';
 
 type BlocNode =
 	| CourbeNode

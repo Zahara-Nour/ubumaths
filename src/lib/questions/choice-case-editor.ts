@@ -20,7 +20,7 @@ import {
 	CHOICE_BLOCK_UNCLOSED_MESSAGE,
 	parseChoiceBody,
 	serializeTemplateChoiceBlock
-} from '$lib/ubumark/parser/choix-parser';
+} from '#lib/ubumark/parser/choix-parser.ts';
 import { parseChoiceAnswer } from './choice-case';
 
 // Types

@@ -4,7 +4,7 @@
  *
  * Compteurs de la Chatterie de l'élève de la session (nés, en sieste, à
  * découvrir), pour le Palotin gardien, et NOUVEAUTÉS que ce calcul a écrites
- * en mémoire (naissances, croissances, étoiles : `$lib/mathoux/news.ts`). Lu
+ * en mémoire (naissances, croissances, étoiles : `#lib/mathoux/news.ts`). Lu
  * par le widget du Palotin et par la fin de séance (Entraînement, Course,
  * révision), APRÈS l'enregistrement des réponses.
  *
@@ -20,10 +20,10 @@
 
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import { loadMathouCollectionWithNews } from '$lib/server/mathoux/collection';
-import type { MathouxSummary } from '$lib/mathoux/summary';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { loadMathouCollectionWithNews } from '#lib/server/mathoux/collection.ts';
+import type { MathouxSummary } from '#lib/mathoux/summary.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/student/mathoux/+server');
 

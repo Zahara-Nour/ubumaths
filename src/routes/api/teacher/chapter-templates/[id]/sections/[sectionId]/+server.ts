@@ -10,11 +10,11 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import { requireOwnedTemplate } from '$lib/server/template-guard';
-import { renameSection, deleteSection } from '$lib/server/chapter-sections';
-import { updateSectionSchema } from '$lib/server/validation/chapter-sections';
-import { uuidSchema } from '$lib/server/validation/common';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { requireOwnedTemplate } from '#lib/server/template-guard.ts';
+import { renameSection, deleteSection } from '#lib/server/chapter-sections.ts';
+import { updateSectionSchema } from '#lib/server/validation/chapter-sections.ts';
+import { uuidSchema } from '#lib/server/validation/common.ts';
 
 function parseSectionId(raw: string | undefined): string {
 	const validation = uuidSchema.safeParse(raw);

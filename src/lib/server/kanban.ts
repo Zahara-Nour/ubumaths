@@ -15,9 +15,9 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 import { fetchStaffDirectory, indexStaffById } from './staff-directory';
-import type { RateLimitResult } from '$lib/server/rateLimiter';
+import type { RateLimitResult } from '#lib/server/rateLimiter.ts';
 import type {
 	KanbanBoard,
 	KanbanBoardWithCounts,
@@ -25,8 +25,8 @@ import type {
 	KanbanCard,
 	KanbanTag,
 	KanbanBoardMember
-} from '$lib/types/database-helpers';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/types/database-helpers.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/kanban');
 

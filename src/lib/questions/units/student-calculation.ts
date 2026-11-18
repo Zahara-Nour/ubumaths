@@ -18,14 +18,14 @@
  * @module questions/units/student-calculation
  */
 
-import type { MathNode } from '$lib/mathAST/types';
-import { parseLatexSafe } from '$lib/mathAST/parser';
-import { tidy } from '$lib/mathAST/tidy';
-import { toLatex } from '$lib/mathAST/latex-generator';
-import { rationalOf } from '$lib/mathAST/eval/evaluate-with-modifiers';
-import { isOpposite, isUnit, isVariable } from '$lib/mathAST/guards';
-import { findNodes } from '$lib/mathAST/transforms';
-import { quantityProblem } from '$lib/mathAST/cli/quantities';
+import type { MathNode } from '#lib/mathAST/types.ts';
+import { parseLatexSafe } from '#lib/mathAST/parser/index.ts';
+import { tidy } from '#lib/mathAST/tidy/index.ts';
+import { toLatex } from '#lib/mathAST/latex-generator.ts';
+import { rationalOf } from '#lib/mathAST/eval/evaluate-with-modifiers.ts';
+import { isOpposite, isUnit, isVariable } from '#lib/mathAST/guards.ts';
+import { findNodes } from '#lib/mathAST/transforms.ts';
+import { quantityProblem } from '#lib/mathAST/cli/quantities.ts';
 import { parseLatexQuantity, parseUnitExpression } from './parser';
 import { degreeSymbolLatex, normalizeStudentQuantity, studentNumericLatex } from './student-input';
 import { readCompositeDuration } from './composite-duration';

@@ -10,12 +10,12 @@
 -->
 
 <script lang="ts">
-	import * as Card from '$lib/components/ui/card';
-	import { Button } from '$lib/components/ui/button';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import { ListTodo, Inbox } from '@lucide/svelte';
 	import WorkItemCard from './WorkItemCard.svelte';
 	import { resolve } from '$app/paths';
-	import type { StudentWorkInbox } from '$lib/types/student-inbox';
+	import type { StudentWorkInbox } from '#lib/types/student-inbox.ts';
 
 	interface Props {
 		inbox: StudentWorkInbox;

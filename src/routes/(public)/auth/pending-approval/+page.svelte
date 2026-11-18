@@ -6,10 +6,10 @@
 -->
 <script lang="ts">
 	import { goto, invalidateAll } from '$app/navigation';
-	import { Button } from '$lib/components/ui/button';
-	import * as Dialog from '$lib/components/ui/dialog';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
 	import { Clock } from '@lucide/svelte';
-	import { clearWorkData } from '$lib/utils/work-data';
+	import { clearWorkData } from '#lib/utils/work-data.ts';
 
 	let isLoggingOut = $state(false);
 	let dialogOpen = $state(true);

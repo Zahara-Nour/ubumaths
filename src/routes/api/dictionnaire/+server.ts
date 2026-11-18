@@ -15,8 +15,8 @@ import {
 	DICTIONARY_PUBLIC_CACHE,
 	isDictionaryAdmin,
 	loadDictionary
-} from '$lib/server/dictionary/load';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/dictionary/load.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/dictionnaire/+server');
 

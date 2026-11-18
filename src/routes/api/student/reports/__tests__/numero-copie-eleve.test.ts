@@ -10,11 +10,11 @@
  * le mélange).
  */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { tableMock, twoLevelExercise } from '$lib/server/worksheets/__tests__/table-mock';
-import { assignmentCopyScope, copyDisplayNumbers } from '$lib/worksheets/worksheet-copy';
+import { tableMock, twoLevelExercise } from '#lib/server/worksheets/__tests__/table-mock.ts';
+import { assignmentCopyScope, copyDisplayNumbers } from '#lib/worksheets/worksheet-copy.ts';
 
 const user = vi.hoisted(() => ({ id: '' }));
-vi.mock('$lib/server/middleware/auth', () => ({
+vi.mock('#lib/server/middleware/auth.ts', () => ({
 	requireRole: async () => ({ user: { id: user.id } })
 }));
 

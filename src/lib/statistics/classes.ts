@@ -10,7 +10,7 @@
  * Classes `[lower ; upper[`, contiguës et dans l'ordre : c'est ce que donnent
  * `n + 1` bornes et `n` effectifs, la saisie retenue pour l'atelier.
  *
- * ⚠️ Aucun import `$lib` : voir `statistics/describe`.
+ * ⚠️ Aucun import `#lib` : voir `statistics/describe`.
  *
  * @module statistics/classes
  */

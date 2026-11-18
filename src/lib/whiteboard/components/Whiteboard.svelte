@@ -17,7 +17,7 @@
 	import FileDrawer from './FileDrawer.svelte';
 	import ContextMenu from './ContextMenu.svelte';
 	import TemplatePickerModal from './TemplatePickerModal.svelte';
-	import { Button } from '$lib/components/ui/button';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import {
 		Plus,
 		ZoomIn,
@@ -33,7 +33,7 @@
 	import type { PageFormatKey } from '../types/document';
 	import type { TemplatePageData } from '../types/templates';
 	import { driveSyncService } from '../services/drive-sync';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import { importImageFromClipboard } from '../utils/image-loader';
 
 	// ==========================================================================

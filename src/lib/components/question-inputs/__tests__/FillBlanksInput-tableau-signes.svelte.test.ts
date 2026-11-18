@@ -15,10 +15,10 @@ import { describe, it, expect, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import FillBlanksInput from '../FillBlanksInput.svelte';
-import { generateInstance } from '$lib/questions/generator/instance-generator';
-import { toDisplayInstance, toPublicQuestion } from '$lib/questions/public-question';
-import type { QuestionInstance, QuestionTemplate } from '$lib/questions/types';
-import { templateMarkdown } from '$lib/ubumark';
+import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
+import { toDisplayInstance, toPublicQuestion } from '#lib/questions/public-question.ts';
+import type { QuestionInstance, QuestionTemplate } from '#lib/questions/types.ts';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 
 // Variables
 let mains: HTMLElement[] = [];

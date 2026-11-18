@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import { resolve } from '$app/paths';
-	import { Card } from '$lib/components/ui/card';
-	import { Separator } from '$lib/components/ui/separator';
+	import { Card } from '#lib/components/ui/card/index.ts';
+	import { Separator } from '#lib/components/ui/separator/index.ts';
 	import { Trophy } from '@lucide/svelte';
-	import UnifiedLeaderboardTable from '$lib/components/game/leaderboard/UnifiedLeaderboardTable.svelte';
-	import MinesweeperDetailTable from '$lib/components/game/leaderboard/MinesweeperDetailTable.svelte';
-	import { LEADERBOARD_GAMES, LEADERBOARD_SCOPES, gameLabel } from '$lib/games/leaderboards';
+	import UnifiedLeaderboardTable from '#lib/components/game/leaderboard/UnifiedLeaderboardTable.svelte';
+	import MinesweeperDetailTable from '#lib/components/game/leaderboard/MinesweeperDetailTable.svelte';
+	import { LEADERBOARD_GAMES, LEADERBOARD_SCOPES, gameLabel } from '#lib/games/leaderboards.ts';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();

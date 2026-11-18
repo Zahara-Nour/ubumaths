@@ -16,8 +16,8 @@
 
 import { createClient } from '@supabase/supabase-js';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import { createServerLogger } from '$lib/utils/logger';
+import type { Database } from '#lib/types/database.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 import { dev } from '$app/env';
 
 const logger = createServerLogger('server/serviceRoleClient');
@@ -222,7 +222,7 @@ let serviceRoleClientInstance: SupabaseClient<Database> | null =
  *
  * @example Job logging in cron endpoint
  * ```typescript
- * import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
+ * import { createServiceRoleClient } from '#lib/server/serviceRoleClient.ts';
  *
  * export const POST: RequestHandler = async () => {
  *   const serviceClient = createServiceRoleClient();

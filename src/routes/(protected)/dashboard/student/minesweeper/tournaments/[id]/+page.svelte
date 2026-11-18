@@ -2,18 +2,18 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { invalidateAll } from '$app/navigation';
 	import { navigating } from '$app/state';
-	import { Button } from '$lib/components/ui/button';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import { Card } from '$lib/components/ui/card';
-	import { Separator } from '$lib/components/ui/separator';
-	import { Badge } from '$lib/components/ui/badge';
-	import MinesweeperBoard from '$lib/components/game/minesweeper/MinesweeperBoard.svelte';
-	import GameControls from '$lib/components/game/minesweeper/GameControls.svelte';
-	import TournamentLeaderboard from '$lib/components/game/minesweeper/TournamentLeaderboard.svelte';
-	import { minesweeperStore } from '$lib/stores/minesweeper.svelte';
-	import { cn } from '$lib/utils';
-	import { DIFFICULTY_LABELS, asGridState } from '$lib/types/minesweeper';
-	import type { Difficulty } from '$lib/types/minesweeper';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import { Card } from '#lib/components/ui/card/index.ts';
+	import { Separator } from '#lib/components/ui/separator/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import MinesweeperBoard from '#lib/components/game/minesweeper/MinesweeperBoard.svelte';
+	import GameControls from '#lib/components/game/minesweeper/GameControls.svelte';
+	import TournamentLeaderboard from '#lib/components/game/minesweeper/TournamentLeaderboard.svelte';
+	import { minesweeperStore } from '#lib/stores/minesweeper.svelte.ts';
+	import { cn } from '#lib/utils.ts';
+	import { DIFFICULTY_LABELS, asGridState } from '#lib/types/minesweeper.ts';
+	import type { Difficulty } from '#lib/types/minesweeper.ts';
 	import type { PageData } from './$types';
 
 	// Props

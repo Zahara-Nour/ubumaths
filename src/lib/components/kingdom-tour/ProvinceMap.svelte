@@ -9,10 +9,10 @@
 	 */
 	import type { Action } from 'svelte/action';
 	import { Crown } from '@lucide/svelte';
-	import { resolvePath } from '$lib/navigation/resolve-path';
+	import { resolvePath } from '#lib/navigation/resolve-path.ts';
 	import KingdomMap from './KingdomMap.svelte';
-	import { capitalOf, cityPath } from '$lib/kingdom-tour/cities';
-	import { PROVINCES } from '$lib/kingdom-tour/tour';
+	import { capitalOf, cityPath } from '#lib/kingdom-tour/cities.ts';
+	import { PROVINCES } from '#lib/kingdom-tour/tour.ts';
 
 	// Constantes
 

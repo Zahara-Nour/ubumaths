@@ -19,7 +19,7 @@
 -->
 
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import {
 		dndzone,
 		SHADOW_PLACEHOLDER_ITEM_ID,
@@ -28,16 +28,16 @@
 	} from 'svelte-dnd-action';
 	import { flip } from 'svelte/animate';
 	import { MoreVertical, Plus, Trash2 } from '@lucide/svelte';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
-	import { ConfirmDialog } from '$lib/components/ui/confirm-dialog';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import * as DropdownMenu from '#lib/components/ui/dropdown-menu/index.ts';
+	import { ConfirmDialog } from '#lib/components/ui/confirm-dialog/index.ts';
 	import type {
 		KanbanColumn,
 		KanbanCard,
 		KanbanTag,
 		KanbanBoardMember
-	} from '$lib/types/database-helpers';
+	} from '#lib/types/database-helpers.ts';
 
 	type CardWithExtras = KanbanCard & { tag_ids?: string[]; assignee_ids?: string[] };
 

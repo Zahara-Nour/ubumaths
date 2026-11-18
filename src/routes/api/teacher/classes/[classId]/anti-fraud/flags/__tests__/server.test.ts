@@ -7,9 +7,9 @@
  * Le filtre de l'URL s'appelle `point`.
  */
 import { describe, it, expect, vi } from 'vitest';
-import { createFakeSupabase } from '$lib/server/__tests__/helpers/fake-supabase';
+import { createFakeSupabase } from '#lib/server/__tests__/helpers/fake-supabase.ts';
 
-vi.mock('$lib/server/stats/teacher-class-auth', () => ({
+vi.mock('#lib/server/stats/teacher-class-auth.ts', () => ({
 	requireTeacherOfClass: async () => undefined
 }));
 

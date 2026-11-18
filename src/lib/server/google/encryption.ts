@@ -10,7 +10,7 @@
  */
 
 import { createCipheriv, createDecipheriv, randomBytes, createHash } from 'crypto';
-import { getEnv } from '$lib/server/env';
+import { getEnv } from '#lib/server/env.ts';
 
 /**
  * Encryption algorithm configuration

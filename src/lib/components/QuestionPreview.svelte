@@ -16,20 +16,20 @@
 -->
 
 <script lang="ts">
-	import type { QuestionTemplate, QuestionInstance } from '$lib/questions/types';
-	import { getQuestionType, QUESTION_TYPE_LABELS } from '$lib/questions/types';
-	import { generateInstance } from '$lib/questions/generator/instance-generator';
-	import { Button } from '$lib/components/ui/button';
-	import * as Card from '$lib/components/ui/card';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Label } from '$lib/components/ui/label';
+	import type { QuestionTemplate, QuestionInstance } from '#lib/questions/types.ts';
+	import { getQuestionType, QUESTION_TYPE_LABELS } from '#lib/questions/types.ts';
+	import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
 	import { AlertCircle, RefreshCw, Check, X } from '@lucide/svelte';
 	import { onMount } from 'svelte';
-	import FlashCard from '$lib/components/questions/FlashCard.svelte';
-	import { MarkdownRenderer } from '$lib/components/markdown';
-	import { templateGenericFunctions } from '$lib/questions/generic-functions';
-	import { detailedCorrection } from '$lib/questions/correction-detail';
-	import AnswerAssumptionsNotice from '$lib/components/questions/AnswerAssumptionsNotice.svelte';
+	import FlashCard from '#lib/components/questions/FlashCard.svelte';
+	import { MarkdownRenderer } from '#lib/components/markdown/index.ts';
+	import { templateGenericFunctions } from '#lib/questions/generic-functions.ts';
+	import { detailedCorrection } from '#lib/questions/correction-detail.ts';
+	import AnswerAssumptionsNotice from '#lib/components/questions/AnswerAssumptionsNotice.svelte';
 
 	interface Props {
 		template: Omit<QuestionTemplate, 'id' | 'created_at' | 'updated_at' | 'created_by'>;

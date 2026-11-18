@@ -1,13 +1,13 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import { goto } from '$app/navigation';
 	import { navigating } from '$app/state';
-	import { Button } from '$lib/components/ui/button';
-	import * as Card from '$lib/components/ui/card';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Separator } from '$lib/components/ui/separator';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import { fixUrl } from '$lib/utils';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { Separator } from '#lib/components/ui/separator/index.ts';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import { fixUrl } from '#lib/utils.ts';
 	import {
 		FileText,
 		ExternalLink,

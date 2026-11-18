@@ -13,13 +13,13 @@
 -->
 
 <script lang="ts">
-	import CorrectionCard from '$lib/components/questions/CorrectionCard.svelte';
-	import { ERROR_KIND_LABELS, errorGuessLabel } from '$lib/questions/error-kinds';
+	import CorrectionCard from '#lib/components/questions/CorrectionCard.svelte';
+	import { ERROR_KIND_LABELS, errorGuessLabel } from '#lib/questions/error-kinds.ts';
 	import type {
 		EvaluationQuestionErrors,
 		QuestionErrorGroup
-	} from '$lib/types/evaluation-breakdown';
-	import type { TestAnswerResult } from '$lib/types/test';
+	} from '#lib/types/evaluation-breakdown.ts';
+	import type { TestAnswerResult } from '#lib/types/test.ts';
 
 	interface Props {
 		errors: Extract<EvaluationQuestionErrors, { status: 'ok' }>;

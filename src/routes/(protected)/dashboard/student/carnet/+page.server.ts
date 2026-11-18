@@ -17,16 +17,16 @@
 import { fail } from '@sveltejs/kit';
 import { z } from 'zod';
 import type { Actions, PageServerLoad } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import { rateLimit } from '$lib/server/middleware/rateLimit';
-import { readMyCarnet } from '$lib/server/carnet/carnet';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { rateLimit } from '#lib/server/middleware/rateLimit.ts';
+import { readMyCarnet } from '#lib/server/carnet/carnet.ts';
 import {
 	addParentContact,
 	parentEmailSchema,
 	type AddContactOutcome
-} from '$lib/server/carnet/envois';
-import { fetchStaffDirectory, soleTeacher } from '$lib/server/staff-directory';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/carnet/envois.ts';
+import { fetchStaffDirectory, soleTeacher } from '#lib/server/staff-directory.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 // Types
 

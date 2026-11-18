@@ -7,7 +7,7 @@
 	rangée, sans colonne de nom, vocabulaire du parent).
 -->
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 
 	// Types
 

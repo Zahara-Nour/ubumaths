@@ -12,24 +12,24 @@
 	 * @component
 	 */
 
-	import { useGrapheurStore } from '$lib/stores/grapheur-context';
+	import { useGrapheurStore } from '#lib/stores/grapheur-context.ts';
 
 	// L'instance de l'atelier qui nous contient, ou celle par défaut.
 	const grapheurStore = useGrapheurStore();
-	import type { CoordinateTransformer } from '$lib/grapheur/viewport';
+	import type { CoordinateTransformer } from '#lib/grapheur/viewport.ts';
 	import type {
 		VerticalAsymptote,
 		HorizontalAsymptote,
 		ObliqueAsymptote,
 		FunctionAnalysis
-	} from '$lib/grapheur/types';
-	import { analyzeAllFunctions, toAnalysisInputs } from '$lib/grapheur/analysis';
+	} from '#lib/grapheur/types.ts';
+	import { analyzeAllFunctions, toAnalysisInputs } from '#lib/grapheur/analysis.ts';
 	import GraphLabel from './GraphLabel.svelte';
 	import {
 		placeAsymptoteLabels,
 		branchBounds as branchBoundsOf
-	} from '$lib/grapheur/asymptote-labels';
-	import { curveColorValue } from '$lib/grapheur/colors';
+	} from '#lib/grapheur/asymptote-labels.ts';
+	import { curveColorValue } from '#lib/grapheur/colors.ts';
 
 	/** Nombre de segments pour dessiner une asymptote courbe. */
 	const ASYMPTOTE_CURVE_STEPS = 64;
@@ -187,7 +187,7 @@
 	{/each}
 	<!-- Étiquettes : le <title> SVG ne pouvait pas s'afficher, la couche étant
 	     en pointer-events="none" comme toutes les décorations du grapheur.
-	     Le placement vit dans $lib/grapheur/asymptote-labels, où il est testé. -->
+	     Le placement vit dans #lib/grapheur/asymptote-labels, où il est testé. -->
 	{#each placeAsymptoteLabels(analyses, transformer, { width, height }) as label, idx (`l-${idx}`)}
 		<GraphLabel
 			x={label.x}

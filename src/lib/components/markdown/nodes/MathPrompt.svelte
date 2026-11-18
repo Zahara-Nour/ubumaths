@@ -15,12 +15,12 @@
 	@module components/markdown/nodes/MathPrompt
 -->
 <script lang="ts">
-	import '$lib/utils/mathlive-styles';
+	import '#lib/utils/mathlive-styles.ts';
 	import 'mathlive';
-	import type { InputState } from '$lib/ubumark';
-	import type { CapitalPairs, GenericFunctionConfig } from '$lib/mathAST/parser/types';
+	import type { InputState } from '#lib/ubumark/index.ts';
+	import type { CapitalPairs, GenericFunctionConfig } from '#lib/mathAST/parser/types.ts';
 	import type { MathfieldElement } from 'mathlive';
-	import { withoutCapitalPairShortcuts } from '$lib/questions/capital-pairs';
+	import { withoutCapitalPairShortcuts } from '#lib/questions/capital-pairs.ts';
 	import { expressionToLatex, extractPromptIndices } from '../utils/math-utils';
 	import { readContentLocale } from '../content-locale';
 	import { readCapitalPairs } from '../content-capital-pairs';

@@ -24,10 +24,10 @@
 
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { createServerLogger } from '$lib/utils/logger';
-import { readAllRows } from '$lib/server/read-all-rows';
-import { createAnonymousSupabase } from '$lib/server/anonymous-supabase';
-import type { Database } from '$lib/types/database';
+import { createServerLogger } from '#lib/utils/logger.ts';
+import { readAllRows } from '#lib/server/read-all-rows.ts';
+import { createAnonymousSupabase } from '#lib/server/anonymous-supabase.ts';
+import type { Database } from '#lib/types/database.ts';
 
 type TemplateColumn = keyof Database['public']['Tables']['question_templates']['Row'];
 

@@ -12,14 +12,14 @@ import { describe, it, expect, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { page, userEvent } from 'vitest/browser';
 import RobotCode from '../RobotCode.svelte';
-import FillBlanksInput from '$lib/components/question-inputs/FillBlanksInput.svelte';
-import { generateInstance } from '$lib/questions/generator/instance-generator';
-import { templateMarkdown } from '$lib/ubumark';
-import type { QuestionTemplate } from '$lib/questions/types';
+import FillBlanksInput from '#lib/components/question-inputs/FillBlanksInput.svelte';
+import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
+import type { QuestionTemplate } from '#lib/questions/types.ts';
 import RobotCorrige from '../RobotCorrige.svelte';
-import BuildAnswer from '$lib/components/questions/BuildAnswer.svelte';
-import { parseRobotContent } from '$lib/ubumark/parser/robot-parser';
-import { expectedRobotAnswer } from '$lib/ubumark/utils/robot-answer';
+import BuildAnswer from '#lib/components/questions/BuildAnswer.svelte';
+import { parseRobotContent } from '#lib/ubumark/parser/robot-parser.ts';
+import { expectedRobotAnswer } from '#lib/ubumark/utils/robot-answer.ts';
 
 let mains: HTMLElement[] = [];
 function mainElement(): HTMLElement {

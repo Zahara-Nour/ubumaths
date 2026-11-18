@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { countAvailableConsumableUses } from '../vip-cards';
-import type { StudentVipCards } from '$lib/types/vip-card';
+import type { StudentVipCards } from '#lib/types/vip-card.ts';
 
 describe('countAvailableConsumableUses', () => {
 	it('returns 0 for empty vip cards', () => {

@@ -22,12 +22,12 @@
 	- onValidate?: () => void
 -->
 <script lang="ts">
-	import { Badge } from '$lib/components/ui/badge';
-	import { Input } from '$lib/components/ui/input';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
 	import { Check } from '@lucide/svelte';
 	import TradeCardSelector from './TradeCardSelector.svelte';
-	import type { VipCardInstance } from '$lib/types/vip-card';
-	import gidouilleImg from '$lib/assets/images/gidouille.png';
+	import type { VipCardInstance } from '#lib/types/vip-card.ts';
+	import gidouilleImg from '#lib/assets/images/gidouille.png';
 
 	// Extended type for cards with instanceId
 	type TradeCard = VipCardInstance & { instanceId: string };

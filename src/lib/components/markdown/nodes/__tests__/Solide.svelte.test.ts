@@ -6,8 +6,8 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import Espace from '../Espace.svelte';
-import { parseEspaceContent } from '$lib/ubumark/parser/espace-parser';
-import { ESPACE_UNAVAILABLE } from '$lib/ubumark/types/espace';
+import { parseEspaceContent } from '#lib/ubumark/parser/espace-parser.ts';
+import { ESPACE_UNAVAILABLE } from '#lib/ubumark/types/espace.ts';
 
 let mains: HTMLElement[] = [];
 function mainElement(): HTMLElement {

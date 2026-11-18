@@ -15,7 +15,7 @@ const ANSI = '\x1b[';
 async function loadLogger(dev: boolean) {
 	vi.resetModules();
 	vi.doMock('$app/env', () => ({ dev, browser: false, building: false, version: '' }));
-	return import('$lib/utils/logger');
+	return import('#lib/utils/logger.ts');
 }
 
 function printed(spy: { mock: { calls: unknown[][] } }): string {

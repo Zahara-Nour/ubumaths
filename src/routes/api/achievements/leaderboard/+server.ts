@@ -19,12 +19,12 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { leaderboardQuerySchema } from '$lib/server/validation/achievements';
+import { leaderboardQuerySchema } from '#lib/server/validation/achievements.ts';
 import {
 	getAchievementLeaderboard,
 	AchievementServiceError
-} from '$lib/server/achievements/service';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/achievements/service.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/achievements/leaderboard/+server');
 

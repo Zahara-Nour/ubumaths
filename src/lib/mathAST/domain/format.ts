@@ -17,13 +17,13 @@ import {
 	formatCondition as intervalsFormatCondition,
 	formatDomainFull as intervalsFormatFull,
 	formatEndpointValue
-} from '$lib/math/intervals/format';
+} from '#lib/math/intervals/format.ts';
 
 // =============================================================================
 // Re-export from intervals
 // =============================================================================
 
-export { formatEndpointValue } from '$lib/math/intervals/format';
+export { formatEndpointValue } from '#lib/math/intervals/format.ts';
 
 // =============================================================================
 // Main API

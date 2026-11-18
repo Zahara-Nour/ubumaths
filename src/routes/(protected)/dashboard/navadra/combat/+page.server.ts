@@ -4,11 +4,11 @@
 
 import type { PageServerLoad, Actions } from './$types';
 import { error, redirect, fail } from '@sveltejs/kit';
-import { generateRandomMonster } from '$lib/utils/game/combat';
-import { getRandomMonsterTemplate, getMonsterImagePaths } from '$lib/data/game/monsters';
-import { startCombatSchema } from '$lib/server/validation/navadra';
-import { toGameMonster, toGamePlayer } from '$lib/types/game';
-import { createServerLogger } from '$lib/utils/logger';
+import { generateRandomMonster } from '#lib/utils/game/combat.ts';
+import { getRandomMonsterTemplate, getMonsterImagePaths } from '#lib/data/game/monsters.ts';
+import { startCombatSchema } from '#lib/server/validation/navadra.ts';
+import { toGameMonster, toGamePlayer } from '#lib/types/game.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('(protected)/dashboard/navadra/combat/+page.server');
 

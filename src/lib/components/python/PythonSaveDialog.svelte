@@ -7,15 +7,15 @@
 	 */
 
 	// Imports
-	import * as Dialog from '$lib/components/ui/dialog';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import { Textarea } from '$lib/components/ui/textarea';
-	import { Label } from '$lib/components/ui/label';
-	import { Switch } from '$lib/components/ui/switch';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Textarea } from '#lib/components/ui/textarea/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import { Switch } from '#lib/components/ui/switch/index.ts';
 	import { Loader2, Save } from '@lucide/svelte';
-	import { pythonStore } from '$lib/stores/pythonPlayground.svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { pythonStore } from '#lib/stores/pythonPlayground.svelte.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 
 	// Props
 	let {

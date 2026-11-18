@@ -6,9 +6,9 @@
  * @module lexicon/runtime
  */
 
-import type { MathTerm } from '$lib/dictionary/model';
-import type { DocumentNode } from '$lib/ubumark';
-import type { GradeCode } from '$lib/types/grades';
+import type { MathTerm } from '#lib/dictionary/model.ts';
+import type { DocumentNode } from '#lib/ubumark/index.ts';
+import type { GradeCode } from '#lib/types/grades.ts';
 import { createLinker, type LinkOptions } from './linker';
 import { lexiconCard, type LexiconCardEntry } from './card';
 

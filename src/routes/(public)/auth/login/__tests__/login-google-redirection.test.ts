@@ -9,17 +9,17 @@ import { isRedirect } from '@sveltejs/kit';
 import { PUBLIC_SUPABASE_URL } from '$app/env/public';
 import { describe, expect, it, vi } from 'vitest';
 
-vi.mock('$lib/utils/logger', () => ({
+vi.mock('#lib/utils/logger.ts', () => ({
 	createServerLogger: () => ({ info: vi.fn(), error: vi.fn(), warn: vi.fn(), debug: vi.fn() })
 }));
 
-vi.mock('$lib/server/rateLimiter', () => ({
+vi.mock('#lib/server/rateLimiter.ts', () => ({
 	checkLoginRateLimitByIP: vi.fn(async () => ({ allowed: true })),
 	checkLoginRateLimitByEmail: vi.fn(async () => ({ allowed: true })),
 	checkOAuthRateLimitByIP: vi.fn(async () => ({ allowed: true }))
 }));
 
-vi.mock('$lib/config/google-login', () => ({ GOOGLE_LOGIN_ENABLED: true }));
+vi.mock('#lib/config/google-login.ts', () => ({ GOOGLE_LOGIN_ENABLED: true }));
 
 const { actions } = await import('../+page.server');
 

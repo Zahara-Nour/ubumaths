@@ -10,10 +10,10 @@ import type { RequestHandler } from './$types';
 import {
 	getTutorConversationQuerySchema,
 	createTutorConversationSchema
-} from '$lib/server/validation/chat';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { getExerciseContentSafe, type Exercise } from '$lib/exercises/types';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/validation/chat.ts';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { getExerciseContentSafe, type Exercise } from '#lib/exercises/types.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/tutor/conversations/+server');
 

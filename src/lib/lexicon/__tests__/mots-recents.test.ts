@@ -6,8 +6,8 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { parseMarkdown, type DocumentNode, type TextNode } from '$lib/ubumark';
-import type { GradeCode } from '$lib/types/grades';
+import { parseMarkdown, type DocumentNode, type TextNode } from '#lib/ubumark/index.ts';
+import type { GradeCode } from '#lib/types/grades.ts';
 import { REFERENCE_DICTIONARY } from '../../../../tests/fixtures/lexique/dictionnaire-reference';
 import { createLinker, type LinkOptions } from '../linker';
 import { lexiconCard } from '../card';

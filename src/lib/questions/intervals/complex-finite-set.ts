@@ -17,12 +17,12 @@
  * @module questions/intervals/complex-finite-set
  */
 
-import type { ConstraintMode } from '$lib/questions/types';
-import { areEquivalent } from '$lib/math';
-import { parseLatexSafe } from '$lib/mathAST/parser';
-import { findNodes } from '$lib/mathAST/transforms';
-import { isVariable } from '$lib/mathAST/guards';
-import { cosmeticViolations } from '$lib/mathAST/cosmetic-transforms';
+import type { ConstraintMode } from '#lib/questions/types.ts';
+import { areEquivalent } from '#lib/math/index.ts';
+import { parseLatexSafe } from '#lib/mathAST/parser/index.ts';
+import { findNodes } from '#lib/mathAST/transforms.ts';
+import { isVariable } from '#lib/mathAST/guards.ts';
+import { cosmeticViolations } from '#lib/mathAST/cosmetic-transforms.ts';
 import type { IntervalVerdict } from './interval-answer';
 
 /** Au-delà, un ensemble n'est pas une liste de solutions (garde de coût : n² comparaisons) */

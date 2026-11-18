@@ -15,7 +15,7 @@
  */
 
 import { z } from 'zod';
-import type { QuestionTemplate } from '$lib/questions/types';
+import type { QuestionTemplate } from '#lib/questions/types.ts';
 
 // ============================================================================
 // TYPES

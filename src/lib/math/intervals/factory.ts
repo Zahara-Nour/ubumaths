@@ -4,9 +4,9 @@
  * All bounds are MathNodes from mathAST, supporting symbolic expressions.
  */
 
-import { number, opposite, infinity } from '$lib/mathAST/factory';
-import { parseCustomPratt } from '$lib/mathAST/parser/custom/parser-pratt';
-import type { MathNode } from '$lib/mathAST/types';
+import { number, opposite, infinity } from '#lib/mathAST/factory.ts';
+import { parseCustomPratt } from '#lib/mathAST/parser/custom/parser-pratt.ts';
+import type { MathNode } from '#lib/mathAST/types.ts';
 import type {
 	Endpoint,
 	EndpointType,

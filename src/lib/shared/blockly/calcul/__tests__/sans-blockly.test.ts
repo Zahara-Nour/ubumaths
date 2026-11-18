@@ -10,7 +10,7 @@ import { dirname, resolve } from 'node:path';
 const RACINE = resolve('src/lib/shared/blockly/calcul');
 const IMPORT = /^\s*(?:import|export)\s[^;]*?from\s+'([^']+)'/gms;
 
-/** Modules importés (relatifs suivis, `$lib/` compris), à partir d'un fichier */
+/** Modules importés (relatifs suivis, `#lib/` compris), à partir d'un fichier */
 function importsDe(fichier: string, vus = new Set<string>()): string[] {
 	if (vus.has(fichier)) return [];
 	vus.add(fichier);
@@ -20,7 +20,7 @@ function importsDe(fichier: string, vus = new Set<string>()): string[] {
 		trouves.push(cible);
 		const local = cible.startsWith('.')
 			? resolve(dirname(fichier), cible)
-			: cible.startsWith('$lib/')
+			: cible.startsWith('#lib/')
 				? resolve('src/lib', cible.slice(5))
 				: null;
 		const fichierLocal = local && [`${local}.ts`, `${local}/index.ts`].find((f) => existsSync(f));

@@ -1,20 +1,20 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import { invalidateAll } from '$app/navigation';
-	import { Button } from '$lib/components/ui/button';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import * as Card from '$lib/components/ui/card';
-	import * as Tabs from '$lib/components/ui/tabs';
-	import { Badge } from '$lib/components/ui/badge';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import ExerciseSelector from '$lib/components/worksheets/ExerciseSelector.svelte';
-	import ExerciseList from '$lib/components/worksheets/ExerciseList.svelte';
-	import ExerciseConfigModal from '$lib/components/worksheets/ExerciseConfigModal.svelte';
-	import PdfPreview from '$lib/components/worksheets/PdfPreview.svelte';
-	import CorrectionManager from '$lib/components/worksheets/CorrectionManager.svelte';
-	import WorksheetAssignmentForm from '$lib/components/worksheets/WorksheetAssignmentForm.svelte';
-	import MetadataCards from '$lib/components/worksheets/MetadataCards.svelte';
-	import ErrorReportsPanel from '$lib/components/worksheets/teacher/ErrorReportsPanel.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import * as Tabs from '#lib/components/ui/tabs/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import ExerciseSelector from '#lib/components/worksheets/ExerciseSelector.svelte';
+	import ExerciseList from '#lib/components/worksheets/ExerciseList.svelte';
+	import ExerciseConfigModal from '#lib/components/worksheets/ExerciseConfigModal.svelte';
+	import PdfPreview from '#lib/components/worksheets/PdfPreview.svelte';
+	import CorrectionManager from '#lib/components/worksheets/CorrectionManager.svelte';
+	import WorksheetAssignmentForm from '#lib/components/worksheets/WorksheetAssignmentForm.svelte';
+	import MetadataCards from '#lib/components/worksheets/MetadataCards.svelte';
+	import ErrorReportsPanel from '#lib/components/worksheets/teacher/ErrorReportsPanel.svelte';
 	import {
 		ArrowLeft,
 		Send,
@@ -39,20 +39,20 @@
 		WorksheetSectionRow,
 		WorksheetExerciseWithExercise,
 		WorksheetAssignmentWithRelations
-	} from '$lib/types/worksheets';
+	} from '#lib/types/worksheets.ts';
 	import {
 		WORKSHEET_TYPE_ICONS,
 		WORKSHEET_TYPE_LABELS,
 		WORKSHEET_STATUS_VARIANTS,
 		WORKSHEET_STATUS_LABELS,
 		ASSIGNMENT_STATUS_LABELS
-	} from '$lib/utils/worksheet-constants';
-	import type { Exercise } from '$lib/exercises/types';
-	import { worksheetLocale } from '$lib/types/worksheets';
-	import { worksheetHeader } from '$lib/worksheets/worksheet-header';
-	import { assignmentCopiesHref } from '$lib/navigation/return-links';
-	import UntranslatedExercisesNotice from '$lib/components/worksheets/UntranslatedExercisesNotice.svelte';
-	import WorksheetCitationsNotice from '$lib/components/worksheets/WorksheetCitationsNotice.svelte';
+	} from '#lib/utils/worksheet-constants.ts';
+	import type { Exercise } from '#lib/exercises/types.ts';
+	import { worksheetLocale } from '#lib/types/worksheets.ts';
+	import { worksheetHeader } from '#lib/worksheets/worksheet-header.ts';
+	import { assignmentCopiesHref } from '#lib/navigation/return-links.ts';
+	import UntranslatedExercisesNotice from '#lib/components/worksheets/UntranslatedExercisesNotice.svelte';
+	import WorksheetCitationsNotice from '#lib/components/worksheets/WorksheetCitationsNotice.svelte';
 
 	let { data }: { data: PageData } = $props();
 

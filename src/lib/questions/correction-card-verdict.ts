@@ -12,8 +12,8 @@
 
 import type { QuestionInstance, ValidationStatus } from './types';
 import { gradeQuestion } from './grading';
-import type { StudentAnswer } from '$lib/utils/answer-validator';
-import type { AnswerData } from '$lib/types/question-display';
+import type { StudentAnswer } from '#lib/utils/answer-validator.ts';
+import type { AnswerData } from '#lib/types/question-display.ts';
 import { withoutBuildCases, withoutFigureCases, withoutSignTableCases } from './expected-result';
 
 // Types

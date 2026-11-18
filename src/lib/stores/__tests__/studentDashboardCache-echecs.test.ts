@@ -8,7 +8,7 @@
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { StudentDashboardCache } from '../studentDashboardCache.svelte';
-import type { StudentProfile } from '$lib/types/student-cache';
+import type { StudentProfile } from '#lib/types/student-cache.ts';
 
 const originalFetch = global.fetch;
 

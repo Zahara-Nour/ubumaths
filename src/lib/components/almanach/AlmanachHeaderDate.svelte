@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
-	import { formatMedium, formatShort, type PataphysicalDate } from '$lib/almanach/calendar';
+	import { formatMedium, formatShort, type PataphysicalDate } from '#lib/almanach/calendar.ts';
 
 	// Date calculée côté serveur (fuseau de Paris) : pas d'écart à l'hydratation
 	let { date }: { date: PataphysicalDate } = $props();

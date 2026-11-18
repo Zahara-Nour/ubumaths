@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import { onMount } from 'svelte';
-	import { friendsManager, type ClassmateInfo } from '$lib/stores/friends.svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import UserAvatar from '$lib/components/UserAvatar.svelte';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
+	import { friendsManager, type ClassmateInfo } from '#lib/stores/friends.svelte.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import UserAvatar from '#lib/components/UserAvatar.svelte';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
 	import { Search, UserPlus, Check, Clock, UserX, Users, Loader2 } from '@lucide/svelte';
 
 	let searchQuery = $state('');

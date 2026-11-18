@@ -13,8 +13,8 @@
 
 import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { filterGalleryTemplates } from '$lib/server/notebook-template-gallery';
-import { createServerLogger } from '$lib/utils/logger';
+import { filterGalleryTemplates } from '#lib/server/notebook-template-gallery.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger(
 	'(protected)/dashboard/teacher/contenu/notebooks/templates/+page.server'

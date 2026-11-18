@@ -12,20 +12,20 @@
 	import { enhance } from '$app/forms';
 	import { resolve } from '$app/paths';
 	import type { SubmitFunction } from '$app/forms';
-	import type { QuestionTemplateRow } from '$lib/types/question-template';
-	import { toQuestionTemplate } from '$lib/types/question-template';
-	import type { SheetPoint, TemplateReview, Verdict } from '$lib/questions/template-review';
-	import { VERDICT_LABELS } from '$lib/questions/template-review';
+	import type { QuestionTemplateRow } from '#lib/types/question-template.ts';
+	import { toQuestionTemplate } from '#lib/types/question-template.ts';
+	import type { SheetPoint, TemplateReview, Verdict } from '#lib/questions/template-review.ts';
+	import { VERDICT_LABELS } from '#lib/questions/template-review.ts';
 	import {
 		QUESTION_TYPE_LABELS,
 		getQuestionType,
 		type ValidationStatus
-	} from '$lib/questions/types';
-	import VariationPreview from '$lib/components/dev/VariationPreview.svelte';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Button } from '$lib/components/ui/button';
-	import { Textarea } from '$lib/components/ui/textarea';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	} from '#lib/questions/types.ts';
+	import VariationPreview from '#lib/components/dev/VariationPreview.svelte';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Textarea } from '#lib/components/ui/textarea/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import { ChevronDown, ChevronRight, TriangleAlert } from '@lucide/svelte';
 
 	// Types

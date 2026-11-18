@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	/**
 	 * DriveFilePicker - Modal dialog to select whiteboard file from Google Drive
 	 *
@@ -9,11 +9,11 @@
 	 * - Sorted by modification time (newest first)
 	 */
 
-	import * as Dialog from '$lib/components/ui/dialog';
-	import { Button } from '$lib/components/ui/button';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import { Loader2, FileText, AlertCircle } from '@lucide/svelte';
 	import { driveSyncService, type DriveFile } from '../services/drive-sync';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 
 	// ==========================================================================
 	// Props

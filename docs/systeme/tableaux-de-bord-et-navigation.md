@@ -108,7 +108,7 @@ Dans l'ordre :
    boîte entière est sur « Mon travail » (`getStudentWorkInbox`).
 2. **Tuile « Ma progression »** vers `/dashboard/student/progression`, si l'élève a un
    programme pour son niveau ou une compétence observée. Elle compte les notions atteintes et en
-   cours. Ses chiffres viennent de `$lib/server/progression`, la même source que la page. Une lecture en échec retire la tuile
+   cours. Ses chiffres viennent de `#lib/server/progression`, la même source que la page. Une lecture en échec retire la tuile
    sans fermer l'accueil.
 3. **Tuile « Énigmes »** vers `/dashboard/student/riddles`, seule entrée vers les énigmes
    (#1121). Elle affiche le nombre d'énigmes résolues (`riddle_attempts` où `is_correct`), ou

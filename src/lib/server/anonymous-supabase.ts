@@ -11,7 +11,7 @@
  */
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$app/env/public';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 
 export function createAnonymousSupabase(): SupabaseClient<Database> {
 	return createClient<Database>(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {

@@ -7,7 +7,7 @@
  *
  * @example
  * ```typescript
- * import { createTestUser, createTestListing } from '$tests/helpers';
+ * import { createTestUser, createTestListing } from '#tests/helpers/index.ts';
  *
  * const seller = createTestUser('student');
  * const listing = createTestListing(seller.id, 'school-1');

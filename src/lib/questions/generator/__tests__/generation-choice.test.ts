@@ -10,10 +10,10 @@ import { describe, it, expect } from 'vitest';
 import { generateInstance } from '../instance-generator';
 import { assignBlankIndices } from '../assign-blank-indices';
 import type { QuestionInstance, QuestionTemplate, QuestionVariation } from '../../types';
-import { templateMarkdown } from '$lib/ubumark';
-import { validateTemplate } from '$lib/questions/validators/template-validator';
-import { choiceAnswerCountErrors } from '$lib/questions/validators/choice-answer-count';
-import { findChoiceBlocks, parseChoiceBody } from '$lib/ubumark/parser/choix-parser';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
+import { validateTemplate } from '#lib/questions/validators/template-validator.ts';
+import { choiceAnswerCountErrors } from '#lib/questions/validators/choice-answer-count.ts';
+import { findChoiceBlocks, parseChoiceBody } from '#lib/ubumark/parser/choix-parser.ts';
 
 // Fixtures
 type LooseVariation = Omit<QuestionVariation, 'statement'> & { statement: string };

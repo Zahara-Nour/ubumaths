@@ -13,11 +13,11 @@
 
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAdmin } from '$lib/server/middleware/auth';
-import { updateUserFieldsSchema } from '$lib/server/validation/admin';
-import type { Database } from '$lib/types/database';
-import type { TablesUpdate } from '$lib/types/database';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireAdmin } from '#lib/server/middleware/auth.ts';
+import { updateUserFieldsSchema } from '#lib/server/validation/admin.ts';
+import type { Database } from '#lib/types/database.ts';
+import type { TablesUpdate } from '#lib/types/database.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/admin/users/[id]/+server');
 

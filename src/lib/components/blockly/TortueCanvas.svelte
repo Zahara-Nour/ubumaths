@@ -11,8 +11,12 @@
   Sans Blockly : n'importe que `segments.ts` et des types (rendu côté serveur, corrigé, aperçu).
 -->
 <script lang="ts">
-	import { DEMI_COTE_CADRE, sortDuCadre, type Segment } from '$lib/shared/blockly/tortue/segments';
-	import type { EtatTortue } from '$lib/shared/blockly/tortue/interpreteur';
+	import {
+		DEMI_COTE_CADRE,
+		sortDuCadre,
+		type Segment
+	} from '#lib/shared/blockly/tortue/segments.ts';
+	import type { EtatTortue } from '#lib/shared/blockly/tortue/interpreteur.ts';
 
 	// =============================================================================
 	// Types

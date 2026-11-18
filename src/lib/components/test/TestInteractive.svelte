@@ -38,25 +38,25 @@
 -->
 
 <script lang="ts">
-	import { computeTestScore } from '$lib/utils/test-score';
-	import type { ClassroomItem, TestResult, TestAnswerResult } from '$lib/types/test';
-	import type { AnswerData } from '$lib/types/question-display';
-	import QuestionCard from '$lib/components/questions/QuestionCard.svelte';
+	import { computeTestScore } from '#lib/utils/test-score.ts';
+	import type { ClassroomItem, TestResult, TestAnswerResult } from '#lib/types/test.ts';
+	import type { AnswerData } from '#lib/types/question-display.ts';
+	import QuestionCard from '#lib/components/questions/QuestionCard.svelte';
 	import TestResults from './TestResults.svelte';
-	import type { BuddyGainView } from '$lib/components/buddy/buddy-gain';
-	import type { MathouNews } from '$lib/mathoux/news';
+	import type { BuddyGainView } from '#lib/components/buddy/buddy-gain.ts';
+	import type { MathouNews } from '#lib/mathoux/news.ts';
 	import TestTimer from './TestTimer.svelte';
-	import { Progress } from '$lib/components/ui/progress';
-	import { Button } from '$lib/components/ui/button';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import { automathsQuitLink } from '$lib/navigation/return-links';
-	import * as Card from '$lib/components/ui/card';
+	import { Progress } from '#lib/components/ui/progress/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import { automathsQuitLink } from '#lib/navigation/return-links.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
 	import { ArrowLeft, LogIn } from '@lucide/svelte';
 	import { SvelteMap } from 'svelte/reactivity';
-	import { slideFromRight, slideToLeft } from '$lib/transitions/slide-transition';
-	import { isCourseCard } from '$lib/questions/types';
-	import { createSeanceReactions } from '$lib/components/buddy/seance-reactions';
-	import { buildSeriesTrace, type TraceRecorder } from '$lib/questions/series-trace';
+	import { slideFromRight, slideToLeft } from '#lib/transitions/slide-transition.ts';
+	import { isCourseCard } from '#lib/questions/types.ts';
+	import { createSeanceReactions } from '#lib/components/buddy/seance-reactions.ts';
+	import { buildSeriesTrace, type TraceRecorder } from '#lib/questions/series-trace.ts';
 
 	// Types
 	interface Props {
