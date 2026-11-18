@@ -107,7 +107,7 @@ Lecture des questions sous un point : **A** — les questions rattachées au poi
 
 ### 2026-11-18 — PR 3a, réalisation
 
-- `CatalogueNotionNav` (liste à compteurs, colonne `lg` / Sheet du bas), `CatalogueNotionSections` (pastilles collantes, sections dépliées), `LazyCatalogueGallery` (IntersectionObserver, 800 px d'avance ; pastille → sections du dessus calculées avant le défilement), `notionTemplateCount`, cartes 9rem sur téléphone (`--catalogue-card-height`).
+- `CatalogueNotionNav` (liste à compteurs, colonne `lg` / Sheet du bas), `CatalogueNotionSections` (pastilles collantes, sections dépliées), `LazyCatalogueGallery` (IntersectionObserver, 800 px d'avance ; pastille → sections du dessus calculées avant le défilement), `notionTemplateCount`, cartes 9rem sur téléphone (`--tile-card-height` déclarée dans `QuestionPreviewCard` : la garde `block-css-vars` refuse une variable lue dans un fichier qui ne la déclare pas).
 - Tests : `catalogue-navigation` (10) + anciens tests adaptés (helpers `catalogue-helpers.ts`) ; rouges sur l'ancienne page (13/15), 47 verts.
 - Piège de test : `getByRole('navigation', { name: 'Notions' })` attrape aussi « Sous-notions » → `exact: true`. `getByText('2 questions')` attrapait le titre de section → `exact: true`.
 - Vu en dev (grand écran, base locale) : pastille → section juste sous les pastilles ; changer de notion après avoir descendu → remonte en haut. Largeur téléphone non vérifiable dans Chrome (largeur minimale de fenêtre) : couverte par les tests à 390 px.

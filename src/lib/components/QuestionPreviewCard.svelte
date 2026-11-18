@@ -35,7 +35,7 @@
 	}
 </script>
 
-<div class="flex h-full flex-col gap-3">
+<div class="tile flex h-full flex-col gap-3" style:--tile-card-default={TILE_CARD_HEIGHT}>
 	<!-- Intitulé : titre et description du modèle (branche, notion et sous-notion
 	     sont affichées par la page : liste des notions, section) -->
 	<!-- flex-1 : la zone s'étire, les cartes d'une même rangée commencent à la même hauteur -->
@@ -56,13 +56,8 @@
 	</div>
 
 	<!-- La flash-card elle-même -->
-	<!-- Hauteur réglable par la grille (plus basse sur téléphone), 12rem sinon -->
-	<FlashCard
-		instance={preview}
-		interactive={false}
-		size="sm"
-		height={`var(--catalogue-card-height, ${TILE_CARD_HEIGHT})`}
-	/>
+	<!-- Plus basse sur téléphone (règle .tile ci-dessous) -->
+	<FlashCard instance={preview} interactive={false} size="sm" height="var(--tile-card-height)" />
 
 	<!-- Ajout au panier, ou retrait -->
 	<div class="flex justify-end">
@@ -86,6 +81,17 @@
 </div>
 
 <style>
+	/* Hauteur de la flash-card : celle des tuiles (12rem), 9rem sur téléphone (< 640 px) */
+	.tile {
+		--tile-card-height: var(--tile-card-default);
+	}
+
+	@media (width < 40rem) {
+		.tile {
+			--tile-card-height: 9rem;
+		}
+	}
+
 	/*
 	 * Tailles de l'intitulé. `app.css` impose `main p { font-size: …1rem… !important }`
 	 * (réglage « A − / + ») : une classe Tailwind ne suffit pas. Ces règles, plus

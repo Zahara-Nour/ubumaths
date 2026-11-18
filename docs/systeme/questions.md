@@ -200,7 +200,7 @@ Seul `series.ts` concerne les questions : composition d'une série (`seriesItemS
   dépliée au départ. La notion (`CatalogueNotionSections`) montre ses sous-notions toutes dépliées,
   avec des pastilles à compteurs collées en haut qui y descendent (les sections du dessus sont
   d'abord calculées, pour que la cible ne glisse pas). Cartes plus basses sur téléphone (9rem au
-  lieu de 12rem, variable `--catalogue-card-height` posée par `CatalogueGallery`).
+  lieu de 12rem, variable `--tile-card-height` de `QuestionPreviewCard`, règle `@media`).
   Les modèles posés sur la notion elle-même forment la rubrique « Général », en tête ; une branche,
   notion ou sous-notion sans modèle publié n'apparaît pas ; un modèle hors de l'arbre lu va dans
   « Non classés » (jamais perdu). **Filtre par niveau** (`filterTemplatesByGrade`, appliqué avant le

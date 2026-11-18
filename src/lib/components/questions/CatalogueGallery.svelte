@@ -51,8 +51,7 @@
 {:else if cards.length === 0}
 	<p class="text-sm text-muted-foreground">Aucun aperçu disponible pour cette rubrique.</p>
 {:else}
-	<!-- Cartes plus basses sur téléphone seulement -->
-	<div class="grid gap-4 max-sm:[--catalogue-card-height:9rem] sm:grid-cols-2 lg:grid-cols-3">
+	<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
 		{#each cards as card (card.template.id)}
 			<QuestionPreviewCard template={card.template} preview={card.preview} />
 		{/each}
