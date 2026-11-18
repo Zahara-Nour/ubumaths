@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, PR `fix/deploy-prod-attente` ouverte._
+_Mis à jour le 2026-11-18, après #2850._
 
-- **État** : #2814 à #2830 en prod (0.96.0). #2835 mergée : `version` (= `Date.now()`) retiré de la config Svelte passée à ESLint (empreinte de cache qui changeait à chaque lancement). Ne suffit pas en CI : nocturne à cache restauré = 31 min. `fix/deploy-prod-attente` : attente max de `deploy:prod` 1500 → 2700 s.
-- **Prochaine action** : merger `fix/deploy-prod-attente` ; puis les petites dépréciations de kit 3 (`goto` avec options 10, `pushState`/`replaceState` 15, `error(N, { message })` 36, `invalidateAll` 54). `json()`/`text()` (≈ 368 fichiers) REPORTÉS. Puis clore (versement). **Cache ESLint en CI : cause NON trouvée** (§ « Cache ESLint en CI » ci-dessous), recherche mise de côté.
+- **État** : #2814 à #2830 en prod (0.96.0). #2835 mergée : `version` (= `Date.now()`) retiré de la config Svelte passée à ESLint (empreinte de cache qui changeait à chaque lancement). Ne suffit pas en CI : nocturne à cache restauré = 31 min. #2850 mergée : attente max de `deploy:prod` 1500 → 2700 s (pas encore en prod).
+- **Prochaine action** : les petites dépréciations de kit 3 (`goto` avec options 10, `pushState`/`replaceState` 15, `error(N, { message })` 36, `invalidateAll` 54). `json()`/`text()` (≈ 368 fichiers) REPORTÉS. Puis clore (versement). **Cache ESLint en CI : cause NON trouvée** (§ « Cache ESLint en CI » ci-dessous), recherche mise de côté.
 - **En attente de David** : rien.
 - **Pièges en cours** : `#lib` exige l'extension écrite (garde `imports-lib-avec-extension`, qui exclut le test de `migrer:diese`) ; limite connue du lint de PR : props importées d'un autre `.svelte` ou type indirect → seul le nocturne les voit ; commitlint refuse un sujet qui commence par une majuscule (« ESLint… ») ; `appNavigationMock` ; suite client en local avec `CI=true`.
-- **Worktree / branche** : `../ubumaths-wt-mises-a-jour` · `fix/deploy-prod-attente`.
+- **Worktree / branche** : aucun.
 
 ## Origine
 
