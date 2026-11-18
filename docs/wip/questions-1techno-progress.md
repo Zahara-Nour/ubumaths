@@ -15,7 +15,7 @@ _Mis à jour le 2026-11-18, pendant le lot 5 (aucune PR encore)._
   https://claude.ai/artifact/CVjnD1cXJukRJRcxujjtry (`verdicts`, vide).
 - **Prochaine action** : rendus de N1-N3 validés par David → PR des fichiers (revue : aucune, contenu) → David
   `create-questions --publier` → migration (nœud + tag de N1-N3 ; `1_TECHNO` + tag des 4 communs si « ok »).
-- **En attente de David** : rendus de N1-N3 (aperçu Tailscale) ; verdicts des 4 communs.
+- **En attente de David** : rendus de N1-N3 (aperçu Tailscale). Communs : 4 « ok » sur 4.
 - **Pièges en cours** : `db:migrate` pousse tout ce qui attend ; questions-1gen n'a pas de session ouverte : la
   prévenir avant la migration des communs ; aperçu Tailscale (443 → 5176, 8443 → 54321) à fermer après la relecture.
 - **Worktree / branche** : `ubumaths-wt-questions-1techno`, `feat/questions-1techno-lot5`.
@@ -843,3 +843,5 @@ n'ouvre ni `[::1]` ni `127.0.0.1` (Vite écoute sur `::1`) : aperçu par Tailsca
 Communs : instantanés prod dans `scripts/questions/1techno-5-communs/` ; page à cocher
 https://claude.ai/artifact/CVjnD1cXJukRJRcxujjtry (`db`, `verdicts` vide) ; alerte : le `nuage` de 7461bb44 n'est pas
 dessiné par la page, à jouer dans l'aperçu.
+
+Verdicts des communs : 4 « ok » sur 4, sans commentaire (collection `verdicts`, lue).
