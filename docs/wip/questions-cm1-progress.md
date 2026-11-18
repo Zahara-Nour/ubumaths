@@ -1746,3 +1746,11 @@ avant. Les modèles publiés sont lus comme les autres ; la migration ne fait qu
    modèles « par formule » et « par comptage » se mélangent sous Aires.
 3. Jumeaux CM2 (mêmes intitulés, aucun modèle) : niveaux « CM1 et CM2 » et tags sur les deux points ? Reco :
    oui pour 086, 087, 089, 090, 091 (c'est le même attendu au CM2) ; non pour 088 (le CM2 ajoute dm² et m²).
+
+### 22 bis. Lot 8b : décisions (David, 2026-11-18)
+
+- « go » sur les 6 modèles du § 22.
+- Rangement : **nouvelle sous-notion « aires sur quadrillage »** sous Aires (modèles 1 et 2) ; créée par la
+  migration nœud + tag.
+- Jumeaux CM2 : niveaux **CM1 et CM2**, tag sur les deux points pour 086/071, 087/072, 089/076, 090/077, 091/078 ;
+  le 088 (cm²) reste CM1 seul.
