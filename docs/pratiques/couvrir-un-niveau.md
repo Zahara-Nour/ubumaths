@@ -280,7 +280,12 @@ niveau chacune (`idx_question_templates_unique_category`).
    Une fiche par fichier du lot, **un exemple par variation tiré par le vrai générateur**
    (`generateInstance`, graine fixe : page reproductible). Les blocs `figure`, `monnaie`,
    `collection`, `horloge` et `courbe` sont dessinés par les scènes de l'appli (à construire :
-   réserve, plan vide, et la construction juste à part) ; les blocs `solide` (arêtes cachées en tirets,
+   réserve, plan vide, et la construction juste à part) ; un bloc `figure-a-completer` montre la
+   figure de départ, et à part la construction juste en vert, calculée par les fonctions de la
+   correction de l'appli (`solutionLines`, `solutionPoints`) pour trois vérifications : droite à
+   construire (`droite p = perpendiculaire(A, d)`, `parallele`…), `symetrique par d` et
+   `point A' = …` ; pour une autre vérification, la figure de départ seule et une alerte (la
+   solution se voit dans l'aperçu) ; les blocs `solide` (arêtes cachées en tirets,
    faces marquées, section) et `cubes` (trois teintes ; un geste `dessiner:` / `retrouver:` est signalé,
    la perspective seule dessinée) le sont par `buildSolideScene` et `buildEspaceScene` ; un bloc `variation` (tableau de signes ou
    de variations) est lu par le parseur de l'appli et dessiné comme `VariationTable.svelte` (valeurs

@@ -193,6 +193,85 @@ describe('dessinerBlocs', () => {
 		expect(r.markdown).toContain('<line ');
 	});
 
+	/** Les traits verts d'une solution, en coordonnées d'écran */
+	const traitsVerts = (svg: string) =>
+		[
+			...svg.matchAll(
+				/<line class="fig-solution" x1="([\d.-]+)" y1="([\d.-]+)" x2="([\d.-]+)" y2="([\d.-]+)"/g
+			)
+		].map((m) => m.slice(1).map(Number));
+
+	it('figure-a-completer, perpendiculaire : la figure de départ, et la bonne droite en vert à part', () => {
+		const r = dessinerBlocs(
+			'```figure-a-completer\nfenetre: 0 ; 14 ; 0 ; 10\ngrille: 1\noutils: droite, equerre\nverifier: droite p = perpendiculaire(A, d)\n---\nm = point(0, 3, visible=faux)\nn = point(14, 3, visible=faux)\nd = droite(m, n)\nA = point(6, 7)\n```'
+		);
+		expect(r.nonDessines).toEqual([]);
+		expect(r.avertissements).toEqual([]);
+		expect(surUneLigne(r.markdown)).toBe(true);
+		expect(r.markdown).toMatch(new RegExp(`^${HTML}<svg class="fig"`));
+		expect(r.markdown).not.toContain('fig-solution');
+		expect(r.solutions).toHaveLength(1);
+		// d horizontale : la perpendiculaire par A (x = 6) est verticale
+		const traits = traitsVerts(r.solutions[0]);
+		expect(traits).toHaveLength(1);
+		const [x1, y1, x2, y2] = traits[0];
+		expect(x1).toBeCloseTo(x2);
+		expect(Math.abs(y2 - y1)).toBeGreaterThan(0);
+	});
+
+	it('figure-a-completer, parallèle : la bonne droite a la direction de d', () => {
+		const r = dessinerBlocs(
+			'```figure-a-completer\nfenetre: 0 ; 14 ; 0 ; 10\ngrille: 1\noutils: droite, equerre\nverifier: droite q = parallele(A, d)\n---\nm = point(0, 0, visible=faux)\nn = point(10, 10, visible=faux)\nd = droite(m, n)\nA = point(4, 7)\n```'
+		);
+		expect(r.nonDessines).toEqual([]);
+		expect(r.solutions).toHaveLength(1);
+		const traits = traitsVerts(r.solutions[0]);
+		expect(traits).toHaveLength(1);
+		const [x1, y1, x2, y2] = traits[0];
+		// d en diagonale montante : à l'écran (y vers le bas), la pente vaut -1
+		expect((y2 - y1) / (x2 - x1)).toBeCloseTo(-1);
+	});
+
+	it('figure-a-completer, symétrique par d : un trait vert par côté de la figure', () => {
+		const r = dessinerBlocs(
+			'```figure-a-completer\nfenetre: 0 ; 12 ; 0 ; 8\ngrille: 1\nverifier: symetrique par d\n---\nm = point(6, 0, visible=faux)\nn = point(6, 8, visible=faux)\nd = droite(m, n)\nA = point(6, 1, visible=faux)\nB = point(3, 2, visible=faux)\nC = point(6, 6, visible=faux)\ns1 = segment(A, B)\ns2 = segment(B, C)\n```'
+		);
+		expect(r.nonDessines).toEqual([]);
+		expect(r.avertissements).toEqual([]);
+		expect(r.solutions).toHaveLength(1);
+		expect(traitsVerts(r.solutions[0])).toHaveLength(2);
+	});
+
+	it('figure-a-completer, point symétrique : le point attendu en vert, avec son nom', () => {
+		const r = dessinerBlocs(
+			"```figure-a-completer\nfenetre: 0 ; 12 ; 0 ; 8\ngrille: 1\noutils: point\nverifier: point A' = symetrie(A, axe=d)\n---\nm = point(6, 0, visible=faux)\nn = point(6, 8, visible=faux)\nd = droite(m, n)\nA = point(2, 3)\n```"
+		);
+		expect(r.nonDessines).toEqual([]);
+		expect(r.solutions).toHaveLength(1);
+		expect(r.solutions[0]).toContain('<circle class="fig-solution-point"');
+		expect(r.solutions[0]).toMatch(/>A(?:'|&#39;|’)</);
+	});
+
+	it('figure-a-completer, autre vérification : la figure de départ, la solution signalée', () => {
+		const r = dessinerBlocs(
+			'```figure-a-completer\nfenetre: 0 ; 10 ; 0 ; 8\ngrille: 1\nverifier: droite_par A ; B\n---\nA = point(1, 1)\nB = point(8, 6)\n```'
+		);
+		expect(r.nonDessines).toEqual([]);
+		expect(r.markdown).toMatch(new RegExp(`^${HTML}<svg class="fig"`));
+		expect(r.solutions).toEqual([]);
+		expect(r.avertissements).toEqual([
+			'bloc figure-a-completer : solution de « droite_par » non dessinée, la voir dans l’aperçu'
+		]);
+	});
+
+	it('figure-a-completer en erreur : la page s’arrête', () => {
+		expect(() =>
+			dessinerBlocs(
+				'```figure-a-completer\nfenetre: 0 ; 10 ; 0 ; 8\nverifier: rien du tout\n---\nA = point(1, 1)\n```'
+			)
+		).toThrow(/bloc figure-a-completer en erreur/);
+	});
+
 	it('courbe : le SVG de la scène de Courbe.svelte (termes d’une suite, escalier)', () => {
 		const r = dessinerBlocs(
 			'```courbe\nx: -1 ; 9\ny: -1 ; 8\nu(n) = 3+n/2 pour n de 0 à 8   bleu   nom=u_n\n```'
