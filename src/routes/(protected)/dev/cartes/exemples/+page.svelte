@@ -44,7 +44,7 @@
 		<p class="subtitle">Explore different ways to use the VipCardHolo component</p>
 
 		<nav class="examples-nav">
-			<a href={resolve('/dev/cartes')}>← Back to Gallery</a>
+			<a href={resolve('dev/cartes')}>← Back to Gallery</a>
 		</nav>
 	</header>
 

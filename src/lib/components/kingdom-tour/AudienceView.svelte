@@ -9,7 +9,7 @@
 	 * sont des `<details>` natifs : repliées, mais leurs réponses restent dans la page, et
 	 * reprises en données structurées FAQPage.
 	 */
-	import { resolve } from '$app/paths';
+	import { resolvePath } from '$lib/navigation/resolve-path';
 	import {
 		BookOpen,
 		Calculator,
@@ -198,7 +198,7 @@
 			<nav class="others" aria-label="Les autres visites">
 				<span>Vous êtes plutôt :</span>
 				{#each others as audience (audience.id)}
-					<a href={resolve(audience.href)}>{audience.label}</a>
+					<a href={resolvePath(audience.href)}>{audience.label}</a>
 				{/each}
 			</nav>
 		</div>

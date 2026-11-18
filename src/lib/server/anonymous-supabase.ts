@@ -10,7 +10,7 @@
  * @module lib/server/anonymous-supabase
  */
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
-import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
+import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$app/env/public';
 import type { Database } from '$lib/types/database';
 
 export function createAnonymousSupabase(): SupabaseClient<Database> {

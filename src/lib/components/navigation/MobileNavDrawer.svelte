@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { resolve } from '$app/paths';
+	import { resolvePath } from '$lib/navigation/resolve-path';
 	import * as Sheet from '$lib/components/ui/sheet';
 	import { theme } from '$lib/stores/theme.svelte';
 	import { fontSize } from '$lib/stores/fontSize.svelte';
@@ -72,7 +72,7 @@
 
 {#snippet itemLink(item: NavItem)}
 	<a
-		href={resolve(item.href as '/')}
+		href={resolvePath(item.href)}
 		data-sveltekit-preload-data="tap"
 		onclick={handleNavClick}
 		class="flex items-center gap-3 px-4 py-3 text-base transition-colors

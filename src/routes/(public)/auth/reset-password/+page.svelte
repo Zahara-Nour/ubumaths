@@ -66,7 +66,7 @@
 				<Button type="submit" class="w-full">Envoyer le lien</Button>
 
 				<div class="text-center text-sm">
-					<a href={resolve('/auth/login')} class="font-medium text-primary hover:underline"
+					<a href={resolve('auth/login')} class="font-medium text-primary hover:underline"
 						>Retour à la connexion</a
 					>
 				</div>

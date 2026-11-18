@@ -99,7 +99,7 @@
 
 			// Redirect to home after a short delay
 			setTimeout(() => {
-				goto(resolve('/'), { replaceState: true, invalidateAll: true });
+				goto(resolve(''), { replaceState: true, invalidateAll: true });
 			}, 500);
 		} catch (err) {
 			console.error('Account deletion error:', err);

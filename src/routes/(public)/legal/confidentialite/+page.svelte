@@ -23,7 +23,7 @@
 				<li><strong>Responsable</strong> : [À COMPLÉTER]</li>
 				<li><strong>Adresse</strong> : [À COMPLÉTER]</li>
 				<li><strong>Email de contact</strong> : contact@chiph.re</li>
-				<li><strong>Site web</strong> : <a href={resolve('/')}>chiph.re</a></li>
+				<li><strong>Site web</strong> : <a href={resolve('')}>chiph.re</a></li>
 			</ul>
 		</section>
 

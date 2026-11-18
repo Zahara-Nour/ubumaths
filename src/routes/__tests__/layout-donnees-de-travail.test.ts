@@ -10,7 +10,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { enforceWorkDataOwner, watchWorkDataOwnerOnce } from '$lib/utils/work-data';
 
 vi.mock('$app/env', () => ({ browser: true }));
-vi.mock('$env/static/public', () => ({
+vi.mock('$app/env/public', () => ({
 	PUBLIC_SUPABASE_URL: 'http://localhost',
 	PUBLIC_SUPABASE_ANON_KEY: 'anon'
 }));

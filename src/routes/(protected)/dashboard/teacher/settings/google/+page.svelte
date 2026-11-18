@@ -96,7 +96,7 @@
 			toaster.success('Compte Google connecté avec succès');
 
 			// Clean up URL (remove query param)
-			const url = new URL(page.url);
+			const url = new URL(page.url.href);
 			url.searchParams.delete('connected');
 			await goto(url.pathname, { replaceState: true });
 		}

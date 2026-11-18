@@ -706,7 +706,7 @@
 						>
 							L'emploi du temps de cette classe n'est pas renseigné : les échéances sont saisies
 							librement.
-							<a class="font-medium underline" href={resolve('/dashboard/teacher/classes')}>
+							<a class="font-medium underline" href={resolve('dashboard/teacher/classes')}>
 								Renseigner l'emploi du temps
 							</a>
 						</p>
@@ -934,8 +934,7 @@
 				{#if data.curriculumTree.length === 0}
 					<p class="text-sm text-muted-foreground">
 						Aucun programme défini pour le niveau de cette classe.
-						<a class="underline" href={resolve('/dashboard/teacher/programme')}>Voir le programme</a
-						>
+						<a class="underline" href={resolve('dashboard/teacher/programme')}>Voir le programme</a>
 					</p>
 				{:else}
 					<div class="space-y-1">

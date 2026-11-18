@@ -65,7 +65,7 @@
 	// Functions
 	/** La recherche de l'adresse actuelle, modifiée (`tous`, vide ou null retirent la clé) */
 	function queryWith(changes: Record<string, string | null>): string {
-		const params = new SvelteURLSearchParams(page.url.searchParams);
+		const params = new SvelteURLSearchParams(page.url.search);
 		for (const [k, v] of Object.entries(changes)) {
 			if (v === null || v === '' || v === 'tous') params.delete(k);
 			else params.set(k, v);

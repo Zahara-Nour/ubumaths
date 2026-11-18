@@ -186,7 +186,7 @@
 	 * Retire la composition de l'URL : un rechargement ne redemande rien (Q45)
 	 */
 	function clearSeriesParam() {
-		const url = new URL(page.url);
+		const url = new URL(page.url.href);
 		deleteSeriesLink(url.searchParams);
 		replaceState(`${url.pathname}${url.search}${url.hash}`, page.state);
 	}

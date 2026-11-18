@@ -8,6 +8,7 @@
  */
 import { lore } from '$lib/config/lore';
 import { exerciseAnchorHash } from '$lib/worksheets/exercise-anchor';
+import type { ReadonlyURLSearchParams } from '$app/state';
 
 export const FROM_PARAM = 'depuis';
 
@@ -32,7 +33,10 @@ export function studentFollowUpHref(studentId: string, fromClassId?: string): st
 	return `${href}?${FROM_PARAM}=analytique&${CLASS_PARAM}=${encodeURIComponent(fromClassId)}`;
 }
 
-export function studentJournalReturn(studentId: string, searchParams: URLSearchParams): ReturnLink {
+export function studentJournalReturn(
+	studentId: string,
+	searchParams: ReadonlyURLSearchParams
+): ReturnLink {
 	const from = searchParams.get(FROM_PARAM);
 	if (from === 'accueil') {
 		return { href: '/dashboard', label: "Retour à l'accueil" };
@@ -53,7 +57,7 @@ export function notionHref(notionId: string, from?: 'programme'): string {
 	return from ? `${href}?${FROM_PARAM}=${from}` : href;
 }
 
-export function notionReturn(searchParams: URLSearchParams): ReturnLink {
+export function notionReturn(searchParams: ReadonlyURLSearchParams): ReturnLink {
 	if (searchParams.get(FROM_PARAM) === 'programme') {
 		return { href: '/dashboard/revisions/decks/programme', label: 'Retour au Programme' };
 	}
@@ -78,7 +82,10 @@ export function studySessionHref(
 	return `/dashboard/revisions/decks/${deckId}/study${search ? `?${search}` : ''}`;
 }
 
-export function studySessionReturnHref(deckId: string, searchParams: URLSearchParams): string {
+export function studySessionReturnHref(
+	deckId: string,
+	searchParams: ReadonlyURLSearchParams
+): string {
 	return searchParams.get(FROM_PARAM) === 'programme'
 		? '/dashboard/revisions/decks/programme'
 		: `/dashboard/revisions/decks/${deckId}`;
@@ -131,7 +138,7 @@ export function assignmentCopiesHref(
 export function assignmentCopiesReturn(
 	worksheetId: string,
 	assignmentId: string,
-	searchParams: URLSearchParams
+	searchParams: ReadonlyURLSearchParams
 ): ReturnLink {
 	if (searchParams.get(FROM_PARAM) === PREVIEW_PARAM) {
 		return {
@@ -148,7 +155,7 @@ export function assignmentCopiesReturn(
 export function assignmentPreviewReturn(
 	worksheetId: string,
 	assignmentId: string,
-	searchParams: URLSearchParams
+	searchParams: ReadonlyURLSearchParams
 ): ReturnLink {
 	const reportId = searchParams.get(REPORT_PARAM);
 	if (searchParams.get(FROM_PARAM) === REPORT_PARAM && reportId && UUID_PATTERN.test(reportId)) {
@@ -204,7 +211,7 @@ export function automathsQuitLink(options: {
 const CLASS_PARAM = 'classe';
 const STUDENT_PARAM = 'eleve';
 
-export function studentFollowUpReturn(searchParams: URLSearchParams): ReturnLink {
+export function studentFollowUpReturn(searchParams: ReadonlyURLSearchParams): ReturnLink {
 	const classId = searchParams.get(CLASS_PARAM);
 	if (searchParams.get(FROM_PARAM) === 'analytique' && classId && UUID_PATTERN.test(classId)) {
 		return {
@@ -221,7 +228,7 @@ export function evaluationResultsHref(evaluationId: string, fromStudentId?: stri
 	return `${href}?${FROM_PARAM}=suivi&${STUDENT_PARAM}=${encodeURIComponent(fromStudentId)}`;
 }
 
-export function evaluationResultsReturn(searchParams: URLSearchParams): ReturnLink {
+export function evaluationResultsReturn(searchParams: ReadonlyURLSearchParams): ReturnLink {
 	const studentId = searchParams.get(STUDENT_PARAM);
 	if (searchParams.get(FROM_PARAM) === 'suivi' && studentId && UUID_PATTERN.test(studentId)) {
 		return { href: studentFollowUpHref(studentId), label: 'Retour au suivi' };

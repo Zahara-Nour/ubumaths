@@ -22,7 +22,7 @@
 		shouldUseFigureEnvironment
 	} from '$lib/exercises/services/image-dimensions';
 	import { escapeHtml } from '../utils';
-	import { PUBLIC_SUPABASE_URL } from '$env/static/public';
+	import { PUBLIC_SUPABASE_URL } from '$app/env/public';
 	import { getQuestionImageUrl } from '$lib/questions/constants';
 	import { sanitizeUrl } from '$lib/utils/sanitize';
 	import {

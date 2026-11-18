@@ -39,7 +39,7 @@
 	 * `?a=` / `?f=` retirés de l'adresse sans naviguer, comme sur `/atelier`.
 	 */
 	function leaveLink() {
-		replaceState(resolve('/grapheur'), {});
+		replaceState(resolve('grapheur'), {});
 	}
 
 	$effect(() => {

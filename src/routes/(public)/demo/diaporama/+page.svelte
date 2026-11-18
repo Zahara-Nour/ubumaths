@@ -262,11 +262,10 @@
 				<Slide background={DARK}>
 					<h2 class="mb-6 font-bold">À vous de jouer</h2>
 					<div class="flex flex-wrap justify-center gap-4">
-						<Button href={resolve('/demo')} variant="secondary" size="lg"
+						<Button href={resolve('demo')} variant="secondary" size="lg"
 							>Les autres démonstrations</Button
 						>
-						<Button href={resolve('/atelier')} variant="secondary" size="lg"
-							>Ouvrir l'Atelier</Button
+						<Button href={resolve('atelier')} variant="secondary" size="lg">Ouvrir l'Atelier</Button
 						>
 					</div>
 				</Slide>

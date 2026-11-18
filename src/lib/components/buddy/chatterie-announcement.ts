@@ -26,7 +26,7 @@ export interface ChatterieAnnouncement {
 }
 
 // Constantes
-export const CHATTERIE_HREF = resolve('/dashboard/student/chatterie');
+export const CHATTERIE_HREF = resolve('dashboard/student/chatterie');
 export const CHATTERIE_LINK = { href: CHATTERIE_HREF, label: 'Aller à la Chatterie' };
 
 // Functions

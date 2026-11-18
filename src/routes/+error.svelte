@@ -106,14 +106,14 @@
 
 		<div class="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 lg:justify-start">
 			{#if copy.offerLogin}
-				<Button href={resolve('/auth/login')}>Se connecter</Button>
+				<Button href={resolve('auth/login')}>Se connecter</Button>
 			{:else if copy.offerRetry}
 				<Button onclick={() => location.reload()}>Réessayer</Button>
 			{/if}
 			{#if copy.offerLogin || copy.offerRetry}
-				<a href={resolve('/')} class={secondaryLinkClass}>Retour à l’accueil</a>
+				<a href={resolve('')} class={secondaryLinkClass}>Retour à l’accueil</a>
 			{:else}
-				<Button href={resolve('/')}>Retour à l’accueil</Button>
+				<Button href={resolve('')}>Retour à l’accueil</Button>
 			{/if}
 			{#if canGoBack}
 				<button type="button" class={secondaryLinkClass} onclick={() => history.back()}>

@@ -92,7 +92,7 @@
 
 	// Handle filter changes - receive new value directly from onchange callback
 	async function handleClassChange(newClassId: string) {
-		const url = new URL(page.url);
+		const url = new URL(page.url.href);
 		if (newClassId) {
 			url.searchParams.set('class_id', newClassId);
 		} else {
@@ -102,7 +102,7 @@
 	}
 
 	async function handlePeriodChange(newPeriod: string) {
-		const url = new URL(page.url);
+		const url = new URL(page.url.href);
 		url.searchParams.set('period', newPeriod);
 		await goto(url.toString());
 	}

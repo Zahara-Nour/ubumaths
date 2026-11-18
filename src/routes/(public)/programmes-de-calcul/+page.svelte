@@ -48,8 +48,7 @@
 	</div>
 	<CalculEditeur programme="" {niveau} />
 	<p class="text-sm text-muted-foreground">
-		Essaie aussi <a href={resolve('/tortue')} class="font-medium text-primary underline"
-			>La Tortue</a
+		Essaie aussi <a href={resolve('tortue')} class="font-medium text-primary underline">La Tortue</a
 		> : des blocs pour tracer des figures.
 	</p>
 </div>

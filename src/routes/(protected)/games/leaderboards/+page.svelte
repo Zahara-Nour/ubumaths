@@ -50,7 +50,7 @@
 	<div class="mb-4 flex flex-wrap justify-center gap-2">
 		{#each LEADERBOARD_GAMES as g (g.value)}
 			<a
-				href="{resolve('/games/leaderboards')}?game={g.value}&scope={data.scope}"
+				href="{resolve('games/leaderboards')}?game={g.value}&scope={data.scope}"
 				data-sveltekit-noscroll
 				aria-current={data.game === g.value ? 'page' : undefined}
 				class="inline-flex items-center gap-1.5 rounded-full border px-4 py-1.5 text-sm font-medium transition-colors {data.game ===
@@ -69,7 +69,7 @@
 		<div class="inline-flex rounded-lg border border-border bg-muted/30 p-1">
 			{#each LEADERBOARD_SCOPES as s (s.value)}
 				<a
-					href="{resolve('/games/leaderboards')}?game={data.game}&scope={s.value}"
+					href="{resolve('games/leaderboards')}?game={data.game}&scope={s.value}"
 					data-sveltekit-noscroll
 					aria-current={data.scope === s.value ? 'page' : undefined}
 					class="rounded-md px-4 py-1.5 text-sm font-medium transition-colors {data.scope ===

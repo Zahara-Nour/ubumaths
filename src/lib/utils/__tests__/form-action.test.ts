@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import type { ActionResult } from '@sveltejs/kit';
+import type { ActionResult } from '$app/forms';
 
 // `deserialize` décode le `data` encodé en devalue. Le mock le remplace par un
 // JSON.parse : le test porte sur la lecture du VERDICT, pas sur l'encodage.

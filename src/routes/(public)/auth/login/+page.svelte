@@ -194,7 +194,7 @@
 							<div class="flex items-center justify-between">
 								<Label for="password">Mot de passe</Label>
 								<a
-									href={resolve('/auth/reset-password')}
+									href={resolve('auth/reset-password')}
 									class="text-sm text-primary hover:underline"
 								>
 									Mot de passe oublié ?
@@ -226,7 +226,7 @@
 			<!-- Controlled self-registration: students create an account with their class code -->
 			<p class="text-center text-sm text-muted-foreground">
 				Nouvel élève ?
-				<a href={resolve('/auth/register')} class="text-primary hover:underline">Créer un compte</a>
+				<a href={resolve('auth/register')} class="text-primary hover:underline">Créer un compte</a>
 			</p>
 		</Card.Content>
 	</Card.Root>

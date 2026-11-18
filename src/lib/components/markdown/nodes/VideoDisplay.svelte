@@ -19,7 +19,7 @@
 <script lang="ts">
 	import type { ImageSizeClass, ImageAlignment } from '$lib/ubumark';
 	import { escapeHtml } from '../utils';
-	import { PUBLIC_SUPABASE_URL } from '$env/static/public';
+	import { PUBLIC_SUPABASE_URL } from '$app/env/public';
 	import { sanitizeUrl } from '$lib/utils/sanitize';
 	import {
 		isProjectStorageImage,

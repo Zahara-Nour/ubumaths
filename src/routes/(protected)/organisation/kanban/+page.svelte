@@ -213,7 +213,7 @@
 										detail route is a Phase 4 placeholder for now.
 									-->
 									<a
-										href={resolve(`/organisation/kanban/${board.id}`)}
+										href={resolve(`organisation/kanban/${board.id}`)}
 										class="before:absolute before:inset-0 before:rounded-xl focus:outline-none"
 										aria-label={`Ouvrir le tableau ${board.title}`}
 									>

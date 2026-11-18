@@ -8,7 +8,8 @@
  * @module server/redirectHandle
  */
 
-import { redirect, type Handle } from '@sveltejs/kit';
+import { redirect } from '@sveltejs/kit';
+import type { Handle } from '@sveltejs/kit/hooks';
 
 /**
  * Pages de démo et de debug rangées sous `/dev` (chantier demo-debug, PR 2) :

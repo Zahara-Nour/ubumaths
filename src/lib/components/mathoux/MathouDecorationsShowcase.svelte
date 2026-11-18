@@ -126,7 +126,7 @@
 		{/each}
 	</ul>
 
-	<Button href={resolve('/dashboard/student/chatterie')} variant="outline">
+	<Button href={resolve('dashboard/student/chatterie')} variant="outline">
 		Décorer mes Mathoux
 	</Button>
 </section>

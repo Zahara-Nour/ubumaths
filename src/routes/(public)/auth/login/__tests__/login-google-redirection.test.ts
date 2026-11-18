@@ -6,7 +6,7 @@
  * toute autre origine reste refusée (liste blanche, pas `external: true`).
  */
 import { isRedirect } from '@sveltejs/kit';
-import { PUBLIC_SUPABASE_URL } from '$env/static/public';
+import { PUBLIC_SUPABASE_URL } from '$app/env/public';
 import { describe, expect, it, vi } from 'vitest';
 
 vi.mock('$lib/utils/logger', () => ({

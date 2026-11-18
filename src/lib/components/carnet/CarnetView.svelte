@@ -193,11 +193,11 @@
 					{#each links as link (`${link.kind}-${link.token}`)}
 						<li>
 							{#if link.kind === 'cahier'}
-								<a href={resolve(`/cahier/${link.token}`)} rel="noreferrer" class="link"
+								<a href={resolve(`cahier/${link.token}`)} rel="noreferrer" class="link"
 									>{link.label}</a
 								>
 							{:else}
-								<a href={resolve(`/cours/${link.token}`)} rel="noreferrer" class="link"
+								<a href={resolve(`cours/${link.token}`)} rel="noreferrer" class="link"
 									>{link.label}</a
 								>
 							{/if}

@@ -7,7 +7,7 @@
 	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
 	import * as Table from '$lib/components/ui/table';
-	import { resolve } from '$app/paths';
+	import { resolvePath } from '$lib/navigation/resolve-path';
 	import type { BlockCatalogEntry } from '$lib/block-catalog';
 	import BlockSource from './BlockSource.svelte';
 	import BlockTryIt from './BlockTryIt.svelte';
@@ -99,7 +99,7 @@
 		{#if entry.seeAlso}
 			<p class="mt-4">
 				Voir aussi :
-				<a href={resolve(entry.seeAlso.href as '/')} class="text-primary underline">
+				<a href={resolvePath(entry.seeAlso.href)} class="text-primary underline">
 					{entry.seeAlso.label}
 				</a>
 			</p>

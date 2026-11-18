@@ -68,7 +68,7 @@
 				{/if}
 			</Card.Content>
 			<Card.Footer class="justify-center">
-				<Button variant="outline" href={resolve('/auth/login')}>Aller à la connexion</Button>
+				<Button variant="outline" href={resolve('auth/login')}>Aller à la connexion</Button>
 			</Card.Footer>
 		{:else}
 			<Card.Header>
@@ -171,14 +171,14 @@
 						<MyCheckbox bind:checked={acceptTerms}>
 							J'accepte les
 							<a
-								href={resolve('/legal/cgu')}
+								href={resolve('legal/cgu')}
 								target="_blank"
 								rel="noopener"
 								class="text-primary hover:underline">conditions générales d'utilisation</a
 							>
 							et la
 							<a
-								href={resolve('/legal/confidentialite')}
+								href={resolve('legal/confidentialite')}
 								target="_blank"
 								rel="noopener"
 								class="text-primary hover:underline">politique de confidentialité</a
@@ -204,7 +204,7 @@
 
 				<p class="text-center text-sm text-muted-foreground">
 					Votre enfant a sa propre adresse ?
-					<a href={resolve('/auth/register')} class="text-primary hover:underline"
+					<a href={resolve('auth/register')} class="text-primary hover:underline"
 						>Il s'inscrit lui-même</a
 					>
 				</p>

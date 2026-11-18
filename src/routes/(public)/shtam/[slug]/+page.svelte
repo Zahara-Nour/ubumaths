@@ -46,7 +46,7 @@
 
 <article class="mx-auto flex w-full max-w-3xl flex-col gap-8 px-4 py-10 sm:px-6">
 	<a
-		href={resolve('/shtam')}
+		href={resolve('shtam')}
 		class="serif self-start rounded-sm text-lg font-bold underline-offset-4 hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
 	>
 		← Le Shtam

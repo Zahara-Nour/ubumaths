@@ -39,7 +39,7 @@
  */
 import { redirect, fail } from '@sveltejs/kit';
 import { dev } from '$app/env';
-import { PUBLIC_SUPABASE_URL } from '$env/static/public';
+import { PUBLIC_SUPABASE_URL } from '$app/env/public';
 import type { Actions, PageServerLoad } from './$types';
 import { createServerLogger } from '$lib/utils/logger';
 import {

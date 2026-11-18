@@ -113,8 +113,8 @@
 	function termHref(term: MathTerm): string {
 		const slug = pageSlugFor(term, data.entries, data.slugs);
 		return slug
-			? resolve(`/glossaire/${slug}`)
-			: `${resolve('/glossaire')}?q=${encodeURIComponent(term.term)}`;
+			? resolve(`glossaire/${slug}`)
+			: `${resolve('glossaire')}?q=${encodeURIComponent(term.term)}`;
 	}
 
 	function scrollToLetter(letter: string) {

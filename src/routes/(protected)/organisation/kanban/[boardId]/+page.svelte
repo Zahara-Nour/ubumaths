@@ -672,7 +672,7 @@
 	<h1 class="sr-only">{boardTitle}</h1>
 	<!-- Header -->
 	<BackLink
-		href={resolve('/organisation/kanban')}
+		href={resolve('organisation/kanban')}
 		label="Retour aux tableaux"
 		class="mb-0 self-start"
 	/>

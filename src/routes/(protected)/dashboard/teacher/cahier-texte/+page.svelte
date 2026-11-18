@@ -86,7 +86,7 @@
 	 * Update URL with new params
 	 */
 	function updateUrl(params: Record<string, string>) {
-		const url = new URL(page.url);
+		const url = new URL(page.url.href);
 		for (const [key, value] of Object.entries(params)) {
 			url.searchParams.set(key, value);
 		}

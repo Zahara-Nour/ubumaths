@@ -3,11 +3,16 @@ import { CHILD_ACCOUNT_DOMAIN } from '$lib/utils/child-account';
 
 const sendTransacEmail = vi.fn(async () => ({ body: { messageId: 'm1' } }));
 
-vi.mock('$env/dynamic/private', () => ({ env: { BREVO_API_KEY: 'cle-de-test' } }));
-// Base distante : envoi réel (la capture locale a son propre test).
-vi.mock('$env/dynamic/public', () => ({
-	env: { PUBLIC_SUPABASE_URL: 'https://exemple.supabase.co' }
+vi.mock('$app/env/private', () => ({
+	BREVO_API_KEY: 'cle-de-test',
+	BREVO_SENDER_EMAIL: undefined,
+	BREVO_SENDER_NAME: undefined,
+	VERCEL: undefined,
+	EMAIL_ENVOI_REEL: undefined,
+	EMAIL_CAPTURE_DIR: undefined
 }));
+// Base distante : envoi réel (la capture locale a son propre test).
+vi.mock('$app/env/public', () => ({ PUBLIC_SUPABASE_URL: 'https://exemple.supabase.co' }));
 
 vi.mock('@getbrevo/brevo', () => ({
 	TransactionalEmailsApi: class {

@@ -22,7 +22,7 @@
  */
 
 import * as Brevo from '@getbrevo/brevo';
-import { env } from '$env/dynamic/private';
+import * as env from '$app/env/private';
 import { createServerLogger } from '$lib/utils/logger';
 import { isChildAccountEmail } from '$lib/utils/child-account';
 import { captureEmail, isEmailCaptureActive } from './capture';

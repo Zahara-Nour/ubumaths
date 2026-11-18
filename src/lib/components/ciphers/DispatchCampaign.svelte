@@ -5,7 +5,7 @@
 -->
 <script lang="ts">
 	import { onMount, tick } from 'svelte';
-	import { resolve } from '$app/paths';
+	import { resolvePath } from '$lib/navigation/resolve-path';
 	import { Button } from '$lib/components/ui/button';
 	import { Label } from '$lib/components/ui/label';
 	import { Textarea } from '$lib/components/ui/textarea';
@@ -184,7 +184,7 @@
 					<Button
 						variant="secondary"
 						size="sm"
-						href={`${resolve(CIPHER_PATHS[dispatch.key.cipher])}${decryptQuery(ciphertext)}`}
+						href={`${resolvePath(CIPHER_PATHS[dispatch.key.cipher])}${decryptQuery(ciphertext)}`}
 						data-testid="dispatch-tools"
 					>
 						Décrypter avec les outils du Cabinet

@@ -89,14 +89,14 @@
 		if (typeof value !== 'string') return;
 		// Navigation sur la même route, query seule → relance le load serveur.
 		// resolve() ne porte pas de query string (même motif que la page Avancement).
-		const url = new URL(page.url);
+		const url = new URL(page.url.href);
 		url.searchParams.set('grade', value);
 		goto(url, { reset: false });
 	}
 
 	/** Paramètres de la même page dans une autre vue (le niveau suit). */
 	function viewSearch(view: View): string {
-		const url = new URL(page.url);
+		const url = new URL(page.url.href);
 		url.searchParams.set('vue', view);
 		return url.search;
 	}

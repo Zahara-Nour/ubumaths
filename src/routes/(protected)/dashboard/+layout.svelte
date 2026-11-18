@@ -40,6 +40,7 @@
 	import { getNavLinks, getZoneTitle, isNavLinkActive } from '$lib/config/dashboard-nav';
 	import { submitLogoutForm } from '$lib/utils/auth';
 	import { resolve } from '$app/paths';
+	import { resolvePath } from '$lib/navigation/resolve-path';
 	import { Button } from '$lib/components/ui/button';
 	import UserAvatar from '$lib/components/UserAvatar.svelte';
 	import { theme } from '$lib/stores/theme.svelte';
@@ -296,7 +297,7 @@
 
 				<!-- Gidouille - links to home -->
 				<a
-					href={resolve('/')}
+					href={resolve('')}
 					data-sveltekit-preload-data="hover"
 					class="transition-opacity hover:opacity-80"
 					aria-label="Retour à l'accueil"
@@ -330,7 +331,7 @@
 				 on the profile page and in the mobile hamburger drawer. -->
 			<div class="border-l pl-2">
 				<a
-					href={resolve('/dashboard/profile')}
+					href={resolve('dashboard/profile')}
 					class="relative block h-10 w-10 cursor-pointer rounded-full transition-all hover:ring-2 hover:ring-ring focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
 					aria-label="Mon profil"
 				>
@@ -426,7 +427,7 @@
 			<nav class="flex flex-col items-center gap-1 py-4" aria-label="Navigation principale">
 				{#each mainLinks as link (link.href)}
 					<a
-						href={resolve(link.href as '/')}
+						href={resolvePath(link.href)}
 						class="group relative flex w-16 flex-col items-center gap-1 rounded-lg px-2 py-3 transition-all duration-300 {isActive(
 							link.href
 						)
@@ -455,7 +456,7 @@
 							</button>
 						{:else}
 							<a
-								href={resolve(link.href as '/')}
+								href={resolvePath(link.href)}
 								class="group relative flex w-16 flex-col items-center gap-1 rounded-lg px-2 py-3 transition-all duration-300 {isActive(
 									link.href
 								)

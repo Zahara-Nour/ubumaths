@@ -1,5 +1,5 @@
 import { error } from '@sveltejs/kit';
-import type { Handle } from '@sveltejs/kit';
+import type { Handle } from '@sveltejs/kit/hooks';
 import { dev } from '$app/env';
 
 /**

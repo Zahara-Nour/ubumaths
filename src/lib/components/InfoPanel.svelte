@@ -9,7 +9,7 @@
 -->
 <script lang="ts">
 	// Imports
-	import { resolve } from '$app/paths';
+	import { resolvePath } from '$lib/navigation/resolve-path';
 	import ChevronRight from '@lucide/svelte/icons/chevron-right';
 	import XIcon from '@lucide/svelte/icons/x';
 	import * as Dialog from '$lib/components/ui/dialog';
@@ -78,7 +78,7 @@
 				{#each LINKS as link (link.path)}
 					<li>
 						<a
-							href={resolve(link.path)}
+							href={resolvePath(link.path)}
 							onclick={() => (open = false)}
 							class="group flex items-center gap-3 px-5 py-3 transition-colors hover:bg-muted focus-visible:bg-muted focus-visible:outline-hidden"
 						>
