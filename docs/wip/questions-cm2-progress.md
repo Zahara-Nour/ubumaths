@@ -6,21 +6,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après #2848 (fichiers du lot 11b)._
+_Mis à jour le 2026-11-18, après la création en prod du lot 11b._
 
-- **État** : lots 0 à 11a publiés. Lot 11b : 5 modèles écrits et mergés (§ 18.2, `scripts/questions/cm2-11b/`), pas encore
-  en prod. Restent ensuite les lots 12 à 19 du § 14.
-- **Prochaine action** : David lance, **depuis le dépôt principal**, `pnpm tsx scripts/create-questions.ts --dir
-scripts/questions/cm2-11b --publier` ; puis ids commités sur une branche `feat/questions-cm2-lot11b-tags`, migration
-  de rangement et tags (gabarit du lot 11a, § 17.3), page à cocher.
-- **En attente de David** : la création en prod ci-dessus. Fichiers `cm2-11a/*.json` modifiés dans
-  `ubumaths-wt-questions-cm1` : à annuler là-bas. Stash « cm2-9 ids » du dépôt principal : à supprimer.
-- **Pièges en cours** : 064 est posé sur la sous-notion « Préalgorithmique » de la notion « Algorithmique » (pas
-  « Problèmes arithmétiques »). `Doc-inchangée:` dans un COMMIT ; sujet de commit en minuscule (commitlint).
-  `migration:horodatage` = heure réelle UTC ; une autre migration en attente → stop avant `db:migrate`. Commit par
-  `git commit -m … -- <fichiers>`. `publier-lot` / `create-questions` peuvent être refusés par le classifieur :
-  réessayer à la demande de David.
-- **Worktree / branche** : aucun (`ubumaths-wt-questions-cm2` retiré après #2848).
+- **État** : lots 0 à 11a publiés. Lot 11b : 5 brouillons créés en prod par David (§ 18.3), ids commités sur
+  `feat/questions-cm2-lot11b-tags` (pas encore de PR). Restent ensuite les lots 12 à 19 du § 14.
+- **Prochaine action** : sur cette branche, vérifier au MCP les 5 brouillons (sans nœud ni tag), puis migration de
+  rangement et tags (gabarit du lot 11a, `20261118194448_…` ; script `lot-…-rangement.py`), test d'intégration rouge
+  sans la migration, `security-auditor`, PR, `db:migrate` ; puis page à cocher.
+- **En attente de David** : fichiers `cm2-11a/*.json` modifiés dans `ubumaths-wt-questions-cm1` : à annuler là-bas.
+  Stash « cm2-9 ids » du dépôt principal : à supprimer.
+- **Pièges en cours** : 064 est posé sur « Préalgorithmique » (notion « Algorithmique »), pas sous « Problèmes
+  arithmétiques ». `Doc-inchangée:` dans un COMMIT ; sujet de commit en minuscule. `migration:horodatage` = heure réelle
+  UTC ; une autre migration en attente → stop avant `db:migrate`. `create-questions` / `publier-lot` peuvent être
+  refusés par le classifieur : réessayer à la demande de David.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, `feat/questions-cm2-lot11b-tags`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -1262,3 +1261,21 @@ corrigé ; (e) un seul lot de 5 modèles. Tableau du § 18 gardé.
 - Base locale (copie du dossier dans le scratchpad, `.env.local`, sous `with-db-lock.sh`) : 5 brouillons ; aperçu admin à
   390 px (Playwright, port 5179) : 9 choix lisibles (A à I), fractions et énoncés corrects.
 - #2848 (fichiers) : CI verte au premier passage, mergée.
+
+### 18.3 Lot 11b : création en prod (2026-11-18)
+
+- David : `create-questions --dir scripts/questions/cm2-11b --publier`, depuis le dépôt principal → `960e6a84` (119,
+  niv. 12), `da63ec7b` (060, 13), `3d2219c0` (062, 3), `ea559f53` (063, 2), `66a1a4ee` (064, 1). Fichiers (ids) copiés
+  sur `feat/questions-cm2-lot11b-tags` (identiques, `cmp`), puis remis à l'état de `main` dans le dépôt principal.
+
+### 18.4 Lot 11b : rangement (2026-11-18)
+
+- MCP : 5 brouillons [CM2] sans nœud ni tag, `updated_at` = création.
+- CM2-064 est posé sur la **notion** « Algorithmique > Préalgorithmique », qui n'a aucune sous-notion (les 5 modèles de 6e
+  y sont rangés directement) : le modèle va sur cette notion (`sous_notion` nulle, cas déjà prévu par le gabarit).
+- Migration `20261118215227_questions_cm2_lot11b_rangement_tags.sql`, générée depuis celle du lot 11a par un script de
+  substitution (aucun reste du lot 11a). Test `questions-cm2-lot11b-rangement-tags` : 9 verts ; corps remplacé par
+  `select 1;` → 5 rouges ; fichier restauré depuis sa copie (`cmp`).
+- `security-auditor` : aucun finding bloquant (diff au gabarit du lot 11a : ids, codes, chemins, compteurs, table
+  temporaire, commentaires ; ligne `sous_notion` nulle résolue sur la notion sans être écrasée ; 5 ids concordants
+  partout ; relevé MCP refait).

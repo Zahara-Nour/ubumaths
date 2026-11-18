@@ -1,4 +1,5 @@
 {
+	"id": "66a1a4ee-cffe-4f6d-b083-8ed7e8c88305",
 	"title": "Trouver toutes les solutions",
 	"description": "Recherche exhaustive, en cochant toutes les solutions : les rectangles d'aire donnée à côtés entiers, les façons de ranger des œufs en boîtes pleines de 6 et de 10, les tailles impaires de groupes d'une classe ; essai organisé au corrigé",
 	"grades": ["CM2"],
