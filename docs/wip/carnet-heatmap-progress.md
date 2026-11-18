@@ -6,12 +6,12 @@ status: en-cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après #2797._
+_Mis à jour le 2026-11-18, après #2797 et le `db:migrate`._
 
-- **État** : PR 2 mergée (#2797) : `carnet_payload` rend la régularité depuis la rentrée (53 sem. max ; 5 sans année connue), évaluations à 5 semaines. Les deux PR du découpage sont mergées.
-- **Prochaine action** : `db:migrate` de `20261117222600` (additive, 4 conditions réunies) **par David** ; une autre migration attend aussi (`20261117222845_questions_1techno_lot2…`, autre session) : `db push` pousserait les deux. Puis vérification manuelle (ligne du 2026-11-18 dans `verifications-manuelles.md`), puis clôture (versement, archivage du journal).
-- **En attente de David** : `db:migrate` (seul ou avec la migration du lot 1techno).
-- **Pièges en cours** : aucun code à livrer (`deploy:prod` inutile : SQL seul) ; base locale partagée modifiée par d'autres sessions → relancer l'e2e.
+- **État** : tout est en prod. Code #2786 (v0.94.0) et `carnet_payload` de #2797 (migration `20261117222600` jouée en prod par le `db push` d'une autre session, vérifié par le MCP le 2026-11-18).
+- **Prochaine action** : vérification manuelle par David (ligne du 2026-11-18 dans `verifications-manuelles.md`), puis clôture (versement dans `docs/systeme/`, archivage du journal).
+- **En attente de David** : la vérification manuelle sur téléphone et ordinateur, avec le lien de parent et un compte élève.
+- **Pièges en cours** : aucun.
 - **Worktree / branche** : supprimés.
 
 ---
