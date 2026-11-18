@@ -10,7 +10,7 @@ _Mis à jour le 2026-11-18, après #2807._
 
 - **État** : lots 0 à 9 publiés. Lot 10 heures et durées (082, 083, 084, 153, 085) : phase 0 validée (§ 16.1), 5 modèles écrits et essayés en local (§ 16.2), fichiers mergés (#2807), pas encore en prod.
 - **Prochaine action** : David lance `create-questions --dir scripts/questions/cm2-10 --publier` (dépôt principal), ids reportés, migration nœud + tag (« lecture de l'heure » : 082, 083 ; « calcul de durées » : 084, 153, 085).
-- **En attente de David** : `set -a; . ./.env; set +a; pnpm tsx scripts/create-questions.ts --dir scripts/questions/cm2-10 --publier` (dépôt principal). ⛔ Jamais `--mettre-a-jour` de `cm2-7b` avec des fichiers d'avant #2770 (ids CM1).
+- **En attente de David** : `pnpm tsx scripts/create-questions.ts --dir scripts/questions/cm2-10 --publier` (dépôt principal). ⛔ Jamais `--mettre-a-jour` de `cm2-7b` avec des fichiers d'avant #2770 (ids CM1).
 - **Pièges en cours** : `pnpm migration:horodatage` = heure réelle UTC ; `db:migrate` refuse une migration plus ancienne que la dernière jouée → `--dry-run --include-all`, liste relue, puis `--include-all`. Worktree neuf : copier `supabase/.temp/` du dépôt principal, puis `pnpm exec svelte-kit sync`. `Doc-inchangée:` dans un COMMIT. `git commit -m … -- <fichiers>`. Stash du dépôt principal « cm2-9 ids » : copie identique de ce qui est mergé, à supprimer (David).
 - **Worktree / branche** : aucun (retiré après #2807) ; ids à commiter sur `main` ou dans le worktree de la migration.
 
