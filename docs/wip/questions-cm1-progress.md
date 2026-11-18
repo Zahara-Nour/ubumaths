@@ -9,10 +9,10 @@ _Mis à jour le 2026-11-18, après #2803 (§ 22 ter)._
 
 - **État** : lots 0 à 8a publiés, 131 points sur 171. Lot 8b écrit (6 modèles), fichiers mergés (#2803). Restent 8c, 8d,
   8e, 9 (§ 20, découpage validé § 20 bis).
-- **Prochaine action** : merger la PR du renommage de 8b-04 (homonyme 6e `c8741112`), puis David lance
-  `create-questions --dir scripts/questions/cm1-8b --publier` **depuis le worktree** ; ensuite migration nœud + tag (sous-notion neuve « aires sur quadrillage » sous Aires ; tags CM1 et
+- **Prochaine action** : PR du rangement 8b (`feat/questions-cm1-lot8b-rangement`, § 22 quater) : revue
+  `security-auditor`, merge, puis `db:migrate` ; ensuite migration nœud + tag (sous-notion neuve « aires sur quadrillage » sous Aires ; tags CM1 et
   CM2, § 22 bis), page à cocher, publication.
-- **En attente de David** : la création en prod des 6 brouillons.
+- **En attente de David** : `db:migrate` après le merge du rangement 8b.
 - **Pièges en cours** : `create-questions --publier` lancé depuis le dépôt principal écrit les ids dans SES fichiers :
   les reporter sur la branche du worktree, puis `git restore` dans le dépôt principal ; `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance (une autre session peut l'avoir fait avant : vérifier au MCP) ; `db:migrate` depuis un worktree : copier d'abord le lien `../ubumaths/supabase/.temp/` ; `create-questions` = `pnpm tsx scripts/create-questions.ts …`, refuse `theme`/`domain`/`subdomain` (ADR 0035) ; horodatage = `pnpm migration:horodatage`, puis `pnpm check:migrations --pr <n>` **juste avant le merge** ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule ; un brouillon sans nœud ne peut pas être tagué (trigger) ; le pre-commit reformate le relevé `etat-prod-*` (prettier) et laisse l'index décalé : `git diff HEAD` vide → `git restore --staged` ; le mode auto refuse `publier-lot` et `garde-niveaux-tags` (lecture de la prod), même en simulation : David les lance ; zsh ne découpe pas `$F` : un tableau `F=(…)`.
 - **Worktree / branche** : `../ubumaths-wt-questions-cm1`, détaché sur `main`, aucune branche ouverte (un id de `4-lot-11/01` d'une autre session y traîne, non commité : pas à nous).
@@ -1772,6 +1772,19 @@ avant. Les modèles publiés sont lus comme les autres ; la migration ne fait qu
 - `--publier` (2026-11-18) refusé : homonyme « Le vocabulaire des angles », niveau 1, déjà en base pour la **6e**
   (`c8741112`, lot 11a : angle plat, adjacents, opposés, supplémentaire — autre contenu). **David : renommer le
   modèle CM1** → « Sommet, côtés et nature d'un angle » (JSON, générateur, tableau du découpage).
+
+### 22 quater. Lot 8b — création en prod et rangement (2026-11-18)
+
+- #2806 mergée (renommage). `create-questions --dir scripts/questions/cm1-8b --publier` lancé depuis le worktree :
+  6 brouillons (d623374d, 31d64c00, 614048c9, 8da9f669, 4c1ce174, 97f2374b), ids commités sur
+  `feat/questions-cm1-lot8b-rangement`.
+- Relevé `etat-prod-2026-11-18-cm1-8b/` (6 draft, sans nœud ni tag ; « aires sur quadrillage » absente), script
+  `lot-cm1-8b-rangement.py` (gabarit 8a + sous-notion neuve façon TSPE 11) → migration
+  `20261118071618_questions_cm1_lot8b_rangement_tags` + fixture : sous-notion « aires sur quadrillage » créée en fin
+  d'Aires (d623374d, 31d64c00) ; 614048c9 → unités et conversions ; 8da9f669, 4c1ce174 → Angles ; 97f2374b →
+  comparaison ; 11 tags posés (CM1-086 à 091, CM2-071, 072, 076, 077, 078), aucun niveau ni statut changé.
+- Test `questions-cm1-lot8b-rangement-tags.test.ts` : 23/23 vert ; corps neutralisé (`select 1;`) : 14 échecs,
+  8 sautés. `types:cliquet` tenu.
 - PR #2803 (fichiers seuls, revue : aucune, contenu). 1re CI rouge : `student-answer-safety` abîmait deux réponses
   attendues en `{{if:}}` imbriqué sur 8 et 10 niveaux → variable calculée `n` (indicatrices, helper `table`) ; CI
   verte, mergée le 2026-11-18.
