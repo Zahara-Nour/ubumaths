@@ -5,19 +5,17 @@ Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) · bornes 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après #2849._
+_Mis à jour le 2026-11-18, PR de rangement du lot 5b ouverte._
 
-- **État** : lots 0 à 5a publiés ; lot 5b (L7–L9 : 043, 084, 085) écrit, **#2849 mergée** (fichiers seuls, § 40).
-  Restent ensuite les lots 6 à 8 (§ 33).
-- **Prochaine action** : après la création en prod, reporter les ids, migration nœud + tag (gabarit lot 5a, nœud
-  « équations et inéquations » ee6b005b), page à cocher.
-- **En attente de David** : `pnpm tsx scripts/create-questions.ts --dir scripts/questions/ttechno-5b-log-resolutions
---publier` (3 brouillons) depuis le dépôt principal.
+- **État** : lots 0 à 5a publiés ; lot 5b (L7–L9) créé en prod (3 brouillons, ids § 41) ; migration nœud + tag
+  `20261118214049` sur la branche `feat/questions-ttechno-lot5b-tags`. Restent ensuite les lots 6 à 8 (§ 33).
+- **Prochaine action** : merge, `migration list --linked`, `db:migrate` depuis le dépôt principal, relecture MCP ;
+  puis page à cocher du lot 5b.
+- **En attente de David** : rien.
 - **Pièges en cours** : un point TTECHNO par modèle (trigger) ; tag = nœud DU POINT (relevé MCP) ; `publier-lot.ts`,
   `create-questions --publier` visent la prod : David les lance (`!`) ; **L7 et L8 demandent de taper log : à
-  publier seulement après le `deploy:prod` qui livre #2839** (pas en prod le 2026-11-18 ; L9 n'en dépend pas) ;
-  port 5176 pris par le worktree `automaths`.
-- **Worktree / branche** : aucun (retiré après #2849).
+  publier seulement après le `deploy:prod` qui livre #2839** (L9 n'en dépend pas) ; port 5176 pris par `automaths`.
+- **Worktree / branche** : `../ubumaths-wt-questions-ttechno`, `feat/questions-ttechno-lot5b-tags`.
 
 ## 1. Périmètre
 
@@ -939,3 +937,14 @@ dans le dépôt principal, reportés et commités sur la branche de la migration
 - ⚠ #2839 (saisie de log) **pas encore en prod** : L7 et L8 restent en brouillon jusqu'au `deploy:prod` qui le
   livre ; L9 n'en dépend pas.
 - **#2849 mergée (2026-11-18)**, CI verte. Worktree retiré.
+
+## 41. Lot 5b : création en prod et rangement (2026-11-18)
+
+- `create-questions --publier` lancé par David : 3 brouillons, ids reportés dans les JSON (commités sur la branche
+  de la migration) et relus par MCP (`draft`, `{T_TECHNO}`, sans nœud ni tag) : L7 `52b884ee` (043, niv. 2),
+  L8 `10bd7075` (084, niv. 3), L9 `becf24bc` (085, niv. 2).
+- Relevé MCP : 043, 084, 085 sur « Fonctions > Logarithmes > équations et inéquations » (ee6b005b).
+- Migration `20261118214049_questions_ttechno_lot5b_rangement_tags` (gabarit lot 5a ; garde sans nœud ni tag, TOUT
+  ou RIEN sur 3, rollback commenté). Accès : tranché § 34 (personne pour les brouillons). Test d'intégration
+  `questions-ttechno-lot5b-rangement-tags` : **rouge sans la migration** (4 échecs + suite principale), **9 / 9
+  vert** avec.
