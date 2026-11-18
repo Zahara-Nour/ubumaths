@@ -616,3 +616,5 @@ vérifiés par MCP (`draft`, `{T_TECHNO}`, sans nœud ni tag) ; ids commités su
 - Migration `20261118071439_questions_ttechno_lot3a_rangement_tags` sur le gabarit du lot 2b.
 - Test `tests/integration/questions-ttechno-lot3a-rangement-tags.test.ts` : 9 verts ; corps retiré (en-tête et
   rollback gardés) → 5 rouges ; fichier restauré d'une copie, identique. `types:cliquet` tenu.
+- `security-auditor` : aucun finding bloquant (diff avec le lot 2b = ids, chemins, codes, compteurs ; rollback
+  miroir ; aucune policy, aucune table d'élève ; chemins résolus en prod sur un seul nœud chacun).
