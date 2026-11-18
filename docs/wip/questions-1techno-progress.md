@@ -8,16 +8,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, pendant le lot 5 (aucune PR encore)._
+_Mis à jour le 2026-11-18, après #2844 (lot 5 migré)._
 
-- **État** : lot 5 : N1-N3 brouillons en prod (d0eb1666, fc84a1c8, 8d2047fe) ; deux migrations écrites, testées et
-  auditées (communs `202805`, rangement `203102`) ; PR de migration ouverte.
-- **Prochaine action** : CI verte → `check:migrations --pr` → merge → `migration list --linked` (seules les deux) →
-  `db:migrate` depuis le worktree → vérif MCP → page à cocher de N1-N3 (verdicts) → publication.
-- **En attente de David** : rien avant la page à cocher de N1-N3.
-- **Pièges en cours** : `db:migrate` pousse tout ce qui attend ; dépôt principal : 6 fichiers ttechno modifiés bloquent
-  `git pull` ; questions-1gen pas prévenue (session fermée ; on n'ajoute que `1_TECHNO` et un tag, accord du 2026-11-17).
-- **Worktree / branche** : `ubumaths-wt-questions-1techno`, `feat/questions-1techno-lot5-migration`.
+- **État** : lots 1 à 4 clos. Lot 5 : 4 communs posés en 1re techno (publiés) ; N1-N3 rangés et tagués, encore
+  brouillons ; page à cocher https://claude.ai/artifact/J6RYqzmQ9nrqviUoQXVBYn (`verdicts`, vide). Reste le lot 6
+  (probabilités).
+- **Prochaine action** : lire et compter les verdicts ; 3 « ok » → David `pnpm tsx scripts/questions/publier-lot.ts
+--dir scripts/questions/1techno-5` (simulation puis `--publier` ; le classifieur me refuse la simulation). Prévenir
+  questions-1gen (4 de ses modèles portent désormais `1_TECHNO` + un tag 1TECHNO). Ensuite phase 0 du lot 6.
+- **En attente de David** : relecture des 3 modèles neufs sur la page à cocher.
+- **Pièges en cours** : `db:migrate` pousse tout ce qui attend ; « inserted before » → `--dry-run --include-all` ;
+  `Doc-inchangée:` dans un COMMIT (≤ 100 caractères par ligne).
+- **Worktree / branche** : aucun (lot 5 mergé, worktree retiré).
 
 ## 1. Relevé (prod, 2026-11-17)
 
@@ -870,3 +872,14 @@ bloc nominal ne démarre pas ; migration rendue → 10 verts. `security-auditor`
 communs, fidèle au lot G).
 
 CI de #2844 : garde « doc à jour » rouge (`Doc-inchangée:` doit être dans un commit, pas dans la PR) → commit avec la ligne.
+
+### Lot 5 — migré, page à cocher des neufs (2026-11-18)
+
+PR #2844 : garde « doc à jour » rouge (ligne `Doc-inchangée:` dans la PR seulement ; puis refusée par commitlint, ligne de
+plus de 100 caractères) → commit avec la ligne raccourcie ; CI verte, `check:migrations --pr 2844` OK, merge. Le dépôt
+principal était redevenu propre. `migration list --linked` : seules `202805` et `203102` en attente ; `db push` refusé
+(« inserted before the last migration on remote ») → `--dry-run --include-all` (les deux seules) puis `--include-all`.
+Vérifié MCP : 7461bb44, f3cb0c7a, 4f328c8c, 3fec6b41 `{1_GEN,1_TECHNO}`, publiés, tag 1GEN + 1TECHNO (082, 085, 084,
+087), `updated_at` inchangé (07:13:28) ; N1-N3 brouillons sur le nœud de leur point, tag 059, 121, 104. Page à cocher
+des neufs publiée (`db`) : https://claude.ai/artifact/J6RYqzmQ9nrqviUoQXVBYn ; alertes : `nuage` non dessiné par la page
+(N2, N3), déjà vus dans l'aperçu.
