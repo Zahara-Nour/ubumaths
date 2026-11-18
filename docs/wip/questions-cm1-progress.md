@@ -1859,3 +1859,23 @@ nœuds qui existent déjà (pas de sous-notion neuve).
 3. Écrire des modèles CM1 plutôt que d'ajouter le CM1 aux modèles CE2 (codes, axes) et 6e (cercle) qui existent ?
    Reco : écrire. Les CE2 ne voient qu'un code à la fois et pas les triangles ; le 6e prend des rayons à virgule et
    n'a pas l'arc.
+
+### 23 bis. Lot 8c : décisions (David, 2026-11-18)
+
+« ok » sur les trois questions du § 23 :
+
+- les 7 modèles et leurs variations ;
+- niveaux **CM1 et CM2**, tag sur les deux points pour 099/091, 100/089, 101/090 ; **CM1 seul** pour 098, 102, 103, 106 ;
+- modèles CM1 écrits (pas de CM1 ajouté aux modèles CE2 et 6e existants).
+
+### 23 ter. Lot 8c — écrit (2026-11-18)
+
+- Script `docs/wip/questions/lot-cm1-8c.py` → `scripts/questions/cm1-8c/` (7 modèles, niveaux 3, 1, 1, 2, 1, 2, 3 ;
+  grades CM1 + CM2 pour 02, 03, 04, CM1 seul sinon). Figures en catalogue, vérifiées par le script (angles droits
+  codés exacts, autres angles à plus de 14° de l'angle droit, côtés codés égaux, côtés non codés nettement
+  différents).
+- `question:specs` : 7/7 importables, 56 specs ; `sonde-figures` 300 tirages par modèle, 0 problème (elle ne sonde
+  pas les dessins d'une case choix : vus dans l'aperçu). Simulation `create-questions` contre la prod : 7 « à
+  créer », aucun homonyme.
+- Base locale (copies à une variation par modèle, 22 brouillons d'essai) : les 22 variations vues à 390 px
+  (Playwright, port 5178), sans défilement horizontal ni erreur de console.
