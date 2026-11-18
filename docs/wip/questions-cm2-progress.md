@@ -15,8 +15,8 @@ _Mis à jour le 2026-11-18, après #2841 (nœud + tag du lot 11a)._
   jouerait ensemble : la session questions-cm1 la joue, ou David dit de jouer les deux. Fichiers `cm2-11a/*.json` modifiés
   dans `ubumaths-wt-questions-cm1` (ids, copie de ce qui est mergé) : à annuler là-bas (David).
 - **Pièges en cours** : lancer `create-questions` depuis le dépôt principal (au lot 11a, lancé du worktree cm1 : ids
-  écrits là-bas). `Doc-inchangée:` dans un COMMIT, pas dans la PR. `migration:horodatage` = heure réelle UTC. `git commit
--m … -- <fichiers>`. Stash « cm2-9 ids » du dépôt principal : à supprimer (David).
+  écrits là-bas). `Doc-inchangée:` dans un COMMIT, pas dans la PR. `migration:horodatage` = heure réelle UTC.
+  Commit par `git commit -m … -- <fichiers>`. Stash « cm2-9 ids » du dépôt principal : à supprimer (David).
 - **Worktree / branche** : `ubumaths-wt-questions-cm2` (`feat/questions-cm2-lot11a-tags`, mergée), gardé pour `db:migrate`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
