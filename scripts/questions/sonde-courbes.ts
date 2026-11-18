@@ -32,13 +32,14 @@ function lireModele(chemin: string): QuestionTemplate {
 }
 
 /**
- * Lignes où chercher les blocs ```courbe : dans un bloc associer, la courbe d'un élément est
- * décalée sous son « - » (« - ```courbe », puis 2 espaces) ; on retire ce décalage, sinon
- * `findCourbeBlocks` ne la voit pas et la sonde rend « 0 problème » sans avoir rien lu.
+ * Lignes où chercher les blocs ```courbe : dans un bloc associer ou choix, la courbe d'un élément
+ * est décalée sous son « - » (« - ```courbe », puis 2 espaces) ; on retire ce décalage, sinon
+ * `findCourbeBlocks` ne la voit pas et la sonde rend « 0 problème » sans avoir rien lu (vu au
+ * lot 5a de Tle techno, courbes dans un ````choix).
  */
 function lignesASonder(texte: string): string[] {
 	const lignes = texte.split('\n');
-	if (!lignes.some(isAssocierBlockStart)) return lignes;
+	if (!lignes.some((l) => isAssocierBlockStart(l) || /^`{3,}choix\s*$/.test(l))) return lignes;
 	return lignes.map((l) => l.replace(/^(?:- | {2})/, ''));
 }
 
