@@ -82,7 +82,14 @@ Un fichier qui perd des erreurs fait aussi échouer : `pnpm types:cliquet --maj`
 
 **`pnpm lint:fast`** (~2,5 s) rejoue toutes les règles de niveau erreur d'eslint sans le service
 TypeScript (`eslint.fast.config.js`), plus oxlint, la parité des variables d'environnement avec
-`.github/ci.env` et la garde des `render` attendus. Eslint complet : 530 s, en CI.
+`.github/ci.env` et la garde des `render` attendus. Eslint complet : 530 s en local.
+
+**ESLint en CI** : sur une PR, le job Lint ne relit que les fichiers de code de la PR
+(`scripts/ci-lint-fichiers.sh`) — les règles d'erreur ne lisent qu'un fichier à la fois, et tout
+l'arbre prenait 19 à 24 min par PR. Il relit tout l'arbre quand la PR touche la config ESLint, une
+règle maison, les dépendances, `.gitignore`, `svelte.config` ou un `tsconfig`. Le filet :
+`lint-nocturne.yml` relit tout l'arbre chaque nuit sur `main` et y enregistre le cache ESLint que
+les PR restaurent (`main` ne lance pas le Lint sur push).
 
 **Variables d'environnement lues par l'appli : `src/env.ts`.** Depuis SvelteKit 3, `$app/env/*` (et
 `$env/*`, qui le réexporte) n'expose que les variables déclarées là (`defineEnvVars`) ; une
@@ -217,7 +224,7 @@ pour de vrai ; `EMAIL_CAPTURE_DIR` change le dossier. Base distante (worktree sa
   fichiers, elle se fait dans sa propre PR. `typst` reste en 0.6.1-rc5 tant qu'aucune nouveauté
   n'est nécessaire. Une PR Dependabot qui touche l'une d'elles échoue en CI ou se ferme.
 - **Paquets de la config ESLint** (`typescript-eslint`, `eslint-plugin-svelte`, `globals`) : leur
-  montée invalide tout le cache ESLint, donc relecture à froid en CI (au-delà de 30 min sur #2537 et
+  montée invalide tout le cache ESLint, donc relecture de tout l'arbre à froid en CI (au-delà de 30 min sur #2537 et
   #2577) ; le job Lint a 60 min. `typescript-eslint` n'est plus épinglé depuis la 8.72.1 : le faux
   positif `$bindable` de la 8.71.1 (sveltejs/eslint-plugin-svelte#1607) est corrigé dans
   `svelte-eslint-parser` 1.10.
