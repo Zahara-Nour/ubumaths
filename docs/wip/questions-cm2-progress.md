@@ -1163,3 +1163,7 @@ de 7 modèles. Tableau du § 17 gardé.
 - Migration `20261118194448_questions_cm2_lot11a_rangement_tags.sql`, copie du lot 10 (script, aucun reste du lot 10).
   Test `questions-cm2-lot11a-rangement-tags` : 9 verts ; corps remplacé par `select 1;` → 5 rouges ; fichier restauré
   depuis sa copie (`cmp`).
+- `security-auditor` : aucun finding bloquant (diff au gabarit du lot 10 : ids, codes, chemins, compteurs, table temporaire,
+  commentaires et résolution nœud-ou-notion ; 7 ids concordants partout ; codes de points uniques). Cosmétique corrigé :
+  titre du test. #2841 : CI non déclenchée au premier push (relancée par la fusion de `origin/main`) ; garde « doc à jour »
+  rouge faute de `Doc-inchangée:` dans un commit (mise dans la description de la PR seulement).
