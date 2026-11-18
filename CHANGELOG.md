@@ -8642,7 +8642,7 @@ All notable changes to this project will be documented in this file. See [standa
 - **exponentielle:** bilan, défauts trouvés et décisions ouvertes ([5ca90d6](https://github.com/Zahara-Nour/ubumaths/commit/5ca90d62c5e7f3b5bc857d1ba00b75cdcececcfd))
 - **extern:** ajoute le dépôt dgpad à la liste ([d31e29a](https://github.com/Zahara-Nour/ubumaths/commit/d31e29a04b0f91d27484bd1bcd7b2c611bc39115))
 - **extern:** ajoute le dépôt excalidraw à la liste ([718b2df](https://github.com/Zahara-Nour/ubumaths/commit/718b2df0c476cdbd00e6aafc8aa0ad1c56a661ed))
-- **extern:** ajoute le dépôt mathalea à la liste ([3d027bb](https://github.com/Zahara-Nour/ubumaths/commit/3d027bbca42d8e98ef78380ddef200271e1f2fd1))
+- **extern:** ajoute un dépôt à la liste ([3d027bb](https://github.com/Zahara-Nour/ubumaths/commit/3d027bbca42d8e98ef78380ddef200271e1f2fd1))
 - **extern:** ajoute le dépôt mathgraph à la liste ([d88b9fa](https://github.com/Zahara-Nour/ubumaths/commit/d88b9fa977483c79c2369312469b93e35b8b473f))
 - **extern:** ajoute le dépôt OpenBoard à la liste ([c33ff7a](https://github.com/Zahara-Nour/ubumaths/commit/c33ff7aaae0f9fef4840c65b6c44b895bd727bf3))
 - **extern:** ajoute le dépôt reveal.js à la liste ([b8e7afc](https://github.com/Zahara-Nour/ubumaths/commit/b8e7afc00473cf2d918f695fe7bfdc6ca3a88547))
