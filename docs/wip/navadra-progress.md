@@ -2,7 +2,7 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, phase 0, rien n'est codé ; question 5 close._
+_Mis à jour le 2026-11-18 : phase 0 validée, rien n'est codé._
 
 - **État** : analyse faite. David repart **de zéro**, avec un **nouveau nom** et le **lore de Chiphre**. Le principe reste le même : chaque sort ou coup se valide par une question, et les questions viennent du système de questions de Chiphre.
 - **Tranché** : avatar combattant, accompagné d'un Mathou familier ; une magie ajoutée au lore (§ « Tranché »).
@@ -20,14 +20,14 @@ _Mis à jour le 2026-11-17, phase 0, rien n'est codé ; question 5 close._
 - **Tranché aussi (5e, 2026-11-17)** : 3 Bêtes par jour, 5 au plus ; celles des notions à retravailler restent jusqu'à leur défaite ; une grosse Bête par semaine. **La question 5 est close.**
 - **Fait (2026-11-17)** : § « Ce qu'on garde de Navadra » relue et validée (indices : le Mathou seul ; tutoriel : Bordure ; chiffres : ceux de Navadra).
 - **Fait aussi** : § « Idées d'ajouts » relue (Mathou réveillé par un combat ; Bataille de Bataillon et grande bataille contre le Czar après la v1).
-- **Phase 0 de la v1 rédigée (2026-11-18)** : page https://claude.ai/artifact/3wLhJbVxMdQfWwPx7qzD5g (parcours, cas limites, problèmes, 7 questions, découpage en 8 PR). À verser dans ce journal une fois validée.
-- **Prochaine action** : recevoir les réponses de David aux 7 questions de la page, puis verser la phase 0 validée dans ce journal.
-- **En attente de David** : les 7 questions de la page (mage après la v1 ? Mathou choisi ? défaite sans perte ? pas de chrono ? QCM et une case seulement ? fiches de Bêtes pour l'IA d'image ? rien de neuf côté prof ?) et les 2 points « proposé » (un sort par Province au départ ; Mathou endormi sans aide).
+- **Phase 0 de la v1 VALIDÉE (2026-11-18)** : § « Phase 0 de la v1 » (parcours, limites, erreurs, 7 questions, découpage en 8 PR).
+- **Prochaine action** : étape 1, les fondations en base. Ouvrir le worktree `ubumaths-wt-navadra` (branche `feat/navadra-fondations`), proposer le schéma, puis **poser à David la question d'accès** (« qui pourra lire quoi ») **avant d'écrire du SQL**. Tests d'intégration RLS d'abord.
+- **En attente de David** : rien ; la question d'accès viendra avec le schéma de l'étape 1.
 - **Façon de poser** : David n'a pas compris la 5a posée en termes techniques. Poser chaque point **en mots simples, avec un exemple**, sans noms de tables ni de colonnes.
 - **Pièges en cours** :
   - L'analyse du jeu d'origine est dans `extern/navadra-jeu/CLAUDE.md`, un fichier **non versionné**. Ce journal en reprend l'essentiel.
   - Le Compendium n'interdit que les **mots** anglais affichés (XP, level, boss, score, leaderboard ; `lore-pataphysique.md:968,1776`), **pas les mécaniques**.
-- **Worktree / branche** : aucun (doc seulement, sur `main`).
+- **Worktree / branche** : aucun pour l'instant (doc sur `main`) ; l'étape 1 ouvrira `../ubumaths-wt-navadra`.
 
 ## Tranché
 
@@ -98,6 +98,62 @@ _Mis à jour le 2026-11-17, phase 0, rien n'est codé ; question 5 close._
   - **3 nouvelles Bêtes par jour**, **5 au plus** en attente sur la carte ;
   - une Bête née d'une **notion à retravailler** (point à remédier) **reste jusqu'à sa défaite** ; les autres repartent au bout de quelques jours, comme dans Navadra ;
   - **une grosse Bête par semaine**, plus longue à vaincre.
+
+## Phase 0 de la v1 (validée par David le 2026-11-18)
+
+Page de relecture : https://claude.ai/artifact/3wLhJbVxMdQfWwPx7qzD5g. David a validé toutes les recommandations, y compris les points marqués « proposé ».
+
+**Contenu de la v1** : une entrée de menu « La Descente de la Vistule » (du primaire au lycée) ; la carte du Royaume ; le combat de la recrue (primaire, coups) et de l'apprenti (collège, sorts tout faits) ; le Mathou familier ; la grosse Bête de la semaine ; le carnet ; le tutoriel de Bordure. **Après la v1** : le mage (la grille), la Bataille de Bataillon, la grande bataille contre le Czar.
+
+**Nominal**
+
+1. Première visite : combat guidé par Bordure contre une petite Bête facile, 2 ou 3 minutes, qu'on peut passer et qui ne revient pas.
+2. Départ : **un coup ou un sort par Province** dès le premier jour, sans notion maîtrisée.
+3. Carte : 6 Provinces, Bêtes du moment ; chaque Bête montre la Province à laquelle elle est sensible (la notion à travailler).
+4. Combat : le coup ou le sort choisi donne la Province, donc le domaine de la question. Juste : l'effet part (×2 si c'est la Province sensible). Faux : coup raté, correction montrée. Après 3 actions, riposte (esquive par question pour la recrue ; défense par sorts pour l'apprenti).
+5. Mathou : souffle un indice ; aide selon son stade.
+6. Victoire en 3 ou 4 tours (une dizaine de questions) : gidouilles plafonnées par jour, Bête dans le carnet, réponses comptées comme travail, Mathou endormi réveillé si c'est sa notion.
+7. Une notion maîtrisée (en combat ou ailleurs) ouvre un nouveau coup ou sort, annoncé par le jeu.
+8. Apparition : 3 Bêtes par jour, 5 au plus ; les ordinaires repartent après quelques jours ; celle d'une notion à remédier reste ; une grosse Bête par semaine, en plusieurs combats, qui garde ses blessures.
+
+**Limites**
+
+- Élève qui arrive : Bêtes nées des notions non travaillées de son niveau.
+- Tout maîtrisé : Bêtes des notions à revoir.
+- Province sans questions à son niveau (algorithmique au primaire) : ni Bête ni coup, coups fermés avec un mot d'explication.
+- Carte pleine (5) : plus d'apparition.
+- Sans Mathou : on combat seul. **Mathou endormi : il vient mais n'aide pas** tant qu'il dort.
+- Plafond de gidouilles atteint : un mot le dit ; les combats comptent toujours comme travail.
+- Sans niveau scolaire (`profiles.grade` vide) : message « vois avec ton professeur ».
+
+**Erreurs**
+
+- Connexion perdue : chaque réponse est enregistrée au fil du combat ; la victoire se renvoie ; page fermée = combat abandonné, sans perte.
+- Bête trop dure : perdre ne coûte rien ; elle reste battable avec le mauvais domaine, en plus long.
+- Triche : correction côté client (ADR 0001) ; le serveur vérifie que la Bête existe, est à l'élève et n'est pas déjà vaincue ; gidouilles plafonnées.
+
+**Les 7 questions (recommandations validées)**
+
+1. Le mage vient **après la v1** ; un lycéen joue en apprenti, avec des sorts tout faits de son niveau.
+2. L'élève **choisit son Mathou** avant le combat ; par défaut, celui de la notion de la Bête s'il l'a, sinon le dernier qui l'a accompagné.
+3. **Perdre ne coûte rien** : la Bête reste, en pleine forme, sauf la grosse Bête qui garde ses blessures.
+4. **Pas de chrono** en v1.
+5. En combat, **seulement les QCM et les questions à une seule case**, avec une exclusion manuelle possible.
+6. Dessins : **j'écris une fiche par Bête** (nom, Province, allure, caractère), **David les fait dessiner par l'IA d'image** (18 à 24 Bêtes ; copie des fiches dans `~/Downloads`).
+7. **Rien de nouveau côté prof** en v1 ; le travail en combat apparaît dans son suivi habituel ; le carnet reste à l'élève seul.
+
+**Découpage (une PR par étape, dans l'ordre)**
+
+1. Fondations en base : Bêtes de l'élève, coups et sorts gagnés, carnet, versement plafonné des gidouilles. **Question d'accès à David avant tout SQL.**
+2. Apparition des Bêtes (sélecteur sur les besoins, 3/jour, 5 max, départ, grosse Bête hebdo).
+3. Combat de la recrue (coups, esquive, questions courtes, victoire, défaite).
+4. Carte, entrée de menu, carnet. Premier jalon : un élève du primaire peut jouer.
+5. Apprenti (sorts tout faits, riposte, défense).
+6. Mathou familier (choix, indice, réveil).
+7. Tutoriel de Bordure et dessins des Bêtes. Fin de la v1.
+8. Suppression de l'ancien portage : migration destructive, arrêt et go de David.
+
+Au code : ajouter « La Descente de la Vistule » à `CONTEXT.md` (et une ADR si l'architecture le justifie, skill `domain-modeling`).
 
 ## À trancher (posé à David le 2026-11-09)
 
@@ -179,6 +235,7 @@ _Mis à jour le 2026-11-17, phase 0, rien n'est codé ; question 5 close._
 
 ## Historique
 
+- **2026-11-18** : phase 0 de la v1 validée par David (toutes les recommandations).
 - **2026-11-18** : phase 0 de la v1 rédigée et publiée en page, 7 questions posées.
 - **2026-11-17** : § « Idées d'ajouts » relue avec David : Mathou réveillé par un combat en v1 ; Czar et Bataillon après la v1.
 - **2026-11-17** : § « Ce qu'on garde de Navadra » relue avec David : indices par le Mathou seul, tutoriel par Bordure, chiffres de Navadra au départ.
