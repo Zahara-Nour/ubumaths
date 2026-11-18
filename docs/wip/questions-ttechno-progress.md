@@ -664,3 +664,5 @@ vérifiés par MCP (`draft`, `{T_TECHNO}`, sans nœud ni tag) ; ids commités su
   table temporaire).
 - Test `tests/integration/questions-ttechno-lot3b-rangement-tags.test.ts` : 9 verts ; corps retiré (en-tête et
   rollback gardés) → 5 rouges ; fichier restauré d'une copie, identique. `types:cliquet` tenu.
+- `security-auditor` : aucun finding bloquant (diff avec le lot 3a = ids, codes, sous-notion, table temporaire ;
+  rollback miroir ; aucune policy, aucune table d'élève).
