@@ -4,15 +4,19 @@
 
 _Mis à jour le 2026-11-18, ouverture du chantier._
 
-- **État** : chantier ouvert ; relevé des 11 alertes Dependabot fait (ci-dessous). Rien de codé.
-- **Prochaine action** : phase 0, David choisit le découpage (SvelteKit 2.70.4 d'abord, ou SvelteKit 3 tout de suite).
-- **En attente de David** : le découpage.
+- **État** : découpage tranché (choix 1). PR 1 : SvelteKit 2.70.3 → 2.70.4 (seul paquet changé dans le lockfile), `check:incremental` 0 erreur.
+- **Prochaine action** : merger la PR 1, puis PR 2 : SvelteKit 3 + adapter-vercel 7 (lire les changements cassants d'abord).
+- **En attente de David** : rien.
 - **Pièges en cours** : dépendances retenues exprès (typescript-eslint, typst, config ESLint, prettier) : mémoire `project_dependances-epinglees` ; `minimumReleaseAge` 3 j, ne jamais le contourner.
 - **Worktree / branche** : `../ubumaths-wt-mises-a-jour` · `chore/mises-a-jour`.
 
 ## Origine
 
 Après le `deploy:prod` v0.95.0 (2026-11-18), GitHub signale 11 failles dans les dépendances (3 graves, 4 moyennes, 4 faibles). David : « ouvre un chantier mises à jour ».
+
+## Décisions de David
+
+- 2026-11-18 : **choix 1** — SvelteKit 2.70.4 d'abord (ferme les 2 alertes qui nous concernent), SvelteKit 3 ensuite dans une PR à part. Autres montées hors du chantier (lot mensuel de Dependabot).
 
 ## Relevé des alertes (2026-11-18)
 
