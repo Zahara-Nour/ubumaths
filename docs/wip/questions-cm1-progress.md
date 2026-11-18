@@ -5,17 +5,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après la publication du lot 8d._
+_Mis à jour le 2026-11-18, lot 8e écrit (§ 25 ter), PR pas encore ouverte._
 
-- **État** : lots 0 à 8d publiés, **148 points du CM1 sur 171** (CM2 : 108 sur 158) ; aucun brouillon en attente.
-- **Prochaine action** : écrire les lots 8e (solides) et 8f (patrons, déplacements, assemblages) une fois la
-  phase 0 du § 25 validée ; puis 9 (probabilités, proportionnalité).
-- **En attente de David** : les 4 questions du § 25 (modèles, 116 et 119 hors du D, jumeaux CM2, 111-112 écrits).
+- **État** : lots 0 à 8d publiés, **148 points du CM1 sur 171** ; phase 0 des lots 8e et 8f validée (§ 25, 25 bis) ;
+  lot 8e écrit et vérifié (5 modèles, § 25 ter), commité et poussé sur `feat/questions-cm1-lot8e`.
+- **Prochaine action** : ouvrir la PR des fichiers du 8e (revue : aucune, contenu ; `Doc-inchangée: contenu`),
+  CI, merge ; David lance `create-questions --dir scripts/questions/cm1-8e --publier` depuis le worktree ; puis
+  migration nœud + tag (01 → CM1-109 + CM2-098, 02 → CM1-110 + CM2-099, 03 → 111, 04 → 112, 05 → 113 ; nœud
+  Solides › propriétés). Ensuite le lot 8f (modèles 8 à 14 du § 25), puis 9.
+- **En attente de David** : rien.
 - **Pièges en cours** : lancer `create-questions --publier` et `db:migrate` **depuis le worktree** (lien
-  `supabase/.temp/` copié) — et celui du **bon** chantier (un `--publier` du CM2 11a a été lancé ici) ; commitlint
-  refuse le type `content` et un corps > 100 caractères par ligne ; le mode auto refuse `publier-lot` (même en
-  simulation) et `garde-niveaux-tags` : David les lance ; ports 5176, 5177 pris ; imports en `#lib/x.ts`.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, détaché sur `main`, aucune branche ouverte.
+  `supabase/.temp/` copié) — et celui du **bon** chantier ; commitlint refuse le type `content` et un corps > 100
+  caractères par ligne ; le mode auto refuse `publier-lot` (même en simulation) et `garde-niveaux-tags` : David les
+  lance ; ports 5175, 5177, 5178 pris ; 17 copies `[essai 8e]` en base locale ; niveau = rang dans le nœud.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, branche `feat/questions-cm1-lot8e`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -2084,3 +2087,24 @@ pouvait pas lire avant.
    pavé) : je le signale dans le journal du CM2.
 4. 111, 112 : écrire des modèles CM1 plutôt que d'ajouter le CM1 aux modèles CE2 `7ed6c420`, `964711ea` ? Reco :
    écrire (même choix qu'aux 8c, 8d : le CM1 ajoute les mesures, la base à 6 côtés).
+
+### 25 bis. Lots 8e, 8f : décisions (David, 2026-11-18)
+
+« je valide » : les 14 modèles du § 25 et leurs variations ; 116 et 119 sortent du D (modèles 9, 10, 14), 114
+reste en D ; niveaux **CM1 et CM2** et tag des deux points (109/098, 110/099, 115/100, 116/101, 117/103,
+118/104, 119/105) ; 111, 112 : modèles CM1 écrits (pas de CM1 ajouté aux modèles CE2).
+
+### 25 ter. Lot 8e — écrit (2026-11-18)
+
+- Script `docs/wip/questions/lot-cm1-8e.py` → `scripts/questions/cm1-8e/` (5 modèles, 17 variations, 70 specs) ;
+  grades CM1 + CM2 pour 01, 02 ; CM1 pour 03, 04, 05.
+- **Niveaux corrigés** : ceux de la phase 0 (1, 2…) étaient faux. Le niveau suit le nœud Solides › propriétés, où
+  le CE2 s'arrête à 13 → **14 à 18**.
+- Règle ajoutée en écrivant (dans le script) : un cube et un pavé **sont** des prismes droits, donc jamais un cube
+  ni un pavé à nommer quand « prisme droit » est parmi les choix. Le modèle 01 dessine boule, cône, pyramides,
+  cylindre ; le 02 garde cube et pavé dans une variation à 4 choix, sans prisme droit.
+- `create-questions` en simulation contre la prod : 5 « à créer » ; `sonde-cubes` : 1 492 blocs, 0 problème.
+- Base locale (17 copies, une variation chacune), aperçus à 390 px (Playwright, port 5182) : aucun défilement
+  horizontal, aucune erreur de console. Corrigés après l'aperçu : (1) face latérale grisée d'un prisme seulement si
+  ses deux côtés sont cotés (le côté oblique ne l'est jamais ; 4 2 3 donnait 2,8 cm sur 3 cm, indécidable) ;
+  (2) « La base est un polygone à 7 côtés : elle a 7 côtés » → « La base a 7 côtés (un pentagone) ».
