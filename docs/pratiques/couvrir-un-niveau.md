@@ -12,6 +12,8 @@ couvre:
   - scripts/lib/lot-questions.ts
   - scripts/lib/niveaux-des-tags.ts
   - scripts/questions/garde-niveaux-tags.ts
+  - scripts/series/creer-serie.ts
+  - scripts/lib/serie-fichier.ts
 ---
 
 # Couvrir un niveau en modèles de questions — démarche, choix et pièges
@@ -330,6 +332,45 @@ scripts/questions/<niveau>-0-<thème> --ids <id8>,…` ; chaque fichier porte so
 4. **Garde des niveaux**, après la migration de rangement et avant la publication :
    `pnpm tsx scripts/questions/garde-niveaux-tags.ts` (lecture seule, toute la base) liste les
    modèles tagués d'un point dont le niveau manque à `grades`, et sort en code 1 s'il y en a.
+
+## 8 bis. Une série de modèles publiés
+
+Une série validée avec David (des modèles, chacun avec un nombre de questions et une durée,
+[ADR 0035](../adr/0035-une-serie-enregistre-des-modeles.md)) s'écrit dans un fichier
+`scripts/series/<niveau>-<sujet>.json`, sans passer par le panier d'Automaths :
+
+```json
+{
+	"title": "La médiatrice",
+	"grade": "6",
+	"description": "…",
+	"items": [
+		{
+			"modele": "Définition de la médiatrice d'un segment",
+			"templateId": "<uuid>",
+			"quantity": 2,
+			"delay": 60
+		}
+	]
+}
+```
+
+`modele` sert seulement à relire le fichier ; `delay: 0` prend la durée du modèle.
+
+```bash
+pnpm tsx scripts/series/creer-serie.ts --fichier scripts/series/<nom>.json              # simulation
+pnpm tsx scripts/series/creer-serie.ts --fichier scripts/series/<nom>.json --publier    # David
+```
+
+- **Simulation** : le fichier est validé avec les bornes de l'appli (50 modèles, 500 questions,
+  600 s par question, un modèle une seule fois), et chaque modèle est cherché en base : il doit
+  exister, être **publié** (un brouillon est invisible aux élèves) et être **du niveau** de la série.
+  Un seul refus, et rien n'est écrit.
+- **`--publier`** : la série est enregistrée au nom de l'unique professeur, et son `id` est écrit
+  en tête du fichier : **commiter le fichier**.
+- **Fichier qui porte un `id`** : jamais recréé ; `--publier --mettre-a-jour` remplace le titre,
+  le niveau, la description et les modèles. Une série verrouillée (un élève l'a commencée) est
+  refusée par la base, et le script le dit.
 
 ## 9. Pièges
 
