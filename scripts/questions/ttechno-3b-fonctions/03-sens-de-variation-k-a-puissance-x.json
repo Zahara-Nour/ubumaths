@@ -1,4 +1,5 @@
 {
+	"id": "f6805041-d456-422c-8560-31b9d3fe9f74",
 	"title": "Sens de variation de x ↦ k·a^x",
 	"description": "Sens de x ↦ k·aˣ sur ℝ dans les quatre cas : k > 0 ou k < 0, a > 1 ou 0 < a < 1",
 	"grades": ["T_TECHNO"],

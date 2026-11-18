@@ -1,4 +1,5 @@
 {
+	"id": "94b1dbf6-b870-4430-8ea1-31830630449d",
 	"title": "Courbe de x ↦ a^x sur ℝ",
 	"description": "Associer trois courbes sur [−3 ; 3] ; courbes de a^x et (1/a)^x ; point d'abscisse −1 ; courbe au-dessus de l'axe des abscisses",
 	"grades": ["T_TECHNO"],
