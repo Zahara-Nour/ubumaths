@@ -6,11 +6,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, phase 0 du lot 11a validée (§ 17.1)._
+_Mis à jour le 2026-11-18, après #2837 (fichiers du lot 11a)._
 
-- **État** : lots 0 à 10 publiés (lot 10 heures et durées : 5/5 `published`, relus au MCP, § 16.4). Restent les lots 11a à 19 du § 14 (ordre validé au § 14.1).
-- **Prochaine action** : écrire le lot 11a (§ 17, 7 modèles), worktree `ubumaths-wt-questions-cm2`.
-- **En attente de David** : rien. ⛔ Jamais `--mettre-a-jour` de `cm2-7b` avec des fichiers d'avant #2770 (ids CM1).
+- **État** : lots 0 à 10 publiés ; lot 11a (problèmes en une étape, 7 modèles) en fichiers sur `main` (#2837, § 17.2), pas en base. Restent ensuite les lots 11b à 19 du § 14.
+- **Prochaine action** : David crée les brouillons (dépôt principal) ; puis ids reportés sur une branche, migration nœud + tag (parties-tout, comparaison ×2, multiplicatifs, nombre inconnu, caractérisation, quatrième proportionnelle).
+- **En attente de David** : `pnpm tsx scripts/create-questions.ts --dir scripts/questions/cm2-11a --publier`. ⛔ Jamais `--mettre-a-jour` de `cm2-7b` avec des fichiers d'avant #2770 (ids CM1).
 - **Pièges en cours** : `pnpm migration:horodatage` = heure réelle UTC ; `db:migrate` refuse une migration plus ancienne que la dernière jouée → `--dry-run --include-all`, liste relue, puis `--include-all`. Worktree neuf : copier `supabase/.temp/` du dépôt principal, puis `pnpm exec svelte-kit sync`. `Doc-inchangée:` dans un COMMIT. `git commit -m … -- <fichiers>`. Stash du dépôt principal « cm2-9 ids » : copie identique de ce qui est mergé, à supprimer (David).
 - **Worktree / branche** : aucun.
 
@@ -1131,3 +1131,21 @@ Recommandations suivies (« je suis tes recos ») : (a) 058 en deux modèles (pa
 nombres propres à chaque variation ; (e) niveau 1 dans « caractérisation », « quatrième proportionnelle » et
 « nombre inconnu », après les pris ailleurs (parties-tout 25, comparaison 6 et 7, multiplicatifs 14) ; (f) un seul lot
 de 7 modèles. Tableau du § 17 gardé.
+
+### 17.2 Lot 11a : écriture (2026-11-18)
+
+- `docs/wip/questions/lot-cm2-11a.py` → `scripts/questions/cm2-11a/` (7 modèles, 23 variations, sans `theme` / `domain` /
+  `subdomain`) ; niveaux 25 (parties-tout), 6 et 7 (comparaison), 14 (multiplicatifs), 1 (nombre inconnu, caractérisation,
+  quatrième proportionnelle).
+- `question:specs --instances 300` : 81 specs vertes, 7 500 tirages réussis, aucun `\textcolor` hors `$` ; specs relues
+  contre les conditions et les plages de leur variation (script, 0 écart) ; `sonde-figures` : 0 problème (balances) ;
+  sonde des ` ```schema-barres ` des corrigés (copie de `sonde-horloges.ts` hors dépôt) : 556 blocs, 0 problème ;
+  `create-questions` en simulation (prod) : 7 à créer, 0 en base.
+- **Écarts à la phase 0** : 11a-5 V1, les deux pesées sont dessinées avec des boîtes étiquetées C (ciseaux) et K (crayon),
+  structure fixe (2 C + K, puis C + K) ; 11a-5 V3, le schéma en barres est dans le **corrigé**, pas dans l'énoncé ; 11a-7
+  V2, épaisseur d'un paquet de g feuilles bornée (g/20 ≤ w ≤ g/5 mm) et V3, 30 à 80 g de farine par œuf (nombres
+  vraisemblables) ; 11a-4 V3, sonnette de 4 à 25 €.
+- Base locale (copie du dossier dans le scratchpad, `.env.local`, sous `with-db-lock.sh`) : 7 brouillons ; aperçu admin à
+  390 px (Playwright, port 5179) : deux balances lisibles, □ et △ rendus, case « choix » Oui / Non, grands nombres
+  groupés (7 224 286), fractions.
+- #2837 (fichiers) : CI verte au premier passage, mergée.

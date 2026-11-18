@@ -1,4 +1,5 @@
 {
+	"id": "a14d1b12-505f-492c-8f72-35efa16ab3be",
 	"title": "Compter les fréquences dans [p − ks ; p + ks]",
 	"description": "Fonction Python compter(freqs, p, s, k) : valeur renvoyée sur huit fréquences (k = 1 ou 2), condition à compléter, pourcentage sur 500 échantillons, effet de k",
 	"grades": ["1_TECHNO"],

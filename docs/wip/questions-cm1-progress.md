@@ -5,11 +5,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, phase 0 du lot 8d écrite (§ 24)._
+_Mis à jour le 2026-11-18, après #2838 (fichiers du lot 8d mergés)._
 
-- **État** : lots 0 à 8c publiés, **144 points du CM1 sur 171** (CM2 : 100 sur 158, recompté au MCP).
-- **Prochaine action** : écrire le lot 8d (§ 24) après le go de David ; puis 8e, 9 (§ 20).
-- **En attente de David** : réponses aux 4 questions du § 24 (phase 0 du 8d).
+- **État** : lots 0 à 8c publiés, **144 points du CM1 sur 171** ; lot 8d écrit et mergé (#2838), pas encore en prod.
+- **Prochaine action** : David lance, depuis le worktree,
+  `pnpm tsx scripts/create-questions.ts --dir scripts/questions/cm1-8d --publier` (4 brouillons) ; puis ids commités
+  sur `feat/questions-cm1-lot8d-rangement`, migration nœud + tags (107, 108 → Symétrie axiale ; 167, 168 →
+  perpendiculaires et parallèles ; 6 tags : CM1-107, 108, 167, 168, CM2-154, 155) ; puis 8e, 9 (§ 20).
+- **En attente de David** : `create-questions --publier` du 8d.
 - **Pièges en cours** : lancer `create-questions --publier` et `db:migrate` **depuis le worktree** (lien
   `supabase/.temp/` copié) ; `db:migrate` « inserted before » → `--dry-run --include-all` puis `--include-all` ;
   titre homonyme d'un autre niveau → `create-questions` refuse (renommer) ; commitlint refuse le type `content` ;
@@ -1959,3 +1962,35 @@ avant. La migration ne fait que ranger et taguer les modèles, sur des nœuds qu
 4. 107 : écrire un modèle CM1 plutôt que d'ajouter le CM1 au modèle CE2 `49b8dc0b`, qui fait presque la même chose
    (axe H / V, figure collée à l'axe) ? Reco : écrire, avec des figures plus grandes et un axe décalé (même choix
    qu'au 8c). Sinon : ajouter le CM1 au modèle CE2 et le taguer CM1-107, ce qui fait un modèle de moins.
+
+### 24 bis. Lot 8d : décisions (David, 2026-11-18)
+
+« je suis tes recos » sur les quatre questions du § 24 :
+
+- les 4 modèles et leurs variations ;
+- 167, 168 sur quadrillage seulement, équerre proposée mais non exigée ; le tracé à l'équerre sur papier uni est
+  la ligne n° 40 de `outils-manquants.md`, pour plus tard ;
+- niveaux **CM1 et CM2**, tag sur les deux points pour 167/154 et 168/155 ; **CM1 seul** pour 107, 108 ;
+- 107 : modèle CM1 écrit (pas de CM1 ajouté au modèle CE2 `49b8dc0b`).
+
+### 24 ter. Lot 8d — écrit (2026-11-18)
+
+- Script `docs/wip/questions/lot-cm1-8d.py` → `scripts/questions/cm1-8d/` (4 modèles, niveaux 1, 2, 1, 2 ; grades
+  CM1 pour 01, 02, CM1 + CM2 pour 03, 04). Figures en catalogue, vérifiées par le script : nœuds de la fenêtre,
+  figure d'un seul côté de l'axe (collée au 107, à 1 à 4 carreaux au 108), symétrique dans la fenêtre, droite
+  attendue par au moins 3 nœuds.
+- 107 : 3 variations × 5 demi-figures (fusée, vase, papillon, château, feuille) ; axe vertical au milieu, horizontal,
+  décalé (fenêtre 16 × 10, axe à 6). 108 : point (`point A' = symetrie(A, axe=d)`), segment, triangle, 6 tirages
+  chacun. 167 : 4 variations × 4 (H / V, diagonale, oblique, A sur d) ; 168 : 3 × 4.
+- Simulation `create-questions` contre la prod : 4 « à créer », 86 specs (justes, et erreurs : figure glissée,
+  symétrique incomplet, point décalé ou trop près de l'axe, parallèle au lieu de perpendiculaire et l'inverse,
+  droite qui ne passe pas par A, nombres échangés sans changer le sens) ; `sonde-figures` 300 tirages par modèle,
+  0 problème.
+- Base locale (13 copies, une variation chacune) : les 13 aperçus vus à 390 px (Playwright, port 5181), sans
+  défilement horizontal ni erreur de console. Détail mineur : le point final après « $A$ » peut passer seul à la
+  ligne.
+
+### 24 quater. Lot 8d — fichiers mergés (2026-11-18)
+
+- #2838 mergée (CI verte). Conflit avec `main` sur `outils-manquants.md` : le n° 39 pris entre-temps (logarithme au
+  clavier), la ligne du tracé à l'équerre sur papier uni devient le **n° 40**.

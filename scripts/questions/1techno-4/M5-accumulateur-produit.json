@@ -1,4 +1,5 @@
 {
+	"id": "ecba4038-e4f2-4861-835b-2b2d3beab467",
 	"title": "Accumulateur pour calculer un produit",
 	"description": "Boucle p = p * k : produit des entiers de 1 à n, initialisation à 1, coefficient multiplicateur global d'évolutions successives, produit des éléments d'une liste",
 	"grades": ["1_TECHNO"],

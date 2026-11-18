@@ -1,4 +1,5 @@
 {
+	"id": "dfeed66c-f7fb-4a28-b8d8-80d5bf61a3e7",
 	"title": "Simuler N échantillons et lire l'histogramme des fréquences",
 	"description": "Liste de 500 fréquences de Bernoulli (taille 100) et son histogramme : effectif d'une classe, effectif sous un seuil, paramètre le plus plausible, contenu de la liste",
 	"grades": ["1_TECHNO"],

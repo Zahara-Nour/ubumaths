@@ -11,7 +11,12 @@ import requireZodValidation from './eslint-rules/require-zod-validation.js';
 import requireSupabaseErrorCheck from './eslint-rules/require-supabase-error-check.js';
 
 // SvelteKit 3 : la config Svelte vit dans les options du plugin `sveltekit()` de vite.config.ts
-const svelteConfig = (await loadConfig('./', { traverse: false }))?.config;
+const loadedSvelteConfig = (await loadConfig('./', { traverse: false }))?.config;
+// `version.name` vaut `Date.now()` à chaque chargement : ESLint met la config dans
+// l'empreinte de son cache, qui changeait donc à chaque lancement, et les ~1 300
+// fichiers Svelte étaient tous relus (Lint de la CI de version : 25 min, cache restauré).
+// Ni eslint-plugin-svelte ni svelte-eslint-parser ne lisent `version` : on le retire.
+const svelteConfig = loadedSvelteConfig && { ...loadedSvelteConfig, version: undefined };
 
 const gitignorePath = fileURLToPath(new URL('./.gitignore', import.meta.url));
 
