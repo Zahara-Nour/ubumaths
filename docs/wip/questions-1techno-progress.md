@@ -846,3 +846,14 @@ Verdicts des communs : 4 « ok » sur 4, sans commentaire (collection `verdicts`
 
 Rendus de N1-N3 (aperçu Tailscale) : David, « je valide les rendus ». Aperçu fermé (`tailscale serve --https=443 off` et
 `--https=8443 off` ; le :10000 → 5175 n'est pas à ce chantier), 5176 arrêté.
+
+### Lot 5 — fichiers mergés, migration des communs (2026-11-18)
+
+PR #2843 (fichiers) mergée, CI verte. Le dépôt principal porte 6 fichiers modifiés de
+`scripts/questions/ttechno-5a-logarithme/` (pas à ce chantier) : `git pull` impossible, David prévenu ; la suite se fait
+dans le worktree, branche `feat/questions-1techno-lot5-migration`. Migration
+`20261118202805_questions_1techno_lot5_communs_tags` (gabarit du lot G) : `1_TECHNO` ajouté + tag 1TECHNO sur 7461bb44
+(082), f3cb0c7a (085), 4f328c8c (084), 3fec6b41 (087). Test
+`tests/integration/questions-1techno-lot5-communs-tags.test.ts` : corps vidé → 6 rouges et le bloc nominal ne démarre
+pas ; migration rendue → 12 verts. Reste : ids de N1-N3 (David, `create-questions --publier` depuis le worktree), leur
+migration de rangement, audit de sécurité.
