@@ -7,19 +7,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après la publication du lot 6 (§ 26)._
+_Mis à jour le 2026-11-18, Q24 tranchée (§ 27)._
 
-- **État** : lots 1 à 6 publiés (lot 5 par questions-1techno). Tous les points 1GEN actifs ont un modèle publié, sauf
-  **1GEN-031**, couvert par le seul brouillon d2067413 (hors chantier).
-- **Prochaine action** : selon Q24 ; puis clore le chantier (versement du durable dans `docs/systeme/`, journal
-  archivé), en recomptant d'abord le découpage du § 4 contre les PR mergées.
-- **En attente de David** : Q24 (§ 26) ; supprimer `feat/questions-1gen-lot6` (`git branch -D`, entièrement dans
-  main).
-- **Pièges en cours** : rollbacks des lots 3 et 4 bloqués par celui de questions-ttechno (§ 25) ; `db:migrate` par
-  `!` attend un `[Y/n]` → `supabase db push --linked --yes` ; ADR 0020 et `couvrir-un-niveau.md` § 9 avant tout tag ; `db push` pousse TOUTES les
-  migrations en attente ; publication en prod = commande `!` de David (ma simulation est refusée : elle vise la
-  prod) ; aperçu : serveur `--host ::`.
-- **Worktree / branche** : aucun.
+- **État** : lots 1 à 6 publiés. Lot 7 = publier le brouillon d2067413 (1GEN-031) : exporté, contrôlé, joué en
+  local ; page à cocher publiée, 0 verdict ; simulation `publier-lot.ts` 1/1.
+- **Prochaine action** : verdict de David, puis `--publier` par David (`!`), relire `published` au MCP, prévenir
+  questions-1techno ; puis clore le chantier (recompter le découpage du § 4 contre les PR mergées, versement, archive).
+- **En attente de David** : verdict sur la page à cocher du lot 7 ; supprimer `feat/questions-1gen-lot6`
+  (`git branch -D`, entièrement dans main).
+- **Pièges en cours** : rollbacks des lots 3 et 4 bloqués par celui de questions-ttechno (§ 25) ; publication en
+  prod = commande `!` de David ; worktree neuf → `pnpm exec svelte-kit sync` avant un script qui importe `$lib`.
+- **Worktree / branche** : `../ubumaths-wt-questions-1gen`, `feat/questions-1gen-lot7`.
 
 ## 1. Relevé (prod, 2026-11-17)
 
@@ -991,3 +989,21 @@ au MCP). Ids en tête des fichiers.
 
 - **Q24** — 1GEN-031 : publier d2067413 tel quel (il est déjà dans la borne, § 2.3), ou écrire un modèle 1GEN
   propre, ou laisser le point sans modèle publié ?
+
+## 27. Lot 7 : publier le brouillon d2067413 (2026-11-18)
+
+**Q24 tranchée (David, 2026-11-18)** : publier d2067413 tel quel, après relecture (ma recommandation : déjà rangé sur
+1GEN-031, complet, 18 specs ; il fait _reconnaître_ sur le graphique plus que _représenter_ — couverture partielle
+assumée).
+
+- Export : `scripts/questions/1gen-7-suite-nuage/d2067413.json` (`export-question-templates.ts`, lecture prod).
+  Six variations : b + rn (croissante, décroissante), a·2ⁿ, a·0,5ⁿ, (n − c)² + d, n² + c.
+- Contrôles : `question:specs` 18/18, 300/300 tirages, « importable » ; `sonde-courbes` 300 blocs, 0 problème ;
+  quotients du corrigé (V4, V5) rendus en fractions (6/11, 4/3), jamais égaux entre eux sur toutes les valeurs
+  tirées (le « mais » du corrigé est toujours vrai).
+- Aperçu admin local (copie déjà en base locale sous le même id, serveur `--host 127.0.0.1`) : V4 jouée, nuage
+  lisible, « arithmétique » refusé, bonne réponse montrée, corrigé juste.
+- Page à cocher : 1 fiche, 6 exemples, 6 nuages dessinés, aucune alerte. Points en base : 1GEN-031 et 1TECHNO-045
+  (aucun point 1SPE malgré `1_SPE` dans `grades` : hors chantier, non bloquant). https://claude.ai/artifact/QANSq7PUZ11zjrXru8fmYj
+  (capacité `db`, 0 verdict à la publication).
+- `publier-lot.ts` (simulation) : 1 brouillon passe ; `garde-niveaux-tags` : aucun niveau manquant.
