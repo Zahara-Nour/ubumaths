@@ -8,15 +8,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, lot 4 écrit (ab2ff42965), brouillons en base locale._
+_Mis à jour le 2026-11-18, rendu du lot 4 validé par David, PR des fichiers en cours._
 
-- **État** : lots 1 à 3 clos ; lot 4 « algorithmique » (8 modèles, § 26) écrit et commité : simulation verte, tirages
-  verts, 8 brouillons en base LOCALE, aperçu ouvert à David par Tailscale (`https://serveur.tail99357e.ts.net`,
-  serveur 5176 + base :8443). Reste les lots 5 (graphiques, stats à deux variables) et 6 (probabilités).
-- **Prochaine action** : retour de David sur le rendu (histogramme M3, blocs Python, tableaux des corrigés M2, M4,
-  M7, M8) ; puis `tailscale serve reset` + arrêt du 5176 ; `git merge origin/main` (`$lib` → `#lib`, sans effet ici :
-  la branche ne touche que docs/ et scripts/questions/), `pnpm install`, re-simulation ; push, PR des fichiers.
-- **En attente de David** : son avis sur le rendu dans l'aperçu.
+- **État** : lots 1 à 3 clos ; lot 4 « algorithmique » (8 modèles, § 26) : rendu validé par David (« ok pour les
+  rendus »), `origin/main` fusionnée, re-simulation verte (8 ✓, contre la base locale : la simulation contre la prod
+  est refusée par le classifieur) ; PR des fichiers ouverte. Reste les lots 5 (graphiques, stats à deux variables)
+  et 6 (probabilités).
+- **Prochaine action** : PR des fichiers verte → merge ; puis **David** lance en prod
+  `pnpm tsx scripts/create-questions.ts --dir scripts/questions/1techno-4 --publier` (8 brouillons, ids écrits dans
+  les fichiers) ; puis migration de rangement + tags (8 tags 1TECHNO, + 1SPE-362 sur M2), test d'intégration rouge
+  d'abord.
+- **En attente de David** : le `create-questions --publier` en prod, après le merge.
 - **Pièges en cours** : M2 porte aussi 1SPE-362 (`grades` 1_TECHNO + 1_SPE) ; `db:migrate` pousse tout ce qui
   attend ; lot 5 : modèles communs de questions-1gen S2 f3cb0c7a → 085, S3 7461bb44 → 082, S4 4f328c8c → 084,
   S6 3fec6b41 → 087 (publiés, à vérifier contre mes bornes en phase 0).
@@ -744,3 +746,10 @@ Tous en Python (` ```python `), réponse en case ou ` ```choix `, notation u(n) 
 
 **Question d'accès** : les 8 modèles naissent brouillons ; la migration les range sur le nœud de leur point et les
 tague (8 tags 1TECHNO + 1SPE-362 sur M2) ; aucun modèle existant n'est touché. Aucune règle d'accès ne change.
+
+### Lot 4 — rendu validé (2026-11-18)
+
+Base locale réinitialisée entre-temps par une autre session : 8 brouillons recréés (copie scratchpad, ids locaux
+hors dépôt). David : « ok pour les rendus ». Aperçu fermé (`tailscale serve --https=443 off` et `--https=8443 off`
+seulement : le :10000 → 5175 n'est pas à ce chantier), 5176 arrêté. `origin/main` fusionnée ; re-simulation contre
+la base locale avec `--malgre-homonyme` (les brouillons locaux portent les mêmes titres) : 8 ✓, 0 ⛔.
