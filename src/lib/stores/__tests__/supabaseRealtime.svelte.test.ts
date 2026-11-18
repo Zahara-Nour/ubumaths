@@ -66,7 +66,7 @@ function createMockSupabaseClient(): SupabaseClient<Database> {
 }
 
 // Mock browser environment
-vi.mock('$app/environment', () => ({
+vi.mock('$app/env', () => ({
 	browser: true,
 	building: false,
 	dev: true,

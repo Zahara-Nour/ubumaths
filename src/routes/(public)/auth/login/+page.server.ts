@@ -38,7 +38,8 @@
  * 6. User is redirected to dashboard (or original page if specified)
  */
 import { redirect, fail } from '@sveltejs/kit';
-import { dev } from '$app/environment';
+import { dev } from '$app/env';
+import { PUBLIC_SUPABASE_URL } from '$app/env/public';
 import type { Actions, PageServerLoad } from './$types';
 import { createServerLogger } from '$lib/utils/logger';
 import {
@@ -110,8 +111,10 @@ export const actions = {
 		}
 
 		// Redirect to Google's OAuth consent screen
+		// SvelteKit 3 refuse une redirection vers une autre origine sans `external` :
+		// on n'autorise que l'origine du projet Supabase (son `/auth/v1/authorize`).
 		if (data.url) {
-			throw redirect(303, data.url);
+			throw redirect(303, data.url, { external: [new URL(PUBLIC_SUPABASE_URL).origin] });
 		}
 
 		// Shouldn't reach here, but handle gracefully

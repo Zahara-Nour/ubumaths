@@ -10,7 +10,7 @@
 -->
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import type { SubmitFunction } from '@sveltejs/kit';
+	import type { SubmitFunction } from '$app/forms';
 	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import { Badge } from '$lib/components/ui/badge';

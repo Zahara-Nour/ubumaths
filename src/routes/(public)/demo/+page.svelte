@@ -8,7 +8,7 @@
 <script lang="ts">
 	import { DEMO_HUB, DEMO_PAGES } from '$lib/seo/demo-pages';
 	import SeoHead from '$lib/seo/SeoHead.svelte';
-	import { resolve } from '$app/paths';
+	import { resolvePath } from '$lib/navigation/resolve-path';
 	import { ArrowRight } from '@lucide/svelte';
 </script>
 
@@ -27,7 +27,7 @@
 		{#each DEMO_PAGES as demo (demo.path)}
 			<li>
 				<a
-					href={resolve(demo.path)}
+					href={resolvePath(demo.path)}
 					data-sveltekit-preload-data="hover"
 					class="group flex h-full flex-col gap-2 rounded-lg border bg-card p-5 transition-colors hover:border-primary"
 				>

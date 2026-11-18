@@ -16,7 +16,7 @@
 		isDailySummaryMetadata
 	} from '$lib/utils/notification-formatters';
 	import { Bell, Loader2 } from '@lucide/svelte';
-	import { goto } from '$app/navigation';
+	import { gotoNotification } from '$lib/navigation/goto-notification';
 	import { onMount } from 'svelte';
 
 	/**
@@ -70,7 +70,7 @@
 
 		// Navigate if action URL exists
 		if (notification.action_url) {
-			goto(notification.action_url);
+			gotoNotification(notification.action_url);
 		}
 	}
 

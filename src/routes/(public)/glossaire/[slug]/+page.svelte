@@ -7,6 +7,7 @@
 	import { GRADES } from '$lib/types/grades';
 	import { termLabel } from '$lib/dictionary/glossary-page';
 	import { resolve } from '$app/paths';
+	import { resolvePath } from '$lib/navigation/resolve-path';
 	import type { GradedField } from '$lib/dictionary/model';
 	import type { PageProps } from './$types';
 
@@ -54,7 +55,7 @@
 			<p class="text-muted-foreground">
 				Voir :
 				<a
-					href={resolve(`/glossaire/${data.cited.slug}`)}
+					href={resolve(`glossaire/${data.cited.slug}`)}
 					class="font-medium text-primary underline"
 				>
 					{termLabel(data.cited.term)}
@@ -109,7 +110,9 @@
 		{#if term.seeAlso}
 			<section>
 				<h2 class="mb-2 text-lg font-semibold">Voir aussi</h2>
-				<a href={resolve(term.seeAlso.path)} class="text-primary underline">{term.seeAlso.label}</a>
+				<a href={resolvePath(term.seeAlso.path)} class="text-primary underline"
+					>{term.seeAlso.label}</a
+				>
 			</section>
 		{/if}
 	</div>

@@ -63,7 +63,7 @@
 
 	function handleClassChange(value: string) {
 		// Navigation reloads the server `load`, which updates `selectedClassId`.
-		goto(`?class=${value}`, { keepFocus: true, noScroll: true });
+		goto(`?class=${value}`, { reset: false });
 	}
 
 	function levelOf(row: (typeof data.rows)[number], code: string): MathCompetenceLevel | null {

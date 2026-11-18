@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après #2821._
+_Mis à jour le 2026-11-18, PR 2b prête à pousser (branche `chore/sveltekit-3`)._
 
-- **État** : #2814 (kit 2.70.4) et #2821 (TypeScript 6.0.3, CI verte, Lint compris) mergées, pas encore en prod. Étude SvelteKit 3 : section « Étude SvelteKit 3 ».
-- **Prochaine action** : PR 2b, kit 3 + adapter-vercel 7 (versions mûres au jour J, règle des 3 j ; 3.2.0 / 7.0.3 au 2026-11-18). Nouveau worktree, `npx sv migrate sveltekit-3`, d'abord vérifier si `$lib` est retiré ou seulement déprécié (sinon `#lib` dans une PR à part), puis corrections à la main de la liste « Obligatoire en 3.0 ». Revues `code-reviewer` + `security-auditor` (CSRF, cookies).
+- **État** : 21 commits, prêts à pousser. Tout vert en local : `pnpm check` (11 559 fichiers, TS 6), `pnpm build`, suite serveur (67 546), suite client en 2 tranches comme la CI (4 962), `types:cliquet`, intégration ciblée, essai manuel sur 5178 (admin, menu, 404). Revues faites : `security-auditor` sans bloquant (cookie 2 corrigé) ; `code-reviewer` : alias `$lib` de la suite d'intégration, `data-sveltekit-noscroll`, liens de notification périmés, `check-incremental`/`check-env-parity` corrigés. #2814 et #2821 mergées, pas encore en prod.
+- **Prochaine action** : grep « claude|anthropic », push, PR (corps dans le scratchpad de la session ou à réécrire depuis la section « PR 2b »), CI surveillée, merge si verte ; puis bloc à jour, worktree nettoyé. Ensuite : `$lib` → `#lib` (PR à part).
 - **En attente de David** : `deploy:prod` pour livrer #2814 et #2821, quand il le voudra.
-- **Pièges en cours** : `check:incremental` tourne sous tsgo (TS 7) : il NE vérifie PAS TS 6, seul `pnpm check` le fait. Dépendances retenues exprès (mémoire `project_dependances-epinglees`) ; `minimumReleaseAge` 3 j, ne jamais le contourner.
-- **Worktree / branche** : aucun (supprimés après #2821).
+- **Pièges en cours** : `$lib` gardé par `alias` (déprécié) — `#lib` = PR à part ; `$env/*` n'expose plus que ce que déclare `src/env.ts` ; `check:incremental` (tsgo) ne vérifie pas TS 6, seul `pnpm check`. `minimumReleaseAge` 3 j.
+- **Worktree / branche** : `../ubumaths-wt-mises-a-jour` · `chore/sveltekit-3`.
 
 ## Origine
 
@@ -57,6 +57,34 @@ Source : https://svelte.dev/docs/kit/migrating-to-sveltekit-3. Comptes faits par
 **Seulement déprécié (plus tard)** : `json()`/`text()` de kit (368 fichiers), `invalidateAll` (54), `$env/*` (18), `pushState`/`replaceState` (15), `goto` avec options (10).
 
 **Rien chez nous** : `$service-worker`, remote functions, `instanceof HttpError`, `data-sveltekit-*="off"`, `preloadData`, `getRequest`, `src/params`.
+
+## PR 2b — SvelteKit 3 (2026-11-18)
+
+Versions : kit **3.2.0**, adapter-vercel **7.0.3** (3.3.x et 7.0.4 publiées le 17, trop jeunes). Outil `sv migrate sveltekit-3` (sv 1.4.0) lancé tâche par tâche, mais il **reformate chaque fichier touché** (commentaires d'en-tête déplacés, `{disabled}` → `disabled={disabled}`) : seule la tâche `svelte-config` est gardée, le reste refait à la main. L'outil ne rend pas la main (prompt final) : arrêter ses processus `node` à la fin.
+
+Constats dans le code de kit 3.2.0 (pas dans le guide) :
+
+- **`$lib` retiré, mais réactivable** par `alias: { $lib: './src/lib' }` (option `alias` dépréciée, simple avertissement) → gardé ainsi ; `#lib` (≈ 14 600 imports) dans une PR à part.
+- **`$env/*` ne rend plus que les variables déclarées dans `src/env.ts`** (`defineEnvVars`), et n'a plus de types → `src/env.ts` créé (3 statiques obligatoires, 9 facultatives `schema: optionnelle`), 18 imports passés à `$app/env/public|private`. Sans `schema` = obligatoire : `check-env-parity` vérifie maintenant ces variables-là contre `.github/ci.env`.
+- **Tests navigateur** : `$app/env/public` lit `globalThis.__sveltekit_dev`, posé par la page HTML de kit, pas par vitest → posé dans `vitest-setup-client.ts`.
+- `Handle` & co → `@sveltejs/kit/hooks` ; `ActionResult` → `$app/forms`.
+- `error(N, { message })` et `pushState`/`replaceState` seulement **dépréciés** (avertissement) ; les appels dépréciés de `replaceState` ne déclenchent pas `before/afterNavigate` → laissés. Mais **`replaceState` est devenu asynchrone** et rejette quand le routeur n'est pas démarré : le `try/catch` de `slides/navigation/hash.ts` ne voyait plus l'échec → rejet non géré qui **figeait toute la suite client** (`wrapDynamicImport` absent dans les fichiers suivants) → repli par `.catch`.
+- **`importOriginal` de `$app/navigation` dans un `vi.mock` ne se termine jamais** en kit 3 : le fichier se fige, puis toute la suite client (`wrapDynamicImport` absent = bruit, présent aussi sur `main`). 11 fichiers passés au mock partagé `tests/helpers/app-navigation-mock.ts` (`appNavigationMock({ goto })`).
+- **`ActionResult`** : succès/échec portent `location`, `App.Error` a un `status` (test `form-action`, cliquet).
+- **Suite d'intégration** : `sveltekit()` sans options ne résout plus `$lib` → `kitAlias` partagé (`vitest.base.config.ts`) entre `vite.config.ts` et `vitest.integration.config.ts`.
+- **`data-sveltekit-noscroll`/`keepfocus` ignorés** (avertissement en dev seulement) → `data-sveltekit-reset="false"` (programme, classements).
+- **`goto` rejette une route inconnue** (kit 2 chargeait la page, donc une 404) → liens de notification par `gotoNotification` (repli `location.assign`, chemins du site seulement) ; deux notifications ont des adresses mortes (`student/resources/<id>`, `student/vip-cards`), fonctions plus appelées.
+- **cookie** : l'override `cookie >=0.7.0` imposait 1.1.1 à kit 3 (qui exige ^2.0.1, sa validation des noms retirée) → borné à `cookie@<0.7.0`.
+- **`@vercel/speed-insights`** importe encore `$app/environment` (avertissement en dev, accepté par kit 3).
+- **Suite client en local** : sans `CI=true`, elle lance aussi les tests Pyodide réels (`*-real`) ; lancer `CI=true pnpm exec vitest run --project=client` pour reproduire la CI.
+- **`goto` : `keepFocus`/`noScroll` retirés** (erreur en dev) → `reset: false` (9 appels).
+- **`redirect()` vers une autre origine** exige `{ external }` : seule la connexion Google (`auth/login`) sort du site → liste blanche = origine Supabase, test à l'appui. Les `next` de `auth/callback` et `auth/confirm` sont relatifs ou de même origine (permis).
+- **`resolve('/x')`** = id de route ; un chemin s'écrit sans `/` (`resolve('shtam')`) : 109 littéraux corrigés ; les chemins portés par une variable passent par `resolvePath` (`$lib/navigation/resolve-path`), `resolve` refusant de typer une union.
+- `page.url` en lecture seule (`ReadonlyURLSearchParams`) : `new URL(page.url.href)`, fonctions de lecture retypées.
+- **`handleError` client** reçoit `kind` (`app`/`framework`/`unknown`) et désormais les `error(...)` voulus → non journalisés ; 404 en avertissement, exception en erreur avec `detail`.
+- **`fail()` répond avec son vrai statut** : `form-action.ts` lisait déjà le corps (en-tête corrigé) ; le combat Navadra (`response.ok`) affichera « Erreur lors de la validation » au lieu de « Réponse incorrecte » sur un refus — mieux.
+- **CSRF** : un POST/PUT/PATCH/DELETE **sans `Content-Type`** d'une autre origine (ou sans `Origin`) est refusé. Crons Vercel en GET, aucun script ne poste vers l'appli → rien ne casse ; à faire relire par `security-auditor`.
+- `tsconfig.json` étend `$app/tsconfig` (`node_modules/$app/`, écrit par `svelte-kit sync`) ; `.svelte-kit/tsconfig.json` n'existe plus → sentinelle `.svelte-kit/.sync-sentinel` dans `check-incremental.sh`.
 
 ## Autres versions en retard (pnpm outdated, 2026-11-18)
 

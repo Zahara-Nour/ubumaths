@@ -13,7 +13,7 @@
 	 */
 
 	import { goto } from '$app/navigation';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
@@ -83,7 +83,7 @@
 			updateUrl({ class: classId });
 		} else {
 			// Remove class filter
-			const url = new URL($page.url);
+			const url = new URL(page.url.href);
 			url.searchParams.delete('class');
 			goto(url.toString(), { replaceState: true });
 		}
@@ -93,7 +93,7 @@
 	 * Update URL with new params
 	 */
 	function updateUrl(params: Record<string, string>) {
-		const url = new URL($page.url);
+		const url = new URL(page.url.href);
 		for (const [key, value] of Object.entries(params)) {
 			url.searchParams.set(key, value);
 		}

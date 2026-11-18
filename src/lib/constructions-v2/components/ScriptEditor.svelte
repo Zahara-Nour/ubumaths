@@ -10,7 +10,7 @@
 	 */
 
 	import { onMount, onDestroy } from 'svelte';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import { parseDsl } from '$lib/geometry-core/dsl';
 	import type { DslRuntimeErrorDetails } from '$lib/geometry-core/dsl/errors';
 	import ConstructionPlayer from './ConstructionPlayer.svelte';

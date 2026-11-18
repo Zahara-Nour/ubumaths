@@ -116,7 +116,7 @@
 				</div>
 			{/each}
 			<a
-				href="{resolve('/glossaire')}?q={encodeURIComponent(card[0].term)}"
+				href="{resolve('glossaire')}?q={encodeURIComponent(card[0].term)}"
 				target="_blank"
 				rel="noopener noreferrer"
 				class="inline-block text-sm text-primary underline">Voir dans le glossaire</a

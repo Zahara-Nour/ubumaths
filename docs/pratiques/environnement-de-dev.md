@@ -7,7 +7,7 @@ couvre:
   - '.husky/*'
   - .lintstagedrc.js
   - vercel.json
-  - svelte.config.js
+  - src/env.ts
   - vite.config.ts
   - .nvmrc
   - .claude/settings.json
@@ -83,6 +83,12 @@ Un fichier qui perd des erreurs fait aussi échouer : `pnpm types:cliquet --maj`
 **`pnpm lint:fast`** (~2,5 s) rejoue toutes les règles de niveau erreur d'eslint sans le service
 TypeScript (`eslint.fast.config.js`), plus oxlint, la parité des variables d'environnement avec
 `.github/ci.env` et la garde des `render` attendus. Eslint complet : 530 s, en CI.
+
+**Variables d'environnement lues par l'appli : `src/env.ts`.** Depuis SvelteKit 3, `$app/env/*` (et
+`$env/*`, qui le réexporte) n'expose que les variables déclarées là (`defineEnvVars`) ; une
+variable absente de la liste vaut `undefined`. Déclarée sans `schema`, elle est obligatoire : la
+génération des modules échoue si elle manque, d'où la parité avec `.github/ci.env` ci-dessus.
+`process.env` n'est pas concerné.
 
 Ses fichiers (`scripts/lint-fast-fichiers.sh`) : à la main, ce qui diffère d'`origin/main` **plus
 les fichiers non suivis** (un fichier tout neuf est relu avant son premier commit) ; au pre-push
@@ -261,8 +267,8 @@ pour de vrai ; `EMAIL_CAPTURE_DIR` change le dossier. Base distante (worktree sa
 - ⚠️ **Une montée de l'outil de build se vérifie sur le rendu**, pas seulement sur les statuts et la
   console : un CSS invalide ne fait aucune erreur (couleurs perdues en v0.54.0, cf. décision du
   2026-10-28).
-- Région des fonctions : **`cdg1`**, imposée par `svelte.config.js` (`regions: ['cdg1']`, runtime
-  `nodejs22.x`) ; le `iad1` des réglages du projet n'est qu'un défaut remplacé. Fluid Compute actif.
+- Région des fonctions : **`cdg1`**, imposée par l'adaptateur dans `vite.config.ts` (options de
+  `sveltekit()` depuis SvelteKit 3 : `regions: ['cdg1']`, runtime `nodejs22.x`) ; le `iad1` des réglages du projet n'est qu'un défaut remplacé. Fluid Compute actif.
 - `vercel.json` pose les en-têtes de cache : 30 jours pour `/fonts/` et `/upsilon-simulator/`, 1 jour
   (+ `stale-while-revalidate` 7 jours) pour les images, sons et CSS de `static/`.
 - `vercel.json` déclare **trois crons** : `/api/cron/riddle-of-the-day`, chaque jour à 00:05 UTC

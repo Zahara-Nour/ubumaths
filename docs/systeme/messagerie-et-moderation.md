@@ -15,6 +15,7 @@ couvre:
   - src/lib/utils/message-attachment-rules.ts
   - 'src/lib/types/{notification,warnings,messageTemplates,student-inbox}.ts'
   - 'src/lib/utils/{notification-formatters,sanitize-notification}.ts'
+  - src/lib/navigation/goto-notification.ts
   - 'src/routes/(protected)/dashboard/{teacher,admin}/{moderation,notifications,message-templates,friendships}/**'
   - 'src/routes/(protected)/dashboard/notifications/**'
 ---
@@ -171,7 +172,11 @@ La modération porte sur la table `messages` **du chat**, pas sur `private_messa
   `NotificationDropdown.svelte` (montés par `src/routes/(protected)/dashboard/+layout.svelte`) ;
   page `src/routes/(protected)/dashboard/notifications/+page.svelte` (message rendu par
   `{@html}` après `sanitizeNotificationHtml` de `src/lib/utils/sanitize-notification.ts`,
-  résumé quotidien par `src/lib/utils/notification-formatters.ts`).
+  résumé quotidien par `src/lib/utils/notification-formatters.ts`). Le clic sur une
+  notification suit son `action_url` par `gotoNotification`
+  (`src/lib/navigation/goto-notification.ts`) : `goto`, et chargement complet de la page si
+  SvelteKit refuse l'adresse (route renommée depuis l'envoi, la page ou la 404 s'affiche) ;
+  seuls les chemins du site (`/…`, jamais `//…`) sont suivis.
 - Envoi manuel : `src/routes/(protected)/dashboard/teacher/notifications/` et
   `dashboard/admin/notifications/` (form actions, `createNotificationSchema`, limite de débit).
 - Types : `src/lib/types/notification.ts` ; validation `src/lib/server/validation/notifications.ts`.

@@ -166,7 +166,7 @@ function refetchMock(row: Record<string, unknown> | null) {
 }
 
 // Mock browser environment
-vi.mock('$app/environment', () => ({
+vi.mock('$app/env', () => ({
 	browser: true,
 	building: false,
 	dev: true,

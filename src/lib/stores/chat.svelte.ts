@@ -1,5 +1,5 @@
 import { toaster } from '$lib/stores/toaster.svelte';
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 import { supabaseRealtimeManager } from './supabaseRealtime.svelte';

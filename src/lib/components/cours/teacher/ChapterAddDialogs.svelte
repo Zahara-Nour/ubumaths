@@ -26,7 +26,7 @@
 	import MySelect from '$lib/components/MySelect.svelte';
 	import DocumentUpload from './DocumentUpload.svelte';
 	import type { SectionContentKind } from '$lib/server/validation/chapter-sections';
-	import type { SubmitFunction } from '@sveltejs/kit';
+	import type { SubmitFunction } from '$app/forms';
 	import type { SupabaseClient } from '@supabase/supabase-js';
 	import type { Database } from '$lib/types/database';
 
@@ -291,7 +291,7 @@
 					<p class="text-sm text-muted-foreground">Aucune série enregistrée pour l’instant.</p>
 				{/if}
 				<a
-					href={resolve('/automaths/panier')}
+					href={resolve('automaths/panier')}
 					target="_blank"
 					rel="noopener noreferrer"
 					class="text-sm text-primary underline-offset-4 hover:underline"

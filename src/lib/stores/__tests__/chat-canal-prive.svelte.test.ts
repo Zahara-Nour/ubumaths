@@ -61,7 +61,7 @@ const PROF = '77777777-7777-4777-a777-777777777777';
 const MSG = '44444444-4444-4444-a444-444444444444';
 const MSG_INCONNU = '55555555-5555-4555-a555-555555555555';
 
-vi.mock('$app/environment', () => ({ browser: true, building: false, dev: true, version: '1' }));
+vi.mock('$app/env', () => ({ browser: true, building: false, dev: true, version: '1' }));
 
 // ============================================================================
 // HELPERS

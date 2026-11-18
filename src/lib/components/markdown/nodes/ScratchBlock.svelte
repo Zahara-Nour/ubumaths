@@ -17,7 +17,7 @@
 	@module components/markdown/nodes/ScratchBlock
 -->
 <script lang="ts">
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import type { ScratchIssue, ScratchNode } from '$lib/ubumark/types/scratch';
 	import { SCRATCH_UNAVAILABLE } from '$lib/ubumark/types/scratch';
 	import { readAuthoringErrors } from '../authoring-errors';

@@ -26,10 +26,9 @@ const navigation = vi.hoisted(() => ({
 	goto: vi.fn(async () => {}),
 	replaceState: vi.fn()
 }));
-vi.mock('$app/navigation', async (importOriginal) => ({
-	...(await importOriginal<typeof import('$app/navigation')>()),
-	...navigation
-}));
+vi.mock('$app/navigation', async () =>
+	(await import('$tests/helpers/app-navigation-mock')).appNavigationMock({ ...navigation })
+);
 const toaster = vi.hoisted(() => ({
 	success: vi.fn(),
 	error: vi.fn(),

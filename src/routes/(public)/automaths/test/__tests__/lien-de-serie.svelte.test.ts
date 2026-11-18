@@ -20,10 +20,9 @@ vi.mock('$app/state', () => ({
 		}
 	}
 }));
-vi.mock('$app/navigation', async (importOriginal) => ({
-	...(await importOriginal<typeof import('$app/navigation')>()),
-	goto
-}));
+vi.mock('$app/navigation', async () =>
+	(await import('$tests/helpers/app-navigation-mock')).appNavigationMock({ goto })
+);
 
 import Page from '../+page.svelte';
 

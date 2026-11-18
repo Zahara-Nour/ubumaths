@@ -131,7 +131,7 @@ export async function integrationClosure(root: string): Promise<string[]> {
 				path: args.path,
 				external: true
 			}));
-			// Tout autre alias `$…` (ex. `$tests` de svelte.config.js) : non suivi ici,
+			// Tout autre alias `$…` (ex. `$tests` des options de sveltekit() dans vite.config.ts) : non suivi ici,
 			// donc signalé plutôt que traité comme un paquet externe.
 			b.onResolve({ filter: /^\$/ }, (args) => {
 				unresolved.push(args.path);

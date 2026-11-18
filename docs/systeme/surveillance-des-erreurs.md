@@ -51,7 +51,9 @@ Trois boucles distinctes :
 - `src/hooks.client.ts` appelle `initErrorMonitoring()`, `initWebVitals()` et
   `initFreezeDetection()` au chargement. Son `handleError` envoie lui-même un `fetch`
   vers `/api/errors/log` pour les erreurs que SvelteKit intercepte (rendu, `$effect`,
-  `load`). Une 404 de navigation part en `warning`, le reste en `error`.
+  `load`). SvelteKit 3 lui passe toutes les erreurs avec un `kind` : une 404 de
+  navigation (`framework`) part en `warning`, une exception (`unknown`) en `error`, une
+  erreur voulue (`app`, levée par `error(...)`) n'est pas journalisée.
 - `src/lib/utils/errorMonitoring.ts` :
   - écoute `error` et `unhandledrejection` sur `window` ;
   - API manuelle : `captureError`, `captureValidationError`, `capturePerformance`,

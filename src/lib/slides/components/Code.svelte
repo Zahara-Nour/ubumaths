@@ -32,7 +32,7 @@
 	 */
 
 	import { onMount, getContext } from 'svelte';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import { DECK_CONTEXT_KEY } from '../core/context.js';
 	import type { DeckStore } from '../stores/deckStore.svelte.js';
 

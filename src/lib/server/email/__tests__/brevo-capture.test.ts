@@ -11,8 +11,26 @@ const sendTransacEmail = vi.fn(async () => ({ body: { messageId: 'm1' } }));
 const privateEnv: Record<string, string | undefined> = {};
 const publicEnv: Record<string, string | undefined> = {};
 
-vi.mock('$env/dynamic/private', () => ({ env: privateEnv }));
-vi.mock('$env/dynamic/public', () => ({ env: publicEnv }));
+// Module simulé : un accesseur par variable lue (vitest refuse une clé absente du
+// mock) ; chaque test remplit `privateEnv` / `publicEnv`.
+function envModule(vars: Record<string, string | undefined>, keys: string[]) {
+	return Object.defineProperties(
+		{},
+		Object.fromEntries(keys.map((key) => [key, { get: () => vars[key], enumerable: true }]))
+	);
+}
+
+vi.mock('$app/env/private', () =>
+	envModule(privateEnv, [
+		'BREVO_API_KEY',
+		'BREVO_SENDER_EMAIL',
+		'BREVO_SENDER_NAME',
+		'VERCEL',
+		'EMAIL_ENVOI_REEL',
+		'EMAIL_CAPTURE_DIR'
+	])
+);
+vi.mock('$app/env/public', () => envModule(publicEnv, ['PUBLIC_SUPABASE_URL']));
 
 vi.mock('@getbrevo/brevo', () => ({
 	TransactionalEmailsApi: class {

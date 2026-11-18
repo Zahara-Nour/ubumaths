@@ -22,7 +22,7 @@
 	// 1. Brave browser blocks these scripts - dynamic import + catch handles this gracefully
 	// 2. Avoids adding to the root layout's static dependency chain (see Safari TDZ fix
 	//    in +layout.ts for details on WebKit module initialization issues)
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import { redactAnalyticsEvent } from '$lib/utils/analytics-redact';
 
 	$effect(() => {
@@ -49,7 +49,7 @@
 	import { shouldReloadOnNavigate } from '$lib/utils/app-version';
 	import { showsInfoButton } from '$lib/utils/footer';
 	import InfoPanel from '$lib/components/InfoPanel.svelte';
-	import { navigating } from '$app/stores';
+	import { navigating } from '$app/state';
 	import type { LayoutData } from './$types';
 	import { Toaster } from 'svelte-sonner';
 	import { ModeWatcher } from 'mode-watcher';
@@ -150,7 +150,7 @@
 <ModeWatcher track={true} defaultMode="system" />
 
 <!-- Loading bar that appears during navigation -->
-{#if $navigating}
+{#if navigating.to}
 	<div class="fixed top-0 right-0 left-0 z-[200] h-1 animate-pulse bg-primary shadow-lg"></div>
 {/if}
 
@@ -194,7 +194,7 @@
 		>
 			<!-- Always render children so page can load -->
 			<div
-				class:opacity-0={$navigating && !isDashboardRoute}
+				class:opacity-0={navigating.to && !isDashboardRoute}
 				class:h-full={isWhiteboardRoute || isHomeRoute}
 				class="transition-opacity duration-200"
 			>
@@ -202,7 +202,7 @@
 			</div>
 
 			<!-- Overlay skeleton during navigation (only for non-dashboard routes) -->
-			{#if $navigating && !isDashboardRoute}
+			{#if navigating.to && !isDashboardRoute}
 				<div class="absolute inset-0 bg-background">
 					{#if skeletonType === 'dashboard'}
 						<SkeletonDashboard />

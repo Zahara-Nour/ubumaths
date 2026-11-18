@@ -105,7 +105,7 @@
 					Le Père Ubu ne parle qu'aux sujets de son royaume. Connecte-toi avec ton compte Chiphre
 					pour discuter avec lui.
 				</p>
-				<Button href={`${resolve('/auth/login')}?redirectTo=/pere-ubu`}>Se connecter</Button>
+				<Button href={`${resolve('auth/login')}?redirectTo=/pere-ubu`}>Se connecter</Button>
 			</div>
 		{/if}
 	</div>

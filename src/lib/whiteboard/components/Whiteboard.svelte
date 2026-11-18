@@ -7,7 +7,7 @@
 	 */
 
 	import { onMount, onDestroy } from 'svelte';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import { whiteboardStore } from '../stores/whiteboard.svelte';
 	import WhiteboardCanvas from './WhiteboardCanvas.svelte';
 	import FloatingToolbar from './FloatingToolbar.svelte';

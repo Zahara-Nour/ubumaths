@@ -98,7 +98,7 @@
 
 	// Les boutons « Retour au panier » des formes mènent au vrai panier
 	function toCart() {
-		goto(resolve('/automaths/panier'));
+		goto(resolve('automaths/panier'));
 	}
 
 	// Rien n'est enregistré sur la vitrine : la forme affiche son résultat elle-même
@@ -176,7 +176,7 @@
 	</Tabs.Root>
 
 	<p>
-		<a href={resolve('/automaths')} class="font-medium text-primary underline underline-offset-4">
+		<a href={resolve('automaths')} class="font-medium text-primary underline underline-offset-4">
 			Composer sa propre série dans Automaths
 		</a>
 	</p>

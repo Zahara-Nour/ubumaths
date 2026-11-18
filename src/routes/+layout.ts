@@ -34,10 +34,10 @@
  * dependency chains in the compiled route entry module.
  */
 
-import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
+import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$app/env/public';
 // Module sans dépendance : son import statique ne crée pas de chaîne (Safari TDZ)
 import { browserCookieMethods } from '$lib/utils/session-cookies';
-import { browser, version } from '$app/environment';
+import { browser, version } from '$app/env';
 // Module sans dépendance, comme `session-cookies`
 import { checkAppVersion } from '$lib/utils/app-version';
 import { enforceWorkDataOwner, watchWorkDataOwnerOnce } from '$lib/utils/work-data';

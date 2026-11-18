@@ -95,7 +95,7 @@
 	 */
 	async function initializeTest() {
 		try {
-			const launch = resolveTestLaunch(new URL(page.url).searchParams);
+			const launch = resolveTestLaunch(new URL(page.url.href).searchParams);
 
 			if (launch.kind === 'error') {
 				throw new Error(launch.message);
@@ -454,7 +454,7 @@
 	onMount(async () => {
 		// Évaluation assignée : aucun modèle n'est chargé (le serveur tire les
 		// questions ; l'aperçu du prof les chargera lui-même)
-		if (!new URL(page.url).searchParams.has('assignment')) {
+		if (!new URL(page.url.href).searchParams.has('assignment')) {
 			// Modèles : cache de l'onglet, lu une fois (déjà là si on vient du catalogue
 			// ou du panier ; sinon lu maintenant, lien de série ouvert directement)
 			await questionTemplatesCache.fetchTemplates();

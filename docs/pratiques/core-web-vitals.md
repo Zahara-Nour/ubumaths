@@ -52,6 +52,6 @@ Vercel.
   par Vite dans les seuls composants de maths (cf.
   [architecture-generale.md](../systeme/architecture-generale.md#premier-affichage--préchargement-et-css)).
 - **Fluid Compute** est actif ; les fonctions tournent à Paris (`cdg1`, imposé par
-  `svelte.config.js` — le `iad1` des réglages du projet n'est qu'un défaut remplacé).
+  `vite.config.ts`, options de `sveltekit()` — le `iad1` des réglages du projet n'est qu'un défaut remplacé).
 - **Restent ouverts** : démarrages à froid de la connexion (plan Hobby, pas de préchauffage),
   layout racine qui importe d'emblée barre latérale, panneaux et skeletons.

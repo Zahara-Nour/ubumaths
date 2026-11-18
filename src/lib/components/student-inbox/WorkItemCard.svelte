@@ -33,7 +33,7 @@
 		Clock,
 		NotebookPen
 	} from '@lucide/svelte';
-	import { resolve } from '$app/paths';
+	import { resolvePath } from '$lib/navigation/resolve-path';
 	import { formatDistanceToNow } from 'date-fns';
 	import { fr } from 'date-fns/locale';
 	import { formatDeadline } from '$lib/utils/dates';
@@ -124,7 +124,7 @@
 </script>
 
 <a
-	href={resolve(item.href as '/')}
+	href={resolvePath(item.href)}
 	class="group block rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
 	aria-label="{meta.label} : {item.title}"
 >

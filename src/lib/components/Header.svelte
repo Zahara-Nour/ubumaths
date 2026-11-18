@@ -71,6 +71,7 @@
 	} from '@lucide/svelte';
 	import gidouille from '$lib/assets/images/gidouille.png';
 	import { resolve } from '$app/paths';
+	import { resolvePath } from '$lib/navigation/resolve-path';
 	import { page } from '$app/state';
 	import { submitLogoutForm } from '$lib/utils/auth';
 
@@ -196,7 +197,7 @@
 
 		<!-- Gidouille + Title - centered on mobile, left-aligned on desktop -->
 		<a
-			href={resolve('/')}
+			href={resolve('')}
 			class="flex flex-1 items-center justify-center gap-2 transition-opacity hover:opacity-80 md:flex-none md:justify-start"
 		>
 			<img src={gidouille} alt="Gidouille" class="h-6 w-6" />
@@ -216,7 +217,7 @@
 			{#if user}
 				<div class="border-l pl-2">
 					<a
-						href={resolve('/dashboard')}
+						href={resolve('dashboard')}
 						class="relative block h-10 w-10 cursor-pointer rounded-full transition-all hover:ring-2 hover:ring-ring focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
 						aria-label="Aller à mon cabinet"
 					>
@@ -316,7 +317,7 @@
 		<nav class="flex flex-1 flex-col py-2" aria-label="Navigation principale">
 			{#each visibleItems as item (item.href)}
 				<a
-					href={resolve(item.href as '/')}
+					href={resolvePath(item.href)}
 					data-sveltekit-preload-data="tap"
 					onclick={handleNavClick}
 					class="flex items-center gap-3 px-4 py-3 text-base transition-colors
@@ -378,7 +379,7 @@
 				<p class="mb-2 text-xs font-medium text-muted-foreground uppercase">Compte</p>
 				<div class="flex flex-col gap-1">
 					<a
-						href={resolve('/dashboard')}
+						href={resolve('dashboard')}
 						onclick={handleNavClick}
 						class="flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors hover:bg-muted"
 					>

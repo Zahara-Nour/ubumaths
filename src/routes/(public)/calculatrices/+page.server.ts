@@ -3,7 +3,7 @@
  * relu sur la machine ne part jamais au navigateur en production (phase 0, point 8).
  */
 
-import { dev } from '$app/environment';
+import { dev } from '$app/env';
 import { listModels } from '$lib/calculatrices/page-data';
 import type { PageServerLoad } from './$types';
 

@@ -42,7 +42,7 @@
 	 * personnel, et non plus le lien en mode éphémère.
 	 */
 	function leaveLink() {
-		replaceState(resolve('/atelier'), {});
+		replaceState(resolve('atelier'), {});
 	}
 
 	$effect(() => {

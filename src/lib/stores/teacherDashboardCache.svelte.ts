@@ -47,7 +47,7 @@ import type {
 import type { StudentVipCards } from '$lib/types/vip-card';
 import type { ClassWithData } from '$lib/server/students';
 import { createLogger } from '$lib/utils/logger';
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 import { SvelteMap } from 'svelte/reactivity';
 
 // ============================================================================

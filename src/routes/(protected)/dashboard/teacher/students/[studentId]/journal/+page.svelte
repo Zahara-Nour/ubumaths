@@ -18,7 +18,7 @@
 
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { rewardJournalStore } from '$lib/stores/rewardJournal.svelte';
 	import RewardEventCard from '$lib/components/rewards/RewardEventCard.svelte';
 	import RewardJournalFilters from '$lib/components/rewards/RewardJournalFilters.svelte';
@@ -36,14 +36,14 @@
 	let { data }: { data: PageData } = $props();
 
 	// Ouvert depuis l'accueil ou le suivi (`?depuis=`), sinon depuis les classes
-	let back = $derived(studentJournalReturn(data.student.id, $page.url.searchParams));
+	let back = $derived(studentJournalReturn(data.student.id, page.url.searchParams));
 
 	// Local state for filter
 	let selectedRewardType = $state<RewardType | null>(null);
 
 	// Get student info from server data
 	let student = $derived(data.student);
-	let studentId = $derived($page.params.studentId);
+	let studentId = $derived(page.params.studentId);
 
 	// Build student display name
 	let studentName = $derived(

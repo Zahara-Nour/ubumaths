@@ -1,4 +1,4 @@
-import { PUBLIC_SUPABASE_URL } from '$env/static/public';
+import { PUBLIC_SUPABASE_URL } from '$app/env/public';
 
 /**
  * Build a public Supabase Storage URL from a bucket id + object path, derived

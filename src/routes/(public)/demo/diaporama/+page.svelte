@@ -14,7 +14,7 @@
 <script lang="ts">
 	import { demoSeo } from '$lib/seo/demo-pages';
 	import SeoHead from '$lib/seo/SeoHead.svelte';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import { resolve } from '$app/paths';
 	import { Maximize, Minimize } from '@lucide/svelte';
 	import BackLink from '$lib/components/navigation/BackLink.svelte';
@@ -262,11 +262,10 @@
 				<Slide background={DARK}>
 					<h2 class="mb-6 font-bold">À vous de jouer</h2>
 					<div class="flex flex-wrap justify-center gap-4">
-						<Button href={resolve('/demo')} variant="secondary" size="lg"
+						<Button href={resolve('demo')} variant="secondary" size="lg"
 							>Les autres démonstrations</Button
 						>
-						<Button href={resolve('/atelier')} variant="secondary" size="lg"
-							>Ouvrir l'Atelier</Button
+						<Button href={resolve('atelier')} variant="secondary" size="lg">Ouvrir l'Atelier</Button
 						>
 					</div>
 				</Slide>

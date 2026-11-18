@@ -3,7 +3,7 @@
 	import PythonPlayground from '$lib/components/python/PythonPlayground.svelte';
 	import { pythonStore } from '$lib/stores/pythonPlayground.svelte';
 	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import { ConfirmDialog } from '$lib/components/ui/confirm-dialog';
 
 	// Props from page server

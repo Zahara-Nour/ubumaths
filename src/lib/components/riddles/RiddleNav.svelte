@@ -17,14 +17,14 @@
 		Calendar,
 		Plus
 	} from '@lucide/svelte';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 
 	interface Props {
 		role: 'teacher' | 'student';
 		currentPath?: string;
 	}
 
-	let { role, currentPath = $page.url.pathname }: Props = $props();
+	let { role, currentPath = page.url.pathname }: Props = $props();
 
 	const teacherLinks = [
 		{

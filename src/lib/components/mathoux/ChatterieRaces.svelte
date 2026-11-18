@@ -32,7 +32,7 @@
 	} from '$lib/mathoux/collection-logic';
 
 	// La révision espacée du programme : c'est elle qui fait tomber les cartes dues.
-	const REVISION_HREF = '/dashboard/revisions/decks/programme';
+	const REVISION_HREF = 'dashboard/revisions/decks/programme';
 
 	const GROWTH_LABEL: Record<MathouGrowth, string> = {
 		a_decouvrir: 'À découvrir',
@@ -55,7 +55,7 @@
 	/** Lien de l'Entraînement d'un Mathou, construit au rendu (`trainingQuery`). */
 	function trainingLink(mathou: Mathou): string | null {
 		const query = trainingQuery(mathou.trainingItems);
-		return query ? `${resolve('/automaths/test')}?${query}` : null;
+		return query ? `${resolve('automaths/test')}?${query}` : null;
 	}
 
 	/**

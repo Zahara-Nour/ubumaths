@@ -8,10 +8,9 @@ import { render } from 'vitest-browser-svelte';
 import { page } from 'vitest/browser';
 
 const goto = vi.hoisted(() => vi.fn(async () => {}));
-vi.mock('$app/navigation', async (importOriginal) => ({
-	...(await importOriginal<typeof import('$app/navigation')>()),
-	goto
-}));
+vi.mock('$app/navigation', async () =>
+	(await import('$tests/helpers/app-navigation-mock')).appNavigationMock({ goto })
+);
 
 const toaster = vi.hoisted(() => ({
 	success: vi.fn(),

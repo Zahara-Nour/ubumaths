@@ -2,7 +2,7 @@
 	import { lore } from '$lib/config/lore';
 	import { invalidateAll } from '$app/navigation';
 	import { page } from '$app/state';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import ExerciseForm from '$lib/components/exercises/ExerciseForm.svelte';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';

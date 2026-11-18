@@ -253,7 +253,7 @@ Après un `deploy:prod`, un onglet ouvert garde l'ancien code. Ses fichiers JS c
 demande n'existent plus, et les données du nouveau serveur peuvent avoir changé de forme (cas réel
 du 2026-11-11 : `reading 'id'` sur `/dev/modeles`, onglet d'avant 0.81.0).
 
-- `version.pollInterval` (`svelte.config.js`) : toutes les 5 min, l'onglet lit
+- `version.pollInterval` (options de `sveltekit()`, `vite.config.ts`) : toutes les 5 min, l'onglet lit
   `/_app/version.json` ; `updated.current` (`$app/state`) passe à vrai s'il a changé.
 - `beforeNavigate` du `+layout.svelte` racine : nouvelle version + lien ou Précédent / Suivant →
   la page suivante se charge en entier. Lien : `cancel()` puis `location.href` (sans `cancel()`,

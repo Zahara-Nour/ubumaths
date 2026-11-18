@@ -102,7 +102,7 @@
 			</p>
 		{/if}
 		<a
-			href={resolve('/dashboard/student/chatterie')}
+			href={resolve('dashboard/student/chatterie')}
 			class="inline-block text-sm font-medium text-primary underline-offset-4 hover:underline"
 		>
 			Voir la Chatterie

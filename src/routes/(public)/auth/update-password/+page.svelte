@@ -42,7 +42,7 @@
 	<Card.Root class="w-full max-w-md">
 		<Card.Header>
 			{#if fromProfile}
-				<BackLink href={resolve('/dashboard/profile')} label="Retour à mon profil" />
+				<BackLink href={resolve('dashboard/profile')} label="Retour à mon profil" />
 			{/if}
 			<Card.Title class="text-center text-3xl"
 				><h1 class="text-3xl! leading-none!">Nouveau mot de passe</h1></Card.Title
@@ -155,7 +155,7 @@
 
 				{#if !fromProfile && !data.mustChange}
 					<div class="text-center text-sm">
-						<a href={resolve('/auth/login')} class="font-medium text-primary hover:underline"
+						<a href={resolve('auth/login')} class="font-medium text-primary hover:underline"
 							>Retour à la connexion</a
 						>
 					</div>

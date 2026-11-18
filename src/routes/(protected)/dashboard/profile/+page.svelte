@@ -197,7 +197,7 @@
 		<div class="flex flex-wrap gap-3">
 			<!-- Compte Google seul : pas de mot de passe à changer. -->
 			{#if data.canChangePassword}
-				<Button variant="outline" href={`${resolve('/auth/update-password')}?depuis=profil`}>
+				<Button variant="outline" href={`${resolve('auth/update-password')}?depuis=profil`}>
 					<KeyRound class="mr-2 h-4 w-4" aria-hidden="true" />
 					Changer mon mot de passe
 				</Button>

@@ -29,9 +29,9 @@
 	function changeClass(value: string | string[]) {
 		if (typeof value !== 'string') return;
 		// Query-only navigation (reloads the server load).
-		const url = new URL(page.url);
+		const url = new URL(page.url.href);
 		url.searchParams.set('class', value);
-		goto(url, { keepFocus: true, noScroll: true });
+		goto(url, { reset: false });
 	}
 
 	function count(pointId: string): number {
@@ -103,7 +103,7 @@
 	{:else if data.tree.length === 0}
 		<div class="rounded-lg border border-dashed p-10 text-center text-muted-foreground">
 			Aucun programme défini pour le niveau de cette classe.
-			<a class="underline" href={resolve('/dashboard/teacher/programme')}>Voir le programme</a>
+			<a class="underline" href={resolve('dashboard/teacher/programme')}>Voir le programme</a>
 		</div>
 	{:else}
 		<!-- Legend + filter -->

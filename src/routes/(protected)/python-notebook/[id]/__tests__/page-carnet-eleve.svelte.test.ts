@@ -48,10 +48,9 @@ const toaster = vi.hoisted(() => ({
 vi.mock('$lib/stores/toaster.svelte', () => ({ toaster }));
 
 const goto = vi.hoisted(() => vi.fn(async () => {}));
-vi.mock('$app/navigation', async (importOriginal) => ({
-	...(await importOriginal<typeof import('$app/navigation')>()),
-	goto
-}));
+vi.mock('$app/navigation', async () =>
+	(await import('$tests/helpers/app-navigation-mock')).appNavigationMock({ goto })
+);
 
 import Page from '../+page.svelte';
 

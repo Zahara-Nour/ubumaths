@@ -29,7 +29,7 @@
 	 */
 
 	import { onMount, onDestroy } from 'svelte';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import type { SupabaseClient } from '@supabase/supabase-js';
 	// Aliased to avoid a name clash with the `<script module>` re-exports above
 	// (which expose these types to external consumers).

@@ -22,7 +22,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import { resolve } from '$app/paths';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { slide } from 'svelte/transition';
 	import type { ActionData } from './$types';
 	import { Button } from '$lib/components/ui/button';
@@ -50,10 +50,7 @@
 	let isEmailLoading = $state(false);
 
 	// Extract error from URL query params (for OAuth callback errors)
-	let urlError = $derived.by(() => {
-		const currentPage = $page;
-		return currentPage.url.searchParams.get('error');
-	});
+	let urlError = $derived(page.url.searchParams.get('error'));
 </script>
 
 <div class="flex min-h-screen items-center justify-center bg-background px-4">
@@ -197,7 +194,7 @@
 							<div class="flex items-center justify-between">
 								<Label for="password">Mot de passe</Label>
 								<a
-									href={resolve('/auth/reset-password')}
+									href={resolve('auth/reset-password')}
 									class="text-sm text-primary hover:underline"
 								>
 									Mot de passe oublié ?
@@ -229,7 +226,7 @@
 			<!-- Controlled self-registration: students create an account with their class code -->
 			<p class="text-center text-sm text-muted-foreground">
 				Nouvel élève ?
-				<a href={resolve('/auth/register')} class="text-primary hover:underline">Créer un compte</a>
+				<a href={resolve('auth/register')} class="text-primary hover:underline">Créer un compte</a>
 			</p>
 		</Card.Content>
 	</Card.Root>

@@ -6,7 +6,7 @@
  * En dev, le terminal les interprète : les couleurs restent.
  *
  * `dev` est lu une fois, à l'import du module : chaque cas recharge le module
- * après avoir fixé `$app/environment`.
+ * après avoir fixé `$app/env`.
  */
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
@@ -14,7 +14,7 @@ const ANSI = '\x1b[';
 
 async function loadLogger(dev: boolean) {
 	vi.resetModules();
-	vi.doMock('$app/environment', () => ({ dev, browser: false, building: false, version: '' }));
+	vi.doMock('$app/env', () => ({ dev, browser: false, building: false, version: '' }));
 	return import('$lib/utils/logger');
 }
 
@@ -23,7 +23,7 @@ function printed(spy: { mock: { calls: unknown[][] } }): string {
 }
 
 afterEach(() => {
-	vi.doUnmock('$app/environment');
+	vi.doUnmock('$app/env');
 	vi.restoreAllMocks();
 });
 

@@ -14,7 +14,7 @@
 	// Imports
 	import { Button } from '$lib/components/ui/button';
 	import { Download } from '@lucide/svelte';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import 'mathlive';
 
 	// Props

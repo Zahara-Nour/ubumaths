@@ -10,7 +10,7 @@ Props :
 - active : la Province lue, teintée sur la carte (`null` : aucune)
 -->
 <script lang="ts">
-	import { resolve } from '$app/paths';
+	import { resolvePath } from '$lib/navigation/resolve-path';
 	import { CITIES, cityPath } from '$lib/kingdom-tour/cities';
 	import {
 		CITY_LABELS,
@@ -99,7 +99,7 @@ Props :
 
 		{#each CITIES as city (city.slug)}
 			{@const label = CITY_LABELS[city.slug]}
-			<a href={resolve(cityPath(city.slug))} tabindex="-1">
+			<a href={resolvePath(cityPath(city.slug))} tabindex="-1">
 				<text x={label.x} y={label.y} text-anchor={anchorOf(label)} class={label.kind}
 					>{label.text}</text
 				>

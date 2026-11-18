@@ -2,7 +2,7 @@
 	import { WORKSHEET_TYPE_LABELS, WORKSHEET_TYPE_OPTIONS } from '$lib/utils/worksheet-constants';
 	import { lore } from '$lib/config/lore';
 	import { goto, invalidateAll } from '$app/navigation';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
@@ -156,7 +156,7 @@
 		if (selectedType) params.set('type', selectedType);
 		params.set('page', '1');
 
-		goto(`?${params.toString()}`, { keepFocus: true });
+		goto(`?${params.toString()}`, { reset: false });
 	}
 
 	/**
@@ -166,7 +166,7 @@
 		searchQuery = '';
 		selectedStatus = '';
 		selectedType = '';
-		goto('/dashboard/teacher/contenu/worksheets', { keepFocus: true });
+		goto('/dashboard/teacher/contenu/worksheets', { reset: false });
 	}
 
 	/**
@@ -174,7 +174,7 @@
 	 */
 	function goToPage(pageNum: number) {
 		// eslint-disable-next-line svelte/prefer-svelte-reactivity -- used only for URL building, not state
-		const params = new URLSearchParams($page.url.searchParams);
+		const params = new URLSearchParams(page.url.search);
 		params.set('page', String(pageNum));
 		goto(`?${params.toString()}`);
 	}

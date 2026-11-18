@@ -6,9 +6,12 @@ import svelte from 'eslint-plugin-svelte';
 import { defineConfig } from 'eslint/config';
 import globals from 'globals';
 import ts from 'typescript-eslint';
-import svelteConfig from './svelte.config.js';
+import { loadConfig } from '@sveltejs/load-config';
 import requireZodValidation from './eslint-rules/require-zod-validation.js';
 import requireSupabaseErrorCheck from './eslint-rules/require-supabase-error-check.js';
+
+// SvelteKit 3 : la config Svelte vit dans les options du plugin `sveltekit()` de vite.config.ts
+const svelteConfig = (await loadConfig('./', { traverse: false }))?.config;
 
 const gitignorePath = fileURLToPath(new URL('./.gitignore', import.meta.url));
 

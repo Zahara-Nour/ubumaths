@@ -85,7 +85,7 @@
 	import type { GalleryImageInfo } from './types';
 	import { parseMarkdown } from '$lib/ubumark/parser';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	// Import NU : côté serveur, `mathlive` résout vers `mathlive-ssr`, qui n'exporte pas
 	// `MathfieldElement` — un import nommé casserait le rendu serveur en build (garde :
 	// `__tests__/mathlive-imports-ssr.test.ts`). La classe est prise dans `onMount`.

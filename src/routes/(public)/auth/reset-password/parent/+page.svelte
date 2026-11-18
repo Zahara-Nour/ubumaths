@@ -43,7 +43,7 @@
 					</Alert.Description>
 				</Alert.Root>
 				<div class="text-center text-sm">
-					<a href={resolve('/auth/login')} class="font-medium text-primary hover:underline"
+					<a href={resolve('auth/login')} class="font-medium text-primary hover:underline"
 						>Page de connexion</a
 					>
 				</div>
@@ -55,7 +55,7 @@
 					</Alert.Description>
 				</Alert.Root>
 				<div class="text-center text-sm">
-					<a href={resolve('/auth/reset-password')} class="font-medium text-primary hover:underline"
+					<a href={resolve('auth/reset-password')} class="font-medium text-primary hover:underline"
 						>Mot de passe oublié</a
 					>
 				</div>

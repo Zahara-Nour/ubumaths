@@ -8,7 +8,6 @@
 import { page } from 'vitest/browser';
 import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
-import { readable } from 'svelte/store';
 import Login from '../auth/login/+page.svelte';
 import Register from '../auth/register/+page.svelte';
 import ResetPassword from '../auth/reset-password/+page.svelte';
@@ -18,10 +17,10 @@ import PendingApproval from '../auth/pending-approval/+page.svelte';
 import Game2048 from '../games/2048/+page.svelte';
 import Mathemo from '../games/mathemo/+page.svelte';
 
-// La connexion lit `?error=` dans l'URL (store `page`)
-vi.mock('$app/stores', async (importOriginal) => ({
-	...(await importOriginal<typeof import('$app/stores')>()),
-	page: readable({ url: new URL('http://localhost/auth/login') })
+// La connexion lit `?error=` dans l'URL (`page` de `$app/state`)
+vi.mock('$app/state', async (importOriginal) => ({
+	...(await importOriginal<typeof import('$app/state')>()),
+	page: { url: new URL('http://localhost/auth/login') }
 }));
 
 const gameData = {

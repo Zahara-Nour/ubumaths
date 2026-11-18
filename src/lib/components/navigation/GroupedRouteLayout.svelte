@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { cn } from '$lib/utils.js';
 	import type { Component, Snippet } from 'svelte';
 
@@ -23,7 +23,7 @@
 	} = $props();
 
 	function isActiveTab(href: string): boolean {
-		return $page.url.pathname.startsWith(href);
+		return page.url.pathname.startsWith(href);
 	}
 </script>
 

@@ -221,7 +221,7 @@
 				Si vous n'avez pas demandé ce consentement, vous pouvez fermer cette page en toute sécurité.
 			</p>
 			<p class="mt-2">
-				<a href={resolve('/legal/confidentialite')} class="text-blue-600 hover:underline"
+				<a href={resolve('legal/confidentialite')} class="text-blue-600 hover:underline"
 					>Politique de confidentialité</a
 				>
 			</p>

@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 // `dev` réglable par test : faux = build (Vercel, aperçu), vrai = pnpm dev.
 const env = vi.hoisted(() => ({ dev: true }));
 
-vi.mock('$app/environment', () => ({
+vi.mock('$app/env', () => ({
 	browser: false,
 	building: false,
 	get dev() {

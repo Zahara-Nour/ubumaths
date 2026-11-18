@@ -10,10 +10,11 @@ import { page } from 'vitest/browser';
 vi.mock('$app/state', () => ({
 	page: { url: new URL('http://localhost/automaths/panier'), state: {} }
 }));
-vi.mock('$app/navigation', async (importOriginal) => ({
-	...(await importOriginal<typeof import('$app/navigation')>()),
-	goto: vi.fn(async () => {})
-}));
+vi.mock('$app/navigation', async () =>
+	(await import('$tests/helpers/app-navigation-mock')).appNavigationMock({
+		goto: vi.fn(async () => {})
+	})
+);
 const toaster = vi.hoisted(() => ({
 	success: vi.fn(),
 	error: vi.fn(),

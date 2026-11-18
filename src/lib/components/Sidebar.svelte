@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { resolve } from '$app/paths';
+	import { resolvePath } from '$lib/navigation/resolve-path';
 	import {
 		Home,
 		Gamepad2,
@@ -96,7 +96,7 @@
 
 {#snippet itemLink(item: NavItem)}
 	<a
-		href={resolve(item.href as '/')}
+		href={resolvePath(item.href)}
 		data-sveltekit-preload-data="tap"
 		class="group flex w-16 flex-col items-center gap-1 rounded-lg px-2 py-3 transition-all duration-300 {isActive(
 			item.href

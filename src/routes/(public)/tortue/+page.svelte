@@ -52,7 +52,7 @@
 	<TortueBacASable {niveau} />
 	<p class="text-sm text-muted-foreground">
 		Essaie aussi
-		<a href={resolve('/programmes-de-calcul')} class="font-medium text-primary underline"
+		<a href={resolve('programmes-de-calcul')} class="font-medium text-primary underline"
 			>Programmes de calcul</a
 		> : des blocs pour calculer à partir d’un nombre choisi.
 	</p>

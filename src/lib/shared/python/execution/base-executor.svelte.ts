@@ -36,7 +36,7 @@ import type {
 } from '$lib/shared/python/debug/types';
 import type { PythonListReport } from '$lib/atelier/from-python';
 
-// Use a simple browser check instead of $app/environment
+// Use a simple browser check instead of $app/env
 // This avoids issues with SvelteKit runtime modules in worker-related contexts
 const isBrowser = typeof window !== 'undefined';
 

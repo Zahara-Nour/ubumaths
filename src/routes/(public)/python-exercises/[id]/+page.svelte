@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import { invalidateAll } from '$app/navigation';
 	import PythonEditor from '$lib/components/python/PythonEditor.svelte';
 	import LockedPythonEditor from '$lib/components/python/LockedPythonEditor.svelte';

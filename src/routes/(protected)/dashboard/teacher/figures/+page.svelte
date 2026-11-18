@@ -57,7 +57,7 @@
 		if (q.trim()) params.set('q', q.trim());
 		for (const tag of tags) params.append('tag', tag);
 		const query = params.toString();
-		goto(query ? `${LIST_PATH}?${query}` : LIST_PATH, { keepFocus: true }).then(() => {});
+		goto(query ? `${LIST_PATH}?${query}` : LIST_PATH, { reset: false }).then(() => {});
 	}
 
 	function handleReset() {

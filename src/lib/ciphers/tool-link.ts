@@ -5,6 +5,7 @@
  * @module lib/ciphers/tool-link
  */
 import { z } from 'zod';
+import type { ReadonlyURLSearchParams } from '$app/state';
 
 // Constantes
 
@@ -31,7 +32,7 @@ export function decryptQuery(message: string): string {
 }
 
 /** Le message à décrypter passé dans l'URL, ou null s'il est absent ou invalide */
-export function readDecryptParam(params: URLSearchParams): string | null {
+export function readDecryptParam(params: ReadonlyURLSearchParams): string | null {
 	const parsed = messageSchema.safeParse(params.get(DECRYPT_PARAM));
 	return parsed.success ? parsed.data : null;
 }

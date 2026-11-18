@@ -33,7 +33,7 @@
 	import type { PageData } from './$types';
 	import { getQuestionType, isCourseQuestion } from '$lib/questions/types';
 	import { goto, invalidateAll } from '$app/navigation';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';

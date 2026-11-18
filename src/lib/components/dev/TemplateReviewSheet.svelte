@@ -11,7 +11,7 @@
 	// Imports
 	import { enhance } from '$app/forms';
 	import { resolve } from '$app/paths';
-	import type { SubmitFunction } from '@sveltejs/kit';
+	import type { SubmitFunction } from '$app/forms';
 	import type { QuestionTemplateRow } from '$lib/types/question-template';
 	import { toQuestionTemplate } from '$lib/types/question-template';
 	import type { SheetPoint, TemplateReview, Verdict } from '$lib/questions/template-review';

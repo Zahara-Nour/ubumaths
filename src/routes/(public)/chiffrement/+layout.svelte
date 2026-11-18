@@ -12,7 +12,7 @@
 <article class="mx-auto flex w-full max-w-4xl flex-col gap-8 px-4 py-10 sm:px-6">
 	{#if !isHome}
 		<a
-			href={resolve('/chiffrement')}
+			href={resolve('chiffrement')}
 			class="self-start text-sm text-muted-foreground hover:underline"
 		>
 			← Le Cabinet Noir de Turingrad

@@ -3,7 +3,7 @@
 	import { lore } from '$lib/config/lore';
 	import { enhance } from '$app/forms';
 	import { goto, invalidateAll } from '$app/navigation';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { Button } from '$lib/components/ui/button';
 	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import { Input } from '$lib/components/ui/input';
@@ -42,7 +42,7 @@
 		const params = new URLSearchParams();
 		if (searchQuery) params.set('search', searchQuery);
 		params.set('page', '1');
-		goto(`?${params.toString()}`, { keepFocus: true });
+		goto(`?${params.toString()}`, { reset: false });
 	}
 
 	/**
@@ -50,7 +50,7 @@
 	 */
 	function clearFilters() {
 		searchQuery = '';
-		goto('/dashboard/teacher/contenu/worksheets/templates', { keepFocus: true });
+		goto('/dashboard/teacher/contenu/worksheets/templates', { reset: false });
 	}
 
 	/**
@@ -58,7 +58,7 @@
 	 */
 	function goToPage(pageNum: number) {
 		// eslint-disable-next-line svelte/prefer-svelte-reactivity -- used only for URL building, not state
-		const params = new URLSearchParams($page.url.searchParams);
+		const params = new URLSearchParams(page.url.search);
 		params.set('page', String(pageNum));
 		goto(`?${params.toString()}`);
 	}

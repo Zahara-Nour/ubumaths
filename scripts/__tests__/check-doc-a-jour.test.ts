@@ -325,7 +325,7 @@ describe('COVERAGE_CONFIG — les fichiers d’environnement sont gardés', () =
 			'.github/dependabot.yml',
 			'.husky/pre-push',
 			'vercel.json',
-			'svelte.config.js',
+			'src/env.ts',
 			'.claude/settings.json',
 			'.claude/hooks/garde-commandes.py',
 			'scripts/deploy-prod.sh',

@@ -13,7 +13,7 @@
  * - Privacy-aware (no sensitive data)
  */
 
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 import {
 	firstHiddenTime,
 	isPaintAfterHidden,

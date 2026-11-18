@@ -9,7 +9,7 @@
 	} from '$lib/types/notification';
 	import { Button } from '$lib/components/ui/button';
 	import { X, ChevronLeft, ChevronRight } from '@lucide/svelte';
-	import { goto } from '$app/navigation';
+	import { gotoNotification } from '$lib/navigation/goto-notification';
 
 	// Show max 5 notifications in carousel
 	const MAX_NOTIFICATIONS = 5;
@@ -54,9 +54,8 @@
 		// Mark as read (optimistic, fire-and-forget)
 		notificationStore.markAsRead(notificationId);
 
-		// Navigate to action URL
-		// Type assertion: action_url comes from database, assumed to be valid route
-		goto(actionUrl as Parameters<typeof goto>[0]);
+		// Navigate to action URL (lien périmé : chargement complet, cf. gotoNotification)
+		gotoNotification(actionUrl);
 	}
 
 	// Get priority colors

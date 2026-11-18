@@ -14,7 +14,7 @@
 	Poste vers les actions de la page : `?/save`, et `?/delete` si `deletable`.
 -->
 <script lang="ts">
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import { goto } from '$app/navigation';
 	import { onDestroy } from 'svelte';
 	import { Button } from '$lib/components/ui/button';

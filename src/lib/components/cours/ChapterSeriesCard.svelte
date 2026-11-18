@@ -14,7 +14,7 @@
 	@module components/cours/ChapterSeriesCard
 -->
 <script lang="ts">
-	import { resolve } from '$app/paths';
+	import { resolvePath } from '$lib/navigation/resolve-path';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Layers } from '@lucide/svelte';
@@ -44,7 +44,7 @@
 		<div class="min-w-0 flex-1">
 			{#if series.launchHref}
 				<a
-					href={resolve(series.launchHref as '/automaths/test')}
+					href={resolvePath(series.launchHref)}
 					class="font-medium underline-offset-4 hover:underline"
 				>
 					{title}

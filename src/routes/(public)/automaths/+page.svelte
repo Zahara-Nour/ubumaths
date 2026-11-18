@@ -80,12 +80,12 @@
 
 	/** Écrit le filtre dans l'adresse, sans nouvelle entrée d'historique */
 	function writeGradeFilterToUrl() {
-		const url = new URL(page.url);
+		const url = new URL(page.url.href);
 		if (chosenGrade) url.searchParams.set(GRADE_PARAM, chosenGrade);
 		else url.searchParams.delete(GRADE_PARAM);
 		if (chosenGrade && withLowerGrades) url.searchParams.set(LOWER_GRADES_PARAM, '1');
 		else url.searchParams.delete(LOWER_GRADES_PARAM);
-		replaceState(`${resolve('/automaths')}${url.search}`, page.state);
+		replaceState(`${resolve('automaths')}${url.search}`, page.state);
 	}
 
 	function handleGradeChange(value: string) {

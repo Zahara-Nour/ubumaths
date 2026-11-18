@@ -34,7 +34,7 @@
 	);
 
 	function handleTabChange(value: string) {
-		const url = new URL(page.url);
+		const url = new URL(page.url.href);
 		url.searchParams.set('onglet', value);
 		replaceState(url, page.state);
 	}

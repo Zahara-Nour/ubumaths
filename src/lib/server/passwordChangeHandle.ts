@@ -10,7 +10,8 @@
  * est levée, sans attendre le rafraîchissement du jeton.
  */
 
-import { json, redirect, type Handle } from '@sveltejs/kit';
+import { json, redirect } from '@sveltejs/kit';
+import type { Handle } from '@sveltejs/kit/hooks';
 import { mustChangePassword } from '$lib/server/child-password';
 
 // Constantes

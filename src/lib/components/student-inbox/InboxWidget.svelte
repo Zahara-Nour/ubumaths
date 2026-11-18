@@ -56,7 +56,7 @@
 			</div>
 			{#if totalCount > 0}
 				<Button
-					href={resolve('/dashboard/student/work' as '/')}
+					href={resolve('dashboard/student/work')}
 					variant="ghost"
 					size="sm"
 					class="text-xs text-muted-foreground hover:text-foreground"
@@ -80,7 +80,7 @@
 			<p class="py-4 text-sm text-muted-foreground">
 				<span>{nonUrgentMessage}</span>
 				<a
-					href={resolve('/dashboard/student/work' as '/')}
+					href={resolve('dashboard/student/work')}
 					class="font-medium text-foreground underline underline-offset-2 hover:no-underline"
 				>
 					Voir tout
