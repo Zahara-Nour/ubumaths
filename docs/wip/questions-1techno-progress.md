@@ -8,19 +8,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après #2801 (fichiers du lot 3)._
+_Mis à jour le 2026-11-18, après #2805 (lot 3 clos)._
 
-- **État** : lots 1 et 2 clos. Lot 3 « dérivation » : #2801 mergée ; 9 brouillons en prod (ids dans les fichiers,
-  commit sur la branche) ; page à cocher https://claude.ai/artifact/VszQXF6HbQ9VZbvgHZFLro publiée.
-- **Prochaine action** : lire et compter les verdicts (collection `verdicts`), puis migration nœud + 9 tags des seuls
-  « ok » (gabarit du lot 1 : `20261117192425_questions_1techno_lot1_rangement_tags` + son test).
-- **En attente de David** : ses verdicts sur la page à cocher.
-- **Pièges en cours** : `db:migrate` pousse tout ce qui attend, et refuse une migration d'une autre session
-  horodatée avant la dernière appliquée (`migration list --linked` juste avant de donner la commande) ; aperçu admin
-  local : `--host 127.0.0.1` (Chrome n'ouvre pas `[::1]`) ; lot 5 : modèles communs de questions-1gen (S2, S3, S4,
-  S6), ids à recevoir.
-- **Worktree / branche** : `../ubumaths-wt-questions-1techno`, `content/questions-1techno-lot3` (ids commités, pas
-  encore poussés ; la migration ira sur cette branche).
+- **État** : lots 1 (#2783), 2 (#2787, #2796) et 3 (#2801, #2805) clos ; 9 modèles de dérivation publiés. Reste les
+  lots 4 à 6 du découpage du § 23 (algorithmique, graphiques et stats à deux variables, probabilités).
+- **Prochaine action** : lot 4 « algorithmique » (003, 107, 051, 122, 067, 103, 105, 101, ` ```python `) : demander à
+  questions-1gen s'il a un modèle commun en cours, relevé prod, phase 0 à faire valider par David.
+- **En attente de David** : rien.
+- **Pièges en cours** : `db:migrate` pousse tout ce qui attend (lot 3 : parti avec 1gen lot 6 et navadra, coordonné
+  par questions-1gen) ; aperçu admin local : `--host 127.0.0.1` (Chrome n'ouvre pas `[::1]`) ; lot 5 : modèles
+  communs de questions-1gen S2 f3cb0c7a → 085, S3 7461bb44 → 082, S4 4f328c8c → 084, S6 3fec6b41 → 087 (brouillons
+  `{1_GEN}`, rangés et tagués 1GEN ; plages : son journal § 23-24), à vérifier contre mes bornes, publication à
+  attendre ; 49fac266 (083) a reçu 1GEN-003.
+- **Worktree / branche** : aucun (à recréer pour le lot 4).
 
 ## 1. Relevé (prod, 2026-11-17)
 
@@ -695,3 +695,13 @@ Page à cocher : 9 « ok » sur 9, sans commentaire (collection `verdicts`, lue)
 `node_id`) et tagués de leur point 1TECHNO. Gardes : tout ou rien (9), brouillons sans nœud ni tag avec `1_TECHNO`.
 Additive (rollback écrit et éprouvé). Test `tests/integration/questions-1techno-lot3-rangement-tags.test.ts` : 10 verts ;
 corps retiré → 4 rouges et le bloc nominal ne démarre pas.
+
+### Lot 3 — migré et publié (2026-11-18)
+
+`security-auditor` : aucun bloquant (deux faibles : commentaire sur la transaction de `db push`, nœud non revérifié au
+rollback, garde des tags suffisante). PR #2805 mergée (CI verte, `check:migrations` OK). `db push` lancé par David
+pour trois migrations en attente (questions-1gen lot 6 `054706`, la nôtre `055440`, navadra `060323`), coordonné par
+questions-1gen après réponse de navadra. Vérifié MCP : les 9 rangés (variations, tangente ×2, fonctions dérivées,
+opérations ×3, variations et extremums, taux de variation), chacun avec son seul point 1TECHNO, point sur le nœud,
+`updated_at` inchangé, triggers actifs. Publication : `publier-lot.ts` en simulation (9 brouillons) puis lancé par
+David avec `--publier` : 9/9 publiés, relu en base. **Lot 3 clos.**
