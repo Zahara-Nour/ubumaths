@@ -11447,6 +11447,83 @@ export type Database = {
           },
         ]
       }
+      student_beasts: {
+        Row: {
+          appeared_at: string
+          beast_key: string
+          defeated_at: string | null
+          hp: number
+          id: string
+          kind: string
+          leaves_at: string | null
+          max_hp: number
+          point_id: string | null
+          province: string
+          rewarded_gidouilles: number | null
+          student_id: string
+          updated_at: string
+        }
+        Insert: {
+          appeared_at?: string
+          beast_key: string
+          defeated_at?: string | null
+          hp: number
+          id?: string
+          kind: string
+          leaves_at?: string | null
+          max_hp: number
+          point_id?: string | null
+          province: string
+          rewarded_gidouilles?: number | null
+          student_id: string
+          updated_at?: string
+        }
+        Update: {
+          appeared_at?: string
+          beast_key?: string
+          defeated_at?: string | null
+          hp?: number
+          id?: string
+          kind?: string
+          leaves_at?: string | null
+          max_hp?: number
+          point_id?: string | null
+          province?: string
+          rewarded_gidouilles?: number | null
+          student_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "student_beasts_point_id_fkey"
+            columns: ["point_id"]
+            isOneToOne: false
+            referencedRelation: "curriculum_points"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "student_beasts_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "minesweeper_student_achievement_progress"
+            referencedColumns: ["student_id"]
+          },
+          {
+            foreignKeyName: "student_beasts_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "student_beasts_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
+        ]
+      }
       student_buddies: {
         Row: {
           change_count: number
@@ -11646,6 +11723,59 @@ export type Database = {
           },
           {
             foreignKeyName: "student_checklist_progress_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
+        ]
+      }
+      student_combat_moves: {
+        Row: {
+          announced_at: string | null
+          earned_at: string
+          move_key: string
+          notion_id: string
+          student_id: string
+        }
+        Insert: {
+          announced_at?: string | null
+          earned_at?: string
+          move_key: string
+          notion_id: string
+          student_id: string
+        }
+        Update: {
+          announced_at?: string | null
+          earned_at?: string
+          move_key?: string
+          notion_id?: string
+          student_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "student_combat_moves_notion_id_fkey"
+            columns: ["notion_id"]
+            isOneToOne: false
+            referencedRelation: "classification_nodes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "student_combat_moves_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "minesweeper_student_achievement_progress"
+            referencedColumns: ["student_id"]
+          },
+          {
+            foreignKeyName: "student_combat_moves_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "student_combat_moves_student_id_fkey"
             columns: ["student_id"]
             isOneToOne: false
             referencedRelation: "riddle_progress"
@@ -16536,6 +16666,17 @@ export type Database = {
           old_time: number
           sample_count: number
           updated: boolean
+        }[]
+      }
+      record_beast_victory: {
+        Args: {
+          p_beast_id: string
+          p_beast_name?: string
+          p_student_id: string
+        }
+        Returns: {
+          cap_reached: boolean
+          paid: number
         }[]
       }
       record_game_reward: {
