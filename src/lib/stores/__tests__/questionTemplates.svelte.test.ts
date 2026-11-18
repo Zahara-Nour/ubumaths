@@ -11,9 +11,13 @@ import { questionTemplatesCache } from '../questionTemplates.svelte';
 const API = '/api/questions/templates/all';
 
 const NODES = [{ id: 'b1', kind: 'branch', name: 'Nombres', parent_id: null, position: 0 }];
+const POINT_NAMES = { m1: ['Utiliser la double distributivité'] };
 
 function reponse(templates: Array<{ id: string }>, ok = true) {
-	return { ok, json: async () => ({ templates, nodes: NODES }) } as Response;
+	return {
+		ok,
+		json: async () => ({ templates, nodes: NODES, pointNames: POINT_NAMES })
+	} as Response;
 }
 
 describe('questionTemplatesCache', () => {
@@ -45,6 +49,26 @@ describe('questionTemplatesCache', () => {
 
 		questionTemplatesCache.clear();
 		expect(questionTemplatesCache.nodes).toEqual([]);
+	});
+
+	it('garde les intitulés des points de chaque modèle (recherche) ; clear() les oublie', async () => {
+		await questionTemplatesCache.fetchTemplates();
+		expect(questionTemplatesCache.pointNames).toEqual(POINT_NAMES);
+
+		questionTemplatesCache.clear();
+		expect(questionTemplatesCache.pointNames).toEqual({});
+	});
+
+	it('réponse sans intitulés de points : aucun intitulé, sans relecture', async () => {
+		fetchMock.mockImplementationOnce(
+			async () =>
+				({ ok: true, json: async () => ({ templates: [{ id: 'm1' }], nodes: NODES }) }) as Response
+		);
+
+		await questionTemplatesCache.fetchTemplates();
+
+		expect(fetchMock).toHaveBeenCalledTimes(1);
+		expect(questionTemplatesCache.pointNames).toEqual({});
 	});
 
 	it('réponse sans arbre (cache de Vercel d’avant le déploiement) : relue une fois en contournant le cache', async () => {

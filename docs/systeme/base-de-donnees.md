@@ -73,7 +73,9 @@ Ce qu'`anon` peut lire, d'après les policies des migrations (relevé statique, 
 les `question_templates` publiés (réponses comprises : `/automaths` génère dans le navigateur) ; tout
 `curriculum_points`, `curriculum_point_automatismes`, `grade_predecessors`, `classification_nodes`,
 `source_types` (contenu public des programmes, ADR 0020) et le rangement des exercices lisibles
-(`exercise_classifications`) ; les lignes `is_public` de `exercises`, `python_exercises` ;
+(`exercise_classifications`) ; les liens `question_template_points` des modèles **publiés** (recherche
+du catalogue Automaths, `20261118204254` ; brouillons exclus, garde
+`tests/integration/automaths-anon-points-rls.test.ts`) ; les lignes `is_public` de `exercises`, `python_exercises` ;
 `parody_evaluations` et leurs `resource_tags`, `tags`, `schools`, `riddle_of_the_day`, les
 `geometry_figures` publiques (ADR 0027, sans leurs tags). Les
 constructions publiques sont réservées aux comptes connectés, et les parties de `minesweeper_games`
@@ -231,7 +233,7 @@ points d'un niveau), `src/lib/server/curriculum-coverage.ts`,
   `20261104224856` ([ADR 0035](../adr/0035-une-serie-enregistre-des-modeles.md)). Le sens « produit » de `AB` (matrices), jadis déduit du thème `Graphes et matrices`, est
   déclaré dans `shared.capitalPairs` : l'éditeur l'écrit, `20261104165734` l'a posé sur les modèles
   existants de ce thème. `question_template_points` le tague aux points du programme (**RESTRICT** côté point : pivot de
-  l'acquisition).
+  l'acquisition) ; `anon` en lit les liens des modèles publiés (`20261118204254`).
 - `question_template_reviews` (depuis `20261029150000`) : le verdict de relecture d'un modèle
   (`valide` / `a_revoir` + commentaire), un par modèle, posé depuis `/dev/modeles`. **Admin seul** en
   lecture comme en écriture (`is_admin()`), anon refusé (42501) ; auteur et date posés par un trigger
@@ -787,4 +789,4 @@ Le schéma part du baseline `20260616220000_baseline_schema.sql` (anciennes migr
 
 ---
 
-Vérifié contre le code le 2026-10-11 (passages `student_last_visits` et `app_metadata` de GoTrue : 2026-10-21 ; avatar et boutique d'avatars : 2026-11-06 ; contenu d'une trace et traces d'un contrôle réservées au serveur : 2026-11-11).
+Vérifié contre le code le 2026-10-11 (lecture `anon` de `question_template_points` : 2026-11-18 ; passages `student_last_visits` et `app_metadata` de GoTrue : 2026-10-21 ; avatar et boutique d'avatars : 2026-11-06 ; contenu d'une trace et traces d'un contrôle réservées au serveur : 2026-11-11).

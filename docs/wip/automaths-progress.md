@@ -4,11 +4,11 @@
 
 _Mis à jour le 2026-11-18, après #2842._
 
-- **État** : PR 1 « correctifs immédiats » mergée (#2842) : retrait depuis la grille, notion dans l'adresse, retour du panier au même niveau et à la même notion, bouton du panier sans pulsation. Pas encore en prod (`deploy:prod` = David). Page : [automaths-recherche-ui.html](automaths-recherche-ui.html), https://claude.ai/artifact/SCczsfi9ayGXjioFtsQq2R.
-- **Prochaine action** : PR 2 recherche (nouveau worktree `../ubumaths-wt-automaths`, branche `feat/automaths-recherche`), phase 0 à présenter avant de coder. Puis PR 3 navigation (arbre des notions + bascule programme), PR 4 série en cours (« Ma série »).
+- **État** : PR 1 mergée (#2842) ; PR 2 recherche codée sur `feat/automaths-recherche` (phase 0 validée, migration `20261118204254` comprise), revue puis PR. Page : [automaths-recherche-ui.html](automaths-recherche-ui.html), https://claude.ai/artifact/SCczsfi9ayGXjioFtsQq2R.
+- **Prochaine action** : revue (code-reviewer + security-auditor), PR, merge, `db:migrate`. Puis PR 3 navigation (arbre des notions + bascule programme), PR 4 série en cours (« Ma série »).
 - **En attente de David** : rien.
 - **Pièges en cours** : la tuile reste la flash-card (décision du 2026-09-29) ; plusieurs points désignent le même nœud (4-021, 4-075, 4-023 → Calcul littéral) ; un point posé sur une notion peut n'avoir aucune question en propre (4-003) → inclure ses sous-notions ; le panier détaillé `/automaths/panier` ne change pas ; le catalogue retient sa dernière adresse en `sessionStorage` (`chiphre_automaths_adresse`) : un test qui rend la page doit vider `sessionStorage`.
-- **Worktree / branche** : aucun (celui de la PR 1 est supprimé).
+- **Worktree / branche** : `../ubumaths-wt-automaths`, `feat/automaths-recherche`.
 
 ### 2026-11-18 — recherche
 
@@ -45,3 +45,33 @@ Le panier détaillé `/automaths/panier` reste inchangé (durées, répétitions
 - Livré : retrait depuis la tuile (nom accessible « Dans le panier : retirer »), `?notion=<id>` dans l'adresse, dernière adresse retenue pour la visite (`sessionStorage`), adresse d'un lien direct retenue aussi, bouton rond sans pulsation, `pb-28`, menu « Branche » nommé.
 - Revue `code-reviewer` (Sonnet) : aucun finding bloquant ; corrigés : adresse d'arrivée retenue, nom accessible. Écarté : `replaceState` au montage, vérifié à la main en dev (rechargement complet, aucune erreur).
 - Vérification manuelle notée dans `verifications-manuelles.md`.
+
+### 2026-11-18 — PR 2 recherche, phase 0 validée par David
+
+Mesures prod (lecture seule) : 2 471 modèles publiés ; 2 350 ont une description, 19 une consigne. Recherche « début de mot » contre « n'importe où » : « aire » 49 contre 319 (« linéaire », « unitaire »…) ; « calcul » 466, « fraction » 225, « pythagore » 9.
+
+Comportements proposés :
+
+1. Champ « Chercher une question » en haut, au-dessus de Branche et Niveau ; pas de curseur automatique ; « / » y met le curseur (sauf si on tape déjà ailleurs).
+2. Cherche dans le titre, la description et les noms branche / notion / sous-notion du modèle ; sans accents ni majuscules ; `$` du LaTeX ignorés ; plusieurs mots → tous présents, dans n'importe quel ordre ; chaque mot au début d'un mot (« aire » ne trouve pas « linéaire »).
+3. Dès 2 lettres, sans bouton. Les résultats remplacent menu Branche + onglets ; groupés par sous-notion, titre « Géométrie › Cercle › disque · 3 », dans l'ordre de l'arbre ; compteur « 49 questions ».
+4. Le niveau choisi filtre aussi les résultats.
+5. Plus de 60 questions : les premiers groupes jusqu'à 60 cartes sont dépliés, les suivants repliés (avec leur compteur), ouverts d'un clic.
+6. Aucun résultat : « Aucune question pour « … » » ; si un niveau est choisi, bouton « Chercher dans tous les niveaux ».
+7. Effacer (croix ou Échap) → retour à la notion où l'on était.
+8. Recherche dans l'adresse (`?q=…`), retenue comme niveau et notion (retour du panier).
+9. Ajouter / retirer du panier : comme dans la grille.
+
+Hors PR : recherches récentes, synonymes, liste des thèmes à compteurs (PR 3). 10. Intitulés des points du programme aussi (ajouté à la demande de David, qui demandait si les tags serviraient : aucune question n'a de tag ; 2 372 / 2 471 ont un point ; « double distributivité » 0 → 3).
+
+Question d'accès tranchée (2026-11-18) : `anon` lit le lien question → point des seules questions publiées (migration `20261118204254`, additive).
+
+Au test en local : « calcul » ramenait 1 050 questions, toute la branche « Nombres et calculs ». David : retirer les noms de branche de la recherche (point 2 modifié).
+
+### 2026-11-18 — PR 2, réalisation
+
+- Migration + test d'intégration (rouge sans, vert avec ; appliquée en local à la main : la base locale a du retard sur des migrations de données d'autres chantiers).
+- API : `pointNames` dans `/api/questions/templates/all` ; lecture en échec → liste servie sans.
+- `catalogue-search.ts` (`searchCatalogue`, `initiallyOpenGroups`), cache, page ; tests rouges vérifiés sur l'ancienne page.
+- Après le merge : `db:migrate` (additive) AVANT tout `deploy:prod`, sinon la recherche tourne sans les points (pas de panne : lecture en échec tolérée).
+- Revues : `security-auditor` (Opus) sans finding bloquant ; appliqué : lecture `anon` limitée aux colonnes `template_id, point_id`, commentaire (pas de statut « archive »), 4 cas d'intégration de plus (embed, `created_at`, update, publié → brouillon), liens filtrés aussi par les ids publiés côté API. `code-reviewer` (Sonnet) : groupe replié impossible à ouvrir avec ses cartes (`$state` proxifiait le résultat → `$state.raw`, test rouge puis vert), tri stable des liens (`point_id`), minuteur nettoyé au départ de la page, frappe en attente appliquée au changement de niveau, `x²` trouvé par « x2 » (NFKD). Écarté : « / » avec une fenêtre ouverte (improbable).

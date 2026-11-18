@@ -45,6 +45,8 @@ interface TemplatesCache {
 	templates: CatalogueTemplate[];
 	/** Arbre des notions (nœuds non archivés), qui range le catalogue */
 	nodes: CatalogueNode[];
+	/** Intitulés des points du programme, par modèle : la recherche du catalogue y cherche */
+	pointNames: Record<string, string[]>;
 	lastFetched: number | null;
 	isLoading: boolean;
 	error: string | null;
@@ -54,6 +56,7 @@ class QuestionTemplatesStore {
 	private cache = $state<TemplatesCache>({
 		templates: [],
 		nodes: [],
+		pointNames: {},
 		lastFetched: null,
 		isLoading: false,
 		error: null
@@ -78,6 +81,11 @@ class QuestionTemplatesStore {
 	/** Arbre des notions (nœuds non archivés), reçu avec les modèles */
 	get nodes(): CatalogueNode[] {
 		return this.cache.nodes;
+	}
+
+	/** Intitulés des points du programme, par id de modèle (recherche du catalogue) */
+	get pointNames(): Record<string, string[]> {
+		return this.cache.pointNames;
 	}
 
 	/**
@@ -145,6 +153,7 @@ class QuestionTemplatesStore {
 			const data = (await response.json()) as {
 				templates?: Record<string, unknown>[];
 				nodes?: CatalogueNode[];
+				pointNames?: Record<string, string[]>;
 			};
 
 			// Réponse sans arbre : Vercel sert encore une liste d'avant le déploiement
@@ -159,6 +168,8 @@ class QuestionTemplatesStore {
 			// cette conversion, la consigne d'exercice disparaissait des cartes.
 			this.cache.templates = (data.templates ?? []).map(mapDbTemplateToForm);
 			this.cache.nodes = data.nodes ?? [];
+			// Absents d'une liste servie avant le déploiement : la recherche s'en passe
+			this.cache.pointNames = data.pointNames ?? {};
 			this.cache.lastFetched = Date.now();
 			// Invalidée pendant la lecture : la liste reçue peut être antérieure
 			if (this.invalidations === invalidationsAtStart) this.stale = false;
@@ -200,6 +211,7 @@ class QuestionTemplatesStore {
 	clear(): void {
 		this.cache.templates = [];
 		this.cache.nodes = [];
+		this.cache.pointNames = {};
 		this.cache.lastFetched = null;
 		this.cache.error = null;
 		this.stale = false;
