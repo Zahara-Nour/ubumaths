@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après #2829._
+_Mis à jour le 2026-11-18, après #2831 (#2832 en CI)._
 
-- **État** : #2827 (script `creer-serie`) et #2829 (deux modèles, fichiers) mergées · **Prochaine action** : après la commande de David, commiter les id sur `feat/questions-6-mediatrice-rangement`, écrire la migration de rangement (Tracer sur quadrillage → 6-165, Calculer → 6-167, nœud « Géométrie > Figures planes > médiatrice et bissectrice », gabarit `20261109132820_questions_6_lot11a_rangement_tags.sql`) et son test d'intégration · **En attente de David** : `! cd ../ubumaths-wt-exercices-noelie && pnpm tsx scripts/create-questions.ts --dir scripts/questions/6-mediatrice --publier` ; la question d'accès de la migration ; l'œil sur les figures (aperçu admin) · **Pièges en cours** : aucun · **Worktree / branche** : `../ubumaths-wt-exercices-noelie`, `feat/questions-6-mediatrice-rangement`
+- **État** : chantier terminé en prod — modèles c52b5ea3 et eadf2049 publiés, rangés (6-165, 6-167, migration `20261118172608` appliquée), série `756deb56` « La médiatrice d'un segment » créée (11 questions, ~17 min) · **Prochaine action** : merger #2832 (fichier de série avec son id), puis versement : retirer le worktree, archiver ce journal · **En attente de David** : l'œil sur les figures (ligne de `verifications-manuelles.md` du 2026-11-18) · **Pièges en cours** : aucun · **Worktree / branche** : `../ubumaths-wt-exercices-noelie`, `feat/serie-6-mediatrice`
 
 ## Décisions (phase 0 validée par David le 2026-11-18)
 
@@ -40,3 +40,9 @@ _Mis à jour le 2026-11-18, après #2829._
   « monte » faux pour le segment en biais qui descend.
 - 2026-11-18 — #2829 mergée (7 vérifications vertes). Branche `feat/questions-6-mediatrice-rangement`
   ouverte pour les id et la migration.
+- 2026-11-18 — David crée les brouillons en prod ; #2831 (migration de rangement, test rouge puis
+  17/17, `security-auditor` sans finding) mergée, `db:migrate` (seule migration en attente), relu en
+  prod : nœud « médiatrice et bissectrice », tags 6-165 / 6-167, trigger `updated_at` réactivé.
+- 2026-11-18 — David lance `publier-lot --publier && creer-serie --publier` : 2 modèles publiés,
+  série `756deb56` (6 lignes, 11 questions, auteur = le professeur), relus en prod. #2832 : fichier
+  `scripts/series/6-mediatrice.json`.
