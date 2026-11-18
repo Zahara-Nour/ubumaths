@@ -8,21 +8,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, rendu du lot 4 validé par David, PR des fichiers en cours._
+_Mis à jour le 2026-11-18, après #2833 (fichiers du lot 4 mergés)._
 
-- **État** : lots 1 à 3 clos ; lot 4 « algorithmique » (8 modèles, § 26) : rendu validé par David (« ok pour les
-  rendus »), `origin/main` fusionnée, re-simulation verte (8 ✓, contre la base locale : la simulation contre la prod
-  est refusée par le classifieur) ; PR des fichiers ouverte. Reste les lots 5 (graphiques, stats à deux variables)
-  et 6 (probabilités).
-- **Prochaine action** : PR des fichiers verte → merge ; puis **David** lance en prod
+- **État** : lots 1 à 3 clos ; lot 4 « algorithmique » (8 modèles, § 26) : fichiers sur `main` (#2833), rien en base
+  de prod encore. Reste les lots 5 (graphiques, stats à deux variables) et 6 (probabilités).
+- **Prochaine action** : **David** lance en prod, depuis le dépôt principal à jour,
   `pnpm tsx scripts/create-questions.ts --dir scripts/questions/1techno-4 --publier` (8 brouillons, ids écrits dans
-  les fichiers) ; puis migration de rangement + tags (8 tags 1TECHNO, + 1SPE-362 sur M2), test d'intégration rouge
-  d'abord.
-- **En attente de David** : le `create-questions --publier` en prod, après le merge.
+  les fichiers) ; puis nouveau worktree : ids commités, migration de rangement + tags (8 tags 1TECHNO, + 1SPE-362
+  sur M2), test d'intégration rouge d'abord.
+- **En attente de David** : ce `create-questions --publier` en prod.
 - **Pièges en cours** : M2 porte aussi 1SPE-362 (`grades` 1_TECHNO + 1_SPE) ; `db:migrate` pousse tout ce qui
   attend ; lot 5 : modèles communs de questions-1gen S2 f3cb0c7a → 085, S3 7461bb44 → 082, S4 4f328c8c → 084,
   S6 3fec6b41 → 087 (publiés, à vérifier contre mes bornes en phase 0).
-- **Worktree / branche** : `../ubumaths-wt-questions-1techno`, `feat/questions-1techno-lot4`.
+- **Worktree / branche** : aucun (lot 4 mergé, worktree retiré) ; le prochain : `feat/questions-1techno-lot4-tags`.
 
 ## 1. Relevé (prod, 2026-11-17)
 
