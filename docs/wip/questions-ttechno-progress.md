@@ -10,7 +10,7 @@ _Mis à jour le 2026-11-18, migration du lot 4 écrite (§ 31), PR à ouvrir._
 - **État** : lot 4 en prod en brouillon (5e810e16 M1 037, 7a37a3e1 M2 039, sans nœud ni tag) ; migration
   `20261118104421` + test (9 verts, 5 rouges sans) commités sur `feat/questions-ttechno-lot4-rangement`, pas
   poussés ; `security-auditor` sans finding (§ 31).
-- **Prochaine action** : push, PR, CI verte →
+- **Prochaine action** : PR #2820, CI verte →
   merge → `check:migrations --pr <n>` avant le merge ; `migration list --linked` ; `db:migrate` depuis le dépôt
   principal ; vérif MCP ; page à cocher ; publication par David.
 - **En attente de David** : rien.
