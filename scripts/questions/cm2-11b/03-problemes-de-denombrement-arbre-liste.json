@@ -1,4 +1,5 @@
 {
+	"id": "3d2219c0-4428-4ec4-bb2f-a26b0d9ee82f",
 	"title": "Problèmes de dénombrement : arbre, liste",
 	"description": "Compter sans oubli ni répétition : les suites de 3 ou 4 lancers d'une pièce, les nombres de trois chiffres écrits avec trois chiffres donnés (chacun une fois, ou répétés), les matchs d'un tournoi où chaque équipe rencontre chaque autre ; arbre ou liste au corrigé",
 	"grades": ["CM2"],

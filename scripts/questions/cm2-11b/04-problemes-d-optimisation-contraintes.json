@@ -1,4 +1,5 @@
 {
+	"id": "ea559f53-eec0-49d8-96e1-868820bd1a72",
 	"title": "Problèmes d'optimisation : plusieurs contraintes",
 	"description": "Le plus grand nombre d'objets qu'on peut fabriquer quand plusieurs fournitures limitent : des étagères (planches coupées, équerres, vis), des torchons (tissu à découper dans le bon sens, ruban autour) ; on garde le plus petit des nombres",
 	"grades": ["CM2"],

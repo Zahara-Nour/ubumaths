@@ -1,4 +1,5 @@
 {
+	"id": "960e6a84-e571-4aa5-a145-36bef7516c8a",
 	"title": "Problèmes additifs en plusieurs étapes",
 	"description": "Un prix manquant (un billet, deux prix, la monnaie rendue), la somme du départ après deux actions (« il retire…, il dépense…, il lui reste… »), la part de pizza gardée (5/12 et 1/4 donnés), deux montants connus par leur somme et leur écart ; schéma en barres au corrigé",
 	"grades": ["CM2"],
