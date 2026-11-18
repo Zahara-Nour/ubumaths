@@ -2,10 +2,10 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, étape 3 codée (PR à ouvrir)._
+_Mis à jour le 2026-11-18, étape 3 en PR (#2822)._
 
 - **État** : étapes 1 (#2808, #2810) et 2 (#2817) mergées. Étape 3 (combat de la recrue) : codée sur `feat/navadra-combat`, tests verts (unitaires, composant, intégration).
-- **Prochaine action** : revues (code + sécurité), PR, CI, merge ; puis étape 4 (carte, entrée de menu, carnet), précédée des vraies fiches du bestiaire et des vrais noms des 6 coups.
+- **Prochaine action** : #2822 (revues faites, CI en cours) → merge ; puis étape 4 (carte, entrée de menu, carnet), précédée des vraies fiches du bestiaire et des vrais noms des 6 coups.
 - **En attente de David** : rien.
 - **Façon de poser** : en mots simples, avec un exemple, sans noms de tables ni de colonnes.
 - **Pièges en cours** :
