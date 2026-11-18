@@ -12,7 +12,7 @@
 	 */
 
 	import { goto } from '$app/navigation';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import MySelect from '$lib/components/MySelect.svelte';
@@ -86,7 +86,7 @@
 	 * Update URL with new params
 	 */
 	function updateUrl(params: Record<string, string>) {
-		const url = new URL($page.url);
+		const url = new URL(page.url);
 		for (const [key, value] of Object.entries(params)) {
 			url.searchParams.set(key, value);
 		}
@@ -127,7 +127,7 @@
 
 	/** L'URL complète du lien public, celle qu'on colle dans un carnet ou un mail. */
 	const shareUrl = $derived(
-		data.shareToken ? `${$page.url.origin}/cahier/${data.shareToken.token}` : null
+		data.shareToken ? `${page.url.origin}/cahier/${data.shareToken.token}` : null
 	);
 
 	async function copyShareUrl() {

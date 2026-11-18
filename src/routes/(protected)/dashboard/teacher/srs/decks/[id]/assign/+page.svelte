@@ -14,7 +14,7 @@
 <script lang="ts">
 	import { lore } from '$lib/config/lore';
 	import { goto } from '$app/navigation';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { Button } from '$lib/components/ui/button';
 	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import * as Card from '$lib/components/ui/card';
@@ -59,7 +59,7 @@
 
 	let { data }: Props = $props();
 
-	const deckId = $derived($page.params.id);
+	const deckId = $derived(page.params.id);
 
 	// State
 	let selectedStudents = $state<string[]>([]);

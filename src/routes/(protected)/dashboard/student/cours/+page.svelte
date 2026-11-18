@@ -8,7 +8,7 @@
 	 * Each chapter card shows progress indicators and links to the detail view.
 	 */
 
-	import { navigating } from '$app/stores';
+	import { navigating } from '$app/state';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
 	import { ChapterCard } from '$lib/components/cours';
@@ -22,7 +22,7 @@
 	let { data }: Props = $props();
 
 	// Derived values
-	let isNavigating = $derived(!!$navigating);
+	let isNavigating = $derived(!!navigating.to);
 	let hasChapters = $derived(data.totalChapters > 0);
 </script>
 

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
 	import { invalidateAll } from '$app/navigation';
-	import { navigating } from '$app/stores';
+	import { navigating } from '$app/state';
 	import { Button } from '$lib/components/ui/button';
 	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import { Card } from '$lib/components/ui/card';
@@ -169,7 +169,7 @@
 	);
 	let isLoading = $derived(minesweeperStore.isLoading);
 	let isCompletingGame = $derived(minesweeperStore.isCompletingGame);
-	let isRefreshingStandings = $derived($navigating !== null);
+	let isRefreshingStandings = $derived(navigating.to !== null);
 
 	// Reset handler (for failed games)
 	function handleReset() {

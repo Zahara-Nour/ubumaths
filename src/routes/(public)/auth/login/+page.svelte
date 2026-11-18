@@ -22,7 +22,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import { resolve } from '$app/paths';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { slide } from 'svelte/transition';
 	import type { ActionData } from './$types';
 	import { Button } from '$lib/components/ui/button';
@@ -50,10 +50,7 @@
 	let isEmailLoading = $state(false);
 
 	// Extract error from URL query params (for OAuth callback errors)
-	let urlError = $derived.by(() => {
-		const currentPage = $page;
-		return currentPage.url.searchParams.get('error');
-	});
+	let urlError = $derived(page.url.searchParams.get('error'));
 </script>
 
 <div class="flex min-h-screen items-center justify-center bg-background px-4">

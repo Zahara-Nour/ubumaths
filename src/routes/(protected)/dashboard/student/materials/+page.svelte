@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { lore } from '$lib/config/lore';
 	import { goto } from '$app/navigation';
-	import { navigating } from '$app/stores';
+	import { navigating } from '$app/state';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
@@ -39,7 +39,7 @@
 	let currentPage = $state(initialData.filters.page);
 
 	// Derived values
-	let isNavigating = $derived(!!$navigating);
+	let isNavigating = $derived(!!navigating.to);
 	let hasFilters = $derived(!!selectedClass || !!selectedCategory || !!selectedTopic);
 
 	// Class items for MySelect

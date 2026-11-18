@@ -8,7 +8,7 @@
 	 * Quick access to create new chapters and manage existing ones.
 	 */
 
-	import { navigating } from '$app/stores';
+	import { navigating } from '$app/state';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import { ChapterCard } from '$lib/components/cours';
@@ -22,7 +22,7 @@
 	let { data }: Props = $props();
 
 	// Derived values
-	let isNavigating = $derived(!!$navigating);
+	let isNavigating = $derived(!!navigating.to);
 	let hasClasses = $derived(data.classes.length > 0);
 </script>
 

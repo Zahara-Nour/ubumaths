@@ -9,7 +9,7 @@
 	import { fr } from 'date-fns/locale';
 	import { goto } from '$app/navigation';
 	import StartFriendTradeModal from './StartFriendTradeModal.svelte';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 
 	interface Props {
 		userId: string;
@@ -18,7 +18,7 @@
 	let { userId }: Props = $props();
 
 	// Get supabase from page data (needed for StartFriendTradeModal)
-	let supabase = $derived($page.data.supabase);
+	let supabase = $derived(page.data.supabase);
 
 	// State
 	let showStartTradeModal = $state(false);

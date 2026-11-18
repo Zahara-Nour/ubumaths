@@ -22,7 +22,7 @@
 </script>
 
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import type { PageData } from './$types';
 	import {
@@ -92,7 +92,7 @@
 
 	// Handle filter changes - receive new value directly from onchange callback
 	async function handleClassChange(newClassId: string) {
-		const url = new URL($page.url);
+		const url = new URL(page.url);
 		if (newClassId) {
 			url.searchParams.set('class_id', newClassId);
 		} else {
@@ -102,7 +102,7 @@
 	}
 
 	async function handlePeriodChange(newPeriod: string) {
-		const url = new URL($page.url);
+		const url = new URL(page.url);
 		url.searchParams.set('period', newPeriod);
 		await goto(url.toString());
 	}
@@ -111,7 +111,7 @@
 	async function refreshData() {
 		isLoading = true;
 		try {
-			await goto($page.url.toString(), { invalidateAll: true });
+			await goto(page.url.toString(), { invalidateAll: true });
 			toaster.success('Données actualisées');
 		} catch (err) {
 			console.error('Error refreshing data:', err);
@@ -128,7 +128,7 @@
 
 	// Handle settings update (refresh data after saving)
 	async function handleSettingsUpdate() {
-		await goto($page.url.toString(), { invalidateAll: true });
+		await goto(page.url.toString(), { invalidateAll: true });
 	}
 
 	// Format number with spaces as thousands separator

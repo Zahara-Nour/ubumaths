@@ -20,14 +20,14 @@
 	import { formatDistanceToNow } from 'date-fns';
 	import { fr } from 'date-fns/locale';
 	import StartFriendTradeModal from './StartFriendTradeModal.svelte';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 
 	// Get supabase client from page data
-	let supabase = $derived($page.data.supabase);
+	let supabase = $derived(page.data.supabase);
 
 	// Get current user ID
-	let userId = $derived($page.data.user?.id);
+	let userId = $derived(page.data.user?.id);
 
 	// State
 	let selectedTab = $state<'active' | 'completed'>('active');

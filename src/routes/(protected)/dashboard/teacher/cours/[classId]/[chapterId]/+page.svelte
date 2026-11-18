@@ -28,7 +28,7 @@
 
 	import { applyAction, enhance } from '$app/forms';
 	import { goto, invalidateAll } from '$app/navigation';
-	import { navigating } from '$app/stores';
+	import { navigating } from '$app/state';
 	import { Button } from '$lib/components/ui/button';
 	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import * as Card from '$lib/components/ui/card';
@@ -143,7 +143,7 @@
 	});
 
 	// Navigating state (reserved for future loading indicators)
-	let _isNavigating = $derived(!!$navigating);
+	let _isNavigating = $derived(!!navigating.to);
 
 	// Le formulaire caché de « Détacher du modèle », envoyé après confirmation.
 	let detachForm: HTMLFormElement | undefined = $state();

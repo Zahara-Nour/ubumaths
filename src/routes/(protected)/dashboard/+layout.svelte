@@ -35,7 +35,7 @@
 <script lang="ts">
 	import type { LayoutData } from './$types';
 	import { page } from '$app/state';
-	import { navigating } from '$app/stores';
+	import { navigating } from '$app/state';
 	import { Sun, Moon, Minus, Plus, Maximize, Minimize, Menu } from '@lucide/svelte';
 	import { getNavLinks, getZoneTitle, isNavLinkActive } from '$lib/config/dashboard-nav';
 	import { submitLogoutForm } from '$lib/utils/auth';
@@ -490,12 +490,12 @@
 			<div class="relative {isFullWidthRoute ? 'p-2' : 'p-4 sm:p-6 lg:p-8'}">
 				<div class={isFullWidthRoute ? 'w-full' : 'mx-auto max-w-4xl'}>
 					<!-- Always render children so page can load -->
-					<div class:opacity-0={$navigating} class="transition-opacity duration-200">
+					<div class:opacity-0={navigating.to} class="transition-opacity duration-200">
 						{@render children()}
 					</div>
 
 					<!-- Overlay skeleton during navigation -->
-					{#if $navigating}
+					{#if navigating.to}
 						<div class="absolute inset-0 bg-background p-4 sm:p-6 lg:p-8">
 							<div class="mx-auto max-w-7xl">
 								{#if skeletonType === 'dashboard'}
