@@ -5,17 +5,18 @@ Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) · bornes 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après la publication du lot 5a (§ 39)._
+_Mis à jour le 2026-11-18, pendant l'écriture du lot 5b (§ 40)._
 
-- **État** : lots 0 à 5a publiés (5a : L1–L6, log décimal, § 39) ; saisie de « log » réglée (#2839, § 36), pas
-  encore en prod. Restent 22 points STMG sans modèle publié : lot 5b (043, 084, 085), lots 6 à 8 (§ 33).
-- **Prochaine action** : écriture du lot 5b (L7–L9, § 34 ; réponses exactes en log, Q25), worktree neuf.
-- **En attente de David** : rien.
-- **Pièges en cours** : un point TTECHNO par modèle (trigger) ; tag = nœud DU POINT (relevé MCP, pas le journal) ;
-  `publier-lot.ts`, `create-questions --publier` visent la prod : David les lance (`!`) depuis le dépôt principal ;
-  `{{var}}` décimale calculée s'écrit en fraction (afficher par `{{eval:var;d}}`) ; un modèle du lot 5b qui demande de
-  taper log n'est publiable qu'après le `deploy:prod` qui livre #2839.
-- **Worktree / branche** : aucun.
+- **État** : lots 0 à 5a publiés ; lot 5b (L7–L9 : 043, 084, 085) écrit, essayé en base locale, PR des fichiers à
+  ouvrir / ouverte sur `feat/questions-ttechno-lot5b`. Restent ensuite les lots 6 à 8 (§ 33).
+- **Prochaine action** : merger la PR des fichiers ; puis David lance `create-questions --publier` (3 brouillons),
+  migration nœud + tag (gabarit lot 5a), page à cocher.
+- **En attente de David** : `create-questions --publier` après le merge.
+- **Pièges en cours** : un point TTECHNO par modèle (trigger) ; tag = nœud DU POINT (relevé MCP) ; `publier-lot.ts`,
+  `create-questions --publier` visent la prod : David les lance (`!`) depuis le dépôt principal ; **L7 et L8 demandent
+  de taper log : publiables seulement après le `deploy:prod` qui livre #2839** (pas en prod le 2026-11-18 ; L9 n'en
+  dépend pas) ; port 5176 pris par le worktree `automaths` (serveur de test sur 5179).
+- **Worktree / branche** : `ubumaths-wt-questions-ttechno` · `feat/questions-ttechno-lot5b`.
 
 ## 1. Périmètre
 
@@ -914,3 +915,25 @@ dans le dépôt principal, reportés et commités sur la branche de la migration
 - `publier-lot.ts --dir scripts/questions/ttechno-5a-logarithme` : simulation verte (6 brouillons) ; garde des
   niveaux : aucun niveau manquant ; `--publier` par David ; statut relu en base (MCP) : 6/6 `published`,
   `{T_TECHNO}` (dc269779, fa2ade8a, 9834f4cd, 22bbd82a, ceeba3f8, af24839d).
+
+## 40. Lot 5b : écriture (2026-11-18)
+
+`docs/wip/questions/lot-ttechno-5b.py` → `scripts/questions/ttechno-5b-log-resolutions/` (3 fichiers, 36 specs),
+`grades ['T_TECHNO']`, brouillons. Worktree `ubumaths-wt-questions-ttechno`, branche `feat/questions-ttechno-lot5b`.
+
+- L7 (043, niv. 2) : 10ˣ = b et aˣ = b en **valeur exacte** (Q25 : log b, log b / log a) ; k·aˣ = b, capital doublé
+  (durée réelle), xᵃ = b (x > 0), taux annuel moyen : **arrondis**. L8 (084, niv. 3) : aˣ < b, aˣ ⩾ b (a > 1),
+  aˣ > b avec 0 < a < 1 (le sens change), xᵃ ⩽ cᵃ (x > 0) ; réponse en intervalle (`answerKind: intervalles`),
+  bornes exactes. L9 (085, niv. 2) : plus petit n (qⁿ < 10⁻ᵗ, capital qui double, machine qui se déprécie,
+  aⁿ > 10ᵏ), calque `f1963ef2` passé en log.
+- Moteur : une valeur approchée (2,32 pour log 5 / log 2) est jugée **fausse** quand la valeur exacte est demandée
+  (specs d'erreur) ; `\log(5)/\log(2)` en ligne → `bad_form`, mais au clavier « / » fait une fraction.
+- Simulation `create-questions` verte contre la prod (aucun homonyme) ; `question:specs` 3 / 3 importables,
+  200 tirages par variation ; 428 formules distinctes des aperçus : accolades et `validateLatex` 0 problème.
+  Corrigé en route : capital à 2 % (35,003 ans → « 35 ») exclu.
+- Base locale (3 brouillons) ; aperçu admin (Chrome, `[::1]:5179`), frappe réelle : L7 7ˣ = 5, « log(5)/log(7) »
+  → fraction, **juste** ; L8 0,5ˣ > 0,3, « ]-oo;log(0,3)/log(0,5)[ » → **juste**, corrigé rendu ; L9 machine
+  8000 € → 7, juste. « inf » tapé reste « inf » (raccourci `oo` ou touche ∞), comme dans tous les modèles à
+  intervalles.
+- ⚠ #2839 (saisie de log) **pas encore en prod** : L7 et L8 restent en brouillon jusqu'au `deploy:prod` qui le
+  livre ; L9 n'en dépend pas.
