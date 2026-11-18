@@ -7,17 +7,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, phase 0 du lot 6 proposée (§ 23)._
+_Mis à jour le 2026-11-18, après #2802 (lot 6, fichiers)._
 
-- **État** : lots 1 à 4 publiés (28 modèles), lot 5 clos par questions-1techno. Lot 6 (statistiques à deux
-  variables, 001 à 007) : phase 0 écrite au § 23 (7 modèles S1-S7 + tag de 49fac266 en 1GEN-003), rien de codé.
-- **Prochaine action** : après les réponses de David, worktree `ubumaths-wt-questions-1gen`, script
-  `docs/wip/questions/lot-6.py`, puis envoyer la phase 0 validée à questions-1techno (S2, S3, S4, S6 communs).
-- **En attente de David** : Q20 à Q23 (§ 23).
+- **État** : lots 1 à 4 publiés, lot 5 clos par questions-1techno. Lot 6 (statistiques à deux variables) : 7 fichiers
+  mergés (#2802, § 24), **pas encore en prod**.
+- **Prochaine action** : David lance `create-questions --dir scripts/questions/1gen-6-statistiques-deux-variables
+--publier` depuis le worktree ; commiter les ids ; migration nœud + tags (S1-S7 + 49fac266 → 1GEN-003 avec
+  `array_append('1_GEN')`) ; page à cocher ; ids à questions-1techno (S2→085, S3→082, S4→084, S6→087).
+- **En attente de David** : la création des brouillons en prod (commande `!`).
 - **Pièges en cours** : ADR 0020 et `couvrir-un-niveau.md` § 9 avant tout tag ; `db push` pousse TOUTES les
   migrations en attente ; publication en prod = commande `!` de David (ma simulation est refusée : elle vise la
   prod) ; aperçu : serveur `--host ::`.
-- **Worktree / branche** : aucun.
+- **Worktree / branche** : `../ubumaths-wt-questions-1gen`, `feat/questions-1gen-lot6` (mergée ; garder pour les ids
+  et la migration).
 
 ## 1. Relevé (prod, 2026-11-17)
 
