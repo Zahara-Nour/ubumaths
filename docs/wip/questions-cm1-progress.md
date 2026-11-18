@@ -5,14 +5,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après #2824 (migration de rangement du lot 8c, § 23 quater)._
+_Mis à jour le 2026-11-18, après #2824 et le `db:migrate` du lot 8c (§ 23 quinquies)._
 
 - **État** : lots 0 à 8b publiés, **137 points du CM1 sur 171** (CM2 : 92 sur 158). Lot 8c : 7 brouillons en prod,
-  migration `20261118115830_questions_cm1_lot8c_rangement_tags` mergée (#2824), **pas encore jouée en prod**.
-- **Prochaine action** : David lance `db:migrate` depuis le worktree (`migration list --linked` avant : seule en
-  attente) ; puis vérif MCP (7 nœuds, 10 tags, `updated_at` inchangé), page à cocher, publication. Ensuite 8d
-  figures à compléter, 8e, 9 (§ 20).
-- **En attente de David** : `db:migrate`.
+  rangés et tagués en prod (#2824, `db:migrate` fait) ; page à cocher publiée
+  (https://claude.ai/artifact/Snbe4QU13vJmw7qSfzQzS9).
+- **Prochaine action** : lire et compter les verdicts (`ArtifactData list verdicts`) ; si 7 « OK » :
+  `publier-lot --dir scripts/questions/cm1-8c` (simulation), puis David lance `--publier`. Ensuite 8d figures à
+  compléter, 8e, 9 (§ 20).
+- **En attente de David** : ses verdicts sur la page à cocher.
 - **Pièges en cours** : lancer `create-questions --publier` et `db:migrate` **depuis le worktree** (lien
   `supabase/.temp/` copié) ; `db:migrate` « inserted before » → `--dry-run --include-all` puis `--include-all` ;
   titre homonyme d'un autre niveau → `create-questions` refuse (renommer) ; commitlint refuse le type `content` ;
@@ -1894,3 +1895,10 @@ nœuds qui existent déjà (pas de sous-notion neuve).
   7 sautés. `types:cliquet` tenu.
 - `security-auditor` : aucun finding bloquant (état « avant » remesuré au MCP : 7 draft, nœud null, 0 tag ; seule
   migration en attente). Non bloquant : verrou bref du `disable trigger` (comme au 8a).
+
+### 23 quinquies. Lot 8c — migration passée, page à cocher (2026-11-18)
+
+- `db:migrate` lancé par David depuis le worktree (seule migration en attente). Vérifié au MCP : `20261118115830`
+  jouée ; 7 brouillons sur leur nœud, 10 tags, `updated_at` inchangé.
+- `page-a-cocher.ts --dir scripts/questions/cm1-8c` : 7 fiches (21 exemples), aucune alerte. Page :
+  https://claude.ai/artifact/Snbe4QU13vJmw7qSfzQzS9 (`verdicts`, capacité `db`, vide).
