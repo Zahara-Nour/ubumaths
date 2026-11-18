@@ -5,7 +5,7 @@
 	 * Décision de David (2026-09-29) : la tuile EST la flash-card de la question
 	 * (non interactive, avec son bouton de retournement), sous un intitulé fait
 	 * du titre et de la description du modèle (branche, notion et sous-notion
-	 * sont affichées par la page : sélecteur, onglet, rubrique). Un clic sur la tuile ne fait rien. En dessous, le
+	 * sont affichées par la page : liste des notions, section). Un clic sur la tuile ne fait rien. En dessous, le
 	 * bouton du panier (la grille n'a ni durée ni répétitions) : « Ajouter au panier »,
 	 * puis « Dans le panier », qui retire la question entière (répétitions et durée comprises).
 	 */
@@ -35,9 +35,9 @@
 	}
 </script>
 
-<div class="flex h-full flex-col gap-3">
+<div class="tile flex h-full flex-col gap-3" style:--tile-card-default={TILE_CARD_HEIGHT}>
 	<!-- Intitulé : titre et description du modèle (branche, notion et sous-notion
-	     sont affichées par la page : sélecteur, onglet, rubrique) -->
+	     sont affichées par la page : liste des notions, section) -->
 	<!-- flex-1 : la zone s'étire, les cartes d'une même rangée commencent à la même hauteur -->
 	<div class="flex flex-1 items-start justify-between gap-2" data-tile-heading>
 		<div class="min-w-0">
@@ -56,7 +56,8 @@
 	</div>
 
 	<!-- La flash-card elle-même -->
-	<FlashCard instance={preview} interactive={false} size="sm" height={TILE_CARD_HEIGHT} />
+	<!-- Plus basse sur téléphone (règle .tile ci-dessous) -->
+	<FlashCard instance={preview} interactive={false} size="sm" height="var(--tile-card-height)" />
 
 	<!-- Ajout au panier, ou retrait -->
 	<div class="flex justify-end">
@@ -80,6 +81,17 @@
 </div>
 
 <style>
+	/* Hauteur de la flash-card : celle des tuiles (12rem), 9rem sur téléphone (< 640 px) */
+	.tile {
+		--tile-card-height: var(--tile-card-default);
+	}
+
+	@media (width < 40rem) {
+		.tile {
+			--tile-card-height: 9rem;
+		}
+	}
+
 	/*
 	 * Tailles de l'intitulé. `app.css` impose `main p { font-size: …1rem… !important }`
 	 * (réglage « A − / + ») : une classe Tailwind ne suffit pas. Ces règles, plus

@@ -3,8 +3,8 @@
  * ====================================================================
  *
  * La notion affichée s'écrit dans l'adresse (`?notion=…`, sans entrée
- * d'historique) : un rechargement ou un lien rouvre la même branche et la
- * même notion. Le catalogue retient sa dernière adresse le temps de la visite
+ * d'historique) : un rechargement ou un lien rouvre la même notion, sa
+ * branche dépliée dans la liste. Le catalogue retient sa dernière adresse le temps de la visite
  * (onglet) : revenu sans paramètre (retour du panier), il la reprend.
  * Bouton rond du panier : fixe (aucune pulsation), et la dernière carte peut
  * remonter au-dessus de lui.
@@ -25,6 +25,7 @@ vi.mock('$app/navigation', async () =>
 );
 
 import Page from '../+page.svelte';
+import { branchButton, notionButton, useWideScreen } from './catalogue-helpers.ts';
 import { questionTemplatesCache } from '#lib/stores/questionTemplates.svelte.ts';
 import { questionCart } from '#lib/stores/questionCart.svelte.ts';
 // Modèle réel relu (Entiers #139) : son aperçu se calcule, sa tuile a un bouton « Ajouter »
@@ -90,6 +91,7 @@ async function chooseInCombobox(name: RegExp, option: string) {
 
 describe('Catalogue Automaths — notion dans l’adresse', () => {
 	beforeEach(async () => {
+		await useWideScreen();
 		replaceState.mockClear();
 		sessionStorage.clear();
 		questionCart.clearCart();
@@ -101,7 +103,7 @@ describe('Catalogue Automaths — notion dans l’adresse', () => {
 		pageState.url = new URL('http://localhost:5175/automaths?niveau=6&inferieurs=1');
 		await render(Page);
 
-		await page.getByRole('tab', { name: 'Fractions' }).click();
+		await notionButton('Fractions').click();
 
 		expect(lastUrl().searchParams.get('notion')).toBe('n-frac');
 		expect(lastUrl().searchParams.get('niveau')).toBe('6');
@@ -113,20 +115,21 @@ describe('Catalogue Automaths — notion dans l’adresse', () => {
 
 		await render(Page);
 
+		await expect.element(notionButton('Thalès')).toHaveAttribute('aria-current', 'true');
+		await expect.element(branchButton('Géométrie')).toHaveAttribute('aria-expanded', 'true');
 		await expect
-			.element(page.getByRole('tab', { name: 'Thalès' }))
-			.toHaveAttribute('aria-selected', 'true');
-		await expect
-			.element(page.getByRole('combobox', { name: /^Branche/ }))
-			.toHaveTextContent('Géométrie');
+			.element(branchButton('Nombres et calculs'))
+			.toHaveAttribute('aria-expanded', 'false');
 	});
 
-	it('changer de branche : l’adresse prend sa première notion', async () => {
+	it('ouvrir une autre branche, puis choisir une de ses notions : l’adresse la prend', async () => {
 		await render(Page);
 
-		await chooseInCombobox(/^Branche/, 'Géométrie');
+		await branchButton('Géométrie').click();
+		await notionButton('Pythagore').click();
 
 		expect(lastUrl().searchParams.get('notion')).toBe('n-pyth');
+		await expect.element(notionButton('Pythagore')).toHaveAttribute('aria-current', 'true');
 	});
 
 	it('notion absente au niveau choisi : première notion, et l’adresse suit', async () => {
@@ -135,9 +138,7 @@ describe('Catalogue Automaths — notion dans l’adresse', () => {
 
 		await chooseInCombobox(/^Niveau :/, '4ème');
 
-		await expect
-			.element(page.getByRole('tab', { name: 'Pythagore' }))
-			.toHaveAttribute('aria-selected', 'true');
+		await expect.element(notionButton('Pythagore')).toHaveAttribute('aria-current', 'true');
 		expect(lastUrl().searchParams.get('notion')).toBe('n-pyth');
 	});
 
@@ -146,9 +147,7 @@ describe('Catalogue Automaths — notion dans l’adresse', () => {
 
 		await render(Page);
 
-		await expect
-			.element(page.getByRole('tab', { name: 'Addition' }))
-			.toHaveAttribute('aria-selected', 'true');
+		await expect.element(notionButton('Addition')).toHaveAttribute('aria-current', 'true');
 	});
 
 	it('retour sans paramètre : la dernière adresse de la visite est reprise', async () => {
@@ -156,9 +155,7 @@ describe('Catalogue Automaths — notion dans l’adresse', () => {
 
 		await render(Page);
 
-		await expect
-			.element(page.getByRole('tab', { name: 'Thalès' }))
-			.toHaveAttribute('aria-selected', 'true');
+		await expect.element(notionButton('Thalès')).toHaveAttribute('aria-current', 'true');
 		await expect.element(page.getByRole('checkbox')).toBeChecked();
 		expect(lastUrl().search).toBe('?niveau=3&inferieurs=1&notion=n-thales');
 	});
@@ -169,9 +166,7 @@ describe('Catalogue Automaths — notion dans l’adresse', () => {
 
 		await render(Page);
 
-		await expect
-			.element(page.getByRole('tab', { name: 'Fractions' }))
-			.toHaveAttribute('aria-selected', 'true');
+		await expect.element(notionButton('Fractions')).toHaveAttribute('aria-current', 'true');
 	});
 
 	it('arrivée par un lien avec paramètres : la visite retient cette adresse', async () => {
@@ -180,14 +175,14 @@ describe('Catalogue Automaths — notion dans l’adresse', () => {
 
 		await render(Page);
 
-		await expect.element(page.getByRole('tab', { name: 'Fractions' })).toBeVisible();
+		await expect.element(notionButton('Fractions')).toBeVisible();
 		expect(sessionStorage.getItem(MEMORY_KEY)).toBe('?niveau=6&notion=n-frac');
 	});
 
 	it('chaque choix est retenu pour la visite', async () => {
 		await render(Page);
 
-		await page.getByRole('tab', { name: 'Fractions' }).click();
+		await notionButton('Fractions').click();
 
 		expect(sessionStorage.getItem(MEMORY_KEY)).toBe('?notion=n-frac');
 	});
@@ -195,6 +190,7 @@ describe('Catalogue Automaths — notion dans l’adresse', () => {
 
 describe('Catalogue Automaths — bouton rond du panier', () => {
 	beforeEach(async () => {
+		await useWideScreen();
 		replaceState.mockClear();
 		sessionStorage.clear();
 		questionCart.clearCart();
@@ -214,7 +210,6 @@ describe('Catalogue Automaths — bouton rond du panier', () => {
 	it('en bas de page, le dernier « Ajouter » peut remonter au-dessus du bouton rond', async () => {
 		await page.viewport(390, 500);
 		await render(Page);
-		await page.getByRole('button', { name: 'Général' }).click();
 		const add = page.getByRole('button', { name: 'Ajouter au panier' });
 		await expect.element(add).toBeVisible();
 

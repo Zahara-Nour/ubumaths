@@ -64,15 +64,15 @@ describe('Catalogue Automaths — consigne d’exercice', () => {
 	});
 
 	it('la carte d’un modèle avec consigne l’affiche au-dessus de l’énoncé', async () => {
+		// Sous-notions dépliées : la section à l'écran calcule ses cartes d'elle-même
 		await render(Page);
-		await page.getByRole('button', { name: 'Tables' }).click();
 
 		await expect.element(page.getByText('Calcule.', { exact: true })).toBeVisible();
 	});
 
 	it('un modèle sans consigne n’affiche pas de consigne', async () => {
+		// Sous-notions dépliées : la section à l'écran calcule ses cartes d'elle-même
 		await render(Page);
-		await page.getByRole('button', { name: 'Tables' }).click();
 
 		await expect.element(page.getByText('Sans consigne')).toBeVisible();
 		await expect.element(page.getByText('Calcule.', { exact: true })).toBeVisible();
