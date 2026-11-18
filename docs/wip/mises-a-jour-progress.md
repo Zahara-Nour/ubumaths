@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après #2828._
+_Mis à jour le 2026-11-18, après #2830._
 
-- **État** : #2814, #2821, #2825, #2826, #2828 mergées, rien encore en prod. #2828 = `pnpm migrer:diese` (conversion `$lib` → `#lib` des branches anciennes) ; consigne envoyée aux 22 sessions ouvertes. **#2830 ouverte** (worktree `ubumaths-wt-lint-ci`, branche `ci/lint-fichiers-modifies`) : ESLint en CI ne relit que les fichiers de la PR (19-24 min → < 1 min), `lint-nocturne.yml` relit tout l'arbre chaque nuit.
-- **Prochaine action** : merger #2830 (CI verte + revue) ; puis les petites dépréciations de kit 3 (`goto` avec options 10, `pushState`/`replaceState` 15, `error(N, { message })` 36, `invalidateAll` 54). `json()`/`text()` (≈ 368 fichiers) REPORTÉS : seconde vague de conflits pour tous les worktrees. Puis clore (versement). Autres majeures HORS chantier (lot mensuel Dependabot).
+- **État** : #2814, #2821, #2825, #2826, #2828, #2830 mergées, rien encore en prod. #2828 = `pnpm migrer:diese` ; consigne envoyée aux 22 sessions ouvertes. #2830 = ESLint en CI ne relit que les fichiers de la PR + les `.svelte` qui importent un module changé (étape ESLint : ~20 min → 1-3 s) ; `lint-nocturne.yml` relit tout l'arbre chaque nuit (03:41 UTC) et enregistre le cache de main (premier run lancé à la main le 2026-11-18).
+- **Prochaine action** : vérifier que le premier `lint-nocturne` est vert ; puis les petites dépréciations de kit 3 (`goto` avec options 10, `pushState`/`replaceState` 15, `error(N, { message })` 36, `invalidateAll` 54). `json()`/`text()` (≈ 368 fichiers) REPORTÉS (seconde vague de conflits). Puis clore (versement). Autres majeures HORS chantier (lot mensuel Dependabot).
 - **En attente de David** : `deploy:prod` (recommandé AVANT les dépréciations).
-- **Pièges en cours** : `#lib` exige l'extension écrite (garde `imports-lib-avec-extension`, qui exclut le test de `migrer:diese`) ; `paths` du `tsconfig.json` nécessaires au typecheck incrémental ; `src/env.ts` ; `appNavigationMock` ; suite client en local avec `CI=true` ; commitlint refuse un sujet qui commence par une majuscule (« ESLint… »).
-- **Worktree / branche** : `ubumaths-wt-lint-ci` / `ci/lint-fichiers-modifies`.
+- **Pièges en cours** : `#lib` exige l'extension écrite (garde `imports-lib-avec-extension`, qui exclut le test de `migrer:diese`) ; limite connue du lint de PR : props importées d'un autre `.svelte` ou type indirect → seul le nocturne les voit ; commitlint refuse un sujet qui commence par une majuscule (« ESLint… ») ; `appNavigationMock` ; suite client en local avec `CI=true`.
+- **Worktree / branche** : aucun.
 
 ## Origine
 
@@ -108,6 +108,7 @@ Constats dans le code de kit 3.2.0 (pas dans le guide) :
 
 ## Historique
 
+- 2026-11-18 : #2830 mergée (CI verte, 14 contrôles ; étape ESLint 1 s) : lint de PR sur les fichiers changés + importeurs `.svelte` ; revue `code-reviewer` (no-unused-props type-aware → importeurs ; vite.config, .d.ts, .nvmrc → tout l'arbre ; quotepath ; cache nocturne save always).
 - 2026-11-18 : #2828 mergée (CI verte, 16 contrôles) : `pnpm migrer:diese` ; revue `code-reviewer` (script limité aux imports, hors commentaires, hors lui-même) ; garde imports-lib : exclusion du test.
 - 2026-11-18 : #2825 mergée (CI verte, 16 contrôles) : SvelteKit 3.2.0 + adapter-vercel 7.0.3, `src/env.ts`, cookie 2 ; revues `code-reviewer` + `security-auditor` traitées.
 - 2026-11-18 : #2814 mergée (CI verte, 16 contrôles) : SvelteKit 2.70.3 → 2.70.4.
