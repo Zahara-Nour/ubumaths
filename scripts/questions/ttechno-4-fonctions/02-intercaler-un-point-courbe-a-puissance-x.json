@@ -1,4 +1,5 @@
 {
+	"id": "7a37a3e1-77d5-48e8-b94c-616727b1ae5a",
 	"title": "Intercaler un point sur la courbe de x ↦ a^x",
 	"description": "Point intercalé entre deux points de la courbe de aˣ : moyenne arithmétique des abscisses, moyenne géométrique des ordonnées ; position du point des moyennes arithmétiques ; compléter une fonction Python et une formule de tableur ; deux intercalations",
 	"grades": ["T_TECHNO"],

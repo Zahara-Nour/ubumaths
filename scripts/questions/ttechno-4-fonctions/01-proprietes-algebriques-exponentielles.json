@@ -1,4 +1,5 @@
 {
+	"id": "5e810e16-609e-487c-ad08-c91b52d7947a",
 	"title": "Propriétés algébriques des fonctions exponentielles",
 	"description": "À savoir : aˣ × aʸ = aˣ⁺ʸ, aˣ ÷ aʸ = aˣ⁻ʸ, (aˣ)ʸ = aˣʸ, a⁰ = 1, a⁻ˣ = 1/aˣ, parmi des erreurs typiques ; aˣ + aʸ n'est pas aˣ⁺ʸ",
 	"grades": ["T_TECHNO"],
