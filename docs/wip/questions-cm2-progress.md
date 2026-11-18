@@ -6,13 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après #2807 et l'import du lot 10._
+_Mis à jour le 2026-11-18, après #2816._
 
-- **État** : lots 0 à 9 publiés. Lot 10 heures et durées (082, 083, 084, 153, 085) : phase 0 validée (§ 16.1), 5 modèles écrits et essayés en local (§ 16.2), fichiers mergés (#2807) ; 5 brouillons en prod (relevé MCP : `draft`, sans nœud), ids commités sur `feat/questions-cm2-lot10-rangement` (6edded28a, poussé).
-- **Prochaine action** : migration nœud + tag sur `feat/questions-cm2-lot10-rangement` (« lecture de l'heure » : 01 `16d78592`, 02 `35ba6a94` → 082, 083 ; « calcul de durées » : 03 `99f80f5e`, 04 `57846784`, 05 `2fda6db8` → 084, 153, 085 ; point exact par modèle : § 16.1) ; test rouge puis vert, `security-auditor`, PR, merge, `db:migrate` ; puis page à cocher.
+- **État** : lots 0 à 9 publiés. Lot 10 heures et durées (082, 083, 084, 153, 085) : 5 brouillons en prod, rangés et tagués (#2816, migration `20261118074731` jouée, relevé MCP conforme, § 16.3) ; relecture pas commencée.
+- **Prochaine action** : page à cocher du lot 10 (5 fiches, comme au lot 9), puis verdicts, `publier-lot` en simulation, `--publier` par David.
 - **En attente de David** : rien. ⛔ Jamais `--mettre-a-jour` de `cm2-7b` avec des fichiers d'avant #2770 (ids CM1).
 - **Pièges en cours** : `pnpm migration:horodatage` = heure réelle UTC ; `db:migrate` refuse une migration plus ancienne que la dernière jouée → `--dry-run --include-all`, liste relue, puis `--include-all`. Worktree neuf : copier `supabase/.temp/` du dépôt principal, puis `pnpm exec svelte-kit sync`. `Doc-inchangée:` dans un COMMIT. `git commit -m … -- <fichiers>`. Stash du dépôt principal « cm2-9 ids » : copie identique de ce qui est mergé, à supprimer (David).
-- **Worktree / branche** : `../ubumaths-wt-questions-cm2` · `feat/questions-cm2-lot10-rangement`.
+- **Worktree / branche** : aucun (retiré après #2816).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -1043,3 +1043,7 @@ ceux pris : lire 9, placer 10 ; durée 9, comparer 10, problèmes 11 ; (e) un se
   restauré depuis sa copie (`cmp`).
 - `security-auditor` : aucun finding (diff au gabarit du lot 9 : ids, codes, chemins, table temporaire et commentaires
   seuls ; 5 ids concordants partout ; apostrophe doublée ; aucun changement d'accès).
+- #2816 : CI verte au premier passage ; `check:migrations --pr 2816` sortie 0 ; mergée. `migration list --linked` : la nôtre
+  seule en attente, plus récente que la dernière jouée (`20261118071439`) ; `db:migrate` depuis le worktree (dépôt
+  principal bloqué par des fichiers non commités d'une autre session). MCP : 5 brouillons rangés (082, 083 sur « lecture
+  de l'heure » ; 084, 153, 085 sur « calcul de durées »), un tag chacun, `updated_at` = création.
