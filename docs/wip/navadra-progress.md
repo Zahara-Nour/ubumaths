@@ -2,10 +2,10 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, étape 2 ouverte._
+_Mis à jour le 2026-11-18, PR #2817 ouverte._
 
-- **État** : étape 1 en prod (#2808, #2810). Étape 2 (apparition des Bêtes + export RGPD) codée, revues faites (code + sécurité, corrigées), PR ouverte.
-- **Prochaine action** : merger la PR de l'étape 2 à CI verte ; puis étape 3 (combat de la recrue), phase 0 à faire valider.
+- **État** : étape 1 en prod (#2808, #2810). Étape 2 (apparition des Bêtes + export RGPD) : PR #2817, revues code et sécurité corrigées, CI en cours.
+- **Prochaine action** : merger #2817 à CI verte ; puis étape 3 (combat de la recrue), phase 0 à faire valider (PV et questions du combat, revérifier la question tirée).
 - **En attente de David** : rien.
 - **Façon de poser** : en mots simples, avec un exemple, sans noms de tables ni de colonnes.
 - **Pièges en cours** :
