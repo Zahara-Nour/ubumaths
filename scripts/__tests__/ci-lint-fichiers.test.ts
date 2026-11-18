@@ -68,6 +68,11 @@ function initialiser(): void {
 	);
 	ecrire('src/lib/Vieux.svelte', '<script lang="ts">import { v } from \'../vieux.ts\';</script>\n');
 	ecrire('src/lib/Seul.svelte', '<p>rien</p>\n');
+	ecrire('src/lib/etat.svelte.ts');
+	ecrire(
+		'src/lib/Etat.svelte',
+		'<script lang="ts">import { e } from \'#lib/etat.svelte.ts\';</script>\n'
+	);
 	git('commit', '-q', '-m', 'init');
 }
 
@@ -107,12 +112,17 @@ describe('ci-lint-fichiers', () => {
 	});
 
 	it('module modifié ou supprimé : les .svelte qui l’importent, pas les autres', () => {
-		pr(['src/lib/types/carte.ts', 'src/lib/ui/bouton/index.ts'], ['src/vieux.ts']);
+		pr(
+			['src/lib/types/carte.ts', 'src/lib/ui/bouton/index.ts', 'src/lib/etat.svelte.ts'],
+			['src/vieux.ts']
+		);
 		expect(liste().sort()).toEqual([
 			'src/lib/Bouton.svelte',
 			'src/lib/Carte.svelte',
+			'src/lib/Etat.svelte',
 			'src/lib/Vieux.svelte',
 			'src/lib/Voisin.svelte',
+			'src/lib/etat.svelte.ts',
 			'src/lib/types/carte.ts',
 			'src/lib/ui/bouton/index.ts'
 		]);

@@ -9,7 +9,8 @@
 # ne lisent qu'un fichier (cf. eslint.fast.config.js), sauf `svelte/no-unused-props`
 # (erreur dans `svelte.configs.recommended`) qui lit les types : changer le type des
 # props défini dans un `.ts` change le verdict du composant qui l'importe. Un import
-# indirect (type d'un type) peut échapper : le filet est `lint-nocturne.yml`, qui
+# indirect (type d'un type), ou des props importées d'un autre `.svelte` (en suivre les
+# parents relirait trop), peuvent échapper : le filet est `lint-nocturne.yml`, qui
 # relit tout l'arbre chaque nuit sur main.
 #
 # Tout l'arbre (`.`) quand un fichier change le verdict de TOUS les autres : config
@@ -61,7 +62,7 @@ a_relire="$(echo "$changes" | grep -E "$CODE" || true)"
 # couvrent `#lib/utils/logger.ts` comme `./logger` ; un `index` se cherche par son
 # dossier (`/button/index`, `/button'`). Un sur-ensemble suffit.
 motifs="$(
-	echo "$changes"$'\n'"$supprimes" | grep -E '\.(ts|mts|cts|js|mjs|cjs)$' | grep -v '\.svelte\.' |
+	echo "$changes"$'\n'"$supprimes" | grep -E '\.(ts|mts|cts|js|mjs|cjs)$' |
 		while IFS= read -r f; do
 			nom="$(basename "$f")"
 			nom="${nom%.*}"
