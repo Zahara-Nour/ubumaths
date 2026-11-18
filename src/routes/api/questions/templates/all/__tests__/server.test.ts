@@ -7,13 +7,28 @@
  * par la session de l'appelant ; un échec ne doit pas être mis en cache.
  *
  * Elle porte aussi l'arbre des notions (nœuds non archivés), qui range le
- * catalogue Automaths : même cache, une seule requête.
+ * catalogue Automaths : même cache, une seule requête. Et, pour la recherche du
+ * catalogue, les intitulés des points du programme de chaque modèle.
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { isHttpError } from '@sveltejs/kit';
 
 const rows = [{ id: 'm1' }, { id: 'm2' }];
 const nodes = [{ id: 'b1', kind: 'branch', name: 'Nombres', parent_id: null, position: 0 }];
+const liens = [
+	{ template_id: 'm1', point_id: 'p1' },
+	{ template_id: 'm1', point_id: 'p2' },
+	{ template_id: 'm2', point_id: 'p-archive' }
+];
+const points = [
+	{ id: 'p1', name: 'Utiliser la double distributivité' },
+	{ id: 'p2', name: 'Réduire une expression' }
+];
+const lignesParTable: Record<string, unknown[]> = {
+	classification_nodes: nodes,
+	question_template_points: liens,
+	curriculum_points: points
+};
 let tableEnEchec: string | null = null;
 const filtres: Array<[string, string, unknown]> = [];
 
@@ -36,9 +51,7 @@ function requete(table: string, lignes: unknown[]) {
 	};
 	return query;
 }
-const anonFrom = vi.fn((table: string) =>
-	requete(table, table === 'classification_nodes' ? nodes : rows)
-);
+const anonFrom = vi.fn((table: string) => requete(table, lignesParTable[table] ?? rows));
 
 vi.mock('#lib/server/anonymous-supabase.ts', () => ({
 	createAnonymousSupabase: () => ({ from: anonFrom })
@@ -70,7 +83,13 @@ describe('GET /api/questions/templates/all', () => {
 
 		expect(anonFrom).toHaveBeenCalledWith('question_templates');
 		expect(sessionFrom).not.toHaveBeenCalled();
-		expect(await reponse.json()).toEqual({ templates: rows, nodes });
+		expect(await reponse.json()).toEqual({
+			templates: rows,
+			nodes,
+			pointNames: {
+				m1: ['Utiliser la double distributivité', 'Réduire une expression']
+			}
+		});
 	});
 
 	it('porte l’arbre des notions : nœuds non archivés, colonnes du rangement seulement', async () => {
@@ -86,6 +105,34 @@ describe('GET /api/questions/templates/all', () => {
 		]);
 		expect(filtres).toContainEqual(['classification_nodes', 'is:archived_at', null]);
 	});
+
+	it('porte les intitulés des points de chaque modèle (recherche) : points archivés exclus', async () => {
+		const { event } = evenement();
+
+		const reponse = await GET(event as never);
+
+		expect(anonFrom).toHaveBeenCalledWith('question_template_points');
+		expect(filtres).toContainEqual(['curriculum_points', 'is:archived_at', null]);
+		const { pointNames } = (await reponse.json()) as { pointNames: Record<string, string[]> };
+		// m2 n'a qu'un point archivé : aucun intitulé
+		expect(pointNames).toEqual({
+			m1: ['Utiliser la double distributivité', 'Réduire une expression']
+		});
+	});
+
+	it.each(['question_template_points', 'curriculum_points'])(
+		'lecture de %s en échec : le catalogue reste servi, sans intitulés de points',
+		async (table) => {
+			tableEnEchec = table;
+			vi.spyOn(console, 'error').mockImplementation(() => {});
+			vi.spyOn(console, 'warn').mockImplementation(() => {});
+			const { event } = evenement();
+
+			const reponse = await GET(event as never);
+
+			expect(await reponse.json()).toEqual({ templates: rows, nodes, pointNames: {} });
+		}
+	);
 
 	it('ne lit pas les cas de test des modèles (`test_specs`) : inutiles à Automaths, 31 % du poids', async () => {
 		const { event } = evenement();

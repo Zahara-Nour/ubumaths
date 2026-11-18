@@ -6,6 +6,9 @@
  * navigateur (`questionTemplatesCache`) : catalogue Automaths, panier, test.
  * Elle porte aussi l'arbre des notions (nœuds non archivés, colonnes du
  * rangement seulement), qui range le catalogue : même cache, une seule requête.
+ * Et, pour la recherche du catalogue, les intitulés des points du programme de
+ * chaque modèle (`pointNames`, points archivés exclus) ; leur lecture en échec
+ * ne prive pas du catalogue : il est servi sans eux.
  *
  * Gardée 5 min par Vercel (`s-maxage=300`), puis servie périmée pendant qu'il
  * la relit en arrière-plan : la base n'est plus relue à chaque visite. Un
@@ -69,6 +72,9 @@ const TEMPLATE_COLUMNS = TEMPLATE_COLUMN_LIST.join(', ');
 /** Colonnes de l'arbre dont le catalogue a besoin (`CatalogueNode`) */
 const NODE_COLUMNS = 'id, kind, name, parent_id, position';
 
+/** Intitulés des points du programme, par modèle (recherche du catalogue) */
+type PointNames = Record<string, string[]>;
+
 const logger = createServerLogger('api/questions/templates/all/+server');
 
 /**
@@ -114,6 +120,52 @@ export const GET: RequestHandler = async ({ setHeaders }) => {
 		throw error(500, 'Impossible de charger les modèles');
 	}
 
+	const pointNames = await readPointNames(supabase);
+
 	setHeaders({ 'cache-control': CACHE_CONTROL });
-	return json({ templates, nodes });
+	return json({ templates, nodes, pointNames });
 };
+
+/**
+ * Intitulés des points non archivés de chaque modèle publié (la RLS d'`anon`
+ * ne rend que les liens des modèles publiés). Lecture en échec : aucun
+ * intitulé, la recherche porte alors sur les titres et les notions seulement.
+ */
+async function readPointNames(
+	supabase: ReturnType<typeof createAnonymousSupabase>
+): Promise<PointNames> {
+	try {
+		const [links, points] = await Promise.all([
+			readAllRows(
+				(from, to) =>
+					supabase
+						.from('question_template_points')
+						.select('template_id, point_id')
+						.order('template_id')
+						.range(from, to),
+				'des points des modèles'
+			),
+			readAllRows(
+				(from, to) =>
+					supabase
+						.from('curriculum_points')
+						.select('id, name')
+						.is('archived_at', null)
+						.order('id')
+						.range(from, to),
+				'des points du programme'
+			)
+		]);
+		const nameById = new Map(points.map((p) => [p.id, p.name]));
+		const pointNames: PointNames = {};
+		for (const link of links) {
+			const name = nameById.get(link.point_id);
+			if (!name) continue;
+			(pointNames[link.template_id] ??= []).push(name);
+		}
+		return pointNames;
+	} catch (readError) {
+		logger.warn('[GET /api/questions/templates/all] Points des modèles illisibles :', readError);
+		return {};
+	}
+}
