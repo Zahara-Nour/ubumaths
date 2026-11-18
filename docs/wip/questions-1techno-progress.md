@@ -622,3 +622,43 @@ PR #2796 mergée (go de David sur la partie destructive). `db:migrate` refusé (
 8 rangés (parabole ×6, signe, formes) avec leurs 15 tags, niveaux et `updated_at` inchangés ; 1acb6d47 `{1_SPE}`, seul
 tag 1SPE-402 ; triggers de `question_templates` actifs. Publication : `publier-lot.ts` en simulation (8 brouillons)
 puis lancé par David avec `--publier` : 8/8 publiés, relu en base. **Lot 2 clos.**
+
+## 25. Lot 3 « dérivation » — phase 0 (proposée, 2026-11-18)
+
+Relevé prod (MCP) : les 9 points ont 0 modèle. questions-1gen : rien en cours, **aucun jumeau** (le module 1GEN n'a
+ni dérivée ni taux en un point ; ses « taux moyen » 037, 040, 043 portent sur aˣ, pas sur 056). Modèles 1re spé
+libres sur ces nœuds, tous hors bornes : a86442c1 (1/x, xⁿ jusqu'à 5), 74d77343 (1/x, √x, xⁿ jusqu'à 6), 2b382069
+(discriminant), 9e377c97 (démonstration). 080 ↔ 131 et 079 ↔ 071 sont des points voisins déjà couverts d'un côté
+(1666b8e9, f52395d1…) : un point par programme et par modèle (§ 9), donc un modèle neuf de l'autre côté, distinct.
+Règles appliquées : Q11 (jumeaux techno, le modèle de 1re spé n'est pas touché), Q12 (un modèle court par
+connaissance). Tous `grades = ['1_TECHNO']`, entiers sauf mention, réponse en case ou ` ```choix ` (`melanger: non`).
+
+- **M1 taux en un point** → 128 (taux de variation), niv. 2 : f(x) = x², a ∈ 1..5 ; f(a+h) − f(a) développé ; taux
+  simplifié (6 + h) ; valeur pour h = 0,1 ; f(x) = x² + bx. Jumeau de b05ec37a, l1t-7.
+- **M2 tangente, position limite** → 069 (tangente), niv. 1 : choix « quand M se rapproche de A, la sécante (AM)
+  se rapproche de… » ; pentes des sécantes pour h = 1 ; 0,1 ; 0,01 → pente de la tangente ; piège « la tangente ne
+  touche la courbe qu'en A ».
+- **M3 équation réduite (cours)** → 071 (tangente), niv. 1 : choix de la formule y = f′(a)(x − a) + f(a) (leurres :
+  f et f′ échangés, f′(a)x + f(a)) ; « y = 4x − 3 est la tangente en a : f′(a) = ? ».
+- **M4 fonction dérivée (cours)** → 072 (fonctions dérivées), niv. 1 : f′ associe à x le nombre dérivé f′(x) ;
+  f′(x) = 2x + 1 donné, f′(3) = ? ; piège f(x) = x², f′(3) = 6 et non 9 ; dérivées de x ↦ k et x ↦ x.
+- **M5 dérivée d'une somme** → 074 (opérations), niv. 2 : x³ + x², x² + x, x³ + x + c (coefficients 1) ; choix
+  « (u + v)′ = u′ + v′ » ; erreur visée : constante dérivée non nulle.
+- **M6 dérivée de kf** → 130 (opérations), niv. 2 : kx, kx², kx³ avec k ∈ ±2..9 ; k fraction simple (x³/3 → x²,
+  ½x² → x).
+- **M7 dérivée d'un polynôme** → 131 (opérations), niv. 3, distinct de 1666b8e9 (forme ordonnée en x) : variable t ;
+  termes dans le désordre (5 − 2x + 4x³) ; termes manquants (x³ − 12x) ; contexte coût C(q) = 0,5q² + 3q + 100 ;
+  degré de f′.
+- **M8 sens de variation** → 081 (variations et extremums), niv. 3 : f de degré 2 (f′ affine) ; f de degré 3 avec
+  f′(x) = 3(x − p)(x − q) donné ; f′ = 3x² − 3p² (racines ±p) ; ` ```variation ` à compléter. Réponse : intervalles
+  de croissance. Jumeau de 2b382069 sans discriminant (l1t-2).
+- **M9 monotonie et taux (cours)** → 056 (variations), niv. 1 : choix « f croissante sur I : le taux entre deux réels
+  de I est… » ; f monotone, f(2) = 7, f(5) = 1 → décroissante ; piège f(0) = 1, f(4) = 9 ⇒ croissante ? → on ne
+  peut pas savoir.
+
+**Question d'accès** : les 9 modèles naissent brouillons ; la migration les range et les tague (9 tags 1TECHNO) ;
+aucun modèle existant n'est touché, rien n'est retiré. Aucune règle d'accès ne change.
+
+Lot 5 : questions-1gen ouvre son lot 6 (stats à deux variables, 1GEN-001 à 007) et propose des modèles communs
+(082 / 085 ↔ 1GEN-002, 084 ↔ 1GEN-004, 087 ↔ 1GEN-007 et 003) ; réponse : rien en cours ici, d'accord sur le
+principe, David tranchera au lot 5.
