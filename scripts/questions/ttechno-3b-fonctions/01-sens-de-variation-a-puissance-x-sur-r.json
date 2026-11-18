@@ -1,4 +1,5 @@
 {
+	"id": "5d8a7865-37c3-4bcc-a0fb-80c49a5ec70d",
 	"title": "Sens de variation de x ↦ a^x sur ℝ",
 	"description": "Sens sur ℝ selon a ; comparer deux puissances d'exposants négatifs sans calcul ; signe de a^x ; a^x par rapport à 1 pour x < 0",
 	"grades": ["T_TECHNO"],

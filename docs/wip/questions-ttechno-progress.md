@@ -5,19 +5,18 @@ Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) · bornes 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après #2815 (lot 3b écrit)._
+_Mis à jour le 2026-11-18, lot 3b en prod (brouillons), migration rangement + tags écrite._
 
-- **État** : lots 0 à 3a en prod et publiés ; lot 3b « fonctions » (C5–C8) écrit, essayé en local (§ 26), #2815
-  mergée (CI verte).
-- **Prochaine action** : David lance, depuis le dépôt principal,
-  `pnpm tsx scripts/create-questions.ts --dir scripts/questions/ttechno-3b-fonctions --publier` ; puis ids
-  commités, migration rangement + tags (C5–C8 → c185c955, points 032, 033, 036, 080), page à cocher, publication.
-- **En attente de David** : `create-questions --publier` du lot 3b (prod).
+- **État** : lots 0 à 3a en prod et publiés ; lot 3b (C5–C8) créé en prod en brouillon (§ 27) ; migration
+  `20261118080905_questions_ttechno_lot3b_rangement_tags` sur `feat/questions-ttechno-lot3b-tags` (PR à ouvrir).
+- **Prochaine action** : PR, CI verte, `check:migrations --pr <n>`, merge ; `migration list --linked` puis
+  `db:migrate` depuis le dépôt principal ; prod vérifiée par MCP ; page à cocher ; publication.
+- **En attente de David** : la relecture de la page à cocher, puis `publier-lot.ts --publier` (prod).
 - **Pièges en cours** : un point TTECHNO par modèle (trigger) ; `grades` en `array_append` seulement ;
   `publier-lot.ts`, `garde-niveaux-tags.ts`, `create-questions --publier` visent la prod : David les lance (`!`),
-  **depuis le dépôt principal, après le merge** (lancé avant : ENOENT) ; `Doc-inchangée:` dans un COMMIT de la PR.
-- **Worktree / branche** : `../ubumaths-wt-questions-ttechno` (branche `feat/questions-ttechno-lot3b` mergée ;
-  la migration partira d'une nouvelle branche).
+  **depuis le dépôt principal, après le merge** ; `Doc-inchangée:` dans un COMMIT de la PR. Le dépôt principal a
+  les 4 JSON du lot 3b modifiés (ids) non commités : ils sont commités sur la branche, à remettre d'aplomb après le merge.
+- **Worktree / branche** : `../ubumaths-wt-questions-ttechno`, `feat/questions-ttechno-lot3b-tags`.
 
 ## 1. Périmètre
 
@@ -653,3 +652,17 @@ sur « propriétés algébriques » (034, 078, 079), C4 sur « fonctions x ↦ a
   (4ˣ, 1ˣ, 0,25ˣ) relié → juste, correction lue ; C8 max de −2 × 0,8ˣ sur [0 ; 5], `5` → juste.
 - **#2815 mergée (2026-11-18)**, CI verte. Premier `create-questions --publier` lancé avant le merge : ENOENT,
   rien écrit.
+
+## 27. Lot 3b : prod, rangement et tags (2026-11-18)
+
+David a lancé `create-questions --publier` : 4 brouillons (5d8a7865 C5, 94b1dbf6 C6, f6805041 C7, 069c1a53 C8),
+vérifiés par MCP (`draft`, `{T_TECHNO}`, sans nœud ni tag) ; ids commités sur la branche de la migration.
+
+- Points (MCP) : 032, 033, 036, 080 sur « Fonctions > Fonction exponentielle > fonctions x ↦ aˣ » (c185c955).
+- Question d'accès tranchée au § 22 : **personne** (brouillons), Tle techno à la publication.
+- Migration `20261118080905_questions_ttechno_lot3b_rangement_tags` sur le gabarit du lot 3a (ids, codes, nœud,
+  table temporaire).
+- Test `tests/integration/questions-ttechno-lot3b-rangement-tags.test.ts` : 9 verts ; corps retiré (en-tête et
+  rollback gardés) → 5 rouges ; fichier restauré d'une copie, identique. `types:cliquet` tenu.
+- `security-auditor` : aucun finding bloquant (diff avec le lot 3a = ids, codes, sous-notion, table temporaire ;
+  rollback miroir ; aucune policy, aucune table d'élève).

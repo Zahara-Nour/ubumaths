@@ -1,4 +1,5 @@
 {
+	"id": "069c1a53-ba05-4721-a368-7378e4cbf945",
 	"title": "Utiliser le sens de variation de x ↦ k·a^x",
 	"description": "Comparer deux images sans calcul (k < 0 compris) ; abscisse du maximum sur [0 ; 5] ; retrouver k et a à partir de f(0) et f(1)",
 	"grades": ["T_TECHNO"],
