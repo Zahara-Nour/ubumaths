@@ -2,18 +2,58 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après #2817._
+_Mis à jour le 2026-11-18, phase 0 de l'étape 3 posée._
 
-- **État** : étapes 1 (#2808, #2810) et 2 (#2817 : apparition des Bêtes, export RGPD, doc `docs/systeme/descente.md`) mergées. Aucune page n'appelle encore l'apparition (étape 4). Pas de worktree ouvert.
-- **Prochaine action** : étape 3 (combat de la recrue). Nouveau worktree `../ubumaths-wt-navadra` depuis `origin/main` ; phase 0 à faire valider (PV provisoires 100/300 à régler, questions du combat, revérifier la question tirée car le filtre « jouable » ne lit que la 1re variation).
-- **En attente de David** : rien.
+- **État** : étapes 1 (#2808, #2810) et 2 (#2817) mergées. Étape 3 (combat de la recrue) : phase 0 rédigée ci-dessous, **rien de codé**.
+- **Prochaine action** : coder l'étape 3 une fois la phase 0 validée (tests d'abord).
+- **En attente de David** : validation de la phase 0 de l'étape 3 (questions A à G).
 - **Façon de poser** : en mots simples, avec un exemple, sans noms de tables ni de colonnes.
 - **Pièges en cours** :
   - **PostgREST tronque un message d'erreur SQL accentué** et rend un 500 sans code : `raise exception` sans accent dans les fonctions appelées par l'API.
   - Base locale : `supabase migration up --local` bute sur une migration de rangement ; appliquer un fichier par `psql -1` sous `scripts/with-db-lock.sh`, puis `notify pgrst, 'reload schema'`.
   - Le prof et l'admin peuvent écrire une trace `descente` (comme `evaluation`) : leurs policies ne filtrent pas le lieu.
   - L'analyse du jeu d'origine est dans `extern/navadra-jeu/CLAUDE.md`, **non versionné**.
-- **Worktree / branche** : aucun (retirés après #2817).
+- **Worktree / branche** : `../ubumaths-wt-navadra` · `feat/navadra-combat`.
+
+## Phase 0 de l'étape 3 : combat de la recrue (posée le 2026-11-18, à valider)
+
+**Ce que l'étape livre** : la page de combat de la recrue (primaire), de la première question à la victoire ou à la défaite. Elle n'est reliée à rien : la carte et l'entrée de menu arrivent à l'étape 4, et aucune Bête n'existe en prod tant que la carte n'appelle pas l'apparition. On la teste en local, sur la base remplie.
+
+**Nominal**
+
+1. **L'élève ouvre le combat d'une de ses Bêtes.** Il voit la Bête, sa Province sensible, ses PV, ses propres cœurs et ses coups : un par Province, ceux des Provinces sans question à son niveau fermés avec un mot d'explication.
+2. **Il choisit un coup** ; une question de la Province du coup s'affiche (QCM ou une seule case, pas de chrono).
+   - Coup de la Province sensible : la question vient **du point de la Bête** (la notion à travailler).
+   - Autre coup : un point de **son niveau** dans cette Province, en préférant les non acquis.
+3. **Juste** : le coup part ; ×2 sur la Province sensible. **Faux** : « Tu as dévié », la correction s'affiche, le coup est raté.
+4. **Après 3 coups, la Bête riposte** : une question d'esquive, tirée du point de la Bête. Réussie : esquivé. Ratée : l'élève perd un cœur.
+5. **Chaque réponse s'enregistre aussitôt** comme une réponse faite ailleurs dans Chiphre (lieu « Descente ») : elle fait avancer la maîtrise du point. Le serveur tient les PV de la Bête.
+6. **Victoire** (PV à 0) : la Bête entre dans le carnet, gidouilles versées (1, ou 3 pour la grosse Bête ; 4 au plus sur 24 h, un mot le dit au-delà).
+7. **Défaite** (plus de cœurs) : aucun coût ; la Bête ordinaire reste sur la carte en pleine forme.
+
+**Limites**
+
+- Bête repartie, déjà vaincue, ou qui n'est pas à l'élève : pas de combat, retour avec un mot.
+- Question tirée qui n'est finalement pas courte (une autre variation que la première a plusieurs cases) : on en tire une autre, sans que l'élève le voie.
+- Point de la Bête sans question jouable aujourd'hui (modèle dépublié depuis) : on prend un autre point de la même Province et du même niveau.
+- Un seul modèle jouable pour un point : la même question peut revenir, avec d'autres nombres.
+- Grosse Bête : voir question C.
+
+**Erreurs**
+
+- Connexion perdue pendant une réponse : la réponse est renvoyée ; si elle n'arrive pas, le combat continue et un mot discret le dit.
+- Page fermée en plein combat : combat abandonné ; une Bête ordinaire repart en pleine forme au combat suivant, la grosse garde ses blessures.
+- Triche (réponse « juste » forgée) : correction côté client (ADR 0001), comme partout ; le serveur vérifie Bête, élève et question ; gidouilles plafonnées.
+
+**Questions**
+
+- **A. Cœurs plutôt que PV pour l'élève.** Recommandation : **3 cœurs** ; une esquive ratée en coûte un. Exemple : un élève de CE1 rate deux esquives, il lui reste un cœur ; une troisième et la Bête gagne ce combat. Plus lisible au primaire que des PV chiffrés.
+- **B. Chiffres** (cible : 3 ou 4 tours, une dizaine de questions). Recommandation : un coup réussi fait **10**, **20 sur la Province sensible**, **8 ailleurs** ; Bête ordinaire **120 PV**, grosse Bête **360 PV** (au lieu de 100 / 300). Exemple : en tapant juste sur la bonne Province avec 7 réponses sur 10, la Bête tombe en 3 tours ; avec une autre Province, en 7 ou 8 tours, battable mais long.
+- **C. Grosse Bête en plusieurs combats.** Recommandation : **un combat contre elle dure 4 tours au plus**, puis elle se replie en gardant ses blessures. Exemple : 360 PV, un bon élève en ôte environ 150 par combat, il la bat au 3e. Les Bêtes ordinaires n'ont pas de limite de tours.
+- **D. Même coup plusieurs fois par tour.** Navadra l'interdisait (chaque sort une fois par tour). Recommandation : **l'autoriser**, pour que l'élève puisse taper trois fois sur la notion à travailler.
+- **E. Question d'esquive tirée du point de la Bête** (recommandation) : même si l'élève choisit d'autres Provinces, il travaille la notion visée au moins une fois par tour.
+- **F. Noms des 6 coups de départ.** Recommandation : des **noms provisoires dans le code** (« Coup de Nombrilie »…), écrits et validés avec les fiches du bestiaire, avant l'étape 4.
+- **G. Coups gagnés en maîtrisant une notion (5a).** Le découpage ne les place dans aucune étape. Pour la recrue, un coup gagné ne ferait rien de plus qu'un coup de départ. Recommandation : **l'étape 3 ne livre que les 6 coups de départ** ; gagner des coups et sorts (et l'annonce) vient avec l'étape 5 (apprenti), où les sorts ont des effets différents.
 
 ## Phase 0 de l'étape 2 : apparition des Bêtes (validée par David le 2026-11-18)
 
@@ -286,6 +326,7 @@ Au code : ajouter « La Descente de la Vistule » à `CONTEXT.md` (et une ADR si
 
 ## Historique
 
+- **2026-11-18** : phase 0 de l'étape 3 posée (questions A à G) ; worktree `../ubumaths-wt-navadra`, branche `feat/navadra-combat`.
 - **2026-11-18** : #2817 mergée (étape 2).
 - **2026-11-18** : étape 2 codée (apparition des Bêtes, export RGPD), phase 0 validée par David (« je te suis ») ; revues code et sécurité corrigées.
 - **2026-11-18** : phase 0 de la v1 validée par David (toutes les recommandations).
