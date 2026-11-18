@@ -2,6 +2,65 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.95.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.94.0...v0.95.0) (2026-11-18)
+
+### ✨ Features
+
+- **carnet:** regularite depuis la rentree dans carnet_payload ([f7aafdc](https://github.com/Zahara-Nour/ubumaths/commit/f7aafdc288d7f4a2d6d5d1b64f27bd4bc69bd0d4))
+- **db:** questions-ttechno lot 2b, rangement et tags (030, 075, 076) ([09afefc](https://github.com/Zahara-Nour/ubumaths/commit/09afefcd575896d3c4dd098e4fad3897b5d94241))
+- **parents:** page des parents revue point par point, FAQ repliee ([e54039b](https://github.com/Zahara-Nour/ubumaths/commit/e54039b19b1d8c30086ca9c51dc8fdf4b1ce99b1))
+- **questions:** 1gen lot 4, ids des brouillons et migration noeud + tags ([9505a4c](https://github.com/Zahara-Nour/ubumaths/commit/9505a4c85f374ea37c776b3ad85985867ee4283e))
+- **questions:** 1gen lot 4, taux moyen, phenomenes exponentiels, seuils ([fed270a](https://github.com/Zahara-Nour/ubumaths/commit/fed270a28c6271409b5d99c467ace164f035b137))
+- **questions:** 1re techno lot 2, second degre sans formule (8 modeles) ([12db815](https://github.com/Zahara-Nour/ubumaths/commit/12db815cc3b5b63b946db69b8a219487a67a5cfa))
+- **questions:** 1techno lot 2, migration de rangement et tags, retrait de 1acb6d47 ([bad2f3a](https://github.com/Zahara-Nour/ubumaths/commit/bad2f3af886ac5918a1420016252de14a6ca4310))
+- **questions:** 4-038, construire un rectangle sans equerre ([b538c3c](https://github.com/Zahara-Nour/ubumaths/commit/b538c3cec669a6231594c63ed48641d440bce4f0))
+- **questions:** 4-038, noeud et tag du modele rectangle sans equerre ([45d2274](https://github.com/Zahara-Nour/ubumaths/commit/45d227436cbd4ac862c445cfec619be61bc110bc))
+- **questions:** cm2 lot 9, partages (131, 132, 136, 137, 143) ([8d2f46c](https://github.com/Zahara-Nour/ubumaths/commit/8d2f46c750772dbd1a351de31ae059ebdc3abae1))
+- **questions:** cm2 lot 9, rangement et tags des 5 partages ([cc2120f](https://github.com/Zahara-Nour/ubumaths/commit/cc2120ff187a3b934ff1575bed883d98de29998b))
+
+### 🐛 Bug Fixes
+
+- **questions:** « 8 h 05 » au point entier dans 2 horloges CE2 (zeros: off) ([5b35739](https://github.com/Zahara-Nour/ubumaths/commit/5b35739f28ae662e58314ff7c184c16db5a34022))
+
+### 📚 Documentation
+
+- **questions-4:** cloture du chantier, couverture de la 4e versee dans cycle4.md ([34a3497](https://github.com/Zahara-Nour/ubumaths/commit/34a34976527acb32f9026d137b155eecc43c51de))
+- **wip:** capture-courriels clos, journal archive ([5702da5](https://github.com/Zahara-Nour/ubumaths/commit/5702da57195bb18f4eb0003350994ab325fd9da8))
+- **wip:** carnet-heatmap, [#2786](https://github.com/Zahara-Nour/ubumaths/issues/2786) en prod (v0.94.0), PR 2 debloquee ([f8b5181](https://github.com/Zahara-Nour/ubumaths/commit/f8b5181374eb1e2e25e2ca9a50e0f9f064e5e474))
+- **wip:** carnet-heatmap, [#2797](https://github.com/Zahara-Nour/ubumaths/issues/2797) mergee, db:migrate a David ([9dba538](https://github.com/Zahara-Nour/ubumaths/commit/9dba5384102af65d17f40fc22ed9f150d6a7323b))
+- **wip:** carnet-heatmap, migration en prod, verification manuelle en attente ([11845ad](https://github.com/Zahara-Nour/ubumaths/commit/11845ad1d06224fe42e79bea9b1081edf8e59433))
+- **wip:** navadra, ce qu'on garde de Navadra valide ([db52f22](https://github.com/Zahara-Nour/ubumaths/commit/db52f22356fb3bb006b59bd30811ff02b6ec6038))
+- **wip:** presentation-parents, [#2798](https://github.com/Zahara-Nour/ubumaths/issues/2798) mergee, verification notee ([089811f](https://github.com/Zahara-Nour/ubumaths/commit/089811fbb16c10456c8baa27ca6269c008fa2a81))
+- **wip:** presentation-parents, FAQ a qui parler tranchee ([440e798](https://github.com/Zahara-Nour/ubumaths/commit/440e798f8f75eecbcaf93e60bcebabd5b68d0c71))
+- **wip:** presentation-parents, point 9 tranche ([881bf73](https://github.com/Zahara-Nour/ubumaths/commit/881bf737025a49541f9ef8a4288e453b588b5974))
+- **wip:** presentation-parents, reprendre ici a jour (point 8 tranche) ([a6186b3](https://github.com/Zahara-Nour/ubumaths/commit/a6186b341b2af6814539275191d676a9581e8563))
+- **wip:** questions-1gen, apercu du lot 4 termine ([6a8de9f](https://github.com/Zahara-Nour/ubumaths/commit/6a8de9f71e33620ef93d2b34a5a1cbd29e6d950b))
+- **wip:** questions-1gen, ecarts du lot 4 acceptes ([7f34eac](https://github.com/Zahara-Nour/ubumaths/commit/7f34eac06b87ea3d56e956f501e71296ff97d27d))
+- **wip:** questions-1gen, lot 4 ecrit, apercu en partie joue ([1847ca3](https://github.com/Zahara-Nour/ubumaths/commit/1847ca37e4604547ff31da5d642e1725dba8e236))
+- **wip:** questions-1gen, lot 4 publie, lot 6 a ouvrir ([9c58b57](https://github.com/Zahara-Nour/ubumaths/commit/9c58b573199362f2e8fa28312ba0655920c65bf3))
+- **wip:** questions-1gen, lot 4 range en prod, page a cocher ([0108156](https://github.com/Zahara-Nour/ubumaths/commit/01081561396126ea6281ba8a917f6021537ed2fa))
+- **wip:** questions-1gen, lot 6 phase 0 validee ([3f5195e](https://github.com/Zahara-Nour/ubumaths/commit/3f5195e424a2f71ec07bbce03c3f0fe3c278afd6))
+- **wip:** questions-1gen, phase 0 du lot 6 (statistiques a deux variables) ([8565686](https://github.com/Zahara-Nour/ubumaths/commit/856568684a32f424c1f0e1a6077b42a1fc110219))
+- **wip:** questions-1techno, lot 2 clos ([#2796](https://github.com/Zahara-Nour/ubumaths/issues/2796)) ([22a1011](https://github.com/Zahara-Nour/ubumaths/commit/22a1011744ce59f36426259e5c8f81d903797c7e))
+- **wip:** questions-1techno, lot 2 relu et migration prouvee ([79f3f77](https://github.com/Zahara-Nour/ubumaths/commit/79f3f779f4aa3c5cced80a0626f4beca11f0a287))
+- **wip:** questions-1techno, phase 0 du lot 3 derivation ([0c7af90](https://github.com/Zahara-Nour/ubumaths/commit/0c7af904fe9ecf26b295145842a8b0f37e073034))
+- **wip:** questions-cm1, correctif zeros des horloges CE2 écrit ([#2792](https://github.com/Zahara-Nour/ubumaths/issues/2792)) ([a1d8eba](https://github.com/Zahara-Nour/ubumaths/commit/a1d8ebab31585913f7a0b1b3ab6ea79f7adaec3e))
+- **wip:** questions-cm1, decisions du lot 8b ([c34550e](https://github.com/Zahara-Nour/ubumaths/commit/c34550ec0084b0cdffb80aa4a1ed01ff32fa1fcc))
+- **wip:** questions-cm1, lot 8a publié (131/171) ([3505713](https://github.com/Zahara-Nour/ubumaths/commit/3505713e5ea0283ce4ff907e3a9771d2ccbc0bfa))
+- **wip:** questions-cm1, phase 0 du lot 8b aires et angles ([344e3e5](https://github.com/Zahara-Nour/ubumaths/commit/344e3e5eaaebe45bdf56cf08c25346182cd16348))
+- **wip:** questions-cm2, audit de la migration du lot 9 ([0302f89](https://github.com/Zahara-Nour/ubumaths/commit/0302f89a4247c9e36d6b665de45e8c6d696612f6))
+- **wip:** questions-cm2, lot 9 range et tague, page a cocher publiee ([f6506d7](https://github.com/Zahara-Nour/ubumaths/commit/f6506d74d633400552f5595c4edf762aac0f50eb))
+- **wip:** questions-cm2, migration du lot 9 mergee, db:migrate en attente ([2dc2fed](https://github.com/Zahara-Nour/ubumaths/commit/2dc2fed3a4289c31e809d9e1cc5d1485004d47c8))
+- **wip:** questions-ttechno, lecture de E1-E4 contre les bornes ([1b67a33](https://github.com/Zahara-Nour/ubumaths/commit/1b67a332f16cbacde611f8b43d4a0869bbc88b34))
+- **wip:** questions-ttechno, lecture de T1-T2 contre les bornes ([6f9360b](https://github.com/Zahara-Nour/ubumaths/commit/6f9360b9ce6273cc31f4dda0532fce438080a103))
+- **wip:** questions-ttechno, lot 2b migre ([#2790](https://github.com/Zahara-Nour/ubumaths/issues/2790)), page a cocher ([43375a9](https://github.com/Zahara-Nour/ubumaths/commit/43375a9e5a929c25a0538ffea7ed40b9beeb50a6))
+- **wip:** questions-ttechno, lot 2b publie ([1547357](https://github.com/Zahara-Nour/ubumaths/commit/15473577a49a31ca368fc55aed6e956bcae7172c))
+- **wip:** rectangle-sans-equerre clos, 4-038 publie ([43bf4d8](https://github.com/Zahara-Nour/ubumaths/commit/43bf4d8222efbfc08fd4daf72927a26ef65d0e06))
+- **wip:** rectangle-sans-equerre, modele 4-038 ecrit et vu en local ([a2780c3](https://github.com/Zahara-Nour/ubumaths/commit/a2780c3d63064d875c5b610403cf3b29c0dc00d5))
+- **wip:** rectangle-sans-equerre, modele 4-038 merge ([#2791](https://github.com/Zahara-Nour/ubumaths/issues/2791)) ([c052cb5](https://github.com/Zahara-Nour/ubumaths/commit/c052cb5758b17cd20bed9f4e2a8814844d141acc))
+- **wip:** rectangle-sans-equerre, phase 0 du modele 4-038 ([905ff9b](https://github.com/Zahara-Nour/ubumaths/commit/905ff9bd2bf160ba987e7198bf2904443e67ee45))
+- **wip:** rectangle-sans-equerre, reprendre ici apres la phase 0 ([b66faf8](https://github.com/Zahara-Nour/ubumaths/commit/b66faf80cdce52ee49772bb5ba3032a147382317))
+
 ## [0.94.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.93.0...v0.94.0) (2026-11-17)
 
 ### ✨ Features
