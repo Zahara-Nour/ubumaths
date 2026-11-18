@@ -8,16 +8,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, lot 6 en cours (avant sa PR)._
+_Mis à jour le 2026-11-18, après #2856 (fichiers du lot 6)._
 
 - **État** : lots 1 à 5 clos. Lot 6 (§ 30-31) : phase 0 validée, P1-P5 écrits
-  (`scripts/questions/1techno-6`), simulation verte, rendus vérifiés (Chrome), PR des fichiers ouverte.
+  (`scripts/questions/1techno-6`), simulation verte, rendus vérifiés (Chrome), PR #2856 mergée.
 - **Prochaine action** : rendus de P1-P5 par David → fermer l'aperçu → PR des fichiers → David `create-questions
 --publier` → migration de rangement + retrait de 137 et `1_TECHNO` de 97b3a376 (destructif : mesurer l'usage, go).
-- **En attente de David** : rien avant le merge ; ensuite `create-questions --publier` (lot 6).
+- **En attente de David** : `create-questions --publier` (lot 6) ; go pour la partie destructive (97b3a376).
 - **Pièges en cours** : dépôt principal sale (fichiers d'autres sessions) → commit de journal 827809b06 resté local sur
   `main`, repris sur la branche ; questions-1gen à prévenir (4 communs). `Doc-inchangée:` dans un COMMIT.
-- **Worktree / branche** : `../ubumaths-wt-questions-1techno`, `feat/questions-1techno-lot6`.
+- **Worktree / branche** : `../ubumaths-wt-questions-1techno`, `feat/questions-1techno-lot6-migration` (créée, journal seul).
 
 ## 1. Relevé (prod, 2026-11-17)
 
@@ -949,3 +949,9 @@ dans MathLive ne passe pas par l'automate : validation des réponses laissée au
 tableau croisé s'écrit avec **une** barre oblique inverse (`coin: Sexe \ Régime`, cf. `cross-table.test.ts`) ;
 deux affichent « Sexe \\ Régime ». Le modèle de 2de 89e928a4 (en prod, recopié) a ce défaut : signalé à David.
 Aperçu fermé, serveur 5179 arrêté, Tailscale :443/:8443 retirés.
+
+### Lot 6 — fichiers mergés (2026-11-18)
+
+PR #2856 mergée (CI verte : 7 réussis, 7 ignorés). Usage de 97b3a376 mesuré (MCP) : 0 carte, 0 tentative, 0 évaluation,
+0 réponse de test, 0 activité de cahier de texte ; sur 1TECHNO-137 : 0 entrée de cahier de texte, 0 état de point,
+0 exercice, 0 automatisme. Le retrait ne coupe rien à personne.
