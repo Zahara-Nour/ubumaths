@@ -10,8 +10,7 @@ _Mis à jour le 2026-11-18, lot 8c en cours de rangement (§ 23 quater)._
 - **État** : lots 0 à 8b publiés, **137 points du CM1 sur 171** (CM2 : 92 sur 158). Lot 8c : 7 brouillons en prod
   (#2823 + `--publier` de David) ; migration de rangement `20261118115830_questions_cm1_lot8c_rangement_tags` écrite,
   test 20/20 vert (rouge sans elle), sur la branche `feat/questions-cm1-lot8c-rangement` (poussée, **PR pas ouverte**).
-- **Prochaine action** : `security-auditor` sur la migration (lancé avant le `/clear`, résultat non lu : le
-  relancer) ; puis PR, CI, `check:migrations --pr`, merge, `db:migrate` (David, depuis le worktree), vérif MCP,
+- **Prochaine action** : PR de la migration (`security-auditor` : aucun finding bloquant), CI, `check:migrations --pr`, merge, `db:migrate` (David, depuis le worktree), vérif MCP,
   page à cocher, publication. Ensuite 8d figures à compléter, 8e, 9 (§ 20).
 - **En attente de David** : rien avant le merge de la migration.
 - **Pièges en cours** : lancer `create-questions --publier` et `db:migrate` **depuis le worktree** (lien
@@ -1893,3 +1892,5 @@ nœuds qui existent déjà (pas de sous-notion neuve).
   axiale ; 10 tags posés (CM1-098 à 103, 106 ; CM2-091, 089, 090), aucun niveau ni statut changé, aucun nœud créé.
 - Test `questions-cm1-lot8c-rangement-tags.test.ts` : 20/20 vert ; corps neutralisé (`select 1;`) : 9 échecs,
   7 sautés. `types:cliquet` tenu.
+- `security-auditor` : aucun finding bloquant (état « avant » remesuré au MCP : 7 draft, nœud null, 0 tag ; seule
+  migration en attente). Non bloquant : verrou bref du `disable trigger` (comme au 8a).
