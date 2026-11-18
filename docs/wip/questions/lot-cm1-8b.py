@@ -92,6 +92,14 @@ def selon(k, textes, n=1):
             + '}}')
 
 
+def table(nom, valeurs):
+    """Variable `nom` = valeurs[j - 1], par indicatrices (`eval:` ne connaît pas `==`) : une
+    réponse attendue `{{n}}` plutôt qu'un `{{if:}}` imbriqué sur 10 niveaux, que le filtre de
+    sécurité des réponses abîme (test `student-answer-safety`)."""
+    return var(nom, 'eval:' + '+'.join(f'(1-min(abs(j-{m}),1))*{int(v)}'
+                                       for m, v in enumerate(valeurs, 1)))
+
+
 def choix(lignes):
     return '\n\n```choix\nmelanger: non\n' + ''.join('- ' + c + '\n' for c in lignes) + '```'
 
@@ -337,7 +345,7 @@ V1 = variation(
     + figure(FEN1, 'Une figure coloriée sur un quadrillage.',
              selon('j', [une_forme(s) for s in ENTIERS]))
     + '\n\nL\'aire de la figure est de $?$ carreaux.',
-    [var('j', f'1..{len(ENTIERS)}')], [selon('j', [compte(s) for s in ENTIERS])],
+    [var('j', f'1..{len(ENTIERS)}'), table('n', [aire(s) for s in ENTIERS])], ['{{n}}'],
     ['L\'unité est le carreau : on compte les carreaux recouverts par la figure.',
      'Ligne par ligne, du bas vers le haut : $' + selon('j', [lignes_de(s) for s in ENTIERS])
      + ' = ' + col(selon('j', [compte(s) for s in ENTIERS])) + '$ carreaux.'])
@@ -346,7 +354,7 @@ V2 = variation(
     + figure(FEN1, 'Une figure coloriée sur un quadrillage, avec des carreaux entiers et des'
              ' demi-carreaux.', selon('j', [une_forme(s, 'vert') for s in DEMIS]))
     + '\n\nL\'aire de la figure est de $?$ carreaux.',
-    [var('j', f'1..{len(DEMIS)}')], [selon('j', [compte(s) for s in DEMIS])],
+    [var('j', f'1..{len(DEMIS)}'), table('n', [aire(s) for s in DEMIS])], ['{{n}}'],
     corrige_demis(DEMIS, 'carreaux'))
 UNITE = ('u1 = point(10, 1, visible=faux)\nu2 = point(12, 1, visible=faux)\n'
          'u3 = point(12, 2, visible=faux)\nu4 = point(10, 2, visible=faux)\n'
@@ -358,8 +366,8 @@ V3 = variation(
     + figure(FEN_U, 'Une figure bleue sur un quadrillage, et à côté un rectangle orange de deux'
              ' carreaux, l\'unité u.', selon('j', [une_forme(s) + '\n' + UNITE for s in DOMINOS]))
     + '\n\nL\'aire de la figure est de $?$ unités **u**.',
-    [var('j', f'1..{len(DOMINOS)}')],
-    [selon('j', [nombre(aire(s) / 2) for s in DOMINOS])],
+    [var('j', f'1..{len(DOMINOS)}'), table('n', [aire(s) / 2 for s in DOMINOS])],
+    ['{{n}}'],
     ['L\'unité **u** recouvre $2$ carreaux.',
      'La figure recouvre $' + selon('j', [compte(s) for s in DOMINOS]) + '$ carreaux.',
      'En unités **u** : $' + selon('j', [compte(s) for s in DOMINOS]) + ' \\div 2 = '
@@ -402,7 +410,7 @@ V1 = variation(
     + figure(FEN1, 'Une figure coloriée sur un quadrillage de carreaux de 1 cm.',
              selon('j', [une_forme(s) for s in CM_ENTIERS]))
     + '\n\n$\\text{Aire} = ?~\\unit{cm^2}$',
-    [var('j', f'1..{len(CM_ENTIERS)}')], [selon('j', [compte(s) for s in CM_ENTIERS])],
+    [var('j', f'1..{len(CM_ENTIERS)}'), table('n', [aire(s) for s in CM_ENTIERS])], ['{{n}}'],
     [UN_CM2, 'Ligne par ligne : $' + selon('j', [lignes_de(s) for s in CM_ENTIERS]) + ' = '
      + selon('j', [compte(s) for s in CM_ENTIERS]) + '$ carreaux.',
      'Aire : $' + col(selon('j', [compte(s) for s in CM_ENTIERS]) + '~\\unit{cm^2}') + '$.'])
@@ -411,7 +419,7 @@ V2 = variation(
     + figure(FEN1, 'Une figure coloriée sur un quadrillage de carreaux de 1 cm, avec des carreaux'
              ' entiers et des demi-carreaux.', selon('j', [une_forme(s, 'vert') for s in CM_DEMIS]))
     + '\n\n$\\text{Aire} = ?~\\unit{cm^2}$',
-    [var('j', f'1..{len(CM_DEMIS)}')], [selon('j', [compte(s) for s in CM_DEMIS])],
+    [var('j', f'1..{len(CM_DEMIS)}'), table('n', [aire(s) for s in CM_DEMIS])], ['{{n}}'],
     [UN_CM2] + corrige_demis(CM_DEMIS, 'carreaux')
     + ['Aire : $' + col(selon('j', [compte(s) for s in CM_DEMIS]) + '~\\unit{cm^2}') + '$.'])
 V3 = variation(
@@ -420,8 +428,8 @@ V3 = variation(
     + figure(FEN2, 'Deux figures coloriées sur un quadrillage de carreaux de 1 cm : A en haut, B en bas.',
              selon('j', [deux_formes(g, p) for g, p in CM_PAIRES]))
     + '\n\nL\'aire de A dépasse celle de B de $?~\\unit{cm^2}$.',
-    [var('j', f'1..{len(CM_PAIRES)}')],
-    [selon('j', [nombre(aire(g) - aire(p)) for g, p in CM_PAIRES])],
+    [var('j', f'1..{len(CM_PAIRES)}'), table('n', [aire(g) - aire(p) for g, p in CM_PAIRES])],
+    ['{{n}}'],
     [UN_CM2,
      'Aire de A : $' + selon('j', [compte(g) for g, p in CM_PAIRES]) + '~\\unit{cm^2}$ ; aire de'
      ' B : $' + selon('j', [compte(p) for g, p in CM_PAIRES]) + '~\\unit{cm^2}$.',
