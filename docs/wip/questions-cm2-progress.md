@@ -6,11 +6,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après #2816._
+_Mis à jour le 2026-11-18, après #2816 et la page à cocher du lot 10._
 
-- **État** : lots 0 à 9 publiés. Lot 10 heures et durées (082, 083, 084, 153, 085) : 5 brouillons en prod, rangés et tagués (#2816, migration `20261118074731` jouée, relevé MCP conforme, § 16.3) ; relecture pas commencée.
-- **Prochaine action** : page à cocher du lot 10 (5 fiches, comme au lot 9), puis verdicts, `publier-lot` en simulation, `--publier` par David.
-- **En attente de David** : rien. ⛔ Jamais `--mettre-a-jour` de `cm2-7b` avec des fichiers d'avant #2770 (ids CM1).
+- **État** : lots 0 à 9 publiés. Lot 10 heures et durées (082, 083, 084, 153, 085) : 5 brouillons en prod, rangés et tagués (#2816, migration `20261118074731` jouée, relevé MCP conforme, § 16.3) ; page à cocher publiée : https://claude.ai/artifact/JTvJHxUWikfoPqdBBK4JBH (0 verdict).
+- **Prochaine action** : relecture par David, lire et compter les verdicts en base, `publier-lot` en simulation, `--publier` par David.
+- **En attente de David** : la relecture du lot 10. ⛔ Jamais `--mettre-a-jour` de `cm2-7b` avec des fichiers d'avant #2770 (ids CM1).
 - **Pièges en cours** : `pnpm migration:horodatage` = heure réelle UTC ; `db:migrate` refuse une migration plus ancienne que la dernière jouée → `--dry-run --include-all`, liste relue, puis `--include-all`. Worktree neuf : copier `supabase/.temp/` du dépôt principal, puis `pnpm exec svelte-kit sync`. `Doc-inchangée:` dans un COMMIT. `git commit -m … -- <fichiers>`. Stash du dépôt principal « cm2-9 ids » : copie identique de ce qui est mergé, à supprimer (David).
 - **Worktree / branche** : aucun (retiré après #2816).
 
@@ -1047,3 +1047,5 @@ ceux pris : lire 9, placer 10 ; durée 9, comparer 10, problèmes 11 ; (e) un se
   seule en attente, plus récente que la dernière jouée (`20261118071439`) ; `db:migrate` depuis le worktree (dépôt
   principal bloqué par des fichiers non commités d'une autre session). MCP : 5 brouillons rangés (082, 083 sur « lecture
   de l'heure » ; 084, 153, 085 sur « calcul de durées »), un tag chacun, `updated_at` = création.
+- Page à cocher publiée (5 fiches, aucune alerte, trotteuse et figures dessinées) :
+  https://claude.ai/artifact/JTvJHxUWikfoPqdBBK4JBH ; `verdicts` vide au départ.
