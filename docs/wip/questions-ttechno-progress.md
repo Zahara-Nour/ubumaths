@@ -781,4 +781,4 @@ David a lancé `create-questions --publier` : 2 brouillons (5e810e16 M1, 7a37a3e
   - **lot 6, fonction inverse** (4) : 045, 086, 049, 087 ;
   - **lot 7, deux variables** (6) : 050, 051, 052, 088, 053, 054 ;
   - **lot 8, loi binomiale** (7) : 057, 060, 061, 067, 069, 090, 091.
-    045, 049, 057, 060, 061, 087 étaient des jumeaux « a priori » (§ 3) que le lot 0 n'a pas retenus.
+- 045, 049, 057, 060, 061, 087 étaient des jumeaux « a priori » (§ 3) que le lot 0 n'a pas retenus.
