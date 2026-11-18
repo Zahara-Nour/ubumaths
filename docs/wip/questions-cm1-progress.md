@@ -5,18 +5,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, lot 8d écrit (§ 24 ter), PR des fichiers ouverte._
+_Mis à jour le 2026-11-18, après #2838 (fichiers du lot 8d mergés)._
 
-- **État** : lots 0 à 8c publiés, **144 points du CM1 sur 171** (CM2 : 100 sur 158, recompté au MCP).
-- **Prochaine action** : merger la PR des fichiers du 8d, puis David lance `create-questions --dir scripts/questions/cm1-8d --publier` depuis le worktree ; rangement + tags (6 tags : CM1-107, 108, 167, 168 ; CM2-154, 155) ; puis 8e, 9 (§ 20).
-- **En attente de David** : rien avant le merge ; ensuite `create-questions --publier` du 8d.
+- **État** : lots 0 à 8c publiés, **144 points du CM1 sur 171** ; lot 8d écrit et mergé (#2838), pas encore en prod.
+- **Prochaine action** : David lance, depuis le worktree,
+  `pnpm tsx scripts/create-questions.ts --dir scripts/questions/cm1-8d --publier` (4 brouillons) ; puis ids commités
+  sur `feat/questions-cm1-lot8d-rangement`, migration nœud + tags (107, 108 → Symétrie axiale ; 167, 168 →
+  perpendiculaires et parallèles ; 6 tags : CM1-107, 108, 167, 168, CM2-154, 155) ; puis 8e, 9 (§ 20).
+- **En attente de David** : `create-questions --publier` du 8d.
 - **Pièges en cours** : lancer `create-questions --publier` et `db:migrate` **depuis le worktree** (lien
   `supabase/.temp/` copié) ; `db:migrate` « inserted before » → `--dry-run --include-all` puis `--include-all` ;
   titre homonyme d'un autre niveau → `create-questions` refuse (renommer) ; commitlint refuse le type `content` ;
   le mode auto refuse `publier-lot` et `garde-niveaux-tags` : David les lance ; `sonde-figures` ne voit pas les
   dessins d'une case choix (aperçu) ; ports 5176, 5177 pris par d'autres sessions ; depuis #2826, imports en
   `#lib/x.ts` (extension écrite).
-- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, `feat/questions-cm1-lot8d`.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, détaché sur `main`, aucune branche ouverte.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -1986,3 +1989,8 @@ avant. La migration ne fait que ranger et taguer les modèles, sur des nœuds qu
 - Base locale (13 copies, une variation chacune) : les 13 aperçus vus à 390 px (Playwright, port 5181), sans
   défilement horizontal ni erreur de console. Détail mineur : le point final après « $A$ » peut passer seul à la
   ligne.
+
+### 24 quater. Lot 8d — fichiers mergés (2026-11-18)
+
+- #2838 mergée (CI verte). Conflit avec `main` sur `outils-manquants.md` : le n° 39 pris entre-temps (logarithme au
+  clavier), la ligne du tracé à l'équerre sur papier uni devient le **n° 40**.
