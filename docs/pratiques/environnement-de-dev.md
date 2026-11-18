@@ -93,6 +93,12 @@ la PR touche la config ESLint, une règle maison, les dépendances, `.gitignore`
 `lint-nocturne.yml` relit tout l'arbre chaque nuit sur `main` et y enregistre le cache ESLint que
 les PR restaurent (`main` ne lance pas le Lint sur push).
 
+**Cache ESLint et config Svelte** : `eslint.config.js` retire `version` de la config Svelte qu'il
+passe au parseur. SvelteKit y met `Date.now()` à chaque chargement ; ESLint compte la config dans
+l'empreinte de son cache, qui changeait donc à chaque lancement : les ~1 300 fichiers Svelte étaient
+relus à chaque fois, cache restauré ou non (Lint de la CI de version : 25 min le 2026-11-18). Une
+valeur qui varie d'un lancement à l'autre ne doit pas entrer dans la config ESLint.
+
 **Variables d'environnement lues par l'appli : `src/env.ts`.** Depuis SvelteKit 3, `$app/env/*` (et
 `$env/*`, qui le réexporte) n'expose que les variables déclarées là (`defineEnvVars`) ; une
 variable absente de la liste vaut `undefined`. Déclarée sans `schema`, elle est obligatoire : la
