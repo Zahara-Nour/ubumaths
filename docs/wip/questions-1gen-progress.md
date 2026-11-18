@@ -897,3 +897,42 @@ de 1re générale ; aucune table d'élèves touchée.
   son `array_append('1_TECHNO')` et ses tags après notre migration.
 - **Q22** : S7 en ` ```choix ` parmi quatre formules (comme 5c092e43 et 4-lot-3), pas d'outil neuf.
 - **Q23** : phase 0 du lot 6 validée telle quelle.
+
+## 24. Lot 6 : écriture (2026-11-18)
+
+Script `docs/wip/questions/lot-1gen-6.py` → `scripts/questions/1gen-6-statistiques-deux-variables/` (7 fichiers,
+60 specs). `question:specs` vert pour les 7 (50 tirages par variation) ; `sonde-courbes` sur 300 tirages : 0
+problème ; 579 formules distinctes des aperçus (40 tirages) passées à `validateLatex` avec compte des accolades : 0
+problème ; simulation `create-questions` verte contre la prod (7 à créer, aucun homonyme, vérifié aussi au MCP).
+Essai en base locale (copie des fichiers, ids locaux) et aperçu admin joué le 2026-11-18 (serveur du worktree,
+`127.0.0.1:5176`) : S1 piège des effectifs (garçons 7/20 contre filles 9/40) juste ; S2 cinq pommes placées, juste ;
+S4 G placé, juste ; S6 au jugé (d₂) juste ; S7 `=B2/B4` → faux, correction lisible avec `B$4` (le `\$` s'affiche
+bien, énoncé, choix et formule colorée) ; nuages de S3 (droite, U) lisibles.
+
+| Modèle | Fichier                               | Point    | Variations | Specs |
+| ------ | ------------------------------------- | -------- | ---------- | ----- |
+| S1     | `01-comparer-deux-groupes-diagrammes` | 1GEN-001 | 4          | 9     |
+| S2     | `02-representer-nuage-de-points`      | 1GEN-002 | 3          | 6     |
+| S3     | `03-lire-nuage-de-points`             | 1GEN-002 | 4          | 9     |
+| S4     | `04-point-moyen-du-nuage`             | 1GEN-004 | 3          | 8     |
+| S5     | `05-interpolation-extrapolation`      | 1GEN-005 | 4          | 8     |
+| S6     | `06-determiner-ajustement-affine`     | 1GEN-007 | 6          | 12    |
+| S7     | `07-formules-tableur-tableau-croise`  | 1GEN-006 | 4          | 8     |
+
+Écarts à la phase 0 (§ 23), sans effet sur les points ni sur les formes de réponse :
+
+- **S1** : deux diagrammes **séparés** (un par groupe) au lieu de barres groupées. Le bloc à deux séries ne prend
+  que des données brutes (une valeur par élève), qu'un tirage ne sait pas écrire. Le piège des effectifs est
+  décliné dans les deux sens (petit groupe = filles, puis garçons), pour que la bonne réponse ne soit pas toujours la
+  même. La v4 « choisir le diagramme d'un tableau croisé » est passée à S7 (v4, diagramme que le tableur doit tracer).
+- **S2** : plages resserrées après l'aperçu, pour des crans d'au moins ~23 px au doigt (pommes : masses de 20 en
+  20 g, de 80 à 280 g ; adhérents de 5 en 5, jusqu'à 60).
+- **S3** : v1 lit la note d'un élève sur un repère ` ```courbe ` à points nommés (lecture exacte sur la grille ; le
+  ` ```nuage ` ne gradue pas assez finement) ; « ajustement adapté ? » en deux variations (presque aligné, en U).
+- **S4** : v3 choisit G parmi quatre **coordonnées** (pièges : coordonnées échangées, colonne du milieu du
+  tableau, division par 4 au lieu de 5) plutôt que quatre points marqués.
+- **S5** : la lecture d'une estimation sur la droite du ` ```nuage ` est retirée (la droite des moindres carrés
+  calculée par le bloc n'est pas maîtrisée par le modèle, et 045 couvre déjà l'estimation) ; à la place, « laquelle
+  de ces estimations est une interpolation ? ».
+- **S6** : la droite au jugé est déclinée en trois variations (bonne droite en d₁, d₂, d₃) ; a et b de Mayer
+  entiers ou à une décimale (b = ȳ₁ − 2,5a à 8 points).
