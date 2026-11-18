@@ -15,7 +15,7 @@ const toaster = vi.hoisted(() => ({
 	warning: vi.fn(),
 	info: vi.fn()
 }));
-vi.mock('$lib/stores/toaster.svelte', () => ({ toaster }));
+vi.mock('#lib/stores/toaster.svelte.ts', () => ({ toaster }));
 
 import { QuestionCartStore } from '../questionCart.svelte';
 

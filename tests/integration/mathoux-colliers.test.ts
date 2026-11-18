@@ -33,7 +33,11 @@ import {
 import { DEFAULT_TEST_PASSWORD } from '../helpers/database/supabase-client';
 import { getPostgresClient } from '../helpers/database/postgres-client';
 import { TestData } from '../helpers/database/test-data-factory';
-import { MATHOU_COLLARS, MATHOU_COLLAR_IDS, MATHOU_DECORATION_IDS } from '$lib/mathoux/decorations';
+import {
+	MATHOU_COLLARS,
+	MATHOU_COLLAR_IDS,
+	MATHOU_DECORATION_IDS
+} from '#lib/mathoux/decorations.ts';
 
 // Types
 type Student = { id: string; client: SupabaseClient };

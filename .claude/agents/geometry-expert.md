@@ -15,7 +15,7 @@ Tu es l'expert de la géométrie de Chiphre : `geometry-core` (DSL, runtime réa
 
 ## Invariants critiques (détail : geometry-core/CLAUDE.md)
 
-1. Pas d'`eval` / `new Function` : `compile()` de `$lib/mathAST/eval/compile`.
+1. Pas d'`eval` / `new Function` : `compile()` de `#lib/mathAST/eval/compile.ts`.
 2. Nouveau builtin = `handleX` + `HANDLERS.set` **et** entrée dans `BUILTIN_NAMES` (pas de `switch`) + ligne dans `dsl-builtins.md`.
 3. Nouveau type `Geo*` visible = **quatre surfaces** de rendu (canvas, SVG, TikZ, Typst) + `compute-position.ts` ; rien ne le rappelle au typecheck.
 4. `graph/` n'importe jamais `dsl/` en valeur ; gardes `isXxx` plutôt que `as GeoXxx`.

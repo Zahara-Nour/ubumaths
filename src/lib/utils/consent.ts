@@ -4,7 +4,7 @@
  * RGPD Article 8: Minors under 15 require parental consent in France.
  */
 
-import type { GradeCode } from '$lib/types/grades';
+import type { GradeCode } from '#lib/types/grades.ts';
 
 /**
  * Niveaux DISPENSÉS du consentement parental : 1re et terminale.

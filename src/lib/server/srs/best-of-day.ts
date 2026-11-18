@@ -13,9 +13,9 @@
  * remplace la révision du jour ; une note égale ou moins bonne ne change rien.
  */
 
-import { schoolDay } from '$lib/server/course-card-attempts';
-import type { FSRS } from '$lib/srs/fsrs';
-import type { CardStats, Grade, ReviewHistoryEntry, ReviewSnapshot } from '$lib/srs/types';
+import { schoolDay } from '#lib/server/course-card-attempts.ts';
+import type { FSRS } from '#lib/srs/fsrs.ts';
+import type { CardStats, Grade, ReviewHistoryEntry, ReviewSnapshot } from '#lib/srs/types.ts';
 
 function snapshotOf(stats: CardStats): ReviewSnapshot {
 	return {

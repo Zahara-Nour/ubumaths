@@ -20,23 +20,23 @@
 	import { goto, invalidateAll } from '$app/navigation';
 	import { page } from '$app/state';
 	import { resolve } from '$app/paths';
-	import { lore } from '$lib/config/lore';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
-	import { Badge } from '$lib/components/ui/badge';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
-	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
-	import ProgrammeMap from '$lib/components/programme/ProgrammeMap.svelte';
-	import OfficialProgrammeView from '$lib/components/programme/OfficialProgrammeView.svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { lore } from '#lib/config/lore.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
+	import InlineMarkdown from '#lib/components/markdown/InlineMarkdown.svelte';
+	import ProgrammeMap from '#lib/components/programme/ProgrammeMap.svelte';
+	import OfficialProgrammeView from '#lib/components/programme/OfficialProgrammeView.svelte';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import {
 		countArchivedPoints,
 		hideArchivedPoints,
 		type ProgrammePointView
-	} from '$lib/utils/programme-tree';
+	} from '#lib/utils/programme-tree.ts';
 	import {
 		Pencil,
 		Archive,
@@ -89,14 +89,14 @@
 		if (typeof value !== 'string') return;
 		// Navigation sur la même route, query seule → relance le load serveur.
 		// resolve() ne porte pas de query string (même motif que la page Avancement).
-		const url = new URL(page.url);
+		const url = new URL(page.url.href);
 		url.searchParams.set('grade', value);
-		goto(url, { keepFocus: true, noScroll: true });
+		goto(url, { reset: false });
 	}
 
 	/** Paramètres de la même page dans une autre vue (le niveau suit). */
 	function viewSearch(view: View): string {
-		const url = new URL(page.url);
+		const url = new URL(page.url.href);
 		url.searchParams.set('vue', view);
 		return url.search;
 	}
@@ -188,7 +188,7 @@
 						class:font-semibold={data.view === v.value}
 						class:text-muted-foreground={data.view !== v.value}
 						aria-current={data.view === v.value ? 'page' : undefined}
-						data-sveltekit-noscroll
+						data-sveltekit-reset="false"
 					>
 						{v.label}
 					</a>

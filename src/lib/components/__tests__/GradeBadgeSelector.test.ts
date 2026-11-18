@@ -26,8 +26,8 @@ import {
 	GRADE_CODES,
 	type GradeCode,
 	type SchoolLevel
-} from '$lib/types/grades';
-import { formatGradeShort, formatGradeForDisplay } from '$lib/utils/grades';
+} from '#lib/types/grades.ts';
+import { formatGradeShort, formatGradeForDisplay } from '#lib/utils/grades.ts';
 
 // ============================================================================
 // TEST FIXTURES

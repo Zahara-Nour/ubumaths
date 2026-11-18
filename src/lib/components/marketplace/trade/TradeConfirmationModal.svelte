@@ -21,16 +21,16 @@
 -->
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { Button } from '$lib/components/ui/button';
-	import VipCard from '$lib/components/VipCard.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import VipCard from '#lib/components/VipCard.svelte';
 	import {
 		vipCardTemplates,
 		getTemplateById,
 		templateToVipCard
-	} from '$lib/stores/vipCardTemplates.svelte';
+	} from '#lib/stores/vipCardTemplates.svelte.ts';
 	import { Check, X, Clock, ArrowRightLeft, Loader2 } from '@lucide/svelte';
-	import type { VipCardInstance, VipCard as VipCardType } from '$lib/types/vip-card';
-	import gidouilleImg from '$lib/assets/images/gidouille.png';
+	import type { VipCardInstance, VipCard as VipCardType } from '#lib/types/vip-card.ts';
+	import gidouilleImg from '#lib/assets/images/gidouille.png';
 
 	// Extended type for cards with instanceId
 	type TradeCard = VipCardInstance & { instanceId: string };

@@ -13,7 +13,7 @@
  * @module questions/construction/segment-measure
  */
 
-import type { SegmentMeasureCheck } from '$lib/ubumark/types/construction';
+import type { SegmentMeasureCheck } from '#lib/ubumark/types/construction.ts';
 import type { DrawnObject, DrawnRegle } from './answer';
 import { isInFrame, isStraight, rulerDirection, type StraightTrait } from './instruments';
 import type { ConstructionVerdict, Position } from './judge';

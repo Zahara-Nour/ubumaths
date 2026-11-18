@@ -5,7 +5,7 @@
  * Uses pdf-parse for extraction (server-side only).
  */
 
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/documents/pdf-extractor');
 

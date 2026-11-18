@@ -23,9 +23,9 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { createClient } from '@supabase/supabase-js';
 import { config } from 'dotenv';
-import { updateExerciseSchema } from '$lib/server/validation/exercises';
-import { deleteExercise, updateExercise } from '$lib/server/exercises';
-import type { Database } from '$lib/types/database';
+import { updateExerciseSchema } from '#lib/server/validation/exercises.ts';
+import { deleteExercise, updateExercise } from '#lib/server/exercises.ts';
+import type { Database } from '#lib/types/database.ts';
 
 config({ path: '.env' });
 

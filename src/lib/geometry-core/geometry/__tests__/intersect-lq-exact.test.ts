@@ -11,9 +11,9 @@ import { intersectLQ, intersectLQExact } from '../intersections';
 import { exact, isExact, type GeoValue } from '../../types/geo-value';
 import { geoFromNumber } from '../../compute/geo-arithmetic';
 import { geoToNumber } from '../../compute/to-number';
-import { toCustom } from '$lib/mathAST/custom-generator';
+import { toCustom } from '#lib/mathAST/custom-generator.ts';
 import type { GeoPoint } from '../../types/primitives';
-import { number as mathNumber, opposite } from '$lib/mathAST';
+import { number as mathNumber, opposite } from '#lib/mathAST/index.ts';
 
 type Conic = readonly [number, number, number, number, number, number];
 

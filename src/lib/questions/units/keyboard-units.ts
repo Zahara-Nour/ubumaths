@@ -14,9 +14,9 @@
  */
 
 import type { VirtualKeyboardKeycap, VirtualKeyboardLayout } from 'mathlive';
-import { unitWritingToLatex } from '$lib/mathAST/units/display';
-import { unitsAreCompatible } from '$lib/mathAST/units/conversion';
-import type { Unit } from '$lib/mathAST/units/types';
+import { unitWritingToLatex } from '#lib/mathAST/units/display.ts';
+import { unitsAreCompatible } from '#lib/mathAST/units/conversion.ts';
+import type { Unit } from '#lib/mathAST/units/types.ts';
 import { extractUnitFromLatex, parseUnitExpression } from './parser';
 import { singleExpectedDuration } from './composite-duration';
 

@@ -14,7 +14,7 @@ import { render } from 'vitest-browser-svelte';
 import Page from '../+page.svelte';
 
 // Le lexique lit /api/dictionnaire (ADR 0022) : sans mots ici, le serveur de test n'est pas appelé
-vi.mock('$lib/dictionary/fetch-dictionary', () => ({ fetchDictionary: async () => [] }));
+vi.mock('#lib/dictionary/fetch-dictionary.ts', () => ({ fetchDictionary: async () => [] }));
 
 const TABS = [
 	'En classe',

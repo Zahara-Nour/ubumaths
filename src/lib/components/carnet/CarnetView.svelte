@@ -10,14 +10,14 @@
 	adresse, et une navigation vers le même site envoie l'adresse complète.
 
 	Ton neutre (B2) : pas de rouge, pas d'alarme. Le carnet arrive déjà filtré
-	par le serveur (`$lib/validation/carnet`) ; ne rien y ajouter ici.
+	par le serveur (`#lib/validation/carnet.ts`) ; ne rien y ajouter ici.
 -->
 <script lang="ts">
 	import { resolve } from '$app/paths';
-	import * as Card from '$lib/components/ui/card';
-	import RegularityTable from '$lib/components/teacher/analytics/RegularityTable.svelte';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import RegularityTable from '#lib/components/teacher/analytics/RegularityTable.svelte';
 	import { BookOpen, CalendarCheck, NotebookText, RotateCcw } from '@lucide/svelte';
-	import type { Carnet, CarnetEvaluation, CarnetLevel } from '$lib/validation/carnet';
+	import type { Carnet, CarnetEvaluation, CarnetLevel } from '#lib/validation/carnet.ts';
 
 	// Types
 
@@ -193,11 +193,11 @@
 					{#each links as link (`${link.kind}-${link.token}`)}
 						<li>
 							{#if link.kind === 'cahier'}
-								<a href={resolve(`/cahier/${link.token}`)} rel="noreferrer" class="link"
+								<a href={resolve(`cahier/${link.token}`)} rel="noreferrer" class="link"
 									>{link.label}</a
 								>
 							{:else}
-								<a href={resolve(`/cours/${link.token}`)} rel="noreferrer" class="link"
+								<a href={resolve(`cours/${link.token}`)} rel="noreferrer" class="link"
 									>{link.label}</a
 								>
 							{/if}

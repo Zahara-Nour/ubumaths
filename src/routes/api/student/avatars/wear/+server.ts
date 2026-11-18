@@ -18,18 +18,18 @@
 import { error, json } from '@sveltejs/kit';
 import { z } from 'zod';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import { rateLimit } from '$lib/server/middleware/rateLimit';
-import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { rateLimit } from '#lib/server/middleware/rateLimit.ts';
+import { createServiceRoleClient } from '#lib/server/serviceRoleClient.ts';
 import {
 	AVATAR_RATE_MAX,
 	avatarRefusalMessage,
 	avatarRefusalStatus,
 	wearAvatar,
 	type WearAvatarOutcome
-} from '$lib/server/avatars/shop';
-import { AVATAR_KEY_PATTERN } from '$lib/avatars/shop';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/avatars/shop.ts';
+import { AVATAR_KEY_PATTERN } from '#lib/avatars/shop.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/student/avatars/wear/+server');
 

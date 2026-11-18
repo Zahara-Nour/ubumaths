@@ -5,13 +5,13 @@
 
 import { error, fail } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
-import { requireRoles } from '$lib/server/middleware/auth';
-import { uuidSchema } from '$lib/server/validation/common';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import { uuidSchema } from '#lib/server/validation/common.ts';
 import {
 	EvaluationError,
 	getTeacherEvaluations,
 	setEvaluationStatus
-} from '$lib/server/evaluations';
+} from '#lib/server/evaluations.ts';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	const { user } = await requireRoles(locals, ['teacher', 'admin']);

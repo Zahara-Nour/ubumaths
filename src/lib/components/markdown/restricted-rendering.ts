@@ -26,8 +26,8 @@
  */
 
 import { getContext, hasContext, setContext } from 'svelte';
-import type { ASTNode, BlockNode, DocumentNode } from '$lib/ubumark';
-import { exceedsMathNestingLimits } from '$lib/questions/student-answer-safety';
+import type { ASTNode, BlockNode, DocumentNode } from '#lib/ubumark/index.ts';
+import { exceedsMathNestingLimits } from '#lib/questions/student-answer-safety.ts';
 
 const RESTRICTED_RENDERING_KEY = Symbol('markdown-restricted-rendering');
 

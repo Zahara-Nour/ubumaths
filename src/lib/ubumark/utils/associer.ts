@@ -9,7 +9,7 @@
  * @module ubumark/utils/associer
  */
 
-import { createRandomSource } from '$lib/utils/random';
+import { createRandomSource } from '#lib/utils/random.ts';
 import type { AssocierSpec } from '../types/associer';
 import { rangerOrder, textSeed } from './ranger';
 

@@ -18,8 +18,8 @@
  * @module questions/sign-table-case
  */
 
-import { parseVariationTableContent } from '$lib/ubumark/parser/variation-table-parser';
-import type { HiddenCellKind, VariationTableNode } from '$lib/ubumark/types/variation-table';
+import { parseVariationTableContent } from '#lib/ubumark/parser/variation-table-parser.ts';
+import type { HiddenCellKind, VariationTableNode } from '#lib/ubumark/types/variation-table.ts';
 import type { InstanceBlank } from './types';
 
 // Types

@@ -13,8 +13,12 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { generateInstance } from '$lib/questions/generator/instance-generator';
-import { isCourseCard, type QuestionInstance, type QuestionTemplate } from '$lib/questions/types';
+import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
+import {
+	isCourseCard,
+	type QuestionInstance,
+	type QuestionTemplate
+} from '#lib/questions/types.ts';
 import { validateSaveTest } from '../tests';
 import { REAL_TEMPLATES } from './fixtures/real-templates';
 

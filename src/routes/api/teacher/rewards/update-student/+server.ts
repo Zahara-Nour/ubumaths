@@ -8,9 +8,9 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRoles } from '$lib/server/middleware/auth';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
 import { z } from 'zod';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/teacher/rewards/update-student/+server');
 

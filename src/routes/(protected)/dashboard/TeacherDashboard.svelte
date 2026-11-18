@@ -56,44 +56,44 @@
 -->
 
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	// ============================================================================
 	// IMPORTS
 	// ============================================================================
 
 	// Types
 	import type { PageData } from './$types';
-	import type { ClassWithData } from '$lib/server/students';
-	import type { Database } from '$lib/types/database';
-	import type { Class, ClassSchedule } from '$lib/types/database-helpers';
+	import type { ClassWithData } from '#lib/server/students.ts';
+	import type { Database } from '#lib/types/database.ts';
+	import type { Class, ClassSchedule } from '#lib/types/database-helpers.ts';
 
 	type AcademicPeriod = Database['public']['Tables']['academic_periods']['Row'];
 
 	// UI Components
-	import { Button } from '$lib/components/ui/button';
-	import { Badge } from '$lib/components/ui/badge';
-	import * as Dialog from '$lib/components/ui/dialog';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
 	import { Calendar, Clock, Target, BookOpen, Users } from '@lucide/svelte';
-	import Wheel from '$lib/components/Wheel.svelte';
-	import StudentQuickActionsTable from '$lib/components/teacher/StudentQuickActionsTable.svelte';
-	import VipCardUseDialog from '$lib/components/teacher/VipCardUseDialog.svelte';
+	import Wheel from '#lib/components/Wheel.svelte';
+	import StudentQuickActionsTable from '#lib/components/teacher/StudentQuickActionsTable.svelte';
+	import VipCardUseDialog from '#lib/components/teacher/VipCardUseDialog.svelte';
 
 	// Stores & Utilities
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import {
 		getSelectedClassId,
 		setSelectedClass,
 		clearSelectedClass
-	} from '$lib/stores/selectedClass.svelte';
-	import { getSelectedPeriodId, setSelectedPeriod } from '$lib/stores/selectedPeriod.svelte';
+	} from '#lib/stores/selectedClass.svelte.ts';
+	import { getSelectedPeriodId, setSelectedPeriod } from '#lib/stores/selectedPeriod.svelte.ts';
 	import {
 		findCurrentSchedule,
 		formatScheduleMatch,
 		getNoClassMessage,
 		isWeekend
-	} from '$lib/utils/timeMatching';
-	import { findCurrentPeriod, getPeriodName } from '$lib/utils/academic-period';
-	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
+	} from '#lib/utils/timeMatching.ts';
+	import { findCurrentPeriod, getPeriodName } from '#lib/utils/academic-period.ts';
+	import { teacherCache } from '#lib/stores/teacherDashboardCache.svelte.ts';
 
 	// ============================================================================
 	// COMPONENT STATE

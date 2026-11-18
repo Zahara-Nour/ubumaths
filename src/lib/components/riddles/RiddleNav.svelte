@@ -5,8 +5,8 @@
 -->
 
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button';
-	import * as Card from '$lib/components/ui/card';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
 	import {
 		Sparkles,
 		History,
@@ -17,14 +17,14 @@
 		Calendar,
 		Plus
 	} from '@lucide/svelte';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 
 	interface Props {
 		role: 'teacher' | 'student';
 		currentPath?: string;
 	}
 
-	let { role, currentPath = $page.url.pathname }: Props = $props();
+	let { role, currentPath = page.url.pathname }: Props = $props();
 
 	const teacherLinks = [
 		{

@@ -7,7 +7,7 @@
 	 */
 
 	import { evolandStore } from '../stores/evoland.svelte';
-	import { Progress } from '$lib/components/ui/progress';
+	import { Progress } from '#lib/components/ui/progress/index.ts';
 
 	// Derived values
 	const hud = $derived(evolandStore.hud);

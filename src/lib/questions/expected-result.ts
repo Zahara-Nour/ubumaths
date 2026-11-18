@@ -28,35 +28,35 @@ import {
 import { rulesDecide } from './rules-suffice';
 import { escapeStudentText, neutralizeStudentLatex } from './student-answer-safety';
 import { correctChoiceIndexesOf, isChoiceBlank, parseChoiceAnswer } from './choice-case';
-import { replaceChoiceBlocks } from '$lib/ubumark/parser/choix-parser';
+import { replaceChoiceBlocks } from '#lib/ubumark/parser/choix-parser.ts';
 import { isWorkFigureBlank } from './graded-part';
-import { findBuildCollections } from '$lib/ubumark/parser/collection-parser';
-import { findBuildMonnaies } from '$lib/ubumark/parser/monnaie-parser';
-import { findLinesToPlace } from '$lib/ubumark/parser/number-line-parser';
-import { findHorlogesToPlace } from '$lib/ubumark/parser/horloge-parser';
-import { findBarsToPlace, findBoxPlotsToPlace } from '$lib/ubumark/parser/stat-chart-parser';
-import { findCourbesToPlace } from '$lib/ubumark/parser/courbe-parser';
-import { findTrigCirclesToPlace } from '$lib/ubumark/parser/trig-circle-parser';
-import { findTortuesToProgram } from '$lib/ubumark/parser/tortue-parser';
-import { findCalculsToProgram } from '$lib/ubumark/parser/calcul-parser';
-import { findRobotsToProduce } from '$lib/ubumark/parser/robot-parser';
-import { findRangersToPlace } from '$lib/ubumark/parser/ranger-parser';
-import { findAssociersToPlace } from '$lib/ubumark/parser/associer-parser';
-import { findTrousToPlace } from '$lib/ubumark/parser/trous-parser';
-import { findPartagesToColorier } from '$lib/ubumark/parser/partage-parser';
-import { NOTHING_COLORED } from '$lib/ubumark/utils/partage-colorier';
+import { findBuildCollections } from '#lib/ubumark/parser/collection-parser.ts';
+import { findBuildMonnaies } from '#lib/ubumark/parser/monnaie-parser.ts';
+import { findLinesToPlace } from '#lib/ubumark/parser/number-line-parser.ts';
+import { findHorlogesToPlace } from '#lib/ubumark/parser/horloge-parser.ts';
+import { findBarsToPlace, findBoxPlotsToPlace } from '#lib/ubumark/parser/stat-chart-parser.ts';
+import { findCourbesToPlace } from '#lib/ubumark/parser/courbe-parser.ts';
+import { findTrigCirclesToPlace } from '#lib/ubumark/parser/trig-circle-parser.ts';
+import { findTortuesToProgram } from '#lib/ubumark/parser/tortue-parser.ts';
+import { findCalculsToProgram } from '#lib/ubumark/parser/calcul-parser.ts';
+import { findRobotsToProduce } from '#lib/ubumark/parser/robot-parser.ts';
+import { findRangersToPlace } from '#lib/ubumark/parser/ranger-parser.ts';
+import { findAssociersToPlace } from '#lib/ubumark/parser/associer-parser.ts';
+import { findTrousToPlace } from '#lib/ubumark/parser/trous-parser.ts';
+import { findPartagesToColorier } from '#lib/ubumark/parser/partage-parser.ts';
+import { NOTHING_COLORED } from '#lib/ubumark/utils/partage-colorier.ts';
 import {
 	findCubesToBuild,
 	findPatronsToBuild,
 	findSolidesToBuild,
 	parseEspaceContent
-} from '$lib/ubumark/parser/espace-parser';
-import { MISSING_HEIGHTS, NOTHING_COLORED_CUBES } from '$lib/ubumark/utils/cubes-gestes';
-import { NOTHING_PLACED, NOTHING_TOUCHED } from '$lib/ubumark/utils/patron-gestes';
-import { BOTH_MISSING, END_MISSING } from '$lib/ubumark/utils/solide-gestes';
+} from '#lib/ubumark/parser/espace-parser.ts';
+import { MISSING_HEIGHTS, NOTHING_COLORED_CUBES } from '#lib/ubumark/utils/cubes-gestes.ts';
+import { NOTHING_PLACED, NOTHING_TOUCHED } from '#lib/ubumark/utils/patron-gestes.ts';
+import { BOTH_MISSING, END_MISSING } from '#lib/ubumark/utils/solide-gestes.ts';
 import { buildCaseCount } from './generator/build-answer';
-import { findVariationsToFill } from '$lib/ubumark/parser/variation-table-parser';
-import type { HiddenCellKind } from '$lib/ubumark/types/variation-table';
+import { findVariationsToFill } from '#lib/ubumark/parser/variation-table-parser.ts';
+import type { HiddenCellKind } from '#lib/ubumark/types/variation-table.ts';
 import { isSignTableCell, signCellToken } from './sign-table-case';
 import { blankErrorGuess, errorGuessSentence } from './error-kinds';
 import {
@@ -64,7 +64,7 @@ import {
 	type BlankVerdict,
 	type DetailedVerdict,
 	type StudentAnswer
-} from '$lib/utils/answer-validator';
+} from '#lib/utils/answer-validator.ts';
 
 // Types
 /** Statut d'affichage : la couleur est choisie par l'écran ou le PDF */

@@ -1,7 +1,7 @@
 import type { PageServerLoad } from './$types';
 import { error, redirect } from '@sveltejs/kit';
-import type { BadgeProgress } from '$lib/utils/riddle-badges';
-import { createServerLogger } from '$lib/utils/logger';
+import type { BadgeProgress } from '#lib/utils/riddle-badges.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('(protected)/dashboard/student/riddles/history/+page.server');
 

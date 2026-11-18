@@ -10,7 +10,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { REQUIRED_FORM_FEEDBACK, requiredFormVerdict } from '../required-form-validator';
-import { validateAnswer } from '$lib/utils/answer-validator';
+import { validateAnswer } from '#lib/utils/answer-validator.ts';
 import { generateInstance } from '../generator/instance-generator';
 import { requiredFormSchema, questionTemplateSchema } from '../template-schema';
 import { acceptableOf, customRequiredForm } from '../form-options';

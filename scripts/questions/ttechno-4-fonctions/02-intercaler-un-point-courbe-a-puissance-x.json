@@ -1,0 +1,418 @@
+{
+	"id": "7a37a3e1-77d5-48e8-b94c-616727b1ae5a",
+	"title": "Intercaler un point sur la courbe de x ↦ a^x",
+	"description": "Point intercalé entre deux points de la courbe de aˣ : moyenne arithmétique des abscisses, moyenne géométrique des ordonnées ; position du point des moyennes arithmétiques ; compléter une fonction Python et une formule de tableur ; deux intercalations",
+	"grades": ["T_TECHNO"],
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Les points $A({{x1}}\\,;{{eval:a^(x1);d}})$ et $B({{eval:x1+2}}\\,;{{eval:a^(x1+2);d}})$ sont sur la courbe de la fonction $f$ définie sur $\\mathbb{R}$ par $f(x)={{a}}^x$.\n\nOn construit le point $C$ qui a pour abscisse la moyenne **arithmétique** des abscisses de $A$ et $B$, et pour ordonnée la moyenne **géométrique** de leurs ordonnées.\n\nDonne les coordonnées de $C$.\n\n$x_C=?$\n\n$y_C=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2|3|4|5|0.5"
+				},
+				{
+					"name": "x1",
+					"expression": "-1|0|1|2"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:x1+1}}"
+				},
+				{
+					"expectedAnswer": "{{eval:a^(x1+1);d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La moyenne arithmétique de deux nombres $u$ et $v$ est $\\dfrac{u+v}{2}$ ; la moyenne géométrique de deux nombres positifs $u$ et $v$ est $\\sqrt{uv}$.",
+					"$x_C=\\dfrac{ {{x1}}+{{eval:x1+2}}}{2}={{eval:x1+1}}$ et $y_C=\\sqrt{{{eval:a^(x1);d}}\\times{{eval:a^(x1+2);d}}}=\\sqrt{ {{eval:a^(2*x1+2);d}} }={{eval:a^(x1+1);d}}$.",
+					"Donc $C\\textcolor{{{color:primary.0}}}{({{eval:x1+1}}\\,;{{eval:a^(x1+1);d}})}$.",
+					"$f({{eval:x1+1}})={{a}}^{ {{eval:x1+1}} }={{eval:a^(x1+1);d}}=y_C$ : le point $C$ est **sur la courbe**. C'est vrai pour tous points $A$ et $B$ de la courbe, car $\\sqrt{a^{x_A}\\times a^{x_B}}=a^{\\frac{x_A+x_B}{2}}$."
+				]
+			}
+		},
+		{
+			"statement": "Les points $A({{x1}}\\,;{{eval:a^(x1);d}})$ et $B({{eval:x1+2}}\\,;{{eval:a^(x1+2);d}})$ sont sur la courbe de la fonction $f$ définie sur $\\mathbb{R}$ par $f(x)={{a}}^x$.\n\nOn construit le point $M$ qui a pour abscisse la moyenne arithmétique des abscisses de $A$ et $B$, et pour ordonnée la moyenne **arithmétique** de leurs ordonnées.\n\nOù est le point $M$ ?\n\n```choix\nmelanger: non\n- sur la courbe de $f$\n- au-dessus de la courbe de $f$\n- en dessous de la courbe de $f$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2|3|4|5|0.5"
+				},
+				{
+					"name": "x1",
+					"expression": "-1|0|1|2"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$x_M=\\dfrac{ {{x1}}+{{eval:x1+2}}}{2}={{eval:x1+1}}$ et $y_M=\\dfrac{{{eval:a^(x1);d}}+{{eval:a^(x1+2);d}}}{2}={{eval:(a^(x1)+a^(x1+2))/2;d}}$.",
+					"Le point de la courbe d'abscisse ${{eval:x1+1}}$ a pour ordonnée $f({{eval:x1+1}})={{a}}^{ {{eval:x1+1}} }={{eval:a^(x1+1);d}}$.",
+					"${{eval:(a^(x1)+a^(x1+2))/2;d}}>{{eval:a^(x1+1);d}}$ : $M$ est $\\textcolor{{{color:primary.0}}}{\\text{au-dessus de la courbe}}$. Pour rester sur la courbe de $x\\mapsto a^x$, il faut la moyenne **géométrique** des ordonnées."
+				]
+			}
+		},
+		{
+			"statement": "La fonction Python `intercaler` reçoit les coordonnées de deux points $A$ et $B$ de la courbe d'une fonction $x\\mapsto a^x$. Elle doit renvoyer celles du point $C$ intercalé : moyenne arithmétique des abscisses, moyenne géométrique des ordonnées.\n\n```python\nfrom math import sqrt\n\ndef intercaler(xA, yA, xB, yB):\n    xC = (xA + xB) / 2\n    yC = ...\n    return xC, yC\n```\n\nQue faut-il écrire à la place des points de suspension ?\n\n```choix\nmelanger: non\n- `(yA + yB) / 2`\n- `sqrt(yA * yB)`\n- `sqrt(yA + yB)`\n- `yA * yB / 2`\n```",
+			"variables": [],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La moyenne arithmétique de deux nombres $u$ et $v$ est $\\dfrac{u+v}{2}$ ; la moyenne géométrique de deux nombres positifs $u$ et $v$ est $\\sqrt{uv}$.",
+					"`sqrt` calcule la racine carrée (on l'importe du module `math`) et `*` est la multiplication : la moyenne géométrique de `yA` et `yB` s'écrit `sqrt(yA * yB)`.",
+					"`(yA + yB) / 2` est la moyenne arithmétique : le point ne serait pas sur la courbe.",
+					"La ligne est donc `yC = sqrt(yA * yB)`."
+				]
+			}
+		},
+		{
+			"statement": "Une feuille de calcul contient les coordonnées de deux points $A$ et $B$ de la courbe de $x\\mapsto{{a}}^x$. On veut en ligne 4 le point $C$ intercalé : moyenne arithmétique des abscisses, moyenne géométrique des ordonnées.\n\n|   | A | B |\n|---|---|---|\n| 1 | x | y |\n| 2 | ${{x1}}$ | ${{eval:a^(x1);d}}$ |\n| 3 | ${{eval:x1+2}}$ | ${{eval:a^(x1+2);d}}$ |\n| 4 | =(A2+A3)/2 |   |\n\nQuelle formule écrire dans la cellule B4 ?\n\n```choix\nmelanger: non\n- =(B2+B3)/2\n- =B2*B3/2\n- =RACINE(B2*B3)\n- =RACINE(B2+B3)\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2|3|4|5|0.5"
+				},
+				{
+					"name": "x1",
+					"expression": "-1|0|1|2"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La moyenne arithmétique de deux nombres $u$ et $v$ est $\\dfrac{u+v}{2}$ ; la moyenne géométrique de deux nombres positifs $u$ et $v$ est $\\sqrt{uv}$.",
+					"**Tableur.** La fonction RACINE calcule la racine carrée et `*` est la multiplication : la moyenne géométrique de B2 et B3 s'écrit « =RACINE(B2*B3) ».",
+					"Ici le tableur affiche $\\sqrt{{{eval:a^(x1);d}}\\times{{eval:a^(x1+2);d}}}={{eval:a^(x1+1);d}}$ : c'est bien ${{a}}^{ {{eval:x1+1}} }$, le point est sur la courbe. « =RACINE(B2*B3) » est $\\textcolor{{{color:primary.0}}}{\\text{la bonne formule}}$.",
+					"« =(B2+B3)/2 » donne la moyenne arithmétique ; « =B2*B3/2 » et « =RACINE(B2+B3) » ne sont pas des moyennes."
+				]
+			}
+		},
+		{
+			"statement": "Les points $A({{x1}}\\,;{{eval:a^(x1);d}})$ et $B({{eval:x1+2}}\\,;{{eval:a^(x1+2);d}})$ sont sur la courbe de la fonction $f$ définie sur $\\mathbb{R}$ par $f(x)={{a}}^x$.\n\nOn construit le point $C$ qui a pour abscisse la moyenne **arithmétique** des abscisses de $A$ et $B$, et pour ordonnée la moyenne **géométrique** de leurs ordonnées. Puis on recommence entre $A$ et $C$ : on obtient le point $D$.\n\nDonne l'abscisse de $D$, puis son ordonnée arrondie au centième.\n\n$x_D=?$\n\n$y_D\\approx?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2|3|5|0.5"
+				},
+				{
+					"name": "x1",
+					"expression": "0|1|2"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:x1+0.5;d}}"
+				},
+				{
+					"expectedAnswer": "{{eval:round(100*a^(x1+0.5))/100;d}}",
+					"precision": {
+						"type": "decimal",
+						"digits": 2
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"La moyenne arithmétique de deux nombres $u$ et $v$ est $\\dfrac{u+v}{2}$ ; la moyenne géométrique de deux nombres positifs $u$ et $v$ est $\\sqrt{uv}$.",
+					"Première intercalation : $x_C=\\dfrac{ {{x1}}+{{eval:x1+2}}}{2}={{eval:x1+1}}$ et $y_C=\\sqrt{{{eval:a^(x1);d}}\\times{{eval:a^(x1+2);d}}}=\\sqrt{ {{eval:a^(2*x1+2);d}} }={{eval:a^(x1+1);d}}$.",
+					"Seconde, entre $A({{x1}}\\,;{{eval:a^(x1);d}})$ et $C({{eval:x1+1}}\\,;{{eval:a^(x1+1);d}})$ : $x_D=\\dfrac{ {{x1}}+{{eval:x1+1}}}{2}=\\textcolor{{{color:primary.0}}}{{{eval:x1+0.5;d}}}$ et $y_D=\\sqrt{{{eval:a^(x1);d}}\\times{{eval:a^(x1+1);d}}}=\\sqrt{ {{eval:a^(2*x1+1);d}} }\\approx\\textcolor{{{color:primary.0}}}{{{eval:round(100*a^(x1+0.5))/100;d}}}$.",
+					"Le point $D$ est encore sur la courbe : $y_D={{a}}^{ {{eval:x1+0.5;d}} }$. En recommençant, on place autant de points de la courbe qu'on veut."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "a = 2, x1 = 1 : C(2 ; 4)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"x1": "1"
+			},
+			"answers": ["2", "4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : moyenne arithmétique des ordonnées (5)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"x1": "1"
+			},
+			"answers": ["2", "5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "a = 0,5, x1 = 1 : C(2 ; 0,25)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "0.5",
+				"x1": "1"
+			},
+			"answers": ["2", "0,25"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "a = 3, x1 = −1 : C(0 ; 1)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"x1": "-1"
+			},
+			"answers": ["0", "1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : C(0 ; 3) (ordonnée de B divisée)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"x1": "-1"
+			},
+			"answers": ["0", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "a = 2, x1 = 1 : M au-dessus",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"x1": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sur la courbe",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"x1": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : en dessous",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"x1": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "a = 0,5 : M au-dessus aussi",
+			"variationIndex": 1,
+			"variables": {
+				"a": "0.5",
+				"x1": "-1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "choix : bonne réponse 1",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : moyenne arithmétique",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : racine de la somme",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : demi-produit",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "choix : bonne réponse 2",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"x1": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : moyenne arithmétique",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"x1": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : demi-produit",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"x1": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : racine de la somme",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"x1": "0"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "a = 2, x1 = 0 : D(0,5 ; 1,41)",
+			"variationIndex": 4,
+			"variables": {
+				"a": "2",
+				"x1": "0"
+			},
+			"answers": ["0,5", "1,41"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ordonnée arrondie au dixième (1,4)",
+			"variationIndex": 4,
+			"variables": {
+				"a": "2",
+				"x1": "0"
+			},
+			"answers": ["0,5", "1,4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : moyenne arithmétique (1,5)",
+			"variationIndex": 4,
+			"variables": {
+				"a": "2",
+				"x1": "0"
+			},
+			"answers": ["0,5", "1,5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "a = 3, x1 = 1 : D(1,5 ; 5,2)",
+			"variationIndex": 4,
+			"variables": {
+				"a": "3",
+				"x1": "1"
+			},
+			"answers": ["1,5", "5,2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "a = 3, x1 = 1 : 5,20 (zéro final) en forme à améliorer",
+			"variationIndex": 4,
+			"variables": {
+				"a": "3",
+				"x1": "1"
+			},
+			"answers": ["1,5", "5,20"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["zeros"]
+			}
+		},
+		{
+			"description": "a = 0,5, x1 = 2 : D(2,5 ; 0,18)",
+			"variationIndex": 4,
+			"variables": {
+				"a": "0.5",
+				"x1": "2"
+			},
+			"answers": ["2,5", "0,18"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

@@ -1,7 +1,7 @@
 """Écrit les 5 modèles du lot 1 « suites géométriques à termes positifs » de la 1re générale
 (enseignement scientifique, module spécifique) dans scripts/questions/1gen-1-suites-geometriques/.
 
-Phase 0 validée par David le 2026-11-17 (Q10 à Q12, journal docs/wip/questions-1gen-progress.md § 9) :
+Phase 0 validée par David le 2026-11-17 (Q10 à Q12, journal docs/archive/wip/questions-1gen-progress.md § 9) :
 
 | #  | Point    | Nœud (posé par la migration)  | Niveau |
 | G1 | 1GEN-028 | Suites géométriques › définition    | 1 |

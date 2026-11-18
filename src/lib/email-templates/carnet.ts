@@ -12,7 +12,7 @@
  * Le jeton est dans le chemin : `redactSecretUrl` le masque dans les journaux.
  */
 
-import { escapeHtml } from '$lib/utils/html-escape';
+import { escapeHtml } from '#lib/utils/html-escape.ts';
 import { getSiteUrl } from './parental-consent';
 
 // Types

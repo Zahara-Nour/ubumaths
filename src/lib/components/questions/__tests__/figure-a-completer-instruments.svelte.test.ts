@@ -11,9 +11,9 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import FlashCard from '../FlashCard.svelte';
-import { generateInstance } from '$lib/questions/generator/instance-generator';
-import type { QuestionInstance, QuestionTemplate } from '$lib/questions/types';
-import { templateMarkdown } from '$lib/ubumark';
+import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
+import type { QuestionInstance, QuestionTemplate } from '#lib/questions/types.ts';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 
 // Fenêtre 0..12 × 0..8 ; axe y = x ; A(2 ; 5) → A'(5 ; 2) ; pied H(3,5 ; 3,5)
 const BLOCK = [

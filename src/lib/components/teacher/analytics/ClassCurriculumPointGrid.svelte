@@ -6,17 +6,17 @@
 	Mode projection (anonymisation) reçu via prop pour cohérence page.
 -->
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import { ArrowUpDown } from '@lucide/svelte';
 	import { badgeMeta } from './curriculum-point-badge-meta';
-	import { Button } from '$lib/components/ui/button';
-	import { Skeleton } from '$lib/components/ui/skeleton';
-	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
-	import { Badge } from '$lib/components/ui/badge';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
-	import * as Card from '$lib/components/ui/card';
-	import { studentFollowUpHref } from '$lib/navigation/return-links';
-	import type { CurriculumPointBadge } from '$lib/server/srs/curriculum-point-badge';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Skeleton } from '#lib/components/ui/skeleton/index.ts';
+	import InlineMarkdown from '#lib/components/markdown/InlineMarkdown.svelte';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { studentFollowUpHref } from '#lib/navigation/return-links.ts';
+	import type { CurriculumPointBadge } from '#lib/server/srs/curriculum-point-badge.ts';
 
 	interface ClassStudent {
 		id: string;

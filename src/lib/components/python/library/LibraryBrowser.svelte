@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { Input } from '$lib/components/ui/input';
-	import { Button } from '$lib/components/ui/button';
-	import { Badge } from '$lib/components/ui/badge';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
 	import { BookOpen, Search, X, Tag } from '@lucide/svelte';
-	import { PYTHON_EXAMPLES } from '$lib/data/python-examples';
-	import { filterExamples, getAllTagsFromExamples } from '$lib/data/python-examples/utils';
-	import type { ExampleTag, PythonExample } from '$lib/data/python-examples/types';
+	import { PYTHON_EXAMPLES } from '#lib/data/python-examples/index.ts';
+	import { filterExamples, getAllTagsFromExamples } from '#lib/data/python-examples/utils.ts';
+	import type { ExampleTag, PythonExample } from '#lib/data/python-examples/types.ts';
 
 	interface Props {
 		onLoad: (example: PythonExample) => void;

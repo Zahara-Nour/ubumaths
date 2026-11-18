@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import { Badge } from '$lib/components/ui/badge';
+	import { lore } from '#lib/config/lore.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
 	import { CheckCircle, AlertCircle, BookOpen, Star } from '@lucide/svelte';
-	import type { StudentExerciseView } from '$lib/types/worksheets';
-	import type { MasteryStatus } from '$lib/types/exercise-mastery';
+	import type { StudentExerciseView } from '#lib/types/worksheets.ts';
+	import type { MasteryStatus } from '#lib/types/exercise-mastery.ts';
 
 	interface Props {
 		exercise: StudentExerciseView;

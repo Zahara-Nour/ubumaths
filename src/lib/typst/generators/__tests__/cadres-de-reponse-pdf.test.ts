@@ -9,21 +9,21 @@
  */
 import { describe, expect, it } from 'vitest';
 import { generateWorksheetTypst } from '../worksheet-generator';
-import { generateStudentWorksheetTypst } from '$lib/worksheets/student-worksheet-typst';
-import { estimateAnswerFrames } from '$lib/worksheets/document/answer-frames';
+import { generateStudentWorksheetTypst } from '#lib/worksheets/student-worksheet-typst.ts';
+import { estimateAnswerFrames } from '#lib/worksheets/document/answer-frames.ts';
 import {
 	ANSWER_FRAME_SIZE_LINES,
 	answerFrameLinesToCm,
 	autoAnswerFrameLines,
 	resolveAnswerFrames
-} from '$lib/worksheets/document/answer-frame-lines';
+} from '#lib/worksheets/document/answer-frame-lines.ts';
 import type {
 	InstanceData,
 	StudentWorksheetView,
 	WorksheetConfig,
 	WorksheetRow,
 	WorksheetType
-} from '$lib/types/worksheets';
+} from '#lib/types/worksheets.ts';
 
 const STATEMENT = [
 	'Soit $f(x) = x^2$.',

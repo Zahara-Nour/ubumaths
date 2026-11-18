@@ -342,7 +342,7 @@ Utilisée par `ExerciseForm` (bouton "Vérifier") et par la page consultation ex
 ### Imports : jamais de valeur depuis le barrel
 
 `base-executor.svelte.ts` importe ses **valeurs** (`PYODIDE_CONFIG`, `fromWorkerMessageSchema`) de
-leurs fichiers (`../config`, `../worker/messages`), jamais du barrel `$lib/shared/python` : le
+leurs fichiers (`../config`, `../worker/messages`), jamais du barrel `#lib/shared/python/index.ts` : le
 barrel ré-exporte `PlaygroundExecutor` et `NotebookExecutor`, qui étendent `BasePythonExecutor`.
 Quand un module charge l'exécuteur par son fichier (Blockly, cf.
 [blockly.md](../blockly.md)), le cycle évaluait `extends BasePythonExecutor` avant la classe. Les

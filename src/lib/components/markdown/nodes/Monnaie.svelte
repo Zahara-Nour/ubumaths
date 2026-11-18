@@ -28,12 +28,12 @@
 		MONNAIE_DEFAULT_CAPTIONS,
 		MONNAIE_UNAVAILABLE,
 		type MonnaieNode
-	} from '$lib/ubumark/types/monnaie';
+	} from '#lib/ubumark/types/monnaie.ts';
 	import {
 		buildMonnaieScene,
 		findMonnaieItemAt,
 		MONNAIE_VIEW
-	} from '$lib/ubumark/utils/monnaie-scene';
+	} from '#lib/ubumark/utils/monnaie-scene.ts';
 	import { readAuthoringErrors } from '../authoring-errors';
 	import { SceneMarks, scenePointOf } from './scene-marks.svelte';
 	import MonnaieObjets from './MonnaieObjets.svelte';

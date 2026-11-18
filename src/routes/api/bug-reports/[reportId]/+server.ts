@@ -11,14 +11,14 @@
 
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAuth } from '$lib/server/middleware/auth';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
 import {
 	updateBugReportUserSchema,
 	updateBugReportAdminSchema
-} from '$lib/server/validation/bug-reports';
+} from '#lib/server/validation/bug-reports.ts';
 import { z } from 'zod';
-import type { TablesUpdate } from '$lib/types/database';
-import { createServerLogger } from '$lib/utils/logger';
+import type { TablesUpdate } from '#lib/types/database.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/bug-reports/[reportId]/+server');
 

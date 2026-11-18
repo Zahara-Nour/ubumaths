@@ -11,7 +11,7 @@
 </script>
 
 <script lang="ts">
-	import { resolve } from '$app/paths';
+	import { resolvePath } from '#lib/navigation/resolve-path.ts';
 
 	let { title, intro, pages }: { title: string; intro: string; pages: IndexedPage[] } = $props();
 </script>
@@ -27,7 +27,7 @@
 			{#each pages as p (p.href)}
 				<li>
 					<a
-						href={resolve(p.href as '/')}
+						href={resolvePath(p.href)}
 						class="block h-full rounded-lg border border-border p-4 transition-colors hover:bg-muted"
 					>
 						<span class="font-semibold">{p.title}</span>

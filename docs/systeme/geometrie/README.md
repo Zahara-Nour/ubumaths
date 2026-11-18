@@ -234,9 +234,9 @@ possible.
 ### Invariants (à ne pas casser)
 
 - **Pas d'`eval` ni de `new Function`** dans le pipeline : les expressions passent par `compile()`
-  de `$lib/mathAST/eval/compile`.
+  de `#lib/mathAST/eval/compile.ts`.
 - **`graph/` n'importe jamais `dsl/` en valeur** (aucune occurrence aujourd'hui). Un helper partagé
-  va dans `$lib/mathAST/analysis/` ou un dossier commun.
+  va dans `#lib/mathAST/analysis/` ou un dossier commun.
 - **Gardes de type** : `types/elements.ts` exporte 86 fonctions `isXxx` ; tout code nouveau les
   utilise au lieu de `as GeoXxx` (42 casts historiques subsistent, ne pas en ajouter).
 - **Caches — ne jamais muter un résultat** : `PARSE_CACHE` et `PARSE_FAILURE_CACHE` plafonnés à
@@ -279,7 +279,7 @@ possible.
 ### Thème clair / sombre
 
 - **Couleurs d'auteur** : un NOM (`couleur="rouge"`, 12 noms, synonymes anglais) est gardé tel quel
-  jusqu'au rendu (`resolveColorName` → `$lib/theme/named-colors`), puis devient
+  jusqu'au rendu (`resolveColorName` → `#lib/theme/named-colors.ts`), puis devient
   `var(--color-fig-<nom>)` à l'écran (défini en `light-dark()` dans `src/app.css`) et sa variante
   claire au PDF (`NAMED_COLOR_PRINT`, `colorForPrint`). Un hexadécimal reste fixe.
 - **Habillage** de `GeometryCanvas` (fond, grille, halos, survol) : tokens `var(--color-*)`

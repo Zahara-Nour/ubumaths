@@ -14,8 +14,8 @@ import {
 	tableMock,
 	twoLevelExercise,
 	type TableMock
-} from '$lib/server/worksheets/__tests__/table-mock';
-import { assignmentCopyScope, copyExerciseOrder } from '$lib/worksheets/worksheet-copy';
+} from '#lib/server/worksheets/__tests__/table-mock.ts';
+import { assignmentCopyScope, copyExerciseOrder } from '#lib/worksheets/worksheet-copy.ts';
 
 // ============================================================================
 // MOCKS
@@ -23,7 +23,7 @@ import { assignmentCopyScope, copyExerciseOrder } from '$lib/worksheets/workshee
 
 const currentUser = vi.hoisted(() => ({ id: '' }));
 
-vi.mock('$lib/server/middleware/auth', () => ({
+vi.mock('#lib/server/middleware/auth.ts', () => ({
 	requireRole: async () => ({ user: { id: currentUser.id } }),
 	// Garde commune simulée : la session vient de `locals.safeGetSession` (le prof)
 	requireAuth: async (locals: { safeGetSession: () => Promise<{ user: unknown }> }) => ({
@@ -31,14 +31,14 @@ vi.mock('$lib/server/middleware/auth', () => ({
 		profile: { role: 'teacher' }
 	})
 }));
-vi.mock('$lib/server/worksheets/assignment-access', () => ({
+vi.mock('#lib/server/worksheets/assignment-access.ts', () => ({
 	resolveAssignmentAccess: async () => ({ canRead: true, readOnly: false })
 }));
-vi.mock('$lib/server/worksheets/assignment-classes', () => ({
+vi.mock('#lib/server/worksheets/assignment-classes.ts', () => ({
 	fetchAssignmentClasses: async () => [],
 	formatClassNames: () => null
 }));
-vi.mock('$lib/server/worksheets/correction-visibility', () => ({
+vi.mock('#lib/server/worksheets/correction-visibility.ts', () => ({
 	getCorrectionVisibilityMap: async (_s: unknown, _a: unknown, ids: string[]) =>
 		new Map(ids.map((id) => [id, true]))
 }));

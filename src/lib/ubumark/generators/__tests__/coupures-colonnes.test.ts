@@ -20,8 +20,8 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { createTypstCompiler } from '@myriaddreamin/typst.ts/compiler';
 import { loadFonts } from '@myriaddreamin/typst.ts/options.init';
-import { parseMarkdown } from '$lib/ubumark';
-import { generateTypst } from '$lib/ubumark/generators/typst-generator';
+import { parseMarkdown } from '#lib/ubumark/index.ts';
+import { generateTypst } from '#lib/ubumark/generators/typst-generator.ts';
 
 type Compilateur = ReturnType<typeof createTypstCompiler>;
 

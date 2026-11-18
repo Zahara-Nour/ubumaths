@@ -7,14 +7,14 @@
  * vérifié par le serveur, et n'affiche rien quand la page doit être rechargée.
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { enforceWorkDataOwner, watchWorkDataOwnerOnce } from '$lib/utils/work-data';
+import { enforceWorkDataOwner, watchWorkDataOwnerOnce } from '#lib/utils/work-data.ts';
 
-vi.mock('$app/environment', () => ({ browser: true }));
-vi.mock('$env/static/public', () => ({
+vi.mock('$app/env', () => ({ browser: true }));
+vi.mock('$app/env/public', () => ({
 	PUBLIC_SUPABASE_URL: 'http://localhost',
 	PUBLIC_SUPABASE_ANON_KEY: 'anon'
 }));
-vi.mock('$lib/utils/work-data', () => ({
+vi.mock('#lib/utils/work-data.ts', () => ({
 	enforceWorkDataOwner: vi.fn(),
 	watchWorkDataOwnerOnce: vi.fn()
 }));

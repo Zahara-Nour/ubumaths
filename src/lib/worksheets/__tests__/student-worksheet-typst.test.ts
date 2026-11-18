@@ -6,7 +6,7 @@
  */
 import { describe, it, expect } from 'vitest';
 import { generateStudentWorksheetTypst } from '../student-worksheet-typst';
-import type { StudentWorksheetView } from '$lib/types/worksheets';
+import type { StudentWorksheetView } from '#lib/types/worksheets.ts';
 
 const createWorksheet = (overrides?: Partial<StudentWorksheetView>): StudentWorksheetView =>
 	({

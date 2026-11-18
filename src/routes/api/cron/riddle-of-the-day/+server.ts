@@ -14,10 +14,10 @@
  */
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { verifyCronAuth } from '$lib/server/auth/cron';
-import { checkAndAutoSelectToday } from '$lib/server/riddle-auto-select';
-import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
-import { createServerLogger } from '$lib/utils/logger';
+import { verifyCronAuth } from '#lib/server/auth/cron.ts';
+import { checkAndAutoSelectToday } from '#lib/server/riddle-auto-select.ts';
+import { createServiceRoleClient } from '#lib/server/serviceRoleClient.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/cron/riddle-of-the-day');
 

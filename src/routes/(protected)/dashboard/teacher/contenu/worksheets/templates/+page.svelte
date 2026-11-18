@@ -1,22 +1,22 @@
 <script lang="ts">
-	import { WORKSHEET_TYPE_LABELS } from '$lib/utils/worksheet-type-labels';
-	import { lore } from '$lib/config/lore';
+	import { WORKSHEET_TYPE_LABELS } from '#lib/utils/worksheet-type-labels.ts';
+	import { lore } from '#lib/config/lore.ts';
 	import { enhance } from '$app/forms';
 	import { goto, invalidateAll } from '$app/navigation';
-	import { page } from '$app/stores';
-	import { Button } from '$lib/components/ui/button';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
-	import * as Card from '$lib/components/ui/card';
-	import * as Table from '$lib/components/ui/table';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import { Badge } from '$lib/components/ui/badge';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { page } from '$app/state';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import * as Table from '#lib/components/ui/table/index.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import { Plus, Copy, Trash2, Eye, FileText, Sparkles, Loader2 } from '@lucide/svelte';
 	import type { PageData, ActionData } from './$types';
-	import type { DefaultTemplate } from '$lib/typst/templates';
-	import type { WorksheetType } from '$lib/types/worksheets';
+	import type { DefaultTemplate } from '#lib/typst/templates/index.ts';
+	import type { WorksheetType } from '#lib/types/worksheets.ts';
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
 	// svelte-ignore state_referenced_locally
@@ -42,7 +42,7 @@
 		const params = new URLSearchParams();
 		if (searchQuery) params.set('search', searchQuery);
 		params.set('page', '1');
-		goto(`?${params.toString()}`, { keepFocus: true });
+		goto(`?${params.toString()}`, { reset: false });
 	}
 
 	/**
@@ -50,7 +50,7 @@
 	 */
 	function clearFilters() {
 		searchQuery = '';
-		goto('/dashboard/teacher/contenu/worksheets/templates', { keepFocus: true });
+		goto('/dashboard/teacher/contenu/worksheets/templates', { reset: false });
 	}
 
 	/**
@@ -58,7 +58,7 @@
 	 */
 	function goToPage(pageNum: number) {
 		// eslint-disable-next-line svelte/prefer-svelte-reactivity -- used only for URL building, not state
-		const params = new URLSearchParams($page.url.searchParams);
+		const params = new URLSearchParams(page.url.search);
 		params.set('page', String(pageNum));
 		goto(`?${params.toString()}`);
 	}

@@ -6,11 +6,11 @@
  */
 
 import type { PageServerLoad } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
+import { requireRole } from '#lib/server/middleware/auth.ts';
 import { redirect } from '@sveltejs/kit';
 import { z } from 'zod';
-import { createServerLogger } from '$lib/utils/logger';
-import { loadTextSize } from '$lib/server/worksheets/print-settings';
+import { createServerLogger } from '#lib/utils/logger.ts';
+import { loadTextSize } from '#lib/server/worksheets/print-settings.ts';
 
 const logger = createServerLogger(
 	'(protected)/dashboard/student/worksheets/[assignmentId]/+page.server'

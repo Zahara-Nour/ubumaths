@@ -9,10 +9,10 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import { requireOwnedTemplate } from '$lib/server/template-guard';
-import { listSections, createSection } from '$lib/server/chapter-sections';
-import { createSectionSchema } from '$lib/server/validation/chapter-sections';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { requireOwnedTemplate } from '#lib/server/template-guard.ts';
+import { listSections, createSection } from '#lib/server/chapter-sections.ts';
+import { createSectionSchema } from '#lib/server/validation/chapter-sections.ts';
 
 // Constantes
 /** Le propriétaire vient de l'URL, jamais du corps. */

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import ClassScheduleGrid from '../ClassScheduleGrid.svelte';
-import type { SchoolPeriod } from '$lib/utils/timetable';
+import type { SchoolPeriod } from '#lib/utils/timetable.ts';
 
 /**
  * Les colonnes doivent être les jours de classe de l'école. Elles étaient

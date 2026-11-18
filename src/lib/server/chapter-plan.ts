@@ -18,14 +18,14 @@
  * @module server/chapter-plan
  */
 
-import type { StudentWorksheetListItem } from '$lib/types/worksheets';
+import type { StudentWorksheetListItem } from '#lib/types/worksheets.ts';
 import type {
 	ChapterSection,
 	ChapterDocument,
 	ChapterExercise,
 	ChapterChecklistItem,
 	ChapterSeries
-} from '$lib/types/chapters';
+} from '#lib/types/chapters.ts';
 
 export type ChecklistItemWithProgress = ChapterChecklistItem & {
 	isCompleted: boolean;

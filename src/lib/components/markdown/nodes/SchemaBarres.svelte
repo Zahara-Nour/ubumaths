@@ -22,7 +22,7 @@
 	import {
 		SCHEMA_BARRES_UNAVAILABLE,
 		type SchemaBarresNode
-	} from '$lib/ubumark/types/schema-barres';
+	} from '#lib/ubumark/types/schema-barres.ts';
 	import {
 		SCHEMA_BARRES_CM_PER_UNIT,
 		SCHEMA_BARRES_DASH,
@@ -31,7 +31,7 @@
 		buildSchemaBarresScene,
 		schemaBarresDrawWidth,
 		schemaBarresLabel
-	} from '$lib/ubumark/utils/schema-barres-scene';
+	} from '#lib/ubumark/utils/schema-barres-scene.ts';
 	import { readAuthoringErrors } from '../authoring-errors';
 
 	interface Props {

@@ -1,7 +1,7 @@
 import { readdir, readFile } from 'fs/promises';
 import { join, resolve, sep } from 'path';
 import type { DocumentMetadata } from './markdown-parser';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/docs-scanner');
 

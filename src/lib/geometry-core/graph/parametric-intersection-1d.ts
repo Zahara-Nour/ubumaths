@@ -23,7 +23,7 @@
  */
 
 import type { GeoParametricCurve } from '../types/elements';
-import type { CompiledFn } from '$lib/mathAST/eval/compile';
+import type { CompiledFn } from '#lib/mathAST/eval/compile.ts';
 
 export interface IntersectionConfig1D {
 	/** Number of equally spaced starts in [t_min, t_max]. */

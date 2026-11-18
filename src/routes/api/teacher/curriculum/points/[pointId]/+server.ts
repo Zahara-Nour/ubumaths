@@ -11,13 +11,13 @@
 import { json } from '@sveltejs/kit';
 import { z } from 'zod';
 import type { RequestHandler } from './$types';
-import { requireRoles } from '$lib/server/middleware/auth';
-import { updateProgrammePointSchema } from '$lib/server/validation/curriculum';
-import { curriculumDbError } from '$lib/server/curriculum';
-import { PROGRAMME_POINT_COLS } from '$lib/server/programme-tree';
-import type { ProgrammePoint } from '$lib/types/database-helpers';
-import type { TablesUpdate } from '$lib/types/database';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import { updateProgrammePointSchema } from '#lib/server/validation/curriculum.ts';
+import { curriculumDbError } from '#lib/server/curriculum.ts';
+import { PROGRAMME_POINT_COLS } from '#lib/server/programme-tree.ts';
+import type { ProgrammePoint } from '#lib/types/database-helpers.ts';
+import type { TablesUpdate } from '#lib/types/database.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/teacher/curriculum/points/[pointId]/+server');
 

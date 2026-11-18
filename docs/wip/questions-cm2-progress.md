@@ -6,13 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après #2807._
+_Mis à jour le 2026-11-18, après la publication du lot 10._
 
-- **État** : lots 0 à 9 publiés. Lot 10 heures et durées (082, 083, 084, 153, 085) : phase 0 validée (§ 16.1), 5 modèles écrits et essayés en local (§ 16.2), fichiers mergés (#2807), pas encore en prod.
-- **Prochaine action** : David lance `create-questions --dir scripts/questions/cm2-10 --publier` (dépôt principal), ids reportés, migration nœud + tag (« lecture de l'heure » : 082, 083 ; « calcul de durées » : 084, 153, 085).
-- **En attente de David** : `pnpm tsx scripts/create-questions.ts --dir scripts/questions/cm2-10 --publier` (dépôt principal). ⛔ Jamais `--mettre-a-jour` de `cm2-7b` avec des fichiers d'avant #2770 (ids CM1).
+- **État** : lots 0 à 10 publiés (lot 10 heures et durées : 5/5 `published`, relus au MCP, § 16.4). Restent les lots 11a à 19 du § 14 (ordre validé au § 14.1).
+- **Prochaine action** : phase 0 du lot 11a, problèmes en une étape (058, 059, 061, 066, 115, 116) : relevé MCP, bornes, tableau, questions.
+- **En attente de David** : rien. ⛔ Jamais `--mettre-a-jour` de `cm2-7b` avec des fichiers d'avant #2770 (ids CM1).
 - **Pièges en cours** : `pnpm migration:horodatage` = heure réelle UTC ; `db:migrate` refuse une migration plus ancienne que la dernière jouée → `--dry-run --include-all`, liste relue, puis `--include-all`. Worktree neuf : copier `supabase/.temp/` du dépôt principal, puis `pnpm exec svelte-kit sync`. `Doc-inchangée:` dans un COMMIT. `git commit -m … -- <fichiers>`. Stash du dépôt principal « cm2-9 ids » : copie identique de ce qui est mergé, à supprimer (David).
-- **Worktree / branche** : aucun (retiré après #2807) ; ids à commiter sur `main` ou dans le worktree de la migration.
+- **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -1031,3 +1031,26 @@ ceux pris : lire 9, placer 10 ; durée 9, comparer 10, problèmes 11 ; (e) un se
 - Base locale (copie du dossier dans le scratchpad, `.env.local`, sous `with-db-lock.sh`) : 5 brouillons ; aperçu admin
   à 390 px (Playwright, port 5178) : trotteuse dessinée (lire), trois aiguilles à poser avec l'étiquette « trotteuse »
   (placer), deux et quatre horloges légendées, cases h / min / s.
+
+### 16.3 Lot 10 : brouillons, rangement (2026-11-18)
+
+- David : `create-questions --dir scripts/questions/cm2-10 --publier` (dépôt principal) → `16d78592` (082, niv. 9),
+  `35ba6a94` (083, 10), `99f80f5e` (084, 9), `57846784` (153, 10), `2fda6db8` (085, 11) ; ids commités sur
+  `feat/questions-cm2-lot10-rangement`. MCP : 5 brouillons [CM2] sans nœud ni tag, `updated_at` = création ; les 5
+  points sur « Grandeurs et mesures > Durées » (082, 083 : « lecture de l'heure » ; 084, 153, 085 : « calcul de durées »).
+- Migration `20261118074731_questions_cm2_lot10_rangement_tags.sql`, copie du lot 9 (script, aucun reste du lot 9 au
+  grep). Test `questions-cm2-lot10-rangement-tags` : 9 verts ; corps remplacé par `select 1;` → 5 rouges ; fichier
+  restauré depuis sa copie (`cmp`).
+- `security-auditor` : aucun finding (diff au gabarit du lot 9 : ids, codes, chemins, table temporaire et commentaires
+  seuls ; 5 ids concordants partout ; apostrophe doublée ; aucun changement d'accès).
+- #2816 : CI verte au premier passage ; `check:migrations --pr 2816` sortie 0 ; mergée. `migration list --linked` : la nôtre
+  seule en attente, plus récente que la dernière jouée (`20261118071439`) ; `db:migrate` depuis le worktree (dépôt
+  principal bloqué par des fichiers non commités d'une autre session). MCP : 5 brouillons rangés (082, 083 sur « lecture
+  de l'heure » ; 084, 153, 085 sur « calcul de durées »), un tag chacun, `updated_at` = création.
+- Page à cocher publiée (5 fiches, aucune alerte, trotteuse et figures dessinées) :
+  https://claude.ai/artifact/JTvJHxUWikfoPqdBBK4JBH ; `verdicts` vide au départ.
+
+### 16.4 Lot 10 : relecture, publication (2026-11-18)
+
+- 5 verdicts « OK » sur 5 (base relue) ; `publier-lot` en simulation : 5 brouillons passent ; `--publier` lancé par
+  David ; MCP : 5 `published`. **Lot 10 clos.**

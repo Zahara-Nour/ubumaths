@@ -13,7 +13,7 @@ import {
 	validateAnswerDetailed,
 	type BlankVerdict,
 	type DetailedVerdict
-} from '$lib/utils/answer-validator';
+} from '#lib/utils/answer-validator.ts';
 
 function instance(
 	blanks: Partial<InstanceBlank>[],

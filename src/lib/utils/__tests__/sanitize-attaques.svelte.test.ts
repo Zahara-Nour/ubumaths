@@ -3,7 +3,7 @@
  * c'est le chemin de l'hydratation et de la navigation côté client).
  *
  * Le pendant serveur (jsdom) est `sanitize-attaques.test.ts`. Le nettoyeur des
- * notifications côté serveur (`$lib/server/sanitization`) n'est attaqué que là.
+ * notifications côté serveur (`#lib/server/sanitization.ts`) n'est attaqué que là.
  */
 import { describe, expect, it } from 'vitest';
 import { sanitizeHtml, sanitizePlainText } from '../sanitize';

@@ -30,15 +30,15 @@
  */
 
 import { json, error } from '@sveltejs/kit';
-import { assertGoogleClassroomEnabled } from '$lib/server/google/feature-guard';
+import { assertGoogleClassroomEnabled } from '#lib/server/google/feature-guard.ts';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import type { TablesUpdate } from '$lib/types/database';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import type { TablesUpdate } from '#lib/types/database.ts';
 import {
 	sharedCourseworkIdParamSchema,
 	updateSharedCourseworkByIdSchema
-} from '$lib/server/validation/google';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/validation/google.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/google/shared-coursework/[id]/+server');
 

@@ -29,18 +29,18 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import type { QuestionInstance, ValidationStatus } from '$lib/questions/types';
-import type { CorrectedDetail } from '$lib/types/evaluation-attempt';
+import type { Database } from '#lib/types/database.ts';
+import type { QuestionInstance, ValidationStatus } from '#lib/questions/types.ts';
+import type { CorrectedDetail } from '#lib/types/evaluation-attempt.ts';
 import {
 	QUESTION_ERRORS_MESSAGE,
 	type BlankErrorStat,
 	type ErrorKindCount,
 	type EvaluationQuestionErrors,
 	type QuestionErrorGroup
-} from '$lib/types/evaluation-breakdown';
-import type { ErrorKind } from '$lib/mathAST/error-kind';
-import { ERROR_KIND_ORDER, answerErrorKinds } from '$lib/questions/error-kinds';
+} from '#lib/types/evaluation-breakdown.ts';
+import type { ErrorKind } from '#lib/mathAST/error-kind.ts';
+import { ERROR_KIND_ORDER, answerErrorKinds } from '#lib/questions/error-kinds.ts';
 import { detailsWithinBudget, type DetailBudget } from './corrected-detail';
 import {
 	BreakdownReadError,
@@ -48,7 +48,7 @@ import {
 	readInBatches,
 	type SessionRow
 } from './evaluation-breakdown';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 // Types
 

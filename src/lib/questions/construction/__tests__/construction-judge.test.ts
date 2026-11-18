@@ -7,7 +7,7 @@
 import { describe, it, expect } from 'vitest';
 import { judgeConstruction } from '../judge';
 import { parseConstructionAnswer, serializeConstructionAnswer } from '../answer';
-import type { ConstructionCheck } from '$lib/ubumark/types/construction';
+import type { ConstructionCheck } from '#lib/ubumark/types/construction.ts';
 
 const POINTS = new Map([
 	['A', { x: 1, y: 2 }],

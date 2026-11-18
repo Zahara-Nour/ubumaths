@@ -10,7 +10,7 @@
 	@module components/markdown/nodes/AssocierContenu
 -->
 <script lang="ts">
-	import { associerItemHasBlock } from '$lib/ubumark/parser/associer-parser';
+	import { associerItemHasBlock } from '#lib/ubumark/parser/associer-parser.ts';
 	import InlineMarkdown from '../InlineMarkdown.svelte';
 	import MarkdownRenderer from '../MarkdownRenderer.svelte';
 

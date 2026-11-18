@@ -4,20 +4,20 @@
 	 *
 	 * Displays a single bug report with status, category, and metadata.
 	 */
-	import { cn } from '$lib/utils';
+	import { cn } from '#lib/utils.ts';
 	import type {
 		BugReportWithAuthor,
 		BugReportCategory,
 		BugReportSeverity,
 		BugReportStatus
-	} from '$lib/types/bug-reports';
+	} from '#lib/types/bug-reports.ts';
 	import {
 		BUG_REPORT_CATEGORY_ICONS,
 		BUG_REPORT_CATEGORY_LABELS,
 		BUG_REPORT_SEVERITY_COLORS
-	} from '$lib/types/bug-reports';
+	} from '#lib/types/bug-reports.ts';
 	import BugReportStatusBadge from './BugReportStatusBadge.svelte';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
+	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
 	import { formatDistanceToNow } from 'date-fns';
 	import { fr } from 'date-fns/locale';
 

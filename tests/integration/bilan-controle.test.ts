@@ -17,11 +17,11 @@
 
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 import { cleanupAllTestData } from '../helpers/database/trigger-test-helpers';
 import { DEFAULT_TEST_PASSWORD } from '../helpers/database/supabase-client';
 import { TestData } from '../helpers/database/test-data-factory';
-import { getEvaluationBreakdown } from '$lib/server/evaluation-breakdown';
+import { getEvaluationBreakdown } from '#lib/server/evaluation-breakdown.ts';
 
 // Types
 type Client = SupabaseClient<Database>;

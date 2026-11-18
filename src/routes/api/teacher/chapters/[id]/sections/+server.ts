@@ -6,10 +6,10 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import { listSections, createSection } from '$lib/server/chapter-sections';
-import { createSectionSchema } from '$lib/server/validation/chapter-sections';
-import { uuidSchema } from '$lib/server/validation/common';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { listSections, createSection } from '#lib/server/chapter-sections.ts';
+import { createSectionSchema } from '#lib/server/validation/chapter-sections.ts';
+import { uuidSchema } from '#lib/server/validation/common.ts';
 
 type ZodIssue = { path: (string | number)[]; message: string };
 

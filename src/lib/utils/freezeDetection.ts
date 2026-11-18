@@ -39,7 +39,7 @@
  * - https://developer.chrome.com/blog/memory-and-energy-saver-mode
  */
 
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 
 // =============================================================================
 // Configuration

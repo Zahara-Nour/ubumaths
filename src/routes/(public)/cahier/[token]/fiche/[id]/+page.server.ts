@@ -14,7 +14,7 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { z } from 'zod';
-import { resolveWorksheetByShareToken } from '$lib/server/journal-share-tokens';
+import { resolveWorksheetByShareToken } from '#lib/server/journal-share-tokens.ts';
 
 /** Même forme que la contrainte SQL : 16 à 64 caractères alphanumériques. */
 const tokenSchema = z

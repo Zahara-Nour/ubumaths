@@ -1,6 +1,6 @@
 import { error } from '@sveltejs/kit';
-import type { Handle } from '@sveltejs/kit';
-import { dev } from '$app/environment';
+import type { Handle } from '@sveltejs/kit/hooks';
+import { dev } from '$app/env';
 
 /**
  * CSRF Protection Handle

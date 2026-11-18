@@ -159,6 +159,15 @@ Pour du state partagé entre toutes les instances d'un composant, utiliser `<scr
 
 ## TypeScript
 
+### Imports `#lib` et `#tests`
+
+`src/lib` s'importe par `#lib/…`, `tests` par `#tests/…` : des **imports de sous-chemin** (champ `imports` de `package.json`), qui remplacent l'alias `$lib` retiré par SvelteKit 3.
+
+- **Extension toujours écrite** : `#lib/utils/logger.ts`, `#lib/stores/toaster.svelte.ts`, `#lib/components/ui/button/index.ts`, `#lib/components/navigation/BackLink.svelte`. Sans extension, ni Node ni TypeScript ne trouvent le fichier.
+- `tsconfig.json` déclare les mêmes chemins dans `paths` : sans eux, `pnpm check:incremental` (tsgo) ne relie pas `#lib/…/X.svelte` au composant et le type en composant générique (props en `any`).
+- Les scripts lancés par `tsx` les résolvent sans configuration (Node lit `package.json`).
+- **Branche partie avant #2826** (encore en `$lib`) : après `git merge origin/main`, `pnpm migrer:diese` convertit les imports des fichiers de la branche (modifiés depuis `origin/main` + non suivis), extension comprise ; `--essai` montre sans écrire, des fichiers en argument restreignent la liste. Un import dont le fichier n'existe pas est signalé (préfixe seul changé).
+
 ### Jamais `any`
 
 ```typescript
@@ -178,17 +187,17 @@ function isProfile(v: unknown): v is Profile {
 
 ### Types de base de données
 
-- `Database`, `Tables<>`, `TablesInsert<>`, `TablesUpdate<>`, `Json` → importer depuis `$lib/types/database` (auto-généré, **ne jamais y toucher**).
-- Alias de tables, unions, interfaces composites → **uniquement** dans `$lib/types/database-helpers.ts`.
+- `Database`, `Tables<>`, `TablesInsert<>`, `TablesUpdate<>`, `Json` → importer depuis `#lib/types/database.ts` (auto-généré, **ne jamais y toucher**).
+- Alias de tables, unions, interfaces composites → **uniquement** dans `#lib/types/database-helpers.ts`.
 
 ```typescript
 // ✅ Alias dans database-helpers.ts
-import type { Tables } from '$lib/types/database';
+import type { Tables } from '#lib/types/database.ts';
 export type Profile = Tables<'profiles'>;
 export type ProfileRole = 'teacher' | 'student' | 'admin';
 
 // ✅ Importation dans le code applicatif
-import type { Profile } from '$lib/types/database-helpers';
+import type { Profile } from '#lib/types/database-helpers.ts';
 ```
 
 ---
@@ -209,8 +218,8 @@ Ordre **obligatoire** dans tout fichier `.ts` ou `<script lang="ts">` :
 ```svelte
 <script lang="ts">
 	// 1. Imports
-	import { Badge } from '$lib/components/ui/badge';
-	import type { GradeCode } from '$lib/types/grades';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import type { GradeCode } from '#lib/types/grades.ts';
 
 	// 2. Types
 	interface Props {
@@ -314,7 +323,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 ## Toaster (notifications)
 
 ```typescript
-import { toaster } from '$lib/stores/toaster.svelte';
+import { toaster } from '#lib/stores/toaster.svelte.ts';
 
 toaster.success('Sauvegardé');
 toaster.error('Erreur lors de la sauvegarde');
@@ -382,16 +391,16 @@ const store = getStore();
 
 ## Anti-patterns clés (récapitulatif)
 
-| ❌ À éviter                                      | ✅ Correct                                              |
-| ------------------------------------------------ | ------------------------------------------------------- |
-| `export let x`                                   | `let { x } = $props()`                                  |
-| `$: doubled = x * 2`                             | `let doubled = $derived(x * 2)`                         |
-| `$: { sideEffect(x); }`                          | `$effect(() => { sideEffect(x); })`                     |
-| `<svelte:component this={C} />`                  | `<C />`                                                 |
-| `import { supabase } from '$lib/supabaseClient'` | `locals.supabase` (serveur) ou `data.supabase` (client) |
-| Types dans `database.ts`                         | Types dans `database-helpers.ts`                        |
-| `data: any`                                      | `data: unknown` + type guard                            |
-| `<select>` / `<input type="checkbox">`           | `<MySelect>` / `<MyCheckbox>`                           |
+| ❌ À éviter                                         | ✅ Correct                                              |
+| --------------------------------------------------- | ------------------------------------------------------- |
+| `export let x`                                      | `let { x } = $props()`                                  |
+| `$: doubled = x * 2`                                | `let doubled = $derived(x * 2)`                         |
+| `$: { sideEffect(x); }`                             | `$effect(() => { sideEffect(x); })`                     |
+| `<svelte:component this={C} />`                     | `<C />`                                                 |
+| `import { supabase } from '#lib/supabaseClient.ts'` | `locals.supabase` (serveur) ou `data.supabase` (client) |
+| Types dans `database.ts`                            | Types dans `database-helpers.ts`                        |
+| `data: any`                                         | `data: unknown` + type guard                            |
+| `<select>` / `<input type="checkbox">`              | `<MySelect>` / `<MyCheckbox>`                           |
 
 ---
 

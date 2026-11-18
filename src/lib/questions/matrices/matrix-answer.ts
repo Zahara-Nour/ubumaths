@@ -28,16 +28,16 @@
  * @module questions/matrices/matrix-answer
  */
 
-import type { ValidationStatus } from '$lib/questions/types';
-import type { MathNode } from '$lib/mathAST/types';
-import { multiply, subtract } from '$lib/mathAST/factory';
-import { isAnswerTooComplex } from '$lib/questions/answer-complexity';
+import type { ValidationStatus } from '#lib/questions/types.ts';
+import type { MathNode } from '#lib/mathAST/types.ts';
+import { multiply, subtract } from '#lib/mathAST/factory.ts';
+import { isAnswerTooComplex } from '#lib/questions/answer-complexity.ts';
 import {
 	cleaned,
 	isExactlyZero,
 	parseCoordinate,
 	splitTopLevel
-} from '$lib/questions/vectors/vector-answer';
+} from '#lib/questions/vectors/vector-answer.ts';
 
 // Types
 export interface MatrixVerdict {

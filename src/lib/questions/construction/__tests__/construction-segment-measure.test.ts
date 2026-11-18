@@ -21,7 +21,7 @@ import {
 } from '../segment-measure';
 import { solutionLines, solutionRuler, solutionSegmentMeasure } from '../drawing';
 import { serializeMeasuredAnswer, type DrawnObject, type DrawnRegle } from '../answer';
-import { readConstructionHeader } from '$lib/ubumark/parser/construction-parser';
+import { readConstructionHeader } from '#lib/ubumark/parser/construction-parser.ts';
 
 function checksOf(source: string) {
 	const { spec, errors } = readConstructionHeader(source);

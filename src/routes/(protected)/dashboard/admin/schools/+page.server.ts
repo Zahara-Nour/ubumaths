@@ -1,10 +1,10 @@
 import { error, fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
-import { schoolUpsertSchema } from '$lib/server/validation/schools';
-import { uuidSchema } from '$lib/server/validation/common';
-import { requireAdmin } from '$lib/server/middleware/auth';
-import { assertTypedConfirmation } from '$lib/server/confirmAction';
-import { createServerLogger } from '$lib/utils/logger';
+import { schoolUpsertSchema } from '#lib/server/validation/schools.ts';
+import { uuidSchema } from '#lib/server/validation/common.ts';
+import { requireAdmin } from '#lib/server/middleware/auth.ts';
+import { assertTypedConfirmation } from '#lib/server/confirmAction.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('(protected)/dashboard/admin/schools/+page.server');
 

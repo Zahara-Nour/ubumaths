@@ -4,12 +4,12 @@
 	 * un atelier éphémère ouvert dans un nouvel onglet (phase 0
 	 * `docs/archive/wip/python-vers-atelier-phase0.md`). Le playground ne bouge pas.
 	 */
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
-	import { Button } from '$lib/components/ui/button';
+	import * as DropdownMenu from '#lib/components/ui/dropdown-menu/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import { ChevronDown } from '@lucide/svelte';
-	import { offerOf, type AtelierOffer, type PythonListReport } from '$lib/atelier/from-python';
-	import { postToAtelier } from '$lib/atelier/python-mailbox';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { offerOf, type AtelierOffer, type PythonListReport } from '#lib/atelier/from-python.ts';
+	import { postToAtelier } from '#lib/atelier/python-mailbox.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 
 	// Props
 	let { lists }: { lists: readonly PythonListReport[] } = $props();

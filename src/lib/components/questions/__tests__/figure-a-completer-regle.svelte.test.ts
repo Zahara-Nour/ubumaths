@@ -13,10 +13,10 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import FlashCard from '../FlashCard.svelte';
-import { generateInstance } from '$lib/questions/generator/instance-generator';
-import type { QuestionInstance, QuestionTemplate } from '$lib/questions/types';
-import type { Position } from '$lib/questions/construction/judge';
-import { templateMarkdown } from '$lib/ubumark';
+import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
+import type { QuestionInstance, QuestionTemplate } from '#lib/questions/types.ts';
+import type { Position } from '#lib/questions/construction/judge.ts';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 
 // Fenêtre 0..10 × 0..8 ; A(2 ; 4) ; règle de 10 cm
 const BLOCK = [

@@ -7,14 +7,14 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { POST } from '../award/+server';
-import * as auth from '$lib/server/middleware/auth';
-import * as studentAccess from '$lib/server/middleware/student-access';
-import * as service from '$lib/server/achievements/service';
+import * as auth from '#lib/server/middleware/auth.ts';
+import * as studentAccess from '#lib/server/middleware/student-access.ts';
+import * as service from '#lib/server/achievements/service.ts';
 
 // Mock dependencies
-vi.mock('$lib/server/middleware/auth');
-vi.mock('$lib/server/middleware/student-access');
-vi.mock('$lib/server/achievements/service');
+vi.mock('#lib/server/middleware/auth.ts');
+vi.mock('#lib/server/middleware/student-access.ts');
+vi.mock('#lib/server/achievements/service.ts');
 
 describe('POST /api/achievements/award', () => {
 	let mockLocals: { supabase: unknown; user?: { id: string } };

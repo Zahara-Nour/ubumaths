@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { cn } from '$lib/utils';
+	import { cn } from '#lib/utils.ts';
 	import { formatTime } from '../core/timeline.svelte';
 	import type { TimelineState } from '../core/timeline.svelte';
 

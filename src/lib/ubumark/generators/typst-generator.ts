@@ -50,11 +50,11 @@ import type {
 	CodeBlockNode,
 	TypstTranspilerOptions,
 	ResolvedTypstTranspilerOptions
-} from '$lib/exercises/types';
-import { getDimensionsForFormat } from '$lib/exercises/services/image-dimensions';
-import { expressionToRawLatex } from '$lib/components/markdown/utils/math-utils';
-import { unitWritingToTypst } from '$lib/mathAST/units/display';
-import { toLocaleDecimal } from '$lib/utils/french-math';
+} from '#lib/exercises/types.ts';
+import { getDimensionsForFormat } from '#lib/exercises/services/image-dimensions.ts';
+import { expressionToRawLatex } from '#lib/components/markdown/utils/math-utils.ts';
+import { unitWritingToTypst } from '#lib/mathAST/units/display.ts';
+import { toLocaleDecimal } from '#lib/utils/french-math.ts';
 import { generateVariationTableTypst } from './variation-table-typst';
 import { generateProbabilityTreeTypst } from './probability-tree-typst';
 import { generateTrigCircleTypst } from './trig-circle-typst';
@@ -88,9 +88,9 @@ import type { VariationTableNode } from '../types/variation-table';
 import type { ProbabilityTreeNode } from '../types/probability-tree';
 import type { TrigCircleNode } from '../types/trig-circle';
 import type { NumberLineNode } from '../types/number-line';
-import { createLogger } from '$lib/utils/logger';
+import { createLogger } from '#lib/utils/logger.ts';
 import { detailKindLabel, type CalloutKind, type DetailKind } from '../utils/detail-kinds';
-import { urlToVirtualPath, isExternalUrl as checkExternalUrl } from '$lib/typst/image-loader';
+import { urlToVirtualPath, isExternalUrl as checkExternalUrl } from '#lib/typst/image-loader.ts';
 
 const logger = createLogger('typst-generator');
 
@@ -3858,7 +3858,7 @@ export async function markdownToTypst(
 	options: TypstTranspilerOptions = {}
 ): Promise<string> {
 	// Dynamic import to avoid circular dependency issues
-	const { parseMarkdown } = await import('$lib/ubumark/parser/markdown-parser');
+	const { parseMarkdown } = await import('#lib/ubumark/parser/markdown-parser.ts');
 	// Rendu réel des blocs ```figure, chargé À LA DEMANDE (import dynamique : il
 	// n'entre pas dans le chunk des pages Markdown — voir figure-typst-registry.ts)
 	await import('./figure-typst-setup');

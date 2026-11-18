@@ -11,7 +11,7 @@
  */
 
 import type { MathNode } from '../../types';
-import { number, euler, superscript } from '$lib/mathAST/factory';
+import { number, euler, superscript } from '#lib/mathAST/factory.ts';
 import { mapNode } from '../../transforms';
 import { parseLatexSafe } from '../../parser';
 import { parseCustom } from '../../parser/custom';

@@ -23,13 +23,13 @@
 -->
 
 <script lang="ts">
-	import type { QuestionVariable } from '$lib/questions/types';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
-	import { Badge } from '$lib/components/ui/badge';
-	import * as Card from '$lib/components/ui/card';
-	import * as Dialog from '$lib/components/ui/dialog';
+	import type { QuestionVariable } from '#lib/questions/types.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
 	import { Plus, Trash2, ArrowUp, ArrowDown } from '@lucide/svelte';
 
 	interface Props {

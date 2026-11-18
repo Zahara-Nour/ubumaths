@@ -1,4 +1,5 @@
 {
+	"id": "614048c9-0e96-4577-9bd4-ce4fe1467559",
 	"title": "Aire en centimètres carrés",
 	"description": "Aire d'une figure sur un quadrillage de carreaux de 1 cm, en cm² : carreaux entiers ; avec des demi-carreaux ; écart entre les aires de deux figures",
 	"grades": ["CM1"],

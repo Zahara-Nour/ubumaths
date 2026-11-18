@@ -3,9 +3,9 @@
  * Types for test/assessment functionality (display, interactive, course modes)
  */
 
-import type { SeriesItem } from '$lib/validation/series';
-import type { QuestionInstance } from '$lib/questions/types';
-import type { AnswerData } from '$lib/types/question-display';
+import type { SeriesItem } from '#lib/validation/series.ts';
+import type { QuestionInstance } from '#lib/questions/types.ts';
+import type { AnswerData } from '#lib/types/question-display.ts';
 
 // ===========================================================================
 // TEST MODES

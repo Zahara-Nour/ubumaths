@@ -21,7 +21,7 @@ import {
 	openInterval,
 	universalDomain
 } from '../../domain/factory';
-import { number, opposite } from '$lib/mathAST/factory';
+import { number, opposite } from '#lib/mathAST/factory.ts';
 import type { Domain } from '../../domain/types';
 import { toLatex } from '../../latex-generator';
 

@@ -7,7 +7,7 @@ import {
 	findRobotsToProduce,
 	hasRobotToProduce,
 	parseRobotContent
-} from '$lib/ubumark/parser/robot-parser';
+} from '#lib/ubumark/parser/robot-parser.ts';
 import {
 	expectedRobotAnswer,
 	readExpectedRobotAnswer,
@@ -15,8 +15,8 @@ import {
 	ROBOT_AILLEURS,
 	ROBOT_INTERDITE,
 	ROBOT_SORTIE
-} from '$lib/ubumark/utils/robot-answer';
-import { ecrireCode } from '$lib/ubumark/utils/robot-moteur';
+} from '#lib/ubumark/utils/robot-answer.ts';
+import { ecrireCode } from '#lib/ubumark/utils/robot-moteur.ts';
 
 const bloc = (...lignes: string[]) => lignes.join('\n');
 

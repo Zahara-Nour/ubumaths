@@ -37,12 +37,12 @@
 		COLLECTION_SIZE_CM,
 		type CollectionSet,
 		type CollectionSpec
-	} from '$lib/ubumark/types/collection';
+	} from '#lib/ubumark/types/collection.ts';
 	import {
 		COLLECTION_VIEW,
 		findCollectionItemAt,
 		type CollectionItem
-	} from '$lib/ubumark/utils/collection-scene';
+	} from '#lib/ubumark/utils/collection-scene.ts';
 	import {
 		addToBuild,
 		buildAnswer,
@@ -58,7 +58,7 @@
 		reserveScene,
 		solutionBuild,
 		type BuildPiece
-	} from '$lib/ubumark/utils/collection-construire';
+	} from '#lib/ubumark/utils/collection-construire.ts';
 	import { scenePointOf } from './scene-marks.svelte';
 	import CollectionObjets from './CollectionObjets.svelte';
 

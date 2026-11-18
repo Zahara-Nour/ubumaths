@@ -12,16 +12,16 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import QuestionCard from '../QuestionCard.svelte';
-import { generateInstance } from '$lib/questions/generator/instance-generator';
-import { toDisplayInstance, toPublicQuestion } from '$lib/questions/public-question';
-import { toSubmission } from '$lib/questions/submission';
-import { gradeQuestion } from '$lib/questions/grading';
-import { choiceLetter } from '$lib/questions/choices';
-import { toOriginalChoiceValues } from '$lib/questions/choice-case';
-import EvaluationResults from '$lib/components/test/EvaluationResults.svelte';
-import type { QuestionInstance, QuestionTemplate } from '$lib/questions/types';
-import type { AnswerData } from '$lib/types/question-display';
-import { templateMarkdown } from '$lib/ubumark';
+import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
+import { toDisplayInstance, toPublicQuestion } from '#lib/questions/public-question.ts';
+import { toSubmission } from '#lib/questions/submission.ts';
+import { gradeQuestion } from '#lib/questions/grading.ts';
+import { choiceLetter } from '#lib/questions/choices.ts';
+import { toOriginalChoiceValues } from '#lib/questions/choice-case.ts';
+import EvaluationResults from '#lib/components/test/EvaluationResults.svelte';
+import type { QuestionInstance, QuestionTemplate } from '#lib/questions/types.ts';
+import type { AnswerData } from '#lib/types/question-display.ts';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 
 const TEMPLATE = {
 	id: '00000000-0000-4000-8000-0000000000c1',

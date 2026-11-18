@@ -6,8 +6,8 @@ import { describe, it, expect } from 'vitest';
 import { page, userEvent } from 'vitest/browser';
 import { render } from 'vitest-browser-svelte';
 import BlockHelpPage from '../BlockHelpPage.svelte';
-import { horlogeEntry } from '$lib/block-catalog/horloge';
-import { BLOCK_CATALOG } from '$lib/block-catalog';
+import { horlogeEntry } from '#lib/block-catalog/horloge.ts';
+import { BLOCK_CATALOG } from '#lib/block-catalog/index.ts';
 
 describe('BlockHelpPage', () => {
 	it('montre les réglages, un bouton Copier par exemple et les horloges', async () => {

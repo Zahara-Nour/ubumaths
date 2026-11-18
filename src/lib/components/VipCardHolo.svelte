@@ -47,9 +47,9 @@
 <script lang="ts">
 	import { spring } from 'svelte/motion';
 	import { onMount } from 'svelte';
-	import type { VipCard } from '$lib/types/vip-card';
-	import { activeCard, orientation, resetBaseOrientation } from '$lib/stores/holo-card.svelte';
-	import { clamp, round, adjust } from '$lib/utils/holo-math';
+	import type { VipCard } from '#lib/types/vip-card.ts';
+	import { activeCard, orientation, resetBaseOrientation } from '#lib/stores/holo-card.svelte.ts';
+	import { clamp, round, adjust } from '#lib/utils/holo-math.ts';
 
 	interface Props {
 		card: VipCard;

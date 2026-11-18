@@ -3,7 +3,7 @@
  *
  * Le programme d'un niveau s'affiche par branche > notion, filtré par les
  * points de ce niveau. Ce module ne lit rien : il range des lignes déjà lues
- * (cf. `$lib/server/programme-tree`), et sert aussi côté client pour masquer
+ * (cf. `#lib/server/programme-tree.ts`), et sert aussi côté client pour masquer
  * les archivés.
  *
  * Ordre :
@@ -11,8 +11,8 @@
  *   - points : ordre du BO (`display_order`, puis code).
  */
 
-import type { Tables } from '$lib/types/database';
-import type { ClassificationNode, ProgrammePoint } from '$lib/types/database-helpers';
+import type { Tables } from '#lib/types/database.ts';
+import type { ClassificationNode, ProgrammePoint } from '#lib/types/database-helpers.ts';
 
 // ---------------------------------------------------------------------------
 // Types

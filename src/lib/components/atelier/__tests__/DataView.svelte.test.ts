@@ -11,8 +11,8 @@ import { render } from 'vitest-browser-svelte';
 import { page, userEvent } from 'vitest/browser';
 import { tick } from 'svelte';
 import AtelierContainer from '../AtelierContainer.svelte';
-import { Atelier } from '$lib/atelier/atelier.svelte';
-import { isList } from '$lib/atelier/types';
+import { Atelier } from '#lib/atelier/atelier.svelte.ts';
+import { isList } from '#lib/atelier/types.ts';
 import { chooseObjectAction } from './harness/function-card';
 import { onDesktopScreen } from './harness/desktop-screen';
 

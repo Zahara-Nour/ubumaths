@@ -3,15 +3,15 @@
 	 * Student Competence Math — detail page
 	 */
 
-	import * as Card from '$lib/components/ui/card';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import { Badge } from '$lib/components/ui/badge';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
 	import { Check, Circle } from '@lucide/svelte';
 	import {
 		formatMathCompetenceLevel,
 		getMathCompetenceLevelVisual,
 		type MissingForNextItem
-	} from '$lib/types/skills';
+	} from '#lib/types/skills.ts';
 	import type { PageData } from './$types';
 
 	interface Props {

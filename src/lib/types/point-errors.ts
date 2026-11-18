@@ -5,7 +5,7 @@
  * « élèves concernés » du widget « Top points à remédier ».
  */
 
-import type { EvaluationQuestionErrors } from '$lib/types/evaluation-breakdown';
+import type { EvaluationQuestionErrors } from '#lib/types/evaluation-breakdown.ts';
 
 /** Erreurs d'un modèle du point : mêmes blocs que le bilan d'un contrôle */
 export interface PointTemplateErrors {

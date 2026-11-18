@@ -1,9 +1,9 @@
-import { formatMedium, toPataphysicalDate } from '$lib/almanach/calendar';
-import { ambianceMonthIndex } from '$lib/almanach/palettes';
-import { allArticles, pickRandomArticle, publishedArticles } from '$lib/server/shtam/articles';
-import { toSummary, todayIsoInParis } from '$lib/server/shtam/present';
+import { formatMedium, toPataphysicalDate } from '#lib/almanach/calendar.ts';
+import { ambianceMonthIndex } from '#lib/almanach/palettes.ts';
+import { allArticles, pickRandomArticle, publishedArticles } from '#lib/server/shtam/articles.ts';
+import { toSummary, todayIsoInParis } from '#lib/server/shtam/present.ts';
 import type { PageServerLoad } from './$types';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('(public)/royaume/+page.server');
 

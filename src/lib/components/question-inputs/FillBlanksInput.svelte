@@ -35,12 +35,12 @@
 -->
 
 <script lang="ts">
-	import '$lib/utils/mathlive-styles';
-	import { parseMarkdown } from '$lib/ubumark';
-	import { lexiconRuntime, loadLexiconRuntime } from '$lib/lexicon/runtime-store.svelte';
-	import { readLexicon } from '$lib/components/markdown/lexicon-context';
-	import type { ResolvedMarkdown } from '$lib/ubumark';
-	import type { GradeLevel, InstanceBlank, QuestionInstance } from '$lib/questions/types';
+	import '#lib/utils/mathlive-styles.ts';
+	import { parseMarkdown } from '#lib/ubumark/index.ts';
+	import { lexiconRuntime, loadLexiconRuntime } from '#lib/lexicon/runtime-store.svelte.ts';
+	import { readLexicon } from '#lib/components/markdown/lexicon-context.ts';
+	import type { ResolvedMarkdown } from '#lib/ubumark/index.ts';
+	import type { GradeLevel, InstanceBlank, QuestionInstance } from '#lib/questions/types.ts';
 	import type { MathfieldElement } from 'mathlive';
 	import {
 		hasPrompts,
@@ -48,74 +48,74 @@
 		expressionToLatex,
 		replacePromptsWithValues,
 		replacePromptsWithPrefilled
-	} from '$lib/components/markdown/utils/math-utils';
-	import { toFrenchDecimal } from '$lib/utils/french-math';
-	import { operationCaseCount } from '$lib/ubumark/utils/operation-division-answer';
-	import { barsCaseCount } from '$lib/ubumark/utils/barres-placer';
-	import { boxPlotCaseCount } from '$lib/ubumark/utils/boxplot-placer';
-	import { buildUnitsKeyboardLayout, unitKeysFor } from '$lib/questions/units/keyboard-units';
-	import { buildIntervalsKeyboardLayout } from '$lib/questions/intervals/keyboard-intervals';
-	import { buildVectorsKeyboardLayout } from '$lib/questions/vectors/keyboard-vectors';
-	import { buildMatricesKeyboardLayout } from '$lib/questions/matrices/keyboard-matrices';
+	} from '#lib/components/markdown/utils/math-utils.ts';
+	import { toFrenchDecimal } from '#lib/utils/french-math.ts';
+	import { operationCaseCount } from '#lib/ubumark/utils/operation-division-answer.ts';
+	import { barsCaseCount } from '#lib/ubumark/utils/barres-placer.ts';
+	import { boxPlotCaseCount } from '#lib/ubumark/utils/boxplot-placer.ts';
+	import { buildUnitsKeyboardLayout, unitKeysFor } from '#lib/questions/units/keyboard-units.ts';
+	import { buildIntervalsKeyboardLayout } from '#lib/questions/intervals/keyboard-intervals.ts';
+	import { buildVectorsKeyboardLayout } from '#lib/questions/vectors/keyboard-vectors.ts';
+	import { buildMatricesKeyboardLayout } from '#lib/questions/matrices/keyboard-matrices.ts';
 	import {
 		buildCombinatoricsKeyboardLayout,
 		hasCombinatoricsKeyboard
-	} from '$lib/questions/combinatorics/keyboard-combinatorics';
-	import type { BlockNode, InlineNode, TableCellNode } from '$lib/ubumark';
+	} from '#lib/questions/combinatorics/keyboard-combinatorics.ts';
+	import type { BlockNode, InlineNode, TableCellNode } from '#lib/ubumark/index.ts';
 	import type { Snippet } from 'svelte';
-	import type { GenericFunctionConfig } from '$lib/mathAST';
-	import type { CapitalPairs } from '$lib/mathAST/parser/types';
+	import type { GenericFunctionConfig } from '#lib/mathAST/index.ts';
+	import type { CapitalPairs } from '#lib/mathAST/parser/types.ts';
 
 	// Node components (reuse from MarkdownRenderer)
-	import ParagraphNode from '$lib/components/markdown/nodes/ParagraphNode.svelte';
-	import MathBlock from '$lib/components/markdown/nodes/MathBlock.svelte';
-	import MathPrompt from '$lib/components/markdown/nodes/MathPrompt.svelte';
-	import HeadingNode from '$lib/components/markdown/nodes/HeadingNode.svelte';
-	import StaticBlockNode from '$lib/components/markdown/nodes/StaticBlockNode.svelte';
-	import TableNode from '$lib/components/markdown/nodes/TableNode.svelte';
-	import ImageDisplay from '$lib/components/markdown/nodes/ImageDisplay.svelte';
-	import Operation from '$lib/components/markdown/nodes/Operation.svelte';
-	import Collection from '$lib/components/markdown/nodes/Collection.svelte';
-	import NumberLine from '$lib/components/markdown/nodes/NumberLine.svelte';
-	import Courbe from '$lib/components/markdown/nodes/Courbe.svelte';
-	import HorlogePlacer from '$lib/components/markdown/nodes/HorlogePlacer.svelte';
-	import TrigPlacer from '$lib/components/markdown/nodes/TrigPlacer.svelte';
-	import BarresPlacer from '$lib/components/markdown/nodes/BarresPlacer.svelte';
-	import BoxPlotPlacer from '$lib/components/markdown/nodes/BoxPlotPlacer.svelte';
-	import RangerPlacer from '$lib/components/markdown/nodes/RangerPlacer.svelte';
-	import AssocierPlacer from '$lib/components/markdown/nodes/AssocierPlacer.svelte';
-	import TrousEtiquettes from '$lib/components/markdown/nodes/TrousEtiquettes.svelte';
-	import TortueProgramme from '$lib/components/markdown/nodes/TortueProgramme.svelte';
-	import RobotCode from '$lib/components/markdown/nodes/RobotCode.svelte';
-	import CalculProgramme from '$lib/components/markdown/nodes/CalculProgramme.svelte';
-	import PartageColorier from '$lib/components/markdown/nodes/PartageColorier.svelte';
-	import CubesGeste from '$lib/components/markdown/nodes/CubesGeste.svelte';
-	import PatronGeste from '$lib/components/markdown/nodes/PatronGeste.svelte';
-	import SolideGeste from '$lib/components/markdown/nodes/SolideGeste.svelte';
-	import Monnaie from '$lib/components/markdown/nodes/Monnaie.svelte';
-	import BuildAnswer from '$lib/components/questions/BuildAnswer.svelte';
-	import FigureBlock from '$lib/components/markdown/nodes/FigureBlock.svelte';
-	import ChoiceBlock from '$lib/components/markdown/nodes/ChoiceBlock.svelte';
-	import VariationTable from '$lib/components/markdown/nodes/VariationTable.svelte';
+	import ParagraphNode from '#lib/components/markdown/nodes/ParagraphNode.svelte';
+	import MathBlock from '#lib/components/markdown/nodes/MathBlock.svelte';
+	import MathPrompt from '#lib/components/markdown/nodes/MathPrompt.svelte';
+	import HeadingNode from '#lib/components/markdown/nodes/HeadingNode.svelte';
+	import StaticBlockNode from '#lib/components/markdown/nodes/StaticBlockNode.svelte';
+	import TableNode from '#lib/components/markdown/nodes/TableNode.svelte';
+	import ImageDisplay from '#lib/components/markdown/nodes/ImageDisplay.svelte';
+	import Operation from '#lib/components/markdown/nodes/Operation.svelte';
+	import Collection from '#lib/components/markdown/nodes/Collection.svelte';
+	import NumberLine from '#lib/components/markdown/nodes/NumberLine.svelte';
+	import Courbe from '#lib/components/markdown/nodes/Courbe.svelte';
+	import HorlogePlacer from '#lib/components/markdown/nodes/HorlogePlacer.svelte';
+	import TrigPlacer from '#lib/components/markdown/nodes/TrigPlacer.svelte';
+	import BarresPlacer from '#lib/components/markdown/nodes/BarresPlacer.svelte';
+	import BoxPlotPlacer from '#lib/components/markdown/nodes/BoxPlotPlacer.svelte';
+	import RangerPlacer from '#lib/components/markdown/nodes/RangerPlacer.svelte';
+	import AssocierPlacer from '#lib/components/markdown/nodes/AssocierPlacer.svelte';
+	import TrousEtiquettes from '#lib/components/markdown/nodes/TrousEtiquettes.svelte';
+	import TortueProgramme from '#lib/components/markdown/nodes/TortueProgramme.svelte';
+	import RobotCode from '#lib/components/markdown/nodes/RobotCode.svelte';
+	import CalculProgramme from '#lib/components/markdown/nodes/CalculProgramme.svelte';
+	import PartageColorier from '#lib/components/markdown/nodes/PartageColorier.svelte';
+	import CubesGeste from '#lib/components/markdown/nodes/CubesGeste.svelte';
+	import PatronGeste from '#lib/components/markdown/nodes/PatronGeste.svelte';
+	import SolideGeste from '#lib/components/markdown/nodes/SolideGeste.svelte';
+	import Monnaie from '#lib/components/markdown/nodes/Monnaie.svelte';
+	import BuildAnswer from '#lib/components/questions/BuildAnswer.svelte';
+	import FigureBlock from '#lib/components/markdown/nodes/FigureBlock.svelte';
+	import ChoiceBlock from '#lib/components/markdown/nodes/ChoiceBlock.svelte';
+	import VariationTable from '#lib/components/markdown/nodes/VariationTable.svelte';
 	import SignCellPicker from './SignCellPicker.svelte';
-	import type { HiddenCell, VariationTableNode } from '$lib/ubumark/types/variation-table';
+	import type { HiddenCell, VariationTableNode } from '#lib/ubumark/types/variation-table.ts';
 	import MultipleChoiceInput from './MultipleChoiceInput.svelte';
-	import type { ChoiceNode } from '$lib/ubumark/types/choix';
+	import type { ChoiceNode } from '#lib/ubumark/types/choix.ts';
 	import {
 		correctChoiceIndexesOf,
 		formatChoiceAnswer,
 		parseChoiceAnswer
-	} from '$lib/questions/choice-case';
-	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
+	} from '#lib/questions/choice-case.ts';
+	import InlineMarkdown from '#lib/components/markdown/InlineMarkdown.svelte';
 	import {
 		provideCapitalPairs,
 		readCapitalPairs
-	} from '$lib/components/markdown/content-capital-pairs';
-	import { readDigitGrouping } from '$lib/components/markdown/content-digit-grouping';
+	} from '#lib/components/markdown/content-capital-pairs.ts';
+	import { readDigitGrouping } from '#lib/components/markdown/content-digit-grouping.ts';
 	import {
 		isIncompleteRepresentation,
 		isLineToRepresentBlank
-	} from '$lib/ubumark/utils/number-line-representer';
+	} from '#lib/ubumark/utils/number-line-representer.ts';
 
 	// Utility functions
 	import {

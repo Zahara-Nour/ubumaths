@@ -10,12 +10,12 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import type { GradeCode } from '$lib/types/grades';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { documentUploadSchema, fileValidationSchema } from '$lib/server/validation/documents';
-import { extractText } from '$lib/server/documents/pdf-extractor';
-import { indexDocument } from '$lib/server/rag';
-import { createServerLogger } from '$lib/utils/logger';
+import type { GradeCode } from '#lib/types/grades.ts';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { documentUploadSchema, fileValidationSchema } from '#lib/server/validation/documents.ts';
+import { extractText } from '#lib/server/documents/pdf-extractor.ts';
+import { indexDocument } from '#lib/server/rag/index.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/documents/upload/+server');
 

@@ -6,8 +6,8 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { page, userEvent } from 'vitest/browser';
 import PointDetailsModal from '../PointDetailsModal.svelte';
-import { POINT_ERRORS_EMPTY, POINT_ERRORS_MESSAGE } from '$lib/types/point-errors';
-import type { QuestionInstance } from '$lib/questions/types';
+import { POINT_ERRORS_EMPTY, POINT_ERRORS_MESSAGE } from '#lib/types/point-errors.ts';
+import type { QuestionInstance } from '#lib/questions/types.ts';
 
 const CLASS = '1a2b3c4d-1111-4111-8111-111111111111';
 const POINT = '2b3c4d5e-2222-4222-8222-222222222222';

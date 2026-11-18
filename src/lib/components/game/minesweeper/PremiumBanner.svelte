@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button';
-	import { cn } from '$lib/utils';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { cn } from '#lib/utils.ts';
 
 	// Props
 	let { class: className }: { class?: string } = $props();

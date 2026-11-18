@@ -1,9 +1,9 @@
 <script lang="ts">
-	import MySelect from '$lib/components/MySelect.svelte';
-	import CipherWorkbench from '$lib/components/ciphers/CipherWorkbench.svelte';
-	import { attempt } from '$lib/ciphers/outcome';
-	import { scytaleCandidates, scytaleDecrypt, scytaleEncrypt } from '$lib/ciphers/scytale';
-	import SeoHead from '$lib/seo/SeoHead.svelte';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import CipherWorkbench from '#lib/components/ciphers/CipherWorkbench.svelte';
+	import { attempt } from '#lib/ciphers/outcome.ts';
+	import { scytaleCandidates, scytaleDecrypt, scytaleEncrypt } from '#lib/ciphers/scytale.ts';
+	import SeoHead from '#lib/seo/SeoHead.svelte';
 
 	// Constantes
 	const PLAIN = 'Attaque à l’aube par le flanc gauche';

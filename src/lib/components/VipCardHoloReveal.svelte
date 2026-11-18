@@ -28,8 +28,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import VipCardHolo from './VipCardHolo.svelte';
-	import type { VipCard as VipCardType } from '$lib/types/vip-card';
-	import { cn } from '$lib/utils';
+	import type { VipCard as VipCardType } from '#lib/types/vip-card.ts';
+	import { cn } from '#lib/utils.ts';
 
 	interface Props {
 		card: VipCardType;

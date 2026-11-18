@@ -22,17 +22,17 @@
 	@module components/markdown/MarkdownRenderer
 -->
 <script lang="ts">
-	import { parseMarkdown } from '$lib/ubumark';
-	import type { DocumentNode, ParseOptions, InputState } from '$lib/ubumark';
+	import { parseMarkdown } from '#lib/ubumark/index.ts';
+	import type { DocumentNode, ParseOptions, InputState } from '#lib/ubumark/index.ts';
 	import type { MarkdownDisplayMode } from './types';
-	import { getCachedAST, setCachedAST } from '$lib/utils/markdown-cache';
-	import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
-	import type { ExerciseHint } from '$lib/exercises/types';
+	import { getCachedAST, setCachedAST } from '#lib/utils/markdown-cache.ts';
+	import type { GenericFunctionConfig } from '#lib/mathAST/parser/types.ts';
+	import type { ExerciseHint } from '#lib/exercises/types.ts';
 
 	// List numbering
-	import { listNumberingStore } from '$lib/stores/listNumbering.svelte';
-	import { getMaxEnumerateDepth } from '$lib/ubumark/utils/list-depth';
-	import type { SchemeId, ListNumberingConfig } from '$lib/types/list-numbering';
+	import { listNumberingStore } from '#lib/stores/listNumbering.svelte.ts';
+	import { getMaxEnumerateDepth } from '#lib/ubumark/utils/list-depth.ts';
+	import type { SchemeId, ListNumberingConfig } from '#lib/types/list-numbering.ts';
 
 	// Import node components
 	import ParagraphNode from './nodes/ParagraphNode.svelte';
@@ -83,9 +83,9 @@
 		restrictDocument,
 		stripFenceLanguages
 	} from './restricted-rendering';
-	import type { ContentLocale } from '$lib/types/locale';
-	import type { GradeCode } from '$lib/types/grades';
-	import { lexiconRuntime, loadLexiconRuntime } from '$lib/lexicon/runtime-store.svelte';
+	import type { ContentLocale } from '#lib/types/locale.ts';
+	import type { GradeCode } from '#lib/types/grades.ts';
+	import { lexiconRuntime, loadLexiconRuntime } from '#lib/lexicon/runtime-store.svelte.ts';
 	import { provideLexicon, readLexicon } from './lexicon-context';
 	import { provideInternalLinks, type InternalLinkReader } from './internal-link-context';
 

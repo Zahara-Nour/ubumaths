@@ -3,7 +3,7 @@
  *
  * Centralizes the Postgres-error → HTTP-status mapping shared by the
  * curriculum CRUD endpoints. L'arbre du programme se lit dans
- * `$lib/server/programme-tree` (branche > notion > points).
+ * `#lib/server/programme-tree.ts` (branche > notion > points).
  */
 
 import { json } from '@sveltejs/kit';

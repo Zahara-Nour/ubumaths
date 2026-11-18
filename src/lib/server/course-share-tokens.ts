@@ -23,16 +23,16 @@
 
 import { z } from 'zod';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import { generateShareTokenString } from '$lib/server/exercise-share-tokens';
+import type { Database } from '#lib/types/database.ts';
+import { generateShareTokenString } from '#lib/server/exercise-share-tokens.ts';
 import {
 	endOfSchoolYear,
 	type JournalShareToken,
 	type PublicWorksheet
-} from '$lib/server/journal-share-tokens';
-import { buildSeriesLink, seriesItemsSchema, totalQuestions } from '$lib/validation/series';
-import { readStoredSeriesMany } from '$lib/server/series-lines';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/journal-share-tokens.ts';
+import { buildSeriesLink, seriesItemsSchema, totalQuestions } from '#lib/validation/series.ts';
+import { readStoredSeriesMany } from '#lib/server/series-lines.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/course-share-tokens');
 

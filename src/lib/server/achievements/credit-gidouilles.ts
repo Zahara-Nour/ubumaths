@@ -16,7 +16,7 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 
 /** Paramètres de la surcharge à 5 arguments. `p_class_id` accepte NULL en SQL
  * (élève hors classe), ce que le générateur de types ne dit pas. */

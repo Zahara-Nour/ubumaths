@@ -10,10 +10,10 @@
 	 * ailleurs la referment ; fermée, ses liens sont inertes. Sans JavaScript, le bouton ne
 	 * s'ouvre pas : chaque vue garde aussi ses liens dans la page.
 	 */
-	import { resolve } from '$app/paths';
+	import { resolvePath } from '#lib/navigation/resolve-path.ts';
 	import { Backpack, HeartHandshake, Presentation } from '@lucide/svelte';
-	import { AUDIENCES, type AudienceId } from '$lib/kingdom-tour/audiences';
-	import { driftAt, driftGeometry, type DriftGeometry } from '$lib/kingdom-tour/drift';
+	import { AUDIENCES, type AudienceId } from '#lib/kingdom-tour/audiences.ts';
+	import { driftAt, driftGeometry, type DriftGeometry } from '#lib/kingdom-tour/drift.ts';
 
 	// Types
 
@@ -291,7 +291,7 @@
 				{@const Icon = ICONS[audience.id]}
 				<li style:--x="{OFFSETS[i].x}rem" style:--y="{OFFSETS[i].y}rem" style:--i={i}>
 					<a
-						href={resolve(audience.href)}
+						href={resolvePath(audience.href)}
 						class="choice"
 						aria-current={current === audience.id ? 'page' : undefined}
 						onclick={() => (open = false)}

@@ -20,23 +20,23 @@
 	 * `pixelsPerUnit`, jamais un par axe — c'est ce qui garde le cercle rond, et
 	 * la raison de ne pas fusionner avec le grapheur (décision figée n° 3).
 	 */
-	import { useAtelier } from '$lib/atelier/context';
-	import { AtelierFigure, syncFigure } from '$lib/atelier/figure-sync';
+	import { useAtelier } from '#lib/atelier/context.ts';
+	import { AtelierFigure, syncFigure } from '#lib/atelier/figure-sync.ts';
 	import {
 		FIGURE_TOOLS,
 		FigureToolbox,
 		type FigureTool,
 		type ToolWriter
-	} from '$lib/atelier/figure-tools.svelte';
-	import { displayName } from '$lib/atelier/names';
-	import { isFigureObject, isFunction } from '$lib/atelier/types';
-	import { geoToNumber } from '$lib/geometry-core/compute/to-number';
-	import type { Viewport } from '$lib/geometry-core/viewport/types';
-	import { createTransformer } from '$lib/geometry-core/viewport/viewport';
-	import type { CanvasTool } from '$lib/components/geometry/canvas-tool';
-	import GeometryCanvas from '$lib/components/geometry/GeometryCanvas.svelte';
-	import type { PointDrag } from '$lib/components/geometry/point-drag';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
+	} from '#lib/atelier/figure-tools.svelte.ts';
+	import { displayName } from '#lib/atelier/names.ts';
+	import { isFigureObject, isFunction } from '#lib/atelier/types.ts';
+	import { geoToNumber } from '#lib/geometry-core/compute/to-number.ts';
+	import type { Viewport } from '#lib/geometry-core/viewport/types.ts';
+	import { createTransformer } from '#lib/geometry-core/viewport/viewport.ts';
+	import type { CanvasTool } from '#lib/components/geometry/canvas-tool.ts';
+	import GeometryCanvas from '#lib/components/geometry/GeometryCanvas.svelte';
+	import type { PointDrag } from '#lib/components/geometry/point-drag.ts';
+	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
 	import { rovingToolbar } from './roving-toolbar';
 
 	let {

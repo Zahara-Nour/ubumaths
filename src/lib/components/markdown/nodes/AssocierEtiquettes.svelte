@@ -26,11 +26,11 @@
 	@module components/markdown/nodes/AssocierEtiquettes
 -->
 <script lang="ts">
-	import type { AssocierNode } from '$lib/ubumark/types/associer';
-	import { associerPlacedOf, displayedAssocierLabels } from '$lib/ubumark/utils/associer';
+	import type { AssocierNode } from '#lib/ubumark/types/associer.ts';
+	import { associerPlacedOf, displayedAssocierLabels } from '#lib/ubumark/utils/associer.ts';
 	import InlineMarkdown from '../InlineMarkdown.svelte';
 	import AssocierContenu from './AssocierContenu.svelte';
-	import { associerItemHasBlock } from '$lib/ubumark/parser/associer-parser';
+	import { associerItemHasBlock } from '#lib/ubumark/parser/associer-parser.ts';
 	import type { BuildCase } from './CollectionConstruire.svelte';
 
 	interface Props {

@@ -10,7 +10,7 @@
  * USAGE:
  * ```svelte
  * <script>
- *   import { sanitizeHtml } from '$lib/utils/sanitize';
+ *   import { sanitizeHtml } from '#lib/utils/sanitize.ts';
  *   let untrustedContent = '<script>alert("xss")</script><p>Safe text</p>';
  * </script>
  *

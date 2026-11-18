@@ -16,9 +16,9 @@
  */
 
 import type { BaseNode } from './ast';
-import type { ComparaisonTortue } from '$lib/shared/blockly/tortue/jugement';
-import type { NiveauTortue } from '$lib/shared/blockly/tortue/interpreteur';
-import type { Segment } from '$lib/shared/blockly/tortue/segments';
+import type { ComparaisonTortue } from '#lib/shared/blockly/tortue/jugement.ts';
+import type { NiveauTortue } from '#lib/shared/blockly/tortue/interpreteur.ts';
+import type { Segment } from '#lib/shared/blockly/tortue/segments.ts';
 
 // ============================================================================
 // VALEURS

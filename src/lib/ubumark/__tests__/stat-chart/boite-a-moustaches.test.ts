@@ -14,10 +14,10 @@ import {
 } from '../../parser/stat-chart-parser';
 import { buildStatChartScene, type BoxPlotScene } from '../../utils/stat-chart-scene';
 import { generateStatChartTypst } from '../../generators/stat-chart-typst';
-import { parseMarkdown } from '$lib/ubumark';
-import { describeList } from '$lib/statistics/describe';
-import { markdownToTipTap } from '$lib/components/rich-text/markdown-import';
-import { tipTapToMarkdown } from '$lib/components/rich-text/markdown-export';
+import { parseMarkdown } from '#lib/ubumark/index.ts';
+import { describeList } from '#lib/statistics/describe.ts';
+import { markdownToTipTap } from '#lib/components/rich-text/markdown-import.ts';
+import { tipTapToMarkdown } from '#lib/components/rich-text/markdown-export.ts';
 
 // =============================================================================
 // Helpers

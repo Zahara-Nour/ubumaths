@@ -15,12 +15,12 @@
  */
 
 import { cellName, GRID_ROWS } from './grid';
-import type { MathNode } from '$lib/mathAST/types';
-import { evaluate } from '$lib/mathAST/eval/evaluate';
-import { toCustom } from '$lib/mathAST/custom-generator';
+import type { MathNode } from '#lib/mathAST/types.ts';
+import { evaluate } from '#lib/mathAST/eval/evaluate.ts';
+import { toCustom } from '#lib/mathAST/custom-generator.ts';
 import { astOf } from './parse';
-import { readListValue } from '$lib/statistics/read-value';
-import { createRandomSource } from '$lib/utils/random';
+import { readListValue } from '#lib/statistics/read-value.ts';
+import { createRandomSource } from '#lib/utils/random.ts';
 
 // =============================================================================
 // Types

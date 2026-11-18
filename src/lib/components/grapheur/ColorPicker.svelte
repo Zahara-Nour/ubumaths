@@ -26,8 +26,8 @@ Features:
 		CURVE_COLOR_LABELS,
 		curveColorValue,
 		isCurveColor
-	} from '$lib/grapheur/colors';
-	import * as Popover from '$lib/components/ui/popover';
+	} from '#lib/grapheur/colors.ts';
+	import * as Popover from '#lib/components/ui/popover/index.ts';
 
 	let { value, onchange }: { value: string; onchange: (color: string) => void } = $props();
 

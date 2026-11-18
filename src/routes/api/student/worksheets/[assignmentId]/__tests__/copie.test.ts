@@ -13,8 +13,11 @@ import {
 	tableMock,
 	twoLevelExercise,
 	type TableMock
-} from '$lib/server/worksheets/__tests__/table-mock';
-import { assignmentCopyScope, resolveWorksheetExerciseCopy } from '$lib/worksheets/worksheet-copy';
+} from '#lib/server/worksheets/__tests__/table-mock.ts';
+import {
+	assignmentCopyScope,
+	resolveWorksheetExerciseCopy
+} from '#lib/worksheets/worksheet-copy.ts';
 
 // ============================================================================
 // MOCKS
@@ -22,18 +25,18 @@ import { assignmentCopyScope, resolveWorksheetExerciseCopy } from '$lib/workshee
 
 const currentStudent = vi.hoisted(() => ({ id: '' }));
 
-vi.mock('$lib/server/middleware/auth', () => ({
+vi.mock('#lib/server/middleware/auth.ts', () => ({
 	requireRole: async () => ({ user: { id: currentStudent.id } })
 }));
-vi.mock('$lib/server/worksheets/assignment-access', () => ({
+vi.mock('#lib/server/worksheets/assignment-access.ts', () => ({
 	resolveAssignmentAccess: async () => ({ canRead: true, readOnly: false })
 }));
-vi.mock('$lib/server/worksheets/assignment-classes', () => ({
+vi.mock('#lib/server/worksheets/assignment-classes.ts', () => ({
 	fetchAssignmentClasses: async () => []
 }));
 // Correction visible par défaut ; un test la masque (cadres de réponse, audit S2)
 const visibility = vi.hoisted(() => ({ visible: true }));
-vi.mock('$lib/server/worksheets/correction-visibility', () => ({
+vi.mock('#lib/server/worksheets/correction-visibility.ts', () => ({
 	getCorrectionVisibilityMap: async (_s: unknown, _a: unknown, ids: string[]) =>
 		new Map(ids.map((id) => [id, visibility.visible]))
 }));

@@ -8,13 +8,13 @@ import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import QuestionCard from '../QuestionCard.svelte';
 import FlashCard from '../FlashCard.svelte';
-import { generateInstance } from '$lib/questions/generator/instance-generator';
-import type { QuestionInstance, QuestionTemplate } from '$lib/questions/types';
-import { resolvedMarkdown, templateMarkdown } from '$lib/ubumark';
-import { LEXICON_VISIBILITY_STORAGE_KEY, setLexiconShown } from '$lib/lexicon/visibility.svelte';
+import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
+import type { QuestionInstance, QuestionTemplate } from '#lib/questions/types.ts';
+import { resolvedMarkdown, templateMarkdown } from '#lib/ubumark/index.ts';
+import { LEXICON_VISIBILITY_STORAGE_KEY, setLexiconShown } from '#lib/lexicon/visibility.svelte.ts';
 
 // Le dictionnaire arrive de /api/dictionnaire (ADR 0022) : ici, le jeu de référence figé
-vi.mock('$lib/dictionary/fetch-dictionary', async () => {
+vi.mock('#lib/dictionary/fetch-dictionary.ts', async () => {
 	const { REFERENCE_DICTIONARY: entries } =
 		await import('../../../../../tests/fixtures/lexique/dictionnaire-reference');
 	return { fetchDictionary: async () => entries };
@@ -22,7 +22,7 @@ vi.mock('$lib/dictionary/fetch-dictionary', async () => {
 
 // Souris par défaut ; B4 passe à un écran tactile
 const pointer = vi.hoisted(() => ({ canHover: true }));
-vi.mock('$lib/lexicon/can-hover.svelte', () => ({ canHover: () => pointer.canHover }));
+vi.mock('#lib/lexicon/can-hover.svelte.ts', () => ({ canHover: () => pointer.canHover }));
 
 const TOGGLE = 'Mots du dictionnaire';
 

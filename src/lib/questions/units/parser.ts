@@ -14,14 +14,14 @@
 
 import type { Unit, Quantity } from './types';
 import { dimensionlessUnit } from './operations';
-import { parse as parseUnit } from '$lib/mathAST/units/parser';
-import { parseLatex } from '$lib/mathAST/parser';
-import { tidy } from '$lib/mathAST/tidy';
-import { rationalOf } from '$lib/mathAST/eval/evaluate-with-modifiers';
-import { evaluateExpression, stripLatexSpacing } from '$lib/math';
-import type { Rational } from '$lib/mathAST/normal/types';
-import { addRational, mulRational } from '$lib/mathAST/normal/rational';
-import { exactConversion } from '$lib/mathAST/units/exact';
+import { parse as parseUnit } from '#lib/mathAST/units/parser.ts';
+import { parseLatex } from '#lib/mathAST/parser/index.ts';
+import { tidy } from '#lib/mathAST/tidy/index.ts';
+import { rationalOf } from '#lib/mathAST/eval/evaluate-with-modifiers.ts';
+import { evaluateExpression, stripLatexSpacing } from '#lib/math/index.ts';
+import type { Rational } from '#lib/mathAST/normal/types.ts';
+import { addRational, mulRational } from '#lib/mathAST/normal/rational.ts';
+import { exactConversion } from '#lib/mathAST/units/exact.ts';
 
 // ============================================================================
 // LATEX PATTERNS

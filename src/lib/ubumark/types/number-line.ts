@@ -15,7 +15,7 @@
  */
 
 import type { BaseNode } from './ast';
-import type { MathNode } from '$lib/mathAST/types';
+import type { MathNode } from '#lib/mathAST/types.ts';
 
 // ============================================================================
 // VALUE TYPES

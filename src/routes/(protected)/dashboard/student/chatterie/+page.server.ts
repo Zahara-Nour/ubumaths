@@ -17,12 +17,12 @@
  */
 
 import type { PageServerLoad } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import { loadMathouCollection } from '$lib/server/mathoux/collection';
-import { readOwnedDecorations } from '$lib/server/mathoux/decorations';
-import type { MathouCatalogId } from '$lib/mathoux/decorations';
-import type { MathouCollection } from '$lib/mathoux/collection-logic';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { loadMathouCollection } from '#lib/server/mathoux/collection.ts';
+import { readOwnedDecorations } from '#lib/server/mathoux/decorations.ts';
+import type { MathouCatalogId } from '#lib/mathoux/decorations.ts';
+import type { MathouCollection } from '#lib/mathoux/collection-logic.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('(protected)/dashboard/student/chatterie/+page.server');
 

@@ -15,13 +15,13 @@
 -->
 <script lang="ts">
 	import { invalidateAll } from '$app/navigation';
-	import * as Tabs from '$lib/components/ui/tabs';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Button } from '$lib/components/ui/button';
-	import ActiveRestrictionsTable from '$lib/components/moderation/ActiveRestrictionsTable.svelte';
-	import ModerationLogsTable from '$lib/components/moderation/ModerationLogsTable.svelte';
-	import MessageReportsTable from '$lib/components/moderation/MessageReportsTable.svelte';
-	import RestrictUserDialog from '$lib/components/moderation/RestrictUserDialog.svelte';
+	import * as Tabs from '#lib/components/ui/tabs/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import ActiveRestrictionsTable from '#lib/components/moderation/ActiveRestrictionsTable.svelte';
+	import ModerationLogsTable from '#lib/components/moderation/ModerationLogsTable.svelte';
+	import MessageReportsTable from '#lib/components/moderation/MessageReportsTable.svelte';
+	import RestrictUserDialog from '#lib/components/moderation/RestrictUserDialog.svelte';
 	import { ShieldAlert, Flag, UserX } from '@lucide/svelte';
 	import type { PageData } from './$types';
 

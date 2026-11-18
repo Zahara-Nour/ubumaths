@@ -13,19 +13,19 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 const resend = vi.fn();
-vi.mock('$lib/server/carnet/envois', async (importOriginal) => ({
-	...(await importOriginal<typeof import('$lib/server/carnet/envois')>()),
+vi.mock('#lib/server/carnet/envois.ts', async (importOriginal) => ({
+	...(await importOriginal<typeof import('#lib/server/carnet/envois.ts')>()),
 	resendLostLinks: (...a: unknown[]) => resend(...a)
 }));
-vi.mock('$lib/server/serviceRoleClient', () => ({ createServiceRoleClient: () => ({}) }));
+vi.mock('#lib/server/serviceRoleClient.ts', () => ({ createServiceRoleClient: () => ({}) }));
 
 const rateLimit = vi.fn();
-vi.mock('$lib/server/middleware/rateLimit', () => ({
+vi.mock('#lib/server/middleware/rateLimit.ts', () => ({
 	rateLimit: (...a: unknown[]) => rateLimit(...a)
 }));
 
 const after = vi.fn();
-vi.mock('$lib/server/after-response', () => ({
+vi.mock('#lib/server/after-response.ts', () => ({
 	runAfterResponse: (...a: unknown[]) => after(...a)
 }));
 

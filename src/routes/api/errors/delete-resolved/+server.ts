@@ -17,10 +17,10 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { deleteAllResolvedErrors } from '$lib/server/errorMonitoring';
-import { requireAdmin } from '$lib/server/middleware/auth';
-import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
-import { createServerLogger } from '$lib/utils/logger';
+import { deleteAllResolvedErrors } from '#lib/server/errorMonitoring.ts';
+import { requireAdmin } from '#lib/server/middleware/auth.ts';
+import { createServiceRoleClient } from '#lib/server/serviceRoleClient.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/errors/delete-resolved/+server');
 

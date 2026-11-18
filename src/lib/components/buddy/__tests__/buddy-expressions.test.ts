@@ -13,8 +13,8 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { buddyMessageEngine } from '../buddy-message-engine';
-import type { PalotinType } from '$lib/config/buddy-messages';
-import type { BuddyExpression } from '$lib/types/buddy';
+import type { PalotinType } from '#lib/config/buddy-messages.ts';
+import type { BuddyExpression } from '#lib/types/buddy.ts';
 
 // Constantes
 /** Toutes les expressions : le `satisfies` casse si une expression est ajoutée au type sans ici. */

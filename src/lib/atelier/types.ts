@@ -10,9 +10,9 @@
  */
 
 import type { Provenance } from './parse';
-import type { CurveColor } from '$lib/grapheur/colors';
-import type { LineStyle } from '$lib/grapheur/types';
-import type { Domain } from '$lib/mathAST/domain/types';
+import type { CurveColor } from '#lib/grapheur/colors.ts';
+import type { LineStyle } from '#lib/grapheur/types.ts';
+import type { Domain } from '#lib/mathAST/domain/types.ts';
 
 // =============================================================================
 // Types
@@ -425,4 +425,4 @@ export function parametersOf(object: AtelierObject): readonly string[] | null {
 }
 
 // Descendus dans le registre (registre-reference, PR 2c) : le refus V57 y vit
-export { dependsOnMessage, lettersText } from '$lib/mathAST/cli/core/parameter-refusal';
+export { dependsOnMessage, lettersText } from '#lib/mathAST/cli/core/parameter-refusal.ts';

@@ -8,14 +8,14 @@ import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import Courbe from '../Courbe.svelte';
 import MarkdownRenderer from '../../MarkdownRenderer.svelte';
-import FillBlanksInput from '$lib/components/question-inputs/FillBlanksInput.svelte';
-import { generateInstance } from '$lib/questions/generator/instance-generator';
-import type { QuestionTemplate } from '$lib/questions/types';
-import { templateMarkdown } from '$lib/ubumark';
-import BuildAnswer from '$lib/components/questions/BuildAnswer.svelte';
-import { parseCourbeContent } from '$lib/ubumark/parser/courbe-parser';
-import { COURBE_PAD, courbeFrame } from '$lib/ubumark/utils/courbe-scene';
-import type { ResolvedMarkdown } from '$lib/ubumark';
+import FillBlanksInput from '#lib/components/question-inputs/FillBlanksInput.svelte';
+import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
+import type { QuestionTemplate } from '#lib/questions/types.ts';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
+import BuildAnswer from '#lib/components/questions/BuildAnswer.svelte';
+import { parseCourbeContent } from '#lib/ubumark/parser/courbe-parser.ts';
+import { COURBE_PAD, courbeFrame } from '#lib/ubumark/utils/courbe-scene.ts';
+import type { ResolvedMarkdown } from '#lib/ubumark/index.ts';
 
 let mains: HTMLElement[] = [];
 function mainElement(): HTMLElement {

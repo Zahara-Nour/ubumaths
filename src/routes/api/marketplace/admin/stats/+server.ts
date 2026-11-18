@@ -1,9 +1,9 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRoles } from '$lib/server/middleware/auth';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
 // Supabase client is now accessed via locals.supabase
-import { adminStatsQuerySchema } from '$lib/server/marketplace/validation';
-import { createServerLogger } from '$lib/utils/logger';
+import { adminStatsQuerySchema } from '#lib/server/marketplace/validation.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/marketplace/admin/stats/+server');
 

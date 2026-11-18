@@ -41,8 +41,8 @@ import { isRelation } from '../../guards';
 import { containsNode } from '../../domain/algebra';
 import { computeDomain } from '../../domain/compute';
 import { compile } from '../../eval/compile';
-import { getEndpoints } from '$lib/math/intervals';
-import { endpointToNumber } from '$lib/math/intervals/endpoint';
+import { getEndpoints } from '#lib/math/intervals/index.ts';
+import { endpointToNumber } from '#lib/math/intervals/endpoint.ts';
 
 // =============================================================================
 // Zero Finding

@@ -9,7 +9,7 @@
  * ```
  *
  * - `attendu:` (obligatoire) : le programme de référence, en notation texte
- *   (`$lib/shared/blockly/tortue/notation.ts`) ; il doit se lire, s'exécuter et tracer
+ *   (`#lib/shared/blockly/tortue/notation.ts`) ; il doit se lire, s'exécuter et tracer
  *   quelque chose, sinon l'élève serait toujours jugé faux.
  * - `montrer: oui | non` (défaut `non`) : la figure à reproduire, en gris.
  * - `comparer: position | forme` (défaut `position`) : même figure au même endroit, ou à
@@ -35,15 +35,18 @@
 import { unnestedLine } from './nested-line';
 import { specialBlockEnd } from './unclosed-block';
 import { isMaskedValue } from '../utils/masked-value';
-import { lireProgrammeTortue, type ComparaisonTortue } from '$lib/shared/blockly/tortue/jugement';
+import {
+	lireProgrammeTortue,
+	type ComparaisonTortue
+} from '#lib/shared/blockly/tortue/jugement.ts';
 import {
 	messageNiveauTortue,
 	nombreDeBlocsTortue,
 	texteVersEtatTortue
-} from '$lib/shared/blockly/tortue/niveaux';
-import type { NiveauTortue } from '$lib/shared/blockly/tortue/interpreteur';
-import { variableJamaisMise } from '$lib/shared/blockly/calcul/notation';
-import { normaliserSegments, type Segment } from '$lib/shared/blockly/tortue/segments';
+} from '#lib/shared/blockly/tortue/niveaux.ts';
+import type { NiveauTortue } from '#lib/shared/blockly/tortue/interpreteur.ts';
+import { variableJamaisMise } from '#lib/shared/blockly/calcul/notation.ts';
+import { normaliserSegments, type Segment } from '#lib/shared/blockly/tortue/segments.ts';
 import {
 	TORTUE_BLOCS_MAX,
 	TORTUE_FIGURE_MAX_SEGMENTS,

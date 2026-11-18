@@ -6,8 +6,8 @@ import { describe, it, expect } from 'vitest';
 import { intersectLF, intersectFF } from '../intersections';
 import { numeric } from '../../types/geo-value';
 import { geoToNumber } from '../../compute/to-number';
-import { parseCustom } from '$lib/mathAST/parser/custom';
-import { compile } from '$lib/mathAST/eval/compile';
+import { parseCustom } from '#lib/mathAST/parser/custom/index.ts';
+import { compile } from '#lib/mathAST/eval/compile.ts';
 import type { GeoPoint } from '../../types/primitives';
 
 function pt(x: number, y: number): GeoPoint {

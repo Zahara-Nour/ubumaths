@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { generateInstance } from '../instance-generator';
-import type { QuestionTemplate } from '$lib/questions/types';
+import type { QuestionTemplate } from '#lib/questions/types.ts';
 
 // Un coefficient nul écrit avec « ;+ » ne doit pas se coller au terme précédent
 function template(statement: string, expectedAnswer: string): QuestionTemplate {

@@ -7,8 +7,8 @@
  *   nombres), avec ses réglages, son statut et ses destinataires.
  */
 
-import type { SeriesItem } from '$lib/validation/series';
-import { isDeadlinePassed as isDeadlinePassedUtil } from '$lib/utils/dates';
+import type { SeriesItem } from '#lib/validation/series.ts';
+import { isDeadlinePassed as isDeadlinePassedUtil } from '#lib/utils/dates.ts';
 
 // ===========================================================================
 // FORMES, STATUTS, BORNES

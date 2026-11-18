@@ -34,7 +34,7 @@ import {
 	closedEndpoint,
 	negInfinityEndpoint,
 	posInfinityEndpoint
-} from '$lib/math/intervals/factory';
+} from '#lib/math/intervals/factory.ts';
 
 // =============================================================================
 // Helper Functions

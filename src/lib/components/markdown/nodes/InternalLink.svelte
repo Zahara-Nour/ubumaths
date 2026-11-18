@@ -4,7 +4,7 @@
 
 	Renders internal links ([[type:uuid|label]]) as navigation links.
 
-	Addressing is delegated to `$lib/resources` — this component holds no route
+	Addressing is delegated to `#lib/resources/index.ts` — this component holds no route
 	knowledge of its own. It used to build URLs with its own `switch`, which is
 	how it ended up pointing at four routes that did not exist: nothing tied its
 	copy of the paths to the real ones.
@@ -13,14 +13,14 @@
 	detail page; a chapter referenced outside its class) renders as inert text
 	rather than a link to a 404.
 
-	@see $lib/resources/registry for the route table
+	@see #lib/resources/registry for the route table
 	@see InternalLinkNode in ast.ts for node structure
 	@module components/markdown/nodes/InternalLink
 -->
 <script lang="ts">
-	import { resolveResource, type ResourceKind, type ViewerRole } from '$lib/resources';
-	import type { InternalLinkReferenceType } from '$lib/ubumark';
-	import { cn } from '$lib/utils';
+	import { resolveResource, type ResourceKind, type ViewerRole } from '#lib/resources/index.ts';
+	import type { InternalLinkReferenceType } from '#lib/ubumark/index.ts';
+	import { cn } from '#lib/utils.ts';
 	import { readInternalLinks } from '../internal-link-context';
 
 	interface Props {

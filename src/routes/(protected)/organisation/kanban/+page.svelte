@@ -12,21 +12,21 @@
 -->
 
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import { invalidateAll } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import { formatDistanceToNow } from 'date-fns';
 	import { fr } from 'date-fns/locale';
 	import { Plus, MoreVertical, Trash2, LayoutDashboard, Users, User } from '@lucide/svelte';
 
-	import { Button } from '$lib/components/ui/button';
-	import { Badge } from '$lib/components/ui/badge';
-	import * as Card from '$lib/components/ui/card';
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import type { KanbanBoardWithCounts } from '$lib/types/database-helpers';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import * as DropdownMenu from '#lib/components/ui/dropdown-menu/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import type { KanbanBoardWithCounts } from '#lib/types/database-helpers.ts';
 
-	import { ConfirmDialog } from '$lib/components/ui/confirm-dialog';
+	import { ConfirmDialog } from '#lib/components/ui/confirm-dialog/index.ts';
 	import CreateBoardDialog from './CreateBoardDialog.svelte';
 	import type { PageData } from './$types';
 
@@ -213,7 +213,7 @@
 										detail route is a Phase 4 placeholder for now.
 									-->
 									<a
-										href={resolve(`/organisation/kanban/${board.id}`)}
+										href={resolve(`organisation/kanban/${board.id}`)}
 										class="before:absolute before:inset-0 before:rounded-xl focus:outline-none"
 										aria-label={`Ouvrir le tableau ${board.title}`}
 									>

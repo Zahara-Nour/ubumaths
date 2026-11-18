@@ -18,7 +18,7 @@
 import { describe, it, expect, beforeAll, afterAll, beforeEach, vi } from 'vitest';
 import { createHash, randomBytes } from 'node:crypto';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 import {
 	cleanupAllTestData,
 	createServiceRoleClient
@@ -32,7 +32,7 @@ const envois = vi.hoisted(() => ({
 	echec: false
 }));
 
-vi.mock('$lib/server/email/brevo', () => ({
+vi.mock('#lib/server/email/brevo.ts', () => ({
 	sendCarnetExceptionEmail: vi.fn(
 		async (to: string, data: { token: string; reasons: string[] }) => {
 			envois.exception.push({ to, token: data.token, reasons: data.reasons });
@@ -48,13 +48,13 @@ vi.mock('$lib/server/email/brevo', () => ({
 }));
 
 // Le client de l'environnement ne doit jamais servir ici.
-vi.mock('$lib/server/serviceRoleClient', () => ({
+vi.mock('#lib/server/serviceRoleClient.ts', () => ({
 	createServiceRoleClient: () => {
 		throw new Error('client service de l’environnement appelé pendant le test');
 	}
 }));
 
-const { runCarnetDaily } = await import('$lib/server/carnet/courriels');
+const { runCarnetDaily } = await import('#lib/server/carnet/courriels.ts');
 
 // Constantes
 const DOMAINE = 'example.test';

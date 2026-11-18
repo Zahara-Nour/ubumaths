@@ -37,11 +37,11 @@ interface Call {
 
 const sendConfirmation = vi.fn();
 const sendLink = vi.fn();
-vi.mock('$lib/server/email/brevo', () => ({
+vi.mock('#lib/server/email/brevo.ts', () => ({
 	sendCarnetConfirmationEmail: (...a: unknown[]) => sendConfirmation(...a),
 	sendCarnetLinkEmail: (...a: unknown[]) => sendLink(...a)
 }));
-vi.mock('$lib/server/serviceRoleClient', () => ({
+vi.mock('#lib/server/serviceRoleClient.ts', () => ({
 	createServiceRoleClient: () => {
 		throw new Error('le test passe sa propre base');
 	}

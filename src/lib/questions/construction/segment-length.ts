@@ -16,7 +16,7 @@
  * @module questions/construction/segment-length
  */
 
-import type { LengthUnit, SegmentLengthCheck } from '$lib/ubumark/types/construction';
+import type { LengthUnit, SegmentLengthCheck } from '#lib/ubumark/types/construction.ts';
 import type { DrawnLine, DrawnObject, DrawnRegle } from './answer';
 import {
 	intersectTraits,

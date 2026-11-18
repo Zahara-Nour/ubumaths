@@ -3,7 +3,7 @@
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { POST } from '../+server';
-import { createFakeSupabase } from '$lib/server/__tests__/helpers/fake-supabase';
+import { createFakeSupabase } from '#lib/server/__tests__/helpers/fake-supabase.ts';
 
 const TEACHER = '22222222-2222-4222-8222-222222222222';
 const ITEM = {

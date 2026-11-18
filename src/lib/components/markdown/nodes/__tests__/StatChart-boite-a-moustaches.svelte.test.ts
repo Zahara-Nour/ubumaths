@@ -10,7 +10,7 @@ import { describe, it, expect, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import StatChart from '../StatChart.svelte';
 import MarkdownRenderer from '../../MarkdownRenderer.svelte';
-import { parseStatChartContent } from '$lib/ubumark/parser/stat-chart-parser';
+import { parseStatChartContent } from '#lib/ubumark/parser/stat-chart-parser.ts';
 
 // =============================================================================
 // Helpers

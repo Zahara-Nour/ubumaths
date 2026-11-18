@@ -26,42 +26,49 @@
  * Toute anomalie (modèle absent, génération en échec, marqueur non résolu, formule
  * maison illisible) lève une exception : l'appelant ne doit rien écrire.
  */
-import { generateInstance } from '$lib/questions/generator/instance-generator';
-import { isCourseCard, type QuestionInstance, type QuestionTemplate } from '$lib/questions/types';
-import { templateGenericFunctions } from '$lib/questions/generic-functions';
-import { parseCustomSafe } from '$lib/mathAST/parser/custom';
-import { toLatex } from '$lib/mathAST';
-import type { CapitalPairs, GenericFunctionConfig } from '$lib/mathAST/parser/types';
-import { withDigitGrouping } from '$lib/utils/french-math';
-import { SCHOOL_MIN_DIGITS_FOR_GROUPING } from '$lib/mathAST/digit-grouping';
-import { withChoiceClockSize } from '$lib/ubumark/parser/horloge-parser';
-import { withChoiceCollectionSize } from '$lib/ubumark/parser/collection-parser';
-import { withChoiceMonnaieSize } from '$lib/ubumark/parser/monnaie-parser';
-import { replaceChoiceBlocks, type ChoiceBlock } from '$lib/ubumark/parser/choix-parser';
-import { correctChoiceIndexesOf, isChoiceBlank } from '$lib/questions/choice-case';
-import { findCourbesToPlace, parseCourbeContent } from '$lib/ubumark/parser/courbe-parser';
-import { findLinesToPlace, parseNumberLineContent } from '$lib/ubumark/parser/number-line-parser';
-import { lineCoefficients } from '$lib/ubumark/utils/courbe-tracer';
+import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
+import {
+	isCourseCard,
+	type QuestionInstance,
+	type QuestionTemplate
+} from '#lib/questions/types.ts';
+import { templateGenericFunctions } from '#lib/questions/generic-functions.ts';
+import { parseCustomSafe } from '#lib/mathAST/parser/custom/index.ts';
+import { toLatex } from '#lib/mathAST/index.ts';
+import type { CapitalPairs, GenericFunctionConfig } from '#lib/mathAST/parser/types.ts';
+import { withDigitGrouping } from '#lib/utils/french-math.ts';
+import { SCHOOL_MIN_DIGITS_FOR_GROUPING } from '#lib/mathAST/digit-grouping.ts';
+import { withChoiceClockSize } from '#lib/ubumark/parser/horloge-parser.ts';
+import { withChoiceCollectionSize } from '#lib/ubumark/parser/collection-parser.ts';
+import { withChoiceMonnaieSize } from '#lib/ubumark/parser/monnaie-parser.ts';
+import { replaceChoiceBlocks, type ChoiceBlock } from '#lib/ubumark/parser/choix-parser.ts';
+import { correctChoiceIndexesOf, isChoiceBlank } from '#lib/questions/choice-case.ts';
+import { findCourbesToPlace, parseCourbeContent } from '#lib/ubumark/parser/courbe-parser.ts';
+import {
+	findLinesToPlace,
+	parseNumberLineContent
+} from '#lib/ubumark/parser/number-line-parser.ts';
+import { lineCoefficients } from '#lib/ubumark/utils/courbe-tracer.ts';
 import {
 	findBoxPlotsToPlace,
 	parseStatChartContent,
 	PLACER_LINE_REGEX
-} from '$lib/ubumark/parser/stat-chart-parser';
-import { boxPlotCaseCount } from '$lib/ubumark/utils/boxplot-placer';
+} from '#lib/ubumark/parser/stat-chart-parser.ts';
+import { boxPlotCaseCount } from '#lib/ubumark/utils/boxplot-placer.ts';
 import {
 	associerItemHasBlock,
 	findAssociersToPlace,
 	parseAssocierContent
-} from '$lib/ubumark/parser/associer-parser';
-import { associerPlacedOf } from '$lib/ubumark/utils/associer';
-import { findTrousToPlace, parseTrousContent } from '$lib/ubumark/parser/trous-parser';
-import { trousPlacedOf } from '$lib/ubumark/utils/trous';
-import { findRobotsToProduce, parseRobotContent } from '$lib/ubumark/parser/robot-parser';
-import { readExpectedRobotAnswer } from '$lib/ubumark/utils/robot-answer';
+} from '#lib/ubumark/parser/associer-parser.ts';
+import { associerPlacedOf } from '#lib/ubumark/utils/associer.ts';
+import { findTrousToPlace, parseTrousContent } from '#lib/ubumark/parser/trous-parser.ts';
+import { trousPlacedOf } from '#lib/ubumark/utils/trous.ts';
+import { findRobotsToProduce, parseRobotContent } from '#lib/ubumark/parser/robot-parser.ts';
+import { readExpectedRobotAnswer } from '#lib/ubumark/utils/robot-answer.ts';
 import {
 	findVariationsToFill,
 	revealVariationBody
-} from '$lib/ubumark/parser/variation-table-parser';
+} from '#lib/ubumark/parser/variation-table-parser.ts';
 
 export type SerieItem = { templateId: string; seed: number };
 /**

@@ -10,11 +10,11 @@ import {
 	validateCreateTag,
 	tagListResponseSchema,
 	createTagResponseSchema
-} from '$lib/server/validation';
-import { validateJsonResponse } from '$lib/server/validation/response-utils';
-import { requireRoles } from '$lib/server/middleware/auth';
-import { isTaggableKind } from '$lib/server/resource-tags';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/validation/index.ts';
+import { validateJsonResponse } from '#lib/server/validation/response-utils.ts';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import { isTaggableKind } from '#lib/server/resource-tags.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/tags/+server');
 

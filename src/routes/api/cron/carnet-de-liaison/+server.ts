@@ -15,10 +15,10 @@
  */
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { verifyCronAuth } from '$lib/server/auth/cron';
-import { runCarnetDaily } from '$lib/server/carnet/courriels';
-import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
-import { createServerLogger } from '$lib/utils/logger';
+import { verifyCronAuth } from '#lib/server/auth/cron.ts';
+import { runCarnetDaily } from '#lib/server/carnet/courriels.ts';
+import { createServiceRoleClient } from '#lib/server/serviceRoleClient.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/cron/carnet-de-liaison');
 

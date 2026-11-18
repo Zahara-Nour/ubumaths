@@ -8,9 +8,9 @@
 import { describe, it, expect } from 'vitest';
 import { Atelier } from '../atelier.svelte';
 import { CalcDesk } from '../desk.svelte';
-import { GrapheurStore } from '$lib/stores/grapheur.svelte';
+import { GrapheurStore } from '#lib/stores/grapheur.svelte.ts';
 import { syncPlots } from '../plot-sync';
-import { isExplicitFunction, type ExplicitFunction } from '$lib/grapheur/types';
+import { isExplicitFunction, type ExplicitFunction } from '#lib/grapheur/types.ts';
 
 // =============================================================================
 // Décor

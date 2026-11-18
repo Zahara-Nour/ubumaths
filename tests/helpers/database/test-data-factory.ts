@@ -5,7 +5,7 @@
  * Useful for reducing boilerplate in trigger tests.
  */
 
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 import { generateTestId, generateTestEmail, createServiceRoleClient } from './trigger-test-helpers';
 import { insertAuthUser } from './postgres-client';
 

@@ -1,10 +1,10 @@
 import { readFileSync } from 'node:fs';
 import { globSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { documentLabels } from '$lib/typst/labels';
-import { WORKSHEET_TYPES } from '$lib/types/worksheets';
-import { getTypeLabel } from '$lib/typst/utils';
-import { WORKSHEET_TYPE_LABELS, WORKSHEET_TYPE_OPTIONS } from '$lib/utils/worksheet-constants';
+import { documentLabels } from '#lib/typst/labels.ts';
+import { WORKSHEET_TYPES } from '#lib/types/worksheets.ts';
+import { getTypeLabel } from '#lib/typst/utils/index.ts';
+import { WORKSHEET_TYPE_LABELS, WORKSHEET_TYPE_OPTIONS } from '#lib/utils/worksheet-constants.ts';
 
 // ADR 0030 : une fiche de type `assessment` est une « Évaluation écrite » (« contrôle »
 // nomme la série notée en ligne) ; l'écran et le PDF disent le même mot.

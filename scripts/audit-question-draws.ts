@@ -25,15 +25,15 @@
  */
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import type { QuestionTemplate } from '$lib/questions/types';
-import { generateInstance } from '$lib/questions/generator/instance-generator';
-import { toQuestionTemplate } from '$lib/types/question-template';
-import { parseVariationTableContent } from '$lib/ubumark/parser/variation-table-parser';
-import { parseMarkdown } from '$lib/ubumark/parser/markdown-parser';
-import { generateTypst } from '$lib/ubumark/generators/typst-generator';
-import { parseCourbeContent } from '$lib/ubumark/parser/courbe-parser';
-import { buildCourbeScene } from '$lib/ubumark/utils/courbe-scene';
-import type { CourbeNode } from '$lib/ubumark/types/courbe';
+import type { QuestionTemplate } from '#lib/questions/types.ts';
+import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
+import { toQuestionTemplate } from '#lib/types/question-template.ts';
+import { parseVariationTableContent } from '#lib/ubumark/parser/variation-table-parser.ts';
+import { parseMarkdown } from '#lib/ubumark/parser/markdown-parser.ts';
+import { generateTypst } from '#lib/ubumark/generators/typst-generator.ts';
+import { parseCourbeContent } from '#lib/ubumark/parser/courbe-parser.ts';
+import { buildCourbeScene } from '#lib/ubumark/utils/courbe-scene.ts';
+import type { CourbeNode } from '#lib/ubumark/types/courbe.ts';
 import { argValue, createScriptClient } from './relecture/common';
 
 // ============================================================================

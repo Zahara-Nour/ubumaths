@@ -24,9 +24,9 @@
 import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
-import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
-import { CHAPTER_DOCUMENTS_BUCKET } from '$lib/server/content-owner';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServiceRoleClient } from '#lib/server/serviceRoleClient.ts';
+import { CHAPTER_DOCUMENTS_BUCKET } from '#lib/server/content-owner.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/documents/[id]/+server');
 

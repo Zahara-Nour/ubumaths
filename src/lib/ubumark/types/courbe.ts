@@ -13,9 +13,9 @@
  * @module ubumark/types/courbe
  */
 
-import { NAMED_COLORS, type NamedColor } from '$lib/theme/named-colors';
+import { NAMED_COLORS, type NamedColor } from '#lib/theme/named-colors.ts';
 import type { BaseNode } from './ast';
-import type { MathNode } from '$lib/mathAST/types';
+import type { MathNode } from '#lib/mathAST/types.ts';
 
 // ============================================================================
 // VALEURS

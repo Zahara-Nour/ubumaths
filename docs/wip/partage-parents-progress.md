@@ -5,14 +5,14 @@
 _Mis à jour le 2026-11-17, après le `deploy:prod` v0.93.0._
 
 - **État** : PR 1 à 4 et 6 à 9 mergées (#2718, #2724, #2731, #2736, #2737, #2739, #2745, #2749, #2752), migrations en prod. Q42 faite : journal des courriels effacé au bout d'un an par le passage quotidien, politique v1.4. **Tout le carnet est en prod** (v0.93.0, 2026-11-17).
-- **Prochaine action** : point 8 sur `/parents` (chantier `presentation-parents`) ; vérification manuelle du carnet en prod.
+- **Prochaine action** : vérification manuelle du carnet en prod (point 8 sur `/parents` fait : #2798, en prod v0.95.0).
 - **En attente de David** : rien. Échec de l'effacement : on garde le comportement (les autres étapes tournent, passage noté en échec, effacement rejoué le lendemain) — recommandation de Claude, David : « je te suis » (2026-11-17). Vérifications manuelles du carnet automatisées dans le chantier `capture-courriels`.
 - **Pièges en cours** : données d'élèves mineurs. 1er trimestre fini le 27 nov. : messages trimestriels dès le 28 (déployé). Base locale en retard sur d'anciennes migrations de contenu. Rejets Brevo différés non marqués `invalid` (pas de webhook). AIPD : l'analyse de risque du carnet reste à y intégrer.
 - **Worktree / branche** : aucun.
 
 ## Origine
 
-Né du chantier `presentation-parents` (point 8, « Comment le suivre ? »), le 2026-11-16 : « il y a une vraie réflexion à mener sur ce qu'on partage avec les parents, et comment on le fait ». David : chantier **extrêmement important**. Le bloc « Suivre son travail » de `/parents` est retiré en attendant ; il sera réécrit à la fin de ce chantier (`docs/wip/presentation-parents-progress.md`).
+Né du chantier `presentation-parents` (point 8, « Comment le suivre ? »), le 2026-11-16 : « il y a une vraie réflexion à mener sur ce qu'on partage avec les parents, et comment on le fait ». David : chantier **extrêmement important**. Le bloc « Suivre son travail » de `/parents` est retiré en attendant ; il sera réécrit à la fin de ce chantier (`docs/archive/wip/presentation-parents-progress.md`).
 
 ## Ce qui existe (vérifié le 2026-11-16)
 

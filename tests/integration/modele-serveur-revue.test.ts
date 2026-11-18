@@ -16,7 +16,7 @@
  */
 import { describe, it, expect, beforeAll, afterAll, vi } from 'vitest';
 import type { SupabaseClient, User } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 import {
 	createServiceRoleClient,
 	cleanupAllTestData
@@ -30,14 +30,14 @@ import {
 	detachChapterFromTemplate,
 	instantiateTemplate,
 	TemplateInUseError
-} from '$lib/server/chapter-templates';
-import { LinkedElementError, unlinkWorksheet } from '$lib/server/chapters';
+} from '#lib/server/chapter-templates.ts';
+import { LinkedElementError, unlinkWorksheet } from '#lib/server/chapters.ts';
 import { POST as templateDocuments } from '../../src/routes/api/teacher/chapter-templates/[id]/documents/+server';
 import { DELETE as deleteChecklistApi } from '../../src/routes/api/teacher/chapters/[id]/checklist/[itemId]/+server';
 import { DELETE as unlinkExerciseApi } from '../../src/routes/api/teacher/chapters/[id]/exercises/[linkId]/+server';
 import { actions as templateActions } from '../../src/routes/(protected)/dashboard/teacher/contenu/templates/[templateId]/+page.server';
 
-vi.mock('$lib/server/serviceRoleClient', async () => {
+vi.mock('#lib/server/serviceRoleClient.ts', async () => {
 	const helpers = await import('../helpers/database/trigger-test-helpers');
 	return { createServiceRoleClient: helpers.createServiceRoleClient };
 });

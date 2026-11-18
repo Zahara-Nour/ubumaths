@@ -1,5 +1,5 @@
 <script lang="ts">
-	import '$lib/utils/mathlive-styles';
+	import '#lib/utils/mathlive-styles.ts';
 	/**
 	 * La carte d'une suite : une ligne, `● u(n) = [champ]` ou `● u(n+1) = [champ]`.
 	 *
@@ -15,15 +15,15 @@
 	 * avec sa raison — reprise des réglages de la carte d'avant (phase 0
 	 * `/grapheur` §5 U1, U2 ; décisions S1 à S4).
 	 */
-	import type { SequenceMode, SequenceObject } from '$lib/atelier/types';
-	import { actionsFor, actionMovesFocus, type ObjectAction } from '$lib/atelier/actions';
-	import { useAtelier } from '$lib/atelier/context';
-	import { cobwebRefusal } from '$lib/atelier/atelier.svelte';
-	import { displayName } from '$lib/atelier/names';
-	import { stateLabelOf } from '$lib/atelier/card-state';
+	import type { SequenceMode, SequenceObject } from '#lib/atelier/types.ts';
+	import { actionsFor, actionMovesFocus, type ObjectAction } from '#lib/atelier/actions.ts';
+	import { useAtelier } from '#lib/atelier/context.ts';
+	import { cobwebRefusal } from '#lib/atelier/atelier.svelte.ts';
+	import { displayName } from '#lib/atelier/names.ts';
+	import { stateLabelOf } from '#lib/atelier/card-state.ts';
 	import { EllipsisVertical, Eye, EyeOff } from '@lucide/svelte';
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
-	import { Input } from '$lib/components/ui/input';
+	import * as DropdownMenu from '#lib/components/ui/dropdown-menu/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
 	import DefinitionField from './DefinitionField.svelte';
 	import CurveStylePopover from './CurveStylePopover.svelte';
 	import CardActionItems from './CardActionItems.svelte';

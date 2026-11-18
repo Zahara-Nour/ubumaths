@@ -13,7 +13,7 @@ import { constructionTraces } from '../../utils/courbe-combinaison';
 import { buildCourbeScene } from '../../utils/courbe-scene';
 import { generateCourbeTypst } from '../../generators/courbe-typst';
 import { maskVectorValue } from '../../utils/masked-value';
-import { findUnmaskedAnswers, maskGestureAnswers } from '$lib/questions/masked-statement';
+import { findUnmaskedAnswers, maskGestureAnswers } from '#lib/questions/masked-statement.ts';
 import type { CourbeNode, CourbeSpec } from '../../types/courbe';
 
 const WINDOW = ['x: -6 ; 6', 'y: -6 ; 6', 'grille: 1'];

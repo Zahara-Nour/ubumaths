@@ -49,7 +49,7 @@
  */
 
 import type { MathNode } from '../../types';
-import type { Interval } from '$lib/math/intervals/types';
+import type { Interval } from '#lib/math/intervals/types.ts';
 import type { Sign } from '../types';
 import { evaluate } from '../../eval/evaluate';
 import { substitute } from '../../eval/substitute';

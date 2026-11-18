@@ -11,15 +11,15 @@
 	 * est fabriquée à l'ouverture de la fenêtre : c'est un lien court
 	 * (`docs/archive/wip/liens-courts-phase0.md`).
 	 */
-	import * as Dialog from '$lib/components/ui/dialog';
-	import { Button } from '$lib/components/ui/button';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import QrCode from '@lucide/svelte/icons/qr-code';
 	import Copy from '@lucide/svelte/icons/copy';
 	import Check from '@lucide/svelte/icons/check';
 	import Download from '@lucide/svelte/icons/download';
-	import { canonicalUrl } from '$lib/seo/site';
-	import { encodeQr, qrFileName, qrSvg, type QrMatrix } from '$lib/qr/qr-code';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { canonicalUrl } from '#lib/seo/site.ts';
+	import { encodeQr, qrFileName, qrSvg, type QrMatrix } from '#lib/qr/qr-code.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 
 	interface Props {
 		/** L'adresse à encoder (relative ou absolue), ou `null` si elle n'existe pas encore */

@@ -12,10 +12,10 @@ const { requireRoles, verifyTeacherStudent, setProvisionalPassword } = vi.hoiste
 	setProvisionalPassword: vi.fn()
 }));
 
-vi.mock('$lib/server/middleware/auth', () => ({ requireRoles }));
-vi.mock('$lib/server/middleware/student-access', () => ({ verifyTeacherStudent }));
-vi.mock('$lib/server/serviceRoleClient', () => ({ createServiceRoleClient: () => ({}) }));
-vi.mock('$lib/server/child-password', () => ({ setProvisionalPassword }));
+vi.mock('#lib/server/middleware/auth.ts', () => ({ requireRoles }));
+vi.mock('#lib/server/middleware/student-access.ts', () => ({ verifyTeacherStudent }));
+vi.mock('#lib/server/serviceRoleClient.ts', () => ({ createServiceRoleClient: () => ({}) }));
+vi.mock('#lib/server/child-password.ts', () => ({ setProvisionalPassword }));
 
 import { POST } from '../+server';
 

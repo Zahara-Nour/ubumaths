@@ -6,8 +6,8 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { ConstructionExecutor } from '$lib/constructions-v2/core/executor';
-import { geoToNumber } from '$lib/geometry-core/compute/to-number';
+import { ConstructionExecutor } from '#lib/constructions-v2/core/executor.ts';
+import { geoToNumber } from '#lib/geometry-core/compute/to-number.ts';
 import {
 	CHANGES,
 	PARALLELOGRAMME,

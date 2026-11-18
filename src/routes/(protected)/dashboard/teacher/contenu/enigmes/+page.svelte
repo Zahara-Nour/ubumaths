@@ -5,21 +5,21 @@
 -->
 
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import type { PageData } from './$types';
-	import type { DbRiddle } from '$lib/types/riddle';
+	import type { DbRiddle } from '#lib/types/riddle.ts';
 	import {
 		getDifficultyLabel,
 		getDifficultyColor,
 		getStatusLabel,
 		getStatusColor
-	} from '$lib/types/riddle';
-	import { Button } from '$lib/components/ui/button';
-	import { Badge } from '$lib/components/ui/badge';
-	import * as Card from '$lib/components/ui/card';
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
-	import { MarkdownRenderer } from '$lib/components/markdown';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	} from '#lib/types/riddle.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import * as DropdownMenu from '#lib/components/ui/dropdown-menu/index.ts';
+	import { MarkdownRenderer } from '#lib/components/markdown/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import { invalidateAll } from '$app/navigation';
 	import {
 		Plus,

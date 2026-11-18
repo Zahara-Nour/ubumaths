@@ -13,9 +13,9 @@
 	@see src/lib/exercises/types.ts - ImageAlignment
 -->
 <script lang="ts">
-	import { Label } from '$lib/components/ui/label';
+	import { Label } from '#lib/components/ui/label/index.ts';
 	import { AlignLeft, AlignCenter, AlignRight } from '@lucide/svelte';
-	import type { ImageAlignment } from '$lib/ubumark';
+	import type { ImageAlignment } from '#lib/ubumark/index.ts';
 
 	// Types
 	interface AlignmentOption {

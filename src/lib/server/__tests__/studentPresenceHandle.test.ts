@@ -8,12 +8,12 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import type { RequestEvent } from '@sveltejs/kit';
 
-vi.mock('$lib/server/buddy-queries', () => ({ recordStudentPresence: vi.fn() }));
-vi.mock('$lib/utils/logger', () => ({
+vi.mock('#lib/server/buddy-queries.ts', () => ({ recordStudentPresence: vi.fn() }));
+vi.mock('#lib/utils/logger.ts', () => ({
 	createServerLogger: () => ({ info: vi.fn(), error: vi.fn(), warn: vi.fn(), debug: vi.fn() })
 }));
 
-import { recordStudentPresence } from '$lib/server/buddy-queries';
+import { recordStudentPresence } from '#lib/server/buddy-queries.ts';
 import { forgetPresences, studentPresenceHandle } from '../studentPresenceHandle';
 
 // Constantes

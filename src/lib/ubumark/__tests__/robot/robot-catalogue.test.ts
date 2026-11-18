@@ -3,9 +3,9 @@
  * cité juste ou faux, rejoué sur la scène de l'exemple).
  */
 import { describe, it, expect } from 'vitest';
-import { robotEntry } from '$lib/block-catalog/robot';
-import { parseRobotContent } from '$lib/ubumark/parser/robot-parser';
-import { robotAnswerVerdict, expectedRobotAnswer } from '$lib/ubumark/utils/robot-answer';
+import { robotEntry } from '#lib/block-catalog/robot.ts';
+import { parseRobotContent } from '#lib/ubumark/parser/robot-parser.ts';
+import { robotAnswerVerdict, expectedRobotAnswer } from '#lib/ubumark/utils/robot-answer.ts';
 
 /** Verdict d'un code sur la scène d'un exemple du catalogue */
 function verdict(titre: string, code: string) {

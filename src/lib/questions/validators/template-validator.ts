@@ -7,7 +7,7 @@
  * @module questions/validators/template-validator
  */
 
-import { hasVariationToFill } from '$lib/ubumark/parser/variation-table-parser';
+import { hasVariationToFill } from '#lib/ubumark/parser/variation-table-parser.ts';
 import type { QuestionTemplate, QuestionVariation, SharedVariationDefaults } from '../types';
 import { getQuestionType } from '../types';
 import { hasCourseCardBackSource } from '../course-card';
@@ -15,26 +15,26 @@ import { findRulesSufficeBlanksWithoutRules } from '../rules-suffice';
 import { assumptionCollisionMessage, findAssumptionCollisions } from '../answer-assumptions';
 import { choiceAnswerCountErrors } from './choice-answer-count';
 import { assignBlankIndices } from '../generator/assign-blank-indices';
-import { hasCollectionToBuild } from '$lib/ubumark/parser/collection-parser';
-import { hasMonnaieToBuild } from '$lib/ubumark/parser/monnaie-parser';
-import { hasLineToPlace } from '$lib/ubumark/parser/number-line-parser';
-import { hasHorlogeToPlace } from '$lib/ubumark/parser/horloge-parser';
-import { hasStatChartToPlace } from '$lib/ubumark/parser/stat-chart-parser';
-import { hasCourbeToPlace } from '$lib/ubumark/parser/courbe-parser';
-import { hasTrigCircleToPlace } from '$lib/ubumark/parser/trig-circle-parser';
-import { hasTortueToProgram } from '$lib/ubumark/parser/tortue-parser';
-import { hasCalculToProgram } from '$lib/ubumark/parser/calcul-parser';
-import { hasRobotToProduce } from '$lib/ubumark/parser/robot-parser';
-import { hasRangerToPlace } from '$lib/ubumark/parser/ranger-parser';
-import { hasAssocierToPlace } from '$lib/ubumark/parser/associer-parser';
-import { hasTrousToPlace } from '$lib/ubumark/parser/trous-parser';
-import { hasPartageToColorier } from '$lib/ubumark/parser/partage-parser';
+import { hasCollectionToBuild } from '#lib/ubumark/parser/collection-parser.ts';
+import { hasMonnaieToBuild } from '#lib/ubumark/parser/monnaie-parser.ts';
+import { hasLineToPlace } from '#lib/ubumark/parser/number-line-parser.ts';
+import { hasHorlogeToPlace } from '#lib/ubumark/parser/horloge-parser.ts';
+import { hasStatChartToPlace } from '#lib/ubumark/parser/stat-chart-parser.ts';
+import { hasCourbeToPlace } from '#lib/ubumark/parser/courbe-parser.ts';
+import { hasTrigCircleToPlace } from '#lib/ubumark/parser/trig-circle-parser.ts';
+import { hasTortueToProgram } from '#lib/ubumark/parser/tortue-parser.ts';
+import { hasCalculToProgram } from '#lib/ubumark/parser/calcul-parser.ts';
+import { hasRobotToProduce } from '#lib/ubumark/parser/robot-parser.ts';
+import { hasRangerToPlace } from '#lib/ubumark/parser/ranger-parser.ts';
+import { hasAssocierToPlace } from '#lib/ubumark/parser/associer-parser.ts';
+import { hasTrousToPlace } from '#lib/ubumark/parser/trous-parser.ts';
+import { hasPartageToColorier } from '#lib/ubumark/parser/partage-parser.ts';
 import {
 	hasCubesToBuild,
 	hasPatronsToBuild,
 	hasSolidesToBuild
-} from '$lib/ubumark/parser/espace-parser';
-import { WORK_FIGURE_ALONE_MESSAGE } from '$lib/ubumark/parser/construction-parser';
+} from '#lib/ubumark/parser/espace-parser.ts';
+import { WORK_FIGURE_ALONE_MESSAGE } from '#lib/ubumark/parser/construction-parser.ts';
 
 /**
  * Validate a question template

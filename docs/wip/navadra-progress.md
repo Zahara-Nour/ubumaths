@@ -2,18 +2,122 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après #2810._
+_Mis à jour le 2026-11-18, après #2822._
 
-- **État** : étape 1 (fondations en base) mergée (#2808) ; migration `20261118060323` **en prod** ; types générés depuis la prod mergés (#2810). Pas de worktree ouvert.
-- **Prochaine action** : étape 2 — apparition des Bêtes, + export RGPD des deux tables (`student_beasts`, `student_combat_moves`). Nouveau worktree `../ubumaths-wt-navadra` depuis `origin/main` ; phase 0 (comportements) à faire valider avant de coder.
+- **État** : étapes 1 (#2808, #2810), 2 (#2817) et 3 (#2822 : combat de la recrue, page `/dashboard/student/descente/combat/[beastId]`) mergées. Aucune page n'y mène encore : sans carte, aucune Bête n'existe en prod.
+- **Prochaine action** : avant l'étape 4, écrire les vraies fiches du bestiaire (18 à 24 Bêtes : nom, Province, allure, caractère ; copie dans `~/Downloads` pour l'IA d'image) et les vrais noms des 6 coups, à faire valider par David. Puis l'étape 4 (carte, entrée de menu, carnet), en phase 0.
 - **En attente de David** : rien.
 - **Façon de poser** : en mots simples, avec un exemple, sans noms de tables ni de colonnes.
 - **Pièges en cours** :
   - **PostgREST tronque un message d'erreur SQL accentué** et rend un 500 sans code : `raise exception` sans accent dans les fonctions appelées par l'API.
   - Base locale : `supabase migration up --local` bute sur une migration de rangement ; appliquer un fichier par `psql -1` sous `scripts/with-db-lock.sh`, puis `notify pgrst, 'reload schema'`.
   - Le prof et l'admin peuvent écrire une trace `descente` (comme `evaluation`) : leurs policies ne filtrent pas le lieu.
+  - « Quitter le combat » mène à `/dashboard/student/descente`, créée à l'étape 4.
+  - Une réponse en combat n'est jamais renvoyée par la page (un 500 peut suivre l'écriture).
   - L'analyse du jeu d'origine est dans `extern/navadra-jeu/CLAUDE.md`, **non versionné**.
-- **Worktree / branche** : aucun (retirés après #2810).
+- **Worktree / branche** : `../ubumaths-wt-navadra` gardé pour le serveur de test (5177) ; à retirer après l'essai de David.
+
+## Phase 0 de l'étape 3 : combat de la recrue (validée par David le 2026-11-18)
+
+David a validé toutes les recommandations (« je te suis »), A à G comprises.
+
+**Ce que l'étape livre** : la page de combat de la recrue (primaire), de la première question à la victoire ou à la défaite. Elle n'est reliée à rien : la carte et l'entrée de menu arrivent à l'étape 4, et aucune Bête n'existe en prod tant que la carte n'appelle pas l'apparition. On la teste en local, sur la base remplie.
+
+**Nominal**
+
+1. **L'élève ouvre le combat d'une de ses Bêtes.** Il voit la Bête, sa Province sensible, ses PV, ses propres cœurs et ses coups : un par Province, ceux des Provinces sans question à son niveau fermés avec un mot d'explication.
+2. **Il choisit un coup** ; une question de la Province du coup s'affiche (QCM ou une seule case, pas de chrono).
+   - Coup de la Province sensible : la question vient **du point de la Bête** (la notion à travailler).
+   - Autre coup : un point de **son niveau** dans cette Province, en préférant les non acquis.
+3. **Juste** : le coup part ; ×2 sur la Province sensible. **Faux** : « Tu as dévié », la correction s'affiche, le coup est raté.
+4. **Après 3 coups, la Bête riposte** : une question d'esquive, tirée du point de la Bête. Réussie : esquivé. Ratée : l'élève perd un cœur.
+5. **Chaque réponse s'enregistre aussitôt** comme une réponse faite ailleurs dans Chiphre (lieu « Descente ») : elle fait avancer la maîtrise du point. Le serveur tient les PV de la Bête.
+6. **Victoire** (PV à 0) : la Bête entre dans le carnet, gidouilles versées (1, ou 3 pour la grosse Bête ; 4 au plus sur 24 h, un mot le dit au-delà).
+7. **Défaite** (plus de cœurs) : aucun coût ; la Bête ordinaire reste sur la carte en pleine forme.
+
+**Limites**
+
+- Bête repartie, déjà vaincue, ou qui n'est pas à l'élève : pas de combat, retour avec un mot.
+- Question tirée qui n'est finalement pas courte (une autre variation que la première a plusieurs cases) : on en tire une autre, sans que l'élève le voie.
+- Point de la Bête sans question jouable aujourd'hui (modèle dépublié depuis) : on prend un autre point de la même Province et du même niveau.
+- Un seul modèle jouable pour un point : la même question peut revenir, avec d'autres nombres.
+- Grosse Bête : voir question C.
+
+**Erreurs**
+
+- Connexion perdue pendant une réponse : la réponse est renvoyée ; si elle n'arrive pas, le combat continue et un mot discret le dit.
+- Page fermée en plein combat : combat abandonné ; une Bête ordinaire repart en pleine forme au combat suivant, la grosse garde ses blessures.
+- Triche (réponse « juste » forgée) : correction côté client (ADR 0001), comme partout ; le serveur vérifie Bête, élève et question ; gidouilles plafonnées.
+
+**Questions**
+
+- **A. Cœurs plutôt que PV pour l'élève.** Recommandation : **3 cœurs** ; une esquive ratée en coûte un. Exemple : un élève de CE1 rate deux esquives, il lui reste un cœur ; une troisième et la Bête gagne ce combat. Plus lisible au primaire que des PV chiffrés.
+- **B. Chiffres** (cible : 3 ou 4 tours, une dizaine de questions). Recommandation : un coup réussi fait **10**, **20 sur la Province sensible**, **8 ailleurs** ; Bête ordinaire **120 PV**, grosse Bête **360 PV** (au lieu de 100 / 300). Exemple : en tapant juste sur la bonne Province avec 7 réponses sur 10, la Bête tombe en 3 tours ; avec une autre Province, en 7 ou 8 tours, battable mais long.
+- **C. Grosse Bête en plusieurs combats.** Recommandation : **un combat contre elle dure 4 tours au plus**, puis elle se replie en gardant ses blessures. Exemple : 360 PV, un bon élève en ôte environ 150 par combat, il la bat au 3e. Les Bêtes ordinaires n'ont pas de limite de tours.
+- **D. Même coup plusieurs fois par tour.** Navadra l'interdisait (chaque sort une fois par tour). Recommandation : **l'autoriser**, pour que l'élève puisse taper trois fois sur la notion à travailler.
+- **E. Question d'esquive tirée du point de la Bête** (recommandation) : même si l'élève choisit d'autres Provinces, il travaille la notion visée au moins une fois par tour.
+- **F. Noms des 6 coups de départ.** Recommandation : des **noms provisoires dans le code** (« Coup de Nombrilie »…), écrits et validés avec les fiches du bestiaire, avant l'étape 4.
+- **G. Coups gagnés en maîtrisant une notion (5a).** Le découpage ne les place dans aucune étape. Pour la recrue, un coup gagné ne ferait rien de plus qu'un coup de départ. Recommandation : **l'étape 3 ne livre que les 6 coups de départ** ; gagner des coups et sorts (et l'annonce) vient avec l'étape 5 (apprenti), où les sorts ont des effets différents.
+
+### Étape 3 : ce qui a été codé (2026-11-18)
+
+- Règles pures `combat-rules.ts` (tour, cœurs, dégâts 20 / 8, repli de la grosse Bête après 4 tours) ; PV 120 / 360 (`spawn-logic.ts`) ; coups de départ `moves.ts` (noms provisoires).
+- Serveur `combat.ts` : `openCombat`, `drawCombatQuestion` (revérifie la question tirée : `isCombatInstance`), `recordCombatAnswer`, `claimBeastVictory`. Lectures partagées avec l'apparition déplacées dans `program.ts`.
+- **Cœur commun extrait** : `src/lib/server/skill-attempts/record-attempt.ts` (`recordStudentAttempt`), utilisé par `api/skill-attempts` et par le combat (trace `descente` au client service) : une réponse en combat compte exactement comme ailleurs (FSRS, suivi, Programme).
+- Routes `api/descente/combat/[beastId]/{question,answer,victory}` ; page `/dashboard/student/descente/combat/[beastId]` (`CombatArena.svelte`). « Quitter » mène à `/dashboard/student/descente`, **qui n'existe qu'à l'étape 4**.
+- **Revues (code + sécurité), 2026-11-18 : aucun bloquant.** Corrigé : une question qui n'arrive pas (réseau) ne coupe plus le combat ; une Bête achevée par une réponse perdue plus tôt donne la victoire même à l'esquive ; verdict neutre quand une réponse juste n'arrive pas ; une réponse n'est **jamais** renvoyée (un 500 peut suivre l'écriture : doublon) ; victoire déjà payée par un autre onglet tracée en `warn` ; liste blanche du client service (`combat.ts`, `record-attempt.ts`) ; test d'accès à la Bête d'un autre élève.
+- **Laissé en l'état, à garder en tête** : recharger la page remet les tours à 1 (la limite de 4 tours de la grosse Bête se contourne en rechargeant) et remet une Bête ordinaire en forme (conforme à « page fermée = abandon ») ; ouvrir la page (GET) écrit les PV ; aucune limite de débit sur les routes (comme `api/skill-attempts`) ; le serveur ne relie pas la réponse au modèle tiré ni à la Province du coup (ADR 0001, gidouilles plafonnées).
+- Choix techniques non posés à David (sans effet visible) : le serveur ne vérifie pas que le modèle répondu est celui qu'il a tiré (une réponse forgée ne fait rien de plus qu'une trace forgée par `api/skill-attempts`) ; tour et cœurs tenus par la page, PV par le serveur.
+
+## Phase 0 de l'étape 2 : apparition des Bêtes (validée par David le 2026-11-18)
+
+David a validé toutes les recommandations (« je te suis »), A à E comprises.
+
+**Ce que l'étape livre** : le calcul qui fait naître et repartir les Bêtes d'un élève, et l'ajout de ses Bêtes et de ses coups gagnés à l'export de ses données (RGPD). Rien de visible encore : la carte arrive à l'étape 4. Le calcul se lance quand l'élève ouvre la carte ; tant qu'aucune page ne l'appelle, aucune Bête n'apparaît en prod.
+
+**Nominal**
+
+1. **À la visite, le serveur rattrape le temps passé** (pas de tâche planifiée). Exemple : un élève ouvre la carte lundi à 8 h, puis mercredi à 8 h ; deux jours ont passé, soit 6 Bêtes dues, mais il en a déjà 2 : il en reçoit 3, pour arriver à 5.
+2. **D'où naît chaque Bête** : d'un point du programme, dans cet ordre de priorité :
+   - un point **à remédier** (de n'importe quel niveau) ;
+   - un point **non acquis de son niveau** ;
+   - un point **à revoir** (une carte de révision due).
+     Dans un même rang, au hasard, en préférant une Province qui n'a pas encore de Bête sur la carte, et jamais deux Bêtes vivantes sur le même point.
+3. **Seulement un point jouable en combat** : il faut au moins une question publiée, courte (QCM ou une seule case) et non exclue, rattachée à ce point. Sinon, pas de Bête.
+4. **La Bête prend la Province de la branche de son point** (correspondance, question A).
+5. **Départ** : une Bête ordinaire repart au bout de 3 jours si elle n'est pas vaincue ; celle d'un point à remédier reste jusqu'à sa défaite, même si l'élève remédie ailleurs entre-temps.
+6. **Grosse Bête** : une tous les 7 jours, née du point le plus prioritaire ; elle reste 7 jours, ne compte pas dans les 5, et garde ses blessures d'un combat à l'autre.
+7. **Export RGPD** : le fichier « mes données » contient ses Bêtes (vivantes, reparties, vaincues) et ses coups gagnés.
+
+**Limites**
+
+- Carte pleine (5 Bêtes ordinaires) : rien de plus, même après une longue absence.
+- Carte pleine de Bêtes qui restent (5 points à remédier) : plus d'apparition tant qu'il n'en a pas vaincu une.
+- Élève qui a tout acquis et n'a rien à revoir : pas de Bête ; la carte le dit (texte à l'étape 4).
+- Province sans point jouable à son niveau (algorithmique au CE1) : jamais de Bête là.
+- Sans niveau scolaire : aucune Bête (message de l'étape 4).
+- Bête repartie : elle quitte la carte, n'entre pas dans le carnet, rien n'est perdu.
+- Point archivé depuis la naissance de la Bête : elle reste jusqu'à son départ normal.
+
+**Erreurs**
+
+- La base ne répond pas : la carte s'affiche avec les Bêtes déjà là ; on réessaiera à la visite suivante.
+- Deux onglets ouverts à la même seconde : voir question E.
+
+**Questions**
+
+- **A. Branches → Provinces.** Il y a 19 branches pour 6 Provinces ; rien ne les relie aujourd'hui. Proposition :
+  - Nombrilie : nombres et calculs, arithmétique, nombres complexes, proportionnalité, algèbre ;
+  - Bedonstan : géométrie, **grandeurs et mesures** ;
+  - Yoyolande : fonctions, suites, intégration, équations différentielles ;
+  - Pifométrie : probabilités, dénombrement, statistiques ;
+  - Glitchistan : algorithmique, **graphes, matrices** ;
+  - Patatovie : logique, ensembles.
+    Les cas discutables sont en gras. Exemple : « calculer l'aire d'un rectangle » donne une Bête de Bedonstan.
+- **B. Rythme** : recommandation **une Bête toutes les 8 heures**, ce qui fait 3 par jour sans dépendre d'un fuseau ni de minuit.
+- **C. Durées** : recommandation **3 jours** pour une Bête ordinaire, **7 jours** pour la grosse Bête.
+- **D. Noms des Bêtes** : recommandation **une liste provisoire de 3 Bêtes par Province** dans le code pour coder et tester cette étape ; les vraies fiches (nom, allure, caractère) sont écrites et validées avant l'étape 4, donc avant qu'un élève voie une Bête.
+- **E. Deux onglets à la même seconde** : l'élève pourrait recevoir quelques Bêtes de trop, une seule fois. Recommandation : **l'accepter** (rare, sans gidouille en jeu, puisque le plafond reste tenu par le serveur, et la carte revient d'elle-même sous 5). L'autre choix est une petite fonction en base qui l'empêche : une migration et une PR de plus.
 
 ## Tranché
 
@@ -91,6 +195,14 @@ _Mis à jour le 2026-11-18, après #2810._
   - personne n'écrit depuis le navigateur : le serveur seul fait apparaître les Bêtes, enregistre les victoires et les réponses en combat ;
   - gidouilles : **1 par Bête ordinaire, 3 par grosse Bête, 0 pour le tutoriel, 4 au plus sur 24 heures** ; une récompense est coupée au plafond.
   - Le bestiaire (nom, allure) vit dans le code ; la base ne garde que la clé de la Bête. Les coups de départ (un par Province) ne sont pas écrits en base.
+
+### Étape 2 : ce qui a été codé (2026-11-18)
+
+- `src/lib/descente/` : `spawn-logic.ts` (règles, pur), `combat-templates.ts` (filtre « jouable » : une case ou `choix`, blocs admis `choix`/`courbe`/`figure`/`python`/`solide`, première variation seulement), `provinces.ts` (question A), `bestiary.ts` (**provisoire**). Serveur : `src/lib/server/descente/spawn.ts` (`spawnBeasts(client, studentId)`, niveau lu dans le profil). Aucune page ne l'appelle : branchement à l'étape 4.
+- **Première grosse Bête 7 jours après l'arrivée** (première Bête ordinaire de l'élève), jamais à la première visite : choix de David du 2026-11-18, sur ma recommandation.
+- Rattrapage sans perte du reste (revue) : la k-ième Bête due est datée de la dernière apparition + k × 8 h ; au-delà des places, datée de maintenant et le dû en trop est perdu.
+- **Provisoire, à régler à l'étape 3** : PV 100 (ordinaire) et 300 (grosse). **Avant l'étape 4** : vraies fiches du bestiaire (les clés provisoires n'atteignent pas la prod tant qu'aucune page n'appelle l'apparition).
+- Export RGPD : `gaming.descente` (Bêtes et coups, lus par pages).
 
 ## Phase 0 de la v1 (validée par David le 2026-11-18)
 
@@ -228,6 +340,10 @@ Au code : ajouter « La Descente de la Vistule » à `CONTEXT.md` (et une ADR si
 
 ## Historique
 
+- **2026-11-18** : #2822 mergée (étape 3, combat de la recrue).
+- **2026-11-18** : phase 0 de l'étape 3 posée (questions A à G) ; worktree `../ubumaths-wt-navadra`, branche `feat/navadra-combat`.
+- **2026-11-18** : #2817 mergée (étape 2).
+- **2026-11-18** : étape 2 codée (apparition des Bêtes, export RGPD), phase 0 validée par David (« je te suis ») ; revues code et sécurité corrigées.
 - **2026-11-18** : phase 0 de la v1 validée par David (toutes les recommandations).
 - **2026-11-18** : phase 0 de la v1 rédigée et publiée en page, 7 questions posées.
 - **2026-11-17** : § « Idées d'ajouts » relue avec David : Mathou réveillé par un combat en v1 ; Czar et Bataillon après la v1.

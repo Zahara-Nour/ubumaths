@@ -7,7 +7,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { clearLabelsOf, cyclePinnedLabels, findPinnedLabel } from '$lib/grapheur/pinned-labels';
+import { clearLabelsOf, cyclePinnedLabels, findPinnedLabel } from '#lib/grapheur/pinned-labels.ts';
 
 const u3 = { kind: 'term', functionId: 'u', rank: 3 } as const;
 const u5 = { kind: 'term', functionId: 'u', rank: 5 } as const;

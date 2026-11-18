@@ -1,19 +1,19 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import { enhance } from '$app/forms';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
-	import { Textarea } from '$lib/components/ui/textarea';
-	import { Badge } from '$lib/components/ui/badge';
-	import * as Card from '$lib/components/ui/card';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import GradeBadgeSelector from '$lib/components/GradeBadgeSelector.svelte';
-	import TagBadgeSelector from '$lib/components/TagBadgeSelector.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import { Textarea } from '#lib/components/ui/textarea/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import GradeBadgeSelector from '#lib/components/GradeBadgeSelector.svelte';
+	import TagBadgeSelector from '#lib/components/TagBadgeSelector.svelte';
 	import { FileText, Upload, Pencil, Trash2, Calendar, User, Loader2, Eye } from '@lucide/svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import { formatGradeShort } from '$lib/utils/grades';
-	import { GRADE_CODES, type GradeCode } from '$lib/types/grades';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import { formatGradeShort } from '#lib/utils/grades.ts';
+	import { GRADE_CODES, type GradeCode } from '#lib/types/grades.ts';
 	import type { PageData } from './$types';
 
 	const { data }: { data: PageData } = $props();

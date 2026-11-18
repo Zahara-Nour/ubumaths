@@ -4,21 +4,21 @@
 		sanitizeForFileName,
 		worksheetPdfFileName,
 		type WorksheetPdfKind
-	} from '$lib/worksheets/pdf-file-name';
-	import { lore } from '$lib/config/lore';
+	} from '#lib/worksheets/pdf-file-name.ts';
+	import { lore } from '#lib/config/lore.ts';
 	import { onMount } from 'svelte';
-	import { Button } from '$lib/components/ui/button';
-	import * as Card from '$lib/components/ui/card';
-	import * as Tabs from '$lib/components/ui/tabs';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Label } from '$lib/components/ui/label';
-	import { Separator } from '$lib/components/ui/separator';
-	import { Progress } from '$lib/components/ui/progress';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import CodeViewer from '$lib/components/CodeViewer.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import * as Tabs from '#lib/components/ui/tabs/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import { Separator } from '#lib/components/ui/separator/index.ts';
+	import { Progress } from '#lib/components/ui/progress/index.ts';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import CodeViewer from '#lib/components/CodeViewer.svelte';
 	import PdfSvgView from './PdfSvgView.svelte';
 	import UntranslatedExercisesNotice from './UntranslatedExercisesNotice.svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import {
 		FileDown,
 		Eye,
@@ -34,39 +34,39 @@
 		FileCode,
 		FileArchive
 	} from '@lucide/svelte';
-	import { generateWorksheetTypst } from '$lib/typst/generators';
-	import { documentFromTeacherCopy } from '$lib/worksheets/document/teacher-adapter';
-	import { renderMarkdownPreview } from '$lib/worksheets/document/render-exercise';
+	import { generateWorksheetTypst } from '#lib/typst/generators/index.ts';
+	import { documentFromTeacherCopy } from '#lib/worksheets/document/teacher-adapter.ts';
+	import { renderMarkdownPreview } from '#lib/worksheets/document/render-exercise.ts';
 	import {
 		clearTrackedExternalImages,
 		getTrackedExternalImages
-	} from '$lib/ubumark/generators/typst-generator';
-	import { fetchExternalImages } from '$lib/typst/image-loader';
-	import { pdfPageCount } from '$lib/typst/pdf-page-count';
+	} from '#lib/ubumark/generators/typst-generator.ts';
+	import { fetchExternalImages } from '#lib/typst/image-loader.ts';
+	import { pdfPageCount } from '#lib/typst/pdf-page-count.ts';
 	import {
 		compileTypstDocument,
 		fallbackWarning
-	} from '$lib/typst/compiler/correction-fonts-compiler';
-	import type { WorksheetWithRelations, InstanceData } from '$lib/types/worksheets';
-	import { worksheetLocale } from '$lib/types/worksheets';
-	import { isContentLocale, type ContentLocale } from '$lib/types/locale';
-	import { untranslatedExercises } from '$lib/exercises/translation-status';
-	import { documentLabels } from '$lib/typst/labels';
-	import { buildWorksheetCopy, GUIDANCE_LEVEL_ITEMS } from '$lib/worksheets/worksheet-copy';
+	} from '#lib/typst/compiler/correction-fonts-compiler.ts';
+	import type { WorksheetWithRelations, InstanceData } from '#lib/types/worksheets.ts';
+	import { worksheetLocale } from '#lib/types/worksheets.ts';
+	import { isContentLocale, type ContentLocale } from '#lib/types/locale.ts';
+	import { untranslatedExercises } from '#lib/exercises/translation-status.ts';
+	import { documentLabels } from '#lib/typst/labels.ts';
+	import { buildWorksheetCopy, GUIDANCE_LEVEL_ITEMS } from '#lib/worksheets/worksheet-copy.ts';
 	import {
 		DEFAULT_GUIDANCE_LEVEL,
 		isGuidanceLevel,
 		type GuidanceLevel
-	} from '$lib/worksheets/student-copy';
+	} from '#lib/worksheets/student-copy.ts';
 	import JSZip from 'jszip';
 	import TextSizeSelect from './TextSizeSelect.svelte';
-	import type { TextSize } from '$lib/typst/text-size';
+	import type { TextSize } from '#lib/typst/text-size.ts';
 	import {
 		getTypstCompiler,
 		type TypstCompiler,
 		getCompilerError,
 		resetCompilerState
-	} from '$lib/typst/compiler';
+	} from '#lib/typst/compiler/index.ts';
 
 	// ============================================================================
 	// PROPS AND STATE

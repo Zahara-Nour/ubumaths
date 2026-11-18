@@ -13,10 +13,10 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { useCardSchema } from '$lib/server/validation/vip-cards';
-import { verifyTeacherStudentWithRole } from '$lib/server/middleware/student-access';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { useCardSchema } from '#lib/server/validation/vip-cards.ts';
+import { verifyTeacherStudentWithRole } from '#lib/server/middleware/student-access.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/vip-cards/approve-card/+server');
 

@@ -9,23 +9,23 @@
 
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import type { QuestionTemplate } from '$lib/questions/types';
-import { getQuestionType, mapDbTemplateToForm } from '$lib/questions/types';
-import { choiceAnswerCountErrors } from '$lib/questions/validators/choice-answer-count';
-import { classificationNodeErrorMessage } from '$lib/server/classification-node-error';
-import { updateQuestionTemplateSchema, validateRequest } from '$lib/server/validation';
-import { requireAdmin, requireRoles } from '$lib/server/middleware/auth';
-import { validateUuidParam } from '$lib/server/validation/params';
-import { toJson } from '$lib/types/database-helpers';
-import type { Database } from '$lib/types/database';
-import { toQuestionTemplate } from '$lib/types/question-template';
-import { withoutDbMetadata } from '$lib/server/questions-bulk-status';
-import { templatePublicationErrors } from '$lib/server/template-publication';
+import type { QuestionTemplate } from '#lib/questions/types.ts';
+import { getQuestionType, mapDbTemplateToForm } from '#lib/questions/types.ts';
+import { choiceAnswerCountErrors } from '#lib/questions/validators/choice-answer-count.ts';
+import { classificationNodeErrorMessage } from '#lib/server/classification-node-error.ts';
+import { updateQuestionTemplateSchema, validateRequest } from '#lib/server/validation/index.ts';
+import { requireAdmin, requireRoles } from '#lib/server/middleware/auth.ts';
+import { validateUuidParam } from '#lib/server/validation/params.ts';
+import { toJson } from '#lib/types/database-helpers.ts';
+import type { Database } from '#lib/types/database.ts';
+import { toQuestionTemplate } from '#lib/types/question-template.ts';
+import { withoutDbMetadata } from '#lib/server/questions-bulk-status.ts';
+import { templatePublicationErrors } from '#lib/server/template-publication.ts';
 import {
 	assumptionCollisionMessage,
 	findAssumptionCollisions
-} from '$lib/questions/answer-assumptions';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/questions/answer-assumptions.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/questions/templates/[id]/+server');
 

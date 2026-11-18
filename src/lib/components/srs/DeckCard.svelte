@@ -17,12 +17,12 @@
 -->
 
 <script lang="ts">
-	import * as Card from '$lib/components/ui/card';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Button } from '$lib/components/ui/button';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import { BookOpen, Clock, Sparkles, Lock } from '@lucide/svelte';
-	import { cn } from '$lib/utils';
-	import type { Deck } from '$lib/srs/types';
+	import { cn } from '#lib/utils.ts';
+	import type { Deck } from '#lib/srs/types.ts';
 
 	interface Props {
 		deck: Deck & {

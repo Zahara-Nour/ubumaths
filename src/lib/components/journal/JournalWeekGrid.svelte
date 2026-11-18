@@ -20,13 +20,13 @@
 -->
 
 <script lang="ts">
-	import { journalContentPreview } from '$lib/journal/content';
-	import { lore } from '$lib/config/lore';
-	import * as Card from '$lib/components/ui/card';
-	import { Badge } from '$lib/components/ui/badge';
+	import { journalContentPreview } from '#lib/journal/content.ts';
+	import { lore } from '#lib/config/lore.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
 	import { FileText, BookCheck, Globe, Plus, Calendar } from '@lucide/svelte';
-	import type { JournalWeekDay } from '$lib/types/journal';
-	import { cn } from '$lib/utils';
+	import type { JournalWeekDay } from '#lib/types/journal.ts';
+	import { cn } from '#lib/utils.ts';
 
 	interface Props {
 		/** Days of the week with entries */

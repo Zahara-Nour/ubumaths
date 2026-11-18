@@ -7,18 +7,18 @@
 	enregistré ; les révisions espacées sont simulées (chantier demo-debug, PR 6g).
 -->
 <script lang="ts">
-	import { demoSeo } from '$lib/seo/demo-pages';
-	import SeoHead from '$lib/seo/SeoHead.svelte';
+	import { demoSeo } from '#lib/seo/demo-pages.ts';
+	import SeoHead from '#lib/seo/SeoHead.svelte';
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import * as Tabs from '$lib/components/ui/tabs';
-	import ClassroomSeries from '$lib/components/test/ClassroomSeries.svelte';
-	import TestInteractive from '$lib/components/test/TestInteractive.svelte';
-	import FlashSeries from '$lib/components/test/FlashSeries.svelte';
-	import TypingSeries from '$lib/components/test/TypingSeries.svelte';
-	import TestCourse from '$lib/components/test/TestCourse.svelte';
-	import type { TestSession } from '$lib/types/test';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import * as Tabs from '#lib/components/ui/tabs/index.ts';
+	import ClassroomSeries from '#lib/components/test/ClassroomSeries.svelte';
+	import TestInteractive from '#lib/components/test/TestInteractive.svelte';
+	import FlashSeries from '#lib/components/test/FlashSeries.svelte';
+	import TypingSeries from '#lib/components/test/TypingSeries.svelte';
+	import TestCourse from '#lib/components/test/TestCourse.svelte';
+	import type { TestSession } from '#lib/types/test.ts';
 	import SpacedReviewDemo from './SpacedReviewDemo.svelte';
 	import { COURSE_TIME_LIMIT_SECONDS, demoClassroomItems, demoInstances } from './questions';
 
@@ -98,7 +98,7 @@
 
 	// Les boutons « Retour au panier » des formes mènent au vrai panier
 	function toCart() {
-		goto(resolve('/automaths/panier'));
+		goto(resolve('automaths/panier'));
 	}
 
 	// Rien n'est enregistré sur la vitrine : la forme affiche son résultat elle-même
@@ -176,7 +176,7 @@
 	</Tabs.Root>
 
 	<p>
-		<a href={resolve('/automaths')} class="font-medium text-primary underline underline-offset-4">
+		<a href={resolve('automaths')} class="font-medium text-primary underline underline-offset-4">
 			Composer sa propre série dans Automaths
 		</a>
 	</p>

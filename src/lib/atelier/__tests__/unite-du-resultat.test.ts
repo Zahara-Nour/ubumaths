@@ -13,15 +13,15 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
-import { tidy } from '$lib/mathAST/tidy';
-import { simplify } from '$lib/mathAST/simplify';
-import { parseCustom } from '$lib/mathAST/parser/custom';
-import { toCustom } from '$lib/mathAST/custom-generator';
-import { evaluateAstWithModifiers } from '$lib/mathAST/eval/evaluate-with-modifiers';
-import { resolveVariables } from '$lib/ubumark/parameterization';
-import { expectedInRequiredUnit } from '$lib/questions/units/required-unit';
-import { validateQuantityAnswer } from '$lib/questions/units/validator';
+import { WebReplEngine } from '#lib/mathAST/cli/web/web-repl-engine.ts';
+import { tidy } from '#lib/mathAST/tidy/index.ts';
+import { simplify } from '#lib/mathAST/simplify/index.ts';
+import { parseCustom } from '#lib/mathAST/parser/custom/index.ts';
+import { toCustom } from '#lib/mathAST/custom-generator.ts';
+import { evaluateAstWithModifiers } from '#lib/mathAST/eval/evaluate-with-modifiers.ts';
+import { resolveVariables } from '#lib/ubumark/parameterization/index.ts';
+import { expectedInRequiredUnit } from '#lib/questions/units/required-unit.ts';
+import { validateQuantityAnswer } from '#lib/questions/units/validator.ts';
 import { Atelier } from '../atelier.svelte';
 import { simplifySteps } from '../simplify-steps';
 import { runInput, type CalcResult } from '../calcul';

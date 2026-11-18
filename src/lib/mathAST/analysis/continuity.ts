@@ -9,8 +9,8 @@
  *
  * @example
  * ```typescript
- * import { analyzeContinuity } from '$lib/mathAST/analysis';
- * import { fraction, variable, number } from '$lib/mathAST/factory';
+ * import { analyzeContinuity } from '#lib/mathAST/analysis/index.ts';
+ * import { fraction, variable, number } from '#lib/mathAST/factory.ts';
  *
  * // Analyze 1/x
  * const expr = fraction(number('1'), variable('x'));

@@ -7,7 +7,7 @@
  * 2 → $r$ » à la place du bloc. Une case par trou.
  */
 import { describe, it, expect } from 'vitest';
-import type { QuestionTemplate } from '$lib/questions/types';
+import type { QuestionTemplate } from '#lib/questions/types.ts';
 import { buildSerie } from '../serie-automatismes';
 
 function modele(id: string, statement: string, blanks?: unknown[]): QuestionTemplate {

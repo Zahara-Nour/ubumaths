@@ -1,11 +1,11 @@
 <script lang="ts">
-	import AlphabetStrip from '$lib/components/ciphers/AlphabetStrip.svelte';
-	import CipherOutput from '$lib/components/ciphers/CipherOutput.svelte';
-	import CipherWorkbench from '$lib/components/ciphers/CipherWorkbench.svelte';
-	import { ALPHABET } from '$lib/ciphers/alphabet';
-	import { atbash } from '$lib/ciphers/atbash';
-	import { attempt } from '$lib/ciphers/outcome';
-	import SeoHead from '$lib/seo/SeoHead.svelte';
+	import AlphabetStrip from '#lib/components/ciphers/AlphabetStrip.svelte';
+	import CipherOutput from '#lib/components/ciphers/CipherOutput.svelte';
+	import CipherWorkbench from '#lib/components/ciphers/CipherWorkbench.svelte';
+	import { ALPHABET } from '#lib/ciphers/alphabet.ts';
+	import { atbash } from '#lib/ciphers/atbash.ts';
+	import { attempt } from '#lib/ciphers/outcome.ts';
+	import SeoHead from '#lib/seo/SeoHead.svelte';
 
 	// Constantes
 	const PLAIN = 'Le Czar ne doit rien savoir. Brûlez ce message après lecture.';

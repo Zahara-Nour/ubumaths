@@ -22,7 +22,7 @@
  * ⚠️ Une nouvelle clé de travail s'ajoute ici, sinon elle survit au changement de compte.
  */
 
-import { clearFreezeDetectionData } from '$lib/utils/freezeDetection';
+import { clearFreezeDetectionData } from '#lib/utils/freezeDetection.ts';
 
 const OWNER_KEY = 'chiphre:work-data-owner';
 const ANONYMOUS = 'anonymous';

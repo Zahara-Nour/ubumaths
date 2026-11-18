@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { Figure } from '../figure';
 import { exact, numeric, isExact } from '../../types/geo-value';
 import { geoToNumber } from '../../compute/to-number';
-import { numericNode } from '$lib/mathAST/common/numeric';
+import { numericNode } from '#lib/mathAST/common/numeric.ts';
 import type { GeoPoint } from '../../types/primitives';
 
 function pt(x: number, y: number): GeoPoint {

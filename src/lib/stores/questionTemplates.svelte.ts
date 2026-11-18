@@ -16,7 +16,7 @@
  *
  * Usage:
  * ```typescript
- * import { questionTemplatesCache } from '$lib/stores/questionTemplates.svelte';
+ * import { questionTemplatesCache } from '#lib/stores/questionTemplates.svelte.ts';
  *
  * // Lire la liste (une fois par onglet)
  * await questionTemplatesCache.fetchTemplates();
@@ -32,8 +32,8 @@
  * ```
  */
 
-import { mapDbTemplateToForm, type CatalogueTemplate } from '$lib/questions/types';
-import type { CatalogueNode } from '$lib/questions/catalogue';
+import { mapDbTemplateToForm, type CatalogueTemplate } from '#lib/questions/types.ts';
+import type { CatalogueNode } from '#lib/questions/catalogue.ts';
 
 /** Liste publique des modèles publiés (gardée 5 min par Vercel) */
 const TEMPLATES_URL = '/api/questions/templates/all';

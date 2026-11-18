@@ -14,7 +14,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { urlToVirtualPath } from '$lib/typst/image-loader';
+import { urlToVirtualPath } from '#lib/typst/image-loader.ts';
 import { copierImagesLocales } from '../fiches/images-locales';
 
 const BASE = 'https://exemple.supabase.co/storage/v1/object/public/exercise-images/auteur';

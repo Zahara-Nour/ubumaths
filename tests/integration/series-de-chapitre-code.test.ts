@@ -3,7 +3,7 @@
  * ====================================================================
  *
  * La base seule est testée par `series-de-chapitre.test.ts` (livraison A).
- * Ici : les fonctions de `$lib/server/chapter-series`, la publication et le
+ * Ici : les fonctions de `#lib/server/chapter-series.ts`, la publication et le
  * rangement, appelées avec le client d'un élève ou du professeur. Ce que les
  * tests unitaires simulent (zéro ligne → `not_found`, doublon, propriété,
  * évaluation non terminée) est vérifié contre Postgres.
@@ -18,16 +18,16 @@ import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { cleanupAllTestData } from '../helpers/database/trigger-test-helpers';
 import { DEFAULT_TEST_PASSWORD } from '../helpers/database/supabase-client';
 import { TestData } from '../helpers/database/test-data-factory';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 import {
 	findOngoingEvaluation,
 	linkSeries,
 	listChapterSeries,
 	setSeriesForm,
 	unlinkSeries
-} from '$lib/server/chapter-series';
-import { setContentPublication } from '$lib/server/chapters-publication';
-import { assignToSection } from '$lib/server/chapter-sections';
+} from '#lib/server/chapter-series.ts';
+import { setContentPublication } from '#lib/server/chapters-publication.ts';
+import { assignToSection } from '#lib/server/chapter-sections.ts';
 
 // Types
 type Person = { id: string; client: SupabaseClient<Database> };

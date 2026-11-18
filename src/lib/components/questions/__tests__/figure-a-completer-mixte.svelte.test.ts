@@ -16,10 +16,10 @@ import { render } from 'vitest-browser-svelte';
 import QuestionCard from '../QuestionCard.svelte';
 import FlashCard from '../FlashCard.svelte';
 import CorrectionCard from '../CorrectionCard.svelte';
-import { generateInstance } from '$lib/questions/generator/instance-generator';
-import type { QuestionInstance, QuestionTemplate } from '$lib/questions/types';
-import type { TestAnswerResult } from '$lib/types/test';
-import { templateMarkdown } from '$lib/ubumark';
+import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
+import type { QuestionInstance, QuestionTemplate } from '#lib/questions/types.ts';
+import type { TestAnswerResult } from '#lib/types/test.ts';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 
 // C presque sur la droite (AB) : 0,25 carreau au-dessus
 const BLOCK = [

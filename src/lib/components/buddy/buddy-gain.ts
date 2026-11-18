@@ -14,10 +14,10 @@
  */
 
 import { z } from 'zod';
-import { lore } from '$lib/config/lore';
-import type { PalotinType } from '$lib/config/buddy-messages';
-import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
-import { toBuddyState, type BuddyExpression, type BuddyState } from '$lib/types/buddy';
+import { lore } from '#lib/config/lore.ts';
+import type { PalotinType } from '#lib/config/buddy-messages.ts';
+import { studentCache } from '#lib/stores/studentDashboardCache.svelte.ts';
+import { toBuddyState, type BuddyExpression, type BuddyState } from '#lib/types/buddy.ts';
 import { buddyMessageEngine } from './buddy-message-engine';
 import { notifyBuddyActivity } from './palotin-presence';
 

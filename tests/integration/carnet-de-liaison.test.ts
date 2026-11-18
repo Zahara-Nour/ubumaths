@@ -22,7 +22,7 @@
  *    l'adresse et interdit de la ressaisir ;
  *  - couper le partage révoque les liens (relu en service role : la RLS échoue
  *    en silence) ;
- *  - PR 3 : ce sur quoi s'appuie le serveur (`$lib/server/carnet/envois`, page
+ *  - PR 3 : ce sur quoi s'appuie le serveur (`#lib/server/carnet/envois.ts`, page
  *    du professeur) — empreinte de l'adresse calculée comme le trigger, porte
  *    `carnet_student_is_shared` ouverte au service role, réglages et opt-out
  *    écrits par le client du professeur (upsert, retrait).

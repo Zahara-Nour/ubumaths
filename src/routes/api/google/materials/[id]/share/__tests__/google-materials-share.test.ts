@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { RequestEvent } from '@sveltejs/kit';
 import { POST, DELETE } from '../+server.js';
-import * as authModule from '$lib/server/middleware/auth';
+import * as authModule from '#lib/server/middleware/auth.ts';
 
 /**
  * API Endpoint Tests: POST/DELETE /api/google/materials/[id]/share
@@ -15,11 +15,11 @@ import * as authModule from '$lib/server/middleware/auth';
 
 // Mock middleware
 // Les routes sont gardées par l'interrupteur (B8) : on teste leur comportement allumé.
-vi.mock('$lib/config/google-classroom', () => ({
+vi.mock('#lib/config/google-classroom.ts', () => ({
 	GOOGLE_CLASSROOM_ENABLED: true
 }));
 
-vi.mock('$lib/server/middleware/auth', () => ({
+vi.mock('#lib/server/middleware/auth.ts', () => ({
 	requireRole: vi.fn()
 }));
 

@@ -6,7 +6,7 @@
  * For DB row types, see database-helpers.ts (StudentBuddy, BuddySkin).
  */
 
-import type { PalotinType } from '$lib/config/buddy-messages';
+import type { PalotinType } from '#lib/config/buddy-messages.ts';
 
 /** Current buddy state for client-side rendering */
 /**

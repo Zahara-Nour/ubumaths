@@ -1,4 +1,5 @@
 {
+	"id": "16d78592-ccf2-491a-ac33-c83b7a007dce",
 	"title": "Quelle heure est-il ? (avec les secondes)",
 	"description": "Lire l'heure à la seconde près (trotteuse) sur un cadran à 12 chiffres, puis où seuls 12, 3, 6, 9 sont écrits ; l'après-midi (15 h 22 min 40 s)",
 	"grades": ["CM2"],

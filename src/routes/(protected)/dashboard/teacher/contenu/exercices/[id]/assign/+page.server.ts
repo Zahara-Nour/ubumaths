@@ -7,12 +7,12 @@
 
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { getAssignmentTargets } from '$lib/server/students';
-import { validateUuidParam } from '$lib/server/validation/params';
+import { getAssignmentTargets } from '#lib/server/students.ts';
+import { validateUuidParam } from '#lib/server/validation/params.ts';
 import {
 	getAssignmentCompletionStats,
 	type AssignmentCompletionStats
-} from '$lib/server/exercise-assignments';
+} from '#lib/server/exercise-assignments.ts';
 
 export const load: PageServerLoad = async ({ params, locals, fetch }) => {
 	const supabase = locals.supabase;

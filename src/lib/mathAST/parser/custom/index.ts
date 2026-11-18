@@ -6,7 +6,7 @@
  *
  * @example
  * ```typescript
- * import { parseCustom, parseCustomSafe } from '$lib/mathAST/parser/custom';
+ * import { parseCustom, parseCustomSafe } from '#lib/mathAST/parser/custom/index.ts';
  *
  * // Simple parsing (throws on error)
  * const ast = parseCustom('2x^2+3x+1');

@@ -22,13 +22,13 @@ import { TestData } from '../helpers/database/test-data-factory';
 import { createFakeTemplate } from '../helpers/competence-referentiel.helpers';
 
 // Lectures et écriture du module au client service : le brancher sur la base LOCALE
-vi.mock('$lib/server/serviceRoleClient', async () => {
+vi.mock('#lib/server/serviceRoleClient.ts', async () => {
 	const helpers = await import('../helpers/database/trigger-test-helpers');
 	return { createServiceRoleClient: helpers.createServiceRoleClient };
 });
 
-import { loadWeekMoment, markWeekCelebrated } from '$lib/server/buddy-weeks';
-import { schoolDay } from '$lib/server/course-card-attempts';
+import { loadWeekMoment, markWeekCelebrated } from '#lib/server/buddy-weeks.ts';
+import { schoolDay } from '#lib/server/course-card-attempts.ts';
 
 // Constantes
 const DAY_MS = 24 * 3600 * 1000;

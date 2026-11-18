@@ -17,7 +17,7 @@
  */
 
 import { TORTUE_UNAVAILABLE, type TortueNode } from '../types/tortue';
-import type { Segment } from '$lib/shared/blockly/tortue/segments';
+import type { Segment } from '#lib/shared/blockly/tortue/segments.ts';
 
 // ============================================================================
 // CONSTANTES

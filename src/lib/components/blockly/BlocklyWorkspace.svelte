@@ -7,7 +7,7 @@
   @example
   ```svelte
   <script lang="ts">
-    import BlocklyWorkspace from '$lib/components/blockly/BlocklyWorkspace.svelte';
+    import BlocklyWorkspace from '#lib/components/blockly/BlocklyWorkspace.svelte';
     import type * as Blockly from 'blockly';
 
     let workspace = $state<Blockly.WorkspaceSvg | null>(null);
@@ -34,9 +34,9 @@
 		ERROR_MESSAGES,
 		CHIPHRE_THEME,
 		type ToolboxDefinition
-	} from '$lib/shared/blockly';
-	import { definirBlocsTortue } from '$lib/shared/blockly/tortue';
-	import { definirBlocsCalcul, francaiserBlocsCalcul } from '$lib/shared/blockly/calcul/blocs';
+	} from '#lib/shared/blockly/index.ts';
+	import { definirBlocsTortue } from '#lib/shared/blockly/tortue/index.ts';
+	import { definirBlocsCalcul, francaiserBlocsCalcul } from '#lib/shared/blockly/calcul/blocs.ts';
 
 	// =============================================================================
 	// Types

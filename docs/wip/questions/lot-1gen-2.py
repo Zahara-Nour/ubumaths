@@ -2,7 +2,7 @@
 générale (enseignement scientifique, module spécifique) dans
 scripts/questions/1gen-2-representations-graphiques/.
 
-Phase 0 validée par David le 2026-11-17 (Q17 à Q19, journal docs/wip/questions-1gen-progress.md
+Phase 0 validée par David le 2026-11-17 (Q17 à Q19, journal docs/archive/wip/questions-1gen-progress.md
 § 15) :
 
 | #  | Point    | Nœud (posé par la migration)                      | Niveau | Réponse            |

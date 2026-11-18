@@ -8,7 +8,7 @@
  * `withConsigneVerbs`.
  */
 
-import type { MathTerm } from '$lib/dictionary/model';
+import type { MathTerm } from '#lib/dictionary/model.ts';
 
 export const CONSIGNE_VERBS_2026_11_16: readonly string[] = [
 	'calculer',

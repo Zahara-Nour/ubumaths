@@ -6,7 +6,7 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { ExerciseShareToken, Exercise } from '$lib/exercises/types';
+import type { ExerciseShareToken, Exercise } from '#lib/exercises/types.ts';
 
 // ============================================================================
 // TOKEN GENERATION UTILITY

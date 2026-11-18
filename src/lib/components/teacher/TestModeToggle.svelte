@@ -19,8 +19,8 @@
 	 * ```
 	 */
 
-	import { testMode } from '$lib/stores/test-mode.svelte';
-	import { Badge } from '$lib/components/ui/badge';
+	import { testMode } from '#lib/stores/test-mode.svelte.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
 
 	// Props
 	let { currentUserIsTest = false }: { currentUserIsTest?: boolean } = $props();

@@ -1,8 +1,8 @@
 <script lang="ts">
-	import VipCardHolo from '$lib/components/VipCardHolo.svelte';
-	import { Button } from '$lib/components/ui/button';
+	import VipCardHolo from '#lib/components/VipCardHolo.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import { resolve } from '$app/paths';
-	import { templateToVipCard } from '$lib/stores/vipCardTemplates.svelte';
+	import { templateToVipCard } from '#lib/stores/vipCardTemplates.svelte.ts';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
@@ -44,7 +44,7 @@
 		<p class="subtitle">Explore different ways to use the VipCardHolo component</p>
 
 		<nav class="examples-nav">
-			<a href={resolve('/dev/cartes')}>← Back to Gallery</a>
+			<a href={resolve('dev/cartes')}>← Back to Gallery</a>
 		</nav>
 	</header>
 

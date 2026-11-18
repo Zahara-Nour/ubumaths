@@ -6,8 +6,8 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { parseCustom, compile } from '$lib/mathAST';
-import type { CompiledFn } from '$lib/mathAST/eval/compile';
+import { parseCustom, compile } from '#lib/mathAST/index.ts';
+import type { CompiledFn } from '#lib/mathAST/eval/compile.ts';
 import { numeric } from '../geo-value';
 import type {
 	GeoElement,

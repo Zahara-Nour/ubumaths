@@ -10,8 +10,8 @@ import {
 	buddyMessages,
 	type PalotinType,
 	type BuddyMessageContext
-} from '$lib/config/buddy-messages';
-import type { BuddyExpression } from '$lib/types/buddy';
+} from '#lib/config/buddy-messages.ts';
+import type { BuddyExpression } from '#lib/types/buddy.ts';
 
 const RECENT_HISTORY_SIZE = 5;
 

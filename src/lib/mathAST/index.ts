@@ -7,7 +7,7 @@
  *
  * @example
  * ```typescript
- * import { MathAST, isVariable, mapNode, withMetadata } from '$lib/mathAST';
+ * import { MathAST, isVariable, mapNode, withMetadata } from '#lib/mathAST/index.ts';
  *
  * // Create expression: x^2 + 3x - 5 = 0
  * const ast = MathAST.equals(

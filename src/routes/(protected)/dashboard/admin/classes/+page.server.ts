@@ -1,12 +1,12 @@
 import { error, fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
-import { requireAdmin } from '$lib/server/middleware/auth';
+import { requireAdmin } from '#lib/server/middleware/auth.ts';
 import {
 	adminClassCreateSchema,
 	adminClassIdSchema,
 	adminClassUpdateSchema
-} from '$lib/server/validation/admin';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/validation/admin.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('(protected)/dashboard/admin/classes/+page.server');
 

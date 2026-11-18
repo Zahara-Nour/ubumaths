@@ -1,9 +1,9 @@
 <script lang="ts">
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
 	import { CircleCheck, LifeBuoy, CircleDashed, Users } from '@lucide/svelte';
-	import * as Card from '$lib/components/ui/card';
-	import { Badge } from '$lib/components/ui/badge';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
 	import { page } from '$app/state';
 	import type { PageData } from './$types';
 

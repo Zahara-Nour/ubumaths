@@ -3,7 +3,7 @@
  * partagé par la grille A de la classe et la page de suivi d'un élève.
  */
 import { AlertCircle, RefreshCw, Clock, CheckCircle, Circle } from '@lucide/svelte';
-import type { CurriculumPointBadge } from '$lib/server/srs/curriculum-point-badge';
+import type { CurriculumPointBadge } from '#lib/server/srs/curriculum-point-badge.ts';
 
 const BADGE_META = {
 	a_remedier: { icon: AlertCircle, color: 'text-red-600', label: 'À remédier' },

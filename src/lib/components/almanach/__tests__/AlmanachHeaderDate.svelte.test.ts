@@ -6,7 +6,7 @@ import {
 	EXTRA_DAY_NAMES,
 	civilToPataphysical,
 	type PataphysicalDate
-} from '$lib/almanach/calendar';
+} from '#lib/almanach/calendar.ts';
 
 /** Rendu dans <main>, comme dans le layout : la taille de police compte */
 async function renderInMain(date: PataphysicalDate) {

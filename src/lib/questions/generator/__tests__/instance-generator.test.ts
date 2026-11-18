@@ -13,7 +13,7 @@ import { describe, it, expect } from 'vitest';
 import { generateInstance } from '../instance-generator';
 import type { GenerationResult, QuestionTemplate, ResolvedVariable } from '../../types';
 import { getQuestionType } from '../../types';
-import { templateMarkdown } from '$lib/ubumark';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 
 /**
  * Helper function to get numeric value from resolved variables array

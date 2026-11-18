@@ -12,7 +12,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { page, userEvent } from 'vitest/browser';
 import { render } from 'vitest-browser-svelte';
 import Page from '../+page.svelte';
-import { texteVersEtatCalcul } from '$lib/shared/blockly/calcul/notation';
+import { texteVersEtatCalcul } from '#lib/shared/blockly/calcul/notation.ts';
 
 let mains: HTMLElement[] = [];
 function mainElement(): HTMLElement {

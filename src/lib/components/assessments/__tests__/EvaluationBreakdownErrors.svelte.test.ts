@@ -11,8 +11,8 @@ import type {
 	EvaluationBreakdown as Breakdown,
 	EvaluationQuestionErrors,
 	QuestionErrorGroup
-} from '$lib/types/evaluation-breakdown';
-import type { QuestionInstance } from '$lib/questions/types';
+} from '#lib/types/evaluation-breakdown.ts';
+import type { QuestionInstance } from '#lib/questions/types.ts';
 
 const EVALUATION = '8b9c0d1e-8888-4888-8888-888888888888';
 const T1 = '4d5e6f70-4444-4444-8444-444444444441';

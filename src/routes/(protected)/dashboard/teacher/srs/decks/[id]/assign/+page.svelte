@@ -12,18 +12,18 @@
 -->
 
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import { goto } from '$app/navigation';
-	import { page } from '$app/stores';
-	import { Button } from '$lib/components/ui/button';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import * as Card from '$lib/components/ui/card';
-	import { Checkbox } from '$lib/components/ui/checkbox';
-	import { Tabs, TabsContent, TabsList, TabsTrigger } from '$lib/components/ui/tabs';
-	import { Badge } from '$lib/components/ui/badge';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { page } from '$app/state';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Checkbox } from '#lib/components/ui/checkbox/index.ts';
+	import { Tabs, TabsContent, TabsList, TabsTrigger } from '#lib/components/ui/tabs/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import { Users, UserCheck, Send, Loader2 } from '@lucide/svelte';
-	import type { AssignDeckRequest, FSRSConfig } from '$lib/srs/types';
+	import type { AssignDeckRequest, FSRSConfig } from '#lib/srs/types.ts';
 
 	interface Student {
 		id: string;
@@ -59,7 +59,7 @@
 
 	let { data }: Props = $props();
 
-	const deckId = $derived($page.params.id);
+	const deckId = $derived(page.params.id);
 
 	// State
 	let selectedStudents = $state<string[]>([]);

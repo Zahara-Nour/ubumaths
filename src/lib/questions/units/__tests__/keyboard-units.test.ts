@@ -11,7 +11,7 @@ import { unitKeysFor, buildUnitsKeyboardLayout, UNITS_LAYOUT_ID } from '../keybo
 import { parseUnitExpression } from '../parser';
 import { validateQuantityAnswer } from '../validator';
 import { normalizeStudentQuantity } from '../student-input';
-import { unitWritingToLatex } from '$lib/mathAST/units/display';
+import { unitWritingToLatex } from '#lib/mathAST/units/display.ts';
 
 /** Toutes les écritures que le catalogue peut rendre, une grandeur par réponse attendue */
 const ALL_MAGNITUDES = [

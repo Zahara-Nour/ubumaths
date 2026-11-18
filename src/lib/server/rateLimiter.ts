@@ -31,8 +31,8 @@
 
 import { createClient } from '@supabase/supabase-js';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import { createServerLogger } from '$lib/utils/logger';
+import type { Database } from '#lib/types/database.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 import { config } from 'dotenv';
 
 // Load environment variables from .env file

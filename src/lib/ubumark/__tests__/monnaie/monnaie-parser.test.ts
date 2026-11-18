@@ -3,14 +3,14 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { parseMarkdown, type ListNode } from '$lib/ubumark';
+import { parseMarkdown, type ListNode } from '#lib/ubumark/index.ts';
 import {
 	decomposeAmount,
 	parseMonnaieContent,
 	withChoiceMonnaieSize
-} from '$lib/ubumark/parser/monnaie-parser';
-import { resolveText } from '$lib/ubumark/parameterization/resolver/text-resolver';
-import type { MonnaieNode } from '$lib/ubumark/types/monnaie';
+} from '#lib/ubumark/parser/monnaie-parser.ts';
+import { resolveText } from '#lib/ubumark/parameterization/resolver/text-resolver.ts';
+import type { MonnaieNode } from '#lib/ubumark/types/monnaie.ts';
 
 const doc = (...lines: string[]) => parseMarkdown(lines.join('\n')).children;
 

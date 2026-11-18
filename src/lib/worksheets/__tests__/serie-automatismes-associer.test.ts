@@ -7,10 +7,10 @@
  * (liste « élément → étiquette »). Une case par élément.
  */
 import { describe, it, expect } from 'vitest';
-import type { QuestionTemplate } from '$lib/questions/types';
+import type { QuestionTemplate } from '#lib/questions/types.ts';
 import { buildSerie } from '../serie-automatismes';
-import { parseMarkdown } from '$lib/ubumark';
-import { generateTypst } from '$lib/ubumark/generators/typst-generator';
+import { parseMarkdown } from '#lib/ubumark/index.ts';
+import { generateTypst } from '#lib/ubumark/generators/typst-generator.ts';
 
 function modele(id: string, statement: string, blanks?: unknown[]): QuestionTemplate {
 	return {

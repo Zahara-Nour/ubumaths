@@ -1,7 +1,7 @@
 import type { RequestHandler } from './$types';
 import { json } from '@sveltejs/kit';
-import { requireRoles } from '$lib/server/middleware/auth';
-import { sanitizePostgresError } from '$lib/server/utils/error-handler';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import { sanitizePostgresError } from '#lib/server/utils/error-handler.ts';
 
 /**
  * Load current in-progress Minesweeper game

@@ -1,10 +1,10 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAuth } from '$lib/server/middleware/auth';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
 // Supabase client is now accessed via locals.supabase
-import { chatMessageSchema } from '$lib/server/marketplace/validation';
+import { chatMessageSchema } from '#lib/server/marketplace/validation.ts';
 import { z } from 'zod';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/marketplace/trades/[id]/chat/+server');
 

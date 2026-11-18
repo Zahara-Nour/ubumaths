@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button';
-	import { Card } from '$lib/components/ui/card';
-	import { cn } from '$lib/utils';
-	import { Separator } from '$lib/components/ui/separator';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Card } from '#lib/components/ui/card/index.ts';
+	import { cn } from '#lib/utils.ts';
+	import { Separator } from '#lib/components/ui/separator/index.ts';
 
 	// Types
 	type MatchResult = {

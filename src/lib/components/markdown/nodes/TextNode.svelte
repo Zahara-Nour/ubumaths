@@ -15,7 +15,7 @@
 -->
 <script lang="ts">
 	import { escapeHtml } from '../utils';
-	import type { DetailKind, TermRange } from '$lib/ubumark';
+	import type { DetailKind, TermRange } from '#lib/ubumark/index.ts';
 	import { inlineDetailClass } from '../detail-styles';
 	import LexiconTerm from './LexiconTerm.svelte';
 

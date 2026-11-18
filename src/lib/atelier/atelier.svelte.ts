@@ -71,7 +71,7 @@ import {
 	referencesOf
 } from './parse';
 import { z } from 'zod';
-import { COORDINATE_LIMIT } from '$lib/grapheur/types';
+import { COORDINATE_LIMIT } from '#lib/grapheur/types.ts';
 import type { ListChartKind } from './chart';
 import {
 	ATELIER_STATE_VERSION,
@@ -80,8 +80,8 @@ import {
 	type StoredObject
 } from './persistence';
 import { expressionOf, graphLatexOf, substitutedAstOf, termsOf } from './engine';
-import { isUnit } from '$lib/mathAST/guards';
-import { findNodes } from '$lib/mathAST/transforms';
+import { isUnit } from '#lib/mathAST/guards.ts';
+import { findNodes } from '#lib/mathAST/transforms.ts';
 import {
 	compactDisplay,
 	fullDisplay,
@@ -111,14 +111,14 @@ import {
 	readInterval,
 	type CheckedInterval
 } from './interval';
-import type { Domain } from '$lib/mathAST/domain/types';
-import { getVariables } from '$lib/mathAST/eval/substitute';
+import type { Domain } from '#lib/mathAST/domain/types.ts';
+import { getVariables } from '#lib/mathAST/eval/substitute.ts';
 import { listCitedMessage } from './list-cited';
 import { figureCitedMessage, figureFullMessage } from './geometry';
 import { partsOf, specOf, type ConstructionSpec } from './construction-spec';
 import { DEFAULT_ANGLE_UNIT, type AngleUnit } from './angle-unit';
-import type { MathNode } from '$lib/mathAST/types';
-import { quantityProblem } from '$lib/mathAST/cli/quantities';
+import type { MathNode } from '#lib/mathAST/types.ts';
+import { quantityProblem } from '#lib/mathAST/cli/quantities.ts';
 import {
 	citesMeasure,
 	hasBareAngle,
@@ -174,7 +174,7 @@ import {
 	storedCellText,
 	type CellEdit
 } from './grid';
-import { transformAST } from '$lib/mathAST/visitor';
+import { transformAST } from '#lib/mathAST/visitor.ts';
 import {
 	CLEAR_PATCH,
 	formatOf,

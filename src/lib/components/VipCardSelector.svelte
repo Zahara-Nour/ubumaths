@@ -22,15 +22,15 @@
 -->
 
 <script lang="ts">
-	import VipCard from '$lib/components/VipCard.svelte';
-	import VipCardSelectorModal from '$lib/components/VipCardSelectorModal.svelte';
-	import { cn } from '$lib/utils';
+	import VipCard from '#lib/components/VipCard.svelte';
+	import VipCardSelectorModal from '#lib/components/VipCardSelectorModal.svelte';
+	import { cn } from '#lib/utils.ts';
 	import { CreditCard, X } from '@lucide/svelte';
 	import {
 		templateToVipCard,
 		getTemplateById,
 		type VipCardTemplate
-	} from '$lib/stores/vipCardTemplates.svelte';
+	} from '#lib/stores/vipCardTemplates.svelte.ts';
 
 	// Component Props
 	interface Props {

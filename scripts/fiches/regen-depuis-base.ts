@@ -29,16 +29,19 @@ import { existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { createClient } from '@supabase/supabase-js';
 import { config as dotenv } from 'dotenv';
-import { WorksheetGenerator } from '$lib/typst/generators/worksheet-generator';
-import { STUDENT_STYLE_TEMPLATE, getDefaultTemplate } from '$lib/typst/templates/default-templates';
-import { urlToVirtualPath } from '$lib/typst/image-loader';
-import type { Database } from '$lib/types/database';
+import { WorksheetGenerator } from '#lib/typst/generators/worksheet-generator.ts';
+import {
+	STUDENT_STYLE_TEMPLATE,
+	getDefaultTemplate
+} from '#lib/typst/templates/default-templates.ts';
+import { urlToVirtualPath } from '#lib/typst/image-loader.ts';
+import type { Database } from '#lib/types/database.ts';
 import type {
 	InstanceData,
 	WorksheetConfig,
 	WorksheetRow,
 	WorksheetTemplateRow
-} from '$lib/types/worksheets';
+} from '#lib/types/worksheets.ts';
 
 dotenv({ path: '.env' });
 

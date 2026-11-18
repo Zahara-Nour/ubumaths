@@ -2,8 +2,8 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { flushSync } from 'svelte';
 import ViewportControls from '../ViewportControls.svelte';
-import { GrapheurStore } from '$lib/stores/grapheur.svelte';
-import { grapheurContext } from '$lib/stores/grapheur-context';
+import { GrapheurStore } from '#lib/stores/grapheur.svelte.ts';
+import { grapheurContext } from '#lib/stores/grapheur-context.ts';
 
 const STORAGE_KEY = 'grapheur-outils-replies';
 

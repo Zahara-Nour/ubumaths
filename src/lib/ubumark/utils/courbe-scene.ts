@@ -27,11 +27,11 @@ import type {
 	CourbeWindow
 } from '../types/courbe';
 import { COURBE_LIMITS, courbeRangeProblem } from '../types/courbe';
-import type { ContentLocale } from '$lib/types/locale';
-import { createSafeEvaluator } from '$lib/mathAST/eval/compile';
-import { sampleFunction } from '$lib/geometry-core/viewport/sampler';
-import { computeGridStep } from '$lib/geometry-core/viewport/grid';
-import { computeCobwebPath, createRecurrenceFunctionEvaluator } from '$lib/grapheur/sequence';
+import type { ContentLocale } from '#lib/types/locale.ts';
+import { createSafeEvaluator } from '#lib/mathAST/eval/compile.ts';
+import { sampleFunction } from '#lib/geometry-core/viewport/sampler.ts';
+import { computeGridStep } from '#lib/geometry-core/viewport/grid.ts';
+import { computeCobwebPath, createRecurrenceFunctionEvaluator } from '#lib/grapheur/sequence.ts';
 
 // ============================================================================
 // TYPES

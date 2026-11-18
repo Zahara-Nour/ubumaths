@@ -16,12 +16,12 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { upsertCheckpointRunSchema } from '$lib/server/validation/notebook-checkpoints';
-import { validateUuidParam } from '$lib/server/validation/params';
-import type { CheckpointRun, CheckpointRunStatus } from '$lib/types/database-helpers';
-import { rpcNullable } from '$lib/types/database-helpers';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { upsertCheckpointRunSchema } from '#lib/server/validation/notebook-checkpoints.ts';
+import { validateUuidParam } from '#lib/server/validation/params.ts';
+import type { CheckpointRun, CheckpointRunStatus } from '#lib/types/database-helpers.ts';
+import { rpcNullable } from '#lib/types/database-helpers.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/python-notebooks/[id]/checkpoint-runs/+server');
 

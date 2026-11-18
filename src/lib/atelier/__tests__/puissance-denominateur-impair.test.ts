@@ -5,10 +5,10 @@
  */
 import { describe, it, expect } from 'vitest';
 import { Atelier } from '../atelier.svelte';
-import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
+import { WebReplEngine } from '#lib/mathAST/cli/web/web-repl-engine.ts';
 import { runInput } from '../calcul';
-import { parseCustomSafe } from '$lib/mathAST/parser/custom';
-import { readableText } from '$lib/mathAST/variations/display';
+import { parseCustomSafe } from '#lib/mathAST/parser/custom/index.ts';
+import { readableText } from '#lib/mathAST/variations/display.ts';
 
 function output(input: string): string {
 	const result = runInput({ atelier: new Atelier(), engine: new WebReplEngine() }, input);

@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
-import type { Handle, RequestEvent } from '@sveltejs/kit';
+import type { RequestEvent } from '@sveltejs/kit';
+import type { Handle } from '@sveltejs/kit/hooks';
 import {
 	createMaintenanceHandle,
 	isAllowedDuringMaintenance,

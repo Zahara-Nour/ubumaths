@@ -8,11 +8,11 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { parseKanbanId, updateBoardSchema } from '$lib/server/validation/kanban';
-import { assertBoardOwner, getBoardWithContent } from '$lib/server/kanban';
-import type { KanbanBoard } from '$lib/types/database-helpers';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { parseKanbanId, updateBoardSchema } from '#lib/server/validation/kanban.ts';
+import { assertBoardOwner, getBoardWithContent } from '#lib/server/kanban.ts';
+import type { KanbanBoard } from '#lib/types/database-helpers.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/organisation/kanban/boards/[boardId]/+server');
 

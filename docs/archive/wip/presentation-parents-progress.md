@@ -2,13 +2,10 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après #2798._
+_Mis à jour le 2026-11-18 : chantier CLOS._
 
-- **État** : page `/parents` réécrite et mergée (#2798) : 4 blocs + FAQ repliée (`FAQPage`). Pas encore en prod.
-- **Prochaine action** : après le prochain `deploy:prod` (demandé par David), vérification de `/parents` (ligne de `verifications-manuelles.md`) ; puis demander à David si l'on passe aux vues élèves et professeurs (« plus tard ») ou si l'on clôt (versement : `carte-des-fonctionnalites.md` déjà à jour).
-- **En attente de David** : `deploy:prod` quand il le voudra ; suite du chantier (élèves / professeurs, ou clôture).
-- **Pièges en cours** : FAQ « À qui parler ? » à préciser si « borné au groupe » d'Akadada est codé ; argent : jamais « gratuit » seul ni « pour toujours ».
-- **Worktree / branche** : aucun (supprimés après #2798).
+- **État** : `/parents` en prod (v0.95.0, 2026-11-18), vérifiée par David. Durable dans `docs/systeme/carte-des-fonctionnalites.md` § La roue des publics.
+- **Reliquats, hors de ce chantier** : FAQ « À qui parler ? » à préciser quand « borné au groupe » d'Akadada sera codé ; limite des jeux et Mistral → futurs chantiers. Vues élèves et professeurs : chantiers à ouvrir à part.
 
 ## Cadre
 
@@ -124,3 +121,4 @@ Bloc « L'inscrire, et combien ça coûte » validé tel quel (« oui »), lien 
 
 - 2026-11-17 : PR du code (`views.ts`, `AudienceView.svelte`, docs `carte-des-fonctionnalites.md` et `seo.md`). Tests : `views.test.ts` 11 rouges puis verts ; `AudienceView.svelte.test.ts` 3 rouges sans le composant, verts avec ; `check:incremental` 0 erreur ; cliquet tenu.
 - 2026-11-17 : #2798 mergée (CI verte ; relecture `code-reviewer` sans bloquant, test `FAQPage` renforcé). Vérification manuelle notée.
+- 2026-11-18 : v0.95.0 en prod, `/parents` vérifiée par David ; chantier clos, journal archivé.

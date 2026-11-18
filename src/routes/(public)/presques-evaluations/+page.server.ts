@@ -21,8 +21,8 @@
 
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { fetchTagNamesForResources } from '$lib/server/resource-tags';
-import { createServerLogger } from '$lib/utils/logger';
+import { fetchTagNamesForResources } from '#lib/server/resource-tags.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('(public)/presques-evaluations/+page.server');
 

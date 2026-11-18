@@ -12,9 +12,9 @@
 
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { createSectionSchema } from '$lib/server/validation/srs';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { createSectionSchema } from '#lib/server/validation/srs.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/srs/decks/[id]/sections/+server');
 

@@ -22,9 +22,9 @@
 
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRoles } from '$lib/server/middleware/auth';
-import { pythonSettingsSchema } from '$lib/server/validation/python-settings';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import { pythonSettingsSchema } from '#lib/server/validation/python-settings.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/profile/python-settings/+server');
 

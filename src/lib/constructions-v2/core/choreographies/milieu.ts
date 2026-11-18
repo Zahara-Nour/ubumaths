@@ -26,8 +26,8 @@ import {
 	type Voie
 } from './types';
 import { capitalize, de, nom, role, type Role } from './names';
-import type { Figure } from '$lib/geometry-core/graph/figure';
-import { isSegment } from '$lib/geometry-core/types/elements';
+import type { Figure } from '#lib/geometry-core/graph/figure.ts';
+import { isSegment } from '#lib/geometry-core/types/elements.ts';
 
 /** Longueur de la règle (`Ruler.svelte`, `length = 15`), en unités = cm. */
 const RULER_LENGTH = 15;

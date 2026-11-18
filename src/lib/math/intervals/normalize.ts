@@ -9,7 +9,7 @@
  */
 
 import type { Interval, Endpoint } from './types';
-import { compareNumericNodes } from '$lib/mathAST/eval/compare-numeric';
+import { compareNumericNodes } from '#lib/mathAST/eval/compare-numeric.ts';
 
 /**
  * Check if two intervals overlap or are adjacent.

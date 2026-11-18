@@ -6,13 +6,13 @@
 -->
 
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import type { PageData } from './$types';
-	import * as Card from '$lib/components/ui/card';
-	import { Progress } from '$lib/components/ui/progress';
-	import { Badge } from '$lib/components/ui/badge';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Progress } from '#lib/components/ui/progress/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
 	import { Star, Flame, ChevronDown, ChevronUp } from '@lucide/svelte';
-	import { xpProgress, MAX_LEVEL } from '$lib/utils/buddy-xp';
+	import { xpProgress, MAX_LEVEL } from '#lib/utils/buddy-xp.ts';
 
 	let { data }: { data: PageData } = $props();
 

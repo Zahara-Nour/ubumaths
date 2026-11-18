@@ -1,4 +1,5 @@
 {
+	"id": "31d64c00-144e-4c0f-887f-475be9ac001e",
 	"title": "Aire en carreaux",
 	"description": "Compter les carreaux d'une figure sur quadrillage : carreaux entiers ; avec des demi-carreaux ; dans une unité fournie de deux carreaux",
 	"grades": ["CM1", "CM2"],

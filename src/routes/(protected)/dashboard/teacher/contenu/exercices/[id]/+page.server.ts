@@ -1,9 +1,13 @@
 import type { PageServerLoad } from './$types';
 import { error, redirect } from '@sveltejs/kit';
-import { getExercise } from '$lib/server/exercises';
-import { getProgrammeTreeKeeping, loadNodesWithAncestors } from '$lib/server/programme-tree';
-import { filterTreePoints, taggableNodeIds, type ProgrammeBranch } from '$lib/utils/programme-tree';
-import { createServerLogger } from '$lib/utils/logger';
+import { getExercise } from '#lib/server/exercises.ts';
+import { getProgrammeTreeKeeping, loadNodesWithAncestors } from '#lib/server/programme-tree.ts';
+import {
+	filterTreePoints,
+	taggableNodeIds,
+	type ProgrammeBranch
+} from '#lib/utils/programme-tree.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger(
 	'(protected)/dashboard/teacher/contenu/exercices/[id]/+page.server'

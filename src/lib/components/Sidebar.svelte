@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { resolve } from '$app/paths';
+	import { resolvePath } from '#lib/navigation/resolve-path.ts';
 	import {
 		Home,
 		Gamepad2,
@@ -16,7 +16,7 @@
 		KeyRound
 	} from '@lucide/svelte';
 	import type { LucideIcon } from '@lucide/svelte';
-	import type { Tables } from '$lib/types/database';
+	import type { Tables } from '#lib/types/database.ts';
 
 	type NavSection = 'serious' | 'fun';
 	type NavItem = {
@@ -96,7 +96,7 @@
 
 {#snippet itemLink(item: NavItem)}
 	<a
-		href={resolve(item.href as '/')}
+		href={resolvePath(item.href)}
 		data-sveltekit-preload-data="tap"
 		class="group flex w-16 flex-col items-center gap-1 rounded-lg px-2 py-3 transition-all duration-300 {isActive(
 			item.href

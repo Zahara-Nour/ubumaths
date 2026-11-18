@@ -26,14 +26,14 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import { FSRS } from '$lib/srs/fsrs';
-import { Grade } from '$lib/srs/types';
-import { applyFsrsReview } from '$lib/server/srs/fsrs-actions';
-import { ensureProgrammeDeckCard } from '$lib/server/srs/programme-deck';
-import { entersProgrammeDeck } from '$lib/server/srs/programme-deck-rule';
-import type { EvaluationTraceColumns } from '$lib/server/evaluation-trace';
-import { createServerLogger } from '$lib/utils/logger';
+import type { Database } from '#lib/types/database.ts';
+import { FSRS } from '#lib/srs/fsrs.ts';
+import { Grade } from '#lib/srs/types.ts';
+import { applyFsrsReview } from '#lib/server/srs/fsrs-actions.ts';
+import { ensureProgrammeDeckCard } from '#lib/server/srs/programme-deck.ts';
+import { entersProgrammeDeck } from '#lib/server/srs/programme-deck-rule.ts';
+import type { EvaluationTraceColumns } from '#lib/server/evaluation-trace.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/srs/record-series-reviews');
 

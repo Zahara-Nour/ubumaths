@@ -7,7 +7,7 @@ import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { page } from 'vitest/browser';
 import ClassificationNodePicker from '../questions/ClassificationNodePicker.svelte';
-import type { TreeNode } from '$lib/questions/classification-tree';
+import type { TreeNode } from '#lib/questions/classification-tree.ts';
 
 const NODES: TreeNode[] = [
 	{ id: 'b1', kind: 'branch', name: 'Calcul', parent_id: null, position: 0 },

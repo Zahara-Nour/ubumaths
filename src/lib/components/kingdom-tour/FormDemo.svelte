@@ -7,7 +7,7 @@
 	 * Une seule réponse choisie parmi quatre : un groupe de boutons radio (flèches pour se
 	 * déplacer, une seule tabulation pour entrer dans le groupe).
 	 */
-	import { FORM_DEMO } from '$lib/kingdom-tour/tour';
+	import { FORM_DEMO } from '#lib/kingdom-tour/tour.ts';
 
 	let selected = $state(0);
 	let buttons: HTMLButtonElement[] = $state([]);

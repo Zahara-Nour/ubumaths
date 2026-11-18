@@ -228,7 +228,7 @@ notifications, le temps réel relance ensuite la lecture ([realtime.md](realtime
 - **`/dashboard/teacher/recherche`** : recherche globale. Requête dans l'URL (`?q=`, `?kinds=`,
   `?tags=`), formulaire `GET`, aucune lecture côté client. Moins de 2 caractères et aucun tag :
   pas de recherche. 50 résultats au plus, 10 tags au plus, 100 caractères au plus. Les liens
-  viennent du registre `$lib/resources`. Moteur : `searchResources` ([serveur.md](serveur.md)).
+  viennent du registre `#lib/resources/index.ts`. Moteur : `searchResources` ([serveur.md](serveur.md)).
 - **`/dashboard/teacher/wheel`** : roue de la fortune plein écran. Classes actives avec leurs
   élèves (`getTeacherClassesWithStudents`), choix de la classe, gidouilles offertes au gagnant
   (10 par défaut) par `/api/teacher/rewards/update-student`, puis `invalidateAll()`.
@@ -253,7 +253,7 @@ Après un `deploy:prod`, un onglet ouvert garde l'ancien code. Ses fichiers JS c
 demande n'existent plus, et les données du nouveau serveur peuvent avoir changé de forme (cas réel
 du 2026-11-11 : `reading 'id'` sur `/dev/modeles`, onglet d'avant 0.81.0).
 
-- `version.pollInterval` (`svelte.config.js`) : toutes les 5 min, l'onglet lit
+- `version.pollInterval` (options de `sveltekit()`, `vite.config.ts`) : toutes les 5 min, l'onglet lit
   `/_app/version.json` ; `updated.current` (`$app/state`) passe à vrai s'il a changé.
 - `beforeNavigate` du `+layout.svelte` racine : nouvelle version + lien ou Précédent / Suivant →
   la page suivante se charge en entier. Lien : `cancel()` puis `location.href` (sans `cancel()`,

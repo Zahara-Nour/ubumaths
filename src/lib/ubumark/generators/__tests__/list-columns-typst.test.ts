@@ -9,7 +9,7 @@
  * `ubu-item` (numéro dans la première ligne), comme un item hors colonnes.
  */
 import { describe, it, expect } from 'vitest';
-import { parseMarkdown } from '$lib/ubumark';
+import { parseMarkdown } from '#lib/ubumark/index.ts';
 import { generateTypst } from '../typst-generator';
 
 /** Corps du document, après l'en-tête de lisibilité (qui définit `ubu-item-bloc` avec une grille). */

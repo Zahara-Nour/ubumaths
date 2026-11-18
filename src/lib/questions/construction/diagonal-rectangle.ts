@@ -25,7 +25,7 @@
  * @module questions/construction/diagonal-rectangle
  */
 
-import type { DiagonalRectangleCheck, LengthUnit } from '$lib/ubumark/types/construction';
+import type { DiagonalRectangleCheck, LengthUnit } from '#lib/ubumark/types/construction.ts';
 import type { DrawnCircle, DrawnLine, DrawnObject, DrawnRegle } from './answer';
 import { compassGraduationOf } from './circle';
 import {

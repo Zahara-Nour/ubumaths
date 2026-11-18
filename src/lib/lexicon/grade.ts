@@ -7,7 +7,7 @@
  * @module lexicon/grade
  */
 
-import { GRADES, isGradeCode, type GradeCode } from '$lib/types/grades';
+import { GRADES, isGradeCode, type GradeCode } from '#lib/types/grades.ts';
 
 /**
  * Niveau de lecture : celui de l'élève ; sans lui (visiteur, professeur), le

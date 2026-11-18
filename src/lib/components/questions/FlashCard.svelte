@@ -26,45 +26,45 @@
 -->
 
 <script lang="ts">
-	import type { QuestionInstance } from '$lib/questions/types';
-	import { getQuestionType, isCourseQuestion } from '$lib/questions/types';
-	import type { AnswerData, QuestionStats } from '$lib/types/question-display';
+	import type { QuestionInstance } from '#lib/questions/types.ts';
+	import { getQuestionType, isCourseQuestion } from '#lib/questions/types.ts';
+	import type { AnswerData, QuestionStats } from '#lib/types/question-display.ts';
 	import {
 		validateAnswer,
 		validateAnswerDetailed,
 		type DetailedVerdict,
 		type StudentAnswer
-	} from '$lib/utils/answer-validator';
-	import { buildExpectedResult, showsInstructionOnly } from '$lib/questions/expected-result';
+	} from '#lib/utils/answer-validator.ts';
+	import { buildExpectedResult, showsInstructionOnly } from '#lib/questions/expected-result.ts';
 	import {
 		globalVerdictOf,
 		instructionOf,
 		trainingStatus
-	} from '$lib/questions/correction-card-verdict';
+	} from '#lib/questions/correction-card-verdict.ts';
 	import { computeBlankColors } from './blank-verdicts';
-	import { MarkdownRenderer } from '$lib/components/markdown';
-	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
-	import { templateGenericFunctions } from '$lib/questions/generic-functions';
-	import { provideCapitalPairs } from '$lib/components/markdown/content-capital-pairs';
+	import { MarkdownRenderer } from '#lib/components/markdown/index.ts';
+	import InlineMarkdown from '#lib/components/markdown/InlineMarkdown.svelte';
+	import { templateGenericFunctions } from '#lib/questions/generic-functions.ts';
+	import { provideCapitalPairs } from '#lib/components/markdown/content-capital-pairs.ts';
 	import {
 		digitGroupingOf,
 		provideDigitGrouping
-	} from '$lib/components/markdown/content-digit-grouping';
-	import { Button } from '$lib/components/ui/button';
-	import * as Card from '$lib/components/ui/card';
+	} from '#lib/components/markdown/content-digit-grouping.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
 	import { RotateCw, Check, X, AlertCircle, TriangleAlert } from '@lucide/svelte';
-	import { cn } from '$lib/utils';
-	import FlipCard from '$lib/components/FlipCard.svelte';
+	import { cn } from '#lib/utils.ts';
+	import FlipCard from '#lib/components/FlipCard.svelte';
 
 	// Input components
-	import FillBlanksInput from '$lib/components/question-inputs/FillBlanksInput.svelte';
-	import { toFrenchDecimal } from '$lib/utils/french-math';
+	import FillBlanksInput from '#lib/components/question-inputs/FillBlanksInput.svelte';
+	import { toFrenchDecimal } from '#lib/utils/french-math.ts';
 	import CourseCardBack from './CourseCardBack.svelte';
 	import CorrectionView from './CorrectionView.svelte';
 	import ExpectedResultView from './ExpectedResultView.svelte';
-	import { provideQuestionLexicon } from '$lib/components/markdown/lexicon-context';
+	import { provideQuestionLexicon } from '#lib/components/markdown/lexicon-context.ts';
 	import LexiconToggle from './LexiconToggle.svelte';
-	import LexiconOff from '$lib/components/markdown/LexiconOff.svelte';
+	import LexiconOff from '#lib/components/markdown/LexiconOff.svelte';
 
 	// Props
 	interface Props {

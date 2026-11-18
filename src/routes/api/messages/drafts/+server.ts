@@ -1,7 +1,7 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/messages/drafts/+server');
 
@@ -44,7 +44,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	try {
 		// ✅ SECURITY: Validate input with Zod
 		const bodyRaw = await request.json();
-		const { saveDraftSchema } = await import('$lib/server/validation/messages');
+		const { saveDraftSchema } = await import('#lib/server/validation/messages.ts');
 		const validation = saveDraftSchema.safeParse(bodyRaw);
 
 		if (!validation.success) {

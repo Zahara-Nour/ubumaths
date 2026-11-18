@@ -20,7 +20,7 @@ import { isStraight, perpendicularThrough, type StraightTrait } from '../instrum
 import { solutionRulers, solutionTriangle } from '../drawing';
 import { serializeConstructionAnswer, type DrawnObject, type DrawnRegle } from '../answer';
 import type { Position } from '../judge';
-import { readConstructionHeader } from '$lib/ubumark/parser/construction-parser';
+import { readConstructionHeader } from '#lib/ubumark/parser/construction-parser.ts';
 
 function checksOf(source: string) {
 	const { spec, errors } = readConstructionHeader(source);

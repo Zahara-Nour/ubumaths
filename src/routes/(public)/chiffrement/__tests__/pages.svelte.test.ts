@@ -15,11 +15,11 @@ import Affine from '../affine/+page.svelte';
 import Vigenere from '../vigenere/+page.svelte';
 import Hill from '../hill/+page.svelte';
 import Rsa from '../rsa/+page.svelte';
-import { modPow } from '$lib/ciphers/rsa';
-import { affineEncrypt } from '$lib/ciphers/affine';
-import { vigenereEncrypt } from '$lib/ciphers/vigenere';
-import { caesarEncrypt } from '$lib/ciphers/caesar';
-import { normalizeText } from '$lib/ciphers/alphabet';
+import { modPow } from '#lib/ciphers/rsa.ts';
+import { affineEncrypt } from '#lib/ciphers/affine.ts';
+import { vigenereEncrypt } from '#lib/ciphers/vigenere.ts';
+import { caesarEncrypt } from '#lib/ciphers/caesar.ts';
+import { normalizeText } from '#lib/ciphers/alphabet.ts';
 
 function text(container: HTMLElement, testid: string): string {
 	return container.querySelector(`[data-testid="${testid}"]`)?.textContent ?? '';

@@ -9,9 +9,9 @@
 -->
 <script lang="ts">
 	import { resolve } from '$app/paths';
-	import { TortueBacASable } from '$lib/components/blockly';
-	import { Button } from '$lib/components/ui/button';
-	import { NIVEAUX_TORTUE, type NiveauTortue } from '$lib/shared/blockly/tortue/interpreteur';
+	import { TortueBacASable } from '#lib/components/blockly/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { NIVEAUX_TORTUE, type NiveauTortue } from '#lib/shared/blockly/tortue/interpreteur.ts';
 
 	// =============================================================================
 	// Variables
@@ -52,7 +52,7 @@
 	<TortueBacASable {niveau} />
 	<p class="text-sm text-muted-foreground">
 		Essaie aussi
-		<a href={resolve('/programmes-de-calcul')} class="font-medium text-primary underline"
+		<a href={resolve('programmes-de-calcul')} class="font-medium text-primary underline"
 			>Programmes de calcul</a
 		> : des blocs pour calculer à partir d’un nombre choisi.
 	</p>

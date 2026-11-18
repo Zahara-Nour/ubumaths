@@ -6,8 +6,8 @@ import { page } from 'vitest/browser';
 import { describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import AudienceView from '../AudienceView.svelte';
-import { MONTH_PALETTES } from '$lib/almanach/palettes';
-import { AUDIENCE_VIEWS, PARENT_VIEW, STUDENT_VIEW, faqJsonLd } from '$lib/kingdom-tour/views';
+import { MONTH_PALETTES } from '#lib/almanach/palettes.ts';
+import { AUDIENCE_VIEWS, PARENT_VIEW, STUDENT_VIEW, faqJsonLd } from '#lib/kingdom-tour/views.ts';
 
 // Constantes
 

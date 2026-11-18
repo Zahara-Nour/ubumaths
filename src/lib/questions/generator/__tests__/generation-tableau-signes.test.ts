@@ -13,11 +13,11 @@ import { beforeAll, describe, it, expect } from 'vitest';
 import { generateInstance } from '../instance-generator';
 import { assignBlankIndices } from '../assign-blank-indices';
 import type { QuestionInstance, QuestionTemplate, QuestionVariation } from '../../types';
-import { templateMarkdown, parseMarkdown } from '$lib/ubumark';
-import { validateAnswer } from '$lib/utils/answer-validator';
+import { templateMarkdown, parseMarkdown } from '#lib/ubumark/index.ts';
+import { validateAnswer } from '#lib/utils/answer-validator.ts';
 import { toPublicQuestion, gestureAnswerLeaks } from '../../public-question';
 import { findUnmaskedAnswers } from '../../masked-statement';
-import type { VariationTableNode } from '$lib/ubumark/types/variation-table';
+import type { VariationTableNode } from '#lib/ubumark/types/variation-table.ts';
 
 function template(
 	variation: Omit<QuestionVariation, 'statement'> & { statement: string },

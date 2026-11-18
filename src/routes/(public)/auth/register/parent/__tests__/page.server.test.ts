@@ -29,7 +29,7 @@ const {
 	checkChildSignupRateLimitByClass: vi.fn()
 }));
 
-vi.mock('$lib/server/serviceRoleClient', () => ({
+vi.mock('#lib/server/serviceRoleClient.ts', () => ({
 	createServiceRoleClient: () => ({
 		rpc: rpcMock,
 		from: () => ({
@@ -41,14 +41,14 @@ vi.mock('$lib/server/serviceRoleClient', () => ({
 		})
 	})
 }));
-vi.mock('$lib/server/child-registration', () => ({
+vi.mock('#lib/server/child-registration.ts', () => ({
 	createChildAccount,
 	createParentRequest,
 	deleteChildAccount,
 	markParentEmailSent
 }));
-vi.mock('$lib/server/email/brevo', () => ({ sendChildRegistrationEmail }));
-vi.mock('$lib/server/rateLimiter', () => ({
+vi.mock('#lib/server/email/brevo.ts', () => ({ sendChildRegistrationEmail }));
+vi.mock('#lib/server/rateLimiter.ts', () => ({
 	checkSignupRateLimitByIP,
 	checkChildSignupRateLimitByParentEmail,
 	checkChildSignupRateLimitByClass

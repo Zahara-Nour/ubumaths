@@ -21,11 +21,11 @@
  */
 
 import { json, error } from '@sveltejs/kit';
-import { assertGoogleClassroomEnabled } from '$lib/server/google/feature-guard';
+import { assertGoogleClassroomEnabled } from '#lib/server/google/feature-guard.ts';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import { bulkShareCourseworkSchema } from '$lib/server/validation';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { bulkShareCourseworkSchema } from '#lib/server/validation/index.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/google/coursework/bulk-share/+server');
 

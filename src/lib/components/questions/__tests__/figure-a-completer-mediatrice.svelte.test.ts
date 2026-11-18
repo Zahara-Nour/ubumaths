@@ -11,9 +11,9 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import FlashCard from '../FlashCard.svelte';
-import { generateInstance } from '$lib/questions/generator/instance-generator';
-import type { QuestionInstance, QuestionTemplate } from '$lib/questions/types';
-import { templateMarkdown } from '$lib/ubumark';
+import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
+import type { QuestionInstance, QuestionTemplate } from '#lib/questions/types.ts';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 
 // Fenêtre 0..12 × 0..8 ; A(4 ; 4), B(8 ; 4) : médiatrice x = 6 ;
 // cercles de rayon 4 centrés en A et B : intersections (6 ; 4 ± √12)

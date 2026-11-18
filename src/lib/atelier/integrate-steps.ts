@@ -18,15 +18,15 @@
  * @module atelier/integrate-steps
  */
 
-import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
-import type { MathNode } from '$lib/mathAST/types';
+import type { RenderedStep } from '#lib/mathAST/common/step-renderer-base.ts';
+import type { MathNode } from '#lib/mathAST/types.ts';
 import {
 	generatePedagogicalIntegrationSteps,
 	PedagogicalIntegrationRenderer,
 	type PedagogicalDefiniteIntegrationResult,
 	type PedagogicalIntegrationStep
-} from '$lib/mathAST/pedagogical-integration';
-import { DEFAULT_VARIABLE } from '$lib/mathAST/cli/core/variable-argument';
+} from '#lib/mathAST/pedagogical-integration/index.ts';
+import { DEFAULT_VARIABLE } from '#lib/mathAST/cli/core/variable-argument.ts';
 import { astOf } from './parse';
 import { summaryOf } from './steps-summary';
 import {

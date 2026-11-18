@@ -1,5 +1,5 @@
 <script lang="ts" module>
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	interface StatsForCSV {
 		overview: {
 			total_uses: number;
@@ -41,13 +41,13 @@
 
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { Button } from '$lib/components/ui/button';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import { Badge } from '$lib/components/ui/badge';
-	import * as Card from '$lib/components/ui/card';
-	import MySelect from '$lib/components/MySelect.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import MySelect from '#lib/components/MySelect.svelte';
 	import { Loader2, TrendingUp, Users, CheckCircle, BarChart3 } from '@lucide/svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 
 	// Types
 	interface TemplateStats {

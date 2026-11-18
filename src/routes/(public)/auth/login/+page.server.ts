@@ -18,7 +18,7 @@
  *
  * AUTHENTICATION METHODS:
  * 1. Google OAuth - Initiates OAuth flow with Google provider
- * 2. Email (or child login id, see $lib/utils/child-account)/Password
+ * 2. Email (or child login id, see #lib/utils/child-account)/Password
  *
  * FLOW (Email/Password):
  * 1. User submits form (POST to /login?/login)
@@ -38,17 +38,18 @@
  * 6. User is redirected to dashboard (or original page if specified)
  */
 import { redirect, fail } from '@sveltejs/kit';
-import { dev } from '$app/environment';
+import { dev } from '$app/env';
+import { PUBLIC_SUPABASE_URL } from '$app/env/public';
 import type { Actions, PageServerLoad } from './$types';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 import {
 	checkLoginRateLimitByIP,
 	checkLoginRateLimitByEmail,
 	checkOAuthRateLimitByIP
-} from '$lib/server/rateLimiter';
-import { skipsLoginRateLimit } from '$lib/server/local-login-rate-limit';
-import { validateFormData, loginFormSchema } from '$lib/server/validation';
-import { GOOGLE_LOGIN_ENABLED } from '$lib/config/google-login';
+} from '#lib/server/rateLimiter.ts';
+import { skipsLoginRateLimit } from '#lib/server/local-login-rate-limit.ts';
+import { validateFormData, loginFormSchema } from '#lib/server/validation/index.ts';
+import { GOOGLE_LOGIN_ENABLED } from '#lib/config/google-login.ts';
 
 const logger = createServerLogger('login/+page.server.ts');
 
@@ -110,8 +111,10 @@ export const actions = {
 		}
 
 		// Redirect to Google's OAuth consent screen
+		// SvelteKit 3 refuse une redirection vers une autre origine sans `external` :
+		// on n'autorise que l'origine du projet Supabase (son `/auth/v1/authorize`).
 		if (data.url) {
-			throw redirect(303, data.url);
+			throw redirect(303, data.url, { external: [new URL(PUBLIC_SUPABASE_URL).origin] });
 		}
 
 		// Shouldn't reach here, but handle gracefully

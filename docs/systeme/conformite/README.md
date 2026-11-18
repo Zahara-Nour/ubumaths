@@ -124,6 +124,11 @@ l'export ne plante pas mais renvoie ces catégories **systématiquement vides**.
 > (`worn_avatar`) et la photo Google gardée (`google_avatar_url`). Une lecture en échec rend 500.
 > `format_version` inchangé (`1.4`).
 >
+> ➕ **2026-11-18.** `gaming.descente` exporte La Descente de la Vistule : les Bêtes de l'élève
+> (`student_beasts`, vivantes, reparties et vaincues, donc son carnet ; lues par pages, au-delà
+> du plafond de 1 000 lignes) et ses coups gagnés (`student_combat_moves`). Une lecture en échec
+> rend 500. `format_version` inchangé (`1.4`).
+>
 > ➕ **2026-11-11.** Les traces (`skill_attempts`) exportent aussi lieu, durées, graine, réponse
 > tapée et verdict par case (ADR 0038, chantier `formes-de-serie`). `format_version` inchangé.
 >

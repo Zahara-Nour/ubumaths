@@ -8,7 +8,7 @@
 	 * de la notion, sinon `null` (modèle « Non rangé »). Une branche seule ne se
 	 * range pas : elle ne fait que guider le choix de la notion.
 	 */
-	import MySelect from '$lib/components/MySelect.svelte';
+	import MySelect from '#lib/components/MySelect.svelte';
 	import {
 		childrenOf,
 		indexNodes,
@@ -17,7 +17,7 @@
 		selectionOf,
 		type CascadeSelection,
 		type TreeNode
-	} from '$lib/questions/classification-tree';
+	} from '#lib/questions/classification-tree.ts';
 
 	// ============================================================================
 	// Props

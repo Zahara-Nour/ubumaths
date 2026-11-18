@@ -14,12 +14,12 @@
 
 import { describe, it, expect } from 'vitest';
 import { Atelier } from '../atelier.svelte';
-import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
+import { WebReplEngine } from '#lib/mathAST/cli/web/web-repl-engine.ts';
 import { runInput, runAction, type CalcSession, type CalcResult } from '../calcul';
-import { computeVariations } from '$lib/mathAST/variations';
-import { parseLatex } from '$lib/mathAST/parser';
-import { variationValueLatex } from '$lib/mathAST/variations/latex';
-import type { MathNode } from '$lib/mathAST/types';
+import { computeVariations } from '#lib/mathAST/variations/index.ts';
+import { parseLatex } from '#lib/mathAST/parser/index.ts';
+import { variationValueLatex } from '#lib/mathAST/variations/latex.ts';
+import type { MathNode } from '#lib/mathAST/types.ts';
 
 // =============================================================================
 // Outils

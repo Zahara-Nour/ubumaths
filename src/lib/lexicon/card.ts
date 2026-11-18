@@ -8,8 +8,8 @@
  * @module lexicon/card
  */
 
-import { isTermVisibleTo, resolveGradedField, type MathTerm } from '$lib/dictionary/model';
-import type { GradeCode } from '$lib/types/grades';
+import { isTermVisibleTo, resolveGradedField, type MathTerm } from '#lib/dictionary/model.ts';
+import type { GradeCode } from '#lib/types/grades.ts';
 
 export interface LexiconCardEntry {
 	id: string;

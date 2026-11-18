@@ -8,8 +8,8 @@
  */
 import { describe, it, expect } from 'vitest';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import { tableMock, type TableResponse } from '$lib/server/worksheets/__tests__/table-mock';
+import type { Database } from '#lib/types/database.ts';
+import { tableMock, type TableResponse } from '#lib/server/worksheets/__tests__/table-mock.ts';
 
 const ELEVE = '550e8400-e29b-41d4-a716-446655440001';
 const AUTRE = '550e8400-e29b-41d4-a716-446655440002';

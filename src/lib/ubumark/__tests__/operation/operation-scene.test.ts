@@ -9,7 +9,7 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { parseOperationContent } from '$lib/ubumark/parser/operation-parser';
+import { parseOperationContent } from '#lib/ubumark/parser/operation-parser.ts';
 import {
 	buildOperationScene,
 	operationResult,
@@ -17,7 +17,7 @@ import {
 	type OperationMark,
 	type OperationResultCell,
 	type OperationScene
-} from '$lib/ubumark/utils/operation-scene';
+} from '#lib/ubumark/utils/operation-scene.ts';
 
 function scene(...lines: string[]): OperationScene {
 	const node = parseOperationContent(lines.join('\n'));

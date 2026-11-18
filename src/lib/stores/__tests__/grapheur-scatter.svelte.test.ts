@@ -6,8 +6,8 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { GrapheurStore } from '$lib/stores/grapheur.svelte';
-import { isScatter } from '$lib/grapheur/types';
+import { GrapheurStore } from '#lib/stores/grapheur.svelte.ts';
+import { isScatter } from '#lib/grapheur/types.ts';
 
 /** Un grapheur qui ne range rien : les tests ne doivent pas écrire de stockage. */
 const graph = () => new GrapheurStore();

@@ -11,10 +11,10 @@ import { userEvent } from 'vitest/browser';
 import { flushSync, tick } from 'svelte';
 import type { MathfieldElement } from 'mathlive';
 import TypingSeries from '../TypingSeries.svelte';
-import type { QuestionInstance } from '$lib/questions/types';
-import type { TestResult } from '$lib/types/test';
-import type { SeriesTraceBody } from '$lib/questions/series-trace';
-import { resolvedMarkdown } from '$lib/ubumark';
+import type { QuestionInstance } from '#lib/questions/types.ts';
+import type { TestResult } from '#lib/types/test.ts';
+import type { SeriesTraceBody } from '#lib/questions/series-trace.ts';
+import { resolvedMarkdown } from '#lib/ubumark/index.ts';
 
 // Constantes
 const MODELES = [

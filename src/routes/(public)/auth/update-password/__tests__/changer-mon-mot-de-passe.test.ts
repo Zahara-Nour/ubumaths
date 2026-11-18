@@ -15,14 +15,14 @@ const { verifyCurrentPassword, updateUserById, checkPasswordChangeRateLimitByUse
 	})
 );
 
-vi.mock('$lib/server/child-password', async (importOriginal) => ({
-	...(await importOriginal<typeof import('$lib/server/child-password')>()),
+vi.mock('#lib/server/child-password.ts', async (importOriginal) => ({
+	...(await importOriginal<typeof import('#lib/server/child-password.ts')>()),
 	verifyCurrentPassword
 }));
-vi.mock('$lib/server/serviceRoleClient', () => ({
+vi.mock('#lib/server/serviceRoleClient.ts', () => ({
 	createServiceRoleClient: () => ({ auth: { admin: { updateUserById } } })
 }));
-vi.mock('$lib/server/rateLimiter', () => ({ checkPasswordChangeRateLimitByUser }));
+vi.mock('#lib/server/rateLimiter.ts', () => ({ checkPasswordChangeRateLimitByUser }));
 
 const { actions, load } = await import('../+page.server');
 

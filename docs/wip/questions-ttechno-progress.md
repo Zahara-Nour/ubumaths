@@ -5,20 +5,18 @@ Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) · bornes 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après #2811 (lot 3a rangé et tagué en prod)._
+_Mis à jour le 2026-11-18, phase 0 du lot 5 écrite (§ 34)._
 
-- **État** : lots 0 à 3 en prod ; lot 3a « propriétés » (C1–C4) : 4 brouillons en prod, rangés et tagués
-  (#2811, `db:migrate` fait, § 24) ; page à cocher publiée, `verdicts` vide.
-- **Prochaine action** : David relit la page à cocher (https://claude.ai/artifact/APGco4p8HR7FuviYRBuqXe) ;
-  compter les verdicts, `garde-niveaux-tags.ts`, `publier-lot.ts --dir scripts/questions/ttechno-3a-proprietes`
-  (simulation, puis `--publier` par David). Ensuite lot 3b « fonctions » (C5–C8 : aˣ sur ℝ, k·aˣ), déjà validé.
-- **En attente de David** : relecture de la page à cocher du lot 3a.
-- **Pièges en cours** : un point TTECHNO par modèle (trigger) ; `grades` en `array_append` seulement ;
-  `publier-lot.ts`, `garde-niveaux-tags.ts`, `create-questions --publier` visent la prod : David les lance (`!`) ;
-  `Doc-inchangée:` dans un COMMIT de la PR (ligne de corps ≤ 100 caractères) ; 034 / 078 / 079 vivent sur
-  « propriétés algébriques », pas sur le nœud aˣ d'E2.
-- **Worktree / branche** : `../ubumaths-wt-questions-ttechno` (branche `feat/questions-ttechno-lot3a-tags`
-  mergée ; le lot 3b partira d'une nouvelle branche).
+- **État** : lots 0 à 4 publiés ; phase 0 du lot 5 (logarithme décimal, L1–L9) écrite au § 34 ; aucun worktree.
+  Bilan MCP (§ 33) : 28 points STMG encore sans modèle publié, tous prévus aux lots 5 à 8 (017, 019 : rien, Q17).
+- **Prochaine action** : après les réponses, worktree `questions-ttechno-lot5a`, écriture de L1–L6
+  (`docs/wip/questions/lot-ttechno-5a.py`), sonder d'abord `log(x)` dans ` ```courbe `.
+- **En attente de David** : Q24 (5a puis 5b), Q25 (valeur exacte ou arrondi), Q26 (nombre de chiffres),
+  question d'accès (§ 34).
+- **Pièges en cours** : un point TTECHNO par modèle (trigger) ; tag = nœud DU POINT (relevé MCP, pas le journal) ;
+  `publier-lot.ts`, `create-questions --publier` visent la prod : David les lance (`!`) depuis le dépôt principal ;
+  `db:migrate` pousse toutes les migrations en attente ; worktree neuf → `svelte-kit sync`.
+- **Worktree / branche** : aucun.
 
 ## 1. Périmètre
 
@@ -626,3 +624,215 @@ sur « propriétés algébriques » (034, 078, 079), C4 sur « fonctions x ↦ a
 
 - Page à cocher : https://claude.ai/artifact/APGco4p8HR7FuviYRBuqXe (4 fiches, 14 exemples, aucune alerte,
   `verdicts` vide). Rendu à 390 px non vérifié cette fois.
+
+## 25. Lot 3a : publication (2026-11-18)
+
+- Page à cocher relue : 4 verdicts sur 4 « ok », sans commentaire.
+- `publier-lot.ts --dir scripts/questions/ttechno-3a-proprietes` : simulation verte (4 brouillons), puis
+  `--publier` par David (premier essai hors du dépôt principal : ENOENT, relancé avec `cd`) ; statut relu en base
+  (MCP) : 4/4 `published` (a5b2c4fa, ebefd0a9, e52d93b4, b14f7169).
+
+## 26. Lot 3b : écriture (2026-11-18)
+
+`docs/wip/questions/lot-ttechno-3b.py` → `scripts/questions/ttechno-3b-fonctions/` (4 fichiers, 46 specs),
+`grades ['T_TECHNO']`, brouillons, tous pour le nœud « fonctions x ↦ aˣ » (c185c955).
+
+- C5 (032, niv. 1) : sens sur ℝ (a > 1, 0 < a < 1) ; comparer deux puissances d'exposants négatifs ; signe de aˣ
+  (x < 0) ; aˣ par rapport à 1 pour x < 0. Cases choix.
+- C6 (033, niv. 1) : associer trois courbes sur [−3 ; 3] (gabarit E4) ; aˣ, 1ˣ, (1/a)ˣ et la symétrie par rapport
+  à l'axe des ordonnées ; f(−1) = 1/a exact (0,5 accepté) ; courbe au-dessus de l'axe (choix).
+- C7 (036, niv. 1) : sens de k·aˣ dans les quatre cas (k ⩾ 2 ou k ⩽ −2, jamais ±1), une variation par cas.
+- C8 (080, niv. 2) : comparer f(x₁) et f(x₂) sans calcul ; abscisse du maximum sur [0 ; 5] ; k et a à partir de
+  f(0) et f(1). Pas de choix mêlé aux cases (piège § 9) : le sens de variation y est dans le corrigé seulement.
+- Simulation `create-questions` verte (aucun homonyme en prod) ; `question:specs` 4 / 4 importables, 3 200
+  tirages ; `sonde-courbes` 0 problème ; 332 formules distinctes des aperçus à `validateLatex` + accolades : 0.
+- Corrigé en route : couleur posée hors `$` (C5, C6, C7) ; `a3 = eval:1/a1` rendu `\dfrac` dans le bloc courbe
+  → `a1 = 1/a3` (a3 ∈ {0,5 ; 0,25}) ; « croissante sur ℝ » dans la variation définie sur [0 ; 5] → sans domaine.
+- Base locale : 4 brouillons (copie des fichiers) ; aperçu admin (Chrome, `127.0.0.1:5177`) : C6 associer
+  (4ˣ, 1ˣ, 0,25ˣ) relié → juste, correction lue ; C8 max de −2 × 0,8ˣ sur [0 ; 5], `5` → juste.
+- **#2815 mergée (2026-11-18)**, CI verte. Premier `create-questions --publier` lancé avant le merge : ENOENT,
+  rien écrit.
+
+## 27. Lot 3b : prod, rangement et tags (2026-11-18)
+
+David a lancé `create-questions --publier` : 4 brouillons (5d8a7865 C5, 94b1dbf6 C6, f6805041 C7, 069c1a53 C8),
+vérifiés par MCP (`draft`, `{T_TECHNO}`, sans nœud ni tag) ; ids commités sur la branche de la migration.
+
+- Points (MCP) : 032, 033, 036, 080 sur « Fonctions > Fonction exponentielle > fonctions x ↦ aˣ » (c185c955).
+- Question d'accès tranchée au § 22 : **personne** (brouillons), Tle techno à la publication.
+- Migration `20261118080905_questions_ttechno_lot3b_rangement_tags` sur le gabarit du lot 3a (ids, codes, nœud,
+  table temporaire).
+- Test `tests/integration/questions-ttechno-lot3b-rangement-tags.test.ts` : 9 verts ; corps retiré (en-tête et
+  rollback gardés) → 5 rouges ; fichier restauré d'une copie, identique. `types:cliquet` tenu.
+- `security-auditor` : aucun finding bloquant (diff avec le lot 3a = ids, codes, sous-notion, table temporaire ;
+  rollback miroir ; aucune policy, aucune table d'élève).
+- **#2818 mergée (2026-11-18)**, CI verte, `check:migrations --pr 2818` vert. `migration list --linked` : deux en
+  attente, `20261118071618` (questions-cm1 lot 8b) et la nôtre → `db:migrate` NON lancé (il pousserait les deux).
+
+**Migré (2026-11-18)** : la migration cm1 jouée entre-temps, `migration list --linked` : seule `20261118080905` en
+attente ; `db:migrate` depuis le dépôt principal (4 conditions). Prod vérifiée (MCP) : C5–C8 sur « fonctions x ↦ aˣ »
+(032, 033, 036, 080), un tag chacun, `draft`, `updated_at` inchangés.
+
+- Page à cocher : https://claude.ai/artifact/GDznUQpPDffxKACVVUEH7h (4 fiches, 16 exemples ; une alerte attendue :
+  bloc associer de C6 non dessiné, joué dans l'aperçu au § 26 ; `verdicts` vide). Rendu à 390 px non vérifié.
+
+## 28. Lot 3b : publication (2026-11-18)
+
+- Page à cocher relue : 4 verdicts sur 4 « ok », sans commentaire.
+- `publier-lot.ts --dir scripts/questions/ttechno-3b-fonctions` : simulation verte (4 brouillons), puis
+  `--publier` par David ; statut relu en base (MCP) : 4/4 `published` (5d8a7865, 94b1dbf6, f6805041, 069c1a53).
+- Bilan MCP des nœuds « fonctions x ↦ aˣ » et « propriétés algébriques » (modèles publiés par point TTECHNO) :
+  031, 032, 033 : 2 ; 034, 036, 078, 079, 080, 081 : 1. Sans modèle : **037** (point chapeau, question à David),
+  039 (lot 4), 042, 082, 083 (lot 5, logarithme).
+
+## 29. Lot 4 : phase 0 (2026-11-18)
+
+**Décision (David, 2026-11-18, « tes recos »)** : 037 (point chapeau « connaître les propriétés algébriques ») reçoit
+un modèle à lui, ajouté au lot 4.
+
+**Relevé prod (MCP, lecture seule)** :
+
+- 035 et 038 : T1 a439df84 et T2 f84e23a3 publiés, `T_TECHNO` et tags posés (§ 21) → rien à écrire.
+- 039 (BO p. 5, « situations algorithmiques » de la partie aˣ, « Python ou tableur ») : aucun modèle. Voisins :
+  E6 9ead685c (placer des points de k·aˣ, 1GEN-042) ; 72b876d7 moyenne géométrique de deux nombres (TTECHNO-018,
+  suites). Rien à réutiliser tel quel.
+- 037 : aucun modèle. Gabarit de forme : 7c8b341b « Propriétés algébriques du logarithme » (TSPE-439, à savoir
+  parmi des erreurs typiques). Nœud du point : « propriétés algébriques » (44206987).
+
+**Proposition** (modèles neufs, `grades ['T_TECHNO']`, brouillons, un point chacun) :
+
+| #   | Modèle                                     | Point | Contenu (variations)                                                                                                                           | Niv. |
+| --- | ------------------------------------------ | ----- | ---------------------------------------------------------------------------------------------------------------------------------------------- | ---- |
+| M1  | Propriétés des exponentielles : laquelle ? | 037   | aˣ × aʸ, aˣ ÷ aʸ, (aˣ)ⁿ : la bonne écriture parmi des erreurs typiques ; vrai / faux aˣ + aʸ = a^(x+y) ; a⁰, a⁻ˣ                               | 1    |
+| M2  | Intercaler un point sur la courbe de aˣ    | 039   | coordonnées du point intercalé (moyennes arithm. / géom.) ; est-il sur la courbe ? ; Python à trous ; formule de tableur ; deux intercalations | 1–2  |
+
+Plages M2 : a ∈ {2 ; 3 ; 4 ; 5 ; 0,5} ; x₁, x₂ entiers d'écart 2 (milieu entier, ordonnée exacte) ; la seconde
+intercalation donne une racine (arrondi au centième). M1 : toutes cases choix, aucun calcul.
+
+**Questions à David** :
+
+- **Q21 — M1** : seulement les propriétés du BO (produit, quotient, puissance, a⁰, a⁻ˣ), sans (ab)ˣ = aˣbˣ ?
+  Reco : **oui, celles du BO**.
+- **Q22 — M2, Python et tableur** : le BO dit « Python ou tableur » ; une variation de chaque ? Reco : **oui**
+  (forme des modèles Python du lot 2 : compléter une ligne, réponse en choix).
+- **Q23 — M2, placer le point** : faire placer le point intercalé dans un repère (`placer:`), ou les coordonnées
+  suffisent ? Reco : **les coordonnées suffisent** (le BO parle d'algorithme, pas de tracé).
+- **Question d'accès** (migration de tags, après écriture) : brouillons, personne ne les voit avant la publication ;
+  publiés, ils apparaissent au catalogue et au cahier de texte de Tle techno seulement. Personne ne perd rien.
+
+**Décisions (David, 2026-11-18, « je te suis »)** : **Q21** M1 sur les propriétés du BO seulement (produit,
+quotient, puissance, a⁰, a⁻ˣ ; pas (ab)ˣ) ; **Q22** M2 avec une variation Python et une variation tableur ;
+**Q23** pas de `placer:`, les coordonnées suffisent ; question d'accès : personne pour les brouillons, Tle techno
+à la publication.
+
+## 30. Lot 4 : écriture (2026-11-18)
+
+`docs/wip/questions/lot-ttechno-4.py` → `scripts/questions/ttechno-4-fonctions/` (2 fichiers, 45 specs),
+`grades ['T_TECHNO']`, brouillons.
+
+- M1 (037, niv. 1, nœud « propriétés algébriques ») : aˣ × aʸ, aˣ ÷ aʸ, (aˣ)ʸ, a⁰, a⁻ˣ parmi des erreurs typiques ;
+  vrai / faux aˣ + aʸ = aˣ⁺ʸ (contre-exemple x = y = 0). Cases choix, bonne réponse à des rangs variés.
+- M2 (039, niv. 2, nœud « fonctions x ↦ aˣ ») : coordonnées du point C intercalé ; position du point des moyennes
+  arithmétiques (au-dessus de la courbe) ; Python à trous (`sqrt(yA * yB)`) ; tableur (`=RACINE(B2*B3)`) ; deux
+  intercalations (ordonnée au centième). a ∈ {2 ; 3 ; 4 ; 5 ; 0,5}, x₁ ∈ {−1 ; 0 ; 1 ; 2}, x₂ = x₁ + 2.
+- Simulation `create-questions` verte contre la prod (aucun homonyme) ; `question:specs` 2 / 2 importables,
+  2 200 tirages, 0 `\textcolor` hors `$` ; 221 formules distinctes de 120 aperçus : accolades 0 problème,
+  `validateLatex` 0 problème hors coordonnées, `\mapsto`, `\mathbb{R}` (notations que le parseur de calcul ne lit pas).
+- Vu en route : « 5,20 » pour 5,2 rend `unoptimal_form` (`zeros`), spec alignée sur le moteur ; nombres du tableau
+  du tableur passés en `$` (virgule décimale).
+- Base locale (copie des fichiers) : 2 brouillons ; aperçu admin (Chrome, `127.0.0.1:5177`) : M2 tableur
+  (a = 4) C → juste, correction lue ; M2 deux intercalations (a = 0,5, x₁ = 2) `2,5` et `0,18` → juste.
+- **#2819 mergée (2026-11-18)**, CI verte ; worktree retiré.
+
+## 31. Lot 4 : prod, rangement et tags (2026-11-18)
+
+David a lancé `create-questions --publier` : 2 brouillons (5e810e16 M1, 7a37a3e1 M2), vérifiés par MCP (`draft`,
+`{T_TECHNO}`, sans nœud ni tag) ; ids commités sur la branche de la migration.
+
+- Points (MCP) : **037 et 039 sur « Fonctions > Fonction exponentielle > fonctions x ↦ aˣ » (c185c955)**. Le § 29
+  plaçait 037 sur « propriétés algébriques » (44206987) : faux, M1 va sur le nœud du point.
+- Question d'accès tranchée au § 29 : **personne** (brouillons), Tle techno à la publication.
+- Migration `20261118104421_questions_ttechno_lot4_rangement_tags` sur le gabarit du lot 3b (ids, codes, 2 modèles,
+  table temporaire).
+- Test `tests/integration/questions-ttechno-lot4-rangement-tags.test.ts` : 9 verts (encore 9 après le commit) ;
+  corps retiré (en-tête et rollback gardés) → 5 rouges ; fichier restauré d'une copie, identique.
+  `types:cliquet` tenu.
+- `security-auditor` : aucun finding (diff avec le lot 3b = en-tête, ids, codes, gardes « 0 ou 2 », table
+  temporaire ; rollback miroir ; aucune policy, aucun GRANT, aucune table d'élève ; état prod mesuré conforme).
+- **#2820 mergée (2026-11-18)**, CI verte après `Doc-inchangée:` (garde doc), `check:migrations --pr 2820` vert.
+  `migration list --linked` : seule `20261118104421` en attente → `db:migrate` depuis le dépôt principal
+  (4 conditions). Prod vérifiée (MCP) : M1 et M2 sur « fonctions x ↦ aˣ », un tag chacun (037, 039), `draft`,
+  `updated_at` inchangés. Worktree retiré.
+
+## 32. Lot 4 : page à cocher (2026-11-18)
+
+- Page à cocher : https://claude.ai/artifact/4sxC6vTuygGLBECtmuznzv (2 fiches : 5e810e16 TTECHNO-037, 6 exemples ;
+  7a37a3e1 TTECHNO-039, 5 exemples ; aucune alerte ; nœud lu en base : « fonctions x ↦ aˣ » ; `verdicts` vide).
+  Rendu à 390 px non vérifié.
+
+## 33. Lot 4 : publication et bilan (2026-11-18)
+
+- Page à cocher relue : 2 verdicts sur 2 « ok », sans commentaire.
+- `publier-lot.ts --dir scripts/questions/ttechno-4-fonctions` : simulation verte (2 brouillons), puis `--publier`
+  par David ; statut relu en base (MCP) : 2/2 `published`, `{T_TECHNO}` (5e810e16, 7a37a3e1).
+- **Bilan MCP** (points TTECHNO non archivés sans aucun modèle publié tagué) : 45 sur 92, dont les 17 STD2A hors
+  périmètre (001–014, 070–072). Restent **28 points STMG** :
+  - 017, 019 : rien à écrire (Q17, couverts de fait par 026 / 027) ;
+  - **lot 5, logarithme décimal** (9) : 040, 041, 042, 082, 083, 043, 084, 085, 044 ;
+  - **lot 6, fonction inverse** (4) : 045, 086, 049, 087 ;
+  - **lot 7, deux variables** (6) : 050, 051, 052, 088, 053, 054 ;
+  - **lot 8, loi binomiale** (7) : 057, 060, 061, 067, 069, 090, 091.
+- 045, 049, 057, 060, 061, 087 étaient des jumeaux « a priori » (§ 3) que le lot 0 n'a pas retenus.
+
+## 34. Lot 5 : phase 0, logarithme décimal (2026-11-18)
+
+**Relevé prod (MCP, lecture seule)** — trois nœuds (sous-notions de « Logarithmes ») :
+
+| Nœud                                    | Points        | Modèles rangés aujourd'hui                                                                               |
+| --------------------------------------- | ------------- | -------------------------------------------------------------------------------------------------------- |
+| « logarithme décimal » (217d0af1)       | 040, 041, 044 | aucun                                                                                                    |
+| « propriétés algébriques » (dae7b3f1)   | 042, 082, 083 | `ffd5c051`, `7c8b341b` (propriétés de ln), `f455700a` (Briggs, Python), `97309b20` (xᵃ, dérivée) : T_SPE |
+| « équations et inéquations » (ee6b005b) | 043, 084, 085 | `d3301f2d` (équation ln), `14036c68` (inéquation ln), `28ede1b8` (demi-vie, exp et ln) : T_SPE / T_COMP  |
+
+- Recherche par contenu sur **tous** les modèles (`\log` dans les variations, « logarithme décimal » ou « log »
+  dans le titre) : **aucun modèle en log décimal**. Rien à taguer.
+- Autres sous-notions de « Logarithmes » (courbe, dérivée, réciproque) : 7 modèles ln de Tle spé / compl.,
+  dont `86c59a05` (variations de ln : comparer, signe) et `74b103a8` (reconnaître la courbe de ln).
+- Calques utiles (idées reprises, **originaux intacts**, Q3) : `7c8b341b` (formules en QCM), `ffd5c051`
+  (écrire en fonction de ln 2 et ln 3, regrouper en ln n), `d3301f2d`, `14036c68`, `f1963ef2` (seuil qⁿ par le
+  logarithme, TCOMP-239), `86c59a05`, `74b103a8`. Hors bornes, non repris : Briggs, xᵃ dérivée, demi-vie,
+  réciproque de exp, limites.
+- Moteur : `log` sans base = **décimal** dans l'évaluation (`mathAST/eval/evaluate.ts`, `common/numeric.ts`) et
+  la dérivation ; donc `{{eval:log(…)}}` et la correction des réponses comprennent `\log`. À sonder à
+  l'écriture : `f(x) = log(x)` dans un bloc ` ```courbe ` (décimal ou népérien ?), et l'équivalence
+  `\dfrac{\log 5}{\log 2}` ↔ `\log(5)/\log(2)`.
+- Bornes (ttechno.md, ltt-1) : log(aⁿ) = n·log(a) avec n entier naturel dans les **transformations** (082, 044) ;
+  x réel admis dans les **résolutions** (043, 084, 085). Pas de base e, pas de log_a, pas de dérivée de log.
+
+**Proposition** (9 modèles neufs, un point chacun, `grades ['T_TECHNO']` seul, brouillons) :
+
+| #   | Modèle                               | Point | Contenu (variations)                                                                                                                                | Niv. |
+| --- | ------------------------------------ | ----- | --------------------------------------------------------------------------------------------------------------------------------------------------- | ---- |
+| L1  | Définition du logarithme décimal     | 040   | log(10ⁿ) = n sans calculatrice (n ∈ −3..6) ; « 10ˣ = 1000, donc x = ? » ; 10^(log b) = b ; nombre de chiffres de N connaissant log N ≈ 5,3          | 1    |
+| L2  | Sens de variation de log             | 041   | sens (choix) ; comparer log 0,7 et log 1,3 sans calcul ; signe de log x ; encadrer : 100 < x < 1000 ⇒ 2 < log x < 3 ; courbe (si le bloc trace log) | 1    |
+| L3  | log(ab) = log a + log b              | 042   | formule (choix) ; log 2 + log 5 = 1 ; log a + log b = log(?) ; log 200 = log 2 + ?                                                                  | 1    |
+| L4  | log(aⁿ) = n log a                    | 082   | formule (choix) ; log(2⁵) = ? × log 2 ; log 8 en fonction de log 2 ; valeur de log(aⁿ) avec log a ≈ 0,301 donné                                     | 1    |
+| L5  | log(a/b) = log a − log b             | 083   | formule (choix) ; log(1/b) = −log b ; log a − log b = log(?) ; log 0,5 avec log 2 donné                                                             | 1    |
+| L6  | Transformer des expressions avec log | 044   | log 72 en fonction de log 2 et log 3 ; log a + log b − log c = log n ; log(100x) = 2 + log x ; log(1000/x²) littéral                                | 2    |
+| L7  | Résoudre aˣ = b ou xᵃ = b            | 043   | 10ˣ = b ⇒ x = log b ; aˣ = b ⇒ x = log b / log a ; annuités (capital doublé, x réel) ; xᵃ = b (x > 0), taux moyen                                   | 2    |
+| L8  | Résoudre aˣ < b ou xᵃ < b            | 084   | a > 1 ; 0 < a < 1 (log a < 0 : le sens change) ; xᵃ ⩽ b, x > 0 ; réponse en intervalle                                                              | 2–3  |
+| L9  | Seuil aⁿ < b, n entier naturel       | 085   | plus petit n (0,8ⁿ < 0,01 ; capital qui dépasse un montant ; dépréciation d'une machine) — calque `f1963ef2` en log                                 | 2    |
+
+Plages : a ∈ {0,5 ; 0,8 ; 0,9 ; 1,02 … 1,08 ; 2 ; 3 ; 5} ; b > 0 ; réponses en valeur exacte ou arrondie selon
+la variation (Q25). L9 distinct de T6 (`questions-1gen`, seuil sans log, par tableau ou Python).
+
+**Questions à David** :
+
+- **Q24 — Découpage** : lot 5a « définition, variations, propriétés » (L1–L6), puis lot 5b « équations,
+  inéquations, seuils » (L7–L9) ? Reco : **5a puis 5b**, pages à cocher courtes comme 3a / 3b.
+- **Q25 — Forme des réponses aux équations** : exemple 2ˣ = 5. Reco : **valeur exacte** (x = log 5 / log 2) quand
+  l'énoncé est purement algébrique, **arrondi** (« au centième », « nombre d'années ») quand il y a un contexte.
+- **Q26 — Nombre de chiffres** (commentaire du BO : log N donne l'ordre de grandeur et le nombre de chiffres
+  d'un entier) : une variation dans L1 ? Reco : **oui**. Le repère semi-logarithmique (STI2D / STL) : non, hors STMG.
+- **Question d'accès** (migration de tags, après écriture) : brouillons, personne ne les voit ; publiés, ils
+  apparaissent au catalogue et au cahier de texte de Tle techno seulement. Personne ne perd rien.

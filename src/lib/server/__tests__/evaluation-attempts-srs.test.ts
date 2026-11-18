@@ -5,7 +5,7 @@
  */
 import { describe, it, expect } from 'vitest';
 import { srsReviewsOf } from '../evaluation-attempts';
-import { isKnownForSrs } from '$lib/questions/grading';
+import { isKnownForSrs } from '#lib/questions/grading.ts';
 
 describe('Q40 — verdict du serveur envoyé au SRS', () => {
 	it.each([

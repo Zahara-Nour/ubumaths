@@ -17,10 +17,10 @@
 
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { getClassWarnings } from '$lib/server/warnings';
-import { getClassWarningsSchema } from '$lib/server/validation/classes';
-import { requireRoles } from '$lib/server/middleware/auth';
-import { createServerLogger } from '$lib/utils/logger';
+import { getClassWarnings } from '#lib/server/warnings.ts';
+import { getClassWarningsSchema } from '#lib/server/validation/classes.ts';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/classes/[classId]/warnings/+server');
 

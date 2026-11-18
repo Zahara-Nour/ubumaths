@@ -19,10 +19,10 @@
 	@see ExerciseDisplay.svelte for original renderList() implementation
 -->
 <script lang="ts">
-	import type { ListItemNode, ASTNode, InlineNode } from '$lib/ubumark';
-	import type { SchemeId } from '$lib/types/list-numbering';
-	import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
-	import type { ExerciseHint } from '$lib/exercises/types';
+	import type { ListItemNode, ASTNode, InlineNode } from '#lib/ubumark/index.ts';
+	import type { SchemeId } from '#lib/types/list-numbering.ts';
+	import type { GenericFunctionConfig } from '#lib/mathAST/parser/types.ts';
+	import type { ExerciseHint } from '#lib/exercises/types.ts';
 	import ParagraphNode from './ParagraphNode.svelte';
 	import MathBlock from './MathBlock.svelte';
 	import ImageDisplay from './ImageDisplay.svelte';
@@ -48,21 +48,21 @@
 	import SchemaBarres from './SchemaBarres.svelte';
 	// Self-import for recursive rendering (Svelte 5 pattern)
 	import ListNode from './ListNode.svelte';
-	import type { VariationTableNode } from '$lib/ubumark/types/variation-table';
-	import type { ProbabilityTreeNode } from '$lib/ubumark/types/probability-tree';
-	import type { TrigCircleNode } from '$lib/ubumark/types/trig-circle';
-	import type { CourbeNode } from '$lib/ubumark/types/courbe';
-	import type { FigureNode } from '$lib/ubumark/types/figure';
-	import type { StatChartNode } from '$lib/ubumark/types/stat-chart';
-	import type { QrNode } from '$lib/ubumark/types/qr';
-	import type { ScratchNode } from '$lib/ubumark/types/scratch';
-	import type { HorlogeNode } from '$lib/ubumark/types/horloge';
-	import type { PartageNode } from '$lib/ubumark/types/partage';
-	import type { EspaceNode } from '$lib/ubumark/types/espace';
-	import type { OperationNode } from '$lib/ubumark/types/operation';
-	import type { CollectionNode } from '$lib/ubumark/types/collection';
-	import type { MonnaieNode } from '$lib/ubumark/types/monnaie';
-	import type { SchemaBarresNode } from '$lib/ubumark/types/schema-barres';
+	import type { VariationTableNode } from '#lib/ubumark/types/variation-table.ts';
+	import type { ProbabilityTreeNode } from '#lib/ubumark/types/probability-tree.ts';
+	import type { TrigCircleNode } from '#lib/ubumark/types/trig-circle.ts';
+	import type { CourbeNode } from '#lib/ubumark/types/courbe.ts';
+	import type { FigureNode } from '#lib/ubumark/types/figure.ts';
+	import type { StatChartNode } from '#lib/ubumark/types/stat-chart.ts';
+	import type { QrNode } from '#lib/ubumark/types/qr.ts';
+	import type { ScratchNode } from '#lib/ubumark/types/scratch.ts';
+	import type { HorlogeNode } from '#lib/ubumark/types/horloge.ts';
+	import type { PartageNode } from '#lib/ubumark/types/partage.ts';
+	import type { EspaceNode } from '#lib/ubumark/types/espace.ts';
+	import type { OperationNode } from '#lib/ubumark/types/operation.ts';
+	import type { CollectionNode } from '#lib/ubumark/types/collection.ts';
+	import type { MonnaieNode } from '#lib/ubumark/types/monnaie.ts';
+	import type { SchemaBarresNode } from '#lib/ubumark/types/schema-barres.ts';
 
 	interface Props {
 		ordered: boolean;

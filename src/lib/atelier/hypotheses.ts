@@ -19,21 +19,21 @@
  * @module atelier/hypotheses
  */
 
-import type { MathNode } from '$lib/mathAST/types';
-import type { Domain } from '$lib/mathAST/domain/types';
+import type { MathNode } from '#lib/mathAST/types.ts';
+import type { Domain } from '#lib/mathAST/domain/types.ts';
 import {
 	avoidsPeriodicPoints,
 	conditionSet,
 	describeConditions,
 	isIncluded,
 	type TidyCondition
-} from '$lib/mathAST/tidy';
-import { parseStudentDomain } from '$lib/mathAST/domain/validation/parse-student-domain';
-import { intersect, isEmpty } from '$lib/mathAST/domain/algebra';
-import { computeDomain } from '$lib/mathAST/domain/compute';
-import { formatInterval } from '$lib/mathAST/domain/format';
-import { toCustom } from '$lib/mathAST/custom-generator';
-import { getVariables } from '$lib/mathAST/eval/substitute';
+} from '#lib/mathAST/tidy/index.ts';
+import { parseStudentDomain } from '#lib/mathAST/domain/validation/parse-student-domain.ts';
+import { intersect, isEmpty } from '#lib/mathAST/domain/algebra.ts';
+import { computeDomain } from '#lib/mathAST/domain/compute.ts';
+import { formatInterval } from '#lib/mathAST/domain/format.ts';
+import { toCustom } from '#lib/mathAST/custom-generator.ts';
+import { getVariables } from '#lib/mathAST/eval/substitute.ts';
 
 // =============================================================================
 // Types

@@ -18,7 +18,7 @@
  * @module ubumark/utils/operation-division-answer
  */
 
-import { toFrenchDecimal, type FrenchDecimalOptions } from '$lib/utils/french-math';
+import { toFrenchDecimal, type FrenchDecimalOptions } from '#lib/utils/french-math.ts';
 import type { OperationSpec } from '../types/operation';
 import { canonical, splitAnswer } from './operation-answer';
 import { buildDivisionScene, divisionResult, type DivisionScene } from './operation-division-scene';

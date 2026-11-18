@@ -27,7 +27,7 @@ import {
 import { indexedNameClash, nextClashFreeName, nextName } from './names';
 import { renameInDefinition } from './parse';
 import { sequenceDisplaySchema, storedDisplaySchema, type StoredDisplay } from './display';
-import { COORDINATE_LIMIT } from '$lib/grapheur/types';
+import { COORDINATE_LIMIT } from '#lib/grapheur/types.ts';
 
 // =============================================================================
 // Constantes

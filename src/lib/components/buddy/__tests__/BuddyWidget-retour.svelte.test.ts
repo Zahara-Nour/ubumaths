@@ -14,10 +14,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import BuddyWidget from '../BuddyWidget.svelte';
 import { BUBBLE_DURATION, GREETING_DELAY } from '../buddy-timing';
-import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
-import { buddyMessages } from '$lib/config/buddy-messages';
-import type { BuddyState } from '$lib/types/buddy';
-import { NO_NEWS } from '$lib/mathoux/news';
+import { studentCache } from '#lib/stores/studentDashboardCache.svelte.ts';
+import { buddyMessages } from '#lib/config/buddy-messages.ts';
+import type { BuddyState } from '#lib/types/buddy.ts';
+import { NO_NEWS } from '#lib/mathoux/news.ts';
 
 // Page courante simulée
 const pageState = vi.hoisted(() => ({ url: new URL('http://localhost:5175/dashboard') }));

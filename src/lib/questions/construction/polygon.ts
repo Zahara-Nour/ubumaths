@@ -13,7 +13,7 @@
  * @module questions/construction/polygon
  */
 
-import type { PolygonCheck } from '$lib/ubumark/types/construction';
+import type { PolygonCheck } from '#lib/ubumark/types/construction.ts';
 import type { DrawnLine } from './answer';
 import type { ConstructionVerdict, Position } from './judge';
 

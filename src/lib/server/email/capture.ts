@@ -19,8 +19,8 @@
 
 import { appendFile, mkdir, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
-import { env } from '$env/dynamic/private';
-import { env as publicEnv } from '$env/dynamic/public';
+import * as env from '$app/env/private';
+import * as publicEnv from '$app/env/public';
 import { CAPTURE_INDEX_FILE, readCaptureIndex, type CapturedEmail } from './capture-index';
 
 export type { CapturedEmail } from './capture-index';

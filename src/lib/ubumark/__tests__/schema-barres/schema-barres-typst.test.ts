@@ -4,11 +4,11 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { parseMarkdown } from '$lib/ubumark';
-import { generateTypst } from '$lib/ubumark/generators/typst-generator';
-import { generateSchemaBarresTypst } from '$lib/ubumark/generators/schema-barres-typst';
-import { parseSchemaBarresContent } from '$lib/ubumark/parser/schema-barres-parser';
-import { SCHEMA_BARRES_UNAVAILABLE } from '$lib/ubumark/types/schema-barres';
+import { parseMarkdown } from '#lib/ubumark/index.ts';
+import { generateTypst } from '#lib/ubumark/generators/typst-generator.ts';
+import { generateSchemaBarresTypst } from '#lib/ubumark/generators/schema-barres-typst.ts';
+import { parseSchemaBarresContent } from '#lib/ubumark/parser/schema-barres-parser.ts';
+import { SCHEMA_BARRES_UNAVAILABLE } from '#lib/ubumark/types/schema-barres.ts';
 
 const typst = (...lines: string[]) =>
 	generateSchemaBarresTypst(parseSchemaBarresContent(lines.join('\n')));

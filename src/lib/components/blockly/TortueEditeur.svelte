@@ -23,25 +23,25 @@
 	import * as BlocklyCore from 'blockly';
 	import { onDestroy, untrack } from 'svelte';
 	import { Play, FastForward, Trash2 } from '@lucide/svelte';
-	import { Button } from '$lib/components/ui/button';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import BlocklyWorkspace from './BlocklyWorkspace.svelte';
 	import TortueCanvas from './TortueCanvas.svelte';
-	import { toolboxTortue } from '$lib/shared/blockly/tortue/toolbox';
-	import { surveillerNomsDeVariables } from '$lib/shared/blockly/calcul/blocs';
+	import { toolboxTortue } from '#lib/shared/blockly/tortue/toolbox.ts';
+	import { surveillerNomsDeVariables } from '#lib/shared/blockly/calcul/blocs.ts';
 	import {
 		executerTortue,
 		messageErreurTortue,
 		type NiveauTortue,
 		type ResultatTortue
-	} from '$lib/shared/blockly/tortue/interpreteur';
+	} from '#lib/shared/blockly/tortue/interpreteur.ts';
 	import {
 		imageAnimation,
 		rythmeAnimation,
 		PAUSE_DEPART_MS
-	} from '$lib/shared/blockly/tortue/animation';
-	import { etatVersTexteTortue, texteVersEtatTortue } from '$lib/shared/blockly/tortue/niveaux';
-	import type { TexteLu } from '$lib/shared/blockly/tortue/notation';
-	import type { Segment } from '$lib/shared/blockly/tortue/segments';
+	} from '#lib/shared/blockly/tortue/animation.ts';
+	import { etatVersTexteTortue, texteVersEtatTortue } from '#lib/shared/blockly/tortue/niveaux.ts';
+	import type { TexteLu } from '#lib/shared/blockly/tortue/notation.ts';
+	import type { Segment } from '#lib/shared/blockly/tortue/segments.ts';
 
 	// =============================================================================
 	// Types

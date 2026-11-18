@@ -8,47 +8,47 @@
 	 */
 	import { onMount, tick } from 'svelte';
 	import { toast } from 'svelte-sonner';
-	import { Atelier } from '$lib/atelier/atelier.svelte';
-	import { provideAtelier } from '$lib/atelier/context';
+	import { Atelier } from '#lib/atelier/atelier.svelte.ts';
+	import { provideAtelier } from '#lib/atelier/context.ts';
 	import {
 		keepCalcHistory,
 		openSession,
 		type HistoryKeeper,
 		type Session,
 		type SessionNotice
-	} from '$lib/atelier/session';
-	import { isFunction, isList, type AtelierObject } from '$lib/atelier/types';
-	import type { ImportedHistory } from '$lib/atelier/history-import';
-	import type { RemovedWithDependents } from '$lib/atelier/atelier.svelte';
-	import { derivativeName, displayName } from '$lib/atelier/names';
-	import type { AtelierState } from '$lib/atelier/persistence';
-	import type { ObjectAction } from '$lib/atelier/actions';
+	} from '#lib/atelier/session.ts';
+	import { isFunction, isList, type AtelierObject } from '#lib/atelier/types.ts';
+	import type { ImportedHistory } from '#lib/atelier/history-import.ts';
+	import type { RemovedWithDependents } from '#lib/atelier/atelier.svelte.ts';
+	import { derivativeName, displayName } from '#lib/atelier/names.ts';
+	import type { AtelierState } from '#lib/atelier/persistence.ts';
+	import type { ObjectAction } from '#lib/atelier/actions.ts';
 	import ObjectPanel from './ObjectPanel.svelte';
 	import CalculView from './CalculView.svelte';
 	import DataView from './DataView.svelte';
 	import FigureView from './FigureView.svelte';
 	import ShareBar from './ShareBar.svelte';
 	import AtelierSettings from './AtelierSettings.svelte';
-	import { readInputMode, writeInputMode, type InputMode } from '$lib/atelier/input-mode';
-	import { readAngleUnit, writeAngleUnit, type AngleUnit } from '$lib/atelier/angle-unit';
+	import { readInputMode, writeInputMode, type InputMode } from '#lib/atelier/input-mode.ts';
+	import { readAngleUnit, writeAngleUnit, type AngleUnit } from '#lib/atelier/angle-unit.ts';
 	import {
 		readPointDragMode,
 		writePointDragMode,
 		type PointDragMode
-	} from '$lib/atelier/point-drag-mode';
-	import { readDomainMode, writeDomainMode, type DomainMode } from '$lib/atelier/domain-mode';
-	import { CalcDesk } from '$lib/atelier/desk.svelte';
-	import GrapheurContainer from '$lib/components/grapheur/GrapheurContainer.svelte';
-	import { GrapheurStore } from '$lib/stores/grapheur.svelte';
-	import { provideGrapheurStore } from '$lib/stores/grapheur-context';
-	import { syncPlots } from '$lib/atelier/plot-sync';
-	import { consoleReadings } from '$lib/atelier/reading';
-	import { ATELIER_STATE_VERSION } from '$lib/atelier/persistence';
-	import { ConfirmDialog } from '$lib/components/ui/confirm-dialog';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import { cascadeMessage, citingCellsNote, removedMessage } from '$lib/atelier/removal';
-	import { tabulationReport } from '$lib/atelier/tabulate';
-	import { pythonOf, pythonPageOf } from '$lib/atelier/to-python';
+	} from '#lib/atelier/point-drag-mode.ts';
+	import { readDomainMode, writeDomainMode, type DomainMode } from '#lib/atelier/domain-mode.ts';
+	import { CalcDesk } from '#lib/atelier/desk.svelte.ts';
+	import GrapheurContainer from '#lib/components/grapheur/GrapheurContainer.svelte';
+	import { GrapheurStore } from '#lib/stores/grapheur.svelte.ts';
+	import { provideGrapheurStore } from '#lib/stores/grapheur-context.ts';
+	import { syncPlots } from '#lib/atelier/plot-sync.ts';
+	import { consoleReadings } from '#lib/atelier/reading.ts';
+	import { ATELIER_STATE_VERSION } from '#lib/atelier/persistence.ts';
+	import { ConfirmDialog } from '#lib/components/ui/confirm-dialog/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import { cascadeMessage, citingCellsNote, removedMessage } from '#lib/atelier/removal.ts';
+	import { tabulationReport } from '#lib/atelier/tabulate.ts';
+	import { pythonOf, pythonPageOf } from '#lib/atelier/to-python.ts';
 	import {
 		ArchiveRestore,
 		EllipsisVertical,
@@ -63,10 +63,10 @@
 		Undo2,
 		X
 	} from '@lucide/svelte';
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
+	import * as DropdownMenu from '#lib/components/ui/dropdown-menu/index.ts';
 	import ToolButton from './ToolButton.svelte';
-	import { FIELD_SELECTOR, consoleShortcut, isMacPlatform } from '$lib/atelier/console-key';
-	import { downloadHistory, historyToUbumark } from '$lib/atelier/history-export';
+	import { FIELD_SELECTOR, consoleShortcut, isMacPlatform } from '#lib/atelier/console-key.ts';
+	import { downloadHistory, historyToUbumark } from '#lib/atelier/history-export.ts';
 	import { rovingToolbar } from './roving-toolbar';
 	import {
 		ATELIER_FILE_TOO_BIG,
@@ -74,10 +74,10 @@
 		atelierFileName,
 		atelierFileToJson,
 		readAtelierFile
-	} from '$lib/atelier/atelier-file';
-	import type { KeptHistory } from '$lib/atelier/history-storage';
-	import { downloadText } from '$lib/atelier/history-export';
-	import { renamedOnReadMessage } from '$lib/atelier/geometry';
+	} from '#lib/atelier/atelier-file.ts';
+	import type { KeptHistory } from '#lib/atelier/history-storage.ts';
+	import { downloadText } from '#lib/atelier/history-export.ts';
+	import { renamedOnReadMessage } from '#lib/atelier/geometry.ts';
 	import {
 		RETRIEVE_LABEL,
 		SET_ASIDE_NOTICE,
@@ -89,7 +89,7 @@
 		replacePersonal,
 		replacementLoss,
 		swapWithSetAside
-	} from '$lib/atelier/replace';
+	} from '#lib/atelier/replace.ts';
 
 	interface Props {
 		/** L'atelier à piloter. Sans lui, le conteneur crée le sien. */

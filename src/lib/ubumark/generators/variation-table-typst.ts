@@ -22,7 +22,7 @@ import type {
 } from '../types/variation-table';
 import { convertLatexToTypstMath } from './typst-generator';
 import { variationRowForDisplay, withImplicitEndpoints } from '../parser/variation-table-parser';
-import { toLocaleDecimal } from '$lib/utils/french-math';
+import { toLocaleDecimal } from '#lib/utils/french-math.ts';
 
 // ============================================================================
 // CONFIGURATION

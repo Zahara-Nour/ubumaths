@@ -8,7 +8,7 @@ import { describe, it, expect } from 'vitest';
 import { normalCdf, normalQuantile } from '../density';
 import { normalSampler, simulateDraws } from '../simulation';
 import { Fraction } from '../fraction';
-import { createRandomSource } from '$lib/utils/random';
+import { createRandomSource } from '#lib/utils/random.ts';
 
 const fixed = (u: number) => () => u;
 

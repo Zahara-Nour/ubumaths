@@ -9,10 +9,10 @@
  */
 import { describe, it, expect } from 'vitest';
 import { specVerdicts } from './spec-verdicts.helper';
-import { runAllTestSpecs } from '$lib/questions/test-spec-runner';
-import { validateBlanksDetailed } from '$lib/utils/answer-validator';
-import type { QuestionInstance, QuestionTemplate } from '$lib/questions/types';
-import type { ResolvedMarkdown } from '$lib/ubumark';
+import { runAllTestSpecs } from '#lib/questions/test-spec-runner.ts';
+import { validateBlanksDetailed } from '#lib/utils/answer-validator.ts';
+import type { QuestionInstance, QuestionTemplate } from '#lib/questions/types.ts';
+import type { ResolvedMarkdown } from '#lib/ubumark/index.ts';
 
 const STATEMENT = '$\\frac{5\\pi}{6}\\text{ rad}=?\\,^\\circ$';
 

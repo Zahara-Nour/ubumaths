@@ -9,15 +9,15 @@
 import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
 import { z } from 'zod';
-import { requireRole } from '$lib/server/middleware/auth';
-import { verifyTeacherStudent } from '$lib/server/middleware/student-access';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { verifyTeacherStudent } from '#lib/server/middleware/student-access.ts';
 import {
 	getStudentCompetences,
 	getStudentEvaluations,
 	getStudentPointFollowUp,
 	getStudentRegularity
-} from '$lib/server/stats/student-follow-up';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/stats/student-follow-up.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger(
 	'(protected)/dashboard/teacher/students/[studentId]/+page.server'

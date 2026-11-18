@@ -13,7 +13,7 @@
 		- Indicates scope (global or conversation-specific)
 -->
 <script lang="ts">
-	import * as Alert from '$lib/components/ui/alert';
+	import * as Alert from '#lib/components/ui/alert/index.ts';
 	import { Ban, Clock, AlertTriangle } from '@lucide/svelte';
 	import { formatDistanceToNow } from 'date-fns';
 	import { fr } from 'date-fns/locale';

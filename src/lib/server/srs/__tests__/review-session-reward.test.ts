@@ -17,14 +17,14 @@
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import type { BuddyXpFromExerciseResult } from '$lib/server/buddy-xp-service';
-import type { BuddyState } from '$lib/types/buddy';
+import type { Database } from '#lib/types/database.ts';
+import type { BuddyXpFromExerciseResult } from '#lib/server/buddy-xp-service.ts';
+import type { BuddyState } from '#lib/types/buddy.ts';
 import {
 	DAILY_XP_CAP,
 	REVIEW_REWARD_CARDS_ANY_DECK,
 	REVIEW_REWARD_CARDS_EMPTIED_DECK
-} from '$lib/utils/buddy-xp';
+} from '#lib/utils/buddy-xp.ts';
 
 const addBuddyXpFromReviewSession = vi.hoisted(() =>
 	vi.fn<(supabase: unknown, studentId: string) => Promise<BuddyXpFromExerciseResult | null>>()
@@ -32,13 +32,13 @@ const addBuddyXpFromReviewSession = vi.hoisted(() =>
 const getStudentBuddy = vi.hoisted(() =>
 	vi.fn<(supabase: unknown, studentId: string) => Promise<BuddyState | null>>()
 );
-vi.mock('$lib/server/buddy-xp-service', () => ({ addBuddyXpFromReviewSession }));
-vi.mock('$lib/server/buddy-queries', () => ({ getStudentBuddy }));
+vi.mock('#lib/server/buddy-xp-service.ts', () => ({ addBuddyXpFromReviewSession }));
+vi.mock('#lib/server/buddy-queries.ts', () => ({ getStudentBuddy }));
 const creditStudentGidouilles = vi.hoisted(() => vi.fn());
-vi.mock('$lib/server/achievements/credit-gidouilles', () => ({ creditStudentGidouilles }));
+vi.mock('#lib/server/achievements/credit-gidouilles.ts', () => ({ creditStudentGidouilles }));
 // Réclamation et relâche au client SERVICE (l'élève n'écrit pas `completed_at`)
 const service = vi.hoisted(() => ({ current: null as unknown }));
-vi.mock('$lib/server/serviceRoleClient', () => ({
+vi.mock('#lib/server/serviceRoleClient.ts', () => ({
 	createServiceRoleClient: () => service.current
 }));
 

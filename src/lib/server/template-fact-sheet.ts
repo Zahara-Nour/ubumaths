@@ -7,7 +7,7 @@
  * l'appelant en fait un message, jamais une fiche « sans point ».
  */
 
-import { getQuestionType, isCourseQuestion, QUESTION_TYPE_LABELS } from '$lib/questions/types';
+import { getQuestionType, isCourseQuestion, QUESTION_TYPE_LABELS } from '#lib/questions/types.ts';
 import {
 	describeValidationSettings,
 	gradeLabel,
@@ -15,10 +15,13 @@ import {
 	nodePath,
 	type FactSheetPoints,
 	type TemplateFactSheet
-} from '$lib/questions/template-fact-sheet';
-import { loadTemplateProgrammeTags, type TemplateProgrammeTags } from '$lib/server/programme-tags';
-import { loadNodesWithAncestors } from '$lib/server/programme-tree';
-import type { ClassificationNode } from '$lib/types/database-helpers';
+} from '#lib/questions/template-fact-sheet.ts';
+import {
+	loadTemplateProgrammeTags,
+	type TemplateProgrammeTags
+} from '#lib/server/programme-tags.ts';
+import { loadNodesWithAncestors } from '#lib/server/programme-tree.ts';
+import type { ClassificationNode } from '#lib/types/database-helpers.ts';
 
 // Types
 

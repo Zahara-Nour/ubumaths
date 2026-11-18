@@ -14,7 +14,7 @@
 -->
 
 <script lang="ts">
-	import { cn } from '$lib/utils';
+	import { cn } from '#lib/utils.ts';
 
 	// Types
 	type Size = 'sm' | 'md' | 'lg';

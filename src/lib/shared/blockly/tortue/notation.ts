@@ -14,7 +14,7 @@
  */
 
 import { lirePiles, nombreDeTours, premierBlocInconnu, valeur, type BlocLu } from './interpreteur';
-import { MAX_ANSWER_LENGTH } from '$lib/questions/submission';
+import { MAX_ANSWER_LENGTH } from '#lib/questions/submission.ts';
 import { ecrireSansExposant, messageExposant } from '../nombres';
 
 // =============================================================================

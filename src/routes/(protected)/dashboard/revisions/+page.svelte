@@ -13,16 +13,16 @@
 -->
 
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import { goto } from '$app/navigation';
-	import DeckCard from '$lib/components/srs/DeckCard.svelte';
-	import { ChapterRevisionButton } from '$lib/components/cours';
-	import { Button } from '$lib/components/ui/button';
-	import * as Card from '$lib/components/ui/card';
-	import { Tabs, TabsContent, TabsList, TabsTrigger } from '$lib/components/ui/tabs';
+	import DeckCard from '#lib/components/srs/DeckCard.svelte';
+	import { ChapterRevisionButton } from '#lib/components/cours/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Tabs, TabsContent, TabsList, TabsTrigger } from '#lib/components/ui/tabs/index.ts';
 	import { Plus, BookOpen, Trophy, Target } from '@lucide/svelte';
-	import { cn } from '$lib/utils';
-	import type { Deck } from '$lib/srs/types';
+	import { cn } from '#lib/utils.ts';
+	import type { Deck } from '#lib/srs/types.ts';
 
 	interface Props {
 		data: {

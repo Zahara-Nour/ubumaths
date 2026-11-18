@@ -35,14 +35,14 @@
 	 *
 	 * @example
 	 * // Example usage in child page
-	 * import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
+	 * import { studentCache } from '#lib/stores/studentDashboardCache.svelte.ts';
 	 * let profile = $derived(studentCache.getProfileSync());
 	 */
 
-	import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
-	import { consent } from '$lib/stores/consent.svelte';
-	import ConsentBanner from '$lib/components/ConsentBanner.svelte';
-	import AgeQuestionDialog from '$lib/components/AgeQuestionDialog.svelte';
+	import { studentCache } from '#lib/stores/studentDashboardCache.svelte.ts';
+	import { consent } from '#lib/stores/consent.svelte.ts';
+	import ConsentBanner from '#lib/components/ConsentBanner.svelte';
+	import AgeQuestionDialog from '#lib/components/AgeQuestionDialog.svelte';
 	import { invalidateAll } from '$app/navigation';
 	import { onMount } from 'svelte';
 

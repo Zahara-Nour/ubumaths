@@ -13,9 +13,9 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
-import { requireRole } from '$lib/server/middleware/auth';
-import { requireConsent } from '$lib/server/middleware/consent';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { requireConsent } from '#lib/server/middleware/consent.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/games/mathemo/use-power/+server');
 

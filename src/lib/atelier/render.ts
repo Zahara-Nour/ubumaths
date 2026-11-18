@@ -15,15 +15,15 @@
  * @module atelier/render
  */
 
-import type { ReplExecutionResult } from '$lib/mathAST/cli/web/types';
-import { displayUnitsInLatex } from '$lib/mathAST/units/display';
-import { toLatex } from '$lib/mathAST/latex-generator';
-import { exactValueToShow } from '$lib/mathAST/eval/exact-value';
-import { tidy } from '$lib/mathAST/tidy';
-import { getVariables } from '$lib/mathAST/eval/substitute';
-import { findNodes } from '$lib/mathAST/transforms';
-import { isUnit } from '$lib/mathAST/guards';
-import type { MathNode } from '$lib/mathAST/types';
+import type { ReplExecutionResult } from '#lib/mathAST/cli/web/types.ts';
+import { displayUnitsInLatex } from '#lib/mathAST/units/display.ts';
+import { toLatex } from '#lib/mathAST/latex-generator.ts';
+import { exactValueToShow } from '#lib/mathAST/eval/exact-value.ts';
+import { tidy } from '#lib/mathAST/tidy/index.ts';
+import { getVariables } from '#lib/mathAST/eval/substitute.ts';
+import { findNodes } from '#lib/mathAST/transforms.ts';
+import { isUnit } from '#lib/mathAST/guards.ts';
+import type { MathNode } from '#lib/mathAST/types.ts';
 
 // =============================================================================
 // Types

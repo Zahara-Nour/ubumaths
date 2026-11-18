@@ -13,7 +13,7 @@ import {
 	formatInline,
 	heapTypeLabel
 } from '../heap-utils';
-import type { HeapEntry, HeapObject } from '$lib/shared/python/debug/types';
+import type { HeapEntry, HeapObject } from '#lib/shared/python/debug/types.ts';
 
 describe('parseVariableValue', () => {
 	it('parses an inline primitive', () => {

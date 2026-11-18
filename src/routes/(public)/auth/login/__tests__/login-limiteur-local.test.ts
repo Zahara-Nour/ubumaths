@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 // `dev` réglable par test : faux = build (Vercel, aperçu), vrai = pnpm dev.
 const env = vi.hoisted(() => ({ dev: true }));
 
-vi.mock('$app/environment', () => ({
+vi.mock('$app/env', () => ({
 	browser: false,
 	building: false,
 	get dev() {
@@ -12,11 +12,11 @@ vi.mock('$app/environment', () => ({
 	version: 'test'
 }));
 
-vi.mock('$lib/utils/logger', () => ({
+vi.mock('#lib/utils/logger.ts', () => ({
 	createServerLogger: () => ({ info: vi.fn(), error: vi.fn(), warn: vi.fn(), debug: vi.fn() })
 }));
 
-vi.mock('$lib/server/rateLimiter', () => ({
+vi.mock('#lib/server/rateLimiter.ts', () => ({
 	checkLoginRateLimitByIP: vi.fn(async () => ({ allowed: false, message: 'Trop de tentatives.' })),
 	checkLoginRateLimitByEmail: vi.fn(async () => ({
 		allowed: false,
@@ -27,7 +27,7 @@ vi.mock('$lib/server/rateLimiter', () => ({
 
 const { actions } = await import('../+page.server');
 const { checkLoginRateLimitByIP, checkLoginRateLimitByEmail } =
-	await import('$lib/server/rateLimiter');
+	await import('#lib/server/rateLimiter.ts');
 
 async function login(ip: string, email = 'eleve@exemple.fr') {
 	const signInWithPassword = vi.fn(async () => ({

@@ -38,5 +38,5 @@ export * from './params';
 // consumer imports it directly, so the pick is functionally neutral — it only
 // satisfies TypeScript.
 // NOTE (latent debt): `variableSchema` is defined in ./exercises AND in
-// $lib/questions/template-schema (re-exported by ./questions).
+// #lib/questions/template-schema (re-exported by ./questions).
 export { variableSchema } from './exercises';

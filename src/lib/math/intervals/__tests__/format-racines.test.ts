@@ -4,7 +4,7 @@
  */
 import { describe, it, expect } from 'vitest';
 import { formatEndpointValue } from '../format';
-import { parseLatex } from '$lib/mathAST/parser';
+import { parseLatex } from '#lib/mathAST/parser/index.ts';
 
 describe('formatEndpointValue — indice des racines', () => {
 	it.each([

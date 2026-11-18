@@ -3,7 +3,7 @@
  * statique, rien lu en base ; la garde de l'espace reste celle du layout.
  */
 import { error } from '@sveltejs/kit';
-import { findBlockEntry } from '$lib/block-catalog';
+import { findBlockEntry } from '#lib/block-catalog/index.ts';
 import type { PageLoad } from './$types';
 
 export const load: PageLoad = ({ params }) => {

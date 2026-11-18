@@ -5,17 +5,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après #2803 (§ 22 ter)._
+_Mis à jour le 2026-11-18, après #2824, le `db:migrate` du lot 8c (§ 23 quinquies) et #2826 (`#lib`)._
 
-- **État** : lots 0 à 8a publiés, 131 points sur 171. Lot 8b écrit (6 modèles), fichiers mergés (#2803). Restent 8c, 8d,
-  8e, 9 (§ 20, découpage validé § 20 bis).
-- **Prochaine action** : merger la PR du renommage de 8b-04 (homonyme 6e `c8741112`), puis David lance
-  `create-questions --dir scripts/questions/cm1-8b --publier` **depuis le worktree** ; ensuite migration nœud + tag (sous-notion neuve « aires sur quadrillage » sous Aires ; tags CM1 et
-  CM2, § 22 bis), page à cocher, publication.
-- **En attente de David** : la création en prod des 6 brouillons.
-- **Pièges en cours** : `create-questions --publier` lancé depuis le dépôt principal écrit les ids dans SES fichiers :
-  les reporter sur la branche du worktree, puis `git restore` dans le dépôt principal ; `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance (une autre session peut l'avoir fait avant : vérifier au MCP) ; `db:migrate` depuis un worktree : copier d'abord le lien `../ubumaths/supabase/.temp/` ; `create-questions` = `pnpm tsx scripts/create-questions.ts …`, refuse `theme`/`domain`/`subdomain` (ADR 0035) ; horodatage = `pnpm migration:horodatage`, puis `pnpm check:migrations --pr <n>` **juste avant le merge** ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule ; un brouillon sans nœud ne peut pas être tagué (trigger) ; le pre-commit reformate le relevé `etat-prod-*` (prettier) et laisse l'index décalé : `git diff HEAD` vide → `git restore --staged` ; le mode auto refuse `publier-lot` et `garde-niveaux-tags` (lecture de la prod), même en simulation : David les lance ; zsh ne découpe pas `$F` : un tableau `F=(…)`.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, détaché sur `main`, aucune branche ouverte (un id de `4-lot-11/01` d'une autre session y traîne, non commité : pas à nous).
+- **État** : lots 0 à 8b publiés, **137 points du CM1 sur 171** (CM2 : 92 sur 158). Lot 8c : 7 brouillons en prod,
+  rangés et tagués en prod (#2824, `db:migrate` fait) ; page à cocher publiée
+  (https://claude.ai/artifact/Snbe4QU13vJmw7qSfzQzS9).
+- **Prochaine action** : lire et compter les verdicts (`ArtifactData list verdicts`) ; si 7 « OK » :
+  `publier-lot --dir scripts/questions/cm1-8c` (simulation), puis David lance `--publier`. Ensuite 8d figures à
+  compléter, 8e, 9 (§ 20).
+- **En attente de David** : ses verdicts sur la page à cocher.
+- **Pièges en cours** : lancer `create-questions --publier` et `db:migrate` **depuis le worktree** (lien
+  `supabase/.temp/` copié) ; `db:migrate` « inserted before » → `--dry-run --include-all` puis `--include-all` ;
+  titre homonyme d'un autre niveau → `create-questions` refuse (renommer) ; commitlint refuse le type `content` ;
+  le mode auto refuse `publier-lot` et `garde-niveaux-tags` : David les lance ; `sonde-figures` ne voit pas les
+  dessins d'une case choix (aperçu) ; ports 5176, 5177 pris par d'autres sessions ; depuis #2826, imports en `#lib/x.ts` (extension écrite), worktree remis sur `main` + `pnpm install` fait.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, détaché sur `main`, aucune branche ouverte.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -1769,9 +1773,132 @@ avant. Les modèles publiés sont lus comme les autres ; la migration ne fait qu
 - Base locale (copies à une variation par modèle, 18 brouillons d'essai) : les 18 variations vues à 390 px
   (Playwright, port 5177), sans défilement horizontal, réponses attendues justes. Reste : noms des points petits
   (8 px), sans option de taille → `outils-manquants.md` n° 37.
-- `--publier` (2026-11-18) refusé : homonyme « Le vocabulaire des angles », niveau 1, déjà en base pour la **6e**
-  (`c8741112`, lot 11a : angle plat, adjacents, opposés, supplémentaire — autre contenu). **David : renommer le
-  modèle CM1** → « Sommet, côtés et nature d'un angle » (JSON, générateur, tableau du découpage).
 - PR #2803 (fichiers seuls, revue : aucune, contenu). 1re CI rouge : `student-answer-safety` abîmait deux réponses
   attendues en `{{if:}}` imbriqué sur 8 et 10 niveaux → variable calculée `n` (indicatrices, helper `table`) ; CI
   verte, mergée le 2026-11-18.
+- `--publier` (2026-11-18) refusé : homonyme « Le vocabulaire des angles », niveau 1, déjà en base pour la **6e**
+  (`c8741112`, lot 11a : angle plat, adjacents, opposés, supplémentaire — autre contenu). **David : renommer le
+  modèle CM1** → « Sommet, côtés et nature d'un angle » (JSON, générateur, tableau du découpage).
+
+### 22 quater. Lot 8b — création en prod et rangement (2026-11-18)
+
+- #2806 mergée (renommage). `create-questions --dir scripts/questions/cm1-8b --publier` lancé depuis le worktree :
+  6 brouillons (d623374d, 31d64c00, 614048c9, 8da9f669, 4c1ce174, 97f2374b), ids commités sur
+  `feat/questions-cm1-lot8b-rangement`.
+- Relevé `etat-prod-2026-11-18-cm1-8b/` (6 draft, sans nœud ni tag ; « aires sur quadrillage » absente), script
+  `lot-cm1-8b-rangement.py` (gabarit 8a + sous-notion neuve façon TSPE 11) → migration
+  `20261118071618_questions_cm1_lot8b_rangement_tags` + fixture : sous-notion « aires sur quadrillage » créée en fin
+  d'Aires (d623374d, 31d64c00) ; 614048c9 → unités et conversions ; 8da9f669, 4c1ce174 → Angles ; 97f2374b →
+  comparaison ; 11 tags posés (CM1-086 à 091, CM2-071, 072, 076, 077, 078), aucun niveau ni statut changé.
+- Test `questions-cm1-lot8b-rangement-tags.test.ts` : 23/23 vert ; corps neutralisé (`select 1;`) : 14 échecs,
+  8 sautés. `types:cliquet` tenu.
+- `security-auditor` : aucun finding bloquant (état « avant » remesuré au MCP). Non bloquant : la garde du rollback ne
+  regarde pas `exercise_classifications`, `student_mathoux`, `student_combat_moves` (clés RESTRICT : échec net, rien
+  perdu) → à ajouter au générateur pour les prochains lots à sous-notion neuve.
+- 1re CI rouge : la sous-notion neuve change l'arbre → `arbre-notions-seed.json`, `seed-classification-nodes` (484),
+  `later-migrations.ts` (`QUESTIONS_CM1_LOT8B`), comme la TSPE 15. CI verte, #2812 mergée, `check:migrations` passé.
+- Base locale en retard (10 migrations ; `5_lot11_blockly` d'une autre session refuse de s'y rejouer) : non touchée.
+
+### 22 quinquies. Lot 8b — migration passée, page à cocher (2026-11-18)
+
+- `db:migrate --include-all` lancé par David depuis le worktree (`074731` du CM2 lot 10 déjà jouée avant). Vérifié
+  au MCP : `20261118071618` jouée ; « aires sur quadrillage » position 7 sous Aires ; 6 brouillons sur leur nœud,
+  11 tags, `updated_at` inchangé.
+- `page-a-cocher.ts --dir scripts/questions/cm1-8b` : 6 fiches (18 exemples), aucune alerte. Page :
+  https://claude.ai/artifact/W1USbwFanqqcyE3o9t4afJ (`verdicts`, capacité `db`, vide).
+
+### 22 sexies. Lot 8b — publié (2026-11-18)
+
+- Page à cocher : 6 « OK » sur 6, aucun commentaire. `garde-niveaux-tags`, `publier-lot --dir scripts/questions/cm1-8b`
+  (simulation) et `--publier` lancés par David. Vérifié au MCP : 6 modèles `published`.
+- Recompte MCP : **137 points du CM1 sur 171** ont un modèle publié (131 + 6) ; CM2 : 92 sur 158.
+
+## 23. Lot 8c — géométrie plane : phase 0 (à valider, 2026-11-18)
+
+Relevé MCP : aucun modèle, ni brouillon, sur 098, 099, 100, 101, 102, 103, 106, **ni sur leurs jumeaux CM2**
+(088 codes, 089 perpendiculaires, 090 parallèles, 091 cercle, 092 figures, 093 propriétés ; le CM2 n'a pas de point
+« axes de symétrie »). Les 7 points sont en **B** : le bloc `figure` a tout ce qu'il faut (`arc`, `angle(…,
+marque="carre")`, `marque_segment(…, traits=2)`, `perpendiculaire`, `parallele`, figures dans un ` ```choix `).
+
+Chaque point est déjà posé sur un nœud ; le modèle se range sur ce nœud (règles de l'ADR 0020 tenues) :
+098, 102, 103 → **propriétés** (Figures planes) ; 099 → **cercle** ; 100, 101 → **perpendiculaires et parallèles** ;
+106 → **Symétrie axiale** (notion).
+
+Patrons en prod : CE2 `77728742` (code des longueurs), `29c06264` (code de l'angle droit), `c2eb20cb` (quelle est
+cette figure ?), `949dd113` (propriétés carré, rectangle, losange), `79e8e279` et `b307a9f9` (axes) ; 6e `b8939937`
+(cercle, disque, rayon, diamètre, corde).
+
+Bornes (cycle3) : 098 codes de l'angle droit et des longueurs égales (pas d'angles égaux ni ⊥, //, qui sont CM2) ;
+099 disque, cercle, centre, rayon, diamètre, corde, arc ; 100, 101 sans borne propre ; 102 triangle, triangle
+rectangle, isocèle, équilatéral, quadrilatère, carré, rectangle, losange (**pas** de trapèze, pentagone, hexagone) ;
+103 mêmes figures, côtés opposés parallèles, longueurs et angles égaux ; 106 sans borne propre.
+
+| #   | Point | Modèle (titre)                                 | Variations                                                                                                                                                                                                                                        | Réponse        | Rangement                      | Niv. |
+| --- | ----- | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------- | ------------------------------ | ---- |
+| 1   | 098   | Lire les codes d'une figure                    | V1 figure à 4 côtés, un angle droit codé → quel angle est droit ? ; V2 deux paires de côtés codées (un trait, deux traits), [AB] = 5 cm → combien mesure [CD] ? (piège : l'autre paire) ; V3 quelle phrase disent les codes ?                     | choix ; nombre | propriétés                     | 3    |
+| 2   | 099   | Cercle, disque, rayon, diamètre, corde, arc    | V1 un trait coloré sur un cercle de centre O → son nom (rayon, diamètre, corde, arc) ; V2 cercle ou disque ? ; V3 cercle de centre O, rayon 3 cm, et OA, OB, OC donnés → quel point est sur le cercle ? ; V4 rayon ↔ diamètre (entiers, 2 à 9 cm) | choix ; nombre | cercle                         | 1    |
+| 3   | 100   | Ces droites sont-elles perpendiculaires ?      | V1 deux droites qui se coupent : perpendiculaires ou non (non : au moins 15° d'écart avec l'angle droit) ; V2 trois dessins → lequel montre des perpendiculaires ? ; V3 quatre droites (d1)…(d4) → laquelle est perpendiculaire à (d1) ?          | choix          | perpendiculaires et parallèles | 1    |
+| 4   | 101   | Ces droites sont-elles parallèles ?            | V1 deux droites : parallèles ou non (non : écart qui se resserre nettement) ; V2 trois dessins → lequel ? ; V3 quatre droites → laquelle est parallèle à (d1) ? (piège : une presque parallèle)                                                   | choix          | perpendiculaires et parallèles | 2    |
+| 5   | 102   | Quelle est cette figure ? (avec sa définition) | V1 figure codée (pas en vraie grandeur) → son nom le plus précis ; V2 une définition (« un quadrilatère qui a 4 angles droits ») → son nom ; V3 pièges : carré posé sur la pointe, triangle équilatéral pointe en bas                             | choix          | propriétés                     | 1    |
+| 6   | 103   | Propriétés des figures usuelles                | V1 quelle phrase est vraie ? (côtés opposés parallèles, côtés égaux, angles droits) ; V2 rectangle ou losange ABCD nommé → quel côté est parallèle à [AB] ? ; V3 triangle isocèle en A ou équilatéral → quel côté a la même longueur que [AB] ?   | choix          | propriétés                     | 2    |
+| 7   | 106   | Les axes de symétrie des figures usuelles      | V1 combien d'axes ? (carré 4, rectangle 2, losange 2, équilatéral 3, isocèle 1, quadrilatère quelconque 0) ; V2 quelle figure n'a aucun axe ? ; V3 la diagonale d'un rectangle est-elle un axe ? (piège classique ; le carré pour le « oui »)     | nombre ; choix | Symétrie axiale                | 3    |
+
+Corrigés : 098 « un petit carré = angle droit ; même nombre de traits = même longueur » ; 099 le centre, le rayon
+du centre au cercle, le diamètre = deux rayons, la corde relie deux points du cercle, l'arc est un morceau du cercle ;
+100-101 avec l'équerre (le coin) ou en mesurant l'écart à deux endroits ; 102-103 par la définition (côtés, angles) ;
+106 par pliage (les deux moitiés se superposent). Le cercle (une infinité d'axes) est laissé de côté au 106.
+
+**Question d'accès** (migration nœud + tag) : personne ne pourra lire quelque chose qu'il ne pouvait pas lire
+avant. Les modèles publiés sont lus comme les autres ; la migration ne fait que les ranger et les taguer, sur des
+nœuds qui existent déjà (pas de sous-notion neuve).
+
+**Questions à David** :
+
+1. Les 7 modèles et leurs variations : OK ?
+2. Jumeaux CM2 : niveaux « CM1 et CM2 » et tag sur les deux points pour 099/091, 100/089, 101/090 (mêmes intitulés) ?
+   Et CM1 seul pour 098, 102, 103 (le CM2 ajoute angles égaux, ⊥, // ; trapèze, pentagone, hexagone) ? Reco : oui
+   (même règle qu'au 8b pour le cm²).
+3. Écrire des modèles CM1 plutôt que d'ajouter le CM1 aux modèles CE2 (codes, axes) et 6e (cercle) qui existent ?
+   Reco : écrire. Les CE2 ne voient qu'un code à la fois et pas les triangles ; le 6e prend des rayons à virgule et
+   n'a pas l'arc.
+
+### 23 bis. Lot 8c : décisions (David, 2026-11-18)
+
+« ok » sur les trois questions du § 23 :
+
+- les 7 modèles et leurs variations ;
+- niveaux **CM1 et CM2**, tag sur les deux points pour 099/091, 100/089, 101/090 ; **CM1 seul** pour 098, 102, 103, 106 ;
+- modèles CM1 écrits (pas de CM1 ajouté aux modèles CE2 et 6e existants).
+
+### 23 ter. Lot 8c — écrit (2026-11-18)
+
+- Script `docs/wip/questions/lot-cm1-8c.py` → `scripts/questions/cm1-8c/` (7 modèles, niveaux 3, 1, 1, 2, 1, 2, 3 ;
+  grades CM1 + CM2 pour 02, 03, 04, CM1 seul sinon). Figures en catalogue, vérifiées par le script (angles droits
+  codés exacts, autres angles à plus de 14° de l'angle droit, côtés codés égaux, côtés non codés nettement
+  différents).
+- `question:specs` : 7/7 importables, 56 specs ; `sonde-figures` 300 tirages par modèle, 0 problème (elle ne sonde
+  pas les dessins d'une case choix : vus dans l'aperçu). Simulation `create-questions` contre la prod : 7 « à
+  créer », aucun homonyme.
+- Base locale (copies à une variation par modèle, 22 brouillons d'essai) : les 22 variations vues à 390 px
+  (Playwright, port 5178), sans défilement horizontal ni erreur de console.
+
+### 23 quater. Lot 8c — création en prod et rangement (2026-11-18)
+
+- #2823 mergée. `create-questions --dir scripts/questions/cm1-8c --publier` lancé par David depuis le worktree :
+  7 brouillons (6108cc4c, f988f07a, 54c0f87f, 265ed3cc, 273dce6f, 20907b18, f521ccf8), ids commités sur
+  `feat/questions-cm1-lot8c-rangement`.
+- Relevé `etat-prod-2026-11-18-cm1-8c/` (7 draft, sans nœud ni tag), script `lot-cm1-8c-rangement.py` (gabarit 8a) →
+  migration `20261118115830_questions_cm1_lot8c_rangement_tags` + fixture : 6108cc4c, 273dce6f, 20907b18 →
+  propriétés ; f988f07a → cercle ; 54c0f87f, 265ed3cc → perpendiculaires et parallèles ; f521ccf8 → Symétrie
+  axiale ; 10 tags posés (CM1-098 à 103, 106 ; CM2-091, 089, 090), aucun niveau ni statut changé, aucun nœud créé.
+- Test `questions-cm1-lot8c-rangement-tags.test.ts` : 20/20 vert ; corps neutralisé (`select 1;`) : 9 échecs,
+  7 sautés. `types:cliquet` tenu.
+- `security-auditor` : aucun finding bloquant (état « avant » remesuré au MCP : 7 draft, nœud null, 0 tag ; seule
+  migration en attente). Non bloquant : verrou bref du `disable trigger` (comme au 8a).
+
+### 23 quinquies. Lot 8c — migration passée, page à cocher (2026-11-18)
+
+- `db:migrate` lancé par David depuis le worktree (seule migration en attente). Vérifié au MCP : `20261118115830`
+  jouée ; 7 brouillons sur leur nœud, 10 tags, `updated_at` inchangé.
+- `page-a-cocher.ts --dir scripts/questions/cm1-8c` : 7 fiches (21 exemples), aucune alerte. Page :
+  https://claude.ai/artifact/Snbe4QU13vJmw7qSfzQzS9 (`verdicts`, capacité `db`, vide).

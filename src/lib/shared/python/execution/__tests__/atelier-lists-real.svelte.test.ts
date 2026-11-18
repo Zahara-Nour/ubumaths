@@ -6,12 +6,12 @@
  * niveau du module par le code exécuté : ses valeurs (200 au plus), ou ses
  * effectifs, ou ce qui l'empêche de passer.
  *
- * Importé par le barrel `$lib/shared/python` (TDZ, voir
+ * Importé par le barrel `#lib/shared/python/index.ts` (TDZ, voir
  * exercise-validation-real.svelte.test.ts).
  */
 
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
-import { BasePythonExecutor } from '$lib/shared/python';
+import { BasePythonExecutor } from '#lib/shared/python/index.ts';
 
 // =============================================================================
 // Décor

@@ -1,0 +1,311 @@
+{
+	"id": "f988f07a-5f4f-4740-9895-f2a675b16c9b",
+	"title": "Cercle, disque, rayon, diamètre, corde, arc",
+	"description": "Nommer rayon, diamètre, corde, arc ; cercle ou disque ; le cercle comme points à la même distance du centre ; rayon et diamètre (entiers)",
+	"grades": ["CM1", "CM2"],
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Voici un cercle de centre $O$. Comment s'appelle le trait rouge ?\n\n```figure\nfenetre: -4 ; 4 ; -3.8 ; 3.8\ndescription: Un cercle de centre O et un trait rouge.\n---\nO = point(0, 0, etiquette=\"bas-droite\")\ncercle(O, rayon=3, epaisseur=2)\n{{if:k==0|A = point(O, longueur=3, angle={{t}}, visible=faux)\nsegment(O, A, couleur=\"rouge\", epaisseur=4)|{{if:k==1|A = point(O, longueur=3, angle={{t}}, visible=faux)\nB = point(O, longueur=3, angle={{eval:t+180}}, visible=faux)\nsegment(A, B, couleur=\"rouge\", epaisseur=4)|{{if:k==2|A = point(O, longueur=3, angle={{t}}, visible=faux)\nB = point(O, longueur=3, angle={{eval:t+100}}, visible=faux)\nsegment(A, B, couleur=\"rouge\", epaisseur=4)|arc(O, rayon=3, debut={{t}}, fin={{eval:t+100}}, couleur=\"rouge\", epaisseur=4)}}}}}}\n```\n\n```choix\nmelanger: non\n- un rayon\n- un diamètre\n- une corde\n- un arc de cercle\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..3"
+				},
+				{
+					"name": "t",
+					"expression": "0..359"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un **rayon** va du centre à un point du cercle. Un **diamètre** relie deux points du cercle en passant par le centre. Une **corde** relie deux points du cercle. Un **arc** est un morceau du cercle lui-même.",
+					"{{if:k==0|Le trait rouge part du centre $O$ et s'arrête sur le cercle :|{{if:k==1|Le trait rouge relie deux points du cercle et passe par le centre $O$ :|{{if:k==2|Le trait rouge relie deux points du cercle sans passer par le centre :|Le trait rouge est posé sur le cercle, il en suit la courbe :}}}}}} c'est {{if:k==0|**un rayon**|{{if:k==1|**un diamètre**|{{if:k==2|**une corde**|**un arc de cercle**}}}}}}."
+				]
+			}
+		},
+		{
+			"statement": "La figure bleue est-elle un cercle ou un disque ?\n\n```figure\nfenetre: -3 ; 3 ; -2.8 ; 2.8\ndescription: Une figure bleue : {{if:k==1|un cercle (la ligne seule)|un disque (la surface coloriée et son bord)}}.\n---\nO = point(0, 0, etiquette=\"bas-droite\")\ncercle(O, rayon=2.2, couleur=\"bleu\", epaisseur=2, remplissage=\"bleu\", opacite_fond={{if:k==1|0|0.45}})\n```\n\n```choix\nmelanger: non\n- un cercle\n- un disque\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..2"
+				},
+				{
+					"name": "j",
+					"expression": "eval:k-1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{j}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le **cercle** est la ligne : tous ses points sont à la même distance du centre. Le **disque** est toute la surface à l'intérieur, avec son bord.",
+					"Ici, {{if:k==1|seule la ligne est tracée : c'est $\\textcolor{{{color:primary.0}}}{\\text{un cercle}}$.|la surface est coloriée : c'est $\\textcolor{{{color:primary.0}}}{\\text{un disque}}$.}}"
+				]
+			}
+		},
+		{
+			"statement": "Un cercle a pour centre le point $O$ et pour rayon ${{r}}~\\unit{cm}$. On sait que $OA = {{dA}}~\\unit{cm}$, $OB = {{dB}}~\\unit{cm}$ et $OC = {{dC}}~\\unit{cm}$.\n\nQuel point est {{if:q==1|sur le cercle|à l'extérieur du disque}} ?\n\n```choix\nmelanger: non\n- le point A\n- le point B\n- le point C\n```",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "1..2"
+				},
+				{
+					"name": "w",
+					"expression": "0..5"
+				},
+				{
+					"name": "r",
+					"expression": "3..8"
+				},
+				{
+					"name": "p",
+					"expression": "1..2"
+				},
+				{
+					"name": "s",
+					"expression": "1..3"
+				},
+				{
+					"name": "dA",
+					"expression": "eval:(1-min(abs(w-0),1))*(r-p)+(1-min(abs(w-1),1))*(r-p)+(1-min(abs(w-2),1))*r+(1-min(abs(w-3),1))*r+(1-min(abs(w-4),1))*(r+s)+(1-min(abs(w-5),1))*(r+s)"
+				},
+				{
+					"name": "dB",
+					"expression": "eval:(1-min(abs(w-0),1))*r+(1-min(abs(w-1),1))*(r+s)+(1-min(abs(w-2),1))*(r-p)+(1-min(abs(w-3),1))*(r+s)+(1-min(abs(w-4),1))*(r-p)+(1-min(abs(w-5),1))*r"
+				},
+				{
+					"name": "dC",
+					"expression": "eval:(1-min(abs(w-0),1))*(r+s)+(1-min(abs(w-1),1))*r+(1-min(abs(w-2),1))*(r+s)+(1-min(abs(w-3),1))*(r-p)+(1-min(abs(w-4),1))*r+(1-min(abs(w-5),1))*(r-p)"
+				},
+				{
+					"name": "u",
+					"expression": "eval:(1-min(abs(w-0),1))*1+(1-min(abs(w-1),1))*2+(1-min(abs(w-2),1))*0+(1-min(abs(w-3),1))*0+(1-min(abs(w-4),1))*2+(1-min(abs(w-5),1))*1"
+				},
+				{
+					"name": "x",
+					"expression": "eval:(1-min(abs(w-0),1))*2+(1-min(abs(w-1),1))*1+(1-min(abs(w-2),1))*2+(1-min(abs(w-3),1))*1+(1-min(abs(w-4),1))*0+(1-min(abs(w-5),1))*0"
+				},
+				{
+					"name": "z",
+					"expression": "eval:(2-q)*u+(q-1)*x"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{z}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les points **du cercle** sont tous à ${{r}}~\\unit{cm}$ de $O$ (le rayon). Plus près de $O$, on est à l'intérieur ; plus loin, on est à l'extérieur du disque.",
+					"{{if:q==1|Le point à exactement ${{r}}~\\unit{cm}$ de $O$ est sur le cercle|Le point à plus de ${{r}}~\\unit{cm}$ de $O$ est à l'extérieur du disque}} : c'est le point $\\textcolor{{{color:primary.0}}}{{{if:z==0|A|{{if:z==1|B|C}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "{{if:k==1|Le rayon d'un cercle mesure ${{r}}~\\unit{cm}$. Combien mesure son diamètre ?\n\nDiamètre : $?~\\unit{cm}$|Le diamètre d'un cercle mesure ${{eval:2*r}}~\\unit{cm}$. Combien mesure son rayon ?\n\nRayon : $?~\\unit{cm}$}}",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..2"
+				},
+				{
+					"name": "r",
+					"expression": "2..9"
+				},
+				{
+					"name": "y",
+					"expression": "eval:(3-k)*r"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{y}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le **diamètre** traverse le cercle en passant par le centre : c'est deux rayons bout à bout.",
+					"{{if:k==1|$2 \\times {{r}} = \\textcolor{{{color:primary.0}}}{{{y}}~\\unit{cm}}$.|${{eval:2*r}} \\div 2 = \\textcolor{{{color:primary.0}}}{{{y}}~\\unit{cm}}$.}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Corde",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"t": "40"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : corde dite diamètre",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"t": "40"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Arc",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"t": "200"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Disque",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"j": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : disque dit cercle",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"j": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Sur le cercle : B (w = 0)",
+			"variationIndex": 2,
+			"variables": {
+				"q": "1",
+				"w": "0",
+				"r": "5",
+				"p": "1",
+				"s": "2",
+				"dA": "4",
+				"dB": "5",
+				"dC": "7",
+				"u": "1",
+				"x": "2",
+				"z": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Dehors : A (w = 5)",
+			"variationIndex": 2,
+			"variables": {
+				"q": "2",
+				"w": "5",
+				"r": "5",
+				"p": "1",
+				"s": "2",
+				"dA": "7",
+				"dB": "5",
+				"dC": "4",
+				"u": "1",
+				"x": "0",
+				"z": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le point dedans",
+			"variationIndex": 2,
+			"variables": {
+				"q": "1",
+				"w": "0",
+				"r": "5",
+				"p": "1",
+				"s": "2",
+				"dA": "4",
+				"dB": "5",
+				"dC": "7",
+				"u": "1",
+				"x": "2",
+				"z": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Rayon 7 → diamètre 14",
+			"variationIndex": 3,
+			"variables": {
+				"k": "1",
+				"r": "7",
+				"y": "14"
+			},
+			"answers": ["14"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Diamètre 12 → rayon 6",
+			"variationIndex": 3,
+			"variables": {
+				"k": "2",
+				"r": "6",
+				"y": "6"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le double au lieu de la moitié",
+			"variationIndex": 3,
+			"variables": {
+				"k": "2",
+				"r": "6",
+				"y": "6"
+			},
+			"answers": ["24"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

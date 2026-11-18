@@ -3,7 +3,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { evaluationTraceOf } from '$lib/server/evaluation-trace';
+import { evaluationTraceOf } from '#lib/server/evaluation-trace.ts';
 
 describe('evaluationTraceOf — Contrôle blanc (chrono par question)', () => {
 	const base = { form: 'interactive' as const, delaySeconds: 20, timeLimitSeconds: null };

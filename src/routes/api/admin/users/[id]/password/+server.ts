@@ -18,11 +18,11 @@
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
-import { requireRoles } from '$lib/server/middleware/auth';
-import { verifyTeacherStudent } from '$lib/server/middleware/student-access';
-import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
-import { setProvisionalPassword } from '$lib/server/child-password';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import { verifyTeacherStudent } from '#lib/server/middleware/student-access.ts';
+import { createServiceRoleClient } from '#lib/server/serviceRoleClient.ts';
+import { setProvisionalPassword } from '#lib/server/child-password.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/admin/users/[id]/password/+server');
 

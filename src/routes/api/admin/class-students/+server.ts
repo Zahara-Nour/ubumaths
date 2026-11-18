@@ -1,8 +1,8 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { classStudentsQuerySchema } from '$lib/server/validation/admin';
-import { requireAdmin } from '$lib/server/middleware/auth';
-import { createServerLogger } from '$lib/utils/logger';
+import { classStudentsQuerySchema } from '#lib/server/validation/admin.ts';
+import { requireAdmin } from '#lib/server/middleware/auth.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/admin/class-students/+server');
 

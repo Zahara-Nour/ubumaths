@@ -3,7 +3,11 @@
  */
 import { describe, it, expect } from 'vitest';
 import { resolveTestLaunch } from '../test-launch';
-import { ANCIEN_LIEN_MESSAGE, encodeSeriesParam, SERIES_LINK_PARAM } from '$lib/validation/series';
+import {
+	ANCIEN_LIEN_MESSAGE,
+	encodeSeriesParam,
+	SERIES_LINK_PARAM
+} from '#lib/validation/series.ts';
 
 const ITEM = {
 	templateId: '11111111-1111-4111-8111-111111111111',

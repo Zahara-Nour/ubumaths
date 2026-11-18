@@ -17,10 +17,10 @@
 	connecté (échéance, cases à cocher).
 -->
 <script lang="ts">
-	import * as Card from '$lib/components/ui/card';
-	import { Button } from '$lib/components/ui/button';
-	import { ChapterSeriesCard, DocumentCard } from '$lib/components/cours';
-	import { getChapterColorClasses, type ChapterColor } from '$lib/types/chapters';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { ChapterSeriesCard, DocumentCard } from '#lib/components/cours/index.ts';
+	import { getChapterColorClasses, type ChapterColor } from '#lib/types/chapters.ts';
 	import { BookMarked, FileText, Target } from '@lucide/svelte';
 	import type { PageData } from './$types';
 

@@ -20,12 +20,12 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import { toBuddyState, type BuddyState } from '$lib/types/buddy';
-import { isWelcomeBackPending, resetLostConstance } from '$lib/server/buddy-queries';
-import { loadWeekMoment, type WeekMoment } from '$lib/server/buddy-weeks';
-import { constanceReset, utcDay } from '$lib/utils/buddy-constance';
-import { createServerLogger } from '$lib/utils/logger';
+import type { Database } from '#lib/types/database.ts';
+import { toBuddyState, type BuddyState } from '#lib/types/buddy.ts';
+import { isWelcomeBackPending, resetLostConstance } from '#lib/server/buddy-queries.ts';
+import { loadWeekMoment, type WeekMoment } from '#lib/server/buddy-weeks.ts';
+import { constanceReset, utcDay } from '#lib/utils/buddy-constance.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 // Types
 export interface BuddyPresence {

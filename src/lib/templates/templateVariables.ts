@@ -9,7 +9,7 @@
  * - Example values for previews
  */
 
-import type { TemplateVariable, TriggerType } from '$lib/types/messageTemplates';
+import type { TemplateVariable, TriggerType } from '#lib/types/messageTemplates.ts';
 
 // =====================================================
 // Global Variables (available in all templates)

@@ -6,9 +6,12 @@ import svelte from 'eslint-plugin-svelte';
 import { defineConfig } from 'eslint/config';
 import globals from 'globals';
 import ts from 'typescript-eslint';
-import svelteConfig from './svelte.config.js';
+import { loadConfig } from '@sveltejs/load-config';
 import requireZodValidation from './eslint-rules/require-zod-validation.js';
 import requireSupabaseErrorCheck from './eslint-rules/require-supabase-error-check.js';
+
+// SvelteKit 3 : la config Svelte vit dans les options du plugin `sveltekit()` de vite.config.ts
+const svelteConfig = (await loadConfig('./', { traverse: false }))?.config;
 
 const gitignorePath = fileURLToPath(new URL('./.gitignore', import.meta.url));
 
@@ -91,7 +94,7 @@ export default defineConfig(
 		}
 	},
 	// La forme canonique d'une expression a un nom : `canonicalForm`
-	// (`$lib/mathAST/normal/canonical-form`). Écrit en ligne, l'appel se
+	// (`#lib/mathAST/normal/canonical-form.ts`). Écrit en ligne, l'appel se
 	// recopie sans qu'on sache qu'il sert à comparer ou à calculer, pas à
 	// montrer (ADR 0032). Règle AST : les appels écrits sur plusieurs lignes
 	// sont vus aussi.
@@ -105,7 +108,7 @@ export default defineConfig(
 					selector:
 						"CallExpression[callee.name='denormalize'] > CallExpression.arguments[callee.name='normalize']",
 					message:
-						'Écrire `canonicalForm(…)` (`$lib/mathAST/normal/canonical-form`) au lieu de `denormalize(normalize(…))`.'
+						'Écrire `canonicalForm(…)` (`#lib/mathAST/normal/canonical-form.ts`) au lieu de `denormalize(normalize(…))`.'
 				}
 			]
 		}

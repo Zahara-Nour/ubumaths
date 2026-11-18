@@ -8,9 +8,9 @@ import {
 	getEvaluationQuestionErrors,
 	type QuestionErrorAnswer
 } from '../evaluation-question-errors';
-import { QUESTION_ERRORS_MESSAGE } from '$lib/types/evaluation-breakdown';
-import type { QuestionInstance } from '$lib/questions/types';
-import type { DetailedVerdict, StudentAnswer } from '$lib/utils/answer-validator';
+import { QUESTION_ERRORS_MESSAGE } from '#lib/types/evaluation-breakdown.ts';
+import type { QuestionInstance } from '#lib/questions/types.ts';
+import type { DetailedVerdict, StudentAnswer } from '#lib/utils/answer-validator.ts';
 import { createFakeSupabase, type Result } from './helpers/fake-supabase';
 import { GRADING_BUDGET_EXCEEDED_FEEDBACK } from '../grading-budget';
 

@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import { goto } from '$app/navigation';
-	import NotebookView from '$lib/components/notebook/NotebookView.svelte';
-	import ShareNotebookDialog from '$lib/components/notebook/ShareNotebookDialog.svelte';
-	import { Button } from '$lib/components/ui/button';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
+	import NotebookView from '#lib/components/notebook/NotebookView.svelte';
+	import ShareNotebookDialog from '#lib/components/notebook/ShareNotebookDialog.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
 	import { Share2, BarChart3, Eye, Pencil } from '@lucide/svelte';
 
 	let { data } = $props();

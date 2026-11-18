@@ -2,7 +2,7 @@
 // Author: Claude Code
 // Date: 2025-10-15
 
-import type { GamePlayer, ElementPyrs } from '$lib/types/game';
+import type { GamePlayer, ElementPyrs } from '#lib/types/game.ts';
 
 class PlayerStore {
 	private _player = $state<GamePlayer | null>(null);

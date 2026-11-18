@@ -18,7 +18,7 @@ import { formatInterval } from '../format';
 import { toCustom } from '../../custom-generator';
 import { findZeros } from '../preimage';
 import { compareNumericNodes } from '../../eval/compare-numeric';
-import { endpointToNumber } from '$lib/math/intervals/endpoint';
+import { endpointToNumber } from '#lib/math/intervals/endpoint.ts';
 
 /**
  * Tolerance for comparing excluded points in student vs correct domain.

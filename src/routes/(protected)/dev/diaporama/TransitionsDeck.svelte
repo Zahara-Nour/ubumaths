@@ -3,7 +3,7 @@
 	Reprise de `/slides/test-transitions`.
 -->
 <script lang="ts">
-	import { Deck, Slide } from '$lib/slides';
+	import { Deck, Slide } from '#lib/slides/index.ts';
 
 	let currentSlide = $state({ h: 0, v: 0 });
 

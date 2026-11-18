@@ -32,15 +32,15 @@
 		OPERATION_ARIA_LABEL,
 		OPERATION_UNAVAILABLE,
 		type OperationNode
-	} from '$lib/ubumark/types/operation';
-	import { buildOperationScene, type OperationMark } from '$lib/ubumark/utils/operation-scene';
+	} from '#lib/ubumark/types/operation.ts';
+	import { buildOperationScene, type OperationMark } from '#lib/ubumark/utils/operation-scene.ts';
 	import {
 		commaFromAnswer,
 		digitsFromAnswer,
 		readOperationAnswer,
 		wrongComma,
 		wrongResultDigits
-	} from '$lib/ubumark/utils/operation-answer';
+	} from '#lib/ubumark/utils/operation-answer.ts';
 	import { readAuthoringErrors } from '../authoring-errors';
 	import OperationDivision from './OperationDivision.svelte';
 	import Self from './Operation.svelte';

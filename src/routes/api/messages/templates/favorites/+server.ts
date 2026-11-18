@@ -9,10 +9,10 @@
  */
 
 import { json, error } from '@sveltejs/kit';
-import { requireAuth } from '$lib/server/middleware/auth';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
 import type { RequestHandler } from './$types';
-import { uuidSchema, validateRequest } from '$lib/server/validation';
-import { createServerLogger } from '$lib/utils/logger';
+import { uuidSchema, validateRequest } from '#lib/server/validation/index.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/messages/templates/favorites/+server');
 

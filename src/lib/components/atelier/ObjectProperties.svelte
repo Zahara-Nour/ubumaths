@@ -1,5 +1,5 @@
 <script lang="ts">
-	import '$lib/utils/mathlive-styles';
+	import '#lib/utils/mathlive-styles.ts';
 	/**
 	 * Le panneau « Propriétés » d'un objet, déplié sous sa carte (chantier
 	 * `docs/archive/wip/atelier-proprietes-progress.md`, validé par David le 2026-10-23).
@@ -12,18 +12,18 @@
 	 * Ouvert par « Propriétés » ou « Renommer » (le focus va alors au nom) ;
 	 * Échap ou ✕ le referme et rend le focus au menu de la carte.
 	 */
-	import type { AtelierObject } from '$lib/atelier/types';
-	import { isFigureObject, isFunction, isPoint, isSequence, isValue } from '$lib/atelier/types';
-	import { useAtelier } from '$lib/atelier/context';
-	import { displayName } from '$lib/atelier/names';
-	import { propertiesOf } from '$lib/atelier/properties';
-	import { forMathlive } from '$lib/atelier/mathfield';
+	import type { AtelierObject } from '#lib/atelier/types.ts';
+	import { isFigureObject, isFunction, isPoint, isSequence, isValue } from '#lib/atelier/types.ts';
+	import { useAtelier } from '#lib/atelier/context.ts';
+	import { displayName } from '#lib/atelier/names.ts';
+	import { propertiesOf } from '#lib/atelier/properties.ts';
+	import { forMathlive } from '#lib/atelier/mathfield.ts';
 	import { convertLatexToMarkup } from 'mathlive';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import { X } from '@lucide/svelte';
-	import { Input } from '$lib/components/ui/input';
-	import { Button } from '$lib/components/ui/button';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
 	import FigureStyleSettings from './FigureStyleSettings.svelte';
 	import CurveStyleSettings from './CurveStyleSettings.svelte';
 	import SliderSettings from './SliderSettings.svelte';

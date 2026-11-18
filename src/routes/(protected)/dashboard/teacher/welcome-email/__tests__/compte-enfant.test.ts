@@ -14,13 +14,13 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 const TEACHER_ID = '550e8400-e29b-41d4-a716-446655440001';
 const STUDENT_ID = '550e8400-e29b-41d4-a716-446655440050';
 
-vi.mock('$lib/server/middleware/auth', () => ({
+vi.mock('#lib/server/middleware/auth.ts', () => ({
 	requireRole: vi.fn().mockResolvedValue({ user: { id: TEACHER_ID } })
 }));
-vi.mock('$lib/server/middleware/student-access', () => ({
+vi.mock('#lib/server/middleware/student-access.ts', () => ({
 	verifyTeacherStudent: vi.fn().mockResolvedValue(true)
 }));
-vi.mock('$lib/server/email/brevo', () => ({ isBrevoConfigured: () => true }));
+vi.mock('#lib/server/email/brevo.ts', () => ({ isBrevoConfigured: () => true }));
 
 function chain(result: unknown) {
 	const c: Record<string, unknown> = {};

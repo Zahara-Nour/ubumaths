@@ -1,22 +1,22 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import * as Card from '$lib/components/ui/card';
-	import { Button } from '$lib/components/ui/button';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
-	import { Textarea } from '$lib/components/ui/textarea';
-	import MySelect from '$lib/components/MySelect.svelte';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import { Textarea } from '#lib/components/ui/textarea/index.ts';
+	import MySelect from '#lib/components/MySelect.svelte';
 	import { Clock, Minus, Plus, Trash2 } from '@lucide/svelte';
-	import TooShortMark from '$lib/components/series/TooShortMark.svelte';
-	import ObservedDelayHint from '$lib/components/series/ObservedDelayHint.svelte';
-	import { effectiveDelay, observedSuggestion, tooShortAt } from '$lib/types/duration-signals';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import { submitAction } from '$lib/utils/form-action';
-	import { getGradeSelectItems } from '$lib/utils/grades';
-	import { MarkdownRenderer } from '$lib/components/markdown';
-	import { convertLegacyLatexToMarkdown } from '$lib/utils/latex-syntax-adapter';
-	import type { SeriesItem } from '$lib/validation/series';
+	import TooShortMark from '#lib/components/series/TooShortMark.svelte';
+	import ObservedDelayHint from '#lib/components/series/ObservedDelayHint.svelte';
+	import { effectiveDelay, observedSuggestion, tooShortAt } from '#lib/types/duration-signals.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import { submitAction } from '#lib/utils/form-action.ts';
+	import { getGradeSelectItems } from '#lib/utils/grades.ts';
+	import { MarkdownRenderer } from '#lib/components/markdown/index.ts';
+	import { convertLegacyLatexToMarkdown } from '#lib/utils/latex-syntax-adapter.ts';
+	import type { SeriesItem } from '#lib/validation/series.ts';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();

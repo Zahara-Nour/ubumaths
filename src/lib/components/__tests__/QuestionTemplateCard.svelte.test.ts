@@ -8,7 +8,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import QuestionTemplateCard from '../QuestionTemplateCard.svelte';
-import type { QuestionTemplate } from '$lib/questions/types';
+import type { QuestionTemplate } from '#lib/questions/types.ts';
 // Modèle réel relu (Entiers #139)
 import fixture from '../../../../data/relecture/entiers/139.json';
 

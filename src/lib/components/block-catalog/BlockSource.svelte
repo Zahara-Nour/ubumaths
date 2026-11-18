@@ -3,8 +3,8 @@
 -->
 <script lang="ts">
 	import { Check, Copy } from '@lucide/svelte';
-	import { Button } from '$lib/components/ui/button';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 
 	let { source }: { source: string } = $props();
 

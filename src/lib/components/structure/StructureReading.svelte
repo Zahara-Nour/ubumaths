@@ -2,7 +2,7 @@
 	Une lecture en français
 	=======================
 
-	Rend une lecture de `$lib/mathAST/structure` (`readingOf`) : le texte de
+	Rend une lecture de `#lib/mathAST/structure/index.ts` (`readingOf`) : le texte de
 	liaison tel quel, les formules en `math-span`, les mots du dictionnaire en
 	mots cliquables (`LexiconTerm` : la même fiche que dans un énoncé, au niveau
 	posé par la page). Une clé absente du dictionnaire : le mot sans lien.
@@ -17,10 +17,10 @@
 	sans arrêt clavier ni sens inverse. MathLive est chargé par la page.
 -->
 <script lang="ts">
-	import { readLexicon } from '$lib/components/markdown/lexicon-context';
-	import LexiconTerm from '$lib/components/markdown/nodes/LexiconTerm.svelte';
-	import { lexiconRuntime } from '$lib/lexicon/runtime-store.svelte';
-	import type { Reading, ReadingSegment } from '$lib/mathAST/structure';
+	import { readLexicon } from '#lib/components/markdown/lexicon-context.ts';
+	import LexiconTerm from '#lib/components/markdown/nodes/LexiconTerm.svelte';
+	import { lexiconRuntime } from '#lib/lexicon/runtime-store.svelte.ts';
+	import type { Reading, ReadingSegment } from '#lib/mathAST/structure/index.ts';
 
 	// Types
 	interface Props {

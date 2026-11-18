@@ -3,10 +3,10 @@ import { render } from 'vitest-browser-svelte';
 import QuestionCard from '../QuestionCard.svelte';
 import FlashCard from '../FlashCard.svelte';
 import CourseCardBack from '../CourseCardBack.svelte';
-import type { QuestionInstance } from '$lib/questions/types';
-import type { AnswerData } from '$lib/types/question-display';
-import { resolvedMarkdown, templateMarkdown } from '$lib/ubumark';
-import { generateInstance } from '$lib/questions/generator/instance-generator';
+import type { QuestionInstance } from '#lib/questions/types.ts';
+import type { AnswerData } from '#lib/types/question-display.ts';
+import { resolvedMarkdown, templateMarkdown } from '#lib/ubumark/index.ts';
+import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
 
 /**
  * Carte de cours (#617) : recto = énoncé, verso = correction, sans case.

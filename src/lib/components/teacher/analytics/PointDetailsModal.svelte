@@ -14,17 +14,17 @@
 -->
 
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import * as Tabs from '$lib/components/ui/tabs';
-	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
-	import QuestionErrorsPanel from '$lib/components/assessments/QuestionErrorsPanel.svelte';
+	import { lore } from '#lib/config/lore.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import * as Tabs from '#lib/components/ui/tabs/index.ts';
+	import InlineMarkdown from '#lib/components/markdown/InlineMarkdown.svelte';
+	import QuestionErrorsPanel from '#lib/components/assessments/QuestionErrorsPanel.svelte';
 	import {
 		POINT_ERRORS_EMPTY,
 		POINT_ERRORS_MESSAGE,
 		type ClassPointErrors,
 		type PointTemplateErrors
-	} from '$lib/types/point-errors';
+	} from '#lib/types/point-errors.ts';
 
 	interface StudentEntry {
 		student_id: string;

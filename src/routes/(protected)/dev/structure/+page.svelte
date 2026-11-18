@@ -6,10 +6,10 @@
 	expression, on voit encadrée la plus petite sous-expression sous le pointeur
 	(nombre, terme, facteur, parenthèses, somme…), et on déplace un terme dans sa
 	somme, un facteur dans son produit, un membre d'une égalité. Une seule formule,
-	`StructureField` (`$lib/components/structure`) : clic court pour écrire, appui
+	`StructureField` (`#lib/components/structure`) : clic court pour écrire, appui
 	puis mouvement pour déplacer, lecture en français, message « 6e ou avant ».
 
-	La structure et sa lecture en français viennent de `$lib/mathAST/structure`.
+	La structure et sa lecture en français viennent de `#lib/mathAST/structure/index.ts`.
 	Chaque expression du corpus est survolable (`StructureFormula.svelte`), avec la
 	lecture courte de la sous-expression survolée.
 
@@ -18,18 +18,22 @@
 	comme avant les longueurs. Le réglage vaut aussi pour le corpus.
 -->
 <script lang="ts">
-	import '$lib/utils/mathlive-styles';
+	import '#lib/utils/mathlive-styles.ts';
 	import 'mathlive';
-	import { Button } from '$lib/components/ui/button';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
 	// Lecture seule : le corpus des tests de parité, une saisie par ligne
-	import corpusText from '$lib/mathAST/structure/__tests__/fixtures/corpus-saisies.txt?raw';
-	import type { CapitalPairs } from '$lib/mathAST/parser';
-	import { readingOf, structureFromLatex, type StructureResult } from '$lib/mathAST/structure';
-	import StructureField from '$lib/components/structure/StructureField.svelte';
-	import StructureReading from '$lib/components/structure/StructureReading.svelte';
+	import corpusText from '#lib/mathAST/structure/__tests__/fixtures/corpus-saisies.txt?raw';
+	import type { CapitalPairs } from '#lib/mathAST/parser/index.ts';
+	import {
+		readingOf,
+		structureFromLatex,
+		type StructureResult
+	} from '#lib/mathAST/structure/index.ts';
+	import StructureField from '#lib/components/structure/StructureField.svelte';
+	import StructureReading from '#lib/components/structure/StructureReading.svelte';
 	import StructureFormula from './StructureFormula.svelte';
-	import { provideStructureLexicon } from '$lib/components/structure/structure-lexicon.svelte';
+	import { provideStructureLexicon } from '#lib/components/structure/structure-lexicon.svelte.ts';
 
 	// Types
 	interface Example {

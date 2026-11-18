@@ -17,15 +17,15 @@
 	@module components/markdown/nodes/ProbabilityTree
 -->
 <script lang="ts">
-	import '$lib/utils/mathlive-styles';
+	import '#lib/utils/mathlive-styles.ts';
 	import 'mathlive';
 	import type {
 		ProbabilityTreeNode,
 		ProbTreeNode,
 		ProbTreeBranch
-	} from '$lib/ubumark/types/probability-tree';
-	import { toLocaleDecimal } from '$lib/utils/french-math';
-	import { probTreeLabelLatex } from '$lib/ubumark/utils/probtree-label';
+	} from '#lib/ubumark/types/probability-tree.ts';
+	import { toLocaleDecimal } from '#lib/utils/french-math.ts';
+	import { probTreeLabelLatex } from '#lib/ubumark/utils/probtree-label.ts';
 	import { readContentLocale } from '../content-locale';
 
 	interface Props {

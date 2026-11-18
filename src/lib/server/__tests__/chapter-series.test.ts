@@ -11,7 +11,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { toChapterSeries, isEvaluationUnfinished } from '../chapter-series';
-import { resolveTestLaunch } from '$lib/utils/test-launch';
+import { resolveTestLaunch } from '#lib/utils/test-launch.ts';
 
 const ITEMS = [
 	{ templateId: '11111111-1111-4111-8111-111111111111', quantity: 4, delay: 20 },

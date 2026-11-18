@@ -118,7 +118,7 @@ export const orientation = new OrientationStore();
  *
  * @example
  * ```typescript
- * import { resetBaseOrientation } from '$lib/stores/holo-card.svelte';
+ * import { resetBaseOrientation } from '#lib/stores/holo-card.svelte.ts';
  *
  * // When user opens the holographic card view
  * resetBaseOrientation();

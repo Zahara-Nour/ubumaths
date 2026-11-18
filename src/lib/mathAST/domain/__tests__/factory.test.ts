@@ -42,9 +42,9 @@ import {
 	EMPTY_DOMAIN,
 	UNIVERSAL_DOMAIN
 } from '../factory';
-import { isNumber, isNegativeInfinity, isPositiveInfinity } from '$lib/mathAST/guards';
-import { literalNumberValue } from '$lib/mathAST/common/numeric';
-import { number, opposite } from '$lib/mathAST/factory';
+import { isNumber, isNegativeInfinity, isPositiveInfinity } from '#lib/mathAST/guards.ts';
+import { literalNumberValue } from '#lib/mathAST/common/numeric.ts';
+import { number, opposite } from '#lib/mathAST/factory.ts';
 
 describe('Endpoint factories', () => {
 	describe('endpoint()', () => {

@@ -3,8 +3,8 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { buildHorlogeScene, HORLOGE_VIEW } from '$lib/ubumark/utils/horloge-scene';
-import type { HorlogeSpec } from '$lib/ubumark/types/horloge';
+import { buildHorlogeScene, HORLOGE_VIEW } from '#lib/ubumark/utils/horloge-scene.ts';
+import type { HorlogeSpec } from '#lib/ubumark/types/horloge.ts';
 
 const SPEC: HorlogeSpec = {
 	times: [{ hours: 9, minutes: 0 }],

@@ -19,10 +19,10 @@ const setSeriesForm = vi.fn();
 const unlinkSeries = vi.fn();
 const findOngoingEvaluation = vi.fn();
 
-vi.mock('$lib/server/middleware/auth', () => ({
+vi.mock('#lib/server/middleware/auth.ts', () => ({
 	requireRole: vi.fn(async () => ({ user: { id: 'prof' } }))
 }));
-vi.mock('$lib/server/chapter-series', () => ({
+vi.mock('#lib/server/chapter-series.ts', () => ({
 	linkSeries: (...args: unknown[]) => linkSeries(...args),
 	setSeriesForm: (...args: unknown[]) => setSeriesForm(...args),
 	unlinkSeries: (...args: unknown[]) => unlinkSeries(...args),

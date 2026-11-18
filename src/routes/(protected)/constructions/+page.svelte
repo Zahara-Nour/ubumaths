@@ -7,11 +7,11 @@
 
 <script lang="ts">
 	import type { PageData } from './$types';
-	import { Button } from '$lib/components/ui/button';
-	import { Badge } from '$lib/components/ui/badge';
-	import * as Card from '$lib/components/ui/card';
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import * as DropdownMenu from '#lib/components/ui/dropdown-menu/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import { invalidateAll } from '$app/navigation';
 	import {
 		Plus,

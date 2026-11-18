@@ -16,8 +16,8 @@ import { describe, it, expect, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { page } from 'vitest/browser';
 import VariationTable from '../VariationTable.svelte';
-import { parseVariationTableContent } from '$lib/ubumark/parser/variation-table-parser';
-import type { VariationTableNode } from '$lib/ubumark/types/variation-table';
+import { parseVariationTableContent } from '#lib/ubumark/parser/variation-table-parser.ts';
+import type { VariationTableNode } from '#lib/ubumark/types/variation-table.ts';
 
 // Variables
 let mains: HTMLElement[] = [];

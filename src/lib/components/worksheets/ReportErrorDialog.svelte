@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import { Button } from '$lib/components/ui/button';
-	import { Label } from '$lib/components/ui/label';
-	import RichTextEditor from '$lib/components/rich-text/RichTextEditor.svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import { sanitizePlainText } from '$lib/utils/sanitize';
-	import type { StudentErrorReportView } from '$lib/types/worksheets';
+	import { lore } from '#lib/config/lore.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import RichTextEditor from '#lib/components/rich-text/RichTextEditor.svelte';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import { sanitizePlainText } from '#lib/utils/sanitize.ts';
+	import type { StudentErrorReportView } from '#lib/types/worksheets.ts';
 
 	interface Props {
 		open: boolean;

@@ -15,7 +15,7 @@
 import { z } from 'zod';
 import type { CellValue } from './formula';
 import { columnLetter, columnOfLetter, GRID_COLUMNS, GRID_ROWS } from './grid';
-import { groupNumberText } from '$lib/mathAST/digit-grouping';
+import { groupNumberText } from '#lib/mathAST/digit-grouping.ts';
 
 // =============================================================================
 // Types

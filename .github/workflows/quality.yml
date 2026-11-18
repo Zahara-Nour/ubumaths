@@ -210,9 +210,23 @@ jobs:
       # --cache-strategy content (NOT the default mtime): CI checkouts rewrite
       # every file's mtime, so the default strategy treats all files as changed
       # and the cache is useless. Hashing content is stable across checkouts.
+      #
+      # Sur une PR, seuls ses fichiers de code et les .svelte qui importent un module
+      # qu'elle change sont relus (scripts/ci-lint-fichiers.sh, qui dit pourquoi) : tout
+      # l'arbre prenait 19 à 24 min par PR. Tout l'arbre quand la PR touche la config
+      # ESLint, les dépendances, les ignores, un tsconfig, un .d.ts… ; le filet est
+      # lint-nocturne.yml.
       - name: Run ESLint
         if: needs.version.outputs.contenu != 'true'
-        run: pnpm eslint . --cache --cache-strategy content
+        env:
+          GITHUB_EVENT_NAME: ${{ github.event_name }}
+        run: |
+          bash scripts/ci-lint-fichiers.sh > "$RUNNER_TEMP/eslint-fichiers.txt"
+          if [ ! -s "$RUNNER_TEMP/eslint-fichiers.txt" ]; then
+            echo "Aucun fichier de code dans la PR : ESLint n'a rien à relire."
+            exit 0
+          fi
+          xargs -d '\n' pnpm eslint --cache --cache-strategy content --no-warn-ignored < "$RUNNER_TEMP/eslint-fichiers.txt"
 
   typecheck:
     name: Type Check

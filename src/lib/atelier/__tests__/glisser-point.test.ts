@@ -10,7 +10,7 @@
 import { describe, it, expect } from 'vitest';
 import { Atelier } from '../atelier.svelte';
 import { AtelierFigure, syncFigure } from '../figure-sync';
-import { geoToNumber } from '$lib/geometry-core/compute/to-number';
+import { geoToNumber } from '#lib/geometry-core/compute/to-number.ts';
 
 type Entry = [kind: 'value' | 'point' | 'curve' | 'function', name: string, definition: string];
 
