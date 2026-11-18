@@ -8,7 +8,7 @@
  *
  * Tourne dans un vrai navigateur, frappe réelle au clavier.
  */
-import { describe, it, expect, afterEach } from 'vitest';
+import { describe, it, expect, afterEach, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import type { MathfieldElement } from 'mathlive';
@@ -41,12 +41,14 @@ describe('MathPrompt — saisie du logarithme décimal', () => {
 		expect((field.inlineShortcuts as Record<string, unknown>).log).toBe('\\log');
 	});
 
-	it('« log(7) » tapé au clavier donne \\log(7)', async () => {
+	it('« log(7) » tapé donne \\log(7)', async () => {
 		const field = await champ();
+		// VRAIE frappe (la frappe simulée de MathLive, `typedText`, ne déclenche pas les
+		// raccourcis). Focus attendu ET curseur posé dans la case avant de taper : en CI, une
+		// frappe partie trop tôt perdait le « l » ou n'arrivait pas dans la case.
 		field.focus();
-		// En CI, une frappe partie avant le focus de la case perdait le « l » (« og(7) »)
-		await expect.poll(() => field.hasFocus()).toBe(true);
-		await new Promise((resolve) => requestAnimationFrame(() => resolve(null)));
+		await vi.waitFor(() => expect(field.hasFocus()).toBe(true));
+		field.executeCommand('moveToNextPlaceholder');
 		await userEvent.keyboard('log(7)');
 		await expect
 			.poll(() => field.getPromptValue('0'))
