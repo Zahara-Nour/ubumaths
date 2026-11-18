@@ -19,8 +19,10 @@ _Mis à jour le 2026-11-17, phase 0, rien n'est codé ; question 5 close._
 - **Tranché aussi (5d, 2026-11-17)** : le Mathou familier donne un petit coup de main qui grandit avec son stade.
 - **Tranché aussi (5e, 2026-11-17)** : 3 Bêtes par jour, 5 au plus ; celles des notions à retravailler restent jusqu'à leur défaite ; une grosse Bête par semaine. **La question 5 est close.**
 - **Fait (2026-11-17)** : § « Ce qu'on garde de Navadra » relue et validée (indices : le Mathou seul ; tutoriel : Bordure ; chiffres : ceux de Navadra).
-- **Prochaine action** : relire avec David § « Idées d'ajouts » (non validée) ; puis écrire les comportements de phase 0 (nominal, limite, erreur) et le découpage de la v1. Les propositions sont dans § « À trancher ».
-- **En attente de David** : rien de posé. La question 3 (public) est réglée : du primaire au lycée.
+- **Fait aussi** : § « Idées d'ajouts » relue (Mathou réveillé par un combat ; Bataille de Bataillon et grande bataille contre le Czar après la v1).
+- **Phase 0 de la v1 rédigée (2026-11-18)** : page https://claude.ai/artifact/3wLhJbVxMdQfWwPx7qzD5g (parcours, cas limites, problèmes, 7 questions, découpage en 8 PR). À verser dans ce journal une fois validée.
+- **Prochaine action** : recevoir les réponses de David aux 7 questions de la page, puis verser la phase 0 validée dans ce journal.
+- **En attente de David** : les 7 questions de la page (mage après la v1 ? Mathou choisi ? défaite sans perte ? pas de chrono ? QCM et une case seulement ? fiches de Bêtes pour l'IA d'image ? rien de neuf côté prof ?) et les 2 points « proposé » (un sort par Province au départ ; Mathou endormi sans aide).
 - **Façon de poser** : David n'a pas compris la 5a posée en termes techniques. Poser chaque point **en mots simples, avec un exemple**, sans noms de tables ni de colonnes.
 - **Pièges en cours** :
   - L'analyse du jeu d'origine est dans `extern/navadra-jeu/CLAUDE.md`, un fichier **non versionné**. Ce journal en reprend l'essentiel.
@@ -148,14 +150,19 @@ _Mis à jour le 2026-11-17, phase 0, rien n'est codé ; question 5 close._
 
 **Retiré (périmé par les décisions de David) :** l'équipe de 3 Mathoux combattants et « les Mathoux sont les sorts » (remplacés par l'avatar, son Mathou familier et les sorts gagnés par la maîtrise des notions) ; les faiblesses entre Provinces façon éléments (remplacées par la vulnérabilité de la Bête à la notion à travailler) ; pyrs et grimoire.
 
-## Idées d'ajouts (proposition)
+## Idées d'ajouts (relues avec David le 2026-11-17)
 
-1. Gagner avec un Mathou en sieste vaut **révision** : il se réveille.
-2. Un point « à remédier » fait venir le monstre de son erreur : la remédiation se fait en jouant.
-3. **Bataille de Bataillon** : le prof lance un adversaire commun à la classe, avec des PV partagés sur une semaine. Coopératif, dans l'école seulement.
-4. **Campagne des 6 Provinces**, avec une bataille de fin menée par le gouverneur. La dernière bataille se joue au palais d'Hiver, pendant la « Mobilisation Générale » avant le brevet ou le bac.
-5. Les Palotins donnent des indices selon leur caractère : Quatrezoneilles (relis l'énoncé), Mousched-Gogh (fais une figure), Giron (reviens aux bases).
-6. Gidouilles versées par une RPC serveur plafonnée, sur le modèle de `record_game_reward` et `gidouilles_activity`.
+**Validé pour la v1 :**
+
+- **Un combat réveille un Mathou en sieste** : réussir en combat des questions de la notion d'un Mathou endormi vaut révision, et il se réveille (choix de David ; suite de la 5a).
+- **Gidouilles versées par une RPC serveur plafonnée**, sur le modèle de `record_game_reward` et `gidouilles_activity` (5b).
+
+**Plus tard, pas en v1 :**
+
+- **Bataille de Bataillon** : le prof lance une Bête commune à la classe, avec des PV partagés sur une semaine. Coopératif, dans l'école seulement (déjà renvoyé à plus tard avec le mode classe).
+- **Grande bataille contre le Czar** : à la « Mobilisation Générale », avant le brevet ou le bac, au palais d'Hiver (choix de David, 2026-11-17). La v1 = Bêtes courantes, grosse Bête de la semaine, carnet, Mathou familier, tutoriel.
+
+**Retiré :** le monstre né d'une erreur de l'élève (écarté par David : l'erreur n'est pas un mal) ; les indices des Palotins (le Mathou seul souffle).
 
 ## Contraintes repérées
 
@@ -172,6 +179,8 @@ _Mis à jour le 2026-11-17, phase 0, rien n'est codé ; question 5 close._
 
 ## Historique
 
+- **2026-11-18** : phase 0 de la v1 rédigée et publiée en page, 7 questions posées.
+- **2026-11-17** : § « Idées d'ajouts » relue avec David : Mathou réveillé par un combat en v1 ; Czar et Bataillon après la v1.
 - **2026-11-17** : § « Ce qu'on garde de Navadra » relue avec David : indices par le Mathou seul, tutoriel par Bordure, chiffres de Navadra au départ.
 - **2026-11-17** : 5e tranchée ; la question 5 est close.
 - **2026-11-17** : 5d tranchée (Mathou familier, aide modeste selon le stade).
