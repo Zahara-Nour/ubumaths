@@ -1,3 +1,5 @@
+import adapter from '@sveltejs/adapter-vercel';
+import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 import tailwindcss from '@tailwindcss/vite';
 import { defineConfig, type ViteUserConfig } from 'vitest/config';
 import { loadEnv, type Plugin } from 'vite';
@@ -40,7 +42,11 @@ function mathliveFontDisplay(): Plugin {
 		enforce: 'pre',
 		transform(code, id) {
 			if (!/[\\/]mathlive[\\/]mathlive-(static|fonts)\.css(\?|$)/.test(id)) return null;
-			return { code: code.replaceAll('font-display:"swap"', 'font-display:swap'), map: null };
+
+			return {
+				code: code.replaceAll('font-display:"swap"', 'font-display:swap'),
+				map: null
+			};
 		}
 	};
 }
@@ -64,7 +70,26 @@ export default defineConfig(async ({ mode, isSsrBuild }): Promise<ViteUserConfig
 		plugins: [
 			mathliveFontDisplay(),
 			tailwindcss(),
-			sveltekit(),
+			sveltekit({
+				// Consult https://svelte.dev/docs/kit/integrations
+				// for more information about preprocessors
+				preprocess: vitePreprocess(),
+				adapter: adapter({ runtime: 'nodejs22.x', regions: ['cdg1'] }),
+				// CSRF Protection - validates Origin/Referer headers for POST/PUT/DELETE/PATCH requests
+				// Protection is enabled by default - requests from different origins are blocked
+				// Add trusted origins here if you need to allow specific cross-origin requests
+				csrf: {
+					// trustedOrigins: ['https://mobile-app.chiph.re']
+				},
+				// SvelteKit 3 ne fournit plus `$lib` (remplacé par `#lib`, import de sous-chemin) :
+				// on le déclare ici, option dépréciée mais acceptée, le temps de migrer les
+				// ~14 600 imports dans une PR à part (journal `docs/wip/mises-a-jour-progress.md`).
+				alias: { $lib: './src/lib', $tests: './tests' },
+				// Onglet resté ouvert pendant un déploiement : `updated.current` passe à vrai, et le
+				// prochain lien charge la page en entier (`+layout.svelte`, `$lib/utils/app-version`)
+				version: { pollInterval: 5 * 60 * 1000 }
+			}),
+
 			// Bundle treemap, only when ANALYZE=1 (never in normal/prod builds).
 			// emitFile → the report lands in each build's output dir, i.e.
 			// .svelte-kit/output/client/stats.html (the user-facing bundle) and the
@@ -72,7 +97,14 @@ export default defineConfig(async ({ mode, isSsrBuild }): Promise<ViteUserConfig
 			// locally with `ANALYZE=1 pnpm build` (a full build takes 64 s on the Mac
 			// mini, measured 2026-09-29 — the old 8 GB laptop could not run it).
 			...(process.env.ANALYZE
-				? [visualizer({ emitFile: true, filename: 'stats.html', gzipSize: true, brotliSize: true })]
+				? [
+						visualizer({
+							emitFile: true,
+							filename: 'stats.html',
+							gzipSize: true,
+							brotliSize: true
+						})
+					]
 				: [])
 		],
 
@@ -114,12 +146,12 @@ export default defineConfig(async ({ mode, isSsrBuild }): Promise<ViteUserConfig
 		 */
 		optimizeDeps: {
 			include: [
-				'@supabase/supabase-js', // Authentication client
-				'@supabase/ssr', // Server-side auth helpers
-				'mathlive', // Math input editor (large library)
-				'canvas-confetti', // Celebration effects
-				'mode-watcher', // Dark mode management
-				'svelte-sonner', // Toast notifications
+				'@supabase/supabase-js' /* Authentication client */,
+				'@supabase/ssr' /* Server-side auth helpers */,
+				'mathlive' /* Math input editor (large library) */,
+				'canvas-confetti' /* Celebration effects */,
+				'mode-watcher' /* Dark mode management */,
+				'svelte-sonner' /* Toast notifications */,
 				// TipTap and ProseMirror - MUST be included to prevent duplicate plugin errors
 				'@tiptap/core',
 				'@tiptap/starter-kit',
@@ -243,11 +275,9 @@ export default defineConfig(async ({ mode, isSsrBuild }): Promise<ViteUserConfig
 						name: 'server',
 						environment: 'node',
 						include: ['src/**/*.{test,spec}.{js,ts}', 'scripts/**/*.{test,spec}.{js,ts}'],
-						exclude: [
-							'src/**/*.svelte.{test,spec}.{js,ts}'
-							// tests/integration/** (incl. database/) is never matched by the include
-							// globs above; it runs via vitest.integration.config.ts (Supabase local).
-						],
+						exclude: ['src/**/*.svelte.{test,spec}.{js,ts}'],
+						// tests/integration/** (incl. database/) is never matched by the include
+						// globs above; it runs via vitest.integration.config.ts (Supabase local).
 						setupFiles: ['./vitest-setup-server.ts']
 					}
 				}
