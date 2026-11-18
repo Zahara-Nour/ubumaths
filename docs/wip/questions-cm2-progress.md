@@ -6,11 +6,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, phase 0 du lot 11a proposée._
+_Mis à jour le 2026-11-18, phase 0 du lot 11a validée (§ 17.1)._
 
 - **État** : lots 0 à 10 publiés (lot 10 heures et durées : 5/5 `published`, relus au MCP, § 16.4). Restent les lots 11a à 19 du § 14 (ordre validé au § 14.1).
-- **Prochaine action** : écrire le lot 11a (§ 17, 7 modèles) une fois les points (a) à (f) tranchés.
-- **En attente de David** : § 17, points (a) à (f). ⛔ Jamais `--mettre-a-jour` de `cm2-7b` avec des fichiers d'avant #2770 (ids CM1).
+- **Prochaine action** : écrire le lot 11a (§ 17, 7 modèles), worktree `ubumaths-wt-questions-cm2`.
+- **En attente de David** : rien. ⛔ Jamais `--mettre-a-jour` de `cm2-7b` avec des fichiers d'avant #2770 (ids CM1).
 - **Pièges en cours** : `pnpm migration:horodatage` = heure réelle UTC ; `db:migrate` refuse une migration plus ancienne que la dernière jouée → `--dry-run --include-all`, liste relue, puis `--include-all`. Worktree neuf : copier `supabase/.temp/` du dépôt principal, puis `pnpm exec svelte-kit sync`. `Doc-inchangée:` dans un COMMIT. `git commit -m … -- <fichiers>`. Stash du dépôt principal « cm2-9 ids » : copie identique de ce qui est mergé, à supprimer (David).
 - **Worktree / branche** : aucun.
 
@@ -1123,3 +1123,11 @@ dans ces trois-là (plusieurs modèles y partagent déjà le 1), et « après le
 14).
 
 (f) Un seul lot de **7 modèles** ? Reco : **oui**.
+
+### 17.1 Lot 11a : décisions (David, 2026-11-18)
+
+Recommandations suivies (« je suis tes recos ») : (a) 058 en deux modèles (parties-tout, comparaison additive) ;
+(b) 061 sans variation en une étape ; (c) 115 V2 chiffrée gardée (le « oui » vient du contexte écrit) ; (d) 116 :
+nombres propres à chaque variation ; (e) niveau 1 dans « caractérisation », « quatrième proportionnelle » et
+« nombre inconnu », après les pris ailleurs (parties-tout 25, comparaison 6 et 7, multiplicatifs 14) ; (f) un seul lot
+de 7 modèles. Tableau du § 17 gardé.
