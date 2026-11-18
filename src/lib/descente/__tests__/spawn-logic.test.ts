@@ -42,12 +42,16 @@ function state(partial: Partial<SpawnState>): SpawnState {
 	};
 }
 
+function quotaOf(ordinary: number, big: boolean) {
+	return { ordinary, big, ordinaryAppearedAt: Array.from({ length: ordinary }, () => NOW) };
+}
+
 /** Tirage déterministe : toujours le premier élément. */
 const first = () => 0;
 
 describe('spawnQuota — combien de Bêtes', () => {
 	test('première visite : 3 Bêtes ordinaires et une grosse Bête', () => {
-		expect(spawnQuota(state({ lastOrdinaryAt: null, lastBigAt: null }))).toEqual({
+		expect(spawnQuota(state({ lastOrdinaryAt: null, lastBigAt: null }))).toMatchObject({
 			ordinary: 3,
 			big: true
 		});
@@ -62,6 +66,35 @@ describe('spawnQuota — combien de Bêtes', () => {
 		expect(spawnQuota(state({ lastOrdinaryAt: ago(8 * HOUR - 60_000) })).ordinary).toBe(0);
 		expect(spawnQuota(state({ lastOrdinaryAt: ago(8 * HOUR) })).ordinary).toBe(1);
 		expect(spawnQuota(state({ lastOrdinaryAt: ago(16 * HOUR) })).ordinary).toBe(2);
+	});
+
+	test('rattrapage sans perte du reste : une visite toutes les 12 heures donne 3 Bêtes par jour', () => {
+		let last = ago(5 * DAY);
+		let total = 0;
+		// Quatre visites espacées de 12 heures (2 jours), à partir de NOW
+		for (let visit = 0; visit < 4; visit++) {
+			const now = new Date(NOW.getTime() + visit * 12 * HOUR);
+			if (visit === 0) last = new Date(now.getTime() - 12 * HOUR);
+			const quota = spawnQuota(state({ now, lastOrdinaryAt: last }));
+			total += quota.ordinary;
+			if (quota.ordinary > 0) last = quota.ordinaryAppearedAt[quota.ordinary - 1];
+		}
+		expect(total).toBe(6);
+	});
+
+	test('la k-ième Bête due est datée de la dernière apparition + k × 8 h', () => {
+		const quota = spawnQuota(state({ lastOrdinaryAt: ago(20 * HOUR) }));
+		expect(quota.ordinaryAppearedAt).toEqual([ago(12 * HOUR), ago(4 * HOUR)]);
+	});
+
+	test('carte pleine au-delà des places : le dû en trop est perdu, datées de maintenant', () => {
+		const quota = spawnQuota(state({ living: living(3), lastOrdinaryAt: ago(5 * DAY) }));
+		expect(quota.ordinary).toBe(2);
+		expect(quota.ordinaryAppearedAt).toEqual([NOW, NOW]);
+	});
+
+	test('première visite : datées de maintenant', () => {
+		expect(spawnQuota(state({ lastOrdinaryAt: null })).ordinaryAppearedAt).toEqual([NOW, NOW, NOW]);
 	});
 
 	test('carte pleine (5 ordinaires) : rien de plus, même après un mois d’absence', () => {
@@ -103,7 +136,7 @@ describe('chooseBeasts — d’où naissent les Bêtes', () => {
 	const all = [review, ...notAcquired, remediation];
 
 	test('priorité : à remédier, puis non acquis du niveau, puis à revoir', () => {
-		const created = chooseBeasts({ ordinary: 4, big: false }, all, { now: NOW, living: [] }, first);
+		const created = chooseBeasts(quotaOf(4, false), all, { now: NOW, living: [] }, first);
 		expect(created.map((b) => b.pointId)).toEqual(['p-rem', 'p-na-1', 'p-na-2', 'p-rev']);
 	});
 
@@ -114,12 +147,7 @@ describe('chooseBeasts — d’où naissent les Bêtes', () => {
 			province: 'bedonstan',
 			pointId: 'p-rem'
 		};
-		const created = chooseBeasts(
-			{ ordinary: 5, big: false },
-			all,
-			{ now: NOW, living: [onMap] },
-			first
-		);
+		const created = chooseBeasts(quotaOf(5, false), all, { now: NOW, living: [onMap] }, first);
 		expect(created.map((b) => b.pointId)).not.toContain('p-rem');
 		expect(new Set(created.map((b) => b.pointId)).size).toBe(created.length);
 	});
@@ -127,7 +155,7 @@ describe('chooseBeasts — d’où naissent les Bêtes', () => {
 	test('dans un même rang, une Province absente de la carte passe d’abord', () => {
 		const onMap = living(1); // une Bête de Nombrilie
 		const created = chooseBeasts(
-			{ ordinary: 1, big: false },
+			quotaOf(1, false),
 			notAcquired,
 			{ now: NOW, living: onMap },
 			first
@@ -137,16 +165,14 @@ describe('chooseBeasts — d’où naissent les Bêtes', () => {
 
 	test('moins de points jouables que de places : moins de Bêtes ; aucun : aucune', () => {
 		expect(
-			chooseBeasts({ ordinary: 5, big: false }, notAcquired, { now: NOW, living: [] }, first)
+			chooseBeasts(quotaOf(5, false), notAcquired, { now: NOW, living: [] }, first)
 		).toHaveLength(2);
-		expect(chooseBeasts({ ordinary: 3, big: true }, [], { now: NOW, living: [] }, first)).toEqual(
-			[]
-		);
+		expect(chooseBeasts(quotaOf(3, true), [], { now: NOW, living: [] }, first)).toEqual([]);
 	});
 
 	test('départ : 3 jours pour une ordinaire, jamais pour un point à remédier', () => {
 		const created = chooseBeasts(
-			{ ordinary: 2, big: false },
+			quotaOf(2, false),
 			[remediation, notAcquired[0]],
 			{ now: NOW, living: [] },
 			first
@@ -156,7 +182,7 @@ describe('chooseBeasts — d’où naissent les Bêtes', () => {
 	});
 
 	test('grosse Bête : la première servie (point le plus prioritaire), 7 jours, même à remédier', () => {
-		const created = chooseBeasts({ ordinary: 1, big: true }, all, { now: NOW, living: [] }, first);
+		const created = chooseBeasts(quotaOf(1, true), all, { now: NOW, living: [] }, first);
 		expect(created[0]).toMatchObject({
 			kind: 'big',
 			pointId: 'p-rem',
@@ -166,10 +192,26 @@ describe('chooseBeasts — d’où naissent les Bêtes', () => {
 		expect(created[1]).toMatchObject({ kind: 'ordinary', pointId: 'p-na-1' });
 	});
 
+	test('le tutoriel ne compte pour rien : sa Province reste « absente »', () => {
+		const tutorial: LivingBeast = {
+			kind: 'tutorial',
+			beastKey: 'nombrilie-1',
+			province: 'nombrilie',
+			pointId: null
+		};
+		const created = chooseBeasts(
+			quotaOf(1, false),
+			notAcquired,
+			{ now: NOW, living: [tutorial] },
+			first
+		);
+		expect(created[0]).toMatchObject({ province: 'nombrilie', beastKey: 'nombrilie-1' });
+	});
+
 	test('la Bête vient du bestiaire de sa Province, de préférence pas déjà sur la carte', () => {
 		const onMap = living(1); // nombrilie-1
 		const created = chooseBeasts(
-			{ ordinary: 1, big: false },
+			quotaOf(1, false),
 			[{ pointId: 'p-x', province: 'nombrilie', tier: 'review' }],
 			{ now: NOW, living: onMap },
 			first

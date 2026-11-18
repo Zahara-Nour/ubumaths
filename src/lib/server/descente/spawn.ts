@@ -9,9 +9,10 @@
  * Lectures au client de L'ÉLÈVE (RLS) : ses Bêtes (« Students can view their own
  * beasts »), son état par point et ses cartes de révision ; parcours, points,
  * tags, modèles publiés et arbre sont lisibles par tout connecté. ⚠️ Un refus RLS
- * rendrait zéro ligne en silence, donc « aucune Bête à faire naître » : sans
- * gravité ici (rien n'est écrit), et prouvé en intégration
- * (tests/integration/descente-apparition.test.ts).
+ * rend zéro ligne en silence : sur les points, aucune Bête ne naît (sans gravité) ;
+ * sur les Bêtes VIVANTES, la carte se croirait vide et dépasserait les 5. Les deux
+ * lectures sont prouvées en intégration (tests/integration/descente-apparition.test.ts :
+ * carte pleine, Bête repartie).
  *
  * Écriture au client SERVICE : l'élève n'écrit jamais ses Bêtes (aucun droit
  * INSERT, étape 1). L'identifiant écrit est celui de la SESSION, vérifié avant
@@ -103,24 +104,26 @@ const MAX_TREE_DEPTH = 3;
 /**
  * Fait naître les Bêtes dues de l'élève de la session.
  *
+ * Le niveau est lu dans le profil de l'élève, jamais reçu de l'appelant : une
+ * route ne peut pas laisser l'élève choisir le niveau de ses Bêtes.
+ *
  * @param studentId l'élève de la SESSION (jamais une entrée client)
- * @param grade `profiles.grade`. NULL → aucune Bête, aucune requête.
  * @throws si une lecture ou l'écriture échoue : l'appelant affiche la carte avec
  *   les Bêtes déjà là et réessaiera à la visite suivante.
  */
 export async function spawnBeasts(
 	supabase: SB,
 	studentId: string,
-	grade: string | null,
 	now: Date = new Date(),
 	random: () => number = Math.random
 ): Promise<SpawnResult> {
-	if (!grade) return { created: 0 };
-
-	const [, state] = await Promise.all([
+	const [, grade, state] = await Promise.all([
 		assertSessionStudent(supabase, studentId),
+		loadGrade(supabase, studentId),
 		loadSpawnState(supabase, studentId, now)
 	]);
+	// Sans niveau scolaire : aucune Bête (la carte dira « vois avec ton professeur »)
+	if (!grade) return { created: 0 };
 
 	const quota = spawnQuota(state);
 	if (quota.ordinary === 0 && !quota.big) return { created: 0 };
@@ -129,7 +132,7 @@ export async function spawnBeasts(
 	const beasts = chooseBeasts(quota, candidates, state, random);
 	if (beasts.length === 0) return { created: 0 };
 
-	await insertBeasts(studentId, beasts, now);
+	await insertBeasts(studentId, beasts);
 	return { created: beasts.length };
 }
 
@@ -142,6 +145,17 @@ async function assertSessionStudent(supabase: SB, studentId: string): Promise<vo
 	if (error || data.user?.id !== studentId) {
 		throw new Error('Descente : l’élève demandé n’est pas l’utilisateur de la session');
 	}
+}
+
+/** Niveau scolaire du profil de l'élève (lu à ses droits). */
+async function loadGrade(supabase: SB, studentId: string): Promise<string | null> {
+	const { data, error } = await supabase
+		.from('profiles')
+		.select('grade')
+		.eq('id', studentId)
+		.maybeSingle();
+	if (error) throw new Error(`Profil illisible : ${error.message}`);
+	return data?.grade ?? null;
 }
 
 /** Bêtes vivantes et dernières apparitions (ordinaire, grosse). */
@@ -322,6 +336,7 @@ async function loadGradePoints(supabase: SB, grades: string[]): Promise<GradePoi
 				.select('id, node_id, grade')
 				.eq('grade', g)
 				.is('archived_at', null)
+				.order('id')
 		)
 	);
 	const points: GradePoint[] = [];
@@ -391,7 +406,7 @@ async function loadTree(supabase: SB, points: GradePoint[]): Promise<Map<string,
 }
 
 /** Écrit les Bêtes au client service ; vérifie le nombre de lignes rendues. */
-async function insertBeasts(studentId: string, beasts: NewBeast[], now: Date): Promise<void> {
+async function insertBeasts(studentId: string, beasts: NewBeast[]): Promise<void> {
 	const rows = beasts.map((beast) => ({
 		student_id: studentId,
 		beast_key: beast.beastKey,
@@ -400,7 +415,7 @@ async function insertBeasts(studentId: string, beasts: NewBeast[], now: Date): P
 		point_id: beast.pointId,
 		max_hp: beast.maxHp,
 		hp: beast.maxHp,
-		appeared_at: now.toISOString(),
+		appeared_at: beast.appearedAt.toISOString(),
 		leaves_at: beast.leavesAt ? beast.leavesAt.toISOString() : null
 	}));
 	const { data, error } = await createServiceRoleClient()

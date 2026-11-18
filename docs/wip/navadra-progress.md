@@ -4,9 +4,9 @@
 
 _Mis à jour le 2026-11-18, étape 2 ouverte._
 
-- **État** : étape 1 en prod (#2808, #2810). Étape 2 (apparition des Bêtes + export RGPD) : phase 0 validée (§ « Phase 0 de l'étape 2 »), rien de codé.
-- **Prochaine action** : coder l'étape 2 (phase 0 validée).
-- **En attente de David** : rien.
+- **État** : étape 1 en prod (#2808, #2810). Étape 2 (apparition des Bêtes + export RGPD) codée, revues faites (code + sécurité, corrigées), PR ouverte.
+- **Prochaine action** : merger la PR de l'étape 2 à CI verte ; puis étape 3 (combat de la recrue), phase 0 à faire valider.
+- **En attente de David** : une grosse Bête dès la première visite (4 Bêtes d'un coup), ou seulement après 7 jours ? Codé : dès la première visite.
 - **Façon de poser** : en mots simples, avec un exemple, sans noms de tables ni de colonnes.
 - **Pièges en cours** :
   - **PostgREST tronque un message d'erreur SQL accentué** et rend un 500 sans code : `raise exception` sans accent dans les fonctions appelées par l'API.
@@ -141,6 +141,13 @@ David a validé toutes les recommandations (« je te suis »), A à E comprises.
   - personne n'écrit depuis le navigateur : le serveur seul fait apparaître les Bêtes, enregistre les victoires et les réponses en combat ;
   - gidouilles : **1 par Bête ordinaire, 3 par grosse Bête, 0 pour le tutoriel, 4 au plus sur 24 heures** ; une récompense est coupée au plafond.
   - Le bestiaire (nom, allure) vit dans le code ; la base ne garde que la clé de la Bête. Les coups de départ (un par Province) ne sont pas écrits en base.
+
+### Étape 2 : ce qui a été codé (2026-11-18)
+
+- `src/lib/descente/` : `spawn-logic.ts` (règles, pur), `combat-templates.ts` (filtre « jouable » : une case ou `choix`, blocs admis `choix`/`courbe`/`figure`/`python`/`solide`, première variation seulement), `provinces.ts` (question A), `bestiary.ts` (**provisoire**). Serveur : `src/lib/server/descente/spawn.ts` (`spawnBeasts(client, studentId)`, niveau lu dans le profil). Aucune page ne l'appelle : branchement à l'étape 4.
+- Rattrapage sans perte du reste (revue) : la k-ième Bête due est datée de la dernière apparition + k × 8 h ; au-delà des places, datée de maintenant et le dû en trop est perdu.
+- **Provisoire, à régler à l'étape 3** : PV 100 (ordinaire) et 300 (grosse). **Avant l'étape 4** : vraies fiches du bestiaire (les clés provisoires n'atteignent pas la prod tant qu'aucune page n'appelle l'apparition).
+- Export RGPD : `gaming.descente` (Bêtes et coups, lus par pages).
 
 ## Phase 0 de la v1 (validée par David le 2026-11-18)
 
@@ -278,6 +285,7 @@ Au code : ajouter « La Descente de la Vistule » à `CONTEXT.md` (et une ADR si
 
 ## Historique
 
+- **2026-11-18** : étape 2 codée (apparition des Bêtes, export RGPD), phase 0 validée par David (« je te suis ») ; revues code et sécurité corrigées.
 - **2026-11-18** : phase 0 de la v1 validée par David (toutes les recommandations).
 - **2026-11-18** : phase 0 de la v1 rédigée et publiée en page, 7 questions posées.
 - **2026-11-17** : § « Idées d'ajouts » relue avec David : Mathou réveillé par un combat en v1 ; Czar et Bataillon après la v1.

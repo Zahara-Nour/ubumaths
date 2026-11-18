@@ -174,6 +174,44 @@ async function remediationPoint(
 	return point.id;
 }
 
+/** Marque des points « à remédier » pour un élève (client service). */
+async function markRemediation(studentId: string, pointIds: string[]): Promise<void> {
+	const { data, error } = await service
+		.from('student_point_state')
+		.upsert(
+			pointIds.map((pointId) => ({
+				student_id: studentId,
+				point_id: pointId,
+				is_acquired: false,
+				needs_remediation: true
+			}))
+		)
+		.select('point_id');
+	if (error || data?.length !== pointIds.length)
+		throw new Error(`décor : états : ${error?.message}`);
+}
+
+/** Une Bête posée par le client service, sans point (ne bloque aucun point). */
+async function seedBeast(
+	studentId: string,
+	fields: { kind: 'ordinary' | 'big'; appeared_at: string; leaves_at: string | null }
+): Promise<string> {
+	const { data, error } = await service
+		.from('student_beasts')
+		.insert({
+			student_id: studentId,
+			beast_key: 'nombrilie-1',
+			province: 'nombrilie',
+			max_hp: 100,
+			hp: 100,
+			...fields
+		})
+		.select('id')
+		.single();
+	if (error || !data) throw new Error(`décor : Bête : ${error?.message}`);
+	return data.id;
+}
+
 /** Bêtes relues HORS RLS : ce que la base contient vraiment. */
 async function storedBeasts(studentId: string) {
 	const { data, error } = await service
@@ -206,7 +244,7 @@ describe('Descente : apparition des Bêtes aux droits de l’élève', () => {
 
 	it('première visite : la grosse Bête et des Bêtes ordinaires, nées des points jouables', async () => {
 		const now = new Date();
-		const result = await spawnBeasts(student.client, student.id, GRADE, now, first);
+		const result = await spawnBeasts(student.client, student.id, now, first);
 
 		const beasts = await storedBeasts(student.id);
 		expect(result.created).toBe(beasts.length);
@@ -214,20 +252,30 @@ describe('Descente : apparition des Bêtes aux droits de l’élève', () => {
 		expect(beasts.length).toBeGreaterThanOrEqual(2);
 		expect(beasts.length).toBeLessThanOrEqual(4);
 
-		// La grosse Bête prend le point le plus prioritaire : à remédier, Province de sa branche
+		// Les deux points à remédier jouables passent d'abord : l'un fait naître la grosse
+		// Bête (7 jours), l'autre une Bête ordinaire qui reste jusqu'à sa défaite. La
+		// Province est celle de la branche du point (Géométrie → Bedonstan, Fonctions → Yoyolande).
+		const provinceOf: Record<string, string> = {
+			[points.big]: 'bedonstan',
+			[points.stays]: 'yoyolande'
+		};
 		const big = beasts.filter((b) => b.kind === 'big');
 		expect(big).toHaveLength(1);
+		expect(Object.keys(provinceOf)).toContain(big[0].point_id);
 		expect(big[0]).toMatchObject({
-			point_id: points.big,
-			province: 'bedonstan',
+			province: provinceOf[big[0].point_id ?? ''],
 			max_hp: 300,
 			hp: 300
 		});
 		expect(new Date(big[0].leaves_at ?? 0).getTime()).toBe(now.getTime() + 7 * DAY_MS);
 
-		// La Bête d'un point à remédier reste jusqu'à sa défaite
-		const stays = beasts.find((b) => b.point_id === points.stays);
-		expect(stays).toMatchObject({ kind: 'ordinary', province: 'yoyolande', leaves_at: null });
+		const otherRemediation = big[0].point_id === points.big ? points.stays : points.big;
+		const stays = beasts.find((b) => b.point_id === otherRemediation);
+		expect(stays).toMatchObject({
+			kind: 'ordinary',
+			province: provinceOf[otherRemediation],
+			leaves_at: null
+		});
 
 		// Aucun point sans modèle jouable (deux cases, brouillon)
 		const born = beasts.map((b) => b.point_id);
@@ -252,13 +300,45 @@ describe('Descente : apparition des Bêtes aux droits de l’élève', () => {
 
 	it('seconde visite aussitôt après : rien de plus', async () => {
 		const before = (await storedBeasts(student.id)).length;
-		const result = await spawnBeasts(student.client, student.id, GRADE, new Date(), first);
+		const result = await spawnBeasts(student.client, student.id, new Date(), first);
 		expect(result.created).toBe(0);
 		expect(await storedBeasts(student.id)).toHaveLength(before);
 	});
 
+	it('carte pleine (5 Bêtes vivantes, lues à ses droits) : rien, même 2 jours après', async () => {
+		const full = await newStudent(GRADE);
+		await markRemediation(full.id, [points.big, points.stays]);
+		const twoDaysAgo = new Date(Date.now() - 2 * DAY_MS).toISOString();
+		const ids: string[] = [];
+		for (let i = 0; i < 5; i++) {
+			ids.push(
+				await seedBeast(full.id, { kind: 'ordinary', appeared_at: twoDaysAgo, leaves_at: null })
+			);
+		}
+		// Une grosse Bête vivante : seule la place des ordinaires est en jeu
+		await seedBeast(full.id, { kind: 'big', appeared_at: twoDaysAgo, leaves_at: null });
+
+		const result = await spawnBeasts(full.client, full.id, new Date(), first);
+		expect(result.created).toBe(0);
+		expect(await storedBeasts(full.id)).toHaveLength(6);
+
+		// Une Bête repartie (départ passé, filtre `leaves_at` en date ISO) libère une place
+		const left = await service
+			.from('student_beasts')
+			.update({ leaves_at: new Date(Date.now() - 60_000).toISOString() })
+			.eq('id', ids[0])
+			.select('id');
+		expect(left.data).toHaveLength(1);
+
+		const again = await spawnBeasts(full.client, full.id, new Date(), first);
+		expect(again.created).toBe(1);
+		const born = (await storedBeasts(full.id)).filter((b) => b.point_id !== null);
+		expect(born).toHaveLength(1);
+		expect([points.big, points.stays]).toContain(born[0].point_id);
+	});
+
 	it('un autre identifiant que celui de la session lève, et rien n’est écrit', async () => {
-		await expect(spawnBeasts(student.client, other.id, GRADE, new Date(), first)).rejects.toThrow(
+		await expect(spawnBeasts(student.client, other.id, new Date(), first)).rejects.toThrow(
 			/session/
 		);
 		expect(await storedBeasts(other.id)).toEqual([]);
@@ -266,7 +346,7 @@ describe('Descente : apparition des Bêtes aux droits de l’élève', () => {
 
 	it('sans niveau scolaire : aucune Bête', async () => {
 		const noGrade = await newStudent(null);
-		const result = await spawnBeasts(noGrade.client, noGrade.id, null, new Date(), first);
+		const result = await spawnBeasts(noGrade.client, noGrade.id, new Date(), first);
 		expect(result.created).toBe(0);
 		expect(await storedBeasts(noGrade.id)).toEqual([]);
 	});

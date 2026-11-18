@@ -217,9 +217,12 @@ function createMockEvent() {
  */
 /** Tables dont la lecture échoue dans le test en cours (vidé avant chaque test). */
 let failingTables: Set<string> = new Set();
+/** Pages rendues par `range()` pour une table (lecture par pages) ; absente : les données de la table. */
+let pagesByTable: Map<string, unknown[][]> = new Map();
 
 function setupMockSupabase() {
 	failingTables = new Set();
+	pagesByTable = new Map();
 	// Create a thenable that resolves to { data, error } ; `error` seulement pour une table en panne
 	const createThenableFor = (table: string) => (data: unknown) => ({
 		then: (resolve: (value: { data: unknown; error: { message: string } | null }) => void) => {
@@ -289,7 +292,10 @@ function setupMockSupabase() {
 
 			// order() returns something with limit() or range() (lecture par pages) ;
 			// order() peut s'enchaîner (second critère de tri)
-			const rangeFn = vi.fn().mockReturnValue(terminalResult);
+			const rangeFn = vi.fn((from: number) => {
+				const pages = pagesByTable.get(table);
+				return pages ? createThenable(pages[Math.floor(from / 1000)] ?? []) : terminalResult;
+			});
 			const orderFn: ReturnType<typeof vi.fn> = vi.fn(() => ({
 				limit: limitFn,
 				range: rangeFn,
@@ -526,6 +532,35 @@ describe('GET /api/account/export', () => {
 				expect(eq).toHaveBeenCalledWith('student_id', TEST_USER.id);
 			}
 		);
+
+		test('les Bêtes au-delà de 1 000 sont lues page après page, sans troncature', async () => {
+			const beast = (i: number) => ({ ...mockBeasts[0], beast_key: `nombrilie-${i}` });
+			const pageOne = Array.from({ length: 1000 }, (_, i) => beast(i));
+			const pageTwo = [beast(1000), beast(1001)];
+			pagesByTable.set('student_beasts', [pageOne, pageTwo]);
+
+			const response = await GET(createMockEvent() as never);
+			const data = await response.json();
+
+			expect(data.gaming.descente.beasts).toHaveLength(1002);
+			const appel = mockSupabase.from.mock.calls.findIndex(
+				(c: unknown[]) => c[0] === 'student_beasts'
+			);
+			const pages = mockSupabase.from.mock.calls
+				.map((c: unknown[], i: number) => (c[0] === 'student_beasts' ? i : -1))
+				.filter((i: number) => i >= 0);
+			expect(appel).toBeGreaterThanOrEqual(0);
+			// Deux lectures : [0, 999] puis [1000, 1999], la seconde incomplète arrête la boucle
+			const ranges = pages.map(
+				(i: number) =>
+					mockSupabase.from.mock.results[i].value.select.mock.results[0].value.eq.mock.results[0]
+						.value.order.mock.results[0].value.order.mock.results[0].value.range.mock.calls[0]
+			);
+			expect(ranges).toEqual([
+				[0, 999],
+				[1000, 1999]
+			]);
+		});
 
 		// Boutique d'avatars (2026-11-06, comportement 17) : collection et avatar porté
 		test('contient la collection d’avatars de l’appelant (catégorie gaming)', async () => {

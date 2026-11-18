@@ -23,8 +23,6 @@ import { requireAuth } from '$lib/server/middleware/auth';
 import { rateLimit } from '$lib/server/middleware/rateLimit';
 import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 import { createServerLogger } from '$lib/utils/logger';
-import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
 
 const logger = createServerLogger('api/account/export');
 
@@ -35,38 +33,21 @@ const PAGE_SIZE = 1000;
 const BEAST_COLUMNS =
 	'beast_key, kind, province, point_id, max_hp, hp, appeared_at, leaves_at, defeated_at, rewarded_gidouilles';
 
-type BeastExportRow = Pick<
-	Database['public']['Tables']['student_beasts']['Row'],
-	| 'beast_key'
-	| 'kind'
-	| 'province'
-	| 'point_id'
-	| 'max_hp'
-	| 'hp'
-	| 'appeared_at'
-	| 'leaves_at'
-	| 'defeated_at'
-	| 'rewarded_gidouilles'
->;
-
 /**
- * Toutes les Bêtes de l'élève, lues par pages : environ trois par jour de jeu, elles
- * dépassent le plafond de 1 000 lignes de PostgREST en un an, qui tronquerait l'export
- * en silence. L'ordre (apparition, identifiant) rend les pages stables.
+ * Toutes les lignes d'une lecture, page par page : le plafond de 1 000 lignes de
+ * PostgREST tronquerait l'export en silence. `fetchPage` doit trier de façon stable.
+ * Les Bêtes (environ trois par jour de jeu) le dépassent en un an ; les coups gagnés
+ * n'ont aucune borne en base.
  */
-async function readAllBeasts(
-	supabase: SupabaseClient<Database>,
-	userId: string
-): Promise<{ data: BeastExportRow[]; error: { message: string } | null }> {
-	const rows: BeastExportRow[] = [];
+async function readAllPages<Row>(
+	fetchPage: (
+		from: number,
+		to: number
+	) => PromiseLike<{ data: Row[] | null; error: { message: string } | null }>
+): Promise<{ data: Row[]; error: { message: string } | null }> {
+	const rows: Row[] = [];
 	for (let from = 0; ; from += PAGE_SIZE) {
-		const { data, error: readError } = await supabase
-			.from('student_beasts')
-			.select(BEAST_COLUMNS)
-			.eq('student_id', userId)
-			.order('appeared_at')
-			.order('id')
-			.range(from, from + PAGE_SIZE - 1);
+		const { data, error: readError } = await fetchPage(from, from + PAGE_SIZE - 1);
 		if (readError) return { data: [], error: readError };
 		const page = data ?? [];
 		rows.push(...page);
@@ -269,13 +250,25 @@ export const GET: RequestHandler = async ({ locals }) => {
 
 			// Jeux — La Descente de la Vistule : Bêtes de l'élève (vivantes, reparties,
 			// vaincues : le carnet), lisibles par lui seul
-			readAllBeasts(supabase, userId),
+			readAllPages((from, to) =>
+				supabase
+					.from('student_beasts')
+					.select(BEAST_COLUMNS)
+					.eq('student_id', userId)
+					.order('appeared_at')
+					.order('id')
+					.range(from, to)
+			),
 
-			// Jeux — La Descente : coups et sorts gagnés (un par notion au plus, ~440)
-			supabase
-				.from('student_combat_moves')
-				.select('move_key, notion_id, earned_at, announced_at')
-				.eq('student_id', userId),
+			// Jeux — La Descente : coups et sorts gagnés, lus par pages eux aussi
+			readAllPages((from, to) =>
+				supabase
+					.from('student_combat_moves')
+					.select('move_key, notion_id, earned_at, announced_at')
+					.eq('student_id', userId)
+					.order('move_key')
+					.range(from, to)
+			),
 
 			// Jeux — le Palotin de l'élève (une ligne par élève ; décision de David, 2026-10-18)
 			supabase
@@ -428,7 +421,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 				avatars: avatarsResult.data || [],
 				descente: {
 					beasts: beastsResult.data,
-					combat_moves: combatMovesResult.data || []
+					combat_moves: combatMovesResult.data
 				},
 				palotin: buddyResult.data || null,
 				dernier_passage: lastVisitResult.data?.last_visit_date ?? null,

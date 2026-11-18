@@ -61,6 +61,14 @@ export interface SpawnState {
 export interface SpawnQuota {
 	ordinary: number;
 	big: boolean;
+	/**
+	 * Date d'apparition de chaque Bête ordinaire (autant que `ordinary`). Le
+	 * rattrapage garde le reste : la k-ième Bête due est datée de la dernière
+	 * apparition + k × 8 h, pour qu'un élève qui vient toutes les 12 heures ait bien
+	 * 3 Bêtes par jour. Carte pleine (plus de Bêtes dues que de places) : `now`,
+	 * le dû au-delà des 5 est perdu, comme le veut la phase 0.
+	 */
+	ordinaryAppearedAt: Date[];
 }
 
 /** Une Bête à écrire en base. */
@@ -70,6 +78,7 @@ export interface NewBeast {
 	province: ProvinceId;
 	pointId: string;
 	maxHp: number;
+	appearedAt: Date;
 	/** `null` : reste jusqu'à sa défaite (point à remédier). */
 	leavesAt: Date | null;
 }
@@ -112,17 +121,23 @@ export function spawnQuota(state: SpawnState): SpawnQuota {
 	const livingOrdinary = state.living.filter((b) => b.kind === 'ordinary').length;
 	const room = Math.max(0, MAX_WAITING_ORDINARY - livingOrdinary);
 
+	const last = state.lastOrdinaryAt;
 	const due =
-		state.lastOrdinaryAt === null
+		last === null
 			? FIRST_VISIT_COUNT
-			: Math.floor((now.getTime() - state.lastOrdinaryAt.getTime()) / SPAWN_INTERVAL_MS);
+			: Math.max(0, Math.floor((now.getTime() - last.getTime()) / SPAWN_INTERVAL_MS));
+	const ordinary = Math.min(due, room);
+	const keepsRemainder = last !== null && due <= room;
+	const ordinaryAppearedAt = Array.from({ length: ordinary }, (_, k) =>
+		keepsRemainder ? new Date(last.getTime() + (k + 1) * SPAWN_INTERVAL_MS) : now
+	);
 
 	const hasLivingBig = state.living.some((b) => b.kind === 'big');
 	const big =
 		!hasLivingBig &&
 		(state.lastBigAt === null || now.getTime() - state.lastBigAt.getTime() >= BIG_INTERVAL_MS);
 
-	return { ordinary: Math.max(0, Math.min(due, room)), big };
+	return { ordinary, big, ordinaryAppearedAt };
 }
 
 /**
@@ -142,18 +157,20 @@ export function chooseBeasts(
 	const presentProvinces = new Set<ProvinceId>();
 	const usedKeys = new Set<string>();
 	for (const beast of state.living) {
+		// Le tutoriel ne compte pour rien dans l'apparition
+		if (beast.kind === 'tutorial') continue;
 		if (beast.pointId) usedPoints.add(beast.pointId);
 		presentProvinces.add(beast.province);
 		usedKeys.add(beast.beastKey);
 	}
 
 	const created: NewBeast[] = [];
-	const plan: Array<'big' | 'ordinary'> = [
-		...(quota.big ? (['big'] as const) : []),
-		...Array.from({ length: quota.ordinary }, () => 'ordinary' as const)
+	const plan: Array<{ kind: 'big' | 'ordinary'; appearedAt: Date }> = [
+		...(quota.big ? [{ kind: 'big' as const, appearedAt: state.now }] : []),
+		...quota.ordinaryAppearedAt.map((appearedAt) => ({ kind: 'ordinary' as const, appearedAt }))
 	];
 
-	for (const kind of plan) {
+	for (const { kind, appearedAt } of plan) {
 		const candidate = pickCandidate(candidates, usedPoints, presentProvinces, random);
 		if (!candidate) break;
 		usedPoints.add(candidate.pointId);
@@ -168,6 +185,7 @@ export function chooseBeasts(
 			province: candidate.province,
 			pointId: candidate.pointId,
 			maxHp: kind === 'big' ? BIG_MAX_HP : ORDINARY_MAX_HP,
+			appearedAt,
 			leavesAt: leavesAtFor(kind, candidate.tier, state.now)
 		});
 	}
