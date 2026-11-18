@@ -95,15 +95,15 @@ Plus de compteur en mémoire (T8, 2026-11-03) : une nouvelle limite passe par `r
 
 ### 1.7 Ce que les hooks font pour tous
 
-| Garde                                      | Fichier                                                                                                          |
-| ------------------------------------------ | ---------------------------------------------------------------------------------------------------------------- |
-| Variables d'environnement validées (Zod)   | `src/lib/server/env.ts` (`initEnv`, `getEnv`)                                                                    |
-| Mode maintenance (503 avant Supabase)      | `src/lib/server/maintenance.ts` (`maintenanceHandle`)                                                            |
-| Session Supabase SSR                       | `src/lib/server/supabase.ts` (`handle`)                                                                          |
-| CSRF : `Origin` ≠ `Host` → 403 (mutations) | `csrfHandle` (`src/lib/server/csrfHandle.ts`, branché dans `src/hooks.server.ts`) + `csrf` de `svelte.config.js` |
-| CSP dépendant de la config                 | `src/lib/server/csp.ts`                                                                                          |
-| Pas de cache partagé pour un connecté      | `src/lib/server/private-response.ts` (`mustStayPrivate`)                                                         |
-| Élévation admin                            | `src/lib/server/adminElevation.ts`                                                                               |
+| Garde                                      | Fichier                                                                                                                                              |
+| ------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Variables d'environnement validées (Zod)   | `src/lib/server/env.ts` (`initEnv`, `getEnv`)                                                                                                        |
+| Mode maintenance (503 avant Supabase)      | `src/lib/server/maintenance.ts` (`maintenanceHandle`)                                                                                                |
+| Session Supabase SSR                       | `src/lib/server/supabase.ts` (`handle`)                                                                                                              |
+| CSRF : `Origin` ≠ `Host` → 403 (mutations) | `csrfHandle` (`src/lib/server/csrfHandle.ts`, branché dans `src/hooks.server.ts`) + `csrf` de SvelteKit (options de `sveltekit()`, `vite.config.ts`) |
+| CSP dépendant de la config                 | `src/lib/server/csp.ts`                                                                                                                              |
+| Pas de cache partagé pour un connecté      | `src/lib/server/private-response.ts` (`mustStayPrivate`)                                                                                             |
+| Élévation admin                            | `src/lib/server/adminElevation.ts`                                                                                                                   |
 
 ---
 
@@ -283,7 +283,7 @@ Côté GitHub Actions (planifiés, hors application) : `.github/workflows/produc
 2. ✅ **`run_flag_stale_python_rechecks` supprimé** (2026-10-13, migration `20261016103000`) : jamais programmé, il ne faisait que compter les lignes `pending` de `python_submission_server_verdicts`, table vide que rien n'alimentait (re-vérification Python abandonnée, ADR 0010). Table et fonction supprimées.
 3. ✅ **Liste blanche service role** (2026-10-13) : `'/api/cleanup/'`, sans route, retiré ; `'/api/cron/'` sert de nouveau (`api/cron/deleted-account-files`). Le commentaire de `api/admin/cron/trigger` cite la vraie route HTTP. Le contrôle n'est qu'un avertissement de dev.
 4. ✅ **Deux `requireAuth` homonymes** (2026-11-03, T7) : celle des pages, qui redirige, s'appelle maintenant `requireUserOrRedirect(user)` (`src/lib/server/auth.ts`) ; `requireAuth(locals)` (`middleware/auth.ts`, 401) est la garde commune des API, et les 62 endpoints qui refaisaient la garde à la main l'utilisent (§ 1.1).
-5. **CSRF en double** : SvelteKit (`svelte.config.js`) + `csrfHandle` maison. ✅ (2026-10-13) `csrfProtection.ts`, appelé par personne, supprimé ; le 403 « origine différente du site » ne ressort plus en « origine illisible » (test `src/lib/server/__tests__/csrfHandle.test.ts`).
+5. **CSRF en double** : SvelteKit (`csrf`, `vite.config.ts`) + `csrfHandle` maison. ✅ (2026-10-13) `csrfProtection.ts`, appelé par personne, supprimé ; le 403 « origine différente du site » ne ressort plus en « origine illisible » (test `src/lib/server/__tests__/csrfHandle.test.ts`).
 6. ✅ **Limiteurs de débit unifiés** (2026-11-03, T8) : le compteur en mémoire de `middleware/rateLimit.ts` et la `Map` de `api/admin/cron/trigger` sont supprimés ; tout compte en base (§ 1.5).
 7. **Journalisation hétérogène** : `console.error` direct dans 319 endpoints, logger structuré dans 4. Décision (David) : tout passera par `createServerLogger`, en lots. **Lot 0 fait (2026-10-13)** : logger sans codes ANSI hors dev ; cliquet par fichier (`pnpm logs:cliquet`, § 1.6), référence à 2 205 appels dans 531 fichiers. **Lot 1 fait (2026-10-13)** : `src/lib/server` (604 appels, 82 fichiers ; `log` → `info`, `debug` → `trace`), le logger garde les champs des erreurs ; référence à 1 602 appels dans 449 fichiers. **Lot 2 fait (2026-10-13)** : `src/routes/api` (1 085 appels, 305 fichiers), hors zones sans doc ; référence à 517 appels dans 144 fichiers. **Lot 3 fait (2026-10-13)** : pages, layouts et `hooks.server.ts` (481 appels, 135 fichiers), et 15 fichiers serveur passés de `createLogger` (muet en prod) à `createServerLogger` ; référence à 35 appels dans 9 fichiers, tous dans des zones sans doc. **Lot 4 fait (2026-11-01)** : les 8 fichiers restants (19 appels ; un neuvième migré entre-temps), leurs zones documentées depuis ; référence vide. **Clos.**
 8. ✅ **Code mort** : `profanity-filter.ts` supprimé (2026-10-13) ; le filtrage des messages passe par la fonction SQL `check_profanity_simple`, appelée par le trigger `process_message_content`.
