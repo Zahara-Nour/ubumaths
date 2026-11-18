@@ -5,17 +5,19 @@ Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) · bornes 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après #2834 (lot 5a mergé)._
+_Mis à jour le 2026-11-18, après #2839 (saisie de log, Q27)._
 
-- **État** : lots 0 à 4 publiés ; lot 5a (L1–L6, log décimal) mergé (#2834), pas encore en prod (§ 35).
+- **État** : lots 0 à 4 publiés ; lot 5a (L1–L6, log décimal) mergé (#2834), pas encore en prod (§ 35) ;
+  saisie de « log » au clavier réglée (#2839, § 36), pas encore en prod.
   Bilan MCP (§ 33) : 28 points STMG encore sans modèle publié, prévus aux lots 5 à 8 (017, 019 : rien, Q17).
 - **Prochaine action** : David crée les 6 brouillons en prod depuis le dépôt principal :
   `pnpm tsx scripts/create-questions.ts --dir scripts/questions/ttechno-5a-logarithme --publier` ; puis migration
-  nœud + tags (gabarit lot 4), page à cocher. En parallèle : PR « saisie de log » (Q27), avant le lot 5b.
+  nœud + tags (gabarit lot 4), page à cocher. Ensuite écriture du lot 5b (L7–L9, réponses exactes en log).
 - **En attente de David** : la commande `create-questions --publier` ci-dessus.
 - **Pièges en cours** : un point TTECHNO par modèle (trigger) ; tag = nœud DU POINT (relevé MCP, pas le journal) ;
   `publier-lot.ts`, `create-questions --publier` visent la prod : David les lance (`!`) depuis le dépôt principal ;
-  `db:migrate` pousse toutes les migrations en attente ; `{{var}}` décimale calculée s'écrit en fraction.
+  `{{var}}` décimale calculée s'écrit en fraction (afficher par `{{eval:var;d}}`) ; un modèle du lot 5b qui demande de
+  taper log n'est publiable qu'après le `deploy:prod` qui livre #2839.
 - **Worktree / branche** : aucun.
 
 ## 1. Périmètre
