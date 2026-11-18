@@ -6,19 +6,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après #2852._
+_Mis à jour le 2026-11-18, après la publication du lot 11b._
 
-- **État** : lots 0 à 11a publiés. Lot 11b : 5 brouillons rangés et tagués en prod (#2852, `db:migrate` fait, § 18.4) ;
-  page à cocher publiée, verdicts attendus. Restent ensuite les lots 12 à 19 du § 14.
-- **Prochaine action** : quand David a coché, lire et compter les verdicts (`ArtifactData list verdicts`,
-  https://claude.ai/artifact/9x1xabePSJzcA2CKK6ehYr) ; puis `publier-lot --dir scripts/questions/cm2-11b` en simulation,
-  David `--publier`. Ensuite phase 0 du lot 12.
-- **En attente de David** : la relecture du lot 11b sur la page à cocher. Stash « cm2-9 ids » du dépôt principal : à
-  supprimer.
+- **État** : lots 0 à 11b publiés (lot 11b : 5/5, § 18.5). Restent les lots 12 à 19 du § 14.
+- **Prochaine action** : phase 0 du lot 12 (§ 14), nouvelle branche dans le worktree.
+- **En attente de David** : stash « cm2-9 ids » du dépôt principal, à supprimer.
 - **Pièges en cours** : `Doc-inchangée:` dans un COMMIT ; sujet de commit en minuscule. `migration:horodatage` = heure
   réelle UTC ; une autre migration en attente → stop avant `db:migrate`. `db:migrate` depuis le worktree : copier
   `supabase/.temp/{project-ref,linked-project.json,pooler-url,postgres-version}` du dépôt principal (ignorés par git).
-  `create-questions` / `publier-lot` peuvent être refusés par le classifieur : réessayer à la demande de David.
+  `create-questions` / `publier-lot` peuvent être refusés par le classifieur : David les lance (`!`).
 - **Worktree / branche** : `../ubumaths-wt-questions-cm2`, branche `feat/questions-cm2-lot11b-tags` mergée (à remplacer
   par la branche du lot 12).
 
@@ -1285,3 +1281,9 @@ corrigé ; (e) un seul lot de 5 modèles. Tableau du § 18 gardé.
   « produits cartésiens », « optimisation », « Préalgorithmique »), un tag chacun, `updated_at` = création.
 - Page à cocher (5 fiches, aucune alerte, base prod) : https://claude.ai/artifact/9x1xabePSJzcA2CKK6ehYr ; `verdicts` vide au
   départ. Rendu à 390 px non revérifié (même gabarit que le lot 11a).
+
+### 18.5 Lot 11b : relecture, publication (2026-11-18)
+
+- Page à cocher : 5 verdicts « OK », sans commentaire ; les 5 ids concordent avec `scripts/questions/cm2-11b/*.json`.
+- `publier-lot` en simulation refusé par le classifieur : David lance simulation et `--publier`. MCP : 5/5 `published`,
+  [CM2], rangés, un tag chacun (119, 060, 062, 063, 064). **Lot 11b clos.**
