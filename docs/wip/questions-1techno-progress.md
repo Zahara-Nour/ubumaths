@@ -8,18 +8,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après #2787 (lot 2, fichiers)._
+_Mis à jour le 2026-11-18, après #2796 (lot 2 clos)._
 
-- **État** : lot 1 clos (#2783). **Lot 2** : fichiers mergés (#2787), 8 brouillons en prod (ids § 24), page à cocher
-  8 « ok » sur 8 ; migration `20261117222845_questions_1techno_lot2_rangement_tags` + test (14 verts, preuve rouge),
-  `security-auditor` sans bloquant ; PR de la migration ouverte.
-- **Prochaine action** : CI verte → **merge seulement après le go de David** (partie destructive) → `db:migrate` par
-  David → vérif MCP → publication (`publier-lot.ts`, `--publier` par David) → lot clos.
-- **En attente de David** : le go sur la partie destructive (1acb6d47 perd 1TECHNO-057 et `1_TECHNO`, aucune donnée
-  d'élève).
-- **Pièges en cours** : M1–M7 communs `{1_GEN,1_TECHNO}`, deux tags (un par programme) ; worktree neuf →
-  `svelte-kit sync` avant `page-a-cocher.ts` ; `db:migrate` pousse tout ce qui attend (`migration list --linked`).
-- **Worktree / branche** : `../ubumaths-wt-questions-1techno`, `feat/questions-1techno-lot2-rangement`.
+- **État** : lots 1 (#2783) et 2 (#2787, #2796) clos, 8 modèles du second degré publiés. Reste les lots 3 à 6 du
+  découpage du § 23 (dérivation, algorithmique, graphiques et stats à deux variables, probabilités).
+- **Prochaine action** : lot 3 « dérivation » (128, 069, 071, 072, 074, 130, 131, 081, 056) : demander d'abord à
+  questions-1gen s'il a un modèle commun en cours, relevé prod, puis phase 0 à faire valider par David.
+- **En attente de David** : rien.
+- **Pièges en cours** : modèles communs `{1_GEN,1_TECHNO}` = deux tags (un par programme) ; worktree neuf →
+  `svelte-kit sync` avant `page-a-cocher.ts` ; `db:migrate` pousse tout ce qui attend, et refuse une migration d'une
+  autre session horodatée avant la dernière appliquée (`migration list --linked` juste avant de donner la commande).
+- **Worktree / branche** : aucun (à recréer pour le lot 3).
 
 ## 1. Relevé (prod, 2026-11-17)
 
@@ -616,3 +615,10 @@ rien (9), brouillons sans nœud ni tag avec les niveaux du relevé, 1acb6d47 ave
 et le bloc nominal ne démarre pas. `security-auditor` : aucun bloquant (note : 1acb6d47 reste rangé sur le nœud
 « parabole », son tag 1SPE-402 étant sur sa notion ; seul l'arbre de l'admin en est touché). Page à cocher : 8 « ok »
 sur 8, sans commentaire.
+
+PR #2796 mergée (go de David sur la partie destructive). `db:migrate` refusé (« inserted before » : la migration
+`20261117222600` de carnet-heatmap, horodatée avant la dernière appliquée) ; David a lancé `db push --include-all` le
+2026-11-18 : carnet-heatmap, la nôtre et `20261117222938` (questions-cm2 lot 9) appliquées ensemble. Vérifié MCP : les
+8 rangés (parabole ×6, signe, formes) avec leurs 15 tags, niveaux et `updated_at` inchangés ; 1acb6d47 `{1_SPE}`, seul
+tag 1SPE-402 ; triggers de `question_templates` actifs. Publication : `publier-lot.ts` en simulation (8 brouillons)
+puis lancé par David avec `--publier` : 8/8 publiés, relu en base. **Lot 2 clos.**
