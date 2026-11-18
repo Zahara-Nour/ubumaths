@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après #2847._
+_Mis à jour le 2026-11-18, PR 3a commitée (pas encore poussée)._
 
-- **État** : PR 1 (#2842) et PR 2 recherche (#2847) mergées ; migration `20261118204254` (lecture `anon` des liens question publiée → point) appliquée en prod et vérifiée. Rien en prod tant que David n'a pas fait `deploy:prod`. Page : [automaths-recherche-ui.html](automaths-recherche-ui.html), https://claude.ai/artifact/SCczsfi9ayGXjioFtsQq2R.
-- **Prochaine action** : PR 3a vue « Notions » (phase 0 validée, points 1-7 ci-dessous), puis PR 3b vue « Programme » (points 8-13, lecture A), puis PR 4 « Ma série ».
-- **En attente de David** : rien (vérification manuelle #2847 notée dans `verifications-manuelles.md`).
-- **Pièges en cours** : la tuile reste la flash-card (décision du 2026-09-29) ; plusieurs points désignent le même nœud (4-021, 4-075, 4-023 → Calcul littéral) ; un point posé sur une notion peut n'avoir aucune question en propre (4-003) → inclure ses sous-notions ; le panier détaillé `/automaths/panier` ne change pas ; un test qui rend la page doit vider `sessionStorage` (`chiphre_automaths_adresse`) ; les modèles de test simplifiés n'ont PAS d'aperçu (carte absente) : prendre la fixture `data/relecture/entiers/139.json` pour asserter une carte ; la recherche ignore le nom de branche (décision de David).
-- **Worktree / branche** : `../ubumaths-wt-automaths`, `feat/automaths-navigation` (PR 3a).
+- **État** : PR 1 (#2842) et PR 2 (#2847) mergées. PR 3a vue « Notions » codée et commitée sur `feat/automaths-navigation` (commit `364e64fb8`) : 47 tests verts, `check:incremental` 0 erreur, cliquet tenu, doc `questions.md` à jour. **Pas encore poussée, pas de PR.**
+- **Prochaine action** : revue `code-reviewer` (Sonnet) du commit `364e64fb8` (lancée ; à relancer si son résultat est perdu), corriger, puis `git pull --rebase` (branche en retard de 4 sur `origin/main`), push, PR, CI, merge. Ensuite PR 3b vue « Programme » (points 8-13, lecture A), puis PR 4 « Ma série ».
+- **En attente de David** : rien.
+- **Pièges en cours** : `getByRole('navigation', { name: 'Notions' })` attrape « Sous-notions » → `exact: true` ; la page défile dans un conteneur interne (pas `window`) ; la tuile reste la flash-card ; un point posé sur une notion peut n'avoir aucune question en propre (4-003) → lecture A : questions rattachées, sinon celles du nœud ; un test qui rend la page vide `sessionStorage` ; carte asserte avec la fixture `data/relecture/entiers/139.json`.
+- **Worktree / branche** : `../ubumaths-wt-automaths`, `feat/automaths-navigation` ; serveur de test sur le port 5176.
 
 ### 2026-11-18 — recherche
 
@@ -104,3 +104,10 @@ Vue « Programme » (PR 3b) :
 13. La recherche remplace les deux vues.
 
 Lecture des questions sous un point : **A** — les questions rattachées au point ; aucune → celles du nœud du point, sous-notions comprises.
+
+### 2026-11-18 — PR 3a, réalisation
+
+- `CatalogueNotionNav` (liste à compteurs, colonne `lg` / Sheet du bas), `CatalogueNotionSections` (pastilles collantes, sections dépliées), `LazyCatalogueGallery` (IntersectionObserver, 800 px d'avance ; pastille → sections du dessus calculées avant le défilement), `notionTemplateCount`, cartes 9rem sur téléphone (`--catalogue-card-height`).
+- Tests : `catalogue-navigation` (10) + anciens tests adaptés (helpers `catalogue-helpers.ts`) ; rouges sur l'ancienne page (13/15), 47 verts.
+- Piège de test : `getByRole('navigation', { name: 'Notions' })` attrape aussi « Sous-notions » → `exact: true`. `getByText('2 questions')` attrapait le titre de section → `exact: true`.
+- Vu en dev (grand écran, base locale) : pastille → section juste sous les pastilles ; changer de notion après avoir descendu → remonte en haut. Largeur téléphone non vérifiable dans Chrome (largeur minimale de fenêtre) : couverte par les tests à 390 px.
