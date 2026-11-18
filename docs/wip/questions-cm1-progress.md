@@ -5,11 +5,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, PR #2803 du lot 8b (§ 22 ter)._
+_Mis à jour le 2026-11-18, après #2803 (§ 22 ter)._
 
-- **État** : lots 0 à 8a publiés, 131 points sur 171. Lot 8b écrit (6 modèles), PR #2803 ouverte. Restent 8c, 8d,
+- **État** : lots 0 à 8a publiés, 131 points sur 171. Lot 8b écrit (6 modèles), fichiers mergés (#2803). Restent 8c, 8d,
   8e, 9 (§ 20, découpage validé § 20 bis).
-- **Prochaine action** : merge de #2803, puis David lance `create-questions --dir scripts/questions/cm1-8b
+- **Prochaine action** : David lance `create-questions --dir scripts/questions/cm1-8b
 --publier` ; ensuite migration nœud + tag (sous-notion neuve « aires sur quadrillage » sous Aires ; tags CM1 et
   CM2, § 22 bis), page à cocher, publication.
 - **En attente de David** : la création en prod des 6 brouillons.
@@ -1769,4 +1769,6 @@ avant. Les modèles publiés sont lus comme les autres ; la migration ne fait qu
 - Base locale (copies à une variation par modèle, 18 brouillons d'essai) : les 18 variations vues à 390 px
   (Playwright, port 5177), sans défilement horizontal, réponses attendues justes. Reste : noms des points petits
   (8 px), sans option de taille → `outils-manquants.md` n° 37.
-- PR #2803 (fichiers seuls, revue : aucune, contenu).
+- PR #2803 (fichiers seuls, revue : aucune, contenu). 1re CI rouge : `student-answer-safety` abîmait deux réponses
+  attendues en `{{if:}}` imbriqué sur 8 et 10 niveaux → variable calculée `n` (indicatrices, helper `table`) ; CI
+  verte, mergée le 2026-11-18.
