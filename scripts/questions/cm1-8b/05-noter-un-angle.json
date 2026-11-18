@@ -1,4 +1,5 @@
 {
+	"id": "4c1ce174-15a0-4613-9df1-d4674350459e",
 	"title": "Noter un angle",
 	"description": "Notation à chapeau dans un triangle : noter l'angle marqué ; trouver le sommet d'un angle noté ; retrouver l'angle noté parmi trois angles de couleur",
 	"grades": ["CM1", "CM2"],
