@@ -5,11 +5,11 @@ Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) · bornes 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, lot 3b écrit (PR des fichiers ouverte)._
+_Mis à jour le 2026-11-18, lot 3b écrit, #2815 ouverte (CI à suivre)._
 
 - **État** : lots 0 à 3a en prod et publiés ; lot 3b « fonctions » (C5–C8) écrit et essayé en local (§ 26), PR
   des fichiers sur `feat/questions-ttechno-lot3b`.
-- **Prochaine action** : CI verte → merge ; puis David lance, depuis le dépôt principal,
+- **Prochaine action** : CI de #2815 (`gh pr checks 2815 --watch`) verte → merge ; puis David lance, depuis le dépôt principal,
   `pnpm tsx scripts/create-questions.ts --dir scripts/questions/ttechno-3b-fonctions --publier` ; ensuite migration
   rangement + tags (C5–C8 → c185c955, points 032, 033, 036, 080), page à cocher, publication.
 - **En attente de David** : `create-questions --publier` du lot 3b (prod), après le merge.
