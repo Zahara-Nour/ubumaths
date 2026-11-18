@@ -538,3 +538,44 @@ SQL : question d'accès et verdict sur E2 var. 3, posés à David.
 - #2800 mergée, `check:migrations` vert, `migration list --linked` : seule 20261118052320 en attente ; `db:migrate`
   depuis le dépôt principal. Prod vérifiée : 6 publiés, `{1_GEN,T_TECHNO}`, tags 1GEN + TTECHNO, `updated_at`
   inchangés, trigger réactivé.
+
+## 22. Compléments du lot 3 : phase 0 (2026-11-18)
+
+**Relevé prod (MCP, lecture seule)** :
+
+- Nœud « fonctions x ↦ aˣ » (c185c955, celui de 031, 032, 033, 036, 080, 081) : les 4 modèles taggés au lot 3
+  (E1–E4), plus 3a8ef5f7 (exposant 1/n), 9ead685c (placer des points de k·aˣ) et fc27769e (lire sur la courbe de
+  k·aˣ), `1_GEN` seul. Tous sur x ⩾ 0 et k > 0 : rien sur a⁻ˣ, sur x < 0 ni sur k < 0.
+- Nœud « propriétés algébriques » (44206987, celui de 034, 078, 079) : seulement les modèles eˣ de 1re / Tle spé
+  (calques à ne pas réécrire, Q15). ⚠ E2 est rangé sur le nœud aˣ : nos trois compléments iront sur 44206987,
+  seul nœud où le trigger accepte 034 / 078 / 079.
+- Recherche par contenu (exposants négatifs, k·aˣ, a⁻ˣ) sur tous les modèles : seulement des puissances entières
+  (2nde 2-270, 3e 3-004). Rien à réutiliser.
+
+**Proposition** (modèles neufs, `grades ['T_TECHNO']` seul : les bornes 1GEN arrêtent x à 0 ; brouillons ; un
+point TTECHNO chacun ; a > 0 partout) :
+
+| #   | Modèle                                      | Point | Contenu (variations)                                                                             | Niv. |
+| --- | ------------------------------------------- | ----- | ------------------------------------------------------------------------------------------------ | ---- |
+| C1  | Produit de puissances, exposants relatifs   | 034   | aᵐ × aᵖ, un exposant négatif ; somme négative ; exposant manquant (aᵐ × a^? = aʳ)                | 1    |
+| C2  | Quotient de puissances, exposants relatifs  | 078   | aᵐ / aᵖ avec p > m ; p négatif (on soustrait un négatif) ; 1 / aᵖ = a⁻ᵖ                          | 1    |
+| C3  | Puissance d'une puissance, n entier relatif | 079   | (aˣ)ⁿ avec n ∈ −3..−1 ; x négatif, n négatif ; a^(nx) à écrire (a^?)ⁿ                            | 1–2  |
+| C4  | Exposant négatif : a⁻ˣ = 1/aˣ               | 031   | a⁻ˣ en fraction 1/aˣ ; 2⁻³ = 1/8 exact ; 1,5⁻²·³ à la calculatrice ; « il y a x ans » (C × a⁻ˣ)  | 1–2  |
+| C5  | Sens de variation de x ↦ aˣ sur ℝ           | 032   | sens sur ℝ (choix) ; comparer a⁻² et a⁻¹·⁵ sans calcul ; aˣ > 0 pour tout x                      | 1    |
+| C6  | Courbe de x ↦ aˣ sur ℝ                      | 033   | associer courbes tracées sur [−3 ; 3] ; points (0 ; 1) et (−1 ; 1/a) ; courbe au-dessus de l'axe | 1    |
+| C7  | Sens de variation de x ↦ k·aˣ               | 036   | choix croissante / décroissante selon k > 0 ou k < 0, a > 1 ou 0 < a < 1 (les 4 cas)             | 1    |
+| C8  | Utiliser le sens de variation de x ↦ k·aˣ   | 080   | comparer f(x₁) et f(x₂) sans calcul (k < 0 compris) ; maximum sur [0 ; 5] ; retrouver k ou a     | 2    |
+
+Plages : a ∈ {2 ; 3 ; 5 ; 1,5 ; 0,5 ; 0,8} ; exposants dans {−3 ; −2,5 ; … ; 2,5 ; 3} (pas 0,5), réponse jamais a⁰ ;
+k ∈ {−5..−1, 1..5}. Réponses : forme « une seule puissance » (`requiredForm: power`, comme E2), fraction exacte,
+décimal arrondi, choix.
+
+**Questions à David** :
+
+- **Q19 — C5, C6 (x < 0)** : E3 et E4 s'arrêtent à x ⩾ 0, le BO de Tle techno étend à ℝ. Écrire C5 et C6, ou s'en
+  tenir à E3 / E4 ? Reco : **les écrire** (sinon a⁻ˣ n'a jamais de courbe ni de sens de variation).
+- **Q20 — Découpage** : lot 3a « propriétés » (C1–C4), puis lot 3b « fonctions » (C5–C8), ou un seul lot ?
+  Reco : **3a puis 3b** (pages à cocher courtes, comme 2a / 2b).
+- **Question d'accès** (migration de tags, après écriture) : modèles en brouillon, personne ne les voit avant la
+  publication ; publiés, ils apparaissent au catalogue et au cahier de texte de Tle techno seulement. Personne ne
+  perd rien.
