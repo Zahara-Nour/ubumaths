@@ -1,0 +1,501 @@
+{
+	"id": "3fec6b41-b401-430b-b602-017bd51e5f10",
+	"title": "Déterminer un ajustement affine",
+	"description": "Droite de Mayer (6 et 8 points), droite au jugé, droite des moindres carrés donnée par la calculatrice",
+	"grades": ["1_GEN"],
+	"level": 2,
+	"delay": 120,
+	"status": "published",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				},
+				{
+					"expectedAnswer": "{{eval:g1-2*k}}"
+				}
+			],
+			"statement": "On considère la série statistique à deux variables suivante.\n\n| $x_i$ | $1$ | $2$ | $3$ | $4$ | $5$ | $6$ |\n|---|---|---|---|---|---|---|\n| $y_i$ | ${{eval:g1-p1}}$ | ${{eval:g1+q1}}$ | ${{eval:g1+p1-q1}}$ | ${{eval:g2-p2}}$ | ${{eval:g2+q2}}$ | ${{eval:g2+p2-q2}}$ |\n\nDétermine l'équation $y=ax+b$ de la droite de Mayer : premier groupe $x$ de $1$ à $3$, second groupe $x$ de $4$ à $6$.\n\n$a=?$ et $b=?$",
+			"variables": [
+				{
+					"name": "g1",
+					"expression": "6..12"
+				},
+				{
+					"name": "k",
+					"expression": "1..4"
+				},
+				{
+					"name": "g2",
+					"expression": "eval:g1+3*k"
+				},
+				{
+					"name": "p1",
+					"expression": "1..3"
+				},
+				{
+					"name": "q1",
+					"expression": "-1..1"
+				},
+				{
+					"name": "p2",
+					"expression": "1..3"
+				},
+				{
+					"name": "q2",
+					"expression": "-1..1"
+				}
+			],
+			"conditions": [],
+			"correction": {
+				"steps": [
+					"La **droite de Mayer** : on partage le nuage en deux groupes de même effectif (les plus petites valeurs de $x$, puis les plus grandes), on calcule le point moyen de chaque groupe, et la droite passe par ces deux points moyens.",
+					"$G_1$ : $\\bar{x}_1=\\dfrac{1+2+3}{3}=2$, $\\bar{y}_1=\\dfrac{{{eval:g1-p1}}+{{eval:g1+q1}}+{{eval:g1+p1-q1}}}{3}={{g1}}$.",
+					"$G_2$ : $\\bar{x}_2=\\dfrac{4+5+6}{3}=5$, $\\bar{y}_2=\\dfrac{{{eval:g2-p2}}+{{eval:g2+q2}}+{{eval:g2+p2-q2}}}{3}={{g2}}$.",
+					"$a=\\dfrac{ {{g2}}-{{g1}} }{5-2}=\\textcolor{{{color:primary.0}}}{{{k}}}$, puis $G_1$ sur la droite : ${{g1}}={{k}}\\times2+b$, donc $b=\\textcolor{{{color:primary.0}}}{{{eval:g1-2*k}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				},
+				{
+					"expectedAnswer": "{{eval:g1-5*k/2}}"
+				}
+			],
+			"statement": "On considère la série statistique à deux variables suivante.\n\n| $x_i$ | $1$ | $2$ | $3$ | $4$ | $5$ | $6$ | $7$ | $8$ |\n|---|---|---|---|---|---|---|---|---|\n| $y_i$ | ${{eval:g1-p1}}$ | ${{eval:g1-q1}}$ | ${{eval:g1+q1}}$ | ${{eval:g1+p1}}$ | ${{eval:g2-p2}}$ | ${{eval:g2-q2}}$ | ${{eval:g2+q2}}$ | ${{eval:g2+p2}}$ |\n\nDétermine l'équation $y=ax+b$ de la droite de Mayer : premier groupe $x$ de $1$ à $4$, second groupe $x$ de $5$ à $8$.\n\n$a=?$ et $b=?$",
+			"variables": [
+				{
+					"name": "g1",
+					"expression": "6..12"
+				},
+				{
+					"name": "k",
+					"expression": "1..3"
+				},
+				{
+					"name": "g2",
+					"expression": "eval:g1+4*k"
+				},
+				{
+					"name": "p1",
+					"expression": "2..3"
+				},
+				{
+					"name": "q1",
+					"expression": "0..1"
+				},
+				{
+					"name": "p2",
+					"expression": "2..3"
+				},
+				{
+					"name": "q2",
+					"expression": "0..1"
+				}
+			],
+			"conditions": [],
+			"correction": {
+				"steps": [
+					"La **droite de Mayer** : on partage le nuage en deux groupes de même effectif (les plus petites valeurs de $x$, puis les plus grandes), on calcule le point moyen de chaque groupe, et la droite passe par ces deux points moyens.",
+					"$G_1$ : $\\bar{x}_1=\\dfrac{1+2+3+4}{4}=2{,}5$, $\\bar{y}_1=\\dfrac{{{eval:g1-p1}}+{{eval:g1-q1}}+{{eval:g1+q1}}+{{eval:g1+p1}}}{4}={{g1}}$.",
+					"$G_2$ : $\\bar{x}_2=\\dfrac{5+6+7+8}{4}=6{,}5$, $\\bar{y}_2=\\dfrac{{{eval:g2-p2}}+{{eval:g2-q2}}+{{eval:g2+q2}}+{{eval:g2+p2}}}{4}={{g2}}$.",
+					"$a=\\dfrac{ {{g2}}-{{g1}} }{6{,}5-2{,}5}=\\textcolor{{{color:primary.0}}}{{{k}}}$, puis $G_1$ sur la droite : ${{g1}}={{k}}\\times2{,}5+b$, donc $b=\\textcolor{{{color:primary.0}}}{{{eval:g1-5*k/2;d}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "On veut ajuster **au jugé** le nuage ci-dessous par une droite.\n\n```courbe\nx: 0 ; 7\ny: -2 ; 20\ngrille: 1 ; 2\npoints: A(1 ; {{eval:a0*1+b0+n1}}), B(2 ; {{eval:a0*2+b0+n2}}), C(3 ; {{eval:a0*3+b0+n3}}), D(4 ; {{eval:a0*4+b0+n4}}), E(5 ; {{eval:a0*5+b0+n5}}), F(6 ; {{eval:a0*6+b0+n6}})\nf(x) = {{a0}}*x+{{b0}}   bleu   nom=d_1\ng(x) = -{{a0}}*x+{{eval:b0+7*a0}}   rouge   nom=d_2\nh(x) = {{a0}}*x+{{eval:b0-4}}   vert   nom=d_3\ntaille: moyenne\ndescription: Nuage de 6 points et trois droites d₁ (bleue), d₂ (rouge), d₃ (verte).\n```\n\nLaquelle de ces droites est un ajustement acceptable du nuage ?\n\n```choix\nmelanger: non\n- $d_1$\n- $d_2$\n- $d_3$\n```",
+			"variables": [
+				{
+					"name": "a0",
+					"expression": "1|2"
+				},
+				{
+					"name": "b0",
+					"expression": "3..5"
+				},
+				{
+					"name": "n1",
+					"expression": "-1..1"
+				},
+				{
+					"name": "n2",
+					"expression": "-1..1"
+				},
+				{
+					"name": "n3",
+					"expression": "-1..1"
+				},
+				{
+					"name": "n4",
+					"expression": "-1..1"
+				},
+				{
+					"name": "n5",
+					"expression": "-1..1"
+				},
+				{
+					"name": "n6",
+					"expression": "-1..1"
+				}
+			],
+			"conditions": [],
+			"correction": {
+				"steps": [
+					"Une droite d'ajustement au jugé suit la tendance du nuage et passe **au milieu** des points : à peu près autant de points au-dessus qu'au-dessous.",
+					"$d_2$ descend alors que le nuage monte ; $d_3$ a la bonne direction, mais laisse tous les points au-dessus d'elle.",
+					"$\\textcolor{{{color:primary.0}}}{d_1}$ suit le nuage et passe au milieu des points : c'est un ajustement acceptable."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"statement": "On veut ajuster **au jugé** le nuage ci-dessous par une droite.\n\n```courbe\nx: 0 ; 7\ny: -2 ; 20\ngrille: 1 ; 2\npoints: A(1 ; {{eval:a0*1+b0+n1}}), B(2 ; {{eval:a0*2+b0+n2}}), C(3 ; {{eval:a0*3+b0+n3}}), D(4 ; {{eval:a0*4+b0+n4}}), E(5 ; {{eval:a0*5+b0+n5}}), F(6 ; {{eval:a0*6+b0+n6}})\nf(x) = {{a0}}*x+{{eval:b0-4}}   bleu   nom=d_1\ng(x) = {{a0}}*x+{{b0}}   rouge   nom=d_2\nh(x) = -{{a0}}*x+{{eval:b0+7*a0}}   vert   nom=d_3\ntaille: moyenne\ndescription: Nuage de 6 points et trois droites d₁ (bleue), d₂ (rouge), d₃ (verte).\n```\n\nLaquelle de ces droites est un ajustement acceptable du nuage ?\n\n```choix\nmelanger: non\n- $d_1$\n- $d_2$\n- $d_3$\n```",
+			"variables": [
+				{
+					"name": "a0",
+					"expression": "1|2"
+				},
+				{
+					"name": "b0",
+					"expression": "3..5"
+				},
+				{
+					"name": "n1",
+					"expression": "-1..1"
+				},
+				{
+					"name": "n2",
+					"expression": "-1..1"
+				},
+				{
+					"name": "n3",
+					"expression": "-1..1"
+				},
+				{
+					"name": "n4",
+					"expression": "-1..1"
+				},
+				{
+					"name": "n5",
+					"expression": "-1..1"
+				},
+				{
+					"name": "n6",
+					"expression": "-1..1"
+				}
+			],
+			"conditions": [],
+			"correction": {
+				"steps": [
+					"Une droite d'ajustement au jugé suit la tendance du nuage et passe **au milieu** des points : à peu près autant de points au-dessus qu'au-dessous.",
+					"$d_3$ descend alors que le nuage monte ; $d_1$ a la bonne direction, mais laisse tous les points au-dessus d'elle.",
+					"$\\textcolor{{{color:primary.0}}}{d_2}$ suit le nuage et passe au milieu des points : c'est un ajustement acceptable."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			],
+			"statement": "On veut ajuster **au jugé** le nuage ci-dessous par une droite.\n\n```courbe\nx: 0 ; 7\ny: -2 ; 20\ngrille: 1 ; 2\npoints: A(1 ; {{eval:a0*1+b0+n1}}), B(2 ; {{eval:a0*2+b0+n2}}), C(3 ; {{eval:a0*3+b0+n3}}), D(4 ; {{eval:a0*4+b0+n4}}), E(5 ; {{eval:a0*5+b0+n5}}), F(6 ; {{eval:a0*6+b0+n6}})\nf(x) = -{{a0}}*x+{{eval:b0+7*a0}}   bleu   nom=d_1\ng(x) = {{a0}}*x+{{eval:b0-4}}   rouge   nom=d_2\nh(x) = {{a0}}*x+{{b0}}   vert   nom=d_3\ntaille: moyenne\ndescription: Nuage de 6 points et trois droites d₁ (bleue), d₂ (rouge), d₃ (verte).\n```\n\nLaquelle de ces droites est un ajustement acceptable du nuage ?\n\n```choix\nmelanger: non\n- $d_1$\n- $d_2$\n- $d_3$\n```",
+			"variables": [
+				{
+					"name": "a0",
+					"expression": "1|2"
+				},
+				{
+					"name": "b0",
+					"expression": "3..5"
+				},
+				{
+					"name": "n1",
+					"expression": "-1..1"
+				},
+				{
+					"name": "n2",
+					"expression": "-1..1"
+				},
+				{
+					"name": "n3",
+					"expression": "-1..1"
+				},
+				{
+					"name": "n4",
+					"expression": "-1..1"
+				},
+				{
+					"name": "n5",
+					"expression": "-1..1"
+				},
+				{
+					"name": "n6",
+					"expression": "-1..1"
+				}
+			],
+			"conditions": [],
+			"correction": {
+				"steps": [
+					"Une droite d'ajustement au jugé suit la tendance du nuage et passe **au milieu** des points : à peu près autant de points au-dessus qu'au-dessous.",
+					"$d_1$ descend alors que le nuage monte ; $d_2$ a la bonne direction, mais laisse tous les points au-dessus d'elle.",
+					"$\\textcolor{{{color:primary.0}}}{d_3}$ suit le nuage et passe au milieu des points : c'est un ajustement acceptable."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:round(A/100)/100}}"
+				},
+				{
+					"expectedAnswer": "{{eval:round(B/100)/100}}"
+				}
+			],
+			"statement": "Pour une série statistique à deux variables, la calculatrice affiche les coefficients de la droite d'ajustement par la méthode des moindres carrés $y=ax+b$ :\n\n$a={{eval:A/10000;d}}$ et $b={{eval:B/10000;d}}$.\n\nDonne $a$ et $b$ arrondis au centième.\n\n$a\\approx ?$ et $b\\approx ?$",
+			"variables": [
+				{
+					"name": "A",
+					"expression": "15001..49999"
+				},
+				{
+					"name": "B",
+					"expression": "50001..199999"
+				}
+			],
+			"conditions": [
+				"abs(mod(A, 100)-50) > 0",
+				"abs(mod(B, 100)-50) > 0",
+				"mod(A, 100) != 0",
+				"mod(B, 100) != 0"
+			],
+			"correction": {
+				"steps": [
+					"La calculatrice fait le calcul des moindres carrés : il reste à arrondir.",
+					"Au centième, on regarde le troisième chiffre après la virgule : $a\\approx\\textcolor{{{color:primary.0}}}{{{eval:round(A/100)/100;d}}}$ et $b\\approx\\textcolor{{{color:primary.0}}}{{{eval:round(B/100)/100;d}}}$.",
+					"La droite des moindres carrés est donc $y={{eval:round(A/100)/100;d}}x+{{eval:round(B/100)/100;d}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["2", "4"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "2",
+				"g1": "8",
+				"g2": "14",
+				"p1": "2",
+				"p2": "1",
+				"q1": "1",
+				"q2": "0"
+			},
+			"description": "Mayer 6 : g1 = 8, k = 2 → a = 2, b = 4",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["6", "4"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "2",
+				"g1": "8",
+				"g2": "14",
+				"p1": "2",
+				"p2": "1",
+				"q1": "1",
+				"q2": "0"
+			},
+			"description": "Erreur : a = (ȳ₂ − ȳ₁) sans diviser (6)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2", "8"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "2",
+				"g1": "8",
+				"g2": "14",
+				"p1": "2",
+				"p2": "1",
+				"q1": "1",
+				"q2": "0"
+			},
+			"description": "Erreur : b = ȳ₁ (8)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["3", "2,5"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "3",
+				"g1": "10",
+				"g2": "22",
+				"p1": "2",
+				"p2": "3",
+				"q1": "1",
+				"q2": "0"
+			},
+			"description": "Mayer 8 : g1 = 10, k = 3 → a = 3, b = 2,5",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["3", "4"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "3",
+				"g1": "10",
+				"g2": "22",
+				"p1": "2",
+				"p2": "3",
+				"q1": "1",
+				"q2": "0"
+			},
+			"description": "Erreur : x̄₁ pris à 2 (b = 4)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a0": "2",
+				"b0": "4",
+				"n1": "0",
+				"n2": "1",
+				"n3": "-1",
+				"n4": "0",
+				"n5": "1",
+				"n6": "-1"
+			},
+			"description": "Au jugé : d₁",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a0": "2",
+				"b0": "4",
+				"n1": "0",
+				"n2": "1",
+				"n3": "-1",
+				"n4": "0",
+				"n5": "1",
+				"n6": "-1"
+			},
+			"description": "Erreur : la droite sous le nuage (d₃)",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a0": "1",
+				"b0": "3",
+				"n1": "0",
+				"n2": "1",
+				"n3": "-1",
+				"n4": "0",
+				"n5": "1",
+				"n6": "-1"
+			},
+			"description": "Au jugé : d₂",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a0": "1",
+				"b0": "5",
+				"n1": "0",
+				"n2": "1",
+				"n3": "-1",
+				"n4": "0",
+				"n5": "1",
+				"n6": "-1"
+			},
+			"description": "Au jugé : d₃",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a0": "1",
+				"b0": "5",
+				"n1": "0",
+				"n2": "1",
+				"n3": "-1",
+				"n4": "0",
+				"n5": "1",
+				"n6": "-1"
+			},
+			"description": "Erreur : pente opposée (d₁)",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["2,35", "15,08"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"A": "23471",
+				"B": "150823"
+			},
+			"description": "a = 2,3471 → 2,35 ; b = 15,0823 → 15,08",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["2,34", "15,08"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"A": "23471",
+				"B": "150823"
+			},
+			"description": "Erreur : troncature (2,34)",
+			"variationIndex": 5
+		}
+	]
+}

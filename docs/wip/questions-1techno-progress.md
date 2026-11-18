@@ -8,17 +8,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après la publication du lot 4._
+_Mis à jour le 2026-11-18, pendant le lot 5 (aucune PR encore)._
 
-- **État** : lots 1 à 4 clos (lot 4 : 8 « ok », publiés par David, vérifié MCP). Phase 0 du lot 5 écrite (§ 28) :
-  4 modèles communs de questions-1gen à poser (082, 084, 085, 087), 3 modèles neufs (N1 → 059, N2 → 121, N3 → 104).
-  Reste ensuite le lot 6 (probabilités).
-- **Prochaine action** : après le go de David sur le § 28 → prévenir questions-1gen, puis worktree
-  `ubumaths-wt-questions-1techno`, page à cocher des 4 communs + écriture de N1-N3.
-- **En attente de David** : validation du § 28 (Q-L5a : N3 sans doublon avec M3 ; Q-L5b : N2 en Python seulement).
-- **Pièges en cours** : `db:migrate` pousse tout ce qui attend ; règle « un point par programme » (§ 9) : 2-336,
-  2-339 et 3-042 (f(x) = k) sont sur d'autres nœuds que 059, donc non posables.
-- **Worktree / branche** : aucun.
+- **État** : lot 5 : N1-N3 écrits, rendus validés par David ; 4 communs « ok » (page à cocher). PR des fichiers
+  ouverte.
+- **Prochaine action** : CI verte → merge ; David `create-questions --dir scripts/questions/1techno-5 --publier` (depuis
+  `main`) ; commiter les ids ; prévenir questions-1gen ; migration (nœud + tag de N1-N3 ; `1_TECHNO` + tag des communs).
+- **En attente de David** : `create-questions --publier` après le merge.
+- **Pièges en cours** : `db:migrate` pousse tout ce qui attend ; questions-1gen pas encore prévenue.
+- **Worktree / branche** : `ubumaths-wt-questions-1techno`, `feat/questions-1techno-lot5`.
 
 ## 1. Relevé (prod, 2026-11-17)
 
@@ -781,7 +779,7 @@ Verdicts : 8 « ok » sur 8, sans commentaire ; les 8 ids sont ceux de `scripts/
 `publier-lot.ts` a été refusée par le classifieur (écriture prod) : David a lancé simulation et `--publier`. Vérifié
 MCP : les 8 `published`. **Lot 4 clos.**
 
-## 28. Lot 5 « graphiques et statistiques à deux variables » — phase 0 (proposée, à valider)
+## 28. Lot 5 « graphiques et statistiques à deux variables » — phase 0 (validée par David, « je valide », 2026-11-18)
 
 Relevé prod (MCP) : les 7 points (121, 059, 082, 085, 104, 084, 087) n'ont aucun modèle.
 
@@ -825,3 +823,26 @@ Comme au lot G (§ 16-17) : page à cocher, puis migration `array_append('1_TECH
 **Question d'accès** : les 4 modèles communs sont publiés ; avec `1_TECHNO` et le tag, les élèves de 1re
 technologique pourront les recevoir, ce qui n'était pas possible avant. Leur contenu n'est pas modifié. N1-N3
 naissent brouillons. Aucune règle d'accès ne change.
+
+## 29. Lot 5 — écriture (2026-11-18)
+
+questions-1gen n'a pas de session ouverte (`ListAgents`) : elle n'a pas été prévenue, à faire avant la migration des
+communs. Script `docs/wip/questions/lot-1techno-5.py` → `scripts/questions/1techno-5/` (N1 5 variations, N2 4, N3 4 ;
+26 specs). `create-questions` en simulation : 3 « à créer », tout vert. D'abord refusé : variable `e` dans N1 (réservée
+à la constante d'Euler, rappelée aussi par David) → `h`. Sonde des courbes : 0 problème (550 blocs). Les blocs `nuage`
+et `histogramme` n'ont pas de sonde : passés à `parseStatChartContent` par un script jetable (200 tirages). D'abord 3
+erreurs : `{{eval:…/100}}` rend une fraction LaTeX (`\dfrac{9}{25}`) dans un `nuage` → ordonnées écrites
+`0,{{eval:10*pt+e}}` (centièmes entiers), ensuite 0 problème. N3 : le nuage montre 100 des 500 points (plafond
+`scatterPoints` = 100), et l'énoncé le dit.
+
+Essai en base locale (copie scratchpad, ids locaux hors dépôt) : N1 `7ebcc9f0`, N2 `59dfe41a`, N3 `db6800b2`. Chrome
+n'ouvre ni `[::1]` ni `127.0.0.1` (Vite écoute sur `::1`) : aperçu par Tailscale pour David.
+
+Communs : instantanés prod dans `scripts/questions/1techno-5-communs/` ; page à cocher
+https://claude.ai/artifact/CVjnD1cXJukRJRcxujjtry (`db`, `verdicts` vide) ; alerte : le `nuage` de 7461bb44 n'est pas
+dessiné par la page, à jouer dans l'aperçu.
+
+Verdicts des communs : 4 « ok » sur 4, sans commentaire (collection `verdicts`, lue).
+
+Rendus de N1-N3 (aperçu Tailscale) : David, « je valide les rendus ». Aperçu fermé (`tailscale serve --https=443 off` et
+`--https=8443 off` ; le :10000 → 5175 n'est pas à ce chantier), 5176 arrêté.
