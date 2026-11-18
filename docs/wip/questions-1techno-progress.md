@@ -8,26 +8,28 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après #2805 (lot 3 clos)._
+_Mis à jour le 2026-11-18, rendu du lot 4 validé par David, PR des fichiers en cours._
 
-- **État** : lots 1 (#2783), 2 (#2787, #2796) et 3 (#2801, #2805) clos ; 9 modèles de dérivation publiés. Reste les
-  lots 4 à 6 du découpage du § 23 (algorithmique, graphiques et stats à deux variables, probabilités).
-- **Prochaine action** : lot 4 « algorithmique » (003, 107, 051, 122, 067, 103, 105, 101, ` ```python `) : demander à
-  questions-1gen s'il a un modèle commun en cours, relevé prod, phase 0 à faire valider par David.
-- **En attente de David** : rien.
-- **Pièges en cours** : `db:migrate` pousse tout ce qui attend (lot 3 : parti avec 1gen lot 6 et navadra, coordonné
-  par questions-1gen) ; aperçu admin local : `--host 127.0.0.1` (Chrome n'ouvre pas `[::1]`) ; lot 5 : modèles
-  communs de questions-1gen S2 f3cb0c7a → 085, S3 7461bb44 → 082, S4 4f328c8c → 084, S6 3fec6b41 → 087 (brouillons
-  `{1_GEN}`, rangés et tagués 1GEN, **publiés le 2026-11-18** ; plages : son journal § 23-24), à vérifier contre
-  mes bornes en phase 0 ; 49fac266 (083) a reçu 1GEN-003.
-- **Worktree / branche** : aucun (à recréer pour le lot 4).
+- **État** : lots 1 à 3 clos ; lot 4 « algorithmique » (8 modèles, § 26) : rendu validé par David (« ok pour les
+  rendus »), `origin/main` fusionnée, re-simulation verte (8 ✓, contre la base locale : la simulation contre la prod
+  est refusée par le classifieur) ; PR des fichiers ouverte. Reste les lots 5 (graphiques, stats à deux variables)
+  et 6 (probabilités).
+- **Prochaine action** : PR des fichiers verte → merge ; puis **David** lance en prod
+  `pnpm tsx scripts/create-questions.ts --dir scripts/questions/1techno-4 --publier` (8 brouillons, ids écrits dans
+  les fichiers) ; puis migration de rangement + tags (8 tags 1TECHNO, + 1SPE-362 sur M2), test d'intégration rouge
+  d'abord.
+- **En attente de David** : le `create-questions --publier` en prod, après le merge.
+- **Pièges en cours** : M2 porte aussi 1SPE-362 (`grades` 1_TECHNO + 1_SPE) ; `db:migrate` pousse tout ce qui
+  attend ; lot 5 : modèles communs de questions-1gen S2 f3cb0c7a → 085, S3 7461bb44 → 082, S4 4f328c8c → 084,
+  S6 3fec6b41 → 087 (publiés, à vérifier contre mes bornes en phase 0).
+- **Worktree / branche** : `../ubumaths-wt-questions-1techno`, `feat/questions-1techno-lot4`.
 
 ## 1. Relevé (prod, 2026-11-17)
 
 - **143 points** `1_TECHNO` : 26 STD2A (hors STMG), **117 pour la STMG**. **35** ont au moins un modèle
   (tous dans le périmètre STMG), **82** aucun.
 - **64 modèles** portent `1_TECHNO` ou un tag 1TECHNO ; tous rangés sur un nœud. 3 brouillons (0495289a,
-  c90fa022, d2067413), le reste publié. Presque tous sont des modèles de 1re spé / 1re générale tagués
+  c90fa022, d2067413 — ce dernier publié le 2026-11-18 par questions-1gen, Q24), le reste publié. Presque tous sont des modèles de 1re spé / 1re générale tagués
   d'un point jumeau (ADR 0020, un tag par programme).
 - 7 modèles ont `1_TECHNO` dans `grades` sans aucun tag 1TECHNO : 5397c20f (1SPE-432), f5585668 (2-314),
   0f673c27 (2-328), 7f82d15a (2-349), 95ee57c8 (2-448), 9852d62c (5-113), 1c86d122 (5-135).
@@ -705,3 +707,49 @@ questions-1gen après réponse de navadra. Vérifié MCP : les 9 rangés (variat
 opérations ×3, variations et extremums, taux de variation), chacun avec son seul point 1TECHNO, point sur le nœud,
 `updated_at` inchangé, triggers actifs. Publication : `publier-lot.ts` en simulation (9 brouillons) puis lancé par
 David avec `--publier` : 9/9 publiés, relu en base. **Lot 3 clos.**
+
+## 26. Lot 4 « algorithmique » — phase 0 (validée par David, « je te suis », 2026-11-18)
+
+Relevé prod (MCP) : les 8 points (003, 107, 051, 122, 067, 103, 105, 101) ont 0 modèle. questions-1gen : rien en
+cours ni prévu (le module 1GEN n'a ni Python, ni liste, ni simulation). Passe anti-doublons (contenu lu, 1re spé,
+1GEN, 2de) :
+
+- **Quasi-doublons non posables** → jumeaux techno (Q11) : `ff3a3a15` factorielle (1SPE, nœud « factorielle ») pour
+  M5 ; `66cd841d` balayage de √2 (2de, nœud « boucle bornée ») pour M8 ; `5192e88a` moyenne d'un échantillon (1SPE,
+  posable sur 103 mais variable à deux valeurs, pas Bernoulli 0/1) pour M2 — modèle de 1re spé non touché.
+- Voisins sans doublon : `4a51f887`, `81322162`, `025ad9fa` (terme ou suite d'un programme ; M6 renvoie la liste) ;
+  `19961e67` (seuil d'une suite, déjà 1TECHNO-052 ; M7 compare deux suites).
+- Rien d'équivalent : 003, 101, 105.
+- **Modèle commun** : M2 porte aussi **1SPE-362** « Simuler une variable aléatoire avec Python » (0 modèle, même
+  nœud « simulation ») : `grades = ['1_TECHNO', '1_SPE']`. 1SPE-365 ↔ 105 écarté (moyennes et σ/√n, pas fréquences
+  et s observé) : M4 seul.
+
+Tous en Python (` ```python `), réponse en case ou ` ```choix `, notation u(n) ; `grades = ['1_TECHNO']` sauf M2.
+
+- **M1 simuler une loi de Bernoulli** → 003, niv. 1 : `random() < 0.p` → P(1) = p ; `random() > 0.p` → 1 − p ;
+  choisir la bonne fonction (leurres `< 1−p`, `== p`, `randint(0, 1)`) ; random() a donné 0,27 → valeur renvoyée.
+- **M2 échantillon de taille n** → 103 + 1SPE-362, niv. 2 : compter les 1 d'après six valeurs de random() données ;
+  compléter `return c / n` (fréquence) ; sens de `echantillon(100, 0.3)` (leurre « exactement 30 »).
+- **M3 N échantillons et histogramme** → 101, niv. 3 : liste `freqs` de 500 fréquences (taille 100) et histogramme ;
+  effectif d'une classe ; effectif sous un seuil ; p le plus plausible ; contenu de `freqs`.
+- **M4 compter dans [p − ks ; p + ks]** → 105, niv. 3 : compter sur une liste de 8 fréquences (k = 1 ou 2, aucune
+  sur une borne) ; compléter la condition (leurre k oublié) ; pourcentage sur 500 ; effet de k sur le compte.
+- **M5 accumulateur produit** → 107, niv. 2 : produit des entiers de 1 à n ; initialisation `p = 1` (leurre 0) ;
+  coefficient multiplicateur global d'évolutions successives ; produit des éléments d'une liste.
+- **M6 liste des termes d'une suite** → 051, niv. 2 : `termes(4)` arithmétique et géométrique (q > 0, u(0) > 0)
+  parmi quatre listes (leurres : commence à u(1), un terme de trop) ; `L[3]` ; liste en compréhension.
+- **M7 rang où une suite dépasse l'autre** → 122, niv. 3 : u arithmétique, v géométrique de raison 2 ; valeur
+  renvoyée par la boucle `while v <= u` ; lecture d'un tableau de valeurs ; condition à compléter.
+- **M8 valeur approchée par balayage** → 067, niv. 3 : f(x) = x² + x sur [0 ; +∞[, f(x) = k ; encadrement par
+  `balayage(k, 1)` ; encadrement au dixième d'après un tableau de valeurs ; condition `f(x + pas) <= k` ; sens de
+  `balayage(k, 0.01)`.
+
+**Question d'accès** : les 8 modèles naissent brouillons ; la migration les range sur le nœud de leur point et les
+tague (8 tags 1TECHNO + 1SPE-362 sur M2) ; aucun modèle existant n'est touché. Aucune règle d'accès ne change.
+
+### Lot 4 — rendu validé (2026-11-18)
+
+Base locale réinitialisée entre-temps par une autre session : 8 brouillons recréés (copie scratchpad, ids locaux
+hors dépôt). David : « ok pour les rendus ». Aperçu fermé (`tailscale serve --https=443 off` et `--https=8443 off`
+seulement : le :10000 → 5175 n'est pas à ce chantier), 5176 arrêté. `origin/main` fusionnée ; re-simulation contre
+la base locale avec `--malgre-homonyme` (les brouillons locaux portent les mêmes titres) : 8 ✓, 0 ⛔.
