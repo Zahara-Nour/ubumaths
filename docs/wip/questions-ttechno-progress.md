@@ -5,18 +5,18 @@ Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) · bornes 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, lot 3b en prod (brouillons), migration rangement + tags écrite._
+_Mis à jour le 2026-11-18, après #2818 (migration du lot 3b mergée, pas migrée)._
 
 - **État** : lots 0 à 3a en prod et publiés ; lot 3b (C5–C8) créé en prod en brouillon (§ 27) ; migration
-  `20261118080905_questions_ttechno_lot3b_rangement_tags` sur `feat/questions-ttechno-lot3b-tags` (PR à ouvrir).
-- **Prochaine action** : PR, CI verte, `check:migrations --pr <n>`, merge ; `migration list --linked` puis
-  `db:migrate` depuis le dépôt principal ; prod vérifiée par MCP ; page à cocher ; publication.
-- **En attente de David** : la relecture de la page à cocher, puis `publier-lot.ts --publier` (prod).
+  `20261118080905_questions_ttechno_lot3b_rangement_tags` mergée (#2818), **pas encore jouée en prod**.
+- **Prochaine action** : `migration list --linked` ; si seule `20261118080905` est en attente, `db:migrate` depuis
+  le dépôt principal ; prod vérifiée par MCP ; page à cocher ; publication.
+- **En attente de David** : `20261118071618` (questions-cm1 lot 8b) aussi en attente : la session cm1 la joue,
+  ou David dit de pousser les deux ; puis page à cocher et `publier-lot.ts --publier` (prod).
 - **Pièges en cours** : un point TTECHNO par modèle (trigger) ; `grades` en `array_append` seulement ;
   `publier-lot.ts`, `garde-niveaux-tags.ts`, `create-questions --publier` visent la prod : David les lance (`!`),
-  **depuis le dépôt principal, après le merge** ; `Doc-inchangée:` dans un COMMIT de la PR. Le dépôt principal a
-  les 4 JSON du lot 3b modifiés (ids) non commités : ils sont commités sur la branche, à remettre d'aplomb après le merge.
-- **Worktree / branche** : `../ubumaths-wt-questions-ttechno`, `feat/questions-ttechno-lot3b-tags`.
+  **depuis le dépôt principal, après le merge** ; `Doc-inchangée:` dans un COMMIT de la PR.
+- **Worktree / branche** : aucun (branche mergée, worktree retiré) ; la suite se fait depuis le dépôt principal.
 
 ## 1. Périmètre
 
@@ -666,3 +666,5 @@ vérifiés par MCP (`draft`, `{T_TECHNO}`, sans nœud ni tag) ; ids commités su
   rollback gardés) → 5 rouges ; fichier restauré d'une copie, identique. `types:cliquet` tenu.
 - `security-auditor` : aucun finding bloquant (diff avec le lot 3a = ids, codes, sous-notion, table temporaire ;
   rollback miroir ; aucune policy, aucune table d'élève).
+- **#2818 mergée (2026-11-18)**, CI verte, `check:migrations --pr 2818` vert. `migration list --linked` : deux en
+  attente, `20261118071618` (questions-cm1 lot 8b) et la nôtre → `db:migrate` NON lancé (il pousserait les deux).
