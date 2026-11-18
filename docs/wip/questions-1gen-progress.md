@@ -889,3 +889,11 @@ de 1re générale ; aucune table d'élèves touchée.
   4-lot-3 font **choisir** la formule (` ```choix `). Je n'ai trouvé aucune case qui compare une formule écrite.
   Choix parmi quatre formules (recommandé), ou outil neuf « formule de tableur » (classe C, chantier à part) ?
 - **Q23** — Phase 0 du lot 6 (modèles, variations, plages, niveaux, formes de réponse) ci-dessus : validée ?
+
+### Décisions (David, 2026-11-18 : « Je valide »)
+
+- **Q20** : 49fac266 tagué 1GEN-003 (avec `array_append('1_GEN')` gardé), pas de modèle « ajustement affine » de plus.
+- **Q21** : S2, S3, S4, S6 **communs** avec questions-1techno (085, 082, 084, 087) : `grades` `['1_GEN']` chez nous,
+  son `array_append('1_TECHNO')` et ses tags après notre migration.
+- **Q22** : S7 en ` ```choix ` parmi quatre formules (comme 5c092e43 et 4-lot-3), pas d'outil neuf.
+- **Q23** : phase 0 du lot 6 validée telle quelle.
