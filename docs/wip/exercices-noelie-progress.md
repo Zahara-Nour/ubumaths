@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après #2827._
+_Mis à jour le 2026-11-18, après #2829._
 
-- **État** : #2827 (script `creer-serie`) mergée ; PR 2 (`content/questions-6-mediatrice` : `scripts/questions/6-mediatrice/`, générateur `docs/wip/questions/lot-6-mediatrice.py`) ouverte · **Prochaine action** : merger la PR 2, puis David crée les brouillons en prod (`create-questions --publier`), commit des id, migration de rangement (6-165 et 6-167, nœud « médiatrice et bissectrice »), publication, fichier `scripts/series/6-mediatrice.json`, `creer-serie --publier` par David · **En attente de David** : la question d'accès de la migration ; l'œil sur les figures (aperçu admin non joué : pas de connexion locale) · **Pièges en cours** : aucun · **Worktree / branche** : `../ubumaths-wt-exercices-noelie`, `content/questions-6-mediatrice`
+- **État** : #2827 (script `creer-serie`) et #2829 (deux modèles, fichiers) mergées · **Prochaine action** : après la commande de David, commiter les id sur `feat/questions-6-mediatrice-rangement`, écrire la migration de rangement (Tracer sur quadrillage → 6-165, Calculer → 6-167, nœud « Géométrie > Figures planes > médiatrice et bissectrice », gabarit `20261109132820_questions_6_lot11a_rangement_tags.sql`) et son test d'intégration · **En attente de David** : `! cd ../ubumaths-wt-exercices-noelie && pnpm tsx scripts/create-questions.ts --dir scripts/questions/6-mediatrice --publier` ; la question d'accès de la migration ; l'œil sur les figures (aperçu admin) · **Pièges en cours** : aucun · **Worktree / branche** : `../ubumaths-wt-exercices-noelie`, `feat/questions-6-mediatrice-rangement`
 
 ## Décisions (phase 0 validée par David le 2026-11-18)
 
@@ -38,3 +38,5 @@ _Mis à jour le 2026-11-18, après #2827._
 - 2026-11-18 — PR 2 : deux modèles (16 et 9 specs vertes, sonde des figures 600 tirages 0 problème,
   créés en base locale) ; corrigés en route : périmètre affiché `\{eval:…}` (variation 2), sens
   « monte » faux pour le segment en biais qui descend.
+- 2026-11-18 — #2829 mergée (7 vérifications vertes). Branche `feat/questions-6-mediatrice-rangement`
+  ouverte pour les id et la migration.
