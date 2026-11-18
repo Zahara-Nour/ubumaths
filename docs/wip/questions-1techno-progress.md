@@ -868,3 +868,5 @@ ni tag (vérifié MCP), les 7 points visés à 0 modèle. Migration `20261118203
 bloc nominal ne démarre pas ; migration rendue → 10 verts. `security-auditor` sur les deux migrations : aucun bloquant
 (faible : `lock_timeout` sans effet sous `db push`, comme les gabarits ; info : pas de verrou consultatif dans celle des
 communs, fidèle au lot G).
+
+CI de #2844 : garde « doc à jour » rouge (`Doc-inchangée:` doit être dans un commit, pas dans la PR) → commit avec la ligne.
