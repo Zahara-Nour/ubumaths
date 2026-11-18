@@ -8,18 +8,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après #2836 (lot 4 rangé et tagué en prod)._
+_Mis à jour le 2026-11-18, après la publication du lot 4._
 
-- **État** : lots 1 à 3 clos ; lot 4 « algorithmique » : 8 brouillons rangés et tagués en prod (§ 27), page à
-  cocher publiée https://claude.ai/artifact/3J8hZfstwcX15X7hToDERh (collection `verdicts`, vide). Reste les lots 5
-  (graphiques, stats à deux variables) et 6 (probabilités).
-- **Prochaine action** : lire et **compter** les verdicts ; 8 « OK » → `pnpm tsx scripts/questions/publier-lot.ts
---dir scripts/questions/1techno-4` en simulation, puis David avec `--publier`. Ensuite phase 0 du lot 5.
-- **En attente de David** : la relecture des 8 modèles sur la page à cocher.
-- **Pièges en cours** : `db:migrate` pousse tout ce qui attend ; lot 5 : modèles communs de questions-1gen S2
-  f3cb0c7a → 085, S3 7461bb44 → 082, S4 4f328c8c → 084, S6 3fec6b41 → 087 (publiés, à vérifier contre mes bornes en
-  phase 0).
-- **Worktree / branche** : aucun (lot 4 mergé, worktree retiré).
+- **État** : lots 1 à 4 clos (lot 4 : 8 « ok », publiés par David, vérifié MCP). Phase 0 du lot 5 écrite (§ 28) :
+  4 modèles communs de questions-1gen à poser (082, 084, 085, 087), 3 modèles neufs (N1 → 059, N2 → 121, N3 → 104).
+  Reste ensuite le lot 6 (probabilités).
+- **Prochaine action** : après le go de David sur le § 28 → prévenir questions-1gen, puis worktree
+  `ubumaths-wt-questions-1techno`, page à cocher des 4 communs + écriture de N1-N3.
+- **En attente de David** : validation du § 28 (Q-L5a : N3 sans doublon avec M3 ; Q-L5b : N2 en Python seulement).
+- **Pièges en cours** : `db:migrate` pousse tout ce qui attend ; règle « un point par programme » (§ 9) : 2-336,
+  2-339 et 3-042 (f(x) = k) sont sur d'autres nœuds que 059, donc non posables.
+- **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, 2026-11-17)
 
@@ -775,3 +774,54 @@ fluctuation, Boucles, représentation graphique, seuil, équations et inéquatio
 1TECHNO (M2 : 1SPE-362 en plus), point sur le nœud, brouillons, `updated_at` = création. Page à cocher
 (`page-a-cocher.ts`, 0 alerte sur 8 fiches) publiée avec la capacité `db` :
 https://claude.ai/artifact/3J8hZfstwcX15X7hToDERh ; `verdicts` vide à la publication.
+
+### Lot 4 — publié (2026-11-18)
+
+Verdicts : 8 « ok » sur 8, sans commentaire ; les 8 ids sont ceux de `scripts/questions/1techno-4`. La simulation
+`publier-lot.ts` a été refusée par le classifieur (écriture prod) : David a lancé simulation et `--publier`. Vérifié
+MCP : les 8 `published`. **Lot 4 clos.**
+
+## 28. Lot 5 « graphiques et statistiques à deux variables » — phase 0 (proposée, à valider)
+
+Relevé prod (MCP) : les 7 points (121, 059, 082, 085, 104, 084, 087) n'ont aucun modèle.
+
+**Modèles communs de questions-1gen à poser** : ils sont publiés, `grades = {1_GEN}`, et chacun est déjà rangé sur
+**le nœud du point 1TECHNO visé**. Je les ai relus contre mes bornes (082-087 : « ajustements au jugé, droite de
+Mayer, moindres carrés ; aucune connaissance théorique », BO p.9) : ni covariance ni formule, toutes les
+variations conviennent.
+
+| Modèle   | Titre                                               | Variations                                                                       | → point |
+| -------- | --------------------------------------------------- | -------------------------------------------------------------------------------- | ------- |
+| 7461bb44 | Lire un nuage de points                             | 4 : lire une valeur, tendance, ajustement affine adapté ou non (×2)              | 082     |
+| f3cb0c7a | Représenter une série à deux variables par un nuage | 3 : placer les points (série brute, pommes, club)                                | 085     |
+| 4f328c8c | Le point moyen d'un nuage                           | 3 : placer G, b par G, reconnaître G                                             | 084     |
+| 3fec6b41 | Déterminer un ajustement affine                     | 6 : Mayer (6 et 8 points), au jugé (×3), moindres carrés (calculatrice, arrondi) | 087     |
+
+Comme au lot G (§ 16-17) : page à cocher, puis migration `array_append('1_TECHNO')` et tag, sans toucher au contenu.
+
+**Modèles neufs** (`grades = ['1_TECHNO']`, notation u(n)) :
+
+- **N1 Résoudre graphiquement f(x) = k** → 059, niv. 1-2. C'est le jumeau en équation de 95ee57c8 (inéquation, déjà
+  tagué 1TECHNO-127, même nœud). Les modèles de 2de et de 3e (2a249385, 75fe996a, eb04ebf7) sont sur d'autres nœuds,
+  ou n'ont que des images figées. Variations : une solution (courbe monotone) ; deux (parabole) ; trois (degré 3) ;
+  aucune (k au-dessus du maximum, en ` ```choix `) ; leurre image / antécédent (« f(k) » contre « x tel que f(x) = k »).
+  Courbes de degré ≤ 3, solutions entières.
+- **N2 Représenter une liste de termes d'une suite** → 121, niv. 2, ` ```python ` (BO p.4 : Python ou tableur). Le
+  programme construit `rangs` et `termes` puis `plt.plot(rangs, termes, 'o')` ; quel nuage obtient-on (trois nuages
+  A, B, C, leurres : décalé d'un rang, axes inversés) ; combien de points sont affichés pour `range(n)` ; compléter
+  l'appel (leurre `plt.plot(termes, rangs)`). Suites arithmétiques et géométriques (q > 0, u(0) > 0). Sans doublon :
+  b916ab0f (M6) renvoie la liste, il ne la représente pas ; les modèles graphiques du nœud n'ont pas de programme.
+- **N3 Représenter les fréquences de N échantillons** → 104, niv. 3, ` ```python `, N de plusieurs centaines.
+  Nuage (k ; f_k) des 500 fréquences : autour de quelle valeur les points se concentrent-ils (p, leurre 1 − p) ;
+  quel code produit ce nuage ou cet histogramme (`plt.scatter(range(N), freqs)`, `plt.hist(freqs)`, leurre
+  `plt.hist(echantillon)`) ; effet d'un n plus grand (nuage plus resserré).
+
+**Questions à David** :
+
+- **Q-L5a** : M3 (dfeed66c, sur 101) lit déjà un histogramme de fréquences (effectif d'une classe, p plausible).
+  N3 se limite au **nuage** et au **code qui produit la représentation**, sans relire l'histogramme. Reco : oui.
+- **Q-L5b** : N2 en Python seulement, comme au lot 4 (le tableur n'a pas de bloc de rendu). Reco : oui.
+
+**Question d'accès** : les 4 modèles communs sont publiés ; avec `1_TECHNO` et le tag, les élèves de 1re
+technologique pourront les recevoir, ce qui n'était pas possible avant. Leur contenu n'est pas modifié. N1-N3
+naissent brouillons. Aucune règle d'accès ne change.
