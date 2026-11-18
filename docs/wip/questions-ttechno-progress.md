@@ -579,3 +579,7 @@ décimal arrondi, choix.
 - **Question d'accès** (migration de tags, après écriture) : modèles en brouillon, personne ne les voit avant la
   publication ; publiés, ils apparaissent au catalogue et au cahier de texte de Tle techno seulement. Personne ne
   perd rien.
+
+**Décisions (David, 2026-11-18, « je suis tes recos »)** : **Q19** C5 et C6 écrits (x < 0) ; **Q20** lot 3a
+« propriétés » (C1–C4), puis lot 3b « fonctions » (C5–C8) ; question d'accès : personne pour les brouillons, Tle
+techno à la publication.
