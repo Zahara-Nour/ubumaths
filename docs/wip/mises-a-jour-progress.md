@@ -4,7 +4,7 @@
 
 _Mis à jour le 2026-11-18, PR 3 en cours (branche `chore/lib-diese`)._
 
-- **État** : PR 3 (`$lib` → `#lib`, `$tests` → `#tests`, option `alias` retirée) écrite dans le worktree `ubumaths-wt-mises-a-jour` ; typecheck 0 erreur, suites serveur et client lancées. Rien de #2814/#2821/#2825 n'est encore en prod.
+- **État** : PR 3 (`$lib` → `#lib`, `$tests` → `#tests`, option `alias` retirée) écrite dans le worktree `ubumaths-wt-mises-a-jour` ; typecheck 0 erreur ; suites serveur (67 580) et client (4 971) vertes, hors 4 tests de délai qui repassent seuls. Rien de #2814/#2821/#2825 n'est encore en prod.
 - **Prochaine action** : ouvrir la PR, CI, merge. Ensuite les dépréciations laissées (`error(N, { message })`, `pushState`/`replaceState`, `invalidateAll`, `json()`), puis les autres majeures (vitest 5, ESLint 10…).
 - **En attente de David** : `deploy:prod` pour livrer #2814, #2821, #2825 (et la PR 3), quand il le voudra (puis les vérifications de #2825).
 - **Pièges en cours** : `#lib` exige l'extension écrite (`.ts`, `.svelte.ts`, `/index.ts`) ; `paths` du `tsconfig.json` nécessaires au typecheck incrémental ; `$env/*` n'expose plus que `src/env.ts` ; `appNavigationMock` ; suite client en local avec `CI=true` ; `check:incremental` (tsgo) ne vérifie pas TS 6. `minimumReleaseAge` 3 j.
