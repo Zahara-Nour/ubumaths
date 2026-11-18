@@ -6,12 +6,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après #2794 (migration du lot 9 mergée, PAS jouée)._
+_Mis à jour le 2026-11-18, après le `db:migrate` du lot 9 (joué hors de cette session)._
 
-- **État** : lots 0 à 8 publiés ; lot 9 (partages) : 5 brouillons en prod (§ 15.3), migration `20261117222938` mergée (#2794), **pas jouée**.
-- **Prochaine action** : `db:migrate` du lot 9 une fois la voie libre, vérif MCP (5 rangés, 5 tags, `updated_at` inchangé), page à cocher, publication.
-- **En attente de David** : `db:migrate` bloqué : `20261117222600_carnet_regularite_depuis_la_rentree.sql` (chantier `carnet-heatmap`) est en attente et plus ancienne que la dernière jouée → `--include-all` la pousserait avec la nôtre. À jouer par sa session (ou David), puis la nôtre. ⛔ Jamais `--mettre-a-jour` de `cm2-7b` avec des fichiers d'avant #2770 (ids CM1).
-- **Pièges en cours** : migrations depuis #2181 : `pnpm migration:horodatage` = heure réelle UTC ; `db:migrate` refuse une migration plus ancienne que la dernière jouée → `--dry-run --include-all`, liste relue, puis `--include-all`. Worktree neuf : copier `supabase/.temp/` (lien projet) du dépôt principal, puis `pnpm exec svelte-kit sync`. Page à cocher : `partage` non dessiné, à jouer dans l'aperçu. `Doc-inchangée:` dans un COMMIT. `git commit -m … -- <fichiers>`. Stash du dépôt principal « cm2-9 ids » : copie identique de ce qui est mergé, à supprimer (David).
+- **État** : lots 0 à 8 publiés ; lot 9 (partages) : 5 brouillons rangés et tagués en prod (MCP), page à cocher publiée (§ 15.3).
+- **Prochaine action** : lire et compter les verdicts (`ArtifactData list verdicts`) ; 5 OK → `publier-lot --dir scripts/questions/cm2-9` en simulation, puis David `--publier`.
+- **En attente de David** : relecture de la page https://claude.ai/artifact/6zsvpGYUozHpvSfTcTUhKx. ⛔ Jamais `--mettre-a-jour` de `cm2-7b` avec des fichiers d'avant #2770 (ids CM1).
+- **Pièges en cours** : `pnpm migration:horodatage` = heure réelle UTC ; `db:migrate` refuse une migration plus ancienne que la dernière jouée → `--dry-run --include-all`, liste relue, puis `--include-all`. Worktree neuf : copier `supabase/.temp/` du dépôt principal, puis `pnpm exec svelte-kit sync`. `Doc-inchangée:` dans un COMMIT. `git commit -m … -- <fichiers>`. Stash du dépôt principal « cm2-9 ids » : copie identique de ce qui est mergé, à supprimer (David).
 - **Worktree / branche** : aucun (#2794 mergée, worktree retiré).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
@@ -954,3 +954,7 @@ de 30 ; (b) un seul lot de 5 modèles. Tableau du § 15 gardé.
 - #2794 : CI verte au 3e passage (runner arrêté, puis job coupé à 20 min, sans lien avec la PR) ;
   `check:migrations --pr 2794` sortie 0 ; mergée. `db:migrate --dry-run` : refusé, `20261117222600` (carnet-heatmap)
   en attente avant la dernière jouée → stop, pas de `--include-all`.
+- 2026-11-18 : migration `20261117222938` jouée hors de cette session (`migration list --linked` : plus rien en
+  attente). MCP : 5 brouillons rangés (4 sur « définition », 143 sur « écritures »), un tag chacun (CM2-131, 132,
+  136, 137, 143), `updated_at` = création. Page à cocher publiée (5 fiches, aucune alerte, figures dessinées) :
+  https://claude.ai/artifact/6zsvpGYUozHpvSfTcTUhKx ; `verdicts` vide au départ.
