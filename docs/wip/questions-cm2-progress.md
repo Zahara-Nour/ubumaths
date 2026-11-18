@@ -1014,6 +1014,12 @@ son jumeau CM1. Relevés de nouveau juste avant la création. Reco : **oui**.
 
 (e) Un seul lot de 5 modèles. Reco : **oui**.
 
+### 16.1 Lot 10 : décisions (David, 2026-11-18)
+
+Recommandations suivies (« je te suis ») : (a) trotteuse lue sur un cadran à 12 chiffres puis `chiffres: quarts`, pas de
+cadran nu ; (b) pas de variation « affichage digital » ; (c) conversions dans les problèmes seulement ; (d) niveaux après
+ceux pris : lire 9, placer 10 ; durée 9, comparer 10, problèmes 11 ; (e) un seul lot de 5 modèles. Tableau du § 16 gardé.
+
 ### 16.2 Lot 10 : écriture (2026-11-18)
 
 - `docs/wip/questions/lot-cm2-10.py` → `scripts/questions/cm2-10/` (5 modèles, 16 variations, sans `theme` / `domain` /
