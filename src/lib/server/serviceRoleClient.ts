@@ -66,6 +66,9 @@ const ALLOWED_SERVICE_ROLE_PATHS = [
 	// Style d'une fiche (lot 4b, D11) : l'élève destinataire reçoit la mise en page
 	// du style de l'auteur ; il n'a aucun droit sur les tables des styles
 	'lib/server/worksheets/worksheet-styles.ts',
+	// La Descente de la Vistule : le serveur seul écrit les Bêtes (aucun droit INSERT à
+	// l'élève) ; identifiant de la session vérifié par `assertSessionStudent`
+	'lib/server/descente/spawn.ts',
 	// Question d'âge en 2nde : la base refuse à l'élève l'écriture de sa réponse
 	'/api/student/age-declaration',
 	// GDPR account deletion (requires auth.admin.deleteUser)

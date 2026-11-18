@@ -57,6 +57,7 @@ on:
       - 'src/lib/validation/carnet.ts'
       - 'src/lib/mathAST/**'
       - 'src/lib/mathoux/**'
+      - 'src/lib/descente/**'
       - 'src/lib/programmes/**'
       - 'src/lib/questions/**'
       - 'src/lib/resources/**'
