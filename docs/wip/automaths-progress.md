@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après #2842._
+_Mis à jour le 2026-11-18, après #2847._
 
-- **État** : PR 1 mergée (#2842) ; PR 2 recherche codée sur `feat/automaths-recherche` (phase 0 validée, migration `20261118204254` comprise), revue puis PR. Page : [automaths-recherche-ui.html](automaths-recherche-ui.html), https://claude.ai/artifact/SCczsfi9ayGXjioFtsQq2R.
-- **Prochaine action** : revue (code-reviewer + security-auditor), PR, merge, `db:migrate`. Puis PR 3 navigation (arbre des notions + bascule programme), PR 4 série en cours (« Ma série »).
-- **En attente de David** : rien.
-- **Pièges en cours** : la tuile reste la flash-card (décision du 2026-09-29) ; plusieurs points désignent le même nœud (4-021, 4-075, 4-023 → Calcul littéral) ; un point posé sur une notion peut n'avoir aucune question en propre (4-003) → inclure ses sous-notions ; le panier détaillé `/automaths/panier` ne change pas ; le catalogue retient sa dernière adresse en `sessionStorage` (`chiphre_automaths_adresse`) : un test qui rend la page doit vider `sessionStorage`.
-- **Worktree / branche** : `../ubumaths-wt-automaths`, `feat/automaths-recherche`.
+- **État** : PR 1 (#2842) et PR 2 recherche (#2847) mergées ; migration `20261118204254` (lecture `anon` des liens question publiée → point) appliquée en prod et vérifiée. Rien en prod tant que David n'a pas fait `deploy:prod`. Page : [automaths-recherche-ui.html](automaths-recherche-ui.html), https://claude.ai/artifact/SCczsfi9ayGXjioFtsQq2R.
+- **Prochaine action** : PR 3 navigation (liste des notions à compteurs + pastilles des sous-notions, bascule « Programme » dès qu'un niveau est choisi), nouveau worktree `../ubumaths-wt-automaths`, branche `feat/automaths-navigation`, phase 0 à présenter avant de coder. Puis PR 4 « Ma série ».
+- **En attente de David** : rien (vérification manuelle #2847 notée dans `verifications-manuelles.md`).
+- **Pièges en cours** : la tuile reste la flash-card (décision du 2026-09-29) ; plusieurs points désignent le même nœud (4-021, 4-075, 4-023 → Calcul littéral) ; un point posé sur une notion peut n'avoir aucune question en propre (4-003) → inclure ses sous-notions ; le panier détaillé `/automaths/panier` ne change pas ; un test qui rend la page doit vider `sessionStorage` (`chiphre_automaths_adresse`) ; les modèles de test simplifiés n'ont PAS d'aperçu (carte absente) : prendre la fixture `data/relecture/entiers/139.json` pour asserter une carte ; la recherche ignore le nom de branche (décision de David).
+- **Worktree / branche** : aucun (celui de la PR 2 est supprimé).
 
 ### 2026-11-18 — recherche
 
@@ -75,3 +75,7 @@ Au test en local : « calcul » ramenait 1 050 questions, toute la branche « No
 - `catalogue-search.ts` (`searchCatalogue`, `initiallyOpenGroups`), cache, page ; tests rouges vérifiés sur l'ancienne page.
 - Après le merge : `db:migrate` (additive) AVANT tout `deploy:prod`, sinon la recherche tourne sans les points (pas de panne : lecture en échec tolérée).
 - Revues : `security-auditor` (Opus) sans finding bloquant ; appliqué : lecture `anon` limitée aux colonnes `template_id, point_id`, commentaire (pas de statut « archive »), 4 cas d'intégration de plus (embed, `created_at`, update, publié → brouillon), liens filtrés aussi par les ids publiés côté API. `code-reviewer` (Sonnet) : groupe replié impossible à ouvrir avec ses cartes (`$state` proxifiait le résultat → `$state.raw`, test rouge puis vert), tri stable des liens (`point_id`), minuteur nettoyé au départ de la page, frappe en attente appliquée au changement de niveau, `x²` trouvé par « x2 » (NFKD). Écarté : « / » avec une fenêtre ouverte (improbable).
+
+### 2026-11-18 — PR 2 mergée (#2847)
+
+- CI verte, mergée ; `db:migrate` (seule migration en attente) ; vérifié en prod : `anon` lit `template_id`, pas `created_at`, une policy `anon`.
