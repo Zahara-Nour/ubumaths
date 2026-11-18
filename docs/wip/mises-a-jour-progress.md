@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, PR `refactor/kit3-depreciations` ouverte._
+_Mis à jour le 2026-11-18, après #2853._
 
-- **État** : #2814 à #2830 en prod (0.96.0). #2835 mergée : `version` (= `Date.now()`) retiré de la config Svelte passée à ESLint (empreinte de cache qui changeait à chaque lancement). Ne suffit pas en CI : nocturne à cache restauré = 31 min. #2850 mergée : attente max de `deploy:prod` 1500 → 2700 s (pas encore en prod). PR `refactor/kit3-depreciations` : `invalidateAll` → `refreshAll` (50 fichiers ; aucune fonction distante, `page.state` ne porte rien → même effet), options de `goto` `replaceState`/`invalidateAll` → `replace`/`refreshAll` (lus `??` par kit), `error(N, { message })` → `error(N, message)` (35 appels).
-- **Prochaine action** : merger la PR #2853 (revues code + sécurité sans finding). `pushState`/`replaceState` **laissés** (§ « Dépréciations de kit 3 » ci-dessous : leur remplaçant déclenche les hooks de navigation). `json()`/`text()` (≈ 368 fichiers) REPORTÉS. Puis clore (versement). **Cache ESLint en CI : cause NON trouvée** (§ « Cache ESLint en CI »), recherche mise de côté.
+- **État** : #2814 à #2830 en prod (0.96.0). #2835, #2850, #2853 mergées (pas encore en prod). #2853 = dépréciations de kit 3 sans effet de bord : `invalidateAll` → `refreshAll`, options `goto` `replace`/`refreshAll`, `error(N, message)` ; revues code + sécurité sans finding.
+- **Prochaine action** : clore le chantier (versement du durable dans `docs/systeme/`, journal archivé). Restent hors lot, décidés : `pushState`/`replaceState` **laissés** (§ « Dépréciations de kit 3 » : leur remplaçant déclenche les hooks de navigation) ; `json()`/`text()` (≈ 368 fichiers) REPORTÉS ; cache ESLint en CI : cause NON trouvée (§ « Cache ESLint en CI »), recherche mise de côté.
 - **En attente de David** : rien.
 - **Pièges en cours** : `#lib` exige l'extension écrite (garde `imports-lib-avec-extension`, qui exclut le test de `migrer:diese`) ; limite connue du lint de PR : props importées d'un autre `.svelte` ou type indirect → seul le nocturne les voit ; commitlint refuse un sujet qui commence par une majuscule (« ESLint… ») ; `appNavigationMock` ; suite client en local avec `CI=true`.
-- **Worktree / branche** : `../ubumaths-wt-mises-a-jour` · `refactor/kit3-depreciations`.
+- **Worktree / branche** : aucun.
 
 ## Dépréciations de kit 3 (2026-11-18)
 
