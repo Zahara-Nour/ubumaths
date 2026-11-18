@@ -5,18 +5,19 @@ Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) · bornes 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, pendant l'écriture du lot 5b (§ 40)._
+_Mis à jour le 2026-11-18, après #2849._
 
-- **État** : lots 0 à 5a publiés ; lot 5b (L7–L9 : 043, 084, 085) écrit, essayé en base locale, PR des fichiers à
-  ouvrir / ouverte sur `feat/questions-ttechno-lot5b`. Restent ensuite les lots 6 à 8 (§ 33).
-- **Prochaine action** : merger la PR des fichiers ; puis David lance `create-questions --publier` (3 brouillons),
-  migration nœud + tag (gabarit lot 5a), page à cocher.
-- **En attente de David** : `create-questions --publier` après le merge.
+- **État** : lots 0 à 5a publiés ; lot 5b (L7–L9 : 043, 084, 085) écrit, **#2849 mergée** (fichiers seuls, § 40).
+  Restent ensuite les lots 6 à 8 (§ 33).
+- **Prochaine action** : après la création en prod, reporter les ids, migration nœud + tag (gabarit lot 5a, nœud
+  « équations et inéquations » ee6b005b), page à cocher.
+- **En attente de David** : `pnpm tsx scripts/create-questions.ts --dir scripts/questions/ttechno-5b-log-resolutions
+--publier` (3 brouillons) depuis le dépôt principal.
 - **Pièges en cours** : un point TTECHNO par modèle (trigger) ; tag = nœud DU POINT (relevé MCP) ; `publier-lot.ts`,
-  `create-questions --publier` visent la prod : David les lance (`!`) depuis le dépôt principal ; **L7 et L8 demandent
-  de taper log : publiables seulement après le `deploy:prod` qui livre #2839** (pas en prod le 2026-11-18 ; L9 n'en
-  dépend pas) ; port 5176 pris par le worktree `automaths` (serveur de test sur 5179).
-- **Worktree / branche** : `ubumaths-wt-questions-ttechno` · `feat/questions-ttechno-lot5b`.
+  `create-questions --publier` visent la prod : David les lance (`!`) ; **L7 et L8 demandent de taper log : à
+  publier seulement après le `deploy:prod` qui livre #2839** (pas en prod le 2026-11-18 ; L9 n'en dépend pas) ;
+  port 5176 pris par le worktree `automaths`.
+- **Worktree / branche** : aucun (retiré après #2849).
 
 ## 1. Périmètre
 
@@ -937,3 +938,4 @@ dans le dépôt principal, reportés et commités sur la branche de la migration
   intervalles.
 - ⚠ #2839 (saisie de log) **pas encore en prod** : L7 et L8 restent en brouillon jusqu'au `deploy:prod` qui le
   livre ; L9 n'en dépend pas.
+- **#2849 mergée (2026-11-18)**, CI verte. Worktree retiré.
