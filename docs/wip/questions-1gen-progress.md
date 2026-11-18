@@ -7,16 +7,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, après #2793 (lot 4 rangé en prod)._
+_Mis à jour le 2026-11-18, après la publication du lot 4 (§ 22)._
 
-- **État** : lots 1, 2 et 3 publiés ; lot 4 en brouillons en prod, rangés et tagués (§ 21), page à cocher publiée,
-  0 verdict. Lot 5 (second degré) : brouillons créés par questions-1techno (#2787), qui les range et les tague.
-- **Prochaine action** : lire les verdicts (`ArtifactData list verdicts`, compter 7) ; tout OK → simulation
-  `publier-lot.ts --dir scripts/questions/1gen-4-taux-moyen-seuils`, puis David lance `--publier` ; relire
-  `published` ; prévenir questions-ttechno (T1, T2).
-- **En attente de David** : relecture de la page à cocher https://claude.ai/artifact/4zbYF42f9MapzqfF4VTw7k
+- **État** : lots 1 à 4 publiés (28 modèles). Lot 5 (second degré) clos par questions-1techno (#2787, #2796) : ses
+  modèles communs `{1_GEN,1_TECHNO}` sont publiés. Lot 6 (statistiques à deux caractères, 001 à 007) : rien d'écrit.
+- **Prochaine action** : phase 0 du lot 6 (§ 4, point 6). Demander d'abord à questions-1techno où en est son lot
+  « graphiques et stats à deux variables » (modèles communs possibles), puis relevé prod et proposition à David.
+- **En attente de David** : rien.
 - **Pièges en cours** : ADR 0020 et `couvrir-un-niveau.md` § 9 avant tout tag ; `db push` pousse TOUTES les
-  migrations en attente ; aperçu : serveur `--host ::`.
+  migrations en attente ; publication en prod = commande `!` de David (ma simulation est refusée : elle vise la
+  prod) ; aperçu : serveur `--host ::`.
 - **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, 2026-11-17)
@@ -797,3 +797,13 @@ David a lancé `create-questions --publier` après #2788. Relu au MCP : 7 brouil
 - Ids de T1 (→ TTECHNO-035) et T2 (→ TTECHNO-038) envoyés à questions-ttechno.
 - Page à cocher : 7 fiches, 27 exemples, aucune alerte. https://claude.ai/artifact/4zbYF42f9MapzqfF4VTw7k (capacité
   `db`, 0 verdict à la publication ; rendu 390 px non revu, même gabarit que le lot 3).
+
+## 22. Lot 4 : publication (2026-11-18)
+
+- Page à cocher : 7 verdicts « ok », sans commentaire (David, 2026-11-18) ; ids identiques à ceux du dossier.
+- `publier-lot.ts --dir scripts/questions/1gen-4-taux-moyen-seuils` lancé par David (`!`) : simulation 7/7 sans
+  refus ni alerte de tag, puis `--publier` : **7/7 publiés, statut relu en base**. (Ma simulation a été refusée
+  par le classifieur : elle vise la prod.)
+- questions-ttechno prévenue : T1 `a439df84` (→ TTECHNO-035) et T2 `f84e23a3` (→ TTECHNO-038) sont publiés ; elle
+  n'ajoute que ses tags.
+- Lot 5 : questions-1techno l'a clos (#2796), modèles communs du second degré publiés.
