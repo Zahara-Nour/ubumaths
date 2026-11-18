@@ -5,18 +5,18 @@ Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) · bornes 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, lot 3b publié (4/4)._
+_Mis à jour le 2026-11-18, phase 0 du lot 4 écrite (§ 29)._
 
-- **État** : lots 0 à 3b en prod et publiés (lot 3 « fonctions aˣ » fini, § 28) ; aucun worktree ouvert.
-- **Prochaine action** : phase 0 du lot 4 (taux moyen, intercaler un point : 035 et 038 déjà couverts par T1 / T2,
-  reste 039) — relevé MCP, proposition, questions à David.
-- **En attente de David** : 037 (« connaître les propriétés algébriques » des exponentielles, point chapeau) n'a
-  aucun modèle (§ 28) : lui en écrire un, ou le laisser couvert par 034 / 078 / 079 / 081 ?
+- **État** : lots 0 à 3b en prod et publiés ; 037 ajouté au lot 4 (David, « tes recos ») ; phase 0 du lot 4
+  écrite (§ 29) ; aucun worktree ouvert.
+- **Prochaine action** : réponses de David à Q21–Q23 (§ 29), puis worktree `feat/questions-ttechno-lot4`,
+  écriture de M1 (037) et M2 (039).
+- **En attente de David** : Q21 (contenu de M1), Q22 (Python et tableur dans M2), Q23 (placer le point ou non).
 - **Pièges en cours** : un point TTECHNO par modèle (trigger) ; `grades` en `array_append` seulement ;
   `publier-lot.ts`, `garde-niveaux-tags.ts`, `create-questions --publier` visent la prod : David les lance (`!`),
   **depuis le dépôt principal, après le merge** ; `Doc-inchangée:` dans un COMMIT de la PR ; `db:migrate` pousse
   toutes les migrations en attente (`migration list --linked` avant).
-- **Worktree / branche** : à créer pour le lot 4 (`git worktree add -b feat/questions-ttechno-lot4 …`).
+- **Worktree / branche** : à créer après la validation (`feat/questions-ttechno-lot4`).
 
 ## 1. Périmètre
 
@@ -684,3 +684,38 @@ attente ; `db:migrate` depuis le dépôt principal (4 conditions). Prod vérifi�
 - Bilan MCP des nœuds « fonctions x ↦ aˣ » et « propriétés algébriques » (modèles publiés par point TTECHNO) :
   031, 032, 033 : 2 ; 034, 036, 078, 079, 080, 081 : 1. Sans modèle : **037** (point chapeau, question à David),
   039 (lot 4), 042, 082, 083 (lot 5, logarithme).
+
+## 29. Lot 4 : phase 0 (2026-11-18)
+
+**Décision (David, 2026-11-18, « tes recos »)** : 037 (point chapeau « connaître les propriétés algébriques ») reçoit
+un modèle à lui, ajouté au lot 4.
+
+**Relevé prod (MCP, lecture seule)** :
+
+- 035 et 038 : T1 a439df84 et T2 f84e23a3 publiés, `T_TECHNO` et tags posés (§ 21) → rien à écrire.
+- 039 (BO p. 5, « situations algorithmiques » de la partie aˣ, « Python ou tableur ») : aucun modèle. Voisins :
+  E6 9ead685c (placer des points de k·aˣ, 1GEN-042) ; 72b876d7 moyenne géométrique de deux nombres (TTECHNO-018,
+  suites). Rien à réutiliser tel quel.
+- 037 : aucun modèle. Gabarit de forme : 7c8b341b « Propriétés algébriques du logarithme » (TSPE-439, à savoir
+  parmi des erreurs typiques). Nœud du point : « propriétés algébriques » (44206987).
+
+**Proposition** (modèles neufs, `grades ['T_TECHNO']`, brouillons, un point chacun) :
+
+| #   | Modèle                                     | Point | Contenu (variations)                                                                                                                           | Niv. |
+| --- | ------------------------------------------ | ----- | ---------------------------------------------------------------------------------------------------------------------------------------------- | ---- |
+| M1  | Propriétés des exponentielles : laquelle ? | 037   | aˣ × aʸ, aˣ ÷ aʸ, (aˣ)ⁿ : la bonne écriture parmi des erreurs typiques ; vrai / faux aˣ + aʸ = a^(x+y) ; a⁰, a⁻ˣ                               | 1    |
+| M2  | Intercaler un point sur la courbe de aˣ    | 039   | coordonnées du point intercalé (moyennes arithm. / géom.) ; est-il sur la courbe ? ; Python à trous ; formule de tableur ; deux intercalations | 1–2  |
+
+Plages M2 : a ∈ {2 ; 3 ; 4 ; 5 ; 0,5} ; x₁, x₂ entiers d'écart 2 (milieu entier, ordonnée exacte) ; la seconde
+intercalation donne une racine (arrondi au centième). M1 : toutes cases choix, aucun calcul.
+
+**Questions à David** :
+
+- **Q21 — M1** : seulement les propriétés du BO (produit, quotient, puissance, a⁰, a⁻ˣ), sans (ab)ˣ = aˣbˣ ?
+  Reco : **oui, celles du BO**.
+- **Q22 — M2, Python et tableur** : le BO dit « Python ou tableur » ; une variation de chaque ? Reco : **oui**
+  (forme des modèles Python du lot 2 : compléter une ligne, réponse en choix).
+- **Q23 — M2, placer le point** : faire placer le point intercalé dans un repère (`placer:`), ou les coordonnées
+  suffisent ? Reco : **les coordonnées suffisent** (le BO parle d'algorithme, pas de tracé).
+- **Question d'accès** (migration de tags, après écriture) : brouillons, personne ne les voit avant la publication ;
+  publiés, ils apparaissent au catalogue et au cahier de texte de Tle techno seulement. Personne ne perd rien.
