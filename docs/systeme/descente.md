@@ -2,6 +2,10 @@
 couvre:
   - 'src/lib/descente/**'
   - 'src/lib/server/descente/**'
+  - 'src/lib/components/descente/**'
+  - src/lib/server/validation/descente.ts
+  - 'src/routes/(protected)/dashboard/student/descente/**'
+  - 'src/routes/api/descente/**'
 ---
 
 # La Descente de la Vistule — le jeu de combats
