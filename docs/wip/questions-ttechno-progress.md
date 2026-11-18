@@ -9,9 +9,9 @@ _Mis à jour le 2026-11-18, après #2851._
 
 - **État** : lots 0 à 5a publiés ; lot 5b (L7–L9) en prod, rangé et tagué (#2851 jouée, § 41), en brouillon.
   Restent ensuite les lots 6 à 8 (§ 33).
-- **Prochaine action** : page à cocher du lot 5b (gabarit § 38), puis publication de L9 seule tant que #2839 n'est
-  pas en prod.
-- **En attente de David** : rien.
+- **Prochaine action** : lire les verdicts de la page à cocher du lot 5b (§ 42), puis publier L9 seule
+  (`becf24bc`) tant que #2839 n'est pas en prod.
+- **En attente de David** : relecture de la page à cocher du lot 5b (§ 42).
 - **Pièges en cours** : un point TTECHNO par modèle (trigger) ; tag = nœud DU POINT (relevé MCP) ; `publier-lot.ts`,
   `create-questions --publier` visent la prod : David les lance (`!`) ; **L7 et L8 demandent de taper log : à
   publier seulement après le `deploy:prod` qui livre #2839** (L9 n'en dépend pas) ; port 5176 pris par `automaths`.
@@ -951,3 +951,9 @@ dans le dépôt principal, reportés et commités sur la branche de la migration
 - **#2851 mergée (2026-11-18)**, CI verte, `check:migrations --pr 2851` vert ; `security-auditor` sans finding.
   `migration list --linked` : seule `20261118214049` en attente ; `db:migrate` depuis le dépôt principal. Relu par
   MCP : 3 / 3 sur ee6b005b, un tag chacun (043, 084, 085), `draft`, `updated_at` inchangé. Worktree retiré.
+
+## 42. Lot 5b : page à cocher (2026-11-18)
+
+- Page à cocher : https://claude.ai/artifact/APGycPrWV53fLcHSp4zD1c (3 fiches : 52b884ee TTECHNO-043, 6 exemples ;
+  10bd7075 084, 4 exemples ; becf24bc 085, 4 exemples ; aucune alerte ; tous `draft` ; `verdicts` vide). Rendu à
+  390 px non vérifié.
