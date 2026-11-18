@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, PR 2b prête à pousser (branche `chore/sveltekit-3`)._
+_Mis à jour le 2026-11-18, après #2825._
 
-- **État** : 21 commits, prêts à pousser. Tout vert en local : `pnpm check` (11 559 fichiers, TS 6), `pnpm build`, suite serveur (67 546), suite client en 2 tranches comme la CI (4 962), `types:cliquet`, intégration ciblée, essai manuel sur 5178 (admin, menu, 404). Revues faites : `security-auditor` sans bloquant (cookie 2 corrigé) ; `code-reviewer` : alias `$lib` de la suite d'intégration, `data-sveltekit-noscroll`, liens de notification périmés, `check-incremental`/`check-env-parity` corrigés. #2814 et #2821 mergées, pas encore en prod.
-- **Prochaine action** : grep « claude|anthropic », push, PR (corps dans le scratchpad de la session ou à réécrire depuis la section « PR 2b »), CI surveillée, merge si verte ; puis bloc à jour, worktree nettoyé. Ensuite : `$lib` → `#lib` (PR à part).
-- **En attente de David** : `deploy:prod` pour livrer #2814 et #2821, quand il le voudra.
-- **Pièges en cours** : `$lib` gardé par `alias` (déprécié) — `#lib` = PR à part ; `$env/*` n'expose plus que ce que déclare `src/env.ts` ; `check:incremental` (tsgo) ne vérifie pas TS 6, seul `pnpm check`. `minimumReleaseAge` 3 j.
-- **Worktree / branche** : `../ubumaths-wt-mises-a-jour` · `chore/sveltekit-3`.
+- **État** : SvelteKit 3.2.0 + adapter-vercel 7.0.3 mergés (#2825, CI verte 16 contrôles), après kit 2.70.4 (#2814) et TypeScript 6.0.3 (#2821). Rien n'est encore en prod. Constats de kit 3 : section « PR 2b — SvelteKit 3 ». Vérifications à l'œil : `verifications-manuelles.md` (#2825).
+- **Prochaine action** : PR 3, `$lib` → `#lib` (≈ 14 600 imports, mécanique) puis retrait de l'option `alias` (`kitAlias` dans `vitest.base.config.ts`). Ensuite les dépréciations laissées (`error(N, { message })`, `pushState`/`replaceState`, `invalidateAll`, `json()`), puis les autres majeures (vitest 5, ESLint 10…).
+- **En attente de David** : `deploy:prod` pour livrer #2814, #2821 et #2825, quand il le voudra (puis les vérifications de #2825).
+- **Pièges en cours** : `$env/*` n'expose plus que ce que déclare `src/env.ts` ; `vi.mock('$app/navigation')` avec `importOriginal` fige la suite client → `appNavigationMock` ; suite client en local avec `CI=true` ; `check:incremental` (tsgo) ne vérifie pas TS 6, seul `pnpm check`. `minimumReleaseAge` 3 j.
+- **Worktree / branche** : aucun (worktree `mises-a-jour` supprimé après #2825).
 
 ## Origine
 
@@ -93,5 +93,6 @@ Constats dans le code de kit 3.2.0 (pas dans le guide) :
 
 ## Historique
 
+- 2026-11-18 : #2825 mergée (CI verte, 16 contrôles) : SvelteKit 3.2.0 + adapter-vercel 7.0.3, `src/env.ts`, cookie 2 ; revues `code-reviewer` + `security-auditor` traitées.
 - 2026-11-18 : #2814 mergée (CI verte, 16 contrôles) : SvelteKit 2.70.3 → 2.70.4.
 - 2026-11-18 : #2821 mergée (CI verte, 17 contrôles) : TypeScript 5.9.3 → 6.0.3 ; `pnpm check` local 0 erreur sur 11 653 fichiers, cliquet tenu, aucune correction de code nécessaire.
