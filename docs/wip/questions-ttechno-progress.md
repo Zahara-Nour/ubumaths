@@ -5,13 +5,14 @@ Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) · bornes 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après la publication du lot 4._
+_Mis à jour le 2026-11-18, phase 0 du lot 5 écrite (§ 34)._
 
-- **État** : lots 0 à 4 publiés (lot 4 : 5e810e16 → 037, 7a37a3e1 → 039, vérifié MCP) ; aucun worktree ouvert.
+- **État** : lots 0 à 4 publiés ; phase 0 du lot 5 (logarithme décimal, L1–L9) écrite au § 34 ; aucun worktree.
   Bilan MCP (§ 33) : 28 points STMG encore sans modèle publié, tous prévus aux lots 5 à 8 (017, 019 : rien, Q17).
-- **Prochaine action** : phase 0 du lot 5, logarithme décimal (040, 041, 042, 082, 083, 043, 084, 085, 044) :
-  relevé MCP de l'existant (calques ln à réécrire en base 10, Q3), proposition, questions à David.
-- **En attente de David** : rien avant la phase 0 du lot 5.
+- **Prochaine action** : après les réponses, worktree `questions-ttechno-lot5a`, écriture de L1–L6
+  (`docs/wip/questions/lot-ttechno-5a.py`), sonder d'abord `log(x)` dans ` ```courbe `.
+- **En attente de David** : Q24 (5a puis 5b), Q25 (valeur exacte ou arrondi), Q26 (nombre de chiffres),
+  question d'accès (§ 34).
 - **Pièges en cours** : un point TTECHNO par modèle (trigger) ; tag = nœud DU POINT (relevé MCP, pas le journal) ;
   `publier-lot.ts`, `create-questions --publier` visent la prod : David les lance (`!`) depuis le dépôt principal ;
   `db:migrate` pousse toutes les migrations en attente ; worktree neuf → `svelte-kit sync`.
@@ -782,3 +783,56 @@ David a lancé `create-questions --publier` : 2 brouillons (5e810e16 M1, 7a37a3e
   - **lot 7, deux variables** (6) : 050, 051, 052, 088, 053, 054 ;
   - **lot 8, loi binomiale** (7) : 057, 060, 061, 067, 069, 090, 091.
 - 045, 049, 057, 060, 061, 087 étaient des jumeaux « a priori » (§ 3) que le lot 0 n'a pas retenus.
+
+## 34. Lot 5 : phase 0, logarithme décimal (2026-11-18)
+
+**Relevé prod (MCP, lecture seule)** — trois nœuds (sous-notions de « Logarithmes ») :
+
+| Nœud                                    | Points        | Modèles rangés aujourd'hui                                                                               |
+| --------------------------------------- | ------------- | -------------------------------------------------------------------------------------------------------- |
+| « logarithme décimal » (217d0af1)       | 040, 041, 044 | aucun                                                                                                    |
+| « propriétés algébriques » (dae7b3f1)   | 042, 082, 083 | `ffd5c051`, `7c8b341b` (propriétés de ln), `f455700a` (Briggs, Python), `97309b20` (xᵃ, dérivée) : T_SPE |
+| « équations et inéquations » (ee6b005b) | 043, 084, 085 | `d3301f2d` (équation ln), `14036c68` (inéquation ln), `28ede1b8` (demi-vie, exp et ln) : T_SPE / T_COMP  |
+
+- Recherche par contenu sur **tous** les modèles (`\log` dans les variations, « logarithme décimal » ou « log »
+  dans le titre) : **aucun modèle en log décimal**. Rien à taguer.
+- Autres sous-notions de « Logarithmes » (courbe, dérivée, réciproque) : 7 modèles ln de Tle spé / compl.,
+  dont `86c59a05` (variations de ln : comparer, signe) et `74b103a8` (reconnaître la courbe de ln).
+- Calques utiles (idées reprises, **originaux intacts**, Q3) : `7c8b341b` (formules en QCM), `ffd5c051`
+  (écrire en fonction de ln 2 et ln 3, regrouper en ln n), `d3301f2d`, `14036c68`, `f1963ef2` (seuil qⁿ par le
+  logarithme, TCOMP-239), `86c59a05`, `74b103a8`. Hors bornes, non repris : Briggs, xᵃ dérivée, demi-vie,
+  réciproque de exp, limites.
+- Moteur : `log` sans base = **décimal** dans l'évaluation (`mathAST/eval/evaluate.ts`, `common/numeric.ts`) et
+  la dérivation ; donc `{{eval:log(…)}}` et la correction des réponses comprennent `\log`. À sonder à
+  l'écriture : `f(x) = log(x)` dans un bloc ` ```courbe ` (décimal ou népérien ?), et l'équivalence
+  `\dfrac{\log 5}{\log 2}` ↔ `\log(5)/\log(2)`.
+- Bornes (ttechno.md, ltt-1) : log(aⁿ) = n·log(a) avec n entier naturel dans les **transformations** (082, 044) ;
+  x réel admis dans les **résolutions** (043, 084, 085). Pas de base e, pas de log_a, pas de dérivée de log.
+
+**Proposition** (9 modèles neufs, un point chacun, `grades ['T_TECHNO']` seul, brouillons) :
+
+| #   | Modèle                               | Point | Contenu (variations)                                                                                                                                | Niv. |
+| --- | ------------------------------------ | ----- | --------------------------------------------------------------------------------------------------------------------------------------------------- | ---- |
+| L1  | Définition du logarithme décimal     | 040   | log(10ⁿ) = n sans calculatrice (n ∈ −3..6) ; « 10ˣ = 1000, donc x = ? » ; 10^(log b) = b ; nombre de chiffres de N connaissant log N ≈ 5,3          | 1    |
+| L2  | Sens de variation de log             | 041   | sens (choix) ; comparer log 0,7 et log 1,3 sans calcul ; signe de log x ; encadrer : 100 < x < 1000 ⇒ 2 < log x < 3 ; courbe (si le bloc trace log) | 1    |
+| L3  | log(ab) = log a + log b              | 042   | formule (choix) ; log 2 + log 5 = 1 ; log a + log b = log(?) ; log 200 = log 2 + ?                                                                  | 1    |
+| L4  | log(aⁿ) = n log a                    | 082   | formule (choix) ; log(2⁵) = ? × log 2 ; log 8 en fonction de log 2 ; valeur de log(aⁿ) avec log a ≈ 0,301 donné                                     | 1    |
+| L5  | log(a/b) = log a − log b             | 083   | formule (choix) ; log(1/b) = −log b ; log a − log b = log(?) ; log 0,5 avec log 2 donné                                                             | 1    |
+| L6  | Transformer des expressions avec log | 044   | log 72 en fonction de log 2 et log 3 ; log a + log b − log c = log n ; log(100x) = 2 + log x ; log(1000/x²) littéral                                | 2    |
+| L7  | Résoudre aˣ = b ou xᵃ = b            | 043   | 10ˣ = b ⇒ x = log b ; aˣ = b ⇒ x = log b / log a ; annuités (capital doublé, x réel) ; xᵃ = b (x > 0), taux moyen                                   | 2    |
+| L8  | Résoudre aˣ < b ou xᵃ < b            | 084   | a > 1 ; 0 < a < 1 (log a < 0 : le sens change) ; xᵃ ⩽ b, x > 0 ; réponse en intervalle                                                              | 2–3  |
+| L9  | Seuil aⁿ < b, n entier naturel       | 085   | plus petit n (0,8ⁿ < 0,01 ; capital qui dépasse un montant ; dépréciation d'une machine) — calque `f1963ef2` en log                                 | 2    |
+
+Plages : a ∈ {0,5 ; 0,8 ; 0,9 ; 1,02 … 1,08 ; 2 ; 3 ; 5} ; b > 0 ; réponses en valeur exacte ou arrondie selon
+la variation (Q25). L9 distinct de T6 (`questions-1gen`, seuil sans log, par tableau ou Python).
+
+**Questions à David** :
+
+- **Q24 — Découpage** : lot 5a « définition, variations, propriétés » (L1–L6), puis lot 5b « équations,
+  inéquations, seuils » (L7–L9) ? Reco : **5a puis 5b**, pages à cocher courtes comme 3a / 3b.
+- **Q25 — Forme des réponses aux équations** : exemple 2ˣ = 5. Reco : **valeur exacte** (x = log 5 / log 2) quand
+  l'énoncé est purement algébrique, **arrondi** (« au centième », « nombre d'années ») quand il y a un contexte.
+- **Q26 — Nombre de chiffres** (commentaire du BO : log N donne l'ordre de grandeur et le nombre de chiffres
+  d'un entier) : une variation dans L1 ? Reco : **oui**. Le repère semi-logarithmique (STI2D / STL) : non, hors STMG.
+- **Question d'accès** (migration de tags, après écriture) : brouillons, personne ne les voit ; publiés, ils
+  apparaissent au catalogue et au cahier de texte de Tle techno seulement. Personne ne perd rien.
