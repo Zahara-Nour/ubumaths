@@ -5,19 +5,19 @@ Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) · bornes 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, lot 5a : migration nœud + tags en cours (§ 37)._
+_Mis à jour le 2026-11-18, après #2845 (lot 5a : nœud + tags, `db:migrate` fait)._
 
-- **État** : lots 0 à 4 publiés ; lot 5a (L1–L6, log décimal) : 6 brouillons en prod, migration nœud + tags sur
-  `feat/questions-ttechno-lot5a-tags` (§ 37) ; saisie de « log » réglée (#2839, § 36), pas encore en prod.
+- **État** : lots 0 à 4 publiés ; lot 5a (L1–L6, log décimal) : 6 brouillons en prod, rangés et tagués (#2845, § 37) ;
+  saisie de « log » réglée (#2839, § 36), pas encore en prod.
   Bilan MCP (§ 33) : 28 points STMG encore sans modèle publié, prévus aux lots 5 à 8 (017, 019 : rien, Q17).
-- **Prochaine action** : PR de la migration → merge → `db:migrate` (4 conditions) → page à cocher du lot 5a.
-  Ensuite écriture du lot 5b (L7–L9, réponses exactes en log).
+- **Prochaine action** : page à cocher du lot 5a (6 fiches, gabarit § 32), relecture par David, puis
+  `publier-lot.ts --dir scripts/questions/ttechno-5a-logarithme`. Ensuite écriture du lot 5b (L7–L9).
 - **En attente de David** : rien.
 - **Pièges en cours** : un point TTECHNO par modèle (trigger) ; tag = nœud DU POINT (relevé MCP, pas le journal) ;
   `publier-lot.ts`, `create-questions --publier` visent la prod : David les lance (`!`) depuis le dépôt principal ;
   `{{var}}` décimale calculée s'écrit en fraction (afficher par `{{eval:var;d}}`) ; un modèle du lot 5b qui demande de
   taper log n'est publiable qu'après le `deploy:prod` qui livre #2839.
-- **Worktree / branche** : `ubumaths-wt-questions-ttechno`, `feat/questions-ttechno-lot5a-tags`.
+- **Worktree / branche** : aucun.
 
 ## 1. Périmètre
 
@@ -899,3 +899,7 @@ dans le dépôt principal, reportés et commités sur la branche de la migration
   `types:cliquet` tenu.
 - `security-auditor` : aucun finding (diff avec le lot 4 = en-tête, ids, codes, nœuds, garde « 0 ou 6 », table
   temporaire ; rollback miroir ; aucune policy, aucun GRANT, aucune table d'élève ; état prod mesuré conforme).
+- **#2845 mergée (2026-11-18)**, CI verte, `check:migrations --pr 2845` vert. `migration list --linked` : seule
+  `20261118203301` en attente → `db:migrate` depuis le dépôt principal (4 conditions). Prod vérifiée (MCP) : 6
+  modèles sur leur nœud, un tag chacun (040, 041, 044 / 042, 082, 083), `draft`, `updated_at` inchangés. Worktree
+  retiré.
