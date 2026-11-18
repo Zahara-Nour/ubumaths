@@ -185,7 +185,7 @@ aiguillage, Élève / Parent / Professeur, vers trois vues courtes : `/eleves`, 
   toujours ». Le niveau est dit partout : du CM1 à la Terminale.
 - **Le registre** : élèves tutoyés ; parents et professeurs vouvoyés (les descriptions du Tour,
   qui tutoient, sont réécrites pour les professeurs).
-- **Les parents** (revue point par point du 2026-11-17, journal `docs/wip/presentation-parents-progress.md`) :
+- **Les parents** (revue point par point du 2026-11-17, journal `docs/archive/wip/presentation-parents-progress.md`) :
   sur la page, ce qui fait venir (qui est derrière, ce que l'enfant y fait, le suivi par le
   [carnet de liaison](carnet-de-liaison.md), l'inscription avec un code de classe et le prix) ;
   dans la **FAQ**, ce qui rassure (à qui il parle, le tuteur IA et son prestataire aux États-Unis,
