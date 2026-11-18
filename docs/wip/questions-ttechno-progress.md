@@ -869,3 +869,11 @@ d'accès : personne pour les brouillons, Tle techno à la publication.
 
 **Q27 tranchée (David, 2026-11-18, « je te suis »)** : petite PR à part, raccourci « log » → `\log` (sans case de
 base) dans les champs de réponse ; à merger avant l'écriture du lot 5b (réponses exactes, Q25).
+
+## 36. Saisie de log au clavier, Q27 (2026-11-18)
+
+Branche `fix/saisie-log` (worktree `ubumaths-wt-questions-ttechno`). `MathPrompt.svelte` (toutes les cases de
+réponse à trous) : raccourci `log` → `\log`, posé avant le filtre des majuscules collées (qui garde et remet les
+raccourcis). Test `markdown/nodes/__tests__/saisie-log.svelte.test.ts` : rouge sans le correctif
+(`\log_{#?}`, « log(7) » → `\log_{\left(7\right)}`), vert avec ; `ln` inchangé. Moteur : `\log\left(7\right)`,
+`\log(7)`, `\log 7` jugés justes. Le lot 5b peut demander des réponses exactes en log (Q25).
