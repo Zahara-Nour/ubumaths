@@ -8,16 +8,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, phase 0 du lot 4 validée._
+_Mis à jour le 2026-11-18, lot 4 écrit (ab2ff42965), brouillons en base locale._
 
-- **État** : lots 1 à 3 clos ; lot 4 « algorithmique » (8 modèles, § 26) phase 0 validée, en écriture. Reste les lots
-  5 (graphiques et stats à deux variables) et 6 (probabilités).
-- **Prochaine action** : écrire `docs/wip/questions/lot-1techno-4.py` → `scripts/questions/1techno-4/`, simulation,
-  essai local, PR des fichiers.
-- **En attente de David** : rien.
+- **État** : lots 1 à 3 clos ; lot 4 « algorithmique » (8 modèles, § 26) écrit et commité : simulation verte, tirages
+  verts, 8 brouillons en base LOCALE, aperçu ouvert à David par Tailscale (`https://serveur.tail99357e.ts.net`,
+  serveur 5176 + base :8443). Reste les lots 5 (graphiques, stats à deux variables) et 6 (probabilités).
+- **Prochaine action** : retour de David sur le rendu (histogramme M3, blocs Python, tableaux des corrigés M2, M4,
+  M7, M8) ; puis `tailscale serve reset` + arrêt du 5176 ; `git merge origin/main` (`$lib` → `#lib`, sans effet ici :
+  la branche ne touche que docs/ et scripts/questions/), `pnpm install`, re-simulation ; push, PR des fichiers.
+- **En attente de David** : son avis sur le rendu dans l'aperçu.
 - **Pièges en cours** : M2 porte aussi 1SPE-362 (`grades` 1_TECHNO + 1_SPE) ; `db:migrate` pousse tout ce qui
-  attend ; aperçu admin local : `--host 127.0.0.1` ; lot 5 : modèles communs de questions-1gen S2 f3cb0c7a → 085,
-  S3 7461bb44 → 082, S4 4f328c8c → 084, S6 3fec6b41 → 087 (publiés, à vérifier contre mes bornes en phase 0).
+  attend ; lot 5 : modèles communs de questions-1gen S2 f3cb0c7a → 085, S3 7461bb44 → 082, S4 4f328c8c → 084,
+  S6 3fec6b41 → 087 (publiés, à vérifier contre mes bornes en phase 0).
 - **Worktree / branche** : `../ubumaths-wt-questions-1techno`, `feat/questions-1techno-lot4`.
 
 ## 1. Relevé (prod, 2026-11-17)
