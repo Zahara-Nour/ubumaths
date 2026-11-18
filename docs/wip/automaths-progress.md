@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, PR 3a revue et corrigée._
+_Mis à jour le 2026-11-18, après #2854._
 
-- **État** : PR 1 (#2842) et PR 2 (#2847) mergées. PR 3a vue « Notions » codée et commitée sur `feat/automaths-navigation` (commit `364e64fb8`) : 47 tests verts, `check:incremental` 0 erreur, cliquet tenu, doc `questions.md` à jour. **Pas encore poussée, pas de PR.**
-- **Prochaine action** : PR 3a poussée (voir `gh pr list --search head:feat/automaths-navigation`) : suivre la CI, merger si verte. Ensuite PR 3b vue « Programme » (points 8-13, lecture A), puis PR 4 « Ma série ».
-- **En attente de David** : rien.
-- **Pièges en cours** : `getByRole('navigation', { name: 'Notions' })` attrape « Sous-notions » → `exact: true` ; la page défile dans un conteneur interne (pas `window`) ; la tuile reste la flash-card ; un point posé sur une notion peut n'avoir aucune question en propre (4-003) → lecture A : questions rattachées, sinon celles du nœud ; un test qui rend la page vide `sessionStorage` ; carte asserte avec la fixture `data/relecture/entiers/139.json`.
-- **Worktree / branche** : `../ubumaths-wt-automaths`, `feat/automaths-navigation` ; serveur de test sur le port 5176.
+- **État** : PR 1 (#2842), PR 2 recherche (#2847) et PR 3a vue « Notions » (#2854) mergées. Rien en prod tant que David n'a pas fait `deploy:prod`.
+- **Prochaine action** : PR 3b vue « Programme » (points 8-13 de la phase 0 du 2026-11-18, lecture A : questions rattachées au point, sinon celles de son nœud), nouveau worktree `../ubumaths-wt-automaths`, branche `feat/automaths-programme`. Phase 0 déjà validée : coder directement (tests d'abord). Puis PR 4 « Ma série ».
+- **En attente de David** : rien (vérification manuelle #2854 notée dans `verifications-manuelles.md`).
+- **Pièges en cours** : `getByRole('navigation', { name: 'Notions' })` attrape « Sous-notions » → `exact: true` ; la page défile dans un conteneur interne (pas `window`) ; garde `block-css-vars` : un composant ne lit que les variables CSS qu'il déclare ; `curriculum_points.rubrique` = « Partie › Chapitre [› Automatismes] », lisible par `anon` (pas de migration) ; non mesuré : ~111 aperçus calculés d'un coup par la dernière pastille d'une grosse notion ; la tuile reste la flash-card ; un test qui rend la page vide `sessionStorage` ; carte asserte avec la fixture `data/relecture/entiers/139.json`.
+- **Worktree / branche** : aucun (celui de la PR 3a est supprimé).
 
 ### 2026-11-18 — recherche
 
@@ -112,3 +112,7 @@ Lecture des questions sous un point : **A** — les questions rattachées au poi
 - Piège de test : `getByRole('navigation', { name: 'Notions' })` attrape aussi « Sous-notions » → `exact: true`. `getByText('2 questions')` attrapait le titre de section → `exact: true`.
 - Vu en dev (grand écran, base locale) : pastille → section juste sous les pastilles ; changer de notion après avoir descendu → remonte en haut. Largeur téléphone non vérifiable dans Chrome (largeur minimale de fenêtre) : couverte par les tests à 390 px.
 - Revue `code-reviewer` (Sonnet) : aucun bloquant. Corrigés : second calage après le défilement d'une pastille (cartes qui grandissent), réserve de hauteur selon 1/2/3 colonnes, focus sur le titre de la notion choisie, défilement après fermeture du panneau (`tick`), compteur lu sur le bouton de branche, branches ouvertes à la main remises à zéro au changement de notion, `prefers-reduced-motion`. Écartés : adresse qui garde la notion de repli (comportement validé en PR 1) ; ~111 aperçus calculés d'un coup sur la dernière pastille d'une grosse notion (non mesuré, à voir en vrai).
+
+### 2026-11-18 — PR 3a mergée (#2854)
+
+- CI rouge au 1er passage : garde `block-css-vars` (variable `--catalogue-card-height` lue par la tuile, déclarée par la grille) → hauteur déclarée dans `QuestionPreviewCard` (`.tile`, `@media`). CI verte, mergée. Vérification manuelle notée.
