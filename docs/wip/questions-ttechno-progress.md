@@ -5,19 +5,18 @@ Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) · bornes 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, migration du lot 4 écrite (§ 31), PR à ouvrir._
+_Mis à jour le 2026-11-18, après #2820 (lot 4 migré)._
 
-- **État** : lot 4 en prod en brouillon (5e810e16 M1 037, 7a37a3e1 M2 039, sans nœud ni tag) ; migration
-  `20261118104421` + test (9 verts, 5 rouges sans) commités sur `feat/questions-ttechno-lot4-rangement`, pas
-  poussés ; `security-auditor` sans finding (§ 31).
-- **Prochaine action** : PR #2820, CI verte →
-  merge → `check:migrations --pr <n>` avant le merge ; `migration list --linked` ; `db:migrate` depuis le dépôt
-  principal ; vérif MCP ; page à cocher ; publication par David.
-- **En attente de David** : rien.
-- **Pièges en cours** : **037 et 039 sont sur « fonctions x ↦ aˣ » (c185c955)**, pas « propriétés algébriques » ;
-  `create-questions --publier`, `publier-lot.ts` visent la prod : David les lance (`!`) depuis le dépôt principal ;
+- **État** : lots 0 à 3b publiés ; lot 4 (5e810e16 M1 037, 7a37a3e1 M2 039) en prod en brouillon, rangé sur
+  « fonctions x ↦ aˣ » et tagué (#2820 migrée, vérifié MCP) ; aucun worktree ouvert.
+- **Prochaine action** : page à cocher du lot 4 (gabarit : https://claude.ai/artifact/GDznUQpPDffxKACVVUEH7h,
+  lot 3b) ; après les verdicts de David, `publier-lot.ts --dir scripts/questions/ttechno-4-fonctions`
+  (simulation, puis `--publier` par David) ; puis bilan des points restants (042, 082, 083 : lot 5, logarithme).
+- **En attente de David** : rien avant la page à cocher.
+- **Pièges en cours** : un point TTECHNO par modèle (trigger) ; tag = nœud DU POINT (relevé MCP, pas le journal) ;
+  `publier-lot.ts`, `create-questions --publier` visent la prod : David les lance (`!`) depuis le dépôt principal ;
   `db:migrate` pousse toutes les migrations en attente ; worktree neuf → `svelte-kit sync`.
-- **Worktree / branche** : `../ubumaths-wt-questions-ttechno` · `feat/questions-ttechno-lot4-rangement`.
+- **Worktree / branche** : aucun.
 
 ## 1. Périmètre
 
@@ -760,3 +759,7 @@ David a lancé `create-questions --publier` : 2 brouillons (5e810e16 M1, 7a37a3e
   `types:cliquet` tenu.
 - `security-auditor` : aucun finding (diff avec le lot 3b = en-tête, ids, codes, gardes « 0 ou 2 », table
   temporaire ; rollback miroir ; aucune policy, aucun GRANT, aucune table d'élève ; état prod mesuré conforme).
+- **#2820 mergée (2026-11-18)**, CI verte après `Doc-inchangée:` (garde doc), `check:migrations --pr 2820` vert.
+  `migration list --linked` : seule `20261118104421` en attente → `db:migrate` depuis le dépôt principal
+  (4 conditions). Prod vérifiée (MCP) : M1 et M2 sur « fonctions x ↦ aˣ », un tag chacun (037, 039), `draft`,
+  `updated_at` inchangés. Worktree retiré.
