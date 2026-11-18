@@ -7,19 +7,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après #2802 (lot 6, fichiers)._
+_Mis à jour le 2026-11-18, après #2804 et le db push (§ 25)._
 
-- **État** : lots 1 à 4 publiés, lot 5 clos par questions-1techno. Lot 6 (statistiques à deux variables) : 7 fichiers
-  mergés (#2802, § 24), **pas encore en prod**.
-- **Prochaine action** : David lance `create-questions --dir scripts/questions/1gen-6-statistiques-deux-variables
---publier` depuis le worktree ; commiter les ids ; migration nœud + tags (S1-S7 + 49fac266 → 1GEN-003 avec
-  `array_append('1_GEN')`) ; page à cocher ; ids à questions-1techno (S2→085, S3→082, S4→084, S6→087).
-- **En attente de David** : la création des brouillons en prod (commande `!`).
-- **Pièges en cours** : ADR 0020 et `couvrir-un-niveau.md` § 9 avant tout tag ; `db push` pousse TOUTES les
+- **État** : lot 6 en prod, 7 brouillons rangés et tagués, 49fac266 tagué 1GEN-003. Page à cocher publiée :
+  https://claude.ai/artifact/MiyPAFTTg13ydC3EJLTn52.
+- **Prochaine action** : lire les verdicts (collection `verdicts`) ; tout OK → `publier-lot.ts --dir
+scripts/questions/1gen-6-statistiques-deux-variables` en simulation, puis David `--publier` ; prévenir
+  questions-1techno (S2, S3, S4, S6 publiés). Ensuite : bilan du niveau (points 1GEN encore sans modèle ?).
+- **En attente de David** : les verdicts de la page à cocher.
+- **Pièges en cours** : rollbacks des lots 3 et 4 bloqués par celui de questions-ttechno (§ 25) ; `db:migrate` par
+  `!` attend un `[Y/n]` → `supabase db push --linked --yes` ; ADR 0020 et `couvrir-un-niveau.md` § 9 avant tout tag ; `db push` pousse TOUTES les
   migrations en attente ; publication en prod = commande `!` de David (ma simulation est refusée : elle vise la
   prod) ; aperçu : serveur `--host ::`.
-- **Worktree / branche** : `../ubumaths-wt-questions-1gen`, `feat/questions-1gen-lot6` (mergée ; garder pour les ids
-  et la migration).
+- **Worktree / branche** : `../ubumaths-wt-questions-1gen` (détaché sur origin/main, serveur 5176 ; à retirer après
+  la publication).
 
 ## 1. Relevé (prod, 2026-11-17)
 
@@ -960,3 +961,15 @@ au MCP). Ids en tête des fichiers.
 - `security-auditor` : aucun finding bloquant ni important. Faible 1 corrigé (la garde refuse un 49fac266 qui
   porterait déjà `1_GEN`, sinon le rollback l'effacerait). Faible 2 : le tout ou rien repose sur la transaction
   implicite de `db push` (gabarit éprouvé) ; revérifier `tgenabled = 'O'` après `db:migrate`.
+
+- **db push** (2026-11-18) : le premier `pnpm db:migrate` lancé par `!` n'a rien appliqué (confirmation `[Y/n]` sans
+  réponse) ; relancé en `supabase db push --linked --yes`. Trois migrations parties ensemble, toutes prêtes et
+  annoncées : la nôtre, `20261118055440` (questions-1techno lot 3), `20261118060323` (navadra, accord de sa session).
+  Relu au MCP : 7 brouillons sur leur nœud, un point 1GEN chacun, `updated_at` inchangé ; 49fac266
+  `{T_COMP,1_TECHNO,1_GEN}`, tags 1GEN-003, 1TECHNO-083, TCOMP-321, `updated_at` inchangé ; trigger `O`.
+- Ids des communs envoyés à questions-1techno (S2 → 085, S3 → 082, S4 → 084, S6 → 087), à prévenir à la publication.
+- ⚠ questions-ttechno a tagué E1-E4, T1-T2 (#2800, `20261118052320`) : ne plus jouer les rollbacks commentés des lots
+  3 et 4 (`20261117191427`, `20261117222809`) sans jouer d'abord le sien.
+- Page à cocher : 7 fiches, 28 exemples ; deux alertes attendues (circulaire et barres de S1, nuage de S3 non dessinés
+  par la page, joués dans l'aperçu local). https://claude.ai/artifact/MiyPAFTTg13ydC3EJLTn52 (capacité `db`, 0
+  verdict à la publication).
