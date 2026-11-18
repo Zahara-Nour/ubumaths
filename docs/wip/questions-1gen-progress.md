@@ -7,20 +7,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après #2804 et le db push (§ 25)._
+_Mis à jour le 2026-11-18, après la publication du lot 6 (§ 26)._
 
-- **État** : lot 6 en prod, 7 brouillons rangés et tagués, 49fac266 tagué 1GEN-003. Page à cocher publiée :
-  https://claude.ai/artifact/MiyPAFTTg13ydC3EJLTn52.
-- **Prochaine action** : lire les verdicts (collection `verdicts`) ; tout OK → `publier-lot.ts --dir
-scripts/questions/1gen-6-statistiques-deux-variables` en simulation, puis David `--publier` ; prévenir
-  questions-1techno (S2, S3, S4, S6 publiés). Ensuite : bilan du niveau (points 1GEN encore sans modèle ?).
-- **En attente de David** : les verdicts de la page à cocher.
+- **État** : lots 1 à 6 publiés (lot 5 par questions-1techno). Tous les points 1GEN actifs ont un modèle publié, sauf
+  **1GEN-031**, couvert par le seul brouillon d2067413 (hors chantier).
+- **Prochaine action** : selon Q24 ; puis clore le chantier (versement du durable dans `docs/systeme/`, journal
+  archivé), en recomptant d'abord le découpage du § 4 contre les PR mergées.
+- **En attente de David** : Q24 (§ 26) ; supprimer `feat/questions-1gen-lot6` (`git branch -D`, entièrement dans
+  main).
 - **Pièges en cours** : rollbacks des lots 3 et 4 bloqués par celui de questions-ttechno (§ 25) ; `db:migrate` par
   `!` attend un `[Y/n]` → `supabase db push --linked --yes` ; ADR 0020 et `couvrir-un-niveau.md` § 9 avant tout tag ; `db push` pousse TOUTES les
   migrations en attente ; publication en prod = commande `!` de David (ma simulation est refusée : elle vise la
   prod) ; aperçu : serveur `--host ::`.
-- **Worktree / branche** : `../ubumaths-wt-questions-1gen` (détaché sur origin/main, serveur 5176 ; à retirer après
-  la publication).
+- **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, 2026-11-17)
 
@@ -973,3 +972,22 @@ au MCP). Ids en tête des fichiers.
 - Page à cocher : 7 fiches, 28 exemples ; deux alertes attendues (circulaire et barres de S1, nuage de S3 non dessinés
   par la page, joués dans l'aperçu local). https://claude.ai/artifact/MiyPAFTTg13ydC3EJLTn52 (capacité `db`, 0
   verdict à la publication).
+
+## 26. Lot 6 : publication et bilan du niveau (2026-11-18)
+
+- Page à cocher : 7 verdicts « ok », sans commentaire (David) ; ids identiques à ceux du dossier.
+- `publier-lot.ts` : simulation 7/7 sans refus ni alerte de tag ; `--publier` lancé par David ; **7/7 `published`**,
+  relu au MCP.
+- questions-1techno prévenue : elle posera 085, 082, 084, 087 et `1_TECHNO` sur S2, S3, S4, S6 à son lot 5 (après
+  sa phase 0), et préviendra avant sa migration.
+- **Bilan du niveau** (MCP, points 1GEN actifs sans aucun modèle publié) : **un seul**, **1GEN-031** (représenter
+  une suite géométrique à termes positifs). Son seul modèle, d2067413 « Reconnaître une suite arithmétique ou
+  géométrique sur un nuage de points » (tagué par #2744), est un **brouillon** partagé 1re spé / 1re techno / 1re
+  générale, créé le 2026-10-28 hors de ce chantier (Q24).
+- Worktree retiré ; branche `feat/questions-1gen-lot6-tags` supprimée. `feat/questions-1gen-lot6` reste en local :
+  `git branch -d` la refuse (commits de main tirés dedans, absents de sa copie distante), `-D` est dans la liste `ask`.
+
+### Question (2026-11-18)
+
+- **Q24** — 1GEN-031 : publier d2067413 tel quel (il est déjà dans la borne, § 2.3), ou écrire un modèle 1GEN
+  propre, ou laisser le point sans modèle publié ?

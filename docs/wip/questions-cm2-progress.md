@@ -6,13 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, phase 0 du lot 10 proposée._
+_Mis à jour le 2026-11-18, après #2807._
 
-- **État** : lots 0 à 9 publiés (lot 9 partages : 5 modèles, § 15.3). Reste 71 points : lots 10 à 19 (§ 14, ordre § 14.1).
-- **Prochaine action** : après la validation, écrire le lot 10 (worktree `ubumaths-wt-questions-cm2`, script `lot-cm2-10.py`).
-- **En attente de David** : rien (phase 0 du lot 10 validée, § 16.1). ⛔ Jamais `--mettre-a-jour` de `cm2-7b` avec des fichiers d'avant #2770 (ids CM1).
+- **État** : lots 0 à 9 publiés. Lot 10 heures et durées (082, 083, 084, 153, 085) : phase 0 validée (§ 16.1), 5 modèles écrits et essayés en local (§ 16.2), fichiers mergés (#2807), pas encore en prod.
+- **Prochaine action** : David lance `create-questions --dir scripts/questions/cm2-10 --publier` (dépôt principal), ids reportés, migration nœud + tag (« lecture de l'heure » : 082, 083 ; « calcul de durées » : 084, 153, 085).
+- **En attente de David** : `pnpm tsx scripts/create-questions.ts --dir scripts/questions/cm2-10 --publier` (dépôt principal). ⛔ Jamais `--mettre-a-jour` de `cm2-7b` avec des fichiers d'avant #2770 (ids CM1).
 - **Pièges en cours** : `pnpm migration:horodatage` = heure réelle UTC ; `db:migrate` refuse une migration plus ancienne que la dernière jouée → `--dry-run --include-all`, liste relue, puis `--include-all`. Worktree neuf : copier `supabase/.temp/` du dépôt principal, puis `pnpm exec svelte-kit sync`. `Doc-inchangée:` dans un COMMIT. `git commit -m … -- <fichiers>`. Stash du dépôt principal « cm2-9 ids » : copie identique de ce qui est mergé, à supprimer (David).
-- **Worktree / branche** : aucun (#2794 mergée, worktree retiré).
+- **Worktree / branche** : aucun (retiré après #2807) ; ids à commiter sur `main` ou dans le worktree de la migration.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -1019,3 +1019,15 @@ son jumeau CM1. Relevés de nouveau juste avant la création. Reco : **oui**.
 Recommandations suivies (« je te suis ») : (a) trotteuse lue sur un cadran à 12 chiffres puis `chiffres: quarts`, pas de
 cadran nu ; (b) pas de variation « affichage digital » ; (c) conversions dans les problèmes seulement ; (d) niveaux après
 ceux pris : lire 9, placer 10 ; durée 9, comparer 10, problèmes 11 ; (e) un seul lot de 5 modèles. Tableau du § 16 gardé.
+
+### 16.2 Lot 10 : écriture (2026-11-18)
+
+- `docs/wip/questions/lot-cm2-10.py` → `scripts/questions/cm2-10/` (5 modèles, 16 variations, sans `theme` / `domain` /
+  `subdomain`) ; niveaux 9, 10 (lecture de l'heure), 9, 10, 11 (calcul de durées). Instants comptés en secondes depuis
+  0 h ; corrigé de 084 par instants intermédiaires (minute pleine, heure pleine, heures, minutes, secondes), retenues
+  dites (« 15 + 55 = 70 s, soit 1 min 10 s »).
+- `question:specs --instances 300` : 56 specs vertes, 4 800 tirages réussis, aucun `\textcolor` hors `$` ;
+  `sonde-horloges` : 1 200 blocs, 0 problème ; `create-questions` en simulation (prod) : 5 à créer, 0 en base.
+- Base locale (copie du dossier dans le scratchpad, `.env.local`, sous `with-db-lock.sh`) : 5 brouillons ; aperçu admin
+  à 390 px (Playwright, port 5178) : trotteuse dessinée (lire), trois aiguilles à poser avec l'étiquette « trotteuse »
+  (placer), deux et quatre horloges légendées, cases h / min / s.
