@@ -5,18 +5,20 @@ Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) · bornes 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, phase 0 du lot 4 validée (§ 29)._
+_Mis à jour le 2026-11-18, lot 4 écrit (§ 30), PR à ouvrir._
 
-- **État** : lots 0 à 3b en prod et publiés ; 037 ajouté au lot 4 (David, « tes recos ») ; phase 0 du lot 4
-  validée (§ 29, Q21–Q23 selon les recos) ; aucun worktree ouvert.
-- **Prochaine action** : worktree `feat/questions-ttechno-lot4`, écrire M1 (037) et M2 (039) par
-  `docs/wip/questions/lot-ttechno-4.py` (gabarit : `lot-ttechno-3b.py` ; forme M1 : 7c8b341b ; Python : lot 2).
-- **En attente de David** : rien.
+- **État** : lots 0 à 3b en prod et publiés ; lot 4 écrit sur `feat/questions-ttechno-lot4` (M1 037, M2 039,
+  § 30), specs vertes, aperçu local joué.
+- **Prochaine action** : PR du lot 4 → CI verte → merge ; puis David lance `create-questions --publier
+--dir scripts/questions/ttechno-4-fonctions` depuis le dépôt principal ; puis migration nœud + tags (gabarit
+  lot 3b, `20261118080905`).
+- **En attente de David** : rien avant le merge ; ensuite le `--publier`.
 - **Pièges en cours** : un point TTECHNO par modèle (trigger) ; `grades` en `array_append` seulement ;
   `publier-lot.ts`, `garde-niveaux-tags.ts`, `create-questions --publier` visent la prod : David les lance (`!`),
   **depuis le dépôt principal, après le merge** ; `Doc-inchangée:` dans un COMMIT de la PR ; `db:migrate` pousse
-  toutes les migrations en attente (`migration list --linked` avant).
-- **Worktree / branche** : à créer (`git worktree add -b feat/questions-ttechno-lot4 ../ubumaths-wt-questions-ttechno origin/main`).
+  toutes les migrations en attente (`migration list --linked` avant) ; worktree neuf → `svelte-kit sync` avant
+  `question:specs`.
+- **Worktree / branche** : `../ubumaths-wt-questions-ttechno` · `feat/questions-ttechno-lot4`.
 
 ## 1. Périmètre
 
@@ -724,3 +726,21 @@ intercalation donne une racine (arrondi au centième). M1 : toutes cases choix, 
 quotient, puissance, a⁰, a⁻ˣ ; pas (ab)ˣ) ; **Q22** M2 avec une variation Python et une variation tableur ;
 **Q23** pas de `placer:`, les coordonnées suffisent ; question d'accès : personne pour les brouillons, Tle techno
 à la publication.
+
+## 30. Lot 4 : écriture (2026-11-18)
+
+`docs/wip/questions/lot-ttechno-4.py` → `scripts/questions/ttechno-4-fonctions/` (2 fichiers, 45 specs),
+`grades ['T_TECHNO']`, brouillons.
+
+- M1 (037, niv. 1, nœud « propriétés algébriques ») : aˣ × aʸ, aˣ ÷ aʸ, (aˣ)ʸ, a⁰, a⁻ˣ parmi des erreurs typiques ;
+  vrai / faux aˣ + aʸ = aˣ⁺ʸ (contre-exemple x = y = 0). Cases choix, bonne réponse à des rangs variés.
+- M2 (039, niv. 2, nœud « fonctions x ↦ aˣ ») : coordonnées du point C intercalé ; position du point des moyennes
+  arithmétiques (au-dessus de la courbe) ; Python à trous (`sqrt(yA * yB)`) ; tableur (`=RACINE(B2*B3)`) ; deux
+  intercalations (ordonnée au centième). a ∈ {2 ; 3 ; 4 ; 5 ; 0,5}, x₁ ∈ {−1 ; 0 ; 1 ; 2}, x₂ = x₁ + 2.
+- Simulation `create-questions` verte contre la prod (aucun homonyme) ; `question:specs` 2 / 2 importables,
+  2 200 tirages, 0 `\textcolor` hors `$` ; 221 formules distinctes de 120 aperçus : accolades 0 problème,
+  `validateLatex` 0 problème hors coordonnées, `\mapsto`, `\mathbb{R}` (notations que le parseur de calcul ne lit pas).
+- Vu en route : « 5,20 » pour 5,2 rend `unoptimal_form` (`zeros`), spec alignée sur le moteur ; nombres du tableau
+  du tableur passés en `$` (virgule décimale).
+- Base locale (copie des fichiers) : 2 brouillons ; aperçu admin (Chrome, `127.0.0.1:5177`) : M2 tableur
+  (a = 4) C → juste, correction lue ; M2 deux intercalations (a = 0,5, x₁ = 2) `2,5` et `0,18` → juste.
