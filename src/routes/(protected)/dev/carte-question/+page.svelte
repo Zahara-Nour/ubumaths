@@ -24,7 +24,7 @@
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import { resolvedMarkdown } from '$lib/ubumark';
 	import { RefreshCw, Copy, Check } from '@lucide/svelte';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 
 	// ============================================================================
 	// STATE MANAGEMENT

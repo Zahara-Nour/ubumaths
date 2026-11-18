@@ -12,7 +12,7 @@
  * - Editor settings (theme, font size)
  */
 
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 import LZString from 'lz-string';
 import { PlaygroundExecutor } from '$lib/shared/python';
 import type { CompletionItem, WorkerBreakpoint } from '$lib/shared/python';

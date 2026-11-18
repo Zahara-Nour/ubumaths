@@ -13,7 +13,7 @@
  * - Kernel restart capability
  */
 
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 import { NotebookExecutor } from '$lib/shared/python';
 import type {
 	CompletionItem,

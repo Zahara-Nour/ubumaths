@@ -8,7 +8,7 @@
  * (component rendering, $effect, load functions) that window.onerror does NOT catch.
  */
 
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 import { initErrorMonitoring, initWebVitals } from '$lib/utils/errorMonitoring';
 import { initFreezeDetection } from '$lib/utils/freezeDetection';
 import type { HandleClientError } from '@sveltejs/kit';

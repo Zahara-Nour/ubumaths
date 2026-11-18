@@ -14,7 +14,7 @@
 <script lang="ts">
 	import { demoSeo } from '$lib/seo/demo-pages';
 	import SeoHead from '$lib/seo/SeoHead.svelte';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import { resolve } from '$app/paths';
 	import { Maximize, Minimize } from '@lucide/svelte';
 	import BackLink from '$lib/components/navigation/BackLink.svelte';

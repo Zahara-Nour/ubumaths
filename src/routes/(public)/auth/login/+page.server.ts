@@ -38,7 +38,7 @@
  * 6. User is redirected to dashboard (or original page if specified)
  */
 import { redirect, fail } from '@sveltejs/kit';
-import { dev } from '$app/environment';
+import { dev } from '$app/env';
 import type { Actions, PageServerLoad } from './$types';
 import { createServerLogger } from '$lib/utils/logger';
 import {

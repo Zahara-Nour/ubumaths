@@ -30,7 +30,7 @@
 	import type { GameState, Direction, Tile, GhostTile, VipCardUsage, VisionPreview } from './types';
 	import type { StudentVipCards } from '$lib/types/vip-card';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 
 	// VIP card IDs
 	const UNDO_CARD_IDS = ['2048-undo'];

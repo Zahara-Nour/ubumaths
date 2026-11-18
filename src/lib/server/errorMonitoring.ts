@@ -13,7 +13,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database, Json } from '$lib/types/database';
 import { createSystemNotification } from './notifications';
-import { dev } from '$app/environment';
+import { dev } from '$app/env';
 import { createServiceRoleClient } from './serviceRoleClient';
 import { escapeHtml } from '$lib/utils/html-escape';
 import { createServerLogger } from '$lib/utils/logger';

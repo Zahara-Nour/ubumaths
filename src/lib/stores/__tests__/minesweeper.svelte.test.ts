@@ -30,7 +30,7 @@ import type { CellState } from '$lib/types/minesweeper';
 // ============================================================================
 
 // Mock browser environment (required for store)
-vi.mock('$app/environment', () => ({
+vi.mock('$app/env', () => ({
 	browser: true,
 	building: false,
 	dev: true,

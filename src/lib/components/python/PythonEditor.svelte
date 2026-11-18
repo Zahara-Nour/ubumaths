@@ -14,7 +14,7 @@
 	 */
 
 	import { onMount, onDestroy } from 'svelte';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import type { EditorView } from '@codemirror/view';
 	import type { Extension } from '@codemirror/state';
 	import type { CompletionContext, CompletionResult, Completion } from '@codemirror/autocomplete';

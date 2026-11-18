@@ -18,7 +18,7 @@ import { createClient } from '@supabase/supabase-js';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 import { createServerLogger } from '$lib/utils/logger';
-import { dev } from '$app/environment';
+import { dev } from '$app/env';
 
 const logger = createServerLogger('server/serviceRoleClient');
 

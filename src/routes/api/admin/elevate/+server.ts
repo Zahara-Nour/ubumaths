@@ -29,7 +29,7 @@
 
 import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 import { json, error } from '@sveltejs/kit';
-import { dev } from '$app/environment';
+import { dev } from '$app/env';
 import type { RequestHandler } from './$types';
 import { adminElevateSchema } from '$lib/server/validation/admin-elevation';
 import {

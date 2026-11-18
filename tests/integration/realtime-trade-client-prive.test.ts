@@ -48,7 +48,7 @@ interface Session {
 // CONSTANTS
 // ============================================================================
 
-vi.mock('$app/environment', () => ({ browser: true, building: false, dev: true, version: '1' }));
+vi.mock('$app/env', () => ({ browser: true, building: false, dev: true, version: '1' }));
 
 const service = createServiceRoleClient();
 

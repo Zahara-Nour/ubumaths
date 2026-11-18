@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { lore } from '$lib/config/lore';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { Button } from '$lib/components/ui/button';

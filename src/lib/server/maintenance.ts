@@ -1,7 +1,7 @@
 import type { Handle } from '@sveltejs/kit';
 import { redirect } from '@sveltejs/kit';
 import { createHash, timingSafeEqual } from 'node:crypto';
-import { building, dev } from '$app/environment';
+import { building, dev } from '$app/env';
 import { env } from '$env/dynamic/private';
 import avatarPereUbu from '$lib/assets/images/avatar-pereubu.png?inline';
 import { frenchOrdinal, PI_STATUS_OCCURRENCES } from '$lib/error-page/pi-status';

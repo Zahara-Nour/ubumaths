@@ -3,7 +3,7 @@
  */
 
 import { error } from '@sveltejs/kit';
-import { dev } from '$app/environment';
+import { dev } from '$app/env';
 import { modelPage } from '$lib/calculatrices/page-data';
 import type { PageServerLoad } from './$types';
 

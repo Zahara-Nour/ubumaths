@@ -43,7 +43,7 @@ import type { BuddyState } from '$lib/types/buddy';
 import type { StudentVipCards } from '$lib/types/vip-card';
 import type { StudentWarningCounts } from '$lib/server/warnings';
 import { createLogger } from '$lib/utils/logger';
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 import { SvelteMap } from 'svelte/reactivity';
 
 // ============================================================================

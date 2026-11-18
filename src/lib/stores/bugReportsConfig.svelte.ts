@@ -20,7 +20,7 @@
  * ```
  */
 
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 import type { BugReportsConfig } from '$lib/types/bug-reports';
 import { DEFAULT_BUG_REPORTS_CONFIG } from '$lib/types/bug-reports';
 

@@ -23,7 +23,7 @@
 	 */
 
 	import { onMount, onDestroy } from 'svelte';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import type { EditorView } from '@codemirror/view';
 	import type { Extension, EditorState as EditorStateType } from '@codemirror/state';
 	import { renderDefaults, reconstructCode, type ParseError } from '$lib/utils/locked-zones';

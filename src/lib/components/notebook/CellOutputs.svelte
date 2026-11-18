@@ -7,7 +7,7 @@
 	 * Supports: stream (stdout/stderr), error, display_data (images, LaTeX, Plotly)
 	 */
 
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import { SvelteSet } from 'svelte/reactivity';
 	import type { CellOutput } from '$lib/types/notebook';
 	import { Button } from '$lib/components/ui/button';

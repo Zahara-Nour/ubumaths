@@ -12,7 +12,7 @@ import { reservedAreasHandle } from '$lib/server/reservedAreasHandle';
 import { sequence } from '@sveltejs/kit/hooks';
 import type { Handle } from '@sveltejs/kit';
 import { logError, getUserContext } from '$lib/server/errorMonitoring';
-import { dev } from '$app/environment';
+import { dev } from '$app/env';
 import { redirect } from '@sveltejs/kit';
 import { initEnv } from '$lib/server/env';
 import { getUserProfile } from '$lib/server/auth';

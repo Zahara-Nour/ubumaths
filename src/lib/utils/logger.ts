@@ -2,7 +2,7 @@
 let dev = true;
 try {
 	// Dynamic import to avoid build errors in standalone scripts
-	const env = await import('$app/environment');
+	const env = await import('$app/env');
 	dev = env.dev;
 } catch {
 	// Fallback for standalone Node.js scripts (tsx, vitest, etc.)

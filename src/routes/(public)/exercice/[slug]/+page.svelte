@@ -11,7 +11,7 @@
 	 * - Show/hide solution toggle
 	 * - AI Tutor for authenticated students (split layout on desktop, drawer on mobile)
 	 */
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import { page } from '$app/state';
 	import * as Card from '$lib/components/ui/card';
 	import * as Dialog from '$lib/components/ui/dialog';

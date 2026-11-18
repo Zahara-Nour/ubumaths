@@ -1,7 +1,7 @@
 <script lang="ts">
 	import '$lib/utils/mathlive-styles';
 	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
 	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
 	import { Button } from '$lib/components/ui/button';

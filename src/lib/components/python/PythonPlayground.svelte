@@ -13,7 +13,7 @@
 	import PythonToAtelier from './PythonToAtelier.svelte';
 	import { DebugToolbar, DebugPanel } from './debug';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import { onMount, onDestroy } from 'svelte';
 	import type { Database } from '$lib/types/database';
 

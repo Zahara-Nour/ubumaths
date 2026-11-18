@@ -22,7 +22,7 @@
 	// 1. Brave browser blocks these scripts - dynamic import + catch handles this gracefully
 	// 2. Avoids adding to the root layout's static dependency chain (see Safari TDZ fix
 	//    in +layout.ts for details on WebKit module initialization issues)
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import { redactAnalyticsEvent } from '$lib/utils/analytics-redact';
 
 	$effect(() => {
