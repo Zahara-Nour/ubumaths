@@ -5,20 +5,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, lot 8e écrit (§ 25 ter), PR pas encore ouverte._
+_Mis à jour le 2026-11-18, après #2855 (fichiers du lot 8e)._
 
 - **État** : lots 0 à 8d publiés, **148 points du CM1 sur 171** ; phase 0 des lots 8e et 8f validée (§ 25, 25 bis) ;
-  lot 8e écrit et vérifié (5 modèles, § 25 ter), commité et poussé sur `feat/questions-cm1-lot8e`.
-- **Prochaine action** : ouvrir la PR des fichiers du 8e (revue : aucune, contenu ; `Doc-inchangée: contenu`),
-  CI, merge ; David lance `create-questions --dir scripts/questions/cm1-8e --publier` depuis le worktree ; puis
-  migration nœud + tag (01 → CM1-109 + CM2-098, 02 → CM1-110 + CM2-099, 03 → 111, 04 → 112, 05 → 113 ; nœud
-  Solides › propriétés). Ensuite le lot 8f (modèles 8 à 14 du § 25), puis 9.
-- **En attente de David** : rien.
+  fichiers du 8e mergés (#2855, § 25 quater), pas encore créés en prod.
+- **Prochaine action** : David lance `pnpm create-questions --dir scripts/questions/cm1-8e --publier` depuis le
+  worktree ; puis relevé + migration nœud + tag (01 → CM1-109 + CM2-098, 02 → CM1-110 + CM2-099, 03 → 111,
+  04 → 112, 05 → 113 ; nœud Solides › propriétés) sur `feat/questions-cm1-lot8e-rangement`. Ensuite le lot 8f
+  (modèles 8 à 14 du § 25), puis 9.
+- **En attente de David** : la commande `create-questions --publier` du 8e.
 - **Pièges en cours** : lancer `create-questions --publier` et `db:migrate` **depuis le worktree** (lien
   `supabase/.temp/` copié) — et celui du **bon** chantier ; commitlint refuse le type `content` et un corps > 100
   caractères par ligne ; le mode auto refuse `publier-lot` (même en simulation) et `garde-niveaux-tags` : David les
-  lance ; ports 5175, 5177, 5178 pris ; 17 copies `[essai 8e]` en base locale ; niveau = rang dans le nœud.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, branche `feat/questions-cm1-lot8e`.
+  lance ; ports 5175, 5177, 5178 pris ; 17 copies `[essai 8e]` en base locale ; niveau = rang dans le nœud ;
+  `ci-lint-fichiers.test.ts` dépasse parfois ses 5 s en CI (relancer le job).
+- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, branche `feat/questions-cm1-lot8e-rangement`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -2108,3 +2109,8 @@ reste en D ; niveaux **CM1 et CM2** et tag des deux points (109/098, 110/099, 11
   horizontal, aucune erreur de console. Corrigés après l'aperçu : (1) face latérale grisée d'un prisme seulement si
   ses deux côtés sont cotés (le côté oblique ne l'est jamais ; 4 2 3 donnait 2,8 cm sur 3 cm, indécidable) ;
   (2) « La base est un polygone à 7 côtés : elle a 7 côtés » → « La base a 7 côtés (un pentagone) ».
+
+### 25 quater. Lot 8e — fichiers mergés (2026-11-18)
+
+- #2855 mergée. Premier passage de la CI rouge : `scripts/__tests__/ci-lint-fichiers.test.ts` hors délai (9,7 s pour
+  5 s), sans rapport avec le lot ; vert à la relance du job.
