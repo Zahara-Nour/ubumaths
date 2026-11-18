@@ -1,4 +1,5 @@
 {
+	"id": "af2d7e03-048a-4540-aa28-3e0a1baf3812",
 	"title": "Le portrait d'un solide",
 	"description": "Retrouver un solide d'après ses faces (prismes à base triangle, pentagone, hexagone ; pyramides ; cube, pavé) ; sommets et arêtes d'un prisme (6, 9)",
 	"grades": ["CM1", "CM2"],
