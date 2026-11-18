@@ -1994,3 +1994,17 @@ avant. La migration ne fait que ranger et taguer les modèles, sur des nœuds qu
 
 - #2838 mergée (CI verte). Conflit avec `main` sur `outils-manquants.md` : le n° 39 pris entre-temps (logarithme au
   clavier), la ligne du tracé à l'équerre sur papier uni devient le **n° 40**.
+
+### 24 quinquies. Lot 8d — création en prod et rangement (2026-11-18)
+
+- `create-questions --dir scripts/questions/cm1-8d --publier` lancé par David depuis le worktree : 4 brouillons
+  (74e6d19d, 452b9a91, 66b4d4ed, 6452c31c), vérifiés au MCP (draft), ids commités sur
+  `feat/questions-cm1-lot8d-rangement`.
+- Relevé `etat-prod-2026-11-18-cm1-8d/` (4 draft, sans nœud ni tag), script `lot-cm1-8d-rangement.py` (gabarit 8c) →
+  migration `20261118192953_questions_cm1_lot8d_rangement_tags` + fixture : 74e6d19d, 452b9a91 → Symétrie axiale ;
+  66b4d4ed, 6452c31c → perpendiculaires et parallèles ; 6 tags posés (CM1-107, 108, 167, 168 ; CM2-154, 155), aucun
+  niveau ni statut changé, aucun nœud créé.
+- Test `questions-cm1-lot8d-rangement-tags.test.ts` : 20/20 vert ; corps neutralisé (`select 1;`) : 9 échecs,
+  7 sautés. `types:cliquet` tenu.
+- `security-auditor` : aucun finding, ni bloquant ni non bloquant. Diff avec le 8c limité aux données du lot ;
+  l'état « avant » remesuré au MCP (4 draft, nœud null, 0 tag) ; c'est la seule migration en attente. PR #2840.

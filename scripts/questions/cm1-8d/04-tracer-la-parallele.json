@@ -1,4 +1,5 @@
 {
+	"id": "6452c31c-e990-4e7d-b4a2-26b44bd98222",
 	"title": "Tracer la parallèle à une droite par un point",
 	"description": "Sur quadrillage, en suivant le même chemin de carreaux ou à l'équerre : droite horizontale ou verticale, en diagonale, oblique",
 	"grades": ["CM1", "CM2"],
