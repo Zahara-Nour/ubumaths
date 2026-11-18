@@ -5,14 +5,14 @@ Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) · bornes 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après #2818 (migration du lot 3b mergée, pas migrée)._
+_Mis à jour le 2026-11-18, lot 3b migré, page à cocher publiée._
 
 - **État** : lots 0 à 3a en prod et publiés ; lot 3b (C5–C8) créé en prod en brouillon (§ 27) ; migration
-  `20261118080905_questions_ttechno_lot3b_rangement_tags` mergée (#2818), **pas encore jouée en prod**.
-- **Prochaine action** : `migration list --linked` ; si seule `20261118080905` est en attente, `db:migrate` depuis
-  le dépôt principal ; prod vérifiée par MCP ; page à cocher ; publication.
-- **En attente de David** : `20261118071618` (questions-cm1 lot 8b) aussi en attente : la session cm1 la joue,
-  ou David dit de pousser les deux ; puis page à cocher et `publier-lot.ts --publier` (prod).
+  `20261118080905_questions_ttechno_lot3b_rangement_tags` mergée (#2818) et jouée en prod ; page à cocher publiée.
+- **Prochaine action** : lire les verdicts (`ArtifactData list verdicts`, compter 4) ; puis `publier-lot.ts --dir
+scripts/questions/ttechno-3b-fonctions` en simulation ; publication par David.
+- **En attente de David** : relecture de https://claude.ai/artifact/GDznUQpPDffxKACVVUEH7h, puis
+  `publier-lot.ts --publier` (prod).
 - **Pièges en cours** : un point TTECHNO par modèle (trigger) ; `grades` en `array_append` seulement ;
   `publier-lot.ts`, `garde-niveaux-tags.ts`, `create-questions --publier` visent la prod : David les lance (`!`),
   **depuis le dépôt principal, après le merge** ; `Doc-inchangée:` dans un COMMIT de la PR.
@@ -668,3 +668,10 @@ vérifiés par MCP (`draft`, `{T_TECHNO}`, sans nœud ni tag) ; ids commités su
   rollback miroir ; aucune policy, aucune table d'élève).
 - **#2818 mergée (2026-11-18)**, CI verte, `check:migrations --pr 2818` vert. `migration list --linked` : deux en
   attente, `20261118071618` (questions-cm1 lot 8b) et la nôtre → `db:migrate` NON lancé (il pousserait les deux).
+
+**Migré (2026-11-18)** : la migration cm1 jouée entre-temps, `migration list --linked` : seule `20261118080905` en
+attente ; `db:migrate` depuis le dépôt principal (4 conditions). Prod vérifiée (MCP) : C5–C8 sur « fonctions x ↦ aˣ »
+(032, 033, 036, 080), un tag chacun, `draft`, `updated_at` inchangés.
+
+- Page à cocher : https://claude.ai/artifact/GDznUQpPDffxKACVVUEH7h (4 fiches, 16 exemples ; une alerte attendue :
+  bloc associer de C6 non dessiné, joué dans l'aperçu au § 26 ; `verdicts` vide). Rendu à 390 px non vérifié.
