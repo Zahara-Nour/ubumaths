@@ -6,11 +6,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après la publication du lot 9._
+_Mis à jour le 2026-11-18, phase 0 du lot 10 proposée._
 
 - **État** : lots 0 à 9 publiés (lot 9 partages : 5 modèles, § 15.3). Reste 71 points : lots 10 à 19 (§ 14, ordre § 14.1).
-- **Prochaine action** : phase 0 du lot 10, heures et durées (082, 083, 084, 153, 085) : relevé MCP, tableau des modèles, questions à trancher.
-- **En attente de David** : rien. ⛔ Jamais `--mettre-a-jour` de `cm2-7b` avec des fichiers d'avant #2770 (ids CM1).
+- **Prochaine action** : après la validation, écrire le lot 10 (worktree `ubumaths-wt-questions-cm2`, script `lot-cm2-10.py`).
+- **En attente de David** : validation de la phase 0 du lot 10 (§ 16, questions a à e). ⛔ Jamais `--mettre-a-jour` de `cm2-7b` avec des fichiers d'avant #2770 (ids CM1).
 - **Pièges en cours** : `pnpm migration:horodatage` = heure réelle UTC ; `db:migrate` refuse une migration plus ancienne que la dernière jouée → `--dry-run --include-all`, liste relue, puis `--include-all`. Worktree neuf : copier `supabase/.temp/` du dépôt principal, puis `pnpm exec svelte-kit sync`. `Doc-inchangée:` dans un COMMIT. `git commit -m … -- <fichiers>`. Stash du dépôt principal « cm2-9 ids » : copie identique de ce qui est mergé, à supprimer (David).
 - **Worktree / branche** : aucun (#2794 mergée, worktree retiré).
 
@@ -960,3 +960,56 @@ de 30 ; (b) un seul lot de 5 modèles. Tableau du § 15 gardé.
   https://claude.ai/artifact/6zsvpGYUozHpvSfTcTUhKx ; `verdicts` vide au départ.
 - 2026-11-18 : 5 verdicts « OK » sur 5 (base relue) ; `publier-lot` en simulation : 5 brouillons passent ;
   `--publier` lancé par David ; MCP : 5 `published`. **Lot 9 clos.**
+
+## 16. Lot 10 — heures et durées (082, 083, 084, 153, 085) : phase 0 (proposée le 2026-11-18)
+
+Relevé MCP du 2026-11-18 : aucun modèle sur les 5 points. Nœuds (« Grandeurs et mesures > Durées ») : **lecture de
+l'heure** (082, 083 ; niveaux 1 à 8 pris) et **calcul de durées** (084, 153, 085 ; niveaux 1 à 8 pris). Jumeaux CM1
+publiés (lot 8a du CM1, `scripts/questions/cm1-8a/`) : `9e655e1a` (lire, cadran nu, niv. 6), `dd81eefb` (placer, 8),
+`f3f00294` (durée entre deux horloges, 6), `cdec9199` (comparer, 8), `68134013` (problèmes, 5). Décision § 4 bis :
+modèles CM2 propres.
+
+Bornes `cycle3.json` : 082 « heures, minutes, secondes ; cadran ou affichage digital » ; 083 heure, minute et
+seconde ; 084 « de 8 h 52 min 27 s à 11 h 37 min 18 s » ; 153 heures, minutes, secondes ; 085 une ou plusieurs étapes
+(trois admises), calcul mental, pas d'algorithme posé en base soixante, unités jour, h, min, s.
+
+**Ce qui distingue le CM2 du CM1** : les **secondes** partout (trotteuse lue et posée, durées en h, min, s), et des
+problèmes à **plusieurs étapes** (trois admises) avec l'unité jour. Outil (en prod, v0.93.0) : trotteuse de
+` ```horloge ` (`heure: 9 h 25 min 40 s` la dessine, la grande aiguille reste pile sur sa minute) et à placer
+(`placer: 9 h 25 min 40 s` : trois aiguilles, trotteuse jugée à la seconde).
+
+| #    | Point   | Sous-notion        | Modèle                                           | Variations, plages                                                                                                                                                                                                                                                                                                                                 |
+| ---- | ------- | ------------------ | ------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 10-1 | CM2-082 | lecture de l'heure | Quelle heure est-il ? (avec les secondes)        | trois cases `$?~\text{h}~?~\text{min}~?~\text{s}$` ; V1 cadran à 12 chiffres, trotteuse, à la seconde ; V2 `chiffres: quarts` ; V3 « c'est l'après-midi », réponse 13 h à 23 h 59 min 59 s                                                                                                                                                         |
+| 10-2 | CM2-083 | lecture de l'heure | Place les aiguilles (avec les secondes)          | `placer: h h m min s s` ; V1 cadran à 12 chiffres ; V2 `chiffres: quarts` ; V3 heure de l'après-midi écrite 13 h à 23 h (« 15 h 37 min 20 s »)                                                                                                                                                                                                     |
+| 10-3 | CM2-084 | calcul de durées   | Durée entre deux horloges (h, min, s)            | V1 moins d'une heure, à cheval sur la minute et l'heure (9 h 52 min 40 s → 10 h 07 min 15 s : 14 min 35 s) ; V2 de 1 h à 3 h 59 min 59 s, l'exemple du BO (8 h 52 min 27 s → 11 h 37 min 18 s : 2 h 44 min 51 s) ; V3 l'après-midi, `cadran: 24`                                                                                                   |
+| 10-4 | CM2-153 | calcul de durées   | Quelle durée est la plus longue ? (à la seconde) | deux activités, quatre horloges à trotteuse ; V1 mêmes heures et minutes de durée, écart de 1 à 59 s ; V2 « elles durent autant » possible. Case « choix » à trois issues (comme `cdec9199`)                                                                                                                                                       |
+| 10-5 | CM2-085 | calcul de durées   | Problèmes de durées (h, min, s, jours)           | V1 une étape, chronomètre : départ + durée en min et s, heure d'arrivée à la seconde ; V2 conversion dans un problème (une course de 135 s : 2 min 15 s ; 50 h : 2 jours 2 h) ; V3 trois étapes (trajet, arrêt, trajet), heure d'arrivée ; V4 voyage sur plusieurs jours (départ lundi 21 h 40, 27 h 35 min de trajet : quel jour, quelle heure ?) |
+
+Forme commune (CM1, lot 8a) : une case par nombre, l'unité après la case ; minutes et secondes écrites sur deux
+chiffres (`8 h 04 min 07 s`), donc `options.constraints.zeros: off` (sinon « 07 » tapé = ½ point). Corrigé par
+instants intermédiaires, jamais de soustraction posée en base soixante : « de 8 h 52 min 27 s à 8 h 53 : 33 s ; à 9 h :
+7 min ; à 11 h : 2 h ; à 11 h 37 : 37 min ; à 11 h 37 min 18 s : 18 s ; 7 + 37 = 44 min, 33 + 18 = 51 s ». Erreurs
+typiques en `testSpecs` : secondes lues sur la grande aiguille (ou l'inverse), 100 s dans une minute (« 2 min 85 s »),
+soustraction chiffre à chiffre (11 h 37 min 18 s − 8 h 52 min 27 s → 3 h −15 min −9 s, ou 2 h 85 min 91 s), minute
+suivante comptée trop tôt (trotteuse sur 50 lue une minute de plus), 12 h ajoutée à tort.
+
+**Question d'accès** : 5 brouillons neufs, puis nœud + tag → personne ne lit rien de plus avant la publication.
+
+**À trancher** :
+
+(a) Lire la trotteuse : cadran à 12 chiffres puis `chiffres: quarts`, **sans** cadran nu (`aucun`) — trois aiguilles
+sur un cadran sans chiffre, à 4 cm sur téléphone, ce serait lire l'aiguille plus que l'heure ? Reco : **oui, pas de
+cadran nu au CM2** (le CM1 l'a déjà).
+
+(b) « Affichage digital » (082) : une variation « 08:52:27 » à écrire en h, min, s ? Reco : **non**, elle ne mesure
+rien que le CM2 ne sache (lire des chiffres) ; le cadran suffit.
+
+(c) 085 avec la conversion (V2 : 135 s = 2 min 15 s ; 50 h = 2 jours 2 h) : le BO cite les unités jour, h, min, s
+sans dire « convertir ». Reco : **oui**, dans un problème, jamais en exercice nu.
+
+(d) Niveaux : au lot 9 du CM2, les modèles neufs passent **après** les niveaux pris (12 à 15) ; ici, lire 9, placer 10
+(lecture de l'heure) ; durée 9, comparer 10, problèmes 11 (calcul de durées). Les secondes rendent chacun plus dur que
+son jumeau CM1. Relevés de nouveau juste avant la création. Reco : **oui**.
+
+(e) Un seul lot de 5 modèles. Reco : **oui**.
