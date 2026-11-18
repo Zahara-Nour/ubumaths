@@ -5,17 +5,17 @@ Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) · bornes 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, PR de rangement du lot 5b ouverte._
+_Mis à jour le 2026-11-18, après #2851._
 
-- **État** : lots 0 à 5a publiés ; lot 5b (L7–L9) créé en prod (3 brouillons, ids § 41) ; migration nœud + tag
-  `20261118214049` sur la branche `feat/questions-ttechno-lot5b-tags`. Restent ensuite les lots 6 à 8 (§ 33).
-- **Prochaine action** : merge, `migration list --linked`, `db:migrate` depuis le dépôt principal, relecture MCP ;
-  puis page à cocher du lot 5b.
+- **État** : lots 0 à 5a publiés ; lot 5b (L7–L9) en prod, rangé et tagué (#2851 jouée, § 41), en brouillon.
+  Restent ensuite les lots 6 à 8 (§ 33).
+- **Prochaine action** : page à cocher du lot 5b (gabarit § 38), puis publication de L9 seule tant que #2839 n'est
+  pas en prod.
 - **En attente de David** : rien.
 - **Pièges en cours** : un point TTECHNO par modèle (trigger) ; tag = nœud DU POINT (relevé MCP) ; `publier-lot.ts`,
   `create-questions --publier` visent la prod : David les lance (`!`) ; **L7 et L8 demandent de taper log : à
   publier seulement après le `deploy:prod` qui livre #2839** (L9 n'en dépend pas) ; port 5176 pris par `automaths`.
-- **Worktree / branche** : `../ubumaths-wt-questions-ttechno`, `feat/questions-ttechno-lot5b-tags`.
+- **Worktree / branche** : aucun (retiré après #2851).
 
 ## 1. Périmètre
 
@@ -948,3 +948,6 @@ dans le dépôt principal, reportés et commités sur la branche de la migration
   ou RIEN sur 3, rollback commenté). Accès : tranché § 34 (personne pour les brouillons). Test d'intégration
   `questions-ttechno-lot5b-rangement-tags` : **rouge sans la migration** (4 échecs + suite principale), **9 / 9
   vert** avec.
+- **#2851 mergée (2026-11-18)**, CI verte, `check:migrations --pr 2851` vert ; `security-auditor` sans finding.
+  `migration list --linked` : seule `20261118214049` en attente ; `db:migrate` depuis le dépôt principal. Relu par
+  MCP : 3 / 3 sur ee6b005b, un tag chacun (043, 084, 085), `draft`, `updated_at` inchangé. Worktree retiré.
