@@ -8,17 +8,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après #2796 (lot 2 clos)._
+_Mis à jour le 2026-11-18, PR des fichiers du lot 3 ouverte._
 
-- **État** : lots 1 (#2783) et 2 (#2787, #2796) clos, 8 modèles du second degré publiés. Reste les lots 3 à 6 du
-  découpage du § 23 (dérivation, algorithmique, graphiques et stats à deux variables, probabilités).
-- **Prochaine action** : lot 3 « dérivation » (128, 069, 071, 072, 074, 130, 131, 081, 056) : demander d'abord à
-  questions-1gen s'il a un modèle commun en cours, relevé prod, puis phase 0 à faire valider par David.
-- **En attente de David** : rien.
-- **Pièges en cours** : modèles communs `{1_GEN,1_TECHNO}` = deux tags (un par programme) ; worktree neuf →
-  `svelte-kit sync` avant `page-a-cocher.ts` ; `db:migrate` pousse tout ce qui attend, et refuse une migration d'une
-  autre session horodatée avant la dernière appliquée (`migration list --linked` juste avant de donner la commande).
-- **Worktree / branche** : aucun (à recréer pour le lot 3).
+- **État** : lots 1 et 2 clos. Lot 3 « dérivation » : phase 0 validée (§ 25), 9 modèles écrits
+  (`scripts/questions/1techno-3/`), simulation verte, essai local fait ; PR des fichiers ouverte.
+- **Prochaine action** : merge de la PR des fichiers, puis David lance `create-questions --dir
+scripts/questions/1techno-3 --publier` (brouillons), ids commités, page à cocher, migration nœud + 9 tags.
+- **En attente de David** : le `create-questions --publier` après le merge.
+- **Pièges en cours** : `db:migrate` pousse tout ce qui attend, et refuse une migration d'une autre session
+  horodatée avant la dernière appliquée (`migration list --linked` juste avant de donner la commande) ; aperçu admin
+  local : `--host 127.0.0.1` (Chrome n'ouvre pas `[::1]`) ; lot 5 : modèles communs de questions-1gen (S2, S3, S4,
+  S6), ids à recevoir.
+- **Worktree / branche** : `../ubumaths-wt-questions-1techno`, `content/questions-1techno-lot3`.
 
 ## 1. Relevé (prod, 2026-11-17)
 
@@ -623,7 +624,7 @@ PR #2796 mergée (go de David sur la partie destructive). `db:migrate` refusé (
 tag 1SPE-402 ; triggers de `question_templates` actifs. Publication : `publier-lot.ts` en simulation (8 brouillons)
 puis lancé par David avec `--publier` : 8/8 publiés, relu en base. **Lot 2 clos.**
 
-## 25. Lot 3 « dérivation » — phase 0 (proposée, 2026-11-18)
+## 25. Lot 3 « dérivation » — phase 0 (validée par David, « oui », 2026-11-18)
 
 Relevé prod (MCP) : les 9 points ont 0 modèle. questions-1gen : rien en cours, **aucun jumeau** (le module 1GEN n'a
 ni dérivée ni taux en un point ; ses « taux moyen » 037, 040, 043 portent sur aˣ, pas sur 056). Modèles 1re spé
@@ -662,3 +663,16 @@ aucun modèle existant n'est touché, rien n'est retiré. Aucune règle d'accès
 Lot 5 : questions-1gen ouvre son lot 6 (stats à deux variables, 1GEN-001 à 007) et propose des modèles communs
 (082 / 085 ↔ 1GEN-002, 084 ↔ 1GEN-004, 087 ↔ 1GEN-007 et 003) ; réponse : rien en cours ici, d'accord sur le
 principe, David tranchera au lot 5.
+
+### Lot 3 — écriture (2026-11-18)
+
+Script `docs/wip/questions/lot-1techno-3.py` → `scripts/questions/1techno-3/` (9 modèles, 88 specs). M2, M3, M4, M9 en
+question de cours (`courseQuestion`, délai 30). M8 : réponse `intervalles` avec `openableBounds` (intervalle de
+croissance), v4 tableau de variation à compléter. `create-questions` en simulation : 9 « à créer », tout vert. 640
+formules des aperçus passées à `validateLatex` + compte d'accolades : 0 problème. Corrigés relus : « h + (−3) »
+(M1), « 1q + 6 » (M7), fractions 7/7 (M9, conditions ajoutées) corrigés. Essai en base locale (copie scratchpad) :
+9 brouillons ; aperçu admin : M1 et M7 rendus, tableau de M8 rendu avec ses cases.
+
+Lot 5 : questions-1gen a fait valider sa phase 0 (son journal, § 23) : S2 → 085, S3 → 082, S4 → 084, S6 → 087, et
+49fac266 reçoit 1GEN-003 + `1_GEN` dans sa migration (ni mes niveaux ni mon tag touchés). Plages à vérifier contre
+mes bornes avant le lot 5 ; ids à recevoir.
