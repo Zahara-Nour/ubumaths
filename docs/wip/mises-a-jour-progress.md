@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, PR 2a en cours._
+_Mis à jour le 2026-11-18, après #2821._
 
-- **État** : #2814 mergée (kit 2.70.4, pas encore en prod). Étude de SvelteKit 3 faite (section « Étude SvelteKit 3 ») ; découpage validé 2a / 2b / plus tard. PR 2a (TypeScript 6.0.3 seul) en cours.
-- **Prochaine action** : finir 2a (`pnpm check`, `types:cliquet`, `lint` complet sous TS 6), PR, merge ; puis 2b.
-- **En attente de David** : `deploy:prod` pour livrer #2814, quand il le voudra.
+- **État** : #2814 (kit 2.70.4) et #2821 (TypeScript 6.0.3, CI verte, Lint compris) mergées, pas encore en prod. Étude SvelteKit 3 : section « Étude SvelteKit 3 ».
+- **Prochaine action** : PR 2b, kit 3 + adapter-vercel 7 (versions mûres au jour J, règle des 3 j ; 3.2.0 / 7.0.3 au 2026-11-18). Nouveau worktree, `npx sv migrate sveltekit-3`, d'abord vérifier si `$lib` est retiré ou seulement déprécié (sinon `#lib` dans une PR à part), puis corrections à la main de la liste « Obligatoire en 3.0 ». Revues `code-reviewer` + `security-auditor` (CSRF, cookies).
+- **En attente de David** : `deploy:prod` pour livrer #2814 et #2821, quand il le voudra.
 - **Pièges en cours** : `check:incremental` tourne sous tsgo (TS 7) : il NE vérifie PAS TS 6, seul `pnpm check` le fait. Dépendances retenues exprès (mémoire `project_dependances-epinglees`) ; `minimumReleaseAge` 3 j, ne jamais le contourner.
-- **Worktree / branche** : `../ubumaths-wt-mises-a-jour` · `chore/typescript-6`.
+- **Worktree / branche** : aucun (supprimés après #2821).
 
 ## Origine
 
@@ -66,3 +66,4 @@ Source : https://svelte.dev/docs/kit/migrating-to-sveltekit-3. Comptes faits par
 ## Historique
 
 - 2026-11-18 : #2814 mergée (CI verte, 16 contrôles) : SvelteKit 2.70.3 → 2.70.4.
+- 2026-11-18 : #2821 mergée (CI verte, 17 contrôles) : TypeScript 5.9.3 → 6.0.3 ; `pnpm check` local 0 erreur sur 11 653 fichiers, cliquet tenu, aucune correction de code nécessaire.
