@@ -2,20 +2,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18 : étape 1 (fondations en base) écrite, PR à ouvrir._
+_Mis à jour le 2026-11-18, après #2808._
 
-- **État** : phase 0 de la v1 validée (§ « Phase 0 de la v1 », 8 étapes). **Étape 1 en cours** : migration `20261118060323_descente_fondations.sql` + `tests/integration/descente-fondations.test.ts` (32 tests, rouges sans la migration, verts avec ; relus par `code-reviewer` et `security-auditor`, sans bloquant).
-- **Tranché le 2026-11-18** (§ « Tranché ») : question d'accès de l'étape 1 et barème des gidouilles (1 / 3 / 0, plafond 4 sur 24 h).
-- **Prochaine action** : PR de l'étape 1 → `code-reviewer` + `security-auditor` → CI verte → merge → `db:migrate` (4 conditions de `CLAUDE.md`) → `db:types`. Puis étape 2 (apparition des Bêtes), qui ajoutera aussi les deux tables à l'export RGPD.
-- **En attente de David** : rien.
+- **État** : étape 1 (fondations en base) **mergée** (#2808) : `student_beasts`, `student_combat_moves`, `record_beast_victory`, lieu de trace `descente`. 32 tests d'intégration ; `code-reviewer` + `security-auditor` sans bloquant. **Migration `20261118060323` PAS encore en prod.**
+- **Prochaine action** : `db:migrate` dès qu'aucune autre migration n'attend (le 2026-11-18, `…054706_questions_1gen_lot6` et `…055440_questions_1techno_lot3` étaient mergées sans être en prod) ; puis `db:types` (PR à part), puis étape 2 (apparition des Bêtes, + export RGPD des deux tables).
+- **En attente de David** : pousser les deux migrations des autres sessions, ou dire de les pousser ensemble.
 - **Façon de poser** : en mots simples, avec un exemple, sans noms de tables ni de colonnes.
 - **Pièges en cours** :
-  - Base locale : `supabase migration up --local` bute sur une migration de rangement déjà jouée (contenu copié de la prod) ; appliquer le seul fichier par `psql -1` sous `scripts/with-db-lock.sh`, puis `notify pgrst, 'reload schema'`.
   - **PostgREST tronque un message d'erreur SQL accentué** et rend un 500 sans code : `raise exception` sans accent dans les fonctions appelées par l'API.
-  - Code et migration en deux PR : rien dans `src/` ne lit les tables avant `db:types`.
+  - Base locale : `supabase migration up --local` bute sur une migration de rangement ; appliquer un fichier par `psql -1` sous `scripts/with-db-lock.sh`, puis `notify pgrst, 'reload schema'`.
+  - Le prof et l'admin peuvent écrire une trace `descente` (comme `evaluation`) : leurs policies ne filtrent pas le lieu.
   - L'analyse du jeu d'origine est dans `extern/navadra-jeu/CLAUDE.md`, **non versionné**.
-  - Le Compendium n'interdit que les **mots** anglais affichés (XP, boss, score…), pas les mécaniques.
-- **Worktree / branche** : `../ubumaths-wt-navadra`, `feat/navadra-fondations`.
+- **Worktree / branche** : `../ubumaths-wt-navadra` (`feat/navadra-fondations`, mergée) — à retirer après `db:migrate`.
 
 ## Tranché
 
