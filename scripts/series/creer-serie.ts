@@ -51,6 +51,12 @@ async function main(): Promise<number> {
 		return 2;
 	}
 	const serie = lireSerie(chemin);
+	if (mettreAJour && !serie.id) {
+		console.error(
+			`⛔ --mettre-a-jour : le fichier ne porte pas d'id de série, rien à mettre à jour (un --publier seul en créerait une)`
+		);
+		return 2;
+	}
 	const { supabase, target } = createScriptClient(publier);
 	console.log(`${publier ? '✍️  ÉCRITURE' : '🔍 SIMULATION'} — base ${target}\n`);
 
@@ -136,6 +142,7 @@ async function main(): Promise<number> {
 			.from('series')
 			.update(champs)
 			.eq('id', serie.id)
+			.eq('created_by', profId)
 			.select('id');
 		if (majError) {
 			if (majError.code === SERIES_LOCKED_SQLSTATE) {
@@ -160,7 +167,17 @@ async function main(): Promise<number> {
 	if (creationError || !creee) {
 		throw new Error(`enregistrement impossible — ${creationError?.message ?? 'aucune ligne'}`);
 	}
-	ecrireIdSerie(chemin, creee.id);
+	try {
+		ecrireIdSerie(chemin, creee.id);
+	} catch (e) {
+		// La série existe déjà en base : sans son id dans le fichier, une relance créerait un doublon
+		console.error(
+			`⛔ série enregistrée (${creee.id}), mais l'id n'a pas pu être écrit dans ${chemin} : ` +
+				`ajoute "id": "${creee.id}" en tête du fichier avant toute relance — ` +
+				(e instanceof Error ? e.message : String(e))
+		);
+		return 1;
+	}
 	console.log(`✅ série enregistrée : ${creee.id} (id écrit dans ${chemin}, à commiter)`);
 	return 0;
 }

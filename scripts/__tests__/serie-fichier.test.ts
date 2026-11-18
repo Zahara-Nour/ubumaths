@@ -135,3 +135,10 @@ describe('ecrireIdSerie', () => {
 		expect(lireSerie(chemin).id).toBe(SERIE_ID);
 	});
 });
+
+describe('lireSerie : lignes strictes', () => {
+	it('refuse une clé inconnue dans une ligne', () => {
+		const items = [{ templateId: M1, quantity: 1, delay: 30, quantite: 3 }];
+		expect(() => lireSerie(fichier({ ...SERIE, items }))).toThrow(/refusé/);
+	});
+});

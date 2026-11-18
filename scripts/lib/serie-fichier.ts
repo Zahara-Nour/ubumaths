@@ -8,7 +8,7 @@
  * (le titre du modèle) n'est là que pour la relecture humaine et n'est pas enregistré.
  */
 
-import { readFileSync, writeFileSync } from 'node:fs';
+import { readFileSync, renameSync, writeFileSync } from 'node:fs';
 import { z } from 'zod';
 import { createSeriesSchema } from '../../src/lib/server/validation/evaluations';
 import { seriesItemSchema, type SeriesItem } from '../../src/lib/validation/series';
@@ -25,9 +25,11 @@ export interface LigneModeleSerie {
 
 // Constantes
 
-const ligneFichierSchema = seriesItemSchema.extend({
-	modele: z.string().max(300).optional()
-});
+const ligneFichierSchema = seriesItemSchema
+	.extend({
+		modele: z.string().max(300).optional()
+	})
+	.strict();
 
 /** Le fichier : une série de l'appli, plus l'id écrit après l'enregistrement */
 export const serieFichierSchema = createSeriesSchema
@@ -128,5 +130,8 @@ export function dureeTotale(serie: SerieFichier, delaisParDefaut: Map<string, nu
 export function ecrireIdSerie(chemin: string, id: string): void {
 	const brut = JSON.parse(readFileSync(chemin, 'utf8')) as Record<string, unknown>;
 	const { id: _ancien, ...reste } = brut;
-	writeFileSync(chemin, `${JSON.stringify({ id, ...reste }, null, '\t')}\n`);
+	// Fichier temporaire puis renommage : jamais de JSON tronqué
+	const temporaire = `${chemin}.tmp`;
+	writeFileSync(temporaire, `${JSON.stringify({ id, ...reste }, null, '\t')}\n`);
+	renameSync(temporaire, chemin);
 }
