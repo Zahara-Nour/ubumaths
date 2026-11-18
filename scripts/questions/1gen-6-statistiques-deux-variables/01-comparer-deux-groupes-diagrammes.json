@@ -1,4 +1,5 @@
 {
+	"id": "9bedbaf4-d5d1-4464-947d-19b8946452ab",
 	"title": "Comparer deux groupes à l'aide de diagrammes",
 	"description": "Croisement de deux caractères qualitatifs : part d'un groupe, comparaison en proportion (piège des effectifs), effectif retrouvé d'un pourcentage",
 	"grades": ["1_GEN"],

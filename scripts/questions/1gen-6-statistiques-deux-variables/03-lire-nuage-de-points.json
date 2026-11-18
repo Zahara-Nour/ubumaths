@@ -1,4 +1,5 @@
 {
+	"id": "7461bb44-6811-4f56-9397-6fb3ff82c1b9",
 	"title": "Lire un nuage de points",
 	"description": "Lire une valeur sur un nuage, dire la tendance, juger si un ajustement affine est adapté",
 	"grades": ["1_GEN"],

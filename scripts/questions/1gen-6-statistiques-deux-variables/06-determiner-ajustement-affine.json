@@ -1,4 +1,5 @@
 {
+	"id": "3fec6b41-b401-430b-b602-017bd51e5f10",
 	"title": "Déterminer un ajustement affine",
 	"description": "Droite de Mayer (6 et 8 points), droite au jugé, droite des moindres carrés donnée par la calculatrice",
 	"grades": ["1_GEN"],
