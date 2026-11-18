@@ -152,7 +152,7 @@ describe('Questions CM2, lot 11a : nœud et tag des modèles neufs (migration de
 		await cleanupAllTestData();
 	});
 
-	it('chaque modèle est EXACTEMENT sur le nœud de son point', () => {
+	it('chaque modèle est EXACTEMENT sur son nœud (celui de son point ou une sous-notion de sa notion)', () => {
 		expect(LOT.map((m) => apres.noeuds.get(m.id))).toEqual(LOT.map((m) => m.noeud));
 	});
 
