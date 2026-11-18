@@ -1,4 +1,5 @@
 {
+	"id": "92120570-1a05-4caa-a0da-5e4d3e20e897",
 	"title": "Rang à partir duquel une suite dépasse une autre",
 	"description": "u arithmétique, v géométrique de raison 2 : valeur renvoyée par la boucle while v <= u, lecture d'un tableau de valeurs, condition à compléter",
 	"grades": ["1_TECHNO"],

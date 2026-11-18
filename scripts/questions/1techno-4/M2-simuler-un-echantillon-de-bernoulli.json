@@ -1,4 +1,5 @@
 {
+	"id": "2bf630e5-d983-4123-a5b8-17a9a0eddbe6",
 	"title": "Simuler un échantillon d'une loi de Bernoulli",
 	"description": "Fonction Python qui compte les 1 de n épreuves de Bernoulli : valeur renvoyée pour six tirages donnés, renvoyer la fréquence, sens d'un appel",
 	"grades": ["1_TECHNO", "1_SPE"],

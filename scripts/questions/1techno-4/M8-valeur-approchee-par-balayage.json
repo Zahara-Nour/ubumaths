@@ -1,4 +1,5 @@
 {
+	"id": "3263f8f6-44af-4952-9cf0-45fdc0d8e344",
 	"title": "Valeur approchée d'une solution par balayage",
 	"description": "x² + x = k sur [0 ; +∞[ : encadrement renvoyé par balayage(k, 1), encadrement au dixième d'après un tableau de valeurs, condition à compléter, sens de balayage(k, 0.01)",
 	"grades": ["1_TECHNO"],

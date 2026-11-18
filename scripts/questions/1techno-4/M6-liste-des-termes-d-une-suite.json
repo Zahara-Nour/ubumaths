@@ -1,4 +1,5 @@
 {
+	"id": "b916ab0f-73d5-4c3d-80d6-5300f4594f91",
 	"title": "Liste des premiers termes d'une suite en Python",
 	"description": "Fonction termes(n) : liste renvoyée (arithmétique, géométrique), élément d'indice 3, liste en compréhension",
 	"grades": ["1_TECHNO"],
