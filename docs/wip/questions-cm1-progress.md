@@ -2124,3 +2124,5 @@ reste en D ; niveaux **CM1 et CM2** et tag des deux points (109/098, 110/099, 11
   niveau ni statut changé, aucun nœud créé. Diff avec le 8d limité aux données du lot.
 - Test `questions-cm1-lot8e-rangement-tags.test.ts` : 20/20 vert ; corps neutralisé (`select 1;`) : 9 échecs,
   7 sautés. `types:cliquet` tenu. Seule migration en attente (`migration list --linked`).
+- `security-auditor` : aucun finding, ni bloquant ni non bloquant (diff avec le 8d limité aux données ; état
+  « avant » remesuré au MCP : 5 draft, nœud null, 0 tag ; 7 points et le nœud Solides > propriétés actifs).
