@@ -5,13 +5,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-17, phase 0 du lot 8b (§ 22)._
+_Mis à jour le 2026-11-18, PR #2803 du lot 8b (§ 22 ter)._
 
-- **État** : lots 0 à 8a publiés, 131 points sur 171. Correctif `zeros` des horloges CE2 écrit en prod. Restent 8b,
-  8c, 8d, 8e, 9 (§ 20, découpage validé § 20 bis).
-- **Prochaine action** : lot 8b « aires et angles » : phase 0 écrite (§ 22, 6 modèles, tout en bloc `figure`) ;
-  après le go, écrire le script du lot dans un worktree neuf (l'ancien est détaché sur `main`).
-- **En attente de David** : les 3 questions du § 22 (modèles ; sous-notion « aires sur quadrillage » ; jumeaux CM2).
+- **État** : lots 0 à 8a publiés, 131 points sur 171. Lot 8b écrit (6 modèles), PR #2803 ouverte. Restent 8c, 8d,
+  8e, 9 (§ 20, découpage validé § 20 bis).
+- **Prochaine action** : merge de #2803, puis David lance `create-questions --dir scripts/questions/cm1-8b
+--publier` ; ensuite migration nœud + tag (sous-notion neuve « aires sur quadrillage » sous Aires ; tags CM1 et
+  CM2, § 22 bis), page à cocher, publication.
+- **En attente de David** : la création en prod des 6 brouillons.
 - **Pièges en cours** : `create-questions --publier` lancé depuis le dépôt principal écrit les ids dans SES fichiers :
   les reporter sur la branche du worktree, puis `git restore` dans le dépôt principal ; `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance (une autre session peut l'avoir fait avant : vérifier au MCP) ; `db:migrate` depuis un worktree : copier d'abord le lien `../ubumaths/supabase/.temp/` ; `create-questions` = `pnpm tsx scripts/create-questions.ts …`, refuse `theme`/`domain`/`subdomain` (ADR 0035) ; horodatage = `pnpm migration:horodatage`, puis `pnpm check:migrations --pr <n>` **juste avant le merge** ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule ; un brouillon sans nœud ne peut pas être tagué (trigger) ; le pre-commit reformate le relevé `etat-prod-*` (prettier) et laisse l'index décalé : `git diff HEAD` vide → `git restore --staged` ; le mode auto refuse `publier-lot` et `garde-niveaux-tags` (lecture de la prod), même en simulation : David les lance ; zsh ne découpe pas `$F` : un tableau `F=(…)`.
 - **Worktree / branche** : `../ubumaths-wt-questions-cm1`, détaché sur `main`, aucune branche ouverte (un id de `4-lot-11/01` d'une autre session y traîne, non commité : pas à nous).
@@ -1754,3 +1755,18 @@ avant. Les modèles publiés sont lus comme les autres ; la migration ne fait qu
   migration nœud + tag.
 - Jumeaux CM2 : niveaux **CM1 et CM2**, tag sur les deux points pour 086/071, 087/072, 089/076, 090/077, 091/078 ;
   le 088 (cm²) reste CM1 seul.
+
+### 22 ter. Lot 8b — écrit (2026-11-18)
+
+- Script `docs/wip/questions/lot-cm1-8b.py` → `scripts/questions/cm1-8b/` (6 modèles, niveaux 1, 2, 1, 1, 2, 1 ;
+  grades CM1 + CM2 sauf 03, CM1 seul). Formes sur quadrillage en catalogue (aire et carreaux entiers / demi-carreaux
+  calculés et vérifiés par le script) ; angles par `point(S, longueur=…, angle=…)`, marques `angle()` saillantes.
+- `question:specs` : 6/6 importables, 48 specs ; `sonde-figures` 300 tirages par modèle, 0 problème.
+- Pièges vus : une `validationRules` custom dont l'expression contient un `{{if:}}` imbriqué rend la bonne réponse
+  fausse (retirée) ; couleur d'un corrigé hors `$` refusée par `question:specs` ; deux figures côte à côte
+  (fenêtre 19 × 7) donnent des carreaux de 13 px à 390 px → **figures empilées** (A en haut, B en bas ; angles
+  l'un au-dessus de l'autre).
+- Base locale (copies à une variation par modèle, 18 brouillons d'essai) : les 18 variations vues à 390 px
+  (Playwright, port 5177), sans défilement horizontal, réponses attendues justes. Reste : noms des points petits
+  (8 px), sans option de taille → `outils-manquants.md` n° 37.
+- PR #2803 (fichiers seuls, revue : aucune, contenu).
