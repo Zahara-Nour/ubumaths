@@ -7,11 +7,11 @@ Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) · bornes 
 
 _Mis à jour le 2026-11-18, après #2851._
 
-- **État** : lots 0 à 5a publiés ; lot 5b (L7–L9) en prod, rangé et tagué (#2851 jouée, § 41), en brouillon.
-  Restent ensuite les lots 6 à 8 (§ 33).
-- **Prochaine action** : lire les verdicts de la page à cocher du lot 5b (§ 42), puis publier L9 seule
-  (`becf24bc`) tant que #2839 n'est pas en prod.
-- **En attente de David** : relecture de la page à cocher du lot 5b (§ 42).
+- **État** : lots 0 à 5a publiés ; lot 5b relu (3/3 ok), **L9 publiée** (§ 43), L7 et L8 en brouillon (relus,
+  prêts). Restent ensuite les lots 6 à 8 (§ 33).
+- **Prochaine action** : lot 6, fonction inverse (045, 086, 049, 087) : phase 0. Dès que #2839 est en prod :
+  `publier-lot.ts --dir scripts/questions/ttechno-5b-log-resolutions` pour L7 et L8 (David lance `--publier`).
+- **En attente de David** : rien (le `deploy:prod` qui livre #2839 débloquera L7 et L8).
 - **Pièges en cours** : un point TTECHNO par modèle (trigger) ; tag = nœud DU POINT (relevé MCP) ; `publier-lot.ts`,
   `create-questions --publier` visent la prod : David les lance (`!`) ; **L7 et L8 demandent de taper log : à
   publier seulement après le `deploy:prod` qui livre #2839** (L9 n'en dépend pas) ; port 5176 pris par `automaths`.
@@ -957,3 +957,12 @@ dans le dépôt principal, reportés et commités sur la branche de la migration
 - Page à cocher : https://claude.ai/artifact/APGycPrWV53fLcHSp4zD1c (3 fiches : 52b884ee TTECHNO-043, 6 exemples ;
   10bd7075 084, 4 exemples ; becf24bc 085, 4 exemples ; aucune alerte ; tous `draft` ; `verdicts` vide). Rendu à
   390 px non vérifié.
+
+## 43. Lot 5b : publication de L9 (2026-11-18)
+
+- Page à cocher relue : 3 verdicts sur 3 « ok », sans commentaire.
+- L9 seule : `publier-lot.ts --dir <scratchpad>/ttechno-5b-l9` (copie du seul `03-logarithme-seuil-entier.json`,
+  le script ne filtre pas par fichier) ; simulation puis `--publier` par David. Relu en base (MCP) : `becf24bc`
+  `published`, `{T_TECHNO}` ; L7 `52b884ee` et L8 `10bd7075` toujours `draft`.
+- **À faire après le `deploy:prod` qui livre #2839** : publier L7 et L8 (même geste, dossier avec leurs deux
+  fichiers, ou `--dir scripts/questions/ttechno-5b-log-resolutions` : L9 déjà publiée est laissée telle quelle).
