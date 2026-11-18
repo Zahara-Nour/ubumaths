@@ -10,14 +10,12 @@
 
 _Mis à jour le 2026-11-18, pendant le lot 5 (aucune PR encore)._
 
-- **État** : phase 0 du lot 5 validée (§ 28). N1-N3 écrits (§ 29) : specs, sonde des courbes et sonde des blocs
-  `nuage` / `histogramme` vertes ; brouillons en base locale. Page à cocher des 4 modèles communs publiée :
-  https://claude.ai/artifact/CVjnD1cXJukRJRcxujjtry (`verdicts`, vide).
-- **Prochaine action** : rendus de N1-N3 validés par David → PR des fichiers (revue : aucune, contenu) → David
-  `create-questions --publier` → migration (nœud + tag de N1-N3 ; `1_TECHNO` + tag des 4 communs si « ok »).
-- **En attente de David** : rendus de N1-N3 (aperçu Tailscale). Communs : 4 « ok » sur 4.
-- **Pièges en cours** : `db:migrate` pousse tout ce qui attend ; questions-1gen n'a pas de session ouverte : la
-  prévenir avant la migration des communs ; aperçu Tailscale (443 → 5176, 8443 → 54321) à fermer après la relecture.
+- **État** : lot 5 : N1-N3 écrits, rendus validés par David ; 4 communs « ok » (page à cocher). PR des fichiers
+  ouverte.
+- **Prochaine action** : CI verte → merge ; David `create-questions --dir scripts/questions/1techno-5 --publier` (depuis
+  `main`) ; commiter les ids ; prévenir questions-1gen ; migration (nœud + tag de N1-N3 ; `1_TECHNO` + tag des communs).
+- **En attente de David** : `create-questions --publier` après le merge.
+- **Pièges en cours** : `db:migrate` pousse tout ce qui attend ; questions-1gen pas encore prévenue.
 - **Worktree / branche** : `ubumaths-wt-questions-1techno`, `feat/questions-1techno-lot5`.
 
 ## 1. Relevé (prod, 2026-11-17)
@@ -845,3 +843,6 @@ https://claude.ai/artifact/CVjnD1cXJukRJRcxujjtry (`db`, `verdicts` vide) ; aler
 dessiné par la page, à jouer dans l'aperçu.
 
 Verdicts des communs : 4 « ok » sur 4, sans commentaire (collection `verdicts`, lue).
+
+Rendus de N1-N3 (aperçu Tailscale) : David, « je valide les rendus ». Aperçu fermé (`tailscale serve --https=443 off` et
+`--https=8443 off` ; le :10000 → 5175 n'est pas à ce chantier), 5176 arrêté.
