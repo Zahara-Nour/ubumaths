@@ -5,11 +5,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après la publication du lot 8c (§ 23 sexies)._
+_Mis à jour le 2026-11-18, phase 0 du lot 8d écrite (§ 24)._
 
 - **État** : lots 0 à 8c publiés, **144 points du CM1 sur 171** (CM2 : 100 sur 158, recompté au MCP).
-- **Prochaine action** : phase 0 du lot 8d (figures à compléter : CM1-107, 108, 167, 168), puis 8e, 9 (§ 20).
-- **En attente de David** : son go pour la phase 0 du 8d.
+- **Prochaine action** : écrire le lot 8d (§ 24) après le go de David ; puis 8e, 9 (§ 20).
+- **En attente de David** : réponses aux 4 questions du § 24 (phase 0 du 8d).
 - **Pièges en cours** : lancer `create-questions --publier` et `db:migrate` **depuis le worktree** (lien
   `supabase/.temp/` copié) ; `db:migrate` « inserted before » → `--dry-run --include-all` puis `--include-all` ;
   titre homonyme d'un autre niveau → `create-questions` refuse (renommer) ; commitlint refuse le type `content` ;
@@ -1907,3 +1907,55 @@ nœuds qui existent déjà (pas de sous-notion neuve).
   `garde-niveaux-tags`.
 - Vérifié au MCP : les 7 modèles `published`. Couverture (points non archivés ayant un modèle publié) : CM1 144/171,
   CM2 100/158 (95 attendus d'après le compte du 8b : d'autres modèles CM2 ont été publiés entre-temps).
+
+## 24. Lot 8d — figures à compléter : phase 0 (à valider, 2026-11-18)
+
+Relevé MCP : aucun modèle, ni brouillon, sur 107, 108, 167, 168, ni sur leurs jumeaux CM2 (097 symétrique, 154
+perpendiculaire, 155 parallèle ; prévus au lot 18 « tracés » de `questions-cm2`). Les 4 points sont en **B** :
+case « figure » (` ```figure-a-completer `), contrôles `symetrique par d`, `point A' = symetrie(A, axe=d)` et
+`droite p = perpendiculaire(A, d)` / `parallele(A, d)` (`perpendiculaire(P, d)` et `parallele(P, d)` du langage
+des figures).
+
+Rangement : 107, 108 → **Symétrie axiale** ; 167, 168 → **perpendiculaires et parallèles** (nœuds des points,
+règles de l'ADR 0020 tenues).
+
+Patrons en prod : CE2 `49b8dc0b` (compléter par symétrie, quadrillage, axe H / V, figure collée à l'axe) ; 6e
+`59694d66` (symétrique, axe en diagonale, puis papier uni à l'équerre et au compas) ; 5e `9dc37ad2` (hauteur à
+l'équerre sur quadrillage, `outils: droite, equerre`).
+
+Bornes (cycle3) : 107 axe horizontal ou vertical, quadrillé (ou pointé) ; 108 quadrillé, axe H ou V **qui ne coupe
+pas la figure** (point, segment, triangle) ; 167, 168 « à l'équerre » (accomp. CM1 p. 19-20).
+
+⚠️ **Limite du juge** (`assertLines`, `construction/line.ts`) : sur papier uni, une droite à construire ne peut être
+qu'une médiatrice ou une bissectrice. Une perpendiculaire ou une parallèle par un point n'est jugée **que sur
+quadrillage**. L'élève y a la règle (droite par deux nœuds) **et** l'équerre, mais l'équerre n'est pas exigée :
+compter les carreaux suffit.
+
+| #   | Point | Modèle (titre)                                      | Variations                                                                                                                                                                         | Réponse | Rangement                      | Niv. |
+| --- | ----- | --------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- | ------------------------------ | ---- |
+| 1   | 107   | Compléter une figure pour la rendre symétrique      | Figure collée à l'axe, 5 à 7 sommets, côtés obliques (pas seulement en diagonale des carreaux) : V1 axe vertical ; V2 axe horizontal ; V3 axe décalé (pas au milieu de la fenêtre) | figure  | Symétrie axiale                | 1    |
+| 2   | 108   | Construire le symétrique d'une figure               | Axe H ou V qui ne touche pas la figure, à 1 à 4 carreaux : V1 un point (A') ; V2 un segment ; V3 un triangle (piège : la figure glissée au lieu de retournée)                      | figure  | Symétrie axiale                | 2    |
+| 3   | 167   | Tracer la perpendiculaire à une droite par un point | Quadrillage, `outils: droite, equerre` : V1 d horizontale ou verticale ; V2 d en diagonale des carreaux ; V3 d oblique (pente 2 ; 1 ou 1 ; 2, 3 ; 1) ; V4 le point A sur d         | figure  | perpendiculaires et parallèles | 1    |
+| 4   | 168   | Tracer la parallèle à une droite par un point       | Même cadre : V1 d horizontale ou verticale ; V2 d en diagonale ; V3 d oblique (2 ; 1, 1 ; 2, 3 ; 1)                                                                                | figure  | perpendiculaires et parallèles | 2    |
+
+Corrigés : 107-108 « chaque sommet a son symétrique de l'autre côté de l'axe, à la même distance : on compte les
+carreaux jusqu'à l'axe, puis autant de l'autre côté ; la figure est retournée, pas glissée » ; 167 « on pose l'équerre
+le long de d et on la fait glisser jusqu'à A ; sur le quadrillage : si d avance de p carreaux et monte de q, la
+perpendiculaire avance de q et descend de p » ; 168 « la parallèle fait le même chemin de carreaux que d ; à
+l'équerre : une perpendiculaire à d, puis la perpendiculaire à celle-ci par A ».
+
+**Question d'accès** (migration nœud + tag) : personne ne pourra lire quelque chose qu'il ne pouvait pas lire
+avant. La migration ne fait que ranger et taguer les modèles, sur des nœuds qui existent déjà.
+
+**Questions à David** :
+
+1. Les 4 modèles et leurs variations : OK ?
+2. 167, 168 sur **quadrillage seulement** (limite du juge), avec l'équerre proposée mais pas exigée ; le tracé à
+   l'équerre sur papier uni (« la droite doit être construite », comme la médiatrice) va dans
+   `outils-manquants.md`, à faire plus tard ? Reco : oui. L'équerre est déjà reconnue comme construction exacte,
+   c'est surtout la garde de l'auteur qui manque. Mais c'est un outil, donc un chantier à part.
+3. Jumeaux CM2 : niveaux **CM1 et CM2** et tag sur les deux points pour 167/154 et 168/155 (mêmes intitulés) ;
+   **CM1 seul** pour 107, 108 (le CM2-097 ajoute l'axe en diagonale) ? Reco : oui (même règle qu'au 8c).
+4. 107 : écrire un modèle CM1 plutôt que d'ajouter le CM1 au modèle CE2 `49b8dc0b`, qui fait presque la même chose
+   (axe H / V, figure collée à l'axe) ? Reco : écrire, avec des figures plus grandes et un axe décalé (même choix
+   qu'au 8c). Sinon : ajouter le CM1 au modèle CE2 et le taguer CM1-107, ce qui fait un modèle de moins.
