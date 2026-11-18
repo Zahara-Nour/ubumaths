@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après #2831 (#2832 en CI)._
+_Mis à jour le 2026-11-18, après #2832._
 
-- **État** : chantier terminé en prod — modèles c52b5ea3 et eadf2049 publiés, rangés (6-165, 6-167, migration `20261118172608` appliquée), série `756deb56` « La médiatrice d'un segment » créée (11 questions, ~17 min) · **Prochaine action** : merger #2832 (fichier de série avec son id), puis versement : retirer le worktree, archiver ce journal · **En attente de David** : l'œil sur les figures (ligne de `verifications-manuelles.md` du 2026-11-18) · **Pièges en cours** : aucun · **Worktree / branche** : `../ubumaths-wt-exercices-noelie`, `feat/serie-6-mediatrice`
+- **État** : terminé en prod — modèles c52b5ea3 et eadf2049 publiés et rangés (6-165, 6-167), série `756deb56` « La médiatrice d'un segment » (11 questions, ~17 min), fichier `scripts/series/6-mediatrice.json` mergé (#2832) ; worktree et branches supprimés · **Prochaine action** : après la vérification de David, archiver ce journal (versement : le durable est déjà dans `couvrir-un-niveau.md` § 8 bis) · **En attente de David** : l'œil sur les figures (`verifications-manuelles.md`, ligne du 2026-11-18) · **Pièges en cours** : aucun · **Worktree / branche** : aucun
 
 ## Décisions (phase 0 validée par David le 2026-11-18)
 
@@ -46,3 +46,5 @@ _Mis à jour le 2026-11-18, après #2831 (#2832 en CI)._
 - 2026-11-18 — David lance `publier-lot --publier && creer-serie --publier` : 2 modèles publiés,
   série `756deb56` (6 lignes, 11 questions, auteur = le professeur), relus en prod. #2832 : fichier
   `scripts/series/6-mediatrice.json`.
+- 2026-11-18 — #2832 mergée ; outil manquant n° 38 ajouté à `outils-manquants.md` (médiatrice à la
+  règle graduée et à l'équerre sur papier uni) ; worktree et 4 branches supprimés.
