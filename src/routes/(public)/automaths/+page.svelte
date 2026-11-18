@@ -26,15 +26,21 @@
 	// Paramètres d'adresse du filtre : un rechargement ou un lien le conserve
 	const GRADE_PARAM = 'niveau';
 	const LOWER_GRADES_PARAM = 'inferieurs';
+	const NOTION_PARAM = 'notion';
+	// Dernière adresse du catalogue, retenue le temps de la visite (onglet) :
+	// revenu sans paramètre (retour du panier), on la reprend
+	const MEMORY_KEY = 'chiphre_automaths_adresse';
 	const GRADE_ITEMS = [
 		{ value: ALL_GRADES_VALUE, label: 'Tous les niveaux' },
 		...GRADE_CODES.map((code) => ({ value: code, label: GRADES[code].displayName }))
 	];
 
-	// Filtre par niveau, repris de l'adresse au chargement (niveau inconnu : ignoré)
-	const initialGrade = page.url.searchParams.get(GRADE_PARAM);
+	// Filtre et notion, repris de l'adresse au chargement (ou de la dernière
+	// adresse de la visite) ; niveau ou notion inconnus : ignorés
+	const initialParams = readInitialParams();
+	const initialGrade = initialParams.get(GRADE_PARAM);
 	let chosenGrade = $state<GradeCode | null>(isGradeCode(initialGrade) ? initialGrade : null);
-	let withLowerGrades = $state(page.url.searchParams.get(LOWER_GRADES_PARAM) === '1');
+	let withLowerGrades = $state(initialParams.get(LOWER_GRADES_PARAM) === '1');
 
 	let filteredTemplates = $derived(
 		filterTemplatesByGrade(questionTemplatesCache.templates, chosenGrade, withLowerGrades)
@@ -47,14 +53,18 @@
 	let hasAnyTemplate = $derived(questionTemplatesCache.templates.length > 0);
 	let branchItems = $derived(catalogue.branches.map((b) => ({ value: b.id, label: b.name })));
 
-	// Branche choisie (la première tant que rien n'est choisi)
+	// Notion choisie (celle de l'adresse au chargement)
+	let chosenNotionId = $state<string | undefined>(initialParams.get(NOTION_PARAM) ?? undefined);
+
+	// Branche choisie ; sinon celle de la notion choisie ; sinon la première
 	let chosenBranchId = $state<string | undefined>(undefined);
 	let selectedBranch = $derived(
-		catalogue.branches.find((b) => b.id === chosenBranchId) ?? catalogue.branches[0]
+		catalogue.branches.find((b) => b.id === chosenBranchId) ??
+			catalogue.branches.find((b) => b.notions.some((n) => n.id === chosenNotionId)) ??
+			catalogue.branches[0]
 	);
 
-	// Notion choisie dans la branche (la première tant que rien n'est choisi)
-	let chosenNotionId = $state<string | undefined>(undefined);
+	// Notion affichée : la choisie si la branche l'a, sinon sa première
 	let selectedNotion = $derived(
 		selectedBranch?.notions.find((n) => n.id === chosenNotionId) ?? selectedBranch?.notions[0]
 	);
@@ -62,6 +72,21 @@
 	// Rubriques dépliées de la notion affichée (valeurs des Accordion.Item)
 	let openRubrics = $state<string[]>([]);
 	let openUnclassified = $state<string[]>([]);
+
+	/**
+	 * Paramètres de départ : ceux de l'adresse ; adresse sans paramètre → la
+	 * dernière adresse de la visite (stockage illisible ou absent : rien)
+	 */
+	function readInitialParams(): URLSearchParams {
+		if (page.url.search) return new URLSearchParams(page.url.search);
+		try {
+			const remembered = sessionStorage.getItem(MEMORY_KEY);
+			if (remembered) return new URLSearchParams(remembered);
+		} catch {
+			// Stockage indisponible (serveur, navigation privée) : on part de zéro
+		}
+		return new URLSearchParams();
+	}
 
 	function rubricValue(rubric: CatalogueRubric): string {
 		return rubric.id ?? GENERAL_RUBRIC_VALUE;
@@ -71,34 +96,52 @@
 		chosenBranchId = value;
 		chosenNotionId = undefined;
 		openRubrics = [];
+		writeChoicesToUrl();
 	}
 
 	function handleNotionChange(value: string | undefined) {
 		chosenNotionId = value;
 		openRubrics = [];
+		writeChoicesToUrl();
 	}
 
-	/** Écrit le filtre dans l'adresse, sans nouvelle entrée d'historique */
-	function writeGradeFilterToUrl() {
-		const url = new URL(page.url.href);
-		if (chosenGrade) url.searchParams.set(GRADE_PARAM, chosenGrade);
-		else url.searchParams.delete(GRADE_PARAM);
-		if (chosenGrade && withLowerGrades) url.searchParams.set(LOWER_GRADES_PARAM, '1');
-		else url.searchParams.delete(LOWER_GRADES_PARAM);
-		replaceState(`${resolve('automaths')}${url.search}`, page.state);
+	/**
+	 * Écrit niveau et notion affichée dans l'adresse, sans nouvelle entrée
+	 * d'historique, et les retient pour la visite
+	 */
+	function writeChoicesToUrl() {
+		const params = new URLSearchParams();
+		if (chosenGrade) params.set(GRADE_PARAM, chosenGrade);
+		if (chosenGrade && withLowerGrades) params.set(LOWER_GRADES_PARAM, '1');
+		if (selectedNotion) params.set(NOTION_PARAM, selectedNotion.id);
+		const search = params.size > 0 ? `?${params.toString()}` : '';
+		replaceState(`${resolve('automaths')}${search}`, page.state);
+		rememberSearch(search);
+	}
+
+	function rememberSearch(search: string) {
+		try {
+			sessionStorage.setItem(MEMORY_KEY, search);
+		} catch {
+			// Stockage indisponible : le retour du panier repartira de zéro
+		}
 	}
 
 	function handleGradeChange(value: string) {
 		chosenGrade = isGradeCode(value) ? value : null;
-		writeGradeFilterToUrl();
+		writeChoicesToUrl();
 	}
 
 	function handleLowerGradesChange(checked: boolean) {
 		withLowerGrades = checked;
-		writeGradeFilterToUrl();
+		writeChoicesToUrl();
 	}
 
 	onMount(() => {
+		// Dernière adresse de la visite reprise : l'adresse affichée la montre
+		if (!page.url.search && initialParams.size > 0) {
+			replaceState(`${resolve('automaths')}?${initialParams.toString()}`, page.state);
+		}
 		void questionTemplatesCache.fetchTemplates();
 	});
 </script>
@@ -108,7 +151,8 @@
 	description="Banque de questions de mathématiques : composez une série d’exercices et lancez-la en classe, en contrôle blanc, en flash-cards ou en course aux nombres."
 />
 
-<div class="container mx-auto max-w-7xl px-4 py-8">
+<!-- pb-28 : la dernière carte peut remonter au-dessus du bouton rond du panier -->
+<div class="container mx-auto max-w-7xl px-4 pt-8 pb-28">
 	<!-- Header -->
 	<div class="mb-8 space-y-2">
 		<h1 class="text-3xl font-bold tracking-tight">Automaths</h1>
@@ -153,6 +197,7 @@
 						items={branchItems}
 						value={selectedBranch.id}
 						onValueChange={handleBranchChange}
+						triggerAriaLabel={`Branche : ${selectedBranch.name}`}
 						triggerClass="w-full sm:w-80"
 					/>
 				</div>
