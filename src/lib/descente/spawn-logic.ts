@@ -107,11 +107,12 @@ export const BIG_INTERVAL_MS = 7 * DAY_MS;
 export const BIG_STAY_MS = 7 * DAY_MS;
 
 /**
- * Points de vie de départ. ⚠️ Provisoires : l'étape 3 (combat) les règle pour
- * qu'une Bête ordinaire tombe en 3 ou 4 tours et une grosse en plusieurs combats.
+ * Points de vie de départ (phase 0 de l'étape 3, question B) : avec 20 par coup
+ * réussi sur la Province sensible (`combat-rules.ts`), une Bête ordinaire tombe
+ * en 3 tours ; la grosse Bête, qui se replie après 4 tours, en 3 combats.
  */
-export const ORDINARY_MAX_HP = 100;
-export const BIG_MAX_HP = 300;
+export const ORDINARY_MAX_HP = 120;
+export const BIG_MAX_HP = 360;
 
 const TIER_ORDER: readonly NeedTier[] = ['remediation', 'not_acquired', 'review'];
 

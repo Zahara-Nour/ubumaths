@@ -10,12 +10,16 @@
  * (lire toutes les variations de tous les modèles d'un parcours à chaque
  * apparition coûterait plusieurs mégaoctets) : environ 7 % des modèles à une case
  * ont une autre variation qui en compte plus. Le combat (étape 3) vérifie à
- * nouveau la question tirée.
+ * nouveau la question tirée (`isCombatInstance`) et en tire une autre si elle
+ * n'est pas courte.
  *
  * Règle prudente : un bloc du sujet n'est admis que s'il est un QCM (`choix`) ou
  * un affichage sans geste de réponse ; tout autre bloc (gestes de réponse comme
  * `ranger`, `figure-a-completer`, ou bloc encore inconnu ici) écarte le modèle.
  */
+
+import { isCourseCard } from '$lib/questions/course-card';
+import type { QuestionInstance } from '$lib/questions/types';
 
 /** Blocs admis dans un sujet de combat : le QCM, et des affichages sans geste. */
 const ALLOWED_FENCES: ReadonlySet<string> = new Set([
@@ -61,4 +65,28 @@ export function isCombatTemplate(template: FirstVariation): boolean {
 	if (fences.includes('choix')) return blankCount <= 1;
 	// Une seule case
 	return blankCount === 1;
+}
+
+/**
+ * La question tirée est-elle courte (étape 3) ? Une seule case, tapée ou un QCM,
+ * sans geste à faire (point à placer, étiquettes à ranger, figure, cellule de
+ * tableau, opération posée), ni carte de cours. Les blocs restés dans le sujet
+ * suivent la même règle prudente que le filtre préalable.
+ */
+export function isCombatInstance(instance: QuestionInstance): boolean {
+	if (COMBAT_EXCLUDED_TEMPLATE_IDS.has(instance.templateId)) return false;
+	if (isCourseCard(instance)) return false;
+	if (typeof instance.statement !== 'string') return false;
+	if (fencesOf(instance.statement).some((name) => !ALLOWED_FENCES.has(name))) return false;
+
+	const blanks = instance.blanks ?? [];
+	if (blanks.length !== 1) return false;
+	const [blank] = blanks;
+	if (blank.type === 'graphical') return false;
+	return (
+		blank.construire === undefined &&
+		blank.cellule === undefined &&
+		blank.operation === undefined &&
+		blank.construction === undefined
+	);
 }

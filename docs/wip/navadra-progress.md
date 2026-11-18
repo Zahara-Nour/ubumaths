@@ -4,9 +4,9 @@
 
 _Mis à jour le 2026-11-18, phase 0 de l'étape 3 posée._
 
-- **État** : étapes 1 (#2808, #2810) et 2 (#2817) mergées. Étape 3 (combat de la recrue) : phase 0 rédigée ci-dessous, **rien de codé**.
+- **État** : étapes 1 (#2808, #2810) et 2 (#2817) mergées. Étape 3 (combat de la recrue) : phase 0 validée (« je te suis »), code en cours.
 - **Prochaine action** : coder l'étape 3 une fois la phase 0 validée (tests d'abord).
-- **En attente de David** : validation de la phase 0 de l'étape 3 (questions A à G).
+- **En attente de David** : rien.
 - **Façon de poser** : en mots simples, avec un exemple, sans noms de tables ni de colonnes.
 - **Pièges en cours** :
   - **PostgREST tronque un message d'erreur SQL accentué** et rend un 500 sans code : `raise exception` sans accent dans les fonctions appelées par l'API.
@@ -15,7 +15,9 @@ _Mis à jour le 2026-11-18, phase 0 de l'étape 3 posée._
   - L'analyse du jeu d'origine est dans `extern/navadra-jeu/CLAUDE.md`, **non versionné**.
 - **Worktree / branche** : `../ubumaths-wt-navadra` · `feat/navadra-combat`.
 
-## Phase 0 de l'étape 3 : combat de la recrue (posée le 2026-11-18, à valider)
+## Phase 0 de l'étape 3 : combat de la recrue (validée par David le 2026-11-18)
+
+David a validé toutes les recommandations (« je te suis »), A à G comprises.
 
 **Ce que l'étape livre** : la page de combat de la recrue (primaire), de la première question à la victoire ou à la défaite. Elle n'est reliée à rien : la carte et l'entrée de menu arrivent à l'étape 4, et aucune Bête n'existe en prod tant que la carte n'appelle pas l'apparition. On la teste en local, sur la base remplie.
 
