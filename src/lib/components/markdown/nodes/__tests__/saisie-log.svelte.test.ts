@@ -44,6 +44,9 @@ describe('MathPrompt — saisie du logarithme décimal', () => {
 	it('« log(7) » tapé au clavier donne \\log(7)', async () => {
 		const field = await champ();
 		field.focus();
+		// En CI, une frappe partie avant le focus de la case perdait le « l » (« og(7) »)
+		await expect.poll(() => field.hasFocus()).toBe(true);
+		await new Promise((resolve) => requestAnimationFrame(() => resolve(null)));
 		await userEvent.keyboard('log(7)');
 		await expect
 			.poll(() => field.getPromptValue('0'))
