@@ -23,6 +23,14 @@ import type { InlineConfig } from 'vitest/node';
 /**
  * Base test configuration shared by all test configs
  */
+/**
+ * Alias de modules passés à `sveltekit({ alias })` par `vite.config.ts` ET par
+ * `vitest.integration.config.ts`. SvelteKit 3 ne fournit plus `$lib` : sans cet
+ * alias, une config qui appelle `sveltekit()` seul ne résout plus `$lib` (la suite
+ * d'intégration tombait). `$lib` → `#lib` = PR à part (journal `mises-a-jour`).
+ */
+export const kitAlias = { $lib: './src/lib', $tests: './tests' };
+
 export const baseTestConfig: Partial<InlineConfig> = {
 	expect: {
 		requireAssertions: true

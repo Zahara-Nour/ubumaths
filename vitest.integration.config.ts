@@ -1,7 +1,7 @@
 import { defineConfig } from 'vitest/config';
 import { loadEnv } from 'vite';
 import { sveltekit } from '@sveltejs/kit/vite';
-import { dbTestConfig } from './vitest.base.config';
+import { dbTestConfig, kitAlias } from './vitest.base.config';
 
 /**
  * Vitest Configuration for Integration Tests
@@ -20,7 +20,7 @@ export default defineConfig(({ mode }) => {
 	Object.assign(process.env, env);
 
 	return {
-		plugins: [sveltekit()], // Enable $lib alias resolution
+		plugins: [sveltekit({ alias: kitAlias })], // $lib et $tests (cf. kitAlias)
 		test: {
 			...dbTestConfig,
 			name: 'integration',
