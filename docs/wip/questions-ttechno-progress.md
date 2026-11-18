@@ -5,18 +5,18 @@ Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) · bornes 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, lot 3b migré, page à cocher publiée._
+_Mis à jour le 2026-11-18, lot 3b publié (4/4)._
 
-- **État** : lots 0 à 3a en prod et publiés ; lot 3b (C5–C8) créé en prod en brouillon (§ 27) ; migration
-  `20261118080905_questions_ttechno_lot3b_rangement_tags` mergée (#2818) et jouée en prod ; page à cocher publiée.
-- **Prochaine action** : lire les verdicts (`ArtifactData list verdicts`, compter 4) ; puis `publier-lot.ts --dir
-scripts/questions/ttechno-3b-fonctions` en simulation ; publication par David.
-- **En attente de David** : relecture de https://claude.ai/artifact/GDznUQpPDffxKACVVUEH7h, puis
-  `publier-lot.ts --publier` (prod).
+- **État** : lots 0 à 3b en prod et publiés (lot 3 « fonctions aˣ » fini, § 28) ; aucun worktree ouvert.
+- **Prochaine action** : phase 0 du lot 4 (taux moyen, intercaler un point : 035 et 038 déjà couverts par T1 / T2,
+  reste 039) — relevé MCP, proposition, questions à David.
+- **En attente de David** : 037 (« connaître les propriétés algébriques » des exponentielles, point chapeau) n'a
+  aucun modèle (§ 28) : lui en écrire un, ou le laisser couvert par 034 / 078 / 079 / 081 ?
 - **Pièges en cours** : un point TTECHNO par modèle (trigger) ; `grades` en `array_append` seulement ;
   `publier-lot.ts`, `garde-niveaux-tags.ts`, `create-questions --publier` visent la prod : David les lance (`!`),
-  **depuis le dépôt principal, après le merge** ; `Doc-inchangée:` dans un COMMIT de la PR.
-- **Worktree / branche** : aucun (branche mergée, worktree retiré) ; la suite se fait depuis le dépôt principal.
+  **depuis le dépôt principal, après le merge** ; `Doc-inchangée:` dans un COMMIT de la PR ; `db:migrate` pousse
+  toutes les migrations en attente (`migration list --linked` avant).
+- **Worktree / branche** : à créer pour le lot 4 (`git worktree add -b feat/questions-ttechno-lot4 …`).
 
 ## 1. Périmètre
 
@@ -675,3 +675,12 @@ attente ; `db:migrate` depuis le dépôt principal (4 conditions). Prod vérifi�
 
 - Page à cocher : https://claude.ai/artifact/GDznUQpPDffxKACVVUEH7h (4 fiches, 16 exemples ; une alerte attendue :
   bloc associer de C6 non dessiné, joué dans l'aperçu au § 26 ; `verdicts` vide). Rendu à 390 px non vérifié.
+
+## 28. Lot 3b : publication (2026-11-18)
+
+- Page à cocher relue : 4 verdicts sur 4 « ok », sans commentaire.
+- `publier-lot.ts --dir scripts/questions/ttechno-3b-fonctions` : simulation verte (4 brouillons), puis
+  `--publier` par David ; statut relu en base (MCP) : 4/4 `published` (5d8a7865, 94b1dbf6, f6805041, 069c1a53).
+- Bilan MCP des nœuds « fonctions x ↦ aˣ » et « propriétés algébriques » (modèles publiés par point TTECHNO) :
+  031, 032, 033 : 2 ; 034, 036, 078, 079, 080, 081 : 1. Sans modèle : **037** (point chapeau, question à David),
+  039 (lot 4), 042, 082, 083 (lot 5, logarithme).
