@@ -65,6 +65,8 @@ function calledIds(): string[] {
 
 describe('Catalogue Automaths — aperçus à la demande', () => {
 	beforeEach(async () => {
+		// Le catalogue reprend la dernière adresse de la visite : chaque test part de zéro
+		sessionStorage.clear();
 		templatePreview.mockClear();
 		await seedTemplatesCache();
 	});

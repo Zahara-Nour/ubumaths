@@ -6,7 +6,8 @@
 	 * (non interactive, avec son bouton de retournement), sous un intitulé fait
 	 * du titre et de la description du modèle (branche, notion et sous-notion
 	 * sont affichées par la page : sélecteur, onglet, rubrique). Un clic sur la tuile ne fait rien. En dessous, le
-	 * bouton d'ajout au panier (la grille n'a ni durée ni répétitions).
+	 * bouton du panier (la grille n'a ni durée ni répétitions) : « Ajouter au panier »,
+	 * puis « Dans le panier », qui retire la question entière (répétitions et durée comprises).
 	 */
 	import { Badge } from '#lib/components/ui/badge/index.ts';
 	import { Button } from '#lib/components/ui/button/index.ts';
@@ -28,8 +29,9 @@
 
 	let isInCart = $derived(questionCart.hasTemplate(template.id));
 
-	function handleAddToCart() {
-		questionCart.addToCart(template.id, 1);
+	function handleCartClick() {
+		if (isInCart) questionCart.removeFromCart(template.id);
+		else questionCart.addToCart(template.id, 1);
 	}
 </script>
 
@@ -56,14 +58,15 @@
 	<!-- La flash-card elle-même -->
 	<FlashCard instance={preview} interactive={false} size="sm" height={TILE_CARD_HEIGHT} />
 
-	<!-- Ajout au panier -->
+	<!-- Ajout au panier, ou retrait -->
 	<div class="flex justify-end">
 		<Button
 			size="sm"
 			variant={isInCart ? 'default' : 'outline'}
 			class="gap-2"
-			onclick={handleAddToCart}
-			disabled={isInCart}
+			onclick={handleCartClick}
+			title={isInCart ? 'Retirer du panier' : undefined}
+			aria-label={isInCart ? 'Dans le panier : retirer' : undefined}
 		>
 			{#if isInCart}
 				<Check class="h-4 w-4" />

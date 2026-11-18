@@ -4,10 +4,11 @@
  * La tuile EST la flash-card (non interactive, retournable), sous le titre et la
  * description du modèle ; un clic sur la tuile n'ouvre rien ; ajout au panier en dessous.
  */
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { page } from 'vitest/browser';
 import QuestionPreviewCard from '../QuestionPreviewCard.svelte';
+import { questionCart } from '#lib/stores/questionCart.svelte.ts';
 import { PREVIEW_SEED } from '#lib/questions/cart-preview.ts';
 import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
 import type { QuestionTemplate } from '#lib/questions/types.ts';
@@ -31,6 +32,10 @@ async function renderTile() {
 }
 
 describe('QuestionPreviewCard', () => {
+	beforeEach(() => {
+		questionCart.clearCart();
+	});
+
 	it("affiche l'énoncé dans la flash-card, sans champ de saisie", async () => {
 		const screen = await renderTile();
 
@@ -74,5 +79,31 @@ describe('QuestionPreviewCard', () => {
 		await page.elementLocator(statement!).click();
 
 		await expect.element(page.getByRole('dialog')).not.toBeInTheDocument();
+	});
+
+	it('« Dans le panier » retire la question : le bouton redevient « Ajouter »', async () => {
+		await renderTile();
+
+		await page.getByRole('button', { name: 'Ajouter au panier' }).click();
+		const inCart = page.getByRole('button', { name: 'Dans le panier : retirer' });
+		await expect.element(inCart).toBeEnabled();
+		await expect.element(inCart).toHaveAttribute('title', 'Retirer du panier');
+		expect(questionCart.hasTemplate(TEMPLATE.id)).toBe(true);
+
+		await inCart.click();
+
+		await expect.element(page.getByRole('button', { name: 'Ajouter au panier' })).toBeVisible();
+		expect(questionCart.hasTemplate(TEMPLATE.id)).toBe(false);
+	});
+
+	it('retrait : répétitions et durée (45 s) réglées dans le panier partent avec la question', async () => {
+		questionCart.addToCart(TEMPLATE.id, 3, 45);
+		await renderTile();
+
+		await page.getByRole('button', { name: 'Dans le panier : retirer' }).click();
+		await page.getByRole('button', { name: 'Ajouter au panier' }).click();
+
+		expect(questionCart.getItem(TEMPLATE.id)).toMatchObject({ quantity: 1 });
+		expect(questionCart.getItem(TEMPLATE.id)?.delay).not.toBe(45);
 	});
 });

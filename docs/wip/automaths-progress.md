@@ -2,15 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, choix validés, avant la PR 1._
+_Mis à jour le 2026-11-18, PR 1 en cours._
 
-- **État** : recherche faite, **les 8 choix sont validés par David (2026-11-18)** : ce sont mes recommandations, telles quelles (historique ci-dessous). Rien de codé. Page : [automaths-recherche-ui.html](automaths-recherche-ui.html), https://claude.ai/artifact/SCczsfi9ayGXjioFtsQq2R.
-- **Prochaine action** : créer le worktree `../ubumaths-wt-automaths` (branche `feat/automaths-catalogue`), puis PR 1 « correctifs immédiats » : aperçu de série qui ne masque plus « Ajouter », sans clignotement ; retrait depuis la grille (bouton + / ✓) ; notion gardée dans l’adresse. Phase 0 (comportements en français) à présenter avant de coder. Puis PR 2 recherche, PR 3 navigation (arbre des notions + bascule programme), PR 4 série en cours.
+- **État** : 8 choix validés (historique ci-dessous) ; phase 0 de la PR 1 validée le 2026-11-18 (« je suis tes recos »), PR 1 en cours. Page : [automaths-recherche-ui.html](automaths-recherche-ui.html), https://claude.ai/artifact/SCczsfi9ayGXjioFtsQq2R.
+- **Prochaine action** : finir la PR 1 « correctifs immédiats » (bouton du panier sans pulsation et espace en bas ; retrait depuis la grille ; notion dans l'adresse ; retour du panier au même niveau et à la même notion). Puis PR 2 recherche, PR 3 navigation (arbre des notions + bascule programme), PR 4 série en cours.
 - **En attente de David** : rien.
-- **Pièges en cours** : la tuile reste la flash-card (décision du 2026-09-29) ; plusieurs points désignent le même nœud (4-021, 4-075, 4-023 → Calcul littéral) ; un point posé sur une notion peut n’avoir aucune question en propre (4-003) → inclure ses sous-notions ; le panier détaillé `/automaths/panier` ne change pas.
-- **Worktree / branche** : aucun encore.
-
-## Historique
+- **Pièges en cours** : la tuile reste la flash-card (décision du 2026-09-29) ; plusieurs points désignent le même nœud (4-021, 4-075, 4-023 → Calcul littéral) ; un point posé sur une notion peut n'avoir aucune question en propre (4-003) → inclure ses sous-notions ; le panier détaillé `/automaths/panier` ne change pas.
+- **Worktree / branche** : `../ubumaths-wt-automaths`, `feat/automaths-catalogue`.
 
 ### 2026-11-18 — recherche
 
@@ -34,3 +32,10 @@ _Mis à jour le 2026-11-18, choix validés, avant la PR 1._
 8. Roue abandonnée pour l’instant.
 
 Le panier détaillé `/automaths/panier` reste inchangé (durées, répétitions, PDF, enregistrement, lien, lancement) ; le catalogue n’en montre qu’un aperçu.
+
+### 2026-11-18 — PR 1, phase 0 validée par David (« je suis tes recos »)
+
+1. Bouton rond du panier : plus de pulsation ; espace libre en bas de page, pour que le dernier « Ajouter » remonte au-dessus du bouton.
+2. « ✓ Dans le panier » devient cliquable : retire la question entière (répétitions et durée comprises) ; infobulle « Retirer du panier » ; pas de message.
+3. Notion dans l'adresse (`?notion=…`), sans entrée d'historique ; changer de branche → sa première notion ; notion absente au niveau choisi → première notion, l'adresse suit ; notion inconnue → ignorée.
+4. Retour du panier : le catalogue retient sa dernière adresse le temps de la visite (onglet) et la reprend quand on y revient sans paramètre ; le panier ne change pas.

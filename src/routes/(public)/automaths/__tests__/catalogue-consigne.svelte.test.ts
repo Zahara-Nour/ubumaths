@@ -55,6 +55,8 @@ async function seedTemplatesCache(templates: unknown[]) {
 
 describe('Catalogue Automaths — consigne d’exercice', () => {
 	beforeEach(async () => {
+		// Le catalogue reprend la dernière adresse de la visite : chaque test part de zéro
+		sessionStorage.clear();
 		await seedTemplatesCache([
 			ligne('avec', "Table d'addition", 'Calcule.'),
 			ligne('sans', 'Sans consigne', null)

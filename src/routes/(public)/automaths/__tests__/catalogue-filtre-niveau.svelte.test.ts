@@ -74,6 +74,8 @@ async function chooseGrade(label: string) {
 
 describe('Catalogue Automaths — filtre par niveau', () => {
 	beforeEach(async () => {
+		// Le catalogue reprend la dernière adresse de la visite : chaque test part de zéro
+		sessionStorage.clear();
 		replaceState.mockClear();
 		pageState.url = new URL('http://localhost:5175/automaths');
 		await seedTemplatesCache();

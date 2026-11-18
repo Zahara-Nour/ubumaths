@@ -199,14 +199,19 @@ Seul `series.ts` concerne les questions : composition d'une série (`seriesItemS
   « Non classés » (jamais perdu). **Filtre par niveau** (`filterTemplatesByGrade`, appliqué avant le
   rangement) : menu « Niveau » (tous par défaut) et case « et niveaux inférieurs » (décochée au départ),
   qui descend l'arbre des prérequis (`getAccessibleGrades` : la 1re techno passe par la 2de, pas par la
-  1re spé) ; un modèle sans niveau n'apparaît sous aucun niveau ; le choix est gardé dans l'adresse
-  (`?niveau=4&inferieurs=1`). La tuile ne montre plus l'ancien sous-domaine. Le panier et les
+  1re spé) ; un modèle sans niveau n'apparaît sous aucun niveau. Le niveau et la notion affichée
+  sont gardés dans l'adresse (`?niveau=4&inferieurs=1&notion=<id>`, sans entrée d'historique ; la
+  notion désigne aussi sa branche ; notion inconnue ou absente au niveau choisi → première notion), et
+  retenus pour la visite (`sessionStorage`, clé `chiphre_automaths_adresse`) : revenu sur `/automaths`
+  sans paramètre (retour du panier), le catalogue reprend la dernière adresse. La tuile ne montre plus l'ancien sous-domaine. Le panier et les
   séries désignent le **modèle** par son id (ADR 0035). Les aperçus (graine `PREVIEW_SEED`) ne sont calculés que pour la rubrique
   dépliée (`CatalogueGallery`, montée par un `{#if}` : l'accordéon et les onglets de bits-ui
   gardent le contenu fermé dans le DOM), une fois par modèle (`templatePreview`), et réutilisés par le
   panier. Avant (novembre 2026), le serveur calculait les 1 912 aperçus à chaque visite : 7 à 11 s.
-  `QuestionPreviewCard` (tuile du catalogue = la flash-card, plus l'ajout au panier),
-  `CartFloatingButton` (vers `/automaths/panier`), `CartQuestionCard` (tuile d'un modèle du
+  `QuestionPreviewCard` (tuile du catalogue = la flash-card, plus « Ajouter au panier », puis
+  « Dans le panier » qui retire la question entière, répétitions et durée comprises),
+  `CartFloatingButton` (bouton rond fixe, sans pulsation, vers `/automaths/panier` ; le catalogue
+  garde un espace en bas, `pb-28`, pour que la dernière carte remonte au-dessus), `CartQuestionCard` (tuile d'un modèle du
   panier, sous son titre : durée par pas de 5 s entre 5 et 300 s, nombre de questions ; modèle plus
   publié → « Modèle retiré », avec « Retirer du panier » ; pour un prof, la marque « Durée sans doute
   trop courte » à la durée choisie, puis la « Durée observée » chez ses élèves avec « Appliquer »
