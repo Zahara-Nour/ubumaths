@@ -188,7 +188,7 @@
 						class:font-semibold={data.view === v.value}
 						class:text-muted-foreground={data.view !== v.value}
 						aria-current={data.view === v.value ? 'page' : undefined}
-						data-sveltekit-noscroll
+						data-sveltekit-reset="false"
 					>
 						{v.label}
 					</a>

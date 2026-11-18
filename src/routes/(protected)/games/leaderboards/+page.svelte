@@ -51,7 +51,7 @@
 		{#each LEADERBOARD_GAMES as g (g.value)}
 			<a
 				href="{resolve('games/leaderboards')}?game={g.value}&scope={data.scope}"
-				data-sveltekit-noscroll
+				data-sveltekit-reset="false"
 				aria-current={data.game === g.value ? 'page' : undefined}
 				class="inline-flex items-center gap-1.5 rounded-full border px-4 py-1.5 text-sm font-medium transition-colors {data.game ===
 				g.value
@@ -70,7 +70,7 @@
 			{#each LEADERBOARD_SCOPES as s (s.value)}
 				<a
 					href="{resolve('games/leaderboards')}?game={data.game}&scope={s.value}"
-					data-sveltekit-noscroll
+					data-sveltekit-reset="false"
 					aria-current={data.scope === s.value ? 'page' : undefined}
 					class="rounded-md px-4 py-1.5 text-sm font-medium transition-colors {data.scope ===
 					s.value
