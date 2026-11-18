@@ -1,4 +1,5 @@
 {
+	"id": "c52b5ea3-361f-42dd-b1dc-4989b19765fb",
 	"title": "Tracer la médiatrice d'un segment sur quadrillage",
 	"description": "Sur quadrillage, à la règle et à l'équerre : placer le milieu en comptant les carreaux, puis tracer la perpendiculaire au segment qui passe par ce milieu",
 	"grades": ["6"],
