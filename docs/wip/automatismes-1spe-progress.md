@@ -689,3 +689,14 @@ abscisses des 2 extremums (`domain: h-4, ?h-2, ?h+2, h+4`), 4 valeurs, 3 flèche
   est figée (énoncé stocké) : inchangée ; seul un nouveau lancement du script la changerait.
 - Publication du modèle : **après le `deploy:prod` qui livre #2456** (jusque-là, la prod refuse `?` dans une
   ligne `variation:`).
+
+### c1c9cfc3 (2-496) préparé pour publication (2026-11-18, session questions-1gen)
+
+2-496 est le seul point d'automatisme encore sans modèle publié pour les niveaux qui y renvoient (2de, 1re spé, 1re
+générale, 1re techno, Terminales) ; relevé fait à la clôture de questions-1gen. Le fichier
+`scripts/questions/automatismes-2de-calcul-litteral/01-application-numerique-formule.json` est identique à la prod
+(export comparé clé par clé). `question:specs` 12/12, 250/250 tirages ; 506 formules d'aperçu, accolades
+équilibrées ; aperçu admin local : décimaux à virgule (I = 2,5), corrigé de Ec juste. Page à cocher :
+https://claude.ai/artifact/AxEuUJts2BC2Fnv36Dze9n (capacité `db`, 0 verdict ; alerte attendue « 2-496 absent des
+bornes » : point créé après `2de.json`). `publier-lot.ts` (simulation) : 1 brouillon passe. Reste : verdict et
+`--publier` par David.
