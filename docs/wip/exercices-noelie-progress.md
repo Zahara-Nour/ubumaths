@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, PR 1 ouverte._
+_Mis à jour le 2026-11-18, après #2827._
 
-- **État** : PR 1 (script `scripts/series/creer-serie.ts`) ouverte · **Prochaine action** : revue, CI, merge ; puis PR 2 (deux modèles de 6e + fichier de série `scripts/series/6-mediatrice.json`) · **En attente de David** : rien avant la PR 2 (puis : `create-questions --publier`, `publier-lot --publier`, `creer-serie --publier`, par `!`) · **Pièges en cours** : aucun · **Worktree / branche** : `../ubumaths-wt-exercices-noelie`, `feat/script-serie`
+- **État** : #2827 (script `creer-serie`) mergée ; PR 2 (`content/questions-6-mediatrice` : `scripts/questions/6-mediatrice/`, générateur `docs/wip/questions/lot-6-mediatrice.py`) ouverte · **Prochaine action** : merger la PR 2, puis David crée les brouillons en prod (`create-questions --publier`), commit des id, migration de rangement (6-165 et 6-167, nœud « médiatrice et bissectrice »), publication, fichier `scripts/series/6-mediatrice.json`, `creer-serie --publier` par David · **En attente de David** : la question d'accès de la migration ; l'œil sur les figures (aperçu admin non joué : pas de connexion locale) · **Pièges en cours** : aucun · **Worktree / branche** : `../ubumaths-wt-exercices-noelie`, `content/questions-6-mediatrice`
 
 ## Décisions (phase 0 validée par David le 2026-11-18)
 
@@ -32,3 +32,9 @@ _Mis à jour le 2026-11-18, PR 1 ouverte._
 - 2026-11-18 — PR 1 : script + logique testée (`scripts/lib/serie-fichier.ts`, 14 tests) ;
   essais en base locale : création (id écrit), relance refusée sans `--mettre-a-jour`, mise à
   jour. Doc : `couvrir-un-niveau.md` § 8 bis.
+- 2026-11-18 — #2827 mergée (suites de revue : id affiché si le fichier ne s'écrit pas, écriture
+  atomique, `--mettre-a-jour` sans id refusé, lignes strictes, `.eq('created_by')`). Option `--prod`
+  proposée par l'audit non retenue (une manipulation de plus pour David).
+- 2026-11-18 — PR 2 : deux modèles (16 et 9 specs vertes, sonde des figures 600 tirages 0 problème,
+  créés en base locale) ; corrigés en route : périmètre affiché `\{eval:…}` (variation 2), sens
+  « monte » faux pour le segment en biais qui descend.
