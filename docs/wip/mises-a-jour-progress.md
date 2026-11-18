@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, PR `ci/eslint-cache-svelte` ouverte._
+_Mis à jour le 2026-11-18, après #2850._
 
-- **État** : #2814, #2821, #2825, #2826, #2828, #2830 mergées et EN PROD (0.96.0, 2026-11-18). #2828 = `pnpm migrer:diese` ; consigne envoyée aux 22 sessions ouvertes. #2830 = ESLint en CI ne relit que les fichiers de la PR + les `.svelte` qui importent un module changé (étape ESLint : ~20 min → 1-3 s) ; `lint-nocturne.yml` relit tout l'arbre chaque nuit (03:41 UTC) et enregistre le cache de main (premier run lancé à la main le 2026-11-18 : vert, 27 min).
-- **Prochaine action** : (1) **Lint de la CI de version** : cause trouvée — `version.name` (= `Date.now()`) de la config Svelte entrait dans l'empreinte du cache ESLint, les ~1 300 fichiers Svelte étaient relus à chaque lancement (19 s → 1,7 s sur un échantillon une fois retiré). PR `ci/eslint-cache-svelte` ; après merge, vérifier le nocturne suivant puis la durée du Lint au prochain `deploy:prod`. (2) Les petites dépréciations de kit 3 (`goto` avec options 10, `pushState`/`replaceState` 15, `error(N, { message })` 36, `invalidateAll` 54). `json()`/`text()` (≈ 368 fichiers) REPORTÉS (seconde vague de conflits). Puis clore (versement). Autres majeures HORS chantier (lot mensuel Dependabot).
+- **État** : #2814 à #2830 en prod (0.96.0). #2835 mergée : `version` (= `Date.now()`) retiré de la config Svelte passée à ESLint (empreinte de cache qui changeait à chaque lancement). Ne suffit pas en CI : nocturne à cache restauré = 31 min. #2850 mergée : attente max de `deploy:prod` 1500 → 2700 s (pas encore en prod).
+- **Prochaine action** : les petites dépréciations de kit 3 (`goto` avec options 10, `pushState`/`replaceState` 15, `error(N, { message })` 36, `invalidateAll` 54). `json()`/`text()` (≈ 368 fichiers) REPORTÉS. Puis clore (versement). **Cache ESLint en CI : cause NON trouvée** (§ « Cache ESLint en CI » ci-dessous), recherche mise de côté.
 - **En attente de David** : rien.
 - **Pièges en cours** : `#lib` exige l'extension écrite (garde `imports-lib-avec-extension`, qui exclut le test de `migrer:diese`) ; limite connue du lint de PR : props importées d'un autre `.svelte` ou type indirect → seul le nocturne les voit ; commitlint refuse un sujet qui commence par une majuscule (« ESLint… ») ; `appNavigationMock` ; suite client en local avec `CI=true`.
-- **Worktree / branche** : `../ubumaths-wt-mises-a-jour` · `ci/eslint-cache-svelte`.
+- **Worktree / branche** : aucun.
 
 ## Origine
 
@@ -113,3 +113,14 @@ Constats dans le code de kit 3.2.0 (pas dans le guide) :
 - 2026-11-18 : #2825 mergée (CI verte, 16 contrôles) : SvelteKit 3.2.0 + adapter-vercel 7.0.3, `src/env.ts`, cookie 2 ; revues `code-reviewer` + `security-auditor` traitées.
 - 2026-11-18 : #2814 mergée (CI verte, 16 contrôles) : SvelteKit 2.70.3 → 2.70.4.
 - 2026-11-18 : #2821 mergée (CI verte, 17 contrôles) : TypeScript 5.9.3 → 6.0.3 ; `pnpm check` local 0 erreur sur 11 653 fichiers, cliquet tenu, aucune correction de code nécessaire.
+
+## Cache ESLint en CI (2026-11-18, cause non trouvée)
+
+Établi par une branche jetable (`diag/eslint-cache`, supprimée) et en local :
+
+- Dans un même job de CI, le cache marche : `eslint src/lib/utils` deux fois → 169/169 sautés au 2e passage.
+- D'un job à l'autre, non : avec le cache enregistré par `lint-nocturne` sur main, 0/169 sautés ; sur 310 entrées échantillonnées, 0 changement de contenu, 100 % `hashOfConfig` différent (même pour `.lintstagedrc.js`).
+- Pourtant la config sérialisée (`calculateConfigForFile` + `json-stable-stringify`) est identique au caractère près entre deux jobs ; Node identique (22.23.4) ; pas de changement de config entre les commits.
+- En local, rien ne se reproduit : après `pnpm lint .` complet (24 min), `eslint src/lib/utils` saute 169/169.
+- Pistes non explorées : comparer la config d'un job qui relit TOUT l'arbre (nocturne) à celle d'un job qui ne relit qu'un dossier, dans la même exécution ; `hashOfConfigFor` mis en cache par objet de config (une mutation avant le premier calcul ?).
+- Contournement : attente de `deploy:prod` portée à 2700 s. Option écartée pour l'instant (à trancher par David, touche l'ADR 0021) : CI de version qui s'appuie sur le nocturne vert au lieu de tout relire.

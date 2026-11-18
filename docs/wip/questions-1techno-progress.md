@@ -883,3 +883,44 @@ Vérifié MCP : 7461bb44, f3cb0c7a, 4f328c8c, 3fec6b41 `{1_GEN,1_TECHNO}`, publi
 087), `updated_at` inchangé (07:13:28) ; N1-N3 brouillons sur le nœud de leur point, tag 059, 121, 104. Page à cocher
 des neufs publiée (`db`) : https://claude.ai/artifact/J6RYqzmQ9nrqviUoQXVBYn ; alertes : `nuage` non dessiné par la page
 (N2, N3), déjà vus dans l'aperçu.
+
+## 30. Lot 6 « probabilités » — phase 0 (proposée, à valider)
+
+Verdicts des neufs du lot 5 (page J6RYqzmQ…) : collection vide au 2026-11-18, en attente de David. questions-1gen n'a
+pas de session ouverte (`ListAgents`) : le prévenir des 4 communs dès qu'elle rouvre ; rien de 1GEN sur les nœuds
+du lot 6.
+
+Relevé prod (MCP) : 090, 097, 136, 013 à 0 modèle ; 137 n'a que 97b3a376 (déborde, Q3 : jumeau). Nœuds : 090
+« probabilités totales » (5ba712bc y porte déjà 092 : un seul point 1TECHNO par modèle) ; 097, 136 « schéma de
+Bernoulli » ; 137 « loi d'une variable aléatoire » ; 013 « tableau croisé d'effectifs ». Passe anti-doublons (contenu
+lu) : 77498f1b (sur 100, une variation, leurres de Tle), 1043c29e (variance, hors borne), 4ff9d049 (binomiale n ⩾ 5),
+2c116f4d, a9c71276, 69a05f98 (probabilité inverse, Tle) écartés ; 89e928a4, eb0dcd85 (2de) complètent un tableau par
+sommes, sans données brutes ; 97b3a376 v1-v2 conviennent, v3-v4 tirent P(lo ⩽ X ⩽ hi) (hors point, l1t-6).
+
+Modèles neufs, `grades = ['1_TECHNO']`, brouillons :
+
+- **P1 « Cours : formule des probabilités totales »** → 090, niv. 1, ` ```choix `. Partition {A, Ā} seulement
+  (l1t-1). P(B) = P(A ∩ B) + P(Ā ∩ B) (leurres : P_A(B) + P_Ā(B), P(A) + P(B)) ; sur un arbre à deux niveaux,
+  quels chemins additionner ; vrai ou faux « P(B) = P(A) × P_A(B) + P(Ā) × P_Ā(B) ».
+- **P2 « Cours : loi de Bernoulli »** → 097, niv. 1. X vaut 1 (succès) ou 0 (échec) ; p donné → P(X = 0) ; tableau
+  de la loi à compléter (bloc `loi`) ; reconnaître le paramètre en contexte (leurre 1 − p) ; X prend-elle d'autres
+  valeurs que 0 et 1 ?
+- **P3 « Espérance d'une loi de Bernoulli »** → 136, niv. 1-2. E(X) = p (leurres 1 − p, 1/2) ; en contexte
+  (t % de pièces défectueuses → E(X) = 0,0t) ; d'après le tableau de la loi. Sans variance.
+- **P4 « Calculer P(X = a), P(X ⩽ a) »** → 137, niv. 2, jumeau de 97b3a376. Loi donnée (bloc `loi`) : P(X = a),
+  P(X ⩽ a), P(X > a) par le contraire (l1t-6) ; d'après un énoncé (urne, dé : v1-v2 de 97b3a376 reprises). Jamais
+  a ⩽ X ⩽ b.
+- **P5 « Tableau croisé d'après des données brutes »** → 013, niv. 2. Liste de 12 à 20 individus (tableau à deux
+  critères : sexe / régime, filière / option…) ; compter et compléter le ` ```tableau-croise ` (cases masquées,
+  totaux compris).
+
+**Partie destructive (comme 1acb6d47 au lot 2)** : 97b3a376 perd 1TECHNO-137 et `1_TECHNO` dans la migration de
+rangement ; usage à mesurer avant (cartes, tentatives, évaluations sur ce point).
+
+**Question d'accès** : P1-P5 naissent brouillons ; rien d'autre ne s'ouvre. En miroir : les élèves de 1re
+technologique ne recevront plus 97b3a376, remplacé par P4.
+
+**Question à David** :
+
+- **Q-L6a** : P5 montre les données brutes dans un tableau simple (une ligne par individu). Reco : oui, 12 à 20
+  lignes, pour que le comptage reste faisable.
