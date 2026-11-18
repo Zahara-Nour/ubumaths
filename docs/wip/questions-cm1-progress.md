@@ -5,7 +5,7 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après #2824 et le `db:migrate` du lot 8c (§ 23 quinquies)._
+_Mis à jour le 2026-11-18, après #2824, le `db:migrate` du lot 8c (§ 23 quinquies) et #2826 (`#lib`)._
 
 - **État** : lots 0 à 8b publiés, **137 points du CM1 sur 171** (CM2 : 92 sur 158). Lot 8c : 7 brouillons en prod,
   rangés et tagués en prod (#2824, `db:migrate` fait) ; page à cocher publiée
@@ -18,7 +18,7 @@ _Mis à jour le 2026-11-18, après #2824 et le `db:migrate` du lot 8c (§ 23 qui
   `supabase/.temp/` copié) ; `db:migrate` « inserted before » → `--dry-run --include-all` puis `--include-all` ;
   titre homonyme d'un autre niveau → `create-questions` refuse (renommer) ; commitlint refuse le type `content` ;
   le mode auto refuse `publier-lot` et `garde-niveaux-tags` : David les lance ; `sonde-figures` ne voit pas les
-  dessins d'une case choix (aperçu) ; ports 5176, 5177 pris par d'autres sessions.
+  dessins d'une case choix (aperçu) ; ports 5176, 5177 pris par d'autres sessions ; depuis #2826, imports en `#lib/x.ts` (extension écrite), worktree remis sur `main` + `pnpm install` fait.
 - **Worktree / branche** : `../ubumaths-wt-questions-cm1`, détaché sur `main`, aucune branche ouverte.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
