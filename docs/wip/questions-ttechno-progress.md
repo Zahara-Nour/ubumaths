@@ -5,18 +5,18 @@ Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) · bornes 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, phase 0 du lot 4 écrite (§ 29)._
+_Mis à jour le 2026-11-18, phase 0 du lot 4 validée (§ 29)._
 
 - **État** : lots 0 à 3b en prod et publiés ; 037 ajouté au lot 4 (David, « tes recos ») ; phase 0 du lot 4
-  écrite (§ 29) ; aucun worktree ouvert.
-- **Prochaine action** : réponses de David à Q21–Q23 (§ 29), puis worktree `feat/questions-ttechno-lot4`,
-  écriture de M1 (037) et M2 (039).
-- **En attente de David** : Q21 (contenu de M1), Q22 (Python et tableur dans M2), Q23 (placer le point ou non).
+  validée (§ 29, Q21–Q23 selon les recos) ; aucun worktree ouvert.
+- **Prochaine action** : worktree `feat/questions-ttechno-lot4`, écrire M1 (037) et M2 (039) par
+  `docs/wip/questions/lot-ttechno-4.py` (gabarit : `lot-ttechno-3b.py` ; forme M1 : 7c8b341b ; Python : lot 2).
+- **En attente de David** : rien.
 - **Pièges en cours** : un point TTECHNO par modèle (trigger) ; `grades` en `array_append` seulement ;
   `publier-lot.ts`, `garde-niveaux-tags.ts`, `create-questions --publier` visent la prod : David les lance (`!`),
   **depuis le dépôt principal, après le merge** ; `Doc-inchangée:` dans un COMMIT de la PR ; `db:migrate` pousse
   toutes les migrations en attente (`migration list --linked` avant).
-- **Worktree / branche** : à créer après la validation (`feat/questions-ttechno-lot4`).
+- **Worktree / branche** : à créer (`git worktree add -b feat/questions-ttechno-lot4 ../ubumaths-wt-questions-ttechno origin/main`).
 
 ## 1. Périmètre
 
@@ -719,3 +719,8 @@ intercalation donne une racine (arrondi au centième). M1 : toutes cases choix, 
   suffisent ? Reco : **les coordonnées suffisent** (le BO parle d'algorithme, pas de tracé).
 - **Question d'accès** (migration de tags, après écriture) : brouillons, personne ne les voit avant la publication ;
   publiés, ils apparaissent au catalogue et au cahier de texte de Tle techno seulement. Personne ne perd rien.
+
+**Décisions (David, 2026-11-18, « je te suis »)** : **Q21** M1 sur les propriétés du BO seulement (produit,
+quotient, puissance, a⁰, a⁻ˣ ; pas (ab)ˣ) ; **Q22** M2 avec une variation Python et une variation tableur ;
+**Q23** pas de `placer:`, les coordonnées suffisent ; question d'accès : personne pour les brouillons, Tle techno
+à la publication.
