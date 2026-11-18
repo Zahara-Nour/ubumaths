@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, PR 1 en cours._
+_Mis à jour le 2026-11-18, après #2842._
 
-- **État** : 8 choix validés (historique ci-dessous) ; phase 0 de la PR 1 validée le 2026-11-18 (« je suis tes recos »), PR 1 en cours. Page : [automaths-recherche-ui.html](automaths-recherche-ui.html), https://claude.ai/artifact/SCczsfi9ayGXjioFtsQq2R.
-- **Prochaine action** : finir la PR 1 « correctifs immédiats » (bouton du panier sans pulsation et espace en bas ; retrait depuis la grille ; notion dans l'adresse ; retour du panier au même niveau et à la même notion). Puis PR 2 recherche, PR 3 navigation (arbre des notions + bascule programme), PR 4 série en cours.
+- **État** : PR 1 « correctifs immédiats » mergée (#2842) : retrait depuis la grille, notion dans l'adresse, retour du panier au même niveau et à la même notion, bouton du panier sans pulsation. Pas encore en prod (`deploy:prod` = David). Page : [automaths-recherche-ui.html](automaths-recherche-ui.html), https://claude.ai/artifact/SCczsfi9ayGXjioFtsQq2R.
+- **Prochaine action** : PR 2 recherche (nouveau worktree `../ubumaths-wt-automaths`, branche `feat/automaths-recherche`), phase 0 à présenter avant de coder. Puis PR 3 navigation (arbre des notions + bascule programme), PR 4 série en cours (« Ma série »).
 - **En attente de David** : rien.
-- **Pièges en cours** : la tuile reste la flash-card (décision du 2026-09-29) ; plusieurs points désignent le même nœud (4-021, 4-075, 4-023 → Calcul littéral) ; un point posé sur une notion peut n'avoir aucune question en propre (4-003) → inclure ses sous-notions ; le panier détaillé `/automaths/panier` ne change pas.
-- **Worktree / branche** : `../ubumaths-wt-automaths`, `feat/automaths-catalogue`.
+- **Pièges en cours** : la tuile reste la flash-card (décision du 2026-09-29) ; plusieurs points désignent le même nœud (4-021, 4-075, 4-023 → Calcul littéral) ; un point posé sur une notion peut n'avoir aucune question en propre (4-003) → inclure ses sous-notions ; le panier détaillé `/automaths/panier` ne change pas ; le catalogue retient sa dernière adresse en `sessionStorage` (`chiphre_automaths_adresse`) : un test qui rend la page doit vider `sessionStorage`.
+- **Worktree / branche** : aucun (celui de la PR 1 est supprimé).
 
 ### 2026-11-18 — recherche
 
@@ -39,3 +39,9 @@ Le panier détaillé `/automaths/panier` reste inchangé (durées, répétitions
 2. « ✓ Dans le panier » devient cliquable : retire la question entière (répétitions et durée comprises) ; infobulle « Retirer du panier » ; pas de message.
 3. Notion dans l'adresse (`?notion=…`), sans entrée d'historique ; changer de branche → sa première notion ; notion absente au niveau choisi → première notion, l'adresse suit ; notion inconnue → ignorée.
 4. Retour du panier : le catalogue retient sa dernière adresse le temps de la visite (onglet) et la reprend quand on y revient sans paramètre ; le panier ne change pas.
+
+### 2026-11-18 — PR 1 mergée (#2842)
+
+- Livré : retrait depuis la tuile (nom accessible « Dans le panier : retirer »), `?notion=<id>` dans l'adresse, dernière adresse retenue pour la visite (`sessionStorage`), adresse d'un lien direct retenue aussi, bouton rond sans pulsation, `pb-28`, menu « Branche » nommé.
+- Revue `code-reviewer` (Sonnet) : aucun finding bloquant ; corrigés : adresse d'arrivée retenue, nom accessible. Écarté : `replaceState` au montage, vérifié à la main en dev (rechargement complet, aucune erreur).
+- Vérification manuelle notée dans `verifications-manuelles.md`.
