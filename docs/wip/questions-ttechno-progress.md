@@ -5,15 +5,14 @@ Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) · bornes 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après #2839 (saisie de log, Q27)._
+_Mis à jour le 2026-11-18, après la page à cocher du lot 5a (§ 38)._
 
-- **État** : lots 0 à 4 publiés ; lot 5a (L1–L6, log décimal) mergé (#2834), pas encore en prod (§ 35) ;
-  saisie de « log » au clavier réglée (#2839, § 36), pas encore en prod.
+- **État** : lots 0 à 4 publiés ; lot 5a (L1–L6, log décimal) : 6 brouillons en prod, rangés et tagués (#2845, § 37),
+  page à cocher publiée (§ 38) ; saisie de « log » réglée (#2839, § 36), pas encore en prod.
   Bilan MCP (§ 33) : 28 points STMG encore sans modèle publié, prévus aux lots 5 à 8 (017, 019 : rien, Q17).
-- **Prochaine action** : David crée les 6 brouillons en prod depuis le dépôt principal :
-  `pnpm tsx scripts/create-questions.ts --dir scripts/questions/ttechno-5a-logarithme --publier` ; puis migration
-  nœud + tags (gabarit lot 4), page à cocher. Ensuite écriture du lot 5b (L7–L9, réponses exactes en log).
-- **En attente de David** : la commande `create-questions --publier` ci-dessus.
+- **Prochaine action** : lire et compter les verdicts de la page du lot 5a, puis
+  `publier-lot.ts --dir scripts/questions/ttechno-5a-logarithme`. Ensuite écriture du lot 5b (L7–L9).
+- **En attente de David** : relecture de la page à cocher du lot 5a (§ 38).
 - **Pièges en cours** : un point TTECHNO par modèle (trigger) ; tag = nœud DU POINT (relevé MCP, pas le journal) ;
   `publier-lot.ts`, `create-questions --publier` visent la prod : David les lance (`!`) depuis le dépôt principal ;
   `{{var}}` décimale calculée s'écrit en fraction (afficher par `{{eval:var;d}}`) ; un modèle du lot 5b qui demande de
@@ -883,3 +882,30 @@ raccourcis). Test `markdown/nodes/__tests__/saisie-log.svelte.test.ts` : rouge s
 - CI : le test de frappe réelle (`userEvent.keyboard`) passait en local et échouait en CI (frappes perdues ou hors de
   la case, 3 essais) ; retiré. Reste le test du raccourci (rouge sans le correctif). Frappe réelle vérifiée à la main
   (aperçu admin local, Chrome, L1 v1) : « log(7) » → `\log\left(7\right)`.
+
+## 37. Lot 5a : prod, rangement et tags (2026-11-18)
+
+David a lancé `create-questions --publier` : 6 brouillons (dc269779 L1, fa2ade8a L2, 9834f4cd L3, 22bbd82a L4,
+ceeba3f8 L5, af24839d L6), vérifiés par MCP (`draft`, `{T_TECHNO}`, sans nœud ni tag) ; ids écrits par le script
+dans le dépôt principal, reportés et commités sur la branche de la migration.
+
+- Points (MCP) : 040, 041, 044 sur « Fonctions > Logarithmes > logarithme décimal » (217d0af1) ; 042, 082, 083 sur
+  « propriétés algébriques » (dae7b3f1). Conforme au § 34.
+- Question d'accès tranchée au § 34 : **personne** (brouillons), Tle techno à la publication.
+- Migration `20261118203301_questions_ttechno_lot5a_rangement_tags` sur le gabarit du lot 4 (ids, codes, nœuds,
+  garde « 0 ou 6 », table temporaire `_qtt5a_modeles`).
+- Test `tests/integration/questions-ttechno-lot5a-rangement-tags.test.ts` : 9 verts ; corps retiré (en-tête et
+  rollback gardés) → 5 rouges ; fichier restauré d'une copie, identique, 9 verts.
+  `types:cliquet` tenu.
+- `security-auditor` : aucun finding (diff avec le lot 4 = en-tête, ids, codes, nœuds, garde « 0 ou 6 », table
+  temporaire ; rollback miroir ; aucune policy, aucun GRANT, aucune table d'élève ; état prod mesuré conforme).
+- **#2845 mergée (2026-11-18)**, CI verte, `check:migrations --pr 2845` vert. `migration list --linked` : seule
+  `20261118203301` en attente → `db:migrate` depuis le dépôt principal (4 conditions). Prod vérifiée (MCP) : 6
+  modèles sur leur nœud, un tag chacun (040, 041, 044 / 042, 082, 083), `draft`, `updated_at` inchangés. Worktree
+  retiré.
+
+## 38. Lot 5a : page à cocher (2026-11-18)
+
+- Page à cocher : https://claude.ai/artifact/5ZCuRYYE2N3wLnsSnvQioG (6 fiches : dc269779 TTECHNO-040, 6 exemples ;
+  fa2ade8a 041, 9834f4cd 042, 22bbd82a 082, ceeba3f8 083, af24839d 044, 5 exemples chacun ; aucune alerte ; tous
+  `draft` ; `verdicts` vide). Rendu à 390 px non vérifié.

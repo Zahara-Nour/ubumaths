@@ -13,8 +13,24 @@ import { generateInstance } from '../../src/lib/questions/generator/instance-gen
 import { prepareStatement, withoutChoiceCases } from '../../src/lib/questions/expected-result';
 import { correctChoiceIndexesOf, isChoiceBlank } from '../../src/lib/questions/choice-case';
 import { parseFigureContent } from '../../src/lib/ubumark/parser/figure-parser';
-import { buildFigureScene } from '../../src/lib/ubumark/utils/figure-scene';
+import { buildFigureScene, type FigureScene } from '../../src/lib/ubumark/utils/figure-scene';
 import { figureToSvg, type FigureShape } from '../../src/lib/ubumark/utils/figure-svg';
+import { readConstructionHeader } from '../../src/lib/ubumark/parser/construction-parser';
+import { createTransformer } from '../../src/lib/geometry-core/viewport/viewport';
+// Inscrit aussi le calcul des positions du juge (effet de bord voulu, cf. positions.ts)
+import {
+	allNamedPointPositions,
+	figureShapes
+} from '../../src/lib/questions/construction/positions-setup';
+import {
+	constructionExpected,
+	constructionPositions
+} from '../../src/lib/questions/construction/positions';
+import {
+	clipLineToWindow,
+	solutionLines,
+	solutionPoints
+} from '../../src/lib/questions/construction/drawing';
 import { parseMonnaieContent } from '../../src/lib/ubumark/parser/monnaie-parser';
 import { parseCollectionContent } from '../../src/lib/ubumark/parser/collection-parser';
 import { parseHorlogeContent } from '../../src/lib/ubumark/parser/horloge-parser';
@@ -255,13 +271,94 @@ function figure(source: string): Bloc {
 	const r = buildFigureScene(node, { locale: 'fr' });
 	if (!r.scene)
 		throw new Error('bloc figure en erreur : ' + r.errors.map((e) => e.message).join(' ; '));
-	const d = figureToSvg(r.scene, node.header.size);
-	const objets = d.shapes.map(forme).join('');
-	const label = attr(r.scene.ariaLabel);
+	return { html: figureSvg(r.scene, node.header.size) };
+}
+
+/** Vérifications dont la page dessine la construction juste (les autres : dans l'aperçu) */
+const CONSTRUCTIONS_DESSINEES = new Set(['droite', 'symetrique', 'point']);
+/** Rayon d'un point attendu, et décalage de son nom (unités SVG) */
+const POINT_ATTENDU = 5;
+const POINT_ATTENDU_NOM = 9;
+
+/**
+ * Bloc ```figure-a-completer, comme FigureACompleterView : la figure de départ, et
+ * à part la construction juste en vert (droite à construire, symétrique, point à
+ * placer), calculée par les fonctions de la correction de l'appli.
+ */
+function figureACompleter(source: string): Bloc {
+	const { figureSource, spec, errors } = readConstructionHeader(source);
+	const node = parseFigureContent(figureSource, { construction: 'a-completer' });
+	const erreurs = [...errors, ...node.errors];
+	const r = erreurs.length === 0 ? buildFigureScene(node, { locale: 'fr' }) : null;
+	if (!r?.scene) {
+		const messages = r ? r.errors : erreurs;
+		throw new Error(
+			'bloc figure-a-completer en erreur : ' + messages.map((e) => e.message).join(' ; ')
+		);
+	}
+	const scene = r.scene;
+	const size = node.header.size;
+	const html = figureSvg(scene, size);
+	// Seules les vérifications dessinées passent à la solution ; les autres : une alerte chacune
+	const dessinees = spec.checks.filter((c) => CONSTRUCTIONS_DESSINEES.has(c.kind));
+	const avertissements = [...new Set(spec.checks.map((c) => c.kind))]
+		.filter((k) => !CONSTRUCTIONS_DESSINEES.has(k))
+		.map(
+			(k) => `bloc figure-a-completer : solution de « ${k} » non dessinée, la voir dans l’aperçu`
+		);
+	if (dessinees.length === 0) return { html, avertissements };
+	let expected;
+	let positions;
+	try {
+		expected = constructionExpected(source);
+		positions = constructionPositions(source);
+	} catch (e) {
+		throw new Error(
+			'bloc figure-a-completer en erreur : ' + (e instanceof Error ? e.message : String(e))
+		);
+	}
+	const points = allNamedPointPositions(scene);
+	const lignes = solutionLines(dessinees, points, [], figureShapes(scene, node.header), expected);
+	const attendus = solutionPoints(dessinees, expected, positions);
+	const solution = figureSvg(scene, size, (versEcran) => {
+		const traits = lignes.flatMap((l) => {
+			const c = l.kind === 'segment' ? l : clipLineToWindow(l, scene.viewport);
+			if (!c) return [];
+			const a = versEcran(c.x1, c.y1);
+			const b = versEcran(c.x2, c.y2);
+			return [`<line class="fig-solution" x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}"/>`];
+		});
+		const poses = attendus.map((p) => {
+			const at = versEcran(p.at.x, p.at.y);
+			return `<circle class="fig-solution-point" cx="${at.x}" cy="${at.y}" r="${POINT_ATTENDU}"/><text class="fe fn fig-solution-nom" x="${at.x + POINT_ATTENDU_NOM}" y="${at.y - POINT_ATTENDU_NOM}">${attr(p.name)}</text>`;
+		});
+		return [...traits, ...poses].join('');
+	});
+	return { html, solution, avertissements };
+}
+
+/** Coordonnées d'écran arrondies au centième (SVG lisible, page reproductible) */
+const centieme = (n: number) => Math.round(n * 100) / 100;
+
+/**
+ * Le SVG d'une scène de figure (cadre et quadrillage compris) ; `dessus` : des
+ * objets ajoutés par-dessus, placés par la conversion maths → écran de la scène.
+ */
+function figureSvg(
+	scene: FigureScene,
+	size: Parameters<typeof figureToSvg>[1],
+	dessus?: (versEcran: (x: number, y: number) => { x: number; y: number }) => string
+): string {
+	const d = figureToSvg(scene, size);
+	const transformer = createTransformer(scene.viewport, d.width, d.height);
+	const versEcran = (x: number, y: number) => {
+		const p = transformer.mathToSvg(x, y);
+		return { x: centieme(p.x), y: centieme(p.y) };
+	};
+	const objets = d.shapes.map(forme).join('') + (dessus ? dessus(versEcran) : '');
+	const label = attr(scene.ariaLabel);
 	if (!d.frame) {
-		return {
-			html: `<svg class="fig" role="img" aria-label="${label}" viewBox="0 0 ${d.width} ${d.height}" style="max-width:${d.width}px">${objets}</svg>`
-		};
+		return `<svg class="fig" role="img" aria-label="${label}" viewBox="0 0 ${d.width} ${d.height}" style="max-width:${d.width}px">${objets}</svg>`;
 	}
 	const m = d.margin ?? 0;
 	const fr = d.frame;
@@ -279,9 +376,7 @@ function figure(source: string): Bloc {
 	].join('');
 	const w = d.width + 2 * m;
 	const h = d.height + 2 * m;
-	return {
-		html: `<svg class="fig" role="img" aria-label="${label}" viewBox="0 0 ${w} ${h}" style="max-width:${w}px"><g aria-hidden="true" transform="translate(${m}, ${m})">${repere}</g><svg x="${m}" y="${m}" width="${d.width}" height="${d.height}" viewBox="0 0 ${d.width} ${d.height}" overflow="hidden">${objets}</svg></svg>`
-	};
+	return `<svg class="fig" role="img" aria-label="${label}" viewBox="0 0 ${w} ${h}" style="max-width:${w}px"><g aria-hidden="true" transform="translate(${m}, ${m})">${repere}</g><svg x="${m}" y="${m}" width="${d.width}" height="${d.height}" viewBox="0 0 ${d.width} ${d.height}" overflow="hidden">${objets}</svg></svg>`;
 }
 
 // ---- Monnaie et collection : balisage de Monnaie.svelte et CollectionObjets.svelte ----
@@ -1613,6 +1708,7 @@ function droite(source: string): Bloc {
 const DESSINS: Record<string, (source: string) => Bloc> = {
 	line: droite,
 	figure,
+	'figure-a-completer': figureACompleter,
 	monnaie,
 	partage,
 	solide,
