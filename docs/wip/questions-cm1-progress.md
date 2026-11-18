@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après #2812 (§ 22 quinquies)._
+_Mis à jour le 2026-11-18, après #2812 et la publication du lot 8b (§ 22 sexies)._
 
-- **État** : lots 0 à 8a publiés (131 points sur 171) ; lot 8b créé, rangé et tagué en prod (sous-notion « aires sur
-  quadrillage »), page à cocher publiée. Restent 8c, 8d, 8e, 9 (§ 20, découpage validé § 20 bis).
-- **Prochaine action** : lire les verdicts de https://claude.ai/artifact/W1USbwFanqqcyE3o9t4afJ (compter) ; puis
-  David lance `garde-niveaux-tags` et `publier-lot --dir scripts/questions/cm1-8b` (simulation, puis `--publier`).
-- **En attente de David** : la relecture des 6 fiches.
+- **État** : lots 0 à 8b publiés, **137 points du CM1 sur 171** (CM2 : 92 sur 158). Restent 8c géométrie plane,
+  8d figures à compléter, 8e solides et déplacements, 9 probabilités et proportionnalité (§ 20, découpage § 20 bis).
+- **Prochaine action** : phase 0 du lot 8c (géométrie plane) : relevé MCP des points et de l'existant, tableau des
+  modèles, questions à David.
+- **En attente de David** : rien.
 - **Pièges en cours** : lancer `create-questions --publier` et `db:migrate` **depuis le worktree** (lien
   `supabase/.temp/` copié) ; `db:migrate` « inserted before » → `--dry-run --include-all` puis `--include-all` ;
   une sous-notion neuve casse `seed-classification-nodes` + `arbre-notions-seed.json` + `later-migrations.ts` ;
@@ -1804,3 +1804,9 @@ avant. Les modèles publiés sont lus comme les autres ; la migration ne fait qu
   11 tags, `updated_at` inchangé.
 - `page-a-cocher.ts --dir scripts/questions/cm1-8b` : 6 fiches (18 exemples), aucune alerte. Page :
   https://claude.ai/artifact/W1USbwFanqqcyE3o9t4afJ (`verdicts`, capacité `db`, vide).
+
+### 22 sexies. Lot 8b — publié (2026-11-18)
+
+- Page à cocher : 6 « OK » sur 6, aucun commentaire. `garde-niveaux-tags`, `publier-lot --dir scripts/questions/cm1-8b`
+  (simulation) et `--publier` lancés par David. Vérifié au MCP : 6 modèles `published`.
+- Recompte MCP : **137 points du CM1 sur 171** ont un modèle publié (131 + 6) ; CM2 : 92 sur 158.
