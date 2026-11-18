@@ -2,10 +2,10 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, PR #2817 ouverte._
+_Mis à jour le 2026-11-18, après #2817._
 
-- **État** : étape 1 en prod (#2808, #2810). Étape 2 (apparition des Bêtes + export RGPD) : PR #2817, revues code et sécurité corrigées, CI en cours.
-- **Prochaine action** : merger #2817 à CI verte ; puis étape 3 (combat de la recrue), phase 0 à faire valider (PV et questions du combat, revérifier la question tirée).
+- **État** : étapes 1 (#2808, #2810) et 2 (#2817 : apparition des Bêtes, export RGPD, doc `docs/systeme/descente.md`) mergées. Aucune page n'appelle encore l'apparition (étape 4). Pas de worktree ouvert.
+- **Prochaine action** : étape 3 (combat de la recrue). Nouveau worktree `../ubumaths-wt-navadra` depuis `origin/main` ; phase 0 à faire valider (PV provisoires 100/300 à régler, questions du combat, revérifier la question tirée car le filtre « jouable » ne lit que la 1re variation).
 - **En attente de David** : rien.
 - **Façon de poser** : en mots simples, avec un exemple, sans noms de tables ni de colonnes.
 - **Pièges en cours** :
@@ -13,7 +13,7 @@ _Mis à jour le 2026-11-18, PR #2817 ouverte._
   - Base locale : `supabase migration up --local` bute sur une migration de rangement ; appliquer un fichier par `psql -1` sous `scripts/with-db-lock.sh`, puis `notify pgrst, 'reload schema'`.
   - Le prof et l'admin peuvent écrire une trace `descente` (comme `evaluation`) : leurs policies ne filtrent pas le lieu.
   - L'analyse du jeu d'origine est dans `extern/navadra-jeu/CLAUDE.md`, **non versionné**.
-- **Worktree / branche** : `../ubumaths-wt-navadra` · `feat/navadra-apparition`.
+- **Worktree / branche** : aucun (retirés après #2817).
 
 ## Phase 0 de l'étape 2 : apparition des Bêtes (validée par David le 2026-11-18)
 
@@ -286,6 +286,7 @@ Au code : ajouter « La Descente de la Vistule » à `CONTEXT.md` (et une ADR si
 
 ## Historique
 
+- **2026-11-18** : #2817 mergée (étape 2).
 - **2026-11-18** : étape 2 codée (apparition des Bêtes, export RGPD), phase 0 validée par David (« je te suis ») ; revues code et sécurité corrigées.
 - **2026-11-18** : phase 0 de la v1 validée par David (toutes les recommandations).
 - **2026-11-18** : phase 0 de la v1 rédigée et publiée en page, 7 questions posées.
