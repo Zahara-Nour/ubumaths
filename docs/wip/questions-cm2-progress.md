@@ -6,11 +6,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après la publication du lot 10._
+_Mis à jour le 2026-11-18, phase 0 du lot 11a proposée._
 
 - **État** : lots 0 à 10 publiés (lot 10 heures et durées : 5/5 `published`, relus au MCP, § 16.4). Restent les lots 11a à 19 du § 14 (ordre validé au § 14.1).
-- **Prochaine action** : phase 0 du lot 11a, problèmes en une étape (058, 059, 061, 066, 115, 116) : relevé MCP, bornes, tableau, questions.
-- **En attente de David** : rien. ⛔ Jamais `--mettre-a-jour` de `cm2-7b` avec des fichiers d'avant #2770 (ids CM1).
+- **Prochaine action** : écrire le lot 11a (§ 17, 7 modèles) une fois les points (a) à (f) tranchés.
+- **En attente de David** : § 17, points (a) à (f). ⛔ Jamais `--mettre-a-jour` de `cm2-7b` avec des fichiers d'avant #2770 (ids CM1).
 - **Pièges en cours** : `pnpm migration:horodatage` = heure réelle UTC ; `db:migrate` refuse une migration plus ancienne que la dernière jouée → `--dry-run --include-all`, liste relue, puis `--include-all`. Worktree neuf : copier `supabase/.temp/` du dépôt principal, puis `pnpm exec svelte-kit sync`. `Doc-inchangée:` dans un COMMIT. `git commit -m … -- <fichiers>`. Stash du dépôt principal « cm2-9 ids » : copie identique de ce qui est mergé, à supprimer (David).
 - **Worktree / branche** : aucun.
 
@@ -1054,3 +1054,72 @@ ceux pris : lire 9, placer 10 ; durée 9, comparer 10, problèmes 11 ; (e) un se
 
 - 5 verdicts « OK » sur 5 (base relue) ; `publier-lot` en simulation : 5 brouillons passent ; `--publier` lancé par
   David ; MCP : 5 `published`. **Lot 10 clos.**
+
+## 17. Lot 11a — problèmes en une étape (058, 059, 061, 066, 115, 116) : phase 0 (proposée le 2026-11-18)
+
+Relevé MCP du 2026-11-18 : aucun modèle sur les 6 points. Sous-notions et niveaux pris :
+
+- 058 (additifs, une étape) : point sur la notion « Problèmes arithmétiques » ; ses sous-notions **parties-tout**
+  (niveaux 1 à 24, CP → CM1 ; CM1 `8a1d9a4a` entiers, `559aa5fc` décimaux et fractions) et **comparaison** (1 à 5 ;
+  CM1 `24db415b` additive, `edb36f84` multiplicative) ;
+- 059 (multiplicatifs parties-tout) : **multiplicatifs** (5 à 13 ; CM1 `e55366fc` partage exact, `b3771f79` avec reste) ;
+- 061 (comparaison multiplicative) : **comparaison** (1 à 5) ;
+- 066 (algébriques) : **nombre inconnu** (1 et 2 : CM1 `98f558e4`, `b28c7f78` balance, `c4011427` schéma en barres ;
+  6e : 6 modèles `schema-barres`) ;
+- 115 (identifier) : **caractérisation** (1 à 7, **que des modèles de 6e, 5e, 3e**) ;
+- 116 (résoudre) : point sur la notion « Situations de proportionnalité » ; sous-notion **quatrième proportionnelle**
+  (1 à 3 : 6e, 4e). Les points jumeaux du CM1 (CM1-129, CM1-130) n'ont **aucun** modèle.
+
+Le niveau d'un modèle ne sert plus qu'à l'ordre et au badge (plus d'index unique sur l'arbre des notions,
+`questions-bulk-status.ts`).
+
+Bornes (`cycle3.json`, exemples de réussite CM2 p. 10-15 et 24) : champ du CM2 (entiers jusqu'à 9 chiffres,
+décimaux aux millièmes, fractions de dénominateur ≤ 60) ; 059 : nombre de parts seulement si une part vaut un
+**entier ≤ 10** (2 611 € à 7 €), valeur d'une part : 73,20 € ÷ 6 ; 061 : **plusieurs étapes** (trottinette quatre
+fois plus chère que le casque, 161,25 € en tout) ; 066 : symboles, deux pesées (ciseaux, crayons), schéma en
+barres (179 billes, quatre fois plus de rouges que de vertes, 17 vertes de moins que de bleues) ; 115 : dire si deux
+grandeurs sont proportionnelles et le justifier (âge et taille : non ; masse d'une pile de manuels identiques :
+oui) ; 116 : linéarité × une ou deux fois, ou × puis + (200 feuilles = 24 mm → 250 feuilles), **jamais le retour à
+l'unité** (3 plaques → 5 plaques relève de la 6e), ni tableau, ni coefficient.
+
+| #     | Point   | Sous-notion, niveau                 | Modèle                                       | Variations, plages                                                                                                                                                                                                                                                                                                                                     |
+| ----- | ------- | ----------------------------------- | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 11a-1 | CM2-058 | parties-tout, 25                    | Problèmes additifs : parties-tout            | V1 le tout, entiers de 7 à 9 chiffres (budgets, populations) ; V2 une partie, décimaux aux millièmes (2,375 kg) ou prix ; V3 l'état de départ (« il a dépensé…, il lui reste… ») ; V4 fractions, l'un des dénominateurs multiple de l'autre (3/8 + 1/4 : 5/8, toute fraction égale juste)                                                              |
+| 11a-2 | CM2-058 | comparaison, 6                      | Problèmes de comparaison additive            | V1 « … de plus que », chercher le plus grand (entiers à 7 chiffres) ; V2 l'écart (« combien de plus ? ») ; V3 « A a … de plus que B », chercher B (le piège : il faut soustraire) ; V4 décimaux, unités mêlées (1,48 m, 7 cm de plus)                                                                                                                  |
+| 11a-3 | CM2-059 | multiplicatifs, 14                  | Problèmes multiplicatifs : le tout, une part | V1 le tout, décimal × entier (6 × 12,20 €) ; V2 la valeur d'une part, dividende décimal ÷ entier à un chiffre, reste nul aux centièmes (73,20 € ÷ 6) ; V3 le nombre de parts, une part entière de 2 à 10, dividende à 4 ou 5 chiffres (2 611 € ÷ 7 €)                                                                                                  |
+| 11a-4 | CM2-061 | comparaison, 7                      | Comparaison multiplicative en deux étapes    | V1 « k fois plus cher », le total connu, chercher le plus grand (161,25 € pour k = 4 : 32,25 × 4 = 129 €) ; V2 « k fois plus », l'écart connu (k − 1 parts) ; V3 « k fois moins », le total connu, chercher le plus petit ; V4 « k fois plus » puis « … de plus » (Léa a 24 billes, Tom 3 fois plus, Inès 5 de plus que Tom : Inès ?) ; k de 2 à 9     |
+| 11a-5 | CM2-066 | nombre inconnu, voir (e)            | Problèmes algébriques : symboles et schémas  | V1 deux balances (`figure`, comme `b28c7f78`) : 2 ciseaux + 1 crayon, 1 ciseaux + 1 crayon → deux cases ; V2 symboles : ■ + ■ + ▲ = 23 et ■ + ▲ = 15 ; V3 trois parts liées (`schema-barres`) : « k fois plus » et « … de moins » pour un total (179 billes : 27, 108, 44), trois cases                                                                |
+| 11a-6 | CM2-115 | caractérisation, voir (e)           | Est-ce une situation de proportionnalité ?   | case « choix » Oui / Non ; V1 situation en mots, banque fermée (prix d'objets identiques, recette, pile de manuels, pas réguliers : oui ; âge et taille, pointure et âge, taxi avec prise en charge, aire et côté du carré : non) ; V2 deux mesures chiffrées qui contredisent ou non « k fois plus » dans un contexte donné (2 kg → 7 €, 6 kg → 18 €) |
+| 11a-7 | CM2-116 | quatrième proportionnelle, voir (e) | Problèmes de proportionnalité (linéarité)    | V1 × une fois (4 croissants 3,60 € → 12 croissants) ; V2 ÷ puis × (200 feuilles 24 mm → 50 → 250 feuilles) ; V3 × puis + (12 œufs 300 g de farine → 18 œufs = 12 + 6) ; rapports simples seulement (2, 3, 4, 5, 10 et leurs inverses), jamais un passage par l'unité                                                                                   |
+
+Forme commune (lot 6 du CM1) : une case par nombre, l'unité après la case (`$?~\text{€}$`) ; prix toujours à deux
+décimales dans l'énoncé (`12,20 €`). Corrigés : la phrase de l'opération et son sens (« on cherche une partie : on
+retire ») ; 116 en langage naturel (« 50 feuilles, c'est 4 fois moins que 200 : 24 ÷ 4 = 6 mm ; 250 = 5 × 50 :
+5 × 6 = 30 mm »), jamais de tableau. Erreurs typiques en `testSpecs` : addition au lieu de soustraction sur « de plus
+que, chercher B » ; total ÷ k au lieu de ÷ (k + 1) (161,25 ÷ 4) ; 24 + 50 = 74 mm (feuilles ajoutées aux
+millimètres) ; ▲ = 23 − 15 (■ et ▲ confondus) ; « oui » au taxi (prix qui augmente ≠ proportionnel).
+
+**Question d'accès** : 7 brouillons neufs, puis nœud + tag → personne ne lit rien de plus avant la publication.
+
+**À trancher** :
+
+(a) 058 en **deux modèles** (parties-tout et comparaison additive, deux sous-notions, comme les deux points du CM1
+054 et 134) ? Reco : **oui**.
+
+(b) 061 sans variation en une étape (le CM1 `edb36f84` la couvre ; la borne du CM2 dit « plusieurs étapes ») ?
+Reco : **oui**, la distinction « fois plus / de plus » passe par V4.
+
+(c) 115 V2 (deux mesures chiffrées) : le « oui » ne se prouve pas par deux nombres ; il vient du contexte écrit
+(« prix au kilo affiché »), les nombres ne servent qu'à repérer le « non ». Garder V2 ainsi, ou V1 seule ? Reco :
+**garder V2**, corrigé « 3 fois plus de kilos mais pas 3 fois plus cher : non ».
+
+(d) 116 V3 (× puis +) : même réponse que V2 possible ; tirer des nombres où l'addition est la voie naturelle (12 → 18
+= 12 + 6) plutôt que les mêmes que V2 ? Reco : **oui**, nombres propres à chaque variation.
+
+(e) Niveaux. Au lot 10, les neufs passaient après les niveaux pris (des niveaux inférieurs). Ici trois sous-notions
+ne portent que des modèles de **6e à 3e** (caractérisation 1 à 7, quatrième proportionnelle 1 à 3) ou mêlés
+(nombre inconnu : CM1 et 6e au 1, 6e au 2). Après eux (8, 4, 3), le CM2 passerait derrière la 5e. Reco : **niveau 1**
+dans ces trois-là (plusieurs modèles y partagent déjà le 1), et « après les pris » pour les trois autres (25, 6, 7,
+14).
+
+(f) Un seul lot de **7 modèles** ? Reco : **oui**.
