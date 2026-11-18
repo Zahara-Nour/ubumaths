@@ -18,8 +18,8 @@ _Mis à jour le 2026-11-18, après #2805 (lot 3 clos)._
 - **Pièges en cours** : `db:migrate` pousse tout ce qui attend (lot 3 : parti avec 1gen lot 6 et navadra, coordonné
   par questions-1gen) ; aperçu admin local : `--host 127.0.0.1` (Chrome n'ouvre pas `[::1]`) ; lot 5 : modèles
   communs de questions-1gen S2 f3cb0c7a → 085, S3 7461bb44 → 082, S4 4f328c8c → 084, S6 3fec6b41 → 087 (brouillons
-  `{1_GEN}`, rangés et tagués 1GEN ; plages : son journal § 23-24), à vérifier contre mes bornes, publication à
-  attendre ; 49fac266 (083) a reçu 1GEN-003.
+  `{1_GEN}`, rangés et tagués 1GEN, **publiés le 2026-11-18** ; plages : son journal § 23-24), à vérifier contre
+  mes bornes en phase 0 ; 49fac266 (083) a reçu 1GEN-003.
 - **Worktree / branche** : aucun (à recréer pour le lot 4).
 
 ## 1. Relevé (prod, 2026-11-17)
