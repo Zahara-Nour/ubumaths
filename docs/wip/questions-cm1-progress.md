@@ -5,21 +5,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après #2823 (fichiers du lot 8c, § 23 ter)._
+_Mis à jour le 2026-11-18, lot 8c en cours de rangement (§ 23 quater)._
 
-- **État** : lots 0 à 8b publiés, **137 points du CM1 sur 171** (CM2 : 92 sur 158). Lot 8c (géométrie plane, 7
-  modèles, `scripts/questions/cm1-8c/`) écrit et mergé (#2823), **pas encore en prod**. Restent ensuite 8d figures à
-  compléter, 8e solides et déplacements, 9 probabilités et proportionnalité (§ 20, découpage § 20 bis).
-- **Prochaine action** : David lance `create-questions --dir scripts/questions/cm1-8c --publier` depuis le worktree ;
-  puis commiter les ids, migration nœud + tag (nœuds existants, pas de sous-notion neuve ; tags CM2-091, 089, 090
-  sur 02, 03, 04), page à cocher, publication.
-- **En attente de David** : le `--publier` du lot 8c.
+- **État** : lots 0 à 8b publiés, **137 points du CM1 sur 171** (CM2 : 92 sur 158). Lot 8c : 7 brouillons en prod
+  (#2823 + `--publier` de David) ; migration de rangement `20261118115830_questions_cm1_lot8c_rangement_tags` écrite,
+  test 20/20 vert (rouge sans elle), sur la branche `feat/questions-cm1-lot8c-rangement` (poussée, **PR pas ouverte**).
+- **Prochaine action** : `security-auditor` sur la migration (lancé avant le `/clear`, résultat non lu : le
+  relancer) ; puis PR, CI, `check:migrations --pr`, merge, `db:migrate` (David, depuis le worktree), vérif MCP,
+  page à cocher, publication. Ensuite 8d figures à compléter, 8e, 9 (§ 20).
+- **En attente de David** : rien avant le merge de la migration.
 - **Pièges en cours** : lancer `create-questions --publier` et `db:migrate` **depuis le worktree** (lien
   `supabase/.temp/` copié) ; `db:migrate` « inserted before » → `--dry-run --include-all` puis `--include-all` ;
   titre homonyme d'un autre niveau → `create-questions` refuse (renommer) ; commitlint refuse le type `content` ;
   le mode auto refuse `publier-lot` et `garde-niveaux-tags` : David les lance ; `sonde-figures` ne voit pas les
   dessins d'une case choix (aperçu) ; ports 5176, 5177 pris par d'autres sessions.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, détaché sur `main`, aucune branche ouverte.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, branche `feat/questions-cm1-lot8c-rangement`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -1881,3 +1881,15 @@ nœuds qui existent déjà (pas de sous-notion neuve).
   créer », aucun homonyme.
 - Base locale (copies à une variation par modèle, 22 brouillons d'essai) : les 22 variations vues à 390 px
   (Playwright, port 5178), sans défilement horizontal ni erreur de console.
+
+### 23 quater. Lot 8c — création en prod et rangement (2026-11-18)
+
+- #2823 mergée. `create-questions --dir scripts/questions/cm1-8c --publier` lancé par David depuis le worktree :
+  7 brouillons (6108cc4c, f988f07a, 54c0f87f, 265ed3cc, 273dce6f, 20907b18, f521ccf8), ids commités sur
+  `feat/questions-cm1-lot8c-rangement`.
+- Relevé `etat-prod-2026-11-18-cm1-8c/` (7 draft, sans nœud ni tag), script `lot-cm1-8c-rangement.py` (gabarit 8a) →
+  migration `20261118115830_questions_cm1_lot8c_rangement_tags` + fixture : 6108cc4c, 273dce6f, 20907b18 →
+  propriétés ; f988f07a → cercle ; 54c0f87f, 265ed3cc → perpendiculaires et parallèles ; f521ccf8 → Symétrie
+  axiale ; 10 tags posés (CM1-098 à 103, 106 ; CM2-091, 089, 090), aucun niveau ni statut changé, aucun nœud créé.
+- Test `questions-cm1-lot8c-rangement-tags.test.ts` : 20/20 vert ; corps neutralisé (`select 1;`) : 9 échecs,
+  7 sautés. `types:cliquet` tenu.

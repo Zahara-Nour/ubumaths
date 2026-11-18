@@ -1,0 +1,79 @@
+[
+	{
+		"id": "20907b18-072c-417e-8a4b-7b863104cedc",
+		"noeudAvant": null,
+		"noeudApres": "Géométrie > Figures planes > propriétés",
+		"gradesAvant": ["CM1"],
+		"gradesApres": ["CM1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-103"]
+	},
+	{
+		"id": "265ed3cc-fad4-4859-80ff-58abeb2912c1",
+		"noeudAvant": null,
+		"noeudApres": "Géométrie > Figures planes > perpendiculaires et parallèles",
+		"gradesAvant": ["CM1", "CM2"],
+		"gradesApres": ["CM1", "CM2"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-101", "CM2§CM2-090"]
+	},
+	{
+		"id": "273dce6f-950b-4379-a7e9-7cd9c937e362",
+		"noeudAvant": null,
+		"noeudApres": "Géométrie > Figures planes > propriétés",
+		"gradesAvant": ["CM1"],
+		"gradesApres": ["CM1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-102"]
+	},
+	{
+		"id": "54c0f87f-748c-4286-95d4-f0b8a49d5c08",
+		"noeudAvant": null,
+		"noeudApres": "Géométrie > Figures planes > perpendiculaires et parallèles",
+		"gradesAvant": ["CM1", "CM2"],
+		"gradesApres": ["CM1", "CM2"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-100", "CM2§CM2-089"]
+	},
+	{
+		"id": "6108cc4c-4ae6-48e1-976a-504cf7054c02",
+		"noeudAvant": null,
+		"noeudApres": "Géométrie > Figures planes > propriétés",
+		"gradesAvant": ["CM1"],
+		"gradesApres": ["CM1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-098"]
+	},
+	{
+		"id": "f521ccf8-e812-40c4-ad47-5e2b43ccc1ff",
+		"noeudAvant": null,
+		"noeudApres": "Géométrie > Symétrie axiale",
+		"gradesAvant": ["CM1"],
+		"gradesApres": ["CM1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-106"]
+	},
+	{
+		"id": "f988f07a-5f4f-4740-9895-f2a675b16c9b",
+		"noeudAvant": null,
+		"noeudApres": "Géométrie > Figures planes > cercle",
+		"gradesAvant": ["CM1", "CM2"],
+		"gradesApres": ["CM1", "CM2"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-099", "CM2§CM2-091"]
+	}
+]
