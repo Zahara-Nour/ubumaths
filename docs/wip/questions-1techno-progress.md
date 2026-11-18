@@ -8,17 +8,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après #2856 (fichiers du lot 6)._
+_Mis à jour le 2026-11-18, après #2856 et la création des brouillons du lot 6._
 
 - **État** : lots 1 à 5 clos. Lot 6 (§ 30-31) : phase 0 validée, P1-P5 écrits
   (`scripts/questions/1techno-6`), simulation verte, rendus vérifiés (Chrome), PR #2856 mergée.
-- **Prochaine action** : David `create-questions --dir scripts/questions/1techno-6 --publier` depuis le worktree
-  (ids écrits dans les fichiers) → migration de rangement + retrait de 137 et `1_TECHNO` de 97b3a376 (gabarit lot 2 ;
-  usage mesuré : 0) → test rouge/vert → `security-auditor` → go de David (destructif) → PR.
-- **En attente de David** : `create-questions --publier` (lot 6) ; go pour la partie destructive (97b3a376).
+- **Prochaine action** : migration de rangement P1-P5 + retrait de 137 et `1_TECHNO` de 97b3a376 (gabarit lot 2,
+  ids au § « Lot 6 — brouillons en prod ») → test rouge/vert → `security-auditor` → go de David (destructif) → PR.
+- **En attente de David** : go pour la partie destructive (97b3a376), une fois la migration écrite.
 - **Pièges en cours** : dépôt principal sale (fichiers d'autres sessions) → commit 827809b06 local sur `main` = 4606c8101
   déjà poussé ; questions-1gen à prévenir (4 communs). `Doc-inchangée:` dans un COMMIT.
-- **Worktree / branche** : `../ubumaths-wt-questions-1techno`, `feat/questions-1techno-lot6-migration` (créée, journal seul).
+- **Worktree / branche** : `../ubumaths-wt-questions-1techno`, `feat/questions-1techno-lot6-migration` (ids des brouillons commités).
 
 ## 1. Relevé (prod, 2026-11-17)
 
@@ -956,3 +955,10 @@ Aperçu fermé, serveur 5179 arrêté, Tailscale :443/:8443 retirés.
 PR #2856 mergée (CI verte : 7 réussis, 7 ignorés). Usage de 97b3a376 mesuré (MCP) : 0 carte, 0 tentative, 0 évaluation,
 0 réponse de test, 0 activité de cahier de texte ; sur 1TECHNO-137 : 0 entrée de cahier de texte, 0 état de point,
 0 exercice, 0 automatisme. Le retrait ne coupe rien à personne.
+
+### Lot 6 — brouillons en prod (2026-11-18)
+
+David a lancé `create-questions --publier` depuis le worktree : P1 `699b1aae-eada-468e-af95-25f74aede343`, P2
+`ef34cc66-8aac-4e06-8cb0-d6c4acf93997`, P3 `4ccf75c2-eae2-4d85-8045-50bdf26add73`, P4
+`b342c534-4dfd-4a37-ba06-0c48e7d50ae2`, P5 `2405ca31-d856-454d-9e1e-682ec371e088` ; brouillons `{1_TECHNO}`, sans nœud
+ni tag (vérifié MCP). 97b3a376 inchangé : publié, `{1_SPE,1_TECHNO}`, 2 tags (1SPE-353, 1TECHNO-137).
