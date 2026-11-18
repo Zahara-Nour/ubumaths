@@ -5,20 +5,22 @@ Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) · bornes 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, lot 4 écrit (§ 30), PR à ouvrir._
+_Mis à jour le 2026-11-18, après #2819._
 
-- **État** : lots 0 à 3b en prod et publiés ; lot 4 écrit sur `feat/questions-ttechno-lot4` (M1 037, M2 039,
-  § 30), specs vertes, aperçu local joué.
-- **Prochaine action** : PR du lot 4 → CI verte → merge ; puis David lance `create-questions --publier
---dir scripts/questions/ttechno-4-fonctions` depuis le dépôt principal ; puis migration nœud + tags (gabarit
-  lot 3b, `20261118080905`).
-- **En attente de David** : rien avant le merge ; ensuite le `--publier`.
+- **État** : lots 0 à 3b en prod et publiés ; lot 4 (M1 037, M2 039) mergé (#2819), fichiers seulement, pas
+  encore en base ; aucun worktree ouvert.
+- **Prochaine action** : David lance, depuis le dépôt principal,
+  `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/ttechno-4-fonctions --publier` ; puis ids
+  vérifiés (MCP) et commités ; puis worktree `feat/questions-ttechno-lot4-rangement` : migration nœud + tags
+  (gabarit lot 3b, `20261118080905` ; M1 → « propriétés algébriques » 44206987, M2 → « fonctions x ↦ aˣ »
+  c185c955), test d'intégration, `security-auditor`, page à cocher, publication.
+- **En attente de David** : le `create-questions --publier` ci-dessus.
 - **Pièges en cours** : un point TTECHNO par modèle (trigger) ; `grades` en `array_append` seulement ;
   `publier-lot.ts`, `garde-niveaux-tags.ts`, `create-questions --publier` visent la prod : David les lance (`!`),
   **depuis le dépôt principal, après le merge** ; `Doc-inchangée:` dans un COMMIT de la PR ; `db:migrate` pousse
   toutes les migrations en attente (`migration list --linked` avant) ; worktree neuf → `svelte-kit sync` avant
   `question:specs`.
-- **Worktree / branche** : `../ubumaths-wt-questions-ttechno` · `feat/questions-ttechno-lot4`.
+- **Worktree / branche** : aucun (`../ubumaths-wt-questions-ttechno` retiré après #2819).
 
 ## 1. Périmètre
 
@@ -744,3 +746,4 @@ quotient, puissance, a⁰, a⁻ˣ ; pas (ab)ˣ) ; **Q22** M2 avec une variation 
   du tableur passés en `$` (virgule décimale).
 - Base locale (copie des fichiers) : 2 brouillons ; aperçu admin (Chrome, `127.0.0.1:5177`) : M2 tableur
   (a = 4) C → juste, correction lue ; M2 deux intercalations (a = 0,5, x₁ = 2) `2,5` et `0,18` → juste.
+- **#2819 mergée (2026-11-18)**, CI verte ; worktree retiré.
