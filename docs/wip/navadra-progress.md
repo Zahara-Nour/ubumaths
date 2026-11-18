@@ -2,18 +2,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après #2808._
+_Mis à jour le 2026-11-18, après #2810._
 
-- **État** : étape 1 (fondations en base) **mergée** (#2808) : `student_beasts`, `student_combat_moves`, `record_beast_victory`, lieu de trace `descente`. 32 tests d'intégration ; `code-reviewer` + `security-auditor` sans bloquant. **Migration `20261118060323` PAS encore en prod.**
-- **Prochaine action** : `db:migrate` dès qu'aucune autre migration n'attend (le 2026-11-18, `…054706_questions_1gen_lot6` et `…055440_questions_1techno_lot3` étaient mergées sans être en prod) ; puis `db:types` (PR à part), puis étape 2 (apparition des Bêtes, + export RGPD des deux tables).
-- **En attente de David** : pousser les deux migrations des autres sessions, ou dire de les pousser ensemble.
+- **État** : étape 1 (fondations en base) mergée (#2808) ; migration `20261118060323` **en prod** ; types générés depuis la prod mergés (#2810). Pas de worktree ouvert.
+- **Prochaine action** : étape 2 — apparition des Bêtes, + export RGPD des deux tables (`student_beasts`, `student_combat_moves`). Nouveau worktree `../ubumaths-wt-navadra` depuis `origin/main` ; phase 0 (comportements) à faire valider avant de coder.
+- **En attente de David** : rien.
 - **Façon de poser** : en mots simples, avec un exemple, sans noms de tables ni de colonnes.
 - **Pièges en cours** :
   - **PostgREST tronque un message d'erreur SQL accentué** et rend un 500 sans code : `raise exception` sans accent dans les fonctions appelées par l'API.
   - Base locale : `supabase migration up --local` bute sur une migration de rangement ; appliquer un fichier par `psql -1` sous `scripts/with-db-lock.sh`, puis `notify pgrst, 'reload schema'`.
   - Le prof et l'admin peuvent écrire une trace `descente` (comme `evaluation`) : leurs policies ne filtrent pas le lieu.
   - L'analyse du jeu d'origine est dans `extern/navadra-jeu/CLAUDE.md`, **non versionné**.
-- **Worktree / branche** : `../ubumaths-wt-navadra` (`feat/navadra-fondations`, mergée) — à retirer après `db:migrate`.
+- **Worktree / branche** : aucun (retirés après #2810).
 
 ## Tranché
 
