@@ -140,6 +140,31 @@ const mockAvatars = [
 	{ avatar_key: 'bonnet_ubu', price_paid: 15, purchased_at: '2026-11-12T10:00:00Z' }
 ];
 
+// La Descente de la Vistule (étape 2, 2026-11-18) : Bêtes et coups gagnés de l'élève
+const mockBeasts = [
+	{
+		id: 'beast-1',
+		beast_key: 'nombrilie-1',
+		kind: 'ordinary',
+		province: 'nombrilie',
+		point_id: 'point-1',
+		max_hp: 100,
+		hp: 0,
+		appeared_at: '2026-11-18T08:00:00Z',
+		leaves_at: '2026-11-21T08:00:00Z',
+		defeated_at: '2026-11-18T09:00:00Z',
+		rewarded_gidouilles: 1
+	}
+];
+const mockCombatMoves = [
+	{
+		move_key: 'nombrilie-fractions',
+		notion_id: 'notion-1',
+		earned_at: '2026-11-18T09:00:00Z',
+		announced_at: null
+	}
+];
+
 // Palotin de l'élève (une ligne par élève)
 const mockBuddy = {
 	palotin_type: 'giron',
@@ -227,6 +252,10 @@ function setupMockSupabase() {
 						return mockMathouDecorations;
 					case 'student_avatars':
 						return mockAvatars;
+					case 'student_beasts':
+						return mockBeasts;
+					case 'student_combat_moves':
+						return mockCombatMoves;
 					case 'student_buddies':
 						return mockBuddy;
 					case 'student_last_visits':
@@ -258,11 +287,15 @@ function setupMockSupabase() {
 			const maybeSingleFn = vi.fn().mockReturnValue(terminalResult);
 			const orFn = vi.fn().mockReturnValue(terminalResult);
 
-			// order() returns something with limit()
-			const orderFn = vi.fn().mockReturnValue({
+			// order() returns something with limit() or range() (lecture par pages) ;
+			// order() peut s'enchaîner (second critère de tri)
+			const rangeFn = vi.fn().mockReturnValue(terminalResult);
+			const orderFn: ReturnType<typeof vi.fn> = vi.fn(() => ({
 				limit: limitFn,
+				range: rangeFn,
+				order: orderFn,
 				...terminalResult
-			});
+			}));
 
 			// contains() (array filter, e.g. notifications.target_user_ids) → order/limit
 			const containsFn = vi.fn().mockReturnValue({
@@ -464,6 +497,36 @@ describe('GET /api/account/export', () => {
 			expect(eq).toHaveBeenCalledWith('student_id', TEST_USER.id);
 		});
 
+		// La Descente de la Vistule (étape 2) : Bêtes (carnet compris) et coups gagnés
+		test.each([
+			[
+				'student_beasts',
+				'beasts',
+				'beast_key, kind, province, point_id, max_hp, hp, appeared_at, leaves_at, defeated_at, rewarded_gidouilles',
+				mockBeasts
+			],
+			[
+				'student_combat_moves',
+				'combat_moves',
+				'move_key, notion_id, earned_at, announced_at',
+				mockCombatMoves
+			]
+		])(
+			'contient %s de l’appelant (catégorie gaming.descente)',
+			async (table, key, columns, rows) => {
+				const response = await GET(createMockEvent() as never);
+				const data = await response.json();
+
+				expect(data.gaming.descente[key]).toEqual(rows);
+				const appel = mockSupabase.from.mock.calls.findIndex((c: unknown[]) => c[0] === table);
+				expect(appel).toBeGreaterThanOrEqual(0);
+				const chaine = mockSupabase.from.mock.results[appel].value;
+				expect(chaine.select.mock.calls[0][0]).toBe(columns);
+				const eq = chaine.select.mock.results[0].value.eq;
+				expect(eq).toHaveBeenCalledWith('student_id', TEST_USER.id);
+			}
+		);
+
 		// Boutique d'avatars (2026-11-06, comportement 17) : collection et avatar porté
 		test('contient la collection d’avatars de l’appelant (catégorie gaming)', async () => {
 			const response = await GET(createMockEvent() as never);
@@ -631,6 +694,8 @@ describe('GET /api/account/export', () => {
 			'student_mathoux',
 			'student_mathou_decorations',
 			'student_avatars',
+			'student_beasts',
+			'student_combat_moves',
 			'student_buddies',
 			'student_last_visits'
 		])('%s illisible → 500', async (table) => {

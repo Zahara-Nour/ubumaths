@@ -4,9 +4,9 @@
 
 _Mis à jour le 2026-11-18, étape 2 ouverte._
 
-- **État** : étape 1 en prod (#2808, #2810). Étape 2 (apparition des Bêtes + export RGPD) : phase 0 rédigée (§ « Phase 0 de l'étape 2 »), rien de codé.
-- **Prochaine action** : coder l'étape 2 dès la validation de sa phase 0.
-- **En attente de David** : les 5 questions A à E de la phase 0 de l'étape 2.
+- **État** : étape 1 en prod (#2808, #2810). Étape 2 (apparition des Bêtes + export RGPD) : phase 0 validée (§ « Phase 0 de l'étape 2 »), rien de codé.
+- **Prochaine action** : coder l'étape 2 (phase 0 validée).
+- **En attente de David** : rien.
 - **Façon de poser** : en mots simples, avec un exemple, sans noms de tables ni de colonnes.
 - **Pièges en cours** :
   - **PostgREST tronque un message d'erreur SQL accentué** et rend un 500 sans code : `raise exception` sans accent dans les fonctions appelées par l'API.
@@ -15,7 +15,9 @@ _Mis à jour le 2026-11-18, étape 2 ouverte._
   - L'analyse du jeu d'origine est dans `extern/navadra-jeu/CLAUDE.md`, **non versionné**.
 - **Worktree / branche** : `../ubumaths-wt-navadra` · `feat/navadra-apparition`.
 
-## Phase 0 de l'étape 2 : apparition des Bêtes (posée à David le 2026-11-18)
+## Phase 0 de l'étape 2 : apparition des Bêtes (validée par David le 2026-11-18)
+
+David a validé toutes les recommandations (« je te suis »), A à E comprises.
 
 **Ce que l'étape livre** : le calcul qui fait naître et repartir les Bêtes d'un élève, et l'ajout de ses Bêtes et de ses coups gagnés à l'export de ses données (RGPD). Rien de visible encore : la carte arrive à l'étape 4. Le calcul se lance quand l'élève ouvre la carte ; tant qu'aucune page ne l'appelle, aucune Bête n'apparaît en prod.
 
