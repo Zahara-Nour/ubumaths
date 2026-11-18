@@ -11,7 +11,6 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import { page } from '$app/state';
-	import { resolve } from '$app/paths';
 	import { resolvePath } from '$lib/navigation/resolve-path';
 	import { LayoutDashboard } from '@lucide/svelte';
 
