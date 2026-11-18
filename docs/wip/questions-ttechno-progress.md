@@ -877,3 +877,7 @@ réponse à trous) : raccourci `log` → `\log`, posé avant le filtre des majus
 raccourcis). Test `markdown/nodes/__tests__/saisie-log.svelte.test.ts` : rouge sans le correctif
 (`\log_{#?}`, « log(7) » → `\log_{\left(7\right)}`), vert avec ; `ln` inchangé. Moteur : `\log\left(7\right)`,
 `\log(7)`, `\log 7` jugés justes. Le lot 5b peut demander des réponses exactes en log (Q25).
+
+- CI : le test de frappe réelle (`userEvent.keyboard`) passait en local et échouait en CI (frappes perdues ou hors de
+  la case, 3 essais) ; retiré. Reste le test du raccourci (rouge sans le correctif). Frappe réelle vérifiée à la main
+  (aperçu admin local, Chrome, L1 v1) : « log(7) » → `\log\left(7\right)`.
