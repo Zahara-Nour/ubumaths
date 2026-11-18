@@ -2,18 +2,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, étape 3 en PR (#2822)._
+_Mis à jour le 2026-11-18, après #2822._
 
-- **État** : étapes 1 (#2808, #2810) et 2 (#2817) mergées. Étape 3 (combat de la recrue) : codée sur `feat/navadra-combat`, tests verts (unitaires, composant, intégration).
-- **Prochaine action** : #2822 (revues faites, CI en cours) → merge ; puis étape 4 (carte, entrée de menu, carnet), précédée des vraies fiches du bestiaire et des vrais noms des 6 coups.
+- **État** : étapes 1 (#2808, #2810), 2 (#2817) et 3 (#2822 : combat de la recrue, page `/dashboard/student/descente/combat/[beastId]`) mergées. Aucune page n'y mène encore : sans carte, aucune Bête n'existe en prod.
+- **Prochaine action** : avant l'étape 4, écrire les vraies fiches du bestiaire (18 à 24 Bêtes : nom, Province, allure, caractère ; copie dans `~/Downloads` pour l'IA d'image) et les vrais noms des 6 coups, à faire valider par David. Puis l'étape 4 (carte, entrée de menu, carnet), en phase 0.
 - **En attente de David** : rien.
 - **Façon de poser** : en mots simples, avec un exemple, sans noms de tables ni de colonnes.
 - **Pièges en cours** :
   - **PostgREST tronque un message d'erreur SQL accentué** et rend un 500 sans code : `raise exception` sans accent dans les fonctions appelées par l'API.
   - Base locale : `supabase migration up --local` bute sur une migration de rangement ; appliquer un fichier par `psql -1` sous `scripts/with-db-lock.sh`, puis `notify pgrst, 'reload schema'`.
   - Le prof et l'admin peuvent écrire une trace `descente` (comme `evaluation`) : leurs policies ne filtrent pas le lieu.
+  - « Quitter le combat » mène à `/dashboard/student/descente`, créée à l'étape 4.
+  - Une réponse en combat n'est jamais renvoyée par la page (un 500 peut suivre l'écriture).
   - L'analyse du jeu d'origine est dans `extern/navadra-jeu/CLAUDE.md`, **non versionné**.
-- **Worktree / branche** : `../ubumaths-wt-navadra` · `feat/navadra-combat`.
+- **Worktree / branche** : `../ubumaths-wt-navadra` gardé pour le serveur de test (5177) ; à retirer après l'essai de David.
 
 ## Phase 0 de l'étape 3 : combat de la recrue (validée par David le 2026-11-18)
 
@@ -338,6 +340,7 @@ Au code : ajouter « La Descente de la Vistule » à `CONTEXT.md` (et une ADR si
 
 ## Historique
 
+- **2026-11-18** : #2822 mergée (étape 3, combat de la recrue).
 - **2026-11-18** : phase 0 de l'étape 3 posée (questions A à G) ; worktree `../ubumaths-wt-navadra`, branche `feat/navadra-combat`.
 - **2026-11-18** : #2817 mergée (étape 2).
 - **2026-11-18** : étape 2 codée (apparition des Bêtes, export RGPD), phase 0 validée par David (« je te suis ») ; revues code et sécurité corrigées.
