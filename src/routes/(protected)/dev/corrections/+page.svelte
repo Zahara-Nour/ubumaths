@@ -13,14 +13,14 @@
 <script lang="ts">
 	// Imports
 	import { onMount } from 'svelte';
-	import type { QuestionInstance } from '$lib/questions/types';
-	import { getQuestionType } from '$lib/questions/types';
-	import type { AnswerData } from '$lib/types/question-display';
-	import type { TestAnswerResult } from '$lib/types/test';
-	import FlashCard from '$lib/components/questions/FlashCard.svelte';
-	import CorrectionCard from '$lib/components/questions/CorrectionCard.svelte';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import { Button } from '$lib/components/ui/button';
+	import type { QuestionInstance } from '#lib/questions/types.ts';
+	import { getQuestionType } from '#lib/questions/types.ts';
+	import type { AnswerData } from '#lib/types/question-display.ts';
+	import type { TestAnswerResult } from '#lib/types/test.ts';
+	import FlashCard from '#lib/components/questions/FlashCard.svelte';
+	import CorrectionCard from '#lib/components/questions/CorrectionCard.svelte';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import { RotateCcw } from '@lucide/svelte';
 
 	// Types
