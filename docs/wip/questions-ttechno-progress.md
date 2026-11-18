@@ -5,18 +5,19 @@ Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) · bornes 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après la publication du lot 3a._
+_Mis à jour le 2026-11-18, lot 3b écrit, #2815 ouverte (CI à suivre)._
 
-- **État** : lots 0 à 3a en prod et publiés ; lot 3a « propriétés » (C1–C4) : 4/4 verdicts « ok », publié (§ 25).
-- **Prochaine action** : lot 3b « fonctions » (C5–C8 : sens de variation et courbe de aˣ sur ℝ, k·aˣ), déjà
-  validé (§ 22) : écriture sur une nouvelle branche, puis le même cycle que 3a.
-- **En attente de David** : rien.
+- **État** : lots 0 à 3a en prod et publiés ; lot 3b « fonctions » (C5–C8) écrit et essayé en local (§ 26), PR
+  des fichiers sur `feat/questions-ttechno-lot3b`.
+- **Prochaine action** : CI de #2815 (`gh pr checks 2815 --watch`) verte → merge ; puis David lance, depuis le dépôt principal,
+  `pnpm tsx scripts/create-questions.ts --dir scripts/questions/ttechno-3b-fonctions --publier` ; ensuite migration
+  rangement + tags (C5–C8 → c185c955, points 032, 033, 036, 080), page à cocher, publication.
+- **En attente de David** : `create-questions --publier` du lot 3b (prod), après le merge.
 - **Pièges en cours** : un point TTECHNO par modèle (trigger) ; `grades` en `array_append` seulement ;
   `publier-lot.ts`, `garde-niveaux-tags.ts`, `create-questions --publier` visent la prod : David les lance (`!`),
-  **depuis le dépôt principal** (`cd /Users/david/Coding/js/ubumaths && …`) ; `Doc-inchangée:` dans un COMMIT de
-  la PR (ligne de corps ≤ 100 caractères) ; C5, C6 (032, 033) et C7, C8 (036, 080) : nœud des points à relever.
-- **Worktree / branche** : `../ubumaths-wt-questions-ttechno` (branche `feat/questions-ttechno-lot3a-tags`
-  mergée ; le lot 3b partira d'une nouvelle branche).
+  **depuis le dépôt principal** ; `Doc-inchangée:` dans un COMMIT de la PR (ligne ≤ 100 caractères).
+- **Worktree / branche** : `../ubumaths-wt-questions-ttechno`, `feat/questions-ttechno-lot3b` (la migration
+  partira d'une nouvelle branche).
 
 ## 1. Périmètre
 
@@ -631,3 +632,22 @@ sur « propriétés algébriques » (034, 078, 079), C4 sur « fonctions x ↦ a
 - `publier-lot.ts --dir scripts/questions/ttechno-3a-proprietes` : simulation verte (4 brouillons), puis
   `--publier` par David (premier essai hors du dépôt principal : ENOENT, relancé avec `cd`) ; statut relu en base
   (MCP) : 4/4 `published` (a5b2c4fa, ebefd0a9, e52d93b4, b14f7169).
+
+## 26. Lot 3b : écriture (2026-11-18)
+
+`docs/wip/questions/lot-ttechno-3b.py` → `scripts/questions/ttechno-3b-fonctions/` (4 fichiers, 46 specs),
+`grades ['T_TECHNO']`, brouillons, tous pour le nœud « fonctions x ↦ aˣ » (c185c955).
+
+- C5 (032, niv. 1) : sens sur ℝ (a > 1, 0 < a < 1) ; comparer deux puissances d'exposants négatifs ; signe de aˣ
+  (x < 0) ; aˣ par rapport à 1 pour x < 0. Cases choix.
+- C6 (033, niv. 1) : associer trois courbes sur [−3 ; 3] (gabarit E4) ; aˣ, 1ˣ, (1/a)ˣ et la symétrie par rapport
+  à l'axe des ordonnées ; f(−1) = 1/a exact (0,5 accepté) ; courbe au-dessus de l'axe (choix).
+- C7 (036, niv. 1) : sens de k·aˣ dans les quatre cas (k ⩾ 2 ou k ⩽ −2, jamais ±1), une variation par cas.
+- C8 (080, niv. 2) : comparer f(x₁) et f(x₂) sans calcul ; abscisse du maximum sur [0 ; 5] ; k et a à partir de
+  f(0) et f(1). Pas de choix mêlé aux cases (piège § 9) : le sens de variation y est dans le corrigé seulement.
+- Simulation `create-questions` verte (aucun homonyme en prod) ; `question:specs` 4 / 4 importables, 3 200
+  tirages ; `sonde-courbes` 0 problème ; 332 formules distinctes des aperçus à `validateLatex` + accolades : 0.
+- Corrigé en route : couleur posée hors `$` (C5, C6, C7) ; `a3 = eval:1/a1` rendu `\dfrac` dans le bloc courbe
+  → `a1 = 1/a3` (a3 ∈ {0,5 ; 0,25}) ; « croissante sur ℝ » dans la variation définie sur [0 ; 5] → sans domaine.
+- Base locale : 4 brouillons (copie des fichiers) ; aperçu admin (Chrome, `127.0.0.1:5177`) : C6 associer
+  (4ˣ, 1ˣ, 0,25ˣ) relié → juste, correction lue ; C8 max de −2 × 0,8ˣ sur [0 ; 5], `5` → juste.
