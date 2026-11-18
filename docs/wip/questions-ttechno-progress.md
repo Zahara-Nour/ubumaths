@@ -5,18 +5,19 @@ Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) · bornes 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après #2800 (lot 3, tags)._
+_Mis à jour le 2026-11-18, lot 3a écrit (PR à ouvrir)._
 
-- **État** : lots 0, 1, 2a, 2b publiés ; lot 3 (tags TTECHNO sur 6 modèles de `questions-1gen` : E1–E4, T1–T2)
-  **en prod** (#2800, `db:migrate` fait, § 21). Les 6 sont publiés : visibles en Tle techno dès maintenant.
-- **Prochaine action** : écrire les compléments du lot 3 (§ 8 bis) : 034, 078, 079 à exposants négatifs (079 avec
-  n relatif) ; a⁻ˣ = 1/aˣ (031) ; sens et allure sur ℝ (x < 0, 032 / 033) ; 036, 080 (k·aˣ, k < 0). Phase 0 d'abord.
+- **État** : lots 0 à 3 en prod ; compléments du lot 3 validés (§ 22, Q19 / Q20) ; lot 3a « propriétés »
+  (C1–C4, exposants négatifs) écrit et essayé en local (§ 23), PR en cours.
+- **Prochaine action** : après le merge, David lance `create-questions --dir scripts/questions/ttechno-3a-proprietes
+--publier` ; puis migration rangement + tags (C1–C3 → 44206987, C4 → c185c955), page à cocher. Ensuite lot 3b
+  « fonctions » (C5–C8 : aˣ sur ℝ, k·aˣ), déjà validé.
 - **En attente de David** : rien.
 - **Pièges en cours** : un point TTECHNO par modèle (trigger) ; `grades` en `array_append` seulement ;
   `publier-lot.ts`, `garde-niveaux-tags.ts`, `create-questions --publier` visent la prod : David les lance (`!`) ;
-  `Doc-inchangée:` dans un COMMIT de la PR (la garde CI le lit là, pas dans la PR) ; les rollbacks de
-  `questions-1gen` (20261117191427, 20261117222809) retirent le nœud : jouer d'abord celui du lot 3.
-- **Worktree / branche** : aucun.
+  `Doc-inchangée:` dans un COMMIT de la PR ; 034 / 078 / 079 vivent sur « propriétés algébriques », pas sur le
+  nœud aˣ d'E2.
+- **Worktree / branche** : `../ubumaths-wt-questions-ttechno`, `feat/questions-ttechno-lot3a`.
 
 ## 1. Périmètre
 
@@ -583,3 +584,20 @@ décimal arrondi, choix.
 **Décisions (David, 2026-11-18, « je suis tes recos »)** : **Q19** C5 et C6 écrits (x < 0) ; **Q20** lot 3a
 « propriétés » (C1–C4), puis lot 3b « fonctions » (C5–C8) ; question d'accès : personne pour les brouillons, Tle
 techno à la publication.
+
+## 23. Lot 3a : écriture (2026-11-18)
+
+`docs/wip/questions/lot-ttechno-3a.py` → `scripts/questions/ttechno-3a-proprietes/` (4 fichiers, 49 specs).
+
+- C1 (034) produit, C2 (078) quotient, C3 (079) (aˣ)ⁿ avec n relatif : réponse « une seule puissance »
+  (`requiredForm: power`, comme E2) ; `2^{-1}` accepté, `\frac{1}{2}` en `bad_form` (specs). Exposant manquant
+  (C1 v2, C3 v2) demandé par une case nombre (« quel réel x … »). Résultat jamais a⁰ ni a¹.
+- C4 (031) a⁻ˣ = 1/aˣ : exposant du dénominateur ; 2⁻³ exact (1/8 ou 0,125) ; 0,5⁻ⁿ = 2ⁿ ; calculatrice ;
+  valeur passée d'un placement V(−y) (erreur typique « on retire t % par an » refusée).
+- Simulation `create-questions` verte (base locale, aucun homonyme) ; `question:specs` 4 / 4 importables, 700
+  tirages ; 295 formules distinctes de 40 aperçus par modèle à `validateLatex` + accolades : 0 problème.
+- Corrigé en route : « (−2,5) × (3) » → parenthèses seulement si n < 0 ; x = 3 / (−3) en fraction → « 3 ÷ (−3) ».
+- Base locale : 4 brouillons (copie des fichiers) ; aperçu admin (Chrome, `127.0.0.1:5177`) : C4 v0 `−3,2`
+  refusé « l'opposé du résultat » ; C1 v2 `1,5^−4,5` saisi au clavier → juste.
+- Rangement prévu (migration après création en prod) : C1–C3 sur « propriétés algébriques » (44206987), C4 sur
+  « fonctions x ↦ aˣ » (c185c955).
