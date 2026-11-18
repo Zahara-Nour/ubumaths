@@ -5,14 +5,14 @@ Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) · bornes 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après #2845 (lot 5a : nœud + tags, `db:migrate` fait)._
+_Mis à jour le 2026-11-18, après la page à cocher du lot 5a (§ 38)._
 
-- **État** : lots 0 à 4 publiés ; lot 5a (L1–L6, log décimal) : 6 brouillons en prod, rangés et tagués (#2845, § 37) ;
-  saisie de « log » réglée (#2839, § 36), pas encore en prod.
+- **État** : lots 0 à 4 publiés ; lot 5a (L1–L6, log décimal) : 6 brouillons en prod, rangés et tagués (#2845, § 37),
+  page à cocher publiée (§ 38) ; saisie de « log » réglée (#2839, § 36), pas encore en prod.
   Bilan MCP (§ 33) : 28 points STMG encore sans modèle publié, prévus aux lots 5 à 8 (017, 019 : rien, Q17).
-- **Prochaine action** : page à cocher du lot 5a (6 fiches, gabarit § 32), relecture par David, puis
+- **Prochaine action** : lire et compter les verdicts de la page du lot 5a, puis
   `publier-lot.ts --dir scripts/questions/ttechno-5a-logarithme`. Ensuite écriture du lot 5b (L7–L9).
-- **En attente de David** : rien.
+- **En attente de David** : relecture de la page à cocher du lot 5a (§ 38).
 - **Pièges en cours** : un point TTECHNO par modèle (trigger) ; tag = nœud DU POINT (relevé MCP, pas le journal) ;
   `publier-lot.ts`, `create-questions --publier` visent la prod : David les lance (`!`) depuis le dépôt principal ;
   `{{var}}` décimale calculée s'écrit en fraction (afficher par `{{eval:var;d}}`) ; un modèle du lot 5b qui demande de
@@ -903,3 +903,9 @@ dans le dépôt principal, reportés et commités sur la branche de la migration
   `20261118203301` en attente → `db:migrate` depuis le dépôt principal (4 conditions). Prod vérifiée (MCP) : 6
   modèles sur leur nœud, un tag chacun (040, 041, 044 / 042, 082, 083), `draft`, `updated_at` inchangés. Worktree
   retiré.
+
+## 38. Lot 5a : page à cocher (2026-11-18)
+
+- Page à cocher : https://claude.ai/artifact/5ZCuRYYE2N3wLnsSnvQioG (6 fiches : dc269779 TTECHNO-040, 6 exemples ;
+  fa2ade8a 041, 9834f4cd 042, 22bbd82a 082, ceeba3f8 083, af24839d 044, 5 exemples chacun ; aucune alerte ; tous
+  `draft` ; `verdicts` vide). Rendu à 390 px non vérifié.
