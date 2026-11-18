@@ -1,4 +1,5 @@
 {
+	"id": "5343077e-3b0a-4bbe-980a-e584b216d45e",
 	"title": "Problèmes de proportionnalité (linéarité)",
 	"description": "Résoudre par « k fois plus » une fois (4 croissants → 12 croissants), deux fois (200 feuilles → 50 → 250 feuilles), ou une fois puis en ajoutant (12 œufs → 6 œufs → 18 œufs) ; jamais en passant par l'unité, sans tableau",
 	"grades": ["CM2"],
