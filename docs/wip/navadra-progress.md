@@ -2,18 +2,66 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après #2810._
+_Mis à jour le 2026-11-18, étape 2 ouverte._
 
-- **État** : étape 1 (fondations en base) mergée (#2808) ; migration `20261118060323` **en prod** ; types générés depuis la prod mergés (#2810). Pas de worktree ouvert.
-- **Prochaine action** : étape 2 — apparition des Bêtes, + export RGPD des deux tables (`student_beasts`, `student_combat_moves`). Nouveau worktree `../ubumaths-wt-navadra` depuis `origin/main` ; phase 0 (comportements) à faire valider avant de coder.
-- **En attente de David** : rien.
+- **État** : étape 1 en prod (#2808, #2810). Étape 2 (apparition des Bêtes + export RGPD) : phase 0 rédigée (§ « Phase 0 de l'étape 2 »), rien de codé.
+- **Prochaine action** : coder l'étape 2 dès la validation de sa phase 0.
+- **En attente de David** : les 5 questions A à E de la phase 0 de l'étape 2.
 - **Façon de poser** : en mots simples, avec un exemple, sans noms de tables ni de colonnes.
 - **Pièges en cours** :
   - **PostgREST tronque un message d'erreur SQL accentué** et rend un 500 sans code : `raise exception` sans accent dans les fonctions appelées par l'API.
   - Base locale : `supabase migration up --local` bute sur une migration de rangement ; appliquer un fichier par `psql -1` sous `scripts/with-db-lock.sh`, puis `notify pgrst, 'reload schema'`.
   - Le prof et l'admin peuvent écrire une trace `descente` (comme `evaluation`) : leurs policies ne filtrent pas le lieu.
   - L'analyse du jeu d'origine est dans `extern/navadra-jeu/CLAUDE.md`, **non versionné**.
-- **Worktree / branche** : aucun (retirés après #2810).
+- **Worktree / branche** : `../ubumaths-wt-navadra` · `feat/navadra-apparition`.
+
+## Phase 0 de l'étape 2 : apparition des Bêtes (posée à David le 2026-11-18)
+
+**Ce que l'étape livre** : le calcul qui fait naître et repartir les Bêtes d'un élève, et l'ajout de ses Bêtes et de ses coups gagnés à l'export de ses données (RGPD). Rien de visible encore : la carte arrive à l'étape 4. Le calcul se lance quand l'élève ouvre la carte ; tant qu'aucune page ne l'appelle, aucune Bête n'apparaît en prod.
+
+**Nominal**
+
+1. **À la visite, le serveur rattrape le temps passé** (pas de tâche planifiée). Exemple : un élève ouvre la carte lundi à 8 h, puis mercredi à 8 h ; deux jours ont passé, soit 6 Bêtes dues, mais il en a déjà 2 : il en reçoit 3, pour arriver à 5.
+2. **D'où naît chaque Bête** : d'un point du programme, dans cet ordre de priorité :
+   - un point **à remédier** (de n'importe quel niveau) ;
+   - un point **non acquis de son niveau** ;
+   - un point **à revoir** (une carte de révision due).
+     Dans un même rang, au hasard, en préférant une Province qui n'a pas encore de Bête sur la carte, et jamais deux Bêtes vivantes sur le même point.
+3. **Seulement un point jouable en combat** : il faut au moins une question publiée, courte (QCM ou une seule case) et non exclue, rattachée à ce point. Sinon, pas de Bête.
+4. **La Bête prend la Province de la branche de son point** (correspondance, question A).
+5. **Départ** : une Bête ordinaire repart au bout de 3 jours si elle n'est pas vaincue ; celle d'un point à remédier reste jusqu'à sa défaite, même si l'élève remédie ailleurs entre-temps.
+6. **Grosse Bête** : une tous les 7 jours, née du point le plus prioritaire ; elle reste 7 jours, ne compte pas dans les 5, et garde ses blessures d'un combat à l'autre.
+7. **Export RGPD** : le fichier « mes données » contient ses Bêtes (vivantes, reparties, vaincues) et ses coups gagnés.
+
+**Limites**
+
+- Carte pleine (5 Bêtes ordinaires) : rien de plus, même après une longue absence.
+- Carte pleine de Bêtes qui restent (5 points à remédier) : plus d'apparition tant qu'il n'en a pas vaincu une.
+- Élève qui a tout acquis et n'a rien à revoir : pas de Bête ; la carte le dit (texte à l'étape 4).
+- Province sans point jouable à son niveau (algorithmique au CE1) : jamais de Bête là.
+- Sans niveau scolaire : aucune Bête (message de l'étape 4).
+- Bête repartie : elle quitte la carte, n'entre pas dans le carnet, rien n'est perdu.
+- Point archivé depuis la naissance de la Bête : elle reste jusqu'à son départ normal.
+
+**Erreurs**
+
+- La base ne répond pas : la carte s'affiche avec les Bêtes déjà là ; on réessaiera à la visite suivante.
+- Deux onglets ouverts à la même seconde : voir question E.
+
+**Questions**
+
+- **A. Branches → Provinces.** Il y a 19 branches pour 6 Provinces ; rien ne les relie aujourd'hui. Proposition :
+  - Nombrilie : nombres et calculs, arithmétique, nombres complexes, proportionnalité, algèbre ;
+  - Bedonstan : géométrie, **grandeurs et mesures** ;
+  - Yoyolande : fonctions, suites, intégration, équations différentielles ;
+  - Pifométrie : probabilités, dénombrement, statistiques ;
+  - Glitchistan : algorithmique, **graphes, matrices** ;
+  - Patatovie : logique, ensembles.
+    Les cas discutables sont en gras. Exemple : « calculer l'aire d'un rectangle » donne une Bête de Bedonstan.
+- **B. Rythme** : recommandation **une Bête toutes les 8 heures**, ce qui fait 3 par jour sans dépendre d'un fuseau ni de minuit.
+- **C. Durées** : recommandation **3 jours** pour une Bête ordinaire, **7 jours** pour la grosse Bête.
+- **D. Noms des Bêtes** : recommandation **une liste provisoire de 3 Bêtes par Province** dans le code pour coder et tester cette étape ; les vraies fiches (nom, allure, caractère) sont écrites et validées avant l'étape 4, donc avant qu'un élève voie une Bête.
+- **E. Deux onglets à la même seconde** : l'élève pourrait recevoir quelques Bêtes de trop, une seule fois. Recommandation : **l'accepter** (rare, sans gidouille en jeu, puisque le plafond reste tenu par le serveur, et la carte revient d'elle-même sous 5). L'autre choix est une petite fonction en base qui l'empêche : une migration et une PR de plus.
 
 ## Tranché
 
