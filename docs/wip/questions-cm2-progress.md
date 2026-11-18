@@ -10,7 +10,7 @@ _Mis à jour le 2026-11-18, phase 0 du lot 10 proposée._
 
 - **État** : lots 0 à 9 publiés (lot 9 partages : 5 modèles, § 15.3). Reste 71 points : lots 10 à 19 (§ 14, ordre § 14.1).
 - **Prochaine action** : après la validation, écrire le lot 10 (worktree `ubumaths-wt-questions-cm2`, script `lot-cm2-10.py`).
-- **En attente de David** : validation de la phase 0 du lot 10 (§ 16, questions a à e). ⛔ Jamais `--mettre-a-jour` de `cm2-7b` avec des fichiers d'avant #2770 (ids CM1).
+- **En attente de David** : rien (phase 0 du lot 10 validée, § 16.1). ⛔ Jamais `--mettre-a-jour` de `cm2-7b` avec des fichiers d'avant #2770 (ids CM1).
 - **Pièges en cours** : `pnpm migration:horodatage` = heure réelle UTC ; `db:migrate` refuse une migration plus ancienne que la dernière jouée → `--dry-run --include-all`, liste relue, puis `--include-all`. Worktree neuf : copier `supabase/.temp/` du dépôt principal, puis `pnpm exec svelte-kit sync`. `Doc-inchangée:` dans un COMMIT. `git commit -m … -- <fichiers>`. Stash du dépôt principal « cm2-9 ids » : copie identique de ce qui est mergé, à supprimer (David).
 - **Worktree / branche** : aucun (#2794 mergée, worktree retiré).
 
@@ -1013,3 +1013,9 @@ sans dire « convertir ». Reco : **oui**, dans un problème, jamais en exercice
 son jumeau CM1. Relevés de nouveau juste avant la création. Reco : **oui**.
 
 (e) Un seul lot de 5 modèles. Reco : **oui**.
+
+### 16.1 Lot 10 : décisions (David, 2026-11-18)
+
+Recommandations suivies (« je te suis ») : (a) trotteuse lue sur un cadran à 12 chiffres puis `chiffres: quarts`, pas de
+cadran nu ; (b) pas de variation « affichage digital » ; (c) conversions dans les problèmes seulement ; (d) niveaux après
+ceux pris : lire 9, placer 10 ; durée 9, comparer 10, problèmes 11 ; (e) un seul lot de 5 modèles. Tableau du § 16 gardé.
