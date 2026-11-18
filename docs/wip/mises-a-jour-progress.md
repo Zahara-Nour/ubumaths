@@ -95,6 +95,12 @@ Constats dans le code de kit 3.2.0 (pas dans le guide) :
 - **Revue (`code-reviewer` Opus)** : deux autres gardes vertes à vide, corrigées. `sans-blockly` cherchait `x.ts.ts` (8 fichiers suivis au lieu de 603) ; la garde de poids de `figure-typst-setup` ne voyait plus `figure-typst.ts'`. `components.json` (shadcn) est passé à `#lib`. Les `paths` rendent TS tolérant à l'extension oubliée, d'où la nouvelle garde `scripts/__tests__/imports-lib-avec-extension.test.ts`, vérifiée rouge en retirant une extension.
 - `check-integration-paths` : filtre esbuild `^#lib`. `tsx` résout `#lib` sans rien (Node lit `package.json`).
 
+## PR 4 — `pnpm migrer:diese` (2026-11-18)
+
+- Les 20 worktrees ouverts sont partis d'avant #2826 : `$lib` ne se résout plus chez eux après `git merge origin/main`. Le script de #2826 n'avait pas été commité → `scripts/migrer-diese.ts` (même règle, fichiers de la branche par défaut, `--essai`), test `scripts/__tests__/migrer-diese.test.ts`.
+- Essai à blanc dans `ecarts-a-trier` : 31 fichiers, 169 imports, 0 introuvable.
+- Après merge : message à toutes les sessions (consigne de merge + `pnpm migrer:diese`).
+
 ## Autres versions en retard (pnpm outdated, 2026-11-18)
 
 - Mineures : tiptap 3.34, bits-ui 2.21, vite 8.3.8, prettier 3.10 (épinglé), oxlint 1.93, playwright 1.65.1…

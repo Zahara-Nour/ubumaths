@@ -166,6 +166,7 @@ Pour du state partagé entre toutes les instances d'un composant, utiliser `<scr
 - **Extension toujours écrite** : `#lib/utils/logger.ts`, `#lib/stores/toaster.svelte.ts`, `#lib/components/ui/button/index.ts`, `#lib/components/navigation/BackLink.svelte`. Sans extension, ni Node ni TypeScript ne trouvent le fichier.
 - `tsconfig.json` déclare les mêmes chemins dans `paths` : sans eux, `pnpm check:incremental` (tsgo) ne relie pas `#lib/…/X.svelte` au composant et le type en composant générique (props en `any`).
 - Les scripts lancés par `tsx` les résolvent sans configuration (Node lit `package.json`).
+- **Branche partie avant #2826** (encore en `$lib`) : après `git merge origin/main`, `pnpm migrer:diese` convertit les imports des fichiers de la branche (modifiés depuis `origin/main` + non suivis), extension comprise ; `--essai` montre sans écrire, des fichiers en argument restreignent la liste. Un import dont le fichier n'existe pas est signalé (préfixe seul changé).
 
 ### Jamais `any`
 
