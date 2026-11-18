@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, ouverture du chantier._
+_Mis à jour le 2026-11-18, après #2814._
 
-- **État** : découpage tranché (choix 1). PR 1 : SvelteKit 2.70.3 → 2.70.4 (seul paquet changé dans le lockfile), `check:incremental` 0 erreur.
-- **Prochaine action** : merger la PR 1, puis PR 2 : SvelteKit 3 + adapter-vercel 7 (lire les changements cassants d'abord).
-- **En attente de David** : rien.
-- **Pièges en cours** : dépendances retenues exprès (typescript-eslint, typst, config ESLint, prettier) : mémoire `project_dependances-epinglees` ; `minimumReleaseAge` 3 j, ne jamais le contourner.
-- **Worktree / branche** : `../ubumaths-wt-mises-a-jour` · `chore/mises-a-jour`.
+- **État** : PR 1 mergée (#2814) : SvelteKit 2.70.4, ferme les 2 alertes qui nous concernent. Pas encore en prod.
+- **Prochaine action** : PR 2, SvelteKit 3 + adapter-vercel 7 : nouveau worktree, lire les changements cassants de la 3.0 d'abord, vérifier les 2 faibles (`use:enhance`, pages prérendues).
+- **En attente de David** : `deploy:prod` pour livrer #2814, quand il le voudra.
+- **Pièges en cours** : dépendances retenues exprès (mémoire `project_dependances-epinglees`) ; `minimumReleaseAge` 3 j, ne jamais le contourner.
+- **Worktree / branche** : aucun (supprimés après #2814).
 
 ## Origine
 
@@ -38,3 +38,7 @@ Les « ×2 » = la même faille comptée deux fois (dépendance de dev et d'exé
 
 - Mineures : tiptap 3.34, bits-ui 2.21, vite 8.3.8, prettier 3.10 (épinglé), oxlint 1.93, playwright 1.65.1…
 - Majeures : kit 3 + adapter-vercel 7, vitest 5 (chemin dans la mémoire `project_vitest-5-chemin`), TypeScript 7, ESLint 10, marked 18, Brevo 6, supabase CLI 3, tailwind-variants 4…
+
+## Historique
+
+- 2026-11-18 : #2814 mergée (CI verte, 16 contrôles) : SvelteKit 2.70.3 → 2.70.4.
