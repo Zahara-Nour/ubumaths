@@ -69,6 +69,9 @@ const ALLOWED_SERVICE_ROLE_PATHS = [
 	// La Descente de la Vistule : le serveur seul écrit les Bêtes (aucun droit INSERT à
 	// l'élève) ; identifiant de la session vérifié par `assertSessionStudent`
 	'lib/server/descente/spawn.ts',
+	// Combat : PV de la Bête, victoire (`record_beast_victory`) et trace au lieu `descente`
+	// (refusé à l'élève) ; même garde `assertSessionStudent`
+	'lib/server/descente/combat.ts',
 	// Question d'âge en 2nde : la base refuse à l'élève l'écriture de sa réponse
 	'/api/student/age-declaration',
 	// GDPR account deletion (requires auth.admin.deleteUser)
@@ -79,8 +82,9 @@ const ALLOWED_SERVICE_ROLE_PATHS = [
 	// vérifié avec la RLS de l'utilisateur avant de signer (message-attachments.ts)
 	'/api/messages/[id]/attachments/+server',
 	'/api/messages/attachments/[attachmentId]/+server',
-	// Nature d'un modèle (carte de cours, statut) lue même en brouillon — lecture seule
-	'/api/skill-attempts',
+	// Nature d'un modèle (carte de cours, statut) lue même en brouillon — lecture seule ;
+	// trace au lieu `descente` écrite par le serveur pour l'élève de la session
+	'lib/server/skill-attempts/record-attempt.ts',
 	// Fin de série : nature « carte » lue même en brouillon (pas d'XP pour une carte)
 	'/api/tests/save',
 	// Évaluation notée (ADR 0015) : séance, graines, réponses et note écrites par le serveur

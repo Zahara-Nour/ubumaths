@@ -1,0 +1,175 @@
+{
+	"id": "273dce6f-950b-4379-a7e9-7cd9c937e362",
+	"title": "Nommer une figure par sa définition",
+	"description": "Triangle (rectangle, isocèle, équilatéral), quadrilatère, carré, rectangle, losange : nom le plus précis d'après les codes ; nom d'après la définition ; figures tournées",
+	"grades": ["CM1"],
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "D'après ses codes, quel est le nom le plus précis de cette figure ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 7\ndescription: Une figure avec ses codes.\n---\n{{if:k==0|{{if:o==0|p0 = point(2.3, 2.0, visible=faux)\np1 = point(8.7, 2.0, visible=faux)\np2 = point(1.3, 5.0, visible=faux)\npolygone(p0, p1, p2, couleur=\"bleu\", epaisseur=2)|{{if:o==1|p0 = point(3.68, 1.71, visible=faux)\np1 = point(8.8, 5.29, visible=faux)\np2 = point(1.2, 3.55, visible=faux)\npolygone(p0, p1, p2, couleur=\"bleu\", epaisseur=2)|p0 = point(7.92, 3.97, visible=faux)\np1 = point(2.08, 6.1, visible=faux)\np2 = point(7.84, 0.9, visible=faux)\npolygone(p0, p1, p2, couleur=\"bleu\", epaisseur=2)}}}}|{{if:k==1|{{if:o==0|p0 = point(2.2, 1.8, visible=faux)\np1 = point(7.8, 1.8, visible=faux)\np2 = point(2.2, 5.2, visible=faux)\npolygone(p0, p1, p2, couleur=\"bleu\", epaisseur=2)\nangle(p2, p0, p1, marque=\"carre\", couleur=\"noir\")|{{if:o==1|p0 = point(3.68, 1.89, visible=faux)\np1 = point(8.27, 5.11, visible=faux)\np2 = point(1.73, 4.68, visible=faux)\npolygone(p0, p1, p2, couleur=\"bleu\", epaisseur=2)\nangle(p2, p0, p1, marque=\"carre\", couleur=\"noir\")|p0 = point(7.63, 4.14, visible=faux)\np1 = point(2.37, 6.06, visible=faux)\np2 = point(6.47, 0.94, visible=faux)\npolygone(p0, p1, p2, couleur=\"bleu\", epaisseur=2)\nangle(p2, p0, p1, marque=\"carre\", couleur=\"noir\")}}}}|{{if:k==2|{{if:o==0|p0 = point(3.1, 1.2, visible=faux)\np1 = point(6.9, 1.2, visible=faux)\np2 = point(5.0, 5.8, visible=faux)\npolygone(p0, p1, p2, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p1, p2)\nmarque_segment(p2, p0)|{{if:o==1|p0 = point(3.98, 1.07, visible=faux)\np1 = point(7.1, 3.25, visible=faux)\np2 = point(2.9, 5.93, visible=faux)\npolygone(p0, p1, p2, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p1, p2)\nmarque_segment(p2, p0)|p0 = point(6.79, 4.69, visible=faux)\np1 = point(3.21, 5.99, visible=faux)\np2 = point(3.43, 1.01, visible=faux)\npolygone(p0, p1, p2, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p1, p2)\nmarque_segment(p2, p0)}}}}|{{if:k==3|{{if:o==0|p0 = point(5.0, 5.53, visible=faux)\np1 = point(2.66, 1.48, visible=faux)\np2 = point(7.34, 1.47, visible=faux)\npolygone(p0, p1, p2, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p0, p1)\nmarque_segment(p1, p2)\nmarque_segment(p2, p0)|{{if:o==1|p0 = point(2.88, 5.83, visible=faux)\np1 = point(3.29, 1.17, visible=faux)\np2 = point(7.12, 3.85, visible=faux)\npolygone(p0, p1, p2, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p0, p1)\nmarque_segment(p1, p2)\nmarque_segment(p2, p0)|p0 = point(3.61, 1.2, visible=faux)\np1 = point(7.2, 4.2, visible=faux)\np2 = point(2.8, 5.8, visible=faux)\npolygone(p0, p1, p2, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p0, p1)\nmarque_segment(p1, p2)\nmarque_segment(p2, p0)}}}}|{{if:k==4|{{if:o==0|p0 = point(1.75, 1.55, visible=faux)\np1 = point(8.25, 2.05, visible=faux)\np2 = point(5.45, 5.45, visible=faux)\np3 = point(2.75, 5.05, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)|{{if:o==1|p0 = point(3.12, 0.9, visible=faux)\np1 = point(8.04, 4.95, visible=faux)\np2 = point(3.89, 6.1, visible=faux)\np3 = point(1.96, 4.26, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)|p0 = point(8.14, 4.1, visible=faux)\np1 = point(1.86, 5.85, visible=faux)\np2 = point(3.33, 1.7, visible=faux)\np3 = point(6.0, 1.15, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)}}}}|{{if:k==5|{{if:o==0|p0 = point(3.0, 1.5, visible=faux)\np1 = point(7.0, 1.5, visible=faux)\np2 = point(7.0, 5.5, visible=faux)\np3 = point(3.0, 5.5, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p0, p1)\nmarque_segment(p1, p2)\nmarque_segment(p2, p3)\nmarque_segment(p3, p0)\nangle(p3, p0, p1, marque=\"carre\", couleur=\"noir\")\nangle(p0, p1, p2, marque=\"carre\", couleur=\"noir\")\nangle(p1, p2, p3, marque=\"carre\", couleur=\"noir\")\nangle(p2, p3, p0, marque=\"carre\", couleur=\"noir\")|{{if:o==1|p0 = point(4.54, 0.9, visible=faux)\np1 = point(7.6, 3.04, visible=faux)\np2 = point(5.46, 6.1, visible=faux)\np3 = point(2.4, 3.96, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p0, p1)\nmarque_segment(p1, p2)\nmarque_segment(p2, p3)\nmarque_segment(p3, p0)\nangle(p3, p0, p1, marque=\"carre\", couleur=\"noir\")\nangle(p0, p1, p2, marque=\"carre\", couleur=\"noir\")\nangle(p1, p2, p3, marque=\"carre\", couleur=\"noir\")\nangle(p2, p3, p0, marque=\"carre\", couleur=\"noir\")|p0 = point(7.56, 4.7, visible=faux)\np1 = point(3.8, 6.06, visible=faux)\np2 = point(2.44, 2.3, visible=faux)\np3 = point(6.2, 0.94, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p0, p1)\nmarque_segment(p1, p2)\nmarque_segment(p2, p3)\nmarque_segment(p3, p0)\nangle(p3, p0, p1, marque=\"carre\", couleur=\"noir\")\nangle(p0, p1, p2, marque=\"carre\", couleur=\"noir\")\nangle(p1, p2, p3, marque=\"carre\", couleur=\"noir\")\nangle(p2, p3, p0, marque=\"carre\", couleur=\"noir\")}}}}|{{if:k==6|{{if:o==0|p0 = point(1.8, 1.8, visible=faux)\np1 = point(8.2, 1.8, visible=faux)\np2 = point(8.2, 5.2, visible=faux)\np3 = point(1.8, 5.2, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)\nangle(p3, p0, p1, marque=\"carre\", couleur=\"noir\")\nangle(p0, p1, p2, marque=\"carre\", couleur=\"noir\")\nangle(p1, p2, p3, marque=\"carre\", couleur=\"noir\")\nangle(p2, p3, p0, marque=\"carre\", couleur=\"noir\")|{{if:o==1|p0 = point(3.67, 0.9, visible=faux)\np1 = point(7.9, 3.86, visible=faux)\np2 = point(6.33, 6.1, visible=faux)\np3 = point(2.1, 3.14, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)\nangle(p3, p0, p1, marque=\"carre\", couleur=\"noir\")\nangle(p0, p1, p2, marque=\"carre\", couleur=\"noir\")\nangle(p1, p2, p3, marque=\"carre\", couleur=\"noir\")\nangle(p2, p3, p0, marque=\"carre\", couleur=\"noir\")|p0 = point(8.47, 3.99, visible=faux)\np1 = point(2.66, 6.1, visible=faux)\np2 = point(1.53, 3.01, visible=faux)\np3 = point(7.34, 0.9, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)\nangle(p3, p0, p1, marque=\"carre\", couleur=\"noir\")\nangle(p0, p1, p2, marque=\"carre\", couleur=\"noir\")\nangle(p1, p2, p3, marque=\"carre\", couleur=\"noir\")\nangle(p2, p3, p0, marque=\"carre\", couleur=\"noir\")}}}}|{{if:o==0|p0 = point(5.0, 1.6, visible=faux)\np1 = point(8.2, 3.5, visible=faux)\np2 = point(5.0, 5.4, visible=faux)\np3 = point(1.8, 3.5, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p0, p1)\nmarque_segment(p1, p2)\nmarque_segment(p2, p3)\nmarque_segment(p3, p0)|{{if:o==1|p0 = point(6.09, 1.94, visible=faux)\np1 = point(7.62, 5.34, visible=faux)\np2 = point(3.91, 5.06, visible=faux)\np3 = point(2.38, 1.66, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p0, p1)\nmarque_segment(p1, p2)\nmarque_segment(p2, p3)\nmarque_segment(p3, p0)|p0 = point(5.65, 5.29, visible=faux)\np1 = point(1.99, 4.59, visible=faux)\np2 = point(4.35, 1.71, visible=faux)\np3 = point(8.01, 2.41, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p0, p1)\nmarque_segment(p1, p2)\nmarque_segment(p2, p3)\nmarque_segment(p3, p0)}}}}}}}}}}}}}}}}}}\n```\n\n```choix\nmelanger: non\n- triangle\n- triangle rectangle\n- triangle isocèle\n- triangle équilatéral\n- quadrilatère\n- carré\n- rectangle\n- losange\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..7"
+				},
+				{
+					"name": "o",
+					"expression": "0..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On compte les côtés, puis on lit les codes : petits traits (côtés de même longueur), petits carrés (angles droits).",
+					"C'est {{if:k==0|un polygone qui a trois côtés|{{if:k==1|un triangle qui a un angle droit|{{if:k==2|un triangle qui a deux côtés de la même longueur|{{if:k==3|un triangle qui a ses trois côtés de la même longueur|{{if:k==4|un polygone qui a quatre côtés|{{if:k==5|un quadrilatère qui a quatre angles droits et quatre côtés de la même longueur|{{if:k==6|un quadrilatère qui a quatre angles droits|un quadrilatère qui a quatre côtés de la même longueur}}}}}}}}}}}}}} : $\\textcolor{{{color:primary.0}}}{{{if:k==0|\\text{triangle}|{{if:k==1|\\text{triangle rectangle}|{{if:k==2|\\text{triangle isocèle}|{{if:k==3|\\text{triangle équilatéral}|{{if:k==4|\\text{quadrilatère}|{{if:k==5|\\text{carré}|{{if:k==6|\\text{rectangle}|\\text{losange}}}}}}}}}}}}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Comment s'appelle {{if:k==0|un polygone qui a trois côtés|{{if:k==1|un triangle qui a un angle droit|{{if:k==2|un triangle qui a deux côtés de la même longueur|{{if:k==3|un triangle qui a ses trois côtés de la même longueur|{{if:k==4|un polygone qui a quatre côtés|{{if:k==5|un quadrilatère qui a quatre angles droits et quatre côtés de la même longueur|{{if:k==6|un quadrilatère qui a quatre angles droits|un quadrilatère qui a quatre côtés de la même longueur}}}}}}}}}}}}}} ?\n\n```choix\nmelanger: non\n- triangle\n- triangle rectangle\n- triangle isocèle\n- triangle équilatéral\n- quadrilatère\n- carré\n- rectangle\n- losange\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..7"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On relit la définition de chaque figure.",
+					"{{if:k==0|Un polygone qui a trois côtés|{{if:k==1|Un triangle qui a un angle droit|{{if:k==2|Un triangle qui a deux côtés de la même longueur|{{if:k==3|Un triangle qui a ses trois côtés de la même longueur|{{if:k==4|Un polygone qui a quatre côtés|{{if:k==5|Un quadrilatère qui a quatre angles droits et quatre côtés de la même longueur|{{if:k==6|Un quadrilatère qui a quatre angles droits|Un quadrilatère qui a quatre côtés de la même longueur}}}}}}}}}}}}}}, c'est un $\\textcolor{{{color:primary.0}}}{{{if:k==0|\\text{triangle}|{{if:k==1|\\text{triangle rectangle}|{{if:k==2|\\text{triangle isocèle}|{{if:k==3|\\text{triangle équilatéral}|{{if:k==4|\\text{quadrilatère}|{{if:k==5|\\text{carré}|{{if:k==6|\\text{rectangle}|\\text{losange}}}}}}}}}}}}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "D'après ses codes, quel est le nom le plus précis de cette figure ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 7\ndescription: Une figure avec ses codes, dans une position inhabituelle.\n---\n{{if:k==1|p0 = point(5.0, 0.9, visible=faux)\np1 = point(7.6, 3.5, visible=faux)\np2 = point(5.0, 6.1, visible=faux)\np3 = point(2.4, 3.5, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p0, p1)\nmarque_segment(p1, p2)\nmarque_segment(p2, p3)\nmarque_segment(p3, p0)\nangle(p3, p0, p1, marque=\"carre\", couleur=\"noir\")\nangle(p0, p1, p2, marque=\"carre\", couleur=\"noir\")\nangle(p1, p2, p3, marque=\"carre\", couleur=\"noir\")\nangle(p2, p3, p0, marque=\"carre\", couleur=\"noir\")|{{if:k==2|p0 = point(2.98, 5.84, visible=faux)\np1 = point(2.97, 1.16, visible=faux)\np2 = point(7.03, 3.5, visible=faux)\npolygone(p0, p1, p2, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p0, p1)\nmarque_segment(p1, p2)\nmarque_segment(p2, p0)|{{if:k==3|p0 = point(3.24, 0.9, visible=faux)\np1 = point(8.14, 3.5, visible=faux)\np2 = point(6.76, 6.1, visible=faux)\np3 = point(1.86, 3.5, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)\nangle(p3, p0, p1, marque=\"carre\", couleur=\"noir\")\nangle(p0, p1, p2, marque=\"carre\", couleur=\"noir\")\nangle(p1, p2, p3, marque=\"carre\", couleur=\"noir\")\nangle(p2, p3, p0, marque=\"carre\", couleur=\"noir\")|p0 = point(4.03, 1.87, visible=faux)\np1 = point(7.75, 1.87, visible=faux)\np2 = point(5.97, 5.13, visible=faux)\np3 = point(2.25, 5.13, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p0, p1)\nmarque_segment(p1, p2)\nmarque_segment(p2, p3)\nmarque_segment(p3, p0)}}}}}}\n```\n\n```choix\nmelanger: non\n- triangle\n- triangle rectangle\n- triangle isocèle\n- triangle équilatéral\n- quadrilatère\n- carré\n- rectangle\n- losange\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..4"
+				},
+				{
+					"name": "z",
+					"expression": "eval:(1-min(abs(k-1),1))*5+(1-min(abs(k-2),1))*3+(1-min(abs(k-3),1))*6+(1-min(abs(k-4),1))*7"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{z}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La position de la figure ne change pas son nom : seuls comptent les côtés et les codes.",
+					"{{if:k==1|Quatre côtés de même longueur et quatre angles droits, même posé sur la pointe : c'est un $\\textcolor{{{color:primary.0}}}{\\text{carré}}$.|{{if:k==2|Trois côtés de même longueur, même la pointe en bas : c'est un $\\textcolor{{{color:primary.0}}}{\\text{triangle équilatéral}}$.|{{if:k==3|Quatre angles droits, même penché : c'est un $\\textcolor{{{color:primary.0}}}{\\text{rectangle}}$.|Quatre côtés de même longueur, sans angle droit, même posé sur un côté : c'est un $\\textcolor{{{color:primary.0}}}{\\text{losange}}$.}}}}}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Losange codé",
+			"variationIndex": 0,
+			"variables": {
+				"k": "7",
+				"o": "1"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Carré codé",
+			"variationIndex": 0,
+			"variables": {
+				"k": "5",
+				"o": "0"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : carré dit losange",
+			"variationIndex": 0,
+			"variables": {
+				"k": "5",
+				"o": "0"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Définition du rectangle",
+			"variationIndex": 1,
+			"variables": {
+				"k": "6"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : définition du carré dite rectangle",
+			"variationIndex": 1,
+			"variables": {
+				"k": "5"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Carré sur la pointe",
+			"variationIndex": 2,
+			"variables": {
+				"k": "1",
+				"z": "5"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : carré sur la pointe dit losange",
+			"variationIndex": 2,
+			"variables": {
+				"k": "1",
+				"z": "5"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Équilatéral pointe en bas",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2",
+				"z": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

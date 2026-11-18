@@ -277,8 +277,8 @@ describe('Descente : apparition des Bêtes aux droits de l’élève', () => {
 		// Fonctions → Yoyolande).
 		expect(beasts.find((b) => b.point_id === points.big)).toMatchObject({
 			province: 'bedonstan',
-			max_hp: 100,
-			hp: 100,
+			max_hp: 120,
+			hp: 120,
 			leaves_at: null
 		});
 		expect(beasts.find((b) => b.point_id === points.stays)).toMatchObject({
@@ -371,8 +371,8 @@ describe('Descente : apparition des Bêtes aux droits de l’élève', () => {
 		expect(Object.keys(provinceOf)).toContain(big[0].point_id);
 		expect(big[0]).toMatchObject({
 			province: provinceOf[big[0].point_id ?? ''],
-			max_hp: 300,
-			hp: 300
+			max_hp: 360,
+			hp: 360
 		});
 		expect(new Date(big[0].leaves_at ?? 0).getTime()).toBe(now.getTime() + 7 * DAY_MS);
 	});

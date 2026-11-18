@@ -1,0 +1,196 @@
+{
+	"id": "f521ccf8-e812-40c4-ad47-5e2b43ccc1ff",
+	"title": "Les axes de symétrie des figures usuelles",
+	"description": "Nombre d'axes du carré, du rectangle, du losange, des triangles particuliers ; figure sans axe ; la diagonale du rectangle n'est pas un axe",
+	"grades": ["CM1"],
+	"level": 3,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Combien d'axes de symétrie a {{if:k==1|ce carré|{{if:k==2|ce rectangle|{{if:k==3|ce losange|{{if:k==4|ce triangle équilatéral|{{if:k==5|ce triangle isocèle|{{if:k==6|ce quadrilatère|ce triangle}}}}}}}}}}}} ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 7\ndescription: Une figure avec ses codes.\n---\n{{if:k==1|{{if:o==0|p0 = point(3.0, 1.5, visible=faux)\np1 = point(7.0, 1.5, visible=faux)\np2 = point(7.0, 5.5, visible=faux)\np3 = point(3.0, 5.5, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p0, p1)\nmarque_segment(p1, p2)\nmarque_segment(p2, p3)\nmarque_segment(p3, p0)\nangle(p3, p0, p1, marque=\"carre\", couleur=\"noir\")\nangle(p0, p1, p2, marque=\"carre\", couleur=\"noir\")\nangle(p1, p2, p3, marque=\"carre\", couleur=\"noir\")\nangle(p2, p3, p0, marque=\"carre\", couleur=\"noir\")|{{if:o==1|p0 = point(4.54, 0.9, visible=faux)\np1 = point(7.6, 3.04, visible=faux)\np2 = point(5.46, 6.1, visible=faux)\np3 = point(2.4, 3.96, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p0, p1)\nmarque_segment(p1, p2)\nmarque_segment(p2, p3)\nmarque_segment(p3, p0)\nangle(p3, p0, p1, marque=\"carre\", couleur=\"noir\")\nangle(p0, p1, p2, marque=\"carre\", couleur=\"noir\")\nangle(p1, p2, p3, marque=\"carre\", couleur=\"noir\")\nangle(p2, p3, p0, marque=\"carre\", couleur=\"noir\")|p0 = point(7.56, 4.7, visible=faux)\np1 = point(3.8, 6.06, visible=faux)\np2 = point(2.44, 2.3, visible=faux)\np3 = point(6.2, 0.94, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p0, p1)\nmarque_segment(p1, p2)\nmarque_segment(p2, p3)\nmarque_segment(p3, p0)\nangle(p3, p0, p1, marque=\"carre\", couleur=\"noir\")\nangle(p0, p1, p2, marque=\"carre\", couleur=\"noir\")\nangle(p1, p2, p3, marque=\"carre\", couleur=\"noir\")\nangle(p2, p3, p0, marque=\"carre\", couleur=\"noir\")}}}}|{{if:k==2|{{if:o==0|p0 = point(1.8, 1.8, visible=faux)\np1 = point(8.2, 1.8, visible=faux)\np2 = point(8.2, 5.2, visible=faux)\np3 = point(1.8, 5.2, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)\nangle(p3, p0, p1, marque=\"carre\", couleur=\"noir\")\nangle(p0, p1, p2, marque=\"carre\", couleur=\"noir\")\nangle(p1, p2, p3, marque=\"carre\", couleur=\"noir\")\nangle(p2, p3, p0, marque=\"carre\", couleur=\"noir\")|{{if:o==1|p0 = point(3.67, 0.9, visible=faux)\np1 = point(7.9, 3.86, visible=faux)\np2 = point(6.33, 6.1, visible=faux)\np3 = point(2.1, 3.14, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)\nangle(p3, p0, p1, marque=\"carre\", couleur=\"noir\")\nangle(p0, p1, p2, marque=\"carre\", couleur=\"noir\")\nangle(p1, p2, p3, marque=\"carre\", couleur=\"noir\")\nangle(p2, p3, p0, marque=\"carre\", couleur=\"noir\")|p0 = point(8.47, 3.99, visible=faux)\np1 = point(2.66, 6.1, visible=faux)\np2 = point(1.53, 3.01, visible=faux)\np3 = point(7.34, 0.9, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)\nangle(p3, p0, p1, marque=\"carre\", couleur=\"noir\")\nangle(p0, p1, p2, marque=\"carre\", couleur=\"noir\")\nangle(p1, p2, p3, marque=\"carre\", couleur=\"noir\")\nangle(p2, p3, p0, marque=\"carre\", couleur=\"noir\")}}}}|{{if:k==3|{{if:o==0|p0 = point(5.0, 1.6, visible=faux)\np1 = point(8.2, 3.5, visible=faux)\np2 = point(5.0, 5.4, visible=faux)\np3 = point(1.8, 3.5, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p0, p1)\nmarque_segment(p1, p2)\nmarque_segment(p2, p3)\nmarque_segment(p3, p0)|{{if:o==1|p0 = point(6.09, 1.94, visible=faux)\np1 = point(7.62, 5.34, visible=faux)\np2 = point(3.91, 5.06, visible=faux)\np3 = point(2.38, 1.66, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p0, p1)\nmarque_segment(p1, p2)\nmarque_segment(p2, p3)\nmarque_segment(p3, p0)|p0 = point(5.65, 5.29, visible=faux)\np1 = point(1.99, 4.59, visible=faux)\np2 = point(4.35, 1.71, visible=faux)\np3 = point(8.01, 2.41, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p0, p1)\nmarque_segment(p1, p2)\nmarque_segment(p2, p3)\nmarque_segment(p3, p0)}}}}|{{if:k==4|{{if:o==0|p0 = point(5.0, 5.53, visible=faux)\np1 = point(2.66, 1.48, visible=faux)\np2 = point(7.34, 1.47, visible=faux)\npolygone(p0, p1, p2, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p0, p1)\nmarque_segment(p1, p2)\nmarque_segment(p2, p0)|{{if:o==1|p0 = point(2.88, 5.83, visible=faux)\np1 = point(3.29, 1.17, visible=faux)\np2 = point(7.12, 3.85, visible=faux)\npolygone(p0, p1, p2, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p0, p1)\nmarque_segment(p1, p2)\nmarque_segment(p2, p0)|p0 = point(3.61, 1.2, visible=faux)\np1 = point(7.2, 4.2, visible=faux)\np2 = point(2.8, 5.8, visible=faux)\npolygone(p0, p1, p2, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p0, p1)\nmarque_segment(p1, p2)\nmarque_segment(p2, p0)}}}}|{{if:k==5|{{if:o==0|p0 = point(3.1, 1.2, visible=faux)\np1 = point(6.9, 1.2, visible=faux)\np2 = point(5.0, 5.8, visible=faux)\npolygone(p0, p1, p2, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p1, p2)\nmarque_segment(p2, p0)|{{if:o==1|p0 = point(3.98, 1.07, visible=faux)\np1 = point(7.1, 3.25, visible=faux)\np2 = point(2.9, 5.93, visible=faux)\npolygone(p0, p1, p2, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p1, p2)\nmarque_segment(p2, p0)|p0 = point(6.79, 4.69, visible=faux)\np1 = point(3.21, 5.99, visible=faux)\np2 = point(3.43, 1.01, visible=faux)\npolygone(p0, p1, p2, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p1, p2)\nmarque_segment(p2, p0)}}}}|{{if:k==6|{{if:o==0|p0 = point(1.75, 1.55, visible=faux)\np1 = point(8.25, 2.05, visible=faux)\np2 = point(5.45, 5.45, visible=faux)\np3 = point(2.75, 5.05, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)|{{if:o==1|p0 = point(3.12, 0.9, visible=faux)\np1 = point(8.04, 4.95, visible=faux)\np2 = point(3.89, 6.1, visible=faux)\np3 = point(1.96, 4.26, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)|p0 = point(8.14, 4.1, visible=faux)\np1 = point(1.86, 5.85, visible=faux)\np2 = point(3.33, 1.7, visible=faux)\np3 = point(6.0, 1.15, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)}}}}|{{if:o==0|p0 = point(2.3, 2.0, visible=faux)\np1 = point(8.7, 2.0, visible=faux)\np2 = point(1.3, 5.0, visible=faux)\npolygone(p0, p1, p2, couleur=\"bleu\", epaisseur=2)|{{if:o==1|p0 = point(3.68, 1.71, visible=faux)\np1 = point(8.8, 5.29, visible=faux)\np2 = point(1.2, 3.55, visible=faux)\npolygone(p0, p1, p2, couleur=\"bleu\", epaisseur=2)|p0 = point(7.92, 3.97, visible=faux)\np1 = point(2.08, 6.1, visible=faux)\np2 = point(7.84, 0.9, visible=faux)\npolygone(p0, p1, p2, couleur=\"bleu\", epaisseur=2)}}}}}}}}}}}}}}}}\n```\n\nNombre d'axes : $?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..7"
+				},
+				{
+					"name": "o",
+					"expression": "0..2"
+				},
+				{
+					"name": "z",
+					"expression": "eval:(1-min(abs(k-1),1))*4+(1-min(abs(k-2),1))*2+(1-min(abs(k-3),1))*2+(1-min(abs(k-4),1))*3+(1-min(abs(k-5),1))*1+(1-min(abs(k-6),1))*0+(1-min(abs(k-7),1))*0"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{z}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une droite est un axe de symétrie quand, en pliant la figure le long de cette droite, les deux moitiés se superposent exactement.",
+					"{{if:k==1|Le carré : les deux diagonales et les deux droites qui passent par les milieux des côtés opposés.|{{if:k==2|Le rectangle : les deux droites qui passent par les milieux des côtés opposés (pas les diagonales).|{{if:k==3|Le losange : ses deux diagonales.|{{if:k==4|Le triangle équilatéral : une droite par sommet, qui passe par le milieu du côté opposé.|{{if:k==5|Le triangle isocèle : la droite qui passe par son sommet principal et le milieu de la base.|{{if:k==6|Ce quadrilatère n'a ni côtés de même longueur ni angles droits : aucun pliage ne superpose ses deux moitiés.|Ce triangle a trois côtés de longueurs différentes : aucun pliage ne superpose ses deux moitiés.}}}}}}}}}}}}",
+					"Nombre d'axes : $\\textcolor{{{color:primary.0}}}{{{z}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Quelle figure n'a aucun axe de symétrie ?\n\n````choix\n- ```figure\n  fenetre: 0 ; 10 ; 0 ; 7\n  taille: grande\n  description: Une figure.\n  ---\n  {{if:k==1|p0 = point(1.93, 1.14, visible=faux)\n  p1 = point(8.07, 3.3, visible=faux)\n  p2 = point(4.49, 5.86, visible=faux)\n  p3 = point(1.99, 4.78, visible=faux)\n  polygone(p0, p1, p2, p3, couleur=\"noir\", epaisseur=2)|p0 = point(6.93, 4.68, visible=faux)\n  p1 = point(1.2, 2.59, visible=faux)\n  p2 = point(8.8, 2.32, visible=faux)\n  polygone(p0, p1, p2, couleur=\"noir\", epaisseur=2)}}\n  ```\n- ```figure\n  fenetre: 0 ; 10 ; 0 ; 7\n  taille: grande\n  description: Une figure.\n  ---\n  p0 = point(3.21, 1.01, visible=faux)\n  p1 = point(6.79, 2.31, visible=faux)\n  p2 = point(3.43, 5.99, visible=faux)\n  polygone(p0, p1, p2, couleur=\"noir\", epaisseur=2)\n  marque_segment(p1, p2)\n  marque_segment(p2, p0)\n  ```\n- ```figure\n  fenetre: 0 ; 10 ; 0 ; 7\n  taille: grande\n  description: Une figure.\n  ---\n  p0 = point(1.8, 1.8, visible=faux)\n  p1 = point(8.2, 1.8, visible=faux)\n  p2 = point(8.2, 5.2, visible=faux)\n  p3 = point(1.8, 5.2, visible=faux)\n  polygone(p0, p1, p2, p3, couleur=\"noir\", epaisseur=2)\n  angle(p3, p0, p1, marque=\"carre\", couleur=\"noir\")\n  angle(p0, p1, p2, marque=\"carre\", couleur=\"noir\")\n  angle(p1, p2, p3, marque=\"carre\", couleur=\"noir\")\n  angle(p2, p3, p0, marque=\"carre\", couleur=\"noir\")\n  ```\n- ```figure\n  fenetre: 0 ; 10 ; 0 ; 7\n  taille: grande\n  description: Une figure.\n  ---\n  p0 = point(6.54, 3.5, visible=faux)\n  p1 = point(5.0, 6.1, visible=faux)\n  p2 = point(3.46, 3.5, visible=faux)\n  p3 = point(5.0, 0.9, visible=faux)\n  polygone(p0, p1, p2, p3, couleur=\"noir\", epaisseur=2)\n  marque_segment(p0, p1)\n  marque_segment(p1, p2)\n  marque_segment(p2, p3)\n  marque_segment(p3, p0)\n  ```\n````",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le triangle isocèle a un axe, le rectangle deux, le losange deux (ses diagonales).",
+					"La figure sans code, aux côtés tous différents, n'a $\\textcolor{{{color:primary.0}}}{\\text{aucun axe}}$ : c'est {{if:k==1|le quadrilatère|le triangle}} quelconque."
+				]
+			}
+		},
+		{
+			"statement": "La droite rouge est-elle un axe de symétrie de {{if:k==1|ce rectangle|{{if:k==2|ce carré|{{if:k==3|ce rectangle|{{if:k==4|ce losange|ce losange}}}}}}}} ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 7\ndescription: Une figure avec ses codes et une droite rouge en tirets.\n---\n{{if:k==1|p0 = point(1.8, 1.8, visible=faux)\np1 = point(8.2, 1.8, visible=faux)\np2 = point(8.2, 5.2, visible=faux)\np3 = point(1.8, 5.2, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)\nangle(p3, p0, p1, marque=\"carre\", couleur=\"noir\")\nangle(p0, p1, p2, marque=\"carre\", couleur=\"noir\")\nangle(p1, p2, p3, marque=\"carre\", couleur=\"noir\")\nangle(p2, p3, p0, marque=\"carre\", couleur=\"noir\")\nu = point(1.80, 1.80, visible=faux)\nv = point(8.20, 5.20, visible=faux)\ndroite(u, v, trait=\"tirets\", couleur=\"rouge\", epaisseur=2)|{{if:k==2|p0 = point(3.0, 1.5, visible=faux)\np1 = point(7.0, 1.5, visible=faux)\np2 = point(7.0, 5.5, visible=faux)\np3 = point(3.0, 5.5, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p0, p1)\nmarque_segment(p1, p2)\nmarque_segment(p2, p3)\nmarque_segment(p3, p0)\nangle(p3, p0, p1, marque=\"carre\", couleur=\"noir\")\nangle(p0, p1, p2, marque=\"carre\", couleur=\"noir\")\nangle(p1, p2, p3, marque=\"carre\", couleur=\"noir\")\nangle(p2, p3, p0, marque=\"carre\", couleur=\"noir\")\nu = point(3.00, 1.50, visible=faux)\nv = point(7.00, 5.50, visible=faux)\ndroite(u, v, trait=\"tirets\", couleur=\"rouge\", epaisseur=2)|{{if:k==3|p0 = point(1.8, 1.8, visible=faux)\np1 = point(8.2, 1.8, visible=faux)\np2 = point(8.2, 5.2, visible=faux)\np3 = point(1.8, 5.2, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)\nangle(p3, p0, p1, marque=\"carre\", couleur=\"noir\")\nangle(p0, p1, p2, marque=\"carre\", couleur=\"noir\")\nangle(p1, p2, p3, marque=\"carre\", couleur=\"noir\")\nangle(p2, p3, p0, marque=\"carre\", couleur=\"noir\")\nu = point(5.00, 1.80, visible=faux)\nv = point(5.00, 5.20, visible=faux)\ndroite(u, v, trait=\"tirets\", couleur=\"rouge\", epaisseur=2)|{{if:k==4|p0 = point(5.0, 1.6, visible=faux)\np1 = point(8.2, 3.5, visible=faux)\np2 = point(5.0, 5.4, visible=faux)\np3 = point(1.8, 3.5, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p0, p1)\nmarque_segment(p1, p2)\nmarque_segment(p2, p3)\nmarque_segment(p3, p0)\nu = point(5.00, 1.60, visible=faux)\nv = point(5.00, 5.40, visible=faux)\ndroite(u, v, trait=\"tirets\", couleur=\"rouge\", epaisseur=2)|p0 = point(5.0, 1.6, visible=faux)\np1 = point(8.2, 3.5, visible=faux)\np2 = point(5.0, 5.4, visible=faux)\np3 = point(1.8, 3.5, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p0, p1)\nmarque_segment(p1, p2)\nmarque_segment(p2, p3)\nmarque_segment(p3, p0)\nu = point(6.60, 2.55, visible=faux)\nv = point(3.40, 4.45, visible=faux)\ndroite(u, v, trait=\"tirets\", couleur=\"rouge\", epaisseur=2)}}}}}}}}\n```\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..5"
+				},
+				{
+					"name": "z",
+					"expression": "eval:(1-min(abs(k-1),1))*1+(1-min(abs(k-2),1))*0+(1-min(abs(k-3),1))*0+(1-min(abs(k-4),1))*0+(1-min(abs(k-5),1))*1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{z}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On imagine qu'on plie la figure le long de la droite rouge : les deux moitiés se superposent-elles exactement ?",
+					"{{if:k==1|Non : plié le long de sa diagonale, un rectangle (qui n'est pas un carré) ne se superpose pas, les coins dépassent. La diagonale n'est $\\textcolor{{{color:primary.0}}}{\\text{pas un axe}}$.|{{if:k==2|Oui : la diagonale d'un carré est un $\\textcolor{{{color:primary.0}}}{\\text{axe de symétrie}}$.|{{if:k==3|Oui : la droite qui passe par les milieux de deux côtés opposés est un $\\textcolor{{{color:primary.0}}}{\\text{axe de symétrie}}$ du rectangle.|{{if:k==4|Oui : la diagonale d'un losange est un $\\textcolor{{{color:primary.0}}}{\\text{axe de symétrie}}$.|Non : plié ainsi, un losange (qui n'est pas un carré) ne se superpose pas. Ses axes sont ses diagonales ; cette droite n'est $\\textcolor{{{color:primary.0}}}{\\text{pas un axe}}$.}}}}}}}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Carré : 4",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"o": "0",
+				"z": "4"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Rectangle : 2",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"o": "1",
+				"z": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : rectangle 4 (diagonales)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"o": "1",
+				"z": "2"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Équilatéral : 3",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4",
+				"o": "2",
+				"z": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Le quadrilatère quelconque",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le rectangle",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Diagonale du rectangle : non",
+			"variationIndex": 2,
+			"variables": {
+				"k": "1",
+				"z": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : diagonale du rectangle dite axe",
+			"variationIndex": 2,
+			"variables": {
+				"k": "1",
+				"z": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Diagonale du carré : oui",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2",
+				"z": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}
