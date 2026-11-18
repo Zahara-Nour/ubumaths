@@ -5,18 +5,18 @@ Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) · bornes 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, phase 0 du lot 5 écrite (§ 34)._
+_Mis à jour le 2026-11-18, lot 5a écrit (§ 35), PR à ouvrir._
 
-- **État** : lots 0 à 4 publiés ; phase 0 du lot 5 (logarithme décimal, L1–L9) écrite au § 34 ; aucun worktree.
-  Bilan MCP (§ 33) : 28 points STMG encore sans modèle publié, tous prévus aux lots 5 à 8 (017, 019 : rien, Q17).
-- **Prochaine action** : après les réponses, worktree `questions-ttechno-lot5a`, écriture de L1–L6
-  (`docs/wip/questions/lot-ttechno-5a.py`), sonder d'abord `log(x)` dans ` ```courbe `.
-- **En attente de David** : Q24 (5a puis 5b), Q25 (valeur exacte ou arrondi), Q26 (nombre de chiffres),
-  question d'accès (§ 34).
+- **État** : lots 0 à 4 publiés ; lot 5a (L1–L6, log décimal) écrit et vérifié en local (§ 35), PR en cours.
+  Bilan MCP (§ 33) : 28 points STMG encore sans modèle publié, prévus aux lots 5 à 8 (017, 019 : rien, Q17).
+- **Prochaine action** : merge du lot 5a → David crée les brouillons en prod (`create-questions --publier`),
+  migration nœud + tags (gabarit lot 4), page à cocher ; puis phase d'écriture du lot 5b (L7–L9).
+- **En attente de David** : **Q27** saisie de log au clavier (`outils-manquants.md` n° 39) : elle bloque les
+  réponses exactes du lot 5b (Q25).
 - **Pièges en cours** : un point TTECHNO par modèle (trigger) ; tag = nœud DU POINT (relevé MCP, pas le journal) ;
   `publier-lot.ts`, `create-questions --publier` visent la prod : David les lance (`!`) depuis le dépôt principal ;
-  `db:migrate` pousse toutes les migrations en attente ; worktree neuf → `svelte-kit sync`.
-- **Worktree / branche** : aucun.
+  `db:migrate` pousse toutes les migrations en attente ; `{{var}}` décimale calculée s'écrit en fraction.
+- **Worktree / branche** : `ubumaths-wt-questions-ttechno` · `feat/questions-ttechno-lot5a`.
 
 ## 1. Périmètre
 
@@ -836,3 +836,33 @@ la variation (Q25). L9 distinct de T6 (`questions-1gen`, seuil sans log, par tab
   d'un entier) : une variation dans L1 ? Reco : **oui**. Le repère semi-logarithmique (STI2D / STL) : non, hors STMG.
 - **Question d'accès** (migration de tags, après écriture) : brouillons, personne ne les voit ; publiés, ils
   apparaissent au catalogue et au cahier de texte de Tle techno seulement. Personne ne perd rien.
+
+**Décisions (David, 2026-11-18, « je suis tes recos »)** : **Q24** lot 5a (L1–L6), puis lot 5b (L7–L9) ;
+**Q25** valeur exacte pour une équation purement algébrique (2ˣ = 5 ⇒ x = log 5 / log 2), arrondi quand il y a un
+contexte ; **Q26** une variation « nombre de chiffres » dans L1, pas de repère semi-logarithmique ; question
+d'accès : personne pour les brouillons, Tle techno à la publication.
+
+## 35. Lot 5a : écriture (2026-11-18)
+
+`docs/wip/questions/lot-ttechno-5a.py` → `scripts/questions/ttechno-5a-logarithme/` (6 fichiers, 76 specs),
+`grades ['T_TECHNO']`, brouillons. Worktree `ubumaths-wt-questions-ttechno`, branche `feat/questions-ttechno-lot5a`.
+
+- L1 (040) : log(10ⁿ), log 0,01…, 10ˣ = b (choix), 10^(log b), calculatrice, nombre de chiffres. L2 (041) : sens
+  (choix), comparer, signe, encadrer, courbe parmi 4 (` ```courbe ` dans un ````choix). L3 (042), L4 (082), L5 (083) :
+  formule (choix mélangé), calculs sans calculatrice, valeurs approchées à partir de log 2 ≈ 0,301… ; L4 : nombre
+  de chiffres de 2ⁿ. L6 (044) : log 72 en log 2 / log 3, regrouper en log n, expressions littérales en x.
+- Simulation `create-questions` verte contre la prod (aucun homonyme) ; `question:specs` 6 / 6 importables,
+  1 200 tirages chacun ; 558 formules distinctes de 240 aperçus : accolades et `validateLatex` 0 problème ;
+  `sonde-courbes` 200 blocs, 0 problème.
+- **Sonde des courbes corrigée** : elle ne lisait pas les courbes d'un ````choix (« 0 blocs », donc « 0 problème »
+  sans rien lire) ; `scripts/questions/sonde-courbes.ts` retire maintenant le décalage dans un choix comme dans un
+  associer (lot 3b relu : inchangé).
+- Moteur : `log` = décimal dans `{{eval:…}}`, la correction et le bloc courbe (`eval/compile.ts`) : vérifié à
+  l'écran (courbe par (1 ; 0) et (10 ; 1)).
+- ⚠ **Saisie de log au clavier** : MathLive change « log » en `\log_{#?}` (case de base, défaut de la bibliothèque) ;
+  « log(7) » tapé donne `\log_{(7)}`, jugé **faux** ; seul `\log(7)` passe (`\log_{10}(7)` → `bad_form`). L1 v2
+  passée en choix. Ligne 39 de `outils-manquants.md`. **Bloque Q25 au lot 5b** (réponses exactes log 5 / log 2).
+- Corrigés en route (aperçus, pas les specs) : `{{la}}` s'affichait « 301/1000 » → `{{eval:la;d}}` ; tirage
+  log 2 + log 5 → log 10 exclu.
+- Base locale : 6 brouillons ; aperçu admin (Chrome, `127.0.0.1:5176`) : L2 courbes, A coché → juste ; L2 signe de
+  log(8,5), rendu à virgule ; L3 v4 `1,322` tapé → juste.
