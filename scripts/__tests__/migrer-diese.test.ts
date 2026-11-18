@@ -43,28 +43,32 @@ describe('convertir', () => {
 		expect(introuvables).toEqual([]);
 	});
 
-	it('ne change que le préfixe : requête, motif, préfixe seul, fichier introuvable', () => {
+	it('ne change que le préfixe : requête, motif, fichier introuvable', () => {
 		const src = [
 			"import css from '$lib/styles/a.css?raw';",
+			"import corpus from '$lib/data/corpus?raw';",
 			"import.meta.glob('$lib/questions/**/*.ts');",
-			"if (s.startsWith('$lib/')) {}",
 			"import { y } from '$lib/disparu';"
 		].join('\n');
 		const { source, introuvables } = convertir(src, existe);
 		expect(source).toBe(
 			[
 				"import css from '#lib/styles/a.css?raw';",
+				"import corpus from '#lib/data/corpus?raw';",
 				"import.meta.glob('#lib/questions/**/*.ts');",
-				"if (s.startsWith('#lib/')) {}",
 				"import { y } from '#lib/disparu';"
 			].join('\n')
 		);
 		expect(introuvables).toEqual(['#lib/disparu']);
 	});
 
-	it('laisse les commentaires, les #lib déjà convertis et les autres alias', () => {
+	it('laisse les commentaires, les chaînes hors import, les #lib et les autres alias', () => {
 		const src = [
 			'// voir $lib/utils/logger pour le détail',
+			"// import { a } from '$lib/utils/logger';",
+			" * @example import { a } from '$lib/utils/logger';",
+			"if (s.startsWith('$lib/')) {}",
+			'const msg = `voir $lib/utils/logger`;',
 			"import { log } from '#lib/utils/logger.ts';",
 			"import { page } from '$app/state';",
 			"import { env } from '$env/dynamic/private';"
