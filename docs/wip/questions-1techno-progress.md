@@ -10,12 +10,11 @@
 
 _Mis à jour le 2026-11-18, lot 6 en cours (avant sa PR)._
 
-- **État** : lots 1 à 4 clos ; lot 5 : communs publiés, N1-N3 brouillons rangés, page à cocher
-  https://claude.ai/artifact/J6RYqzmQ9nrqviUoQXVBYn (`verdicts` vide). Lot 6 (§ 30-31) : phase 0 validée, P1-P5 écrits
+- **État** : lots 1 à 5 clos. Lot 6 (§ 30-31) : phase 0 validée, P1-P5 écrits
   (`scripts/questions/1techno-6`), simulation verte, essai en base locale, aperçu Tailscale ouvert (5179, :443/:8443).
 - **Prochaine action** : rendus de P1-P5 par David → fermer l'aperçu → PR des fichiers → David `create-questions
 --publier` → migration de rangement + retrait de 137 et `1_TECHNO` de 97b3a376 (destructif : mesurer l'usage, go).
-- **En attente de David** : verdicts du lot 5 (puis `publier-lot.ts --dir scripts/questions/1techno-5`) ; rendus du lot 6.
+- **En attente de David** : rendus du lot 6 (P1-P5 dans l'aperçu).
 - **Pièges en cours** : dépôt principal sale (fichiers d'autres sessions) → commit de journal 827809b06 resté local sur
   `main`, repris sur la branche ; questions-1gen à prévenir (4 communs). `Doc-inchangée:` dans un COMMIT.
 - **Worktree / branche** : `../ubumaths-wt-questions-1techno`, `feat/questions-1techno-lot6`.
@@ -935,3 +934,8 @@ P5 : 12 individus tirés par deux variables 0/1 chacun, effectifs par produits, 
 formules passées à `validateLatex` + compte d'accolades : 0 problème. 80 blocs `tableau-croise` passés à
 `parseStatChartContent` : 0 erreur, cases masquées lues. Essai en base locale (copie scratchpad, ids locaux hors
 dépôt) ; aperçu Tailscale sur 5179 (5176-5178 pris par d'autres worktrees).
+
+### Lot 5 — publié (2026-11-18)
+
+Verdicts des neufs : 3 « ok » sur 3, sans commentaire (N1, N2, N3). David a lancé `publier-lot.ts` (simulation puis
+`--publier`). Vérifié MCP : d0eb1666, fc84a1c8, 8d2047fe `published`, `{1_TECHNO}`, rangés. **Lot 5 clos.**
