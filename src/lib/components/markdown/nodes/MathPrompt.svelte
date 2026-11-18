@@ -220,6 +220,19 @@
 		return element.tagName === 'MATH-FIELD';
 	}
 
+	/**
+	 * « log » tapé = logarithme décimal, `\log` sans base (convention du dépôt, Tle techno).
+	 * Le raccourci de MathLive écrit `\log_{#?}` : sa case de base avale « (7) » et
+	 * la réponse est jugée fausse (décision Q27, journal questions-ttechno § 35).
+	 * Déclaré AVANT le filtre des majuscules : les raccourcis qu'il garde et remet
+	 * contiennent déjà `log`.
+	 */
+	$effect(() => {
+		if (!mathField || !isMathfield(mathField)) return;
+		if (mathField.inlineShortcuts.log === '\\log') return;
+		mathField.inlineShortcuts = { ...mathField.inlineShortcuts, log: '\\log' };
+	});
+
 	/** Raccourcis du champ avant le filtre : remis quand le sens n'est plus « longueur » */
 	let originalShortcuts: MathfieldElement['inlineShortcuts'] | undefined;
 
