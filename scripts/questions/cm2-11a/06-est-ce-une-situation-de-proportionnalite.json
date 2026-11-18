@@ -1,4 +1,5 @@
 {
+	"id": "90d6612d-948c-4dcc-8867-2928c18596a1",
 	"title": "Est-ce une situation de proportionnalité ?",
 	"description": "Dire si deux grandeurs sont proportionnelles (case « choix » Oui / Non) : situations en mots (pile de manuels identiques : oui ; âge et taille : non ; taxi avec prise en charge : non), ou deux prix au marché (« 3 fois plus de kilos, 3 fois plus cher ? »)",
 	"grades": ["CM2"],

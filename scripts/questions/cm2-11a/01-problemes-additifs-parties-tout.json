@@ -1,4 +1,5 @@
 {
+	"id": "f0f354c8-3169-4c46-a1a9-4ce9b6b1694e",
 	"title": "Problèmes additifs : parties-tout",
 	"description": "Le tout avec des entiers jusqu'au milliard, une partie avec des millièmes (un colis de 3,275 kg), l'état de départ (« il a dépensé…, il lui reste… »), des fractions dont l'un des dénominateurs est multiple de l'autre (1/4 + 3/8) ; une étape",
 	"grades": ["CM2"],
