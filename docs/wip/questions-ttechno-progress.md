@@ -5,19 +5,19 @@ Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) · bornes 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, lot 3b écrit, #2815 ouverte (CI à suivre)._
+_Mis à jour le 2026-11-18, après #2815 (lot 3b écrit)._
 
-- **État** : lots 0 à 3a en prod et publiés ; lot 3b « fonctions » (C5–C8) écrit et essayé en local (§ 26), PR
-  des fichiers sur `feat/questions-ttechno-lot3b`.
-- **Prochaine action** : CI de #2815 (`gh pr checks 2815 --watch`) verte → merge ; puis David lance, depuis le dépôt principal,
-  `pnpm tsx scripts/create-questions.ts --dir scripts/questions/ttechno-3b-fonctions --publier` ; ensuite migration
-  rangement + tags (C5–C8 → c185c955, points 032, 033, 036, 080), page à cocher, publication.
-- **En attente de David** : `create-questions --publier` du lot 3b (prod), après le merge.
+- **État** : lots 0 à 3a en prod et publiés ; lot 3b « fonctions » (C5–C8) écrit, essayé en local (§ 26), #2815
+  mergée (CI verte).
+- **Prochaine action** : David lance, depuis le dépôt principal,
+  `pnpm tsx scripts/create-questions.ts --dir scripts/questions/ttechno-3b-fonctions --publier` ; puis ids
+  commités, migration rangement + tags (C5–C8 → c185c955, points 032, 033, 036, 080), page à cocher, publication.
+- **En attente de David** : `create-questions --publier` du lot 3b (prod).
 - **Pièges en cours** : un point TTECHNO par modèle (trigger) ; `grades` en `array_append` seulement ;
   `publier-lot.ts`, `garde-niveaux-tags.ts`, `create-questions --publier` visent la prod : David les lance (`!`),
-  **depuis le dépôt principal** ; `Doc-inchangée:` dans un COMMIT de la PR (ligne ≤ 100 caractères).
-- **Worktree / branche** : `../ubumaths-wt-questions-ttechno`, `feat/questions-ttechno-lot3b` (la migration
-  partira d'une nouvelle branche).
+  **depuis le dépôt principal, après le merge** (lancé avant : ENOENT) ; `Doc-inchangée:` dans un COMMIT de la PR.
+- **Worktree / branche** : `../ubumaths-wt-questions-ttechno` (branche `feat/questions-ttechno-lot3b` mergée ;
+  la migration partira d'une nouvelle branche).
 
 ## 1. Périmètre
 
@@ -651,3 +651,5 @@ sur « propriétés algébriques » (034, 078, 079), C4 sur « fonctions x ↦ a
   → `a1 = 1/a3` (a3 ∈ {0,5 ; 0,25}) ; « croissante sur ℝ » dans la variation définie sur [0 ; 5] → sans domaine.
 - Base locale : 4 brouillons (copie des fichiers) ; aperçu admin (Chrome, `127.0.0.1:5177`) : C6 associer
   (4ˣ, 1ˣ, 0,25ˣ) relié → juste, correction lue ; C8 max de −2 × 0,8ˣ sur [0 ; 5], `5` → juste.
+- **#2815 mergée (2026-11-18)**, CI verte. Premier `create-questions --publier` lancé avant le merge : ENOENT,
+  rien écrit.
