@@ -4,8 +4,9 @@
  *
  * Phase 0 validée par David le 2026-11-18 (journal `automaths`) :
  *
- * - on cherche dans le titre, la description, les noms de la branche, de la
- *   notion et de la sous-notion du modèle, et les intitulés de ses points du
+ * - on cherche dans le titre, la description, les noms de la notion et de la
+ *   sous-notion du modèle (pas la branche : « calcul » ramenait toute la
+ *   branche « Nombres et calculs », décision de David du 2026-11-18), et les intitulés de ses points du
  *   programme (`pointNames`, reçus avec la liste des modèles) ;
  * - sans accents ni majuscules, `$` et commandes LaTeX réduits à leurs lettres ;
  * - tous les mots de la recherche, dans n'importe quel ordre, chacun au DÉBUT
@@ -92,7 +93,6 @@ function haystackOf(
 	const parts = [
 		template.title ?? '',
 		template.description ?? '',
-		place?.branch.name ?? '',
 		place?.notion.name ?? '',
 		place?.subnotion?.name ?? '',
 		...(pointNames[template.id] ?? [])

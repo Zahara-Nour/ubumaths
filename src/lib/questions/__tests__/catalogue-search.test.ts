@@ -3,7 +3,7 @@
  * ================================
  *
  * Phase 0 validée par David le 2026-11-18 : titre, description, noms de la
- * branche / notion / sous-notion et intitulés des points du programme ; sans
+ * notion / sous-notion (pas la branche, retirée le jour même) et intitulés des points du programme ; sans
  * accents ni majuscules ; `$` du LaTeX ignorés ; tous les mots, dans n'importe
  * quel ordre, chacun au début d'un mot ; dès 2 lettres ; résultats groupés par
  * sous-notion dans l'ordre de l'arbre ; au-delà de 60 cartes, les groupes
@@ -103,8 +103,11 @@ describe('searchCatalogue', () => {
 		expect(ids('rayon 3')).toEqual(['aire']);
 	});
 
-	it('cherche dans les noms de branche, notion et sous-notion', () => {
-		expect(ids('géométrie')).toEqual(['aire', 'general', 'perimetre']);
+	it('ne cherche pas dans le nom de la branche (« calcul » ramènerait « Nombres et calculs » entier)', () => {
+		expect(ids('géométrie')).toEqual([]);
+	});
+
+	it('cherche dans les noms de notion et de sous-notion', () => {
 		expect(ids('disque')).toEqual(['aire', 'perimetre']);
 		expect(ids('litteral')).toEqual(['dev', 'lineaire']);
 	});
