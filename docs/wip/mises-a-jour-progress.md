@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après #2826._
+_Mis à jour le 2026-11-18, après #2828._
 
-- **État** : `$lib` → `#lib` mergé (#2826, CI verte 16 contrôles), après kit 2.70.4 (#2814), TypeScript 6.0.3 (#2821), SvelteKit 3.2.0 (#2825). Rien de ces quatre PR n'est encore en prod. Constats : sections « PR 2b » et « PR 3 ».
-- **Prochaine action** : dépréciations de kit 3 laissées (`json()`/`text()` ≈ 368 fichiers, `invalidateAll` 54, `error(N, { message })` 36, `pushState`/`replaceState` 15, `goto` avec options 10), une ou plusieurs PR mécaniques ; puis clore le chantier (versement). Les autres majeures (vitest 5, ESLint 10…) sont HORS chantier (décision du 2026-11-18 : lot mensuel de Dependabot).
-- **En attente de David** : `deploy:prod` pour livrer #2814, #2821, #2825, #2826 (puis les vérifications de #2825) ; et le choix : dépréciations tout de suite, ou après le déploiement.
-- **Pièges en cours** : `#lib` exige l'extension écrite (garde `imports-lib-avec-extension`) ; `paths` du `tsconfig.json` nécessaires au typecheck incrémental ; `$env/*` n'expose plus que `src/env.ts` ; `appNavigationMock` ; suite client en local avec `CI=true` ; une suite complète en local fait tomber 3-4 tests de délai (verts seuls).
-- **Worktree / branche** : aucun (worktree `mises-a-jour` supprimé après #2826).
+- **État** : #2814, #2821, #2825, #2826, #2828 mergées, rien encore en prod. #2828 = `pnpm migrer:diese` (conversion `$lib` → `#lib` des branches anciennes) ; consigne envoyée aux 22 sessions ouvertes. **#2830 ouverte** (worktree `ubumaths-wt-lint-ci`, branche `ci/lint-fichiers-modifies`) : ESLint en CI ne relit que les fichiers de la PR (19-24 min → < 1 min), `lint-nocturne.yml` relit tout l'arbre chaque nuit.
+- **Prochaine action** : merger #2830 (CI verte + revue) ; puis les petites dépréciations de kit 3 (`goto` avec options 10, `pushState`/`replaceState` 15, `error(N, { message })` 36, `invalidateAll` 54). `json()`/`text()` (≈ 368 fichiers) REPORTÉS : seconde vague de conflits pour tous les worktrees. Puis clore (versement). Autres majeures HORS chantier (lot mensuel Dependabot).
+- **En attente de David** : `deploy:prod` (recommandé AVANT les dépréciations).
+- **Pièges en cours** : `#lib` exige l'extension écrite (garde `imports-lib-avec-extension`, qui exclut le test de `migrer:diese`) ; `paths` du `tsconfig.json` nécessaires au typecheck incrémental ; `src/env.ts` ; `appNavigationMock` ; suite client en local avec `CI=true` ; commitlint refuse un sujet qui commence par une majuscule (« ESLint… »).
+- **Worktree / branche** : `ubumaths-wt-lint-ci` / `ci/lint-fichiers-modifies`.
 
 ## Origine
 
@@ -108,6 +108,7 @@ Constats dans le code de kit 3.2.0 (pas dans le guide) :
 
 ## Historique
 
+- 2026-11-18 : #2828 mergée (CI verte, 16 contrôles) : `pnpm migrer:diese` ; revue `code-reviewer` (script limité aux imports, hors commentaires, hors lui-même) ; garde imports-lib : exclusion du test.
 - 2026-11-18 : #2825 mergée (CI verte, 16 contrôles) : SvelteKit 3.2.0 + adapter-vercel 7.0.3, `src/env.ts`, cookie 2 ; revues `code-reviewer` + `security-auditor` traitées.
 - 2026-11-18 : #2814 mergée (CI verte, 16 contrôles) : SvelteKit 2.70.3 → 2.70.4.
 - 2026-11-18 : #2821 mergée (CI verte, 17 contrôles) : TypeScript 5.9.3 → 6.0.3 ; `pnpm check` local 0 erreur sur 11 653 fichiers, cliquet tenu, aucune correction de code nécessaire.
