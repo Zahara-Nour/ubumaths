@@ -11,7 +11,7 @@ _Mis à jour le 2026-11-08, après #2478, le `deploy:prod` v0.78.1 et la publica
 - **État** : `7f82d15a` mis à jour en prod (v0 + v1 « à compléter », 12 specs) et **republié** (2026-11-08) ·
   **Prochaine action** : aucune dans ce chantier ; la suite de la soirée (UX de l'admin des modèles) est le chantier
   `admin-modeles` · **En attente de David** : `c9e0effd` publiable (#2462 en prod) ; publication en admin de
-  `f9608ee5`, `9bd4bcc6`, `894f766e` et des 6 fiches de 1re ; modèles `23751c95`, `c1c9cfc3`, `d4f38d30`,
+  `f9608ee5`, `9bd4bcc6`, `894f766e` et des 6 fiches de 1re ; modèles `23751c95`, `d4f38d30`,
   `d4d56c1b` · **Pièges en cours** : `create-questions.ts --mettre-a-jour` ne touche jamais un modèle publié :
   le repasser en brouillon (onglet « Publiés » de la liste), relancer, republier depuis l'onglet « Brouillons »
   (la page d'édition refuse les réponses écrites dans le texte, `outils-manquants.md` n° 22) ; écritures contre
@@ -700,3 +700,6 @@ générale, 1re techno, Terminales) ; relevé fait à la clôture de questions-1
 https://claude.ai/artifact/AxEuUJts2BC2Fnv36Dze9n (capacité `db`, 0 verdict ; alerte attendue « 2-496 absent des
 bornes » : point créé après `2de.json`). `publier-lot.ts` (simulation) : 1 brouillon passe. Reste : verdict et
 `--publier` par David.
+
+**Publié le 2026-11-18** par David (`publier-lot.ts --publier`, sans verdict posé sur la page) ; relu `published` au
+MCP. Plus aucun point d'automatisme de 1re générale sans modèle publié.
