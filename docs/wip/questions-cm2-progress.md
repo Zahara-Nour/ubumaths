@@ -6,13 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, lot 11a écrit (§ 17.2)._
+_Mis à jour le 2026-11-18, après #2837 (fichiers du lot 11a)._
 
-- **État** : lots 0 à 10 publiés (lot 10 heures et durées : 5/5 `published`, relus au MCP, § 16.4). Restent les lots 11a à 19 du § 14 (ordre validé au § 14.1).
-- **Prochaine action** : PR des fichiers du lot 11a (`feat/questions-cm2-lot11a`), puis David : `create-questions --dir scripts/questions/cm2-11a --publier` ; ensuite migration nœud + tag.
-- **En attente de David** : rien. ⛔ Jamais `--mettre-a-jour` de `cm2-7b` avec des fichiers d'avant #2770 (ids CM1).
+- **État** : lots 0 à 10 publiés ; lot 11a (problèmes en une étape, 7 modèles) en fichiers sur `main` (#2837, § 17.2), pas en base. Restent ensuite les lots 11b à 19 du § 14.
+- **Prochaine action** : David crée les brouillons (dépôt principal) ; puis ids reportés sur une branche, migration nœud + tag (parties-tout, comparaison ×2, multiplicatifs, nombre inconnu, caractérisation, quatrième proportionnelle).
+- **En attente de David** : `pnpm tsx scripts/create-questions.ts --dir scripts/questions/cm2-11a --publier`. ⛔ Jamais `--mettre-a-jour` de `cm2-7b` avec des fichiers d'avant #2770 (ids CM1).
 - **Pièges en cours** : `pnpm migration:horodatage` = heure réelle UTC ; `db:migrate` refuse une migration plus ancienne que la dernière jouée → `--dry-run --include-all`, liste relue, puis `--include-all`. Worktree neuf : copier `supabase/.temp/` du dépôt principal, puis `pnpm exec svelte-kit sync`. `Doc-inchangée:` dans un COMMIT. `git commit -m … -- <fichiers>`. Stash du dépôt principal « cm2-9 ids » : copie identique de ce qui est mergé, à supprimer (David).
-- **Worktree / branche** : `ubumaths-wt-questions-cm2`, `feat/questions-cm2-lot11a`.
+- **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -1148,3 +1148,4 @@ de 7 modèles. Tableau du § 17 gardé.
 - Base locale (copie du dossier dans le scratchpad, `.env.local`, sous `with-db-lock.sh`) : 7 brouillons ; aperçu admin à
   390 px (Playwright, port 5179) : deux balances lisibles, □ et △ rendus, case « choix » Oui / Non, grands nombres
   groupés (7 224 286), fractions.
+- #2837 (fichiers) : CI verte au premier passage, mergée.
