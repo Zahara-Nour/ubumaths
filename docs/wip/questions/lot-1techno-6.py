@@ -323,7 +323,7 @@ def p5(contexte, col1, crit1, oui1, non1, crit2, oui2, non2, masques, cases, bon
                      for i in range(1, N_IND + 1))
     brut = f'| {col1} | {crit1} | {crit2} |\n|---|---|---|\n' + lignes
     tableau = ('```tableau-croise\nlignes: ' + oui1 + ' ; ' + non1 + '\ncolonnes: ' + oui2 + ' ; ' + non2 + '\n'
-               + oui1 + ' = {{oo}} ; {{on}}\n' + non1 + ' = {{no}} ; {{nn}}\ncoin: ' + crit1 + ' \\\\ ' + crit2
+               + oui1 + ' = {{oo}} ; {{on}}\n' + non1 + ' = {{no}} ; {{nn}}\ncoin: ' + crit1 + ' \\ ' + crit2
                + '\n')
     enonce = (contexte + '\n\n' + brut + '\nOn range ces données dans le tableau croisé ci-dessous.\n\n'
               + tableau + 'masquer: ' + masques + '\n```\n\nComplète les cases cachées.\n\n'

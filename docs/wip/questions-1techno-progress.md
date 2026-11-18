@@ -11,10 +11,10 @@
 _Mis à jour le 2026-11-18, lot 6 en cours (avant sa PR)._
 
 - **État** : lots 1 à 5 clos. Lot 6 (§ 30-31) : phase 0 validée, P1-P5 écrits
-  (`scripts/questions/1techno-6`), simulation verte, essai en base locale, aperçu Tailscale ouvert (5179, :443/:8443).
+  (`scripts/questions/1techno-6`), simulation verte, rendus vérifiés (Chrome), PR des fichiers ouverte.
 - **Prochaine action** : rendus de P1-P5 par David → fermer l'aperçu → PR des fichiers → David `create-questions
 --publier` → migration de rangement + retrait de 137 et `1_TECHNO` de 97b3a376 (destructif : mesurer l'usage, go).
-- **En attente de David** : rendus du lot 6 (P1-P5 dans l'aperçu).
+- **En attente de David** : rien avant le merge ; ensuite `create-questions --publier` (lot 6).
 - **Pièges en cours** : dépôt principal sale (fichiers d'autres sessions) → commit de journal 827809b06 resté local sur
   `main`, repris sur la branche ; questions-1gen à prévenir (4 communs). `Doc-inchangée:` dans un COMMIT.
 - **Worktree / branche** : `../ubumaths-wt-questions-1techno`, `feat/questions-1techno-lot6`.
@@ -939,3 +939,13 @@ dépôt) ; aperçu Tailscale sur 5179 (5176-5178 pris par d'autres worktrees).
 
 Verdicts des neufs : 3 « ok » sur 3, sans commentaire (N1, N2, N3). David a lancé `publier-lot.ts` (simulation puis
 `--publier`). Vérifié MCP : d0eb1666, fc84a1c8, 8d2047fe `published`, `{1_TECHNO}`, rangés. **Lot 5 clos.**
+
+### Lot 6 — rendus (2026-11-18)
+
+David a choisi que je vérifie les rendus moi-même (Chrome, `127.0.0.1:5179` sur la base locale, sans Tailscale ;
+graines par variation calculées par `generateInstance`). Vus : P1 (choix, arbre, valeur numérique), P2 (tableau de la
+loi), P4 (tableau à quatre valeurs et sa correction), P5 (données brutes, tableau croisé masqué, correction). La frappe
+dans MathLive ne passe pas par l'automate : validation des réponses laissée aux specs. **Défaut corrigé** : le coin du
+tableau croisé s'écrit avec **une** barre oblique inverse (`coin: Sexe \ Régime` en JSON, cf. `cross-table.test.ts`) ;
+deux affichent « Sexe \\ Régime ». Le modèle de 2de 89e928a4 (en prod, recopié) a ce défaut : signalé à David.
+Aperçu fermé, serveur 5179 arrêté, Tailscale :443/:8443 retirés.
