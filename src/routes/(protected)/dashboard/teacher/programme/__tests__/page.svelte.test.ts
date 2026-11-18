@@ -18,11 +18,11 @@ import { render } from 'vitest-browser-svelte';
 import { page } from 'vitest/browser';
 import { tick } from 'svelte';
 
-const invalidateAll = vi.hoisted(() => vi.fn(async () => {}));
+const refreshAll = vi.hoisted(() => vi.fn(async () => {}));
 vi.mock('$app/navigation', async () =>
 	(await import('#tests/helpers/app-navigation-mock.ts')).appNavigationMock({
 		goto: vi.fn(async () => {}),
-		invalidateAll
+		refreshAll
 	})
 );
 
@@ -160,7 +160,7 @@ let fetchMock: ReturnType<typeof vi.fn>;
 beforeEach(() => {
 	fetchMock = vi.fn(async () => new Response(JSON.stringify({ point: {} }), { status: 200 }));
 	vi.stubGlobal('fetch', fetchMock);
-	invalidateAll.mockClear();
+	refreshAll.mockClear();
 });
 
 afterEach(() => {

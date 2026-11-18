@@ -111,7 +111,7 @@
 	async function refreshData() {
 		isLoading = true;
 		try {
-			await goto(page.url.toString(), { invalidateAll: true });
+			await goto(page.url.toString(), { refreshAll: true });
 			toaster.success('Données actualisées');
 		} catch (err) {
 			console.error('Error refreshing data:', err);
@@ -128,7 +128,7 @@
 
 	// Handle settings update (refresh data after saving)
 	async function handleSettingsUpdate() {
-		await goto(page.url.toString(), { invalidateAll: true });
+		await goto(page.url.toString(), { refreshAll: true });
 	}
 
 	// Format number with spaces as thousands separator

@@ -1,6 +1,6 @@
 <!-- eslint-disable custom/require-zod-validation -->
 <script lang="ts">
-	import { goto, invalidateAll } from '$app/navigation';
+	import { goto, refreshAll } from '$app/navigation';
 	import { Button } from '#lib/components/ui/button/index.ts';
 	import * as Card from '#lib/components/ui/card/index.ts';
 	import { Badge } from '#lib/components/ui/badge/index.ts';
@@ -168,7 +168,7 @@
 
 			// Close dialog and refresh data
 			bulkResolveDialogOpen = false;
-			await invalidateAll();
+			await refreshAll();
 		} catch (err) {
 			// Show error toast
 			const errorMessage = err instanceof Error ? err.message : 'Erreur inconnue';
@@ -201,7 +201,7 @@
 
 			// Close dialog and refresh data
 			deleteResolvedDialogOpen = false;
-			await invalidateAll();
+			await refreshAll();
 		} catch (err) {
 			// Show error toast
 			const errorMessage = err instanceof Error ? err.message : 'Erreur inconnue';

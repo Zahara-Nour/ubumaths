@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
 	import { browser } from '$app/env';
-	import { invalidateAll } from '$app/navigation';
+	import { refreshAll } from '$app/navigation';
 	import PythonEditor from '#lib/components/python/PythonEditor.svelte';
 	import LockedPythonEditor from '#lib/components/python/LockedPythonEditor.svelte';
 	import { parseTemplate } from '#lib/utils/locked-zones.ts';
@@ -196,7 +196,7 @@
 			}
 
 			// Refresh submissions list from the server.
-			await invalidateAll();
+			await refreshAll();
 		} finally {
 			isSubmitting = false;
 		}

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { lore } from '#lib/config/lore.ts';
-	import { invalidateAll } from '$app/navigation';
+	import { refreshAll } from '$app/navigation';
 	import { Button } from '#lib/components/ui/button/index.ts';
 	import { Badge } from '#lib/components/ui/badge/index.ts';
 	import { ConfirmDialog } from '#lib/components/ui/confirm-dialog/index.ts';
@@ -45,7 +45,7 @@
 			}
 			toaster.success(`${lore.learning.exercise} supprimée`);
 			confirmingDelete = null;
-			await invalidateAll();
+			await refreshAll();
 		} catch (e) {
 			toaster.error(e instanceof Error ? e.message : 'Erreur lors de la suppression');
 		} finally {

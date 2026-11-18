@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { lore } from '#lib/config/lore.ts';
-	import { invalidateAll } from '$app/navigation';
+	import { refreshAll } from '$app/navigation';
 	import { page } from '$app/state';
 	import { browser } from '$app/env';
 	import ExerciseForm from '#lib/components/exercises/ExerciseForm.svelte';
@@ -216,7 +216,7 @@
 			}
 
 			toaster.success(`${lore.learning.exercise} mise à jour avec succès`);
-			await invalidateAll();
+			await refreshAll();
 		} catch (error) {
 			console.error('Error updating exercise:', error);
 			toaster.error(

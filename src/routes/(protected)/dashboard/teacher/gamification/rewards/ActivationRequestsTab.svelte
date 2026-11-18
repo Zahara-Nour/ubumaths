@@ -21,7 +21,7 @@
 	import * as Card from '#lib/components/ui/card/index.ts';
 	import { Badge } from '#lib/components/ui/badge/index.ts';
 	import { toaster } from '#lib/stores/toaster.svelte.ts';
-	import { invalidateAll } from '$app/navigation';
+	import { refreshAll } from '$app/navigation';
 	import MySelect from '#lib/components/MySelect.svelte';
 	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
 	import ConfirmDialog from '#lib/components/ui/confirm-dialog/ConfirmDialog.svelte';
@@ -219,7 +219,7 @@
 		const processedInstanceIds = new Set(requestsToProcess.map((r) => r.instanceId));
 		onRequestsChange(activationRequests.filter((req) => !processedInstanceIds.has(req.instanceId)));
 
-		await invalidateAll();
+		await refreshAll();
 
 		isBulkProcessing = false;
 		showBulkApproveDialog = false;
@@ -269,7 +269,7 @@
 		const processedInstanceIds = new Set(requestsToProcess.map((r) => r.instanceId));
 		onRequestsChange(activationRequests.filter((req) => !processedInstanceIds.has(req.instanceId)));
 
-		await invalidateAll();
+		await refreshAll();
 
 		isBulkProcessing = false;
 		showBulkRejectDialog = false;
@@ -299,7 +299,7 @@
 			// Optimistic update
 			onRequestsChange(activationRequests.filter((req) => req.instanceId !== instanceId));
 
-			await invalidateAll();
+			await refreshAll();
 		} catch (_error) {
 			console.error('[rewards] Approve card error:', _error);
 			toaster.error(_error instanceof Error ? _error.message : 'Erreur');
@@ -328,7 +328,7 @@
 			// Optimistic update
 			onRequestsChange(activationRequests.filter((req) => req.instanceId !== instanceId));
 
-			await invalidateAll();
+			await refreshAll();
 		} catch (_error) {
 			toaster.error('Erreur lors du rejet');
 		} finally {

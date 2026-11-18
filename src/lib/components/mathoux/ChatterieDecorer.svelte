@@ -15,10 +15,10 @@
 	 *   fois), ou « Retirer » si ce Mathou la porte. Gratuit.
 	 *
 	 * La base débite et vérifie tout (`/api/student/mathoux/decorations/*`) ; la
-	 * page est rechargée après chaque action (`invalidateAll`).
+	 * page est rechargée après chaque action (`refreshAll`).
 	 */
 
-	import { invalidateAll } from '$app/navigation';
+	import { refreshAll } from '$app/navigation';
 	import * as Dialog from '#lib/components/ui/dialog/index.ts';
 	import { Button } from '#lib/components/ui/button/index.ts';
 	import { consent } from '#lib/stores/consent.svelte.ts';
@@ -174,7 +174,7 @@
 	async function run(info: CatalogInfo, action: () => Promise<PostOutcome>) {
 		busy = info.id;
 		try {
-			if ((await action()) !== 'failed') await invalidateAll();
+			if ((await action()) !== 'failed') await refreshAll();
 		} finally {
 			busy = null;
 		}

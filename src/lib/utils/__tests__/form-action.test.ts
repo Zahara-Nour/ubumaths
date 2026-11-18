@@ -6,11 +6,11 @@ const LOCATION = '/dashboard/teacher/cahier-texte';
 
 // `deserialize` décode le `data` encodé en devalue. Le mock le remplace par un
 // JSON.parse : le test porte sur la lecture du VERDICT, pas sur l'encodage.
-const invalidateAllMock = vi.fn();
+const refreshAllMock = vi.fn();
 const toasterWarning = vi.fn();
 
 vi.mock('$app/navigation', () => ({
-	invalidateAll: () => invalidateAllMock()
+	refreshAll: () => refreshAllMock()
 }));
 
 vi.mock('#lib/stores/toaster.svelte.ts', () => ({
@@ -217,23 +217,23 @@ describe('submitAction', () => {
 
 describe('refreshPageData', () => {
 	beforeEach(() => {
-		invalidateAllMock.mockReset();
+		refreshAllMock.mockReset();
 		toasterWarning.mockReset();
 	});
 
 	it('recharge les données de la page', async () => {
-		invalidateAllMock.mockResolvedValue(undefined);
+		refreshAllMock.mockResolvedValue(undefined);
 
 		await refreshPageData();
 
-		expect(invalidateAllMock).toHaveBeenCalledOnce();
+		expect(refreshAllMock).toHaveBeenCalledOnce();
 	});
 
 	// L'écriture a réussi ; c'est le rechargement qui tombe. Laissé nu, ce rejet
 	// sautait le message de succès et la fermeture de la modale : l'écran se
 	// figeait sans rien dire.
 	it('avertit sans jeter quand le rechargement échoue', async () => {
-		invalidateAllMock.mockRejectedValue(new Error('Failed to fetch'));
+		refreshAllMock.mockRejectedValue(new Error('Failed to fetch'));
 
 		await expect(refreshPageData()).resolves.toBeUndefined();
 		expect(toasterWarning).toHaveBeenCalledWith(

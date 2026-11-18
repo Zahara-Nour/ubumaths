@@ -31,7 +31,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		// Only teachers and admins can upload documents
 		if (profile.role !== 'teacher' && profile.role !== 'admin') {
-			throw error(403, { message: 'Seuls les enseignants peuvent téléverser des documents' });
+			throw error(403, 'Seuls les enseignants peuvent téléverser des documents');
 		}
 
 		// ====================================================================
@@ -42,7 +42,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		const metadataStr = formData.get('metadata');
 
 		if (!file || !(file instanceof File)) {
-			throw error(400, { message: 'Fichier manquant' });
+			throw error(400, 'Fichier manquant');
 		}
 
 		// ====================================================================
@@ -55,11 +55,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		});
 
 		if (!fileValidation.success) {
-			throw error(400, { message: fileValidation.error.issues[0].message });
+			throw error(400, fileValidation.error.issues[0].message);
 		}
 
 		if (file.size > MAX_FILE_SIZE) {
-			throw error(400, { message: 'Le fichier est trop volumineux (max 10MB)' });
+			throw error(400, 'Le fichier est trop volumineux (max 10MB)');
 		}
 
 		// ====================================================================
@@ -78,14 +78,14 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				const parsed = JSON.parse(metadataStr);
 				const validation = documentUploadSchema.safeParse(parsed);
 				if (!validation.success) {
-					throw error(400, { message: validation.error.issues[0].message });
+					throw error(400, validation.error.issues[0].message);
 				}
 				metadata = validation.data;
 			} catch (e) {
 				if (e && typeof e === 'object' && 'status' in e) {
 					throw e; // Re-throw SvelteKit errors
 				}
-				throw error(400, { message: 'Métadonnées invalides' });
+				throw error(400, 'Métadonnées invalides');
 			}
 		} else {
 			// Use filename as title if no metadata provided
@@ -104,16 +104,12 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		const extraction = await extractText(buffer, file.type);
 
 		if (!extraction.success || !extraction.text) {
-			throw error(400, {
-				message: extraction.error || "Impossible d'extraire le texte du fichier"
-			});
+			throw error(400, extraction.error || "Impossible d'extraire le texte du fichier");
 		}
 
 		// Check minimum content length
 		if (extraction.text.length < 50) {
-			throw error(400, {
-				message: 'Le document contient trop peu de texte pour être indexé'
-			});
+			throw error(400, 'Le document contient trop peu de texte pour être indexé');
 		}
 
 		// ====================================================================
@@ -138,9 +134,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		});
 
 		if (!result.success) {
-			throw error(500, {
-				message: result.error || "Erreur lors de l'indexation du document"
-			});
+			throw error(500, result.error || "Erreur lors de l'indexation du document");
 		}
 
 		// ====================================================================
@@ -160,8 +154,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			throw err;
 		}
 
-		throw error(500, {
-			message: 'Erreur lors du téléversement du document'
-		});
+		throw error(500, 'Erreur lors du téléversement du document');
 	}
 };

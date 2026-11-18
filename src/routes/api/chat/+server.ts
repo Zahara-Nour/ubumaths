@@ -42,7 +42,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			// Validate with tutor schema
 			const validation = tutorRequestSchema.safeParse(rawBody);
 			if (!validation.success) {
-				throw error(400, { message: validation.error.issues[0].message });
+				throw error(400, validation.error.issues[0].message);
 			}
 
 			const { messages, exerciseContext, conversationId, helpLevel } = validation.data;
@@ -50,9 +50,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			// 1. Tutor-specific rate limiting
 			const rateLimitResult = await checkTutorRateLimit(user.id, exerciseContext?.exerciseId);
 			if (!rateLimitResult.allowed) {
-				throw error(429, {
-					message: rateLimitResult.message || 'Limite de tuteur dépassée. Réessayer plus tard.'
-				});
+				throw error(
+					429,
+					rateLimitResult.message || 'Limite de tuteur dépassée. Réessayer plus tard.'
+				);
 			}
 
 			// 2. Get last user message for cheat detection
@@ -306,16 +307,14 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		const rateLimitResult = await checkChatbotRateLimit(user.id);
 
 		if (!rateLimitResult.allowed) {
-			throw error(429, {
-				message: rateLimitResult.message || 'Trop de requêtes. Réessayer plus tard.'
-			});
+			throw error(429, rateLimitResult.message || 'Trop de requêtes. Réessayer plus tard.');
 		}
 
 		// SECURITY: Input Validation with Zod
 		const validation = chatRequestSchema.safeParse(rawBody);
 
 		if (!validation.success) {
-			throw error(400, { message: validation.error.issues[0].message });
+			throw error(400, validation.error.issues[0].message);
 		}
 
 		const { messages, personality } = validation.data;
@@ -401,8 +400,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			throw err; // Re-throw SvelteKit errors (401, 429, 400)
 		}
 
-		throw error(500, {
-			message: "Erreur lors de la communication avec l'IA"
-		});
+		throw error(500, "Erreur lors de la communication avec l'IA");
 	}
 };

@@ -8,7 +8,7 @@
 	 * renommer un point (son code ne change jamais) et l'archiver / le restaurer.
 	 *
 	 * Les écritures passent par PATCH /api/teacher/curriculum/points/[pointId] ;
-	 * la page se recharge par invalidateAll().
+	 * la page se recharge par refreshAll().
 	 *
 	 * Vue « Carte » (?vue=carte) : l'arbre complet en carte mentale, sans
 	 * édition (ProgrammeMap).
@@ -17,7 +17,7 @@
 	 * officiel du niveau, en PDF et en transcription ubumark
 	 * (OfficialProgrammeView).
 	 */
-	import { goto, invalidateAll } from '$app/navigation';
+	import { goto, refreshAll } from '$app/navigation';
 	import { page } from '$app/state';
 	import { resolve } from '$app/paths';
 	import { lore } from '#lib/config/lore.ts';
@@ -139,7 +139,7 @@
 		if (await patchPoint(renameTarget.id, { name })) {
 			renameOpen = false;
 			toaster.success('Renommé');
-			await invalidateAll();
+			await refreshAll();
 		}
 	}
 
@@ -149,7 +149,7 @@
 		const archiving = point.archived_at === null;
 		if (await patchPoint(point.id, { archived: archiving })) {
 			toaster.success(archiving ? 'Archivé' : 'Restauré');
-			await invalidateAll();
+			await refreshAll();
 		}
 	}
 </script>

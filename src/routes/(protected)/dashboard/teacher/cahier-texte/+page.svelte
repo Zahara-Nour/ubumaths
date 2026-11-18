@@ -90,7 +90,7 @@
 		for (const [key, value] of Object.entries(params)) {
 			url.searchParams.set(key, value);
 		}
-		goto(url.toString(), { replaceState: true });
+		goto(url.toString(), { replace: true });
 	}
 
 	/**

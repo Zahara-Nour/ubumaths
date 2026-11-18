@@ -2,7 +2,7 @@
 	import { lore } from '#lib/config/lore.ts';
 	import type { PageData } from './$types';
 	import { enhance } from '$app/forms';
-	import { invalidateAll } from '$app/navigation';
+	import { refreshAll } from '$app/navigation';
 	import { Button } from '#lib/components/ui/button/index.ts';
 	import { Input } from '#lib/components/ui/input/index.ts';
 	import * as Card from '#lib/components/ui/card/index.ts';
@@ -107,7 +107,7 @@
 			}
 
 			toaster.success('Email de consentement envoyé !');
-			await invalidateAll();
+			await refreshAll();
 		} catch (err) {
 			console.error('[Consent Page] Send error:', err);
 			toaster.error(err instanceof Error ? err.message : "Erreur lors de l'envoi");
@@ -280,7 +280,7 @@
 																		toaster.success(
 																			'Déclaration annulée : la question sera reposée'
 																		);
-																		await invalidateAll();
+																		await refreshAll();
 																	} else if (result.type === 'failure') {
 																		toaster.error(String(result.data?.error || 'Erreur'));
 																	} else if (result.type === 'error') {
@@ -335,7 +335,7 @@
 															if (result.type === 'success') {
 																toaster.success('Email mis à jour');
 																cancelEditing(student.id);
-																await invalidateAll();
+																await refreshAll();
 															} else if (result.type === 'failure') {
 																toaster.error(String(result.data?.error || 'Erreur'));
 															}

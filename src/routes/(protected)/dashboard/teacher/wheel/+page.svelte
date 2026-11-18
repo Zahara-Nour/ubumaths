@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { lore } from '#lib/config/lore.ts';
-	import { invalidateAll } from '$app/navigation';
+	import { refreshAll } from '$app/navigation';
 	import Wheel from '#lib/components/Wheel.svelte';
 	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import type { PageData } from './$types';
@@ -42,7 +42,7 @@
 
 			// Refresh data
 			setTimeout(() => {
-				invalidateAll();
+				refreshAll();
 			}, 100);
 
 			// Find student name

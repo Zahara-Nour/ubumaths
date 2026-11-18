@@ -21,7 +21,7 @@
 	import { Button } from '#lib/components/ui/button/index.ts';
 	import { Input } from '#lib/components/ui/input/index.ts';
 	import { enhance } from '$app/forms';
-	import { invalidateAll } from '$app/navigation';
+	import { refreshAll } from '$app/navigation';
 	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import type { Snippet } from 'svelte';
 
@@ -200,7 +200,7 @@
 							// redirect / error result types: let SvelteKit handle it.
 							await update();
 						}
-						await invalidateAll();
+						await refreshAll();
 					};
 				}}
 			>

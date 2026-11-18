@@ -14,7 +14,7 @@
 		- Automatic data refresh after actions
 -->
 <script lang="ts">
-	import { invalidateAll } from '$app/navigation';
+	import { refreshAll } from '$app/navigation';
 	import * as Tabs from '#lib/components/ui/tabs/index.ts';
 	import { Badge } from '#lib/components/ui/badge/index.ts';
 	import { Button } from '#lib/components/ui/button/index.ts';
@@ -40,7 +40,7 @@
 	 */
 	async function handleUnrestrict(): Promise<void> {
 		// Refresh data from server
-		await invalidateAll();
+		await refreshAll();
 	}
 
 	/**
@@ -48,7 +48,7 @@
 	 */
 	async function handleReportReview(): Promise<void> {
 		// Refresh data from server
-		await invalidateAll();
+		await refreshAll();
 	}
 
 	/**
@@ -56,7 +56,7 @@
 	 */
 	async function handleNewRestriction(): Promise<void> {
 		// Refresh data from server
-		await invalidateAll();
+		await refreshAll();
 	}
 </script>
 

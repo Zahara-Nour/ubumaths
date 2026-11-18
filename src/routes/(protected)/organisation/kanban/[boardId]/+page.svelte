@@ -117,7 +117,7 @@
 
 	// Local mutable mirror of the server data, seeded once at mount via a
 	// helper that copies out of the reactive `data` prop. We deliberately do
-	// NOT re-seed if `data` changes (no `invalidateAll()` happens on this page
+	// NOT re-seed if `data` changes (no `refreshAll()` happens on this page
 	// — all mutations go through optimistic local state). Using a helper
 	// function keeps the autofixer happy about state_referenced_locally.
 	function snapshotColumns(): ColumnWithCards[] {

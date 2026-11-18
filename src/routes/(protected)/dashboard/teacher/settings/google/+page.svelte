@@ -98,14 +98,14 @@
 			// Clean up URL (remove query param)
 			const url = new URL(page.url.href);
 			url.searchParams.delete('connected');
-			await goto(url.pathname, { replaceState: true });
+			await goto(url.pathname, { replace: true });
 		}
 
 		// Retour de Google en erreur (refus, jeton) : le dire, puis nettoyer l'adresse.
 		const oauthError = googleOAuthErrorMessage(page.url.searchParams.get('error'));
 		if (oauthError) {
 			toaster.error(oauthError);
-			await goto(page.url.pathname, { replaceState: true });
+			await goto(page.url.pathname, { replace: true });
 		}
 	});
 
