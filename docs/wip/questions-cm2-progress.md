@@ -1236,3 +1236,9 @@ e) ? Reco : **oui**.
 choix, qui est le cœur du problème ? Reco : **oui**, et le dire dans le corrigé.
 
 (e) Un seul lot de **5 modèles** ? Reco : **oui**.
+
+### 18.1 Lot 11b : décisions (David, 2026-11-18)
+
+Recommandations suivies : (a) 064 en case choix `plusieurs: oui` (cocher toutes les solutions) ; (b) 062 sans les
+dominos ; (c) 064 au niveau 1 de « Préalgorithmique » ; (d) 063 V2, les deux sens de pose des torchons, dit au
+corrigé ; (e) un seul lot de 5 modèles. Tableau du § 18 gardé.
