@@ -9,7 +9,7 @@
 _Mis à jour le 2026-11-18, après la publication du lot 11a._
 
 - **État** : lots 0 à 11a publiés (§ 17.4). Restent les lots 11b à 19 du § 14.
-- **Prochaine action** : phase 0 du lot 11b (problèmes en plusieurs étapes : 119, 060, 062, 063, 064), relevé MCP d'abord.
+- **Prochaine action** : réponses de David aux questions (a) à (e) du § 18, puis écriture du lot 11b.
 - **En attente de David** : fichiers `cm2-11a/*.json` modifiés dans `ubumaths-wt-questions-cm1` (ids, copie de ce qui est
   mergé) : à annuler là-bas. Stash « cm2-9 ids » du dépôt principal : à supprimer.
 - **Pièges en cours** : lancer `create-questions` depuis le dépôt principal (au lot 11a, lancé du worktree cm1 : ids
@@ -1182,3 +1182,57 @@ de 7 modèles. Tableau du § 17 gardé.
 - Page à cocher : 7 verdicts « OK », sans commentaire ; les 7 ids concordent avec `scripts/questions/cm2-11a/*.json`.
 - `publier-lot --dir scripts/questions/cm2-11a` en simulation (prod) : 7 brouillons passent le contrôle ; David
   `--publier` ; simulation rejouée : les 7 « publié ».
+
+## 18. Lot 11b — problèmes en plusieurs étapes (119, 060, 062, 063, 064) : phase 0 (proposée le 2026-11-18)
+
+Relevé MCP du 2026-11-18 : aucun modèle sur les 5 points. Sous-notions et niveaux pris :
+
+- 119 (additifs en plusieurs étapes), 060 (mixtes) : **en deux étapes ou plus** (niveaux 4 à 11, CP → CM1 ; CM1
+  `9666ca34` additifs en deux ou trois étapes, `30c6f9d4` mixtes, les quatre opérations) ;
+- 062 (dénombrement) : **produits cartésiens** (1 CE2, 2 CM1 `67cb8e74` : 6 × 3 tenues, menus, deux dés, dominos de 0
+  à n ≤ 6) ;
+- 063 (optimisation) : **optimisation** (1 CM1 `03bd034d` : bracelets, payer en pièces de 2 € et 5 €) ;
+- 064 (préparer les algorithmes) : notion « Algorithmique », sous-notion **Préalgorithmique** (5 modèles de 6e, tous
+  au niveau 1, sur les programmes : aucun sur la recherche exhaustive).
+
+Bornes (`cycle3.json`, Exemples de réussite CM2 2025 p. 11-14) : champ du CM2, « plus la structure est complexe, plus
+le champ numérique est réduit » (BO) ; 119 : Qassim (9 € + 13,85 € + camembert, billet de 50 €, 21,45 € rendus), Côme
+(retire 40 €, rôti 17,80 €, il reste 31,40 € : au départ ?), Yseult (5/12 et 1/4 de pizza donnés : part gardée ?),
+Léo et Lucie (43,40 € à deux, 7,80 € de plus : chacun ?) ; 060 : Romy (3 pains à 1,35 €, 7 chaussons, billet de 20 €,
+7,90 € rendus : un chausson ?) ; 062 : tableau, arbre ou liste (trois lancers de pièce ; dominos de 0 à 6) ; 063 :
+plusieurs contraintes (étagères : planches de 5 m coupées en 2 m, équerres, vis ; torchons 80 × 50 cm dans un tissu de
+3 m × 2,40 m, 50 m de ruban) ; 064 : recherche exhaustive (rectangles d'aire 60 cm² à côtés entiers ; 100 œufs en
+boîtes de 6 et de 10 ; groupes d'un nombre impair d'élèves dans une classe de 30).
+
+Outil (en prod) : la case « choix » à **plusieurs bonnes réponses** (` ```choix ` + `plusieurs: oui`, note 1 / ½ / 0).
+
+| #     | Point   | Sous-notion, niveau        | Modèle                                   | Variations, plages                                                                                                                                                                                                                                                                                                                                                          |
+| ----- | ------- | -------------------------- | ---------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 11b-1 | CM2-119 | en deux étapes ou plus, 12 | Problèmes additifs en plusieurs étapes   | V1 un prix manquant (Qassim : deux prix connus, un billet, la monnaie rendue) ; V2 l'état de départ après deux ou trois actions (Côme) ; V3 fractions : la part qui reste (1 − 5/12 − 1/4 = 1/3, dénominateurs ≤ 60, l'un multiple de l'autre) ; V4 la somme et l'écart connus (Léo et Lucie) → deux cases                                                                  |
+| 11b-2 | CM2-060 | en deux étapes ou plus, 13 | Problèmes mixtes en plusieurs étapes     | V1 un prix à l'unité inconnu (Romy : a objets à p €, b objets inconnus, billet, monnaie rendue ; division exacte au centime) ; V2 un achat puis un partage (k paquets à p €, partagés entre m amis) ; V3 recette et dépenses (n objets vendus à p €, des frais fixes, le bénéfice) ; entiers ≤ 10 000, prix à deux décimales                                                |
+| 11b-3 | CM2-062 | produits cartésiens, 3     | Problèmes de dénombrement : arbre, liste | V1 trois ou quatre lancers d'une pièce : combien de résultats possibles ? (8, 16 ; corrigé en arbre) ; V2 nombres de trois chiffres écrits avec trois chiffres donnés, chacun une fois (6) ou répétés (27) ; V3 un tournoi, chaque équipe joue une fois contre chaque autre (n de 4 à 10 : n × (n − 1) ÷ 2)                                                                 |
+| 11b-4 | CM2-063 | optimisation, 2            | Problèmes d'optimisation : contraintes   | V1 étagères : trois fournitures, les planches coupées (planche de L m → L ÷ l morceaux, sans reste utile), le plus petit des trois nombres ; V2 torchons : combien de rectangles dans le tissu (deux sens possibles, nombres où les deux sens diffèrent) et combien de tours de ruban, le plus petit des deux                                                               |
+| 11b-5 | CM2-064 | Préalgorithmique, voir (c) | Trouver toutes les solutions             | case choix, `plusieurs: oui` : V1 rectangles d'aire A à côtés entiers (A parmi 24, 36, 48, 60…) : cocher toutes les dimensions possibles parmi 6 à 8 (pièges : 7 × 9 pour 60) ; V2 N œufs en boîtes pleines de 6 et de 10 (N pair de 40 à 100) : cocher toutes les façons ; V3 groupes de même taille, un nombre impair d'élèves (n de 20 à 36) : cocher toutes les tailles |
+
+Forme commune (lot 11a) : une case par nombre, l'unité après la case ; prix à deux décimales ; corrigés en phrases
+(schéma en barres pour 119 V1, V4 et 060 V1 ; arbre ou liste pour 062 ; liste organisée pour 064). Erreurs typiques en
+`testSpecs` : 119 V2, 40 − 17,80 + 31,40 (sens de l'action) ; 119 V4, 43,40 ÷ 2 ; 062 V3, n × (n − 1) sans diviser
+par 2 ; 063, le plus grand des nombres au lieu du plus petit ; 064, une seule solution cochée.
+
+**Question d'accès** : 5 brouillons neufs, puis nœud + tag → personne ne lit rien de plus avant la publication.
+
+**À trancher** :
+
+(a) 064 : l'élève **coche toutes les bonnes réponses** dans une liste (« 1 × 60, 2 × 30, 7 × 9… : coche toutes les
+dimensions possibles »), plutôt que de répondre « combien de solutions ? ». Reco : **cocher** ; le nombre seul ne
+montre pas qu'il a trouvé les bonnes.
+
+(b) 062 sans les dominos (le modèle du CM1 les a déjà, de 0 à 6) ? Reco : **oui**.
+
+(c) 064 au **niveau 1** de « Préalgorithmique », où sont déjà les 5 modèles de 6e (même choix qu'au lot 11a, § 17.1
+e) ? Reco : **oui**.
+
+(d) 063 V2 : les torchons peuvent être posés dans les deux sens (en long : 12 torchons ; en large : 18). Garder ce
+choix, qui est le cœur du problème ? Reco : **oui**, et le dire dans le corrigé.
+
+(e) Un seul lot de **5 modèles** ? Reco : **oui**.
