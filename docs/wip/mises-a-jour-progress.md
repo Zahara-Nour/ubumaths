@@ -2,10 +2,10 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, PR 2b en cours (branche `chore/sveltekit-3`)._
+_Mis à jour le 2026-11-18, PR 2b prête à pousser (branche `chore/sveltekit-3`)._
 
-- **État** : 14 commits locaux, rien de poussé. `check:incremental` 0 erreur, suite serveur verte (67 546), docs à jour (`docs:check-a-jour` OK), `svelte:autofix` passé sur les 123 `.svelte` du diff (rien de nouveau). Suite client : figeait à cause de `replaceState` devenu asynchrone (diaporama, corrigé) ; relancée en entier, résultat à lire. Brouillon du corps de PR : section « Vérifications » à remplir. #2814 et #2821 mergées, pas encore en prod.
-- **Prochaine action** : `CI=true pnpm exec vitest run --project=client` vert, puis `types:cliquet`, `pnpm build`, essai manuel sur 5176 (connexion, navigation, page d'erreur, filtres `goto`), revues `code-reviewer` (opus) + `security-auditor`, grep « claude|anthropic », push et PR.
+- **État** : 21 commits, prêts à pousser. Tout vert en local : `pnpm check` (11 559 fichiers, TS 6), `pnpm build`, suite serveur (67 546), suite client en 2 tranches comme la CI (4 962), `types:cliquet`, intégration ciblée, essai manuel sur 5178 (admin, menu, 404). Revues faites : `security-auditor` sans bloquant (cookie 2 corrigé) ; `code-reviewer` : alias `$lib` de la suite d'intégration, `data-sveltekit-noscroll`, liens de notification périmés, `check-incremental`/`check-env-parity` corrigés. #2814 et #2821 mergées, pas encore en prod.
+- **Prochaine action** : grep « claude|anthropic », push, PR (corps dans le scratchpad de la session ou à réécrire depuis la section « PR 2b »), CI surveillée, merge si verte ; puis bloc à jour, worktree nettoyé. Ensuite : `$lib` → `#lib` (PR à part).
 - **En attente de David** : `deploy:prod` pour livrer #2814 et #2821, quand il le voudra.
 - **Pièges en cours** : `$lib` gardé par `alias` (déprécié) — `#lib` = PR à part ; `$env/*` n'expose plus que ce que déclare `src/env.ts` ; `check:incremental` (tsgo) ne vérifie pas TS 6, seul `pnpm check`. `minimumReleaseAge` 3 j.
 - **Worktree / branche** : `../ubumaths-wt-mises-a-jour` · `chore/sveltekit-3`.
@@ -69,6 +69,13 @@ Constats dans le code de kit 3.2.0 (pas dans le guide) :
 - **Tests navigateur** : `$app/env/public` lit `globalThis.__sveltekit_dev`, posé par la page HTML de kit, pas par vitest → posé dans `vitest-setup-client.ts`.
 - `Handle` & co → `@sveltejs/kit/hooks` ; `ActionResult` → `$app/forms`.
 - `error(N, { message })` et `pushState`/`replaceState` seulement **dépréciés** (avertissement) ; les appels dépréciés de `replaceState` ne déclenchent pas `before/afterNavigate` → laissés. Mais **`replaceState` est devenu asynchrone** et rejette quand le routeur n'est pas démarré : le `try/catch` de `slides/navigation/hash.ts` ne voyait plus l'échec → rejet non géré qui **figeait toute la suite client** (`wrapDynamicImport` absent dans les fichiers suivants) → repli par `.catch`.
+- **`importOriginal` de `$app/navigation` dans un `vi.mock` ne se termine jamais** en kit 3 : le fichier se fige, puis toute la suite client (`wrapDynamicImport` absent = bruit, présent aussi sur `main`). 11 fichiers passés au mock partagé `tests/helpers/app-navigation-mock.ts` (`appNavigationMock({ goto })`).
+- **`ActionResult`** : succès/échec portent `location`, `App.Error` a un `status` (test `form-action`, cliquet).
+- **Suite d'intégration** : `sveltekit()` sans options ne résout plus `$lib` → `kitAlias` partagé (`vitest.base.config.ts`) entre `vite.config.ts` et `vitest.integration.config.ts`.
+- **`data-sveltekit-noscroll`/`keepfocus` ignorés** (avertissement en dev seulement) → `data-sveltekit-reset="false"` (programme, classements).
+- **`goto` rejette une route inconnue** (kit 2 chargeait la page, donc une 404) → liens de notification par `gotoNotification` (repli `location.assign`, chemins du site seulement) ; deux notifications ont des adresses mortes (`student/resources/<id>`, `student/vip-cards`), fonctions plus appelées.
+- **cookie** : l'override `cookie >=0.7.0` imposait 1.1.1 à kit 3 (qui exige ^2.0.1, sa validation des noms retirée) → borné à `cookie@<0.7.0`.
+- **`@vercel/speed-insights`** importe encore `$app/environment` (avertissement en dev, accepté par kit 3).
 - **Suite client en local** : sans `CI=true`, elle lance aussi les tests Pyodide réels (`*-real`) ; lancer `CI=true pnpm exec vitest run --project=client` pour reproduire la CI.
 - **`goto` : `keepFocus`/`noScroll` retirés** (erreur en dev) → `reset: false` (9 appels).
 - **`redirect()` vers une autre origine** exige `{ external }` : seule la connexion Google (`auth/login`) sort du site → liste blanche = origine Supabase, test à l'appui. Les `next` de `auth/callback` et `auth/confirm` sont relatifs ou de même origine (permis).
