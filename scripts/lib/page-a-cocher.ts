@@ -299,28 +299,27 @@ function figureACompleter(source: string): Bloc {
 	const scene = r.scene;
 	const size = node.header.size;
 	const html = figureSvg(scene, size);
-	const autres = [...new Set(spec.checks.map((c) => c.kind))].filter(
-		(k) => !CONSTRUCTIONS_DESSINEES.has(k)
-	);
-	if (autres.length > 0) {
-		return {
-			html,
-			avertissements: autres.map(
-				(k) => `bloc figure-a-completer : solution de « ${k} » non dessinée, la voir dans l’aperçu`
-			)
-		};
-	}
+	// Seules les vérifications dessinées passent à la solution ; les autres : une alerte chacune
+	const dessinees = spec.checks.filter((c) => CONSTRUCTIONS_DESSINEES.has(c.kind));
+	const avertissements = [...new Set(spec.checks.map((c) => c.kind))]
+		.filter((k) => !CONSTRUCTIONS_DESSINEES.has(k))
+		.map(
+			(k) => `bloc figure-a-completer : solution de « ${k} » non dessinée, la voir dans l’aperçu`
+		);
+	if (dessinees.length === 0) return { html, avertissements };
 	let expected;
+	let positions;
 	try {
 		expected = constructionExpected(source);
+		positions = constructionPositions(source);
 	} catch (e) {
 		throw new Error(
 			'bloc figure-a-completer en erreur : ' + (e instanceof Error ? e.message : String(e))
 		);
 	}
 	const points = allNamedPointPositions(scene);
-	const lignes = solutionLines(spec.checks, points, [], figureShapes(scene, node.header), expected);
-	const attendus = solutionPoints(spec.checks, expected, constructionPositions(source));
+	const lignes = solutionLines(dessinees, points, [], figureShapes(scene, node.header), expected);
+	const attendus = solutionPoints(dessinees, expected, positions);
 	const solution = figureSvg(scene, size, (versEcran) => {
 		const traits = lignes.flatMap((l) => {
 			const c = l.kind === 'segment' ? l : clipLineToWindow(l, scene.viewport);
@@ -335,7 +334,7 @@ function figureACompleter(source: string): Bloc {
 		});
 		return [...traits, ...poses].join('');
 	});
-	return { html, solution };
+	return { html, solution, avertissements };
 }
 
 /** Coordonnées d'écran arrondies au centième (SVG lisible, page reproductible) */
