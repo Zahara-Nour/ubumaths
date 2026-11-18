@@ -604,3 +604,17 @@ techno à la publication.
 
 - Rangement prévu (migration après création en prod) : C1–C3 sur « propriétés algébriques » (44206987), C4 sur
   « fonctions x ↦ aˣ » (c185c955).
+
+## 24. Lot 3a : prod, rangement et tags (2026-11-18)
+
+David a lancé `create-questions --publier` : 4 brouillons (a5b2c4fa C1, ebefd0a9 C2, e52d93b4 C3, b14f7169 C4),
+vérifiés par MCP (`draft`, `{T_TECHNO}`, sans nœud ni tag) ; ids commités sur la branche de la migration.
+
+- Points (MCP) : 034, 078, 079 sur « Fonctions > Fonction exponentielle > propriétés algébriques » (44206987) ;
+  031 sur « fonctions x ↦ aˣ » (c185c955).
+- Question d'accès tranchée au § 22 : **personne** (brouillons), Tle techno à la publication.
+- Migration `20261118071439_questions_ttechno_lot3a_rangement_tags` sur le gabarit du lot 2b.
+- Test `tests/integration/questions-ttechno-lot3a-rangement-tags.test.ts` : 9 verts ; corps retiré (en-tête et
+  rollback gardés) → 5 rouges ; fichier restauré d'une copie, identique. `types:cliquet` tenu.
+- `security-auditor` : aucun finding bloquant (diff avec le lot 2b = ids, chemins, codes, compteurs ; rollback
+  miroir ; aucune policy, aucune table d'élève ; chemins résolus en prod sur un seul nœud chacun).

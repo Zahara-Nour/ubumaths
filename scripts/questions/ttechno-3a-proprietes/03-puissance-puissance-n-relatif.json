@@ -1,4 +1,5 @@
 {
+	"id": "e52d93b4-0b93-48fc-aebf-9f3092dc0177",
 	"title": "Puissance d'une puissance (n entier relatif)",
 	"description": "(a^x)^n = a^(nx) avec n négatif, x négatif ; retrouver x connaissant a^(nx)",
 	"grades": ["T_TECHNO"],
