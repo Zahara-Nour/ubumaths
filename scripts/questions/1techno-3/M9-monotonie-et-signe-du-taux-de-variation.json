@@ -1,4 +1,5 @@
 {
+	"id": "936b7e76-74eb-4c82-a3b8-bdccb3682cfc",
 	"title": "Fonction monotone et signe du taux de variation",
 	"description": "Croissante : taux positif ou nul entre deux réels de I ; deux images ne suffisent pas",
 	"grades": ["1_TECHNO"],

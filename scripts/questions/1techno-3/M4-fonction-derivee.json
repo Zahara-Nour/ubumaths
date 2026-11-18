@@ -1,4 +1,5 @@
 {
+	"id": "9b89e676-8833-4b2e-aa44-ef34c8655785",
 	"title": "Fonction dérivée et nombre dérivé",
 	"description": "f′ associe à x le nombre dérivé f′(x) ; f′(a) se calcule sur f′, pas sur f",
 	"grades": ["1_TECHNO"],

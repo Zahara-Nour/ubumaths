@@ -1,4 +1,5 @@
 {
+	"id": "77a599ef-2cee-4ac2-b1cc-f0036d56b9d7",
 	"title": "Dérivée d'un polynôme de degré au plus 3",
 	"description": "Variable t, termes dans le désordre ou manquants, fonction coût ; degré de la dérivée",
 	"grades": ["1_TECHNO"],

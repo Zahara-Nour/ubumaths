@@ -8,18 +8,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, PR des fichiers du lot 3 ouverte._
+_Mis à jour le 2026-11-18, après #2801 (fichiers du lot 3)._
 
-- **État** : lots 1 et 2 clos. Lot 3 « dérivation » : phase 0 validée (§ 25), 9 modèles écrits
-  (`scripts/questions/1techno-3/`), simulation verte, essai local fait ; PR des fichiers ouverte.
-- **Prochaine action** : merge de la PR des fichiers, puis David lance `create-questions --dir
-scripts/questions/1techno-3 --publier` (brouillons), ids commités, page à cocher, migration nœud + 9 tags.
-- **En attente de David** : le `create-questions --publier` après le merge.
+- **État** : lots 1 et 2 clos. Lot 3 « dérivation » : #2801 mergée ; 9 brouillons en prod (ids dans les fichiers,
+  commit sur la branche) ; page à cocher https://claude.ai/artifact/VszQXF6HbQ9VZbvgHZFLro publiée.
+- **Prochaine action** : lire et compter les verdicts (collection `verdicts`), puis migration nœud + 9 tags des seuls
+  « ok » (gabarit du lot 1 : `20261117192425_questions_1techno_lot1_rangement_tags` + son test).
+- **En attente de David** : ses verdicts sur la page à cocher.
 - **Pièges en cours** : `db:migrate` pousse tout ce qui attend, et refuse une migration d'une autre session
   horodatée avant la dernière appliquée (`migration list --linked` juste avant de donner la commande) ; aperçu admin
   local : `--host 127.0.0.1` (Chrome n'ouvre pas `[::1]`) ; lot 5 : modèles communs de questions-1gen (S2, S3, S4,
   S6), ids à recevoir.
-- **Worktree / branche** : `../ubumaths-wt-questions-1techno`, `content/questions-1techno-lot3`.
+- **Worktree / branche** : `../ubumaths-wt-questions-1techno`, `content/questions-1techno-lot3` (ids commités, pas
+  encore poussés ; la migration ira sur cette branche).
 
 ## 1. Relevé (prod, 2026-11-17)
 
@@ -676,3 +677,21 @@ formules des aperçus passées à `validateLatex` + compte d'accolades : 0 probl
 Lot 5 : questions-1gen a fait valider sa phase 0 (son journal, § 23) : S2 → 085, S3 → 082, S4 → 084, S6 → 087, et
 49fac266 reçoit 1GEN-003 + `1_GEN` dans sa migration (ni mes niveaux ni mon tag touchés). Plages à vérifier contre
 mes bornes avant le lot 5 ; ids à recevoir.
+
+### Lot 3 — brouillons en prod, page à cocher (2026-11-18)
+
+PR #2801 (fichiers) mergée. David a lancé `create-questions --publier` : M1 `06bee149-e006-4b9f-8f0b-1e21ace0a1cf`, M2
+`5643abd0-1454-4b03-b612-3fd3b1a1ca33`, M3 `382171b6-f5b5-490d-97c1-e0e9db592ac4`, M4
+`9b89e676-8833-4b2e-aa44-ef34c8655785`, M5 `531a7080-9b20-46be-a614-7104d5401451`, M6
+`8efb084c-aefe-41f2-a8b5-50167d6f7257`, M7 `77a599ef-2cee-4ac2-b1cc-f0036d56b9d7`, M8
+`14b60caa-e18e-46d8-9ff6-3889fd9de40e`, M9 `936b7e76-74eb-4c82-a3b8-bdccb3682cfc` ; brouillons `{1_TECHNO}`, sans
+nœud ni tag, niveaux du script (vérifié MCP). Page à cocher https://claude.ai/artifact/VszQXF6HbQ9VZbvgHZFLro
+(capacité `db`, collection `verdicts`, vide à la publication) ; décimaux écrits « 0{,}1 » dans la page.
+
+### Lot 3 — verdicts et migration (2026-11-18)
+
+Page à cocher : 9 « ok » sur 9, sans commentaire (collection `verdicts`, lue). Migration
+`20261118055440_questions_1techno_lot3_rangement_tags` : 9 brouillons rangés sur le nœud de leur point (lu sur
+`node_id`) et tagués de leur point 1TECHNO. Gardes : tout ou rien (9), brouillons sans nœud ni tag avec `1_TECHNO`.
+Additive (rollback écrit et éprouvé). Test `tests/integration/questions-1techno-lot3-rangement-tags.test.ts` : 10 verts ;
+corps retiré → 4 rouges et le bloc nominal ne démarre pas.
