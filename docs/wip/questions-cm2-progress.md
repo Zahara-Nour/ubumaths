@@ -1264,6 +1264,6 @@ corrigé ; (e) un seul lot de 5 modèles. Tableau du § 18 gardé.
 
 ### 18.3 Lot 11b : création en prod (2026-11-18)
 
-- David : `create-questions --dir scripts/questions/cm2-11b --publier`, depuis le dépôt principal → `3d2219c0` (119,
-  niv. 12), `960e6a84` (060, 13), `ea559f53` (062, 3), `da63ec7b` (063, 2), `66a1a4ee` (064, 1). Fichiers (ids) copiés
+- David : `create-questions --dir scripts/questions/cm2-11b --publier`, depuis le dépôt principal → `960e6a84` (119,
+  niv. 12), `da63ec7b` (060, 13), `3d2219c0` (062, 3), `ea559f53` (063, 2), `66a1a4ee` (064, 1). Fichiers (ids) copiés
   sur `feat/questions-cm2-lot11b-tags` (identiques, `cmp`), puis remis à l'état de `main` dans le dépôt principal.
