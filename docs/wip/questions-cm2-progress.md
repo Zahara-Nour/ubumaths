@@ -6,17 +6,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après la publication du lot 11a._
+_Mis à jour le 2026-11-18, après #2848 (fichiers du lot 11b)._
 
-- **État** : lots 0 à 11a publiés (§ 17.4). Restent les lots 11b à 19 du § 14.
-- **Prochaine action** : réponses de David aux questions (a) à (e) du § 18, puis écriture du lot 11b.
-- **En attente de David** : fichiers `cm2-11a/*.json` modifiés dans `ubumaths-wt-questions-cm1` (ids, copie de ce qui est
-  mergé) : à annuler là-bas. Stash « cm2-9 ids » du dépôt principal : à supprimer.
-- **Pièges en cours** : lancer `create-questions` depuis le dépôt principal (au lot 11a, lancé du worktree cm1 : ids
-  écrits là-bas). `Doc-inchangée:` dans un COMMIT, pas dans la PR. `migration:horodatage` = heure réelle UTC ; une autre
-  migration en attente → stop avant `db:migrate`. Commit par `git commit -m … -- <fichiers>`. `publier-lot`, même en
-  simulation, peut être refusé par le classifieur (lecture de la prod) : réessayer à la demande de David.
-- **Worktree / branche** : aucun.
+- **État** : lots 0 à 11a publiés. Lot 11b : 5 modèles écrits et mergés (§ 18.2, `scripts/questions/cm2-11b/`), pas encore
+  en prod. Restent ensuite les lots 12 à 19 du § 14.
+- **Prochaine action** : David lance, **depuis le dépôt principal**, `pnpm tsx scripts/create-questions.ts --dir
+scripts/questions/cm2-11b --publier` ; puis ids commités sur une branche `feat/questions-cm2-lot11b-tags`, migration
+  de rangement et tags (gabarit du lot 11a, § 17.3), page à cocher.
+- **En attente de David** : la création en prod ci-dessus. Fichiers `cm2-11a/*.json` modifiés dans
+  `ubumaths-wt-questions-cm1` : à annuler là-bas. Stash « cm2-9 ids » du dépôt principal : à supprimer.
+- **Pièges en cours** : 064 est posé sur la sous-notion « Préalgorithmique » de la notion « Algorithmique » (pas
+  « Problèmes arithmétiques »). `Doc-inchangée:` dans un COMMIT ; sujet de commit en minuscule (commitlint).
+  `migration:horodatage` = heure réelle UTC ; une autre migration en attente → stop avant `db:migrate`. Commit par
+  `git commit -m … -- <fichiers>`. `publier-lot` / `create-questions` peuvent être refusés par le classifieur :
+  réessayer à la demande de David.
+- **Worktree / branche** : aucun (`ubumaths-wt-questions-cm2` retiré après #2848).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -1257,3 +1261,4 @@ corrigé ; (e) un seul lot de 5 modèles. Tableau du § 18 gardé.
   34, 38, 42 exclus). Lettres `e` (Euler) remplacées : `g` (écart), `q` (équerres).
 - Base locale (copie du dossier dans le scratchpad, `.env.local`, sous `with-db-lock.sh`) : 5 brouillons ; aperçu admin à
   390 px (Playwright, port 5179) : 9 choix lisibles (A à I), fractions et énoncés corrects.
+- #2848 (fichiers) : CI verte au premier passage, mergée.
