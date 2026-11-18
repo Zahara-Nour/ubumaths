@@ -8,9 +8,9 @@
 _Mis à jour le 2026-11-18, après la publication du lot 8d._
 
 - **État** : lots 0 à 8d publiés, **148 points du CM1 sur 171** (CM2 : 108 sur 158) ; aucun brouillon en attente.
-- **Prochaine action** : lot 8e (solides, déplacements : 109, 110-113, 115, 117, 118 ; § 20), phase 0 (relevé
-  MCP, patrons CE2 `11ebf9fe`, `c8c9746a`), à valider par David ; puis 9 (probabilités, proportionnalité).
-- **En attente de David** : rien.
+- **Prochaine action** : écrire les lots 8e (solides) et 8f (patrons, déplacements, assemblages) une fois la
+  phase 0 du § 25 validée ; puis 9 (probabilités, proportionnalité).
+- **En attente de David** : les 4 questions du § 25 (modèles, 116 et 119 hors du D, jumeaux CM2, 111-112 écrits).
 - **Pièges en cours** : lancer `create-questions --publier` et `db:migrate` **depuis le worktree** (lien
   `supabase/.temp/` copié) — et celui du **bon** chantier (un `--publier` du CM2 11a a été lancé ici) ; commitlint
   refuse le type `content` et un corps > 100 caractères par ligne ; le mode auto refuse `publier-lot` (même en
@@ -2024,3 +2024,63 @@ avant. La migration ne fait que ranger et taguer les modèles, sur des nœuds qu
   `--publier`) et `garde-niveaux-tags` lancés par David (le mode auto refuse même la simulation). Vérifié au MCP :
   4 modèles `published`.
 - Recompte MCP (points non archivés ayant un modèle publié) : **CM1 148/171** (144 + 4) ; CM2 108/158.
+
+## 25. Lot 8e — solides, patrons, déplacements : phase 0 (à valider, 2026-11-18)
+
+Relevé MCP : aucun modèle, ni brouillon, sur 109 à 119, **ni sur leurs jumeaux CM2** (098 nommer, 099 décrire,
+100 reconnaître un patron, 101 construire un patron, 103 vocabulaire, 104 instructions, 105 assemblages : lot 19 de
+`questions-cm2`, pas commencé). Nœuds : 109 à 113 → Solides › propriétés ; 115 (et 116) → Solides › patrons ;
+117, 118 → Repérage et déplacements › coder un déplacement ; 119 → nœud du CE1-079 / 6-209 (à relever).
+
+Outils, tous en prod : ` ```solide ` (cube, pavé, **prisme triangle / triangle-rectangle**, pyramide carrée /
+rectangle / triangle, cylindre, cône, boule ; `marquer: face …`, `cotes:`), ` ```patron ` (cube, faux patrons,
+grille `X` jusqu'à 10 cases, **`designer: opposee`**, **`completer:`**), ` ```robot ` (flèches, avance-pivote,
+cases grises, `produire: oui`), ` ```cubes ` (assemblages), ` ```choix ` qui peut contenir des solides dessinés
+(5e `b4c9a2a1`). Patrons : CE2 `b9c77a83`, `c9d9d6d4`, `7ed6c420`, `964711ea`, `11ebf9fe`, `c8c9746a` ;
+CE1 `856f400e`, `c8da0674`, `e3bacfdc`, `10dcf449` ; 6e `ce3c4e11`.
+
+Bornes (exemples de mise en œuvre CM1, p. 20-21) : faces d'un prisme droit = 2 bases superposables + faces
+latérales rectangles ; pyramide = triangles qui se touchent au sommet + une base ; décrire = nombre et nature des
+faces, sommets, arêtes ; patron : dire oui / non **et justifier un non** ; **faces opposées** d'un patron ;
+**compléter une amorce** ; vocabulaire : avancer, reculer, quart de tour à gauche / à droite, **demi-tour** ;
+« combien de petits cubes ? ». Pas de plan de ville (pas d'outil, exotique).
+
+Fait nouveau : au § 4 bis, 116 (construire un patron) et 119 (assemblages de cubes) sont en **D**. Depuis,
+`completer:` et ` ```cubes ` sont en prod, et le CM2 a passé son jumeau 101 en B (§ 14.1 de `questions-cm2`).
+
+**Lot 8e — solides** (5 modèles) :
+
+| #   | Point | Modèle                                 | Variations                                                                                                                                                                                                                                                     | Réponse       | Niv. |
+| --- | ----- | -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------- | ---- |
+| 1   | 109   | Nommer un solide, prisme droit compris | 7 noms : V1 prisme à base triangulaire ; V2 prisme couché (triangle rectangle) ; V3 pyramide à base triangulaire (piège : pas un prisme) ; V4 les six autres ; V5 « lequel est un prisme droit ? » parmi 4 solides dessinés (pyramide, cône, cylindre, prisme) | choix         | 1    |
+| 2   | 110   | Le portrait d'un solide                | V1 « 5 faces : 2 triangles pareils et 3 rectangles » → prisme ; V2 « 1 carré et 4 triangles qui se touchent en un sommet » → pyramide ; V3 cube / pavé ; V4 sommets et arêtes d'un prisme dessiné (6, 9)                                                       | choix, nombre | 2    |
+| 3   | 111   | Les faces d'un cube et d'un pavé (CM1) | V1 combien de faces pareilles à la face grisée (2) ; V2 mesures de la face grisée (cotes) ; V3 pavé à 2 faces carrées : combien de carrés, de rectangles (2, 4)                                                                                                | nombre        | 1    |
+| 4   | 112   | Les faces d'une pyramide (CM1)         | V1 combien de faces, de triangles (base carrée 5 / 4 ; triangle 4 / 4) ; V2 sans dessin : base à 6 côtés → 6 faces latérales, 7 faces ; V3 forme de la base grisée                                                                                             | nombre, choix | 2    |
+| 5   | 113   | Les faces d'un prisme droit            | V1 forme d'une face latérale grisée (rectangle) ; V2 forme d'une base grisée ; V3 combien de faces (2 + 3 = 5) ; V4 sans dessin : base à 5 côtés → 5 faces latérales, 7 faces                                                                                  | choix, nombre | 2    |
+
+**Lot 8f — patrons, déplacements, assemblages** (7 modèles ; 8, 9, 10 si 116 sort du D, 14 si 119 sort du D) :
+
+| #   | Point | Modèle                                | Variations                                                                                                                                                                               | Réponse | Niv. |
+| --- | ----- | ------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- | ---- |
+| 8   | 115   | Est-ce un patron de cube ? Pourquoi ? | V1 oui / non (11 vrais, 8 faux, tournés, retournés) ; V2 « pourquoi non ? » : 2 faces l'une sur l'autre (6 carrés) / il manque une face (5) / une face de trop (7)                       | choix   | 1    |
+| 9   | 116   | La face opposée                       | Patron dessiné, une face grise : l'élève touche celle qui sera en face (`designer: opposee`) ; croix, puis patrons moins familiers                                                       | toucher | 2    |
+| 10  | 116   | Compléter un patron de cube           | `completer:` 1 face (V1), puis 2 faces (V2) ; toute pose qui se plie en cube est juste                                                                                                   | poser   | 3    |
+| 11  | 117   | Où regarde le robot ?                 | Robot dessiné, son nez montre où il regarde : V1 un quart de tour à droite / à gauche ; V2 demi-tour ; V3 deux ou trois pivots de suite ; V4 « il recule d'une case : où arrive-t-il ? » | choix   | 1    |
+| 12  | 118   | Où arrive le robot ? (CM1)            | Code « avance de… / pivote… / demi-tour » écrit en mots, 4 à 7 instructions, quadrillage 8 × 6 (patron CE1 `e3bacfdc`)                                                                   | choix   | 1    |
+| 13  | 118   | Écrire le code du robot (CM1)         | `produire: oui`, 10 × 7, murs gris : V1 flèches ; V2 avance-pivote, sens de départ tiré                                                                                                  | code    | 2    |
+| 14  | 119   | Combien de petits cubes ?             | ` ```cubes ` : V1 une rangée de piles ; V2 deux rangées, cubes cachés ; V3 escalier (≤ 20 cubes ; patron 6e `ce3c4e11`)                                                                  | nombre  | 1    |
+
+**Question d'accès** (migration nœud + tag, comme aux 8c, 8d) : personne ne pourra lire quelque chose qu'il ne
+pouvait pas lire avant.
+
+**Questions à David** :
+
+1. Les modèles et leurs variations : OK ?
+2. 116 (construire un patron) et 119 (assemblages de cubes) sortent du D, avec les outils qui sont en prod depuis
+   (`completer:`, ` ```cubes `), comme le CM2 l'a fait pour 101 ? Reco : oui (modèles 9, 10, 14). 114 (construire
+   un solide en vrai) reste en D.
+3. Jumeaux CM2 : niveaux **CM1 et CM2**, tag des deux points (109/098, 110/099, 115/100, 116/101, 117/103,
+   118/104, 119/105), même règle qu'aux 8c, 8d ? Reco : oui. Le lot 19 du CM2 n'aurait plus que 102 (patron du
+   pavé) : je le signale dans le journal du CM2.
+4. 111, 112 : écrire des modèles CM1 plutôt que d'ajouter le CM1 aux modèles CE2 `7ed6c420`, `964711ea` ? Reco :
+   écrire (même choix qu'aux 8c, 8d : le CM1 ajoute les mesures, la base à 6 côtés).
