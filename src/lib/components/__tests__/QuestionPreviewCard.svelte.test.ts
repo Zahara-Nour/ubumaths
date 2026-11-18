@@ -85,7 +85,7 @@ describe('QuestionPreviewCard', () => {
 		await renderTile();
 
 		await page.getByRole('button', { name: 'Ajouter au panier' }).click();
-		const inCart = page.getByRole('button', { name: 'Dans le panier' });
+		const inCart = page.getByRole('button', { name: 'Dans le panier : retirer' });
 		await expect.element(inCart).toBeEnabled();
 		await expect.element(inCart).toHaveAttribute('title', 'Retirer du panier');
 		expect(questionCart.hasTemplate(TEMPLATE.id)).toBe(true);
@@ -100,7 +100,7 @@ describe('QuestionPreviewCard', () => {
 		questionCart.addToCart(TEMPLATE.id, 3, 45);
 		await renderTile();
 
-		await page.getByRole('button', { name: 'Dans le panier' }).click();
+		await page.getByRole('button', { name: 'Dans le panier : retirer' }).click();
 		await page.getByRole('button', { name: 'Ajouter au panier' }).click();
 
 		expect(questionCart.getItem(TEMPLATE.id)).toMatchObject({ quantity: 1 });

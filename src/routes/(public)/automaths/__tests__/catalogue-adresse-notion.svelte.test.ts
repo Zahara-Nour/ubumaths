@@ -174,6 +174,16 @@ describe('Catalogue Automaths — notion dans l’adresse', () => {
 			.toHaveAttribute('aria-selected', 'true');
 	});
 
+	it('arrivée par un lien avec paramètres : la visite retient cette adresse', async () => {
+		sessionStorage.setItem(MEMORY_KEY, '?notion=n-thales');
+		pageState.url = new URL('http://localhost:5175/automaths?niveau=6&notion=n-frac');
+
+		await render(Page);
+
+		await expect.element(page.getByRole('tab', { name: 'Fractions' })).toBeVisible();
+		expect(sessionStorage.getItem(MEMORY_KEY)).toBe('?niveau=6&notion=n-frac');
+	});
+
 	it('chaque choix est retenu pour la visite', async () => {
 		await render(Page);
 

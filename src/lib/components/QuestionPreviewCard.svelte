@@ -66,6 +66,7 @@
 			class="gap-2"
 			onclick={handleCartClick}
 			title={isInCart ? 'Retirer du panier' : undefined}
+			aria-label={isInCart ? 'Dans le panier : retirer' : undefined}
 		>
 			{#if isInCart}
 				<Check class="h-4 w-4" />

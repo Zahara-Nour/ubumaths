@@ -138,9 +138,12 @@
 	}
 
 	onMount(() => {
-		// Dernière adresse de la visite reprise : l'adresse affichée la montre
+		// Dernière adresse de la visite reprise : l'adresse affichée la montre.
+		// Arrivée par un lien avec paramètres : c'est elle que la visite retient.
 		if (!page.url.search && initialParams.size > 0) {
 			replaceState(`${resolve('automaths')}?${initialParams.toString()}`, page.state);
+		} else if (page.url.search) {
+			rememberSearch(page.url.search);
 		}
 		void questionTemplatesCache.fetchTemplates();
 	});
