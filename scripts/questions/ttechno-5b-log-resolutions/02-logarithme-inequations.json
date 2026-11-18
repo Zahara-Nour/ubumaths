@@ -1,4 +1,5 @@
 {
+	"id": "10bd7075-2ff9-4bf1-9161-1fb141ea4d0a",
 	"title": "Résoudre une inéquation aˣ < b ou xᵃ < b avec log",
 	"description": "aˣ < b et aˣ ⩾ b pour a > 1 ; aˣ > b pour 0 < a < 1 (le sens change) ; xᵃ ⩽ b pour x > 0 ; réponse en intervalle, bornes exactes",
 	"grades": ["T_TECHNO"],

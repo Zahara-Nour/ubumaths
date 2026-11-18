@@ -946,6 +946,6 @@ David a choisi que je vérifie les rendus moi-même (Chrome, `127.0.0.1:5179` su
 graines par variation calculées par `generateInstance`). Vus : P1 (choix, arbre, valeur numérique), P2 (tableau de la
 loi), P4 (tableau à quatre valeurs et sa correction), P5 (données brutes, tableau croisé masqué, correction). La frappe
 dans MathLive ne passe pas par l'automate : validation des réponses laissée aux specs. **Défaut corrigé** : le coin du
-tableau croisé s'écrit avec **une** barre oblique inverse (`coin: Sexe \ Régime` en JSON, cf. `cross-table.test.ts`) ;
+tableau croisé s'écrit avec **une** barre oblique inverse (`coin: Sexe \ Régime`, cf. `cross-table.test.ts`) ;
 deux affichent « Sexe \\ Régime ». Le modèle de 2de 89e928a4 (en prod, recopié) a ce défaut : signalé à David.
 Aperçu fermé, serveur 5179 arrêté, Tailscale :443/:8443 retirés.

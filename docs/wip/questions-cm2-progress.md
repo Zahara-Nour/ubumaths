@@ -6,21 +6,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après #2848 (fichiers du lot 11b)._
+_Mis à jour le 2026-11-18, après #2852._
 
-- **État** : lots 0 à 11a publiés. Lot 11b : 5 modèles écrits et mergés (§ 18.2, `scripts/questions/cm2-11b/`), pas encore
-  en prod. Restent ensuite les lots 12 à 19 du § 14.
-- **Prochaine action** : David lance, **depuis le dépôt principal**, `pnpm tsx scripts/create-questions.ts --dir
-scripts/questions/cm2-11b --publier` ; puis ids commités sur une branche `feat/questions-cm2-lot11b-tags`, migration
-  de rangement et tags (gabarit du lot 11a, § 17.3), page à cocher.
-- **En attente de David** : la création en prod ci-dessus. Fichiers `cm2-11a/*.json` modifiés dans
-  `ubumaths-wt-questions-cm1` : à annuler là-bas. Stash « cm2-9 ids » du dépôt principal : à supprimer.
-- **Pièges en cours** : 064 est posé sur la sous-notion « Préalgorithmique » de la notion « Algorithmique » (pas
-  « Problèmes arithmétiques »). `Doc-inchangée:` dans un COMMIT ; sujet de commit en minuscule (commitlint).
-  `migration:horodatage` = heure réelle UTC ; une autre migration en attente → stop avant `db:migrate`. Commit par
-  `git commit -m … -- <fichiers>`. `publier-lot` / `create-questions` peuvent être refusés par le classifieur :
-  réessayer à la demande de David.
-- **Worktree / branche** : aucun (`ubumaths-wt-questions-cm2` retiré après #2848).
+- **État** : lots 0 à 11a publiés. Lot 11b : 5 brouillons rangés et tagués en prod (#2852, `db:migrate` fait, § 18.4) ;
+  page à cocher publiée, verdicts attendus. Restent ensuite les lots 12 à 19 du § 14.
+- **Prochaine action** : quand David a coché, lire et compter les verdicts (`ArtifactData list verdicts`,
+  https://claude.ai/artifact/9x1xabePSJzcA2CKK6ehYr) ; puis `publier-lot --dir scripts/questions/cm2-11b` en simulation,
+  David `--publier`. Ensuite phase 0 du lot 12.
+- **En attente de David** : la relecture du lot 11b sur la page à cocher. Stash « cm2-9 ids » du dépôt principal : à
+  supprimer.
+- **Pièges en cours** : `Doc-inchangée:` dans un COMMIT ; sujet de commit en minuscule. `migration:horodatage` = heure
+  réelle UTC ; une autre migration en attente → stop avant `db:migrate`. `db:migrate` depuis le worktree : copier
+  `supabase/.temp/{project-ref,linked-project.json,pooler-url,postgres-version}` du dépôt principal (ignorés par git).
+  `create-questions` / `publier-lot` peuvent être refusés par le classifieur : réessayer à la demande de David.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, branche `feat/questions-cm2-lot11b-tags` mergée (à remplacer
+  par la branche du lot 12).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -1262,3 +1262,26 @@ corrigé ; (e) un seul lot de 5 modèles. Tableau du § 18 gardé.
 - Base locale (copie du dossier dans le scratchpad, `.env.local`, sous `with-db-lock.sh`) : 5 brouillons ; aperçu admin à
   390 px (Playwright, port 5179) : 9 choix lisibles (A à I), fractions et énoncés corrects.
 - #2848 (fichiers) : CI verte au premier passage, mergée.
+
+### 18.3 Lot 11b : création en prod (2026-11-18)
+
+- David : `create-questions --dir scripts/questions/cm2-11b --publier`, depuis le dépôt principal → `960e6a84` (119,
+  niv. 12), `da63ec7b` (060, 13), `3d2219c0` (062, 3), `ea559f53` (063, 2), `66a1a4ee` (064, 1). Fichiers (ids) copiés
+  sur `feat/questions-cm2-lot11b-tags` (identiques, `cmp`), puis remis à l'état de `main` dans le dépôt principal.
+
+### 18.4 Lot 11b : rangement (2026-11-18)
+
+- MCP : 5 brouillons [CM2] sans nœud ni tag, `updated_at` = création.
+- CM2-064 est posé sur la **notion** « Algorithmique > Préalgorithmique », qui n'a aucune sous-notion (les 5 modèles de 6e
+  y sont rangés directement) : le modèle va sur cette notion (`sous_notion` nulle, cas déjà prévu par le gabarit).
+- Migration `20261118215227_questions_cm2_lot11b_rangement_tags.sql`, générée depuis celle du lot 11a par un script de
+  substitution (aucun reste du lot 11a). Test `questions-cm2-lot11b-rangement-tags` : 9 verts ; corps remplacé par
+  `select 1;` → 5 rouges ; fichier restauré depuis sa copie (`cmp`).
+- `security-auditor` : aucun finding bloquant (diff au gabarit du lot 11a : ids, codes, chemins, compteurs, table
+  temporaire, commentaires ; ligne `sous_notion` nulle résolue sur la notion sans être écrasée ; 5 ids concordants
+  partout ; relevé MCP refait).
+- #2852 : CI verte, mergée ; `migration list --linked` : seule la nôtre en attente ; `db:migrate` depuis le worktree
+  (lien Supabase copié dans `supabase/.temp`, ignoré par git). MCP : 5 brouillons rangés (« en deux étapes ou plus » ×2,
+  « produits cartésiens », « optimisation », « Préalgorithmique »), un tag chacun, `updated_at` = création.
+- Page à cocher (5 fiches, aucune alerte, base prod) : https://claude.ai/artifact/9x1xabePSJzcA2CKK6ehYr ; `verdicts` vide au
+  départ. Rendu à 390 px non revérifié (même gabarit que le lot 11a).
