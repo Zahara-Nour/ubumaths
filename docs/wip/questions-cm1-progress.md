@@ -2006,3 +2006,5 @@ avant. La migration ne fait que ranger et taguer les modèles, sur des nœuds qu
   niveau ni statut changé, aucun nœud créé.
 - Test `questions-cm1-lot8d-rangement-tags.test.ts` : 20/20 vert ; corps neutralisé (`select 1;`) : 9 échecs,
   7 sautés. `types:cliquet` tenu.
+- `security-auditor` : aucun finding, ni bloquant ni non bloquant. Diff avec le 8c limité aux données du lot ;
+  l'état « avant » remesuré au MCP (4 draft, nœud null, 0 tag) ; c'est la seule migration en attente. PR #2840.
