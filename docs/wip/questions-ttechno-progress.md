@@ -5,19 +5,20 @@ Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) · bornes 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, lot 3a écrit (PR à ouvrir)._
+_Mis à jour le 2026-11-18, après #2809 (lot 3a écrit)._
 
 - **État** : lots 0 à 3 en prod ; compléments du lot 3 validés (§ 22, Q19 / Q20) ; lot 3a « propriétés »
-  (C1–C4, exposants négatifs) écrit et essayé en local (§ 23), PR en cours.
-- **Prochaine action** : après le merge, David lance `create-questions --dir scripts/questions/ttechno-3a-proprietes
+  (C1–C4, exposants négatifs) écrit et essayé en local (§ 23), #2809 mergée.
+- **Prochaine action** : David lance `create-questions --dir scripts/questions/ttechno-3a-proprietes
 --publier` ; puis migration rangement + tags (C1–C3 → 44206987, C4 → c185c955), page à cocher. Ensuite lot 3b
   « fonctions » (C5–C8 : aˣ sur ℝ, k·aˣ), déjà validé.
-- **En attente de David** : rien.
+- **En attente de David** : `create-questions --publier` du lot 3a (prod).
 - **Pièges en cours** : un point TTECHNO par modèle (trigger) ; `grades` en `array_append` seulement ;
   `publier-lot.ts`, `garde-niveaux-tags.ts`, `create-questions --publier` visent la prod : David les lance (`!`) ;
   `Doc-inchangée:` dans un COMMIT de la PR ; 034 / 078 / 079 vivent sur « propriétés algébriques », pas sur le
   nœud aˣ d'E2.
-- **Worktree / branche** : `../ubumaths-wt-questions-ttechno`, `feat/questions-ttechno-lot3a`.
+- **Worktree / branche** : `../ubumaths-wt-questions-ttechno` (branche `feat/questions-ttechno-lot3a` mergée ;
+  la migration partira d'une nouvelle branche).
 
 ## 1. Périmètre
 
@@ -599,5 +600,7 @@ techno à la publication.
 - Corrigé en route : « (−2,5) × (3) » → parenthèses seulement si n < 0 ; x = 3 / (−3) en fraction → « 3 ÷ (−3) ».
 - Base locale : 4 brouillons (copie des fichiers) ; aperçu admin (Chrome, `127.0.0.1:5177`) : C4 v0 `−3,2`
   refusé « l'opposé du résultat » ; C1 v2 `1,5^−4,5` saisi au clavier → juste.
+  **#2809 mergée (2026-11-18)**, CI verte.
+
 - Rangement prévu (migration après création en prod) : C1–C3 sur « propriétés algébriques » (44206987), C4 sur
   « fonctions x ↦ aˣ » (c185c955).
