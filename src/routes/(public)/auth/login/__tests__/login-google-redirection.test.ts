@@ -50,6 +50,8 @@ describe('/auth/login — redirection vers Google', () => {
 	it('refuse une adresse d’une autre origine', async () => {
 		const thrown = await googleSignIn('https://ailleurs.example/auth/v1/authorize');
 		expect(isRedirect(thrown)).toBe(false);
+		// Refus de la liste blanche de kit, pas une autre exception
 		expect(thrown).toBeInstanceOf(Error);
+		expect((thrown as Error).message).toMatch(/allowlist/);
 	});
 });
