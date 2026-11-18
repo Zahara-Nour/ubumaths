@@ -1,4 +1,5 @@
 {
+	"id": "ebefd0a9-b634-487f-b811-ee5abcff763c",
 	"title": "Quotient de puissances (exposants relatifs)",
 	"description": "a^x / a^y = a^(x−y) : exposant négatif au résultat, au dénominateur ; 1 / a^y",
 	"grades": ["T_TECHNO"],
