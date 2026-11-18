@@ -4,8 +4,8 @@
 
 _Mis à jour le 2026-11-18, PR 2b en cours (branche `chore/sveltekit-3`)._
 
-- **État** : kit 3.2.0 + adapter-vercel 7.0.3 posés dans le worktree, `check:incremental` à 0 erreur ; détail dans « PR 2b — SvelteKit 3 ». #2814 et #2821 mergées, pas encore en prod.
-- **Prochaine action** : suites serveur + client, `types:cliquet`, `pnpm build`, essai manuel sur 5176 (connexion, navigation, page d'erreur), docs (`docs:check-a-jour`), revues `code-reviewer` (opus) + `security-auditor`, puis PR.
+- **État** : 14 commits locaux, rien de poussé. `check:incremental` 0 erreur, suite serveur verte (67 546), docs à jour (`docs:check-a-jour` OK), `svelte:autofix` passé sur les 123 `.svelte` du diff (rien de nouveau). Suite client : figeait à cause de `replaceState` devenu asynchrone (diaporama, corrigé) ; relancée en entier, résultat à lire. Brouillon du corps de PR : section « Vérifications » à remplir. #2814 et #2821 mergées, pas encore en prod.
+- **Prochaine action** : `CI=true pnpm exec vitest run --project=client` vert, puis `types:cliquet`, `pnpm build`, essai manuel sur 5176 (connexion, navigation, page d'erreur, filtres `goto`), revues `code-reviewer` (opus) + `security-auditor`, grep « claude|anthropic », push et PR.
 - **En attente de David** : `deploy:prod` pour livrer #2814 et #2821, quand il le voudra.
 - **Pièges en cours** : `$lib` gardé par `alias` (déprécié) — `#lib` = PR à part ; `$env/*` n'expose plus que ce que déclare `src/env.ts` ; `check:incremental` (tsgo) ne vérifie pas TS 6, seul `pnpm check`. `minimumReleaseAge` 3 j.
 - **Worktree / branche** : `../ubumaths-wt-mises-a-jour` · `chore/sveltekit-3`.
@@ -68,7 +68,8 @@ Constats dans le code de kit 3.2.0 (pas dans le guide) :
 - **`$env/*` ne rend plus que les variables déclarées dans `src/env.ts`** (`defineEnvVars`), et n'a plus de types → `src/env.ts` créé (3 statiques obligatoires, 9 facultatives `schema: optionnelle`), 18 imports passés à `$app/env/public|private`. Sans `schema` = obligatoire : `check-env-parity` vérifie maintenant ces variables-là contre `.github/ci.env`.
 - **Tests navigateur** : `$app/env/public` lit `globalThis.__sveltekit_dev`, posé par la page HTML de kit, pas par vitest → posé dans `vitest-setup-client.ts`.
 - `Handle` & co → `@sveltejs/kit/hooks` ; `ActionResult` → `$app/forms`.
-- `error(N, { message })` et `pushState`/`replaceState` seulement **dépréciés** (avertissement) ; les appels dépréciés de `replaceState` ne déclenchent pas `before/afterNavigate` → laissés.
+- `error(N, { message })` et `pushState`/`replaceState` seulement **dépréciés** (avertissement) ; les appels dépréciés de `replaceState` ne déclenchent pas `before/afterNavigate` → laissés. Mais **`replaceState` est devenu asynchrone** et rejette quand le routeur n'est pas démarré : le `try/catch` de `slides/navigation/hash.ts` ne voyait plus l'échec → rejet non géré qui **figeait toute la suite client** (`wrapDynamicImport` absent dans les fichiers suivants) → repli par `.catch`.
+- **Suite client en local** : sans `CI=true`, elle lance aussi les tests Pyodide réels (`*-real`) ; lancer `CI=true pnpm exec vitest run --project=client` pour reproduire la CI.
 - **`goto` : `keepFocus`/`noScroll` retirés** (erreur en dev) → `reset: false` (9 appels).
 - **`redirect()` vers une autre origine** exige `{ external }` : seule la connexion Google (`auth/login`) sort du site → liste blanche = origine Supabase, test à l'appui. Les `next` de `auth/callback` et `auth/confirm` sont relatifs ou de même origine (permis).
 - **`resolve('/x')`** = id de route ; un chemin s'écrit sans `/` (`resolve('shtam')`) : 109 littéraux corrigés ; les chemins portés par une variable passent par `resolvePath` (`$lib/navigation/resolve-path`), `resolve` refusant de typer une union.
