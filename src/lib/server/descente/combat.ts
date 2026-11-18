@@ -284,8 +284,13 @@ export async function recordCombatAnswer(
 		try {
 			victory = await payVictory(studentId, beast);
 		} catch (err) {
-			// La page renverra la victoire (`claimBeastVictory`)
-			logger.error('[descente] victoire non enregistrée :', err);
+			if (err instanceof CombatError && err.code === 'defeated') {
+				// Une autre réponse (autre onglet) l'a achevée et payée : rien à refaire
+				logger.warn('[descente] victoire déjà enregistrée par une autre réponse');
+			} else {
+				// La page renverra la victoire (`claimBeastVictory`)
+				logger.error('[descente] victoire non enregistrée :', err);
+			}
 		}
 	}
 	return { beastHp: hp, recorded: attempt.ok, victory };

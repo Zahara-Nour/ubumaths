@@ -151,6 +151,15 @@
 				verdict = { tone: 'neutral', text: stopMessage(result.code) };
 				return;
 			}
+			// Hoquet du réseau ou du serveur : rien n'est écrit, on peut redemander
+			// (choix du coup, ou bouton « La Bête riposte » pour l'esquive)
+			if (result.code === 'network' || result.code === 'server_error') {
+				verdict = {
+					tone: 'neutral',
+					text: 'La question n’a pas pu arriver. Réessaie.'
+				};
+				return;
+			}
 			stopped = stopMessage(result.code);
 			return;
 		}
@@ -184,15 +193,24 @@
 		}
 		unsaved = !result.ok || !result.value.recorded;
 
+		// Bête à 0 côté serveur, quelle que soit la question (une réponse perdue plus tôt
+		// a pu l'achever) : victoire
+		if (result.ok && result.value.beastHp === 0) {
+			fight = { ...fight, beastHp: 0, phase: 'won' };
+			reward = result.value.victory;
+			victoryPending = result.value.victory === null;
+			void focusIn('[data-combat-next]');
+			return;
+		}
+
 		if (current.purpose === 'attack') {
 			// Réponse perdue : le coup ne part pas, le combat continue
 			const hp = result.ok ? result.value.beastHp : fight.beastHp;
 			fight = afterAttack(fight, hp);
-			if (result.ok && result.value.beastHp === 0) {
-				reward = result.value.victory;
-				victoryPending = result.value.victory === null;
-			}
-			verdict = attackVerdict(answer.isCorrect, current.province);
+			verdict =
+				answer.isCorrect && !result.ok
+					? { tone: 'neutral', text: 'Ta réponse n’a pas pu arriver : le coup n’est pas parti.' }
+					: attackVerdict(answer.isCorrect, current.province);
 		} else {
 			fight = afterDodge(fight, answer.isCorrect);
 			verdict = answer.isCorrect
@@ -379,6 +397,17 @@
 					</Button>
 				</div>
 			{/if}
+		</div>
+	{:else if fight.phase === 'dodge'}
+		<!-- Question d'esquive pas encore arrivée (ou à redemander) -->
+		<div class="space-y-3 text-center" data-testid="combat-dodge-wait">
+			{#if verdict}
+				<p class="text-sm text-muted-foreground" role="status">{verdict.text}</p>
+			{/if}
+			<Button size="lg" onclick={goOn} disabled={loading}>
+				<Shield class="mr-2 h-4 w-4" aria-hidden="true" />
+				La Bête riposte
+			</Button>
 		</div>
 	{:else}
 		<!-- Choix du coup -->

@@ -254,7 +254,42 @@ describe('CombatArena — combat de la recrue', () => {
 		const { container } = await open();
 		await strike(container, 'Coup de Bedonstan', '4');
 		expect(container.textContent).toContain('Une réponse n’a pas pu être enregistrée');
-		// Le coup ne part pas : les PV ne bougent pas
+		// Le coup ne part pas : les PV ne bougent pas, et le verdict le dit
 		expect(text(container, 'combat-beast-hp')).toBe('120 / 120');
+		expect(text(container, 'combat-verdict')).toBe(
+			'Ta réponse n’a pas pu arriver : le coup n’est pas parti.'
+		);
+	});
+
+	it('question qui n’arrive pas (réseau) : le combat continue, on rechoisit son coup', async () => {
+		requestQuestion.mockResolvedValueOnce({ ok: false, code: 'network' });
+		const { container } = await open();
+		await click(container, 'Coup de Bedonstan');
+		await expect.poll(() => container.textContent).toContain('La question n’a pas pu arriver');
+		expect(container.textContent).not.toContain('Le combat ne peut pas continuer');
+		// Nouvel essai : la question arrive
+		await click(container, 'Coup de Bedonstan');
+		await expect
+			.poll(() => container.querySelector('[data-testid="combat-question"]'))
+			.toBeTruthy();
+	});
+
+	it('Bête achevée par une réponse perdue plus tôt : la victoire arrive à l’esquive', async () => {
+		sendAnswer.mockResolvedValue({
+			ok: true,
+			value: { beastHp: 20, recorded: true, victory: null }
+		});
+		const { container } = await open();
+		for (let i = 0; i < 3; i++) {
+			await strike(container, 'Coup de Nombrilie');
+			if (i < 2) await click(container, 'Continuer');
+		}
+		await click(container, 'La Bête riposte');
+		sendAnswer.mockResolvedValue({
+			ok: true,
+			value: { beastHp: 0, recorded: true, victory: { paid: 1, capReached: false } }
+		});
+		await click(container, 'Valider');
+		await expect.poll(() => text(container, 'combat-won')).toContain('+1 gidouille');
 	});
 });

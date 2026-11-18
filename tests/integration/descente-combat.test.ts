@@ -430,6 +430,20 @@ describe('Descente : combat de la recrue sur la vraie base', () => {
 		});
 	});
 
+	it('la Bête d’un autre élève, avec son propre identifiant : introuvable, rien n’est écrit', async () => {
+		const theirs = await seedBeast(other.id, { hp: 0 });
+		await expect(
+			recordCombatAnswer(student.client, student.id, answer(theirs, {}))
+		).rejects.toMatchObject({ code: 'not_found' });
+		await expect(claimBeastVictory(student.client, student.id, theirs)).rejects.toMatchObject({
+			code: 'not_found'
+		});
+		const stored = await storedBeast(theirs);
+		expect(stored.defeated_at).toBeNull();
+		expect(stored.rewarded_gidouilles).toBeNull();
+		expect((await traces(student.id)).filter((t) => t.place === 'descente')).toEqual([]);
+	});
+
 	it('un autre identifiant que celui de la session lève, et rien n’est écrit', async () => {
 		const id = await seedBeast(other.id);
 		await expect(recordCombatAnswer(student.client, other.id, answer(id, {}))).rejects.toThrow(

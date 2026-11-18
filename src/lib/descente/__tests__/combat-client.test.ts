@@ -58,18 +58,15 @@ describe('sendAnswer', () => {
 		});
 	});
 
-	test('serveur en panne : renvoyée, puis réussie', async () => {
-		const fetchFn = vi
-			.fn()
-			.mockResolvedValueOnce(reply(503, { error: 'server_error' }))
-			.mockResolvedValueOnce(reply(200, { beastHp: 100, recorded: true, victory: null }));
+	test('serveur en panne : jamais renvoyée (trace et dégâts possiblement déjà écrits)', async () => {
+		const fetchFn = vi.fn(async () => reply(500, { error: 'server_error' }));
 		const result = await sendAnswer(
 			BEAST,
 			{ purpose: 'attack', province: 'bedonstan', instance, answer },
-			{ fetchFn, retryDelaysMs: [0, 0] }
+			{ fetchFn }
 		);
-		expect(result.ok).toBe(true);
-		expect(fetchFn).toHaveBeenCalledTimes(2);
+		expect(result).toEqual({ ok: false, code: 'server_error' });
+		expect(fetchFn).toHaveBeenCalledTimes(1);
 	});
 
 	test('coupure réseau : jamais renvoyée', async () => {
@@ -77,7 +74,7 @@ describe('sendAnswer', () => {
 		const result = await sendAnswer(
 			BEAST,
 			{ purpose: 'dodge', province: 'bedonstan', instance, answer },
-			{ fetchFn, retryDelaysMs: [0, 0] }
+			{ fetchFn }
 		);
 		expect(result).toEqual({ ok: false, code: 'network' });
 		expect(fetchFn).toHaveBeenCalledTimes(1);
@@ -88,7 +85,7 @@ describe('sendAnswer', () => {
 		const result = await sendAnswer(
 			BEAST,
 			{ purpose: 'attack', province: 'bedonstan', instance, answer },
-			{ fetchFn, retryDelaysMs: [0, 0] }
+			{ fetchFn }
 		);
 		expect(result).toEqual({ ok: false, code: 'gone' });
 		expect(fetchFn).toHaveBeenCalledTimes(1);
@@ -96,6 +93,20 @@ describe('sendAnswer', () => {
 });
 
 describe('requestQuestion et claimVictory', () => {
+	test('question : refaite quand le serveur est en panne', async () => {
+		const fetchFn = vi
+			.fn()
+			.mockResolvedValueOnce(reply(503, { error: 'server_error' }))
+			.mockResolvedValueOnce(reply(200, { instance }));
+		const result = await requestQuestion(
+			BEAST,
+			{ purpose: 'dodge', province: 'bedonstan', recent: [] },
+			{ fetchFn, retryDelaysMs: [0, 0] }
+		);
+		expect(result.ok).toBe(true);
+		expect(fetchFn).toHaveBeenCalledTimes(2);
+	});
+
 	test('question : coup et modèles déjà posés', async () => {
 		const fetchFn = vi.fn(async () => reply(200, { instance }));
 		const result = await requestQuestion(

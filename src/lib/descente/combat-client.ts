@@ -3,10 +3,11 @@
  * =======================================================
  *
  * Trois routes (`/api/descente/combat/[beastId]/…`) : question, réponse,
- * victoire. Une réponse est renvoyée quand le serveur répond qu'il est en panne
- * (5xx, 429, 408), jamais après une coupure réseau : elle a pu être écrite, la
- * renvoyer ferait une trace et des dégâts en double (même règle que les séries,
- * `series-trace.ts`). Elle est alors perdue et le combat continue.
+ * victoire. Une demande de question ou de victoire est refaite quand le serveur
+ * répond qu'il est en panne (5xx, 429, 408) : elle n'écrit rien en double (la
+ * victoire est payée une seule fois en base). Une RÉPONSE n'est jamais renvoyée :
+ * un 500 peut arriver après l'écriture de la trace et des dégâts, la renvoyer les
+ * doublerait. Elle est alors perdue et le combat continue.
  */
 
 import type { ProvinceId } from '$lib/kingdom-tour/tour';
@@ -104,7 +105,7 @@ export function sendAnswer(
 		instance: QuestionInstance;
 		answer: AnswerData;
 	},
-	options: { fetchFn?: typeof fetch; retryDelaysMs?: number[] } = {}
+	options: { fetchFn?: typeof fetch } = {}
 ): Promise<CombatCall<CombatAnswerResponse>> {
 	const trace = buildSeriesTrace({
 		place: 'typing',
@@ -122,7 +123,8 @@ export function sendAnswer(
 			answer_parts: trace?.answer_parts,
 			part_verdicts: trace?.part_verdicts
 		},
-		options
+		// Jamais renvoyée (voir l'en-tête)
+		{ fetchFn: options.fetchFn, retryDelaysMs: [] }
 	);
 }
 

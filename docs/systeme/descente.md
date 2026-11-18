@@ -89,8 +89,10 @@ une victoire non enregistrée se renvoie (`claimBeastVictory`, route `…/victor
 
 **Routes** (`src/routes/api/descente/combat/[beastId]/`, Zod `validation/descente.ts`) :
 `question`, `answer`, `victory` ; refus en 404 / 409 `{ error: <code> }` (`combat-http.ts`).
-La page renvoie une réponse sur une panne du serveur (5xx, 429, 408), jamais après une coupure
-réseau (doublon de trace et de dégâts).
+La page redemande une question ou une victoire sur une panne du serveur (5xx, 429, 408) ;
+elle ne renvoie **jamais** une réponse (un 500 peut suivre l'écriture : trace et dégâts en
+double). Une question qui n'arrive pas ne coupe pas le combat ; une réponse qui rend la Bête à 0
+donne la victoire, même pendant une esquive.
 
 **Triche** : correction côté client (ADR 0001). Le serveur ne vérifie pas que le modèle répondu
 est celui qu'il a tiré, ni la Province d'un coup : une réponse forgée ne fait rien de plus qu'une
