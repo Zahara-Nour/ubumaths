@@ -5,20 +5,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après #2824, le `db:migrate` du lot 8c (§ 23 quinquies) et #2826 (`#lib`)._
+_Mis à jour le 2026-11-18, après la publication du lot 8c (§ 23 sexies)._
 
-- **État** : lots 0 à 8b publiés, **137 points du CM1 sur 171** (CM2 : 92 sur 158). Lot 8c : 7 brouillons en prod,
-  rangés et tagués en prod (#2824, `db:migrate` fait) ; page à cocher publiée
-  (https://claude.ai/artifact/Snbe4QU13vJmw7qSfzQzS9).
-- **Prochaine action** : lire et compter les verdicts (`ArtifactData list verdicts`) ; si 7 « OK » :
-  `publier-lot --dir scripts/questions/cm1-8c` (simulation), puis David lance `--publier`. Ensuite 8d figures à
-  compléter, 8e, 9 (§ 20).
-- **En attente de David** : ses verdicts sur la page à cocher.
+- **État** : lots 0 à 8c publiés, **144 points du CM1 sur 171** (CM2 : 100 sur 158, recompté au MCP).
+- **Prochaine action** : phase 0 du lot 8d (figures à compléter : CM1-107, 108, 167, 168), puis 8e, 9 (§ 20).
+- **En attente de David** : son go pour la phase 0 du 8d.
 - **Pièges en cours** : lancer `create-questions --publier` et `db:migrate` **depuis le worktree** (lien
   `supabase/.temp/` copié) ; `db:migrate` « inserted before » → `--dry-run --include-all` puis `--include-all` ;
   titre homonyme d'un autre niveau → `create-questions` refuse (renommer) ; commitlint refuse le type `content` ;
   le mode auto refuse `publier-lot` et `garde-niveaux-tags` : David les lance ; `sonde-figures` ne voit pas les
-  dessins d'une case choix (aperçu) ; ports 5176, 5177 pris par d'autres sessions ; depuis #2826, imports en `#lib/x.ts` (extension écrite), worktree remis sur `main` + `pnpm install` fait.
+  dessins d'une case choix (aperçu) ; ports 5176, 5177 pris par d'autres sessions ; depuis #2826, imports en
+  `#lib/x.ts` (extension écrite).
 - **Worktree / branche** : `../ubumaths-wt-questions-cm1`, détaché sur `main`, aucune branche ouverte.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
@@ -1902,3 +1899,11 @@ nœuds qui existent déjà (pas de sous-notion neuve).
   jouée ; 7 brouillons sur leur nœud, 10 tags, `updated_at` inchangé.
 - `page-a-cocher.ts --dir scripts/questions/cm1-8c` : 7 fiches (21 exemples), aucune alerte. Page :
   https://claude.ai/artifact/Snbe4QU13vJmw7qSfzQzS9 (`verdicts`, capacité `db`, vide).
+
+### 23 sexies. Lot 8c — publication (2026-11-18)
+
+- Verdicts lus (`ArtifactData list verdicts`) : 7 « OK », aucun commentaire.
+- `publier-lot --dir scripts/questions/cm1-8c` en simulation : 7 brouillons passent ; David a lancé `--publier` et
+  `garde-niveaux-tags`.
+- Vérifié au MCP : les 7 modèles `published`. Couverture (points non archivés ayant un modèle publié) : CM1 144/171,
+  CM2 100/158 (95 attendus d'après le compte du 8b : d'autres modèles CM2 ont été publiés entre-temps).
