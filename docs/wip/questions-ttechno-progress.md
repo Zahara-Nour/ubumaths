@@ -5,18 +5,18 @@ Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) · bornes 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, lot 5a écrit (§ 35), PR à ouvrir._
+_Mis à jour le 2026-11-18, après #2834 (lot 5a mergé)._
 
-- **État** : lots 0 à 4 publiés ; lot 5a (L1–L6, log décimal) écrit et vérifié en local (§ 35), PR en cours.
+- **État** : lots 0 à 4 publiés ; lot 5a (L1–L6, log décimal) mergé (#2834), pas encore en prod (§ 35).
   Bilan MCP (§ 33) : 28 points STMG encore sans modèle publié, prévus aux lots 5 à 8 (017, 019 : rien, Q17).
-- **Prochaine action** : merge du lot 5a → David crée les brouillons en prod (`create-questions --publier`),
-  migration nœud + tags (gabarit lot 4), page à cocher ; puis phase d'écriture du lot 5b (L7–L9).
-- **En attente de David** : **Q27** saisie de log au clavier (`outils-manquants.md` n° 39) : elle bloque les
-  réponses exactes du lot 5b (Q25).
+- **Prochaine action** : David crée les 6 brouillons en prod depuis le dépôt principal :
+  `pnpm tsx scripts/create-questions.ts --dir scripts/questions/ttechno-5a-logarithme --publier` ; puis migration
+  nœud + tags (gabarit lot 4), page à cocher. En parallèle : PR « saisie de log » (Q27), avant le lot 5b.
+- **En attente de David** : la commande `create-questions --publier` ci-dessus.
 - **Pièges en cours** : un point TTECHNO par modèle (trigger) ; tag = nœud DU POINT (relevé MCP, pas le journal) ;
   `publier-lot.ts`, `create-questions --publier` visent la prod : David les lance (`!`) depuis le dépôt principal ;
   `db:migrate` pousse toutes les migrations en attente ; `{{var}}` décimale calculée s'écrit en fraction.
-- **Worktree / branche** : `ubumaths-wt-questions-ttechno` · `feat/questions-ttechno-lot5a`.
+- **Worktree / branche** : aucun.
 
 ## 1. Périmètre
 
@@ -866,3 +866,6 @@ d'accès : personne pour les brouillons, Tle techno à la publication.
   log 2 + log 5 → log 10 exclu.
 - Base locale : 6 brouillons ; aperçu admin (Chrome, `127.0.0.1:5176`) : L2 courbes, A coché → juste ; L2 signe de
   log(8,5), rendu à virgule ; L3 v4 `1,322` tapé → juste.
+
+**Q27 tranchée (David, 2026-11-18, « je te suis »)** : petite PR à part, raccourci « log » → `\log` (sans case de
+base) dans les champs de réponse ; à merger avant l'écriture du lot 5b (réponses exactes, Q25).
