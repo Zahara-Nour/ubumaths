@@ -92,6 +92,7 @@ Constats dans le code de kit 3.2.0 (pas dans le guide) :
 - `package.json` : `"imports": { "#lib/*": "./src/lib/*", "#tests/*": "./tests/*" }` ; `kitAlias` et l'option `alias` de `sveltekit()` retirés (`vite.config.ts`, `vitest.integration.config.ts`).
 - **Typecheck incrémental** : sans `paths` dans `tsconfig.json`, tsgo ne relie pas `#lib/…/X.svelte` au composant (le `rootDirs` de `.svelte-kit/.svelte-check` ne s'applique pas aux imports de sous-chemin) → type générique `*.svelte`, 178 erreurs (props en `any`). `paths` `#lib/*` et `#tests/*` ajoutés : 0 erreur.
 - **Piège du script** : le littéral `'$lib/'` (préfixe testé par `startsWith`) est devenu `'#lib//index.ts'` → 4 gardes qui suivent les imports (`find-top-level-effects`, `chaque-page-a-un-titre`, `sans-blockly`, `workers-sans-runes`) devenaient aveugles ; seule `chaque-page-a-un-titre` a échoué. Corrigé ; `listBareImportTargets` retrouve bien `utils/mathlive-styles.ts` & co.
+- **Revue (`code-reviewer` Opus)** : deux autres gardes vertes à vide, corrigées. `sans-blockly` cherchait `x.ts.ts` (8 fichiers suivis au lieu de 603) ; la garde de poids de `figure-typst-setup` ne voyait plus `figure-typst.ts'`. `components.json` (shadcn) est passé à `#lib`. Les `paths` rendent TS tolérant à l'extension oubliée, d'où la nouvelle garde `scripts/__tests__/imports-lib-avec-extension.test.ts`, vérifiée rouge en retirant une extension.
 - `check-integration-paths` : filtre esbuild `^#lib`. `tsx` résout `#lib` sans rien (Node lit `package.json`).
 
 ## Autres versions en retard (pnpm outdated, 2026-11-18)

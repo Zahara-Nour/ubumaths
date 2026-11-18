@@ -56,6 +56,8 @@ describe('figure → Typst : rendu inscrit par les producteurs de PDF', () => {
 
 	it('le générateur Typst du baril n’importe PAS le rendu lourd', () => {
 		const source = readFileSync(join(SRC, 'lib/ubumark/generators/typst-generator.ts'), 'utf8');
-		expect(source).not.toMatch(/^import .*(\/figure-typst'|figure-typst-setup|geometry-core)/m);
+		expect(source).not.toMatch(
+			/^import .*(\/figure-typst(\.ts)?'|figure-typst-setup|geometry-core)/m
+		);
 	});
 });
