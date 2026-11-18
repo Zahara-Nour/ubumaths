@@ -5,14 +5,12 @@ Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) · bornes 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après la page à cocher du lot 5a (§ 38)._
+_Mis à jour le 2026-11-18, après la publication du lot 5a (§ 39)._
 
-- **État** : lots 0 à 4 publiés ; lot 5a (L1–L6, log décimal) : 6 brouillons en prod, rangés et tagués (#2845, § 37),
-  page à cocher publiée (§ 38) ; saisie de « log » réglée (#2839, § 36), pas encore en prod.
-  Bilan MCP (§ 33) : 28 points STMG encore sans modèle publié, prévus aux lots 5 à 8 (017, 019 : rien, Q17).
-- **Prochaine action** : lire et compter les verdicts de la page du lot 5a, puis
-  `publier-lot.ts --dir scripts/questions/ttechno-5a-logarithme`. Ensuite écriture du lot 5b (L7–L9).
-- **En attente de David** : relecture de la page à cocher du lot 5a (§ 38).
+- **État** : lots 0 à 5a publiés (5a : L1–L6, log décimal, § 39) ; saisie de « log » réglée (#2839, § 36), pas
+  encore en prod. Restent 22 points STMG sans modèle publié : lot 5b (043, 084, 085), lots 6 à 8 (§ 33).
+- **Prochaine action** : écriture du lot 5b (L7–L9, § 34 ; réponses exactes en log, Q25), worktree neuf.
+- **En attente de David** : rien.
 - **Pièges en cours** : un point TTECHNO par modèle (trigger) ; tag = nœud DU POINT (relevé MCP, pas le journal) ;
   `publier-lot.ts`, `create-questions --publier` visent la prod : David les lance (`!`) depuis le dépôt principal ;
   `{{var}}` décimale calculée s'écrit en fraction (afficher par `{{eval:var;d}}`) ; un modèle du lot 5b qui demande de
@@ -909,3 +907,10 @@ dans le dépôt principal, reportés et commités sur la branche de la migration
 - Page à cocher : https://claude.ai/artifact/5ZCuRYYE2N3wLnsSnvQioG (6 fiches : dc269779 TTECHNO-040, 6 exemples ;
   fa2ade8a 041, 9834f4cd 042, 22bbd82a 082, ceeba3f8 083, af24839d 044, 5 exemples chacun ; aucune alerte ; tous
   `draft` ; `verdicts` vide). Rendu à 390 px non vérifié.
+
+## 39. Lot 5a : publication (2026-11-18)
+
+- Page à cocher relue : 6 verdicts sur 6 « ok », sans commentaire.
+- `publier-lot.ts --dir scripts/questions/ttechno-5a-logarithme` : simulation verte (6 brouillons) ; garde des
+  niveaux : aucun niveau manquant ; `--publier` par David ; statut relu en base (MCP) : 6/6 `published`,
+  `{T_TECHNO}` (dc269779, fa2ade8a, 9834f4cd, 22bbd82a, ceeba3f8, af24839d).
