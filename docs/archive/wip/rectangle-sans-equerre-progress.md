@@ -2,7 +2,7 @@
 
 > Outil manquant n° 37 de [`outils-manquants.md`](../../wip/outils-manquants.md). Point servi : 4-038 « Construire des
 > rectangles sans équerre » (`cycle4.json`, aucune borne écrite). Né du chantier
-> [`questions-4`](../../wip/questions-4-progress.md) § 54.
+> [`questions-4`](questions-4-progress.md) § 54.
 
 ## Reprendre ici
 

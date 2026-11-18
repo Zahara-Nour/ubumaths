@@ -1,19 +1,18 @@
 # Chantier « questions-4 » — couvrir la 4e en modèles de questions
 
-> Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) (skill `couvrir-niveau`).
+> Démarche : [couvrir-un-niveau.md](../../pratiques/couvrir-un-niveau.md) (skill `couvrir-niveau`).
 > Bornes : `docs/systeme/programmes/bornes/cycle4.json` → `4.points`.
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, 4-038 publié._
+_Mis à jour le 2026-11-18 : **chantier clos** (go de David)._
 
-- **État** : lots 1 à 11 publiés. **81 points de 4e sur 82** ont un modèle publié ; seul 4-026 (classe D,
-  non évaluable) n'en a pas. 4-038 : modèle `a95aedfd` (lot 11, chantier `rectangle-sans-equerre`, clos),
-  publié le 2026-11-18.
-- **Prochaine action** : la clôture (versement dans `docs/systeme/`, archivage du journal).
-- **En attente de David** : rien.
-- **Pièges en cours** : aucun propre au chantier.
-- **Worktree / branche** : `../ubumaths-wt-questions-4` (HEAD détachée sur `origin/main`), aucune branche en cours.
+- **État** : lots 0 à 10 publiés, 4-038 par le chantier `rectangle-sans-equerre` ; relevé MCP de clôture : 134 modèles
+  publiés de niveau `4`, aucun brouillon, **81 points sur 82** couverts. 4-026 sans modèle, non évaluable.
+- **Durable versé** dans `docs/systeme/programmes/bornes/cycle4.md` § Quatrième, « Couverture en modèles de questions ».
+- **Note de la session 3e (4-068 / 4-069)** : non appliquée, par décision de David (§ 55).
+- Scripts (`docs/wip/questions/lot-4-*.py`, `docs/wip/questions-4/`) laissés en place : gabarits pour d'autres
+  chantiers.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-28)
 
@@ -1271,3 +1270,13 @@ le trou noté pour le chantier d'outils.
 - Décisions de David (« je te suis ») : un côté et une diagonale ; palette Segment · Compas · Règle graduée ;
   juger le résultat, sommets construits ; chantier à part (outil), puis le modèle ici, puis la clôture.
   Rattachement à la 6e (§ 50.1) caduc : l'outil se fait pour la 4e.
+
+## 55. Clôture (2026-11-18)
+
+- Découpage du § 4 / § 5 bis recompté contre la base : lots 0 à 9 faits, outils C servis (lot 10 : 027, 028, 074 ;
+  4-038 au lot 11 du chantier `rectangle-sans-equerre`, modèle a95aedfd) ; 068, 069 couverts par les modèles Blockly
+  et tortue (chantiers `blockly`, `tortue-variables`).
+- Relevé MCP : 134 modèles contenant `4` (130 de 4e seule, 4 avec la 3e), tous `published` ; seul 4-026 sans modèle.
+- 4-068 / 4-069 (note de la session 3e) : f91149f2, 81bacf03, d43fda5a ne font créer aucun bloc personnalisé
+  (contenu cherché : « définir », « bloc personnalis », « nouveau bloc » : rien). David (« je te suis ») : laissés
+  sous « Algorithmique › Variables et instructions », pas sous « blocs personnalisés ».

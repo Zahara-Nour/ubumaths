@@ -679,6 +679,30 @@ Les incertitudes du cycle 4 sont tranchées (détail : `questions.json`, champ `
 - **4-080** — Traduire une diminution de t % par un coefficient multiplicateur (− 20 % → × 0,8).
   - Diminuer de t % = multiplier par 1 − t/100 (−20 % → × 0,8). — _Exemples 2026 p.43_ (acc.)
 
+### Couverture en modèles de questions (prod, 2026-11-18)
+
+Chantier `questions-4` (démarche [couvrir-un-niveau.md](../../../pratiques/couvrir-un-niveau.md)), du 2026-10-28 au
+2026-11-18 ; journal dans `docs/archive/wip/questions-4-progress.md`.
+
+- **134 modèles publiés** contenant le niveau `4` (130 de 4e seule, 4 partagés avec la 3e), aucun brouillon ;
+  **81 points sur 82** ont au moins un modèle publié (relevé MCP du 2026-11-18).
+- **1 point sans modèle, par décision de David** (2026-10-28) : **4-026** (conjecturer à l'aide d'un algorithme ou
+  d'un tableur) est **non évaluable** dans l'appli.
+- **Modèles venus d'un autre niveau** (règle de la 6e : niveau du point qui les décrit) : factorisation numérique
+  → 5e (5-008) ; b/x = c → 2de (2-464) ; puissance d'une puissance → 2de (2-260). Restent en 4e **sans tag**, par
+  décision : 07a51f8f (x/9 = 9/7), 86b80159, e8de8b81, 23b29a15 (opérations à trou), 8919c37b ((b√a)²), 5d515eb1,
+  554496dd.
+- **Pensée informatique** : 065 à 067 en pseudo-code français proche de Scratch, bloc de code sans langage, jamais de
+  Python (décision du 2026-10-28) ; 067 aussi par la tortue avec variables ; 068, 069 par les gestes Blockly
+  (` ```tortue `, ` ```calcul ` `niveau: 4e`). Leurs modèles restent rangés sous « Algorithmique › Variables et
+  instructions » : aucun ne fait créer de bloc personnalisé, la sous-notion « blocs personnalisés » (3-050) ne
+  leur va pas (décision du 2026-11-18).
+- **Outils servis pour la 4e** : ` ```solide ` et ` ```patron ` (027, 028), ` ```partage ` `colorier:` (074,
+  fraction d'une fraction : b ≠ d, « du rectangle », « du carré » si b = d), `verifier: rectangle` sans équerre
+  (038, chantier `rectangle-sans-equerre`), ` ```figure grille:` + `translation()` (030 à 032).
+- **Sonde des figures** (`scripts/questions/sonde-figures.ts`) née ici : un lot qui dessine des figures passe la
+  sonde, 0 problème, avant la page à cocher.
+
 ## Troisième (66 points, 55 avec une borne propre)
 
 ### Bornes générales (héritées par tous les points du niveau)
