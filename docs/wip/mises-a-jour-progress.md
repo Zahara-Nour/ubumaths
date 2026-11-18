@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après la mise en prod de la 0.96.0._
+_Mis à jour le 2026-11-18, PR `ci/eslint-cache-svelte` ouverte._
 
 - **État** : #2814, #2821, #2825, #2826, #2828, #2830 mergées et EN PROD (0.96.0, 2026-11-18). #2828 = `pnpm migrer:diese` ; consigne envoyée aux 22 sessions ouvertes. #2830 = ESLint en CI ne relit que les fichiers de la PR + les `.svelte` qui importent un module changé (étape ESLint : ~20 min → 1-3 s) ; `lint-nocturne.yml` relit tout l'arbre chaque nuit (03:41 UTC) et enregistre le cache de main (premier run lancé à la main le 2026-11-18 : vert, 27 min).
-- **Prochaine action** : (1) **Lint de la CI de version** : il relit tout l'arbre (31 min le 2026-11-18) et dépasse l'attente de `deploy:prod` (1500 s) → le script a abandonné, relancé à la main après le vert. Lui faire réutiliser le cache ESLint du nocturne (ou s'appuyer sur le nocturne vert) ; à défaut, relever `DEPLOY_PROD_ATTENTE_MAX`. (2) Les petites dépréciations de kit 3 (`goto` avec options 10, `pushState`/`replaceState` 15, `error(N, { message })` 36, `invalidateAll` 54). `json()`/`text()` (≈ 368 fichiers) REPORTÉS (seconde vague de conflits). Puis clore (versement). Autres majeures HORS chantier (lot mensuel Dependabot).
+- **Prochaine action** : (1) **Lint de la CI de version** : cause trouvée — `version.name` (= `Date.now()`) de la config Svelte entrait dans l'empreinte du cache ESLint, les ~1 300 fichiers Svelte étaient relus à chaque lancement (19 s → 1,7 s sur un échantillon une fois retiré). PR `ci/eslint-cache-svelte` ; après merge, vérifier le nocturne suivant puis la durée du Lint au prochain `deploy:prod`. (2) Les petites dépréciations de kit 3 (`goto` avec options 10, `pushState`/`replaceState` 15, `error(N, { message })` 36, `invalidateAll` 54). `json()`/`text()` (≈ 368 fichiers) REPORTÉS (seconde vague de conflits). Puis clore (versement). Autres majeures HORS chantier (lot mensuel Dependabot).
 - **En attente de David** : rien.
 - **Pièges en cours** : `#lib` exige l'extension écrite (garde `imports-lib-avec-extension`, qui exclut le test de `migrer:diese`) ; limite connue du lint de PR : props importées d'un autre `.svelte` ou type indirect → seul le nocturne les voit ; commitlint refuse un sujet qui commence par une majuscule (« ESLint… ») ; `appNavigationMock` ; suite client en local avec `CI=true`.
-- **Worktree / branche** : aucun.
+- **Worktree / branche** : `../ubumaths-wt-mises-a-jour` · `ci/eslint-cache-svelte`.
 
 ## Origine
 
