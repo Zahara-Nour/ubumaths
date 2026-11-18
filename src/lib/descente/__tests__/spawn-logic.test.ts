@@ -38,6 +38,7 @@ function state(partial: Partial<SpawnState>): SpawnState {
 		living: [],
 		lastOrdinaryAt: ago(1 * HOUR),
 		lastBigAt: ago(1 * DAY),
+		firstOrdinaryAt: ago(30 * DAY),
 		...partial
 	};
 }
@@ -50,11 +51,17 @@ function quotaOf(ordinary: number, big: boolean) {
 const first = () => 0;
 
 describe('spawnQuota — combien de Bêtes', () => {
-	test('première visite : 3 Bêtes ordinaires et une grosse Bête', () => {
-		expect(spawnQuota(state({ lastOrdinaryAt: null, lastBigAt: null }))).toMatchObject({
-			ordinary: 3,
-			big: true
-		});
+	test('première visite : 3 Bêtes ordinaires, pas de grosse Bête', () => {
+		expect(
+			spawnQuota(state({ lastOrdinaryAt: null, lastBigAt: null, firstOrdinaryAt: null }))
+		).toMatchObject({ ordinary: 3, big: false });
+	});
+
+	test('première grosse Bête : 7 jours après l’arrivée (sa toute première Bête)', () => {
+		const arrived = (ms: number) =>
+			state({ lastOrdinaryAt: ago(1 * HOUR), lastBigAt: null, firstOrdinaryAt: ago(ms) });
+		expect(spawnQuota(arrived(7 * DAY - 60_000)).big).toBe(false);
+		expect(spawnQuota(arrived(7 * DAY)).big).toBe(true);
 	});
 
 	test('exemple de la phase 0 : 2 jours d’absence, 2 Bêtes en attente → 3 de plus, pour 5', () => {

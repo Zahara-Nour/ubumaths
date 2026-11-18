@@ -12,7 +12,9 @@
  *     Province absente de la carte ; jamais deux Bêtes vivantes sur le même point ;
  *   - une Bête ordinaire repart au bout de 3 jours ; celle d'un point à remédier
  *     reste jusqu'à sa défaite ;
- *   - une grosse Bête tous les 7 jours, née du point le plus prioritaire ; elle
+ *   - une grosse Bête tous les 7 jours, la première 7 jours après l'arrivée
+ *     (première Bête de l'élève ; choix de David du 2026-11-18), née du point le
+ *     plus prioritaire ; elle
  *     reste 7 jours et ne compte pas dans les 5 ;
  *   - le tutoriel ne compte pour rien ici.
  *
@@ -56,6 +58,8 @@ export interface SpawnState {
 	lastOrdinaryAt: Date | null;
 	/** Apparition de sa dernière grosse Bête ; `null` : jamais. */
 	lastBigAt: Date | null;
+	/** Apparition de sa toute première Bête ordinaire (son arrivée) ; `null` : jamais. */
+	firstOrdinaryAt: Date | null;
 }
 
 export interface SpawnQuota {
@@ -132,10 +136,12 @@ export function spawnQuota(state: SpawnState): SpawnQuota {
 		keepsRemainder ? new Date(last.getTime() + (k + 1) * SPAWN_INTERVAL_MS) : now
 	);
 
+	// Grosse Bête : 7 jours après la précédente ; la première, 7 jours après
+	// l'arrivée (jamais à la première visite, déjà chargée)
 	const hasLivingBig = state.living.some((b) => b.kind === 'big');
+	const bigClock = state.lastBigAt ?? state.firstOrdinaryAt;
 	const big =
-		!hasLivingBig &&
-		(state.lastBigAt === null || now.getTime() - state.lastBigAt.getTime() >= BIG_INTERVAL_MS);
+		!hasLivingBig && bigClock !== null && now.getTime() - bigClock.getTime() >= BIG_INTERVAL_MS;
 
 	return { ordinary, big, ordinaryAppearedAt };
 }

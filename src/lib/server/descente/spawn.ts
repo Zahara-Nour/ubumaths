@@ -158,31 +158,35 @@ async function loadGrade(supabase: SB, studentId: string): Promise<string | null
 	return data?.grade ?? null;
 }
 
-/** Bêtes vivantes et dernières apparitions (ordinaire, grosse). */
+/** Bêtes vivantes, dernières apparitions (ordinaire, grosse) et arrivée de l'élève. */
 async function loadSpawnState(supabase: SB, studentId: string, now: Date): Promise<SpawnState> {
 	const nowIso = now.toISOString();
-	const lastOf = (kind: 'ordinary' | 'big') =>
+	const edgeOf = (kind: 'ordinary' | 'big', latest: boolean) =>
 		supabase
 			.from('student_beasts')
 			.select('appeared_at')
 			.eq('student_id', studentId)
 			.eq('kind', kind)
-			.order('appeared_at', { ascending: false })
+			.order('appeared_at', { ascending: !latest })
 			.limit(1);
 
-	const [livingResult, lastOrdinaryResult, lastBigResult] = await Promise.all([
+	const [livingResult, lastOrdinaryResult, lastBigResult, firstOrdinaryResult] = await Promise.all([
 		supabase
 			.from('student_beasts')
 			.select('kind, beast_key, province, point_id')
 			.eq('student_id', studentId)
 			.is('defeated_at', null)
 			.or(`leaves_at.is.null,leaves_at.gt.${nowIso}`),
-		lastOf('ordinary'),
-		lastOf('big')
+		edgeOf('ordinary', true),
+		edgeOf('big', true),
+		edgeOf('ordinary', false)
 	]);
 	if (livingResult.error) throw new Error(`Bêtes illisibles : ${livingResult.error.message}`);
 	if (lastOrdinaryResult.error) {
 		throw new Error(`Dernière Bête illisible : ${lastOrdinaryResult.error.message}`);
+	}
+	if (firstOrdinaryResult.error) {
+		throw new Error(`Première Bête illisible : ${firstOrdinaryResult.error.message}`);
 	}
 	if (lastBigResult.error) {
 		throw new Error(`Dernière grosse Bête illisible : ${lastBigResult.error.message}`);
@@ -208,7 +212,8 @@ async function loadSpawnState(supabase: SB, studentId: string, now: Date): Promi
 		now,
 		living,
 		lastOrdinaryAt: dateOf(lastOrdinaryResult.data),
-		lastBigAt: dateOf(lastBigResult.data)
+		lastBigAt: dateOf(lastBigResult.data),
+		firstOrdinaryAt: dateOf(firstOrdinaryResult.data)
 	};
 }
 

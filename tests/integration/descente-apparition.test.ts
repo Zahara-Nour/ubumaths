@@ -242,38 +242,28 @@ describe('Descente : apparition des Bêtes aux droits de l’élève', () => {
 		await cleanupAllTestData();
 	});
 
-	it('première visite : la grosse Bête et des Bêtes ordinaires, nées des points jouables', async () => {
+	it('première visite : des Bêtes ordinaires nées des points jouables, pas de grosse Bête', async () => {
 		const now = new Date();
 		const result = await spawnBeasts(student.client, student.id, now, first);
 
 		const beasts = await storedBeasts(student.id);
 		expect(result.created).toBe(beasts.length);
-		// Grosse Bête + 3 ordinaires au plus (moins si le référentiel local manque de points jouables)
+		// 3 ordinaires au plus (moins si le référentiel local manque de points jouables)
 		expect(beasts.length).toBeGreaterThanOrEqual(2);
-		expect(beasts.length).toBeLessThanOrEqual(4);
+		expect(beasts.length).toBeLessThanOrEqual(3);
+		expect(beasts.filter((b) => b.kind !== 'ordinary')).toEqual([]);
 
-		// Les deux points à remédier jouables passent d'abord : l'un fait naître la grosse
-		// Bête (7 jours), l'autre une Bête ordinaire qui reste jusqu'à sa défaite. La
-		// Province est celle de la branche du point (Géométrie → Bedonstan, Fonctions → Yoyolande).
-		const provinceOf: Record<string, string> = {
-			[points.big]: 'bedonstan',
-			[points.stays]: 'yoyolande'
-		};
-		const big = beasts.filter((b) => b.kind === 'big');
-		expect(big).toHaveLength(1);
-		expect(Object.keys(provinceOf)).toContain(big[0].point_id);
-		expect(big[0]).toMatchObject({
-			province: provinceOf[big[0].point_id ?? ''],
-			max_hp: 300,
-			hp: 300
+		// Les deux points à remédier jouables passent d'abord : leurs Bêtes restent jusqu'à
+		// leur défaite. La Province est celle de la branche du point (Géométrie → Bedonstan,
+		// Fonctions → Yoyolande).
+		expect(beasts.find((b) => b.point_id === points.big)).toMatchObject({
+			province: 'bedonstan',
+			max_hp: 100,
+			hp: 100,
+			leaves_at: null
 		});
-		expect(new Date(big[0].leaves_at ?? 0).getTime()).toBe(now.getTime() + 7 * DAY_MS);
-
-		const otherRemediation = big[0].point_id === points.big ? points.stays : points.big;
-		const stays = beasts.find((b) => b.point_id === otherRemediation);
-		expect(stays).toMatchObject({
-			kind: 'ordinary',
-			province: provinceOf[otherRemediation],
+		expect(beasts.find((b) => b.point_id === points.stays)).toMatchObject({
+			province: 'yoyolande',
 			leaves_at: null
 		});
 
@@ -335,6 +325,37 @@ describe('Descente : apparition des Bêtes aux droits de l’élève', () => {
 		const born = (await storedBeasts(full.id)).filter((b) => b.point_id !== null);
 		expect(born).toHaveLength(1);
 		expect([points.big, points.stays]).toContain(born[0].point_id);
+	});
+
+	it('7 jours après l’arrivée : la grosse Bête, née d’un point à remédier', async () => {
+		const veteran = await newStudent(GRADE);
+		await markRemediation(veteran.id, [points.big, points.stays]);
+		// Arrivée il y a 8 jours ; une Bête ordinaire récente (aucune ordinaire due)
+		const eightDaysAgo = new Date(Date.now() - 8 * DAY_MS).toISOString();
+		await seedBeast(veteran.id, { kind: 'ordinary', appeared_at: eightDaysAgo, leaves_at: null });
+		await seedBeast(veteran.id, {
+			kind: 'ordinary',
+			appeared_at: new Date(Date.now() - 60_000).toISOString(),
+			leaves_at: null
+		});
+
+		const now = new Date();
+		const result = await spawnBeasts(veteran.client, veteran.id, now, first);
+		expect(result.created).toBe(1);
+
+		const big = (await storedBeasts(veteran.id)).filter((b) => b.kind === 'big');
+		expect(big).toHaveLength(1);
+		const provinceOf: Record<string, string> = {
+			[points.big]: 'bedonstan',
+			[points.stays]: 'yoyolande'
+		};
+		expect(Object.keys(provinceOf)).toContain(big[0].point_id);
+		expect(big[0]).toMatchObject({
+			province: provinceOf[big[0].point_id ?? ''],
+			max_hp: 300,
+			hp: 300
+		});
+		expect(new Date(big[0].leaves_at ?? 0).getTime()).toBe(now.getTime() + 7 * DAY_MS);
 	});
 
 	it('un autre identifiant que celui de la session lève, et rien n’est écrit', async () => {

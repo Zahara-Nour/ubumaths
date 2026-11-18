@@ -32,15 +32,15 @@ Migration `supabase/migrations/20261118060323_descente_fondations.sql` :
 `spawnBeasts(client de l'élève, studentId)` (`src/lib/server/descente/spawn.ts`), à appeler à
 l'ouverture de la carte. Pas de tâche planifiée : chaque visite **rattrape** le temps passé.
 
-| Règle          | Valeur                                                                   |
-| -------------- | ------------------------------------------------------------------------ |
-| Rythme         | une Bête ordinaire toutes les 8 h (première visite : 3)                  |
-| Plafond        | 5 Bêtes ordinaires vivantes ; au-delà, le dû est perdu                   |
-| Reste du temps | gardé : la k-ième Bête due est datée de la dernière apparition + k × 8 h |
-| Départ         | 3 jours ; jamais pour un point à remédier (reste jusqu'à sa défaite)     |
-| Grosse Bête    | une tous les 7 jours (dès la première visite), reste 7 jours, hors des 5 |
-| Points de vie  | 100 / 300, **provisoires** (réglés à l'étape 3)                          |
-| Tutoriel       | ne compte pour rien dans l'apparition                                    |
+| Règle          | Valeur                                                                                |
+| -------------- | ------------------------------------------------------------------------------------- |
+| Rythme         | une Bête ordinaire toutes les 8 h (première visite : 3)                               |
+| Plafond        | 5 Bêtes ordinaires vivantes ; au-delà, le dû est perdu                                |
+| Reste du temps | gardé : la k-ième Bête due est datée de la dernière apparition + k × 8 h              |
+| Départ         | 3 jours ; jamais pour un point à remédier (reste jusqu'à sa défaite)                  |
+| Grosse Bête    | une tous les 7 jours, la première 7 jours après l'arrivée ; reste 7 jours, hors des 5 |
+| Points de vie  | 100 / 300, **provisoires** (réglés à l'étape 3)                                       |
+| Tutoriel       | ne compte pour rien dans l'apparition                                                 |
 
 **D'où naît une Bête** (`spawn-logic.ts`) : d'un point du parcours de l'élève, par priorité :
 à remédier (`needs_remediation`, tout le parcours) → non acquis de **son** niveau → à revoir
