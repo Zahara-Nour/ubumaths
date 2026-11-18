@@ -1,4 +1,5 @@
 {
+	"id": "fba4bd3c-0888-4ce1-a4a3-70be99b68987",
 	"title": "Simuler une loi de Bernoulli avec random()",
 	"description": "random() < p renvoie 1 avec la probabilité p ; random() > p : 1 − p ; choisir la bonne fonction ; valeur renvoyée pour un tirage donné",
 	"grades": ["1_TECHNO"],

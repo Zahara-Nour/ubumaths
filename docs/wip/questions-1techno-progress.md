@@ -8,19 +8,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après #2833 (fichiers du lot 4 mergés)._
+_Mis à jour le 2026-11-18, PR du lot 4 (rangement + tags) ouverte._
 
-- **État** : lots 1 à 3 clos ; lot 4 « algorithmique » (8 modèles, § 26) : fichiers sur `main` (#2833), rien en base
-  de prod encore. Reste les lots 5 (graphiques, stats à deux variables) et 6 (probabilités).
-- **Prochaine action** : **David** lance en prod, depuis le dépôt principal à jour,
-  `pnpm tsx scripts/create-questions.ts --dir scripts/questions/1techno-4 --publier` (8 brouillons, ids écrits dans
-  les fichiers) ; puis nouveau worktree : ids commités, migration de rangement + tags (8 tags 1TECHNO, + 1SPE-362
-  sur M2), test d'intégration rouge d'abord.
-- **En attente de David** : ce `create-questions --publier` en prod.
+- **État** : lots 1 à 3 clos ; lot 4 « algorithmique » : 8 brouillons en prod (ids commités), migration
+  `20261118190129_questions_1techno_lot4_rangement_tags` sur `feat/questions-1techno-lot4-tags` (§ 27). Reste les
+  lots 5 (graphiques, stats à deux variables) et 6 (probabilités).
+- **Prochaine action** : CI verte → `check:migrations --pr` → merge → `db:migrate` depuis le dépôt principal
+  (`migration list --linked` avant : rien d'autre en attente) → vérif MCP → page à cocher → `publier-lot.ts`.
+- **En attente de David** : rien avant la page à cocher.
 - **Pièges en cours** : M2 porte aussi 1SPE-362 (`grades` 1_TECHNO + 1_SPE) ; `db:migrate` pousse tout ce qui
   attend ; lot 5 : modèles communs de questions-1gen S2 f3cb0c7a → 085, S3 7461bb44 → 082, S4 4f328c8c → 084,
   S6 3fec6b41 → 087 (publiés, à vérifier contre mes bornes en phase 0).
-- **Worktree / branche** : aucun (lot 4 mergé, worktree retiré) ; le prochain : `feat/questions-1techno-lot4-tags`.
+- **Worktree / branche** : `../ubumaths-wt-questions-1techno` · `feat/questions-1techno-lot4-tags`.
 
 ## 1. Relevé (prod, 2026-11-17)
 
@@ -751,3 +750,19 @@ Base locale réinitialisée entre-temps par une autre session : 8 brouillons rec
 hors dépôt). David : « ok pour les rendus ». Aperçu fermé (`tailscale serve --https=443 off` et `--https=8443 off`
 seulement : le :10000 → 5175 n'est pas à ce chantier), 5176 arrêté. `origin/main` fusionnée ; re-simulation contre
 la base locale avec `--malgre-homonyme` (les brouillons locaux portent les mêmes titres) : 8 ✓, 0 ⛔.
+
+## 27. Lot 4 — brouillons en prod, migration (2026-11-18)
+
+David a lancé `create-questions --publier` : M1 `fba4bd3c-0888-4ce1-a4a3-70be99b68987`, M2
+`2bf630e5-d983-4123-a5b8-17a9a0eddbe6`, M3 `dfeed66c-f7fb-4a28-b8d8-80d5bf61a3e7`, M4
+`a14d1b12-505f-492c-8f72-35efa16ab3be`, M5 `ecba4038-e4f2-4861-835b-2b2d3beab467`, M6
+`b916ab0f-73d5-4c3d-80d6-5300f4594f91`, M7 `92120570-1a05-4caa-a0da-5e4d3e20e897`, M8
+`3263f8f6-44af-4952-9cf0-45fdc0d8e344` ; brouillons sans nœud ni tag, M2 `{1_TECHNO,1_SPE}`, les autres
+`{1_TECHNO}` (vérifié MCP). Les 9 points visés : 0 modèle ; 1SPE-362 et 1TECHNO-103 sur le même nœud « simulation ».
+
+Migration `20261118190129_questions_1techno_lot4_rangement_tags` (gabarit du lot 2 : point 1TECHNO + point jumeau
+sur le même nœud) : 8 rangés sur le nœud de leur point 1TECHNO, 9 tags. Gardes : tout ou rien (8), brouillons sans
+nœud ni tag, niveaux du relevé. Additive, rollback écrit et éprouvé. Test
+`tests/integration/questions-1techno-lot4-rangement-tags.test.ts` : rouge sans la migration (ENOENT, 6 échecs), puis
+10 verts. `security-auditor` : aucun bloquant (deux faibles, déjà connus aux lots 2-3 : nœud non revérifié au
+rollback, `lock_timeout` sous `db push`).
