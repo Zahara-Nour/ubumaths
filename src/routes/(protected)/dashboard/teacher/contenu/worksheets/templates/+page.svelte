@@ -42,7 +42,7 @@
 		const params = new URLSearchParams();
 		if (searchQuery) params.set('search', searchQuery);
 		params.set('page', '1');
-		goto(`?${params.toString()}`, { keepFocus: true });
+		goto(`?${params.toString()}`, { reset: false });
 	}
 
 	/**
@@ -50,7 +50,7 @@
 	 */
 	function clearFilters() {
 		searchQuery = '';
-		goto('/dashboard/teacher/contenu/worksheets/templates', { keepFocus: true });
+		goto('/dashboard/teacher/contenu/worksheets/templates', { reset: false });
 	}
 
 	/**

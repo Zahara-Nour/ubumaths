@@ -91,7 +91,7 @@
 		// resolve() ne porte pas de query string (même motif que la page Avancement).
 		const url = new URL(page.url);
 		url.searchParams.set('grade', value);
-		goto(url, { keepFocus: true, noScroll: true });
+		goto(url, { reset: false });
 	}
 
 	/** Paramètres de la même page dans une autre vue (le niveau suit). */

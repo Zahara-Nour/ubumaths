@@ -76,8 +76,7 @@
 
 	function setFilter(key: string, value: string | null) {
 		goto(`${resolve('/(protected)/dev/modeles')}${queryWith({ [key]: value })}`, {
-			keepFocus: true,
-			noScroll: true
+			reset: false
 		});
 	}
 

@@ -31,7 +31,7 @@
 		// Query-only navigation (reloads the server load).
 		const url = new URL(page.url);
 		url.searchParams.set('class', value);
-		goto(url, { keepFocus: true, noScroll: true });
+		goto(url, { reset: false });
 	}
 
 	function count(pointId: string): number {

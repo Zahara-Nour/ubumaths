@@ -156,7 +156,7 @@
 		if (selectedType) params.set('type', selectedType);
 		params.set('page', '1');
 
-		goto(`?${params.toString()}`, { keepFocus: true });
+		goto(`?${params.toString()}`, { reset: false });
 	}
 
 	/**
@@ -166,7 +166,7 @@
 		searchQuery = '';
 		selectedStatus = '';
 		selectedType = '';
-		goto('/dashboard/teacher/contenu/worksheets', { keepFocus: true });
+		goto('/dashboard/teacher/contenu/worksheets', { reset: false });
 	}
 
 	/**
