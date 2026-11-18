@@ -2,32 +2,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18 : phase 0 validée, rien n'est codé._
+_Mis à jour le 2026-11-18 : étape 1 (fondations en base) écrite, PR à ouvrir._
 
-- **État** : analyse faite. David repart **de zéro**, avec un **nouveau nom** et le **lore de Chiphre**. Le principe reste le même : chaque sort ou coup se valide par une question, et les questions viennent du système de questions de Chiphre.
-- **Tranché** : avatar combattant, accompagné d'un Mathou familier ; une magie ajoutée au lore (§ « Tranché »).
-- **Tranché aussi** : la magie par étapes (recrue, apprenti, mage), avec un seul moteur. Voir § « Tranché ».
-- **Tranché aussi** : les adversaires sont des **Bêtes imprévues**, un bestiaire imaginaire par Province ; le Czar ne vient qu'aux grandes batailles. Voir § « Tranché ».
-- **Tranché aussi** : la riposte. La recrue l'esquive par une question ; l'apprenti et le mage se défendent par leurs sorts.
-- **Tranché aussi** : pas de nom de produit. Le jeu s'appelle **La Descente de la Vistule**, un voyage initiatique à travers le Royaume, et c'est une activité de Chiphre, pas son cadre. Voir § « Tranché ».
-- **Tranché aussi** : la descente ne suit aucun ordre. Les Bêtes surgissent n'importe où dans le Royaume, et le joueur va les combattre là où elles sont.
-- **Tranché aussi** : les Bêtes naissent des besoins de l'élève et sont vulnérables à ce domaine ; le joueur choisit le domaine par son coup ou son sort, la recrue comprise.
-- **Tranché aussi** : le grade de l'Ordre de la Grande Passoire se fondera sur le travail réel, pas sur les gidouilles ; c'est le chantier à part `ordre-grande-passoire`.
-- **Tranché aussi (5a, 2026-11-17)** : on gagne des coups et des sorts en **maîtrisant des notions**, comme pour l'Ordre ; les questions des combats comptent comme du travail.
-- **Tranché aussi (5b, 2026-11-17)** : une victoire rapporte des gidouilles, plafonnées par jour, et rien d'autre.
-- **Tranché aussi (5c, 2026-11-17)** : un carnet de voyage, album des Bêtes vaincues par Province, visible par l'élève seul.
-- **Tranché aussi (5d, 2026-11-17)** : le Mathou familier donne un petit coup de main qui grandit avec son stade.
-- **Tranché aussi (5e, 2026-11-17)** : 3 Bêtes par jour, 5 au plus ; celles des notions à retravailler restent jusqu'à leur défaite ; une grosse Bête par semaine. **La question 5 est close.**
-- **Fait (2026-11-17)** : § « Ce qu'on garde de Navadra » relue et validée (indices : le Mathou seul ; tutoriel : Bordure ; chiffres : ceux de Navadra).
-- **Fait aussi** : § « Idées d'ajouts » relue (Mathou réveillé par un combat ; Bataille de Bataillon et grande bataille contre le Czar après la v1).
-- **Phase 0 de la v1 VALIDÉE (2026-11-18)** : § « Phase 0 de la v1 » (parcours, limites, erreurs, 7 questions, découpage en 8 PR).
-- **Prochaine action** : étape 1, les fondations en base. Ouvrir le worktree `ubumaths-wt-navadra` (branche `feat/navadra-fondations`), proposer le schéma, puis **poser à David la question d'accès** (« qui pourra lire quoi ») **avant d'écrire du SQL**. Tests d'intégration RLS d'abord.
-- **En attente de David** : rien ; la question d'accès viendra avec le schéma de l'étape 1.
-- **Façon de poser** : David n'a pas compris la 5a posée en termes techniques. Poser chaque point **en mots simples, avec un exemple**, sans noms de tables ni de colonnes.
+- **État** : phase 0 de la v1 validée (§ « Phase 0 de la v1 », 8 étapes). **Étape 1 en cours** : migration `20261118060323_descente_fondations.sql` + `tests/integration/descente-fondations.test.ts` (29 tests, rouges sans la migration, verts avec).
+- **Tranché le 2026-11-18** (§ « Tranché ») : question d'accès de l'étape 1 et barème des gidouilles (1 / 3 / 0, plafond 4 sur 24 h).
+- **Prochaine action** : PR de l'étape 1 → `code-reviewer` + `security-auditor` → CI verte → merge → `db:migrate` (4 conditions de `CLAUDE.md`) → `db:types`. Puis étape 2 (apparition des Bêtes), qui ajoutera aussi les deux tables à l'export RGPD.
+- **En attente de David** : rien.
+- **Façon de poser** : en mots simples, avec un exemple, sans noms de tables ni de colonnes.
 - **Pièges en cours** :
-  - L'analyse du jeu d'origine est dans `extern/navadra-jeu/CLAUDE.md`, un fichier **non versionné**. Ce journal en reprend l'essentiel.
-  - Le Compendium n'interdit que les **mots** anglais affichés (XP, level, boss, score, leaderboard ; `lore-pataphysique.md:968,1776`), **pas les mécaniques**.
-- **Worktree / branche** : aucun pour l'instant (doc sur `main`) ; l'étape 1 ouvrira `../ubumaths-wt-navadra`.
+  - Base locale : `supabase migration up --local` bute sur une migration de rangement déjà jouée (contenu copié de la prod) ; appliquer le seul fichier par `psql -1` sous `scripts/with-db-lock.sh`, puis `notify pgrst, 'reload schema'`.
+  - Code et migration en deux PR : rien dans `src/` ne lit les tables avant `db:types`.
+  - L'analyse du jeu d'origine est dans `extern/navadra-jeu/CLAUDE.md`, **non versionné**.
+  - Le Compendium n'interdit que les **mots** anglais affichés (XP, boss, score…), pas les mécaniques.
+- **Worktree / branche** : `../ubumaths-wt-navadra`, `feat/navadra-fondations`.
 
 ## Tranché
 
@@ -98,6 +85,13 @@ _Mis à jour le 2026-11-18 : phase 0 validée, rien n'est codé._
   - **3 nouvelles Bêtes par jour**, **5 au plus** en attente sur la carte ;
   - une Bête née d'une **notion à retravailler** (point à remédier) **reste jusqu'à sa défaite** ; les autres repartent au bout de quelques jours, comme dans Navadra ;
   - **une grosse Bête par semaine**, plus longue à vaincre.
+
+- **2026-11-18 — Étape 1 : question d'accès et barème** (David suit mes recommandations) :
+  - l'élève voit ses Bêtes, ses coups et sorts, son carnet ; **ni le prof ni l'admin** ; aucun accès sans compte ;
+  - le prof voit, comme aujourd'hui, les réponses en combat dans son suivi (lieu « Descente ») et la ligne de gidouilles au journal ;
+  - personne n'écrit depuis le navigateur : le serveur seul fait apparaître les Bêtes, enregistre les victoires et les réponses en combat ;
+  - gidouilles : **1 par Bête ordinaire, 3 par grosse Bête, 0 pour le tutoriel, 4 au plus sur 24 heures** ; une récompense est coupée au plafond.
+  - Le bestiaire (nom, allure) vit dans le code ; la base ne garde que la clé de la Bête. Les coups de départ (un par Province) ne sont pas écrits en base.
 
 ## Phase 0 de la v1 (validée par David le 2026-11-18)
 
