@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, PR #2859 (`json()` → `Response.json`) ouverte._
+_Mis à jour le 2026-11-19, après #2859._
 
-- **État** : #2814 à #2830 en prod (0.96.0). #2835, #2850, #2853 mergées (pas encore en prod). #2853 = dépréciations de kit 3 sans effet de bord : `invalidateAll` → `refreshAll`, options `goto` `replace`/`refreshAll`, `error(N, message)` ; revues code + sécurité sans finding. #2859 (branche `refactor/kit3-json-text`) : `json()` de kit → `Response.json` (372 fichiers, 867 appels ; § « `json()` → `Response.json` »).
-- **Prochaine action** : merger #2859, puis **étudier le cache ESLint en CI** (décidé par David le 2026-11-19, § « Cache ESLint en CI »), puis clore le chantier (versement du durable dans `docs/systeme/`, journal archivé). `pushState`/`replaceState` **laissés** (§ « Dépréciations de kit 3 » : leur remplaçant déclenche les hooks de navigation).
+- **État** : #2814 à #2830 en prod (0.96.0). #2835, #2850, #2853, #2859 mergées (pas encore en prod). #2853 = dépréciations de kit 3 sans effet de bord : `invalidateAll` → `refreshAll`, options `goto` `replace`/`refreshAll`, `error(N, message)` ; revues code + sécurité sans finding. #2859 = `json()` de kit → `Response.json` (372 fichiers, 867 appels ; § « `json()` → `Response.json` »).
+- **Prochaine action** : **étudier le cache ESLint en CI** (décidé par David le 2026-11-19, § « Cache ESLint en CI »), puis clore le chantier (versement du durable dans `docs/systeme/`, journal archivé). `pushState`/`replaceState` **laissés** (§ « Dépréciations de kit 3 » : leur remplaçant déclenche les hooks de navigation).
 - **En attente de David** : rien.
-- **Pièges en cours** : `#lib` exige l'extension écrite (garde `imports-lib-avec-extension`, qui exclut le test de `migrer:diese`) ; limite connue du lint de PR : props importées d'un autre `.svelte` ou type indirect → seul le nocturne les voit ; commitlint refuse un sujet qui commence par une majuscule (« ESLint… ») ; `appNavigationMock` ; suite client en local avec `CI=true`.
-- **Worktree / branche** : `ubumaths-wt-mises-a-jour` · `refactor/kit3-json-text`.
+- **Pièges en cours** : `#lib` exige l'extension écrite (garde `imports-lib-avec-extension`, qui exclut le test de `migrer:diese`) ; limite connue du lint de PR : props importées d'un autre `.svelte` ou type indirect → seul le nocturne les voit ; commitlint refuse un sujet qui commence par une majuscule (« ESLint… ») et une ligne de corps > 100 caractères (`Doc-inchangée:` comprise) ; la garde `docs:check-a-jour` ne voit que les COMMITS (la lancer après le commit) ; `page-demo-lexique` instable en CI (délai, relancer le job) ; `appNavigationMock` ; suite client en local avec `CI=true`.
+- **Worktree / branche** : aucun.
 
 ## `json()` → `Response.json` (2026-11-19)
 
