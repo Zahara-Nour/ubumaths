@@ -9,6 +9,10 @@
  * les `MAX_SHEETS` premières. Filtres : verdict, statut, alertes, titre (`?titre=`), point
  * (`?point=`).
  *
+ * Série choisie, affichage « parcours » (par défaut ; `?vue=fiches` pour l'affichage d'avant) : en
+ * plus des modèles de la série, ceux des mêmes notions et du même niveau qui n'y sont pas, et les
+ * points de ces notions sans aucun modèle (chantier parcours-serie).
+ *
  * SECURITY : admin seul (`requireAdmin`, en plus de la garde de `/dev`) ; entrées validées par Zod.
  */
 
@@ -31,15 +35,22 @@ import {
 	countTemplates,
 	findReviewNode,
 	isDefaultFilters,
+	formatSeriesDuration,
 	matchesFilters,
 	MAX_POINT_INPUT,
+	neighbourTemplates,
 	MAX_TITLE_SEARCH,
 	nodeChain,
 	parseFilters,
 	parsePointCode,
+	parseReviewView,
+	pointsWithoutTemplate,
+	programmeName,
 	reviewNodePath,
+	seriesNotions,
 	seriesOptions,
 	seriesSelection,
+	seriesTotals,
 	summaryAlerts,
 	templatesUnder,
 	type SeriesSheetEntry
@@ -132,16 +143,73 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	const tooMany = entries.length > MAX_SHEETS;
 	const shown = entries.slice(0, MAX_SHEETS);
 
+	// Parcours : les mêmes notions, au niveau de la série, hors de la série
+	const view = parseReviewView(params);
+	const lines = seriesLines?.lines ?? null;
+	let parcours = null;
+	let neighbourShown: SeriesSheetEntry[] = [];
+	if (series && lines && view === 'parcours') {
+		const seriesIds = lines.map((l) => l.templateId);
+		const notions = seriesNotions(seriesIds, byId, overview.nodes);
+		const notionIds = notions.map((n) => n.id);
+		const neighbours = neighbourTemplates({
+			seriesTemplateIds: seriesIds,
+			notionIds,
+			templates: overview.templates,
+			nodes: overview.nodes,
+			grade: series.grade,
+			filters
+		});
+		// Le plafond des fiches vaut pour la page entière : la série d'abord
+		neighbourShown = neighbours
+			.slice(0, Math.max(0, MAX_SHEETS - shown.length))
+			.map((id) => ({ templateId: id, quantity: 0, delay: 0, key: `voisin-${id}`, found: true }));
+		const totals = seriesTotals(lines);
+		parcours = {
+			questions: totals.questions,
+			duration: formatSeriesDuration(totals.seconds),
+			grade: programmeName(series.grade),
+			notions: notions.map((n) => n.name),
+			neighbourCount: neighbours.length,
+			missingPoints: pointsWithoutTemplate(overview.points, notionIds, overview.nodes, series.grade)
+		};
+	}
+
 	let sheets: Awaited<ReturnType<typeof loadReviewSheets>> = { rows: [], points: {} };
 	let sheetsError: string | null = null;
 	try {
 		// Au-delà du plafond : les premières seulement (la page le dit)
-		const ids = [...new Set(shown.filter((e) => e.found).map((e) => e.templateId))];
+		const ids = [
+			...new Set([...shown, ...neighbourShown].filter((e) => e.found).map((e) => e.templateId))
+		];
 		sheets = await loadReviewSheets(supabase, ids);
 	} catch (err) {
 		sheetsError = err instanceof Error ? err.message : 'Lecture des fiches en échec';
 	}
 	const rowById = new Map(sheets.rows.map((r) => [r.id, r]));
+
+	/** Une entrée de la vue, avec sa fiche (null : introuvable, ou lecture des fiches en échec) */
+	function toSheet(entry: SeriesSheetEntry, inSeries: boolean) {
+		const row = entry.found ? rowById.get(entry.templateId) : undefined;
+		const seriesLine = inSeries ? { quantity: entry.quantity, delay: entry.delay } : null;
+		// Lecture des fiches en échec : la page le dit déjà, pas de « introuvable » en plus
+		if (!row) return { key: entry.key, templateId: entry.templateId, sheet: null, seriesLine };
+		const summary = byId.get(row.id);
+		return {
+			key: entry.key,
+			templateId: entry.templateId,
+			seriesLine,
+			sheet: {
+				row,
+				points: sheets.points[row.id] ?? [],
+				review: summary?.review ?? null,
+				alerts: summary ? summaryAlerts(summary) : [],
+				nodePath: summary?.nodeId
+					? nodeChain(summary.nodeId, overview.nodes).map((n) => n.name)
+					: []
+			}
+		};
+	}
 
 	return {
 		tree,
@@ -159,27 +227,10 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 		tooMany,
 		maxSheets: MAX_SHEETS,
 		sheetsError,
-		sheets: shown.map((entry) => {
-			const row = entry.found ? rowById.get(entry.templateId) : undefined;
-			const seriesLine = seriesId ? { quantity: entry.quantity, delay: entry.delay } : null;
-			// Lecture des fiches en échec : la page le dit déjà, pas de « introuvable » en plus
-			if (!row) return { key: entry.key, templateId: entry.templateId, sheet: null, seriesLine };
-			const summary = byId.get(row.id);
-			return {
-				key: entry.key,
-				templateId: entry.templateId,
-				seriesLine,
-				sheet: {
-					row,
-					points: sheets.points[row.id] ?? [],
-					review: summary?.review ?? null,
-					alerts: summary ? summaryAlerts(summary) : [],
-					nodePath: summary?.nodeId
-						? nodeChain(summary.nodeId, overview.nodes).map((n) => n.name)
-						: []
-				}
-			};
-		})
+		sheets: shown.map((entry) => toSheet(entry, seriesId !== null)),
+		view,
+		parcours,
+		neighbourSheets: neighbourShown.map((entry) => toSheet(entry, false))
 	};
 };
 
