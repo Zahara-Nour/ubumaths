@@ -1,4 +1,5 @@
 {
+	"id": "4d75350c-a7fc-46e9-9b57-bb505bb46172",
 	"title": "Suite de nombres : trouver la règle et continuer",
 	"description": "Trouver la règle d'une suite (on retire un nombre, on ajoute un décimal, un écart qui grandit, × 2 puis + c en alternance) et écrire les trois termes suivants",
 	"grades": ["CM2"],
