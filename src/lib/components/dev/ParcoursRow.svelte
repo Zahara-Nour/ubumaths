@@ -91,9 +91,12 @@
 
 		<div class="min-w-0 flex-1">
 			<LazyMount>
-				<ul class="flex gap-3 overflow-x-auto pb-2" aria-label="Variations de « {row.title} »">
+				<ul
+					class="tray flex gap-3 overflow-x-auto rounded-md p-3"
+					aria-label="Variations de « {row.title} »"
+				>
 					{#each template.variations as _variation, i (i)}
-						<li class="w-[min(24rem,80vw)] shrink-0 rounded-md border p-2">
+						<li class="w-[min(24rem,80vw)] shrink-0">
 							<VariationPreview {template} variationIndex={i} {firstSeed} {tab} compact />
 						</li>
 					{/each}
@@ -108,6 +111,14 @@
 </article>
 
 <style>
+	/* Plateau des cartes, plus sombre que la rangée : la carte élève (fond `card`, comme la
+	   rangée) s'en détache, en clair comme en sombre */
+	.tray {
+		background: light-dark(
+			color-mix(in oklab, var(--color-background) 94%, black),
+			color-mix(in oklab, var(--color-background) 70%, black)
+		);
+	}
 	.verdict {
 		border-radius: 9999px;
 		padding: 0.05rem 0.5rem;
