@@ -6,21 +6,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, après la publication du lot 13._
+_Mis à jour le 2026-11-19, pendant le lot 14a._
 
-- **État** : lots 0 à 13 publiés (lot 13 : 5/5, § 20.4). Restent les lots 14a à 19 du § 14 ; le lot 19 se réduit à
-  CM2-102 (§ 19.4).
-- **Prochaine action** : phase 0 du lot 14a (données lues : 107, 156, 123, 157, 124, 158), nouvelle branche dans le
-  worktree.
+- **État** : lots 0 à 13 publiés ; lot 14a (6 modèles, § 21) écrit et essayé en local, PR des fichiers à ouvrir.
+  Restent les lots 14b à 19 du § 14 (15 sans 109, 18 sans 087 ni 094 : § 21.1 ; 19 réduit à CM2-102 : § 19.4).
+- **Prochaine action** : PR des fichiers du lot 14a, puis David lance `create-questions --publier`, migration nœud + tag.
 - **En attente de David** : rien.
 - **Pièges en cours** : `Doc-inchangée:` dans un COMMIT ; sujet de commit en minuscule, corps ≤ 100 caractères par ligne.
   `migration:horodatage` = heure réelle UTC ; une autre migration en attente → stop avant `db:migrate` (worktree remis
   sur `origin/main` d'abord). `db:migrate` depuis le worktree : `supabase/.temp` copié. `create-questions` /
   `publier-lot` refusés au classifieur : David les lance (`!`), puis copier les fichiers avec ids dans le worktree et
-  `git restore` côté dépôt principal. Port 5179 pris par `questions-ttechno` : serveur d'essai sur 5186. Un titre déjà
-  porté au même nœud et niveau : `create-questions` le bloque → renommer. `de` + `{{if}}` ne s'élide pas : écrire les
-  compléments élidés ; un milieu calculé dans une figure s'écrit `\dfrac` → `milieu()`.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, détaché sur `main` (nouvelle branche au lot 14a).
+  `git restore` côté dépôt principal. Port 5179 pris par `questions-ttechno` : serveur d'essai sur 5186. `de` +
+  `{{if}}` ne s'élide pas. Une spec qui recalcule une donnée par la formule du modèle ne la vérifie pas : contrôler
+  l'invariant (§ 21.3).
+- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, branche `feat/questions-cm2-lot14a`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -1553,3 +1552,23 @@ Recommandations suivies (« je te suis ») : (a) niveaux 6 et 7 (tableaux), 8 et
 (b) 124 et 158 écrits sans fractions sur les secteurs (moitiés et quarts à l'œil, parts calculées sur les effectifs),
 option `étiquettes: fractions` inscrite au n° 44 de `outils-manquants.md`, pour plus tard ; (c) toute fraction égale
 juste, corrigé simplifié ; (d) un seul lot de 6 modèles.
+
+### 21.3 Lot 14a : écriture (2026-11-19)
+
+- `docs/wip/questions/lot-cm2-14a.py` → `scripts/questions/cm2-14a/` (6 modèles, 22 variations, sans `theme` / `domain` /
+  `subdomain`). `question:specs --instances 300` : 50 specs vertes, 6 600 tirages réussis, aucun `\textcolor` hors `$` ;
+  `create-questions` en simulation (prod) : 6 à créer, 0 en base.
+- **Sonde des blocs de statistiques** (aucune dans `scripts/questions/`) : script du scratchpad, chaque bloc ` ```barres `,
+  ` ```circulaire `, ` ```tableau-croise ` de 300 tirages par modèle passé à `parseStatChartContent` puis
+  `buildStatChartScene` → 0 problème (témoin : `étiquettes: fractions` et une barre au-dessus de l'axe signalés).
+- **Bug trouvé à l'aperçu, pas par les specs** : `posee()` n'entourait pas sa base de parenthèses ; avec une base
+  composée (`2000+100*u1`, colis de 156 V2), les masses sortaient de leur plage (3,305 kg) et le plus léger n'était pas
+  toujours le colis attendu. Les specs calculent avec la même expression : vertes. Corrigé (parenthèses) ; contrôle des
+  extrêmes sur les 10 variations à choix (réponse = l'unique plus grand, plus petit, la moitié…) : 3 000 tirages justes,
+  300 faux sur l'ancienne version. **Piège** : une spec qui recalcule la donnée par la formule du modèle ne la vérifie
+  pas ; contrôler l'invariant (l'extrême est unique et au bon rang).
+- **Écarts à la phase 0** : 156 V2 et V4 sur des colis (plus léger, combien de kg de plus), pas des animaux : plages
+  libres pour le piège 2,1xx contre 2,2…2,9 ; 156 V1 tout en neuf chiffres (950 à 999 millions contre 800 à 949) ; 123 V2
+  de 500 en 500 jusqu'à 5 000 (pas de 1 000 en 1 000) ; 157 V3 sur six mois.
+- Base locale (copie du dossier dans le scratchpad, `.env.local`, sous `with-db-lock.sh`) : 6 brouillons ; aperçu admin
+  à 390 px (Playwright, port 5186), les 22 variations vues : aucun débordement, 0 erreur console.
