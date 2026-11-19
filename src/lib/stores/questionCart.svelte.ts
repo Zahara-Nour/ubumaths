@@ -62,8 +62,8 @@ export class QuestionCartStore {
 				this.saveToStorage();
 				toaster.info(
 					items.length === 0
-						? "Panier d'une ancienne version vidé."
-						: `${anciennes} question${anciennes > 1 ? 's' : ''} d'une ancienne version retirée${anciennes > 1 ? 's' : ''} du panier.`
+						? "Série d'une ancienne version vidée."
+						: `${anciennes} question${anciennes > 1 ? 's' : ''} d'une ancienne version retirée${anciennes > 1 ? 's' : ''} de ta série.`
 				);
 			}
 		} catch (error) {
@@ -78,7 +78,7 @@ export class QuestionCartStore {
 		} catch (error) {
 			console.error('Failed to save cart to localStorage:', error);
 			if (error instanceof DOMException && error.name === 'QuotaExceededError') {
-				alert("Le panier est plein : supprimer des questions avant d'en ajouter d'autres.");
+				alert("Ta série est pleine : retire des questions avant d'en ajouter d'autres.");
 			}
 		}
 	}

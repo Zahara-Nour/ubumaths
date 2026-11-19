@@ -14,7 +14,7 @@
 	- result: TestResult - Test result data
 	- onRestart: () => void - Callback to restart test
 	- onBackToCart: () => void - Callback to return to cart
-	- inEvaluation: évaluation assignée → ni « Recommencer » ni « Retour au panier »,
+	- inEvaluation: évaluation assignée → ni « Recommencer » ni « Retour à ma série »,
 	  seulement « Mes évaluations » (une nouvelle tentative passe par la vérification
 	  des tentatives et de la date limite)
 	- buddyGain: gain du Palotin pour cette séance (`null` / absent → rien)
@@ -179,7 +179,7 @@
 		{:else}
 			<Button variant="outline" onclick={onBackToCart}>
 				<ArrowLeft class="mr-2 h-4 w-4" />
-				Retour au panier
+				Retour à ma série
 			</Button>
 			<Button onclick={onRestart}>
 				<RotateCw class="mr-2 h-4 w-4" />

@@ -1,7 +1,7 @@
 """Écrit les modèles neufs du lot 5 « graphiques et statistiques à deux variables » de la 1re techno
 dans scripts/questions/1techno-5/.
 
-Phase 0 validée par David le 2026-11-18 (journal docs/wip/questions-1techno-progress.md, § 28).
+Phase 0 validée par David le 2026-11-18 (journal docs/archive/wip/questions-1techno-progress.md, § 28).
 Les points 082, 084, 085, 087 reçoivent des modèles communs de questions-1gen (migration) ; ici, trois
 modèles neufs :
 

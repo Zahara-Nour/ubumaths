@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, après #2866._
+_Mis à jour le 2026-11-19, après #2875._
 
-- **État** : PR 1 (#2842), 2 (#2847), 3a (#2854) et 3b vue « Programme » (#2866) mergées. Rien en prod tant que David n'a pas fait `deploy:prod` (pas de migration).
-- **Prochaine action** : PR 4 « Ma série » (recommandation 3 du 2026-11-18 : colonne ≥ 1 280 px, panneau en dessous, barre en bas sur téléphone) — phase 0 à écrire et faire valider.
-- **En attente de David** : vérification manuelle #2866 notée dans `verifications-manuelles.md`.
-- **Pièges en cours** : séparateur de `rubrique` = « > » en base ; liste servie sans `points` (cache Vercel d'avant le déploiement) → vue Notions seule ; cartes de test : fixture `data/relecture/entiers/139.json` ; `getByRole('navigation', { name: 'Notions' })` → `exact: true` ; `deploy-prod.test.ts` dépasse parfois 5 s en CI (relancer le job).
-- **Worktree / branche** : `../ubumaths-wt-automaths` gardé tant que David teste par `https://serveur.tail99357e.ts.net` (serveur 5176, Serve 443 et 8443) ; puis arrêter le serveur, `tailscale serve --https=443 off` et `--https=8443 off`, `git worktree remove` + `git branch -d feat/automaths-programme`.
+- **État** : les 4 PR du découpage sont mergées : 1 (#2842), 2 (#2847), 3a (#2854), 3b (#2866), 4 « Ma série » (#2875). Rien en prod tant que David n'a pas fait `deploy:prod` (pas de migration).
+- **Prochaine action** : retours de David sur #2866 et #2875 ; s'il n'y a rien, clore le chantier (recompter le découpage, verser le durable dans `docs/systeme/questions.md`, archiver ce journal). Laissés par la revue de #2875 : aperçu monté sous 1 280 px, panneau ouvert à la rotation, texte OpenAPI « panier ».
+- **En attente de David** : vérifications manuelles #2866 et #2875 (`verifications-manuelles.md`).
+- **Pièges en cours** : séparateur de `rubrique` = « > » en base ; liste servie sans `points` (cache Vercel d'avant le déploiement) → vue Notions seule ; banc de test : `overflow: hidden` sur html et body (pas de défilement sans le lever) ; élément `display: none` absent de `getByRole`.
+- **Worktree / branche** : `../ubumaths-wt-automaths` (5176, Serve 443 et 8443) et `../ubumaths-wt-automaths-serie` (5180, Serve 8444) gardés pour les tests de David ; ensuite arrêter les serveurs, `tailscale serve --https=443 off`, `--https=8444 off` (8443 : Supabase, partagé), `git worktree remove` les deux, `git branch -d feat/automaths-programme feat/automaths-ma-serie`.
 
 ### 2026-11-18 — recherche
 
@@ -145,3 +145,31 @@ Lecture des questions sous un point : **A** — les questions rattachées au poi
 ### 2026-11-19 — PR 3b mergée (#2866)
 
 - CI : conflit avec `main` (`json` → `Response.json` dans l'API) résolu par merge ; `deploy-prod.test.ts` en dépassement de délai (sans rapport), job relancé, vert. Mergée. Vérification manuelle notée.
+
+### 2026-11-19 — PR 4 « Ma série », phase 0 validée par David
+
+1. Aperçu « Ma série · 3 questions · environ 2 min 30 » : chaque question (titre, « ×4 » répétitions) avec une croix qui la retire ; durée totale = somme des répétitions × durée.
+2. Aucun réglage dans l'aperçu : durées, répétitions, PDF, lancement restent sur la page détaillée (« Ouvrir ma série »).
+3. Ordre d'ajout.
+4. Série vide : « Ta série est vide : ajoute des questions avec « Ajouter ». »
+5. Grand écran (≥ 1 280 px) : colonne à droite, collante, défile seule si longue ; plus de bouton rond.
+6. Tablette / petit ordinateur : bouton rond conservé → ouvre « Ma série » dans un panneau à droite (plus de changement de page).
+7. Téléphone : barre fine en bas « Ma série · 3 questions · 2 min 30 ▴ » → panneau du bas ; série vide → pas de barre.
+8. « Ma série » partout où l'on voyait « panier » (titre « Mon Panier », « Dans le panier : retirer », « Vider le panier ») ; l'adresse `/automaths/panier` ne change pas.
+
+### 2026-11-19 — PR 4, réalisation
+
+- `series-summary.ts` (`seriesTotalSeconds` avec `effectiveDelay`, `formatSeriesDuration`, `seriesQuestionCount`) ; « 3 questions » = nombre de modèles (comme l'exemple validé), répétitions sur chaque ligne.
+- `MySeriesPreview` (aperçu, croix, « Ouvrir ma série ») ; `MySeriesDock` (bouton rond `sm`–`xl`, barre `< sm`, deux panneaux) remplace `CartFloatingButton` (supprimé) ; colonne `xl` collante dans la page (conteneur élargi à 96rem en `xl`).
+- Point 8 : libellés « panier » visibles → « Ma série » (tuile « Ajouter » / « Dans ma série », page détaillée, « Retour à ma série » des formes, messages du panier, lien sans forme, prof). CONTEXT.md : « panier (à l'écran) » → **Ma série**.
+- Tests : `catalogue-ma-serie.svelte.test.ts` (12, rouges 12/12 avant le code), `series-summary.test.ts` (8) ; anciens tests adaptés (libellés ; bloc « bouton rond » déplacé).
+- Piège de test : un élément en `display: none` n'est pas dans l'arbre d'accessibilité → `getByRole(...).elements()` vide, pas `not.toBeVisible()` (qui attend l'élément et expire).
+
+### 2026-11-19 — PR 4, revue `code-reviewer` (Sonnet) : aucun bloquant
+
+- Corrigés : barre du téléphone avec marge `safe-area-inset-bottom` ; croix d'un titre à formule → nom neutre « Retirer la question n » ; retrait → focus sur la croix suivante, sinon le message « série vide », résumé en `aria-live` ; `Sheet.Description` (sr-only) dans les deux panneaux ; croix de 40 px ; colonne nommée par son titre (`aria-labelledby`). Test de la colonne collante qui défile pour de vrai (le banc met `overflow: hidden` sur html et body), rouge sans `sticky`.
+- Laissés : aperçu de la colonne monté aussi sous 1 280 px (`display: none`, coût non mesuré) ; panneau resté ouvert si l'écran change de taille (rotation) ; texte OpenAPI « Enregistre le panier comme série » (doc d'API, pas l'écran).
+
+### 2026-11-19 — PR 4 mergée (#2875)
+
+- CI verte au premier passage, mergée. Vérification manuelle notée.

@@ -1,6 +1,6 @@
 """Écrit les modèles du lot 3 « dérivation » de la 1re techno dans scripts/questions/1techno-3/.
 
-Phase 0 validée par David le 2026-11-18 (journal docs/wip/questions-1techno-progress.md, § 25).
+Phase 0 validée par David le 2026-11-18 (journal docs/archive/wip/questions-1techno-progress.md, § 25).
 Neuf modèles propres à la 1re techno (aucun jumeau en 1re générale, accord de questions-1gen) :
 
 - M1 taux de variation en un point → 1TECHNO-128 (jumeau de b05ec37a, décision l1t-7) ;

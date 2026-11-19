@@ -365,3 +365,38 @@ Les incertitudes sont dans `questions-techno.json` (sans décision) :
   - Langage Python ou tableur. — _BO 1re techno p.4_ (BO)
   - k ∈ {1 ; 2 ; 3} ; s = écart type de la série des fréquences observées. — _BO 1re techno p.10_ (BO)
   - ⚠ Dans l'extraction du BO (p.10), cette ligne suit les situations algorithmiques sans tiret ; elle en fait partie (mise en page).
+
+## Couverture en modèles de questions (prod, 2026-11-19)
+
+Chantier `questions-1techno` (démarche [couvrir-un-niveau.md](../../../../pratiques/couvrir-un-niveau.md)), du
+2026-11-17 au 2026-11-19, pour la **1re STMG** : tout le programme de 1re technologique sauf la rubrique « Activités
+géométriques (série STD2A) » (26 points, laissés hors chantier, notés dans `docs/wip/outils-manquants.md`). Journal
+dans `docs/archive/wip/questions-1techno-progress.md`, scripts d'écriture dans `docs/wip/questions/lot-1techno-*.py`,
+fichiers des lots dans `scripts/questions/1techno-*`.
+
+- **151 modèles publiés** contiennent le niveau `1_TECHNO` (27 de 1re techno seule, les autres partagés avec la 1re
+  spé, la 1re générale, la 2de, la 3e ou la Terminale) ; **115 points STMG sur 117** ont au moins un modèle publié (relevé MCP du 2026-11-19).
+- **Sans modèle, par décision** (Q8) : 012 (traiter un fichier de données réelles) et 143 (modéliser par une
+  fonction), points-compétences hors appli. 042 est couvert par c90fa022 (intérêts simples ou composés, commun
+  avec la 1re spé et la 1re générale), brouillon depuis octobre, publié à la clôture.
+- **Brouillon laissé** : 0495289a (récurrence dépendant de n, sur 118), hors des bornes de la 1re spé (décision D11
+  de `questions-1spe`) ; 118 a d'autres modèles publiés.
+- **Existant tagué** (migrations seules, page à cocher avant chaque migration) : T1 (#2743, 15 modèles), T2 (#2748,
+  33 modèles, dont des modèles de 2de et de 3e) ; modèles communs de `questions-1gen` : lot G (#2758, suites
+  géométriques 036, 038, 049), lot R (#2772, représentations 044, 117, 119), 817d257f → 041 (#2783), statistiques à
+  deux variables 082, 084, 085, 087 (#2844).
+- **Retirés de la 1re techno** (un jumeau techno les remplace, le modèle de 1re spé n'est pas touché) : 1239554b et
+  79d69593 sur 118 (#2753, récurrence géométrique à termes signés), 1acb6d47 sur 057 (#2796, formule −b/2a et forme
+  canonique), 97b3a376 sur 137 (#2861, P(a ⩽ X ⩽ b)). Contenu corrigé : 83b1f614 v3, racines évidentes de f′ au
+  corrigé avant la factorisation (#2764).
+- **Lots écrits** : 1 connaissances des suites (#2779, #2783) ; 2 second degré sans formule, 8 modèles communs
+  `{1_GEN,1_TECHNO}` (#2787, #2796) ; 3 dérivation, 9 modèles (#2801, #2805) ; 4 algorithmique en ` ```python `,
+  8 modèles, dont un commun avec 1SPE-362 (#2833, #2836) ; 5 graphiques et statistiques à deux variables, 3 modèles
+  (#2843, #2844) ; 6 probabilités, 5 modèles (#2856, #2861).
+- **Choix de forme** (décisions de David) : un seul point 1TECHNO par modèle (trigger, ADR 0020) ; un modèle
+  « en partie » dans les bornes donne un **jumeau techno**, jamais une scission du modèle d'origine (Q3, Q11) ; un
+  modèle court par connaissance (Q12) ; u(n) dans les modèles neufs, uₙ accepté dans les modèles réutilisés et
+  communs (Q6) ; second degré à racines entières, tableau de variation depuis la forme factorisée ou ax² + c
+  seulement ; dérivée sans discriminant ; probabilités sur la partition {A, Ā}, sans P(a ⩽ X ⩽ b) ; tableau croisé
+  à compléter d'après 12 à 20 données brutes (Q-L6a) ; simulations et représentations en Python seulement, le
+  tableur n'ayant pas de bloc de rendu (Q-L5b).

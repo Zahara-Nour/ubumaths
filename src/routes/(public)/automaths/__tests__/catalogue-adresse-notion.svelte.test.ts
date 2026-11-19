@@ -6,8 +6,7 @@
  * d'historique) : un rechargement ou un lien rouvre la même notion, sa
  * branche dépliée dans la liste. Le catalogue retient sa dernière adresse le temps de la visite
  * (onglet) : revenu sans paramètre (retour du panier), il la reprend.
- * Bouton rond du panier : fixe (aucune pulsation), et la dernière carte peut
- * remonter au-dessus de lui.
+ * (Bouton rond et barre de « Ma série » : catalogue-ma-serie.svelte.test.ts.)
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
@@ -28,7 +27,7 @@ import Page from '../+page.svelte';
 import { branchButton, notionButton, useWideScreen } from './catalogue-helpers.ts';
 import { questionTemplatesCache } from '#lib/stores/questionTemplates.svelte.ts';
 import { questionCart } from '#lib/stores/questionCart.svelte.ts';
-// Modèle réel relu (Entiers #139) : son aperçu se calcule, sa tuile a un bouton « Ajouter »
+// Modèle réel relu (Entiers #139) : son aperçu se calcule, sa tuile s'affiche
 import fixture from '../../../../../data/relecture/entiers/139.json';
 
 const MEMORY_KEY = 'chiphre_automaths_adresse';
@@ -185,41 +184,5 @@ describe('Catalogue Automaths — notion dans l’adresse', () => {
 		await notionButton('Fractions').click();
 
 		expect(sessionStorage.getItem(MEMORY_KEY)).toBe('?notion=n-frac');
-	});
-});
-
-describe('Catalogue Automaths — bouton rond du panier', () => {
-	beforeEach(async () => {
-		await useWideScreen();
-		replaceState.mockClear();
-		sessionStorage.clear();
-		questionCart.clearCart();
-		pageState.url = new URL('http://localhost:5175/automaths');
-		await seedTemplatesCache();
-	});
-
-	it('panier non vide : le bouton ne pulse pas', async () => {
-		questionCart.addToCart('add');
-		await render(Page);
-
-		const cart = page.getByRole('button', { name: 'Voir le panier' });
-		await expect.element(cart).toBeVisible();
-		expect(getComputedStyle(cart.element()).animationName).toBe('none');
-	});
-
-	it('en bas de page, le dernier « Ajouter » peut remonter au-dessus du bouton rond', async () => {
-		await page.viewport(390, 500);
-		await render(Page);
-		const add = page.getByRole('button', { name: 'Ajouter au panier' });
-		await expect.element(add).toBeVisible();
-
-		// Page défilée tout en bas : le bas de la page touche le bas de l'écran.
-		// Le bouton rond occupe la bande du bas de l'écran (de son haut au bord) :
-		// l'espace sous « Ajouter », jusqu'au bas de la page, doit la dépasser.
-		const pageBottom = document.querySelector('.container')!.getBoundingClientRect().bottom;
-		const spaceBelowAdd = pageBottom - add.element().getBoundingClientRect().bottom;
-		const cart = page.getByRole('button', { name: 'Voir le panier' }).element();
-		const cartBand = window.innerHeight - cart.getBoundingClientRect().top;
-		expect(spaceBelowAdd).toBeGreaterThan(cartBand);
 	});
 });

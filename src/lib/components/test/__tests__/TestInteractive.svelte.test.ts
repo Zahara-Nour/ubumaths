@@ -269,7 +269,7 @@ describe('TestInteractive — Contrôle blanc', () => {
 		confirmSpy.mockRestore();
 	});
 
-	it('évaluation : ni « Recommencer » ni « Retour au panier », mais « Mes évaluations »', async () => {
+	it('évaluation : ni « Recommencer » ni « Retour à ma série », mais « Mes évaluations »', async () => {
 		const { container } = await open([item('Énoncé A', 1)], true, true);
 
 		elapse(1200);
@@ -282,7 +282,7 @@ describe('TestInteractive — Contrôle blanc', () => {
 		);
 		expect(myAssessments?.getAttribute('href')).toBe('/dashboard/student/assessments');
 		expect(container.textContent).not.toContain(RESTART);
-		expect(container.textContent).not.toContain('Retour au panier');
+		expect(container.textContent).not.toContain('Retour à ma série');
 	});
 
 	it('visiteur non connecté : averti que ses réponses ne comptent pas', async () => {

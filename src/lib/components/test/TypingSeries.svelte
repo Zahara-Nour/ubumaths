@@ -21,7 +21,7 @@
 	- loginNote?: boolean - false : pas de message « Connecte-toi… » (vitrine `/demo/questions`)
 	- onComplete: (result: TestResult) => void - Appelé une seule fois, à la fin du premier tour
 	- onRestart: () => void - Nouvelles questions (la page régénère)
-	- onBack: () => void - Retour au panier
+	- onBack: () => void - Retour à ma série
 	- traceRecorder: élève connecté → une trace par question du premier tour,
 	  envoyée à « Valider » (ou à l'auto-évaluation d'une carte de cours), lieu
 	  `typing` (ADR 0038) ; `null` → rien. « Revoir » n'en laisse pas.
@@ -255,7 +255,7 @@
 					</Button>
 					<Button variant="ghost" onclick={onBack}>
 						<ArrowLeft class="mr-2 h-4 w-4" aria-hidden="true" />
-						Retour au panier
+						Retour à ma série
 					</Button>
 				</div>
 			</Card.Content>
@@ -314,7 +314,7 @@
 				<p class="text-muted-foreground">Aucune question à afficher pour cette série.</p>
 				<Button variant="ghost" onclick={onBack}>
 					<ArrowLeft class="mr-2 h-4 w-4" aria-hidden="true" />
-					Retour au panier
+					Retour à ma série
 				</Button>
 			</Card.Content>
 		</Card.Root>

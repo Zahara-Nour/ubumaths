@@ -235,6 +235,7 @@ Seule la **famille B** (compétences mathématiques) est d'actualité ; la famil
 | domaine (au sens Sacoche)                                   | **thème**                                                                                                           |
 | thème / domaine / sous-domaine d'un exercice ou d'un modèle | **branche**, **notion**, **sous-notion**                                                                            |
 | catégorie (du panier, d'une série)                          | **modèle** (« catégorie » : d'exercice seulement)                                                                   |
+| panier (à l'écran)                                          | **Ma série** (« panier » : adresse `/automaths/panier` et code `questionCart` seulement)                            |
 | Mode Révision (forme de série)                              | **En classe** (≠ révision SRS)                                                                                      |
 | Quiz, Entraînement (forme de série)                         | **Contrôle blanc**                                                                                                  |
 | niveau de détail, palier (d'une correction)                 | **correction concise** / **correction détaillée**                                                                   |

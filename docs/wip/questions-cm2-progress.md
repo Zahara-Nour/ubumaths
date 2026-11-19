@@ -6,20 +6,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, après #2865 (lot 12 rangé et tagué en prod)._
+_Mis à jour le 2026-11-19, après la publication du lot 12._
 
-- **État** : lots 0 à 11b publiés. Lot 12 : 5 brouillons rangés et tagués en prod (#2865, `db:migrate` fait, § 19.3) ;
-  page à cocher publiée, verdicts attendus. « d'allumettes » corrigé en prod (5 modèles). Restent les lots 13 à 19 du § 14.
-- **Prochaine action** : quand David a coché, lire et compter les verdicts (`ArtifactData list verdicts`,
-  https://claude.ai/artifact/1v98tpiPCLMLkMkA9nQeS8) ; puis `publier-lot --dir scripts/questions/cm2-12` (David lance
-  simulation et `--publier`). Ensuite phase 0 du lot 13 (aires).
-- **En attente de David** : la relecture du lot 12 ; stash « cm2-9 ids » du dépôt principal, à supprimer.
+- **État** : lots 0 à 12 publiés (lot 12 : 5/5, § 19.5). Restent les lots 13 à 19 du § 14 ; le lot 19 se réduit à
+  CM2-102 (§ 19.4).
+- **Prochaine action** : phase 0 du lot 13 (aires : 071, 072, 073, 074, 075, 120), nouvelle branche dans le worktree.
+- **En attente de David** : stash « cm2-9 ids » du dépôt principal, à supprimer.
 - **Pièges en cours** : `Doc-inchangée:` dans un COMMIT ; sujet de commit en minuscule. `migration:horodatage` = heure
   réelle UTC ; une autre migration en attente → stop avant `db:migrate` (une migration distante absente de la branche :
   mettre le worktree à jour sur `origin/main` d'abord). `db:migrate` depuis le worktree : `supabase/.temp` copié.
   `create-questions` lancé par David dans le dépôt principal → copier les fichiers avec leurs ids dans le worktree, puis
-  `git restore` côté dépôt principal. Port 5179 pris par `questions-ttechno` : serveur d'essai sur 5186.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, détaché sur `main` après #2865 (nouvelle branche au lot 13).
+  `git restore` côté dépôt principal. `create-questions` / `publier-lot` refusés au classifieur : David les lance (`!`).
+  Port 5179 pris par `questions-ttechno` : serveur d'essai sur 5186. Un titre déjà porté au même nœud et niveau (autre
+  classe) : `create-questions` le bloque → renommer.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, détaché sur `main` (nouvelle branche au lot 13).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -1388,3 +1388,9 @@ lot 8f (décidé par David le 2026-11-18, § 25 bis de `questions-cm1-progress.m
 `feat/questions-cm1-lot8f`) écrit 7 modèles CM1 et CM2, tagués aussi CM2-100, 101, 103, 104, 105 (0 modèle en prod au
 2026-11-19). **Notre lot 19 se réduit à CM2-102 (patron du pavé)** ; ne pas écrire les autres en double. À la phase 0 du
 lot 19 : revérifier au MCP que le lot 8f est bien tagué.
+
+### 19.5 Lot 12 : relecture, publication (2026-11-19)
+
+- Page à cocher : 5 verdicts « OK », sans commentaire ; les 5 ids concordent avec `scripts/questions/cm2-12/*.json`.
+- David lance `publier-lot --dir scripts/questions/cm2-12` (simulation puis `--publier`). MCP : 5/5 `published`, [CM2],
+  sur « suites de motifs », un tag chacun (068 ×2, 069, 070 ×2). **Lot 12 clos.**

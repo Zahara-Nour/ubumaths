@@ -5,23 +5,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, après #2872._
+_Mis à jour le 2026-11-19, après #2873._
 
-- **État** : lots 0 à 8e publiés, **153 points du CM1 sur 171** (CM2 115/158). Lot 8f (modèles 8 à 14 du § 25,
-  7 modèles CM1 + CM2) : fichiers mergés (#2872), rien en prod.
-- **Prochaine action** : David lance `create-questions --dir scripts/questions/cm1-8f --publier` depuis le
-  worktree (après `git pull` de `main` dedans) ; vérifier au MCP (7 draft, sans nœud, 0 tag) ; commiter les ids
-  sur une branche ; migration nœud + tag (gabarit 8e, 14 sur Solides › constructions) ; page à cocher ;
-  publication. Ensuite le lot 9.
-- **En attente de David** : le `create-questions --publier` du 8f.
+- **État** : lots 0 à 8f publiés, **158 points du CM1 sur 171** (CM2 120/158). Sans modèle publié : CM1-097,
+  104, 105, 114 (D), 123 à 130, 140.
+- **Prochaine action** : phase 0 du lot 9 (relever ces 13 points, leur classement au § 4 bis, les outils), à
+  faire valider par David avant d'écrire.
+- **En attente de David** : rien.
 - **Pièges en cours** : création en prod = `pnpm tsx scripts/create-questions.ts --dir … --publier
-[--mettre-a-jour]`, depuis le worktree ; `--mettre-a-jour` ne touche JAMAIS un publié (sinon migration de
-  contenu, gabarit `docs/wip/questions/cm1-8e-04-contenu.py`) : le lancer AVANT `publier-lot`, vérifier au MCP
-  entre les deux ; commitlint refuse le type `content` et un corps > 100 caractères par ligne ; le mode auto
-  refuse `publier-lot` et `garde-niveaux-tags` : David les lance ; les scripts de lot réécrivent les JSON SANS
-  leur `id` ; `ci-lint-fichiers.test.ts` dépasse parfois ses 5 s en CI. Rangement du 8f : 14 sur Solides ›
-  constructions (pas sur la notion Solides où est le point 119), voir § 25 nonies.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm1` ; branche `feat/questions-cm1-lot8f` mergée.
+[--mettre-a-jour]`, depuis le worktree ; `--mettre-a-jour` ne touche JAMAIS un publié : le lancer AVANT
+  `publier-lot` ; commitlint refuse le type `content` et un corps > 100 caractères par ligne ; David lance
+  `publier-lot --publier` et `garde-niveaux-tags` ; `docs:check-a-jour` ne voit rien avant le commit : le relancer
+  après, une migration de données demande `Doc-inchangée:` ; la page à cocher ne dessine ni ` ```patron ` ni
+  ` ```robot ` (outils-manquants n° 43).
+- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, HEAD détaché sur `main` ; aucune branche ouverte.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -2213,3 +2210,16 @@ reste en D ; niveaux **CM1 et CM2** et tag des deux points (109/098, 110/099, 11
   7 sautés. `types:cliquet` tenu. Seule migration en attente (`migration list --linked`).
 - `security-auditor` : aucun finding bloquant (diff avec le 8e limité aux données ; état « avant » remesuré au
   MCP). Non bloquant, déjà connu : les tags (pas le contenu) des brouillons sont lisibles par tout compte connecté.
+- #2873 mergée (premier passage rouge : garde « doc à jour », `Doc-inchangée:` ajouté). `db:migrate` lancé par
+  David (au second essai : le premier n'avait rien joué). Vérifié au MCP : `20261119085732` jouée ; 7 brouillons
+  sur leur nœud, 14 tags, `updated_at` préservé.
+
+### 25 undecies. Lot 8f — page à cocher et publication (2026-11-19)
+
+- Page `page-a-cocher.ts --dir scripts/questions/cm1-8f` : 7 fiches (18 exemples) ; 5 alertes « bloc non
+  dessiné » (` ```patron ` : 08, 09, 10 ; ` ```robot ` : 11, 13), jouées dans l'aperçu. 1200 px sans défilement ni
+  erreur de console ; à 390 px, la source d'un patron (`000 000/…`) déborde (page seulement). Outils-manquants
+  n° 43. Publiée : https://claude.ai/artifact/3tRyJQfLE7fJiNcb2S2toG (`verdicts`, capacité `db`).
+- Verdicts : 7 « OK » sur 7, aucun commentaire. `publier-lot` en simulation : 7/7 ; `--publier` et
+  `garde-niveaux-tags` lancés par David. Vérifié au MCP : 7 modèles `published`.
+- Recompte MCP (points non archivés ayant un modèle publié) : **CM1 158/171** (153 + 5) ; CM2 120/158 (115 + 5).
