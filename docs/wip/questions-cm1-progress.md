@@ -5,18 +5,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, lot 9c créé en prod, rangement écrit (§ 26 septies)._
+_Mis à jour le 2026-11-19, après #2897 (lot 9c rangé en prod, page à cocher, § 26 septies)._
 
 - **État** : lots 0 à 9ab publiés, **166 points du CM1 sur 171**. Lot 9c (4 modèles, CM1 + CM2 : 097/087,
-  104/094) en brouillons en prod (ids commités) ; migration de rangement + tags écrite, test 20/20, PR en cours.
+  104/094) en brouillons en prod, rangés et tagués (#2897, migration jouée) ; page à cocher publiée.
   105, 114, 140 restent sans modèle (D).
-- **Prochaine action** : `security-auditor`, PR, CI, merge, `db:migrate` ; puis page à cocher (`page-a-cocher.ts
---dir scripts/questions/cm1-9c`), verdicts de David, `publier-lot`.
+- **Prochaine action** : lire et compter les verdicts de https://claude.ai/artifact/M3j3FBF47PAATrDk2cgwcf
+  (collection `verdicts`) ; puis `publier-lot --dir scripts/questions/cm1-9c` en simulation, David `--publier`.
 - **En attente de David** : facultatif, 08 (`1dd68bdd`, CM1-130) sur « quatrième proportionnelle » plutôt que sur
   la notion Situations de proportionnalité ?
 - **Pièges en cours** : `--mettre-a-jour` ne touche JAMAIS un publié ; commitlint : pas de type `content`, corps
   ≤ 100 caractères par ligne ; David lance `publier-lot --publier` et `garde-niveaux-tags`.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, branche `feat/questions-cm1-lot9c-rangement`.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, branche `feat/questions-cm1-lot9c-rangement` (mergée).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -2368,3 +2368,11 @@ figure) ; 130 V3 (÷ une fois) = une seule utilisation de la linéarité ; jumea
   CM2-094), aucun niveau ni statut changé, aucun nœud créé.
 - Test `questions-cm1-lot9c-rangement-tags.test.ts` : 20/20 vert ; corps neutralisé (`select 1;`) : 9 échecs,
   7 sautés. `types:cliquet` tenu. Seule migration en attente (`migration list --linked`).
+- `security-auditor` : aucun finding bloquant (diff avec le 9ab limité aux données ; policies et état « avant »
+  vérifiés au MCP). #2897 mergée (CI verte du premier coup). `migration list --linked` : seule 20261119165723 en
+  attente (20261119165705 = lot 14b du CM2, déjà sur `main` et jouée) ; `db:migrate` passé ; vérifié au MCP :
+  4 brouillons sur « constructions », 8 tags, `updated_at` préservé.
+- Page `page-a-cocher.ts --dir scripts/questions/cm1-9c` : 4 fiches (8 exemples) ; 4 alertes « solution non
+  dessinée » (segment, rectangle, carré, triangle, cercle : vérifications non dessinées par la page), solutions
+  vues dans l'aperçu local (§ 26 sexies). Publiée : https://claude.ai/artifact/M3j3FBF47PAATrDk2cgwcf
+  (`verdicts`, capacité `db`), base vide à la publication.
