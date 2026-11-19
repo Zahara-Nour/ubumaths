@@ -8,8 +8,10 @@
 # Ce qu'elle fait :
 # - serveur de dev dans le dépôt principal → l'ARRÊTE (cas sûr : on le relance
 #   en une commande, et la règle l'interdit) et prévient ;
-# - serveur de dev trop gros ou trop vieux, Chrome trop gourmand, swap trop plein
-#   → prévient seulement ;
+# - serveur de dev trop gros ou trop vieux, Chrome trop gourmand, swap trop plein,
+#   extension de Chrome ou de Brave bloquée (CPU au plafond, des heures de CPU
+#   cumulées : 2 extensions à 100 % pendant 10 jours le 2026-11-19) → prévient
+#   seulement ;
 # - swap au-delà de SEUIL_MENAGE_SWAP (gel proche) → lance menage-machine.sh
 #   (onglets Chrome gourmands fermés, serveurs de dev oubliés arrêtés) et en
 #   envoie le résumé.
@@ -30,6 +32,8 @@ SEUIL_SERVEUR_MO="${SEUIL_SERVEUR_MO:-1500}"         # mémoire d'un serveur de 
 SEUIL_SERVEUR_HEURES="${SEUIL_SERVEUR_HEURES:-6}"    # âge d'un serveur de dev
 SEUIL_CHROME_CPU="${SEUIL_CHROME_CPU:-600}"          # CPU cumulé de Chrome, en %
 SEUIL_CHROME_ONGLETS="${SEUIL_CHROME_ONGLETS:-60}"   # processus d'onglets Chrome
+SEUIL_EXTENSION_CPU="${SEUIL_EXTENSION_CPU:-90}"      # CPU d'un processus d'extension, en %
+SEUIL_EXTENSION_HEURES="${SEUIL_EXTENSION_HEURES:-1}" # temps CPU cumulé de ce processus
 SEUIL_SWAP_POURCENT="${SEUIL_SWAP_POURCENT:-85}"     # swap utilisé / swap total
 SEUIL_MENAGE_SWAP="${SEUIL_MENAGE_SWAP:-95}"         # swap au-delà duquel le ménage part seul
 SURVEILLANCE_RAPPEL_MIN="${SURVEILLANCE_RAPPEL_MIN:-60}"
@@ -144,11 +148,12 @@ while read -r pid rss etime commande; do
 	fi
 done < <(serveurs_vite)
 
-# 2. Chrome : CPU cumulé et nombre de processus d'onglets.
+# 2. Chrome : CPU cumulé et nombre de processus d'onglets (Chrome de /Applications
+#    seulement : le Chrome for Testing de Playwright n'est pas celui de David).
 read -r chrome_cpu chrome_onglets chrome_actifs < <(
 	ps -Ao pcpu=,command= | awk '
-		/Google Chrome/ { cpu += $1 }
-		/Google Chrome/ && /--type=renderer/ { onglets++; if ($1 > 20) actifs++ }
+		/\/Applications\/Google Chrome\.app\// { cpu += $1 }
+		/\/Applications\/Google Chrome\.app\// && /--type=renderer/ { onglets++; if ($1 > 20) actifs++ }
 		END { printf "%d %d %d\n", cpu, onglets, actifs }'
 )
 if [ "$chrome_cpu" -gt "$SEUIL_CHROME_CPU" ] || [ "$chrome_onglets" -gt "$SEUIL_CHROME_ONGLETS" ]; then
@@ -158,6 +163,26 @@ if [ "$chrome_cpu" -gt "$SEUIL_CHROME_CPU" ] || [ "$chrome_onglets" -gt "$SEUIL_
 		journaliser "alerte : Chrome $chrome_cpu % CPU, $chrome_onglets onglets ($chrome_actifs actifs)"
 	fi
 fi
+
+# 2 bis. Extensions bloquées : CPU au plafond ET des heures de CPU cumulées (un pic
+#    bref n'en est pas une). Jamais arrêtées : on ne sait pas laquelle c'est.
+#    time= de ps (macOS) : « minutes:secondes.centièmes ».
+while read -r pid cpu temps commande; do
+	[ -n "$pid" ] || continue
+	case "$commande" in
+	*"/Applications/Google Chrome.app/"*) navigateur=Chrome ;;
+	*"/Applications/Brave Browser.app/"*) navigateur=Brave ;;
+	*) continue ;;
+	esac
+	cpu_entier="${cpu%%.*}"
+	heures_cpu=$(($(secondes_depuis_etime "${temps%%.*}") / 3600))
+	[ "$cpu_entier" -ge "$SEUIL_EXTENSION_CPU" ] && [ "$heures_cpu" -ge "$SEUIL_EXTENSION_HEURES" ] || continue
+	if a_renvoyer "extension-$pid"; then
+		alertes+=("Extension $navigateur bloquée : $cpu_entier % CPU, $heures_cpu h de CPU cumulées.")
+		marquer "extension-$pid"
+		journaliser "alerte : extension $navigateur (pid $pid) $cpu_entier % CPU, $heures_cpu h de CPU"
+	fi
+done < <(ps -Ao pid=,pcpu=,time=,command= | awk '/--extension-process/')
 
 # 3. Swap.
 swap_pourcent=0

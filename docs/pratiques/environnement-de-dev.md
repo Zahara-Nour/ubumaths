@@ -151,7 +151,9 @@ toutes les 5 min par launchd (`pnpm surveillance:installer`, `--desinstaller` po
 
 - serveur de dev dans le dépôt principal de Chiphre → **arrêté**, et signalé (jamais celui d'un worktree ni d'un autre projet) ;
 - serveur de dev de plus de 1,5 Go ou de plus de 6 h, Chrome au-delà de 600 % de CPU ou de 60
-  onglets, swap au-delà de 85 % → **signalés seulement** (seuils en tête du script) ;
+  onglets, swap au-delà de 85 %, extension de Chrome ou de Brave bloquée (plus de 90 % de CPU et
+  plus d'une heure de CPU cumulée) → **signalés seulement** (seuils en tête du script). Une extension
+  bloquée s'arrête par `kill <pid>` (pid dans le journal) : le navigateur la relance ;
 - signalement = notification ntfy.sh sur l'iPhone (canal aléatoire dans
   `~/.config/surveillance-machine/ntfy-topic`, message sans chemin ni nom de projet) + journal
   `~/.local/state/surveillance-machine/journal.log` ; même alerte renvoyée au plus une fois par heure.
@@ -160,9 +162,10 @@ toutes les 5 min par launchd (`pnpm surveillance:installer`, `--desinstaller` po
 - `pnpm surveillance:essai` : ce qu'elle ferait maintenant, sans rien arrêter ni envoyer.
 
 **Ménage quand la charge est trop grande** : `pnpm menage` (`--essai` pour voir sans rien fermer),
-`scripts/menage-machine.sh`. Ferme les onglets Chrome au-delà de 20 % de CPU (Chrome reste ouvert,
-l'onglet se recharge d'un clic ; extensions épargnées) et arrête les serveurs de dev de Chiphre lancés
-depuis plus de 6 h ou dans le dépôt principal (jamais ceux d'un autre projet). À distance : demander
+`scripts/menage-machine.sh`. Ferme les onglets Chrome et Brave au-delà de 20 % de CPU (le navigateur
+reste ouvert, l'onglet se recharge d'un clic ; épargnés : les extensions et le Chrome for Testing de
+Playwright) et arrête les serveurs de dev de Chiphre lancés depuis plus de 6 h ou dans le dépôt
+principal (jamais ceux d'un autre projet, ni le serveur de test de David sur le port 5173). À distance : demander
 « fais le ménage » à n'importe quelle session.
 
 **Tester depuis le MacBook ou l'iPhone (Tailscale)** : [tester-sur-un-autre-appareil.md](tester-sur-un-autre-appareil.md)
