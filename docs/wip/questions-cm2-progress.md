@@ -6,21 +6,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, PR des fichiers du lot 12 ouverte._
+_Mis à jour le 2026-11-19, après #2865 (lot 12 rangé et tagué en prod)._
 
-- **État** : lots 0 à 11b publiés. Lot 12 (suites et motifs, § 19) : 5 fichiers écrits, vérifiés, essayés en base
-  locale (§ 19.2) ; PR des fichiers ouverte. « d'allumettes » corrigé dans 5 modèles publiés : #2860 mergée, écriture
-  en prod à lancer par David (§ 19.2).
-- **Prochaine action** : PR des fichiers mergée → David lance `create-questions --dir scripts/questions/cm2-12 --publier`
-  (brouillons) ; ids commités ; migration de rangement et tags (gabarit du lot 11b) ; page à cocher.
-- **En attente de David** : `pnpm tsx scripts/update-published-questions.ts --lot motifs-allumettes --publier` ; stash
-  « cm2-9 ids » du dépôt principal, à supprimer.
+- **État** : lots 0 à 11b publiés. Lot 12 : 5 brouillons rangés et tagués en prod (#2865, `db:migrate` fait, § 19.3) ;
+  page à cocher publiée, verdicts attendus. « d'allumettes » corrigé en prod (5 modèles). Restent les lots 13 à 19 du § 14.
+- **Prochaine action** : quand David a coché, lire et compter les verdicts (`ArtifactData list verdicts`,
+  https://claude.ai/artifact/1v98tpiPCLMLkMkA9nQeS8) ; puis `publier-lot --dir scripts/questions/cm2-12` (David lance
+  simulation et `--publier`). Ensuite phase 0 du lot 13 (aires).
+- **En attente de David** : la relecture du lot 12 ; stash « cm2-9 ids » du dépôt principal, à supprimer.
 - **Pièges en cours** : `Doc-inchangée:` dans un COMMIT ; sujet de commit en minuscule. `migration:horodatage` = heure
-  réelle UTC ; une autre migration en attente → stop avant `db:migrate`. `db:migrate` depuis le worktree : copier
-  `supabase/.temp/{project-ref,linked-project.json,pooler-url,postgres-version}` du dépôt principal (ignorés par git).
-  `create-questions` / `publier-lot` peuvent être refusés par le classifieur : David les lance (`!`). Port 5179 pris par
-  le worktree `questions-ttechno` : serveur d'essai sur 5186.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, `feat/questions-cm2-lot12-fichiers`.
+  réelle UTC ; une autre migration en attente → stop avant `db:migrate` (une migration distante absente de la branche :
+  mettre le worktree à jour sur `origin/main` d'abord). `db:migrate` depuis le worktree : `supabase/.temp` copié.
+  `create-questions` lancé par David dans le dépôt principal → copier les fichiers avec leurs ids dans le worktree, puis
+  `git restore` côté dépôt principal. Port 5179 pris par `questions-ttechno` : serveur d'essai sur 5186.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, détaché sur `main` après #2865 (nouvelle branche au lot 13).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -1366,3 +1365,18 @@ Tableau du § 19 gardé.
 - Base locale (copie du dossier dans le scratchpad, `.env.local`, sous `with-db-lock.sh`) : 5 brouillons ; aperçu admin à
   390 px (Playwright, port 5186) : croix de jetons d'abord collées entre étapes (bras bout à bout) → étapes écartées ; les
   6 motifs lisibles, case « choix » A à D, nombres groupés (9 519), aucun débordement, 0 erreur console.
+
+### 19.3 Lot 12 : prod, rangement, page à cocher (2026-11-19)
+
+- David lance `update-published-questions --lot motifs-allumettes --publier` : MCP, les 5 modèles sans « de allumettes »,
+  toujours `published`. Puis `create-questions --dir scripts/questions/cm2-12 --publier` : 5 brouillons [CM2], niveau 1,
+  sans nœud ni tag (`4d75350c`, `1b122322`, `4baa1364`, `6223743f`, `3ffa86cd`), ids commités.
+- Migration `20261119054950_questions_cm2_lot12_rangement_tags.sql`, dérivée de celle du lot 11b par substitution (aucun
+  reste). Test `questions-cm2-lot12-rangement-tags` : 9 verts ; corps remplacé par `select 1;` → 5 rouges ; fichier
+  restauré (`cmp`). `security-auditor` : aucun finding bloquant (non bloquant : aucun test ne contrôle les 5 modèles
+  CM1 / 6e du même nœud, intouchés par construction).
+- #2865 : CI verte, `check:migrations` vert, mergée. Prod portait `20261119052352` (lot 6 de `questions-1techno`, sur
+  `main`) : worktree remis sur `origin/main`, `migration list --linked` → seule la nôtre en attente ; `db:migrate`. MCP :
+  5 brouillons sur « suites de motifs », un tag chacun (068 ×2, 069, 070 ×2), `updated_at` = création.
+- `garde-niveaux-tags` : aucun niveau manquant. Page à cocher (5 fiches, aucune alerte, base prod) :
+  https://claude.ai/artifact/1v98tpiPCLMLkMkA9nQeS8 ; `verdicts` vide au départ.
