@@ -39,7 +39,7 @@ import type {
 } from '#lib/types/worksheets.ts';
 import type { GeneratorConfig, GeneratorContext, GenerateResult } from '../types';
 import { BaseTypstGenerator } from './base-generator';
-import { escapeTypst } from '#lib/ubumark/index.ts';
+import { escapeTypst, escapeTypstBrackets } from '#lib/ubumark/index.ts';
 import { renderTemplate } from '../templates';
 import {
 	printedStyleId,
@@ -418,9 +418,9 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 			level_badges: levels.badges,
 			// Sous le titre, en petit : la catégorie, ou les notions sous un titre libre
 			show_title_sub: flag(printed.sub !== ''),
-			title_sub: escapeTypst(printed.sub),
+			title_sub: escapeTypstBrackets(printed.sub),
 			// Au bas de chaque page : notions et catégorie, ou le titre libre
-			footer_title: escapeTypst(printed.footer),
+			footer_title: escapeTypstBrackets(printed.footer),
 			show_student_name: flag(header.studentName),
 			show_class: flag(header.className),
 			show_date: flag(header.dateLine),
@@ -439,7 +439,9 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 			site_qr: SITE_QR_TYPST,
 			site_name: SITE_NAME,
 			site_gidouille: SITE_GIDOUILLE_TYPST,
-			title: escapeTypst(
+			// Crochets échappés : le titre est posé dans des cellules `[…]` de grille,
+			// un `]` venu de la base fermerait la cellule (audit de sécurité, ADR 0041)
+			title: escapeTypstBrackets(
 				mode === 'worksheet' && this.options.inlineCorrections
 					? `${printed.main} — ${this.labels.correction}`
 					: printed.main

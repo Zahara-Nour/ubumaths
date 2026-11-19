@@ -156,4 +156,17 @@ describe('titre de la fiche au pied de page', () => {
 		expect(typst).not.toContain('Révisions');
 		expect(typst).not.toContain('révisions');
 	});
+
+	it('un crochet dans le titre ou une notion reste du texte (jamais du code Typst)', async () => {
+		const evil = ']], text(red)[PIEGE], [[';
+		const typst = sheet(null, [], 'fr', {
+			title: evil,
+			custom_title: true,
+			category: 'review',
+			classifications: [{ node_id: 'n1', name: evil, kind: 'notion', position: 0 }]
+		});
+		expect(typst).not.toContain(']], text(red)');
+		const all = await pages(typst);
+		expect(all[0]).toContain('PIEGE');
+	}, 60_000);
 });
