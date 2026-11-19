@@ -629,10 +629,12 @@ Shantell / Chiphre Math), pour les seuls exercices dont la correction est visibl
 `// <polices-du-corrige>`, posées en tête de chaque correction dans un bloc `#[ … ]` qui les borne
 (`correctionInFonts` de `render-exercise.ts`, pour le Corrigé, la partie corrigé d'une fiche et la
 fiche + corrigé) ; aucun gabarit n'est réécrit. `withoutCorrectionFonts` les retire.
-`withCorrectionFonts` (tout le document) ne sert plus qu'à `/dev/polices`.
+`withCorrectionFonts` (tout le document) ne sert plus qu'à `/dev/polices` et, avec d'autres
+règles (paramètre `rules`), à `/dev/polices/luciole`.
 Les trois fichiers (`static/fonts/chiphre-math-typst/`, 870 ko) ne sont chargés que par un
 compilateur à part (`src/lib/typst/compiler/correction-fonts-compiler.ts`, construit au premier
 Corrigé, partagé avec `/dev/polices`) : la fiche et les Réponses ne les téléchargent pas.
+`createFontsCompiler(fichiers)` construit un tel compilateur pour d'autres polices (essai Luciole).
 `compileTypstDocument` choisit le compilateur d'après le document et porte le **repli** : la
 compilation avec ces polices lève une erreur → le même corrigé recompilé sans elles,
 `console.error` du message Typst et `toaster.warning` (« Corrigé imprimé dans la police standard :
