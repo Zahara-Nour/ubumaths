@@ -1587,7 +1587,8 @@ const studentStyleCommon = (
     #grid(
       columns: (1fr, auto, 1fr),
       column-gutter: 1em,
-      align: (left, center, right),
+      // Centré en hauteur : le badge ne décale ni le titre ni « n / N »
+      align: (left + horizon, center + horizon, right + horizon),
       [{{#if show_level}}{{level_badges}}#h(0.4em){{/if}}{{#if show_title}}{{footer_title}}{{/if}}],
       counter(page).display("1 / 1", both: true),
       if counter(page).get().first() > 1 [{{#if site_gidouille}}#{{site_gidouille}}#h(0.3em){{/if}}{{site_name}}]
@@ -1812,7 +1813,7 @@ export const SAMPLE_PREVIEW_DATA = {
 	level: '1ère spécialité maths',
 	level_short: '1ère Spé',
 	level_badges:
-		'#box(fill: rgb("#e8590c"), radius: 3pt, inset: (x: 0.4em, y: 0.25em), outset: (y: 0.05em))[#text(fill: white, weight: "bold")[1ère Spé]]',
+		'#box(fill: rgb("#e8590c"), radius: 3pt, inset: (x: 0.4em, y: 0.25em), baseline: 0.25em)[#text(fill: white, weight: "bold")[1ère Spé]]',
 	title_sub: 'entraînement technique',
 	footer_title: 'Equations du premier degre · Entraînement technique',
 	// Display-option flags: previews always show every field, whatever a given
