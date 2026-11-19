@@ -1,4 +1,5 @@
 {
+	"id": "82351474-f11f-430d-b74e-f850c00b684b",
 	"title": "Construire un rectangle ou un carré de dimensions données",
 	"description": "Construire sur papier uni, à l'équerre et à la règle graduée, un rectangle ou un carré dont un côté est tracé et les dimensions données en cm",
 	"grades": ["CM1", "CM2"],

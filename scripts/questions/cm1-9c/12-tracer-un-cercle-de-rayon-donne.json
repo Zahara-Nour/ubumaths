@@ -1,4 +1,5 @@
 {
+	"id": "2e15c33a-d21b-449b-ba3b-b9591db2bd1c",
 	"title": "Tracer un cercle de rayon donné",
 	"description": "Tracer au compas un cercle de centre donné et de rayon donné en cm (ou en cm et mm), l'ouverture prise sur la règle graduée",
 	"grades": ["CM1", "CM2"],

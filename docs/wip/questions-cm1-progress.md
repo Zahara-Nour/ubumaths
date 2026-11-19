@@ -5,18 +5,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, après #2894 (lot 9c écrit, § 26 sexies)._
+_Mis à jour le 2026-11-19, lot 9c créé en prod, rangement écrit (§ 26 septies)._
 
 - **État** : lots 0 à 9ab publiés, **166 points du CM1 sur 171**. Lot 9c (4 modèles, CM1 + CM2 : 097/087,
-  104/094) écrit, specs et aperçus locaux verts, fichiers mergés (#2894). 105, 114, 140 restent sans modèle (D).
-- **Prochaine action** : **David** lance `create-questions --dir scripts/questions/cm1-9c
---publier` (brouillons) ; ids commités, rangement + tags (migration, gabarit 9ab), page à cocher, `publier-lot`.
+  104/094) en brouillons en prod (ids commités) ; migration de rangement + tags écrite, test 20/20, PR en cours.
+  105, 114, 140 restent sans modèle (D).
+- **Prochaine action** : `security-auditor`, PR, CI, merge, `db:migrate` ; puis page à cocher (`page-a-cocher.ts
+--dir scripts/questions/cm1-9c`), verdicts de David, `publier-lot`.
 - **En attente de David** : facultatif, 08 (`1dd68bdd`, CM1-130) sur « quatrième proportionnelle » plutôt que sur
   la notion Situations de proportionnalité ?
-- **Pièges en cours** : `create-questions --publier` en LOCAL écrit l'id local dans les fichiers : relancer le
-  script du lot avant de commiter ; `--mettre-a-jour` ne touche JAMAIS un publié ; commitlint : pas de type
-  `content`, corps ≤ 100 caractères par ligne ; David lance `publier-lot --publier` et `garde-niveaux-tags`.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, branche `feat/questions-cm1-lot9c` (mergée) ; nouvelle branche pour les ids et le rangement.
+- **Pièges en cours** : `--mettre-a-jour` ne touche JAMAIS un publié ; commitlint : pas de type `content`, corps
+  ≤ 100 caractères par ligne ; David lance `publier-lot --publier` et `garde-niveaux-tags`.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, branche `feat/questions-cm1-lot9c-rangement`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -2357,3 +2357,14 @@ figure) ; 130 V3 (÷ une fois) = une seule utilisation de la linéarité ; jumea
 - Base locale (9 copies, une variation chacune), aperçus à 390 px (Playwright, port 5184) : aucun défilement
   horizontal, aucune erreur de console ; vus : les 8 figures et leurs palettes (Règle graduée · Segment ;
   Segment · Équerre · Règle graduée ; Règle graduée · Compas).
+
+### 26 septies. Lot 9c — création en prod et rangement (2026-11-19)
+
+- `create-questions.ts --dir scripts/questions/cm1-9c --publier` lancé par David : 4 brouillons (7d048525,
+  82351474, 3a888b08, 2e15c33a), vérifiés au MCP (draft, sans nœud, 0 tag, CM1 + CM2), ids commités.
+- Relevé `etat-prod-2026-11-19-cm1-9c/`, script `lot-cm1-9c-rangement.py` (gabarit 9ab) → migration
+  `20261119165723_questions_cm1_lot9c_rangement_tags` et fixture : les 4 sur Géométrie > Figures planes >
+  constructions (nœud des quatre points) ; 8 tags posés (09 : CM1-097, CM2-087 ; 10, 11, 12 : CM1-104,
+  CM2-094), aucun niveau ni statut changé, aucun nœud créé.
+- Test `questions-cm1-lot9c-rangement-tags.test.ts` : 20/20 vert ; corps neutralisé (`select 1;`) : 9 échecs,
+  7 sautés. `types:cliquet` tenu. Seule migration en attente (`migration list --linked`).

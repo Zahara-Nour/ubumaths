@@ -1,4 +1,5 @@
 {
+	"id": "7d048525-862b-425b-9037-c455303bd68f",
 	"title": "Tracer un segment de longueur donnée",
 	"description": "Tracer à la règle graduée un segment de longueur donnée, en cm ou en cm et mm, depuis un point ou sur une demi-droite",
 	"grades": ["CM1", "CM2"],

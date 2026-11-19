@@ -1,4 +1,5 @@
 {
+	"id": "3a888b08-c7a1-495a-845b-c7540f351c74",
 	"title": "Construire un triangle rectangle de côtés donnés",
 	"description": "Construire sur papier uni un triangle rectangle dont un côté de l'angle droit est tracé : l'angle droit à l'équerre, l'autre côté à la règle graduée",
 	"grades": ["CM1", "CM2"],
