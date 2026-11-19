@@ -15,7 +15,7 @@
  * segment s'arrête sur ses graduations du mm, ‹ › décalent son bout d'1 mm,
  * Retourner change son bord (chantier `regle-graduee`, ADR 0036) ; « Effacer »
  * enlève le départ ou la droite en attente, sinon le dernier objet. Comportements validés
- * par David le 2026-10-25 (`docs/wip/geometrie-validation-progress.md` § 5).
+ * par David le 2026-10-25 (`docs/archive/wip/geometrie-validation-progress.md` § 5).
  *
  * Aucune dépendance à geometry-core : les positions des points sont données
  * par l'appelant (la scène déjà calculée pour dessiner la figure).

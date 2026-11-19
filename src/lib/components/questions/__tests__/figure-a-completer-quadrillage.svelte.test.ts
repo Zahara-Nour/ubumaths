@@ -3,7 +3,7 @@
  * ============================================================
  *
  * Comportements validés par David le 2026-10-26
- * (`docs/wip/geometrie-validation-progress.md` § 7 et § 9) : chaque toucher va
+ * (`docs/archive/wip/geometrie-validation-progress.md` § 7 et § 9) : chaque toucher va
  * au nœud le plus proche ; le segment s'arrête à ses deux bouts ; juste → ses
  * segments en vert ; faux → message du juge et bonne figure en pointillés, du
  * côté où l'élève a tracé ; clavier : flèches de nœud en nœud, Entrée touche.

@@ -4,7 +4,7 @@
  *
  * Verso de la carte flash et copie corrigée : la figure elle-même (tracés de
  * l'élève, bonne droite), jamais la chaîne `droite(…)` en texte
- * (`docs/wip/geometrie-validation-progress.md` § 5, décision 3).
+ * (`docs/archive/wip/geometrie-validation-progress.md` § 5, décision 3).
  */
 import { describe, it, expect } from 'vitest';
 import '#lib/questions/construction/positions-setup.ts';

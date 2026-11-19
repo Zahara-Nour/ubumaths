@@ -1,6 +1,6 @@
 /**
  * Question à bloc ```figure-a-completer (case « figure ») : génération et jugement
- * de bout en bout (`docs/wip/geometrie-validation-progress.md` § 3 et § 4).
+ * de bout en bout (`docs/archive/wip/geometrie-validation-progress.md` § 3 et § 4).
  *
  * Le bloc porte sa case, comme ```operation : `blanks[]` peut l'omettre. La
  * réponse attendue est symbolique (`droite(A;B)`) ; le juge lit les positions

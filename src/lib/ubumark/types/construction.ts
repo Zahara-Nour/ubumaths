@@ -7,7 +7,7 @@
  * Figure de travail : l'élève y trace pour vérifier, rien n'est noté (aucune
  * vérification, `work`).
  * Le parseur rend un nœud `figure` qui porte `construction` (spécification :
- * `docs/wip/geometrie-validation-progress.md` § 3 et § 4).
+ * `docs/archive/wip/geometrie-validation-progress.md` § 3 et § 4).
  *
  * @module ubumark/types/construction
  */
