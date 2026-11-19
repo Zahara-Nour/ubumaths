@@ -1334,3 +1334,10 @@ après la virgule.
 (e) Trouvé en passant : 2 modèles **publiés** du CM1 (`37dd213b`, `ac5fcd5c`) écrivent « un motif **de allumettes** »
 (2 variations chacun). Corriger en « d'allumettes » à part, par `--mettre-a-jour` (instantané d'abord, § 7 de la
 doc) ? Reco : **oui**, dans ce chantier, avant l'écriture du lot 12.
+
+### 19.1 Lot 12 : décisions (David, 2026-11-19)
+
+Recommandations suivies (« je te suis ») : (a) les 5 modèles au niveau 1 de « suites de motifs » ; (b) 12-1 V2 avec
+des décimaux, deux chiffres après la virgule au plus ; (c) 12-5 en case « choix », une seule réponse juste ; (d) un
+seul lot de 5 modèles ; (e) « de allumettes » des 2 modèles du CM1 corrigé dans ce chantier, avant l'écriture du lot.
+Tableau du § 19 gardé.
