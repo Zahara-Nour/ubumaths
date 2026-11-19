@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, PR 4 « Ma série » commencée._
+_Mis à jour le 2026-11-19, après #2875._
 
-- **État** : PR 1 (#2842), 2 (#2847), 3a (#2854), 3b (#2866) mergées. PR 4 « Ma série » : phase 0 validée le 2026-11-19, réalisation en cours sur `feat/automaths-ma-serie`.
-- **Prochaine action** : tests rouges (colonne / panneau / barre, retrait, durée totale, libellés « Ma série »), puis code.
-- **En attente de David** : vérification manuelle #2866 notée dans `verifications-manuelles.md`.
-- **Pièges en cours** : séparateur de `rubrique` = « > » en base ; liste servie sans `points` (cache Vercel d'avant le déploiement) → vue Notions seule ; cartes de test : fixture `data/relecture/entiers/139.json` ; `getByRole('navigation', { name: 'Notions' })` → `exact: true` ; `deploy-prod.test.ts` dépasse parfois 5 s en CI (relancer le job).
-- **Worktree / branche** : PR 4 dans `../ubumaths-wt-automaths-serie` · `feat/automaths-ma-serie`. `../ubumaths-wt-automaths` FIGÉ (serveur de test 5176 de David, Serve 443 et 8443) ; à la fin de ses tests : arrêter le serveur, `tailscale serve --https=443 off` et `--https=8443 off`, `git worktree remove` + `git branch -d feat/automaths-programme`.
+- **État** : les 4 PR du découpage sont mergées : 1 (#2842), 2 (#2847), 3a (#2854), 3b (#2866), 4 « Ma série » (#2875). Rien en prod tant que David n'a pas fait `deploy:prod` (pas de migration).
+- **Prochaine action** : retours de David sur #2866 et #2875 ; s'il n'y a rien, clore le chantier (recompter le découpage, verser le durable dans `docs/systeme/questions.md`, archiver ce journal). Laissés par la revue de #2875 : aperçu monté sous 1 280 px, panneau ouvert à la rotation, texte OpenAPI « panier ».
+- **En attente de David** : vérifications manuelles #2866 et #2875 (`verifications-manuelles.md`).
+- **Pièges en cours** : séparateur de `rubrique` = « > » en base ; liste servie sans `points` (cache Vercel d'avant le déploiement) → vue Notions seule ; banc de test : `overflow: hidden` sur html et body (pas de défilement sans le lever) ; élément `display: none` absent de `getByRole`.
+- **Worktree / branche** : `../ubumaths-wt-automaths` (5176, Serve 443 et 8443) et `../ubumaths-wt-automaths-serie` (5180, Serve 8444) gardés pour les tests de David ; ensuite arrêter les serveurs, `tailscale serve --https=443 off`, `--https=8444 off` (8443 : Supabase, partagé), `git worktree remove` les deux, `git branch -d feat/automaths-programme feat/automaths-ma-serie`.
 
 ### 2026-11-18 — recherche
 
@@ -169,3 +169,7 @@ Lecture des questions sous un point : **A** — les questions rattachées au poi
 
 - Corrigés : barre du téléphone avec marge `safe-area-inset-bottom` ; croix d'un titre à formule → nom neutre « Retirer la question n » ; retrait → focus sur la croix suivante, sinon le message « série vide », résumé en `aria-live` ; `Sheet.Description` (sr-only) dans les deux panneaux ; croix de 40 px ; colonne nommée par son titre (`aria-labelledby`). Test de la colonne collante qui défile pour de vrai (le banc met `overflow: hidden` sur html et body), rouge sans `sticky`.
 - Laissés : aperçu de la colonne monté aussi sous 1 280 px (`display: none`, coût non mesuré) ; panneau resté ouvert si l'écran change de taille (rotation) ; texte OpenAPI « Enregistre le panier comme série » (doc d'API, pas l'écran).
+
+### 2026-11-19 — PR 4 mergée (#2875)
+
+- CI verte au premier passage, mergée. Vérification manuelle notée.
