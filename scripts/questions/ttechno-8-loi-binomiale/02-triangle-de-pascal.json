@@ -1,4 +1,5 @@
 {
+	"id": "98ce1795-1cb6-4116-87d1-7ee062e0c2bb",
 	"title": "Triangle de Pascal : compléter une ligne",
 	"description": "Ligne suivante du triangle (n ⩽ 10), relation de Pascal sur deux coefficients donnés, la relation qui construit le triangle",
 	"grades": ["T_TECHNO"],

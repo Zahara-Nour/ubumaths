@@ -1,4 +1,5 @@
 {
+	"id": "bacd052e-9780-4f1d-9f6a-2e97733168a9",
 	"title": "Diagramme en bâtons d'une loi binomiale",
 	"description": "Lire la valeur la plus probable sur le diagramme en bâtons de B(10 ; p) ; retrouver p d'après la forme du diagramme ; ligne Python qui calcule la hauteur d'un bâton",
 	"grades": ["T_TECHNO"],

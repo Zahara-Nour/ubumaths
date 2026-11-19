@@ -1,4 +1,5 @@
 {
+	"id": "04e65a91-c47e-4aa9-a92f-aa652e03adbb",
 	"title": "Coefficients binomiaux au triangle de Pascal (n ⩽ 10)",
 	"description": "Lire un coefficient dans le triangle ; le calculer en construisant le triangle (n ⩽ 10) ; valeurs particulières et symétrie",
 	"grades": ["T_TECHNO"],

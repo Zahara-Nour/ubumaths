@@ -1,4 +1,5 @@
 {
+	"id": "ae383e7c-937d-44e8-bf19-280ebf98be6e",
 	"title": "Simulation d'échantillons et loi binomiale",
 	"description": "Le nombre de 1 d'un échantillon de Bernoulli suit B(n ; p) ; fréquences observées et probabilités quand le nombre d'échantillons grandit ; compter les 1 en Python",
 	"grades": ["T_TECHNO"],

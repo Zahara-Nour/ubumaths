@@ -1,4 +1,5 @@
 {
+	"id": "82a0e909-3b31-46b8-9b5b-136bb7342b9b",
 	"title": "Représenter l'espérance de B(n ; p) quand n ou p varie",
 	"description": "Placer les points (n ; np) à p fixé ; ils sont alignés sur une droite passant par l'origine ; n fixé et p variable ; formule de tableur",
 	"grades": ["T_TECHNO"],

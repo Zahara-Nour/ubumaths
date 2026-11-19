@@ -5,13 +5,13 @@ Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) · bornes 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, après #2882._
+_Mis à jour le 2026-11-19, migration du lot 8 écrite (PR en cours)._
 
 - **État** : lots 0 à 7 publiés (sauf L7, L8 du 5b) ; lot 8 (loi binomiale, 7 modèles B1–B7) écrit, simulation verte, essayé en local (§ 55). Fichiers mergés (#2882).
-- **Prochaine action** : David lance `create-questions --dir scripts/questions/ttechno-8-loi-binomiale --publier` ; ensuite migration nœud + tag (gabarit lot 7 ; 057, 067, 090 sur la notion « Loi binomiale » 7f0932c3, 060 sur d78d5a6b, 061 sur 49cafc5f, 069 et 091 sur aa1217ed), page à cocher, publication.
+- **Prochaine action** : relancer `security-auditor` sur la migration (diff avec le lot 7 + relevé prod en lecture), puis PR de la migration nœud + tag (§ 56) : CI, `check:migrations --pr`, merge, `db:migrate` depuis le dépôt principal ; puis page à cocher, publication.
 - **En attente de David** : le `deploy:prod` qui livre #2839 (L7, L8), s'il ne vient pas d'être fait (vérifier `production`).
 - **Pièges en cours** : `$` littéral (tableur) = `\$` ; un point TTECHNO par modèle (trigger) ; tag = nœud DU POINT ; `publier-lot.ts` et `create-questions --publier` visent la prod : David les lance (`!`), ids reportés à la main si besoin ; `p^floor(…)` refusé par eval (passer par une variable) ; Chrome refuse `[::1]` : serveur `--host 127.0.0.1`.
-- **Worktree / branche** : aucun (retiré après #2882) ; la migration se fera sur une nouvelle branche.
+- **Worktree / branche** : `ubumaths-wt-questions-ttechno`, `feat/questions-ttechno-lot8-tags`.
 
 ## 1. Périmètre
 
@@ -1241,3 +1241,15 @@ pour les brouillons, Tle techno à la publication.
   effectif / fréquence / probabilité, B6 5 points placés jugés justes, B7 courbe des moyennes et droite de
   l'espérance, Python.
 - **#2882 mergée (2026-11-19)**, CI verte. Worktree retiré.
+
+## 56. Lot 8 : prod, rangement et tags (2026-11-19)
+
+David a lancé `create-questions --publier` : 7 brouillons (9fa1b0e9 B1, 98ce1795 B2, 04e65a91 B3, bacd052e B4,
+ae383e7c B5, 82a0e909 B6, 8ad50484 B7), vérifiés par MCP (`draft`, `{T_TECHNO}`, sans nœud ni tag). Ids non écrits
+dans le dépôt principal : reportés à la main dans `scripts/questions/ttechno-8-loi-binomiale/`, d'après les titres.
+
+- Migration `20261119144747_questions_ttechno_lot8_rangement_tags` (gabarit lot 7 ; 057, 067, 090 sur la notion
+  « Probabilités > Loi binomiale », 060 sur « Dénombrement > Combinaisons > triangle de Pascal », 061 sur
+  « … > coefficients binomiaux », 069 et 091 sur « Probabilités > Loi binomiale > espérance et variance »).
+- Test `tests/integration/questions-ttechno-lot8-rangement-tags.test.ts` : 9 verts ; corps retiré → 5 rouges ;
+  fichier restauré d'une copie, identique. `types:cliquet` tenu.
