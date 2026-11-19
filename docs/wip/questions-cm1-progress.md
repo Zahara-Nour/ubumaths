@@ -5,21 +5,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, lots 9a + 9b écrits (§ 26 ter), PR pas encore ouverte._
+_Mis à jour le 2026-11-19, après #2881 (fichiers 9ab mergés)._
 
-- **État** : lots 0 à 8f publiés, **158 points du CM1 sur 171**. Lot 9 validé (§ 26 bis) : 9a + 9b (8 modèles,
-  probabilités 123 à 128, proportionnalité 129, 130) écrits dans `scripts/questions/cm1-9ab/`, commités sur
-  `content/questions-cm1-lot9ab` ; 9c (097, 104 : 4 constructions) reste à écrire.
-- **Prochaine action** : ouvrir la PR des fichiers 9ab (revue : aucune, contenu ; `Doc-inchangée: contenu`),
-  CI, merge ; puis David lance `create-questions --dir scripts/questions/cm1-9ab --publier` ; migration nœud +
-  tag (124 tague aussi CM2-109) ; prévenir `questions-cm2` (109, 087, 094 pris ici).
-- **En attente de David** : rien.
-- **Pièges en cours** : création en prod = `pnpm tsx scripts/create-questions.ts --dir … --publier
-[--mettre-a-jour]`, depuis le worktree ; `--mettre-a-jour` ne touche JAMAIS un publié : le lancer AVANT
-  `publier-lot` ; commitlint refuse le type `content` et un corps > 100 caractères par ligne ; David lance
-  `publier-lot --publier` et `garde-niveaux-tags` ; ranger : réponses = positions AFFICHÉES
-  (`ranger-attendus.ts`) ; `pnpm -s` refusé (pnpm 12).
-- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, branche `content/questions-cm1-lot9ab`.
+- **État** : lots 0 à 8f publiés, **158 points du CM1 sur 171**. Lot 9a + 9b (8 modèles, probabilités 123 à 128,
+  proportionnalité 129, 130) mergés dans `scripts/questions/cm1-9ab/` (#2881), pas encore créés en prod ;
+  9c (097, 104 : 4 constructions) reste à écrire. `questions-cm2` prévenue (109, 087, 094 pris ici ; § 21.1 de
+  son journal).
+- **Prochaine action** : David lance, depuis le worktree,
+  `pnpm tsx scripts/create-questions.ts --dir scripts/questions/cm1-9ab --publier` ; puis relevé MCP et
+  migration nœud + tag (124 tague aussi CM2-109), sur une branche neuve tirée de `origin/main`.
+- **En attente de David** : la création en prod du lot 9ab.
+- **Pièges en cours** : `--mettre-a-jour` ne touche JAMAIS un publié : le lancer AVANT `publier-lot` ;
+  commitlint refuse le type `content` et un corps > 100 caractères par ligne ; David lance `publier-lot
+--publier` et `garde-niveaux-tags` ; ranger : réponses = positions AFFICHÉES (`ranger-attendus.ts`) ;
+  `pnpm -s` refusé (pnpm 12).
+- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, branche `content/questions-cm1-lot9ab` (mergée).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -2309,3 +2309,5 @@ figure) ; 130 V3 (÷ une fois) = une seule utilisation de la linéarité ; jumea
   tous réussis, aucun `\textcolor` hors `$`.
 - Base locale (19 copies, une variation chacune), aperçus à 390 px (Playwright, port 5184) : aucun défilement
   horizontal, aucune erreur de console ; vus : rangement (attendu juste), roue à 4 parts, prix « 2,00 € ».
+- #2881 ouverte, CI verte, mergée (aucune revue : contenu). `questions-cm2` prévenue par message : CM2-109 (lot 15),
+  CM2-087 et CM2-094 (lot 18) pris ici ; noté au § 21.1 de son journal.
