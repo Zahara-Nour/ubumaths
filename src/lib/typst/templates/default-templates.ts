@@ -1587,7 +1587,8 @@ const studentStyleCommon = (
     #grid(
       columns: (1fr, auto, 1fr),
       column-gutter: 1em,
-      align: (left, center, right),
+      // Centré en hauteur : le badge ne décale ni le titre ni « n / N »
+      align: (left + horizon, center + horizon, right + horizon),
       [{{#if show_level}}{{level_badges}}#h(0.4em){{/if}}{{#if show_title}}{{footer_title}}{{/if}}],
       counter(page).display("1 / 1", both: true),
       if counter(page).get().first() > 1 [{{#if site_gidouille}}#{{site_gidouille}}#h(0.3em){{/if}}{{site_name}}]
@@ -1623,25 +1624,24 @@ const studentStyleHeader = (
 // Le fond blanc masque le filet vertical derrière le bandeau.
 #place(top + center, scope: "parent", float: true)[
   #block(width: 100%, fill: white, inset: (bottom: 6pt), below: 1.2em)[
-${banner}    // Titre, identité et notes à gauche ; QR du site à droite (« chiph.re » dessous)
+${banner}    // Première ligne, trois colonnes de même largeur sur les côtés : badge du
+    // niveau à gauche, titre au CENTRE DE LA PAGE, QR du site à droite
+    // (« chiph.re » dessous). Dessous le titre, en petit gris : la catégorie, ou
+    // les notions sous un titre libre (ADR 0041).
     #grid(
-      columns: (1fr, auto),
-      column-gutter: 1em,
-      align: (horizon, center + top),
-      [
-    // Badge du niveau à gauche, titre au centre ; dessous, en petit gris :
-    // la catégorie, ou les notions sous un titre libre (ADR 0041)
-    {{#if show_title}}#grid(
-      columns: (1fr, 4fr, 1fr),
+      columns: (1fr, 3fr, 1fr),
       column-gutter: 0.5em,
-      align: (left + horizon, center + horizon, right),
+      align: (left + horizon, center + horizon, right + horizon),
       [{{#if show_level}}{{level_badges}}{{/if}}],
-      [#text(size: 1.5em, weight: "bold")[{{title}}]{{#if show_title_sub}}
+      [{{#if show_title}}#text(size: 1.5em, weight: "bold")[{{title}}]{{#if show_title_sub}}
         #v(0.2em, weak: true)
-        #text(size: 0.85em, style: "italic", fill: rgb("#5a5a5a"))[{{title_sub}}]{{/if}}],
-      []
+        #text(size: 0.85em, style: "italic", fill: rgb("#5a5a5a"))[{{title_sub}}]{{/if}}{{/if}}],
+      [{{#if site_qr}}#box[#align(center)[#{{site_qr}}
+      #v(2pt, weak: true)
+      #text(size: 8pt, fill: gray)[{{site_name}}]]]{{/if}}]
     )
-    #v(0.4em){{/if}}
+    #v(0.4em)
+    // Identité et notes sur toute la largeur
     {{#if show_identity}}#grid(
       columns: (1fr, auto, 1fr),
       align: (left, center, right),
@@ -1652,11 +1652,6 @@ ${banner}    // Titre, identité et notes à gauche ; QR du site à droite (« c
     #v(0.3em){{/if}}
     {{#if show_header_notes}}#text(size: 0.9em)[${HEADER_NOTES}]
     #v(0.3em){{/if}}
-      ],
-      [{{#if site_qr}}#{{site_qr}}
-      #v(2pt, weak: true)
-      #text(size: 8pt, fill: gray)[{{site_name}}]{{/if}}]
-    )
     #v(0.3em)
     #line(length: 100%, stroke: 0.5pt + gray)
   ]
@@ -1812,7 +1807,7 @@ export const SAMPLE_PREVIEW_DATA = {
 	level: '1ère spécialité maths',
 	level_short: '1ère Spé',
 	level_badges:
-		'#box(fill: rgb("#e8590c"), radius: 3pt, inset: (x: 0.4em, y: 0.25em), outset: (y: 0.05em))[#text(fill: white, weight: "bold")[1ère Spé]]',
+		'#box(fill: rgb("#e8590c"), radius: 3pt, inset: (x: 0.4em, y: 0.25em), baseline: 0.25em)[#text(fill: white, weight: "bold")[1ère Spé]]',
 	title_sub: 'entraînement technique',
 	footer_title: 'Equations du premier degre · Entraînement technique',
 	// Display-option flags: previews always show every field, whatever a given

@@ -143,6 +143,10 @@ describe('printedTitle', () => {
 		});
 	});
 
+	it('anglais, Automatismes : « Fluency » (David, 2026-11-19, sur ma reco)', () => {
+		expect(printedTitle({ ...base, locale: 'en', category: 'automatisms' }).main).toBe('Fluency');
+	});
+
 	it('anglais, titre libre à plusieurs notions : aucune notion imprimée', () => {
 		expect(
 			printedTitle({

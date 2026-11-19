@@ -388,7 +388,7 @@ page 1, une grille badge(s) du niveau à gauche, titre au centre, et dessous en 
 (« Suites · Dérivation »), la catégorie en minuscules dessous, bas de page « Suites · Entraînement
 technique » ; sans notion → la catégorie seule ; ni l'une ni l'autre → `title`. Titre libre, ou
 autres types → le titre seul, les notions dessous seulement si la fiche en admet plusieurs, jamais
-la catégorie. En anglais : catégorie traduite, aucune notion (pas de noms anglais). Le **niveau**
+la catégorie. En anglais : catégorie traduite (Technical practice, Applications, Fluency, Review ; « Fluency » pour Automatismes, David, 2026-11-19), aucune notion (pas de noms anglais). Le **niveau**
 (`worksheets.grades`) : un badge par niveau, forme courte (« 1ère Spé »), plein orange texte blanc
 (`levelBadge`, `worksheet-palette.ts`), du plus petit au plus grand ; aucun, ou fiche en anglais →
 rien (`{{level_badges}}`, `levels()` du générateur ; `{{level}}` / `{{level_short}}` restent
