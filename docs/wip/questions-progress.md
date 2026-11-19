@@ -2,15 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, `03` (CP-008) corrigé._
+_Mis à jour le 2026-11-19, après #2918._
 
 - **État** : relevé prod du 2026-11-19 : **75 points CP sur 84** ont un modèle publié. Lot D (6 modèles, § 4 septdecies) **publié** par David (page à cocher : 6 OK, https://claude.ai/artifact/Jw3Uin7HLh73Ni4NUPthP9). Sans modèle : 058, 059, 060 (brouillons du chantier `geometrie-validation`) et le groupe D (053, 063, 064, 065, 066, 074 : non évaluables à l'écran).
 - **`03` (CP-008) tranché le 2026-11-19** : la variation « 0 à 20 » devient « 0 à 10, seuls 0 et 10 écrits » (x de 2 à 8), car les graduations étaient à 12 px sur téléphone ; les nombres de 11 à 19 restent couverts par le morceau de dix (a = 1). Fichier `scripts/questions/cp-demi-droite/11a01460.json`, lot `cp-demi-droite` de `update-published-questions.ts` ; specs 8/8, 600 tirages.
-- **Prochaine action** : après le merge, David lance la simulation puis `--publier` du lot `cp-demi-droite`, et on vérifie en base par MCP.
+- **Prochaine action** : #2918 mergée ; David lance la simulation puis `--publier` du lot `cp-demi-droite`, et on vérifie en base par MCP.
 - **En attente de David** : écriture du lot `cp-demi-droite` en prod ; publication des brouillons CP-058, 059, 060 (chantier `geometrie-validation`, messages #2526 et #2527 déjà en prod) ; vérification manuelle #1702.
 - **Reste du CP après le lot D** : groupe D seul (074, 053, 063, 064, 065, 066 : non évaluables à l'écran).
 - **Pièges en cours** : un modèle porte au plus UN point (ADR 0020) ; QCM OU cases ; case dans un tableau = `$?$` ; **`{{if:…}}` imbriqué non résolu dans `correctChoiceIndex`** ; jamais de variable `e` ; **niveaux numérotés dès l'écriture** ; montants en `$n~\unit{€}$` ; **écriture en prod : David la lance (`!`)** ; **`gh pr checks --watch` / `gh run watch` peuvent rendre la main avant la fin : suivre le statut du run** ; `create-questions` et les deux scripts visent `.env` (prod) : `set -a; . ./.env.local; set +a` pour la locale ; fichiers des anciens lots CP en retard sur la base (niveaux B1, B3, H renumérotés ; sous-domaines B2 changés) ; les 4 modèles C sont publiés en base LOCALE (essais).
-- **Worktree / branche** : `../ubumaths-wt-questions-cp-demi-droite`, `fix/questions-cp-demi-droite`.
+- **Worktree / branche** : aucun (retiré après #2918).
 - **But final** : skill réutilisable pour les autres niveaux (§ 5) — fait.
 
 ## 1. Modèles CP existants (prod, 2026-10-24)
