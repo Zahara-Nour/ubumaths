@@ -52,7 +52,7 @@ donc une garde mécanique ; ailleurs, une règle courte suffit.
 4. **`docs/wip/<sujet>-progress.md` commité au premier commit.** Laissé non
    suivi, il est invisible des autres sessions et meurt avec un
    `worktree remove --force`. C'est le seul point de rendez-vous entre sessions.
-5. **Ports** : 5175 dans le dépôt principal ; dans un worktree, un autre port libre à partir de 5176 (`--strictPort` échoue si le port est pris : prendre le suivant). Jamais 5173, celui de David.
+5. **Ports** : ⛔ jamais de serveur de dev dans le dépôt principal ; dans un worktree, un port libre à partir de 5176 (`--strictPort` échoue si le port est pris : prendre le suivant). Jamais 5173, celui de David.
    ⛔ **`pnpm kill:servers` est interdit depuis un worktree** : il tue les ports
    5173→5180 **et** Supabase (54321), donc le serveur de l'utilisateur et la base
    d'une autre session.

@@ -20,7 +20,7 @@ Règles seulement. Carte de la doc : [docs/README.md](docs/README.md) (`docs/sys
 ## Commandes
 
 ```bash
-pnpm dev --port 5175 --strictPort   # 5175 dans le dépôt principal, 5176+ dans un worktree ; 5173 = David, JAMAIS (pas de `--` avant --port)
+pnpm dev --port 5176 --strictPort   # dans un worktree SEULEMENT, 5176+ ; ⛔ jamais dans le dépôt principal ; 5173 = David, JAMAIS (pas de `--` avant --port)
 pnpm check:incremental              # TS + Svelte, 0 erreur
 pnpm types:cliquet                  # types des tests (--maj après corrections)
 pnpm lint:fast                      # lint rapide
@@ -67,7 +67,7 @@ git worktree add -b <type>/<sujet> ../ubumaths-wt-<sujet> origin/main
 cp ../ubumaths/.env ../ubumaths/.env.local . && pnpm install --prefer-offline
 ```
 
-- **Dépôt principal = `main`** (commits doc, `db:migrate` d'après-merge, lecture). **Jamais de chantier dedans.**
+- **Dépôt principal = `main`** (commits doc, `db:migrate` d'après-merge, lecture). **Jamais de chantier dedans, jamais de serveur de dev** (`pnpm dev`) : il faut un worktree.
 - **Un worktree = une branche = une session = un nom.** Le `<sujet>` du worktree nomme aussi le journal (`docs/wip/<sujet>-progress.md`) et la session (David : `/rename <sujet>`). Annoncer `git worktree list` + `pwd` + le nom du chantier au premier message.
 - Un worktree n'isole ni la RAM, ni Supabase local, ni les ports. Verrous partagés `typecheck` et `supabase` (`db:*` locaux, `test:integration`) : **exit 2 = attendre, ne pas contourner.**
 - ⛔ **`pnpm kill:servers` interdit depuis un worktree** (tue 5173 et Supabase) : kill ciblé sur son port.
