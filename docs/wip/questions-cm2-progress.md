@@ -1394,3 +1394,77 @@ lot 19 : revérifier au MCP que le lot 8f est bien tagué.
 - Page à cocher : 5 verdicts « OK », sans commentaire ; les 5 ids concordent avec `scripts/questions/cm2-12/*.json`.
 - David lance `publier-lot --dir scripts/questions/cm2-12` (simulation puis `--publier`). MCP : 5/5 `published`, [CM2],
   sur « suites de motifs », un tag chacun (068 ×2, 069, 070 ×2). **Lot 12 clos.**
+
+## 20. Lot 13 — aires (071, 072, 073, 074, 075, 120) : phase 0 (proposée le 2026-11-19)
+
+Relevé MCP du 2026-11-19 (sous-notions de Grandeurs et mesures > Aires) :
+
+- **CM2-071 et CM2-072 sont déjà couverts** depuis le § 14 par deux modèles publiés **CM1 + CM2** (chantier
+  `questions-cm1`), sur « aires sur quadrillage » : `d623374d` « Comparer les aires de deux figures » (niveau 1, 3
+  variations, dont « le plus long tour a-t-il la plus grande aire ? ») et `31d64c00` « Aire en carreaux » (niveau 2,
+  3 variations, demi-carreaux et autre unité « u »). **Aucun n'encadre une aire**, alors que la borne de 072 le demande
+  (« carreaux entiers et demi-carreaux ; encadrement », Exemples de réussite CM2 p. 16).
+- 073, 074, 075, 120 : aucun modèle CM2. Voisins : « unités et conversions », `614048c9` CM1 (aire en cm² sur
+  quadrillage, niveau 1), `82748db8` 6e (conversions m² ↔ dm² ↔ cm², niveau 1, corrigé par tableau à deux colonnes par
+  unité), `f628c809` 5e (niveau 1) ; « carré », `01e205ed` 6e (aire, niveau 1), `9f33998e` 6e (côté, niveau 2) ;
+  « rectangle », `fdd849f5` 6e (aire, niveau 1), `059e3fc9` 6e (largeur, niveau 2). Les modèles de 6e tirent aussi mm²,
+  dam², hm², hors CM2.
+
+Bornes (`cycle3.json`) : 073, cm², dm², m² seulement (BO) ; 074, conversions entre m², dm², cm² (« 3,7 dm² en cm² ») ;
+075 et 120, côtés entiers en cm, formule connue.
+
+| #    | Point   | Sous-notion, niveau             | Modèle                              | Variations, plages                                                                                                                                                                                                                                                            |
+| ---- | ------- | ------------------------------- | ----------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 13-1 | CM2-073 | unités et conversions, voir (a) | Choisir l'unité d'aire              | Case « choix » cm² / dm² / m² : V1 « l'aire d'un timbre / d'une feuille de cahier / d'une salle de classe se mesure en… » ; V2 « l'aire de ce terrain est 420 … » (nombre donné, l'unité à choisir) ; V3 inverse, la mesure plausible parmi « 6 cm² », « 6 dm² », « 6 m² »    |
+| 13-2 | CM2-074 | unités et conversions, (a)      | Convertir des aires                 | V1 m² → dm² ou dm² → cm² (× 100, entiers) ; V2 cm² → dm² ou dm² → m² (: 100, résultat entier ou décimal) ; V3 décimal vers l'unité plus petite (« 3,7 dm² = ? cm² ») ; V4 deux sauts m² ↔ cm², voir (c) ; corrigé par le tableau à deux colonnes par unité (comme `82748db8`) |
+| 13-3 | CM2-075 | carré, (a)                      | Aire d'un carré                     | V1 côté donné en texte, de 2 à 12 cm ; V2 carré dessiné sur fond blanc, côté coté ; V3 petit problème (« un carreau carré de 9 cm de côté »), voir (d) ; réponse en cm², l'unité après la case                                                                                |
+| 13-4 | CM2-120 | rectangle, (a)                  | Aire d'un rectangle                 | V1 longueur de 3 à 15 cm, largeur de 2 à 9 cm (L > l) ; V2 rectangle dessiné, côtés cotés ; V3 petit problème (« une étiquette de 8 cm sur 5 cm ») ; réponse en cm²                                                                                                           |
+| 13-5 | CM2-072 | aires sur quadrillage, (b)      | Encadrer l'aire d'une figure courbe | Figure à bord courbe (disque, ovale, tache) sur quadrillage : deux cases, « au moins … carreaux » (carreaux entièrement dedans) et « au plus … carreaux » (carreaux touchés) ; comptes calculés par le générateur                                                             |
+
+Erreurs typiques en `testSpecs` : 13-3, 4 × c (le périmètre) ou c + c ; 13-4, 2 × (L + l) ou L + l ; 13-2, × 10 au lieu
+de × 100 (« 3,7 dm² = 37 cm² ») ; 13-5, cases inversées.
+
+**Question d'accès** : 4 ou 5 brouillons neufs, puis nœud + tag → personne ne lit rien de plus avant la publication.
+
+**À trancher** :
+
+(a) Les modèles au **niveau 1** de leur sous-notion, comme les voisins de CM1 et de 6e (personne n'est renuméroté) ?
+Reco : **oui** (même règle qu'au lot 12).
+
+(b) 071 et 072 sont déjà couverts : on n'écrit **rien de plus pour 071**, et **un seul modèle pour 072**, l'encadrement
+(13-5), seul morceau de la borne que les modèles CM1 + CM2 ne tirent pas ? Reco : **oui**.
+
+(c) 13-2 V4 : les **deux sauts** m² ↔ cm² (« 2 m² = 20 000 cm² ») ? La 6e les a exclus (décision c3-12 du 2026-10-18,
+« seulement m² ↔ dm² et dm² ↔ cm² ») ; la borne du CM2 ne tranche pas. Reco : **non**, comme la 6e (un saut à la fois,
+le CM2 n'en fait pas plus que la 6e) ; 13-2 garde 3 variations.
+
+(d) 13-3 et 13-4 : côtés **en cm seulement**, comme la borne, ou aussi en m et en dm dans les problèmes (« une pièce
+carrée de 4 m de côté », réponse en m², ce qui sert aussi 073) ? Reco : **cm en V1 et V2, m ou dm en V3** (le BO du
+CM2 nomme les trois unités d'aire ; les nombres restent entiers).
+
+(e) Un seul lot de **5 modèles** ? Reco : **oui**.
+
+### 20.1 Lot 13 : décisions (David, 2026-11-19)
+
+Recommandations suivies (« je suis tes recos ») : (a) les 5 modèles au niveau 1 de leur sous-notion ; (b) rien de plus
+pour 071, un seul modèle pour 072 (encadrement, 13-5) ; (c) pas de deux sauts m² ↔ cm², 13-2 en 3 variations ; (d) côtés
+en cm en V1 et V2, en m ou dm dans le problème (V3), nombres entiers ; (e) un seul lot de 5 modèles. Le stash « cm2-9 ids »
+du dépôt principal (5 fichiers identiques à `origin/main`) est supprimé.
+
+### 20.2 Lot 13 : écriture (2026-11-19)
+
+- `docs/wip/questions/lot-cm2-13.py` → `scripts/questions/cm2-13/` (5 modèles, 20 variations, niveau 1, sans `theme` /
+  `domain` / `subdomain`). `question:specs --instances 300` : 43 specs vertes, 6 000 tirages réussis, aucun
+  `\textcolor` hors `$` ; `sonde-figures` : 508 blocs, 0 problème ; `create-questions` en simulation (prod) : 5 à créer,
+  0 en base.
+- **Écarts à la phase 0** : 13-1 en 4 variations (objets en cm², en dm², en m², puis la mesure plausible parmi
+  « 6 cm² / 6 dm² / 6 m² ») ; compléments écrits élidés (« d'une salle », « du sol ») : `de` + `{{if}}` ne s'élide
+  pas. 13-2 V2 de 120 à 9 999 (unités ≠ 0 : deux chiffres après la virgule). 13-3 V2 côté de 2 à 9 cm, 13-4 V2 jusqu'à
+  14 cm sur 8 cm : dessinés à l'échelle, fenêtre à la taille de la figure, côtés cotés par `milieu()` (un milieu
+  calculé s'écrivait `\dfrac` pour un côté impair, refusé par le bloc). 13-5 titré « figure arrondie », une variation
+  par figure (4 disques, 3 ovales en polygones de 48 côtés), comptes calculés sur la figure dessinée, sans tangence
+  aux lignes (marge 0,12) et stables à l'échantillonnage ; lignes du quadrillage tracées **par-dessus** le remplissage
+  (la grille de fond se perdait dessous).
+- Base locale (copie du dossier dans le scratchpad, `.env.local`, sous `with-db-lock.sh`) : 5 brouillons ; aperçu admin à
+  390 px (Playwright, port 5186), les 20 variations vues : aucun débordement, 0 erreur console ; décimaux groupés,
+  case « choix » A à C, carreaux comptables.
