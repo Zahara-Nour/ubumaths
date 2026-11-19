@@ -254,3 +254,18 @@ describe('QuestionPreviewTabs — erreurs d’auteur (Q48)', () => {
 		expect(container.textContent).not.toContain('Ligne 3');
 	});
 });
+
+describe('QuestionPreviewTabs — sans barre d’onglets (parcours d’une série)', () => {
+	it('bare : ni onglets ni explications, le rendu choisi par le parent est montré', async () => {
+		const { container } = await render(QuestionPreviewTabs, {
+			target: mainElement(),
+			props: { instance: choiceQuestion(), tab: 'classroom', bare: true }
+		});
+		flushSync();
+		await tick();
+		expect(container.querySelectorAll('[role="tab"]')).toHaveLength(0);
+		expect(container.textContent).not.toContain('la carte ne se retourne pas');
+		expect(activePanel(container).textContent).toContain('Combien font 2 + 2 ?');
+		expect(findButton(container, 'Voir le verso')).toBeDefined();
+	});
+});

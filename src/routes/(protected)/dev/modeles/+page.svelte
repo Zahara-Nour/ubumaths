@@ -7,10 +7,13 @@
 	fiches de la série choisie (dans son ordre), du nœud choisi, ou de tout ce que les filtres
 	retiennent (titre, point, verdict, statut, alertes), chacune avec l'aperçu de ses variations et
 	son verdict « validé / à revoir » + commentaire.
-	Chantier revue-modeles : docs/wip/revue-modeles-progress.md.
+	Série choisie : affichage « Parcours » par défaut (une rangée de cartes élèves par modèle, puis
+	les modèles et points des mêmes notions), « Fiches » sur demande (`?vue=fiches`).
+	Chantiers revue-modeles et parcours-serie (docs/wip/).
 -->
 <script lang="ts">
 	// Imports
+	import { browser } from '$app/env';
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import { SvelteURLSearchParams } from 'svelte/reactivity';
@@ -28,9 +31,12 @@
 	} from '#lib/questions/template-review.ts';
 	import ReviewTree from '#lib/components/dev/ReviewTree.svelte';
 	import TemplateReviewSheet from '#lib/components/dev/TemplateReviewSheet.svelte';
+	import SeriesParcours from '#lib/components/dev/SeriesParcours.svelte';
+	import { PanelLeftClose, PanelLeftOpen } from '@lucide/svelte';
 
 	// Constantes
 	const MAX_UNFOLD = 20;
+	const TREE_KEY = 'dev-modeles-arbre';
 	const VERDICT_ITEMS = [
 		{ value: 'tous', label: 'Tous les verdicts' },
 		{ value: 'a_revoir', label: '🔶 À revoir' },
@@ -50,6 +56,8 @@
 	let openSheets = $state<Record<string, boolean>>({});
 	// Code de point mal formé : aide sous la case, sans quitter la page (le serveur le refuserait)
 	let pointHelp = $state<string | null>(null);
+	// Arbre des programmes replié : préférence de ce navigateur seulement (rien de grave si perdue)
+	let treeOpen = $state(readTreeOpen());
 
 	const totals = $derived(data.totals);
 	const openKeys = $derived(new Set(data.path.map((p) => p.key)));
@@ -61,6 +69,7 @@
 			data.filters.title !== '' ||
 			data.filters.point !== null
 	);
+	const showParcours = $derived(data.view === 'parcours' && data.parcours !== null);
 
 	// Functions
 	/** La recherche de l'adresse actuelle, modifiée (`tous`, vide ou null retirent la clé) */
@@ -88,6 +97,24 @@
 		}
 		pointHelp = null;
 		setFilter('point', value);
+	}
+
+	function readTreeOpen(): boolean {
+		if (!browser) return true;
+		try {
+			return localStorage.getItem(TREE_KEY) !== 'replie';
+		} catch {
+			return true;
+		}
+	}
+
+	function toggleTree() {
+		treeOpen = !treeOpen;
+		try {
+			localStorage.setItem(TREE_KEY, treeOpen ? 'ouvert' : 'replie');
+		} catch {
+			// Stockage indisponible (navigation privée) : le choix vaut pour cette page seulement
+		}
 	}
 
 	function setAllSheets(open: boolean) {
@@ -174,15 +201,37 @@
 		<p id="point-help" class="text-sm text-destructive">{pointHelp}</p>
 	{/if}
 
-	<div class="grid gap-4 md:grid-cols-[minmax(16rem,22rem)_1fr]">
-		<nav aria-label="Arbre des modèles" class="max-h-[80vh] overflow-y-auto rounded-lg border p-2">
-			<ReviewTree
-				nodes={data.tree}
-				{openKeys}
-				selectedKey={data.nodeKey}
-				queryFor={(key) => queryWith({ noeud: key })}
-			/>
-		</nav>
+	<div class={treeOpen ? 'grid gap-4 md:grid-cols-[minmax(16rem,22rem)_1fr]' : 'space-y-4'}>
+		<div class="space-y-2">
+			<Button
+				variant="outline"
+				size="sm"
+				aria-expanded={treeOpen}
+				aria-controls="arbre-modeles"
+				onclick={toggleTree}
+			>
+				{#if treeOpen}
+					<PanelLeftClose class="mr-1 h-4 w-4" aria-hidden="true" />
+					Replier les programmes
+				{:else}
+					<PanelLeftOpen class="mr-1 h-4 w-4" aria-hidden="true" />
+					Programmes
+				{/if}
+			</Button>
+			<nav
+				id="arbre-modeles"
+				hidden={!treeOpen}
+				aria-label="Arbre des modèles"
+				class="max-h-[80vh] overflow-y-auto rounded-lg border p-2"
+			>
+				<ReviewTree
+					nodes={data.tree}
+					{openKeys}
+					selectedKey={data.nodeKey}
+					queryFor={(key) => queryWith({ noeud: key })}
+				/>
+			</nav>
+		</div>
 
 		<main class="min-w-0 space-y-3">
 			{#if data.pointUnknown}
@@ -198,11 +247,33 @@
 						La composition de la série « {data.series.title} » est illisible.
 					</p>
 				{:else}
-					<p class="text-sm">
-						Série « {data.series.title} » — {data.selectedCount} modèle(s){hasFilter
-							? ' retenus par les filtres'
-							: ''}
-					</p>
+					<div
+						class="flex flex-wrap items-center gap-2"
+						role="group"
+						aria-label="Affichage de la série"
+					>
+						<Button
+							size="sm"
+							variant={data.view === 'parcours' ? 'default' : 'outline'}
+							aria-current={data.view === 'parcours' ? 'page' : undefined}
+							href="{resolve('/(protected)/dev/modeles')}{queryWith({ vue: null })}"
+							>Parcours</Button
+						>
+						<Button
+							size="sm"
+							variant={data.view === 'fiches' ? 'default' : 'outline'}
+							aria-current={data.view === 'fiches' ? 'page' : undefined}
+							href="{resolve('/(protected)/dev/modeles')}{queryWith({ vue: 'fiches' })}"
+							>Fiches</Button
+						>
+					</div>
+					{#if !showParcours}
+						<p class="text-sm">
+							Série « {data.series.title} » — {data.selectedCount} modèle(s){hasFilter
+								? ' retenus par les filtres'
+								: ''}
+						</p>
+					{/if}
 				{/if}
 			{:else if !data.nodeFound}
 				<p class="text-sm text-destructive">Ce nœud n'existe plus : choisir dans l'arbre.</p>
@@ -229,7 +300,7 @@
 				</p>
 			{/if}
 
-			{#if data.selectedCount === 0 && (hasFilter || data.nodeKey || data.series?.readable)}
+			{#if !showParcours && data.selectedCount === 0 && (hasFilter || data.nodeKey || data.series?.readable)}
 				<p class="text-sm text-muted-foreground">
 					{data.filters.point && !data.pointUnknown
 						? `Aucun modèle sur le point ${data.filters.point}${data.nodeKey || data.seriesId ? ' ici' : ''}.`
@@ -253,7 +324,16 @@
 				<p class="rounded bg-destructive/10 p-2 text-sm text-destructive">{data.sheetsError}</p>
 			{/if}
 
-			{#if data.sheets.length > 0}
+			{#if showParcours && data.parcours && data.series}
+				<SeriesParcours
+					title={data.series.title}
+					parcours={data.parcours}
+					entries={data.sheets}
+					neighbours={data.neighbourSheets}
+					filtered={hasFilter}
+					sheetsError={data.sheetsError !== null}
+				/>
+			{:else if data.sheets.length > 0}
 				<div class="flex gap-2">
 					<Button variant="outline" size="sm" onclick={() => setAllSheets(true)}
 						>{data.sheets.length > MAX_UNFOLD
@@ -265,7 +345,7 @@
 					>
 				</div>
 			{/if}
-			{#each data.sheets as entry (entry.key)}
+			{#each showParcours ? [] : data.sheets as entry (entry.key)}
 				{#if entry.sheet}
 					<TemplateReviewSheet
 						row={entry.sheet.row}

@@ -385,3 +385,136 @@ export function seriesOptions(
 		)
 		.map((r) => ({ value: r.id, label: `${r.title} · ${programmeName(r.grade)}` }));
 }
+
+// Parcours d'une série
+
+/** Affichage d'une série choisie : « parcours » (par défaut) ou « fiches » (l'affichage d'avant) */
+export type ReviewView = 'parcours' | 'fiches';
+
+/** Un point du programme, tel que le parcours le cherche dans les notions de la série */
+export interface PointSummary {
+	code: string;
+	grade: string | null;
+	name: string;
+	nodeId: string | null;
+	archived: boolean;
+	/** Au moins un modèle (quel que soit son statut) est tagué sur ce point */
+	tagged: boolean;
+}
+
+/** L'affichage demandé dans l'adresse (`?vue=`) ; une valeur inconnue vaut « parcours » */
+export function parseReviewView(params: URLSearchParams): ReviewView {
+	return params.get('vue') === 'fiches' ? 'fiches' : 'parcours';
+}
+
+/** La notion d'un nœud : le 2e étage de son chemin (branche > notion > sous-notion) ; null au-dessus */
+export function notionOf(nodeId: string, nodes: ReadonlyMap<string, TreeNodeRow>): string | null {
+	return nodeChain(nodeId, nodes)[1]?.id ?? null;
+}
+
+/** Les notions des modèles de la série, sans doublon, dans l'ordre de la série */
+export function seriesNotions(
+	templateIds: readonly string[],
+	byId: ReadonlyMap<string, TemplateSummary>,
+	nodes: ReadonlyMap<string, TreeNodeRow>
+): { id: string; name: string }[] {
+	const seen = new Set<string>();
+	const notions: { id: string; name: string }[] = [];
+	for (const id of templateIds) {
+		const nodeId = byId.get(id)?.nodeId;
+		const notion = nodeId ? notionOf(nodeId, nodes) : null;
+		if (!notion || seen.has(notion)) continue;
+		seen.add(notion);
+		notions.push({ id: notion, name: nodes.get(notion)?.name ?? notion });
+	}
+	return notions;
+}
+
+/** Le nœud est-il l'une de ces notions, ou en dessous ? */
+function isUnderNotions(
+	nodeId: string | null,
+	notionIds: ReadonlySet<string>,
+	nodes: ReadonlyMap<string, TreeNodeRow>
+): boolean {
+	if (!nodeId) return false;
+	const notion = notionOf(nodeId, nodes);
+	return notion !== null && notionIds.has(notion);
+}
+
+/** Ordre de l'arbre : positions du chemin, étage par étage (un nœud avant ses enfants) */
+function compareChains(a: readonly TreeNodeRow[], b: readonly TreeNodeRow[]): number {
+	for (let i = 0; i < Math.min(a.length, b.length); i++) {
+		const d = a[i].position - b[i].position || a[i].name.localeCompare(b[i].name, 'fr');
+		if (d !== 0) return d;
+	}
+	return a.length - b.length;
+}
+
+/**
+ * « Ailleurs dans les mêmes notions » : les modèles rangés dans ces notions (ou en dessous), tagués
+ * sur un point du niveau de la série, absents de la série et retenus par les filtres, dans l'ordre
+ * de l'arbre puis du titre.
+ */
+export function neighbourTemplates(input: {
+	seriesTemplateIds: readonly string[];
+	notionIds: readonly string[];
+	templates: readonly TemplateSummary[];
+	nodes: ReadonlyMap<string, TreeNodeRow>;
+	grade: string;
+	filters: ReviewFilters;
+}): string[] {
+	const { nodes, grade, filters } = input;
+	const notions = new Set(input.notionIds);
+	if (notions.size === 0) return [];
+	const inSeries = new Set(input.seriesTemplateIds);
+	return input.templates
+		.filter(
+			(t) =>
+				!inSeries.has(t.id) &&
+				isUnderNotions(t.nodeId, notions, nodes) &&
+				t.points.some((p) => p.grade === grade) &&
+				matchesFilters(t, filters)
+		)
+		.map((t) => ({ t, chain: nodeChain(t.nodeId ?? '', nodes) }))
+		.sort((a, b) => compareChains(a.chain, b.chain) || a.t.title.localeCompare(b.t.title, 'fr'))
+		.map(({ t }) => t.id);
+}
+
+/** Les points du niveau rangés dans ces notions, sans aucun modèle et non archivés, par code */
+export function pointsWithoutTemplate(
+	points: readonly PointSummary[],
+	notionIds: readonly string[],
+	nodes: ReadonlyMap<string, TreeNodeRow>,
+	grade: string
+): { code: string; name: string }[] {
+	const notions = new Set(notionIds);
+	return points
+		.filter(
+			(p) =>
+				p.grade === grade && !p.tagged && !p.archived && isUnderNotions(p.nodeId, notions, nodes)
+		)
+		.sort((a, b) => a.code.localeCompare(b.code, 'fr', { numeric: true }))
+		.map((p) => ({ code: p.code, name: p.name }));
+}
+
+/** Nombre de questions d'une série et durée totale (secondes) */
+export function seriesTotals(lines: readonly Pick<SeriesLine, 'quantity' | 'delay'>[]): {
+	questions: number;
+	seconds: number;
+} {
+	let questions = 0;
+	let seconds = 0;
+	for (const l of lines) {
+		questions += l.quantity;
+		seconds += l.quantity * l.delay;
+	}
+	return { questions, seconds };
+}
+
+/** Durée lisible : « 45 s », « 1 min », « 1 min 30 », « 1 min 05 » */
+export function formatSeriesDuration(seconds: number): string {
+	if (seconds < 60) return `${seconds} s`;
+	const min = Math.floor(seconds / 60);
+	const s = seconds % 60;
+	return s === 0 ? `${min} min` : `${min} min ${String(s).padStart(2, '0')}`;
+}
