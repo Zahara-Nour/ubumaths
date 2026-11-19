@@ -5,14 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, relevé prod (§ 19)._
+_Mis à jour le 2026-11-19, lot 12 (ex-lot 11) remis à jour (§ 19)._
 
-- **État** : lots 0 à 10 publiés ; robot à produire (CE1-080) publié dans `scripts/questions/ce1-11/` (#2687, #2689).
-  Prod : **95 points sur 107** à modèle publié. Lot 11 (§ 18, validé) écrit, **PR #2234 ouverte depuis le 2026-11-02,
-  jamais mergée** ; son dossier `ce1-11/` entre en collision avec celui du robot.
-- **Prochaine action** : reprendre #2234 dans un worktree : mise à jour depuis `main`, dossier renommé `ce1-12/`,
-  niveaux relevés, publication du lot entier (05 et `a7dfe502` compris, § 19). Puis un lot 001, 002, 003
-  (`centaines:` livré, #2420) + 074 et la fin de 072 (règle, équerre, compas, triangle, cercle : outils livrés).
+- **État** : lots 0 à 10 et robot CE1-080 (`ce1-11/`) publiés. Prod : 95 points sur 107. Lot 11 de la PR #2234 devenu
+  **lot 12** : `lot-ce1-12.py` → `scripts/questions/ce1-12/` (01 à 05), format sans `theme` (ADR 0035), simulé 5/5.
+- **Prochaine action** : CI + merge de #2234 → David : `create-questions --publier` sur `ce1-12/` → migration nœud +
+  tag (5 neufs) et niveau 2 de `a7dfe502` → page à cocher (`ce1-12/` et `cp-figure/`) → publication des deux dossiers.
+  Puis un lot 001, 002, 003 + 074 et la fin de 072 (outils livrés).
 - **En attente de David** : essai tablette des cases « figure » (`verifications-manuelles.md`, ne bloque plus) ;
   futur chantier « `\textcolor` hors formule » (53 fichiers de lots).
 - **Pièges en cours** : jamais de variable `e` ni `i` ; **mots en couleur dans le texte = `colt()`
@@ -922,3 +921,9 @@ Décisions :
 2. **Plus de chantier `centaines:`** : l'outil est livré (#2420). Lot de contenu 001, 002, 003, avec 074 et la fin de
    072 (triangle, triangle rectangle, cercle : `controles-figure` les juge ; règle graduée, ADR 0036).
 3. Les 4 points D restent hors appli : CE1 couvert une fois ces deux lots publiés (103 points faisables).
+4. **`cp-figure/` publié en entier avec le lot** (David, 2026-11-19) : `a7dfe502` (CE1-073 et CP-058), `010d81a5`
+   (CP-059), `1cf6eaa9` (CP-060), tous trois déjà rangés et tagués.
+
+- 2026-11-19 : #2234 mise à jour depuis `main` ; `lot-ce1-11.py` de `main` (robot) gardé, celui de la PR renommé
+  `lot-ce1-12.py`, un seul dossier `ce1-12/` ; contenu identique à la PR (vérifié fichier par fichier, sans les trois
+  clés retirées) ; `create-questions` simulé : 5 à créer, 80 specs.
