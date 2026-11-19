@@ -4,7 +4,7 @@ import sys
 
 DOSSIER = sys.argv[1]
 
-# Décisions de David le 2026-10-26 (journal docs/wip/geometrie-validation-progress.md § 7 et § 9) :
+# Décisions de David le 2026-10-26 (journal docs/archive/wip/geometrie-validation-progress.md § 7 et § 9) :
 # carré + rectangle seulement ; aucune lettre (sommets invisibles) ; côté en morceaux accepté ;
 # trait repassé sur un côté donné ignoré ; delay 90 s.
 

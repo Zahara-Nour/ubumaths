@@ -2,14 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-09, après #2527._
+_Mis à jour le 2026-11-19 : chantier CLOS, journal archivé._
 
-- **État** : CP-059, CP-060, CP-058 en brouillon ; essais iPad passés (§ 15). Messages du carré décalé (#2526), accolé,
-  séparé, sur une partie de [AB] (#2527) mergés ; en prod au prochain `deploy:prod`.
-- **Prochaine action** : clore le chantier (versement du durable dans `docs/systeme/`, journal archivé).
-- **En attente de David** : publication de CP-060 et CP-058 (brouillons `1cf6eaa9…`, `a7dfe502…`).
-- **Pièges en cours** : lettres impossibles en valeurs de variables (§ 6) ; limites connues de CP-060 au § 9 et § 12.
-- **Worktree / branche** : aucun (retiré après #2527).
+- **État** : CP-059, CP-060 et CP-058 **publiés** par David (vérifié en prod le 2026-11-19, 21:03 UTC) ; messages
+  #2526 et #2527 en prod. Découpage tenu : CP-034 couvert par le QCM du lot B2 ; figure de travail et case
+  « choix » partis au chantier `figure-et-choix`.
+- **Durable versé** : `docs/systeme/questions.md` (case « figure » : principes, jugement, messages),
+  `docs/systeme/ubumark.md` (bloc ` ```figure-a-completer `), `CONTEXT.md` (« Figure à compléter »).
+- **Prochaine action** : aucune.
 
 ## 1. Relevé : ce qui existe et ce qui manque (2026-10-24)
 
@@ -47,9 +47,9 @@ Proposition passée au conseil (5 conseillers + relecture croisée anonyme). Ce 
 - **Questions ouvertes tranchées par le conseil** : juger le **résultat** (pas la manière) ; **tout-ou-rien** avec message
   précis sur la première vérification échouée ; **liste nommée** de vérifications (DSL quand deux vrais modèles l'exigeront).
 - **Découpage** : CP-059 seul de bout en bout sur tablette → CP-060 → CP-034. **CP-008** sort vers les « réponses à
-  placer » ([questions](questions-progress.md) § 3.4) ; **CP-058** à réexaminer (pas forcément une figure). Tolérance et test « en bougeant les points » :
+  placer » ([questions](../../wip/questions-progress.md) § 3.4) ; **CP-058** à réexaminer (pas forcément une figure). Tolérance et test « en bougeant les points » :
   collège (sans objet au CP avec aimantation).
-- **Ordre des chantiers inchangé** ([questions](questions-progress.md) § 4 bis). Journal des gestes, note partielle, DSL dès le lot 1 : écartés pour
+- **Ordre des chantiers inchangé** ([questions](../../wip/questions-progress.md) § 4 bis). Journal des gestes, note partielle, DSL dès le lot 1 : écartés pour
   l'instant (périmètre ; enregistrer des gestes contredirait « aucune réponse d'élève conservée »).
 - **Angles morts à traiter en phase 0** : le prof qui écrit le modèle (exemple, temps d'écriture) ; l'enfant de 6 ans
   (précision au doigt, consigne mal lue, message d'échec, indice, reprise d'une figure à moitié faite) ; exercice rendu
@@ -132,7 +132,7 @@ règle graduée), pas « reporter une longueur » comme noté au § 1 : comme 05
 (3) **feuille blanche**, sans quadrillage ; (4) **un** point piège ; (5) trait en trop = **faux** ; (6) Valider **grisé** tant
 que rien n'est tracé ; (7) `delay` **60 s** ; (8) bloc ` ```construction ` (figure de départ et réponse ensemble). Les
 modèles CP-059 / 060 s'écrivent **dans le chantier figure** (ils dépendent du bloc neuf), pas dans le chantier questions.
-Le code attend toujours la fin de B1 → B3 ([questions](questions-progress.md) § 4 nonies).
+Le code attend toujours la fin de B1 → B3 ([questions](../../wip/questions-progress.md) § 4 nonies).
 
 ## 4. Plan technique (VALIDÉ par David le 2026-10-25)
 

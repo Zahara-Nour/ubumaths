@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, après #2918 et l'écriture du lot `cp-demi-droite` en prod._
+_Mis à jour le 2026-11-19, après la publication de CP-058, 059, 060 et la clôture de `geometrie-validation`._
 
-- **État** : relevé prod du 2026-11-19 : **75 points CP sur 84** ont un modèle publié. Lot D (6 modèles, § 4 septdecies) **publié** par David (page à cocher : 6 OK, https://claude.ai/artifact/Jw3Uin7HLh73Ni4NUPthP9). Sans modèle : 058, 059, 060 (brouillons du chantier `geometrie-validation`) et le groupe D (053, 063, 064, 065, 066, 074 : non évaluables à l'écran).
+- **État** : relevé prod du 2026-11-19 : **78 points CP sur 84** ont un modèle publié. Lot D (6 modèles, § 4 septdecies) **publié** par David (page à cocher : 6 OK, https://claude.ai/artifact/Jw3Uin7HLh73Ni4NUPthP9). CP-058, 059, 060 **publiés** par David (vérifié en prod le 2026-11-19, 21:03 UTC ; chantier `geometrie-validation` clos). Sans modèle : le groupe D seul (053, 063, 064, 065, 066, 074 : non évaluables à l'écran).
 - **`03` (CP-008) tranché le 2026-11-19** : la variation « 0 à 20 » devient « 0 à 10, seuls 0 et 10 écrits » (x de 2 à 8), car les graduations étaient à 12 px sur téléphone ; les nombres de 11 à 19 restent couverts par le morceau de dix (a = 1). Fichier `scripts/questions/cp-demi-droite/11a01460.json`, lot `cp-demi-droite` de `update-published-questions.ts` ; specs 8/8, 600 tirages.
 - **Lot `cp-demi-droite` écrit en prod** le 2026-11-19 par David : `11a01460` mis à jour (21:20 UTC), vérifié par MCP (description, 8 specs) et par simulation relancée (« identique »).
-- **Prochaine action** : aucune côté CP tant que 058-060 (chantier `geometrie-validation`) et le groupe D restent en l'état ; prochain niveau à couvrir avec la skill `couvrir-niveau`, au choix de David.
-- **En attente de David** : publication des brouillons CP-058, 059, 060 (chantier `geometrie-validation`, messages #2526 et #2527 déjà en prod) ; vérification manuelle #1702.
+- **Prochaine action** : aucune côté CP (reste le groupe D, non évaluable à l'écran) ; prochain niveau à couvrir avec la skill `couvrir-niveau`, au choix de David.
+- **En attente de David** : vérification manuelle #1702.
 - **Reste du CP après le lot D** : groupe D seul (074, 053, 063, 064, 065, 066 : non évaluables à l'écran).
 - **Pièges en cours** : un modèle porte au plus UN point (ADR 0020) ; QCM OU cases ; case dans un tableau = `$?$` ; **`{{if:…}}` imbriqué non résolu dans `correctChoiceIndex`** ; jamais de variable `e` ; **niveaux numérotés dès l'écriture** ; montants en `$n~\unit{€}$` ; **écriture en prod : David la lance (`!`)** ; **`gh pr checks --watch` / `gh run watch` peuvent rendre la main avant la fin : suivre le statut du run** ; `create-questions` et les deux scripts visent `.env` (prod) : `set -a; . ./.env.local; set +a` pour la locale ; fichiers des anciens lots CP en retard sur la base (niveaux B1, B3, H renumérotés ; sous-domaines B2 changés) ; les 4 modèles C sont publiés en base LOCALE (essais).
 - **Worktree / branche** : aucun (retiré après #2918).
@@ -45,15 +45,15 @@ Non tagués CP (12) :
 
 ## 2 bis. Case « figure » → chantier à part
 
-Relevé, verdict du conseil et phase 0 de CP-059 : déplacés le 2026-10-25 dans [geometrie-validation](geometrie-validation-progress.md).
+Relevé, verdict du conseil et phase 0 de CP-059 : déplacés le 2026-10-25 dans [geometrie-validation](../archive/wip/geometrie-validation-progress.md).
 
 ## 3. Outils proposés
 
 1. Bloc `horloge` (cadran paramétrable ; CP heures entières, puis minutes CE1/CE2) — recommandé en premier.
 2. Bloc `collection` (vrac, barres de dix + cubes, groupements partiels).
 3. Bloc `monnaie` (pièces et billets d'euros).
-4. Plus tard : réponses à placer (point sur la droite, étiquettes à ranger, aiguilles) — reçoit **CP-008** (verdict du conseil, [geometrie-validation](geometrie-validation-progress.md), suivi par David le 2026-10-25).
-5. **Case « figure »** ([geometrie-validation](geometrie-validation-progress.md), verdict du conseil) : objets de l'élève retrouvés par leur position sur les nœuds, vérification de propriétés en tout-ou-rien ; CP-059 d'abord, puis 060, puis 034.
+4. Plus tard : réponses à placer (point sur la droite, étiquettes à ranger, aiguilles) — reçoit **CP-008** (verdict du conseil, [geometrie-validation](../archive/wip/geometrie-validation-progress.md), suivi par David le 2026-10-25).
+5. **Case « figure »** ([geometrie-validation](../archive/wip/geometrie-validation-progress.md), verdict du conseil) : objets de l'élève retrouvés par leur position sur les nœuds, vérification de propriétés en tout-ou-rien ; CP-059 d'abord, puis 060, puis 034.
 6. **Opérations posées** (demandé par David le 2026-10-24) : bloc « en colonnes » (addition au CP, CP-016 ; puis soustraction, multiplication, division aux niveaux suivants) — aucun rendu « posé » n'existe dans `ubumark`. Place dans l'ordre : à trancher.
 
 ## 4. Questions à David
@@ -135,7 +135,7 @@ David suit mes recommandations (« je te suis »).
 
 1. D'abord, ses relectures en attente (A3, `92c8e499`) puis la publication A1-A6 en un lot : elles orientent les lots suivants.
 2. **Lot H** (une PR) : modèles d'horloge CP-046 (lire) et CP-047 (positionner, en QCM d'horloges) + **CP-016** (addition posée, le lot 1 d'`operations-posees` est sur `main`). Les deux blocs ne sont pas en prod : brouillons jusqu'au `deploy:prod`.
-3. **Groupe B inséré avant la case « figure »** (aucun outil neuf), trois lots : **B1** tableaux (068, 069, 084) → **B2** reconnaître sur une figure, affichage seul (054-056, 057, 061, 062, 067) → **B3** images fixes (049-052, 040). 034 (avec 059, 060) reste pour la case « figure » ; **008** passe aux « réponses à placer » (§ 3.4) et **058** est à réexaminer (pas forcément une figure) — David suit le verdict du conseil ([geometrie-validation](geometrie-validation-progress.md)), 2026-10-25.
+3. **Groupe B inséré avant la case « figure »** (aucun outil neuf), trois lots : **B1** tableaux (068, 069, 084) → **B2** reconnaître sur une figure, affichage seul (054-056, 057, 061, 062, 067) → **B3** images fixes (049-052, 040). 034 (avec 059, 060) reste pour la case « figure » ; **008** passe aux « réponses à placer » (§ 3.4) et **058** est à réexaminer (pas forcément une figure) — David suit le verdict du conseil ([geometrie-validation](../archive/wip/geometrie-validation-progress.md)), 2026-10-25.
 4. Puis case « figure » (chantier à part), collection, monnaie — inchangé (§ 4 bis).
 
 ## 4 decies. Lot H : décisions (David, 2026-10-25)
@@ -276,10 +276,10 @@ Phase 0 proposée, réponse de David : « je te suis », sur la phase 0 entière
 - 2026-10-25 : `db:migrate` lancé par David (demo_scripts + lot H), vérifié en prod : 3 modèles H sur leur sous-notion, 1 tag chacun ; 5 scripts de démo au prof, 0 à l'admin. Page à cocher H relue : 3/3 OK.
 - 2026-10-25 : relevé des pages : `92c8e499` (A6) OK depuis 14 h 22 → A6 9/9 OK ; A3 toujours sans verdict.
 - 2026-10-25 : page A3 relue par David, 6/6 OK. Tous les brouillons du chantier (A1 à H) sont validés.
-- 2026-10-25 : validation des figures faites par l'élève passée au conseil ; verdict consigné ([geometrie-validation](geometrie-validation-progress.md)) et suivi par David : 008 → réponses à placer, 058 à réexaminer (§ 3, § 4 nonies).
-- 2026-10-25 : case « figure », phase 0 de CP-059 écrite en brouillon ([geometrie-validation](geometrie-validation-progress.md)), 8 questions à David ; CP-034 à réexaminer (« comparer », pas « reporter »).
-- 2026-10-25 : phase 0 de CP-059 validée par David ([geometrie-validation](geometrie-validation-progress.md), 8 décisions) ; modèles 059/060 dans le chantier figure.
-- 2026-10-25 : § 2 bis / 2 ter (case « figure ») déplacés dans [geometrie-validation](geometrie-validation-progress.md).
+- 2026-10-25 : validation des figures faites par l'élève passée au conseil ; verdict consigné ([geometrie-validation](../archive/wip/geometrie-validation-progress.md)) et suivi par David : 008 → réponses à placer, 058 à réexaminer (§ 3, § 4 nonies).
+- 2026-10-25 : case « figure », phase 0 de CP-059 écrite en brouillon ([geometrie-validation](../archive/wip/geometrie-validation-progress.md)), 8 questions à David ; CP-034 à réexaminer (« comparer », pas « reporter »).
+- 2026-10-25 : phase 0 de CP-059 validée par David ([geometrie-validation](../archive/wip/geometrie-validation-progress.md), 8 décisions) ; modèles 059/060 dans le chantier figure.
+- 2026-10-25 : § 2 bis / 2 ter (case « figure ») déplacés dans [geometrie-validation](../archive/wip/geometrie-validation-progress.md).
 - 2026-10-25 : lot B1, phase 0 validée (§ 4 undecies), worktree `../ubumaths-wt-questions` (`feat/questions-b1`) ; 3 modèles écrits, 16 specs vertes, rendu relu à 390 px (cases `[_]` → `$?$` : le champ texte débordait ; « la ligne de Inès » → Lina).
 - 2026-10-25 : B1, 3 brouillons créés en prod (`create-questions --publier`, go de David : `7752c23e`, `76d14aa6`, `55662eef`), vérifiés sans nœud ni tag ; question d'accès tranchée (personne) ; migration `20261026140000` nœud + tag et test, rouge (5/9) puis vert.
 - 2026-10-25 : #1763 mergée (CI verte, audit sécurité sans finding bloquant) ; `db:migrate` joué, vérifié en prod (3 modèles B1 sur leur sous-notion, 1 tag chacun) ; page à cocher B1 publiée.

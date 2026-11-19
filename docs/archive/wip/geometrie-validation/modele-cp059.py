@@ -4,7 +4,7 @@ import sys
 
 DOSSIER = sys.argv[1]
 
-# Décisions de David le 2026-10-25 (journal docs/wip/geometrie-validation-progress.md § 3) :
+# Décisions de David le 2026-10-25 (journal docs/archive/wip/geometrie-validation-progress.md § 3) :
 # outil droite seul, feuille blanche, un point piège, trait en trop = faux, delay 60 s.
 
 # Trois points nommés A, B, C ; k choisit le point piège (r), les deux autres (p, q) sont à relier.

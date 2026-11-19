@@ -753,7 +753,13 @@ grise pas « Valider » (`FlashCard`, `QuestionCard` ; la version publique porte
 0. Vide → `empty`. Nature `intervalles` → sa chaîne. Puis **garde de complexité**
    (`isAnswerTooComplex`) : une écriture démesurée est `incorrect` **avant** toute lecture.
    Puis `equation`, `vecteur`, `matrice`, `primitive` / `solution-ed` : chacune sa chaîne.
-   Case « figure » (`blank.construction`), juste après le vide : `judgeConstruction`. Chaque
+   Case « figure » (`blank.construction`), juste après le vide : `judgeConstruction`. Principes
+   (verdict du conseil, chantier `geometrie-validation` clos le 2026-11-19, journal archivé dans
+   `docs/archive/wip/geometrie-validation-progress.md`) : juger le **résultat**, jamais les gestes
+   (aucun geste enregistré : aucune réponse d'élève n'est conservée) ; vérifier des **propriétés**,
+   pas comparer à une figure attendue (plusieurs bonnes figures : le carré d'un côté ou de l'autre de
+   [AB]) ; objets de l'élève retrouvés par leurs **coordonnées** (aimantation aux nœuds), pas par des
+   identifiants ; **tout-ou-rien**, avec le message de la première vérification ratée. Chaque
    vérification `droite_par P ; Q` prend **sa** droite parmi celles tracées (une droite qui passe par
    P et Q, quels que soient les deux points qui l'ont tracée) ; une droite qu'aucune ne prend est
    « de trop » (faux) ; message de la première vérification ratée (« Ta droite passe par A et C, pas

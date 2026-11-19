@@ -468,7 +468,9 @@ Pas d'ADR propre à la géométrie ; le PDF suit [ADR 0004](../../adr/0004-pdf-t
   moteur a été dépassée : `constructions-v2` est construit SUR le DSL.)
 
 Abandonné ou jamais fait : machine à états d'outils (création d'objets à la souris), index spatial
-RBush, `validation/` branché sur des exercices.
+RBush, `validation/` branché sur des exercices. Les figures faites par l'élève sont jugées
+ailleurs, sans `checks.ts` : case « figure » des questions, `src/lib/questions/construction/`
+([questions](../questions.md)).
 
 ## 11. Points ouverts
 
