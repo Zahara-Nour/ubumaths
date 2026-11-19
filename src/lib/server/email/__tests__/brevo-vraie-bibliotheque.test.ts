@@ -40,7 +40,14 @@ describe('Brevo — vraie bibliothèque, réseau simulé', () => {
 	it('envoie une seule requête avec la clé, le courriel complet, et rend l’identifiant', async () => {
 		fetchMock.mockResolvedValue(reponse(201, { messageId: '<m1@brevo>' }));
 
-		const res = await sendEmail('parent@exemple.fr', 'Sujet', `<a href="${LIEN_A_JETON}">x</a>`);
+		const res = await sendEmail(
+			'parent@exemple.fr',
+			'Sujet',
+			`<a href="${LIEN_A_JETON}">x</a>`,
+			'x',
+			'prof@exemple.fr',
+			{ 'List-Unsubscribe': '<https://exemple.fr/stop>' }
+		);
 
 		expect(res).toEqual({ success: true, messageId: '<m1@brevo>' });
 		expect(fetchMock).toHaveBeenCalledTimes(1);
@@ -52,7 +59,10 @@ describe('Brevo — vraie bibliothèque, réseau simulé', () => {
 			sender: { email: 'noreply@ubumaths.fr', name: 'Chiphre' },
 			to: [{ email: 'parent@exemple.fr' }],
 			subject: 'Sujet',
-			htmlContent: `<a href="${LIEN_A_JETON}">x</a>`
+			htmlContent: `<a href="${LIEN_A_JETON}">x</a>`,
+			textContent: 'x',
+			replyTo: { email: 'prof@exemple.fr' },
+			headers: { 'List-Unsubscribe': '<https://exemple.fr/stop>' }
 		});
 	});
 
@@ -68,12 +78,37 @@ describe('Brevo — vraie bibliothèque, réseau simulé', () => {
 		}
 	);
 
-	it('le message d’erreur ne contient pas le courriel (lien à jeton)', async () => {
-		fetchMock.mockResolvedValue(reponse(400, { code: 'invalid_parameter', message: 'mauvais' }));
+	it('erreur 400 : statut et code de Brevo seulement, ni adresse ni courriel', async () => {
+		// Réponse qui cite tout : l'adresse et le contenu ne doivent pas en sortir.
+		fetchMock.mockResolvedValue(
+			reponse(400, {
+				code: 'invalid_parameter',
+				message: `parent@exemple.fr refusé : <a href="${LIEN_A_JETON}">`
+			})
+		);
 
 		const res = await sendEmail('parent@exemple.fr', 'Sujet', `<a href="${LIEN_A_JETON}">x</a>`);
 
-		expect(res.success).toBe(false);
-		expect(res.error).not.toContain('jeton-secret');
+		expect(res).toEqual({
+			success: false,
+			error: 'Envoi refusé par Brevo (statut 400, invalid_parameter)'
+		});
+	});
+
+	it('code de Brevo inattendu : le statut seul', async () => {
+		fetchMock.mockResolvedValue(reponse(401, { code: 'parent@exemple.fr', message: 'x' }));
+
+		const res = await sendEmail('parent@exemple.fr', 'Sujet', '<p>x</p>');
+
+		expect(res.error).toBe('Envoi refusé par Brevo (statut 401)');
+	});
+
+	it('réseau coupé : « Brevo injoignable », un seul essai', async () => {
+		fetchMock.mockRejectedValue(new TypeError(`fetch failed ${LIEN_A_JETON}`));
+
+		const res = await sendEmail('parent@exemple.fr', 'Sujet', '<p>x</p>');
+
+		expect(res).toEqual({ success: false, error: 'Brevo injoignable' });
+		expect(fetchMock).toHaveBeenCalledTimes(1);
 	});
 });
