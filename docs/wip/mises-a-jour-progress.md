@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, après #2859._
+_Mis à jour le 2026-11-19, PR `ci/node-exact` ouverte._
 
-- **État** : #2814 à #2830 en prod (0.96.0). #2835, #2850, #2853, #2859 mergées (pas encore en prod). #2853 = dépréciations de kit 3 sans effet de bord : `invalidateAll` → `refreshAll`, options `goto` `replace`/`refreshAll`, `error(N, message)` ; revues code + sécurité sans finding. #2859 = `json()` de kit → `Response.json` (372 fichiers, 867 appels ; § « `json()` → `Response.json` »).
-- **Prochaine action** : **étudier le cache ESLint en CI** (décidé par David le 2026-11-19, § « Cache ESLint en CI »), puis clore le chantier (versement du durable dans `docs/systeme/`, journal archivé). `pushState`/`replaceState` **laissés** (§ « Dépréciations de kit 3 » : leur remplaçant déclenche les hooks de navigation).
+- **État** : #2814 à #2830 en prod (0.96.0). #2835, #2850, #2853, #2859 mergées (pas encore en prod). **Cause du cache ESLint trouvée** : la version exacte de Node entre dans l'empreinte, et `.nvmrc` = `22` laissait chaque runner prendre le Node de son image (22.23.4 ou 22.23.5). PR `ci/node-exact` : `.nvmrc` = `22.23.5` (§ « Cache ESLint en CI »).
+- **Prochaine action** : après le merge, lancer `lint-nocturne` sur `main` deux fois (le 1er remplit le cache, le 2e doit sauter presque tout) ; si c'est vérifié, ramener l'attente de `deploy:prod` (2700 s) à sa valeur d'avant. Puis clore le chantier (versement du durable dans `docs/systeme/`, journal archivé).
 - **En attente de David** : rien.
-- **Pièges en cours** : `#lib` exige l'extension écrite (garde `imports-lib-avec-extension`, qui exclut le test de `migrer:diese`) ; limite connue du lint de PR : props importées d'un autre `.svelte` ou type indirect → seul le nocturne les voit ; commitlint refuse un sujet qui commence par une majuscule (« ESLint… ») et une ligne de corps > 100 caractères (`Doc-inchangée:` comprise) ; la garde `docs:check-a-jour` ne voit que les COMMITS (la lancer après le commit) ; `page-demo-lexique` instable en CI (délai, relancer le job) ; `appNavigationMock` ; suite client en local avec `CI=true`.
-- **Worktree / branche** : aucun.
+- **Pièges en cours** : `.nvmrc` se monte à la main (Dependabot ne le lit pas) ; `#lib` exige l'extension écrite (garde `imports-lib-avec-extension`) ; props importées d'un autre `.svelte` ou type indirect → seul le nocturne les voit ; commitlint refuse un sujet qui commence par une majuscule et une ligne de corps > 100 caractères ; `docs:check-a-jour` ne voit que les COMMITS ; `page-demo-lexique` instable en CI (relancer le job) ; suite client en local avec `CI=true`.
+- **Worktree / branche** : `../ubumaths-wt-mises-a-jour` · `ci/node-exact`.
 
 ## `json()` → `Response.json` (2026-11-19)
 
@@ -126,7 +126,11 @@ Constats dans le code de kit 3.2.0 (pas dans le guide) :
 - 2026-11-18 : #2814 mergée (CI verte, 16 contrôles) : SvelteKit 2.70.3 → 2.70.4.
 - 2026-11-18 : #2821 mergée (CI verte, 17 contrôles) : TypeScript 5.9.3 → 6.0.3 ; `pnpm check` local 0 erreur sur 11 653 fichiers, cliquet tenu, aucune correction de code nécessaire.
 
-## Cache ESLint en CI (2026-11-18, cause non trouvée)
+## Cache ESLint en CI (2026-11-18 ; cause trouvée le 2026-11-19)
+
+**Cause (2026-11-19)** : ESLint calcule l'empreinte de config à partir de `${version d'ESLint}_${process.version}_${config}` (`lint-result-cache.js`, `hashOfConfigFor`). `.nvmrc` valait `22` : `setup-node` prend le Node 22 de l'image du runner, et GitHub déploie ses images progressivement. Nocturnes du 2026-11-18 : 17:34 image 20261111, Node 22.23.4 ; 19:28 image 20261116, **22.23.5** ; 20:46 image 20261111, 22.23.4 → cache de 19:28 restauré (même clé), tout relu, 31 min. Les jobs du diagnostic d'hier étaient tombés sur la même image, d'où « Node identique ». Contre-épreuve : la config sérialisée de `.lintstagedrc.js` en local (autre commit, autre machine) est identique au caractère près à celle de la CI. Correctif : `.nvmrc` = `22.23.5` (choix de David : la version exacte dans `.nvmrc`, pas seulement dans les jobs ESLint).
+
+Ce que le diagnostic d'hier avait établi :
 
 Établi par une branche jetable (`diag/eslint-cache`, supprimée) et en local :
 
