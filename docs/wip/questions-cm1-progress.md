@@ -5,20 +5,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, après #2873._
+_Mis à jour le 2026-11-19, lots 9a + 9b écrits (§ 26 ter), PR pas encore ouverte._
 
-- **État** : lots 0 à 8f publiés, **158 points du CM1 sur 171** (CM2 120/158). Sans modèle publié : CM1-097,
-  104, 105, 114 (D), 123 à 130, 140.
-- **Prochaine action** : phase 0 du lot 9 (relever ces 13 points, leur classement au § 4 bis, les outils), à
-  faire valider par David avant d'écrire.
+- **État** : lots 0 à 8f publiés, **158 points du CM1 sur 171**. Lot 9 validé (§ 26 bis) : 9a + 9b (8 modèles,
+  probabilités 123 à 128, proportionnalité 129, 130) écrits dans `scripts/questions/cm1-9ab/`, commités sur
+  `content/questions-cm1-lot9ab` ; 9c (097, 104 : 4 constructions) reste à écrire.
+- **Prochaine action** : ouvrir la PR des fichiers 9ab (revue : aucune, contenu ; `Doc-inchangée: contenu`),
+  CI, merge ; puis David lance `create-questions --dir scripts/questions/cm1-9ab --publier` ; migration nœud +
+  tag (124 tague aussi CM2-109) ; prévenir `questions-cm2` (109, 087, 094 pris ici).
 - **En attente de David** : rien.
 - **Pièges en cours** : création en prod = `pnpm tsx scripts/create-questions.ts --dir … --publier
 [--mettre-a-jour]`, depuis le worktree ; `--mettre-a-jour` ne touche JAMAIS un publié : le lancer AVANT
   `publier-lot` ; commitlint refuse le type `content` et un corps > 100 caractères par ligne ; David lance
-  `publier-lot --publier` et `garde-niveaux-tags` ; `docs:check-a-jour` ne voit rien avant le commit : le relancer
-  après, une migration de données demande `Doc-inchangée:` ; la page à cocher ne dessine ni ` ```patron ` ni
-  ` ```robot ` (outils-manquants n° 43).
-- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, HEAD détaché sur `main` ; aucune branche ouverte.
+  `publier-lot --publier` et `garde-niveaux-tags` ; ranger : réponses = positions AFFICHÉES
+  (`ranger-attendus.ts`) ; `pnpm -s` refusé (pnpm 12).
+- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, branche `content/questions-cm1-lot9ab`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -2288,3 +2289,23 @@ pouvait pas lire avant.
    (ceux du CM2 dépassent le CM1).
 5. Ordre : 9a → 9b → 9c, une PR de fichiers et une migration par lot, ou 9a + 9b ensemble (8 modèles, sans
    géométrie) ? Reco : 9a + 9b ensemble, puis 9c.
+
+### 26 bis. Lot 9 : décisions (David, 2026-11-19)
+
+« go » sur les cinq recommandations du § 26 : les 12 modèles et leurs variations ; 097 et 104 sortent du D,
+105, 114, 140 y restent (105 à ajouter aux outils manquants : plusieurs constructions vérifiées dans une même
+figure) ; 130 V3 (÷ une fois) = une seule utilisation de la linéarité ; jumeaux CM1 + CM2 et tag des deux points
+(124/109, 097/087, 104/094), le CM2 prévenu ; 129, 130 CM1 seuls ; ordre 9a + 9b ensemble, puis 9c.
+
+### 26 ter. Lots 9a + 9b — écrits (2026-11-19)
+
+- Script `docs/wip/questions/lot-cm1-9ab.py` → `scripts/questions/cm1-9ab/` (8 modèles, 19 variations, 67 specs) ;
+  grades CM1 + CM2 pour 02 (CM1-124, CM2-109), CM1 pour les autres. Niveaux : 1, sauf 04 et 05 (2).
+- Écarts au § 26 : 07 s'appelle « Proportionnel ou pas ? » (titre du CM2 `90d6612d` déjà pris au même niveau,
+  `create-questions` bloque) ; sa V2 parle de cahiers, pas de pains au chocolat (prix trop hauts) ; 08 V2, prix
+  d'un croissant de 1,10 à 1,90 € (1,00 € rendait le calcul trivial).
+- Rangement (04 V1) : positions affichées relevées par `ranger-attendus.ts` (`['2', '0', '1']` aux deux tirages).
+- `create-questions` en simulation contre la prod : 8 « à créer » ; `question:specs` 300 tirages par variation,
+  tous réussis, aucun `\textcolor` hors `$`.
+- Base locale (19 copies, une variation chacune), aperçus à 390 px (Playwright, port 5184) : aucun défilement
+  horizontal, aucune erreur de console ; vus : rangement (attendu juste), roue à 4 parts, prix « 2,00 € ».
