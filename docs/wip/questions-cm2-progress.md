@@ -6,22 +6,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, après #2907 (lot 15 rangé en prod)._
+_Mis à jour le 2026-11-19, après le `--publier` du lot 15._
 
-- **État** : lots 0 à 14b publiés. Lot 15 (probabilités, 110 à 114) : 5 brouillons en prod, rangés et tagués (#2907,
-  `db:migrate` fait, MCP vérifié). Page à cocher publiée : https://claude.ai/artifact/FcxbrRRwWXPKeit927pogK
-  (`verdicts` vide). Restent ensuite les lots 16 à 19 du § 14.
-- **Prochaine action** : David relit la page ; compter les verdicts (`ArtifactData list verdicts`) ; `publier-lot` en
-  simulation, David lance `--publier` ; MCP. Puis lot 16.
-- **En attente de David** : la relecture du lot 15. Chantier voisin ouvert : `gras-cellule-tableau` (phase 0 validée,
+- **État** : lots 0 à 15 publiés (lot 15, probabilités 110 à 114 : 5/5 `published`, § 23.4). Restent les lots 16 à 19
+  du § 14 : 16 angles (076, 077, 078, 081), 17 géométrie, 18 tracés, 19 solides et patrons.
+- **Prochaine action** : phase 0 du lot 16 (angles) : relevé MCP, bornes, tableau des modèles, puis attendre le go.
+- **En attente de David** : rien sur ce chantier. Chantier voisin ouvert : `gras-cellule-tableau` (phase 0 validée,
   répare le `**Brumeval**` du 14b en prod).
 - **Pièges en cours** : `Doc-inchangée:` dans un COMMIT ; sujet de commit en minuscule, corps ≤ 100 caractères par ligne.
   `migration:horodatage` = heure réelle UTC ; une autre migration en attente → stop avant `db:migrate` (worktree remis
-  sur `origin/main` d'abord). `db:migrate` depuis le worktree : `supabase/.temp` copié. `create-questions` /
-  `publier-lot` refusés au classifieur : David les lance (`!`). Port 5179 pris par `questions-ttechno` : serveur
-  d'essai sur 5186. `de` + `{{if}}` ne s'élide pas. ` ```probtree ` impose des nombres sur ses branches,
-  ` ```tableau-croise ` refuse le texte (§ 23.2). Aucun message par réponse fausse (`feedback.incorrect` jamais affiché).
-  Index du dépôt principal partagé : `git commit -- <fichier>`.
+  sur `origin/main` d'abord). `db:migrate` depuis le worktree : `supabase/.temp` copié. `create-questions --publier` et
+  `publier-lot --publier` : David les lance (`!`) ; la simulation de `publier-lot` passe. Port 5179 pris par
+  `questions-ttechno` : serveur d'essai sur 5186. `de` + `{{if}}` ne s'élide pas. Aucun message par réponse fausse
+  (`feedback.incorrect` jamais affiché). Index du dépôt principal partagé : `git commit -- <fichier>`.
 - **Worktree / branche** : `../ubumaths-wt-questions-cm2`, détaché sur `origin/main` : nouvelle branche du lot
   suivant depuis `origin/main`.
 
@@ -1794,3 +1791,9 @@ message (« compte toutes les issues ») ; (c) 114 : arbre ou tableau donné, l'
 - `garde-niveaux-tags` : aucun niveau manquant. Page à cocher (5 fiches, base prod, aucune alerte) :
   https://claude.ai/artifact/FcxbrRRwWXPKeit927pogK ; `verdicts` vide au départ. Rendu à 390 px (Playwright, fichier
   local) : pas de débordement, 0 erreur.
+
+### 23.4 Lot 15 : relecture, publication (2026-11-19)
+
+- Page à cocher : 5 verdicts « OK », sans commentaire ; les 5 ids concordent avec `scripts/questions/cm2-15/*.json`.
+- `publier-lot` en simulation : 5 brouillons passent le contrôle. David lance `--publier`. MCP : 5/5 `published`, [CM2],
+  rangés et tagués (110 à 114). **Lot 15 clos.**
