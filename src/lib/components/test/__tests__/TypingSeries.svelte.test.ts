@@ -265,11 +265,11 @@ describe('TypingSeries — fin de série', () => {
 		expect(onComplete).toHaveBeenCalledTimes(1);
 	});
 
-	it('« Recommencer » et « Retour au panier »', async () => {
+	it('« Recommencer » et « Retour à ma série »', async () => {
 		const { container, onRestart, onBack } = await open([question(0)]);
 		await answerAndNext(container);
 		await click(container, 'Recommencer avec de nouvelles questions');
-		await click(container, 'Retour au panier');
+		await click(container, 'Retour à ma série');
 		expect(onRestart).toHaveBeenCalledTimes(1);
 		expect(onBack).toHaveBeenCalledTimes(1);
 	});
@@ -286,7 +286,7 @@ describe('TypingSeries — visiteur et série vide', () => {
 	it('série vide : un message et le retour au panier', async () => {
 		const { container, onBack } = await open([]);
 		expect(container.textContent).toContain('Aucune question à afficher');
-		await click(container, 'Retour au panier');
+		await click(container, 'Retour à ma série');
 		expect(onBack).toHaveBeenCalledTimes(1);
 	});
 });

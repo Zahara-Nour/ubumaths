@@ -43,13 +43,13 @@ describe('QuestionPreviewCard', () => {
 		expect(screen.container.querySelector('math-field, input, textarea')).toBeNull();
 	});
 
-	it('propose le retournement et l’ajout au panier', async () => {
+	it('propose le retournement et l’ajout à « Ma série »', async () => {
 		await renderTile();
 
 		await expect
 			.element(page.getByRole('button', { name: 'Voir la correction' }).first())
 			.toBeInTheDocument();
-		await expect.element(page.getByRole('button', { name: /panier/ })).toBeInTheDocument();
+		await expect.element(page.getByRole('button', { name: /ma série/ })).toBeInTheDocument();
 	});
 
 	it('intitulé : titre et description du modèle (la rubrique dit la sous-notion)', async () => {
@@ -81,18 +81,18 @@ describe('QuestionPreviewCard', () => {
 		await expect.element(page.getByRole('dialog')).not.toBeInTheDocument();
 	});
 
-	it('« Dans le panier » retire la question : le bouton redevient « Ajouter »', async () => {
+	it('« Dans ma série » retire la question : le bouton redevient « Ajouter »', async () => {
 		await renderTile();
 
-		await page.getByRole('button', { name: 'Ajouter au panier' }).click();
-		const inCart = page.getByRole('button', { name: 'Dans le panier : retirer' });
+		await page.getByRole('button', { name: 'Ajouter à ma série' }).click();
+		const inCart = page.getByRole('button', { name: 'Dans ma série : retirer' });
 		await expect.element(inCart).toBeEnabled();
-		await expect.element(inCart).toHaveAttribute('title', 'Retirer du panier');
+		await expect.element(inCart).toHaveAttribute('title', 'Retirer de ma série');
 		expect(questionCart.hasTemplate(TEMPLATE.id)).toBe(true);
 
 		await inCart.click();
 
-		await expect.element(page.getByRole('button', { name: 'Ajouter au panier' })).toBeVisible();
+		await expect.element(page.getByRole('button', { name: 'Ajouter à ma série' })).toBeVisible();
 		expect(questionCart.hasTemplate(TEMPLATE.id)).toBe(false);
 	});
 
@@ -100,8 +100,8 @@ describe('QuestionPreviewCard', () => {
 		questionCart.addToCart(TEMPLATE.id, 3, 45);
 		await renderTile();
 
-		await page.getByRole('button', { name: 'Dans le panier : retirer' }).click();
-		await page.getByRole('button', { name: 'Ajouter au panier' }).click();
+		await page.getByRole('button', { name: 'Dans ma série : retirer' }).click();
+		await page.getByRole('button', { name: 'Ajouter à ma série' }).click();
 
 		expect(questionCart.getItem(TEMPLATE.id)).toMatchObject({ quantity: 1 });
 		expect(questionCart.getItem(TEMPLATE.id)?.delay).not.toBe(45);

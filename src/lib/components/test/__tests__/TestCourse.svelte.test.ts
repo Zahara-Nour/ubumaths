@@ -65,13 +65,13 @@ describe('TestCourse — fin de la course', () => {
 	it('hors évaluation : « Recommencer » est proposé', async () => {
 		const { container } = await finish(false);
 		expect(container.textContent).toContain('Recommencer');
-		expect(container.textContent).toContain('Retour au panier');
+		expect(container.textContent).toContain('Retour à ma série');
 	});
 
-	it('évaluation : ni « Recommencer » ni « Retour au panier », mais « Mes évaluations »', async () => {
+	it('évaluation : ni « Recommencer » ni « Retour à ma série », mais « Mes évaluations »', async () => {
 		const { container } = await finish(true);
 		expect(container.textContent).not.toContain('Recommencer');
-		expect(container.textContent).not.toContain('Retour au panier');
+		expect(container.textContent).not.toContain('Retour à ma série');
 		expect(container.querySelector('a[href="/dashboard/student/assessments"]')).not.toBeNull();
 	});
 

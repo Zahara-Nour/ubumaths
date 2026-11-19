@@ -115,7 +115,7 @@ function viewButton(name: 'Programme' | 'Notions') {
 }
 
 function cardsOf(sectionName: RegExp) {
-	return page.getByRole('region', { name: sectionName }).getByRole('button', { name: /panier/ });
+	return page.getByRole('region', { name: sectionName }).getByRole('button', { name: /ma série/ });
 }
 
 beforeEach(async () => {

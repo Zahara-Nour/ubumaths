@@ -74,7 +74,7 @@
 			<Card.Content class="py-12 text-center text-muted-foreground">
 				<p>Aucune série pour l'instant.</p>
 				<p class="mt-2 text-sm">
-					Compose un panier dans Automaths, puis « Enregistrer comme série ».
+					Compose ta série dans Automaths, puis « Enregistrer comme série ».
 				</p>
 			</Card.Content>
 		</Card.Root>

@@ -303,7 +303,7 @@
 				</Button>
 				<Button variant="outline" onclick={onBack}>
 					<ArrowLeft class="mr-2 h-4 w-4" />
-					Retour au panier
+					Retour à ma série
 				</Button>
 			</div>
 		</div>
