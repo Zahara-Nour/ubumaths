@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, PR 2a commitée et poussée, PR pas encore ouverte._
+_Mis à jour le 2026-11-19, après #2903._
 
-- **État** : PR 1 mergée (#2901, migration jouée) · **PR 2a prête** sur `feat/categorie-fiche-editeur` (poussée) : migration `20261119182829_titre_libre_fiche.sql` (case `worksheets.custom_title`, vrai par défaut, + les deux fonctions de partage), tests d'intégration **vérifiés rouges sans elle** (6) puis verts (60), `security-auditor` sans finding bloquant, `code-reviewer` corrigé, `check:incremental` 0, cliquet tenu · **Prochaine action** : ouvrir la PR 2a → CI verte → `pnpm check:migrations --pr <n>` → merge → `migration list --linked` (seule `20261119182829` en attente) → `db:migrate` (4 conditions réunies) → `db:types` → PR 2b (éditeur + PDF), nouvelle branche dans le même worktree ; retirer alors les `as never` des tests · **En attente de David** : rien · **Pièges en cours** : `title` toujours rempli (titre composé écrit par l'éditeur quand `custom_title` est faux) ; retirer les notions en trop AVANT de passer en catégorie à une notion (23514) ; duplication (`api/worksheets/[id]/duplicate`) et publication en chapitre recopient catégorie + notions + `custom_title` ; la route élève ne sélectionne pas `grades` ; FK RESTRICT ; maquette : catégorie en italique minuscule gris `#5a5a5a` · **Worktree** : `../ubumaths-wt-categorie-fiche` (migration déjà appliquée en local) · **Maquette** : https://claude.ai/artifact/4NVjLSrbd7J7XNPzaC3cur
+- **État** : PR 1 (#2901) et PR 2a (#2903, case `worksheets.custom_title`) mergées, migrations jouées en prod (`migration list --linked` vide) · branche `feat/categorie-fiche-editeur-ui` ouverte (pas encore poussée) : 1er commit = `db:types` + retrait des `as never` de `categorie-notions-fiche.test.ts` (cliquet tenu) · **Prochaine action** : PR 2b (éditeur + PDF) — choix catégorie/notions dans l'éditeur, titre composé, badge du niveau, bas de page, tous les cas de la synthèse ; tests d'abord · **En attente de David** : rien · **Pièges en cours** : `title` toujours rempli (titre composé écrit par l'éditeur quand `custom_title` est faux) ; retirer les notions en trop AVANT de passer en catégorie à une notion (23514) ; duplication (`api/worksheets/[id]/duplicate`) et publication en chapitre recopient catégorie + notions + `custom_title` ; la route élève ne sélectionne pas `grades` ; FK RESTRICT ; `as never` restant dans `cadres-lignes-partage.test.ts` (valeur `unknown` voulue) ; maquette : catégorie en italique minuscule gris `#5a5a5a` · **Worktree** : `../ubumaths-wt-categorie-fiche` · **Maquette** : https://claude.ai/artifact/4NVjLSrbd7J7XNPzaC3cur
 
 ## Synthèse de la phase 0 (2026-11-19)
 
@@ -53,7 +53,7 @@ _Mis à jour le 2026-11-19, PR 2a commitée et poussée, PR pas encore ouverte._
 1. ✅ **PR 1 — ADR + migration** (#2901, migration jouée le 2026-11-19) : table, colonne, garde de la règle, fonction SQL du PDF élève /
    partage (catégorie, notions, niveaux), tests d'intégration rouges puis verts ; `db:migrate`,
    `db:types`.
-2. **PR 2a — case « titre libre »** (migration `20261119182829`, tests d'intégration).
+2. ✅ **PR 2a — case « titre libre »** (#2903, migration `20261119182829` jouée le 2026-11-19).
    **PR 2b — éditeur + PDF** : choix catégorie/notions dans l'éditeur, titre composé, badge du
    niveau, bas de page, tous les cas de la synthèse.
 3. **PR 3 — reprise des 50 fiches** : page à cocher (déduit du titre), écriture en prod par David.
