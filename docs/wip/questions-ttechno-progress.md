@@ -1065,3 +1065,44 @@ David a lancé `create-questions --publier` : 5 brouillons (a6fa11c8 I1, b34c8c9
 - `publier-lot.ts --dir scripts/questions/ttechno-6-inverse` : simulation puis `--publier`, lancées par David (le
   classifieur refuse aussi la simulation, qui lit la prod). Statut relu en base (MCP) : 5/5 `published`,
   `{T_TECHNO}` (a6fa11c8, b34c8c9b, 912caf72, bb7bcab6, 9d6896cc).
+
+## 49. Lot 7 : phase 0, deux variables (2026-11-19)
+
+**Relevé prod (MCP, lecture seule)** :
+
+| Point              | Nœud (sous-notion)                                                  | Modèles rangés aujourd'hui                                                                                  |
+| ------------------ | ------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| 050, 051, 052, 088 | « changement de variable » (aed5064f, Statistique à deux variables) | 17f35a67 « z = ln(y) » (T_COMP) : ln et e hors programme STMG (Q3) → rien à taguer                          |
+| 053, 054           | « ajustement affine » (61aaeaa9, Statistique à deux variables)      | a573d517, 3fec6b41, 49fac266, ef8ade24 : droite donnée, interpréter, interpoler ; aucun Σ des carrés → rien |
+
+- Bornes : ajustements au jugé, droite de Mayer, moindres carrés, sans théorie (051) ; changements donnés (u², 1/t,
+  1/√n, log(y)) (052) ; Python ou tableur (053, 054) ; couples en nombre fini (054).
+- Outils : ` ```nuage ` avec `ajustement: z = 1/y` (ou `t = x²`, `√`, `ln`) et `nuage: z` (nuage transformé,
+  droite) ; **ni log décimal ni 1/√n** dans le bloc. ` ```courbe ` + `placer:` + `axes:` pour placer des points
+  (lot 6, I5). Python : forme des modèles du lot 2b (compléter une ligne, choix).
+
+**Proposition** (6 modèles neufs, un point chacun, `grades ['T_TECHNO']`, brouillons) :
+
+| #   | Modèle                                        | Point | Contenu (variations)                                                                                                                                     | Niv. |
+| --- | --------------------------------------------- | ----- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- |
+| D1  | Quel changement de variable redresse le nuage | 050   | nuage (x ; y) courbé ; nuages (x ; z) pour deux ou trois changements proposés (`nuage: z`) : lequel donne des points presque alignés (choix)             | 1    |
+| D2  | Représenter le nuage transformé               | 052   | tableau x, y : compléter t = x² (ou z = 1/y, z = log(y) avec y puissance de 10) ; placer les points transformés dans un repère (`placer:`, `axes:`)      | 1–2  |
+| D3  | Conjecturer une relation linéaire             | 088   | nuage transformé et tableau (u ; v) presque proportionnels ou affines : quelle relation semble lier les nouvelles variables (choix) ; coefficient (case) | 1–2  |
+| D4  | Ajustement par changement de variable         | 051   | z = 1/y (ou t = x², z = log(y)) et droite z = ax + b donnée ; droite de Mayer sur 4 à 6 points (deux points moyens) ; en déduire y ; estimer y pour x₀   | 2–3  |
+| D5  | Somme des carrés des écarts (Python, tableur) | 053   | 3 ou 4 points, a et b donnés : calculer Σ(yᵢ − (axᵢ + b))² (case) ; ligne Python de la boucle (choix) ; formule de tableur d'une colonne (choix)         | 2    |
+| D6  | Chercher le couple (a ; b) qui minimise       | 054   | tableau de S pour quelques couples : lequel garder (choix) ; deux couples à départager par le calcul (case) ; balayage Python : la ligne de comparaison  | 2    |
+
+Plages : 4 à 6 points ; valeurs transformées exactes (1/y décimal fini, x² entiers, log(y) avec y = 10ᵏ ou donné
+arrondi) ; a, b décimaux à un chiffre après la virgule.
+
+**Questions à David** :
+
+- **Q32 — log(y)** (l'exemple du BO) : le bloc ` ```nuage ` ne connaît que ln, carré, √, inverse. Je mets
+  z = log(y) **en texte seulement** (tableaux, calculs, sans tracé du bloc) et je note l'outil manquant
+  (« log et 1/√n dans ` ```nuage ` ») dans `outils-manquants.md` ? Reco : **oui**.
+- **Q33 — Droite de Mayer** (D4) : la faire calculer (deux points moyens, puis la droite), ou la donner comme les
+  calculatrices et ne faire que la suite (en déduire y, estimer) ? Reco : **les deux**, une variation chacune.
+- **Q34 — Python et tableur** (D5, D6) : une variation de chaque, comme M2 (lot 4) ? Reco : **oui**.
+- **Q35 — Découpage** : un seul lot de 6 modèles (une page à cocher) ? Reco : **oui**.
+- **Question d'accès** (migration de tags, après écriture) : brouillons, personne ne les voit ; publiés, ils
+  apparaissent au catalogue et au cahier de texte de Tle techno seulement. Personne ne perd rien.
