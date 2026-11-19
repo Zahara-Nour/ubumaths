@@ -6,15 +6,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, captures du lot 15 lues et 114 corrigé (§ 23.2), PR à ouvrir._
+_Mis à jour le 2026-11-19, après #2905 (lot 15 mergé)._
 
-- **État** : lots 0 à 14b publiés. Lot 15 (probabilités, 5 modèles : 110 à 114) sur `feat/questions-cm2-lot15` :
-  specs vertes, invariants 0 défaut, simulation verte, 5 brouillons en base LOCALE (`4530b442`, `0a56c35f`,
-  `e0588bdd`, `50dad94f`, `da0e69b3`). Les 19 captures à 390 px sont lues, et 114 est corrigé (`**` littéraux, V3
-  tronquée). Restent ensuite les lots 16 à 19 du § 14.
-- **Prochaine action** : PR (« revue : aucune, contenu », `Doc-inchangée: contenu`), CI, merge ; puis David lance
-  `create-questions --publier`.
-- **En attente de David** : rien.
+- **État** : lots 0 à 14b publiés. Lot 15 (probabilités, 110 à 114) mergé (#2905), pas encore en prod. Les 5 brouillons
+  sont en base LOCALE. Restent ensuite les lots 16 à 19 du § 14.
+- **Prochaine action** : David lance `create-questions --publier` sur `scripts/questions/cm2-15` (prod), puis nœud + tag
+  par migration et page à cocher, comme aux lots précédents ; puis lot 16.
+- **En attente de David** : (1) le `--publier` du lot 15 ; (2) le 14b en prod affiche `**Brumeval**` (gras d'une cellule
+  sans trou, § 23.2, ligne 46 d'`outils-manquants.md`) : corriger le rendu des tableaux (recommandé) ou le contenu du
+  14b par migration ?
 - **Pièges en cours** : `Doc-inchangée:` dans un COMMIT ; sujet de commit en minuscule, corps ≤ 100 caractères par ligne.
   `migration:horodatage` = heure réelle UTC ; une autre migration en attente → stop avant `db:migrate` (worktree remis
   sur `origin/main` d'abord). `db:migrate` depuis le worktree : `supabase/.temp` copié. `create-questions` /
@@ -22,7 +22,8 @@ _Mis à jour le 2026-11-19, captures du lot 15 lues et 114 corrigé (§ 23.2), P
   d'essai sur 5186. `de` + `{{if}}` ne s'élide pas. ` ```probtree ` impose des nombres sur ses branches,
   ` ```tableau-croise ` refuse le texte (§ 23.2). Aucun message par réponse fausse (`feedback.incorrect` jamais affiché).
   Index du dépôt principal partagé : `git commit -- <fichier>`.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, branche `feat/questions-cm2-lot15`.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, encore sur `feat/questions-cm2-lot15` (mergée) : nouvelle
+  branche du lot suivant depuis `origin/main`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
