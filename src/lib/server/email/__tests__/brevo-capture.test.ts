@@ -7,7 +7,7 @@ import { CHILD_ACCOUNT_DOMAIN } from '#lib/utils/child-account.ts';
 // Capture des courriels en local : base locale → rien ne part chez Brevo,
 // chaque courriel est écrit dans un dossier (tests Playwright, relecture).
 
-const sendTransacEmail = vi.fn(async () => ({ body: { messageId: 'm1' } }));
+const sendTransacEmail = vi.fn(async (_request: unknown) => ({ messageId: 'm1' }));
 const privateEnv: Record<string, string | undefined> = {};
 const publicEnv: Record<string, string | undefined> = {};
 
@@ -33,12 +33,9 @@ vi.mock('$app/env/private', () =>
 vi.mock('$app/env/public', () => envModule(publicEnv, ['PUBLIC_SUPABASE_URL']));
 
 vi.mock('@getbrevo/brevo', () => ({
-	TransactionalEmailsApi: class {
-		setApiKey() {}
-		sendTransacEmail = sendTransacEmail;
-	},
-	TransactionalEmailsApiApiKeys: { apiKey: 0 },
-	SendSmtpEmail: class {}
+	BrevoClient: class {
+		transactionalEmails = { sendTransacEmail };
+	}
 }));
 
 const { sendEmail, isBrevoConfigured } = await import('../brevo');
