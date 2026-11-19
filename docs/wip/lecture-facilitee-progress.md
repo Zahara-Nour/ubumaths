@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, après #2902._
+_Mis à jour le 2026-11-19, après #2908._
 
-- **État** : PR 4a mergée (#2902) et migration jouée en prod (`easy_reading`) ; PR 4b (code des PDF : moteur, réglage élève, aperçus, copies) sur `feat/lecture-facilitee-pdf-code`.
-- **Prochaine action** : revue (`code-reviewer` + `security-auditor`), PR 4b, CI, merge.
-- **En attente de David** : texte justifié en lecture facilitée ? (les mots espacés creusent des blancs ; reco : aligné à gauche, conseil courant pour les dys).
-- **Pièges en cours** : `\cdot` gros et `∯` petit laissés (D8) ; lot de copies par élève de `PdfPreview` (zip) sans taille ni lecture facilitée, comme avant.
-- **Worktree / branche** : `../ubumaths-wt-lecture-facilitee` · `feat/lecture-facilitee-pdf-code`.
+- **État** : les 4 PR du découpage D4 sont mergées : essai (PR 1), réglage écran (#2898, #2900), jeu écran Luciole Math (#2892), PDF en Luciole (#2902 migration jouée en prod, #2908 code ; texte aligné à gauche, jamais justifié). Vérification manuelle notée (#2908).
+- **Prochaine action** : clore le chantier si David le dit (versement : le durable est déjà dans `docs/systeme/fiches-et-pdf.md` et `base-de-donnees.md` ; archiver ce journal). Autres PDF (exercice public, guides, cahier, presques-évaluations) seulement si David le demande (D12).
+- **En attente de David** : essai du PDF ; go pour clore.
+- **Pièges en cours** : `\cdot` gros et `∯` petit laissés (D8) ; lot « une copie par élève » de `PdfPreview` (zip) sans taille ni lecture facilitée, comme avant.
+- **Worktree / branche** : aucun (worktree retiré après #2908).
 
 ## Ce qui existe déjà (vérifié le 2026-11-19)
 
@@ -70,6 +70,7 @@ Conséquence pour l'étude :
 - **D11 (Q2)** : réglage PDF et interrupteur écran **séparés** (écran = ce navigateur ; PDF = l'élève).
 - **D12 (Q3)** : fiches seulement (fiche, réponses, corrigé, copies par élève) ; autres PDF plus tard si David le veut.
 - **D13 (Q4)** : mêmes petits écarts qu'à l'écran, quitte à une page de plus.
+- **D14 (2026-11-19, après l'essai)** : en lecture facilitée, texte aligné à gauche, jamais justifié (la justification creusait des blancs irréguliers) ; David : « je te suis ».
 
 ## Observations de l'essai (2026-11-19)
 
