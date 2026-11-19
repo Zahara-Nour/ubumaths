@@ -5,13 +5,13 @@ Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) · bornes 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, migration du lot 8 écrite (PR en cours)._
+_Mis à jour le 2026-11-19, après #2886 et `db:migrate`._
 
-- **État** : lots 0 à 7 publiés (sauf L7, L8 du 5b) ; lot 8 (loi binomiale, 7 modèles B1–B7) écrit, simulation verte, essayé en local (§ 55). Fichiers mergés (#2882).
-- **Prochaine action** : PR de la migration nœud + tag (§ 56) : CI, `check:migrations --pr`, merge, `db:migrate` depuis le dépôt principal ; puis page à cocher, publication.
+- **État** : lots 0 à 7 publiés (sauf L7, L8 du 5b) ; lot 8 (loi binomiale, 7 brouillons B1–B7) en prod, rangés et tagués (§ 55, § 56).
+- **Prochaine action** : page à cocher du lot 8 (`page-a-cocher.ts --dir scripts/questions/ttechno-8-loi-binomiale`, artefact avec `db`, 390 px), puis `publier-lot.ts` (simulation, puis David `--publier`). Après le lot 8, bilan MCP des points STMG restants.
 - **En attente de David** : le `deploy:prod` qui livre #2839 (L7, L8), s'il ne vient pas d'être fait (vérifier `production`).
-- **Pièges en cours** : `$` littéral (tableur) = `\$` ; un point TTECHNO par modèle (trigger) ; tag = nœud DU POINT ; `publier-lot.ts` et `create-questions --publier` visent la prod : David les lance (`!`), ids reportés à la main si besoin ; `p^floor(…)` refusé par eval (passer par une variable) ; Chrome refuse `[::1]` : serveur `--host 127.0.0.1`.
-- **Worktree / branche** : `ubumaths-wt-questions-ttechno`, `feat/questions-ttechno-lot8-tags`.
+- **Pièges en cours** : `$` littéral (tableur) = `\$` ; un point TTECHNO par modèle ; tag = nœud DU POINT ; `create-questions --publier` et `publier-lot.ts` visent la prod : David les lance (`!`), ids reportés à la main ; `Doc-inchangée:` dans un COMMIT (pas la PR) pour une migration ; `db push` « inserted before » → `--dry-run --include-all` ; Chrome refuse `[::1]` : serveur `--host 127.0.0.1`.
+- **Worktree / branche** : aucun (retiré après #2886).
 
 ## 1. Périmètre
 
@@ -1257,3 +1257,7 @@ dans le dépôt principal : reportés à la main dans `scripts/questions/ttechno
   067, 090 résolus au niveau notion par le premier `update`, déjà dans le gabarit ; prod relue en lecture : 7 brouillons
   sans nœud ni tag, points sur les nœuds attendus, chemins sans doublon).
 - CI de #2886 : garde « doc à jour » rouge (ligne `Doc-inchangée:` attendue dans un commit, pas dans la PR) → commit du journal avec la ligne.
+- **#2886 mergée (2026-11-19)**, CI verte, `check:migrations --pr 2886` vert. `migration list --linked` : seule
+  `20261119144747` en attente ; `db push` refusé (« inserted before ») → `--include-all --dry-run` (elle seule), puis
+  `--include-all`, depuis le dépôt principal (4 conditions). Prod vérifiée (MCP) : les 7 sur leur nœud, un tag chacun,
+  `draft`, `updated_at` inchangés. Worktree retiré.
