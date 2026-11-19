@@ -2,14 +2,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, PR ouverte._
+_Mis à jour le 2026-11-19, après #2904._
 
-- **État** : migration `20261119183452_questions_cm1_08_noeud` écrite (générée par
-  `docs/wip/questions/lot-cm1-08-noeud.py`), test d'intégration 15/15 vert, rouge sans la migration (6 échecs,
-  6 sautés). · **Prochaine action** : revue `security-auditor`, CI, merge, `db:migrate`, vérification MCP.
-  · **En attente de David** : rien (question d'accès tranchée : personne ne gagne d'accès).
-  · **Pièges en cours** : aucun. · **Worktree / branche** : `ubumaths-wt-cm1-08-noeud`,
-  `feat/questions-cm1-08-noeud`.
+- **État** : #2904 mergée (CI verte, `security-auditor` sans finding bloquant) ; migration
+  `20261119183452_questions_cm1_08_noeud` **pas encore jouée en prod**. · **Prochaine action** : quand
+  `20261119182829_titre_libre_fiche` (chantier `categorie-fiche`) est jouée, `migration list --linked` → seule la
+  nôtre en attente → `pnpm db:migrate`, puis vérifier au MCP : 1dd68bdd sur « quatrième proportionnelle », tag
+  CM1-130, `updated_at` = 2026-11-19 15:54:12, trigger `update_question_templates_updated_at` actif. Ensuite archiver
+  ce journal, retirer le worktree et la branche. · **En attente de David** : rien. · **Pièges en cours** :
+  `db:migrate` pousse TOUTES les migrations en attente. · **Worktree / branche** : `ubumaths-wt-cm1-08-noeud`,
+  `feat/questions-cm1-08-noeud` (mergée).
 
 ## Contexte
 
