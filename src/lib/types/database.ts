@@ -12212,16 +12212,19 @@ export type Database = {
       }
       student_print_settings: {
         Row: {
+          easy_reading: boolean
           student_id: string
           text_size: string
           updated_at: string
         }
         Insert: {
+          easy_reading?: boolean
           student_id: string
           text_size?: string
           updated_at?: string
         }
         Update: {
+          easy_reading?: boolean
           student_id?: string
           text_size?: string
           updated_at?: string
@@ -14223,6 +14226,7 @@ export type Database = {
           config: Json | null
           created_at: string
           created_by: string
+          custom_title: boolean
           description: string | null
           estimated_duration_minutes: number | null
           grades: string[] | null
@@ -14244,6 +14248,7 @@ export type Database = {
           config?: Json | null
           created_at?: string
           created_by: string
+          custom_title?: boolean
           description?: string | null
           estimated_duration_minutes?: number | null
           grades?: string[] | null
@@ -14265,6 +14270,7 @@ export type Database = {
           config?: Json | null
           created_at?: string
           created_by?: string
+          custom_title?: boolean
           description?: string | null
           estimated_duration_minutes?: number | null
           grades?: string[] | null

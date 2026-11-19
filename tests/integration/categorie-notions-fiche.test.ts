@@ -148,7 +148,7 @@ async function addNode(
 ): Promise<string | null> {
 	const { error } = await client
 		.from('worksheet_classifications')
-		.insert({ worksheet_id: id, node_id: nodeId, position } as never)
+		.insert({ worksheet_id: id, node_id: nodeId, position })
 		.select('node_id');
 	return error ? (error.code ?? 'erreur') : null;
 }
@@ -156,7 +156,7 @@ async function addNode(
 async function setCategory(id: string, category: string | null): Promise<string | null> {
 	const { data, error } = await teacherClient
 		.from('worksheets')
-		.update({ category } as never)
+		.update({ category })
 		.eq('id', id)
 		.select('id');
 	if (error) return error.code ?? 'erreur';
@@ -365,7 +365,7 @@ describe('notions : une seule, sauf Révisions et Automatismes', () => {
 		await resetNodes(id, [suitesId, derivationId]);
 		const { error } = await teacherClient
 			.from('worksheets')
-			.update({ type: 'worksheet' } as never)
+			.update({ type: 'worksheet' })
 			.eq('id', id)
 			.select('id');
 		expect(error?.code).toBe('23514');
@@ -544,7 +544,7 @@ describe('titre libre : la case qui dit si le titre est écrit à la main', () =
 	async function setCustomTitle(id: string, value: boolean): Promise<void> {
 		const { data, error } = await teacherClient
 			.from('worksheets')
-			.update({ custom_title: value } as never)
+			.update({ custom_title: value })
 			.eq('id', id)
 			.select('id');
 		expect(error).toBeNull();
@@ -583,7 +583,7 @@ describe('titre libre : la case qui dit si le titre est écrit à la main', () =
 		await sql('update public.worksheets set custom_title = false where id = $1', [worksheetId]);
 		const { data, error } = await studentClient
 			.from('worksheets')
-			.update({ custom_title: true } as never)
+			.update({ custom_title: true })
 			.eq('id', worksheetId)
 			.select('id');
 		// Refus de la RLS : aucune erreur, zéro ligne

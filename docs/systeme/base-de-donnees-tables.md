@@ -444,7 +444,7 @@ Liens : `checklist_item_id` → `chapter_checklist_items` · `student_id` → `p
 
 ### `student_print_settings`
 
-`student_id` · `text_size` · `updated_at`
+`easy_reading` · `student_id` · `text_size` · `updated_at`
 
 Liens : `student_id` → `profiles`
 
@@ -516,7 +516,7 @@ Liens : `created_by` → `profiles` · `style_id` → `worksheet_styles`
 
 ### `worksheets`
 
-`archived_at?` · `category?` · `config?` · `created_at` · `created_by` · `description?` · `estimated_duration_minutes?` · `grades?` · `id` · `published_at?` · `school_id?` · `status` · `style_id?` · `title` · `total_points?` · `translations?` · `type` · `updated_at` · `version?`
+`archived_at?` · `category?` · `config?` · `created_at` · `created_by` · `custom_title` · `description?` · `estimated_duration_minutes?` · `grades?` · `id` · `published_at?` · `school_id?` · `status` · `style_id?` · `title` · `total_points?` · `translations?` · `type` · `updated_at` · `version?`
 
 Liens : `created_by` → `profiles` · `school_id` → `schools` · `style_id` → `worksheet_styles`
 
