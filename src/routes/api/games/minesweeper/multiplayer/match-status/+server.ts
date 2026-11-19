@@ -3,7 +3,6 @@
  * GET - Check if a match was found while waiting in queue
  */
 
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '#lib/server/middleware/auth.ts';
 import { sanitizeRPCError } from '#lib/server/utils/error-handler.ts';
@@ -38,5 +37,5 @@ export const GET: RequestHandler = async ({ locals }) => {
 		sanitizeRPCError(rpcError, 'check_match_status');
 	}
 
-	return json(data);
+	return Response.json(data);
 };

@@ -1,5 +1,5 @@
 import type { RequestHandler } from './$types';
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import { requireAuth, requireRoles } from '#lib/server/middleware/auth.ts';
 import { createTournamentSchema } from '#lib/server/validation/minesweeper-tournament.ts';
 import { sanitizeRPCError, sanitizePostgresError } from '#lib/server/utils/error-handler.ts';
@@ -111,7 +111,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			})
 		);
 
-		return json({
+		return Response.json({
 			tournaments: tournamentsWithCount
 		});
 	} catch (err) {
@@ -214,7 +214,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			sanitizeRPCError(rpcError, 'create_tournament');
 		}
 
-		return json(
+		return Response.json(
 			{
 				tournament_id: tournamentId
 			},

@@ -12,7 +12,7 @@
  * - Uses worksheet_assignment_classes junction table
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '#lib/server/middleware/auth.ts';
 import { z } from 'zod';
@@ -142,7 +142,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 			...rest
 		} = assignment;
 
-		return json({
+		return Response.json({
 			success: true,
 			assignment: {
 				...rest,
@@ -473,7 +473,7 @@ export const PATCH: RequestHandler = async ({ params, locals, request }) => {
 				...rest
 			} = fullAssignment;
 
-			return json({
+			return Response.json({
 				success: true,
 				message: 'Affectation mise à jour',
 				assignment: {
@@ -484,7 +484,7 @@ export const PATCH: RequestHandler = async ({ params, locals, request }) => {
 			});
 		}
 
-		return json({
+		return Response.json({
 			success: true,
 			message: 'Affectation mise à jour',
 			assignment: updated
@@ -569,7 +569,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 			throw error(500, 'Impossible de supprimer l’affectation');
 		}
 
-		return json({
+		return Response.json({
 			success: true,
 			message: 'Affectation supprimée'
 		});
@@ -602,7 +602,7 @@ async function handleAction(
 			if (!result.success) {
 				throw error(400, result.message);
 			}
-			return json({
+			return Response.json({
 				success: true,
 				message: result.message,
 				affectedStudents: result.affectedStudents
@@ -614,7 +614,7 @@ async function handleAction(
 			if (!result.success) {
 				throw error(400, result.message);
 			}
-			return json({
+			return Response.json({
 				success: true,
 				message: result.message
 			});

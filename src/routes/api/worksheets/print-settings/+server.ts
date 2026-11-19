@@ -13,7 +13,7 @@
  * dernier ressort ; un refus (zéro ligne écrite) → 403.
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRoles } from '#lib/server/middleware/auth.ts';
 import {
@@ -44,7 +44,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 	if (!query.success) throw error(400, query.error.issues[0].message);
 
 	const studentId = targetStudent(profile.role, user.id, query.data.studentId);
-	return json({ textSize: await loadTextSize(locals.supabase, studentId) });
+	return Response.json({ textSize: await loadTextSize(locals.supabase, studentId) });
 };
 
 export const PUT: RequestHandler = async ({ locals, request }) => {
@@ -72,5 +72,5 @@ export const PUT: RequestHandler = async ({ locals, request }) => {
 	// Zéro ligne : la RLS a refusé (pas un élève, ou pas le droit)
 	if (!saved) throw error(403, 'Réglage impossible pour ce compte');
 
-	return json({ textSize });
+	return Response.json({ textSize });
 };

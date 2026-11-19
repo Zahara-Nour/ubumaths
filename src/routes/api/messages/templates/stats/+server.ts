@@ -9,7 +9,7 @@
  *   - period: 'week', 'month', 'year', 'all' (default: 'month')
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import { requireRoles } from '#lib/server/middleware/auth.ts';
 import type { RequestHandler } from './$types';
 import { templateStatsQuerySchema } from '#lib/server/validation/message-templates.ts';
@@ -62,7 +62,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 			return error(500, 'Erreur lors de la récupération des statistiques');
 		}
 
-		return json({ stats: data?.[0] || null });
+		return Response.json({ stats: data?.[0] || null });
 	} else {
 		// Get overall stats
 		let query = supabase
@@ -120,6 +120,6 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 			.sort((a, b) => b.count - a.count)
 			.slice(0, 10);
 
-		return json({ stats });
+		return Response.json({ stats });
 	}
 };

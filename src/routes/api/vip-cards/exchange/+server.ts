@@ -32,7 +32,7 @@
  *   par les fonctions SQL elles-mêmes.
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '#lib/server/middleware/auth.ts';
 import {
@@ -279,7 +279,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	const cardsReceived = await describeReceivedCards(supabase, plan, granted);
 
-	return json({
+	return Response.json({
 		cardsDiscarded,
 		cardsReceived,
 		actionCardUsed: {

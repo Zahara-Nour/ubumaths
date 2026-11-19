@@ -6,7 +6,7 @@
  * base quand une section est supprimée.
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '#lib/server/middleware/auth.ts';
 import { assignToSection } from '#lib/server/chapter-sections.ts';
@@ -68,5 +68,5 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		throw error(500, 'Impossible de ranger les ressources');
 	}
 
-	return json({ success: true });
+	return Response.json({ success: true });
 };

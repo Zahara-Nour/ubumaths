@@ -38,7 +38,7 @@
  */
 
 import { exerciseCapitalPairs } from '#lib/questions/capital-pairs.ts';
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '#lib/server/middleware/auth.ts';
 import { z } from 'zod';
@@ -527,7 +527,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 			per_student_copies: perStudentCopies
 		};
 
-		return json(response);
+		return Response.json(response);
 	} catch (err) {
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;

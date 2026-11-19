@@ -16,7 +16,7 @@
  * - Class access scoped by RLS (mono-teacher: teacher/admin)
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '#lib/server/middleware/auth.ts';
 import { uuidSchema } from '#lib/server/validation/index.ts';
@@ -72,7 +72,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		}
 
 		// Transform to camelCase for frontend
-		return json({
+		return Response.json({
 			categories: (categories || []).map((cat) => ({
 				id: cat.id,
 				classId: cat.class_id,

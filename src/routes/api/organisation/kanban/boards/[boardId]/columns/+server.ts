@@ -6,7 +6,7 @@
  *        403 responses).
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '#lib/server/middleware/auth.ts';
 import { parseKanbanId, createColumnSchema } from '#lib/server/validation/kanban.ts';
@@ -58,5 +58,5 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		throw error(500, 'Erreur lors de la création de la colonne');
 	}
 
-	return json({ column: data as KanbanColumn }, { status: 201 });
+	return Response.json({ column: data as KanbanColumn }, { status: 201 });
 };

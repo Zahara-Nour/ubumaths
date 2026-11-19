@@ -32,7 +32,7 @@
  * }
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import { assertGoogleClassroomEnabled } from '#lib/server/google/feature-guard.ts';
 import type { RequestHandler } from './$types';
 import { requireRole } from '#lib/server/middleware/auth.ts';
@@ -84,7 +84,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 		}));
 
 		// Return transformed courses
-		return json({
+		return Response.json({
 			courses: transformedCourses
 		});
 	} catch (err) {

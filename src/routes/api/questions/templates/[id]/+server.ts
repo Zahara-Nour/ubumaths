@@ -7,7 +7,7 @@
  * DELETE /api/questions/templates/[id] - Delete template
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import type { QuestionTemplate } from '#lib/questions/types.ts';
 import { getQuestionType, mapDbTemplateToForm } from '#lib/questions/types.ts';
@@ -49,7 +49,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 			throw error(404, 'Template not found');
 		}
 
-		return json(mapDbTemplateToForm(template as unknown as Record<string, unknown>));
+		return Response.json(mapDbTemplateToForm(template as unknown as Record<string, unknown>));
 	} catch (err) {
 		logger.error('Error fetching template:', err);
 
@@ -142,7 +142,7 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 		const validation = validateRequest(updateQuestionTemplateSchema, body);
 
 		if (!validation.success) {
-			return json(
+			return Response.json(
 				{
 					success: false,
 					errors: [validation.error]
@@ -180,7 +180,10 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 
 		const update = buildTemplateUpdate(templateData, merged);
 		if (Object.keys(update).length === 0) {
-			return json({ success: false, errors: ['Aucun champ à mettre à jour'] }, { status: 400 });
+			return Response.json(
+				{ success: false, errors: ['Aucun champ à mettre à jour'] },
+				{ status: 400 }
+			);
 		}
 
 		// Hypothèses de l'énoncé (ADR 0012) : jamais sur une variable tirée,
@@ -188,7 +191,7 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 		if (TYPE_SOURCE_KEYS.some((key) => isProvided(templateData, key))) {
 			const collisions = findAssumptionCollisions(merged.options?.answerAssumptions, merged);
 			if (collisions.length > 0) {
-				return json(
+				return Response.json(
 					{ success: false, errors: collisions.map(assumptionCollisionMessage) },
 					{ status: 400 }
 				);
@@ -200,7 +203,7 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 		if (merged.status !== 'published') {
 			const countErrors = choiceAnswerCountErrors(merged, { draft: true });
 			if (countErrors.length > 0) {
-				return json({ success: false, errors: countErrors }, { status: 400 });
+				return Response.json({ success: false, errors: countErrors }, { status: 400 });
 			}
 		}
 
@@ -209,7 +212,7 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 		if (merged.status === 'published') {
 			const errors = templatePublicationErrors(merged);
 			if (errors.length > 0) {
-				return json({ success: false, errors }, { status: 400 });
+				return Response.json({ success: false, errors }, { status: 400 });
 			}
 		}
 
@@ -229,13 +232,13 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 			// Nœud refusé par la base (branche, archivé, inexistant) : faute de saisie, pas panne
 			const nodeMessage = classificationNodeErrorMessage(updateError);
 			if (nodeMessage) {
-				return json({ success: false, errors: [nodeMessage] }, { status: 400 });
+				return Response.json({ success: false, errors: [nodeMessage] }, { status: 400 });
 			}
 			logger.error('Error updating template:', updateError);
 			throw error(500, 'Failed to update template');
 		}
 
-		return json({
+		return Response.json({
 			success: true,
 			template
 		});
@@ -246,7 +249,7 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 			throw err;
 		}
 
-		return json({
+		return Response.json({
 			success: false,
 			errors: ['Internal server error']
 		});
@@ -298,7 +301,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 		//   NULL, ce que refuse `chk_attempt_regime`). Mesuré le 2026-10-01 : c'est
 		//   ce code qui sort dès qu'une tentative a été envoyée.
 		if (deleteError?.code === '23503' || deleteError?.code === '23514') {
-			return json(
+			return Response.json(
 				{
 					success: false,
 					error:
@@ -315,7 +318,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 			throw error(404, 'Template not found');
 		}
 
-		return json({ success: true }, { status: 200 });
+		return Response.json({ success: true }, { status: 200 });
 	} catch (err) {
 		logger.error('Error in DELETE /api/questions/templates/[id]:', err);
 
@@ -323,7 +326,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 			throw err;
 		}
 
-		return json(
+		return Response.json(
 			{
 				success: false,
 				error: 'Internal server error'

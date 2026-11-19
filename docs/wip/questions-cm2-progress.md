@@ -6,17 +6,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après la publication du lot 11b._
+_Mis à jour le 2026-11-19, PR des fichiers du lot 12 ouverte._
 
-- **État** : lots 0 à 11b publiés (lot 11b : 5/5, § 18.5). Restent les lots 12 à 19 du § 14.
-- **Prochaine action** : phase 0 du lot 12 (§ 14), nouvelle branche dans le worktree.
-- **En attente de David** : stash « cm2-9 ids » du dépôt principal, à supprimer.
+- **État** : lots 0 à 11b publiés. Lot 12 (suites et motifs, § 19) : 5 fichiers écrits, vérifiés, essayés en base
+  locale (§ 19.2) ; PR des fichiers ouverte. « d'allumettes » corrigé dans 5 modèles publiés : #2860 mergée, écriture
+  en prod à lancer par David (§ 19.2).
+- **Prochaine action** : PR des fichiers mergée → David lance `create-questions --dir scripts/questions/cm2-12 --publier`
+  (brouillons) ; ids commités ; migration de rangement et tags (gabarit du lot 11b) ; page à cocher.
+- **En attente de David** : `pnpm tsx scripts/update-published-questions.ts --lot motifs-allumettes --publier` ; stash
+  « cm2-9 ids » du dépôt principal, à supprimer.
 - **Pièges en cours** : `Doc-inchangée:` dans un COMMIT ; sujet de commit en minuscule. `migration:horodatage` = heure
   réelle UTC ; une autre migration en attente → stop avant `db:migrate`. `db:migrate` depuis le worktree : copier
   `supabase/.temp/{project-ref,linked-project.json,pooler-url,postgres-version}` du dépôt principal (ignorés par git).
-  `create-questions` / `publier-lot` peuvent être refusés par le classifieur : David les lance (`!`).
-- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, branche `feat/questions-cm2-lot11b-tags` mergée (à remplacer
-  par la branche du lot 12).
+  `create-questions` / `publier-lot` peuvent être refusés par le classifieur : David les lance (`!`). Port 5179 pris par
+  le worktree `questions-ttechno` : serveur d'essai sur 5186.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, `feat/questions-cm2-lot12-fichiers`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -1341,3 +1345,24 @@ Recommandations suivies (« je te suis ») : (a) les 5 modèles au niveau 1 de �
 des décimaux, deux chiffres après la virgule au plus ; (c) 12-5 en case « choix », une seule réponse juste ; (d) un
 seul lot de 5 modèles ; (e) « de allumettes » des 2 modèles du CM1 corrigé dans ce chantier, avant l'écriture du lot.
 Tableau du § 19 gardé.
+
+### 19.2 Lot 12 : correction « d'allumettes », écriture (2026-11-19)
+
+- (e) Les modèles publiés ne passent pas par `create-questions --mettre-a-jour` : lot `motifs-allumettes` de
+  `update-published-questions.ts` (comme `horloges-ce-zeros`), sans migration. Même faute trouvée en base dans 3 modèles
+  publiés de 1re spé (`89594aa7`, `05edc72b`, `41100a51`, « le nombre de allumettes ») : ajoutés au lot (5 cibles).
+  Instantané de prod au premier commit ; scripts `lot-cm1-6ter.py` et `lot-1spe-suites.py` corrigés (`de()` élide),
+  régénérés à part : identiques aux fichiers corrigés. Simulation en prod : `variations` seules, specs vertes (8, 8, 6,
+  13, 9). #2860 : CI verte, mergée. Écriture en prod : à lancer par David (`--publier`), puis vérification au MCP.
+- `docs/wip/questions/lot-cm2-12.py` → `scripts/questions/cm2-12/` (5 modèles, 19 variations, niveau 1, sans `theme` /
+  `domain` / `subdomain`). `question:specs --instances 300` : 40 specs vertes, 5 700 tirages réussis, aucun `\textcolor`
+  hors `$` ; `sonde-figures` : 900 blocs, 0 problème ; `create-questions` en simulation (prod) : 5 à créer, 0 en base.
+- **Écarts à la phase 0** : 12-1 renommé « Suite de nombres : trouver la règle et continuer » (le CM1 `b47f2699` porte
+  déjà « les trois termes suivants », même nœud, même niveau) ; 12-1 V1 de 1 000 à 9 999, pas de 11 à 99 ; V3 écart
+  - a, + 2a, + 3a (a de 1 à 3) ; V4 × 2 puis + c (départ de 5 à 20, c de 1 à 9, c ≠ départ). 12-2 en 3 variations
+    (100e ; 20e, 30e ou 50e ; quel rang). 12-3 V2 L de carreaux (3, 5, 7), V4 deux étages de carrés d'allumettes (7, 12,
+    17 : 5 × n + 2). 12-4, étapes 10 à 60 ; V4 inverse sur les carrés. 12-5, étapes 20 à 60 ; calculs écrits « 3 × n + 1 »
+    partout (choix et corrigés).
+- Base locale (copie du dossier dans le scratchpad, `.env.local`, sous `with-db-lock.sh`) : 5 brouillons ; aperçu admin à
+  390 px (Playwright, port 5186) : croix de jetons d'abord collées entre étapes (bras bout à bout) → étapes écartées ; les
+  6 motifs lisibles, case « choix » A à D, nombres groupés (9 519), aucun débordement, 0 erreur console.

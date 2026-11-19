@@ -1,4 +1,4 @@
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { drawVipCardsSchema } from '#lib/server/validation/draw-vip-cards.ts';
 import { requireConsent, hasConsentFields } from '#lib/server/middleware/consent.ts';
@@ -141,7 +141,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		// inside the draw_multiple_vip_cards RPC (no separate INSERT needed)
 
 		// 7. Success response
-		return json(result);
+		return Response.json(result);
 	} catch (err) {
 		logger.error('Error drawing VIP cards:', err);
 

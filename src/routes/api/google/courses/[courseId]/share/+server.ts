@@ -29,7 +29,7 @@
  * - All inputs validated with Zod
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import { assertGoogleClassroomEnabled } from '#lib/server/google/feature-guard.ts';
 import type { RequestHandler } from './$types';
 import { requireRole } from '#lib/server/middleware/auth.ts';
@@ -157,7 +157,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		}
 
 		// Transform to camelCase
-		return json({
+		return Response.json({
 			success: true,
 			sharedCoursework: {
 				id: sharedCoursework.id,
@@ -269,7 +269,7 @@ export const DELETE: RequestHandler = async ({ locals, url }) => {
 				throw error(500, 'Impossible de retirer le partage du devoir Classroom');
 			}
 
-			return json({
+			return Response.json({
 				success: true,
 				message: 'Partage du devoir Classroom retiré'
 			});
@@ -341,7 +341,7 @@ export const DELETE: RequestHandler = async ({ locals, url }) => {
 				throw error(500, 'Impossible de retirer le partage du support');
 			}
 
-			return json({
+			return Response.json({
 				success: true,
 				message: 'Partage du support retiré'
 			});

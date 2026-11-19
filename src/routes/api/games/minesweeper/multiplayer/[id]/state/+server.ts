@@ -6,7 +6,7 @@
  * PATCH: Update player's game state (real-time sync)
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '#lib/server/middleware/auth.ts';
 import { realtimeStateUpdateSchema } from '#lib/server/validation/minesweeper-multiplayer.ts';
@@ -40,7 +40,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 		sanitizeRPCError(rpcError, 'get_match_state');
 	}
 
-	return json(data);
+	return Response.json(data);
 };
 
 /**
@@ -87,5 +87,5 @@ export const PATCH: RequestHandler = async ({ request, params, locals }) => {
 		sanitizeRPCError(rpcError, 'update_game_state');
 	}
 
-	return json(data);
+	return Response.json(data);
 };

@@ -10,7 +10,6 @@
  * (`{ error: <code> }`) · 500.
  */
 
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '#lib/server/middleware/auth.ts';
 import { validateUuidParam } from '#lib/server/validation/params.ts';
@@ -22,7 +21,7 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 	const { user } = await requireRole(locals, 'student');
 
 	try {
-		return json(await claimBeastVictory(locals.supabase, user.id, beastId));
+		return Response.json(await claimBeastVictory(locals.supabase, user.id, beastId));
 	} catch (err) {
 		return combatErrorResponse(err, 'victoire');
 	}

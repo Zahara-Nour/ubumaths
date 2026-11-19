@@ -15,7 +15,7 @@
  * `worksheet_exercises` filtre de toute façon ce que l'appelant peut lire.
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import { z } from 'zod';
 import type { RequestHandler } from './$types';
 import { requireRoles } from '#lib/server/middleware/auth.ts';
@@ -64,7 +64,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 		throw error(404, `Cette fiche n’a pas d’exercice ${parsedNumber.data}`);
 	}
 
-	return json({
+	return Response.json({
 		worksheet_exercise_id: match.exercise.id,
 		number: match.number,
 		total: ordered.length

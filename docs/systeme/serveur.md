@@ -33,7 +33,7 @@ Avant tout handler, `src/hooks.server.ts` a déjà tourné : `handle = sequence(
 
 Ordre d'un handler, tel que le code le pratique (exemple réel : `src/routes/api/admin/cron/trigger/+server.ts`) :
 
-1. **garde d'identité** → 2. **validation Zod** (paramètres, query, corps) → 3. **contrôle métier** (le prof possède-t-il la classe ? consentement ?) → 4. **requête** avec le client de l'appelant → 5. **erreur assainie** ou `json(...)`.
+1. **garde d'identité** → 2. **validation Zod** (paramètres, query, corps) → 3. **contrôle métier** (le prof possède-t-il la classe ? consentement ?) → 4. **requête** avec le client de l'appelant → 5. **erreur assainie** ou `Response.json(...)`.
 
 ### 1.1 Authentification et rôle
 

@@ -13,7 +13,7 @@
  * - Uses worksheet_assignment_classes junction table
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '#lib/server/middleware/auth.ts';
 import { z } from 'zod';
@@ -222,7 +222,7 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 			}
 		}
 
-		return json({
+		return Response.json({
 			success: true,
 			assignments: assignmentsWithStatus
 		});
@@ -437,7 +437,7 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 		if (fetchError) {
 			logger.error('Error fetching created assignment:', fetchError);
 			// Assignment was created, just return basic data
-			return json({
+			return Response.json({
 				success: true,
 				message: 'Affectation créée',
 				assignment
@@ -470,7 +470,7 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 			...rest
 		} = fullAssignment;
 
-		return json({
+		return Response.json({
 			success: true,
 			message: 'Affectation créée',
 			assignment: {

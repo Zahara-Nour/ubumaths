@@ -13,7 +13,7 @@
  * single-exercise lookup, prefer GET /api/python-exercises/[id]/mastery.
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '#lib/server/middleware/auth.ts';
 import { pythonMasteryQuerySchema } from '#lib/server/validation/python-exercises.ts';
@@ -53,5 +53,5 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		throw error(500, 'Impossible de charger les statuts de maîtrise');
 	}
 
-	return json({ mastery: data ?? [] });
+	return Response.json({ mastery: data ?? [] });
 };

@@ -22,7 +22,7 @@
  * @module api/exercises/images
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRoles } from '#lib/server/middleware/auth.ts';
 import {
@@ -210,5 +210,5 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		'POST /api/exercises/images'
 	);
 
-	return json(validated, { status: 201 });
+	return Response.json(validated, { status: 201 });
 };

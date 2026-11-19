@@ -1,4 +1,4 @@
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { searchMessagesQuerySchema } from '#lib/server/validation/messages.ts';
 import { requireAuth } from '#lib/server/middleware/auth.ts';
@@ -55,7 +55,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			throw error(500, 'Erreur lors de la recherche de messages');
 		}
 
-		return json({ messages: messages || [], query: q, total: messages?.length || 0 });
+		return Response.json({ messages: messages || [], query: q, total: messages?.length || 0 });
 	} catch (err) {
 		logger.error('Error in search API:', err);
 		if (err && typeof err === 'object' && 'status' in err) {

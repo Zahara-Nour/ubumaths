@@ -4,7 +4,7 @@
  * POST - Create new template
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRoles } from '#lib/server/middleware/auth.ts';
 import { insertTemplateWithStyle } from '#lib/server/worksheets/worksheet-styles.ts';
@@ -84,7 +84,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		'GET /api/worksheets/templates'
 	);
 
-	return json(validated);
+	return Response.json(validated);
 };
 
 /**
@@ -134,5 +134,5 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		'POST /api/worksheets/templates'
 	);
 
-	return json(validated, { status: 201 });
+	return Response.json(validated, { status: 201 });
 };

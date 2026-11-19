@@ -8,7 +8,7 @@
  * AUTH: Authenticated users only
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '#lib/server/middleware/auth.ts';
 import { rateLimit } from '#lib/server/middleware/rateLimit.ts';
@@ -95,7 +95,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 			offset
 		};
 
-		return json(response);
+		return Response.json(response);
 	} catch (err) {
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
@@ -172,7 +172,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			logger.error('[API] Failed to notify admins:', notifyError);
 		}
 
-		return json({ success: true, report }, { status: 201 });
+		return Response.json({ success: true, report }, { status: 201 });
 	} catch (err) {
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;

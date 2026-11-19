@@ -5,7 +5,6 @@
  * DELETE - Remove/deactivate an assignment (teacher only)
  */
 
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { updateAssignment, deleteAssignment } from '#lib/server/exercise-assignments.ts';
 import type { ExerciseAssignment } from '#lib/exercises/types.ts';
@@ -37,7 +36,7 @@ export const PATCH: RequestHandler = async ({ request, params, locals }) => {
 		const errorMsg = validation.error.issues
 			.map((e) => `${e.path.join('.')}: ${e.message}`)
 			.join('; ');
-		return json({ error: `Données invalides : ${errorMsg}` }, { status: 400 });
+		return Response.json({ error: `Données invalides : ${errorMsg}` }, { status: 400 });
 	}
 
 	const updates: Partial<Pick<ExerciseAssignment, 'optional_deadline' | 'notes' | 'is_active'>> =
@@ -56,13 +55,13 @@ export const PATCH: RequestHandler = async ({ request, params, locals }) => {
 
 		// Check if it's an authorization error
 		if (updateError.includes('not authorized') || updateError.includes('not found')) {
-			return json({ error: updateError }, { status: 403 });
+			return Response.json({ error: updateError }, { status: 403 });
 		}
 
-		return json({ error: updateError }, { status: 400 });
+		return Response.json({ error: updateError }, { status: 400 });
 	}
 
-	return json(updated);
+	return Response.json(updated);
 };
 
 /**
@@ -94,13 +93,13 @@ export const DELETE: RequestHandler = async ({ params, url, locals }) => {
 
 		// Check if it's an authorization error
 		if (deleteError.includes('not authorized') || deleteError.includes('not found')) {
-			return json({ error: deleteError }, { status: 403 });
+			return Response.json({ error: deleteError }, { status: 403 });
 		}
 
-		return json({ error: deleteError }, { status: 400 });
+		return Response.json({ error: deleteError }, { status: 400 });
 	}
 
-	return json(
+	return Response.json(
 		{
 			success,
 			message: hardDelete ? 'Affectation supprimée définitivement' : 'Affectation désactivée'

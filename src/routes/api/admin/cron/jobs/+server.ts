@@ -12,7 +12,7 @@
  * - offset: pagination offset (default: 0)
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAdmin } from '#lib/server/middleware/auth.ts';
 import { cronJobsQuerySchema, type CronJobsResponse } from '#lib/server/validation/cron.ts';
@@ -129,7 +129,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			}
 		};
 
-		return json(response);
+		return Response.json(response);
 	} catch (err) {
 		if (err instanceof Response) throw err;
 		logger.error('[CRON Jobs API] Unexpected error:', err);

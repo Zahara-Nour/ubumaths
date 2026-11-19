@@ -17,7 +17,7 @@
  * pas achetée ; 429 trop d’appels ; 500 panne.
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import { z } from 'zod';
 import type { RequestHandler } from './$types';
 import { requireRole } from '#lib/server/middleware/auth.ts';
@@ -56,5 +56,5 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	}
 
 	if (!outcome.ok) throw error(refusalStatus(outcome.reason), refusalMessage(outcome.reason));
-	return json({});
+	return Response.json({});
 };

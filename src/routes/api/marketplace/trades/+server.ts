@@ -1,4 +1,4 @@
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '#lib/server/middleware/auth.ts';
 // Supabase client is now accessed via locals.supabase
@@ -143,7 +143,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		latest_offer: trade.latest_offer?.[0] || null
 	}));
 
-	return json({
+	return Response.json({
 		trades: processedTrades,
 		pagination: {
 			page,
@@ -369,5 +369,5 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		)
 	};
 
-	return json(processedTrade, { status: 201 });
+	return Response.json(processedTrade, { status: 201 });
 };

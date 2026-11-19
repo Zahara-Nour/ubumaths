@@ -1,5 +1,4 @@
 import type { RequestHandler } from './$types';
-import { json } from '@sveltejs/kit';
 import { requireRole } from '#lib/server/middleware/auth.ts';
 import { sanitizePostgresError } from '#lib/server/utils/error-handler.ts';
 
@@ -91,7 +90,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 		const totalUnlocked = flattenedAchievements.length;
 		const progressPercentage = Math.round((totalUnlocked / totalPossible) * 100);
 
-		return json({
+		return Response.json({
 			achievements: flattenedAchievements,
 			stats: {
 				total_unlocked: totalUnlocked,

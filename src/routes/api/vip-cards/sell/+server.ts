@@ -22,7 +22,7 @@
  * - studentId is taken from session.user.id (not from body)
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '#lib/server/middleware/auth.ts';
 import { requireConsent } from '#lib/server/middleware/consent.ts';
@@ -87,7 +87,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			errorMessage.includes('cooldown') ||
 			errorMessage.includes('timestamp')
 		) {
-			return json(
+			return Response.json(
 				{ success: false, error: errorMessage, secondsRemaining: result.secondsRemaining },
 				{ status: 400 }
 			);
@@ -96,7 +96,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(400, errorMessage);
 	}
 
-	return json({
+	return Response.json({
 		success: true,
 		sellPrice: result.sellPrice,
 		cardId: result.cardId,

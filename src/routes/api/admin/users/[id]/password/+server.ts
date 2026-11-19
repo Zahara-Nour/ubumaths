@@ -15,7 +15,7 @@
  * @module api/admin/users/[id]/password
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
 import { requireRoles } from '#lib/server/middleware/auth.ts';
@@ -47,5 +47,5 @@ export const POST: RequestHandler = async ({ locals, params }) => {
 	}
 
 	logger.info('Provisional password set for a student');
-	return json({ password: result.password }, { headers: { 'Cache-Control': 'no-store' } });
+	return Response.json({ password: result.password }, { headers: { 'Cache-Control': 'no-store' } });
 };

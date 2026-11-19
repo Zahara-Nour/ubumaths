@@ -19,7 +19,7 @@
  *   corrigé qui ne vaudrait pour personne. `per_student_copies` le dit.
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '#lib/server/middleware/auth.ts';
 import { z } from 'zod';
@@ -183,7 +183,7 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 		// prof (D6), destinataire de l'affectation ; sans élève, on le demande.
 		const perStudentCopies = hasPerStudentCopies(worksheet, classScope);
 		if (perStudentCopies && !studentId) {
-			return json({ success: true, needs_student: true, per_student_copies: true });
+			return Response.json({ success: true, needs_student: true, per_student_copies: true });
 		}
 		if (perStudentCopies && studentId) {
 			if (!(await isStudentOfAssignment(locals.supabase, assignmentId, studentId))) {
@@ -205,7 +205,7 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 
 		// If JSON format requested, return correction data
 		if (format === 'json') {
-			return json({
+			return Response.json({
 				success: true,
 				worksheet: {
 					id: worksheet.id,
@@ -249,7 +249,7 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 		// Return Typst source (PDF generation must be done client-side)
 		const filename = `${sanitizeForFileName(worksheet.title)}_correction_${sanitizeForFileName(studentName)}.pdf`;
 
-		return json({
+		return Response.json({
 			success: true,
 			typst: typstContent,
 			filename,

@@ -2,13 +2,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après #2853._
+_Mis à jour le 2026-11-19, après #2859._
 
-- **État** : #2814 à #2830 en prod (0.96.0). #2835, #2850, #2853 mergées (pas encore en prod). #2853 = dépréciations de kit 3 sans effet de bord : `invalidateAll` → `refreshAll`, options `goto` `replace`/`refreshAll`, `error(N, message)` ; revues code + sécurité sans finding.
-- **Prochaine action** : clore le chantier (versement du durable dans `docs/systeme/`, journal archivé). Restent hors lot, décidés : `pushState`/`replaceState` **laissés** (§ « Dépréciations de kit 3 » : leur remplaçant déclenche les hooks de navigation) ; `json()`/`text()` (≈ 368 fichiers) REPORTÉS ; cache ESLint en CI : cause NON trouvée (§ « Cache ESLint en CI »), recherche mise de côté.
+- **État** : #2814 à #2830 en prod (0.96.0). #2835, #2850, #2853, #2859 mergées (pas encore en prod). #2853 = dépréciations de kit 3 sans effet de bord : `invalidateAll` → `refreshAll`, options `goto` `replace`/`refreshAll`, `error(N, message)` ; revues code + sécurité sans finding. #2859 = `json()` de kit → `Response.json` (372 fichiers, 867 appels ; § « `json()` → `Response.json` »).
+- **Prochaine action** : **étudier le cache ESLint en CI** (décidé par David le 2026-11-19, § « Cache ESLint en CI »), puis clore le chantier (versement du durable dans `docs/systeme/`, journal archivé). `pushState`/`replaceState` **laissés** (§ « Dépréciations de kit 3 » : leur remplaçant déclenche les hooks de navigation).
 - **En attente de David** : rien.
-- **Pièges en cours** : `#lib` exige l'extension écrite (garde `imports-lib-avec-extension`, qui exclut le test de `migrer:diese`) ; limite connue du lint de PR : props importées d'un autre `.svelte` ou type indirect → seul le nocturne les voit ; commitlint refuse un sujet qui commence par une majuscule (« ESLint… ») ; `appNavigationMock` ; suite client en local avec `CI=true`.
+- **Pièges en cours** : `#lib` exige l'extension écrite (garde `imports-lib-avec-extension`, qui exclut le test de `migrer:diese`) ; limite connue du lint de PR : props importées d'un autre `.svelte` ou type indirect → seul le nocturne les voit ; commitlint refuse un sujet qui commence par une majuscule (« ESLint… ») et une ligne de corps > 100 caractères (`Doc-inchangée:` comprise) ; la garde `docs:check-a-jour` ne voit que les COMMITS (la lancer après le commit) ; `page-demo-lexique` instable en CI (délai, relancer le job) ; `appNavigationMock` ; suite client en local avec `CI=true`.
 - **Worktree / branche** : aucun.
+
+## `json()` → `Response.json` (2026-11-19)
+
+- Décidé par David le 2026-11-19 (« on fait le 2 »). `text()` de kit : aucun appel.
+- Différences lues dans `@sveltejs/kit` 3.2.0 (`src/exports/index.js`) : (1) kit pose `Content-Length`, pas `Response.json` → le serveur envoie par morceaux ; aucun code ne lit cet en-tête sur nos propres réponses ; (2) `json(undefined)` rend un corps vide, `Response.json(undefined)` **lève une `TypeError`**. `Content-Type` : identique (`application/json` si absent).
+- Preuve pour (2) : passe de détection où les 867 appels passaient par une fonction temporaire `jsonStrict<T>(data: 0 extends 1 & T ? never : undefined extends T ? never : T)` → typecheck : **0 appel** dont la donnée peut être `undefined`, `unknown` ou `any`. Sonde vérifiée rouge sur les trois cas, dans `src/lib/server` et dans un `+server.ts`.
+- Transformation par script (import retiré de la ligne `@sveltejs/kit`, `json(` → `Response.json(` hors `.json(`), puis `pnpm format`. Piège : le `sed` de macOS ignore `\b` → perl.
 
 ## Dépréciations de kit 3 (2026-11-18)
 

@@ -3,7 +3,7 @@
  * GET - Fetch all classes for the authenticated teacher
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '#lib/server/middleware/auth.ts';
 import { getTeacherClassesWithCounts } from '#lib/server/students.ts';
@@ -27,7 +27,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 		// Use the existing server function to get classes with counts
 		const classes = await getTeacherClassesWithCounts(user.id, locals.supabase);
 
-		return json({
+		return Response.json({
 			classes
 		});
 	} catch (err) {

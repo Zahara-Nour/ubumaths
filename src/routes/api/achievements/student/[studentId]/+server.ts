@@ -25,7 +25,7 @@
  * - Status 500: Server error
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '#lib/server/middleware/auth.ts';
 import { verifyTeacherStudentWithRole } from '#lib/server/middleware/student-access.ts';
@@ -86,7 +86,7 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 		// Fetch student achievements
 		const achievements = await getStudentAchievements(supabase, studentId, validatedContext);
 
-		return json({
+		return Response.json({
 			success: true,
 			achievements,
 			count: achievements.length

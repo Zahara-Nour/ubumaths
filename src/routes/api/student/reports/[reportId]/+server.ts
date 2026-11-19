@@ -32,7 +32,7 @@
  * - Once a report is reviewed (fixed/rejected), it cannot be deleted
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '#lib/server/middleware/auth.ts';
 import {
@@ -95,7 +95,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 			'DELETE /api/student/reports/[reportId]'
 		);
 
-		return json(validated);
+		return Response.json(validated);
 	} catch (err) {
 		// Re-throw SvelteKit errors
 		if (err && typeof err === 'object' && 'status' in err) {

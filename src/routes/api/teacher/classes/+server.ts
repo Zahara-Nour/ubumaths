@@ -1,4 +1,4 @@
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '#lib/server/middleware/auth.ts';
 import { getTeacherClassesWithCounts } from '#lib/server/students.ts';
@@ -26,7 +26,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 	try {
 		const classes = await getTeacherClassesWithCounts(user.id, supabase);
 
-		return json({
+		return Response.json({
 			classes,
 			timestamp: Date.now()
 		});

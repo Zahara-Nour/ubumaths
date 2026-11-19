@@ -38,7 +38,7 @@
  * - Only returns the authenticated student's own progress
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
 import { requireAuth } from '#lib/server/middleware/auth.ts';
@@ -95,7 +95,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			// Don't fail entirely, just return empty checklist
 		}
 
-		return json({
+		return Response.json({
 			progress: chapterResult.data.progress,
 			checklistItems: checklistResult.data || []
 		});

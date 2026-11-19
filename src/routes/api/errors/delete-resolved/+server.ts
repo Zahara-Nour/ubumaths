@@ -15,7 +15,7 @@
  * - { success: true, deleted_count: number }
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { deleteAllResolvedErrors } from '#lib/server/errorMonitoring.ts';
 import { requireAdmin } from '#lib/server/middleware/auth.ts';
@@ -36,7 +36,7 @@ export const POST: RequestHandler = async ({ locals }) => {
 			throw error(500, result.error || 'Failed to delete resolved errors');
 		}
 
-		return json({
+		return Response.json({
 			success: true,
 			deleted_count: result.deletedCount || 0
 		});

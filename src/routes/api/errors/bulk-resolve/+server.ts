@@ -3,7 +3,7 @@
  * POST - Bulk resolve error reports based on filters
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import {
 	getErrorOccurrences,
@@ -77,7 +77,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		// If no occurrences match, return early with zero counts
 		if (occurrences.length === 0) {
-			return json({
+			return Response.json({
 				success: true,
 				resolved_count: 0,
 				affected_occurrences: 0
@@ -108,7 +108,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			}
 		}
 
-		return json({
+		return Response.json({
 			success: true,
 			resolved_count: totalResolvedCount,
 			affected_occurrences: affectedOccurrences

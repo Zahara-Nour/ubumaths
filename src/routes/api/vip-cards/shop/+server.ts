@@ -16,7 +16,7 @@
  * - Returns only public card information (no sensitive data)
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '#lib/server/middleware/auth.ts';
 import { createServerLogger } from '#lib/utils/logger.ts';
@@ -106,7 +106,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 		category: card.category
 	}));
 
-	return json({
+	return Response.json({
 		success: true,
 		cards,
 		balance: profileResult.data?.gidouilles ?? 0

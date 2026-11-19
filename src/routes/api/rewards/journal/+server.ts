@@ -21,7 +21,7 @@
  * }
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '#lib/server/middleware/auth.ts';
 import { rewardJournalQuerySchema } from '#lib/server/validation/reward-journal.ts';
@@ -110,7 +110,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			}
 		};
 
-		return json(response);
+		return Response.json(response);
 	} catch (err) {
 		// Re-throw SvelteKit errors
 		if (err && typeof err === 'object' && 'status' in err) {

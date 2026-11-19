@@ -4,7 +4,7 @@
  * POST - Link an exercise to a chapter
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '#lib/server/middleware/auth.ts';
 import { linkExercise } from '#lib/server/chapters.ts';
@@ -68,7 +68,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		throw error(500, 'Failed to fetch exercises');
 	}
 
-	return json({
+	return Response.json({
 		exercises: exerciseLinks || [],
 		count: exerciseLinks?.length || 0
 	});
@@ -156,5 +156,5 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		throw error(500, 'Failed to link exercise');
 	}
 
-	return json({ exercise: result.data }, { status: 201 });
+	return Response.json({ exercise: result.data }, { status: 201 });
 };

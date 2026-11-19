@@ -68,7 +68,7 @@
 			"correction": {
 				"steps": [
 					"Une pyramide peut avoir une base carrée, rectangle, triangulaire ou à plus de côtés : ni sa base, ni son nombre de faces ne sont toujours les mêmes, et sa base n'est un triangle que parfois.",
-					"Ce qui est toujours vrai : $\\textcolor{{{color:primary.0}}}{\\text{ses faces latérales sont des triangles qui se rejoignent au sommet}}$."
+					"Ce qui est toujours vrai : ses faces latérales sont des $\\textcolor{{{color:primary.0}}}{\\text{triangles}}$ qui se rejoignent au sommet."
 				]
 			}
 		}

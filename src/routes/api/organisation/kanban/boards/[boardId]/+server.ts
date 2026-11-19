@@ -6,7 +6,7 @@
  * DELETE — remove the board (owner only). Cascades to columns + cards.
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '#lib/server/middleware/auth.ts';
 import { parseKanbanId, updateBoardSchema } from '#lib/server/validation/kanban.ts';
@@ -25,7 +25,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		throw error(404, 'Tableau introuvable');
 	}
 
-	return json({ board });
+	return Response.json({ board });
 };
 
 export const PATCH: RequestHandler = async ({ locals, params, request }) => {
@@ -59,7 +59,7 @@ export const PATCH: RequestHandler = async ({ locals, params, request }) => {
 		throw error(500, 'Erreur lors de la mise à jour du tableau');
 	}
 
-	return json({ board: data as KanbanBoard });
+	return Response.json({ board: data as KanbanBoard });
 };
 
 export const DELETE: RequestHandler = async ({ locals, params }) => {
@@ -82,5 +82,5 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 		throw error(500, 'Erreur lors de la suppression du tableau');
 	}
 
-	return json({ success: true });
+	return Response.json({ success: true });
 };

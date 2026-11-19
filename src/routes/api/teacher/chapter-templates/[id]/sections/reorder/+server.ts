@@ -6,7 +6,7 @@
  * l'ordre des sections dans les chapitres liés (ADR 0029, Q3).
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '#lib/server/middleware/auth.ts';
 import { requireOwnedTemplate } from '#lib/server/template-guard.ts';
@@ -41,5 +41,5 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		throw error(500, 'Impossible de réordonner les sections');
 	}
 
-	return json({ success: true });
+	return Response.json({ success: true });
 };

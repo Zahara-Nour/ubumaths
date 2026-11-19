@@ -1,4 +1,4 @@
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { checkChatbotRateLimit } from '#lib/server/rateLimiter.ts';
 import { checkTutorRateLimit, incrementTutorUsage } from '#lib/server/tutor/tutor-rate-limiter.ts';
@@ -68,7 +68,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			// 3. Analyze for cheat attempts
 			const cheatAnalysis = analyzeMessage(userMessageContent);
 			if (cheatAnalysis.recommendation === 'refuse') {
-				return json({
+				return Response.json({
 					message: cheatAnalysis.isCheatAttempt.suggestedResponse,
 					tutorMetadata: {
 						cheatDetected: true,
@@ -170,7 +170,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			// Check if API key is configured
 			if (!env.GROQ_API_KEY) {
 				logger.error('GROQ_API_KEY not configured');
-				return json(
+				return Response.json(
 					{
 						error: 'Service temporairement indisponible',
 						details: 'API key not configured'
@@ -288,7 +288,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				}
 			}
 
-			return json({
+			return Response.json({
 				message: responseMessage,
 				tutorMetadata: {
 					cheatDetected: false,
@@ -322,7 +322,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		// Check if API key is configured (type-safe optional check)
 		if (!env.GROQ_API_KEY) {
 			logger.error('GROQ_API_KEY not configured');
-			return json(
+			return Response.json(
 				{
 					error: 'Service temporairement indisponible',
 					details: 'API key not configured'
@@ -383,7 +383,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		// Journalisation de l'usage IA : RETIRÉE, `ai_chat_usage` n'existe pas.
 		// Voir le commentaire du premier site plus haut dans ce fichier.
 
-		return json({
+		return Response.json({
 			message: responseMessage
 		});
 	} catch (err) {

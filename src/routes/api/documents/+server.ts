@@ -6,7 +6,7 @@
  * PATCH /api/documents - Update document metadata
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '#lib/server/middleware/auth.ts';
 import {
@@ -122,7 +122,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			updatedAt: doc.updated_at
 		}));
 
-		return json({
+		return Response.json({
 			documents: formattedDocuments,
 			pagination: {
 				page,
@@ -187,7 +187,7 @@ export const DELETE: RequestHandler = async ({ request, locals }) => {
 			throw error(500, 'Erreur lors de la suppression du document');
 		}
 
-		return json({ success: true, message: 'Document supprimé' });
+		return Response.json({ success: true, message: 'Document supprimé' });
 	} catch (err) {
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
@@ -269,7 +269,7 @@ export const PATCH: RequestHandler = async ({ request, locals }) => {
 			}
 		}
 
-		return json({ success: true, message: 'Document mis à jour' });
+		return Response.json({ success: true, message: 'Document mis à jour' });
 	} catch (err) {
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;

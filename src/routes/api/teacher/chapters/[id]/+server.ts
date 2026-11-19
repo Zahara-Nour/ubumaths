@@ -5,7 +5,7 @@
  * DELETE - Delete chapter
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '#lib/server/middleware/auth.ts';
 import { updateChapter, deleteChapter } from '#lib/server/chapters.ts';
@@ -70,7 +70,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		throw error(404, 'Chapter not found');
 	}
 
-	return json({ chapter });
+	return Response.json({ chapter });
 };
 
 /**
@@ -116,7 +116,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		throw error(500, 'Failed to update chapter');
 	}
 
-	return json({ chapter: result.data });
+	return Response.json({ chapter: result.data });
 };
 
 /**
@@ -145,5 +145,5 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 		throw error(500, 'Failed to delete chapter');
 	}
 
-	return json({ success: true });
+	return Response.json({ success: true });
 };

@@ -26,7 +26,7 @@
  * la liste côté navigateur : `CatalogueTemplate`.
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { createServerLogger } from '#lib/utils/logger.ts';
 import { readAllRows } from '#lib/server/read-all-rows.ts';
@@ -133,7 +133,7 @@ export const GET: RequestHandler = async ({ setHeaders }) => {
 	const { points, templatePoints } = await readProgramme(supabase, publishedIds);
 
 	setHeaders({ 'cache-control': CACHE_CONTROL });
-	return json({ templates, nodes, points, templatePoints });
+	return Response.json({ templates, nodes, points, templatePoints });
 };
 
 /** `id` d'une ligne lue, ou `null` */

@@ -20,7 +20,7 @@
  * }
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRoles } from '#lib/server/middleware/auth.ts';
 import { pythonSettingsSchema } from '#lib/server/validation/python-settings.ts';
@@ -54,7 +54,7 @@ export const PUT: RequestHandler = async ({ locals, request }) => {
 			throw error(500, 'Failed to update settings');
 		}
 
-		return json({ success: true, settings });
+		return Response.json({ success: true, settings });
 	} catch (err) {
 		// Re-throw SvelteKit errors
 		if (err && typeof err === 'object' && 'status' in err) {

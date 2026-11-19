@@ -9,7 +9,7 @@
  * Constraint: Trade must be in 'negotiating' status
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '#lib/server/middleware/auth.ts';
 import { z } from 'zod';
@@ -71,7 +71,7 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 		throw error(500, "Erreur lors de l'annulation");
 	}
 
-	return json({
+	return Response.json({
 		success: true,
 		message: 'Echange annule'
 	});

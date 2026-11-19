@@ -1,6 +1,6 @@
 import type { RequestHandler } from './$types';
 import { toDbRiddle, RIDDLE_COLUMNS } from '#lib/types/riddle.ts';
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import { validateRiddleAnswer } from '#lib/utils/riddle-validator.ts';
 import { createRiddleValidationMessage, getRiddleTeacherId } from '#lib/server/riddle-messages.ts';
 import { riddleAnswerSchema } from '#lib/server/validation/riddles.ts';
@@ -192,5 +192,5 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 		}
 	}
 
-	return json(response);
+	return Response.json(response);
 };

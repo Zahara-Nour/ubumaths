@@ -5,7 +5,7 @@
  * DELETE - Remove an exercise from the worksheet
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRoles } from '#lib/server/middleware/auth.ts';
 import {
@@ -101,7 +101,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		'GET /api/worksheets/[id]/exercises/[exerciseId]'
 	);
 
-	return json({ exercise: validated });
+	return Response.json({ exercise: validated });
 };
 
 /**
@@ -203,7 +203,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		'PUT /api/worksheets/[id]/exercises/[exerciseId]'
 	);
 
-	return json({ exercise: validated });
+	return Response.json({ exercise: validated });
 };
 
 /**
@@ -242,5 +242,5 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 		throw error(500, 'Impossible de retirer l’exercice de la fiche');
 	}
 
-	return json({ success: true, message: 'Exercice retiré de la fiche' });
+	return Response.json({ success: true, message: 'Exercice retiré de la fiche' });
 };

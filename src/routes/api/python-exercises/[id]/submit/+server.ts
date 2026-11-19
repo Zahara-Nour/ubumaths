@@ -3,7 +3,7 @@
  * POST - Submit solution to exercise
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '#lib/server/middleware/auth.ts';
 import type { SupabaseClient } from '@supabase/supabase-js';
@@ -181,7 +181,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		throw error(500, 'Impossible d’enregistrer la solution');
 	}
 
-	return json(
+	return Response.json(
 		{
 			submission,
 			message: validationResult.valid

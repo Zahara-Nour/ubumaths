@@ -4,7 +4,7 @@
  * respecté. Rend des comptes, jamais un nom.
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import { z } from 'zod';
 import type { RequestHandler } from './$types';
 import { requireRoles } from '#lib/server/middleware/auth.ts';
@@ -32,5 +32,5 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	const isTestMode = await getTeacherTestMode(user.id, locals.supabase);
 	const result = await getDurationSignals(locals.supabase, query.data, isTestMode);
 	if (result.status === 'error') throw error(500, result.message);
-	return json({ signals: result.signals, observed: result.observed });
+	return Response.json({ signals: result.signals, observed: result.observed });
 };
