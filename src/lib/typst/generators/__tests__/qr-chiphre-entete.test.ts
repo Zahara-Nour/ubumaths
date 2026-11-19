@@ -3,7 +3,9 @@
  * (David, 2026-11-19) :
  *   - page 1 : QR code vers https://www.chiph.re dans l'en-tête, à droite du
  *     titre, « chiph.re » dessous ; le bas de page n'en parle pas ;
- *   - pages suivantes : « chiph.re » au centre du bas de page.
+ *   - pages suivantes : gidouille + « chiph.re » à droite du bas de page ;
+ *   - bas de page de toutes les pages : titre à gauche, numéro « n / N » au
+ *     centre (David, 2026-11-19, second retour).
  * Sur tous les PDF : fiche, réponses, corrigé.
  *
  * Rendu vérifié avec le compilateur de prod (typst.ts en WebAssembly) : texte
@@ -51,18 +53,39 @@ function sheet(styleId: string | null, mode: Mode): string {
 	}).typstContent;
 }
 
-/** Texte de chaque page du PDF compilé */
-async function pages(typst: string): Promise<string[]> {
+/** Un morceau de texte d'une page, avec son abscisse en part de la largeur (0 à 1) */
+interface Piece {
+	str: string;
+	x: number;
+}
+
+/** Morceaux de texte de chaque page du PDF compilé */
+async function pieces(typst: string): Promise<Piece[][]> {
 	const { $typst } = await import('@myriaddreamin/typst.ts/dist/esm/contrib/snippet.mjs');
 	const pdf = await $typst.pdf({ mainContent: typst });
 	const { getDocument } = await import('pdfjs-dist/legacy/build/pdf.mjs');
 	const doc = await getDocument({ data: new Uint8Array(pdf!) }).promise;
-	const out: string[] = [];
+	const out: Piece[][] = [];
 	for (let i = 1; i <= doc.numPages; i++) {
-		const content = await (await doc.getPage(i)).getTextContent();
-		out.push(content.items.map((item) => ('str' in item ? item.str : '')).join(''));
+		const page = await doc.getPage(i);
+		const width = page.getViewport({ scale: 1 }).width;
+		const content = await page.getTextContent();
+		out.push(
+			content.items.flatMap((item) =>
+				'str' in item ? [{ str: item.str, x: item.transform[4] / width }] : []
+			)
+		);
 	}
 	return out;
+}
+
+const text = (page: Piece[]) => page.map((piece) => piece.str).join('');
+
+/** Abscisse du morceau qui contient `part` */
+function xOf(page: Piece[], part: string): number {
+	const piece = page.find((p) => p.str.includes(part));
+	if (!piece) throw new Error(`« ${part} » introuvable`);
+	return piece.x;
 }
 
 const count = (text: string, part: string) => text.split(part).length - 1;
@@ -96,21 +119,28 @@ describe('Chiphre sur le PDF', () => {
 		const typst = sheet(id, mode);
 		expect(count(typst, 'QR code vers https://www.chiph.re')).toBe(1);
 		expect(typst).toContain('format: "svg"');
+		// La gidouille devant « chiph.re », au bas des pages suivantes
+		expect(count(typst, '<title>Gidouille</title>')).toBe(1);
 	});
 
 	it.each(CASES)(
 		'« %s », %s : « chiph.re » sous le QR en page 1, en bas des pages suivantes',
 		async (_name, mode, id) => {
-			const all = await pages(sheet(id, mode));
+			const all = await pieces(sheet(id, mode));
 			expect(all.length).toBeGreaterThanOrEqual(2);
 			// Page 1 : la légende du QR seule, pas de rappel en bas de page
-			expect(count(all[0], SITE), 'page 1').toBe(1);
+			expect(count(text(all[0]), SITE), 'page 1').toBe(1);
 			for (const [index, page] of all.entries()) {
+				const where = `page ${index + 1}`;
+				// Numéro au centre, sur toutes les pages
+				const number = xOf(page, `${index + 1} / ${all.length}`);
+				expect(number, where).toBeGreaterThan(0.4);
+				expect(number, where).toBeLessThan(0.55);
 				if (index === 0) continue;
-				expect(count(page, SITE), `page ${index + 1}`).toBe(1);
-				// Titre et numéro gardés
-				expect(page, `page ${index + 1}`).toContain('Fiche test');
-				expect(page, `page ${index + 1}`).toContain(`${index + 1} / ${all.length}`);
+				expect(count(text(page), SITE), where).toBe(1);
+				expect(text(page), where).toContain('Fiche test');
+				// « chiph.re » à droite
+				expect(xOf(page, SITE), where).toBeGreaterThan(0.8);
 			}
 		},
 		60_000

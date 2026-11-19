@@ -1,7 +1,7 @@
 /**
  * Le titre de la fiche au pied de chaque page (styles « Fiche élève » et
  * « 2 colonnes - paysage ») : feuilles imprimées mélangées, on retrouve la
- * fiche de chacune. Titre à gauche, numéro de page à droite.
+ * fiche de chacune. Titre à gauche, numéro de page au centre.
  *
  * Rendu vérifié avec le compilateur de prod (typst.ts en WebAssembly) : texte
  * de la page 2, qui n'a pas d'en-tête, lu par pdfjs.

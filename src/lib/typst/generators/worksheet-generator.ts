@@ -61,7 +61,7 @@ import {
 import { MATH_LIMITS_SETUP } from '#lib/worksheets/document/math-limits.ts';
 import { TITLE_ONLY_HEADER, worksheetHeader } from '#lib/worksheets/worksheet-header.ts';
 import type { DocumentForm, WorksheetDocument } from '#lib/worksheets/document/types.ts';
-import { SITE_NAME, SITE_QR_TYPST } from '../templates/site-mark';
+import { SITE_GIDOUILLE_TYPST, SITE_NAME, SITE_QR_TYPST } from '../templates/site-mark';
 
 // ============================================================================
 // TYPES
@@ -377,6 +377,7 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 			// Chiphre : QR du site en tête de la page 1, nom du site en bas des suivantes
 			site_qr: SITE_QR_TYPST,
 			site_name: SITE_NAME,
+			site_gidouille: SITE_GIDOUILLE_TYPST,
 			title: escapeTypst(
 				mode === 'worksheet' && this.options.inlineCorrections
 					? `${this.title(worksheet)} — ${this.labels.correction}`
