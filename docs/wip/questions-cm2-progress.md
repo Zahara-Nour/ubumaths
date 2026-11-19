@@ -1493,3 +1493,48 @@ du dépôt principal (5 fichiers identiques à `origin/main`) est supprimé.
 - Page à cocher : 5 verdicts « OK », sans commentaire ; les 5 ids concordent avec `scripts/questions/cm2-13/*.json`.
 - `publier-lot` en simulation : 5 brouillons passent le contrôle. David lance `--publier`. MCP : 5/5 `published`, [CM2],
   rangés et tagués (073, 074, 075, 120, 072). **Lot 13 clos.**
+
+## 21. Lot 14a — données lues (107, 156, 123, 157, 124, 158) : phase 0 (proposée le 2026-11-19)
+
+Relevé MCP du 2026-11-19 : aucun modèle CM2 sur les 6 points. Nœuds : « tableaux » (107, 156 ; niveaux 1 à 5 pris),
+« diagrammes en barres » (123, 157 ; 1 à 7 pris), « diagrammes circulaires » (124, 158 ; 1 et 2 pris par la 5e et la
+1re). Jumeaux CM1 publiés (lot 7 du CM1) : `f5742b78` (121, lire un tableau, populations à 6 chiffres), `40dcbbcc` (169,
+la ville la plus peuplée), `cc52549c` (138, axes de 10, 20, 25, 50, jusqu'à 500), `c245f0cc` (171, combien de plus,
+mois le plus fort, total). **Aucun diagramme circulaire au CM1.** Décision § 4 bis : modèles CM2 propres.
+
+Bornes : générales du CM2 (entiers jusqu'à 999 999 999, décimaux jusqu'aux millièmes, **pas de pourcentages au cours
+moyen**) ; 124, « diagramme circulaire avec légende ; parts simples (1/5, 3/10, 2/5) ». L'exemple de réussite du CM2
+(cocktail) écrit **les fractions sur les secteurs** ; le bloc ` ```circulaire ` ne sait afficher que des pourcentages,
+des effectifs, des angles ou rien (`étiquettes:`), et ne trace pas de parts égales : voir (b).
+
+Ce qui distingue le CM2 du CM1 : grands nombres (millions) et décimaux dans les tableaux, tableau à double entrée
+dans le même point, axes de 100 à 1 000 en barres, diagramme circulaire.
+
+| #     | Point   | Sous-notion, niveau       | Modèle                                | Variations, plages                                                                                                                                                                                                                                                                                   |
+| ----- | ------- | ------------------------- | ------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 14a-1 | CM2-107 | tableaux, 6               | Lire un tableau                       | V1 populations de 5 pays fictifs, 1 000 000 à 999 999 999, case nombre ; V2 l'inverse, « quel pays a … habitants ? » (case « choix », nombres de même longueur) ; V3 masses de 5 animaux en kg, millièmes (0,125 à 9,875) ; V4 double entrée, 5 villes × 3 années, pluie en mm                       |
+| 14a-2 | CM2-156 | tableaux, 7               | Que dit le tableau ?                  | V1 le pays le plus peuplé (7 à 9 chiffres, trois de même longueur et même premier chiffre) ; V2 l'animal le plus léger, décimaux de longueurs différentes (2,5 et 2,375) ; V3 double entrée, l'année la plus pluvieuse d'une ville (choix) ; V4 combien de kg de plus (décimaux)                     |
+| 14a-3 | CM2-123 | diagrammes en barres, 8   | Lis le diagramme (axe de 100 à 1 000) | V1 axe de 100 en 100, jusqu'à 1 000, barres sur une graduation ; V2 axe de 500 en 500 ou de 1 000 en 1 000, jusqu'à 10 000 (visiteurs d'un musée) ; V3 axe de 200 en 200, barres à mi-graduation ; V4 l'inverse, « quel mois … ? » (choix)                                                           |
+| 14a-4 | CM2-157 | diagrammes en barres, 9   | Que dit le diagramme en barres ?      | V1 combien de plus en mars qu'en février (axe de 100 ou de 250) ; V2 le mois le plus fort ou le plus faible (choix) ; V3 combien de mois dépassent un seuil (une graduation de l'axe)                                                                                                                |
+| 14a-5 | CM2-124 | diagrammes circulaires, 1 | Lis le diagramme circulaire           | Case fraction. V1 sans étiquettes, secteurs d'une moitié et de quarts (1/2, 1/4, 3/4) ; V2 `étiquettes: effectifs`, total de 10, 20, 30, 40 ou 50 élèves donné dans l'énoncé, parts en cinquièmes ou dixièmes (6 sur 30 → 1/5) ; V3 l'inverse, « quel moyen concerne le quart des élèves ? » (choix) |
+| 14a-6 | CM2-158 | diagrammes circulaires, 2 | Que dit le diagramme circulaire ?     | V1 le moyen le plus utilisé (choix, sans étiquettes, secteurs bien distincts) ; V2 le moins utilisé ; V3 avec effectifs, combien d'élèves de plus en bus qu'à pied ; V4 « plus de la moitié des élèves viennent-ils en bus ? » (oui / non)                                                           |
+
+Erreurs typiques en `testSpecs` : 14a-2 V2, le décimal le plus long pris pour le plus grand ; 14a-3 V3, la graduation du
+dessous ; 14a-5 V2, l'effectif au lieu de la part (6 au lieu de 6/30), la part sur le mauvais total ; 14a-4 V1, la
+somme au lieu de l'écart.
+
+**Question d'accès** : 6 brouillons neufs, puis nœud + tag → personne ne lit rien de plus avant la publication.
+
+**À trancher** :
+
+(a) Niveaux : tableaux 6 et 7, barres 8 et 9 (à la suite du CM1), circulaires 1 et 2 (à côté de la 5e, qui commence
+aussi ces niveaux) ? Reco : **oui**.
+
+(b) Fractions écrites sur les secteurs (exemple du CM2) : le bloc ne le sait pas. Reco : **écrire 124 et 158 sans elles**
+(moitiés et quarts reconnaissables à l'œil, puis parts calculées à partir des effectifs), et inscrire une option
+`étiquettes: fractions` dans `outils-manquants.md` : petite, elle servirait aussi le problème du cocktail (108, lot 14b).
+La faire avant le lot = un chantier à part.
+
+(c) 14a-5 : toute fraction égale est juste (6/30 comme 1/5), le corrigé simplifie ? Reco : **oui**, comme au lot 9.
+
+(d) Un seul lot de **6 modèles** ? Reco : **oui**.
