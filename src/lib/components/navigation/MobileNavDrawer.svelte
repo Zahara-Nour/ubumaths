@@ -4,6 +4,7 @@
 	import * as Sheet from '#lib/components/ui/sheet/index.ts';
 	import { theme } from '#lib/stores/theme.svelte.ts';
 	import { fontSize } from '#lib/stores/fontSize.svelte.ts';
+	import EasyReadingToggle from '#lib/components/EasyReadingToggle.svelte';
 	import { Sun, Moon, Minus, Plus } from '@lucide/svelte';
 	import type { LucideIcon } from '@lucide/svelte';
 
@@ -162,6 +163,9 @@
 							<Plus class="h-4 w-4" />
 						</button>
 					</div>
+				</div>
+				<div class="mt-2">
+					<EasyReadingToggle variant="menu" />
 				</div>
 			</div>
 		{/if}

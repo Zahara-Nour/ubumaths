@@ -45,6 +45,7 @@
 	import UserAvatar from '#lib/components/UserAvatar.svelte';
 	import { theme } from '#lib/stores/theme.svelte.ts';
 	import { fontSize } from '#lib/stores/fontSize.svelte.ts';
+	import EasyReadingToggle from '#lib/components/EasyReadingToggle.svelte';
 	import { notificationStore } from '#lib/stores/notifications.svelte.ts';
 	import { notificationsRealtimeManager } from '#lib/stores/notificationsRealtime.svelte.ts';
 	import { activityStore } from '#lib/stores/activity.svelte.ts';
@@ -372,6 +373,8 @@
 						<Plus class="h-5 w-5" />
 					</Button>
 				</div>
+
+				<EasyReadingToggle />
 
 				<!-- Dark mode toggle -->
 				<Button

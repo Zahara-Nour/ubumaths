@@ -427,6 +427,69 @@ main math-field {
 	line-height: calc(1.5rem * var(--font-scale)) !important;
 }
 
+/*
+ * Lecture facilitée
+ * =================
+ *
+ * Réglage `easyReading` (easyReading.svelte.ts), classe `lecture-facilitee` sur <html> :
+ * le texte du contenu passe en Luciole (dessinée pour les lecteurs en difficulté,
+ * CC-BY 4.0), lettres, mots et lignes un peu plus espacés. Menus et en-tête gardent leur
+ * police (D3). Les formules passent en Luciole Math par `mathlive-fonts.ts`.
+ * Police téléchargée seulement réglage allumé ; si elle manque, repli sur la police
+ * habituelle.
+ */
+@font-face {
+	font-family: 'Luciole';
+	src: url('/fonts/luciole/Luciole-Regular.woff2') format('woff2');
+	font-weight: 400;
+	font-style: normal;
+	font-display: swap;
+}
+@font-face {
+	font-family: 'Luciole';
+	src: url('/fonts/luciole/Luciole-Bold.woff2') format('woff2');
+	font-weight: 700;
+	font-style: normal;
+	font-display: swap;
+}
+@font-face {
+	font-family: 'Luciole';
+	src: url('/fonts/luciole/Luciole-Italic.woff2') format('woff2');
+	font-weight: 400;
+	font-style: italic;
+	font-display: swap;
+}
+@font-face {
+	font-family: 'Luciole';
+	src: url('/fonts/luciole/Luciole-BoldItalic.woff2') format('woff2');
+	font-weight: 700;
+	font-style: italic;
+	font-display: swap;
+}
+
+html.lecture-facilitee main,
+html.lecture-facilitee main :is(h1, h2, h3, h4, h5, h6),
+html.lecture-facilitee main .exercise-content :is(p, li, td, th, h1, h2, h3, h4, h5, h6) {
+	font-family:
+		'Luciole',
+		'Inter',
+		-apple-system,
+		BlinkMacSystemFont,
+		'Segoe UI',
+		system-ui,
+		sans-serif;
+	/* Les variantes d'Inter (cv11, ss01) n'ont pas de sens pour Luciole */
+	font-feature-settings: normal;
+	letter-spacing: 0.02em;
+	word-spacing: 0.08em;
+}
+
+/* Lignes plus espacées : 1,75 au lieu de 1,5 (cumulé avec la taille du texte) */
+html.lecture-facilitee main p,
+html.lecture-facilitee main li {
+	line-height: calc(1.75rem * var(--font-scale)) !important;
+}
+
 /* Apply scaling to table and other elements in dashboard content only */
 .dashboard-content td,
 .dashboard-content th {

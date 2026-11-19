@@ -42,6 +42,7 @@
 	import * as Sheet from '#lib/components/ui/sheet/index.ts';
 	import { theme } from '#lib/stores/theme.svelte.ts';
 	import { fontSize } from '#lib/stores/fontSize.svelte.ts';
+	import EasyReadingToggle from '#lib/components/EasyReadingToggle.svelte';
 	import type { User } from '@supabase/supabase-js';
 	import type { Profile } from '#lib/types/database-helpers.ts';
 	import type { LucideIcon } from '@lucide/svelte';
@@ -271,6 +272,8 @@
 					</Button>
 				</div>
 
+				<EasyReadingToggle />
+
 				<!-- Dark mode toggle -->
 				<Button
 					onclick={(e: MouseEvent) => {
@@ -370,6 +373,9 @@
 						<Plus class="h-4 w-4" />
 					</button>
 				</div>
+			</div>
+			<div class="mt-2">
+				<EasyReadingToggle variant="menu" />
 			</div>
 		</div>
 
