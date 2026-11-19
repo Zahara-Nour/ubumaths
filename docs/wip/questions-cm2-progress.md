@@ -1443,3 +1443,28 @@ carrée de 4 m de côté », réponse en m², ce qui sert aussi 073) ? Reco : **
 CM2 nomme les trois unités d'aire ; les nombres restent entiers).
 
 (e) Un seul lot de **5 modèles** ? Reco : **oui**.
+
+### 20.1 Lot 13 : décisions (David, 2026-11-19)
+
+Recommandations suivies (« je suis tes recos ») : (a) les 5 modèles au niveau 1 de leur sous-notion ; (b) rien de plus
+pour 071, un seul modèle pour 072 (encadrement, 13-5) ; (c) pas de deux sauts m² ↔ cm², 13-2 en 3 variations ; (d) côtés
+en cm en V1 et V2, en m ou dm dans le problème (V3), nombres entiers ; (e) un seul lot de 5 modèles. Le stash « cm2-9 ids »
+du dépôt principal (5 fichiers identiques à `origin/main`) est supprimé.
+
+### 20.2 Lot 13 : écriture (2026-11-19)
+
+- `docs/wip/questions/lot-cm2-13.py` → `scripts/questions/cm2-13/` (5 modèles, 20 variations, niveau 1, sans `theme` /
+  `domain` / `subdomain`). `question:specs --instances 300` : 43 specs vertes, 6 000 tirages réussis, aucun
+  `\textcolor` hors `$` ; `sonde-figures` : 508 blocs, 0 problème ; `create-questions` en simulation (prod) : 5 à créer,
+  0 en base.
+- **Écarts à la phase 0** : 13-1 en 4 variations (objets en cm², en dm², en m², puis la mesure plausible parmi
+  « 6 cm² / 6 dm² / 6 m² ») ; compléments écrits élidés (« d'une salle », « du sol ») : `de` + `{{if}}` ne s'élide
+  pas. 13-2 V2 de 120 à 9 999 (unités ≠ 0 : deux chiffres après la virgule). 13-3 V2 côté de 2 à 9 cm, 13-4 V2 jusqu'à
+  14 cm sur 8 cm : dessinés à l'échelle, fenêtre à la taille de la figure, côtés cotés par `milieu()` (un milieu
+  calculé s'écrivait `\dfrac` pour un côté impair, refusé par le bloc). 13-5 titré « figure arrondie », une variation
+  par figure (4 disques, 3 ovales en polygones de 48 côtés), comptes calculés sur la figure dessinée, sans tangence
+  aux lignes (marge 0,12) et stables à l'échantillonnage ; lignes du quadrillage tracées **par-dessus** le remplissage
+  (la grille de fond se perdait dessous).
+- Base locale (copie du dossier dans le scratchpad, `.env.local`, sous `with-db-lock.sh`) : 5 brouillons ; aperçu admin à
+  390 px (Playwright, port 5186), les 20 variations vues : aucun débordement, 0 erreur console ; décimaux groupés,
+  case « choix » A à C, carreaux comptables.
