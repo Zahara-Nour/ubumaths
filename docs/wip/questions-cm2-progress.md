@@ -6,13 +6,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, après #2885 (lot 14a rangé)._
+_Mis à jour le 2026-11-19, après la publication du lot 14a._
 
-- **État** : lots 0 à 13 publiés ; lot 14a (6 modèles, § 21) en brouillon en prod, rangé et tagué (§ 21.4), page à
-  cocher publiée. Restent les lots 14b à 19 du § 14 (15 sans 109, 18 sans 087 ni 094 : § 21.1 ; 19 réduit à CM2-102).
-- **Prochaine action** : lire les verdicts de la page à cocher (https://claude.ai/artifact/UueCSUdzRztFPHQS6V3h6g) ;
-  tout OK → `publier-lot` en simulation, puis David lance `--publier`. Ensuite phase 0 du lot 14b.
-- **En attente de David** : la relecture du lot 14a.
+- **État** : lots 0 à 14a publiés (lot 14a : 6 modèles, § 21.5). Restent les lots 14b à 19 du § 14 (15 sans 109,
+  18 sans 087 ni 094 : § 21.1 ; 19 réduit à CM2-102 : § 19.4).
+- **Prochaine action** : phase 0 du lot 14b (courbes, construire, problèmes : 125, 159, 121, 122, 108).
+- **En attente de David** : rien.
 - **Pièges en cours** : `Doc-inchangée:` dans un COMMIT ; sujet de commit en minuscule, corps ≤ 100 caractères par ligne.
   `migration:horodatage` = heure réelle UTC ; une autre migration en attente → stop avant `db:migrate` (worktree remis
   sur `origin/main` d'abord). `db:migrate` depuis le worktree : `supabase/.temp` copié. `create-questions` /
@@ -20,7 +19,8 @@ _Mis à jour le 2026-11-19, après #2885 (lot 14a rangé)._
   d'essai sur 5186. `de` + `{{if}}` ne s'élide pas. Une spec qui recalcule une donnée par la formule du modèle ne la
   vérifie pas : contrôler l'invariant (§ 21.3). La page à cocher ne dessine pas ` ```circulaire ` (§ 21.4).
 - **Worktree / branche** : `../ubumaths-wt-questions-cm2`, détaché sur `origin/main` ; 7 fichiers
-  `scripts/questions/ttechno-8-loi-binomiale/` modifiés dedans, pas à ce chantier (à signaler, ne pas toucher).
+  `scripts/questions/ttechno-8-loi-binomiale/` modifiés dedans (ids du lot 8 de `questions-ttechno`, déjà sur sa
+  branche, PR #2886) : pas à ce chantier, ne pas toucher.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -1591,3 +1591,9 @@ juste, corrigé simplifié ; (d) un seul lot de 6 modèles.
   ` ```circulaire ` (alerte sur 2 fiches) : les 7 diagrammes de la page ont été dessinés après coup depuis
   `buildStatChartScene` (script du scratchpad, y de la scène vers le haut), alertes retirées. À ajouter à
   `page-a-cocher.ts` un jour (comme le n° 43 de `outils-manquants.md`).
+
+### 21.5 Lot 14a : relecture, publication (2026-11-19)
+
+- Page à cocher : 6 verdicts « OK », sans commentaire ; les 6 ids concordent avec `scripts/questions/cm2-14a/*.json`.
+- `publier-lot` en simulation : 6 brouillons passent le contrôle. David lance `--publier`. MCP : 6/6 `published`, [CM2],
+  rangés et tagués (107, 156, 123, 157, 124, 158). **Lot 14a clos.**
