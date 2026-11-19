@@ -14,12 +14,20 @@
 	import demoExercises from './exercices-demo.json';
 	import { downloadExercisePdf, type PdfFontSet } from './shantell-pdf';
 
+	const FONT_SET_LABELS: Record<MathFontSet, string> = {
+		shantell: 'Chiphre Math (manuscrite)',
+		katex: 'KaTeX (standard)',
+		luciole: 'Luciole Math (lecture facilitée, essai)'
+	};
+
 	let isReady = $state(false);
 	let currentFont = $state<MathFontSet>('shantell');
 	let isSwitching = $state(false);
 	let renderKey = $state(0); // Force re-render of mathfields
 	// PDF en cours de compilation : « <id>:<police> »
 	let pendingPdf = $state<string | null>(null);
+	// Police du texte autour des formules : celle qui va avec le jeu de maths
+	let textFontClass = $derived(currentFont === 'luciole' ? 'font-luciole' : 'font-shantell-sans');
 
 	// UbuMark examples mixing text and math
 	const ubumarkExamples = [
@@ -215,6 +223,30 @@
 			font-style: normal;
 			font-display: swap;
 		}
+		@font-face {
+			font-family: 'Luciole';
+			src: url('/fonts/luciole/Luciole-Regular.woff2') format('woff2');
+			font-weight: 400;
+			font-style: normal;
+			font-display: swap;
+		}
+		@font-face {
+			font-family: 'Luciole';
+			src: url('/fonts/luciole/Luciole-Bold.woff2') format('woff2');
+			font-weight: 700;
+			font-style: normal;
+			font-display: swap;
+		}
+		@font-face {
+			font-family: 'Luciole';
+			src: url('/fonts/luciole/Luciole-Italic.woff2') format('woff2');
+			font-weight: 400;
+			font-style: italic;
+			font-display: swap;
+		}
+		.font-luciole {
+			font-family: 'Luciole', sans-serif;
+		}
 		.font-shantell-sans {
 			font-family: 'ShantellSans', sans-serif;
 			font-weight: 300;
@@ -311,11 +343,19 @@
 			>
 				{isSwitching && currentFont !== 'katex' ? 'Chargement...' : 'KaTeX Standard'}
 			</button>
+			<button
+				onclick={() => handleSwitchFont('luciole')}
+				disabled={isSwitching}
+				class="rounded-lg px-4 py-2 font-medium transition-colors disabled:opacity-50 {currentFont ===
+				'luciole'
+					? 'bg-purple-600 text-white'
+					: 'bg-secondary text-secondary-foreground hover:opacity-80'}"
+			>
+				{isSwitching && currentFont !== 'luciole' ? 'Chargement...' : 'Luciole Math'}
+			</button>
 		</div>
 		<span class="text-sm text-muted-foreground">
-			Police active: <strong
-				>{currentFont === 'shantell' ? 'Chiphre Math (manuscrite)' : 'KaTeX (standard)'}</strong
-			>
+			Police active: <strong>{FONT_SET_LABELS[currentFont]}</strong>
 		</span>
 		<span class="text-xs text-green-600"> Changement dynamique sans rechargement de page </span>
 	</div>
@@ -365,15 +405,15 @@
 			<div class="mt-8">
 				<h2 class="mb-4 text-xl font-semibold">Texte mixte (UbuMark)</h2>
 				<p class="mb-4 text-sm text-muted-foreground">
-					Test de l'harmonie entre le texte normal (Shantell Sans) et les formules mathématiques
-					(KaTeX modifié).
+					Test de l'harmonie entre le texte (Shantell Sans, ou Luciole avec Luciole Math) et les
+					formules.
 				</p>
 
 				<div class="space-y-4">
 					{#each ubumarkExamples as example (example.label)}
 						<div class="rounded-lg border bg-card p-4">
 							<div class="mb-2 text-sm font-medium text-muted-foreground">{example.label}</div>
-							<div class="font-shantell-sans text-lg leading-relaxed">
+							<div class="{textFontClass} text-lg leading-relaxed">
 								<InlineMarkdown content={example.content} />
 							</div>
 						</div>
@@ -413,7 +453,7 @@
 									</Button>
 								</div>
 							</div>
-							<div class="font-shantell-sans">
+							<div class={textFontClass}>
 								<MarkdownRenderer content={exercise.statement_md} />
 								<h4 class="mt-4 mb-2 font-semibold text-muted-foreground">Corrigé</h4>
 								<MarkdownRenderer content={exercise.solution_md} />
@@ -445,6 +485,11 @@
 			<li>
 				Chiphre Math : la feuille <code>mathlive-fonts-shantell.css</code> est ajoutée par-dessus, puis
 				retirée pour revenir à KaTeX
+			</li>
+			<li>
+				Luciole Math : la feuille <code>mathlive-fonts-luciole.css</code> (polices de
+				<code>static/fonts/luciole-math/</code>, construites par
+				<code>tools/chiphre-math/src/build_luciole_katex.py</code> depuis Luciole et Luciole-Math)
 			</li>
 			<li>Force le re-render des mathfields via une cle Svelte</li>
 		</ul>

@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, après l'avis de David sur la page d'essai (#2884)._
+_Mis à jour le 2026-11-19, PR 3 ouverte (jeu écran Luciole Math)._
 
-- **État** : PR 1 mergée (#2884). David a regardé la page d'essai : « C plutôt pas mal », il faut voir **avec MathLive et toutes les expressions possibles** → D6 ci-dessous : la PR 3 passe avant la PR 2.
-- **Prochaine action** : PR 3, nouveau jeu de polices écran `luciole` pour MathLive (fichiers `KaTeX_*.woff2` construits depuis Luciole / Luciole-Math avec `tools/chiphre-math`, sans effet manuscrit), ajouté à côté de `katex` et `shantell` dans `mathlive-fonts.ts` ; 3e bouton « Luciole Math » sur `/dev/polices`, dont la vitrine montre déjà tous les symboles, la galerie, le texte mixte et les exercices. Worktree `../ubumaths-wt-lecture-facilitee`, branche `feat/lecture-facilitee-mathlive`.
-- **En attente de David** : rien ; il jugera la PR 3 sur `/dev/polices`.
-- **Pièges en cours** : ne rien renommer ni retirer de ce qui porte le nom KaTeX ; les métriques des polices sont codées dans MathLive (pas lues dans les fichiers) → un glyphe Luciole plus large/haut que celui de KaTeX déborde (voir comment `tools/chiphre-math` l'a traité : `build_metrics.py`, `docs/TECHNICAL.md`) ; venv Python à recréer (`tools/chiphre-math/README.md`) ; Tailscale Serve `:8445` → 5175 encore ouvert (le couper : `tailscale serve --https=8445 off`).
-- **Worktree / branche** : aucun.
+- **État** : PR 3 sur `feat/lecture-facilitee-mathlive` : jeu `luciole` (`static/fonts/luciole-math/`, `build_luciole_katex.py`), 3e bouton « Luciole Math » sur `/dev/polices`. Vérifié à l'écran : vitrine, galerie, texte mixte, exercices.
+- **Prochaine action** : David juge sur `/dev/polices` (bouton « Luciole Math ») ; selon D1, PR 2 (réglage « Lecture facilitée », texte) puis branchement du jeu Luciole Math derrière le réglage.
+- **En attente de David** : son avis sur le rendu, et sur les écarts listés dans « Observations PR 3 ».
+- **Pièges en cours** : polices `.woff2` en cache du navigateur après reconstruction (recharger les fichiers) ; venv `tools/chiphre-math/venv` (ignoré) ; ports 5175-5180 pris par d'autres sessions, serveur de la PR sur 5181 ; Tailscale Serve `:8445` → 5175 peut-être encore ouvert (`tailscale serve --https=8445 off`).
+- **Worktree / branche** : `../ubumaths-wt-lecture-facilitee` · `feat/lecture-facilitee-mathlive`.
 
 ## Ce qui existe déjà (vérifié le 2026-11-19)
 
@@ -65,6 +65,20 @@ Conséquence pour l'étude :
 - Aperçu écran MathML : la conversion de MathLive perd la virgule décimale et ignore `\mathcal` ; corrigé dans la page.
 
 ## Historique
+
+### 2026-11-19 — PR 3 : jeu écran Luciole Math
+
+- `tools/chiphre-math/src/build_luciole_katex.py` : les 20 `KaTeX_*.woff2` depuis Luciole (texte) et Luciole-Math (maths). Glyphe ordinaire au même point de code (lettres des alphabets mathématiques pour Math-Italic, AMS = ℕℤℚℝℂ, Caligraphic/Script, Fraktur, Typewriter) ; grands symboles, délimiteurs, morceaux empilés, √ et primes : variante de hauteur la plus proche calée dans la boîte KaTeX.
+- **Taille** : à taille native, Luciole (capitales 763, « b » 791) dépasse les hauteurs de KaTeX (683, 694) qui servent à MathLive : le `b` de `√(b²−4ac)` touchait la barre. Glyphes réduits à 0,9 dans les polices, formules grossies de 1/0,9 par `mathlive-fonts.ts` : même taille de lettres, écarts agrandis.
+- **Codes privés** : Luciole-Math range d'autres signes en E000… (zéro barré) → grande racine en « 0 » barrés ; corrigé par noms de glyphes (`sqrt.tp/ex/bt`, `notaccent` pour le ≠).
+- Grec minuscule droit, ⟂, ¬ ajoutés (absents de KaTeX, sinon police du système).
+
+### Observations PR 3 (2026-11-19), à montrer à David
+
+- `\cdot` : point de Luciole-Math gros (presque une puce).
+- La barre de racine rejoint le haut du √ avec un petit cran.
+- `\oiint` (∯) reste petit.
+- Barres de fraction et de racine à 0,1 em (épaisseur de Luciole-Math), nettement plus grasses que KaTeX.
 
 ### 2026-11-19 — ouverture
 
