@@ -3,7 +3,7 @@
  * =====================================================================
  *
  * Comportements validés par David le 2026-10-25
- * (`docs/wip/geometrie-validation-progress.md` § 5) : toucher A puis B trace la
+ * (`docs/archive/wip/geometrie-validation-progress.md` § 5) : toucher A puis B trace la
  * droite, aimantée près des points ; Effacer ; Valider grisé tant que rien n'est
  * tracé ; juste → droite verte ; faux → message du juge et bonne droite en
  * pointillés. Décor réel : la question est générée ; la saisie dans `QuestionCard`

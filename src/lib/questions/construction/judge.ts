@@ -5,7 +5,7 @@
  * On juge le RÉSULTAT par des positions, jamais par des identifiants : une
  * droite tracée depuis deux points quelconques qui passe par A et B est la
  * droite (AB). Tout-ou-rien ; le message est celui de la première vérification
- * ratée (verdict du conseil, `docs/wip/geometrie-validation-progress.md` § 2).
+ * ratée (verdict du conseil, `docs/archive/wip/geometrie-validation-progress.md` § 2).
  *
  * Pur : les positions des points de la figure sont données par l'appelant
  * (registre `positions.ts`).

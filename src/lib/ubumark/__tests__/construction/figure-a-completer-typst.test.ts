@@ -1,6 +1,6 @@
 /**
  * Bloc ```figure-a-completer au PDF : la figure de départ seule (décision de
- * David du 2026-10-25, `docs/wip/geometrie-validation-progress.md` § 4) — le
+ * David du 2026-10-25, `docs/archive/wip/geometrie-validation-progress.md` § 4) — le
  * même dessin que le bloc ```figure sans les lignes `outils:` / `verifier:`.
  */
 import { describe, it, expect } from 'vitest';

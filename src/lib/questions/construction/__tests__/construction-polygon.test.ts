@@ -1,7 +1,7 @@
 /**
  * Juge d'une case « figure » : compléter un carré / un rectangle sur
  * quadrillage (CP-060) — phase 0 validée par David le 2026-10-26
- * (`docs/wip/geometrie-validation-progress.md` § 7 et § 9). On juge le
+ * (`docs/archive/wip/geometrie-validation-progress.md` § 7 et § 9). On juge le
  * RÉSULTAT : un côté en morceaux ou un trait repassé sur le côté donné ne
  * changent rien ; le carré peut être construit d'un côté ou de l'autre.
  */

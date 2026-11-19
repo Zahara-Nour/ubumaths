@@ -1,6 +1,6 @@
 /**
  * Bloc ```figure-a-completer — lecture (phase 0 de CP-059 validée le 2026-10-25,
- * `docs/wip/geometrie-validation-progress.md` § 3 et § 4)
+ * `docs/archive/wip/geometrie-validation-progress.md` § 3 et § 4)
  *
  * Le bloc est une figure de départ (même en-tête, même langage que ```figure)
  * plus ses lignes à lui : `outils:`, `verifier:` et `case:` (posée par le

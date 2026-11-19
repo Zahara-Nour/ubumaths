@@ -3,7 +3,7 @@
  * =====================================================
  *
  * Comportements validés par David le 2026-10-26
- * (`docs/wip/geometrie-validation-progress.md` § 8 et § 9) : l'élève trace la droite
+ * (`docs/archive/wip/geometrie-validation-progress.md` § 8 et § 9) : l'élève trace la droite
  * (AB) puis tape « oui » ou « non » ; Valider grisé tant que la droite manque ; droite
  * fausse → le message du juge ; réponse fausse → faux, sans message de cases
  * numérotées (un enfant de CP ne lit pas « Les blancs suivants… », ni « Blanc 1 »).

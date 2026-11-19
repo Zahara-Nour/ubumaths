@@ -8,7 +8,7 @@
  * « présent » quand ses quatre côtés sont couverts. Ordre des messages : trait
  * hors des lignes, figure non fermée (ou fermée sur un côté donné prolongé,
  * à côté de ce côté sur sa droite, ou sur une partie de ce côté), pas un carré, trait de trop, trait qui dépasse. Décisions de David du 2026-10-26
- * (`docs/wip/geometrie-validation-progress.md` § 7 et § 9).
+ * (`docs/archive/wip/geometrie-validation-progress.md` § 7 et § 9).
  *
  * @module questions/construction/polygon
  */

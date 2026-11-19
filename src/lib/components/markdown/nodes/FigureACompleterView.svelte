@@ -4,7 +4,7 @@
 
 	La figure de départ (`FigureBlockView`, même SVG qu'en statique et qu'au PDF)
 	et, par-dessus, le tracé de l'élève. Comportements validés par David le
-	2026-10-25 (`docs/wip/geometrie-validation-progress.md` § 5) :
+	2026-10-25 (`docs/archive/wip/geometrie-validation-progress.md` § 5) :
 
 	- toucher un point puis un autre trace la droite, qui va jusqu'aux bords ;
 	  près d'un point, le toucher est aimanté (`SNAP_RADIUS_PX` à l'écran) ;
