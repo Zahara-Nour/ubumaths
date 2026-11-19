@@ -29,7 +29,8 @@
  *   lots : second-degre, suites, derivation, textcolor-2de, niveaux-2de-probabilites,
  *          textcolor-hors-2de, tracer-droites-2de, tableau-signes-2de, valeur-absolue-droite-2de,
  *          resoudre-graphique-droite-3, somme-vecteurs-2de, triangle-cm-6, blockly-6-210,
- *          blockly-5-106, variable-e, totaux-ce, horloges-ce-zeros, motifs-allumettes
+ *          blockly-5-106, variable-e, totaux-ce, horloges-ce-zeros, motifs-allumettes,
+ *          cp-demi-droite
  *   … --seulement <id8>[,<id8>]   restreint aux cibles dont l'id commence ainsi
  *   … --sans-diff                 simulation sans le diff (preuves rouges seulement)
  */
@@ -247,6 +248,12 @@ const MOTIFS_ALLUMETTES: readonly string[] = [
 	'41100a51-0ca9-436e-9d90-13ff62f01331' // 1re spé « Motif : relation de récurrence »
 ];
 
+/** Chantier `questions` (CP-008) : la demi-droite de 0 à 20 (graduations à 12 px sur téléphone)
+ *  devient une demi-droite de 0 à 10 où seuls 0 et 10 sont écrits */
+const CP_DEMI_DROITE: readonly string[] = [
+	'11a01460-f201-44f5-83fc-18041c5c585d' // CP « Place le nombre sur la demi-droite » V2
+];
+
 const LOTS: Record<string, Lot> = {
 	'second-degre': { dossier: 'scripts/questions/second-degre-existants', cibles: SECOND_DEGRE },
 	suites: { dossier: 'scripts/questions/suites-existants', cibles: SUITES },
@@ -289,7 +296,11 @@ const LOTS: Record<string, Lot> = {
 		dossier: 'scripts/questions/ce-horloges-zeros',
 		cibles: HORLOGES_CE_ZEROS
 	},
-	'motifs-allumettes': { dossier: 'scripts/questions/motifs-allumettes', cibles: MOTIFS_ALLUMETTES }
+	'motifs-allumettes': {
+		dossier: 'scripts/questions/motifs-allumettes',
+		cibles: MOTIFS_ALLUMETTES
+	},
+	'cp-demi-droite': { dossier: 'scripts/questions/cp-demi-droite', cibles: CP_DEMI_DROITE }
 };
 
 /** Champs écrits ; tout le reste doit être identique entre le fichier et la base */
