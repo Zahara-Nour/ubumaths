@@ -6,14 +6,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, après #2917 (lot 16 rangé en prod)._
+_Mis à jour le 2026-11-19, après la publication du lot 16._
 
-- **État** : lots 0 à 15 publiés. Lot 16 (081, 088 ×2, 092, 093) : 5 brouillons en prod, rangés et tagués (#2915
-  fichiers, #2917 migration, § 24.3) ; page à cocher publiée, `verdicts` vide. Reste ensuite le **dernier lot 17**
-  (095, 097, 102) ; tous les autres points des anciens lots 16 à 19 sont couverts par les jumeaux CM1 + CM2 (§ 24).
-- **Prochaine action** : lire les verdicts de la page à cocher (https://claude.ai/artifact/6jPfzF3pMvofQUiKBdTkUq),
-  `publier-lot --dir scripts/questions/cm2-16` en simulation, puis David lance `--publier` ; puis phase 0 du lot 17.
-- **En attente de David** : la relecture de la page à cocher du lot 16.
+- **État** : lots 0 à 16 publiés (lot 16 : 081, 088 ×2, 092, 093, 5/5 `published`, § 24.4). Reste le **dernier lot 17**
+  (095 figure composée, 097 symétrique sur quadrillage, 102 patron du pavé) ; tous les autres points des anciens lots
+  16 à 19 sont couverts par les jumeaux CM1 + CM2 (§ 24).
+- **Prochaine action** : phase 0 du lot 17 : relevé MCP (095, 097, 102 toujours sans modèle ?), bornes, outils (case
+  « figure » : construire, symétrique ; ` ```patron `), tableau des modèles, puis attendre le go.
+- **En attente de David** : rien.
 - **Pièges en cours** : `Doc-inchangée:` dans un COMMIT ; sujet de commit en minuscule, corps ≤ 100 caractères par ligne.
   `db:migrate` : `migration list --linked` d'abord (une autre session peut l'avoir déjà poussée, vu au lot 16).
   `create-questions --publier` et `publier-lot --publier` : David les lance (`!`). Serveur d'essai sur 5186. Choix
@@ -1887,3 +1887,9 @@ le plus précis attendu.
 - `garde-niveaux-tags` : aucun niveau manquant. Page à cocher (5 fiches, base prod, aucune alerte) :
   https://claude.ai/artifact/6jPfzF3pMvofQUiKBdTkUq ; `verdicts` vide au départ. Rendu à 390 px (Playwright, fichier
   local) : pas de débordement, 0 erreur.
+
+### 24.4 Lot 16 : relecture, publication (2026-11-19)
+
+- Page à cocher : 5 verdicts « OK », sans commentaire ; les 5 ids concordent avec `scripts/questions/cm2-16/*.json`.
+- `publier-lot` en simulation : 5 brouillons passent le contrôle. David lance `--publier`. MCP : 5/5 `published`, [CM2],
+  rangés et tagués (081, 088 ×2, 092, 093). **Lot 16 clos.**
