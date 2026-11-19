@@ -21,7 +21,7 @@
  * dossier (voir `capture.ts`, `EMAIL_ENVOI_REEL=1` pour envoyer quand même).
  */
 
-import * as Brevo from '@getbrevo/brevo';
+import { BrevoClient } from '@getbrevo/brevo';
 import * as env from '$app/env/private';
 import { createServerLogger } from '#lib/utils/logger.ts';
 import { isChildAccountEmail } from '#lib/utils/child-account.ts';
@@ -47,24 +47,27 @@ export interface EmailSendResult {
 }
 
 /**
- * Brevo API client singleton
+ * Client Brevo, créé au premier envoi
  */
-let apiInstance: Brevo.TransactionalEmailsApi | null = null;
+let client: BrevoClient | null = null;
 
 /**
  * Get or create Brevo API client
+ *
+ * `maxRetries: 0` : la bibliothèque réessaie sinon d'elle-même après un délai
+ * dépassé ou une erreur 5xx, alors que Brevo a pu envoyer le courriel ; le
+ * parent recevrait deux fois le même lien. Un échec reste un échec.
  */
-function getBrevoClient(): Brevo.TransactionalEmailsApi {
-	if (!apiInstance) {
+function getBrevoClient(): BrevoClient {
+	if (!client) {
 		const apiKey = env.BREVO_API_KEY;
 		if (!apiKey) {
 			throw new Error('BREVO_API_KEY environment variable is not set');
 		}
 
-		apiInstance = new Brevo.TransactionalEmailsApi();
-		apiInstance.setApiKey(Brevo.TransactionalEmailsApiApiKeys.apiKey, apiKey);
+		client = new BrevoClient({ apiKey, maxRetries: 0 });
 	}
-	return apiInstance;
+	return client;
 }
 
 /**
@@ -122,32 +125,22 @@ export async function sendEmail(
 	}
 
 	try {
-		const client = getBrevoClient();
+		const brevo = getBrevoClient();
 		const sender = getSenderConfig();
 
-		const sendSmtpEmail = new Brevo.SendSmtpEmail();
-		sendSmtpEmail.sender = { email: sender.email, name: sender.name };
-		sendSmtpEmail.to = [{ email: to }];
-		sendSmtpEmail.subject = subject;
-		sendSmtpEmail.htmlContent = htmlContent;
-
-		if (textContent) {
-			sendSmtpEmail.textContent = textContent;
-		}
-
-		if (replyTo) {
-			sendSmtpEmail.replyTo = { email: replyTo };
-		}
-
-		if (headers) {
-			sendSmtpEmail.headers = headers;
-		}
-
-		const response = await client.sendTransacEmail(sendSmtpEmail);
+		const response = await brevo.transactionalEmails.sendTransacEmail({
+			sender: { email: sender.email, name: sender.name },
+			to: [{ email: to }],
+			subject,
+			htmlContent,
+			...(textContent ? { textContent } : {}),
+			...(replyTo ? { replyTo: { email: replyTo } } : {}),
+			...(headers ? { headers } : {})
+		});
 
 		return {
 			success: true,
-			messageId: response.body?.messageId
+			messageId: response.messageId
 		};
 	} catch (error) {
 		// Ni l'objet d'erreur entier : celui de Brevo garde la requête, donc le
