@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, PR 1 ouverte._
+_Mis à jour le 2026-11-19, après #2884._
 
-- **État** : phase 0 validée (D1–D5 ci-dessous). PR 1 ouverte : page d'essai `/dev/polices/luciole` (3 versions à l'écran + PDF Typst Luciole/Luciole Math), polices dans `static/fonts/luciole/`.
-- **Prochaine action** : CI verte → merge ; puis David regarde la page d'essai (serveur de test du worktree : port 5181).
-- **En attente de David** : son avis sur Luciole Math (décide de la PR 3) ; observations ci-dessous.
-- **Pièges en cours** : rien renommer de ce qui porte le nom KaTeX ; Luciole texte CC-BY 4.0 → crédit (PR 2) ; l'aperçu MathML de Chrome laisse un espace après une racine (absent du PDF).
-- **Worktree / branche** : `../ubumaths-wt-lecture-facilitee` · `feat/lecture-facilitee`.
+- **État** : PR 1 mergée (#2884) : page d'essai `/dev/polices/luciole` (3 versions à l'écran + PDF Typst Luciole/Luciole Math), polices dans `static/fonts/luciole/`.
+- **Prochaine action** : PR 2, réglage « Lecture facilitée » à l'écran pour le texte (D2, D3), avec le crédit des polices sur `/a-propos` (D5). Nouveau worktree `../ubumaths-wt-lecture-facilitee`, branche `feat/lecture-facilitee-reglage`.
+- **En attente de David** : son avis sur la version C et les PDF de la page d'essai (décide de la PR 3 = Luciole Math à l'écran) ; voir « Observations de l'essai ».
+- **Pièges en cours** : rien renommer de ce qui porte le nom KaTeX ; Luciole texte CC-BY 4.0 → crédit ; l'aperçu MathML de Chrome laisse un espace après une racine (absent du PDF) ; revue #2884 : `luciole-pdf.ts` garde un échec de chargement jusqu'au rechargement (mineur, laissé).
+- **Worktree / branche** : aucun (retiré après #2884).
 
 ## Ce qui existe déjà (vérifié le 2026-11-19)
 
