@@ -357,6 +357,14 @@ Code : `src/lib/server/` (`chapters.ts`, `chapters-publication.ts`, `chapter-tem
 ### Fiches
 
 - `worksheets` (`status` = rédaction terminée ou non) → `worksheet_sections`, `worksheet_exercises`.
+- **Catégorie et notions d'une fiche** ([ADR 0041](../adr/0041-categorie-et-notions-d-une-fiche.md),
+  `20261119173341`) : `worksheets.category` (`technical_practice`, `applications`, `automatisms`,
+  `review` ; NULL hors `type = 'worksheet'`, CHECK 23514) et `worksheet_classifications` (fiche →
+  notion ou sous-notion, `position` = ordre d'impression ; FK RESTRICT : un nœud cité ne se supprime
+  pas). Lecture quand on lit la fiche (RLS de `worksheets`), écriture par l'auteur ou l'admin, anon
+  rien. Garde différée (trigger de contrainte, verrou sur la fiche) : une fiche d'exercices a au plus
+  une notion, sauf en `review` et `automatisms` (23514). Les deux fonctions de partage rendent
+  `category` et `classifications`. Tests : `tests/integration/categorie-notions-fiche.test.ts`.
 - `worksheet_assignments` (distribution) → `worksheet_assignment_classes`,
   `worksheet_assignment_students`, `worksheet_assignment_exercise_settings`.
   `worksheet_assignments.guidance_level` : **niveau de guidage** des exercices pour cette

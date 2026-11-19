@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, PR 1 en cours (ADR + migration)._
+_Mis à jour le 2026-11-19, PR 1 relue, prête à ouvrir._
 
-- **État** : PR 1 écrite dans le worktree — ADR 0041, migration `20261119173341_categorie_notions_fiche.sql` (appliquée en LOCAL seulement), 34 tests d'intégration verts (rouges sans la migration) · **Prochaine action** : revues `code-reviewer` + `security-auditor`, PR, CI, merge, puis `db:migrate` (4 conditions) et `db:types` · **En attente de David** : rien · **Pièges en cours** : mono-professeur (un seul compte teacher en test → l'admin tient le rôle du second auteur) ; les liens de partage transmettaient DÉJÀ `grades` (la note « Lié » plus bas se trompait) · **Worktree / branche** : `../ubumaths-wt-categorie-fiche` · `feat/categorie-fiche` · **Maquette** : https://claude.ai/artifact/4NVjLSrbd7J7XNPzaC3cur
+- **État** : PR 1 écrite dans le worktree — ADR 0041, migration `20261119173341_categorie_notions_fiche.sql` (appliquée en LOCAL seulement), 38 tests d'intégration verts (rouges sans la migration) ; revues code (Opus) + sécurité : aucun bloquant, findings corrigés (verrou `for update` dans la garde, rollback, tests du différé) · **Prochaine action** : PR, CI, merge, puis `db:migrate` (4 conditions, `migration list --linked` d'abord) et `db:types` ; puis PR 2 · **En attente de David** : rien · **Pièges en cours** : mono-professeur (un seul compte teacher en test → l'admin tient le rôle du second auteur) ; les liens de partage transmettaient DÉJÀ `grades` (la note « Lié » plus bas se trompait) · **Worktree / branche** : `../ubumaths-wt-categorie-fiche` · `feat/categorie-fiche` · **Maquette** : https://claude.ai/artifact/4NVjLSrbd7J7XNPzaC3cur
 
 ## Synthèse de la phase 0 (2026-11-19)
 
