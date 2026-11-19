@@ -5,16 +5,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, après #2913._
+_Mis à jour le 2026-11-19, lot 12 et `cp-figure/` publiés._
 
-- **État** : #2234 et #2913 mergées (5 brouillons `ce1-12/` en prod ; migration
-  `20261119195540_questions_ce1_lot12_rangement_tags` sur `main`, **pas encore jouée en prod**). Niveau 2 de
-  `a7dfe502` abandonné (ADR 0035).
-- **Prochaine action** : `migration list --linked` ; `db:migrate` bloqué tant que
-  `20261119195149_questions_cp_d_rangement_tags` (#2911, chantier CP) attend → David tranche (la jouer avec, ou
-  attendre la session CP) → dry-run → `db:migrate` → vérif MCP → page à cocher `ce1-12/` + `cp-figure/` → David :
-  `publier-lot --publier` sur les deux. Puis le lot 001, 002, 003 + 074 et fin de 072. Stash « ids du lot 12 » du
-  dépôt principal = copie, à jeter.
+- **État** : lot 12 (`ce1-12/`, 5 modèles) et `cp-figure/` (3 modèles, dont `a7dfe502` = CE1-073) **publiés** ;
+  migration du lot jouée et vérifiée. Prod : 100 points sur 107 (restent 001, 002, 074 ; 4 points D hors appli).
+- **Prochaine action** : phase 0 du lot 001, 002, 003 + 074 et fin de 072 (triangle, triangle rectangle, cercle)
+  dans un worktree neuf depuis `origin/main` (l'ancien, `chore/questions-ce1-lot12-rangement`, est mergé).
 - **En attente de David** : essai tablette des cases « figure » (`verifications-manuelles.md`, ne bloque plus) ;
   futur chantier « `\textcolor` hors formule » (53 fichiers de lots).
 - **Pièges en cours** : jamais de variable `e` ni `i` ; **mots en couleur dans le texte = `colt()`
@@ -23,8 +19,8 @@ _Mis à jour le 2026-11-19, après #2913._
   horodatage `pnpm migration:horodatage`, `check:migrations --pr <n>` ; `db:migrate` : dry-run d'abord ; commitlint :
   sujet sans majuscule, corps ≤ 100 colonnes ; shards navigateur : « Browser connection was closed » = relancer ;
   `create-questions --mettre-a-jour` refusé au mode auto ; worktree neuf : `svelte-kit sync` avant `tsx`.
-- **Worktree / branche** : `../ubumaths-wt-questions-ce1`, `chore/questions-ce1-lot12-rangement` (mergée ; à
-  recycler pour le lot suivant).
+- **Worktree / branche** : `../ubumaths-wt-questions-ce1` sur `chore/questions-ce1-lot12-rangement` (mergée) :
+  à retirer, nouvelle branche pour le lot suivant.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-26)
 
@@ -935,3 +931,8 @@ Décisions :
   relevé `etat-prod-2026-11-19-ce1-12/`, générateur `lot-ce1-12-rangement.py`.
 - 2026-11-19 : #2913 mergée (CI verte, `check:migrations` OK) ; `db:migrate` suspendu : la migration du lot D du CP
   (#2911) attend aussi en prod.
+- 2026-11-19 : `migration list --linked` : la migration du lot D du CP attendait ; David : attendre la session CP.
+  Une fois jouée, `db:migrate` (David) : 5 modèles vérifiés (nœud, tag, brouillon, `updated_at` intact). Page à
+  cocher https://claude.ai/artifact/XD4LxzMPgKdUxQgwyZXw6F (8 fiches ; alertes : solutions de `figure-a-completer`
+  et `figure-de-travail` non dessinées). `publier-lot` simulé 5/5 et 3/3, puis `--publier` (David) : 8 publiés,
+  vérifiés en base. Aucun verdict enregistré sur la page (collection vide).
