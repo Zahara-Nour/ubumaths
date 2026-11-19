@@ -1106,3 +1106,8 @@ arrondi) ; a, b décimaux à un chiffre après la virgule.
 - **Q35 — Découpage** : un seul lot de 6 modèles (une page à cocher) ? Reco : **oui**.
 - **Question d'accès** (migration de tags, après écriture) : brouillons, personne ne les voit ; publiés, ils
   apparaissent au catalogue et au cahier de texte de Tle techno seulement. Personne ne perd rien.
+
+**Décisions (David, 2026-11-19, « je te suis »)** : **Q32** log(y) en texte seulement (y = 10ᵏ, sans tracé du bloc),
+outil manquant « log et 1/√n dans ` ```nuage ` » noté dans `outils-manquants.md` ; **Q33** droite de Mayer
+calculée ET donnée, une variation chacune (D4) ; **Q34** une variation Python et une tableur (D5, D6) ; **Q35** un
+seul lot de 6 modèles ; question d'accès : personne pour les brouillons, Tle techno à la publication.
