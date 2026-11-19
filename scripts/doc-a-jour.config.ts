@@ -45,7 +45,9 @@ export const COVERAGE_CONFIG: CoverageConfig = {
 		'scripts/check-production-health.ts',
 		'scripts/garde-dev-depot-principal.sh',
 		'scripts/surveillance-machine.sh',
-		'scripts/surveillance-machine-installer.sh'
+		'scripts/surveillance-machine-installer.sh',
+		'scripts/menage-machine.sh',
+		'scripts/machine-commun.sh'
 	],
 	excluded: [
 		'**/__tests__/**',

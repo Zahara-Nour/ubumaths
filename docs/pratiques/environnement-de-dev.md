@@ -31,6 +31,8 @@ couvre:
   - scripts/garde-dev-depot-principal.sh
   - scripts/surveillance-machine.sh
   - scripts/surveillance-machine-installer.sh
+  - scripts/menage-machine.sh
+  - scripts/machine-commun.sh
 ---
 
 # Environnement de dev : la carte
@@ -153,7 +155,15 @@ toutes les 5 min par launchd (`pnpm surveillance:installer`, `--desinstaller` po
 - signalement = notification ntfy.sh sur l'iPhone (canal aléatoire dans
   `~/.config/surveillance-machine/ntfy-topic`, message sans chemin ni nom de projet) + journal
   `~/.local/state/surveillance-machine/journal.log` ; même alerte renvoyée au plus une fois par heure.
+- swap au-delà de 95 % (gel proche) → **ménage automatique** (au plus une fois par quart d'heure),
+  résumé dans la notification ;
 - `pnpm surveillance:essai` : ce qu'elle ferait maintenant, sans rien arrêter ni envoyer.
+
+**Ménage quand la charge est trop grande** : `pnpm menage` (`--essai` pour voir sans rien fermer),
+`scripts/menage-machine.sh`. Ferme les onglets Chrome au-delà de 20 % de CPU (Chrome reste ouvert,
+l'onglet se recharge d'un clic ; extensions épargnées) et arrête les serveurs de dev de Chiphre lancés
+depuis plus de 6 h ou dans le dépôt principal (jamais ceux d'un autre projet). À distance : demander
+« fais le ménage » à n'importe quelle session.
 
 **Tester depuis le MacBook ou l'iPhone (Tailscale)** : [tester-sur-un-autre-appareil.md](tester-sur-un-autre-appareil.md)
 (tunnel SSH, `--host`, Tailscale Serve ; cookie `Secure`, Supabase local, limiteur de connexion).

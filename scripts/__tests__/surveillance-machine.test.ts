@@ -32,6 +32,7 @@ import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 
 const SCRIPT = resolve(__dirname, '../surveillance-machine.sh');
+const MENAGE = resolve(__dirname, '../menage-machine.sh');
 
 let racine: string;
 let principal: string;
@@ -79,6 +80,11 @@ function ecrireFaux(nom: string, corps: string): void {
 function machine(m: Machine): void {
 	writeFileSync(join(racine, 'ps-vite.txt'), m.processus.join('\n') + '\n');
 	writeFileSync(join(racine, 'ps-chrome.txt'), m.chrome.join('\n') + '\n');
+	// Même liste avec un pid (1000, 1001…) : `ps -Ao pid=,pcpu=,command=` du ménage
+	writeFileSync(
+		join(racine, 'ps-chrome-pid.txt'),
+		m.chrome.map((l, i) => `${1000 + i} ${l}`).join('\n') + '\n'
+	);
 	writeFileSync(join(racine, 'swap.txt'), m.swap + '\n');
 	const lsof = Object.entries(m.dossiers)
 		.map(([pid, d]) => `[ "$pid" = "${pid}" ] && printf 'p${pid}\\nfcwd\\nn%s\\n' "${d}"`)
@@ -86,7 +92,7 @@ function machine(m: Machine): void {
 	// ps -Ao pid=,rss=,etime=,command= → serveurs ; ps -Ao pcpu=,command= → Chrome
 	ecrireFaux(
 		'ps',
-		`case "$*" in *pcpu*) cat "${racine}/ps-chrome.txt" ;; *) cat "${racine}/ps-vite.txt" ;; esac`
+		`case "$*" in *pid=,pcpu=*) cat "${racine}/ps-chrome-pid.txt" ;; *pcpu*) cat "${racine}/ps-chrome.txt" ;; *) cat "${racine}/ps-vite.txt" ;; esac`
 	);
 	ecrireFaux(
 		'lsof',
@@ -97,8 +103,8 @@ function machine(m: Machine): void {
 	ecrireFaux('tuer', `printf '%s\\n' "$@" >>"${racine}/tues.log"`);
 }
 
-function lancer(extra: NodeJS.ProcessEnv = {}, args: string[] = []) {
-	return spawnSync('bash', [SCRIPT, ...args], {
+function lancer(extra: NodeJS.ProcessEnv = {}, args: string[] = [], script = SCRIPT) {
+	return spawnSync('bash', [script, ...args], {
 		cwd: racine,
 		env: {
 			...process.env,
@@ -313,5 +319,100 @@ describe('surveillance-machine', () => {
 		expect(readFileSync(join(racine, 'etat', 'journal.log'), 'utf8')).toContain(
 			'pas de canal ntfy'
 		);
+	});
+});
+
+const ONGLET = '/Applications/Google Chrome.app/Helper (Renderer) --type=renderer';
+const EXTENSION = `${ONGLET} --extension-process`;
+const SWAP_GEL = 'total = 12288.00M  used = 11800.00M  free = 488.00M  (encrypted)';
+
+describe('menage-machine', () => {
+	it('ferme les onglets gourmands, épargne les calmes et les extensions', () => {
+		machine({
+			processus: [],
+			dossiers: {},
+			swap: SWAP_CALME,
+			chrome: [`58.0 ${ONGLET}`, `5.0 ${ONGLET}`, `90.0 ${EXTENSION}`, `40.0 ${ONGLET}`]
+		});
+		const r = lancer({}, [], MENAGE);
+		expect(tues().trim().split('\n')).toEqual(['1000', '1003']);
+		expect(r.stdout.trim().split('\n').at(-1)).toBe(
+			'Ménage : 2 onglet(s) Chrome fermé(s), 0 serveur(s) de dev arrêté(s).'
+		);
+	});
+
+	it('arrête les serveurs vieux de notre dépôt et ceux du dépôt principal, pas les autres', () => {
+		const autre = join(racine, 'autre-projet');
+		mkdirSync(autre);
+		gitJetable(autre, 'init', '-q', '-b', 'main');
+		machine({
+			processus: [
+				vite(500, 300_000, '07:00:00', 5181), // worktree, 7 h → arrêté
+				vite(501, 300_000, '30:00', 5182), // worktree, récent → gardé
+				vite(502, 300_000, '05:00', 5175), // dépôt principal → arrêté
+				vite(503, 300_000, '2-00:00:00', 3000) // autre projet → jamais
+			],
+			dossiers: { '500': worktree, '501': worktree, '502': principal, '503': autre },
+			swap: SWAP_CALME,
+			chrome: []
+		});
+		const r = lancer({}, [], MENAGE);
+		expect(tues().trim().split('\n')).toEqual(['500', '502']);
+		expect(r.stdout).toContain('2 serveur(s) de dev arrêté(s) (:5181 :5175).');
+	});
+
+	it('--essai : ne ferme rien, dit ce qu’il fermerait', () => {
+		machine({
+			processus: [vite(502, 300_000, '05:00', 5175)],
+			dossiers: { '502': principal },
+			swap: SWAP_CALME,
+			chrome: [`58.0 ${ONGLET}`]
+		});
+		const r = lancer({}, ['--essai'], MENAGE);
+		expect(tues()).toBe('');
+		expect(r.stdout).toContain("Ménage (essai, rien n'est fermé) : 1 onglet(s)");
+	});
+});
+
+describe('surveillance-machine : ménage automatique', () => {
+	it('swap au-delà de 95 % : ménage lancé, résumé envoyé', () => {
+		machine({
+			processus: [],
+			dossiers: {},
+			swap: SWAP_GEL,
+			chrome: [`58.0 ${ONGLET}`, `5.0 ${ONGLET}`]
+		});
+		lancer();
+		expect(tues().trim()).toBe('1000');
+		expect(envois()).toContain('Ménage : 1 onglet(s) Chrome fermé(s)');
+		expect(envois()).toContain('Swap : 96 %');
+	});
+
+	it('pas de second ménage avant la pause', () => {
+		machine({ processus: [], dossiers: {}, swap: SWAP_GEL, chrome: [`58.0 ${ONGLET}`] });
+		lancer();
+		lancer();
+		expect(tues().trim().split('\n')).toHaveLength(1);
+		lancer({ SURVEILLANCE_MENAGE_PAUSE_MIN: '0' });
+		expect(tues().trim().split('\n')).toHaveLength(2);
+	});
+
+	it('swap sous le seuil du ménage : rien n’est fermé', () => {
+		machine({
+			processus: [],
+			dossiers: {},
+			swap: 'total = 12288.00M  used = 11000.00M  free = 1288.00M  (encrypted)',
+			chrome: [`58.0 ${ONGLET}`]
+		});
+		lancer();
+		expect(tues()).toBe('');
+		expect(envois()).toContain('Swap : 89 %');
+	});
+
+	it('--essai : le ménage est simulé', () => {
+		machine({ processus: [], dossiers: {}, swap: SWAP_GEL, chrome: [`58.0 ${ONGLET}`] });
+		const r = lancer({}, ['--essai']);
+		expect(tues()).toBe('');
+		expect(r.stdout).toContain('Ménage (essai');
 	});
 });

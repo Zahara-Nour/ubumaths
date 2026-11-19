@@ -69,6 +69,7 @@
 		"kill:servers": "bash scripts/kill-servers.sh",
 		"surveillance:installer": "bash scripts/surveillance-machine-installer.sh",
 		"surveillance:essai": "bash scripts/surveillance-machine.sh --essai",
+		"menage": "bash scripts/menage-machine.sh",
 		"db:types": "pnpm supabase gen types typescript --project-id cnevnzsvixxpnurautls --schema public > src/lib/types/database.ts && tsx scripts/generate-db-doc.ts",
 		"db:doc": "tsx scripts/generate-db-doc.ts",
 		"check:barrels": "tsx scripts/check-barrel-exports.ts",
