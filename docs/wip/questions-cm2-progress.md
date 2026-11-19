@@ -6,15 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, après #2878 (lot 13 rangé et tagué en prod)._
+_Mis à jour le 2026-11-19, après la publication du lot 13._
 
-- **État** : lots 0 à 12 publiés. Lot 13 (aires) : 5 brouillons rangés et tagués en prod (#2878, `db:migrate` fait,
-  § 20.3) ; page à cocher publiée, verdicts attendus. Restent les lots 14a à 19 du § 14 ; le lot 19 se réduit à
+- **État** : lots 0 à 13 publiés (lot 13 : 5/5, § 20.4). Restent les lots 14a à 19 du § 14 ; le lot 19 se réduit à
   CM2-102 (§ 19.4).
-- **Prochaine action** : quand David a coché, lire et compter les verdicts (`ArtifactData list verdicts`,
-  https://claude.ai/artifact/6G45jabTk2DLAXfhojXQcb) ; puis `publier-lot --dir scripts/questions/cm2-13` (David lance
-  simulation et `--publier`). Ensuite phase 0 du lot 14a (données lues : 107, 156, 123, 157, 124, 158).
-- **En attente de David** : la relecture du lot 13.
+- **Prochaine action** : phase 0 du lot 14a (données lues : 107, 156, 123, 157, 124, 158), nouvelle branche dans le
+  worktree.
+- **En attente de David** : rien.
 - **Pièges en cours** : `Doc-inchangée:` dans un COMMIT ; sujet de commit en minuscule, corps ≤ 100 caractères par ligne.
   `migration:horodatage` = heure réelle UTC ; une autre migration en attente → stop avant `db:migrate` (worktree remis
   sur `origin/main` d'abord). `db:migrate` depuis le worktree : `supabase/.temp` copié. `create-questions` /
@@ -22,7 +20,7 @@ _Mis à jour le 2026-11-19, après #2878 (lot 13 rangé et tagué en prod)._
   `git restore` côté dépôt principal. Port 5179 pris par `questions-ttechno` : serveur d'essai sur 5186. Un titre déjà
   porté au même nœud et niveau : `create-questions` le bloque → renommer. `de` + `{{if}}` ne s'élide pas : écrire les
   compléments élidés ; un milieu calculé dans une figure s'écrit `\dfrac` → `milieu()`.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, détaché sur `main` après #2878 (nouvelle branche au lot 14a).
+- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, détaché sur `main` (nouvelle branche au lot 14a).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -1489,3 +1487,9 @@ du dépôt principal (5 fichiers identiques à `origin/main`) est supprimé.
   « aires sur quadrillage »), un tag chacun (073, 074, 075, 120, 072), `updated_at` = création.
 - `garde-niveaux-tags` : aucun niveau manquant. Page à cocher (5 fiches, aucune alerte, base prod) :
   https://claude.ai/artifact/6G45jabTk2DLAXfhojXQcb ; `verdicts` vide au départ.
+
+### 20.4 Lot 13 : relecture, publication (2026-11-19)
+
+- Page à cocher : 5 verdicts « OK », sans commentaire ; les 5 ids concordent avec `scripts/questions/cm2-13/*.json`.
+- `publier-lot` en simulation : 5 brouillons passent le contrôle. David lance `--publier`. MCP : 5/5 `published`, [CM2],
+  rangés et tagués (073, 074, 075, 120, 072). **Lot 13 clos.**
