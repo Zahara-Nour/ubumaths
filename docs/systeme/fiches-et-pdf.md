@@ -358,7 +358,9 @@ réponses, corrigé, fiche + corrections) et un code commun (`STUDENT_STYLE_COMM
 place de `{{style_common}}`). **« 2 colonnes - paysage »** (`studentStyleLandscape`, David,
 2026-10-16) reprend ces quatre formes avec un autre code commun
 (`STUDENT_LANDSCAPE_STYLE_COMMON` : la même page, `flipped: true`) : tout le document, corrigé
-compris, est en A4 paysage. Les onze autres n'ont que leur fiche et prennent les autres formes du
+compris, est en A4 paysage. Le **pied de page** de ces deux styles porte le titre de la fiche à
+gauche (sous `{{#if show_title}}`) et « n / N » à droite, pour retrouver la fiche d'une feuille
+imprimée (David, 2026-11-19 ; `titre-pied-de-page.test.ts`). Les onze autres n'ont que leur fiche et prennent les autres formes du
 style par défaut. Le style ne décide plus des **points** : le type de la fiche s'en charge,
 quel que soit le style (ADR 0030, qui remplace D8 : « Fiche élève » imprime les points d'une
 évaluation écrite qui les demande). `resolveTemplate(style, forme, gabarit lu en base)` : le style
