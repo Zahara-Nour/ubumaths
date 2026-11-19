@@ -5,14 +5,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19 ; lot 8f écrit, PR des fichiers en cours (§ 25 nonies)._
+_Mis à jour le 2026-11-19, après #2872._
 
 - **État** : lots 0 à 8e publiés, **153 points du CM1 sur 171** (CM2 115/158). Lot 8f (modèles 8 à 14 du § 25,
-  7 modèles CM1 + CM2) écrit et vérifié (simulation, sondes, base locale à 390 px).
-- **Prochaine action** : PR des fichiers → CI verte → merge ; puis David lance `create-questions --dir
-scripts/questions/cm1-8f --publier` depuis le worktree ; ids commités ; migration nœud + tag (gabarit 8e) ;
-  page à cocher ; publication. Ensuite le lot 9.
-- **En attente de David** : rien.
+  7 modèles CM1 + CM2) : fichiers mergés (#2872), rien en prod.
+- **Prochaine action** : David lance `create-questions --dir scripts/questions/cm1-8f --publier` depuis le
+  worktree (après `git pull` de `main` dedans) ; vérifier au MCP (7 draft, sans nœud, 0 tag) ; commiter les ids
+  sur une branche ; migration nœud + tag (gabarit 8e, 14 sur Solides › constructions) ; page à cocher ;
+  publication. Ensuite le lot 9.
+- **En attente de David** : le `create-questions --publier` du 8f.
 - **Pièges en cours** : création en prod = `pnpm tsx scripts/create-questions.ts --dir … --publier
 [--mettre-a-jour]`, depuis le worktree ; `--mettre-a-jour` ne touche JAMAIS un publié (sinon migration de
   contenu, gabarit `docs/wip/questions/cm1-8e-04-contenu.py`) : le lancer AVANT `publier-lot`, vérifier au MCP
@@ -20,7 +21,7 @@ scripts/questions/cm1-8f --publier` depuis le worktree ; ids commités ; migrati
   refuse `publier-lot` et `garde-niveaux-tags` : David les lance ; les scripts de lot réécrivent les JSON SANS
   leur `id` ; `ci-lint-fichiers.test.ts` dépasse parfois ses 5 s en CI. Rangement du 8f : 14 sur Solides ›
   constructions (pas sur la notion Solides où est le point 119), voir § 25 nonies.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm1` ; branche `feat/questions-cm1-lot8f`.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm1` ; branche `feat/questions-cm1-lot8f` mergée.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -2196,3 +2197,4 @@ reste en D ; niveaux **CM1 et CM2** et tag des deux points (109/098, 110/099, 11
 - `questions-cm2` prévenue par message : CM2-100, 101, 103, 104, 105 pris ici, son lot 19 garde 102.
 - Base locale (18 copies, une variation chacune), aperçus à 390 px (Playwright, port 5183) : aucun défilement
   horizontal, aucune erreur de console ; vus : patrons, face grise, cases en pointillés, robot, mur gris.
+- #2872 mergée (CI verte du premier coup).
