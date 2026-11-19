@@ -5,12 +5,15 @@ Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) · bornes 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, page à cocher du lot 8 publiée (§ 57)._
+_Mis à jour le 2026-11-19, après la publication du lot 8 et de L7, L8 (§ 58)._
 
-- **État** : lots 0 à 7 publiés (sauf L7, L8 du 5b) ; lot 8 (loi binomiale, 7 brouillons B1–B7) en prod, rangés, tagués ; page à cocher publiée (§ 57).
-- **Prochaine action** : lire les verdicts de la page (`ArtifactData list verdicts`), corriger les « à revoir », puis `publier-lot.ts --dir scripts/questions/ttechno-8-loi-binomiale` (simulation, puis David `--publier`). Ensuite, bilan MCP des points STMG restants.
-- **En attente de David** : relecture de la page à cocher du lot 8.
-- **Pièges en cours** : `$` littéral (tableur) = `\$` ; un point TTECHNO par modèle ; tag = nœud DU POINT ; `create-questions --publier` et `publier-lot.ts` visent la prod : David les lance (`!`), ids reportés à la main ; `Doc-inchangée:` dans un COMMIT (pas la PR) pour une migration ; `db push` « inserted before » → `--dry-run --include-all` ; Chrome refuse `[::1]` : serveur `--host 127.0.0.1`.
+- **État** : lots 0 à 8 publiés ; bilan MCP : les 75 points STMG ont un modèle publié (017, 019 de fait, Q17) ; seuls
+  les 17 points STD2A restent sans modèle (hors périmètre).
+- **Prochaine action** : clôture du chantier (versement), sur le go de David : le durable vers `docs/systeme/`, le
+  journal vers `docs/archive/`, mémoire et `outils-manquants.md` (n° 42 reste « plus tard »).
+- **En attente de David** : le go de clôture.
+- **Pièges en cours** : `create-questions --publier` et `publier-lot.ts` visent la prod : David les lance (`!`) ;
+  un `--publier` peut ne rien écrire sans bruit : relire le statut en base.
 - **Worktree / branche** : aucun.
 
 ## 1. Périmètre
@@ -1268,3 +1271,18 @@ dans le dépôt principal : reportés à la main dans `scripts/questions/ttechno
 - Page à cocher : https://claude.ai/artifact/Bj4AcBkkpiPnZ9Z25tmtfv (7 fiches, 23 exemples ; nœuds et points lus en
   base ; `verdicts` vide). Une alerte attendue (B7) : bloc ` ```loi ` et scène « moyenne-selon-n » de la
   ` ```simulation ` non dessinés par la page, à jouer dans l'aperçu. Rendu à 390 px non vérifié.
+
+## 58. Lot 8 : publication et bilan (2026-11-19)
+
+- Page à cocher relue : 7 verdicts sur 7 « ok », sans commentaire.
+- `publier-lot.ts --dir scripts/questions/ttechno-8-loi-binomiale` : simulation verte, puis `--publier` par David
+  (le premier essai n'avait rien écrit, relancé avec `!`). Relu en base (MCP) : 7/7 `published`, `{T_TECHNO}`
+  (9fa1b0e9, 98ce1795, 04e65a91, bacd052e, ae383e7c, 82a0e909, 8ad50484).
+- **Bilan MCP** (points TTECHNO non archivés sans modèle publié tagué) : 21 sur 92, dont les 17 STD2A hors
+  périmètre. Restent 4 points STMG : 017, 019 (rien à écrire, Q17) ; **043, 084** = L7 `52b884ee` et L8
+  `10bd7075` du lot 5b, en brouillon en attendant le `deploy:prod` de #2839, fait depuis.
+- L7, L8 : simulation `publier-lot.ts --dir scripts/questions/ttechno-5b-log-resolutions` verte (2 brouillons ; L9
+  déjà publiée, laissée telle quelle). `--publier` : David.
+- David a lancé `--publier` : relu en base (MCP), L7 `52b884ee` et L8 `10bd7075` `published`, `{T_TECHNO}` (L9
+  `becf24bc` inchangée). **Les 75 points STMG sont couverts** (017, 019 de fait, Q17) ; seuls les 17 STD2A restent
+  sans modèle, hors périmètre.
