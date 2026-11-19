@@ -5,20 +5,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, rangement du lot 8e écrit (§ 25 quinquies), PR à ouvrir._
+_Mis à jour le 2026-11-19, après #2857 (rangement du lot 8e) ; page à cocher publiée._
 
-- **État** : lots 0 à 8d publiés, **148 points du CM1 sur 171** ; lot 8e : fichiers mergés (#2855), 5 brouillons
-  créés en prod, migration de rangement écrite et testée sur `feat/questions-cm1-lot8e-rangement` (§ 25 quinquies).
-- **Prochaine action** : PR du rangement (audit de sécurité), CI, merge ; David lance `pnpm db:migrate` depuis le
-  worktree ; vérification au MCP ; page à cocher ; `publier-lot` (David). Ensuite le lot 8f (modèles 8 à 14 du
-  § 25), puis 9.
-- **En attente de David** : rien avant le merge.
+- **État** : lots 0 à 8d publiés, **148 points du CM1 sur 171** ; lot 8e : 5 brouillons en prod, rangés et tagués
+  (#2857, migration passée) ; page à cocher publiée (§ 25 sexies).
+- **Prochaine action** : verdicts de David sur la page ; corriger ce qui est « à revoir » (dont le débordement de
+  la correction du modèle 04, § 25 sexies) ; `publier-lot` (David). Ensuite le lot 8f (modèles 8 à 14 du § 25),
+  puis 9.
+- **En attente de David** : la page à cocher https://claude.ai/artifact/J4kWSo45dx1hDoQZh1UXV8 ; go sur la
+  correction du modèle 04.
 - **Pièges en cours** : création en prod = `pnpm tsx scripts/create-questions.ts --dir … --publier` (pas de script
   `pnpm create-questions`) ; la lancer, comme `db:migrate`, **depuis le worktree** (lien `supabase/.temp/` copié) ;
   commitlint refuse le type `content` et un corps > 100 caractères par ligne ; le mode auto refuse `publier-lot`
-  et `garde-niveaux-tags` : David les lance ; ports 5175, 5177, 5178 pris ; 17 copies `[essai 8e]` en base locale ;
-  `ci-lint-fichiers.test.ts` dépasse parfois ses 5 s en CI (relancer le job).
-- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, branche `feat/questions-cm1-lot8e-rangement`.
+  et `garde-niveaux-tags` : David les lance ; 17 copies `[essai 8e]` en base locale ; `ci-lint-fichiers.test.ts`
+  dépasse parfois ses 5 s en CI (relancer le job) ; `\text{…}` long dans une formule ne se coupe pas à 390 px.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, branche `feat/questions-cm1-lot8e-relecture`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -2126,3 +2127,15 @@ reste en D ; niveaux **CM1 et CM2** et tag des deux points (109/098, 110/099, 11
   7 sautés. `types:cliquet` tenu. Seule migration en attente (`migration list --linked`).
 - `security-auditor` : aucun finding, ni bloquant ni non bloquant (diff avec le 8d limité aux données ; état
   « avant » remesuré au MCP : 5 draft, nœud null, 0 tag ; 7 points et le nœud Solides > propriétés actifs).
+
+### 25 sexies. Lot 8e — migration passée, page à cocher (2026-11-19)
+
+- #2857 mergée ; `db:migrate` lancé par David depuis le worktree. Vérifié au MCP : `20261118223150` jouée ;
+  5 brouillons sur Solides > propriétés, 7 tags (CM1-109 à 113 ; CM2-098, 099), toujours draft.
+- Page `page-a-cocher.ts --dir scripts/questions/cm1-8e` : 5 fiches (17 exemples), aucune alerte ; vue à 1200 px
+  sans défilement ni erreur de console. À 390 px, **un débordement** : correction du modèle 04 (pyramide),
+  `$\textcolor{…}{\text{ses faces latérales sont des triangles qui se rejoignent au sommet}}$` (66 caractères
+  dans une formule, KaTeX ne coupe pas) : la ligne sort de la carte, et sortirait de l'écran d'un téléphone dans
+  l'appli. Reco : ne colorer que le mot-clé (« ses faces latérales sont des $\textcolor{…}{\text{triangles}}$
+  qui se rejoignent au sommet »), à corriger dans `lot-cm1-8e.py` puis re-créer (mise à jour par id).
+  Publiée : https://claude.ai/artifact/J4kWSo45dx1hDoQZh1UXV8 (`verdicts`, capacité `db`, vide).
