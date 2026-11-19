@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, PR Brevo 6 en cours._
+_Mis à jour le 2026-11-19, après #2879._
 
-- **État** : Brevo 3.0.4 → 6.2.0 fait sur `chore/dependabot` (remplace #2075, à fermer à l'ouverture de la PR) : `BrevoClient`, `maxRetries: 0` (choix de David : pas de doublon de lien), test sur la vraie bibliothèque avec `fetch` simulé.
-- **Prochaine action** : revue (code-reviewer + security-auditor), PR, CI, merge, fermer #2075.
-- **En attente de David** : rien.
-- **Pièges en cours** : Dependabot ne monte pas `.nvmrc` (à la main, vide le cache ESLint jusqu'au nocturne suivant) ; typst.ts ignoré exprès (`.github/dependabot.yml`) ; l'envoi de courriels touche des adresses réelles → tests sans envoi (`fetch` simulé).
-- **Worktree / branche** : `../ubumaths-wt-dependabot` · `chore/dependabot`.
+- **État** : #2879 mergée (Brevo 3.0.4 → 6.2.0, `maxRetries: 0`, erreurs réduites au statut et au code) ; #2075 fermée. **Aucune PR Dependabot ouverte.** Rien de déployé (`deploy:prod` sur demande de David).
+- **Prochaine action** : demander à David s'il clôt le chantier (versement + archivage du journal) ou le garde ouvert pour les prochaines PR Dependabot.
+- **En attente de David** : clore ou garder ouvert.
+- **Pièges en cours** : Dependabot ne monte pas `.nvmrc` (à la main, vide le cache ESLint jusqu'au nocturne suivant) ; typst.ts ignoré exprès (`.github/dependabot.yml`) ; l'envoi de courriels touche des adresses réelles → tests sans envoi (`fetch` simulé) ; la garde SECURITY DEFINER de la CI peut rater au démarrage de Docker (relancer le job).
+- **Worktree / branche** : aucun (supprimés après #2879).
 
 ---
 
@@ -27,3 +27,5 @@ _Mis à jour le 2026-11-19, PR Brevo 6 en cours._
 - Phase 0 : un seul appelant (`src/lib/server/email/brevo.ts`, `sendTransacEmail`). La v4 a réécrit la bibliothèque (Fern) : `BrevoClient({ apiKey })`, `client.transactionalEmails.sendTransacEmail({...})`, réponse = `{ messageId }` directement. Plus de dépendances (axios, bluebird, rewire partis).
 - La v6 réessaie seule 2 fois (408, 429, 5xx) → risque de courriel en double (lien de consentement). **David : `maxRetries: 0`** (comportement de la v3).
 - Tests : imitations adaptées ; `brevo-vraie-bibliotheque.test.ts` passe par la vraie bibliothèque avec `fetch` simulé — vérifié rouge sans `maxRetries: 0` (4 tests), vert avec.
+- Revue : code-reviewer et security-auditor sans bloquant ; message d'erreur v6 (corps de réponse, adresse possible) réduit au statut + code court (2e commit). Délai par défaut 60 s laissé : la v3 n'en avait aucun.
+- #2879 mergée le 2026-11-19 (CI : garde SECURITY DEFINER relancée une fois, Docker de la CI).
