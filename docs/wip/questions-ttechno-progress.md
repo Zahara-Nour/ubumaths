@@ -5,15 +5,13 @@ Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) · bornes 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, après #2862._
+_Mis à jour le 2026-11-19, après #2868._
 
-- **État** : lots 0 à 5a publiés ; lot 5b : L9 publiée, L7 et L8 en brouillon (relus, prêts) ; **lot 6 (fonction
-  inverse, 5 modèles I1–I5) écrit et mergé** (§ 45, #2862). Restent les lots 7 et 8 (§ 33).
-- **Prochaine action** : David crée les 5 brouillons en prod depuis le worktree (`create-questions --dir scripts/questions/ttechno-6-inverse --publier`) ; puis migration nœud + tag (045, 086 sur « définition et courbe » 96c8b0bd ; 049, 087 sur « variations et extremums » 2e77d4d9). Dès que #2839 est en prod : publier L7 et L8.
-- **En attente de David** : la création des 5 brouillons du lot 6 en prod ; le `deploy:prod` de #2839 (L7, L8).
-- **Pièges en cours** : un point TTECHNO par modèle (trigger) ; tag = nœud DU POINT ; `publier-lot.ts`,
-  `create-questions --publier` visent la prod : David les lance (`!`) ; L7 et L8 après le `deploy:prod` de #2839.
-- **Worktree / branche** : `ubumaths-wt-questions-ttechno`, `feat/questions-ttechno-lot6-rangement` (ids + migration).
+- **État** : lots 0 à 5a publiés ; lot 5b : L9 publiée, L7 et L8 en brouillon (relus, prêts) ; **lot 6 (fonction inverse, 5 modèles) en brouillon en prod, rangé et tagué** (§ 46), page à cocher publiée (§ 47). Restent les lots 7 et 8 (§ 33).
+- **Prochaine action** : lire et compter les verdicts de la page du lot 6, puis `publier-lot.ts --dir scripts/questions/ttechno-6-inverse` (simulation, puis `--publier` par David). Ensuite lot 7 (deux variables : 050, 051, 052, 088, 053, 054), phase 0.
+- **En attente de David** : la relecture de la page du lot 6 ; le `deploy:prod` qui livre #2839 (L7, L8).
+- **Pièges en cours** : un point TTECHNO par modèle (trigger) ; tag = nœud DU POINT ; `publier-lot.ts`, `create-questions --publier` visent la prod : David les lance (`!`) ; L7 et L8 après le `deploy:prod` de #2839.
+- **Worktree / branche** : aucun (retiré après #2868).
 
 ## 1. Périmètre
 
@@ -1040,3 +1038,23 @@ publication.
   I5 tableau → courbes, 4 courbes sans points d'extrémité (fenêtre x ⩾ 0, plus de `sur […]`) ; I5 placer
   (b = −3) 5 points → juste ; I2 courbe de −2 − 3/x. Deux brouillons de sonde locaux supprimés.
 - **#2862 mergée (2026-11-19)**, CI verte.
+
+## 46. Lot 6 : prod, rangement et tags (2026-11-19)
+
+David a lancé `create-questions --publier` : 5 brouillons (a6fa11c8 I1, b34c8c9b I2, 912caf72 I3, bb7bcab6 I4,
+9d6896cc I5), vérifiés par MCP (`draft`, `{T_TECHNO}`, sans nœud ni tag) ; ids commités avec la migration.
+
+- Migration `20261119060317_questions_ttechno_lot6_rangement_tags` (gabarit lot 5b ; 045, 086 sur « Fonction
+  inverse > définition et courbe », 049 ×2 et 087 sur « Dérivation > variations et extremums »).
+- Test `tests/integration/questions-ttechno-lot6-rangement-tags.test.ts` : 9 verts ; corps retiré → 5 rouges ;
+  fichier restauré d'une copie, identique. `types:cliquet` tenu.
+- `security-auditor` : aucun finding (diff avec le lot 5b = en-tête, ids, chemins, codes, compte, table temporaire ;
+  doublon 049 sans effet sur gardes, vérification et rollback ; état prod conforme).
+- **#2868 mergée (2026-11-19)**, CI verte, `check:migrations --pr 2868` vert. `migration list --linked` : seule
+  `20261119060317` en attente → `db:migrate` depuis le dépôt principal (4 conditions). Prod vérifiée (MCP) : les 5 sur
+  leur nœud, un tag chacun, `draft`, `updated_at` inchangés. Worktree retiré.
+
+## 47. Lot 6 : page à cocher (2026-11-19)
+
+- Page à cocher : https://claude.ai/artifact/W3RrCufGJ6wqLqF3EgSM5q (5 fiches, 24 exemples ; aucune alerte ; nœuds
+  et points lus en base ; `verdicts` vide). Rendu à 390 px non vérifié (fenêtre de Chrome non réduite).
