@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, après #2889._
+_Mis à jour le 2026-11-19, PR « racine et délimiteurs » ouverte (après #2889)._
 
-- **État** : PR 3 mergée (#2889) : jeu écran `luciole` sur `/dev/polices` (bouton « Luciole Math »), relecture faite (grec gras, retour à KaTeX en quittant la page). Rien en prod hors `/dev`.
-- **Prochaine action** : avis de David sur le rendu ; s'il convient (D1), PR 2 = réglage « Lecture facilitée » (texte), puis le jeu Luciole Math branché derrière ce réglage.
-- **En attente de David** : son avis sur le rendu et sur les écarts de « Observations PR 3 » (`\cdot` gros, cran racine/barre, `∯` petit, barres épaisses).
-- **Pièges en cours** : polices `.woff2` en cache du navigateur après reconstruction ; serveur de test de David sur 5181 depuis le worktree, publié par Tailscale `:8446` (couper : `tailscale serve --https=8446 off`) ; `:8445` → 5175 peut-être encore ouvert ; venv `tools/chiphre-math/venv` à recréer dans un nouveau worktree.
-- **Worktree / branche** : `../ubumaths-wt-lecture-facilitee` gardé tant que David teste (sert le lien Tailscale) ; à retirer ensuite (`git worktree remove`, `git branch -d feat/lecture-facilitee-mathlive`).
+- **État** : David aime beaucoup Luciole Math (« franchement j'aime beaucoup ») ; restaient la racine et des brisures des grands délimiteurs → corrigés sur `fix/lecture-facilitee-racine-delimiteurs`.
+- **Prochaine action** : merger cette PR ; puis PR 2 = réglage « Lecture facilitée » (texte) et jeu Luciole Math branché derrière (D1 tranché par l'avis de David, à lui confirmer).
+- **En attente de David** : confirmer que les maths passent aussi en Luciole Math avec le réglage (D1) ; écarts restants : `\cdot` gros, `∯` petit.
+- **Pièges en cours** : trait fin entre deux lignes d'une matrice = artefact de MathLive (aussi en KaTeX), pas une brisure ; polices `.woff2` en cache du navigateur ; serveurs du worktree : 5181 (Tailscale `:8446`, Supabase par le tailnet) et 5182 (local) ; `:8445` → 5175 peut-être encore ouvert.
+- **Worktree / branche** : `../ubumaths-wt-lecture-facilitee` · `fix/lecture-facilitee-racine-delimiteurs`.
 
 ## Ce qui existe déjà (vérifié le 2026-11-19)
 
@@ -65,6 +65,12 @@ Conséquence pour l'étude :
 - Aperçu écran MathML : la conversion de MathLive perd la virgule décimale et ignore `\mathcal` ; corrigé dans la page.
 
 ## Historique
+
+### 2026-11-19 — racine et délimiteurs (après l'avis de David)
+
+- Morceaux empilés (accolades, crochets, grande racine) : décalés de 25 à 70 unités parce que chacun était calé sur le bord gauche de sa boîte KaTeX ; ils gardent maintenant la position de Luciole (même repère pour tout le délimiteur).
+- Petite racine : la barre flottait à 77 unités du √ (avance KaTeX plus large que le dessin) ; avance = bout du dessin − 20.
+- Grande racine : MathLive remonte sa barre de 0,04 em (aussi visible en KaTeX) ; pour Luciole, barre posée sans cette marge.
 
 ### 2026-11-19 — PR 3 : jeu écran Luciole Math
 

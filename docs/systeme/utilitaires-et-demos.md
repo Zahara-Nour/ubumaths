@@ -355,7 +355,11 @@ il y ajoute la vérification des instructions (`checkScratchProgram`), faite hor
 - **Jeu Luciole : un code privé de KaTeX n'est jamais cherché tel quel dans Luciole-Math.** Elle
   range d'autres signes aux mêmes points de code (E000 = zéro barré, alors que MathLive empile la
   grande racine avec E001, E000, ⎷) : `build_luciole_katex.py` désigne les glyphes par leur nom
-  (`GLYPH_ALIASES`) et laisse les autres codes privés à KaTeX. Après une reconstruction, le
+  (`GLYPH_ALIASES`) et laisse les autres codes privés à KaTeX. Les morceaux d'un délimiteur
+  empilé gardent la position horizontale de Luciole (`Source.parts`) : calés chacun sur le
+  bord gauche de leur boîte KaTeX, ils se décalaient (crans). La barre de racine part au bout
+  du dessin du √ (`RADICALS`), et `mathlive-fonts.ts` la pose sans la remontée de 0,04 em de
+  MathLive. Après une reconstruction, le
   navigateur garde les anciens `.woff2` en cache : recharger les fichiers (`fetch(…, {cache:
 'reload'})`) avant de juger.
 - **`/dev/polices` rétablit KaTeX en partant** (`onDestroy` → `switchMathFonts('katex')`).
