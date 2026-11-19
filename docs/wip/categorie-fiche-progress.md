@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, phase 0 close, stockage et accès validés (rien de codé)._
+_Mis à jour le 2026-11-19, PR 1 relue, prête à ouvrir._
 
-- **État** : phase 0 close : synthèse, stockage et accès validés · **Prochaine action** : PR 1 (ADR + migration) dans le worktree `ubumaths-wt-categorie-fiche` · **En attente de David** : validation du découpage · **Pièges en cours** : « thème » est un mot retiré (CONTEXT.md) → la fiche pointe des nœuds de l'arbre (ADR 0019) ; la « Proposition » plus bas (deux colonnes, catégorie au-dessus) est **périmée** · **Worktree / branche** : aucun (à créer : `feat/categorie-fiche`) · **Maquette** : https://claude.ai/artifact/4NVjLSrbd7J7XNPzaC3cur (à mettre à jour : plusieurs notions)
+- **État** : PR 1 écrite dans le worktree — ADR 0041, migration `20261119173341_categorie_notions_fiche.sql` (appliquée en LOCAL seulement), 38 tests d'intégration verts (rouges sans la migration) ; revues code (Opus) + sécurité : aucun bloquant, findings corrigés (verrou `for update` dans la garde, rollback, tests du différé) · **Prochaine action** : PR, CI, merge, puis `db:migrate` (4 conditions, `migration list --linked` d'abord) et `db:types` ; puis PR 2 · **En attente de David** : rien · **Pièges en cours** : mono-professeur (un seul compte teacher en test → l'admin tient le rôle du second auteur) ; les liens de partage transmettaient DÉJÀ `grades` (la note « Lié » plus bas se trompait) · **Worktree / branche** : `../ubumaths-wt-categorie-fiche` · `feat/categorie-fiche` · **Maquette** : https://claude.ai/artifact/4NVjLSrbd7J7XNPzaC3cur
 
 ## Synthèse de la phase 0 (2026-11-19)
 
@@ -107,6 +107,6 @@ titres libres (« Préparation Bac Blanc 1 », « Produit scalaire »…).
 ## Lié
 
 - Niveau de la fiche imprimé sous le titre et au bas de page : PR #2891 (chantier `pied-gidouille`).
-  Le PDF de l'élève et celui d'un lien de partage n'ont pas les niveaux (fonction SQL sans
-  `grades`) : migration à décider, question d'accès « l'élève et le visiteur d'un lien de partage
-  pourront lire le niveau de la fiche ».
+  ⚠️ Corrigé le 2026-11-19 : les deux fonctions de partage rendent DÉJÀ `grades` (prod = dépôt,
+  md5 vérifié), et l'élève lit la ligne `worksheets` par la RLS. Aucune migration pour le niveau :
+  c'est le code (route élève, vue partagée) qui ne le transmet pas au PDF → PR 2.

@@ -49,6 +49,7 @@ contourner en silence.
 | 0038 | [Le contenu d'une trace : la graine, la réponse par case, les temps](0038-contenu-d-une-trace.md)                                        | 2026-11-11 |
 | 0039 | [Les blocs tortue et calcul sont interprétés par Chiphre, jamais évalués en JavaScript](0039-blocs-interpretes-par-chiphre.md)           | 2026-11-14 |
 | 0040 | [Le carnet de liaison : un lien par parent, des courriels sur exception](0040-carnet-de-liaison-lien-par-parent.md)                      | 2026-11-16 |
+| 0041 | [Catégorie et notions d'une fiche](0041-categorie-et-notions-d-une-fiche.md)                                                             | 2026-11-19 |
 
 ## Écrire un ADR
 
