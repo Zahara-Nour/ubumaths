@@ -1256,3 +1256,4 @@ dans le dépôt principal : reportés à la main dans `scripts/questions/ttechno
 - `security-auditor` : aucun finding (diff avec le lot 7 = en-tête, ids, codes, chemins, table temporaire, compte ; 057,
   067, 090 résolus au niveau notion par le premier `update`, déjà dans le gabarit ; prod relue en lecture : 7 brouillons
   sans nœud ni tag, points sur les nœuds attendus, chemins sans doublon).
+- CI de #2886 : garde « doc à jour » rouge (ligne `Doc-inchangée:` attendue dans un commit, pas dans la PR) → commit du journal avec la ligne.
