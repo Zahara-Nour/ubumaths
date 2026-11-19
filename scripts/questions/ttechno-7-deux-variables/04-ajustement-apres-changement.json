@@ -1,4 +1,5 @@
 {
+	"id": "80850db7-d658-4789-b273-bb73635e245d",
 	"title": "Ajustement affine après un changement de variable",
 	"description": "Droite donnée par la calculatrice après z = 1/y, t = x² ou z = log(y) : estimer y ; droite de Mayer calculée par les deux points moyens",
 	"grades": ["T_TECHNO"],

@@ -5,13 +5,13 @@ Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) · bornes 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, après #2874._
+_Mis à jour le 2026-11-19, lot 7 : migration écrite (§ 51)._
 
-- **État** : lots 0 à 5a et lot 6 publiés ; lot 5b : L9 publiée, L7 et L8 en brouillon (relus, prêts). **Lot 7 (deux variables, 6 modèles) : fichiers mergés (#2874)**, pas encore en prod (§ 50). Reste le lot 8 (§ 33).
-- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/ttechno-7-deux-variables --publier` (prod, `!`) ; puis vérifier les 6 brouillons (MCP), commiter les ids, migration de rangement et de tags (gabarit lot 6 : 050, 051, 052, 088 sur « changement de variable » aed5064f ; 053, 054 sur « ajustement affine » 61aaeaa9), page à cocher.
-- **En attente de David** : le `create-questions --publier` du lot 7 ; le `deploy:prod` qui livre #2839 (L7, L8).
-- **Pièges en cours** : `$` littéral (tableur) = `\$`, les accents graves ne protègent pas ; un point TTECHNO par modèle (trigger) ; tag = nœud DU POINT ; `publier-lot.ts` (simulation comprise) et `create-questions --publier` visent la prod : David les lance (`!`) ; L7 et L8 après le `deploy:prod` de #2839.
-- **Worktree / branche** : aucun (retiré après #2874).
+- **État** : lots 0 à 6 publiés (sauf L7, L8 du 5b). Lot 7 : 6 brouillons en prod (§ 51) ; migration de rangement et de tags + test écrits et commités sur `feat/questions-ttechno-lot7-tags` (9 verts, 5 rouges sans le corps), **PR pas encore ouverte**.
+- **Prochaine action** : verdict `security-auditor` sur la migration (lancé en fin de session ; s'il n'est pas noté au § 51, le relancer) → ouvrir la PR, CI verte, `check:migrations --pr <n>`, merge, `migration list --linked` puis `db:migrate` (4 conditions), vérifier en prod (MCP), page à cocher du lot 7.
+- **En attente de David** : le `deploy:prod` qui livre #2839 (L7, L8).
+- **Pièges en cours** : `$` littéral (tableur) = `\$` ; un point TTECHNO par modèle (trigger) ; tag = nœud DU POINT ; `publier-lot.ts` et `create-questions --publier` visent la prod : David les lance (`!`) ; dépôt principal : `1techno.md` modifié par une autre session bloque le pre-push (commit ffa0f252a de `main` local passe par cette branche).
+- **Worktree / branche** : `ubumaths-wt-questions-ttechno`, `feat/questions-ttechno-lot7-tags`.
 
 ## 1. Périmètre
 
@@ -1132,3 +1132,16 @@ seul lot de 6 modèles ; question d'accès : personne pour les brouillons, Tle t
 - Base locale : 6 brouillons ; aperçu admin (Chrome, `[::1]:5180`) : D1 trois nuages titrés ; D5 tableur
   `$F$1` affiché, réponse juste ; D2 repère t / y à 4 points.
 - **#2874 mergée (2026-11-19)**, CI verte. Worktree retiré.
+
+## 51. Lot 7 : prod, rangement et tags (2026-11-19)
+
+David a lancé `create-questions --publier` : 6 brouillons (50bf587d D1, 007822c5 D2, 68ee10e5 D3, 80850db7 D4,
+f88cc70d D5, 43f1fd84 D6), vérifiés par MCP (`draft`, `{T_TECHNO}`, sans nœud ni tag). Le script ne les a pas écrits
+dans les fichiers du dépôt principal (lancé d'ailleurs) : ids reportés à la main dans
+`scripts/questions/ttechno-7-deux-variables/`, d'après les titres.
+
+- Migration `20261119100631_questions_ttechno_lot7_rangement_tags` (gabarit lot 6 ; 050, 051, 052, 088 sur
+  « Statistiques > Statistique à deux variables > changement de variable », 053 et 054 sur « … > ajustement
+  affine »).
+- Test `tests/integration/questions-ttechno-lot7-rangement-tags.test.ts` : 9 verts ; corps retiré → 5 rouges ;
+  fichier restauré d'une copie, identique. `types:cliquet` tenu.

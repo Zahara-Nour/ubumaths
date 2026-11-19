@@ -1,4 +1,5 @@
 {
+	"id": "007822c5-baf3-49d7-afcc-40fad51bc13c",
 	"title": "Effectuer un changement de variable et représenter le nuage",
 	"description": "Tableau de valeurs transformées à compléter (t = x², z = 1/y, z = log(y)) ; points (t ; y) à placer dans un repère",
 	"grades": ["T_TECHNO"],
