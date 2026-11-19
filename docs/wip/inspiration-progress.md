@@ -2,10 +2,10 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19 : la proposition 4 est devenue le chantier `lecture-facilitee`._
+_Mis à jour le 2026-11-19 : la proposition 5 est livrée (#2922)._
 
-- **État** : une autre plateforme d'exercices étudiée ; 9 propositions passées une par une avec David. **5 retenues** (2, 3, 4, 5, et 10 = course de chevaux en réseau, apportée par David), **3 gardées pour plus tard** (7, 8, 9), **2 mises de côté** (1, 6). Rien de codé.
-- **Prochaine action** : 4 ouverte le 2026-11-19 (chantier `lecture-facilitee`, avec l'étude d'une police de maths Luciole) ; restent 2, 3, 5, 10 : choisir avec David la suivante (chacun = son worktree, sa phase 0 en français avant de coder).
+- **État** : 9 propositions passées avec David. **5 retenues** : 4 livrée (chantier `lecture-facilitee`), **5 livrée** (chantier `memes-nombres`, #2922) ; restent 2, 3, 10. **3 gardées pour plus tard** (7, 8, 9), **2 mises de côté** (1, 6).
+- **Prochaine action** : choisir avec David la suivante parmi 2 (multivue), 3 (réglages du diaporama), 10 (course de chevaux, s'appuie sur la 5) ; chacune = son worktree, sa phase 0 en français.
 - **En attente de David** : ce choix.
 - **Pièges en cours** : le bouton « Export PDF » de `/automaths/panier` n'est qu'une alerte « Fonctionnalité à venir » (`handleExportPDF`) : il n'existe aucun PDF de série.
 - **Worktree / branche** : aucun.
@@ -36,7 +36,7 @@ _Mis à jour le 2026-11-19 : la proposition 4 est devenue le chantier `lecture-f
 - Le PDF (option du prof sur une fiche) vient après.
 - Avant de coder : page d'essai Luciole + police des maths.
 
-**5. Lien de série : « Mêmes nombres pour tous ».** Case dans `SeriesLinkShare`, éteinte par défaut : le lien porte une graine, tous les élèves ont les mêmes questions (correction collective d'un devoir). Le lien court et le QR la conservent.
+**5. Lien de série : « Mêmes nombres pour tous ».** → livrée le 2026-11-19 (chantier `memes-nombres`, #2922). Case dans `SeriesLinkShare`, éteinte par défaut : le lien porte une graine, tous les élèves ont les mêmes questions (correction collective d'un devoir). Le lien court et le QR la conservent.
 
 - Pas de réglage « correction seulement si faux » ; le reste des réglages de son lien élève est déjà couvert par les formes de série ou hors sujet.
 - Phase 0 : vérifier qu'une même graine rend bien les mêmes nombres pour tous les modèles, et le comportement des lignes répétées.

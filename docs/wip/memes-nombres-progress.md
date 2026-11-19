@@ -4,13 +4,13 @@ Proposition 5 du chantier `inspiration` (docs/wip/inspiration-progress.md, déci
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, ouverture du chantier._
+_Mis à jour le 2026-11-19, après #2922._
 
-- **État** : phase 0 validée ; code, tests et doc faits, PR ouverte.
-- **Prochaine action** : CI verte → merge ; puis mettre à jour le journal `inspiration` (5 livrée).
-- **En attente de David** : rien.
-- **Pièges en cours** : la Course aux nombres affiche « Recommencer avec de nouvelles questions » mais redonne les mêmes (avant ce chantier, hors périmètre).
-- **Worktree / branche** : `../ubumaths-wt-memes-nombres` · `feat/memes-nombres`.
+- **État** : **chantier livré** (#2922 mergée, pas encore déployée) ; vérification manuelle notée dans `verifications-manuelles.md`.
+- **Prochaine action** : aucune ; à clore (versement dans `docs/systeme/` déjà fait, journal à archiver).
+- **En attente de David** : correction à part du libellé de fin de la Course aux nombres ? (« Recommencer avec de nouvelles questions » alors qu'elle redonne les mêmes, `TestCourse.handleRestart`, antérieur au chantier).
+- **Pièges en cours** : aucun.
+- **Worktree / branche** : supprimés.
 
 ---
 
