@@ -8,7 +8,7 @@ Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) · bornes 
 _Mis à jour le 2026-11-19, migration du lot 8 écrite (PR en cours)._
 
 - **État** : lots 0 à 7 publiés (sauf L7, L8 du 5b) ; lot 8 (loi binomiale, 7 modèles B1–B7) écrit, simulation verte, essayé en local (§ 55). Fichiers mergés (#2882).
-- **Prochaine action** : relancer `security-auditor` sur la migration (diff avec le lot 7 + relevé prod en lecture), puis PR de la migration nœud + tag (§ 56) : CI, `check:migrations --pr`, merge, `db:migrate` depuis le dépôt principal ; puis page à cocher, publication.
+- **Prochaine action** : PR de la migration nœud + tag (§ 56) : CI, `check:migrations --pr`, merge, `db:migrate` depuis le dépôt principal ; puis page à cocher, publication.
 - **En attente de David** : le `deploy:prod` qui livre #2839 (L7, L8), s'il ne vient pas d'être fait (vérifier `production`).
 - **Pièges en cours** : `$` littéral (tableur) = `\$` ; un point TTECHNO par modèle (trigger) ; tag = nœud DU POINT ; `publier-lot.ts` et `create-questions --publier` visent la prod : David les lance (`!`), ids reportés à la main si besoin ; `p^floor(…)` refusé par eval (passer par une variable) ; Chrome refuse `[::1]` : serveur `--host 127.0.0.1`.
 - **Worktree / branche** : `ubumaths-wt-questions-ttechno`, `feat/questions-ttechno-lot8-tags`.
@@ -1253,3 +1253,6 @@ dans le dépôt principal : reportés à la main dans `scripts/questions/ttechno
   « … > coefficients binomiaux », 069 et 091 sur « Probabilités > Loi binomiale > espérance et variance »).
 - Test `tests/integration/questions-ttechno-lot8-rangement-tags.test.ts` : 9 verts ; corps retiré → 5 rouges ;
   fichier restauré d'une copie, identique. `types:cliquet` tenu.
+- `security-auditor` : aucun finding (diff avec le lot 7 = en-tête, ids, codes, chemins, table temporaire, compte ; 057,
+  067, 090 résolus au niveau notion par le premier `update`, déjà dans le gabarit ; prod relue en lecture : 7 brouillons
+  sans nœud ni tag, points sur les nœuds attendus, chemins sans doublon).
