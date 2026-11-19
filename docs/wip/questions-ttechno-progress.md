@@ -1210,3 +1210,8 @@ p à un chiffre après la virgule ; calcul exact de Σ k·P(X = k) seulement pou
 - **Q40 — Découpage** : un seul lot de 7 modèles, une page à cocher ? Reco : **oui**.
 - **Question d'accès** (migration de tags, après écriture) : personne ne voit les brouillons ; une fois publiés, ils
   apparaissent au catalogue et au cahier de texte de Tle techno seulement. Personne ne perd rien.
+
+**Décisions (David, 2026-11-19, « je suis tes recos »)** : **Q36** B1 modèle de définition (ni 062 ni 089) ; **Q37**
+B2, B3 neufs, n ⩽ 10, originaux intacts ; **Q38** ` ```simulation ` à graine fixe, questions indépendantes du
+tirage ; **Q39** Python dans B4, B5, B7, tableur dans B6 ; **Q40** un seul lot de 7 ; question d'accès : personne
+pour les brouillons, Tle techno à la publication.
