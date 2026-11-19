@@ -1,4 +1,5 @@
 {
+	"id": "19b2b250-35c8-451d-b4fe-51374dbd2c13",
 	"title": "Est-ce une expérience aléatoire ?",
 	"description": "Reconnaître une expérience aléatoire (dé, pièce, sac, roue, cartes) parmi des situations au résultat connu d'avance (calcul, balle lâchée, jour suivant), une ou plusieurs à cocher",
 	"grades": ["CM1"],

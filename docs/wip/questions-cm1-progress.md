@@ -5,14 +5,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, lots 9a + 9b écrits (§ 26 ter), PR pas encore ouverte._
+_Mis à jour le 2026-11-19, lots 9a + 9b écrits et créés en brouillon en prod (§ 26 ter), PR en cours._
 
 - **État** : lots 0 à 8f publiés, **158 points du CM1 sur 171**. Lot 9 validé (§ 26 bis) : 9a + 9b (8 modèles,
   probabilités 123 à 128, proportionnalité 129, 130) écrits dans `scripts/questions/cm1-9ab/`, commités sur
   `content/questions-cm1-lot9ab` ; 9c (097, 104 : 4 constructions) reste à écrire.
-- **Prochaine action** : ouvrir la PR des fichiers 9ab (revue : aucune, contenu ; `Doc-inchangée: contenu`),
-  CI, merge ; puis David lance `create-questions --dir scripts/questions/cm1-9ab --publier` ; migration nœud +
-  tag (124 tague aussi CM2-109) ; prévenir `questions-cm2` (109, 087, 094 pris ici).
+- **Prochaine action** : PR des fichiers 9ab (revue : aucune, contenu ; `Doc-inchangée: contenu`), CI, merge ;
+  brouillons DÉJÀ en prod (ids commités) ; migration nœud + tag (124 tague aussi CM2-109) ; David relit puis
+  `publier-lot --publier` ; prévenir `questions-cm2` (109, 087, 094 pris ici).
 - **En attente de David** : rien.
 - **Pièges en cours** : création en prod = `pnpm tsx scripts/create-questions.ts --dir … --publier
 [--mettre-a-jour]`, depuis le worktree ; `--mettre-a-jour` ne touche JAMAIS un publié : le lancer AVANT
@@ -2309,3 +2309,5 @@ figure) ; 130 V3 (÷ une fois) = une seule utilisation de la linéarité ; jumea
   tous réussis, aucun `\textcolor` hors `$`.
 - Base locale (19 copies, une variation chacune), aperçus à 390 px (Playwright, port 5184) : aucun défilement
   horizontal, aucune erreur de console ; vus : rangement (attendu juste), roue à 4 parts, prix « 2,00 € ».
+- Brouillons créés en prod le 2026-11-19 (8 modèles, `status = draft`, vérifié au MCP) ; les `id` écrits par
+  `create-questions` sont commités dans les 8 fichiers.
