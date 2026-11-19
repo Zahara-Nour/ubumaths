@@ -2,15 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, code et tests écrits, PR à ouvrir._
+_Mis à jour le 2026-11-19, après #2914 : chantier clos._
 
-- **État** : `table-cell-inline.ts` (`tableCellMarkedInline`) + `TableNode.svelte` ; tests
-  `gras-cellule-tableau.svelte.test.ts` (5 rouges avant, 18 verts) ; doc `docs/systeme/ubumark.md`.
-- **Prochaine action** : typecheck, PR, revue `code-reviewer` + `security-auditor`, merge.
+- **État** : #2914 mergée (gras / italique / code dans une cellule sans trou). Revues : code-reviewer
+  (`a*b*c` corrigé), security-auditor (rien de bloquant).
+- **Prochaine action** : aucune. Vérification manuelle notée (`verifications-manuelles.md`), à faire
+  après `deploy:prod`.
 - **En attente de David** : rien.
-- **Pièges en cours** : le parseur de paragraphe met `3 * 4 * 5` et `x_1` en italique → deux gardes
-  (marque bordée d'espace, `_` dans un mot) ; une cellule n'affiche jamais lien ni champ (chat S1).
-- **Worktree / branche** : `../ubumaths-wt-gras-cellule-tableau`, branche `fix/gras-cellule-tableau`.
+- **Worktree / branche** : supprimés.
 
 ## 1. Phase 0 (validée par David le 2026-11-19, « oui »)
 
