@@ -10,6 +10,8 @@
 	- XSS protection via HTML escaping
 	- Responsive overflow handling
 	- Inline math rendering via <math-span>
+	- Marques en ligne (gras, italique, code) lues comme dans un paragraphe
+	  (`table-cell-inline.ts`) ; jamais de lien ni de champ de saisie
 	- Rendu de cellule personnalisable (`customCell`) : l'énoncé d'une question à
 	  trous y place ses champs de saisie ; sans lui, rendu inchangé
 
@@ -27,6 +29,8 @@
 	import type { GenericFunctionConfig } from '#lib/mathAST/parser/types.ts';
 	import { escapeHtml } from '../utils';
 	import MathInline from './MathInline.svelte';
+	import TextNode from './TextNode.svelte';
+	import { tableCellMarkedInline } from '../table-cell-inline';
 
 	interface Props {
 		header: TableCellNode[];
@@ -139,6 +143,29 @@
 
 <!-- Snippet to render cell content with math support -->
 {#snippet cellContent(content: string)}
+	{@const marked = tableCellMarkedInline(content)}
+	{#if marked}
+		<!-- Cellule à marques : texte avec gras / italique / code, et formules -->
+		{#each marked as node, i (i)}
+			{#if node.type === 'math-inline'}
+				<MathInline expression={node.expression} syntax={node.syntax} {genericFunctions} />
+			{:else}
+				<TextNode
+					content={node.content}
+					bold={node.bold}
+					italic={node.italic}
+					code={node.code}
+					detail={node.detail}
+				/>
+			{/if}
+		{/each}
+	{:else}
+		{@render plainCellContent(content)}
+	{/if}
+{/snippet}
+
+<!-- Rendu ordinaire : texte et formules -->
+{#snippet plainCellContent(content: string)}
 	{#each parseCellContent(content) as segment, i (i)}
 		{#if segment.type === 'math'}
 			<MathInline expression={segment.content} syntax={segment.syntax} {genericFunctions} />
