@@ -6,17 +6,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19 : lot 13 écrit (branche `feat/questions-ce2-lot13`)._
+_Mis à jour le 2026-11-19, après #2896 (lot 13 en fichiers, mergé)._
 
-- **État** : lots 1 à 12b publiés ; lot 13 (§ 20 : CE2-039 ×2, CE2-070 coté en cm ×3) écrit, specs vertes, PR à
-  ouvrir/merger. Q3 (lot 11) retirée : rien à changer. Restent sans modèle, par décision : 086, 043, 051, 065.
-- **Prochaine action** : après le merge, David lance `pnpm tsx scripts/create-questions.ts --dir
+- **État** : lots 1 à 12b publiés ; lot 13 (§ 20 : CE2-039 ×2, CE2-070 coté en cm ×3) mergé (#2896), pas encore
+  en base de prod. Q3 (lot 11) retirée : rien à changer. Restent sans modèle, par décision : 086, 043, 051, 065.
+- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir
 scripts/questions/ce2-13 --publier` depuis le worktree ; puis ids commités, migration nœud + tag (039 : nœud des
   longueurs ; 070 : « constructions »), page à cocher, publication ; puis clôture du chantier (versement).
 - **En attente de David** : le `create-questions --publier` ; vérification manuelle des lots 12b et 13.
 - **Pièges en cours** : coordonnées en flottants → arrondies ; `db:migrate` depuis un worktree : copier
   `supabase/.temp/{project-ref,linked-project.json,pooler-url}` ; Chrome ne lit pas `[::1]` (aperçu local non jouable).
-- **Worktree / branche** : `../ubumaths-wt-questions-ce2`, branche `feat/questions-ce2-lot13`.
+- **Worktree / branche** : `../ubumaths-wt-questions-ce2`, HEAD détaché sur `origin/main` ; branche `feat/questions-ce2-lot13-db`
+  à créer pour les ids et la migration.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -1144,3 +1145,4 @@ phrase périmée de `couvrir-un-niveau.md` est corrigée dans la PR du lot.
   de David sur 5173). Le geste (règle posée, aimantation au mm) → ligne de `verifications-manuelles.md`.
 - `create-questions` en simulation contre la prod : refusé par le mode auto (classifieur) → à lancer par David avec
   le `--publier`.
+- 2026-11-19 : #2896 mergée (CI verte ; revue : aucune, contenu). Ligne ajoutée à `verifications-manuelles.md`.
