@@ -28,6 +28,9 @@ couvre:
   - scripts/check-production-health.ts
   - scripts/side-effect-modules.ts
   - scripts/find-top-level-effects.ts
+  - scripts/garde-dev-depot-principal.sh
+  - scripts/surveillance-machine.sh
+  - scripts/surveillance-machine-installer.sh
 ---
 
 # Environnement de dev : la carte
@@ -137,6 +140,20 @@ un commit (`Doc-inchangée: …` / `Doc-reportée: …`). `--no-verify` n'a plus
 **Ports.** 5173 = le serveur de David, jamais touché · 5176 et suivants = worktrees. ⛔ **Aucun serveur de dev
 dans le dépôt principal** (cf. [claude-md-pourquoi.md](claude-md-pourquoi.md#commandes)). Toujours `pnpm dev --port <n> --strictPort` (sans `--` : il ferait ignorer le port).
 `pnpm kill:servers` est interdit depuis un worktree (il tue 5173 et Supabase).
+
+**Garde de `pnpm dev`** : `scripts/garde-dev-depot-principal.sh` passe devant `vite dev` et refuse de
+démarrer dans le dépôt principal (pas en CI). Un `pnpm dev` qui sort en ⛔ = se mettre dans un worktree.
+
+**Surveillance du Mac mini** (après le gel du 2026-11-19) : `scripts/surveillance-machine.sh`, lancé
+toutes les 5 min par launchd (`pnpm surveillance:installer`, `--desinstaller` pour la retirer).
+
+- serveur de dev dans le dépôt principal → **arrêté**, et signalé ;
+- serveur de dev de plus de 1,5 Go ou de plus de 6 h, Chrome au-delà de 300 % de CPU ou de 60
+  onglets, swap au-delà de 85 % → **signalés seulement** (seuils en tête du script) ;
+- signalement = notification ntfy.sh sur l'iPhone (canal aléatoire dans
+  `~/.config/surveillance-machine/ntfy-topic`, message sans chemin ni nom de projet) + journal
+  `~/.local/state/surveillance-machine/journal.log` ; même alerte renvoyée au plus une fois par heure.
+- `pnpm surveillance:essai` : ce qu'elle ferait maintenant, sans rien arrêter ni envoyer.
 
 **Tester depuis le MacBook ou l'iPhone (Tailscale)** : [tester-sur-un-autre-appareil.md](tester-sur-un-autre-appareil.md)
 (tunnel SSH, `--host`, Tailscale Serve ; cookie `Secure`, Supabase local, limiteur de connexion).
