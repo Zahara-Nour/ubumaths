@@ -8,8 +8,13 @@
 # Ce qu'elle fait :
 # - serveur de dev dans le dépôt principal → l'ARRÊTE (cas sûr : on le relance
 #   en une commande, et la règle l'interdit) et prévient ;
-# - serveur de dev trop gros ou trop vieux, Chrome trop gourmand, swap trop plein
-#   → prévient seulement.
+# - serveur de dev trop gros ou trop vieux, Chrome trop gourmand, swap trop plein,
+#   extension de Chrome ou de Brave bloquée (CPU au plafond, des heures de CPU
+#   cumulées : 2 extensions à 100 % pendant 10 jours le 2026-11-19) → prévient
+#   seulement ;
+# - swap au-delà de SEUIL_MENAGE_SWAP (gel proche) → lance menage-machine.sh
+#   (onglets Chrome gourmands fermés, serveurs de dev oubliés arrêtés) et en
+#   envoie le résumé.
 # Alerte = notification ntfy.sh (canal au nom aléatoire, lu dans
 # ~/.config/surveillance-machine/ntfy-topic) + ligne dans le journal. Le message
 # envoyé ne contient que des chiffres et des ports : ni chemin, ni nom de projet.
@@ -27,13 +32,18 @@ SEUIL_SERVEUR_MO="${SEUIL_SERVEUR_MO:-1500}"         # mémoire d'un serveur de 
 SEUIL_SERVEUR_HEURES="${SEUIL_SERVEUR_HEURES:-6}"    # âge d'un serveur de dev
 SEUIL_CHROME_CPU="${SEUIL_CHROME_CPU:-600}"          # CPU cumulé de Chrome, en %
 SEUIL_CHROME_ONGLETS="${SEUIL_CHROME_ONGLETS:-60}"   # processus d'onglets Chrome
+SEUIL_EXTENSION_CPU="${SEUIL_EXTENSION_CPU:-90}"      # CPU d'un processus d'extension, en %
+SEUIL_EXTENSION_HEURES="${SEUIL_EXTENSION_HEURES:-1}" # temps CPU cumulé de ce processus
 SEUIL_SWAP_POURCENT="${SEUIL_SWAP_POURCENT:-85}"     # swap utilisé / swap total
+SEUIL_MENAGE_SWAP="${SEUIL_MENAGE_SWAP:-95}"         # swap au-delà duquel le ménage part seul
 SURVEILLANCE_RAPPEL_MIN="${SURVEILLANCE_RAPPEL_MIN:-60}"
+SURVEILLANCE_MENAGE_PAUSE_MIN="${SURVEILLANCE_MENAGE_PAUSE_MIN:-15}"
 
 ETAT="${SURVEILLANCE_ETAT:-$HOME/.local/state/surveillance-machine}"
 CONFIG="${SURVEILLANCE_CONFIG:-$HOME/.config/surveillance-machine}"
 NTFY_SERVEUR="${NTFY_SERVEUR:-https://ntfy.sh}"
 TUER="${SURVEILLANCE_TUER:-kill}"
+MENAGE="${SURVEILLANCE_MENAGE:-$(dirname "$0")/menage-machine.sh}"
 JOURNAL="$ETAT/journal.log"
 
 essai=0
@@ -95,35 +105,9 @@ marquer() {
 	a_marquer+=("$1")
 }
 
-# Âge en secondes d'un champ etime de ps : [[jj-]hh:]mm:ss.
-secondes_depuis_etime() {
-	local e="$1" jours=0 h=0 m=0 s=0
-	if [[ "$e" == *-* ]]; then
-		jours="${e%%-*}"
-		e="${e#*-}"
-	fi
-	IFS=: read -r -a parts <<<"$e"
-	case "${#parts[@]}" in
-	3) h="${parts[0]}" m="${parts[1]}" s="${parts[2]}" ;;
-	2) m="${parts[0]}" s="${parts[1]}" ;;
-	*) s="${parts[0]}" ;;
-	esac
-	echo $(((10#$jours * 86400) + (10#$h * 3600) + (10#$m * 60) + 10#$s))
-}
-
-# Dossier git commun de NOTRE dépôt (celui du script, ou SURVEILLANCE_DEPOT) : un
-# `vite dev` d'un autre projet n'est jamais arrêté.
-DEPOT_COMMUN="$(git -C "${SURVEILLANCE_DEPOT:-$(dirname "$0")}" rev-parse --path-format=absolute --git-common-dir 2>/dev/null || true)"
-
-# Vrai si <dossier> est dans le dépôt principal de NOTRE dépôt (pas un worktree
-# lié, pas un autre projet) : même règle que garde-dev-depot-principal.sh.
-dans_depot_principal() {
-	[ -n "$DEPOT_COMMUN" ] || return 1
-	local dossier_git dossier_commun
-	dossier_git="$(git -C "$1" rev-parse --path-format=absolute --git-dir 2>/dev/null)" || return 1
-	dossier_commun="$(git -C "$1" rev-parse --path-format=absolute --git-common-dir 2>/dev/null)" || return 1
-	[ "$dossier_commun" = "$DEPOT_COMMUN" ] && [ "$dossier_git" = "$dossier_commun" ]
-}
+# shellcheck source=machine-commun.sh
+source "$(dirname "$0")/machine-commun.sh"
+initialiser_depot "$(dirname "$0")"
 
 # ── Contrôles ──────────────────────────────────────────────────────────────────
 
@@ -135,14 +119,12 @@ fi
 
 alertes=()
 
-# 1. Serveurs de dev : le processus node qui exécute vite (pas l'enveloppe pnpm,
-# ni le `sh -c "… && vite dev"` du script `dev`).
+# 1. Serveurs de dev.
 while read -r pid rss etime commande; do
 	[ -n "$pid" ] || continue
-	dossier="$(lsof -a -p "$pid" -d cwd -Fn 2>/dev/null | sed -n 's/^n//p' | head -1)"
+	dossier="$(dossier_du_processus "$pid")"
 	[ -n "$dossier" ] || continue
-	port="$(sed -n 's/.*--port[= ]\([0-9]*\).*/\1/p' <<<"$commande")"
-	port="${port:-?}"
+	port="$(port_de_commande "$commande")"
 	mo=$((rss / 1024))
 	heures=$(($(secondes_depuis_etime "$etime") / 3600))
 
@@ -164,13 +146,14 @@ while read -r pid rss etime commande; do
 			journaliser "alerte : serveur de dev :$port (pid $pid, $mo Mo, ${heures} h) dans $dossier"
 		fi
 	fi
-done < <(ps -Ao pid=,rss=,etime=,command= | awk '$4 ~ /(^|\/)node$/ && /vite(\.js)? dev/ {print}')
+done < <(serveurs_vite)
 
-# 2. Chrome : CPU cumulé et nombre de processus d'onglets.
+# 2. Chrome : CPU cumulé et nombre de processus d'onglets (Chrome de /Applications
+#    seulement : le Chrome for Testing de Playwright n'est pas celui de David).
 read -r chrome_cpu chrome_onglets chrome_actifs < <(
 	ps -Ao pcpu=,command= | awk '
-		/Google Chrome/ { cpu += $1 }
-		/Google Chrome/ && /--type=renderer/ { onglets++; if ($1 > 20) actifs++ }
+		/\/Applications\/Google Chrome\.app\// { cpu += $1 }
+		/\/Applications\/Google Chrome\.app\// && /--type=renderer/ { onglets++; if ($1 > 20) actifs++ }
 		END { printf "%d %d %d\n", cpu, onglets, actifs }'
 )
 if [ "$chrome_cpu" -gt "$SEUIL_CHROME_CPU" ] || [ "$chrome_onglets" -gt "$SEUIL_CHROME_ONGLETS" ]; then
@@ -181,12 +164,29 @@ if [ "$chrome_cpu" -gt "$SEUIL_CHROME_CPU" ] || [ "$chrome_onglets" -gt "$SEUIL_
 	fi
 fi
 
-# 3. Swap : « total = 12288.00M  used = 11540.94M  free = 747.06M ».
-read -r swap_total swap_utilise < <(
-	sysctl -n vm.swapusage | awk '{
-		for (i = 1; i <= NF; i++) { if ($i == "total") t = $(i + 2); if ($i == "used") u = $(i + 2) }
-		printf "%d %d\n", t, u }'
-)
+# 2 bis. Extensions bloquées : CPU au plafond ET des heures de CPU cumulées (un pic
+#    bref n'en est pas une). Jamais arrêtées : on ne sait pas laquelle c'est.
+#    time= de ps (macOS) : « minutes:secondes.centièmes ».
+while read -r pid cpu temps commande; do
+	[ -n "$pid" ] || continue
+	case "$commande" in
+	*"/Applications/Google Chrome.app/"*) navigateur=Chrome ;;
+	*"/Applications/Brave Browser.app/"*) navigateur=Brave ;;
+	*) continue ;;
+	esac
+	cpu_entier="${cpu%%.*}"
+	heures_cpu=$(($(secondes_depuis_etime "${temps%%.*}") / 3600))
+	[ "$cpu_entier" -ge "$SEUIL_EXTENSION_CPU" ] && [ "$heures_cpu" -ge "$SEUIL_EXTENSION_HEURES" ] || continue
+	if a_renvoyer "extension-$pid"; then
+		alertes+=("Extension $navigateur bloquée : $cpu_entier % CPU, $heures_cpu h de CPU cumulées.")
+		marquer "extension-$pid"
+		journaliser "alerte : extension $navigateur (pid $pid) $cpu_entier % CPU, $heures_cpu h de CPU"
+	fi
+done < <(ps -Ao pid=,pcpu=,time=,command= | awk '/--extension-process/')
+
+# 3. Swap.
+swap_pourcent=0
+read -r swap_total swap_utilise < <(lire_swap)
 if [ "${swap_total:-0}" -gt 0 ]; then
 	swap_pourcent=$((swap_utilise * 100 / swap_total))
 	if [ "$swap_pourcent" -ge "$SEUIL_SWAP_POURCENT" ]; then
@@ -195,6 +195,21 @@ if [ "${swap_total:-0}" -gt 0 ]; then
 			marquer swap
 			journaliser "alerte : swap $swap_pourcent % ($swap_utilise Mo / $swap_total Mo)"
 		fi
+	fi
+fi
+
+# 4. Gel proche : ménage automatique (au plus une fois par SURVEILLANCE_MENAGE_PAUSE_MIN).
+if [ "$swap_pourcent" -ge "$SEUIL_MENAGE_SWAP" ]; then
+	marque_menage="$ETAT/menage"
+	derniere=0
+	[ -f "$marque_menage" ] && derniere="$(cat "$marque_menage" 2>/dev/null || echo 0)"
+	if [ $(($(date +%s) - derniere)) -ge $((SURVEILLANCE_MENAGE_PAUSE_MIN * 60)) ]; then
+		options=()
+		[ "$essai" = 1 ] && options=(--essai)
+		resume="$(/bin/bash "$MENAGE" ${options[@]+"${options[@]}"} 2>/dev/null | tail -1)"
+		[ "$essai" = 1 ] || date +%s >"$marque_menage"
+		alertes+=("${resume:-Ménage : échec du lancement.}")
+		journaliser "ménage automatique (swap $swap_pourcent %) : $resume"
 	fi
 fi
 
