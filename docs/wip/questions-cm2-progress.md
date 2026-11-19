@@ -6,21 +6,24 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, phase 0 du lot 15 proposée._
+_Mis à jour le 2026-11-19, lot 15 écrit (§ 23.2), pas encore en PR._
 
-- **État** : lots 0 à 14b publiés (lot 14b : 6 modèles, § 22.4). Restent les lots 15 à 19 du § 14 (15 sans 109,
-  18 sans 087 ni 094 : § 21.1 ; 19 réduit à CM2-102 : § 19.4).
-- **Prochaine action** : écrire le lot 15 (§ 23.1 : décisions prises).
+- **État** : lots 0 à 14b publiés. Lot 15 (probabilités, 5 modèles : 110 à 114) écrit sur `feat/questions-cm2-lot15`
+  (poussée) : specs vertes, invariants 0 défaut, `create-questions` simulation verte, 5 brouillons en base LOCALE
+  (`4530b442`, `0a56c35f`, `e0588bdd`, `50dad94f`, `da0e69b3`). Aperçu à 390 px : 19 variations sans erreur console ni
+  débordement, mais captures à refaire (la page défile dans un conteneur : `apercu15b.mjs` du scratchpad, hauteur 4200,
+  à relancer ; m2 V3, la roue, pas vue). Restent ensuite les lots 16 à 19 du § 14.
+- **Prochaine action** : serveur d'essai sur 5186, refaire et lire les captures du lot 15 ; puis PR des fichiers
+  (« revue : aucune, contenu », `Doc-inchangée: contenu`), CI, merge ; puis David lance `create-questions --publier`.
 - **En attente de David** : rien.
 - **Pièges en cours** : `Doc-inchangée:` dans un COMMIT ; sujet de commit en minuscule, corps ≤ 100 caractères par ligne.
   `migration:horodatage` = heure réelle UTC ; une autre migration en attente → stop avant `db:migrate` (worktree remis
   sur `origin/main` d'abord). `db:migrate` depuis le worktree : `supabase/.temp` copié. `create-questions` /
   `publier-lot` refusés au classifieur : David les lance (`!`). Port 5179 pris par `questions-ttechno` : serveur
-  d'essai sur 5186. `de` + `{{if}}` ne s'élide pas. Contrôler les invariants à part (§ 21.3, 22.2 : il a trouvé un
-  défaut que les specs ne voyaient pas). La page à cocher ne dessine pas ` ```circulaire ` (§ 21.4). Index du dépôt
-  principal partagé : `git commit -- <fichier>`, et un `push` de `main` emporte les commits locaux des autres sessions.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, détaché sur `origin/main` (#2895 mergée, branches locales
-  supprimées) ; la publication ne demande pas de branche.
+  d'essai sur 5186. `de` + `{{if}}` ne s'élide pas. ` ```probtree ` impose des nombres sur ses branches,
+  ` ```tableau-croise ` refuse le texte (§ 23.2). Aucun message par réponse fausse (`feedback.incorrect` jamais affiché).
+  Index du dépôt principal partagé : `git commit -- <fichier>`.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, branche `feat/questions-cm2-lot15`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -1745,3 +1748,22 @@ Recommandations suivies (« je valide ») : (a) niveaux 3 et 4 (événements : 1
 111, 112), 3 (Expériences aléatoires : 113) ; (b) 111 : « 1 chance sur 3 » pour « 2 chances sur 6 » refusé, avec un
 message (« compte toutes les issues ») ; (c) 114 : arbre ou tableau donné, l'élève compte (rien à inscrire dans
 `outils-manquants.md`) ; (d) un seul lot de 5 modèles.
+
+### 23.2 Lot 15 : écriture (2026-11-19)
+
+- **114 tout en tableau** (David, 2026-11-19, question posée pendant l'écriture) : ` ```probtree ` impose un nombre sur
+  chaque branche (fraction, décimal, ou « … » qui fait case à remplir), sans option pour le cacher ; or le CM2 n'écrit
+  pas de fractions en probabilités. Les 3 variations donnent les issues dans un tableau **markdown** (` ```tableau-croise `
+  refuse une case en texte, « PF » : « n'est pas un nombre »). Arbre sans nombres : non inscrit (décision c).
+- `docs/wip/questions/lot-cm2-15.py` → `scripts/questions/cm2-15/` (5 modèles, 19 variations, sans `theme` / `domain` /
+  `subdomain`). `question:specs --instances 300` : 59 specs vertes, 5 700 tirages réussis, aucun `\textcolor` hors `$` ;
+  `create-questions` en simulation (prod) : 5 à créer, 0 en base.
+- **Contrôle des invariants à part** (script du scratchpad) : les 1 727 tirages possibles énumérés, réponse recalculée
+  par comptage direct (faces, jeu de 52 cartes construit, boules, issues des deux étapes par produit cartésien,
+  comparaisons en fractions exactes) : 0 défaut.
+- Écart à la décision (b) : un message attaché à une réponse fausse n'existe pas (`correction.feedback.incorrect` n'est
+  affiché nulle part) ; « 1 sur 3 » est jugé faux (deux cases, 1 ≠ 2 et 3 ≠ 6), et le corrigé dit pourquoi (« on ne
+  simplifie pas : “1 chance sur 3” ne dit pas combien il y a d'issues »).
+- Écart à la phase 0 : 112 en 5 variations (deux sacs de même total ; à « une chance sur deux » ; deux sacs de même
+  nombre de rouges, l'erreur « le sac le plus plein » ; deux roues de 4 et 8 parts ; deux évènements d'un dé) ; 110 V3
+  (roue numérotée) remplacée par le jeu de 52 cartes (le bloc ` ```partage ` ne numérote pas ses parts).
