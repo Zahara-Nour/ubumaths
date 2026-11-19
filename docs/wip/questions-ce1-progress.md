@@ -5,22 +5,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, lot 12 et `cp-figure/` publiés._
+_Mis à jour le 2026-11-19, lot 13 écrit (§ 20)._
 
-- **État** : lot 12 (`ce1-12/`, 5 modèles) et `cp-figure/` (3 modèles, dont `a7dfe502` = CE1-073) **publiés** ;
-  migration du lot jouée et vérifiée. Prod : 100 points sur 107 (restent 001, 002, 074 ; 4 points D hors appli).
-- **Prochaine action** : phase 0 du lot 001, 002, 003 + 074 et fin de 072 (triangle, triangle rectangle, cercle)
-  dans un worktree neuf depuis `origin/main` (l'ancien, `chore/questions-ce1-lot12-rangement`, est mergé).
+- **État** : lot 13 (`ce1-13/`, 5 modèles : 001, 002, 003, 074 ×2) écrit, tout vert ; PR des fichiers ouverte.
+  Prod : 100 points sur 107 ; après ce lot, 001, 002, 074 couverts (103, les 4 D hors appli).
+- **Prochaine action** : merge de la PR ; `create-questions --publier` (David) ; PR rangement + tags : 5 neufs, et
+  `aaebfe52` → CE1-001, `2fafe84d` → CE1-002 avec le niveau CE1 ajouté (§ 20, décision 1) ; page à cocher ; publication.
 - **En attente de David** : essai tablette des cases « figure » (`verifications-manuelles.md`, ne bloque plus) ;
   futur chantier « `\textcolor` hors formule » (53 fichiers de lots).
-- **Pièges en cours** : jamais de variable `e` ni `i` ; **mots en couleur dans le texte = `colt()`
-  (`$\textcolor{…}{\text{…}}$`), jamais `\textcolor` nu** ; points invisibles (`visible=faux`) jamais nommés dans le
-  corrigé ; **niveaux : relever la catégorie juste avant la publication** ; `publier-lot` = tout le dossier ou rien ;
-  horodatage `pnpm migration:horodatage`, `check:migrations --pr <n>` ; `db:migrate` : dry-run d'abord ; commitlint :
-  sujet sans majuscule, corps ≤ 100 colonnes ; shards navigateur : « Browser connection was closed » = relancer ;
-  `create-questions --mettre-a-jour` refusé au mode auto ; worktree neuf : `svelte-kit sync` avant `tsx`.
-- **Worktree / branche** : `../ubumaths-wt-questions-ce1` sur `chore/questions-ce1-lot12-rangement` (mergée) :
-  à retirer, nouvelle branche pour le lot suivant.
+- **Pièges en cours** : jamais de variable `e` ni `i` ; mots en couleur = `colt()` ; `{{if:…}}` : jamais `||` dans la
+  condition (le `|` sépare les branches), `mod(d,10)` ; droite de l'équerre orientée par $[AB]$ (§ 20) ; niveaux relevés
+  juste avant la publication ; `publier-lot` = tout le dossier ou rien ; port 5176 pris par une autre session.
+- **Worktree / branche** : `../ubumaths-wt-questions-ce1` sur `feat/questions-ce1-lot13`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-26)
 
@@ -936,3 +932,49 @@ Décisions :
   cocher https://claude.ai/artifact/XD4LxzMPgKdUxQgwyZXw6F (8 fiches ; alertes : solutions de `figure-a-completer`
   et `figure-de-travail` non dessinées). `publier-lot` simulé 5/5 et 3/3, puis `--publier` (David) : 8 publiés,
   vérifiés en base. Aucun verdict enregistré sur la page (collection vide).
+
+## 20. Lot 13 : 001, 002, 003, 074 et fin de 072 — phase 0 (2026-11-19)
+
+Relevé MCP du 2026-11-19 :
+
+- **001, 002, 074** : aucun modèle. **003** : `8cd98206` (« Unités, dizaines et centaines », texte).
+- **072** : déjà **trois** modèles publiés, `973bf62d` (carré, rectangle obliques), `d0f7d7a8` (cercle de centre donné
+  sur quadrillage) et `e50d512d` (triangle rectangle en carreaux), ces deux-là venus du lot 12b du CE2. Reste le
+  **triangle quelconque**. Le juge ne le sait que sur papier uni (compas, report, règle graduée) : sur quadrillage,
+  `triangle` est refusé, sauf le triangle rectangle.
+- Modèles du CE2 (lot `ce2-11`, collection à centaines), sur le même nœud « dénombrement » que CE1-001 et 002 :
+  `aaebfe52` « Dénombrer des plaques, des barres et des cubes » (c, d, u de 1 à 9 : ≤ 999, tout dans les bornes du
+  CE1) ; `2fafe84d` « Construire un nombre de 100 à 999 avec le matériel » (dans les bornes) ; `4df6c483`
+  « … plus de dix objets d'un rang » **dépasse 1 000** (v2 jusqu'à 1 009, v3 en milliers) : pas pour le CE1.
+- Un point par programme (règle 2 de l'ADR 0020) : `aaebfe52` et `2fafe84d` n'ont qu'un point CE2 ; un point CE1
+  du même nœud est admis.
+
+| Fichier / modèle               | Point   | Sous-notion   | Variations                                                                                                                                                                                 |
+| ------------------------------ | ------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `aaebfe52` (tag)               | CE1-001 | dénombrement  | tel quel ; + niveau CE1                                                                                                                                                                    |
+| `2fafe84d` (tag)               | CE1-002 | dénombrement  | tel quel ; + niveau CE1                                                                                                                                                                    |
+| `01-denombrer-plus-de-dix-ce1` | CE1-001 | dénombrement  | collection, total ≤ 999 : plus de dix cubes (2 c, 3 d, 17 u) ; plus de dix barres (2 c, 27 d, 4 u) ; les deux (2 c, 27 d, 14 u) → `Il y a [_] cubes`                                       |
+| `02-construis-la-commande`     | CE1-002 | dénombrement  | `construire:` d'après une écriture non canonique : « 2 centaines, 15 dizaines et 3 unités » (353) ; « 17 dizaines et 8 unités » ; « 9 centaines et 10 dizaines » (1 000)                   |
+| `03-plaques-carnets-timbres`   | CE1-003 | décomposition | BO « 235 timbres » : plaques de 100, carnets de 10, timbres seuls ; une commande donnée, une autre à compléter (1 plaque, [_] carnets, 5 timbres ; 0 plaque…) ; combien de carnets en tout |
+| `04-trace-a-la-regle-graduee`  | CE1-074 | constructions | papier uni : `segment AB = 6 cm` (cm entiers, 3 à 10) ; puis sur une demi-droite donnée `sur [Ax)`                                                                                         |
+| `05-equerre-et-compas`         | CE1-074 | constructions | papier uni : angle droit à l'équerre (`triangle ABC : CAB = 90`) ; cercle de centre $O$ passant par $A$ au compas ; cercle de rayon 3 cm (compas ouvert sur la règle)                      |
+
+Erreurs typiques dans les `testSpecs` : chiffres juxtaposés (2 c, 3 d, 17 u → 2317 au lieu de 247 ; 2 c, 27 d,
+4 u → 2274 au lieu de 474) ; plus de dix ignorés (2 c, 27 d, 14 u → 2 c, 7 d, 4 u = 274) ; commande sans les carnets ;
+segment tracé d'une graduation de trop (7 cm pour 6).
+
+**Question d'accès** : personne ne lit rien de plus — modèles neufs en brouillon (admin seul) ; la migration range,
+tague et ajoute le niveau CE1 à deux modèles déjà publiés, aucune règle d'accès ne change.
+
+Décisions (David, « je te suis », 2026-11-19) :
+
+1. `aaebfe52` → CE1-001 et `2fafe84d` → CE1-002, niveau CE1 ajouté (une seule note de difficulté pour les deux
+   niveaux).
+2. Triangle quelconque de 072 : ligne 47 de `outils-manquants.md`, hors du lot.
+3. 074 en deux modèles (règle graduée ; équerre et compas) ; milieu par pliage hors appli.
+
+- 2026-11-19 : lot 13 écrit (`lot-ce1-13.py`, `scripts/questions/ce1-13/`) : 5 modèles, 66 specs ; `create-questions`
+  simulé 5/5 ; `question:specs` 7 000 tirages verts, aucun `\textcolor` hors formule ; `sonde-collections` 600 blocs
+  et `sonde-figures` 600 blocs, 0 problème ; 5 brouillons en base locale. **Piège** : la droite de l'équerre s'écrit
+  `droite(A ; A + AB tourné d'un quart de tour)` (`perpendicularThrough`) : avec $B$ à gauche de $A$, le second point
+  part vers le bas. Aperçu admin non joué : Chrome n'ouvre pas `http://[::1]:5177`.
