@@ -59,7 +59,7 @@ async function numbersShown(query: Record<string, string>): Promise<string[]> {
 		numbers = [...(main.textContent ?? '').matchAll(/Nombre tiré : (\d{6})/g)].map((m) => m[1]);
 		expect(numbers.length).toBeGreaterThan(0);
 	});
-	screen.unmount();
+	await screen.unmount();
 	main.remove();
 	return numbers;
 }
@@ -131,7 +131,7 @@ describe('« Mêmes nombres pour tous » : Recommencer', () => {
 		await vi.waitFor(() => expect(button(main, 'Voir la correction')).toBeDefined());
 		const after = shown(main);
 
-		screen.unmount();
+		await screen.unmount();
 		main.remove();
 		return { before, after };
 	}
