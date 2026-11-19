@@ -195,9 +195,7 @@ export const POST: RequestHandler = async ({ locals, params }) => {
 		}
 	}
 
-	// Les notions de la fiche (ADR 0041), dans leur ordre d'impression. La garde
-	// du nombre de notions est vérifiée à la fin de l'insertion : la catégorie
-	// de la copie est déjà posée.
+	// Les notions de la fiche (ADR 0041), dans leur ordre d'impression.
 	const { data: notions, error: notionsError } = await locals.supabase
 		.from('worksheet_classifications')
 		.select('node_id, position')

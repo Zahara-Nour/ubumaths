@@ -13,6 +13,7 @@
 	import ClassificationNodePicker from '#lib/components/questions/ClassificationNodePicker.svelte';
 	import { indexNodes, type TreeNode } from '#lib/questions/classification-tree.ts';
 	import type { WorksheetClassificationView } from '#lib/types/worksheets.ts';
+	import { notionLabel } from '#lib/worksheets/worksheet-title.ts';
 
 	// ============================================================================
 	// Props
@@ -72,11 +73,11 @@
 				<li
 					class="flex items-center gap-1 rounded-full border bg-muted/40 py-0.5 pr-1 pl-2.5 text-sm"
 				>
-					<span>{notion.name}</span>
+					<span>{notionLabel(notion.name)}</span>
 					<button
 						type="button"
 						class="rounded-full p-0.5 text-muted-foreground hover:bg-muted hover:text-foreground"
-						aria-label="Retirer {notion.name}"
+						aria-label="Retirer {notionLabel(notion.name)}"
 						onclick={() => remove(notion.node_id)}
 						{disabled}
 					>

@@ -302,6 +302,16 @@ describe('nombre de notions', () => {
 		});
 	});
 
+	it('titre composé de plus de 255 caractères : refusé, rien d’écrit', async () => {
+		const longIds: string[] = [];
+		for (let i = 0; i < 6; i++) {
+			longIds.push(await node('notion', branchId, `${RUN} ${'notion longue '.repeat(3)}${i}`));
+		}
+		const id = await worksheet('worksheet', 'technical_practice', [suitesId], false);
+		expect(await save(id, { notions: longIds })).toMatch(/trop long/i);
+		expect((await stored(id)).notions).toEqual([suitesId]);
+	});
+
 	it('une branche n’est pas une notion : refusé', async () => {
 		const id = await worksheet('worksheet', null);
 		expect(await save(id, { notions: [branchId] })).toMatch(/notion/i);

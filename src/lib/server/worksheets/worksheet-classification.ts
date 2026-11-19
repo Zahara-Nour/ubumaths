@@ -72,10 +72,15 @@ export type ClassificationPlan =
 /** Ce qu'une fiche peut porter : une notion ou une sous-notion, jamais une branche */
 const CLASSIFIABLE_KINDS = new Set(['notion', 'subnotion']);
 
+/** Longueur maximale d'un titre (contrainte `worksheets_title_check`) */
+const TITLE_MAX_LENGTH = 255;
+
 const MESSAGES = {
 	categoryType: 'Seule une fiche d’exercices a une catégorie.',
 	unknownNode: 'Choisis une notion ou une sous-notion de l’arbre.',
 	duplicate: 'Une même notion ne peut pas être choisie deux fois.',
+	titleTooLong:
+		'Le titre composé de ces notions est trop long (255 caractères au plus) : retire une notion, ou écris un titre libre.',
 	emptyTitle:
 		'Sans titre libre, la fiche a besoin d’une notion ou d’une catégorie : choisis-en une, ou écris un titre.'
 } as const;
@@ -185,6 +190,7 @@ export async function prepareClassification(
 			notions.map((id) => names.get(id) ?? '')
 		);
 		if (title === '') return { ok: false, message: MESSAGES.emptyTitle };
+		if (title.length > TITLE_MAX_LENGTH) return { ok: false, message: MESSAGES.titleTooLong };
 		update.title = title;
 	}
 
@@ -216,7 +222,7 @@ export async function applyClassification(
 				.in('node_id', removed)
 				.select('node_id');
 			if (error || data?.length !== removed.length) {
-				throw new Error(`notions en trop non retirées : ${error?.message ?? 'refus silencieux'}`);
+				throw new Error(`notions non retirées : ${error?.message ?? 'refus silencieux'}`);
 			}
 		}
 	}
