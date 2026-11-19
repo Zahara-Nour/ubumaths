@@ -233,6 +233,21 @@ describe('surveillance-machine', () => {
 		expect(envois()).toContain('Serveur de dev :5182 : 195 Mo, 26 h.');
 	});
 
+	it('Chrome à ~600 % avec quelques onglets actifs : pas d’alerte (usage courant)', () => {
+		const onglet = '/Applications/Google Chrome.app/Helper (Renderer) --type=renderer';
+		machine({
+			processus: [],
+			dossiers: {},
+			swap: SWAP_CALME,
+			chrome: [
+				'100.0 /Applications/Google Chrome.app/Helper --type=gpu-process',
+				...Array.from({ length: 5 }, () => `99.0 ${onglet}`)
+			]
+		});
+		lancer();
+		expect(envois()).toBe('');
+	});
+
 	it('Chrome emballé et swap plein : signalés', () => {
 		const onglet = '/Applications/Google Chrome.app/Helper (Renderer) --type=renderer';
 		machine({
