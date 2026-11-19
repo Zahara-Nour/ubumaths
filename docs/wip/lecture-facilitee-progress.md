@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, PR 3 ouverte (jeu écran Luciole Math)._
+_Mis à jour le 2026-11-19, après #2889._
 
-- **État** : PR 3 sur `feat/lecture-facilitee-mathlive` : jeu `luciole` (`static/fonts/luciole-math/`, `build_luciole_katex.py`), 3e bouton « Luciole Math » sur `/dev/polices`. Vérifié à l'écran : vitrine, galerie, texte mixte, exercices.
-- **Prochaine action** : David juge sur `/dev/polices` (bouton « Luciole Math ») ; selon D1, PR 2 (réglage « Lecture facilitée », texte) puis branchement du jeu Luciole Math derrière le réglage.
-- **En attente de David** : son avis sur le rendu, et sur les écarts listés dans « Observations PR 3 ».
-- **Pièges en cours** : polices `.woff2` en cache du navigateur après reconstruction (recharger les fichiers) ; venv `tools/chiphre-math/venv` (ignoré) ; ports 5175-5180 pris par d'autres sessions, serveur de la PR sur 5181 ; Tailscale Serve `:8445` → 5175 peut-être encore ouvert (`tailscale serve --https=8445 off`).
-- **Worktree / branche** : `../ubumaths-wt-lecture-facilitee` · `feat/lecture-facilitee-mathlive`.
+- **État** : PR 3 mergée (#2889) : jeu écran `luciole` sur `/dev/polices` (bouton « Luciole Math »), relecture faite (grec gras, retour à KaTeX en quittant la page). Rien en prod hors `/dev`.
+- **Prochaine action** : avis de David sur le rendu ; s'il convient (D1), PR 2 = réglage « Lecture facilitée » (texte), puis le jeu Luciole Math branché derrière ce réglage.
+- **En attente de David** : son avis sur le rendu et sur les écarts de « Observations PR 3 » (`\cdot` gros, cran racine/barre, `∯` petit, barres épaisses).
+- **Pièges en cours** : polices `.woff2` en cache du navigateur après reconstruction ; serveur de test de David sur 5181 depuis le worktree, publié par Tailscale `:8446` (couper : `tailscale serve --https=8446 off`) ; `:8445` → 5175 peut-être encore ouvert ; venv `tools/chiphre-math/venv` à recréer dans un nouveau worktree.
+- **Worktree / branche** : `../ubumaths-wt-lecture-facilitee` gardé tant que David teste (sert le lien Tailscale) ; à retirer ensuite (`git worktree remove`, `git branch -d feat/lecture-facilitee-mathlive`).
 
 ## Ce qui existe déjà (vérifié le 2026-11-19)
 
