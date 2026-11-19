@@ -8,8 +8,7 @@
 _Mis à jour le 2026-11-19, clôture en cours (§ 21)._
 
 - **État** : CE1 couvert (recompté en prod : 103 points sur 107, les 4 sans modèle = les D 092, 048, 068, 078).
-  Clôture : PR `chore/questions-ce1-tags` (2 tags sur des modèles d'avant le chantier, § 21) ouverte, puis
-  `db:migrate`.
+  Clôture : #2926 (2 tags sur des modèles d'avant le chantier, § 21) ouverte, puis `db:migrate`.
 - **Prochaine action** : après le merge et `db:migrate`, vérifier les 2 tags au MCP, puis versement (le durable dans
   `docs/systeme/`, journal archivé).
 - **En attente de David** : essai tablette des cases « figure » (`verifications-manuelles.md`) ; aperçu admin des
