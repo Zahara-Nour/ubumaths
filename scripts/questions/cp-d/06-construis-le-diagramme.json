@@ -1,4 +1,5 @@
 {
+	"id": "d0dec6cb-3785-499c-adf3-267a0f24c008",
 	"title": "Construis le diagramme en barres",
 	"description": "Monter les barres d'après un petit tableau, axe de 0 à 10 gradué de un en un : toutes les barres (3 fruits) ; deux barres sur quatre (sports)",
 	"grades": ["CP"],
