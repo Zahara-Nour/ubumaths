@@ -192,6 +192,21 @@ Seul `series.ts` concerne les questions : composition d'une série (`seriesItemS
   **modifié depuis le verdict** (`updated_at` du modèle postérieur au verdict — les migrations de
   rangement le font bouger aussi). Reprise des verdicts des anciennes pages à cocher :
   `scripts/questions/reprise-verdicts.ts` (simulation par défaut, `--ecrire`).
+  **Parcours d'une série** (chantier parcours-serie, phase 0 du 2026-11-19) : série choisie,
+  l'affichage par défaut est « Parcours » (`components/dev/SeriesParcours.svelte`), « Fiches » celui
+  d'avant (`?vue=fiches`, `parseReviewView`). En tête (collant) : questions et durée totale
+  (`seriesTotals`, `formatSeriesDuration`), rendu élève commun à toutes les cartes (Flash-card par
+  défaut, Contrôle blanc, En classe) et « Tout retirer » (nouvelle graine pour toutes). Une rangée par
+  modèle dans l'ordre de la série (`ParcoursRow`) : rang, « × quantité · durée », statut, verdict, une
+  carte par variation (`VariationPreview` en `compact` → `QuestionPreviewTabs` en `bare`, sans barre
+  d'onglets) sur un plateau plus sombre que la rangée, dessinée à l'approche de l'écran (`LazyMount`),
+  et le verdict (`ReviewVerdictForm`, commun avec la fiche). Puis « Ailleurs dans les mêmes
+  notions » : les modèles rangés dans les **notions** de la série (2e étage du chemin, `notionOf`,
+  `seriesNotions`) ou en dessous, tagués sur un point du **niveau de la série**, absents de la série,
+  filtres appliqués (`neighbourTemplates`, ordre de l'arbre puis titre) ; le plafond `MAX_SHEETS`
+  vaut pour la page entière, la série d'abord. Enfin « Points sans aucun modèle » : points du niveau
+  dans ces notions, non archivés, qu'aucun modèle ne tague (`pointsWithoutTemplate`, sur les points
+  de `loadReviewOverview`). L'arbre des programmes se replie (préférence du navigateur).
 - Automaths : catalogue rangé dans le navigateur selon l'**arbre des notions**
   (`src/lib/questions/catalogue.ts` : `buildCatalogue`) — branches, notions et sous-notions
   (rubriques) dans l'ordre de l'arbre (`position`, puis nom), puis par niveau et titre. **Navigation**

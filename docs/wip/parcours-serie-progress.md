@@ -8,10 +8,12 @@ status: en cours
 
 _Mis à jour le 2026-11-19, avant la PR._
 
-- **État** : phase 0 validée, PR 1 en cours (tests, puis code) · **Prochaine action** : finir la
-  PR 1, la faire relire (`code-reviewer`), la merger · **En attente de David** : rien ·
-  **Pièges en cours** : aucun · **Worktree / branche** : `ubumaths-wt-parcours-serie`,
-  `feat/parcours-serie`
+- **État** : PR 1 prête (parcours, arbre repliable, plateau sombre sous les cartes), validée à l'œil
+  par David sur le serveur de test · **Prochaine action** : relecture `code-reviewer`, PR, CI,
+  merge ; puis archiver ce journal (le durable est dans `docs/systeme/questions.md`) ·
+  **En attente de David** : rien · **Pièges en cours** : série d'essai créée en base LOCALE
+  seulement (`6411f128`, « La médiatrice d'un segment (essai local) ») · **Worktree / branche** :
+  `ubumaths-wt-parcours-serie`, `feat/parcours-serie`
 
 ## But
 
@@ -48,3 +50,8 @@ Tester une série : la progression est-elle juste, manque-t-il des modèles int�
 ### 2026-11-19
 
 - Phase 0 écrite et validée ; worktree ouvert.
+- Code + tests (11 sur les fonctions, 1 sur `QuestionPreviewTabs` en `bare`) ; serveur de test sur
+  la branche (`:10000` → 5179).
+- Retours de David : arbre des programmes repliable (fait) ; en sombre, cartes noyées dans la
+  rangée (même fond `card`) → plateau plus sombre sous les cartes (fait, « c'est bien »).
+- Piège : `$app/environment` est déprécié (kit 3) → `$app/env`, sinon typecheck en erreur.
