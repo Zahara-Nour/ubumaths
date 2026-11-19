@@ -26,10 +26,7 @@
 
 {#if variant === 'icon'}
 	<Button
-		onclick={(e: MouseEvent) => {
-			easyReading.toggle();
-			(e.currentTarget as HTMLElement).blur();
-		}}
+		onclick={() => easyReading.toggle()}
 		variant={easyReading.enabled ? 'secondary' : 'ghost'}
 		size="icon-sm"
 		aria-pressed={easyReading.enabled}
@@ -60,6 +57,6 @@
 		{title}
 	>
 		<BookOpenText class="mr-2 h-4 w-4" aria-hidden="true" />
-		{LABEL} : {easyReading.enabled ? 'activée' : 'désactivée'}
+		{LABEL}
 	</Button>
 {/if}

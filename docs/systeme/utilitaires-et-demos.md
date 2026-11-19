@@ -370,6 +370,11 @@ il y ajoute la vérification des instructions (`checkScratchProgram`), faite hor
   Un jeu pose un `<link>` dans `<head>`, change `MathfieldElement.fontsDirectory` et ajoute ses
   règles aux feuilles de MathLive : sans ce retour, une navigation côté client garderait le jeu
   partout jusqu'au rechargement (avec Luciole, toutes les formules grossies de 1/0,9).
+- **La surcharge reste la dernière feuille du `<head>`** (`keepOverrideLast`, un
+  `MutationObserver`) : `mathlive/static.css` arrive avec le chunk des pages à maths ; jeu posé
+  sur une page sans maths puis navigation côté client, il passerait après la surcharge et ses
+  `@font-face` KaTeX l'emporteraient. `switchMathFonts` note le jeu avant l'import de MathLive :
+  de deux bascules rapprochées, la dernière gagne.
 - **Navigateur en français : minuscules grecques droites.** MathLive choisit `letterShapeStyle`
   d'après la langue du navigateur (« french » si elle commence par `fr`) et écrit alors α, π…
   droits, pris dans KaTeX_Main-Regular. KaTeX n'y a pas de minuscules grecques : le navigateur
