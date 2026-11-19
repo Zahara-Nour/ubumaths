@@ -47,12 +47,14 @@ const SECOND_LINES = { exercise: 12 };
 
 /**
  * Clés de la fiche rendue : celles de la migration 20261016103500, moins
- * `template_id` (#1529), plus `category` et `classifications` (ADR 0041)
+ * `template_id` (#1529), plus `category`, `classifications` et `custom_title`
+ * (ADR 0041)
  */
 const WORKSHEET_KEYS = [
 	'category',
 	'classifications',
 	'config',
+	'custom_title',
 	'description',
 	'estimated_duration_minutes',
 	'exercises',
