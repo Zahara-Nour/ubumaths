@@ -2,14 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, après #2906 ; #2910 et `chore/menage-machine` en cours._
+_Mis à jour le 2026-11-19, après #2916._
 
-- **État** : surveillance installée (#2906, launchd + ntfy OK sur l'iPhone). **#2910** (seuil Chrome 300 → 600 %) : CI verte sur 63a6f4a, **pas encore mergée**. **`chore/menage-machine`** (worktree `../ubumaths-wt-menage-machine`, poussée, PAS de PR) : `pnpm menage` + ménage auto si swap ≥ 95 % (1×/15 min), helpers dans `scripts/machine-commun.sh`, 19 tests verts, check 0 erreur ; branche partie de #2910.
-- **Prochaine action** : merger #2910 ; puis sur `chore/menage-machine` : `git merge origin/main`, corriger la revue (1) filtre Chrome ancré sur `/Applications/Google Chrome.app/` — sinon Chrome for Testing de Playwright est tué (prouvé, pid réel) ; (2) en-tête de `menage-machine.sh` : les tests sont dans `surveillance-machine.test.ts`. Puis PR, CI, merge (aucune réinstallation launchd nécessaire : il lance le script du dépôt principal).
-- **En attente de David** : le ménage doit-il épargner le port 5173 (son serveur de test, éventuellement > 6 h) ? Recommandation : oui.
-- **Gel n° 2 (21:35, charge 139)** : ménage fait à la main — 32 onglets Chrome + 5 onglets **Brave** fermés → charge 57. À intégrer au ménage : **Brave aussi** (`/Applications/Brave Browser.app/`). Deux processus d'**extension** (Chrome client-id 9, Brave client-id 8) tournent à 100 % depuis 10 jours : épargnés, à signaler à David.
-- **Pièges** : tests de scripts lancés en bloc sur machine chargée → timeouts sans rapport (passent seuls). Index du dépôt principal : fichiers d'autres sessions indexés → `git commit -- <mes fichiers>`.
-- **Worktree / branche** : `../ubumaths-wt-surveillance-seuil` (#2910), `../ubumaths-wt-menage-machine` (`chore/menage-machine`).
+- **État** : surveillance (#2906), seuil Chrome 600 % (#2910) et ménage (#2916) mergés ; le dépôt principal est à jour, donc launchd lance déjà les nouveaux scripts. `pnpm menage` ferme les onglets Chrome/Brave gourmands (Chrome for Testing de Playwright épargné, filtre ancré sur `/Applications/`) et les serveurs de dev oubliés, **jamais :5173** ; il part seul quand le swap atteint 95 %. Nouvelle alerte : extension Chrome/Brave bloquée (> 90 % CPU et > 1 h de CPU cumulée), signalée, jamais arrêtée (décision de David).
+- **Gel n° 2 (21:35)** : ménage manuel, puis les 2 extensions bloquées depuis 10 jours (Chrome pid 958, Brave pid 821) ont été arrêtées par David (`! kill`) → charge 57 → 10.
+- **Prochaine action** : aucune ; chantier à clore (versement dans `docs/systeme/` si besoin, archivage du journal). À surveiller : l'extension repart-elle à 100 % ? (alerte ntfy le dira ; l'identifier alors avec Maj+Échap dans le navigateur).
+- **Pièges** : tests de scripts en bloc sur machine chargée → timeouts sans rapport. `ps time=` sur macOS = « minutes:secondes.cc ». Index du dépôt principal : `git commit -- <mes fichiers>`.
+- **Worktree / branche** : aucun.
 
 ## Contexte
 
