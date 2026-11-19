@@ -1161,3 +1161,52 @@ dans les fichiers du dépôt principal (lancé d'ailleurs) : ids reportés à la
 - `publier-lot.ts --dir scripts/questions/ttechno-7-deux-variables` : simulation puis `--publier`, lancées par David.
   Statut relu en base (MCP) : 6/6 `published`, `{T_TECHNO}` (50bf587d, 007822c5, 68ee10e5, 80850db7, f88cc70d,
   43f1fd84).
+
+## 54. Lot 8 : phase 0, loi binomiale (2026-11-19)
+
+**Relevé prod (MCP, lecture seule)** :
+
+| Point         | Nœud                                                 | Modèles rangés aujourd'hui                                                                                                   |
+| ------------- | ---------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| 057, 067, 090 | notion « Probabilités > Loi binomiale » (7f0932c3)   | aucun sur la notion ; ses sous-notions portent déjà 089, 062, 063, 064, 065, 058 (un seul point TTECHNO par modèle) → rien   |
+| 060           | « Combinaisons > triangle de Pascal » (d78d5a6b)     | ef3c495c (relation et triangle, n jusqu'à 15 : « en partie », § 9), deux démonstrations, 96be181c (déjà 066) → rien à taguer |
+| 061           | « Combinaisons > coefficients binomiaux » (49cafc5f) | 4dcbae71 (n jusqu'à 40), 970dab52 (n jusqu'à 20) : « en partie », § 9 ; 7d9d9b81 (factorielles) ; 07ebdcbe (déjà 059) → rien |
+| 069, 091      | « Loi binomiale > espérance et variance » (aa1217ed) | dbee4649 (déjà 058), variance et démonstrations (hors bornes) → rien                                                         |
+
+- Bornes : coefficients au triangle pour n ⩽ 10, pas de factorielle ; espérance admise, pas de variance ; 066, 067,
+  068, 069, 090, 091 « Python ou tableur ».
+- Outils : ` ```loi ` `X ~ B(n ; p)` + `diagramme: oui` (bâtons, n ⩽ 29) ; ` ```simulation ` `X ~ B(n ; p)` en mode
+  `tirages` (tableau des effectifs observés à côté des probabilités) et `moyenne` (courbe des moyennes et droite
+  E(X) = np), `graine:` fixe ; ` ```courbe ` + `placer:` + `axes:` ; Python et tableur sous la forme du lot 2b.
+
+**Proposition** (7 modèles neufs, un point chacun, `grades ['T_TECHNO']`, brouillons) :
+
+| #   | Modèle                                      | Point | Contenu (variations)                                                                                                                                                                                                                                 | Niv. |
+| --- | ------------------------------------------- | ----- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- |
+| B1  | La loi binomiale B(n ; p)                   | 057   | situation (n épreuves, succès p) : ce que compte X (choix) ; valeurs prises, de 0 à n (case) ; traduire « exactement 2 », « au moins un », « aucun » (choix)                                                                                         | 1    |
+| B2  | Triangle de Pascal                          | 060   | compléter la ligne suivante d'une ligne donnée (n ⩽ 10) ; relation de Pascal sur deux coefficients donnés ; repérer le nombre faux d'une ligne (choix)                                                                                               | 1–2  |
+| B3  | Coefficients binomiaux au triangle (n ⩽ 10) | 061   | triangle donné jusqu'à n : lire un coefficient ; construire jusqu'à n = 6 puis lire ; valeurs (n ; 0), (n ; 1), (n ; n) et symétrie, n ⩽ 10                                                                                                          | 1–2  |
+| B4  | Diagramme en bâtons de B(n ; p)             | 067   | ` ```loi ` en bâtons : valeur la plus probable ; comparer deux bâtons ; quel diagramme pour p = 0,2 / 0,5 / 0,8 (choix) ; Python : ligne de la hauteur                                                                                               | 2    |
+| B5  | Simulation et loi binomiale                 | 090   | ` ```simulation ` de N échantillons de taille n (graine fixe) à côté de la loi : ce que compte la simulation, quel tableau est la loi, la fréquence observée de k est proche de quelle probabilité (choix) ; Python : compter les 1 d'un échantillon | 2    |
+| B6  | Représenter l'espérance quand n ou p varie  | 069   | placer les points (n ; np) pour n = 1 à 5, p fixé, puis (p ; np), n fixé (`placer:`) ; ils sont alignés sur une droite passant par l'origine, de coefficient p (ou n) (choix) ; tableur : formule de la colonne E                                    | 2    |
+| B7  | Espérance : le lien avec np                 | 091   | loi de B(3 ou 4 ; p) donnée : calculer Σ k·P(X = k) (case) et comparer à np ; ` ```simulation ` en mode `moyenne` : vers quelle valeur va la moyenne (case) ; Python : la boucle `E = E + k*P[k]`                                                    | 2    |
+
+Plages : coefficients n ⩽ 10 ; diagrammes et simulations n de 5 à 20 (l'élève ne calcule rien, le bloc le fait) ;
+p à un chiffre après la virgule ; calcul exact de Σ k·P(X = k) seulement pour n ⩽ 4 et p ∈ {0,5 ; 0,2 ; 0,1}.
+
+**Questions à David** :
+
+- **Q36 — 057 (« Loi binomiale B(n ; p) »)** : le point est un simple titre du BO. Je fais un modèle de définition
+  (B1 : ce que compte X, ses valeurs, traduire « au moins un » en {X ⩾ 1}), sans refaire 062 (reconnaître) ni 089
+  (paramètres) ? Reco : **oui**.
+- **Q37 — 060 et 061** : les modèles de Tle spé (ef3c495c, 4dcbae71, 970dab52) vont jusqu'à n = 40. J'écris deux
+  modèles neufs limités à n ⩽ 10 (B2, B3), sans toucher aux originaux, comme pour les autres jumeaux ? Reco : **oui**.
+- **Q38 — Simulation (B5, B7)** : le bloc tire au hasard, mais avec une graine fixe le tirage est toujours le même.
+  Je ne pose que des questions dont la réponse ne dépend pas du tirage (par exemple : « la moyenne semble se
+  rapprocher de quelle valeur ? » → np), ou je fixe les effectifs observés à la main dans le modèle (tableau en dur) ?
+  Reco : **le bloc avec graine fixe, et des questions qui ne dépendent pas du tirage**.
+- **Q39 — Python / tableur** : une variation Python ou tableur dans B4, B5, B6, B7 (le BO le demande pour ces
+  points) ? Reco : **oui** (B4, B5, B7 en Python ; B6 en tableur).
+- **Q40 — Découpage** : un seul lot de 7 modèles, une page à cocher ? Reco : **oui**.
+- **Question d'accès** (migration de tags, après écriture) : personne ne voit les brouillons ; une fois publiés, ils
+  apparaissent au catalogue et au cahier de texte de Tle techno seulement. Personne ne perd rien.
