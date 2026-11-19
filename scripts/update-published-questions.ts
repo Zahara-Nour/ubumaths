@@ -29,7 +29,7 @@
  *   lots : second-degre, suites, derivation, textcolor-2de, niveaux-2de-probabilites,
  *          textcolor-hors-2de, tracer-droites-2de, tableau-signes-2de, valeur-absolue-droite-2de,
  *          resoudre-graphique-droite-3, somme-vecteurs-2de, triangle-cm-6, blockly-6-210,
- *          blockly-5-106, variable-e, totaux-ce, horloges-ce-zeros
+ *          blockly-5-106, variable-e, totaux-ce, horloges-ce-zeros, motifs-allumettes
  *   … --seulement <id8>[,<id8>]   restreint aux cibles dont l'id commence ainsi
  *   … --sans-diff                 simulation sans le diff (preuves rouges seulement)
  */
@@ -238,6 +238,15 @@ const HORLOGES_CE_ZEROS: readonly string[] = [
 	'71741618-2f0f-4d24-a4cf-95d360984dea' // CE2 « Dire l'heure et l'écrire en chiffres » V2, V3
 ];
 
+/** Chantier `questions-cm2` (§ 19.1 e) : « de allumettes » → « d'allumettes » dans l'énoncé */
+const MOTIFS_ALLUMETTES: readonly string[] = [
+	'37dd213b-d85f-4774-8e78-b04bd92f774a', // CM1 « Motif évolutif : les trois étapes suivantes » V3, V4
+	'ac5fcd5c-d87c-4bea-9ab2-349b4855d955', // CM1 « Motif évolutif : choisir la règle » V3, V4
+	'89594aa7-17b2-45cb-9991-0483d311796f', // 1re spé « Motif : nombre d'éléments à une étape »
+	'05edc72b-5253-454c-91d6-b001fa50e12c', // 1re spé « Motif : relation explicite »
+	'41100a51-0ca9-436e-9d90-13ff62f01331' // 1re spé « Motif : relation de récurrence »
+];
+
 const LOTS: Record<string, Lot> = {
 	'second-degre': { dossier: 'scripts/questions/second-degre-existants', cibles: SECOND_DEGRE },
 	suites: { dossier: 'scripts/questions/suites-existants', cibles: SUITES },
@@ -276,7 +285,11 @@ const LOTS: Record<string, Lot> = {
 	'blockly-5-106': { dossier: 'scripts/questions/5-blockly-existants', cibles: BLOCKLY_5_106 },
 	'variable-e': { dossier: 'scripts/questions/variable-e-existants', cibles: VARIABLE_E },
 	'totaux-ce': { dossier: 'scripts/questions/ce-totaux-existants', cibles: TOTAUX_CE },
-	'horloges-ce-zeros': { dossier: 'scripts/questions/ce-horloges-zeros', cibles: HORLOGES_CE_ZEROS }
+	'horloges-ce-zeros': {
+		dossier: 'scripts/questions/ce-horloges-zeros',
+		cibles: HORLOGES_CE_ZEROS
+	},
+	'motifs-allumettes': { dossier: 'scripts/questions/motifs-allumettes', cibles: MOTIFS_ALLUMETTES }
 };
 
 /** Champs écrits ; tout le reste doit être identique entre le fichier et la base */

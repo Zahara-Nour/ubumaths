@@ -667,6 +667,11 @@ MOTIFS = {
 }
 
 
+def de(mot):
+    """« de » élidé devant une voyelle ou un h : « d'allumettes », « de jetons »."""
+    return ("d'" if mot[:1].lower() in 'aeiouyhéèêàâîôû' else 'de ') + mot
+
+
 def ajout(nom, s):
     """Ce qu'on ajoute pour passer à l'étape s (de 2 à 6)."""
     return {'colonnes': '{{k}}', 'escalier': str(s), 'carres': '3', 'triangles': '2'}[nom]
@@ -674,8 +679,8 @@ def ajout(nom, s):
 
 def motif_suivantes(nom):
     figure, objets, variables, valeurs, regle, pourquoi = MOTIFS[nom]
-    enonce = ('Voici les trois premières étapes d\'un motif de ' + objets + '.\n\n' + figure
-              + '\n\nCombien de ' + objets + ' y aura-t-il aux trois étapes suivantes ?\n\n'
+    enonce = ('Voici les trois premières étapes d\'un motif ' + de(objets) + '.\n\n' + figure
+              + '\n\nCombien ' + de(objets) + ' y aura-t-il aux trois étapes suivantes ?\n\n'
               + '\n\n'.join('Étape ' + str(s) + ' : $?$ ' + objets for s in (4, 5, 6)))
     etapes = ['**On compte.** Étape 1 : $' + ev(valeurs[0]) + '$ ; étape 2 : $' + ev(valeurs[1])
               + '$ ; étape 3 : $' + ev(valeurs[2]) + '$.',
@@ -720,7 +725,7 @@ LEURRES_MOTIF = {
 
 def motif_regle(nom):
     figure, objets, variables, valeurs, regle, pourquoi = MOTIFS[nom]
-    enonce = ('Voici les trois premières étapes d\'un motif de ' + objets + '.\n\n' + figure
+    enonce = ('Voici les trois premières étapes d\'un motif ' + de(objets) + '.\n\n' + figure
               + '\n\nQuelle phrase dit comment on passe d\'une étape à la suivante ?\n\n'
               + choix([regle] + LEURRES_MOTIF[nom]))
     etapes = ['**On compte.** Étape 1 : $' + ev(valeurs[0]) + '$ ; étape 2 : $' + ev(valeurs[1])
