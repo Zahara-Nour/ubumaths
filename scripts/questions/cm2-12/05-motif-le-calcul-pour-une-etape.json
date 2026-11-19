@@ -1,4 +1,5 @@
 {
+	"id": "3ffa86cd-4aa8-46d8-90aa-cec9e81ae256",
 	"title": "Motif évolutif : le calcul pour l'étape n",
 	"description": "Motif dessiné en trois étapes : choisir, parmi quatre, le calcul qui donne le nombre d'éléments à une étape lointaine (carrés, triangles, deux étages d'allumettes, croix de jetons)",
 	"grades": ["CM2"],
