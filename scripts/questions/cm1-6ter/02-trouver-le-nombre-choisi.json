@@ -1,4 +1,5 @@
 {
+	"id": "98f558e4-3361-42df-9bee-5e5837100e74",
 	"title": "Trouver le nombre choisi",
 	"description": "Un nombre inconnu noté par une lettre ou un symbole : k × (a + N) = r, N × k + a = r, deux égalités à symboles enchaînées",
 	"grades": ["CM1"],

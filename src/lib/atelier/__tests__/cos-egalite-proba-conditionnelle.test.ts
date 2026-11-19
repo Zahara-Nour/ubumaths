@@ -12,14 +12,14 @@
 
 import { describe, it, expect } from 'vitest';
 import { Atelier } from '../atelier.svelte';
-import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
+import { WebReplEngine } from '#lib/mathAST/cli/web/web-repl-engine.ts';
 import { runInput, type CalcSession } from '../calcul';
-import { solve } from '$lib/mathAST/solve/solve';
-import { parseLatex } from '$lib/mathAST/parser';
-import { isRelation } from '$lib/mathAST/guards';
-import { isSolverFailure } from '$lib/mathAST/solve/types';
-import { parseStatChartContent } from '$lib/ubumark/parser/stat-chart-parser';
-import { buildStatChartScene } from '$lib/ubumark/utils/stat-chart-scene';
+import { solve } from '#lib/mathAST/solve/solve.ts';
+import { parseLatex } from '#lib/mathAST/parser/index.ts';
+import { isRelation } from '#lib/mathAST/guards.ts';
+import { isSolverFailure } from '#lib/mathAST/solve/types.ts';
+import { parseStatChartContent } from '#lib/ubumark/parser/stat-chart-parser.ts';
+import { buildStatChartScene } from '#lib/ubumark/utils/stat-chart-scene.ts';
 
 function session(): CalcSession {
 	return { atelier: new Atelier(), engine: new WebReplEngine() };

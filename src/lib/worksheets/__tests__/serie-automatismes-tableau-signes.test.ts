@@ -7,9 +7,9 @@
  * Chaque cellule cachée compte pour une case.
  */
 import { describe, it, expect } from 'vitest';
-import type { QuestionTemplate } from '$lib/questions/types';
+import type { QuestionTemplate } from '#lib/questions/types.ts';
 import { buildSerie } from '../serie-automatismes';
-import { parseVariationTableContent } from '$lib/ubumark/parser/variation-table-parser';
+import { parseVariationTableContent } from '#lib/ubumark/parser/variation-table-parser.ts';
 
 const TABLEAU = [
 	'```variation',

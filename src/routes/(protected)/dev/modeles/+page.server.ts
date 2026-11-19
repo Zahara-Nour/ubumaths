@@ -15,8 +15,8 @@
 import { error, fail } from '@sveltejs/kit';
 import { z } from 'zod';
 import type { Actions, PageServerLoad } from './$types';
-import { requireAdmin } from '$lib/server/middleware/auth';
-import { POINT_BOUNDS } from '$lib/server/point-bounds';
+import { requireAdmin } from '#lib/server/middleware/auth.ts';
+import { POINT_BOUNDS } from '#lib/server/point-bounds.ts';
 import {
 	deleteReview,
 	loadReviewOverview,
@@ -25,7 +25,7 @@ import {
 	loadSeriesLines,
 	MAX_SHEETS,
 	saveReview
-} from '$lib/server/template-review';
+} from '#lib/server/template-review.ts';
 import {
 	buildReviewTree,
 	countTemplates,
@@ -43,7 +43,7 @@ import {
 	summaryAlerts,
 	templatesUnder,
 	type SeriesSheetEntry
-} from '$lib/questions/template-review';
+} from '#lib/questions/template-review.ts';
 
 // Constantes
 

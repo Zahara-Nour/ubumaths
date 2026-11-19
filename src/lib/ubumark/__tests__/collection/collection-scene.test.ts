@@ -7,15 +7,15 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { parseCollectionContent } from '$lib/ubumark/parser/collection-parser';
+import { parseCollectionContent } from '#lib/ubumark/parser/collection-parser.ts';
 import {
 	buildCollectionScene,
 	COLLECTION_VIEW,
 	findCollectionItemAt,
 	type CollectionItem,
 	type CollectionScene
-} from '$lib/ubumark/utils/collection-scene';
-import type { CollectionSpec } from '$lib/ubumark/types/collection';
+} from '#lib/ubumark/utils/collection-scene.ts';
+import type { CollectionSpec } from '#lib/ubumark/types/collection.ts';
 
 function spec(...lines: string[]): CollectionSpec {
 	const node = parseCollectionContent(lines.join('\n'));

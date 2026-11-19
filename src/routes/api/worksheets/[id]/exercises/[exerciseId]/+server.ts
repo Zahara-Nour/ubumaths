@@ -5,18 +5,18 @@
  * DELETE - Remove an exercise from the worksheet
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRoles } from '$lib/server/middleware/auth';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
 import {
 	validateUpdateWorksheetExercise,
 	worksheetExerciseResponseSchema
-} from '$lib/server/validation/worksheets';
-import { uuidSchema } from '$lib/server/validation/common';
-import { validateJsonResponse } from '$lib/server/validation/response-utils';
-import type { TablesUpdate } from '$lib/types/database';
-import { toJson } from '$lib/types/database-helpers';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/validation/worksheets.ts';
+import { uuidSchema } from '#lib/server/validation/common.ts';
+import { validateJsonResponse } from '#lib/server/validation/response-utils.ts';
+import type { TablesUpdate } from '#lib/types/database.ts';
+import { toJson } from '#lib/types/database-helpers.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/worksheets/[id]/exercises/[exerciseId]/+server');
 
@@ -101,7 +101,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		'GET /api/worksheets/[id]/exercises/[exerciseId]'
 	);
 
-	return json({ exercise: validated });
+	return Response.json({ exercise: validated });
 };
 
 /**
@@ -203,7 +203,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		'PUT /api/worksheets/[id]/exercises/[exerciseId]'
 	);
 
-	return json({ exercise: validated });
+	return Response.json({ exercise: validated });
 };
 
 /**
@@ -242,5 +242,5 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 		throw error(500, 'Impossible de retirer l’exercice de la fiche');
 	}
 
-	return json({ success: true, message: 'Exercice retiré de la fiche' });
+	return Response.json({ success: true, message: 'Exercice retiré de la fiche' });
 };

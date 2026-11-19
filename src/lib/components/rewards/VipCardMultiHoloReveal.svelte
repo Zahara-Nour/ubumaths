@@ -25,8 +25,8 @@
 -->
 
 <script lang="ts">
-	import VipCardHoloReveal from '$lib/components/VipCardHoloReveal.svelte';
-	import type { VipCard } from '$lib/types/vip-card';
+	import VipCardHoloReveal from '#lib/components/VipCardHoloReveal.svelte';
+	import type { VipCard } from '#lib/types/vip-card.ts';
 
 	interface Props {
 		cards: Array<{

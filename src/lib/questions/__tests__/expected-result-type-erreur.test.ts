@@ -12,7 +12,7 @@ import { describe, it, expect } from 'vitest';
 import { buildExpectedResult, type ExpectedResult } from '../expected-result';
 import { generateInstance } from '../generator/instance-generator';
 import type { QuestionInstance, QuestionTemplate } from '../types';
-import type { DetailedVerdict } from '$lib/utils/answer-validator';
+import type { DetailedVerdict } from '#lib/utils/answer-validator.ts';
 
 // Fixtures
 function generate(

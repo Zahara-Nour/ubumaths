@@ -16,9 +16,9 @@ import { normalizeStudentQuantity } from '../student-input';
 import { parseLatexQuantity } from '../parser';
 import { validateQuantityAnswer } from '../validator';
 import { checkUnit } from '../../constraint-validators';
-import { validateAnswer } from '$lib/utils/answer-validator';
-import type { QuestionInstance, InstanceBlank } from '$lib/questions/types';
-import type { ResolvedMarkdown } from '$lib/ubumark';
+import { validateAnswer } from '#lib/utils/answer-validator.ts';
+import type { QuestionInstance, InstanceBlank } from '#lib/questions/types.ts';
+import type { ResolvedMarkdown } from '#lib/ubumark/index.ts';
 
 // ============================================================================
 // HELPERS

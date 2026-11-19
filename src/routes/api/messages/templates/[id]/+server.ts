@@ -8,12 +8,12 @@
  * DELETE - Delete template (admin/owner only)
  */
 
-import { json, error } from '@sveltejs/kit';
-import { requireAuth } from '$lib/server/middleware/auth';
+import { error } from '@sveltejs/kit';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
 import type { RequestHandler } from './$types';
-import { validateTemplate } from '$lib/templates/templateEngine';
-import { updateMessageTemplateSchema, validateRequest } from '$lib/server/validation';
-import { createServerLogger } from '$lib/utils/logger';
+import { validateTemplate } from '#lib/templates/templateEngine.ts';
+import { updateMessageTemplateSchema, validateRequest } from '#lib/server/validation/index.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/messages/templates/[id]/+server');
 
@@ -53,7 +53,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		created_by_name: template.creator?.full_name || null
 	};
 
-	return json({ template: formattedTemplate });
+	return Response.json({ template: formattedTemplate });
 };
 
 // =====================================================
@@ -124,7 +124,7 @@ export const PATCH: RequestHandler = async ({ locals, params, request }) => {
 		});
 
 		if (!validation.valid) {
-			return json(
+			return Response.json(
 				{
 					error: 'Validation échouée',
 					errors: validation.errors
@@ -187,7 +187,7 @@ export const PATCH: RequestHandler = async ({ locals, params, request }) => {
 		return error(500, 'Erreur lors de la mise à jour du template');
 	}
 
-	return json({
+	return Response.json({
 		template: updatedTemplate,
 		message: 'Template mis à jour avec succès'
 	});
@@ -236,7 +236,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 		return error(500, 'Erreur lors de la suppression du template');
 	}
 
-	return json({
+	return Response.json({
 		message: 'Template supprimé avec succès'
 	});
 };

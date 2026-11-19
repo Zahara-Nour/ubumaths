@@ -6,7 +6,7 @@
 	une question de cours : la case est alors cochée et désactivée.
 -->
 <script lang="ts">
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
+	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
 
 	interface Props {
 		/** Valeur saisie (`options.courseQuestion`) */

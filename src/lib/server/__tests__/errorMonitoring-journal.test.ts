@@ -11,7 +11,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 const insertMock = vi.fn();
 const createSystemNotificationMock = vi.fn();
 
-vi.mock('$lib/server/serviceRoleClient', () => ({
+vi.mock('#lib/server/serviceRoleClient.ts', () => ({
 	createServiceRoleClient: () => ({
 		from: () => ({
 			insert: (row: Record<string, unknown>) => {
@@ -28,7 +28,7 @@ vi.mock('$lib/server/serviceRoleClient', () => ({
 		})
 	})
 }));
-vi.mock('$lib/server/notifications', () => ({
+vi.mock('#lib/server/notifications.ts', () => ({
 	createSystemNotification: (...args: unknown[]) => createSystemNotificationMock(...args)
 }));
 

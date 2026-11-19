@@ -1,0 +1,180 @@
+{
+	"id": "4ccf75c2-eae2-4d85-8045-50bdf26add73",
+	"title": "Espérance d'une loi de Bernoulli",
+	"description": "E(X) = p pour une loi de Bernoulli : formule, paramètre donné, en contexte, d'après le tableau de la loi",
+	"grades": ["1_TECHNO"],
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "La variable aléatoire $X$ suit la loi de Bernoulli de paramètre $p$.\n\nSon espérance est…\n\n```choix\n- $E(X)=p$\n- $E(X)=1-p$\n- $E(X)=\\dfrac{1}{2}$\n- $E(X)=1$\n```",
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"variables": [],
+			"correction": {
+				"steps": [
+					"Si $X$ suit la loi de Bernoulli de paramètre $p$, alors $E(X)=0\\times(1-p)+1\\times p=p$.",
+					"Donc $\\textcolor{{{color:primary.0}}}{E(X)=p}$."
+				]
+			}
+		},
+		{
+			"statement": "La variable aléatoire $X$ suit la loi de Bernoulli de paramètre $p={{eval:a/100;d}}$.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$E(X)=?$",
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a/100}}"
+				}
+			],
+			"variables": [
+				{
+					"name": "a",
+					"expression": "5..95"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Si $X$ suit la loi de Bernoulli de paramètre $p$, alors $E(X)=0\\times(1-p)+1\\times p=p$.",
+					"$E(X)=\\textcolor{{{color:primary.0}}}{{{eval:a/100;d}}}$."
+				]
+			},
+			"conditions": ["a != 50"]
+		},
+		{
+			"statement": "Dans une production, ${{t}}\\,\\%$ des pièces sont défectueuses. On prélève une pièce au hasard ; $X$ vaut $1$ si la pièce est défectueuse, $0$ sinon.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$E(X)=?$",
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:t/100}}"
+				}
+			],
+			"variables": [
+				{
+					"name": "t",
+					"expression": "2..15"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$X$ suit la loi de Bernoulli de paramètre $p={{eval:t/100;d}}$ (probabilité que la pièce soit défectueuse).",
+					"Si $X$ suit la loi de Bernoulli de paramètre $p$, alors $E(X)=0\\times(1-p)+1\\times p=p$.",
+					"$E(X)=\\textcolor{{{color:primary.0}}}{{{eval:t/100;d}}}$."
+				]
+			}
+		},
+		{
+			"statement": "La loi de probabilité d'une variable aléatoire $X$ est donnée ci-dessous.\n\n| $x_k$ | $0$ | $1$ |\n|---|---|---|\n| $P(X=x_k)$ | ${{eval:q/100;d}}$ | ${{eval:(100-q)/100;d}}$ |\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$E(X)=?$",
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(100-q)/100}}"
+				}
+			],
+			"variables": [
+				{
+					"name": "q",
+					"expression": "5..95"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$E(X)=0\\times{{eval:q/100;d}}+1\\times{{eval:(100-q)/100;d}}=\\textcolor{{{color:primary.0}}}{{{eval:(100-q)/100;d}}}$.",
+					"C'est le paramètre $p=P(X=1)$ de cette loi de Bernoulli."
+				]
+			},
+			"conditions": ["q != 50"]
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "E(X) = p",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 − p",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Paramètre donné",
+			"variationIndex": 1,
+			"variables": {
+				"a": "42"
+			},
+			"answers": ["0,42"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 − p",
+			"variationIndex": 1,
+			"variables": {
+				"a": "42"
+			},
+			"answers": ["0,58"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Contexte",
+			"variationIndex": 2,
+			"variables": {
+				"t": "6"
+			},
+			"answers": ["0,06"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : pourcentage brut",
+			"variationIndex": 2,
+			"variables": {
+				"t": "6"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Tableau",
+			"variationIndex": 3,
+			"variables": {
+				"q": "20"
+			},
+			"answers": ["0,8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : P(X = 0)",
+			"variationIndex": 3,
+			"variables": {
+				"q": "20"
+			},
+			"answers": ["0,2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

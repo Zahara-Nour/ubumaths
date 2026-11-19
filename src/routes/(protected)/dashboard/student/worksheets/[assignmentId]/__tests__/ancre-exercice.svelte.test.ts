@@ -8,7 +8,7 @@
  */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
-import type { StudentWorksheetView } from '$lib/types/worksheets';
+import type { StudentWorksheetView } from '#lib/types/worksheets.ts';
 
 const location = vi.hoisted(() => ({ hash: '' }));
 vi.mock('$app/state', () => ({

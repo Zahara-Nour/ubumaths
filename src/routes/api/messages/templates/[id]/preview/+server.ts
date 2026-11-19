@@ -8,13 +8,13 @@
  * Body: { data: Record<string, string | number> }
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRoles } from '$lib/server/middleware/auth';
-import { previewTemplate } from '$lib/templates/templateEngine';
-import { previewTemplateSchema } from '$lib/server/validation/message-templates';
-import { validateUuidParam } from '$lib/server/validation/params';
-import { toMessageTemplate } from '$lib/types/messageTemplates';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import { previewTemplate } from '#lib/templates/templateEngine.ts';
+import { previewTemplateSchema } from '#lib/server/validation/message-templates.ts';
+import { validateUuidParam } from '#lib/server/validation/params.ts';
+import { toMessageTemplate } from '#lib/types/messageTemplates.ts';
 
 // =====================================================
 // POST - Generate preview
@@ -55,7 +55,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 	// jsonb : la ligne est convertie plutôt qu'affirmée.
 	const preview = previewTemplate(toMessageTemplate(template), customData);
 
-	return json({
+	return Response.json({
 		preview,
 		template_id: template.id,
 		template_title: template.title

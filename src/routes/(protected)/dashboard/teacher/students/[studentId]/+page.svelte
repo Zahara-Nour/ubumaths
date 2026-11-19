@@ -11,20 +11,20 @@
 	 *
 	 * Phase 0 : docs/wip/suivi-eleve-progress.md
 	 */
-	import { lore } from '$lib/config/lore';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
-	import { Badge } from '$lib/components/ui/badge';
-	import * as Card from '$lib/components/ui/card';
+	import { lore } from '#lib/config/lore.ts';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import InlineMarkdown from '#lib/components/markdown/InlineMarkdown.svelte';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
 	import {
 		evaluationResultsHref,
 		studentFollowUpReturn,
 		studentJournalHref
-	} from '$lib/navigation/return-links';
-	import { badgeMeta } from '$lib/components/teacher/analytics/curriculum-point-badge-meta';
-	import RegularityTable from '$lib/components/teacher/analytics/RegularityTable.svelte';
-	import { formatGrade, type StudentEvaluationStatus } from '$lib/types/evaluation';
-	import { formatMathCompetenceLevel, getMathCompetenceLevelVisual } from '$lib/types/skills';
+	} from '#lib/navigation/return-links.ts';
+	import { badgeMeta } from '#lib/components/teacher/analytics/curriculum-point-badge-meta.ts';
+	import RegularityTable from '#lib/components/teacher/analytics/RegularityTable.svelte';
+	import { formatGrade, type StudentEvaluationStatus } from '#lib/types/evaluation.ts';
+	import { formatMathCompetenceLevel, getMathCompetenceLevelVisual } from '#lib/types/skills.ts';
 	import { page } from '$app/state';
 	import type { PageData } from './$types';
 

@@ -7,7 +7,7 @@ import { describe, expect, it } from 'vitest';
 import {
 	findSchemaBarresBlocks,
 	parseSchemaBarresContent
-} from '$lib/ubumark/parser/schema-barres-parser';
+} from '#lib/ubumark/parser/schema-barres-parser.ts';
 
 const parse = (...lines: string[]) => parseSchemaBarresContent(lines.join('\n'));
 

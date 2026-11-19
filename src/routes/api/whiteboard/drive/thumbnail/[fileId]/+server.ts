@@ -19,11 +19,11 @@
 import { error } from '@sveltejs/kit';
 import { z } from 'zod';
 import type { RequestHandler } from './$types';
-import { GoogleNotConnectedError, GoogleTokenExpiredError } from '$lib/server/google/errors';
-import { requireRole } from '$lib/server/middleware/auth';
-import { getTeacherAccessToken } from '$lib/server/google/sync';
-import { GoogleDriveClient } from '$lib/server/google/drive-api';
-import { createServerLogger } from '$lib/utils/logger';
+import { GoogleNotConnectedError, GoogleTokenExpiredError } from '#lib/server/google/errors.ts';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { getTeacherAccessToken } from '#lib/server/google/sync.ts';
+import { GoogleDriveClient } from '#lib/server/google/drive-api.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/whiteboard/drive/thumbnail/[fileId]/+server');
 

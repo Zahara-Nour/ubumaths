@@ -1,16 +1,16 @@
 import type { RequestHandler } from './$types';
-import { toDbRiddle, RIDDLE_COLUMNS } from '$lib/types/riddle';
-import { error, json } from '@sveltejs/kit';
-import { validateRiddleAnswer } from '$lib/utils/riddle-validator';
-import { createRiddleValidationMessage, getRiddleTeacherId } from '$lib/server/riddle-messages';
-import { riddleAnswerSchema } from '$lib/server/validation/riddles';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { requireConsent } from '$lib/server/middleware/consent';
-import { validateUuidParam } from '$lib/server/validation/params';
-import { addBuddyXpFromExercise } from '$lib/server/buddy-xp-service';
-import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
-import { fetchRiddleSolutions } from '$lib/server/riddle-solutions';
-import { createServerLogger } from '$lib/utils/logger';
+import { toDbRiddle, RIDDLE_COLUMNS } from '#lib/types/riddle.ts';
+import { error } from '@sveltejs/kit';
+import { validateRiddleAnswer } from '#lib/utils/riddle-validator.ts';
+import { createRiddleValidationMessage, getRiddleTeacherId } from '#lib/server/riddle-messages.ts';
+import { riddleAnswerSchema } from '#lib/server/validation/riddles.ts';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { requireConsent } from '#lib/server/middleware/consent.ts';
+import { validateUuidParam } from '#lib/server/validation/params.ts';
+import { addBuddyXpFromExercise } from '#lib/server/buddy-xp-service.ts';
+import { createServiceRoleClient } from '#lib/server/serviceRoleClient.ts';
+import { fetchRiddleSolutions } from '#lib/server/riddle-solutions.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/riddles/[id]/submit/+server');
 
@@ -192,5 +192,5 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 		}
 	}
 
-	return json(response);
+	return Response.json(response);
 };

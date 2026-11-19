@@ -12,7 +12,7 @@ import { render } from 'vitest-browser-svelte';
 import { page } from 'vitest/browser';
 
 import Page from '../+page.svelte';
-import { questionTemplatesCache } from '$lib/stores/questionTemplates.svelte';
+import { questionTemplatesCache } from '#lib/stores/questionTemplates.svelte.ts';
 
 const NODES = [
 	{ id: 'b', kind: 'branch', name: 'Nombres et calculs', parent_id: null, position: 0 },
@@ -55,6 +55,8 @@ async function seedTemplatesCache(templates: unknown[]) {
 
 describe('Catalogue Automaths — consigne d’exercice', () => {
 	beforeEach(async () => {
+		// Le catalogue reprend la dernière adresse de la visite : chaque test part de zéro
+		sessionStorage.clear();
 		await seedTemplatesCache([
 			ligne('avec', "Table d'addition", 'Calcule.'),
 			ligne('sans', 'Sans consigne', null)
@@ -62,15 +64,15 @@ describe('Catalogue Automaths — consigne d’exercice', () => {
 	});
 
 	it('la carte d’un modèle avec consigne l’affiche au-dessus de l’énoncé', async () => {
+		// Sous-notions dépliées : la section à l'écran calcule ses cartes d'elle-même
 		await render(Page);
-		await page.getByRole('button', { name: 'Tables' }).click();
 
 		await expect.element(page.getByText('Calcule.', { exact: true })).toBeVisible();
 	});
 
 	it('un modèle sans consigne n’affiche pas de consigne', async () => {
+		// Sous-notions dépliées : la section à l'écran calcule ses cartes d'elle-même
 		await render(Page);
-		await page.getByRole('button', { name: 'Tables' }).click();
 
 		await expect.element(page.getByText('Sans consigne')).toBeVisible();
 		await expect.element(page.getByText('Calcule.', { exact: true })).toBeVisible();

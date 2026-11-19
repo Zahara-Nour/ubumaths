@@ -4,11 +4,11 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { parseMarkdown } from '$lib/ubumark';
-import { generateTypst } from '$lib/ubumark/generators/typst-generator';
-import { generatePartageTypst } from '$lib/ubumark/generators/partage-typst';
-import { parsePartageContent } from '$lib/ubumark/parser/partage-parser';
-import { PARTAGE_UNAVAILABLE } from '$lib/ubumark/types/partage';
+import { parseMarkdown } from '#lib/ubumark/index.ts';
+import { generateTypst } from '#lib/ubumark/generators/typst-generator.ts';
+import { generatePartageTypst } from '#lib/ubumark/generators/partage-typst.ts';
+import { parsePartageContent } from '#lib/ubumark/parser/partage-parser.ts';
+import { PARTAGE_UNAVAILABLE } from '#lib/ubumark/types/partage.ts';
 
 const typst = (...lines: string[]) => generatePartageTypst(parsePartageContent(lines.join('\n')));
 const count = (text: string, pattern: RegExp) => (text.match(pattern) ?? []).length;

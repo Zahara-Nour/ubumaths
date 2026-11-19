@@ -8,12 +8,12 @@
  * AUTH: Student only
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import { getStudentBuddy, createStudentBuddy } from '$lib/server/buddy-queries';
-import { chooseBuddySchema } from '$lib/server/validation/buddy';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { getStudentBuddy, createStudentBuddy } from '#lib/server/buddy-queries.ts';
+import { chooseBuddySchema } from '#lib/server/validation/buddy.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/student/buddy/+server');
 
@@ -22,7 +22,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 
 	try {
 		const buddy = await getStudentBuddy(locals.supabase, user.id);
-		return json({ buddy });
+		return Response.json({ buddy });
 	} catch (err) {
 		logger.error('❌ [API] GET /api/student/buddy:', err);
 		throw error(500, 'Erreur lors de la recuperation du buddy');
@@ -59,7 +59,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		if (!buddy) {
 			throw error(409, 'Un Palotin a deja ete choisi');
 		}
-		return json({ buddy }, { status: 201 });
+		return Response.json({ buddy }, { status: 201 });
 	} catch (err) {
 		if (err && typeof err === 'object' && 'status' in err) throw err;
 		logger.error('❌ [API] POST /api/student/buddy:', err);

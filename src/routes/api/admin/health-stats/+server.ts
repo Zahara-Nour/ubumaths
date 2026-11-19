@@ -17,15 +17,15 @@
  * - Reduces load on Supabase free tier by avoiding repeated expensive queries
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import {
 	fetchHealthStats,
 	getCachedHealthStats,
 	setCachedHealthStats
-} from '$lib/server/healthStats';
-import { requireAdmin } from '$lib/server/middleware/auth';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/healthStats.ts';
+import { requireAdmin } from '#lib/server/middleware/auth.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/admin/health-stats/+server');
 
@@ -58,7 +58,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 
 		if (cached) {
 			// Cache hit - return cached data with metadata
-			return json({
+			return Response.json({
 				...cached,
 				meta: {
 					...cached.meta,
@@ -81,7 +81,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 		// Step 4: Add cache metadata to response
 		const expiresAt = new Date(Date.now() + CACHE_TTL_SECONDS * 1000);
 
-		return json({
+		return Response.json({
 			...stats,
 			meta: {
 				...stats.meta,

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { ShoppingCart } from '@lucide/svelte';
-	import { Badge } from '$lib/components/ui/badge';
-	import { questionCart } from '$lib/stores/questionCart.svelte';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { questionCart } from '#lib/stores/questionCart.svelte.ts';
 	import { goto } from '$app/navigation';
 
 	// Reactive values from store
@@ -16,12 +16,10 @@
 	}
 </script>
 
-<!-- Floating Action Button -->
+<!-- Bouton rond du panier : fixe, sans pulsation (elle attirait l'œil en permanence) -->
 <button
 	onclick={handleClick}
-	class="group fixed right-6 bottom-6 z-50 flex h-16 w-16 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-all duration-300 hover:scale-110 hover:shadow-xl focus:ring-4 focus:ring-primary/30 focus:outline-none {hasItems
-		? 'animate-pulse'
-		: ''}"
+	class="group fixed right-6 bottom-6 z-50 flex h-16 w-16 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-all duration-300 hover:scale-110 hover:shadow-xl focus:ring-4 focus:ring-primary/30 focus:outline-none"
 	aria-label="Voir le panier"
 	title="Voir le panier ({totalItems} {totalItems === 1 ? 'question' : 'questions'})"
 >
@@ -40,20 +38,3 @@
 		{/if}
 	</div>
 </button>
-
-<style>
-	/* Pulse animation for non-empty cart */
-	.animate-pulse {
-		animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-	}
-
-	@keyframes pulse {
-		0%,
-		100% {
-			opacity: 1;
-		}
-		50% {
-			opacity: 0.85;
-		}
-	}
-</style>

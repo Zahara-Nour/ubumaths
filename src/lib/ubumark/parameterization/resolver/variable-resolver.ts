@@ -23,20 +23,20 @@ import { parseRandomSpec } from '../parser/random-parser';
 import { parseEvalExpressionWithModifiers } from '../parser/eval-parser';
 import { normalizeExpression } from '../parser/expression-normalizer';
 import { generateRandomNumber } from './random-generator';
-import { randomInt, type RandomSource } from '$lib/utils/random';
-import { parseCustom } from '$lib/mathAST/parser/custom';
-import { parseLatex } from '$lib/mathAST/parser';
-import { numberToLatexSafe } from '$lib/mathAST/common/numeric';
+import { randomInt, type RandomSource } from '#lib/utils/random.ts';
+import { parseCustom } from '#lib/mathAST/parser/custom/index.ts';
+import { parseLatex } from '#lib/mathAST/parser/index.ts';
+import { numberToLatexSafe } from '#lib/mathAST/common/numeric.ts';
 import {
 	substitute,
 	evaluateAstWithModifiers,
 	evalResultToCustom,
 	getVariables
-} from '$lib/mathAST/eval';
-import type { BindingValue, EvalDurationOptions } from '$lib/mathAST/eval';
-import type { DurationWriting } from '$lib/mathAST/tidy';
-import type { MathNode } from '$lib/mathAST/types';
-import { toFrenchDecimal } from '$lib/utils/french-math';
+} from '#lib/mathAST/eval/index.ts';
+import type { BindingValue, EvalDurationOptions } from '#lib/mathAST/eval/index.ts';
+import type { DurationWriting } from '#lib/mathAST/tidy/index.ts';
+import type { MathNode } from '#lib/mathAST/types.ts';
+import { toFrenchDecimal } from '#lib/utils/french-math.ts';
 import { barePiRefusal } from '../validator/bare-pi';
 
 // ============================================================================

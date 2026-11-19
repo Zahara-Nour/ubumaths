@@ -6,12 +6,12 @@
  * l'ordre des sections dans les chapitres liés (ADR 0029, Q3).
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import { requireOwnedTemplate } from '$lib/server/template-guard';
-import { reorderSections } from '$lib/server/chapter-sections';
-import { reorderSectionsSchema } from '$lib/server/validation/chapter-sections';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { requireOwnedTemplate } from '#lib/server/template-guard.ts';
+import { reorderSections } from '#lib/server/chapter-sections.ts';
+import { reorderSectionsSchema } from '#lib/server/validation/chapter-sections.ts';
 
 export const POST: RequestHandler = async ({ locals, params, request }) => {
 	const { user } = await requireRole(locals, 'teacher');
@@ -41,5 +41,5 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		throw error(500, 'Impossible de réordonner les sections');
 	}
 
-	return json({ success: true });
+	return Response.json({ success: true });
 };

@@ -35,7 +35,8 @@ function nombre(valeur: number) {
 	return { shadow: { type: 'math_number', fields: { NUM: valeur } } } as const;
 }
 
-function operation(op: 'ADD' | 'MINUS' | 'MULTIPLY' | 'DIVIDE', b: number) {
+/** Bloc d'opération de la boîte à outils (+ − × ÷), à deux nombres en ombre. */
+export function operation(op: 'ADD' | 'MINUS' | 'MULTIPLY' | 'DIVIDE', b: number) {
 	return {
 		kind: 'block',
 		type: 'calcul_operation',
@@ -100,6 +101,43 @@ export const CALCUL_TOOLBOX = {
 	]
 } as const;
 
+/** Catégorie des variables créées par l'élève (4e, 3e ; la tortue de 4e / 3e aussi). */
+export const CATEGORIE_DES_VARIABLES = {
+	kind: 'category',
+	name: 'Variables',
+	colour: COULEURS_CALCUL.variables,
+	custom: CATEGORIE_VARIABLES
+} as const;
+
+/**
+ * Catégorie « Conditions » : « si … alors (sinon) », comparaisons ; et / ou, non avec
+ * `logique` (3e). La tortue de 3e la reprend.
+ */
+export function categorieConditions(logique: boolean) {
+	return {
+		kind: 'category',
+		name: 'Conditions',
+		colour: COULEURS_CALCUL.conditions,
+		contents: [
+			{ kind: 'block', type: 'calcul_si' },
+			{ kind: 'block', type: 'calcul_si_sinon' },
+			comparaison('EQ'),
+			comparaison('NEQ'),
+			comparaison('LT'),
+			comparaison('LTE'),
+			comparaison('GT'),
+			comparaison('GTE'),
+			...(logique
+				? [
+						{ kind: 'block', type: 'logic_operation', fields: { OP: 'AND' } },
+						{ kind: 'block', type: 'logic_operation', fields: { OP: 'OR' } },
+						{ kind: 'block', type: 'logic_negate' }
+					]
+				: [])
+		]
+	};
+}
+
 /** Boîte à outils des blocs proposés au niveau donné. */
 export function toolboxCalcul(niveau: NiveauCalcul) {
 	if (niveau === '5e') return CALCUL_TOOLBOX;
@@ -118,35 +156,9 @@ export function toolboxCalcul(niveau: NiveauCalcul) {
 					}
 				]
 			},
-			{
-				kind: 'category',
-				name: 'Variables',
-				colour: COULEURS_CALCUL.variables,
-				custom: CATEGORIE_VARIABLES
-			},
+			CATEGORIE_DES_VARIABLES,
 			AFFICHER,
-			{
-				kind: 'category',
-				name: 'Conditions',
-				colour: COULEURS_CALCUL.conditions,
-				contents: [
-					{ kind: 'block', type: 'calcul_si' },
-					{ kind: 'block', type: 'calcul_si_sinon' },
-					comparaison('EQ'),
-					comparaison('NEQ'),
-					comparaison('LT'),
-					comparaison('LTE'),
-					comparaison('GT'),
-					comparaison('GTE'),
-					...(troisieme
-						? [
-								{ kind: 'block', type: 'logic_operation', fields: { OP: 'AND' } },
-								{ kind: 'block', type: 'logic_operation', fields: { OP: 'OR' } },
-								{ kind: 'block', type: 'logic_negate' }
-							]
-						: [])
-				]
-			},
+			categorieConditions(troisieme),
 			{
 				kind: 'category',
 				name: 'Boucles',

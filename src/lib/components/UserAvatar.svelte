@@ -53,8 +53,8 @@
 </script>
 
 <script lang="ts">
-	import { cn } from '$lib/utils.js';
-	import { getAvatarFallback, getAvatarInitials, type UserRole } from '$lib/utils/avatar';
+	import { cn } from '#lib/utils.ts';
+	import { getAvatarFallback, getAvatarInitials, type UserRole } from '#lib/utils/avatar.ts';
 
 	interface Props {
 		avatar_url?: string | null;

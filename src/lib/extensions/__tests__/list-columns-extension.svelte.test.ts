@@ -8,9 +8,9 @@
  */
 import { describe, it, expect, afterEach } from 'vitest';
 import { Editor } from '@tiptap/core';
-import { createEditorExtensions } from '$lib/components/rich-text/editor-config';
-import { markdownToTipTap } from '$lib/components/rich-text/markdown-import';
-import { tipTapToMarkdown } from '$lib/components/rich-text/markdown-export';
+import { createEditorExtensions } from '#lib/components/rich-text/editor-config.ts';
+import { markdownToTipTap } from '#lib/components/rich-text/markdown-import.ts';
+import { tipTapToMarkdown } from '#lib/components/rich-text/markdown-export.ts';
 import { getListColumns } from '../list-columns-extension';
 
 let editor: Editor | null = null;

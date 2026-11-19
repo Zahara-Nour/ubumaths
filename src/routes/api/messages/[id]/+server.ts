@@ -1,9 +1,9 @@
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { updateMessageSchema } from '$lib/server/validation/messages';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { validateUuidParam } from '$lib/server/validation/params';
-import { createServerLogger } from '$lib/utils/logger';
+import { updateMessageSchema } from '#lib/server/validation/messages.ts';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { validateUuidParam } from '#lib/server/validation/params.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/messages/[id]/+server');
 
@@ -44,7 +44,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 			p_user_id: user.id
 		});
 
-		return json({ message: messages[0] });
+		return Response.json({ message: messages[0] });
 	} catch (err) {
 		logger.error('Error in get message API:', err);
 		if (err && typeof err === 'object' && 'status' in err) {
@@ -135,7 +135,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 					throw error(403, 'Statut de lecture non modifié : droits insuffisants');
 				}
 
-				return json({ success: true, isRead: newReadValue !== null });
+				return Response.json({ success: true, isRead: newReadValue !== null });
 			}
 
 			case 'toggleStar': {
@@ -149,7 +149,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 					throw error(500, 'Erreur lors de la mise à jour du favori');
 				}
 
-				return json({ success: true, isStarred: newStarValue });
+				return Response.json({ success: true, isStarred: newStarValue });
 			}
 
 			case 'moveToFolder': {
@@ -168,7 +168,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 			}
 		}
 
-		return json({ success: true });
+		return Response.json({ success: true });
 	} catch (err) {
 		logger.error('Error in update message API:', err);
 		if (err && typeof err === 'object' && 'status' in err) {
@@ -240,7 +240,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 			}
 		}
 
-		return json({ success: true });
+		return Response.json({ success: true });
 	} catch (err) {
 		logger.error('Error in delete message API:', err);
 		if (err && typeof err === 'object' && 'status' in err) {

@@ -8,7 +8,7 @@ import { generateInstance } from '../generator/instance-generator';
 import { questionTemplateSchema, blankSchema, blankDefaultsSchema } from '../template-schema';
 import { runTestSpec } from '../test-spec-runner';
 import type { QuestionTemplate, QuestionVariation } from '../types';
-import { templateMarkdown } from '$lib/ubumark';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 
 /** Mains de k cartes parmi 32 : attendu `binom(32, k)` calculé */
 function handsTemplate(

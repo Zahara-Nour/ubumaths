@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
-	import RestrictedRichText from '$lib/components/rich-text/RestrictedRichText.svelte';
-	import { lore } from '$lib/config/lore';
+	import RestrictedRichText from '#lib/components/rich-text/RestrictedRichText.svelte';
+	import { lore } from '#lib/config/lore.ts';
 	import { page } from '$app/state';
-	import { privateMessages } from '$lib/stores/privateMessages.svelte';
-	import { Button } from '$lib/components/ui/button';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
+	import { privateMessages } from '#lib/stores/privateMessages.svelte.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
 	import {
 		Loader2,
 		Reply,
@@ -20,7 +20,7 @@
 	} from '@lucide/svelte';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-	import UserAvatar from '$lib/components/UserAvatar.svelte';
+	import UserAvatar from '#lib/components/UserAvatar.svelte';
 
 	const threadRootId = $derived(page.params.id);
 

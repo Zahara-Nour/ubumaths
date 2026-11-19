@@ -9,7 +9,7 @@ import { describe, it, expect } from 'vitest';
 import { page } from 'vitest/browser';
 import { render } from 'vitest-browser-svelte';
 import Page from '../+page.svelte';
-import { trigEntry } from '$lib/block-catalog/trig';
+import { trigEntry } from '#lib/block-catalog/trig.ts';
 
 describe('/aide-ecriture/cercle-trigo', () => {
 	it('dessine chacun de ses exemples', async () => {

@@ -41,13 +41,13 @@
  * ```
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import type { StudentWarnings } from '$lib/types/student-cache';
-import type { Warning, WarningType, StudentWarningCounts } from '$lib/server/warnings';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import type { StudentWarnings } from '#lib/types/student-cache.ts';
+import type { Warning, WarningType, StudentWarningCounts } from '#lib/server/warnings.ts';
 import { z } from 'zod';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/student/warnings/[periodId]/+server');
 
@@ -110,7 +110,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			warnings
 		};
 
-		return json({ warnings: studentWarnings });
+		return Response.json({ warnings: studentWarnings });
 	} catch (err) {
 		// Re-throw SvelteKit errors
 		if (err && typeof err === 'object' && 'status' in err) {

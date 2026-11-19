@@ -22,8 +22,8 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import { fetchInChunks } from '$lib/server/utils/chunked-in';
+import type { Database } from '#lib/types/database.ts';
+import { fetchInChunks } from '#lib/server/utils/chunked-in.ts';
 
 type SB = SupabaseClient<Database>;
 

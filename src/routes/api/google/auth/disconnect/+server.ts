@@ -23,12 +23,12 @@
  * }
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import { decryptToken } from '$lib/server/google/encryption';
-import { revokeAccess } from '$lib/server/google/oauth';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { decryptToken } from '#lib/server/google/encryption.ts';
+import { revokeAccess } from '#lib/server/google/oauth.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/google/auth/disconnect/+server');
 
@@ -54,7 +54,7 @@ export const POST: RequestHandler = async ({ locals }) => {
 		// If no integration exists, consider it already disconnected
 		if (fetchError || !integration) {
 			logger.info(`[Google OAuth] No integration found for teacher ${user.id}`);
-			return json({ success: true });
+			return Response.json({ success: true });
 		}
 
 		// Revoke access on Google (best effort - don't fail if this fails)
@@ -90,7 +90,7 @@ export const POST: RequestHandler = async ({ locals }) => {
 
 		logger.info(`[Google OAuth] Successfully disconnected Google account for teacher ${user.id}`);
 
-		return json({ success: true });
+		return Response.json({ success: true });
 	} catch (err) {
 		// Re-throw SvelteKit errors
 		if (err && typeof err === 'object' && 'status' in err) {

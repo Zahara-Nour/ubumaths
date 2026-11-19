@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import { goto, replaceState } from '$app/navigation';
 	import { page } from '$app/state';
 	import { onMount } from 'svelte';
-	import { Button } from '$lib/components/ui/button';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import * as Card from '$lib/components/ui/card';
-	import * as Dialog from '$lib/components/ui/dialog';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
 	import {
 		ShoppingCart,
 		Trash2,
@@ -16,13 +16,13 @@
 		Save,
 		AlertCircle
 	} from '@lucide/svelte';
-	import { questionCart } from '$lib/stores/questionCart.svelte';
-	import { questionTemplatesCache } from '$lib/stores/questionTemplates.svelte';
-	import CartQuestionCard from '$lib/components/CartQuestionCard.svelte';
-	import TestModeDialog from '$lib/components/test/TestModeDialog.svelte';
-	import SaveSeriesDialog from '$lib/components/series/SaveSeriesDialog.svelte';
-	import SeriesLinkShare from '$lib/components/series/SeriesLinkShare.svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { questionCart } from '#lib/stores/questionCart.svelte.ts';
+	import { questionTemplatesCache } from '#lib/stores/questionTemplates.svelte.ts';
+	import CartQuestionCard from '#lib/components/CartQuestionCard.svelte';
+	import TestModeDialog from '#lib/components/test/TestModeDialog.svelte';
+	import SaveSeriesDialog from '#lib/components/series/SaveSeriesDialog.svelte';
+	import SeriesLinkShare from '#lib/components/series/SeriesLinkShare.svelte';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import {
 		SERIES_LINK_PARAM,
 		deleteSeriesLink,
@@ -30,15 +30,15 @@
 		hasSeriesLink,
 		parseSeriesLink,
 		type SeriesItem
-	} from '$lib/validation/series';
-	import { templatePreview } from '$lib/questions/catalogue';
-	import { fetchDurationSignals } from '$lib/utils/duration-signals';
+	} from '#lib/validation/series.ts';
+	import { templatePreview } from '#lib/questions/catalogue.ts';
+	import { fetchDurationSignals } from '#lib/utils/duration-signals.ts';
 	import {
 		observedSuggestion,
 		tooShortAt,
 		type DurationSignalsResponse
-	} from '$lib/types/duration-signals';
-	import type { TestMode } from '$lib/types/test';
+	} from '#lib/types/duration-signals.ts';
+	import type { TestMode } from '#lib/types/test.ts';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
@@ -186,7 +186,7 @@
 	 * Retire la composition de l'URL : un rechargement ne redemande rien (Q45)
 	 */
 	function clearSeriesParam() {
-		const url = new URL(page.url);
+		const url = new URL(page.url.href);
 		deleteSeriesLink(url.searchParams);
 		replaceState(`${url.pathname}${url.search}${url.hash}`, page.state);
 	}

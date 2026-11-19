@@ -16,7 +16,7 @@ import type { Component } from 'svelte';
  *
  * Usage:
  * ```typescript
- * import { modalStack } from '$lib/stores/modalStack.svelte';
+ * import { modalStack } from '#lib/stores/modalStack.svelte.ts';
  * import MyModal from './MyModal.svelte';
  *
  * // Push a modal

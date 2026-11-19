@@ -1,0 +1,245 @@
+{
+	"id": "4d75350c-a7fc-46e9-9b57-bb505bb46172",
+	"title": "Suite de nombres : trouver la règle et continuer",
+	"description": "Trouver la règle d'une suite (on retire un nombre, on ajoute un décimal, un écart qui grandit, × 2 puis + c en alternance) et écrire les trois termes suivants",
+	"grades": ["CM2"],
+	"level": 1,
+	"delay": 150,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true,
+			"zeros": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Voici le début d'une suite de nombres :\n\n$${{eval:u-0*a}} \\ ;\\  {{eval:u-1*a}} \\ ;\\  {{eval:u-2*a}} \\ ;\\  {{eval:u-3*a}} \\ ;\\  {{eval:u-4*a}} \\ ;\\  \\ldots$$\n\nTrouve la règle, puis écris les trois nombres suivants.\n\n6e nombre : $?$\n\n7e nombre : $?$\n\n8e nombre : $?$",
+			"variables": [
+				{
+					"name": "u",
+					"expression": "1000..9999"
+				},
+				{
+					"name": "a",
+					"expression": "11..99"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:u-5*a}}"
+				},
+				{
+					"expectedAnswer": "{{eval:u-6*a}}"
+				},
+				{
+					"expectedAnswer": "{{eval:u-7*a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**La règle.** On retire ${{a}}$ à chaque fois. On le vérifie sur les nombres donnés : ${{eval:u-0*a}} - {{a}} = {{eval:u-1*a}}$, ${{eval:u-1*a}} - {{a}} = {{eval:u-2*a}}$.",
+					"**Les trois suivants.** ${{eval:u-4*a}} - {{a}} = \\textcolor{{{color:primary.0}}}{{{eval:u-5*a}}}$ ; ${{eval:u-5*a}} - {{a}} = \\textcolor{{{color:primary.0}}}{{{eval:u-6*a}}}$ ; ${{eval:u-6*a}} - {{a}} = \\textcolor{{{color:primary.0}}}{{{eval:u-7*a}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Voici le début d'une suite de nombres :\n\n$${{eval:(25*s+0*p)/100;d}} \\ ;\\  {{eval:(25*s+1*p)/100;d}} \\ ;\\  {{eval:(25*s+2*p)/100;d}} \\ ;\\  {{eval:(25*s+3*p)/100;d}} \\ ;\\  {{eval:(25*s+4*p)/100;d}} \\ ;\\  \\ldots$$\n\nTrouve la règle, puis écris les trois nombres suivants.\n\n6e nombre : $?$\n\n7e nombre : $?$\n\n8e nombre : $?$",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "4..40"
+				},
+				{
+					"name": "p",
+					"expression": "25|50|75|150|250"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(25*s+5*p)/100;d}}",
+					"requiredForm": {
+						"pattern": "a:number"
+					}
+				},
+				{
+					"expectedAnswer": "{{eval:(25*s+6*p)/100;d}}",
+					"requiredForm": {
+						"pattern": "a:number"
+					}
+				},
+				{
+					"expectedAnswer": "{{eval:(25*s+7*p)/100;d}}",
+					"requiredForm": {
+						"pattern": "a:number"
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"**La règle.** On ajoute ${{eval:p/100;d}}$ à chaque fois. On le vérifie sur les nombres donnés : ${{eval:(25*s+0*p)/100;d}} + {{eval:p/100;d}} = {{eval:(25*s+1*p)/100;d}}$, ${{eval:(25*s+1*p)/100;d}} + {{eval:p/100;d}} = {{eval:(25*s+2*p)/100;d}}$.",
+					"**Les trois suivants.** ${{eval:(25*s+4*p)/100;d}} + {{eval:p/100;d}} = \\textcolor{{{color:primary.0}}}{{{eval:(25*s+5*p)/100;d}}}$ ; ${{eval:(25*s+5*p)/100;d}} + {{eval:p/100;d}} = \\textcolor{{{color:primary.0}}}{{{eval:(25*s+6*p)/100;d}}}$ ; ${{eval:(25*s+6*p)/100;d}} + {{eval:p/100;d}} = \\textcolor{{{color:primary.0}}}{{{eval:(25*s+7*p)/100;d}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Voici le début d'une suite de nombres :\n\n$${{eval:u+0*a}} \\ ;\\  {{eval:u+1*a}} \\ ;\\  {{eval:u+3*a}} \\ ;\\  {{eval:u+6*a}} \\ ;\\  {{eval:u+10*a}} \\ ;\\  \\ldots$$\n\nTrouve la règle, puis écris les trois nombres suivants.\n\n6e nombre : $?$\n\n7e nombre : $?$\n\n8e nombre : $?$",
+			"variables": [
+				{
+					"name": "u",
+					"expression": "1..50"
+				},
+				{
+					"name": "a",
+					"expression": "1..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:u+15*a}}"
+				},
+				{
+					"expectedAnswer": "{{eval:u+21*a}}"
+				},
+				{
+					"expectedAnswer": "{{eval:u+28*a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**La règle.** L'écart grandit : on ajoute ${{a}}$, puis ${{eval:2*a}}$, puis ${{eval:3*a}}$, et ainsi de suite. On le vérifie sur les nombres donnés : ${{eval:u+0*a}} + {{eval:1*a}} = {{eval:u+1*a}}$, ${{eval:u+1*a}} + {{eval:2*a}} = {{eval:u+3*a}}$.",
+					"**Les trois suivants.** ${{eval:u+10*a}} + {{eval:5*a}} = \\textcolor{{{color:primary.0}}}{{{eval:u+15*a}}}$ ; ${{eval:u+15*a}} + {{eval:6*a}} = \\textcolor{{{color:primary.0}}}{{{eval:u+21*a}}}$ ; ${{eval:u+21*a}} + {{eval:7*a}} = \\textcolor{{{color:primary.0}}}{{{eval:u+28*a}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Voici le début d'une suite de nombres :\n\n$${{eval:u}} \\ ;\\  {{eval:2*u}} \\ ;\\  {{eval:2*u+c}} \\ ;\\  {{eval:4*u+2*c}} \\ ;\\  {{eval:4*u+3*c}} \\ ;\\  \\ldots$$\n\nTrouve la règle, puis écris les trois nombres suivants.\n\n6e nombre : $?$\n\n7e nombre : $?$\n\n8e nombre : $?$",
+			"variables": [
+				{
+					"name": "u",
+					"expression": "5..20"
+				},
+				{
+					"name": "c",
+					"expression": "1..9"
+				}
+			],
+			"conditions": ["c != u"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:8*u+6*c}}"
+				},
+				{
+					"expectedAnswer": "{{eval:8*u+7*c}}"
+				},
+				{
+					"expectedAnswer": "{{eval:16*u+14*c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**La règle.** On multiplie par $2$, puis on ajoute ${{c}}$, et ainsi de suite. On le vérifie sur les nombres donnés : ${{eval:u}} \\times 2 = {{eval:2*u}}$, ${{eval:2*u}} + {{c}} = {{eval:2*u+c}}$.",
+					"**Les trois suivants.** ${{eval:4*u+3*c}} \\times 2 = \\textcolor{{{color:primary.0}}}{{{eval:8*u+6*c}}}$ ; ${{eval:8*u+6*c}} + {{c}} = \\textcolor{{{color:primary.0}}}{{{eval:8*u+7*c}}}$ ; ${{eval:8*u+7*c}} \\times 2 = \\textcolor{{{color:primary.0}}}{{{eval:16*u+14*c}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "− 47 : 1 765 ; 1 718 ; 1 671",
+			"variationIndex": 0,
+			"variables": {
+				"u": "2000",
+				"a": "47"
+			},
+			"answers": ["1\\,765", "1\\,718", "1\\,671"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : + 47 (sens de la suite)",
+			"variationIndex": 0,
+			"variables": {
+				"u": "2000",
+				"a": "47"
+			},
+			"answers": ["1\\,859", "1\\,906", "1\\,953"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "+ 0,25 : 3,25 ; 3,5 ; 3,75",
+			"variationIndex": 1,
+			"variables": {
+				"s": "8",
+				"p": "25"
+			},
+			"answers": ["3,25", "3,5", "3,75"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3,30 ; 3,55 ; 3,80 (3 + 0,25 = 3,30)",
+			"variationIndex": 1,
+			"variables": {
+				"s": "8",
+				"p": "25"
+			},
+			"answers": ["3,3", "3,55", "3,8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "écart + 2, + 4… : 34 ; 46 ; 60",
+			"variationIndex": 2,
+			"variables": {
+				"u": "4",
+				"a": "2"
+			},
+			"answers": ["34", "46", "60"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : + 8 à chaque fois",
+			"variationIndex": 2,
+			"variables": {
+				"u": "4",
+				"a": "2"
+			},
+			"answers": ["32", "40", "48"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "× 2 puis + 3 : 66 ; 69 ; 138",
+			"variationIndex": 3,
+			"variables": {
+				"u": "6",
+				"c": "3"
+			},
+			"answers": ["66", "69", "138"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : × 2 à chaque fois",
+			"variationIndex": 3,
+			"variables": {
+				"u": "6",
+				"c": "3"
+			},
+			"answers": ["66", "132", "264"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

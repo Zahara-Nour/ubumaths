@@ -1,0 +1,440 @@
+{
+	"id": "912caf72-fdaa-4394-b71d-805ec1547e7e",
+	"title": "Étudier une fonction ax + b + k/x",
+	"description": "Dérivée a − k/x² ; même dénominateur ; signe de f′ et sens de variation sur ]0 ; +∞[ ; minimum ; x + k/x sur ℝ privé de 0 ; x² + k/x",
+	"grades": ["T_TECHNO"],
+	"level": 2,
+	"delay": 120,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		},
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "On considère la fonction $f$ définie sur $\\left]0\\,;+\\infty\\right[$ par $f(x)={{if:a>1|{{a}}}}x{{if:b>0|+{{b}}}}{{if:b<0|{{b}}}}+\\dfrac{ {{k}} }{x}$.\n\nCalcule $f'(x)$.\n\n$f'(x)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1|2"
+				},
+				{
+					"name": "m",
+					"expression": "2..5"
+				},
+				{
+					"name": "k",
+					"expression": "eval:a*m^2"
+				},
+				{
+					"name": "b",
+					"expression": "-5..5"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}-\\frac{ {{k}} }{x^2}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La dérivée de $x\\mapsto\\dfrac{1}{x}$ est $x\\mapsto-\\dfrac{1}{x^2}$ ; celle de $x\\mapsto {{if:a>1|{{a}}}}x{{if:b>0|+{{b}}}}{{if:b<0|{{b}}}}$ est la constante ${{a}}$.",
+					"Donc $f'(x)=\\textcolor{{{color:primary.0}}}{{{a}}-\\dfrac{ {{k}} }{x^2}}$."
+				]
+			}
+		},
+		{
+			"statement": "On considère la fonction $f$ définie sur $\\left]0\\,;+\\infty\\right[$ par $f(x)={{if:a>1|{{a}}}}x{{if:b>0|+{{b}}}}{{if:b<0|{{b}}}}+\\dfrac{ {{k}} }{x}$. Sa dérivée est $f'(x)={{a}}-\\dfrac{ {{k}} }{x^2}$.\n\nÉcris $f'(x)$ avec un seul dénominateur.\n\n$f'(x)=\\dfrac{?}{x^2}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1|2"
+				},
+				{
+					"name": "m",
+					"expression": "2..5"
+				},
+				{
+					"name": "k",
+					"expression": "eval:a*m^2"
+				},
+				{
+					"name": "b",
+					"expression": "-5..5"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:a>1|{{a}}}}x^2-{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On écrit ${{a}}=\\dfrac{ {{a}}x^2}{x^2}$ :",
+					"$f'(x)=\\dfrac{ {{a}}x^2}{x^2}-\\dfrac{ {{k}} }{x^2}=\\dfrac{\\textcolor{{{color:primary.0}}}{{{if:a>1|{{a}}}}x^2-{{k}}}}{x^2}$."
+				]
+			}
+		},
+		{
+			"statement": "On considère la fonction $f$ définie sur $\\left]0\\,;+\\infty\\right[$ par $f(x)={{if:a>1|{{a}}}}x{{if:b>0|+{{b}}}}{{if:b<0|{{b}}}}+\\dfrac{ {{k}} }{x}$. Sa dérivée est $f'(x)=\\dfrac{ {{if:a>1|{{a}}}}x^2-{{k}} }{x^2}$.\n\nSur quel intervalle $f'(x)\\geqslant 0$ ?\n\n$S=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1|2"
+				},
+				{
+					"name": "m",
+					"expression": "2..5"
+				},
+				{
+					"name": "k",
+					"expression": "eval:a*m^2"
+				},
+				{
+					"name": "b",
+					"expression": "-5..5"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "[{{m}};+\\infty[",
+					"answerKind": "intervalles"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Sur $\\left]0\\,;+\\infty\\right[$, $x^2>0$ : $f'(x)$ a le signe de ${{if:a>1|{{a}}}}x^2-{{k}}={{if:a>1|{{a}}}}\\left(x^2-{{m}}^2\\right)$, négatif pour $0<x<{{m}}$, nul en ${{m}}$, positif pour $x>{{m}}$.",
+					"```variation\nvariable: x\ndomain: ]0, [{{m}}, [+inf[\n\nsign: f'(x)\n  0: ||\n  0,{{m}}: -\n  {{m}}: z\n  {{m}},+inf: +\n\nvariation: f(x)\n  {{m}}: {{eval:2*a*m+b}}, bottom\n```",
+					"$S=\\textcolor{{{color:primary.0}}}{\\left[{{m}}\\,;+\\infty\\right[}$ : $f$ est croissante sur cet intervalle, décroissante sur $\\left]0\\,;{{m}}\\right]$."
+				]
+			}
+		},
+		{
+			"statement": "On considère la fonction $f$ définie sur $\\left]0\\,;+\\infty\\right[$ par $f(x)={{if:a>1|{{a}}}}x{{if:b>0|+{{b}}}}{{if:b<0|{{b}}}}+\\dfrac{ {{k}} }{x}$. Sa dérivée est $f'(x)=\\dfrac{ {{if:a>1|{{a}}}}x^2-{{k}} }{x^2}$.\n\n$f$ admet un minimum sur $\\left]0\\,;+\\infty\\right[$. Pour quelle valeur de $x$, et quel est ce minimum ?\n\n$x=?$ ; minimum $=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1|2"
+				},
+				{
+					"name": "m",
+					"expression": "2..5"
+				},
+				{
+					"name": "k",
+					"expression": "eval:a*m^2"
+				},
+				{
+					"name": "b",
+					"expression": "-5..5"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{m}}"
+				},
+				{
+					"expectedAnswer": "{{eval:2*a*m+b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Sur $\\left]0\\,;+\\infty\\right[$, $x^2>0$ : $f'(x)$ a le signe de ${{if:a>1|{{a}}}}x^2-{{k}}={{if:a>1|{{a}}}}\\left(x^2-{{m}}^2\\right)$, négatif pour $0<x<{{m}}$, nul en ${{m}}$, positif pour $x>{{m}}$.",
+					"```variation\nvariable: x\ndomain: ]0, [{{m}}, [+inf[\n\nsign: f'(x)\n  0: ||\n  0,{{m}}: -\n  {{m}}: z\n  {{m}},+inf: +\n\nvariation: f(x)\n  {{m}}: {{eval:2*a*m+b}}, bottom\n```",
+					"$f$ décroît puis croît : le minimum est atteint en $x=\\textcolor{{{color:primary.0}}}{{{m}}}$ et vaut $f({{m}})={{eval:a*m}}{{if:b>0|+{{b}}}}{{if:b<0|{{b}}}}+\\dfrac{ {{k}} }{ {{m}} }=\\textcolor{{{color:primary.0}}}{{{eval:2*a*m+b}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On considère la fonction $f$ définie sur $\\mathbb{R}\\setminus\\{0\\}$ par $f(x)=x+\\dfrac{ {{k}} }{x}$. Sa dérivée est $f'(x)=\\dfrac{x^2-{{k}} }{x^2}$.\n\nSur quels intervalles $f$ est-elle décroissante ?\n\n```choix\nmelanger: non\n- sur $\\left[-{{m}}\\,;0\\right[$ et sur $\\left]0\\,;{{m}}\\right]$\n- sur $\\left[-{{m}}\\,;{{m}}\\right]$\n- sur $\\left]-\\infty\\,;-{{m}}\\right]$ et sur $\\left[{{m}}\\,;+\\infty\\right[$\n- sur $\\left]0\\,;{{m}}\\right]$ seulement\n```",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "2..5"
+				},
+				{
+					"name": "k",
+					"expression": "eval:m^2"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$x^2>0$ : $f'(x)$ a le signe de $x^2-{{k}}=(x-{{m}})(x+{{m}})$, qui s'annule en $-{{m}}$ et en ${{m}}$. $f$ n'est pas définie en $0$ (double barre).",
+					"```variation\nvariable: x\ndomain: -inf, -{{m}}, 0, {{m}}, +inf\n\nsign: f'(x)\n  -inf,-{{m}}: +\n  -{{m}}: z\n  -{{m}},0: -\n  0: ||\n  0,{{m}}: -\n  {{m}}: z\n  {{m}},+inf: +\n```",
+					"$f$ est décroissante $\\textcolor{{{color:primary.0}}}{\\text{sur } \\left[-{{m}}\\,;0\\right[ \\text{ et sur } \\left]0\\,;{{m}}\\right]}$, séparément : on ne peut pas écrire $\\left[-{{m}}\\,;{{m}}\\right]$, qui contient $0$."
+				]
+			}
+		},
+		{
+			"statement": "On considère la fonction $f$ définie sur $\\left]0\\,;+\\infty\\right[$ par $f(x)=x^2+\\dfrac{ {{k}} }{x}$. Sa dérivée est $f'(x)=2x-\\dfrac{ {{k}} }{x^2}=\\dfrac{2x^3-{{k}} }{x^2}$.\n\n$f$ est décroissante puis croissante. En quelle valeur de $x$ change-t-elle de sens, et quel est son minimum ?\n\n$x=?$ ; minimum $=?$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "2..4"
+				},
+				{
+					"name": "k",
+					"expression": "eval:2*c^3"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{c}}"
+				},
+				{
+					"expectedAnswer": "{{eval:3*c^2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$x^2>0$ : $f'(x)$ a le signe de $2x^3-{{k}}$. Or $2x^3={{k}}$ pour $x^3={{eval:c^3}}$, soit $x={{c}}$ ; la fonction cube étant croissante, $2x^3-{{k}}<0$ pour $x<{{c}}$ et $>0$ pour $x>{{c}}$.",
+					"```variation\nvariable: x\ndomain: ]0, [{{c}}, [+inf[\n\nsign: f'(x)\n  0: ||\n  0,{{c}}: -\n  {{c}}: z\n  {{c}},+inf: +\n\nvariation: f(x)\n  {{c}}: {{eval:3*c^2}}, bottom\n```",
+					"Changement de sens en $x=\\textcolor{{{color:primary.0}}}{{{c}}}$ ; minimum $f({{c}})={{eval:c^2}}+\\dfrac{ {{k}} }{ {{c}} }=\\textcolor{{{color:primary.0}}}{{{eval:3*c^2}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2x + 1 + 18/x : 2 − 18/x²",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"m": "3",
+				"k": "18",
+				"b": "1"
+			},
+			"answers": ["2-\\frac{18}{x^2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2 + 18/x² (signe)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"m": "3",
+				"k": "18",
+				"b": "1"
+			},
+			"answers": ["2+\\frac{18}{x^2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 3 − 18/x² (constante dérivée)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"m": "3",
+				"k": "18",
+				"b": "1"
+			},
+			"answers": ["3-\\frac{18}{x^2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x − 2 + 16/x : x² − 16",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"m": "4",
+				"k": "16",
+				"b": "-2"
+			},
+			"answers": ["x^2-16"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 − 16",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"m": "4",
+				"k": "16",
+				"b": "-2"
+			},
+			"answers": ["1-16"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : x − 16",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"m": "4",
+				"k": "16",
+				"b": "-2"
+			},
+			"answers": ["x-16"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2x² − 8 : [2 ; +∞[",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"m": "2",
+				"k": "8",
+				"b": "0"
+			},
+			"answers": ["[2;+\\infty["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ]0 ; 2]",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"m": "2",
+				"k": "8",
+				"b": "0"
+			},
+			"answers": ["]0;2]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : [4 ; +∞[ (k/a au lieu de √(k/a))",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"m": "2",
+				"k": "8",
+				"b": "0"
+			},
+			"answers": ["[4;+\\infty["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x + 3 + 25/x : min 13 en 5",
+			"variationIndex": 3,
+			"variables": {
+				"a": "1",
+				"m": "5",
+				"k": "25",
+				"b": "3"
+			},
+			"answers": ["5", "13"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : min 8 (b oublié)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "1",
+				"m": "5",
+				"k": "25",
+				"b": "3"
+			},
+			"answers": ["5", "8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2x − 4 + 32/x : min 12 en 4",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"m": "4",
+				"k": "32",
+				"b": "-4"
+			},
+			"answers": ["4", "12"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "x + 9/x : [−3 ; 0[ et ]0 ; 3]",
+			"variationIndex": 4,
+			"variables": {
+				"m": "3",
+				"k": "9"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : [−3 ; 3] (0 oublié)",
+			"variationIndex": 4,
+			"variables": {
+				"m": "3",
+				"k": "9"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ]0 ; 3] seulement",
+			"variationIndex": 4,
+			"variables": {
+				"m": "3",
+				"k": "9"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x² + 54/x : en 3, min 27",
+			"variationIndex": 5,
+			"variables": {
+				"c": "3",
+				"k": "54"
+			},
+			"answers": ["3", "27"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : x = 27 (k/2 sans racine cubique)",
+			"variationIndex": 5,
+			"variables": {
+				"c": "3",
+				"k": "54"
+			},
+			"answers": ["27", "27"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -8,7 +8,7 @@ import type { Component } from 'svelte';
  * Wrapper around svelte-sonner toast for consistent API
  *
  * Usage:
- * import { toaster } from '$lib/stores/toaster.svelte';
+ * import { toaster } from '#lib/stores/toaster.svelte.ts';
  *
  * toaster.success('Success message');
  * toaster.error('Error message');

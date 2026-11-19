@@ -28,7 +28,7 @@ import {
 import { createAuthenticatedClient } from '../helpers/database/supabase-client';
 import { TestData } from '../helpers/database/test-data-factory';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 
 describe('VIP Card draw - global flag only - Integration Tests', () => {
 	let service: SupabaseClient<Database>;

@@ -11,7 +11,7 @@ import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import ExerciseModal from '../ExerciseModal.svelte';
 import ExerciseDisplay from '../ExerciseDisplay.svelte';
-import type { StudentExerciseView } from '$lib/types/worksheets';
+import type { StudentExerciseView } from '#lib/types/worksheets.ts';
 
 const STATEMENT = "Calcule ~P'(2)~ pour ~P(x)=x^2~.";
 

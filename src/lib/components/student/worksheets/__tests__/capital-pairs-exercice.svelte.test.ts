@@ -11,10 +11,10 @@ import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import ExerciseModal from '../ExerciseModal.svelte';
 import ExerciseDisplay from '../ExerciseDisplay.svelte';
-import TeacherExerciseDisplay from '$lib/components/exercises/ExerciseDisplay.svelte';
-import type { StudentExerciseView } from '$lib/types/worksheets';
-import type { Exercise } from '$lib/exercises/types';
-import type { CapitalPairs } from '$lib/mathAST/parser/types';
+import TeacherExerciseDisplay from '#lib/components/exercises/ExerciseDisplay.svelte';
+import type { StudentExerciseView } from '#lib/types/worksheets.ts';
+import type { Exercise } from '#lib/exercises/types.ts';
+import type { CapitalPairs } from '#lib/mathAST/parser/types.ts';
 
 const STATEMENT = "Dans le triangle ~ABC~, montrer que ~A'B'=5~.";
 const SOLUTION = "On trouve ~A'B'^2=25~.";

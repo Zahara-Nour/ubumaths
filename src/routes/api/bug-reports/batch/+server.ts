@@ -8,14 +8,14 @@
  * AUTH: admin only
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAuth } from '$lib/server/middleware/auth';
-import type { TablesUpdate } from '$lib/types/database';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import type { TablesUpdate } from '#lib/types/database.ts';
 import {
 	batchUpdateBugReportsSchema,
 	batchDeleteBugReportsSchema
-} from '$lib/server/validation/bug-reports';
+} from '#lib/server/validation/bug-reports.ts';
 
 // =============================================================================
 // PATCH /api/bug-reports/batch - Batch update status
@@ -78,7 +78,7 @@ export const PATCH: RequestHandler = async ({ request, locals }) => {
 	}
 
 	// `success` n'est vrai que si TOUS les rapports demandés ont été modifiés.
-	return json({
+	return Response.json({
 		success: failed.length === 0,
 		updated: updated.length,
 		failed
@@ -134,7 +134,7 @@ export const DELETE: RequestHandler = async ({ request, locals }) => {
 	}
 
 	// `success` n'est vrai que si TOUS les rapports demandés ont été supprimés.
-	return json({
+	return Response.json({
 		success: failed.length === 0,
 		deleted: deleted.length,
 		failed

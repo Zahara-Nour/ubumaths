@@ -18,9 +18,9 @@ import {
 } from '../answer-complexity';
 import { gradeQuestion } from '../grading';
 import { INTERVAL_FEEDBACK } from '../intervals/interval-answer';
-import { isBlankValueCorrect, validateAnswer } from '$lib/utils/answer-validator';
+import { isBlankValueCorrect, validateAnswer } from '#lib/utils/answer-validator.ts';
 import type { InstanceBlank, QuestionInstance } from '../types';
-import type { ResolvedMarkdown } from '$lib/ubumark';
+import type { ResolvedMarkdown } from '#lib/ubumark/index.ts';
 
 // Fixtures
 /** Budget d'une correction hostile (navigateur ET serveur) */

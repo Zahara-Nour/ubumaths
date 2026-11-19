@@ -27,13 +27,13 @@
 	@module components/markdown/nodes/NumberLine
 -->
 <script lang="ts">
-	import '$lib/utils/mathlive-styles';
+	import '#lib/utils/mathlive-styles.ts';
 	import 'mathlive';
 	import type {
 		NumberLineNode,
 		NumberLinePoint,
 		NumberLineSegment
-	} from '$lib/ubumark/types/number-line';
+	} from '#lib/ubumark/types/number-line.ts';
 	import {
 		NL_LAYOUT,
 		NL_MIN_WIDTH,
@@ -46,10 +46,10 @@
 		bracketDirection,
 		bracketPoints,
 		segmentLevels
-	} from '$lib/ubumark/utils/number-line-render';
+	} from '#lib/ubumark/utils/number-line-render.ts';
 	import { readAuthoringErrors } from '../authoring-errors';
 	import { readContentLocale } from '../content-locale';
-	import { toLocaleDecimal } from '$lib/utils/french-math';
+	import { toLocaleDecimal } from '#lib/utils/french-math.ts';
 	import NumberLinePlacer from './NumberLinePlacer.svelte';
 	import NumberLineRepresenter from './NumberLineRepresenter.svelte';
 	import type { BuildCase } from './CollectionConstruire.svelte';

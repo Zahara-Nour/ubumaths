@@ -7,7 +7,7 @@
  * fait en entiers (BigInt), et l'arrondi décimal aussi : aucun flottant, donc
  * aucun arrondi faux sur un demi (le défaut de #671).
  *
- * ⚠️ Pas d'import `$lib` dans ce module (cf. v1) : chemins relatifs.
+ * ⚠️ Pas d'import `#lib` dans ce module (cf. v1) : chemins relatifs.
  *
  * @module statistics/binomial
  */

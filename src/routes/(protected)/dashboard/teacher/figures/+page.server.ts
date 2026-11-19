@@ -5,14 +5,14 @@
 
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { requireRoles } from '$lib/server/middleware/auth';
-import { parseFigureListFilters } from '$lib/server/validation/geometry-figures';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import { parseFigureListFilters } from '#lib/server/validation/geometry-figures.ts';
 import {
 	FIGURE_LIST_LIMIT,
 	GeometryFigureError,
 	listGeometryFigures,
 	listGeometryFigureTagNames
-} from '$lib/server/geometry-figures';
+} from '#lib/server/geometry-figures.ts';
 
 export const load: PageServerLoad = async ({ locals, url }) => {
 	const { user } = await requireRoles(locals, ['teacher', 'admin']);

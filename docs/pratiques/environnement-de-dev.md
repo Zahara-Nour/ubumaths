@@ -1,11 +1,13 @@
 ---
 couvre:
+  - src/lib/server/email/capture.ts
+  - src/lib/server/email/capture-index.ts
   - '.github/workflows/**'
   - .github/dependabot.yml
   - '.husky/*'
   - .lintstagedrc.js
   - vercel.json
-  - svelte.config.js
+  - src/env.ts
   - vite.config.ts
   - .nvmrc
   - .claude/settings.json
@@ -80,7 +82,35 @@ Un fichier qui perd des erreurs fait aussi échouer : `pnpm types:cliquet --maj`
 
 **`pnpm lint:fast`** (~2,5 s) rejoue toutes les règles de niveau erreur d'eslint sans le service
 TypeScript (`eslint.fast.config.js`), plus oxlint, la parité des variables d'environnement avec
-`.github/ci.env` et la garde des `render` attendus. Eslint complet : 530 s, en CI.
+`.github/ci.env` et la garde des `render` attendus. Eslint complet : 530 s en local.
+
+**ESLint en CI** : sur une PR, le job Lint ne relit que les fichiers de code de la PR, plus les
+`.svelte` qui importent un module qu'elle modifie ou supprime (`scripts/ci-lint-fichiers.sh`) ; tout
+l'arbre prenait 19 à 24 min par PR. Les règles d'erreur ne lisent qu'un fichier, sauf
+`svelte/no-unused-props`, qui lit le type des props, d'où ces importeurs. Il relit tout l'arbre quand
+la PR touche la config ESLint, une règle maison, les dépendances, `.gitignore`, `vite.config`, un
+`tsconfig`, un `.d.ts` ou `.nvmrc`, ou plus de 300 fichiers de code. Le filet :
+`lint-nocturne.yml` relit tout l'arbre chaque nuit sur `main` et y enregistre le cache ESLint que
+les PR restaurent (`main` ne lance pas le Lint sur push).
+
+**Cache ESLint et config Svelte** : `eslint.config.js` retire `version` de la config Svelte qu'il
+passe au parseur. SvelteKit y met `Date.now()` à chaque chargement ; ESLint compte la config dans
+l'empreinte de son cache, qui changeait donc à chaque lancement : les ~1 300 fichiers Svelte étaient
+relus à chaque fois, cache restauré ou non (Lint de la CI de version : 25 min le 2026-11-18). Une
+valeur qui varie d'un lancement à l'autre ne doit pas entrer dans la config ESLint.
+
+**Cache ESLint et version de Node** : l'empreinte compte aussi la version exacte de Node
+(`process.version`). Avec `22` dans `.nvmrc`, chaque runner prenait le Node 22 de son image, et les
+images de GitHub ne changent pas toutes en même temps : 22.23.4 sur l'une, 22.23.5 sur l'autre, et
+tout l'arbre relu (nocturne du 2026-11-18 : 31 min, cache pourtant restauré). `.nvmrc` porte donc
+la version exacte, montée à la main (Dependabot ne la lit pas) ; la monter vide le cache une fois,
+jusqu'au nocturne suivant. `pnpm deploy:prod` attend jusqu'à 45 min la CI de version.
+
+**Variables d'environnement lues par l'appli : `src/env.ts`.** Depuis SvelteKit 3, `$app/env/*` (et
+`$env/*`, qui le réexporte) n'expose que les variables déclarées là (`defineEnvVars`) ; une
+variable absente de la liste vaut `undefined`. Déclarée sans `schema`, elle est obligatoire : la
+génération des modules échoue si elle manque, d'où la parité avec `.github/ci.env` ci-dessus.
+`process.env` n'est pas concerné.
 
 Ses fichiers (`scripts/lint-fast-fichiers.sh`) : à la main, ce qui diffère d'`origin/main` **plus
 les fichiers non suivis** (un fichier tout neuf est relu avant son premier commit) ; au pre-push
@@ -140,6 +170,22 @@ copiée, **jamais de données d'élèves en local** (`scripts/db-seed-riche/inde
 - Agents : [.claude/agents/README.md](../../.claude/agents/README.md). Skills du projet
   (`.claude/skills/`) et skills personnels (`~/.claude/skills/`) : [skills-claude.md](skills-claude.md).
 
+### Courriels en local : capturés, jamais envoyés
+
+`.env` porte la clé Brevo de prod. Sur la **base locale** (adresse Supabase `localhost`,
+`127.0.0.1` ou le Mac mini par le tailnet `*.ts.net`, hors Vercel), `sendEmail` n'appelle pas Brevo : chaque courriel est écrit dans
+`.captures/courriels/` (ignoré par git), un `.html` à ouvrir dans le navigateur (et un `.txt`),
+plus une ligne dans `index.jsonl` (date, destinataire, sujet, fichier, en-têtes). Les tests
+Playwright lisent l'index par `readCaptureIndex` (`src/lib/server/email/capture-index.ts`, sans
+`$env`, donc importable hors SvelteKit) et suivent les liens des courriels :
+`e2e/verifs/carnet.spec.ts` rejoue ainsi les vérifications manuelles du carnet de liaison. Les
+gabarits écrivent l'adresse de la prod (`https://www.chiph.re/...`) : le test n'en garde que le
+chemin. L'appli voit un envoi réussi, et le service
+de courriel compte comme configuré même sans clé. `EMAIL_ENVOI_REEL=1` dans `.env.local` envoie
+pour de vrai ; `EMAIL_CAPTURE_DIR` change le dossier. Base distante (worktree sans `.env.local`)
+→ envoi réel. Le dossier ne se vide jamais seul. Code : `src/lib/server/email/capture.ts`,
+`src/lib/server/email/capture-index.ts`.
+
 ## GitHub
 
 | Workflow                    | Déclencheur                                                           | Rôle                                                                                                                                                                                                                                                                                  |
@@ -193,7 +239,7 @@ copiée, **jamais de données d'élèves en local** (`scripts/db-seed-riche/inde
   fichiers, elle se fait dans sa propre PR. `typst` reste en 0.6.1-rc5 tant qu'aucune nouveauté
   n'est nécessaire. Une PR Dependabot qui touche l'une d'elles échoue en CI ou se ferme.
 - **Paquets de la config ESLint** (`typescript-eslint`, `eslint-plugin-svelte`, `globals`) : leur
-  montée invalide tout le cache ESLint, donc relecture à froid en CI (au-delà de 30 min sur #2537 et
+  montée invalide tout le cache ESLint, donc relecture de tout l'arbre à froid en CI (au-delà de 30 min sur #2537 et
   #2577) ; le job Lint a 60 min. `typescript-eslint` n'est plus épinglé depuis la 8.72.1 : le faux
   positif `$bindable` de la 8.71.1 (sveltejs/eslint-plugin-svelte#1607) est corrigé dans
   `svelte-eslint-parser` 1.10.
@@ -243,8 +289,8 @@ copiée, **jamais de données d'élèves en local** (`scripts/db-seed-riche/inde
 - ⚠️ **Une montée de l'outil de build se vérifie sur le rendu**, pas seulement sur les statuts et la
   console : un CSS invalide ne fait aucune erreur (couleurs perdues en v0.54.0, cf. décision du
   2026-10-28).
-- Région des fonctions : **`cdg1`**, imposée par `svelte.config.js` (`regions: ['cdg1']`, runtime
-  `nodejs22.x`) ; le `iad1` des réglages du projet n'est qu'un défaut remplacé. Fluid Compute actif.
+- Région des fonctions : **`cdg1`**, imposée par l'adaptateur dans `vite.config.ts` (options de
+  `sveltekit()` depuis SvelteKit 3 : `regions: ['cdg1']`, runtime `nodejs22.x`) ; le `iad1` des réglages du projet n'est qu'un défaut remplacé. Fluid Compute actif.
 - `vercel.json` pose les en-têtes de cache : 30 jours pour `/fonts/` et `/upsilon-simulator/`, 1 jour
   (+ `stale-while-revalidate` 7 jours) pour les images, sons et CSS de `static/`.
 - `vercel.json` déclare **trois crons** : `/api/cron/riddle-of-the-day`, chaque jour à 00:05 UTC

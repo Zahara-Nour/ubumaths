@@ -1,0 +1,394 @@
+{
+	"id": "a6fa11c8-0059-4fc3-8336-15bf17edeb87",
+	"title": "Inverse d'un nombre très grand ou très proche de 0",
+	"description": "Ordres de grandeur de 1/x pour x = ±10⁻ⁿ et 10ⁿ ; ce que devient 1/x quand x devient très grand ou très proche de 0 ; notation lim pour a + k/x et k/x",
+	"grades": ["T_TECHNO"],
+	"level": 1,
+	"delay": 40,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		},
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Calcule l'inverse de ${{eval:sg*10^(-n);d}}$.\n\n$\\dfrac{1}{ {{eval:sg*10^(-n);d}} }=?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2..5"
+				},
+				{
+					"name": "sg",
+					"expression": "1|1|-1"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:sg*10^n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{eval:10^(-n);d}}=\\dfrac{1}{ {{eval:10^n}} }$ : diviser $1$ par ce nombre revient à multiplier par ${{eval:10^n}}$.",
+					"$\\dfrac{1}{ {{eval:sg*10^(-n);d}} }=\\textcolor{{{color:primary.0}}}{{{eval:sg*10^n}}}$ : l'inverse d'un nombre très proche de $0$ est très grand en valeur absolue, et de même signe."
+				]
+			}
+		},
+		{
+			"statement": "Calcule l'inverse de ${{eval:10^n}}$, en écriture décimale.\n\n$\\dfrac{1}{ {{eval:10^n}} }=?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "3..6"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:10^(-n);d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\dfrac{1}{ {{eval:10^n}} }=10^{ -{{n}} }=\\textcolor{{{color:primary.0}}}{{{eval:10^(-n);d}}}$ : l'inverse d'un très grand nombre est très proche de $0$."
+				]
+			}
+		},
+		{
+			"statement": "On donne à $x$ des valeurs {{if:sg>0|positives|négatives}} de plus en plus grandes en valeur absolue : ${{eval:sg*10}}$, ${{eval:sg*100}}$, ${{eval:sg*1000}}$…\n\nQue devient $\\dfrac{1}{x}$ ?\n\n```choix\nmelanger: non\n- il devient de plus en plus grand\n- il se rapproche de $1$\n- il se rapproche de $0$\n```",
+			"variables": [
+				{
+					"name": "sg",
+					"expression": "1|-1"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\dfrac{1}{ {{eval:sg*10}} }={{eval:sg*0.1;d}}$, $\\dfrac{1}{ {{eval:sg*100}} }={{eval:sg*0.01;d}}$, $\\dfrac{1}{ {{eval:sg*1000}} }={{eval:sg*0.001;d}}$…",
+					"$\\dfrac{1}{x}$ $\\textcolor{{{color:primary.0}}}{\\text{se rapproche de } 0}$ (en restant {{if:sg>0|positif|négatif}}) : la courbe de la fonction inverse se rapproche de l'axe des abscisses."
+				]
+			}
+		},
+		{
+			"statement": "On donne à $x$ des valeurs {{if:sg>0|positives|négatives}} de plus en plus proches de $0$ : ${{eval:sg*0.1;d}}$, ${{eval:sg*0.01;d}}$, ${{eval:sg*0.001;d}}$…\n\nQue devient $\\dfrac{1}{x}$ ?\n\n```choix\nmelanger: non\n- il devient positif et de plus en plus grand\n- il devient négatif et de plus en plus grand en valeur absolue\n- il se rapproche de $0$\n```",
+			"variables": [
+				{
+					"name": "sg",
+					"expression": "1|-1"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(1-sg)/2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\dfrac{1}{ {{eval:sg*0.1;d}} }={{eval:sg*10}}$, $\\dfrac{1}{ {{eval:sg*0.01;d}} }={{eval:sg*100}}$, $\\dfrac{1}{ {{eval:sg*0.001;d}} }={{eval:sg*1000}}$…",
+					"$\\dfrac{1}{x}$ est du signe de $x$ et $\\textcolor{{{color:primary.0}}}{\\text{devient de plus en plus grand en valeur absolue}}$ : la branche de la courbe {{if:sg>0|monte le long|descend le long}} de l'axe des ordonnées."
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n$\\lim_{x\\to+\\infty}\\left({{a}}{{if:sg<0|-|+}}\\dfrac{ {{k}} }{x}\\right)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-5..5"
+				},
+				{
+					"name": "k",
+					"expression": "1..9"
+				},
+				{
+					"name": "sg",
+					"expression": "1|-1"
+				}
+			],
+			"conditions": ["a != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Quand $x$ devient très grand, $\\dfrac{ {{k}} }{x}$ se rapproche de $0$.",
+					"Donc ${{a}}{{if:sg<0|-|+}}\\dfrac{ {{k}} }{x}$ se rapproche de ${{a}}$ : $\\lim_{x\\to+\\infty}\\left({{a}}{{if:sg<0|-|+}}\\dfrac{ {{k}} }{x}\\right)=\\textcolor{{{color:primary.0}}}{{{a}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Complète : que vaut $\\lim_{x\\to0,\\ x>0}\\dfrac{ {{eval:sg*k}} }{x}$ ?\n\n```choix\nmelanger: non\n- $-\\infty$\n- $0$\n- $+\\infty$\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..9"
+				},
+				{
+					"name": "sg",
+					"expression": "1|-1"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1+sg}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Quand $x$ se rapproche de $0$ en restant positif, $\\dfrac{1}{x}$ devient positif et de plus en plus grand : $\\lim_{x\\to0,\\ x>0}\\dfrac{1}{x}=+\\infty$.",
+					"On multiplie par ${{eval:sg*k}}$, {{if:sg>0|positif : le signe ne change pas|négatif : le signe change}}. $\\lim_{x\\to0,\\ x>0}\\dfrac{ {{eval:sg*k}} }{x}=\\textcolor{{{color:primary.0}}}{{{if:sg>0|+|-}}\\infty}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "1/0,001 = 1000",
+			"variationIndex": 0,
+			"variables": {
+				"n": "3",
+				"sg": "1"
+			},
+			"answers": ["1000"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 0,001",
+			"variationIndex": 0,
+			"variables": {
+				"n": "3",
+				"sg": "1"
+			},
+			"answers": ["0,001"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1/(−0,01) = −100",
+			"variationIndex": 0,
+			"variables": {
+				"n": "2",
+				"sg": "-1"
+			},
+			"answers": ["-100"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signe perdu (100)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "2",
+				"sg": "-1"
+			},
+			"answers": ["100"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1/10000 = 0,0001",
+			"variationIndex": 1,
+			"variables": {
+				"n": "4"
+			},
+			"answers": ["0,0001"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un zéro de trop (0,00001)",
+			"variationIndex": 1,
+			"variables": {
+				"n": "4"
+			},
+			"answers": ["0,00001"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x très grand : se rapproche de 0",
+			"variationIndex": 2,
+			"variables": {
+				"sg": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : de plus en plus grand",
+			"variationIndex": 2,
+			"variables": {
+				"sg": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x négatif très grand : se rapproche de 0",
+			"variationIndex": 2,
+			"variables": {
+				"sg": "-1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "x → 0, x > 0 : positif et très grand",
+			"variationIndex": 3,
+			"variables": {
+				"sg": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : se rapproche de 0",
+			"variationIndex": 3,
+			"variables": {
+				"sg": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x → 0, x < 0 : négatif et très grand",
+			"variationIndex": 3,
+			"variables": {
+				"sg": "-1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur x < 0 : positif",
+			"variationIndex": 3,
+			"variables": {
+				"sg": "-1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "lim 3 + 5/x = 3",
+			"variationIndex": 4,
+			"variables": {
+				"a": "3",
+				"k": "5",
+				"sg": "1"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 0",
+			"variationIndex": 4,
+			"variables": {
+				"a": "3",
+				"k": "5",
+				"sg": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "lim −2 − 4/x = −2",
+			"variationIndex": 4,
+			"variables": {
+				"a": "-2",
+				"k": "4",
+				"sg": "-1"
+			},
+			"answers": ["-2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "lim 3/x en 0⁺ = +∞",
+			"variationIndex": 5,
+			"variables": {
+				"k": "3",
+				"sg": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "lim −3/x en 0⁺ = −∞",
+			"variationIndex": 5,
+			"variables": {
+				"k": "3",
+				"sg": "-1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : +∞ (signe de k oublié)",
+			"variationIndex": 5,
+			"variables": {
+				"k": "3",
+				"sg": "-1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 0",
+			"variationIndex": 5,
+			"variables": {
+				"k": "3",
+				"sg": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

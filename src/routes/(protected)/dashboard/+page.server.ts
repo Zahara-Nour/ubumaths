@@ -42,16 +42,16 @@
  */
 
 import type { PageServerLoad } from './$types';
-import { getStudentWorkInbox } from '$lib/server/student-inbox';
-import type { StudentWorkInbox } from '$lib/types/student-inbox';
-import type { WeekConfig } from '$lib/utils/week-config';
+import { getStudentWorkInbox } from '#lib/server/student-inbox.ts';
+import type { StudentWorkInbox } from '#lib/types/student-inbox.ts';
+import type { WeekConfig } from '#lib/utils/week-config.ts';
 import {
 	getNotionsProgression,
 	getCompetencesProgression,
 	type NotionsProgression,
 	type CompetencesProgression
-} from '$lib/server/progression/student-progression';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/progression/student-progression.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('(protected)/dashboard/+page.server');
 
@@ -175,7 +175,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	/**
 	 * Résumé de progression pour la tuile « Ma progression » (élèves seulement).
 	 *
-	 * ⚠️ Les chiffres viennent de `$lib/server/progression`, la MÊME source que
+	 * ⚠️ Les chiffres viennent de `#lib/server/progression`, la MÊME source que
 	 * la page `/dashboard/student/progression`. Ne pas ré-agréger ici : c'est
 	 * exactement ce qui a produit une tuile bloquée à zéro pendant que la page
 	 * affichait le vrai décompte.

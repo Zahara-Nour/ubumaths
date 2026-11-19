@@ -18,7 +18,7 @@
 
 import { describe, it, expect, vi } from 'vitest';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 
 const CLASSE_CIBLE = '550e8400-e29b-41d4-a716-446655440000';
 const ELEVE_A = '550e8400-e29b-41d4-a716-446655440001';

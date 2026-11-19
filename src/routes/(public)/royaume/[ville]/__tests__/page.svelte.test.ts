@@ -5,8 +5,8 @@ import { page, userEvent } from 'vitest/browser';
 import { afterEach, describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import Page from '../+page.svelte';
-import { cityBySlug, type City } from '$lib/kingdom-tour/cities';
-import { PROVINCES } from '$lib/kingdom-tour/tour';
+import { cityBySlug, type City } from '#lib/kingdom-tour/cities.ts';
+import { PROVINCES } from '#lib/kingdom-tour/tour.ts';
 
 // Constantes
 

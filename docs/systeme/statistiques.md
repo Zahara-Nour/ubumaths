@@ -232,7 +232,7 @@ continue après 1000) rend `beyond: true` au lieu d'annoncer un faux « plus gra
 
 ## Invariants
 
-1. **Aucun import `$lib`** dans `src/lib/statistics/` : `mathAST` l'importe par chemin relatif
+1. **Aucun import `#lib`** dans `src/lib/statistics/` : `mathAST` l'importe par chemin relatif
    et `pnpm math` le fait tourner sous `tsx`, sans alias.
 2. **Une seule source** : un indicateur, une loi, un texte d'indicateurs ne se recalculent pas
    ailleurs ; l'atelier et les fiches montrent les mêmes nombres.

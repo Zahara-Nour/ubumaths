@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	/**
 	 * User Management Page
 	 *
@@ -13,23 +13,23 @@
 	 */
 
 	import type { PageData } from './$types';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import * as Card from '$lib/components/ui/card';
-	import UserAvatar from '$lib/components/UserAvatar.svelte';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Label } from '$lib/components/ui/label';
-	import { Separator } from '$lib/components/ui/separator';
-	import { Textarea } from '$lib/components/ui/textarea';
-	import type { Database } from '$lib/types/database';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import UserAvatar from '#lib/components/UserAvatar.svelte';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import { Separator } from '#lib/components/ui/separator/index.ts';
+	import { Textarea } from '#lib/components/ui/textarea/index.ts';
+	import type { Database } from '#lib/types/database.ts';
 	import { Upload, Save, RotateCcw, Loader2, Clock, Check, X } from '@lucide/svelte';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import { Switch } from '$lib/components/ui/switch';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
-	import StudentPasswordReset from '$lib/components/admin/StudentPasswordReset.svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import * as Tooltip from '$lib/components/ui/tooltip';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import { Switch } from '#lib/components/ui/switch/index.ts';
+	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
+	import StudentPasswordReset from '#lib/components/admin/StudentPasswordReset.svelte';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import * as Tooltip from '#lib/components/ui/tooltip/index.ts';
 
 	// Extended profile type that includes related data from API responses
 	type Profile = Database['public']['Tables']['profiles']['Row'];

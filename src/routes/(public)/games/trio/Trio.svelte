@@ -14,7 +14,7 @@
 
 	import Tile from './Tile.svelte';
 	import { X, Plus, Minus, HelpCircle } from '@lucide/svelte';
-	import { Button } from '$lib/components/ui/button';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import confetti from 'canvas-confetti';
 	import { untrack } from 'svelte';
 

@@ -4,8 +4,8 @@
  * This file can be imported anywhere to test Supabase connectivity
  */
 
-import { supabase } from '$lib/supabaseClient';
-import { createLogger } from '$lib/utils/logger';
+import { supabase } from '#lib/supabaseClient.ts';
+import { createLogger } from '#lib/utils/logger.ts';
 
 const logger = createLogger('supabase-test.ts');
 

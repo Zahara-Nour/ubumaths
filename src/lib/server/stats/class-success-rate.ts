@@ -20,17 +20,17 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import { fetchInChunks } from '$lib/server/utils/chunked-in';
-import { keepLinksOfGrade } from '$lib/server/curriculum-grade';
-import { PROGRAMME_POINT_COLS } from '$lib/server/programme-tree';
-import type { ProgrammePointRow } from '$lib/utils/programme-tree';
+import type { Database } from '#lib/types/database.ts';
+import { fetchInChunks } from '#lib/server/utils/chunked-in.ts';
+import { keepLinksOfGrade } from '#lib/server/curriculum-grade.ts';
+import { PROGRAMME_POINT_COLS } from '#lib/server/programme-tree.ts';
+import type { ProgrammePointRow } from '#lib/utils/programme-tree.ts';
 import {
 	isLivePoint,
 	placeInTree,
 	type PlacedCurriculumPoint
-} from '$lib/server/stats/class-knowledge';
-import { readSchoolYearOfSchool, regularityFirstDay } from '$lib/server/stats/class-regularity';
+} from '#lib/server/stats/class-knowledge.ts';
+import { readSchoolYearOfSchool, regularityFirstDay } from '#lib/server/stats/class-regularity.ts';
 
 // Types
 

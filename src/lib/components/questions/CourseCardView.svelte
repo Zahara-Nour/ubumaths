@@ -12,19 +12,19 @@
 -->
 
 <script lang="ts">
-	import type { QuestionInstance } from '$lib/questions/types';
-	import { courseCardFront } from '$lib/questions/course-card';
-	import { templateGenericFunctions } from '$lib/questions/generic-functions';
-	import { provideCapitalPairs } from '$lib/components/markdown/content-capital-pairs';
+	import type { QuestionInstance } from '#lib/questions/types.ts';
+	import { courseCardFront } from '#lib/questions/course-card.ts';
+	import { templateGenericFunctions } from '#lib/questions/generic-functions.ts';
+	import { provideCapitalPairs } from '#lib/components/markdown/content-capital-pairs.ts';
 	import {
 		digitGroupingOf,
 		provideDigitGrouping
-	} from '$lib/components/markdown/content-digit-grouping';
-	import { MarkdownRenderer } from '$lib/components/markdown';
-	import { Button } from '$lib/components/ui/button';
-	import { Badge } from '$lib/components/ui/badge';
+	} from '#lib/components/markdown/content-digit-grouping.ts';
+	import { MarkdownRenderer } from '#lib/components/markdown/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
 	import { Eye } from '@lucide/svelte';
-	import { cn } from '$lib/utils';
+	import { cn } from '#lib/utils.ts';
 	import CourseCardBack from './CourseCardBack.svelte';
 	import SelfAssessButtons from './SelfAssessButtons.svelte';
 

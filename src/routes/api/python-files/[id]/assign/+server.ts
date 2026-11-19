@@ -4,12 +4,12 @@
  * DELETE - Remove all assignments for this file
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import { assignPythonFileSchema } from '$lib/server/validation/python-files';
-import { validateUuidParam } from '$lib/server/validation/params';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { assignPythonFileSchema } from '#lib/server/validation/python-files.ts';
+import { validateUuidParam } from '#lib/server/validation/params.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/python-files/[id]/assign/+server');
 
@@ -103,7 +103,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		throw error(500, 'Impossible de créer les affectations');
 	}
 
-	return json(
+	return Response.json(
 		{
 			success: true,
 			message: `Fichier distribué à ${created?.length ?? 0} classe(s)`,
@@ -153,7 +153,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 		throw error(500, 'Impossible de supprimer les affectations');
 	}
 
-	return json({ success: true });
+	return Response.json({ success: true });
 };
 
 /**
@@ -210,5 +210,5 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		throw error(500, 'Impossible de charger les affectations');
 	}
 
-	return json({ assignments: assignments ?? [] });
+	return Response.json({ assignments: assignments ?? [] });
 };

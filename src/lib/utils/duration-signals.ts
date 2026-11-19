@@ -9,7 +9,7 @@ import {
 	type DurationSignals,
 	type DurationSignalsResponse,
 	type ObservedDurations
-} from '$lib/types/duration-signals';
+} from '#lib/types/duration-signals.ts';
 
 // Functions
 

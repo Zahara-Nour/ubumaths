@@ -20,19 +20,19 @@
 	 */
 
 	import { resolve } from '$app/paths';
-	import { Button } from '$lib/components/ui/button';
-	import MathouAvatar from '$lib/components/mathoux/MathouAvatar.svelte';
-	import { getMathouRace } from '$lib/components/mathoux/mathou-races';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import MathouAvatar from '#lib/components/mathoux/MathouAvatar.svelte';
+	import { getMathouRace } from '#lib/components/mathoux/mathou-races.ts';
 	import {
 		starGradeLabel,
 		trainingQuery,
 		type Mathou,
 		type MathouGrowth,
 		type MathouRaceGroup
-	} from '$lib/mathoux/collection-logic';
+	} from '#lib/mathoux/collection-logic.ts';
 
 	// La révision espacée du programme : c'est elle qui fait tomber les cartes dues.
-	const REVISION_HREF = '/dashboard/revisions/decks/programme';
+	const REVISION_HREF = 'dashboard/revisions/decks/programme';
 
 	const GROWTH_LABEL: Record<MathouGrowth, string> = {
 		a_decouvrir: 'À découvrir',
@@ -55,7 +55,7 @@
 	/** Lien de l'Entraînement d'un Mathou, construit au rendu (`trainingQuery`). */
 	function trainingLink(mathou: Mathou): string | null {
 		const query = trainingQuery(mathou.trainingItems);
-		return query ? `${resolve('/automaths/test')}?${query}` : null;
+		return query ? `${resolve('automaths/test')}?${query}` : null;
 	}
 
 	/**

@@ -19,16 +19,16 @@
  *   L6 : une question de cours n'y entre jamais).
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { FSRS } from '$lib/srs/fsrs';
-import { requireRole } from '$lib/server/middleware/auth';
-import { requireConsent } from '$lib/server/middleware/consent';
-import { chapterDeckParamsSchema, chapterReviewSubmitSchema } from '$lib/server/validation/srs';
-import { loadChapterDeck, type ChapterDeck } from '$lib/server/srs/chapter-deck';
-import { applyFsrsReview } from '$lib/server/srs/fsrs-actions';
-import { recordSrsReviewAttempt } from '$lib/server/srs/srs-attempt';
-import { createServerLogger } from '$lib/utils/logger';
+import { FSRS } from '#lib/srs/fsrs.ts';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { requireConsent } from '#lib/server/middleware/consent.ts';
+import { chapterDeckParamsSchema, chapterReviewSubmitSchema } from '#lib/server/validation/srs.ts';
+import { loadChapterDeck, type ChapterDeck } from '#lib/server/srs/chapter-deck.ts';
+import { applyFsrsReview } from '#lib/server/srs/fsrs-actions.ts';
+import { recordSrsReviewAttempt } from '#lib/server/srs/srs-attempt.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/srs/chapters/[chapterId]/submit/+server');
 
@@ -38,18 +38,18 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 
 	const paramsValidation = chapterDeckParamsSchema.safeParse(params);
 	if (!paramsValidation.success) {
-		return json({ error: paramsValidation.error.issues[0].message }, { status: 400 });
+		return Response.json({ error: paramsValidation.error.issues[0].message }, { status: 400 });
 	}
 
 	let bodyRaw: unknown;
 	try {
 		bodyRaw = await request.json();
 	} catch {
-		return json({ error: 'Corps de requête illisible' }, { status: 400 });
+		return Response.json({ error: 'Corps de requête illisible' }, { status: 400 });
 	}
 	const bodyValidation = chapterReviewSubmitSchema.safeParse(bodyRaw);
 	if (!bodyValidation.success) {
-		return json({ error: bodyValidation.error.issues[0].message }, { status: 400 });
+		return Response.json({ error: bodyValidation.error.issues[0].message }, { status: 400 });
 	}
 
 	const { chapterId } = paramsValidation.data;
@@ -91,7 +91,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 	// retenues pour la planification (ADR 0016)
 	const attemptRecorded = await recordSrsReviewAttempt(supabase, user.id, templateId, grade);
 
-	return json({
+	return Response.json({
 		success: true,
 		attemptRecorded,
 		// `false` : la journée avait déjà un résultat au moins aussi bon (ADR 0016)

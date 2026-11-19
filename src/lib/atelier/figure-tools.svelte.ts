@@ -20,8 +20,8 @@
 import type { Atelier } from './atelier.svelte';
 import { supportNamed } from './construction';
 import { commonPoints, type Support } from './construction-intersect';
-import { geoToNumber } from '$lib/geometry-core/compute/to-number';
-import type { GeoPoint } from '$lib/geometry-core/types/primitives';
+import { geoToNumber } from '#lib/geometry-core/compute/to-number.ts';
+import type { GeoPoint } from '#lib/geometry-core/types/primitives.ts';
 import { displayName, indexedNameClash, RESERVED_NAMES } from './names';
 import { draggedCoordinates, positionAt, positionWithin } from './point-drag';
 import type { ObjectKind } from './types';

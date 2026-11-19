@@ -4,8 +4,8 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { findCubesToBuild, parseEspaceContent } from '$lib/ubumark/parser/espace-parser';
-import type { CubesSpec } from '$lib/ubumark/types/espace';
+import { findCubesToBuild, parseEspaceContent } from '#lib/ubumark/parser/espace-parser.ts';
+import type { CubesSpec } from '#lib/ubumark/types/espace.ts';
 import {
 	NOTHING_COLORED_CUBES,
 	MISSING_HEIGHTS,
@@ -22,7 +22,7 @@ import {
 	retrouverHasOtherSolutions,
 	retrouverMistakes,
 	viewGrid
-} from '$lib/ubumark/utils/cubes-gestes';
+} from '#lib/ubumark/utils/cubes-gestes.ts';
 
 const parse = (...lines: string[]) => parseEspaceContent(lines.join('\n'));
 const messages = (...lines: string[]) => parse(...lines).errors.join(' | ');

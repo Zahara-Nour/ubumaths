@@ -52,8 +52,8 @@ export {
 
 // =============================================================================
 // NOT re-exported here — must be imported directly from their files:
-//   - import { GenericTechnicalRenderer } from '$lib/mathAST/common/technical-renderer';
-//   - import { rewrite, type EngineConfig, ... } from '$lib/mathAST/common/rewriting-engine';
+//   - import { GenericTechnicalRenderer } from '#lib/mathAST/common/technical-renderer.ts';
+//   - import { rewrite, type EngineConfig, ... } from '#lib/mathAST/common/rewriting-engine.ts';
 //
 // Background: re-exporting these from common/index.ts pulls in their runtime
 // imports (latex-generator, pattern/rule, pattern/match) for every module that

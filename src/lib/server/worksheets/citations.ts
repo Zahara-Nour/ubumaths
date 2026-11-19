@@ -24,13 +24,13 @@
  * @module server/worksheets/citations
  */
 
-import { extractResourceReferences } from '$lib/resources/references';
-import type { WorksheetCitation, WorksheetCitationsReport } from '$lib/types/worksheets';
+import { extractResourceReferences } from '#lib/resources/references.ts';
+import type { WorksheetCitation, WorksheetCitationsReport } from '#lib/types/worksheets.ts';
 import {
 	describeExerciseSelection,
 	parseExerciseSelection
-} from '$lib/resources/exercise-selection';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/resources/exercise-selection.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/worksheets/citations');
 

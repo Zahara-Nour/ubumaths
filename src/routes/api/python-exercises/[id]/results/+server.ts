@@ -3,12 +3,12 @@
  * GET - Get submission results for an exercise
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import { exerciseIdParamSchema } from '$lib/server/validation/python-exercises';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { exerciseIdParamSchema } from '#lib/server/validation/python-exercises.ts';
 import { z } from 'zod';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/python-exercises/[id]/results/+server');
 
@@ -137,7 +137,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 		}
 
 		if (!classMembers || classMembers.length === 0) {
-			return json({ results: [] });
+			return Response.json({ results: [] });
 		}
 
 		const studentIds = classMembers.map((cm) => cm.student_id);
@@ -176,10 +176,10 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 				const studentIds = classMembers.map((cm) => cm.student_id);
 				query = query.in('student_id', studentIds);
 			} else {
-				return json({ results: [] });
+				return Response.json({ results: [] });
 			}
 		} else {
-			return json({ results: [] });
+			return Response.json({ results: [] });
 		}
 	}
 
@@ -257,7 +257,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 		>
 	);
 
-	return json({
+	return Response.json({
 		results,
 		summary: Object.values(studentStats)
 	});

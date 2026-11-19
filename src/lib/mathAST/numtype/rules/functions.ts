@@ -12,7 +12,7 @@ import type { MathType, NumericType, SignInfo } from '../types';
 import { join, isSubtype } from '../algebra';
 import { COMPLEX_TYPE, TRANSCENDENTAL_TYPE, INTEGER_TYPE, UNKNOWN_TYPE } from '../types';
 import { inferSqrtType } from './power';
-import { absBounds } from '$lib/math/intervals';
+import { absBounds } from '#lib/math/intervals/index.ts';
 import { applyFunctionToBounds } from './function-bounds';
 import { signFromBounds } from './literals';
 

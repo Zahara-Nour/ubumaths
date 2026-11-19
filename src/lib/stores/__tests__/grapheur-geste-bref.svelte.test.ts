@@ -7,7 +7,7 @@
  */
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { GrapheurStore, BRIEF_GESTURE_DELAY } from '$lib/stores/grapheur.svelte';
+import { GrapheurStore, BRIEF_GESTURE_DELAY } from '#lib/stores/grapheur.svelte.ts';
 
 /** Un peu plus long que le délai de fin d'un geste bref. */
 const AFTER = BRIEF_GESTURE_DELAY + 50;

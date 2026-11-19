@@ -1,7 +1,7 @@
 <script lang="ts">
 	/** Harnais : la vue Figure seule, dans une boîte de la largeur demandée (téléphone). */
-	import { provideAtelier } from '$lib/atelier/context';
-	import type { Atelier } from '$lib/atelier/atelier.svelte';
+	import { provideAtelier } from '#lib/atelier/context.ts';
+	import type { Atelier } from '#lib/atelier/atelier.svelte.ts';
 	import FigureView from '../../FigureView.svelte';
 
 	let {

@@ -27,7 +27,7 @@ export const COVERAGE_CONFIG: CoverageConfig = {
 		'.husky/*',
 		'.lintstagedrc.js',
 		'vercel.json',
-		'svelte.config.js',
+		'src/env.ts',
 		'vite.config.ts',
 		'.nvmrc',
 		'.claude/settings.json',

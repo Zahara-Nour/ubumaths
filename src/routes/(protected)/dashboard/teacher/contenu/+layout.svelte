@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import GroupedRouteLayout from '$lib/components/navigation/GroupedRouteLayout.svelte';
+	import { lore } from '#lib/config/lore.ts';
+	import GroupedRouteLayout from '#lib/components/navigation/GroupedRouteLayout.svelte';
 	import { Layers, BookOpen, Lightbulb, FileSpreadsheet, NotebookPen } from '@lucide/svelte';
 	import type { Component } from 'svelte';
 

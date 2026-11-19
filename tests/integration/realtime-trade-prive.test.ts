@@ -34,7 +34,7 @@ import {
 import { createAuthenticatedClient } from '../helpers/database/supabase-client';
 import { TestData } from '../helpers/database/test-data-factory';
 import { getPostgresClient } from '../helpers/database/postgres-client';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 
 // ============================================================================
 // TYPES

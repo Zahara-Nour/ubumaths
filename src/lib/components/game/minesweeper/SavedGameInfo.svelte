@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { Badge } from '$lib/components/ui/badge';
-	import type { GameState } from '$lib/types/minesweeper';
-	import { DIFFICULTY_CONFIGS, DIFFICULTY_LABELS } from '$lib/types/minesweeper';
-	import type { Difficulty } from '$lib/types/minesweeper';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import type { GameState } from '#lib/types/minesweeper.ts';
+	import { DIFFICULTY_CONFIGS, DIFFICULTY_LABELS } from '#lib/types/minesweeper.ts';
+	import type { Difficulty } from '#lib/types/minesweeper.ts';
 
 	// Props
 	let { savedGame }: { savedGame: GameState | null } = $props();

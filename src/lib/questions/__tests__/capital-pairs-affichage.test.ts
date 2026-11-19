@@ -17,7 +17,7 @@ import { generateInstance } from '../generator/instance-generator';
 import { generateCorrection } from '../generator/correction-generator';
 import { convertToLatex } from '../generator/content-resolver';
 import type { QuestionInstance, QuestionTemplate } from '../types';
-import { templateMarkdown } from '$lib/ubumark';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 
 // ============================================================================
 // HELPERS

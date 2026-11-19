@@ -1,8 +1,8 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 // Articles du test : un paru, un futur, un brouillon (les vrais articles changent avec le temps)
-vi.mock('$lib/server/shtam/articles', async (importOriginal) => {
-	const original = await importOriginal<typeof import('$lib/server/shtam/articles')>();
+vi.mock('#lib/server/shtam/articles.ts', async (importOriginal) => {
+	const original = await importOriginal<typeof import('#lib/server/shtam/articles.ts')>();
 	const raw = (date: string, draft = false) =>
 		`---\ntitle: Titre ${date}\ndate: ${date}\nauthor: pile\nlede: Chapeau.\n${draft ? 'draft: true\n' : ''}---\n\nCorps.\n\n## Le vrai du faux\n\nFait.\n`;
 	const articles = original.parseArticles({

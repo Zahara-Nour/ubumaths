@@ -12,9 +12,9 @@
 
 import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { getExerciseBySlug, getExercise } from '$lib/server/exercises';
-import { getExerciseByShareToken } from '$lib/server/exercise-share-tokens';
-import type { Exercise } from '$lib/exercises/types';
+import { getExerciseBySlug, getExercise } from '#lib/server/exercises.ts';
+import { getExerciseByShareToken } from '#lib/server/exercise-share-tokens.ts';
+import type { Exercise } from '#lib/exercises/types.ts';
 
 /**
  * Check if string is a valid UUID v4

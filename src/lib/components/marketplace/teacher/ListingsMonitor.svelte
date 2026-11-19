@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
-	import { Badge } from '$lib/components/ui/badge';
-	import { ScrollArea } from '$lib/components/ui/scroll-area';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { Card, CardContent, CardHeader, CardTitle } from '#lib/components/ui/card/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { ScrollArea } from '#lib/components/ui/scroll-area/index.ts';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import { Package, Coins, User, TrendingUp, TrendingDown } from '@lucide/svelte';
 
 	interface Listing {

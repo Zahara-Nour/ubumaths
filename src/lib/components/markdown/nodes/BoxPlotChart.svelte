@@ -16,9 +16,9 @@
 	@module components/markdown/nodes/BoxPlotChart
 -->
 <script lang="ts">
-	import { COURBE_COLORS } from '$lib/ubumark/types/courbe';
-	import { namedColorScreen, namedColorTable } from '$lib/theme/named-colors';
-	import { SCATTER_LABEL_CHAR_PX, type BoxPlotScene } from '$lib/ubumark/utils/stat-chart-scene';
+	import { COURBE_COLORS } from '#lib/ubumark/types/courbe.ts';
+	import { namedColorScreen, namedColorTable } from '#lib/theme/named-colors.ts';
+	import { SCATTER_LABEL_CHAR_PX, type BoxPlotScene } from '#lib/ubumark/utils/stat-chart-scene.ts';
 
 	interface Props {
 		scene: BoxPlotScene;

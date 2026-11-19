@@ -12,17 +12,17 @@
 	 * sans doute trop courte » à cette durée (prof, chantier `durees-trop-courtes`),
 	 * puis la durée observée chez ses élèves, à appliquer (chantier `durees-ajustees`).
 	 */
-	import { Button } from '$lib/components/ui/button';
-	import FlashCard from '$lib/components/questions/FlashCard.svelte';
-	import { TILE_CARD_HEIGHT } from '$lib/components/questions/tile-card';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import FlashCard from '#lib/components/questions/FlashCard.svelte';
+	import { TILE_CARD_HEIGHT } from '#lib/components/questions/tile-card.ts';
 	import { Clock, Minus, Plus, Repeat } from '@lucide/svelte';
-	import { MarkdownRenderer } from '$lib/components/markdown';
-	import { convertLegacyLatexToMarkdown } from '$lib/utils/latex-syntax-adapter';
-	import type { SeriesItem } from '$lib/validation/series';
-	import type { QuestionInstance, QuestionTemplate } from '$lib/questions/types';
-	import type { QuestionTiming } from '$lib/types/evaluation-breakdown';
-	import TooShortMark from '$lib/components/series/TooShortMark.svelte';
-	import ObservedDelayHint from '$lib/components/series/ObservedDelayHint.svelte';
+	import { MarkdownRenderer } from '#lib/components/markdown/index.ts';
+	import { convertLegacyLatexToMarkdown } from '#lib/utils/latex-syntax-adapter.ts';
+	import type { SeriesItem } from '#lib/validation/series.ts';
+	import type { QuestionInstance, QuestionTemplate } from '#lib/questions/types.ts';
+	import type { QuestionTiming } from '#lib/types/evaluation-breakdown.ts';
+	import TooShortMark from '#lib/components/series/TooShortMark.svelte';
+	import ObservedDelayHint from '#lib/components/series/ObservedDelayHint.svelte';
 
 	// Bornes et pas de la durée (secondes)
 	const DELAY_STEP = 5;

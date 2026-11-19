@@ -14,14 +14,14 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 import {
 	CHILD_ACCOUNT_DOMAIN,
 	childAccountEmail,
 	childLoginBase,
 	pickChildLoginId
-} from '$lib/utils/child-account';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/utils/child-account.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 // Types
 

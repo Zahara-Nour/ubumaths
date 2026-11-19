@@ -16,18 +16,18 @@
 	import { SvelteURLSearchParams } from 'svelte/reactivity';
 	import { page } from '$app/state';
 	import type { PageData } from './$types';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
 	import {
 		MAX_POINT_INPUT,
 		MAX_TITLE_SEARCH,
 		parsePointCode
-	} from '$lib/questions/template-review';
-	import ReviewTree from '$lib/components/dev/ReviewTree.svelte';
-	import TemplateReviewSheet from '$lib/components/dev/TemplateReviewSheet.svelte';
+	} from '#lib/questions/template-review.ts';
+	import ReviewTree from '#lib/components/dev/ReviewTree.svelte';
+	import TemplateReviewSheet from '#lib/components/dev/TemplateReviewSheet.svelte';
 
 	// Constantes
 	const MAX_UNFOLD = 20;
@@ -65,7 +65,7 @@
 	// Functions
 	/** La recherche de l'adresse actuelle, modifiée (`tous`, vide ou null retirent la clé) */
 	function queryWith(changes: Record<string, string | null>): string {
-		const params = new SvelteURLSearchParams(page.url.searchParams);
+		const params = new SvelteURLSearchParams(page.url.search);
 		for (const [k, v] of Object.entries(changes)) {
 			if (v === null || v === '' || v === 'tous') params.delete(k);
 			else params.set(k, v);
@@ -76,8 +76,7 @@
 
 	function setFilter(key: string, value: string | null) {
 		goto(`${resolve('/(protected)/dev/modeles')}${queryWith({ [key]: value })}`, {
-			keepFocus: true,
-			noScroll: true
+			reset: false
 		});
 	}
 

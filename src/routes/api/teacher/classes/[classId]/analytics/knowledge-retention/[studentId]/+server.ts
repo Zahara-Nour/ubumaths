@@ -6,15 +6,14 @@
  * Query : ?branch=<uuid> (obligatoire)
  */
 
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireTeacherOfClass } from '$lib/server/stats/teacher-class-auth';
+import { requireTeacherOfClass } from '#lib/server/stats/teacher-class-auth.ts';
 import {
 	classAndStudentParamSchema,
 	retentionQuerySchema
-} from '$lib/server/validation/teacher-analytics';
-import { getStudentRetentionCurve } from '$lib/server/stats';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/validation/teacher-analytics.ts';
+import { getStudentRetentionCurve } from '#lib/server/stats/index.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger(
 	'api/teacher/classes/[classId]/analytics/knowledge-retention/[studentId]/+server'
@@ -23,7 +22,7 @@ const logger = createServerLogger(
 export const GET: RequestHandler = async ({ params, url, locals }) => {
 	const paramCheck = classAndStudentParamSchema.safeParse(params);
 	if (!paramCheck.success) {
-		return json({ error: paramCheck.error.issues[0].message }, { status: 400 });
+		return Response.json({ error: paramCheck.error.issues[0].message }, { status: 400 });
 	}
 
 	const queryCheck = retentionQuerySchema.safeParse({
@@ -31,7 +30,7 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 		weeks: url.searchParams.get('weeks') ?? undefined
 	});
 	if (!queryCheck.success) {
-		return json({ error: queryCheck.error.issues[0].message }, { status: 400 });
+		return Response.json({ error: queryCheck.error.issues[0].message }, { status: 400 });
 	}
 
 	const { classId, studentId } = paramCheck.data;
@@ -49,16 +48,16 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 	// panne doit se distinguer d'un refus mérité.
 	if (membershipError) {
 		logger.error('Contrôle d’accès impossible :', membershipError);
-		return json({ error: 'Impossible de vérifier l’accès' }, { status: 500 });
+		return Response.json({ error: 'Impossible de vérifier l’accès' }, { status: 500 });
 	}
 
 	if (!membership) {
-		return json({ error: 'Élève non rattaché à cette classe' }, { status: 404 });
+		return Response.json({ error: 'Élève non rattaché à cette classe' }, { status: 404 });
 	}
 
 	// Classe sans niveau : pas de programme, donc pas de branche à lire.
 	if (!classRow.grade) {
-		return json({ points: [] });
+		return Response.json({ points: [] });
 	}
 
 	const points = await getStudentRetentionCurve(
@@ -68,5 +67,5 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 		queryCheck.data.weeks
 	);
 
-	return json({ points });
+	return Response.json({ points });
 };

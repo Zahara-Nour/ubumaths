@@ -8,17 +8,17 @@
  * AUTH: Authenticated users only
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { rateLimit } from '$lib/server/middleware/rateLimit';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { rateLimit } from '#lib/server/middleware/rateLimit.ts';
 import {
 	createBugReportSchema,
 	listBugReportsQuerySchema
-} from '$lib/server/validation/bug-reports';
-import type { BugReportWithAuthor, ListBugReportsResponse } from '$lib/types/bug-reports';
-import { notifyAdminsOfNewBugReport } from '$lib/server/notifications';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/validation/bug-reports.ts';
+import type { BugReportWithAuthor, ListBugReportsResponse } from '#lib/types/bug-reports.ts';
+import { notifyAdminsOfNewBugReport } from '#lib/server/notifications.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/bug-reports/+server');
 
@@ -95,7 +95,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 			offset
 		};
 
-		return json(response);
+		return Response.json(response);
 	} catch (err) {
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
@@ -172,7 +172,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			logger.error('[API] Failed to notify admins:', notifyError);
 		}
 
-		return json({ success: true, report }, { status: 201 });
+		return Response.json({ success: true, report }, { status: 201 });
 	} catch (err) {
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;

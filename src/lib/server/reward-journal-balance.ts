@@ -12,9 +12,9 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import type { RewardEvent, RewardEventType } from '$lib/types/reward-journal';
-import { createServerLogger } from '$lib/utils/logger';
+import type { Database } from '#lib/types/database.ts';
+import type { RewardEvent, RewardEventType } from '#lib/types/reward-journal.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/reward-journal-balance');
 

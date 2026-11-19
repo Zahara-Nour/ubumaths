@@ -10,8 +10,8 @@
  * est réécrit et un message le dit.
  */
 
-import { toaster } from '$lib/stores/toaster.svelte';
-import { MAX_ITEM_QUANTITY, seriesItemSchema, type SeriesItem } from '$lib/validation/series';
+import { toaster } from '#lib/stores/toaster.svelte.ts';
+import { MAX_ITEM_QUANTITY, seriesItemSchema, type SeriesItem } from '#lib/validation/series.ts';
 
 // Constantes
 

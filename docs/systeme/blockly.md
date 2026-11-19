@@ -10,7 +10,7 @@ couvre:
 # Blockly — programmation par blocs
 
 > Écrite à partir du code le 2026-11-14 (chantier `blockly`, journal
-> `docs/archive/wip/blockly-progress.md`). Vérifié contre le code le 2026-11-14 (écran du geste, PR 4b, le même jour) ; programme de calcul (logique, PR 5a) et `départ:` le 2026-11-14 ; écran du programme de calcul (PR 5b) le 2026-11-14 ; nombre maximal de blocs (`blocs:`) le 2026-11-15 ; bac à sable « Programmes de calcul » le 2026-11-15 ; blocs de 4e / 3e et `niveau:` (logique, sans écran) le 2026-11-16 ; leur écran (blocs Blockly, boîtes à outils par niveau, sélecteur du bac à sable) le 2026-11-16 ; module partagé (`types.ts`, `config.ts`, `generators/index.ts`) après le ménage, le 2026-11-16 ; tortue de 4e / 3e (logique, sans écran : moteur commun, `tortue/niveaux.ts`) le 2026-11-16.
+> `docs/archive/wip/blockly-progress.md`). Vérifié contre le code le 2026-11-14 (écran du geste, PR 4b, le même jour) ; programme de calcul (logique, PR 5a) et `départ:` le 2026-11-14 ; écran du programme de calcul (PR 5b) le 2026-11-14 ; nombre maximal de blocs (`blocs:`) le 2026-11-15 ; bac à sable « Programmes de calcul » le 2026-11-15 ; blocs de 4e / 3e et `niveau:` (logique, sans écran) le 2026-11-16 ; leur écran (blocs Blockly, boîtes à outils par niveau, sélecteur du bac à sable) le 2026-11-16 ; module partagé (`types.ts`, `config.ts`, `generators/index.ts`) après le ménage, le 2026-11-16 ; tortue de 4e / 3e (logique, sans écran : moteur commun, `tortue/niveaux.ts`) le 2026-11-16 ; son écran (boîtes à outils par niveau, carte, corrigé, sélecteur de `/tortue`), `départ:` sans contrôle des variables et messages de la notation au vocabulaire tortue le 2026-11-17.
 
 ## À quoi ça sert
 
@@ -22,7 +22,11 @@ Trois pages, rien n'est enregistré :
 
 - **`/tortue`, « La Tortue »** (publique, sans connexion, dans le menu et le sitemap) : bac à
   sable de la tortue seule. **Aucun JavaScript n'y est exécuté** : seul l'interpréteur de blocs
-  tourne ; le code Python est un aperçu replié (« Voir en Python »).
+  tourne ; le code Python est un aperçu replié (« Voir en Python »), au niveau de base seulement.
+  Sélecteur « Blocs : base · 4e · 3e » (boutons `aria-pressed`, base par défaut) : changer de
+  niveau change la boîte à outils (`toolboxTortue`), les blocs posés restent ; un bloc au-dessus
+  du niveau choisi est refusé au lancer ; en 4e / 3e, pas d'aperçu Python (les blocs de calcul
+  n'ont pas de générateur).
 - **`/programmes-de-calcul`, « Programmes de calcul »** (publique, sans connexion, dans le menu
   et le sitemap) : bac à sable des blocs de calcul, avec le même éditeur que le geste ```calcul
   (`CalculEditeur`, espace vide au départ) : « Essayer avec » un nombre, Lancer, affichages. Rien
@@ -44,19 +48,20 @@ dessiné et un PDF « À faire sur Chiphre » (§ L'écran d'une question tortue
 
 | Fichier                                                 | Rôle                                                                                                                                                                                                                                                                                                                   |
 | ------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `src/routes/(public)/tortue/+page.svelte`               | Page publique « La Tortue », monte `TortueBacASable`                                                                                                                                                                                                                                                                   |
-| `src/lib/components/blockly/TortueBacASable.svelte`     | Blocs tortue, boutons Lancer / Tout de suite / Effacer, quadrillage animé, aperçu Python replié ; onglets Blocs / Tortue sous `lg`                                                                                                                                                                                     |
+| `src/routes/(public)/tortue/+page.svelte`               | Page publique « La Tortue », sélecteur de niveau (base, 4e, 3e), monte `TortueBacASable`                                                                                                                                                                                                                               |
+| `src/lib/components/blockly/TortueBacASable.svelte`     | Blocs tortue du niveau, boutons Lancer / Tout de suite / Effacer, quadrillage animé, aperçu Python replié (base seulement) ; onglets Blocs / Tortue sous `lg`                                                                                                                                                          |
 | `src/routes/(public)/programmes-de-calcul/+page.svelte` | Page publique « Programmes de calcul », sélecteur de niveau, monte `CalculEditeur` (programme vide), rien de jugé                                                                                                                                                                                                      |
 | `src/lib/components/blockly/BlocklyWorkspace.svelte`    | `Blockly.inject` ; charge la locale française (`blockly/msg/fr`) puis `francaiserBlocsCalcul` avant                                                                                                                                                                                                                    |
 | `src/lib/shared/blockly/config.ts`                      | `BLOCKLY_CONFIG` (limites), `DEFAULT_WORKSPACE_OPTIONS`, thème `CHIPHRE_THEME`, messages d'erreur                                                                                                                                                                                                                      |
 | `src/lib/shared/blockly/toolbox/standard.ts`            | Boîte à outils : Logique, Boucles, Math, Texte, Listes, Variables, Fonctions                                                                                                                                                                                                                                           |
 | `src/lib/shared/blockly/generators/`                    | `generateCode` (générateurs Blockly, aperçu « Voir en Python »), enveloppes `wrapJavaScriptCode` / `wrapPythonCode`, garde-fous (longueur, boucles infinies)                                                                                                                                                           |
 | `src/lib/shared/blockly/lecture.ts`                     | Lecture commune (tortue, calcul) : état sérialisé → `BlocLu` vérifié (`lirePiles`), `premierBlocInconnu`, `nombreDeTours`                                                                                                                                                                                              |
+| `src/lib/shared/blockly/nombres.ts`                     | Nombres des programmes (tortue, calcul) : `ecrireSansExposant`, `messageExposant` (refus de `1e2`), `toursEntiers` (nombre de tours entier ≥ 0 à l'arrondi du calcul près)                                                                                                                                             |
 | `src/lib/shared/blockly/calcul/interpreteur.ts`         | `executerCalcul(etat, nombre, niveau)` : interprète un programme de calcul (5e, 4e, 3e) pour un nombre de départ (ADR 0039), rend les nombres affichés ; `branchesNonParcourues` ; **moteur commun** `creerMoteur` / `preparerProgramme` (variables, calculs, conditions, « si », répétitions), partagé avec la tortue |
 | `src/lib/shared/blockly/calcul/notation.ts`             | `etatVersTexteCalcul` / `texteVersEtatCalcul` : `mettre résultat à nombre + 2 ; afficher résultat × 4` ↔ état Blockly ; `messageNiveau`, `conditionsDuProgramme`                                                                                                                                                       |
 | `src/lib/shared/blockly/calcul/jugement.ts`             | `jugerProgrammeCalcul` (mêmes affichages sur chaque essai), `dependDuNombre`, `lireProgrammeCalcul`, `lireEssais` / `ecrireEssais`, `ESSAIS_PAR_DEFAUT`                                                                                                                                                                |
 | `src/lib/shared/blockly/calcul/blocs.ts`                | `definirBlocsCalcul` (blocs de calcul, « si », « répéter jusqu'à », sans générateur), `francaiserBlocsCalcul`, `surveillerNomsDeVariables` ; **seul fichier de `calcul/` qui importe Blockly**                                                                                                                         |
-| `src/lib/shared/blockly/calcul/toolbox.ts`              | `toolboxCalcul(niveau)` (5e = `CALCUL_TOOLBOX` : Calcul, Résultat, Afficher, Boucles avec `controls_repeat` seul ; 4e / 3e : cf. § Niveaux), `COULEURS_CALCUL` ; sans import de Blockly                                                                                                                                |
+| `src/lib/shared/blockly/calcul/toolbox.ts`              | `toolboxCalcul(niveau)` (5e = `CALCUL_TOOLBOX` : Calcul, Résultat, Afficher, Boucles avec `controls_repeat` seul ; 4e / 3e : cf. § Niveaux), `COULEURS_CALCUL`, `operation`, `CATEGORIE_DES_VARIABLES`, `categorieConditions` (repris par la tortue) ; sans import de Blockly                                          |
 | `src/lib/components/blockly/CalculEditeur.svelte`       | Éditeur d'une question de calcul (blocs du niveau, « Essayer avec », Lancer, affichages) ; rend le programme en texte à chaque modification ; chargé à la demande                                                                                                                                                      |
 | `src/lib/shared/blockly/tortue/interpreteur.ts`         | `executerTortue(etat, niveau)` : interprète l'état sérialisé des blocs tortue (ADR 0039) par le moteur commun, avec les blocs du niveau (`base`, `4e`, `3e`) ; rend segments, tortue finale et étapes                                                                                                                  |
 | `src/lib/shared/blockly/tortue/niveaux.ts`              | Tortue de 4e / 3e : `texteVersEtatTortue` / `etatVersTexteTortue` (notation de base ou celle du calcul étendue), `nombreDeBlocsTortue`, `messageNiveauTortue`                                                                                                                                                          |
@@ -65,9 +70,9 @@ dessiné et un PDF « À faire sur Chiphre » (§ L'écran d'une question tortue
 | `src/lib/shared/blockly/tortue/notation.ts`             | `etatVersTexte` / `texteVersEtat` : programme en notation texte (`répéter 4 [ avancer 3 ; tourner à droite 90 ]`) ↔ état Blockly                                                                                                                                                                                       |
 | `src/lib/shared/blockly/tortue/jugement.ts`             | `jugerProgrammeTortue` (comparaison `position` ou `forme`, niveau), `lireProgrammeTortue` (segments ou message d'erreur)                                                                                                                                                                                               |
 | `src/lib/shared/blockly/tortue/blocs.ts`                | `definirBlocsTortue` : définitions Blockly et générateurs d'aperçu JS / Python (`from turtle import *`)                                                                                                                                                                                                                |
-| `src/lib/shared/blockly/tortue/toolbox.ts`              | `TORTUE_TOOLBOX` : Tortue, « répéter n fois » (`controls_repeat`, champ entier ≥ 0), nombre — uniquement des blocs interprétés                                                                                                                                                                                         |
+| `src/lib/shared/blockly/tortue/toolbox.ts`              | `toolboxTortue(niveau)` : base = `TORTUE_TOOLBOX` (Tortue, « répéter n fois » `controls_repeat` à champ entier ≥ 0, nombre) ; 4e / 3e : cf. § Tortue de 4e et 3e — uniquement des blocs interprétés au niveau                                                                                                          |
 | `src/lib/components/blockly/TortueCanvas.svelte`        | Quadrillage fixe 20 × 20 en SVG, segments coupés au cadre, dépassement signalé ; figure modèle en gris, attendu en pointillés, tracé vert / rouge ; sans Blockly                                                                                                                                                       |
-| `src/lib/components/blockly/TortueEditeur.svelte`       | Éditeur d'une question tortue (blocs, Lancer, quadrillage, onglets sous `lg`) ; rend le programme en texte à chaque modification ; chargé à la demande                                                                                                                                                                 |
+| `src/lib/components/blockly/TortueEditeur.svelte`       | Éditeur d'une question tortue (blocs du niveau, Lancer, quadrillage, onglets sous `lg`) ; rend le programme en texte au niveau à chaque modification ; chargé à la demande                                                                                                                                             |
 | `static/blockly/media/`                                 | Médias de Blockly (corbeille, sprites, icônes), servis par Chiphre                                                                                                                                                                                                                                                     |
 
 ## Invariants
@@ -93,8 +98,9 @@ dessiné et un PDF « À faire sur Chiphre » (§ L'écran d'une question tortue
   le programme (rien n'est tracé).
 - Blocs : `tortue_avancer` / `tortue_reculer` (entrée `VALEUR`), `tortue_gauche` /
   `tortue_droite` (entrée `ANGLE`), `tortue_lever_stylo`, `tortue_baisser_stylo` ;
-  `controls_repeat` / `controls_repeat_ext` (répétitions arrondies à l'entier inférieur, négatives
-  → 0), `math_number`. Entrée vide → 0, bloc désactivé → ignoré, nombre posé seul → ignoré. Piles
+  `controls_repeat` / `controls_repeat_ext` (nombre de tours entier ≥ 0, cf. § Tortue de 4e et 3e,
+  Exécution ; le champ de `controls_repeat` est entier ≥ 0 par Blockly, et lu à l'entier
+  inférieur s'il ne l'était pas — état fabriqué seulement), `math_number`. Entrée vide → 0, bloc désactivé → ignoré, nombre posé seul → ignoré. Piles
   exécutées de haut en bas ; les suivants (`next`) sont lus en boucle, seule l'imbrication
   (bornée à 1 000) fait récursion.
 - Repère : unité = un carreau, départ en (0, 0), cap 0 = vers la droite, tourner à gauche = sens
@@ -111,8 +117,9 @@ dessiné et un PDF « À faire sur Chiphre » (§ L'écran d'une question tortue
   (§ Tortue de 4e et 3e).
 - **Moteur commun** : depuis le chantier `tortue-variables`, `executerTortue` passe par le moteur
   des programmes de calcul (`creerMoteur`) ; les blocs tortue lui sont confiés comme instructions
-  propres au domaine. Sans niveau, rien ne change (mêmes pas, même arrondi inférieur des
-  répétitions, tests d'avant inchangés).
+  propres au domaine. Sans niveau, mêmes pas qu'avant ; le nombre de tours calculé suit la règle
+  de tous les niveaux (entier ≥ 0, sinon arrêt `tours-non-entier` — correctif `tortue-nombres`,
+  2026-11-17 ; avant : entier inférieur, négatif → 0).
 - Quadrillage fixe 20 × 20 (`DEMI_COTE_CADRE`). Sur `/tortue`, **animé** : pause de 600 ms au départ (`PAUSE_DEPART_MS`, tortue au départ, rien de
   tracé), puis 300 ms par étape jusqu'à 40 étapes, au-delà l'animation entière dure
   12 s (plusieurs étapes par tic sous 16 ms) ; « Tout de suite » saute à la fin, toute
@@ -135,10 +142,13 @@ dessiné et un PDF « À faire sur Chiphre » (§ L'écran d'une question tortue
   une réponse trop longue à `MAX_ANSWER_LENGTH`, un programme de cette longueur exacte peut avoir
   été coupé (et rejoué comme un autre programme) : il est refusé (« Programme trop long »).
 - `etatVersTexte` suit l'exécution : piles de haut en bas, blocs désactivés et nombres posés
-  seuls ignorés, entrée vide → 0, répétitions à l'entier inférieur ; un bloc inconnu refuse tout.
+  seuls ignorés, entrée vide → 0 ; nombre de tours d'un `controls_repeat_ext` écrit tel quel (non
+  entier : la relecture le refuse) ; nombres toujours écrits sans exposant (`nombres.ts`,
+  `ecrireSansExposant`) ; un bloc inconnu refuse tout.
   `texteVersEtat` rend une seule pile (`controls_repeat`, ombres `math_number`), rejouable par
   `executerTortue` et rechargeable dans l'espace de blocs. Refus : instruction inconnue (le
-  message la cite), nombre absent ou illisible, `répéter` sans entier ≥ 0 ou sans crochets,
+  message la cite), nombre absent ou illisible, nombre à exposant (« « 1e2 » : écrire le nombre en
+  entier (100). », `messageExposant`), `répéter` sans entier ≥ 0 ou sans crochets,
   crochets mal appariés, plus de 50 répétitions imbriquées, texte trop long. Un aller-retour
   texte → blocs → texte rend le même texte.
 - **Jugement** (`jugement.ts`) : les deux programmes rejoués, segments comparés sans ordre ni
@@ -160,9 +170,9 @@ dessiné et un PDF « À faire sur Chiphre » (§ L'écran d'une question tortue
 ### Tortue de 4e et 3e
 
 Chantier `tortue-variables`, phase 0 validée par David le 2026-11-16 (journal
-`docs/wip/tortue-variables-progress.md`). Même bloc ```tortue, clé `niveau: 4e | 3e` ; absente →
-`base`, rien ne change (modèles publiés compris). Écran (boîtes à outils par niveau, sélecteur du
-bac à sable) : PR B, pas encore livré.
+`docs/archive/wip/tortue-variables-progress.md`). Même bloc ```tortue, clé `niveau: 4e | 3e` ; absente →
+`base`, rien ne change (modèles publiés compris). Écran : boîtes à outils par niveau, carte et
+corrigé au niveau, sélecteur de `/tortue` (§ L'écran d'une question tortue, § Trois pages).
 
 - **Blocs admis** (`NIVEAU_DES_BLOCS` de `tortue/interpreteur.ts`, `connusTortue(niveau)`) :
   `base` = blocs tortue, `controls_repeat`, `controls_repeat_ext`, `math_number` ; **4e** + les
@@ -170,10 +180,20 @@ bac à sable) : PR B, pas encore livré.
   dans les entrées ; **3e** + `calcul_si`, `calcul_si_sinon`, `logic_compare`, `logic_operation`,
   `logic_negate`, `calcul_repeter_jusqua`. Jamais les blocs propres au calcul (`afficher`,
   `nombre`, `résultat`, `reste`) : bloc inconnu.
+- **Boîtes à outils** (`toolboxTortue`) : **4e** = Tortue, Calcul (+ − × ÷, nombre), Variables
+  (catégorie dynamique de Blockly : « Créer une variable… », mettre, ajouter, lire), Boucles
+  (`controls_repeat_ext` seul, nombre de tours calculé) ; **3e** + Conditions (« si », « si /
+  sinon », comparaisons, et / ou / non) et « répéter jusqu'à ». Un nom de variable refusé l'est
+  dès sa création (`surveillerNomsDeVariables`, message `.tortue-nom-refuse` sous les blocs).
 - **Exécution** : celle du moteur commun, mêmes règles que le calcul (variable jamais mise = 0,
-  20 variables au plus, noms réservés refusés, condition vide fausse, égalité à la marge). En
-  4e / 3e, `controls_repeat_ext` arrondit à l'entier le plus proche (négatif → 0) ; sans niveau,
-  entier inférieur comme avant. Distance négative = recule ; angle non entier admis. Arrêts :
+  20 variables au plus, noms réservés refusés, condition vide fausse, égalité à la marge).
+  **Nombre de tours** (`controls_repeat_ext`), à tous les niveaux : entier ≥ 0 à l'arrondi du
+  calcul près (`toursEntiers`, `0,1 × 30` = 3), jamais arrondi en silence ; sinon arrêt
+  `tours-non-entier` avec le tracé partiel (« Répéter : le nombre de fois vaut 2,5, il faut un
+  nombre entier (0, 1, 2…). »). Écrit non entier ou négatif (`répéter 2,5 [ … ]`, `répéter -2`) :
+  refusé dès la lecture. Les programmes de calcul (répétition calculée de 4e / 3e) gardent
+  l'arrondi à l'entier le plus proche (Scratch).
+  Distance négative = recule ; angle non entier admis. Arrêts :
   ÷ 0 → `division-par-zero` (« on ne peut pas diviser par 0 ») ; nombre infini → `trop-loin` ;
   boucle sans fin → `trop-long` (10 000 pas, une opération ou une comparaison comptent un pas).
   Étapes de l'animation : une par instruction tortue, aucune pour une variable ou un « si ».
@@ -181,7 +201,10 @@ bac à sable) : PR B, pas encore livré.
   3e, celle des programmes de calcul (`calcul/notation.ts`, option `tortue`) avec en plus
   `avancer <calcul>`, `reculer <calcul>`, `tourner à droite <calcul>`, `tourner à gauche
 <calcul>`, `lever le stylo`, `baisser le stylo` : `mettre n à 6 ; répéter n [ avancer 3 ;
-tourner à gauche 360 ÷ n ]`. Écriture canonique du calcul (`−`, `×`, `÷`, virgule).
+tourner à gauche 360 ÷ n ]`. Écriture canonique du calcul (`−`, `×`, `÷`, virgule). Les mots
+  propres au calcul sont refusés à la lecture en les nommant (« « afficher » n'existe pas pour la
+  tortue… », de même `nombre`, `résultat`, `reste de`) ; les exemples des messages sont ceux de la
+  tortue (`si n > 0 alors [ avancer 1 ]`, `n > 0`).
 - **Compte des blocs** (`nombreDeBlocsTortue`) : en 4e / 3e, les instructions (mettre, ajouter,
   avancer, reculer, tourner, stylo, répéter, si, jusqu'à), jamais les calculs ni les conditions des
   entrées (l'hexagone ci-dessus = 4 blocs).
@@ -190,6 +213,8 @@ tourner à gauche 360 ÷ n ]`. Écriture canonique du calcul (`−`, `×`, `÷`,
 - **Pour l'auteur** (`messageNiveauTortue`) : le bloc du niveau le plus haut qui dépasse, lu dans la
   notation de 4e / 3e même sans niveau (« « mettre … à » est un bloc de 4e (ajouter niveau: 4e) »
   plutôt qu'« instruction inconnue ») ; nom du bloc par `messageBlocAuDessus`, commun au calcul.
+  Variable lue jamais mise : refusée dans `attendu:` (faute de frappe), admise dans `départ:`
+  (« complète le programme » : `départ: répéter n [ … ]`, l'élève met `n` ; David, 2026-11-17).
 
 ## Programme de calcul en réponse
 
@@ -325,6 +350,10 @@ sinon [ … ]`, `répéter <calcul> [ … ]` (un entier écrit reste le bloc de 
   garde le programme de référence.
 - **Hors question** (aperçu de l'éditeur riche, aide à l'écriture, `MarkdownRenderer` et
   `StaticBlockNode`) : la même carte, geste libre, rien de jugé.
+- **`niveau: 4e | 3e`** : la carte passe le niveau du bloc à l'éditeur (boîte à outils, notation
+  de la réponse, tracé verrouillé) et compte les blocs au niveau (`nombreDeBlocsTortue`) ; l'attendu
+  en pointillés et le corrigé se lisent au niveau de la réponse attendue (`4e | …`), sinon à celui
+  du bloc (gardé dans l'énoncé masqué).
 - **PDF** (`ubumark/generators/tortue-typst.ts`) : cf. [ubumark](ubumark.md).
 
 ## L'écran d'une question de calcul

@@ -15,17 +15,17 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import { fetchInChunks } from '$lib/server/utils/chunked-in';
-import { keepLinksOfGrade } from '$lib/server/curriculum-grade';
-import { PROGRAMME_POINT_COLS, loadNodesWithAncestors } from '$lib/server/programme-tree';
-import { placeOfNode, type ProgrammePointRow } from '$lib/utils/programme-tree';
+import type { Database } from '#lib/types/database.ts';
+import { fetchInChunks } from '#lib/server/utils/chunked-in.ts';
+import { keepLinksOfGrade } from '#lib/server/curriculum-grade.ts';
+import { PROGRAMME_POINT_COLS, loadNodesWithAncestors } from '#lib/server/programme-tree.ts';
+import { placeOfNode, type ProgrammePointRow } from '#lib/utils/programme-tree.ts';
 import {
 	templateToBadge,
 	BADGE_PRIORITY,
 	type CurriculumPointBadge
-} from '$lib/server/srs/curriculum-point-badge';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/srs/curriculum-point-badge.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/stats/class-knowledge');
 

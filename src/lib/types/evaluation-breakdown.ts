@@ -4,10 +4,10 @@
  * Partagé entre le serveur (calcul, lecture) et la page résultats du professeur.
  */
 
-import type { QuestionInstance, ValidationStatus } from '$lib/questions/types';
-import type { CorrectedDetail } from '$lib/types/evaluation-attempt';
-import type { ErrorKind } from '$lib/mathAST/error-kind';
-import type { BlankErrorKind } from '$lib/questions/error-kinds';
+import type { QuestionInstance, ValidationStatus } from '#lib/questions/types.ts';
+import type { CorrectedDetail } from '#lib/types/evaluation-attempt.ts';
+import type { ErrorKind } from '#lib/mathAST/error-kind.ts';
+import type { BlankErrorKind } from '#lib/questions/error-kinds.ts';
 
 /** Répartition des réponses : juste (1) / partiel (½) / faux, mauvaise forme comprise (0) / sans réponse */
 export interface BreakdownCounts {

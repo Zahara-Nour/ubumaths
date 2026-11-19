@@ -19,22 +19,22 @@
  * insuffisant (« Il te manque N gidouilles ») ; 429 trop d’appels ; 500 panne.
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import { z } from 'zod';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import { rateLimit } from '$lib/server/middleware/rateLimit';
-import { requireConsent } from '$lib/server/middleware/consent';
-import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { rateLimit } from '#lib/server/middleware/rateLimit.ts';
+import { requireConsent } from '#lib/server/middleware/consent.ts';
+import { createServiceRoleClient } from '#lib/server/serviceRoleClient.ts';
 import {
 	AVATAR_RATE_MAX,
 	avatarRefusalMessage,
 	avatarRefusalStatus,
 	buyAvatar,
 	type BuyAvatarOutcome
-} from '$lib/server/avatars/shop';
-import { AVATAR_KEY_PATTERN } from '$lib/avatars/shop';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/avatars/shop.ts';
+import { AVATAR_KEY_PATTERN } from '#lib/avatars/shop.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/student/avatars/buy/+server');
 
@@ -62,5 +62,5 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			avatarRefusalStatus(outcome.reason),
 			avatarRefusalMessage(outcome.reason, outcome.missing)
 		);
-	return json({ balance: outcome.balance });
+	return Response.json({ balance: outcome.balance });
 };

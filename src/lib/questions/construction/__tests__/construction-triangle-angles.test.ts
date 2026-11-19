@@ -28,7 +28,7 @@ import { constructionOf, intersectTraits, repereAt, traitOf, type Trait } from '
 import { solutionLines, solutionTriangle } from '../drawing';
 import { serializeConstructionAnswer, type DrawnObject, type DrawnRepere } from '../answer';
 import type { Position } from '../judge';
-import { readConstructionHeader } from '$lib/ubumark/parser/construction-parser';
+import { readConstructionHeader } from '#lib/ubumark/parser/construction-parser.ts';
 
 function checksOf(source: string) {
 	const { spec, errors } = readConstructionHeader(source);
@@ -607,7 +607,7 @@ describe('aide à l’écriture : les exemples du lot 7 se construisent', () => 
 		'Construire un triangle par un côté et deux angles (rapporteur)',
 		'Construire un triangle par deux côtés et l’angle compris'
 	])('%s', async (title) => {
-		const { figureACompleterEntry } = await import('$lib/block-catalog/figure-a-completer');
+		const { figureACompleterEntry } = await import('#lib/block-catalog/figure-a-completer.ts');
 		const example = figureACompleterEntry.examples.find((e) => e.title === title);
 		expect(example).toBeDefined();
 		const lines = (example?.source ?? '').split('\n');

@@ -4,8 +4,8 @@
  */
 
 import { error } from '@sveltejs/kit';
-import { dev } from '$app/environment';
-import { guidePage } from '$lib/calculatrices/page-data';
+import { dev } from '$app/env';
+import { guidePage } from '#lib/calculatrices/page-data.ts';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = ({ params }) => {

@@ -1,0 +1,231 @@
+{
+	"id": "3a8ef5f7-402f-48a3-9ddc-aca94723bf56",
+	"title": "Puissance d'exposant 1/n",
+	"description": "b^(1/n) : valeur exacte, nombre positif dont la puissance n-ième vaut b, (a^(1/n))ⁿ = a",
+	"grades": ["1_GEN"],
+	"level": 1,
+	"delay": 40,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"options": {
+		"constraints": {
+			"form": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Calcule ${{b}}^{\\frac{1}{ {{n}} }}$.\n\n${{b}}^{\\frac{1}{ {{n}} }}=?$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "2|3|4"
+				},
+				{
+					"name": "n",
+					"expression": "2..5"
+				},
+				{
+					"name": "b",
+					"expression": "eval:r^n"
+				}
+			],
+			"conditions": ["r^n <= 81"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $b>0$ et $n$ entier non nul, $b^{\\frac{1}{n}}$ est le nombre **positif** dont la puissance $n$-ième vaut $b$ : $\\left(b^{\\frac{1}{n}}\\right)^n=b^{\\frac{1}{n}\\times n}=b^1=b$.",
+					"On cherche le nombre positif dont la puissance ${{n}}$-ième vaut ${{b}}$ : ${{r}}^{ {{n}} }={{b}}$, donc ${{b}}^{\\frac{1}{ {{n}} }}=\\textcolor{{{color:primary.0}}}{{{r}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Quel est le nombre positif $x$ tel que $x^{ {{n}} }={{b}}$ ? Donne sa valeur arrondie au centième.\n\n$x\\approx ?$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "2..20"
+				},
+				{
+					"name": "n",
+					"expression": "2..5"
+				}
+			],
+			"conditions": ["round(b^(1/n)) != b^(1/n)"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:round(100*b^(1/n))/100;d}}",
+					"precision": {
+						"type": "decimal",
+						"digits": 2
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $b>0$ et $n$ entier non nul, $b^{\\frac{1}{n}}$ est le nombre **positif** dont la puissance $n$-ième vaut $b$ : $\\left(b^{\\frac{1}{n}}\\right)^n=b^{\\frac{1}{n}\\times n}=b^1=b$.",
+					"Le nombre positif $x$ tel que $x^{ {{n}} }={{b}}$ est $x={{b}}^{\\frac{1}{ {{n}} }}$.",
+					"À la calculatrice : $x\\approx\\textcolor{{{color:primary.0}}}{{{eval:round(100*b^(1/n))/100;d}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Calcule $\\left({{a}}^{\\frac{1}{ {{n}} }}\\right)^{ {{n}} }$.\n\n$\\left({{a}}^{\\frac{1}{ {{n}} }}\\right)^{ {{n}} }=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..20"
+				},
+				{
+					"name": "n",
+					"expression": "2..5"
+				}
+			],
+			"conditions": ["round(a^(1/n)) != a^(1/n)"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $b>0$ et $n$ entier non nul, $b^{\\frac{1}{n}}$ est le nombre **positif** dont la puissance $n$-ième vaut $b$ : $\\left(b^{\\frac{1}{n}}\\right)^n=b^{\\frac{1}{n}\\times n}=b^1=b$.",
+					"On multiplie les exposants : $\\left({{a}}^{\\frac{1}{ {{n}} }}\\right)^{ {{n}} }={{a}}^{\\frac{1}{ {{n}} }\\times{{n}} }={{a}}^1=\\textcolor{{{color:primary.0}}}{{{a}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "8^(1/3) = 2",
+			"variationIndex": 0,
+			"variables": {
+				"r": "2",
+				"n": "3",
+				"b": "8"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 8/3",
+			"variationIndex": 0,
+			"variables": {
+				"r": "2",
+				"n": "3",
+				"b": "8"
+			},
+			"answers": ["\\frac{8}{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 8^3 = 512",
+			"variationIndex": 0,
+			"variables": {
+				"r": "2",
+				"n": "3",
+				"b": "8"
+			},
+			"answers": ["512"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "81^(1/4) = 3",
+			"variationIndex": 0,
+			"variables": {
+				"r": "3",
+				"n": "4",
+				"b": "81"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "x^3 = 10 : x ≈ 2,15",
+			"variationIndex": 1,
+			"variables": {
+				"b": "10",
+				"n": "3"
+			},
+			"answers": ["2,15"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 10/3 ≈ 3,33",
+			"variationIndex": 1,
+			"variables": {
+				"b": "10",
+				"n": "3"
+			},
+			"answers": ["3,33"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 10^3 = 1000",
+			"variationIndex": 1,
+			"variables": {
+				"b": "10",
+				"n": "3"
+			},
+			"answers": ["1000"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(7^(1/2))^2 = 7",
+			"variationIndex": 2,
+			"variables": {
+				"a": "7",
+				"n": "2"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : arrondi intermédiaire 2,65² ≈ 7,02",
+			"variationIndex": 2,
+			"variables": {
+				"a": "7",
+				"n": "2"
+			},
+			"answers": ["7,02"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1 (exposant 1/n × n pris pour la valeur)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "7",
+				"n": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

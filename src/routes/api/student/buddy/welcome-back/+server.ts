@@ -13,12 +13,12 @@
  * fêter (deuxième appel, autre onglet).
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import { acknowledgeWelcomeBack } from '$lib/server/buddy-queries';
-import { markWeekCelebrated } from '$lib/server/buddy-weeks';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { acknowledgeWelcomeBack } from '#lib/server/buddy-queries.ts';
+import { markWeekCelebrated } from '#lib/server/buddy-weeks.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/student/buddy/welcome-back/+server');
 
@@ -42,5 +42,5 @@ export const POST: RequestHandler = async ({ locals }) => {
 			logger.error('Semaine non marquée fêtée après le retour :', err);
 		}
 	}
-	return json({ acknowledged });
+	return Response.json({ acknowledged });
 };

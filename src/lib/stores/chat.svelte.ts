@@ -1,9 +1,9 @@
-import { toaster } from '$lib/stores/toaster.svelte';
-import { browser } from '$app/environment';
+import { toaster } from '#lib/stores/toaster.svelte.ts';
+import { browser } from '$app/env';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 import { supabaseRealtimeManager } from './supabaseRealtime.svelte';
-import { createLogger } from '$lib/utils/logger';
+import { createLogger } from '#lib/utils/logger.ts';
 import { z } from 'zod';
 import { SvelteMap } from 'svelte/reactivity';
 
@@ -173,7 +173,7 @@ type BroadcastPayload =
  *
  * @example
  * ```ts
- * import { chatStore } from '$lib/stores/chat.svelte';
+ * import { chatStore } from '#lib/stores/chat.svelte.ts';
  *
  * // Initialize with Supabase client and user info
  * chatStore.init(supabase, userId, { full_name: 'John Doe', avatar_url: 'https://...' });

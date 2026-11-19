@@ -9,8 +9,8 @@ import { describe, it, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { tick } from 'svelte';
 import AtelierContainer from '../AtelierContainer.svelte';
-import { Atelier } from '$lib/atelier/atelier.svelte';
-import { ATELIER_STORAGE_KEY, loadAtelier, saveAtelier } from '$lib/atelier/persistence';
+import { Atelier } from '#lib/atelier/atelier.svelte.ts';
+import { ATELIER_STORAGE_KEY, loadAtelier, saveAtelier } from '#lib/atelier/persistence.ts';
 
 async function settle() {
 	await tick();

@@ -13,11 +13,11 @@
  * @module grapheur/exact
  */
 
-import { evaluate } from '$lib/mathAST/eval/evaluate';
-import { substitute } from '$lib/mathAST/eval/substitute';
-import { toLatex } from '$lib/mathAST/latex-generator';
-import { number } from '$lib/mathAST/factory';
-import type { MathNode } from '$lib/mathAST/types';
+import { evaluate } from '#lib/mathAST/eval/evaluate.ts';
+import { substitute } from '#lib/mathAST/eval/substitute.ts';
+import { toLatex } from '#lib/mathAST/latex-generator.ts';
+import { number } from '#lib/mathAST/factory.ts';
+import type { MathNode } from '#lib/mathAST/types.ts';
 import { INDEX_VARIABLE, PREV_TERM_VARIABLE, type SequenceComputeSpec } from './sequence';
 
 // =============================================================================

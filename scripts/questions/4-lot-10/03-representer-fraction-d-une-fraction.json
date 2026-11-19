@@ -1,0 +1,364 @@
+{
+	"id": "63a06b04-a830-47e2-a588-ade704b930af",
+	"title": "Représenter une fraction d'une fraction",
+	"description": "Représenter les a/b des c/d dans un carré unité ou sur un schéma en barres : colorier, lire la fraction coloriée, valeur d'une partie d'une quantité, fraction d'un reste",
+	"grades": ["4"],
+	"level": 9,
+	"delay": 90,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"reducedFractions": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Colorie les $\\frac{ {{a}} }{ {{b}} }$ des $\\frac{ {{c}} }{ {{d}} }$ du {{if:b==d|carré|rectangle}}.\n\n```partage\nforme: grille {{b}}x{{d}}\ncolorier: {{eval:a*c}}/{{eval:b*d}}\n```\n\n",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "2..5"
+				},
+				{
+					"name": "d",
+					"expression": "2..5"
+				},
+				{
+					"name": "a",
+					"expression": "1..{{eval:b-1}}"
+				},
+				{
+					"name": "c",
+					"expression": "1..{{eval:d-1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Les $\\frac{ {{c}} }{ {{d}} }$ du {{if:b==d|carré|rectangle}}** : ${{c}}$ colonnes sur ${{d}}$.",
+					"**Les $\\frac{ {{a}} }{ {{b}} }$ de cette partie** : dans ces colonnes, ${{a}}$ lignes sur ${{b}}$. On obtient un rectangle de ${{a}} \\times {{c}} = \\textcolor{{{color:primary.0}}}{{{eval:a*c}}}$ cases sur ${{b}} \\times {{d}} = {{eval:b*d}}$.\n\n```partage\nforme: grille {{b}}x{{d}}\ngris: 1{{if:a>=1 && c>=2|, {{eval:0*d+2}}|}}{{if:a>=1 && c>=3|, {{eval:0*d+3}}|}}{{if:a>=1 && c>=4|, {{eval:0*d+4}}|}}{{if:a>=2 && c>=1|, {{eval:1*d+1}}|}}{{if:a>=2 && c>=2|, {{eval:1*d+2}}|}}{{if:a>=2 && c>=3|, {{eval:1*d+3}}|}}{{if:a>=2 && c>=4|, {{eval:1*d+4}}|}}{{if:a>=3 && c>=1|, {{eval:2*d+1}}|}}{{if:a>=3 && c>=2|, {{eval:2*d+2}}|}}{{if:a>=3 && c>=3|, {{eval:2*d+3}}|}}{{if:a>=3 && c>=4|, {{eval:2*d+4}}|}}{{if:a>=4 && c>=1|, {{eval:3*d+1}}|}}{{if:a>=4 && c>=2|, {{eval:3*d+2}}|}}{{if:a>=4 && c>=3|, {{eval:3*d+3}}|}}{{if:a>=4 && c>=4|, {{eval:3*d+4}}|}}\n```\n\n",
+					"Le geste juge le nombre de cases coloriées ; la disposition en rectangle ci-dessus montre pourquoi il en faut ${{eval:a*c}}$."
+				]
+			}
+		},
+		{
+			"statement": "On a colorié les $\\frac{ {{a}} }{ {{b}} }$ des $\\frac{ {{c}} }{ {{d}} }$ du {{if:b==d|carré|rectangle}}.\n\n```partage\nforme: grille {{b}}x{{d}}\ngris: 1{{if:a>=1 && c>=2|, {{eval:0*d+2}}|}}{{if:a>=1 && c>=3|, {{eval:0*d+3}}|}}{{if:a>=1 && c>=4|, {{eval:0*d+4}}|}}{{if:a>=2 && c>=1|, {{eval:1*d+1}}|}}{{if:a>=2 && c>=2|, {{eval:1*d+2}}|}}{{if:a>=2 && c>=3|, {{eval:1*d+3}}|}}{{if:a>=2 && c>=4|, {{eval:1*d+4}}|}}{{if:a>=3 && c>=1|, {{eval:2*d+1}}|}}{{if:a>=3 && c>=2|, {{eval:2*d+2}}|}}{{if:a>=3 && c>=3|, {{eval:2*d+3}}|}}{{if:a>=3 && c>=4|, {{eval:2*d+4}}|}}{{if:a>=4 && c>=1|, {{eval:3*d+1}}|}}{{if:a>=4 && c>=2|, {{eval:3*d+2}}|}}{{if:a>=4 && c>=3|, {{eval:3*d+3}}|}}{{if:a>=4 && c>=4|, {{eval:3*d+4}}|}}\n```\n\nQuelle fraction du {{if:b==d|carré|rectangle}} est coloriée ?\n\n$?$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "2..5"
+				},
+				{
+					"name": "d",
+					"expression": "2..5"
+				},
+				{
+					"name": "a",
+					"expression": "1..{{eval:b-1}}"
+				},
+				{
+					"name": "c",
+					"expression": "1..{{eval:d-1}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{ {{eval:a*c}} }{ {{eval:b*d}} }"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Les $\\frac{ {{c}} }{ {{d}} }$ du {{if:b==d|carré|rectangle}}** : ${{c}}$ colonnes sur ${{d}}$.",
+					"**Les $\\frac{ {{a}} }{ {{b}} }$ de cette partie** : ${{a}}$ lignes sur ${{b}}$ dans ces colonnes, soit ${{a}} \\times {{c}} = {{eval:a*c}}$ cases sur ${{b}} \\times {{d}} = {{eval:b*d}}$.",
+					"$$\\frac{ {{a}} }{ {{b}} } \\times \\frac{ {{c}} }{ {{d}} } = \\textcolor{{{color:primary.0}}}{\\frac{ {{eval:a*c}} }{ {{eval:b*d}} }}$$",
+					"Ce n'est pas une somme : on prend une partie **d'une partie**."
+				]
+			}
+		},
+		{
+			"statement": "{{if:s==1|Cette bande représente une cagnotte de ${{Q}}~\\unit{€}$|Cette bande représente les ${{Q}}$ élèves inscrits à un tournoi}}.\n\n```partage\nforme: bande {{b}}\ngris: {{a}}\n```\n\n{{if:s==1|Combien d'euros représente la partie grise ?|Combien d'élèves représente la partie grise ?}}\n\n$?~{{if:s==1|\\unit{€}|\\text{ élèves}}}$",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "1|2"
+				},
+				{
+					"name": "b",
+					"expression": "2..5"
+				},
+				{
+					"name": "a",
+					"expression": "1..{{eval:b-1}}"
+				},
+				{
+					"name": "m",
+					"expression": "4..40"
+				},
+				{
+					"name": "Q",
+					"expression": "eval:b*m"
+				}
+			],
+			"conditions": ["b*m <= 200"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*m}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La bande a ${{b}}$ parts égales : une part vaut ${{Q}} \\div {{b}} = {{m}}$.",
+					"La partie grise est faite de ${{a}}$ parts : ${{a}} \\times {{m}} = \\textcolor{{{color:primary.0}}}{{{eval:a*m}}}${{if:s==1|~\\unit{€}|}}."
+				]
+			}
+		},
+		{
+			"statement": "Il reste {{if:c==1 && d==2|la moitié|les $\\frac{ {{c}} }{ {{d}} }$}} d'un gâteau. Léa mange $\\frac{ {{a}} }{ {{b}} }$ de ce reste. La bande représente le gâteau entier.\n\n```partage\nforme: bande {{eval:b*d}}\ncolorier: {{eval:a*c}}/{{eval:b*d}}\n```\n\nColorie ce que mange Léa, puis écris la fraction du gâteau qu'elle a mangée.\n\n$?$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "2..5"
+				},
+				{
+					"name": "d",
+					"expression": "2..5"
+				},
+				{
+					"name": "a",
+					"expression": "1..{{eval:b-1}}"
+				},
+				{
+					"name": "c",
+					"expression": "1..{{eval:d-1}}"
+				}
+			],
+			"conditions": ["b*d <= 12"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{ {{eval:a*c}} }{ {{eval:b*d}} }"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La bande a ${{b}} \\times {{d}} = {{eval:b*d}}$ parts. Le reste, $\\frac{ {{c}} }{ {{d}} }$ du gâteau, fait ${{c}} \\times {{b}} = {{eval:b*c}}$ parts.",
+					"Léa en mange $\\frac{ {{a}} }{ {{b}} }$ : ${{a}}$ paquets de ${{c}}$ parts, soit ${{a}} \\times {{c}} = \\textcolor{{{color:primary.0}}}{{{eval:a*c}}}$ parts.\n\n```partage\nforme: bande {{eval:b*d}}\ngris: {{eval:a*c}}{{if:a*c==1|,|}}\n```\n\n",
+					"$$\\frac{ {{a}} }{ {{b}} } \\times \\frac{ {{c}} }{ {{d}} } = \\textcolor{{{color:primary.0}}}{\\frac{ {{eval:a*c}} }{ {{eval:b*d}} }}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2/3 des 3/4 : 6 cases",
+			"variationIndex": 0,
+			"variables": {
+				"b": "3",
+				"d": "4",
+				"a": "2",
+				"c": "3"
+			},
+			"answers": ["1, 2, 3, 5, 6, 7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "6 cases ailleurs",
+			"variationIndex": 0,
+			"variables": {
+				"b": "3",
+				"d": "4",
+				"a": "2",
+				"c": "3"
+			},
+			"answers": ["4, 8, 9, 10, 11, 12"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : les 2/3 de la figure entière (8 cases)",
+			"variationIndex": 0,
+			"variables": {
+				"b": "3",
+				"d": "4",
+				"a": "2",
+				"c": "3"
+			},
+			"answers": ["1, 2, 3, 4, 5, 6, 7, 8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : les 3/4 seulement (9 cases)",
+			"variationIndex": 0,
+			"variables": {
+				"b": "3",
+				"d": "4",
+				"a": "2",
+				"c": "3"
+			},
+			"answers": ["1, 2, 3, 5, 6, 7, 9, 10, 11"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Lire 2/3 des 3/4 : 6/12",
+			"variationIndex": 1,
+			"variables": {
+				"b": "3",
+				"d": "4",
+				"a": "2",
+				"c": "3"
+			},
+			"answers": ["\\frac{6}{12}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Lire réduit : 1/2",
+			"variationIndex": 1,
+			"variables": {
+				"b": "3",
+				"d": "4",
+				"a": "2",
+				"c": "3"
+			},
+			"answers": ["\\frac{1}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : somme 1/2 + 1/3 = 5/6",
+			"variationIndex": 1,
+			"variables": {
+				"b": "2",
+				"d": "3",
+				"a": "1",
+				"c": "1"
+			},
+			"answers": ["\\frac{5}{6}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : les a/b de la figure entière",
+			"variationIndex": 1,
+			"variables": {
+				"b": "3",
+				"d": "4",
+				"a": "2",
+				"c": "3"
+			},
+			"answers": ["\\frac{8}{12}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3/5 de 200 € : 120",
+			"variationIndex": 2,
+			"variables": {
+				"s": "1",
+				"b": "5",
+				"a": "3",
+				"m": "40",
+				"Q": "200"
+			},
+			"answers": ["120"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : Q ÷ b sans × a",
+			"variationIndex": 2,
+			"variables": {
+				"s": "1",
+				"b": "5",
+				"a": "3",
+				"m": "40",
+				"Q": "200"
+			},
+			"answers": ["40"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2/3 de 60 élèves : 40",
+			"variationIndex": 2,
+			"variables": {
+				"s": "2",
+				"b": "3",
+				"a": "2",
+				"m": "20",
+				"Q": "60"
+			},
+			"answers": ["40"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Léa : 1/3 des 3/4, 3 parts et 3/12",
+			"variationIndex": 3,
+			"variables": {
+				"b": "3",
+				"d": "4",
+				"a": "1",
+				"c": "3"
+			},
+			"answers": ["1, 2, 3", "\\frac{3}{12}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Léa : fraction réduite 1/4",
+			"variationIndex": 3,
+			"variables": {
+				"b": "3",
+				"d": "4",
+				"a": "1",
+				"c": "3"
+			},
+			"answers": ["4, 6, 8", "\\frac{1}{4}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1/3 + 3/4",
+			"variationIndex": 3,
+			"variables": {
+				"b": "3",
+				"d": "4",
+				"a": "1",
+				"c": "3"
+			},
+			"answers": ["1, 2, 3", "\\frac{13}{12}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1/3 du gâteau entier (4 parts)",
+			"variationIndex": 3,
+			"variables": {
+				"b": "3",
+				"d": "4",
+				"a": "1",
+				"c": "3"
+			},
+			"answers": ["1, 2, 3, 4", "\\frac{4}{12}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

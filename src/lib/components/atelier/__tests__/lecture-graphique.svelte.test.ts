@@ -8,8 +8,8 @@ import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import AtelierContainer from '../AtelierContainer.svelte';
-import { Atelier } from '$lib/atelier/atelier.svelte';
-import { isFunction } from '$lib/atelier/types';
+import { Atelier } from '#lib/atelier/atelier.svelte.ts';
+import { isFunction } from '#lib/atelier/types.ts';
 import { onDesktopScreen } from './harness/desktop-screen';
 
 // À 414 px (la page des tests), « Mes objets » est replié : on teste les cartes sur bureau

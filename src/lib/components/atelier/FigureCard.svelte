@@ -1,5 +1,5 @@
 <script lang="ts">
-	import '$lib/utils/mathlive-styles';
+	import '#lib/utils/mathlive-styles.ts';
 	/**
 	 * La carte d'un point ou d'une courbe de la figure : une seule ligne,
 	 * `● A = [(1 ; 2)]`, `● d : [y = 3x − 2]`, `● d = [(AB)]`.
@@ -14,19 +14,19 @@
 	 * Une seule carte pour les deux : ils ne diffèrent que par la fenêtre du
 	 * point de couleur (taille ou trait) et l'étiquette d'un point.
 	 */
-	import type { CurveObject, PointObject } from '$lib/atelier/types';
-	import { isPoint } from '$lib/atelier/types';
-	import { actionsFor, actionMovesFocus, type ObjectAction } from '$lib/atelier/actions';
-	import { useAtelier } from '$lib/atelier/context';
-	import { displayName } from '$lib/atelier/names';
+	import type { CurveObject, PointObject } from '#lib/atelier/types.ts';
+	import { isPoint } from '#lib/atelier/types.ts';
+	import { actionsFor, actionMovesFocus, type ObjectAction } from '#lib/atelier/actions.ts';
+	import { useAtelier } from '#lib/atelier/context.ts';
+	import { displayName } from '#lib/atelier/names.ts';
 	import {
 		figureNatureOf,
 		figureSeparatorOf,
 		followsOf,
 		stateLabelOf
-	} from '$lib/atelier/card-state';
+	} from '#lib/atelier/card-state.ts';
 	import { EllipsisVertical, Link2 } from '@lucide/svelte';
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
+	import * as DropdownMenu from '#lib/components/ui/dropdown-menu/index.ts';
 	import DefinitionField from './DefinitionField.svelte';
 	import FigureStylePopover from './FigureStylePopover.svelte';
 	import CardActionItems from './CardActionItems.svelte';

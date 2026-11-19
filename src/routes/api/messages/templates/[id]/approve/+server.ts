@@ -7,11 +7,11 @@
  * Body: { action: 'approve' | 'reject', notes?: string }
  */
 
-import { json, error } from '@sveltejs/kit';
-import { requireAdmin } from '$lib/server/middleware/auth';
+import { error } from '@sveltejs/kit';
+import { requireAdmin } from '#lib/server/middleware/auth.ts';
 import type { RequestHandler } from './$types';
-import { approveTemplateSchema } from '$lib/server/validation/message-templates';
-import { createServerLogger } from '$lib/utils/logger';
+import { approveTemplateSchema } from '#lib/server/validation/message-templates.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/messages/templates/[id]/approve/+server');
 
@@ -67,7 +67,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		p_metadata: notes ? { notes: notes } : null
 	});
 
-	return json({
+	return Response.json({
 		template: updated,
 		message: `Template ${action === 'approve' ? 'approuvé' : 'rejeté'} avec succès`
 	});

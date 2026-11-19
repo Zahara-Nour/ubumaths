@@ -16,20 +16,24 @@
  * - BREVO_API_KEY: API key from Brevo dashboard
  * - BREVO_SENDER_EMAIL: Verified sender email (e.g., noreply@ubumaths.fr)
  * - BREVO_SENDER_NAME: Sender display name (e.g., Chiphre)
+ *
+ * Sur la base locale, rien ne part : les courriels sont capturés dans un
+ * dossier (voir `capture.ts`, `EMAIL_ENVOI_REEL=1` pour envoyer quand même).
  */
 
 import * as Brevo from '@getbrevo/brevo';
-import { env } from '$env/dynamic/private';
-import { createServerLogger } from '$lib/utils/logger';
-import { isChildAccountEmail } from '$lib/utils/child-account';
-import type { ChildRegistrationEmailData } from '$lib/email-templates/child-registration';
-import type { ChildPasswordResetEmailData } from '$lib/email-templates/child-password-reset';
+import * as env from '$app/env/private';
+import { createServerLogger } from '#lib/utils/logger.ts';
+import { isChildAccountEmail } from '#lib/utils/child-account.ts';
+import { captureEmail, isEmailCaptureActive } from './capture';
+import type { ChildRegistrationEmailData } from '#lib/email-templates/child-registration.ts';
+import type { ChildPasswordResetEmailData } from '#lib/email-templates/child-password-reset.ts';
 import type {
 	CarnetConfirmationEmailData,
 	CarnetExceptionEmailData,
 	CarnetLinkEmailData,
 	CarnetQuarterlyEmailData
-} from '$lib/email-templates/carnet';
+} from '#lib/email-templates/carnet.ts';
 
 const logger = createServerLogger('server/email/brevo');
 
@@ -94,6 +98,27 @@ export async function sendEmail(
 	if (isChildAccountEmail(to)) {
 		logger.warn('[Brevo] Envoi refusé : adresse du domaine fictif');
 		return { success: false, error: 'Adresse fictive : aucun courriel envoyé' };
+	}
+
+	// Base locale : le courriel est écrit dans un dossier, rien ne part (capture.ts).
+	if (isEmailCaptureActive()) {
+		try {
+			const captured = await captureEmail({
+				to,
+				subject,
+				html: htmlContent,
+				text: textContent,
+				headers
+			});
+			logger.info(`[Courriel capturé] ${captured.file}`);
+			return { success: true, messageId: `capture:${captured.file}` };
+		} catch (error) {
+			logger.error(
+				'[Courriel] Capture impossible :',
+				error instanceof Error ? error.message : 'erreur inconnue'
+			);
+			return { success: false, error: 'Capture du courriel impossible' };
+		}
 	}
 
 	try {
@@ -163,7 +188,7 @@ export async function sendWelcomeEmail(
 	replyToEmail?: string
 ): Promise<EmailSendResult> {
 	const { WELCOME_EMAIL_SUBJECT, getWelcomeEmailHtml, getWelcomeEmailText } =
-		await import('$lib/email-templates/welcome');
+		await import('#lib/email-templates/welcome.ts');
 
 	return sendEmail(
 		toEmail,
@@ -196,7 +221,7 @@ export async function sendConsentEmail(
 	replyToEmail?: string
 ): Promise<EmailSendResult> {
 	const { CONSENT_EMAIL_SUBJECT, getConsentEmailHtml, getConsentEmailText } =
-		await import('$lib/email-templates/parental-consent');
+		await import('#lib/email-templates/parental-consent.ts');
 
 	return sendEmail(
 		toEmail,
@@ -219,7 +244,7 @@ export async function sendChildRegistrationEmail(
 		getChildRegistrationSubject,
 		getChildRegistrationEmailHtml,
 		getChildRegistrationEmailText
-	} = await import('$lib/email-templates/child-registration');
+	} = await import('#lib/email-templates/child-registration.ts');
 
 	return sendEmail(
 		toEmail,
@@ -241,7 +266,7 @@ export async function sendChildPasswordResetEmail(
 		getChildPasswordResetSubject,
 		getChildPasswordResetEmailHtml,
 		getChildPasswordResetEmailText
-	} = await import('$lib/email-templates/child-password-reset');
+	} = await import('#lib/email-templates/child-password-reset.ts');
 
 	return sendEmail(
 		toEmail,
@@ -260,7 +285,7 @@ export async function sendCarnetConfirmationEmail(
 		getCarnetConfirmationSubject,
 		getCarnetConfirmationEmailHtml,
 		getCarnetConfirmationEmailText
-	} = await import('$lib/email-templates/carnet');
+	} = await import('#lib/email-templates/carnet.ts');
 
 	return sendEmail(
 		toEmail,
@@ -276,7 +301,7 @@ export async function sendCarnetLinkEmail(
 	data: CarnetLinkEmailData
 ): Promise<EmailSendResult> {
 	const { getCarnetLinkSubject, getCarnetLinkEmailHtml, getCarnetLinkEmailText } =
-		await import('$lib/email-templates/carnet');
+		await import('#lib/email-templates/carnet.ts');
 
 	return sendEmail(
 		toEmail,
@@ -307,7 +332,7 @@ export async function sendCarnetExceptionEmail(
 		getCarnetExceptionEmailHtml,
 		getCarnetExceptionEmailText,
 		getCarnetStopLink
-	} = await import('$lib/email-templates/carnet');
+	} = await import('#lib/email-templates/carnet.ts');
 
 	return sendEmail(
 		toEmail,
@@ -329,7 +354,7 @@ export async function sendCarnetQuarterlyEmail(
 		getCarnetQuarterlyEmailHtml,
 		getCarnetQuarterlyEmailText,
 		getCarnetStopLink
-	} = await import('$lib/email-templates/carnet');
+	} = await import('#lib/email-templates/carnet.ts');
 
 	return sendEmail(
 		toEmail,
@@ -346,5 +371,6 @@ export async function sendCarnetQuarterlyEmail(
  * Useful for graceful degradation or admin checks
  */
 export function isBrevoConfigured(): boolean {
-	return !!env.BREVO_API_KEY;
+	// En local, la capture tient lieu de service : les pages d'envoi restent utilisables.
+	return !!env.BREVO_API_KEY || isEmailCaptureActive();
 }

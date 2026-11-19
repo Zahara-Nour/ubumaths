@@ -35,20 +35,11 @@
  * Spec : docs/archive/wip/srs-fsrs-spec-tdd.md §1
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { skillAttemptInputSchema } from '$lib/server/validation/skill-attempts';
-import { FSRS } from '$lib/srs/fsrs';
-import { Grade } from '$lib/srs/types';
-import { ensureProgrammeDeckCard } from '$lib/server/srs/programme-deck';
-import { entersProgrammeDeck } from '$lib/server/srs/programme-deck-rule';
-import { applyFsrsReview } from '$lib/server/srs/fsrs-actions';
-import { attemptSourceForTemplate } from '$lib/server/course-card-attempts';
-import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
-import { createServerLogger } from '$lib/utils/logger';
-
-const logger = createServerLogger('api/skill-attempts/+server');
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { skillAttemptInputSchema } from '#lib/server/validation/skill-attempts.ts';
+import { recordStudentAttempt } from '#lib/server/skill-attempts/record-attempt.ts';
 
 // ============================================================================
 // POST /api/skill-attempts
@@ -88,134 +79,30 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	// démo passent par la même `FlashCard` : un admin ou un professeur y répond
 	// sans polluer les statistiques (ni tentative, ni fiche FSRS, ni deck).
 	if (profile.role !== 'student') {
-		return json({ success: true, recorded: false });
+		return Response.json({ success: true, recorded: false });
 	}
 
-	// Vérification existence du template + récupération des points de programme tagués
-	// en 1 seul round-trip (perf P0#2 — économise 1 SELECT vs 2 séparés).
-	// Lu avec les droits du SERVEUR : la RLS cache à l'élève un modèle repassé en
-	// brouillon pendant sa série (0 ligne, sans erreur) ; sa trace doit être gardée
-	// (décision de David, 2026-09-28). Seuls id, options, statut et points sont lus.
-	const { data: templateRow, error: templateError } = await createServiceRoleClient()
-		.from('question_templates')
-		.select('id, options, status, question_template_points(point_id)')
-		.eq('id', template_id)
-		.maybeSingle();
+	// Modèle, FSRS, trace et deck Programme : cœur commun avec la Descente
+	const result = await recordStudentAttempt(locals.supabase, {
+		studentId: user.id,
+		templateId: template_id,
+		success,
+		withHelp: with_help,
+		phaseBlocage: phase_blocage,
+		place,
+		seed,
+		responseMs: response_ms,
+		allottedMs: allotted_ms,
+		endReason: end_reason,
+		answerParts: answer_parts,
+		partVerdicts: part_verdicts
+	});
 
-	if (templateError) {
-		logger.error('[skill-attempts] Failed to verify template:', templateError);
-		throw error(500, 'Failed to verify template');
+	if (!result.ok) {
+		if (result.reason === 'template_check_failed') throw error(500, 'Failed to verify template');
+		if (result.reason === 'template_not_found') throw error(404, 'template_not_found');
+		return Response.json({ error: result.reason }, { status: 500 });
 	}
 
-	if (!templateRow) {
-		throw error(404, 'template_not_found');
-	}
-
-	// Points de programme tagués sur ce template (Programme deck + réponse API).
-	type LinkRow = { point_id: string };
-	const links = (templateRow.question_template_points ?? []) as unknown as LinkRow[];
-	const pointIds = links.map((l) => l.point_id);
-
-	// Mapping success → grade (cf. spec §1.1)
-	const grade: Grade = success ? Grade.GOOD : Grade.AGAIN;
-
-	// ----- FSRS update synchrone côté TS (AVANT l'INSERT skill_attempts) -----
-	// Fail-loud : si FSRS UPSERT échoue, on n'insère PAS skill_attempts pour
-	// éviter une désynchro durable srs_card_stats ↔ student_point_state.
-	// Le client peut retenter ; un échec persistant signale un vrai bug à fixer.
-	// Auto-évaluation (« déclaré ») : carte de cours (#617), lue en base, ou forme
-	// Flash-cards (l'élève retourne la carte et dit s'il a réussi, ADR 0038).
-	// Fiche : meilleur résultat du jour (ADR 0016), écriture vérifiée ; la trace
-	// ci-dessous est TOUJOURS insérée.
-	const selfAssessed =
-		place === 'flash_cards' || attemptSourceForTemplate(templateRow) === 'student_self';
-	try {
-		if (selfAssessed) {
-			const now = new Date();
-			await applyFsrsReview(
-				locals.supabase,
-				new FSRS(),
-				user.id,
-				'template',
-				template_id,
-				grade,
-				undefined,
-				{
-					// Auto-évaluation : le MEILLEUR résultat du jour (décision de David, 2026-09-30)
-					bestOfDay: { now },
-					verifyWrite: true
-				}
-			);
-		} else {
-			await applyFsrsReview(locals.supabase, new FSRS(), user.id, 'template', template_id, grade);
-		}
-	} catch (fsrsErr) {
-		logger.error('[skill-attempts] FSRS update failed (fail-loud):', {
-			userId: user.id,
-			templateId: template_id,
-			grade,
-			err: fsrsErr
-		});
-		return json({ error: 'fsrs_update_failed' }, { status: 500 });
-	}
-
-	// ----- INSERT skill_attempts (per-template) -----
-	// 1 row par attempt. Le trigger boucle ensuite sur question_template_points
-	// pour recalculer chaque student_point_state impactée.
-	// `.select()` : garde de principe — un INSERT refusé par la RLS lève une
-	// erreur (42501), mais on vérifie quand même qu'une ligne a été écrite.
-	const { data: insertedRows, error: insertError } = await locals.supabase
-		.from('skill_attempts')
-		.insert({
-			student_id: user.id,
-			template_id,
-			success,
-			grade,
-			with_help,
-			// Auto-évaluation (carte de cours, Flash-cards) → `student_self`
-			source: selfAssessed ? 'student_self' : 'auto',
-			...(phase_blocage !== undefined ? { phase_blocage } : {}),
-			// Contenu d'une trace (ADR 0038) : absent → NULL ; aucune case → NULL
-			place,
-			seed: seed ?? null,
-			response_ms: response_ms ?? null,
-			allotted_ms: allotted_ms ?? null,
-			end_reason: end_reason ?? null,
-			answer_parts,
-			part_verdicts
-		})
-		.select('id');
-
-	if (insertError) {
-		// Code et message seulement : `details` d'une violation de CHECK contient la
-		// ligne entière, réponse tapée par l'élève comprise (texte libre de mineur)
-		logger.error('[skill-attempts] INSERT failed:', {
-			code: insertError.code,
-			message: insertError.message
-		});
-		return json({ error: 'insert_failed' }, { status: 500 });
-	}
-
-	if (!insertedRows || insertedRows.length !== 1) {
-		logger.error('[skill-attempts] INSERT sans ligne écrite', {
-			userId: user.id,
-			templateId: template_id,
-			written: insertedRows?.length ?? 0
-		});
-		return json({ error: 'insert_failed' }, { status: 500 });
-	}
-
-	// ----- Auto-ajout au deck Programme si template tagué -----
-	// Règle partagée (Q113) : jamais une question de cours (carte comprise), ni un
-	// brouillon — la révision relit la carte avec les droits de l'élève.
-	if (pointIds.length > 0 && entersProgrammeDeck(templateRow)) {
-		try {
-			await ensureProgrammeDeckCard(locals.supabase, user.id, template_id);
-		} catch (progErr) {
-			logger.error('[skill-attempts] Programme deck add failed:', progErr);
-			// Non bloquant : le skill_attempts est déjà enregistré.
-		}
-	}
-
-	return json({ inserted: 1, point_ids: pointIds });
+	return Response.json({ inserted: 1, point_ids: result.pointIds });
 };

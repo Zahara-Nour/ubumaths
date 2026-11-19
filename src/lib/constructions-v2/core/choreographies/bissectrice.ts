@@ -25,9 +25,9 @@ import {
 	type SubStep,
 	type TraceTag
 } from './types';
-import { isAngle, isLine, isRay, isSegment } from '$lib/geometry-core/types/elements';
-import type { Figure } from '$lib/geometry-core/graph/figure';
-import { geoToNumber } from '$lib/geometry-core/compute/to-number';
+import { isAngle, isLine, isRay, isSegment } from '#lib/geometry-core/types/elements.ts';
+import type { Figure } from '#lib/geometry-core/graph/figure.ts';
+import { geoToNumber } from '#lib/geometry-core/compute/to-number.ts';
 import { de, droite, en, labelAux, nom, role } from './names';
 import { PROTRACTOR_RADIUS } from '../../constants';
 

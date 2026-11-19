@@ -1,0 +1,226 @@
+{
+	"id": "9b89e676-8833-4b2e-aa44-ef34c8655785",
+	"title": "Fonction dérivée et nombre dérivé",
+	"description": "f′ associe à x le nombre dérivé f′(x) ; f′(a) se calcule sur f′, pas sur f",
+	"grades": ["1_TECHNO"],
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"courseQuestion": true
+	},
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		},
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Soit $f$ une fonction dérivable sur un intervalle $I$. Sa fonction dérivée $f'$ associe à chaque réel $x$ de $I$…\n\n```choix\n- le nombre dérivé de $f$ en $x$, noté $f'(x)$\n- l'image $f(x)$\n- le taux de variation de $f$ entre $0$ et $x$\n- l'ordonnée à l'origine de la tangente en $x$\n```",
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"variables": [],
+			"correction": {
+				"steps": [
+					"La fonction dérivée $f'$ est la fonction $x\\mapsto f'(x)$ : en chaque $x$, elle donne le **nombre dérivé** de $f$ en $x$, coefficient directeur de la tangente."
+				]
+			}
+		},
+		{
+			"statement": "La dérivée d'une fonction $f$ est $f'(x)={{eval:m*x+p}}$.\n\n$f'({{a}})=?$",
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:m*a+p}}"
+				}
+			],
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "m",
+					"expression": "2..5;±"
+				},
+				{
+					"name": "p",
+					"expression": "1..9;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le nombre dérivé en ${{a}}$ est l'image de ${{a}}$ par la fonction dérivée : $f'({{a}})={{m}}\\times{{a;()}}{{p;+}}=\\textcolor{{{color:primary.0}}}{ {{eval:m*a+p}} }$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=x^2$, de dérivée $f'(x)=2x$.\n\n$f'({{a}})=?$",
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2*a}}"
+				}
+			],
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On calcule avec la **dérivée** : $f'({{a}})=2\\times{{a;()}}=\\textcolor{{{color:primary.0}}}{ {{eval:2*a}} }$.",
+					"${{eval:a^2}}$ serait $f({{a}})$, l'image, pas le nombre dérivé."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{k}}$. Sa dérivée est…\n\n```choix\nmelanger: non\n- $f'(x)=0$\n- $f'(x)={{k}}$\n- $f'(x)=1$\n- $f'(x)={{k}}x$\n```",
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..9;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une fonction constante a une courbe horizontale : ses tangentes ont toutes un coefficient directeur nul, donc $f'(x)=0$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=x$. Sa dérivée est…\n\n```choix\nmelanger: non\n- $f'(x)=1$\n- $f'(x)=0$\n- $f'(x)=x$\n- $f'(x)=2x$\n```",
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"variables": [],
+			"correction": {
+				"steps": [
+					"La courbe de $x\\mapsto x$ est la droite $y=x$, de coefficient directeur $1$ : en tout point, sa tangente est elle-même, donc $f'(x)=1$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Nombre dérivé en x",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : l'image",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "f′(x) = 2x + 1, f′(3) = 7",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"m": "2",
+				"p": "1"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : coefficient seul",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"m": "2",
+				"p": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x², f′(3) = 6",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : f(3) = 9",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Constante : 0",
+			"variationIndex": 3,
+			"variables": {
+				"k": "5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la constante",
+			"variationIndex": 3,
+			"variables": {
+				"k": "5"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x : 1",
+			"variationIndex": 4,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 0",
+			"variationIndex": 4,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

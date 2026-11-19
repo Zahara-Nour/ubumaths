@@ -12,10 +12,10 @@ import { describe, it, expect, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { loadFonts } from '@myriaddreamin/typst.ts/options.init';
-import { parseMarkdown } from '$lib/ubumark';
-import { generateTypst } from '$lib/ubumark/generators/typst-generator';
-import { ROBOT_ECRIS_LE_CODE } from '$lib/ubumark/generators/robot-typst';
-import { ROBOT_UNAVAILABLE } from '$lib/ubumark/types/robot';
+import { parseMarkdown } from '#lib/ubumark/index.ts';
+import { generateTypst } from '#lib/ubumark/generators/typst-generator.ts';
+import { ROBOT_ECRIS_LE_CODE } from '#lib/ubumark/generators/robot-typst.ts';
+import { ROBOT_UNAVAILABLE } from '#lib/ubumark/types/robot.ts';
 
 const bloc = (...lines: string[]) => ['```robot', ...lines, '```'].join('\n');
 

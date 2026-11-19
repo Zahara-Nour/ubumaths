@@ -1,13 +1,13 @@
 <script lang="ts">
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import { lore } from '$lib/config/lore';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import { lore } from '#lib/config/lore.ts';
 	import { onMount } from 'svelte';
-	import ConsentButton from '$lib/components/ConsentButton.svelte';
-	import * as Card from '$lib/components/ui/card';
-	import ExerciseDisplay from '$lib/components/exercises/ExerciseDisplay.svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import { formatUserError, logNonCriticalError } from '$lib/utils/errors';
-	import { formatDeadlineFull, getDeadlineStatus } from '$lib/utils/dates';
+	import ConsentButton from '#lib/components/ConsentButton.svelte';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import ExerciseDisplay from '#lib/components/exercises/ExerciseDisplay.svelte';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import { formatUserError, logNonCriticalError } from '#lib/utils/errors.ts';
+	import { formatDeadlineFull, getDeadlineStatus } from '#lib/utils/dates.ts';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();

@@ -3,8 +3,8 @@
  * Adapts Père Ubu's responses based on student grade level (CP to Terminale)
  */
 
-import type { GradeCode } from '$lib/types/grades';
-import { GRADES } from '$lib/types/grades';
+import type { GradeCode } from '#lib/types/grades.ts';
+import { GRADES } from '#lib/types/grades.ts';
 
 /**
  * Niveaux de langue utilisés par le tuteur

@@ -9,15 +9,15 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { parseOperationContent } from '$lib/ubumark/parser/operation-parser';
+import { parseOperationContent } from '#lib/ubumark/parser/operation-parser.ts';
 import {
 	buildDivisionScene,
 	divisionResult,
 	type DivisionCell,
 	type DivisionScene
-} from '$lib/ubumark/utils/operation-division-scene';
-import { generateOperationTypst } from '$lib/ubumark/generators/operation-typst';
-import { OPERATION_UNAVAILABLE } from '$lib/ubumark/types/operation';
+} from '#lib/ubumark/utils/operation-division-scene.ts';
+import { generateOperationTypst } from '#lib/ubumark/generators/operation-typst.ts';
+import { OPERATION_UNAVAILABLE } from '#lib/ubumark/types/operation.ts';
 
 function parse(...lines: string[]) {
 	return parseOperationContent(lines.join('\n'));

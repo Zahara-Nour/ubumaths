@@ -10,10 +10,10 @@ import { isHttpError } from '@sveltejs/kit';
 
 const assignToSection = vi.fn();
 
-vi.mock('$lib/server/middleware/auth', () => ({
+vi.mock('#lib/server/middleware/auth.ts', () => ({
 	requireRole: vi.fn(async () => ({ user: { id: 'prof' } }))
 }));
-vi.mock('$lib/server/chapter-sections', () => ({
+vi.mock('#lib/server/chapter-sections.ts', () => ({
 	assignToSection: (...args: unknown[]) => assignToSection(...args)
 }));
 

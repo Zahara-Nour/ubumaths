@@ -32,11 +32,11 @@
  */
 
 import type { LayoutServerLoad } from './$types';
-import type { StudentProfile, ClassMembership, StudentRewards } from '$lib/types/student-cache';
-import { asStudentVipCards } from '$lib/types/vip-card';
+import type { StudentProfile, ClassMembership, StudentRewards } from '#lib/types/student-cache.ts';
+import { asStudentVipCards } from '#lib/types/vip-card.ts';
 import { error } from '@sveltejs/kit';
-import { toBuddyState } from '$lib/types/buddy';
-import { createServerLogger } from '$lib/utils/logger';
+import { toBuddyState } from '#lib/types/buddy.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('(protected)/dashboard/student/+layout.server');
 

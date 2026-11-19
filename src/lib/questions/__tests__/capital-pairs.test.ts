@@ -27,10 +27,10 @@ import {
 import { figureNameWarnings } from '../figure-name-check';
 import { requiredFormVerdict } from '../required-form-validator';
 import { evaluateRule } from '../validation-rule-evaluator';
-import { validateAnswer } from '$lib/utils/answer-validator';
-import { createQuestionTemplateSchema } from '$lib/server/validation/questions';
+import { validateAnswer } from '#lib/utils/answer-validator.ts';
+import { createQuestionTemplateSchema } from '#lib/server/validation/questions.ts';
 import type { QuestionInstance, QuestionTemplate } from '../types';
-import { templateMarkdown } from '$lib/ubumark';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 
 // ============================================================================
 // HELPERS

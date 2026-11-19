@@ -7,12 +7,12 @@
 	 */
 
 	import { Dialog } from 'bits-ui';
-	import { Button } from '$lib/components/ui/button';
-	import DialogContent from '$lib/components/ui/dialog/dialog-content.svelte';
-	import DialogHeader from '$lib/components/ui/dialog/dialog-header.svelte';
-	import DialogFooter from '$lib/components/ui/dialog/dialog-footer.svelte';
-	import DialogTitle from '$lib/components/ui/dialog/dialog-title.svelte';
-	import DialogDescription from '$lib/components/ui/dialog/dialog-description.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import DialogContent from '#lib/components/ui/dialog/dialog-content.svelte';
+	import DialogHeader from '#lib/components/ui/dialog/dialog-header.svelte';
+	import DialogFooter from '#lib/components/ui/dialog/dialog-footer.svelte';
+	import DialogTitle from '#lib/components/ui/dialog/dialog-title.svelte';
+	import DialogDescription from '#lib/components/ui/dialog/dialog-description.svelte';
 	import { History, FileText, Loader2 } from '@lucide/svelte';
 
 	// ==========================================================================

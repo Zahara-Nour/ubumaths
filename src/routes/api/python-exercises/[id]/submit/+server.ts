@@ -3,19 +3,19 @@
  * POST - Submit solution to exercise
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
+import { requireRole } from '#lib/server/middleware/auth.ts';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import {
 	submitExerciseSchema,
 	validationResultSchema,
 	type SubmitExerciseInput
-} from '$lib/server/validation/python-exercises';
-import type { Database } from '$lib/types/database';
-import { requireConsent } from '$lib/server/middleware/consent';
-import { validateUuidParam } from '$lib/server/validation/params';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/validation/python-exercises.ts';
+import type { Database } from '#lib/types/database.ts';
+import { requireConsent } from '#lib/server/middleware/consent.ts';
+import { validateUuidParam } from '#lib/server/validation/params.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/python-exercises/[id]/submit/+server');
 
@@ -181,7 +181,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		throw error(500, 'Impossible d’enregistrer la solution');
 	}
 
-	return json(
+	return Response.json(
 		{
 			submission,
 			message: validationResult.valid

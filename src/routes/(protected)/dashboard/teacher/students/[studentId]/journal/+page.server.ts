@@ -16,9 +16,9 @@
 import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
 import { z } from 'zod';
-import { requireRoles } from '$lib/server/middleware/auth';
-import { verifyTeacherStudentWithRole } from '$lib/server/middleware/student-access';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import { verifyTeacherStudentWithRole } from '#lib/server/middleware/student-access.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger(
 	'(protected)/dashboard/teacher/students/[studentId]/journal/+page.server'

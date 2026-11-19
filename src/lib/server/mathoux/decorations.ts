@@ -26,7 +26,7 @@
 
 import { z } from 'zod';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 import {
 	isMathouCatalogId,
 	type MathouCatalogId,
@@ -34,7 +34,7 @@ import {
 	type MathouDecorationId,
 	type MathouGlassesId,
 	type MathouHatId
-} from '$lib/mathoux/decorations';
+} from '#lib/mathoux/decorations.ts';
 
 // Types
 type SB = SupabaseClient<Database>;

@@ -13,7 +13,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
+import { WebReplEngine } from '#lib/mathAST/cli/web/web-repl-engine.ts';
 import { renderResult } from '../render';
 
 const run = (input: string) =>

@@ -22,12 +22,12 @@
 import { createHash } from 'node:crypto';
 import { z } from 'zod';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
-import { endOfSchoolYear } from '$lib/server/journal-share-tokens';
-import { sendCarnetConfirmationEmail, sendCarnetLinkEmail } from '$lib/server/email/brevo';
-import { CARNET_CONFIRM_DAYS } from '$lib/email-templates/carnet';
-import { createServerLogger } from '$lib/utils/logger';
+import type { Database } from '#lib/types/database.ts';
+import { createServiceRoleClient } from '#lib/server/serviceRoleClient.ts';
+import { endOfSchoolYear } from '#lib/server/journal-share-tokens.ts';
+import { sendCarnetConfirmationEmail, sendCarnetLinkEmail } from '#lib/server/email/brevo.ts';
+import { CARNET_CONFIRM_DAYS } from '#lib/email-templates/carnet.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 import { carnetTokenSchema, generateCarnetToken, hashCarnetToken } from './carnet';
 
 // Types

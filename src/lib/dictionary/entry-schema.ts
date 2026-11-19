@@ -11,8 +11,8 @@
  */
 
 import { z } from 'zod';
-import { GRADE_CODES } from '$lib/types/grades';
-import type { Tables } from '$lib/types/database';
+import { GRADE_CODES } from '#lib/types/grades.ts';
+import type { Tables } from '#lib/types/database.ts';
 import { SEE_ALSO_PATHS, type GradedField, type MathTerm } from './model';
 
 // ---------------------------------------------------------------------------

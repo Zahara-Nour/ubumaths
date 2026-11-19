@@ -1,0 +1,250 @@
+{
+	"id": "6336ae4d-33ed-4a23-9517-9f27b0492de5",
+	"title": "Trois nombres consécutifs d'une suite arithmétique ?",
+	"description": "Prouver que trois nombres sont, ou ne sont pas, des termes consécutifs d'une suite arithmétique, en comparant les écarts",
+	"grades": ["T_TECHNO"],
+	"level": 2,
+	"delay": 45,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "On considère les nombres $a={{x}}$, $b={{eval:x+r}}$ et $c={{eval:x+2*r+s*d}}$.\n\nSont-ils, dans cet ordre, trois termes consécutifs d'une suite arithmétique ?\n\n```choix\nmelanger: non\n- oui, car $b-a=c-b$\n- non, car $b-a\\neq c-b$\n- oui, car $a$, $b$ et $c$ sont rangés dans l'ordre croissant\n```",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "-10..30"
+				},
+				{
+					"name": "r",
+					"expression": "2..12"
+				},
+				{
+					"name": "s",
+					"expression": "0|1"
+				},
+				{
+					"name": "d",
+					"expression": "1..4"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{s}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Trois nombres $a$, $b$, $c$ sont, dans cet ordre, des termes consécutifs d'une suite arithmétique si et seulement si $b-a=c-b$ (on ajoute toujours le même nombre).",
+					"$b-a={{r}}$ et $c-b={{eval:r+s*d}}$.",
+					"{{if:s==0|Les deux écarts sont égaux : **oui**, ce sont trois termes consécutifs d'une suite arithmétique de raison ${{r}}$.|Les deux écarts sont différents : **non**. (Être rangés dans l'ordre croissant ne suffit pas.)}}"
+				]
+			}
+		},
+		{
+			"statement": "Le loyer mensuel d'un local commercial était de ${{x}}~\\unit{€}$ en 2023, de ${{eval:x+r}}~\\unit{€}$ en 2024 et de ${{eval:x+2*r+s*d}}~\\unit{€}$ en 2025.\n\nCes trois loyers sont-ils trois termes consécutifs d'une suite arithmétique ?\n\n```choix\nmelanger: non\n- oui, car la hausse est la même chaque année\n- non, car la hausse n'est pas la même chaque année\n- oui, car le loyer augmente chaque année\n```",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "600..900"
+				},
+				{
+					"name": "r",
+					"expression": "15..40"
+				},
+				{
+					"name": "s",
+					"expression": "0|1"
+				},
+				{
+					"name": "d",
+					"expression": "2..9"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{s}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Trois nombres $a$, $b$, $c$ sont, dans cet ordre, des termes consécutifs d'une suite arithmétique si et seulement si $b-a=c-b$ (on ajoute toujours le même nombre).",
+					"Hausse de 2023 à 2024 : ${{eval:x+r}}-{{x}}={{r}}$ ; hausse de 2024 à 2025 : ${{eval:x+2*r+s*d}}-{{eval:x+r}}={{eval:r+s*d}}$.",
+					"{{if:s==0|Les deux hausses sont égales : **oui**, la suite des loyers est arithmétique de raison ${{r}}$.|Les deux hausses sont différentes : **non**. (Un loyer qui augmente chaque année ne suffit pas.)}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "choix : bonne réponse 0",
+			"variationIndex": 0,
+			"variables": {
+				"x": "4",
+				"r": "5",
+				"s": "0",
+				"d": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "choix 1 refusé",
+			"variationIndex": 0,
+			"variables": {
+				"x": "4",
+				"r": "5",
+				"s": "0",
+				"d": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "choix 2 refusé",
+			"variationIndex": 0,
+			"variables": {
+				"x": "4",
+				"r": "5",
+				"s": "0",
+				"d": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "choix : bonne réponse 1",
+			"variationIndex": 0,
+			"variables": {
+				"x": "4",
+				"r": "5",
+				"s": "1",
+				"d": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "choix 0 refusé",
+			"variationIndex": 0,
+			"variables": {
+				"x": "4",
+				"r": "5",
+				"s": "1",
+				"d": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "choix 2 refusé",
+			"variationIndex": 0,
+			"variables": {
+				"x": "4",
+				"r": "5",
+				"s": "1",
+				"d": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "choix : bonne réponse 0",
+			"variationIndex": 1,
+			"variables": {
+				"x": "700",
+				"r": "20",
+				"s": "0",
+				"d": "5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "choix 1 refusé",
+			"variationIndex": 1,
+			"variables": {
+				"x": "700",
+				"r": "20",
+				"s": "0",
+				"d": "5"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "choix 2 refusé",
+			"variationIndex": 1,
+			"variables": {
+				"x": "700",
+				"r": "20",
+				"s": "0",
+				"d": "5"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "choix : bonne réponse 1",
+			"variationIndex": 1,
+			"variables": {
+				"x": "700",
+				"r": "20",
+				"s": "1",
+				"d": "5"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "choix 0 refusé",
+			"variationIndex": 1,
+			"variables": {
+				"x": "700",
+				"r": "20",
+				"s": "1",
+				"d": "5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "choix 2 refusé",
+			"variationIndex": 1,
+			"variables": {
+				"x": "700",
+				"r": "20",
+				"s": "1",
+				"d": "5"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

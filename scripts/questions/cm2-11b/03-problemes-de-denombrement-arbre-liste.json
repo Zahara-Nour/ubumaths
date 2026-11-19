@@ -1,0 +1,230 @@
+{
+	"id": "3d2219c0-4428-4ec4-bb2f-a26b0d9ee82f",
+	"title": "Problèmes de dénombrement : arbre, liste",
+	"description": "Compter sans oubli ni répétition : les suites de 3 ou 4 lancers d'une pièce, les nombres de trois chiffres écrits avec trois chiffres donnés (chacun une fois, ou répétés), les matchs d'un tournoi où chaque équipe rencontre chaque autre ; arbre ou liste au corrigé",
+	"grades": ["CM2"],
+	"level": 3,
+	"delay": 150,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Telma lance une pièce de monnaie ${{k}}$ fois de suite et note chaque fois « pile » (P) ou « face » (F). Par exemple, elle peut obtenir {{if:k==3|F, F, P|F, F, P, F}}.\n\nCombien de suites de résultats différentes Telma peut-elle obtenir ?\n\nElle peut en obtenir $?$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "3..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:8+8*(k-3)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On fait un **arbre** : au premier lancer, 2 résultats (P ou F) ; pour chacun, 2 résultats au deuxième lancer, soit $2 \\times 2 = 4$ débuts ; puis encore 2 au troisième lancer.",
+					"{{if:k==3|$2 \\times 2 \\times 2 = \\textcolor{{{color:primary.0}}}{8}$.|$2 \\times 2 \\times 2 \\times 2 = \\textcolor{{{color:primary.0}}}{16}$.}}",
+					"{{if:k==3|La liste, sans oubli ni répétition : PPP, PPF, PFP, PFF, FPP, FPF, FFP, FFF.|Les 8 suites de trois lancers (PPP, PPF, PFP, PFF, FPP, FPF, FFP, FFF), chacune suivie de P ou de F : $8 \\times 2 = 16$.}}",
+					"Telma peut obtenir ${{eval:8+8*(k-3)}}$ suites différentes."
+				]
+			}
+		},
+		{
+			"statement": "On écrit des nombres de trois chiffres avec les chiffres ${{x}}$, ${{y}}$ et ${{z}}$ seulement{{if:r==0|, en utilisant chaque chiffre une fois et une seule (par exemple {{y}}{{x}}{{z}})|. Un chiffre peut être utilisé plusieurs fois (par exemple {{y}}{{y}}{{x}})}}.\n\nCombien de nombres différents peut-on écrire ?\n\nOn peut en écrire $?$.",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "0..1"
+				},
+				{
+					"name": "x",
+					"expression": "1..9"
+				},
+				{
+					"name": "y",
+					"expression": "1..9"
+				},
+				{
+					"name": "z",
+					"expression": "1..9"
+				}
+			],
+			"conditions": ["x != y", "y != z", "x != z"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:6+21*r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On fait un **arbre** chiffre par chiffre : centaines, puis dizaines, puis unités.",
+					"{{if:r==0|Centaines : 3 choix ; dizaines : il reste 2 chiffres ; unités : il en reste 1. $3 \\times 2 \\times 1 = \\textcolor{{{color:primary.0}}}{6}$.|Centaines : 3 choix ; dizaines : encore 3 ; unités : encore 3. $3 \\times 3 \\times 3 = \\textcolor{{{color:primary.0}}}{27}$.}}",
+					"{{if:r==0|La liste : {{x}}{{y}}{{z}}, {{x}}{{z}}{{y}}, {{y}}{{x}}{{z}}, {{y}}{{z}}{{x}}, {{z}}{{x}}{{y}}, {{z}}{{y}}{{x}}.|Par exemple, les 9 nombres qui commencent par {{x}} : {{x}}{{x}}{{x}}, {{x}}{{x}}{{y}}, {{x}}{{x}}{{z}}, {{x}}{{y}}{{x}}, {{x}}{{y}}{{y}}, {{x}}{{y}}{{z}}, {{x}}{{z}}{{x}}, {{x}}{{z}}{{y}}, {{x}}{{z}}{{z}} ; autant pour {{y}} et pour {{z}}.}}",
+					"On peut écrire ${{eval:6+21*r}}$ nombres différents."
+				]
+			}
+		},
+		{
+			"statement": "${{n}}$ équipes participent à un tournoi de handball. Chaque équipe joue une fois, et une seule, contre chacune des autres équipes.\n\nCombien de matchs y a-t-il en tout ?\n\nIl y a $?$ matchs.",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "4..10"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n*(n-1)/2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On fait une **liste organisée** : la première équipe joue contre les ${{eval:n-1}}$ autres ; la deuxième a déjà joué contre la première, il lui reste ${{eval:n-2}}$ matchs ; et ainsi de suite, jusqu'à l'avant-dernière, qui n'a plus qu'un match.",
+					"$${{if:n==4|3 + 2 + 1|{{if:n==5|4 + 3 + 2 + 1|{{if:n==6|5 + 4 + 3 + 2 + 1|{{if:n==7|6 + 5 + 4 + 3 + 2 + 1|{{if:n==8|7 + 6 + 5 + 4 + 3 + 2 + 1|{{if:n==9|8 + 7 + 6 + 5 + 4 + 3 + 2 + 1|9 + 8 + 7 + 6 + 5 + 4 + 3 + 2 + 1}}}}}}}}}}}} = \\textcolor{{{color:primary.0}}}{{{eval:n*(n-1)/2}}}$$",
+					"Il y a ${{eval:n*(n-1)/2}}$ matchs en tout.",
+					"Attention : ${{n}} \\times {{eval:n-1}} = {{eval:n*(n-1)}}$ compterait chaque match deux fois (A contre B, puis B contre A)."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "pièce : 3 lancers → 8",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : pièce, 2 × 3 (6)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "pièce : 4 lancers → 16",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4"
+			},
+			"answers": ["16"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : pièce, 2 × 4 (8)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "chiffres une fois : 6",
+			"variationIndex": 1,
+			"variables": {
+				"r": "0",
+				"x": "2",
+				"y": "5",
+				"z": "7"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : chiffres une fois, 3",
+			"variationIndex": 1,
+			"variables": {
+				"r": "0",
+				"x": "2",
+				"y": "5",
+				"z": "7"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "chiffres répétés : 27",
+			"variationIndex": 1,
+			"variables": {
+				"r": "1",
+				"x": "2",
+				"y": "5",
+				"z": "7"
+			},
+			"answers": ["27"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : chiffres répétés, 3 × 3 (9)",
+			"variationIndex": 1,
+			"variables": {
+				"r": "1",
+				"x": "2",
+				"y": "5",
+				"z": "7"
+			},
+			"answers": ["9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "tournoi : 6 équipes → 15",
+			"variationIndex": 2,
+			"variables": {
+				"n": "6"
+			},
+			"answers": ["15"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : tournoi, chaque match compté deux fois (30)",
+			"variationIndex": 2,
+			"variables": {
+				"n": "6"
+			},
+			"answers": ["30"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : tournoi, 6 × 6 (36)",
+			"variationIndex": 2,
+			"variables": {
+				"n": "6"
+			},
+			"answers": ["36"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

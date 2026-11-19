@@ -16,7 +16,7 @@
  *
  * Usage:
  * ```typescript
- * import { questionTemplatesCache } from '$lib/stores/questionTemplates.svelte';
+ * import { questionTemplatesCache } from '#lib/stores/questionTemplates.svelte.ts';
  *
  * // Lire la liste (une fois par onglet)
  * await questionTemplatesCache.fetchTemplates();
@@ -32,8 +32,9 @@
  * ```
  */
 
-import { mapDbTemplateToForm, type CatalogueTemplate } from '$lib/questions/types';
-import type { CatalogueNode } from '$lib/questions/catalogue';
+import { mapDbTemplateToForm, type CatalogueTemplate } from '#lib/questions/types.ts';
+import type { CatalogueNode } from '#lib/questions/catalogue.ts';
+import type { CatalogueProgrammePoint } from '#lib/questions/catalogue-programme.ts';
 
 /** Liste publique des modèles publiés (gardée 5 min par Vercel) */
 const TEMPLATES_URL = '/api/questions/templates/all';
@@ -45,15 +46,38 @@ interface TemplatesCache {
 	templates: CatalogueTemplate[];
 	/** Arbre des notions (nœuds non archivés), qui range le catalogue */
 	nodes: CatalogueNode[];
+	/** Points du programme, tous niveaux (vue « Programme » du catalogue) */
+	points: CatalogueProgrammePoint[];
+	/** Ids des points de chaque modèle */
+	templatePoints: Record<string, string[]>;
+	/** Intitulés des points du programme, par modèle : la recherche du catalogue y cherche */
+	pointNames: Record<string, string[]>;
 	lastFetched: number | null;
 	isLoading: boolean;
 	error: string | null;
+}
+
+/** Intitulés des points de chaque modèle (recherche) ; un point inconnu est ignoré */
+function pointNamesOf(
+	points: readonly CatalogueProgrammePoint[],
+	templatePoints: Readonly<Record<string, string[]>>
+): Record<string, string[]> {
+	const nameById = new Map(points.map((p) => [p.id, p.name]));
+	const names: Record<string, string[]> = {};
+	for (const [templateId, pointIds] of Object.entries(templatePoints)) {
+		const found = pointIds.flatMap((id) => nameById.get(id) ?? []);
+		if (found.length > 0) names[templateId] = found;
+	}
+	return names;
 }
 
 class QuestionTemplatesStore {
 	private cache = $state<TemplatesCache>({
 		templates: [],
 		nodes: [],
+		points: [],
+		templatePoints: {},
+		pointNames: {},
 		lastFetched: null,
 		isLoading: false,
 		error: null
@@ -78,6 +102,21 @@ class QuestionTemplatesStore {
 	/** Arbre des notions (nœuds non archivés), reçu avec les modèles */
 	get nodes(): CatalogueNode[] {
 		return this.cache.nodes;
+	}
+
+	/** Points du programme, tous niveaux (vue « Programme » du catalogue) */
+	get points(): CatalogueProgrammePoint[] {
+		return this.cache.points;
+	}
+
+	/** Ids des points du programme, par id de modèle */
+	get templatePoints(): Record<string, string[]> {
+		return this.cache.templatePoints;
+	}
+
+	/** Intitulés des points du programme, par id de modèle (recherche du catalogue) */
+	get pointNames(): Record<string, string[]> {
+		return this.cache.pointNames;
 	}
 
 	/**
@@ -145,6 +184,9 @@ class QuestionTemplatesStore {
 			const data = (await response.json()) as {
 				templates?: Record<string, unknown>[];
 				nodes?: CatalogueNode[];
+				points?: CatalogueProgrammePoint[];
+				templatePoints?: Record<string, string[]>;
+				pointNames?: Record<string, string[]>;
 			};
 
 			// Réponse sans arbre : Vercel sert encore une liste d'avant le déploiement
@@ -159,6 +201,13 @@ class QuestionTemplatesStore {
 			// cette conversion, la consigne d'exercice disparaissait des cartes.
 			this.cache.templates = (data.templates ?? []).map(mapDbTemplateToForm);
 			this.cache.nodes = data.nodes ?? [];
+			// Absents d'une liste servie avant le déploiement : la vue « Programme »
+			// ne s'affiche pas ; la recherche lit les intitulés que cette liste portait
+			this.cache.points = data.points ?? [];
+			this.cache.templatePoints = data.templatePoints ?? {};
+			this.cache.pointNames = data.points
+				? pointNamesOf(data.points, this.cache.templatePoints)
+				: (data.pointNames ?? {});
 			this.cache.lastFetched = Date.now();
 			// Invalidée pendant la lecture : la liste reçue peut être antérieure
 			if (this.invalidations === invalidationsAtStart) this.stale = false;
@@ -200,6 +249,9 @@ class QuestionTemplatesStore {
 	clear(): void {
 		this.cache.templates = [];
 		this.cache.nodes = [];
+		this.cache.points = [];
+		this.cache.templatePoints = {};
+		this.cache.pointNames = {};
 		this.cache.lastFetched = null;
 		this.cache.error = null;
 		this.stale = false;

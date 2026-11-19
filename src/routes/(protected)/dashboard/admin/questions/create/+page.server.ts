@@ -8,9 +8,9 @@
 
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { requireAdmin } from '$lib/server/middleware/auth';
-import { loadActiveNodes } from '$lib/server/classification-nodes';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireAdmin } from '#lib/server/middleware/auth.ts';
+import { loadActiveNodes } from '#lib/server/classification-nodes.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('(protected)/dashboard/admin/questions/create/+page.server');
 

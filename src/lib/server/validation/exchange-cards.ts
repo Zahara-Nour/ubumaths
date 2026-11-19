@@ -6,7 +6,7 @@
  *
  * USAGE:
  * ```typescript
- * import { exchangeCardsSchema } from '$lib/server/validation/exchange-cards';
+ * import { exchangeCardsSchema } from '#lib/server/validation/exchange-cards.ts';
  *
  * const validation = exchangeCardsSchema.safeParse(body);
  * if (!validation.success) {

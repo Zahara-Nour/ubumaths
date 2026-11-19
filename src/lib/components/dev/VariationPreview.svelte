@@ -8,10 +8,10 @@
 -->
 <script lang="ts">
 	// Imports
-	import type { QuestionTemplate } from '$lib/questions/types';
-	import { generateInstance } from '$lib/questions/generator/instance-generator';
-	import QuestionPreviewTabs from '$lib/components/questions/QuestionPreviewTabs.svelte';
-	import { Button } from '$lib/components/ui/button';
+	import type { QuestionTemplate } from '#lib/questions/types.ts';
+	import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
+	import QuestionPreviewTabs from '#lib/components/questions/QuestionPreviewTabs.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import { RefreshCw } from '@lucide/svelte';
 
 	// Types

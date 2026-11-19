@@ -28,17 +28,17 @@ import {
 } from '../helpers/database/trigger-test-helpers';
 import { DEFAULT_TEST_PASSWORD } from '../helpers/database/supabase-client';
 import { TestData } from '../helpers/database/test-data-factory';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 
 // Le Programme est écrit par le client service : le brancher sur la base LOCALE.
-vi.mock('$lib/server/serviceRoleClient', async () => {
+vi.mock('#lib/server/serviceRoleClient.ts', async () => {
 	const helpers = await import('../helpers/database/trigger-test-helpers');
 	return { createServiceRoleClient: helpers.createServiceRoleClient };
 });
 
 import { GET as dueRoute } from '../../src/routes/api/srs/chapters/[chapterId]/due/+server';
 import { POST as submitRoute } from '../../src/routes/api/srs/chapters/[chapterId]/submit/+server';
-import { summarizeChapterDecks } from '$lib/server/srs/chapter-deck';
+import { summarizeChapterDecks } from '#lib/server/srs/chapter-deck.ts';
 
 // Types
 type Person = { id: string; client: SupabaseClient<Database> };

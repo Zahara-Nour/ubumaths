@@ -1,10 +1,10 @@
 <script lang="ts">
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import { lore } from '$lib/config/lore';
-	import * as Card from '$lib/components/ui/card';
-	import * as Table from '$lib/components/ui/table';
-	import { Badge } from '$lib/components/ui/badge';
-	import MySelect from '$lib/components/MySelect.svelte';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import { lore } from '#lib/config/lore.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import * as Table from '#lib/components/ui/table/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import MySelect from '#lib/components/MySelect.svelte';
 	import {
 		BookOpen,
 		CheckCircle2,

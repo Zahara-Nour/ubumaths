@@ -11,8 +11,8 @@ const { requireTeacherOfClass, getClassPointErrors } = vi.hoisted(() => ({
 	getClassPointErrors: vi.fn()
 }));
 
-vi.mock('$lib/server/stats/teacher-class-auth', () => ({ requireTeacherOfClass }));
-vi.mock('$lib/server/stats/point-errors', () => ({ getClassPointErrors }));
+vi.mock('#lib/server/stats/teacher-class-auth.ts', () => ({ requireTeacherOfClass }));
+vi.mock('#lib/server/stats/point-errors.ts', () => ({ getClassPointErrors }));
 
 import { GET } from '../+server';
 

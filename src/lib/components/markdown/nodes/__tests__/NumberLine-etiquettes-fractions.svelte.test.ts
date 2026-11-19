@@ -8,7 +8,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import NumberLine from '../NumberLine.svelte';
-import { parseNumberLineContent } from '$lib/ubumark/parser/number-line-parser';
+import { parseNumberLineContent } from '#lib/ubumark/parser/number-line-parser.ts';
 
 let mains: HTMLElement[] = [];
 function mainElement(width: number): HTMLElement {

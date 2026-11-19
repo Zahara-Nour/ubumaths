@@ -658,6 +658,11 @@ def compte(motif, n_expr):
     return MOTIFS[motif]['compte'].replace('K', n_expr + '+1-p')
 
 
+def de(mot):
+    """« de » élidé devant une voyelle ou un h : « d'allumettes », « de jetons »."""
+    return ("d'" if mot[:1].lower() in 'aeiouyhéèêàâîôû' else 'de ') + mot
+
+
 def enonce(motif):
     m = MOTIFS[motif]
     return m['phrase'] + ' Voici les trois premières étapes.' + m['figure']
@@ -672,7 +677,7 @@ P1 = var('p', '1')
 def v370(motif):
     m = MOTIFS[motif]
     return variation(
-        enonce(motif) + '\n\nCombien de ' + m['quoi'] + ' compte l\'étape ' + ev('k')
+        enonce(motif) + '\n\nCombien ' + de(m['quoi']) + ' compte l\'étape ' + ev('k')
         + ' ?\n\n$?$ ' + m['quoi'],
         [P1, var('k', '4..8')], [ev(compte(motif, 'k'))],
         [m['explication'],
@@ -701,7 +706,7 @@ MODELES.append(modele(
 def v222(motif):
     m = MOTIFS[motif]
     return variation(
-        enonce(motif) + '\n\nOn note $u_n$ le nombre de ' + m['quoi'] + ' de l\'étape $n$'
+        enonce(motif) + '\n\nOn note $u_n$ le nombre ' + de(m['quoi']) + ' de l\'étape $n$'
         ' (la première étape dessinée est l\'étape $' + ev('p') + '$).\n\n'
         'Exprime $u_n$ en fonction de $n$.\n\n$u_n=?$',
         [P], [{'expectedAnswer': m['explicite'], 'requiredForm': {'pattern': 'u'}}],
@@ -738,7 +743,7 @@ MODELES.append(modele(
 def v376(motif):
     m = MOTIFS[motif]
     return variation(
-        enonce(motif) + '\n\nOn note $u_n$ le nombre de ' + m['quoi'] + ' de l\'étape $n$'
+        enonce(motif) + '\n\nOn note $u_n$ le nombre ' + de(m['quoi']) + ' de l\'étape $n$'
         ' (la première étape dessinée est l\'étape $' + ev('p') + '$).\n\n'
         'Complète la relation de récurrence.\n\n$u_{n+1}=u_n+?$',
         [P], [m['pas']],

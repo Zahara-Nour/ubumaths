@@ -3,11 +3,11 @@
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { GET, POST } from '../+server';
-import { runCarnetDaily } from '$lib/server/carnet/courriels';
-import { getEnv } from '$lib/server/env';
+import { runCarnetDaily } from '#lib/server/carnet/courriels.ts';
+import { getEnv } from '#lib/server/env.ts';
 
-vi.mock('$lib/server/env', () => ({ getEnv: vi.fn() }));
-vi.mock('$lib/server/carnet/courriels', () => ({ runCarnetDaily: vi.fn() }));
+vi.mock('#lib/server/env.ts', () => ({ getEnv: vi.fn() }));
+vi.mock('#lib/server/carnet/courriels.ts', () => ({ runCarnetDaily: vi.fn() }));
 
 const rpc = vi.fn();
 // Passages en cours : `from('background_job_runs').select().eq().eq().gte().limit()`
@@ -18,13 +18,14 @@ const chaine = {
 	gte: () => chaine,
 	limit: () => enCours()
 };
-vi.mock('$lib/server/serviceRoleClient', () => ({
+vi.mock('#lib/server/serviceRoleClient.ts', () => ({
 	createServiceRoleClient: () => ({ rpc, from: () => chaine })
 }));
 
 const SECRET = 'test-secret-12345678901234567890';
 const RAPPORT = {
 	erased: 0,
+	erasedNotifications: 0,
 	links: { sent: 1, failed: 0 },
 	exceptions: { sent: 2, failed: 0 },
 	quarterly: { sent: 0, failed: 0 },

@@ -12,7 +12,8 @@
  */
 
 import { z } from 'zod';
-import type { TestMode } from '$lib/types/test';
+import type { TestMode } from '#lib/types/test.ts';
+import type { ReadonlyURLSearchParams } from '$app/state';
 
 /** Nombre de lignes d'une série */
 export const MAX_SERIES_ITEMS = 50;
@@ -157,7 +158,7 @@ export type SeriesLinkResult =
  * Relit la composition d'un lien de série `?modeles=…`. Un ancien lien
  * `?categories=…` (sans `modeles`) n'est plus relu : message dédié.
  */
-export function parseSeriesLink(searchParams: URLSearchParams): SeriesLinkResult {
+export function parseSeriesLink(searchParams: ReadonlyURLSearchParams): SeriesLinkResult {
 	const raw = searchParams.get(SERIES_LINK_PARAM);
 	if (raw === null && searchParams.has(ANCIEN_LIEN_PARAM)) {
 		return { success: false, error: ANCIEN_LIEN_MESSAGE };
@@ -185,7 +186,7 @@ export function parseSeriesLink(searchParams: URLSearchParams): SeriesLinkResult
 }
 
 /** Le lien porte-t-il une composition (ou un ancien lien, à signaler) ? */
-export function hasSeriesLink(searchParams: URLSearchParams): boolean {
+export function hasSeriesLink(searchParams: ReadonlyURLSearchParams): boolean {
 	return searchParams.has(SERIES_LINK_PARAM) || searchParams.has(ANCIEN_LIEN_PARAM);
 }
 

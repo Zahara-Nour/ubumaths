@@ -2,8 +2,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import ViewportControls from '../ViewportControls.svelte';
 import KeyboardHandler from '../KeyboardHandler.svelte';
-import { GrapheurStore, BRIEF_GESTURE_DELAY } from '$lib/stores/grapheur.svelte';
-import { grapheurContext } from '$lib/stores/grapheur-context';
+import { GrapheurStore, BRIEF_GESTURE_DELAY } from '#lib/stores/grapheur.svelte.ts';
+import { grapheurContext } from '#lib/stores/grapheur-context.ts';
 
 // Une instance neuve par test, fournie aux composants par le contexte.
 let grapheurStore = new GrapheurStore();

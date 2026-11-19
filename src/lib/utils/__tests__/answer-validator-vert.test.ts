@@ -9,8 +9,8 @@
 
 import { describe, it, expect } from 'vitest';
 import { validateAnswer } from '../answer-validator';
-import type { QuestionInstance } from '$lib/questions/types';
-import type { ResolvedMarkdown } from '$lib/ubumark';
+import type { QuestionInstance } from '#lib/questions/types.ts';
+import type { ResolvedMarkdown } from '#lib/ubumark/index.ts';
 
 function status(expected: string, answer: string): string {
 	const instance: QuestionInstance = {

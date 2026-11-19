@@ -13,18 +13,20 @@
  * Réponses : 200 `AvatarShop` ; 403 pas élève ; 500 panne.
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import { readAvatarShop } from '$lib/server/avatars/shop';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { readAvatarShop } from '#lib/server/avatars/shop.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/student/avatars/+server');
 
 export const GET: RequestHandler = async ({ locals }) => {
 	const { user, profile } = await requireRole(locals, 'student');
 	try {
-		return json(await readAvatarShop(locals.supabase, user.id, profile.worn_avatar ?? null));
+		return Response.json(
+			await readAvatarShop(locals.supabase, user.id, profile.worn_avatar ?? null)
+		);
 	} catch (err) {
 		logger.error('Boutique d’avatars illisible :', err);
 		throw error(500, 'Boutique indisponible pour l’instant : réessaie dans un moment.');

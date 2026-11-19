@@ -6,7 +6,7 @@ import { parseCourbeContent } from '../../parser/courbe-parser';
 import { buildCourbeScene } from '../../utils/courbe-scene';
 import { generateCourbeTypst } from '../../generators/courbe-typst';
 import { generateTypst } from '../../generators/typst-generator';
-import { parseMarkdown } from '$lib/ubumark';
+import { parseMarkdown } from '#lib/ubumark/index.ts';
 
 const SOURCE = `x: -4 ; 6
 y: -8 ; 12

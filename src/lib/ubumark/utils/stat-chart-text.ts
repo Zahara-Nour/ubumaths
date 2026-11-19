@@ -13,7 +13,7 @@
  * @module ubumark/utils/stat-chart-text
  */
 
-import type { ContentLocale } from '$lib/types/locale';
+import type { ContentLocale } from '#lib/types/locale.ts';
 import type { FrequencyTableRow, StatChartDirection } from '../types/stat-chart';
 
 /** Lignes possibles d'un tableau d'indicateurs (`.comparer`, deux séries) */

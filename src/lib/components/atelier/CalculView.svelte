@@ -1,5 +1,5 @@
 <script lang="ts">
-	import '$lib/utils/mathlive-styles';
+	import '#lib/utils/mathlive-styles.ts';
 	/**
 	 * La console de l'atelier (l'ancienne vue Calcul).
 	 *
@@ -16,40 +16,40 @@
 	 * réglages (`docs/archive/wip/atelier-reglages-phase0.md`).
 	 */
 	import { convertLatexToMarkup, type MathfieldElement } from 'mathlive';
-	import type { CalcDesk, Entry } from '$lib/atelier/desk.svelte';
+	import type { CalcDesk, Entry } from '#lib/atelier/desk.svelte.ts';
 	import {
 		commandBeingWritten,
 		commandCatalog,
 		plain,
 		type AtelierCommand
-	} from '$lib/atelier/commands';
+	} from '#lib/atelier/commands.ts';
 	import { tick } from 'svelte';
 	import { SvelteMap } from 'svelte/reactivity';
-	import { Button } from '$lib/components/ui/button';
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as DropdownMenu from '#lib/components/ui/dropdown-menu/index.ts';
 	import ChevronDown from '@lucide/svelte/icons/chevron-down';
-	import { answerToCopy } from '$lib/atelier/copy-text';
-	import { insertProposal, proposalsFor, type Proposal } from '$lib/atelier/completion';
-	import VariationTable from '$lib/components/markdown/nodes/VariationTable.svelte';
-	import StatChart from '$lib/components/markdown/nodes/StatChart.svelte';
+	import { answerToCopy } from '#lib/atelier/copy-text.ts';
+	import { insertProposal, proposalsFor, type Proposal } from '#lib/atelier/completion.ts';
+	import VariationTable from '#lib/components/markdown/nodes/VariationTable.svelte';
+	import StatChart from '#lib/components/markdown/nodes/StatChart.svelte';
 	import FormulaText from './FormulaText.svelte';
 	import StepsOnDemand from './StepsOnDemand.svelte';
-	import { definedName } from '$lib/atelier/desk.svelte';
+	import { definedName } from '#lib/atelier/desk.svelte.ts';
 	import {
 		readStepsVerbosity,
 		writeStepsVerbosity,
 		type StepsVerbosity
-	} from '$lib/atelier/steps-summary';
-	import type { InputMode } from '$lib/atelier/input-mode';
+	} from '#lib/atelier/steps-summary.ts';
+	import type { InputMode } from '#lib/atelier/input-mode.ts';
 	import {
 		calcTextOf,
 		commandWords,
 		draftTextOf,
 		fieldLatexFromText
-	} from '$lib/atelier/natural-input';
+	} from '#lib/atelier/natural-input.ts';
 	import NaturalField from './NaturalField.svelte';
-	import { isSafeLatex } from '$lib/atelier/safe-latex';
-	import { definitionHint, type DraftHint } from '$lib/atelier/draft-hint';
+	import { isSafeLatex } from '#lib/atelier/safe-latex.ts';
+	import { definitionHint, type DraftHint } from '#lib/atelier/draft-hint.ts';
 
 	/** Les étapes d'une ligne et leur résumé, celles de la ligne ou de son bouton. */
 	type LineSteps = { readonly steps?: Entry['steps']; readonly summary?: Entry['summary'] };

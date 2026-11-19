@@ -22,13 +22,13 @@
  * - studentId is taken from session.user.id (not from body)
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import { requireConsent } from '$lib/server/middleware/consent';
-import { sellVipCardBodySchema } from '$lib/server/validation/vip-cards';
-import { sellResultSchema } from '$lib/server/validation/vip-card-rpc';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { requireConsent } from '#lib/server/middleware/consent.ts';
+import { sellVipCardBodySchema } from '#lib/server/validation/vip-cards.ts';
+import { sellResultSchema } from '#lib/server/validation/vip-card-rpc.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/vip-cards/sell/+server');
 
@@ -87,7 +87,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			errorMessage.includes('cooldown') ||
 			errorMessage.includes('timestamp')
 		) {
-			return json(
+			return Response.json(
 				{ success: false, error: errorMessage, secondsRemaining: result.secondsRemaining },
 				{ status: 400 }
 			);
@@ -96,7 +96,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(400, errorMessage);
 	}
 
-	return json({
+	return Response.json({
 		success: true,
 		sellPrice: result.sellPrice,
 		cardId: result.cardId,

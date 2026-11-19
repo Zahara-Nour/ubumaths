@@ -1,0 +1,336 @@
+{
+	"id": "7461bb44-6811-4f56-9397-6fb3ff82c1b9",
+	"title": "Lire un nuage de points",
+	"description": "Lire une valeur sur un nuage, dire la tendance, juger si un ajustement affine est adapté",
+	"grades": ["1_GEN"],
+	"level": 1,
+	"delay": 45,
+	"status": "published",
+	"shared": {},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:y1*(1-min(abs(k-1),1))+y2*(1-min(abs(k-2),1))+y3*(1-min(abs(k-3),1))+y4*(1-min(abs(k-4),1))+y5*(1-min(abs(k-5),1))+y6*(1-min(abs(k-6),1))}}"
+				}
+			],
+			"statement": "Six élèves ont noté leur temps de révision (en heures) et leur note au contrôle (sur 20). Chaque point du nuage représente un élève.\n\n```courbe\nx: 0 ; 7\ny: -1 ; 21\ngrille: 1 ; 1\naxes: x = Heures de révision ; y = Note\npoints: A(1 ; {{y1}}), B(2 ; {{y2}}), C(3 ; {{y3}}), D(4 ; {{y4}}), E(5 ; {{y5}}), F(6 ; {{y6}})\ntaille: moyenne\ndescription: Nuage de 6 points, un par élève : heures de révision de 1 à 6 en abscisse, note sur 20 en ordonnée, graduée de 1 en 1.\n```\n\nQuelle note a obtenue l'élève qui a révisé ${{k}}$ heures ?\n\n$?$",
+			"variables": [
+				{
+					"name": "y1",
+					"expression": "4..19"
+				},
+				{
+					"name": "y2",
+					"expression": "4..19"
+				},
+				{
+					"name": "y3",
+					"expression": "4..19"
+				},
+				{
+					"name": "y4",
+					"expression": "4..19"
+				},
+				{
+					"name": "y5",
+					"expression": "4..19"
+				},
+				{
+					"name": "y6",
+					"expression": "4..19"
+				},
+				{
+					"name": "k",
+					"expression": "2..6"
+				}
+			],
+			"conditions": [],
+			"correction": {
+				"steps": [
+					"On cherche le point d'abscisse ${{k}}$ (les heures de révision), puis on lit son ordonnée (la note).",
+					"Ce point est $({{k}}\\,;{{eval:y1*(1-min(abs(k-1),1))+y2*(1-min(abs(k-2),1))+y3*(1-min(abs(k-3),1))+y4*(1-min(abs(k-4),1))+y5*(1-min(abs(k-5),1))+y6*(1-min(abs(k-6),1))}})$ : l'élève a eu $\\textcolor{{{color:primary.0}}}{{{eval:y1*(1-min(abs(k-1),1))+y2*(1-min(abs(k-2),1))+y3*(1-min(abs(k-3),1))+y4*(1-min(abs(k-4),1))+y5*(1-min(abs(k-5),1))+y6*(1-min(abs(k-6),1))}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(1-a/abs(a))/2}}"
+				}
+			],
+			"statement": "Le nuage de points ci-dessous représente une série statistique à deux variables $(x_i\\,;y_i)$.\n\n```nuage\nx: 1 ; 2 ; 3 ; 4 ; 5 ; 6\ny: {{eval:b+(a)*1+n1}} ; {{eval:b+(a)*2+n2}} ; {{eval:b+(a)*3+n3}} ; {{eval:b+(a)*4+n4}} ; {{eval:b+(a)*5+n5}} ; {{eval:b+(a)*6+n6}}\nnom x: x\nnom y: y\n```\n\nQue montre ce nuage ?\n\n```choix\nmelanger: non\n- $y$ a tendance à augmenter quand $x$ augmente\n- $y$ a tendance à diminuer quand $x$ augmente\n- On ne voit aucune tendance\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "3..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "32..36"
+				},
+				{
+					"name": "n1",
+					"expression": "-2..2"
+				},
+				{
+					"name": "n2",
+					"expression": "-2..2"
+				},
+				{
+					"name": "n3",
+					"expression": "-2..2"
+				},
+				{
+					"name": "n4",
+					"expression": "-2..2"
+				},
+				{
+					"name": "n5",
+					"expression": "-2..2"
+				},
+				{
+					"name": "n6",
+					"expression": "-2..2"
+				}
+			],
+			"conditions": [],
+			"correction": {
+				"steps": [
+					"On parcourt le nuage de gauche à droite, quand $x$ augmente.",
+					"Les points {{if:a>0|montent|descendent}} dans l'ensemble (même si deux points voisins ne suivent pas toujours) : **$y$ a tendance à {{if:a>0|augmenter|diminuer}} quand $x$ augmente**."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "Le nuage de points ci-dessous représente une série statistique à deux variables $(x_i\\,;y_i)$.\n\n```nuage\nx: 1 ; 2 ; 3 ; 4 ; 5 ; 6\ny: {{eval:b+(a)*1+n1}} ; {{eval:b+(a)*2+n2}} ; {{eval:b+(a)*3+n3}} ; {{eval:b+(a)*4+n4}} ; {{eval:b+(a)*5+n5}} ; {{eval:b+(a)*6+n6}}\nnom x: x\nnom y: y\n```\n\nUn ajustement affine (par une droite) de ce nuage semble-t-il adapté ?\n\n```choix\nmelanger: non\n- Oui : les points sont presque alignés\n- Non : les points dessinent nettement une courbe\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "3..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "32..36"
+				},
+				{
+					"name": "n1",
+					"expression": "-1..1"
+				},
+				{
+					"name": "n2",
+					"expression": "-1..1"
+				},
+				{
+					"name": "n3",
+					"expression": "-1..1"
+				},
+				{
+					"name": "n4",
+					"expression": "-1..1"
+				},
+				{
+					"name": "n5",
+					"expression": "-1..1"
+				},
+				{
+					"name": "n6",
+					"expression": "-1..1"
+				}
+			],
+			"conditions": [],
+			"correction": {
+				"steps": [
+					"Un ajustement affine est adapté quand les points se répartissent autour d'une droite.",
+					"Ici, ils sont **presque alignés** : une droite passerait tout près de chacun d'eux. L'ajustement affine est adapté."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"statement": "Le nuage de points ci-dessous représente une série statistique à deux variables $(x_i\\,;y_i)$.\n\n```nuage\nx: 1 ; 2 ; 3 ; 4 ; 5 ; 6\ny: {{eval:c*(1-m)^2+b}} ; {{eval:c*(2-m)^2+b}} ; {{eval:c*(3-m)^2+b}} ; {{eval:c*(4-m)^2+b}} ; {{eval:c*(5-m)^2+b}} ; {{eval:c*(6-m)^2+b}}\nnom x: x\nnom y: y\n```\n\nUn ajustement affine (par une droite) de ce nuage semble-t-il adapté ?\n\n```choix\nmelanger: non\n- Oui : les points sont presque alignés\n- Non : les points dessinent nettement une courbe\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "2..3"
+				},
+				{
+					"name": "m",
+					"expression": "3|4"
+				},
+				{
+					"name": "b",
+					"expression": "2..6"
+				}
+			],
+			"conditions": [],
+			"correction": {
+				"steps": [
+					"Un ajustement affine est adapté quand les points se répartissent autour d'une droite.",
+					"Ici, les points descendent puis remontent : ils dessinent une **courbe** en forme de U. Aucune droite ne passe près de tous : l'ajustement affine n'est pas adapté."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["13"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "4",
+				"y1": "7",
+				"y2": "9",
+				"y3": "10",
+				"y4": "13",
+				"y5": "12",
+				"y6": "16"
+			},
+			"description": "4 heures : la note du point D",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["10"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "4",
+				"y1": "7",
+				"y2": "9",
+				"y3": "10",
+				"y4": "13",
+				"y5": "12",
+				"y6": "16"
+			},
+			"description": "Erreur : point voisin lu (3 heures)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "4",
+				"b": "34",
+				"n1": "1",
+				"n2": "-2",
+				"n3": "0",
+				"n4": "2",
+				"n5": "-1",
+				"n6": "0"
+			},
+			"description": "Tendance croissante",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "4",
+				"b": "34",
+				"n1": "1",
+				"n2": "-2",
+				"n3": "0",
+				"n4": "2",
+				"n5": "-1",
+				"n6": "0"
+			},
+			"description": "Erreur : aucune tendance",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-3",
+				"b": "34",
+				"n1": "1",
+				"n2": "-2",
+				"n3": "0",
+				"n4": "2",
+				"n5": "-1",
+				"n6": "0"
+			},
+			"description": "Tendance décroissante",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-4",
+				"b": "34",
+				"n1": "1",
+				"n2": "0",
+				"n3": "-1",
+				"n4": "1",
+				"n5": "0",
+				"n6": "-1"
+			},
+			"description": "Points presque alignés : oui",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "-4",
+				"b": "34",
+				"n1": "1",
+				"n2": "0",
+				"n3": "-1",
+				"n4": "1",
+				"n5": "0",
+				"n6": "-1"
+			},
+			"description": "Erreur : non",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"b": "4",
+				"c": "2",
+				"m": "3"
+			},
+			"description": "Points en U : non",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"b": "4",
+				"c": "2",
+				"m": "3"
+			},
+			"description": "Erreur : oui",
+			"variationIndex": 3
+		}
+	]
+}

@@ -13,11 +13,11 @@ import { describe, it, expect, vi } from 'vitest';
 import { isHttpError } from '@sveltejs/kit';
 
 // Garde commune : session/profil lus dans `locals` (cf. helper)
-vi.mock('$lib/server/middleware/auth', async (importActual) =>
-	(await import('$tests/helpers/garde-auth-locals')).gardeAuthDepuisLocals(importActual)
+vi.mock('#lib/server/middleware/auth.ts', async (importActual) =>
+	(await import('#tests/helpers/garde-auth-locals.ts')).gardeAuthDepuisLocals(importActual)
 );
 
-vi.mock('$lib/server/marketplace/notifications', () => ({ notifyTradeCompleted: vi.fn() }));
+vi.mock('#lib/server/marketplace/notifications.ts', () => ({ notifyTradeCompleted: vi.fn() }));
 
 import { POST } from '../+server';
 

@@ -18,7 +18,7 @@
  */
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { requireAdmin } from '$lib/server/middleware/auth';
+import { requireAdmin } from '#lib/server/middleware/auth.ts';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	// Admin gate (admin login OR step-up elevation)

@@ -13,7 +13,7 @@ import { CalcDesk } from '../desk.svelte';
 import { actionsFor } from '../actions';
 import { listChart } from '../chart';
 import { parseDefinition } from '../parse';
-import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
+import { WebReplEngine } from '#lib/mathAST/cli/web/web-repl-engine.ts';
 import { runInput } from '../calcul';
 import { salvageObjects } from '../persistence';
 import { isList, type ListObject } from '../types';

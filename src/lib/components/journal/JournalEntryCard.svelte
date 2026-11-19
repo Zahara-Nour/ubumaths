@@ -19,13 +19,13 @@
 -->
 
 <script lang="ts">
-	import { journalContentPreview } from '$lib/journal/content';
-	import * as Card from '$lib/components/ui/card';
-	import { Badge } from '$lib/components/ui/badge';
+	import { journalContentPreview } from '#lib/journal/content.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
 	import { FileText, BookCheck, Globe, Calendar } from '@lucide/svelte';
-	import type { ClassJournalEntry, JournalEntryWithClass } from '$lib/types/journal';
-	import { GRADES, type GradeCode } from '$lib/types/grades';
-	import { cn } from '$lib/utils';
+	import type { ClassJournalEntry, JournalEntryWithClass } from '#lib/types/journal.ts';
+	import { GRADES, type GradeCode } from '#lib/types/grades.ts';
+	import { cn } from '#lib/utils.ts';
 
 	interface Props {
 		/** The journal entry */

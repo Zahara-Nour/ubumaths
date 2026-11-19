@@ -8,8 +8,12 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { page } from 'vitest/browser';
-import { ANCIEN_LIEN_MESSAGE, SERIES_LINK_PARAM, encodeSeriesParam } from '$lib/validation/series';
-import { questionTemplatesCache } from '$lib/stores/questionTemplates.svelte';
+import {
+	ANCIEN_LIEN_MESSAGE,
+	SERIES_LINK_PARAM,
+	encodeSeriesParam
+} from '#lib/validation/series.ts';
+import { questionTemplatesCache } from '#lib/stores/questionTemplates.svelte.ts';
 
 const goto = vi.hoisted(() => vi.fn(async () => {}));
 const url = vi.hoisted(() => ({ current: new URL('http://localhost/automaths/test') }));
@@ -20,10 +24,9 @@ vi.mock('$app/state', () => ({
 		}
 	}
 }));
-vi.mock('$app/navigation', async (importOriginal) => ({
-	...(await importOriginal<typeof import('$app/navigation')>()),
-	goto
-}));
+vi.mock('$app/navigation', async () =>
+	(await import('#tests/helpers/app-navigation-mock.ts')).appNavigationMock({ goto })
+);
 
 import Page from '../+page.svelte';
 
@@ -80,11 +83,11 @@ describe('C19 — lien de série', () => {
 		await renderPage();
 
 		await vi.waitFor(() => expect(goto).toHaveBeenCalledTimes(1));
-		const [target, options] = goto.mock.calls[0] as unknown as [string, { replaceState: boolean }];
+		const [target, options] = goto.mock.calls[0] as unknown as [string, { replace: boolean }];
 		const href = new URL(target, 'http://localhost');
 		expect(href.pathname).toBe('/automaths/panier');
 		expect(href.searchParams.get(SERIES_LINK_PARAM)).toBe(encoded);
-		expect(options).toMatchObject({ replaceState: true });
+		expect(options).toMatchObject({ replace: true });
 		expect(document.body.textContent).not.toContain('Choisissez un mode de test');
 	});
 

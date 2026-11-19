@@ -23,12 +23,15 @@
 import type { FigureNode, FigureWindow } from '../types/figure';
 import { FIGURE_WIDTH_CM } from '../types/figure';
 import { buildFigureScene, type FigureFrame } from '../utils/figure-scene';
-import { exportToTypst } from '$lib/geometry-core/rendering/export-typst';
+import { exportToTypst } from '#lib/geometry-core/rendering/export-typst.ts';
 import { localizeFigureText } from '../utils/figure-text-locale';
 import { FIGURE_TYPST_UNAVAILABLE, type FigureTypstOptions } from './figure-typst-registry';
 import { protractorTypst } from './protractor-typst';
-import { posedProtractorOf } from '$lib/questions/construction/measure';
-import { allNamedPointPositions, figureShapes } from '$lib/questions/construction/positions-setup';
+import { posedProtractorOf } from '#lib/questions/construction/measure.ts';
+import {
+	allNamedPointPositions,
+	figureShapes
+} from '#lib/questions/construction/positions-setup.ts';
 import type { FigureScene } from '../utils/figure-scene';
 
 /**

@@ -18,8 +18,8 @@
  * with a fixed seed for reproducibility.
  */
 
-import { generateInstance } from '$lib/questions/generator/instance-generator';
-import type { QuestionTemplate, QuestionInstance } from '$lib/questions/types';
+import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
+import type { QuestionTemplate, QuestionInstance } from '#lib/questions/types.ts';
 
 /**
  * Generate instance for SRS review

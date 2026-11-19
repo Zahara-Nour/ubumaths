@@ -11,7 +11,7 @@
  * Client service : la RLS ne montre au proposant que SES propositions — la
  * lecture rendait zéro ligne, sans erreur, et personne n'était prévenu.
  */
-import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
+import { createServiceRoleClient } from '#lib/server/serviceRoleClient.ts';
 
 export async function proposersRejectedByAcceptance(acceptedProposalId: string): Promise<string[]> {
 	const service = createServiceRoleClient();

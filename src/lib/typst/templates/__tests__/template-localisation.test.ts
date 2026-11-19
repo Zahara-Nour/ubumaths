@@ -10,7 +10,7 @@
 import { describe, expect, it } from 'vitest';
 import { DEFAULT_TEMPLATES, renderTemplate, SAMPLE_PREVIEW_DATA } from '../default-templates';
 import { labelPlaceholders } from '../../labels';
-import { TYPST_LANGS } from '$lib/types/locale';
+import { TYPST_LANGS } from '#lib/types/locale.ts';
 
 /**
  * Accented characters are the strongest tell: an English render must contain

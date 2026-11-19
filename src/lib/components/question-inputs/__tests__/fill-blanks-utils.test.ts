@@ -19,8 +19,8 @@ import type {
 	BlankNode,
 	ParagraphNode,
 	InputState
-} from '$lib/ubumark';
-import type { InstanceBlank, QuestionInstance } from '$lib/questions/types';
+} from '#lib/ubumark/index.ts';
+import type { InstanceBlank, QuestionInstance } from '#lib/questions/types.ts';
 import {
 	augmentASTForExpressions,
 	buildInputStates,

@@ -27,11 +27,11 @@ import {
 } from '../helpers/database/trigger-test-helpers';
 import { createAuthenticatedClient } from '../helpers/database/supabase-client';
 import { TestData } from '../helpers/database/test-data-factory';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 
 // Les notifications de fin d'échange passent par un client service pris dans
 // l'environnement : hors sujet ici.
-vi.mock('$lib/server/marketplace/notifications', () => ({ notifyTradeCompleted: vi.fn() }));
+vi.mock('#lib/server/marketplace/notifications.ts', () => ({ notifyTradeCompleted: vi.fn() }));
 
 import { POST as confirmerRoute } from '../../src/routes/api/marketplace/trades/[id]/confirm/+server';
 

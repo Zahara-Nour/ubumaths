@@ -55,21 +55,21 @@
  * - 500: Database or server error
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
+import { requireRole } from '#lib/server/middleware/auth.ts';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import {
 	submit2048ScoreSchema,
 	get2048ScoreResponseSchema,
 	submit2048ScoreWithRewardResponseSchema
-} from '$lib/server/validation/games';
-import { requireConsent } from '$lib/server/middleware/consent';
-import { validateJsonResponse } from '$lib/server/validation/response-utils';
-import { calculate2048TheoreticalReward } from '$lib/server/games/reward-2048';
-import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
-import { creditAchievementGidouilles } from '$lib/server/achievements/credit-gidouilles';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/validation/games.ts';
+import { requireConsent } from '#lib/server/middleware/consent.ts';
+import { validateJsonResponse } from '#lib/server/validation/response-utils.ts';
+import { calculate2048TheoreticalReward } from '#lib/server/games/reward-2048.ts';
+import { createServiceRoleClient } from '#lib/server/serviceRoleClient.ts';
+import { creditAchievementGidouilles } from '#lib/server/achievements/credit-gidouilles.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/games/2048/scores/+server');
 
@@ -109,7 +109,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			'GET /api/games/2048/scores'
 		);
 
-		return json(validated);
+		return Response.json(validated);
 	} catch (err) {
 		// Re-throw SvelteKit errors
 		if (err && typeof err === 'object' && 'status' in err) {
@@ -265,7 +265,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			'POST /api/games/2048/scores'
 		);
 
-		return json(validated);
+		return Response.json(validated);
 	} catch (err) {
 		// Re-throw SvelteKit errors
 		if (err && typeof err === 'object' && 'status' in err) {

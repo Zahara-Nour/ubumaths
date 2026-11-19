@@ -12,15 +12,15 @@
 	 * - Handles loading and error states
 	 * - Redirects to home on success
 	 */
-	import * as Dialog from '$lib/components/ui/dialog';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import { AlertTriangle, Loader2, Trash2, X } from '@lucide/svelte';
-	import { clearWorkData } from '$lib/utils/work-data';
+	import { clearWorkData } from '#lib/utils/work-data.ts';
 
 	interface Props {
 		open: boolean;
@@ -99,7 +99,7 @@
 
 			// Redirect to home after a short delay
 			setTimeout(() => {
-				goto(resolve('/'), { replaceState: true, invalidateAll: true });
+				goto(resolve(''), { replace: true, refreshAll: true });
 			}, 500);
 		} catch (err) {
 			console.error('Account deletion error:', err);

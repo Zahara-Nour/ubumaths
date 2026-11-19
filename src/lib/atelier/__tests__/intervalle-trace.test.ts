@@ -11,8 +11,8 @@ import { CalcDesk } from '../desk.svelte';
 import { Atelier } from '../atelier.svelte';
 import { plotRestrictionOf } from '../interval';
 import { syncPlots } from '../plot-sync';
-import { GrapheurStore } from '$lib/stores/grapheur.svelte';
-import { isExplicitFunction, type ExplicitFunction } from '$lib/grapheur/types';
+import { GrapheurStore } from '#lib/stores/grapheur.svelte.ts';
+import { isExplicitFunction, type ExplicitFunction } from '#lib/grapheur/types.ts';
 
 function desk(...definitions: string[]): CalcDesk {
 	const d = new CalcDesk(new Atelier());

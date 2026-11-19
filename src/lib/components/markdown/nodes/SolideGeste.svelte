@@ -23,8 +23,8 @@
 	@module components/markdown/nodes/SolideGeste
 -->
 <script lang="ts">
-	import type { EspaceNode, SolideSpec } from '$lib/ubumark/types/espace';
-	import { ESPACE_MARGIN, ESPACE_STROKE } from '$lib/ubumark/utils/espace-scene';
+	import type { EspaceNode, SolideSpec } from '#lib/ubumark/types/espace.ts';
+	import { ESPACE_MARGIN, ESPACE_STROKE } from '#lib/ubumark/utils/espace-scene.ts';
 	import {
 		SOLIDE_DASH,
 		SOLIDE_DOT_RADIUS,
@@ -34,7 +34,7 @@
 		solideLineStroke,
 		solideArrowBetween,
 		solideLabel
-	} from '$lib/ubumark/utils/espace-solides';
+	} from '#lib/ubumark/utils/espace-solides.ts';
 	import {
 		readSolideAnswer,
 		solideAnswer,
@@ -43,7 +43,7 @@
 		solideSolutionVector,
 		solideVectorMistake,
 		type SolideVectorEnds
-	} from '$lib/ubumark/utils/solide-gestes';
+	} from '#lib/ubumark/utils/solide-gestes.ts';
 	import InlineMarkdown from '../InlineMarkdown.svelte';
 	import type { BuildCase } from './CollectionConstruire.svelte';
 

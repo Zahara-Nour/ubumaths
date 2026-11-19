@@ -9,12 +9,12 @@
  * downloading the whole student's mastery list. RLS enforces visibility.
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { validateUuidParam } from '$lib/server/validation/params';
-import { pythonMasterySingleQuerySchema } from '$lib/server/validation/python-exercises';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { validateUuidParam } from '#lib/server/validation/params.ts';
+import { pythonMasterySingleQuerySchema } from '#lib/server/validation/python-exercises.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/python-exercises/[id]/mastery/+server');
 
@@ -49,5 +49,5 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 		throw error(500, 'Impossible de charger le statut de maîtrise');
 	}
 
-	return json({ status: data?.status ?? null });
+	return Response.json({ status: data?.status ?? null });
 };

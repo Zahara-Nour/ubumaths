@@ -9,17 +9,17 @@
 	  class board. If "Classe" is picked, a second MySelect lists their classes.
 
 	On submit, POSTs to /api/organisation/kanban/boards. On success, calls
-	`onCreated` (parent triggers `invalidateAll()`) and closes the dialog.
+	`onCreated` (parent triggers `refreshAll()`) and closes the dialog.
 -->
 
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { lore } from '#lib/config/lore.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import type { TeacherClassOption } from './+page.server';
 
 	type Props = {

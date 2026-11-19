@@ -6,8 +6,8 @@
  * (plan validé par David le 2026-10-25, chantier demo-debug, PR 6i). Les questions
  * du minuteur sont celles de `/demo/questions`.
  */
-import { pythonPageOf } from '$lib/atelier/to-python';
-import type { Page } from '$lib/whiteboard/types/document';
+import { pythonPageOf } from '#lib/atelier/to-python.ts';
+import type { Page } from '#lib/whiteboard/types/document.ts';
 import { DEMO_FIGURES, type DemoFigure } from '../geometrie/figures';
 
 // Constantes

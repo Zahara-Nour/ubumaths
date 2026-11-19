@@ -32,25 +32,25 @@
 
 <script lang="ts">
 	import { SvelteSet } from 'svelte/reactivity';
-	import { computeTestScore } from '$lib/utils/test-score';
-	import type { TestSession, TestResult, TestAnswerResult } from '$lib/types/test';
-	import type { AnswerData } from '$lib/types/question-display';
-	import QuestionCard from '$lib/components/questions/QuestionCard.svelte';
+	import { computeTestScore } from '#lib/utils/test-score.ts';
+	import type { TestSession, TestResult, TestAnswerResult } from '#lib/types/test.ts';
+	import type { AnswerData } from '#lib/types/question-display.ts';
+	import QuestionCard from '#lib/components/questions/QuestionCard.svelte';
 	import TestTimer from './TestTimer.svelte';
 	import TestResults from './TestResults.svelte';
-	import type { BuddyGainView } from '$lib/components/buddy/buddy-gain';
-	import type { MathouNews } from '$lib/mathoux/news';
-	import { Button } from '$lib/components/ui/button';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import { automathsQuitLink } from '$lib/navigation/return-links';
-	import * as Card from '$lib/components/ui/card';
+	import type { BuddyGainView } from '#lib/components/buddy/buddy-gain.ts';
+	import type { MathouNews } from '#lib/mathoux/news.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import { automathsQuitLink } from '#lib/navigation/return-links.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
 	import { CheckCircle2, ArrowUp } from '@lucide/svelte';
-	import { cn } from '$lib/utils';
+	import { cn } from '#lib/utils.ts';
 	import {
 		buildSeriesTrace,
 		type SeriesTraceTiming,
 		type TraceRecorder
-	} from '$lib/questions/series-trace';
+	} from '#lib/questions/series-trace.ts';
 
 	interface Props {
 		session: TestSession;

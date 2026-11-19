@@ -21,7 +21,7 @@ import {
 	resolveExpression
 } from '../../../parameterization/resolver/variable-resolver';
 import type { Variable } from '../../../types';
-import { createRandomSource } from '$lib/utils/random';
+import { createRandomSource } from '#lib/utils/random.ts';
 
 describe('resolveVariables', () => {
 	// ============================================================================

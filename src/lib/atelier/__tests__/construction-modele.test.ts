@@ -10,7 +10,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { Atelier } from '../atelier.svelte';
-import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
+import { WebReplEngine } from '#lib/mathAST/cli/web/web-repl-engine.ts';
 import { promote, runInput, type CalcResult, type CalcSession } from '../calcul';
 import { curveNatureOf } from '../curve-nature';
 import { figureFullMessage } from '../geometry';

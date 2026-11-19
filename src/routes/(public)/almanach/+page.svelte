@@ -1,5 +1,5 @@
 <script lang="ts">
-	import SeoHead from '$lib/seo/SeoHead.svelte';
+	import SeoHead from '#lib/seo/SeoHead.svelte';
 	import {
 		FEASTS,
 		MONTH_NAMES,
@@ -10,14 +10,14 @@
 		monthGregorianRange,
 		type Feast,
 		type MonthIndex
-	} from '$lib/almanach/calendar';
+	} from '#lib/almanach/calendar.ts';
 	import {
 		HERO_HALO_OPACITY,
 		HERO_VEIL_OPACITY,
 		MONTH_PALETTES,
 		ambianceMonthIndex,
 		paletteCssVars
-	} from '$lib/almanach/palettes';
+	} from '#lib/almanach/palettes.ts';
 	import AlmanachConverter from './AlmanachConverter.svelte';
 	import type { PageProps } from './$types';
 

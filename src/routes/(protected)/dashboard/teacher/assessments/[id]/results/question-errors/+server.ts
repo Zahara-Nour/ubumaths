@@ -4,14 +4,14 @@
  * seule, sous la RLS du professeur.
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import { z } from 'zod';
 import type { RequestHandler } from './$types';
-import { requireRoles } from '$lib/server/middleware/auth';
-import { EvaluationError, getEvaluation, getEvaluationResults } from '$lib/server/evaluations';
-import { getEvaluationQuestionErrors } from '$lib/server/evaluation-question-errors';
-import { getTeacherTestMode } from '$lib/server/test-mode';
-import { validateUuidParam } from '$lib/server/validation/params';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import { EvaluationError, getEvaluation, getEvaluationResults } from '#lib/server/evaluations.ts';
+import { getEvaluationQuestionErrors } from '#lib/server/evaluation-question-errors.ts';
+import { getTeacherTestMode } from '#lib/server/test-mode.ts';
+import { validateUuidParam } from '#lib/server/validation/params.ts';
 
 const querySchema = z.object({ template: z.string().uuid() });
 
@@ -42,7 +42,7 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 			})),
 			query.data.template
 		);
-		return json(errors);
+		return Response.json(errors);
 	} catch (e) {
 		if (e instanceof EvaluationError) throw error(e.status, e.message);
 		throw e;

@@ -38,6 +38,10 @@ couvre:
 > adresse `@eleves.chiph.re` (compte d'un enfant inscrit par son parent, voir
 > [auth.md](../auth.md#le-domaine-fictif-eleveschiphre)) : le courriel de consentement part
 > toujours à l'adresse du parent.
+>
+> **Base locale (2026-11-17)** : sur la base Supabase locale, `sendEmail` n'envoie rien ; le
+> courriel est écrit dans `.captures/courriels/` (`src/lib/server/email/capture.ts`, détail dans
+> [environnement-de-dev.md](../../pratiques/environnement-de-dev.md#courriels-en-local--capturés-jamais-envoyés)).
 
 > **Carnet de liaison (2026-11-16, ADR 0040)** : quand le professeur active le carnet d'une
 > classe, l'adresse d'un consentement **accordé** (`granted`) devient une adresse confirmée du

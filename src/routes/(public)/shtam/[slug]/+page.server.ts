@@ -1,7 +1,7 @@
 import { error } from '@sveltejs/kit';
 import { z } from 'zod';
-import { SLUG_PATTERN, allArticles, findPublishedArticle } from '$lib/server/shtam/articles';
-import { toArticleView, todayIsoInParis } from '$lib/server/shtam/present';
+import { SLUG_PATTERN, allArticles, findPublishedArticle } from '#lib/server/shtam/articles.ts';
+import { toArticleView, todayIsoInParis } from '#lib/server/shtam/present.ts';
 import type { PageServerLoad } from './$types';
 
 // Jamais prérendue : un article daté de demain doit rester introuvable jusqu'à demain.

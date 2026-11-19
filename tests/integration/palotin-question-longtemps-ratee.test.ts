@@ -20,8 +20,8 @@ import {
 import { DEFAULT_TEST_PASSWORD } from '../helpers/database/supabase-client';
 import { TestData } from '../helpers/database/test-data-factory';
 import { createFakeTemplate } from '../helpers/competence-referentiel.helpers';
-import { loadLongStruggleWon } from '$lib/server/buddy-struggle';
-import type { Database } from '$lib/types/database';
+import { loadLongStruggleWon } from '#lib/server/buddy-struggle.ts';
+import type { Database } from '#lib/types/database.ts';
 
 // Constantes
 const SUPABASE_URL = process.env.SUPABASE_TEST_URL || 'http://localhost:54321';

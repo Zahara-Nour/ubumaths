@@ -1,13 +1,13 @@
 <script lang="ts">
-	import RestrictedRichText from '$lib/components/rich-text/RestrictedRichText.svelte';
-	import { lore } from '$lib/config/lore';
+	import RestrictedRichText from '#lib/components/rich-text/RestrictedRichText.svelte';
+	import { lore } from '#lib/config/lore.ts';
 	import { goto } from '$app/navigation';
-	import { Button } from '$lib/components/ui/button';
-	import * as Card from '$lib/components/ui/card';
-	import { Badge } from '$lib/components/ui/badge';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
 	import { User, Hash, Calendar, MessageSquare, CheckCircle2, XCircle } from '@lucide/svelte';
-	import RichTextDisplay from '$lib/components/rich-text/RichTextDisplay.svelte';
-	import type { TeacherErrorReportView } from '$lib/types/worksheets';
+	import RichTextDisplay from '#lib/components/rich-text/RichTextDisplay.svelte';
+	import type { TeacherErrorReportView } from '#lib/types/worksheets.ts';
 
 	// Props
 	let {

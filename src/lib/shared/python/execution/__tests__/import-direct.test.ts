@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 // Blockly charge l'exécuteur Python par import direct du fichier, sans passer par le barrel
-// `$lib/shared/python`. base-executor importait ce barrel, qui ré-exporte notebook-executor :
+// `#lib/shared/python/index.ts`. base-executor importait ce barrel, qui ré-exporte notebook-executor :
 // `class NotebookExecutor extends BasePythonExecutor` s'évaluait avant BasePythonExecutor →
 // « Cannot access 'BasePythonExecutor' before initialization ».
 describe('exécuteurs Python importés directement', () => {

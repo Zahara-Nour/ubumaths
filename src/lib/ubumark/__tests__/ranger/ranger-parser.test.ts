@@ -15,11 +15,11 @@ import {
 	parseRangerContent,
 	replaceRangerBlocks,
 	serializeRangerBlock
-} from '$lib/ubumark/parser/ranger-parser';
-import { rangerOrder } from '$lib/ubumark/utils/ranger';
-import { parseMarkdown } from '$lib/ubumark';
-import { generateTypst } from '$lib/ubumark/generators/typst-generator';
-import { createRandomSource } from '$lib/utils/random';
+} from '#lib/ubumark/parser/ranger-parser.ts';
+import { rangerOrder } from '#lib/ubumark/utils/ranger.ts';
+import { parseMarkdown } from '#lib/ubumark/index.ts';
+import { generateTypst } from '#lib/ubumark/generators/typst-generator.ts';
+import { createRandomSource } from '#lib/utils/random.ts';
 
 const block = (...body: string[]) => ['```ranger', ...body, '```'].join('\n');
 

@@ -2,7 +2,7 @@
  * Guides calculatrices : adresses des niveaux et filiation (copie de `grade_predecessors`).
  */
 import { describe, expect, it } from 'vitest';
-import { GRADE_CODES } from '$lib/types/grades';
+import { GRADE_CODES } from '#lib/types/grades.ts';
 import { GRADE_SLUGS, ancestorsOf, gradeFromSlug, isGuideGrade } from '../levels';
 
 describe('adresses des niveaux', () => {

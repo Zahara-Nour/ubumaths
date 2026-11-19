@@ -16,7 +16,7 @@
  */
 
 import type { BaseNode } from './ast';
-import type { NiveauCalcul } from '$lib/shared/blockly/calcul/interpreteur';
+import type { NiveauCalcul } from '#lib/shared/blockly/calcul/interpreteur.ts';
 
 // ============================================================================
 // VALEURS

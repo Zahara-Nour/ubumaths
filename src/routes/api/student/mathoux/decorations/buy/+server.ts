@@ -19,22 +19,22 @@
  * gidouilles ») ; 500 panne.
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import { z } from 'zod';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import { rateLimit } from '$lib/server/middleware/rateLimit';
-import { requireConsent } from '$lib/server/middleware/consent';
-import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
-import { buyMathouDecoration, type DecorationOutcome } from '$lib/server/mathoux/decorations';
-import { refusalMessage, refusalStatus } from '$lib/server/mathoux/decoration-errors';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { rateLimit } from '#lib/server/middleware/rateLimit.ts';
+import { requireConsent } from '#lib/server/middleware/consent.ts';
+import { createServiceRoleClient } from '#lib/server/serviceRoleClient.ts';
+import { buyMathouDecoration, type DecorationOutcome } from '#lib/server/mathoux/decorations.ts';
+import { refusalMessage, refusalStatus } from '#lib/server/mathoux/decoration-errors.ts';
 import {
 	MATHOU_COLLAR_IDS,
 	MATHOU_DECORATION_IDS,
 	MATHOU_GLASSES_IDS,
 	MATHOU_HAT_IDS
-} from '$lib/mathoux/decorations';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/mathoux/decorations.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/student/mathoux/decorations/buy/+server');
 
@@ -71,5 +71,5 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	if (!outcome.ok)
 		throw error(refusalStatus(outcome.reason), refusalMessage(outcome.reason, outcome.missing));
-	return json({ balance: outcome.balance ?? null });
+	return Response.json({ balance: outcome.balance ?? null });
 };

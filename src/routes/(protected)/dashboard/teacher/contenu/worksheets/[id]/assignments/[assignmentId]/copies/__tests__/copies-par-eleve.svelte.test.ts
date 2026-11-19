@@ -14,7 +14,7 @@ import { page } from 'vitest/browser';
 
 // Compilations en cours : le compilateur et ses images sont partagés, une seule à la fois
 const compiled = vi.hoisted(() => ({ sources: [] as string[], active: 0, maxActive: 0 }));
-vi.mock('$lib/typst/compiler', () => ({
+vi.mock('#lib/typst/compiler/index.ts', () => ({
 	getTypstCompiler: async () => ({
 		svg: async ({ mainContent }: { mainContent: string }) => {
 			compiled.sources.push(mainContent);

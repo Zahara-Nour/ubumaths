@@ -5,7 +5,7 @@
 import type { GeoValue } from '../types/geo-value';
 import type { GeoPoint } from '../types/primitives';
 import type { Point } from '../viewport/types';
-import { evaluate } from '$lib/mathAST/eval';
+import { evaluate } from '#lib/mathAST/eval/index.ts';
 
 /**
  * Convert a GeoValue to a JavaScript number.

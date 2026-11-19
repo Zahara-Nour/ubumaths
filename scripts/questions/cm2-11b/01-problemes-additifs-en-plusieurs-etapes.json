@@ -1,0 +1,438 @@
+{
+	"id": "960e6a84-e571-4aa5-a145-36bef7516c8a",
+	"title": "Problèmes additifs en plusieurs étapes",
+	"description": "Un prix manquant (un billet, deux prix, la monnaie rendue), la somme du départ après deux actions (« il retire…, il dépense…, il lui reste… »), la part de pizza gardée (5/12 et 1/4 donnés), deux montants connus par leur somme et leur écart ; schéma en barres au corrigé",
+	"grades": ["CM2"],
+	"level": 12,
+	"delay": 180,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true,
+			"zeros": "off",
+			"reducedFractions": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Qassim achète un reblochon à ${{eval:floor((a)/100)}}.{{eval:floor(mod(a,100)/10)}}{{eval:mod(a,10)}}~\\unit{€}$, une tranche de beaufort à ${{eval:floor((b)/100)}}.{{eval:floor(mod(b,100)/10)}}{{eval:mod(b,10)}}~\\unit{€}$ et un camembert. Il donne un billet de $50~\\unit{€}$ au fromager, qui lui rend ${{eval:floor((5000-a-b-c)/100)}}.{{eval:floor(mod(5000-a-b-c,100)/10)}}{{eval:mod(5000-a-b-c,10)}}~\\unit{€}$.\n\nQuel est le prix du camembert ?\n\nLe camembert coûte $?~\\text{€}$.",
+			"variables": [
+				{
+					"name": "aE",
+					"expression": "4..19"
+				},
+				{
+					"name": "aC",
+					"expression": "0..99"
+				},
+				{
+					"name": "a",
+					"expression": "eval:100*aE+aC"
+				},
+				{
+					"name": "bE",
+					"expression": "6..24"
+				},
+				{
+					"name": "bC",
+					"expression": "1..99"
+				},
+				{
+					"name": "b",
+					"expression": "eval:100*bE+bC"
+				},
+				{
+					"name": "cE",
+					"expression": "2..9"
+				},
+				{
+					"name": "cC",
+					"expression": "1..99"
+				},
+				{
+					"name": "c",
+					"expression": "eval:100*cE+cC"
+				}
+			],
+			"conditions": ["5000 - a - b - c >= 150", "mod(5000-a-b-c,10) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(c)/100;d}}",
+					"requiredForm": {
+						"pattern": "a:number"
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Ce que Qassim a dépensé.** Il a donné $50~\\unit{€}$ et on lui a rendu ${{eval:floor((5000-a-b-c)/100)}}.{{eval:floor(mod(5000-a-b-c,100)/10)}}{{eval:mod(5000-a-b-c,10)}}~\\unit{€}$ : $50 - {{eval:floor((5000-a-b-c)/100)}}.{{eval:floor(mod(5000-a-b-c,100)/10)}}{{eval:mod(5000-a-b-c,10)}} = {{eval:floor((a+b+c)/100)}}.{{eval:floor(mod(a+b+c,100)/10)}}{{eval:mod(a+b+c,10)}}$.\n\n```schema-barres\nBillet : 50 € (10)\nFromages, monnaie : {{eval:floor((a)/100)}},{{eval:floor(mod((a),100)/10)}}{{eval:mod((a),10)}} € (3) ; {{eval:floor((b)/100)}},{{eval:floor(mod((b),100)/10)}}{{eval:mod((b),10)}} € (3) ; ? (2) ; {{eval:floor((5000-a-b-c)/100)}},{{eval:floor(mod((5000-a-b-c),100)/10)}}{{eval:mod((5000-a-b-c),10)}} € (2)\n```",
+					"**Les deux prix connus.** ${{eval:floor((a)/100)}}.{{eval:floor(mod(a,100)/10)}}{{eval:mod(a,10)}} + {{eval:floor((b)/100)}}.{{eval:floor(mod(b,100)/10)}}{{eval:mod(b,10)}} = {{eval:floor((a+b)/100)}}.{{eval:floor(mod(a+b,100)/10)}}{{eval:mod(a+b,10)}}$.",
+					"**Le camembert.** C'est ce qui manque : ${{eval:floor((a+b+c)/100)}}.{{eval:floor(mod(a+b+c,100)/10)}}{{eval:mod(a+b+c,10)}} - {{eval:floor((a+b)/100)}}.{{eval:floor(mod(a+b,100)/10)}}{{eval:mod(a+b,10)}} = \\textcolor{{{color:primary.0}}}{{{eval:floor((c)/100)}}.{{eval:floor(mod(c,100)/10)}}{{eval:mod(c,10)}}}$.",
+					"Le camembert coûte ${{eval:floor((c)/100)}}.{{eval:floor(mod(c,100)/10)}}{{eval:mod(c,10)}}~\\unit{€}$.",
+					"On vérifie : ${{eval:floor((a)/100)}}.{{eval:floor(mod(a,100)/10)}}{{eval:mod(a,10)}} + {{eval:floor((b)/100)}}.{{eval:floor(mod(b,100)/10)}}{{eval:mod(b,10)}} + {{eval:floor((c)/100)}}.{{eval:floor(mod(c,100)/10)}}{{eval:mod(c,10)}} + {{eval:floor((5000-a-b-c)/100)}}.{{eval:floor(mod(5000-a-b-c,100)/10)}}{{eval:mod(5000-a-b-c,10)}} = 50$ ; on retrouve le billet."
+				]
+			}
+		},
+		{
+			"statement": "Côme sort faire des courses. Il passe d'abord à la banque, où il retire ${{eval:10*x}}~\\unit{€}$ au distributeur. Puis il achète un rôti à ${{eval:floor((y)/100)}}.{{eval:floor(mod(y,100)/10)}}{{eval:mod(y,10)}}~\\unit{€}$ chez le boucher. En rentrant, il constate qu'il lui reste ${{eval:floor((z)/100)}}.{{eval:floor(mod(z,100)/10)}}{{eval:mod(z,10)}}~\\unit{€}$.\n\nQuelle somme d'argent Côme avait-il en sortant de chez lui ?\n\nIl avait $?~\\text{€}$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "2..8"
+				},
+				{
+					"name": "yE",
+					"expression": "9..39"
+				},
+				{
+					"name": "yC",
+					"expression": "1..99"
+				},
+				{
+					"name": "y",
+					"expression": "eval:100*yE+yC"
+				},
+				{
+					"name": "zE",
+					"expression": "12..69"
+				},
+				{
+					"name": "zC",
+					"expression": "1..99"
+				},
+				{
+					"name": "z",
+					"expression": "eval:100*zE+zC"
+				}
+			],
+			"conditions": ["z + y - 1000 * x >= 300", "mod(z+y,100) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(z+y-1000*x)/100;d}}",
+					"requiredForm": {
+						"pattern": "a:number"
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"On **remonte le temps**, de la fin vers le début, en faisant chaque fois l'inverse.",
+					"**Avant la boucherie.** Il avait ce qui lui reste, plus le prix du rôti : ${{eval:floor((z)/100)}}.{{eval:floor(mod(z,100)/10)}}{{eval:mod(z,10)}} + {{eval:floor((y)/100)}}.{{eval:floor(mod(y,100)/10)}}{{eval:mod(y,10)}} = {{eval:floor((z+y)/100)}}.{{eval:floor(mod(z+y,100)/10)}}{{eval:mod(z+y,10)}}$.",
+					"**Avant la banque.** Le distributeur lui a donné ${{eval:10*x}}~\\unit{€}$ : avant, il en avait autant de moins. ${{eval:floor((z+y)/100)}}.{{eval:floor(mod(z+y,100)/10)}}{{eval:mod(z+y,10)}} - {{eval:10*x}} = \\textcolor{{{color:primary.0}}}{{{eval:floor((z+y-1000*x)/100)}}.{{eval:floor(mod(z+y-1000*x,100)/10)}}{{eval:mod(z+y-1000*x,10)}}}$.",
+					"Côme avait ${{eval:floor((z+y-1000*x)/100)}}.{{eval:floor(mod(z+y-1000*x,100)/10)}}{{eval:mod(z+y-1000*x,10)}}~\\unit{€}$ en sortant de chez lui.",
+					"On vérifie dans l'ordre de l'histoire : ${{eval:floor((z+y-1000*x)/100)}}.{{eval:floor(mod(z+y-1000*x,100)/10)}}{{eval:mod(z+y-1000*x,10)}} + {{eval:10*x}} - {{eval:floor((y)/100)}}.{{eval:floor(mod(y,100)/10)}}{{eval:mod(y,10)}} = {{eval:floor((z)/100)}}.{{eval:floor(mod(z,100)/10)}}{{eval:mod(z,10)}}$."
+				]
+			}
+		},
+		{
+			"statement": "Yseult partage une pizza avec sa sœur et son frère. Elle donne $\\frac{{{a}}}{{{eval:q*d}}}$ de la pizza à sa sœur et $\\frac{{{b}}}{{{d}}}$ de la pizza à son frère.\n\nQuelle fraction de la pizza Yseult a-t-elle gardée pour elle ?\n\nElle a gardé $?$ de la pizza.",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "2..12"
+				},
+				{
+					"name": "q",
+					"expression": "2..5"
+				},
+				{
+					"name": "b",
+					"expression": "1..{{eval:d-1}}"
+				},
+				{
+					"name": "a",
+					"expression": "1..{{eval:q*d-1}}"
+				}
+			],
+			"conditions": [
+				"q * d <= 60",
+				"mod(a,q) != 0",
+				"q * d - a - q * b >= 1",
+				"mod(b,2) + mod(d,2) >= 1",
+				"mod(b,3) + mod(d,3) >= 1",
+				"mod(b,5) + mod(d,5) >= 1"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{{{eval:q*d-a-q*b}}}{{{eval:q*d}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Même dénominateur.** Les parts ne sont pas de la même taille : on écrit $\\frac{{{b}}}{{{d}}}$ avec le dénominateur ${{eval:q*d}}$.",
+					"$$\\frac{{{b}}}{{{d}}} = \\frac{{{eval:q*b}}}{{{eval:q*d}}}$$",
+					"**Ce qu'elle a donné.** $\\frac{{{a}}}{{{eval:q*d}}} + \\frac{{{eval:q*b}}}{{{eval:q*d}}} = \\frac{{{eval:a+q*b}}}{{{eval:q*d}}}$.",
+					"**Ce qu'elle a gardé.** La pizza entière, c'est $\\frac{{{eval:q*d}}}{{{eval:q*d}}}$ : $\\frac{{{eval:q*d}}}{{{eval:q*d}}} - \\frac{{{eval:a+q*b}}}{{{eval:q*d}}} = \\textcolor{{{color:primary.0}}}{\\frac{{{eval:q*d-a-q*b}}}{{{eval:q*d}}}}$.",
+					"Yseult a gardé $\\frac{{{eval:q*d-a-q*b}}}{{{eval:q*d}}}$ de la pizza."
+				]
+			}
+		},
+		{
+			"statement": "Léo et Lucie ont ${{eval:floor((2*x+g)/100)}}.{{eval:floor(mod(2*x+g,100)/10)}}{{eval:mod(2*x+g,10)}}~\\unit{€}$ à eux deux. Lucie a ${{eval:floor((g)/100)}}.{{eval:floor(mod(g,100)/10)}}{{eval:mod(g,10)}}~\\unit{€}$ de plus que Léo.\n\nCombien chaque enfant a-t-il d'euros ?\n\nLéo a $?~\\text{€}$.\n\nLucie a $?~\\text{€}$.",
+			"variables": [
+				{
+					"name": "xE",
+					"expression": "8..39"
+				},
+				{
+					"name": "xC",
+					"expression": "1..99"
+				},
+				{
+					"name": "x",
+					"expression": "eval:100*xE+xC"
+				},
+				{
+					"name": "gE",
+					"expression": "1..12"
+				},
+				{
+					"name": "gC",
+					"expression": "1..99"
+				},
+				{
+					"name": "g",
+					"expression": "eval:100*gE+gC"
+				}
+			],
+			"conditions": ["g < x", "mod(2*x+g,10) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(x)/100;d}}",
+					"requiredForm": {
+						"pattern": "a:number"
+					}
+				},
+				{
+					"expectedAnswer": "{{eval:(x+g)/100;d}}",
+					"requiredForm": {
+						"pattern": "a:number"
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Le schéma.** Lucie a autant que Léo, et encore ${{eval:floor((g)/100)}}.{{eval:floor(mod(g,100)/10)}}{{eval:mod(g,10)}}~\\unit{€}$.\n\n```schema-barres\nLéo : ? (4)\nLucie : ? (4) ; {{eval:floor((g)/100)}},{{eval:floor(mod((g),100)/10)}}{{eval:mod((g),10)}} € (2)\ntotal : {{eval:floor((2*x+g)/100)}},{{eval:floor(mod((2*x+g),100)/10)}}{{eval:mod((2*x+g),10)}} €\n```",
+					"**On enlève l'écart.** Il reste deux parts égales : ${{eval:floor((2*x+g)/100)}}.{{eval:floor(mod(2*x+g,100)/10)}}{{eval:mod(2*x+g,10)}} - {{eval:floor((g)/100)}}.{{eval:floor(mod(g,100)/10)}}{{eval:mod(g,10)}} = {{eval:floor((2*x)/100)}}.{{eval:floor(mod(2*x,100)/10)}}{{eval:mod(2*x,10)}}$.",
+					"**Léo.** ${{eval:floor((2*x)/100)}}.{{eval:floor(mod(2*x,100)/10)}}{{eval:mod(2*x,10)}} \\div 2 = \\textcolor{{{color:primary.0}}}{{{eval:floor((x)/100)}}.{{eval:floor(mod(x,100)/10)}}{{eval:mod(x,10)}}}$.",
+					"**Lucie.** ${{eval:floor((x)/100)}}.{{eval:floor(mod(x,100)/10)}}{{eval:mod(x,10)}} + {{eval:floor((g)/100)}}.{{eval:floor(mod(g,100)/10)}}{{eval:mod(g,10)}} = \\textcolor{{{color:primary.0}}}{{{eval:floor((x+g)/100)}}.{{eval:floor(mod(x+g,100)/10)}}{{eval:mod(x+g,10)}}}$.",
+					"On vérifie : ${{eval:floor((x)/100)}}.{{eval:floor(mod(x,100)/10)}}{{eval:mod(x,10)}} + {{eval:floor((x+g)/100)}}.{{eval:floor(mod(x+g,100)/10)}}{{eval:mod(x+g,10)}} = {{eval:floor((2*x+g)/100)}}.{{eval:floor(mod(2*x+g,100)/10)}}{{eval:mod(2*x+g,10)}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Qassim : 9 + 13,85, billet 50, rendu 21,45 → 5,70 €",
+			"variationIndex": 0,
+			"variables": {
+				"aE": "9",
+				"aC": "0",
+				"a": "900",
+				"bE": "13",
+				"bC": "85",
+				"b": "1385",
+				"cE": "5",
+				"cC": "70",
+				"c": "570"
+			},
+			"answers": ["5,7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : Qassim, une étape seulement (28,55)",
+			"variationIndex": 0,
+			"variables": {
+				"aE": "9",
+				"aC": "0",
+				"a": "900",
+				"bE": "13",
+				"bC": "85",
+				"b": "1385",
+				"cE": "5",
+				"cC": "70",
+				"c": "570"
+			},
+			"answers": ["28,55"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : Qassim, tout ajouté (44,30)",
+			"variationIndex": 0,
+			"variables": {
+				"aE": "9",
+				"aC": "0",
+				"a": "900",
+				"bE": "13",
+				"bC": "85",
+				"b": "1385",
+				"cE": "5",
+				"cC": "70",
+				"c": "570"
+			},
+			"answers": ["44,3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Côme : 31,40 + 17,80 − 40 = 9,20 €",
+			"variationIndex": 1,
+			"variables": {
+				"x": "4",
+				"yE": "17",
+				"yC": "80",
+				"y": "1780",
+				"zE": "31",
+				"zC": "40",
+				"z": "3140"
+			},
+			"answers": ["9,2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : Côme, tout ajouté (89,20)",
+			"variationIndex": 1,
+			"variables": {
+				"x": "4",
+				"yE": "17",
+				"yC": "80",
+				"y": "1780",
+				"zE": "31",
+				"zC": "40",
+				"z": "3140"
+			},
+			"answers": ["89,2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : Côme, dans l'ordre de l'histoire (53,60)",
+			"variationIndex": 1,
+			"variables": {
+				"x": "4",
+				"yE": "17",
+				"yC": "80",
+				"y": "1780",
+				"zE": "31",
+				"zC": "40",
+				"z": "3140"
+			},
+			"answers": ["53,6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Yseult : 1 − 5/12 − 1/4 = 4/12",
+			"variationIndex": 2,
+			"variables": {
+				"d": "4",
+				"q": "3",
+				"b": "1",
+				"a": "5"
+			},
+			"answers": ["\\frac{4}{12}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Yseult : 1/3, fraction égale",
+			"variationIndex": 2,
+			"variables": {
+				"d": "4",
+				"q": "3",
+				"b": "1",
+				"a": "5"
+			},
+			"answers": ["\\frac{1}{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : Yseult, ce qu'elle a donné (8/12)",
+			"variationIndex": 2,
+			"variables": {
+				"d": "4",
+				"q": "3",
+				"b": "1",
+				"a": "5"
+			},
+			"answers": ["\\frac{8}{12}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : Yseult, numérateurs et dénominateurs ajoutés puis ôtés de 1 (10/16)",
+			"variationIndex": 2,
+			"variables": {
+				"d": "4",
+				"q": "3",
+				"b": "1",
+				"a": "5"
+			},
+			"answers": ["\\frac{10}{16}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Léo et Lucie : 43,40 €, 7,80 € de plus → 17,80 et 25,60",
+			"variationIndex": 3,
+			"variables": {
+				"xE": "17",
+				"xC": "80",
+				"x": "1780",
+				"gE": "7",
+				"gC": "80",
+				"g": "780"
+			},
+			"answers": ["17,8", "25,6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : Léo et Lucie, moitié puis écart (21,70 ; 29,50)",
+			"variationIndex": 3,
+			"variables": {
+				"xE": "17",
+				"xC": "80",
+				"x": "1780",
+				"gE": "7",
+				"gC": "80",
+				"g": "780"
+			},
+			"answers": ["21,7", "29,5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : Léo et Lucie, inversés",
+			"variationIndex": 3,
+			"variables": {
+				"xE": "17",
+				"xC": "80",
+				"x": "1780",
+				"gE": "7",
+				"gC": "80",
+				"g": "780"
+			},
+			"answers": ["25,6", "17,8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

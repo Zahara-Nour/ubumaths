@@ -8,12 +8,12 @@ import { render } from 'vitest-browser-svelte';
 import { page, userEvent } from 'vitest/browser';
 import TrousEtiquettes from '../TrousEtiquettes.svelte';
 import MarkdownRenderer from '../../MarkdownRenderer.svelte';
-import FillBlanksInput from '$lib/components/question-inputs/FillBlanksInput.svelte';
-import BuildAnswer from '$lib/components/questions/BuildAnswer.svelte';
-import { parseTrousContent } from '$lib/ubumark/parser/trous-parser';
-import type { QuestionTemplate } from '$lib/questions/types';
-import { generateInstance } from '$lib/questions/generator/instance-generator';
-import { templateMarkdown } from '$lib/ubumark';
+import FillBlanksInput from '#lib/components/question-inputs/FillBlanksInput.svelte';
+import BuildAnswer from '#lib/components/questions/BuildAnswer.svelte';
+import { parseTrousContent } from '#lib/ubumark/parser/trous-parser.ts';
+import type { QuestionTemplate } from '#lib/questions/types.ts';
+import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 
 let mains: HTMLElement[] = [];
 function mainElement(): HTMLElement {

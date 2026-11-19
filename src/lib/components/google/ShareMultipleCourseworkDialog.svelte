@@ -20,16 +20,16 @@
 -->
 
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import { Button } from '$lib/components/ui/button';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import { Label } from '$lib/components/ui/label';
-	import { Textarea } from '$lib/components/ui/textarea';
-	import { Input } from '$lib/components/ui/input';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import * as Card from '$lib/components/ui/card';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { lore } from '#lib/config/lore.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import { Textarea } from '#lib/components/ui/textarea/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import { Loader2, Search } from '@lucide/svelte';
 	import { SvelteSet, SvelteMap } from 'svelte/reactivity';
 

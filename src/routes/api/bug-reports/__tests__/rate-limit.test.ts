@@ -6,17 +6,20 @@
  */
 import { describe, it, expect, vi } from 'vitest';
 
-vi.mock('$lib/server/middleware/auth', () => ({
+vi.mock('#lib/server/middleware/auth.ts', () => ({
 	requireAuth: vi.fn().mockResolvedValue({
 		user: { id: 'eleve-rate-limit' },
 		profile: { id: 'eleve-rate-limit', role: 'student' }
 	})
 }));
-vi.mock('$lib/server/notifications', () => ({
+vi.mock('#lib/server/notifications.ts', () => ({
 	notifyAdminsOfNewBugReport: vi.fn()
 }));
 
-vi.mock('$lib/server/rateLimiter', () => import('$lib/server/__tests__/helpers/fake-rate-limiter'));
+vi.mock(
+	'#lib/server/rateLimiter.ts',
+	() => import('#lib/server/__tests__/helpers/fake-rate-limiter.ts')
+);
 
 import { POST } from '../+server';
 

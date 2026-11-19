@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createLogger } from '$lib/utils/logger';
+	import { createLogger } from '#lib/utils/logger.ts';
 
 	// Default logger (threshold: info) - trace messages suppressed
 	const defaultLogger = createLogger('LoggerDemo.svelte');
@@ -164,7 +164,7 @@
 	>
 		<h3 class="mb-2 text-lg font-semibold">Usage Example</h3>
 		<pre class="overflow-x-auto rounded bg-gray-900 p-3 text-sm text-gray-100"><code
-				>import {'{ createLogger }'} from '$lib/utils/logger';
+				>import {'{ createLogger }'} from '#lib/utils/logger.ts';
 
 // Default threshold (info)
 const logger = createLogger('MyComponent.svelte');

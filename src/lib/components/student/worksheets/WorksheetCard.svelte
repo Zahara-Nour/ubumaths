@@ -8,11 +8,11 @@
 -->
 
 <script lang="ts">
-	import { WORKSHEET_TYPE_LABELS } from '$lib/utils/worksheet-type-labels';
-	import { lore } from '$lib/config/lore';
-	import * as Card from '$lib/components/ui/card';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Button } from '$lib/components/ui/button';
+	import { WORKSHEET_TYPE_LABELS } from '#lib/utils/worksheet-type-labels.ts';
+	import { lore } from '#lib/config/lore.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import {
 		FileText,
 		Clock,
@@ -25,7 +25,7 @@
 		PenLine,
 		ArrowRight
 	} from '@lucide/svelte';
-	import type { StudentWorksheetListItem, WorksheetType } from '$lib/types/worksheets';
+	import type { StudentWorksheetListItem, WorksheetType } from '#lib/types/worksheets.ts';
 
 	interface Props {
 		worksheet: StudentWorksheetListItem;

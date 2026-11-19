@@ -26,13 +26,13 @@ import {
 	createMockRequest,
 	mockRpcSuccess,
 	mockRpcError
-} from '$tests/helpers';
+} from '#tests/helpers/index.ts';
 
 // Rate-limit checks live in a different module and hit a service-role client
 // (not the per-request supabase we mock here). In unit tests we don't want
 // them to make real network calls or share state across tests, so we stub all
 // three kanban helpers to always allow the request.
-vi.mock('$lib/server/rateLimiter', () => ({
+vi.mock('#lib/server/rateLimiter.ts', () => ({
 	checkKanbanBoardCreateRateLimit: vi.fn(async () => ({ allowed: true })),
 	checkKanbanColumnMutationRateLimit: vi.fn(async () => ({ allowed: true })),
 	checkKanbanCardMutationRateLimit: vi.fn(async () => ({ allowed: true }))

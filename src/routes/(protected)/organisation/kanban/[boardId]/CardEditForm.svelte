@@ -13,16 +13,16 @@
 -->
 
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import { CalendarDays, Settings2, X } from '@lucide/svelte';
 	import { CalendarDate, type DateValue } from '@internationalized/date';
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
-	import { Button } from '$lib/components/ui/button';
-	import * as Popover from '$lib/components/ui/popover';
-	import { Calendar } from '$lib/components/ui/calendar';
-	import RichTextEditor from '$lib/components/rich-text/RichTextEditor.svelte';
-	import type { KanbanTag, KanbanBoardMember } from '$lib/types/database-helpers';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Popover from '#lib/components/ui/popover/index.ts';
+	import { Calendar } from '#lib/components/ui/calendar/index.ts';
+	import RichTextEditor from '#lib/components/rich-text/RichTextEditor.svelte';
+	import type { KanbanTag, KanbanBoardMember } from '#lib/types/database-helpers.ts';
 	import { TAG_COLOR_TOKENS } from './tag-colors';
 	import AssigneeAvatars from './AssigneeAvatars.svelte';
 

@@ -15,7 +15,7 @@
  * @module server/content-owner
  */
 
-import type { ContentOwner } from '$lib/types/chapters';
+import type { ContentOwner } from '#lib/types/chapters.ts';
 
 export type { ContentOwner };
 

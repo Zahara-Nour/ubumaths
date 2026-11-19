@@ -14,7 +14,7 @@
 
 import type { QuestionTemplate, QuestionVariation } from '../types';
 import { assignBlankIndices } from '../generator/assign-blank-indices';
-import { parseChoiceBody } from '$lib/ubumark/parser/choix-parser';
+import { parseChoiceBody } from '#lib/ubumark/parser/choix-parser.ts';
 import { readExpectedChoices } from '../choice-case';
 
 // Types

@@ -8,7 +8,7 @@
  * - Transpiler options
  * - Rendering options
  *
- * Note: AST types and ParseOptions are now in $lib/ubumark
+ * Note: AST types and ParseOptions are now in #lib/ubumark
  *
  * @module exercises/types
  */
@@ -17,10 +17,10 @@
 // IMPORTS
 // ============================================================================
 
-import type { Variable, ResolvedVariable, DocumentNode } from '$lib/ubumark';
-import type { GradeCode } from '$lib/types/grades';
-import type { ContentLocale, TranslatedLocale } from '$lib/types/locale';
-import type { CapitalPairs, GenericFunctionConfig } from '$lib/mathAST/parser/types';
+import type { Variable, ResolvedVariable, DocumentNode } from '#lib/ubumark/index.ts';
+import type { GradeCode } from '#lib/types/grades.ts';
+import type { ContentLocale, TranslatedLocale } from '#lib/types/locale.ts';
+import type { CapitalPairs, GenericFunctionConfig } from '#lib/mathAST/parser/types.ts';
 
 // ============================================================================
 // EXERCISE CATEGORY
@@ -98,9 +98,9 @@ export type {
 	RenderOptions,
 	Variable,
 	ResolvedVariable
-} from '$lib/ubumark';
+} from '#lib/ubumark/index.ts';
 
-export { DEFAULT_IMAGE_SIZE_MAPPINGS } from '$lib/ubumark';
+export { DEFAULT_IMAGE_SIZE_MAPPINGS } from '#lib/ubumark/index.ts';
 
 // ============================================================================
 // RESOURCE TYPES
@@ -1010,7 +1010,7 @@ export type ExerciseUpdate = Partial<Omit<Exercise, 'id' | 'created_at' | 'creat
 	id: string;
 };
 
-// Note: AST NODE TYPES and PARSER OPTIONS have been moved to $lib/ubumark/types
+// Note: AST NODE TYPES and PARSER OPTIONS have been moved to #lib/ubumark/types
 
 // ============================================================================
 // TRANSPILER OPTIONS
@@ -1171,7 +1171,7 @@ export type ResolvedTypstTranspilerOptions = Required<
 		'genericFunctions' | 'capitalPairs' | 'afterQuestion' | 'keepEndWithNext' | 'chainedStart'
 	>;
 
-// Note: RenderOptions, ParseResult, and MathPlaceholder are re-exported from $lib/ubumark
+// Note: RenderOptions, ParseResult, and MathPlaceholder are re-exported from #lib/ubumark
 
 // ============================================================================
 // EXPORT/IMPORT TYPES

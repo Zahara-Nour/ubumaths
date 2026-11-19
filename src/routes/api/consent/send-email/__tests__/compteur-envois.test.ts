@@ -21,17 +21,17 @@ const PARENT_EMAIL = 'parent' + '@example.com';
 
 const sendConsentEmail = vi.fn();
 
-vi.mock('$lib/server/email/brevo', () => ({
+vi.mock('#lib/server/email/brevo.ts', () => ({
 	isBrevoConfigured: () => true,
 	sendConsentEmail: (...args: unknown[]) => sendConsentEmail(...args)
 }));
-vi.mock('$lib/server/middleware/auth', () => ({
+vi.mock('#lib/server/middleware/auth.ts', () => ({
 	requireRole: async () => ({
 		user: { id: TEACHER_ID },
 		profile: { id: TEACHER_ID, email: 'prof' + '@example.com', firstname: 'A', lastname: 'B' }
 	})
 }));
-vi.mock('$lib/server/middleware/student-access', () => ({
+vi.mock('#lib/server/middleware/student-access.ts', () => ({
 	verifyTeacherStudent: async () => true
 }));
 

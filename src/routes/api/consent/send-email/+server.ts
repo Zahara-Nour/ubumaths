@@ -28,17 +28,17 @@
  * - Emails now sent from noreply@ubumaths.fr
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import {
 	closePendingConsentRequest,
 	consentRequestPlan
-} from '$lib/server/parental-consent-requests';
+} from '#lib/server/parental-consent-requests.ts';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
-import { requireRole } from '$lib/server/middleware/auth';
-import { verifyTeacherStudent } from '$lib/server/middleware/student-access';
-import { sendConsentEmail, isBrevoConfigured } from '$lib/server/email/brevo';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { verifyTeacherStudent } from '#lib/server/middleware/student-access.ts';
+import { sendConsentEmail, isBrevoConfigured } from '#lib/server/email/brevo.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/consent/send-email/+server');
 
@@ -272,7 +272,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		`[Send Consent Email] Email sent successfully to ${parent_email} for student ${student_id} by teacher ${user.id}`
 	);
 
-	return json({
+	return Response.json({
 		success: true,
 		message: 'Email de consentement envoyé avec succès !',
 		messageId: result.messageId,

@@ -5,22 +5,22 @@
 -->
 
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import type { PageData } from './$types';
-	import type { DbRiddle } from '$lib/types/riddle';
+	import type { DbRiddle } from '#lib/types/riddle.ts';
 	import {
 		getDifficultyLabel,
 		getDifficultyColor,
 		getStatusLabel,
 		getStatusColor
-	} from '$lib/types/riddle';
-	import { Button } from '$lib/components/ui/button';
-	import { Badge } from '$lib/components/ui/badge';
-	import * as Card from '$lib/components/ui/card';
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
-	import { MarkdownRenderer } from '$lib/components/markdown';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import { invalidateAll } from '$app/navigation';
+	} from '#lib/types/riddle.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import * as DropdownMenu from '#lib/components/ui/dropdown-menu/index.ts';
+	import { MarkdownRenderer } from '#lib/components/markdown/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import { refreshAll } from '$app/navigation';
 	import {
 		Plus,
 		MoreVertical,
@@ -56,7 +56,7 @@
 
 		if (result.type === 'success') {
 			toaster.success('Énigme supprimée');
-			await invalidateAll();
+			await refreshAll();
 		} else {
 			toaster.error('Erreur lors de la suppression');
 		}
@@ -77,7 +77,7 @@
 
 		if (result.type === 'success') {
 			toaster.success(riddle.status === 'draft' ? 'Énigme publiée' : 'Énigme mise en brouillon');
-			await invalidateAll();
+			await refreshAll();
 		} else {
 			toaster.error('Erreur lors de la mise à jour');
 		}

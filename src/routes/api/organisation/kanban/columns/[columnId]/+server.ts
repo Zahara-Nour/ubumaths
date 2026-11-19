@@ -5,14 +5,14 @@
  * DELETE — remove a column (cascade cards). (board owner only)
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { parseKanbanId, updateColumnSchema } from '$lib/server/validation/kanban';
-import { assertBoardOwner, getColumnBoardId, rateLimitResponse } from '$lib/server/kanban';
-import { checkKanbanColumnMutationRateLimit } from '$lib/server/rateLimiter';
-import type { KanbanColumn, KanbanColumnUpdate } from '$lib/types/database-helpers';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { parseKanbanId, updateColumnSchema } from '#lib/server/validation/kanban.ts';
+import { assertBoardOwner, getColumnBoardId, rateLimitResponse } from '#lib/server/kanban.ts';
+import { checkKanbanColumnMutationRateLimit } from '#lib/server/rateLimiter.ts';
+import type { KanbanColumn, KanbanColumnUpdate } from '#lib/types/database-helpers.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/organisation/kanban/columns/[columnId]/+server');
 
@@ -59,7 +59,7 @@ export const PATCH: RequestHandler = async ({ locals, params, request }) => {
 		throw error(500, 'Erreur lors de la mise à jour de la colonne');
 	}
 
-	return json({ column: data as KanbanColumn });
+	return Response.json({ column: data as KanbanColumn });
 };
 
 export const DELETE: RequestHandler = async ({ locals, params }) => {
@@ -86,5 +86,5 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 		throw error(500, 'Erreur lors de la suppression de la colonne');
 	}
 
-	return json({ success: true });
+	return Response.json({ success: true });
 };

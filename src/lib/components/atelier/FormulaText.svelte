@@ -1,5 +1,5 @@
 <script lang="ts">
-	import '$lib/utils/mathlive-styles';
+	import '#lib/utils/mathlive-styles.ts';
 	/**
 	 * Un message dont les formules sont écrites `$…$` (refus de `.réciproque` :
 	 * « sur [0 ; +∞[ : $f^{-1}(x) = \sqrt{x}$ »), formules composées.
@@ -12,7 +12,7 @@
 	 * MathLive ne sait pas composer reste en texte, échappée.
 	 */
 	import { convertLatexToMarkup, convertLatexToSpeakableText } from 'mathlive';
-	import { messageParts } from '$lib/atelier/reciprocal';
+	import { messageParts } from '#lib/atelier/reciprocal.ts';
 
 	interface Props {
 		text: string;

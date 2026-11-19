@@ -12,7 +12,7 @@ import { render } from 'vitest-browser-svelte';
 import { page } from 'vitest/browser';
 
 const pdf = vi.hoisted(() => ({ sources: [] as string[], names: [] as string[] }));
-vi.mock('$lib/typst/pdf-generator', () => ({
+vi.mock('#lib/typst/pdf-generator.ts', () => ({
 	generateAndDownloadPdf: async (generate: () => string, filename: string) => {
 		pdf.sources.push(generate());
 		pdf.names.push(filename);

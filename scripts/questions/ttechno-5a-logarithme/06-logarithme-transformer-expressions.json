@@ -1,0 +1,275 @@
+{
+	"id": "af24839d-880d-46a5-a909-a3ef9283340c",
+	"title": "Transformer des expressions avec le logarithme décimal",
+	"description": "log(2ᵖ3^q) en fonction de log 2 et log 3 ; log a + log b − log c = log n ; expressions littérales : log(10ᵏx), log(xⁿ) + log(xᵐ), log(10ᵏ/xⁿ)",
+	"grades": ["T_TECHNO"],
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Écris $\\log({{eval:2^p*3^q}})$ en fonction de $\\log(2)$ et $\\log(3)$.\n\n$\\log({{eval:2^p*3^q}})=?\\log(2)+?\\log(3)$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..4"
+				},
+				{
+					"name": "q",
+					"expression": "1..3"
+				}
+			],
+			"conditions": ["p+q >= 3"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{p}}"
+				},
+				{
+					"expectedAnswer": "{{q}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $a>0$ et $b>0$ : $\\log(ab)=\\log(a)+\\log(b)$. Pour $a>0$ et $n$ entier naturel : $\\log\\left(a^n\\right)=n\\log(a)$.",
+					"${{eval:2^p*3^q}}={{if:p==1|2|2^{ {{p}} }}}\\times{{if:q==1|3|3^{ {{q}} }}}$, donc $\\log({{eval:2^p*3^q}})=\\log\\left({{if:p==1|2|2^{ {{p}} }}}\\right)+\\log\\left({{if:q==1|3|3^{ {{q}} }}}\\right)=\\textcolor{{{color:primary.0}}}{{{p}}}\\log(2)+\\textcolor{{{color:primary.0}}}{{{q}}}\\log(3)$."
+				]
+			}
+		},
+		{
+			"statement": "Écris $A=\\log({{a}})+\\log({{b}})-\\log({{c}})$ sous la forme $\\log(n)$, avec $n$ entier.\n\n$A=\\log(?)$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "2..5"
+				},
+				{
+					"name": "m",
+					"expression": "2..5"
+				},
+				{
+					"name": "a",
+					"expression": "{{eval:c*m}}"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				}
+			],
+			"conditions": ["m*b != a+b-c"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:m*b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $a>0$ et $b>0$ : $\\log(ab)=\\log(a)+\\log(b)$. Pour $a>0$ et $b>0$ : $\\log\\left(\\dfrac{a}{b}\\right)=\\log(a)-\\log(b)$ ; en particulier $\\log\\left(\\dfrac{1}{b}\\right)=-\\log(b)$.",
+					"$A=\\log\\left(\\dfrac{ {{a}}\\times{{b}} }{ {{c}} }\\right)=\\log(\\textcolor{{{color:primary.0}}}{{{eval:m*b}}})$."
+				]
+			}
+		},
+		{
+			"statement": "Pour tout réel $x>0$, complète.\n\n$\\log({{eval:10^k}}x)=?+\\log(x)$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..4"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $a>0$ et $b>0$ : $\\log(ab)=\\log(a)+\\log(b)$.",
+					"$\\log({{eval:10^k}}x)=\\log({{eval:10^k}})+\\log(x)=\\textcolor{{{color:primary.0}}}{{{k}}}+\\log(x)$."
+				]
+			}
+		},
+		{
+			"statement": "Pour tout réel $x>0$, écris $\\log\\left(x^{ {{n}} }\\right)+\\log\\left(x^{ {{m}} }\\right)$ sous la forme $k\\log(x)$.\n\n$\\log\\left(x^{ {{n}} }\\right)+\\log\\left(x^{ {{m}} }\\right)=?\\log(x)$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2..5"
+				},
+				{
+					"name": "m",
+					"expression": "2..5"
+				}
+			],
+			"conditions": ["n*m != n+m"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n+m}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $a>0$ et $n$ entier naturel : $\\log\\left(a^n\\right)=n\\log(a)$.",
+					"$\\log\\left(x^{ {{n}} }\\right)+\\log\\left(x^{ {{m}} }\\right)={{n}}\\log(x)+{{m}}\\log(x)=\\textcolor{{{color:primary.0}}}{{{eval:n+m}}}\\log(x)$."
+				]
+			}
+		},
+		{
+			"statement": "Pour tout réel $x>0$, complète.\n\n$\\log\\left(\\dfrac{ {{eval:10^k}} }{x^{ {{n}} }}\\right)=?-?\\log(x)$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..3"
+				},
+				{
+					"name": "n",
+					"expression": "2..4"
+				}
+			],
+			"conditions": ["k != n"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				},
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $a>0$ et $b>0$ : $\\log\\left(\\dfrac{a}{b}\\right)=\\log(a)-\\log(b)$ ; en particulier $\\log\\left(\\dfrac{1}{b}\\right)=-\\log(b)$. Pour $a>0$ et $n$ entier naturel : $\\log\\left(a^n\\right)=n\\log(a)$.",
+					"$\\log\\left(\\dfrac{ {{eval:10^k}} }{x^{ {{n}} }}\\right)=\\log({{eval:10^k}})-\\log\\left(x^{ {{n}} }\\right)=\\textcolor{{{color:primary.0}}}{{{k}}}-\\textcolor{{{color:primary.0}}}{{{n}}}\\log(x)$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "log 72 = 3 log 2 + 2 log 3",
+			"variationIndex": 0,
+			"variables": {
+				"p": "3",
+				"q": "2"
+			},
+			"answers": ["3", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : cases échangées",
+			"variationIndex": 0,
+			"variables": {
+				"p": "3",
+				"q": "2"
+			},
+			"answers": ["2", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "log 15 + log 4 − log 5 = log 12",
+			"variationIndex": 1,
+			"variables": {
+				"c": "5",
+				"m": "3",
+				"a": "15",
+				"b": "4"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : log 14 (somme et différence)",
+			"variationIndex": 1,
+			"variables": {
+				"c": "5",
+				"m": "3",
+				"a": "15",
+				"b": "4"
+			},
+			"answers": ["14"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "log(100x) = 2 + log x",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 100",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["100"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "log x² + log x³ = 5 log x",
+			"variationIndex": 3,
+			"variables": {
+				"n": "2",
+				"m": "3"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 6 (exposants multipliés)",
+			"variationIndex": 3,
+			"variables": {
+				"n": "2",
+				"m": "3"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "log(1000/x²) = 3 − 2 log x",
+			"variationIndex": 4,
+			"variables": {
+				"k": "3",
+				"n": "2"
+			},
+			"answers": ["3", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1000 et 2",
+			"variationIndex": 4,
+			"variables": {
+				"k": "3",
+				"n": "2"
+			},
+			"answers": ["1000", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

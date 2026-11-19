@@ -10,16 +10,16 @@
  */
 import { describe, it, expect, vi } from 'vitest';
 import { detailsWithinBudget, detailOfCorrected, submittedCopyDetails } from '../corrected-detail';
-import { gradeQuestion, statusFromBlankStatuses } from '$lib/questions/grading';
+import { gradeQuestion, statusFromBlankStatuses } from '#lib/questions/grading.ts';
 import {
 	GRADING_BUDGET_EXCEEDED_FEEDBACK,
 	SUBMISSION_GRADING_BUDGET_MS,
 	SUBMITTED_COPY_DETAIL_BUDGET_MS
 } from '../grading-budget';
-import type { InstanceBlank, QuestionInstance } from '$lib/questions/types';
-import type { ResolvedMarkdown } from '$lib/ubumark';
-import type { DetailedVerdict } from '$lib/utils/answer-validator';
-import type { CorrectedDetail } from '$lib/types/evaluation-attempt';
+import type { InstanceBlank, QuestionInstance } from '#lib/questions/types.ts';
+import type { ResolvedMarkdown } from '#lib/ubumark/index.ts';
+import type { DetailedVerdict } from '#lib/utils/answer-validator.ts';
+import type { CorrectedDetail } from '#lib/types/evaluation-attempt.ts';
 
 // Fixtures
 const math = (expectedAnswer: string): InstanceBlank => ({

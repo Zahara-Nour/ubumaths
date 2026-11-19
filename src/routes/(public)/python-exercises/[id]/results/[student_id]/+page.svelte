@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import { Button } from '$lib/components/ui/button';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import * as Card from '$lib/components/ui/card';
-	import { Badge } from '$lib/components/ui/badge';
-	import PythonEditor from '$lib/components/python/PythonEditor.svelte';
-	import ExerciseValidationResult from '$lib/components/python/exercises/ExerciseValidationResult.svelte';
+	import { lore } from '#lib/config/lore.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import PythonEditor from '#lib/components/python/PythonEditor.svelte';
+	import ExerciseValidationResult from '#lib/components/python/exercises/ExerciseValidationResult.svelte';
 	import {
 		CheckCircle2,
 		XCircle,
@@ -14,8 +14,8 @@
 		Copy,
 		LayoutGrid
 	} from '@lucide/svelte';
-	import type { ExerciseValidationResult as ValidationResult } from '$lib/shared/python';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import type { ExerciseValidationResult as ValidationResult } from '#lib/shared/python/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();

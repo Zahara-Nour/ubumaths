@@ -1,0 +1,1317 @@
+[
+	{
+		"id": "281ad02d-63ea-440e-a27b-7dcc382536ea",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 60,
+		"level": 16,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "2"
+					}
+				],
+				"statement": "Combien de faces de ce pavé sont exactement pareilles à la face grisée, la face grisée comprise ?\n\n```solide\nforme: pave {{if:o==1|5 3 2|{{if:o==2|6 2 4|4 3 5}}}}\nmarquer: face {{if:m==1|dessus|{{if:m==2|devant|droite}}}}\ncotes: cm\n```\n\n[_] faces",
+				"variables": [
+					{
+						"name": "o",
+						"expression": "1..3"
+					},
+					{
+						"name": "m",
+						"expression": "1..3"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Dans un pavé, deux faces face à face sont pareilles. La face grisée a sa jumelle : {{if:m==1|le dessous|{{if:m==2|la face de derrière|la face de gauche}}}}.",
+						"Les trois longueurs du pavé sont différentes : les autres faces ont d'autres mesures.",
+						"Il y a $\\textcolor{{{color:primary.0}}}{2}$ faces pareilles."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					},
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				],
+				"statement": "La face grisée de ce pavé est un rectangle. Quelles sont ses mesures ?\n\n```solide\nforme: pave {{if:o==1|5 3 2|{{if:o==2|6 2 4|4 3 5}}}}\nmarquer: face {{if:m==1|dessus|{{if:m==2|devant|droite}}}}\ncotes: cm\n```\n\nLongueur : [_] cm\n\nLargeur : [_] cm",
+				"variables": [
+					{
+						"name": "o",
+						"expression": "1..3"
+					},
+					{
+						"name": "m",
+						"expression": "1..3"
+					},
+					{
+						"name": "a",
+						"expression": "{{if:o==1|{{if:m==1|5|{{if:m==2|5|3}}}}|{{if:o==2|{{if:m==1|6|{{if:m==2|6|4}}}}|{{if:m==1|4|{{if:m==2|5|5}}}}}}}}"
+					},
+					{
+						"name": "b",
+						"expression": "{{if:o==1|{{if:m==1|3|{{if:m==2|2|2}}}}|{{if:o==2|{{if:m==1|2|{{if:m==2|4|2}}}}|{{if:m==1|3|{{if:m==2|4|3}}}}}}}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Chaque côté de la face grisée est une arête du pavé : on lit sa mesure sur l'arête pareille qui porte une cote.",
+						"La face grisée mesure $\\textcolor{{{color:primary.0}}}{{{a}}}$ cm sur $\\textcolor{{{color:primary.0}}}{{{b}}}$ cm."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{c}}"
+					},
+					{
+						"expectedAnswer": "{{eval:6-c}}"
+					}
+				],
+				"statement": "Parmi les $6$ faces de {{if:s==1|ce cube|{{if:s==2|ce pavé|ce pavé}}}}, combien sont des carrés, et combien sont des rectangles qui ne sont pas des carrés ?\n\n```solide\nforme: {{if:s==1|cube 3|{{if:s==2|pave 3 3 5|pave 5 3 2}}}}\ncotes: cm\n```\n\n[_] carrés et [_] rectangles non carrés",
+				"variables": [
+					{
+						"name": "s",
+						"expression": "1..3"
+					},
+					{
+						"name": "c",
+						"expression": "{{if:s==1|6|{{if:s==2|2|0}}}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"{{if:s==1|Toutes les arêtes mesurent $3$ cm : les $6$ faces sont des carrés.|{{if:s==2|Le dessus et le dessous mesurent $3$ cm sur $3$ cm : $2$ carrés. Les $4$ faces debout mesurent $3$ cm sur $5$ cm : des rectangles qui ne sont pas des carrés.|Les arêtes mesurent $5$, $3$ et $2$ cm : aucune face n'a quatre côtés égaux.}}}}",
+						"$\\textcolor{{{color:primary.0}}}{{{c}}}$ carré{{if:s==1|s|{{if:s==2|s|}}}} et $\\textcolor{{{color:primary.0}}}{{{eval:6-c}}}$ rectangle{{if:s==1||{{if:s==2|s|s}}}} non carré{{if:s==1||{{if:s==2|s|s}}}}."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Les faces d'un cube et d'un pavé : mesures",
+		"description": "Faces opposées pareilles ; mesures d'une face d'après les cotes ; combien de carrés et de rectangles non carrés (6 et 0, 2 et 4, 0 et 6)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"m": "1",
+					"o": "1"
+				},
+				"description": "Face du dessus : 2 pareilles",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"m": "3",
+					"o": "3"
+				},
+				"description": "Face de droite : 2 pareilles",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"m": "2",
+					"o": "2"
+				},
+				"description": "Erreur : la face grisée seule",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["4"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"m": "2",
+					"o": "1"
+				},
+				"description": "Erreur : les 4 faces debout",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5", "3"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "3",
+					"m": "1",
+					"o": "1"
+				},
+				"description": "Dessus du pavé 5 3 2 : 5 sur 3",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["6", "4"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "6",
+					"b": "4",
+					"m": "2",
+					"o": "2"
+				},
+				"description": "Devant du pavé 6 2 4 : 6 sur 4",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["5", "3"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "3",
+					"m": "3",
+					"o": "3"
+				},
+				"description": "Droite du pavé 4 3 5 : 5 sur 3",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["3", "5"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "5",
+					"b": "3",
+					"m": "1",
+					"o": "1"
+				},
+				"description": "Erreur : longueur et largeur échangées",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["5", "2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "5",
+					"b": "3",
+					"m": "1",
+					"o": "1"
+				},
+				"description": "Erreur : la hauteur prise pour la largeur",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["6", "0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "6",
+					"s": "1"
+				},
+				"description": "Cube : 6 et 0",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["2", "4"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "2",
+					"s": "2"
+				},
+				"description": "Pavé à base carrée : 2 et 4",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["1", "5"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "2",
+					"s": "2"
+				},
+				"description": "Erreur : le dessus seul compté",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["0", "6"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "0",
+					"s": "3"
+				},
+				"description": "Pavé sans carré : 0 et 6",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["0", "6"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "6",
+					"s": "1"
+				},
+				"description": "Erreur : cube jugé sans carré",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "af2d7e03-048a-4540-aa28-3e0a1baf3812",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CM1", "CM2"],
+		"delay": 60,
+		"level": 15,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{r}}"
+					}
+				],
+				"statement": "{{if:p==1|J'ai $5$ faces : $2$ triangles pareils, face à face, et $3$ rectangles.|{{if:p==2|J'ai $7$ faces : $2$ pentagones pareils, face à face, et $5$ rectangles.|{{if:p==3|J'ai $5$ faces : $1$ carré, et $4$ triangles qui se rejoignent en un même sommet.|{{if:p==4|J'ai $4$ faces, toutes des triangles ; trois d'entre eux se rejoignent en un même sommet.|J'ai $8$ faces : $2$ hexagones pareils, face à face, et $6$ rectangles.}}}}}}}} Qui suis-je ?\n\n```choix\n- C'est un cube.\n- C'est un pavé.\n- C'est une boule.\n- C'est un cône.\n- C'est une pyramide.\n- C'est un cylindre.\n- C'est un prisme droit.\n```",
+				"variables": [
+					{
+						"name": "p",
+						"expression": "1..5"
+					},
+					{
+						"name": "r",
+						"expression": "{{if:p==1|6|{{if:p==2|6|{{if:p==3|4|{{if:p==4|4|6}}}}}}}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"{{if:p==1|Deux bases pareilles face à face, reliées par des rectangles : c'est $\\textcolor{{{color:primary.0}}}{\\text{un prisme droit}}$, à base triangulaire.|{{if:p==2|Deux bases pareilles face à face, reliées par des rectangles : c'est $\\textcolor{{{color:primary.0}}}{\\text{un prisme droit}}$, à base pentagonale ($5$ côtés, donc $5$ rectangles).|{{if:p==3|Des triangles qui se rejoignent en un sommet, sur une base : c'est $\\textcolor{{{color:primary.0}}}{\\text{une pyramide}}$, à base carrée.|{{if:p==4|Des triangles qui se rejoignent en un sommet : c'est $\\textcolor{{{color:primary.0}}}{\\text{une pyramide}}$, dont la base est elle aussi un triangle.|Deux bases pareilles face à face, reliées par des rectangles : c'est $\\textcolor{{{color:primary.0}}}{\\text{un prisme droit}}$, à base hexagonale ($6$ côtés, donc $6$ rectangles).}}}}}}}}"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:c-1}}"
+					}
+				],
+				"statement": "{{if:c==1|J'ai $6$ faces, toutes des carrés pareils ; $8$ sommets et $12$ arêtes.|J'ai $6$ faces rectangulaires, qui ne sont pas toutes des carrés ; $8$ sommets et $12$ arêtes.}} Qui suis-je ?\n\n```choix\n- C'est un cube.\n- C'est un pavé.\n- C'est une pyramide.\n- C'est un cylindre.\n```",
+				"variables": [
+					{
+						"name": "c",
+						"expression": "1..2"
+					}
+				],
+				"correction": {
+					"steps": [
+						"{{if:c==1|Six faces carrées toutes pareilles : c'est $\\textcolor{{{color:primary.0}}}{\\text{un cube}}$.|Six faces rectangulaires, pas toutes carrées : c'est $\\textcolor{{{color:primary.0}}}{\\text{un pavé}}$.}}"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "6"
+					},
+					{
+						"expectedAnswer": "9"
+					}
+				],
+				"statement": "Combien ce prisme droit a-t-il de sommets, et combien d'arêtes ?\n\n```solide\nforme: prisme {{if:o==1|triangle 3 2.5 4|{{if:o==2|triangle-rectangle 3 2 4.5|triangle 4 2 3}}}}\n```\n\n[_] sommets et [_] arêtes",
+				"variables": [
+					{
+						"name": "o",
+						"expression": "1..3"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Les traits en pointillés sont les arêtes cachées : elles comptent aussi.",
+						"Sommets : $3$ sur la base de devant et $3$ sur celle de derrière, $\\textcolor{{{color:primary.0}}}{6}$.",
+						"Arêtes : $3$ autour de chaque base, et $3$ qui les relient : $3 + 3 + 3 = \\textcolor{{{color:primary.0}}}{9}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Le portrait d'un solide",
+		"description": "Retrouver un solide d'après ses faces (prismes à base triangle, pentagone, hexagone ; pyramides ; cube, pavé) ; sommets et arêtes d'un prisme (6, 9)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["6"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"p": "1",
+					"r": "6"
+				},
+				"description": "Prisme à base triangle",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["4"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"p": "1",
+					"r": "6"
+				},
+				"description": "Erreur : prisme pris pour une pyramide",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["6"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"p": "2",
+					"r": "6"
+				},
+				"description": "Prisme à base pentagone",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["4"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"p": "3",
+					"r": "4"
+				},
+				"description": "Pyramide à base carrée",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["6"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"p": "3",
+					"r": "4"
+				},
+				"description": "Erreur : pyramide prise pour un prisme",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["4"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"p": "4",
+					"r": "4"
+				},
+				"description": "Pyramide à base triangle",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["6"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"p": "5",
+					"r": "6"
+				},
+				"description": "Prisme à base hexagone",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "1"
+				},
+				"description": "Cube",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "1"
+				},
+				"description": "Erreur : cube pris pour un pavé",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "2"
+				},
+				"description": "Pavé",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "2"
+				},
+				"description": "Erreur : pavé pris pour un cube",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["6", "9"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"o": "1"
+				},
+				"description": "Prisme : 6 sommets, 9 arêtes",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["6", "7"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"o": "1"
+				},
+				"description": "Erreur : arêtes cachées oubliées",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["9", "6"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"o": "2"
+				},
+				"description": "Erreur : sommets et arêtes échangés",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["8", "12"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"o": "3"
+				},
+				"description": "Erreur : compté comme un pavé",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "b423785d-cfe4-4387-a617-d71ab18838a1",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 60,
+		"level": 17,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{n}}"
+					},
+					{
+						"expectedAnswer": "{{eval:n+1}}"
+					}
+				],
+				"statement": "Combien cette pyramide a-t-elle de faces latérales, et combien de faces en tout ?\n\n```solide\nforme: pyramide {{if:q==1|carree 3 3.5|{{if:q==2|rectangle 4 2.5 3.5|triangle 3.5 3.5}}}}\nmarquer: face dessous\n```\n\nLa base est grisée.\n\n[_] faces latérales et [_] faces en tout",
+				"variables": [
+					{
+						"name": "q",
+						"expression": "1..3"
+					},
+					{
+						"name": "n",
+						"expression": "{{if:q==1|4|{{if:q==2|4|3}}}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Chaque côté de la base porte une face latérale, un triangle qui monte jusqu'au sommet.",
+						"La base a $\\textcolor{{{color:primary.0}}}{{{n}}}$ côtés : $\\textcolor{{{color:primary.0}}}{{{n}}}$ faces latérales, et avec la base, $\\textcolor{{{color:primary.0}}}{{{eval:n+1}}}$ faces en tout."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{n}}"
+					},
+					{
+						"expectedAnswer": "{{eval:n+1}}"
+					}
+				],
+				"statement": "La base d'une pyramide a ${{n}}$ côtés{{if:n==1||{{if:n==2||{{if:n==3||{{if:n==4||{{if:n==5| (un pentagone)|{{if:n==6| (un hexagone)|{{if:n==7|| (un octogone)}}}}}}}}}}}}}}. Combien cette pyramide a-t-elle de faces latérales, et combien de faces en tout ?\n\n[_] faces latérales et [_] faces en tout",
+				"variables": [
+					{
+						"name": "n",
+						"expression": "5..8"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Chaque côté de la base porte une face latérale, un triangle qui monte jusqu'au sommet : $\\textcolor{{{color:primary.0}}}{{{n}}}$ faces latérales.",
+						"Avec la base : ${{n}} + 1 = \\textcolor{{{color:primary.0}}}{{{eval:n+1}}}$ faces en tout."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Quelle phrase est vraie pour toutes les pyramides ?\n\n```choix\n- Ses faces latérales sont des triangles qui se rejoignent en un même sommet.\n- Toutes ses faces sont des triangles.\n- Sa base est un carré.\n- Elle a $5$ faces.\n```",
+				"variables": [],
+				"correction": {
+					"steps": [
+						"Une pyramide peut avoir une base carrée, rectangle, triangulaire ou à plus de côtés : ni sa base, ni son nombre de faces ne sont toujours les mêmes, et sa base n'est un triangle que parfois.",
+						"Ce qui est toujours vrai : $\\textcolor{{{color:primary.0}}}{\\text{ses faces latérales sont des triangles qui se rejoignent au sommet}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Les faces d'une pyramide : base et faces latérales",
+		"description": "Faces latérales et faces en tout (base à 3, 4, puis 5 à 8 côtés, sans dessin) ; ce qui est vrai pour toutes les pyramides",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["4", "5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"n": "4",
+					"q": "1"
+				},
+				"description": "Base carrée : 4 et 5",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["4", "4"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"n": "4",
+					"q": "1"
+				},
+				"description": "Erreur : base oubliée",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["4", "5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"n": "4",
+					"q": "2"
+				},
+				"description": "Base rectangle : 4 et 5",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["3", "4"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"n": "3",
+					"q": "3"
+				},
+				"description": "Base triangle : 3 et 4",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["4", "4"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"n": "3",
+					"q": "3"
+				},
+				"description": "Erreur : base triangle comptée parmi les faces latérales",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5", "6"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"n": "5"
+				},
+				"description": "Base à 5 côtés : 5 et 6",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["8", "9"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"n": "8"
+				},
+				"description": "Base à 8 côtés : 8 et 9",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["6", "8"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"n": "6"
+				},
+				"description": "Erreur : comme un prisme (deux bases)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["7", "7"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"n": "7"
+				},
+				"description": "Erreur : base oubliée",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "La phrase vraie",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {},
+				"description": "Erreur : toutes les faces sont des triangles",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["3"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {},
+				"description": "Erreur : toujours 5 faces",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "b80d1619-1738-4a0e-ba1a-4d13fc9f2507",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CM1", "CM2"],
+		"delay": 30,
+		"level": 14,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "6"
+					}
+				],
+				"statement": "Comment s'appelle ce solide ?\n\n```solide\nforme: prisme {{if:o==1|triangle 3 2.5 4|{{if:o==2|triangle-rectangle 3 2 4.5|triangle 4 2 3}}}}\n```\n\n```choix\n- C'est un cube.\n- C'est un pavé.\n- C'est une boule.\n- C'est un cône.\n- C'est une pyramide.\n- C'est un cylindre.\n- C'est un prisme droit.\n```",
+				"variables": [
+					{
+						"name": "o",
+						"expression": "1..3"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Il a deux faces pareilles, face à face : ce sont des triangles, ses $\\textcolor{{{color:primary.0}}}{\\text{bases}}$. Ses autres faces, les faces latérales, sont des rectangles.",
+						"C'est $\\textcolor{{{color:primary.0}}}{\\text{un prisme droit}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "4"
+					}
+				],
+				"statement": "Comment s'appelle ce solide ?\n\n```solide\nforme: pyramide triangle {{if:o==1|3.5 3.5|{{if:o==2|4 3|3 4}}}}\n```\n\n```choix\n- C'est un cube.\n- C'est un pavé.\n- C'est une boule.\n- C'est un cône.\n- C'est une pyramide.\n- C'est un cylindre.\n- C'est un prisme droit.\n```",
+				"variables": [
+					{
+						"name": "o",
+						"expression": "1..3"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Toutes ses faces sont des triangles, et trois d'entre eux se rejoignent en un même sommet, en haut.",
+						"Un prisme droit aurait deux triangles face à face, reliés par des rectangles.",
+						"C'est $\\textcolor{{{color:primary.0}}}{\\text{une pyramide}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{r}}"
+					}
+				],
+				"statement": "Comment s'appelle ce solide ?\n\n```solide\nforme: {{if:s==1|boule 2|{{if:s==2|cone 1.5 3.5|{{if:s==3|pyramide carree 3 3.5|{{if:s==4|pyramide rectangle 4 2.5 3.5|cylindre 1.5 3}}}}}}}}\n```\n\n```choix\n- C'est un cube.\n- C'est un pavé.\n- C'est une boule.\n- C'est un cône.\n- C'est une pyramide.\n- C'est un cylindre.\n- C'est un prisme droit.\n```",
+				"variables": [
+					{
+						"name": "s",
+						"expression": "1..5"
+					},
+					{
+						"name": "r",
+						"expression": "{{if:s==1|2|{{if:s==2|3|{{if:s==3|4|{{if:s==4|4|5}}}}}}}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"{{if:s==1|Elle est toute ronde : ni face plane, ni sommet, ni arête. C'est $\\textcolor{{{color:primary.0}}}{\\text{une boule}}$.|{{if:s==2|Une base ronde, un disque, et une face courbe qui finit en pointe : c'est $\\textcolor{{{color:primary.0}}}{\\text{un cône}}$.|{{if:s==3|Une base carrée et quatre triangles qui se rejoignent en un sommet : c'est $\\textcolor{{{color:primary.0}}}{\\text{une pyramide}}$.|{{if:s==4|Une base rectangle et quatre triangles qui se rejoignent en un sommet : c'est $\\textcolor{{{color:primary.0}}}{\\text{une pyramide}}$.|Deux disques face à face, reliés par une face courbe. Ses bases ne sont pas des polygones : ce n'est pas un prisme droit, c'est $\\textcolor{{{color:primary.0}}}{\\text{un cylindre}}$.}}}}}}}}"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Lequel de ces solides est un prisme droit ?\n\n````choix\n- ```solide\n  forme: prisme {{if:o==1|triangle 3 2.5 4|{{if:o==2|triangle-rectangle 3 2 4.5|triangle 4 2 3}}}}\n  ```\n- ```solide\n  forme: pyramide triangle 3.5 3.5\n  ```\n- ```solide\n  forme: cylindre 1.5 3\n  ```\n- ```solide\n  forme: cone 1.5 3.5\n  ```\n````",
+				"variables": [
+					{
+						"name": "o",
+						"expression": "1..3"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Un prisme droit a deux bases pareilles, des polygones, face à face, reliées par des rectangles.",
+						"La pyramide finit en pointe ; le cylindre et le cône ont des bases rondes.",
+						"C'est $\\textcolor{{{color:primary.0}}}{\\text{le solide aux deux triangles face à face}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Nommer un solide, prisme droit compris",
+		"description": "Sept noms : prisme droit debout ou couché, pyramide à base triangle (piège), boule, cône, pyramide, cylindre ; lequel est un prisme droit parmi quatre solides",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["6"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"o": "1"
+				},
+				"description": "Prisme à base isocèle",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["6"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"o": "2"
+				},
+				"description": "Prisme couché, base triangle rectangle",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["4"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"o": "1"
+				},
+				"description": "Erreur : prisme pris pour une pyramide",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"o": "3"
+				},
+				"description": "Erreur : prisme pris pour un pavé",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["4"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"o": "1"
+				},
+				"description": "Pyramide à base triangle",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["6"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"o": "2"
+				},
+				"description": "Erreur : pyramide à base triangle prise pour un prisme",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"r": "2",
+					"s": "1"
+				},
+				"description": "Boule",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["3"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"r": "3",
+					"s": "2"
+				},
+				"description": "Cône",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["4"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"r": "4",
+					"s": "4"
+				},
+				"description": "Pyramide à base rectangle",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"r": "5",
+					"s": "5"
+				},
+				"description": "Cylindre",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["6"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"r": "5",
+					"s": "5"
+				},
+				"description": "Erreur : cylindre pris pour un prisme droit",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["4"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"r": "3",
+					"s": "2"
+				},
+				"description": "Erreur : cône pris pour une pyramide",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"o": "1"
+				},
+				"description": "Le prisme parmi quatre solides",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"o": "1"
+				},
+				"description": "Erreur : la pyramide à base triangle",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"o": "2"
+				},
+				"description": "Erreur : le cylindre",
+				"variationIndex": 3
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "f83c0424-7010-43e0-9ae0-ac7da1d948d5",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 60,
+		"level": 18,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Quelle est la forme de la face grisée de ce prisme droit ?\n\n```solide\nforme: prisme {{if:o==1|triangle 3 2.5 4|{{if:o==2|triangle-rectangle 3 2 4.5|triangle 4 2 3}}}}\nmarquer: face {{if:o==1|dessous|{{if:o==2|{{if:m==1|dessous|gauche}}|dessous}}}}\ncotes: cm\n```\n\n```choix\n- C'est un rectangle.\n- C'est un triangle.\n- C'est un carré.\n```",
+				"variables": [
+					{
+						"name": "o",
+						"expression": "1..3"
+					},
+					{
+						"name": "m",
+						"expression": "1..2"
+					}
+				],
+				"correction": {
+					"steps": [
+						"La face grisée relie la base de devant à celle de derrière : c'est une face latérale.",
+						"En perspective, elle est dessinée penchée ; dans le vrai prisme, ses angles sont droits et ses côtés n'ont pas tous la même longueur (voir les cotes).",
+						"Les faces latérales d'un prisme droit sont des $\\textcolor{{{color:primary.0}}}{\\text{rectangles}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Quelle est la forme de la face grisée de ce prisme droit ?\n\n```solide\nforme: prisme {{if:o==1|triangle 3 2.5 4|{{if:o==2|triangle-rectangle 3 2 4.5|triangle 4 2 3}}}}\nmarquer: face {{if:m==1|devant|derriere}}\n```\n\n```choix\n- C'est un triangle.\n- C'est un rectangle.\n- C'est un carré.\n```",
+				"variables": [
+					{
+						"name": "o",
+						"expression": "1..3"
+					},
+					{
+						"name": "m",
+						"expression": "1..2"
+					}
+				],
+				"correction": {
+					"steps": [
+						"La face grisée est {{if:m==1|devant|derrière}} : c'est une des deux bases du prisme. Elle a $3$ côtés.",
+						"Les bases de ce prisme sont des $\\textcolor{{{color:primary.0}}}{\\text{triangles}}$, pareils et face à face."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "5"
+					},
+					{
+						"expectedAnswer": "2"
+					},
+					{
+						"expectedAnswer": "3"
+					}
+				],
+				"statement": "Combien ce prisme droit a-t-il de faces ? Combien de bases, combien de faces latérales ?\n\n```solide\nforme: prisme {{if:o==1|triangle 3 2.5 4|{{if:o==2|triangle-rectangle 3 2 4.5|triangle 4 2 3}}}}\n```\n\n[_] faces : [_] bases et [_] faces latérales",
+				"variables": [
+					{
+						"name": "o",
+						"expression": "1..3"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Les $2$ bases sont les triangles de devant et de derrière.",
+						"Chaque côté de la base porte une face latérale, un rectangle : $3$ faces latérales.",
+						"$2 + 3 = \\textcolor{{{color:primary.0}}}{5}$ faces."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{n}}"
+					},
+					{
+						"expectedAnswer": "{{eval:n+2}}"
+					}
+				],
+				"statement": "Les bases d'un prisme droit sont des polygones à ${{n}}$ côtés. Combien ce prisme a-t-il de faces latérales, et combien de faces en tout ?\n\n[_] faces latérales et [_] faces en tout",
+				"variables": [
+					{
+						"name": "n",
+						"expression": "5..8"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Chaque côté d'une base porte une face latérale, un rectangle : $\\textcolor{{{color:primary.0}}}{{{n}}}$ faces latérales.",
+						"Avec les $2$ bases : ${{n}} + 2 = \\textcolor{{{color:primary.0}}}{{{eval:n+2}}}$ faces en tout."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Les faces d'un prisme droit",
+		"description": "Faces latérales rectangles, bases triangles ; 5 faces = 2 bases + 3 faces latérales ; bases à 5 à 8 côtés, sans dessin",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"m": "1",
+					"o": "1"
+				},
+				"description": "Face latérale du dessous : rectangle",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"m": "2",
+					"o": "2"
+				},
+				"description": "Face latérale de gauche : rectangle",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"m": "2",
+					"o": "3"
+				},
+				"description": "Erreur : face latérale prise pour un triangle",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"m": "2",
+					"o": "1"
+				},
+				"description": "Erreur : face latérale prise pour un carré",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"m": "1",
+					"o": "1"
+				},
+				"description": "Base de devant : triangle",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"m": "2",
+					"o": "2"
+				},
+				"description": "Base de derrière : triangle",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"m": "1",
+					"o": "3"
+				},
+				"description": "Erreur : base prise pour un rectangle",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["5", "2", "3"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"o": "1"
+				},
+				"description": "5 faces : 2 bases, 3 latérales",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["4", "1", "3"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"o": "1"
+				},
+				"description": "Erreur : une seule base",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["6", "2", "4"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"o": "2"
+				},
+				"description": "Erreur : compté comme un pavé",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["5", "7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"n": "5"
+				},
+				"description": "Bases à 5 côtés : 5 et 7",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["8", "10"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"n": "8"
+				},
+				"description": "Bases à 8 côtés : 8 et 10",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["6", "7"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"n": "6"
+				},
+				"description": "Erreur : une seule base",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["7", "7"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"n": "7"
+				},
+				"description": "Erreur : bases oubliées",
+				"variationIndex": 3
+			}
+		],
+		"classification_node_id": null
+	}
+]

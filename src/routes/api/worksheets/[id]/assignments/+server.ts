@@ -13,14 +13,14 @@
  * - Uses worksheet_assignment_classes junction table
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAuth } from '$lib/server/middleware/auth';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
 import { z } from 'zod';
-import { CORRECTION_RELEASE_MODES, ASSIGNMENT_STATUSES } from '$lib/types/worksheets';
-import { getCorrectionReleaseStatus } from '$lib/server/worksheets/correction-release';
-import { guidanceLevelSchema } from '$lib/server/validation/worksheets';
-import { createServerLogger } from '$lib/utils/logger';
+import { CORRECTION_RELEASE_MODES, ASSIGNMENT_STATUSES } from '#lib/types/worksheets.ts';
+import { getCorrectionReleaseStatus } from '#lib/server/worksheets/correction-release.ts';
+import { guidanceLevelSchema } from '#lib/server/validation/worksheets.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/worksheets/[id]/assignments/+server');
 
@@ -222,7 +222,7 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 			}
 		}
 
-		return json({
+		return Response.json({
 			success: true,
 			assignments: assignmentsWithStatus
 		});
@@ -437,7 +437,7 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 		if (fetchError) {
 			logger.error('Error fetching created assignment:', fetchError);
 			// Assignment was created, just return basic data
-			return json({
+			return Response.json({
 				success: true,
 				message: 'Affectation créée',
 				assignment
@@ -470,7 +470,7 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 			...rest
 		} = fullAssignment;
 
-		return json({
+		return Response.json({
 			success: true,
 			message: 'Affectation créée',
 			assignment: {

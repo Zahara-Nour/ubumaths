@@ -1,8 +1,8 @@
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRoles } from '$lib/server/middleware/auth';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
 import { z } from 'zod';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/moderation/reports/[id]/+server');
 
@@ -108,5 +108,5 @@ export const PUT: RequestHandler = async ({ request, params, locals }) => {
 		throw error(500, 'Failed to review report');
 	}
 
-	return json({ success: true });
+	return Response.json({ success: true });
 };

@@ -9,15 +9,15 @@
 -->
 
 <script lang="ts">
-	import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
-	import type { BuddyMessageContext } from '$lib/config/buddy-messages';
-	import type { BuddyExpression, BuddyState, WeekMoment } from '$lib/types/buddy';
+	import { studentCache } from '#lib/stores/studentDashboardCache.svelte.ts';
+	import type { BuddyMessageContext } from '#lib/config/buddy-messages.ts';
+	import type { BuddyExpression, BuddyState, WeekMoment } from '#lib/types/buddy.ts';
 	import { buddyMessageEngine } from './buddy-message-engine';
 	import BuddyAvatar from './BuddyAvatar.svelte';
 	import BuddySpeechBubble from './BuddySpeechBubble.svelte';
 	import BuddyStatusPanel from './BuddyStatusPanel.svelte';
 	import { onMount, untrack } from 'svelte';
-	import { displayedConstance, utcDay } from '$lib/utils/buddy-constance';
+	import { displayedConstance, utcDay } from '#lib/utils/buddy-constance.ts';
 	import { page } from '$app/state';
 	import { BUBBLE_DURATION, GREETING_DELAY, LINK_BUBBLE_DURATION } from './buddy-timing';
 	import {

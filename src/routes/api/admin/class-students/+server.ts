@@ -1,8 +1,8 @@
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { classStudentsQuerySchema } from '$lib/server/validation/admin';
-import { requireAdmin } from '$lib/server/middleware/auth';
-import { createServerLogger } from '$lib/utils/logger';
+import { classStudentsQuerySchema } from '#lib/server/validation/admin.ts';
+import { requireAdmin } from '#lib/server/middleware/auth.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/admin/class-students/+server');
 
@@ -51,7 +51,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 	if (!classId) {
 		// Return empty array if no class_id provided
-		return json({ users: [] });
+		return Response.json({ users: [] });
 	}
 
 	try {
@@ -102,7 +102,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			.filter((user) => user !== null)
 			.sort((a, b) => (a?.firstname || '').localeCompare(b?.firstname || '')); // Sort alphabetically
 
-		return json({ users });
+		return Response.json({ users });
 	} catch (err) {
 		logger.error('[GET /api/admin/class-students] Error:', err);
 

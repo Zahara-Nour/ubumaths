@@ -14,17 +14,17 @@
 	 * @component
 	 */
 
-	import { useGrapheurStore } from '$lib/stores/grapheur-context';
+	import { useGrapheurStore } from '#lib/stores/grapheur-context.ts';
 
 	// L'instance de l'atelier qui nous contient, ou celle par défaut.
 	const grapheurStore = useGrapheurStore();
-	import type { CoordinateTransformer } from '$lib/grapheur/viewport';
-	import { toAnalysisInputs } from '$lib/grapheur/analysis';
+	import type { CoordinateTransformer } from '#lib/grapheur/viewport.ts';
+	import { toAnalysisInputs } from '#lib/grapheur/analysis.ts';
 	import {
 		findAllIntersections,
 		deduplicateIntersections,
 		type IntersectionResult
-	} from '$lib/grapheur/intersections';
+	} from '#lib/grapheur/intersections.ts';
 
 	// Props
 	let {

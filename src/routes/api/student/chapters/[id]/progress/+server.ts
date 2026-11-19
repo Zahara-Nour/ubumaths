@@ -38,13 +38,13 @@
  * - Only returns the authenticated student's own progress
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { getMyChecklistProgress, getChapterWithContent } from '$lib/server/chapters';
-import { uuidSchema } from '$lib/server/validation/common';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { getMyChecklistProgress, getChapterWithContent } from '#lib/server/chapters.ts';
+import { uuidSchema } from '#lib/server/validation/common.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/student/chapters/[id]/progress/+server');
 
@@ -95,7 +95,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			// Don't fail entirely, just return empty checklist
 		}
 
-		return json({
+		return Response.json({
 			progress: chapterResult.data.progress,
 			checklistItems: checklistResult.data || []
 		});

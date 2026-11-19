@@ -169,7 +169,7 @@ bloc du grapheur dans `src/app.css`). Le tester sur la couleur **rendue**
 
 Une courbe stocke une **identité** (`curve-1` … `curve-4`), jamais une valeur. La
 teinte vit dans `src/app.css` (`--color-curve-N`, en `light-dark()`), et
-`curveColorValue()` (`$lib/grapheur/colors`) la traduit au moment de peindre :
+`curveColorValue()` (`#lib/grapheur/colors.ts`) la traduit au moment de peindre :
 
 ```svelte
 <path style:stroke={curveColorValue(func.color)} /> <!-- pas stroke={func.color} -->

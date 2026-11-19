@@ -17,17 +17,17 @@
 -->
 
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import type { PageData } from './$types';
-	import * as Tabs from '$lib/components/ui/tabs';
-	import { Badge } from '$lib/components/ui/badge';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
-	import { selectedClassStore } from '$lib/stores/selectedClass.svelte';
-	import { getSelectedPeriodId } from '$lib/stores/selectedPeriod.svelte';
+	import * as Tabs from '#lib/components/ui/tabs/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import { teacherCache } from '#lib/stores/teacherDashboardCache.svelte.ts';
+	import { selectedClassStore } from '#lib/stores/selectedClass.svelte.ts';
+	import { getSelectedPeriodId } from '#lib/stores/selectedPeriod.svelte.ts';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
-	import { openVipCardDrawModal, openVipCardsModal } from '$lib/utils/vip-card-modals';
+	import { openVipCardDrawModal, openVipCardsModal } from '#lib/utils/vip-card-modals.ts';
 	import GidouillesTab from './GidouillesTab.svelte';
 	import ActivationRequestsTab, { type ActivationRequest } from './ActivationRequestsTab.svelte';
 
@@ -65,13 +65,13 @@
 			tab === 'gidouilles'
 				? '/dashboard/teacher/gamification/rewards'
 				: `/dashboard/teacher/gamification/rewards?tab=${tab}`;
-		goto(url, { replaceState: false });
+		goto(url, { replace: false });
 	}
 
 	// Local state for activation requests (enables optimistic updates)
 	let activationRequests = $state<ActivationRequest[]>([]);
 
-	// Sync local state with server data (runs on mount and after invalidateAll)
+	// Sync local state with server data (runs on mount and after refreshAll)
 	$effect(() => {
 		activationRequests = data.activationRequests as ActivationRequest[];
 	});

@@ -13,7 +13,7 @@
  * (droits RGPD art. 15, 17 et 20).
  */
 
-import { json, type Handle } from '@sveltejs/kit';
+import type { Handle } from '@sveltejs/kit/hooks';
 
 // ============================================================================
 // CONSTANTES
@@ -63,7 +63,7 @@ export const accountStatusHandle: Handle = async ({ event, resolve }) => {
 	const estApi = routeId?.startsWith('/api/') ?? false;
 	const estEcriture = !METHODES_LECTURE.has(event.request.method);
 	if (estApi || estEcriture) {
-		return json({ message: 'Compte non approuvé' }, { status: 403 });
+		return Response.json({ message: 'Compte non approuvé' }, { status: 403 });
 	}
 
 	// Page en lecture : le layout `(protected)` redirige (attente) ou déconnecte (refus).

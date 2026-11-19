@@ -7,7 +7,12 @@
  * derrière = texte visible, sous-liste ciblée par un marqueur à son retrait.
  */
 import { describe, it, expect } from 'vitest';
-import { parseMarkdown, stripMarkdown, type ListNode, type ParagraphNode } from '$lib/ubumark';
+import {
+	parseMarkdown,
+	stripMarkdown,
+	type ListNode,
+	type ParagraphNode
+} from '#lib/ubumark/index.ts';
 
 function listes(markdown: string): ListNode[] {
 	return parseMarkdown(markdown).children.filter((c): c is ListNode => c.type === 'list');

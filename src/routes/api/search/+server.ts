@@ -9,12 +9,11 @@
  * decision, not the safety net.
  */
 
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRoles } from '$lib/server/middleware/auth';
-import { rateLimit } from '$lib/server/middleware/rateLimit';
-import { searchQuerySchema } from '$lib/server/validation/search';
-import { searchResources } from '$lib/server/search';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import { rateLimit } from '#lib/server/middleware/rateLimit.ts';
+import { searchQuerySchema } from '#lib/server/validation/search.ts';
+import { searchResources } from '#lib/server/search.ts';
 
 export const GET: RequestHandler = async ({ url, locals }) => {
 	const { user } = await requireRoles(locals, ['teacher', 'admin']);
@@ -34,7 +33,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	});
 
 	if (!parsed.success) {
-		return json({ error: parsed.error.issues[0].message }, { status: 400 });
+		return Response.json({ error: parsed.error.issues[0].message }, { status: 400 });
 	}
 
 	const { rows, error } = await searchResources(locals.supabase, {
@@ -46,8 +45,8 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	});
 
 	if (error) {
-		return json({ error }, { status: 500 });
+		return Response.json({ error }, { status: 500 });
 	}
 
-	return json({ results: rows });
+	return Response.json({ results: rows });
 };

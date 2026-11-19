@@ -5,7 +5,7 @@
  */
 import { describe, it, expect } from 'vitest';
 import { evaluateFigureScript, evaluateStoredFigure } from '../geometry-figure-script';
-import { buildKochDsl } from '$lib/components/geometry/koch-dsl';
+import { buildKochDsl } from '#lib/components/geometry/koch-dsl.ts';
 
 describe('evaluateFigureScript', () => {
 	it('un script correct rend la figure', () => {

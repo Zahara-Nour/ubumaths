@@ -21,7 +21,7 @@ import {
 	extractInlineImages,
 	type NotebookExportOptions
 } from './generators/notebook-generator';
-import type { PythonNotebook } from '$lib/types/notebook';
+import type { PythonNotebook } from '#lib/types/notebook.ts';
 
 export interface GenerateNotebookPdfInput {
 	notebook: PythonNotebook;

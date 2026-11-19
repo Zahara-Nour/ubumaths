@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { contrastRatio } from '$lib/theme/author-color';
+import { contrastRatio } from '#lib/theme/author-color.ts';
 import { MONTH_NAMES, civilToPataphysical } from '../calendar';
 import { MONTH_PALETTES, UBU_BODY_COLOR, ambianceMonthIndex, paletteCssVars } from '../palettes';
 

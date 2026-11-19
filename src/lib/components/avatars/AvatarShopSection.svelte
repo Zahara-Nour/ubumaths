@@ -12,7 +12,7 @@
 	- Acheter (consentement parental exigé, comme la boutique VIP) n'équipe pas
 	  l'avatar ; porter et retirer sont gratuits et restent possibles sans
 	  consentement.
-	- Après un port ou un retrait, la page est rechargée (`invalidateAll`) : l'en-tête
+	- Après un port ou un retrait, la page est rechargée (`refreshAll`) : l'en-tête
 	  relit le profil et montre le nouvel avatar aussitôt.
 
 	La base tient les règles (solde, possession, fenêtre de vente) : ici, seulement
@@ -20,19 +20,19 @@
 -->
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { invalidateAll } from '$app/navigation';
-	import { Button } from '$lib/components/ui/button';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Skeleton } from '$lib/components/ui/skeleton';
-	import ConsentButton from '$lib/components/ConsentButton.svelte';
-	import UserAvatar from '$lib/components/UserAvatar.svelte';
-	import gidouilleImage from '$lib/assets/images/gidouille.png';
+	import { refreshAll } from '$app/navigation';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { Skeleton } from '#lib/components/ui/skeleton/index.ts';
+	import ConsentButton from '#lib/components/ConsentButton.svelte';
+	import UserAvatar from '#lib/components/UserAvatar.svelte';
+	import gidouilleImage from '#lib/assets/images/gidouille.png';
 	import { CircleUserRound } from '@lucide/svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
-	import { syncGidouilles } from '$lib/utils/cache-sync';
-	import { AVATAR_FAMILIES, type AvatarShop, type ShopAvatar } from '$lib/avatars/shop';
-	import type { CacheContext } from '$lib/types/cache-context';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import { studentCache } from '#lib/stores/studentDashboardCache.svelte.ts';
+	import { syncGidouilles } from '#lib/utils/cache-sync.ts';
+	import { AVATAR_FAMILIES, type AvatarShop, type ShopAvatar } from '#lib/avatars/shop.ts';
+	import type { CacheContext } from '#lib/types/cache-context.ts';
 
 	interface Props {
 		/** Profil de l'élève (pour l'aperçu de son avatar actuel) */
@@ -124,7 +124,7 @@
 				return;
 			}
 			toaster.success(avatar ? `Tu portes ${avatar.name}.` : 'Avatar retiré.');
-			await Promise.all([load(), invalidateAll()]);
+			await Promise.all([load(), refreshAll()]);
 		} finally {
 			busyKey = null;
 		}

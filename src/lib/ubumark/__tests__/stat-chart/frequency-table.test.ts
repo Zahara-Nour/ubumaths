@@ -10,7 +10,7 @@ import { describe, it, expect } from 'vitest';
 import { parseStatChartContent } from '../../parser/stat-chart-parser';
 import { buildStatChartScene, type FrequencyTableScene } from '../../utils/stat-chart-scene';
 import { generateStatChartTypst } from '../../generators/stat-chart-typst';
-import { parseMarkdown, type BlockNode, type ListNode } from '$lib/ubumark';
+import { parseMarkdown, type BlockNode, type ListNode } from '#lib/ubumark/index.ts';
 import type { StatChartNode } from '../../types/stat-chart';
 
 // =============================================================================

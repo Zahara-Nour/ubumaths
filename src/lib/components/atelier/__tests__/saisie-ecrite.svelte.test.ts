@@ -12,9 +12,9 @@ import { cleanup, render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import type { MathfieldElement } from 'mathlive';
 import AtelierContainer from '../AtelierContainer.svelte';
-import { Atelier } from '$lib/atelier/atelier.svelte';
-import { INPUT_MODE_KEY } from '$lib/atelier/input-mode';
-import { CALC_HISTORY_STORAGE_KEY, CALC_HISTORY_VERSION } from '$lib/atelier/history-storage';
+import { Atelier } from '#lib/atelier/atelier.svelte.ts';
+import { INPUT_MODE_KEY } from '#lib/atelier/input-mode.ts';
+import { CALC_HISTORY_STORAGE_KEY, CALC_HISTORY_VERSION } from '#lib/atelier/history-storage.ts';
 
 // =============================================================================
 // Décor

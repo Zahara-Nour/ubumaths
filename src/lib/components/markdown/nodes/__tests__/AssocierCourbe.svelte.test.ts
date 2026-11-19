@@ -9,7 +9,7 @@ import { describe, it, expect, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { page, userEvent } from 'vitest/browser';
 import AssocierPlacer from '../AssocierPlacer.svelte';
-import { parseAssocierContent } from '$lib/ubumark/parser/associer-parser';
+import { parseAssocierContent } from '#lib/ubumark/parser/associer-parser.ts';
 
 let mains: HTMLElement[] = [];
 function mainElement(): HTMLElement {

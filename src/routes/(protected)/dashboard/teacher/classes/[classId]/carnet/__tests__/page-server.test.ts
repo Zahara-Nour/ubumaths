@@ -32,7 +32,7 @@ interface Call {
 // Simulations
 
 const requireTeacherOfClass = vi.fn();
-vi.mock('$lib/server/stats/teacher-class-auth', () => ({
+vi.mock('#lib/server/stats/teacher-class-auth.ts', () => ({
 	requireTeacherOfClass: (...a: unknown[]) => requireTeacherOfClass(...a)
 }));
 
@@ -45,8 +45,8 @@ const envois = {
 	sendContactConfirmation: vi.fn(),
 	sendLinksToConfirmedContacts: vi.fn()
 };
-vi.mock('$lib/server/carnet/envois', async (importOriginal) => {
-	const original = await importOriginal<typeof import('$lib/server/carnet/envois')>();
+vi.mock('#lib/server/carnet/envois.ts', async (importOriginal) => {
+	const original = await importOriginal<typeof import('#lib/server/carnet/envois.ts')>();
 	return {
 		...original,
 		addParentContact: (...a: unknown[]) => envois.addParentContact(...a),
@@ -59,10 +59,10 @@ vi.mock('$lib/server/carnet/envois', async (importOriginal) => {
 	};
 });
 
-vi.mock('$lib/server/email/brevo', () => ({ isBrevoConfigured: () => true }));
+vi.mock('#lib/server/email/brevo.ts', () => ({ isBrevoConfigured: () => true }));
 
 let serviceRespond: (call: Call) => Result | undefined = () => undefined;
-vi.mock('$lib/server/serviceRoleClient', () => ({
+vi.mock('#lib/server/serviceRoleClient.ts', () => ({
 	createServiceRoleClient: () => fake((c) => serviceRespond(c)).client
 }));
 

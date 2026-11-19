@@ -14,7 +14,7 @@ import {
 	createWriteVerdictSupabase,
 	expectHttpStatus,
 	type FakeTable
-} from '$tests/helpers/write-verdict-supabase';
+} from '#tests/helpers/write-verdict-supabase.ts';
 
 const USER_ID = '550e8400-e29b-41d4-a716-446655440001';
 const OTHER_ID = '550e8400-e29b-41d4-a716-446655440002';

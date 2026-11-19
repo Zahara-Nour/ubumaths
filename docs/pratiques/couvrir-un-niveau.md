@@ -12,6 +12,8 @@ couvre:
   - scripts/lib/lot-questions.ts
   - scripts/lib/niveaux-des-tags.ts
   - scripts/questions/garde-niveaux-tags.ts
+  - scripts/series/creer-serie.ts
+  - scripts/lib/serie-fichier.ts
 ---
 
 # Couvrir un niveau en modèles de questions — démarche, choix et pièges
@@ -278,7 +280,12 @@ niveau chacune (`idx_question_templates_unique_category`).
    Une fiche par fichier du lot, **un exemple par variation tiré par le vrai générateur**
    (`generateInstance`, graine fixe : page reproductible). Les blocs `figure`, `monnaie`,
    `collection`, `horloge` et `courbe` sont dessinés par les scènes de l'appli (à construire :
-   réserve, plan vide, et la construction juste à part) ; les blocs `solide` (arêtes cachées en tirets,
+   réserve, plan vide, et la construction juste à part) ; un bloc `figure-a-completer` montre la
+   figure de départ, et à part la construction juste en vert, calculée par les fonctions de la
+   correction de l'appli (`solutionLines`, `solutionPoints`) pour trois vérifications : droite à
+   construire (`droite p = perpendiculaire(A, d)`, `parallele`…), `symetrique par d` et
+   `point A' = …` ; pour une autre vérification, la figure de départ seule et une alerte (la
+   solution se voit dans l'aperçu) ; les blocs `solide` (arêtes cachées en tirets,
    faces marquées, section) et `cubes` (trois teintes ; un geste `dessiner:` / `retrouver:` est signalé,
    la perspective seule dessinée) le sont par `buildSolideScene` et `buildEspaceScene` ; un bloc `variation` (tableau de signes ou
    de variations) est lu par le parseur de l'appli et dessiné comme `VariationTable.svelte` (valeurs
@@ -330,6 +337,45 @@ scripts/questions/<niveau>-0-<thème> --ids <id8>,…` ; chaque fichier porte so
 4. **Garde des niveaux**, après la migration de rangement et avant la publication :
    `pnpm tsx scripts/questions/garde-niveaux-tags.ts` (lecture seule, toute la base) liste les
    modèles tagués d'un point dont le niveau manque à `grades`, et sort en code 1 s'il y en a.
+
+## 8 bis. Une série de modèles publiés
+
+Une série validée avec David (des modèles, chacun avec un nombre de questions et une durée,
+[ADR 0035](../adr/0035-une-serie-enregistre-des-modeles.md)) s'écrit dans un fichier
+`scripts/series/<niveau>-<sujet>.json`, sans passer par le panier d'Automaths :
+
+```json
+{
+	"title": "La médiatrice",
+	"grade": "6",
+	"description": "…",
+	"items": [
+		{
+			"modele": "Définition de la médiatrice d'un segment",
+			"templateId": "<uuid>",
+			"quantity": 2,
+			"delay": 60
+		}
+	]
+}
+```
+
+`modele` sert seulement à relire le fichier ; `delay: 0` prend la durée du modèle.
+
+```bash
+pnpm tsx scripts/series/creer-serie.ts --fichier scripts/series/<nom>.json              # simulation
+pnpm tsx scripts/series/creer-serie.ts --fichier scripts/series/<nom>.json --publier    # David
+```
+
+- **Simulation** : le fichier est validé avec les bornes de l'appli (50 modèles, 500 questions,
+  600 s par question, un modèle une seule fois), et chaque modèle est cherché en base : il doit
+  exister, être **publié** (un brouillon est invisible aux élèves) et être **du niveau** de la série.
+  Un seul refus, et rien n'est écrit.
+- **`--publier`** : la série est enregistrée au nom de l'unique professeur, et son `id` est écrit
+  en tête du fichier : **commiter le fichier**.
+- **Fichier qui porte un `id`** : jamais recréé ; `--publier --mettre-a-jour` remplace le titre,
+  le niveau, la description et les modèles. Une série verrouillée (un élève l'a commencée) est
+  refusée par la base, et le script le dit.
 
 ## 9. Pièges
 
@@ -389,7 +435,7 @@ couvert` dans un **commit** de la PR, pas dans son corps.
 - Garde « déjà tagué » d'une migration de rangement : un trigger interdit un tag sur un modèle sans
   nœud (« il ne peut pas perdre son rangement »), donc l'état « tagué sans nœud » ne se fabrique pas ;
   un modèle tagué à la main est arrêté par la garde « déjà rangé » (test de #2279).
-- Worktree neuf : `pnpm exec svelte-kit sync` avant `question:specs` (`$lib` introuvable).
+- Worktree neuf : `pnpm exec svelte-kit sync` avant `question:specs` (`#lib` introuvable).
 - **Réponse attendue trop imbriquée** : la liste blanche des réponses (`student-answer-safety.render.test.ts`,
   CI) passe chaque `expectedAnswer` du dépôt et plafonne la profondeur des accolades (12) : un `{{if:}}`
   imbriqué sur plus de ~6 cas la dépasse. Calculer la réponse par `eval` (`floor`, indicatrices) et garder les

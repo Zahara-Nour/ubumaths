@@ -25,52 +25,52 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import { toJson } from '$lib/types/database-helpers';
-import type { SeriesItem } from '$lib/validation/series';
-import type { QuestionInstance, QuestionTemplate } from '$lib/questions/types';
-import type { AnswerData } from '$lib/types/question-display';
-import type { EvaluationWithSeries } from '$lib/types/evaluation';
+import type { Database } from '#lib/types/database.ts';
+import { toJson } from '#lib/types/database-helpers.ts';
+import type { SeriesItem } from '#lib/validation/series.ts';
+import type { QuestionInstance, QuestionTemplate } from '#lib/questions/types.ts';
+import type { AnswerData } from '#lib/types/question-display.ts';
+import type { EvaluationWithSeries } from '#lib/types/evaluation.ts';
 import type {
 	CorrectedAnswer,
 	CorrectedQuestion,
 	EvaluationSubmitResponse
-} from '$lib/types/evaluation-attempt';
-import { getAttemptsRemaining } from '$lib/types/evaluation';
-import { generateInstance } from '$lib/questions/generator/instance-generator';
-import { drawSeriesQuestions, MAX_QUESTION_SEED } from '$lib/questions/series-items';
+} from '#lib/types/evaluation-attempt.ts';
+import { getAttemptsRemaining } from '#lib/types/evaluation.ts';
+import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
+import { drawSeriesQuestions, MAX_QUESTION_SEED } from '#lib/questions/series-items.ts';
 import {
 	gestureAnswerLeaks,
 	toPublicQuestion,
 	type PublicQuestion
-} from '$lib/questions/public-question';
+} from '#lib/questions/public-question.ts';
 import {
 	gradeOutOf20,
 	isKnownForSrs,
 	type QuestionVerdict,
 	type SubmittedAnswer
-} from '$lib/questions/grading';
-import { gradeWithinBudget, type GradingBudget } from '$lib/server/grading-budget';
-import { toOriginalChoiceValues } from '$lib/questions/choice-case';
-import { detailsWithinBudget, submittedCopyDetails } from '$lib/server/corrected-detail';
-import type { ValidationStatus } from '$lib/questions/types';
-import type { SeriesReview } from '$lib/server/srs/record-series-reviews';
-import { toQuestionTemplate, type QuestionTemplateRow } from '$lib/types/question-template';
-import { isDeadlinePassed } from '$lib/utils/dates';
+} from '#lib/questions/grading.ts';
+import { gradeWithinBudget, type GradingBudget } from '#lib/server/grading-budget.ts';
+import { toOriginalChoiceValues } from '#lib/questions/choice-case.ts';
+import { detailsWithinBudget, submittedCopyDetails } from '#lib/server/corrected-detail.ts';
+import type { ValidationStatus } from '#lib/questions/types.ts';
+import type { SeriesReview } from '#lib/server/srs/record-series-reviews.ts';
+import { toQuestionTemplate, type QuestionTemplateRow } from '#lib/types/question-template.ts';
+import { isDeadlinePassed } from '#lib/utils/dates.ts';
 import {
 	countAttempts,
 	EvaluationError,
 	getAssignmentWithEvaluation,
 	isAssignmentRecipient
-} from '$lib/server/evaluations';
-import { recordSeriesReviews } from '$lib/server/srs/record-series-reviews';
+} from '#lib/server/evaluations.ts';
+import { recordSeriesReviews } from '#lib/server/srs/record-series-reviews.ts';
 import {
 	evaluationTraceOf,
 	type EvaluationEndReason,
 	type EvaluationTraceColumns
-} from '$lib/server/evaluation-trace';
-import { addBuddyXpFromTest } from '$lib/server/buddy-xp-service';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/evaluation-trace.ts';
+import { addBuddyXpFromTest } from '#lib/server/buddy-xp-service.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/evaluation-attempts');
 

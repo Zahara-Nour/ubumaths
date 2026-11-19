@@ -8,9 +8,9 @@
  * DELETE - Remove an individual student from the assignment
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRoles } from '$lib/server/middleware/auth';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
 import {
 	validateAssignmentParams,
 	validateAddAssignmentStudents,
@@ -18,9 +18,9 @@ import {
 	assignmentStudentsResponseSchema,
 	addStudentsResponseSchema,
 	removeStudentResponseSchema
-} from '$lib/server/validation/worksheets';
-import { validateJsonResponse } from '$lib/server/validation/response-utils';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/validation/worksheets.ts';
+import { validateJsonResponse } from '#lib/server/validation/response-utils.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger(
 	'api/worksheets/[id]/assignments/[assignmentId]/students/+server'
@@ -148,7 +148,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		'GET /api/worksheets/[id]/assignments/[assignmentId]/students'
 	);
 
-	return json(validated);
+	return Response.json(validated);
 };
 
 // ============================================================================
@@ -234,7 +234,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		'POST /api/worksheets/[id]/assignments/[assignmentId]/students'
 	);
 
-	return json(validated, { status: 201 });
+	return Response.json(validated, { status: 201 });
 };
 
 // ============================================================================
@@ -301,5 +301,5 @@ export const DELETE: RequestHandler = async ({ locals, params, request }) => {
 		'DELETE /api/worksheets/[id]/assignments/[assignmentId]/students'
 	);
 
-	return json(validated);
+	return Response.json(validated);
 };

@@ -12,12 +12,10 @@ couvre:
 
 # Carnet de liaison
 
-> Première doc de cette zone, écrite avec la PR 2 du chantier
-> [`partage-parents`](../wip/partage-parents-progress.md) (2026-11-16) ; côté professeur et
-> envois ajoutés en PR 3 ; passage quotidien (courriels d'exception, trimestriel, effacement)
-> en PR 4 (migration `20261116215952`, cron `api/cron/carnet-de-liaison`). Le versement complet en
-> PR 5. Vérifié contre le code le 2026-11-16. Décision :
-> [ADR 0040](../adr/0040-carnet-de-liaison-lien-par-parent.md).
+> Écrite au fil du chantier `partage-parents` (PR #2718, #2724, #2731, #2736, #2737,
+> novembre 2026), versée à sa fin. Vérifiée contre le code le 2026-11-17. Décision :
+> [ADR 0040](../adr/0040-carnet-de-liaison-lien-par-parent.md). Registre RGPD : fiche T9 de
+> [registre-traitements.md](conformite/registre-traitements.md).
 
 ## À quoi ça sert
 
@@ -26,19 +24,33 @@ lien qui lui est propre ([CONTEXT.md](../../CONTEXT.md)). L'élève voit le mêm
 son Cabinet, avec « Tes parents voient cette page ».
 
 Le carnet montre seulement (question d'accès Q16) : le prénom, un **palier** de jours de
-travail pour chacune des 5 dernières semaines (0, 1, 2-3, 4+ ; jamais le nombre exact ni les
+travail pour chaque semaine depuis la rentrée (0, 1, 2-3, 4+ ; jamais le nombre exact ni les
 jours), le nombre de révisions en retard, les évaluations faites ou non (**jamais la note**),
 et les liens du cahier et du cours de la classe.
 
+La régularité s'affiche en **une rangée de cases**, une par semaine, la plus ancienne à
+gauche : une ligne de la grille du professeur (`RegularityTable`, sans colonne de nom, en
+« jours de travail » et non « jours actifs »), calée à droite pour que la semaine en cours soit
+visible sur téléphone. Elle part de la semaine de la rentrée (ou de l'arrivée de l'élève,
+ci-dessous), 53 semaines au plus (`carnetSchema` et SQL). Année scolaire inconnue (classe sans
+école, ou école sans année active) : les 5 dernières semaines, faute de rentrée et de vacances
+connues. Les **évaluations** gardent leur fenêtre de 5 semaines (Q14).
+
+Tout se compte depuis la rentrée **et depuis l'arrivée de l'élève** dans une classe au carnet
+(Q43 ; la plus ancienne de ses adhésions actives, `class_members.joined_at`) : ni semaine, ni
+évaluation échue d'avant son arrivée. Une évaluation sans échéance non faite reste tant
+qu'elle n'est pas faite, si elle date de l'année scolaire en cours (créée au plus tôt un mois
+avant la rentrée : préparation d'été ; Q27).
+
 ## Les surfaces
 
-| Adresse                                       | Qui                    | Ce qu'elle fait                                                                                                                                                                                                                                                                                                |
-| --------------------------------------------- | ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `/carnet/[token]`                             | le parent, sans compte | Le carnet (`CarnetView`) ; arrêter ou reprendre les courriels. Tout échec (révoqué, expiré, inexistant, partage coupé, élève sorti de la classe) rend le **même** 404.                                                                                                                                         |
-| `/carnet/confirmer/[token]`                   | l'adresse saisie       | Deux boutons : « Confirmer mon adresse » (émet le lien et l'**envoie par courriel** — la page ne le montre pas, Q26 : un antivirus qui clique n'emporte rien) et « Je ne suis pas le parent » (adresse effacée). L'affichage seul n'appelle pas la base.                                                       |
-| `/carnet/lien-perdu`                          | le parent, sans compte | Saisir son adresse : chaque élève dont elle est confirmée et le carnet ouvert reçoit un lien **neuf** (l'ancien est révoqué). Même réponse que l'adresse soit connue ou non ; envoi après la réponse ; limites par IP (5 / 10 min) et par empreinte d'adresse (3 / jour).                                      |
-| `/dashboard/student/carnet`                   | l'élève                | Son carnet, l'état du partage, les courriels envoyés à ses parents (date, nature, motifs ; jamais les adresses). Ajouter l'adresse d'un parent (carnet ouvert, moins de 2 parents ; 6 ajouts / heure). Entrée « Carnet de liaison » du menu, toujours visible.                                                 |
-| `/dashboard/teacher/classes/[classId]/carnet` | le professeur          | Activer (en annonçant le nombre de courriels), désactiver, seuils des exceptions ; « Envoyer les liens manquants » ; par élève : état des adresses, ajouter, renvoyer une confirmation, nouveau lien, retirer une adresse, couper / rétablir le partage. Bouton « Carnet de liaison » de la liste des classes. |
+| Adresse                                       | Qui                    | Ce qu'elle fait                                                                                                                                                                                                                                                                                                                                                                                |
+| --------------------------------------------- | ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/carnet/[token]`                             | le parent, sans compte | Le carnet (`CarnetView`) ; arrêter ou reprendre les courriels. Tout échec (révoqué, expiré, inexistant, partage coupé, élève sorti de la classe) rend le **même** 404.                                                                                                                                                                                                                         |
+| `/carnet/confirmer/[token]`                   | l'adresse saisie       | Deux boutons : « Confirmer mon adresse » (émet le lien et l'**envoie par courriel** — la page ne le montre pas, Q26 : un antivirus qui clique n'emporte rien) et « Je ne suis pas le parent » (adresse effacée). L'affichage seul n'appelle pas la base.                                                                                                                                       |
+| `/carnet/lien-perdu`                          | le parent, sans compte | Saisir son adresse : chaque élève dont elle est confirmée et le carnet ouvert reçoit un lien **neuf** (l'ancien est révoqué). Même réponse que l'adresse soit connue ou non ; envoi après la réponse ; limites par IP (5 / 10 min) et par empreinte d'adresse (3 / jour). Le courriel du lien y mène : « Gardez ce courriel. Si vous ne le retrouvez plus un jour, demandez un nouveau lien ». |
+| `/dashboard/student/carnet`                   | l'élève                | Son carnet, l'état du partage, les courriels envoyés à ses parents (date, nature, motifs ; jamais les adresses). Ajouter l'adresse d'un parent (carnet ouvert, moins de 2 parents ; 6 ajouts / heure). Entrée « Carnet de liaison » du menu, toujours visible.                                                                                                                                 |
+| `/dashboard/teacher/classes/[classId]/carnet` | le professeur          | Activer (en annonçant le nombre de courriels), désactiver, seuils des exceptions ; « Envoyer les liens manquants » ; par élève : état des adresses, ajouter, renvoyer une confirmation, nouveau lien, retirer une adresse, couper / rétablir le partage. Bouton « Carnet de liaison » de la liste des classes.                                                                                 |
 
 ## Les envois
 
@@ -104,13 +116,14 @@ seulement). Module `src/lib/server/carnet/courriels.ts` (`runCarnetDaily`), dans
    jour où l'élève n'est dans aucune classe active, retire la marque s'il revient, efface les
    adresses marquées depuis 90 jours (ligne entière, liens et épisodes ; le journal des
    courriels garde ses lignes sans adresse). Une adresse « Je ne suis pas le parent » effacée
-   ainsi peut être ressaisie.
+   ainsi peut être ressaisie. Puis `carnet_erase_old_notifications` (Q42) efface les lignes du
+   journal des courriels de plus d'un an (rapport : `erasedNotifications`).
 2. **Liens manquants** (Q29, Q36) : `sendClassMissingLinks` sur chaque classe active au carnet
    activé (élève arrivé après, consentement accordé après, rentrée, envoi en échec).
 3. **Exceptions** (E1-E3, E7) : `carnet_sync_exception_episodes` ouvre un épisode par adresse
    et par exception en cours (évaluation non faite dans les 7 jours après l'échéance, une par
-   évaluation ; plus ancienne révision en retard depuis plus de N jours ; aucun jour actif sur
-   les N derniers jours de classe hors vacances, depuis la rentrée ; année scolaire inconnue →
+   évaluation, si l'échéance suit l'arrivée de l'élève ; plus ancienne révision en retard depuis plus de N jours ; aucun jour actif sur
+   les N derniers jours de classe hors vacances, depuis la rentrée et l'arrivée de l'élève ; année scolaire inconnue →
    pas d'inactivité) et ferme ceux qui ont disparu ; `carnet_exception_plan` rend un courriel
    par adresse qui a des épisodes non signalés, si aucun courriel d'exception ou trimestriel
    n'est parti vers elle depuis 6 j 12 h (Q19, Q33) ; pendant les vacances, seules les
@@ -138,7 +151,7 @@ et à son bas (`#courriels`, bouton « Ne plus recevoir ») ; en-tête `List-Uns
 même lien. Pas de `List-Unsubscribe-Post` : SvelteKit refuse, avant tout hook, un POST de
 formulaire sans `Origin` de notre site (Q39).
 
-### Limites connues (PR 4)
+### Limites connues
 
 - Les rejets définitifs que Brevo signale **après** l'envoi ne marquent pas l'adresse
   `invalid` (pas de webhook Brevo) ; seuls les échecs immédiats sont journalisés.
@@ -148,9 +161,16 @@ formulaire sans `Origin` de notre site (Q39).
   partir le même jour (Q33 : les liens ne comptent pas).
 - Épisodes non marqués après un envoi réussi (erreur de base) : journalisé, ils repartent une
   semaine plus tard.
-- Arrêter puis reprendre les courriels resignale une exception encore en cours ; un élève
-  arrivé en cours d'année est jugé inactif depuis la rentrée de l'école ; une évaluation sans
-  échéance jamais faite reste dans le carnet d'une année sur l'autre (Q27).
+- Arrêter puis reprendre les courriels resignale une exception encore en cours (voulu : le
+  parent qui reprend veut l'état présent).
+- Un élève qui change de classe en cours d'année, ou retiré puis remis dans sa classe (un
+  retrait efface l'adhésion) : tout repart de sa nouvelle arrivée. Le parent ne voit plus les
+  semaines ni les évaluations échues d'avant ; l'alerte d'inactivité attend N jours (jamais de
+  fausse alarme).
+- L'effacement des 90 jours efface aussi les adresses « Je ne suis pas le parent » et retirées :
+  leur empreinte ne bloque plus une ressaisie.
+- Le journal des courriels (`parent_notifications`) est effacé au bout d'**un an** (Q42) : l'élève,
+  le professeur et l'admin ne voient plus les courriels plus anciens.
 
 ## Les portes
 
@@ -184,8 +204,10 @@ formulaire sans `Origin` de notre site (Q39).
 - `src/routes/(protected)/dashboard/teacher/classes/[classId]/carnet/__tests__/` : gardes,
   appartenance à la classe, gestes.
 - `src/routes/(public)/carnet/**/__tests__/`, `src/routes/(protected)/dashboard/student/carnet/__tests__/`.
-- `src/lib/components/carnet/__tests__/CarnetView.svelte.test.ts` : paliers, évaluations par
+- `src/lib/components/carnet/__tests__/CarnetView.svelte.test.ts` : une case par semaine
+  (ordre, palier, vacances, sans nom), rangée calée sur la semaine en cours, évaluations par
   ligne, aucune note.
+- `src/lib/validation/__tests__/carnet.test.ts` : 53 semaines au plus, palier connu seulement.
 - `tests/integration/carnet-courriels-exception.test.ts` : exceptions, épisodes, plafond,
   vacances, jeton d'un courriel, Q27, trimestriel, effacement.
 - `tests/integration/carnet-passage-quotidien.test.ts` : `runCarnetDaily` contre la base locale,

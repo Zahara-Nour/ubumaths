@@ -73,7 +73,9 @@ Ce qu'`anon` peut lire, d'après les policies des migrations (relevé statique, 
 les `question_templates` publiés (réponses comprises : `/automaths` génère dans le navigateur) ; tout
 `curriculum_points`, `curriculum_point_automatismes`, `grade_predecessors`, `classification_nodes`,
 `source_types` (contenu public des programmes, ADR 0020) et le rangement des exercices lisibles
-(`exercise_classifications`) ; les lignes `is_public` de `exercises`, `python_exercises` ;
+(`exercise_classifications`) ; les liens `question_template_points` des modèles **publiés** (recherche
+du catalogue Automaths, `20261118204254` ; brouillons exclus, garde
+`tests/integration/automaths-anon-points-rls.test.ts`) ; les lignes `is_public` de `exercises`, `python_exercises` ;
 `parody_evaluations` et leurs `resource_tags`, `tags`, `schools`, `riddle_of_the_day`, les
 `geometry_figures` publiques (ADR 0027, sans leurs tags). Les
 constructions publiques sont réservées aux comptes connectés, et les parties de `minesweeper_games`
@@ -231,7 +233,7 @@ points d'un niveau), `src/lib/server/curriculum-coverage.ts`,
   `20261104224856` ([ADR 0035](../adr/0035-une-serie-enregistre-des-modeles.md)). Le sens « produit » de `AB` (matrices), jadis déduit du thème `Graphes et matrices`, est
   déclaré dans `shared.capitalPairs` : l'éditeur l'écrit, `20261104165734` l'a posé sur les modèles
   existants de ce thème. `question_template_points` le tague aux points du programme (**RESTRICT** côté point : pivot de
-  l'acquisition).
+  l'acquisition) ; `anon` en lit les liens des modèles publiés (`20261118204254`).
 - `question_template_reviews` (depuis `20261029150000`) : le verdict de relecture d'un modèle
   (`valide` / `a_revoir` + commentaire), un par modèle, posé depuis `/dev/modeles`. **Admin seul** en
   lecture comme en écriture (`is_admin()`), anon refusé (42501) ; auteur et date posés par un trigger
@@ -332,7 +334,13 @@ et arrête les courriels tant que l'adresse a un lien actif ; colonne illisible 
 `carnet_current_exceptions`, `carnet_sync_exception_episodes`, `carnet_exception_plan`,
 `carnet_quarterly_plan`, `carnet_erase_orphan_contacts` ; internes : `carnet_school_year`,
 `carnet_is_holiday`, `carnet_contact_by_token`. Une évaluation sans échéance non faite reste dans le
-carnet (Q27).
+carnet si elle date de l'année en cours (Q27). Migration `20261117113154` : `carnet_payload` et
+`carnet_current_exceptions` comptent depuis l'**arrivée** de l'élève dans une classe au carnet
+(`class_members.joined_at`, Q43), pas seulement depuis la rentrée. Migration `20261117222600` :
+la régularité de `carnet_payload` court depuis la semaine de la rentrée (53 semaines au plus ; 5
+sans année scolaire connue), les évaluations restent sur 5 semaines. Migration `20261117134539` :
+`carnet_erase_old_notifications` (cron, `service_role` seul) efface les lignes de
+`parent_notifications` de plus d'un an (Q42).
 
 `reconcileAutoCoverage()` (`src/lib/server/curriculum-coverage.ts`) recalcule les lignes `auto` de
 `journal_entry_points` depuis les activités, sans toucher aux lignes `manual` : la couverture
@@ -605,6 +613,22 @@ par **l'élève seul** (ni prof ni admin, décision de David du 2026-11-06), cas
 `set_worn_avatar` (porte un avatar possédé, même hors vente ou retiré : `avatar_url` = son image ;
 NULL : la photo Google revient ; refus `not_owned`). Changer `image_path` met à jour les porteurs
 (trigger `sync_worn_avatar_image_trg`). Test : `tests/integration/boutique-avatars.test.ts`.
+La Descente de la Vistule, jeu de combats (migration `20261118060323`, chantier `navadra`) :
+`student_beasts` garde les Bêtes imprévues de l'élève (clé du bestiaire du code, `kind`
+`ordinary` / `big` / `tutorial` avec un seul tutoriel par élève, Province sensible, point du
+programme qui l'a fait naître en SET NULL, points de vie, arrivée, départ prévu `leaves_at` — NULL :
+reste jusqu'à sa défaite —, défaite et gidouilles versées) ; le carnet de voyage est la liste de ses
+Bêtes vaincues. `student_combat_moves` garde les coups et sorts gagnés en maîtrisant une notion
+(clé du code, notion en RESTRICT, annonce) ; les coups de départ ne sont pas écrits. Les deux sont
+lisibles par **l'élève seul** (ni prof ni admin, décision de David du 2026-11-18), écrites par le
+serveur seul, cascade depuis `profiles`. `record_beast_victory` (`service_role` seul, verrou de la
+ligne `profiles` puis de la Bête) refuse une Bête d'un autre élève (`P0002`), déjà vaincue ou repartie
+(`55000`), marque la défaite et verse 1 (ordinaire), 3 (grosse Bête) ou 0 (tutoriel), **4 au plus
+sur 24 heures glissantes**, coupé au plafond, libellé « Descente : victoire contre … ». Les réponses
+en combat sont des traces au lieu `descente`, que la policy d'insertion de l'élève refuse ; le
+prof (source `teacher`) et l'admin peuvent en écrire, comme pour `evaluation` (leurs policies ne
+filtrent pas le lieu). Pas encore dans l'export RGPD : il viendra avec le premier code qui lit ces tables (après
+`db:types`). Test : `tests/integration/descente-fondations.test.ts`.
 `student_last_visits` (migration `20261021210000`) garde le jour UTC du dernier passage de l'élève
 (dernière page vue hors API, `studentPresenceHandle`) et, depuis la migration `20261022100000`, le
 jour du retour à fêter (`welcome_back_on`), pour le Palotin triste après une longue absence. Lisible
@@ -765,4 +789,4 @@ Le schéma part du baseline `20260616220000_baseline_schema.sql` (anciennes migr
 
 ---
 
-Vérifié contre le code le 2026-10-11 (passages `student_last_visits` et `app_metadata` de GoTrue : 2026-10-21 ; avatar et boutique d'avatars : 2026-11-06 ; contenu d'une trace et traces d'un contrôle réservées au serveur : 2026-11-11).
+Vérifié contre le code le 2026-10-11 (lecture `anon` de `question_template_points` : 2026-11-18 ; passages `student_last_visits` et `app_metadata` de GoTrue : 2026-10-21 ; avatar et boutique d'avatars : 2026-11-06 ; contenu d'une trace et traces d'un contrôle réservées au serveur : 2026-11-11).

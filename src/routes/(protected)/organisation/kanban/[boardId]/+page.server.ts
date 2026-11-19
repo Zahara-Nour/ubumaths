@@ -15,9 +15,9 @@
 
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { getBoardWithContent } from '$lib/server/kanban';
-import { parseKanbanId } from '$lib/server/validation/kanban';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { getBoardWithContent } from '#lib/server/kanban.ts';
+import { parseKanbanId } from '#lib/server/validation/kanban.ts';
 
 export const load: PageServerLoad = async ({ locals, params }) => {
 	const { user } = await requireAuth(locals);

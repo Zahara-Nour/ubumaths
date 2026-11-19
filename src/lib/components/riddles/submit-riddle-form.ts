@@ -6,7 +6,7 @@
  * après un enregistrement réussi.
  */
 import { deserialize } from '$app/forms';
-import type { CreateRiddleData } from '$lib/types/riddle';
+import type { CreateRiddleData } from '#lib/types/riddle.ts';
 
 export type SubmitRiddleFormResult = { ok: true } | { ok: false; message: string | null };
 

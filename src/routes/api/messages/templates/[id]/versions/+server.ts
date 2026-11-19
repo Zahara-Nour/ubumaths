@@ -7,11 +7,11 @@
  * POST - Restore a specific version
  */
 
-import { json, error } from '@sveltejs/kit';
-import { requireAuth } from '$lib/server/middleware/auth';
+import { error } from '@sveltejs/kit';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
 import type { RequestHandler } from './$types';
-import { templateVersionSchema } from '$lib/server/validation/message-templates';
-import { createServerLogger } from '$lib/utils/logger';
+import { templateVersionSchema } from '#lib/server/validation/message-templates.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/messages/templates/[id]/versions/+server');
 
@@ -74,7 +74,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		modified_by_name: v.modifier?.full_name || 'Inconnu'
 	}));
 
-	return json({
+	return Response.json({
 		versions: formattedVersions || [],
 		count: formattedVersions?.length || 0
 	});
@@ -155,7 +155,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		return error(500, 'Erreur lors de la restauration de la version');
 	}
 
-	return json({
+	return Response.json({
 		template: restored,
 		message: `Version ${body.version_number} restaurée avec succès`
 	});

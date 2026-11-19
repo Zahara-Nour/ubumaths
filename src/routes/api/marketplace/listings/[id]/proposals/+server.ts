@@ -1,8 +1,8 @@
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAuth } from '$lib/server/middleware/auth';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
 // Supabase client is now accessed via locals.supabase
-import { createProposalSchema } from '$lib/server/marketplace/validation';
+import { createProposalSchema } from '#lib/server/marketplace/validation.ts';
 import {
 	validateCardOwnership,
 	lockCardsForEntity,
@@ -12,17 +12,17 @@ import {
 	getStudentSchoolId,
 	enrichWithParticipants,
 	enrichProposalsWithCardData
-} from '$lib/server/marketplace/helpers';
-import { autoAcceptExactProposal } from '$lib/server/marketplace/auto-accept';
-import { proposersRejectedByAcceptance } from '$lib/server/marketplace/acceptance';
+} from '#lib/server/marketplace/helpers.ts';
+import { autoAcceptExactProposal } from '#lib/server/marketplace/auto-accept.ts';
+import { proposersRejectedByAcceptance } from '#lib/server/marketplace/acceptance.ts';
 import {
 	notifyNewProposal,
 	notifyProposalAccepted,
 	notifyProposalRejected
-} from '$lib/server/marketplace/notifications';
-import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
+} from '#lib/server/marketplace/notifications.ts';
+import { createServiceRoleClient } from '#lib/server/serviceRoleClient.ts';
 import { z } from 'zod';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/marketplace/listings/[id]/proposals/+server');
 
@@ -195,7 +195,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 		return { ...p, summary: `${iGot} contre ${iGave}` };
 	});
 
-	return json(result);
+	return Response.json(result);
 };
 
 /**
@@ -454,7 +454,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 			await notifyProposalRejected(proposerId, 'Annonce', 'Autre proposition acceptée');
 		}
 
-		return json(
+		return Response.json(
 			{
 				...(await enrichWithParticipants(supabase, [proposal]))[0],
 				status: 'accepted',
@@ -476,5 +476,5 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 	await notifyNewProposal(supabase, listing.creator_id, userId, 'Annonce', proposal.id);
 
 	const [avecProposant] = await enrichWithParticipants(supabase, [proposal]);
-	return json(avecProposant, { status: 201 });
+	return Response.json(avecProposant, { status: 201 });
 };

@@ -16,7 +16,7 @@ Référence synthétique pour Claude : **composants UI obligatoires**, imports S
 
 ## MySelect — sélecteurs (OBLIGATOIRE)
 
-**Règle n°2** : toujours `MySelect` — jamais `<select>` natif, jamais `import * as Select from '$lib/components/ui/select'`.
+**Règle n°2** : toujours `MySelect` — jamais `<select>` natif, jamais `import * as Select from '#lib/components/ui/select'`.
 
 **Fichier** : `src/lib/components/MySelect.svelte` (construit sur Bits UI `Select`, SSR-compatible, touch-friendly 44 px).
 
@@ -70,7 +70,7 @@ Exemples réels : `ScheduleEntryModal.svelte` (single + triggerClass), `Workshee
 
 ## MyCheckbox — cases à cocher (OBLIGATOIRE)
 
-**Règle n°2** : toujours `MyCheckbox` — jamais `<input type="checkbox">` natif, jamais `import { Checkbox } from '$lib/components/ui/checkbox'` en direct.
+**Règle n°2** : toujours `MyCheckbox` — jamais `<input type="checkbox">` natif, jamais `import { Checkbox } from '#lib/components/ui/checkbox/index.ts'` en direct.
 
 **Fichier** : `src/lib/components/MyCheckbox.svelte` (wrapper Shadcn Checkbox + Label auto-connecté, touch-friendly 44 px).
 
@@ -163,17 +163,21 @@ Pourquoi : la destination écrite dans le lien est la même après un lien parta
 
 ```svelte
 <!-- Named import for atomic components -->
-import {Button} from '$lib/components/ui/button'; import {Input} from '$lib/components/ui/input'; import
-{Label} from '$lib/components/ui/label'; import {Badge} from '$lib/components/ui/badge'; import {Switch}
-from '$lib/components/ui/switch'; import {Textarea} from '$lib/components/ui/textarea'; import {Separator}
-from '$lib/components/ui/separator'; import {Skeleton} from '$lib/components/ui/skeleton'; import {Progress}
-from '$lib/components/ui/progress';
+import {Button} from '#lib/components/ui/button/index.ts'; import {Input} from '#lib/components/ui/input/index.ts';
+import
+{Label} from '#lib/components/ui/label/index.ts'; import {Badge} from '#lib/components/ui/badge/index.ts';
+import {Switch}
+from '#lib/components/ui/switch/index.ts'; import {Textarea} from '#lib/components/ui/textarea/index.ts';
+import {Separator}
+from '#lib/components/ui/separator/index.ts'; import {Skeleton} from '#lib/components/ui/skeleton/index.ts';
+import {Progress}
+from '#lib/components/ui/progress/index.ts';
 
 <!-- Namespace import for compound components -->
-import * as Card from '$lib/components/ui/card'; import * as Dialog from '$lib/components/ui/dialog';
-import * as DropdownMenu from '$lib/components/ui/dropdown-menu'; import * as Sheet from '$lib/components/ui/sheet';
-import * as Tabs from '$lib/components/ui/tabs'; import * as Collapsible from '$lib/components/ui/collapsible';
-import * as Avatar from '$lib/components/ui/avatar'; import * as Accordion from '$lib/components/ui/accordion';
+import * as Card from '#lib/components/ui/card/index.ts'; import * as Dialog from '#lib/components/ui/dialog/index.ts';
+import * as DropdownMenu from '#lib/components/ui/dropdown-menu/index.ts'; import * as Sheet from '#lib/components/ui/sheet/index.ts';
+import * as Tabs from '#lib/components/ui/tabs/index.ts'; import * as Collapsible from '#lib/components/ui/collapsible/index.ts';
+import * as Avatar from '#lib/components/ui/avatar/index.ts'; import * as Accordion from '#lib/components/ui/accordion/index.ts';
 ```
 
 **Composants disponibles** (dossiers dans `src/lib/components/ui/`) : accordion · alert · avatar · badge · breadcrumb · button · calendar · card · checkbox · collapsible · confirm-dialog · dialog · dropdown-menu · input · label · popover · progress · radio-group · scroll-area · separator · sheet · skeleton · slider · switch · table · tabs · textarea · tooltip.
@@ -210,8 +214,8 @@ d'écran (« Close » jusqu'au 2026-10-14, relevé par la revue a11y des réglag
 Boîte de confirmation réutilisable (titre + description + variante destructive).
 
 ```svelte
-import ConfirmDialog from '$lib/components/ui/confirm-dialog/ConfirmDialog.svelte'; // ou : import {ConfirmDialog}
-from '$lib/components/ui/confirm-dialog';
+import ConfirmDialog from '#lib/components/ui/confirm-dialog/ConfirmDialog.svelte'; // ou : import {ConfirmDialog}
+from '#lib/components/ui/confirm-dialog/index.ts';
 
 <ConfirmDialog
 	bind:open={showConfirm}
@@ -229,7 +233,7 @@ from '$lib/components/ui/confirm-dialog';
 Ne pas utiliser directement les primitives Shadcn Avatar. Utiliser **`UserAvatar`** :
 
 ```svelte
-import UserAvatar from '$lib/components/UserAvatar.svelte';
+import UserAvatar from '#lib/components/UserAvatar.svelte';
 
 <UserAvatar
   avatar_url={user.avatar_url}
@@ -250,7 +254,7 @@ import UserAvatar from '$lib/components/UserAvatar.svelte';
 **Composant** : `src/lib/components/rich-text/RichTextEditor.svelte` — unifié form + chat.
 
 ```svelte
-import RichTextEditor from '$lib/components/rich-text/RichTextEditor.svelte';
+import RichTextEditor from '#lib/components/rich-text/RichTextEditor.svelte';
 
 <!-- Form mode (default) — bidirectionnel via htmlValue -->
 let content = $state('');
@@ -272,7 +276,7 @@ Pour l'affichage seul : `RichTextDisplay.svelte` (pas d'éditeur).
 ## Notifications toast
 
 ```svelte
-import {toaster} from '$lib/stores/toaster.svelte'; toaster.success('Évaluation créée'); toaster.error('Erreur
+import {toaster} from '#lib/stores/toaster.svelte.ts'; toaster.success('Évaluation créée'); toaster.error('Erreur
 lors de la sauvegarde'); toaster.warning('Aucun élève sélectionné'); toaster.info('Synchronisation en
 cours…'); toaster.message('Message neutre'); // sans icône de statut
 ```
@@ -284,7 +288,7 @@ Wrapper sur `svelte-sonner`. Le Toaster est monté dans le layout racine.
 ## Thème & taille de police
 
 ```svelte
-import {theme} from '$lib/stores/theme.svelte'; import {fontSize} from '$lib/stores/fontSize.svelte';
+import {theme} from '#lib/stores/theme.svelte.ts'; import {fontSize} from '#lib/stores/fontSize.svelte.ts';
 theme.toggle(); // bascule clair/sombre (via mode-watcher) theme.dark; // boolean réactif fontSize.increase();
 // +12,5 % (max 150 %) fontSize.decrease(); // −12,5 % (min 75 %) fontSize.reset(); // 100 % fontSize.size;
 // scale actuelle (0.75–1.5) fontSize.canIncrease; // boolean
@@ -301,7 +305,7 @@ La variable CSS `--font-scale` est appliquée sur `<html>`. Le scaling n'affecte
 - **`cn()` pour les classes conditionnelles** :
 
 ```svelte
-import {cn} from '$lib/utils';
+import {cn} from '#lib/utils.ts';
 
 <div class={cn('flex gap-2', isActive && 'bg-accent', className)}>…</div>
 ```

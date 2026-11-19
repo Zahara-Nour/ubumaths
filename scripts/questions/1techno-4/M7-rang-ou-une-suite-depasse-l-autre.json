@@ -1,0 +1,255 @@
+{
+	"id": "92120570-1a05-4caa-a0da-5e4d3e20e897",
+	"title": "Rang à partir duquel une suite dépasse une autre",
+	"description": "u arithmétique, v géométrique de raison 2 : valeur renvoyée par la boucle while v <= u, lecture d'un tableau de valeurs, condition à compléter",
+	"grades": ["1_TECHNO"],
+	"level": 3,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "On considère les suites $(u(n))$ et $(v(n))$ définies par $u(0)={{a}}$, $u(n+1)=u(n)+{{r}}$, et $v(0)={{b}}$, $v(n+1)=2\\times v(n)$. La fonction Python suivante cherche à partir de quel rang $v(n)$ dépasse $u(n)$.\n\n```python\ndef rang():\n    u = {{a}}\n    v = {{b}}\n    n = 0\n    while v <= u:\n        u = u + {{r}}\n        v = 2 * v\n        n = n + 1\n    return n\n```\n\nQue renvoie `rang()` ?\n\n$?$",
+			"blanks": [
+				{
+					"expectedAnswer": "{{N}}"
+				}
+			],
+			"variables": [
+				{
+					"name": "N",
+					"expression": "4..6"
+				},
+				{
+					"name": "b",
+					"expression": "1..3"
+				},
+				{
+					"name": "rmax",
+					"expression": "eval:floor(min(b*2^(N-1)-1, (b*2^N-b-2)/N))"
+				},
+				{
+					"name": "r",
+					"expression": "2..{{rmax}}"
+				},
+				{
+					"name": "alo",
+					"expression": "eval:max(b*2^(N-1)-r*(N-1), b+1)"
+				},
+				{
+					"name": "ahi",
+					"expression": "eval:b*2^N-r*N-1"
+				},
+				{
+					"name": "a",
+					"expression": "{{alo}}..{{ahi}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La boucle continue tant que $v(n)\\leqslant u(n)$ ; à chaque tour, `n` augmente de $1$.",
+					"$u({{eval:N-1}})={{eval:a+r*(N-1)}}$ et $v({{eval:N-1}})={{eval:b*2^(N-1)}}$ : on a encore $v({{eval:N-1}})\\leqslant u({{eval:N-1}})$.",
+					"$u({{N}})={{eval:a+r*N}}$ et $v({{N}})={{eval:b*2^N}}$ : $v({{N}})>u({{N}})$.",
+					"La boucle s'arrête pour $n={{N}}$ : `rang()` renvoie $\\textcolor{{{color:primary.0}}}{{{N}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On considère les suites $(u(n))$ et $(v(n))$ définies par $u(0)={{a}}$, $u(n+1)=u(n)+{{r}}$, et $v(0)={{b}}$, $v(n+1)=2\\times v(n)$. Un tableur donne leurs premiers termes.\n\n| $n$ | $0$ | $1$ | $2$ | $3$ | $4$ | $5$ | $6$ | $7$ |\n| --- | --- | --- | --- | --- | --- | --- | --- | --- |\n| $u(n)$ | ${{eval:a+r*0}}$ | ${{eval:a+r*1}}$ | ${{eval:a+r*2}}$ | ${{eval:a+r*3}}$ | ${{eval:a+r*4}}$ | ${{eval:a+r*5}}$ | ${{eval:a+r*6}}$ | ${{eval:a+r*7}}$ |\n| $v(n)$ | ${{eval:b*2^0}}$ | ${{eval:b*2^1}}$ | ${{eval:b*2^2}}$ | ${{eval:b*2^3}}$ | ${{eval:b*2^4}}$ | ${{eval:b*2^5}}$ | ${{eval:b*2^6}}$ | ${{eval:b*2^7}}$ |\n\nQuel est le plus petit entier $n$ tel que $v(n)>u(n)$ ?\n\n$n=?$",
+			"blanks": [
+				{
+					"expectedAnswer": "{{N}}"
+				}
+			],
+			"variables": [
+				{
+					"name": "N",
+					"expression": "4..6"
+				},
+				{
+					"name": "b",
+					"expression": "1..3"
+				},
+				{
+					"name": "rmax",
+					"expression": "eval:floor(min(b*2^(N-1)-1, (b*2^N-b-2)/N))"
+				},
+				{
+					"name": "r",
+					"expression": "2..{{rmax}}"
+				},
+				{
+					"name": "alo",
+					"expression": "eval:max(b*2^(N-1)-r*(N-1), b+1)"
+				},
+				{
+					"name": "ahi",
+					"expression": "eval:b*2^N-r*N-1"
+				},
+				{
+					"name": "a",
+					"expression": "{{alo}}..{{ahi}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$u({{eval:N-1}})={{eval:a+r*(N-1)}}$ et $v({{eval:N-1}})={{eval:b*2^(N-1)}}$ : on a encore $v({{eval:N-1}})\\leqslant u({{eval:N-1}})$.",
+					"$u({{N}})={{eval:a+r*N}}$ et $v({{N}})={{eval:b*2^N}}$ : $v({{N}})>u({{N}})$.",
+					"Ensuite, $v(n)$ double et reste au-dessus : le plus petit rang est $n=\\textcolor{{{color:primary.0}}}{{{N}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On considère les suites $(u(n))$ et $(v(n))$ définies par $u(0)={{a}}$, $u(n+1)=u(n)+{{r}}$, et $v(0)={{b}}$, $v(n+1)=2\\times v(n)$. La fonction Python ci-dessous doit renvoyer le plus petit entier $n$ tel que $v(n)>u(n)$.\n\n```python\ndef rang():\n    u = {{a}}\n    v = {{b}}\n    n = 0\n    while ...:\n        u = u + {{r}}\n        v = 2 * v\n        n = n + 1\n    return n\n```\n\nQue faut-il écrire à la place des points de suspension ?\n\n```choix\n- `v <= u`\n- `v > u`\n- `v <= n`\n- `u <= n`\n```",
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"variables": [
+				{
+					"name": "N",
+					"expression": "4..6"
+				},
+				{
+					"name": "b",
+					"expression": "1..3"
+				},
+				{
+					"name": "rmax",
+					"expression": "eval:floor(min(b*2^(N-1)-1, (b*2^N-b-2)/N))"
+				},
+				{
+					"name": "r",
+					"expression": "2..{{rmax}}"
+				},
+				{
+					"name": "alo",
+					"expression": "eval:max(b*2^(N-1)-r*(N-1), b+1)"
+				},
+				{
+					"name": "ahi",
+					"expression": "eval:b*2^N-r*N-1"
+				},
+				{
+					"name": "a",
+					"expression": "{{alo}}..{{ahi}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On continue **tant que** $v(n)$ n'a pas dépassé $u(n)$, c'est-à-dire tant que $v(n)\\leqslant u(n)$ : `v <= u`.",
+					"Avec `v > u`, la boucle ne tournerait pas, car au départ $v(0)={{b}}<u(0)={{a}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "N = 5 : renvoie 5",
+			"variationIndex": 0,
+			"variables": {
+				"N": "5",
+				"b": "2",
+				"rmax": "12",
+				"r": "10",
+				"alo": "3",
+				"ahi": "13",
+				"a": "10"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : dernier rang où v ⩽ u",
+			"variationIndex": 0,
+			"variables": {
+				"N": "5",
+				"b": "2",
+				"rmax": "12",
+				"r": "10",
+				"alo": "3",
+				"ahi": "13",
+				"a": "10"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Tableau : 5",
+			"variationIndex": 1,
+			"variables": {
+				"N": "5",
+				"b": "2",
+				"rmax": "12",
+				"r": "10",
+				"alo": "3",
+				"ahi": "13",
+				"a": "10"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 6",
+			"variationIndex": 1,
+			"variables": {
+				"N": "5",
+				"b": "2",
+				"rmax": "12",
+				"r": "10",
+				"alo": "3",
+				"ahi": "13",
+				"a": "10"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v <= u",
+			"variationIndex": 2,
+			"variables": {
+				"N": "5",
+				"b": "2",
+				"rmax": "12",
+				"r": "10",
+				"alo": "3",
+				"ahi": "13",
+				"a": "10"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : v > u",
+			"variationIndex": 2,
+			"variables": {
+				"N": "5",
+				"b": "2",
+				"rmax": "12",
+				"r": "10",
+				"alo": "3",
+				"ahi": "13",
+				"a": "10"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

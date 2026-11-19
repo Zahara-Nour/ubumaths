@@ -12,9 +12,9 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import FlashCard from '../FlashCard.svelte';
-import { generateInstance } from '$lib/questions/generator/instance-generator';
-import type { QuestionInstance, QuestionTemplate } from '$lib/questions/types';
-import { templateMarkdown } from '$lib/ubumark';
+import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
+import type { QuestionInstance, QuestionTemplate } from '#lib/questions/types.ts';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 
 // Fenêtre 0..12 × 0..8 ; O(2 ; 2), A(8 ; 3), B(4 ; 7). Arc en O par (5 ; 1), rayon √10 :
 // A' ≈ (5,12 ; 2,52), B' ≈ (3,17 ; 4,94) ; arcs de rayon A'B' : croisement P ≈ (6,24 ; 5,41)

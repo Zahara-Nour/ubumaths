@@ -10,11 +10,11 @@
  * @param requests - Array of { instanceId, studentId } to reject
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { verifyTeacherStudentWithRole } from '$lib/server/middleware/student-access';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { verifyTeacherStudentWithRole } from '#lib/server/middleware/student-access.ts';
 
 const batchRejectSchema = z.object({
 	requests: z
@@ -96,7 +96,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		}
 	}
 
-	return json({
+	return Response.json({
 		success: results.failed === 0,
 		rejected: results.success,
 		failed: results.failed,

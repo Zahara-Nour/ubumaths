@@ -20,8 +20,8 @@ const resolveCourse = vi.fn();
 const resolveWorksheet = vi.fn();
 const resolveDocument = vi.fn();
 
-vi.mock('$lib/server/course-share-tokens', async (importOriginal) => ({
-	...(await importOriginal<typeof import('$lib/server/course-share-tokens')>()),
+vi.mock('#lib/server/course-share-tokens.ts', async (importOriginal) => ({
+	...(await importOriginal<typeof import('#lib/server/course-share-tokens.ts')>()),
 	resolveCourseShareToken: (...a: unknown[]) => resolveCourse(...a),
 	resolveCourseWorksheetByShareToken: (...a: unknown[]) => resolveWorksheet(...a),
 	resolveCourseDocumentByShareToken: (...a: unknown[]) => resolveDocument(...a)
@@ -31,7 +31,7 @@ const createSignedUrl = vi.fn();
 const storageFrom = vi.fn(() => ({ createSignedUrl }));
 const tableFrom = vi.fn();
 const serviceClient = { from: tableFrom, storage: { from: storageFrom }, rpc: vi.fn() };
-vi.mock('$lib/server/serviceRoleClient', () => ({
+vi.mock('#lib/server/serviceRoleClient.ts', () => ({
 	createServiceRoleClient: () => serviceClient
 }));
 

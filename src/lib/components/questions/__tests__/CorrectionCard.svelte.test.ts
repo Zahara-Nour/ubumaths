@@ -9,11 +9,11 @@
 import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import CorrectionCard from '../CorrectionCard.svelte';
-import type { QuestionInstance } from '$lib/questions/types';
-import type { TestAnswerResult } from '$lib/types/test';
-import type { AnswerData } from '$lib/types/question-display';
-import type { DetailedVerdict } from '$lib/utils/answer-validator';
-import { resolvedMarkdown } from '$lib/ubumark';
+import type { QuestionInstance } from '#lib/questions/types.ts';
+import type { TestAnswerResult } from '#lib/types/test.ts';
+import type { AnswerData } from '#lib/types/question-display.ts';
+import type { DetailedVerdict } from '#lib/utils/answer-validator.ts';
+import { resolvedMarkdown } from '#lib/ubumark/index.ts';
 
 function result(
 	instance: Partial<QuestionInstance>,

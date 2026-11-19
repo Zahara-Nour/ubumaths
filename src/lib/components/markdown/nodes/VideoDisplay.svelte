@@ -17,10 +17,10 @@
 	@see video-extension.ts for TipTap rendering logic
 -->
 <script lang="ts">
-	import type { ImageSizeClass, ImageAlignment } from '$lib/ubumark';
+	import type { ImageSizeClass, ImageAlignment } from '#lib/ubumark/index.ts';
 	import { escapeHtml } from '../utils';
-	import { PUBLIC_SUPABASE_URL } from '$env/static/public';
-	import { sanitizeUrl } from '$lib/utils/sanitize';
+	import { PUBLIC_SUPABASE_URL } from '$app/env/public';
+	import { sanitizeUrl } from '#lib/utils/sanitize.ts';
 	import {
 		isProjectStorageImage,
 		readProjectMediaOnly,

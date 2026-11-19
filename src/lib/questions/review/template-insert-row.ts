@@ -11,10 +11,10 @@
  *   range dans l'arbre des notions.
  */
 
-import type { QuestionTemplate } from '$lib/questions/types';
-import { getQuestionType } from '$lib/questions/types';
-import type { TablesInsert } from '$lib/types/database';
-import { toJson } from '$lib/types/database-helpers';
+import type { QuestionTemplate } from '#lib/questions/types.ts';
+import { getQuestionType } from '#lib/questions/types.ts';
+import type { TablesInsert } from '#lib/types/database.ts';
+import { toJson } from '#lib/types/database-helpers.ts';
 
 export function toTemplateInsertRow(
 	template: Omit<QuestionTemplate, 'id'>,

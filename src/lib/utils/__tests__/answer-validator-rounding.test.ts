@@ -10,9 +10,9 @@
 
 import { describe, it, expect } from 'vitest';
 import { blankStatuses, validateAnswer, validateAnswerDetailed } from '../answer-validator';
-import { roundToPrecision } from '$lib/questions/rounding';
-import type { InstanceBlank, PrecisionType, QuestionInstance } from '$lib/questions/types';
-import type { ResolvedMarkdown } from '$lib/ubumark';
+import { roundToPrecision } from '#lib/questions/rounding.ts';
+import type { InstanceBlank, PrecisionType, QuestionInstance } from '#lib/questions/types.ts';
+import type { ResolvedMarkdown } from '#lib/ubumark/index.ts';
 
 function check(answer: string, expectedAnswer: string, precision: PrecisionType) {
 	const blank: InstanceBlank = { expectedAnswer, type: 'math', precision };

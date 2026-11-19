@@ -7,8 +7,8 @@ import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import { tick } from 'svelte';
 import QrCodeButton from '../QrCodeButton.svelte';
-import { QR_BORDER, encodeQr, qrSvg } from '$lib/qr/qr-code';
-import { decodeBlob } from '$lib/qr/__tests__/decode-qr';
+import { QR_BORDER, encodeQr, qrSvg } from '#lib/qr/qr-code.ts';
+import { decodeBlob } from '#lib/qr/__tests__/decode-qr.ts';
 
 async function settle() {
 	await tick();

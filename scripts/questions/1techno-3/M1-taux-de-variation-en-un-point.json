@@ -1,0 +1,224 @@
+{
+	"id": "06bee149-e006-4b9f-8f0b-1e21ace0a1cf",
+	"title": "Taux de variation en un point",
+	"description": "Taux de variation de x ↦ x² (ou x² + bx) entre a et a + h : développer, simplifier par h",
+	"grades": ["1_TECHNO"],
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		},
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=x^2$. Pour $h\\neq 0$, le taux de variation de $f$ entre ${{a}}$ et ${{a}}+h$ est\n\n$$\\dfrac{f({{a}}+h)-f({{a}})}{h}=\\dfrac{({{a}}+h)^2-{{eval:a^2}}}{h}$$\n\nDéveloppe et réduis le numérateur.\n\n$({{a}}+h)^2-{{eval:a^2}}=?$",
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2*a}}h+h^2",
+					"requiredForm": {
+						"pattern": "u"
+					}
+				}
+			],
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$({{a}}+h)^2={{eval:a^2}}+{{eval:2*a}}h+h^2$ (identité remarquable).",
+					"Donc $({{a}}+h)^2-{{eval:a^2}}=\\textcolor{{{color:primary.0}}}{ {{eval:2*a}}h+h^2 }$ : les ${{eval:a^2}}$ se compensent."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=x^2$. Pour $h\\neq 0$, le taux de variation de $f$ entre ${{a}}$ et ${{a}}+h$ est\n\n$$\\dfrac{f({{a}}+h)-f({{a}})}{h}=\\dfrac{({{a}}+h)^2-{{eval:a^2}}}{h}$$\n\nLe numérateur vaut ${{eval:2*a}}h+h^2$. Simplifie le taux par $h$.\n\n$\\dfrac{f({{a}}+h)-f({{a}})}{h}=?$",
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2*a}}+h",
+					"requiredForm": {
+						"pattern": "u"
+					}
+				}
+			],
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{eval:2*a}}h+h^2=h({{eval:2*a}}+h)$ : on met $h$ en facteur.",
+					"Comme $h\\neq 0$, on simplifie : le taux vaut $\\textcolor{{{color:primary.0}}}{ {{eval:2*a}}+h }$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=x^2$. Pour $h\\neq 0$, le taux de variation de $f$ entre ${{a}}$ et ${{a}}+h$ est\n\n$$\\dfrac{f({{a}}+h)-f({{a}})}{h}=\\dfrac{({{a}}+h)^2-{{eval:a^2}}}{h}$$\n\nCe taux vaut ${{eval:2*a}}+h$. Calcule-le pour $h={{hh}}$.\n\n$\\text{taux}=?$",
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2*a+hh}}"
+				}
+			],
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5"
+				},
+				{
+					"name": "hh",
+					"expression": "0.1|0.01|0.5"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On remplace $h$ par ${{hh}}$ : ${{eval:2*a}}+{{hh}}=\\textcolor{{{color:primary.0}}}{ {{eval:2*a+hh}} }$.",
+					"Plus $h$ est proche de $0$, plus le taux est proche de ${{eval:2*a}}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{eval:x^2+bx}}$. Pour $h\\neq 0$, on calcule le taux de variation de $f$ entre ${{a}}$ et ${{a}}+h$.\n\nOn trouve $f({{a}}+h)-f({{a}})=h^2+{{eval:2*a+b}}h$ (après développement). Simplifie le taux par $h$.\n\n$\\dfrac{f({{a}}+h)-f({{a}})}{h}=?$",
+			"blanks": [
+				{
+					"expectedAnswer": "h+{{eval:2*a+b}}",
+					"requiredForm": {
+						"pattern": "u"
+					}
+				}
+			],
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..4"
+				},
+				{
+					"name": "b",
+					"expression": "1..5;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$h^2{{eval:2*a+b;+}}h=h(h{{eval:2*a+b;+}})$ : on met $h$ en facteur.",
+					"Comme $h\\neq 0$, le taux vaut $\\textcolor{{{color:primary.0}}}{h{{eval:2*a+b;+}}}$."
+				]
+			},
+			"conditions": ["2*a+b != 0"]
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "a = 3 : 6h + h²",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["6h+h^2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : (a+h)² = a² + h²",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["h^2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : double produit oublié de 2",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["3h+h^2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "a = 3 : 6 + h",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["6+h"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : h oublié",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "a = 2, h = 0,1 : 4,1",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"hh": "0.1"
+			},
+			"answers": ["4.1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : h non ajouté",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"hh": "0.1"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "a = 2, b = -3 : h + 1",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "-3"
+			},
+			"answers": ["h+1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : b oublié",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "-3"
+			},
+			"answers": ["h+4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

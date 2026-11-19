@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	/**
 	 * NotebookView Component
 	 *
@@ -15,16 +15,16 @@
 	import { dndzone, type DndEvent } from 'svelte-dnd-action';
 	import { cellulesApresGeste, estOmbre } from './notebook-dnd';
 	import { flip } from 'svelte/animate';
-	import { NotebookStore } from '$lib/stores/notebookStore.svelte';
-	import type { NotebookCell as NotebookCellType } from '$lib/types/notebook';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { NotebookStore } from '#lib/stores/notebookStore.svelte.ts';
+	import type { NotebookCell as NotebookCellType } from '#lib/types/notebook.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import NotebookToolbar from './NotebookToolbar.svelte';
 	import NotebookStatusBar from './NotebookStatusBar.svelte';
 	import NotebookCell from './NotebookCell.svelte';
 	import NotebookOutline from './NotebookOutline.svelte';
-	import { Alert } from '$lib/components/ui/alert';
+	import { Alert } from '#lib/components/ui/alert/index.ts';
 	import { Eye, Lock } from '@lucide/svelte';
-	import { provideRestrictedRendering } from '$lib/components/markdown/restricted-rendering';
+	import { provideRestrictedRendering } from '#lib/components/markdown/restricted-rendering.ts';
 
 	const FLIP_MS = 200;
 

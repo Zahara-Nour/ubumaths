@@ -1,18 +1,20 @@
-import { json } from '@sveltejs/kit';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { RequestHandler } from './$types';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { validateSaveTest } from '$lib/server/validation/tests';
-import { addBuddyXpFromTest, type BuddyXpFromExerciseResult } from '$lib/server/buddy-xp-service';
-import { fetchTemplateThemeIds } from '$lib/server/buddy-themes';
-import { loadLongStruggleWon } from '$lib/server/buddy-struggle';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { validateSaveTest } from '#lib/server/validation/tests.ts';
+import {
+	addBuddyXpFromTest,
+	type BuddyXpFromExerciseResult
+} from '#lib/server/buddy-xp-service.ts';
+import { fetchTemplateThemeIds } from '#lib/server/buddy-themes.ts';
+import { loadLongStruggleWon } from '#lib/server/buddy-struggle.ts';
 import {
 	CourseCardLookupError,
 	fetchCourseCardTemplateIds
-} from '$lib/server/course-card-attempts';
-import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
-import { createServerLogger } from '$lib/utils/logger';
-import type { Database } from '$lib/types/database';
+} from '#lib/server/course-card-attempts.ts';
+import { createServiceRoleClient } from '#lib/server/serviceRoleClient.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
+import type { Database } from '#lib/types/database.ts';
 
 const logger = createServerLogger('api/tests/save/+server');
 
@@ -45,7 +47,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		const validation = validateSaveTest(body);
 
 		if (!validation.success) {
-			return json({ error: validation.error.issues[0].message }, { status: 400 });
+			return Response.json({ error: validation.error.issues[0].message }, { status: 400 });
 		}
 
 		const { result, assignmentId, seriesElapsedMs } = validation.data;
@@ -54,7 +56,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		// `/api/evaluations/assignments/[id]/start` puis `/api/evaluations/attempts/[id]/submit`.
 		// Une fin de série qui cible une évaluation est refusée.
 		if (assignmentId) {
-			return json(
+			return Response.json(
 				{ error: "Un contrôle s'enregistre par l'envoi du contrôle, pas ici" },
 				{ status: 400 }
 			);
@@ -62,7 +64,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		// Flash-cards : auto-évaluées de bout en bout, donc sans XP (comme une carte)
 		if (result.mode === 'flash') {
-			return json({ buddy_xp: null });
+			return Response.json({ buddy_xp: null });
 		}
 
 		const templateIds = [
@@ -82,7 +84,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			courseCardIds = await fetchCourseCardTemplateIds(createServiceRoleClient(), templateIds);
 		} catch (lookupError) {
 			if (!(lookupError instanceof CourseCardLookupError)) throw lookupError;
-			return json(
+			return Response.json(
 				{ error: 'Enregistrement momentanément impossible, réessayer dans un instant.' },
 				{ status: 503 }
 			);
@@ -132,10 +134,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			logger.error('⚠️ [API] Error awarding buddy XP:', buddyError);
 		}
 
-		return json({ buddy_xp: buddyXp });
+		return Response.json({ buddy_xp: buddyXp });
 	} catch (error) {
 		logger.error('Error saving test results:', error);
-		return json({ error: 'Internal server error' }, { status: 500 });
+		return Response.json({ error: 'Internal server error' }, { status: 500 });
 	}
 };
 

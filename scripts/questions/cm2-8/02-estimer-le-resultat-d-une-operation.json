@@ -1,0 +1,297 @@
+{
+	"id": "1f2e22ab-47a5-4862-95fb-1f95f69f9191",
+	"title": "Estimer le résultat d'une opération",
+	"description": "Différence d'un nombre de 4 chiffres et d'un nombre de 3 chiffres (1 212 − 496 ≈ 700), produit de 3 chiffres par 2 chiffres (724 × 68 ≈ 49 000), quotient d'un nombre de 5 chiffres (59 437 ÷ 6 ≈ 10 000) ; choisir parmi quatre valeurs",
+	"grades": ["CM2"],
+	"level": 10,
+	"delay": 60,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Sans poser l'opération, choisis la meilleure estimation.\n\n$${{a}} - {{b}} \\approx \\ldots$$\n\n```choix\n- ${{E}}$\n- ${{eval:10*E}}$\n- ${{eval:E/10}}$\n- ${{eval:E+100}}$\n```",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "1..9"
+				},
+				{
+					"name": "y",
+					"expression": "0..9"
+				},
+				{
+					"name": "z",
+					"expression": "1..9"
+				},
+				{
+					"name": "ea0",
+					"expression": "0..40"
+				},
+				{
+					"name": "ea",
+					"expression": "eval:ea0-20"
+				},
+				{
+					"name": "eb0",
+					"expression": "0..40"
+				},
+				{
+					"name": "eb",
+					"expression": "eval:eb0-20"
+				},
+				{
+					"name": "A",
+					"expression": "eval:1000*x+100*y"
+				},
+				{
+					"name": "B",
+					"expression": "eval:100*z"
+				},
+				{
+					"name": "a",
+					"expression": "eval:A+ea"
+				},
+				{
+					"name": "b",
+					"expression": "eval:B+eb"
+				},
+				{
+					"name": "E",
+					"expression": "eval:A-B"
+				}
+			],
+			"conditions": ["ea != 0", "eb != 0", "b >= 100", "A - B >= 200"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On arrondit chaque nombre à la centaine la plus proche : ${{a}} \\approx {{A}}$ et ${{b}} \\approx {{B}}$.",
+					"$${{a}} - {{b}} \\approx {{A}} - {{B}} = \\textcolor{{{color:primary.0}}}{{{E}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Sans poser l'opération, choisis la meilleure estimation.\n\n$${{a}} \\times {{b}} \\approx \\ldots$$\n\n```choix\n- ${{E}}$\n- ${{eval:10*E}}$\n- ${{eval:E/10}}$\n- ${{eval:100*E}}$\n```",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "2..9"
+				},
+				{
+					"name": "y",
+					"expression": "2..9"
+				},
+				{
+					"name": "ea0",
+					"expression": "0..60"
+				},
+				{
+					"name": "ea",
+					"expression": "eval:ea0-30"
+				},
+				{
+					"name": "eb0",
+					"expression": "0..6"
+				},
+				{
+					"name": "eb",
+					"expression": "eval:eb0-3"
+				},
+				{
+					"name": "a",
+					"expression": "eval:100*x+ea"
+				},
+				{
+					"name": "b",
+					"expression": "eval:10*y+eb"
+				},
+				{
+					"name": "E",
+					"expression": "eval:1000*x*y"
+				}
+			],
+			"conditions": ["ea != 0", "eb != 0", "mod(a,10) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On arrondit ${{a}}$ à la centaine et ${{b}}$ à la dizaine : ${{a}} \\approx {{eval:100*x}}$ et ${{b}} \\approx {{eval:10*y}}$.",
+					"$${{a}} \\times {{b}} \\approx {{eval:100*x}} \\times {{eval:10*y}} = \\textcolor{{{color:primary.0}}}{{{E}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Sans poser l'opération, choisis la meilleure estimation.\n\n$${{n}} \\div {{d}} \\approx \\ldots$$\n\n```choix\n- ${{E}}$\n- ${{eval:10*E}}$\n- ${{eval:E/10}}$\n- ${{eval:100*E}}$\n```",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "2..9"
+				},
+				{
+					"name": "q",
+					"expression": "1..10"
+				},
+				{
+					"name": "f0",
+					"expression": "0..1200"
+				},
+				{
+					"name": "f",
+					"expression": "eval:f0-600"
+				},
+				{
+					"name": "N",
+					"expression": "eval:1000*d*q"
+				},
+				{
+					"name": "n",
+					"expression": "eval:N+f"
+				},
+				{
+					"name": "E",
+					"expression": "eval:1000*q"
+				}
+			],
+			"conditions": ["N >= 10000", "n >= 10000", "n <= 99999", "mod(n,10) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On remplace ${{n}}$ par un nombre proche facile à diviser par ${{d}}$ : ${{n}} \\approx {{N}}$.",
+					"$${{n}} \\div {{d}} \\approx {{N}} \\div {{d}} = \\textcolor{{{color:primary.0}}}{{{E}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "BO : 1 212 − 496 ≈ 700",
+			"variationIndex": 0,
+			"variables": {
+				"x": "1",
+				"y": "2",
+				"z": "5",
+				"ea0": "32",
+				"ea": "12",
+				"eb0": "16",
+				"eb": "-4",
+				"A": "1200",
+				"B": "500",
+				"a": "1212",
+				"b": "496",
+				"E": "700"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 7 000 (un zéro de trop)",
+			"variationIndex": 0,
+			"variables": {
+				"x": "1",
+				"y": "2",
+				"z": "5",
+				"ea0": "32",
+				"ea": "12",
+				"eb0": "16",
+				"eb": "-4",
+				"A": "1200",
+				"B": "500",
+				"a": "1212",
+				"b": "496",
+				"E": "700"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BO : 724 × 68 ≈ 49 000",
+			"variationIndex": 1,
+			"variables": {
+				"x": "7",
+				"y": "7",
+				"ea0": "54",
+				"ea": "24",
+				"eb0": "1",
+				"eb": "-2",
+				"a": "724",
+				"b": "68",
+				"E": "49000"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 490 000",
+			"variationIndex": 1,
+			"variables": {
+				"x": "7",
+				"y": "7",
+				"ea0": "54",
+				"ea": "24",
+				"eb0": "1",
+				"eb": "-2",
+				"a": "724",
+				"b": "68",
+				"E": "49000"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BO : 59 437 ÷ 6 ≈ 10 000",
+			"variationIndex": 2,
+			"variables": {
+				"d": "6",
+				"q": "10",
+				"f0": "37",
+				"f": "-563",
+				"N": "60000",
+				"n": "59437",
+				"E": "10000"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 000",
+			"variationIndex": 2,
+			"variables": {
+				"d": "6",
+				"q": "10",
+				"f0": "37",
+				"f": "-563",
+				"N": "60000",
+				"n": "59437",
+				"E": "10000"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

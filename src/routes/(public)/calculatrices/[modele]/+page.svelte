@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
-	import SeoHead from '$lib/seo/SeoHead.svelte';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
+	import SeoHead from '#lib/seo/SeoHead.svelte';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();

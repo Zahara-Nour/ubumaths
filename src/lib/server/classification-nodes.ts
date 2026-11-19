@@ -8,9 +8,9 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import type { TreeNode } from '$lib/questions/classification-tree';
-import { readAllRows } from '$lib/server/read-all-rows';
+import type { Database } from '#lib/types/database.ts';
+import type { TreeNode } from '#lib/questions/classification-tree.ts';
+import { readAllRows } from '#lib/server/read-all-rows.ts';
 
 /** @throws si une page de la lecture échoue : jamais d'arbre partiel */
 export async function loadActiveNodes(supabase: SupabaseClient<Database>): Promise<TreeNode[]> {

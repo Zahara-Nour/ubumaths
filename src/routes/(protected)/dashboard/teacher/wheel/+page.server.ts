@@ -1,6 +1,6 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { getTeacherClassesWithStudents } from '$lib/server/students';
+import { getTeacherClassesWithStudents } from '#lib/server/students.ts';
 
 export const load: PageServerLoad = async ({ locals, parent: _parent }) => {
 	// Get authenticated user and profile from parent layout

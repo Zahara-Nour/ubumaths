@@ -12,11 +12,11 @@ import { describe, it, expect } from 'vitest';
 import { generateInstance } from '../instance-generator';
 import { assignBlankIndices } from '../assign-blank-indices';
 import type { QuestionTemplate, QuestionVariation } from '../../types';
-import { templateMarkdown } from '$lib/ubumark';
-import { isBlankValueCorrect, validateAnswer } from '$lib/utils/answer-validator';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
+import { isBlankValueCorrect, validateAnswer } from '#lib/utils/answer-validator.ts';
 import { findUnmaskedAnswers, maskGestureAnswers } from '../../masked-statement';
-import { parseCourbeContent } from '$lib/ubumark/parser/courbe-parser';
-import { hasMaskedValue } from '$lib/ubumark/utils/masked-value';
+import { parseCourbeContent } from '#lib/ubumark/parser/courbe-parser.ts';
+import { hasMaskedValue } from '#lib/ubumark/utils/masked-value.ts';
 
 function template(variation: Omit<QuestionVariation, 'statement'> & { statement: string }) {
 	return {

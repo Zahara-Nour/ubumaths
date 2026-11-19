@@ -24,7 +24,7 @@
  *   compassRenderer,
  *   pencilRenderer,
  *   type InstrumentRenderer
- * } from '$lib/constructions/instruments';
+ * } from '#lib/constructions/instruments/index.ts';
  *
  * // Get a renderer by name
  * const renderer = getInstrumentRenderer('ruler');

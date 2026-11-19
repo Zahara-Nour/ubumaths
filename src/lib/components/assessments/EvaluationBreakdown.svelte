@@ -20,11 +20,11 @@
 -->
 
 <script lang="ts">
-	import * as Card from '$lib/components/ui/card';
-	import * as Table from '$lib/components/ui/table';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import * as Table from '#lib/components/ui/table/index.ts';
 	import QuestionErrorsPanel from './QuestionErrorsPanel.svelte';
 	import { ChevronRight } from '@lucide/svelte';
-	import TooShortMark from '$lib/components/series/TooShortMark.svelte';
+	import TooShortMark from '#lib/components/series/TooShortMark.svelte';
 	import {
 		QUESTION_ERRORS_MESSAGE,
 		type BreakdownTally,
@@ -32,7 +32,7 @@
 		type EvaluationQuestionErrors,
 		type NotionBreakdown,
 		type QuestionBreakdown
-	} from '$lib/types/evaluation-breakdown';
+	} from '#lib/types/evaluation-breakdown.ts';
 
 	interface Props {
 		breakdown: EvaluationBreakdown;

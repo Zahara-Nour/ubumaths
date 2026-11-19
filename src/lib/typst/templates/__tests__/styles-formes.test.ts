@@ -30,7 +30,7 @@ import type {
 	WorksheetConfig,
 	WorksheetRow,
 	WorksheetTemplateRow
-} from '$lib/types/worksheets';
+} from '#lib/types/worksheets.ts';
 
 const FORMS = ['worksheet', 'answers', 'correction', 'worksheet_with_corrections'] as const;
 

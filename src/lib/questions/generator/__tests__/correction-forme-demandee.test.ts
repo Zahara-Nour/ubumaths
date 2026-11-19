@@ -16,7 +16,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { generateCorrection } from '../correction-generator';
-import { resolvedMarkdown } from '$lib/ubumark';
+import { resolvedMarkdown } from '#lib/ubumark/index.ts';
 import type { GeneratedSteps, QuestionInstance } from '../../types';
 
 // =============================================================================

@@ -10,13 +10,13 @@
  * POST /api/teacher/chapter-templates/[id]/document-upload-url
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import { requireOwnedTemplate } from '$lib/server/template-guard';
-import { documentUploadUrlSchema } from '$lib/server/validation/chapter-documents';
-import { CHAPTER_DOCUMENTS_BUCKET, newStoragePath } from '$lib/server/content-owner';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { requireOwnedTemplate } from '#lib/server/template-guard.ts';
+import { documentUploadUrlSchema } from '#lib/server/validation/chapter-documents.ts';
+import { CHAPTER_DOCUMENTS_BUCKET, newStoragePath } from '#lib/server/content-owner.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/teacher/chapter-templates/[id]/document-upload-url/+server');
 
@@ -52,5 +52,5 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		throw error(500, "Erreur lors de la préparation de l'envoi");
 	}
 
-	return json({ storagePath: data.path, token: data.token }, { status: 201 });
+	return Response.json({ storagePath: data.path, token: data.token }, { status: 201 });
 };

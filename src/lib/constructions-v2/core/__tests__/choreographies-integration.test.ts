@@ -13,12 +13,12 @@
 import { describe, it, expect } from 'vitest';
 import { ConstructionExecutor } from '../executor';
 import type { SubStep } from '../choreographies/types';
-import { geoToNumber } from '$lib/geometry-core/compute/to-number';
-import { numeric } from '$lib/geometry-core/types/geo-value';
+import { geoToNumber } from '#lib/geometry-core/compute/to-number.ts';
+import { numeric } from '#lib/geometry-core/types/geo-value.ts';
 import {
 	computeAngleGeometry,
 	projectAngleEndpoints
-} from '$lib/geometry-core/rendering/angle-geometry-shared';
+} from '#lib/geometry-core/rendering/angle-geometry-shared.ts';
 
 describe('ConstructionExecutor — decorator wiring (Phase 3)', () => {
 	it('no decorators → currentDecoratorTriple is null after step', () => {

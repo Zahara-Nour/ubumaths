@@ -7,12 +7,17 @@
  * `postMessage` or any browser global.
  */
 
-import type { PyodideInterface, PyProxy, BehaviorCheck, TestCaseResult } from '$lib/shared/python';
-import { compareOutputs } from '$lib/shared/python/validation/output-compare';
+import type {
+	PyodideInterface,
+	PyProxy,
+	BehaviorCheck,
+	TestCaseResult
+} from '#lib/shared/python/index.ts';
+import { compareOutputs } from '#lib/shared/python/validation/output-compare.ts';
 import {
 	compareValue,
 	type VariableCompareOptions
-} from '$lib/shared/python/validation/variable-compare';
+} from '#lib/shared/python/validation/variable-compare.ts';
 
 // =============================================================================
 // Types

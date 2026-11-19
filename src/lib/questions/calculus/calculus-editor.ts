@@ -8,7 +8,7 @@
  * @module questions/calculus/calculus-editor
  */
 
-import type { BlankDefaults, CalculusBlankFields } from '$lib/questions/types';
+import type { BlankDefaults, CalculusBlankFields } from '#lib/questions/types.ts';
 
 // Types
 export interface CalculusEditorState {

@@ -8,7 +8,7 @@
 <script lang="ts">
 	// Imports
 	import { resolve } from '$app/paths';
-	import type { ReviewNode } from '$lib/questions/template-review';
+	import type { ReviewNode } from '#lib/questions/template-review.ts';
 	import Self from './ReviewTree.svelte';
 
 	// Types

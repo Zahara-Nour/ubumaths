@@ -8,13 +8,12 @@
  * Spec : docs/archive/wip/srs-fsrs-spec-tdd.md §6
  */
 
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { updateSectionSchema } from '$lib/server/validation/srs';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { updateSectionSchema } from '#lib/server/validation/srs.ts';
 import { z } from 'zod';
-import type { TablesUpdate } from '$lib/types/database';
-import { createServerLogger } from '$lib/utils/logger';
+import type { TablesUpdate } from '#lib/types/database.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/srs/decks/[id]/sections/[sectionId]/+server');
 
@@ -36,22 +35,22 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 	// panne doit se distinguer d'un refus mérité.
 	if (deckError) {
 		logger.error('Contrôle d’accès impossible :', deckError);
-		return json({ error: 'Impossible de vérifier l’accès' }, { status: 500 });
+		return Response.json({ error: 'Impossible de vérifier l’accès' }, { status: 500 });
 	}
 	if (!deck) {
-		return json({ error: 'Deck introuvable ou accès refusé' }, { status: 404 });
+		return Response.json({ error: 'Deck introuvable ou accès refusé' }, { status: 404 });
 	}
 
 	let bodyRaw: unknown;
 	try {
 		bodyRaw = await request.json();
 	} catch {
-		return json({ error: 'Corps de requête illisible' }, { status: 400 });
+		return Response.json({ error: 'Corps de requête illisible' }, { status: 400 });
 	}
 
 	const validation = updateSectionSchema.safeParse(bodyRaw);
 	if (!validation.success) {
-		return json({ error: validation.error.issues[0].message }, { status: 400 });
+		return Response.json({ error: validation.error.issues[0].message }, { status: 400 });
 	}
 
 	const updates: TablesUpdate<'srs_deck_sections'> = {};
@@ -61,7 +60,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 		updates.display_order = validation.data.display_order;
 
 	if (Object.keys(updates).length === 0) {
-		return json({ error: 'Aucun champ à modifier' }, { status: 400 });
+		return Response.json({ error: 'Aucun champ à modifier' }, { status: 400 });
 	}
 
 	const { data, error: updateErr } = await locals.supabase
@@ -74,20 +73,20 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 
 	if (updateErr) {
 		if (updateErr.code === '23505') {
-			return json({ error: 'Une section avec ce nom existe déjà.' }, { status: 409 });
+			return Response.json({ error: 'Une section avec ce nom existe déjà.' }, { status: 409 });
 		}
 		if (updateErr.code === '42501') {
-			return json({ error: 'Modification refusée par les permissions.' }, { status: 403 });
+			return Response.json({ error: 'Modification refusée par les permissions.' }, { status: 403 });
 		}
 		logger.error('[sections/PATCH] failed:', updateErr);
-		return json({ error: updateErr.message }, { status: 500 });
+		return Response.json({ error: updateErr.message }, { status: 500 });
 	}
 
 	if (!data) {
-		return json({ error: 'Section introuvable' }, { status: 404 });
+		return Response.json({ error: 'Section introuvable' }, { status: 404 });
 	}
 
-	return json({ section: data });
+	return Response.json({ section: data });
 };
 
 export const DELETE: RequestHandler = async ({ params, locals }) => {
@@ -95,7 +94,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 
 	const paramsValidation = sectionParamsSchema.safeParse(params);
 	if (!paramsValidation.success) {
-		return json({ error: 'Identifiant invalide' }, { status: 400 });
+		return Response.json({ error: 'Identifiant invalide' }, { status: 400 });
 	}
 	const { id: deckId, sectionId } = paramsValidation.data;
 
@@ -111,10 +110,10 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 	// panne doit se distinguer d'un refus mérité.
 	if (deckError) {
 		logger.error('Contrôle d’accès impossible :', deckError);
-		return json({ error: 'Impossible de vérifier l’accès' }, { status: 500 });
+		return Response.json({ error: 'Impossible de vérifier l’accès' }, { status: 500 });
 	}
 	if (!deck) {
-		return json({ error: 'Deck introuvable ou accès refusé' }, { status: 404 });
+		return Response.json({ error: 'Deck introuvable ou accès refusé' }, { status: 404 });
 	}
 
 	const { data: deletedSections, error: deleteErr } = await locals.supabase
@@ -126,10 +125,10 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 
 	if (deleteErr) {
 		if (deleteErr.code === '42501') {
-			return json({ error: 'Suppression refusée par les permissions.' }, { status: 403 });
+			return Response.json({ error: 'Suppression refusée par les permissions.' }, { status: 403 });
 		}
 		logger.error('[sections/DELETE] failed:', deleteErr);
-		return json({ error: deleteErr.message }, { status: 500 });
+		return Response.json({ error: deleteErr.message }, { status: 500 });
 	}
 
 	// 0 ligne : soit la section n'existe pas (suppression idempotente, 200 comme avant),
@@ -144,12 +143,12 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 			.maybeSingle();
 		if (lectureErr) {
 			logger.error('[sections/DELETE] contrôle impossible :', lectureErr);
-			return json({ error: 'Impossible de vérifier la suppression' }, { status: 500 });
+			return Response.json({ error: 'Impossible de vérifier la suppression' }, { status: 500 });
 		}
 		if (encore) {
-			return json({ error: 'Cette section ne peut pas être supprimée.' }, { status: 403 });
+			return Response.json({ error: 'Cette section ne peut pas être supprimée.' }, { status: 403 });
 		}
 	}
 
-	return json({ success: true });
+	return Response.json({ success: true });
 };

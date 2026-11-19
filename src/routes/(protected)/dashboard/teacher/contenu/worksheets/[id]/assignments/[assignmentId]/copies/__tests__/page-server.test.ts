@@ -9,7 +9,7 @@
  */
 import { describe, expect, it, vi } from 'vitest';
 import { load } from '../+page.server';
-import { tableMock } from '$lib/server/worksheets/__tests__/table-mock';
+import { tableMock } from '#lib/server/worksheets/__tests__/table-mock.ts';
 
 const WORKSHEET_ID = '550e8400-e29b-41d4-a716-446655440011';
 const ASSIGNMENT_ID = '550e8400-e29b-41d4-a716-446655440010';

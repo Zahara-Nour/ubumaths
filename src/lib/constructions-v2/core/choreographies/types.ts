@@ -11,7 +11,7 @@
  * Reference : `docs/systeme/geometrie/constructions.md`.
  */
 
-import type { Figure } from '$lib/geometry-core/graph/figure';
+import type { Figure } from '#lib/geometry-core/graph/figure.ts';
 import type { InstrumentType } from '../../types';
 
 /** Decorator categories. */

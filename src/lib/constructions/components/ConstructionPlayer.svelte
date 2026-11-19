@@ -1,5 +1,5 @@
 <script lang="ts">
-	import '$lib/utils/mathlive-styles';
+	import '#lib/utils/mathlive-styles.ts';
 	/**
 	 * ConstructionPlayer - Main player component for geometric constructions
 	 *
@@ -12,8 +12,8 @@
 	import ConstructionCanvas from './ConstructionCanvas.svelte';
 	import PlayerControls from './PlayerControls.svelte';
 	import ParameterControls from './ParameterControls.svelte';
-	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
-	import { Button } from '$lib/components/ui/button';
+	import MarkdownRenderer from '#lib/components/markdown/MarkdownRenderer.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import { RefreshCw } from '@lucide/svelte';
 	import { onDestroy } from 'svelte';
 	import 'mathlive'; // Required for math rendering in instructions

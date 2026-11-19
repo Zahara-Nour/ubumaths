@@ -1,7 +1,7 @@
 // Gardes `if (!browser)` des stores temps réel (supabaseRealtime, chat, presence).
 //
 // Ces cas ne peuvent pas vivre dans les `*.svelte.test.ts` : ceux-ci tournent dans
-// Chromium, où le mock de `$app/environment` est figé à `browser: true` (vitest copie
+// Chromium, où le mock de `$app/env` est figé à `browser: true` (vitest copie
 // les exports du mock, on ne peut pas le basculer test par test). Ici, projet `server`
 // (node), `browser` vaut false pour tout le fichier.
 //
@@ -9,9 +9,9 @@
 // chaque test installe d'abord un client factice dans l'état privé du store.
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 
-vi.mock('$app/environment', () => ({
+vi.mock('$app/env', () => ({
 	browser: false,
 	building: false,
 	dev: true,

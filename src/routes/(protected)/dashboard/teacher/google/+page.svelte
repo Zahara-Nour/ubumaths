@@ -34,13 +34,13 @@
 -->
 
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import { Button } from '$lib/components/ui/button';
-	import * as Card from '$lib/components/ui/card';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Skeleton } from '$lib/components/ui/skeleton';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import { fixUrl } from '$lib/utils';
+	import { lore } from '#lib/config/lore.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { Skeleton } from '#lib/components/ui/skeleton/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import { fixUrl } from '#lib/utils.ts';
 	import { SvelteMap } from 'svelte/reactivity';
 	import {
 		RefreshCw,
@@ -58,12 +58,12 @@
 		File
 	} from '@lucide/svelte';
 	import type { PageData } from './$types';
-	import ShareCourseworkDialog from '$lib/components/google/ShareCourseworkDialog.svelte';
-	import ManageSharedCourseworkDialog from '$lib/components/google/ManageSharedCourseworkDialog.svelte';
-	import ShareMaterialDialog from '$lib/components/google/ShareMaterialDialog.svelte';
-	import ManageSharedMaterialDialog from '$lib/components/google/ManageSharedMaterialDialog.svelte';
-	import ShareMultipleMaterialsDialog from '$lib/components/google/ShareMultipleMaterialsDialog.svelte';
-	import UnshareTopicMaterialsDialog from '$lib/components/google/UnshareTopicMaterialsDialog.svelte';
+	import ShareCourseworkDialog from '#lib/components/google/ShareCourseworkDialog.svelte';
+	import ManageSharedCourseworkDialog from '#lib/components/google/ManageSharedCourseworkDialog.svelte';
+	import ShareMaterialDialog from '#lib/components/google/ShareMaterialDialog.svelte';
+	import ManageSharedMaterialDialog from '#lib/components/google/ManageSharedMaterialDialog.svelte';
+	import ShareMultipleMaterialsDialog from '#lib/components/google/ShareMultipleMaterialsDialog.svelte';
+	import UnshareTopicMaterialsDialog from '#lib/components/google/UnshareTopicMaterialsDialog.svelte';
 
 	// ============================================================================
 	// Types

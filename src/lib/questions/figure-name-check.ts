@@ -13,8 +13,13 @@
  * n'est pas signalée ici (le test du modèle s'en charge).
  */
 
-import { findNodes, isFigureName, parseLatexSafe, type FigureNameNode } from '$lib/mathAST';
-import { formatPointNames } from '$lib/mathAST/common/point-names';
+import {
+	findNodes,
+	isFigureName,
+	parseLatexSafe,
+	type FigureNameNode
+} from '#lib/mathAST/index.ts';
+import { formatPointNames } from '#lib/mathAST/common/point-names.ts';
 import { resolveCapitalPairs } from './capital-pairs';
 import { assignBlankIndices } from './generator/assign-blank-indices';
 import type { QuestionTemplate } from './types';

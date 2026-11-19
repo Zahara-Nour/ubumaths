@@ -8,20 +8,20 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { isHttpError, isRedirect } from '@sveltejs/kit';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 
 type ExerciseRow = Database['public']['Tables']['exercises']['Row'];
 
-vi.mock('$lib/server/exercises', () => ({
+vi.mock('#lib/server/exercises.ts', () => ({
 	getExerciseBySlug: vi.fn(),
 	getExercise: vi.fn()
 }));
-vi.mock('$lib/server/exercise-share-tokens', () => ({
+vi.mock('#lib/server/exercise-share-tokens.ts', () => ({
 	getExerciseByShareToken: vi.fn()
 }));
 
-const { getExerciseBySlug } = await import('$lib/server/exercises');
-const { getExerciseByShareToken } = await import('$lib/server/exercise-share-tokens');
+const { getExerciseBySlug } = await import('#lib/server/exercises.ts');
+const { getExerciseByShareToken } = await import('#lib/server/exercise-share-tokens.ts');
 const { load } = await import('../+page.server');
 
 function exerciseRow(overrides: Partial<ExerciseRow> = {}): ExerciseRow & { tags: string[] } {

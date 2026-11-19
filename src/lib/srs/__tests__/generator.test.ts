@@ -11,9 +11,9 @@ import {
 	generateSRSPreviewInstances,
 	validateTemplateForSRS
 } from '../generator';
-import type { GenerationResult, QuestionTemplate } from '$lib/questions/types';
-import { templateMarkdown } from '$lib/ubumark';
-import { generateInstance } from '$lib/questions/generator/instance-generator';
+import type { GenerationResult, QuestionTemplate } from '#lib/questions/types.ts';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
+import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
 
 const generateInstanceMock = vi.mocked(generateInstance);
 
@@ -22,8 +22,8 @@ const generateInstanceMock = vi.mocked(generateInstance);
  * (graine, transmission, échec) et non la génération elle-même. Le faux rend
  * le VRAI type `GenerationResult`, imposé par l'annotation de retour.
  */
-vi.mock('$lib/questions/generator/instance-generator', async () => {
-	const { resolvedMarkdown } = await import('$lib/ubumark');
+vi.mock('#lib/questions/generator/instance-generator.ts', async () => {
+	const { resolvedMarkdown } = await import('#lib/ubumark/index.ts');
 	return {
 		generateInstance: vi.fn((template: QuestionTemplate, seed?: number): GenerationResult => {
 			if (template.status !== 'published') {

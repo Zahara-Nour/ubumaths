@@ -3,7 +3,7 @@
  * Validates student answers for automatic validation
  */
 
-import type { AnswerConfig } from '$lib/types/riddle';
+import type { AnswerConfig } from '#lib/types/riddle.ts';
 
 /**
  * Validation result

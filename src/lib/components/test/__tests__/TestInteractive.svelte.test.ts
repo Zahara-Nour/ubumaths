@@ -8,13 +8,13 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { flushSync, tick } from 'svelte';
 import TestInteractive from '../TestInteractive.svelte';
-import type { ClassroomItem, TestResult } from '$lib/types/test';
-import type { QuestionInstance } from '$lib/questions/types';
-import { resolvedMarkdown } from '$lib/ubumark';
+import type { ClassroomItem, TestResult } from '#lib/types/test.ts';
+import type { QuestionInstance } from '#lib/questions/types.ts';
+import { resolvedMarkdown } from '#lib/ubumark/index.ts';
 import {
 	registerSeanceReactionHandler,
 	type SeanceReaction
-} from '$lib/components/buddy/seance-reactions';
+} from '#lib/components/buddy/seance-reactions.ts';
 
 const RESTART = 'Recommencer avec de nouvelles questions';
 const VISITOR_NOTE = 'Connecte-toi pour que tes réponses comptent dans tes révisions.';

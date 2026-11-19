@@ -19,8 +19,8 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { schoolDay } from '$lib/server/course-card-attempts';
-import type { Database } from '$lib/types/database';
+import { schoolDay } from '#lib/server/course-card-attempts.ts';
+import type { Database } from '#lib/types/database.ts';
 
 // Types
 /** Trace d'un modèle : instant et verdict (`null` = inconnu) */

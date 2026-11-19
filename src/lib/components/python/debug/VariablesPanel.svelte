@@ -7,10 +7,10 @@
 	 */
 
 	// Imports
-	import type { DebugVariable } from '$lib/shared/python/debug/types';
-	import * as Accordion from '$lib/components/ui/accordion';
-	import { Badge } from '$lib/components/ui/badge';
-	import { cn } from '$lib/utils';
+	import type { DebugVariable } from '#lib/shared/python/debug/types.ts';
+	import * as Accordion from '#lib/components/ui/accordion/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { cn } from '#lib/utils.ts';
 
 	// Types
 	interface Props {

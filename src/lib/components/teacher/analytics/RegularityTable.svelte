@@ -3,10 +3,11 @@
 	case = un palier de jours actifs, une seule couleur en quatre intensités ;
 	survol, appui ou clavier = le palier en toutes lettres, jamais le nombre
 	exact. Repère des semaines de vacances dans l'en-tête. Partagé par la grille
-	de la classe et par le suivi d'un élève.
+	de la classe, par le suivi d'un élève et par le carnet de liaison (une
+	rangée, sans colonne de nom, vocabulaire du parent).
 -->
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 
 	// Types
 
@@ -27,15 +28,34 @@
 		anonymized?: boolean;
 		/** Libellé de la colonne des noms */
 		label?: string;
+		/** Colonne des noms ; sans elle, une case se lit sans nom (carnet : le prénom est en titre) */
+		showNames?: boolean;
+		/** Unité des paliers : « jours actifs » (professeur) ou « jours de travail » (carnet) */
+		unit?: 'actif' | 'travail';
+		/** Rangée calée à droite à l'affichage : la semaine en cours visible sur téléphone */
+		scrollToEnd?: boolean;
 	}
 
 	// Constantes
 
-	const TIER_LABELS: Record<Tier, string> = {
-		0: 'aucun jour actif',
-		1: '1 jour actif',
-		2: '2 à 3 jours actifs',
-		3: '4 jours actifs ou plus'
+	const TIER_LABELS: Record<'actif' | 'travail', Record<Tier, string>> = {
+		actif: {
+			0: 'aucun jour actif',
+			1: '1 jour actif',
+			2: '2 à 3 jours actifs',
+			3: '4 jours actifs ou plus'
+		},
+		travail: {
+			0: 'aucun jour de travail',
+			1: '1 jour de travail',
+			2: '2 à 3 jours de travail',
+			3: '4 jours de travail ou plus'
+		}
+	};
+
+	const LEGEND_TITLES: Record<'actif' | 'travail', string> = {
+		actif: 'Jours actifs dans la semaine :',
+		travail: 'Jours de travail dans la semaine :'
 	};
 
 	const LEGEND: { tier: Tier; label: string }[] = [
@@ -54,13 +74,22 @@
 
 	// Variables
 
-	let { weeks, students, anonymized = false, label = lore.entities.student }: Props = $props();
+	let {
+		weeks,
+		students,
+		anonymized = false,
+		label = lore.entities.student,
+		showNames = true,
+		unit = 'actif',
+		scrollToEnd = false
+	}: Props = $props();
 
 	/** Case choisie (appui, clic ou clavier) : ligne et colonne */
 	let picked = $state<{ row: number; col: number } | null>(null);
 	/** Case qui reçoit le focus au Tab (une seule : les flèches parcourent la grille) */
 	let active = $state({ row: 0, col: 0 });
 	let gridEl = $state<HTMLTableElement | null>(null);
+	let scrollEl = $state<HTMLDivElement | null>(null);
 
 	/** Libellé du mois au-dessus de la première semaine de chaque mois */
 	const monthLabels = $derived(
@@ -70,6 +99,13 @@
 			return month !== previous ? MONTH_FORMAT.format(new Date(`${w.start}T00:00:00Z`)) : '';
 		})
 	);
+
+	// Rangée calée à droite : la semaine la plus récente d'abord visible (N4)
+	$effect(() => {
+		if (!scrollToEnd || !scrollEl) return;
+		void weeks.length;
+		scrollEl.scrollLeft = scrollEl.scrollWidth;
+	});
 
 	// Functions
 
@@ -103,7 +139,7 @@
 		const student = students[picked.row];
 		const week = weeks[picked.col];
 		if (!student || !week) return '';
-		return cellText(studentDisplay(student, picked.row), week, student.tiers[picked.col] ?? 0);
+		return cellText(cellName(student, picked.row), week, student.tiers[picked.col] ?? 0);
 	}
 
 	function weekLabel(week: RegularityWeek): string {
@@ -115,8 +151,15 @@
 		return anonymized ? `${lore.entities.student} ${idx + 1}` : s.display_name;
 	}
 
-	function cellText(name: string, week: RegularityWeek, tier: Tier): string {
-		return `${name} — ${weekLabel(week)} : ${TIER_LABELS[tier]}`;
+	/** Nom en tête du texte d'une case ; aucun sans colonne de noms */
+	function cellName(s: RegularityStudent, idx: number): string | null {
+		return showNames ? studentDisplay(s, idx) : null;
+	}
+
+	function cellText(name: string | null, week: RegularityWeek, tier: Tier): string {
+		const text = `${weekLabel(week)} : ${TIER_LABELS[unit][tier]}`;
+		if (name === null) return text.charAt(0).toUpperCase() + text.slice(1);
+		return `${name} — ${text}`;
 	}
 
 	function tierClass(tier: Tier): string {
@@ -125,7 +168,7 @@
 </script>
 
 <div class="mb-3 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
-	<span>Jours actifs dans la semaine :</span>
+	<span>{LEGEND_TITLES[unit]}</span>
 	{#each LEGEND as item (item.tier)}
 		<span class="flex items-center gap-1">
 			<span class="cell {tierClass(item.tier)}" aria-hidden="true"></span>
@@ -138,7 +181,7 @@
 	</span>
 </div>
 
-<div class="overflow-x-auto">
+<div bind:this={scrollEl} class="overflow-x-auto">
 	<table
 		bind:this={gridEl}
 		class="border-separate border-spacing-0.5 text-xs"
@@ -146,11 +189,13 @@
 	>
 		<thead>
 			<tr>
-				<th
-					scope="col"
-					class="sticky left-0 z-10 bg-card px-2 py-1 text-left font-medium"
-					rowspan="2">{label}</th
-				>
+				{#if showNames}
+					<th
+						scope="col"
+						class="sticky left-0 z-10 bg-card px-2 py-1 text-left font-medium"
+						rowspan="2">{label}</th
+					>
+				{/if}
 				{#each weeks as week, i (week.start)}
 					<th
 						scope="col"
@@ -173,14 +218,16 @@
 		</thead>
 		<tbody>
 			{#each students as student, idx (student.id)}
-				{@const name = studentDisplay(student, idx)}
+				{@const name = cellName(student, idx)}
 				<tr>
-					<th
-						scope="row"
-						class="sticky left-0 z-10 max-w-[10rem] truncate bg-card px-2 py-0.5 text-left font-medium"
-					>
-						{name}
-					</th>
+					{#if name !== null}
+						<th
+							scope="row"
+							class="sticky left-0 z-10 max-w-[10rem] truncate bg-card px-2 py-0.5 text-left font-medium"
+						>
+							{name}
+						</th>
+					{/if}
 					{#each weeks as week, w (week.start)}
 						{@const tier = student.tiers[w] ?? 0}
 						{@const text = cellText(name, week, tier)}

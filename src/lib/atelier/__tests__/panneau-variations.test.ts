@@ -16,9 +16,9 @@
 import { describe, it, expect } from 'vitest';
 import { Atelier } from '../atelier.svelte';
 import { CalcDesk } from '../desk.svelte';
-import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
+import { WebReplEngine } from '#lib/mathAST/cli/web/web-repl-engine.ts';
 import { runInput, runAction, type CalcSession } from '../calcul';
-import type { SignRow, VariationRow } from '$lib/ubumark/types/variation-table';
+import type { SignRow, VariationRow } from '#lib/ubumark/types/variation-table.ts';
 
 function session(): CalcSession {
 	return { atelier: new Atelier(), engine: new WebReplEngine() };

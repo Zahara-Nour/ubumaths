@@ -19,14 +19,13 @@
  *   attempt: { id, resumed, remainingSeconds, questions } }
  */
 
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { uuidSchema } from '$lib/server/validation/common';
-import { EvaluationError } from '$lib/server/evaluations';
-import { startEvaluationAttempt } from '$lib/server/evaluation-attempts';
-import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
-import { rateLimit } from '$lib/server/middleware/rateLimit';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { uuidSchema } from '#lib/server/validation/common.ts';
+import { EvaluationError } from '#lib/server/evaluations.ts';
+import { startEvaluationAttempt } from '#lib/server/evaluation-attempts.ts';
+import { createServiceRoleClient } from '#lib/server/serviceRoleClient.ts';
+import { rateLimit } from '#lib/server/middleware/rateLimit.ts';
 
 export const POST: RequestHandler = async ({ locals, params }) => {
 	const { user, profile } = await requireAuth(locals);
@@ -35,7 +34,7 @@ export const POST: RequestHandler = async ({ locals, params }) => {
 
 	const idValidation = uuidSchema.safeParse(params.id);
 	if (!idValidation.success) {
-		return json({ error: 'Lien de contrôle invalide' }, { status: 400 });
+		return Response.json({ error: 'Lien de contrôle invalide' }, { status: 400 });
 	}
 
 	try {
@@ -50,9 +49,9 @@ export const POST: RequestHandler = async ({ locals, params }) => {
 		);
 
 		if (result.kind === 'preview') {
-			return json({ preview: true, evaluation: result.evaluation });
+			return Response.json({ preview: true, evaluation: result.evaluation });
 		}
-		return json({
+		return Response.json({
 			preview: false,
 			evaluation: result.evaluation,
 			attempt: {
@@ -63,7 +62,8 @@ export const POST: RequestHandler = async ({ locals, params }) => {
 			}
 		});
 	} catch (e) {
-		if (e instanceof EvaluationError) return json({ error: e.message }, { status: e.status });
+		if (e instanceof EvaluationError)
+			return Response.json({ error: e.message }, { status: e.status });
 		throw e;
 	}
 };

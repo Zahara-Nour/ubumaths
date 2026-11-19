@@ -1,11 +1,11 @@
 import { describe, it, expect } from 'vitest';
-import { numericNode } from '$lib/mathAST/common/numeric';
+import { numericNode } from '#lib/mathAST/common/numeric.ts';
 import { intersectLL, intersectLC, intersectCC } from '../intersections';
 import { exact, isExact } from '../../types/geo-value';
 import { geoToNumber } from '../../compute/to-number';
 import { geoEqual } from '../../compute/compare';
 import { geoFromNumber, geoFromFraction } from '../../compute/geo-arithmetic';
-import { number, sqrt } from '$lib/mathAST';
+import { number, sqrt } from '#lib/mathAST/index.ts';
 import type { GeoPoint } from '../../types/primitives';
 
 function pt(x: number, y: number): GeoPoint {

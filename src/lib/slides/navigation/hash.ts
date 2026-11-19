@@ -145,12 +145,11 @@ export function syncHashEffect(store: DeckStore, options: HashNavigationOptions 
 		// to enforce its routing invariants). Since we're only changing the
 		// hash, the pathname stays the same → SvelteKit treats this as a
 		// same-page state update, no navigation triggered.
-		try {
-			replaceState(url, page.state);
-		} catch {
-			// Fallback if SvelteKit context isn't available (e.g. used in a
-			// non-SvelteKit context).
+		// SvelteKit 3 : `replaceState` est asynchrone et rejette (sans lever)
+		// quand le routeur n'est pas démarré (hors appli SvelteKit, tests) :
+		// le repli passe par `.catch`, un `try/catch` ne le verrait pas.
+		replaceState(url, page.state).catch(() => {
 			window.location.hash = hash;
-		}
+		});
 	}
 }

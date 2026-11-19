@@ -17,13 +17,13 @@ const pageState = vi.hoisted(() => ({
 }));
 const replaceState = vi.hoisted(() => vi.fn());
 vi.mock('$app/state', () => ({ page: pageState }));
-vi.mock('$app/navigation', async (importOriginal) => ({
-	...(await importOriginal<typeof import('$app/navigation')>()),
-	replaceState
-}));
+vi.mock('$app/navigation', async () =>
+	(await import('#tests/helpers/app-navigation-mock.ts')).appNavigationMock({ replaceState })
+);
 
 import Page from '../+page.svelte';
-import { questionTemplatesCache } from '$lib/stores/questionTemplates.svelte';
+import { notionButton, useWideScreen } from './catalogue-helpers.ts';
+import { questionTemplatesCache } from '#lib/stores/questionTemplates.svelte.ts';
 
 const NODES = [
 	{ id: 'b-nombres', kind: 'branch', name: 'Nombres et calculs', parent_id: null, position: 0 },
@@ -75,6 +75,9 @@ async function chooseGrade(label: string) {
 
 describe('Catalogue Automaths — filtre par niveau', () => {
 	beforeEach(async () => {
+		await useWideScreen();
+		// Le catalogue reprend la dernière adresse de la visite : chaque test part de zéro
+		sessionStorage.clear();
 		replaceState.mockClear();
 		pageState.url = new URL('http://localhost:5175/automaths');
 		await seedTemplatesCache();
@@ -83,8 +86,8 @@ describe('Catalogue Automaths — filtre par niveau', () => {
 	it('à l’arrivée : tous les niveaux, pas de case « inférieurs »', async () => {
 		await render(Page);
 
-		await expect.element(page.getByRole('tab', { name: 'Addition' })).toBeVisible();
-		await expect.element(page.getByRole('tab', { name: 'Fractions' })).toBeVisible();
+		await expect.element(notionButton('Addition')).toBeVisible();
+		await expect.element(notionButton('Fractions')).toBeVisible();
 		expect(page.getByRole('checkbox').elements()).toHaveLength(0);
 	});
 
@@ -93,8 +96,8 @@ describe('Catalogue Automaths — filtre par niveau', () => {
 
 		await chooseGrade('6ème');
 
-		await expect.element(page.getByRole('tab', { name: 'Fractions' })).toBeVisible();
-		expect(page.getByRole('tab', { name: 'Addition' }).elements()).toHaveLength(0);
+		await expect.element(notionButton('Fractions')).toBeVisible();
+		expect(notionButton('Addition').elements()).toHaveLength(0);
 		await expect.element(page.getByRole('checkbox')).not.toBeChecked();
 		expect(lastUrl().searchParams.get('niveau')).toBe('6');
 		expect(lastUrl().searchParams.has('inferieurs')).toBe(false);
@@ -106,8 +109,8 @@ describe('Catalogue Automaths — filtre par niveau', () => {
 
 		await page.getByRole('checkbox').click();
 
-		await expect.element(page.getByRole('tab', { name: 'Addition' })).toBeVisible();
-		await expect.element(page.getByRole('tab', { name: 'Fractions' })).toBeVisible();
+		await expect.element(notionButton('Addition')).toBeVisible();
+		await expect.element(notionButton('Fractions')).toBeVisible();
 		expect(lastUrl().searchParams.get('inferieurs')).toBe('1');
 	});
 
@@ -116,8 +119,8 @@ describe('Catalogue Automaths — filtre par niveau', () => {
 
 		await chooseGrade('4ème');
 
-		await expect.element(page.getByRole('tab', { name: 'Pythagore' })).toBeVisible();
-		expect(page.getByRole('tab', { name: 'Addition' }).elements()).toHaveLength(0);
+		await expect.element(notionButton('Pythagore')).toBeVisible();
+		expect(notionButton('Addition').elements()).toHaveLength(0);
 	});
 
 	it('niveau sans aucun modèle : message, et le menu reste pour en changer', async () => {
@@ -135,8 +138,8 @@ describe('Catalogue Automaths — filtre par niveau', () => {
 		await render(Page);
 
 		await expect.element(page.getByRole('checkbox')).toBeChecked();
-		await expect.element(page.getByRole('tab', { name: 'Addition' })).toBeVisible();
-		await expect.element(page.getByRole('tab', { name: 'Fractions' })).toBeVisible();
+		await expect.element(notionButton('Addition')).toBeVisible();
+		await expect.element(notionButton('Fractions')).toBeVisible();
 	});
 
 	it('niveau inconnu dans l’adresse : ignoré, tous les niveaux', async () => {
@@ -144,7 +147,7 @@ describe('Catalogue Automaths — filtre par niveau', () => {
 
 		await render(Page);
 
-		await expect.element(page.getByRole('tab', { name: 'Addition' })).toBeVisible();
-		await expect.element(page.getByRole('tab', { name: 'Fractions' })).toBeVisible();
+		await expect.element(notionButton('Addition')).toBeVisible();
+		await expect.element(notionButton('Fractions')).toBeVisible();
 	});
 });

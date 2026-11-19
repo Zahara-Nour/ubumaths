@@ -44,14 +44,17 @@ import {
 	triangleTools,
 	rightAngleOf,
 	isRuledLength,
+	isDiagonalRectangleCheck,
 	isRuledPolygonCheck,
 	isSquaresLength,
+	DIAGONAL_RECTANGLE_TOOLS,
 	RULED_POLYGON_TOOLS,
 	type ConstructionCheck,
 	type ConstructionCheckKind,
 	type ConstructionSpec,
 	type ConstructionTool,
 	readLengthText,
+	type DiagonalRectangleCheck,
 	type RuledPolygonCheck,
 	type TriangleAngle,
 	type TriangleLength
@@ -532,7 +535,7 @@ function readRuledPolygon(
 	kind: 'carre' | 'rectangle',
 	text: string,
 	line: number
-): RuledPolygonCheck | null {
+): RuledPolygonCheck | DiagonalRectangleCheck | null {
 	const colon = text.indexOf(':');
 	const pointsText = colon === -1 ? text : text.slice(0, colon);
 	const lengthText = colon === -1 ? null : text.slice(colon + 1).trim();
@@ -556,6 +559,17 @@ function readRuledPolygon(
 		}
 		return { kind, points: [a, b, c, d], ruled: true, line };
 	}
+	// Rectangle sans équerre : deux longueurs, ou une longueur nommée autre que [BC]
+	if (lengthText !== null) {
+		const parts = lengthText.split(';').map((part) => part.trim());
+		const namesOtherThanBC = (part: string) => {
+			const named = /^([A-Z])([A-Z])\s*=/.exec(part);
+			return named !== null && [named[1], named[2]].sort().join('') !== [b, c].sort().join('');
+		};
+		if (parts.length > 1 || parts.some(namesOtherThanBC)) {
+			return readDiagonalRectangle([a, b, c, d], parts, line);
+		}
+	}
 	const usage = `« rectangle ${a} ; ${b} ; ${c} ; ${d} : ${b}${c} = 3 cm »`;
 	if (lengthText === null) {
 		throw new LineError(`rectangle ${a}${b}${c}${d} : donner la longueur de [${b}${c}], ${usage}`);
@@ -574,6 +588,56 @@ function readRuledPolygon(
 		);
 	}
 	return { kind, points: [a, b, c, d], ruled: true, height: read, line };
+}
+
+/**
+ * Rectangle sans équerre (chantier `rectangle-sans-equerre`, phase 0 du 2026-11-17) :
+ * `rectangle A ; B ; C ; D : AB = 4 cm ; AC = 6 cm`, le côté [AB] et la diagonale
+ * [AC] (dans n'importe quel ordre, `BA` et `CA` admis), au mm près, le côté plus
+ * court que la diagonale
+ */
+function readDiagonalRectangle(
+	points: [string, string, string, string],
+	parts: readonly string[],
+	line: number
+): DiagonalRectangleCheck {
+	const [a, b, c, d] = points;
+	const name = `rectangle ${a}${b}${c}${d}`;
+	const usage = `« rectangle ${a} ; ${b} ; ${c} ; ${d} : ${a}${b} = 4 cm ; ${a}${c} = 6 cm »`;
+	const read = parts.map((part) => /^([A-Z])([A-Z])\s*=\s*(.+)$/.exec(part));
+	const is = (match: RegExpExecArray | null, p: string, q: string) =>
+		match !== null && [match[1], match[2]].sort().join('') === [p, q].sort().join('');
+	const diagonalAt = read.findIndex((match) => is(match, a, c));
+	if (read.length !== 2 || read.some((match) => match === null) || diagonalAt === -1) {
+		throw new LineError(`${name} : donner le côté [${a}${b}] et la diagonale [${a}${c}], ${usage}`);
+	}
+	const sideMatch = read[1 - diagonalAt];
+	if (is(sideMatch, a, c)) {
+		throw new LineError(`${name} : donner le côté [${a}${b}] et la diagonale [${a}${c}], ${usage}`);
+	}
+	if (!is(sideMatch, a, b)) {
+		throw new LineError(
+			`${name} : le côté donné est [${a}${b}] (la diagonale [${a}${c}] est tracée), ${usage}`
+		);
+	}
+	const lengthOf = (match: RegExpExecArray | null) => {
+		const length = match ? readLengthText(match[3].trim()) : null;
+		if (!length) throw new LineError(`${name} : longueur en cm ou en mm, ${usage}`);
+		if (!Number.isInteger(length.length) || length.length <= 0) {
+			throw new LineError(
+				`${name} : une longueur à la règle graduée se donne au millimètre près (3 cm, 3 cm 5 mm ou 35 mm)`
+			);
+		}
+		return length;
+	};
+	const side = lengthOf(sideMatch);
+	const diagonal = lengthOf(read[diagonalAt]);
+	if (side.length >= diagonal.length) {
+		throw new LineError(
+			`${name} : le côté [${a}${b}] doit être plus court que la diagonale [${a}${c}]`
+		);
+	}
+	return { kind: 'rectangle', points: [a, b, c, d], side, diagonal, line };
 }
 
 /** Les mots de `verifier:` (le segment à mesurer s'écrit `mesure AB`) */
@@ -695,6 +759,35 @@ function ruledPolygonError(
 }
 
 /**
+ * Rectangle sans équerre : seul dans la figure, papier uni, palette Segment ·
+ * Compas · Règle graduée exactement (décision 2)
+ */
+function diagonalRectangleError(
+	check: DiagonalRectangleCheck,
+	spec: ConstructionSpec,
+	grid: boolean
+): string | null {
+	const name = `rectangle ${check.points.join('')}`;
+	if (spec.checks.length > 1) {
+		return `${name} : un rectangle sans équerre ne se mêle pas à d’autres vérifications`;
+	}
+	if (grid) {
+		return `${name} : le rectangle sans équerre se construit sur papier uni ; retirer « grille: » (ou écrire « grille: non »)`;
+	}
+	const palette = DIAGONAL_RECTANGLE_TOOLS.join(', ');
+	const other = spec.tools.find((t) => !DIAGONAL_RECTANGLE_TOOLS.includes(t));
+	if (other) return `${name} : outil ${other} hors de la palette (${palette})`;
+	const labels: Record<string, string> = {
+		segment: 'le segment',
+		compas: 'le compas',
+		regle: 'la règle graduée'
+	};
+	const missing = DIAGONAL_RECTANGLE_TOOLS.find((t) => !spec.tools.includes(t));
+	if (missing) return `${name} : il faut ${labels[missing]} (outils: ${palette})`;
+	return null;
+}
+
+/**
  * Une vérification qui ne va pas avec les autres : son outil n'est pas celui
  * de la figure, ou c'est un second carré / rectangle (le juge compte les
  * segments en trop sur UN polygone).
@@ -722,6 +815,8 @@ function coherenceError(
 	const rulerTriangle = check.kind === 'triangle' && check.lengths.some(isRuledLength);
 	// … et au carré / rectangle coté (PR 6), qui a ses propres règles ci-dessous
 	if (isRuledPolygonCheck(check)) return ruledPolygonError(check, spec, grid);
+	// … et au rectangle sans équerre (chantier `rectangle-sans-equerre`)
+	if (isDiagonalRectangleCheck(check)) return diagonalRectangleError(check, spec, grid);
 	// … et à mesurer un segment (n° 26)
 	if (
 		check.kind !== 'segment' &&
@@ -1025,13 +1120,15 @@ export function readConstructionHeader(
 				? undefined
 				: isRuledPolygonCheck(first)
 					? RULED_POLYGON_TOOLS
-					: first.kind === 'triangle'
-						? triangleTools(first, grid)
-						: centered
-							? centeredCircleTools(centered)
-							: kind === 'droite' && grid
-								? LINE_GRID_TOOLS
-								: PLAIN_PAPER_TOOLS[kind];
+					: isDiagonalRectangleCheck(first)
+						? DIAGONAL_RECTANGLE_TOOLS
+						: first.kind === 'triangle'
+							? triangleTools(first, grid)
+							: centered
+								? centeredCircleTools(centered)
+								: kind === 'droite' && grid
+									? LINE_GRID_TOOLS
+									: PLAIN_PAPER_TOOLS[kind];
 		spec.tools = plainPaper ? [...plainPaper] : [CHECK_TOOL[kind]];
 	}
 	const coherent: ConstructionCheck[] = [];

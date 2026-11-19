@@ -31,25 +31,25 @@
 	 */
 
 	import type { PageData } from './$types';
-	import { getQuestionType, isCourseQuestion } from '$lib/questions/types';
-	import { goto, invalidateAll } from '$app/navigation';
-	import { browser } from '$app/environment';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
-	import * as Card from '$lib/components/ui/card';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import * as Tabs from '$lib/components/ui/tabs';
-	import * as Collapsible from '$lib/components/ui/collapsible';
-	import { Badge } from '$lib/components/ui/badge';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import { questionTemplatesCache } from '$lib/stores/questionTemplates.svelte';
-	import GradeBadgeSelector from '$lib/components/GradeBadgeSelector.svelte';
-	import QuestionTemplateCard from '$lib/components/QuestionTemplateCard.svelte';
-	import type { GradeCode } from '$lib/types/grades';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import { childrenOf, indexNodes, nodePathLabel } from '$lib/questions/classification-tree';
+	import { getQuestionType, isCourseQuestion } from '#lib/questions/types.ts';
+	import { goto, refreshAll } from '$app/navigation';
+	import { browser } from '$app/env';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import * as Tabs from '#lib/components/ui/tabs/index.ts';
+	import * as Collapsible from '#lib/components/ui/collapsible/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import { questionTemplatesCache } from '#lib/stores/questionTemplates.svelte.ts';
+	import GradeBadgeSelector from '#lib/components/GradeBadgeSelector.svelte';
+	import QuestionTemplateCard from '#lib/components/QuestionTemplateCard.svelte';
+	import type { GradeCode } from '#lib/types/grades.ts';
+	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import { childrenOf, indexNodes, nodePathLabel } from '#lib/questions/classification-tree.ts';
 	import BulkStatusReport from './BulkStatusReport.svelte';
 	import { SvelteSet } from 'svelte/reactivity';
 	import {
@@ -57,7 +57,7 @@
 		changeTemplatesStatus,
 		type BulkStatusSummary,
 		type BulkTemplateStatus
-	} from '$lib/questions/bulk-status';
+	} from '#lib/questions/bulk-status.ts';
 	import {
 		Plus,
 		Eye,
@@ -453,7 +453,7 @@
 
 				toaster.success('Modèle dupliqué avec succès');
 				// Refresh page
-				goto('/dashboard/admin/questions', { invalidateAll: true }).then(() => {});
+				goto('/dashboard/admin/questions', { refreshAll: true }).then(() => {});
 			} else {
 				toaster.error('Erreur lors de la duplication : ' + result.errors.join(', '));
 			}
@@ -495,7 +495,7 @@
 				deleteConfirmOpen = false;
 				templateToDelete = null;
 				// Refresh page
-				goto('/dashboard/admin/questions', { invalidateAll: true }).then(() => {});
+				goto('/dashboard/admin/questions', { refreshAll: true }).then(() => {});
 			} else {
 				toaster.error('Erreur lors de la suppression');
 			}
@@ -578,7 +578,7 @@
 		if (succeeded && bulkSummary) notifyBulkResult(bulkSummary);
 		questionTemplatesCache.invalidate();
 		try {
-			await invalidateAll();
+			await refreshAll();
 		} catch (err) {
 			console.error('Reload after bulk status change failed:', err);
 			toaster.error(

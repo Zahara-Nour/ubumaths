@@ -1,10 +1,10 @@
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAuth } from '$lib/server/middleware/auth';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
 // Supabase client is now accessed via locals.supabase
-import { updateConfigSchema } from '$lib/server/marketplace/validation';
+import { updateConfigSchema } from '#lib/server/marketplace/validation.ts';
 import { z } from 'zod';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/marketplace/config/+server');
 
@@ -53,10 +53,10 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 			if (configError) {
 				// No school-level config exists yet
-				return json({ config: null });
+				return Response.json({ config: null });
 			}
 
-			return json({ config });
+			return Response.json({ config });
 		} else if (class_id) {
 			// Get class-specific config
 			const { data: config, error: configError } = await supabase
@@ -66,10 +66,10 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 				.single();
 
 			if (configError) {
-				return json({ config: null });
+				return Response.json({ config: null });
 			}
 
-			return json({ config });
+			return Response.json({ config });
 		} else if (profile.school_id) {
 			// Get all configs for the school.
 			// `school_id` est nullable : sans école rattachée il n'y a aucune
@@ -93,10 +93,10 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 				throw error(500, 'Erreur lors de la récupération des configurations');
 			}
 
-			return json({ configs: configs || [] });
+			return Response.json({ configs: configs || [] });
 		} else {
 			// Administrateur sans école rattachée : aucune configuration à lister.
-			return json({ configs: [] });
+			return Response.json({ configs: [] });
 		}
 	} else if (profile.role === 'student') {
 		// Student can only see their class's config
@@ -113,7 +113,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 		if (membershipError || !membership) {
 			// Student not in any class
-			return json({ config: null });
+			return Response.json({ config: null });
 		}
 
 		const { data: config, error: configError } = await supabase
@@ -124,10 +124,10 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 		if (configError) {
 			// No config for this class
-			return json({ config: null });
+			return Response.json({ config: null });
 		}
 
-		return json({ config });
+		return Response.json({ config });
 	} else if (profile.role === 'teacher') {
 		// Teacher can only see configs for their classes
 		if (class_id) {
@@ -149,10 +149,10 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 				.single();
 
 			if (configError) {
-				return json({ config: null });
+				return Response.json({ config: null });
 			}
 
-			return json({ config });
+			return Response.json({ config });
 		} else {
 			// Get all configs for teacher's classes
 			const { data: configs, error: configsError } = await supabase
@@ -173,7 +173,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 				throw error(500, 'Erreur lors de la récupération des configurations');
 			}
 
-			return json({ configs: configs || [] });
+			return Response.json({ configs: configs || [] });
 		}
 	} else {
 		throw error(403, 'Accès réservé aux enseignants et administrateurs');
@@ -256,7 +256,7 @@ export const PATCH: RequestHandler = async ({ url, request, locals }) => {
 					throw error(500, 'Erreur lors de la mise à jour de la configuration');
 				}
 
-				return json(updatedConfig);
+				return Response.json(updatedConfig);
 			} else {
 				// Create new config (class-level: only class_id, no school_id due to XOR constraint)
 				const { data: newConfig, error: createError } = await supabase
@@ -273,7 +273,7 @@ export const PATCH: RequestHandler = async ({ url, request, locals }) => {
 					throw error(500, 'Erreur lors de la création de la configuration');
 				}
 
-				return json(newConfig, { status: 201 });
+				return Response.json(newConfig, { status: 201 });
 			}
 		} else if (profile.role === 'admin') {
 			// Admin can update any class in their school
@@ -317,7 +317,7 @@ export const PATCH: RequestHandler = async ({ url, request, locals }) => {
 					throw error(500, 'Erreur lors de la mise à jour de la configuration');
 				}
 
-				return json(updatedConfig);
+				return Response.json(updatedConfig);
 			} else {
 				// Create new config (class-level: only class_id, no school_id due to XOR constraint)
 				const { data: newConfig, error: createError } = await supabase
@@ -333,7 +333,7 @@ export const PATCH: RequestHandler = async ({ url, request, locals }) => {
 					throw error(500, 'Erreur lors de la création de la configuration');
 				}
 
-				return json(newConfig, { status: 201 });
+				return Response.json(newConfig, { status: 201 });
 			}
 		} else {
 			throw error(403, 'Accès réservé aux enseignants et administrateurs');
@@ -385,7 +385,7 @@ export const PATCH: RequestHandler = async ({ url, request, locals }) => {
 				throw error(500, 'Erreur lors de la mise à jour de la configuration');
 			}
 
-			return json(updatedConfig);
+			return Response.json(updatedConfig);
 		} else {
 			// Create new school config
 			const { data: newConfig, error: createError } = await supabase
@@ -403,7 +403,7 @@ export const PATCH: RequestHandler = async ({ url, request, locals }) => {
 				throw error(500, 'Erreur lors de la création de la configuration');
 			}
 
-			return json(newConfig, { status: 201 });
+			return Response.json(newConfig, { status: 201 });
 		}
 	}
 

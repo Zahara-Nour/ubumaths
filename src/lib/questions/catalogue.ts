@@ -20,12 +20,12 @@
  * (ADR 0035).
  */
 
-import { generateInstance } from '$lib/questions/generator/instance-generator';
-import { PREVIEW_SEED } from '$lib/questions/cart-preview';
-import type { QuestionInstance, QuestionTemplate } from '$lib/questions/types';
-import { compareNodes, placeOfNode, type TreeNode } from '$lib/questions/classification-tree';
-import type { GradeCode } from '$lib/types/grades';
-import { getAccessibleGrades } from '$lib/utils/grades';
+import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
+import { PREVIEW_SEED } from '#lib/questions/cart-preview.ts';
+import type { QuestionInstance, QuestionTemplate } from '#lib/questions/types.ts';
+import { compareNodes, placeOfNode, type TreeNode } from '#lib/questions/classification-tree.ts';
+import type { GradeCode } from '#lib/types/grades.ts';
+import { getAccessibleGrades } from '#lib/utils/grades.ts';
 
 // ============================================================================
 // TYPES
@@ -82,7 +82,7 @@ let previews = new WeakMap<QuestionTemplate, QuestionInstance | null>();
 // ============================================================================
 
 /** Dans une rubrique : niveau croissant (numérique : 10 après 2), puis titre */
-function compareTemplates(a: QuestionTemplate, b: QuestionTemplate): number {
+export function compareTemplates(a: QuestionTemplate, b: QuestionTemplate): number {
 	return (a.level ?? 0) - (b.level ?? 0) || (a.title ?? '').localeCompare(b.title ?? '', 'fr');
 }
 
@@ -159,6 +159,11 @@ export function buildCatalogue(
 	});
 
 	return { branches, unclassified };
+}
+
+/** Nombre de questions d'une notion, toutes rubriques comprises */
+export function notionTemplateCount(notion: CatalogueNotion): number {
+	return notion.rubrics.reduce((sum, rubric) => sum + rubric.templates.length, 0);
 }
 
 /**

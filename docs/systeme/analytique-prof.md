@@ -209,7 +209,7 @@ projection**, le suivi afficherait le vrai nom). Elle rassemble ce que l'analyti
   dans `class_members`.
 - Zod : `src/lib/server/validation/teacher-analytics.ts` (5 schémas, bornes : `topN` 1-30,
   `weeks` 1-26).
-- Composants : `src/lib/components/teacher/analytics/` (`curriculum-point-badge-meta.ts` : icône, couleur et libellé d'un badge, partagés avec la page de suivi ; `RegularityTable.svelte` : tableau de régularité, partagé par la grille C et le suivi ; 7 widgets, `AnalyticsModal` du widget G, `PointDetailsModal` du widget E) ; onglet
+- Composants : `src/lib/components/teacher/analytics/` (`curriculum-point-badge-meta.ts` : icône, couleur et libellé d'un badge, partagés avec la page de suivi ; `RegularityTable.svelte` : tableau de régularité, partagé par la grille C, le suivi et le carnet de liaison (une rangée, sans colonne de nom, en « jours de travail ») ; 7 widgets, `AnalyticsModal` du widget G, `PointDetailsModal` du widget E) ; onglet
   Surveillance : `src/lib/components/teacher/anti-fraud/`.
 
 ## Invariants

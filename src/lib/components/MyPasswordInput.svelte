@@ -17,7 +17,7 @@
 	```
 -->
 <script lang="ts">
-	import { Input } from '$lib/components/ui/input';
+	import { Input } from '#lib/components/ui/input/index.ts';
 	import { Eye, EyeOff } from '@lucide/svelte';
 
 	interface Props {

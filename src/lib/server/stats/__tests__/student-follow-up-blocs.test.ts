@@ -5,9 +5,9 @@
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-vi.mock('$lib/server/evaluations', () => ({ getStudentAssignments: vi.fn() }));
+vi.mock('#lib/server/evaluations.ts', () => ({ getStudentAssignments: vi.fn() }));
 
-import { getStudentAssignments } from '$lib/server/evaluations';
+import { getStudentAssignments } from '#lib/server/evaluations.ts';
 import {
 	getStudentCompetences,
 	getStudentEvaluations,

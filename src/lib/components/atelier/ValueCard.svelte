@@ -1,5 +1,5 @@
 <script lang="ts">
-	import '$lib/utils/mathlive-styles';
+	import '#lib/utils/mathlive-styles.ts';
 	/**
 	 * La carte d'une valeur : une seule ligne, `a = [champ]`.
 	 *
@@ -17,22 +17,22 @@
 	 * curseur, il effacerait sa formule.
 	 */
 	import { tick } from 'svelte';
-	import type { ValueObject } from '$lib/atelier/types';
-	import { actionsFor, actionMovesFocus, type ObjectAction } from '$lib/atelier/actions';
-	import { useAtelier } from '$lib/atelier/context';
-	import { constantOf } from '$lib/atelier/atelier.svelte';
-	import { displayName } from '$lib/atelier/names';
-	import { stateLabelOf } from '$lib/atelier/card-state';
+	import type { ValueObject } from '#lib/atelier/types.ts';
+	import { actionsFor, actionMovesFocus, type ObjectAction } from '#lib/atelier/actions.ts';
+	import { useAtelier } from '#lib/atelier/context.ts';
+	import { constantOf } from '#lib/atelier/atelier.svelte.ts';
+	import { displayName } from '#lib/atelier/names.ts';
+	import { stateLabelOf } from '#lib/atelier/card-state.ts';
 	import { EllipsisVertical } from '@lucide/svelte';
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
-	import * as Dialog from '$lib/components/ui/dialog';
+	import * as DropdownMenu from '#lib/components/ui/dropdown-menu/index.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
 	import DefinitionField from './DefinitionField.svelte';
 	import ValueSlider from './ValueSlider.svelte';
 	import SliderSettings from './SliderSettings.svelte';
 	import CardActionItems from './CardActionItems.svelte';
 	import UnavailableItem from './UnavailableItem.svelte';
-	import { valueAnswerOf } from '$lib/atelier/calcul';
-	import { forMathlive } from '$lib/atelier/mathfield';
+	import { valueAnswerOf } from '#lib/atelier/calcul.ts';
+	import { forMathlive } from '#lib/atelier/mathfield.ts';
 	import { convertLatexToMarkup } from 'mathlive';
 
 	interface Props {

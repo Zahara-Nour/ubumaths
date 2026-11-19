@@ -5,15 +5,15 @@
 
 import { error, fail } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
-import { requireRoles } from '$lib/server/middleware/auth';
-import { validateUuidParam } from '$lib/server/validation/params';
-import { updateSeriesSchema } from '$lib/server/validation/evaluations';
-import { getSeries, SeriesError, updateSeries } from '$lib/server/series';
-import type { SeriesItem } from '$lib/validation/series';
-import { createServerLogger } from '$lib/utils/logger';
-import { getDurationSignals } from '$lib/server/stats/duration-signals';
-import { getTeacherTestMode } from '$lib/server/test-mode';
-import type { DurationSignalsResponse } from '$lib/types/duration-signals';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import { validateUuidParam } from '#lib/server/validation/params.ts';
+import { updateSeriesSchema } from '#lib/server/validation/evaluations.ts';
+import { getSeries, SeriesError, updateSeries } from '#lib/server/series.ts';
+import type { SeriesItem } from '#lib/validation/series.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
+import { getDurationSignals } from '#lib/server/stats/duration-signals.ts';
+import { getTeacherTestMode } from '#lib/server/test-mode.ts';
+import type { DurationSignalsResponse } from '#lib/types/duration-signals.ts';
 
 const logger = createServerLogger('series/edit');
 

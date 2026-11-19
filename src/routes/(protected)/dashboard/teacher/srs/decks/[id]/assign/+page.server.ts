@@ -7,8 +7,8 @@
 
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { getAssignmentTargets } from '$lib/server/students';
-import { createServerLogger } from '$lib/utils/logger';
+import { getAssignmentTargets } from '#lib/server/students.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger(
 	'(protected)/dashboard/teacher/srs/decks/[id]/assign/+page.server'

@@ -80,7 +80,7 @@ import {
 } from '../factory';
 import { toPolynomial } from '../factor/polynomial';
 import { getBuiltinDomain, hasRestrictedDomain, getBuiltinRangeEntry } from './builtins';
-import { isNegativeInfinity, isPositiveInfinity } from '$lib/mathAST/guards';
+import { isNegativeInfinity, isPositiveInfinity } from '#lib/mathAST/guards.ts';
 import { ZERO_TOLERANCE } from '../common';
 import {
 	solveLinearInequality,

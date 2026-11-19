@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { executerTortue } from '../interpreteur';
 import { etatVersTexte, LONGUEUR_MAX_PROGRAMME, nombreDeBlocs, texteVersEtat } from '../notation';
-import { MAX_ANSWER_LENGTH } from '$lib/questions/submission';
+import { MAX_ANSWER_LENGTH } from '#lib/questions/submission.ts';
 
 // =============================================================================
 // Aides
@@ -113,6 +113,25 @@ describe('etatVersTexte', () => {
 	it('« répéter » à entrée valeur : son nombre', () => {
 		const etat = espace(pile(bloc('controls_repeat_ext', { inputs: { TIMES: nombre(3) } })));
 		expect(etatVersTexte(etat)).toEqual({ ok: true, texte: 'répéter 3 [ ]' });
+	});
+
+	it('nombres sans exposant, même très grands ou très petits (correctif tortue-nombres)', () => {
+		const etat = espace(
+			pile(
+				bloc('tortue_avancer', { inputs: { VALEUR: nombre(1e21) } }),
+				bloc('tortue_avancer', { inputs: { VALEUR: nombre(1e-7) } })
+			)
+		);
+		expect(etatVersTexte(etat)).toEqual({
+			ok: true,
+			texte: 'avancer 1000000000000000000000 ; avancer 0,0000001'
+		});
+	});
+
+	it('« répéter » à entrée valeur non entière : écrite telle quelle, donc refusée à la relecture', () => {
+		const etat = espace(pile(bloc('controls_repeat_ext', { inputs: { TIMES: nombre(2.5) } })));
+		expect(etatVersTexte(etat)).toEqual({ ok: true, texte: 'répéter 2,5 [ ]' });
+		expect(texteVersEtat('répéter 2,5 [ ]')).toMatchObject({ ok: false });
 	});
 
 	it('espace vide : texte vide', () => {

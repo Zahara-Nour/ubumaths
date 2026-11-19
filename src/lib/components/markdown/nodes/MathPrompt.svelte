@@ -15,12 +15,12 @@
 	@module components/markdown/nodes/MathPrompt
 -->
 <script lang="ts">
-	import '$lib/utils/mathlive-styles';
+	import '#lib/utils/mathlive-styles.ts';
 	import 'mathlive';
-	import type { InputState } from '$lib/ubumark';
-	import type { CapitalPairs, GenericFunctionConfig } from '$lib/mathAST/parser/types';
+	import type { InputState } from '#lib/ubumark/index.ts';
+	import type { CapitalPairs, GenericFunctionConfig } from '#lib/mathAST/parser/types.ts';
 	import type { MathfieldElement } from 'mathlive';
-	import { withoutCapitalPairShortcuts } from '$lib/questions/capital-pairs';
+	import { withoutCapitalPairShortcuts } from '#lib/questions/capital-pairs.ts';
 	import { expressionToLatex, extractPromptIndices } from '../utils/math-utils';
 	import { readContentLocale } from '../content-locale';
 	import { readCapitalPairs } from '../content-capital-pairs';
@@ -219,6 +219,19 @@
 	function isMathfield(element: HTMLElement): element is MathfieldElement {
 		return element.tagName === 'MATH-FIELD';
 	}
+
+	/**
+	 * « log » tapé = logarithme décimal, `\log` sans base (convention du dépôt, Tle techno).
+	 * Le raccourci de MathLive écrit `\log_{#?}` : sa case de base avale « (7) » et
+	 * la réponse est jugée fausse (décision Q27, journal questions-ttechno § 35).
+	 * Déclaré AVANT le filtre des majuscules : les raccourcis qu'il garde et remet
+	 * contiennent déjà `log`.
+	 */
+	$effect(() => {
+		if (!mathField || !isMathfield(mathField)) return;
+		if (mathField.inlineShortcuts.log === '\\log') return;
+		mathField.inlineShortcuts = { ...mathField.inlineShortcuts, log: '\\log' };
+	});
 
 	/** Raccourcis du champ avant le filtre : remis quand le sens n'est plus « longueur » */
 	let originalShortcuts: MathfieldElement['inlineShortcuts'] | undefined;

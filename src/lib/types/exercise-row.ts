@@ -20,11 +20,11 @@ import type {
 	DistributionMode,
 	SharedExerciseDefaults,
 	Variable
-} from '$lib/exercises/types';
-import { EXERCISE_CATEGORIES } from '$lib/exercises/types';
-import type { GradeCode } from '$lib/types/grades';
-import { isGradeCode } from '$lib/types/grades';
-import type { Json } from '$lib/types/database';
+} from '#lib/exercises/types.ts';
+import { EXERCISE_CATEGORIES } from '#lib/exercises/types.ts';
+import type { GradeCode } from '#lib/types/grades.ts';
+import { isGradeCode } from '#lib/types/grades.ts';
+import type { Json } from '#lib/types/database.ts';
 
 /** Row shape shared by every `exercises` select (`select('*')`). */
 export interface ExerciseRow {

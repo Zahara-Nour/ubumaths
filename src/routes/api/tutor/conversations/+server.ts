@@ -5,15 +5,15 @@
  * POST: Create new conversation
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import {
 	getTutorConversationQuerySchema,
 	createTutorConversationSchema
-} from '$lib/server/validation/chat';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { getExerciseContentSafe, type Exercise } from '$lib/exercises/types';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/validation/chat.ts';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { getExerciseContentSafe, type Exercise } from '#lib/exercises/types.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/tutor/conversations/+server');
 
@@ -58,7 +58,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		throw error(500, 'Erreur lors de la recherche de la conversation');
 	}
 
-	return json({ conversation });
+	return Response.json({ conversation });
 };
 
 /**
@@ -151,5 +151,5 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(500, 'Erreur lors de la création de la conversation');
 	}
 
-	return json({ conversation }, { status: 201 });
+	return Response.json({ conversation }, { status: 201 });
 };

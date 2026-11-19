@@ -1,8 +1,8 @@
 import { existsSync, readFileSync, readdirSync } from 'fs';
 import { resolve } from 'path';
-import { convertXmlToDsl } from '$lib/constructions-v2/converter';
-import { CONSTRUCTION_AUTHOR_ROLES } from '$lib/server/constructions-access';
-import { requireRoles } from '$lib/server/middleware/auth';
+import { convertXmlToDsl } from '#lib/constructions-v2/converter.ts';
+import { CONSTRUCTION_AUTHOR_ROLES } from '#lib/server/constructions-access.ts';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
 import type { PageServerLoad } from './$types';
 
 interface ConvertedFixture {

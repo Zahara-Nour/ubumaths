@@ -1,0 +1,264 @@
+{
+	"id": "54c0f87f-748c-4286-95d4-f0b8a49d5c08",
+	"title": "Ces droites sont-elles perpendiculaires ?",
+	"description": "Reconnaître des droites perpendiculaires (sans code) : oui ou non, quel dessin, quelle droite parmi trois",
+	"grades": ["CM1", "CM2"],
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Ces deux droites sont-elles perpendiculaires ?\n\n```figure\nfenetre: -5 ; 5 ; -4 ; 4\ndescription: Une droite bleue et une droite rouge qui se coupent.\n---\nO = point(0, 0, visible=faux)\nU = point(O, longueur=3, angle={{eval:t}}, visible=faux)\nV = point(O, longueur=3, angle={{eval:t+90+g}}, visible=faux)\ndroite(O, U, couleur=\"bleu\", epaisseur=2)\ndroite(O, V, couleur=\"rouge\", epaisseur=2)\n```\n\n```choix\nmelanger: non\n- Oui, elles sont perpendiculaires.\n- Non, elles ne sont pas perpendiculaires.\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "0..1"
+				},
+				{
+					"name": "s",
+					"expression": "0..1"
+				},
+				{
+					"name": "d",
+					"expression": "20..35"
+				},
+				{
+					"name": "t",
+					"expression": "0..179"
+				},
+				{
+					"name": "g",
+					"expression": "eval:c*(2*s-1)*d"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Deux droites **perpendiculaires** se coupent en formant un angle droit.",
+					"On pose le coin de l'équerre (ou le coin d'une feuille) là où les droites se coupent, un bord le long d'une droite.",
+					"{{if:c==0|L'autre droite suit exactement l'autre bord : elles sont $\\textcolor{{{color:primary.0}}}{\\text{perpendiculaires}}$.|L'autre droite s'écarte du bord de l'équerre : elles ne sont $\\textcolor{{{color:primary.0}}}{\\text{pas perpendiculaires}}$.}}"
+				]
+			}
+		},
+		{
+			"statement": "Sur quel dessin les deux droites sont-elles perpendiculaires ?\n\n````choix\n- ```figure\n  fenetre: -5 ; 5 ; -4 ; 4\n  taille: grande\n  description: Deux droites qui se coupent.\n  ---\n  aO = point(0, 0, visible=faux)\n  aU = point(aO, longueur=3, angle={{eval:t0}}, visible=faux)\n  aV = point(aO, longueur=3, angle={{eval:t0+90+0}}, visible=faux)\n  droite(aO, aU, couleur=\"bleu\", epaisseur=2)\n  droite(aO, aV, couleur=\"rouge\", epaisseur=2)\n  ```\n- ```figure\n  fenetre: -5 ; 5 ; -4 ; 4\n  taille: grande\n  description: Deux droites qui se coupent.\n  ---\n  bO = point(0, 0, visible=faux)\n  bU = point(bO, longueur=3, angle={{eval:t1}}, visible=faux)\n  bV = point(bO, longueur=3, angle={{eval:t1+90+g1}}, visible=faux)\n  droite(bO, bU, couleur=\"bleu\", epaisseur=2)\n  droite(bO, bV, couleur=\"rouge\", epaisseur=2)\n  ```\n- ```figure\n  fenetre: -5 ; 5 ; -4 ; 4\n  taille: grande\n  description: Deux droites qui se coupent.\n  ---\n  cO = point(0, 0, visible=faux)\n  cU = point(cO, longueur=3, angle={{eval:t2}}, visible=faux)\n  cV = point(cO, longueur=3, angle={{eval:t2+90+g2}}, visible=faux)\n  droite(cO, cU, couleur=\"bleu\", epaisseur=2)\n  droite(cO, cV, couleur=\"rouge\", epaisseur=2)\n  ```\n````",
+			"variables": [
+				{
+					"name": "t0",
+					"expression": "0..179"
+				},
+				{
+					"name": "t1",
+					"expression": "0..179"
+				},
+				{
+					"name": "t2",
+					"expression": "0..179"
+				},
+				{
+					"name": "g1",
+					"expression": "20..30"
+				},
+				{
+					"name": "g2",
+					"expression": "-35..-25"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Deux droites **perpendiculaires** se coupent en formant un angle droit.",
+					"On pose le coin de l'équerre (ou le coin d'une feuille) là où les droites se coupent, un bord le long d'une droite.",
+					"Sur un seul dessin, l'angle est droit : c'est lui. Sur les deux autres, l'angle est plus petit ou plus grand qu'un angle droit."
+				]
+			}
+		},
+		{
+			"statement": "Quelle droite est perpendiculaire à la droite noire ?\n\n```figure\nfenetre: -5 ; 5 ; -5 ; 5\ndescription: Une droite noire et trois droites de couleur, bleue, rouge et verte.\n---\nO = point(0, 0, visible=faux)\nU = point(O, longueur=3, angle={{t}}, visible=faux)\ndroite(O, U, couleur=\"noir\", epaisseur=3)\nX0 = point(O, longueur=3, angle={{eval:t+180}}, visible=faux)\nY0 = point(X0, longueur=3, angle={{eval:t+90+g0}}, visible=faux)\ndroite(X0, Y0, couleur=\"bleu\", epaisseur=2)\nX1 = point(0, 0, visible=faux)\nY1 = point(X1, longueur=3, angle={{eval:t+90+g1}}, visible=faux)\ndroite(X1, Y1, couleur=\"rouge\", epaisseur=2)\nX2 = point(O, longueur=3, angle={{eval:t+0}}, visible=faux)\nY2 = point(X2, longueur=3, angle={{eval:t+90+g2}}, visible=faux)\ndroite(X2, Y2, couleur=\"vert\", epaisseur=2)\n```\n\n```choix\nmelanger: non\n- la droite bleue\n- la droite rouge\n- la droite verte\n```",
+			"variables": [
+				{
+					"name": "w",
+					"expression": "0..2"
+				},
+				{
+					"name": "t",
+					"expression": "0..179"
+				},
+				{
+					"name": "d0",
+					"expression": "20..35"
+				},
+				{
+					"name": "s0",
+					"expression": "0..1"
+				},
+				{
+					"name": "g0",
+					"expression": "eval:(1-(1-min(abs(w-0),1)))*(2*s0-1)*d0"
+				},
+				{
+					"name": "d1",
+					"expression": "20..35"
+				},
+				{
+					"name": "s1",
+					"expression": "0..1"
+				},
+				{
+					"name": "g1",
+					"expression": "eval:(1-(1-min(abs(w-1),1)))*(2*s1-1)*d1"
+				},
+				{
+					"name": "d2",
+					"expression": "20..35"
+				},
+				{
+					"name": "s2",
+					"expression": "0..1"
+				},
+				{
+					"name": "g2",
+					"expression": "eval:(1-(1-min(abs(w-2),1)))*(2*s2-1)*d2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{w}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On vérifie chaque droite de couleur avec l'équerre, posée là où elle coupe la droite noire.",
+					"Seule la droite {{if:w==0|**bleue**|{{if:w==1|**rouge**|**verte**}}}} fait un angle droit avec la droite noire : c'est $\\textcolor{{{color:primary.0}}}{{{if:w==0|\\text{la droite bleue}|{{if:w==1|\\text{la droite rouge}|\\text{la droite verte}}}}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Perpendiculaires",
+			"variationIndex": 0,
+			"variables": {
+				"c": "0",
+				"s": "1",
+				"d": "25",
+				"t": "30",
+				"g": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Non (écart 25)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "1",
+				"s": "1",
+				"d": "25",
+				"t": "30",
+				"g": "25"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sécantes dites perpendiculaires",
+			"variationIndex": 0,
+			"variables": {
+				"c": "1",
+				"s": "0",
+				"d": "30",
+				"t": "100",
+				"g": "-30"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Le bon dessin",
+			"variationIndex": 1,
+			"variables": {
+				"t0": "20",
+				"t1": "60",
+				"t2": "140",
+				"g1": "25",
+				"g2": "-30"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : dessin à 115°",
+			"variationIndex": 1,
+			"variables": {
+				"t0": "20",
+				"t1": "60",
+				"t2": "140",
+				"g1": "25",
+				"g2": "-30"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "La rouge",
+			"variationIndex": 2,
+			"variables": {
+				"w": "1",
+				"t": "20",
+				"d0": "25",
+				"s0": "0",
+				"g0": "-25",
+				"d1": "30",
+				"s1": "1",
+				"g1": "0",
+				"d2": "22",
+				"s2": "1",
+				"g2": "22"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la verte",
+			"variationIndex": 2,
+			"variables": {
+				"w": "1",
+				"t": "20",
+				"d0": "25",
+				"s0": "0",
+				"g0": "-25",
+				"d1": "30",
+				"s1": "1",
+				"g1": "0",
+				"d2": "22",
+				"s2": "1",
+				"g2": "22"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

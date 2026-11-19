@@ -23,7 +23,7 @@ import {
 	type CourbeNode,
 	type CourbeSize
 } from '../types/courbe';
-import { namedColorTable, namedColorTypst } from '$lib/theme/named-colors';
+import { namedColorTable, namedColorTypst } from '#lib/theme/named-colors.ts';
 import { buildCourbeScene, type ScenePoint } from '../utils/courbe-scene';
 import { solutionLine } from '../utils/courbe-tracer';
 import { solutionVector } from '../utils/courbe-vecteur';

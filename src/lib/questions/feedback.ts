@@ -9,7 +9,7 @@
  */
 
 import type { ConstraintId } from './types';
-import { bySuperfluRule } from '$lib/mathAST/superflu/rules';
+import { bySuperfluRule } from '#lib/mathAST/superflu/rules.ts';
 
 /**
  * Feedback messages for each constraint type

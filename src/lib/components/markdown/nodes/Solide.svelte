@@ -21,8 +21,8 @@
 	@module components/markdown/nodes/Solide
 -->
 <script lang="ts">
-	import { ESPACE_UNAVAILABLE, type EspaceNode } from '$lib/ubumark/types/espace';
-	import { ESPACE_MARGIN, ESPACE_STROKE } from '$lib/ubumark/utils/espace-scene';
+	import { ESPACE_UNAVAILABLE, type EspaceNode } from '#lib/ubumark/types/espace.ts';
+	import { ESPACE_MARGIN, ESPACE_STROKE } from '#lib/ubumark/utils/espace-scene.ts';
 	import {
 		SOLIDE_DASH,
 		SOLIDE_DOT_RADIUS,
@@ -31,7 +31,7 @@
 		buildSolideScene,
 		solideLineStroke,
 		solideLabel
-	} from '$lib/ubumark/utils/espace-solides';
+	} from '#lib/ubumark/utils/espace-solides.ts';
 	import { readAuthoringErrors } from '../authoring-errors';
 
 	interface Props {

@@ -8,8 +8,8 @@
  * Free tier: ~1000 requests/day on HF Inference API
  */
 
-import { getEnv } from '$lib/server/env';
-import { createServerLogger } from '$lib/utils/logger';
+import { getEnv } from '#lib/server/env.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/rag/embeddings');
 

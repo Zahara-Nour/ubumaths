@@ -6,7 +6,10 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import StatChart from '../StatChart.svelte';
-import { buildRunningMeanScene, buildSampleMeansScene } from '$lib/ubumark/utils/simulation-scene';
+import {
+	buildRunningMeanScene,
+	buildSampleMeansScene
+} from '#lib/ubumark/utils/simulation-scene.ts';
 
 let mains: HTMLElement[] = [];
 function mainElement(): HTMLElement {

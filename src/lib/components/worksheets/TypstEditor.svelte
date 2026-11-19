@@ -21,22 +21,26 @@
 	```
 -->
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button';
-	import { Textarea } from '$lib/components/ui/textarea';
-	import { Badge } from '$lib/components/ui/badge';
-	import * as Tabs from '$lib/components/ui/tabs';
-	import * as Card from '$lib/components/ui/card';
-	import { Label } from '$lib/components/ui/label';
-	import { Separator } from '$lib/components/ui/separator';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Textarea } from '#lib/components/ui/textarea/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import * as Tabs from '#lib/components/ui/tabs/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import { Separator } from '#lib/components/ui/separator/index.ts';
 	import { Code2, Eye, Plus, AlertCircle, FileText, RefreshCw, Loader2 } from '@lucide/svelte';
-	import type { TemplatePlaceholder } from '$lib/types/worksheets';
-	import { COMMON_PLACEHOLDERS, SAMPLE_PREVIEW_DATA, renderTemplate } from '$lib/typst/templates';
+	import type { TemplatePlaceholder } from '#lib/types/worksheets.ts';
+	import {
+		COMMON_PLACEHOLDERS,
+		SAMPLE_PREVIEW_DATA,
+		renderTemplate
+	} from '#lib/typst/templates/index.ts';
 	import {
 		getTypstCompiler,
 		type TypstCompiler,
 		getCompilerError,
 		resetCompilerState
-	} from '$lib/typst/compiler';
+	} from '#lib/typst/compiler/index.ts';
 
 	// Props
 	interface Props {

@@ -8,9 +8,9 @@
 -->
 
 <script lang="ts">
-	import type { RewardType } from '$lib/types/reward-journal';
-	import { cn } from '$lib/utils';
-	import { Button } from '$lib/components/ui/button';
+	import type { RewardType } from '#lib/types/reward-journal.ts';
+	import { cn } from '#lib/utils.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import { Coins, Star, Crown, Trophy, Package, AlertTriangle, X } from '@lucide/svelte';
 
 	// Props

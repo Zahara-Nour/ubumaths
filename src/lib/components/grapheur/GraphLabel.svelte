@@ -1,5 +1,5 @@
 <script lang="ts">
-	import '$lib/utils/mathlive-styles';
+	import '#lib/utils/mathlive-styles.ts';
 	/**
 	 * GraphLabel Component
 	 *
@@ -14,7 +14,7 @@
 	 */
 
 	import { convertLatexToMarkup } from 'mathlive';
-	import { curveColorValue } from '$lib/grapheur/colors';
+	import { curveColorValue } from '#lib/grapheur/colors.ts';
 
 	/** A label: plain text always, plus LaTeX when the value is worth rendering. */
 	export interface GraphLabelContent {

@@ -17,7 +17,7 @@ const serviceFrom = vi.fn((table: string) => {
 	if (table !== 'riddle_solutions') throw new Error(`table inattendue : ${table}`);
 	return chain({ data: [SOLUTION_ROW], error: null });
 });
-vi.mock('$lib/server/serviceRoleClient', () => ({
+vi.mock('#lib/server/serviceRoleClient.ts', () => ({
 	createServiceRoleClient: () => ({ from: serviceFrom })
 }));
 

@@ -10,8 +10,8 @@ const { requireTeacherOfClass, getClassRegularityGrid } = vi.hoisted(() => ({
 	getClassRegularityGrid: vi.fn()
 }));
 
-vi.mock('$lib/server/stats/teacher-class-auth', () => ({ requireTeacherOfClass }));
-vi.mock('$lib/server/stats', () => ({ getClassRegularityGrid }));
+vi.mock('#lib/server/stats/teacher-class-auth.ts', () => ({ requireTeacherOfClass }));
+vi.mock('#lib/server/stats/index.ts', () => ({ getClassRegularityGrid }));
 
 import { GET } from '../+server';
 

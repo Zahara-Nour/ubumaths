@@ -8,7 +8,7 @@
 -->
 
 <script lang="ts">
-	import type { PalotinType } from '$lib/config/buddy-messages';
+	import type { PalotinType } from '#lib/config/buddy-messages.ts';
 
 	interface Props {
 		palotin: PalotinType;

@@ -24,17 +24,17 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
+import type { RenderedStep } from '#lib/mathAST/common/step-renderer-base.ts';
 import { Atelier } from '../atelier.svelte';
 import { CalcDesk } from '../desk.svelte';
 import { integrateSteps } from '../integrate-steps';
 import { citesForbiddenPoint, hasUnexplainedCoefficient } from '../integrate-steps-check';
-import { parseLatex } from '$lib/mathAST/parser';
-import { superscript, euler, implicitMultiply, number, fraction } from '$lib/mathAST/factory';
+import { parseLatex } from '#lib/mathAST/parser/index.ts';
+import { superscript, euler, implicitMultiply, number, fraction } from '#lib/mathAST/factory.ts';
 import {
 	generatePedagogicalIntegrationSteps,
 	type PedagogicalIntegrationStep
-} from '$lib/mathAST/pedagogical-integration';
+} from '#lib/mathAST/pedagogical-integration/index.ts';
 import { astOf } from '../parse';
 
 // =============================================================================

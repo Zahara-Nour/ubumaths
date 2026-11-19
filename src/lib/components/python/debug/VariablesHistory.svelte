@@ -8,10 +8,10 @@
 	 * - Highlights changed values and current step
 	 */
 
-	import { debugStore } from '$lib/stores/pythonDebug.svelte';
-	import { cn } from '$lib/utils';
+	import { debugStore } from '#lib/stores/pythonDebug.svelte.ts';
+	import { cn } from '#lib/utils.ts';
 	import { SvelteSet } from 'svelte/reactivity';
-	import type { DebugSnapshot, DebugVariable } from '$lib/shared/python/debug/types';
+	import type { DebugSnapshot, DebugVariable } from '#lib/shared/python/debug/types.ts';
 
 	// Types
 	interface Props {

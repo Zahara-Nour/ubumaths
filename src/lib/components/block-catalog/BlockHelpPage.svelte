@@ -1,14 +1,14 @@
 <!--
 	Page d'aide d'un bloc ubumark (`/aide-ecriture/blocs/<bloc>`, prof) :
 	réglages, exemples à copier, erreurs typiques, zone « Essayer ».
-	Contenu : une fiche de `$lib/block-catalog`.
+	Contenu : une fiche de `#lib/block-catalog/index.ts`.
 -->
 <script lang="ts">
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
-	import * as Table from '$lib/components/ui/table';
-	import { resolve } from '$app/paths';
-	import type { BlockCatalogEntry } from '$lib/block-catalog';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import MarkdownRenderer from '#lib/components/markdown/MarkdownRenderer.svelte';
+	import * as Table from '#lib/components/ui/table/index.ts';
+	import { resolvePath } from '#lib/navigation/resolve-path.ts';
+	import type { BlockCatalogEntry } from '#lib/block-catalog/index.ts';
 	import BlockSource from './BlockSource.svelte';
 	import BlockTryIt from './BlockTryIt.svelte';
 
@@ -99,7 +99,7 @@
 		{#if entry.seeAlso}
 			<p class="mt-4">
 				Voir aussi :
-				<a href={resolve(entry.seeAlso.href as '/')} class="text-primary underline">
+				<a href={resolvePath(entry.seeAlso.href)} class="text-primary underline">
 					{entry.seeAlso.label}
 				</a>
 			</p>

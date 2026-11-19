@@ -9,7 +9,7 @@
  * ```
  *
  * - `attendu:` (obligatoire) : le programme de référence, en notation texte
- *   (`$lib/shared/blockly/tortue/notation.ts`) ; il doit se lire, s'exécuter et tracer
+ *   (`#lib/shared/blockly/tortue/notation.ts`) ; il doit se lire, s'exécuter et tracer
  *   quelque chose, sinon l'élève serait toujours jugé faux.
  * - `montrer: oui | non` (défaut `non`) : la figure à reproduire, en gris.
  * - `comparer: position | forme` (défaut `position`) : même figure au même endroit, ou à
@@ -21,7 +21,8 @@
  *   calculs dans les entrées, répétition calculée ; en 3e, en plus, « si », conditions, « répéter
  *   jusqu'à ». `attendu:` et `départ:` s'écrivent alors dans la notation des programmes de calcul
  *   (`mettre n à 6 ; répéter n [ avancer 3 ; tourner à gauche 360 ÷ n ]`) et doivent tenir dans
- *   le niveau.
+ *   le niveau. Une variable lue jamais mise est refusée dans `attendu:` (faute de frappe), admise
+ *   dans `départ:` (l'élève la met : « complète le programme »).
  * - `case: N` : posée par le générateur.
  * - `figure:` : réservée à l'énoncé d'une évaluation notée, où `attendu:` devient `?` ; elle
  *   porte la figure à reproduire (`x1 y1 x2 y2 ; …`).
@@ -34,15 +35,18 @@
 import { unnestedLine } from './nested-line';
 import { specialBlockEnd } from './unclosed-block';
 import { isMaskedValue } from '../utils/masked-value';
-import { lireProgrammeTortue, type ComparaisonTortue } from '$lib/shared/blockly/tortue/jugement';
+import {
+	lireProgrammeTortue,
+	type ComparaisonTortue
+} from '#lib/shared/blockly/tortue/jugement.ts';
 import {
 	messageNiveauTortue,
 	nombreDeBlocsTortue,
 	texteVersEtatTortue
-} from '$lib/shared/blockly/tortue/niveaux';
-import type { NiveauTortue } from '$lib/shared/blockly/tortue/interpreteur';
-import { variableJamaisMise } from '$lib/shared/blockly/calcul/notation';
-import { normaliserSegments, type Segment } from '$lib/shared/blockly/tortue/segments';
+} from '#lib/shared/blockly/tortue/niveaux.ts';
+import type { NiveauTortue } from '#lib/shared/blockly/tortue/interpreteur.ts';
+import { variableJamaisMise } from '#lib/shared/blockly/calcul/notation.ts';
+import { normaliserSegments, type Segment } from '#lib/shared/blockly/tortue/segments.ts';
 import {
 	TORTUE_BLOCS_MAX,
 	TORTUE_FIGURE_MAX_SEGMENTS,
@@ -318,15 +322,15 @@ export function parseTortueContent(source: string): TortueNode {
 
 	/**
 	 * Erreur d'un programme écrit au niveau du bloc : variable lue jamais mise (faute de frappe :
-	 * elle vaudrait 0 ; dite avant le niveau, qui proposerait sinon de monter en 4e), bloc
-	 * au-dessus du niveau, programme illisible ; null s'il convient.
+	 * elle vaudrait 0 ; dite avant le niveau, qui proposerait sinon de monter en 4e ; `attendu:`
+	 * seulement), bloc au-dessus du niveau, programme illisible ; null s'il convient.
 	 */
-	const erreurDuProgramme = (programme: string): string | null => {
+	const erreurDuProgramme = (programme: string, controlerVariables: boolean): string | null => {
 		// Sans niveau, pas de variables : `avancer trois` dit le niveau à demander, jamais
 		// « trois est lue mais jamais mise » (revue PR A)
 		const horsNiveau = messageNiveauTortue(programme, niveau);
 		if (niveau === 'base' && horsNiveau !== null) return horsNiveau;
-		const fautive = variableJamaisMise(programme, { tortue: true });
+		const fautive = controlerVariables ? variableJamaisMise(programme, { tortue: true }) : null;
 		if (fautive !== null) return `« ${fautive} » est lue mais jamais mise (faute de frappe ?)`;
 		if (horsNiveau !== null) return horsNiveau;
 		const lu = texteVersEtatTortue(programme, niveau);
@@ -335,7 +339,7 @@ export function parseTortueContent(source: string): TortueNode {
 	// Un niveau illisible : les programmes ne se lisent pas (son erreur est déjà dite)
 	if (niveauLu && attenduEcrit !== null) {
 		const ligne = seen.get('attendu') ?? 1;
-		const erreur = erreurDuProgramme(attenduEcrit);
+		const erreur = erreurDuProgramme(attenduEcrit, true);
 		const lu = erreur === null ? lireProgrammeTortue(attenduEcrit, niveau) : null;
 		if (erreur !== null) fail(ligne, `attendu: ${erreur}`);
 		else if (lu && !lu.ok) fail(ligne, `attendu: ${lu.message}`);
@@ -346,8 +350,10 @@ export function parseTortueContent(source: string): TortueNode {
 			segmentsAttendus = lu.segments;
 		}
 	}
+	// `départ:` peut lire une variable que l'élève mettra (« complète le programme » :
+	// `départ: répéter n [ … ]` ; David, 2026-11-17)
 	if (niveauLu && departEcrit !== null) {
-		const erreur = erreurDuProgramme(departEcrit);
+		const erreur = erreurDuProgramme(departEcrit, false);
 		if (erreur !== null) fail(seen.get('départ') ?? 1, `départ: ${erreur}`);
 		else depart = departEcrit === '' ? null : departEcrit;
 	}

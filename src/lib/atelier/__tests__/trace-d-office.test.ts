@@ -8,7 +8,7 @@
 import { describe, it, expect } from 'vitest';
 import { Atelier } from '../atelier.svelte';
 import { runInput, promote } from '../calcul';
-import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
+import { WebReplEngine } from '#lib/mathAST/cli/web/web-repl-engine.ts';
 
 function session() {
 	return { atelier: new Atelier(), engine: new WebReplEngine() };

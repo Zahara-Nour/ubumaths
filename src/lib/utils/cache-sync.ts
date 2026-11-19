@@ -36,12 +36,12 @@
  * @see VipCardExchangeModal.svelte - VIP cards optimistic pattern
  */
 
-import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
-import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
-import type { CacheContext } from '$lib/types/cache-context';
-import type { StudentVipCards } from '$lib/types/vip-card';
-import type { StudentWarningCounts } from '$lib/server/warnings';
-import { isTeacherContext } from '$lib/types/cache-context';
+import { teacherCache } from '#lib/stores/teacherDashboardCache.svelte.ts';
+import { studentCache } from '#lib/stores/studentDashboardCache.svelte.ts';
+import type { CacheContext } from '#lib/types/cache-context.ts';
+import type { StudentVipCards } from '#lib/types/vip-card.ts';
+import type { StudentWarningCounts } from '#lib/server/warnings.ts';
+import { isTeacherContext } from '#lib/types/cache-context.ts';
 
 // ============================================================================
 // VIP CARDS SYNC

@@ -1,7 +1,7 @@
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRoles } from '$lib/server/middleware/auth';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/moderation/messages/[id]/context/+server');
 
@@ -64,5 +64,5 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 		throw error(500, 'Failed to get message context');
 	}
 
-	return json({ messages: data || [] });
+	return Response.json({ messages: data || [] });
 };

@@ -4,8 +4,8 @@
 
 import { error, fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
-import { getErrorLog, resolveError } from '$lib/server/errorMonitoring';
-import { requireAdmin } from '$lib/server/middleware/auth';
+import { getErrorLog, resolveError } from '#lib/server/errorMonitoring.ts';
+import { requireAdmin } from '#lib/server/middleware/auth.ts';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
 	const { id } = params;

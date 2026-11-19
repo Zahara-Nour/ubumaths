@@ -17,9 +17,9 @@
 import { describe, it, expect } from 'vitest';
 import { ConstructionExecutor } from '../executor';
 import { applyFinalVisibility } from '../choreographies/visibility';
-import { Figure } from '$lib/geometry-core/graph/figure';
-import { numeric } from '$lib/geometry-core/types/geo-value';
-import type { GeoPoint } from '$lib/geometry-core/types/primitives';
+import { Figure } from '#lib/geometry-core/graph/figure.ts';
+import { numeric } from '#lib/geometry-core/types/geo-value.ts';
+import type { GeoPoint } from '#lib/geometry-core/types/primitives.ts';
 
 function pt(x: number, y: number): GeoPoint {
 	return { x: numeric(x), y: numeric(y) };

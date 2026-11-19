@@ -20,7 +20,7 @@ import type { SolveResult, Solution } from '../types';
 import { analyzeSign } from '../../sign';
 import { parseCustom } from '../../parser/custom';
 import { number, multiply, opposite, PI as PI_NODE } from '../../factory';
-import { closedInterval } from '$lib/math/intervals/factory';
+import { closedInterval } from '#lib/math/intervals/factory.ts';
 // L'ensemble d'intervalles du module domain (avec `excludedPoints`), celui
 // qu'attend `analyzeSign` : la variante de math/intervals n'est pas un `Domain`.
 import { intervalSet } from '../../domain/factory';

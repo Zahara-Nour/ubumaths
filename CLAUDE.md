@@ -89,14 +89,14 @@ cp ../ubumaths/.env ../ubumaths/.env.local . && pnpm install --prefer-offline
 1. **Zod sur toute entrée** (`request.json()`, query params) : bornes `.min()`/`.max()`, limites de tableaux, UUID ; `safeParse` → `error(400, …)`. → [qualite.md](docs/pratiques/qualite.md#input-validation-with-zod)
 2. **`MySelect` / `MyCheckbox`** — jamais Shadcn Select/Checkbox direct ni natifs. → [composants-ui.md](docs/pratiques/composants-ui.md)
 3. **Runes Svelte 5 uniquement** (`$state`/`$derived`/`$props`, jamais `export let` ni `$:`). Event → handler → state → DOM ; `$effect` pour les side-effects seulement.
-4. **Jamais `any`** — `unknown` + type guards, ou types de `$lib/types/database`.
+4. **Jamais `any`** — `unknown` + type guards, ou types de `#lib/types/database.ts`.
 5. **Après chaque `.svelte` créé/modifié → `pnpm svelte:autofix <fichier>`.**
-6. **`database.ts` est généré** (`pnpm db:types`) : n'y ajouter aucun type ; alias, unions, composites → `$lib/types/database-helpers`.
+6. **`database.ts` est généré** (`pnpm db:types`) : n'y ajouter aucun type ; alias, unions, composites → `#lib/types/database-helpers.ts`.
 7. **Bouton retour = `BackLink`** : page parente lue dans l'adresse (jamais `history.back()` ni `goto()` ; deux parents → `?depuis=`), au-dessus du titre, dit où il va ; `kind="quit"` en pleine activité ; aucun sur une page de navigation ou carrefour. → [composants-ui.md](docs/pratiques/composants-ui.md#backlink--bouton-retour-obligatoire)
 
 ## Structure & patterns
 
-`src/lib/{components,server,stores,utils,types}/` · `src/routes/{(public),(protected),api}/`. Ordre dans un fichier : Imports → Types → Constantes → Variables → Functions → Components. Toasts : `toaster.success(…)` de `$lib/stores/toaster.svelte`. Handlers en minuscule (`onclick`). Code explicite et simple > astuces.
+`src/lib/{components,server,stores,utils,types}/` · `src/routes/{(public),(protected),api}/`. Ordre dans un fichier : Imports → Types → Constantes → Variables → Functions → Components. Toasts : `toaster.success(…)` de `#lib/stores/toaster.svelte.ts`. Handlers en minuscule (`onclick`). Code explicite et simple > astuces.
 
 ## Base de données
 

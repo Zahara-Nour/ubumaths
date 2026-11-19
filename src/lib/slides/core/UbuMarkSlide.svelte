@@ -11,7 +11,7 @@
 	 *   MIN_FIT_SCALE ; au-delà, la diapositive défile (chantier demo-debug, 6i-b)
 	 */
 	import { tick, getContext } from 'svelte';
-	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
+	import MarkdownRenderer from '#lib/components/markdown/MarkdownRenderer.svelte';
 	import type { SlideProps } from './types.js';
 	import Slide from './Slide.svelte';
 	import { DECK_CONTEXT_KEY } from './context.js';

@@ -11,7 +11,7 @@
 	textes plus petits ou plus grands que le corps passent par des `<div>`.
 -->
 <script lang="ts">
-	import SeoHead from '$lib/seo/SeoHead.svelte';
+	import SeoHead from '#lib/seo/SeoHead.svelte';
 </script>
 
 <SeoHead

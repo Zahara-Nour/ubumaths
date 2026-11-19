@@ -1,0 +1,293 @@
+{
+	"id": "9834f4cd-4e57-451d-bfc3-a0a8780cc423",
+	"title": "Logarithme d'un produit",
+	"description": "log(ab) = log a + log b : formule ; log a + log b sans calculatrice (produit puissance de 10) ; regrouper en log(n) ; log(a × 10^k) ; valeurs approchées",
+	"grades": ["T_TECHNO"],
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Pour tous réels $a>0$ et $b>0$, $\\log(ab)$ est égal à :\n\n```choix\n- $\\log(a)+\\log(b)$\n- $\\log(a)\\times\\log(b)$\n- $\\log(a+b)$\n- $a\\log(b)$\n```",
+			"variables": [],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : le logarithme transforme un produit en somme.",
+					"Pour $a>0$ et $b>0$ : $\\log(ab)=\\textcolor{{{color:primary.0}}}{\\log(a)+\\log(b)}$."
+				]
+			}
+		},
+		{
+			"statement": "Sans calculatrice, calcule $\\log({{a}})+\\log({{eval:b;d}})$.\n\n$\\log({{a}})+\\log({{eval:b;d}})=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2|4|5|8|20|25"
+				},
+				{
+					"name": "k",
+					"expression": "1..3"
+				},
+				{
+					"name": "b",
+					"expression": "eval:10^k/a"
+				}
+			],
+			"conditions": ["10^k > a"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $a>0$ et $b>0$ : $\\log(ab)=\\log(a)+\\log(b)$.",
+					"$\\log({{a}})+\\log({{eval:b;d}})=\\log({{a}}\\times{{eval:b;d}})=\\log({{eval:10^k}})=\\textcolor{{{color:primary.0}}}{{{k}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Écris sous la forme $\\log(n)$, avec $n$ entier : $\\log({{a}})+\\log({{b}})$.\n\n$\\log({{a}})+\\log({{b}})=\\log(?)$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				}
+			],
+			"conditions": ["a != b", "a+b != a*b"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $a>0$ et $b>0$ : $\\log(ab)=\\log(a)+\\log(b)$.",
+					"$\\log({{a}})+\\log({{b}})=\\log({{a}}\\times{{b}})=\\log(\\textcolor{{{color:primary.0}}}{{{eval:a*b}}})$."
+				]
+			}
+		},
+		{
+			"statement": "Complète sans calculatrice.\n\n$\\log({{eval:a*10^k}})=\\log({{a}})+?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "k",
+					"expression": "1..3"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $a>0$ et $b>0$ : $\\log(ab)=\\log(a)+\\log(b)$.",
+					"${{eval:a*10^k}}={{a}}\\times{{eval:10^k}}$, donc $\\log({{eval:a*10^k}})=\\log({{a}})+\\log({{eval:10^k}})=\\log({{a}})+\\textcolor{{{color:primary.0}}}{{{k}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On donne $\\log({{a}})\\approx{{eval:la;d}}$ et $\\log({{b}})\\approx{{eval:lb;d}}$. Déduis-en une valeur approchée de $\\log({{eval:a*b}})$.\n\n$\\log({{eval:a*b}})\\approx ?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2|3"
+				},
+				{
+					"name": "b",
+					"expression": "5|7"
+				},
+				{
+					"name": "la",
+					"expression": "eval:round(1000*log(a))/1000"
+				},
+				{
+					"name": "lb",
+					"expression": "eval:round(1000*log(b))/1000"
+				}
+			],
+			"conditions": ["a*b != 10"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:la+lb;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $a>0$ et $b>0$ : $\\log(ab)=\\log(a)+\\log(b)$.",
+					"$\\log({{eval:a*b}})=\\log({{a}})+\\log({{b}})\\approx{{eval:la;d}}+{{eval:lb;d}}\\approx\\textcolor{{{color:primary.0}}}{{{eval:la+lb;d}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "log(ab) = log a + log b",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : log a × log b",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "log 4 + log 25 = 2",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"k": "2",
+				"b": "25"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : log 4 + log 25 = 100",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"k": "2",
+				"b": "25"
+			},
+			"answers": ["100"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "log 2 + log 5 = 1",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"k": "1",
+				"b": "5"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "log 3 + log 7 = log 21",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "7"
+			},
+			"answers": ["21"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : log 10 (somme)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "7"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "log 300 = log 3 + 2",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"k": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 100",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"k": "2"
+			},
+			"answers": ["100"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "log 6 ≈ 0,301 + 0,477 = 0,778",
+			"variationIndex": 4,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"la": "0.301",
+				"lb": "0.477"
+			},
+			"answers": ["0,778"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "log 14 ≈ 0,301 + 0,845 = 1,146",
+			"variationIndex": 4,
+			"variables": {
+				"a": "2",
+				"b": "7",
+				"la": "0.301",
+				"lb": "0.845"
+			},
+			"answers": ["1,146"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : produit 0,301 × 0,845 ≈ 0,254",
+			"variationIndex": 4,
+			"variables": {
+				"a": "2",
+				"b": "7",
+				"la": "0.301",
+				"lb": "0.845"
+			},
+			"answers": ["0,254"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

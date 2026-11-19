@@ -275,6 +275,8 @@
 	details ul {
 		margin: 6px 0 0;
 		padding-left: 18px;
+		/* Une spec de figure (segment(…)|segment(…)) n'a aucun espace : coupée où il faut */
+		overflow-wrap: anywhere;
 	}
 	summary {
 		cursor: pointer;
@@ -380,6 +382,17 @@
 	.fig .fp {
 		stroke-width: 1.5;
 		fill: none;
+	}
+	/* Construction juste d'une figure à compléter (comme `.bonne-droite` de l'appli) */
+	.fig .fig-solution {
+		stroke: var(--color-fig-vert);
+		stroke-width: 2.5;
+	}
+	.fig .fig-solution-point {
+		fill: var(--color-fig-vert);
+	}
+	.fig .fig-solution-nom {
+		fill: var(--color-fig-vert);
 	}
 	.fig .fg {
 		stroke: var(--line);

@@ -9,18 +9,17 @@
  * - POST /api/srs/decks - Create new deck
  */
 
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { DEFAULT_DESIRED_RETENTION, DEFAULT_MAXIMUM_INTERVAL } from '$lib/srs/config';
+import { DEFAULT_DESIRED_RETENTION, DEFAULT_MAXIMUM_INTERVAL } from '#lib/srs/config.ts';
 import {
 	createDeckSchema,
 	listDecksQuerySchema,
 	deckListResponseSchema,
 	createDeckResponseSchema
-} from '$lib/server/validation/srs';
-import { validateJsonResponse } from '$lib/server/validation/response-utils';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/validation/srs.ts';
+import { validateJsonResponse } from '#lib/server/validation/response-utils.ts';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/srs/decks/+server');
 
@@ -48,7 +47,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		const validation = listDecksQuerySchema.safeParse(queryRaw);
 
 		if (!validation.success) {
-			return json({ error: validation.error.issues[0].message }, { status: 400 });
+			return Response.json({ error: validation.error.issues[0].message }, { status: 400 });
 		}
 
 		const query = validation.data;
@@ -78,11 +77,11 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 		if (decksError) {
 			logger.error('Error fetching decks:', decksError);
-			return json({ error: 'Impossible de charger les decks' }, { status: 500 });
+			return Response.json({ error: 'Impossible de charger les decks' }, { status: 500 });
 		}
 
 		if (!deckStats) {
-			return json({ decks: [] });
+			return Response.json({ decks: [] });
 		}
 
 		// Transform view data to match expected response format
@@ -112,10 +111,10 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			'GET /api/srs/decks'
 		);
 
-		return json(validated);
+		return Response.json(validated);
 	} catch (error) {
 		logger.error('Unexpected error in GET /api/srs/decks:', error);
-		return json({ error: 'Une erreur inattendue s’est produite' }, { status: 500 });
+		return Response.json({ error: 'Une erreur inattendue s’est produite' }, { status: 500 });
 	}
 };
 
@@ -145,7 +144,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		const validation = createDeckSchema.safeParse(bodyRaw);
 
 		if (!validation.success) {
-			return json({ error: validation.error.issues[0].message }, { status: 400 });
+			return Response.json({ error: validation.error.issues[0].message }, { status: 400 });
 		}
 
 		const body = validation.data;
@@ -172,7 +171,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		if (createError) {
 			logger.error('Error creating deck:', createError);
-			return json({ error: 'Impossible de créer le deck' }, { status: 500 });
+			return Response.json({ error: 'Impossible de créer le deck' }, { status: 500 });
 		}
 
 		// Validate response
@@ -182,9 +181,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			'POST /api/srs/decks'
 		);
 
-		return json(validated, { status: 201 });
+		return Response.json(validated, { status: 201 });
 	} catch (error) {
 		logger.error('Unexpected error in POST /api/srs/decks:', error);
-		return json({ error: 'Une erreur inattendue s’est produite' }, { status: 500 });
+		return Response.json({ error: 'Une erreur inattendue s’est produite' }, { status: 500 });
 	}
 };

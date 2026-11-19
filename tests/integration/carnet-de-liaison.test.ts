@@ -22,7 +22,7 @@
  *    l'adresse et interdit de la ressaisir ;
  *  - couper le partage révoque les liens (relu en service role : la RLS échoue
  *    en silence) ;
- *  - PR 3 : ce sur quoi s'appuie le serveur (`$lib/server/carnet/envois`, page
+ *  - PR 3 : ce sur quoi s'appuie le serveur (`#lib/server/carnet/envois.ts`, page
  *    du professeur) — empreinte de l'adresse calculée comme le trigger, porte
  *    `carnet_student_is_shared` ouverte au service role, réglages et opt-out
  *    écrits par le client du professeur (upsert, retrait).
@@ -129,7 +129,13 @@ async function nouvelEleve(
 	if (e1) throw new Error(e1.message);
 	const { error: e2 } = await service
 		.from('class_members')
-		.insert({ class_id: classe, student_id: profil.id, status: 'active' });
+		// Arrivé avant toute rentrée (Q43 : le carnet compte depuis l'arrivée)
+		.insert({
+			class_id: classe,
+			student_id: profil.id,
+			status: 'active',
+			joined_at: new Date(Date.now() - 400 * 86_400_000).toISOString()
+		});
 	if (e2) throw new Error(e2.message);
 	return { id: profil.id, client: await clientFor(profil.email!) };
 }
@@ -629,6 +635,161 @@ describe('carnet de liaison (base locale)', () => {
 				await service.from('school_years').delete().eq('id', annee);
 				await service.from('schools').delete().eq('id', ecole);
 			}
+		});
+
+		describe('régularité depuis la rentrée (carnet-heatmap, PR 2)', () => {
+			/** École, année active commencée à `rentree`, classe au carnet */
+			async function classeAvecRentree(nom: string, rentree: string) {
+				const ecole = await insertId('schools', {
+					name: `École ${nom}`,
+					city: 'Testville',
+					country: 'France'
+				});
+				const annee = await insertId('school_years', {
+					school_id: ecole,
+					name: `Année ${nom}`,
+					start_date: rentree,
+					end_date: plusJours(rentree, 420),
+					is_active: true
+				});
+				const classe = (await TestData.class().withName(nom).create()).id;
+				const { error: e1 } = await service
+					.from('classes')
+					.update({ school_id: ecole })
+					.eq('id', classe);
+				if (e1) throw new Error(e1.message);
+				const { error: e2 } = await service
+					.from('class_carnet_settings')
+					.insert({ class_id: classe, enabled: true });
+				if (e2) throw new Error(e2.message);
+				const nettoyer = async () => {
+					await service.from('class_carnet_settings').delete().eq('class_id', classe);
+					await service.from('class_members').delete().eq('class_id', classe);
+					await service.from('classes').delete().eq('id', classe);
+					await service.from('school_years').delete().eq('id', annee);
+					await service.from('schools').delete().eq('id', ecole);
+				};
+				return { classe, nettoyer };
+			}
+
+			/** Lundis de `de` à `a` (inclus), de semaine en semaine */
+			function lundisDe(de: string, a: string): string[] {
+				const lundis: string[] = [];
+				for (let l = de; l <= a; l = plusJours(l, 7)) lundis.push(l);
+				return lundis;
+			}
+
+			it('N1 : une case par semaine depuis la rentrée ; N5 : évaluations sur 5 semaines', async () => {
+				const aujourdhui = jourDeParis(new Date());
+				// Rentrée un mercredi, il y a 10 semaines : 11 cases.
+				const { classe, nettoyer } = await classeAvecRentree(
+					'4e Heatmap',
+					plusJours(lundi(aujourdhui, -10), 2)
+				);
+				const series: string[] = [];
+				const evaluations: string[] = [];
+				try {
+					const eleve = await nouvelEleve('Noa', classe);
+					await traces(eleve.id, lundi(aujourdhui, -8), 5);
+					await traces(eleve.id, plusJours(lundi(aujourdhui, -8), 1), 5);
+					// Échue il y a 8 semaines : hors de la fenêtre des évaluations (Q14)
+					for (const [titre, jours] of [
+						['Contrôle ancien', -56],
+						['Contrôle récent', -2]
+					] as const) {
+						const serieId = await insertId('series', {
+							title: titre,
+							grade: '4',
+							items: [{ templateId, quantity: 1, delay: 20 }],
+							created_by: teacherId
+						});
+						series.push(serieId);
+						const ev = await insertId('evaluations', {
+							series_id: serieId,
+							form: 'interactive',
+							status: 'published',
+							deadline: new Date(Date.now() + jours * 86_400_000).toISOString(),
+							created_by: teacherId
+						});
+						evaluations.push(ev);
+						await insertId('evaluation_assignments', {
+							evaluation_id: ev,
+							class_id: classe,
+							assigned_by: teacherId
+						});
+					}
+					const { jeton } = await parentConfirme(eleve.id, `parent-n1@${DOMAINE}`);
+					const carnet = await lireCarnet(jeton);
+					expect(carnet?.weeks.map((w) => w.week_start)).toEqual(
+						lundisDe(lundi(aujourdhui, -10), lundi(aujourdhui, 0))
+					);
+					expect(carnet?.weeks.find((w) => w.week_start === lundi(aujourdhui, -8))?.level).toBe(
+						'2-3'
+					);
+					expect(carnet?.evaluations.map((e) => e.title)).toEqual(['Contrôle récent']);
+
+					// L'élève lit les mêmes semaines dans « Mon carnet »
+					const { data: monCarnet, error } = await eleve.client.rpc('get_my_carnet');
+					expect(error).toBeNull();
+					expect((monCarnet as CarnetPayload).weeks).toEqual(carnet?.weeks);
+				} finally {
+					await service.from('evaluation_assignments').delete().in('evaluation_id', evaluations);
+					await service.from('evaluations').delete().in('id', evaluations);
+					await service.from('series').delete().in('id', series);
+					await nettoyer();
+				}
+			});
+
+			it('Q43 : arrivée en cours d’année, cases depuis la semaine de l’arrivée', async () => {
+				const aujourdhui = jourDeParis(new Date());
+				const { classe, nettoyer } = await classeAvecRentree(
+					'4e Heatmap arrivée',
+					lundi(aujourdhui, -10)
+				);
+				try {
+					const eleve = await nouvelEleve('Sacha', classe);
+					const { data } = await service
+						.from('class_members')
+						.update({ joined_at: `${plusJours(lundi(aujourdhui, -7), 3)}T09:00:00Z` })
+						.eq('class_id', classe)
+						.select('id');
+					expect(data).toHaveLength(1);
+					const { jeton } = await parentConfirme(eleve.id, `parent-s1@${DOMAINE}`);
+					const carnet = await lireCarnet(jeton);
+					expect(carnet?.weeks.map((w) => w.week_start)).toEqual(
+						lundisDe(lundi(aujourdhui, -7), lundi(aujourdhui, 0))
+					);
+				} finally {
+					await nettoyer();
+				}
+			});
+
+			it('L4 : au plus 53 semaines, même avec une rentrée trop ancienne', async () => {
+				const aujourdhui = jourDeParis(new Date());
+				const { classe, nettoyer } = await classeAvecRentree(
+					'4e Heatmap ancienne',
+					plusJours(aujourdhui, -400)
+				);
+				try {
+					const eleve = await nouvelEleve('Robin', classe);
+					// nouvelEleve le fait arriver il y a 400 jours : on le recule encore
+					const { data } = await service
+						.from('class_members')
+						.update({ joined_at: new Date(Date.now() - 500 * 86_400_000).toISOString() })
+						.eq('class_id', classe)
+						.select('id');
+					expect(data).toHaveLength(1);
+					const { jeton } = await parentConfirme(eleve.id, `parent-r1@${DOMAINE}`);
+					const carnet = await lireCarnet(jeton);
+					expect(carnet?.weeks).toHaveLength(53);
+					expect(carnet?.weeks[0].week_start).toBe(lundi(aujourdhui, -52));
+				} finally {
+					await nettoyer();
+				}
+			});
+
+			// L3 (année scolaire inconnue → 5 semaines) : couvert par « rend le
+			// carnet d’un seul élève », dont la classe n’a pas d’école.
 		});
 
 		it('« ne plus recevoir » garde le carnet ouvert', async () => {

@@ -6,7 +6,7 @@
 import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import ProbabilityTree from '../ProbabilityTree.svelte';
-import { parseProbTreeContent } from '$lib/ubumark/parser/probability-tree-parser';
+import { parseProbTreeContent } from '#lib/ubumark/parser/probability-tree-parser.ts';
 
 async function mathSpans(lines: string[]): Promise<string[]> {
 	const { node } = parseProbTreeContent(lines);

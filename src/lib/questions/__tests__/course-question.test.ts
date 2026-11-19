@@ -14,7 +14,7 @@ import { isCourseQuestion, type QuestionTemplate } from '../types';
 import { applyCourseQuestionOption, readCourseQuestionOption } from '../course-question';
 import { optionsSchema, questionTemplateSchema } from '../template-schema';
 import { generateInstance } from '../generator/instance-generator';
-import { templateMarkdown } from '$lib/ubumark';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 
 // ============================================================================
 // FIXTURES

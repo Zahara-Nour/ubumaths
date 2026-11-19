@@ -11,7 +11,7 @@
 	template" from the notebook editor.
 -->
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import TemplateCard from './TemplateCard.svelte';
 	import { Sparkles } from '@lucide/svelte';
 

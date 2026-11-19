@@ -9,7 +9,7 @@
  * on a day the class meets — never a Sunday, never a Thursday of half-term.
  *
  * No Supabase dependency on purpose. Reading `class_schedules` /
- * `school_holidays` lives in `$lib/server/class-sessions`; this module only
+ * `school_holidays` lives in `#lib/server/class-sessions.ts`; this module only
  * knows the calendar, which makes the rule testable without a database.
  *
  * ⚠️ Every date is handled in UTC. `new Date('2026-09-10')` is parsed as UTC

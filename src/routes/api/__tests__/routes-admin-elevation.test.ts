@@ -15,10 +15,10 @@
  */
 import { describe, it, expect, vi } from 'vitest';
 import type { RequestEvent } from '@sveltejs/kit';
-import { createFakeSupabase } from '$lib/server/__tests__/helpers/fake-supabase';
+import { createFakeSupabase } from '#lib/server/__tests__/helpers/fake-supabase.ts';
 
-vi.mock('$lib/server/serviceRoleClient', () => ({ createServiceRoleClient: vi.fn(() => ({})) }));
-vi.mock('$lib/server/errorMonitoring', async (importActual) => ({
+vi.mock('#lib/server/serviceRoleClient.ts', () => ({ createServiceRoleClient: vi.fn(() => ({})) }));
+vi.mock('#lib/server/errorMonitoring.ts', async (importActual) => ({
 	...(await importActual<object>()),
 	deleteAllResolvedErrors: vi.fn(async () => ({ success: true, count: 0 }))
 }));

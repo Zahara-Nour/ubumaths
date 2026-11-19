@@ -1,11 +1,11 @@
 <script lang="ts">
-	import type { MarketplaceListing, MarketplaceProposal } from '$lib/types/marketplace';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import { Button } from '$lib/components/ui/button';
-	import { Textarea } from '$lib/components/ui/textarea';
-	import { Label } from '$lib/components/ui/label';
-	import VipCard from '$lib/components/VipCard.svelte';
-	import gidouilleImage from '$lib/assets/images/gidouille.png';
+	import type { MarketplaceListing, MarketplaceProposal } from '#lib/types/marketplace.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Textarea } from '#lib/components/ui/textarea/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import VipCard from '#lib/components/VipCard.svelte';
+	import gidouilleImage from '#lib/assets/images/gidouille.png';
 	import { ArrowDown, TriangleAlert } from '@lucide/svelte';
 
 	// Props

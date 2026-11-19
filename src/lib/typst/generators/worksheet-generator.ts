@@ -36,10 +36,10 @@ import type {
 	WorksheetConfig,
 	InstanceData,
 	WorksheetTemplateRow
-} from '$lib/types/worksheets';
+} from '#lib/types/worksheets.ts';
 import type { GeneratorConfig, GeneratorContext, GenerateResult } from '../types';
 import { BaseTypstGenerator } from './base-generator';
-import { escapeTypst } from '$lib/ubumark';
+import { escapeTypst } from '#lib/ubumark/index.ts';
 import { renderTemplate } from '../templates';
 import {
 	printedStyleId,
@@ -49,18 +49,18 @@ import {
 	type TemplateForm
 } from '../templates/styles';
 import { documentLabels, labelPlaceholders, type DocumentLabels } from '../labels';
-import { DATE_LOCALES, TYPST_LANGS, type ContentLocale } from '$lib/types/locale';
-import { localizedText, worksheetLocale } from '$lib/types/worksheets';
+import { DATE_LOCALES, TYPST_LANGS, type ContentLocale } from '#lib/types/locale.ts';
+import { localizedText, worksheetLocale } from '#lib/types/worksheets.ts';
 import { withTextSize, type TextSize } from '../text-size';
-import { documentFromTeacherCopy } from '$lib/worksheets/document/teacher-adapter';
+import { documentFromTeacherCopy } from '#lib/worksheets/document/teacher-adapter.ts';
 import {
 	renderDocumentPreamble,
 	renderExercises,
 	type ExerciseLayout
-} from '$lib/worksheets/document/render-exercise';
-import { MATH_LIMITS_SETUP } from '$lib/worksheets/document/math-limits';
-import { TITLE_ONLY_HEADER, worksheetHeader } from '$lib/worksheets/worksheet-header';
-import type { DocumentForm, WorksheetDocument } from '$lib/worksheets/document/types';
+} from '#lib/worksheets/document/render-exercise.ts';
+import { MATH_LIMITS_SETUP } from '#lib/worksheets/document/math-limits.ts';
+import { TITLE_ONLY_HEADER, worksheetHeader } from '#lib/worksheets/worksheet-header.ts';
+import type { DocumentForm, WorksheetDocument } from '#lib/worksheets/document/types.ts';
 
 // ============================================================================
 // TYPES

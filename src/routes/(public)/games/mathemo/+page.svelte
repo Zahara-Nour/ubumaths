@@ -20,14 +20,14 @@
 	import { confetti } from '@neoconfetti/svelte';
 	import { reducedMotion } from './reduced-motion.svelte';
 	import { game } from './game.svelte';
-	import type { GradeCode } from '$lib/types/grades';
+	import type { GradeCode } from '#lib/types/grades.ts';
 	import { MATHEMO_GRADES, GRADE_LABELS } from './types';
-	import type { StudentVipCards } from '$lib/types/vip-card';
-	import { Button } from '$lib/components/ui/button';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import * as Tooltip from '$lib/components/ui/tooltip';
+	import type { StudentVipCards } from '#lib/types/vip-card.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import * as Tooltip from '#lib/components/ui/tooltip/index.ts';
 	import { Trophy, Lightbulb, Undo2, Eye, Zap } from '@lucide/svelte';
-	import MySelect from '$lib/components/MySelect.svelte';
+	import MySelect from '#lib/components/MySelect.svelte';
 	import type { PageData } from './$types';
 
 	// Create items array for Select component (Bits UI format)

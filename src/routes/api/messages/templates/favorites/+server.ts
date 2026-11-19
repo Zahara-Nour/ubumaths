@@ -8,11 +8,11 @@
  * DELETE - Remove template from favorites (via query param)
  */
 
-import { json, error } from '@sveltejs/kit';
-import { requireAuth } from '$lib/server/middleware/auth';
+import { error } from '@sveltejs/kit';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
 import type { RequestHandler } from './$types';
-import { uuidSchema, validateRequest } from '$lib/server/validation';
-import { createServerLogger } from '$lib/utils/logger';
+import { uuidSchema, validateRequest } from '#lib/server/validation/index.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/messages/templates/favorites/+server');
 
@@ -80,7 +80,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 		})
 		.filter((f): f is NonNullable<typeof f> => f !== null);
 
-	return json({
+	return Response.json({
 		favorites: formattedFavorites || [],
 		count: formattedFavorites?.length || 0
 	});
@@ -128,7 +128,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 	if (insertError) {
 		// Check if already favorited
 		if (insertError.code === '23505') {
-			return json({ message: 'Template déjà dans les favoris', already_favorited: true });
+			return Response.json({ message: 'Template déjà dans les favoris', already_favorited: true });
 		}
 
 		logger.error('Error adding favorite:', insertError);
@@ -142,7 +142,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		p_performed_by: user.id
 	});
 
-	return json({ message: 'Template ajouté aux favoris', success: true }, { status: 201 });
+	return Response.json({ message: 'Template ajouté aux favoris', success: true }, { status: 201 });
 };
 
 // DELETE - Remove from favorites
@@ -175,5 +175,5 @@ export const DELETE: RequestHandler = async ({ locals, url }) => {
 		p_performed_by: user.id
 	});
 
-	return json({ message: 'Template retiré des favoris', success: true });
+	return Response.json({ message: 'Template retiré des favoris', success: true });
 };

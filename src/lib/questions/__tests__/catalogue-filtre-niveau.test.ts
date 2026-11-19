@@ -6,7 +6,7 @@
  * ce niveau et des niveaux inférieurs (arbre des prérequis, `getAccessibleGrades`).
  */
 import { describe, it, expect } from 'vitest';
-import type { QuestionTemplate } from '$lib/questions/types';
+import type { QuestionTemplate } from '#lib/questions/types.ts';
 import { filterTemplatesByGrade } from '../catalogue';
 
 function modele(id: string, grades: string[]): QuestionTemplate {

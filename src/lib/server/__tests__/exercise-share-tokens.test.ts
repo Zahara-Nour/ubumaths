@@ -7,7 +7,7 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { ExerciseShareToken } from '$lib/exercises/types';
+import type { ExerciseShareToken } from '#lib/exercises/types.ts';
 
 // Mock Supabase client factory
 function createMockSupabase(overrides: Record<string, unknown> = {}) {
