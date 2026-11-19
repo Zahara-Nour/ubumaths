@@ -1855,3 +1855,19 @@ Recommandations suivies (« je te suis ») : (a) les jumeaux CM1 + CM2 couvrent 
 17 à 19 ; (b) lot 16 élargi à **5 modèles** (081, 088 ×2, 092, 093), puis un **dernier lot 17** (095, 097, 102) ;
 (c) niveaux : mesure en degrés 2, propriétés 11 à 14 ; (d) trapèze : `(AB) // (CD)` écrit sous la figure, et le nom
 le plus précis attendu.
+
+### 24.2 Lot 16 : écriture (2026-11-19)
+
+- `docs/wip/questions/lot-cm2-16.py` → `scripts/questions/cm2-16/` (5 modèles, 17 variations, gabarits de
+  `lot-cm1-8c.py`). `question:specs --instances 300` : 59 specs vertes, 5 100 tirages réussis, aucun `\textcolor`
+  hors `$` ; `sonde-figures` : 0 problème ; `create-questions` en simulation (prod) : 5 à créer, 0 en base.
+- Formes revues par le script (assertions) : le quadrilatère, le pentagone et l'hexagone n'ont ni angle presque droit
+  (à moins de 16°), ni côtés presque égaux, ni côtés presque parallèles ; les trapèzes n'ont que `[AB] // [CD]`.
+- Choix multiple (088 codes V3, symboles V3 ; 093 V3) : des bonnes cases seulement, mais pas toutes = **en partie juste**
+  (`unoptimal_form`, ½ point, `choices.ts`), pas faux : specs écrites ainsi.
+- `sonde-figures` ne lit pas les figures placées DANS les options d'une case « choix » (081 V1 : « 0 blocs ») : vues à
+  l'écran.
+- Base locale (copie dans le scratchpad, `.env.local`, `with-db-lock.sh`) : 5 brouillons ; aperçu admin à 390 px
+  (Playwright, port 5186), les 17 variations, plus trapèze, trapèze rectangle et droites perpendiculaires ciblés : aucun
+  débordement, 0 erreur. Corrigé : étiquettes `(d)` / `(d')` collées au bout des droites → écartées.
+- #2915 (fichiers) ouverte.
