@@ -53,6 +53,7 @@ import { DATE_LOCALES, TYPST_LANGS, type ContentLocale } from '#lib/types/locale
 import { GRADES, isGradeCode } from '#lib/types/grades.ts';
 import { localizedText, worksheetLocale } from '#lib/types/worksheets.ts';
 import { withTextSize, type TextSize } from '../text-size';
+import { withEasyReading } from '../easy-reading';
 import { documentFromTeacherCopy } from '#lib/worksheets/document/teacher-adapter.ts';
 import {
 	renderDocumentPreamble,
@@ -126,6 +127,12 @@ export interface WorksheetGeneratorOptions {
 	 * passe sur une colonne au-delà de la taille normale. Normale par défaut.
 	 */
 	textSize?: TextSize;
+	/**
+	 * Lecture facilitée (accessibilité, `easy-reading.ts`) : tout le document en
+	 * Luciole, formules en Luciole Math ; les corrections quittent alors les
+	 * polices du Corrigé. Faux par défaut.
+	 */
+	easyReading?: boolean;
 }
 
 /**
@@ -149,6 +156,8 @@ export interface GenerateTypstParams {
 	inlineCorrections?: boolean;
 	/** Voir `WorksheetGeneratorOptions.textSize` */
 	textSize?: TextSize;
+	/** Voir `WorksheetGeneratorOptions.easyReading` */
+	easyReading?: boolean;
 }
 
 // ============================================================================
@@ -306,8 +315,10 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 		);
 		const resolved = resolveTemplate(styleId, this.form, custom);
 		// Corrigé : Shantell Sans et Chiphre Math sur chaque correction seulement,
-		// posées par le rendu des exercices (`render-exercise.ts`)
-		const typstContent = this.generateFromTemplate(input, resolved);
+		// posées par le rendu des exercices (`render-exercise.ts`) ; en lecture
+		// facilitée, tout le document en Luciole
+		const filled = this.generateFromTemplate(input, resolved);
+		const typstContent = this.options.easyReading ? withEasyReading(filled) : filled;
 
 		return {
 			typstContent,
@@ -486,7 +497,8 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 			: copyDoc;
 		return renderExercises(doc, mode, layout, {
 			inlineCorrections: mode === 'worksheet' && this.options.inlineCorrections,
-			correctionFonts: this.options.correctionFonts
+			// Lecture facilitée : les corrections suivent la police du document
+			correctionFonts: this.options.easyReading ? false : this.options.correctionFonts
 		});
 	}
 }
@@ -527,7 +539,8 @@ export function generateWorksheetTypst(params: GenerateTypstParams): string {
 			individualCopyNotice: params.individualCopyNotice,
 			withCorrections: params.withCorrections,
 			inlineCorrections: params.inlineCorrections,
-			textSize: params.textSize
+			textSize: params.textSize,
+			easyReading: params.easyReading
 		}
 	);
 

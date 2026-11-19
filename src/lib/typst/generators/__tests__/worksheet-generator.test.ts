@@ -11,6 +11,8 @@ import { describe, it, expect } from 'vitest';
 import { WorksheetGenerator, generateWorksheetTypst } from '../worksheet-generator';
 import { DEFAULT_TEMPLATES, DEFAULT_TEMPLATE_IDS } from '../../templates/default-templates';
 import { exerciseBadge } from '../../worksheet-palette';
+import { CORRECTION_FONT_RULES, hasCorrectionFonts } from '../../correction-fonts';
+import { hasEasyReading, withoutEasyReading } from '../../easy-reading';
 import type {
 	WorksheetRow,
 	InstanceData,
@@ -926,6 +928,71 @@ describe('taille du texte', () => {
 			textSize: 'x_large'
 		});
 		expect(typst).toContain('size: 18pt, lang:');
+	});
+});
+
+// Lecture facilitée (élèves dys, chantier `lecture-facilitee`, D9–D13 du 2026-11-19)
+describe('lecture facilitée', () => {
+	const typstOf = (
+		mode: 'worksheet' | 'answers' | 'correction',
+		options: {
+			easyReading?: boolean;
+			withCorrections?: 'answers' | 'correction';
+			textSize?: 'normal' | 'large' | 'x_large';
+		} = {}
+	) =>
+		new WorksheetGenerator(createMockConfig(), undefined, { mode }, options).generate({
+			worksheet: createMockWorksheet(),
+			instance: createMockInstance()
+		}).typstContent;
+
+	it('sans réglage : rien ne change (pas de Luciole)', () => {
+		expect(hasEasyReading(typstOf('worksheet'))).toBe(false);
+		expect(typstOf('worksheet')).toBe(typstOf('worksheet', { easyReading: false }));
+	});
+
+	it.each([
+		['fiche', 'worksheet', undefined],
+		['réponses', 'answers', undefined],
+		['corrigé', 'correction', undefined],
+		['fiche + réponses', 'worksheet', 'answers'],
+		['fiche + corrigé', 'worksheet', 'correction']
+	] as const)('%s : tout le document en Luciole', (_, mode, withCorrections) => {
+		const typst = typstOf(mode, { easyReading: true, withCorrections });
+		expect(hasEasyReading(typst)).toBe(true);
+		// Le même document, Luciole en plus
+		expect(withoutEasyReading(typst)).toBe(
+			typstOf(mode, { withCorrections, easyReading: false }).replaceAll(
+				CORRECTION_FONT_RULES + '\n',
+				''
+			)
+		);
+	});
+
+	it('corrigé : les corrections quittent Shantell Sans / Chiphre Math', () => {
+		expect(hasCorrectionFonts(typstOf('correction'))).toBe(true);
+		expect(hasCorrectionFonts(typstOf('correction', { easyReading: true }))).toBe(false);
+		expect(
+			hasCorrectionFonts(typstOf('worksheet', { easyReading: true, withCorrections: 'correction' }))
+		).toBe(false);
+	});
+
+	it('se cumule avec la taille du texte', () => {
+		const typst = typstOf('worksheet', { easyReading: true, textSize: 'large' });
+		expect(hasEasyReading(typst)).toBe(true);
+		expect(typst).toContain('size: 14pt, lang:');
+	});
+
+	it('la fonction héritée transmet la lecture facilitée', () => {
+		const typst = generateWorksheetTypst({
+			worksheet: createMockWorksheet(),
+			instance: createMockInstance(),
+			config: createMockConfig(),
+			mode: 'correction',
+			easyReading: true
+		});
+		expect(hasEasyReading(typst)).toBe(true);
+		expect(hasCorrectionFonts(typst)).toBe(false);
 	});
 });
 

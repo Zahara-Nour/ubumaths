@@ -4,7 +4,7 @@
 > (`pnpm db:types` régénère les deux, depuis la **production**). Ne pas éditer à la main :
 > le texte explicatif vit dans [base-de-donnees.md](base-de-donnees.md).
 
-232 tables · 24 vues · 349 fonctions. Colonne suivie de `?` : peut être nulle.
+233 tables · 24 vues · 349 fonctions. Colonne suivie de `?` : peut être nulle.
 
 ## Établissement et personnes (26)
 
@@ -440,11 +440,11 @@ Liens : `entry_id` → `class_journal_entries` · `point_id` → `curriculum_poi
 
 Liens : `checklist_item_id` → `chapter_checklist_items` · `student_id` → `profiles`
 
-## Fiches (12)
+## Fiches (13)
 
 ### `student_print_settings`
 
-`student_id` · `text_size` · `updated_at`
+`easy_reading` · `student_id` · `text_size` · `updated_at`
 
 Liens : `student_id` → `profiles`
 
@@ -471,6 +471,12 @@ Liens : `assignment_id` → `worksheet_assignments` · `student_id` → `profile
 `assigned_at` · `available_from?` · `closes_at?` · `correction_release_at?` · `correction_release_mode?` · `created_at` · `created_by` · `guidance_level` · `id` · `individualized?` · `instructions?` · `show_corrections?` · `status?` · `title?` · `updated_at` · `worksheet_id`
 
 Liens : `created_by` → `profiles` · `worksheet_id` → `worksheets`
+
+### `worksheet_classifications`
+
+`created_at` · `node_id` · `position` · `worksheet_id`
+
+Liens : `node_id` → `classification_nodes` · `worksheet_id` → `worksheets`
 
 ### `worksheet_error_reports`
 
@@ -510,7 +516,7 @@ Liens : `created_by` → `profiles` · `style_id` → `worksheet_styles`
 
 ### `worksheets`
 
-`archived_at?` · `config?` · `created_at` · `created_by` · `description?` · `estimated_duration_minutes?` · `grades?` · `id` · `published_at?` · `school_id?` · `status` · `style_id?` · `title` · `total_points?` · `translations?` · `type` · `updated_at` · `version?`
+`archived_at?` · `category?` · `config?` · `created_at` · `created_by` · `description?` · `estimated_duration_minutes?` · `grades?` · `id` · `published_at?` · `school_id?` · `status` · `style_id?` · `title` · `total_points?` · `translations?` · `type` · `updated_at` · `version?`
 
 Liens : `created_by` → `profiles` · `school_id` → `schools` · `style_id` → `worksheet_styles`
 
