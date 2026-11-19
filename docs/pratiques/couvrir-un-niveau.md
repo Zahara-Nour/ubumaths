@@ -215,9 +215,10 @@ principe, chaque bloc ``figure passé au moteur de l'appli (`parseFigure` puis
    indisponible », échappe aux specs).
    Lot de matériel multibase : `pnpm tsx scripts/questions/sonde-collections.ts --dir …`, même
    principe, chaque bloc ` ```collection ` passé à `parseCollectionContent` → **0 problème** (plafond
-   d'un grand bloc dépassé, valeur au-delà de 9 999 : les specs ne le voient pas). Un modèle à
-   `construire:` ne porte pas « Espaces dès 4 chiffres » : la valeur posée (`4635`) y serait une forme
-   à améliorer ; écrire le nombre de l'énoncé groupé à la main (`{{m}}\,{{c}}{{d}}{{u}}`).
+   d'un grand bloc dépassé, valeur au-delà de 9 999 : les specs ne le voient pas). Une case à
+   `construire:` est jugée sur sa seule valeur, écrite par le composant (#2495) : « Espaces dès 4
+   chiffres » n'y change rien, l'élève ne tape pas le nombre. Écrire le nombre de l'énoncé groupé à
+   la main (`{{m}}\,{{c}}{{d}}{{u}}`) : la formule `${{n}}$` ne met pas l'espace.
    Lot d'horloges ou de droites graduées : `pnpm tsx scripts/questions/sonde-horloges.ts --dir …`, même
    principe, chaque bloc ` ```horloge ` et ` ```line ` (énoncé, corrigé, horloges d'un choix) passé à son
    parseur → **0 problème** (heure refusée, point hors de la droite : les specs ne le voient pas).

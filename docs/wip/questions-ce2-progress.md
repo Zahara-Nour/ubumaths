@@ -6,15 +6,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19 : reprise, phase 0 du lot 13 proposée._
+_Mis à jour le 2026-11-19 : lot 13 écrit (branche `feat/questions-ce2-lot13`)._
 
-- **État** : lots 1 à 12b publiés. Le n° 18 (règle graduée) est livré (chantier `regle-graduee`, clos le
-  2026-11-09) : 039 et 070 coté en cm sont débloqués. Restent sans modèle, par décision : 086, 043, 051, 065.
-- **Prochaine action** : lot 13 (§ 20) une fois la phase 0 validée ; puis clôture du chantier (versement).
-- **En attente de David** : Q1-Q3 du § 20 ; vérification manuelle du lot 12b (`verifications-manuelles.md`).
-- **Pièges en cours** : coordonnées en flottants → arrondies (garde de complexité) ; `db:migrate` depuis un worktree :
-  copier `supabase/.temp/{project-ref,linked-project.json,pooler-url}` ; commitlint : corps ≤ 100 caractères par ligne.
-- **Worktree / branche** : `../ubumaths-wt-questions-ce2`, HEAD détaché sur `origin/main` (aucune branche en cours).
+- **État** : lots 1 à 12b publiés ; lot 13 (§ 20 : CE2-039 ×2, CE2-070 coté en cm ×3) écrit, specs vertes, PR à
+  ouvrir/merger. Q3 (lot 11) retirée : rien à changer. Restent sans modèle, par décision : 086, 043, 051, 065.
+- **Prochaine action** : après le merge, David lance `pnpm tsx scripts/create-questions.ts --dir
+scripts/questions/ce2-13 --publier` depuis le worktree ; puis ids commités, migration nœud + tag (039 : nœud des
+  longueurs ; 070 : « constructions »), page à cocher, publication ; puis clôture du chantier (versement).
+- **En attente de David** : le `create-questions --publier` ; vérification manuelle des lots 12b et 13.
+- **Pièges en cours** : coordonnées en flottants → arrondies ; `db:migrate` depuis un worktree : copier
+  `supabase/.temp/{project-ref,linked-project.json,pooler-url}` ; Chrome ne lit pas `[::1]` (aperçu local non jouable).
+- **Worktree / branche** : `../ubumaths-wt-questions-ce2`, branche `feat/questions-ce2-lot13`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -1090,7 +1092,7 @@ Décisions de David (« je suis tes recos », 2026-11-08) : Q1 oui (07 et 08 pou
   #2473, vérifié sur `origin/production`) ; `publier-lot` simulation puis `--publier` (David) ; relevé MCP : 6/6
   `published`. **Lot 12b clos.**
 
-## 20. Lot 13 — règle graduée : tracer un segment, constructions cotées en cm (phase 0, 2026-11-19, à valider)
+## 20. Lot 13 — règle graduée : tracer un segment, constructions cotées en cm (phase 0 validée le 2026-11-19)
 
 Débloqué par le chantier `regle-graduee` (clos le 2026-11-09, `outils-manquants.md` ex-n° 18). Relevé MCP du
 2026-11-19 : aucun modèle de prod n'a de vérification en cm ou en mm hors de `f06e45e8` (6-173) et `a95aedfd` (4-038).
@@ -1116,3 +1118,29 @@ du chantier `regle-graduee` : « après ») ; les longueurs décimales (« 5,3 c
 (comme les lots 12 et 12b).
 
 Questions à David : voir le message du 2026-11-19 (Q1 découpage, Q2 niveaux, Q3 reste du lot 11).
+
+Décisions de David (« je te suis », 2026-11-19) : Q1 cinq modèles (cm, puis cm et mm) ; Q2 niveaux 8 et 9 (longueurs),
+5 (constructions) ; Q3 corriger 04 et 05 du lot 11 (« Espaces dès 4 chiffres »).
+
+**Q3 retirée après relecture (2026-11-19)** : ma raison était fausse. Depuis #2495, une case `construire:` est jugée
+sur sa seule valeur, écrite par le composant : l'option ne change rien pour l'élève, qui ne tape pas le nombre ; et
+le nombre de l'énoncé du 05 reste groupé à la main (`${{n}}$` ne met pas l'espace). Rien à changer en prod ; la
+phrase périmée de `couvrir-un-niveau.md` est corrigée dans la PR du lot.
+
+### Lot 13 — écriture (2026-11-19)
+
+- Script `docs/wip/questions/lot-ce2-13.py` → `scripts/questions/ce2-13/` : 5 modèles, 60 specs (01 : 14, 02 : 16,
+  03 : 14, 04 : 7, 05 : 9) ; `question:specs` 200 tirages par variation, verts, 0 `\textcolor` hors `$` ;
+  `sonde-figures` : 0 problème (1 500 blocs).
+- Messages relevés un par un (sonde `validateAnswer`, jetable) : chaque spec `incorrect` rend le message visé
+  (« Ton segment mesure 5 cm 4 mm au lieu de 5 cm 3 mm. », « Ton segment est tracé à l'œil… », « Trace un seul
+  segment [AB]… », « Ton côté [BC] est tracé à l'œil : utilise l'équerre. », « Ton point C est placé à l'œil… »,
+  « Ta figure n'est pas fermée. », « Il manque le côté [BC]. », « Ton compas est ouvert à l'œil… », « Pique ton
+  compas en O. », « Trace un seul cercle de centre O. »).
+- Coordonnées de B écrites `point({{eval:2+c}}, 1)` ; longueur en mm du 02 : `m = {{eval:10*a+b}}` (jamais un
+  multiple de 10, et la correction lit a cm et b mm).
+- Base locale : 5 brouillons créés (copie du dossier dans le scratchpad). **Pas joués à l'écran** : l'extension
+  Chrome refuse `[::1]` et l'appli y renvoie toute visite de `127.0.0.1` ; `localhost` exclu (cookies de la session
+  de David sur 5173). Le geste (règle posée, aimantation au mm) → ligne de `verifications-manuelles.md`.
+- `create-questions` en simulation contre la prod : refusé par le mode auto (classifieur) → à lancer par David avec
+  le `--publier`.
