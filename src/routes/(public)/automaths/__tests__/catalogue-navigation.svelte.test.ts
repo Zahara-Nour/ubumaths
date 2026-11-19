@@ -208,7 +208,7 @@ describe('Catalogue Automaths — sous-notions', () => {
 			.element(
 				page
 					.getByRole('region', { name: /^Somme/ })
-					.getByRole('button', { name: /panier/ })
+					.getByRole('button', { name: /ma série/ })
 					.first()
 			)
 			.toBeVisible();

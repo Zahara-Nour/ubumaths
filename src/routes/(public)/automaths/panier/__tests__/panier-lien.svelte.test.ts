@@ -104,7 +104,7 @@ describe('Panier ouvert par un lien de série (Q45)', () => {
 		await renderPanier();
 
 		await vi.waitFor(() => expect(questionCart.allItems).toEqual(SERIES));
-		expect(document.body.textContent).not.toContain('Remplacer ton panier');
+		expect(document.body.textContent).not.toContain('Remplacer ta série');
 		await expectUrlCleaned();
 	});
 
@@ -113,7 +113,7 @@ describe('Panier ouvert par un lien de série (Q45)', () => {
 		openLink(encodeSeriesParam(SERIES));
 		await renderPanier();
 
-		await expect.element(page.getByText('Remplacer ton panier par cette série ?')).toBeVisible();
+		await expect.element(page.getByText('Remplacer ta série par celle du lien ?')).toBeVisible();
 		expect(navigation.replaceState).not.toHaveBeenCalled();
 		await page.getByRole('button', { name: 'Remplacer', exact: true }).click();
 
@@ -152,7 +152,7 @@ describe('Panier ouvert par un lien de série (Q45)', () => {
 		await renderPanier();
 
 		await expect.element(page.getByText(/Ce lien de série est abîmé/)).toBeVisible();
-		expect(document.body.textContent).not.toContain('Remplacer ton panier');
+		expect(document.body.textContent).not.toContain('Remplacer ta série');
 		expect(questionCart.allItems).toEqual([{ templateId: MINE, quantity: 3, delay: 20 }]);
 		await expectUrlCleaned();
 	});
@@ -164,7 +164,7 @@ describe('Panier ouvert par un lien de série (Q45)', () => {
 		await renderPanier();
 
 		await expect.element(page.getByText(ANCIEN_LIEN_MESSAGE)).toBeVisible();
-		expect(document.body.textContent).not.toContain('Remplacer ton panier');
+		expect(document.body.textContent).not.toContain('Remplacer ta série');
 		expect(questionCart.allItems).toEqual([{ templateId: MINE, quantity: 3, delay: 20 }]);
 		await expectUrlCleaned();
 	});
@@ -173,7 +173,7 @@ describe('Panier ouvert par un lien de série (Q45)', () => {
 		questionCart.addToCart(MINE, 3, 20);
 		await renderPanier();
 
-		await expect.element(page.getByText('Mon Panier')).toBeVisible();
+		await expect.element(page.getByRole('heading', { name: 'Ma série' })).toBeVisible();
 		expect(navigation.replaceState).not.toHaveBeenCalled();
 		expect(questionCart.allItems).toEqual([{ templateId: MINE, quantity: 3, delay: 20 }]);
 	});

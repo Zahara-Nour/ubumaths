@@ -87,8 +87,8 @@
 		<Dialog.Header>
 			<Dialog.Title>Enregistrer comme série</Dialog.Title>
 			<Dialog.Description>
-				La série garde les {items.length} modèle{items.length > 1 ? 's' : ''} du panier. Tu pourras ensuite
-				en faire un contrôle.
+				La série garde les {items.length} modèle{items.length > 1 ? 's' : ''} de « Ma série ». Tu pourras
+				ensuite en faire un contrôle.
 			</Dialog.Description>
 		</Dialog.Header>
 

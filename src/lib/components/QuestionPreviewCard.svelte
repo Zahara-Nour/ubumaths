@@ -6,8 +6,8 @@
 	 * (non interactive, avec son bouton de retournement), sous un intitulé fait
 	 * du titre et de la description du modèle (branche, notion et sous-notion
 	 * sont affichées par la page : liste des notions, section). Un clic sur la tuile ne fait rien. En dessous, le
-	 * bouton du panier (la grille n'a ni durée ni répétitions) : « Ajouter au panier »,
-	 * puis « Dans le panier », qui retire la question entière (répétitions et durée comprises).
+	 * bouton de « Ma série » (la grille n'a ni durée ni répétitions) : « Ajouter »,
+	 * puis « Dans ma série », qui retire la question entière (répétitions et durée comprises).
 	 */
 	import { Badge } from '#lib/components/ui/badge/index.ts';
 	import { Button } from '#lib/components/ui/button/index.ts';
@@ -59,22 +59,22 @@
 	<!-- Plus basse sur téléphone (règle .tile ci-dessous) -->
 	<FlashCard instance={preview} interactive={false} size="sm" height="var(--tile-card-height)" />
 
-	<!-- Ajout au panier, ou retrait -->
+	<!-- Ajout à « Ma série », ou retrait -->
 	<div class="flex justify-end">
 		<Button
 			size="sm"
 			variant={isInCart ? 'default' : 'outline'}
 			class="gap-2"
 			onclick={handleCartClick}
-			title={isInCart ? 'Retirer du panier' : undefined}
-			aria-label={isInCart ? 'Dans le panier : retirer' : undefined}
+			title={isInCart ? 'Retirer de ma série' : undefined}
+			aria-label={isInCart ? 'Dans ma série : retirer' : 'Ajouter à ma série'}
 		>
 			{#if isInCart}
 				<Check class="h-4 w-4" />
-				Dans le panier
+				Dans ma série
 			{:else}
 				<Plus class="h-4 w-4" />
-				Ajouter au panier
+				Ajouter
 			{/if}
 		</Button>
 	</div>

@@ -12,7 +12,8 @@
 	import CatalogueTreeNav from '#lib/components/questions/CatalogueTreeNav.svelte';
 	import CatalogueNotionSections from '#lib/components/questions/CatalogueNotionSections.svelte';
 	import CatalogueProgrammeSections from '#lib/components/questions/CatalogueProgrammeSections.svelte';
-	import CartFloatingButton from '#lib/components/CartFloatingButton.svelte';
+	import MySeriesDock from '#lib/components/series/MySeriesDock.svelte';
+	import MySeriesPreview from '#lib/components/series/MySeriesPreview.svelte';
 	import { Input } from '#lib/components/ui/input/index.ts';
 	import { Button } from '#lib/components/ui/button/index.ts';
 	import { ChevronDown } from '@lucide/svelte';
@@ -366,202 +367,220 @@
 	description="Banque de questions de mathématiques : composez une série d’exercices et lancez-la en classe, en contrôle blanc, en flash-cards ou en course aux nombres."
 />
 
-<!-- pb-28 : la dernière carte peut remonter au-dessus du bouton rond du panier -->
-<div class="container mx-auto max-w-7xl px-4 pt-8 pb-28">
-	<!-- Header -->
-	<div class="mb-8 space-y-2">
-		<h1 class="text-3xl font-bold tracking-tight">Automaths</h1>
-	</div>
-
-	{#if !questionTemplatesCache.isLoaded && questionTemplatesCache.error}
-		<div
-			class="flex min-h-96 items-center justify-center rounded-lg border border-dashed p-12"
-			role="alert"
-		>
-			<div class="text-center">
-				<h2 class="text-xl font-semibold text-muted-foreground">
-					Impossible de charger les questions
-				</h2>
-				<p class="mt-2 text-sm text-muted-foreground">
-					Vérifie ta connexion, puis recharge la page.
-				</p>
-			</div>
-		</div>
-	{:else if !questionTemplatesCache.isLoaded}
-		<p class="text-center text-muted-foreground">Chargement des questions…</p>
-	{:else if !hasAnyTemplate}
-		<!-- Empty state -->
-		<div class="flex min-h-96 items-center justify-center rounded-lg border border-dashed p-12">
-			<div class="text-center">
-				<h2 class="text-xl font-semibold text-muted-foreground">
-					Aucune question disponible pour le moment
-				</h2>
-				<p class="mt-2 text-sm text-muted-foreground">Les questions publiées apparaîtront ici.</p>
-			</div>
-		</div>
-	{:else}
-		<!-- Recherche : pas de curseur automatique (clavier du téléphone) ; « / » l'y met -->
-		<div class="relative mb-4 max-w-xl" role="search">
-			<Input
-				bind:ref={searchField}
-				type="search"
-				bind:value={searchInput}
-				oninput={handleSearchInput}
-				onkeydown={handleSearchKeydown}
-				placeholder="Chercher une question : « distributivité », « aire du disque »…"
-				aria-label="Chercher une question"
-				class="pr-10 [&::-webkit-search-cancel-button]:hidden"
-			/>
-			{#if searchInput}
-				<button
-					type="button"
-					class="absolute top-1/2 right-2 -translate-y-1/2 rounded px-2 text-muted-foreground hover:text-foreground"
-					aria-label="Effacer la recherche"
-					onclick={clearSearch}>✕</button
-				>
-			{/if}
-		</div>
-
-		<div class="mb-6 flex flex-wrap items-center gap-x-8 gap-y-4">
-			<!-- Niveau : seul, ou avec les niveaux inférieurs -->
-			<div class="flex flex-wrap items-center gap-4">
-				<label for="grade-select" class="shrink-0 text-sm font-medium whitespace-nowrap"
-					>Niveau :</label
-				>
-				<MySelect
-					id="grade-select"
-					items={GRADE_ITEMS}
-					value={chosenGrade ?? ALL_GRADES_VALUE}
-					onValueChange={handleGradeChange}
-					triggerAriaLabel={`Niveau : ${chosenGrade ? GRADES[chosenGrade].displayName : 'tous les niveaux'}`}
-					fitContent
-				/>
-				{#if chosenGrade}
-					<MyCheckbox
-						checked={withLowerGrades}
-						onchange={handleLowerGradesChange}
-						label="et niveaux inférieurs"
-					/>
-				{/if}
+<!-- pb-28 : la dernière carte peut remonter au-dessus du bouton rond ou de la barre de « Ma série » -->
+<div class="container mx-auto max-w-7xl px-4 pt-8 pb-28 xl:max-w-[96rem]">
+	<!-- Grand écran (≥ 1 280 px) : « Ma série » en colonne à droite -->
+	<div class="xl:grid xl:grid-cols-[minmax(0,1fr)_18rem] xl:gap-8">
+		<div class="min-w-0">
+			<!-- Header -->
+			<div class="mb-8 space-y-2">
+				<h1 class="text-3xl font-bold tracking-tight">Automaths</h1>
 			</div>
 
-			<!-- Bascule : seulement quand le niveau choisi a un programme ; la recherche remplace les deux vues -->
-			{#if programme.length > 0 && !searchResult}
+			{#if !questionTemplatesCache.isLoaded && questionTemplatesCache.error}
 				<div
-					role="group"
-					aria-label="Parcourir par"
-					class="inline-flex rounded-md border border-border p-0.5"
+					class="flex min-h-96 items-center justify-center rounded-lg border border-dashed p-12"
+					role="alert"
 				>
-					{#each VIEW_OPTIONS as option (option.view)}
-						{@const pressed = activeView === option.view}
+					<div class="text-center">
+						<h2 class="text-xl font-semibold text-muted-foreground">
+							Impossible de charger les questions
+						</h2>
+						<p class="mt-2 text-sm text-muted-foreground">
+							Vérifie ta connexion, puis recharge la page.
+						</p>
+					</div>
+				</div>
+			{:else if !questionTemplatesCache.isLoaded}
+				<p class="text-center text-muted-foreground">Chargement des questions…</p>
+			{:else if !hasAnyTemplate}
+				<!-- Empty state -->
+				<div class="flex min-h-96 items-center justify-center rounded-lg border border-dashed p-12">
+					<div class="text-center">
+						<h2 class="text-xl font-semibold text-muted-foreground">
+							Aucune question disponible pour le moment
+						</h2>
+						<p class="mt-2 text-sm text-muted-foreground">
+							Les questions publiées apparaîtront ici.
+						</p>
+					</div>
+				</div>
+			{:else}
+				<!-- Recherche : pas de curseur automatique (clavier du téléphone) ; « / » l'y met -->
+				<div class="relative mb-4 max-w-xl" role="search">
+					<Input
+						bind:ref={searchField}
+						type="search"
+						bind:value={searchInput}
+						oninput={handleSearchInput}
+						onkeydown={handleSearchKeydown}
+						placeholder="Chercher une question : « distributivité », « aire du disque »…"
+						aria-label="Chercher une question"
+						class="pr-10 [&::-webkit-search-cancel-button]:hidden"
+					/>
+					{#if searchInput}
 						<button
 							type="button"
-							class="rounded px-3 py-1 text-sm {pressed
-								? 'bg-primary text-primary-foreground'
-								: 'text-muted-foreground hover:text-foreground'}"
-							aria-pressed={pressed}
-							onclick={() => handleViewChange(option.view)}>{option.label}</button
-						>
-					{/each}
-				</div>
-			{/if}
-		</div>
-
-		{#if searchResult}
-			<!-- Résultats de la recherche, à la place de la liste des notions -->
-			{#if searchResult.total === 0}
-				<div class="space-y-4 rounded-lg border border-dashed p-12 text-center">
-					<p class="text-muted-foreground">Aucune question pour « {searchQuery.trim()} »</p>
-					{#if chosenGrade}
-						<Button variant="outline" onclick={() => handleGradeChange(ALL_GRADES_VALUE)}
-							>Chercher dans tous les niveaux</Button
+							class="absolute top-1/2 right-2 -translate-y-1/2 rounded px-2 text-muted-foreground hover:text-foreground"
+							aria-label="Effacer la recherche"
+							onclick={clearSearch}>✕</button
 						>
 					{/if}
 				</div>
-			{:else}
-				<p class="mb-4 text-sm text-muted-foreground" aria-live="polite">
-					{questionCount(searchResult.total)}
-				</p>
-				<Accordion.Root
-					type="multiple"
-					value={openSearchGroups}
-					onValueChange={handleSearchGroupsChange}
-					class="space-y-4"
-				>
-					{#each searchResult.groups as group (group.id)}
-						<Accordion.Item value={group.id} class="rounded-lg border !border-b-0 bg-background">
+
+				<div class="mb-6 flex flex-wrap items-center gap-x-8 gap-y-4">
+					<!-- Niveau : seul, ou avec les niveaux inférieurs -->
+					<div class="flex flex-wrap items-center gap-4">
+						<label for="grade-select" class="shrink-0 text-sm font-medium whitespace-nowrap"
+							>Niveau :</label
+						>
+						<MySelect
+							id="grade-select"
+							items={GRADE_ITEMS}
+							value={chosenGrade ?? ALL_GRADES_VALUE}
+							onValueChange={handleGradeChange}
+							triggerAriaLabel={`Niveau : ${chosenGrade ? GRADES[chosenGrade].displayName : 'tous les niveaux'}`}
+							fitContent
+						/>
+						{#if chosenGrade}
+							<MyCheckbox
+								checked={withLowerGrades}
+								onchange={handleLowerGradesChange}
+								label="et niveaux inférieurs"
+							/>
+						{/if}
+					</div>
+
+					<!-- Bascule : seulement quand le niveau choisi a un programme ; la recherche remplace les deux vues -->
+					{#if programme.length > 0 && !searchResult}
+						<div
+							role="group"
+							aria-label="Parcourir par"
+							class="inline-flex rounded-md border border-border p-0.5"
+						>
+							{#each VIEW_OPTIONS as option (option.view)}
+								{@const pressed = activeView === option.view}
+								<button
+									type="button"
+									class="rounded px-3 py-1 text-sm {pressed
+										? 'bg-primary text-primary-foreground'
+										: 'text-muted-foreground hover:text-foreground'}"
+									aria-pressed={pressed}
+									onclick={() => handleViewChange(option.view)}>{option.label}</button
+								>
+							{/each}
+						</div>
+					{/if}
+				</div>
+
+				{#if searchResult}
+					<!-- Résultats de la recherche, à la place de la liste des notions -->
+					{#if searchResult.total === 0}
+						<div class="space-y-4 rounded-lg border border-dashed p-12 text-center">
+							<p class="text-muted-foreground">Aucune question pour « {searchQuery.trim()} »</p>
+							{#if chosenGrade}
+								<Button variant="outline" onclick={() => handleGradeChange(ALL_GRADES_VALUE)}
+									>Chercher dans tous les niveaux</Button
+								>
+							{/if}
+						</div>
+					{:else}
+						<p class="mb-4 text-sm text-muted-foreground" aria-live="polite">
+							{questionCount(searchResult.total)}
+						</p>
+						<Accordion.Root
+							type="multiple"
+							value={openSearchGroups}
+							onValueChange={handleSearchGroupsChange}
+							class="space-y-4"
+						>
+							{#each searchResult.groups as group (group.id)}
+								<Accordion.Item
+									value={group.id}
+									class="rounded-lg border !border-b-0 bg-background"
+								>
+									<Accordion.Trigger class="px-4 hover:bg-muted/50 hover:no-underline">
+										<span class="font-medium text-foreground">
+											{group.path.join(' › ')}
+											<span class="font-normal text-muted-foreground">
+												· {group.templates.length}</span
+											>
+										</span>
+									</Accordion.Trigger>
+									<Accordion.Content class="px-4 pt-2 pb-4">
+										<!-- Aperçus calculés seulement pour les groupes dépliés -->
+										{#if openSearchGroups.includes(group.id)}
+											<CatalogueGallery templates={group.templates} />
+										{/if}
+									</Accordion.Content>
+								</Accordion.Item>
+							{/each}
+						</Accordion.Root>
+					{/if}
+				{:else if activeView === NOTIONS_VIEW && catalogue.branches.length === 0 && catalogue.unclassified.length === 0}
+					<p class="rounded-lg border border-dashed p-12 text-center text-muted-foreground">
+						Aucune question pour ce niveau.
+					</p>
+				{/if}
+
+				{#if !searchResult && activeView === PROGRAMME_VIEW && selectedChapter}
+					{@const chapter = selectedChapter}
+					{@render browser(
+						'Chapitres',
+						chapterGroups,
+						chapter.id,
+						`Chapitre : ${chapter.name} · ${chapterTemplateCount(chapter)}`,
+						programmeContent
+					)}
+					{#snippet programmeContent()}
+						{#key chapter.id}
+							<CatalogueProgrammeSections {chapter} />
+						{/key}
+					{/snippet}
+				{:else if !searchResult && activeView === NOTIONS_VIEW && selectedBranch && selectedNotion}
+					{@const notion = selectedNotion}
+					{@render browser(
+						'Notions',
+						notionGroups,
+						notion.id,
+						`Notion : ${notion.name} · ${notionTemplateCount(notion)}`,
+						notionContent
+					)}
+					{#snippet notionContent()}
+						{#key notion.id}
+							<CatalogueNotionSections {notion} />
+						{/key}
+					{/snippet}
+				{/if}
+
+				{#if catalogue.unclassified.length > 0 && !searchResult && activeView === NOTIONS_VIEW}
+					<!-- Modèles hors de l'arbre lu : ne devrait pas arriver, jamais perdus pour autant.
+			     Repliés : leurs aperçus ne se calculent qu'à l'ouverture. -->
+					<Accordion.Root type="multiple" bind:value={openUnclassified} class="mt-10">
+						<Accordion.Item value={UNCLASSIFIED_VALUE} class="rounded-lg border !border-b-0">
 							<Accordion.Trigger class="px-4 hover:bg-muted/50 hover:no-underline">
 								<span class="font-medium text-foreground">
-									{group.path.join(' › ')}
-									<span class="font-normal text-muted-foreground"> · {group.templates.length}</span>
+									Non classés ({catalogue.unclassified.length})
 								</span>
 							</Accordion.Trigger>
 							<Accordion.Content class="px-4 pt-2 pb-4">
-								<!-- Aperçus calculés seulement pour les groupes dépliés -->
-								{#if openSearchGroups.includes(group.id)}
-									<CatalogueGallery templates={group.templates} />
+								{#if openUnclassified.includes(UNCLASSIFIED_VALUE)}
+									<CatalogueGallery templates={catalogue.unclassified} />
 								{/if}
 							</Accordion.Content>
 						</Accordion.Item>
-					{/each}
-				</Accordion.Root>
+					</Accordion.Root>
+				{/if}
 			{/if}
-		{:else if activeView === NOTIONS_VIEW && catalogue.branches.length === 0 && catalogue.unclassified.length === 0}
-			<p class="rounded-lg border border-dashed p-12 text-center text-muted-foreground">
-				Aucune question pour ce niveau.
-			</p>
-		{/if}
+		</div>
 
-		{#if !searchResult && activeView === PROGRAMME_VIEW && selectedChapter}
-			{@const chapter = selectedChapter}
-			{@render browser(
-				'Chapitres',
-				chapterGroups,
-				chapter.id,
-				`Chapitre : ${chapter.name} · ${chapterTemplateCount(chapter)}`,
-				programmeContent
-			)}
-			{#snippet programmeContent()}
-				{#key chapter.id}
-					<CatalogueProgrammeSections {chapter} />
-				{/key}
-			{/snippet}
-		{:else if !searchResult && activeView === NOTIONS_VIEW && selectedBranch && selectedNotion}
-			{@const notion = selectedNotion}
-			{@render browser(
-				'Notions',
-				notionGroups,
-				notion.id,
-				`Notion : ${notion.name} · ${notionTemplateCount(notion)}`,
-				notionContent
-			)}
-			{#snippet notionContent()}
-				{#key notion.id}
-					<CatalogueNotionSections {notion} />
-				{/key}
-			{/snippet}
-		{/if}
-
-		{#if catalogue.unclassified.length > 0 && !searchResult && activeView === NOTIONS_VIEW}
-			<!-- Modèles hors de l'arbre lu : ne devrait pas arriver, jamais perdus pour autant.
-			     Repliés : leurs aperçus ne se calculent qu'à l'ouverture. -->
-			<Accordion.Root type="multiple" bind:value={openUnclassified} class="mt-10">
-				<Accordion.Item value={UNCLASSIFIED_VALUE} class="rounded-lg border !border-b-0">
-					<Accordion.Trigger class="px-4 hover:bg-muted/50 hover:no-underline">
-						<span class="font-medium text-foreground">
-							Non classés ({catalogue.unclassified.length})
-						</span>
-					</Accordion.Trigger>
-					<Accordion.Content class="px-4 pt-2 pb-4">
-						{#if openUnclassified.includes(UNCLASSIFIED_VALUE)}
-							<CatalogueGallery templates={catalogue.unclassified} />
-						{/if}
-					</Accordion.Content>
-				</Accordion.Item>
-			</Accordion.Root>
-		{/if}
-	{/if}
+		<aside aria-labelledby="ma-serie-titre" class="hidden xl:block">
+			<div data-series-sticky class="sticky top-4 max-h-[calc(100vh-2rem)] overflow-y-auto">
+				<MySeriesPreview titleId="ma-serie-titre" />
+			</div>
+		</aside>
+	</div>
 </div>
 
-<!-- Floating cart button -->
-<CartFloatingButton />
+<!-- Plus petit : bouton rond (tablette) ou barre en bas (téléphone) → panneau -->
+<MySeriesDock />
