@@ -1647,3 +1647,9 @@ l'échelle à choisir ? Reco : **oui** ; c'est ce que dit « recueillir des donn
 
 (d) Cocktail (108-6 V1) : parts lues à l'œil (moitié, quart), le bloc n'écrivant pas les fractions sur les secteurs
 (n° 44 de `outils-manquants.md`) ? Reco : **oui**, comme au lot 14a.
+
+### 22.1 Lot 14b : décisions (David, 2026-11-19)
+
+Recommandations suivies (« je te suis ») : (a) niveaux 4, 5, 6 (courbes et repères), 10 (barres), 4 et 4 (notion
+« Représenter des données ») ; (b) 108 en deux modèles, lot de 6 ; (c) 121 avec un relevé brut à compter, échelles 1,
+2, 5, 10 et effectifs ≤ 100 ; (d) cocktail : parts lues à l'œil (moitié, quart).
