@@ -97,9 +97,14 @@ les PR restaurent (`main` ne lance pas le Lint sur push).
 passe au parseur. SvelteKit y met `Date.now()` à chaque chargement ; ESLint compte la config dans
 l'empreinte de son cache, qui changeait donc à chaque lancement : les ~1 300 fichiers Svelte étaient
 relus à chaque fois, cache restauré ou non (Lint de la CI de version : 25 min le 2026-11-18). Une
-valeur qui varie d'un lancement à l'autre ne doit pas entrer dans la config ESLint. En CI, le cache de `main` n'est
-pourtant toujours pas repris d'un job à l'autre (cause inconnue au 2026-11-18, cf. journal
-`docs/wip/mises-a-jour-progress.md`) : `pnpm deploy:prod` attend jusqu'à 45 min la CI de version.
+valeur qui varie d'un lancement à l'autre ne doit pas entrer dans la config ESLint.
+
+**Cache ESLint et version de Node** : l'empreinte compte aussi la version exacte de Node
+(`process.version`). Avec `22` dans `.nvmrc`, chaque runner prenait le Node 22 de son image, et les
+images de GitHub ne changent pas toutes en même temps : 22.23.4 sur l'une, 22.23.5 sur l'autre, et
+tout l'arbre relu (nocturne du 2026-11-18 : 31 min, cache pourtant restauré). `.nvmrc` porte donc
+la version exacte, montée à la main (Dependabot ne la lit pas) ; la monter vide le cache une fois,
+jusqu'au nocturne suivant. `pnpm deploy:prod` attend jusqu'à 45 min la CI de version.
 
 **Variables d'environnement lues par l'appli : `src/env.ts`.** Depuis SvelteKit 3, `$app/env/*` (et
 `$env/*`, qui le réexporte) n'expose que les variables déclarées là (`defineEnvVars`) ; une
