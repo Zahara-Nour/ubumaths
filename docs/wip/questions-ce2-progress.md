@@ -9,9 +9,9 @@
 _Mis à jour le 2026-11-19, après la publication du lot 13._
 
 - **État** : lots 1 à 13 publiés (lot 13 : 5/5 `published`, relevé MCP). Restent sans modèle, par décision : 086, 043,
-  051, 065. Page à cocher du lot 13 : 0 verdict en base.
+  051, 065. Page à cocher du lot 13 : 5 « ok ».
 - **Prochaine action** : clôture du chantier (versement : le durable vers `docs/systeme/`, journal archivé) — attend le go.
-- **En attente de David** : le go de clôture ; la relecture du lot 13 (0 verdict) ; vérification manuelle des lots 12b et 13.
+- **En attente de David** : le go de clôture ; vérification manuelle des lots 12b et 13.
 - **Pièges en cours** : aucun.
 - **Worktree / branche** : `../ubumaths-wt-questions-ce2`, HEAD détaché sur `origin/main`.
 
@@ -1153,3 +1153,5 @@ phrase périmée de `couvrir-un-niveau.md` est corrigée dans la PR du lot.
   (case « figure » non dessinée) ; `publier-lot` en simulation : 5/5.
 - 2026-11-19 : `publier-lot --publier` (David) ; relevé MCP : 5/5 `published`. Page à cocher : **0 verdict** en base
   (collection `verdicts` vide) → relecture non prouvée. **Lot 13 clos.**
+- 2026-11-19 : relecture de David (page rouverte) : 5 verdicts « ok », sans commentaire (base `verdicts` comptée),
+  posés en 2,7 s → relecture du tracé non prouvée ; la ligne de `verifications-manuelles.md` (lot 13) reste à faire.
