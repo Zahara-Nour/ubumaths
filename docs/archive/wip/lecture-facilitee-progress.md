@@ -2,13 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, phase 0 de la PR 4 validée._
+_Mis à jour le 2026-11-19 : chantier CLOS (go de David)._
 
-- **État** : PR 4 (PDF en Luciole) : phase 0 validée (D9–D13) ; en deux PR (règle `db:types`) : 4a migration (colonne `easy_reading` de `student_print_settings`) + tests d'intégration, puis 4b le code des PDF.
-- **Prochaine action** : PR 4a ouverte → merge → `db:migrate` → `db:types` ; puis PR 4b sur une branche neuve.
-- **En attente de David** : rien.
-- **Pièges en cours** : `\cdot` gros et `∯` petit laissés (D8) ; polices `.woff2` en cache ; serveurs 5181 / 5182 du worktree peut-être encore lancés.
-- **Worktree / branche** : `../ubumaths-wt-lecture-facilitee` · `feat/lecture-facilitee-pdf`.
+- **État** : clos. Découpage D4 entièrement mergé (#2892, #2898, #2900, #2902, #2908) ; crédit D5 dans `/a-propos`. Le durable est dans `docs/systeme/fiches-et-pdf.md` et `docs/systeme/base-de-donnees.md`.
+- **Prochaine action** : aucune. Autres PDF (exercice public, guides, cahier, presques-évaluations) = nouveau chantier si David le demande (D12).
+- **Pièges laissés** : `\cdot` gros et `∯` petit (D8) ; lot « une copie par élève » de `PdfPreview` (zip) sans taille ni lecture facilitée.
+- **Worktree / branche** : aucun.
 
 ## Ce qui existe déjà (vérifié le 2026-11-19)
 
@@ -70,6 +69,7 @@ Conséquence pour l'étude :
 - **D11 (Q2)** : réglage PDF et interrupteur écran **séparés** (écran = ce navigateur ; PDF = l'élève).
 - **D12 (Q3)** : fiches seulement (fiche, réponses, corrigé, copies par élève) ; autres PDF plus tard si David le veut.
 - **D13 (Q4)** : mêmes petits écarts qu'à l'écran, quitte à une page de plus.
+- **D14 (2026-11-19, après l'essai)** : en lecture facilitée, texte aligné à gauche, jamais justifié (la justification creusait des blancs irréguliers) ; David : « je te suis ».
 
 ## Observations de l'essai (2026-11-19)
 
@@ -80,6 +80,12 @@ Conséquence pour l'étude :
 - Aperçu écran MathML : la conversion de MathLive perd la virgule décimale et ignore `\mathcal` ; corrigé dans la page.
 
 ## Historique
+
+### 2026-11-19 — PR 4a et 4b : PDF en lecture facilitée
+
+- #2902 : colonne `easy_reading` de `student_print_settings` (tests d'intégration rouges sans, verts avec ; `security-auditor` sans bloquant) ; `db:migrate` joué (seule migration en attente).
+- 4b : `src/lib/typst/easy-reading.ts` (règles encadrées, posées en tête et après le dernier `#set text`/`#set par`), compilateur à part `getEasyReadingCompiler` + repli (`fontSetOf`), option `easyReading` du générateur (corrections sans polices du Corrigé), `print-settings.ts` généralisé (`loadPrintSettings*`, `savePrintSettings`), API `print-settings` (`easyReading`), case `EasyReadingPdfCheckbox` (fiche élève, aperçu vue élève / vue prof, `PdfPreview`), copies par élève.
+- Preuve : 5 fiches générées par le générateur réel, compilées par `scripts/fiches/compile-prod.mjs` avec Luciole : toutes OK ; polices embarquées = Luciole + Luciole Math seules (aucune New Computer Modern ni Shantell).
 
 ### 2026-11-19 — PR de suite : interligne du tableau de bord, classe dès le chargement
 

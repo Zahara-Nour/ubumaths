@@ -1,0 +1,326 @@
+{
+	"id": "59ffdd9e-1a90-412a-9eb1-f04374042bb6",
+	"title": "Range les bandelettes",
+	"description": "Ranger 3, 4 puis 5 bandelettes alignées à gauche, de la plus courte à la plus longue (5 au plus, borne du programme), étiquettes à ranger",
+	"grades": ["CP"],
+	"level": 2,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Range les bandelettes de la plus courte à la plus longue.\n\n```figure\nfenetre: 0 ; 13 ; 0 ; 4.0\ndescription: 3 bandelettes de couleur nommées A, B et C, l'une sous l'autre, alignées à gauche.\n---\nP0a = point(1, 2.9, visible=faux)\nP0b = point({{x0}}, 2.9, visible=faux)\nP0c = point({{x0}}, 3.5, visible=faux)\nP0d = point(1, 3.5, visible=faux)\npolygone(P0a, P0b, P0c, P0d, couleur=\"noir\", remplissage=\"bleu\", opacite_fond=1)\ntexte(0.4, 3.2, \"A\")\nP1a = point(1, 1.7, visible=faux)\nP1b = point({{x1}}, 1.7, visible=faux)\nP1c = point({{x1}}, 2.3, visible=faux)\nP1d = point(1, 2.3, visible=faux)\npolygone(P1a, P1b, P1c, P1d, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1)\ntexte(0.4, 2.0, \"B\")\nP2a = point(1, 0.5, visible=faux)\nP2b = point({{x2}}, 0.5, visible=faux)\nP2c = point({{x2}}, 1.1, visible=faux)\nP2d = point(1, 1.1, visible=faux)\npolygone(P2a, P2b, P2c, P2d, couleur=\"noir\", remplissage=\"vert\", opacite_fond=1)\ntexte(0.4, 0.8, \"C\")\n```\n\n```ranger\nsigne: <\n- {{if:q==0|A|{{if:q==1|A|{{if:q==2|B|{{if:q==3|C|{{if:q==4|B|C}}}}}}}}}}\n- {{if:q==0|B|{{if:q==1|C|{{if:q==2|A|{{if:q==3|A|{{if:q==4|C|B}}}}}}}}}}\n- {{if:q==0|C|{{if:q==1|B|{{if:q==2|C|{{if:q==3|B|{{if:q==4|A|A}}}}}}}}}}\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "3..5"
+				},
+				{
+					"name": "g",
+					"expression": "2..3"
+				},
+				{
+					"name": "q",
+					"expression": "0..5"
+				},
+				{
+					"name": "l0",
+					"expression": "eval:s+g*((0)*(q-1)*(q-2)*(q-3)*(q-4)*(q-5)/(-120)+(0)*(q-0)*(q-2)*(q-3)*(q-4)*(q-5)/(24)+(1)*(q-0)*(q-1)*(q-3)*(q-4)*(q-5)/(-12)+(1)*(q-0)*(q-1)*(q-2)*(q-4)*(q-5)/(12)+(2)*(q-0)*(q-1)*(q-2)*(q-3)*(q-5)/(-24)+(2)*(q-0)*(q-1)*(q-2)*(q-3)*(q-4)/(120))"
+				},
+				{
+					"name": "x0",
+					"expression": "eval:1+l0"
+				},
+				{
+					"name": "l1",
+					"expression": "eval:s+g*((1)*(q-1)*(q-2)*(q-3)*(q-4)*(q-5)/(-120)+(2)*(q-0)*(q-2)*(q-3)*(q-4)*(q-5)/(24)+(0)*(q-0)*(q-1)*(q-3)*(q-4)*(q-5)/(-12)+(2)*(q-0)*(q-1)*(q-2)*(q-4)*(q-5)/(12)+(0)*(q-0)*(q-1)*(q-2)*(q-3)*(q-5)/(-24)+(1)*(q-0)*(q-1)*(q-2)*(q-3)*(q-4)/(120))"
+				},
+				{
+					"name": "x1",
+					"expression": "eval:1+l1"
+				},
+				{
+					"name": "l2",
+					"expression": "eval:s+g*((2)*(q-1)*(q-2)*(q-3)*(q-4)*(q-5)/(-120)+(1)*(q-0)*(q-2)*(q-3)*(q-4)*(q-5)/(24)+(2)*(q-0)*(q-1)*(q-3)*(q-4)*(q-5)/(-12)+(0)*(q-0)*(q-1)*(q-2)*(q-4)*(q-5)/(12)+(1)*(q-0)*(q-1)*(q-2)*(q-3)*(q-5)/(-24)+(0)*(q-0)*(q-1)*(q-2)*(q-3)*(q-4)/(120))"
+				},
+				{
+					"name": "x2",
+					"expression": "eval:1+l2"
+				}
+			],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"Les bandelettes partent toutes du même bord, à gauche : on regarde où elles s'arrêtent.",
+					"De la plus courte à la plus longue : $\\text{{{if:q==0|A|{{if:q==1|A|{{if:q==2|B|{{if:q==3|C|{{if:q==4|B|C}}}}}}}}}}}$ ; $\\text{{{if:q==0|B|{{if:q==1|C|{{if:q==2|A|{{if:q==3|A|{{if:q==4|C|B}}}}}}}}}}}$ ; $\\text{{{if:q==0|C|{{if:q==1|B|{{if:q==2|C|{{if:q==3|B|{{if:q==4|A|A}}}}}}}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Range les bandelettes de la plus courte à la plus longue.\n\n```figure\nfenetre: 0 ; 16 ; 0 ; 5.2\ndescription: 4 bandelettes de couleur nommées A, B, C et D, l'une sous l'autre, alignées à gauche.\n---\nP0a = point(1, 4.1, visible=faux)\nP0b = point({{x0}}, 4.1, visible=faux)\nP0c = point({{x0}}, 4.7, visible=faux)\nP0d = point(1, 4.7, visible=faux)\npolygone(P0a, P0b, P0c, P0d, couleur=\"noir\", remplissage=\"bleu\", opacite_fond=1)\ntexte(0.4, 4.4, \"A\")\nP1a = point(1, 2.9, visible=faux)\nP1b = point({{x1}}, 2.9, visible=faux)\nP1c = point({{x1}}, 3.5, visible=faux)\nP1d = point(1, 3.5, visible=faux)\npolygone(P1a, P1b, P1c, P1d, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1)\ntexte(0.4, 3.2, \"B\")\nP2a = point(1, 1.7, visible=faux)\nP2b = point({{x2}}, 1.7, visible=faux)\nP2c = point({{x2}}, 2.3, visible=faux)\nP2d = point(1, 2.3, visible=faux)\npolygone(P2a, P2b, P2c, P2d, couleur=\"noir\", remplissage=\"vert\", opacite_fond=1)\ntexte(0.4, 2.0, \"C\")\nP3a = point(1, 0.5, visible=faux)\nP3b = point({{x3}}, 0.5, visible=faux)\nP3c = point({{x3}}, 1.1, visible=faux)\nP3d = point(1, 1.1, visible=faux)\npolygone(P3a, P3b, P3c, P3d, couleur=\"noir\", remplissage=\"orange\", opacite_fond=1)\ntexte(0.4, 0.8, \"D\")\n```\n\n```ranger\nsigne: <\n- {{if:q==0|C|{{if:q==1|B|{{if:q==2|D|{{if:q==3|A|{{if:q==4|D|B}}}}}}}}}}\n- {{if:q==0|A|{{if:q==1|D|{{if:q==2|B|{{if:q==3|C|{{if:q==4|C|A}}}}}}}}}}\n- {{if:q==0|D|{{if:q==1|A|{{if:q==2|C|{{if:q==3|B|{{if:q==4|A|D}}}}}}}}}}\n- {{if:q==0|B|{{if:q==1|C|{{if:q==2|A|{{if:q==3|D|{{if:q==4|B|C}}}}}}}}}}\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "3..5"
+				},
+				{
+					"name": "g",
+					"expression": "2..3"
+				},
+				{
+					"name": "q",
+					"expression": "0..5"
+				},
+				{
+					"name": "l0",
+					"expression": "eval:s+g*((1)*(q-1)*(q-2)*(q-3)*(q-4)*(q-5)/(-120)+(2)*(q-0)*(q-2)*(q-3)*(q-4)*(q-5)/(24)+(3)*(q-0)*(q-1)*(q-3)*(q-4)*(q-5)/(-12)+(0)*(q-0)*(q-1)*(q-2)*(q-4)*(q-5)/(12)+(2)*(q-0)*(q-1)*(q-2)*(q-3)*(q-5)/(-24)+(1)*(q-0)*(q-1)*(q-2)*(q-3)*(q-4)/(120))"
+				},
+				{
+					"name": "x0",
+					"expression": "eval:1+l0"
+				},
+				{
+					"name": "l1",
+					"expression": "eval:s+g*((3)*(q-1)*(q-2)*(q-3)*(q-4)*(q-5)/(-120)+(0)*(q-0)*(q-2)*(q-3)*(q-4)*(q-5)/(24)+(1)*(q-0)*(q-1)*(q-3)*(q-4)*(q-5)/(-12)+(2)*(q-0)*(q-1)*(q-2)*(q-4)*(q-5)/(12)+(3)*(q-0)*(q-1)*(q-2)*(q-3)*(q-5)/(-24)+(0)*(q-0)*(q-1)*(q-2)*(q-3)*(q-4)/(120))"
+				},
+				{
+					"name": "x1",
+					"expression": "eval:1+l1"
+				},
+				{
+					"name": "l2",
+					"expression": "eval:s+g*((0)*(q-1)*(q-2)*(q-3)*(q-4)*(q-5)/(-120)+(3)*(q-0)*(q-2)*(q-3)*(q-4)*(q-5)/(24)+(2)*(q-0)*(q-1)*(q-3)*(q-4)*(q-5)/(-12)+(1)*(q-0)*(q-1)*(q-2)*(q-4)*(q-5)/(12)+(1)*(q-0)*(q-1)*(q-2)*(q-3)*(q-5)/(-24)+(3)*(q-0)*(q-1)*(q-2)*(q-3)*(q-4)/(120))"
+				},
+				{
+					"name": "x2",
+					"expression": "eval:1+l2"
+				},
+				{
+					"name": "l3",
+					"expression": "eval:s+g*((2)*(q-1)*(q-2)*(q-3)*(q-4)*(q-5)/(-120)+(1)*(q-0)*(q-2)*(q-3)*(q-4)*(q-5)/(24)+(0)*(q-0)*(q-1)*(q-3)*(q-4)*(q-5)/(-12)+(3)*(q-0)*(q-1)*(q-2)*(q-4)*(q-5)/(12)+(0)*(q-0)*(q-1)*(q-2)*(q-3)*(q-5)/(-24)+(2)*(q-0)*(q-1)*(q-2)*(q-3)*(q-4)/(120))"
+				},
+				{
+					"name": "x3",
+					"expression": "eval:1+l3"
+				}
+			],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"Les bandelettes partent toutes du même bord, à gauche : on regarde où elles s'arrêtent.",
+					"De la plus courte à la plus longue : $\\text{{{if:q==0|C|{{if:q==1|B|{{if:q==2|D|{{if:q==3|A|{{if:q==4|D|B}}}}}}}}}}}$ ; $\\text{{{if:q==0|A|{{if:q==1|D|{{if:q==2|B|{{if:q==3|C|{{if:q==4|C|A}}}}}}}}}}}$ ; $\\text{{{if:q==0|D|{{if:q==1|A|{{if:q==2|C|{{if:q==3|B|{{if:q==4|A|D}}}}}}}}}}}$ ; $\\text{{{if:q==0|B|{{if:q==1|C|{{if:q==2|A|{{if:q==3|D|{{if:q==4|B|C}}}}}}}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Range les bandelettes de la plus courte à la plus longue.\n\n```figure\nfenetre: 0 ; 19 ; 0 ; 6.4\ndescription: 5 bandelettes de couleur nommées A, B, C, D et E, l'une sous l'autre, alignées à gauche.\n---\nP0a = point(1, 5.3, visible=faux)\nP0b = point({{x0}}, 5.3, visible=faux)\nP0c = point({{x0}}, 5.9, visible=faux)\nP0d = point(1, 5.9, visible=faux)\npolygone(P0a, P0b, P0c, P0d, couleur=\"noir\", remplissage=\"bleu\", opacite_fond=1)\ntexte(0.4, 5.6, \"A\")\nP1a = point(1, 4.1, visible=faux)\nP1b = point({{x1}}, 4.1, visible=faux)\nP1c = point({{x1}}, 4.7, visible=faux)\nP1d = point(1, 4.7, visible=faux)\npolygone(P1a, P1b, P1c, P1d, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1)\ntexte(0.4, 4.4, \"B\")\nP2a = point(1, 2.9, visible=faux)\nP2b = point({{x2}}, 2.9, visible=faux)\nP2c = point({{x2}}, 3.5, visible=faux)\nP2d = point(1, 3.5, visible=faux)\npolygone(P2a, P2b, P2c, P2d, couleur=\"noir\", remplissage=\"vert\", opacite_fond=1)\ntexte(0.4, 3.2, \"C\")\nP3a = point(1, 1.7, visible=faux)\nP3b = point({{x3}}, 1.7, visible=faux)\nP3c = point({{x3}}, 2.3, visible=faux)\nP3d = point(1, 2.3, visible=faux)\npolygone(P3a, P3b, P3c, P3d, couleur=\"noir\", remplissage=\"orange\", opacite_fond=1)\ntexte(0.4, 2.0, \"D\")\nP4a = point(1, 0.5, visible=faux)\nP4b = point({{x4}}, 0.5, visible=faux)\nP4c = point({{x4}}, 1.1, visible=faux)\nP4d = point(1, 1.1, visible=faux)\npolygone(P4a, P4b, P4c, P4d, couleur=\"noir\", remplissage=\"violet\", opacite_fond=1)\ntexte(0.4, 0.8, \"E\")\n```\n\n```ranger\nsigne: <\n- {{if:q==0|C|{{if:q==1|D|{{if:q==2|E|{{if:q==3|B|{{if:q==4|A|C}}}}}}}}}}\n- {{if:q==0|E|{{if:q==1|B|{{if:q==2|A|{{if:q==3|E|{{if:q==4|C|D}}}}}}}}}}\n- {{if:q==0|A|{{if:q==1|E|{{if:q==2|D|{{if:q==3|C|{{if:q==4|B|B}}}}}}}}}}\n- {{if:q==0|D|{{if:q==1|C|{{if:q==2|B|{{if:q==3|A|{{if:q==4|E|E}}}}}}}}}}\n- {{if:q==0|B|{{if:q==1|A|{{if:q==2|C|{{if:q==3|D|{{if:q==4|D|A}}}}}}}}}}\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "3..5"
+				},
+				{
+					"name": "g",
+					"expression": "2..3"
+				},
+				{
+					"name": "q",
+					"expression": "0..5"
+				},
+				{
+					"name": "l0",
+					"expression": "eval:s+g*((2)*(q-1)*(q-2)*(q-3)*(q-4)*(q-5)/(-120)+(4)*(q-0)*(q-2)*(q-3)*(q-4)*(q-5)/(24)+(1)*(q-0)*(q-1)*(q-3)*(q-4)*(q-5)/(-12)+(3)*(q-0)*(q-1)*(q-2)*(q-4)*(q-5)/(12)+(0)*(q-0)*(q-1)*(q-2)*(q-3)*(q-5)/(-24)+(4)*(q-0)*(q-1)*(q-2)*(q-3)*(q-4)/(120))"
+				},
+				{
+					"name": "x0",
+					"expression": "eval:1+l0"
+				},
+				{
+					"name": "l1",
+					"expression": "eval:s+g*((4)*(q-1)*(q-2)*(q-3)*(q-4)*(q-5)/(-120)+(1)*(q-0)*(q-2)*(q-3)*(q-4)*(q-5)/(24)+(3)*(q-0)*(q-1)*(q-3)*(q-4)*(q-5)/(-12)+(0)*(q-0)*(q-1)*(q-2)*(q-4)*(q-5)/(12)+(2)*(q-0)*(q-1)*(q-2)*(q-3)*(q-5)/(-24)+(2)*(q-0)*(q-1)*(q-2)*(q-3)*(q-4)/(120))"
+				},
+				{
+					"name": "x1",
+					"expression": "eval:1+l1"
+				},
+				{
+					"name": "l2",
+					"expression": "eval:s+g*((0)*(q-1)*(q-2)*(q-3)*(q-4)*(q-5)/(-120)+(3)*(q-0)*(q-2)*(q-3)*(q-4)*(q-5)/(24)+(4)*(q-0)*(q-1)*(q-3)*(q-4)*(q-5)/(-12)+(2)*(q-0)*(q-1)*(q-2)*(q-4)*(q-5)/(12)+(1)*(q-0)*(q-1)*(q-2)*(q-3)*(q-5)/(-24)+(0)*(q-0)*(q-1)*(q-2)*(q-3)*(q-4)/(120))"
+				},
+				{
+					"name": "x2",
+					"expression": "eval:1+l2"
+				},
+				{
+					"name": "l3",
+					"expression": "eval:s+g*((3)*(q-1)*(q-2)*(q-3)*(q-4)*(q-5)/(-120)+(0)*(q-0)*(q-2)*(q-3)*(q-4)*(q-5)/(24)+(2)*(q-0)*(q-1)*(q-3)*(q-4)*(q-5)/(-12)+(4)*(q-0)*(q-1)*(q-2)*(q-4)*(q-5)/(12)+(4)*(q-0)*(q-1)*(q-2)*(q-3)*(q-5)/(-24)+(1)*(q-0)*(q-1)*(q-2)*(q-3)*(q-4)/(120))"
+				},
+				{
+					"name": "x3",
+					"expression": "eval:1+l3"
+				},
+				{
+					"name": "l4",
+					"expression": "eval:s+g*((1)*(q-1)*(q-2)*(q-3)*(q-4)*(q-5)/(-120)+(2)*(q-0)*(q-2)*(q-3)*(q-4)*(q-5)/(24)+(0)*(q-0)*(q-1)*(q-3)*(q-4)*(q-5)/(-12)+(1)*(q-0)*(q-1)*(q-2)*(q-4)*(q-5)/(12)+(3)*(q-0)*(q-1)*(q-2)*(q-3)*(q-5)/(-24)+(3)*(q-0)*(q-1)*(q-2)*(q-3)*(q-4)/(120))"
+				},
+				{
+					"name": "x4",
+					"expression": "eval:1+l4"
+				}
+			],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"Les bandelettes partent toutes du même bord, à gauche : on regarde où elles s'arrêtent.",
+					"De la plus courte à la plus longue : $\\text{{{if:q==0|C|{{if:q==1|D|{{if:q==2|E|{{if:q==3|B|{{if:q==4|A|C}}}}}}}}}}}$ ; $\\text{{{if:q==0|E|{{if:q==1|B|{{if:q==2|A|{{if:q==3|E|{{if:q==4|C|D}}}}}}}}}}}$ ; $\\text{{{if:q==0|A|{{if:q==1|E|{{if:q==2|D|{{if:q==3|C|{{if:q==4|B|B}}}}}}}}}}}$ ; $\\text{{{if:q==0|D|{{if:q==1|C|{{if:q==2|B|{{if:q==3|A|{{if:q==4|E|E}}}}}}}}}}}$ ; $\\text{{{if:q==0|B|{{if:q==1|A|{{if:q==2|C|{{if:q==3|D|{{if:q==4|D|A}}}}}}}}}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3 bandelettes, A < B < C",
+			"variationIndex": 0,
+			"variables": {
+				"s": "3",
+				"g": "2",
+				"q": "0",
+				"l0": "3",
+				"x0": "4",
+				"l1": "5",
+				"x1": "6",
+				"l2": "7",
+				"x2": "8"
+			},
+			"answers": ["2", "0", "1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : de la plus longue à la plus courte",
+			"variationIndex": 0,
+			"variables": {
+				"s": "3",
+				"g": "2",
+				"q": "0",
+				"l0": "3",
+				"x0": "4",
+				"l1": "5",
+				"x1": "6",
+				"l2": "7",
+				"x2": "8"
+			},
+			"answers": ["1", "0", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3 bandelettes, C < A < B",
+			"variationIndex": 0,
+			"variables": {
+				"s": "4",
+				"g": "3",
+				"q": "3",
+				"l0": "7",
+				"x0": "8",
+				"l1": "10",
+				"x1": "11",
+				"l2": "4",
+				"x2": "5"
+			},
+			"answers": ["2", "0", "1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "4 bandelettes, C < A < D < B",
+			"variationIndex": 1,
+			"variables": {
+				"s": "3",
+				"g": "2",
+				"q": "0",
+				"l0": "5",
+				"x0": "6",
+				"l1": "9",
+				"x1": "10",
+				"l2": "3",
+				"x2": "4",
+				"l3": "7",
+				"x3": "8"
+			},
+			"answers": ["3", "0", "1", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deux voisines échangées",
+			"variationIndex": 1,
+			"variables": {
+				"s": "3",
+				"g": "2",
+				"q": "0",
+				"l0": "5",
+				"x0": "6",
+				"l1": "9",
+				"x1": "10",
+				"l2": "3",
+				"x2": "4",
+				"l3": "7",
+				"x3": "8"
+			},
+			"answers": ["0", "3", "1", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "5 bandelettes",
+			"variationIndex": 2,
+			"variables": {
+				"s": "5",
+				"g": "3",
+				"q": "5",
+				"l0": "17",
+				"x0": "18",
+				"l1": "11",
+				"x1": "12",
+				"l2": "5",
+				"x2": "6",
+				"l3": "8",
+				"x3": "9",
+				"l4": "14",
+				"x4": "15"
+			},
+			"answers": ["4", "0", "1", "2", "3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : à l'envers",
+			"variationIndex": 2,
+			"variables": {
+				"s": "5",
+				"g": "3",
+				"q": "5",
+				"l0": "17",
+				"x0": "18",
+				"l1": "11",
+				"x1": "12",
+				"l2": "5",
+				"x2": "6",
+				"l3": "8",
+				"x3": "9",
+				"l4": "14",
+				"x4": "15"
+			},
+			"answers": ["3", "2", "1", "0", "4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

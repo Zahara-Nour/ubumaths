@@ -1,0 +1,134 @@
+{
+	"id": "d0dec6cb-3785-499c-adf3-267a0f24c008",
+	"title": "Construis le diagramme en barres",
+	"description": "Monter les barres d'après un petit tableau, axe de 0 à 10 gradué de un en un : toutes les barres (3 fruits) ; deux barres sur quatre (sports)",
+	"grades": ["CP"],
+	"level": 1,
+	"delay": 120,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Les élèves de la classe ont choisi leur fruit préféré.\n\n| Fruit | Nombre d'élèves |\n|---|---|\n| Pomme | ${{a}}$ |\n| Banane | ${{b}}$ |\n| Fraise | ${{c}}$ |\n\nConstruis le diagramme en barres.\n\n```barres\ntitre: Fruit préféré\naxes: Fruit ; Élèves\nPomme = {{a}}\nBanane = {{b}}\nFraise = {{c}}\naxe: 0 à 10\nplacer: toutes\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..10"
+				},
+				{
+					"name": "b",
+					"expression": "1..10"
+				},
+				{
+					"name": "c",
+					"expression": "1..10"
+				}
+			],
+			"conditions": ["(a-b)*(a-b) > 0", "(a-c)*(a-c) > 0", "(b-c)*(b-c) > 0"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"Une barre par fruit, aussi haute que son nombre d'élèves. L'axe est gradué de un en un.",
+					"Pomme : ${{a}}$ ; banane : ${{b}}$ ; fraise : ${{c}}$."
+				]
+			}
+		},
+		{
+			"statement": "Les élèves de la classe ont choisi leur sport préféré.\n\n| Sport | Nombre d'élèves |\n|---|---|\n| Football | ${{a}}$ |\n| Danse | ${{b}}$ |\n| Judo | ${{c}}$ |\n| Natation | ${{d}}$ |\n\nDeux barres sont déjà tracées. Construis les barres de la danse et de la natation.\n\n```barres\ntitre: Sport préféré\naxes: Sport ; Élèves\nFootball = {{a}}\nDanse = {{b}}\nJudo = {{c}}\nNatation = {{d}}\naxe: 0 à 10\nplacer: Danse ; Natation\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..10"
+				},
+				{
+					"name": "b",
+					"expression": "1..10"
+				},
+				{
+					"name": "c",
+					"expression": "1..10"
+				},
+				{
+					"name": "d",
+					"expression": "1..10"
+				}
+			],
+			"conditions": ["b != d"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"L'axe est gradué de un en un.",
+					"La barre de la danse monte jusqu'au trait ${{b}}$, celle de la natation jusqu'au trait ${{d}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Pomme 6, banane 4, fraise 8",
+			"variationIndex": 0,
+			"variables": {
+				"a": "6",
+				"b": "4",
+				"c": "8"
+			},
+			"answers": ["6", "4", "8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la fraise un trait trop haut",
+			"variationIndex": 0,
+			"variables": {
+				"a": "6",
+				"b": "4",
+				"c": "8"
+			},
+			"answers": ["6", "4", "9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : banane et fraise inversées",
+			"variationIndex": 0,
+			"variables": {
+				"a": "6",
+				"b": "4",
+				"c": "8"
+			},
+			"answers": ["6", "8", "4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Danse 3, natation 9",
+			"variationIndex": 1,
+			"variables": {
+				"a": "7",
+				"b": "3",
+				"c": "5",
+				"d": "9"
+			},
+			"answers": ["3", "9"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la barre du judo à la place de la danse",
+			"variationIndex": 1,
+			"variables": {
+				"a": "7",
+				"b": "3",
+				"c": "5",
+				"d": "9"
+			},
+			"answers": ["5", "9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

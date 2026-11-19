@@ -60,6 +60,7 @@
 	} from '#lib/worksheets/student-copy.ts';
 	import JSZip from 'jszip';
 	import TextSizeSelect from './TextSizeSelect.svelte';
+	import EasyReadingPdfCheckbox from './EasyReadingPdfCheckbox.svelte';
 	import type { TextSize } from '#lib/typst/text-size.ts';
 	import {
 		getTypstCompiler,
@@ -142,6 +143,8 @@
 	// Taille du texte (accessibilité) : choisie au coup par coup, jamais
 	// enregistrée ; normale à chaque ouverture
 	let textSize = $state<TextSize>('normal');
+	// Lecture facilitée (Luciole) : même principe, éteinte à chaque ouverture
+	let easyReading = $state(false);
 	let isGenerating = $state(false);
 	let pdfUrl = $state<string | null>(null);
 	let pdfBlob = $state<Blob | null>(null);
@@ -268,6 +271,11 @@
 		generatePreview();
 	}
 
+	function handleEasyReadingChange(checked: boolean) {
+		easyReading = checked;
+		generatePreview();
+	}
+
 	function handleLocaleChange(locale: string) {
 		langueChoisie = locale;
 		generatePreview();
@@ -290,7 +298,8 @@
 		instance: InstanceData,
 		kind: WorksheetPdfKind,
 		studentName: string | undefined,
-		size: TextSize = textSize
+		size: TextSize = textSize,
+		easy: boolean = easyReading
 	): string {
 		clearTrackedExternalImages();
 		return generateWorksheetTypst({
@@ -302,7 +311,8 @@
 			studentName,
 			className: classId ? 'Classe' : undefined,
 			template: ws.template,
-			textSize: size
+			textSize: size,
+			easyReading: easy
 		});
 	}
 
@@ -318,6 +328,7 @@
 		// Le niveau de CETTE génération : changé entre-temps, on recommence
 		const levelAtStart = printLevel;
 		const sizeAtStart = textSize;
+		const easyReadingAtStart = easyReading;
 		const localeAtStart = printLocale;
 
 		// Clean up previous PDF
@@ -382,7 +393,12 @@
 			isGenerating = false;
 		}
 		// Niveau, taille ou langue changés pendant la génération : le changement n'est pas perdu
-		if (printLevel !== levelAtStart || textSize !== sizeAtStart || printLocale !== localeAtStart) {
+		if (
+			printLevel !== levelAtStart ||
+			textSize !== sizeAtStart ||
+			easyReading !== easyReadingAtStart ||
+			printLocale !== localeAtStart
+		) {
 			generatePreview();
 		}
 	}
@@ -426,6 +442,7 @@
 		const studentName = selectedStudentName();
 		const level = printLevel;
 		const size = textSize;
+		const easy = easyReading;
 		const jobs = ZIP_LOCALES.flatMap((locale) =>
 			PDF_KIND_ITEMS.map((item) => ({ locale, kind: item.value, label: item.label }))
 		);
@@ -446,7 +463,8 @@
 					generateSimpleInstance(ws, level),
 					job.kind,
 					studentName,
-					size
+					size,
+					easy
 				);
 				const imageData = await fetchExternalImages(getTrackedExternalImages());
 				const compiled = await compileTypstDocument(source, {
@@ -836,6 +854,13 @@ INFORMATIONS
 							<TextSizeSelect
 								value={textSize}
 								onchange={handleTextSizeChange}
+								disabled={isLongRunning}
+							/>
+						</div>
+						<div class="flex items-end pb-2">
+							<EasyReadingPdfCheckbox
+								checked={easyReading}
+								onchange={handleEasyReadingChange}
 								disabled={isLongRunning}
 							/>
 						</div>

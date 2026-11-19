@@ -20,6 +20,7 @@
 	import * as Tabs from '#lib/components/ui/tabs/index.ts';
 	import MySelect from '#lib/components/MySelect.svelte';
 	import TextSizeSelect from '#lib/components/worksheets/TextSizeSelect.svelte';
+	import EasyReadingPdfCheckbox from '#lib/components/worksheets/EasyReadingPdfCheckbox.svelte';
 	import { textSizeOf, type TextSize } from '#lib/typst/text-size.ts';
 	import MarkdownRenderer from '#lib/components/markdown/MarkdownRenderer.svelte';
 	import { genericFunctionsConfig } from '#lib/components/markdown/utils/math-utils.ts';
@@ -100,6 +101,9 @@
 	// enregistrée pour lui si on la change ; en vue prof, normale et ponctuelle
 	let textSize = $state<TextSize>('normal');
 	let isSavingTextSize = $state(false);
+	// Lecture facilitée (PDF en Luciole) : même principe que la taille
+	let easyReading = $state(false);
+	let isSavingEasyReading = $state(false);
 
 	// PDF download state
 	let isPdfLoading = $state(false);
@@ -168,10 +172,15 @@
 			worksheet = responseData as StudentWorksheetView;
 			previewMode = responseData.preview_mode || 'teacher';
 			previewStudentName = responseData.preview_student_name || null;
-			// La taille de l'élève demandé ; un autre choisi entre-temps : réponse périmée
-			const sizeFor = selectedStudentId;
-			const size = sizeFor ? await studentTextSize(sizeFor) : 'normal';
-			if (selectedStudentId === sizeFor) textSize = size;
+			// Les réglages de l'élève demandé ; un autre choisi entre-temps : réponse périmée
+			const settingsFor = selectedStudentId;
+			const settings = settingsFor
+				? await studentPrintSettings(settingsFor)
+				: { textSize: 'normal' as const, easyReading: false };
+			if (selectedStudentId === settingsFor) {
+				textSize = settings.textSize;
+				easyReading = settings.easyReading;
+			}
 		} catch (err) {
 			console.error('Error fetching preview:', err);
 			error = err instanceof Error ? err.message : 'Erreur lors du chargement';
@@ -180,19 +189,55 @@
 		}
 	}
 
-	/** La taille enregistrée pour l'élève ; normale si elle est illisible */
-	async function studentTextSize(studentId: string): Promise<TextSize> {
+	/**
+	 * Les réglages d'impression enregistrés pour l'élève ; illisibles : taille
+	 * normale, lecture facilitée éteinte
+	 */
+	async function studentPrintSettings(
+		studentId: string
+	): Promise<{ textSize: TextSize; easyReading: boolean }> {
+		const fallback = { textSize: 'normal' as const, easyReading: false };
 		try {
 			const url = new URL('/api/worksheets/print-settings', window.location.origin);
 			url.searchParams.set('studentId', studentId);
 			const response = await fetch(url.toString());
-			if (!response.ok) return 'normal';
+			if (!response.ok) return fallback;
 			const body: unknown = await response.json();
-			return textSizeOf(
-				body && typeof body === 'object' && 'textSize' in body ? body.textSize : null
+			if (!body || typeof body !== 'object') return fallback;
+			return {
+				textSize: textSizeOf('textSize' in body ? body.textSize : null),
+				easyReading: 'easyReading' in body && body.easyReading === true
+			};
+		} catch {
+			return fallback;
+		}
+	}
+
+	/** Vue d'un élève : enregistrée pour lui ; vue prof : ce PDF seulement */
+	async function handleEasyReadingChange(checked: boolean) {
+		const previous = easyReading;
+		easyReading = checked;
+		const studentId = selectedStudentId;
+		const studentName = previewStudentName;
+		if (!studentId) return;
+
+		isSavingEasyReading = true;
+		try {
+			const response = await fetch('/api/worksheets/print-settings', {
+				method: 'PUT',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ studentId, easyReading: checked })
+			});
+			if (!response.ok) throw new Error(`HTTP ${response.status}`);
+			toaster.success(
+				`Lecture facilitée ${checked ? 'enregistrée' : 'retirée'} pour ${studentName ?? 'cet élève'} (toutes ses fiches)`
 			);
 		} catch {
-			return 'normal';
+			// Un autre élève choisi entre-temps : sa case vient de sa propre lecture
+			if (selectedStudentId === studentId) easyReading = previous;
+			toaster.error("La lecture facilitée n'a pas pu être enregistrée");
+		} finally {
+			isSavingEasyReading = false;
 		}
 	}
 
@@ -265,7 +310,8 @@
 			() =>
 				generateStudentWorksheetTypst(capturedWorksheet, ending, {
 					individualCopyNotice,
-					textSize
+					textSize,
+					easyReading
 				}),
 			filename
 		);
@@ -509,6 +555,11 @@
 						value={textSize}
 						onchange={handleTextSizeChange}
 						disabled={isSavingTextSize || loading}
+					/>
+					<EasyReadingPdfCheckbox
+						checked={easyReading}
+						onchange={handleEasyReadingChange}
+						disabled={isSavingEasyReading || loading}
 					/>
 					{#if data.students.length > 0}
 						<!-- Une copie au nom de chaque élève visé (ADR 0030, lot 5) -->

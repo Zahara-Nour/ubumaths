@@ -62,6 +62,8 @@ export interface StudentPdfOptions {
 	className?: string | null;
 	/** Taille du texte de l'élève (`student_print_settings`) ; normale par défaut */
 	textSize?: TextSize;
+	/** Lecture facilitée de l'élève (`student_print_settings`, Luciole) ; faux par défaut */
+	easyReading?: boolean;
 }
 
 // ============================================================================
@@ -128,7 +130,8 @@ export function generateStudentWorksheetTypst(
 			withCorrections: ending === 'none' ? undefined : ending,
 			correctionFonts: options.correctionFonts,
 			individualCopyNotice: options.individualCopyNotice,
-			textSize: options.textSize
+			textSize: options.textSize,
+			easyReading: options.easyReading
 		}
 	);
 	return generator.generate({

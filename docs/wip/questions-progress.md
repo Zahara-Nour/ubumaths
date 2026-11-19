@@ -2,13 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, après #1838._
+_Mis à jour le 2026-11-19, après #2911 (migration jouée)._
 
-- **État** : 72 modèles CP publiés (groupes A, H, B, M, C). Skill `couvrir-niveau` + doc `docs/pratiques/couvrir-un-niveau.md` à jour ; outils du dépôt (#1838) : `scripts/questions/page-a-cocher.ts` (page à cocher lue en base, alertes) et `scripts/questions/publier-lot.ts` (contrôles joués en simulation, tout ou rien, reprise d'un lot interrompu).
-- **Prochaine action** : utiliser le skill sur un nouveau niveau (`/couvrir-niveau <niveau>`, session neuve) ; le CP reste ici pour ses points en suspens.
-- **En attente de David** : vérification manuelle #1702 (plus tard, dit-il) ; reste du CP en suspens (case « figure », réponses à placer, 058).
+- **État** : relevé prod du 2026-11-19 : **70 points CP sur 84** ont un modèle publié. Lot D (CP-001, 070, 008, 033, 072 : 6 modèles, § 4 septdecies) : 6 brouillons en prod, **rangés et tagués** (migration `20261119195149`, #2911, jouée par David, vérifiée au MCP). Page à cocher publiée : https://claude.ai/artifact/Jw3Uin7HLh73Ni4NUPthP9 (verdicts en base de l'artefact, collection `verdicts`).
+- **Alertes de la page** : `03` (CP-008), V2 « 0 à 20 » : graduations à 12 px sur téléphone, trop serrées au doigt → proposition : V2 = demi-droite de 0 à 10 sans le 5 écrit (`--mettre-a-jour` par David) ; `05` (ranger) non dessiné sur la page : le jouer dans l'aperçu admin.
+- **Prochaine action** : lire et compter les verdicts de David → corrections éventuelles (`--mettre-a-jour`) → `publier-lot.ts --dir scripts/questions/cp-d` en simulation → **David** `--publier` → relevé de couverture final.
+- **En attente de David** : publication des brouillons CP-058, 059, 060 (chantier `geometrie-validation`) ; vérification manuelle #1702.
+- **Reste du CP après le lot D** : groupe D seul (074, 053, 063, 064, 065, 066 : non évaluables à l'écran).
 - **Pièges en cours** : un modèle porte au plus UN point (ADR 0020) ; QCM OU cases ; case dans un tableau = `$?$` ; **`{{if:…}}` imbriqué non résolu dans `correctChoiceIndex`** ; jamais de variable `e` ; **niveaux numérotés dès l'écriture** ; montants en `$n~\unit{€}$` ; **écriture en prod : David la lance (`!`)** ; **`gh pr checks --watch` / `gh run watch` peuvent rendre la main avant la fin : suivre le statut du run** ; `create-questions` et les deux scripts visent `.env` (prod) : `set -a; . ./.env.local; set +a` pour la locale ; fichiers des anciens lots CP en retard sur la base (niveaux B1, B3, H renumérotés ; sous-domaines B2 changés) ; les 4 modèles C sont publiés en base LOCALE (essais).
-- **Worktree / branche** : aucun (retiré après #1838).
+- **Worktree / branche** : `../ubumaths-wt-questions-cp-d`, `feat/questions-cp-d`.
 - **But final** : skill réutilisable pour les autres niveaux (§ 5) — fait.
 
 ## 1. Modèles CP existants (prod, 2026-10-24)
@@ -197,6 +199,35 @@ David suit mes recommandations (« je suis tes recos »). Les blocs à construir
 - Les scripts de page à cocher et de publication deviennent réutilisables sous `scripts/questions/`, dans une PR à part, après la doc.
 - Le skill comprend la **création des outils qui manquent** (nouveaux blocs, gestes de réponse), en chantiers à part (question de David).
 - Vérifications manuelles reportées par David.
+
+## 4 septdecies. Lot D (collections, droite, longueurs, barres) : décisions (David, 2026-11-19)
+
+Relevé prod du 2026-11-19 : 70 points sur 84 ont un modèle publié. Sans modèle : 001, 070, 008, 033,
+072 (outils désormais en prod : `collection`, `line placer:`, `ranger`, `barres placer:`) ; 058, 059,
+060 en brouillon (chantier `geometrie-validation`, publication par David) ; groupe D (074, 053, 063 à 066).
+Correction : CP-072 n'attend aucun outil (barres à construire livrées le 2026-10-28).
+
+Phase 0 proposée, réponse de David : « je te suis », sur la phase 0 entière et ses trois questions
+(5 points et variations, deux modèles pour CP-033, axe de 0 à 10 pour CP-072).
+
+| Fichier                                   | Point  | Notion, niveau           | Variations                                                                                   |
+| ----------------------------------------- | ------ | ------------------------ | -------------------------------------------------------------------------------------------- |
+| 01 Combien de petits cubes ?              | CP-001 | dénombrement, 2          | vrac 6 à 20 ; barres et cubes 21 à 99 ; plus de dix cubes seuls (3 barres et 15 cubes)       |
+| 02 Quelle collection a le plus de cubes ? | CP-070 | ordre, 2                 | deux collections rangées ; piège du BO (A partiellement groupée), « autant » possible        |
+| 03 Place le nombre sur la demi-droite     | CP-008 | droite graduée, 1        | 0 à 10 ; 0 à 20 ; morceau de dix (10 à 100)                                                  |
+| 04 Quelle bandelette est la plus longue ? | CP-033 | comparaison et mesure, 1 | la plus longue ou la plus courte, 3 puis 4 bandelettes alignées, 2 carreaux d'écart au moins |
+| 05 Range les bandelettes                  | CP-033 | comparaison et mesure, 2 | 3, 4, 5 bandelettes, étiquettes à ranger                                                     |
+| 06 Construis le diagramme en barres       | CP-072 | diagrammes en barres, 1  | toutes les barres (3 fruits) ; deux barres sur quatre (sports) ; axe 0 à 10                  |
+
+- Collections dessinées seulement (le BO cite aussi les objets déplaçables).
+- Question d'accès de la migration nœud + tag : personne ne gagne ni ne perd d'accès (tags de classement).
+- Script : `docs/wip/questions/lot-cp-d.py` → `scripts/questions/cp-d/`. Simulation 6/6 verte ; sondes figures,
+  collections, droites : 0 problème ; créés en base locale le 2026-11-19.
+- Piège : les réponses d'un ` ```ranger ` sont des positions **affichées** ; le mélange d'une spec est fixe
+  et ne dépend que du nombre d'étiquettes (3 : 2,0,1 ; 4 : 3,0,1,2 ; 5 : 4,0,1,2,3), relevé par
+  `generateInstanceWithFixedVariables`. Une place vide y est jugée `unoptimal_form` (spec retirée).
+- Rendu non vu dans Chrome (le navigateur n'ouvrait pas `http://[::1]:5177`) : relu en texte
+  (`question:specs --apercu`) ; à voir sur la page à cocher.
 
 ## 5. Méthode (pour le futur skill)
 
