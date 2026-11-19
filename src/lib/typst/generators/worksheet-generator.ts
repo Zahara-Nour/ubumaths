@@ -50,6 +50,7 @@ import {
 } from '../templates/styles';
 import { documentLabels, labelPlaceholders, type DocumentLabels } from '../labels';
 import { DATE_LOCALES, TYPST_LANGS, type ContentLocale } from '#lib/types/locale.ts';
+import { GRADES, isGradeCode } from '#lib/types/grades.ts';
 import { localizedText, worksheetLocale } from '#lib/types/worksheets.ts';
 import { withTextSize, type TextSize } from '../text-size';
 import { documentFromTeacherCopy } from '#lib/worksheets/document/teacher-adapter.ts';
@@ -61,7 +62,7 @@ import {
 import { MATH_LIMITS_SETUP } from '#lib/worksheets/document/math-limits.ts';
 import { TITLE_ONLY_HEADER, worksheetHeader } from '#lib/worksheets/worksheet-header.ts';
 import type { DocumentForm, WorksheetDocument } from '#lib/worksheets/document/types.ts';
-import { SITE_NAME, SITE_QR_TYPST } from '../templates/site-mark';
+import { SITE_GIDOUILLE_TYPST, SITE_NAME, SITE_QR_TYPST } from '../templates/site-mark';
 
 // ============================================================================
 // TYPES
@@ -237,6 +238,23 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 		return localizedText(worksheet.title, worksheet.translations, 'title', this.locale) ?? '';
 	}
 
+	/**
+	 * Les niveaux de la fiche, du plus petit au plus grand, séparés par « · » :
+	 * noms complets (sous le titre) et courts (bas de page). Fiche en anglais :
+	 * aucun, faute de noms anglais des niveaux. Une vue sans niveaux (PDF de
+	 * l'élève, lien de partage) : aucun.
+	 */
+	private levels(worksheet: WorksheetRow): { full: string; short: string } {
+		const grades: unknown[] = Array.isArray(worksheet.grades) ? worksheet.grades : [];
+		const known = grades.filter(isGradeCode);
+		if (this.locale !== 'fr' || known.length === 0) return { full: '', short: '' };
+		const sorted = [...new Set(known)].sort((a, b) => GRADES[a].schoolYear - GRADES[b].schoolYear);
+		return {
+			full: sorted.map((grade) => GRADES[grade].displayName).join(' · '),
+			short: sorted.map((grade) => GRADES[grade].shortName).join(' · ')
+		};
+	}
+
 	/** Date de rendu (`AAAA-MM-JJ`) telle qu'imprimée, dans la langue du document */
 	private formattedDueDate(isoDate: string): string {
 		return new Date(`${isoDate}T00:00:00Z`).toLocaleDateString(DATE_LOCALES[this.locale], {
@@ -351,6 +369,8 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 		const showDuration = header.duration && duration !== '';
 		const showTotal = header.points && totalPoints !== '';
 
+		const levels = this.levels(worksheet);
+
 		// Prepare template data
 		const templateData: Record<string, string> = {
 			// Chrome vocabulary: one template body serves both languages, so a label
@@ -360,6 +380,10 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 			lang: TYPST_LANGS[this.locale],
 			// Le titre s'imprime toujours ; le reste selon le type
 			show_title: 'true',
+			// Le niveau de la fiche : sous le titre (page 1) et au bas de chaque page
+			show_level: flag(levels.full !== ''),
+			level: escapeTypst(levels.full),
+			level_short: escapeTypst(levels.short),
 			show_student_name: flag(header.studentName),
 			show_class: flag(header.className),
 			show_date: flag(header.dateLine),
@@ -377,6 +401,7 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 			// Chiphre : QR du site en tête de la page 1, nom du site en bas des suivantes
 			site_qr: SITE_QR_TYPST,
 			site_name: SITE_NAME,
+			site_gidouille: SITE_GIDOUILLE_TYPST,
 			title: escapeTypst(
 				mode === 'worksheet' && this.options.inlineCorrections
 					? `${this.title(worksheet)} — ${this.labels.correction}`

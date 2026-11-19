@@ -60,6 +60,8 @@ function renderEnglish(templateContent: string): string {
 		title: 'CONTENT',
 		// La phrase de calculatrice vient des libellés, posée par le générateur
 		calculator: 'CONTENT',
+		// Pas de niveau en anglais (aucun nom anglais), comme le générateur
+		show_level: '',
 		...labelPlaceholders('en'),
 		lang: TYPST_LANGS.en
 	};

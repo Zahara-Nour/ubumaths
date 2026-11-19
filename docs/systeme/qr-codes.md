@@ -126,7 +126,8 @@ ou une fiche, vers l'adresse de son choix. Syntaxe et pipeline : [ubumark](ubuma
 En tête de la page 1 des PDF des styles « Fiche élève » et « 2 colonnes - paysage », un QR vers
 **l'accueil** `https://www.chiph.re` (`src/lib/typst/templates/site-mark.ts`, David, 2026-11-19).
 Seconde destination admise après les séries : une adresse fixe et courte, sans lien court ni jeton,
-la même sur toutes les fiches. Décodé depuis le PDF rendu (jsQR, 150 dpi) le 2026-11-19. Détail de
+la même sur toutes les fiches. `gidouilleSvg()` (`qr-code.ts`) rend la même spirale seule, sans
+fond, pour le pied de page des fiches. Décodé depuis le PDF rendu (jsQR, 150 dpi) le 2026-11-19. Détail de
 la mise en page : [fiches-et-pdf.md](fiches-et-pdf.md).
 
 - Poids de `uqr` (build du 2026-10-19) : 4,4 Ko gzip, chargé d'office par 16 pages sur 330 —

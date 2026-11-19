@@ -31,7 +31,7 @@ const UNAVAILABLE_TYPST = `#block(stroke: 0.5pt + luma(160), inset: 6pt, radius:
 // ============================================================================
 
 /** Une chaîne Typst littérale : seuls `\` et `"` s'échappent */
-function typstString(text: string): string {
+export function typstString(text: string): string {
 	return `"${text.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`;
 }
 

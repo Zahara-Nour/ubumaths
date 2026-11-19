@@ -177,7 +177,7 @@ async function ecrireFiche(supabase: ReturnType<typeof createClient<Database>>, 
 
 		const { data: w, error: e1 } = await supabase
 			.from('worksheets')
-			.select('title, config, style_id, translations')
+			.select('title, config, style_id, translations, grades')
 			.eq('id', id)
 			.single();
 		const { data: sections, error: e2 } = await supabase
@@ -234,7 +234,9 @@ async function ecrireFiche(supabase: ReturnType<typeof createClient<Database>>, 
 					id,
 					title: titreEn(w),
 					type: 'worksheet',
-					config
+					config,
+					// Les niveaux, imprimés sous le titre et au bas des pages
+					grades: w.grades
 				} as unknown as WorksheetRow;
 				const typst = new WorksheetGenerator(config, {}, { mode }).generate({
 					worksheet,
