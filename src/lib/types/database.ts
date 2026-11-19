@@ -14226,6 +14226,7 @@ export type Database = {
           config: Json | null
           created_at: string
           created_by: string
+          custom_title: boolean
           description: string | null
           estimated_duration_minutes: number | null
           grades: string[] | null
@@ -14247,6 +14248,7 @@ export type Database = {
           config?: Json | null
           created_at?: string
           created_by: string
+          custom_title?: boolean
           description?: string | null
           estimated_duration_minutes?: number | null
           grades?: string[] | null
@@ -14268,6 +14270,7 @@ export type Database = {
           config?: Json | null
           created_at?: string
           created_by?: string
+          custom_title?: boolean
           description?: string | null
           estimated_duration_minutes?: number | null
           grades?: string[] | null

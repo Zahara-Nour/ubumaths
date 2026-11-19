@@ -45,6 +45,8 @@ import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '#lib/server/middleware/auth.ts';
 import { resolveAssignmentAccess } from '#lib/server/worksheets/assignment-access.ts';
+import { loadWorksheetClassifications } from '#lib/server/worksheets/worksheet-classification.ts';
+import { isWorksheetCategory } from '#lib/worksheets/worksheet-title.ts';
 import { loadAuthorStyleTemplate } from '#lib/server/worksheets/worksheet-styles.ts';
 import {
 	validateStudentWorksheetParam,
@@ -150,7 +152,10 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 					style_id,
 					created_by,
 					total_points,
-					estimated_duration_minutes
+					estimated_duration_minutes,
+					grades,
+					category,
+					custom_title
 				)
 			`
 			)
@@ -177,6 +182,9 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 				created_by: string;
 				total_points: number | null;
 				estimated_duration_minutes: number | null;
+				grades: string[] | null;
+				category: string | null;
+				custom_title: boolean;
 			}
 		);
 		// La classe rapportée à l'élève est la SIENNE : la RLS ne lui montre de la
@@ -397,7 +405,13 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			template: await loadAuthorStyleTemplate(worksheet),
 			// Cartouche du gabarit, comme le PDF du prof
 			total_points: worksheet.total_points,
-			estimated_duration_minutes: worksheet.estimated_duration_minutes
+			estimated_duration_minutes: worksheet.estimated_duration_minutes,
+			// Badge du niveau et titre composé du PDF (ADR 0041) : l'accès à la
+			// fiche est vérifié plus haut ; les notions se lisent sous sa RLS
+			grades: worksheet.grades ?? [],
+			category: isWorksheetCategory(worksheet.category) ? worksheet.category : null,
+			custom_title: worksheet.custom_title,
+			classifications: await loadWorksheetClassifications(locals.supabase, worksheet.id)
 		};
 
 		// Validate response

@@ -64,6 +64,10 @@ export interface PublicWorksheet {
 	config: unknown;
 	status: string;
 	grades: string[] | null;
+	/** Catégorie, titre libre, notions (ADR 0041) : le PDF du lien est celui de la classe */
+	category?: string | null;
+	custom_title?: boolean;
+	classifications?: Array<{ node_id: string; name: string; kind?: string; position: number }>;
 	translations: unknown;
 	total_points: number | null;
 	estimated_duration_minutes: number | null;

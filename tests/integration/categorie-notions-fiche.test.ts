@@ -28,6 +28,8 @@ import { cleanupAllTestData } from '../helpers/database/trigger-test-helpers';
 import { DEFAULT_TEST_PASSWORD } from '../helpers/database/supabase-client';
 import { getPostgresClient } from '../helpers/database/postgres-client';
 import { TestData } from '../helpers/database/test-data-factory';
+import { resolveCourseWorksheetByShareToken } from '#lib/server/course-share-tokens.ts';
+import { resolveWorksheetByShareToken } from '#lib/server/journal-share-tokens.ts';
 
 // ============================================================================
 // CONSTANTES
@@ -148,7 +150,7 @@ async function addNode(
 ): Promise<string | null> {
 	const { error } = await client
 		.from('worksheet_classifications')
-		.insert({ worksheet_id: id, node_id: nodeId, position } as never)
+		.insert({ worksheet_id: id, node_id: nodeId, position })
 		.select('node_id');
 	return error ? (error.code ?? 'erreur') : null;
 }
@@ -156,7 +158,7 @@ async function addNode(
 async function setCategory(id: string, category: string | null): Promise<string | null> {
 	const { data, error } = await teacherClient
 		.from('worksheets')
-		.update({ category } as never)
+		.update({ category })
 		.eq('id', id)
 		.select('id');
 	if (error) return error.code ?? 'erreur';
@@ -365,7 +367,7 @@ describe('notions : une seule, sauf Révisions et Automatismes', () => {
 		await resetNodes(id, [suitesId, derivationId]);
 		const { error } = await teacherClient
 			.from('worksheets')
-			.update({ type: 'worksheet' } as never)
+			.update({ type: 'worksheet' })
 			.eq('id', id)
 			.select('id');
 		expect(error?.code).toBe('23514');
@@ -525,6 +527,30 @@ describe('liens de partage : catégorie et notions de la fiche citée', () => {
 	});
 
 	it.each([
+		[
+			'cahier de texte',
+			() => resolveWorksheetByShareToken(visitor as never, JOURNAL_TOKEN, worksheetId)
+		],
+		[
+			'cours partagé',
+			() => resolveCourseWorksheetByShareToken(visitor as never, COURSE_TOKEN, worksheetId)
+		]
+	] as const)(
+		'%s : la lecture côté serveur garde catégorie, case et notions (le PDF du lien)',
+		async (_label, open) => {
+			const shared = (await open()) as unknown as SharedWorksheet | null;
+			expect(shared).toMatchObject({
+				category: 'review',
+				custom_title: expect.any(Boolean),
+				classifications: [
+					{ node_id: derivationId, name: `${RUN} Dérivation`, position: 0 },
+					{ node_id: suitesId, name: `${RUN} Suites`, position: 1 }
+				]
+			});
+		}
+	);
+
+	it.each([
 		['cahier de texte', viaJournal],
 		['cours partagé', viaCourse]
 	] as const)('%s : fiche sans notion → liste vide', async (_label, open) => {
@@ -544,7 +570,7 @@ describe('titre libre : la case qui dit si le titre est écrit à la main', () =
 	async function setCustomTitle(id: string, value: boolean): Promise<void> {
 		const { data, error } = await teacherClient
 			.from('worksheets')
-			.update({ custom_title: value } as never)
+			.update({ custom_title: value })
 			.eq('id', id)
 			.select('id');
 		expect(error).toBeNull();
@@ -583,7 +609,7 @@ describe('titre libre : la case qui dit si le titre est écrit à la main', () =
 		await sql('update public.worksheets set custom_title = false where id = $1', [worksheetId]);
 		const { data, error } = await studentClient
 			.from('worksheets')
-			.update({ custom_title: true } as never)
+			.update({ custom_title: true })
 			.eq('id', worksheetId)
 			.select('id');
 		// Refus de la RLS : aucune erreur, zéro ligne

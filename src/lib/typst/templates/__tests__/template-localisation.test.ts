@@ -58,6 +58,9 @@ function renderEnglish(templateContent: string): string {
 		exercises_badge: 'CONTENT',
 		instructions: 'CONTENT',
 		title: 'CONTENT',
+		// Catégorie et notions (ADR 0041) : traduites ou retirées par le générateur
+		title_sub: 'CONTENT',
+		footer_title: 'CONTENT',
 		// La phrase de calculatrice vient des libellés, posée par le générateur
 		calculator: 'CONTENT',
 		// Pas de niveau en anglais (aucun nom anglais), comme le générateur

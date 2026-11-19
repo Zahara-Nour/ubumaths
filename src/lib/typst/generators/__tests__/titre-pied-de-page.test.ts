@@ -3,10 +3,14 @@
  * « 2 colonnes - paysage ») : feuilles imprimées mélangées, on retrouve la
  * fiche de chacune. Titre à gauche, numéro de page au centre.
  *
- * Le niveau de la fiche (David, 2026-11-19) : nom complet sous le titre en
- * page 1, forme courte après le titre au bas de chaque page ; plusieurs
- * niveaux du plus petit au plus grand, séparés par « · » ; aucun → rien.
- * Fiche en anglais : pas de niveau (aucun nom anglais des niveaux).
+ * Le niveau de la fiche (ADR 0041, David, 2026-11-19) : un badge (forme
+ * courte, plein orange, texte blanc) à gauche du titre en page 1 et au début
+ * du bas de page ; plusieurs niveaux → plusieurs badges, du plus petit au plus
+ * grand ; aucun → rien. Fiche en anglais : pas de niveau (aucun nom anglais).
+ *
+ * Titre composé (ADR 0041) : sans titre libre, les notions en grand et la
+ * catégorie en petit dessous ; bas de page « Suites · Entraînement technique ».
+ * Titre libre : lui seul, les notions dessous si la fiche en admet plusieurs.
  *
  * Rendu vérifié avec le compilateur de prod (typst.ts en WebAssembly) : texte
  * de la page 2, qui n'a pas d'en-tête, lu par pdfjs.
@@ -36,11 +40,13 @@ const INSTANCE: InstanceData = {
 function sheet(
 	styleId: string | null,
 	grades: string[] = [],
-	language: 'fr' | 'en' = 'fr'
+	language: 'fr' | 'en' = 'fr',
+	extra: Record<string, unknown> = {}
 ): string {
 	const worksheet = {
 		id: 'w',
 		title: TITLE,
+		...extra,
 		description: null,
 		type: 'worksheet',
 		config: { language },
@@ -101,24 +107,91 @@ describe('titre de la fiche au pied de page', () => {
 		60_000
 	);
 
-	it('niveau : nom complet sous le titre en page 1, forme courte au bas de chaque page', async () => {
+	it('niveau : un badge à gauche du titre en page 1 et au début de chaque bas de page', async () => {
 		const all = await pages(sheet(null, ['1_SPE']));
-		expect(all[0]).toContain('1ère spécialité maths');
+		expect(all[0]).not.toContain('1ère spécialité maths');
 		for (const [index, page] of all.entries()) {
-			expect(page, `page ${index + 1}`).toContain(`${TITLE} · 1ère Spé`);
+			expect(page, `page ${index + 1}`).toMatch(new RegExp(`1ère Spé\\s*${TITLE}`));
 		}
 	}, 60_000);
 
-	it('deux niveaux : du plus petit au plus grand', () => {
+	it('deux niveaux : deux badges, du plus petit au plus grand', () => {
 		const typst = sheet(null, ['1_SPE', '2']);
-		expect(typst).toContain('2nde · 1ère spécialité maths');
-		expect(typst).toContain('2nde · 1ère Spé');
+		expect(typst).toMatch(/\[2nde\][\s\S]*\[1ère Spé\]/);
+		expect(typst).not.toContain('2nde · 1ère');
 	});
 
-	it('aucun niveau, ou fiche en anglais : rien', () => {
+	it('aucun niveau, ou fiche en anglais : aucun badge', () => {
 		for (const typst of [sheet(null, []), sheet(null, ['1_SPE'], 'en')]) {
 			expect(typst).not.toContain('Spé');
-			expect(typst).not.toContain(`${TITLE} ·`);
 		}
+	});
+
+	it('titre composé : la notion en grand, la catégorie dessous, les deux au bas de page', async () => {
+		const all = await pages(
+			sheet(null, ['1_SPE'], 'fr', {
+				title: 'Suites · Entraînement technique',
+				custom_title: false,
+				category: 'technical_practice',
+				classifications: [{ node_id: 'n1', name: 'Suites', kind: 'notion', position: 0 }]
+			})
+		);
+		expect(all[0]).toContain('entraînement technique');
+		for (const [index, page] of all.entries()) {
+			expect(page, `page ${index + 1}`).toMatch(/1ère Spé\s*Suites · Entraînement technique/);
+		}
+	}, 60_000);
+
+	it('titre libre en Révisions : les notions dessous, le titre seul au bas de page', () => {
+		const typst = sheet(null, [], 'fr', {
+			title: 'Préparation Bac Blanc 1',
+			custom_title: true,
+			category: 'review',
+			classifications: [
+				{ node_id: 'n2', name: 'Dérivation', kind: 'notion', position: 1 },
+				{ node_id: 'n1', name: 'Suites', kind: 'notion', position: 0 }
+			]
+		});
+		expect(typst).toContain('Suites · Dérivation');
+		expect(typst).not.toContain('Révisions');
+		expect(typst).not.toContain('révisions');
+	});
+
+	it('un crochet dans le titre ou une notion reste du texte (jamais du code Typst)', async () => {
+		const evil = ']], text(red)[PIEGE], [[';
+		const typst = sheet(null, [], 'fr', {
+			title: evil,
+			custom_title: true,
+			category: 'review',
+			classifications: [{ node_id: 'n1', name: evil, kind: 'notion', position: 0 }]
+		});
+		expect(typst).not.toContain(']], text(red)');
+		const all = await pages(typst);
+		expect(all[0]).toContain('PIEGE');
+	}, 60_000);
+
+	it('style d’un prof sans {{title_sub}} : la catégorie reste dans le titre', () => {
+		const worksheet = {
+			id: 'w',
+			title: 'Suites · Entraînement technique',
+			custom_title: false,
+			category: 'technical_practice',
+			classifications: [{ node_id: 'n1', name: 'Suites', kind: 'notion', position: 0 }],
+			description: null,
+			type: 'worksheet',
+			config: { language: 'fr' },
+			grades: [],
+			style_id: '6f1c2a4e-0000-4000-8000-00000000abcd',
+			estimated_duration_minutes: null,
+			total_points: null
+		} as unknown as WorksheetRow;
+		const typst = new WorksheetGenerator({ language: 'fr' }, undefined, {
+			mode: 'worksheet'
+		}).generate({
+			worksheet,
+			instance: INSTANCE,
+			template: { template_content: 'TITRE<{{title}}>' } as never
+		}).typstContent;
+		expect(typst).toContain('TITRE<Suites · Entraînement technique>');
 	});
 });

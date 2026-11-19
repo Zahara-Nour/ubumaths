@@ -114,7 +114,12 @@ export function generateStudentWorksheetTypst(
 		config,
 		style_id: worksheet.style_id ?? null,
 		total_points: worksheet.total_points ?? null,
-		estimated_duration_minutes: worksheet.estimated_duration_minutes ?? null
+		estimated_duration_minutes: worksheet.estimated_duration_minutes ?? null,
+		// Badge du niveau et titre composé (ADR 0041), comme le PDF du prof
+		grades: worksheet.grades ?? [],
+		category: worksheet.category ?? null,
+		custom_title: worksheet.custom_title ?? true,
+		classifications: worksheet.classifications ?? []
 	} as unknown as WorksheetRow;
 
 	const generator = new WorksheetGenerator(

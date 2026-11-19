@@ -35,6 +35,15 @@ export interface TableMock {
 	selects: Array<{ table: string; columns: string }>;
 }
 
+/**
+ * Tables lues par toutes les routes de la copie mais sans objet pour la
+ * plupart des tests : réponse neutre si le test n'en déclare pas d'autre.
+ * Notions de la fiche (ADR 0041) : aucune.
+ */
+const NEUTRAL_RESPONSES: Record<string, TableResponse> = {
+	worksheet_classifications: { data: [], error: null }
+};
+
 export function tableMock(
 	responses: Record<string, TableResponse>,
 	rpc: Record<string, TableResponse> = {}
@@ -46,7 +55,8 @@ export function tableMock(
 
 	function chain(table: string) {
 		const response = (): TableResponse =>
-			responses[table] ?? { data: null, error: { message: `table inattendue : ${table}` } };
+			responses[table] ??
+			NEUTRAL_RESPONSES[table] ?? { data: null, error: { message: `table inattendue : ${table}` } };
 		const query: Record<string, unknown> = {};
 		for (const method of ['eq', 'in', 'order', 'limit', 'neq', 'is', 'delete', 'range']) {
 			query[method] = () => query;

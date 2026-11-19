@@ -20,3 +20,12 @@ export const SECTION_COLOR = 'rgb("#fc8f1b")';
 export function exerciseBadge(number: string | number): string {
 	return `box(fill: ${BADGE_FILL}, radius: 3pt, inset: (x: 6pt, y: 3pt))[#text(fill: ${BADGE_TEXT}, weight: "bold")[${number}]]`;
 }
+
+/**
+ * Badge du niveau de la fiche (ADR 0041), plein orange, texte blanc, en
+ * expression Typst (mode code) : en tête de la page 1 et au début du bas de
+ * page. Sa taille suit celle du texte qui l'entoure. `label` déjà échappé.
+ */
+export function levelBadge(label: string): string {
+	return `box(fill: ${BADGE_FILL}, radius: 3pt, inset: (x: 0.4em, y: 0.25em), outset: (y: 0.05em))[#text(fill: ${BADGE_TEXT}, weight: "bold")[${label}]]`;
+}

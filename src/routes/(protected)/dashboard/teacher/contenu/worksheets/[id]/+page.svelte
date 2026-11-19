@@ -350,10 +350,16 @@
 	async function handleSaveChanges(): Promise<void> {
 		if (!hasPendingChanges) return;
 
+		// Les notions partent en identifiants, dans l'ordre (ADR 0041) ; le serveur
+		// relit leurs noms et compose le titre
+		const { classifications, ...fields } = pendingChanges;
+		const body = classifications
+			? { ...fields, notions: classifications.map((n) => n.node_id) }
+			: fields;
 		const response = await fetch(`/api/worksheets/${worksheet.id}`, {
 			method: 'PUT',
 			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify(pendingChanges)
+			body: JSON.stringify(body)
 		});
 
 		if (!response.ok) {
@@ -482,6 +488,7 @@
 		<MetadataCards
 			worksheet={effectiveWorksheet}
 			styles={data.styles}
+			nodes={data.nodes}
 			{hasPendingChanges}
 			onFieldChange={isDraft ? handleFieldChange : undefined}
 			onSave={isDraft ? handleSaveChanges : undefined}

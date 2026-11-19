@@ -76,7 +76,8 @@ export const POST: RequestHandler = async ({ locals, params }) => {
 	// - fiche : `status` (toujours brouillon), `version` (repart à 1),
 	//   `published_at` et `archived_at` (une copie neuve n'est ni publiée ni
 	//   archivée), `created_by` / `school_id` (la copie appartient à qui duplique),
-	//   `title` (suffixé « (copie) » ; la traduction du titre reste celle d'origine) ;
+	//   `title` (suffixé « (copie) » ; la traduction du titre reste celle d'origine ;
+	//   un titre composé se recompose au prochain enregistrement, ADR 0041) ;
 	// - sections et exercices : `worksheet_id` (la copie) et `section_id`
 	//   (remappé vers la section copiée).
 	// Test colonne par colonne : tests/integration/duplication-fiche-complete.test.ts.
@@ -95,6 +96,9 @@ export const POST: RequestHandler = async ({ locals, params }) => {
 			estimated_duration_minutes: original.estimated_duration_minutes,
 			total_points: original.total_points,
 			grades: original.grades,
+			// Catégorie et titre libre (ADR 0041) ; les notions sont recopiées plus bas
+			category: original.category,
+			custom_title: original.custom_title,
 			created_by: user.id,
 			school_id: profile.school_id
 		})
@@ -187,6 +191,29 @@ export const POST: RequestHandler = async ({ locals, params }) => {
 					expected: exerciseInserts.length,
 					received: insertedExercises?.length ?? 0
 				}
+			);
+		}
+	}
+
+	// Les notions de la fiche (ADR 0041), dans leur ordre d'impression. La garde
+	// du nombre de notions est vérifiée à la fin de l'insertion : la catégorie
+	// de la copie est déjà posée.
+	const { data: notions, error: notionsError } = await locals.supabase
+		.from('worksheet_classifications')
+		.select('node_id, position')
+		.eq('worksheet_id', worksheetId);
+	if (notionsError) await abortCopy('notions (lecture)', notionsError);
+	if (notions && notions.length > 0) {
+		const { data: insertedNotions, error: insertNotionsError } = await locals.supabase
+			.from('worksheet_classifications')
+			.insert(
+				notions.map((n) => ({ worksheet_id: copyId, node_id: n.node_id, position: n.position }))
+			)
+			.select('node_id');
+		if (insertNotionsError || insertedNotions?.length !== notions.length) {
+			await abortCopy(
+				'notions',
+				insertNotionsError ?? { expected: notions.length, received: insertedNotions?.length ?? 0 }
 			);
 		}
 	}

@@ -3,7 +3,10 @@
  *
  * These templates use Typst markup with placeholders in {{placeholder}} format.
  * Available placeholders:
- * - {{title}} - Worksheet title
+ * - {{title}} - Worksheet title as printed (ADR 0041: the notions, or the free title)
+ * - {{title_sub}} - Small line under the title: category, or notions under a free title
+ * - {{footer_title}} - Title at the foot of each page (notions · category, or free title)
+ * - {{level_badges}} - Level badges (short names, orange), Typst markup
  * - {{date}} - Current date or assignment date
  * - {{class}} - Class name
  * - {{student_name}} - Student's full name
@@ -1575,7 +1578,8 @@ const studentStyleCommon = (
     length: 100% - 3cm,
     stroke: 0.3pt + luma(75%)
   )),
-  // Titre de la fiche à gauche, pour retrouver la fiche d'une feuille imprimée ;
+  // Badge du niveau puis titre de la fiche à gauche (notions et catégorie, ou
+  // titre libre, ADR 0041), pour retrouver la fiche d'une feuille imprimée ;
   // numéro de page au centre ; gidouille + « chiph.re » à droite à partir de la
   // page 2 (la page 1 a le QR de l'en-tête)
   footer: context [
@@ -1584,7 +1588,7 @@ const studentStyleCommon = (
       columns: (1fr, auto, 1fr),
       column-gutter: 1em,
       align: (left, center, right),
-      [{{#if show_title}}{{title}}{{/if}}{{#if show_level}} · {{level_short}}{{/if}}],
+      [{{#if show_level}}{{level_badges}}#h(0.4em){{/if}}{{#if show_title}}{{footer_title}}{{/if}}],
       counter(page).display("1 / 1", both: true),
       if counter(page).get().first() > 1 [{{#if site_gidouille}}#{{site_gidouille}}#h(0.3em){{/if}}{{site_name}}]
     )
@@ -1625,9 +1629,18 @@ ${banner}    // Titre, identité et notes à gauche ; QR du site à droite (« c
       column-gutter: 1em,
       align: (horizon, center + top),
       [
-    {{#if show_title}}#align(center)[#text(size: 1.5em, weight: "bold")[{{title}}]]
-    #v(0.4em){{/if}}
-    {{#if show_level}}#align(center)[#text(fill: luma(90))[{{level}}]]
+    // Badge du niveau à gauche, titre au centre ; dessous, en petit gris :
+    // la catégorie, ou les notions sous un titre libre (ADR 0041)
+    {{#if show_title}}#grid(
+      columns: (1fr, 4fr, 1fr),
+      column-gutter: 0.5em,
+      align: (left + horizon, center + horizon, right),
+      [{{#if show_level}}{{level_badges}}{{/if}}],
+      [#text(size: 1.5em, weight: "bold")[{{title}}]{{#if show_title_sub}}
+        #v(0.2em, weak: true)
+        #text(size: 0.85em, style: "italic", fill: rgb("#5a5a5a"))[{{title_sub}}]{{/if}}],
+      []
+    )
     #v(0.4em){{/if}}
     {{#if show_identity}}#grid(
       columns: (1fr, auto, 1fr),
@@ -1798,11 +1811,16 @@ export const SAMPLE_PREVIEW_DATA = {
 	site_gidouille: SITE_GIDOUILLE_TYPST,
 	level: '1ère spécialité maths',
 	level_short: '1ère Spé',
+	level_badges:
+		'#box(fill: rgb("#e8590c"), radius: 3pt, inset: (x: 0.4em, y: 0.25em), outset: (y: 0.05em))[#text(fill: white, weight: "bold")[1ère Spé]]',
+	title_sub: 'entraînement technique',
+	footer_title: 'Equations du premier degre · Entraînement technique',
 	// Display-option flags: previews always show every field, whatever a given
 	// worksheet's config says. Kept last so the editor's placeholder panel, which
 	// lists the first entries, keeps showing content fields.
 	show_title: 'true',
 	show_level: 'true',
+	show_title_sub: 'true',
 	show_identity: 'true',
 	show_date: 'true',
 	show_class: 'true',
