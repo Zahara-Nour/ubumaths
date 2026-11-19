@@ -2,13 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, après #2908._
+_Mis à jour le 2026-11-19 : chantier CLOS (go de David)._
 
-- **État** : les 4 PR du découpage D4 sont mergées : essai (PR 1), réglage écran (#2898, #2900), jeu écran Luciole Math (#2892), PDF en Luciole (#2902 migration jouée en prod, #2908 code ; texte aligné à gauche, jamais justifié). Vérification manuelle notée (#2908).
-- **Prochaine action** : clore le chantier si David le dit (versement : le durable est déjà dans `docs/systeme/fiches-et-pdf.md` et `base-de-donnees.md` ; archiver ce journal). Autres PDF (exercice public, guides, cahier, presques-évaluations) seulement si David le demande (D12).
-- **En attente de David** : essai du PDF ; go pour clore.
-- **Pièges en cours** : `\cdot` gros et `∯` petit laissés (D8) ; lot « une copie par élève » de `PdfPreview` (zip) sans taille ni lecture facilitée, comme avant.
-- **Worktree / branche** : aucun (worktree retiré après #2908).
+- **État** : clos. Découpage D4 entièrement mergé (#2892, #2898, #2900, #2902, #2908) ; crédit D5 dans `/a-propos`. Le durable est dans `docs/systeme/fiches-et-pdf.md` et `docs/systeme/base-de-donnees.md`.
+- **Prochaine action** : aucune. Autres PDF (exercice public, guides, cahier, presques-évaluations) = nouveau chantier si David le demande (D12).
+- **Pièges laissés** : `\cdot` gros et `∯` petit (D8) ; lot « une copie par élève » de `PdfPreview` (zip) sans taille ni lecture facilitée.
+- **Worktree / branche** : aucun.
 
 ## Ce qui existe déjà (vérifié le 2026-11-19)
 
