@@ -936,3 +936,39 @@ Décisions :
   cocher https://claude.ai/artifact/XD4LxzMPgKdUxQgwyZXw6F (8 fiches ; alertes : solutions de `figure-a-completer`
   et `figure-de-travail` non dessinées). `publier-lot` simulé 5/5 et 3/3, puis `--publier` (David) : 8 publiés,
   vérifiés en base. Aucun verdict enregistré sur la page (collection vide).
+
+## 20. Lot 13 : 001, 002, 003, 074 et fin de 072 — phase 0 (2026-11-19)
+
+Relevé MCP du 2026-11-19 :
+
+- **001, 002, 074** : aucun modèle. **003** : `8cd98206` (« Unités, dizaines et centaines », texte).
+- **072** : déjà **trois** modèles publiés, `973bf62d` (carré, rectangle obliques), `d0f7d7a8` (cercle de centre donné
+  sur quadrillage) et `e50d512d` (triangle rectangle en carreaux), ces deux-là venus du lot 12b du CE2. Reste le
+  **triangle quelconque**. Le juge ne le sait que sur papier uni (compas, report, règle graduée) : sur quadrillage,
+  `triangle` est refusé, sauf le triangle rectangle.
+- Modèles du CE2 (lot `ce2-11`, collection à centaines), sur le même nœud « dénombrement » que CE1-001 et 002 :
+  `aaebfe52` « Dénombrer des plaques, des barres et des cubes » (c, d, u de 1 à 9 : ≤ 999, tout dans les bornes du
+  CE1) ; `2fafe84d` « Construire un nombre de 100 à 999 avec le matériel » (dans les bornes) ; `4df6c483`
+  « … plus de dix objets d'un rang » **dépasse 1 000** (v2 jusqu'à 1 009, v3 en milliers) : pas pour le CE1.
+- Un point par programme (règle 2 de l'ADR 0020) : `aaebfe52` et `2fafe84d` n'ont qu'un point CE2 ; un point CE1
+  du même nœud est admis.
+
+| Fichier / modèle               | Point   | Sous-notion   | Variations                                                                                                                                                                                 |
+| ------------------------------ | ------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `aaebfe52` (tag)               | CE1-001 | dénombrement  | tel quel ; + niveau CE1                                                                                                                                                                    |
+| `2fafe84d` (tag)               | CE1-002 | dénombrement  | tel quel ; + niveau CE1                                                                                                                                                                    |
+| `01-denombrer-plus-de-dix-ce1` | CE1-001 | dénombrement  | collection, total ≤ 999 : plus de dix cubes (2 c, 3 d, 17 u) ; plus de dix barres (2 c, 27 d, 4 u) ; les deux (2 c, 27 d, 14 u) → `Il y a [_] cubes`                                       |
+| `02-construis-la-commande`     | CE1-002 | dénombrement  | `construire:` d'après une écriture non canonique : « 2 centaines, 15 dizaines et 3 unités » (353) ; « 17 dizaines et 8 unités » ; « 9 centaines et 10 dizaines » (1 000)                   |
+| `03-plaques-carnets-timbres`   | CE1-003 | décomposition | BO « 235 timbres » : plaques de 100, carnets de 10, timbres seuls ; une commande donnée, une autre à compléter (1 plaque, [_] carnets, 5 timbres ; 0 plaque…) ; combien de carnets en tout |
+| `04-trace-a-la-regle-graduee`  | CE1-074 | constructions | papier uni : `segment AB = 6 cm` (cm entiers, 3 à 10) ; puis sur une demi-droite donnée `sur [Ax)`                                                                                         |
+| `05-equerre-et-compas`         | CE1-074 | constructions | papier uni : angle droit à l'équerre (`triangle ABC : CAB = 90`) ; cercle de centre $O$ passant par $A$ au compas ; cercle de rayon 3 cm (compas ouvert sur la règle)                      |
+
+Erreurs typiques dans les `testSpecs` : chiffres juxtaposés (2 c, 3 d, 17 u → 2317 au lieu de 247 ; 2 c, 27 d,
+4 u → 2274 au lieu de 474) ; plus de dix ignorés (2 c, 27 d, 14 u → 2 c, 7 d, 4 u = 274) ; commande sans les carnets ;
+segment tracé d'une graduation de trop (7 cm pour 6).
+
+**Question d'accès** : personne ne lit rien de plus — modèles neufs en brouillon (admin seul) ; la migration range,
+tague et ajoute le niveau CE1 à deux modèles déjà publiés, aucune règle d'accès ne change.
+
+Questions à David : voir le message du 2026-11-19 (taguer les deux modèles du CE2 ; triangle quelconque ; 074 en
+deux modèles).
