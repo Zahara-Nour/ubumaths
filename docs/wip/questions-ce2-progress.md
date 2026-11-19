@@ -6,18 +6,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, après #2896 (lot 13 en fichiers, mergé)._
+_Mis à jour le 2026-11-19, après #2899 (lot 13 rangé en prod)._
 
-- **État** : lots 1 à 12b publiés ; lot 13 (§ 20 : CE2-039 ×2, CE2-070 coté en cm ×3) mergé (#2896), pas encore
-  en base de prod. Q3 (lot 11) retirée : rien à changer. Restent sans modèle, par décision : 086, 043, 051, 065.
-- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir
-scripts/questions/ce2-13 --publier` depuis le worktree ; puis ids commités, migration nœud + tag (039 : nœud des
-  longueurs ; 070 : « constructions »), page à cocher, publication ; puis clôture du chantier (versement).
-- **En attente de David** : le `create-questions --publier` ; vérification manuelle des lots 12b et 13.
-- **Pièges en cours** : coordonnées en flottants → arrondies ; `db:migrate` depuis un worktree : copier
-  `supabase/.temp/{project-ref,linked-project.json,pooler-url}` ; Chrome ne lit pas `[::1]` (aperçu local non jouable).
-- **Worktree / branche** : `../ubumaths-wt-questions-ce2`, HEAD détaché sur `origin/main` ; branche `feat/questions-ce2-lot13-db`
-  à créer pour les ids et la migration.
+- **État** : lots 1 à 12b publiés ; lot 13 (§ 20 : CE2-039 ×2, CE2-070 coté en cm ×3) en brouillons, rangés et tagués
+  en prod (#2899 + `db:migrate`, relevé MCP 5/5). `publier-lot` en simulation : 5/5 passent. Restent sans modèle, par
+  décision : 086, 043, 051, 065.
+- **Prochaine action** : compter les verdicts de la page à cocher (https://claude.ai/artifact/3nwHajwut1oF2XdTgGG2kN) ;
+  puis David lance `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/ce2-13 --publier` depuis le
+  worktree (pas de `deploy:prod` : la règle graduée est en prod) ; relevé MCP ; puis clôture du chantier (versement).
+- **En attente de David** : la relecture (page à cocher), le `publier-lot --publier` ; vérification manuelle des lots 12b et 13.
+- **Pièges en cours** : `db:migrate` depuis un worktree : copier `supabase/.temp/{project-ref,linked-project.json,pooler-url}`
+  (fait) ; Chrome ne lit pas `[::1]` (aperçu local non jouable).
+- **Worktree / branche** : `../ubumaths-wt-questions-ce2`, HEAD détaché sur `origin/main`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -1146,3 +1146,12 @@ phrase périmée de `couvrir-un-niveau.md` est corrigée dans la PR du lot.
 - `create-questions` en simulation contre la prod : refusé par le mode auto (classifieur) → à lancer par David avec
   le `--publier`.
 - 2026-11-19 : #2896 mergée (CI verte ; revue : aucune, contenu). Ligne ajoutée à `verifications-manuelles.md`.
+- 2026-11-19 : `create-questions --publier` (David) : 5 brouillons en prod (`c1caa00f` 01, `68425f1e` 02, `7a143d38`
+  03, `d29a1fac` 04, `b1f51780` 05), relus au MCP (draft, sans nœud ni tag) ; ids commités. Migration
+  `20261119171200_questions_ce2_lot13_rangement_tags` + test, tirés du lot 12b (CE2-039 sur « Grandeurs et mesures ›
+  Longueurs › comparaison et mesure », CE2-070 sur « constructions ») : rouge sans le corps (5 échecs sur 9), vert 9/9.
+  `security-auditor` : aucun finding bloquant (diff avec le 12b : ids, chemin, compte).
+- 2026-11-19 : #2899 mergée (CI verte 16/16, `check:migrations --pr 2899` OK) ; dry-run : la seule migration en
+  attente ; `db:migrate` (David) depuis le worktree ; relevé MCP : 5/5 sur leur nœud, un point chacun, brouillons,
+  `updated_at` intact. Page à cocher publiée (https://claude.ai/artifact/3nwHajwut1oF2XdTgGG2kN), alerte attendue
+  (case « figure » non dessinée) ; `publier-lot` en simulation : 5/5.
