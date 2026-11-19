@@ -533,6 +533,25 @@ html.lecture-facilitee main li {
 }
 
 /*
+ * Lecture facilitée sur le tableau de bord : les règles `.dashboard-content .text-*`
+ * ci-dessus battent `html.lecture-facilitee main p` (classe > élément). Même
+ * élargissement que pour le contenu (1,5 → 1,75, soit × 7/6), sur les mêmes éléments.
+ */
+html.lecture-facilitee .dashboard-content :is(p, li).text-xs {
+	line-height: calc(1rem * 7 / 6 * var(--font-scale)) !important;
+}
+html.lecture-facilitee .dashboard-content :is(p, li).text-sm {
+	line-height: calc(1.25rem * 7 / 6 * var(--font-scale)) !important;
+}
+html.lecture-facilitee .dashboard-content :is(p, li).text-base {
+	line-height: calc(1.5rem * 7 / 6 * var(--font-scale)) !important;
+}
+html.lecture-facilitee .dashboard-content :is(p, li).text-lg,
+html.lecture-facilitee .dashboard-content :is(p, li).text-xl {
+	line-height: calc(1.75rem * 7 / 6 * var(--font-scale)) !important;
+}
+
+/*
  * Exercise Font Family
  * ====================
  *
