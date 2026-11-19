@@ -25,6 +25,7 @@
 	import AccountDeletionDialog from '#lib/components/account/AccountDeletionDialog.svelte';
 	import { theme } from '#lib/stores/theme.svelte.ts';
 	import { fontSize } from '#lib/stores/fontSize.svelte.ts';
+	import EasyReadingToggle from '#lib/components/EasyReadingToggle.svelte';
 	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import { submitLogoutForm } from '#lib/utils/auth.ts';
 	import { childLoginIdOf } from '#lib/utils/child-account.ts';
@@ -186,6 +187,8 @@
 					<Plus class="h-4 w-4" />
 				</Button>
 			</div>
+
+			<EasyReadingToggle variant="labelled" />
 		</div>
 	</section>
 

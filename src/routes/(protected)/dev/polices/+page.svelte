@@ -5,6 +5,7 @@
 	import InlineMarkdown from '#lib/components/markdown/InlineMarkdown.svelte';
 	import MarkdownRenderer from '#lib/components/markdown/MarkdownRenderer.svelte';
 	import { Button } from '#lib/components/ui/button/index.ts';
+	import { easyReading } from '#lib/stores/easyReading.svelte.ts';
 	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import {
 		switchMathFonts,
@@ -184,10 +185,10 @@
 		}
 	});
 
-	// En partant, retour au jeu KaTeX : sinon une navigation côté client garderait le jeu
-	// choisi partout (et, pour Luciole, les formules grossies de 1/0,9)
+	// En partant, retour au jeu du réglage « Lecture facilitée » (KaTeX ou Luciole Math) :
+	// sinon une navigation côté client garderait partout le jeu choisi ici
 	onDestroy(() => {
-		if (browser) void switchMathFonts('katex');
+		if (browser) void switchMathFonts(easyReading.mathFontSet);
 	});
 </script>
 

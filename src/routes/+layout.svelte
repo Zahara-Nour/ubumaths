@@ -43,6 +43,7 @@
 	import Sidebar from '#lib/components/Sidebar.svelte';
 	import { theme } from '#lib/stores/theme.svelte.ts';
 	import { fontSize } from '#lib/stores/fontSize.svelte.ts';
+	import { easyReading } from '#lib/stores/easyReading.svelte.ts';
 	import { initializeTemplates } from '#lib/stores/vipCardTemplates.svelte.ts';
 	import { page, updated } from '$app/state';
 	import { beforeNavigate } from '$app/navigation';
@@ -98,11 +99,12 @@
 	// Determine which skeleton variant to show based on current route
 	let skeletonType = $derived(getSkeletonType(page.url.pathname));
 
-	// Initialize theme and fontSize stores (ensures DOM updates on mode/size changes)
+	// Initialize theme, fontSize and easyReading stores (ensures DOM updates on mode/size changes)
 	$effect(() => {
 		// Access to ensure reactivity
 		void theme.dark;
 		void fontSize.size;
+		void easyReading.enabled;
 	});
 
 	// Palotin de l'élève connecté (maison, écusson, passages : chantier `palotins`).

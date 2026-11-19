@@ -120,14 +120,17 @@ export async function switchMathFonts(fontSet: MathFontSet): Promise<void> {
 	// Skip if already using this font set
 	if (currentFontSet === fontSet) return;
 
+	// Jeu noté AVANT l'import de MathLive : deux bascules rapprochées (allumer puis éteindre
+	// la lecture facilitée pendant le premier import) ne doivent pas finir sur la première
+	currentFontSet = fontSet;
 	applyOverrideCss(fontSet);
 
 	// Update MathfieldElement.fontsDirectory for any new mathfields
 	const { MathfieldElement } = await import('mathlive');
+	// Une bascule plus récente a pris la main pendant l'import : elle posera son jeu
+	if (currentFontSet !== fontSet) return;
 	MathfieldElement.fontsDirectory = FONT_DIRECTORIES[fontSet];
 	applyFontSetRules(fontSet);
-
-	currentFontSet = fontSet;
 
 	// Wait for fonts to load
 	await document.fonts.ready;
@@ -188,6 +191,29 @@ function applyOverrideCss(fontSet: MathFontSet): void {
 	link.rel = 'stylesheet';
 	link.href = href;
 	if (!existing) document.head.appendChild(link);
+	keepOverrideLast();
+}
+
+/** Garde de `keepOverrideLast`, posée une fois */
+let headObserver: MutationObserver | null = null;
+
+/**
+ * La surcharge doit rester la DERNIÈRE feuille du `<head>` : les `@font-face` KaTeX de
+ * `mathlive/static.css` arrivent avec le chunk des pages qui ont des maths
+ * (`mathlive-styles.ts`). Jeu choisi sur une page sans maths (réglage « Lecture
+ * facilitée » au démarrage), puis navigation côté client vers un exercice : Vite ajoute
+ * cette feuille après la surcharge, qui perdrait (à descripteurs égaux, la dernière
+ * `@font-face` l'emporte). Chaque ajout au `<head>` remet donc la surcharge en dernier.
+ */
+function keepOverrideLast(): void {
+	if (headObserver) return;
+	headObserver = new MutationObserver(() => {
+		const link = document.getElementById(OVERRIDE_LINK_ID);
+		if (link && link.parentNode === document.head && document.head.lastElementChild !== link) {
+			document.head.appendChild(link);
+		}
+	});
+	headObserver.observe(document.head, { childList: true });
 }
 
 /**

@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, après #2892._
+_Mis à jour le 2026-11-19, PR 2 « réglage Lecture facilitée » ouverte (après #2892)._
 
-- **État** : jeu écran Luciole Math sur `/dev/polices` (#2889), racine et grands délimiteurs corrigés (#2892) ; David : « franchement j'aime beaucoup ». D7 : l'interrupteur passera aussi les formules en Luciole Math.
-- **Prochaine action** : PR 2 = réglage « Lecture facilitée » (phase 0 validée en A, D2, D3) : texte en Luciole ET formules en Luciole Math (D7) ; phase 0 à compléter pour les formules (bascule du jeu MathLive selon le réglage, hors `/dev`).
-- **En attente de David** : rien.
-- **Pièges en cours** : trait fin entre deux lignes d'une matrice = artefact de MathLive (aussi en KaTeX) ; polices `.woff2` en cache du navigateur ; serveurs du worktree 5181 (Tailscale `:8446`) et 5182 à arrêter ; `:8445` → 5175 peut-être encore ouvert.
-- **Worktree / branche** : `../ubumaths-wt-lecture-facilitee` (branche mergée) à retirer une fois les serveurs arrêtés.
+- **État** : PR 2 sur `feat/lecture-facilitee-reglage` : interrupteur « Lecture facilitée » (en-têtes, menus mobiles, profil), texte du contenu en Luciole + formules en Luciole Math (D7), crédit des polices dans `/a-propos` (D5).
+- **Prochaine action** : merger la PR 2 ; puis PR 4 = PDF en Luciole / Luciole Math (Typst lit `Luciole-Math.otf` telle quelle) : phase 0 à poser à David.
+- **En attente de David** : essayer le réglage (serveurs 5181 / 5182 du worktree).
+- **Pièges en cours** : `\cdot` gros et `∯` petit laissés tels quels (D8) ; polices `.woff2` en cache du navigateur ; `:8445` → 5175 peut-être encore ouvert.
+- **Worktree / branche** : `../ubumaths-wt-lecture-facilitee` · `feat/lecture-facilitee-reglage`.
 
 ## Ce qui existe déjà (vérifié le 2026-11-19)
 
@@ -57,6 +57,8 @@ Conséquence pour l'étude :
 - **D6 (2026-11-19, après l'essai)** : version C jugée « plutôt pas mal » ; avant de décider, la voir rendue **par MathLive** sur toutes les expressions → PR 3 (jeu écran Luciole Math, sur `/dev/polices` seulement) avant la PR 2.
 
 - **D7 (2026-11-19, après #2892)** : David trouve le jeu écran Luciole Math réussi (« franchement j'aime beaucoup ») et répond « oui » : l'interrupteur « Lecture facilitée » passe aussi les **formules** en Luciole Math (D1 tranché).
+- **D8 (2026-11-19)** : David reconfirme D7 (« Oui, maths aussi ») et laisse `\cdot` (gros) et `∯` (petit) tels quels.
+- **Phase 0 des formules (complète A, découle de D7)** : nominal : réglage allumé → toutes les formules (champs MathLive et formules rendues) en Luciole Math ; limite : `/dev/polices` rend, en partant, le jeu du réglage (et non plus KaTeX) ; erreur : police absente → repli du navigateur, rien ne casse. Le jeu de polices des maths vaut pour toute la page (en-tête compris : il n'y en a guère).
 
 ## Observations de l'essai (2026-11-19)
 
@@ -67,6 +69,13 @@ Conséquence pour l'étude :
 - Aperçu écran MathML : la conversion de MathLive perd la virgule décimale et ignore `\mathcal` ; corrigé dans la page.
 
 ## Historique
+
+### 2026-11-19 — PR 2 : réglage « Lecture facilitée »
+
+- `src/lib/stores/easyReading.svelte.ts` : réglage gardé sous `easyReading`, classe `lecture-facilitee` sur `<html>`, bascule `switchMathFonts('luciole' | 'katex')` ; tests `easyReading.svelte.test.ts`.
+- `EasyReadingToggle.svelte` (3 formes : icône, ligne de menu, bouton à libellé), posé à côté de la taille du texte dans `Header`, le layout du tableau de bord, `MobileNavDrawer` et le profil.
+- `app.css` : `@font-face` Luciole (téléchargée seulement réglage allumé), `main` en Luciole (titres et `.exercise-content` compris), lettres +0,02 em, mots +0,08 em, lignes 1,75 rem × taille du texte.
+- Vérifié dans Chrome (5182) : texte en Luciole, en-tête en Inter, jeu Luciole Math posé, rendu par `/dev/polices` en partant.
 
 ### 2026-11-19 — racine et délimiteurs (après l'avis de David)
 
