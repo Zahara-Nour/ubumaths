@@ -82,23 +82,24 @@ export function isWorksheetCategory(value: unknown): value is WorksheetCategory 
 }
 
 /**
- * Plusieurs notions possibles : fiche d'exercices en Révisions ou en
- * Automatismes, et tous les autres types. Même règle que la garde en base
- * (`worksheet_classification_count_guard`).
+ * Nom d'une notion tel qu'il s'imprime : majuscule en tête. Les sous-notions
+ * de l'arbre s'écrivent en minuscule (« loi géométrique »), mais en titre
+ * elles commencent par une majuscule (« Loi géométrique »).
  */
-export function allowsSeveralNotions(
-	type: WorksheetType,
-	category: WorksheetCategory | null
-): boolean {
-	return type !== 'worksheet' || category === 'review' || category === 'automatisms';
+export function notionLabel(name: string): string {
+	return name.charAt(0).toLocaleUpperCase('fr') + name.slice(1);
 }
 
-/** Le titre composé écrit en base (en français) : « Suites · Entraînement technique » */
+/**
+ * Le titre composé écrit en base (en français) : « Suites · Entraînement
+ * technique ». Une fiche peut avoir plusieurs notions, quels que soient son
+ * type et sa catégorie (ADR 0041, amendé le 2026-11-19).
+ */
 export function composedTitle(
 	category: WorksheetCategory | null,
 	notions: readonly string[]
 ): string {
-	return [...notions, category ? CATEGORY_LABELS.fr[category] : '']
+	return [...notions.map(notionLabel), category ? CATEGORY_LABELS.fr[category] : '']
 		.filter((part) => part !== '')
 		.join(SEPARATOR);
 }
@@ -107,7 +108,7 @@ export function composedTitle(
 export function printedTitle(input: PrintedTitleInput): PrintedTitle {
 	const { type, category, customTitle, title, locale } = input;
 	// Les notions n'ont pas encore de nom anglais : rien d'imprimé en anglais
-	const notions = locale === 'fr' ? input.notions : [];
+	const notions = locale === 'fr' ? input.notions.map(notionLabel) : [];
 	const notionsText = notions.join(SEPARATOR);
 
 	// Titre composé : fiche d'exercices sans titre libre
@@ -124,10 +125,7 @@ export function printedTitle(input: PrintedTitleInput): PrintedTitle {
 		return { main: title, sub: '', footer: title };
 	}
 
-	// Titre libre, ou titre écrit à la main des autres types : jamais la catégorie
-	return {
-		main: title,
-		sub: allowsSeveralNotions(type, category) ? notionsText : '',
-		footer: title
-	};
+	// Titre libre, ou titre écrit à la main des autres types : jamais la
+	// catégorie ; les notions en petit dessous
+	return { main: title, sub: notionsText, footer: title };
 }

@@ -27,7 +27,6 @@
 	import WorksheetNotionsEditor from '#lib/components/worksheets/WorksheetNotionsEditor.svelte';
 	import type { TreeNode } from '#lib/questions/classification-tree.ts';
 	import {
-		allowsSeveralNotions,
 		CATEGORY_LABELS,
 		composedTitle,
 		isWorksheetCategory,
@@ -229,7 +228,6 @@
 	let isExerciseSheet = $derived(worksheet.type === 'worksheet');
 	let category = $derived(isWorksheetCategory(worksheet.category) ? worksheet.category : null);
 	let notions = $derived<WorksheetClassificationView[]>(worksheet.classifications ?? []);
-	let severalNotions = $derived(allowsSeveralNotions(worksheet.type, category));
 	// Sans titre libre, une fiche d'exercices prend le titre composé (le serveur l'écrit)
 	let composed = $derived(isExerciseSheet && worksheet.custom_title === false);
 	let composedPreview = $derived(
@@ -301,12 +299,11 @@
 			{/if}
 
 			<div>
-				<p class="text-xs text-muted-foreground">{severalNotions ? 'Notions' : 'Notion'}</p>
+				<p class="text-xs text-muted-foreground">Notions</p>
 				{#if isEditable}
 					<WorksheetNotionsEditor
 						{nodes}
 						value={notions}
-						several={severalNotions}
 						onchange={(v) => onFieldChange?.('classifications', v)}
 					/>
 				{:else}
