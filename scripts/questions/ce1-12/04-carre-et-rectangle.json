@@ -1,9 +1,7 @@
 {
 	"title": "Carré et rectangle : angles droits et côtés",
 	"description": "Longueur d'un côté d'après les propriétés ; phrases vraies pour tous les carrés, tous les rectangles",
-	"grades": [
-		"CE1"
-	],
+	"grades": ["CE1"],
 	"level": 6,
 	"delay": 90,
 	"status": "draft",
@@ -113,9 +111,7 @@
 				"w": "3",
 				"a": "7"
 			},
-			"answers": [
-				"7"
-			],
+			"answers": ["7"],
 			"expected": {
 				"status": "correct"
 			}
@@ -130,9 +126,7 @@
 				"w": "3",
 				"a": "3"
 			},
-			"answers": [
-				"3"
-			],
+			"answers": ["3"],
 			"expected": {
 				"status": "correct"
 			}
@@ -147,9 +141,7 @@
 				"w": "3",
 				"a": "7"
 			},
-			"answers": [
-				"3"
-			],
+			"answers": ["3"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -164,9 +156,7 @@
 				"w": "3",
 				"a": "3"
 			},
-			"answers": [
-				"7"
-			],
+			"answers": ["7"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -179,9 +169,7 @@
 				"k": "1",
 				"n": "5"
 			},
-			"answers": [
-				"5"
-			],
+			"answers": ["5"],
 			"expected": {
 				"status": "correct"
 			}
@@ -194,9 +182,7 @@
 				"k": "3",
 				"n": "8"
 			},
-			"answers": [
-				"8"
-			],
+			"answers": ["8"],
 			"expected": {
 				"status": "correct"
 			}
@@ -209,9 +195,7 @@
 				"k": "1",
 				"n": "5"
 			},
-			"answers": [
-				"20"
-			],
+			"answers": ["20"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -220,9 +204,7 @@
 			"description": "Rectangle : 4 angles droits",
 			"variationIndex": 2,
 			"variables": {},
-			"answers": [
-				"0"
-			],
+			"answers": ["0"],
 			"expected": {
 				"status": "correct"
 			}
@@ -231,9 +213,7 @@
 			"description": "Erreur : 4 côtés égaux (le carré)",
 			"variationIndex": 2,
 			"variables": {},
-			"answers": [
-				"1"
-			],
+			"answers": ["1"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -242,9 +222,7 @@
 			"description": "Carré : côtés égaux et angles droits",
 			"variationIndex": 3,
 			"variables": {},
-			"answers": [
-				"0"
-			],
+			"answers": ["0"],
 			"expected": {
 				"status": "correct"
 			}
@@ -253,9 +231,7 @@
 			"description": "Erreur : sans angle droit",
 			"variationIndex": 3,
 			"variables": {},
-			"answers": [
-				"1"
-			],
+			"answers": ["1"],
 			"expected": {
 				"status": "incorrect"
 			}

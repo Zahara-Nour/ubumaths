@@ -1,9 +1,7 @@
 {
 	"title": "Faces, arêtes et sommets : cube, pavé, pyramide",
 	"description": "Compter les faces, les arêtes, les sommets d'un cube, d'un pavé, d'une pyramide à base carrée",
-	"grades": [
-		"CE1"
-	],
+	"grades": ["CE1"],
 	"level": 9,
 	"delay": 90,
 	"status": "draft",
@@ -82,9 +80,7 @@
 				}
 			],
 			"correction": {
-				"steps": [
-					"Comme le cube, le pavé a $3$ faces vues et $3$ cachées : $3 + 3 = 6$ faces."
-				]
+				"steps": ["Comme le cube, le pavé a $3$ faces vues et $3$ cachées : $3 + 3 = 6$ faces."]
 			}
 		},
 		{
@@ -211,9 +207,7 @@
 			"variables": {
 				"o": "1"
 			},
-			"answers": [
-				"6"
-			],
+			"answers": ["6"],
 			"expected": {
 				"status": "correct"
 			}
@@ -224,9 +218,7 @@
 			"variables": {
 				"o": "2"
 			},
-			"answers": [
-				"3"
-			],
+			"answers": ["3"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -237,9 +229,7 @@
 			"variables": {
 				"o": "1"
 			},
-			"answers": [
-				"12"
-			],
+			"answers": ["12"],
 			"expected": {
 				"status": "correct"
 			}
@@ -250,9 +240,7 @@
 			"variables": {
 				"o": "2"
 			},
-			"answers": [
-				"9"
-			],
+			"answers": ["9"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -263,9 +251,7 @@
 			"variables": {
 				"o": "1"
 			},
-			"answers": [
-				"8"
-			],
+			"answers": ["8"],
 			"expected": {
 				"status": "correct"
 			}
@@ -276,9 +262,7 @@
 			"variables": {
 				"o": "2"
 			},
-			"answers": [
-				"7"
-			],
+			"answers": ["7"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -289,9 +273,7 @@
 			"variables": {
 				"o": "1"
 			},
-			"answers": [
-				"6"
-			],
+			"answers": ["6"],
 			"expected": {
 				"status": "correct"
 			}
@@ -302,9 +284,7 @@
 			"variables": {
 				"o": "2"
 			},
-			"answers": [
-				"3"
-			],
+			"answers": ["3"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -315,9 +295,7 @@
 			"variables": {
 				"o": "1"
 			},
-			"answers": [
-				"12"
-			],
+			"answers": ["12"],
 			"expected": {
 				"status": "correct"
 			}
@@ -328,9 +306,7 @@
 			"variables": {
 				"o": "2"
 			},
-			"answers": [
-				"9"
-			],
+			"answers": ["9"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -341,9 +317,7 @@
 			"variables": {
 				"o": "1"
 			},
-			"answers": [
-				"8"
-			],
+			"answers": ["8"],
 			"expected": {
 				"status": "correct"
 			}
@@ -354,9 +328,7 @@
 			"variables": {
 				"o": "2"
 			},
-			"answers": [
-				"7"
-			],
+			"answers": ["7"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -367,9 +339,7 @@
 			"variables": {
 				"o": "1"
 			},
-			"answers": [
-				"5"
-			],
+			"answers": ["5"],
 			"expected": {
 				"status": "correct"
 			}
@@ -380,9 +350,7 @@
 			"variables": {
 				"o": "2"
 			},
-			"answers": [
-				"2"
-			],
+			"answers": ["2"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -393,9 +361,7 @@
 			"variables": {
 				"o": "1"
 			},
-			"answers": [
-				"8"
-			],
+			"answers": ["8"],
 			"expected": {
 				"status": "correct"
 			}
@@ -406,9 +372,7 @@
 			"variables": {
 				"o": "2"
 			},
-			"answers": [
-				"7"
-			],
+			"answers": ["7"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -419,9 +383,7 @@
 			"variables": {
 				"o": "1"
 			},
-			"answers": [
-				"5"
-			],
+			"answers": ["5"],
 			"expected": {
 				"status": "correct"
 			}
@@ -430,9 +392,7 @@
 			"description": "Pyramide : 4 triangles",
 			"variationIndex": 9,
 			"variables": {},
-			"answers": [
-				"4"
-			],
+			"answers": ["4"],
 			"expected": {
 				"status": "correct"
 			}
@@ -441,9 +401,7 @@
 			"description": "Erreur : la base comptée (5)",
 			"variationIndex": 9,
 			"variables": {},
-			"answers": [
-				"5"
-			],
+			"answers": ["5"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -452,9 +410,7 @@
 			"description": "Erreur : les triangles vus seuls (2)",
 			"variationIndex": 9,
 			"variables": {},
-			"answers": [
-				"2"
-			],
+			"answers": ["2"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -465,9 +421,7 @@
 			"variables": {
 				"o": "1"
 			},
-			"answers": [
-				"8"
-			],
+			"answers": ["8"],
 			"expected": {
 				"status": "incorrect"
 			}

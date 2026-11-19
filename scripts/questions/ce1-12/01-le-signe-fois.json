@@ -1,9 +1,7 @@
 {
 	"title": "Le signe × : « fois »",
 	"description": "Écrire une addition répétée avec ×, lire ×, et le calcul d'une situation (paquets de 10 ou 20)",
-	"grades": [
-		"CE1"
-	],
+	"grades": ["CE1"],
 	"level": 6,
 	"delay": 90,
 	"status": "draft",
@@ -20,9 +18,7 @@
 					"expression": "2..9"
 				}
 			],
-			"conditions": [
-				"g != n"
-			],
+			"conditions": ["g != n"],
 			"blanks": [
 				{
 					"expectedAnswer": "0"
@@ -71,9 +67,7 @@
 					"expression": "2..9"
 				}
 			],
-			"conditions": [
-				"g != n"
-			],
+			"conditions": ["g != n"],
 			"blanks": [
 				{
 					"expectedAnswer": "0"
@@ -123,9 +117,7 @@
 				"g": "3",
 				"n": "4"
 			},
-			"answers": [
-				"0"
-			],
+			"answers": ["0"],
 			"expected": {
 				"status": "correct"
 			}
@@ -137,9 +129,7 @@
 				"g": "3",
 				"n": "4"
 			},
-			"answers": [
-				"1"
-			],
+			"answers": ["1"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -151,9 +141,7 @@
 				"g": "3",
 				"n": "4"
 			},
-			"answers": [
-				"2"
-			],
+			"answers": ["2"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -165,9 +153,7 @@
 				"g": "3",
 				"n": "4"
 			},
-			"answers": [
-				"3"
-			],
+			"answers": ["3"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -179,9 +165,7 @@
 				"a": "7",
 				"b": "3"
 			},
-			"answers": [
-				"0"
-			],
+			"answers": ["0"],
 			"expected": {
 				"status": "correct"
 			}
@@ -193,9 +177,7 @@
 				"a": "7",
 				"b": "3"
 			},
-			"answers": [
-				"1"
-			],
+			"answers": ["1"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -207,9 +189,7 @@
 				"g": "5",
 				"n": "4"
 			},
-			"answers": [
-				"0"
-			],
+			"answers": ["0"],
 			"expected": {
 				"status": "correct"
 			}
@@ -221,9 +201,7 @@
 				"g": "5",
 				"n": "4"
 			},
-			"answers": [
-				"1"
-			],
+			"answers": ["1"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -235,9 +213,7 @@
 				"g": "5",
 				"n": "4"
 			},
-			"answers": [
-				"3"
-			],
+			"answers": ["3"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -250,9 +226,7 @@
 				"m": "2",
 				"n": "20"
 			},
-			"answers": [
-				"140"
-			],
+			"answers": ["140"],
 			"expected": {
 				"status": "correct"
 			}
@@ -265,9 +239,7 @@
 				"m": "1",
 				"n": "10"
 			},
-			"answers": [
-				"50"
-			],
+			"answers": ["50"],
 			"expected": {
 				"status": "correct"
 			}
@@ -280,9 +252,7 @@
 				"m": "2",
 				"n": "20"
 			},
-			"answers": [
-				"27"
-			],
+			"answers": ["27"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -295,9 +265,7 @@
 				"m": "2",
 				"n": "20"
 			},
-			"answers": [
-				"720"
-			],
+			"answers": ["720"],
 			"expected": {
 				"status": "incorrect"
 			}
