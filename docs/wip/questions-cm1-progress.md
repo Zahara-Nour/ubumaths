@@ -11,11 +11,11 @@ _Mis à jour le 2026-11-19, après #2863 ; lot 8e publié, correction du modèle
   mais le modèle 04 (b423785d) a encore en prod l'ancienne correction qui déborde à 390 px : il était déjà
   publié quand `--mettre-a-jour` est passé (qui ne touche jamais un modèle publié). Le fichier du dépôt est juste.
 - **Prochaine action** : faire passer la correction du 04 en prod **sans geste manuel de David** (exigence du
-  2026-11-19). Deux voies à lui proposer, mots simples : (a) migration de données qui remplace cette phrase du
+  2026-11-19). Deux voies proposées, mots simples : (a) migration de données qui remplace cette phrase du
   modèle publié (patron des migrations de rangement, garde « contenu = relevé ») ; (b) outil : option de
   `create-questions` qui met à jour un modèle publié (lève une garde voulue : décision de David). Reco : (a).
   Puis noter l'outil manquant dans `docs/wip/outils-manquants.md`. Ensuite le lot 8f (modèles 8 à 14 du § 25), puis 9.
-- **En attente de David** : le choix (a) / (b) ci-dessus.
+- **En attente de David** : rien ; **(a) tranché** (« je te suis », 2026-11-19) : migration de données.
 - **Pièges en cours** : création en prod = `pnpm tsx scripts/create-questions.ts --dir … --publier
 [--mettre-a-jour]`, depuis le worktree ; `--mettre-a-jour` AVANT `publier-lot`, et vérifier au MCP entre les
   deux ; commitlint refuse le type `content` et un corps > 100 caractères par ligne ; le mode auto refuse
@@ -2157,3 +2157,4 @@ reste en D ; niveaux **CM1 et CM2** et tag des deux points (109/098, 110/099, 11
   `--mettre-a-jour`, qui laisse les modèles publiés. Je n'ai pas vérifié au MCP entre les deux commandes.
 - David : « je ne veux rien faire manuellement » (pas d'édition dans l'appli). Voies (a) migration de données,
   (b) option de `create-questions` sur modèle publié : à trancher (Reprendre ici).
+- David : « je te suis » → voie (a), migration de données qui remplace la phrase du modèle 04 publié.
