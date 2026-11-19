@@ -12,6 +12,12 @@
 #   extension de Chrome ou de Brave bloquée (CPU au plafond, des heures de CPU
 #   cumulées : 2 extensions à 100 % pendant 10 jours le 2026-11-19) → prévient
 #   seulement ;
+# - charge au-delà de SEUIL_CHARGE deux passages de suite, pression mémoire de
+#   macOS « tendue » ou « critique » → prévient, en nommant les 3 programmes qui
+#   prennent le plus (CPU pour la charge, mémoire pour la pression et le swap) ;
+# - à chaque passage, une ligne dans historique.csv (charge, pression, swap,
+#   navigateurs, serveurs de dev, processus Claude) : après un gel, on lit ce qui
+#   est monté avant (`pnpm surveillance:historique`) ;
 # - swap au-delà de SEUIL_MENAGE_SWAP (gel proche) → lance menage-machine.sh
 #   (onglets Chrome gourmands fermés, serveurs de dev oubliés arrêtés) et en
 #   envoie le résumé.
@@ -20,9 +26,10 @@
 # envoyé ne contient que des chiffres et des ports : ni chemin, ni nom de projet.
 # Une même alerte n'est renvoyée qu'après SURVEILLANCE_RAPPEL_MIN minutes.
 #
-# Usage : surveillance-machine.sh [--essai] [--test]
-#   --essai : affiche ce qu'elle ferait, n'arrête rien et n'envoie rien ;
-#   --test  : envoie une notification de test.
+# Usage : surveillance-machine.sh [--essai] [--test] [--historique]
+#   --essai      : affiche ce qu'elle ferait, n'arrête rien, n'envoie ni n'écrit rien ;
+#   --test       : envoie une notification de test ;
+#   --historique : affiche les 2 dernières heures de l'historique.
 #
 # Tests : scripts/__tests__/surveillance-machine.test.ts.
 set -uo pipefail
@@ -35,9 +42,13 @@ SEUIL_CHROME_ONGLETS="${SEUIL_CHROME_ONGLETS:-60}"   # processus d'onglets Chrom
 SEUIL_EXTENSION_CPU="${SEUIL_EXTENSION_CPU:-90}"      # CPU d'un processus d'extension, en %
 SEUIL_EXTENSION_HEURES="${SEUIL_EXTENSION_HEURES:-1}" # temps CPU cumulé de ce processus
 SEUIL_SWAP_POURCENT="${SEUIL_SWAP_POURCENT:-85}"     # swap utilisé / swap total
+NB_COEURS="$(sysctl -n hw.ncpu 2>/dev/null)"
+NB_COEURS="${NB_COEURS:-12}"
+SEUIL_CHARGE="${SEUIL_CHARGE:-$((NB_COEURS * 3))}"   # charge (1 min), deux passages de suite
 SEUIL_MENAGE_SWAP="${SEUIL_MENAGE_SWAP:-95}"         # swap au-delà duquel le ménage part seul
 SURVEILLANCE_RAPPEL_MIN="${SURVEILLANCE_RAPPEL_MIN:-60}"
 SURVEILLANCE_MENAGE_PAUSE_MIN="${SURVEILLANCE_MENAGE_PAUSE_MIN:-15}"
+SURVEILLANCE_HISTORIQUE_LIGNES="${SURVEILLANCE_HISTORIQUE_LIGNES:-4032}" # 14 jours à 5 min
 
 ETAT="${SURVEILLANCE_ETAT:-$HOME/.local/state/surveillance-machine}"
 CONFIG="${SURVEILLANCE_CONFIG:-$HOME/.config/surveillance-machine}"
@@ -45,15 +56,19 @@ NTFY_SERVEUR="${NTFY_SERVEUR:-https://ntfy.sh}"
 TUER="${SURVEILLANCE_TUER:-kill}"
 MENAGE="${SURVEILLANCE_MENAGE:-$(dirname "$0")/menage-machine.sh}"
 JOURNAL="$ETAT/journal.log"
+HISTORIQUE="$ETAT/historique.csv"
+ENTETE_HISTORIQUE="date;charge;pression;swap_pct;chrome_cpu;brave_cpu;serveurs_dev;processus_claude"
 
 essai=0
 test_notif=0
+voir_historique=0
 for arg in "$@"; do
 	case "$arg" in
 	--essai) essai=1 ;;
 	--test) test_notif=1 ;;
+	--historique) voir_historique=1 ;;
 	*)
-		echo "Usage : $0 [--essai] [--test]" >&2
+		echo "Usage : $0 [--essai] [--test] [--historique]" >&2
 		exit 2
 		;;
 	esac
@@ -99,6 +114,21 @@ a_renvoyer() {
 	[ $((maintenant - derniere)) -ge $((SURVEILLANCE_RAPPEL_MIN * 60)) ]
 }
 
+# Ajoute une ligne à l'historique (sauf en --essai) et n'en garde que les
+# SURVEILLANCE_HISTORIQUE_LIGNES dernières. Un échec d'écriture n'empêche jamais
+# les alertes.
+ecrire_historique() {
+	[ "$essai" = 1 ] && return 0
+	[ -e "$HISTORIQUE" ] && [ ! -f "$HISTORIQUE" ] && return 0
+	{ [ -s "$HISTORIQUE" ] || echo "$ENTETE_HISTORIQUE"; echo "$1"; } 2>/dev/null >>"$HISTORIQUE" || return 0
+	local lignes=$(($(wc -l <"$HISTORIQUE") - 1))
+	if [ "$lignes" -gt "$SURVEILLANCE_HISTORIQUE_LIGNES" ]; then
+		{ head -1 "$HISTORIQUE"; tail -n "$SURVEILLANCE_HISTORIQUE_LIGNES" "$HISTORIQUE"; } >"$HISTORIQUE.tmp" &&
+			mv "$HISTORIQUE.tmp" "$HISTORIQUE"
+	fi
+	return 0
+}
+
 # Les alertes de ce passage ; marquées seulement une fois l'envoi réussi.
 a_marquer=()
 marquer() {
@@ -117,11 +147,23 @@ if [ "$test_notif" = 1 ]; then
 	exit 0
 fi
 
+if [ "$voir_historique" = 1 ]; then
+	if [ -s "$HISTORIQUE" ]; then
+		{ head -1 "$HISTORIQUE"; tail -n +2 "$HISTORIQUE" | tail -n 24; } | column -t -s ';'
+	else
+		echo "Pas encore d'historique ($HISTORIQUE)."
+	fi
+	exit 0
+fi
+
 alertes=()
+nb_serveurs=0
+PROGRAMMES="$(programmes_regroupes)"
 
 # 1. Serveurs de dev.
 while read -r pid rss etime commande; do
 	[ -n "$pid" ] || continue
+	nb_serveurs=$((nb_serveurs + 1))
 	dossier="$(dossier_du_processus "$pid")"
 	[ -n "$dossier" ] || continue
 	port="$(port_de_commande "$commande")"
@@ -191,12 +233,48 @@ if [ "${swap_total:-0}" -gt 0 ]; then
 	swap_pourcent=$((swap_utilise * 100 / swap_total))
 	if [ "$swap_pourcent" -ge "$SEUIL_SWAP_POURCENT" ]; then
 		if a_renvoyer swap; then
-			alertes+=("Swap : $swap_pourcent % ($((swap_utilise / 1024)) Go sur $((swap_total / 1024)) Go).")
+			en_tete="$(en_tete_memoire <<<"$PROGRAMMES")"
+			alertes+=("Swap : $swap_pourcent % ($((swap_utilise / 1024)) Go sur $((swap_total / 1024)) Go).${en_tete:+ En tête : $en_tete.}")
 			marquer swap
 			journaliser "alerte : swap $swap_pourcent % ($swap_utilise Mo / $swap_total Mo)"
 		fi
 	fi
 fi
+
+# 3 bis. Charge : au-delà de SEUIL_CHARGE deux passages de suite (un pic de
+#    compilation n'est pas un emballement). La marque du passage précédent ne
+#    compte que si elle a moins de 11 min (Mac en veille : pas « de suite »).
+charge="$(sysctl -n vm.loadavg 2>/dev/null | awk '{ print int($2) }')"
+charge="${charge:-0}"
+marque_charge="$ETAT/charge-haute"
+if [ "$charge" -gt "$SEUIL_CHARGE" ]; then
+	if [ -n "$(find "$marque_charge" -mmin -11 2>/dev/null)" ] && a_renvoyer charge; then
+		en_tete="$(en_tete_cpu <<<"$PROGRAMMES")"
+		alertes+=("Charge $charge ($NB_COEURS cœurs).${en_tete:+ En tête : $en_tete.}")
+		marquer charge
+		journaliser "alerte : charge $charge (seuil $SEUIL_CHARGE)"
+	fi
+	[ "$essai" = 1 ] || touch "$marque_charge"
+else
+	[ "$essai" = 1 ] || rm -f "$marque_charge"
+fi
+
+# 3 ter. Pression mémoire de macOS : 1 normale, 2 tendue, 4 critique (absente : sautée).
+pression="$(sysctl -n kern.memorystatus_vm_pressure_level 2>/dev/null | tr -d '[:space:]')"
+case "$pression" in
+2) etat_memoire=tendue ;;
+4) etat_memoire=critique ;;
+*) etat_memoire="" ;;
+esac
+# Clé par état : « critique » part même si « tendue » vient d'être envoyée.
+if [ -n "$etat_memoire" ] && a_renvoyer "pression-$etat_memoire"; then
+	en_tete="$(en_tete_memoire <<<"$PROGRAMMES")"
+	alertes+=("Mémoire $etat_memoire.${en_tete:+ En tête : $en_tete.}")
+	marquer "pression-$etat_memoire"
+	journaliser "alerte : pression mémoire $etat_memoire ($pression)"
+fi
+
+ecrire_historique "$(date '+%Y-%m-%d %H:%M');$charge;${pression:-?};$swap_pourcent;$(valeur_programme Chrome 2 <<<"$PROGRAMMES");$(valeur_programme Brave 2 <<<"$PROGRAMMES");$nb_serveurs;$(valeur_programme claude 4 <<<"$PROGRAMMES")"
 
 # 4. Gel proche : ménage automatique (au plus une fois par SURVEILLANCE_MENAGE_PAUSE_MIN).
 if [ "$swap_pourcent" -ge "$SEUIL_MENAGE_SWAP" ]; then

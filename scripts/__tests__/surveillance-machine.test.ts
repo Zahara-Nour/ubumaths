@@ -26,6 +26,7 @@ import {
 	readFileSync,
 	realpathSync,
 	rmSync,
+	utimesSync,
 	writeFileSync
 } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -50,6 +51,12 @@ type Machine = {
 	chrome: string[];
 	/** lignes « pid pcpu time commande » (processus d'extension) */
 	extensions?: string[];
+	/** lignes « pcpu rss(Ko) exécutable » (tous les programmes) */
+	programmes?: string[];
+	/** sortie de `sysctl -n vm.loadavg` */
+	charge?: string;
+	/** sortie de `sysctl -n kern.memorystatus_vm_pressure_level` ('' = indisponible) */
+	pression?: string;
 };
 
 const SWAP_CALME = 'total = 12288.00M  used = 2048.00M  free = 10240.00M  (encrypted)';
@@ -89,6 +96,9 @@ function machine(m: Machine): void {
 	);
 	writeFileSync(join(racine, 'ps-extensions.txt'), (m.extensions ?? []).join('\n') + '\n');
 	writeFileSync(join(racine, 'swap.txt'), m.swap + '\n');
+	writeFileSync(join(racine, 'ps-programmes.txt'), (m.programmes ?? []).join('\n') + '\n');
+	writeFileSync(join(racine, 'charge.txt'), (m.charge ?? '{ 2.00 2.00 2.00 }') + '\n');
+	writeFileSync(join(racine, 'pression.txt'), m.pression ?? '1');
 	const lsof = Object.entries(m.dossiers)
 		.map(([pid, d]) => `[ "$pid" = "${pid}" ] && printf 'p${pid}\\nfcwd\\nn%s\\n' "${d}"`)
 		.join('\n');
@@ -96,13 +106,17 @@ function machine(m: Machine): void {
 	// ps -Ao pid=,pcpu=,time=,command= → extensions
 	ecrireFaux(
 		'ps',
-		`case "$*" in *pid=,pcpu=,time=*) cat "${racine}/ps-extensions.txt" ;; *pid=,pcpu=*) cat "${racine}/ps-chrome-pid.txt" ;; *pcpu*) cat "${racine}/ps-chrome.txt" ;; *) cat "${racine}/ps-vite.txt" ;; esac`
+		`case "$*" in *pid=,pcpu=,time=*) cat "${racine}/ps-extensions.txt" ;; *pid=,pcpu=*) cat "${racine}/ps-chrome-pid.txt" ;; *pcpu=,rss=*) cat "${racine}/ps-programmes.txt" ;; *pcpu*) cat "${racine}/ps-chrome.txt" ;; *) cat "${racine}/ps-vite.txt" ;; esac`
 	);
 	ecrireFaux(
 		'lsof',
 		`while [ $# -gt 0 ]; do [ "$1" = -p ] && pid="$2"; shift; done\n${lsof}\nexit 0`
 	);
-	ecrireFaux('sysctl', `cat "${racine}/swap.txt"`);
+	ecrireFaux(
+		'sysctl',
+		`case "$*" in *vm.swapusage*) cat "${racine}/swap.txt" ;; *vm.loadavg*) cat "${racine}/charge.txt" ;;
+*hw.ncpu*) echo 12 ;; *pressure*) [ -s "${racine}/pression.txt" ] || exit 1; cat "${racine}/pression.txt"; echo ;; esac`
+	);
 	ecrireFaux('curl', `printf '%s\\n' "$@" >>"${racine}/curl.log"`);
 	ecrireFaux('tuer', `printf '%s\\n' "$@" >>"${racine}/tues.log"`);
 }
@@ -473,5 +487,171 @@ describe('surveillance-machine : ménage automatique', () => {
 		const r = lancer({}, ['--essai']);
 		expect(tues()).toBe('');
 		expect(r.stdout).toContain('Ménage (essai');
+	});
+});
+
+const APP_CHROME =
+	'/Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Helpers/Google Chrome Helper (Renderer).app/Contents/MacOS/Google Chrome Helper (Renderer)';
+const APP_BRAVE =
+	'/Applications/Brave Browser.app/Contents/Frameworks/Brave Browser Framework.framework/Helpers/Brave Browser Helper (Renderer).app/Contents/MacOS/Brave Browser Helper (Renderer)';
+/** Chrome 640 % / 4,1 Go (deux onglets), node 180 % / 1,5 Go, Brave 95 % / 0,5 Go, claude × 2 */
+const PROGRAMMES = [
+	`400.0 2150000 ${APP_CHROME}`,
+	`240.0 2150000 ${APP_CHROME}`,
+	`180.0 1572864 /opt/homebrew/bin/node`,
+	`95.0 524288 ${APP_BRAVE}`,
+	`3.0 600000 /Users/x/.local/bin/claude`,
+	`2.0 500000 /Users/x/.local/share/claude/versions/2.1.327`,
+	`1.0 100000 /Users/x/Projets/MonProjet/target/debug/monprojet`
+];
+const CHARGE_HAUTE = '{ 52.10 40.00 30.00 }';
+
+function historique(): string[] {
+	const f = join(racine, 'etat', 'historique.csv');
+	return existsSync(f) ? readFileSync(f, 'utf8').trim().split('\n') : [];
+}
+
+describe('surveillance-machine : historique', () => {
+	it('une ligne par passage, en-tête une seule fois', () => {
+		machine({
+			processus: [],
+			dossiers: {},
+			swap: SWAP_CALME,
+			chrome: [],
+			programmes: PROGRAMMES,
+			charge: '{ 16.48 17.87 20.59 }'
+		});
+		lancer();
+		lancer();
+		const h = historique();
+		expect(h).toHaveLength(3);
+		expect(h[0]).toBe(
+			'date;charge;pression;swap_pct;chrome_cpu;brave_cpu;serveurs_dev;processus_claude'
+		);
+		expect(h[1]).toMatch(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2};16;1;16;640;95;0;2$/);
+	});
+
+	it('ne garde que les SURVEILLANCE_HISTORIQUE_LIGNES dernières lignes', () => {
+		machine({ processus: [], dossiers: {}, swap: SWAP_CALME, chrome: [] });
+		for (let i = 0; i < 5; i++) lancer({ SURVEILLANCE_HISTORIQUE_LIGNES: '3' });
+		expect(historique()).toHaveLength(4); // en-tête + 3
+	});
+
+	it('--essai n’écrit rien ; --historique affiche les dernières lignes', () => {
+		machine({ processus: [], dossiers: {}, swap: SWAP_CALME, chrome: [] });
+		lancer({}, ['--essai']);
+		expect(historique()).toEqual([]);
+		lancer();
+		const r = lancer({}, ['--historique']);
+		expect(r.status).toBe(0);
+		expect(r.stdout).toContain('charge');
+		expect(r.stdout.trim().split('\n')).toHaveLength(2);
+	});
+
+	it('historique impossible à écrire : les alertes partent quand même', () => {
+		mkdirSync(join(racine, 'etat', 'historique.csv'), { recursive: true });
+		machine({ processus: [], dossiers: {}, swap: SWAP_CALME, chrome: [], pression: '4' });
+		lancer();
+		expect(envois()).toContain('Mémoire critique');
+	});
+});
+
+describe('surveillance-machine : alertes précoces', () => {
+	it('charge haute deux passages de suite : signalée avec les coupables', () => {
+		machine({
+			processus: [],
+			dossiers: {},
+			swap: SWAP_CALME,
+			chrome: [],
+			programmes: PROGRAMMES,
+			charge: CHARGE_HAUTE
+		});
+		lancer();
+		expect(envois()).toBe('');
+		lancer();
+		expect(envois()).toContain(
+			'Charge 52 (12 cœurs). En tête : Chrome 640 % · node 180 % · Brave 95 %.'
+		);
+	});
+
+	it('pic de charge isolé : rien', () => {
+		machine({ processus: [], dossiers: {}, swap: SWAP_CALME, chrome: [], charge: CHARGE_HAUTE });
+		lancer();
+		machine({ processus: [], dossiers: {}, swap: SWAP_CALME, chrome: [] });
+		lancer();
+		machine({ processus: [], dossiers: {}, swap: SWAP_CALME, chrome: [], charge: CHARGE_HAUTE });
+		lancer();
+		expect(envois()).toBe('');
+	});
+
+	it('pression mémoire tendue ou critique : signalée avec les Go par programme', () => {
+		machine({
+			processus: [],
+			dossiers: {},
+			swap: SWAP_CALME,
+			chrome: [],
+			programmes: PROGRAMMES,
+			pression: '2'
+		});
+		lancer();
+		expect(envois()).toContain(
+			'Mémoire tendue. En tête : Chrome 4,1 Go · node 1,5 Go · claude 1,0 Go.'
+		);
+	});
+
+	it('les noms inconnus deviennent « autres » : jamais un nom de projet', () => {
+		machine({
+			processus: [],
+			dossiers: {},
+			swap: SWAP_CALME,
+			chrome: [],
+			programmes: [`900.0 9000000 /Users/x/Projets/MonProjet/target/debug/monprojet`],
+			pression: '4'
+		});
+		lancer();
+		expect(envois()).toContain('Mémoire critique. En tête : autres 8,6 Go.');
+		expect(envois()).not.toContain('MonProjet');
+		expect(envois()).not.toContain('monprojet');
+	});
+
+	it('mémoire critique juste après « tendue » : signalée quand même', () => {
+		machine({ processus: [], dossiers: {}, swap: SWAP_CALME, chrome: [], pression: '2' });
+		lancer();
+		machine({ processus: [], dossiers: {}, swap: SWAP_CALME, chrome: [], pression: '4' });
+		lancer();
+		expect(envois()).toContain('Mémoire tendue');
+		expect(envois()).toContain('Mémoire critique');
+	});
+
+	it('charge haute après une longue pause : pas « deux passages de suite »', () => {
+		machine({ processus: [], dossiers: {}, swap: SWAP_CALME, chrome: [], charge: CHARGE_HAUTE });
+		lancer();
+		const marque = join(racine, 'etat', 'charge-haute');
+		const ancienne = new Date(Date.now() - 60 * 60 * 1000);
+		utimesSync(marque, ancienne, ancienne);
+		lancer();
+		expect(envois()).toBe('');
+	});
+
+	it('pression normale ou indisponible : rien, sans erreur', () => {
+		machine({ processus: [], dossiers: {}, swap: SWAP_CALME, chrome: [], pression: '1' });
+		expect(lancer().status).toBe(0);
+		machine({ processus: [], dossiers: {}, swap: SWAP_CALME, chrome: [], pression: '' });
+		const r = lancer();
+		expect(r.status).toBe(0);
+		expect(envois()).toBe('');
+		expect(historique()[2]).toContain(';?;');
+	});
+
+	it('swap plein : les coupables en mémoire suivent l’alerte', () => {
+		machine({
+			processus: [],
+			dossiers: {},
+			swap: 'total = 12288.00M  used = 11000.00M  free = 1288.00M  (encrypted)',
+			chrome: [],
+			programmes: PROGRAMMES
+		});
+		lancer();
+		expect(envois()).toContain('Swap : 89 % (10 Go sur 12 Go). En tête : Chrome 4,1 Go');
 	});
 });

@@ -159,7 +159,13 @@ toutes les 5 min par launchd (`pnpm surveillance:installer`, `--desinstaller` po
   `~/.local/state/surveillance-machine/journal.log` ; même alerte renvoyée au plus une fois par heure.
 - swap au-delà de 95 % (gel proche) → **ménage automatique** (au plus une fois par quart d'heure),
   résumé dans la notification ;
-- `pnpm surveillance:essai` : ce qu'elle ferait maintenant, sans rien arrêter ni envoyer.
+- charge au-delà de 36 (3 × 12 cœurs) deux passages de suite, pression mémoire de macOS « tendue »
+  ou « critique » → **signalées**, avec les 3 programmes qui prennent le plus (CPU pour la charge,
+  mémoire pour la pression et le swap ; noms de programmes seulement, jamais de chemin) ;
+- **historique** : une ligne par passage dans `~/.local/state/surveillance-machine/historique.csv`
+  (charge, pression, swap, CPU de Chrome et Brave, serveurs de dev, processus Claude), 14 jours
+  gardés. Après un gel : `pnpm surveillance:historique` (2 dernières heures) ;
+- `pnpm surveillance:essai` : ce qu'elle ferait maintenant, sans rien arrêter, envoyer ni écrire.
 
 **Ménage quand la charge est trop grande** : `pnpm menage` (`--essai` pour voir sans rien fermer),
 `scripts/menage-machine.sh`. Ferme les onglets Chrome et Brave au-delà de 20 % de CPU (le navigateur
