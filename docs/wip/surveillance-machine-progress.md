@@ -2,12 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, après #2916._
+_Mis à jour le 2026-11-19, après #2921._
 
-- **État** : surveillance (#2906), seuil Chrome 600 % (#2910) et ménage (#2916) mergés ; le dépôt principal est à jour, donc launchd lance déjà les nouveaux scripts. `pnpm menage` ferme les onglets Chrome/Brave gourmands (Chrome for Testing de Playwright épargné, filtre ancré sur `/Applications/`) et les serveurs de dev oubliés, **jamais :5173** ; il part seul quand le swap atteint 95 %. Nouvelle alerte : extension Chrome/Brave bloquée (> 90 % CPU et > 1 h de CPU cumulée), signalée, jamais arrêtée (décision de David).
-- **Gel n° 2 (21:35)** : ménage manuel, puis les 2 extensions bloquées depuis 10 jours (Chrome pid 958, Brave pid 821) ont été arrêtées par David (`! kill`) → charge 57 → 10.
-- **Prochaine action** : aucune ; chantier à clore (versement dans `docs/systeme/` si besoin, archivage du journal). À surveiller : l'extension repart-elle à 100 % ? (alerte ntfy le dira ; l'identifier alors avec Maj+Échap dans le navigateur).
-- **Pièges** : tests de scripts en bloc sur machine chargée → timeouts sans rapport. `ps time=` sur macOS = « minutes:secondes.cc ». Index du dépôt principal : `git commit -- <mes fichiers>`.
+- **État** : surveillance (#2906), seuil Chrome (#2910), ménage (#2916), historique + alertes charge/pression + coupables nommés (#2921) mergés ; le dépôt principal est à jour, launchd lance les nouveaux scripts. Historique : `pnpm surveillance:historique` (`~/.local/state/surveillance-machine/historique.csv`, 14 jours).
+- **Idées restantes, validables plus tard** (4 à 8 de la liste du 2026-11-19) : processus de test orphelins (vitest, svelte-check, Playwright) ; « RAS » quotidien qui prouve que la surveillance vit ; bouton « Faire le ménage » dans la notification ntfy (question de sécurité : qui connaît le canal peut le déclencher) ; place disque ; nombre de sessions Claude.
+- **À 22:30** : 7 onglets Brave à ~100 % chacun, partis en boucle depuis l'arrêt de l'extension Brave (pid 821) ; proposé à David : `! pnpm menage`.
+- **Prochaine action** : aucune imposée ; soit une idée restante (phase 0 d'abord), soit clore le chantier (versement + archivage du journal).
+- **Pièges** : `ps time=` sur macOS = « minutes:secondes.cc » ; noms de programmes = liste blanche (`PROGRAMMES_CONNUS`), le reste « autres » jamais classé ; tests de scripts en bloc sur machine chargée → timeouts sans rapport ; index du dépôt principal : `git commit -- <mes fichiers>`.
 - **Worktree / branche** : aucun.
 
 ## Contexte
