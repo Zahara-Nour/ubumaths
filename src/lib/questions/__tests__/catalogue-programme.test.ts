@@ -91,6 +91,23 @@ describe('buildProgramme — parties et chapitres', () => {
 		expect(new Set(chapterIds).size).toBe(3);
 	});
 
+	it('identifiants de chapitre jamais vides ni en double (casse, accents, symboles)', () => {
+		const points = [
+			point('a', 'Nombres > Calcul', 1),
+			point('b', 'Nombres > calcul', 2),
+			point('c', 'Nombres > Càlcul', 3),
+			point('d', 'Nombres > ∑', 4),
+			point('e', 'Nombres > ∫', 5)
+		];
+
+		const chapterIds = buildProgramme(points, '5', [], {}, NODES)[0].chapters.map((c) => c.id);
+
+		expect(chapterIds).toHaveLength(5);
+		expect(new Set(chapterIds).size).toBe(5);
+		expect(chapterIds.every((id) => id.length > 0)).toBe(true);
+		expect(chapterIds[0]).toBe('calcul');
+	});
+
 	it('aucun niveau, ou niveau sans point : programme vide', () => {
 		expect(buildProgramme([point('p', 'A > B', 1)], null, [], {}, NODES)).toEqual([]);
 		expect(buildProgramme([point('p', 'A > B', 1)], 'CP', [], {}, NODES)).toEqual([]);

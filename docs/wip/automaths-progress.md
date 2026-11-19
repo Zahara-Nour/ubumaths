@@ -5,8 +5,8 @@
 _Mis à jour le 2026-11-19, PR 3b en cours (pas encore de PR ouverte)._
 
 - **État** : PR 1 (#2842), 2 (#2847), 3a (#2854) mergées. PR 3b vue « Programme » codée et commitée sur `feat/automaths-programme` (tests verts, `check:incremental` 0, `lint:fast` propre, doc `questions.md` à jour), revue `code-reviewer` faite : aucun bloquant.
-- **Prochaine action** : traiter la revue (voir « PR 3b, revue » plus bas), relancer les tests du catalogue, pousser, ouvrir la PR, CI, merger. Puis PR 4 « Ma série ».
-- **En attente de David** : regarder la vue sur `http://localhost:5176/automaths?niveau=5` (serveur du worktree, base locale) ; valider les choix non écrits en phase 0 (section « réalisation »).
+- **Prochaine action** : PR ouverte → CI, merger. Puis PR 4 « Ma série ».
+- **En attente de David** : rien (choix de la réalisation validés le 2026-11-19).
 - **Pièges en cours** : séparateur de `rubrique` = « > » en base ; une liste servie sans `points` (cache Vercel d'avant le déploiement) → vue Notions seule ; les cartes de test n'apparaissent qu'avec la fixture `data/relecture/entiers/139.json` ; `getByRole('navigation', { name: 'Notions' })` → `exact: true` ; Chrome (extension) refusait la page en dev le 2026-11-19.
 - **Worktree / branche** : `../ubumaths-wt-automaths` · `feat/automaths-programme`.
 
@@ -135,3 +135,9 @@ Lecture des questions sous un point : **A** — les questions rattachées au poi
 - `CatalogueTreeNav` : une branche dont la seule notion porte son nom devient une entrée simple aussi dans la vue Notions — acceptable, le dire dans la PR.
 - Points sans niveau exclus de la recherche (aucun aujourd'hui) — le dire dans la PR.
 - Onglet ouvert avec l'ancien code + nouvelle API : recherche sans intitulés de points jusqu'au rechargement (fenêtre de déploiement seulement).
+
+### 2026-11-19 — PR 3b, suite
+
+- David valide les quatre choix de la réalisation (« Questions de « … » », « Programme » en premier, ancien lien `?notion=` → Notions, repli si les rattachées sont hors niveau).
+- Revue traitée : identifiant de chapitre jamais vide ni en double (partie devant, puis numéro ; test rouge puis vert). Les autres points sont dits dans la PR.
+- Lien de test tailnet : `https://serveur.tail99357e.ts.net/automaths?niveau=5` (Serve 443 → 5176, 8443 → 54321 ; le 10000 → 5175 est à une autre session, pas de `serve reset`).

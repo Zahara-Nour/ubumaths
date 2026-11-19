@@ -154,22 +154,23 @@ export function buildProgramme(
 		});
 	}
 
-	// Identifiants de chapitres : le nom seul, la partie devant en cas de doublon
-	const chapterNameCounts = new Map<string, number>();
-	for (const part of parts.values()) {
-		for (const name of part.chapters.keys()) {
-			chapterNameCounts.set(slugOf(name), (chapterNameCounts.get(slugOf(name)) ?? 0) + 1);
-		}
+	// Identifiants de chapitres : le nom seul ; déjà pris → la partie devant ;
+	// encore pris (casse, accents) → un numéro ; nom sans lettre → « chapitre »
+	const usedIds = new Set<string>();
+	function chapterId(partName: string, chapterName: string): string {
+		const base = slugOf(chapterName) || 'chapitre';
+		const candidates = [base, `${slugOf(partName) || 'partie'}-${base}`];
+		let id = candidates.find((c) => !usedIds.has(c));
+		for (let n = 2; !id; n++) if (!usedIds.has(`${base}-${n}`)) id = `${base}-${n}`;
+		usedIds.add(id);
+		return id;
 	}
 
 	return [...parts.values()].map((part) => ({
 		id: slugOf(part.name),
 		name: part.name,
 		chapters: [...part.chapters].map(([name, sections]) => ({
-			id:
-				(chapterNameCounts.get(slugOf(name)) ?? 0) > 1
-					? `${slugOf(part.name)}-${slugOf(name)}`
-					: slugOf(name),
+			id: chapterId(part.name, name),
 			name,
 			points: sections
 		}))
