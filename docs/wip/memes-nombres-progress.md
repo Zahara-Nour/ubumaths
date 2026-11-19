@@ -6,10 +6,10 @@ Proposition 5 du chantier `inspiration` (docs/wip/inspiration-progress.md, déci
 
 _Mis à jour le 2026-11-19, ouverture du chantier._
 
-- **État** : phase 0 écrite (ci-dessous), rien de codé.
-- **Prochaine action** : validation de la phase 0 par David, puis tests rouges → code.
-- **En attente de David** : les 3 questions de la phase 0.
-- **Pièges en cours** : aucun.
+- **État** : phase 0 validée ; code, tests et doc faits, PR ouverte.
+- **Prochaine action** : CI verte → merge ; puis mettre à jour le journal `inspiration` (5 livrée).
+- **En attente de David** : rien.
+- **Pièges en cours** : la Course aux nombres affiche « Recommencer avec de nouvelles questions » mais redonne les mêmes (avant ce chantier, hors périmètre).
 - **Worktree / branche** : `../ubumaths-wt-memes-nombres` · `feat/memes-nombres`.
 
 ---
@@ -31,10 +31,12 @@ _Mis à jour le 2026-11-19, ouverture du chantier._
 - **Limite** : un modèle modifié entre l'envoi du lien et son ouverture peut donner d'autres nombres (rien à faire). Un lien sans graine se comporte comme aujourd'hui.
 - **Erreur** : une graine abîmée dans l'URL → ignorée, nombres au hasard (pas de message).
 
-### Questions à David
+### Décisions de David (2026-11-19, sur mes recommandations)
 
-1. « Recommencer » à la fin : mêmes questions, ou nouvelles ?
-2. Lien « Sans forme (ouvre Ma série) » : case cachée, ou proposée aussi ?
-3. Quand change-t-on de graine : à chaque fois qu'on coche la case ?
+1. « Recommencer » redonne **les mêmes** questions (libellé « Recommencer les mêmes questions »).
+2. Lien « Sans forme (ouvre Ma série) » : **case cachée**.
+3. Une graine neuve à chaque fois qu'on coche ; pas de bouton « Autres nombres ».
 
 ## Historique
+
+- 2026-11-19 : graine `graine=<n>` dans le lien (`SERIES_SEED_PARAM`), `seriesSeedSequence`, case dans `SeriesLinkShare`, libellé de Recommencer (`sameQuestions`) dans Flash, Saisie, Contrôle blanc ; tests de rendu (deux ouvertures du lien, Recommencer) ; doc `evaluations.md` et `questions.md`.
