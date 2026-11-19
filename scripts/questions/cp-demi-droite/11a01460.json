@@ -1,7 +1,7 @@
 {
 	"id": "11a01460-f201-44f5-83fc-18041c5c585d",
 	"title": "Place le nombre sur la demi-droite",
-	"description": "Placer un nombre sur une demi-droite graduée de un en un : de 0 à 10 ; de 0 à 20 (11 à 19) ; un morceau de dix, de 10 à 100",
+	"description": "Placer un nombre sur une demi-droite graduée de un en un : de 0 à 10 avec 5 écrit ; de 0 à 10 sans le 5 écrit ; un morceau de dix, de 10 à 100",
 	"grades": ["CP"],
 	"level": 1,
 	"delay": 60,
@@ -26,18 +26,17 @@
 		},
 		{
 			"blanks": [],
-			"statement": "Place le nombre ${{x}}$ sur la demi-droite graduée.\n\n```line\nstart: 0\nend: 20\nstep: 1\nmajor: 5\nlabels: 0, 10, 20\nplacer: {{x}}\n```",
+			"statement": "Place le nombre ${{x}}$ sur la demi-droite graduée.\n\n```line\nstart: 0\nend: 10\nstep: 1\nmajor: 5\nlabels: 0, 10\nplacer: {{x}}\n```",
 			"variables": [
 				{
 					"name": "x",
-					"expression": "11..19"
+					"expression": "2..8"
 				}
 			],
-			"conditions": ["x != 15"],
 			"correction": {
 				"steps": [
 					"La demi-droite est graduée de un en un : d'un trait au suivant, on avance de $1$.",
-					"On part de $10$ et on compte encore ${{eval:x-10}}$ traits : $10 + {{eval:x-10}} = {{x}}$."
+					"On part de $0$ et on compte ${{x}}$ traits."
 				]
 			}
 		},
@@ -109,26 +108,37 @@
 			"variationIndex": 0
 		},
 		{
-			"answers": ["13"],
+			"description": "5 sur la demi-droite de 0 à 10, sans le 5 écrit",
+			"variationIndex": 1,
+			"variables": {
+				"x": "5"
+			},
+			"answers": ["5"],
 			"expected": {
 				"status": "correct"
-			},
-			"variables": {
-				"x": "13"
-			},
-			"description": "13 sur la demi-droite de 0 à 20",
-			"variationIndex": 1
+			}
 		},
 		{
-			"answers": ["3"],
+			"description": "Erreur : 6 (le trait de 0 compté)",
+			"variationIndex": 1,
+			"variables": {
+				"x": "5"
+			},
+			"answers": ["6"],
 			"expected": {
 				"status": "incorrect"
-			},
+			}
+		},
+		{
+			"description": "Rien placé : case vide",
+			"variationIndex": 1,
 			"variables": {
-				"x": "13"
+				"x": "8"
 			},
-			"description": "Erreur : 3 (compté depuis 0, sans la dizaine)",
-			"variationIndex": 1
+			"answers": [""],
+			"expected": {
+				"status": "empty"
+			}
 		},
 		{
 			"answers": ["37"],
