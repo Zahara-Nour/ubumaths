@@ -6,13 +6,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, après #2895._
+_Mis à jour le 2026-11-19, après la publication du lot 14b._
 
-- **État** : lots 0 à 14a publiés ; lot 14b (6 modèles, § 22) en brouillons rangés et tagués en prod (§ 22.3).
-  Restent ensuite les lots 15 à 19 du § 14 (15 sans 109, 18 sans 087 ni 094 : § 21.1 ; 19 réduit à CM2-102 : § 19.4).
-- **Prochaine action** : relecture de David sur la page à cocher (https://claude.ai/artifact/VzSotRtECKkdN5SSpSUNMF),
-  compter les verdicts, puis `publier-lot --dir scripts/questions/cm2-14b` en simulation ; David lance `--publier`.
-- **En attente de David** : la relecture des 6 fiches.
+- **État** : lots 0 à 14b publiés (lot 14b : 6 modèles, § 22.4). Restent les lots 15 à 19 du § 14 (15 sans 109,
+  18 sans 087 ni 094 : § 21.1 ; 19 réduit à CM2-102 : § 19.4).
+- **Prochaine action** : phase 0 du lot 15 (probabilités : 110 à 114, sans 109).
+- **En attente de David** : rien.
 - **Pièges en cours** : `Doc-inchangée:` dans un COMMIT ; sujet de commit en minuscule, corps ≤ 100 caractères par ligne.
   `migration:horodatage` = heure réelle UTC ; une autre migration en attente → stop avant `db:migrate` (worktree remis
   sur `origin/main` d'abord). `db:migrate` depuis le worktree : `supabase/.temp` copié. `create-questions` /
@@ -1690,3 +1689,9 @@ Recommandations suivies (« je te suis ») : (a) niveaux 4, 5, 6 (courbes et rep
   https://claude.ai/artifact/VzSotRtECKkdN5SSpSUNMF ; `verdicts` vide au départ. Les 2 diagrammes circulaires
   (108-6) dessinés après coup par le script du lot 14a (`buildStatChartScene`), alerte retirée. Rendu à 390 px
   (Playwright, fichier local) : pas de débordement, 0 erreur.
+
+### 22.4 Lot 14b : relecture, publication (2026-11-19)
+
+- Page à cocher : 6 verdicts « OK », sans commentaire ; les 6 ids concordent avec `scripts/questions/cm2-14b/*.json`.
+- `publier-lot` en simulation : 6 brouillons passent le contrôle. David lance `--publier`. MCP : 6/6 `published`, [CM2],
+  rangés et tagués (125, 159, 122, 121, 108 ×2). **Lot 14b clos.**
