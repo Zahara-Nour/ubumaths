@@ -1546,3 +1546,10 @@ couvrent **CM2-109** (« Toutes les issues possibles », lot 9ab, #2881, migrati
 **CM2-087** et **CM2-094** (constructions, lot 9c, pas encore écrit). Le lot 15 perd 109 ; le lot 18 perd 094, et 087
 (classé D au § 14) est couvert. À vérifier au MCP avant la phase 0 de ces lots. 129 et 130 (proportionnalité) restent
 CM1 seulement.
+
+### 21.2 Lot 14a : décisions (David, 2026-11-19)
+
+Recommandations suivies (« je te suis ») : (a) niveaux 6 et 7 (tableaux), 8 et 9 (barres), 1 et 2 (circulaires) ;
+(b) 124 et 158 écrits sans fractions sur les secteurs (moitiés et quarts à l'œil, parts calculées sur les effectifs),
+option `étiquettes: fractions` inscrite au n° 44 de `outils-manquants.md`, pour plus tard ; (c) toute fraction égale
+juste, corrigé simplifié ; (d) un seul lot de 6 modèles.
