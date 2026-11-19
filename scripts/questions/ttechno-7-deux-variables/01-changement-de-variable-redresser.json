@@ -1,4 +1,5 @@
 {
+	"id": "50bf587d-30e5-42c5-a214-cf0b69895bea",
 	"title": "Quel changement de variable redresse le nuage ?",
 	"description": "Nuage (x ; y) courbé et deux nuages obtenus par changement de variable (t = x², z = 1/y, z = log(y)) : lequel donne des points alignés",
 	"grades": ["T_TECHNO"],

@@ -1,4 +1,5 @@
 {
+	"id": "68ee10e5-d587-493e-b2cb-75b0e124708b",
 	"title": "Conjecturer une relation linéaire entre de nouvelles variables",
 	"description": "Après un changement de variable : y proportionnel à t = x² (coefficient), z = 1/y affine en x (coefficients), log(y) affine en x (choix de la conjecture)",
 	"grades": ["T_TECHNO"],

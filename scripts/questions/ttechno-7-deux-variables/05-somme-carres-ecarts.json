@@ -1,4 +1,5 @@
 {
+	"id": "f88cc70d-a12d-4481-8943-f0532fabd647",
 	"title": "Somme des carrés des écarts à une droite",
 	"description": "Calculer Σ(yᵢ − (axᵢ + b))² sur trois points ; ligne d'une fonction Python ; formule de tableur à recopier vers le bas",
 	"grades": ["T_TECHNO"],

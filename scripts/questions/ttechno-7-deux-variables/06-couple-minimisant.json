@@ -1,4 +1,5 @@
 {
+	"id": "43f1fd84-e598-416a-9df0-1fbeda3ffeba",
 	"title": "Chercher le couple (a ; b) qui minimise la somme des carrés",
 	"description": "Parmi des couples (a ; b), garder celui de plus petite somme des carrés des écarts : lecture d'un tableau, calcul pour deux couples, balayage Python, formule de tableur",
 	"grades": ["T_TECHNO"],
