@@ -23,6 +23,17 @@
 	import { Input } from '#lib/components/ui/input/index.ts';
 	import { Textarea } from '#lib/components/ui/textarea/index.ts';
 	import MySelect from '#lib/components/MySelect.svelte';
+	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
+	import WorksheetNotionsEditor from '#lib/components/worksheets/WorksheetNotionsEditor.svelte';
+	import type { TreeNode } from '#lib/questions/classification-tree.ts';
+	import {
+		allowsSeveralNotions,
+		CATEGORY_LABELS,
+		composedTitle,
+		isWorksheetCategory,
+		WORKSHEET_CATEGORIES
+	} from '#lib/worksheets/worksheet-title.ts';
+	import type { WorksheetClassificationView } from '#lib/types/worksheets.ts';
 	import { worksheetLocale } from '#lib/types/worksheets.ts';
 	import WorksheetTypeOptions from '#lib/components/worksheets/WorksheetTypeOptions.svelte';
 	import GradeBadgeSelector from '#lib/components/GradeBadgeSelector.svelte';
@@ -49,6 +60,8 @@
 		worksheet: WorksheetWithRelations; // Already merged with pending changes
 		/** Le menu « Style » : ceux de Chiphre, puis ceux du prof */
 		styles?: StyleOption[];
+		/** L'arbre des notions (nœuds non archivés), pour les notions de la fiche */
+		nodes?: TreeNode[];
 		hasPendingChanges?: boolean;
 		onFieldChange?: (field: string, value: unknown) => void;
 		onSave?: () => Promise<void>;
@@ -58,6 +71,7 @@
 	let {
 		worksheet,
 		styles = BUILT_IN_STYLE_OPTIONS,
+		nodes = [],
 		hasPendingChanges = false,
 		onFieldChange,
 		onSave,
@@ -205,6 +219,26 @@
 	// Style options for MySelect
 	let styleOptions = $derived(styles.map((s) => ({ value: s.id, label: s.name })));
 
+	// Catégorie, notions et titre libre (ADR 0041)
+	/** Valeur de l'option « aucune » (MySelect n'accepte pas `null`) */
+	const NO_CATEGORY = '';
+	const categoryItems = [
+		{ value: NO_CATEGORY, label: 'Aucune' },
+		...WORKSHEET_CATEGORIES.map((c) => ({ value: c, label: CATEGORY_LABELS.fr[c] }))
+	];
+	let isExerciseSheet = $derived(worksheet.type === 'worksheet');
+	let category = $derived(isWorksheetCategory(worksheet.category) ? worksheet.category : null);
+	let notions = $derived<WorksheetClassificationView[]>(worksheet.classifications ?? []);
+	let severalNotions = $derived(allowsSeveralNotions(worksheet.type, category));
+	// Sans titre libre, une fiche d'exercices prend le titre composé (le serveur l'écrit)
+	let composed = $derived(isExerciseSheet && worksheet.custom_title === false);
+	let composedPreview = $derived(
+		composedTitle(
+			category,
+			notions.map((n) => n.name)
+		)
+	);
+
 	// Le style retenu ; absent ou illisible → le style par défaut, comme le PDF
 	let chosenStyle = $derived(styles.find((s) => s.id === styleIdOf(worksheet)));
 	let defaultStyle = $derived(styles.find((s) => s.id === DEFAULT_STYLE_ID));
@@ -247,10 +281,59 @@
 			<Card.Title class="text-base">Informations</Card.Title>
 		</Card.Header>
 		<Card.Content class="space-y-3 pt-0">
+			<!-- Catégorie (fiche d'exercices) et notions, ADR 0041 -->
+			{#if isExerciseSheet}
+				<div>
+					<p class="text-xs text-muted-foreground">Catégorie</p>
+					{#if isEditable}
+						<MySelect
+							type="single"
+							value={category ?? NO_CATEGORY}
+							onchange={(v) => onFieldChange?.('category', v || null)}
+							items={categoryItems}
+							placeholder="Catégorie"
+							triggerAriaLabel="Catégorie : {category ? CATEGORY_LABELS.fr[category] : 'aucune'}"
+						/>
+					{:else}
+						<p class="text-sm font-medium">{category ? CATEGORY_LABELS.fr[category] : '-'}</p>
+					{/if}
+				</div>
+			{/if}
+
+			<div>
+				<p class="text-xs text-muted-foreground">{severalNotions ? 'Notions' : 'Notion'}</p>
+				{#if isEditable}
+					<WorksheetNotionsEditor
+						{nodes}
+						value={notions}
+						several={severalNotions}
+						onchange={(v) => onFieldChange?.('classifications', v)}
+					/>
+				{:else}
+					<p class="text-sm font-medium">
+						{notions.length > 0 ? notions.map((n) => n.name).join(' · ') : '-'}
+					</p>
+				{/if}
+			</div>
+
+			{#if isExerciseSheet && isEditable}
+				<MyCheckbox
+					checked={!composed}
+					onchange={(checked) => onFieldChange?.('custom_title', checked)}
+					label="Titre libre (sinon : notions et catégorie)"
+				/>
+			{/if}
+
 			<!-- Title -->
 			<div>
-				<p class="text-xs text-muted-foreground">Titre</p>
-				{#if !editingTitle}
+				<p class="text-xs text-muted-foreground">
+					{composed ? 'Titre composé' : 'Titre'}
+				</p>
+				{#if composed}
+					<p class="font-semibold">
+						{composedPreview || 'Choisis une notion ou une catégorie, ou coche « Titre libre ».'}
+					</p>
+				{:else if !editingTitle}
 					<button
 						type="button"
 						class="w-full text-left font-semibold {isEditable
