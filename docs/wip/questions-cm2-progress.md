@@ -6,19 +6,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, après le `--publier` du lot 15._
+_Mis à jour le 2026-11-19, après #2917 (lot 16 rangé en prod)._
 
-- **État** : lots 0 à 15 publiés (lot 15, probabilités 110 à 114 : 5/5 `published`, § 23.4). Restent les lots 16 à 19
-  du § 14 : 16 angles (076, 077, 078, 081), 17 géométrie, 18 tracés, 19 solides et patrons.
-- **Prochaine action** : phase 0 du lot 16 (angles) : relevé MCP, bornes, tableau des modèles, puis attendre le go.
-- **En attente de David** : rien sur ce chantier. Chantier voisin ouvert : `gras-cellule-tableau` (phase 0 validée,
-  répare le `**Brumeval**` du 14b en prod).
+- **État** : lots 0 à 15 publiés. Lot 16 (081, 088 ×2, 092, 093) : 5 brouillons en prod, rangés et tagués (#2915
+  fichiers, #2917 migration, § 24.3) ; page à cocher publiée, `verdicts` vide. Reste ensuite le **dernier lot 17**
+  (095, 097, 102) ; tous les autres points des anciens lots 16 à 19 sont couverts par les jumeaux CM1 + CM2 (§ 24).
+- **Prochaine action** : lire les verdicts de la page à cocher (https://claude.ai/artifact/6jPfzF3pMvofQUiKBdTkUq),
+  `publier-lot --dir scripts/questions/cm2-16` en simulation, puis David lance `--publier` ; puis phase 0 du lot 17.
+- **En attente de David** : la relecture de la page à cocher du lot 16.
 - **Pièges en cours** : `Doc-inchangée:` dans un COMMIT ; sujet de commit en minuscule, corps ≤ 100 caractères par ligne.
-  `migration:horodatage` = heure réelle UTC ; une autre migration en attente → stop avant `db:migrate` (worktree remis
-  sur `origin/main` d'abord). `db:migrate` depuis le worktree : `supabase/.temp` copié. `create-questions --publier` et
-  `publier-lot --publier` : David les lance (`!`) ; la simulation de `publier-lot` passe. Port 5179 pris par
-  `questions-ttechno` : serveur d'essai sur 5186. `de` + `{{if}}` ne s'élide pas. Aucun message par réponse fausse
-  (`feedback.incorrect` jamais affiché). Index du dépôt principal partagé : `git commit -- <fichier>`.
+  `db:migrate` : `migration list --linked` d'abord (une autre session peut l'avoir déjà poussée, vu au lot 16).
+  `create-questions --publier` et `publier-lot --publier` : David les lance (`!`). Serveur d'essai sur 5186. Choix
+  multiple : une partie des bonnes cases = `unoptimal_form`. `sonde-figures` ne lit pas les figures DANS un choix.
+  Index du dépôt principal partagé : `git commit -- <fichier>`.
 - **Worktree / branche** : `../ubumaths-wt-questions-cm2`, détaché sur `origin/main` : nouvelle branche du lot
   suivant depuis `origin/main`.
 
@@ -1871,3 +1871,19 @@ le plus précis attendu.
   (Playwright, port 5186), les 17 variations, plus trapèze, trapèze rectangle et droites perpendiculaires ciblés : aucun
   débordement, 0 erreur. Corrigé : étiquettes `(d)` / `(d')` collées au bout des droites → écartées.
 - #2915 (fichiers) ouverte.
+
+### 24.3 Lot 16 : prod, rangement, page à cocher (2026-11-19)
+
+- #2915 (fichiers) : CI verte, mergée. David lance `create-questions --dir scripts/questions/cm2-16 --publier` depuis le
+  worktree (branche du rangement : ids écrits là). MCP : 5 brouillons [CM2], niveaux 2, 11, 12, 13, 14, sans nœud ni
+  tag, `updated_at` = création (`a741e3dd`, `5834743b`, `464b1661`, `5f2c283f`, `5c13d53e`).
+- Migration `20261119205908_questions_cm2_lot16_rangement_tags.sql`, dérivée de celle du lot 15 par substitution
+  (081 sur « Grandeurs et mesures > Angles > mesure en degrés » ; 088 ×2, 092, 093 sur « Géométrie > Figures planes >
+  propriétés »). Test `questions-cm2-lot16-rangement-tags` : 9 verts ; corps remplacé par `select 1;` → 5 rouges ;
+  fichier restauré (`cmp`). `security-auditor` : aucun finding (9/9 rejoué après le commit).
+- #2917 : CI verte, `check:migrations` sortie 0, mergée. `migration list --linked` : la nôtre **déjà en prod**, poussée
+  par le `db:migrate` d'une autre session juste après le merge ; rien relancé. MCP : 5 brouillons rangés (« mesure en
+  degrés », « propriétés » ×4), un tag chacun (081, 088, 088, 092, 093), `updated_at` = création.
+- `garde-niveaux-tags` : aucun niveau manquant. Page à cocher (5 fiches, base prod, aucune alerte) :
+  https://claude.ai/artifact/6jPfzF3pMvofQUiKBdTkUq ; `verdicts` vide au départ. Rendu à 390 px (Playwright, fichier
+  local) : pas de débordement, 0 erreur.
