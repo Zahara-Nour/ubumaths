@@ -3,9 +3,9 @@ couvre:
   - src/routes/+layout.svelte
   - 'src/routes/(protected)/+layout.svelte'
   - 'src/routes/(protected)/dashboard/{admin,student,teacher}/*'
-  - 'src/lib/components/{Header,Sidebar,InfoPanel,LoadingDashboard,LoadingTable,ExerciseSkeleton,FlipCard,FontSelector,Wheel}.svelte'
+  - 'src/lib/components/{Header,EasyReadingToggle,Sidebar,InfoPanel,LoadingDashboard,LoadingTable,ExerciseSkeleton,FlipCard,FontSelector,Wheel}.svelte'
   - 'src/lib/components/{skeleton,modals}/**'
-  - 'src/lib/stores/{studentDashboardCache,teacherDashboardCache,selectedClass,selectedPeriod,activity,mobile,modalStack,input-capability,auth}.svelte.ts'
+  - 'src/lib/stores/{studentDashboardCache,teacherDashboardCache,selectedClass,selectedPeriod,activity,mobile,easyReading,modalStack,input-capability,auth}.svelte.ts'
   - 'src/lib/types/{student-cache,teacher-cache,cache-context}.ts'
   - src/lib/utils/cache-sync.ts
   - src/lib/utils/app-version.ts
@@ -45,7 +45,8 @@ Déjà documenté ailleurs, et seulement cité ici :
 
 - au premier Tab, un lien « Aller au contenu », caché hors focus, qui mène au `<main>` ;
 - un en-tête (`Header`) : gidouille et « Chiphre » (lien vers `/`), avatar (lien vers
-  `/dashboard`) ou bouton « Connexion », et sur ordinateur taille du texte, thème, plein écran ;
+  `/dashboard`) ou bouton « Connexion », et sur ordinateur taille du texte, « Lecture facilitée »,
+  thème, plein écran ;
 - sur ordinateur (`md` et plus), une barre d'icônes à gauche (`Sidebar`) : Accueil, Automaths, Jeux,
   Python (élève, prof), La Tortue, Programmes de calcul, Upsilon, Atelier, Chiffrement, Le Shtam, Whiteboard (prof), puis, sous un
   trait, Zygomatics ;
@@ -70,6 +71,17 @@ layout racine. En plus, selon le rôle :
   administration · expire dans mm:ss » et bouton « Quitter le mode admin ». Un vrai compte admin
   n'a pas de bandeau ;
 - `/dashboard/admin` : une page d'index minimale (« Sélectionnez une section dans le menu… »).
+
+### Réglage « Lecture facilitée »
+
+Interrupteur (`EasyReadingToggle`, icône livre ouvert) à côté de la taille du texte : en-tête,
+layout du tableau de bord, tiroir mobile, menu mobile de l'en-tête, page profil. Visible par tous,
+éteint par défaut, gardé dans le navigateur sous `easyReading` (`easyReading.svelte.ts`).
+Allumé : classe `lecture-facilitee` sur `<html>`, et `app.css` passe le texte de `<main>` en
+Luciole (titres et `.exercise-content` compris), lettres +0,02 em, mots +0,08 em, lignes 1,75 rem
+× taille du texte ; l'en-tête et les menus gardent Inter. Les formules passent au jeu Luciole Math
+(`switchMathFonts('luciole')`, cf. [utilitaires-et-demos.md](utilitaires-et-demos.md)). Police
+absente → repli sur Inter. Crédit des polices : section « Polices » de `/a-propos`.
 
 ## Comment c'est construit
 
@@ -340,4 +352,5 @@ du 2026-11-11 : `reading 'id'` sur `/dev/modeles`, onglet d'avant 0.81.0).
   déconnexion par `invalidate('supabase:auth')`, remplacés par un lien et un formulaire ; celui de
   `student/+layout.svelte` promet « zéro appel API » et une expiration automatique.
 - **Effet vide** dans le layout racine (`+layout.svelte:81-85`) : il lit `theme.dark` et
-  `fontSize.size` sans rien en faire ; les stores appliquent eux-mêmes leurs changements au DOM.
+  `fontSize.size` et `easyReading.enabled` sans rien en faire ; les stores appliquent eux-mêmes
+  leurs changements au DOM.
