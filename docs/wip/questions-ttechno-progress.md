@@ -5,13 +5,13 @@ Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) · bornes 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, après la publication du lot 6 (§ 48)._
+_Mis à jour le 2026-11-19, après #2874._
 
-- **État** : lots 0 à 5a et lot 6 publiés ; lot 5b : L9 publiée, L7 et L8 en brouillon (relus, prêts). **Lot 7 (deux variables, 6 modèles) écrit** (§ 50), PR des fichiers ouverte. Reste le lot 8 (§ 33).
-- **Prochaine action** : PR du lot 7 verte → merge ; puis David lance `create-questions --publier` (prod), migration de rangement et de tags (gabarit lot 6), page à cocher.
-- **En attente de David** : le `deploy:prod` qui livre #2839 (L7, L8).
+- **État** : lots 0 à 5a et lot 6 publiés ; lot 5b : L9 publiée, L7 et L8 en brouillon (relus, prêts). **Lot 7 (deux variables, 6 modèles) : fichiers mergés (#2874)**, pas encore en prod (§ 50). Reste le lot 8 (§ 33).
+- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/ttechno-7-deux-variables --publier` (prod, `!`) ; puis vérifier les 6 brouillons (MCP), commiter les ids, migration de rangement et de tags (gabarit lot 6 : 050, 051, 052, 088 sur « changement de variable » aed5064f ; 053, 054 sur « ajustement affine » 61aaeaa9), page à cocher.
+- **En attente de David** : le `create-questions --publier` du lot 7 ; le `deploy:prod` qui livre #2839 (L7, L8).
 - **Pièges en cours** : `$` littéral (tableur) = `\$`, les accents graves ne protègent pas ; un point TTECHNO par modèle (trigger) ; tag = nœud DU POINT ; `publier-lot.ts` (simulation comprise) et `create-questions --publier` visent la prod : David les lance (`!`) ; L7 et L8 après le `deploy:prod` de #2839.
-- **Worktree / branche** : `ubumaths-wt-questions-ttechno`, `feat/questions-ttechno-lot7`.
+- **Worktree / branche** : aucun (retiré après #2874).
 
 ## 1. Périmètre
 
@@ -1131,3 +1131,4 @@ seul lot de 6 modèles ; question d'accès : personne pour les brouillons, Tle t
   graves ; une réponse 1/2 pour 0,5 est `bad_form` (spec retirée).
 - Base locale : 6 brouillons ; aperçu admin (Chrome, `[::1]:5180`) : D1 trois nuages titrés ; D5 tableur
   `$F$1` affiché, réponse juste ; D2 repère t / y à 4 points.
+- **#2874 mergée (2026-11-19)**, CI verte. Worktree retiré.
