@@ -9,7 +9,7 @@
 	  class board. If "Classe" is picked, a second MySelect lists their classes.
 
 	On submit, POSTs to /api/organisation/kanban/boards. On success, calls
-	`onCreated` (parent triggers `invalidateAll()`) and closes the dialog.
+	`onCreated` (parent triggers `refreshAll()`) and closes the dialog.
 -->
 
 <script lang="ts">

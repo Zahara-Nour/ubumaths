@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { lore } from '#lib/config/lore.ts';
-	import { invalidateAll } from '$app/navigation';
+	import { refreshAll } from '$app/navigation';
 	import { Button } from '#lib/components/ui/button/index.ts';
 	import BackLink from '#lib/components/navigation/BackLink.svelte';
 	import * as Card from '#lib/components/ui/card/index.ts';
@@ -91,7 +91,7 @@
 	// Pending changes for metadata editing (single source of truth for edits)
 	let pendingChanges = $state<Partial<WorksheetWithRelations>>({});
 
-	// Update local state when data changes (e.g., after invalidateAll)
+	// Update local state when data changes (e.g., after refreshAll)
 	$effect(() => {
 		worksheetData = data.worksheet as WorksheetWithRelations;
 		pendingChanges = {}; // Reset pending changes when server data changes
@@ -181,7 +181,7 @@
 			}
 
 			toaster.success(config.success);
-			await invalidateAll();
+			await refreshAll();
 		} catch (error) {
 			console.error('Status change error:', error);
 			toaster.error(error instanceof Error ? error.message : config.error);
@@ -226,7 +226,7 @@
 			if (addedCount > 0) {
 				toaster.success(`${addedCount} ${lore.learning.exercise}(s) ajoutée(s)`);
 				// Refresh the page data to show new exercises
-				await invalidateAll();
+				await refreshAll();
 			}
 
 			if (addedCount < exercises.length) {
@@ -370,7 +370,7 @@
 		pendingChanges = {};
 
 		// Nouveau style : la fiche d'un style du prof se relit pour le PDF
-		if (styleChanged) await invalidateAll();
+		if (styleChanged) await refreshAll();
 
 		toaster.success('Modifications enregistrees');
 	}

@@ -278,7 +278,7 @@ Les RPC de classement unifié sont dans `supabase/migrations/20260616230000_fix_
   L'écran est dans l'onglet « Avatars » du Marché **et** dans « Mon profil », parce que le Marché
   n'est ouvert qu'aux classes où le prof l'active (décision de David du 2026-11-11 : 37 élèves
   sur 81 l'avaient). Réservée aux élèves : prof et admin gardent leur emblème. Après un port,
-  la page est rechargée (`invalidateAll`) et l'en-tête montre le nouvel avatar. Base, gardes
+  la page est rechargée (`refreshAll`) et l'en-tête montre le nouvel avatar. Base, gardes
   et tests : [base-de-donnees.md](base-de-donnees.md) (`tests/integration/boutique-avatars.test.ts`) ;
   routes : `src/routes/api/student/avatars/__tests__/avatars-routes.test.ts`.
 - **Cartes réservées au serveur** : personne ne modifie directement `profiles.vip_cards` (garde

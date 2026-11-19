@@ -490,7 +490,7 @@
 	 * ⚠️ Deux exigences contraires se rencontrent ici. L'état local doit rester
 	 * la source de vérité PENDANT un glisser, sinon le geste saccade ; mais tout
 	 * ce que le professeur change depuis le plan revient par les props, après
-	 * `invalidateAll()`.
+	 * `refreshAll()`.
 	 *
 	 * ⚠️⚠️ Les IDENTIFIANTS ne suffisent pas, et c'est contre-intuitif : publier
 	 * un contenu ou corriger le texte d'un objectif ne change aucun identifiant.

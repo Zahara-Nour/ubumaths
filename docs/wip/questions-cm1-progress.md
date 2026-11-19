@@ -5,17 +5,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après la publication du lot 8d._
+_Mis à jour le 2026-11-18, rangement du lot 8e écrit (§ 25 quinquies), PR à ouvrir._
 
-- **État** : lots 0 à 8d publiés, **148 points du CM1 sur 171** (CM2 : 108 sur 158) ; aucun brouillon en attente.
-- **Prochaine action** : écrire les lots 8e (solides) et 8f (patrons, déplacements, assemblages) une fois la
-  phase 0 du § 25 validée ; puis 9 (probabilités, proportionnalité).
-- **En attente de David** : les 4 questions du § 25 (modèles, 116 et 119 hors du D, jumeaux CM2, 111-112 écrits).
-- **Pièges en cours** : lancer `create-questions --publier` et `db:migrate` **depuis le worktree** (lien
-  `supabase/.temp/` copié) — et celui du **bon** chantier (un `--publier` du CM2 11a a été lancé ici) ; commitlint
-  refuse le type `content` et un corps > 100 caractères par ligne ; le mode auto refuse `publier-lot` (même en
-  simulation) et `garde-niveaux-tags` : David les lance ; ports 5176, 5177 pris ; imports en `#lib/x.ts`.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, détaché sur `main`, aucune branche ouverte.
+- **État** : lots 0 à 8d publiés, **148 points du CM1 sur 171** ; lot 8e : fichiers mergés (#2855), 5 brouillons
+  créés en prod, migration de rangement écrite et testée sur `feat/questions-cm1-lot8e-rangement` (§ 25 quinquies).
+- **Prochaine action** : PR du rangement (audit de sécurité), CI, merge ; David lance `pnpm db:migrate` depuis le
+  worktree ; vérification au MCP ; page à cocher ; `publier-lot` (David). Ensuite le lot 8f (modèles 8 à 14 du
+  § 25), puis 9.
+- **En attente de David** : rien avant le merge.
+- **Pièges en cours** : création en prod = `pnpm tsx scripts/create-questions.ts --dir … --publier` (pas de script
+  `pnpm create-questions`) ; la lancer, comme `db:migrate`, **depuis le worktree** (lien `supabase/.temp/` copié) ;
+  commitlint refuse le type `content` et un corps > 100 caractères par ligne ; le mode auto refuse `publier-lot`
+  et `garde-niveaux-tags` : David les lance ; ports 5175, 5177, 5178 pris ; 17 copies `[essai 8e]` en base locale ;
+  `ci-lint-fichiers.test.ts` dépasse parfois ses 5 s en CI (relancer le job).
+- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, branche `feat/questions-cm1-lot8e-rangement`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -2084,3 +2087,42 @@ pouvait pas lire avant.
    pavé) : je le signale dans le journal du CM2.
 4. 111, 112 : écrire des modèles CM1 plutôt que d'ajouter le CM1 aux modèles CE2 `7ed6c420`, `964711ea` ? Reco :
    écrire (même choix qu'aux 8c, 8d : le CM1 ajoute les mesures, la base à 6 côtés).
+
+### 25 bis. Lots 8e, 8f : décisions (David, 2026-11-18)
+
+« je valide » : les 14 modèles du § 25 et leurs variations ; 116 et 119 sortent du D (modèles 9, 10, 14), 114
+reste en D ; niveaux **CM1 et CM2** et tag des deux points (109/098, 110/099, 115/100, 116/101, 117/103,
+118/104, 119/105) ; 111, 112 : modèles CM1 écrits (pas de CM1 ajouté aux modèles CE2).
+
+### 25 ter. Lot 8e — écrit (2026-11-18)
+
+- Script `docs/wip/questions/lot-cm1-8e.py` → `scripts/questions/cm1-8e/` (5 modèles, 17 variations, 70 specs) ;
+  grades CM1 + CM2 pour 01, 02 ; CM1 pour 03, 04, 05.
+- **Niveaux corrigés** : ceux de la phase 0 (1, 2…) étaient faux. Le niveau suit le nœud Solides › propriétés, où
+  le CE2 s'arrête à 13 → **14 à 18**.
+- Règle ajoutée en écrivant (dans le script) : un cube et un pavé **sont** des prismes droits, donc jamais un cube
+  ni un pavé à nommer quand « prisme droit » est parmi les choix. Le modèle 01 dessine boule, cône, pyramides,
+  cylindre ; le 02 garde cube et pavé dans une variation à 4 choix, sans prisme droit.
+- `create-questions` en simulation contre la prod : 5 « à créer » ; `sonde-cubes` : 1 492 blocs, 0 problème.
+- Base locale (17 copies, une variation chacune), aperçus à 390 px (Playwright, port 5182) : aucun défilement
+  horizontal, aucune erreur de console. Corrigés après l'aperçu : (1) face latérale grisée d'un prisme seulement si
+  ses deux côtés sont cotés (le côté oblique ne l'est jamais ; 4 2 3 donnait 2,8 cm sur 3 cm, indécidable) ;
+  (2) « La base est un polygone à 7 côtés : elle a 7 côtés » → « La base a 7 côtés (un pentagone) ».
+
+### 25 quater. Lot 8e — fichiers mergés (2026-11-18)
+
+- #2855 mergée. Premier passage de la CI rouge : `scripts/__tests__/ci-lint-fichiers.test.ts` hors délai (9,7 s pour
+  5 s), sans rapport avec le lot ; vert à la relance du job.
+
+### 25 quinquies. Lot 8e — création en prod et rangement (2026-11-18)
+
+- `create-questions.ts --dir scripts/questions/cm1-8e --publier` lancé par David depuis le worktree : 5 brouillons
+  (b80d1619, af2d7e03, 281ad02d, b423785d, f83c0424), vérifiés au MCP (draft, sans nœud, 0 tag), ids commités.
+- Relevé `etat-prod-2026-11-18-cm1-8e/` (5 modèles, 0 tag ; les 7 points sur Géométrie > Solides > propriétés),
+  script `lot-cm1-8e-rangement.py` (gabarit 8d) → migration `20261118223150_questions_cm1_lot8e_rangement_tags`
+  et fixture : 5 modèles rangés sur Solides > propriétés, 7 tags posés (CM1-109 à 113 ; CM2-098, 099), aucun
+  niveau ni statut changé, aucun nœud créé. Diff avec le 8d limité aux données du lot.
+- Test `questions-cm1-lot8e-rangement-tags.test.ts` : 20/20 vert ; corps neutralisé (`select 1;`) : 9 échecs,
+  7 sautés. `types:cliquet` tenu. Seule migration en attente (`migration list --linked`).
+- `security-auditor` : aucun finding, ni bloquant ni non bloquant (diff avec le 8d limité aux données ; état
+  « avant » remesuré au MCP : 5 draft, nœud null, 0 tag ; 7 points et le nœud Solides > propriétés actifs).

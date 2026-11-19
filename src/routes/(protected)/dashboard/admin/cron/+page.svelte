@@ -1,6 +1,6 @@
 <!-- Admin CRON Monitoring Page -->
 <script lang="ts">
-	import { invalidateAll, goto } from '$app/navigation';
+	import { refreshAll, goto } from '$app/navigation';
 	import { Button } from '#lib/components/ui/button/index.ts';
 	import * as Card from '#lib/components/ui/card/index.ts';
 	import { Badge } from '#lib/components/ui/badge/index.ts';
@@ -196,7 +196,7 @@
 
 	async function refresh() {
 		loading = true;
-		await invalidateAll();
+		await refreshAll();
 		loading = false;
 	}
 

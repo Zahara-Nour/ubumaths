@@ -6,19 +6,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après #2852._
+_Mis à jour le 2026-11-18, après la publication du lot 11b._
 
-- **État** : lots 0 à 11a publiés. Lot 11b : 5 brouillons rangés et tagués en prod (#2852, `db:migrate` fait, § 18.4) ;
-  page à cocher publiée, verdicts attendus. Restent ensuite les lots 12 à 19 du § 14.
-- **Prochaine action** : quand David a coché, lire et compter les verdicts (`ArtifactData list verdicts`,
-  https://claude.ai/artifact/9x1xabePSJzcA2CKK6ehYr) ; puis `publier-lot --dir scripts/questions/cm2-11b` en simulation,
-  David `--publier`. Ensuite phase 0 du lot 12.
-- **En attente de David** : la relecture du lot 11b sur la page à cocher. Stash « cm2-9 ids » du dépôt principal : à
-  supprimer.
+- **État** : lots 0 à 11b publiés (lot 11b : 5/5, § 18.5). Restent les lots 12 à 19 du § 14.
+- **Prochaine action** : phase 0 du lot 12 (§ 14), nouvelle branche dans le worktree.
+- **En attente de David** : stash « cm2-9 ids » du dépôt principal, à supprimer.
 - **Pièges en cours** : `Doc-inchangée:` dans un COMMIT ; sujet de commit en minuscule. `migration:horodatage` = heure
   réelle UTC ; une autre migration en attente → stop avant `db:migrate`. `db:migrate` depuis le worktree : copier
   `supabase/.temp/{project-ref,linked-project.json,pooler-url,postgres-version}` du dépôt principal (ignorés par git).
-  `create-questions` / `publier-lot` peuvent être refusés par le classifieur : réessayer à la demande de David.
+  `create-questions` / `publier-lot` peuvent être refusés par le classifieur : David les lance (`!`).
 - **Worktree / branche** : `../ubumaths-wt-questions-cm2`, branche `feat/questions-cm2-lot11b-tags` mergée (à remplacer
   par la branche du lot 12).
 
@@ -1285,3 +1281,63 @@ corrigé ; (e) un seul lot de 5 modèles. Tableau du § 18 gardé.
   « produits cartésiens », « optimisation », « Préalgorithmique »), un tag chacun, `updated_at` = création.
 - Page à cocher (5 fiches, aucune alerte, base prod) : https://claude.ai/artifact/9x1xabePSJzcA2CKK6ehYr ; `verdicts` vide au
   départ. Rendu à 390 px non revérifié (même gabarit que le lot 11a).
+
+### 18.5 Lot 11b : relecture, publication (2026-11-18)
+
+- Page à cocher : 5 verdicts « OK », sans commentaire ; les 5 ids concordent avec `scripts/questions/cm2-11b/*.json`.
+- `publier-lot` en simulation refusé par le classifieur : David lance simulation et `--publier`. MCP : 5/5 `published`,
+  [CM2], rangés, un tag chacun (119, 060, 062, 063, 064). **Lot 11b clos.**
+
+## 19. Lot 12 — suites et motifs (068, 069, 070) : phase 0 (proposée le 2026-11-19)
+
+Relevé MCP du 2026-11-19 : aucun modèle CM2 sur les 3 points. Les 3 sont posés sur la sous-notion **suites de
+motifs** (Algèbre > Premiers pas algébriques), où sont déjà 5 modèles, tous au niveau 1 : 4 du CM1 (`b47f2699` suite,
+trois termes suivants ; `e59976bf` suite, choisir la règle ; `37dd213b` motif, trois étapes suivantes ; `ac5fcd5c`
+motif, choisir la règle) et 1 de 6e (`39bafe0e` motif : étape suivante, ce qu'on ajoute, étape lointaine, quelle étape).
+
+Bornes (`cycle3.json`, Exemples de réussite CM2 2025 p. 15-16) : 068, trois termes suivants et **terme de rang
+éloigné** pour une suite à pas constant (« 100e terme de 5 ; 8 ; 11 ») ; 069, aucune borne propre ; 070, relation avec
+l'étape précédente **ou directement avec le rang**. BO (Algèbre) : exprimer « la relation entre deux éléments
+consécutifs ou entre le rang d'un élément et la valeur associée » ; nombre générique, « (N × 12) + 5 ».
+
+Outils (en prod) : ` ```figure ` (motifs dessinés en trois étapes, comme le CM1 et la 6e), case « choix ».
+
+| #    | Point   | Sous-notion, niveau        | Modèle                                       | Variations, plages                                                                                                                                                                                                                                                                                                |
+| ---- | ------- | -------------------------- | -------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 12-1 | CM2-068 | suites de motifs, voir (a) | Suite de nombres : les trois termes suivants | Cinq termes donnés, trois cases. V1 − a (suite qui descend, a de 3 à 25, termes ≥ 0) ; V2 + a décimal (0,5 ; 0,25 ; 1,5 ; 2,5…), voir (b) ; V3 × k puis + c en alternance, ou + a, + 2a, + 3a… (écart qui grandit de 1 à chaque fois) ; V4 deux opérations en alternance sur des nombres jusqu'à 10 000           |
+| 12-2 | CM2-068 | suites de motifs, (a)      | Suite à pas constant : un terme éloigné      | V1 le 100e terme (départ de 1 à 20, pas de 2 à 12 : u + 99 × a) ; V2 le 20e, 30e ou 50e terme ; V3 à quel rang trouve-t-on le nombre N ? (N dans la suite) ; corrigé : « du 1er au 100e, on avance de 99 pas »                                                                                                    |
+| 12-3 | CM2-069 | suites de motifs, (a)      | Motif évolutif : les étapes suivantes        | Trois étapes dessinées, motifs qui grandissent dans plusieurs sens : V1 croix de jetons (5, 9, 13 : + 4, un par bras) ; V2 L de carreaux (3, 5, 7) ; V3 rectangle de jetons 1 × 2, 2 × 3, 3 × 4 (+ 4, + 6, + 8 : l'ajout grandit) ; V4 carrés d'allumettes en ligne de deux étages ; trois cases (étapes 4, 5, 6) |
+| 12-4 | CM2-070 | suites de motifs, (a)      | Motif évolutif : une étape lointaine         | Trois étapes dessinées ; nombre d'éléments à l'étape 10, 20 ou 50 : V1 carrés d'allumettes accolés (3 × n + 1) ; V2 croix de jetons (4 × n + 1) ; V3 triangles d'allumettes (2 × n + 1) ; V4 inverse : à quelle étape y a-t-il N éléments ? ; corrigé par le rang (« 1 jeton au centre, puis 4 par étape »)       |
+| 12-5 | CM2-070 | suites de motifs, (a)      | Motif évolutif : le calcul pour l'étape n    | Case « choix » : quel calcul donne le nombre d'éléments à l'étape 50 ? (« 3 × 50 + 1 », « 4 × 50 », « 50 + 3 », « 3 × 49 + 4 » vrai aussi → une seule juste par variation, voir (c)) ; mêmes motifs que 12-4                                                                                                      |
+
+Forme commune (lot 6 ter du CM1) : une case par nombre, l'unité après la case (« jetons », « allumettes ») ; corrigés
+avec les flèches de la règle (« + 4 ») entre les termes, puis le calcul par le rang. Erreurs typiques en `testSpecs` :
+12-2, u + 100 × a (100 pas au lieu de 99) ; 12-4, 3 × n sans le premier côté (+ 1 oublié) ; 12-3 V3, + 4 à chaque fois
+au lieu d'un ajout qui grandit ; 12-1 V2, 2,5 + 0,25 = 2,30.
+
+**Question d'accès** : 5 brouillons neufs, puis nœud + tag → personne ne lit rien de plus avant la publication.
+
+**À trancher** :
+
+(a) Les 5 modèles au **niveau 1** de « suites de motifs », comme les 4 du CM1 et celui de 6e (personne n'est
+renuméroté) ? Reco : **oui**.
+
+(b) 12-1 V2 avec des **décimaux** (pas de 0,25 ou 2,5), au programme du CM2 ? Reco : **oui**, au plus deux chiffres
+après la virgule.
+
+(c) 12-5 : le calcul est choisi dans une liste, plutôt que tapé par l'élève (« écris le calcul ») ? Reco : **liste**
+(le correcteur n'a pas à juger « 1 + 3 × 50 » contre « 3 × 50 + 1 ») ; les mauvais choix sont les erreurs typiques
+(oublier le + 1, multiplier par le mauvais nombre), jamais un deuxième calcul juste.
+
+(d) Un seul lot de **5 modèles** ? Reco : **oui**.
+
+(e) Trouvé en passant : 2 modèles **publiés** du CM1 (`37dd213b`, `ac5fcd5c`) écrivent « un motif **de allumettes** »
+(2 variations chacun). Corriger en « d'allumettes » à part, par `--mettre-a-jour` (instantané d'abord, § 7 de la
+doc) ? Reco : **oui**, dans ce chantier, avant l'écriture du lot 12.
+
+### 19.1 Lot 12 : décisions (David, 2026-11-19)
+
+Recommandations suivies (« je te suis ») : (a) les 5 modèles au niveau 1 de « suites de motifs » ; (b) 12-1 V2 avec
+des décimaux, deux chiffres après la virgule au plus ; (c) 12-5 en case « choix », une seule réponse juste ; (d) un
+seul lot de 5 modèles ; (e) « de allumettes » des 2 modèles du CM1 corrigé dans ce chantier, avant l'écriture du lot.
+Tableau du § 19 gardé.

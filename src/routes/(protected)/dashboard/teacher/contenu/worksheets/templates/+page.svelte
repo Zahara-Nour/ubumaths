@@ -2,7 +2,7 @@
 	import { WORKSHEET_TYPE_LABELS } from '#lib/utils/worksheet-type-labels.ts';
 	import { lore } from '#lib/config/lore.ts';
 	import { enhance } from '$app/forms';
-	import { goto, invalidateAll } from '$app/navigation';
+	import { goto, refreshAll } from '$app/navigation';
 	import { page } from '$app/state';
 	import { Button } from '#lib/components/ui/button/index.ts';
 	import BackLink from '#lib/components/navigation/BackLink.svelte';
@@ -218,7 +218,7 @@
 													await update();
 													if (result.type === 'success') {
 														toaster.success('Modèle dupliqué');
-														await invalidateAll();
+														await refreshAll();
 													}
 													duplicatingId = null;
 												};
@@ -246,7 +246,7 @@
 														await update();
 														if (result.type === 'success') {
 															toaster.success('Modèle supprimé');
-															await invalidateAll();
+															await refreshAll();
 														}
 														deletingId = null;
 													};

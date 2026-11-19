@@ -2,13 +2,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après #2850._
+_Mis à jour le 2026-11-18, après #2853._
 
-- **État** : #2814 à #2830 en prod (0.96.0). #2835 mergée : `version` (= `Date.now()`) retiré de la config Svelte passée à ESLint (empreinte de cache qui changeait à chaque lancement). Ne suffit pas en CI : nocturne à cache restauré = 31 min. #2850 mergée : attente max de `deploy:prod` 1500 → 2700 s (pas encore en prod).
-- **Prochaine action** : les petites dépréciations de kit 3 (`goto` avec options 10, `pushState`/`replaceState` 15, `error(N, { message })` 36, `invalidateAll` 54). `json()`/`text()` (≈ 368 fichiers) REPORTÉS. Puis clore (versement). **Cache ESLint en CI : cause NON trouvée** (§ « Cache ESLint en CI » ci-dessous), recherche mise de côté.
+- **État** : #2814 à #2830 en prod (0.96.0). #2835, #2850, #2853 mergées (pas encore en prod). #2853 = dépréciations de kit 3 sans effet de bord : `invalidateAll` → `refreshAll`, options `goto` `replace`/`refreshAll`, `error(N, message)` ; revues code + sécurité sans finding.
+- **Prochaine action** : clore le chantier (versement du durable dans `docs/systeme/`, journal archivé). Restent hors lot, décidés : `pushState`/`replaceState` **laissés** (§ « Dépréciations de kit 3 » : leur remplaçant déclenche les hooks de navigation) ; `json()`/`text()` (≈ 368 fichiers) REPORTÉS ; cache ESLint en CI : cause NON trouvée (§ « Cache ESLint en CI »), recherche mise de côté.
 - **En attente de David** : rien.
 - **Pièges en cours** : `#lib` exige l'extension écrite (garde `imports-lib-avec-extension`, qui exclut le test de `migrer:diese`) ; limite connue du lint de PR : props importées d'un autre `.svelte` ou type indirect → seul le nocturne les voit ; commitlint refuse un sujet qui commence par une majuscule (« ESLint… ») ; `appNavigationMock` ; suite client en local avec `CI=true`.
 - **Worktree / branche** : aucun.
+
+## Dépréciations de kit 3 (2026-11-18)
+
+- `invalidateAll` → `refreshAll` : seule différence documentée, `refreshAll` ne remet pas `page.state` à `{}` et relance aussi les fonctions distantes. Aucune fonction distante (`$app/server` non importé) ; `page.state` n'est jamais rempli (seulement retransmis) → même effet. Piège : deux méthodes de cache s'appellent aussi `invalidateAll` (`teacherDashboardCache`, `studentDashboardCache`) — à ne pas renommer.
+- `pushState`/`replaceState` **laissés** : le remplaçant `goto(url, { state, shallow: true, replace: true })` passe par `_before_navigate` (le code de kit le dit : « for backwards compatibility we don't trigger navigation hooks etc for push/replaceState »). Effets ici : `navigating.to` → barre et squelette à chaque frappe de la recherche du catalogue ; `beforeNavigate` racine (`shouldReloadOnNavigate`) → rechargement complet si une nouvelle version est en ligne ; `afterNavigate` du Palotin. À rouvrir seulement si kit 4 les retire.
 
 ## Origine
 

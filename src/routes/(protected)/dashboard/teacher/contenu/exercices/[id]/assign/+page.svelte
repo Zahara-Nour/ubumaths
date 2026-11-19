@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { lore } from '#lib/config/lore.ts';
-	import { invalidateAll } from '$app/navigation';
+	import { refreshAll } from '$app/navigation';
 	import { Button } from '#lib/components/ui/button/index.ts';
 	import BackLink from '#lib/components/navigation/BackLink.svelte';
 	import { Input } from '#lib/components/ui/input/index.ts';
@@ -103,7 +103,7 @@
 			studentNotes = '';
 
 			// Reload data
-			await invalidateAll();
+			await refreshAll();
 		} catch (err) {
 			toaster.error(formatUserError(err));
 		} finally {
@@ -147,7 +147,7 @@
 			classNotes = '';
 
 			// Reload data
-			await invalidateAll();
+			await refreshAll();
 		} catch (err) {
 			toaster.error(formatUserError(err));
 		} finally {
@@ -183,7 +183,7 @@
 			publicNotes = '';
 
 			// Reload data
-			await invalidateAll();
+			await refreshAll();
 		} catch (err) {
 			toaster.error(formatUserError(err));
 		} finally {
@@ -218,7 +218,7 @@
 			}
 
 			toaster.success('Assignation supprimée');
-			await invalidateAll();
+			await refreshAll();
 		} catch (err) {
 			toaster.error(formatUserError(err));
 		} finally {

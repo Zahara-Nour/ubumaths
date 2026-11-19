@@ -5,7 +5,7 @@
 -->
 
 <script lang="ts">
-	import { invalidateAll } from '$app/navigation';
+	import { refreshAll } from '$app/navigation';
 	import { Button } from '#lib/components/ui/button/index.ts';
 	import BackLink from '#lib/components/navigation/BackLink.svelte';
 	import { Badge } from '#lib/components/ui/badge/index.ts';
@@ -40,7 +40,7 @@
 	async function handleRefresh() {
 		isRefreshing = true;
 		try {
-			await invalidateAll();
+			await refreshAll();
 			toaster.success('Classement actualise');
 		} catch (err) {
 			console.error('Failed to refresh:', err);
@@ -64,7 +64,7 @@
 
 			toaster.success('Tournoi annule');
 			showCancelDialog = false;
-			await invalidateAll();
+			await refreshAll();
 		} catch (err) {
 			console.error('Failed to cancel tournament:', err);
 			toaster.error(err instanceof Error ? err.message : "Erreur lors de l'annulation");

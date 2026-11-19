@@ -32,7 +32,7 @@
 
 	import type { PageData } from './$types';
 	import { getQuestionType, isCourseQuestion } from '#lib/questions/types.ts';
-	import { goto, invalidateAll } from '$app/navigation';
+	import { goto, refreshAll } from '$app/navigation';
 	import { browser } from '$app/env';
 	import { Button } from '#lib/components/ui/button/index.ts';
 	import { Input } from '#lib/components/ui/input/index.ts';
@@ -453,7 +453,7 @@
 
 				toaster.success('Modèle dupliqué avec succès');
 				// Refresh page
-				goto('/dashboard/admin/questions', { invalidateAll: true }).then(() => {});
+				goto('/dashboard/admin/questions', { refreshAll: true }).then(() => {});
 			} else {
 				toaster.error('Erreur lors de la duplication : ' + result.errors.join(', '));
 			}
@@ -495,7 +495,7 @@
 				deleteConfirmOpen = false;
 				templateToDelete = null;
 				// Refresh page
-				goto('/dashboard/admin/questions', { invalidateAll: true }).then(() => {});
+				goto('/dashboard/admin/questions', { refreshAll: true }).then(() => {});
 			} else {
 				toaster.error('Erreur lors de la suppression');
 			}
@@ -578,7 +578,7 @@
 		if (succeeded && bulkSummary) notifyBulkResult(bulkSummary);
 		questionTemplatesCache.invalidate();
 		try {
-			await invalidateAll();
+			await refreshAll();
 		} catch (err) {
 			console.error('Reload after bulk status change failed:', err);
 			toaster.error(

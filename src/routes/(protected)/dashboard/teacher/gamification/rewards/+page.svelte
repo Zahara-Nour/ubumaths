@@ -65,13 +65,13 @@
 			tab === 'gidouilles'
 				? '/dashboard/teacher/gamification/rewards'
 				: `/dashboard/teacher/gamification/rewards?tab=${tab}`;
-		goto(url, { replaceState: false });
+		goto(url, { replace: false });
 	}
 
 	// Local state for activation requests (enables optimistic updates)
 	let activationRequests = $state<ActivationRequest[]>([]);
 
-	// Sync local state with server data (runs on mount and after invalidateAll)
+	// Sync local state with server data (runs on mount and after refreshAll)
 	$effect(() => {
 		activationRequests = data.activationRequests as ActivationRequest[];
 	});

@@ -7,11 +7,11 @@ Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) · bornes 
 
 _Mis à jour le 2026-11-18, après #2851._
 
-- **État** : lots 0 à 5a publiés ; lot 5b (L7–L9) en prod, rangé et tagué (#2851 jouée, § 41), en brouillon.
-  Restent ensuite les lots 6 à 8 (§ 33).
-- **Prochaine action** : lire les verdicts de la page à cocher du lot 5b (§ 42), puis publier L9 seule
-  (`becf24bc`) tant que #2839 n'est pas en prod.
-- **En attente de David** : relecture de la page à cocher du lot 5b (§ 42).
+- **État** : lots 0 à 5a publiés ; lot 5b relu (3/3 ok), **L9 publiée** (§ 43), L7 et L8 en brouillon (relus,
+  prêts). Restent ensuite les lots 6 à 8 (§ 33).
+- **Prochaine action** : lot 6, fonction inverse (045, 086, 049, 087) : phase 0. Dès que #2839 est en prod :
+  `publier-lot.ts --dir scripts/questions/ttechno-5b-log-resolutions` pour L7 et L8 (David lance `--publier`).
+- **En attente de David** : rien (le `deploy:prod` qui livre #2839 débloquera L7 et L8).
 - **Pièges en cours** : un point TTECHNO par modèle (trigger) ; tag = nœud DU POINT (relevé MCP) ; `publier-lot.ts`,
   `create-questions --publier` visent la prod : David les lance (`!`) ; **L7 et L8 demandent de taper log : à
   publier seulement après le `deploy:prod` qui livre #2839** (L9 n'en dépend pas) ; port 5176 pris par `automaths`.
@@ -957,3 +957,59 @@ dans le dépôt principal, reportés et commités sur la branche de la migration
 - Page à cocher : https://claude.ai/artifact/APGycPrWV53fLcHSp4zD1c (3 fiches : 52b884ee TTECHNO-043, 6 exemples ;
   10bd7075 084, 4 exemples ; becf24bc 085, 4 exemples ; aucune alerte ; tous `draft` ; `verdicts` vide). Rendu à
   390 px non vérifié.
+
+## 43. Lot 5b : publication de L9 (2026-11-18)
+
+- Page à cocher relue : 3 verdicts sur 3 « ok », sans commentaire.
+- L9 seule : `publier-lot.ts --dir <scratchpad>/ttechno-5b-l9` (copie du seul `03-logarithme-seuil-entier.json`,
+  le script ne filtre pas par fichier) ; simulation puis `--publier` par David. Relu en base (MCP) : `becf24bc`
+  `published`, `{T_TECHNO}` ; L7 `52b884ee` et L8 `10bd7075` toujours `draft`.
+- **À faire après le `deploy:prod` qui livre #2839** : publier L7 et L8 (même geste, dossier avec leurs deux
+  fichiers, ou `--dir scripts/questions/ttechno-5b-log-resolutions` : L9 déjà publiée est laissée telle quelle).
+
+## 44. Lot 6 : phase 0, fonction inverse (2026-11-19)
+
+**Relevé prod (MCP, lecture seule)** :
+
+| Point | Nœud (sous-notion)                                    | Modèles rangés aujourd'hui                                                                      |
+| ----- | ----------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| 045   | « définition et courbe » (96c8b0bd, Fonction inverse) | 1048e462 « La fonction inverse » (2de + T_TECHNO, tagué 048 : un seul point TTECHNO par modèle) |
+| 086   | idem                                                  | idem                                                                                            |
+| 049   | « variations et extremums » (2e77d4d9, Dérivation)    | 17 modèles 1re spé / 1re techno / Tle spé : polynômes, eˣ, ln ; aucun avec 1/x                  |
+| 087   | idem                                                  | idem                                                                                            |
+
+- Recherche par contenu sur tous les modèles (« coût moyen », « prix unitaire », « asymptote », « inverse »,
+  `\frac{…}{x}`) : asymptotes de Tle spé (b4f3142b, a4d8dc52, 6248e597 : limites, hors bornes) ; 9755a856
+  (dériver une somme avec 1/x **et √x**, 1re spé : √x hors bornes) ; 2de « 1/x = k, 1/x < k ». **Rien à taguer.**
+- 1048e462 couvre déjà la courbe et l'ensemble de définition (048) ; rien sur les bornes ni les asymptotes.
+- Bornes : 045 et 086 en approche intuitive, notation lim admise pour 1/x, k/x, a + k/x (ltt-6) ; 049 / 087 :
+  P(x) + k/x avec deg P ⩽ 3, forme quotient (x² + 2x + 100)/x admise (ltt-4) ; dérivées : polynômes et 1/x
+  seulement.
+- Outils : ` ```courbe ` trace 1/x (1048e462) ; ` ```variation ` a la double barre (`||`) ; `placer:` dans un repère.
+  À sonder à l'écriture : double barre dans une ligne `variation:` entre deux branches, courbe de x + 1/x sans
+  trait vertical en 0.
+
+**Proposition** (5 modèles neufs, un point chacun, `grades ['T_TECHNO']`, brouillons) :
+
+| #   | Modèle                                 | Point | Contenu (variations)                                                                                                                                   | Niv. |
+| --- | -------------------------------------- | ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------ | ---- |
+| I1  | 1/x pour x très grand ou proche de 0   | 045   | inverses de 0,001, 10⁶, −0,0001 ; « quand x devient très grand, 1/x… » (choix) ; x proche de 0 à droite / à gauche ; notation lim (1/x, k/x, a + k/x)  | 1–2  |
+| I2  | Asymptotes de l'hyperbole, par lecture | 086   | courbe de 1/x, k/x ou a + k/x tracée : droites dont la courbe se rapproche (choix : y = 0, x = 0, y = a) ; équation de l'asymptote horizontale         | 1    |
+| I3  | Étudier f(x) = ax + b + k/x            | 049   | dérivée a − k/x² ; même dénominateur (ax² − k)/x² ; signe de f′ sur ]0 ; +∞[ ; sens de variation ; minimum (valeur et abscisse)                        | 2    |
+| I4  | Coût moyen, prix unitaire              | 049   | CM(x) = C(x)/x écrit (x² + 2x + 100)/x puis x + 2 + 100/x ; production qui rend le coût moyen minimal ; ce coût minimal ; prix unitaire                | 2–3  |
+| I5  | Représenter P(x) + k/x                 | 087   | tableau de valeurs à compléter puis points à placer (`placer:`) ; quelle courbe pour quelle fonction (choix) ; allure tirée d'un tableau de variations | 1–2  |
+
+Plages : a ∈ {1 ; 2 ; 0,5} ; k ∈ {4 ; 9 ; 16 ; 25 ; 100} (carrés : minimum en x = √(k/a) entier) ; contextes x en
+centaines d'unités, x ∈ [1 ; 20].
+
+**Questions à David** :
+
+- **Q27 — Ensemble d'étude** : ]0 ; +∞[ partout (les contextes l'imposent), plus une variation sur ℝ privé de 0
+  avec la double barre dans I3 ? Reco : **oui**.
+- **Q28 — Polynôme de degré 2 ou 3** : une variation x² + k/x dans I3 (f′ = (2x³ − k)/x², k = 16 ou 54, racine
+  cubique entière) ? Reco : **oui, une seule**, le reste en ax + b + k/x.
+- **Q29 — « Représenter » (087)** : faire placer des points dans un repère et choisir l'allure, ou seulement
+  choisir l'allure ? Reco : **les deux** (c'est le verbe du point).
+- **Q30 — Découpage** : un seul lot de 5 modèles ? Reco : **oui** (une page à cocher de 5 fiches).
+- **Question d'accès** (migration de tags, après écriture) : brouillons, personne ne les voit ; publiés, ils
+  apparaissent au catalogue et au cahier de texte de Tle techno seulement. Personne ne perd rien.

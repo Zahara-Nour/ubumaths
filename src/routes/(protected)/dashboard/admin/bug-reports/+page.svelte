@@ -5,7 +5,7 @@
 	 * Displays all bug reports with filtering and management actions.
 	 * Supports batch operations (status change, delete) with selection.
 	 */
-	import { goto, invalidateAll } from '$app/navigation';
+	import { goto, refreshAll } from '$app/navigation';
 	import * as Card from '#lib/components/ui/card/index.ts';
 	import { Button } from '#lib/components/ui/button/index.ts';
 	import BugReportList from '#lib/components/bug-reports/BugReportList.svelte';
@@ -133,7 +133,7 @@
 
 			toaster.success('Rapport mis à jour');
 			detailDialogOpen = false;
-			await invalidateAll();
+			await refreshAll();
 		} catch (error) {
 			const message = error instanceof Error ? error.message : 'Erreur inconnue';
 			toaster.error(message);
@@ -160,7 +160,7 @@
 			toaster.success('Rapport supprimé');
 			deleteDialogOpen = false;
 			detailDialogOpen = false;
-			await invalidateAll();
+			await refreshAll();
 		} catch (error) {
 			const message = error instanceof Error ? error.message : 'Erreur inconnue';
 			toaster.error(message);
@@ -219,7 +219,7 @@
 			batchStatusDialogOpen = false;
 			batchNewStatus = '';
 			clearSelection();
-			await invalidateAll();
+			await refreshAll();
 		} catch (error) {
 			const message = error instanceof Error ? error.message : 'Erreur inconnue';
 			toaster.error(message);
@@ -269,7 +269,7 @@
 
 			batchDeleteDialogOpen = false;
 			clearSelection();
-			await invalidateAll();
+			await refreshAll();
 		} catch (error) {
 			const message = error instanceof Error ? error.message : 'Erreur inconnue';
 			toaster.error(message);

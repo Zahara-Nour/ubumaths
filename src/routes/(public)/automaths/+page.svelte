@@ -1,28 +1,29 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount, tick } from 'svelte';
 	import { page } from '$app/state';
 	import { replaceState } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import SeoHead from '#lib/seo/SeoHead.svelte';
-	import * as Tabs from '#lib/components/ui/tabs/index.ts';
+	import * as Sheet from '#lib/components/ui/sheet/index.ts';
 	import * as Accordion from '#lib/components/ui/accordion/index.ts';
 	import MySelect from '#lib/components/MySelect.svelte';
 	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
 	import CatalogueGallery from '#lib/components/questions/CatalogueGallery.svelte';
+	import CatalogueNotionNav from '#lib/components/questions/CatalogueNotionNav.svelte';
+	import CatalogueNotionSections from '#lib/components/questions/CatalogueNotionSections.svelte';
 	import CartFloatingButton from '#lib/components/CartFloatingButton.svelte';
 	import { Input } from '#lib/components/ui/input/index.ts';
 	import { Button } from '#lib/components/ui/button/index.ts';
+	import { ChevronDown } from '@lucide/svelte';
 	import { questionTemplatesCache } from '#lib/stores/questionTemplates.svelte.ts';
 	import {
 		buildCatalogue,
 		filterTemplatesByGrade,
-		type CatalogueRubric
+		notionTemplateCount
 	} from '#lib/questions/catalogue.ts';
 	import { initiallyOpenGroups, searchCatalogue } from '#lib/questions/catalogue-search.ts';
 	import { GRADE_CODES, GRADES, isGradeCode, type GradeCode } from '#lib/types/grades.ts';
 
-	// Valeur d'accordéon de la rubrique « Général » (elle n'a pas de nœud)
-	const GENERAL_RUBRIC_VALUE = 'general';
 	const UNCLASSIFIED_VALUE = 'non-classes';
 	// Valeur du menu « Niveau » quand aucun niveau n'est choisi
 	const ALL_GRADES_VALUE = 'tous';
@@ -57,7 +58,6 @@
 	// par le serveur.
 	let catalogue = $derived(buildCatalogue(filteredTemplates, questionTemplatesCache.nodes));
 	let hasAnyTemplate = $derived(questionTemplatesCache.templates.length > 0);
-	let branchItems = $derived(catalogue.branches.map((b) => ({ value: b.id, label: b.name })));
 
 	// Recherche : texte du champ, et texte cherché (après le délai de frappe)
 	const initialSearch = initialParams.get(SEARCH_PARAM) ?? '';
@@ -88,21 +88,21 @@
 	// Notion choisie (celle de l'adresse au chargement)
 	let chosenNotionId = $state<string | undefined>(initialParams.get(NOTION_PARAM) ?? undefined);
 
-	// Branche choisie ; sinon celle de la notion choisie ; sinon la première
-	let chosenBranchId = $state<string | undefined>(undefined);
+	// Branche de la notion choisie ; sinon la première (notion absente au niveau, ou inconnue)
 	let selectedBranch = $derived(
-		catalogue.branches.find((b) => b.id === chosenBranchId) ??
-			catalogue.branches.find((b) => b.notions.some((n) => n.id === chosenNotionId)) ??
+		catalogue.branches.find((b) => b.notions.some((n) => n.id === chosenNotionId)) ??
 			catalogue.branches[0]
 	);
 
-	// Notion affichée : la choisie si la branche l'a, sinon sa première
+	// Notion affichée : la choisie si elle existe au niveau, sinon la première
 	let selectedNotion = $derived(
 		selectedBranch?.notions.find((n) => n.id === chosenNotionId) ?? selectedBranch?.notions[0]
 	);
 
-	// Rubriques dépliées de la notion affichée (valeurs des Accordion.Item)
-	let openRubrics = $state<string[]>([]);
+	// Téléphone : liste des notions dans un panneau du bas
+	let notionSheetOpen = $state(false);
+	// Haut de la notion affichée : on y remonte en changeant de notion
+	let notionTop = $state<HTMLElement | null>(null);
 	let openUnclassified = $state<string[]>([]);
 
 	/**
@@ -120,21 +120,18 @@
 		return new URLSearchParams();
 	}
 
-	function rubricValue(rubric: CatalogueRubric): string {
-		return rubric.id ?? GENERAL_RUBRIC_VALUE;
-	}
-
-	function handleBranchChange(value: string) {
-		chosenBranchId = value;
-		chosenNotionId = undefined;
-		openRubrics = [];
+	async function handleNotionSelect(notionId: string) {
+		chosenNotionId = notionId;
+		notionSheetOpen = false;
 		writeChoicesToUrl();
-	}
-
-	function handleNotionChange(value: string | undefined) {
-		chosenNotionId = value;
-		openRubrics = [];
-		writeChoicesToUrl();
+		// Panneau refermé et notion rendue avant de défiler (le panneau bloque le défilement)
+		await tick();
+		// Choisie après avoir descendu : on remonte au début de la notion
+		if (notionTop && notionTop.getBoundingClientRect().top < 0) {
+			notionTop.scrollIntoView({ block: 'start' });
+		}
+		// Clavier, lecteur d'écran : le focus passe au titre de la notion choisie
+		document.getElementById('notion-titre')?.focus({ preventScroll: true });
 	}
 
 	/**
@@ -302,23 +299,6 @@
 		</div>
 
 		<div class="mb-6 flex flex-wrap items-center gap-x-8 gap-y-4">
-			{#if selectedBranch && !searchResult}
-				<!-- Branche -->
-				<div class="flex items-center gap-4">
-					<label for="branch-select" class="shrink-0 text-sm font-medium whitespace-nowrap"
-						>Branche :</label
-					>
-					<MySelect
-						id="branch-select"
-						items={branchItems}
-						value={selectedBranch.id}
-						onValueChange={handleBranchChange}
-						triggerAriaLabel={`Branche : ${selectedBranch.name}`}
-						triggerClass="w-full sm:w-80"
-					/>
-				</div>
-			{/if}
-
 			<!-- Niveau : seul, ou avec les niveaux inférieurs -->
 			<div class="flex flex-wrap items-center gap-4">
 				<label for="grade-select" class="shrink-0 text-sm font-medium whitespace-nowrap"
@@ -343,7 +323,7 @@
 		</div>
 
 		{#if searchResult}
-			<!-- Résultats de la recherche, à la place du menu Branche et des onglets -->
+			<!-- Résultats de la recherche, à la place de la liste des notions -->
 			{#if searchResult.total === 0}
 				<div class="space-y-4 rounded-lg border border-dashed p-12 text-center">
 					<p class="text-muted-foreground">Aucune question pour « {searchQuery.trim()} »</p>
@@ -387,51 +367,52 @@
 			</p>
 		{/if}
 
-		{#if selectedBranch && !searchResult}
-			<!-- Notions -->
-			<Tabs.Root value={selectedNotion?.id} onValueChange={handleNotionChange}>
-				<Tabs.List class="mb-6 flex-wrap border border-border !bg-transparent">
-					{#each selectedBranch.notions as notion (notion.id)}
-						<Tabs.Trigger value={notion.id} class="flex items-center gap-2">
-							{notion.name}
-						</Tabs.Trigger>
-					{/each}
-				</Tabs.List>
+		{#if selectedBranch && selectedNotion && !searchResult}
+			{@const notion = selectedNotion}
+			<!-- Notions : colonne à gauche (grand écran), panneau du bas (téléphone) -->
+			<div class="lg:grid lg:grid-cols-[16rem_minmax(0,1fr)] lg:gap-8">
+				<aside class="hidden lg:block">
+					<div class="sticky top-4 max-h-[calc(100vh-2rem)] overflow-y-auto pr-2">
+						<CatalogueNotionNav
+							branches={catalogue.branches}
+							selectedNotionId={notion.id}
+							onselect={handleNotionSelect}
+						/>
+					</div>
+				</aside>
 
-				{#each selectedBranch.notions as notion (notion.id)}
-					<Tabs.Content value={notion.id} class="space-y-6 bg-transparent">
-						<!-- bits-ui garde les onglets inactifs dans le DOM (hidden) : seul l'onglet
-						     choisi porte les rubriques, sinon chaque notion les répéterait -->
-						{#if notion.id === selectedNotion?.id}
-							<Accordion.Root
-								type="multiple"
-								bind:value={openRubrics}
-								class="space-y-4 rounded-lg border-border bg-background"
-							>
-								{#each notion.rubrics as rubric (rubricValue(rubric))}
-									<Accordion.Item
-										value={rubricValue(rubric)}
-										class="rounded-lg border !border-b-0 bg-background"
-									>
-										<Accordion.Trigger
-											class="bg-background px-4 hover:bg-muted/50 hover:no-underline"
-										>
-											<span class="font-medium text-foreground">{rubric.name}</span>
-										</Accordion.Trigger>
-										<Accordion.Content class="bg-background px-4 pt-2 pb-4">
-											<!-- bits-ui rend aussi le contenu FERMÉ (hidden) : la galerie, et
-											     ses aperçus, ne sont montés qu'à l'ouverture de la rubrique -->
-											{#if openRubrics.includes(rubricValue(rubric))}
-												<CatalogueGallery templates={rubric.templates} />
-											{/if}
-										</Accordion.Content>
-									</Accordion.Item>
-								{/each}
-							</Accordion.Root>
-						{/if}
-					</Tabs.Content>
-				{/each}
-			</Tabs.Root>
+				<div bind:this={notionTop} class="min-w-0 scroll-mt-4">
+					<Button
+						variant="outline"
+						class="mb-4 w-full justify-between lg:hidden"
+						onclick={() => (notionSheetOpen = true)}
+					>
+						<span class="truncate">
+							Notion : {notion.name} · {notionTemplateCount(notion)}
+						</span>
+						<ChevronDown class="h-4 w-4 shrink-0" aria-hidden="true" />
+					</Button>
+
+					{#key notion.id}
+						<CatalogueNotionSections {notion} />
+					{/key}
+				</div>
+			</div>
+
+			<Sheet.Root bind:open={notionSheetOpen}>
+				<Sheet.Content side="bottom" class="max-h-[80vh] overflow-y-auto">
+					<Sheet.Header>
+						<Sheet.Title>Notions</Sheet.Title>
+					</Sheet.Header>
+					<div class="px-4 pb-6">
+						<CatalogueNotionNav
+							branches={catalogue.branches}
+							selectedNotionId={notion.id}
+							onselect={handleNotionSelect}
+						/>
+					</div>
+				</Sheet.Content>
+			</Sheet.Root>
 		{/if}
 
 		{#if catalogue.unclassified.length > 0 && !searchResult}

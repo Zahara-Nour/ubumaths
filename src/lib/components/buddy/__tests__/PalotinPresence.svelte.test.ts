@@ -29,7 +29,7 @@ vi.mock('$app/state', () => ({ page: pageState }));
 vi.mock('$app/navigation', () => ({
 	afterNavigate: vi.fn(),
 	goto: vi.fn(),
-	invalidateAll: vi.fn()
+	refreshAll: vi.fn()
 }));
 
 // Constantes

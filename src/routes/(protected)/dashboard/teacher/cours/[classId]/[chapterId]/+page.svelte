@@ -27,7 +27,7 @@
 	 */
 
 	import { applyAction, enhance } from '$app/forms';
-	import { goto, invalidateAll } from '$app/navigation';
+	import { goto, refreshAll } from '$app/navigation';
 	import { navigating } from '$app/state';
 	import { Button } from '#lib/components/ui/button/index.ts';
 	import BackLink from '#lib/components/navigation/BackLink.svelte';
@@ -135,7 +135,7 @@
 				toaster.warning(form.warning);
 			}
 
-			invalidateAll();
+			refreshAll();
 		} else if (form?.error) {
 			toaster.error(form.error);
 		}
@@ -364,7 +364,7 @@
 	takenExerciseIds={data.exercises.map((e) => e.exerciseId)}
 	takenWorksheetIds={data.worksheets.map((w) => w.worksheetId)}
 	takenSeriesIds={data.chapterSeries.map((cs) => cs.seriesId)}
-	onDocumentAdded={() => invalidateAll()}
+	onDocumentAdded={() => refreshAll()}
 />
 
 <!--

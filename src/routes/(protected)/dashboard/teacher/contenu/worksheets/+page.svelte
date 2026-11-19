@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { WORKSHEET_TYPE_LABELS, WORKSHEET_TYPE_OPTIONS } from '#lib/utils/worksheet-constants.ts';
 	import { lore } from '#lib/config/lore.ts';
-	import { goto, invalidateAll } from '$app/navigation';
+	import { goto, refreshAll } from '$app/navigation';
 	import { page } from '$app/state';
 	import { Button } from '#lib/components/ui/button/index.ts';
 	import { Input } from '#lib/components/ui/input/index.ts';
@@ -75,7 +75,7 @@
 			}
 
 			toaster.success('Feuille supprimée');
-			await invalidateAll();
+			await refreshAll();
 		} catch (error) {
 			console.error('Delete error:', error);
 			toaster.error(error instanceof Error ? error.message : 'Erreur lors de la suppression');
@@ -102,7 +102,7 @@
 			}
 
 			toaster.success('Feuille dupliquee');
-			await invalidateAll();
+			await refreshAll();
 		} catch (error) {
 			console.error('Duplicate error:', error);
 			toaster.error(error instanceof Error ? error.message : 'Erreur lors de la duplication');

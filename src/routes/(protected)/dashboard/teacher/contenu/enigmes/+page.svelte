@@ -20,7 +20,7 @@
 	import * as DropdownMenu from '#lib/components/ui/dropdown-menu/index.ts';
 	import { MarkdownRenderer } from '#lib/components/markdown/index.ts';
 	import { toaster } from '#lib/stores/toaster.svelte.ts';
-	import { invalidateAll } from '$app/navigation';
+	import { refreshAll } from '$app/navigation';
 	import {
 		Plus,
 		MoreVertical,
@@ -56,7 +56,7 @@
 
 		if (result.type === 'success') {
 			toaster.success('Énigme supprimée');
-			await invalidateAll();
+			await refreshAll();
 		} else {
 			toaster.error('Erreur lors de la suppression');
 		}
@@ -77,7 +77,7 @@
 
 		if (result.type === 'success') {
 			toaster.success(riddle.status === 'draft' ? 'Énigme publiée' : 'Énigme mise en brouillon');
-			await invalidateAll();
+			await refreshAll();
 		} else {
 			toaster.error('Erreur lors de la mise à jour');
 		}

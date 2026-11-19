@@ -4,7 +4,7 @@
 	 *
 	 * Displays user's own bug reports with filtering.
 	 */
-	import { goto, invalidateAll } from '$app/navigation';
+	import { goto, refreshAll } from '$app/navigation';
 	import * as Card from '#lib/components/ui/card/index.ts';
 	import { Button } from '#lib/components/ui/button/index.ts';
 	import BugReportList from '#lib/components/bug-reports/BugReportList.svelte';
@@ -52,7 +52,7 @@
 		createDialogOpen = open;
 		if (!open) {
 			// Refresh data after closing
-			invalidateAll();
+			refreshAll();
 		}
 	}
 

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { lore } from '#lib/config/lore.ts';
 	import { enhance } from '$app/forms';
-	import { invalidateAll } from '$app/navigation';
+	import { refreshAll } from '$app/navigation';
 	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import UserAvatar from '#lib/components/UserAvatar.svelte';
 	import MySelect from '#lib/components/MySelect.svelte';
@@ -232,7 +232,7 @@
 							return async ({ result }) => {
 								if (result.type === 'success') {
 									toaster.success('Amitié supprimée');
-									await invalidateAll();
+									await refreshAll();
 								} else {
 									toaster.error("Impossible de supprimer l'amitié");
 								}

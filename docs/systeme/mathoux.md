@@ -319,7 +319,7 @@ et « Lunettes et chapeaux » ci-dessous.
 - **Où** : dans la Chatterie, « Décorer » sur chaque Mathou né ouvre `ChatterieDecorer` : les six
   dessinées sur CE Mathou, avec le prix, « Achetée » ou « Portée par … », et « Acheter »,
   « Poser » ou « Retirer » ; « Il te manque N gidouilles » à la place d'« Acheter » ; sans
-  consentement, « Acheter » est grisé et une phrase le dit. Après chaque action, `invalidateAll`.
+  consentement, « Acheter » est grisé et une phrase le dit. Après chaque action, `refreshAll`.
   Une lecture des achats en échec n'empêche pas la Chatterie : pas de « Décorer ». Dans l'onglet
   Boutique du Marché, `MathouDecorationsShowcase` montre les six sur un matou noir avec leur prix et
   mène à la Chatterie, **sans achat** (le Marché peut être fermé).

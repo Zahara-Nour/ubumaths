@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import { invalidateAll } from '$app/navigation';
+	import { refreshAll } from '$app/navigation';
 	import { Button } from '#lib/components/ui/button/index.ts';
 	import PlayerPanel from '#lib/components/game/combat/PlayerPanel.svelte';
 	import MonsterPanel from '#lib/components/game/combat/MonsterPanel.svelte';
@@ -256,7 +256,7 @@
 				}
 
 				// Refresh data
-				await invalidateAll();
+				await refreshAll();
 			} else {
 				console.error('[handleChallengeSubmit] Server error:', response.status);
 				toaster.error('Erreur lors de la validation de la réponse');

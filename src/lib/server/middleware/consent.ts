@@ -74,9 +74,7 @@ export function canPerformAction(profile: ConsentProfile, _action: RestrictedAct
 export function requireConsent(profile: ConsentProfile, action: RestrictedAction): void {
 	if (!canPerformAction(profile, action)) {
 		const actionMessage = ACTION_MESSAGES[action];
-		throw error(403, {
-			message: `Consentement parental requis pour ${actionMessage}. Voir avec l’enseignant.`
-		});
+		throw error(403, `Consentement parental requis pour ${actionMessage}. Voir avec l’enseignant.`);
 	}
 }
 
