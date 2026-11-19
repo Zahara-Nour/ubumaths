@@ -5,20 +5,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, après #2857 (rangement du lot 8e) ; page à cocher publiée._
+_Mis à jour le 2026-11-19 ; PR de la migration de contenu du 04 en cours (§ 25 octies)._
 
-- **État** : lots 0 à 8d publiés, **148 points du CM1 sur 171** ; lot 8e : 5 brouillons en prod, rangés et tagués
-  (#2857, migration passée) ; page à cocher publiée (§ 25 sexies).
-- **Prochaine action** : 5 OK sur 5 ; correction du modèle 04 faite (§ 25 sexies) : PR, CI, merge ; David lance
-  `create-questions.ts --dir scripts/questions/cm1-8e --publier --mettre-a-jour` puis `publier-lot` ; recompte.
-  Ensuite le lot 8f (modèles 8 à 14 du § 25), puis 9.
-- **En attente de David** : rien avant le merge.
-- **Pièges en cours** : création en prod = `pnpm tsx scripts/create-questions.ts --dir … --publier` (pas de script
-  `pnpm create-questions`) ; la lancer, comme `db:migrate`, **depuis le worktree** (lien `supabase/.temp/` copié) ;
-  commitlint refuse le type `content` et un corps > 100 caractères par ligne ; le mode auto refuse `publier-lot`
-  et `garde-niveaux-tags` : David les lance ; 17 copies `[essai 8e]` en base locale ; `ci-lint-fichiers.test.ts`
-  dépasse parfois ses 5 s en CI (relancer le job) ; `\text{…}` long dans une formule ne se coupe pas à 390 px.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, branche `feat/questions-cm1-lot8e-relecture`.
+- **État** : lots 0 à 8e publiés, **153 points du CM1 sur 171** (CM2 115/158). Le modèle 04 (b423785d) porte
+  encore en prod l'ancienne correction (déborde à 390 px) ; migration `20261119060346_questions_cm1_lot8e_04_contenu`
+  écrite, test d'intégration rouge sans elle puis 9/9 vert (md5 de la prod vérifié).
+- **Prochaine action** : PR → CI verte → merge → `db:migrate` depuis la branche mergée (additive, 4 conditions
+  réunies : accès inchangé, preuve rouge, contenu seul, rollback écrit) → vérifier au MCP (`strpos` nouvelle
+  phrase). Ensuite le lot 8f (modèles 8 à 14 du § 25), puis 9.
+- **En attente de David** : rien.
+- **Pièges en cours** : création en prod = `pnpm tsx scripts/create-questions.ts --dir … --publier
+[--mettre-a-jour]`, depuis le worktree ; `--mettre-a-jour` ne touche JAMAIS un publié : le lancer AVANT
+  `publier-lot`, et vérifier au MCP entre les deux ; commitlint refuse le type `content` et un corps > 100
+  caractères par ligne ; le mode auto refuse `publier-lot` et `garde-niveaux-tags` : David les lance ;
+  `lot-cm1-8e.py` réécrit les JSON SANS leur `id` ; `ci-lint-fichiers.test.ts` dépasse parfois ses 5 s en CI.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, branche `feat/questions-cm1-lot8e-correctif`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -2144,3 +2145,28 @@ reste en D ; niveaux **CM1 et CM2** et tag des deux points (109/098, 110/099, 11
   régénéré, id gardé ; diff d'une ligne). Simulation `create-questions` : 04 « CONTENU DIFFÉRENT », les 4 autres
   identiques. Page régénérée : 390 px sans défilement horizontal, aucune erreur de console. À la mise en prod :
   `create-questions.ts --dir scripts/questions/cm1-8e --publier --mettre-a-jour`, puis `publier-lot`.
+
+### 25 septies. Lot 8e — publié, correction du 04 manquée (2026-11-19)
+
+- #2863 mergée. David a lancé `create-questions … --publier --mettre-a-jour` et `publier-lot … --publier`.
+  Vérifié au MCP : 5 modèles `published` ; recompte **CM1 153/171** (148 + 5), CM2 115/158.
+- Le modèle 04 (b423785d) porte encore l'ancienne phrase (`strpos` au MCP : ancienne vraie, nouvelle fausse) ;
+  la simulation dit toujours « CONTENU DIFFÉRENT ». Cause probable : modèle déjà publié au passage de
+  `--mettre-a-jour`, qui laisse les modèles publiés. Je n'ai pas vérifié au MCP entre les deux commandes.
+- David : « je ne veux rien faire manuellement » (pas d'édition dans l'appli). Voies (a) migration de données,
+  (b) option de `create-questions` sur modèle publié : à trancher (Reprendre ici).
+- David : « je te suis » → voie (a), migration de données qui remplace la phrase du modèle 04 publié.
+
+### 25 octies. Migration de contenu du modèle 04 (2026-11-19)
+
+- Relevé MCP : b423785d `published`, `{CM1}`, md5(variations) `3dda5f67…`, md5(test_specs) `954a7dcc…`, ancienne
+  phrase présente. « Avant » reconstruit depuis le fichier du lot (ancienne phrase remise) : même md5 que la
+  prod, donc aucun contenu recopié à la main.
+- Générateur `docs/wip/questions/cm1-8e-04-contenu.py` (gabarit `questions-1techno/83b1f614-contenu.py`) →
+  migration `20261119060346_questions_cm1_lot8e_04_contenu.sql` et fixture
+  `tests/integration/fixtures/questions-cm1-lot8e-04-contenu.json`. Garde : variations EXACTEMENT celles de la
+  prod, sinon refus ; modèle absent (base locale) : rien. Rollback écrit, gardé.
+- Test `tests/integration/questions-cm1-lot8e-04-contenu.test.ts` : rouge migration vidée (2 échecs + bloc
+  principal en échec au `beforeAll`), 9/9 vert avec elle.
+- Accès : aucune policy ne change ; seule une phrase de corrigé change.
+- Outil manquant noté : `outils-manquants.md` n° 41 (corriger un publié sans migration écrite par modèle).
