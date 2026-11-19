@@ -5,18 +5,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, lot 13 écrit (§ 20)._
+_Mis à jour le 2026-11-19, lot 13 en prod en brouillon (§ 20)._
 
-- **État** : lot 13 (`ce1-13/`, 5 modèles : 001, 002, 003, 074 ×2) écrit, tout vert ; PR des fichiers ouverte.
+- **État** : lot 13 (`ce1-13/`, 5 modèles : 001, 002, 003, 074 ×2) écrit, tout vert ; #2920 mergée ; 5 brouillons en prod ; PR rangement + tags ouverte.
   Prod : 100 points sur 107 ; après ce lot, 001, 002, 074 couverts (103, les 4 D hors appli).
-- **Prochaine action** : merge de la PR ; `create-questions --publier` (David) ; PR rangement + tags : 5 neufs, et
-  `aaebfe52` → CE1-001, `2fafe84d` → CE1-002 avec le niveau CE1 ajouté (§ 20, décision 1) ; page à cocher ; publication.
+- **Prochaine action** : PR rangement + tags (CI, `check:migrations`, merge, `db:migrate` par David après
+  `migration list --linked`, vérification MCP) ; page à cocher ; `publier-lot` (David).
 - **En attente de David** : essai tablette des cases « figure » (`verifications-manuelles.md`, ne bloque plus) ;
   futur chantier « `\textcolor` hors formule » (53 fichiers de lots).
 - **Pièges en cours** : jamais de variable `e` ni `i` ; mots en couleur = `colt()` ; `{{if:…}}` : jamais `||` dans la
   condition (le `|` sépare les branches), `mod(d,10)` ; droite de l'équerre orientée par $[AB]$ (§ 20) ; niveaux relevés
   juste avant la publication ; `publier-lot` = tout le dossier ou rien ; port 5176 pris par une autre session.
-- **Worktree / branche** : `../ubumaths-wt-questions-ce1` sur `feat/questions-ce1-lot13`.
+- **Worktree / branche** : `../ubumaths-wt-questions-ce1` sur `chore/questions-ce1-lot13-rangement`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-26)
 
@@ -978,3 +978,10 @@ Décisions (David, « je te suis », 2026-11-19) :
   et `sonde-figures` 600 blocs, 0 problème ; 5 brouillons en base locale. **Piège** : la droite de l'équerre s'écrit
   `droite(A ; A + AB tourné d'un quart de tour)` (`perpendicularThrough`) : avec $B$ à gauche de $A$, le second point
   part vers le bas. Aperçu admin non joué : Chrome n'ouvre pas `http://[::1]:5177`.
+- 2026-11-19 : #2920 mergée ; `create-questions --publier` (David) : 5 brouillons en prod (`6140dae0`, `2647fb0f`,
+  `7e23cca8`, `14400c15`, `3b5c6c13`), sans nœud ni tag (MCP). Relevé `etat-prod-2026-11-19-ce1-13/` (copie
+  `releve-prod-ce1-ce2.ts` : points CE1 et CE2), générateur `lot-ce1-13-rangement.py`, migration
+  `20261119213641` (7 modèles : 5 rangés, 2 niveaux CE2 → CE1, CE2 ; 7 tags posés, 2 gardés) ; test d'intégration
+  21 verts, rouge sans la migration (10 échecs, suite principale arrêtée).
+- 2026-11-19 : `security-auditor` : aucun finding bloquant (personne ne gagne ni ne perd de lecture ; `updated_at`
+  préservé, nécessaire aux statistiques d'erreurs de `point-errors.ts` ; prod conforme au relevé).

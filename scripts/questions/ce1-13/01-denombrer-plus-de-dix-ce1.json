@@ -1,4 +1,5 @@
 {
+	"id": "6140dae0-a92e-4f30-bae4-5f2c8559b32b",
 	"title": "Dénombrer quand il y a plus de dix objets d'un rang",
 	"description": "Plaques, barres, cubes jusqu'à 999 ; plus de dix cubes, plus de dix barres, ou les deux",
 	"grades": ["CE1"],
