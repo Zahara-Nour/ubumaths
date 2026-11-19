@@ -8,7 +8,7 @@
  * Proportionnalité > Situations de proportionnalité (et caractérisation) pour 129 et 130 ; tag du
  * point posé, et de son jumeau CM2-109 pour le modèle de 124 (CM1 + CM2). Aucun niveau ni statut ne
  * change, aucun nœud créé. Décisions de David du 2026-11-19 (journal
- * docs/wip/questions-cm1-progress.md § 26, 26 bis).
+ * docs/archive/wip/questions-cm1-progress.md § 26, 26 bis).
  *
  * Les modèles n'existent qu'en production. Le test fabrique donc l'état de la prod — des copies
  * minimales portant les VRAIS identifiants, à leur nœud (ou sans), à leurs niveaux, à leur statut et

@@ -1,6 +1,6 @@
 /**
  * Droite graduée : une étiquette en fraction (23/10) est montrée en entier
- * (`docs/wip/questions-cm1-progress.md` § 10 ter : le dénominateur était coupé,
+ * (`docs/archive/wip/questions-cm1-progress.md` § 10 ter : le dénominateur était coupé,
  * math-field de 42 px dans une zone de 30 px)
  *
  * Rendu dans <main> : décor réel de l'application (`app.css` y impose des règles).
