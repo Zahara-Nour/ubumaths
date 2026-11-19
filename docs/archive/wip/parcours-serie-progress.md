@@ -1,19 +1,17 @@
 ---
-status: en cours
+status: clos le 2026-11-19 (#2890)
 ---
 
 # Chantier `parcours-serie` — vue « Parcours » d'une série dans `/dev/modeles`
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, avant la PR._
+_Mis à jour le 2026-11-19, après #2890._
 
-- **État** : PR 1 prête (parcours, arbre repliable, plateau sombre sous les cartes), validée à l'œil
-  par David sur le serveur de test · **Prochaine action** : relecture `code-reviewer`, PR, CI,
-  merge ; puis archiver ce journal (le durable est dans `docs/systeme/questions.md`) ·
-  **En attente de David** : rien · **Pièges en cours** : série d'essai créée en base LOCALE
-  seulement (`6411f128`, « La médiatrice d'un segment (essai local) ») · **Worktree / branche** :
-  `ubumaths-wt-parcours-serie`, `feat/parcours-serie`
+- **État** : clos — parcours d'une série en `/dev/modeles` mergé (#2890) ; le durable est dans
+  `docs/systeme/questions.md` (« Parcours d'une série ») · **Prochaine action** : aucune ·
+  **En attente de David** : rien · **Pièges en cours** : série d'essai en base LOCALE seulement
+  (`6411f128`) · **Worktree / branche** : supprimés
 
 ## But
 
@@ -55,3 +53,4 @@ Tester une série : la progression est-elle juste, manque-t-il des modèles int�
 - Retours de David : arbre des programmes repliable (fait) ; en sombre, cartes noyées dans la
   rangée (même fond `card`) → plateau plus sombre sous les cartes (fait, « c'est bien »).
 - Piège : `$app/environment` est déprécié (kit 3) → `$app/env`, sinon typecheck en erreur.
+- #2890 mergé (CI verte, revue `code-reviewer` : 2 mineurs corrigés). Journal archivé.
