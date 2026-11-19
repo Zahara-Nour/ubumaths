@@ -7,7 +7,7 @@
  * coder un déplacement (3) et Solides > constructions (1, son point est sur la notion Solides) ;
  * tag du point du CM1 (115 à 119) et de son jumeau du CM2 (100, 101, 103, 104, 105) posés.
  * Aucun niveau ni statut ne change, aucun nœud créé. Décisions de David du 2026-11-18 (journal
- * docs/wip/questions-cm1-progress.md § 25, 25 bis, 25 nonies).
+ * docs/archive/wip/questions-cm1-progress.md § 25, 25 bis, 25 nonies).
  *
  * Les modèles n'existent qu'en production. Le test fabrique donc l'état de la prod — des copies
  * minimales portant les VRAIS identifiants, à leur nœud (ou sans), à leurs niveaux, à leur statut et

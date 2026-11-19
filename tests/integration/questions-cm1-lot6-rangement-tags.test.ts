@@ -6,7 +6,7 @@
  * sans nœud ni tag) vont sur la sous-notion de « Problèmes arithmétiques » qui porte leur point, tag
  * posé (CM1-054 deux fois, 055, 056 deux fois, 057, 058, 059, 060, 134). Aucun niveau ni statut ne
  * change, aucun nœud créé. Décisions de David du 2026-11-15 (journal
- * docs/wip/questions-cm1-progress.md § 16, 16 bis).
+ * docs/archive/wip/questions-cm1-progress.md § 16, 16 bis).
  *
  * Les modèles n'existent qu'en production. Le test fabrique donc l'état de la prod — des copies
  * minimales portant les VRAIS identifiants, à leur nœud (ou sans), à leurs niveaux, à leur statut et

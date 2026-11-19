@@ -5,7 +5,7 @@
  * Migration `20261116193751_questions_cm1_lot6bis_rangement_tags` : les 7 brouillons du lot 6 bis
  * (créés sans nœud ni tag) vont sur la sous-notion de « Nombres et calculs » qui porte leur point,
  * tag posé (CM1-001, 002, 131, 143, 010, 024, 048). Aucun niveau ni statut ne change, aucun nœud
- * créé. Décisions de David du 2026-11-16 (journal docs/wip/questions-cm1-progress.md § 17, 17 bis).
+ * créé. Décisions de David du 2026-11-16 (journal docs/archive/wip/questions-cm1-progress.md § 17, 17 bis).
  *
  * Les modèles n'existent qu'en production. Le test fabrique donc l'état de la prod — des copies
  * minimales portant les VRAIS identifiants, à leur nœud (ou sans), à leurs niveaux, à leur statut et
