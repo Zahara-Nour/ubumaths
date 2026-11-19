@@ -1,4 +1,5 @@
 {
+	"id": "e1f02c23-582c-4e7e-b5a0-20578e66f834",
 	"title": "Que dit le tableau ? (grands nombres, décimaux, double entrée)",
 	"description": "Le pays le plus peuplé (neuf chiffres), le colis le plus léger (2,125 contre 2,3 : le plus long n'est pas le plus grand), l'année la plus pluvieuse d'une ville (double entrée), combien de kg de plus pèse un colis (centièmes)",
 	"grades": ["CM2"],

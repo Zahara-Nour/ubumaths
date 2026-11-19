@@ -1,4 +1,5 @@
 {
+	"id": "aff8498b-3e20-4d2b-9ca9-ba5150a33d87",
 	"title": "Que dit le diagramme en barres ? (visiteurs du musée)",
 	"description": "Combien de visiteurs de plus un mois que le précédent (axe de 250), le mois du plus petit nombre de visiteurs (case choix, axe de 500), pendant combien de mois le musée a dépassé un seuil",
 	"grades": ["CM2"],

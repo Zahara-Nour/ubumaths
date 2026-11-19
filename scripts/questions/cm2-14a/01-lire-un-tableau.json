@@ -1,4 +1,5 @@
 {
+	"id": "c382e240-277c-44eb-a79d-e6a763daa8bf",
 	"title": "Lis un tableau (grands nombres, décimaux, double entrée)",
 	"description": "Pays inventés : le nombre d'habitants d'un pays (jusqu'à 999 999 999), le pays qui a un nombre d'habitants donné (case choix, neuf chiffres) ; la masse d'un animal en kg (millièmes) ; la pluie d'une ville une année (tableau à double entrée)",
 	"grades": ["CM2"],

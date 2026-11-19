@@ -1,4 +1,5 @@
 {
+	"id": "9d601156-86e1-4b56-ac11-f6cbf96182b4",
 	"title": "Lis le diagramme en barres (axe de 100, 200 ou 500)",
 	"description": "Visiteurs d'un musée chaque mois : lire une barre sur un axe gradué de 100 en 100, de 500 en 500, une barre entre deux traits (axe de 200 en 200), puis le mois d'une barre donnée (case choix)",
 	"grades": ["CM2"],
