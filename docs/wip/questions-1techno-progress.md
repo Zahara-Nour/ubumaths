@@ -8,15 +8,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, après #2861 (migration du lot 6 appliquée)._
+_Mis à jour le 2026-11-19, après la publication du lot 6._
 
-- **État** : lots 1 à 5 clos. Lot 6 : P1-P5 brouillons rangés et tagués en prod ; 97b3a376 retiré de la 1re techno.
-- **Prochaine action** : lire les verdicts de la page à cocher https://claude.ai/artifact/Suw63yXmSoVJwy2NTCfS9Y
-  (collection `verdicts`) → corrections éventuelles → publication par David (`publier-lot.ts`, simulation puis
-  `--publier`) → lot 6 clos ; puis lot suivant du découpage (§ 23).
-- **En attente de David** : verdicts de P1-P5. 1TECHNO-137 n'a pas de modèle publié de 1re techno tant que P4 ne l'est pas.
+- **État** : les 6 lots du découpage (§ 23) sont clos. Relevé prod : 114 points STMG sur 117 ont un modèle publié ;
+  restent 012 et 143 (Q8 : sans modèle) et 042, dont le seul modèle, c90fa022 (brouillon commun 1SPE/1GEN/1TECHNO),
+  n'a jamais été publié.
+- **Prochaine action** : selon la réponse de David sur c90fa022, puis clôture (recompter le découpage, versement
+  dans `docs/systeme/`, archivage du journal).
+- **En attente de David** : publier c90fa022 (relu à la Q4 : v3 gardée) ou le laisser ?
 - **Pièges en cours** : questions-1gen à prévenir (4 communs du lot 5). `Doc-inchangée:` dans un COMMIT.
-- **Worktree / branche** : aucun (worktree du lot 6 retiré) ; nouveau worktree pour le prochain lot de code.
+- **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, 2026-11-17)
 
@@ -980,3 +981,10 @@ PR #2861 mergée (go de David sur la partie destructive ; CI verte, `check:migra
 --linked` : seule `20261119052352` en attente → `db:migrate`. Vérifié MCP : P1-P5 brouillons `{1_TECHNO}` sur le nœud de
 leur point, tag 090, 097, 136, 137, 013 ; 97b3a376 publié `{1_SPE}`, seul tag 1SPE-353, nœud inchangé ; `updated_at`
 inchangés. Page à cocher (`db`, collection `verdicts`) : https://claude.ai/artifact/Suw63yXmSoVJwy2NTCfS9Y
+
+### Lot 6 — publié (2026-11-19)
+
+Verdicts P1-P5 : 5 « ok » sur 5, sans commentaire. David a lancé `publier-lot.ts` (simulation puis `--publier`).
+Vérifié MCP : les 5 `published`. **Lot 6 clos ; découpage du § 23 terminé.**
+Relevé prod (2026-11-19) : 117 points STMG, 3 sans modèle publié — 012, 143 (Q8) et 042 (c90fa022 brouillon,
+`{1_SPE,1_TECHNO,1_GEN}`, créé le 2026-10-01, jamais publié).
