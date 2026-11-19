@@ -6,20 +6,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, pendant le lot 14a._
+_Mis à jour le 2026-11-19, après #2885 (lot 14a rangé)._
 
-- **État** : lots 0 à 13 publiés ; lot 14a (6 modèles, § 21) écrit et essayé en local, PR des fichiers à ouvrir.
-  Restent les lots 14b à 19 du § 14 (15 sans 109, 18 sans 087 ni 094 : § 21.1 ; 19 réduit à CM2-102 : § 19.4).
-- **Prochaine action** : PR des fichiers du lot 14a, puis David lance `create-questions --publier`, migration nœud + tag.
-- **En attente de David** : rien.
+- **État** : lots 0 à 13 publiés ; lot 14a (6 modèles, § 21) en brouillon en prod, rangé et tagué (§ 21.4), page à
+  cocher publiée. Restent les lots 14b à 19 du § 14 (15 sans 109, 18 sans 087 ni 094 : § 21.1 ; 19 réduit à CM2-102).
+- **Prochaine action** : lire les verdicts de la page à cocher (https://claude.ai/artifact/UueCSUdzRztFPHQS6V3h6g) ;
+  tout OK → `publier-lot` en simulation, puis David lance `--publier`. Ensuite phase 0 du lot 14b.
+- **En attente de David** : la relecture du lot 14a.
 - **Pièges en cours** : `Doc-inchangée:` dans un COMMIT ; sujet de commit en minuscule, corps ≤ 100 caractères par ligne.
   `migration:horodatage` = heure réelle UTC ; une autre migration en attente → stop avant `db:migrate` (worktree remis
   sur `origin/main` d'abord). `db:migrate` depuis le worktree : `supabase/.temp` copié. `create-questions` /
-  `publier-lot` refusés au classifieur : David les lance (`!`), puis copier les fichiers avec ids dans le worktree et
-  `git restore` côté dépôt principal. Port 5179 pris par `questions-ttechno` : serveur d'essai sur 5186. `de` +
-  `{{if}}` ne s'élide pas. Une spec qui recalcule une donnée par la formule du modèle ne la vérifie pas : contrôler
-  l'invariant (§ 21.3).
-- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, branche `feat/questions-cm2-lot14a`.
+  `publier-lot` refusés au classifieur : David les lance (`!`). Port 5179 pris par `questions-ttechno` : serveur
+  d'essai sur 5186. `de` + `{{if}}` ne s'élide pas. Une spec qui recalcule une donnée par la formule du modèle ne la
+  vérifie pas : contrôler l'invariant (§ 21.3). La page à cocher ne dessine pas ` ```circulaire ` (§ 21.4).
+- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, détaché sur `origin/main` ; 7 fichiers
+  `scripts/questions/ttechno-8-loi-binomiale/` modifiés dedans, pas à ce chantier (à signaler, ne pas toucher).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -1572,3 +1573,21 @@ juste, corrigé simplifié ; (d) un seul lot de 6 modèles.
   de 500 en 500 jusqu'à 5 000 (pas de 1 000 en 1 000) ; 157 V3 sur six mois.
 - Base locale (copie du dossier dans le scratchpad, `.env.local`, sous `with-db-lock.sh`) : 6 brouillons ; aperçu admin
   à 390 px (Playwright, port 5186), les 22 variations vues : aucun débordement, 0 erreur console.
+
+### 21.4 Lot 14a : prod, rangement, page à cocher (2026-11-19)
+
+- #2883 (fichiers) : CI verte, mergée. David lance `create-questions --dir scripts/questions/cm2-14a --publier` (depuis le
+  worktree) : MCP, 6 brouillons [CM2], niveaux 6, 7, 8, 9, 1, 2, sans nœud ni tag (`c382e240`, `e1f02c23`, `9d601156`,
+  `aff8498b`, `d8a1484c`, `ebd55761`), ids commités.
+- Migration `20261119144118_questions_cm2_lot14a_rangement_tags.sql`, dérivée de celle du lot 13 par substitution.
+  Test `questions-cm2-lot14a-rangement-tags` : 9 verts ; corps remplacé par `select 1;` → 5 rouges ; fichier restauré
+  (`cmp`). `security-auditor` : aucun finding bloquant ; un reste du gabarit (« les 5 brouillons » dans un commentaire)
+  corrigé.
+- #2885 : CI verte, `check:migrations` vert, mergée. Worktree remis sur `origin/main`, `migration list --linked` → seule
+  la nôtre en attente ; `db:migrate`. MCP : 6 brouillons rangés (« tableaux » ×2, « diagrammes en barres » ×2,
+  « diagrammes circulaires » ×2), un tag chacun (107, 156, 123, 157, 124, 158), `updated_at` = création.
+- `garde-niveaux-tags` : aucun niveau manquant. Page à cocher (6 fiches, base prod) :
+  https://claude.ai/artifact/UueCSUdzRztFPHQS6V3h6g ; `verdicts` vide au départ. `page-a-cocher.ts` ne dessine pas
+  ` ```circulaire ` (alerte sur 2 fiches) : les 7 diagrammes de la page ont été dessinés après coup depuis
+  `buildStatChartScene` (script du scratchpad, y de la scène vers le haut), alertes retirées. À ajouter à
+  `page-a-cocher.ts` un jour (comme le n° 43 de `outils-manquants.md`).
