@@ -5,18 +5,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, lot 9c publié (§ 26 septies)._
+_Mis à jour le 2026-11-19, recompte de clôture fait (§ 26 octies)._
 
-- **État** : lots 0 à 9c publiés, **168 points du CM1 sur 171**. Lot 9c : 4 verdicts « ok » sur 4,
-  `publier-lot --publier` lancé par David, 4 `published` vérifiés au MCP (CM1 + CM2).
-  105, 114, 140 restent sans modèle (D).
-- **Prochaine action** : recompter le découpage validé (§ 3, § 26) contre les PR mergées et la base, puis
-  proposer la clôture à David (versement dans `docs/systeme/`, archive du journal).
-- **En attente de David** : facultatif, 08 (`1dd68bdd`, CM1-130) sur « quatrième proportionnelle » plutôt que sur
-  la notion Situations de proportionnalité ?
-- **Pièges en cours** : `--mettre-a-jour` ne touche JAMAIS un publié ; commitlint : pas de type `content`, corps
-  ≤ 100 caractères par ligne ; David lance `publier-lot --publier` et `garde-niveaux-tags`.
-- **Worktree / branche** : aucun (branche `feat/questions-cm1-lot9c-rangement` mergée, worktree retiré).
+- **État** : chantier terminé, **168 points du CM1 sur 171** (recompte MCP du 2026-11-19) ; 105, 114, 140 sans
+  modèle (D, décidé) ; 105 noté aux outils manquants (n° 45). Aucune PR ouverte, aucun brouillon en attente
+  hors les 8 du lot 0 (§ 5.6, voulus).
+- **Prochaine action** : clôture, si David dit go : versement du durable dans `docs/systeme/`, archive du
+  journal, ménage des branches `*questions-cm1*` (locales et distantes, toutes mergées).
+- **En attente de David** : go de clôture ; facultatif, 08 (`1dd68bdd`, CM1-130) sur « quatrième
+  proportionnelle » plutôt que sur la notion Situations de proportionnalité ?
+- **Pièges en cours** : `--mettre-a-jour` ne touche JAMAIS un publié ; David lance `publier-lot --publier`.
+- **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -2378,3 +2377,14 @@ figure) ; 130 V3 (÷ une fois) = une seule utilisation de la linéarité ; jumea
   (`verdicts`, capacité `db`), base vide à la publication.
 - Verdicts : 4 « ok » sur 4, sans commentaire (ids = ceux des 4 fichiers). David a lancé la simulation,
   `garde-niveaux-tags` et `publier-lot --publier` ; vérifié au MCP : les 4 `published`, `grades` CM1 + CM2.
+
+### 26 octies. Recompte de clôture (2026-11-19)
+
+- MCP : 171 points CM1 non archivés, **168 avec un modèle publié** ; sans modèle : 105, 114, 140 (D, § 26 bis).
+  Aucun point n'a de modèle en brouillon.
+- Modèles `grades ∋ CM1` : 219 publiés, tous rangés et tagués ; 8 brouillons sans tag ni point (`cda36cc2`,
+  `08fbcd26`, `09f22a2f`, `17a3c039`, `61baef92`, `fe9df9ba`, `4ee04b22`, `5d4dfd32`) = ceux du § 5.4, dépubliés
+  au lot 0 (§ 5.6), voulus.
+- Découpage : lots 0 à 9c tous publiés (§ 3, 4 bis, 14 bis, 16 bis, 20 bis, 26 bis) ; 73 PR mergées, 1 fermée
+  (#2887), aucune ouverte.
+- Reste de la décision du § 26 bis : 105 ajouté aux outils manquants (n° 45, figure composée).
