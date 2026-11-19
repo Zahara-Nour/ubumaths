@@ -1893,3 +1893,53 @@ le plus précis attendu.
 - Page à cocher : 5 verdicts « OK », sans commentaire ; les 5 ids concordent avec `scripts/questions/cm2-16/*.json`.
 - `publier-lot` en simulation : 5 brouillons passent le contrôle. David lance `--publier`. MCP : 5/5 `published`, [CM2],
   rangés et tagués (081, 088 ×2, 092, 093). **Lot 16 clos.**
+
+## 25. Lot 17 — symétrique et patron du pavé (097, 102) : phase 0 (proposée le 2026-11-19)
+
+Relevé MCP du 2026-11-19 : 095, 097, 102 toujours sans modèle, ni brouillon. Les autres points CM2 sans modèle
+sont les D tranchés le 2026-11-04 (126, 079, 080, 096, 106). Les jumeaux du chantier `questions-cm1` couvrent 100,
+101, 103, 104, 105 (vérifié : 1 ou 2 modèles publiés chacun).
+
+**095 (figure composée)** : même cas que CM1-105, laissé sans modèle par David le 2026-11-19. Une figure à
+compléter ne vérifie qu'une construction à la fois, et la perpendiculaire / parallèle à l'équerre sur papier uni
+manque. Les deux outils sont déjà notés (`outils-manquants.md`, n° 45 et n° 40, CM2-095 cité). Reco : **D**.
+
+**Outils** (aucun neuf) :
+
+- 097 : ` ```figure-a-completer ` sur quadrillage, `verifier: symetrique par d` ou `point A' = symetrie(A, axe=d)`
+  (gabarit CM1-108 `452b9a91`, `cm1-8d/02`). Le contrôle accepte un axe quelconque (6-180 sur papier uni) ; une
+  diagonale du quadrillage envoie un nœud sur un nœud.
+- 102 : ` ```patron solide: pave l p h ` (formes 1 à 11, `faux 1` à `faux 8`, `cotes: cm`, `designer: opposee`),
+  options ` ```patron ` dans une case « choix », ` ```solide ` pour la perspective (gabarit CM1-100 `0da1780b`,
+  `cm1-8f/08`, `09`).
+
+Nœuds : 097 sur « Symétrie axiale » (niveaux 1 à 3 pris : CE2, CM1, 6e) ; 102 sur « patrons » (1 à 6 pris : CE2,
+CM1 + CM2, 5e).
+
+Bornes : 097, papier quadrillé, axe vertical, horizontal ou diagonale du quadrillage, axe qui ne coupe pas la figure
+(accompagnement CM2 p. 20) ; 102, aucune borne propre.
+
+| #    | Point   | Nœud, niveau       | Modèle                               | Variations, plages                                                                                                                                                                                                                                                                                                                                                                                                        |
+| ---- | ------- | ------------------ | ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 17-1 | CM2-097 | Symétrie axiale, 4 | Le symétrique, axe sur une diagonale | V1 placer $A'$, axe sur une diagonale du quadrillage (↗ ou ↘) ; V2 symétrique d'un segment, axe diagonal ; V3 symétrique d'un triangle, axe diagonal ; V4 symétrique d'un quadrilatère, axe vertical, horizontal ou diagonal. 6 figures tirées par variation, axe qui ne touche pas la figure, image dans la fenêtre                                                                                                      |
+| 17-2 | CM2-102 | patrons, 7         | Reconnaître le patron d'un pavé      | V1 se plie-t-il en pavé ? oui / non (pavé l × p × h, de 1 à 5, trois mesures différentes ; formes 1 à 11 ou faux 1 à 8, tourné) ; V2 pavé dessiné en perspective, cotes : lequel de ces 3 assemblages est son patron ? (son patron, celui d'un autre pavé, un faux) ; V3 patron coté : combien de faces mesurent l cm sur h cm ? (2) ; V4 la face marquée est le dessus : touche la face du dessous (`designer: opposee`) |
+
+Erreurs typiques en `testSpecs` : 097, le point recopié du même côté (translation), l'image prise par rapport à une
+droite verticale au lieu de la diagonale ; 102, « oui » pour un faux patron, le patron du pavé voisin, 1 ou 4 faces
+au lieu de 2, une face voisine au lieu de l'opposée.
+
+**Question d'accès** : 2 brouillons neufs, puis nœud + tag → personne ne lit rien de plus avant la publication.
+
+**À trancher** :
+
+(a) 095 reste sans modèle (D), comme CM1-105, l'outil étant déjà noté (n° 45) ? Lot 17 = **2 modèles**, et le
+chantier est fini. Reco : **oui**.
+
+(b) 097 V4 garde aussi les axes vertical et horizontal (le point les cite, le CM1 n'a que des triangles), les V1 à V3
+ne prenant que les diagonales ? Reco : **oui**.
+
+(c) Niveaux : Symétrie axiale 4, patrons 7 ? Reco : **oui**.
+
+(d) 102 V1 : un « faux » est un des 8 faux patrons du cube, dessiné en rectangles (deux faces l'une sur l'autre, ou
+un trou). Le faux « les bonnes formes, mais des faces de tailles qui ne vont pas ensemble » n'existe pas dans le bloc :
+on s'en passe ? Reco : **oui** (la V2 « patron d'un autre pavé » couvre ce raisonnement).
