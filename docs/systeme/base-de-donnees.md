@@ -364,7 +364,10 @@ Code : `src/lib/server/` (`chapters.ts`, `chapters-publication.ts`, `chapter-tem
   pas). Lecture quand on lit la fiche (RLS de `worksheets`), écriture par l'auteur ou l'admin, anon
   rien. Garde différée (trigger de contrainte, verrou sur la fiche) : une fiche d'exercices a au plus
   une notion, sauf en `review` et `automatisms` (23514). Les deux fonctions de partage rendent
-  `category` et `classifications`. Tests : `tests/integration/categorie-notions-fiche.test.ts`.
+  `category` et `classifications`. **Titre** (`20261119182829`) : `worksheets.title` toujours
+  rempli ; `worksheets.custom_title` (vrai par défaut) dit s'il est libre (imprimé tel quel) ou
+  composé par l'éditeur (« Suites · Entraînement technique », recomposé par le PDF) ; les liens de
+  partage le rendent. Tests : `tests/integration/categorie-notions-fiche.test.ts`.
 - `worksheet_assignments` (distribution) → `worksheet_assignment_classes`,
   `worksheet_assignment_students`, `worksheet_assignment_exercise_settings`.
   `worksheet_assignments.guidance_level` : **niveau de guidage** des exercices pour cette

@@ -13764,6 +13764,42 @@ export type Database = {
           },
         ]
       }
+      worksheet_classifications: {
+        Row: {
+          created_at: string
+          node_id: string
+          position: number
+          worksheet_id: string
+        }
+        Insert: {
+          created_at?: string
+          node_id: string
+          position?: number
+          worksheet_id: string
+        }
+        Update: {
+          created_at?: string
+          node_id?: string
+          position?: number
+          worksheet_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "worksheet_classifications_node_id_fkey"
+            columns: ["node_id"]
+            isOneToOne: false
+            referencedRelation: "classification_nodes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "worksheet_classifications_worksheet_id_fkey"
+            columns: ["worksheet_id"]
+            isOneToOne: false
+            referencedRelation: "worksheets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       worksheet_error_reports: {
         Row: {
           assignment_id: string
@@ -14183,6 +14219,7 @@ export type Database = {
       worksheets: {
         Row: {
           archived_at: string | null
+          category: string | null
           config: Json | null
           created_at: string
           created_by: string
@@ -14203,6 +14240,7 @@ export type Database = {
         }
         Insert: {
           archived_at?: string | null
+          category?: string | null
           config?: Json | null
           created_at?: string
           created_by: string
@@ -14223,6 +14261,7 @@ export type Database = {
         }
         Update: {
           archived_at?: string | null
+          category?: string | null
           config?: Json | null
           created_at?: string
           created_by?: string
