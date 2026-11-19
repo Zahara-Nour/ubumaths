@@ -1,4 +1,5 @@
 {
+	"id": "a36679be-05f8-4efe-bc5c-97fd34155039",
 	"title": "Où regarde le robot ?",
 	"description": "Quart de tour à droite, à gauche (celles du robot), demi-tour, deux ou trois pivots de suite ; reculer d'une case",
 	"grades": ["CM1", "CM2"],

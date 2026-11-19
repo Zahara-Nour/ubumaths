@@ -1,4 +1,5 @@
 {
+	"id": "08337d34-d1fe-4c28-984e-ff71d9833b9e",
 	"title": "Combien de petits cubes ?",
 	"description": "Une rangée de piles, deux rangées avec des cubes cachés, escaliers (20 cubes au plus)",
 	"grades": ["CM1", "CM2"],

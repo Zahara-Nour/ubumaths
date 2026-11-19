@@ -1,4 +1,5 @@
 {
+	"id": "7714c08c-832c-48d0-a937-e953a9133222",
 	"title": "Écrire le code du robot : passer par l'ouverture",
 	"description": "Quadrillage 10 × 7, un mur gris à une seule ouverture : code en flèches, puis avance et pivote avec un sens de départ tiré",
 	"grades": ["CM1", "CM2"],

@@ -1,4 +1,5 @@
 {
+	"id": "0da1780b-c872-45a2-8fe0-0027f2ef8e22",
 	"title": "Est-ce un patron de cube ? Pourquoi ?",
 	"description": "Oui ou non (11 patrons, 8 faux patrons, tournés, retournés) ; pourquoi non : deux faces l'une sur l'autre (6 carrés), il manque une face (5), une face de trop (7)",
 	"grades": ["CM1", "CM2"],
