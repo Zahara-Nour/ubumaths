@@ -141,6 +141,10 @@ Détail : [safari-webkit-tdz.md](../pratiques/safari-webkit-tdz.md).
   KaTeX restent déclarées dans le document, comme `<math-field>` l'exige à son montage. Le
   plugin Vite `mathliveFontDisplay` (`vite.config.ts`) corrige le `font-display:"swap"` entre
   guillemets que MathLive écrit (invalide : le texte restait invisible jusqu'à 3 s).
+- **Un seul script inline dans `src/app.html`**, avant `%sveltekit.head%` : il lit le réglage
+  `easyReading` du navigateur et pose la classe `lecture-facilitee` sur `<html>` avant le premier
+  affichage (sinon le texte passait d'Inter à Luciole au chargement). Cf.
+  [coquille-et-caches.md](coquille-et-caches.md) § Réglage « Lecture facilitée ».
 - **Cache de `static/`** : règles `headers` de `vercel.json` (polices 30 j, images, sons et CSS
   1 j, avec `stale-while-revalidate`) ; ces fichiers étaient revalidés à chaque visite.
 
