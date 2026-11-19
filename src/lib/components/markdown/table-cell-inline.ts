@@ -27,8 +27,8 @@ const MARK_HINT = /[*_`]/;
 /** Formules `$…$` et `~…~`, retirées avant de chercher un `_` dans un mot */
 const MATH_SPANS = /\$[^$]*\$|~[^~\n]*~/g;
 
-/** `_` entre deux lettres ou chiffres (`x_1`, `snake_case`) : pas une marque */
-const INTRAWORD_UNDERSCORE = /[\p{L}\p{N}]_[\p{L}\p{N}]/u;
+/** `_` ou `*` entre deux lettres ou chiffres (`x_1`, `snake_case`, `a*b*c`) : pas une marque */
+const INTRAWORD_DELIMITER = /[\p{L}\p{N}][*_]+[\p{L}\p{N}]/u;
 
 /**
  * Morceaux d'une cellule qui porte au moins une marque (gras, italique, code), ou
@@ -48,9 +48,10 @@ export function tableCellMarkedInline(content: string): TableCellInline[] | null
 	);
 	if (markedTexts.length === 0) return null;
 	// Le parseur de paragraphe est plus large que CommonMark : `3 * 4 * 5` y met « 4 » en
-	// italique, `x_1 et y_2` aussi. Une cellule déjà écrite ne doit pas changer pour ça :
-	// une marque ne s'ouvre ni ne se ferme sur une espace, et `_` dans un mot n'en est pas une.
+	// italique, `x_1 et y_2` et `a*b*c` aussi. Une cellule déjà écrite ne doit pas changer pour
+	// ça : une marque ne s'ouvre ni ne se ferme sur une espace, et `_` ou `*` dans un mot n'en est
+	// pas une.
 	if (markedTexts.some((node) => /^\s|\s$/.test(node.content))) return null;
-	if (INTRAWORD_UNDERSCORE.test(content.replace(MATH_SPANS, ''))) return null;
+	if (INTRAWORD_DELIMITER.test(content.replace(MATH_SPANS, ''))) return null;
 	return nodes;
 }

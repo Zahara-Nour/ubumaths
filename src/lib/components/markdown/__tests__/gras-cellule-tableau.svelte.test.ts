@@ -76,13 +76,21 @@ describe('TableNode — markdown en ligne dans une cellule sans trou', () => {
 		expect(el.querySelector('td strong, td em, td code')).toBeNull();
 	});
 
-	it.each(['- 3', '1. a', '+ 2', '# 4', '> 5', '3 * 4 * 5', 'x_1 et y_2', 'snake_case_name'])(
-		'`%s` (bloc ou marque douteuse) : affiché tel quel',
-		async (texte) => {
-			const el = await tableau(`| a |\n| --- |\n| ${texte} |`);
-			expect(el.querySelector('td')?.textContent?.trim()).toBe(texte);
-		}
-	);
+	it.each([
+		'- 3',
+		'1. a',
+		'+ 2',
+		'# 4',
+		'> 5',
+		'3 * 4 * 5',
+		'x_1 et y_2',
+		'snake_case_name',
+		'a*b*c',
+		'3*4*5 **gras**'
+	])('`%s` (bloc ou marque douteuse) : affiché tel quel', async (texte) => {
+		const el = await tableau(`| a |\n| --- |\n| ${texte} |`);
+		expect(el.querySelector('td')?.textContent?.trim()).toBe(texte);
+	});
 });
 
 describe('TableNode — cellule du chat (rendu restreint)', () => {
