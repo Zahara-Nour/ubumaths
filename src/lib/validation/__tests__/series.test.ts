@@ -6,6 +6,7 @@
 import { describe, it, expect } from 'vitest';
 import {
 	SERIES_LINK_PARAM,
+	SERIES_SEED_PARAM,
 	buildSeriesLink,
 	decodeSeriesParamJson,
 	encodeSeriesParam,
@@ -158,6 +159,20 @@ describe('buildSeriesLink (Q44)', () => {
 		expect(url.pathname).toBe('/automaths/test');
 		expect(url.searchParams.get('mode')).toBe('course');
 		expect(url.searchParams.get('time')).toBe('420');
+	});
+
+	it('mêmes nombres pour tous : le lien porte la graine de la série', () => {
+		const url = new URL(
+			buildSeriesLink('https://chiph.re', [ITEM], { mode: 'display', seed: 123456 })
+		);
+
+		expect(url.searchParams.get(SERIES_SEED_PARAM)).toBe('123456');
+	});
+
+	it('sans « mêmes nombres » : aucun paramètre de graine', () => {
+		const url = new URL(buildSeriesLink('https://chiph.re', [ITEM], { mode: 'display' }));
+
+		expect(url.searchParams.has(SERIES_SEED_PARAM)).toBe(false);
 	});
 
 	it('encodeSeriesParam est l’inverse du décodage', () => {

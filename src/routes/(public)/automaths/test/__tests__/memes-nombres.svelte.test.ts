@@ -1,0 +1,99 @@
+/**
+ * « Mêmes nombres pour tous » (chantier memes-nombres) : un lien de série qui porte
+ * une graine donne les mêmes questions à tous ceux qui l'ouvrent.
+ */
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render } from 'vitest-browser-svelte';
+import { SERIES_SEED_PARAM, SERIES_LINK_PARAM, encodeSeriesParam } from '#lib/validation/series.ts';
+import { questionTemplatesCache } from '#lib/stores/questionTemplates.svelte.ts';
+
+const goto = vi.hoisted(() => vi.fn(async () => {}));
+const url = vi.hoisted(() => ({ current: new URL('http://localhost/automaths/test') }));
+vi.mock('$app/state', () => ({
+	page: {
+		get url() {
+			return url.current;
+		}
+	}
+}));
+vi.mock('$app/navigation', async () =>
+	(await import('#tests/helpers/app-navigation-mock.ts')).appNavigationMock({ goto })
+);
+
+import Page from '../+page.svelte';
+
+const TEMPLATE_ID = '11111111-1111-4111-8111-111111111111';
+
+/** Un modèle qui tire vraiment ses nombres (6 chiffres : deux tirages ne se confondent pas) */
+const TEMPLATE = {
+	id: TEMPLATE_ID,
+	title: 'Nombre tiré',
+	level: 1,
+	grades: ['6'],
+	status: 'published',
+	variations: [
+		{
+			statement: 'Nombre tiré : {{x}} [_]',
+			variables: [{ name: 'x', expression: '{{random:100000..999999}}' }],
+			blanks: [{ expectedAnswer: '{{x}}' }]
+		}
+	]
+};
+
+async function seedTemplatesCache() {
+	questionTemplatesCache.clear();
+	vi.stubGlobal('fetch', async () => new Response(JSON.stringify({ templates: [TEMPLATE] })));
+	await questionTemplatesCache.fetchTemplates();
+	vi.unstubAllGlobals();
+}
+
+/** Ouvre le lien, et rend les nombres affichés, dans l'ordre */
+async function numbersShown(query: Record<string, string>): Promise<string[]> {
+	url.current = new URL(`http://localhost/automaths/test?${new URLSearchParams(query)}`);
+	await seedTemplatesCache();
+	const main = document.body.appendChild(document.createElement('main'));
+	const screen = await render(Page, { target: main, props: { data: { user: null } } as never });
+	let numbers: string[] = [];
+	await vi.waitFor(() => {
+		numbers = [...(main.textContent ?? '').matchAll(/Nombre tiré : (\d{6})/g)].map((m) => m[1]);
+		expect(numbers.length).toBeGreaterThan(0);
+	});
+	screen.unmount();
+	main.remove();
+	return numbers;
+}
+
+function link(extra: Record<string, string> = {}): Record<string, string> {
+	return {
+		[SERIES_LINK_PARAM]: encodeSeriesParam([{ templateId: TEMPLATE_ID, quantity: 3, delay: 20 }]),
+		mode: 'interactive',
+		...extra
+	};
+}
+
+describe('« Mêmes nombres pour tous » : deux élèves ouvrent le même lien', () => {
+	beforeEach(() => {
+		goto.mockClear();
+	});
+
+	it('même graine : les mêmes nombres, à l’affichage', async () => {
+		const eleve1 = await numbersShown(link({ [SERIES_SEED_PARAM]: '123456' }));
+		const eleve2 = await numbersShown(link({ [SERIES_SEED_PARAM]: '123456' }));
+
+		expect(eleve2).toEqual(eleve1);
+	});
+
+	it('graines différentes : d’autres nombres', async () => {
+		const a = await numbersShown(link({ [SERIES_SEED_PARAM]: '1' }));
+		const b = await numbersShown(link({ [SERIES_SEED_PARAM]: '2' }));
+
+		expect(b).not.toEqual(a);
+	});
+
+	it('sans graine : des nombres au hasard (comme avant)', async () => {
+		const a = await numbersShown(link());
+		const b = await numbersShown(link());
+
+		expect(b).not.toEqual(a);
+	});
+});

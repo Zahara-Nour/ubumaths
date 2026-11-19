@@ -8,7 +8,9 @@ import { describe, it, expect, vi } from 'vitest';
 import {
 	buildSeriesItems,
 	drawSeriesQuestions,
-	DEFAULT_QUESTION_DELAY_SECONDS
+	seriesSeedSequence,
+	DEFAULT_QUESTION_DELAY_SECONDS,
+	MAX_QUESTION_SEED
 } from '#lib/questions/series-items.ts';
 import type { GenerationResult, QuestionInstance, QuestionTemplate } from '#lib/questions/types.ts';
 import type { SeriesItem } from '#lib/validation/series.ts';
@@ -177,5 +179,41 @@ describe('drawSeriesQuestions (évaluation : le serveur tire modèle + graine)',
 		mocked.mockClear();
 		drawSeriesQuestions([line('add', 2, 15)], [template('Additionner', 'add')]);
 		expect(mocked).not.toHaveBeenCalled();
+	});
+});
+
+describe('seriesSeedSequence (mêmes nombres pour tous)', () => {
+	it('une même graine de série rend la même suite de graines de questions', () => {
+		const a = seriesSeedSequence(123456);
+		const b = seriesSeedSequence(123456);
+		const suiteA = Array.from({ length: 10 }, () => a());
+		const suiteB = Array.from({ length: 10 }, () => b());
+
+		expect(suiteA).toEqual(suiteB);
+		for (const seed of suiteA) {
+			expect(Number.isInteger(seed)).toBe(true);
+			expect(seed).toBeGreaterThanOrEqual(0);
+			expect(seed).toBeLessThanOrEqual(MAX_QUESTION_SEED);
+		}
+	});
+
+	it('deux graines de série différentes rendent des suites différentes', () => {
+		const a = seriesSeedSequence(1);
+		const b = seriesSeedSequence(2);
+		expect(Array.from({ length: 5 }, () => a())).not.toEqual(Array.from({ length: 5 }, () => b()));
+	});
+
+	it('ligne répétée : questions différentes entre elles, mais les mêmes pour tous', () => {
+		const series = [line('add', 3, 15), line('mul', 2, 30)];
+		const templates = [template('Additionner', 'add'), template('Multiplier', 'mul')];
+		const seedsOf = () =>
+			buildSeriesItems(series, templates, { nextSeed: seriesSeedSequence(42) }).map(
+				(item) => item.instance.seed
+			);
+
+		const eleve1 = seedsOf();
+		const eleve2 = seedsOf();
+		expect(eleve1).toEqual(eleve2);
+		expect(new Set(eleve1).size).toBe(5);
 	});
 });
