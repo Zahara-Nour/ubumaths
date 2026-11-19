@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, PR `ci/node-exact` ouverte._
+_Mis à jour le 2026-11-19, après #2867._
 
-- **État** : #2814 à #2830 en prod (0.96.0). #2835, #2850, #2853, #2859 mergées (pas encore en prod). **Cause du cache ESLint trouvée** : la version exacte de Node entre dans l'empreinte, et `.nvmrc` = `22` laissait chaque runner prendre le Node de son image (22.23.4 ou 22.23.5). PR `ci/node-exact` : `.nvmrc` = `22.23.5` (§ « Cache ESLint en CI »).
-- **Prochaine action** : après le merge, lancer `lint-nocturne` sur `main` deux fois (le 1er remplit le cache, le 2e doit sauter presque tout) ; si c'est vérifié, ramener l'attente de `deploy:prod` (2700 s) à sa valeur d'avant. Puis clore le chantier (versement du durable dans `docs/systeme/`, journal archivé).
+- **État** : #2814 à #2830 en prod (0.96.0). #2835, #2850, #2853, #2859, #2867 mergées (pas encore en prod). **Cache ESLint réparé** (#2867, `.nvmrc` = `22.23.5`) : nocturne n° 1 sur main 21 min (remplit), n° 2 **5 s** (run 44475305359). Attente de `deploy:prod` gardée à 2700 s (plafond utile quand le cache est vide), commentaire corrigé.
+- **Prochaine action** : clore le chantier (versement du durable dans `docs/systeme/`, journal archivé).
 - **En attente de David** : rien.
-- **Pièges en cours** : `.nvmrc` se monte à la main (Dependabot ne le lit pas) ; `#lib` exige l'extension écrite (garde `imports-lib-avec-extension`) ; props importées d'un autre `.svelte` ou type indirect → seul le nocturne les voit ; commitlint refuse un sujet qui commence par une majuscule et une ligne de corps > 100 caractères ; `docs:check-a-jour` ne voit que les COMMITS ; `page-demo-lexique` instable en CI (relancer le job) ; suite client en local avec `CI=true`.
-- **Worktree / branche** : `../ubumaths-wt-mises-a-jour` · `ci/node-exact`.
+- **Pièges en cours** : `.nvmrc` se monte à la main (Dependabot ne le lit pas) et vide le cache ESLint jusqu'au nocturne suivant ; `#lib` exige l'extension écrite ; props importées d'un autre `.svelte` ou type indirect → seul le nocturne les voit ; commitlint : sujet sans majuscule, corps ≤ 100 caractères ; `docs:check-a-jour` ne voit que les COMMITS ; `page-demo-lexique` instable en CI.
+- **Worktree / branche** : `../ubumaths-wt-mises-a-jour` · `ci/node-exact-suite`.
 
 ## `json()` → `Response.json` (2026-11-19)
 
@@ -129,6 +129,8 @@ Constats dans le code de kit 3.2.0 (pas dans le guide) :
 ## Cache ESLint en CI (2026-11-18 ; cause trouvée le 2026-11-19)
 
 **Cause (2026-11-19)** : ESLint calcule l'empreinte de config à partir de `${version d'ESLint}_${process.version}_${config}` (`lint-result-cache.js`, `hashOfConfigFor`). `.nvmrc` valait `22` : `setup-node` prend le Node 22 de l'image du runner, et GitHub déploie ses images progressivement. Nocturnes du 2026-11-18 : 17:34 image 20261111, Node 22.23.4 ; 19:28 image 20261116, **22.23.5** ; 20:46 image 20261111, 22.23.4 → cache de 19:28 restauré (même clé), tout relu, 31 min. Les jobs du diagnostic d'hier étaient tombés sur la même image, d'où « Node identique ». Contre-épreuve : la config sérialisée de `.lintstagedrc.js` en local (autre commit, autre machine) est identique au caractère près à celle de la CI. Correctif : `.nvmrc` = `22.23.5` (choix de David : la version exacte dans `.nvmrc`, pas seulement dans les jobs ESLint).
+
+Vérifié après #2867 : nocturne sur main n° 1 (Node 22.23.5) 21 min, n° 2 restaure ce cache et relit tout l'arbre en 5 s.
 
 Ce que le diagnostic d'hier avait établi :
 

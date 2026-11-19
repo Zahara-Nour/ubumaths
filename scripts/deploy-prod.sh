@@ -36,9 +36,9 @@ PROFONDEUR=50
 # Sans `-s` : pnpm 12 ne connaît plus cette option (« unexpected argument »).
 RELEASE="${DEPLOY_PROD_RELEASE:-pnpm release}"
 PAUSE="${DEPLOY_PROD_PAUSE:-30}"
-# 45 min : la CI de version relit tout l'arbre ESLint (25 à 31 min le 2026-11-18, cache
-# ESLint de main jamais repris d'un job à l'autre, cause inconnue) ; à 1500 s, le
-# script abandonnait avant le vert.
+# 45 min : quand le cache ESLint est vide (Node monté dans .nvmrc, paquet de la config
+# ESLint monté, nocturne pas encore passé), la CI de version relit tout l'arbre : 21 à
+# 31 min ; à 1500 s, le script abandonnait avant le vert. Cache plein : ~5 s.
 ATTENTE_MAX="${DEPLOY_PROD_ATTENTE_MAX:-2700}"
 RELANCES_MAX="${DEPLOY_PROD_RELANCES_MAX:-2}"
 # Plantage connu des tests navigateur, sans lien avec le code (vu sur main et sur
