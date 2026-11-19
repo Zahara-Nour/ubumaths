@@ -6,12 +6,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, après la publication du lot 14b._
+_Mis à jour le 2026-11-19, phase 0 du lot 15 proposée._
 
 - **État** : lots 0 à 14b publiés (lot 14b : 6 modèles, § 22.4). Restent les lots 15 à 19 du § 14 (15 sans 109,
   18 sans 087 ni 094 : § 21.1 ; 19 réduit à CM2-102 : § 19.4).
-- **Prochaine action** : phase 0 du lot 15 (probabilités : 110 à 114, sans 109).
-- **En attente de David** : rien.
+- **Prochaine action** : écrire le lot 15 (§ 23) une fois tranché.
+- **En attente de David** : les 4 questions du § 23 (niveaux, « 1 chance sur 3 », 114 affiché, lot de 5).
 - **Pièges en cours** : `Doc-inchangée:` dans un COMMIT ; sujet de commit en minuscule, corps ≤ 100 caractères par ligne.
   `migration:horodatage` = heure réelle UTC ; une autre migration en attente → stop avant `db:migrate` (worktree remis
   sur `origin/main` d'abord). `db:migrate` depuis le worktree : `supabase/.temp` copié. `create-questions` /
@@ -1695,3 +1695,46 @@ Recommandations suivies (« je te suis ») : (a) niveaux 4, 5, 6 (courbes et rep
 - Page à cocher : 6 verdicts « OK », sans commentaire ; les 6 ids concordent avec `scripts/questions/cm2-14b/*.json`.
 - `publier-lot` en simulation : 6 brouillons passent le contrôle. David lance `--publier`. MCP : 6/6 `published`, [CM2],
   rangés et tagués (125, 159, 122, 121, 108 ×2). **Lot 14b clos.**
+
+## 23. Lot 15 — probabilités (110, 111, 112, 113, 114) : phase 0 (proposée le 2026-11-19)
+
+Relevé MCP du 2026-11-19 : CM2-109 couvert par le jumeau CM1 + CM2 `5081e180` (§ 21.1) ; aucun modèle sur 110 à 114.
+Nœuds : 110 et 114 sur « événements » (niveaux 1 et 2 pris : CM1/CM2, 5e, 4e, 3e) ; 111 et 112 sur « probabilité
+simple » (1 et 2 pris : CM1, 6e, 4e) ; 113 sur « Expériences aléatoires » (1 et 2 pris : CM1, 4e). Aucun modèle d'un
+autre niveau à taguer : ceux de 6e et 5e donnent la probabilité en fraction (`101cd4bd` : 1/a), hors CM2.
+
+Bornes : 110, « tirer un roi », « obtenir un multiple de 3 » ; 111, forme « a chances sur b », équiprobabilité, **pas de
+fraction** ; 112, comparer à « une chance sur deux » par la moitié de b, cas simples ; 113, générales ; 114, deux étapes,
+tableau à double entrée ou arbre (deux lancers de pièce ; roue à 4 secteurs deux fois → 16 issues). Expériences de
+109 : dé à six faces, pièce, jeu de 52 cartes, roue. Outils : case « choix » (`plusieurs: oui`), ` ```partage forme:
+disque n ` (la roue, comme `63675a23`), ` ```probtree `, ` ```tableau-croise ` (affichés, rien à compléter dedans).
+
+| #    | Point   | Sous-notion, niveau       | Modèle                               | Variations, plages                                                                                                                                                                                                                                                                                                                                                                           |
+| ---- | ------- | ------------------------- | ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 15-1 | CM2-110 | événements, 3             | Les issues qui réalisent l'évènement | V1 dé à 6 faces, « obtenir un nombre pair / un multiple de 3 / plus grand que N » : coche toutes les issues (case « choix » `plusieurs`) ; V2 jeu de 52 cartes, « tirer un roi / un cœur / une figure / un as rouge » : combien de cartes ? ; V3 roue de 8 secteurs numérotés dessinée : coche les secteurs ; V4 sac de boules numérotées 1 à 12 ou 20, « un multiple de 4 / 5 » : combien ? |
+| 15-2 | CM2-111 | probabilité simple, 3     | … chances sur …                      | Deux cases : « $?$ chances sur $?$ ». V1 dé à 6 faces (pair, multiple de 3, plus grand que N) ; V2 sac de r rouges et b bleues (total ≤ 20), « tirer une rouge » ; V3 roue de 8 parts, g grises dessinées ; V4 jeu de 52 cartes (un roi : 4 sur 52, un cœur : 13 sur 52)                                                                                                                     |
+| 15-3 | CM2-112 | probabilité simple, 4     | Qu'est-ce qui est le plus probable ? | Case « choix ». V1 deux sacs de même total (3 rouges sur 8 contre 5 sur 8) : dans lequel a-t-on le plus de chances ? ; V2 « plus d'une chance sur deux, moins, ou exactement » (a comparé à la moitié de b, b pair ≤ 20) ; V3 deux roues, l'une de 4 parts, l'autre de 8 (1 grise sur 4 contre 3 sur 8 : on double) ; V4 dé : « pair » ou « plus grand que 4 » ?                             |
+| 15-4 | CM2-113 | Expériences aléatoires, 3 | Le hasard n'a pas de mémoire         | V1 une pièce est tombée N fois de suite sur pile (N = 3 à 6) ; au lancer suivant : plus de chances pile, face, ou autant ? (choix) ; V2 le 6 n'est pas sorti depuis N lancers : a-t-il plus de chances de sortir ? (choix) ; V3 tirage d'une boule **remise** dans le sac après trois rouges : « $?$ chances sur $?$ » de tirer une rouge, inchangé                                          |
+| 15-5 | CM2-114 | événements, 4             | Deux étapes : tableau ou arbre       | V1 deux lancers de pièce, arbre (` ```probtree `) : combien d'issues (4), chances de deux fois pile (1 sur 4), d'un pile et d'un face (2 sur 4) ; V2 roue de 4 secteurs (1 à 4) tournée deux fois, tableau à double entrée des sommes : combien d'issues (16), chances d'une somme donnée ; V3 une pièce puis un dé, arbre ou tableau (12 issues) : chances de « face et un nombre pair »    |
+
+Forme commune : une case par nombre, « chances sur » écrit entre les deux cases ; « lequel » en case « choix » ;
+corrigé : la liste des issues (toutes, puis celles qui réalisent l'évènement), puis le compte. Erreurs typiques en
+`testSpecs` : 110, l'oubli du 6 dans « multiple de 3 » ; 111, les issues défavorables à la place des favorables
+(« 2 sur 6 » pour « 4 sur 6 »), le nombre de couleurs pris pour le total (V2) ; 112, le plus grand nombre de boules
+au lieu de la part ; 113, « face, c'est son tour » ; 114, 3 issues pour deux pièces (pile-face et face-pile confondus),
+8 issues au lieu de 16.
+
+**Question d'accès** : 5 brouillons neufs, puis nœud + tag → personne ne lit rien de plus avant la publication.
+
+**À trancher** :
+
+(a) Niveaux : événements 3 et 4, probabilité simple 3 et 4, Expériences aléatoires 3 ? Reco : **oui**.
+
+(b) 111 : la réponse attendue est **le compte** (a = issues qui réalisent l'évènement, b = toutes les issues) ; « 1 chance
+sur 3 » pour « 2 chances sur 6 » est-il juste ? Reco : **refusé, avec un message** (« compte les issues : combien en
+tout ? ») ; simplifier, c'est la fraction égale, qui n'est pas au programme de CM2 pour les probabilités.
+
+(c) 114 : les issues **affichées** (arbre ou tableau donné, l'élève compte), pas un arbre à compléter ? Reco : **oui** ;
+un arbre à compléter n'existe pas en ` ```probtree ` (à inscrire dans `outils-manquants.md` si tu le veux).
+
+(d) Un seul lot de **5 modèles** ? Reco : **oui**.
