@@ -962,3 +962,12 @@ David a lancé `create-questions --publier` depuis le worktree : P1 `699b1aae-ea
 `ef34cc66-8aac-4e06-8cb0-d6c4acf93997`, P3 `4ccf75c2-eae2-4d85-8045-50bdf26add73`, P4
 `b342c534-4dfd-4a37-ba06-0c48e7d50ae2`, P5 `2405ca31-d856-454d-9e1e-682ec371e088` ; brouillons `{1_TECHNO}`, sans nœud
 ni tag (vérifié MCP). 97b3a376 inchangé : publié, `{1_SPE,1_TECHNO}`, 2 tags (1SPE-353, 1TECHNO-137).
+
+### Lot 6 — migration de rangement (2026-11-19)
+
+Relevé prod (MCP, 2026-11-19) : P1-P5 brouillons `{1_TECHNO}`, sans nœud ni tag ; 97b3a376 publié `{1_SPE,1_TECHNO}`,
+rangé sur 4e871e12 (nœud de 1SPE-353 et 1TECHNO-137), tags 1SPE-353 + 1TECHNO-137. Migration
+`20261119052352_questions_1techno_lot6_rangement_tags` (gabarit du lot 2, sans point 1GEN) : (A) 5 brouillons rangés
+sur le nœud de leur point, 5 tags (090, 097, 136, 137, 013) ; (B) 97b3a376 perd 1TECHNO-137 et `1_TECHNO`. Test
+`questions-1techno-lot6-rangement-tags.test.ts` : corps vidé → 7 rouges et le bloc nominal ne démarre pas ; migration
+rendue → 14 verts.
