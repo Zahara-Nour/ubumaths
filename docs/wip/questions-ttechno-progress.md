@@ -5,13 +5,13 @@ Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) · bornes 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, lot 7 : migration écrite (§ 51)._
+_Mis à jour le 2026-11-19, après #2876._
 
-- **État** : lots 0 à 6 publiés (sauf L7, L8 du 5b). Lot 7 : 6 brouillons en prod (§ 51) ; migration de rangement et de tags + test écrits et commités sur `feat/questions-ttechno-lot7-tags` (9 verts, 5 rouges sans le corps), `security-auditor` sans finding ; PR ouverte.
-- **Prochaine action** : PR de la migration : CI verte, `check:migrations --pr <n>`, merge, `migration list --linked` puis `db:migrate` (4 conditions), vérifier en prod (MCP), page à cocher du lot 7.
-- **En attente de David** : le `deploy:prod` qui livre #2839 (L7, L8).
-- **Pièges en cours** : `$` littéral (tableur) = `\$` ; un point TTECHNO par modèle (trigger) ; tag = nœud DU POINT ; `publier-lot.ts` et `create-questions --publier` visent la prod : David les lance (`!`) ; dépôt principal : `1techno.md` modifié par une autre session bloque le pre-push (commit ffa0f252a de `main` local passe par cette branche).
-- **Worktree / branche** : `ubumaths-wt-questions-ttechno`, `feat/questions-ttechno-lot7-tags`.
+- **État** : lots 0 à 6 publiés (sauf L7, L8 du 5b). **Lot 7 (deux variables, 6 modèles) en brouillon en prod, rangé et tagué** (§ 51, `db:migrate` fait). Reste le lot 8 (§ 33).
+- **Prochaine action** : page à cocher du lot 7 (6 fiches, gabarit lot 6 § 47) ; après la relecture de David, `publier-lot.ts --dir scripts/questions/ttechno-7-deux-variables` (simulation puis `--publier`, par David). Ensuite lot 8 (loi binomiale : 057, 060, 061, 067, 069, 090, 091), phase 0.
+- **En attente de David** : le `deploy:prod` qui livre #2839 (L7, L8), s'il ne vient pas d'être fait (vérifier `production`).
+- **Pièges en cours** : `$` littéral (tableur) = `\$` ; un point TTECHNO par modèle (trigger) ; tag = nœud DU POINT ; `publier-lot.ts` (simulation comprise) et `create-questions --publier` visent la prod : David les lance (`!`) et le script peut ne pas écrire les ids dans le dépôt principal (les reporter à la main).
+- **Worktree / branche** : aucun (retiré après #2876).
 
 ## 1. Périmètre
 
@@ -1147,3 +1147,4 @@ dans les fichiers du dépôt principal (lancé d'ailleurs) : ids reportés à la
   fichier restauré d'une copie, identique. `types:cliquet` tenu.
 - `security-auditor` : aucun finding (diff avec le lot 6 = en-tête, ids, codes, chemins, table temporaire, compte ;
   prod relue en lecture : 6 points non archivés sur les nœuds attendus, 6 brouillons sans nœud ni tag).
+- **#2876 mergée (2026-11-19)**, CI verte (conflit du journal avec main : la version de la branche le contenait), `check:migrations --pr 2876` vert. `migration list --linked` : seule `20261119100631` en attente → `db:migrate` depuis le dépôt principal (4 conditions). Prod vérifiée (MCP) : les 6 sur leur nœud, un tag chacun, `draft`, `updated_at` inchangés. Worktree retiré.
