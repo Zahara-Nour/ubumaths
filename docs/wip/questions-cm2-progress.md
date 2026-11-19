@@ -1538,3 +1538,11 @@ La faire avant le lot = un chantier à part.
 (c) 14a-5 : toute fraction égale est juste (6/30 comme 1/5), le corrigé simplifie ? Reco : **oui**, comme au lot 9.
 
 (d) Un seul lot de **6 modèles** ? Reco : **oui**.
+
+### 21.1 Lots 15 et 18 réduits par le chantier `questions-cm1` (2026-11-19)
+
+Message de la session `questions-cm1` (décision de David, § 26 bis de son journal) : ses modèles jumeaux CM1 + CM2
+couvrent **CM2-109** (« Toutes les issues possibles », lot 9ab, #2881, migration qui tague les deux points),
+**CM2-087** et **CM2-094** (constructions, lot 9c, pas encore écrit). Le lot 15 perd 109 ; le lot 18 perd 094, et 087
+(classé D au § 14) est couvert. À vérifier au MCP avant la phase 0 de ces lots. 129 et 130 (proportionnalité) restent
+CM1 seulement.
