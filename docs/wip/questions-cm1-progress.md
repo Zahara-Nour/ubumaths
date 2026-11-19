@@ -5,21 +5,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19 ; PR de la migration de contenu du 04 en cours (§ 25 octies)._
+_Mis à jour le 2026-11-19, après #2869._
 
-- **État** : lots 0 à 8e publiés, **153 points du CM1 sur 171** (CM2 115/158). Le modèle 04 (b423785d) porte
-  encore en prod l'ancienne correction (déborde à 390 px) ; migration `20261119060346_questions_cm1_lot8e_04_contenu`
-  écrite, test d'intégration rouge sans elle puis 9/9 vert (md5 de la prod vérifié).
-- **Prochaine action** : PR → CI verte → merge → `db:migrate` depuis la branche mergée (additive, 4 conditions
-  réunies : accès inchangé, preuve rouge, contenu seul, rollback écrit) → vérifier au MCP (`strpos` nouvelle
-  phrase). Ensuite le lot 8f (modèles 8 à 14 du § 25), puis 9.
-- **En attente de David** : rien.
+- **État** : lots 0 à 8e publiés, **153 points du CM1 sur 171** (CM2 115/158) ; correction du modèle 04
+  (b423785d) **en prod** (migration `20261119060346` jouée, vérifiée au MCP : md5 = fichier du dépôt).
+- **Prochaine action** : lot 8f (modèles 8 à 14 du § 25), sur une nouvelle branche depuis `origin/main`, puis 9.
+- **En attente de David** : rien (vérification téléphone du 04 notée dans `verifications-manuelles.md`).
 - **Pièges en cours** : création en prod = `pnpm tsx scripts/create-questions.ts --dir … --publier
-[--mettre-a-jour]`, depuis le worktree ; `--mettre-a-jour` ne touche JAMAIS un publié : le lancer AVANT
-  `publier-lot`, et vérifier au MCP entre les deux ; commitlint refuse le type `content` et un corps > 100
-  caractères par ligne ; le mode auto refuse `publier-lot` et `garde-niveaux-tags` : David les lance ;
-  `lot-cm1-8e.py` réécrit les JSON SANS leur `id` ; `ci-lint-fichiers.test.ts` dépasse parfois ses 5 s en CI.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, branche `feat/questions-cm1-lot8e-correctif`.
+[--mettre-a-jour]`, depuis le worktree ; `--mettre-a-jour` ne touche JAMAIS un publié (sinon migration de
+  contenu, gabarit `docs/wip/questions/cm1-8e-04-contenu.py`) : le lancer AVANT `publier-lot`, vérifier au MCP
+  entre les deux ; commitlint refuse le type `content` et un corps > 100 caractères par ligne ; le mode auto
+  refuse `publier-lot` et `garde-niveaux-tags` : David les lance ; les scripts de lot réécrivent les JSON SANS
+  leur `id` ; `ci-lint-fichiers.test.ts` dépasse parfois ses 5 s en CI.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm1` ; branche `feat/questions-cm1-lot8e-correctif` mergée.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -2170,3 +2168,5 @@ reste en D ; niveaux **CM1 et CM2** et tag des deux points (109/098, 110/099, 11
   principal en échec au `beforeAll`), 9/9 vert avec elle.
 - Accès : aucune policy ne change ; seule une phrase de corrigé change.
 - Outil manquant noté : `outils-manquants.md` n° 41 (corriger un publié sans migration écrite par modèle).
+- #2869 mergée ; `db:migrate` (seule migration en attente, vérifié par `migration list --linked`) ; MCP :
+  nouvelle phrase présente, ancienne absente, md5(variations) `c120baed…` = fichier du dépôt, specs inchangées.
