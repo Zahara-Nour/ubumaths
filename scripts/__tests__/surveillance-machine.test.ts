@@ -599,17 +599,20 @@ describe('surveillance-machine : alertes précoces', () => {
 		);
 	});
 
-	it('les noms inconnus deviennent « autres » : jamais un nom de projet', () => {
+	it('les noms inconnus deviennent « autres », jamais classés : aucun nom de projet', () => {
 		machine({
 			processus: [],
 			dossiers: {},
 			swap: SWAP_CALME,
 			chrome: [],
-			programmes: [`900.0 9000000 /Users/x/Projets/MonProjet/target/debug/monprojet`],
+			programmes: [
+				`900.0 9000000 /Users/x/Projets/MonProjet/target/debug/monprojet`,
+				`2.0 500000 claude bg-spare`
+			],
 			pression: '4'
 		});
 		lancer();
-		expect(envois()).toContain('Mémoire critique. En tête : autres 8,6 Go.');
+		expect(envois()).toContain('Mémoire critique. En tête : claude 0,5 Go.');
 		expect(envois()).not.toContain('MonProjet');
 		expect(envois()).not.toContain('monprojet');
 	});

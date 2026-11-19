@@ -83,7 +83,7 @@ programmes_regroupes() {
 			sub(/^ *[^ ]+ +[^ ]+ +/, "")
 			if (match($0, /\/[^\/]+\.app\//)) nom = substr($0, RSTART + 1, RLENGTH - 6)
 			else { nom = $0; sub(/.*\//, "", nom) }
-			if ($0 ~ /\/claude\/versions\//) nom = "claude"
+			if ($0 ~ /\/claude\/versions\// || nom ~ /^claude /) nom = "claude"
 			if (nom == "Google Chrome") nom = "Chrome"
 			else if (nom == "Brave Browser") nom = "Brave"
 			else if (nom == "Google Chrome for Testing") nom = "Chrome-Playwright"
@@ -94,15 +94,16 @@ programmes_regroupes() {
 }
 
 # Les 3 programmes qui prennent le plus de CPU (« Chrome 640 % · node 180 % »),
-# depuis la sortie de programmes_regroupes sur l'entrée standard.
+# depuis la sortie de programmes_regroupes sur l'entrée standard. « autres »
+# (des centaines de petits processus) n'est jamais un coupable : pas classé.
 en_tete_cpu() {
-	sort -t "$(printf '\t')" -k2,2nr | awk -F '\t' '$2 > 0 && i < 3 {
+	sort -t "$(printf '\t')" -k2,2nr | awk -F '\t' '$1 != "autres" && $2 > 0 && i < 3 {
 		printf "%s%s %d %%", (i++ ? " · " : ""), $1, $2 }'
 }
 
 # Les 3 programmes qui prennent le plus de mémoire (« Chrome 4,1 Go · node 1,5 Go »).
 en_tete_memoire() {
-	sort -t "$(printf '\t')" -k3,3nr | LC_ALL=C awk -F '\t' '$3 > 0 && i < 3 {
+	sort -t "$(printf '\t')" -k3,3nr | LC_ALL=C awk -F '\t' '$1 != "autres" && $3 > 0 && i < 3 {
 		go = sprintf("%.1f", $3 / 1048576); sub(/\./, ",", go)
 		printf "%s%s %s Go", (i++ ? " · " : ""), $1, go }'
 }
