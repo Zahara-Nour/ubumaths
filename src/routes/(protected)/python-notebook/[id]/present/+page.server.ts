@@ -10,9 +10,9 @@
 
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { uuidSchema } from '$lib/server/validation/common';
-import { isForeignStudentNotebook } from '$lib/utils/notebook-foreign-content';
-import { createServerLogger } from '$lib/utils/logger';
+import { uuidSchema } from '#lib/server/validation/common.ts';
+import { isForeignStudentNotebook } from '#lib/utils/notebook-foreign-content.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('(protected)/python-notebook/[id]/present/+page.server');
 

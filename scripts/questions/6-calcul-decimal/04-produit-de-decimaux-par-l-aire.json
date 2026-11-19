@@ -1,10 +1,8 @@
 {
+	"id": "f5651c7d-363a-48fa-bf62-3cff037076ef",
 	"title": "Un produit de décimaux par l'aire",
 	"description": "Sens du produit de deux décimaux par l'aire d'un rectangle et la conversion des unités (3,7 dm × 2,9 dm ; 0,4 m × 0,3 m)",
 	"grades": ["6"],
-	"theme": "Décimaux",
-	"domain": "Multiplier",
-	"subdomain": "Produit",
 	"level": 6,
 	"delay": 60,
 	"status": "draft",

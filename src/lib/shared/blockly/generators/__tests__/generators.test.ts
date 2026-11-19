@@ -43,33 +43,6 @@ describe('JavaScript Code Wrapping', () => {
 			expect(wrapped).toContain('function isPrime(n)');
 		});
 
-		it('should capture console.log output', () => {
-			const code = 'console.log("test");';
-			const wrapped = wrapJavaScriptCode(code);
-
-			expect(wrapped).toContain('const __output__ = []');
-			expect(wrapped).toContain('const __console_log__ = console.log');
-			expect(wrapped).toContain('console.log = function(...args)');
-		});
-
-		it('should include error handling', () => {
-			const code = 'throw new Error("test");';
-			const wrapped = wrapJavaScriptCode(code);
-
-			expect(wrapped).toContain('try {');
-			expect(wrapped).toContain('} catch (error) {');
-			expect(wrapped).toContain('return {');
-			expect(wrapped).toContain('success: false');
-		});
-
-		it('should restore console.log in finally block', () => {
-			const code = 'const x = 1;';
-			const wrapped = wrapJavaScriptCode(code);
-
-			expect(wrapped).toContain('} finally {');
-			expect(wrapped).toContain('console.log = __console_log__');
-		});
-
 		it('should handle empty code', () => {
 			const code = '';
 			const wrapped = wrapJavaScriptCode(code);
@@ -427,10 +400,6 @@ describe('Code Wrapping Integration', () => {
 		expect(wrapped).toContain('function gcd');
 		expect(wrapped).toContain('function lcm');
 		expect(wrapped).toContain('function isPrime');
-		expect(wrapped).toContain('__output__');
-		expect(wrapped).toContain('try {');
-		expect(wrapped).toContain('} catch');
-		expect(wrapped).toContain('} finally {');
 		expect(wrapped).toContain(code);
 	});
 

@@ -23,7 +23,7 @@ import {
 	BasePythonExecutor,
 	type ExerciseValidationConfig,
 	type ToWorkerMessage
-} from '$lib/shared/python';
+} from '#lib/shared/python/index.ts';
 
 // =============================================================================
 // Test harness — a TestExecutor that holds a persistent context

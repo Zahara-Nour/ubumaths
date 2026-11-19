@@ -5,7 +5,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { areEquivalent } from '$lib/math';
+import { areEquivalent } from '#lib/math/index.ts';
 
 describe('areEquivalent avec hypothèses de l’énoncé', () => {
 	it('x > 0 : x^a·x^b ≡ x^{a+b}, seulement déclaré', () => {

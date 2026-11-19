@@ -82,9 +82,6 @@
 			}
 		],
 		"grades": ["4"],
-		"theme": "Fractions",
-		"domain": "Apprivoiser",
-		"subdomain": "Simplification",
 		"level": 6,
 		"status": "draft",
 		"delay": 20,

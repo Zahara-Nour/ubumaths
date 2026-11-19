@@ -1,10 +1,8 @@
 {
+	"id": "5077e030-ab90-4660-91a7-25cb48281445",
 	"title": "Entier, décimal ou non décimal ?",
 	"description": "Dire si une fraction représente un nombre entier (35/7, entier donc aussi décimal), un nombre décimal (3/4, 7/5) ou un nombre non décimal (2/3, 7/6), par la division posée du numérateur par le dénominateur ; non décimal quand un reste revient (dénominateurs 3, 6, 9, 11, 12, où il revient vite)",
 	"grades": ["6"],
-	"theme": "Fractions",
-	"domain": "Apprivoiser",
-	"subdomain": "Forme décimale",
 	"level": 13,
 	"delay": 30,
 	"status": "draft",

@@ -1,10 +1,8 @@
 {
+	"id": "2e9b26b0-a75f-4531-bb59-49fd2171b2ef",
 	"title": "Puissance d'un produit",
 	"description": "Utiliser (ab)ⁿ = aⁿbⁿ : (3 × 4)² = 3^? × 4^? ; 2⁵ × 3⁵ en une seule puissance ; 2⁴ × 5⁴ astucieusement",
 	"grades": ["4"],
-	"theme": "Puissances",
-	"domain": "Calculer",
-	"subdomain": "Puissance d'un produit",
 	"level": 2,
 	"delay": 45,
 	"status": "draft",

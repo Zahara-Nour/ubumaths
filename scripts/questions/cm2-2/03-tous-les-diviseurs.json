@@ -1,10 +1,8 @@
 {
+	"id": "9adccef3-9403-45df-ba90-350c8857e675",
 	"title": "Tous les diviseurs d'un nombre",
 	"description": "Écrire tous les diviseurs d'un entier jusqu'à 30 (4, 6 ou 8 diviseurs, leur nombre est donné), dans n'importe quel ordre",
 	"grades": ["CM2"],
-	"theme": "Entiers",
-	"domain": "Diviser",
-	"subdomain": "Multiples et diviseurs",
 	"level": 6,
 	"delay": 30,
 	"status": "draft",

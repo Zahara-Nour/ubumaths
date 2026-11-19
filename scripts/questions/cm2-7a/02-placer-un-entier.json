@@ -1,10 +1,8 @@
 {
+	"id": "7df1aadd-82a0-4df0-af34-2873083b7e4a",
 	"title": "Placer un nombre entier sur une demi-droite graduée",
 	"description": "Placer un nombre entier sur une demi-droite graduée de 1 en 1 jusqu'à 100 000 en 100 000 (deux graduations étiquetées, le pas est à trouver), puis deux points sur la même droite",
 	"grades": ["CM2"],
-	"theme": "Entiers",
-	"domain": "Apprivoiser",
-	"subdomain": "Repérage",
 	"level": 3,
 	"delay": 45,
 	"status": "draft",

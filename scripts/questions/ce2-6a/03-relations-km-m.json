@@ -1,10 +1,8 @@
 {
+	"id": "7c31aa9a-9c57-40a1-8f22-87eb7b11eecd",
 	"title": "Kilomètres et mètres",
 	"description": "5 km = 5 000 m ; 5 km + 750 m = 5 750 m ; 5 750 m = 5 km 750 m ; 5 km 40 m = 5 040 m",
 	"grades": ["CE2"],
-	"theme": "Grandeurs",
-	"domain": "Longueurs",
-	"subdomain": "Unités",
 	"level": 11,
 	"delay": 90,
 	"status": "draft",

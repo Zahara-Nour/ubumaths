@@ -33,7 +33,7 @@ import {
 	createMockRequest,
 	mockSuccess,
 	mockSequence
-} from '$tests/helpers';
+} from '#tests/helpers/index.ts';
 
 // ============================================================================
 // TEST DATA

@@ -11,9 +11,9 @@ import { render } from 'vitest-browser-svelte';
 import { page, userEvent } from 'vitest/browser';
 import type { MathfieldElement } from 'mathlive';
 import AtelierContainer from '../AtelierContainer.svelte';
-import { Atelier } from '$lib/atelier/atelier.svelte';
-import { INPUT_MODE_KEY } from '$lib/atelier/input-mode';
-import { POINT_DRAG_MODE_KEY } from '$lib/atelier/point-drag-mode';
+import { Atelier } from '#lib/atelier/atelier.svelte.ts';
+import { INPUT_MODE_KEY } from '#lib/atelier/input-mode.ts';
+import { POINT_DRAG_MODE_KEY } from '#lib/atelier/point-drag-mode.ts';
 import { chooseObjectAction } from './harness/function-card';
 import { onDesktopScreen } from './harness/desktop-screen';
 
@@ -285,17 +285,23 @@ describe('Calcul en écriture mathématique', () => {
 		await vi.waitFor(() => expect(history()).toContain('3x2'));
 	});
 
-	it('le bouton « Calculer » calcule aussi', async () => {
-		const { choose, typeMath, history, calcul } = await open();
-		await choose('Écriture mathématique');
+	// Pas de bouton « Calculer » (David, 2026-11-14) : Entrée, ou la touche ↵ du
+	// clavier virtuel ou du clavier du téléphone, valide dans les deux champs
+	it('aucun bouton « Calculer » : Entrée calcule dans le champ texte', async () => {
+		const { textField, history, calcul } = await open();
+		const buttons = [...calcul().querySelectorAll('button')];
+		expect(buttons.some((b) => b.textContent?.trim() === 'Calculer')).toBe(false);
 
-		await typeMath('4+3');
-		const button = [...calcul().querySelectorAll('button')].find(
-			(b) => b.textContent?.trim() === 'Calculer'
-		);
-		await vi.waitFor(() => expect(button?.disabled).toBe(false));
-		button?.click();
+		const field = textField();
+		if (field === null) throw new Error('pas de champ texte');
+		await userEvent.click(field);
+		// Ligne vide : Entrée ne fait rien, l'historique ne bouge pas
+		const empty = history();
+		await userEvent.keyboard('{Enter}');
+		await new Promise((resolve) => setTimeout(resolve, 200));
+		expect(history()).toBe(empty);
 
+		await userEvent.keyboard('4+3{Enter}');
 		await vi.waitFor(() => expect(history()).toContain('7'));
 	});
 
@@ -353,6 +359,29 @@ describe('Calcul en écriture mathématique', () => {
 
 		await vi.waitFor(() => expect(container.textContent).not.toContain('Modèle :'));
 		expect(container.querySelector('[aria-label="Commandes disponibles"]')).toBeNull();
+	});
+
+	// Phase 0 `docs/wip/modele-definition-progress.md` : la même ligne qu'en texte
+	it('une définition de fonction montre le modèle de l’ensemble', async () => {
+		const { choose, typeMath, container } = await open();
+		await choose('Écriture mathématique');
+
+		await typeMath('g(t)=3t');
+
+		await vi.waitFor(() =>
+			expect(container.querySelector('.modele')?.textContent).toContain('g(t) = t² sur [0;3]')
+		);
+	});
+
+	it('« sur » tapé au clavier de MathLive : le modèle de l’intervalle', async () => {
+		const { choose, typeMath, container } = await open();
+		await choose('Écriture mathématique');
+
+		await typeMath('f(x)=x sur');
+
+		await vi.waitFor(() =>
+			expect(container.querySelector('.modele')?.textContent).toContain('[a;b], ]a;b[, [0;+∞[')
+		);
 	});
 });
 

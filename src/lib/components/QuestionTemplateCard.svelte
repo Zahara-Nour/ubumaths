@@ -14,6 +14,8 @@
 
 	Props:
 	- template: QuestionTemplate
+	- path: chemin dans l'arbre des notions (« Branche › Notion › Sous-notion »,
+	  « Non rangé »), calculé par le serveur ; absent = rien d'affiché
 	- onPreview: (id: string) => void
 	- onEdit: (id: string) => void
 	- onDuplicate: (id: string) => void
@@ -21,22 +23,23 @@
 -->
 
 <script lang="ts">
-	import type { QuestionTemplate } from '$lib/questions/types';
-	import { getQuestionType, isCourseQuestion, QUESTION_TYPE_LABELS } from '$lib/questions/types';
-	import { Button } from '$lib/components/ui/button';
-	import { Badge } from '$lib/components/ui/badge';
-	import * as Card from '$lib/components/ui/card';
+	import type { QuestionTemplate } from '#lib/questions/types.ts';
+	import { getQuestionType, isCourseQuestion, QUESTION_TYPE_LABELS } from '#lib/questions/types.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
 	import { Eye, Pencil, Copy, Trash2 } from '@lucide/svelte';
 
 	interface Props {
 		template: QuestionTemplate;
+		path?: string | null;
 		onPreview: (id: string) => void;
 		onEdit: (id: string) => void;
 		onDuplicate: (id: string) => void;
 		onDelete: (id: string) => void;
 	}
 
-	let { template, onPreview, onEdit, onDuplicate, onDelete }: Props = $props();
+	let { template, path = null, onPreview, onEdit, onDuplicate, onDelete }: Props = $props();
 
 	/**
 	 * Get badge color for question type
@@ -126,18 +129,10 @@
 	<Card.Content class="space-y-3">
 		<!-- Categories -->
 		<div class="space-y-1">
-			<div class="flex items-center gap-2 text-xs text-muted-foreground">
-				<span class="font-medium">Thème:</span>
-				<span>{template.theme}</span>
-			</div>
-			<div class="flex items-center gap-2 text-xs text-muted-foreground">
-				<span class="font-medium">Domaine:</span>
-				<span>{template.domain}</span>
-			</div>
-			{#if template.subdomain}
+			{#if path}
 				<div class="flex items-center gap-2 text-xs text-muted-foreground">
-					<span class="font-medium">Sous-domaine:</span>
-					<span>{template.subdomain}</span>
+					<span class="font-medium">Rangé dans:</span>
+					<span>{path}</span>
 				</div>
 			{/if}
 			<div class="flex items-center gap-2 text-xs text-muted-foreground">

@@ -7,7 +7,7 @@
 
 	FEATURES:
 	- Student info header with avatar and name
-	- Lien de retour vers les classes, ou vers l'accueil s'il a été ouvert de là
+	- Lien de retour vers les classes, ou vers l'accueil ou le suivi s'il a été ouvert de là
 	- Reuses RewardEventCard and RewardJournalFilters from Phase 5
 	- Same layout and UX as student journal
 
@@ -18,32 +18,32 @@
 
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { page } from '$app/stores';
-	import { rewardJournalStore } from '$lib/stores/rewardJournal.svelte';
-	import RewardEventCard from '$lib/components/rewards/RewardEventCard.svelte';
-	import RewardJournalFilters from '$lib/components/rewards/RewardJournalFilters.svelte';
-	import { Button } from '$lib/components/ui/button';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import { studentJournalReturn } from '$lib/navigation/return-links';
-	import { Skeleton } from '$lib/components/ui/skeleton';
-	import * as Card from '$lib/components/ui/card';
-	import UserAvatar from '$lib/components/UserAvatar.svelte';
+	import { page } from '$app/state';
+	import { rewardJournalStore } from '#lib/stores/rewardJournal.svelte.ts';
+	import RewardEventCard from '#lib/components/rewards/RewardEventCard.svelte';
+	import RewardJournalFilters from '#lib/components/rewards/RewardJournalFilters.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import { studentJournalReturn } from '#lib/navigation/return-links.ts';
+	import { Skeleton } from '#lib/components/ui/skeleton/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import UserAvatar from '#lib/components/UserAvatar.svelte';
 	import { RefreshCw, ChevronDown, AlertCircle, Inbox } from '@lucide/svelte';
-	import type { RewardType } from '$lib/types/reward-journal';
+	import type { RewardType } from '#lib/types/reward-journal.ts';
 	import type { PageData } from './$types';
 
 	// Props from server load
 	let { data }: { data: PageData } = $props();
 
-	// Ouvert depuis l'accueil (`?depuis=accueil`) ou depuis les classes
-	let back = $derived(studentJournalReturn($page.url.searchParams));
+	// Ouvert depuis l'accueil ou le suivi (`?depuis=`), sinon depuis les classes
+	let back = $derived(studentJournalReturn(data.student.id, page.url.searchParams));
 
 	// Local state for filter
 	let selectedRewardType = $state<RewardType | null>(null);
 
 	// Get student info from server data
 	let student = $derived(data.student);
-	let studentId = $derived($page.params.studentId);
+	let studentId = $derived(page.params.studentId);
 
 	// Build student display name
 	let studentName = $derived(

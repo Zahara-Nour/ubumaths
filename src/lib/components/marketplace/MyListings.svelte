@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { marketplaceStore } from '$lib/stores/marketplace.svelte';
-	import type { MarketplaceListing, MarketplaceProposal } from '$lib/types/marketplace';
-	import * as Card from '$lib/components/ui/card';
-	import { Button } from '$lib/components/ui/button';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import { Badge } from '$lib/components/ui/badge';
-	import SkeletonList from '$lib/components/skeleton/SkeletonList.svelte';
-	import UserAvatar from '$lib/components/UserAvatar.svelte';
+	import { marketplaceStore } from '#lib/stores/marketplace.svelte.ts';
+	import type { MarketplaceListing, MarketplaceProposal } from '#lib/types/marketplace.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import SkeletonList from '#lib/components/skeleton/SkeletonList.svelte';
+	import UserAvatar from '#lib/components/UserAvatar.svelte';
 	import {
 		Package,
 		Clock,
@@ -19,7 +19,7 @@
 	import { formatDistanceToNow } from 'date-fns';
 	import { fr } from 'date-fns/locale';
 	import ProposalResponseModal from './ProposalResponseModal.svelte';
-	import { ConfirmDialog } from '$lib/components/ui/confirm-dialog';
+	import { ConfirmDialog } from '#lib/components/ui/confirm-dialog/index.ts';
 
 	// Constants
 	const statusFilterItems = [

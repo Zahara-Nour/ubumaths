@@ -1,10 +1,8 @@
 {
+	"id": "4948acaf-461e-4ba7-b969-e8b596d2fa34",
 	"title": "Problèmes de comparaison en deux étapes",
 	"description": "Trouver l'autre valeur, puis le tout : Léo 188 billes, Lucie 75 de plus, combien en tout ? ; Tom a moins de cartes que Sara ; un pull et un pantalon plus cher",
 	"grades": ["CE2"],
-	"theme": "Entiers",
-	"domain": "Problèmes",
-	"subdomain": "Deux étapes",
 	"level": 8,
 	"delay": 120,
 	"status": "draft",

@@ -1,10 +1,8 @@
 {
+	"id": "e297293d-41fd-4c8d-94de-be0e4e377756",
 	"title": "Relations entre les unités de contenance",
 	"description": "1 cL = 10 mL ; 4 hL = 40 daL ; 3 L = 3 000 mL ; 23 dL = 2,3 L ; 125 cL = 1,25 L ; 6,4 L = 640 cL ; 0,75 L = 75 cL",
 	"grades": ["CM1"],
-	"theme": "Grandeurs",
-	"domain": "Contenances",
-	"subdomain": "Unités",
 	"level": 5,
 	"delay": 90,
 	"status": "draft",

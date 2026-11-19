@@ -1,0 +1,186 @@
+{
+	"id": "d2e2f75d-dc9b-4494-a4f7-911e1ebb71cf",
+	"title": "Aire d'un rectangle",
+	"description": "Calculer l'aire d'un rectangle de côtés entiers (longueur × largeur) : en cm, sur un dessin, ou dans un petit problème en m ou en dm",
+	"grades": ["CM2"],
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Quelle est l'aire d'un rectangle de longueur ${{L}}~\\unit{cm}$ et de largeur ${{l}}~\\unit{cm}$ ?\n\n$\\text{Aire} = ?~\\unit{cm^2}$",
+			"variables": [
+				{
+					"name": "L",
+					"expression": "3..15"
+				},
+				{
+					"name": "l",
+					"expression": "2..9"
+				}
+			],
+			"conditions": ["l < L"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:L*l}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Aire d'un rectangle : **longueur × largeur**.",
+					"$${{L}} \\times {{l}} = \\textcolor{{{color:primary.0}}}{{{eval:L*l}}}$$",
+					"L'aire du rectangle est $\\textcolor{{{color:primary.0}}}{{{eval:L*l}}}~\\unit{cm^2}$."
+				]
+			}
+		},
+		{
+			"statement": "Ce rectangle mesure ${{L}}~\\unit{cm}$ sur ${{l}}~\\unit{cm}$. Quelle est son aire ?\n\n```figure\nfenetre: -1 ; {{eval:L+3}} ; -2 ; {{eval:l+1}}\ndescription: Un rectangle de {{L}} cm de longueur et {{l}} cm de largeur.\n---\nA = point(0, 0, visible=faux)\nB = point({{L}}, 0, visible=faux)\nC = point({{L}}, {{l}}, visible=faux)\nD = point(0, {{l}}, visible=faux)\npolygone(A, B, C, D, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.2)\nM = milieu(A, B, visible=faux)\nN = milieu(B, C, visible=faux)\ntexte(M, \"{{L}} cm\", dy=-0.4, ancre=\"haut\")\ntexte(N, \"{{l}} cm\", dx=0.3, ancre=\"gauche\")\n```\n\n$\\text{Aire} = ?~\\unit{cm^2}$",
+			"variables": [
+				{
+					"name": "L",
+					"expression": "3..14"
+				},
+				{
+					"name": "l",
+					"expression": "2..8"
+				}
+			],
+			"conditions": ["l < L"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:L*l}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Aire d'un rectangle : **longueur × largeur**.",
+					"$${{L}} \\times {{l}} = \\textcolor{{{color:primary.0}}}{{{eval:L*l}}}$$",
+					"L'aire du rectangle est $\\textcolor{{{color:primary.0}}}{{{eval:L*l}}}~\\unit{cm^2}$."
+				]
+			}
+		},
+		{
+			"statement": "{{if:j==1|Un potager rectangulaire mesure ${{L}}~\\unit{m}$ sur ${{l}}~\\unit{m}$.|Une affiche rectangulaire mesure ${{L}}~\\unit{dm}$ sur ${{l}}~\\unit{dm}$.}} Quelle est son aire ?\n\n$\\text{Aire} = ?~\\unit{{{if:j==1|m^2|dm^2}}}$",
+			"variables": [
+				{
+					"name": "j",
+					"expression": "1..2"
+				},
+				{
+					"name": "L",
+					"expression": "4..12"
+				},
+				{
+					"name": "l",
+					"expression": "2..9"
+				}
+			],
+			"conditions": ["l < L"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:L*l}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Aire d'un rectangle : **longueur × largeur**.",
+					"$${{L}} \\times {{l}} = \\textcolor{{{color:primary.0}}}{{{eval:L*l}}}$$",
+					"L'aire est $\\textcolor{{{color:primary.0}}}{{{eval:L*l}}}~\\unit{{{if:j==1|m^2|dm^2}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "8 cm sur 5 cm : 40",
+			"variationIndex": 0,
+			"variables": {
+				"L": "8",
+				"l": "5"
+			},
+			"answers": ["40"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2 × (8 + 5) (le périmètre, 26)",
+			"variationIndex": 0,
+			"variables": {
+				"L": "8",
+				"l": "5"
+			},
+			"answers": ["26"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 8 + 5 (13)",
+			"variationIndex": 0,
+			"variables": {
+				"L": "8",
+				"l": "5"
+			},
+			"answers": ["13"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "dessin 7 sur 4 : 28",
+			"variationIndex": 1,
+			"variables": {
+				"L": "7",
+				"l": "4"
+			},
+			"answers": ["28"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2 × (7 + 4) (22)",
+			"variationIndex": 1,
+			"variables": {
+				"L": "7",
+				"l": "4"
+			},
+			"answers": ["22"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "potager 9 m sur 6 m : 54",
+			"variationIndex": 2,
+			"variables": {
+				"j": "1",
+				"L": "9",
+				"l": "6"
+			},
+			"answers": ["54"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 9 + 6 (15)",
+			"variationIndex": 2,
+			"variables": {
+				"j": "1",
+				"L": "9",
+				"l": "6"
+			},
+			"answers": ["15"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

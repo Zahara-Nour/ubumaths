@@ -9,8 +9,8 @@
 import { describe, it, expect } from 'vitest';
 import { generateInstance } from '../instance-generator';
 import type { QuestionTemplate, QuestionVariation } from '../../types';
-import { templateMarkdown } from '$lib/ubumark';
-import { validateAnswer } from '$lib/utils/answer-validator';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
+import { validateAnswer } from '#lib/utils/answer-validator.ts';
 
 function template(variation: Omit<QuestionVariation, 'statement'> & { statement: string }) {
 	return {
@@ -19,8 +19,6 @@ function template(variation: Omit<QuestionVariation, 'statement'> & { statement:
 		status: 'draft',
 		variations: [{ ...variation, statement: templateMarkdown(variation.statement) }],
 		grades: ['CE1'],
-		theme: 'Test',
-		domain: 'Test',
 		level: 1
 	} as QuestionTemplate;
 }

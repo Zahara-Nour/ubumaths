@@ -14,7 +14,7 @@
 	- result: TestResult - Test result data
 	- onRestart: () => void - Callback to restart test
 	- onBackToCart: () => void - Callback to return to cart
-	- inEvaluation: évaluation assignée → ni « Recommencer » ni « Retour au panier »,
+	- inEvaluation: évaluation assignée → ni « Recommencer » ni « Retour à ma série »,
 	  seulement « Mes évaluations » (une nouvelle tentative passe par la vérification
 	  des tentatives et de la date limite)
 	- buddyGain: gain du Palotin pour cette séance (`null` / absent → rien)
@@ -23,16 +23,16 @@
 -->
 
 <script lang="ts">
-	import type { TestResult } from '$lib/types/test';
-	import CorrectionCard from '$lib/components/questions/CorrectionCard.svelte';
-	import * as Card from '$lib/components/ui/card';
-	import { Button } from '$lib/components/ui/button';
+	import type { TestResult } from '#lib/types/test.ts';
+	import CorrectionCard from '#lib/components/questions/CorrectionCard.svelte';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import { ArrowLeft, RotateCw, Clock, TrendingUp } from '@lucide/svelte';
-	import { cn } from '$lib/utils';
-	import BuddyGainCard from '$lib/components/buddy/BuddyGainCard.svelte';
-	import type { BuddyGainView } from '$lib/components/buddy/buddy-gain';
-	import MathouNewsCard from '$lib/components/mathoux/MathouNewsCard.svelte';
-	import type { MathouNews } from '$lib/mathoux/news';
+	import { cn } from '#lib/utils.ts';
+	import BuddyGainCard from '#lib/components/buddy/BuddyGainCard.svelte';
+	import type { BuddyGainView } from '#lib/components/buddy/buddy-gain.ts';
+	import MathouNewsCard from '#lib/components/mathoux/MathouNewsCard.svelte';
+	import type { MathouNews } from '#lib/mathoux/news.ts';
 
 	interface Props {
 		result: TestResult;
@@ -90,7 +90,7 @@
 	<div class="text-center">
 		<h1 class="text-3xl font-bold">Résultats du test</h1>
 		<p class="mt-2 text-muted-foreground">
-			{result.mode === 'interactive' ? 'Entraînement' : 'Course aux nombres'}
+			{result.mode === 'interactive' ? 'Contrôle blanc' : 'Course aux nombres'}
 		</p>
 	</div>
 
@@ -179,7 +179,7 @@
 		{:else}
 			<Button variant="outline" onclick={onBackToCart}>
 				<ArrowLeft class="mr-2 h-4 w-4" />
-				Retour au panier
+				Retour à ma série
 			</Button>
 			<Button onclick={onRestart}>
 				<RotateCw class="mr-2 h-4 w-4" />

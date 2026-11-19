@@ -18,9 +18,9 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import type { JSONContent } from '@tiptap/core';
-import { PUBLIC_SUPABASE_URL } from '$env/static/public';
+import { PUBLIC_SUPABASE_URL } from '$app/env/public';
 import MarkdownRenderer from '../MarkdownRenderer.svelte';
-import { tipTapToMarkdown } from '$lib/components/rich-text/markdown-export';
+import { tipTapToMarkdown } from '#lib/components/rich-text/markdown-export.ts';
 
 const HOTE = 'exemple.invalid';
 const IMAGE_EXTERNE = `https://${HOTE}/traceur.png`;

@@ -1,0 +1,262 @@
+{
+	"id": "ea559f53-eec0-49d8-96e1-868820bd1a72",
+	"title": "Problèmes d'optimisation : plusieurs contraintes",
+	"description": "Le plus grand nombre d'objets qu'on peut fabriquer quand plusieurs fournitures limitent : des étagères (planches coupées, équerres, vis), des torchons (tissu à découper dans le bon sens, ruban autour) ; on garde le plus petit des nombres",
+	"grades": ["CM2"],
+	"level": 2,
+	"delay": 240,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Madame Lidon fabrique des étagères. Pour une étagère, il lui faut une planche de ${{l}}~\\unit{m}$, ${{q}}$ équerres et ${{w}}$ vis. Elle dispose de :\n\n- ${{P}}$ planches de ${{L}}~\\unit{m}$, qu'elle peut couper ;\n- ${{E}}$ équerres ;\n- ${{V}}$ vis.\n\nCombien d'étagères peut-elle fabriquer au maximum ?\n\nElle peut en fabriquer $?$.",
+			"variables": [
+				{
+					"name": "l",
+					"expression": "2..3"
+				},
+				{
+					"name": "L",
+					"expression": "4..9"
+				},
+				{
+					"name": "P",
+					"expression": "4..12"
+				},
+				{
+					"name": "q",
+					"expression": "2..4"
+				},
+				{
+					"name": "E",
+					"expression": "20..90"
+				},
+				{
+					"name": "w",
+					"expression": "6..12"
+				},
+				{
+					"name": "V",
+					"expression": "60..200"
+				}
+			],
+			"conditions": [
+				"L > l",
+				"mod(L,l) != 0",
+				"P*floor(L/l) != floor(E/q)",
+				"floor(E/q) != floor(V/w)",
+				"P*floor(L/l) != floor(V/w)",
+				"floor(P*L/l) != P*floor(L/l)"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:min(P*floor(L/l),min(floor(E/q),floor(V/w)))}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On compte combien d'étagères permet **chaque fourniture**, puis on garde le **plus petit** nombre : au-delà, il manquerait quelque chose.",
+					"**Planches.** Dans une planche de ${{L}}~\\unit{m}$, on coupe ${{eval:floor(L/l)}}$ morceau{{if:floor(L/l)>1|x|}} de ${{l}}~\\unit{m}$ (le reste, ${{eval:mod(L,l)}}~\\unit{m}$, ne sert à rien) : ${{P}} \\times {{eval:floor(L/l)}} = {{eval:P*floor(L/l)}}$ étagères.",
+					"**Équerres.** ${{E}} \\div {{q}}$ : ${{eval:floor(E/q)}}$ étagères{{if:mod(E,q)>0| (il reste {{eval:mod(E,q)}} équerre{{if:mod(E,q)>1|s|}})|}}.",
+					"**Vis.** ${{V}} \\div {{w}}$ : ${{eval:floor(V/w)}}$ étagères{{if:mod(V,w)>0| (il reste {{eval:mod(V,w)}} vis)|}}.",
+					"Le plus petit des trois nombres : Madame Lidon peut fabriquer au maximum $\\textcolor{{{color:primary.0}}}{{{eval:min(P*floor(L/l),min(floor(E/q),floor(V/w)))}}}$ étagères."
+				]
+			}
+		},
+		{
+			"statement": "Azmar fabrique des torchons rectangulaires de ${{a}}~\\unit{cm}$ sur ${{b}}~\\unit{cm}$ ; il coud du ruban tout autour de chaque torchon. Il a un reste de tissu rectangulaire de ${{eval:W/100;d}}~\\unit{m}$ sur ${{eval:H/100;d}}~\\unit{m}$, et ${{R}}~\\unit{m}$ de ruban.\n\nCombien de torchons Azmar peut-il fabriquer au maximum ?\n\nIl peut en fabriquer $?$.",
+			"variables": [
+				{
+					"name": "ai",
+					"expression": "6..9"
+				},
+				{
+					"name": "a",
+					"expression": "eval:10*ai"
+				},
+				{
+					"name": "bi",
+					"expression": "4..6"
+				},
+				{
+					"name": "b",
+					"expression": "eval:10*bi"
+				},
+				{
+					"name": "wi",
+					"expression": "20..40"
+				},
+				{
+					"name": "W",
+					"expression": "eval:10*wi"
+				},
+				{
+					"name": "hi",
+					"expression": "15..30"
+				},
+				{
+					"name": "H",
+					"expression": "eval:10*hi"
+				},
+				{
+					"name": "R",
+					"expression": "20..60"
+				}
+			],
+			"conditions": [
+				"a > b",
+				"W > H",
+				"floor(W/a)*floor(H/b) != floor(W/b)*floor(H/a)",
+				"floor(W/a)*floor(H/b) >= 4",
+				"floor(W/b)*floor(H/a) >= 4",
+				"floor(100*R/(2*(a+b))) != max(floor(W/a)*floor(H/b),floor(W/b)*floor(H/a))",
+				"floor(100*R/(2*(a+b))) != min(floor(W/a)*floor(H/b),floor(W/b)*floor(H/a))"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:min(max(floor(W/a)*floor(H/b),floor(W/b)*floor(H/a)),floor(100*R/(2*(a+b))))}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Le tissu.** Tout est en centimètres : ${{eval:W/100;d}}~\\unit{m} = {{W}}~\\unit{cm}$, ${{eval:H/100;d}}~\\unit{m} = {{H}}~\\unit{cm}$. On peut poser les torchons de deux façons.",
+					"Le long côté du torchon sur le long côté du tissu : ${{eval:floor(W/a)}}$ torchons dans la longueur (${{W}} \\div {{a}}$), ${{eval:floor(H/b)}}$ dans la largeur (${{H}} \\div {{b}}$), soit ${{eval:floor(W/a)}} \\times {{eval:floor(H/b)}} = {{eval:floor(W/a)*floor(H/b)}}$ torchons.",
+					"Dans l'autre sens : ${{eval:floor(W/b)}} \\times {{eval:floor(H/a)}} = {{eval:floor(W/b)*floor(H/a)}}$ torchons. Le tissu permet donc ${{eval:max(floor(W/a)*floor(H/b),floor(W/b)*floor(H/a))}}$ torchons au plus.",
+					"**Le ruban.** Le tour d'un torchon : $2 \\times ({{a}} + {{b}}) = {{eval:2*(a+b)}}~\\unit{cm}$ ; ${{R}}~\\unit{m} = {{eval:100*R}}~\\unit{cm}$, et ${{eval:100*R}} \\div {{eval:2*(a+b)}}$ : ${{eval:floor(100*R/(2*(a+b)))}}$ torchons au plus.",
+					"Le plus petit des deux nombres : Azmar peut fabriquer au maximum $\\textcolor{{{color:primary.0}}}{{{eval:min(max(floor(W/a)*floor(H/b),floor(W/b)*floor(H/a)),floor(100*R/(2*(a+b))))}}}$ torchons."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "étagères : 12, 20, 13 → 12",
+			"variationIndex": 0,
+			"variables": {
+				"l": "2",
+				"L": "5",
+				"P": "6",
+				"q": "2",
+				"E": "40",
+				"w": "9",
+				"V": "120"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : étagères, 6 × 5 ÷ 2 sans couper (15)",
+			"variationIndex": 0,
+			"variables": {
+				"l": "2",
+				"L": "5",
+				"P": "6",
+				"q": "2",
+				"E": "40",
+				"w": "9",
+				"V": "120"
+			},
+			"answers": ["15"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : étagères, le plus grand (20)",
+			"variationIndex": 0,
+			"variables": {
+				"l": "2",
+				"L": "5",
+				"P": "6",
+				"q": "2",
+				"E": "40",
+				"w": "9",
+				"V": "120"
+			},
+			"answers": ["20"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : étagères, les vis (13)",
+			"variationIndex": 0,
+			"variables": {
+				"l": "2",
+				"L": "5",
+				"P": "6",
+				"q": "2",
+				"E": "40",
+				"w": "9",
+				"V": "120"
+			},
+			"answers": ["13"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "torchons : 12 ou 18 dans le tissu, 19 avec le ruban → 18",
+			"variationIndex": 1,
+			"variables": {
+				"ai": "8",
+				"a": "80",
+				"bi": "5",
+				"b": "50",
+				"wi": "30",
+				"W": "300",
+				"hi": "24",
+				"H": "240",
+				"R": "50"
+			},
+			"answers": ["18"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : torchons, un seul sens (12)",
+			"variationIndex": 1,
+			"variables": {
+				"ai": "8",
+				"a": "80",
+				"bi": "5",
+				"b": "50",
+				"wi": "30",
+				"W": "300",
+				"hi": "24",
+				"H": "240",
+				"R": "50"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : torchons, le ruban seulement (19)",
+			"variationIndex": 1,
+			"variables": {
+				"ai": "8",
+				"a": "80",
+				"bi": "5",
+				"b": "50",
+				"wi": "30",
+				"W": "300",
+				"hi": "24",
+				"H": "240",
+				"R": "50"
+			},
+			"answers": ["19"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

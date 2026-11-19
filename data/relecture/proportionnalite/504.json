@@ -27,9 +27,6 @@
 			}
 		],
 		"grades": ["2"],
-		"theme": "Proportionnalité",
-		"domain": "Pourcentages",
-		"subdomain": "Variations",
 		"level": 5,
 		"status": "draft",
 		"delay": 10,

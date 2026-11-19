@@ -42,9 +42,6 @@
 			}
 		],
 		"grades": ["CE1"],
-		"theme": "Entiers",
-		"domain": "Additionner",
-		"subdomain": "A trou",
 		"level": 9,
 		"status": "draft",
 		"delay": 15,

@@ -1,10 +1,11 @@
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import { z } from 'zod';
 import type { RequestHandler } from './$types';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
 // Supabase client is now accessed via locals.supabase
-import { createListingSchema, listingsQuerySchema } from '$lib/server/marketplace/validation';
-import { getHiddenMarketplaceCreators } from '$lib/server/marketplace/hidden-creators';
-import { recordListingViewsSchema } from '$lib/server/validation/marketplace-rpc';
+import { createListingSchema, listingsQuerySchema } from '#lib/server/marketplace/validation.ts';
+import { getHiddenMarketplaceCreators } from '#lib/server/marketplace/hidden-creators.ts';
+import { recordListingViewsSchema } from '#lib/server/validation/marketplace-rpc.ts';
 import {
 	validateCardOwnership,
 	lockCardsForEntity,
@@ -13,12 +14,12 @@ import {
 	getStudentSchoolId,
 	enrichListingsWithCardData,
 	enrichWithParticipants
-} from '$lib/server/marketplace/helpers';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/marketplace/helpers.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/marketplace/listings/+server');
 // TODO: Add cache invalidation when cache-manager is properly implemented
-// import { invalidateListingCaches } from '$lib/server/marketplace/cache-manager';
+// import { invalidateListingCaches } from '#lib/server/marketplace/cache-manager';
 
 /**
  * GET /api/marketplace/listings
@@ -27,11 +28,8 @@ const logger = createServerLogger('api/marketplace/listings/+server');
  */
 export const GET: RequestHandler = async ({ url, locals }) => {
 	const supabase = locals.supabase;
-	const userId = locals.user?.id;
-
-	if (!userId) {
-		throw error(401, 'Non authentifié');
-	}
+	const { user, profile } = await requireAuth(locals);
+	const userId = user.id;
 
 	// Validate query parameters
 	const queryValidation = listingsQuerySchema.safeParse({
@@ -52,17 +50,6 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		throw error(400, 'creator_id invalide');
 	}
 	const creatorId = creatorIdValidation.data;
-
-	// Get user profile to check role
-	const { data: profile, error: profileError } = await supabase
-		.from('profiles')
-		.select('role, school_id')
-		.eq('id', userId)
-		.single();
-
-	if (profileError || !profile) {
-		throw error(404, 'Profil non trouvé');
-	}
 
 	let schoolId: string;
 
@@ -197,7 +184,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		await enrichListingsWithCardData(supabase, listings || [])
 	);
 
-	return json({
+	return Response.json({
 		listings: enrichedListings,
 		pagination: {
 			page,
@@ -214,11 +201,8 @@ export const GET: RequestHandler = async ({ url, locals }) => {
  */
 export const POST: RequestHandler = async ({ request, locals }) => {
 	const supabase = locals.supabase;
-	const userId = locals.user?.id;
-
-	if (!userId) {
-		throw error(401, 'Non authentifié');
-	}
+	const { user } = await requireAuth(locals);
+	const userId = user.id;
 
 	// Validate request body
 	const body = await request.json().catch(() => ({}));
@@ -320,5 +304,5 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	const [enrichedListing] = await enrichListingsWithCardData(supabase, [listing]);
 
 	const [avecParticipant] = await enrichWithParticipants(supabase, [enrichedListing]);
-	return json(avecParticipant, { status: 201 });
+	return Response.json(avecParticipant, { status: 201 });
 };

@@ -16,7 +16,7 @@
 	@module components/markdown/nodes/BlankInput
 -->
 <script lang="ts">
-	import { cn } from '$lib/utils';
+	import { cn } from '#lib/utils.ts';
 
 	interface Props {
 		/** 1-based index of the blank */

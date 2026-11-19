@@ -31,16 +31,16 @@
 -->
 
 <script lang="ts">
-	import type { QuestionInstance } from '$lib/questions/types';
-	import { getQuestionType, QUESTION_TYPE_LABELS } from '$lib/questions/types';
-	import { Badge } from '$lib/components/ui/badge';
-	import * as Card from '$lib/components/ui/card';
-	import * as Collapsible from '$lib/components/ui/collapsible';
-	import { Button } from '$lib/components/ui/button';
-	import { MarkdownRenderer } from '$lib/components/markdown';
-	import { templateGenericFunctions } from '$lib/questions/generic-functions';
-	import { provideCapitalPairs } from '$lib/components/markdown/content-capital-pairs';
-	import { detailedCorrection } from '$lib/questions/correction-detail';
+	import type { QuestionInstance } from '#lib/questions/types.ts';
+	import { getQuestionType, QUESTION_TYPE_LABELS } from '#lib/questions/types.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import * as Collapsible from '#lib/components/ui/collapsible/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { MarkdownRenderer } from '#lib/components/markdown/index.ts';
+	import { templateGenericFunctions } from '#lib/questions/generic-functions.ts';
+	import { provideCapitalPairs } from '#lib/components/markdown/content-capital-pairs.ts';
+	import { detailedCorrection } from '#lib/questions/correction-detail.ts';
 	import {
 		ChevronDown,
 		ChevronRight,
@@ -50,7 +50,7 @@
 		Info,
 		FileText
 	} from '@lucide/svelte';
-	import { cn } from '$lib/utils';
+	import { cn } from '#lib/utils.ts';
 
 	// ============================================================================
 	// PROPS
@@ -58,6 +58,8 @@
 
 	interface Props {
 		instance: QuestionInstance;
+		/** Chemin dans l'arbre des notions, fourni par l'appelant ; absent = rien d'affiché */
+		path?: string | null;
 
 		// Display options
 		truncateStatement?: boolean; // Truncate statement text
@@ -88,6 +90,7 @@
 
 	let {
 		instance,
+		path = null,
 		truncateStatement = false,
 		statementMaxLength = 200,
 		showDescription = true,
@@ -274,23 +277,13 @@
 					</Collapsible.Trigger>
 
 					<Collapsible.Content class="space-y-3 px-2">
-						<!-- Theme, Domain, Subdomain -->
-						<div class="space-y-1 text-sm">
-							<div class="flex items-center gap-2">
-								<span class="font-medium text-muted-foreground">Thème:</span>
-								<span>{instance.theme}</span>
+						<!-- Chemin dans l'arbre des notions -->
+						{#if path}
+							<div class="flex items-center gap-2 text-sm">
+								<span class="font-medium text-muted-foreground">Rangé dans:</span>
+								<span>{path}</span>
 							</div>
-							<div class="flex items-center gap-2">
-								<span class="font-medium text-muted-foreground">Domaine:</span>
-								<span>{instance.domain}</span>
-							</div>
-							{#if instance.subdomain}
-								<div class="flex items-center gap-2">
-									<span class="font-medium text-muted-foreground">Sous-domaine:</span>
-									<span>{instance.subdomain}</span>
-								</div>
-							{/if}
-						</div>
+						{/if}
 
 						<!-- Grades -->
 						<div class="flex items-center gap-2">

@@ -1,10 +1,8 @@
 {
+	"id": "ef807ee9-f95b-469a-a6a8-4232e933b4c6",
 	"title": "Somme des premiers entiers",
 	"description": "1 + 2 + … + n par la formule n(n+1)/2",
 	"grades": ["1_SPE"],
-	"theme": "Suites",
-	"domain": "Sommes",
-	"subdomain": "Somme des entiers",
 	"level": 1,
 	"status": "draft",
 	"delay": 30,

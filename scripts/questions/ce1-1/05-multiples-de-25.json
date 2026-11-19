@@ -1,10 +1,8 @@
 {
+	"id": "03675b9b-030e-46f5-9316-abfd55cbc2a2",
 	"title": "Les multiples de $25$",
 	"description": "1 × 25, 2 × 25, 3 × 25, 4 × 25",
 	"grades": ["CE1"],
-	"theme": "Entiers",
-	"domain": "Multiplier",
-	"subdomain": "Produit",
 	"level": 10,
 	"delay": 20,
 	"status": "draft",

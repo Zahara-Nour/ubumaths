@@ -1,10 +1,8 @@
 {
+	"id": "55662eef-d05e-46fa-897d-354a2bd5ec22",
 	"title": "Remplis le tableau à double entrée",
 	"description": "Remplir un tableau à double entrée vide (enfants × couleurs) à partir de phrases (2 ou 3 enfants)",
 	"grades": ["CP"],
-	"theme": "Statistiques",
-	"domain": "Représenter des données",
-	"subdomain": "Tableau à double entrée",
 	"level": 1,
 	"delay": 90,
 	"status": "draft",

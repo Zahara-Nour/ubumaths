@@ -21,9 +21,9 @@
  * @module typst/generators/notebook-generator
  */
 
-import { parseMarkdown } from '$lib/ubumark/parser/markdown-parser';
-import { generateTypst } from '$lib/ubumark/generators';
-import { escapeTypstBrackets } from '$lib/ubumark/generators';
+import { parseMarkdown } from '#lib/ubumark/parser/markdown-parser.ts';
+import { generateTypst } from '#lib/ubumark/generators/index.ts';
+import { escapeTypstBrackets } from '#lib/ubumark/generators/index.ts';
 import { BaseTypstGenerator } from './base-generator';
 import type { GenerateResult, GeneratorConfig, GeneratorContext } from '../types';
 import type {
@@ -36,9 +36,9 @@ import type {
 	ErrorOutput,
 	DisplayOutput,
 	CheckpointConfig
-} from '$lib/types/notebook';
+} from '#lib/types/notebook.ts';
 // Rendu Typst des blocs ```figure (registre : voir figure-typst-registry.ts)
-import '$lib/ubumark/generators/figure-typst-setup';
+import '#lib/ubumark/generators/figure-typst-setup.ts';
 
 // ============================================================================
 // PUBLIC TYPES

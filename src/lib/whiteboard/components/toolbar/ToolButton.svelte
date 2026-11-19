@@ -6,7 +6,7 @@
 	 * Uses native title attribute for tooltip (no provider needed).
 	 */
 
-	import { Button } from '$lib/components/ui/button';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	// Type d'une icône Lucide (Component<LucideProps>) ; `Icon` est le composant de base,
 	// qui exige `icon`/`iconNode` et n'accepte donc pas une icône toute faite.
 	import type { LucideIcon } from '@lucide/svelte';

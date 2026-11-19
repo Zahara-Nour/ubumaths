@@ -1,0 +1,57 @@
+# Chantier `calcul-aligne` — calculs et raisonnements alignés dans les blocs `$$`
+
+## Reprendre ici
+
+_Mis à jour le 2026-11-06, après #2424 : **chantier clos**, journal archivé._
+
+- **État** : tout mergé — #2410, #2422 (calcul centré `array{rcl}`), #2423 (éditeur : chargement/échec, garde `mathlive-imports-ssr`), #2425 (formules du cahier de texte + XSS stocké au rendu serveur fermé), #2424 (indicateur et message d'échec visibles). Rien en prod sans `deploy:prod` : **le XSS du cahier reste ouvert en prod** tant qu'il n'est pas lancé.
+- **Versé** : `docs/systeme/ubumark.md` (calcul aligné, pièges MathLive), `docs/pratiques/composants-ui.md` (bouton, chargement), `docs/systeme/editeur-riche.md` (cahier, XSS, points faibles de l'audit) ; vérifications dans `docs/wip/verifications-manuelles.md`.
+- **En attente de David** : `pnpm deploy:prod` (sur sa demande seulement) ; SSH depuis le MacBook en échec (Tailscale du MacBook à vérifier).
+- **Worktree / branche** : retirés.
+
+## Décisions de David (2026-11-06)
+
+- **Bouton « Calcul aligné » : une ligne** (comme livré), pas deux lignes vides — tranché le 2026-11-06.
+- **Relation centrée dans sa colonne** : `\begin{array}{rcl}` (gauche alignée à droite, relation centrée, droite alignée à gauche), proposé par David après l'essai (un ⇒ tapé à la place d'un ⇔ décalait la ligne). Les raccourcis `=>` → `\implies` envisagés avant sont abandonnés.
+- **Cmd+Entrée dans un bloc `aligned` existant le convertit** en calcul centré (option a).
+
+## Décisions de David (2026-11-05)
+
+- Deux gestes : raccourci **Cmd/Ctrl/Alt+Entrée** dans un bloc `$$` + bouton **« Calcul aligné »** dans la section « Formule » du menu.
+- Mise en page **centrée** (le bloc reste centré, ses lignes s'alignent entre elles).
+- Coupure (le `&`) : **premier connecteur logique** (⇔, ⇒, ⇐) hors parenthèses, sinon **première relation** (=, <, ≤, >, ≥, ≠, ≈). La nouvelle ligne reprend la relation de la ligne du dessus.
+- « ou » / « et » tapés dans un bloc deviennent des mots droits — dans **ce** chantier, **blocs seulement** (pas les formules en ligne, pas les champs de réponse élève).
+
+## Phase 0 — comportements
+
+Nominal : 1 bouton (bloc aligné, curseur dedans) · 2 Cmd+Entrée sur un bloc simple → aligné, coupé · 3 Cmd+Entrée sur un aligné → ligne sous le curseur, relation reprise · 4 rendu élève centré, aligné · 5 PDF aligné (grille Typst existante) · 6 aller-retour markdown identique.
+Limites : 7 sans relation → aligné à gauche · 8 formule en ligne `$…$` inchangée · 9 bloc vide → deux lignes vides · 10 ligne vide + Retour arrière → retirée.
+Erreur : 11 LaTeX mal formé tapé à la main → rien ne casse (le bloc n'est pas reconnu comme aligné : traité comme une formule simple).
+
+**Écart à signaler à David** : le bouton insère **une** ligne (et non deux vides) ; Cmd+Entrée découpe ensuite la ligne tapée. Deux lignes vides obligeaient à taper `=7` dans la cellule de gauche, mal alignée.
+
+## Pièges (mesurés en navigateur, MathLive 0.111)
+
+- `addRowAfter` natif de MathLive, curseur en fin de champ : enveloppe tout dans `\displaylines{…}` → la touche est interceptée en capture, avant MathLive.
+- Retour arrière sur une ligne vide : MathLive ne la retire jamais → `retirerLigneVide`.
+- `\text{ ou }` en raccourci laisse MathLive **en mode texte** (toute la suite s'y écrit) → `\:\mathrm{ou}\:`. Typst : `upright(o u)`, rendu « ou ».
+- `typedText` (frappe simulée) applique mal les raccourcis : tester avec `userEvent.keyboard`, après une pause de ~300 ms au clic.
+- Curseur repéré par un marqueur `\maltese` inséré puis retiré (MathLive n'expose pas la ligne du curseur).
+- Dans une commande TipTap, `editor.state` n'a pas encore l'insertion : lire `tr.doc` / `tr.selection`.
+- `aligned` à 3 colonnes (`a &\iff& b`) ne centre pas : ses colonnes alternent droite / gauche / droite → `array{rcl}`.
+- Dans un `array` MathLive : Retour arrière au début d'une cellule ne fait **rien** (ne passe pas à la précédente), **Tab sort du champ** → `effacerRelation` et `rangerRelation`.
+- MathLive affiche `\implies` **sans** les espaces de `\iff` (KaTeX les met) : ne pas compter sur `\implies` pour égaliser les largeurs.
+
+## Journal
+
+- 2026-11-05 — phase 0 validée ; `calcul-aligne.ts` (pur) + câblage `MathBlock` + bouton ; tests : 23 purs, 7 chaîne (aller-retour, rendu, PDF), 5 navigateur (preuve rouge faite sans le câblage).
+- 2026-11-05 — PR #2410. Revue : (1) marqueur retiré avec l'espace → `\alpha x` soudé en `\alphax` → `sansMarqueur` garde l'espace entre commande et lettre ; (2) Retour arrière sur une sélection n'effaçait qu'un caractère quand une ligne vide existait → laissé à MathLive si sélection ; (3) `[0,1)` faisait perdre la coupure → parenthèses comptées à part, jamais sous zéro ; (4) `try/finally` : jamais de marqueur oublié. Tests ajoutés (rouges vérifiés).
+- 2026-11-06 — Essai de David sur `/demo/editeur` (5176). (1) Changer la relation d'une nouvelle ligne (⇔ → ⇒) décalait la ligne : le LaTeX était juste, mais `aligned` aligne sur le bord gauche des flèches, de largeurs différentes. → calcul centré `array{rcl}` (`ajouterLigne` convertit, `effacerRelation`, `rangerRelation`, PDF : `generateMathBlock` envoie `array{rcl}` à la grille). Tests : 44 purs, 10 chaîne, 8 navigateur dont le scénario de David (preuve rouge faite sans le câblage). (2) « L'éditeur ne réagit pas » : **pas lié au chantier** — `RichTextEditor` n'est créé qu'après `await import('mathlive')` (ligne de 2025-12-16) ; en dev, MathLive non minifié (1,3 Mo) + ~250 modules → plusieurs secondes où la barre est là sans éditeur. David d'accord pour une PR à part : état « chargement » visible + MathLive chargé plus tôt. (3) Vu au passage : la section « cahier de texte » de la démo n'affiche aucune formule (déjà le cas avant ce chantier) — à signaler à David.
+- 2026-11-06 — PR #2422, revue `code-reviewer` (3 importants, 2 mineurs, tous traités) : (1) ligne déjà remplie, Retour arrière puis `=>` : le `=` était rangé aussitôt, le `>` tombait à droite → rien tant que l'atome avant le curseur est une relation (`relationEnCours`, lu par `getValue` sans poser de marqueur), rangement au `blur` sinon ; (2) `\subset` / `\in` au milieu rabaissés à droite → milieu gardé tel quel ; (3) PDF : relation hors motif (`\approx`, `\subset`) → la 2e cellule d'un `array{rcl}` est prise telle quelle ; (4) `\left(0;1\right]` bloquait la coupure → délimiteur de `\left`/`\right` non compté ; (5) états avec marqueur poussés dans ProseMirror → `synchroniser` les ignore. Tests : 49 purs, 11 chaîne, 9 navigateur (preuve rouge du scénario (1) faite).
+- 2026-11-06 — Éditeur « inactif » de David : **cause trouvée**, il ouvrait 5176 par **tunnel SSH depuis son MacBook** ; en dev ~250 modules + MathLive non minifié (4,3 Mo) traversent le tunnel (en local : 59 ms / 140 ms). Pas un bug. Reste éventuel pour la PR « éditeur lent » : message si `import('mathlive')` échoue (l'IIFE de `RichTextEditor` n'a aucun `catch`) + état « chargement » — question posée à David.
+- 2026-11-06 — PR « éditeur : chargement et échec » (`fix/editeur-chargement`), demandée par David malgré la cause trouvée (tunnel). Constat en codant : `RichTextEditor` importait DÉJÀ MathLive statiquement (`import 'mathlive'`) → « charger MathLive plus tôt » ne gagnait rien, abandonné ; le `await import('mathlive')` est retiré, l'éditeur naît au montage (synchrone). État `chargement` (`en-cours` / `pret` / `erreur`) : barre `inert` tant qu'il n'est pas prêt, « Chargement de l'éditeur… », et en cas d'exception « L'éditeur n'a pas pu se charger » + « Recharger la page ». `/demo/editeur` n'est pas rendu côté serveur : l'indicateur ne se voit qu'un instant. Tests : `RichTextEditor-chargement` (1), `RichTextEditor-echec` (1, `vi.mock` d'`editor-config` ; TipTap ne lève pas sur un nœud inconnu, il avertit et repart vide).
+- 2026-11-06 — PR #2423, revue `code-reviewer` : (1) **bloquant** — l'import nommé `{ MathfieldElement } from 'mathlive'` casse le SSR en build (condition `node` → `mathlive-ssr.min.mjs`, qui ne l'exporte pas ; vu par `node -e`, invisible en dev et en tests) → retour à `import 'mathlive'` + `import type`, classe lue par `customElements.get('math-field')` ; garde `mathlive-imports-ssr.test.ts` (tout nom importé de `mathlive` existe dans la version serveur ; rouge vérifié sur l'ancien commit) ; (2) région `role="status"` permanente ; (3) bouton markdown désactivé tant que l'éditeur n'est pas prêt, alerte au-dessus (`z-20`).
+- 2026-11-06 — #2423, CI rouge : 3 tests de `page-demo-editeur` (clic puis frappe sans effet). Créer l'éditeur dès le montage le faisait apparaître pendant que la mise en page bougeait encore (formules MathLive), le clic du test tombait à côté (sonde : aucun `focusin`, passe avec 800 ms d'attente). **Création synchrone retirée** : retour à `await import('mathlive')` dans `onMount` (sûr côté serveur), avec `try/catch`, garde de démontage. Restent : état chargement, barre et bouton markdown inertes, message d'échec, garde `mathlive-imports-ssr`. Piège : Chrome traite les touches avant les minuteurs ; `onCreate` de TipTap est un `setTimeout(0)`.
+- 2026-11-06 — Essai de David après #2423 : éditeur bloqué **sans indicateur**. Mesuré : le panneau de l'éditeur, vide, fait 0 px (`h-full` sous un parent à `min-height`, `overflow-y-auto`) → indicateur et message d'échec rendus mais invisibles ; mes tests vérifiaient leur présence, pas leur rendu. → posés sur la zone de contenu (qui a la hauteur minimale), test qui mesure la hauteur du message (32 px avant, rouge vérifié).
+- 2026-11-06 — PR #2425 (`fix/cahier-formules`), **rustine** malgré la décision « cahier → ubumark » (chantier à part, non engagé) : formules du cahier de texte vides, `transformMathHtml` ne lisait `latex` que juste après le marqueur. L'audit `security-auditor` a trouvé un **XSS stocké au rendu serveur** (expressions `[^>]*` + jsdom qui n'échappe pas `>` dans les attributs) → lecture dans l'arbre DOM rendu par DOMPurify ; réaudit sans finding bloquant. Prod : 2 séances, 0 formule, 0 charge suspecte. Points faibles préexistants notés (non traités) : `math-field` écrit à la main accepté en entrée, `\href` de MathLive non audité → `editeur-riche.md` § Écarts connus.
+- 2026-11-06 — #2424 mergée (CI verte au 3e run, les deux premiers perdus au plantage navigateur connu). Fin de chantier : versement vérifié, vérifications manuelles notées, journal archivé, worktree retiré.

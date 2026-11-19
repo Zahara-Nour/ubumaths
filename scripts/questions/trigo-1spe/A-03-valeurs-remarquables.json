@@ -1,10 +1,8 @@
 {
+	"id": "5a89b292-e311-40fb-9115-e6572d031e40",
 	"title": "Cosinus et sinus des angles remarquables",
 	"description": "Valeurs exactes de cos et sin en 0, π/6, π/4, π/3 et π/2, lues sur le cercle trigonométrique",
 	"grades": ["1_SPE"],
-	"theme": "Fonctions",
-	"domain": "Fonctions trigonométriques",
-	"subdomain": "Cosinus et sinus d'un réel",
 	"level": 1,
 	"status": "draft",
 	"delay": 30,

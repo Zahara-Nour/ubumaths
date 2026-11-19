@@ -679,6 +679,30 @@ Les incertitudes du cycle 4 sont tranchées (détail : `questions.json`, champ `
 - **4-080** — Traduire une diminution de t % par un coefficient multiplicateur (− 20 % → × 0,8).
   - Diminuer de t % = multiplier par 1 − t/100 (−20 % → × 0,8). — _Exemples 2026 p.43_ (acc.)
 
+### Couverture en modèles de questions (prod, 2026-11-18)
+
+Chantier `questions-4` (démarche [couvrir-un-niveau.md](../../../pratiques/couvrir-un-niveau.md)), du 2026-10-28 au
+2026-11-18 ; journal dans `docs/archive/wip/questions-4-progress.md`.
+
+- **134 modèles publiés** contenant le niveau `4` (130 de 4e seule, 4 partagés avec la 3e), aucun brouillon ;
+  **81 points sur 82** ont au moins un modèle publié (relevé MCP du 2026-11-18).
+- **1 point sans modèle, par décision de David** (2026-10-28) : **4-026** (conjecturer à l'aide d'un algorithme ou
+  d'un tableur) est **non évaluable** dans l'appli.
+- **Modèles venus d'un autre niveau** (règle de la 6e : niveau du point qui les décrit) : factorisation numérique
+  → 5e (5-008) ; b/x = c → 2de (2-464) ; puissance d'une puissance → 2de (2-260). Restent en 4e **sans tag**, par
+  décision : 07a51f8f (x/9 = 9/7), 86b80159, e8de8b81, 23b29a15 (opérations à trou), 8919c37b ((b√a)²), 5d515eb1,
+  554496dd.
+- **Pensée informatique** : 065 à 067 en pseudo-code français proche de Scratch, bloc de code sans langage, jamais de
+  Python (décision du 2026-10-28) ; 067 aussi par la tortue avec variables ; 068, 069 par les gestes Blockly
+  (` ```tortue `, ` ```calcul ` `niveau: 4e`). Leurs modèles restent rangés sous « Algorithmique › Variables et
+  instructions » : aucun ne fait créer de bloc personnalisé, la sous-notion « blocs personnalisés » (3-050) ne
+  leur va pas (décision du 2026-11-18).
+- **Outils servis pour la 4e** : ` ```solide ` et ` ```patron ` (027, 028), ` ```partage ` `colorier:` (074,
+  fraction d'une fraction : b ≠ d, « du rectangle », « du carré » si b = d), `verifier: rectangle` sans équerre
+  (038, chantier `rectangle-sans-equerre`), ` ```figure grille:` + `translation()` (030 à 032).
+- **Sonde des figures** (`scripts/questions/sonde-figures.ts`) née ici : un lot qui dessine des figures passe la
+  sonde, 0 problème, avant la page à cocher.
+
 ## Troisième (66 points, 55 avec une borne propre)
 
 ### Bornes générales (héritées par tous les points du niveau)
@@ -876,3 +900,24 @@ Les incertitudes du cycle 4 sont tranchées (détail : `questions.json`, champ `
   - Cas simples, sans coefficient multiplicateur (120 € + 20 % = 120 + 24). — _BO c4 p.19_ (BO)
 - **3-069** — Appliquer, dans des cas simples, une diminution exprimée en pourcentage sans utiliser le coefficient multiplicateur (120 € diminué de 20 % : 120 − 24 = 96 €).
   - Cas simples, sans coefficient multiplicateur (120 € + 20 % = 120 + 24). — _BO c4 p.19_ (BO)
+
+### Couverture en modèles de questions (prod, 2026-11-17)
+
+Chantier `questions-3` (démarche [couvrir-un-niveau.md](../../../pratiques/couvrir-un-niveau.md)), du 2026-10-28 au
+2026-11-17 ; journal dans `docs/archive/wip/questions-3-progress.md`.
+
+- **92 modèles publiés** contenant le niveau `3` (87 de 3e seule, 4 partagés avec la 4e, 1 avec la 1re techno) ; **65 points sur 66** ont au
+  moins un modèle publié (relevé MCP du 2026-11-17).
+- **1 point sans modèle, par décision de David** (2026-11-04, confirmée le 2026-11-17) : **3-017** (raisonnement par
+  analyse-synthèse) est **non évaluable** dans l'appli : la réponse finale ne montre pas le raisonnement, et un
+  modèle « vérifier qu'une valeur est solution » ne couvrirait que la synthèse.
+- **3-050** (bloc personnalisé), classé « hors appli » le 2026-11-04, est finalement couvert (lot 7, ` ```scratch `),
+  sur la sous-notion « Algorithmique › Variables et instructions › blocs personnalisés ».
+- **3-032** (tableur) : couvert par le modèle tableur de la 4e (niveaux 4 et 3, tagué 4-045 et 3-032).
+- **Modèles d'un autre niveau** (décisions du 2026-10-28) : un modèle de 4e ou de 5e dont le contenu relève de la 3e
+  passe en **3e seule**, tagué ; un modèle hors programme va au niveau de son point ; sans point, il reste sans tag,
+  non archivé (77b82211 « Réduire une somme », cf4468c3 « Puissance d'une puissance »).
+- **Outils livrés pour la 3e** : ` ```boite-a-moustaches ` (lire 3-062, construire 3-030), ` ```solide ` avec sections
+  (3-020), blocs ` ```scratch ` (3-047 à 3-050), `tracer: vecteur` (#2274 ; 3-024 à 3-026).
+- **Brouillon restant** : 27ac630c (« Relier une droite à sa fonction affine », 3-067, geste associer), à essayer
+  puis publier par David (`docs/wip/verifications-manuelles.md`).

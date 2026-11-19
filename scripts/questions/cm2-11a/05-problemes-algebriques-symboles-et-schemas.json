@@ -1,0 +1,246 @@
+{
+	"id": "d962df2c-671e-4443-988e-a69b2b8a8bc9",
+	"title": "Problèmes algébriques : symboles et schémas",
+	"description": "Deux pesées dessinées (ciseaux et crayons), deux égalités à symboles (□ et △), trois quantités liées par « fois plus » et « de moins » pour un total (179 billes) ; schéma en barres dans le corrigé",
+	"grades": ["CM2"],
+	"level": 1,
+	"delay": 180,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Les paires de ciseaux (C) sont toutes identiques, les crayons (K) aussi. Voici deux pesées, la balance est en équilibre.\n\n```figure\nfenetre: 0 ; 9 ; -0.4 ; 2.6\ndescription: Première pesée : à gauche deux paires de ciseaux C et un crayon K, à droite une masse de {{eval:2*c+k}} g.\n---\nB1 = point(3.95, 0, visible=faux)\nB2 = point(5.05, 0, visible=faux)\nB3 = point(4.5, 1.15, visible=faux)\nBP = polygone(B1, B2, B3, couleur=\"noir\", remplissage=\"gris\", opacite_fond=1)\nF1 = point(0.3, 1.2, visible=faux)\nF2 = point(8.7, 1.2, visible=faux)\nsegment(F1, F2, epaisseur=4)\nA1 = point(0.4, 1.3, visible=faux)\nA2 = point(1.4, 1.3, visible=faux)\nA3 = point(1.4, 2.2, visible=faux)\nA4 = point(0.4, 2.2, visible=faux)\nAP = polygone(A1, A2, A3, A4, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.3)\ntexte(0.9, 1.75, \"C\")\nB1 = point(1.6, 1.3, visible=faux)\nB2 = point(2.6, 1.3, visible=faux)\nB3 = point(2.6, 2.2, visible=faux)\nB4 = point(1.6, 2.2, visible=faux)\nBP = polygone(B1, B2, B3, B4, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.3)\ntexte(2.1, 1.75, \"C\")\nK1 = point(2.8, 1.3, visible=faux)\nK2 = point(3.8, 1.3, visible=faux)\nK3 = point(3.8, 2.2, visible=faux)\nK4 = point(2.8, 2.2, visible=faux)\nKP = polygone(K1, K2, K3, K4, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.3)\ntexte(3.3, 1.75, \"K\")\nD1 = point(5.3, 1.3, visible=faux)\nD2 = point(7.7, 1.3, visible=faux)\nD3 = point(7.7, 2.2, visible=faux)\nD4 = point(5.3, 2.2, visible=faux)\nDP = polygone(D1, D2, D3, D4, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.3)\ntexte(6.5, 1.75, \"{{eval:2*c+k}} g\")\n```\n\n```figure\nfenetre: 0 ; 9 ; -0.4 ; 2.6\ndescription: Deuxième pesée : à gauche une paire de ciseaux C et un crayon K, à droite une masse de {{eval:c+k}} g.\n---\nB1 = point(3.95, 0, visible=faux)\nB2 = point(5.05, 0, visible=faux)\nB3 = point(4.5, 1.15, visible=faux)\nBP = polygone(B1, B2, B3, couleur=\"noir\", remplissage=\"gris\", opacite_fond=1)\nF1 = point(0.3, 1.2, visible=faux)\nF2 = point(8.7, 1.2, visible=faux)\nsegment(F1, F2, epaisseur=4)\nA1 = point(1.6, 1.3, visible=faux)\nA2 = point(2.6, 1.3, visible=faux)\nA3 = point(2.6, 2.2, visible=faux)\nA4 = point(1.6, 2.2, visible=faux)\nAP = polygone(A1, A2, A3, A4, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.3)\ntexte(2.1, 1.75, \"C\")\nK1 = point(2.8, 1.3, visible=faux)\nK2 = point(3.8, 1.3, visible=faux)\nK3 = point(3.8, 2.2, visible=faux)\nK4 = point(2.8, 2.2, visible=faux)\nKP = polygone(K1, K2, K3, K4, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.3)\ntexte(3.3, 1.75, \"K\")\nD1 = point(5.3, 1.3, visible=faux)\nD2 = point(7.7, 1.3, visible=faux)\nD3 = point(7.7, 2.2, visible=faux)\nD4 = point(5.3, 2.2, visible=faux)\nDP = polygone(D1, D2, D3, D4, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.3)\ntexte(6.5, 1.75, \"{{eval:c+k}} g\")\n```\n\nQuelle est la masse d'une paire de ciseaux ? Quelle est la masse d'un crayon ?\n\nUne paire de ciseaux pèse $?$ g.\n\nUn crayon pèse $?$ g.",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "25..90"
+				},
+				{
+					"name": "k",
+					"expression": "6..30"
+				}
+			],
+			"conditions": ["c != k"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{c}}"
+				},
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Comparer les pesées.** La première a une paire de ciseaux de plus que la deuxième ; tout le reste est pareil. La différence des masses, c'est donc une paire de ciseaux.",
+					"**Une paire de ciseaux.** ${{eval:2*c+k}} - {{eval:c+k}} = \\textcolor{{{color:primary.0}}}{{{c}}}$ g.",
+					"**Un crayon.** Deuxième pesée : ${{eval:c+k}} - {{c}} = \\textcolor{{{color:primary.0}}}{{{k}}}$ g.",
+					"**Vérification.** Première pesée : $2 \\times {{c}} + {{k}} = {{eval:2*c+k}}$."
+				]
+			}
+		},
+		{
+			"statement": "Chaque symbole cache toujours le même nombre.\n\n$$\\square{{if:n>1| + \\square|}}{{if:n>2| + \\square|}}{{if:n>3| + \\square|}} + \\triangle = {{eval:n*s+t}}$$\n\n$$\\square + \\triangle = {{eval:s+t}}$$\n\nQuels nombres cachent $\\square$ et $\\triangle$ ?\n\n$\\square = ?$\n\n$\\triangle = ?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2..4"
+				},
+				{
+					"name": "s",
+					"expression": "3..40"
+				},
+				{
+					"name": "t",
+					"expression": "2..40"
+				}
+			],
+			"conditions": ["s != t"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{s}}"
+				},
+				{
+					"expectedAnswer": "{{t}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Comparer les deux égalités.** La première a ${{eval:n-1}}$ carré{{if:n>2|s|}} de plus que la deuxième : {{if:n>2|ces carrés valent|ce carré vaut}} ${{eval:n*s+t}} - {{eval:s+t}} = {{eval:(n-1)*s}}$.",
+					"**Le carré.** {{if:n>2|On partage entre les ${{eval:n-1}}$ carrés : |}}$\\square = \\textcolor{{{color:primary.0}}}{{{s}}}$.",
+					"**Le triangle.** Deuxième égalité : ${{eval:s+t}} - {{s}} = \\textcolor{{{color:primary.0}}}{{{t}}}$.",
+					"**Vérification.** ${{eval:n}} \\times {{s}} + {{t}} = {{eval:n*s+t}}$."
+				]
+			}
+		},
+		{
+			"statement": "Dans un paquet de billes rouges, vertes et bleues, il y a ${{eval:(k+2)*w+d}}$ billes. Il y a {{if:k==2|deux|{{if:k==3|trois|{{if:k==4|quatre|{{if:k==5|cinq|{{if:k==6|six|{{if:k==7|sept|{{if:k==8|huit|neuf}}}}}}}}}}}}}} fois plus de billes rouges que de billes vertes, et ${{d}}$ billes vertes de moins que de billes bleues.\n\nCombien y a-t-il de billes de chaque couleur ?\n\nRouges : $?$ billes\n\nVertes : $?$ billes\n\nBleues : $?$ billes",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..5"
+				},
+				{
+					"name": "w",
+					"expression": "8..60"
+				},
+				{
+					"name": "d",
+					"expression": "5..30"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:k*w}}"
+				},
+				{
+					"expectedAnswer": "{{w}}"
+				},
+				{
+					"expectedAnswer": "{{eval:w+d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Le schéma.** Les vertes font **une part**. Les rouges en font ${{k}}$, les bleues une part et encore ${{d}}$.\n\n```schema-barres\nVertes : ? (2)\nRouges : ? (2) ; ? (2){{if:k>2| ; ? (2)|}}{{if:k>3| ; ? (2)|}}{{if:k>4| ; ? (2)|}}\nBleues : ? (2) ; {{d}} (1)\ntotal : {{eval:(k+2)*w+d}}\n```",
+					"**On enlève ${{d}}$.** Il reste des parts égales : $1 + {{k}} + 1 = {{eval:k+2}}$ parts, pour ${{eval:(k+2)*w+d}} - {{d}} = {{eval:(k+2)*w}}$ billes.",
+					"**Vertes.** ${{eval:(k+2)*w}} \\div {{eval:k+2}} = \\textcolor{{{color:primary.0}}}{{{w}}}$.",
+					"**Rouges.** ${{k}} \\times {{w}} = \\textcolor{{{color:primary.0}}}{{{eval:k*w}}}$. **Bleues.** ${{w}} + {{d}} = \\textcolor{{{color:primary.0}}}{{{eval:w+d}}}$.",
+					"**Vérification.** ${{eval:k*w}} + {{w}} + {{eval:w+d}} = {{eval:(k+2)*w+d}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "pesées : 2C + K = 110, C + K = 70 → 40 et 30",
+			"variationIndex": 0,
+			"variables": {
+				"c": "40",
+				"k": "30"
+			},
+			"answers": ["40", "30"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : pesées, 110 ÷ 3 et 70 ÷ 2 (36, 35)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "40",
+				"k": "30"
+			},
+			"answers": ["36", "35"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : pesées, inversées (30, 40)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "40",
+				"k": "30"
+			},
+			"answers": ["30", "40"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "symboles : 2□ + △ = 23, □ + △ = 15 → 8 et 7",
+			"variationIndex": 1,
+			"variables": {
+				"n": "2",
+				"s": "8",
+				"t": "7"
+			},
+			"answers": ["8", "7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : symboles, confondus (7, 8)",
+			"variationIndex": 1,
+			"variables": {
+				"n": "2",
+				"s": "8",
+				"t": "7"
+			},
+			"answers": ["7", "8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "symboles : 4□ + △ = 50, □ + △ = 17 → 11 et 6",
+			"variationIndex": 1,
+			"variables": {
+				"n": "4",
+				"s": "11",
+				"t": "6"
+			},
+			"answers": ["11", "6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : symboles, 50 − 17 sans diviser (33, −16)",
+			"variationIndex": 1,
+			"variables": {
+				"n": "4",
+				"s": "11",
+				"t": "6"
+			},
+			"answers": ["33", "-16"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "billes : 179, 4 fois plus, 17 de moins → 108, 27, 44",
+			"variationIndex": 2,
+			"variables": {
+				"k": "4",
+				"w": "27",
+				"d": "17"
+			},
+			"answers": ["108", "27", "44"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : billes, 179 ÷ 6 ≈ 29 sans retirer 17 (116, 29, 46)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "4",
+				"w": "27",
+				"d": "17"
+			},
+			"answers": ["116", "29", "46"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : billes, bleues = vertes − 17 (108, 27, 10)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "4",
+				"w": "27",
+				"d": "17"
+			},
+			"answers": ["108", "27", "10"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

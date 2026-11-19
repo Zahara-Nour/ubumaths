@@ -1,0 +1,197 @@
+{
+	"id": "eadf2049-599d-40bf-ab90-9091dbf38f1d",
+	"title": "Calculer avec la médiatrice",
+	"description": "S'appuyer sur la propriété de la médiatrice (MA = MB) pour calculer un périmètre ou une longueur : triangle MAB, quadrilatère AMBN",
+	"grades": ["6"],
+	"level": 3,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "La droite $d$ est la médiatrice du segment $[AB]$, et le point $M$ est sur $d$.\n\n```figure\nfenetre: -4 ; 4 ; -1.2 ; 4.6\ndescription: Un segment [AB], sa médiatrice d codée (milieu I, angle droit) et un point M de d ; le triangle MAB en tirets.\n---\nA = point(-3, 0, etiquette=\"bas-gauche\")\nB = point(3, 0, etiquette=\"bas-droite\")\nI = point(0, 0, visible=faux)\nM = point(0, 3.5, etiquette=\"haut-droite\")\nsegment(A, B)\nd = mediatrice(A, B, couleur=\"bleu\")\ntexte(0.35, -0.8, \"d\")\nmarque_segment(A, I)\nmarque_segment(I, B)\nangle(B, I, M, marque=\"carre\")\nsegment(M, A, trait=\"tirets\")\nsegment(M, B, trait=\"tirets\")\n```\n\nOn sait que $MA = {{eval:a/10;d}}~\\unit{cm}$ et $AB = {{eval:c/10;d}}~\\unit{cm}$.\n\nQuel est le périmètre du triangle $MAB$ ?\n\n$\\mathcal{P} = ?~\\unit{cm}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "35..70"
+				},
+				{
+					"name": "c",
+					"expression": "40..60"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(2*a+c)/10;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**La propriété de la médiatrice.** Tout point de la médiatrice de $[AB]$ est à la même distance de $A$ et de $B$.",
+					"$M$ est sur $d$ : $MB = MA = {{eval:a/10;d}}~\\unit{cm}$.",
+					"$\\mathcal{P} = MA + MB + AB = {{eval:a/10;d}} + {{eval:a/10;d}} + {{eval:c/10;d}} = \\textcolor{{{color:primary.0}}}{{{eval:(2*a+c)/10;d}}~\\unit{cm}}$."
+				]
+			}
+		},
+		{
+			"statement": "La droite $d$ est la médiatrice du segment $[AB]$, et le point $M$ est sur $d$.\n\n```figure\nfenetre: -4 ; 4 ; -1.2 ; 4.6\ndescription: Un segment [AB], sa médiatrice d codée (milieu I, angle droit) et un point M de d ; le triangle MAB en tirets.\n---\nA = point(-3, 0, etiquette=\"bas-gauche\")\nB = point(3, 0, etiquette=\"bas-droite\")\nI = point(0, 0, visible=faux)\nM = point(0, 3.5, etiquette=\"haut-droite\")\nsegment(A, B)\nd = mediatrice(A, B, couleur=\"bleu\")\ntexte(0.35, -0.8, \"d\")\nmarque_segment(A, I)\nmarque_segment(I, B)\nangle(B, I, M, marque=\"carre\")\nsegment(M, A, trait=\"tirets\")\nsegment(M, B, trait=\"tirets\")\n```\n\nLe triangle $MAB$ a pour périmètre ${{eval:(2*a+c)/10;d}}~\\unit{cm}$, et $AB = {{eval:c/10;d}}~\\unit{cm}$.\n\nQuelle est la longueur $MA$ ?\n\n$MA = ?~\\unit{cm}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "35..70"
+				},
+				{
+					"name": "c",
+					"expression": "40..60"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a/10;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**La propriété de la médiatrice.** Tout point de la médiatrice de $[AB]$ est à la même distance de $A$ et de $B$.",
+					"$M$ est sur $d$ : $MA = MB$. Les deux côtés $[MA]$ et $[MB]$ ont la même longueur.",
+					"$MA + MB = {{eval:(2*a+c)/10;d}} - {{eval:c/10;d}} = {{eval:2*a/10;d}}~\\unit{cm}$, que l'on partage en deux.",
+					"$MA = {{eval:2*a/10;d}} \\div 2 = \\textcolor{{{color:primary.0}}}{{{eval:a/10;d}}~\\unit{cm}}$."
+				]
+			}
+		},
+		{
+			"statement": "La droite $d$ est la médiatrice du segment $[AB]$. Les points $M$ et $N$ sont sur $d$.\n\n```figure\nfenetre: -4 ; 4 ; -3.6 ; 4.6\ndescription: Un segment [AB], sa médiatrice d codée et deux points M et N de d, de part et d'autre de [AB] ; le quadrilatère AMBN en tirets.\n---\nA = point(-3, 0, etiquette=\"gauche\")\nB = point(3, 0, etiquette=\"droite\")\nI = point(0, 0, visible=faux)\nM = point(0, 3.5, etiquette=\"haut-droite\")\nN = point(0, -2.5, etiquette=\"bas-droite\")\nsegment(A, B, trait=\"pointilles\")\nd = mediatrice(A, B, couleur=\"bleu\")\ntexte(0.35, 4.2, \"d\")\nmarque_segment(A, I)\nmarque_segment(I, B)\nangle(B, I, M, marque=\"carre\")\npolygone(A, M, B, N, trait=\"tirets\")\n```\n\nOn sait que $MA = {{eval:a/10;d}}~\\unit{cm}$ et $NB = {{eval:n/10;d}}~\\unit{cm}$.\n\nQuel est le périmètre du quadrilatère $AMBN$ ?\n\n$\\mathcal{P} = ?~\\unit{cm}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "35..70"
+				},
+				{
+					"name": "n",
+					"expression": "25..45"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2*(a+n)/10;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**La propriété de la médiatrice.** Tout point de la médiatrice de $[AB]$ est à la même distance de $A$ et de $B$.",
+					"$M$ est sur $d$ : $MB = MA = {{eval:a/10;d}}~\\unit{cm}$. $N$ est sur $d$ : $NA = NB = {{eval:n/10;d}}~\\unit{cm}$.",
+					"$\\mathcal{P} = AM + MB + BN + NA = {{eval:a/10;d}} + {{eval:a/10;d}} + {{eval:n/10;d}} + {{eval:n/10;d}} = \\textcolor{{{color:primary.0}}}{{{eval:2*(a+n)/10;d}}~\\unit{cm}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "MA = 4,5 ; AB = 5 : 14",
+			"variationIndex": 0,
+			"variables": {
+				"a": "45",
+				"c": "50"
+			},
+			"answers": ["14"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "MA = 3,7 ; AB = 4,2 : 11,6",
+			"variationIndex": 0,
+			"variables": {
+				"a": "37",
+				"c": "42"
+			},
+			"answers": ["11,6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : MA + AB, sans MB",
+			"variationIndex": 0,
+			"variables": {
+				"a": "45",
+				"c": "50"
+			},
+			"answers": ["9,5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "P = 14 ; AB = 5 : MA = 4,5",
+			"variationIndex": 1,
+			"variables": {
+				"a": "45",
+				"c": "50"
+			},
+			"answers": ["4,5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : P − AB sans partager",
+			"variationIndex": 1,
+			"variables": {
+				"a": "45",
+				"c": "50"
+			},
+			"answers": ["9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : P − AB − AB",
+			"variationIndex": 1,
+			"variables": {
+				"a": "45",
+				"c": "50"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "MA = 4 ; NB = 3 : 14",
+			"variationIndex": 2,
+			"variables": {
+				"a": "40",
+				"n": "30"
+			},
+			"answers": ["14"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "MA = 5,5 ; NB = 2,6 : 16,2",
+			"variationIndex": 2,
+			"variables": {
+				"a": "55",
+				"n": "26"
+			},
+			"answers": ["16,2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : MA + NB seulement",
+			"variationIndex": 2,
+			"variables": {
+				"a": "40",
+				"n": "30"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

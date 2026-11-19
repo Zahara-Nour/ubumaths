@@ -1,10 +1,8 @@
 {
+	"id": "c9c3a8a3-575a-4d8d-b278-cc22d348f274",
 	"title": "Appliquer une fraction à un entier",
 	"description": "Calculer une fraction d'un entier, en simplifiant d'abord (2/5 de 60 = 2 × 12) ou avec un résultat fractionnaire (5/4 de 3 = 15/4)",
 	"grades": ["6"],
-	"theme": "Fractions",
-	"domain": "Calculer",
-	"subdomain": "Fraction d'une quantité",
 	"level": 4,
 	"delay": 30,
 	"status": "draft",

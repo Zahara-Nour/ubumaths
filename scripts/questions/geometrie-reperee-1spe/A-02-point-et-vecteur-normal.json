@@ -1,10 +1,8 @@
 {
+	"id": "e710f32f-993f-4c49-9b18-f06ace3f1af7",
 	"title": "Équation de droite : un point et un vecteur normal",
 	"description": "Déterminer une équation cartésienne (ou l'équation réduite) de la droite passant par un point et de vecteur normal donné, en écrivant AM·n = 0",
 	"grades": ["1_SPE"],
-	"theme": "Géométrie",
-	"domain": "Géométrie repérée",
-	"subdomain": "Vecteur normal et équation de droite",
 	"level": 1,
 	"status": "draft",
 	"delay": 120,

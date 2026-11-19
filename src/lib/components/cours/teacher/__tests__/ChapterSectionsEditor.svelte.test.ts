@@ -23,7 +23,7 @@ import {
 	SHADOW_PLACEHOLDER_ITEM_ID,
 	TRIGGERS
 } from 'svelte-dnd-action';
-import type { ChapterDocument, ChapterSection } from '$lib/types/chapters';
+import type { ChapterDocument, ChapterSection } from '#lib/types/chapters.ts';
 import ChapterSectionsEditor from '../ChapterSectionsEditor.svelte';
 
 const CHAPITRE = '11111111-1111-4111-8111-111111111111';
@@ -388,7 +388,7 @@ describe('ChapterSectionsEditor — un rafraîchissement pendant le geste', () =
 
 	/**
 	 * Le plan se rafraîchit depuis le serveur pendant qu'on tire une ressource :
-	 * publier un contenu appelle `invalidateAll()`, et les props reviennent. Les
+	 * publier un contenu appelle `refreshAll()`, et les props reviennent. Les
 	 * listes sont alors reconstruites — elles portent la ressource RÉELLE, plus
 	 * son ombre. Si le rangement échoue ensuite, la restauration ne doit pas la
 	 * remettre une seconde fois : deux lignes de même clé, et le rendu lève

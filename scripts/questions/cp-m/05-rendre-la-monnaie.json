@@ -1,10 +1,8 @@
 {
+	"id": "45a90289-20a2-468b-bcdc-c6abc69bfe52",
 	"title": "Combien le marchand rend-il ?",
 	"description": "Rendre la monnaie sur un billet de 10, 20 ou 50 € (rendu ≤ 20 €)",
 	"grades": ["CP"],
-	"theme": "Grandeurs",
-	"domain": "Monnaie",
-	"subdomain": "Rendre la monnaie",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

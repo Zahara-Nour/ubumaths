@@ -220,9 +220,6 @@
 			}
 		],
 		"grades": ["6"],
-		"theme": "Grandeurs",
-		"domain": "Aires",
-		"subdomain": "Aire d'un triangle quelconque",
 		"level": 1,
 		"status": "draft",
 		"delay": 20,

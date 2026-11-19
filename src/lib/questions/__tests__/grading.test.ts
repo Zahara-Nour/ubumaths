@@ -18,7 +18,7 @@ import {
 import { statusFromChoices } from '../choices';
 import type { SubmittedAnswer } from '../grading';
 import type { InstanceBlank, QuestionInstance } from '../types';
-import type { ResolvedMarkdown } from '$lib/ubumark';
+import type { ResolvedMarkdown } from '#lib/ubumark/index.ts';
 
 // Fixtures
 function blanksInstance(
@@ -30,8 +30,6 @@ function blanksInstance(
 		statement: 'Test' as ResolvedMarkdown,
 		blanks,
 		grades: ['6'],
-		theme: 'Test',
-		domain: 'Test',
 		level: 1,
 		generatedAt: new Date().toISOString(),
 		...(options && { options })

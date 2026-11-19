@@ -107,9 +107,6 @@
 			}
 		],
 		"grades": ["6"],
-		"theme": "Proportionnalité",
-		"domain": "Echelle d'une carte",
-		"subdomain": "Trouver l'échelle",
 		"level": 2,
 		"status": "draft",
 		"delay": 10,

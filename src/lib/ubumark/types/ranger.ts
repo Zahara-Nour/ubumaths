@@ -12,8 +12,12 @@
 
 import type { BaseNode } from './ast';
 
-/** Signe entre deux places : `<` (croissant, défaut) ou `>` (décroissant) */
-export type RangerSign = '<' | '>';
+/**
+ * Signe entre deux places : `<` (croissant, défaut), `>` (décroissant), ou
+ * `aucun` : étapes à remettre dans l'ordre (démonstration), places numérotées en
+ * colonne, sans signe entre elles
+ */
+export type RangerSign = '<' | '>' | 'aucun';
 
 export interface RangerSpec {
 	/** Case de la première place (`case: N`, posée par le générateur) ; absente hors question */

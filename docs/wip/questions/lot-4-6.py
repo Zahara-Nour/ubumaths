@@ -76,6 +76,11 @@ def col(x, k=0):
     return '\\textcolor{{{color:primary.' + str(k) + '}}}{' + x + '}'
 
 
+def colt(*a, **k):
+    """Valeur colorée en plein texte : `\\textcolor` hors `$…$` s'afficherait en LaTeX brut."""
+    return '$' + col(*a, **k) + '$'
+
+
 def ev(x):
     return '{{eval:' + x + '}}'
 
@@ -451,7 +456,7 @@ def image_figure(cas):
         ['La translation qui transforme $A$ en $B$ fait **glisser** toute la figure comme la'
          ' flèche : ' + selon('c', [deplacement(k['dx'], k['dy']) for k in cas]) + '.',
          'La figure F glisse sans tourner ni se retourner : son image est '
-         + col('\\text{la figure ' + etiq(0) + '}') + '.',
+         + colt('\\text{la figure ' + etiq(0) + '}') + '.',
          'La figure ' + etiq(1) + ' a glissé dans une autre direction ; la figure ' + etiq(2)
          + ' est retournée (symétrie axiale) ; la figure ' + etiq(3) + ' a fait un demi-tour.'])
 
@@ -507,7 +512,7 @@ V30_POINT = variation(
     + [var('p', '0..3')], ['0'],
     ['On fait glisser $C$ comme la flèche de $A$ vers $B$ : '
      + selon('c', [deplacement(k['dx'], k['dy']) for k in CAS_POINTS]) + '.',
-     'L\'image de $C$ est ' + col('\\text{le point }' + nom_point(0)) + '.'])
+     'L\'image de $C$ est ' + colt('\\text{le point }' + nom_point(0)) + '.'])
 
 # Transformation qui fait passer de F à G : w = 0 translation, 1 symétrie axiale, 2 demi-tour.
 TRANSFORMATIONS = ['une translation', 'une symétrie axiale', 'un demi-tour']
@@ -527,7 +532,7 @@ V30_QUELLE = variation(
     [selon('w', ['G est F qui a **glissé**, sans tourner ni se retourner : c\'est',
                  'G est F **retournée**, comme dans un miroir vertical : c\'est',
                  'G est F qui a **tourné d\'un demi-tour** (la tête en bas) : c\'est'])
-     + ' ' + col('\\text{' + selon('w', TRANSFORMATIONS) + '}') + '.'])
+     + ' ' + colt('\\text{' + selon('w', TRANSFORMATIONS) + '}') + '.'])
 
 MODELES.append(modele(
     '03-effet-translation', 'Effet d\'une translation',
@@ -584,7 +589,7 @@ V31_NATURE = variation(
     PARA_VARS, ['0'],
     ['$C$ glisse comme $A$ glisse vers $B$ : $(CD)$ est parallèle à $(AB)$, et $CD = AB$.',
      'Si $D$ est l\'image de $C$ par la translation qui transforme $A$ en $B$, alors $ABDC$ est '
-     + col('\\text{un parallélogramme}') + ' (attention à l\'ordre des lettres : $A$, $B$, puis'
+     + colt('\\text{un parallélogramme}') + ' (attention à l\'ordre des lettres : $A$, $B$, puis'
      ' $D$, $C$).'])
 V31_IMAGE = variation(
     'Le quadrilatère $ABDC$ est un parallélogramme. '
@@ -599,7 +604,7 @@ V31_IMAGE = variation(
     ['$ABDC$ est un parallélogramme : ' + selon('q', ['$C$ glisse vers $D$ comme $A$ glisse vers $B$',
                                                       '$A$ glisse vers $B$ comme $C$ glisse vers $D$'])
      + ' (côtés opposés $[AB]$ et $[CD]$ parallèles et de même longueur).',
-     'L\'image est ' + col('\\text{le point }' + selon('q', ['D', 'B'])) + '.'])
+     'L\'image est ' + colt('\\text{le point }' + selon('q', ['D', 'B'])) + '.'])
 
 # Frise : cinq parallélogrammes numérotés, espacés de 3 carreaux ; la flèche vaut k espacements.
 FRISE = ''.join(
@@ -620,7 +625,7 @@ V31_FRISE = variation(
     [var('k', '1..3')], ['0'],
     ['La flèche mesure ' + ev('3*k') + ' carreaux vers la droite : la figure 1 glisse de '
      + ev('3*k') + ' carreaux.',
-     'Son image est ' + col('\\text{la figure }' + ev('1 + k')) + '.'])
+     'Son image est ' + colt('\\text{la figure }' + ev('1 + k')) + '.'])
 
 S_PARA = {**CAS_PARA[0], 'c': 0}
 MODELES.append(modele(
@@ -678,7 +683,7 @@ V32_DROITE = variation(
              '$(d\')$ coupe $(d)$ en un seul point']),
     [], ['0'],
     [CONSERVE + 'la direction des droites.',
-     'L\'image d\'une droite par une translation est ' + col('\\text{une droite parallèle}')
+     'L\'image d\'une droite par une translation est ' + colt('\\text{une droite parallèle}')
      + ' (parfois confondue avec elle, si la flèche suit la droite).'])
 V32_LISTE = variation(
     'Qu\'est-ce qu\'une translation conserve ? Coche toutes les bonnes réponses.'

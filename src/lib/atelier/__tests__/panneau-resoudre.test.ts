@@ -15,7 +15,7 @@
 import { describe, it, expect } from 'vitest';
 import { Atelier } from '../atelier.svelte';
 import { CalcDesk } from '../desk.svelte';
-import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
+import { WebReplEngine } from '#lib/mathAST/cli/web/web-repl-engine.ts';
 import { runInput, runAction, type CalcSession } from '../calcul';
 
 function session(): CalcSession {
@@ -46,7 +46,7 @@ describe('le bouton et la commande s’accordent', () => {
 
 		expect(clic.ok).toBe(true);
 		if (!clic.ok) return;
-		expect(clic.latex).toBe('x = 3');
+		expect(clic.latex).toBe('S = \\left\\{ 3 \\right\\}');
 		expect(clic.steps?.[0].title).toBe('Équation du premier degré');
 	});
 

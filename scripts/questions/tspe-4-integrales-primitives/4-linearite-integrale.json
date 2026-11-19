@@ -1,10 +1,8 @@
 {
+	"id": "e68152f7-f990-4788-ae8f-0e49ec6e2778",
 	"title": "Linéarité de l'intégrale",
 	"description": "Calculer avec la linéarité : combinaison αf + βg, déduire ∫g de ∫(f + g), constante ajoutée (piège : ∫c = c au lieu de c(b − a))",
 	"grades": ["T_SPE"],
-	"theme": "Intégration",
-	"domain": "Propriétés de l'intégrale",
-	"subdomain": "Linéarité",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

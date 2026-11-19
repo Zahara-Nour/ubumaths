@@ -1,10 +1,8 @@
 {
+	"id": "15dd2a0f-2dc0-45af-974e-e58af07f468a",
 	"title": "Programme de calcul et lettre",
 	"description": "Appliquer un programme de calcul à plusieurs étapes à une lettre : écrire l'expression obtenue en fonction de x, puis la développer et la réduire",
 	"grades": ["4"],
-	"theme": "Fonctions",
-	"domain": "Programmes de calcul",
-	"subdomain": "Appliquer",
 	"level": 2,
 	"delay": 90,
 	"status": "draft",

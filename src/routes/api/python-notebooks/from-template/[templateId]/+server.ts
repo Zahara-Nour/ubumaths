@@ -19,15 +19,15 @@
  *     the RLS SELECT policy on `python_notebooks` enforces this
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { uuidSchema } from '$lib/server/validation/common';
-import { cloneTemplateSchema } from '$lib/server/validation/notebook-templates';
-import type { NotebookContent, NotebookCell } from '$lib/types/notebook';
-import { asNotebookContent } from '$lib/types/notebook';
-import { toJson } from '$lib/types/database-helpers';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { uuidSchema } from '#lib/server/validation/common.ts';
+import { cloneTemplateSchema } from '#lib/server/validation/notebook-templates.ts';
+import type { NotebookContent, NotebookCell } from '#lib/types/notebook.ts';
+import { asNotebookContent } from '#lib/types/notebook.ts';
+import { toJson } from '#lib/types/database-helpers.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/python-notebooks/from-template/[templateId]/+server');
 
@@ -159,5 +159,5 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		throw error(500, 'Impossible de créer le carnet à partir du modèle');
 	}
 
-	return json({ notebook: inserted }, { status: 201 });
+	return Response.json({ notebook: inserted }, { status: 201 });
 };

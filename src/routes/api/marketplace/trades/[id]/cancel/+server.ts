@@ -9,10 +9,11 @@
  * Constraint: Trade must be in 'negotiating' status
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
 import { z } from 'zod';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/marketplace/trades/[id]/cancel/+server');
 
@@ -21,11 +22,8 @@ const tradeIdSchema = z.string().uuid('Invalid trade ID');
 
 export const POST: RequestHandler = async ({ params, locals }) => {
 	const supabase = locals.supabase;
-	const userId = locals.user?.id;
-
-	if (!userId) {
-		throw error(401, 'Non authentifie');
-	}
+	const { user } = await requireAuth(locals);
+	const userId = user.id;
 
 	// Validate trade ID
 	const tradeIdValidation = tradeIdSchema.safeParse(params.id);
@@ -73,7 +71,7 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 		throw error(500, "Erreur lors de l'annulation");
 	}
 
-	return json({
+	return Response.json({
 		success: true,
 		message: 'Echange annule'
 	});

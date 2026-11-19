@@ -13,7 +13,7 @@ import { render } from 'vitest-browser-svelte';
 import Page from '../+page.svelte';
 
 // Le dictionnaire arrive de /api/dictionnaire (ADR 0022) : ici, le jeu de référence figé
-vi.mock('$lib/dictionary/fetch-dictionary', async () => {
+vi.mock('#lib/dictionary/fetch-dictionary.ts', async () => {
 	const { REFERENCE_DICTIONARY: entries } =
 		await import('../../../../../../tests/fixtures/lexique/dictionnaire-reference');
 	return { fetchDictionary: async () => entries };
@@ -24,7 +24,7 @@ function lexiconButtons(container: HTMLElement): string[] {
 }
 
 async function chooseGrade(label: string): Promise<void> {
-	await page.getByRole('button', { name: 'Niveau de l’élève' }).click();
+	await page.getByRole('combobox', { name: 'Niveau de l’élève' }).click();
 	await page.getByRole('option', { name: label, exact: true }).click();
 }
 

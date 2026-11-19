@@ -20,13 +20,13 @@
  * - is_visible = true filter applied
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { getStudentChapters } from '$lib/server/chapters';
-import { uuidSchema } from '$lib/server/validation/common';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { getStudentChapters } from '#lib/server/chapters.ts';
+import { uuidSchema } from '#lib/server/validation/common.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/student/chapters/+server');
 
@@ -64,7 +64,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 			throw error(500, 'Failed to fetch chapters');
 		}
 
-		return json({
+		return Response.json({
 			chapters: result.data,
 			count: result.count
 		});

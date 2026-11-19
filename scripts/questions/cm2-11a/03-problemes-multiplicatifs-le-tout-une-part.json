@@ -1,0 +1,256 @@
+{
+	"id": "454c54ac-6c7a-4801-862e-c197a53a76e2",
+	"title": "Problèmes multiplicatifs : le tout, une part",
+	"description": "Le tout (7 maillots à 18,45 €), la valeur d'une part (6 dictionnaires pour 73,20 €), le nombre de parts quand une part vaut un entier jusqu'à 10 (2 611 € à 7 €) ; une étape",
+	"grades": ["CM2"],
+	"level": 14,
+	"delay": 120,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true,
+			"zeros": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Un club de football achète ${{g}}$ maillots à ${{eval:floor((p)/100)}}.{{eval:floor(mod(p,100)/10)}}{{eval:mod(p,10)}}~\\unit{€}$ l'un.\n\nCombien le club paie-t-il en tout ?\n\nIl paie $?~\\text{€}$.",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "3..9"
+				},
+				{
+					"name": "pE",
+					"expression": "8..45"
+				},
+				{
+					"name": "pC",
+					"expression": "5..95"
+				},
+				{
+					"name": "p",
+					"expression": "eval:100*pE+pC"
+				}
+			],
+			"conditions": ["mod(pC,10) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(g*p)/100;d}}",
+					"requiredForm": {
+						"pattern": "a:number"
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{g}}$ maillots à ${{eval:floor((p)/100)}}.{{eval:floor(mod(p,100)/10)}}{{eval:mod(p,10)}}~\\unit{€}$, c'est ${{g}}$ fois ${{eval:floor((p)/100)}}.{{eval:floor(mod(p,100)/10)}}{{eval:mod(p,10)}}~\\unit{€}$ : on multiplie (multiplication posée d'un décimal par un entier).",
+					"$${{g}} \\times {{eval:floor((p)/100)}}.{{eval:floor(mod(p,100)/10)}}{{eval:mod(p,10)}} = \\textcolor{{{color:primary.0}}}{{{eval:floor((g*p)/100)}}.{{eval:floor(mod(g*p,100)/10)}}{{eval:mod(g*p,10)}}}$$",
+					"Le club paie ${{eval:floor((g*p)/100)}}.{{eval:floor(mod(g*p,100)/10)}}{{eval:mod(g*p,10)}}~\\unit{€}$ en tout.",
+					"Ordre de grandeur : ${{g}} \\times {{eval:floor(p/100+0.5)}} = {{eval:g*floor(p/100+0.5)}}$ ; le résultat en est proche, il est vraisemblable."
+				]
+			}
+		},
+		{
+			"statement": "La maîtresse a acheté ${{g}}$ dictionnaires identiques pour la classe. Elle a payé ${{eval:floor((g*p)/100)}}.{{eval:floor(mod(g*p,100)/10)}}{{eval:mod(g*p,10)}}~\\unit{€}$.\n\nQuel est le prix d'un dictionnaire ?\n\nUn dictionnaire coûte $?~\\text{€}$.",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "2..9"
+				},
+				{
+					"name": "pE",
+					"expression": "8..24"
+				},
+				{
+					"name": "pC",
+					"expression": "5..95"
+				},
+				{
+					"name": "p",
+					"expression": "eval:100*pE+pC"
+				}
+			],
+			"conditions": ["mod(pC,5) == 0", "g * p <= 99999"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(p)/100;d}}",
+					"requiredForm": {
+						"pattern": "a:number"
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"On partage ${{eval:floor((g*p)/100)}}.{{eval:floor(mod(g*p,100)/10)}}{{eval:mod(g*p,10)}}~\\unit{€}$ en ${{g}}$ parts égales : on divise (division décimale posée, par un nombre à un chiffre).",
+					"$${{eval:floor((g*p)/100)}}.{{eval:floor(mod(g*p,100)/10)}}{{eval:mod(g*p,10)}} \\div {{g}} = \\textcolor{{{color:primary.0}}}{{{eval:floor((p)/100)}}.{{eval:floor(mod(p,100)/10)}}{{eval:mod(p,10)}}}$$",
+					"Un dictionnaire coûte ${{eval:floor((p)/100)}}.{{eval:floor(mod(p,100)/10)}}{{eval:mod(p,10)}}~\\unit{€}$.",
+					"On vérifie : ${{g}} \\times {{eval:floor((p)/100)}}.{{eval:floor(mod(p,100)/10)}}{{eval:mod(p,10)}} = {{eval:floor((g*p)/100)}}.{{eval:floor(mod(g*p,100)/10)}}{{eval:mod(g*p,10)}}$, on retrouve ce que la maîtresse a payé."
+				]
+			}
+		},
+		{
+			"statement": "À la fête du village, monsieur Dupin vend des sandwichs avec une boisson, à ${{q}}~\\unit{€}$ l'ensemble. À la fin de la journée, sa recette est de ${{eval:q*n}}~\\unit{€}$.\n\nCombien de sandwichs monsieur Dupin a-t-il vendus ?\n\nIl en a vendu $?$.",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "3..10"
+				},
+				{
+					"name": "n",
+					"expression": "120..1400"
+				}
+			],
+			"conditions": ["q * n >= 1000", "q * n <= 12000"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche combien de fois il y a ${{q}}~\\unit{€}$ dans ${{eval:q*n}}~\\unit{€}$ : on divise.",
+					"$${{eval:q*n}} \\div {{q}} = \\textcolor{{{color:primary.0}}}{{{n}}}$$",
+					"Monsieur Dupin a vendu ${{n}}$ sandwichs.",
+					"On vérifie : ${{n}} \\times {{q}} = {{eval:q*n}}$, on retrouve la recette."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "tout : 7 × 18,45 = 129,15 €",
+			"variationIndex": 0,
+			"variables": {
+				"g": "7",
+				"pE": "18",
+				"pC": "45",
+				"p": "1845"
+			},
+			"answers": ["129,15"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : tout, 7 + 18,45 (25,45)",
+			"variationIndex": 0,
+			"variables": {
+				"g": "7",
+				"pE": "18",
+				"pC": "45",
+				"p": "1845"
+			},
+			"answers": ["25,45"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : tout, virgule mal placée (1 291,5)",
+			"variationIndex": 0,
+			"variables": {
+				"g": "7",
+				"pE": "18",
+				"pC": "45",
+				"p": "1845"
+			},
+			"answers": ["1\\,291,5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "part : 73,20 ÷ 6 = 12,20 €",
+			"variationIndex": 1,
+			"variables": {
+				"g": "6",
+				"pE": "12",
+				"pC": "20",
+				"p": "1220"
+			},
+			"answers": ["12,2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Zéro final accepté : 12,20 €",
+			"variationIndex": 1,
+			"variables": {
+				"g": "6",
+				"pE": "12",
+				"pC": "20",
+				"p": "1220"
+			},
+			"answers": ["12,20"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : part, le zéro du quotient oublié (12,2 lu 1,22)",
+			"variationIndex": 1,
+			"variables": {
+				"g": "6",
+				"pE": "12",
+				"pC": "20",
+				"p": "1220"
+			},
+			"answers": ["1,22"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : part, 73,20 − 6 (67,20)",
+			"variationIndex": 1,
+			"variables": {
+				"g": "6",
+				"pE": "12",
+				"pC": "20",
+				"p": "1220"
+			},
+			"answers": ["67,2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "parts : 2 611 ÷ 7 = 373",
+			"variationIndex": 2,
+			"variables": {
+				"q": "7",
+				"n": "373"
+			},
+			"answers": ["373"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : parts, 2 611 × 7 (18 277)",
+			"variationIndex": 2,
+			"variables": {
+				"q": "7",
+				"n": "373"
+			},
+			"answers": ["18\\,277"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : parts, 2 611 − 7 (2 604)",
+			"variationIndex": 2,
+			"variables": {
+				"q": "7",
+				"n": "373"
+			},
+			"answers": ["2\\,604"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

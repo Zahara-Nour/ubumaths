@@ -2,7 +2,7 @@
 scripts/questions/tspe-2-limites/.
 
 Phase 0 validée par David le 2026-11-01 (« go » sur les recos, § 15 du journal
-« docs/wip/questions-tspe-progress.md »), un point par modèle :
+« docs/archive/wip/questions-tspe-progress.md »), un point par modèle :
 
 | # | Point    | Titre                                                  | Catégorie, niveau                                     |
 | 1 | TSPE-402 | Limites usuelles d'une suite                           | Suites › Limites de suites › limites usuelles, 1       |

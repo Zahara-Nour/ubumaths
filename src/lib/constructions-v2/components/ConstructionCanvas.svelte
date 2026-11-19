@@ -1,7 +1,7 @@
 <script lang="ts">
-	import GeometryCanvas from '$lib/components/geometry/GeometryCanvas.svelte';
-	import { createTransformer } from '$lib/geometry-core/viewport/viewport';
-	import type { Viewport } from '$lib/geometry-core/viewport/types';
+	import GeometryCanvas from '#lib/components/geometry/GeometryCanvas.svelte';
+	import { createTransformer } from '#lib/geometry-core/viewport/viewport.ts';
+	import type { Viewport } from '#lib/geometry-core/viewport/types.ts';
 	import {
 		Ruler,
 		Compass,
@@ -10,7 +10,7 @@
 		Protractor,
 		SetSquare
 	} from '../instruments/components/index';
-	import type { Figure } from '$lib/geometry-core/graph/figure';
+	import type { Figure } from '#lib/geometry-core/graph/figure.ts';
 	import type { InstrumentState, DrawAnimationState } from '../types';
 	import {
 		partialSegmentSVG,
@@ -29,9 +29,9 @@
 		resolveScreenStyle,
 		lineToSVG,
 		rayToSVG
-	} from '$lib/geometry-core/rendering/svg-primitives';
-	import { geoToNumber } from '$lib/geometry-core/compute/to-number';
-	import { isFreePoint } from '$lib/geometry-core/types/elements';
+	} from '#lib/geometry-core/rendering/svg-primitives.ts';
+	import { geoToNumber } from '#lib/geometry-core/compute/to-number.ts';
+	import { isFreePoint } from '#lib/geometry-core/types/elements.ts';
 
 	interface Props {
 		figure: Figure;

@@ -26,16 +26,16 @@
 -->
 <script lang="ts">
 	import { onMount, tick } from 'svelte'; // onMount for future scroll handling
-	import { MarkdownRenderer } from '$lib/components/markdown';
-	import { Button } from '$lib/components/ui/button';
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
-	import UserAvatar from '$lib/components/UserAvatar.svelte';
+	import { MarkdownRenderer } from '#lib/components/markdown/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as DropdownMenu from '#lib/components/ui/dropdown-menu/index.ts';
+	import UserAvatar from '#lib/components/UserAvatar.svelte';
 	import { MoreVertical, Flag, Download, Trash2 } from '@lucide/svelte';
-	import DeleteMessageDialog from '$lib/components/moderation/DeleteMessageDialog.svelte';
-	import type { Message } from '$lib/stores/chat.svelte';
-	import { chatStore } from '$lib/stores/chat.svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import { tipTapToMarkdown } from '$lib/components/rich-text/markdown-export';
+	import DeleteMessageDialog from '#lib/components/moderation/DeleteMessageDialog.svelte';
+	import type { Message } from '#lib/stores/chat.svelte.ts';
+	import { chatStore } from '#lib/stores/chat.svelte.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import { tipTapToMarkdown } from '#lib/components/rich-text/markdown-export.ts';
 	import type { JSONContent } from '@tiptap/core';
 
 	// Component Props
@@ -346,12 +346,23 @@
 
 							<!-- Message Actions (3-dot menu) - Outside bubble -->
 							{#if canReportMessage(message) || canDeleteMessage(message)}
-								<div class="flex-shrink-0 opacity-0 transition-opacity group-hover:opacity-100">
+								<!-- Visible au survol ; toujours visible sur écran tactile (sans survol) et au clavier -->
+								<div
+									class="flex-shrink-0 opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100 [@media(hover:none)]:opacity-100"
+								>
 									<DropdownMenu.Root>
-										<DropdownMenu.Trigger class="cursor-pointer">
-											<Button variant="ghost" size="sm" class="h-6 w-6 p-0">
-												<MoreVertical class="h-4 w-4" />
-											</Button>
+										<DropdownMenu.Trigger>
+											{#snippet child({ props })}
+												<Button
+													{...props}
+													variant="ghost"
+													size="sm"
+													class="h-6 w-6 cursor-pointer p-0"
+													aria-label="Actions sur le message"
+												>
+													<MoreVertical class="h-4 w-4" />
+												</Button>
+											{/snippet}
 										</DropdownMenu.Trigger>
 										<DropdownMenu.Content>
 											{#if canReportMessage(message)}
@@ -407,7 +418,9 @@
 
 						<!-- Quick Reactions (only for other users' messages) -->
 						{#if onReact && !isOwnMessage(message)}
-							<div class="mt-1 flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+							<div
+								class="mt-1 flex gap-1 opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100 [@media(hover:none)]:opacity-100"
+							>
 								{#each reactionEmojis as emoji (emoji)}
 									<button
 										onclick={() => onReact?.(message.id, emoji)}

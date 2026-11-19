@@ -1,10 +1,8 @@
 {
+	"id": "c18da717-bf32-4034-8ab4-5558ef1511b9",
 	"title": "Trouver un contre-exemple",
 	"description": "Choisir, parmi quatre valeurs, un contre-exemple qui prouve qu'une affirmation est fausse : n = 1 pour « n² est plus grand que n », n = 0 pour « le double est plus grand »",
 	"grades": ["5"],
-	"theme": "Calcul littéral",
-	"domain": "Raisonner",
-	"subdomain": "Contre-exemple",
 	"level": 1,
 	"delay": 45,
 	"status": "draft",

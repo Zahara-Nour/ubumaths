@@ -23,7 +23,7 @@ describe('cadres de réponse', () => {
 		await render(WorksheetTypeOptions, {
 			props: { type: 'exam', config: { answers_on_sheet: true }, onchange }
 		});
-		const trigger = page.getByRole('button', { name: 'Place des cadres de réponse' });
+		const trigger = page.getByRole('combobox', { name: 'Place des cadres de réponse' });
 		await expect.element(trigger).toHaveTextContent('Après chaque question');
 		await trigger.click();
 		await page.getByRole('option', { name: "Après l'exercice" }).click();

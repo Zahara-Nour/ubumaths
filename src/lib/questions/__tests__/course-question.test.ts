@@ -14,7 +14,7 @@ import { isCourseQuestion, type QuestionTemplate } from '../types';
 import { applyCourseQuestionOption, readCourseQuestionOption } from '../course-question';
 import { optionsSchema, questionTemplateSchema } from '../template-schema';
 import { generateInstance } from '../generator/instance-generator';
-import { templateMarkdown } from '$lib/ubumark';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 
 // ============================================================================
 // FIXTURES
@@ -34,8 +34,6 @@ function question(overrides: Partial<QuestionTemplate> = {}): QuestionTemplate {
 			}
 		],
 		grades: ['1_SPE'],
-		theme: 'Algèbre',
-		domain: 'Polynômes',
 		level: 1,
 		...overrides
 	};

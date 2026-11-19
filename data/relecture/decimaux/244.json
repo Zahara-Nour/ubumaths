@@ -40,9 +40,6 @@
 			}
 		],
 		"grades": ["CM1"],
-		"theme": "Décimaux",
-		"domain": "Apprivoiser",
-		"subdomain": "Comparer",
 		"level": 1,
 		"status": "draft",
 		"delay": 20,

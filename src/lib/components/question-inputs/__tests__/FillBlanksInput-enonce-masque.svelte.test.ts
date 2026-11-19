@@ -12,10 +12,10 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import FillBlanksInput from '../FillBlanksInput.svelte';
-import { generateInstance } from '$lib/questions/generator/instance-generator';
-import { toDisplayInstance, toPublicQuestion } from '$lib/questions/public-question';
-import type { QuestionInstance, QuestionTemplate } from '$lib/questions/types';
-import { templateMarkdown } from '$lib/ubumark';
+import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
+import { toDisplayInstance, toPublicQuestion } from '#lib/questions/public-question.ts';
+import type { QuestionInstance, QuestionTemplate } from '#lib/questions/types.ts';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 
 // Variables
 let mains: HTMLElement[] = [];
@@ -45,8 +45,6 @@ function generated(statement: string): QuestionInstance {
 			type: 'fill_in_blanks',
 			variations: [{ statement: templateMarkdown(`Question.\n\n${statement}`) }],
 			grades: ['CE1'],
-			theme: 'Test',
-			domain: 'Test',
 			level: 1
 		} as unknown as QuestionTemplate,
 		42
@@ -70,8 +68,8 @@ async function screenOf(instance: QuestionInstance, values: string[] = []): Prom
 }
 
 function html(root: HTMLElement): string {
-	// Identifiant de montage du diagramme (`c1-titre`, `c2-titre`) : seul écart permis
-	return root.innerHTML.replace(/\bc\d+-/g, 'c-');
+	// Identifiants de montage (diagramme `c1-titre`, menu bits-ui `bits-c3`) : seuls écarts permis
+	return root.innerHTML.replace(/\bc\d+-/g, 'c-').replace(/\bbits-c\d+\b/g, 'bits-c');
 }
 
 const CASES: [string, string][] = [
@@ -114,6 +112,22 @@ const CASES: [string, string][] = [
 			'---',
 			'A = point(1, 2)',
 			'B = point(4, 2)'
+		)
+	],
+	// Chantier `tableau-signes`, PR 3 : valeur de x `??1`, signe et marque `?` seul
+	[
+		'tableau de signes à compléter',
+		block(
+			'variation',
+			'variable: x',
+			'domain: -inf, ?-3, 2, +inf',
+			'',
+			'sign: (x+3)(x-2)',
+			'  -inf,-3: ?+',
+			'  -3: ?z',
+			'  -3,2: -',
+			'  2: z',
+			'  2,+inf: ?+'
 		)
 	]
 ];

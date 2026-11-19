@@ -8,29 +8,29 @@
 -->
 
 <script lang="ts">
-	import { worksheetPdfFileName } from '$lib/worksheets/pdf-file-name';
-	import { WORKSHEET_TYPE_LABELS } from '$lib/utils/worksheet-type-labels';
-	import { lore } from '$lib/config/lore';
+	import { worksheetPdfFileName } from '#lib/worksheets/pdf-file-name.ts';
+	import { WORKSHEET_TYPE_LABELS } from '#lib/utils/worksheet-type-labels.ts';
+	import { lore } from '#lib/config/lore.ts';
 	import { onMount } from 'svelte';
-	import { Button } from '$lib/components/ui/button';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import { Badge } from '$lib/components/ui/badge';
-	import * as Card from '$lib/components/ui/card';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import * as Tabs from '$lib/components/ui/tabs';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import TextSizeSelect from '$lib/components/worksheets/TextSizeSelect.svelte';
-	import { textSizeOf, type TextSize } from '$lib/typst/text-size';
-	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
-	import { genericFunctionsConfig } from '$lib/components/markdown/utils/math-utils';
-	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
-	import { generateAndDownloadPdf } from '$lib/typst/pdf-generator';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import * as Tabs from '#lib/components/ui/tabs/index.ts';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import TextSizeSelect from '#lib/components/worksheets/TextSizeSelect.svelte';
+	import { textSizeOf, type TextSize } from '#lib/typst/text-size.ts';
+	import MarkdownRenderer from '#lib/components/markdown/MarkdownRenderer.svelte';
+	import { genericFunctionsConfig } from '#lib/components/markdown/utils/math-utils.ts';
+	import InlineMarkdown from '#lib/components/markdown/InlineMarkdown.svelte';
+	import { generateAndDownloadPdf } from '#lib/typst/pdf-generator.ts';
 	import {
 		generateStudentWorksheetTypst,
 		type StudentPdfEnding
-	} from '$lib/worksheets/student-worksheet-typst';
-	import { fallbackWarning } from '$lib/typst/compiler/correction-fonts-compiler';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	} from '#lib/worksheets/student-worksheet-typst.ts';
+	import { fallbackWarning } from '#lib/typst/compiler/correction-fonts-compiler.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import {
 		Eye,
 		User,
@@ -53,20 +53,20 @@
 		Star
 	} from '@lucide/svelte';
 	import type { PageData } from './$types';
-	import { detailedCorrection } from '$lib/questions/correction-detail';
-	import { provideCapitalPairs } from '$lib/components/markdown/content-capital-pairs';
+	import { detailedCorrection } from '#lib/questions/correction-detail.ts';
+	import { provideCapitalPairs } from '#lib/components/markdown/content-capital-pairs.ts';
 	import { page } from '$app/state';
-	import { assignmentCopiesHref, assignmentPreviewReturn } from '$lib/navigation/return-links';
+	import { assignmentCopiesHref, assignmentPreviewReturn } from '#lib/navigation/return-links.ts';
 	import {
 		ANCHOR_HIGHLIGHT_MS,
 		exerciseAnchorId,
 		scrollToAnchoredExercise
-	} from '$lib/worksheets/exercise-anchor';
+	} from '#lib/worksheets/exercise-anchor.ts';
 	import type {
 		StudentWorksheetView,
 		StudentExerciseView,
 		WorksheetType
-	} from '$lib/types/worksheets';
+	} from '#lib/types/worksheets.ts';
 
 	let { data }: { data: PageData } = $props();
 

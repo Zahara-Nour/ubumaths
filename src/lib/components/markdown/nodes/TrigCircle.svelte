@@ -22,21 +22,21 @@
 	@module components/markdown/nodes/TrigCircle
 -->
 <script lang="ts">
-	import '$lib/utils/mathlive-styles';
-	import { resolveAuthorColor } from '$lib/theme/author-color';
+	import '#lib/utils/mathlive-styles.ts';
+	import { resolveAuthorColor } from '#lib/theme/author-color.ts';
 	import 'mathlive';
 	import type {
 		TrigCircleNode,
 		TrigAngle,
 		TrigArc,
 		TrigNamedPoint
-	} from '$lib/ubumark/types/trig-circle';
+	} from '#lib/ubumark/types/trig-circle.ts';
 	import {
 		REMARKABLE_ANGLES,
 		TRIG_DEFAULT_COLOR,
 		isNamedPointAngle
-	} from '$lib/ubumark/types/trig-circle';
-	import { TRIG_RADIUS, TRIG_SVG_SIZE } from '$lib/ubumark/utils/trig-placer';
+	} from '#lib/ubumark/types/trig-circle.ts';
+	import { TRIG_RADIUS, TRIG_SVG_SIZE } from '#lib/ubumark/utils/trig-placer.ts';
 	import { readAuthoringErrors } from '../authoring-errors';
 	import TrigPlacer from './TrigPlacer.svelte';
 

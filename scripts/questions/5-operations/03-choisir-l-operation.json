@@ -1,10 +1,8 @@
 {
+	"id": "ab4cf356-c5f9-47fb-a0d6-9f11b41ec81e",
 	"title": "Choisir l'opération",
 	"description": "Choisir l'opération qui résout un problème : partage, groupement, écart, prix × quantité, réunion de deux quantités",
 	"grades": ["5"],
-	"theme": "Décimaux",
-	"domain": "Problèmes",
-	"subdomain": "Choisir l'opération",
 	"level": 1,
 	"delay": 45,
 	"status": "draft",

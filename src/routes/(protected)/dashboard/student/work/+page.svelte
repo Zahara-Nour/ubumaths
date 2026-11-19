@@ -15,11 +15,11 @@
 -->
 
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import * as Card from '$lib/components/ui/card';
-	import { Button } from '$lib/components/ui/button';
+	import { lore } from '#lib/config/lore.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import { Inbox, BookOpen, Code, FileText, ClipboardCheck } from '@lucide/svelte';
-	import WorkInboxSection from '$lib/components/student-inbox/WorkInboxSection.svelte';
+	import WorkInboxSection from '#lib/components/student-inbox/WorkInboxSection.svelte';
 	import type { PageData } from './$types';
 
 	interface Props {

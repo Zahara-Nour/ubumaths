@@ -51,7 +51,7 @@
 
 import { describe, it, expect, beforeAll, afterAll, beforeEach, vi } from 'vitest';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 import type { User } from '@supabase/supabase-js';
 
 import { POST } from '../../src/routes/api/skill-attempts/+server';
@@ -125,11 +125,14 @@ function buildLocals(
 	};
 }
 
-function buildRequest(body: unknown): Request {
+// Lieu exigé par l'API (ADR 0038) : Saisie par défaut (corrigée par l'application,
+// source `auto`), sauf lieu donné. `flash_cards` est « déclaré » (`student_self`) :
+// couvert par `srs-memoire-serveur.test.ts`.
+function buildRequest(body: Record<string, unknown>): Request {
 	return new Request('http://localhost/api/skill-attempts', {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify(body)
+		body: JSON.stringify({ place: 'typing', ...body })
 	});
 }
 
@@ -394,6 +397,66 @@ describe('POST /api/skill-attempts — comportement', () => {
 		expect(row.grade).toBe(1);
 	});
 
+	it('ADR 0038 : écrit lieu, graine, durées, fin, réponse et verdict par case (CHECK de la base passés)', async () => {
+		const student = await TestData.profile().withRole('student').create();
+		const templateId = await createFakeTemplate(service, student.id);
+
+		const locals = buildLocals(service, { id: student.id } as User);
+		const request = buildRequest({
+			template_id: templateId,
+			success: false,
+			place: 'number_race',
+			seed: 2147483647,
+			response_ms: 10000,
+			allotted_ms: 10000,
+			end_reason: 'timeout',
+			answer_parts: ['12', ''],
+			part_verdicts: [true, false]
+		});
+		const response = await POST({ request, locals } as never);
+		expect(response.status).toBe(200);
+
+		const { data: rows } = await service
+			.from('skill_attempts')
+			.select('place, seed, response_ms, allotted_ms, end_reason, answer_parts, part_verdicts')
+			.eq('template_id', templateId)
+			.eq('student_id', student.id);
+		expect(rows).toEqual([
+			{
+				place: 'number_race',
+				seed: 2147483647,
+				response_ms: 10000,
+				allotted_ms: 10000,
+				end_reason: 'timeout',
+				answer_parts: ['12', ''],
+				part_verdicts: [true, false]
+			}
+		]);
+	});
+
+	it('ADR 0038 : aucune case → answer_parts et part_verdicts NULL (la base refuse `[]`)', async () => {
+		const student = await TestData.profile().withRole('student').create();
+		const templateId = await createFakeTemplate(service, student.id);
+
+		const locals = buildLocals(service, { id: student.id } as User);
+		const request = buildRequest({
+			template_id: templateId,
+			success: false,
+			place: 'typing',
+			answer_parts: [],
+			part_verdicts: []
+		});
+		const response = await POST({ request, locals } as never);
+		expect(response.status).toBe(200);
+
+		const { data: rows } = await service
+			.from('skill_attempts')
+			.select('place, answer_parts, part_verdicts')
+			.eq('template_id', templateId)
+			.eq('student_id', student.id);
+		expect(rows).toEqual([{ place: 'typing', answer_parts: null, part_verdicts: null }]);
+	});
+
 	it('stores phase_blocage when provided', async () => {
 		const student = await TestData.profile().withRole('student').create();
 		const templateId = await createFakeTemplate(service, student.id);
@@ -553,7 +616,7 @@ describe('End-to-end : answer → attempt → trigger → cache', () => {
 	it.skip('one of the seeded 6e templates (Fractions/Addition) is correctly tagged via migration 2.1', async () => {
 		// Verify that the migration 20260609130000 actually tagged real templates.
 		// getTaggedKnowledgeTemplate fetches a template that has at least one skill linked.
-		const taggedTemplate = await getTaggedKnowledgeTemplate(service, 'Fractions', 'Addition');
+		const taggedTemplate = await getTaggedKnowledgeTemplate(service);
 		expect(taggedTemplate).not.toBeNull();
 		expect(taggedTemplate!.template_id).toBeDefined();
 		expect(taggedTemplate!.point_id).toBeDefined();

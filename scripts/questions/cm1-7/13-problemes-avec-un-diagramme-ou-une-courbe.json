@@ -1,0 +1,306 @@
+{
+	"id": "f1f7b2d1-caa4-4c4c-a3bb-939c49715e44",
+	"title": "Résous un problème avec un diagramme ou une courbe",
+	"description": "En deux étapes : la recette de deux jours de tombola (barres), le mois qui manque au diagramme par le total (barres), la température prévue si la hausse continue (courbe)",
+	"grades": ["CM1"],
+	"level": 3,
+	"delay": 180,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Ce diagramme donne le nombre de billets de tombola vendus chaque jour de la semaine.\n\n```barres\ntitre: Billets vendus\naxes: Jour ; Billets\nLundi = {{a1}}\nMardi = {{a2}}\nMercredi = {{a3}}\nJeudi = {{a4}}\nVendredi = {{a5}}\naxe: 0 à 100, de 10 en 10\n```\n\nUn billet coûte ${{p}}$ €. Combien d'euros ont rapporté les billets du jeudi et du vendredi ?\n\n$?$ €",
+			"variables": [
+				{
+					"name": "u1",
+					"expression": "1..10"
+				},
+				{
+					"name": "u2",
+					"expression": "1..10"
+				},
+				{
+					"name": "u3",
+					"expression": "1..10"
+				},
+				{
+					"name": "u4",
+					"expression": "1..10"
+				},
+				{
+					"name": "u5",
+					"expression": "1..10"
+				},
+				{
+					"name": "a1",
+					"expression": "eval:10*u1"
+				},
+				{
+					"name": "a2",
+					"expression": "eval:10*u2"
+				},
+				{
+					"name": "a3",
+					"expression": "eval:10*u3"
+				},
+				{
+					"name": "a4",
+					"expression": "eval:10*u4"
+				},
+				{
+					"name": "a5",
+					"expression": "eval:10*u5"
+				},
+				{
+					"name": "p",
+					"expression": "2..5"
+				},
+				{
+					"name": "s",
+					"expression": "eval:a4+a5"
+				},
+				{
+					"name": "n",
+					"expression": "eval:s*p"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les billets du jeudi et du vendredi : ${{a4}} + {{a5}} = {{s}}$ billets.",
+					"Chaque billet rapporte ${{p}}$ € : ${{s}} \\times {{p}} = \\textcolor{{{color:primary.0}}}{{{n}}}$ €."
+				]
+			}
+		},
+		{
+			"statement": "Le club a vendu ${{T}}$ places de spectacle en quatre mois. Le diagramme montre les trois premiers mois seulement.\n\n```barres\ntitre: Places vendues\naxes: Mois ; Places\nJanvier = {{a}}\nFévrier = {{b}}\nMars = {{c}}\naxe: 0 à 200, de 20 en 20\n```\n\nCombien de places a-t-on vendues en avril ?\n\n$?$ places",
+			"variables": [
+				{
+					"name": "ua",
+					"expression": "2..10"
+				},
+				{
+					"name": "ub",
+					"expression": "2..10"
+				},
+				{
+					"name": "uc",
+					"expression": "2..10"
+				},
+				{
+					"name": "d",
+					"expression": "15..190"
+				},
+				{
+					"name": "a",
+					"expression": "eval:20*ua"
+				},
+				{
+					"name": "b",
+					"expression": "eval:20*ub"
+				},
+				{
+					"name": "c",
+					"expression": "eval:20*uc"
+				},
+				{
+					"name": "s",
+					"expression": "eval:a+b+c"
+				},
+				{
+					"name": "T",
+					"expression": "eval:s+d"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les trois mois du diagramme : ${{a}} + {{b}} + {{c}} = {{s}}$ places.",
+					"Avril : ce qui manque pour aller à ${{T}}$, ${{T}} - {{s}} = \\textcolor{{{color:primary.0}}}{{{d}}}$ places."
+				]
+			}
+		},
+		{
+			"statement": "On a relevé la température à $8$ h, $10$ h et $12$ h.\n\n```courbe\nx: 6 ; 14\ny: 0 ; 30\ngrille: 2 ; 2\naxes: x = Heure (h) ; y = Température (°C)\ndonnées: (8 ; {{t0}}) ; (10 ; {{t1}}) ; (12 ; {{t2}})\ntaille: moyenne\n```\n\nEntre $8$ h et $12$ h, la température a monté. Si elle monte encore d'autant entre $12$ h et $16$ h, quelle température fera-t-il à $16$ h ?\n\n$?$ °C",
+			"variables": [
+				{
+					"name": "u0",
+					"expression": "1..5"
+				},
+				{
+					"name": "d1",
+					"expression": "1..3"
+				},
+				{
+					"name": "d2",
+					"expression": "1..3"
+				},
+				{
+					"name": "t0",
+					"expression": "eval:2*u0"
+				},
+				{
+					"name": "t1",
+					"expression": "eval:t0+2*d1"
+				},
+				{
+					"name": "t2",
+					"expression": "eval:t1+2*d2"
+				},
+				{
+					"name": "m",
+					"expression": "eval:t2-t0"
+				},
+				{
+					"name": "n",
+					"expression": "eval:t2+m"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On lit : $8$ h, ${{t0}}$ °C ; $12$ h, ${{t2}}$ °C. La hausse : ${{t2}} - {{t0}} = {{m}}$ °C.",
+					"Encore ${{m}}$ °C de plus : ${{t2}} + {{m}} = \\textcolor{{{color:primary.0}}}{{{n}}}$ °C à $16$ h."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "(70 + 40) × 3 = 330",
+			"variationIndex": 0,
+			"variables": {
+				"u1": "5",
+				"u2": "8",
+				"u3": "6",
+				"u4": "7",
+				"u5": "4",
+				"a1": "50",
+				"a2": "80",
+				"a3": "60",
+				"a4": "70",
+				"a5": "40",
+				"p": "3",
+				"s": "110",
+				"n": "330"
+			},
+			"answers": ["330"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : jeudi seulement (210)",
+			"variationIndex": 0,
+			"variables": {
+				"u1": "5",
+				"u2": "8",
+				"u3": "6",
+				"u4": "7",
+				"u5": "4",
+				"a1": "50",
+				"a2": "80",
+				"a3": "60",
+				"a4": "70",
+				"a5": "40",
+				"p": "3",
+				"s": "110",
+				"n": "330"
+			},
+			"answers": ["210"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Avril : 475 − 360 = 115",
+			"variationIndex": 1,
+			"variables": {
+				"ua": "6",
+				"ub": "8",
+				"uc": "4",
+				"d": "115",
+				"a": "120",
+				"b": "160",
+				"c": "80",
+				"s": "360",
+				"T": "475"
+			},
+			"answers": ["115"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le total",
+			"variationIndex": 1,
+			"variables": {
+				"ua": "6",
+				"ub": "8",
+				"uc": "4",
+				"d": "115",
+				"a": "120",
+				"b": "160",
+				"c": "80",
+				"s": "360",
+				"T": "475"
+			},
+			"answers": ["475"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "8 h 6 °C, 12 h 14 °C : 14 + 8 = 22",
+			"variationIndex": 2,
+			"variables": {
+				"u0": "3",
+				"d1": "2",
+				"d2": "2",
+				"t0": "6",
+				"t1": "10",
+				"t2": "14",
+				"m": "8",
+				"n": "22"
+			},
+			"answers": ["22"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la hausse seule (8)",
+			"variationIndex": 2,
+			"variables": {
+				"u0": "3",
+				"d1": "2",
+				"d2": "2",
+				"t0": "6",
+				"t1": "10",
+				"t2": "14",
+				"m": "8",
+				"n": "22"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

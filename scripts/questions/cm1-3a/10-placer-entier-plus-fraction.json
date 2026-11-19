@@ -1,10 +1,8 @@
 {
+	"id": "00910e5b-7a51-4c30-a489-115883738058",
 	"title": "Placer un entier plus une fraction sur une demi-droite",
 	"description": "Placer la somme d'un entier et d'une fraction inférieure à 1 sur une demi-droite graduée (place 2 + 1/4) ; unité partagée en 2 à 6 parts",
 	"grades": ["CM1"],
-	"theme": "Fractions",
-	"domain": "Apprivoiser",
-	"subdomain": "Repérage",
 	"level": 4,
 	"delay": 45,
 	"status": "draft",

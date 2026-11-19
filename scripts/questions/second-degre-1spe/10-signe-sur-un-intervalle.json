@@ -1,11 +1,9 @@
 {
+	"id": "568c7bee-093c-4765-839c-7b94e95d4a67",
 	"title": "Signe d'un trinôme sur un intervalle",
 	"description": "Du signe de a à l'extérieur des racines, du signe contraire entre",
 	"grades": ["1_SPE"],
-	"theme": "Fonctions",
-	"domain": "Polynôme du second degré",
 	"status": "draft",
-	"subdomain": "Signe et inéquations",
 	"level": 2,
 	"delay": 30,
 	"variations": [

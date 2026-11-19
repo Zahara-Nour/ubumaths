@@ -55,9 +55,6 @@
 			}
 		],
 		"grades": ["6"],
-		"theme": "Décimaux",
-		"domain": "Multiplier",
-		"subdomain": "Produit particulier",
 		"level": 1,
 		"status": "draft",
 		"delay": 15,

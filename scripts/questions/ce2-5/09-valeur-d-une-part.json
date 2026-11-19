@@ -1,10 +1,8 @@
 {
+	"id": "059b8bba-c68f-4b8d-b93a-04a33e8d1c1c",
 	"title": "Problèmes de partage : la valeur d'une part",
 	"description": "Combien chacun : 72 € pour 6 dictionnaires ; 357 roses en 7 bouquets ; 79,60 € pour 4 chemises",
 	"grades": ["CE2"],
-	"theme": "Entiers",
-	"domain": "Problèmes",
-	"subdomain": "Multiplicatifs",
 	"level": 11,
 	"delay": 90,
 	"status": "draft",

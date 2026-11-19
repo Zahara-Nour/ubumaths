@@ -35,9 +35,6 @@
 			}
 		],
 		"grades": ["CM1"],
-		"theme": "Fractions",
-		"domain": "Apprivoiser",
-		"subdomain": "Forme décimale",
 		"level": 4,
 		"status": "draft",
 		"delay": 20,

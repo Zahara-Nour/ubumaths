@@ -1,10 +1,8 @@
 {
+	"id": "6bcb3535-6632-4659-9a83-23a740b8e685",
 	"title": "Boule ou sphère ?",
 	"description": "Connaître la définition de la sphère (OM = r) et de la boule (OM ⩽ r) ; situer un point par rapport à une sphère",
 	"grades": ["3"],
-	"theme": "Géométrie",
-	"domain": "Solides",
-	"subdomain": "Sphère et boule",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",
@@ -37,7 +35,7 @@
 			"correction": {
 				"steps": [
 					"La **sphère** de centre $O$ et de rayon $r$ est formée des points $M$ de l'espace tels que $OM = r$ ; la **boule** de centre $O$ et de rayon $r$, des points tels que $OM \\leqslant r$ (la sphère et son intérieur).",
-					"Ici $OM = {{d}}~\\unit{cm}$ et $r = {{r}}~\\unit{cm}$ : $OM {{if:t==0|<|}}{{if:t==1|=|}}{{if:t==2|>|}} r$, donc $M$ est \\textcolor{{{color:primary.0}}}{\\text{{{if:t==0|à l'intérieur de la boule|}}{{if:t==1|sur la sphère|}}{{if:t==2|à l'extérieur de la boule|}}}}."
+					"Ici $OM = {{d}}~\\unit{cm}$ et $r = {{r}}~\\unit{cm}$ : $OM {{if:t==0|<|}}{{if:t==1|=|}}{{if:t==2|>|}} r$, donc $M$ est $\\textcolor{{{color:primary.0}}}{\\text{{{if:t==0|à l'intérieur de la boule|}}{{if:t==1|sur la sphère|}}{{if:t==2|à l'extérieur de la boule|}}}}$."
 				]
 			}
 		},
@@ -57,7 +55,7 @@
 			"correction": {
 				"steps": [
 					"La **sphère** de centre $O$ et de rayon $r$ est formée des points $M$ de l'espace tels que $OM = r$ ; la **boule** de centre $O$ et de rayon $r$, des points tels que $OM \\leqslant r$ (la sphère et son intérieur).",
-					"Dans l'espace, $OM {{if:w==0|=|}}{{if:w==1|\\leqslant|}} r$ décrit \\textcolor{{{color:primary.0}}}{\\text{{{if:w==0|la sphère|}}{{if:w==1|la boule|}}}} ; le cercle et le disque sont des figures **planes**."
+					"Dans l'espace, $OM {{if:w==0|=|}}{{if:w==1|\\leqslant|}} r$ décrit $\\textcolor{{{color:primary.0}}}{\\text{{{if:w==0|la sphère|}}{{if:w==1|la boule|}}}}$ ; le cercle et le disque sont des figures **planes**."
 				]
 			}
 		}

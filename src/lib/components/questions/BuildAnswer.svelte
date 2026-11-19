@@ -9,7 +9,8 @@
 	et une construction juste à côté) ; sans réponse (R9), la construction juste
 	seule. Lecture seule : jamais de réserve active. Droite à placer (```line,
 	`placer:`) : la droite verrouillée avec les points de l'élève (`answers`, un par
-	point, quand il y en a plusieurs), ou les points justes. Horloge à placer
+	point, quand il y en a plusieurs), ou les points justes. Droite à représenter
+	(```line, `representer:`) : l'intervalle de l'élève, ou l'intervalle juste. Horloge à placer
 	(```horloge, `placer:`) : le cadran verrouillé avec les aiguilles de l'élève,
 	ou le cadran à l'heure juste. Figure à colorier (```partage, `colorier:`) : la
 	figure verrouillée avec les parts de l'élève, ou la figure juste. Diagramme en barres à construire (```barres,
@@ -18,53 +19,73 @@
 	(```boite-a-moustaches, `placer:`) : les traits de l'élève (cinq cases par boîte),
 	ou la boîte juste. Étiquettes à ranger (```ranger) : les places
 	verrouillées avec les étiquettes de l'élève (`answers`, une par place) et, faux,
-	le rangement juste (`expected`) ; ou le rangement juste seul. Cercle trigonométrique
+	le rangement juste (`expected`) ; ou le rangement juste seul. Éléments à associer
+	(```associer) : les rangées verrouillées avec les étiquettes de l'élève (`answers`, une
+	par élément) et, faux, la bonne étiquette dessous (`expected`) ; ou les bonnes
+	étiquettes seules. Texte à trous (```trous) : de même, le texte aux places de
+	l'élève, la bonne étiquette sous une place fausse ; ou les bonnes étiquettes seules.
+	Cercle trigonométrique
 	à placer (```trig, `placer:`) : le cercle verrouillé avec les points de l'élève
 	(`answers`, un par point), ou les points justes en vert.
 
 	@module components/questions/BuildAnswer
 -->
 <script lang="ts">
-	import Collection from '$lib/components/markdown/nodes/Collection.svelte';
-	import CollectionConstruire from '$lib/components/markdown/nodes/CollectionConstruire.svelte';
-	import Monnaie from '$lib/components/markdown/nodes/Monnaie.svelte';
-	import MonnaieConstruire from '$lib/components/markdown/nodes/MonnaieConstruire.svelte';
-	import NumberLine from '$lib/components/markdown/nodes/NumberLine.svelte';
-	import NumberLinePlacer from '$lib/components/markdown/nodes/NumberLinePlacer.svelte';
-	import Courbe from '$lib/components/markdown/nodes/Courbe.svelte';
-	import { parseCourbeContent } from '$lib/ubumark/parser/courbe-parser';
-	import Horloge from '$lib/components/markdown/nodes/Horloge.svelte';
-	import HorlogePlacer from '$lib/components/markdown/nodes/HorlogePlacer.svelte';
-	import { parseHorlogeContent } from '$lib/ubumark/parser/horloge-parser';
-	import BarresPlacer from '$lib/components/markdown/nodes/BarresPlacer.svelte';
-	import RangerPlacer from '$lib/components/markdown/nodes/RangerPlacer.svelte';
-	import { parseRangerContent } from '$lib/ubumark/parser/ranger-parser';
-	import Partage from '$lib/components/markdown/nodes/Partage.svelte';
-	import PartageColorier from '$lib/components/markdown/nodes/PartageColorier.svelte';
-	import { parsePartageContent } from '$lib/ubumark/parser/partage-parser';
-	import CubesGeste from '$lib/components/markdown/nodes/CubesGeste.svelte';
-	import PatronGeste from '$lib/components/markdown/nodes/PatronGeste.svelte';
-	import { parseEspaceContent } from '$lib/ubumark/parser/espace-parser';
-	import StatChart from '$lib/components/markdown/nodes/StatChart.svelte';
-	import { parseStatChartContent } from '$lib/ubumark/parser/stat-chart-parser';
-	import { solvedSpec } from '$lib/ubumark/utils/barres-placer';
-	import { solvedBoxPlotSpec } from '$lib/ubumark/utils/boxplot-placer';
-	import BoxPlotPlacer from '$lib/components/markdown/nodes/BoxPlotPlacer.svelte';
-	import { HORLOGE_SIZE_CM } from '$lib/ubumark/types/horloge';
-	import TrigPlacer from '$lib/components/markdown/nodes/TrigPlacer.svelte';
-	import TrigCircle from '$lib/components/markdown/nodes/TrigCircle.svelte';
-	import { parseTrigCircleContent } from '$lib/ubumark/parser/trig-circle-parser';
-	import { TRIG_PLACER_STEPS } from '$lib/ubumark/utils/trig-placer';
-	import { parseNumberLineContent } from '$lib/ubumark/parser/number-line-parser';
-	import { parseCollectionContent } from '$lib/ubumark/parser/collection-parser';
-	import { parseMonnaieContent } from '$lib/ubumark/parser/monnaie-parser';
-	import { solutionBuild as collectionSolution } from '$lib/ubumark/utils/collection-construire';
+	import Collection from '#lib/components/markdown/nodes/Collection.svelte';
+	import CollectionConstruire from '#lib/components/markdown/nodes/CollectionConstruire.svelte';
+	import Monnaie from '#lib/components/markdown/nodes/Monnaie.svelte';
+	import MonnaieConstruire from '#lib/components/markdown/nodes/MonnaieConstruire.svelte';
+	import NumberLine from '#lib/components/markdown/nodes/NumberLine.svelte';
+	import NumberLinePlacer from '#lib/components/markdown/nodes/NumberLinePlacer.svelte';
+	import NumberLineRepresenter from '#lib/components/markdown/nodes/NumberLineRepresenter.svelte';
+	import Courbe from '#lib/components/markdown/nodes/Courbe.svelte';
+	import { parseCourbeContent } from '#lib/ubumark/parser/courbe-parser.ts';
+	import { solutionLine } from '#lib/ubumark/utils/courbe-tracer.ts';
+	import { solutionVector } from '#lib/ubumark/utils/courbe-vecteur.ts';
+	import { constructionTraces } from '#lib/ubumark/utils/courbe-combinaison.ts';
+	import Horloge from '#lib/components/markdown/nodes/Horloge.svelte';
+	import HorlogePlacer from '#lib/components/markdown/nodes/HorlogePlacer.svelte';
+	import { parseHorlogeContent } from '#lib/ubumark/parser/horloge-parser.ts';
+	import BarresPlacer from '#lib/components/markdown/nodes/BarresPlacer.svelte';
+	import RangerPlacer from '#lib/components/markdown/nodes/RangerPlacer.svelte';
+	import { parseRangerContent } from '#lib/ubumark/parser/ranger-parser.ts';
+	import AssocierPlacer from '#lib/components/markdown/nodes/AssocierPlacer.svelte';
+	import { parseAssocierContent } from '#lib/ubumark/parser/associer-parser.ts';
+	import TrousEtiquettes from '#lib/components/markdown/nodes/TrousEtiquettes.svelte';
+	import { parseTrousContent } from '#lib/ubumark/parser/trous-parser.ts';
+	import TortueCorrige from '#lib/components/markdown/nodes/TortueCorrige.svelte';
+	import { parseTortueContent } from '#lib/ubumark/parser/tortue-parser.ts';
+	import RobotCorrige from '#lib/components/markdown/nodes/RobotCorrige.svelte';
+	import { parseRobotContent } from '#lib/ubumark/parser/robot-parser.ts';
+	import CalculCorrige from '#lib/components/markdown/nodes/CalculCorrige.svelte';
+	import { parseCalculContent } from '#lib/ubumark/parser/calcul-parser.ts';
+	import Partage from '#lib/components/markdown/nodes/Partage.svelte';
+	import PartageColorier from '#lib/components/markdown/nodes/PartageColorier.svelte';
+	import { parsePartageContent } from '#lib/ubumark/parser/partage-parser.ts';
+	import CubesGeste from '#lib/components/markdown/nodes/CubesGeste.svelte';
+	import PatronGeste from '#lib/components/markdown/nodes/PatronGeste.svelte';
+	import SolideGeste from '#lib/components/markdown/nodes/SolideGeste.svelte';
+	import { parseEspaceContent } from '#lib/ubumark/parser/espace-parser.ts';
+	import StatChart from '#lib/components/markdown/nodes/StatChart.svelte';
+	import { parseStatChartContent } from '#lib/ubumark/parser/stat-chart-parser.ts';
+	import { solvedSpec } from '#lib/ubumark/utils/barres-placer.ts';
+	import { solvedBoxPlotSpec } from '#lib/ubumark/utils/boxplot-placer.ts';
+	import BoxPlotPlacer from '#lib/components/markdown/nodes/BoxPlotPlacer.svelte';
+	import { HORLOGE_SIZE_CM } from '#lib/ubumark/types/horloge.ts';
+	import TrigPlacer from '#lib/components/markdown/nodes/TrigPlacer.svelte';
+	import TrigCircle from '#lib/components/markdown/nodes/TrigCircle.svelte';
+	import { parseTrigCircleContent } from '#lib/ubumark/parser/trig-circle-parser.ts';
+	import { TRIG_PLACER_STEPS } from '#lib/ubumark/utils/trig-placer.ts';
+	import { parseNumberLineContent } from '#lib/ubumark/parser/number-line-parser.ts';
+	import { parseCollectionContent } from '#lib/ubumark/parser/collection-parser.ts';
+	import { parseMonnaieContent } from '#lib/ubumark/parser/monnaie-parser.ts';
+	import { solutionBuild as collectionSolution } from '#lib/ubumark/utils/collection-construire.ts';
 	import {
 		EMPTY_BUILD as EMPTY_MONNAIE,
 		solutionBuild as monnaieSolution
-	} from '$lib/ubumark/utils/monnaie-construire';
-	import type { ExpectedStatus } from '$lib/questions/expected-result';
-	import type { BuildKind } from '$lib/questions/types';
+	} from '#lib/ubumark/utils/monnaie-construire.ts';
+	import type { ExpectedStatus } from '#lib/questions/expected-result.ts';
+	import type { BuildKind } from '#lib/questions/types.ts';
 
 	interface Props {
 		kind: BuildKind;
@@ -78,7 +99,7 @@
 		 * statut de chaque point (barre), prime sur `answer`
 		 */
 		answers?: { answer: string; status: ExpectedStatus }[];
-		/** Étiquettes à ranger : la bonne réponse de chaque place (le bloc ne la dit pas) */
+		/** Étiquettes à ranger, éléments à associer, texte à trous : la bonne réponse de chaque place (le bloc ne la dit pas) */
 		expected?: readonly string[];
 	}
 
@@ -108,9 +129,15 @@
 		kind === 'boite-a-moustaches' ? parseStatChartContent('boite-a-moustaches', source) : null
 	);
 	let ranger = $derived(kind === 'ranger' ? parseRangerContent(source) : null);
+	let associer = $derived(kind === 'associer' ? parseAssocierContent(source) : null);
+	let trous = $derived(kind === 'trous' ? parseTrousContent(source) : null);
+	let tortue = $derived(kind === 'tortue' ? parseTortueContent(source) : null);
+	let calcul = $derived(kind === 'calcul' ? parseCalculContent(source) : null);
+	let robot = $derived(kind === 'robot' ? parseRobotContent(source) : null);
 	let partage = $derived(kind === 'partage' ? parsePartageContent(source) : null);
 	let cubes = $derived(kind === 'cubes' ? parseEspaceContent(source) : null);
 	let patron = $derived(kind === 'patron' ? parseEspaceContent(source, 'patron') : null);
+	let solide = $derived(kind === 'solide' ? parseEspaceContent(source, 'solide') : null);
 </script>
 
 {#if collection?.spec?.build !== undefined}
@@ -122,6 +149,19 @@
 			node={{
 				...collection,
 				spec: { ...spec, build: undefined, sets: [collectionSolution(spec.build!)] }
+			}}
+		/>
+	{/if}
+{:else if line?.representer !== undefined}
+	{#if lineCases}
+		<NumberLineRepresenter node={line} answers={lineCases} showControls={false} />
+	{:else if line.representer.interval}
+		<!-- L'intervalle juste, sans `representer:` : dessiné seul -->
+		<NumberLine
+			node={{
+				...line,
+				representer: undefined,
+				segments: [{ ...line.representer.interval, color: 'vert' }]
 			}}
 		/>
 	{/if}
@@ -137,6 +177,42 @@
 				points: line.placer.map((t) => ({ label: t.name, value: t.value, color: 'vert' }))
 			}}
 			pointsOnLine
+		/>
+	{/if}
+{:else if courbe?.spec?.tracer !== undefined}
+	{@const spec = courbe.spec}
+	{#if lineCases}
+		<Courbe node={courbe} answers={lineCases} showControls={false} />
+	{:else}
+		<!-- Le repère avec la droite juste et deux de ses nœuds, sans `tracer:` : dessiné seul -->
+		{@const solution = solutionLine(spec, spec.tracer!.equation)}
+		<Courbe
+			node={{ ...courbe, spec: { ...spec, tracer: undefined } }}
+			marks={(solution?.points ?? []).map((p) => ({ name: '', x: p.x, y: p.y, color: 'vert' }))}
+			traces={solution
+				? [{ from: solution.segment[0], to: solution.segment[1], color: 'vert' }]
+				: []}
+		/>
+	{/if}
+{:else if courbe?.spec?.vecteur !== undefined}
+	{@const spec = courbe.spec}
+	{#if lineCases}
+		<Courbe node={courbe} answers={lineCases} showControls={false} />
+	{:else}
+		<!-- Le repère avec la flèche juste (et la construction d'une somme), sans `tracer:` -->
+		{@const vector = spec.vecteur!}
+		{@const arrow = vector.coords ? solutionVector(spec, vector.coords, null, vector.origin) : null}
+		{@const construction =
+			arrow && vector.terms
+				? constructionTraces(spec, vector.terms, arrow.from).map((t) => ({
+						...t,
+						color: 'vert' as const,
+						dashed: true
+					}))
+				: []}
+		<Courbe
+			node={{ ...courbe, spec: { ...spec, vecteur: undefined } }}
+			traces={arrow ? [...construction, { ...arrow, color: 'vert', arrow: true }] : []}
 		/>
 	{/if}
 {:else if courbe?.spec?.placer !== undefined}
@@ -192,6 +268,49 @@
 			showControls={false}
 		/>
 	{/if}
+{:else if associer && associer.errors.length === 0}
+	{@const node = { ...associer, caseIndex: 0 }}
+	{#if lineCases}
+		<AssocierPlacer {node} answers={lineCases} {expected} showControls={false} />
+	{:else if expected}
+		<!-- La bonne réponse : chaque élément avec sa bonne étiquette -->
+		<AssocierPlacer
+			{node}
+			answers={expected.map((value) => ({
+				value,
+				isCorrect: null,
+				disabled: true,
+				onChange: () => {}
+			}))}
+			showControls={false}
+		/>
+	{/if}
+{:else if tortue}
+	<!-- Programme tortue : le tracé de l'élève et l'attendu en pointillés, les programmes en texte -->
+	<TortueCorrige node={tortue} {answer} correct={accepted(status)} expected={expected?.[0]} />
+{:else if robot}
+	<!-- Robot à produire : le trajet de l'élève, un code juste et son trajet en pointillés -->
+	<RobotCorrige node={robot} {answer} correct={accepted(status)} expected={expected?.[0]} />
+{:else if calcul}
+	<!-- Programme de calcul : les programmes en texte, le tableau nombre → résultat -->
+	<CalculCorrige node={calcul} {answer} correct={accepted(status)} expected={expected?.[0]} />
+{:else if trous && trous.errors.length === 0}
+	{@const node = { ...trous, caseIndex: 0 }}
+	{#if lineCases}
+		<TrousEtiquettes {node} answers={lineCases} {expected} showControls={false} />
+	{:else if expected}
+		<!-- La bonne réponse : chaque trou avec sa bonne étiquette -->
+		<TrousEtiquettes
+			{node}
+			answers={expected.map((value) => ({
+				value,
+				isCorrect: null,
+				disabled: true,
+				onChange: () => {}
+			}))}
+			showControls={false}
+		/>
+	{/if}
 {:else if partage?.spec?.colorier !== undefined}
 	{@const spec = partage.spec}
 	{#if locked}
@@ -222,6 +341,13 @@
 	{:else}
 		<!-- La réponse juste, sans geste : les faces attendues, ou le patron du prof -->
 		<PatronGeste node={patron} solution />
+	{/if}
+{:else if solide?.spec?.kind === 'solide' && solide.spec.task !== undefined && solide.errors.length === 0}
+	{#if locked}
+		<SolideGeste node={solide} answer={locked} showControls={false} />
+	{:else}
+		<!-- La réponse juste, sans geste : la flèche attendue -->
+		<SolideGeste node={solide} solution />
 	{/if}
 {:else if horloge?.spec?.placer !== undefined}
 	{@const spec = horloge.spec}

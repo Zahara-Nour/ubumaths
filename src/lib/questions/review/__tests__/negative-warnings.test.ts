@@ -9,7 +9,7 @@
  */
 import { describe, it, expect } from 'vitest';
 import { checkTemplate, formatCheckReport } from '../check-template';
-import type { QuestionTemplate } from '$lib/questions/types';
+import type { QuestionTemplate } from '#lib/questions/types.ts';
 
 /** Case choix minimale : la formule à vérifier est dans l'énoncé */
 function qcm(
@@ -21,8 +21,6 @@ function qcm(
 		id: 't',
 		title: 't',
 		grades: ['2'],
-		theme: 'T',
-		domain: 'D',
 		level: 1,
 		status: 'draft',
 		variations: [

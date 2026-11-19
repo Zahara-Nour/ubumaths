@@ -1,10 +1,8 @@
 {
+	"id": "e73b947f-b2c7-4003-97b3-32ec00ffdaf4",
 	"title": "Probabilité d'un évènement",
 	"description": "Calculer la probabilité d'un évènement dans une situation d'équiprobabilité : urne, dé, jeu de 32 cartes, lettres d'un mot",
 	"grades": ["4"],
-	"theme": "Probabilités",
-	"domain": "Calculer",
-	"subdomain": "Équiprobabilité",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

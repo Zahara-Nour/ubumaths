@@ -7,14 +7,14 @@
 	 */
 
 	// Imports
-	import { debugStore } from '$lib/stores/pythonDebug.svelte';
+	import { debugStore } from '#lib/stores/pythonDebug.svelte.ts';
 	import VariablesPanel from './VariablesPanel.svelte';
 	import VariablesHistory from './VariablesHistory.svelte';
 	import CallStackPanel from './CallStackPanel.svelte';
 	import LoopIndicator from './LoopIndicator.svelte';
 	import MemoryDiagramView from './MemoryDiagramView.svelte';
 	import RecursionTreeView from './RecursionTreeView.svelte';
-	import { cn } from '$lib/utils';
+	import { cn } from '#lib/utils.ts';
 	import Bug from '@lucide/svelte/icons/bug';
 	import Info from '@lucide/svelte/icons/info';
 	import Table from '@lucide/svelte/icons/table';

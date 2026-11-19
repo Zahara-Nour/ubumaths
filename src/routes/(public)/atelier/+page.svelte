@@ -1,5 +1,5 @@
 <script lang="ts">
-	import SeoHead from '$lib/seo/SeoHead.svelte';
+	import SeoHead from '#lib/seo/SeoHead.svelte';
 	/**
 	 * L'atelier de recherche de l'élève.
 	 *
@@ -13,10 +13,14 @@
 	import { page } from '$app/state';
 	import { replaceState } from '$app/navigation';
 	import { resolve } from '$app/paths';
-	import AtelierContainer from '$lib/components/atelier/AtelierContainer.svelte';
-	import { Atelier } from '$lib/atelier/atelier.svelte';
-	import { openLink } from '$lib/atelier/grapheur-link';
-	import type { AtelierState } from '$lib/atelier/persistence';
+	import AtelierContainer from '#lib/components/atelier/AtelierContainer.svelte';
+	import AtelierSilhouette from '#lib/components/atelier/AtelierSilhouette.svelte';
+	import { Atelier } from '#lib/atelier/atelier.svelte.ts';
+	import { openLink } from '#lib/atelier/grapheur-link.ts';
+	import type { AtelierState } from '#lib/atelier/persistence.ts';
+
+	/** Le titre de niveau 1 : le même pour la silhouette et pour l'atelier chargé. */
+	const HEADING = 'Atelier';
 
 	interface Opened {
 		atelier: Atelier;
@@ -38,7 +42,7 @@
 	 * personnel, et non plus le lien en mode éphémère.
 	 */
 	function leaveLink() {
-		replaceState(resolve('/atelier'), {});
+		replaceState(resolve('atelier'), {});
 	}
 
 	$effect(() => {
@@ -77,10 +81,13 @@
 				ephemeral={opened.received !== null}
 				received={opened.received}
 				notice={opened.notice}
-				heading="Atelier"
+				heading={HEADING}
 				onLinkLeft={leaveLink}
 			/>
 		{/key}
+	{:else}
+		<!-- Rendue par le serveur : la forme de l'atelier tant que son JS charge -->
+		<AtelierSilhouette heading={HEADING} />
 	{/if}
 </div>
 

@@ -383,9 +383,8 @@ Aucun ADR propre à ces outils. Google Classroom : drapeau décrit dans
    Le panneau de fichiers ne propose plus rien de Google quand le drapeau est éteint (V5, test
    `src/lib/whiteboard/__tests__/panneau-sans-google.svelte.test.ts`). Un tableau partagé en direct
    pour les élèves (chat, visio) serait une autre fonctionnalité, à penser avec le projet visio.
-4. **Google** : `class_google_classroom_links` n'est lue nulle part dans `src/` et compte 0
-   ligne en prod (mesuré le 2026-10-13) ; la supprimer serait une migration destructive, à
-   décider par David. Le drapeau, lui, est testé par toutes les routes `/api/google/**` (B8,
+4. **Google** : `class_google_classroom_links` (lue nulle part, 0 ligne) est supprimée (M11,
+   2026-11-03, décision de David). Le drapeau, lui, est testé par toutes les routes `/api/google/**` (B8,
    `src/routes/api/google/__tests__/interrupteur-google.test.ts` : 403 pour chaque méthode, sauf
    `auth/disconnect` et `auth/status`).
 5. **Diaporamas** : l'annotation (`AnnotatableSlide`, `WhiteboardSlide`, `slideAnnotationStore`)

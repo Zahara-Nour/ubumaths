@@ -1,0 +1,305 @@
+{
+	"id": "5d8a7865-37c3-4bcc-a0fb-80c49a5ec70d",
+	"title": "Sens de variation de x ↦ a^x sur ℝ",
+	"description": "Sens sur ℝ selon a ; comparer deux puissances d'exposants négatifs sans calcul ; signe de a^x ; a^x par rapport à 1 pour x < 0",
+	"grades": ["T_TECHNO"],
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "On considère la fonction $f$ définie sur $\\mathbb{R}$ par $f(x)={{a}}^x$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1.5|2|3|5"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $a>0$, la fonction $x\\mapsto a^x$ est croissante sur $\\mathbb{R}$ si $a>1$, décroissante sur $\\mathbb{R}$ si $0<a<1$, constante (égale à $1$) si $a=1$.",
+					"Ici $a=\\textcolor{{{color:primary.0}}}{{{a}}}>1$ : $f$ est **croissante** sur $\\mathbb{R}$, pour les $x$ négatifs comme pour les positifs."
+				]
+			}
+		},
+		{
+			"statement": "On considère la fonction $f$ définie sur $\\mathbb{R}$ par $f(x)={{a}}^x$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "0.2|0.5|0.8|0.9"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $a>0$, la fonction $x\\mapsto a^x$ est croissante sur $\\mathbb{R}$ si $a>1$, décroissante sur $\\mathbb{R}$ si $0<a<1$, constante (égale à $1$) si $a=1$.",
+					"Ici $0<a=\\textcolor{{{color:primary.0}}}{{{a}}}<1$ : $f$ est **décroissante** sur $\\mathbb{R}$."
+				]
+			}
+		},
+		{
+			"statement": "Sans calculer, compare ${{a}}^{ {{x1}} }$ et ${{a}}^{ {{x2}} }$.\n\n```choix\nmelanger: non\n- ${{a}}^{ {{x1}} }<{{a}}^{ {{x2}} }$\n- ${{a}}^{ {{x1}} }>{{a}}^{ {{x2}} }$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "0.5|0.8|1.5|2|3"
+				},
+				{
+					"name": "x1",
+					"expression": "-3|-2.5|-2"
+				},
+				{
+					"name": "x2",
+					"expression": "-1.5|-1|-0.5"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1-min(floor(a),1)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $a>0$, la fonction $x\\mapsto a^x$ est croissante sur $\\mathbb{R}$ si $a>1$, décroissante sur $\\mathbb{R}$ si $0<a<1$, constante (égale à $1$) si $a=1$. C'est vrai aussi pour les exposants négatifs.",
+					"Ici $a={{a}}$ {{if:a>1|est supérieur à $1$ : $x\\mapsto{{a}}^x$ est croissante|est compris entre $0$ et $1$ : $x\\mapsto{{a}}^x$ est décroissante}}.",
+					"${{x1}}<{{x2}}$, donc $\\textcolor{{{color:primary.0}}}{{{a}}^{ {{x1}} }{{if:a>1|<|>}}{{a}}^{ {{x2}} }}$."
+				]
+			}
+		},
+		{
+			"statement": "Quel est le signe du nombre ${{a}}^{ {{x}} }$ ?\n\n```choix\nmelanger: non\n- strictement négatif\n- nul\n- strictement positif\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1.5|2|3|5|0.5|0.8"
+				},
+				{
+					"name": "x",
+					"expression": "-3|-2.5|-2|-1.5|-1|-0.5"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $a>0$, $a^x>0$ pour **tout** réel $x$ : la courbe de $x\\mapsto a^x$ reste au-dessus de l'axe des abscisses.",
+					"Ici ${{a}}^{ {{x}} }=\\dfrac{1}{ {{a}}^{ {{eval:-x;d}} } }$ est $\\textcolor{{{color:primary.0}}}{\\text{strictement positif}}$ : un exposant négatif ne rend pas le nombre négatif."
+				]
+			}
+		},
+		{
+			"statement": "Sans calculer, situe ${{a}}^{ {{x}} }$ par rapport à $1$.\n\n```choix\nmelanger: non\n- ${{a}}^{ {{x}} }<1$\n- ${{a}}^{ {{x}} }=1$\n- ${{a}}^{ {{x}} }>1$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "0.5|0.8|1.5|2|3"
+				},
+				{
+					"name": "x",
+					"expression": "-3|-2.5|-2|-1.5|-1|-0.5"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2-2*min(floor(a),1)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$1={{a}}^0$. Pour $a>0$, la fonction $x\\mapsto a^x$ est croissante sur $\\mathbb{R}$ si $a>1$, décroissante sur $\\mathbb{R}$ si $0<a<1$, constante (égale à $1$) si $a=1$.",
+					"Ici $a={{a}}$ {{if:a>1|est supérieur à $1$ : $x\\mapsto{{a}}^x$ est croissante|est compris entre $0$ et $1$ : $x\\mapsto{{a}}^x$ est décroissante}}.",
+					"${{x}}<0$, donc $\\textcolor{{{color:primary.0}}}{{{a}}^{ {{x}} }{{if:a>1|<|>}}1}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2^x croissante",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : décroissante",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "0,5^x décroissante",
+			"variationIndex": 1,
+			"variables": {
+				"a": "0.5"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : croissante",
+			"variationIndex": 1,
+			"variables": {
+				"a": "0.5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "a = 2 : 2^-3 < 2^-1",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"x1": "-3",
+				"x2": "-1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur a = 2 : « > » (comparaison des valeurs absolues)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"x1": "-3",
+				"x2": "-1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "a = 0,5 : 0,5^-2 > 0,5^-0,5",
+			"variationIndex": 2,
+			"variables": {
+				"a": "0.5",
+				"x1": "-2",
+				"x2": "-0.5"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur a = 0,5 : « < »",
+			"variationIndex": 2,
+			"variables": {
+				"a": "0.5",
+				"x1": "-2",
+				"x2": "-0.5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3^-2 strictement positif",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"x": "-2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : strictement négatif",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"x": "-2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3^-2 < 1",
+			"variationIndex": 4,
+			"variables": {
+				"a": "3",
+				"x": "-2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3^-2 > 1",
+			"variationIndex": 4,
+			"variables": {
+				"a": "3",
+				"x": "-2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "0,8^-1,5 > 1",
+			"variationIndex": 4,
+			"variables": {
+				"a": "0.8",
+				"x": "-1.5"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 0,8^-1,5 < 1",
+			"variationIndex": 4,
+			"variables": {
+				"a": "0.8",
+				"x": "-1.5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

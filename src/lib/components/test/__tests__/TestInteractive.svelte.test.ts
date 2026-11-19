@@ -1,5 +1,5 @@
 /**
- * Forme « Entraînement » d'une série (spécification de David, 2026-09-30) :
+ * Forme « Contrôle blanc » d'une série (ex-« Entraînement », spécification de David, 2026-09-30) :
  * une question à la fois, chacune avec SON chrono ; l'élève valide, ou le
  * chrono expire. À l'expiration, ce qui est tapé ou coché est validé (Q18).
  */
@@ -8,9 +8,13 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { flushSync, tick } from 'svelte';
 import TestInteractive from '../TestInteractive.svelte';
-import type { ClassroomItem, TestResult } from '$lib/types/test';
-import type { QuestionInstance } from '$lib/questions/types';
-import { resolvedMarkdown } from '$lib/ubumark';
+import type { ClassroomItem, TestResult } from '#lib/types/test.ts';
+import type { QuestionInstance } from '#lib/questions/types.ts';
+import { resolvedMarkdown } from '#lib/ubumark/index.ts';
+import {
+	registerSeanceReactionHandler,
+	type SeanceReaction
+} from '#lib/components/buddy/seance-reactions.ts';
 
 const RESTART = 'Recommencer avec de nouvelles questions';
 const VISITOR_NOTE = 'Connecte-toi pour que tes réponses comptent dans tes révisions.';
@@ -21,8 +25,6 @@ function choiceQuestion(statement: string): QuestionInstance {
 		templateId: `tpl-${statement}`,
 		statement: resolvedMarkdown(`${statement}\n\n\`\`\`choix\ncase: 0\n- 3\n- 4\n\`\`\``),
 		grades: ['6'],
-		theme: 'Entiers',
-		domain: 'Calcul',
 		level: 1,
 		generatedAt: new Date().toISOString(),
 		blanks: [
@@ -37,14 +39,15 @@ function choiceQuestion(statement: string): QuestionInstance {
 }
 
 function item(statement: string, delaySeconds: number): ClassroomItem {
-	return { instance: choiceQuestion(statement), delaySeconds, categoryKey: 'x' };
+	return { instance: choiceQuestion(statement), delaySeconds, templateId: 'x' };
 }
 
 async function open(
 	items: ClassroomItem[],
 	isLoggedIn = true,
 	inEvaluation = false,
-	collectOnly = false
+	collectOnly = false,
+	palotinReactions: { notionOf: (templateId: string) => string | null } | null = null
 ) {
 	const onComplete = vi.fn<(result: TestResult) => void>();
 	const onRestart = vi.fn();
@@ -56,7 +59,8 @@ async function open(
 		onRestart,
 		onBack,
 		inEvaluation,
-		collectOnly
+		collectOnly,
+		palotinReactions
 	});
 	flushSync();
 	await tick();
@@ -116,7 +120,7 @@ function clickQuit(container: HTMLElement): boolean {
 	return cancelledByLink;
 }
 
-describe('TestInteractive — Entraînement', () => {
+describe('TestInteractive — Contrôle blanc', () => {
 	beforeEach(() => {
 		vi.useFakeTimers({
 			toFake: [
@@ -219,6 +223,8 @@ describe('TestInteractive — Entraînement', () => {
 		expect(answers).toHaveLength(2);
 		expect(answers[0].isCorrect).toBe(true);
 		expect(answers[1].isCorrect).toBe(false);
+		// Fin de chaque question, envoyée avec la copie d'un contrôle (PR 4 bis)
+		expect(answers.map((a) => a.endReason)).toEqual(['validated', 'timeout']);
 	});
 
 	it('« Recommencer » demande de nouvelles questions à la page', async () => {
@@ -263,7 +269,7 @@ describe('TestInteractive — Entraînement', () => {
 		confirmSpy.mockRestore();
 	});
 
-	it('évaluation : ni « Recommencer » ni « Retour au panier », mais « Mes évaluations »', async () => {
+	it('évaluation : ni « Recommencer » ni « Retour à ma série », mais « Mes évaluations »', async () => {
 		const { container } = await open([item('Énoncé A', 1)], true, true);
 
 		elapse(1200);
@@ -276,7 +282,7 @@ describe('TestInteractive — Entraînement', () => {
 		);
 		expect(myAssessments?.getAttribute('href')).toBe('/dashboard/student/assessments');
 		expect(container.textContent).not.toContain(RESTART);
-		expect(container.textContent).not.toContain('Retour au panier');
+		expect(container.textContent).not.toContain('Retour à ma série');
 	});
 
 	it('visiteur non connecté : averti que ses réponses ne comptent pas', async () => {
@@ -287,5 +293,204 @@ describe('TestInteractive — Entraînement', () => {
 	it('élève connecté : pas d’avertissement', async () => {
 		const { container } = await open([item('Énoncé A', 10)], true);
 		expect(container.textContent).not.toContain(VISITOR_NOTE);
+	});
+});
+
+describe('TestInteractive — réactions du Palotin (chantier palotins, partie C)', () => {
+	let unregister: () => void = () => {};
+	let finishPassage: () => void = () => {};
+	const handler = vi.fn<(reaction: SeanceReaction) => Promise<void>>();
+	const notions = { notionOf: () => 'notion-1' };
+
+	beforeEach(() => {
+		vi.useFakeTimers({
+			toFake: [
+				'setTimeout',
+				'clearTimeout',
+				'Date',
+				'requestAnimationFrame',
+				'cancelAnimationFrame',
+				'performance'
+			]
+		});
+		handler.mockReset();
+		handler.mockImplementation(
+			() =>
+				new Promise<void>((resolve) => {
+					finishPassage = resolve;
+				})
+		);
+		unregister = registerSeanceReactionHandler(handler);
+	});
+	afterEach(() => {
+		unregister();
+		vi.useRealTimers();
+	});
+
+	/** Valide la réponse « 4 » (juste) ou « 3 » (faux) de la question en cours, puis l'avance. */
+	function answer(container: HTMLElement, correct: boolean) {
+		choose(container, correct ? 1 : 0);
+		clickButton(currentCard(container), 'Valider');
+		elapse(350);
+	}
+
+	const series = (count: number) =>
+		Array.from({ length: count }, (_, i) => item(`Énoncé ${i + 1}`, 60));
+
+	it('5 réussites : la question suivante attend que le Palotin soit reparti (C2, C11)', async () => {
+		const { container } = await open(series(7), true, false, false, notions);
+		for (let i = 0; i < 5; i++) answer(container, true);
+
+		expect(handler).toHaveBeenCalledExactlyOnceWith('streak');
+		elapse(5000);
+		expect(position(container)).toBe('Question 5 sur 7');
+
+		finishPassage();
+		await tick();
+		elapse(350);
+		expect(position(container)).toBe('Question 6 sur 7');
+	});
+
+	it('3 erreurs sur la même notion : encouragement (C3)', async () => {
+		const { container } = await open(series(5), true, false, false, notions);
+		for (let i = 0; i < 3; i++) answer(container, false);
+		expect(handler).toHaveBeenCalledExactlyOnceWith('struggle');
+	});
+
+	it('chrono écoulé sans réponse : l’erreur compte aussi', async () => {
+		const { container } = await open(series(5), true, false, false, notions);
+		for (let i = 0; i < 2; i++) answer(container, false);
+		elapse(60_100);
+		expect(handler).toHaveBeenCalledExactlyOnceWith('struggle');
+		expect(position(container)).toBe('Question 3 sur 5');
+	});
+
+	it('jamais sur la dernière question : la fin de séance reste au gain (C11)', async () => {
+		const { container, onComplete } = await open(series(5), true, false, false, notions);
+		for (let i = 0; i < 5; i++) answer(container, true);
+		expect(handler).not.toHaveBeenCalled();
+		expect(onComplete).toHaveBeenCalledTimes(1);
+	});
+
+	it('contrôle noté ou réactions coupées : jamais de réaction (C13)', async () => {
+		const graded = await open(series(7), true, true, true, notions);
+		for (let i = 0; i < 5; i++) answer(graded.container, true);
+		await graded.unmount();
+
+		const off = await open(series(7));
+		for (let i = 0; i < 5; i++) answer(off.container, true);
+		expect(handler).not.toHaveBeenCalled();
+		expect(position(off.container)).toBe('Question 6 sur 7');
+	});
+});
+
+// Une trace par question, envoyée dès la réponse (ADR 0038, N9, N12)
+describe('TestInteractive — traces du Contrôle blanc', () => {
+	const MODELE = '22222222-2222-4222-8222-222222222222';
+
+	function tracedItem(statement: string, delaySeconds: number): ClassroomItem {
+		return {
+			instance: { ...choiceQuestion(statement), templateId: MODELE, seed: 77 },
+			delaySeconds,
+			templateId: MODELE
+		};
+	}
+
+	async function openTraced(items: ClassroomItem[], collectOnly = false) {
+		const record = vi.fn();
+		const traceRecorder = { record, settle: async () => ({ failed: 0 }) };
+		const result = await render(TestInteractive, {
+			items,
+			isLoggedIn: true,
+			onComplete: vi.fn(),
+			onRestart: vi.fn(),
+			onBack: vi.fn(),
+			collectOnly,
+			inEvaluation: collectOnly,
+			traceRecorder
+		});
+		flushSync();
+		await tick();
+		return { ...result, record };
+	}
+
+	beforeEach(() => {
+		vi.useFakeTimers({
+			toFake: [
+				'setTimeout',
+				'clearTimeout',
+				'Date',
+				'requestAnimationFrame',
+				'cancelAnimationFrame',
+				'performance'
+			]
+		});
+	});
+	afterEach(() => {
+		vi.useRealTimers();
+	});
+
+	it('« Valider » : trace aussitôt, lieu mock_test, durées, réponse et verdict par case', async () => {
+		const { container, record } = await openTraced([
+			tracedItem('Énoncé A', 10),
+			tracedItem('Énoncé B', 10)
+		]);
+		elapse(2000);
+		choose(container, 1);
+		clickButton(currentCard(container), 'Valider');
+
+		expect(record).toHaveBeenCalledTimes(1);
+		const trace = record.mock.calls[0][0];
+		expect(trace).toMatchObject({
+			template_id: MODELE,
+			success: true,
+			place: 'mock_test',
+			seed: 77,
+			allotted_ms: 10000,
+			end_reason: 'validated',
+			answer_parts: ['1'],
+			part_verdicts: [true]
+		});
+		expect(trace.response_ms).toBeGreaterThanOrEqual(2000);
+		expect(trace.response_ms).toBeLessThan(2500);
+	});
+
+	it('chrono écoulé sans réponse : trace ratée, fin « temps écoulé », sans case', async () => {
+		const { record } = await openTraced([tracedItem('Énoncé A', 1)]);
+		elapse(1200);
+		expect(record).toHaveBeenCalledTimes(1);
+		const trace = record.mock.calls[0][0];
+		expect(trace).toMatchObject({
+			success: false,
+			end_reason: 'timeout',
+			allotted_ms: 1000,
+			response_ms: 1000
+		});
+		expect(trace).not.toHaveProperty('answer_parts');
+	});
+
+	it('la durée de réponse repart de zéro à chaque question', async () => {
+		const { container, record } = await openTraced([
+			tracedItem('Énoncé A', 10),
+			tracedItem('Énoncé B', 10)
+		]);
+		elapse(3000);
+		choose(container, 1);
+		clickButton(currentCard(container), 'Valider');
+		elapse(400);
+		elapse(1000);
+		choose(container, 0);
+		clickButton(currentCard(container), 'Valider');
+		expect(record).toHaveBeenCalledTimes(2);
+		expect(record.mock.calls[1][0].response_ms).toBeLessThan(1500);
+		expect(record.mock.calls[1][0]).toMatchObject({ success: false, part_verdicts: [false] });
+	});
+
+	it('contrôle (copie collectée) : aucune trace par cette voie', async () => {
+		const { container, record } = await openTraced([tracedItem('Énoncé A', 10)], true);
+		choose(container, 1);
+		clickButton(currentCard(container), 'Valider');
+		elapse(400);
+		expect(record).not.toHaveBeenCalled();
 	});
 });

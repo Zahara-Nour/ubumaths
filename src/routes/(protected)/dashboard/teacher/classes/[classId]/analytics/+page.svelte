@@ -10,25 +10,25 @@
 	disponible — l'interaction "click sur cellule pour focus" sera V2.1.
 -->
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import type { PageData } from './$types';
 	import { RefreshCw, EyeOff, Eye, Download } from '@lucide/svelte';
-	import * as Tabs from '$lib/components/ui/tabs';
-	import { Button } from '$lib/components/ui/button';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import * as Card from '$lib/components/ui/card';
-	import ClassCapacityGrid from '$lib/components/teacher/analytics/ClassCapacityGrid.svelte';
-	import TopCapacitiesToRemediate from '$lib/components/teacher/analytics/TopCapacitiesToRemediate.svelte';
-	import ClassActivityHeatmap from '$lib/components/teacher/analytics/ClassActivityHeatmap.svelte';
-	import StudentRetentionCurve from '$lib/components/teacher/analytics/StudentRetentionCurve.svelte';
-	import StudentGradeHistogram from '$lib/components/teacher/analytics/StudentGradeHistogram.svelte';
-	import ClassCompetenceGrid from '$lib/components/teacher/analytics/ClassCompetenceGrid.svelte';
-	import TopObservablesToConsolidate from '$lib/components/teacher/analytics/TopObservablesToConsolidate.svelte';
-	import AntiFraudFlagsList from '$lib/components/teacher/anti-fraud/AntiFraudFlagsList.svelte';
-	import AntiFraudFilters from '$lib/components/teacher/anti-fraud/AntiFraudFilters.svelte';
-	import { Badge } from '$lib/components/ui/badge';
-	import { fetchUnresolvedCount } from '$lib/components/teacher/anti-fraud/unresolved-count';
+	import * as Tabs from '#lib/components/ui/tabs/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import ClassCurriculumPointGrid from '#lib/components/teacher/analytics/ClassCurriculumPointGrid.svelte';
+	import TopCurriculumPointsToRemediate from '#lib/components/teacher/analytics/TopCurriculumPointsToRemediate.svelte';
+	import ClassRegularityGrid from '#lib/components/teacher/analytics/ClassRegularityGrid.svelte';
+	import ClassSuccessRates from '#lib/components/teacher/analytics/ClassSuccessRates.svelte';
+	import StudentRetentionCurve from '#lib/components/teacher/analytics/StudentRetentionCurve.svelte';
+	import ClassCompetenceGrid from '#lib/components/teacher/analytics/ClassCompetenceGrid.svelte';
+	import TopObservablesToConsolidate from '#lib/components/teacher/analytics/TopObservablesToConsolidate.svelte';
+	import AntiFraudFlagsList from '#lib/components/teacher/anti-fraud/AntiFraudFlagsList.svelte';
+	import AntiFraudFilters from '#lib/components/teacher/anti-fraud/AntiFraudFilters.svelte';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { fetchUnresolvedCount } from '#lib/components/teacher/anti-fraud/unresolved-count.ts';
 
 	let { data }: { data: PageData } = $props();
 
@@ -130,12 +130,11 @@
 		</Tabs.List>
 
 		<Tabs.Content value="knowledge" class="space-y-6">
-			<ClassCapacityGrid classId={data.classId} {anonymized} {refreshNonce} />
+			<ClassCurriculumPointGrid classId={data.classId} {anonymized} {refreshNonce} />
 
-			<div class="grid gap-6 lg:grid-cols-2">
-				<TopCapacitiesToRemediate classId={data.classId} {refreshNonce} />
-				<ClassActivityHeatmap classId={data.classId} {anonymized} {refreshNonce} />
-			</div>
+			<TopCurriculumPointsToRemediate classId={data.classId} {refreshNonce} />
+			<ClassSuccessRates classId={data.classId} {refreshNonce} />
+			<ClassRegularityGrid classId={data.classId} {anonymized} {refreshNonce} />
 
 			{#if data.students.length > 0}
 				<Card.Root>
@@ -168,7 +167,7 @@
 					</Card.Header>
 					<Card.Content>
 						{#if selectedStudentId}
-							<div class="grid gap-6 lg:grid-cols-2">
+							<div>
 								{#if !data.grade}
 									<p class="py-4 text-center text-sm text-muted-foreground">
 										Le niveau de votre {lore.entities.class} n'est pas renseigné.
@@ -189,14 +188,6 @@
 										Aucune branche du programme pour ce niveau.
 									</p>
 								{/if}
-								<StudentGradeHistogram
-									classId={data.classId}
-									studentId={selectedStudentId}
-									studentName={anonymized
-										? `${lore.entities.student} sélectionné`
-										: selectedStudentName}
-									{refreshNonce}
-								/>
 							</div>
 						{:else}
 							<p class="py-4 text-center text-sm text-muted-foreground">

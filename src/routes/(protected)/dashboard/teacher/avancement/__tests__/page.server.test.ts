@@ -9,7 +9,7 @@
  *   - un point archivé n'apparaît que s'il a été travaillé cette année (Q1).
  */
 import { describe, it, expect, vi } from 'vitest';
-import { createFakeSupabase } from '$lib/server/__tests__/helpers/fake-supabase';
+import { createFakeSupabase } from '#lib/server/__tests__/helpers/fake-supabase.ts';
 import {
 	answerProgramme,
 	pointIdsOf,
@@ -18,10 +18,10 @@ import {
 	P_FRACTION,
 	P_QUATRIEME,
 	P_TRIANGLE_ARCHIVE
-} from '$lib/server/__tests__/helpers/fake-programme';
+} from '#lib/server/__tests__/helpers/fake-programme.ts';
 import type { PageServerData } from '../$types';
 
-vi.mock('$lib/server/middleware/auth', () => ({ requireRoles: async () => ({}) }));
+vi.mock('#lib/server/middleware/auth.ts', () => ({ requireRoles: async () => ({}) }));
 
 import { load } from '../+page.server';
 

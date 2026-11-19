@@ -1,10 +1,8 @@
 {
+	"id": "6137a555-a62d-4382-b509-4a6f7cbd346b",
 	"title": "Quotient d'exponentielles",
 	"description": "eᵃ / eᵇ = eᵃ⁻ᵇ, exposants entiers puis affines en x",
 	"grades": ["1_SPE"],
-	"theme": "Fonctions",
-	"domain": "Fonction exponentielle",
-	"subdomain": "Propriétés algébriques",
 	"level": 3,
 	"status": "draft",
 	"delay": 40,

@@ -9,14 +9,14 @@
  * we verify the destination column belongs to the same board as the source.
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { parseKanbanId, updateCardSchema } from '$lib/server/validation/kanban';
-import { getCardColumnId, getColumnBoardId, rateLimitResponse } from '$lib/server/kanban';
-import { checkKanbanCardMutationRateLimit } from '$lib/server/rateLimiter';
-import type { KanbanCard } from '$lib/types/database-helpers';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { parseKanbanId, updateCardSchema } from '#lib/server/validation/kanban.ts';
+import { getCardColumnId, getColumnBoardId, rateLimitResponse } from '#lib/server/kanban.ts';
+import { checkKanbanCardMutationRateLimit } from '#lib/server/rateLimiter.ts';
+import type { KanbanCard } from '#lib/types/database-helpers.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/organisation/kanban/cards/[cardId]/+server');
 
@@ -234,7 +234,7 @@ export const PATCH: RequestHandler = async ({ locals, params, request }) => {
 		cardRow = data as KanbanCard;
 	}
 
-	return json({ card: cardRow });
+	return Response.json({ card: cardRow });
 };
 
 export const DELETE: RequestHandler = async ({ locals, params }) => {
@@ -259,5 +259,5 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 		throw error(500, 'Erreur lors de la suppression de la carte');
 	}
 
-	return json({ success: true });
+	return Response.json({ success: true });
 };

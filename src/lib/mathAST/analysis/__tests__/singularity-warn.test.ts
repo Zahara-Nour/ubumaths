@@ -11,7 +11,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { parseCustom } from '$lib/mathAST';
+import { parseCustom } from '#lib/mathAST/index.ts';
 import { warnIfSingularitySuspected } from '../singularity-warn';
 
 describe('warnIfSingularitySuspected', () => {

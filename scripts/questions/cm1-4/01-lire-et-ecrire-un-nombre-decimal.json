@@ -1,10 +1,8 @@
 {
+	"id": "2cff4ef5-a463-4bce-85ff-b0fec81dce08",
 	"title": "Lire et écrire un nombre décimal",
 	"description": "Trois unités et vingt-cinq centièmes ↔ 3,25 : écrire avec une virgule un nombre donné en lettres, le lire parmi quatre écritures ; au plus deux décimales",
 	"grades": ["CM1"],
-	"theme": "Décimaux",
-	"domain": "Apprivoiser",
-	"subdomain": "Ecriture",
 	"level": 12,
 	"delay": 30,
 	"status": "draft",

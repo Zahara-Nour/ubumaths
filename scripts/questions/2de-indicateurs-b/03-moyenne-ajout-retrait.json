@@ -1,10 +1,8 @@
 {
+	"id": "a4de4154-a681-48b9-802a-f5f1b9df6fb9",
 	"title": "Moyenne après l'ajout ou le retrait d'une valeur",
 	"description": "Nouvelle moyenne quand on ajoute ou retire une valeur (par la somme) ; sens de variation sans calcul",
 	"grades": ["2"],
-	"theme": "Statistiques",
-	"domain": "Indicateurs",
-	"subdomain": "Moyenne",
 	"level": 5,
 	"delay": 60,
 	"status": "draft",
@@ -102,7 +100,7 @@
 			"correction": {
 				"steps": [
 					"Une valeur ajoutée **au-dessus** de la moyenne la fait augmenter, **au-dessous** la fait diminuer, **égale** à la moyenne ne la change pas.",
-					"{{if:s==0|${{v}}>{{m}}$ : la valeur est au-dessus de la moyenne, qui \\textcolor{{{color:primary.0}}}{\\text{augmente}}.| }}{{if:s==1|${{v}}={{m}}$ : la valeur est égale à la moyenne, qui \\textcolor{{{color:primary.0}}}{\\text{ne change pas}}.| }}{{if:s==2|${{v}}<{{m}}$ : la valeur est au-dessous de la moyenne, qui \\textcolor{{{color:primary.0}}}{\\text{diminue}}.| }}"
+					"{{if:s==0|${{v}}>{{m}}$ : la valeur est au-dessus de la moyenne, qui $\\textcolor{{{color:primary.0}}}{\\text{augmente}}$.| }}{{if:s==1|${{v}}={{m}}$ : la valeur est égale à la moyenne, qui $\\textcolor{{{color:primary.0}}}{\\text{ne change pas}}$.| }}{{if:s==2|${{v}}<{{m}}$ : la valeur est au-dessous de la moyenne, qui $\\textcolor{{{color:primary.0}}}{\\text{diminue}}$.| }}"
 				]
 			}
 		}

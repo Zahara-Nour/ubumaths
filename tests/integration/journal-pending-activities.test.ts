@@ -13,7 +13,7 @@
 
 import { describe, it, expect, beforeAll, afterAll, beforeEach, vi } from 'vitest';
 import type { SupabaseClient, User } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 
 import { actions } from '../../src/routes/(protected)/dashboard/teacher/cahier-texte/[classId]/[date]/+page.server';
 import {
@@ -113,9 +113,6 @@ async function makeTaggedTemplate(pointIds: string[], notionId: string): Promise
 			type: 'fill_in_blanks',
 			grades: [TEST_GRADE],
 			classification_node_id: notionId,
-			theme: `Thème ${crypto.randomUUID().slice(0, 8)}`,
-			domain: 'Domaine',
-			subdomain: null,
 			level: 1,
 			variations: [{ blanks: [{ expectedAnswer: '2' }], statement: 'Calculer $1 + 1 = ?$' }]
 		} as never)

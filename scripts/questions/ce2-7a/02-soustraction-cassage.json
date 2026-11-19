@@ -1,10 +1,8 @@
 {
+	"id": "89698b69-cb9a-4cc7-bed2-00e5aa0a0f5b",
 	"title": "Pose et calcule une soustraction (par cassage, jusqu'à 10 000)",
 	"description": "Soustraction posée, méthode par cassage : 4 − 3 chiffres, 4 − 4 chiffres, zéros (5 002 − 847)",
 	"grades": ["CE2"],
-	"theme": "Nombres",
-	"domain": "Soustraction",
-	"subdomain": "Calcul posé",
 	"level": 3,
 	"delay": 180,
 	"status": "draft",

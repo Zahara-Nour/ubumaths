@@ -1,11 +1,9 @@
 {
+	"id": "cffdd283-49ee-4292-b8ca-b6096b8b1ae2",
 	"title": "Dériver une somme d'exponentielle et de polynôme",
 	"description": "Dérivée d'une somme : (k·eˣ)′ = k·eˣ, polynôme du second degré dérivé terme à terme",
 	"grades": ["1_SPE"],
-	"theme": "Fonctions",
-	"domain": "Fonction exponentielle",
 	"status": "draft",
-	"subdomain": "Dérivation",
 	"level": 2,
 	"delay": 45,
 	"variations": [

@@ -9,11 +9,11 @@
 	import { enhance } from '$app/forms';
 	import { resolve } from '$app/paths';
 	import type { ActionData } from './$types';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
-	import * as Card from '$lib/components/ui/card';
-	import * as Alert from '$lib/components/ui/alert';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import * as Alert from '#lib/components/ui/alert/index.ts';
 
 	// Form action result
 	let { form }: { form: ActionData } = $props();
@@ -66,7 +66,7 @@
 				<Button type="submit" class="w-full">Envoyer le lien</Button>
 
 				<div class="text-center text-sm">
-					<a href={resolve('/auth/login')} class="font-medium text-primary hover:underline"
+					<a href={resolve('auth/login')} class="font-medium text-primary hover:underline"
 						>Retour à la connexion</a
 					>
 				</div>

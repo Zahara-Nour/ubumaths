@@ -1,8 +1,8 @@
 import type { PageServerLoad, Actions } from './$types';
 import { redirect, fail } from '@sveltejs/kit';
-import { requireRoles } from '$lib/server/middleware/auth';
-import { RIDDLE_COLUMNS } from '$lib/types/riddle';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import { RIDDLE_COLUMNS } from '#lib/types/riddle.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger(
 	'(protected)/dashboard/teacher/contenu/enigmes/of-the-day/+page.server'

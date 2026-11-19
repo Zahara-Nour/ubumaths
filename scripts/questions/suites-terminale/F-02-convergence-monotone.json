@@ -1,10 +1,8 @@
 {
+	"id": "2bf6edc7-e12f-450e-951c-cbf2b20b1e19",
 	"title": "Suite monotone et bornée : que peut-on conclure ?",
 	"description": "QCM : croissante majorée ⟹ convergente (vers ℓ ≤ M, pas forcément M) ; croissante non majorée ⟹ +∞ ; majorée seule ou croissante seule : pas de conclusion",
 	"grades": ["T_SPE"],
-	"theme": "Suites",
-	"domain": "Comportement global",
-	"subdomain": "Convergence monotone",
 	"level": 2,
 	"status": "draft",
 	"delay": 60,

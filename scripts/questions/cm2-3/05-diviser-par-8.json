@@ -1,10 +1,8 @@
 {
+	"id": "3b691903-fb8c-42e6-82d0-c643bda733ce",
 	"title": "Diviser par $8$",
 	"description": "Trois moitiés successives : 128 ÷ 8, 2 480 ÷ 8, quotient décimal 36 ÷ 8 = 4,5",
 	"grades": ["CM2"],
-	"theme": "Entiers",
-	"domain": "Diviser",
-	"subdomain": "Quotient",
 	"level": 11,
 	"delay": 30,
 	"status": "draft",

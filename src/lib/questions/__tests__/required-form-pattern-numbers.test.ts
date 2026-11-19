@@ -10,7 +10,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { checkRequiredForm } from '../required-form-validator';
-import { validateAnswer } from '$lib/utils/answer-validator';
+import { validateAnswer } from '#lib/utils/answer-validator.ts';
 import { generateInstance } from '../generator/instance-generator';
 import type { QuestionInstance, QuestionTemplate } from '../types';
 
@@ -74,8 +74,6 @@ describe('générateur : variables tirées dans le motif', () => {
 				}
 			],
 			grades: ['6'],
-			theme: 'Entiers',
-			domain: 'Vocabulaire',
 			level: 1
 		} as unknown as QuestionTemplate;
 		const generated = generateInstance(template, 1);

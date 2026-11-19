@@ -1,10 +1,8 @@
 {
+	"id": "602bd8d7-589e-4bf5-9b8c-40f113b5e219",
 	"title": "La fonction carré",
 	"description": "Reconnaître la parabole de x ↦ x² ; image d'un négatif, d'un décimal (pièges : −3² = −9, parabole renversée, V de la valeur absolue, 0,3² = 0,9)",
 	"grades": ["2"],
-	"theme": "Fonctions",
-	"domain": "Fonction carré",
-	"subdomain": "Courbe",
 	"level": 2,
 	"delay": 60,
 	"status": "draft",

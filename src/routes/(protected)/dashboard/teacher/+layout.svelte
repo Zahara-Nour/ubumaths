@@ -7,9 +7,9 @@
 
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { getSelectedClassId, reconcileSelectedClass } from '$lib/stores/selectedClass.svelte';
-	import { getSelectedPeriodId, setSelectedPeriod } from '$lib/stores/selectedPeriod.svelte';
-	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
+	import { getSelectedClassId, reconcileSelectedClass } from '#lib/stores/selectedClass.svelte.ts';
+	import { getSelectedPeriodId, setSelectedPeriod } from '#lib/stores/selectedPeriod.svelte.ts';
+	import { teacherCache } from '#lib/stores/teacherDashboardCache.svelte.ts';
 	import type { LayoutData } from './$types';
 	import type { Snippet } from 'svelte';
 

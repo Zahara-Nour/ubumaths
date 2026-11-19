@@ -5,6 +5,10 @@
  * de navigation remontait comme une erreur. Désormais le message reste celui de
  * SvelteKit, la pile part dans `detail` (repliée par la page d'erreur), et une
  * 404 est journalisée en avertissement.
+ *
+ * SvelteKit 3 : le hook reçoit `kind` (`app` = `error(...)` voulu, `framework` =
+ * erreur de SvelteKit comme une 404, `unknown` = exception). Une erreur voulue
+ * n'est pas une panne : rien n'est journalisé.
  */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { NavigationEvent } from '@sveltejs/kit';
@@ -31,29 +35,37 @@ afterEach(() => {
 });
 
 describe('handleError (client)', () => {
-	it('404 : message de SvelteKit, sans pile, journalisée en avertissement', async () => {
+	it('404 : message de SvelteKit gardé, sans pile, journalisée en avertissement', async () => {
 		const result = await handleError({
-			error: new Error('Not found: /chifrement'),
-			event,
-			status: 404,
-			message: 'Not Found'
+			kind: 'framework',
+			error: { status: 404, message: 'Not Found' },
+			event
 		});
 
-		expect(result).toEqual({ message: 'Not Found' });
+		expect(result).toBeUndefined();
 		expect(loggedBody().severity).toBe('warning');
 		expect(loggedBody().message).toContain('/chifrement');
 	});
 
 	it('erreur inattendue : la pile part dans `detail`, pas dans le message', async () => {
 		const result = await handleError({
+			kind: 'unknown',
 			error: new TypeError('x is undefined'),
-			event,
-			status: 500,
-			message: 'Internal Error'
+			event
 		});
 
-		expect(result?.message).toBe('Internal Error');
-		expect(result?.detail).toContain('x is undefined');
+		expect(result).toEqual({ detail: expect.stringContaining('x is undefined') });
 		expect(loggedBody().severity).toBe('error');
+	});
+
+	it('erreur voulue (`error(...)`) : rien de journalisé, message gardé', async () => {
+		const result = await handleError({
+			kind: 'app',
+			error: { status: 403, message: 'Accès refusé' },
+			event
+		});
+
+		expect(result).toBeUndefined();
+		expect(fetchMock).not.toHaveBeenCalled();
 	});
 });

@@ -1,10 +1,8 @@
 {
+	"id": "8d94fd69-4375-4773-8eef-63f59f05a0ce",
 	"title": "Estimer la médiane d'une série regroupée en classes",
 	"description": "Répartition uniforme dans la classe médiane : médiane estimée par proportionnalité",
 	"grades": ["2"],
-	"theme": "Statistiques",
-	"domain": "Indicateurs",
-	"subdomain": "Médiane",
 	"level": 5,
 	"delay": 90,
 	"status": "draft",

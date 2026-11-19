@@ -3,22 +3,22 @@
  * Generated from migration: 20250123000000_worksheets.sql
  */
 
-import type { DocumentNode } from '$lib/ubumark';
+import type { DocumentNode } from '#lib/ubumark/index.ts';
 import type {
 	ExerciseVariation,
 	SharedExerciseDefaults,
 	ExerciseHint,
 	ExerciseResource
-} from '$lib/exercises/types';
-import type { GradeCode } from '$lib/types/grades';
-import type { CapitalPairs } from '$lib/mathAST/parser/types';
-import type { GuidanceLevel } from '$lib/worksheets/student-copy';
+} from '#lib/exercises/types.ts';
+import type { GradeCode } from '#lib/types/grades.ts';
+import type { CapitalPairs } from '#lib/mathAST/parser/types.ts';
+import type { GuidanceLevel } from '#lib/worksheets/student-copy.ts';
 import {
 	DEFAULT_CONTENT_LOCALE,
 	isContentLocale,
 	type ContentLocale,
 	type TranslatedLocale
-} from '$lib/types/locale';
+} from '#lib/types/locale.ts';
 
 // =============================================================================
 // ENUMS AND CONSTANTS
@@ -1240,9 +1240,9 @@ export interface WorksheetCitationsReport {
 /**
  * Une séance du cahier de texte qui cite une fiche PAR NUMÉRO d'exercice.
  *
- * Vit ici, et non dans `$lib/server/worksheets/citations`, parce que le panneau
+ * Vit ici, et non dans `#lib/server/worksheets/citations.ts`, parce que le panneau
  * d'avertissement qui l'affiche est un composant : rien de ce qu'importe le
- * client ne doit venir de `$lib/server`.
+ * client ne doit venir de `#lib/server`.
  */
 export interface WorksheetCitation {
 	entryId: string;

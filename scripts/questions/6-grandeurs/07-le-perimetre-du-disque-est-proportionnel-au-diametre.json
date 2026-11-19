@@ -1,10 +1,8 @@
 {
+	"id": "4343af4c-1549-4eb3-8471-8fd3f9233c38",
 	"title": "Le périmètre d'un disque est proportionnel à son diamètre",
 	"description": "Utiliser la proportionnalité entre périmètre et diamètre : diamètre multiplié par 2, périmètre multiplié par 2 ; le périmètre divisé par le diamètre vaut toujours environ 3,14",
 	"grades": ["6"],
-	"theme": "Grandeurs",
-	"domain": "Périmètres",
-	"subdomain": "Périmètre d'un disque",
 	"level": 1,
 	"delay": 30,
 	"status": "draft",

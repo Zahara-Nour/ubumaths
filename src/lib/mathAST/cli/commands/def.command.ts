@@ -8,7 +8,7 @@
  * Syntax: .def f(x) = x^2 or .def g(x,y) = x + y
  */
 
-import chalk from 'chalk';
+import { colors } from '../core/terminal-colors';
 import { BaseCommand } from './base-command';
 import type { CommandContext, CommandResult } from '../types';
 import { toCustom } from '../../index';
@@ -164,12 +164,12 @@ export class DefCommand extends BaseCommand {
 				setFunctionDerivative(ctx.evalState, funcName, derivative);
 				const derivStr = toCustom(derivative);
 				derivativeInfo =
-					'\n  ' + chalk.dim(`${funcName}'(${paramsDisplay})`) + ' = ' + chalk.dim(derivStr);
+					'\n  ' + colors.dim(`${funcName}'(${paramsDisplay})`) + ' = ' + colors.dim(derivStr);
 			} catch (err) {
 				// Differentiation failed - show warning but continue
 				if (err instanceof DifferentiationError) {
 					derivativeInfo =
-						'\n  ' + chalk.yellow(`Warning: Could not auto-compute derivative: ${err.message}`);
+						'\n  ' + colors.yellow(`Warning: Could not auto-compute derivative: ${err.message}`);
 				}
 				// For other errors, silently ignore (function is still defined)
 			}
@@ -183,7 +183,7 @@ export class DefCommand extends BaseCommand {
 			const domainStr = formatDomainCondition(domainResult.domain, params[0]);
 			// Only show domain if it's not universal (x ∈ ℝ)
 			if (domainResult.domain.kind !== 'universal') {
-				domainInfo = '\n  ' + chalk.dim('Domaine : ') + chalk.dim(domainStr);
+				domainInfo = '\n  ' + colors.dim('Domaine : ') + colors.dim(domainStr);
 			}
 		} catch {
 			// Domain computation failed - silently ignore
@@ -193,11 +193,11 @@ export class DefCommand extends BaseCommand {
 		const valueStr = toCustom(parseResult.ast);
 		const actionWord = isOverwrite ? 'Redefined' : 'Defined';
 		const output =
-			chalk.green(`${actionWord}:`) +
+			colors.green(`${actionWord}:`) +
 			' ' +
-			chalk.bold(`${funcName}(${paramsDisplay})`) +
+			colors.bold(`${funcName}(${paramsDisplay})`) +
 			' = ' +
-			chalk.cyan(valueStr) +
+			colors.cyan(valueStr) +
 			derivativeInfo +
 			domainInfo;
 

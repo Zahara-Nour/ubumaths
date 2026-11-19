@@ -1,10 +1,8 @@
 {
+	"id": "e75cb1a3-56f6-4498-b6bf-06e852b3252d",
 	"title": "Arrondir un nombre décimal",
 	"description": "Arrondir à l'unité, au dixième, au centième un décimal à 2 ou 3 décimales (retenue comprise : 3,96 → 4)",
 	"grades": ["6"],
-	"theme": "Décimaux",
-	"domain": "Apprivoiser",
-	"subdomain": "Arrondir",
 	"level": 1,
 	"delay": 20,
 	"status": "draft",

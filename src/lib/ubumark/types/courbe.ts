@@ -13,9 +13,9 @@
  * @module ubumark/types/courbe
  */
 
-import { NAMED_COLORS, type NamedColor } from '$lib/theme/named-colors';
+import { NAMED_COLORS, type NamedColor } from '#lib/theme/named-colors.ts';
 import type { BaseNode } from './ast';
-import type { MathNode } from '$lib/mathAST/types';
+import type { MathNode } from '#lib/mathAST/types.ts';
 
 // ============================================================================
 // VALEURS
@@ -86,6 +86,16 @@ export interface CourbePoint {
 	name: string;
 	x: number;
 	y: number;
+	line: number;
+}
+
+/** Couleur de la courbe de données (une seule série, Q3 de `relier-points`) */
+export const COURBE_DATA_COLOR: CourbeColor = 'bleu';
+
+/** Courbe de données (`données:`) : points donnés, reliés dans l'ordre des abscisses */
+export interface CourbeData {
+	/** Triés par abscisse croissante, abscisses distinctes, 2 à `COURBE_LIMITS.dataPoints` */
+	points: { x: number; y: number }[];
 	line: number;
 }
 
@@ -184,6 +194,65 @@ export interface CourbeTarget {
 	line: number;
 }
 
+/**
+ * Vecteur à tracer par l'élève (`tracer: vecteur u = (3 ; -2) depuis A`, une
+ * question) : ses coordonnées (multiples du pas de la grille, vecteur non nul),
+ * `null` dans l'énoncé masqué d'une évaluation notée ; nom facultatif (une
+ * minuscule, '' sans nom) ; origine imposée `from` (un point de `points:`), dont
+ * `origin` donne les coordonnées. Jamais dessiné avant la correction.
+ */
+export interface CourbeVectorToTrace {
+	name: string;
+	coords: { x: number; y: number } | null;
+	from?: string;
+	origin?: { x: number; y: number };
+	/**
+	 * Combinaison écrite (`tracer: vecteur 2u - AC`, chantier `somme-vecteurs`) :
+	 * ses termes, dans l'ordre écrit ; `coords` en est la somme. Absent quand le
+	 * vecteur est donné par ses coordonnées.
+	 */
+	terms?: CourbeVectorTerm[];
+	line: number;
+}
+
+/**
+ * Un terme d'une combinaison à tracer : `coef` × le vecteur de `from` à `to`
+ * (points de `points:`) ; `name` : le nom écrit (`u`, un vecteur de `vecteurs:`),
+ * '' pour un couple de points (`AC`). `at` : l'origine du représentant donné,
+ * `u` : ses coordonnées (sans le coefficient).
+ */
+export interface CourbeVectorTerm {
+	coef: number;
+	name: string;
+	from: string;
+	to: string;
+	at: { x: number; y: number };
+	u: { x: number; y: number };
+}
+
+/**
+ * Vecteur donné (`vecteurs: u = AB, AC`), dessiné en flèche de `from` à `to`
+ * (points de `points:`) ; nom facultatif (une minuscule, '' sans nom), écrit près
+ * du milieu de la flèche.
+ */
+export interface CourbeGivenVector {
+	name: string;
+	from: string;
+	to: string;
+	line: number;
+}
+
+/**
+ * Droite à tracer par l'élève (`tracer: y = 2x - 1`, une question) : l'équation
+ * telle qu'écrite (normalisée), passant par au moins deux nœuds de la grille dans
+ * la fenêtre (vérifié à l'analyse) ; `?` dans l'énoncé masqué d'une évaluation
+ * notée. Jamais dessinée avant la correction : c'est la réponse attendue.
+ */
+export interface CourbeLineToTrace {
+	equation: string;
+	line: number;
+}
+
 /** Titres des axes (`axes: x = Durée (min) ; y = Température (°C)`), null : pas de titre */
 export interface CourbeAxisTitles {
 	x: string | null;
@@ -207,11 +276,25 @@ export interface CourbeSpec {
 	/**
 	 * Points à placer (`placer:`, 1 à 6), dans l'ordre écrit : les RÉPONSES
 	 * attendues. L'écran ne doit jamais les dessiner ni les écrire dans le DOM
-	 * (chantier `docs/wip/points-repere-progress.md`).
+	 * (chantier `docs/archive/wip/points-repere-progress.md`).
 	 */
 	placer?: CourbeTarget[];
+	/**
+	 * Droite à tracer (`tracer:`, jamais avec `placer:`) : la RÉPONSE attendue,
+	 * jamais dessinée ni écrite dans le DOM avant la correction
+	 */
+	tracer?: CourbeLineToTrace;
+	/**
+	 * Vecteur à tracer (`tracer: vecteur …`, jamais avec `placer:`) : la RÉPONSE
+	 * attendue, jamais dessinée ni écrite dans le DOM avant la correction
+	 */
+	vecteur?: CourbeVectorToTrace;
+	/** Vecteurs donnés (`vecteurs:`), dessinés en flèches ; absent sans la clé */
+	vecteurs?: CourbeGivenVector[];
 	/** Titres des axes (`axes:`) ; absent sans la clé */
 	axisTitles?: CourbeAxisTitles;
+	/** Courbe de données (`données:`, jamais avec `placer:` ni `tracer:`) ; absente sans la clé */
+	donnees?: CourbeData;
 }
 
 // ============================================================================
@@ -246,7 +329,8 @@ export interface CourbeNode extends BaseNode {
 	warnings: CourbeIssue[];
 	/**
 	 * Repère à points à placer dans une question : première case (`case: N`,
-	 * posée par le générateur) ; le point k a la case N + k
+	 * posée par le générateur) ; le point k a la case N + k. Droite à tracer :
+	 * une seule case, N
 	 */
 	caseIndex?: number;
 }
@@ -272,11 +356,21 @@ export const COURBE_LIMITS = {
 	gridLines: 200,
 	functions: 10,
 	points: 50,
+	/** Points d'une courbe de données (`données:`) */
+	dataPoints: 25,
 	asymptotes: 20,
 	areas: 10,
 	tangents: 10,
+	/** Vecteurs donnés (`vecteurs:`) */
+	vectors: 4,
+	/** Termes d'une combinaison à tracer (`tracer: vecteur u + v`) */
+	terms: 4,
+	/** Plus grand coefficient d'un terme, en valeur absolue (entiers seulement) */
+	coefficient: 3,
 	/** Points à placer par l'élève (`placer:`) */
 	targets: 6,
+	/** Longueur de l'équation d'une droite à tracer (`tracer:`) */
+	equation: 80,
 	/** Longueur d'un titre d'axe (`axes:`) */
 	axisTitle: 60,
 	sequences: 10,

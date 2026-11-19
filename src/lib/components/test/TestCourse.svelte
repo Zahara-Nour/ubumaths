@@ -23,23 +23,34 @@
 	- unitKeys: touches d'unités de chaque question (évaluation)
 	- buddyGain: gain du Palotin, affiché sur l'écran de résultats (`null` → rien)
 	- mathouNews: nouveautés de la Chatterie, affichées sur l'écran de résultats (`null` → rien)
+	- traceRecorder: série libre d'un élève connecté → une trace par question (lieu
+	  `number_race`, ADR 0038) ; `null` → rien (contrôle, visiteur). Question validée :
+	  durée = du début de la course à « Valider », durée allouée = durée de la course.
+	  À la fin, question jamais validée : ratée, fin « temps écoulé » au chrono, sans
+	  durée ni fin si l'élève a cliqué « Terminer » (décision de David, 2026-11-11).
 -->
 
 <script lang="ts">
-	import { computeTestScore } from '$lib/utils/test-score';
-	import type { TestSession, TestResult, TestAnswerResult } from '$lib/types/test';
-	import type { AnswerData } from '$lib/types/question-display';
-	import QuestionCard from '$lib/components/questions/QuestionCard.svelte';
+	import { SvelteSet } from 'svelte/reactivity';
+	import { computeTestScore } from '#lib/utils/test-score.ts';
+	import type { TestSession, TestResult, TestAnswerResult } from '#lib/types/test.ts';
+	import type { AnswerData } from '#lib/types/question-display.ts';
+	import QuestionCard from '#lib/components/questions/QuestionCard.svelte';
 	import TestTimer from './TestTimer.svelte';
 	import TestResults from './TestResults.svelte';
-	import type { BuddyGainView } from '$lib/components/buddy/buddy-gain';
-	import type { MathouNews } from '$lib/mathoux/news';
-	import { Button } from '$lib/components/ui/button';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import { automathsQuitLink } from '$lib/navigation/return-links';
-	import * as Card from '$lib/components/ui/card';
+	import type { BuddyGainView } from '#lib/components/buddy/buddy-gain.ts';
+	import type { MathouNews } from '#lib/mathoux/news.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import { automathsQuitLink } from '#lib/navigation/return-links.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
 	import { CheckCircle2, ArrowUp } from '@lucide/svelte';
-	import { cn } from '$lib/utils';
+	import { cn } from '#lib/utils.ts';
+	import {
+		buildSeriesTrace,
+		type SeriesTraceTiming,
+		type TraceRecorder
+	} from '#lib/questions/series-trace.ts';
 
 	interface Props {
 		session: TestSession;
@@ -51,6 +62,7 @@
 		unitKeys?: (string[] | undefined)[];
 		buddyGain?: BuddyGainView | null;
 		mathouNews?: MathouNews | null;
+		traceRecorder?: TraceRecorder | null;
 	}
 
 	let {
@@ -62,7 +74,8 @@
 		showResults = true,
 		unitKeys = [],
 		buddyGain = null,
-		mathouNews = null
+		mathouNews = null,
+		traceRecorder = null
 	}: Props = $props();
 
 	// « Quitter » : « Mes contrôles » (avec confirmation) en contrôle, le panier sinon
@@ -70,6 +83,8 @@
 
 	// State
 	let answers = $state<Map<number, AnswerData>>(new Map());
+	// Questions validées : fin envoyée avec la copie d'un contrôle (PR 4 bis)
+	const validated = new SvelteSet<number>();
 	// Cartes des questions : en évaluation, ce qui est tapé sans « Valider » part aussi
 	let cards = $state<Array<ReturnType<typeof QuestionCard> | undefined>>([]);
 	let isCompleted = $state(false);
@@ -84,9 +99,29 @@
 	 * Handle answer submission for a specific question
 	 */
 	function handleAnswerSubmit(index: number, answerData: AnswerData) {
+		if (!answers.has(index)) {
+			validated.add(index);
+			recordTrace(index, answerData, {
+				responseMs: Date.now() - session.startTime,
+				allottedMs: timeLimit * 1000,
+				endReason: 'validated'
+			});
+		}
 		answers.set(index, answerData);
 		// Force reactivity
 		answers = new Map(answers);
+	}
+
+	/** Trace d'une question (ADR 0038) ; jamais en contrôle (`traceRecorder` nul) */
+	function recordTrace(index: number, answerData?: AnswerData, timing?: SeriesTraceTiming) {
+		if (!traceRecorder || collectOnly) return;
+		const trace = buildSeriesTrace({
+			place: 'number_race',
+			instance: session.instances[index],
+			answer: answerData,
+			timing
+		});
+		if (trace) traceRecorder.record(trace);
 	}
 
 	/**
@@ -94,7 +129,7 @@
 	 */
 	function handleTimerComplete() {
 		if (!isCompleted) {
-			finishTest();
+			finishTest('timeout');
 		}
 	}
 
@@ -114,13 +149,13 @@
 		) {
 			return;
 		}
-		finishTest();
+		finishTest('finish');
 	}
 
 	/**
 	 * Finish test and calculate results
 	 */
-	function finishTest() {
+	function finishTest(reason: 'timeout' | 'finish') {
 		// Évaluation : une réponse tapée mais pas validée est envoyée telle quelle
 		// (le serveur la corrige) ; hors évaluation, comportement inchangé
 		if (collectOnly) {
@@ -130,6 +165,17 @@
 				if (pending) answers.set(index, pending);
 			});
 		}
+		// Questions jamais validées : ratées ; « temps écoulé » seulement au chrono
+		session.instances.forEach((_, index) => {
+			if (answers.has(index)) return;
+			recordTrace(
+				index,
+				undefined,
+				reason === 'timeout'
+					? { responseMs: timeLimit * 1000, allottedMs: timeLimit * 1000, endReason: 'timeout' }
+					: undefined
+			);
+		});
 		const endTime = Date.now();
 		const timeSpent = Math.round((endTime - session.startTime) / 1000);
 
@@ -143,7 +189,13 @@
 				userAnswer,
 				isCorrect: userAnswer?.isCorrect || false,
 				timeSpent: userAnswer?.timeSpent,
-				attempts: userAnswer?.attempts
+				attempts: userAnswer?.attempts,
+				// Non validée : temps écoulé au chrono ; laissée par « Terminer » : aucune fin
+				endReason: validated.has(index)
+					? ('validated' as const)
+					: reason === 'timeout'
+						? ('timeout' as const)
+						: undefined
 			};
 		});
 
@@ -184,6 +236,7 @@
 	function handleRestart() {
 		// Reset state
 		answers = new Map();
+		validated.clear();
 		isCompleted = false;
 		testResult = null;
 		session.startTime = Date.now();

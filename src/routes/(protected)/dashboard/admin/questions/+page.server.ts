@@ -7,7 +7,7 @@
  * Features:
  * - Query parameter parsing (type, grades, search, sort, order, page)
  * - Server-side sorting with SQL injection prevention
- * - Full-text search using PostgreSQL's textSearch (French config)
+ * - Recherche par titre (ILIKE) ou par début d'identifiant (plage d'UUID)
  * - Grade filtering using JSONB array containment
  * - Pagination with 50 items per page (published tab)
  * - Same filters applied to drafts (no pagination) for bulk publication
@@ -24,11 +24,15 @@
  * - Includes total count for pagination
  */
 
-import { COURSE_QUESTION_FILTER } from '$lib/questions/course-question';
+import { COURSE_QUESTION_FILTER } from '#lib/questions/course-question.ts';
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { requireAdmin } from '$lib/server/middleware/auth';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireAdmin } from '#lib/server/middleware/auth.ts';
+import { readAllRows } from '#lib/server/read-all-rows.ts';
+import { loadActiveNodes } from '#lib/server/classification-nodes.ts';
+import { z } from 'zod';
+import { filterNodeIds, type TreeNode } from '#lib/questions/classification-tree.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('(protected)/dashboard/admin/questions/+page.server');
 
@@ -40,21 +44,27 @@ const logger = createServerLogger('(protected)/dashboard/admin/questions/+page.s
 interface TemplateFilters {
 	type: string | null;
 	grades: string | null;
-	theme: string | null;
-	domain: string | null;
-	subdomain: string | null;
+	/** Modèles rangés sous ces nœuds (notion + sous-notions, ou toute une branche) ; `null` : pas de filtre */
+	nodeIds: string[] | null;
+	/** Modèles non rangés (`classification_node_id is null`) */
+	unranked: boolean;
 	minLevel: string | null;
 	maxLevel: string | null;
 	/** Questions de cours seulement (`?courseQuestion=1`, Q110 b) */
 	courseQuestion: boolean;
+	/** Terme cherché dans le titre ou au début de l'identifiant ; `null` : pas de recherche */
+	search: string | null;
 }
 
 /** Ce que `applyTemplateFilters` utilise d'une requête PostgREST */
 interface FilterableQuery {
 	eq(column: string, value: string): this;
+	in(column: string, values: string[]): this;
+	is(column: string, value: null): this;
 	overlaps(column: string, value: string[]): this;
 	gte(column: string, value: number): this;
 	lte(column: string, value: number): this;
+	ilike(column: string, pattern: string): this;
 	or(filters: string): this;
 }
 
@@ -65,15 +75,68 @@ interface FilterableQuery {
 /** Plafond de lignes par requête côté PostgREST */
 const ID_PAGE_SIZE = 1000;
 
+/** Identifiant qu'aucun nœud ne porte : un filtre sur un nœud inconnu ne rend rien */
+const NO_NODE_ID = '00000000-0000-0000-0000-000000000000';
+
+const uuidSchema = z.string().uuid();
+
+/** Terme de recherche : espaces autour retirés, vide = pas de recherche */
+const searchSchema = z.string().trim().max(100);
+
+/**
+ * Longueur minimale d'un début d'identifiant : les 8 caractères affichés par la liste.
+ * Plus court, « 2024 » ou « face » ramèneraient des modèles sans rapport (David, 2026-11-09).
+ */
+const MIN_ID_PREFIX = 8;
+
+/** Forme d'un UUID : chaque `-` du début d'identifiant doit tomber à sa place */
+const UUID_SHAPE = 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx';
+
+/** Terme qui peut être un début d'identifiant : chiffres hexadécimaux et tirets */
+const ID_PREFIX_PATTERN = /^[0-9a-f-]+$/i;
+
 // ============================================================================
 // FUNCTIONS
 // ============================================================================
 
 /**
+ * Échappe les jokers de LIKE (`%`, `_`) et le caractère d'échappement (`\\`). PostgREST
+ * lit `*` comme `%` et ne sait pas l'échapper : il devient `_` (un caractère quelconque).
+ */
+function escapeLike(term: string): string {
+	return term.replace(/[\\%_]/g, (char) => `\\${char}`).replaceAll('*', '_');
+}
+
+/** 32 chiffres hexadécimaux → UUID avec ses tirets (8-4-4-4-12) */
+function toUuid(hex: string): string {
+	return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+}
+
+/**
+ * Plage d'UUID qui commencent par ce début d'identifiant ; `null` si le terme n'en est
+ * pas un. PostgREST ne sait pas convertir `id` en texte : on compare des UUID (ordre des
+ * octets = ordre des chiffres hexadécimaux), ce qui passe par l'index de la clé primaire.
+ */
+function idPrefixRange(term: string): { low: string; high: string } | null {
+	if (!ID_PREFIX_PATTERN.test(term)) return null;
+	// Tirets aux places d'un UUID (identifiant copié entier), ou aucun tiret
+	if (term.includes('-')) {
+		if (term.length > UUID_SHAPE.length) return null;
+		if ([...term].some((char, index) => (char === '-') !== (UUID_SHAPE[index] === '-'))) {
+			return null;
+		}
+	}
+	const hex = term.replaceAll('-', '').toLowerCase();
+	if (hex.length < MIN_ID_PREFIX || hex.length > 32) return null;
+	return { low: toUuid(hex.padEnd(32, '0')), high: toUuid(hex.padEnd(32, 'f')) };
+}
+
+/**
  * Applique les filtres de la page à une requête, quel que soit l'onglet.
  *
  * Niveaux scolaires : chevauchement de tableaux JSONB (un modèle 6e/5e sort
- * pour le filtre « 6e, 3e »). Thème, domaine, sous-domaine : égalité exacte.
+ * pour le filtre « 6e, 3e »). Arbre des notions : « Non rangés » l'emporte, sinon les
+ * nœuds retenus (une notion inclut ses sous-notions).
  */
 function applyTemplateFilters<Q extends FilterableQuery>(query: Q, filters: TemplateFilters): Q {
 	let filtered = query;
@@ -84,14 +147,26 @@ function applyTemplateFilters<Q extends FilterableQuery>(query: Q, filters: Temp
 			filters.grades.split(',').map((grade) => grade.trim())
 		);
 	}
-	if (filters.theme) filtered = filtered.eq('theme', filters.theme);
-	if (filters.domain) filtered = filtered.eq('domain', filters.domain);
-	if (filters.subdomain) filtered = filtered.eq('subdomain', filters.subdomain);
+	if (filters.unranked) {
+		filtered = filtered.is('classification_node_id', null);
+	} else if (filters.nodeIds) {
+		filtered = filtered.in(
+			'classification_node_id',
+			filters.nodeIds.length > 0 ? filters.nodeIds : [NO_NODE_ID]
+		);
+	}
 	const minLevel = filters.minLevel ? parseInt(filters.minLevel) : NaN;
 	if (!isNaN(minLevel)) filtered = filtered.gte('level', minLevel);
 	const maxLevel = filters.maxLevel ? parseInt(filters.maxLevel) : NaN;
 	if (!isNaN(maxLevel)) filtered = filtered.lte('level', maxLevel);
 	if (filters.courseQuestion) filtered = filtered.or(COURSE_QUESTION_FILTER);
+	if (filters.search) {
+		const range = idPrefixRange(filters.search);
+		// Terme hexadécimal : sans caractère spécial, il peut entrer tel quel dans `or()`
+		filtered = range
+			? filtered.or(`title.ilike.*${filters.search}*,and(id.gte.${range.low},id.lte.${range.high})`)
+			: filtered.ilike('title', `%${escapeLike(filters.search)}%`);
+	}
 	return filtered;
 }
 
@@ -107,12 +182,19 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	 */
 	const typeFilter = url.searchParams.get('type'); // Question type ('numerical_exact', etc.)
 	const gradesFilter = url.searchParams.get('grades'); // Comma-separated grades ('6,5,4')
-	const themeFilter = url.searchParams.get('theme'); // Theme category
-	const domainFilter = url.searchParams.get('domain'); // Domain category
-	const subdomainFilter = url.searchParams.get('subdomain'); // Subdomain category
+	// Arbre des notions : identifiants mal formés ignorés. Les anciens paramètres
+	// d'adresse (thème, domaine, sous-domaine) ne sont plus lus.
+	const branchParam = url.searchParams.get('branche');
+	const notionParam = url.searchParams.get('notion');
+	const branchFilter = uuidSchema.safeParse(branchParam).success ? branchParam : null;
+	const notionFilter = uuidSchema.safeParse(notionParam).success ? notionParam : null;
+	const unrankedFilter = url.searchParams.get('nonRanges') === '1';
 	const minLevelFilter = url.searchParams.get('minLevel'); // Minimum difficulty level
 	const maxLevelFilter = url.searchParams.get('maxLevel'); // Maximum difficulty level
-	const searchFilter = url.searchParams.get('search'); // Full-text search term
+	// Recherche par titre ou début d'identifiant
+	const searchParsed = searchSchema.safeParse(url.searchParams.get('search') ?? '');
+	if (!searchParsed.success) throw error(400, 'Recherche trop longue (100 caractères au plus)');
+	const searchFilter = searchParsed.data || null;
 	// Questions de cours seulement : seule la valeur « 1 » active le filtre
 	const courseQuestionFilter = url.searchParams.get('courseQuestion') === '1';
 	const sortField = url.searchParams.get('sort') || 'created_at'; // Sort column
@@ -134,33 +216,50 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	const actualSortField = validSortFields.includes(sortField) ? sortField : 'created_at';
 	const actualSortOrder = sortOrder === 'asc' ? true : false; // Convert to boolean
 
+	// Les nœuds non archivés : filtres de la page et chemins des étiquettes
+	let nodes: TreeNode[];
+	try {
+		nodes = await loadActiveNodes(supabase);
+	} catch (nodesError) {
+		logger.error("Lecture de l'arbre impossible :", nodesError);
+		throw error(500, 'Impossible de charger les données');
+	}
+
 	const filters: TemplateFilters = {
 		type: typeFilter,
 		grades: gradesFilter,
-		theme: themeFilter,
-		domain: domainFilter,
-		subdomain: subdomainFilter,
+		nodeIds: filterNodeIds(nodes, { branchId: branchFilter, notionId: notionFilter }),
+		unranked: unrankedFilter,
 		minLevel: minLevelFilter,
 		maxLevel: maxLevelFilter,
-		courseQuestion: courseQuestionFilter
+		courseQuestion: courseQuestionFilter,
+		search: searchFilter
 	};
-	// Recherche plein texte (`searchFilter`) toujours désactivée : elle attend un index
-	// tsvector sur `variations` (migration à écrire, GIN + config 'french').
 
 	try {
 		/**
 		 * Brouillons : mêmes filtres et même tri que les publiés, sans pagination
 		 * (la publication par lot doit pouvoir cocher tout ce qui est filtré).
+		 * Lus page par page : PostgREST tronque à 1000 lignes.
 		 */
-		const { data: drafts, error: draftsError } = await applyTemplateFilters(
-			supabase.from('question_templates').select('*').eq('status', 'draft'),
-			filters
-		)
-			.order(actualSortField, { ascending: actualSortOrder })
-			// Départage : des modèles importés en lot partagent le même created_at
-			.order('id');
-
-		if (draftsError) {
+		let drafts;
+		try {
+			drafts = await readAllRows(
+				(from, to) =>
+					applyTemplateFilters(
+						supabase
+							.from('question_templates')
+							.select('*')
+							.eq('status', 'draft')
+							.order(actualSortField, { ascending: actualSortOrder })
+							// Départage : des modèles importés en lot partagent le même created_at
+							.order('id')
+							.range(from, to),
+						filters
+					),
+				'des brouillons'
+			);
+		} catch (draftsError) {
 			logger.error('Error fetching draft templates:', draftsError);
 			throw error(500, 'Failed to load draft templates');
 		}
@@ -209,35 +308,8 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 			if (idRows.length < ID_PAGE_SIZE) break;
 		}
 
-		/**
-		 * Extract unique categories from all templates
-		 *
-		 * This is used to populate the filter dropdowns dynamically.
-		 * We fetch all templates (no filters except count) to get all possible categories.
-		 */
-		const { data: allTemplates, error: allTemplatesError } = await supabase
-			.from('question_templates')
-			.select('theme, domain, subdomain');
-
-		if (allTemplatesError) {
-			logger.error('Lecture impossible :', allTemplatesError);
-			throw error(500, 'Impossible de charger les données');
-		}
-
-		const themes = new Set<string>();
-		const domains = new Set<string>();
-		const subdomains = new Set<string>();
-
-		if (allTemplates) {
-			for (const template of allTemplates) {
-				if (template.theme) themes.add(template.theme);
-				if (template.domain) domains.add(template.domain);
-				if (template.subdomain) subdomains.add(template.subdomain);
-			}
-		}
-
 		return {
-			drafts: drafts || [],
+			drafts,
 			templates: templates || [],
 			publishedIds,
 			total: count || 0,
@@ -248,19 +320,15 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 			filters: {
 				type: typeFilter,
 				grades: gradesFilter,
-				theme: themeFilter,
-				domain: domainFilter,
-				subdomain: subdomainFilter,
+				branche: branchFilter,
+				notion: notionFilter,
+				nonRanges: unrankedFilter,
 				minLevel: minLevelFilter,
 				maxLevel: maxLevelFilter,
 				courseQuestion: courseQuestionFilter,
 				search: searchFilter
 			},
-			categories: {
-				themes: Array.from(themes).sort(),
-				domains: Array.from(domains).sort(),
-				subdomains: Array.from(subdomains).sort()
-			}
+			nodes
 		};
 	} catch (err) {
 		logger.error('Error in question templates load:', err);

@@ -27,9 +27,6 @@
 			}
 		],
 		"grades": ["CE2"],
-		"theme": "Entiers",
-		"domain": "Additionner",
-		"subdomain": "Triple et tiers",
 		"level": 4,
 		"status": "draft",
 		"delay": 15,

@@ -13,12 +13,12 @@
 	 * @component
 	 */
 
-	import { useGrapheurStore } from '$lib/stores/grapheur-context';
+	import { useGrapheurStore } from '#lib/stores/grapheur-context.ts';
 
 	// L'instance de l'atelier qui nous contient, ou celle par défaut.
 	const grapheurStore = useGrapheurStore();
-	import { createTransformer } from '$lib/grapheur/viewport';
-	import type { Viewport } from '$lib/grapheur/types';
+	import { createTransformer } from '#lib/grapheur/viewport.ts';
+	import type { Viewport } from '#lib/grapheur/types.ts';
 	import GridLines from './GridLines.svelte';
 	import AxisLines from './AxisLines.svelte';
 	import FunctionCurve from './FunctionCurve.svelte';
@@ -27,19 +27,19 @@
 		integralUnder,
 		osculatingCircleAt,
 		tangentAt
-	} from '$lib/grapheur/analysis';
+	} from '#lib/grapheur/analysis.ts';
 	import IntegralArea from './IntegralArea.svelte';
 	import SequencePlot from './SequencePlot.svelte';
 	import ScatterPlot from './ScatterPlot.svelte';
 	import CurveHover from './CurveHover.svelte';
-	import type { PinnedLabelTarget } from '$lib/grapheur/pinned-labels';
+	import type { PinnedLabelTarget } from '#lib/grapheur/pinned-labels.ts';
 	import IntersectionPoints from './IntersectionPoints.svelte';
 	import AsymptoteLines from './AsymptoteLines.svelte';
 	import SpecialPoints from './SpecialPoints.svelte';
-	import { curveColorValue } from '$lib/grapheur/colors';
+	import { curveColorValue } from '#lib/grapheur/colors.ts';
 	import { SvelteMap } from 'svelte/reactivity';
-	import { isExplicitFunction } from '$lib/grapheur/types';
-	import { snapReading } from '$lib/grapheur/image-reading';
+	import { isExplicitFunction } from '#lib/grapheur/types.ts';
+	import { snapReading } from '#lib/grapheur/image-reading.ts';
 	import ImageReadings from './ImageReadings.svelte';
 	import ReadingSliders from './ReadingSliders.svelte';
 
@@ -266,6 +266,13 @@
 	const CLICK_TOLERANCE = 4;
 
 	/**
+	 * Un démontage pendant la molette clôt le geste : le magasin survit au
+	 * graphe (changement de vue de l'atelier), et un `isInteracting` resté vrai
+	 * laisserait les analyses endormies jusqu'à la fin du délai.
+	 */
+	$effect(() => () => grapheurStore.endBriefGesture());
+
+	/**
 	 * Handle pointer down - initiate dragging (pan or axis scale)
 	 */
 	function handlePointerDown(e: PointerEvent): void {
@@ -400,6 +407,8 @@
 
 		// Zoom factor: scroll up = zoom in, scroll down = zoom out
 		const factor = e.deltaY < 0 ? 0.9 : 1.1;
+		// Geste bref : les analyses ne tournent qu'une fois, après le dernier cran.
+		grapheurStore.briefGesture();
 		grapheurStore.zoom(factor, mathPoint.x, mathPoint.y);
 	}
 

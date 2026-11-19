@@ -1,7 +1,8 @@
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { adminTradesQuerySchema } from '$lib/server/marketplace/validation';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import { adminTradesQuerySchema } from '#lib/server/marketplace/validation.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/marketplace/admin/trades/+server');
 
@@ -11,26 +12,7 @@ const logger = createServerLogger('api/marketplace/admin/trades/+server');
  */
 export const GET: RequestHandler = async ({ url, locals }) => {
 	const supabase = locals.supabase;
-	const userId = locals.user?.id;
-
-	if (!userId) {
-		throw error(401, 'Non authentifié');
-	}
-
-	// Get user profile to determine role
-	const { data: profile, error: profileError } = await supabase
-		.from('profiles')
-		.select('role, school_id')
-		.eq('id', userId)
-		.single();
-
-	if (profileError || !profile) {
-		throw error(404, 'Profil non trouvé');
-	}
-
-	if (profile.role !== 'teacher' && profile.role !== 'admin') {
-		throw error(403, 'Accès réservé aux enseignants et administrateurs');
-	}
+	const { profile } = await requireRoles(locals, ['teacher', 'admin']);
 
 	// Validate query parameters
 	const queryValidation = adminTradesQuerySchema.safeParse({
@@ -88,7 +70,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 		if (classIds.length === 0) {
 			// Teacher has no classes
-			return json({
+			return Response.json({
 				trades: [],
 				pagination: {
 					page,
@@ -114,7 +96,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 		if (studentIds.length === 0) {
 			// Teacher has no students
-			return json({
+			return Response.json({
 				trades: [],
 				pagination: {
 					page,
@@ -188,7 +170,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		const studentIds = schoolStudents?.map((s: { id: string }) => s.id) || [];
 
 		if (studentIds.length === 0) {
-			return json({
+			return Response.json({
 				trades: [],
 				pagination: {
 					page,
@@ -232,7 +214,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		throw error(500, 'Erreur lors de la récupération des échanges');
 	}
 
-	return json({
+	return Response.json({
 		trades: trades || [],
 		pagination: {
 			page,

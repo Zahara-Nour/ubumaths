@@ -1,6 +1,6 @@
 """Écrit les 8 modèles du lot 3b du CM1 (fractions décimales) dans scripts/questions/cm1-3b/.
 
-Phase 0 du 2026-10-30 (§ 10 du journal `docs/wip/questions-cm1-progress.md`), suivie par David
+Phase 0 du 2026-10-30 (§ 10 du journal `docs/archive/wip/questions-cm1-progress.md`), suivie par David
 (« je te suis ») : écriture à virgule refusée dans les cases « fraction décimale »
 (`requiredForm: 'fraction'`) ; pour intercaler, toute fraction strictement entre les bornes est
 juste (règle `range`) ; droite agrandie de 23/10 à 24/10 pour les centièmes.

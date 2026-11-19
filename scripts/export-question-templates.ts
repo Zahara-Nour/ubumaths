@@ -11,19 +11,17 @@
  */
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { toQuestionTemplate } from '$lib/types/question-template';
-import type { Tables } from '$lib/types/database';
+import { toQuestionTemplate } from '#lib/types/question-template.ts';
+import type { Tables } from '#lib/types/database.ts';
 import { argValue, createScriptClient } from './relecture/common';
 
-/** Ordre des clés du fichier, celui des instantanés déjà versionnés */
+/** Ordre des clés du fichier, celui des instantanés déjà versionnés ; sans l'ancien quadruplet
+ *  (thème, domaine, sous-domaine : ADR 0035), qu'un fichier de modèle ne porte plus */
 const KEYS = [
 	'id',
 	'title',
 	'description',
 	'grades',
-	'theme',
-	'domain',
-	'subdomain',
 	'level',
 	'delay',
 	'status',

@@ -1,10 +1,8 @@
 {
+	"id": "29edb833-67b0-4bb1-8c0d-3862094c96dd",
 	"title": "Que dit le tableau à double entrée ?",
 	"description": "Le jour où la cantine a le plus d'élèves (avec, puis sans totaux) ; une case cachée retrouvée par le total ; combien de garçons de plus",
 	"grades": ["CE1"],
-	"theme": "Statistiques",
-	"domain": "Représenter des données",
-	"subdomain": "Tableau à double entrée",
 	"level": 4,
 	"delay": 150,
 	"status": "draft",

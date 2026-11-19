@@ -1,10 +1,8 @@
 {
+	"id": "b892331e-4450-4806-88ac-0775fcc908a4",
 	"title": "Additionner des fractions de même dénominateur",
 	"description": "5/12 + 4/12 ; une somme qui fait le tout (3/4 + 1/4 = 1)",
 	"grades": ["CE2"],
-	"theme": "Fractions",
-	"domain": "Calculer",
-	"subdomain": "Addition et Soustraction",
 	"level": 14,
 	"delay": 45,
 	"status": "draft",

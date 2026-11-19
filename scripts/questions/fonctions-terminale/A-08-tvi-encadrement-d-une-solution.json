@@ -1,10 +1,8 @@
 {
+	"id": "d3ae0f61-3377-4d00-896e-291aaaf6ba5d",
 	"title": "Encadrer la solution de f(x) = k à l'aide d'un tableau de valeurs",
 	"description": "Fonction continue strictement croissante, tableau de valeurs au pas 0,1 : encadrement d'amplitude 0,1 de l'unique solution (pièges : décalage d'un pas, valeurs de f recopiées)",
 	"grades": ["T_SPE", "T_COMP"],
-	"theme": "Fonctions",
-	"domain": "Continuité",
-	"subdomain": "Théorème des valeurs intermédiaires",
 	"level": 2,
 	"status": "draft",
 	"delay": 90,

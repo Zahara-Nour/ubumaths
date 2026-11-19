@@ -12,7 +12,7 @@ import { describe, it, expect } from 'vitest';
 import { parse } from '../parser';
 import { interpret } from '../interpreter';
 import type { GeoFunction } from '../../types/elements';
-import { isPiecewise } from '$lib/mathAST';
+import { isPiecewise } from '#lib/mathAST/index.ts';
 
 function run(script: string) {
 	return interpret(parse(script));

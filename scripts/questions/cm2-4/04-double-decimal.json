@@ -1,10 +1,8 @@
 {
+	"id": "7b0b17fd-437c-439f-ab45-5d4649462d0f",
 	"title": "Calculer le double d'un nombre décimal",
 	"description": "Une décimale (13,6 → 27,2) ; deux décimales (4,35 → 8,7)",
 	"grades": ["CM2"],
-	"theme": "Décimaux",
-	"domain": "Multiplier",
-	"subdomain": "Produit particulier",
 	"level": 5,
 	"delay": 30,
 	"status": "draft",

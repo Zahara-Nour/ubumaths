@@ -256,17 +256,13 @@ export function approximateLatexOf(approximation: ApproximateDigits): string {
 /**
  * Des solutions en valeurs approchées, DANS L'ORDRE DONNÉ — celui de la ligne
  * qu'elles accompagnent : `S \approx \left\{ -1.4142 \,;\, 1.4142 \right\}`,
- * `x = 0.5`. `asSet` : écrire un ensemble même pour une seule solution, comme
- * la ligne (`S = \{√2\}`).
+ * `S = \left\{ 0.5 \right\}` — un ensemble même pour une seule solution, comme
+ * la ligne (`S = \{√2\}`, chantier `registre-reference`, Q2).
  *
  * `null` si toutes sont déjà des nombres écrits, ou si l'une n'a pas de
  * valeur approchée (paramètre, valeur non réelle).
  */
-export function approximateSolutionsLatex(
-	variable: string,
-	solutions: readonly MathNode[],
-	asSet: boolean
-): string | null {
+export function approximateSolutionsLatex(solutions: readonly MathNode[]): string | null {
 	if (solutions.length === 0 || solutions.every(isWrittenNumber)) return null;
 	const approximations: ApproximateDigits[] = [];
 	for (const solution of solutions) {
@@ -275,9 +271,6 @@ export function approximateSolutionsLatex(
 		approximations.push(approximation);
 	}
 	const relation = approximations.every((a) => a.exact) ? '=' : '\\approx';
-	if (approximations.length === 1 && !asSet) {
-		return `${variable} ${relation} ${approximationLatex(approximations[0])}`;
-	}
 	const values = approximations.map(approximationLatex).join(' \\,;\\, ');
 	return `S ${relation} \\left\\{ ${values} \\right\\}`;
 }

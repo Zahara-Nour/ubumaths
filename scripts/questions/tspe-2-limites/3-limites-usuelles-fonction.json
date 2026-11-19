@@ -1,10 +1,8 @@
 {
+	"id": "6d611634-f7a1-4100-b931-9035ea5c0d29",
 	"title": "Limites usuelles d'une fonction",
 	"description": "Limite de k·xⁿ en −∞, de k/xⁿ en 0 (à droite ou à gauche) et en ±∞, de k√x en +∞, de k/√x en 0, de k·eˣ en ±∞ (pièges : parité de n, côté de 0, signe de k, eˣ → 0 en −∞)",
 	"grades": ["T_SPE"],
-	"theme": "Fonctions",
-	"domain": "Limites de fonctions",
-	"subdomain": "Limites usuelles",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

@@ -1,10 +1,8 @@
 {
+	"id": "a2ba4759-4bfb-419c-92d3-7f4b5411982c",
 	"title": "Soustraire 0,9 ; 1,9 ; 2,9 en compensant",
 	"description": "Calcul astucieux : soustraire 0,9, 1,9 ou 2,9 à un décimal en enlevant 1, 2 ou 3 puis en rajoutant 0,1 (5,3 − 1,9 = 5,3 − 2 + 0,1)",
 	"grades": ["6"],
-	"theme": "Décimaux",
-	"domain": "Soustraire",
-	"subdomain": "Différence astucieuse",
 	"level": 1,
 	"delay": 30,
 	"status": "draft",

@@ -1,10 +1,8 @@
 {
+	"id": "5a476fc4-e9ce-4b9b-9626-4f31ee7ab1ee",
 	"title": "Comparer des contenances d'unités différentes",
 	"description": "0,8 L et 75 cL ; 2,5 L et 2 400 mL ; ranger quatre contenances en cL, L, mL et dL ; 1 L − 25 cL ; 2 L + 50 cL",
 	"grades": ["CM1"],
-	"theme": "Grandeurs",
-	"domain": "Contenances",
-	"subdomain": "Comparaison",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

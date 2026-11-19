@@ -1,13 +1,15 @@
 /**
- * `tidy` avec `unitChoice: 'written'` : l'unité écrite d'abord.
+ * `tidy` avec `unitChoice: 'written'` (le défaut depuis le 2026-11-02) : une
+ * unité TAPÉE.
  *
- * Spécification : docs/archive/wip/grandeurs-eval-progress.md, lot 1 (décision 3 de
- * David, 2026-09-27). Pour une grandeur numérique :
- * 1. l'unité écrite (premier terme d'une somme ; pour un produit, chaque
- *    dimension de base prend la première unité écrite) si la valeur y a une
- *    écriture décimale finie ;
- * 2. sinon le choix scolaire (§D.3 de tidy-phase0.md) ;
- * 3. sinon inchangé (fraction dans l'unité écrite) — l'appelant décide.
+ * Spécification : règle de l'unité du résultat reprise à zéro par David le
+ * 2026-11-02 (docs/wip/registre-reference-progress.md § Unité du résultat).
+ * Pour une grandeur numérique :
+ * 1. parmi les unités tapées (pour un produit, une unité tapée par dimension de
+ *    base, ou l'unité composée tapée), celle où la valeur s'écrit avec le MOINS
+ *    DE CHIFFRES ; à égalité la plus petite unité ;
+ * 2. une durée où au moins deux de h, min, s sont tapées : en h-min-s ;
+ * 3. sinon le choix scolaire (§D.3 de tidy-phase0.md), sinon inchangé.
  *
  * Et dans les deux modes : un quotient de grandeurs de même dimension est un
  * nombre (`3[h]/1[min]` → 180).
@@ -26,17 +28,18 @@ const WRITTEN: TidyOptions = { unitChoice: 'written' };
 
 const latexWritten = (s: string) => toLatex(tidy(parseCustom(s), WRITTEN));
 const customWritten = (s: string) => toCustom(tidy(parseCustom(s), WRITTEN));
-const customSchool = (s: string) => toCustom(tidy(parseCustom(s)));
+const customDefault = (s: string) => toCustom(tidy(parseCustom(s)));
+const customSchool = (s: string) => toCustom(tidy(parseCustom(s), { unitChoice: 'school' }));
 
 // La table validée par David (LaTeX : le séparateur décimal est celui du générateur).
 const TABLE: ReadonlyArray<readonly [string, string]> = [
 	['4*7[mm]', '28~\\unit{mm}'],
 	['7[mm]*5[mm]', '35~\\unit{mm^2}'],
-	['7[mm]*5[cm]', '350~\\unit{mm^2}'],
-	['3[h]+20[min]', '200~\\unit{min}'],
-	['20[min]+3[h]', '200~\\unit{min}'],
-	['1[h]+45[min]+30[min]', '2.25~\\unit{h}'],
-	['5[km]+3[m]', '5.003~\\unit{km}'],
+	['7[mm]*5[cm]', '3.5~\\unit{cm^2}'],
+	['3[h]+20[min]', '3~\\unit{h}~20~\\unit{min}'],
+	['20[min]+3[h]', '3~\\unit{h}~20~\\unit{min}'],
+	['1[h]+45[min]+30[min]', '2~\\unit{h}~15~\\unit{min}'],
+	['5[km]+3[m]', '5003~\\unit{m}'],
 	['120[km]/2[h]', '60~\\unit{km/h}'],
 	['3[h]/1[min]', '180'],
 	['10[km]/3', '\\dfrac{10}{3}~\\unit{km}']
@@ -54,11 +57,11 @@ describe("unitChoice: 'written' — l'unité écrite d'abord", () => {
 		['0.5[km]', '0.5[km]'],
 		['7[cm]*5[mm]', '3.5[cm^2]'],
 		['2[km]*500[m]', '1[km^2]'],
-		['500[m]+2[km]', '2500[m]'],
+		['500[m]+2[km]', '2.5[km]'],
 		// Une dimension absente du premier terme prend la première unité écrite.
 		['90[km/h]*2[h]', '180[km]'],
 		// Pas d'écriture décimale finie dans l'unité écrite : repli scolaire.
-		['1[h]+20[min]', '80[min]'],
+		['1[h]+20[min]', '1[h] 20[min]'],
 		// Ni dans l'unité écrite ni en unité scolaire : inchangé.
 		['100[km]/3[h]', '(100/3)[km/h]']
 	])('%s → %s', (input, expected) => {
@@ -102,7 +105,13 @@ describe("unitChoice: 'written' — cas limites", () => {
 	);
 });
 
-describe('mode scolaire (défaut) — inchangé, sauf le quotient de même dimension', () => {
+describe('le défaut est l’unité tapée (2026-11-02)', () => {
+	it.each(TABLE.map(([input]) => input))('%s : sans option comme avec `written`', (input) => {
+		expect(customDefault(input)).toBe(customWritten(input));
+	});
+});
+
+describe('mode scolaire (option) — inchangé, sauf le quotient de même dimension', () => {
 	it.each([
 		['4*7[mm]', '2.8[cm]'],
 		['7[mm]*5[cm]', '3.5[cm^2]'],
@@ -110,7 +119,6 @@ describe('mode scolaire (défaut) — inchangé, sauf le quotient de même dimen
 		['1[h]+45[min]+30[min]', '2.25[h]']
 	])('%s → %s (choix scolaire)', (input, expected) => {
 		expect(customSchool(input)).toBe(expected);
-		expect(toCustom(tidy(parseCustom(input), { unitChoice: 'school' }))).toBe(expected);
 	});
 
 	it.each([

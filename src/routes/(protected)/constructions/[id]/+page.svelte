@@ -2,11 +2,11 @@
 	import { onMount } from 'svelte';
 	import type { Component } from 'svelte';
 	import type { PageData } from './$types';
-	import { Button } from '$lib/components/ui/button';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import { Badge } from '$lib/components/ui/badge';
-	import * as Card from '$lib/components/ui/card';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import { goto } from '$app/navigation';
 	import { Edit, Trash2, Globe, Lock, Calendar } from '@lucide/svelte';
 
@@ -21,7 +21,7 @@
 
 	onMount(async () => {
 		if (data.construction.dsl_script) {
-			const mod = await import('$lib/constructions-v2/components/ConstructionPlayer.svelte');
+			const mod = await import('#lib/constructions-v2/components/ConstructionPlayer.svelte');
 			DslPlayer = mod.default;
 		}
 	});

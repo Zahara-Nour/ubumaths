@@ -8,11 +8,11 @@
 	 * @component
 	 */
 
-	import { Button } from '$lib/components/ui/button';
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as DropdownMenu from '#lib/components/ui/dropdown-menu/index.ts';
 	import { Download, FileCode, Image } from '@lucide/svelte';
-	import { exportSvg, exportPng } from '$lib/grapheur/export';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { exportSvg, exportPng } from '#lib/grapheur/export.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 
 	// Props
 	let {

@@ -19,10 +19,10 @@ import {
 	openInterval,
 	closedInterval
 } from './factory';
-import { number, opposite } from '$lib/mathAST/factory';
-import { numericNode } from '$lib/mathAST/common/numeric';
-import { getEndpoints, buildInterval } from '$lib/math/intervals';
-import { endpointToNumber } from '$lib/math/intervals/endpoint';
+import { number, opposite } from '#lib/mathAST/factory.ts';
+import { numericNode } from '#lib/mathAST/common/numeric.ts';
+import { getEndpoints, buildInterval } from '#lib/math/intervals/index.ts';
+import { endpointToNumber } from '#lib/math/intervals/endpoint.ts';
 import { tryConvertConditionToInterval } from './algebra';
 
 // =============================================================================

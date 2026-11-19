@@ -7,11 +7,11 @@ import { describe, it, expect, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import Monnaie from '../Monnaie.svelte';
 import MarkdownRenderer from '../../MarkdownRenderer.svelte';
-import MultipleChoiceInput from '$lib/components/question-inputs/MultipleChoiceInput.svelte';
-import { parseMonnaieContent } from '$lib/ubumark/parser/monnaie-parser';
-import { MONNAIE_ARIA_LABEL, MONNAIE_UNAVAILABLE } from '$lib/ubumark/types/monnaie';
-import { buildMonnaieScene, MONNAIE_VIEW } from '$lib/ubumark/utils/monnaie-scene';
-import type { ResolvedMarkdown } from '$lib/ubumark';
+import MultipleChoiceInput from '#lib/components/question-inputs/MultipleChoiceInput.svelte';
+import { parseMonnaieContent } from '#lib/ubumark/parser/monnaie-parser.ts';
+import { MONNAIE_ARIA_LABEL, MONNAIE_UNAVAILABLE } from '#lib/ubumark/types/monnaie.ts';
+import { buildMonnaieScene, MONNAIE_VIEW } from '#lib/ubumark/utils/monnaie-scene.ts';
+import type { ResolvedMarkdown } from '#lib/ubumark/index.ts';
 
 let mains: HTMLElement[] = [];
 function mainElement(): HTMLElement {

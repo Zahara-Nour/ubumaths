@@ -4,8 +4,8 @@
  * 2026-10-11). Une forme trigonométrique n'est ni algébrique ni exponentielle.
  */
 import { describe, it, expect } from 'vitest';
-import { parseLatex } from '$lib/mathAST/parser';
-import { matchesComplexForm } from '$lib/questions/complex-forms';
+import { parseLatex } from '#lib/mathAST/parser/index.ts';
+import { matchesComplexForm } from '#lib/questions/complex-forms.ts';
 
 const TRIGONOMETRIC = '2\\left(\\cos\\frac{\\pi}{3}+i\\sin\\frac{\\pi}{3}\\right)';
 

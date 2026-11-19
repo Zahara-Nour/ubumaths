@@ -1,10 +1,8 @@
 {
+	"id": "c73289f0-0dbc-44d4-b66b-f88afb4960d4",
 	"title": "Calculer une moyenne",
 	"description": "Calculer la moyenne simple d'une série de 4 ou 5 nombres entiers, quand elle tombe juste (12, 15, 9, 14 → 12,5 au niveau suivant)",
 	"grades": ["5"],
-	"theme": "Statistiques",
-	"domain": "Indicateurs",
-	"subdomain": "moyenne",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

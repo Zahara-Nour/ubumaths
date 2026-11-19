@@ -19,13 +19,13 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 // même objet que le client passé en argument (cf. buildMockSupabase), ce qui
 // garde les assertions historiques ; le bloc « Q171 » les sépare.
 const service = vi.hoisted(() => ({ client: null as unknown }));
-vi.mock('$lib/server/serviceRoleClient', () => ({
+vi.mock('#lib/server/serviceRoleClient.ts', () => ({
 	createServiceRoleClient: () => service.client
 }));
 
 import { loadOrInitCardStats, upsertCardStats, applyFsrsReview } from '../fsrs-actions';
-import { FSRS } from '$lib/srs/fsrs';
-import { Grade, type CardStats } from '$lib/srs/types';
+import { FSRS } from '#lib/srs/fsrs.ts';
+import { Grade, type CardStats } from '#lib/srs/types.ts';
 
 // ============================================================================
 // Mock builders

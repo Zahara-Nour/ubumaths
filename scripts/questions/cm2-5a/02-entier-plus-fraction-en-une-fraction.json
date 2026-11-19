@@ -1,10 +1,8 @@
 {
+	"id": "74128182-6188-4a81-97d3-b197003dd7b5",
 	"title": "Écrire un entier plus une fraction comme une fraction",
 	"description": "Écrire la somme d'un entier et d'une fraction inférieure à 1 comme une seule fraction (5 + 3/4 = 23/4 ; 3 + 7/25 = 82/25) ; dénominateur au plus 60",
 	"grades": ["CM2"],
-	"theme": "Fractions",
-	"domain": "Apprivoiser",
-	"subdomain": "Décomposition",
 	"level": 7,
 	"delay": 30,
 	"status": "draft",

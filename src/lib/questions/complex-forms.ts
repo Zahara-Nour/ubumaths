@@ -16,7 +16,7 @@
  * @module questions/complex-forms
  */
 
-import type { MathNode } from '$lib/mathAST/types';
+import type { MathNode } from '#lib/mathAST/types.ts';
 import type { ComplexForm } from './types';
 import {
 	findNodes,
@@ -33,13 +33,13 @@ import {
 	isOpposite,
 	isSuperscript,
 	isVariable
-} from '$lib/mathAST';
+} from '#lib/mathAST/index.ts';
 import {
 	imaginaryProductRest,
 	unifyComplexAlgebraicNotationAST,
 	unifyEulerNotationAST
-} from '$lib/mathAST/cosmetic-transforms';
-import { evaluateNodeToApproximatedNumber } from '$lib/mathAST/eval/evaluate';
+} from '#lib/mathAST/cosmetic-transforms.ts';
+import { evaluateNodeToApproximatedNumber } from '#lib/mathAST/eval/evaluate.ts';
 
 /** Messages d'une forme exigée non respectée */
 export const COMPLEX_FORM_FEEDBACK: Record<ComplexForm, string> = {

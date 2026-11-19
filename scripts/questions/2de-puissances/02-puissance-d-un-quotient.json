@@ -1,10 +1,8 @@
 {
+	"id": "73514cdb-b018-4aa9-b379-586fa8cd1d74",
 	"title": "Puissance d'un quotient",
 	"description": "Écrire sans parenthèses (x/k)ⁿ et (k/x)ⁿ ; (p/q)⁻ⁿ en fraction irréductible",
 	"grades": ["2"],
-	"theme": "Puissances",
-	"domain": "Calculer",
-	"subdomain": "Puissance d'un quotient",
 	"level": 1,
 	"delay": 45,
 	"status": "draft",

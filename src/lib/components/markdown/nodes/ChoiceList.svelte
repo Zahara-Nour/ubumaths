@@ -18,9 +18,10 @@
 	import { Circle, CircleDot, Square, SquareCheck } from '@lucide/svelte';
 	import MarkdownRenderer from '../MarkdownRenderer.svelte';
 	import InlineMarkdown from '../InlineMarkdown.svelte';
-	import { monnaieChoiceSize } from '$lib/ubumark/utils/monnaie-choix';
-	import { choiceLetter } from '$lib/questions/choices';
-	import type { ExpectedStatus } from '$lib/questions/expected-result';
+	import { parseMarkdown } from '#lib/ubumark/index.ts';
+	import { monnaieChoiceSize } from '#lib/ubumark/utils/monnaie-choix.ts';
+	import { choiceLetter } from '#lib/questions/choices.ts';
+	import type { ExpectedStatus } from '#lib/questions/expected-result.ts';
 
 	interface Item {
 		/** Markdown du choix */
@@ -47,6 +48,16 @@
 		return content.trimStart().startsWith('```');
 	}
 
+	/**
+	 * Choix qui tient sur une ligne de texte (un seul paragraphe). Sinon (formule seule
+	 * `$$<$$`, plusieurs paragraphes…), InlineMarkdown ne trouverait pas de paragraphe et
+	 * afficherait le code : rendu complet, comme à la saisie (`MultipleChoiceInput`).
+	 */
+	function isInlineChoice(content: string): boolean {
+		const nodes = parseMarkdown(content).children;
+		return nodes.length === 1 && nodes[0].type === 'paragraph';
+	}
+
 	/** Libellé d'un choix corrigé, selon son statut et s'il est coché */
 	function choiceLabel(item: Item): string {
 		if (item.status === 'correct') return 'coché, juste';
@@ -65,8 +76,10 @@
 		>
 			<MarkdownRenderer content={item.content} />
 		</div>
-	{:else}
+	{:else if isInlineChoice(item.content)}
 		<span class="min-w-0 flex-1"><InlineMarkdown content={item.content} /></span>
+	{:else}
+		<div class="choice-formula min-w-0 flex-1"><MarkdownRenderer content={item.content} /></div>
 	{/if}
 {/snippet}
 
@@ -188,6 +201,13 @@
 	.choice.tone-unoptimal {
 		border-color: var(--choice-unoptimal);
 		border-style: dashed;
+	}
+
+	/* Formule seule ($$<$$) : contre la lettre, comme un choix de texte, pas centrée au
+	   milieu de la ligne (l'écran de réponse, lui, la garde centrée) */
+	.choice-formula :global(.math-block-container) {
+		justify-content: flex-start;
+		margin: 0;
 	}
 
 	:global(.choice-box) {

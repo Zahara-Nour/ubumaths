@@ -1,10 +1,8 @@
 {
+	"id": "76908c5f-b7eb-4e44-966f-726aef6882a4",
 	"title": "Comparer des longueurs",
 	"description": "Deux longueurs dans deux unités : 2 m et 150 cm ; 1 m 20 cm et 125 cm ; 1 km et 900 m",
 	"grades": ["CE1"],
-	"theme": "Grandeurs",
-	"domain": "Longueurs",
-	"subdomain": "Comparaison et mesure",
 	"level": 3,
 	"delay": 60,
 	"status": "draft",

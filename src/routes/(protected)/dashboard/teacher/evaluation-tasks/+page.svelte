@@ -6,9 +6,9 @@
 	 * UI prof Phase 4.1 — Liste des tâches d'évaluation famille B.
 	 */
 
-	import * as Card from '$lib/components/ui/card';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Button } from '$lib/components/ui/button';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import { ClipboardList, Plus, ChevronRight, Calendar, Users } from '@lucide/svelte';
 	import type { PageData } from './$types';
 

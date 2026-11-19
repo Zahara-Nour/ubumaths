@@ -16,7 +16,7 @@
  */
 
 import type { MathNode } from '../types';
-import type { Interval } from '$lib/math/intervals/types';
+import type { Interval } from '#lib/math/intervals/types.ts';
 import type { Domain } from '../domain/types';
 import type { Verbosity } from '../common/verbosity';
 

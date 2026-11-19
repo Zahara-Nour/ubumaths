@@ -8,22 +8,22 @@
  * L'ancienne clé `correction_detail` peut rester en base : elle n'est plus lue.
  */
 import { describe, it, expect } from 'vitest';
-import { correctionForPrint } from '$lib/questions/correction-detail';
-import { WorksheetGenerator } from '$lib/typst/generators/worksheet-generator';
+import { correctionForPrint } from '#lib/questions/correction-detail.ts';
+import { WorksheetGenerator } from '#lib/typst/generators/worksheet-generator.ts';
 import { generateStudentWorksheetTypst } from '../student-worksheet-typst';
 import {
 	studentWorksheetDetailResponseSchema,
 	worksheetConfigSchema
-} from '$lib/server/validation/worksheets';
-import { asWorksheetConfig } from '$lib/types/worksheets';
+} from '#lib/server/validation/worksheets.ts';
+import { asWorksheetConfig } from '#lib/types/worksheets.ts';
 import { buildSerie } from '../serie-automatismes';
-import type { QuestionTemplate } from '$lib/questions/types';
+import type { QuestionTemplate } from '#lib/questions/types.ts';
 import type {
 	InstanceData,
 	StudentWorksheetView,
 	WorksheetConfig,
 	WorksheetRow
-} from '$lib/types/worksheets';
+} from '#lib/types/worksheets.ts';
 
 /** Un corrigé avec les trois sortes de détails */
 const MARKED = [
@@ -207,8 +207,6 @@ describe('série d’automatismes : les marqueurs sont gardés, le choix se fait
 	const marque = {
 		title: 't',
 		grades: ['2'],
-		theme: 'T',
-		domain: 'D',
 		level: 1,
 		status: 'draft',
 		id: 'marque',

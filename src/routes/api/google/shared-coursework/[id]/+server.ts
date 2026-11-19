@@ -29,16 +29,16 @@
  * - All inputs validated with Zod
  */
 
-import { json, error } from '@sveltejs/kit';
-import { assertGoogleClassroomEnabled } from '$lib/server/google/feature-guard';
+import { error } from '@sveltejs/kit';
+import { assertGoogleClassroomEnabled } from '#lib/server/google/feature-guard.ts';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import type { TablesUpdate } from '$lib/types/database';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import type { TablesUpdate } from '#lib/types/database.ts';
 import {
 	sharedCourseworkIdParamSchema,
 	updateSharedCourseworkByIdSchema
-} from '$lib/server/validation/google';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/validation/google.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/google/shared-coursework/[id]/+server');
 
@@ -239,7 +239,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 		const categoryData = updatedRecord.coursework_categories as unknown as { name: string } | null;
 
 		// Transform to camelCase and include enriched data
-		return json({
+		return Response.json({
 			success: true,
 			sharedCoursework: {
 				id: updatedRecord.id,
@@ -332,7 +332,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 			throw error(500, 'Impossible de supprimer le devoir Classroom partagé');
 		}
 
-		return json({
+		return Response.json({
 			success: true
 		});
 	} catch (err) {

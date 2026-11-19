@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { playerStore } from '$lib/stores/game/player.svelte';
-	import { spellsStore } from '$lib/stores/game/spells.svelte';
+	import { playerStore } from '#lib/stores/game/player.svelte.ts';
+	import { spellsStore } from '#lib/stores/game/spells.svelte.ts';
 	import { resolve } from '$app/paths';
 
 	// Game stats
@@ -66,7 +66,7 @@
 	<section class="grid gap-6 md:grid-cols-2">
 		<!-- Combat Card -->
 		<a
-			href={resolve('/dashboard/navadra/combat')}
+			href={resolve('dashboard/navadra/combat')}
 			class="group rounded-lg border border-border bg-card p-6 transition-all hover:border-primary hover:shadow-lg"
 		>
 			<div class="mb-4 text-5xl">⚔️</div>
@@ -80,7 +80,7 @@
 
 		<!-- Spells Card -->
 		<a
-			href={resolve('/dashboard/navadra/spells')}
+			href={resolve('dashboard/navadra/spells')}
 			class="group rounded-lg border border-border bg-card p-6 transition-all hover:border-primary hover:shadow-lg"
 		>
 			<div class="mb-4 text-5xl">📖</div>

@@ -2,39 +2,46 @@
 	import { page } from '$app/state';
 	import { goto, replaceState } from '$app/navigation';
 	import { onMount } from 'svelte';
-	import { buildSeriesItems } from '$lib/questions/series-items';
-	import { questionTemplatesCache } from '$lib/stores/questionTemplates.svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { buildSeriesItems } from '#lib/questions/series-items.ts';
+	import { isCourseCard, seriesFormExcludesCourseCards } from '#lib/questions/course-card.ts';
+	import { questionTemplatesCache } from '#lib/stores/questionTemplates.svelte.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import type { PageData } from './$types';
-	import type { CartItem } from '$lib/stores/questionCart.svelte';
-	import type { ClassroomItem, TestMode, TestSession } from '$lib/types/test';
+	import type { SeriesItem } from '#lib/validation/series.ts';
+	import type { ClassroomItem, TestMode, TestSession } from '#lib/types/test.ts';
 	import { AlertCircle } from '@lucide/svelte';
-	import * as Card from '$lib/components/ui/card';
-	import { Button } from '$lib/components/ui/button';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
 
 	// Import test components
-	import ClassroomSeries from '$lib/components/test/ClassroomSeries.svelte';
-	import TestInteractive from '$lib/components/test/TestInteractive.svelte';
-	import TestCourse from '$lib/components/test/TestCourse.svelte';
-	import FlashSeries from '$lib/components/test/FlashSeries.svelte';
-	import EvaluationResults from '$lib/components/test/EvaluationResults.svelte';
-	import { resolveTestLaunch } from '$lib/utils/test-launch';
-	import type { TestResult } from '$lib/types/test';
+	import ClassroomSeries from '#lib/components/test/ClassroomSeries.svelte';
+	import TestInteractive from '#lib/components/test/TestInteractive.svelte';
+	import TestCourse from '#lib/components/test/TestCourse.svelte';
+	import FlashSeries from '#lib/components/test/FlashSeries.svelte';
+	import TypingSeries from '#lib/components/test/TypingSeries.svelte';
+	import EvaluationResults from '#lib/components/test/EvaluationResults.svelte';
+	import { resolveTestLaunch } from '#lib/utils/test-launch.ts';
+	import type { TestResult } from '#lib/types/test.ts';
 	import type {
 		EvaluationStartResponse,
 		EvaluationSubmitResponse
-	} from '$lib/types/evaluation-attempt';
-	import { toSubmission, type Submission } from '$lib/questions/submission';
-	import { toDisplayInstance, unitKeysOf } from '$lib/questions/public-question';
-	import { receiveBuddyGain, type BuddyGainView } from '$lib/components/buddy/buddy-gain';
-	import { fetchMathouNews } from '$lib/components/mathoux/mathou-news';
-	import type { MathouNews } from '$lib/mathoux/news';
+	} from '#lib/types/evaluation-attempt.ts';
+	import { toSubmission, type Submission } from '#lib/questions/submission.ts';
+	import { toDisplayInstance, unitKeysOf } from '#lib/questions/public-question.ts';
+	import {
+		receiveBuddyGain,
+		seriesElapsedMs,
+		type BuddyGainView
+	} from '#lib/components/buddy/buddy-gain.ts';
+	import { fetchMathouNews } from '#lib/components/mathoux/mathou-news.ts';
+	import type { MathouNews } from '#lib/mathoux/news.ts';
+	import { createTraceRecorder } from '#lib/questions/series-trace.ts';
 
 	let { data }: { data: PageData } = $props();
 
 	// State
 	let testSession = $state<TestSession | null>(null);
-	// « En classe » et « Entraînement » : chaque question porte sa durée et sa catégorie
+	// « En classe » et « Contrôle blanc » : chaque question porte sa durée et son modèle
 	let seriesItems = $state<ClassroomItem[]>([]);
 	let isLoading = $state(true);
 	let error = $state<string | null>(null);
@@ -60,13 +67,35 @@
 	let mathouNews = $state<MathouNews | null>(null);
 	// Séance à qui revient la réponse attendue : une relance avant son arrivée la rend caduque
 	let newsRequest = 0;
+	/**
+	 * Traces d'une série libre, question par question (ADR 0038, N9) : seulement
+	 * pour un élève connecté hors contrôle (le serveur n'écrit rien pour un prof).
+	 */
+	const traceRecorder = createTraceRecorder();
+	const seriesTraceRecorder = $derived(data.user && !assignmentId ? traceRecorder : null);
+
+	/**
+	 * Réactions du Palotin pendant le Contrôle blanc libre d'un élève connecté
+	 * (chantier `palotins`, partie C) ; jamais en contrôle. La notion d'une
+	 * question est celle de son modèle. Sans Palotin (prof, Palotin illisible),
+	 * personne ne réagit et rien n'attend.
+	 */
+	const palotinReactions = $derived(
+		data.user && !assignmentId
+			? {
+					notionOf: (templateId: string) =>
+						questionTemplatesCache.templates.find((template) => template.id === templateId)
+							?.classification_node_id ?? null
+				}
+			: null
+	);
 
 	/**
 	 * Parse URL parameters and initialize test session
 	 */
 	async function initializeTest() {
 		try {
-			const launch = resolveTestLaunch(new URL(page.url).searchParams);
+			const launch = resolveTestLaunch(new URL(page.url.href).searchParams);
 
 			if (launch.kind === 'error') {
 				throw new Error(launch.message);
@@ -82,11 +111,11 @@
 			// Ancien lien de série sans forme : le serveur redirige déjà vers le
 			// panier (Q46) ; filet pour une navigation qui ne passerait pas par lui
 			if (launch.kind === 'cart') {
-				await goto(launch.href, { replaceState: true });
+				await goto(launch.href, { replace: true });
 				return;
 			}
 
-			startSeries(launch.mode, launch.categories, launch.timeLimit);
+			startSeries(launch.mode, launch.lines, launch.timeLimit);
 			isLoading = false;
 		} catch (err) {
 			console.error('Error initializing test:', err);
@@ -128,11 +157,11 @@
 		if (start.preview) {
 			// Aperçu : les modèles sont chargés seulement maintenant (la page d'un
 			// élève en évaluation n'en reçoit aucun)
-			if (questionTemplatesCache.isEmpty) await questionTemplatesCache.fetchTemplates();
-			seriesItems = generateSeriesItems(start.evaluation.categories, { excludeCourseCards: true });
+			await questionTemplatesCache.fetchTemplates();
+			seriesItems = generateSeriesItems(start.evaluation.items, { excludeCourseCards: true });
 			testSession = {
 				mode: form,
-				categories: start.evaluation.categories,
+				items: start.evaluation.items,
 				instances: seriesItems.map((item) => item.instance),
 				userAnswers: new Map(),
 				startTime: Date.now(),
@@ -151,13 +180,14 @@
 		seriesItems = attempt.questions.map((question) => ({
 			instance: toDisplayInstance(question),
 			delaySeconds: question.delaySeconds,
-			categoryKey: '',
+			// Durée réglable par question : la tentative ne livre pas le modèle
+			templateId: `position-${question.position}`,
 			unitKeys: unitKeysOf(question)
 		}));
 
 		testSession = {
 			mode: form,
-			categories: [],
+			items: [],
 			instances: seriesItems.map((item) => item.instance),
 			userAnswers: new Map(),
 			startTime: Date.now(),
@@ -179,16 +209,23 @@
 	/**
 	 * Lance une série libre (panier ou lien) sous la forme choisie
 	 */
-	function startSeries(mode: TestMode, categories: CartItem[], timeLimit?: number) {
-		// Course aux nombres : pas de carte de cours (décision 2026-09-28)
-		const items = generateSeriesItems(categories, { excludeCourseCards: mode === 'course' });
+	function startSeries(mode: TestMode, series: SeriesItem[], timeLimit?: number) {
+		// Contrôle blanc, Course aux nombres : pas de carte de cours (non évaluable)
+		const excludeCourseCards = seriesFormExcludesCourseCards(mode);
+		const items = generateSeriesItems(series, { excludeCourseCards });
+		// Série vide parce que toutes ses lignes sont des cartes : le dire (pas une panne)
+		if (items.length === 0 && excludeCourseCards && onlyCourseCards(series)) {
+			throw new Error(
+				'Cette série ne contient que des cartes de cours, sans réponse à corriger : choisir la forme « En classe », « Flash » ou « Saisie ».'
+			);
+		}
 		const instances = items.map((item) => item.instance);
-		// « En classe », « Entraînement » : chaque question garde sa durée et sa catégorie
+		// « En classe », « Contrôle blanc » : chaque question garde sa durée et son modèle
 		if (mode === 'display' || mode === 'interactive') seriesItems = items;
 
 		testSession = {
 			mode,
-			categories,
+			items: series,
 			instances,
 			userAnswers: new Map(),
 			startTime: Date.now(),
@@ -198,18 +235,26 @@
 		};
 	}
 
+	/** Toutes les lignes de la série sont-elles des cartes de cours ? */
+	function onlyCourseCards(series: SeriesItem[]): boolean {
+		const byId = new Map(
+			questionTemplatesCache.templates.map((template) => [template.id, template])
+		);
+		return series.every((item) => {
+			const template = byId.get(item.templateId);
+			return template !== undefined && isCourseCard(template);
+		});
+	}
+
 	/**
-	 * Questions d'une série, chacune avec sa durée et sa catégorie
-	 * (`buildSeriesItems`) ; source des modèles : cache, sinon données serveur.
+	 * Questions d'une série, chacune avec sa durée et son modèle
+	 * (`buildSeriesItems`) ; modèles lus dans le cache de l'onglet.
 	 */
 	function generateSeriesItems(
-		categories: CartItem[],
+		series: SeriesItem[],
 		options: { excludeCourseCards?: boolean } = {}
 	): ClassroomItem[] {
-		const templates =
-			questionTemplatesCache.templates.length > 0
-				? questionTemplatesCache.templates
-				: data.templates;
+		const templates = questionTemplatesCache.templates;
 
 		// Aucun modèle du tout (hors ligne, sans cache) : échec explicite
 		if (templates.length === 0) {
@@ -217,12 +262,12 @@
 				'Aucun modèle disponible. Veuillez vous reconnecter à Internet et recharger la page.'
 			);
 		}
-		return buildSeriesItems(categories, templates, options);
+		return buildSeriesItems(series, templates, options);
 	}
 
 	/**
-	 * « En classe », « Entraînement » : Recommencer tire de nouvelles questions
-	 * (évaluation : toujours sans carte de cours)
+	 * « En classe », « Contrôle blanc » : Recommencer tire de nouvelles questions
+	 * (Contrôle blanc et évaluation : sans carte de cours)
 	 */
 	function handleSeriesRestart() {
 		if (!testSession) return;
@@ -230,8 +275,8 @@
 		mathouNews = null;
 		newsRequest += 1;
 		try {
-			seriesItems = generateSeriesItems(testSession.categories, {
-				excludeCourseCards: !!assignmentId
+			seriesItems = generateSeriesItems(testSession.items, {
+				excludeCourseCards: !!assignmentId || seriesFormExcludesCourseCards(testSession.mode)
 			});
 			testSession.instances = seriesItems.map((item) => item.instance);
 			testSession.startTime = Date.now();
@@ -244,14 +289,16 @@
 	}
 
 	/**
-	 * « Flash-cards » : Recommencer tire de nouvelles questions (cartes de cours comprises)
+	 * « Flash-cards », « Saisie » : Recommencer tire de nouvelles questions (cartes
+	 * de cours comprises)
 	 */
 	function handleFlashRestart() {
 		if (!testSession) return;
+		buddyGain = null;
+		mathouNews = null;
+		newsRequest += 1;
 		try {
-			testSession.instances = generateSeriesItems(testSession.categories).map(
-				(item) => item.instance
-			);
+			testSession.instances = generateSeriesItems(testSession.items).map((item) => item.instance);
 			testSession.startTime = Date.now();
 		} catch (err) {
 			toaster.error(
@@ -337,7 +384,8 @@
 	}
 
 	/**
-	 * Handle test completion - save results to database
+	 * Fin de série : contrôle → envoi de la copie ; série libre → dernières
+	 * traces, puis gain du Palotin
 	 */
 	async function handleTestComplete(result: TestResult) {
 		// Nouvelle fin de séance : le gain précédent ne vaut plus
@@ -352,48 +400,53 @@
 			return;
 		}
 		// Visiteur non connecté : rien à enregistrer (l'API répondrait 401) ; les formes
-		// Flash-cards et Entraînement l'annoncent à l'écran
-		if (!data.user) return;
-		// Save to database (interactive, course, et flash : même sauvegarde que l'Entraînement).
-		// Aperçu d'une évaluation par le prof : enregistré comme un entraînement libre
-		// (jamais d'assignation : une évaluation ne s'enregistre que par son envoi)
-		if (result.mode === 'interactive' || result.mode === 'course' || result.mode === 'flash') {
-			try {
-				const response = await fetch('/api/tests/save', {
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json'
-					},
-					body: JSON.stringify({
-						result,
-						categories: testSession?.categories || []
-					})
-				});
+		// le disent à l'écran. Aperçu d'un contrôle par le prof : rien non plus.
+		if (!data.user || assignmentId) return;
 
-				if (response.ok) {
-					const data = await response.json();
-					// Update result with session ID
-					result.sessionId = data.sessionId;
-					// Gain du Palotin : montré sur l'écran de résultats, widget mis à jour
-					buddyGain = await receiveBuddyGain(data);
-					// Séance enregistrée, acquisition à jour : la Chatterie a-t-elle du nouveau ?
-					// Pas pour les flash-cards (aucun écran pour l'afficher : la demander la
-					// consommerait, le Palotin la dira) ni l'aperçu d'évaluation du prof
-					if (!assignmentId && result.mode !== 'flash') {
-						const news = await fetchMathouNews();
-						if (request === newsRequest) mathouNews = news;
-					}
-				} else {
-					console.error('Failed to save test results:', await response.text());
-					// 401 = visiteur non connecté : rien à enregistrer, rien à signaler
-					if (response.status !== 401) {
-						toaster.error("Tes résultats n'ont pas pu être enregistrés.");
-					}
-				}
-			} catch (error) {
-				console.error('Error saving test results:', error);
-				toaster.error("Tes résultats n'ont pas pu être enregistrés.");
+		// Traces envoyées question par question : attendre les dernières (E1),
+		// le gain et les nouvelles de la Chatterie lisent l'acquisition à jour
+		const { failed } = await traceRecorder.settle();
+		if (failed > 0) {
+			toaster.warning("Certaines réponses n'ont pas été enregistrées.");
+		}
+
+		// Flash-cards : auto-évaluées, aucun gain (et aucune séance écrite, N13).
+		// Saisie : corrigée par l'appli, gain comme le Contrôle blanc (David, 2026-11-11)
+		if (result.mode !== 'interactive' && result.mode !== 'course' && result.mode !== 'typing') {
+			return;
+		}
+
+		// Fin de série : le gain du Palotin seulement (plus de séance libre, N13)
+		try {
+			const response = await fetch('/api/tests/save', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					result,
+					items: testSession?.items || [],
+					// Durée de la série : le serveur en tire son début (question longtemps
+					// ratée enfin réussie, fêtée une seule fois) sans lire l'heure du client
+					...(testSession ? { seriesElapsedMs: seriesElapsedMs(testSession.startTime) } : {})
+				})
+			});
+
+			if (response.ok) {
+				// Gain du Palotin : montré sur l'écran de résultats, widget mis à jour.
+				// Une série relancée entre-temps ne reçoit pas le gain de la précédente.
+				const gain = await receiveBuddyGain(await response.json());
+				if (request !== newsRequest) return;
+				buddyGain = gain;
+				// La Chatterie a-t-elle du nouveau ?
+				const news = await fetchMathouNews();
+				if (request === newsRequest) mathouNews = news;
+			} else {
+				// Les réponses sont déjà enregistrées : seul le gain manque
+				console.error('Failed to compute buddy gain:', await response.text());
 			}
+		} catch (error) {
+			console.error('Error computing buddy gain:', error);
 		}
 	}
 
@@ -401,16 +454,10 @@
 	onMount(async () => {
 		// Évaluation assignée : aucun modèle n'est chargé (le serveur tire les
 		// questions ; l'aperçu du prof les chargera lui-même)
-		if (!new URL(page.url).searchParams.has('assignment')) {
-			// Priority: server data > existing cache > API fetch (only if necessary)
-			if (data.templates && data.templates.length > 0) {
-				questionTemplatesCache.initializeFromServer(data.templates);
-			}
-			// Only fetch from API if cache is completely empty AND server didn't load data
-			// This prevents fetch loops when offline
-			else if (questionTemplatesCache.isEmpty && !questionTemplatesCache.error) {
-				await questionTemplatesCache.fetchTemplates();
-			}
+		if (!new URL(page.url.href).searchParams.has('assignment')) {
+			// Modèles : cache de l'onglet, lu une fois (déjà là si on vient du catalogue
+			// ou du panier ; sinon lu maintenant, lien de série ouvert directement)
+			await questionTemplatesCache.fetchTemplates();
 		}
 
 		// Initialize test after cache is ready
@@ -464,7 +511,7 @@
 					<h2 class="text-xl font-semibold text-destructive">Erreur</h2>
 					<p class="mt-2 text-sm text-muted-foreground">{error}</p>
 					<Button onclick={handleBack} class="mt-6">
-						{assignmentId ? 'Mes contrôles' : 'Retour au panier'}
+						{assignmentId ? 'Mes contrôles' : 'Retour à ma série'}
 					</Button>
 				</div>
 			</Card.Content>
@@ -498,7 +545,7 @@
 				onRestart={handleSeriesRestart}
 			/>
 		{:else if testSession.mode === 'interactive'}
-			<!-- Forme « Entraînement » : nouvelles questions = nouveau composant -->
+			<!-- Forme « Contrôle blanc » : nouvelles questions = nouveau composant -->
 			{#key seriesItems}
 				<TestInteractive
 					items={seriesItems}
@@ -512,6 +559,8 @@
 					showResults={!attemptId}
 					{buddyGain}
 					{mathouNews}
+					{palotinReactions}
+					traceRecorder={seriesTraceRecorder}
 				/>
 			{/key}
 		{:else if testSession.mode === 'course'}
@@ -526,6 +575,7 @@
 				unitKeys={attemptUnitKeys}
 				{buddyGain}
 				{mathouNews}
+				traceRecorder={seriesTraceRecorder}
 			/>
 		{:else if testSession.mode === 'flash' && !assignmentId}
 			<!-- Forme « Flash-cards » : nouvelles questions = nouveau composant -->
@@ -536,6 +586,21 @@
 					onComplete={handleTestComplete}
 					onRestart={handleFlashRestart}
 					onBack={handleBackToCart}
+					traceRecorder={seriesTraceRecorder}
+				/>
+			{/key}
+		{:else if testSession.mode === 'typing' && !assignmentId}
+			<!-- Forme « Saisie » : nouvelles questions = nouveau composant -->
+			{#key testSession.instances}
+				<TypingSeries
+					instances={testSession.instances}
+					isLoggedIn={!!data.user}
+					onComplete={handleTestComplete}
+					onRestart={handleFlashRestart}
+					onBack={handleBackToCart}
+					traceRecorder={seriesTraceRecorder}
+					{buddyGain}
+					{mathouNews}
 				/>
 			{/key}
 		{/if}

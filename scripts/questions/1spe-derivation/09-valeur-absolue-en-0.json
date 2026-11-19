@@ -1,10 +1,8 @@
 {
+	"id": "b359cd25-c05c-4f15-be5b-a0e581c45b47",
 	"title": "Dérivabilité de la valeur absolue en 0",
 	"description": "Taux de variation de |x| entre 0 et h (h > 0, h < 0), puis dérivabilité en 0 (case choix)",
 	"grades": ["1_SPE"],
-	"theme": "Fonctions",
-	"domain": "Dérivation",
-	"subdomain": "Dérivabilité en un point",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

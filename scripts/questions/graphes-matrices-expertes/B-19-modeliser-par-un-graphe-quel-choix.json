@@ -1,13 +1,14 @@
 {
+	"id": "1f88d29a-086b-4fc9-9b28-debca396c697",
 	"title": "Modéliser par un graphe : sommets, arêtes, situation possible ?",
 	"description": "Choisir ce que représentent sommets et arêtes, reconnaître le graphe complet d'un tournoi, décider si une situation est réalisable par la somme des degrés (pièges : sommets et arêtes inversés, ordre confondu avec le nombre d'arêtes, croire qu'un degré impair est interdit)",
 	"grades": ["T_EXP"],
-	"theme": "Graphes et matrices",
-	"domain": "Graphes",
-	"subdomain": "Modélisation par un graphe",
 	"level": 2,
 	"status": "draft",
 	"delay": 60,
+	"shared": {
+		"capitalPairs": "product"
+	},
 	"variations": [
 		{
 			"statement": "Un réseau de ${{n}}$ ordinateurs est relié par des câbles : chaque câble relie directement deux ordinateurs. On veut modéliser ce réseau par un graphe.\n\nQue doivent représenter les sommets et les arêtes ?\n\n```choix\n- Sommets : les ordinateurs ; arêtes : les câbles\n- Sommets : les câbles ; arêtes : les ordinateurs\n- Sommets : les ordinateurs ; arêtes : les chemins entre deux ordinateurs\n- Un seul sommet, de degré ${{n}}$\n```",

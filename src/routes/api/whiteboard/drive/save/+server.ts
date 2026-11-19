@@ -16,20 +16,20 @@
  * - Requires Google integration with drive.file scope
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import {
 	GoogleNotConnectedError,
 	GoogleTokenExpiredError,
 	GoogleInsufficientPermissionsError
-} from '$lib/server/google/errors';
-import { requireRole } from '$lib/server/middleware/auth';
-import { saveToDriveRequestSchema } from '$lib/server/validation/whiteboard-drive';
-import { GoogleDriveClient } from '$lib/server/google/drive-api';
-import { getTeacherAccessToken } from '$lib/server/google/sync';
-import { validateUbwFile, serializeDocument } from '$lib/whiteboard/utils/file-operations';
-import { DRIVE_MIME_TYPE } from '$lib/whiteboard/utils/sync-state';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/google/errors.ts';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { saveToDriveRequestSchema } from '#lib/server/validation/whiteboard-drive.ts';
+import { GoogleDriveClient } from '#lib/server/google/drive-api.ts';
+import { getTeacherAccessToken } from '#lib/server/google/sync.ts';
+import { validateUbwFile, serializeDocument } from '#lib/whiteboard/utils/file-operations.ts';
+import { DRIVE_MIME_TYPE } from '#lib/whiteboard/utils/sync-state.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/whiteboard/drive/save/+server');
 
@@ -174,7 +174,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			);
 		}
 
-		return json({
+		return Response.json({
 			success: true,
 			fileId: result.id,
 			modifiedTime: result.modifiedTime || new Date().toISOString()

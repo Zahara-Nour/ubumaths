@@ -1,7 +1,7 @@
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 import type { RealtimeChannel, SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import { createLogger } from '$lib/utils/logger';
+import type { Database } from '#lib/types/database.ts';
+import { createLogger } from '#lib/utils/logger.ts';
 
 const logger = createLogger('supabaseRealtime.svelte.ts');
 
@@ -16,7 +16,7 @@ const logger = createLogger('supabaseRealtime.svelte.ts');
  *
  * @example
  * ```ts
- * import { supabaseRealtimeManager } from '$lib/stores/supabaseRealtime.svelte';
+ * import { supabaseRealtimeManager } from '#lib/stores/supabaseRealtime.svelte.ts';
  *
  * // Initialize with Supabase client
  * supabaseRealtimeManager.init(supabase, userId);

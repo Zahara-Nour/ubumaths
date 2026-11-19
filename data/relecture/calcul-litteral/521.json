@@ -94,9 +94,6 @@
 			}
 		],
 		"grades": ["5"],
-		"theme": "Calcul littéral",
-		"domain": "Transformation",
-		"subdomain": "Réduction",
 		"level": 3,
 		"status": "draft",
 		"delay": 30,

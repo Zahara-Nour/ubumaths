@@ -8,8 +8,8 @@
  * via `toTemplatePutBody`, et la route les vide comme avant.
  */
 import { describe, it, expect } from 'vitest';
-import { toTemplatePutBody } from '$lib/questions/template-put-body';
-import { templateMarkdown } from '$lib/ubumark/types/template';
+import { toTemplatePutBody } from '#lib/questions/template-put-body.ts';
+import { templateMarkdown } from '#lib/ubumark/types/template.ts';
 import { callPut, fakeDb, FIXTURE } from './fake-templates-db';
 
 describe('toTemplatePutBody', () => {
@@ -18,8 +18,6 @@ describe('toTemplatePutBody', () => {
 			title: 'T',
 			variations: [{ statement: templateMarkdown('x') }],
 			grades: ['CE1'],
-			theme: 'Entiers',
-			domain: 'Multiplier',
 			level: 1,
 			status: 'draft',
 			delay: 15
@@ -28,8 +26,6 @@ describe('toTemplatePutBody', () => {
 			title: 'T',
 			variations: [{ statement: 'x' }],
 			grades: ['CE1'],
-			theme: 'Entiers',
-			domain: 'Multiplier',
 			level: 1,
 			status: 'draft',
 			delay: 15,
@@ -38,7 +34,7 @@ describe('toTemplatePutBody', () => {
 			defaultDisplayOptions: null,
 			exerciseInstruction: null,
 			options: null,
-			subdomain: null,
+			classification_node_id: null,
 			testSpecs: null
 		});
 	});
@@ -57,9 +53,6 @@ describe("PUT depuis l'éditeur", () => {
 						shared: FIXTURE.shared as never,
 						variations: FIXTURE.variations as never,
 						grades: FIXTURE.grades as never,
-						theme: FIXTURE.theme as string,
-						domain: FIXTURE.domain as string,
-						subdomain: FIXTURE.subdomain as string,
 						level: FIXTURE.level as number,
 						status: 'draft'
 					})
@@ -87,9 +80,6 @@ describe("PUT depuis l'éditeur : question de cours", () => {
 						shared: FIXTURE.shared as never,
 						variations: FIXTURE.variations as never,
 						grades: FIXTURE.grades as never,
-						theme: FIXTURE.theme as string,
-						domain: FIXTURE.domain as string,
-						subdomain: FIXTURE.subdomain as string,
 						level: FIXTURE.level as number,
 						status: 'draft',
 						options: { courseQuestion: true }
@@ -118,9 +108,6 @@ describe("PUT depuis l'éditeur : publication", () => {
 						shared: FIXTURE.shared as never,
 						variations: FIXTURE.variations as never,
 						grades: FIXTURE.grades as never,
-						theme: FIXTURE.theme as string,
-						domain: FIXTURE.domain as string,
-						subdomain: FIXTURE.subdomain as string,
 						level: FIXTURE.level as number,
 						delay: FIXTURE.delay as number,
 						testSpecs: FIXTURE.testSpecs as never,

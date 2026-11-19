@@ -101,14 +101,14 @@ la vitrine `src/routes/(public)/demo/constructions/`.
 
 ### Composants et consommateurs
 
-| Fichier                                                                     | Rôle                                                                                |
-| --------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
-| `src/lib/components/geometry/GeometryCanvas.svelte`                         | Toile interactive : SVG, rough.js (main levée), MathLive (`mtexte`), drag, curseurs |
-| `src/lib/components/geometry/ElementPopover.svelte`, `SliderControl.svelte` | Panneau d'un objet, curseur                                                         |
-| `src/lib/ubumark/utils/figure-scene.ts`                                     | Bloc ` ```figure ` : interprète, refuse ce que le PDF ne sait pas dessiner, budget  |
-| `src/lib/ubumark/utils/figure-svg.ts`                                       | Bloc ` ```figure ` à l'écran : SVG statique (`figureToSvg`), sans `GeometryCanvas`  |
-| `src/lib/ubumark/generators/figure-typst.ts`                                | Bloc ` ```figure ` au PDF : `exportToTypst`                                         |
-| `src/lib/components/markdown/nodes/FigureBlock*.svelte`                     | Composants du bloc (chargement à la demande)                                        |
+| Fichier                                                                     | Rôle                                                                                           |
+| --------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `src/lib/components/geometry/GeometryCanvas.svelte`                         | Toile interactive : SVG, rough.js (main levée), MathLive (`mtexte`), drag, curseurs            |
+| `src/lib/components/geometry/ElementPopover.svelte`, `SliderControl.svelte` | Panneau d'un objet, curseur                                                                    |
+| `src/lib/ubumark/utils/figure-scene.ts`                                     | Bloc ` ```figure ` : interprète, refuse ce que le PDF ne sait pas dessiner, budget             |
+| `src/lib/ubumark/utils/figure-svg.ts`                                       | Bloc ` ```figure ` à l'écran : SVG statique (`figureToSvg`), sans `GeometryCanvas`             |
+| `src/lib/ubumark/generators/figure-typst.ts`                                | Bloc ` ```figure ` au PDF : `exportToTypst` ; `mesure AB` : à 1 cm si ça tient (`atRealScale`) |
+| `src/lib/components/markdown/nodes/FigureBlock*.svelte`                     | Composants du bloc (chargement à la demande)                                                   |
 
 ### La vue Géométrie de l'atelier
 
@@ -234,9 +234,9 @@ possible.
 ### Invariants (à ne pas casser)
 
 - **Pas d'`eval` ni de `new Function`** dans le pipeline : les expressions passent par `compile()`
-  de `$lib/mathAST/eval/compile`.
+  de `#lib/mathAST/eval/compile.ts`.
 - **`graph/` n'importe jamais `dsl/` en valeur** (aucune occurrence aujourd'hui). Un helper partagé
-  va dans `$lib/mathAST/analysis/` ou un dossier commun.
+  va dans `#lib/mathAST/analysis/` ou un dossier commun.
 - **Gardes de type** : `types/elements.ts` exporte 86 fonctions `isXxx` ; tout code nouveau les
   utilise au lieu de `as GeoXxx` (42 casts historiques subsistent, ne pas en ajouter).
 - **Caches — ne jamais muter un résultat** : `PARSE_CACHE` et `PARSE_FAILURE_CACHE` plafonnés à
@@ -268,6 +268,8 @@ possible.
   lissage (`bezier.ts`) ; courbes implicites par `marchingSquares`.
 - **PDF découpé** : `exportToTypst({ clipToViewport: true, underlay })` met traits et remplissages
   dans une boîte découpée à la fenêtre ; noms et textes restent au-dessus, jamais coupés.
+  `overlay` : lignes cetz dessinées après tout (rapporteur posé d'une figure à compléter,
+  `ubumark/generators/protractor-typst.ts`).
 - **Noms de points** : `etiquette=` → `rendering/label-placement.ts` (bloc ` ```figure `, écran et
   PDF) ; `GeometryCanvas` et les exports SVG/TikZ écrivent toujours en haut à droite. Le nom
   masqué (`etiquette="aucune"`, `labelHidden`, `Figure.setLabelHidden`) est respecté pour les
@@ -277,7 +279,7 @@ possible.
 ### Thème clair / sombre
 
 - **Couleurs d'auteur** : un NOM (`couleur="rouge"`, 12 noms, synonymes anglais) est gardé tel quel
-  jusqu'au rendu (`resolveColorName` → `$lib/theme/named-colors`), puis devient
+  jusqu'au rendu (`resolveColorName` → `#lib/theme/named-colors.ts`), puis devient
   `var(--color-fig-<nom>)` à l'écran (défini en `light-dark()` dans `src/app.css`) et sa variante
   claire au PDF (`NAMED_COLOR_PRINT`, `colorForPrint`). Un hexadécimal reste fixe.
 - **Habillage** de `GeometryCanvas` (fond, grille, halos, survol) : tokens `var(--color-*)`

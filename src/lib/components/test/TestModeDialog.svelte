@@ -5,9 +5,13 @@
 
 	Modes:
 	- Display (« En classe ») : projection question par question, sans score
-	- Interactive (« Entraînement ») : une question à la fois, score à la fin
+	- Interactive (« Contrôle blanc ») : une question à la fois, chronométrée, score à la fin
+	- Typing (« Saisie ») : l'élève tape, la carte se retourne après « Valider », sans chrono
 	- Course aux nombres: All questions at once with time limit
 	- Flash (« Flash-cards ») : l'élève retourne chaque carte et s'auto-évalue, sans chrono
+
+	Un clic sur une carte lance la série, sauf la Course aux nombres : elle
+	affiche d'abord le temps imparti, puis « Commencer le test » la lance.
 
 	Props:
 	- open: boolean - Dialog open state
@@ -15,14 +19,14 @@
 -->
 
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import * as Card from '$lib/components/ui/card';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
-	import { Eye, BrainCircuit, Timer, Rocket, Layers } from '@lucide/svelte';
-	import type { TestMode } from '$lib/types/test';
+	import { lore } from '#lib/config/lore.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import { Eye, BrainCircuit, Timer, Rocket, Layers, Keyboard } from '@lucide/svelte';
+	import type { TestMode } from '#lib/types/test.ts';
 
 	// Props
 	interface Props {
@@ -56,9 +60,9 @@
 		},
 		{
 			mode: 'interactive' as TestMode,
-			title: 'Entraînement',
+			title: 'Contrôle blanc',
 			icon: BrainCircuit,
-			description: 'Répondez aux questions une par une, chacune chronométrée.',
+			description: 'Pour préparer un contrôle : les questions une par une, chacune chronométrée.',
 			features: ['Une question à la fois', 'Score sur 10', 'Correction détaillée à la fin']
 		},
 		{
@@ -78,14 +82,26 @@
 				"Tu t'auto-évalues après avoir vu la réponse",
 				'Revoir les cartes non trouvées'
 			]
+		},
+		{
+			mode: 'typing' as TestMode,
+			title: 'Saisie',
+			icon: Keyboard,
+			description: 'Tape ta réponse, la carte se retourne pour te corriger. Sans chrono.',
+			features: [
+				'Une question à la fois',
+				'Ta réponse face à la bonne, puis la correction',
+				'Revoir les questions ratées'
+			]
 		}
 	];
 
 	/**
-	 * Handle mode selection
+	 * Clic sur une carte : lance la série, sauf la Course (temps à régler d'abord)
 	 */
 	function handleModeSelect(mode: TestMode) {
 		selectedMode = mode;
+		if (mode !== 'course') handleStart();
 	}
 
 	/**
@@ -113,11 +129,11 @@
 </script>
 
 <Dialog.Root bind:open>
-	<Dialog.Content class="max-w-3xl">
+	<Dialog.Content class="max-h-[90vh] max-w-3xl overflow-y-auto">
 		<Dialog.Header>
 			<Dialog.Title>Choisissez un mode de test</Dialog.Title>
 			<Dialog.Description>
-				Sélectionnez comment vous souhaitez pratiquer avec les questions de votre panier.
+				Cliquez sur une forme pour lancer la série avec les questions de votre série.
 			</Dialog.Description>
 		</Dialog.Header>
 
@@ -125,7 +141,11 @@
 		<div class="grid gap-4 py-4 sm:grid-cols-2">
 			{#each modeConfigs as config (config.mode)}
 				{@const Icon = config.icon}
-				<button type="button" onclick={() => handleModeSelect(config.mode)} class="transition-all">
+				<button
+					type="button"
+					onclick={() => handleModeSelect(config.mode)}
+					class="text-left transition-all"
+				>
 					<Card.Root
 						class="h-full cursor-pointer transition-all hover:shadow-lg {selectedMode ===
 						config.mode
@@ -186,10 +206,12 @@
 
 		<Dialog.Footer>
 			<Button variant="outline" onclick={handleClose}>{lore.actions.cancel}</Button>
-			<Button onclick={handleStart} disabled={!canStart}>
-				<Rocket class="mr-2 h-4 w-4" />
-				Commencer le test
-			</Button>
+			{#if selectedMode === 'course'}
+				<Button onclick={handleStart} disabled={!canStart}>
+					<Rocket class="mr-2 h-4 w-4" />
+					Commencer le test
+				</Button>
+			{/if}
 		</Dialog.Footer>
 	</Dialog.Content>
 </Dialog.Root>

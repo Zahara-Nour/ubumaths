@@ -1,11 +1,9 @@
 {
+	"id": "f52395d1-31ca-4bdb-be8f-723c5d96d2ac",
 	"title": "Équation d'une tangente connaissant f(a) et f′(a)",
 	"description": "Équation réduite y = mx + p de la tangente au point d'abscisse a, à partir des valeurs données de f(a) et f′(a)",
 	"grades": ["1_SPE"],
-	"theme": "Fonctions",
-	"domain": "Dérivation",
 	"status": "draft",
-	"subdomain": "Tangente",
 	"level": 1,
 	"delay": 45,
 	"shared": {

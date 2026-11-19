@@ -1,10 +1,8 @@
 {
+	"id": "6a770d04-b763-4887-95a9-336709a92fba",
 	"title": "Volume d'une pyramide",
 	"description": "Calculer le volume d'une pyramide (aire de la base × hauteur ÷ 3) : base carrée, rectangulaire, triangulaire ou d'aire donnée, lien avec le pavé, formule à choisir",
 	"grades": ["4"],
-	"theme": "Grandeurs",
-	"domain": "Volumes",
-	"subdomain": "Pyramide et cône",
 	"level": 1,
 	"delay": 120,
 	"status": "draft",

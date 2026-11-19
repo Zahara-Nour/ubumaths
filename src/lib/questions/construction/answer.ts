@@ -4,17 +4,29 @@
  *
  * Ce que l'élève a tracé, écrit en coordonnées : `droite(x1;y1;x2;y2)` ou
  * `segment(x1;y1;x2;y2)` (par ses deux bouts), `point(x;y)` (outil point,
- * chantier `controles-figure` lot 2a), les objets séparés par `|`. Entrée de l'élève : bornée (longueur, nombre
+ * chantier `controles-figure` lot 2a), `cercle(cx;cy;x;y)` (compas : le centre
+ * et un point du cercle, lot 2b), `report(cx;cy;ax;ay;bx;by)` (report de
+ * longueur : le centre, puis les deux points de l'écartement, lot 4),
+ * `repere(vx;vy;ax;ay;r;deg;sens)` (repère du rapporteur : centre, point de la
+ * base, rayon, graduation entière 0..180, côté ±1, lot 5), `regle(ox;oy;bx;by;sens)`
+ * (règle graduée posée : son 0, un point de sa direction, son bord ±1 ; chantier
+ * `regle-graduee`, ADR 0036), les objets séparés par `|`. Entrée de l'élève : bornée (longueur, nombre
  * d'objets, valeurs finies et modérées) avant toute lecture ; illisible → null.
+ * Angle à mesurer (lot 6) : la mesure tapée en dernier, `mesure(50)`, à part des
+ * objets tracés (`splitMeasuredAnswer`).
  *
  * @module questions/construction/answer
  */
 
 import { z } from 'zod';
 
-/** Plafonds : au-delà, la réponse est illisible (jamais jugée) */
+/**
+ * Plafonds : au-delà, la réponse est illisible (jamais jugée). 2 000 caractères :
+ * ceux de l'envoi (`MAX_ANSWER_LENGTH`, `submission.ts`) ; les traits des
+ * instruments sont en pleine précision (~90 caractères chacun).
+ */
 export const CONSTRUCTION_ANSWER_LIMITS = {
-	chars: 1_000,
+	chars: 2_000,
 	objects: 20,
 	coordinate: 1e6
 } as const;
@@ -27,6 +39,21 @@ const LINE_REGEX = new RegExp(
 	`^(droite|segment)\\(\\s*(${NUMBER})\\s*;\\s*(${NUMBER})\\s*;\\s*(${NUMBER})\\s*;\\s*(${NUMBER})\\s*\\)$`
 );
 const POINT_REGEX = new RegExp(`^point\\(\\s*(${NUMBER})\\s*;\\s*(${NUMBER})\\s*\\)$`);
+const CIRCLE_REGEX = new RegExp(
+	`^cercle\\(\\s*(${NUMBER})\\s*;\\s*(${NUMBER})\\s*;\\s*(${NUMBER})\\s*;\\s*(${NUMBER})\\s*\\)$`
+);
+
+const REPORT_REGEX = new RegExp(
+	`^report\\(${Array.from({ length: 6 }, () => `\\s*(${NUMBER})\\s*`).join(';')}\\)$`
+);
+
+const REPERE_REGEX = new RegExp(
+	`^repere\\(${Array.from({ length: 7 }, () => `\\s*(${NUMBER})\\s*`).join(';')}\\)$`
+);
+
+const REGLE_REGEX = new RegExp(
+	`^regle\\(${Array.from({ length: 5 }, () => `\\s*(${NUMBER})\\s*`).join(';')}\\)$`
+);
 
 const coordinate = z
 	.number()
@@ -52,11 +79,99 @@ const drawnPointSchema = z.object({ kind: z.literal('point'), x: coordinate, y: 
 /** Point placé par l'élève (outil point) */
 export type DrawnPoint = z.infer<typeof drawnPointSchema>;
 
+const drawnCircleSchema = z
+	.object({
+		kind: z.literal('cercle'),
+		cx: coordinate,
+		cy: coordinate,
+		x: coordinate,
+		y: coordinate
+	})
+	.refine((c) => Math.hypot(c.x - c.cx, c.y - c.cy) > SAME_POINT_EPSILON);
+
+/** Cercle tracé au compas : son centre et un de ses points */
+export type DrawnCircle = z.infer<typeof drawnCircleSchema>;
+
+const drawnReportSchema = z
+	.object({
+		kind: z.literal('report'),
+		cx: coordinate,
+		cy: coordinate,
+		ax: coordinate,
+		ay: coordinate,
+		bx: coordinate,
+		by: coordinate
+	})
+	.refine((r) => Math.hypot(r.bx - r.ax, r.by - r.ay) > SAME_POINT_EPSILON);
+
+/**
+ * Report de longueur : cercle centré en (cx ; cy), de rayon l'écartement entre
+ * (ax ; ay) et (bx ; by) — gardé pour juger si l'écartement est construit
+ */
+export type DrawnReport = z.infer<typeof drawnReportSchema>;
+
+const drawnRepereSchema = z
+	.object({
+		kind: z.literal('repere'),
+		vx: coordinate,
+		vy: coordinate,
+		ax: coordinate,
+		ay: coordinate,
+		r: coordinate.positive(),
+		deg: z.number().int().min(0).max(180),
+		sens: z.union([z.literal(1), z.literal(-1)])
+	})
+	.refine((m) => Math.hypot(m.ax - m.vx, m.ay - m.vy) > SAME_POINT_EPSILON);
+
+/**
+ * Repère du rapporteur (lot 5) : rapporteur centré en (vx ; vy), base le long de
+ * la demi-droite vers (ax ; ay), repère à la graduation `deg` (degrés comptés
+ * depuis la base, dans le sens trigonométrique si `sens` = 1), à `r` du centre.
+ * Un point, pas un trait (position : `repereAt`, `instruments.ts`).
+ */
+export type DrawnRepere = z.infer<typeof drawnRepereSchema>;
+
+const drawnRegleSchema = z
+	.object({
+		kind: z.literal('regle'),
+		ox: coordinate,
+		oy: coordinate,
+		bx: coordinate,
+		by: coordinate,
+		sens: z.union([z.literal(1), z.literal(-1)])
+	})
+	.refine((r) => Math.hypot(r.bx - r.ox, r.by - r.oy) > SAME_POINT_EPSILON);
+
+/**
+ * Règle graduée posée (chantier `regle-graduee`, ADR 0036) : son 0 en (ox ; oy),
+ * graduée vers (bx ; by) ; `sens` : le côté de son corps (1 : à droite de la
+ * direction, -1 : retournée). Ni un point ni un trait : la preuve qu'un bout de
+ * segment est sur une graduation (`rulerGraduation`, `instruments.ts`).
+ */
+export type DrawnRegle = z.infer<typeof drawnRegleSchema>;
+
 /** Ce que l'élève a tracé ou placé */
-export type DrawnObject = DrawnLine | DrawnPoint;
+export type DrawnObject =
+	DrawnLine | DrawnPoint | DrawnCircle | DrawnReport | DrawnRepere | DrawnRegle;
 
 export function isDrawnLine(object: DrawnObject): object is DrawnLine {
-	return object.kind !== 'point';
+	return object.kind === 'droite' || object.kind === 'segment';
+}
+
+export function isDrawnCircle(object: DrawnObject): object is DrawnCircle {
+	return object.kind === 'cercle';
+}
+
+export function isDrawnReport(object: DrawnObject): object is DrawnReport {
+	return object.kind === 'report';
+}
+
+export function isDrawnRepere(object: DrawnObject): object is DrawnRepere {
+	return object.kind === 'repere';
+}
+
+export function isDrawnRegle(object: DrawnObject): object is DrawnRegle {
+	return object.kind === 'regle';
 }
 
 export function isDrawnPoint(object: DrawnObject): object is DrawnPoint {
@@ -71,6 +186,35 @@ function parseObject(part: string): DrawnObject | null {
 			kind: 'point',
 			x: Number(point[1]),
 			y: Number(point[2])
+		});
+		return parsed.success ? parsed.data : null;
+	}
+	const mark = REPERE_REGEX.exec(part);
+	if (mark) {
+		const [vx, vy, ax, ay, r, deg, sens] = mark.slice(1).map(Number);
+		const parsed = drawnRepereSchema.safeParse({ kind: 'repere', vx, vy, ax, ay, r, deg, sens });
+		return parsed.success ? parsed.data : null;
+	}
+	const ruler = REGLE_REGEX.exec(part);
+	if (ruler) {
+		const [ox, oy, bx, by, sens] = ruler.slice(1).map(Number);
+		const parsed = drawnRegleSchema.safeParse({ kind: 'regle', ox, oy, bx, by, sens });
+		return parsed.success ? parsed.data : null;
+	}
+	const report = REPORT_REGEX.exec(part);
+	if (report) {
+		const [cx, cy, ax, ay, bx, by] = report.slice(1).map(Number);
+		const parsed = drawnReportSchema.safeParse({ kind: 'report', cx, cy, ax, ay, bx, by });
+		return parsed.success ? parsed.data : null;
+	}
+	const circle = CIRCLE_REGEX.exec(part);
+	if (circle) {
+		const parsed = drawnCircleSchema.safeParse({
+			kind: 'cercle',
+			cx: Number(circle[1]),
+			cy: Number(circle[2]),
+			x: Number(circle[3]),
+			y: Number(circle[4])
 		});
 		return parsed.success ? parsed.data : null;
 	}
@@ -105,8 +249,43 @@ export function parseConstructionAnswer(answer: string): DrawnObject[] | null {
 /** Écrire ce que l'élève a tracé (écran de l'élève, tests) */
 export function serializeConstructionAnswer(objects: readonly DrawnObject[]): string {
 	return objects
-		.map((o) =>
-			isDrawnLine(o) ? `${o.kind}(${o.x1};${o.y1};${o.x2};${o.y2})` : `point(${o.x};${o.y})`
-		)
+		.map((o) => {
+			if (isDrawnLine(o)) return `${o.kind}(${o.x1};${o.y1};${o.x2};${o.y2})`;
+			if (isDrawnCircle(o)) return `cercle(${o.cx};${o.cy};${o.x};${o.y})`;
+			if (isDrawnReport(o)) return `report(${o.cx};${o.cy};${o.ax};${o.ay};${o.bx};${o.by})`;
+			if (isDrawnRepere(o))
+				return `repere(${o.vx};${o.vy};${o.ax};${o.ay};${o.r};${o.deg};${o.sens})`;
+			if (isDrawnRegle(o)) return `regle(${o.ox};${o.oy};${o.bx};${o.by};${o.sens})`;
+			return `point(${o.x};${o.y})`;
+		})
 		.join('|');
+}
+
+/** La mesure tapée (lot 6) : un entier, trois chiffres au plus */
+const MEASURE_PART_REGEX = /^mesure\(\s*(\d{1,3})\s*\)$/;
+
+/**
+ * Réponse d'un angle à mesurer (lot 6) : les objets tracés (repères du
+ * rapporteur, jamais notés) et la mesure tapée, en dernier ; `measure` null si
+ * rien n'est tapé ; null si la réponse est illisible (mesure ailleurs qu'en
+ * dernier, ou deux fois)
+ */
+export function splitMeasuredAnswer(
+	answer: string
+): { drawn: string; measure: number | null } | null {
+	const parts = answer.trim() === '' ? [] : answer.split('|').map((part) => part.trim());
+	const last = parts.length > 0 ? MEASURE_PART_REGEX.exec(parts[parts.length - 1]) : null;
+	const drawnParts = last ? parts.slice(0, -1) : parts;
+	if (drawnParts.some((part) => part.startsWith('mesure'))) return null;
+	return { drawn: drawnParts.join('|'), measure: last ? Number(last[1]) : null };
+}
+
+/** Écrire les objets tracés suivis de la mesure tapée (écran de l'élève, tests) */
+export function serializeMeasuredAnswer(
+	objects: readonly DrawnObject[],
+	measure: number | null
+): string {
+	const drawn = serializeConstructionAnswer(objects);
+	if (measure === null) return drawn;
+	return drawn === '' ? `mesure(${measure})` : `${drawn}|mesure(${measure})`;
 }

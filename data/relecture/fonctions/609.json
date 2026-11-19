@@ -279,9 +279,6 @@
 			}
 		],
 		"grades": ["1_SPE"],
-		"theme": "Fonctions",
-		"domain": "Polynôme du second degré",
-		"subdomain": "Apprivoiser",
 		"level": 9,
 		"status": "draft",
 		"delay": 40,

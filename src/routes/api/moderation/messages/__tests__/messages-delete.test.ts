@@ -19,7 +19,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { createMockSupabase, createMockLocals, createMockRequest } from '$tests/helpers';
+import { createMockSupabase, createMockLocals, createMockRequest } from '#tests/helpers/index.ts';
 
 // ============================================================================
 // CLIENT SERVICE (l'écriture du soft-delete)
@@ -34,7 +34,12 @@ const ecriture = vi.hoisted(() => ({
 	appels: [] as Array<{ table: string; valeurs: unknown; id: unknown }>
 }));
 
-vi.mock('$lib/server/serviceRoleClient', () => ({
+// Garde commune : session/profil lus dans `locals` (cf. helper)
+vi.mock('#lib/server/middleware/auth.ts', async (importActual) =>
+	(await import('#tests/helpers/garde-auth-locals.ts')).gardeAuthDepuisLocals(importActual)
+);
+
+vi.mock('#lib/server/serviceRoleClient.ts', () => ({
 	createServiceRoleClient: () => ({
 		from: (table: string) => {
 			const appel = { table, valeurs: undefined as unknown, id: undefined as unknown };
@@ -146,7 +151,7 @@ describe('DELETE /api/moderation/messages/[id] - Authentication & Authorization'
 		} catch (err: unknown) {
 			const error = err as { status: number; body: { message: string } };
 			expect(error.status).toBe(401);
-			expect(error.body.message).toBe('Not authenticated');
+			expect(error.body.message).toBe('Non autorisé - Authentification requise');
 		}
 	});
 
@@ -173,7 +178,7 @@ describe('DELETE /api/moderation/messages/[id] - Authentication & Authorization'
 		} catch (err: unknown) {
 			const error = err as { status: number; body: { message: string } };
 			expect(error.status).toBe(403);
-			expect(error.body.message).toBe('Only teachers and admins can delete messages');
+			expect(error.body.message).toBe('Interdit - Enseignants, Administrateurs uniquement');
 		}
 	});
 

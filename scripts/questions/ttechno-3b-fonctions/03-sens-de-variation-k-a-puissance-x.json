@@ -1,0 +1,214 @@
+{
+	"id": "f6805041-d456-422c-8560-31b9d3fe9f74",
+	"title": "Sens de variation de x ↦ k·a^x",
+	"description": "Sens de x ↦ k·aˣ sur ℝ dans les quatre cas : k > 0 ou k < 0, a > 1 ou 0 < a < 1",
+	"grades": ["T_TECHNO"],
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "On considère la fonction $f$ définie sur $\\mathbb{R}$ par $f(x)={{k}}\\times{{a}}^x$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1.5|2|3|1.05"
+				},
+				{
+					"name": "k",
+					"expression": "2|3|4|5|100"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $k\\neq0$ et $a>0$ : si $k>0$, $x\\mapsto ka^x$ a **le même** sens de variation que $x\\mapsto a^x$ ; si $k<0$, elle a **le sens contraire** (multiplier par un nombre négatif renverse l'ordre).",
+					"$x\\mapsto{{a}}^x$ est {{if:a>1|croissante, car ${{a}}>1$|décroissante, car $0<{{a}}<1$}}.",
+					"$k={{k}}>0$ : même sens, $f$ est $\\textcolor{{{color:primary.0}}}{\\text{croissante}}$."
+				]
+			}
+		},
+		{
+			"statement": "On considère la fonction $f$ définie sur $\\mathbb{R}$ par $f(x)={{k}}\\times{{a}}^x$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "0.5|0.8|0.9|0.95"
+				},
+				{
+					"name": "k",
+					"expression": "2|3|4|5|100"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $k\\neq0$ et $a>0$ : si $k>0$, $x\\mapsto ka^x$ a **le même** sens de variation que $x\\mapsto a^x$ ; si $k<0$, elle a **le sens contraire** (multiplier par un nombre négatif renverse l'ordre).",
+					"$x\\mapsto{{a}}^x$ est {{if:a>1|croissante, car ${{a}}>1$|décroissante, car $0<{{a}}<1$}}.",
+					"$k={{k}}>0$ : même sens, $f$ est $\\textcolor{{{color:primary.0}}}{\\text{décroissante}}$."
+				]
+			}
+		},
+		{
+			"statement": "On considère la fonction $f$ définie sur $\\mathbb{R}$ par $f(x)={{k}}\\times{{a}}^x$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1.5|2|3|1.05"
+				},
+				{
+					"name": "k",
+					"expression": "-5|-4|-3|-2"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $k\\neq0$ et $a>0$ : si $k>0$, $x\\mapsto ka^x$ a **le même** sens de variation que $x\\mapsto a^x$ ; si $k<0$, elle a **le sens contraire** (multiplier par un nombre négatif renverse l'ordre).",
+					"$x\\mapsto{{a}}^x$ est {{if:a>1|croissante, car ${{a}}>1$|décroissante, car $0<{{a}}<1$}}.",
+					"$k={{k}}<0$ : sens contraire, $f$ est $\\textcolor{{{color:primary.0}}}{\\text{décroissante}}$."
+				]
+			}
+		},
+		{
+			"statement": "On considère la fonction $f$ définie sur $\\mathbb{R}$ par $f(x)={{k}}\\times{{a}}^x$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "0.5|0.8|0.9|0.95"
+				},
+				{
+					"name": "k",
+					"expression": "-5|-4|-3|-2"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $k\\neq0$ et $a>0$ : si $k>0$, $x\\mapsto ka^x$ a **le même** sens de variation que $x\\mapsto a^x$ ; si $k<0$, elle a **le sens contraire** (multiplier par un nombre négatif renverse l'ordre).",
+					"$x\\mapsto{{a}}^x$ est {{if:a>1|croissante, car ${{a}}>1$|décroissante, car $0<{{a}}<1$}}.",
+					"$k={{k}}<0$ : sens contraire, $f$ est $\\textcolor{{{color:primary.0}}}{\\text{croissante}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3 × 2^x croissante",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"k": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : décroissante",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"k": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "4 × 0,5^x décroissante",
+			"variationIndex": 1,
+			"variables": {
+				"a": "0.5",
+				"k": "4"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : croissante",
+			"variationIndex": 1,
+			"variables": {
+				"a": "0.5",
+				"k": "4"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−3 × 2^x décroissante",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"k": "-3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : croissante (signe de k oublié)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"k": "-3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−2 × 0,8^x croissante",
+			"variationIndex": 3,
+			"variables": {
+				"a": "0.8",
+				"k": "-2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : décroissante (signe de k oublié)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "0.8",
+				"k": "-2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -2,17 +2,17 @@
  * GET /api/teacher/classes/[classId]/anti-fraud/flags
  *
  * Liste les flags anti-fraud des élèves de la classe (jointure class_members).
- * Filtres : resolved, since, type, capacity.
+ * Filtres : resolved, since, type, point (point du programme).
  *
  * Cf. spec TDD : docs/archive/wip/srs-anti-fraud-spec-tdd.md §B9
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireTeacherOfClass } from '$lib/server/stats/teacher-class-auth';
-import { classIdParamSchema } from '$lib/server/validation/teacher-analytics';
-import { flagsListQuerySchema } from '$lib/server/validation/anti-fraud';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireTeacherOfClass } from '#lib/server/stats/teacher-class-auth.ts';
+import { classIdParamSchema } from '#lib/server/validation/teacher-analytics.ts';
+import { flagsListQuerySchema } from '#lib/server/validation/anti-fraud.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/teacher/classes/[classId]/anti-fraud/flags/+server');
 
@@ -22,21 +22,21 @@ const DEFAULT_SINCE_DAYS = 30;
 export const GET: RequestHandler = async ({ params, url, locals }) => {
 	const paramCheck = classIdParamSchema.safeParse(params);
 	if (!paramCheck.success) {
-		return json({ error: paramCheck.error.issues[0].message }, { status: 400 });
+		return Response.json({ error: paramCheck.error.issues[0].message }, { status: 400 });
 	}
 
 	const queryCheck = flagsListQuerySchema.safeParse({
 		resolved: url.searchParams.get('resolved') ?? undefined,
 		since: url.searchParams.get('since') ?? undefined,
 		type: url.searchParams.get('type') ?? undefined,
-		capacity: url.searchParams.get('capacity') ?? undefined
+		point: url.searchParams.get('point') ?? undefined
 	});
 	if (!queryCheck.success) {
-		return json({ error: queryCheck.error.issues[0].message }, { status: 400 });
+		return Response.json({ error: queryCheck.error.issues[0].message }, { status: 400 });
 	}
 
 	const { classId } = paramCheck.data;
-	const { resolved, since, type, capacity } = queryCheck.data;
+	const { resolved, since, type, point } = queryCheck.data;
 	await requireTeacherOfClass(locals, classId);
 
 	// 1. Liste des élèves actifs de la classe.
@@ -55,7 +55,7 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 
 	const studentIds = (memberRows ?? []).map((m) => m.student_id);
 	if (studentIds.length === 0) {
-		return json({ flags: [], total: 0, resolved_count: 0 });
+		return Response.json({ flags: [], total: 0, resolved_count: 0 });
 	}
 
 	// 2. Construit la query flags avec filtres.
@@ -75,11 +75,11 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 		.limit(MAX_FLAGS_PER_REQUEST);
 
 	if (type) q = q.eq('flag_type', type);
-	if (capacity) q = q.eq('capacity_point_id', capacity);
+	if (point) q = q.eq('capacity_point_id', point);
 
 	const { data: flagRows, error: flagErr } = await q;
 	if (flagErr) {
-		return json({ error: flagErr.message }, { status: 500 });
+		return Response.json({ error: flagErr.message }, { status: 500 });
 	}
 
 	type FlagRow = {
@@ -96,7 +96,7 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 		resolved_at: string | null;
 		created_at: string;
 		profiles: { id: string; first_name: string | null; last_name: string | null } | null;
-		skills: { id: string; name: string } | null;
+		curriculum_points: { id: string; name: string } | null;
 	};
 
 	const flags = ((flagRows ?? []) as unknown as FlagRow[]).map((row) => ({
@@ -119,7 +119,9 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 					last_name: row.profiles.last_name
 				}
 			: { id: row.student_id, first_name: null, last_name: null },
-		capacity: row.skills ? { id: row.skills.id, name: row.skills.name } : null
+		point: row.curriculum_points
+			? { id: row.curriculum_points.id, name: row.curriculum_points.name }
+			: null
 	}));
 
 	// 3. Compteur total + résolus (pour le tableau de bord).
@@ -130,7 +132,7 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 		.eq('resolved', true)
 		.gte('created_at', sinceIso);
 
-	return json({
+	return Response.json({
 		flags,
 		total: flags.length,
 		resolved_count: resolvedCount ?? 0

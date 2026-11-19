@@ -17,9 +17,9 @@ import {
 } from '../expected-result';
 import { generateInstance } from '../generator/instance-generator';
 import { CONSTRAINT_FEEDBACK } from '../feedback';
-import { REAL_TEMPLATES } from '$lib/server/validation/__tests__/fixtures/real-templates';
+import { REAL_TEMPLATES } from '#lib/server/validation/__tests__/fixtures/real-templates.ts';
 import type { InstanceBlank, QuestionInstance, QuestionTemplate } from '../types';
-import type { ResolvedMarkdown } from '$lib/ubumark';
+import type { ResolvedMarkdown } from '#lib/ubumark/index.ts';
 
 // Fixtures
 function template(
@@ -32,8 +32,6 @@ function template(
 		id: 't',
 		type: 'fill_in_blanks',
 		level: 1,
-		theme: 'x',
-		domain: 'y',
 		grades: ['6'],
 		title: 't',
 		variations: [{ statement, blanks, variables, ...extra }]

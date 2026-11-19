@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import FunctionCurve from '../FunctionCurve.svelte';
-import { createTransformer } from '$lib/grapheur/viewport';
-import { GrapheurStore } from '$lib/stores/grapheur.svelte';
-import { isExplicitFunction } from '$lib/grapheur/types';
-import type { ExplicitFunction, Viewport } from '$lib/grapheur/types';
-import type { Restriction } from '$lib/grapheur/restriction';
+import { createTransformer } from '#lib/grapheur/viewport.ts';
+import { GrapheurStore } from '#lib/stores/grapheur.svelte.ts';
+import { isExplicitFunction } from '#lib/grapheur/types.ts';
+import type { ExplicitFunction, Viewport } from '#lib/grapheur/types.ts';
+import type { Restriction } from '#lib/grapheur/restriction.ts';
 
 /**
  * Une courbe restreinte se dessine sur son ensemble seulement, avec ses

@@ -21,6 +21,19 @@
 		     maths importent `$lib/utils/mathlive-styles` (CSS haché par Vite, seulement sur
 		     les pages qui en ont besoin) ; avant, deux CSS bloquantes sur toutes les pages. -->
 
+		<!-- Lecture facilitée : classe posée avant le premier affichage, sinon le texte
+		     s'affiche un instant en Inter puis saute en Luciole. Même clé et même classe
+		     que `easyReading.svelte.ts` ; les formules basculent quand le store démarre. -->
+		<script>
+			try {
+				if (localStorage.getItem('easyReading') === 'true') {
+					document.documentElement.classList.add('lecture-facilitee');
+				}
+			} catch (e) {
+				// Stockage bloqué (navigation privée) : réglage éteint
+			}
+		</script>
+
 		%sveltekit.head%
 	</head>
 

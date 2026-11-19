@@ -13,11 +13,11 @@ import { describe, it, expect, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import QuestionCard from '../QuestionCard.svelte';
 import FlashCard from '../FlashCard.svelte';
-import FigureBlock from '$lib/components/markdown/nodes/FigureBlock.svelte';
-import { generateInstance } from '$lib/questions/generator/instance-generator';
-import type { QuestionInstance, QuestionTemplate } from '$lib/questions/types';
-import { parseMarkdown, resolvedMarkdown, templateMarkdown } from '$lib/ubumark';
-import type { FigureNode } from '$lib/ubumark/types/figure';
+import FigureBlock from '#lib/components/markdown/nodes/FigureBlock.svelte';
+import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
+import type { QuestionInstance, QuestionTemplate } from '#lib/questions/types.ts';
+import { parseMarkdown, resolvedMarkdown, templateMarkdown } from '#lib/ubumark/index.ts';
+import type { FigureNode } from '#lib/ubumark/types/figure.ts';
 
 const BLOCK = [
 	'```figure-a-completer',
@@ -40,8 +40,6 @@ const TEMPLATE = {
 		{ statement: templateMarkdown(`Trace la droite qui passe par les points A et B.\n\n${BLOCK}`) }
 	],
 	grades: ['CP'],
-	theme: 'Test',
-	domain: 'Test',
 	level: 1
 } as unknown as QuestionTemplate;
 

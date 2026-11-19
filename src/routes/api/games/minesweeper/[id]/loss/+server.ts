@@ -1,9 +1,9 @@
 import type { RequestHandler } from './$types';
-import { error, json } from '@sveltejs/kit';
-import { requireRoles } from '$lib/server/middleware/auth';
-import { completeGameSchema, validateGridState } from '$lib/server/validation/minesweeper';
-import { sanitizeRPCError, sanitizePostgresError } from '$lib/server/utils/error-handler';
-import { validateUuidParam } from '$lib/server/validation/params';
+import { error } from '@sveltejs/kit';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import { completeGameSchema, validateGridState } from '#lib/server/validation/minesweeper.ts';
+import { sanitizeRPCError, sanitizePostgresError } from '#lib/server/utils/error-handler.ts';
+import { validateUuidParam } from '#lib/server/validation/params.ts';
 
 /**
  * Record Minesweeper game loss
@@ -92,7 +92,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 			sanitizeRPCError(rpcError, 'record_minesweeper_loss');
 		}
 
-		return json({ success: true });
+		return Response.json({ success: true });
 	} catch (err) {
 		sanitizePostgresError(err, 'MINESWEEPER_LOSS');
 	}

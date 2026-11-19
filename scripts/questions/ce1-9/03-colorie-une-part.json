@@ -1,10 +1,8 @@
 {
+	"id": "191eee18-341b-47b9-ba6c-0b873746d64d",
 	"title": "Colorie une fraction unitaire de la figure",
 	"description": "Colorier 1/2 à 1/10 d'une bande, d'un disque ou d'une grille",
 	"grades": ["CE1"],
-	"theme": "Fractions",
-	"domain": "Apprivoiser",
-	"subdomain": "Partage",
 	"level": 7,
 	"delay": 90,
 	"status": "draft",

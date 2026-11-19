@@ -1,10 +1,10 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import SpecialPoints from '../SpecialPoints.svelte';
-import { GrapheurStore } from '$lib/stores/grapheur.svelte';
-import { grapheurContext } from '$lib/stores/grapheur-context';
-import { createTransformer } from '$lib/grapheur/viewport';
-import type { Viewport } from '$lib/grapheur/types';
+import { GrapheurStore } from '#lib/stores/grapheur.svelte.ts';
+import { grapheurContext } from '#lib/stores/grapheur-context.ts';
+import { createTransformer } from '#lib/grapheur/viewport.ts';
+import type { Viewport } from '#lib/grapheur/types.ts';
 
 // Une instance neuve par test, fournie aux composants par le contexte.
 let grapheurStore = new GrapheurStore();

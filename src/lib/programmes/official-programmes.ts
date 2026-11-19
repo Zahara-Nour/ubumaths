@@ -3,7 +3,7 @@
  * ====================================
  * Le texte officiel de chaque niveau : un PDF servi depuis `static/programmes/`
  * et, quand elle existe, sa transcription ubumark (lue côté serveur par
- * `$lib/server/programmes/transcriptions`).
+ * `#lib/server/programmes/transcriptions.ts`).
  *
  * Les cycles 2, 3 et 4 n'ont qu'un PDF pour trois niveaux, rangé par domaine
  * puis par niveau : aucune page n'est « celle » d'un niveau, le PDF s'ouvre
@@ -14,7 +14,7 @@
  * @module programmes/official-programmes
  */
 
-import type { GradeCode } from '$lib/types/grades';
+import type { GradeCode } from '#lib/types/grades.ts';
 
 // Types
 

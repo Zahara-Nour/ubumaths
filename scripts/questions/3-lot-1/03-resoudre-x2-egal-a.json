@@ -1,10 +1,8 @@
 {
+	"id": "3806ee3d-efc7-4f7d-ba23-966101aff103",
 	"title": "Résoudre x² = a",
 	"description": "Résoudre x² = a : deux solutions −√a et √a si a > 0 (x² = 49, x² = 7), une si a = 0, aucune si a < 0 ; ensemble des solutions écrit",
 	"grades": ["3"],
-	"theme": "Calcul littéral",
-	"domain": "Equations",
-	"subdomain": "x² = a",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

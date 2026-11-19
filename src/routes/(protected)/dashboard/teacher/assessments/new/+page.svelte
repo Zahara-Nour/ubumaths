@@ -1,14 +1,14 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { Button } from '$lib/components/ui/button';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import * as Card from '$lib/components/ui/card';
-	import { Badge } from '$lib/components/ui/badge';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import { submitAction } from '$lib/utils/form-action';
-	import EvaluationConfigForm from '$lib/components/assessments/EvaluationConfigForm.svelte';
-	import { countSeriesQuestions, formLabel } from '$lib/types/evaluation';
-	import type { EvaluationSettingsInput } from '$lib/types/evaluation';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import { submitAction } from '#lib/utils/form-action.ts';
+	import EvaluationConfigForm from '#lib/components/assessments/EvaluationConfigForm.svelte';
+	import { countSeriesQuestions, formLabel } from '#lib/types/evaluation.ts';
+	import type { EvaluationSettingsInput } from '#lib/types/evaluation.ts';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
@@ -19,7 +19,7 @@
 	let lastSettings = $state<EvaluationSettingsInput | undefined>(undefined);
 	let isSubmitting = $state(false);
 
-	let questionsCount = $derived(countSeriesQuestions(data.series.categories));
+	let questionsCount = $derived(countSeriesQuestions(data.series.items));
 
 	function handleBack() {
 		goto('/dashboard/teacher/series').then(() => {});

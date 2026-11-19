@@ -1,10 +1,8 @@
 {
+	"id": "702af2f7-e1d9-4fe6-99a8-887377fe9a70",
 	"title": "Lire et écrire une fraction",
 	"description": "Cinquante-trois douzièmes ↔ 53/12 : écrire en chiffres une fraction donnée en lettres, la lire parmi quatre écritures ; dénominateur au plus 60",
 	"grades": ["CM2"],
-	"theme": "Fractions",
-	"domain": "Apprivoiser",
-	"subdomain": "Ecriture",
 	"level": 8,
 	"delay": 30,
 	"status": "draft",

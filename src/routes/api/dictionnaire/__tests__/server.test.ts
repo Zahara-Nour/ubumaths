@@ -8,8 +8,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { RequestEvent } from '@sveltejs/kit';
 
 const loadDictionary = vi.fn();
-vi.mock('$lib/server/dictionary/load', async (importOriginal) => ({
-	...(await importOriginal<typeof import('$lib/server/dictionary/load')>()),
+vi.mock('#lib/server/dictionary/load.ts', async (importOriginal) => ({
+	...(await importOriginal<typeof import('#lib/server/dictionary/load.ts')>()),
 	loadDictionary: (...args: unknown[]) => loadDictionary(...args)
 }));
 

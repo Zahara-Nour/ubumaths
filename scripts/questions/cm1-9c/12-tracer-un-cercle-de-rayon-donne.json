@@ -1,0 +1,144 @@
+{
+	"id": "2e15c33a-d21b-449b-ba3b-b9591db2bd1c",
+	"title": "Tracer un cercle de rayon donné",
+	"description": "Tracer au compas un cercle de centre donné et de rayon donné en cm (ou en cm et mm), l'ouverture prise sur la règle graduée",
+	"grades": ["CM1", "CM2"],
+	"level": 1,
+	"delay": 120,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Trace le cercle de centre $O$ et de rayon ${{r}}\\,\\text{cm}$. Pose le $0$ de la règle graduée sur $O$, puis ouvre le compas jusqu'à la bonne graduation.\n\n```figure-a-completer\nfenetre: 0 ; 14 ; 0 ; 14\nverifier: cercle c = cercle(O, rayon={{r}} cm)\n---\nO = point(7, 7)\n```",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "2..6"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La règle posée avec son $0$ sur $O$ ; le compas piqué en $O$, ouvert jusqu'à la graduation ${{r}}\\,\\text{cm}$ : on trace le $\\textcolor{{{color:primary.0}}}{\\text{cercle}}$."
+				]
+			}
+		},
+		{
+			"statement": "Trace le cercle de centre $O$ et de rayon ${{eval:x/10;d}}\\,\\text{cm}$. Pose le $0$ de la règle graduée sur $O$, puis ouvre le compas jusqu'à la bonne graduation.\n\n```figure-a-completer\nfenetre: 0 ; 14 ; 0 ; 14\nverifier: cercle c = cercle(O, rayon={{eval:x/10;d}} cm)\n---\nO = point(7, 7)\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "2..5"
+				},
+				{
+					"name": "m",
+					"expression": "1..9"
+				},
+				{
+					"name": "x",
+					"expression": "eval:10*c+m"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{eval:x/10;d}}\\,\\text{cm} = {{c}}\\,\\text{cm}\\,{{m}}\\,\\text{mm}$ : sur la règle, ${{m}}$ petites graduations après le ${{c}}\\,\\text{cm}$.",
+					"Le compas piqué en $O$, ouvert jusqu'à cette graduation : on trace le $\\textcolor{{{color:primary.0}}}{\\text{cercle}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Rayon 4 cm",
+			"variationIndex": 0,
+			"variables": {
+				"r": "4"
+			},
+			"answers": ["regle(7;7;8;7;1)|cercle(7;7;11;7)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Rayon 6 cm",
+			"variationIndex": 0,
+			"variables": {
+				"r": "6"
+			},
+			"answers": ["regle(7;7;8;7;1)|cercle(7;7;13;7)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : rayon 4,2 cm au lieu de 4 cm",
+			"variationIndex": 0,
+			"variables": {
+				"r": "4"
+			},
+			"answers": ["regle(7;7;8;7;1)|cercle(7;7;11.2;7)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : compas ouvert sans la règle",
+			"variationIndex": 0,
+			"variables": {
+				"r": "4"
+			},
+			"answers": ["cercle(7;7;11;7)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : compas piqué à côté de O",
+			"variationIndex": 0,
+			"variables": {
+				"r": "4"
+			},
+			"answers": ["regle(7;7;8;7;1)|cercle(7.5;7;11.5;7)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Rayon 3,5 cm",
+			"variationIndex": 1,
+			"variables": {
+				"c": "3",
+				"m": "5",
+				"x": "35"
+			},
+			"answers": ["regle(7;7;8;7;1)|cercle(7;7;10.5;7)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : rayon 3 cm au lieu de 3,5 cm",
+			"variationIndex": 1,
+			"variables": {
+				"c": "3",
+				"m": "5",
+				"x": "35"
+			},
+			"answers": ["regle(7;7;8;7;1)|cercle(7;7;10;7)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : diamètre de 3,5 cm (rayon 1,75)",
+			"variationIndex": 1,
+			"variables": {
+				"c": "3",
+				"m": "5",
+				"x": "35"
+			},
+			"answers": ["regle(7;7;8;7;1)|cercle(7;7;8.7;7)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

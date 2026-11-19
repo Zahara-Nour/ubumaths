@@ -12,8 +12,8 @@
  */
 
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
-import { BasePythonExecutor } from '$lib/shared/python';
-import type { DebugSnapshot, DebugPauseReason } from '$lib/shared/python/debug/types';
+import { BasePythonExecutor } from '#lib/shared/python/index.ts';
+import type { DebugSnapshot, DebugPauseReason } from '#lib/shared/python/debug/types.ts';
 
 // =============================================================================
 // Recording executor — drives the debug session to completion, collecting every

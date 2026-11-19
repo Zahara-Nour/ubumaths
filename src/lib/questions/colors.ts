@@ -62,7 +62,7 @@ export const COLOR_PALETTES = {
 
 export type PaletteName = keyof typeof COLOR_PALETTES;
 
-import { randomIndex, type RandomSource } from '$lib/utils/random';
+import { randomIndex, type RandomSource } from '#lib/utils/random.ts';
 
 /**
  * Resolves a color reference to an actual hex color code

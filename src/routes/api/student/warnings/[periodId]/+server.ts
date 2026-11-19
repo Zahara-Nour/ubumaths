@@ -41,12 +41,13 @@
  * ```
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import type { StudentWarnings } from '$lib/types/student-cache';
-import type { Warning, WarningType, StudentWarningCounts } from '$lib/server/warnings';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import type { StudentWarnings } from '#lib/types/student-cache.ts';
+import type { Warning, WarningType, StudentWarningCounts } from '#lib/server/warnings.ts';
 import { z } from 'zod';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/student/warnings/[periodId]/+server');
 
@@ -54,17 +55,8 @@ const logger = createServerLogger('api/student/warnings/[periodId]/+server');
 const periodIdSchema = z.string().uuid();
 
 export const GET: RequestHandler = async ({ locals, params }) => {
-	const { user, profile, supabase } = locals;
-
-	// Auth check: Must be logged in
-	if (!user || !profile) {
-		throw error(401, 'Authentication required');
-	}
-
-	// Auth check: Must be a student
-	if (profile.role !== 'student') {
-		throw error(403, 'This endpoint is only accessible to students');
-	}
+	const { user } = await requireRole(locals, 'student');
+	const { supabase } = locals;
 
 	// Validate periodId parameter
 	const periodIdValidation = periodIdSchema.safeParse(params.periodId);
@@ -118,7 +110,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			warnings
 		};
 
-		return json({ warnings: studentWarnings });
+		return Response.json({ warnings: studentWarnings });
 	} catch (err) {
 		// Re-throw SvelteKit errors
 		if (err && typeof err === 'object' && 'status' in err) {

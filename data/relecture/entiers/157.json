@@ -44,9 +44,6 @@
 			}
 		],
 		"grades": ["CE1"],
-		"theme": "Entiers",
-		"domain": "Multiplier",
-		"subdomain": "Puissances de $$10$$",
 		"level": 1,
 		"status": "draft",
 		"delay": 10,

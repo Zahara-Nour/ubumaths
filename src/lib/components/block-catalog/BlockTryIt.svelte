@@ -3,9 +3,9 @@
 	et les messages d'erreur suivent en direct.
 -->
 <script lang="ts">
-	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
-	import { Button } from '$lib/components/ui/button';
-	import { Textarea } from '$lib/components/ui/textarea';
+	import MarkdownRenderer from '#lib/components/markdown/MarkdownRenderer.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Textarea } from '#lib/components/ui/textarea/index.ts';
 
 	let { initial }: { initial: string } = $props();
 

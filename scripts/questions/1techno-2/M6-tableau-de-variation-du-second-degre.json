@@ -1,0 +1,154 @@
+{
+	"id": "e539088a-1eee-4259-8e61-b0f6fa514eaf",
+	"title": "Tableau de variation d'une fonction du second degré",
+	"description": "Compléter le tableau : abscisse et ordonnée du sommet, sens des flèches",
+	"grades": ["1_GEN", "1_TECHNO"],
+	"level": 3,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		},
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{if:a==-1|-|}}{{if:a*a>1|{{a}}|}}(x{{eval:-(r);+}})(x{{eval:-(s);+}})$.\n\nComplète son tableau de variation.\n\n```variation\nvariable: x\ndomain: -inf, ?{{al}}, +inf\n\nvariation: f(x)\n  {{al}}: ?{{be}}, {{if:a>0|bottom|top}}\n  -inf,{{al}}: ?flèche\n  {{al}},+inf: ?flèche\n```",
+			"blanks": [],
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "r",
+					"expression": "-6..4"
+				},
+				{
+					"name": "h",
+					"expression": "1..3"
+				},
+				{
+					"name": "s",
+					"expression": "eval:r+2*h"
+				},
+				{
+					"name": "al",
+					"expression": "eval:r+h"
+				},
+				{
+					"name": "be",
+					"expression": "eval:-a*h^2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f(x)=0$ pour $x={{r}}$ ou $x={{s}}$ ; l'axe de symétrie passe par le milieu, $x={{al}}$ : c'est l'abscisse du sommet, et $f({{al}})={{be}}$.",
+					"Le coefficient de $x^2$ est ${{a}}$ : $f$ est {{if:a>0|décroissante puis croissante|croissante puis décroissante}}, avec un {{if:a>0|minimum|maximum}} au sommet.",
+					"```variation\nvariable: x\ndomain: -inf, {{al}}, +inf\n\nvariation: f(x)\n  {{al}}: {{be}}, {{if:a>0|bottom|top}}\n```"
+				]
+			},
+			"conditions": ["s <= 6"]
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{eval:ax^2+c}}$.\n\nComplète son tableau de variation.\n\n```variation\nvariable: x\ndomain: -inf, ?0, +inf\n\nvariation: f(x)\n  0: ?{{c}}, {{if:a>0|bottom|top}}\n  -inf,0: ?flèche\n  0,+inf: ?flèche\n```",
+			"blanks": [],
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..6;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La parabole est symétrique par rapport à l'axe des ordonnées : le sommet a pour abscisse $0$, et $f(0)={{c}}$.",
+					"Le coefficient de $x^2$ est ${{a}}$ : $f$ est {{if:a>0|décroissante puis croissante|croissante puis décroissante}}, avec un {{if:a>0|minimum|maximum}} au sommet.",
+					"```variation\nvariable: x\ndomain: -inf, 0, +inf\n\nvariation: f(x)\n  0: {{c}}, {{if:a>0|bottom|top}}\n```"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2(x-1)(x-5) : 3, ↘, -8, ↗",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"r": "1",
+				"h": "2",
+				"s": "5",
+				"al": "3",
+				"be": "-8"
+			},
+			"answers": ["3", "↘", "-8", "↗"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : flèches inversées",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"r": "1",
+				"h": "2",
+				"s": "5",
+				"al": "3",
+				"be": "-8"
+			},
+			"answers": ["3", "↗", "-8", "↘"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : extremum 8",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"r": "1",
+				"h": "2",
+				"s": "5",
+				"al": "3",
+				"be": "-8"
+			},
+			"answers": ["3", "↘", "8", "↗"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "-x²+4 : 0, ↗, 4, ↘",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-1",
+				"c": "4"
+			},
+			"answers": ["0", "↗", "4", "↘"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : flèches de a > 0",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-1",
+				"c": "4"
+			},
+			"answers": ["0", "↘", "4", "↗"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

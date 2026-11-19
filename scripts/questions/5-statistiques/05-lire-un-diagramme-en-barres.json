@@ -1,10 +1,8 @@
 {
+	"id": "eeba38c7-b5f2-47d5-a3ff-8d6f4bc19221",
 	"title": "Lire un diagramme en barres",
 	"description": "Lire un effectif sur un diagramme en barres gradué de 2 en 2 ou de 5 en 5 (combien d'élèves ont 12 ans ?)",
 	"grades": ["5"],
-	"theme": "Statistiques",
-	"domain": "Représenter des données",
-	"subdomain": "diagrammes en barres",
 	"level": 4,
 	"delay": 90,
 	"status": "draft",

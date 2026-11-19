@@ -1,10 +1,8 @@
 {
+	"id": "c20b687f-f089-4ed0-b1b0-dc3641c3c978",
 	"title": "Repérer un point par un nombre entier",
 	"description": "Lire le nombre entier qui repère un point d'une demi-droite graduée de 1 en 1, 10 en 10 ou 100 en 100, ou de 1 000 en 1 000 jusqu'à 100 000 en 100 000 (3 470 000) ; deux graduations étiquetées, le pas est à trouver",
 	"grades": ["CM2"],
-	"theme": "Entiers",
-	"domain": "Apprivoiser",
-	"subdomain": "Repérage",
 	"level": 2,
 	"delay": 45,
 	"status": "draft",

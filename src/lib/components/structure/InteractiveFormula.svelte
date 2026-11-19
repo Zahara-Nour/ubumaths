@@ -38,7 +38,7 @@
 		type ExpressionStructure,
 		type MovableGroup,
 		type MovablePart
-	} from '$lib/mathAST/structure';
+	} from '#lib/mathAST/structure/index.ts';
 	import { computeFrames, frameAt, fractionLimits, type Box } from './frame-geometry';
 
 	// Types

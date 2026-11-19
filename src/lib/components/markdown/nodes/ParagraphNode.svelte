@@ -21,10 +21,10 @@
 	@see BlankInput.svelte for blank input rendering
 -->
 <script lang="ts">
-	import { sanitizeUrl } from '$lib/utils/sanitize';
-	import type { InlineNode, InputState, InternalLinkReferenceType } from '$lib/ubumark';
-	import type { CapitalPairs, GenericFunctionConfig } from '$lib/mathAST/parser/types';
-	import type { ExerciseHint } from '$lib/exercises/types';
+	import { sanitizeUrl } from '#lib/utils/sanitize.ts';
+	import type { InlineNode, InputState, InternalLinkReferenceType } from '#lib/ubumark/index.ts';
+	import type { CapitalPairs, GenericFunctionConfig } from '#lib/mathAST/parser/types.ts';
+	import type { ExerciseHint } from '#lib/exercises/types.ts';
 	import MathInline from './MathInline.svelte';
 	import MathPrompt from './MathPrompt.svelte';
 	import TextNode from './TextNode.svelte';
@@ -32,7 +32,7 @@
 	import BlankInput from './BlankInput.svelte';
 	import HintReference from './HintReference.svelte';
 	import InternalLink from './InternalLink.svelte';
-	import type { ViewerRole } from '$lib/resources';
+	import type { ViewerRole } from '#lib/resources/index.ts';
 	import {
 		hasPrompts,
 		expressionToFlashLatex,
@@ -107,7 +107,7 @@
 		genericFunctions,
 		hints = [],
 		onHintOpen,
-		internalLinkRole = 'student',
+		internalLinkRole,
 		onInternalLinkClick
 	}: Props = $props();
 

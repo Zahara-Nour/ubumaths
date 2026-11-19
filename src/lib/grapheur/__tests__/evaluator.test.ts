@@ -15,7 +15,7 @@ import {
 } from '../evaluator';
 
 // Sampler (lives in geometry-core, used here by the integration tests)
-import { sampleFunction } from '$lib/geometry-core/viewport';
+import { sampleFunction } from '#lib/geometry-core/viewport/index.ts';
 
 // Bezier tests
 import {

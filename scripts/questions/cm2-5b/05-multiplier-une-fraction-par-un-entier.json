@@ -1,10 +1,8 @@
 {
+	"id": "c257a672-73a1-41ba-8157-cba8d080ecbd",
 	"title": "Multiplier une fraction par un entier",
 	"description": "3 × 5/4 = 5/4 + 5/4 + 5/4 = 15/4 : produit d'un entier (2 à 9) par une fraction, vu comme une addition itérée ; dénominateur au plus 60, toute fraction égale juste",
 	"grades": ["CM2"],
-	"theme": "Fractions",
-	"domain": "Calculer",
-	"subdomain": "Multiplication",
 	"level": 10,
 	"delay": 30,
 	"status": "draft",

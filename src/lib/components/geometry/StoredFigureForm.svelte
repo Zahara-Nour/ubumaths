@@ -14,23 +14,23 @@
 	Poste vers les actions de la page : `?/save`, et `?/delete` si `deletable`.
 -->
 <script lang="ts">
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import { goto } from '$app/navigation';
 	import { onDestroy } from 'svelte';
-	import { Button } from '$lib/components/ui/button';
-	import * as Card from '$lib/components/ui/card';
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
-	import { Textarea } from '$lib/components/ui/textarea';
-	import { ConfirmDialog } from '$lib/components/ui/confirm-dialog';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
-	import TagBadgeSelector from '$lib/components/TagBadgeSelector.svelte';
-	import StoredFigurePreview from '$lib/components/geometry/StoredFigurePreview.svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import { submitAction } from '$lib/utils/form-action';
-	import { getGradeSelectItems } from '$lib/utils/grades';
-	import { evaluateStoredFigure } from '$lib/utils/geometry-figure-script';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import { Textarea } from '#lib/components/ui/textarea/index.ts';
+	import { ConfirmDialog } from '#lib/components/ui/confirm-dialog/index.ts';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
+	import TagBadgeSelector from '#lib/components/TagBadgeSelector.svelte';
+	import StoredFigurePreview from '#lib/components/geometry/StoredFigurePreview.svelte';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import { submitAction } from '#lib/utils/form-action.ts';
+	import { getGradeSelectItems } from '#lib/utils/grades.ts';
+	import { evaluateStoredFigure } from '#lib/utils/geometry-figure-script.ts';
 	import {
 		hasFigureHeader,
 		readHeaderField,
@@ -39,9 +39,13 @@
 		writeHeaderField,
 		writeWindowFields,
 		type StoredFigureFieldKey
-	} from '$lib/utils/stored-figure-header';
-	import { formatFigureWindow } from '$lib/ubumark/utils/figure-view';
-	import { FIGURE_RENDER_MODES, FIGURE_SIZES, type FigureWindow } from '$lib/ubumark/types/figure';
+	} from '#lib/utils/stored-figure-header.ts';
+	import { formatFigureWindow } from '#lib/ubumark/utils/figure-view.ts';
+	import {
+		FIGURE_RENDER_MODES,
+		FIGURE_SIZES,
+		type FigureWindow
+	} from '#lib/ubumark/types/figure.ts';
 
 	// ============================================================================
 	// TYPES

@@ -71,7 +71,13 @@ describe('construction — lecture du bloc', () => {
 				'A = point(1, 2)'
 			)
 		);
-		expect(node.construction?.checks.map((c) => (c.kind === 'point' ? null : c.points))).toEqual([
+		expect(
+			node.construction?.checks.map((c) =>
+				c.kind === 'point' || c.kind === 'droite' || c.kind === 'cercle' || c.kind === 'segment'
+					? null
+					: c.points
+			)
+		).toEqual([
 			['A', 'B'],
 			['C', 'D']
 		]);
@@ -104,16 +110,18 @@ describe('construction — erreurs situées', () => {
 	it('outil inconnu', () => {
 		expect(
 			messages(
-				block('fenetre: 0 ; 10 ; 0 ; 6', 'outils: compas', 'verifier: droite_par A ; B', '---')
+				block('fenetre: 0 ; 10 ; 0 ; 6', 'outils: crayon', 'verifier: droite_par A ; B', '---')
 			)
-		).toContain('Ligne 2 : outil « compas » inconnu (droite, segment, point)');
+		).toContain(
+			'Ligne 2 : outil « crayon » inconnu (droite, segment, point, equerre, compas, report, rapporteur, regle)'
+		);
 	});
 
 	it('vérification inconnue', () => {
 		expect(
 			messages(block('fenetre: 0 ; 10 ; 0 ; 6', 'verifier: cercle_par A ; B', '---'))
 		).toContain(
-			'Ligne 2 : vérification « cercle_par » inconnue (droite_par, carre, rectangle, symetrique, point)'
+			'Ligne 2 : vérification « cercle_par » inconnue (droite_par, carre, rectangle, symetrique, point, droite, cercle, triangle, angle, mesure, segment)'
 		);
 	});
 
@@ -183,22 +191,24 @@ describe('carré et rectangle sur quadrillage (CP-060, § 7 et § 9)', () => {
 
 	it('carre attend deux points, rectangle trois, tous différents', () => {
 		expect(messages(block('fenetre: 0 ; 10 ; 0 ; 7', 'verifier: carre A', '---'))).toContain(
-			'Ligne 2 : carre attend deux points : « carre A ; B »'
+			'Ligne 2 : carre attend deux points : « carre A ; B » (sur papier uni : « carre A ; B ; C ; D »)'
 		);
 		expect(
 			messages(block('fenetre: 0 ; 10 ; 0 ; 7', 'verifier: rectangle A ; B', '---'))
-		).toContain('Ligne 2 : rectangle attend trois points : « rectangle A ; B ; C »');
+		).toContain(
+			'Ligne 2 : rectangle attend trois points : « rectangle A ; B ; C » (sur papier uni : « rectangle A ; B ; C ; D : BC = 3 cm »)'
+		);
 		expect(
 			messages(block('fenetre: 0 ; 10 ; 0 ; 7', 'verifier: rectangle A ; B ; A', '---'))
 		).toContain('Ligne 2 : rectangle attend trois points différents');
 	});
 
-	it('un seul outil par bloc', () => {
+	it('un seul outil par bloc (plusieurs : seulement les instruments du point ou du symétrique)', () => {
 		expect(
 			messages(
 				block('fenetre: 0 ; 10 ; 0 ; 7', 'outils: droite, segment', 'verifier: carre A ; B', '---')
 			)
-		).toContain('Ligne 2 : un seul outil par figure');
+		).toContain('Ligne 3 : carre : un seul outil par figure (outils: segment)');
 	});
 
 	it('l’outil va avec la vérification', () => {

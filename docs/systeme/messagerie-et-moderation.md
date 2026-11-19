@@ -15,6 +15,7 @@ couvre:
   - src/lib/utils/message-attachment-rules.ts
   - 'src/lib/types/{notification,warnings,messageTemplates,student-inbox}.ts'
   - 'src/lib/utils/{notification-formatters,sanitize-notification}.ts'
+  - src/lib/navigation/goto-notification.ts
   - 'src/routes/(protected)/dashboard/{teacher,admin}/{moderation,notifications,message-templates,friendships}/**'
   - 'src/routes/(protected)/dashboard/notifications/**'
 ---
@@ -171,7 +172,11 @@ La modération porte sur la table `messages` **du chat**, pas sur `private_messa
   `NotificationDropdown.svelte` (montés par `src/routes/(protected)/dashboard/+layout.svelte`) ;
   page `src/routes/(protected)/dashboard/notifications/+page.svelte` (message rendu par
   `{@html}` après `sanitizeNotificationHtml` de `src/lib/utils/sanitize-notification.ts`,
-  résumé quotidien par `src/lib/utils/notification-formatters.ts`).
+  résumé quotidien par `src/lib/utils/notification-formatters.ts`). Le clic sur une
+  notification suit son `action_url` par `gotoNotification`
+  (`src/lib/navigation/goto-notification.ts`) : `goto`, et chargement complet de la page si
+  SvelteKit refuse l'adresse (route renommée depuis l'envoi, la page ou la 404 s'affiche) ;
+  seuls les chemins du site (`/…`, jamais `//…`) sont suivis.
 - Envoi manuel : `src/routes/(protected)/dashboard/teacher/notifications/` et
   `dashboard/admin/notifications/` (form actions, `createNotificationSchema`, limite de débit).
 - Types : `src/lib/types/notification.ts` ; validation `src/lib/server/validation/notifications.ts`.
@@ -182,7 +187,8 @@ La modération porte sur la table `messages` **du chat**, pas sur `private_messa
   `dashboard/admin/message-templates/` (+ `stats/`), avec `FiltersHelp`, `TagsInput` et
   `VariableAutocomplete` de `src/lib/components/templates/` (`TagsInput` sert aussi à
   `src/routes/(protected)/constructions/conversion/+page.svelte`).
-- API : `src/routes/api/messages/templates/` — CRUD, `[id]/approve/` (admin seul),
+- API : `src/routes/api/messages/templates/` — CRUD, `[id]/approve/` (admin seul :
+  `requireAdmin`, prof en mode administration compris),
   `[id]/duplicate/`, `[id]/preview/`, `[id]/versions/`, `favorites/`, `match/`, `stats/`.
 - Moteur de variables : `src/lib/templates/` (vérifié le 2026-10-13) — `templateVariables.ts`
   (variables par déclencheur, `VARIABLES_BY_TRIGGER`), `templateEngine.ts` (`renderTemplate`,
@@ -311,6 +317,9 @@ La modération porte sur la table `messages` **du chat**, pas sur `private_messa
 - Toute notification passe par `sanitizeNotificationHtml` (`src/lib/server/sanitization.ts`)
   avant l'écriture, et de nouveau côté client avant `{@html}`. Configuration partagée
   `NOTIFICATION_SANITIZE_CONFIG` (voir [editeur-riche.md](editeur-riche.md)).
+- `notifications.ts` importe `sanitization.ts` **à l'écriture seulement** (`sanitizeMessage`) :
+  il tire jsdom (~650 modules), et `hooks.server.ts` importe `notifications` via
+  `errorMonitoring`. Test : `notifications-chargement-paresseux.test.ts`.
 - `auto-notifications.ts` échappe (`escapeHtml`) les textes saisis avant de les insérer dans
   le gabarit.
 - Bannière et menu déroulant n'affichent que `title` et `action_label` en texte, sans `{@html}`.

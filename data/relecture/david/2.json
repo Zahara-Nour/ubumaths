@@ -6,14 +6,11 @@
 	"template": {
 		"delay": 10,
 		"level": 3,
-		"theme": "Entiers",
 		"title": "Parité d'un nombre entier",
-		"domain": "Apprivoiser",
 		"grades": [
 			"CE1"
 		],
 		"status": "draft",
-		"subdomain": "Ecriture",
 		"variations": [
 			{
 				"statement": "Quelle est la parité de ce nombre ?\n\n$${{expr}}$$\n\n```choix\nmelanger: non\n- pair\n- impair\n```",

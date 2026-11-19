@@ -11,8 +11,8 @@ import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import { flushSync, tick } from 'svelte';
 import FlashCard from '../FlashCard.svelte';
-import type { QuestionInstance } from '$lib/questions/types';
-import { resolvedMarkdown } from '$lib/ubumark';
+import type { QuestionInstance } from '#lib/questions/types.ts';
+import { resolvedMarkdown } from '#lib/ubumark/index.ts';
 import type { MathfieldElement } from 'mathlive';
 
 const NOT_A_COUNTER_EXAMPLE = "Ce nombre n'est pas un contre-exemple : il vérifie l'inégalité.";
@@ -39,8 +39,6 @@ const counterExample = {
 	],
 	correction: { steps: [resolvedMarkdown('Tout réel de $]0;5[$ convient.')] },
 	grades: ['1_SPE'],
-	theme: 'Logique',
-	domain: 'Logique',
 	level: 2,
 	generatedAt: new Date().toISOString()
 } as QuestionInstance;

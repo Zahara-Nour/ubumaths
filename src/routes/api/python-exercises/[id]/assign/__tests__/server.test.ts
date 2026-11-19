@@ -15,7 +15,7 @@ import {
 	createMockRequest,
 	mockSuccess,
 	mockError
-} from '$tests/helpers';
+} from '#tests/helpers/index.ts';
 
 const EXERCISE_ID = '550e8400-e29b-41d4-a716-446655440003';
 const TEACHER_ID = '550e8400-e29b-41d4-a716-446655440011';

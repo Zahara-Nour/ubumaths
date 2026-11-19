@@ -23,18 +23,22 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import { computePointBadges, worstBadge, type CapacityBadge } from '$lib/server/srs/capacity-badge';
-import { getProgrammeTree } from '$lib/server/programme-tree';
+import type { Database } from '#lib/types/database.ts';
+import {
+	computePointBadges,
+	worstBadge,
+	type CurriculumPointBadge
+} from '#lib/server/srs/curriculum-point-badge.ts';
+import { getProgrammeTree } from '#lib/server/programme-tree.ts';
 import {
 	notionLevel,
 	isCompetenceObserved,
 	type MathCompetenceCode,
 	type MathCompetenceLevel
-} from '$lib/types/skills';
-import { isValidGradeCode } from '$lib/utils/grades';
-import { createServerLogger } from '$lib/utils/logger';
-import type { ProgrammePointView } from '$lib/utils/programme-tree';
+} from '#lib/types/skills.ts';
+import { isValidGradeCode } from '#lib/utils/grades.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
+import type { ProgrammePointView } from '#lib/utils/programme-tree.ts';
 
 const logger = createServerLogger('server/progression/student-progression');
 
@@ -54,7 +58,7 @@ export interface NotionSummary {
 	total_count: number;
 	has_remediation: boolean;
 	/** Pire badge FSRS parmi les points (priorité a_remedier > a_renforcer > ...). */
-	fsrs_badge: CapacityBadge;
+	fsrs_badge: CurriculumPointBadge;
 }
 
 export interface BranchWithNotions {
@@ -98,7 +102,7 @@ export interface NotionPointDetail {
 	trainable: boolean;
 	is_acquired: boolean;
 	needs_remediation: boolean;
-	badge: CapacityBadge;
+	badge: CurriculumPointBadge;
 }
 
 export interface NotionDetail {
@@ -155,7 +159,7 @@ const EMPTY_NOTION_STATS: NotionsStats = {
 /**
  * Compte les notions par niveau atteint.
  *
- * Le niveau vient de `notionLevel()` (`$lib/types/skills`), partagée avec l'UI :
+ * Le niveau vient de `notionLevel()` (`#lib/types/skills.ts`), partagée avec l'UI :
  * c'est ce partage qui empêche la tuile et la page de diverger.
  */
 export function aggregateNotionStats(notions: NotionSummary[]): NotionsStats {
@@ -219,11 +223,11 @@ function summarizeNotion(
 	notion: { id: string; name: string; points: ProgrammePointView[] },
 	branch: { id: string; name: string },
 	stateByPoint: Map<string, PointState>,
-	badges: Map<string, CapacityBadge>
+	badges: Map<string, CurriculumPointBadge>
 ): NotionSummary {
 	let acquired_count = 0;
 	let has_remediation = false;
-	const notionBadges: CapacityBadge[] = [];
+	const notionBadges: CurriculumPointBadge[] = [];
 
 	for (const point of notion.points) {
 		const state = stateByPoint.get(point.id);

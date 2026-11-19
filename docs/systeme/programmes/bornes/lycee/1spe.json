@@ -244,7 +244,7 @@
 				"libelle": "Produire un raisonnement par contraposée",
 				"rubrique": "Vocabulaire ensembliste et logique",
 				"bornes": [],
-				"remarque": "Point-compétence (raisonner) : « les élèves produisent des raisonnements … par contraposée » (BO p.4) ; aucun grain questionnable propre, au mieux une question sur la contraposée d'une implication donnée (voir aussi la puce « formuler la réciproque d'une implication, la contraposée »)."
+				"remarque": "Point-compétence (raisonner), questionnable : raisonnement par contraposée écrit à trous (contraposée à choisir, étape clé en case, étapes à ranger), sur la parité des entiers ; sous les bornes générales."
 			},
 			"1SPE-206": {
 				"libelle": "Générer une liste en extension",
@@ -602,7 +602,7 @@
 				"libelle": "Proposer, modéliser une situation permettant de générer une suite de nombres",
 				"rubrique": "Algèbre > Suites numériques, modèles discrets",
 				"bornes": [],
-				"remarque": "Point-compétence (modéliser) : « Proposer, modéliser une situation permettant de générer une suite de nombres » (BO p.6) ; aucun grain questionnable propre."
+				"remarque": "Point-compétence (modéliser) : « Proposer, modéliser une situation permettant de générer une suite de nombres » (BO p.6) ; couvert par ses voisins (370, 222, 376 : motifs ; 230, 379, 297 : modéliser une évolution), pas de modèle propre."
 			},
 			"1SPE-222": {
 				"libelle": "Déterminer une relation explicite pour une suite définie par un motif géométrique, par une question de dénombrement",
@@ -1742,7 +1742,7 @@
 				"libelle": "Résoudre un problème d'optimisation",
 				"rubrique": "Analyse > Variations et courbes représentatives des fonctions",
 				"bornes": [],
-				"remarque": "Point-compétence (modéliser, résoudre un problème) : « Résoudre un problème d'optimisation » (BO p.8) ; les fonctions en jeu restent bornées par les bornes générales."
+				"remarque": "Point-compétence (modéliser, résoudre un problème), questionnable : problème guidé (aire, volume), fonction à exprimer ou dérivée donnée, valeur optimale et optimum en cases ; les fonctions en jeu restent bornées par les bornes générales."
 			},
 			"1SPE-285": {
 				"libelle": "Exploiter les variations d'une fonction pour établir une inégalité",
@@ -2401,7 +2401,7 @@
 				"libelle": "Utiliser le produit scalaire pour résoudre un problème géométrique",
 				"rubrique": "Géométrie > Calcul vectoriel et produit scalaire",
 				"bornes": [],
-				"remarque": "Point-compétence (résoudre un problème géométrique) : « Utiliser le produit scalaire pour résoudre un problème géométrique » (BO p.9) ; aucun grain questionnable propre, plan seulement."
+				"remarque": "Point-compétence (résoudre un problème géométrique), questionnable : problème guidé à trous (carré, rectangle ; relation de Chasles, produits scalaires en cases, justification en case choix), plan seulement."
 			},
 			"1SPE-322": {
 				"libelle": "Formule d'Al-Kashi (démonstration avec le produit scalaire)",
@@ -2592,7 +2592,7 @@
 				"libelle": "Utiliser un repère pour étudier une configuration",
 				"rubrique": "Géométrie > Géométrie repérée",
 				"bornes": [],
-				"remarque": "Point-compétence (choisir un cadre) : « Utiliser un repère pour étudier une configuration » (BO p.9) ; aucun grain questionnable propre, plan en repère orthonormé."
+				"remarque": "Point-compétence (choisir un cadre), questionnable : problème guidé dans un repère orthonormé choisi sur la figure (carré, coordonnées et distances en cases, conclusion en case choix), plan seulement."
 			},
 			"1SPE-334": {
 				"libelle": "Recherche de l'ensemble des points équidistants de l'axe des abscisses et d'un point donné",

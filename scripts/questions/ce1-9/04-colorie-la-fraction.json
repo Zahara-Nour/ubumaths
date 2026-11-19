@@ -1,10 +1,8 @@
 {
+	"id": "2d051cdc-fa11-4e4d-b4f9-ce2fa3a02aa4",
 	"title": "Colorie une fraction de la figure, jusqu'à 1",
 	"description": "Colorier n/d (n ≤ d) d'une bande, d'un disque ou d'une grille",
 	"grades": ["CE1"],
-	"theme": "Fractions",
-	"domain": "Apprivoiser",
-	"subdomain": "Partage",
 	"level": 8,
 	"delay": 90,
 	"status": "draft",

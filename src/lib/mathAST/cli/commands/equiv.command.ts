@@ -7,12 +7,13 @@
  * 2. Single expression with === operator: "2x + 3x === 5x"
  */
 
-import chalk from 'chalk';
+import { colors } from '../core/terminal-colors';
 import { BaseCommand } from './base-command';
 import { readCommandArguments } from '../core/variable-argument';
 import type { CommandContext, CommandResult } from '../types';
 import { normalize, hashNormalForm, normalFormsEquivalent } from '../../normal';
 import { parse } from '../core/pipeline';
+import { remarkableValuesInTrigonometry } from '../core/angle-radians';
 
 // =============================================================================
 // Equiv Command
@@ -255,9 +256,10 @@ export class EquivCommand extends BaseCommand {
 		expr2: import('../../types').MathNode
 	): CommandResult {
 		try {
-			// Normalize both expressions
-			const form1 = normalize(expr1);
-			const form2 = normalize(expr2);
+			// Normalize both expressions — la valeur remarquable d'un angle mesuré d'abord :
+			// `.equiv cos(60°) 1/2` répondait faux (revue de la PR 3 du lot 2)
+			const form1 = normalize(remarkableValuesInTrigonometry(expr1));
+			const form2 = normalize(remarkableValuesInTrigonometry(expr2));
 
 			// Check equivalence
 			const isEquivalent = normalFormsEquivalent(form1, form2);
@@ -268,17 +270,17 @@ export class EquivCommand extends BaseCommand {
 
 			// Format output
 			const equivLabel = isEquivalent
-				? chalk.bold.green('Equivalent: true')
-				: chalk.bold.red('Equivalent: false');
+				? colors.boldGreen('Equivalent: true')
+				: colors.boldRed('Equivalent: false');
 
 			const lines = [
 				equivLabel,
 				'',
-				chalk.dim('Expression 1:') + ' ' + expr1Str,
-				'  ' + chalk.dim('Hash:') + ' ' + chalk.cyan(hash1),
+				colors.dim('Expression 1:') + ' ' + expr1Str,
+				'  ' + colors.dim('Hash:') + ' ' + colors.cyan(hash1),
 				'',
-				chalk.dim('Expression 2:') + ' ' + expr2Str,
-				'  ' + chalk.dim('Hash:') + ' ' + chalk.cyan(hash2)
+				colors.dim('Expression 2:') + ' ' + expr2Str,
+				'  ' + colors.dim('Hash:') + ' ' + colors.cyan(hash2)
 			];
 
 			return {

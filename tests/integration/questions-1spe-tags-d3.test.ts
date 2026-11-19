@@ -5,7 +5,7 @@
  * Migration `20261101160000_questions_1spe_tags_d3` : f1440b52 « Dériver un quotient » passe de
  * 1SPE-274 à 1SPE-396 (quotient) ; 318ea542 « Étude de fonction : par quoi commencer » reçoit
  * 1SPE-283, comme ses deux cartes sœurs. Ni nœud, ni niveau, ni contenu ne changent.
- * Décision de David le 2026-11-01 (journal docs/wip/questions-1spe-progress.md § 17).
+ * Décision de David le 2026-11-01 (journal docs/archive/wip/questions-1spe-progress.md § 17).
  *
  * Les modèles n'existent qu'en production. Le test fabrique donc l'état de la prod — des copies
  * minimales portant les VRAIS identifiants, à leur nœud, en 1re spé, publiées, avec leurs tags

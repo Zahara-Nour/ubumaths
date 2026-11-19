@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { REFERENCE_DICTIONARY } from '../../../../../../tests/fixtures/lexique/dictionnaire-reference';
-import { GRADE_CODES } from '$lib/types/grades';
+import { GRADE_CODES } from '#lib/types/grades.ts';
 import {
 	allPlayableWords,
 	getWordsForLevel as wordsAmong,

@@ -1,6 +1,6 @@
 """Écrit les 10 modèles du lot 2 du CM1 (numération des entiers) dans scripts/questions/cm1-2/.
 
-Phase 0 validée par David le 2026-10-29 (§ 8 du journal `docs/wip/questions-cm1-progress.md`).
+Phase 0 validée par David le 2026-10-29 (§ 8 du journal `docs/archive/wip/questions-cm1-progress.md`).
 Bornes : `cycle3.json`, CM1 (entiers jusqu'à 999 999, six rangs, ranger jusqu'à cinq nombres,
 diviseur candidat ≤ 10 ; exemples du programme : 342 320 filtres en cartons de 1 000, le nombre
 qui suit 99 999, 45 307 … 45 370, 141 n'est pas multiple de 7). Un point par modèle ; le nœud
@@ -74,6 +74,11 @@ def selon(nom, valeurs, debut=0):
 
 def col(x, i=0):
     return '\\textcolor{{{color:primary.' + str(i) + '}}}{' + x + '}'
+
+
+def colt(*a, **k):
+    """Valeur colorée en plein texte : `\\textcolor` hors `$…$` s'afficherait en LaTeX brut."""
+    return '$' + col(*a, **k) + '$'
 
 
 def choix(lignes, melanger=True):
@@ -539,11 +544,11 @@ OUI_NON_VARS = [var('d', CANDIDATS), var('o', '0..1'), var('q', '4..140'), var('
                 var('s', '1..{{dm}}'), var('r', 'eval:s*o'), var('n', 'eval:d*q+r')]
 OUI_NON_COND = ['n>=20', 'n<=999']
 DIVISION = ('$${{n}} = {{d}} \\times {{q}}{{if:o==1| + {{r}}|}}$$')
-CONCLUSION_MULTIPLE = ('{{if:o==0|Le reste est $0$ : ' + col('oui') + ', ${{n}}$ est un multiple'
+CONCLUSION_MULTIPLE = ('{{if:o==0|Le reste est $0$ : ' + colt('oui') + ', ${{n}}$ est un multiple'
                        ' de ${{d}}$ (il est dans la table de ${{d}}$).|Le reste est ${{r}}$, pas'
-                       ' $0$ : ' + col('non') + ', ${{n}}$ n\'est pas un multiple de ${{d}}$.}}')
-CONCLUSION_DIVISEUR = ('{{if:o==0|Le reste est $0$ : ' + col('oui') + ', ${{d}}$ est un'
-                       ' diviseur de ${{n}}$.|Le reste est ${{r}}$, pas $0$ : ' + col('non')
+                       ' $0$ : ' + colt('non') + ', ${{n}}$ n\'est pas un multiple de ${{d}}$.}}')
+CONCLUSION_DIVISEUR = ('{{if:o==0|Le reste est $0$ : ' + colt('oui') + ', ${{d}}$ est un'
+                       ' diviseur de ${{n}}$.|Le reste est ${{r}}$, pas $0$ : ' + colt('non')
                        + ', ${{d}}$ n\'est pas un diviseur de ${{n}}$.}}')
 
 EST_MULTIPLE = variation(

@@ -73,9 +73,6 @@
 			}
 		],
 		"grades": ["6"],
-		"theme": "Décimaux",
-		"domain": "Multiplier",
-		"subdomain": "Puissances de 10",
 		"level": 9,
 		"status": "draft",
 		"delay": 20,

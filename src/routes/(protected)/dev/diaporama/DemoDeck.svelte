@@ -13,12 +13,12 @@
 		Code,
 		type DeckConfig,
 		type SlideChangedEvent
-	} from '$lib/slides';
-	import type { QuestionInstance } from '$lib/questions/types';
-	import type { AnswerData } from '$lib/types/question-display';
-	import type { Page } from '$lib/whiteboard/types/document';
-	import { resolvedMarkdown } from '$lib/ubumark';
-	import FlashCard from '$lib/components/questions/FlashCard.svelte';
+	} from '#lib/slides/index.ts';
+	import type { QuestionInstance } from '#lib/questions/types.ts';
+	import type { AnswerData } from '#lib/types/question-display.ts';
+	import type { Page } from '#lib/whiteboard/types/document.ts';
+	import { resolvedMarkdown } from '#lib/ubumark/index.ts';
+	import FlashCard from '#lib/components/questions/FlashCard.svelte';
 
 	let { config = {} }: { config?: Partial<DeckConfig> } = $props();
 
@@ -60,8 +60,6 @@ Integrale definie : $\\int_0^1 x^2 \\, dx = \\frac{1}{3}$
 			'Quel est le resultat de $2^3$ ?\n\n```choix\ncase: 0\n- $6$\n- $8$\n- $9$\n- $16$\n```'
 		),
 		grades: ['6'],
-		theme: 'Calcul',
-		domain: 'Puissances',
 		level: 1,
 		generatedAt: new Date().toISOString(),
 		// Case choix : bonne réponse en indice d'origine ($8$)

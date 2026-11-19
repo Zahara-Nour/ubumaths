@@ -8,7 +8,7 @@
 
 	import type { Timeline } from '../core/timeline.svelte';
 	import { formatTime } from '../core/timeline.svelte';
-	import { cn } from '$lib/utils';
+	import { cn } from '#lib/utils.ts';
 
 	// Types
 	interface Props {

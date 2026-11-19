@@ -8,7 +8,7 @@
 import type { MathNode, FunctionNode } from '../types';
 import type { EvalOptions, EvalResult } from './types';
 import type { Rational } from '../normal/types';
-import type { PrecisionType } from '$lib/questions/types';
+import type { PrecisionType } from '#lib/questions/types.ts';
 import { DEFAULT_EVAL_OPTIONS } from './types';
 import { getVariables } from './substitute';
 import {
@@ -1242,7 +1242,7 @@ function evaluateRoundingFunctions(node: MathNode): MathNode {
 /**
  * Checks if a node is a boolean expression (boolean, relation, logical, logical-not).
  */
-function isBooleanExpression(node: MathNode): boolean {
+export function isBooleanExpression(node: MathNode): boolean {
 	// `(2 > 1)`, `\lnot (2 > 1)` : des parenthèses autour d'une comparaison
 	if (isDelimiter(node)) return isBooleanExpression(node.content);
 	return isBoolean(node) || isRelation(node) || isLogical(node) || isLogicalNot(node);

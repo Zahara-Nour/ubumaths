@@ -22,17 +22,17 @@
 	@module components/markdown/MarkdownRenderer
 -->
 <script lang="ts">
-	import { parseMarkdown } from '$lib/ubumark';
-	import type { DocumentNode, ParseOptions, InputState } from '$lib/ubumark';
+	import { parseMarkdown } from '#lib/ubumark/index.ts';
+	import type { DocumentNode, ParseOptions, InputState } from '#lib/ubumark/index.ts';
 	import type { MarkdownDisplayMode } from './types';
-	import { getCachedAST, setCachedAST } from '$lib/utils/markdown-cache';
-	import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
-	import type { ExerciseHint } from '$lib/exercises/types';
+	import { getCachedAST, setCachedAST } from '#lib/utils/markdown-cache.ts';
+	import type { GenericFunctionConfig } from '#lib/mathAST/parser/types.ts';
+	import type { ExerciseHint } from '#lib/exercises/types.ts';
 
 	// List numbering
-	import { listNumberingStore } from '$lib/stores/listNumbering.svelte';
-	import { getMaxEnumerateDepth } from '$lib/ubumark/utils/list-depth';
-	import type { SchemeId, ListNumberingConfig } from '$lib/types/list-numbering';
+	import { listNumberingStore } from '#lib/stores/listNumbering.svelte.ts';
+	import { getMaxEnumerateDepth } from '#lib/ubumark/utils/list-depth.ts';
+	import type { SchemeId, ListNumberingConfig } from '#lib/types/list-numbering.ts';
 
 	// Import node components
 	import ParagraphNode from './nodes/ParagraphNode.svelte';
@@ -60,8 +60,14 @@
 	import Operation from './nodes/Operation.svelte';
 	import Collection from './nodes/Collection.svelte';
 	import Monnaie from './nodes/Monnaie.svelte';
+	import SchemaBarres from './nodes/SchemaBarres.svelte';
 	import ChoiceBlock from './nodes/ChoiceBlock.svelte';
 	import RangerPlacer from './nodes/RangerPlacer.svelte';
+	import AssocierPlacer from './nodes/AssocierPlacer.svelte';
+	import TrousEtiquettes from './nodes/TrousEtiquettes.svelte';
+	import TortueProgramme from './nodes/TortueProgramme.svelte';
+	import RobotCode from './nodes/RobotCode.svelte';
+	import CalculProgramme from './nodes/CalculProgramme.svelte';
 
 	// Raw markdown viewer with syntax highlighting
 	import MarkdownRaw from './MarkdownRaw.svelte';
@@ -69,15 +75,19 @@
 	import { provideAuthoringErrors } from './authoring-errors';
 	import { createRenderBudget, provideRenderBudget } from './render-budget';
 	import {
+		provideProjectMediaOnly,
+		neutralizeUnsafeBlocks,
 		provideRestrictedRendering,
+		readProjectMediaOnly,
 		readRestrictedRendering,
 		restrictDocument,
 		stripFenceLanguages
 	} from './restricted-rendering';
-	import type { ContentLocale } from '$lib/types/locale';
-	import type { GradeCode } from '$lib/types/grades';
-	import { lexiconRuntime, loadLexiconRuntime } from '$lib/lexicon/runtime-store.svelte';
+	import type { ContentLocale } from '#lib/types/locale.ts';
+	import type { GradeCode } from '#lib/types/grades.ts';
+	import { lexiconRuntime, loadLexiconRuntime } from '#lib/lexicon/runtime-store.svelte.ts';
 	import { provideLexicon, readLexicon } from './lexicon-context';
+	import { provideInternalLinks, type InternalLinkReader } from './internal-link-context';
 
 	interface Props {
 		/** Markdown content to render (template or resolved instance) */
@@ -142,6 +152,17 @@
 		 * d'un rendu parent ou du cadre de la question ; `null` : aucun mot.
 		 */
 		lexiconGrade?: GradeCode | null;
+		/**
+		 * Qui lit les références `[[…]]` : rôle, classe, jeton du lien public du
+		 * cahier. Absent : celui d'un rendu parent, sinon un élève.
+		 */
+		internalLinks?: InternalLinkReader;
+		/**
+		 * Vidéos du seul stockage du projet ; les autres (YouTube compris)
+		 * deviennent des liens. Cahier de texte, lu par des visiteurs anonymes.
+		 * Hérité par les rendus imbriqués.
+		 */
+		projectMediaOnly?: boolean;
 	}
 
 	let {
@@ -163,13 +184,18 @@
 		locale,
 		showAuthoringErrors,
 		restricted,
-		lexiconGrade
+		lexiconGrade,
+		internalLinks,
+		projectMediaOnly
 	}: Props = $props();
 
 	provideContentLocale(() => locale);
 	provideAuthoringErrors(() => showAuthoringErrors);
+	provideInternalLinks(() => internalLinks);
+	provideProjectMediaOnly(() => projectMediaOnly);
 	provideRestrictedRendering(() => restricted);
 	const isRestricted = readRestrictedRendering();
+	const isProjectMediaOnly = readProjectMediaOnly();
 	provideLexicon(() => lexiconGrade);
 	const lexicon = readLexicon();
 
@@ -198,10 +224,17 @@
 		// Mode restreint : filet sur l'AST ; mots cliquables : repérés au niveau du
 		// lecteur (copies, le cache n'est pas modifié)
 		const finish = (doc: DocumentNode) => {
-			const safe = isRestricted() ? restrictDocument(doc) : doc;
-			const grade = lexicon();
+			// Cahier de texte : blocs spéciaux porteurs d'une commande à attributs neutralisés
+			const safe = isRestricted()
+				? restrictDocument(doc)
+				: isProjectMediaOnly()
+					? neutralizeUnsafeBlocks(doc)
+					: doc;
+			const reading = lexicon();
 			const runtime = lexiconRuntime();
-			return grade && runtime ? runtime.linkDocument(safe, grade) : safe;
+			return reading && runtime
+				? runtime.linkDocument(safe, reading.linkGrade, reading.link)
+				: safe;
 		};
 
 		// Check cache first
@@ -390,10 +423,22 @@
 					<Collection {node} />
 				{:else if node.type === 'monnaie'}
 					<Monnaie {node} />
+				{:else if node.type === 'schema-barres'}
+					<SchemaBarres {node} />
 				{:else if node.type === 'choice'}
 					<ChoiceBlock {node} />
 				{:else if node.type === 'ranger'}
 					<RangerPlacer {node} />
+				{:else if node.type === 'associer'}
+					<AssocierPlacer {node} />
+				{:else if node.type === 'trous'}
+					<TrousEtiquettes {node} />
+				{:else if node.type === 'tortue'}
+					<TortueProgramme {node} />
+				{:else if node.type === 'calcul'}
+					<CalculProgramme {node} />
+				{:else if node.type === 'robot'}
+					<RobotCode {node} />
 				{/if}
 			{/each}
 		{:else}

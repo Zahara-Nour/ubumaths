@@ -1,10 +1,8 @@
 {
+	"id": "7369d049-b30b-4bc3-b8af-9afb15f16ed9",
 	"title": "Lis le tableau à double entrée",
 	"description": "Filles et garçons à la cantine, jour par jour ; modes de transport avec totaux (BO, total 282) : une case, puis un total",
 	"grades": ["CE1"],
-	"theme": "Statistiques",
-	"domain": "Représenter des données",
-	"subdomain": "Tableau à double entrée",
 	"level": 3,
 	"delay": 120,
 	"status": "draft",

@@ -1,10 +1,8 @@
 {
+	"id": "81322162-3f57-46ab-b4c9-dd45c14f0b18",
 	"title": "Reconnaître la suite que génère un algorithme",
 	"description": "Suite générée par un algorithme (Python ou langage naturel) : forme explicite, relation de récurrence (deux cases), nature et raison",
 	"grades": ["1_SPE"],
-	"theme": "Suites",
-	"domain": "Seuil et algorithmes",
-	"subdomain": "Algorithmes",
 	"level": 4,
 	"delay": 60,
 	"status": "draft",

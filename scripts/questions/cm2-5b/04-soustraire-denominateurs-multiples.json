@@ -1,10 +1,8 @@
 {
+	"id": "edb7fca8-46a4-4dd8-b20c-64d1c3c16f7a",
 	"title": "Soustraire des fractions de dénominateurs multiples",
 	"description": "Différence de deux fractions dont un dénominateur est multiple de l'autre : 5/6 − 1/12 ; 11/40 − 1/8 ; dénominateurs au plus 60, toute fraction égale juste",
 	"grades": ["CM2"],
-	"theme": "Fractions",
-	"domain": "Calculer",
-	"subdomain": "Addition et Soustraction",
 	"level": 26,
 	"delay": 30,
 	"status": "draft",

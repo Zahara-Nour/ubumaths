@@ -32,8 +32,12 @@ import type {
 	BuildKind
 } from '../types';
 import { buildKindName, getQuestionType, isPlaceKind } from '../types';
-import type { ResolvedMarkdown, TemplateMarkdown } from '$lib/ubumark';
-import { templateMarkdown, resolvedMarkdown, detectCircularDependencies } from '$lib/ubumark';
+import type { ResolvedMarkdown, TemplateMarkdown } from '#lib/ubumark/index.ts';
+import {
+	templateMarkdown,
+	resolvedMarkdown,
+	detectCircularDependencies
+} from '#lib/ubumark/index.ts';
 import { validateTemplate } from '../validators/template-validator';
 import { resolveVariables } from './variable-resolver';
 import {
@@ -45,49 +49,87 @@ import {
 } from './content-resolver';
 import { shuffleChoices } from './choice-shuffler';
 import { assignBlankIndices } from './assign-blank-indices';
-import { parseOperationContent } from '$lib/ubumark/parser/operation-parser';
-import { hasCollectionToBuild } from '$lib/ubumark/parser/collection-parser';
-import { hasMonnaieToBuild } from '$lib/ubumark/parser/monnaie-parser';
-import { hasLineToPlace } from '$lib/ubumark/parser/number-line-parser';
-import { hasHorlogeToPlace } from '$lib/ubumark/parser/horloge-parser';
-import { hasStatChartToPlace } from '$lib/ubumark/parser/stat-chart-parser';
-import { hasCourbeToPlace } from '$lib/ubumark/parser/courbe-parser';
-import { hasTrigCircleToPlace } from '$lib/ubumark/parser/trig-circle-parser';
-import { barsCaseCount } from '$lib/ubumark/utils/barres-placer';
-import { boxPlotCaseCount } from '$lib/ubumark/utils/boxplot-placer';
+import { parseOperationContent } from '#lib/ubumark/parser/operation-parser.ts';
+import { isDiagonalRectangleCheck, isRuledPolygonCheck } from '#lib/ubumark/types/construction.ts';
+import { hasCollectionToBuild } from '#lib/ubumark/parser/collection-parser.ts';
+import { hasMonnaieToBuild } from '#lib/ubumark/parser/monnaie-parser.ts';
+import { hasLineToPlace } from '#lib/ubumark/parser/number-line-parser.ts';
+import { hasHorlogeToPlace } from '#lib/ubumark/parser/horloge-parser.ts';
+import { hasStatChartToPlace } from '#lib/ubumark/parser/stat-chart-parser.ts';
+import { hasCourbeToPlace } from '#lib/ubumark/parser/courbe-parser.ts';
+import { hasTrigCircleToPlace } from '#lib/ubumark/parser/trig-circle-parser.ts';
+import { hasTortueToProgram } from '#lib/ubumark/parser/tortue-parser.ts';
+import { readExpectedTortueAnswer } from '#lib/ubumark/utils/tortue-answer.ts';
+import { hasCalculToProgram } from '#lib/ubumark/parser/calcul-parser.ts';
+import { readExpectedCalculAnswer } from '#lib/ubumark/utils/calcul-answer.ts';
+import {
+	findRobotsToProduce,
+	hasRobotToProduce,
+	parseRobotContent
+} from '#lib/ubumark/parser/robot-parser.ts';
+import { readExpectedRobotAnswer } from '#lib/ubumark/utils/robot-answer.ts';
+import { hasVariationToFill } from '#lib/ubumark/parser/variation-table-parser.ts';
+import {
+	readSignTableCases,
+	signTableAnswerLatex,
+	signTableCaseIndices,
+	type SignTableAnswer
+} from '../sign-table-case';
+import { barsCaseCount } from '#lib/ubumark/utils/barres-placer.ts';
+import { boxPlotCaseCount } from '#lib/ubumark/utils/boxplot-placer.ts';
 import {
 	findRangersToPlace,
 	hasRangerToPlace,
 	parseRangerContent,
 	replaceRangerBlocks,
 	serializeRangerBlock
-} from '$lib/ubumark/parser/ranger-parser';
-import { rangerOrder } from '$lib/ubumark/utils/ranger';
-import { hasPartageToColorier } from '$lib/ubumark/parser/partage-parser';
-import { hasCubesToBuild, hasPatronsToBuild } from '$lib/ubumark/parser/espace-parser';
-import type { RangerSign } from '$lib/ubumark/types/ranger';
+} from '#lib/ubumark/parser/ranger-parser.ts';
+import { rangerOrder } from '#lib/ubumark/utils/ranger.ts';
+import {
+	findAssociersToPlace,
+	hasAssocierToPlace,
+	parseAssocierContent,
+	replaceAssocierBlocks,
+	serializeAssocierBlock
+} from '#lib/ubumark/parser/associer-parser.ts';
+import {
+	findTrousToPlace,
+	hasTrousToPlace,
+	parseTrousContent,
+	replaceTrousBlocks,
+	serializeTrousBlock
+} from '#lib/ubumark/parser/trous-parser.ts';
+import type { TrousSegment } from '#lib/ubumark/types/trous.ts';
+import { hasPartageToColorier } from '#lib/ubumark/parser/partage-parser.ts';
+import {
+	hasCubesToBuild,
+	hasPatronsToBuild,
+	hasSolidesToBuild
+} from '#lib/ubumark/parser/espace-parser.ts';
+import type { RangerSign } from '#lib/ubumark/types/ranger.ts';
+import type { AssocierGesture } from '#lib/ubumark/types/associer.ts';
 import { buildAnswerOf, MASKED_IN_TEMPLATE } from './build-answer';
-import { parseMarkdown } from '$lib/ubumark/parser/markdown-parser';
-import { operationExpectedAnswer } from '$lib/ubumark/utils/operation-answer';
-import { divisionExpectedAnswers } from '$lib/ubumark/utils/operation-division-answer';
+import { parseMarkdown } from '#lib/ubumark/parser/markdown-parser.ts';
+import { operationExpectedAnswer } from '#lib/ubumark/utils/operation-answer.ts';
+import { divisionExpectedAnswers } from '#lib/ubumark/utils/operation-division-answer.ts';
 import {
 	WORK_FIGURE_ALONE_MESSAGE,
 	readConstructionHeader
-} from '$lib/ubumark/parser/construction-parser';
-import { parseFigureContent } from '$lib/ubumark/parser/figure-parser';
+} from '#lib/ubumark/parser/construction-parser.ts';
+import { parseFigureContent } from '#lib/ubumark/parser/figure-parser.ts';
 import {
 	parseChoiceBody,
 	replaceChoiceBlocks,
 	serializeChoiceBlock,
 	type ChoiceBlockSpec
-} from '$lib/ubumark/parser/choix-parser';
+} from '#lib/ubumark/parser/choix-parser.ts';
 import { formatChoiceAnswer, readExpectedChoices } from '../choice-case';
-import { toFrenchDecimal } from '$lib/utils/french-math';
-import { normalizeExpression, detectExpressionType } from '$lib/ubumark/parameterization';
+import { toFrenchDecimal } from '#lib/utils/french-math.ts';
+import { normalizeExpression, detectExpressionType } from '#lib/ubumark/parameterization/index.ts';
 import {
 	applyRemoveSpaces,
 	AuthorExpressionError
-} from '$lib/ubumark/parameterization/resolver/variable-resolver';
+} from '#lib/ubumark/parameterization/resolver/variable-resolver.ts';
 import { resolveVariableConditionals } from './variable-conditionals';
 import { buildCorrectionContext, resolveCorrectionContent } from './correction-resolver';
 import { generateCorrection } from './correction-generator';
@@ -98,7 +140,8 @@ import { expectedIntervalsLatex } from '../intervals/interval-answer';
 import { expectedVectorLatex } from '../vectors/vector-answer';
 import { expectedMatrixLatex } from '../matrices/matrix-answer';
 import { evaluateConditions } from './condition-evaluator';
-import { createRandomSource, randomIndex, type RandomSource } from '$lib/utils/random';
+import { createRandomSource, randomIndex, type RandomSource } from '#lib/utils/random.ts';
+import { expectedInRequiredUnit } from '#lib/questions/units/required-unit.ts';
 
 // ============================================================================
 // SHARED DEFAULTS MERGING
@@ -136,18 +179,146 @@ function rangerLabelsCollide(
 	});
 }
 
+/**
+ * Un robot à produire (```robot + `produire: oui`) est-il impossible avec ce tirage (aucun
+ * code de 15 instructions et 4 virages au plus, départ ou arrivée sur une case grise, arrivée
+ * au départ) ? Résolu à part, comme `rangerLabelsCollide` : les variables seules, d'où le refus
+ * de `{{random:` dans le bloc (`ROBOT_RANDOM_MESSAGE`). Condition implicite : le tirage est
+ * refait ; si aucun ne convient, le dernier passe et le bloc dit son erreur au prof. Toute autre
+ * erreur (case hors du quadrillage, clé inconnue) n'est pas une affaire de tirage : pas de
+ * nouvel essai, le prof la voit tout de suite.
+ */
+function robotSceneImpossible(
+	statement: TemplateMarkdown | undefined,
+	variables: ResolvedVariable[],
+	genericFunctions: Parameters<typeof resolveMarkdownContent>[3],
+	cleanCoefficients: boolean,
+	capitalPairs: Parameters<typeof resolveMarkdownContent>[5]
+): boolean {
+	const text = String(statement ?? '');
+	if (!text.includes('```robot')) return false;
+	return findRobotsToProduce(text).some((block) => {
+		const resolved = String(
+			resolveMarkdownContent(
+				templateMarkdown(block.body.join('\n')),
+				variables,
+				createRandomSource(0),
+				genericFunctions,
+				cleanCoefficients,
+				capitalPairs
+			)
+		);
+		const node = parseRobotContent(resolved);
+		return (
+			node.spec === null &&
+			node.errors.every((e) => ROBOT_TIRAGE_ERRORS.some((motif) => motif.test(e.message)))
+		);
+	});
+}
+
+/** Erreurs d'un bloc robot qui tiennent au tirage (`robotSceneImpossible`) */
+const ROBOT_TIRAGE_ERRORS = [/aucun code de/, /l’arrivée est le départ/, /est sur une case grise/];
+
+const ROBOT_RANDOM_MESSAGE =
+	'Robot à produire : pas de {{random:…}} dans le bloc ```robot (le tirage ne pourrait pas être vérifié) ; utiliser une variable';
+
+/** Un robot à produire tire-t-il un hasard dans son bloc (`{{random:`) ? */
+function robotHasRandom(statement: TemplateMarkdown | undefined): boolean {
+	const text = String(statement ?? '');
+	if (!text.includes('```robot')) return false;
+	return findRobotsToProduce(text).some((block) => block.body.join('\n').includes('{{random'));
+}
+
+/**
+ * Deux éléments d'un même bloc ```associer ont-ils le même texte avec ce tirage, ou
+ * deux étiquettes écrites différemment ? Résolus à part, comme `rangerLabelsCollide`.
+ */
+function associerTextsCollide(
+	statement: TemplateMarkdown | undefined,
+	variables: ResolvedVariable[],
+	genericFunctions: Parameters<typeof resolveMarkdownContent>[3],
+	cleanCoefficients: boolean,
+	capitalPairs: Parameters<typeof resolveMarkdownContent>[5]
+): boolean {
+	const text = String(statement ?? '');
+	if (!text.includes('```associer')) return false;
+	const resolve = (written: string) =>
+		String(
+			resolveMarkdownContent(
+				templateMarkdown(written),
+				variables,
+				createRandomSource(0),
+				genericFunctions,
+				cleanCoefficients,
+				capitalPairs
+			)
+		).trim();
+	return findAssociersToPlace(text).some((block) => {
+		const { items, labels } = parseAssocierContent(block.body.join('\n'));
+		// Seuls deux textes ÉCRITS différents comptent : deux éléments écrits identiques
+		// sont refusés par le parseur, avec son message (inutile de retirer)
+		const collide = (written: string[]) => {
+			const resolved = written.map(resolve);
+			return resolved.some((text, i) =>
+				resolved.some((other, j) => j > i && other === text && written[j] !== written[i])
+			);
+		};
+		return collide(items) || collide(labels);
+	});
+}
+
+/**
+ * Deux étiquettes d'un même bloc ```trous écrites différemment ont-elles le même
+ * texte avec ce tirage ? Résolues à part, comme `rangerLabelsCollide` (deux trous à
+ * la même étiquette écrite sont permis : elle n'est montrée qu'une fois).
+ */
+function trousLabelsCollide(
+	statement: TemplateMarkdown | undefined,
+	variables: ResolvedVariable[],
+	genericFunctions: Parameters<typeof resolveMarkdownContent>[3],
+	cleanCoefficients: boolean,
+	capitalPairs: Parameters<typeof resolveMarkdownContent>[5]
+): boolean {
+	const text = String(statement ?? '');
+	if (!text.includes('```trous')) return false;
+	return findTrousToPlace(text).some((block) => {
+		const { labels } = parseTrousContent(block.body.join('\n'));
+		const resolved = labels.map((label) =>
+			String(
+				resolveMarkdownContent(
+					templateMarkdown(label),
+					variables,
+					createRandomSource(0),
+					genericFunctions,
+					cleanCoefficients,
+					capitalPairs
+				)
+			).trim()
+		);
+		return new Set(resolved).size < resolved.length;
+	});
+}
+
 /** Ce qui donne la réponse d'un bloc qui porte sa case, pour les messages au prof */
 function blockAnswerName(kind: BuildKind): string {
-	if (kind === 'line') return 'la graduation de la droite graduée (placer:)';
+	if (kind === 'line')
+		return 'la graduation ou l’intervalle de la droite graduée (placer:, representer:)';
 	if (kind === 'horloge') return 'l’heure de l’horloge (placer:)';
 	if (kind === 'barres') return 'l’effectif de la barre (placer:)';
 	if (kind === 'boite-a-moustaches') return 'les valeurs de la boîte (placer:)';
 	if (kind === 'ranger') return 'l’étiquette à sa place (bloc ranger)';
+	if (kind === 'associer') return 'l’étiquette de chaque élément (bloc associer, « -> »)';
+	if (kind === 'trous') return 'l’étiquette de chaque trou (bloc trous, « [étiquette] »)';
 	if (kind === 'partage') return 'la fraction du bloc partage (colorier:)';
 	if (kind === 'cubes') return 'la vue ou les vues du bloc cubes (dessiner:, retrouver:)';
 	if (kind === 'patron') return 'les faces du bloc patron (designer:, completer:)';
-	if (kind === 'courbe') return 'les coordonnées du point du repère (placer:)';
+	if (kind === 'solide') return 'les points du bloc solide (tracer:)';
+	if (kind === 'courbe')
+		return 'les coordonnées du point, la droite ou le vecteur du repère (placer:, tracer:)';
 	if (kind === 'trig') return 'la mesure du point du cercle trigonométrique (placer:)';
+	if (kind === 'tortue') return 'le programme du bloc tortue (attendu:)';
+	if (kind === 'calcul') return 'le programme du bloc calcul (attendu:)';
+	if (kind === 'robot') return 'le code du robot (calculé d’après la scène)';
 	return `la valeur du bloc ${kind} (construire:)`;
 }
 
@@ -236,7 +407,10 @@ function resolveRequiredForm(
 	// parenthésé (`9 / (-3)` reconnaît `9:(-3)` ; une formule `a+1` reste un seul opérande)
 	const resolve = (pattern: string) =>
 		pattern.replace(MARKER_REGEX, (marker) => {
-			const value = resolveExpression(marker, resolvedVariables, random).trim();
+			// Une valeur dans un motif : une durée reste UNE grandeur (2026-11-03)
+			const value = resolveExpression(marker, resolvedVariables, random, {
+				durations: 'single'
+			}).trim();
 			return /^\d+(?:\.\d+)?$/.test(value) ? value : `(${value})`;
 		});
 	return requiredForm.acceptable === undefined
@@ -337,7 +511,10 @@ function resolveValidationRules(
 	const resolve = (text: string) =>
 		text.replace(MARKER_REGEX, (marker) => {
 			if (BARE_MARKER_REGEX.test(marker)) return marker;
-			const value = resolveExpression(marker, resolvedVariables, random).trim();
+			// Une valeur dans un motif : une durée reste UNE grandeur (2026-11-03)
+			const value = resolveExpression(marker, resolvedVariables, random, {
+				durations: 'single'
+			}).trim();
 			return /^\d+(?:\.\d+)?$/.test(value) ? value : `(${value})`;
 		});
 	return rules.map((rule): ValidationRule => {
@@ -424,10 +601,10 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 		const genericFunctionNames = declaredGenericFunctions(template.shared?.genericFunctions);
 		const genericFunctions = templateGenericFunctions(genericFunctionNames);
 		// Sens de `AB` (longueur ou produit), résolu UNE fois ici (Q-K) : déclaration du
-		// modèle → contexte (thème) → longueur. Porté par l'instance jusqu'au parseur.
+		// modèle → longueur (le contexte de la branche est lu à l'enregistrement, par
+		// l'éditeur, qui écrit alors la déclaration). Porté par l'instance jusqu'au parseur.
 		const { capitalPairs } = resolveCapitalPairs({
-			declaration: template.shared?.capitalPairs,
-			theme: template.theme
+			declaration: template.shared?.capitalPairs
 		});
 		// Coefficients nettoyés (`1x-1y+0` → `x-y`) : strictement `true`, sinon rien ne change
 		const cleanCoefficients = template.shared?.cleanCoefficients === true;
@@ -443,6 +620,10 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			}
 		}
 
+		if (robotHasRandom(resolvedVariation.statement)) {
+			return { success: false, errors: [ROBOT_RANDOM_MESSAGE] };
+		}
+
 		// 5. Resolve variables in declaration order (with condition retry loop).
 		// Un tirage est rejeté et recommencé quand une condition est fausse, mais aussi quand
 		// une variable ne se calcule pas pour CE tirage (division par zéro, arccos(3/2)) :
@@ -453,6 +634,10 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 		let lastVariableError: string | undefined;
 		let conditionFailures = 0;
 		let rangerCollisions = 0;
+		let associerCollisions = 0;
+		let trousCollisions = 0;
+		/** Dernier tirage rejeté pour un robot impossible : repris si aucun ne convient */
+		let robotFallback: ResolvedVariable[] | undefined;
 		for (let attempt = 0; attempt <= MAX_CONDITION_RETRIES; attempt++) {
 			// Nouvel essai : la source continue, les tirages sont donc neufs
 			let candidate: ResolvedVariable[];
@@ -481,8 +666,70 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				rangerCollisions++;
 				continue;
 			}
+			// Éléments à associer : deux éléments (ou deux étiquettes) au même texte après tirage
+			if (
+				associerTextsCollide(
+					resolvedVariation.statement,
+					candidate,
+					genericFunctions,
+					cleanCoefficients,
+					capitalPairs
+				)
+			) {
+				associerCollisions++;
+				continue;
+			}
+			// Texte à trous : deux étiquettes au même texte après tirage
+			if (
+				trousLabelsCollide(
+					resolvedVariation.statement,
+					candidate,
+					genericFunctions,
+					cleanCoefficients,
+					capitalPairs
+				)
+			) {
+				trousCollisions++;
+				continue;
+			}
+			// Robot à produire : aucun code possible avec ce tirage
+			if (
+				robotSceneImpossible(
+					resolvedVariation.statement,
+					candidate,
+					genericFunctions,
+					cleanCoefficients,
+					capitalPairs
+				)
+			) {
+				robotFallback = candidate;
+				continue;
+			}
 			resolvedVariables = candidate;
 			break;
+		}
+
+		if (resolvedVariables === undefined && associerCollisions > 0) {
+			return {
+				success: false,
+				errors: [
+					`Éléments à associer : deux éléments identiques (ou deux étiquettes) à chacun des ${associerCollisions} tirages ; écrire une condition qui les rend différents`
+				]
+			};
+		}
+
+		if (resolvedVariables === undefined && trousCollisions > 0) {
+			return {
+				success: false,
+				errors: [
+					`Texte à trous : deux étiquettes identiques à chacun des ${trousCollisions} tirages (laquelle irait où ?) ; écrire une condition qui les rend différentes`
+				]
+			};
+		}
+
+		// Robot à produire impossible à chaque tirage : le dernier passe, la case dira pourquoi
+		if (resolvedVariables === undefined && robotFallback !== undefined) {
+			resolvedVariables = robotFallback;
 		}
 
 		if (resolvedVariables === undefined && rangerCollisions > 0) {
@@ -549,10 +796,17 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				hasStatChartToPlace(String(resolvedStatement)) ||
 				hasCourbeToPlace(String(resolvedStatement)) ||
 				hasTrigCircleToPlace(String(resolvedStatement)) ||
+				hasTortueToProgram(String(resolvedStatement)) ||
+				hasCalculToProgram(String(resolvedStatement)) ||
+				hasRobotToProduce(String(resolvedStatement)) ||
 				hasRangerToPlace(String(resolvedStatement)) ||
+				hasAssocierToPlace(String(resolvedStatement)) ||
+				hasTrousToPlace(String(resolvedStatement)) ||
 				hasPartageToColorier(String(resolvedStatement)) ||
 				hasCubesToBuild(String(resolvedStatement)) ||
-				hasPatronsToBuild(String(resolvedStatement))) &&
+				hasPatronsToBuild(String(resolvedStatement)) ||
+				hasSolidesToBuild(String(resolvedStatement)) ||
+				hasVariationToFill(String(resolvedStatement))) &&
 			getQuestionType({ options: template.options }) === 'fill_in_blanks';
 		if (resolvedVariation.blanks || hasOperationBlock) {
 			// 7a. Fill-in-blanks pipeline
@@ -594,6 +848,9 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			}
 			if (blankResult.choiceErrors) {
 				return { success: false, errors: blankResult.choiceErrors };
+			}
+			if (blankResult.variationErrors) {
+				return { success: false, errors: blankResult.variationErrors };
 			}
 
 			// Cases des blocs ```choix : choix et réglages lus ici ; bonne réponse portée par
@@ -637,13 +894,31 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				const named = namesAssignedIn(header.figureSource);
 				for (const check of header.spec.checks) {
 					// Symétrique : l'axe ou le centre est nommé aussi (`d = droite(P, Q)`, `O = point(…)`) ;
-					// point à placer : son expression est calculée à la publication (`check-template`)
+					// point à placer : son expression est calculée à la publication (`check-template`) ;
+					// triangle (lot 4) : A, B et ce qui donne les longueurs, C est à construire
+					// angle (lot 5) : A et O (`check.points`), le côté est à tracer
+					// segment de longueur donnée (ADR 0036) : A seulement, B est à tracer
+					// carré / rectangle coté (PR 6 de `regle-graduee`) : A et B, C et D sont à construire
 					const names =
-						check.kind === 'point'
+						check.kind === 'point' || check.kind === 'droite' || check.kind === 'cercle'
 							? []
-							: check.kind === 'symetrique'
-								? [...(check.points ?? []), check.by]
-								: check.points;
+							: isRuledPolygonCheck(check)
+								? check.points.slice(0, 2)
+								: // Rectangle sans équerre : A et C (la diagonale), B et D sont à construire
+									isDiagonalRectangleCheck(check)
+									? [check.points[0], check.points[2]]
+									: check.kind === 'segment'
+										? [check.point]
+										: check.kind === 'symetrique'
+											? [...(check.points ?? []), check.by]
+											: check.kind === 'triangle'
+												? [
+														check.points[0],
+														check.points[1],
+														// En carreaux (n° 20), rien à nommer
+														...check.lengths.flatMap((l) => ('source' in l ? l.source : []))
+													]
+												: check.points;
 					for (const name of names) {
 						if (!named.has(name)) {
 							errors.push({
@@ -730,6 +1005,16 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				number,
 				{ order: number[]; labels: string[]; sign: RangerSign }
 			>();
+			// Éléments à associer : ordre AFFICHÉ des étiquettes de chaque bloc, par case de son premier élément
+			const associerOrders = new Map<
+				number,
+				{ order: number[]; gesture: AssocierGesture; items: string[]; labels: string[] }
+			>();
+			// Texte à trous : ordre AFFICHÉ de la réserve de chaque bloc, par case de son premier trou
+			const trousOrders = new Map<
+				number,
+				{ order: number[]; lines: TrousSegment[][]; labels: string[] }
+			>();
 			for (const [key, { kind, source, point }] of Object.entries(blankResult.buildBlanks ?? {})) {
 				const index = Number(key);
 				const read = buildAnswerOf(kind, source, point);
@@ -737,7 +1022,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				// Le juge apparierait une construction avec une autre case (34 tapé ailleurs)
 				if (template.options?.orderIndependent) {
 					errors.push(
-						`${kind === 'cubes' || kind === 'patron' || kind === 'courbe' || kind === 'trig' ? 'un' : 'une'} ${kind === 'partage' || kind === 'cubes' || kind === 'patron' ? buildKindName(kind) : isPlaceKind(kind) ? `${buildKindName(kind)} à placer` : 'case à construire'} ne se combine pas avec « ordre indifférent »`
+						`${kind === 'cubes' || kind === 'patron' || kind === 'solide' || kind === 'courbe' || kind === 'trig' || kind === 'tortue' || kind === 'calcul' || kind === 'robot' ? 'un' : 'une'} ${kind === 'partage' || kind === 'cubes' || kind === 'patron' || kind === 'solide' || kind === 'tortue' || kind === 'calcul' || kind === 'robot' ? buildKindName(kind) : isPlaceKind(kind) ? `${buildKindName(kind)} à placer` : 'case à construire'} ne se combine pas avec « ordre indifférent »`
 					);
 				}
 				if (errors.length > 0 || !('answer' in read)) {
@@ -762,8 +1047,71 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 					});
 					continue;
 				}
+				if (kind === 'associer') {
+					// Mélange des étiquettes au premier élément du bloc ; réponse = la position
+					// affichée de la bonne étiquette de l'élément
+					const first = index - (point ?? 0);
+					let shown = associerOrders.get(first);
+					if (!shown) {
+						const { gesture, items, labels } = parseAssocierContent(source);
+						shown = { order: rangerOrder(labels.length, random), gesture, items, labels };
+						associerOrders.set(first, shown);
+					}
+					buildAnswers.set(index, {
+						kind,
+						answer: String(shown.order.indexOf(Number(read.answer)))
+					});
+					continue;
+				}
+				if (kind === 'trous') {
+					// Mélange de la réserve au premier trou du bloc ; réponse = la position
+					// affichée de la bonne étiquette du trou
+					const first = index - (point ?? 0);
+					let shown = trousOrders.get(first);
+					if (!shown) {
+						const { lines, labels } = parseTrousContent(source);
+						shown = { order: rangerOrder(labels.length, random), lines, labels };
+						trousOrders.set(first, shown);
+					}
+					buildAnswers.set(index, {
+						kind,
+						answer: String(shown.order.indexOf(Number(read.answer)))
+					});
+					continue;
+				}
 				buildAnswers.set(index, { kind, answer: read.answer });
 			}
+			// Cases des tableaux de signes à compléter : réponse = la cellule cachée du bloc
+			const signTableAnswers = new Map<number, SignTableAnswer>();
+			for (const [key, { source, cell }] of Object.entries(blankResult.variationBlanks ?? {})) {
+				// Un tableau est lu une fois, à sa première case
+				if (cell > 0) continue;
+				const first = Number(key);
+				const read = readSignTableCases(source, first, {
+					orderIndependent: template.options?.orderIndependent
+				});
+				if ('errors' in read) return { success: false, errors: read.errors };
+				read.answers.forEach((answer, k) => signTableAnswers.set(first + k, answer));
+			}
+			if (signTableAnswers.size > 0) {
+				// Le tableau que l'écran de l'élève lit vraiment porte chacune de ses cases
+				const shown = new Set(
+					parseMarkdown(blankResult.statement).children.flatMap((child) =>
+						child.type === 'variation-table' ? signTableCaseIndices(child) : []
+					)
+				);
+				for (const index of signTableAnswers.keys()) {
+					if (!shown.has(index)) {
+						return {
+							success: false,
+							errors: [
+								`Case ${index + 1} (tableau de signes) : bloc illisible à l'écran (fence de fin \`\`\` en retrait, ou bloc dans un bloc de code ?)`
+							]
+						};
+					}
+				}
+			}
+
 			// Chaque case à construire doit être un bloc que l'écran de l'élève lit vraiment
 			// (droite à placer : ses cases, une par point) :
 			// une fence de fin en retrait, un bloc montré dans un bloc de code ``` ne le sont
@@ -773,13 +1121,22 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 					parseMarkdown(blankResult.statement).children.flatMap((child) => {
 						if (child.type === 'number-line') {
 							const first = child.caseIndex;
+							if (child.representer !== undefined && first !== undefined) return [first];
 							if (child.placer === undefined || first === undefined) return [];
 							return child.placer.map((_, k) => first + k);
 						}
 						if (child.type === 'courbe') {
 							const first = child.caseIndex;
+							if ((child.spec?.tracer || child.spec?.vecteur) && first !== undefined)
+								return [first];
 							if (!child.spec?.placer || first === undefined) return [];
 							return child.spec.placer.map((_, k) => first + k);
+						}
+						if (child.type === 'tortue' || child.type === 'calcul') {
+							return child.spec !== null && child.caseIndex !== undefined ? [child.caseIndex] : [];
+						}
+						if (child.type === 'robot') {
+							return child.spec?.produire && child.caseIndex !== undefined ? [child.caseIndex] : [];
 						}
 						if (child.type === 'trig-circle') {
 							const first = child.caseIndex;
@@ -809,6 +1166,16 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 							const first = child.caseIndex;
 							if (first === undefined) return [];
 							return child.labels.map((_, k) => first + k);
+						}
+						if (child.type === 'associer') {
+							const first = child.caseIndex;
+							if (first === undefined) return [];
+							return child.items.map((_, k) => first + k);
+						}
+						if (child.type === 'trous') {
+							const first = child.caseIndex;
+							if (first === undefined) return [];
+							return child.answers.map((_, k) => first + k);
 						}
 						if (child.type === 'stat-chart') {
 							const first = child.caseIndex;
@@ -845,8 +1212,12 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			// elles ne donnent que des réglages.
 			// Les cases des blocs ```figure-a-completer aussi.
 			const isBlockCase = (index: number) =>
-				operationAnswers.has(index) || constructionCases.has(index) || buildAnswers.has(index);
-			const blockCaseCount = operationAnswers.size + constructionCases.size + buildAnswers.size;
+				operationAnswers.has(index) ||
+				constructionCases.has(index) ||
+				buildAnswers.has(index) ||
+				signTableAnswers.has(index);
+			const blockCaseCount =
+				operationAnswers.size + constructionCases.size + buildAnswers.size + signTableAnswers.size;
 			let alignedBlanks: TemplateBlank[];
 			if (templateBlanks.length === blankResult.totalBlanks) {
 				for (const index of operationAnswers.keys()) {
@@ -866,6 +1237,16 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 							success: false,
 							errors: [
 								`Case ${index + 1} : sa réponse est la figure de l’élève (bloc ${name}) ; laisser expectedAnswer vide`
+							]
+						};
+					}
+				}
+				for (const index of signTableAnswers.keys()) {
+					if ((templateBlanks[index].expectedAnswer ?? '').trim() !== '') {
+						return {
+							success: false,
+							errors: [
+								`Case ${index + 1} : sa réponse vient du tableau de signes ; laisser expectedAnswer vide`
 							]
 						};
 					}
@@ -954,13 +1335,32 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 							.map((check) =>
 								check.kind === 'point'
 									? `point(${check.name})`
-									: check.kind === 'symetrique'
-										? `symetrique(${[...(check.points ?? []), check.by].join(';')})`
-										: `droite(${check.points[0]};${check.points[1]})`
+									: check.kind === 'droite'
+										? `droite(${check.name})`
+										: check.kind === 'cercle'
+											? `cercle(${check.name})`
+											: check.kind === 'symetrique'
+												? `symetrique(${[...(check.points ?? []), check.by].join(';')})`
+												: check.kind === 'segment'
+													? `segment(${check.point}${check.end};${check.length}mm)`
+													: `droite(${check.points[0]};${check.points[1]})`
 							)
 							.join('|'),
 						type: 'graphical',
 						construction
+					};
+				}
+				// Case d'un tableau de signes : sa propre case, sans les réglages de la variation
+				// (`answerKind`, unité, précision… jugeraient la valeur de x comme autre chose)
+				const signTableAnswer = signTableAnswers.get(i);
+				if (signTableAnswer) {
+					return {
+						expectedAnswer: signTableAnswer.answer,
+						type: blankResult.blankTypes[i],
+						cellule: signTableAnswer.kind,
+						expectedAnswerLatex: signTableAnswerLatex(signTableAnswer),
+						// Valeur de x jugée par équivalence (phase 0) : `1,5` vaut `\frac{3}{2}`
+						...(signTableAnswer.kind === 'valeur' && { acceptDecimal: true })
 					};
 				}
 				const operationAnswer = operationAnswers.get(i);
@@ -1002,9 +1402,13 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 					answerKind !== 'intervalles' &&
 					answerKind !== 'vecteur' &&
 					answerKind !== 'matrice';
+				// Unité imposée : l'attendu s'écrit dans cette unité (`1.5[km]` → `1500[m]`)
+				const required = (blank.unit ?? resolvedVariation.blankDefaults?.unit)?.required;
 				const expectedAnswer = isCleanable
 					? cleanCoefficientsCustom(resolvedExpected, genericFunctions, capitalPairs)
-					: resolvedExpected;
+					: required
+						? expectedInRequiredUnit(resolvedExpected, required)
+						: resolvedExpected;
 
 				// `i` matches the blank counter assigned by `assignBlankIndices`
 				// (left-to-right, consecutive, 0-based). If that contract changes,
@@ -1098,7 +1502,16 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				}
 				if (buildAnswer !== undefined) {
 					resolved.construire = buildAnswer.kind;
-					resolved.expectedAnswerLatex = buildAnswer.answer;
+					// Programme tortue ou de calcul : le corrigé montre le programme, sans la
+					// comparaison ni les essais ; robot : le code, sans la scène
+					resolved.expectedAnswerLatex =
+						buildAnswer.kind === 'tortue'
+							? (readExpectedTortueAnswer(buildAnswer.answer)?.attendu ?? buildAnswer.answer)
+							: buildAnswer.kind === 'calcul'
+								? (readExpectedCalculAnswer(buildAnswer.answer)?.attendu ?? buildAnswer.answer)
+								: buildAnswer.kind === 'robot'
+									? (readExpectedRobotAnswer(buildAnswer.answer)?.solution ?? buildAnswer.answer)
+									: buildAnswer.answer;
 				}
 				return resolved;
 			});
@@ -1130,6 +1543,39 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 						return serializeRangerBlock({
 							caseIndex: block.caseIndex,
 							sign: shown.sign,
+							labels: shown.order.map((index) => shown.labels[index])
+						});
+					})
+				);
+			}
+
+			// Blocs ```associer de l'énoncé : sans les liens, étiquettes dans l'ordre AFFICHÉ
+			if (associerOrders.size > 0) {
+				finalStatement = resolvedMarkdown(
+					replaceAssocierBlocks(String(finalStatement), (block) => {
+						const shown =
+							block.caseIndex === undefined ? undefined : associerOrders.get(block.caseIndex);
+						if (!shown || block.caseIndex === undefined) return '';
+						return serializeAssocierBlock({
+							caseIndex: block.caseIndex,
+							gesture: shown.gesture,
+							items: shown.items,
+							labels: shown.order.map((index) => shown.labels[index])
+						});
+					})
+				);
+			}
+
+			// Blocs ```trous de l'énoncé : trous vides, réserve dans l'ordre AFFICHÉ
+			if (trousOrders.size > 0) {
+				finalStatement = resolvedMarkdown(
+					replaceTrousBlocks(String(finalStatement), (block) => {
+						const shown =
+							block.caseIndex === undefined ? undefined : trousOrders.get(block.caseIndex);
+						if (!shown || block.caseIndex === undefined) return '';
+						return serializeTrousBlock({
+							caseIndex: block.caseIndex,
+							lines: shown.lines,
 							labels: shown.order.map((index) => shown.labels[index])
 						});
 					})
@@ -1237,9 +1683,6 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			...(genericFunctionNames && { genericFunctions: genericFunctionNames }),
 			capitalPairs,
 			grades: template.grades,
-			theme: template.theme,
-			domain: template.domain,
-			subdomain: template.subdomain,
 			level: template.level,
 			delay: template.delay,
 			correction: resolvedCorrection,

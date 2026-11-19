@@ -20,7 +20,7 @@ import {
 	type SimulationScene
 } from '../../utils/stat-chart-scene';
 import { generateStatChartTypst } from '../../generators/stat-chart-typst';
-import { Fraction } from '$lib/statistics/fraction';
+import { Fraction } from '#lib/statistics/fraction.ts';
 import {
 	exponentialSampler,
 	geometricSampler,
@@ -28,8 +28,8 @@ import {
 	simulateDraws,
 	uniformSampler,
 	type LawSampler
-} from '$lib/statistics/simulation';
-import { createRandomSource } from '$lib/utils/random';
+} from '#lib/statistics/simulation.ts';
+import { createRandomSource } from '#lib/utils/random.ts';
 
 // =============================================================================
 // Helpers

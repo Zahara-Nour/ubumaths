@@ -7,43 +7,19 @@
  * Body: { new_title?: string, class_id?: string }
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
 import type { RequestHandler } from './$types';
-import { duplicateTemplateSchema } from '$lib/server/validation/message-templates';
-import { createServerLogger } from '$lib/utils/logger';
+import { duplicateTemplateSchema } from '#lib/server/validation/message-templates.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/messages/templates/[id]/duplicate/+server');
 
 export const POST: RequestHandler = async ({ locals, params, request }) => {
-	const { supabase, user } = locals;
+	const { supabase } = locals;
 	const { id } = params;
 
-	if (!user) {
-		return error(401, 'Non authentifié');
-	}
-
-	// Get user profile
-	const { data: profile, error: profileError } = await supabase
-		.from('profiles')
-		.select('role')
-		.eq('id', user.id)
-		.single();
-
-	// PGRST116 = pas de profil, et le refus qui suit est légitime. Toute AUTRE
-	// panne produisait le même refus, indiscernable d'un refus mérité.
-	if (profileError && profileError.code !== 'PGRST116') {
-		logger.error('Rôle illisible :', profileError);
-		return error(500, 'Impossible de vérifier les droits');
-	}
-
-	if (!profile) {
-		return error(404, 'Profil non trouvé');
-	}
-
-	// Only teachers and admins can duplicate
-	if (profile.role !== 'admin' && profile.role !== 'teacher') {
-		return error(403, 'Permissions insuffisantes');
-	}
+	const { user } = await requireRoles(locals, ['teacher', 'admin']);
 
 	// ✅ SECURITY: Validate input with Zod
 	const body = await request.json();
@@ -103,7 +79,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		return error(500, 'Template dupliqué mais erreur lors de la récupération');
 	}
 
-	return json(
+	return Response.json(
 		{
 			template: newTemplate,
 			message: 'Template dupliqué avec succès'

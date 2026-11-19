@@ -1,0 +1,79 @@
+[
+	{
+		"id": "08337d34-d1fe-4c28-984e-ff71d9833b9e",
+		"noeudAvant": null,
+		"noeudApres": "Géométrie > Solides > constructions",
+		"gradesAvant": ["CM1", "CM2"],
+		"gradesApres": ["CM1", "CM2"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-119", "CM2§CM2-105"]
+	},
+	{
+		"id": "0da1780b-c872-45a2-8fe0-0027f2ef8e22",
+		"noeudAvant": null,
+		"noeudApres": "Géométrie > Solides > patrons",
+		"gradesAvant": ["CM1", "CM2"],
+		"gradesApres": ["CM1", "CM2"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-115", "CM2§CM2-100"]
+	},
+	{
+		"id": "10f2e60e-6ecf-494b-9573-e55c805dc4f3",
+		"noeudAvant": null,
+		"noeudApres": "Géométrie > Repérage et déplacements > coder un déplacement",
+		"gradesAvant": ["CM1", "CM2"],
+		"gradesApres": ["CM1", "CM2"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-118", "CM2§CM2-104"]
+	},
+	{
+		"id": "7714c08c-832c-48d0-a937-e953a9133222",
+		"noeudAvant": null,
+		"noeudApres": "Géométrie > Repérage et déplacements > coder un déplacement",
+		"gradesAvant": ["CM1", "CM2"],
+		"gradesApres": ["CM1", "CM2"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-118", "CM2§CM2-104"]
+	},
+	{
+		"id": "9fe0fee6-5e3b-4fa2-9594-a245d6688ff6",
+		"noeudAvant": null,
+		"noeudApres": "Géométrie > Solides > patrons",
+		"gradesAvant": ["CM1", "CM2"],
+		"gradesApres": ["CM1", "CM2"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-116", "CM2§CM2-101"]
+	},
+	{
+		"id": "a36679be-05f8-4efe-bc5c-97fd34155039",
+		"noeudAvant": null,
+		"noeudApres": "Géométrie > Repérage et déplacements > coder un déplacement",
+		"gradesAvant": ["CM1", "CM2"],
+		"gradesApres": ["CM1", "CM2"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-117", "CM2§CM2-103"]
+	},
+	{
+		"id": "ebc05cbb-69cd-4689-a562-48b9c2fb0252",
+		"noeudAvant": null,
+		"noeudApres": "Géométrie > Solides > patrons",
+		"gradesAvant": ["CM1", "CM2"],
+		"gradesApres": ["CM1", "CM2"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-116", "CM2§CM2-101"]
+	}
+]

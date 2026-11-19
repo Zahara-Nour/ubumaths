@@ -1,6 +1,6 @@
 """Écrit les 10 modèles du lot « dérivation » de la 1re spé dans scripts/questions/1spe-derivation/.
 
-Phase 0 validée par David le 2026-11-01 (§ 18 du journal « docs/wip/questions-1spe-progress.md »),
+Phase 0 validée par David le 2026-11-01 (§ 18 du journal « docs/archive/wip/questions-1spe-progress.md »),
 un point par modèle :
 
 | #  | Point    | Titre                                         | Fonctions › Dérivation › …, niveau |

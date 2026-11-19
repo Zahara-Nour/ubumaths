@@ -1,10 +1,8 @@
 {
+	"id": "ba8f2f75-2989-4505-8d6d-f2df837a2ee6",
 	"title": "Durées à deux étapes",
 	"description": "Départ 7 h 10 + 1 h 30 + 40 min ; deux durées à ajouter ; une pause à enlever",
 	"grades": ["CE2"],
-	"theme": "Grandeurs",
-	"domain": "Durées",
-	"subdomain": "Durée écoulée",
 	"level": 4,
 	"delay": 150,
 	"status": "draft",

@@ -1,10 +1,8 @@
 {
+	"id": "8aa2821f-d852-464b-9ff6-c7a8c373a6e9",
 	"title": "Comparer des longueurs d'unités différentes",
 	"description": "3,5 m et 340 cm ; 2,4 km et 2 450 m ; ranger quatre longueurs en cm, m, mm et dm ; 2 m + 45 cm ; 1 km − 350 m",
 	"grades": ["CM1"],
-	"theme": "Grandeurs",
-	"domain": "Longueurs",
-	"subdomain": "Comparaison et mesure",
 	"level": 5,
 	"delay": 60,
 	"status": "draft",

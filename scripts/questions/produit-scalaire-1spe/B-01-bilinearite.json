@@ -1,10 +1,8 @@
 {
+	"id": "d520539a-4d14-492d-8d85-a303a6c30798",
 	"title": "Bilinéarité du produit scalaire",
 	"description": "Développer un produit scalaire par bilinéarité à partir des normes et du produit scalaire de deux vecteurs",
 	"grades": ["1_SPE"],
-	"theme": "Géométrie",
-	"domain": "Produit scalaire",
-	"subdomain": "Propriétés",
 	"level": 2,
 	"status": "draft",
 	"delay": 120,

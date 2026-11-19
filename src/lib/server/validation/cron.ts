@@ -59,6 +59,8 @@ const ALLOWED_JOB_PATHS = [
 	'/api/cron/riddle-of-the-day',
 	// Fichiers des comptes supprimés (cron Vercel hebdomadaire, vercel.json)
 	'/api/cron/deleted-account-files',
+	// Carnet de liaison : liens manquants, courriels d'exception, trimestriel (cron Vercel quotidien)
+	'/api/cron/carnet-de-liaison',
 	// pg_cron jobs (database RPC functions)
 	'rpc:cleanup_stale_trades',
 	'rpc:run_recalculate_minesweeper_ref_times',

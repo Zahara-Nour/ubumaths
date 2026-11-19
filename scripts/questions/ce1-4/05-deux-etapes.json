@@ -1,10 +1,8 @@
 {
+	"id": "93d318d1-090e-4ea2-8226-792662a60376",
 	"title": "Problèmes en deux étapes (jusqu'à 1 000)",
 	"description": "Ajouts et retraits enchaînés : 83 + 18 − 27 ; deux achats et la monnaie rendue sur un billet",
 	"grades": ["CE1"],
-	"theme": "Entiers",
-	"domain": "Problèmes",
-	"subdomain": "Deux étapes",
 	"level": 5,
 	"delay": 120,
 	"status": "draft",

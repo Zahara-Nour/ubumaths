@@ -4,9 +4,9 @@
 # Contenu = modèles de questions (`scripts/questions/**/*.json`), doc (`docs/**`, dont les
 # scripts générateurs `docs/wip/questions/*.py`) et `.md` hors `src/`, `static/`, `data/`.
 # Rien de cela n'est importé par le code : typecheck, build, audit et garde SECURITY
-# DEFINER ne peuvent pas changer de verdict, on les saute. Les tests serveur et client
-# tournent toujours : deux d'entre eux lisent les JSON de scripts/questions
-# (answer-complexity-corpus, student-answer-safety.render), et le Lint garde la doc.
+# DEFINER ne peuvent pas changer de verdict, on les saute ; les tests client aussi (aucun
+# ne lit scripts/questions ni docs/). Les tests serveur se réduisent à ceux qui lisent les
+# JSON de scripts/questions (scripts/ci-tests-contenu.sh) ; le Lint (sans ESLint) garde la doc.
 #
 # Seulement sur `pull_request` : le checkout est alors le commit de merge, dont le
 # premier parent est la base ; `git diff HEAD^1 HEAD` = ce que la PR change.

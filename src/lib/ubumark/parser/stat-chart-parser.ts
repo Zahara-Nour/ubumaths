@@ -37,7 +37,7 @@
 
 import { unnestedLine } from './nested-line';
 import { bodyOpensParagraph } from './block-closure';
-import { groupNumberText } from '$lib/mathAST/digit-grouping';
+import { groupNumberText } from '#lib/mathAST/digit-grouping.ts';
 import {
 	CLASS_CHART_KINDS,
 	CROSS_TABLE_DISPLAYS,
@@ -81,23 +81,23 @@ import {
 	type QueryInterval
 } from '../types/stat-chart';
 import { COURBE_COLORS, COURBE_SIZES, type CourbeColor, type CourbeSize } from '../types/courbe';
-import { resolveNamedColor } from '$lib/theme/named-colors';
-import { summarizeClasses } from '$lib/statistics/classes';
-import { describeList } from '$lib/statistics/describe';
-import { crossTable } from '$lib/statistics/cross-table';
-import { Fraction } from '$lib/statistics/fraction';
-import { randomVariable } from '$lib/statistics/random-variable';
-import { readListValue } from '$lib/statistics/read-value';
-import { invalidValueReason, readExactValue } from '$lib/statistics/bivariate';
+import { resolveNamedColor } from '#lib/theme/named-colors.ts';
+import { summarizeClasses } from '#lib/statistics/classes.ts';
+import { describeList } from '#lib/statistics/describe.ts';
+import { crossTable } from '#lib/statistics/cross-table.ts';
+import { Fraction } from '#lib/statistics/fraction.ts';
+import { randomVariable } from '#lib/statistics/random-variable.ts';
+import { readListValue } from '#lib/statistics/read-value.ts';
+import { invalidValueReason, readExactValue } from '#lib/statistics/bivariate.ts';
 import {
 	changeDomainProblem,
 	readVariableChange,
 	VARIABLE_CHANGE_LIST,
 	type VariableChange
-} from '$lib/statistics/variable-change';
-import { BINOMIAL_MAX_N } from '$lib/statistics/binomial';
-import { GEOMETRIC_MAX_K } from '$lib/statistics/geometric';
-import { UNIFORM_MAX_VALUES } from '$lib/statistics/uniform';
+} from '#lib/statistics/variable-change.ts';
+import { BINOMIAL_MAX_N } from '#lib/statistics/binomial.ts';
+import { GEOMETRIC_MAX_K } from '#lib/statistics/geometric.ts';
+import { UNIFORM_MAX_VALUES } from '#lib/statistics/uniform.ts';
 import { carreauGrid, usesCarreaux } from '../utils/stat-chart-carreaux';
 import { SCALE_STEPS, scaleAxis } from '../utils/barres-placer';
 import { isMaskedValue } from '../utils/masked-value';
@@ -536,8 +536,8 @@ export function findStatChartBlocks(lines: string[]): StatChartBlockRange[] {
 /** `axe: à choisir` : l'élève choisit l'échelle */
 const CHOOSE_SCALE = 'à choisir';
 
-/** Ligne `placer:` d'un diagramme en barres à construire */
-const PLACER_LINE_REGEX = /^placer\s*:/i;
+/** Ligne `placer:` (ligne rognée) d'un diagramme à construire : barres, boîte à moustaches */
+export const PLACER_LINE_REGEX = /^placer\s*:/i;
 
 /**
  * Les diagrammes en barres à construire (`placer:`) d'un énoncé, délimités comme

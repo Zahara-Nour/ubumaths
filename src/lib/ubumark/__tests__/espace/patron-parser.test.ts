@@ -2,9 +2,9 @@
  * Bloc ```patron : analyse du texte — chantier `solides`, § 9
  */
 import { describe, expect, it } from 'vitest';
-import { parseMarkdown } from '$lib/ubumark';
-import { parseEspaceContent } from '$lib/ubumark/parser/espace-parser';
-import type { EspaceNode, PatronSpec } from '$lib/ubumark/types/espace';
+import { parseMarkdown } from '#lib/ubumark/index.ts';
+import { parseEspaceContent } from '#lib/ubumark/parser/espace-parser.ts';
+import type { EspaceNode, PatronSpec } from '#lib/ubumark/types/espace.ts';
 
 const read = (...lines: string[]) => parseEspaceContent(lines.join('\n'), 'patron');
 const spec = (...lines: string[]) => read(...lines).spec as PatronSpec | null;

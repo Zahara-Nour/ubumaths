@@ -1,10 +1,8 @@
 {
+	"id": "15f9d78b-f1b0-4d20-b72f-a4eb2bdeefe4",
 	"title": "Définition de la médiatrice d'un segment",
 	"description": "La médiatrice d'un segment est la droite perpendiculaire au segment qui passe par son milieu : la reconnaître sur une figure codée, choisir sa définition",
 	"grades": ["6"],
-	"theme": "Géométrie",
-	"domain": "Figures planes",
-	"subdomain": "Médiatrice d'un segment",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

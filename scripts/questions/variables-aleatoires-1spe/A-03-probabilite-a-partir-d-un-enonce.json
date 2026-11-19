@@ -1,10 +1,8 @@
 {
+	"id": "97b3a376-01de-42cd-8297-b0f7937e38f1",
 	"title": "Probabilité d'une valeur de X à partir d'un énoncé",
 	"description": "Urne, dé ou deux dés (somme, événements X = k, X ≤ k, X ≥ k, a ≤ X ≤ b) : traduire en événement, puis calculer sa probabilité (équiprobabilité)",
 	"grades": ["1_SPE"],
-	"theme": "Probabilités",
-	"domain": "Variables aléatoires",
-	"subdomain": "Loi d'une variable aléatoire",
 	"level": 2,
 	"status": "draft",
 	"delay": 60,

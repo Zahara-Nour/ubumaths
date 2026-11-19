@@ -1,0 +1,128 @@
+{
+	"id": "49fac266-f622-4ef5-8a2b-5638ca5a4c99",
+	"title": "Ajustement affine : interpréter le coefficient directeur et l'ordonnée à l'origine",
+	"description": "Droite donnée par la calculatrice : interpréter a (variation moyenne de y par unité de x) et b (estimation en x = 0)",
+	"grades": ["T_COMP"],
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "On étudie le nombre $y$ d'abonnés (en milliers) à un service selon le rang $x$ de l'année. La calculatrice donne la droite des moindres carrés $y={{eval:A/10;d}}x+{{B}}$.\n\nComment interpréter le coefficient ${{eval:A/10;d}}$ ?\n\n```choix\n- Le nombre d'abonnés augmente d'environ ${{eval:A/10;d}}$ milliers chaque année\n- Le nombre d'abonnés augmente d'environ ${{eval:A/10;d}}\\,\\%$ chaque année\n- Le nombre d'abonnés est multiplié par ${{eval:A/10;d}}$ chaque année\n- Il y avait ${{eval:A/10;d}}$ milliers d'abonnés l'année de rang $0$\n```",
+			"variables": [
+				{
+					"name": "A",
+					"expression": "12..95"
+				},
+				{
+					"name": "B",
+					"expression": "20..80"
+				}
+			],
+			"conditions": ["mod(A, 10) != 0"],
+			"correction": {
+				"steps": [
+					"Le coefficient directeur $a$ est la variation de $y$ quand $x$ augmente de $1$.",
+					"Selon cet ajustement, **le nombre d'abonnés augmente d'environ ${{eval:A/10;d}}$ milliers par an**."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "On étudie le nombre $y$ d'abonnés (en milliers) à un service selon le rang $x$ de l'année. La calculatrice donne la droite des moindres carrés $y={{eval:A/10;d}}x+{{B}}$.\n\nComment interpréter le nombre ${{B}}$ ?\n\n```choix\n- L'ajustement estime à ${{B}}$ milliers le nombre d'abonnés l'année de rang $0$\n- Le nombre d'abonnés augmente d'environ ${{B}}$ milliers chaque année\n- Le nombre d'abonnés ne descendra jamais sous ${{B}}$ milliers\n- Le nombre moyen d'abonnés sur la période est ${{B}}$ milliers\n```",
+			"variables": [
+				{
+					"name": "A",
+					"expression": "12..95"
+				},
+				{
+					"name": "B",
+					"expression": "20..80"
+				}
+			],
+			"conditions": ["mod(A, 10) != 0"],
+			"correction": {
+				"steps": [
+					"L'ordonnée à l'origine $b$ est la valeur de $y$ donnée par l'ajustement pour $x=0$.",
+					"Donc **l'ajustement estime à ${{B}}$ milliers le nombre d'abonnés l'année de rang $0$**."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"A": "35",
+				"B": "40"
+			},
+			"description": "v0 : bonne interprétation",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"A": "35",
+				"B": "40"
+			},
+			"description": "v0 : pourcentage",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"A": "35",
+				"B": "40"
+			},
+			"description": "v0 : confusion avec b",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"A": "35",
+				"B": "40"
+			},
+			"description": "v1 : bonne interprétation",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"A": "35",
+				"B": "40"
+			},
+			"description": "v1 : confusion avec a",
+			"variationIndex": 1
+		}
+	]
+}

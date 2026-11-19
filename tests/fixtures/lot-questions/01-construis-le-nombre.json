@@ -1,10 +1,8 @@
 {
+	"id": "00000000-0000-4000-8000-000000000000",
 	"title": "Construis le nombre",
 	"description": "Construire un nombre de 11 à 99 avec des barres de dix et des cubes",
 	"grades": ["CP"],
-	"theme": "Entiers",
-	"domain": "Apprivoiser",
-	"subdomain": "Dénombrer",
 	"level": 1,
 	"delay": 90,
 	"status": "draft",

@@ -7,10 +7,10 @@
 -->
 
 <script lang="ts">
-	import type { QuestionInstance } from '$lib/questions/types';
-	import QuestionPreviewBaseCard from '$lib/components/questions/QuestionPreviewBaseCard.svelte';
-	import * as Card from '$lib/components/ui/card';
-	import { resolvedMarkdown } from '$lib/ubumark';
+	import type { QuestionInstance } from '#lib/questions/types.ts';
+	import QuestionPreviewBaseCard from '#lib/components/questions/QuestionPreviewBaseCard.svelte';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { resolvedMarkdown } from '#lib/ubumark/index.ts';
 
 	// ============================================================================
 	// SAMPLE DATA
@@ -49,9 +49,6 @@
 			}
 		},
 		grades: ['4', '3', '2'],
-		theme: 'Algèbre',
-		domain: 'Équations',
-		subdomain: 'Quadratiques',
 		level: 3,
 		delay: 120,
 		precision: { type: 'none' },
@@ -79,8 +76,6 @@
 			}
 		],
 		grades: ['6', '5'],
-		theme: 'Arithmétique',
-		domain: 'Nombres premiers',
 		level: 2,
 		generatedAt: new Date().toISOString(),
 		seed: 123,
@@ -100,9 +95,6 @@
 		solution: '3x^2 - 3x - 8',
 		resolvedVariables: [],
 		grades: ['4', '3'],
-		theme: 'Algèbre',
-		domain: 'Calcul littéral',
-		subdomain: 'Développement',
 		level: 4,
 		generatedAt: new Date().toISOString(),
 		seed: 789

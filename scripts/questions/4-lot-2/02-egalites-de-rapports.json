@@ -1,10 +1,8 @@
 {
+	"id": "21c79ea0-cb67-445b-b515-a698de63425e",
 	"title": "Égalités de rapports",
 	"description": "Exprimer la proportionnalité par des égalités de rapports ou un ratio : x/2 = y/3 ; a/2 = b/3 = c/7 ; 6, 9 et 21 sont-ils dans le ratio 2 : 3 : 7 ?",
 	"grades": ["4"],
-	"theme": "Proportionnalité",
-	"domain": "Ratios",
-	"subdomain": "Égalités de rapports",
 	"level": 1,
 	"delay": 30,
 	"status": "draft",

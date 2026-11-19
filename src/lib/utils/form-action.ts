@@ -2,21 +2,20 @@
  * Appel manuel d'un form action SvelteKit
  * =======================================
  *
- * ⚠️ Un `fail()` répond en **HTTP 200**.
+ * ⚠️ Le verdict est dans le CORPS de la réponse, pas dans son statut HTTP.
  *
- * SvelteKit sérialise le verdict dans le CORPS de la réponse
- * (`{ type: 'failure', status: 400, data }`) et laisse le statut HTTP à 200 —
- * cf. `action_json({ type: 'failure', … })`, appelé sans statut, dans
- * `@sveltejs/kit/src/runtime/server/page/actions.js`.
- *
- * Conséquence : `if (response.ok)` est TOUJOURS vrai, y compris sur un refus de
- * validation. Une page qui teste `response.ok` annonce donc « succès » puis
- * recharge des données inchangées. Payé en production le 2026-09-16 : l'emploi
- * du temps affichait « Créneau ajouté » alors que le serveur refusait le jour,
- * et rien n'était écrit.
+ * SvelteKit sérialise le verdict dans le corps (`{ type: 'failure', status: 400,
+ * data }`). Jusqu'à SvelteKit 2, un `fail()` répondait en HTTP 200 : une page qui
+ * testait `response.ok` annonçait donc « succès » sur un refus de validation, puis
+ * rechargeait des données inchangées. Payé en production le 2026-09-16 : l'emploi
+ * du temps affichait « Créneau ajouté » alors que le serveur refusait le jour, et
+ * rien n'était écrit. Depuis SvelteKit 3, `fail()` répond avec son vrai statut
+ * (`action_json(…, { status: result.status })` dans
+ * `@sveltejs/kit/src/runtime/server/page/actions.js`), mais le corps reste la seule
+ * source sûre : une redirection, elle, revient toujours en 200 (ci-dessous).
  *
  * Deux redirections à ne pas confondre :
- * - celle levée par l'ACTION revient elle aussi en 200, avec
+ * - celle levée par l'ACTION revient en 200, avec
  *   `{ type: 'redirect' }` dans le corps. C'est un SUCCÈS : l'action a écrit,
  *   puis renvoie ailleurs. Sa destination est rendue dans `redirect`, à charge
  *   pour l'appelant d'y naviguer ;
@@ -32,9 +31,9 @@
  */
 
 import { deserialize } from '$app/forms';
-import { invalidateAll } from '$app/navigation';
-import type { ActionResult } from '@sveltejs/kit';
-import { toaster } from '$lib/stores/toaster.svelte';
+import { refreshAll } from '$app/navigation';
+import type { ActionResult } from '$app/forms';
+import { toaster } from '#lib/stores/toaster.svelte.ts';
 
 // ============================================================================
 // TYPES
@@ -166,7 +165,7 @@ export async function submitAction<T = Record<string, unknown>>(
 /**
  * Recharge les données de la page après une écriture réussie.
  *
- * `invalidateAll()` peut rejeter (réseau coupé entre l'écriture et le
+ * `refreshAll()` peut rejeter (réseau coupé entre l'écriture et le
  * rechargement). Laissé nu, ce rejet saute le message de succès et la fermeture
  * de la modale : l'écran se fige sans rien dire, alors que l'écriture, elle, a
  * bien eu lieu — le symptôme même que ce module existe pour supprimer.
@@ -180,7 +179,7 @@ export async function submitAction<T = Record<string, unknown>>(
  */
 export async function refreshPageData(): Promise<void> {
 	try {
-		await invalidateAll();
+		await refreshAll();
 	} catch (err) {
 		console.error('[refreshPageData] Rechargement des données échoué :', err);
 		toaster.warning("Enregistré, mais l'affichage n'a pas pu être rafraîchi");

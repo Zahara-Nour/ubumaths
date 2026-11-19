@@ -25,7 +25,7 @@
 	@see src/lib/shared/parameterization for variable system
 -->
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import {
 		Bold,
 		Italic,
@@ -46,8 +46,8 @@
 	} from '@lucide/svelte';
 	import MarkdownRenderer from './MarkdownRenderer.svelte';
 	import type { ImageUploadConfig } from './types';
-	import type { Variable } from '$lib/ubumark';
-	import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
+	import type { Variable } from '#lib/ubumark/index.ts';
+	import type { GenericFunctionConfig } from '#lib/mathAST/parser/types.ts';
 
 	// Props
 	interface Props {

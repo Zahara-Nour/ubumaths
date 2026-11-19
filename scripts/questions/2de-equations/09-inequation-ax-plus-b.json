@@ -1,10 +1,8 @@
 {
+	"id": "75439740-73da-4257-8896-6b64a9332e21",
 	"title": "Résoudre une inéquation ax + b > 0",
 	"description": "Ensemble des solutions de ax + b > 0 : a positif, puis a négatif (le sens change), les quatre sens",
 	"grades": ["2"],
-	"theme": "Calcul littéral",
-	"domain": "Inéquations",
-	"subdomain": "Premier degré",
 	"level": 3,
 	"delay": 60,
 	"status": "draft",

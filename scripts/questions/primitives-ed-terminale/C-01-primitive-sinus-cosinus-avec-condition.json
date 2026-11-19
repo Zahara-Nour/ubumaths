@@ -1,10 +1,8 @@
 {
+	"id": "23402520-cbc3-4d49-b6dc-999e1ff17e3c",
 	"title": "Primitive de sinus et cosinus vérifiant une condition",
 	"description": "Primitives de a·cos x, a·sin x, cos(ωx) et sin(ωx), rendues uniques par F(0) = y₀ (spécialité seulement)",
 	"grades": ["T_SPE"],
-	"theme": "Primitives et équations différentielles",
-	"domain": "Primitives",
-	"subdomain": "Primitives de sinus et cosinus",
 	"level": 2,
 	"status": "draft",
 	"delay": 60,

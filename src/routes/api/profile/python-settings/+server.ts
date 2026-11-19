@@ -20,25 +20,17 @@
  * }
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { pythonSettingsSchema } from '$lib/server/validation/python-settings';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import { pythonSettingsSchema } from '#lib/server/validation/python-settings.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/profile/python-settings/+server');
 
 export const PUT: RequestHandler = async ({ locals, request }) => {
-	const { user, profile, supabase } = locals;
-
-	// Auth check: Must be logged in
-	if (!user || !profile) {
-		throw error(401, 'Authentication required');
-	}
-
-	// Auth check: Must be student or teacher
-	if (profile.role !== 'student' && profile.role !== 'teacher') {
-		throw error(403, 'This endpoint is only accessible to students and teachers');
-	}
+	const { user } = await requireRoles(locals, ['student', 'teacher']);
+	const { supabase } = locals;
 
 	try {
 		// Parse and validate request body
@@ -62,7 +54,7 @@ export const PUT: RequestHandler = async ({ locals, request }) => {
 			throw error(500, 'Failed to update settings');
 		}
 
-		return json({ success: true, settings });
+		return Response.json({ success: true, settings });
 	} catch (err) {
 		// Re-throw SvelteKit errors
 		if (err && typeof err === 'object' && 'status' in err) {

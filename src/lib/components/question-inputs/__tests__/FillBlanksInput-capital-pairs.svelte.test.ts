@@ -12,9 +12,9 @@ import { describe, it, expect, beforeAll } from 'vitest';
 import { userEvent } from 'vitest/browser';
 import { render } from 'vitest-browser-svelte';
 import FillBlanksInput from '../FillBlanksInput.svelte';
-import type { ResolvedMarkdown } from '$lib/ubumark';
-import type { InstanceBlank } from '$lib/questions/types';
-import type { CapitalPairs } from '$lib/mathAST/parser/types';
+import type { ResolvedMarkdown } from '#lib/ubumark/index.ts';
+import type { InstanceBlank } from '#lib/questions/types.ts';
+import type { CapitalPairs } from '#lib/mathAST/parser/types.ts';
 import type { MathfieldElement } from 'mathlive';
 
 const statement = 'Réponse : $\\placeholder[0]{}$' as ResolvedMarkdown;

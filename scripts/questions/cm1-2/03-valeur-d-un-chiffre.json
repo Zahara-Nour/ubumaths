@@ -1,10 +1,8 @@
 {
+	"id": "573a49b3-9c6c-4d6f-9f92-70f196c50232",
 	"title": "La valeur d'un chiffre (jusqu'à $999\\,999$)",
 	"description": "Chiffre d'un rang, valeur d'un chiffre selon sa position, rang d'un chiffre, dans un entier de 5 à 6 chiffres",
 	"grades": ["CM1"],
-	"theme": "Entiers",
-	"domain": "Apprivoiser",
-	"subdomain": "Décomposition",
 	"level": 23,
 	"delay": 20,
 	"status": "draft",

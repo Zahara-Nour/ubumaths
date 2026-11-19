@@ -5,8 +5,8 @@
 import { describe, it, expect } from 'vitest';
 import { generateInstance } from '../instance-generator';
 import type { QuestionTemplate, QuestionVariation } from '../../types';
-import { templateMarkdown } from '$lib/ubumark';
-import { validateAnswer } from '$lib/utils/answer-validator';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
+import { validateAnswer } from '#lib/utils/answer-validator.ts';
 
 function makeTemplate(variation: Partial<QuestionVariation>): QuestionTemplate {
 	return {
@@ -14,8 +14,6 @@ function makeTemplate(variation: Partial<QuestionVariation>): QuestionTemplate {
 		title: 'Pièges',
 		status: 'draft',
 		grades: ['6'],
-		theme: 'Test',
-		domain: 'Test',
 		level: 1,
 		variations: [{ statement: templateMarkdown('$?$'), ...variation }]
 	};

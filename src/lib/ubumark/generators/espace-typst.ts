@@ -25,6 +25,9 @@
  * dessine la face manquante. `solved` : les faces attendues, ou les faces
  * retirées du patron du prof, en gris.
  *
+ * Geste du solide (`tracer: vecteur …`, chantier `solide-vecteur`, lot 2) : le
+ * solide seul, l'élève trace la flèche ; `solved` : la flèche juste (`solideSolutionVector`).
+ *
  * Un bloc en erreur devient le cadre neutre « Solide indisponible » — jamais
  * une erreur de compilation (une seule erreur Typst fait échouer toute la fiche).
  *
@@ -51,12 +54,13 @@ import {
 	SOLIDE_DASH,
 	SOLIDE_DOT_RADIUS,
 	SOLIDE_LABEL_SIZE,
-	SOLIDE_THICK_STROKE,
 	buildSolideScene,
+	solideLineStroke,
 	type SolideLabel
 } from '../utils/espace-solides';
 import { PATRON_FOLD_STROKE, buildPatronScene, type PatronLine } from '../utils/espace-patrons';
 import { expectedPatronAnswer, readCompleterAnswer } from '../utils/patron-gestes';
+import { solideSolutionVector } from '../utils/solide-gestes';
 
 // ============================================================================
 // CONSTANTES
@@ -190,10 +194,18 @@ function solideTypst(spec: SolideSpec): string {
 	}
 	for (const line of scene.lines) {
 		const dash = line.dashed ? `, dash: (${SOLIDE_DASH.map(cm).join(', ')})` : '';
-		const thickness = cm(line.thick ? SOLIDE_THICK_STROKE : ESPACE_STROKE);
+		const thickness = cm(solideLineStroke(line));
 		const [first, ...rest] = line.points;
 		content.push(
 			`  #place(top + left, curve(stroke: (paint: black, thickness: ${thickness}, cap: "round", join: "round"${dash}), curve.move(${at(first)}), ${rest.map((p) => `curve.line(${at(p)})`).join(', ')}))`
+		);
+	}
+	// Flèches (vecteurs donnés, petites flèches des noms) : le trait, puis la pointe noire
+	for (const arrow of scene.arrows) {
+		const thickness = cm(arrow.small ? ESPACE_STROKE * 0.8 : ESPACE_STROKE);
+		content.push(
+			`  #place(top + left, curve(stroke: (paint: black, thickness: ${thickness}, cap: "round"), curve.move(${at(arrow.shaft[0])}), curve.line(${at(arrow.shaft[1])})))`,
+			`  #place(top + left, polygon(fill: black, stroke: none, ${arrow.head.map(at).join(', ')}))`
 		);
 	}
 	for (const dot of scene.dots) {
@@ -212,7 +224,12 @@ function labelsTypst(labels: SolideLabel[]): string[] {
 		// en markup, Typst ferait de `O'` une apostrophe typographique
 		const w = 2;
 		const h = 1;
-		return `  #place(top + left, dx: ${cm(label.at.x + ESPACE_MARGIN - w / 2)}, dy: ${cm(label.at.y + ESPACE_MARGIN - h / 2)}, box(width: ${cm(w)}, height: ${cm(h)}, align(center + horizon, text(size: ${cm(SOLIDE_LABEL_SIZE)}, ${JSON.stringify(label.text)}))))`;
+		// Indice d'un nom de vecteur (w1) : `sub`, comme \vec{w_{1}} de la phrase
+		const body =
+			label.sub === undefined
+				? `, ${JSON.stringify(label.text)})`
+				: `)[#${JSON.stringify(label.text)}#sub(${JSON.stringify(label.sub)})]`;
+		return `  #place(top + left, dx: ${cm(label.at.x + ESPACE_MARGIN - w / 2)}, dy: ${cm(label.at.y + ESPACE_MARGIN - h / 2)}, box(width: ${cm(w)}, height: ${cm(h)}, align(center + horizon, text(size: ${cm(SOLIDE_LABEL_SIZE)}${body})))`;
 	});
 }
 
@@ -291,10 +308,16 @@ export function generateEspaceTypst(node: EspaceNode, options: { solved?: boolea
 	const spec = node.spec;
 	if (node.errors.length > 0 || spec === null) return UNAVAILABLE_TYPST;
 
-	if (spec.kind === 'solide') {
-		return ['#align(center)[#block(breakable: false)[', solideTypst(spec), ']]'].join('\n');
-	}
 	const solved = options.solved ?? false;
+	if (spec.kind === 'solide') {
+		// Geste `tracer:` : le solide seul ; corrigé : la flèche juste, en plus des vecteurs donnés
+		const solution = solved ? solideSolutionVector(spec) : null;
+		const drawn =
+			solution === null
+				? spec
+				: { ...spec, vectors: [...spec.vectors, { ...solution, name: null }] };
+		return ['#align(center)[#block(breakable: false)[', solideTypst(drawn), ']]'].join('\n');
+	}
 	if (spec.kind === 'patron') {
 		const figure =
 			spec.task?.kind === 'completer' ? completerTypst(spec, solved) : patronTypst(spec, solved);

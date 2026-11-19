@@ -1,10 +1,8 @@
 {
+	"id": "9a4592bf-5e79-4a4a-bb1a-698a715a4a34",
 	"title": "Équations particulières avec l'exponentielle",
 	"description": "e^u = 1, (x−k)eˣ = 0 (eˣ ne s'annule pas), e^u = k ≤ 0 (aucune solution)",
 	"grades": ["1_SPE"],
-	"theme": "Fonctions",
-	"domain": "Fonction exponentielle",
-	"subdomain": "Équations et inéquations",
 	"level": 3,
 	"status": "draft",
 	"delay": 45,

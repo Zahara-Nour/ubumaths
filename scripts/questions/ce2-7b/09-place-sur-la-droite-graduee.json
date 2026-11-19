@@ -1,10 +1,8 @@
 {
+	"id": "ab1c22c8-968d-42dc-90f0-1d890ac0c46f",
 	"title": "Placer des nombres sur une droite graduée (de 1 en 1 à 1 000 en 1 000)",
 	"description": "Placer un nombre ou deux sur une portion de demi-droite graduée : de 1 en 1, de 10 en 10, de 100 en 100, de 1 000 en 1 000",
 	"grades": ["CE2"],
-	"theme": "Nombres",
-	"domain": "Entiers",
-	"subdomain": "Repérage",
 	"level": 3,
 	"delay": 120,
 	"status": "draft",

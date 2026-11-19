@@ -29,7 +29,7 @@ import {
 } from '../helpers/database/trigger-test-helpers';
 import { DEFAULT_TEST_PASSWORD } from '../helpers/database/supabase-client';
 import { TestData } from '../helpers/database/test-data-factory';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 import { POST as startEvaluationRoute } from '../../src/routes/api/evaluations/assignments/[id]/start/+server';
 
 const SUPABASE_URL = process.env.SUPABASE_TEST_URL || 'http://localhost:54321';
@@ -94,7 +94,7 @@ describe('un élève archivé et l’évaluation de son ancienne classe', () => 
 		archivedStudentId = archived.id;
 		archivedStudent = archived.client;
 
-		// Un modèle PUBLIÉ dans la catégorie de la série : depuis le chantier 5,
+		// Un modèle PUBLIÉ désigné par la série : depuis le chantier 5,
 		// `start` tire les questions côté serveur et répond 409 « aucune question
 		// disponible » sans modèle. Ce test porte sur l'ACCÈS, pas sur les questions.
 		await service.from('question_templates').delete().eq('id', TEMPLATE_ID);
@@ -102,9 +102,6 @@ describe('un élève archivé et l’évaluation de son ancienne classe', () => 
 			id: TEMPLATE_ID,
 			type: 'fill_in_blanks',
 			title: 'Accès archivé ZZ',
-			theme: 'Fractions',
-			domain: 'Nombres',
-			subdomain: null,
 			level: 1,
 			grades: ['3'],
 			status: 'published',
@@ -119,9 +116,9 @@ describe('un élève archivé et l’évaluation de son ancienne classe', () => 
 			.insert({
 				title: 'Contrôle sur les fractions ZZ',
 				grade: '3',
-				categories: [
+				items: [
 					{
-						category: { theme: 'Fractions', domain: 'Nombres', subdomain: null, level: 1 },
+						templateId: TEMPLATE_ID,
 						quantity: 1,
 						delay: 20
 					}

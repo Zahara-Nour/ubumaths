@@ -14,10 +14,10 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import { createServerLogger } from '$lib/utils/logger';
-import { loadNodesWithAncestors } from '$lib/server/programme-tree';
-import { placeOfNode } from '$lib/utils/programme-tree';
+import type { Database } from '#lib/types/database.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
+import { loadNodesWithAncestors } from '#lib/server/programme-tree.ts';
+import { placeOfNode } from '#lib/utils/programme-tree.ts';
 
 const logger = createServerLogger('server/buddy-themes');
 

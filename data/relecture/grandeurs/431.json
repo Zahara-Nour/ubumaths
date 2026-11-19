@@ -227,9 +227,6 @@
 			}
 		],
 		"grades": ["6"],
-		"theme": "Grandeurs",
-		"domain": "Unités",
-		"subdomain": "Unités composées",
 		"level": 2,
 		"status": "draft",
 		"delay": 20,

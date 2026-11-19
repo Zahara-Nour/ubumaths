@@ -6,18 +6,18 @@
  * GET - List all error reports with pagination, filtering, and counts per status
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRoles } from '$lib/server/middleware/auth';
-import { fetchCopyNumbering } from '$lib/server/worksheets/display-number';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import { fetchCopyNumbering } from '#lib/server/worksheets/display-number.ts';
 import {
 	validateAssignmentParams,
 	validateErrorReportsQuery,
 	teacherErrorReportsListResponseSchema
-} from '$lib/server/validation/worksheets';
-import { validateJsonResponse } from '$lib/server/validation/response-utils';
-import type { TeacherErrorReportView, ErrorReportStatus } from '$lib/types/worksheets';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/validation/worksheets.ts';
+import { validateJsonResponse } from '#lib/server/validation/response-utils.ts';
+import type { TeacherErrorReportView, ErrorReportStatus } from '#lib/types/worksheets.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/worksheets/[id]/assignments/[assignmentId]/reports/+server');
 
@@ -234,7 +234,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 			'GET /api/worksheets/[id]/assignments/[assignmentId]/reports'
 		);
 
-		return json(validated);
+		return Response.json(validated);
 	} catch (err) {
 		// Re-throw SvelteKit errors
 		if (err && typeof err === 'object' && 'status' in err) {

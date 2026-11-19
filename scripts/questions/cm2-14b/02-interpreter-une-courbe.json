@@ -1,0 +1,702 @@
+{
+	"id": "d88cabf0-e7bc-40ca-a2aa-da921ff01f82",
+	"title": "Que dit la courbe ? (montée, plus forte hausse, arrêt)",
+	"description": "Entre quelles heures la température augmente (deux cases), en quelle heure elle a le plus monté, de quelle heure à quelle heure un randonneur s'est arrêté (courbe à plat), combien de kg un bébé a pris (décimaux)",
+	"grades": ["CM2"],
+	"level": 5,
+	"delay": 120,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true,
+			"zeros": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "On a relevé la température toutes les heures, de $8$ h à $18$ h.\n\n```courbe\nx: 7 ; 19\ny: 0 ; 30\ngrille: 1 ; 2\naxes: x = Heure (h) ; y = Température (°C)\ndonnées: (8 ; {{t0}}) ; (9 ; {{t1}}) ; (10 ; {{t2}}) ; (11 ; {{t3}}) ; (12 ; {{t4}}) ; (13 ; {{t5}}) ; (14 ; {{t6}}) ; (15 ; {{t7}}) ; (16 ; {{t8}}) ; (17 ; {{t9}}) ; (18 ; {{t10}})\ntaille: moyenne\n```\n\nEntre quelles heures la température augmente-t-elle ?\n\nElle augmente de $?$ h à $?$ h.",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "4..8"
+				},
+				{
+					"name": "s1",
+					"expression": "1..2"
+				},
+				{
+					"name": "s2",
+					"expression": "2..3"
+				},
+				{
+					"name": "s3",
+					"expression": "1..2"
+				},
+				{
+					"name": "p",
+					"expression": "1..3"
+				},
+				{
+					"name": "L",
+					"expression": "3..6"
+				},
+				{
+					"name": "q",
+					"expression": "eval:p+L"
+				},
+				{
+					"name": "t0",
+					"expression": "eval:m+s1*max(0,p-0)+s2*max(0,min(0,q)-p)-s3*max(0,0-q)"
+				},
+				{
+					"name": "t1",
+					"expression": "eval:m+s1*max(0,p-1)+s2*max(0,min(1,q)-p)-s3*max(0,1-q)"
+				},
+				{
+					"name": "t2",
+					"expression": "eval:m+s1*max(0,p-2)+s2*max(0,min(2,q)-p)-s3*max(0,2-q)"
+				},
+				{
+					"name": "t3",
+					"expression": "eval:m+s1*max(0,p-3)+s2*max(0,min(3,q)-p)-s3*max(0,3-q)"
+				},
+				{
+					"name": "t4",
+					"expression": "eval:m+s1*max(0,p-4)+s2*max(0,min(4,q)-p)-s3*max(0,4-q)"
+				},
+				{
+					"name": "t5",
+					"expression": "eval:m+s1*max(0,p-5)+s2*max(0,min(5,q)-p)-s3*max(0,5-q)"
+				},
+				{
+					"name": "t6",
+					"expression": "eval:m+s1*max(0,p-6)+s2*max(0,min(6,q)-p)-s3*max(0,6-q)"
+				},
+				{
+					"name": "t7",
+					"expression": "eval:m+s1*max(0,p-7)+s2*max(0,min(7,q)-p)-s3*max(0,7-q)"
+				},
+				{
+					"name": "t8",
+					"expression": "eval:m+s1*max(0,p-8)+s2*max(0,min(8,q)-p)-s3*max(0,8-q)"
+				},
+				{
+					"name": "t9",
+					"expression": "eval:m+s1*max(0,p-9)+s2*max(0,min(9,q)-p)-s3*max(0,9-q)"
+				},
+				{
+					"name": "t10",
+					"expression": "eval:m+s1*max(0,p-10)+s2*max(0,min(10,q)-p)-s3*max(0,10-q)"
+				},
+				{
+					"name": "a",
+					"expression": "eval:8+p"
+				},
+				{
+					"name": "b",
+					"expression": "eval:8+q"
+				}
+			],
+			"conditions": ["q <= 9", "t10 > m", "t0 < m+s2*L"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				},
+				{
+					"expectedAnswer": "{{b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La température augmente quand la courbe monte, de gauche à droite.",
+					"Elle descend jusqu'au point le plus bas, à ${{a}}$ h, puis monte jusqu'au point le plus haut, à ${{b}}$ h, puis redescend.",
+					"Elle augmente de $\\textcolor{{{color:primary.0}}}{{{a}}}$ h à $\\textcolor{{{color:primary.0}}}{{{b}}}$ h."
+				]
+			}
+		},
+		{
+			"statement": "On a relevé la température toutes les heures, de $8$ h à $14$ h.\n\n```courbe\nx: 7 ; 15\ny: 0 ; 25\ngrille: 1 ; 1\naxes: x = Heure (h) ; y = Température (°C)\ndonnées: (8 ; {{t0}}) ; (9 ; {{t1}}) ; (10 ; {{t2}}) ; (11 ; {{t3}}) ; (12 ; {{t4}}) ; (13 ; {{t5}}) ; (14 ; {{t6}})\ntaille: moyenne\n```\n\nEn quelle heure la température a-t-elle le plus monté ?\n\nDe $?$ h à $?$ h.",
+			"variables": [
+				{
+					"name": "t0",
+					"expression": "4..8"
+				},
+				{
+					"name": "b1",
+					"expression": "1..2"
+				},
+				{
+					"name": "b2",
+					"expression": "1..2"
+				},
+				{
+					"name": "b3",
+					"expression": "1..2"
+				},
+				{
+					"name": "b4",
+					"expression": "1..2"
+				},
+				{
+					"name": "b5",
+					"expression": "1..2"
+				},
+				{
+					"name": "b6",
+					"expression": "1..2"
+				},
+				{
+					"name": "g",
+					"expression": "4..5"
+				},
+				{
+					"name": "k",
+					"expression": "0..5"
+				},
+				{
+					"name": "d1",
+					"expression": "eval:b1+(g-b1)*((k-1)*(k-2)*(k-3)*(k-4)*(k-5))/(-120)"
+				},
+				{
+					"name": "d2",
+					"expression": "eval:b2+(g-b2)*((k-0)*(k-2)*(k-3)*(k-4)*(k-5))/(24)"
+				},
+				{
+					"name": "d3",
+					"expression": "eval:b3+(g-b3)*((k-0)*(k-1)*(k-3)*(k-4)*(k-5))/(-12)"
+				},
+				{
+					"name": "d4",
+					"expression": "eval:b4+(g-b4)*((k-0)*(k-1)*(k-2)*(k-4)*(k-5))/(12)"
+				},
+				{
+					"name": "d5",
+					"expression": "eval:b5+(g-b5)*((k-0)*(k-1)*(k-2)*(k-3)*(k-5))/(-24)"
+				},
+				{
+					"name": "d6",
+					"expression": "eval:b6+(g-b6)*((k-0)*(k-1)*(k-2)*(k-3)*(k-4))/(120)"
+				},
+				{
+					"name": "t1",
+					"expression": "eval:t0+d1"
+				},
+				{
+					"name": "t2",
+					"expression": "eval:t1+d2"
+				},
+				{
+					"name": "t3",
+					"expression": "eval:t2+d3"
+				},
+				{
+					"name": "t4",
+					"expression": "eval:t3+d4"
+				},
+				{
+					"name": "t5",
+					"expression": "eval:t4+d5"
+				},
+				{
+					"name": "t6",
+					"expression": "eval:t5+d6"
+				},
+				{
+					"name": "a",
+					"expression": "eval:8+k"
+				},
+				{
+					"name": "b",
+					"expression": "eval:9+k"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				},
+				{
+					"expectedAnswer": "{{b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque heure, on regarde de combien la courbe monte : la plus forte hausse, c'est le morceau de courbe le plus raide.",
+					"De ${{a}}$ h à ${{b}}$ h, elle monte de ${{g}}$ °C ; les autres heures, de $1$ ou $2$ °C.",
+					"De $\\textcolor{{{color:primary.0}}}{{{a}}}$ h à $\\textcolor{{{color:primary.0}}}{{{b}}}$ h."
+				]
+			}
+		},
+		{
+			"statement": "Un randonneur part à $9$ h. La courbe donne la distance qu'il a parcourue depuis son départ, heure par heure.\n\n```courbe\nx: 8 ; 16\ny: 0 ; 30\ngrille: 1 ; 2\naxes: x = Heure (h) ; y = Distance parcourue (km)\ndonnées: (9 ; {{t0}}) ; (10 ; {{t1}}) ; (11 ; {{t2}}) ; (12 ; {{t3}}) ; (13 ; {{t4}}) ; (14 ; {{t5}}) ; (15 ; {{t6}})\ntaille: moyenne\n```\n\nLe randonneur s'est arrêté pour pique-niquer. De quelle heure à quelle heure ?\n\nIl s'est arrêté de $?$ h à $?$ h.",
+			"variables": [
+				{
+					"name": "v1",
+					"expression": "3..5"
+				},
+				{
+					"name": "v2",
+					"expression": "3..5"
+				},
+				{
+					"name": "v3",
+					"expression": "3..5"
+				},
+				{
+					"name": "v4",
+					"expression": "3..5"
+				},
+				{
+					"name": "v5",
+					"expression": "3..5"
+				},
+				{
+					"name": "v6",
+					"expression": "3..5"
+				},
+				{
+					"name": "p",
+					"expression": "1..4"
+				},
+				{
+					"name": "L",
+					"expression": "1..2"
+				},
+				{
+					"name": "r1",
+					"expression": "eval:v1*(1-min(1,max(0,1-p))*min(1,max(0,p+L+1-1)))"
+				},
+				{
+					"name": "r2",
+					"expression": "eval:v2*(1-min(1,max(0,2-p))*min(1,max(0,p+L+1-2)))"
+				},
+				{
+					"name": "r3",
+					"expression": "eval:v3*(1-min(1,max(0,3-p))*min(1,max(0,p+L+1-3)))"
+				},
+				{
+					"name": "r4",
+					"expression": "eval:v4*(1-min(1,max(0,4-p))*min(1,max(0,p+L+1-4)))"
+				},
+				{
+					"name": "r5",
+					"expression": "eval:v5*(1-min(1,max(0,5-p))*min(1,max(0,p+L+1-5)))"
+				},
+				{
+					"name": "r6",
+					"expression": "eval:v6*(1-min(1,max(0,6-p))*min(1,max(0,p+L+1-6)))"
+				},
+				{
+					"name": "t0",
+					"expression": "eval:0"
+				},
+				{
+					"name": "t1",
+					"expression": "eval:t0+r1"
+				},
+				{
+					"name": "t2",
+					"expression": "eval:t1+r2"
+				},
+				{
+					"name": "t3",
+					"expression": "eval:t2+r3"
+				},
+				{
+					"name": "t4",
+					"expression": "eval:t3+r4"
+				},
+				{
+					"name": "t5",
+					"expression": "eval:t4+r5"
+				},
+				{
+					"name": "t6",
+					"expression": "eval:t5+r6"
+				},
+				{
+					"name": "a",
+					"expression": "eval:9+p"
+				},
+				{
+					"name": "b",
+					"expression": "eval:9+p+L"
+				}
+			],
+			"conditions": ["p+L <= 5"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				},
+				{
+					"expectedAnswer": "{{b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Quand il est arrêté, la distance parcourue ne change pas : la courbe est à plat.",
+					"Elle reste à ${{eval:(t0)*((p-1)*(p-2)*(p-3)*(p-4)*(p-5)*(p-6))/(720)+(t1)*((p-0)*(p-2)*(p-3)*(p-4)*(p-5)*(p-6))/(-120)+(t2)*((p-0)*(p-1)*(p-3)*(p-4)*(p-5)*(p-6))/(48)+(t3)*((p-0)*(p-1)*(p-2)*(p-4)*(p-5)*(p-6))/(-36)+(t4)*((p-0)*(p-1)*(p-2)*(p-3)*(p-5)*(p-6))/(48)+(t5)*((p-0)*(p-1)*(p-2)*(p-3)*(p-4)*(p-6))/(-120)+(t6)*((p-0)*(p-1)*(p-2)*(p-3)*(p-4)*(p-5))/(720)}}$ km de ${{a}}$ h à ${{b}}$ h.",
+					"Il s'est arrêté de $\\textcolor{{{color:primary.0}}}{{{a}}}$ h à $\\textcolor{{{color:primary.0}}}{{{b}}}$ h."
+				]
+			}
+		},
+		{
+			"statement": "On a pesé un bébé chaque mois, de $1$ à $6$ mois.\n\n```courbe\nx: 0 ; 7\ny: 0 ; 10\ngrille: 1 ; 0,5\naxes: x = Âge (mois) ; y = Masse (kg)\ndonnées: (1 ; {{eval:w1/2;d}}) ; (2 ; {{eval:w2/2;d}}) ; (3 ; {{eval:w3/2;d}}) ; (4 ; {{eval:w4/2;d}}) ; (5 ; {{eval:w5/2;d}}) ; (6 ; {{eval:w6/2;d}})\ntaille: moyenne\n```\n\nCombien de kilogrammes le bébé a-t-il pris entre ${{eval:a+1}}$ mois et ${{eval:b+1}}$ mois ?\n\n$?$ kg",
+			"variables": [
+				{
+					"name": "w1",
+					"expression": "7..9"
+				},
+				{
+					"name": "g2",
+					"expression": "1..2"
+				},
+				{
+					"name": "g3",
+					"expression": "1..2"
+				},
+				{
+					"name": "g4",
+					"expression": "1..2"
+				},
+				{
+					"name": "g5",
+					"expression": "1..2"
+				},
+				{
+					"name": "g6",
+					"expression": "1..2"
+				},
+				{
+					"name": "w2",
+					"expression": "eval:w1+g2"
+				},
+				{
+					"name": "w3",
+					"expression": "eval:w2+g3"
+				},
+				{
+					"name": "w4",
+					"expression": "eval:w3+g4"
+				},
+				{
+					"name": "w5",
+					"expression": "eval:w4+g5"
+				},
+				{
+					"name": "w6",
+					"expression": "eval:w5+g6"
+				},
+				{
+					"name": "a",
+					"expression": "0..2"
+				},
+				{
+					"name": "b",
+					"expression": "3..5"
+				},
+				{
+					"name": "x",
+					"expression": "eval:(w1)*((a-1)*(a-2)*(a-3)*(a-4)*(a-5))/(-120)+(w2)*((a-0)*(a-2)*(a-3)*(a-4)*(a-5))/(24)+(w3)*((a-0)*(a-1)*(a-3)*(a-4)*(a-5))/(-12)+(w4)*((a-0)*(a-1)*(a-2)*(a-4)*(a-5))/(12)+(w5)*((a-0)*(a-1)*(a-2)*(a-3)*(a-5))/(-24)+(w6)*((a-0)*(a-1)*(a-2)*(a-3)*(a-4))/(120)"
+				},
+				{
+					"name": "y",
+					"expression": "eval:(w1)*((b-1)*(b-2)*(b-3)*(b-4)*(b-5))/(-120)+(w2)*((b-0)*(b-2)*(b-3)*(b-4)*(b-5))/(24)+(w3)*((b-0)*(b-1)*(b-3)*(b-4)*(b-5))/(-12)+(w4)*((b-0)*(b-1)*(b-2)*(b-4)*(b-5))/(12)+(w5)*((b-0)*(b-1)*(b-2)*(b-3)*(b-5))/(-24)+(w6)*((b-0)*(b-1)*(b-2)*(b-3)*(b-4))/(120)"
+				},
+				{
+					"name": "d",
+					"expression": "eval:y-x"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:d/2;d}}",
+					"requiredForm": {
+						"pattern": "a:number"
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"On lit les deux masses : à ${{eval:a+1}}$ mois, ${{eval:x/2;d}}$ kg ; à ${{eval:b+1}}$ mois, ${{eval:y/2;d}}$ kg.",
+					"Ce qu'il a pris : l'écart, ${{eval:y/2;d}} - {{eval:x/2;d}} = \\textcolor{{{color:primary.0}}}{{{eval:d/2;d}}}$ kg."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Augmente de 10 h à 15 h",
+			"variationIndex": 0,
+			"variables": {
+				"m": "6",
+				"s1": "1",
+				"s2": "2",
+				"s3": "1",
+				"p": "2",
+				"L": "5",
+				"q": "7",
+				"t0": "8",
+				"t1": "7",
+				"t2": "6",
+				"t3": "8",
+				"t4": "10",
+				"t5": "12",
+				"t6": "14",
+				"t7": "16",
+				"t8": "15",
+				"t9": "14",
+				"t10": "13",
+				"a": "10",
+				"b": "15"
+			},
+			"answers": ["10", "15"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : depuis 8 h",
+			"variationIndex": 0,
+			"variables": {
+				"m": "6",
+				"s1": "1",
+				"s2": "2",
+				"s3": "1",
+				"p": "2",
+				"L": "5",
+				"q": "7",
+				"t0": "8",
+				"t1": "7",
+				"t2": "6",
+				"t3": "8",
+				"t4": "10",
+				"t5": "12",
+				"t6": "14",
+				"t7": "16",
+				"t8": "15",
+				"t9": "14",
+				"t10": "13",
+				"a": "10",
+				"b": "15"
+			},
+			"answers": ["8", "15"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : la descente (15 h à 18 h)",
+			"variationIndex": 0,
+			"variables": {
+				"m": "6",
+				"s1": "1",
+				"s2": "2",
+				"s3": "1",
+				"p": "2",
+				"L": "5",
+				"q": "7",
+				"t0": "8",
+				"t1": "7",
+				"t2": "6",
+				"t3": "8",
+				"t4": "10",
+				"t5": "12",
+				"t6": "14",
+				"t7": "16",
+				"t8": "15",
+				"t9": "14",
+				"t10": "13",
+				"a": "10",
+				"b": "15"
+			},
+			"answers": ["15", "18"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Plus forte hausse : de 10 h à 11 h",
+			"variationIndex": 1,
+			"variables": {
+				"t0": "5",
+				"b1": "1",
+				"b2": "2",
+				"b3": "1",
+				"b4": "2",
+				"b5": "1",
+				"b6": "1",
+				"g": "4",
+				"k": "2",
+				"d1": "1",
+				"d2": "2",
+				"d3": "4",
+				"d4": "2",
+				"d5": "1",
+				"d6": "1",
+				"t1": "6",
+				"t2": "8",
+				"t3": "12",
+				"t4": "14",
+				"t5": "15",
+				"t6": "16",
+				"a": "10",
+				"b": "11"
+			},
+			"answers": ["10", "11"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la plus haute valeur (13 h à 14 h)",
+			"variationIndex": 1,
+			"variables": {
+				"t0": "5",
+				"b1": "1",
+				"b2": "2",
+				"b3": "1",
+				"b4": "2",
+				"b5": "1",
+				"b6": "1",
+				"g": "4",
+				"k": "2",
+				"d1": "1",
+				"d2": "2",
+				"d3": "4",
+				"d4": "2",
+				"d5": "1",
+				"d6": "1",
+				"t1": "6",
+				"t2": "8",
+				"t3": "12",
+				"t4": "14",
+				"t5": "15",
+				"t6": "16",
+				"a": "10",
+				"b": "11"
+			},
+			"answers": ["13", "14"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Arrêt de 11 h à 13 h",
+			"variationIndex": 2,
+			"variables": {
+				"v1": "4",
+				"v2": "3",
+				"v3": "5",
+				"v4": "4",
+				"v5": "3",
+				"v6": "5",
+				"p": "2",
+				"L": "2",
+				"r1": "4",
+				"r2": "3",
+				"r3": "0",
+				"r4": "0",
+				"r5": "3",
+				"r6": "5",
+				"t0": "0",
+				"t1": "4",
+				"t2": "7",
+				"t3": "7",
+				"t4": "7",
+				"t5": "10",
+				"t6": "15",
+				"a": "11",
+				"b": "13"
+			},
+			"answers": ["11", "13"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la marche avant l'arrêt (9 h à 11 h)",
+			"variationIndex": 2,
+			"variables": {
+				"v1": "4",
+				"v2": "3",
+				"v3": "5",
+				"v4": "4",
+				"v5": "3",
+				"v6": "5",
+				"p": "2",
+				"L": "2",
+				"r1": "4",
+				"r2": "3",
+				"r3": "0",
+				"r4": "0",
+				"r5": "3",
+				"r6": "5",
+				"t0": "0",
+				"t1": "4",
+				"t2": "7",
+				"t3": "7",
+				"t4": "7",
+				"t5": "10",
+				"t6": "15",
+				"a": "11",
+				"b": "13"
+			},
+			"answers": ["9", "11"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "De 1 à 4 mois : 6,5 − 4 = 2,5 kg",
+			"variationIndex": 3,
+			"variables": {
+				"w1": "8",
+				"g2": "2",
+				"g3": "1",
+				"g4": "2",
+				"g5": "1",
+				"g6": "1",
+				"w2": "10",
+				"w3": "11",
+				"w4": "13",
+				"w5": "14",
+				"w6": "15",
+				"a": "0",
+				"b": "3",
+				"x": "8",
+				"y": "13",
+				"d": "5"
+			},
+			"answers": ["2,5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la masse à 4 mois (6,5)",
+			"variationIndex": 3,
+			"variables": {
+				"w1": "8",
+				"g2": "2",
+				"g3": "1",
+				"g4": "2",
+				"g5": "1",
+				"g6": "1",
+				"w2": "10",
+				"w3": "11",
+				"w4": "13",
+				"w5": "14",
+				"w6": "15",
+				"a": "0",
+				"b": "3",
+				"x": "8",
+				"y": "13",
+				"d": "5"
+			},
+			"answers": ["6,5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

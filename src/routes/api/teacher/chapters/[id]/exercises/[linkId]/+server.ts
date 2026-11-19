@@ -3,12 +3,12 @@
  * DELETE - Unlink an exercise from a chapter
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import { unlinkExercise, LinkedElementError } from '$lib/server/chapters';
-import { uuidSchema } from '$lib/server/validation/common';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { unlinkExercise, LinkedElementError } from '#lib/server/chapters.ts';
+import { uuidSchema } from '#lib/server/validation/common.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/teacher/chapters/[id]/exercises/[linkId]/+server');
 
@@ -86,5 +86,5 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 		throw error(500, 'Failed to unlink exercise');
 	}
 
-	return json({ success: true });
+	return Response.json({ success: true });
 };

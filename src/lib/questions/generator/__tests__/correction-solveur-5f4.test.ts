@@ -6,9 +6,9 @@
 
 import { describe, it, expect } from 'vitest';
 import { generateCorrection } from '../correction-generator';
-import { resolvedMarkdown } from '$lib/ubumark';
+import { resolvedMarkdown } from '#lib/ubumark/index.ts';
 import type { QuestionInstance } from '../../types';
-import type { GradeCode } from '$lib/types/grades';
+import type { GradeCode } from '#lib/types/grades.ts';
 
 // =============================================================================
 // Décor
@@ -23,8 +23,6 @@ function instanceWith(
 		statement: resolvedMarkdown('Test statement'),
 		resolvedVariables: [],
 		grades: [...grades],
-		theme: 'Test',
-		domain: 'Test',
 		level: 1,
 		generatedAt: '2026-10-25T00:00:00Z',
 		correction: { generatedSteps }

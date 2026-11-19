@@ -7,13 +7,13 @@
  * `.ajustement` du moteur (PR c, Q173-Q177) : mêmes calculs, mêmes textes.
  *
  * ⚠️ Imports d'exécution RELATIFS seulement : le moteur (`mathAST`) importe ce
- * module, et `pnpm math` le fait tourner sous `tsx`, sans alias `$lib` (voir
+ * module, et `pnpm math` le fait tourner sous `tsx`, sans alias `#lib` (voir
  * `statistics/describe`). Les `import type` disparaissent à la compilation.
  *
  * @module ubumark/utils/scatter-lines
  */
 
-import type { ContentLocale } from '$lib/types/locale';
+import type { ContentLocale } from '#lib/types/locale.ts';
 import {
 	isInterpolation,
 	predictX,

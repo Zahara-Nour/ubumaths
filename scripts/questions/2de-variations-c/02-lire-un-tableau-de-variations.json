@@ -1,10 +1,8 @@
 {
+	"id": "9e35f8ba-9427-40ad-a62a-13422f50442b",
 	"title": "Lire un tableau de variations",
 	"description": "Intervalle où f est croissante ou décroissante, image lue dans un tableau de variations (pièges : intervalle des images au lieu des abscisses, bornes inversées)",
 	"grades": ["2"],
-	"theme": "Fonctions",
-	"domain": "Généralités",
-	"subdomain": "Variations",
 	"level": 2,
 	"delay": 60,
 	"status": "draft",

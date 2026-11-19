@@ -34,7 +34,7 @@ Référence synthétique pour Claude : **linting/checks**, **validation Zod**, *
 ```ts
 import { z } from 'zod';
 import { error } from '@sveltejs/kit';
-import { createWorksheetSchema } from '$lib/server/validation/worksheets';
+import { createWorksheetSchema } from '#lib/server/validation/worksheets.ts';
 
 const v = createWorksheetSchema.safeParse(await request.json());
 if (!v.success) throw error(400, v.error.issues[0].message);

@@ -1,0 +1,193 @@
+{
+	"id": "d623374d-4e14-4bfa-aa80-5a627ae44b7c",
+	"title": "Comparer les aires de deux figures",
+	"description": "Deux figures sur quadrillage : aires nettement différentes ; même aire après découpage et recollement ; la figure au plus long tour a la plus petite aire",
+	"grades": ["CM1", "CM2"],
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Quelle figure a la plus grande aire ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 14.5\ngrille: 1\ndescription: Deux figures coloriées sur un quadrillage : A en haut, B en bas.\n---\n{{if:j==1|a1 = point(1, 8, visible=faux)\na2 = point(5, 8, visible=faux)\na3 = point(5, 12, visible=faux)\na4 = point(1, 12, visible=faux)\npolygone(a1, a2, a3, a4, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)\nb1 = point(1, 1, visible=faux)\nb2 = point(5, 1, visible=faux)\nb3 = point(5, 4, visible=faux)\nb4 = point(4, 4, visible=faux)\nb5 = point(4, 3, visible=faux)\nb6 = point(2, 3, visible=faux)\nb7 = point(2, 4, visible=faux)\nb8 = point(1, 4, visible=faux)\npolygone(b1, b2, b3, b4, b5, b6, b7, b8, couleur=\"noir\", epaisseur=2, remplissage=\"rouge\", opacite_fond=0.35)\ntexte(0.5, 10.0, \"A\")\ntexte(0.5, 2.5, \"B\")|{{if:j==2|a1 = point(1, 8, visible=faux)\na2 = point(5, 8, visible=faux)\na3 = point(5, 11, visible=faux)\na4 = point(4, 11, visible=faux)\na5 = point(4, 10, visible=faux)\na6 = point(2, 10, visible=faux)\na7 = point(2, 11, visible=faux)\na8 = point(1, 11, visible=faux)\npolygone(a1, a2, a3, a4, a5, a6, a7, a8, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)\nb1 = point(1, 1, visible=faux)\nb2 = point(5, 1, visible=faux)\nb3 = point(5, 5, visible=faux)\nb4 = point(1, 5, visible=faux)\npolygone(b1, b2, b3, b4, couleur=\"noir\", epaisseur=2, remplissage=\"rouge\", opacite_fond=0.35)\ntexte(0.5, 9.5, \"A\")\ntexte(0.5, 3.0, \"B\")|{{if:j==3|a1 = point(1, 8, visible=faux)\na2 = point(6, 8, visible=faux)\na3 = point(6, 12, visible=faux)\na4 = point(5, 12, visible=faux)\na5 = point(5, 10, visible=faux)\na6 = point(2, 10, visible=faux)\na7 = point(2, 12, visible=faux)\na8 = point(1, 12, visible=faux)\npolygone(a1, a2, a3, a4, a5, a6, a7, a8, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)\nb1 = point(1, 3, visible=faux)\nb2 = point(3, 3, visible=faux)\nb3 = point(3, 1, visible=faux)\nb4 = point(4, 1, visible=faux)\nb5 = point(4, 3, visible=faux)\nb6 = point(6, 3, visible=faux)\nb7 = point(6, 4, visible=faux)\nb8 = point(1, 4, visible=faux)\npolygone(b1, b2, b3, b4, b5, b6, b7, b8, couleur=\"noir\", epaisseur=2, remplissage=\"rouge\", opacite_fond=0.35)\ntexte(0.5, 10.0, \"A\")\ntexte(0.5, 2.5, \"B\")|{{if:j==4|a1 = point(1, 10, visible=faux)\na2 = point(3, 10, visible=faux)\na3 = point(3, 8, visible=faux)\na4 = point(4, 8, visible=faux)\na5 = point(4, 10, visible=faux)\na6 = point(6, 10, visible=faux)\na7 = point(6, 11, visible=faux)\na8 = point(1, 11, visible=faux)\npolygone(a1, a2, a3, a4, a5, a6, a7, a8, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)\nb1 = point(1, 1, visible=faux)\nb2 = point(6, 1, visible=faux)\nb3 = point(6, 5, visible=faux)\nb4 = point(5, 5, visible=faux)\nb5 = point(5, 3, visible=faux)\nb6 = point(2, 3, visible=faux)\nb7 = point(2, 5, visible=faux)\nb8 = point(1, 5, visible=faux)\npolygone(b1, b2, b3, b4, b5, b6, b7, b8, couleur=\"noir\", epaisseur=2, remplissage=\"rouge\", opacite_fond=0.35)\ntexte(0.5, 9.5, \"A\")\ntexte(0.5, 3.0, \"B\")|{{if:j==5|a1 = point(1, 8, visible=faux)\na2 = point(6, 8, visible=faux)\na3 = point(6, 9, visible=faux)\na4 = point(5, 9, visible=faux)\na5 = point(5, 10, visible=faux)\na6 = point(4, 10, visible=faux)\na7 = point(4, 11, visible=faux)\na8 = point(3, 11, visible=faux)\na9 = point(3, 12, visible=faux)\na10 = point(2, 12, visible=faux)\na11 = point(2, 13, visible=faux)\na12 = point(1, 13, visible=faux)\npolygone(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)\nb1 = point(1, 1, visible=faux)\nb2 = point(3, 1, visible=faux)\nb3 = point(3, 5, visible=faux)\nb4 = point(1, 5, visible=faux)\npolygone(b1, b2, b3, b4, couleur=\"noir\", epaisseur=2, remplissage=\"rouge\", opacite_fond=0.35)\ntexte(0.5, 10.5, \"A\")\ntexte(0.5, 3.0, \"B\")|{{if:j==6|a1 = point(1, 8, visible=faux)\na2 = point(3, 8, visible=faux)\na3 = point(3, 12, visible=faux)\na4 = point(1, 12, visible=faux)\npolygone(a1, a2, a3, a4, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)\nb1 = point(1, 1, visible=faux)\nb2 = point(6, 1, visible=faux)\nb3 = point(6, 2, visible=faux)\nb4 = point(5, 2, visible=faux)\nb5 = point(5, 3, visible=faux)\nb6 = point(4, 3, visible=faux)\nb7 = point(4, 4, visible=faux)\nb8 = point(3, 4, visible=faux)\nb9 = point(3, 5, visible=faux)\nb10 = point(2, 5, visible=faux)\nb11 = point(2, 6, visible=faux)\nb12 = point(1, 6, visible=faux)\npolygone(b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, couleur=\"noir\", epaisseur=2, remplissage=\"rouge\", opacite_fond=0.35)\ntexte(0.5, 10.0, \"A\")\ntexte(0.5, 3.5, \"B\")|{{if:j==7|a1 = point(2, 8, visible=faux)\na2 = point(4, 8, visible=faux)\na3 = point(4, 9, visible=faux)\na4 = point(5, 9, visible=faux)\na5 = point(5, 11, visible=faux)\na6 = point(4, 11, visible=faux)\na7 = point(4, 12, visible=faux)\na8 = point(2, 12, visible=faux)\na9 = point(2, 11, visible=faux)\na10 = point(1, 11, visible=faux)\na11 = point(1, 9, visible=faux)\na12 = point(2, 9, visible=faux)\npolygone(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)\nb1 = point(1, 1, visible=faux)\nb2 = point(5, 1, visible=faux)\nb3 = point(5, 2, visible=faux)\nb4 = point(6, 2, visible=faux)\nb5 = point(6, 3, visible=faux)\nb6 = point(2, 3, visible=faux)\nb7 = point(2, 2, visible=faux)\nb8 = point(1, 2, visible=faux)\npolygone(b1, b2, b3, b4, b5, b6, b7, b8, couleur=\"noir\", epaisseur=2, remplissage=\"rouge\", opacite_fond=0.35)\ntexte(0.5, 10.0, \"A\")\ntexte(0.5, 2.0, \"B\")|a1 = point(1, 8, visible=faux)\na2 = point(5, 8, visible=faux)\na3 = point(5, 9, visible=faux)\na4 = point(6, 9, visible=faux)\na5 = point(6, 10, visible=faux)\na6 = point(2, 10, visible=faux)\na7 = point(2, 9, visible=faux)\na8 = point(1, 9, visible=faux)\npolygone(a1, a2, a3, a4, a5, a6, a7, a8, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)\nb1 = point(2, 1, visible=faux)\nb2 = point(4, 1, visible=faux)\nb3 = point(4, 2, visible=faux)\nb4 = point(5, 2, visible=faux)\nb5 = point(5, 4, visible=faux)\nb6 = point(4, 4, visible=faux)\nb7 = point(4, 5, visible=faux)\nb8 = point(2, 5, visible=faux)\nb9 = point(2, 4, visible=faux)\nb10 = point(1, 4, visible=faux)\nb11 = point(1, 2, visible=faux)\nb12 = point(2, 2, visible=faux)\npolygone(b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, couleur=\"noir\", epaisseur=2, remplissage=\"rouge\", opacite_fond=0.35)\ntexte(0.5, 9.0, \"A\")\ntexte(0.5, 3.0, \"B\")}}}}}}}}}}}}}}\n```\n\n```choix\nmelanger: non\n- La figure A a la plus grande aire.\n- La figure B a la plus grande aire.\n- Les deux figures ont la même aire.\n```",
+			"variables": [
+				{
+					"name": "j",
+					"expression": "1..8"
+				},
+				{
+					"name": "r",
+					"expression": "eval:1-mod(j,2)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'aire, c'est la place que prend la surface de la figure. On peut poser une figure sur l'autre, ou compter les carreaux qu'elle recouvre.",
+					"On compte les carreaux de chaque figure : A en a ${{if:j==1|16|{{if:j==2|10|{{if:j==3|14|{{if:j==4|7|{{if:j==5|15|{{if:j==6|8|{{if:j==7|12|8}}}}}}}}}}}}}}$, B en a ${{if:j==1|10|{{if:j==2|16|{{if:j==3|7|{{if:j==4|14|{{if:j==5|8|{{if:j==6|15|{{if:j==7|8|12}}}}}}}}}}}}}}$.",
+					"La figure qui recouvre le plus de carreaux prend le plus de place.",
+					"La figure $\\textcolor{{{color:primary.0}}}{{{if:r==0|\\text{A}|\\text{B}}}}$ a la plus grande aire."
+				]
+			}
+		},
+		{
+			"statement": "Quelle figure a la plus grande aire ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 14.5\ngrille: 1\ndescription: Deux figures coloriées sur un quadrillage : A en haut, B en bas.\n---\n{{if:j==1|a1 = point(1, 8, visible=faux)\na2 = point(7, 8, visible=faux)\na3 = point(7, 10, visible=faux)\na4 = point(1, 10, visible=faux)\npolygone(a1, a2, a3, a4, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)\nb1 = point(1, 1, visible=faux)\nb2 = point(4, 1, visible=faux)\nb3 = point(4, 5, visible=faux)\nb4 = point(1, 5, visible=faux)\npolygone(b1, b2, b3, b4, couleur=\"noir\", epaisseur=2, remplissage=\"rouge\", opacite_fond=0.35)\ntexte(0.5, 9.0, \"A\")\ntexte(0.5, 3.0, \"B\")|{{if:j==2|a1 = point(1, 8, visible=faux)\na2 = point(5, 8, visible=faux)\na3 = point(5, 10, visible=faux)\na4 = point(1, 10, visible=faux)\npolygone(a1, a2, a3, a4, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)\nb1 = point(1, 1, visible=faux)\nb2 = point(5, 1, visible=faux)\nb3 = point(5, 2, visible=faux)\nb4 = point(6, 2, visible=faux)\nb5 = point(6, 3, visible=faux)\nb6 = point(2, 3, visible=faux)\nb7 = point(2, 2, visible=faux)\nb8 = point(1, 2, visible=faux)\npolygone(b1, b2, b3, b4, b5, b6, b7, b8, couleur=\"noir\", epaisseur=2, remplissage=\"rouge\", opacite_fond=0.35)\ntexte(0.5, 9.0, \"A\")\ntexte(0.5, 2.0, \"B\")|{{if:j==3|a1 = point(1, 8, visible=faux)\na2 = point(4, 8, visible=faux)\na3 = point(4, 11, visible=faux)\na4 = point(1, 11, visible=faux)\npolygone(a1, a2, a3, a4, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)\nb1 = point(1, 1, visible=faux)\nb2 = point(6, 1, visible=faux)\nb3 = point(6, 2, visible=faux)\nb4 = point(2, 2, visible=faux)\nb5 = point(2, 6, visible=faux)\nb6 = point(1, 6, visible=faux)\npolygone(b1, b2, b3, b4, b5, b6, couleur=\"noir\", epaisseur=2, remplissage=\"rouge\", opacite_fond=0.35)\ntexte(0.5, 9.5, \"A\")\ntexte(0.5, 3.5, \"B\")|a1 = point(1, 8, visible=faux)\na2 = point(6, 8, visible=faux)\na3 = point(6, 10, visible=faux)\na4 = point(1, 10, visible=faux)\npolygone(a1, a2, a3, a4, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)\nb1 = point(1, 1, visible=faux)\nb2 = point(5, 1, visible=faux)\nb3 = point(5, 4, visible=faux)\nb4 = point(4, 4, visible=faux)\nb5 = point(4, 3, visible=faux)\nb6 = point(2, 3, visible=faux)\nb7 = point(2, 4, visible=faux)\nb8 = point(1, 4, visible=faux)\npolygone(b1, b2, b3, b4, b5, b6, b7, b8, couleur=\"noir\", epaisseur=2, remplissage=\"rouge\", opacite_fond=0.35)\ntexte(0.5, 9.0, \"A\")\ntexte(0.5, 2.5, \"B\")}}}}}}\n```\n\n```choix\nmelanger: non\n- La figure A a la plus grande aire.\n- La figure B a la plus grande aire.\n- Les deux figures ont la même aire.\n```",
+			"variables": [
+				{
+					"name": "j",
+					"expression": "1..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On peut découper la figure A et recoller les morceaux autrement, sans rien perdre ni rien ajouter : on obtient la figure B.",
+					"On compte les carreaux de chaque figure : A en a ${{if:j==1|12|{{if:j==2|8|{{if:j==3|9|10}}}}}}$, B en a ${{if:j==1|12|{{if:j==2|8|{{if:j==3|9|10}}}}}}$.",
+					"Découper et recoller ne change pas l'aire.",
+					"Les deux figures ont $\\textcolor{{{color:primary.0}}}{\\text{la même aire}}$."
+				]
+			}
+		},
+		{
+			"statement": "Lucas dit : « la figure qui a le plus long tour a la plus grande aire ». Quelle figure a la plus grande aire ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 14.5\ngrille: 1\ndescription: Deux figures coloriées sur un quadrillage : A en haut, B en bas.\n---\n{{if:j==1|a1 = point(1, 8, visible=faux)\na2 = point(4, 8, visible=faux)\na3 = point(4, 11, visible=faux)\na4 = point(1, 11, visible=faux)\npolygone(a1, a2, a3, a4, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)\nb1 = point(1, 1, visible=faux)\nb2 = point(9, 1, visible=faux)\nb3 = point(9, 2, visible=faux)\nb4 = point(1, 2, visible=faux)\npolygone(b1, b2, b3, b4, couleur=\"noir\", epaisseur=2, remplissage=\"rouge\", opacite_fond=0.35)\ntexte(0.5, 9.5, \"A\")\ntexte(0.5, 1.5, \"B\")|{{if:j==2|a1 = point(1, 8, visible=faux)\na2 = point(9, 8, visible=faux)\na3 = point(9, 9, visible=faux)\na4 = point(1, 9, visible=faux)\npolygone(a1, a2, a3, a4, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)\nb1 = point(1, 1, visible=faux)\nb2 = point(4, 1, visible=faux)\nb3 = point(4, 4, visible=faux)\nb4 = point(1, 4, visible=faux)\npolygone(b1, b2, b3, b4, couleur=\"noir\", epaisseur=2, remplissage=\"rouge\", opacite_fond=0.35)\ntexte(0.5, 8.5, \"A\")\ntexte(0.5, 2.5, \"B\")|{{if:j==3|a1 = point(1, 8, visible=faux)\na2 = point(5, 8, visible=faux)\na3 = point(5, 12, visible=faux)\na4 = point(1, 12, visible=faux)\npolygone(a1, a2, a3, a4, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)\nb1 = point(1, 1, visible=faux)\nb2 = point(8, 1, visible=faux)\nb3 = point(8, 3, visible=faux)\nb4 = point(1, 3, visible=faux)\npolygone(b1, b2, b3, b4, couleur=\"noir\", epaisseur=2, remplissage=\"rouge\", opacite_fond=0.35)\ntexte(0.5, 10.0, \"A\")\ntexte(0.5, 2.0, \"B\")|{{if:j==4|a1 = point(1, 8, visible=faux)\na2 = point(8, 8, visible=faux)\na3 = point(8, 10, visible=faux)\na4 = point(1, 10, visible=faux)\npolygone(a1, a2, a3, a4, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)\nb1 = point(1, 1, visible=faux)\nb2 = point(5, 1, visible=faux)\nb3 = point(5, 5, visible=faux)\nb4 = point(1, 5, visible=faux)\npolygone(b1, b2, b3, b4, couleur=\"noir\", epaisseur=2, remplissage=\"rouge\", opacite_fond=0.35)\ntexte(0.5, 9.0, \"A\")\ntexte(0.5, 3.0, \"B\")|{{if:j==5|a1 = point(1, 8, visible=faux)\na2 = point(5, 8, visible=faux)\na3 = point(5, 11, visible=faux)\na4 = point(1, 11, visible=faux)\npolygone(a1, a2, a3, a4, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)\nb1 = point(1, 1, visible=faux)\nb2 = point(8, 1, visible=faux)\nb3 = point(8, 2, visible=faux)\nb4 = point(2, 2, visible=faux)\nb5 = point(2, 6, visible=faux)\nb6 = point(1, 6, visible=faux)\npolygone(b1, b2, b3, b4, b5, b6, couleur=\"noir\", epaisseur=2, remplissage=\"rouge\", opacite_fond=0.35)\ntexte(0.5, 9.5, \"A\")\ntexte(0.5, 3.5, \"B\")|{{if:j==6|a1 = point(1, 8, visible=faux)\na2 = point(8, 8, visible=faux)\na3 = point(8, 9, visible=faux)\na4 = point(2, 9, visible=faux)\na5 = point(2, 13, visible=faux)\na6 = point(1, 13, visible=faux)\npolygone(a1, a2, a3, a4, a5, a6, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)\nb1 = point(1, 1, visible=faux)\nb2 = point(5, 1, visible=faux)\nb3 = point(5, 4, visible=faux)\nb4 = point(1, 4, visible=faux)\npolygone(b1, b2, b3, b4, couleur=\"noir\", epaisseur=2, remplissage=\"rouge\", opacite_fond=0.35)\ntexte(0.5, 10.5, \"A\")\ntexte(0.5, 2.5, \"B\")|{{if:j==7|a1 = point(1, 8, visible=faux)\na2 = point(5, 8, visible=faux)\na3 = point(5, 11, visible=faux)\na4 = point(1, 11, visible=faux)\npolygone(a1, a2, a3, a4, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)\nb1 = point(1, 1, visible=faux)\nb2 = point(6, 1, visible=faux)\nb3 = point(6, 5, visible=faux)\nb4 = point(5, 5, visible=faux)\nb5 = point(5, 2, visible=faux)\nb6 = point(2, 2, visible=faux)\nb7 = point(2, 5, visible=faux)\nb8 = point(1, 5, visible=faux)\npolygone(b1, b2, b3, b4, b5, b6, b7, b8, couleur=\"noir\", epaisseur=2, remplissage=\"rouge\", opacite_fond=0.35)\ntexte(0.5, 9.5, \"A\")\ntexte(0.5, 3.0, \"B\")|a1 = point(1, 8, visible=faux)\na2 = point(6, 8, visible=faux)\na3 = point(6, 12, visible=faux)\na4 = point(5, 12, visible=faux)\na5 = point(5, 9, visible=faux)\na6 = point(2, 9, visible=faux)\na7 = point(2, 12, visible=faux)\na8 = point(1, 12, visible=faux)\npolygone(a1, a2, a3, a4, a5, a6, a7, a8, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)\nb1 = point(1, 1, visible=faux)\nb2 = point(5, 1, visible=faux)\nb3 = point(5, 4, visible=faux)\nb4 = point(1, 4, visible=faux)\npolygone(b1, b2, b3, b4, couleur=\"noir\", epaisseur=2, remplissage=\"rouge\", opacite_fond=0.35)\ntexte(0.5, 10.0, \"A\")\ntexte(0.5, 2.5, \"B\")}}}}}}}}}}}}}}\n```\n\n```choix\nmelanger: non\n- La figure A a la plus grande aire.\n- La figure B a la plus grande aire.\n- Les deux figures ont la même aire.\n```",
+			"variables": [
+				{
+					"name": "j",
+					"expression": "1..8"
+				},
+				{
+					"name": "r",
+					"expression": "eval:1-mod(j,2)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le tour d'une figure (son périmètre) et sa surface (son aire) sont deux choses différentes : une figure longue et fine a un grand tour mais peu de place.",
+					"On compte les carreaux de chaque figure : A en a ${{if:j==1|9|{{if:j==2|8|{{if:j==3|16|{{if:j==4|14|{{if:j==5|12|{{if:j==6|11|{{if:j==7|12|11}}}}}}}}}}}}}}$, B en a ${{if:j==1|8|{{if:j==2|9|{{if:j==3|14|{{if:j==4|16|{{if:j==5|11|{{if:j==6|12|{{if:j==7|11|12}}}}}}}}}}}}}}$.",
+					"Lucas se trompe : la figure au plus long tour a ici la plus petite aire.",
+					"La figure $\\textcolor{{{color:primary.0}}}{{{if:r==0|\\text{A}|\\text{B}}}}$ a la plus grande aire."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "A (4 × 4) plus grande que B",
+			"variationIndex": 0,
+			"variables": {
+				"j": "1",
+				"r": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : B choisie",
+			"variationIndex": 0,
+			"variables": {
+				"j": "1",
+				"r": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Grande figure à droite : B",
+			"variationIndex": 0,
+			"variables": {
+				"j": "2",
+				"r": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : « même aire » quand B est plus grande",
+			"variationIndex": 0,
+			"variables": {
+				"j": "2",
+				"r": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "6 × 2 et 3 × 4 : même aire",
+			"variationIndex": 1,
+			"variables": {
+				"j": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la plus longue (A) choisie",
+			"variationIndex": 1,
+			"variables": {
+				"j": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3 × 3 contre 8 × 1 : A",
+			"variationIndex": 2,
+			"variables": {
+				"j": "1",
+				"r": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la plus longue figure (B) choisie",
+			"variationIndex": 2,
+			"variables": {
+				"j": "1",
+				"r": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Bande fine à gauche : B",
+			"variationIndex": 2,
+			"variables": {
+				"j": "6",
+				"r": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

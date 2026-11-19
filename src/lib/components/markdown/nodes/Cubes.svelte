@@ -18,14 +18,14 @@
 	@module components/markdown/nodes/Cubes
 -->
 <script lang="ts">
-	import { ESPACE_UNAVAILABLE, type EspaceNode } from '$lib/ubumark/types/espace';
+	import { ESPACE_UNAVAILABLE, type EspaceNode } from '#lib/ubumark/types/espace.ts';
 	import {
 		ESPACE_CM_PER_UNIT,
 		ESPACE_MARGIN,
 		ESPACE_STROKE,
 		buildEspaceScene,
 		espaceLabel
-	} from '$lib/ubumark/utils/espace-scene';
+	} from '#lib/ubumark/utils/espace-scene.ts';
 	import { readAuthoringErrors } from '../authoring-errors';
 
 	interface Props {

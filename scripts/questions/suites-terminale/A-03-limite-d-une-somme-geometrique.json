@@ -1,10 +1,8 @@
 {
+	"id": "708f8a08-31c0-49f2-85f9-8f9b8a2b4a44",
 	"title": "Limite d'une somme de termes d'une suite géométrique",
 	"description": "1 + q + … + qⁿ → 1/(1 − q) pour 0 < q < 1, multipliée par le premier terme (pièges : oubli du premier terme, 1/(1 + q), +∞ car on ajoute des termes positifs)",
 	"grades": ["T_SPE", "T_COMP"],
-	"theme": "Suites",
-	"domain": "Limites de suites",
-	"subdomain": "Sommes géométriques",
 	"level": 2,
 	"status": "draft",
 	"delay": 60,

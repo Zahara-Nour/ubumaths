@@ -1,10 +1,8 @@
 {
+	"id": "71d10661-2f62-47df-9e00-37e2a6789080",
 	"title": "Lire un vecteur normal sur une équation de droite",
 	"description": "Lire les coordonnées d'un vecteur normal sur une équation cartésienne ou réduite, compléter un vecteur normal (colinéarité, orthogonalité avec un vecteur directeur), ou en donner un (case vecteur, tout vecteur colinéaire accepté)",
 	"grades": ["1_SPE"],
-	"theme": "Géométrie",
-	"domain": "Géométrie repérée",
-	"subdomain": "Vecteur normal et équation de droite",
 	"level": 1,
 	"status": "draft",
 	"delay": 120,

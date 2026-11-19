@@ -1,10 +1,8 @@
 {
+	"id": "c38c9152-aaf3-49ea-9047-c838e987062e",
 	"title": "Comparer des masses",
 	"description": "1 kg et 900 g ; 2 kg 100 g et 950 g ; la plus lourde et la plus légère de quatre masses",
 	"grades": ["CE1"],
-	"theme": "Grandeurs",
-	"domain": "Masses",
-	"subdomain": "Comparaison",
 	"level": 2,
 	"delay": 60,
 	"status": "draft",

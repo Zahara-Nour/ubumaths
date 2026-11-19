@@ -76,8 +76,10 @@ d'enchaîner les séries.
 2. Corps en voix de la Rédaction ; une chute absurde ; puis `## Le vrai du faux`.
 3. Formules en ubumark (pièges : `docs/pratiques/notation-unites.md`) ; titre en texte brut (π, ², √ en
    Unicode) ; titre ou chapô contenant « : » ou « # » entre guillemets simples.
-4. Illustration éventuelle : SVG dans `static/shtam/`, insérée par
-   `![texte](/shtam/fichier.svg){size=large}`.
+4. Illustrations : un **dessin de presse** par article, **en tête du corps** (la une reprend la première
+   image) : `static/shtam/<slug>.webp` (1200×800, q85), prompt et original dans
+   `docs/Chiphres/illustrations/shtam/<slug>/`, intégration par `bash docs/Chiphres/illustrations/shtam/integrer.sh`.
+   Figures SVG éventuelles dans le corps, après le dessin : `![texte](/shtam/fichier.svg){size=large}`.
 5. **Ne jamais lancer prettier sur les articles** (il casse `~q*2~`) : ils sont dans `.prettierignore`.
 6. Vérifier : `pnpm test:server src/lib/server/shtam` et
    `pnpm check:ubumark src/lib/server/shtam/articles`.

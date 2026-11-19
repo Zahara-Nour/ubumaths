@@ -1,10 +1,8 @@
 {
+	"id": "b59fe450-e57a-4dfc-8aa7-29337b3fa28f",
 	"title": "Suite majorée, minorée ou bornée",
 	"description": "QCM sur des suites usuelles : n² + a, a − bn, a + b/(n + 1), (−q)ⁿ, a + b(−1)ⁿ (pièges : croissante donc non majorée, minorée confondu avec positive)",
 	"grades": ["T_SPE"],
-	"theme": "Suites",
-	"domain": "Comportement global",
-	"subdomain": "Suites majorées, minorées, bornées",
 	"level": 1,
 	"status": "draft",
 	"delay": 60,

@@ -1,10 +1,8 @@
 {
+	"id": "5291643e-06bd-4134-9f96-77c8adbe76ea",
 	"title": "Supérieur à, inférieur à, compris entre (jusqu'à $999\\,999$)",
 	"description": "Écrire un nombre qui respecte la phrase (toute réponse juste acceptée), entiers de 5 à 6 chiffres",
 	"grades": ["CM1"],
-	"theme": "Entiers",
-	"domain": "Apprivoiser",
-	"subdomain": "Comparer",
 	"level": 12,
 	"delay": 20,
 	"status": "draft",

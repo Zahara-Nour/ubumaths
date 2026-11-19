@@ -5,7 +5,7 @@
  * l'affiche l'est aussi, au lieu d'une coquille vide visible de tous.
  */
 import type { PageServerLoad } from './$types';
-import { requireAdmin } from '$lib/server/middleware/auth';
+import { requireAdmin } from '#lib/server/middleware/auth.ts';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	await requireAdmin(locals);

@@ -6,9 +6,7 @@
 	"template": {
 		"delay": 30,
 		"level": 9,
-		"theme": "Entiers",
 		"title": "Enigme pour trouver un nombre",
-		"domain": "Apprivoiser",
 		"grades": ["CM2"],
 		"shared": {
 			"variables": [
@@ -19,7 +17,6 @@
 			]
 		},
 		"status": "draft",
-		"subdomain": "Ecriture",
 		"variations": [
 			{
 				"blanks": [

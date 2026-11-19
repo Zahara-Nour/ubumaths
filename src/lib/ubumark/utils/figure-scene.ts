@@ -18,8 +18,8 @@
  * @module ubumark/utils/figure-scene
  */
 
-import { HEX_COLOR, resolveNamedColor } from '$lib/theme/named-colors';
-import { darkContrastWarning } from '$lib/theme/author-color';
+import { HEX_COLOR, resolveNamedColor } from '#lib/theme/named-colors.ts';
+import { darkContrastWarning } from '#lib/theme/author-color.ts';
 import type {
 	FigureIssue,
 	FigureNode,
@@ -38,17 +38,17 @@ import {
 	labelDirection,
 	labelOffset,
 	type Direction
-} from '$lib/geometry-core/rendering/label-placement';
-import { resolveStyle } from '$lib/geometry-core/rendering/svg-primitives';
-import type { ContentLocale } from '$lib/types/locale';
+} from '#lib/geometry-core/rendering/label-placement.ts';
+import { resolveStyle } from '#lib/geometry-core/rendering/svg-primitives.ts';
+import type { ContentLocale } from '#lib/types/locale.ts';
 import { formatTick, multiples } from './courbe-scene';
-import { parse } from '$lib/geometry-core/dsl/parser';
-import { interpret } from '$lib/geometry-core/dsl/interpreter';
-import { DslParseError, DslRuntimeError } from '$lib/geometry-core/dsl/errors';
-import { DslTokenizerError } from '$lib/geometry-core/dsl/tokenizer';
-import type { DslExpr, DslProgram, DslStatement } from '$lib/geometry-core/dsl/types';
-import { Figure, FigureElementLimitError } from '$lib/geometry-core/graph/figure';
-import type { GeoElement } from '$lib/geometry-core/types/elements';
+import { parse } from '#lib/geometry-core/dsl/parser.ts';
+import { interpret } from '#lib/geometry-core/dsl/interpreter.ts';
+import { DslParseError, DslRuntimeError } from '#lib/geometry-core/dsl/errors.ts';
+import { DslTokenizerError } from '#lib/geometry-core/dsl/tokenizer.ts';
+import type { DslExpr, DslProgram, DslStatement } from '#lib/geometry-core/dsl/types.ts';
+import { Figure, FigureElementLimitError } from '#lib/geometry-core/graph/figure.ts';
+import type { GeoElement } from '#lib/geometry-core/types/elements.ts';
 import {
 	isAngle,
 	isArcByAngles,
@@ -56,9 +56,9 @@ import {
 	isPointElement,
 	isText,
 	isVector
-} from '$lib/geometry-core/types/elements';
-import { geoToNumber } from '$lib/geometry-core/compute/to-number';
-import type { Viewport } from '$lib/geometry-core/viewport/types';
+} from '#lib/geometry-core/types/elements.ts';
+import { geoToNumber } from '#lib/geometry-core/compute/to-number.ts';
+import type { Viewport } from '#lib/geometry-core/viewport/types.ts';
 
 // ============================================================================
 // TYPES

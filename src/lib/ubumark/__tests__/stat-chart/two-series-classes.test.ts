@@ -15,8 +15,8 @@ import {
 	type HistogramScene
 } from '../../utils/stat-chart-scene';
 import { generateStatChartTypst } from '../../generators/stat-chart-typst';
-import { describeList } from '$lib/statistics/describe';
-import { formatApproxValue } from '$lib/statistics/format';
+import { describeList } from '#lib/statistics/describe.ts';
+import { formatApproxValue } from '#lib/statistics/format.ts';
 import type { StatChartKind } from '../../types/stat-chart';
 
 // =============================================================================

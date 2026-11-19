@@ -19,7 +19,7 @@ import type {
 	ExerciseValidationConfig,
 	ExerciseValidationResult,
 	ASTRequirement
-} from '$lib/shared/python';
+} from '#lib/shared/python/index.ts';
 import { detectSyntaxError, runASTChecks } from './ast';
 import { runBehavior } from './runners';
 

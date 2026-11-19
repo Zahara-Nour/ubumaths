@@ -1,10 +1,8 @@
 {
+	"id": "bbb43bf4-2cb7-4aa0-abf2-946b7199d159",
 	"title": "Angle droit, aigu ou obtus ?",
 	"description": "Un angle sur quadrillage, droit (aussi tourné), aigu ou obtus, loin de l'angle droit",
 	"grades": ["CE1"],
-	"theme": "Géométrie",
-	"domain": "Figures planes",
-	"subdomain": "Angles",
 	"level": 2,
 	"delay": 90,
 	"status": "draft",
@@ -28,7 +26,7 @@
 			],
 			"correction": {
 				"steps": [
-					"L'angle est \\textcolor{{{color:primary.0}}}{droit} : le coin de l'équerre s'y pose juste (les côtés suivent les carreaux, ou leurs diagonales)."
+					"L'angle est $\\textcolor{{{color:primary.0}}}{droit}$ : le coin de l'équerre s'y pose juste (les côtés suivent les carreaux, ou leurs diagonales)."
 				]
 			}
 		},
@@ -51,7 +49,7 @@
 			],
 			"correction": {
 				"steps": [
-					"L'angle est \\textcolor{{{color:primary.0}}}{aigu} : il est plus fermé que le coin de l'équerre."
+					"L'angle est $\\textcolor{{{color:primary.0}}}{aigu}$ : il est plus fermé que le coin de l'équerre."
 				]
 			}
 		},
@@ -74,7 +72,7 @@
 			],
 			"correction": {
 				"steps": [
-					"L'angle est \\textcolor{{{color:primary.0}}}{obtus} : il est plus ouvert que le coin de l'équerre."
+					"L'angle est $\\textcolor{{{color:primary.0}}}{obtus}$ : il est plus ouvert que le coin de l'équerre."
 				]
 			}
 		}

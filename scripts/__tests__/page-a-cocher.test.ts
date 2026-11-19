@@ -145,6 +145,19 @@ describe('dessinerBlocs', () => {
 		expect(r.solutions[0].match(/<rect class="c-forme"/g)).toHaveLength(5);
 	});
 
+	it('collection à centaines : plaques quadrillées et gros cubes à trois faces, jamais un cadre vide', () => {
+		const md = dessinerBlocs('```collection\nmilliers: 2\ncentaines: 3\n```').markdown;
+		// 3 plaques (un rectangle chacune) ; 2 gros cubes (devant, dessus, côté)
+		expect(md.match(/<rect class="c-forme"/g)).toHaveLength(3);
+		expect(md.match(/<polygon class="c-forme c-face-\d"/g)).toHaveLength(6);
+		expect(md).toContain('class="c-quad"');
+		expect(md).not.toContain('c-contour');
+		// La construction juste de 1 234 pose aussi le gros cube et les plaques
+		const r = dessinerBlocs('```collection\ncase: 0\nconstruire: 1234\n```');
+		expect(r.solutions[0].match(/<polygon class="c-forme c-face-\d"/g)).toHaveLength(3);
+		expect(r.solutions[0]).not.toContain('c-contour');
+	});
+
 	it('horloge : un cadran par heure, la grande aiguille seulement si elle est montrée', () => {
 		const deux = dessinerBlocs('```horloge\nheure: 3 h ; 9 h 30\n```');
 		expect(deux.markdown.match(/class="h-cadran"/g)).toHaveLength(2);
@@ -155,12 +168,154 @@ describe('dessinerBlocs', () => {
 		expect(cachees.markdown).toContain('h-heures');
 	});
 
+	it('schema-barres : le SVG de la scène de l’appli, manquants en pointillés, sans alerte', () => {
+		const r = dessinerBlocs(
+			'```schema-barres\nTom : ? (2)\nLéa : ? (2) ; 12 (1)\nBen : ? (2) ; -5 (1)\ntotal : 84\n```'
+		);
+		expect(r.nonDessines).toEqual([]);
+		expect(r.markdown).toMatch(new RegExp(`^${HTML}<svg class="sb-schema"`));
+		expect(r.markdown.match(/<rect class="sb-segment/g)).toHaveLength(5);
+		expect(r.markdown.match(/sb-manquant/g)).toHaveLength(1);
+		expect(r.markdown).toContain('>84</text>');
+		expect(r.markdown).toContain('aria-label="Schéma en barres');
+		expect(r.markdown).toContain('stroke-dasharray="5 4"');
+		const echappe = dessinerBlocs('```schema-barres\nR&D : <b> (2)\n```');
+		expect(echappe.markdown).toContain('R&amp;D');
+		expect(echappe.markdown).toContain('&lt;b>');
+		expect(echappe.markdown).not.toContain('<b>');
+	});
+
 	it('figure : le SVG de figureToSvg', () => {
 		const r = dessinerBlocs(
 			'```figure\nfenetre: 0 ; 10 ; 0 ; 7\ndescription: Un segment.\n---\nA = point(1, 1)\nB = point(8, 1)\ns = segment(A, B)\n```'
 		);
 		expect(r.markdown).toMatch(new RegExp(`^${HTML}<svg class="fig"`));
 		expect(r.markdown).toContain('<line ');
+	});
+
+	/** Les traits verts d'une solution, en coordonnées d'écran */
+	const traitsVerts = (svg: string) =>
+		[
+			...svg.matchAll(
+				/<line class="fig-solution" x1="([\d.-]+)" y1="([\d.-]+)" x2="([\d.-]+)" y2="([\d.-]+)"/g
+			)
+		].map((m) => m.slice(1).map(Number));
+	/** Les traits de la figure (sans classe : ni quadrillage, ni solution), en coordonnées d'écran */
+	const traitsDeLaFigure = (svg: string) =>
+		[
+			...svg.matchAll(
+				/<line x1="([\d.-]+)" y1="([\d.-]+)" x2="([\d.-]+)" y2="([\d.-]+)" style="stroke:/g
+			)
+		].map((m) => m.slice(1).map(Number));
+	/** Le premier point visible de la figure (A), en coordonnées d'écran */
+	const pointDeLaFigure = (svg: string) => {
+		const m = svg.match(/<circle cx="([\d.-]+)" cy="([\d.-]+)" r="[\d.]+" style="fill:/);
+		if (!m) throw new Error('aucun point dans la figure');
+		return [Number(m[1]), Number(m[2])];
+	};
+	/** L'axe vertical d (x constant) parmi les traits de la figure */
+	const axeVertical = (svg: string) => {
+		const axe = traitsDeLaFigure(svg).find(([x1, , x2]) => Math.abs(x1 - x2) < 0.01);
+		if (!axe) throw new Error('aucun axe vertical');
+		return axe[0];
+	};
+
+	it('figure-a-completer, perpendiculaire : la figure de départ, et la bonne droite en vert à part', () => {
+		const r = dessinerBlocs(
+			'```figure-a-completer\nfenetre: 0 ; 14 ; 0 ; 10\ngrille: 1\noutils: droite, equerre\nverifier: droite p = perpendiculaire(A, d)\n---\nm = point(0, 3, visible=faux)\nn = point(14, 3, visible=faux)\nd = droite(m, n)\nA = point(6, 7)\n```'
+		);
+		expect(r.nonDessines).toEqual([]);
+		expect(r.avertissements).toEqual([]);
+		expect(surUneLigne(r.markdown)).toBe(true);
+		expect(r.markdown).toMatch(new RegExp(`^${HTML}<svg class="fig"`));
+		expect(r.markdown).not.toContain('fig-solution');
+		expect(r.solutions).toHaveLength(1);
+		// d horizontale : la perpendiculaire est verticale, et passe par A (même repère d'écran)
+		const [ax] = pointDeLaFigure(r.solutions[0]);
+		const traits = traitsVerts(r.solutions[0]);
+		expect(traits).toHaveLength(1);
+		const [x1, y1, x2, y2] = traits[0];
+		expect(x1).toBeCloseTo(ax, 1);
+		expect(x2).toBeCloseTo(ax, 1);
+		expect(Math.abs(y2 - y1)).toBeGreaterThan(0);
+	});
+
+	it('figure-a-completer, parallèle : la bonne droite a la direction de d et passe par A', () => {
+		const r = dessinerBlocs(
+			'```figure-a-completer\nfenetre: 0 ; 14 ; 0 ; 10\ngrille: 1\noutils: droite, equerre\nverifier: droite q = parallele(A, d)\n---\nm = point(0, 0, visible=faux)\nn = point(10, 10, visible=faux)\nd = droite(m, n)\nA = point(4, 7)\n```'
+		);
+		expect(r.nonDessines).toEqual([]);
+		expect(r.solutions).toHaveLength(1);
+		const traits = traitsVerts(r.solutions[0]);
+		expect(traits).toHaveLength(1);
+		const [x1, y1, x2, y2] = traits[0];
+		// d en diagonale montante : à l'écran (y vers le bas), la pente vaut -1
+		expect((y2 - y1) / (x2 - x1)).toBeCloseTo(-1);
+		// A est sur la droite verte (produit vectoriel nul, à l'arrondi du centième près)
+		const [ax, ay] = pointDeLaFigure(r.solutions[0]);
+		const croix = (x2 - x1) * (ay - y1) - (y2 - y1) * (ax - x1);
+		expect(Math.abs(croix) / Math.hypot(x2 - x1, y2 - y1)).toBeLessThan(0.1);
+	});
+
+	it('figure-a-completer, symétrique par d : chaque trait vert est l’image d’un côté par d', () => {
+		const r = dessinerBlocs(
+			'```figure-a-completer\nfenetre: 0 ; 12 ; 0 ; 8\ngrille: 1\nverifier: symetrique par d\n---\nm = point(6, 0, visible=faux)\nn = point(6, 8, visible=faux)\nd = droite(m, n)\nA = point(6, 1, visible=faux)\nB = point(3, 2, visible=faux)\nC = point(6, 6, visible=faux)\ns1 = segment(A, B)\ns2 = segment(B, C)\n```'
+		);
+		expect(r.nonDessines).toEqual([]);
+		expect(r.avertissements).toEqual([]);
+		expect(r.solutions).toHaveLength(1);
+		const axe = axeVertical(r.solutions[0]);
+		const cotes = traitsDeLaFigure(r.solutions[0]).filter(([x1, , x2]) => Math.abs(x1 - x2) > 0.01);
+		expect(cotes).toHaveLength(2);
+		const verts = traitsVerts(r.solutions[0]);
+		expect(verts).toHaveLength(2);
+		// Image d'un trait par l'axe vertical : x → 2·axe − x, y inchangé (bouts dans un ordre ou l'autre)
+		const memeTrait = (a: number[], b: number[]) =>
+			[
+				[0, 1, 2, 3],
+				[2, 3, 0, 1]
+			].some((o) => o.every((k, i) => Math.abs(a[i] - b[k]) < 0.1));
+		for (const v of verts) {
+			const image = [2 * axe - v[0], v[1], 2 * axe - v[2], v[3]];
+			expect(cotes.some((c) => memeTrait(image, c))).toBe(true);
+		}
+	});
+
+	it('figure-a-completer, point symétrique : le point attendu en vert, à sa place, avec son nom', () => {
+		const r = dessinerBlocs(
+			"```figure-a-completer\nfenetre: 0 ; 12 ; 0 ; 8\ngrille: 1\noutils: point\nverifier: point A' = symetrie(A, axe=d)\n---\nm = point(6, 0, visible=faux)\nn = point(6, 8, visible=faux)\nd = droite(m, n)\nA = point(2, 3)\n```"
+		);
+		expect(r.nonDessines).toEqual([]);
+		expect(r.solutions).toHaveLength(1);
+		const vert = r.solutions[0].match(
+			/<circle class="fig-solution-point" cx="([\d.-]+)" cy="([\d.-]+)"/
+		);
+		expect(vert).not.toBeNull();
+		const [ax, ay] = pointDeLaFigure(r.solutions[0]);
+		const axe = axeVertical(r.solutions[0]);
+		expect(Number(vert?.[1])).toBeCloseTo(2 * axe - ax, 1);
+		expect(Number(vert?.[2])).toBeCloseTo(ay, 1);
+		expect(r.solutions[0]).toMatch(/>A(?:'|&#39;|’)</);
+	});
+
+	it('figure-a-completer, autre vérification : la figure de départ, la solution signalée', () => {
+		const r = dessinerBlocs(
+			'```figure-a-completer\nfenetre: 0 ; 10 ; 0 ; 8\ngrille: 1\nverifier: droite_par A ; B\n---\nA = point(1, 1)\nB = point(8, 6)\n```'
+		);
+		expect(r.nonDessines).toEqual([]);
+		expect(r.markdown).toMatch(new RegExp(`^${HTML}<svg class="fig"`));
+		expect(r.solutions).toEqual([]);
+		expect(r.avertissements).toEqual([
+			'bloc figure-a-completer : solution de « droite_par » non dessinée, la voir dans l’aperçu'
+		]);
+	});
+
+	it('figure-a-completer en erreur : la page s’arrête', () => {
+		expect(() =>
+			dessinerBlocs(
+				'```figure-a-completer\nfenetre: 0 ; 10 ; 0 ; 8\nverifier: rien du tout\n---\nA = point(1, 1)\n```'
+			)
+		).toThrow(/bloc figure-a-completer en erreur/);
 	});
 
 	it('courbe : le SVG de la scène de Courbe.svelte (termes d’une suite, escalier)', () => {
@@ -214,6 +369,36 @@ describe('dessinerBlocs', () => {
 			'aria-label="croissante"',
 			'aria-label="décroissante"'
 		]);
+	});
+
+	it('variation à compléter : cellules cachées encadrées, remplies de la réponse ; « rien » écrit', () => {
+		const r = dessinerBlocs(
+			'```variation\ncase: 0\nvariable: x\ndomain: -inf, ?-3, 0, +inf\n\nsign: B(x)\n  -inf,-3: ?+\n  -3: ?z\n  -3,0: -\n  0: ?rien\n  0,+inf: -\n```'
+		);
+		expect(r.nonDessines).toEqual([]);
+		const t = r.markdown.slice(HTML.length);
+		// Quatre cellules cachées : valeur, signe, marque, « rien »
+		expect(t.match(/class="vt-cache"/g)).toHaveLength(4);
+		expect(t).toContain('<span class="vt-cache"><span class="tex" data-tex="-3"></span></span>');
+		expect(t).toContain('<span class="vt-cache"><span class="vt-signe">+</span></span>');
+		expect(t).toContain('<span class="vt-cache"><span class="vt-zero">0</span></span>');
+		expect(t).toContain('<span class="vt-cache">rien</span>');
+		// Le signe visible ne l'est pas
+		expect(t).toContain('<td class="vt-intervalle"><span class="vt-signe">−</span></td>');
+	});
+
+	it('variation à compléter, ligne variation: : valeur et flèche cachées encadrées, remplies', () => {
+		const r = dessinerBlocs(
+			'```variation\ncase: 0\nvariable: x\ndomain: -4, 1, 5\n\nvariation: f(x)\n  -4: 2, bottom\n  1: ?7, top\n  5: -3, bottom\n  1,5: ?flèche\n```'
+		);
+		expect(r.nonDessines).toEqual([]);
+		const t = r.markdown.slice(HTML.length);
+		expect(t.match(/class="vt-cache"/g)).toHaveLength(2);
+		// La valeur garde sa hauteur : encadrée dans son bloc « en haut »
+		expect(t).toContain(
+			'<div class="vt-val vt-haut"><span class="vt-cache"><span class="tex" data-tex="7"></span></span></div>'
+		);
+		expect(t).toMatch(/<span class="vt-cache">[^]*?aria-label="décroissante"/);
 	});
 
 	it('variation : une formule échappée pour l’attribut (\\dfrac)', () => {
@@ -425,6 +610,107 @@ describe('dessinerBlocs', () => {
 
 	it('courbe en erreur : la page s’arrête', () => {
 		expect(() => dessinerBlocs('```courbe\nx: 5 ; 1\n```')).toThrow(/bloc courbe en erreur/);
+	});
+
+	it('line : axe, une graduation par pas, nombres en formules à la française, point et segment', () => {
+		const r = dessinerBlocs(
+			'```line\nstart: 0\nend: 2\nstep: 0.5\nmajor: 2\npoints: A=1/2\nsegments: [1, 2[\n```'
+		);
+		expect(r.nonDessines).toEqual([]);
+		expect(r.avertissements).toEqual([]);
+		expect(surUneLigne(r.markdown)).toBe(true);
+		expect(r.markdown.match(/class="nl-tick"/g)).toHaveLength(5);
+		// Nombres sous les grandes graduations seulement : 0, 1, 2
+		expect(r.markdown.match(/data-tex=/g)).toHaveLength(3);
+		expect(r.markdown).toContain('class="nl-point"');
+		expect(r.markdown).toContain('var(--color-fig-rouge)');
+		expect(r.markdown).toContain('>A<');
+		expect(r.markdown.match(/class="nl-segment"/g)).toHaveLength(1);
+		expect(r.markdown.match(/class="nl-bracket"/g)).toHaveLength(2);
+		expect(r.markdown).toContain('var(--color-fig-bleu)');
+		expect(r.solutions).toEqual([]);
+	});
+
+	it('line : étiquettes de l’auteur, décimaux à la française ; automatiques comme l’appli', () => {
+		const r = dessinerBlocs('```line\nstart: 2\nend: 3\nstep: 0.1\nlabels: 2, 2.5, 3\n```');
+		expect(r.markdown).toContain('data-tex="2{,}5"');
+		// formatAutoLabel de l'appli : 0,5 s'écrit en fraction
+		expect(dessinerBlocs('```line\nstart: 0\nend: 1\nstep: 0.5\n```').markdown).toContain(
+			'data-tex="\\frac{1}{2}"'
+		);
+	});
+
+	it('line : une étiquette cachée est un « ? », sans son nombre', () => {
+		const r = dessinerBlocs('```line\nstart: 0\nend: 4\nstep: 1\nhidden: 3\n```');
+		expect(r.markdown).toContain('class="nl-cache"');
+		expect(r.markdown).not.toContain('data-tex="3"');
+		expect(r.markdown).toContain('data-tex="2"');
+	});
+
+	it('line avec flèches : deux pointes ; demi-droite jusqu’à la pointe, un seul crochet', () => {
+		const r = dessinerBlocs(
+			'```line\nstart: 0\nend: 5\nstep: 1\narrows: true\nsegments: [2, +inf[\n```'
+		);
+		expect(r.markdown.match(/class="nl-arrow"/g)).toHaveLength(2);
+		expect(r.markdown.match(/class="nl-bracket"/g)).toHaveLength(1);
+	});
+
+	it('line à placer : énoncé sans aucun point, la correction pose les points attendus en vert', () => {
+		const r = dessinerBlocs('```line\nstart: 0\nend: 10\nstep: 1\nplacer: A=3 ; B=7\n```');
+		// `points:` est refusé avec `placer:` par le parseur : l'énoncé n'a aucun point
+		expect(r.markdown).not.toContain('class="nl-point"');
+		expect(r.solutions).toHaveLength(1);
+		expect(r.solutions[0].match(/class="nl-point"/g)).toHaveLength(2);
+		expect(r.solutions[0]).toContain('>A<');
+		expect(r.solutions[0]).toContain('>B<');
+		expect(r.solutions[0]).toContain('var(--color-fig-vert)');
+		// Posés SUR la droite (y = 50), plus gros ; x(3) = 40 + 3/10 × 520
+		expect(r.solutions[0]).toContain('cx="196" cy="50" r="7"');
+	});
+
+	it('line à représenter : énoncé sans segment, la correction trace l’intervalle en vert', () => {
+		const r = dessinerBlocs(
+			'```line\nstart: -5\nend: 5\nstep: 1\narrows: true\nrepresenter: ]-inf, 2]\n```'
+		);
+		// `segments:` est refusé avec `representer:` par le parseur : l'énoncé n'en a aucun
+		expect(r.markdown).not.toContain('class="nl-segment"');
+		expect(r.solutions).toHaveLength(1);
+		expect(r.solutions[0].match(/class="nl-segment"/g)).toHaveLength(1);
+		expect(r.solutions[0].match(/class="nl-bracket"/g)).toHaveLength(1);
+		expect(r.solutions[0]).toContain('var(--color-fig-vert)');
+		// Demi-droite jusqu'à la pointe gauche (40 - 10), jusqu'à x(2) = 40 + 7/10 × 520
+		expect(r.solutions[0]).toContain('x1="30" y1="50" x2="404" y2="50"');
+	});
+
+	it('line : becs des crochets vers l’intérieur (compris) ou l’extérieur (exclu)', () => {
+		const r = dessinerBlocs('```line\nstart: 0\nend: 2\nstep: 1\nsegments: [1, 2[\n```');
+		expect(r.markdown).toContain('d="M 305 41 L 300 41 L 300 59 L 305 59"');
+		expect(r.markdown).toContain('d="M 565 41 L 560 41 L 560 59 L 565 59"');
+	});
+
+	it('line : deux points au même endroit, noms côte à côte ; segments qui se touchent, un étage', () => {
+		const r = dessinerBlocs(
+			'```line\nstart: 0\nend: 2\nstep: 1\npoints: A=1, B=1\nsegments: [0, 1], [1, 2]\n```'
+		);
+		expect(r.markdown).toContain('<foreignObject x="268" y="7"');
+		expect(r.markdown).toContain('<foreignObject x="282" y="7"');
+		expect(r.markdown).toContain('x1="40" y1="50" x2="300" y2="50"');
+		expect(r.markdown).toContain('x1="300" y1="40" x2="560" y2="40"');
+	});
+
+	it('line à représenter sans intervalle lisible : signalé en alerte, pas de solution vide', () => {
+		const r = dessinerBlocs('```line\nstart: -5\nend: 5\nstep: 1\nrepresenter: ?\n```');
+		expect(r.solutions).toEqual([]);
+		expect(r.avertissements.join(' ')).toMatch(/bloc line : .*intervalle/);
+	});
+
+	it('line : une couleur inconnue remonte en alerte de fiche', () => {
+		const r = dessinerBlocs('```line\nstart: 0\nend: 4\nstep: 1\npoints: A=2 fuchsia\n```');
+		expect(r.avertissements.join(' ')).toMatch(/bloc line : Point A/);
+	});
+
+	it('line en erreur : la page s’arrête', () => {
+		expect(() => dessinerBlocs('```line\nstep: 1\n```')).toThrow(/bloc line en erreur/);
 	});
 
 	it('bloc inconnu de la page : sa source, échappée, et signalé', () => {

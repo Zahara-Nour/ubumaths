@@ -1,10 +1,8 @@
 {
+	"id": "26aceb03-fb1c-4088-9bf3-f4754fc2d1aa",
 	"title": "Diviser un décimal par un entier",
 	"description": "Quotient d'un décimal par un entier de 2 à 9 (division finie), d'un entier par 2, 4, 5, 8 (quotient décimal), arrondi au centième d'une division qui ne s'arrête pas (10 ÷ 3, 73 ÷ 6)",
 	"grades": ["6"],
-	"theme": "Décimaux",
-	"domain": "Diviser",
-	"subdomain": "Quotient",
 	"level": 8,
 	"delay": 30,
 	"status": "draft",

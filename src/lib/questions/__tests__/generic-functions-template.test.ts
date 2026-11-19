@@ -19,13 +19,13 @@ import {
 	parseGenericFunctionNames,
 	formatGenericFunctionNames
 } from '../generic-functions';
-import { validateAnswer } from '$lib/utils/answer-validator';
+import { validateAnswer } from '#lib/utils/answer-validator.ts';
 import { requiredFormVerdict } from '../required-form-validator';
-import { createQuestionTemplateSchema } from '$lib/server/validation/questions';
-import { DEFAULT_GENERIC_FUNCTION_NAMES } from '$lib/mathAST';
-import { parseCustomSafe } from '$lib/mathAST';
+import { createQuestionTemplateSchema } from '#lib/server/validation/questions.ts';
+import { DEFAULT_GENERIC_FUNCTION_NAMES } from '#lib/mathAST/index.ts';
+import { parseCustomSafe } from '#lib/mathAST/index.ts';
 import type { QuestionInstance, QuestionTemplate } from '../types';
-import { templateMarkdown } from '$lib/ubumark';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 
 // ============================================================================
 // HELPERS
@@ -55,8 +55,6 @@ function polynomialTemplate(
 			}
 		],
 		grades: ['1_SPE'],
-		theme: 'Fonctions',
-		domain: 'Dérivation',
 		level: 1
 	};
 }
@@ -130,8 +128,6 @@ describe('Schéma des noms de fonctions', () => {
 			title: 'Dérivée',
 			variations: [{ statement: 'Soit $P(x)$' }],
 			grades: ['1_SPE'],
-			theme: 'Fonctions',
-			domain: 'Dérivation',
 			level: 1
 		};
 		expect(

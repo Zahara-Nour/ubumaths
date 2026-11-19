@@ -1,21 +1,21 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import { invalidateAll } from '$app/navigation';
-	import { Button } from '$lib/components/ui/button';
-	import PlayerPanel from '$lib/components/game/combat/PlayerPanel.svelte';
-	import MonsterPanel from '$lib/components/game/combat/MonsterPanel.svelte';
-	import SpellSelector from '$lib/components/game/combat/SpellSelector.svelte';
-	import CombatLog from '$lib/components/game/combat/CombatLog.svelte';
-	import ChallengeContainer from '$lib/components/game/challenges/ChallengeContainer.svelte';
-	import ChallengeResult from '$lib/components/game/challenges/ChallengeResult.svelte';
+	import { refreshAll } from '$app/navigation';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import PlayerPanel from '#lib/components/game/combat/PlayerPanel.svelte';
+	import MonsterPanel from '#lib/components/game/combat/MonsterPanel.svelte';
+	import SpellSelector from '#lib/components/game/combat/SpellSelector.svelte';
+	import CombatLog from '#lib/components/game/combat/CombatLog.svelte';
+	import ChallengeContainer from '#lib/components/game/challenges/ChallengeContainer.svelte';
+	import ChallengeResult from '#lib/components/game/challenges/ChallengeResult.svelte';
 
-	import { generateChallengeInstance } from '$lib/utils/game/challenge-variables'; // For future challenge generation
+	import { generateChallengeInstance } from '#lib/utils/game/challenge-variables.ts'; // For future challenge generation
 
-	import { calculatePlayerMaxEndurance } from '$lib/utils/game/combat'; // For future endurance calculations
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { calculatePlayerMaxEndurance } from '#lib/utils/game/combat.ts'; // For future endurance calculations
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import type { PageData, ActionData } from './$types';
-	import type { ChallengeInstance } from '$lib/types/game';
-	import { asCombatFlow } from '$lib/types/game';
+	import type { ChallengeInstance } from '#lib/types/game.ts';
+	import { asCombatFlow } from '#lib/types/game.ts';
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
 
@@ -256,7 +256,7 @@
 				}
 
 				// Refresh data
-				await invalidateAll();
+				await refreshAll();
 			} else {
 				console.error('[handleChallengeSubmit] Server error:', response.status);
 				toaster.error('Erreur lors de la validation de la réponse');

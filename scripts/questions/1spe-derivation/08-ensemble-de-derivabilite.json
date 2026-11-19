@@ -1,10 +1,8 @@
 {
+	"id": "d2bca2d8-1824-44ae-954e-96a5cb69fd61",
 	"title": "Ensemble de dérivabilité",
 	"description": "Ensemble sur lequel une fonction de référence est dérivable (1/x, √x, x³, 1/x²), case choix",
 	"grades": ["1_SPE"],
-	"theme": "Fonctions",
-	"domain": "Dérivation",
-	"subdomain": "Fonctions dérivées",
 	"level": 7,
 	"delay": 30,
 	"status": "draft",

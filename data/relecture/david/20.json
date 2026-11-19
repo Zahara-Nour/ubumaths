@@ -6,12 +6,9 @@
 	"template": {
 		"delay": 20,
 		"level": 1,
-		"theme": "Entiers",
 		"title": "Repérer sur une demi-droite graduée",
-		"domain": "Apprivoiser",
 		"grades": ["CE1"],
 		"status": "draft",
-		"subdomain": "Repérage",
 		"variations": [
 			{
 				"blanks": [

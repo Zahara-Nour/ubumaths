@@ -8,13 +8,13 @@
  * AUTH: GET = authenticated, PATCH = admin only
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAuth, requireRole } from '$lib/server/middleware/auth';
-import { updateBugReportsConfigSchema } from '$lib/server/validation/bug-reports';
-import type { BugReportsConfig } from '$lib/types/bug-reports';
-import type { TablesUpdate } from '$lib/types/database';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireAdmin, requireAuth } from '#lib/server/middleware/auth.ts';
+import { updateBugReportsConfigSchema } from '#lib/server/validation/bug-reports.ts';
+import type { BugReportsConfig } from '#lib/types/bug-reports.ts';
+import type { TablesUpdate } from '#lib/types/database.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/bug-reports/config/+server');
 
@@ -52,7 +52,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			updatedAt: config.updated_at
 		};
 
-		return json(response);
+		return Response.json(response);
 	} catch (err) {
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
@@ -67,7 +67,8 @@ export const GET: RequestHandler = async ({ locals }) => {
 // =============================================================================
 
 export const PATCH: RequestHandler = async ({ request, locals }) => {
-	const { user } = await requireRole(locals, 'admin');
+	// Prof en mode administration, ou vrai compte admin
+	const { supabase, adminUserId } = await requireAdmin(locals);
 
 	// Validate request body
 	let body: unknown;
@@ -87,7 +88,7 @@ export const PATCH: RequestHandler = async ({ request, locals }) => {
 	try {
 		// Build update object with snake_case column names
 		const updateData: TablesUpdate<'bug_reports_config'> = {
-			updated_by: user.id
+			updated_by: adminUserId
 		};
 
 		if (data.fabEnabled !== undefined) {
@@ -103,7 +104,7 @@ export const PATCH: RequestHandler = async ({ request, locals }) => {
 			updateData.auto_report_enabled = data.autoReportEnabled;
 		}
 
-		const { data: updatedConfig, error: updateError } = await locals.supabase
+		const { data: updatedConfig, error: updateError } = await supabase
 			.from('bug_reports_config')
 			.update(updateData)
 			.eq('singleton_key', 'global')
@@ -130,7 +131,7 @@ export const PATCH: RequestHandler = async ({ request, locals }) => {
 			updatedAt: updatedConfig.updated_at
 		};
 
-		return json(response);
+		return Response.json(response);
 	} catch (err) {
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;

@@ -13,9 +13,9 @@
  * remplace la révision du jour ; une note égale ou moins bonne ne change rien.
  */
 
-import { schoolDay } from '$lib/server/course-card-attempts';
-import type { FSRS } from '$lib/srs/fsrs';
-import type { CardStats, Grade, ReviewHistoryEntry, ReviewSnapshot } from '$lib/srs/types';
+import { schoolDay } from '#lib/server/course-card-attempts.ts';
+import type { FSRS } from '#lib/srs/fsrs.ts';
+import type { CardStats, Grade, ReviewHistoryEntry, ReviewSnapshot } from '#lib/srs/types.ts';
 
 function snapshotOf(stats: CardStats): ReviewSnapshot {
 	return {
@@ -34,9 +34,11 @@ function reviewWithSnapshot(
 	base: CardStats,
 	grade: Grade,
 	before: ReviewSnapshot,
+	now: Date,
 	timeSpent?: number
 ): CardStats {
-	const reviewed: CardStats = { ...base, ...fsrs.reviewCard(base, grade, timeSpent) };
+	// Même horloge que `schoolDay(now)` : FSRS choisit le court terme d'après le jour civil
+	const reviewed: CardStats = { ...base, ...fsrs.reviewCard(base, grade, timeSpent, now) };
 	const history = [...reviewed.reviewHistory];
 	const last = history.at(-1);
 	if (last) history[history.length - 1] = { ...last, before };
@@ -63,7 +65,7 @@ export function reviewBestOfDay(
 	const todayEntries = stats.reviewHistory.filter(isToday);
 
 	if (todayEntries.length === 0) {
-		return reviewWithSnapshot(fsrs, stats, grade, snapshotOf(stats), timeSpent);
+		return reviewWithSnapshot(fsrs, stats, grade, snapshotOf(stats), now, timeSpent);
 	}
 
 	const bestToday = Math.max(...todayEntries.map((entry) => entry.grade));
@@ -81,5 +83,5 @@ export function reviewBestOfDay(
 		...before,
 		reviewHistory: stats.reviewHistory.filter((entry) => !isToday(entry))
 	};
-	return reviewWithSnapshot(fsrs, base, grade, before, timeSpent);
+	return reviewWithSnapshot(fsrs, base, grade, before, now, timeSpent);
 }

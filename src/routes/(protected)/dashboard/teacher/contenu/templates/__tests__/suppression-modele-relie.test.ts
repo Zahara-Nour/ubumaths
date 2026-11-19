@@ -14,11 +14,11 @@ import { describe, it, expect, vi } from 'vitest';
 
 const MODELE = '22222222-2222-4222-8222-222222222222';
 
-vi.mock('$lib/server/middleware/auth', () => ({
+vi.mock('#lib/server/middleware/auth.ts', () => ({
 	requireRole: vi.fn(async () => ({ user: { id: 'prof' } }))
 }));
-vi.mock('$lib/server/chapter-templates', async (importActual) => {
-	const actual = await importActual<typeof import('$lib/server/chapter-templates')>();
+vi.mock('#lib/server/chapter-templates.ts', async (importActual) => {
+	const actual = await importActual<typeof import('#lib/server/chapter-templates.ts')>();
 	return {
 		...actual,
 		deleteChapterTemplate: vi.fn(async () => ({ error: new actual.TemplateInUseError() }))

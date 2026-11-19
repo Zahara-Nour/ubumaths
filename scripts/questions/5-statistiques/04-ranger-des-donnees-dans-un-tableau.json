@@ -1,10 +1,8 @@
 {
+	"id": "d85ade81-efb4-40ec-92f3-4d55f96fb9d1",
 	"title": "Ranger des données dans un tableau",
 	"description": "Construire le tableau des effectifs d'une liste brute de données (âges, moyens de transport)",
 	"grades": ["5"],
-	"theme": "Statistiques",
-	"domain": "Représenter des données",
-	"subdomain": "tableaux",
 	"level": 5,
 	"delay": 180,
 	"status": "draft",

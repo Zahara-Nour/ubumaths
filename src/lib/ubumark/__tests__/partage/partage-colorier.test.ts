@@ -4,21 +4,21 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { parseMarkdown } from '$lib/ubumark';
+import { parseMarkdown } from '#lib/ubumark/index.ts';
 import {
 	findPartagesToColorier,
 	hasPartageToColorier,
 	parsePartageContent
-} from '$lib/ubumark/parser/partage-parser';
+} from '#lib/ubumark/parser/partage-parser.ts';
 import {
 	coloredAnswer,
 	coloringMistakes,
 	expectedColoringAnswer,
 	isColoringCorrect,
 	ranksOfAnswer
-} from '$lib/ubumark/utils/partage-colorier';
-import { generatePartageTypst } from '$lib/ubumark/generators/partage-typst';
-import type { PartageNode } from '$lib/ubumark/types/partage';
+} from '#lib/ubumark/utils/partage-colorier.ts';
+import { generatePartageTypst } from '#lib/ubumark/generators/partage-typst.ts';
+import type { PartageNode } from '#lib/ubumark/types/partage.ts';
 
 const parse = (...lines: string[]) => parsePartageContent(lines.join('\n'));
 const messages = (...lines: string[]) => parse(...lines).errors.join(' | ');

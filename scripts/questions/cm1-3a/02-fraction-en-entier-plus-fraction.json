@@ -1,10 +1,8 @@
 {
+	"id": "5c5bf99a-3b8c-4f32-b18c-bb700efba13a",
 	"title": "Écrire une fraction comme un entier plus une fraction",
 	"description": "Écrire une fraction supérieure à 1 comme la somme d'un entier et d'une fraction inférieure à 1 (21/8 = 2 + 5/8) ; dénominateur au plus 20",
 	"grades": ["CM1"],
-	"theme": "Fractions",
-	"domain": "Apprivoiser",
-	"subdomain": "Décomposition",
 	"level": 4,
 	"delay": 30,
 	"status": "draft",

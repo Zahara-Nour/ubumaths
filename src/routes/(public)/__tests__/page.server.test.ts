@@ -1,10 +1,10 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import * as pageServer from '../+page.server';
-import { allArticles } from '$lib/server/shtam/articles';
+import { allArticles } from '#lib/server/shtam/articles.ts';
 
 // Articles du Shtam du test : deux parus, un futur
-vi.mock('$lib/server/shtam/articles', async (importOriginal) => {
-	const original = await importOriginal<typeof import('$lib/server/shtam/articles')>();
+vi.mock('#lib/server/shtam/articles.ts', async (importOriginal) => {
+	const original = await importOriginal<typeof import('#lib/server/shtam/articles.ts')>();
 	const raw = (date: string) =>
 		`---\ntitle: Titre ${date}\ndate: ${date}\nauthor: giron\nlede: Chapeau.\n---\n\nCorps.\n\n## Le vrai du faux\n\nFait.\n`;
 	const articles = original.parseArticles({

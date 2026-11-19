@@ -1,10 +1,8 @@
 {
+	"id": "378aa770-4d92-4c21-aa2f-05d8f9cc4fb4",
 	"title": "Multiplier une fraction par un entier",
 	"description": "Produit d'une fraction par un entier dans les deux sens (3/7 × 4, 5 × 2/9)",
 	"grades": ["6"],
-	"theme": "Fractions",
-	"domain": "Calculer",
-	"subdomain": "Multiplication",
 	"level": 7,
 	"delay": 30,
 	"status": "draft",

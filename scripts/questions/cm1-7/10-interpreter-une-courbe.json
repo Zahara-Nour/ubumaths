@@ -1,0 +1,324 @@
+{
+	"id": "da976537-296f-4cb0-b4d2-a73bd6743d6d",
+	"title": "Que dit la courbe des températures ?",
+	"description": "Relevé de la journée : l'heure de la température la plus haute (BO), la plus basse, la hausse entre 8 h et 14 h",
+	"grades": ["CM1"],
+	"level": 2,
+	"delay": 120,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "On a relevé la température toutes les deux heures, de $8$ h à $18$ h.\n\n```courbe\nx: 6 ; 20\ny: 0 ; 30\ngrille: 2 ; 2\naxes: x = Heure (h) ; y = Température (°C)\ndonnées: (8 ; {{t0}}) ; (10 ; {{t1}}) ; (12 ; {{t2}}) ; (14 ; {{t3}}) ; (16 ; {{t4}}) ; (18 ; {{t5}})\ntaille: moyenne\n```\n\nÀ quelle heure la température est-elle la plus haute ?\n\n$?$ h",
+			"variables": [
+				{
+					"name": "w",
+					"expression": "12..14"
+				},
+				{
+					"name": "s",
+					"expression": "1..2"
+				},
+				{
+					"name": "k",
+					"expression": "0..5"
+				},
+				{
+					"name": "t0",
+					"expression": "eval:2*(w-s*abs(0-k))"
+				},
+				{
+					"name": "t1",
+					"expression": "eval:2*(w-s*abs(1-k))"
+				},
+				{
+					"name": "t2",
+					"expression": "eval:2*(w-s*abs(2-k))"
+				},
+				{
+					"name": "t3",
+					"expression": "eval:2*(w-s*abs(3-k))"
+				},
+				{
+					"name": "t4",
+					"expression": "eval:2*(w-s*abs(4-k))"
+				},
+				{
+					"name": "t5",
+					"expression": "eval:2*(w-s*abs(5-k))"
+				},
+				{
+					"name": "h",
+					"expression": "eval:8+2*k"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{h}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La température la plus haute : le point le plus haut de la courbe.",
+					"Il est à ${{eval:2*w}}$ °C ; on descend lire l'heure : $\\textcolor{{{color:primary.0}}}{{{h}}}$ h."
+				]
+			}
+		},
+		{
+			"statement": "On a relevé la température toutes les deux heures, de $8$ h à $18$ h.\n\n```courbe\nx: 6 ; 20\ny: 0 ; 30\ngrille: 2 ; 2\naxes: x = Heure (h) ; y = Température (°C)\ndonnées: (8 ; {{t0}}) ; (10 ; {{t1}}) ; (12 ; {{t2}}) ; (14 ; {{t3}}) ; (16 ; {{t4}}) ; (18 ; {{t5}})\ntaille: moyenne\n```\n\nÀ quelle heure la température est-elle la plus basse ?\n\n$?$ h",
+			"variables": [
+				{
+					"name": "w",
+					"expression": "1..3"
+				},
+				{
+					"name": "s",
+					"expression": "1..2"
+				},
+				{
+					"name": "k",
+					"expression": "0..5"
+				},
+				{
+					"name": "t0",
+					"expression": "eval:2*(w+s*abs(0-k))"
+				},
+				{
+					"name": "t1",
+					"expression": "eval:2*(w+s*abs(1-k))"
+				},
+				{
+					"name": "t2",
+					"expression": "eval:2*(w+s*abs(2-k))"
+				},
+				{
+					"name": "t3",
+					"expression": "eval:2*(w+s*abs(3-k))"
+				},
+				{
+					"name": "t4",
+					"expression": "eval:2*(w+s*abs(4-k))"
+				},
+				{
+					"name": "t5",
+					"expression": "eval:2*(w+s*abs(5-k))"
+				},
+				{
+					"name": "h",
+					"expression": "eval:8+2*k"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{h}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La température la plus basse : le point le plus bas de la courbe.",
+					"Il est à ${{eval:2*w}}$ °C ; on descend lire l'heure : $\\textcolor{{{color:primary.0}}}{{{h}}}$ h."
+				]
+			}
+		},
+		{
+			"statement": "On a relevé la température toutes les deux heures, de $8$ h à $18$ h.\n\n```courbe\nx: 6 ; 20\ny: 0 ; 30\ngrille: 2 ; 2\naxes: x = Heure (h) ; y = Température (°C)\ndonnées: (8 ; {{t0}}) ; (10 ; {{t1}}) ; (12 ; {{t2}}) ; (14 ; {{t3}}) ; (16 ; {{t4}}) ; (18 ; {{t5}})\ntaille: moyenne\n```\n\nDe combien de degrés la température a-t-elle monté entre $8$ h et $14$ h ?\n\n$?$ °C",
+			"variables": [
+				{
+					"name": "u0",
+					"expression": "2..5"
+				},
+				{
+					"name": "d1",
+					"expression": "1..3"
+				},
+				{
+					"name": "d2",
+					"expression": "1..3"
+				},
+				{
+					"name": "d3",
+					"expression": "0..2"
+				},
+				{
+					"name": "d4",
+					"expression": "1..2"
+				},
+				{
+					"name": "d5",
+					"expression": "1..2"
+				},
+				{
+					"name": "t0",
+					"expression": "eval:2*u0"
+				},
+				{
+					"name": "t1",
+					"expression": "eval:t0+2*d1"
+				},
+				{
+					"name": "t2",
+					"expression": "eval:t1+2*d2"
+				},
+				{
+					"name": "t3",
+					"expression": "eval:t2+2*d3"
+				},
+				{
+					"name": "t4",
+					"expression": "eval:t3-2*d4"
+				},
+				{
+					"name": "t5",
+					"expression": "eval:t4-2*d5"
+				},
+				{
+					"name": "n",
+					"expression": "eval:t3-t0"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On lit les deux relevés : $8$ h, ${{t0}}$ °C ; $14$ h, ${{t3}}$ °C.",
+					"La hausse : l'écart, ${{t3}} - {{t0}} = \\textcolor{{{color:primary.0}}}{{{n}}}$ °C."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "La plus haute à 16 h (26 °C)",
+			"variationIndex": 0,
+			"variables": {
+				"w": "13",
+				"s": "2",
+				"k": "4",
+				"t0": "10",
+				"t1": "14",
+				"t2": "18",
+				"t3": "22",
+				"t4": "26",
+				"t5": "22",
+				"h": "16"
+			},
+			"answers": ["16"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la température au lieu de l'heure",
+			"variationIndex": 0,
+			"variables": {
+				"w": "13",
+				"s": "2",
+				"k": "4",
+				"t0": "10",
+				"t1": "14",
+				"t2": "18",
+				"t3": "22",
+				"t4": "26",
+				"t5": "22",
+				"h": "16"
+			},
+			"answers": ["26"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "La plus basse à 8 h (4 °C)",
+			"variationIndex": 1,
+			"variables": {
+				"w": "2",
+				"s": "1",
+				"k": "0",
+				"t0": "4",
+				"t1": "6",
+				"t2": "8",
+				"t3": "10",
+				"t4": "12",
+				"t5": "14",
+				"h": "8"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : l'heure la plus chaude (18 h)",
+			"variationIndex": 1,
+			"variables": {
+				"w": "2",
+				"s": "1",
+				"k": "0",
+				"t0": "4",
+				"t1": "6",
+				"t2": "8",
+				"t3": "10",
+				"t4": "12",
+				"t5": "14",
+				"h": "8"
+			},
+			"answers": ["18"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Hausse de 8 h à 14 h : 18 − 6 = 12",
+			"variationIndex": 2,
+			"variables": {
+				"u0": "3",
+				"d1": "2",
+				"d2": "3",
+				"d3": "1",
+				"d4": "2",
+				"d5": "1",
+				"t0": "6",
+				"t1": "10",
+				"t2": "16",
+				"t3": "18",
+				"t4": "14",
+				"t5": "12",
+				"n": "12"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la température de 14 h",
+			"variationIndex": 2,
+			"variables": {
+				"u0": "3",
+				"d1": "2",
+				"d2": "3",
+				"d3": "1",
+				"d4": "2",
+				"d5": "1",
+				"t0": "6",
+				"t1": "10",
+				"t2": "16",
+				"t3": "18",
+				"t4": "14",
+				"t5": "12",
+				"n": "12"
+			},
+			"answers": ["18"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

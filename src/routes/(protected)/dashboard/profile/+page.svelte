@@ -7,6 +7,8 @@
 
 	Regroupe :
 	- Informations utilisateur (avatar, nom, email, rôle)
+	- Avatars (élèves) : la boutique d'avatars, ouverte à tous les élèves
+	  (décision de David du 2026-11-11), aussi dans l'onglet « Avatars » du Marché
 	- Préférences (mode sombre, taille du texte) — accessibles aussi via le
 	  menu hamburger sur mobile et via le header sur desktop
 	- Compte (mot de passe, GDPR Art. 20 : export, GDPR Art. 17 : suppression)
@@ -15,16 +17,18 @@
 	Migré depuis l'ancien dropdown de l'avatar (Phase 3 refonte sidebar).
 -->
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import type { PageData } from './$types';
-	import UserAvatar from '$lib/components/UserAvatar.svelte';
-	import { Button } from '$lib/components/ui/button';
-	import AccountDeletionDialog from '$lib/components/account/AccountDeletionDialog.svelte';
-	import { theme } from '$lib/stores/theme.svelte';
-	import { fontSize } from '$lib/stores/fontSize.svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import { submitLogoutForm } from '$lib/utils/auth';
-	import { childLoginIdOf } from '$lib/utils/child-account';
+	import UserAvatar from '#lib/components/UserAvatar.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import AvatarShopSection from '#lib/components/avatars/AvatarShopSection.svelte';
+	import AccountDeletionDialog from '#lib/components/account/AccountDeletionDialog.svelte';
+	import { theme } from '#lib/stores/theme.svelte.ts';
+	import { fontSize } from '#lib/stores/fontSize.svelte.ts';
+	import EasyReadingToggle from '#lib/components/EasyReadingToggle.svelte';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import { submitLogoutForm } from '#lib/utils/auth.ts';
+	import { childLoginIdOf } from '#lib/utils/child-account.ts';
 	import { resolve } from '$app/paths';
 	import {
 		LogOut,
@@ -134,6 +138,17 @@
 		</div>
 	</section>
 
+	{#if role === 'student'}
+		<section class="rounded-lg border border-border bg-card p-6 shadow-sm" aria-label="Avatars">
+			<AvatarShopSection
+				avatarUrl={data.profile.avatar_url}
+				firstname={data.profile.firstname}
+				lastname={data.profile.lastname}
+				showPreview={false}
+			/>
+		</section>
+	{/if}
+
 	<section
 		class="rounded-lg border border-border bg-card p-6 shadow-sm"
 		aria-label="Préférences d'affichage"
@@ -172,6 +187,8 @@
 					<Plus class="h-4 w-4" />
 				</Button>
 			</div>
+
+			<EasyReadingToggle variant="labelled" />
 		</div>
 	</section>
 
@@ -183,7 +200,7 @@
 		<div class="flex flex-wrap gap-3">
 			<!-- Compte Google seul : pas de mot de passe à changer. -->
 			{#if data.canChangePassword}
-				<Button variant="outline" href={`${resolve('/auth/update-password')}?depuis=profil`}>
+				<Button variant="outline" href={`${resolve('auth/update-password')}?depuis=profil`}>
 					<KeyRound class="mr-2 h-4 w-4" aria-hidden="true" />
 					Changer mon mot de passe
 				</Button>

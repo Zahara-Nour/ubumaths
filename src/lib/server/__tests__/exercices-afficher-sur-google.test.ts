@@ -13,7 +13,7 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 import {
 	SEARCH_INDEXED_REQUIRES_PUBLIC_MESSAGE,
 	SearchIndexedRequiresPublicError,
@@ -25,7 +25,7 @@ import { createExercise, updateExercise } from '../exercises';
 import { restoreFromBackup } from '../admin/exercise-backup';
 import { importExerciseFromJSON } from '../exercise-import-export';
 
-vi.mock('$lib/server/resource-tags', () => ({
+vi.mock('#lib/server/resource-tags.ts', () => ({
 	syncResourceTags: vi.fn().mockResolvedValue(undefined),
 	fetchResourceTagNames: vi.fn().mockResolvedValue([]),
 	fetchTagNamesForResources: vi.fn().mockResolvedValue(new Map()),

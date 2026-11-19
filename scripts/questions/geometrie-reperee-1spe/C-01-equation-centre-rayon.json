@@ -1,10 +1,8 @@
 {
+	"id": "3a6583b5-9cc4-4005-9eb8-742828c5f7b4",
 	"title": "Équation d’un cercle de centre et rayon donnés",
 	"description": "Écrire une équation du cercle de centre Ω et de rayon r : (x − x_Ω)² + (y − y_Ω)² = r²",
 	"grades": ["1_SPE"],
-	"theme": "Géométrie",
-	"domain": "Géométrie repérée",
-	"subdomain": "Équation de cercle",
 	"level": 1,
 	"status": "draft",
 	"delay": 60,

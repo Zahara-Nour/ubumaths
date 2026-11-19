@@ -1,10 +1,8 @@
 {
+	"id": "2a249385-5832-40da-b1f4-afe13707d2c3",
 	"title": "Résoudre f(x) = k en se ramenant à une fonction de référence",
 	"description": "f(x) = k avec f donnée par son expression (2x² + 1, 3/x − 1, 2√x + 1, 2x³ + 3) : isoler la fonction de référence, puis la résoudre (pièges : solution négative oubliée, √ au lieu du carré, (k − c)/a au lieu de a/(k − c), signe du cube)",
 	"grades": ["2"],
-	"theme": "Fonctions",
-	"domain": "Généralités",
-	"subdomain": "Résolution algébrique",
 	"level": 1,
 	"delay": 90,
 	"status": "draft",

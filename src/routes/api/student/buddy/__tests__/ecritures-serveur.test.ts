@@ -12,14 +12,14 @@ import {
 	buddyRow,
 	createFakeBuddyDb,
 	type FakeBuddyDb
-} from '$lib/server/__tests__/helpers/fake-buddy-db';
-import { createFakeSupabase } from '$lib/server/__tests__/helpers/fake-supabase';
+} from '#lib/server/__tests__/helpers/fake-buddy-db.ts';
+import { createFakeSupabase } from '#lib/server/__tests__/helpers/fake-supabase.ts';
 
 const service = vi.hoisted(() => ({ current: null as unknown }));
-vi.mock('$lib/server/serviceRoleClient', () => ({
+vi.mock('#lib/server/serviceRoleClient.ts', () => ({
 	createServiceRoleClient: () => service.current
 }));
-vi.mock('$lib/server/middleware/auth', () => ({
+vi.mock('#lib/server/middleware/auth.ts', () => ({
 	requireRole: async () => ({ user: { id: ELEVE }, profile: { role: 'student' } })
 }));
 

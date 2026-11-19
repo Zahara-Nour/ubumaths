@@ -1,10 +1,8 @@
 {
+	"id": "273050b8-866b-45e4-8e78-25d39f585588",
 	"title": "Compter des effectifs",
 	"description": "Compter dans une liste brute de données combien de fois revient une valeur (l'effectif de 12 ans parmi les âges de 20 élèves)",
 	"grades": ["5"],
-	"theme": "Statistiques",
-	"domain": "Représenter des données",
-	"subdomain": "effectifs et fréquences",
 	"level": 2,
 	"delay": 120,
 	"status": "draft",

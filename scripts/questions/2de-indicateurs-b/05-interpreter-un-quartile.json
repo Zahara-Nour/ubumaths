@@ -1,10 +1,8 @@
 {
+	"id": "82ba1365-0c8f-4d04-bce2-4c314748e291",
 	"title": "Interpréter un quartile",
 	"description": "Sens de Q1 et Q3 (« au moins 25 % / 75 % des valeurs sont inférieures ou égales ») ; nombre minimal de valeurs concernées",
 	"grades": ["2"],
-	"theme": "Statistiques",
-	"domain": "Indicateurs",
-	"subdomain": "Quartiles",
 	"level": 2,
 	"delay": 60,
 	"status": "draft",
@@ -34,7 +32,7 @@
 			"correction": {
 				"steps": [
 					"${{if:g==0|Q_1|Q_3}}$ est la plus petite valeur de la série telle qu'**au moins** ${{if:g==0|25|75}}\\,\\%$ des valeurs lui soient inférieures ou égales.",
-					"Donc \\textcolor{{{color:primary.0}}}{\\text{au moins }{{if:g==0|25|75}}\\,\\%\\text{ des valeurs sont} \\leqslant {{q}}}. Le quartile ne dit rien de la moyenne."
+					"Donc $\\textcolor{{{color:primary.0}}}{\\text{au moins }{{if:g==0|25|75}}\\,\\%\\text{ des valeurs sont} \\leqslant {{q}}}$. Le quartile ne dit rien de la moyenne."
 				]
 			}
 		},

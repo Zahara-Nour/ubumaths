@@ -6,11 +6,11 @@
 
 import { error, fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
-import { requireRoles } from '$lib/server/middleware/auth';
-import { uuidSchema } from '$lib/server/validation/common';
-import { createEvaluationFormSchema } from '$lib/server/validation/evaluations';
-import { getSeries, SeriesError } from '$lib/server/series';
-import { createEvaluation, EvaluationError } from '$lib/server/evaluations';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import { uuidSchema } from '#lib/server/validation/common.ts';
+import { createEvaluationFormSchema } from '#lib/server/validation/evaluations.ts';
+import { getSeries, SeriesError } from '#lib/server/series.ts';
+import { createEvaluation, EvaluationError } from '#lib/server/evaluations.ts';
 
 export const load: PageServerLoad = async ({ locals, url }) => {
 	await requireRoles(locals, ['teacher', 'admin']);

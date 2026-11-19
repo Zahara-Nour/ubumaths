@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import { goto } from '$app/navigation';
-	import { Button } from '$lib/components/ui/button';
-	import * as Card from '$lib/components/ui/card';
-	import { Input } from '$lib/components/ui/input';
-	import ExerciseSkeleton from '$lib/components/ExerciseSkeleton.svelte';
-	import { formatDeadline, isDeadlinePassed, isDeadlineSoon } from '$lib/utils/dates';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import ExerciseSkeleton from '#lib/components/ExerciseSkeleton.svelte';
+	import { formatDeadline, isDeadlinePassed, isDeadlineSoon } from '#lib/utils/dates.ts';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();

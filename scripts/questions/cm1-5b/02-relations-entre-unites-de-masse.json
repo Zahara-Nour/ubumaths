@@ -1,10 +1,8 @@
 {
+	"id": "1be3eee7-337c-4ffb-b848-ee06bee78def",
 	"title": "Relations entre les unités de masse",
 	"description": "40 dg = 4 g ; 3 g + 5 cg = 305 cg ; 6,2 t = 6 200 kg ; 3 250 kg = 3,25 t ; 1/4 kg = 250 g ; 1/2 t = 500 kg ; 1,25 kg = 1 250 g",
 	"grades": ["CM1"],
-	"theme": "Grandeurs",
-	"domain": "Masses",
-	"subdomain": "Unités",
 	"level": 8,
 	"delay": 90,
 	"status": "draft",

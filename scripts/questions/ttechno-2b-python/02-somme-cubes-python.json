@@ -1,0 +1,197 @@
+{
+	"id": "fe576c5b-0787-4cbe-9b1d-4d17f815d8b5",
+	"title": "Fonction Python : somme des n premiers cubes",
+	"description": "Compléter l'accumulateur et les bornes de la boucle d'une fonction Python qui calcule la somme des n premiers cubes, puis la faire tourner",
+	"grades": ["T_TECHNO"],
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "La fonction `somme_cubes` doit renvoyer $1^3+2^3+\\cdots+n^3$.\n\n```python\ndef somme_cubes(n):\n    s = 0\n    for k in range(1, n + 1):\n        ...\n    return s\n```\n\nQue faut-il écrire à la place des points de suspension ?\n\n```choix\nmelanger: non\n- `s = s + k * 3`\n- `s = k ** 3`\n- `s = s + k ** 3`\n- `s = s + n ** 3`\n```",
+			"variables": [],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"`s` sert d'accumulateur : il part de $0$ et, à chaque tour de boucle, on lui ajoute le terme du rang `k`.",
+					"Le terme du rang `k` est $k^3$, qui s'écrit `k ** 3` en Python.",
+					"`k * 3` est le triple de `k`, pas son cube ; avec `s = k ** 3`, `s` ne garderait que le dernier cube ; `n ** 3` ajouterait $n$ fois le même nombre.",
+					"La ligne est donc `s = s + k ** 3`."
+				]
+			}
+		},
+		{
+			"statement": "La fonction `somme_cubes` doit renvoyer $1^3+2^3+\\cdots+n^3$.\n\n```python\ndef somme_cubes(n):\n    s = 0\n    for k in range(...):\n        s = s + k ** 3\n    return s\n```\n\nQue faut-il écrire entre les parenthèses de `range` ?\n\n```choix\nmelanger: non\n- `1, n + 1`\n- `1, n`\n- `n`\n- `n + 1, 1`\n```",
+			"variables": [],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"`range(a, b)` donne les entiers de `a` à `b - 1` : il s'arrête **juste avant** `b`.",
+					"`k` doit prendre les valeurs $1$, $2$, …, $n$ : on écrit `range(1, n + 1)`.",
+					"`range(1, n)` et `range(n)` s'arrêtent à $n-1$ : ils oublient $n^3$. `range(n + 1, 1)` ne donne aucun entier : la fonction renverrait $0$."
+				]
+			}
+		},
+		{
+			"statement": "La fonction `somme_cubes` doit renvoyer $1^3+2^3+\\cdots+n^3$.\n\n```python\ndef somme_cubes(n):\n    s = 0\n    for k in range(1, n + 1):\n        s = s + k ** 3\n    return s\n```\n\nQue renvoie `somme_cubes({{n}})` ?\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "3..5"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(n*(n+1)/2)^2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"`k` prend les valeurs $1$, $2$, …, ${{n}}$.",
+					"$1^3+2^3+3^3{{if:n>=4|+4^3|}}{{if:n>=5|+5^3|}}=1+8+27{{if:n>=4|+64|}}{{if:n>=5|+125|}}=\\textcolor{{{color:primary.0}}}{{{eval:(n*(n+1)/2)^2}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "choix : bonne réponse 2",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "choix 0 refusé",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "choix 1 refusé",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "choix 3 refusé",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "choix : bonne réponse 0",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "choix 1 refusé",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "choix 2 refusé",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "choix 3 refusé",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "n = 3 : 36",
+			"variationIndex": 2,
+			"variables": {
+				"n": "3"
+			},
+			"answers": ["36"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : triples (18)",
+			"variationIndex": 2,
+			"variables": {
+				"n": "3"
+			},
+			"answers": ["18"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : dernier terme (27)",
+			"variationIndex": 2,
+			"variables": {
+				"n": "3"
+			},
+			"answers": ["27"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 3³ oublié (9)",
+			"variationIndex": 2,
+			"variables": {
+				"n": "3"
+			},
+			"answers": ["9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "n = 5 : 225",
+			"variationIndex": 2,
+			"variables": {
+				"n": "5"
+			},
+			"answers": ["225"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

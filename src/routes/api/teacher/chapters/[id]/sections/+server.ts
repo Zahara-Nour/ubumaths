@@ -4,12 +4,12 @@
  * POST - Crée une section (placée en dernier par défaut)
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import { listSections, createSection } from '$lib/server/chapter-sections';
-import { createSectionSchema } from '$lib/server/validation/chapter-sections';
-import { uuidSchema } from '$lib/server/validation/common';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { listSections, createSection } from '#lib/server/chapter-sections.ts';
+import { createSectionSchema } from '#lib/server/validation/chapter-sections.ts';
+import { uuidSchema } from '#lib/server/validation/common.ts';
 
 type ZodIssue = { path: (string | number)[]; message: string };
 
@@ -43,7 +43,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		throw error(500, 'Impossible de lire les sections');
 	}
 
-	return json({ sections: data });
+	return Response.json({ sections: data });
 };
 
 export const POST: RequestHandler = async ({ locals, params, request }) => {
@@ -85,5 +85,5 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		throw error(500, 'Impossible de créer la section');
 	}
 
-	return json({ section: data }, { status: 201 });
+	return Response.json({ section: data }, { status: 201 });
 };

@@ -1,10 +1,8 @@
 {
+	"id": "9723b1e4-ff05-4b08-961a-5207bc879cce",
 	"title": "Ensemble de définition d'un quotient",
 	"description": "Valeurs interdites d'une fonction quotient : dénominateur x − c, ax + b (valeur fractionnaire), produit (x − p)(x − q) ; ℝ privé des valeurs interdites (pièges : signe de la valeur, numérateur annulé, {3} au lieu de ℝ \\ {3})",
 	"grades": ["2"],
-	"theme": "Fonctions",
-	"domain": "Généralités",
-	"subdomain": "Définition et courbe",
 	"level": 5,
 	"delay": 90,
 	"status": "draft",

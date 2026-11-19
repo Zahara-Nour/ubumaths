@@ -3,9 +3,9 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { parseMarkdown } from '$lib/ubumark';
-import { generateTypst } from '$lib/ubumark/generators/typst-generator';
-import { encodeQr, qrSvg } from '$lib/qr/qr-code';
+import { parseMarkdown } from '#lib/ubumark/index.ts';
+import { generateTypst } from '#lib/ubumark/generators/typst-generator.ts';
+import { encodeQr, qrSvg } from '#lib/qr/qr-code.ts';
 
 const typst = (...lines: string[]) => generateTypst(parseMarkdown(lines.join('\n')));
 

@@ -1,10 +1,8 @@
 {
+	"id": "11f91d46-82c7-4dca-8812-e85b7bd93ae2",
 	"title": "Pourcentage d'un pourcentage",
 	"description": "Ensembles emboîtés : la proportion d'une partie d'une partie est le produit des proportions ; retrouver une des deux proportions",
 	"grades": ["2"],
-	"theme": "Proportionnalité",
-	"domain": "Pourcentages",
-	"subdomain": "Proportion",
 	"level": 4,
 	"delay": 60,
 	"status": "draft",
@@ -38,7 +36,7 @@
 			"correction": {
 				"steps": [
 					"Prendre $p_2$ d'une partie qui représente $p_1$ du tout, c'est prendre $p_1\\times p_2$ du tout : les proportions se **multiplient**.",
-					"$\\dfrac{ {{p1}} }{100}\\times\\dfrac{ {{p2}} }{100}={{eval:(p1)/100;d}}\\times {{eval:(p2)/100;d}}={{eval:(p1)*(p2)/10000;d}}$, soit \\textcolor{{{color:primary.0}}}{{{eval:(p1)*(p2)/100;d}}\\,\\%}."
+					"$\\dfrac{ {{p1}} }{100}\\times\\dfrac{ {{p2}} }{100}={{eval:(p1)/100;d}}\\times {{eval:(p2)/100;d}}={{eval:(p1)*(p2)/10000;d}}$, soit $\\textcolor{{{color:primary.0}}}{{{eval:(p1)*(p2)/100;d}}\\,\\%}$."
 				]
 			}
 		},
@@ -66,7 +64,7 @@
 			"correction": {
 				"steps": [
 					"La proportion du tout est le produit : $\\dfrac{ {{p1}} }{100}\\times p=\\dfrac{ {{eval:(p1)*(p2)/100;d}} }{100}$.",
-					"$p=\\dfrac{ {{eval:(p1)*(p2)/100;d}} }{ {{p1}} }={{eval:(p2)/100;d}}$, soit \\textcolor{{{color:primary.0}}}{{{p2}}\\,\\%}."
+					"$p=\\dfrac{ {{eval:(p1)*(p2)/100;d}} }{ {{p1}} }={{eval:(p2)/100;d}}$, soit $\\textcolor{{{color:primary.0}}}{{{p2}}\\,\\%}$."
 				]
 			}
 		}

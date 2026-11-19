@@ -1,10 +1,8 @@
 {
+	"id": "884908d3-b1d8-4e54-9eb1-287908213fa8",
 	"title": "Soustraire des fractions",
 	"description": "Différence de deux fractions de même dénominateur (8/10 − 5/10), ou dont un dénominateur est multiple de l'autre (5/6 − 1/12) ; dénominateurs au plus 20, toute fraction égale juste",
 	"grades": ["CM1"],
-	"theme": "Fractions",
-	"domain": "Calculer",
-	"subdomain": "Addition et Soustraction",
 	"level": 18,
 	"delay": 30,
 	"status": "draft",

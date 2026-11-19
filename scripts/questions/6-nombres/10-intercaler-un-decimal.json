@@ -1,10 +1,8 @@
 {
+	"id": "2e982062-0fc9-473f-8aa2-affaf55c567d",
 	"title": "Intercaler un nombre décimal",
 	"description": "Écrire un décimal strictement compris entre deux décimaux (dixièmes consécutifs, centièmes consécutifs, 5,3 et 5,31) ; toute réponse comprise est juste",
 	"grades": ["6"],
-	"theme": "Décimaux",
-	"domain": "Apprivoiser",
-	"subdomain": "Encadrer",
 	"level": 5,
 	"delay": 20,
 	"status": "draft",

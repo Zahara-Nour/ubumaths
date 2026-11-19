@@ -9,11 +9,11 @@
  */
 
 import { describe, it, expect, vi } from 'vitest';
-import { createFakeSupabase } from '$lib/server/__tests__/helpers/fake-supabase';
+import { createFakeSupabase } from '#lib/server/__tests__/helpers/fake-supabase.ts';
 
 const auth = vi.hoisted(() => ({ grade: null as string | null }));
 
-vi.mock('$lib/server/middleware/auth', () => ({
+vi.mock('#lib/server/middleware/auth.ts', () => ({
 	requireAuth: async () => ({
 		user: { id: 'eleve-1' },
 		profile: { id: 'eleve-1', grade: auth.grade }
@@ -84,9 +84,9 @@ function supabaseFixture() {
 			case 'question_templates':
 				return {
 					data: [
-						{ id: 't-partagee', subdomain: 'Partagée' },
-						{ id: 't-seule', subdomain: 'Seule' },
-						{ id: 't-archive', subdomain: 'Archivée' }
+						{ id: 't-partagee', title: 'Partagée' },
+						{ id: 't-seule', title: 'Seule' },
+						{ id: 't-archive', title: 'Archivée' }
 					]
 				};
 			case 'question_template_points':

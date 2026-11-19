@@ -1,13 +1,14 @@
 {
+	"id": "1820cab8-ab88-4365-bc13-d44c5e234c49",
 	"title": "Puissances d'une matrice carrée",
 	"description": "Calculer A² et Aⁿ pour une matrice triangulaire (1 k ; 0 1), diagonale ou quelconque d'ordre 2 (pièges : élever chaque coefficient au carré, kⁿ au lieu de nk, n·a au lieu de aⁿ)",
 	"grades": ["T_EXP"],
-	"theme": "Graphes et matrices",
-	"domain": "Matrices",
-	"subdomain": "Puissances de matrices",
 	"level": 2,
 	"status": "draft",
 	"delay": 60,
+	"shared": {
+		"capitalPairs": "product"
+	},
 	"variations": [
 		{
 			"statement": "$A = \\begin{pmatrix}1&{{k}}\\\\0&1\\end{pmatrix}$. On admet que, pour tout entier $n \\geqslant 1$, $A^n = \\begin{pmatrix}1&nk\\\\0&1\\end{pmatrix}$ avec $k = {{k}}$.\n\nOn note $A^{ {{n}} } = \\begin{pmatrix} c_{11} & c_{12} \\\\ c_{21} & c_{22} \\end{pmatrix}$.\n\n$c_{11}=?$\n\n$c_{12}=?$\n\n$c_{21}=?$\n\n$c_{22}=?$",

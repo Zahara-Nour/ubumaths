@@ -1,0 +1,177 @@
+{
+	"id": "63675a23-2b10-4881-b096-66ed5e7da700",
+	"title": "Du moins probable au plus probable",
+	"description": "Ranger trois tirages d'un sac selon le nombre de boules de chaque couleur ; dire quelle couleur d'une roue a le plus de chances (sans calcul)",
+	"grades": ["CM1"],
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Un sac contient ${{R}}$ boules rouges, ${{B}}$ boules bleues et ${{G}}$ boules vertes. On tire une boule sans regarder.\n\nRange ces tirages du **moins probable** au **plus probable**.\n\n```ranger\nsigne: <\n- une boule {{if:p==0|rouge|{{if:p==1|bleue|verte}}}}\n- une boule {{if:p==0|bleue|{{if:p==1|verte|rouge}}}}\n- une boule {{if:p==0|verte|{{if:p==1|rouge|bleue}}}}\n```",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "0..2"
+				},
+				{
+					"name": "x",
+					"expression": "1..3"
+				},
+				{
+					"name": "y",
+					"expression": "5..7"
+				},
+				{
+					"name": "z",
+					"expression": "10..12"
+				},
+				{
+					"name": "R",
+					"expression": "eval:(1-min(abs(p-0),1))*x+(1-min(abs(p-2),1))*y+(1-min(abs(p-1),1))*z"
+				},
+				{
+					"name": "B",
+					"expression": "eval:(1-min(abs(p-1),1))*x+(1-min(abs(p-0),1))*y+(1-min(abs(p-2),1))*z"
+				},
+				{
+					"name": "G",
+					"expression": "eval:(1-min(abs(p-2),1))*x+(1-min(abs(p-1),1))*y+(1-min(abs(p-0),1))*z"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Plus il y a de boules d'une couleur, plus on a de chances de la tirer.",
+					"On range les couleurs de la moins nombreuse (${{x}}$ boules) à la plus nombreuse (${{z}}$ boules).",
+					"$$\\textcolor{{{color:primary.0}}}{\\text{une boule {{if:p==0|rouge|{{if:p==1|bleue|verte}}}}} < \\text{une boule {{if:p==0|bleue|{{if:p==1|verte|rouge}}}}} < \\text{une boule {{if:p==0|verte|{{if:p==1|rouge|bleue}}}}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Une roue est partagée en $8$ parts égales. On la fait tourner : quand elle s'arrête, la flèche montre une part au hasard.\n\n```partage\nforme: disque 8\ngris: {{g}}\n```\n\nQuelle couleur a le plus de chances d'être montrée par la flèche ?\n\n```choix\nmelanger: non\n- une part coloriée\n- une part blanche\n- les deux ont autant de chances\n```",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "1..7"
+				},
+				{
+					"name": "r",
+					"expression": "eval:(1-min(abs(g-1),1))*1+(1-min(abs(g-2),1))*1+(1-min(abs(g-3),1))*1+(1-min(abs(g-4),1))*2+(1-min(abs(g-5),1))*0+(1-min(abs(g-6),1))*0+(1-min(abs(g-7),1))*0"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On compte les parts : ${{g}}$ coloriée{{if:g>1|s}} et ${{eval:8-g}}$ blanche{{if:g<7|s}}.",
+					"Les parts sont égales : la couleur qui a le plus de parts a le plus de chances.",
+					"Réponse : $\\textcolor{{{color:primary.0}}}{\\text{{{if:r==0|une part coloriée|{{if:r==1|une part blanche|les deux ont autant de chances}}}}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Rouge < bleue < verte",
+			"variationIndex": 0,
+			"variables": {
+				"p": "0",
+				"x": "2",
+				"y": "6",
+				"z": "11",
+				"R": "2",
+				"B": "6",
+				"G": "11"
+			},
+			"answers": ["2", "0", "1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ordre inverse",
+			"variationIndex": 0,
+			"variables": {
+				"p": "0",
+				"x": "2",
+				"y": "6",
+				"z": "11",
+				"R": "2",
+				"B": "6",
+				"G": "11"
+			},
+			"answers": ["1", "0", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Bleue < verte < rouge",
+			"variationIndex": 0,
+			"variables": {
+				"p": "1",
+				"x": "1",
+				"y": "5",
+				"z": "12",
+				"R": "12",
+				"B": "1",
+				"G": "5"
+			},
+			"answers": ["2", "0", "1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "3 parts coloriées : la blanche",
+			"variationIndex": 1,
+			"variables": {
+				"g": "3",
+				"r": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3 parts, la coloriée",
+			"variationIndex": 1,
+			"variables": {
+				"g": "3",
+				"r": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "6 parts coloriées : la coloriée",
+			"variationIndex": 1,
+			"variables": {
+				"g": "6",
+				"r": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "4 parts : autant",
+			"variationIndex": 1,
+			"variables": {
+				"g": "4",
+				"r": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

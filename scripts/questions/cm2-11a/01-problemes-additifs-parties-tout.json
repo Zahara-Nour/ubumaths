@@ -1,0 +1,375 @@
+{
+	"id": "f0f354c8-3169-4c46-a1a9-4ce9b6b1694e",
+	"title": "Problèmes additifs : parties-tout",
+	"description": "Le tout avec des entiers jusqu'au milliard, une partie avec des millièmes (un colis de 3,275 kg), l'état de départ (« il a dépensé…, il lui reste… »), des fractions dont l'un des dénominateurs est multiple de l'autre (1/4 + 3/8) ; une étape",
+	"grades": ["CM2"],
+	"level": 25,
+	"delay": 120,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true,
+			"zeros": "off",
+			"reducedFractions": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "L'an dernier, le musée régional a accueilli ${{a}}$ visiteurs, et le parc naturel ${{b}}$ visiteurs.\n\nCombien de visiteurs les deux sites ont-ils accueillis en tout ?\n\nIls ont accueilli $?$ visiteurs.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1200000..480000000"
+				},
+				{
+					"name": "b",
+					"expression": "1500000..480000000"
+				}
+			],
+			"conditions": ["a + b <= 999999999"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a+b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque site est une **partie** ; on cherche **le tout** : on ajoute les parties, classe par classe (unités, milliers, millions).\n\n```schema-barres\nVisiteurs : {{eval:floor((a)/1000000)}} {{eval:floor(mod((floor((a)/1000)),1000)/100)}}{{eval:floor(mod((floor((a)/1000)),100)/10)}}{{eval:mod((floor((a)/1000)),10)}} {{eval:floor(mod((a),1000)/100)}}{{eval:floor(mod((a),100)/10)}}{{eval:mod((a),10)}} (4) ; {{eval:floor((b)/1000000)}} {{eval:floor(mod((floor((b)/1000)),1000)/100)}}{{eval:floor(mod((floor((b)/1000)),100)/10)}}{{eval:mod((floor((b)/1000)),10)}} {{eval:floor(mod((b),1000)/100)}}{{eval:floor(mod((b),100)/10)}}{{eval:mod((b),10)}} (4) = ?\n```",
+					"$${{a}} + {{b}} = \\textcolor{{{color:primary.0}}}{{{eval:a+b}}}$$",
+					"Les deux sites ont accueilli ${{eval:a+b}}$ visiteurs en tout.",
+					"Le tout est plus grand que chaque partie : ${{eval:a+b}}$ est plus grand que ${{a}}$ et que ${{b}}$. C'est vraisemblable."
+				]
+			}
+		},
+		{
+			"statement": "Un colis pèse ${{eval:T/1000;d}}~\\unit{kg}$. Il contient un livre de ${{eval:a/1000;d}}~\\unit{kg}$ et un jeu.\n\nCombien pèse le jeu ?\n\nLe jeu pèse $?~\\text{kg}$.",
+			"variables": [
+				{
+					"name": "T",
+					"expression": "1500..9800"
+				},
+				{
+					"name": "a",
+					"expression": "205..4800"
+				}
+			],
+			"conditions": ["T - a >= 300", "mod(T,10) != 0", "mod(a,10) != 0", "mod(T-a,10) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(T-a)/1000;d}}",
+					"requiredForm": {
+						"pattern": "a:number"
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le colis entier, c'est **le tout** ; le livre est une partie, on cherche l'autre partie : on enlève, en alignant les virgules (millièmes sous millièmes).",
+					"$${{eval:T/1000;d}} - {{eval:a/1000;d}} = \\textcolor{{{color:primary.0}}}{{{eval:(T-a)/1000;d}}}$$",
+					"Le jeu pèse ${{eval:(T-a)/1000;d}}~\\unit{kg}$.",
+					"On vérifie en remettant les deux parties ensemble : ${{eval:a/1000;d}} + {{eval:(T-a)/1000;d}} = {{eval:T/1000;d}}$, on retrouve bien le colis."
+				]
+			}
+		},
+		{
+			"statement": "Ce matin, Côme avait de l'argent dans son porte-monnaie. Il a dépensé ${{eval:floor((a)/100)}}.{{eval:floor(mod(a,100)/10)}}{{eval:mod(a,10)}}~\\unit{€}$ au marché ; il lui reste ${{eval:floor((b)/100)}}.{{eval:floor(mod(b,100)/10)}}{{eval:mod(b,10)}}~\\unit{€}$.\n\nCombien d'argent Côme avait-il ce matin ?\n\nIl avait $?~\\text{€}$.",
+			"variables": [
+				{
+					"name": "aE",
+					"expression": "12..58"
+				},
+				{
+					"name": "aC",
+					"expression": "1..99"
+				},
+				{
+					"name": "a",
+					"expression": "eval:100*aE+aC"
+				},
+				{
+					"name": "bE",
+					"expression": "6..39"
+				},
+				{
+					"name": "bC",
+					"expression": "1..99"
+				},
+				{
+					"name": "b",
+					"expression": "eval:100*bE+bC"
+				}
+			],
+			"conditions": ["aC + bC != 100"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(a+b)/100;d}}",
+					"requiredForm": {
+						"pattern": "a:number"
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'argent du matin, c'est **le tout** : ce qu'il a dépensé et ce qui lui reste. « Il lui reste » ne veut pas dire qu'on enlève : on cherche le tout, on ajoute.\n\n```schema-barres\nCe matin : ? (8)\nDépensé, reste : {{eval:floor((a)/100)}},{{eval:floor(mod((a),100)/10)}}{{eval:mod((a),10)}} € (5) ; {{eval:floor((b)/100)}},{{eval:floor(mod((b),100)/10)}}{{eval:mod((b),10)}} € (3)\n```",
+					"$${{eval:floor((a)/100)}}.{{eval:floor(mod(a,100)/10)}}{{eval:mod(a,10)}} + {{eval:floor((b)/100)}}.{{eval:floor(mod(b,100)/10)}}{{eval:mod(b,10)}} = \\textcolor{{{color:primary.0}}}{{{eval:floor((a+b)/100)}}.{{eval:floor(mod(a+b,100)/10)}}{{eval:mod(a+b,10)}}}$$",
+					"Côme avait ${{eval:floor((a+b)/100)}}.{{eval:floor(mod(a+b,100)/10)}}{{eval:mod(a+b,10)}}~\\unit{€}$ ce matin.",
+					"On vérifie : ${{eval:floor((a+b)/100)}}.{{eval:floor(mod(a+b,100)/10)}}{{eval:mod(a+b,10)}} - {{eval:floor((a)/100)}}.{{eval:floor(mod(a,100)/10)}}{{eval:mod(a,10)}} = {{eval:floor((b)/100)}}.{{eval:floor(mod(b,100)/10)}}{{eval:mod(b,10)}}$ ; après le marché, il lui reste bien ${{eval:floor((b)/100)}}.{{eval:floor(mod(b,100)/10)}}{{eval:mod(b,10)}}~\\unit{€}$."
+				]
+			}
+		},
+		{
+			"statement": "Lina lit un roman. Samedi, elle en lit $\\frac{{{a}}}{{{d}}}$ ; dimanche, elle en lit $\\frac{{{b}}}{{{eval:q*d}}}$.\n\nQuelle fraction du roman Lina a-t-elle lue pendant le week-end ?\n\nElle en a lu $?$.",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "2..12"
+				},
+				{
+					"name": "q",
+					"expression": "2..5"
+				},
+				{
+					"name": "a",
+					"expression": "1..{{eval:d-1}}"
+				},
+				{
+					"name": "b",
+					"expression": "1..{{eval:q*d-1}}"
+				}
+			],
+			"conditions": ["q * d <= 60", "a * q + b < q * d", "mod(b,q) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{{{eval:a*q+b}}}{{{eval:q*d}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Samedi et dimanche sont les deux **parties** ; on cherche **le tout** : on ajoute. Les parts ne sont pas de la même taille : on écrit d'abord $\\frac{{{a}}}{{{d}}}$ avec le dénominateur ${{eval:q*d}}$ (chaque part coupée en ${{q}}$).",
+					"$$\\frac{{{a}}}{{{d}}} = \\frac{{{eval:a*q}}}{{{eval:q*d}}}$$",
+					"$$\\frac{{{eval:a*q}}}{{{eval:q*d}}} + \\frac{{{b}}}{{{eval:q*d}}} = \\textcolor{{{color:primary.0}}}{\\frac{{{eval:a*q+b}}}{{{eval:q*d}}}}$$",
+					"Lina a lu $\\frac{{{eval:a*q+b}}}{{{eval:q*d}}}$ du roman pendant le week-end.",
+					"C'est moins que le roman entier, $\\frac{{{eval:q*d}}}{{{eval:q*d}}}$ : il lui reste des pages à lire, c'est vraisemblable."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "tout : 4 503 120 + 12 786 400 = 17 289 520",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4503120",
+				"b": "12786400"
+			},
+			"answers": ["17\\,289\\,520"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : tout, soustraction (8 283 280)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4503120",
+				"b": "12786400"
+			},
+			"answers": ["8\\,283\\,280"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : tout, retenue des millions oubliée (16 289 520)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4503120",
+				"b": "12786400"
+			},
+			"answers": ["16\\,289\\,520"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Forme : sans les espaces",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4503120",
+				"b": "12786400"
+			},
+			"answers": ["17289520"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["spaces"]
+			}
+		},
+		{
+			"description": "partie : 3,275 − 1,482 = 1,793 kg",
+			"variationIndex": 1,
+			"variables": {
+				"T": "3275",
+				"a": "1482"
+			},
+			"answers": ["1,793"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : partie, les deux ajoutés (4,757)",
+			"variationIndex": 1,
+			"variables": {
+				"T": "3275",
+				"a": "1482"
+			},
+			"answers": ["4,757"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : partie, le petit chiffre ôté du grand (2,213)",
+			"variationIndex": 1,
+			"variables": {
+				"T": "3275",
+				"a": "1482"
+			},
+			"answers": ["2,213"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Forme : 1793/1000",
+			"variationIndex": 1,
+			"variables": {
+				"T": "3275",
+				"a": "1482"
+			},
+			"answers": ["\\frac{1793}{1000}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "départ : 23,45 + 17,80 = 41,25 €",
+			"variationIndex": 2,
+			"variables": {
+				"aE": "23",
+				"aC": "45",
+				"a": "2345",
+				"bE": "17",
+				"bC": "80",
+				"b": "1780"
+			},
+			"answers": ["41,25"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : départ, « il reste » lu soustraction (5,65 €)",
+			"variationIndex": 2,
+			"variables": {
+				"aE": "23",
+				"aC": "45",
+				"a": "2345",
+				"bE": "17",
+				"bC": "80",
+				"b": "1780"
+			},
+			"answers": ["5,65"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : départ, retenue des centimes oubliée (40,25 €)",
+			"variationIndex": 2,
+			"variables": {
+				"aE": "23",
+				"aC": "45",
+				"a": "2345",
+				"bE": "17",
+				"bC": "80",
+				"b": "1780"
+			},
+			"answers": ["40,25"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "fractions : 1/4 + 3/8 = 5/8",
+			"variationIndex": 3,
+			"variables": {
+				"d": "4",
+				"q": "2",
+				"a": "1",
+				"b": "3"
+			},
+			"answers": ["\\frac{5}{8}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : fractions, numérateurs et dénominateurs ajoutés (4/12)",
+			"variationIndex": 3,
+			"variables": {
+				"d": "4",
+				"q": "2",
+				"a": "1",
+				"b": "3"
+			},
+			"answers": ["\\frac{4}{12}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : fractions, 1/4 lu 1/8 (4/8)",
+			"variationIndex": 3,
+			"variables": {
+				"d": "4",
+				"q": "2",
+				"a": "1",
+				"b": "3"
+			},
+			"answers": ["\\frac{4}{8}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "fractions : 1/6 + 5/18 = 8/18",
+			"variationIndex": 3,
+			"variables": {
+				"d": "6",
+				"q": "3",
+				"a": "1",
+				"b": "5"
+			},
+			"answers": ["\\frac{8}{18}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "fractions : 4/9, fraction égale à 8/18",
+			"variationIndex": 3,
+			"variables": {
+				"d": "6",
+				"q": "3",
+				"a": "1",
+				"b": "5"
+			},
+			"answers": ["\\frac{4}{9}"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

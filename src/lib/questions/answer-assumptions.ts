@@ -4,7 +4,7 @@
  *
  * `options.answerAssumptions` : { x: 'positive', n: 'natural' }. Déclarées
  * pour le modèle entier, explicites seulement, transmises telles quelles à
- * `areEquivalent` (`$lib/math`) par la correction.
+ * `areEquivalent` (`#lib/math/index.ts`) par la correction.
  *
  * Ce module porte ce que mathAST ne vérifie pas : le vocabulaire fermé, le
  * nom de variable admis, la limite de 10, et l'interdiction de viser une
@@ -15,7 +15,7 @@
  */
 
 import { z } from 'zod';
-import type { AnswerAssumptionKind, AnswerAssumptions } from '$lib/math';
+import type { AnswerAssumptionKind, AnswerAssumptions } from '#lib/math/index.ts';
 
 // ============================================================================
 // Types
@@ -261,11 +261,11 @@ export function formatAnswerAssumptions(assumptions: AnswerAssumptions | undefin
 }
 
 /**
- * Catégorie « Suites » (thème ou domaine) : l'éditeur y PROPOSE « n ∈ ℕ ».
+ * Rangement « Suites » (branche ou notion de l'arbre) : l'éditeur y PROPOSE « n ∈ ℕ ».
  * Jamais appliqué d'office (ADR 0012 : hypothèses explicites seulement).
  */
-export function isSequenceCategory(theme: string, domain: string): boolean {
-	return [theme, domain].some((label) => /^suites?\b/i.test(label.trim()));
+export function isSequenceCategory(branch: string, notion: string): boolean {
+	return [branch, notion].some((label) => /^suites?\b/i.test(label.trim()));
 }
 
 /** Lignes de l'éditeur à partir des hypothèses enregistrées (hypothèses inconnues écartées). */

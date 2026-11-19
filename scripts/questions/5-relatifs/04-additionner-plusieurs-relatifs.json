@@ -1,10 +1,8 @@
 {
+	"id": "b92b4b51-5ad2-45d9-bd32-a83547f7cc6c",
 	"title": "Additionner plusieurs nombres relatifs",
 	"description": "Additionner trois ou quatre entiers relatifs en regroupant les positifs, les négatifs et les opposés : (−7) + 4 + (−2) ; (−7) + 4 + 7 + (−2)",
 	"grades": ["5"],
-	"theme": "Relatifs",
-	"domain": "Additionner et soustraire",
-	"subdomain": "Sommes de plusieurs nombres",
 	"level": 1,
 	"delay": 45,
 	"status": "draft",

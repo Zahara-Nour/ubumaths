@@ -1,10 +1,8 @@
 {
+	"id": "faf57d3b-a954-4a3e-bd80-5ce4f5ee908c",
 	"title": "Multiples et diviseurs",
 	"description": "Dire si un nombre est un multiple d'un autre (84 et 7), si un nombre en divise un autre (9 et 72), trouver un diviseur parmi quatre nombres ; tables jusqu'à 10, nombres ≤ 100",
 	"grades": ["5"],
-	"theme": "Entiers",
-	"domain": "Diviser",
-	"subdomain": "Multiples et diviseurs",
 	"level": 1,
 	"delay": 30,
 	"status": "draft",

@@ -1,10 +1,8 @@
 {
+	"id": "a1b46489-4566-449e-a4e9-e1e144a0b11d",
 	"title": "Comparer deux nombres décimaux",
 	"description": "Comparer deux décimaux (pièges : 3,9 et 3,12 ; 2,5 et 2,50 ; 3,4 et 3,04 ; millièmes) ; signe large ⩽",
 	"grades": ["6"],
-	"theme": "Décimaux",
-	"domain": "Apprivoiser",
-	"subdomain": "Comparer",
 	"level": 3,
 	"delay": 20,
 	"status": "draft",

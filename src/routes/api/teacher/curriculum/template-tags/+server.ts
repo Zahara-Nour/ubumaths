@@ -13,12 +13,14 @@
  * Teacher/admin only (la RLS applique `is_teacher_or_admin()`).
  */
 
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRoles } from '$lib/server/middleware/auth';
-import { templateTagSchema, templateTagListQuerySchema } from '$lib/server/validation/curriculum';
-import { curriculumDbError } from '$lib/server/curriculum';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import {
+	templateTagSchema,
+	templateTagListQuerySchema
+} from '#lib/server/validation/curriculum.ts';
+import { curriculumDbError } from '#lib/server/curriculum.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/teacher/curriculum/template-tags/+server');
 
@@ -29,7 +31,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		template_id: url.searchParams.get('template_id')
 	});
 	if (!parsed.success) {
-		return json({ error: parsed.error.issues[0].message }, { status: 400 });
+		return Response.json({ error: parsed.error.issues[0].message }, { status: 400 });
 	}
 
 	const { data, error: dbErr } = await locals.supabase
@@ -39,10 +41,10 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 	if (dbErr) {
 		logger.error('[curriculum] template-tags GET failed:', dbErr);
-		return json({ error: 'Échec du chargement des tags' }, { status: 500 });
+		return Response.json({ error: 'Échec du chargement des tags' }, { status: 500 });
 	}
 
-	return json({ tags: data ?? [] });
+	return Response.json({ tags: data ?? [] });
 };
 
 export const POST: RequestHandler = async ({ request, locals }) => {
@@ -52,12 +54,12 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	try {
 		body = await request.json();
 	} catch {
-		return json({ error: 'Corps JSON invalide' }, { status: 400 });
+		return Response.json({ error: 'Corps JSON invalide' }, { status: 400 });
 	}
 
 	const parsed = templateTagSchema.safeParse(body);
 	if (!parsed.success) {
-		return json({ error: parsed.error.issues[0].message }, { status: 400 });
+		return Response.json({ error: parsed.error.issues[0].message }, { status: 400 });
 	}
 
 	const { error: dbErr } = await locals.supabase
@@ -68,15 +70,15 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		// 23505 = déjà tagué. Le prof a recoché une case déjà cochée : ce n'est
 		// pas une erreur, c'est le résultat qu'il demande.
 		if (dbErr.code === '23505') {
-			return json({ success: true, alreadyTagged: true });
+			return Response.json({ success: true, alreadyTagged: true });
 		}
 		const mapped = curriculumDbError(dbErr);
 		if (mapped) return mapped;
 		logger.error('[curriculum] template-tags POST failed:', dbErr);
-		return json({ error: dbErr.message }, { status: 500 });
+		return Response.json({ error: dbErr.message }, { status: 500 });
 	}
 
-	return json({ success: true }, { status: 201 });
+	return Response.json({ success: true }, { status: 201 });
 };
 
 export const DELETE: RequestHandler = async ({ url, locals }) => {
@@ -87,7 +89,7 @@ export const DELETE: RequestHandler = async ({ url, locals }) => {
 		point_id: url.searchParams.get('point_id')
 	});
 	if (!parsed.success) {
-		return json({ error: 'template_id et point_id requis (UUID)' }, { status: 400 });
+		return Response.json({ error: 'template_id et point_id requis (UUID)' }, { status: 400 });
 	}
 
 	// `.select()` : un refus RLS rend zéro ligne sans erreur, il ne doit pas passer pour un succès.
@@ -102,11 +104,11 @@ export const DELETE: RequestHandler = async ({ url, locals }) => {
 		const mapped = curriculumDbError(dbErr);
 		if (mapped) return mapped;
 		logger.error('[curriculum] template-tags DELETE failed:', dbErr);
-		return json({ error: dbErr.message }, { status: 500 });
+		return Response.json({ error: dbErr.message }, { status: 500 });
 	}
 	if (!deleted || deleted.length === 0) {
-		return json({ error: 'Tag introuvable ou non modifiable' }, { status: 404 });
+		return Response.json({ error: 'Tag introuvable ou non modifiable' }, { status: 404 });
 	}
 
-	return json({ success: true });
+	return Response.json({ success: true });
 };

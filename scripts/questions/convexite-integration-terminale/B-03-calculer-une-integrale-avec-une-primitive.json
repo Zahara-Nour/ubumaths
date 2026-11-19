@@ -1,10 +1,8 @@
 {
+	"id": "b52c53d8-df28-48a3-b494-56fb1cd72009",
 	"title": "Calculer une intégrale à l'aide d'une primitive",
 	"description": "∫ₐᵇ f(x) dx = F(b) − F(a) en valeur exacte : polynôme, eᵃˣ, a/x, u′/u, 2uu′ (pièges : F(a) − F(b), F(a) oublié)",
 	"grades": ["T_SPE", "T_COMP"],
-	"theme": "Intégration",
-	"domain": "Calcul intégral",
-	"subdomain": "Calcul par une primitive",
 	"level": 2,
 	"status": "draft",
 	"delay": 60,

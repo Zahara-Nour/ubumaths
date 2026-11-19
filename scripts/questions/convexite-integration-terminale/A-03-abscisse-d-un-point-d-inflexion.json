@@ -1,10 +1,8 @@
 {
+	"id": "08f9ad7b-7885-474f-b0a1-630a8847140e",
 	"title": "Abscisse d'un point d'inflexion",
 	"description": "f″ s'annule EN CHANGEANT DE SIGNE (piège : racine double de f″, sans changement de signe)",
 	"grades": ["T_SPE", "T_COMP"],
-	"theme": "Fonctions convexes",
-	"domain": "Convexité",
-	"subdomain": "Point d'inflexion",
 	"level": 2,
 	"status": "draft",
 	"delay": 60,

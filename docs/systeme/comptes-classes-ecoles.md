@@ -7,11 +7,12 @@ couvre:
   - 'src/routes/(protected)/dashboard/admin/{classes,schools,users,import-students,settings,backup}/**'
   - 'src/routes/(protected)/dashboard/teacher/{classes,students,welcome-email,settings}/**'
   - 'src/routes/(protected)/dashboard/profile/**'
-  - 'src/lib/server/{students,staff-directory}.ts'
+  - 'src/lib/server/{students,staff-directory,school-year-errors}.ts'
   - 'src/lib/server/validation/{classes,schools,school-config,admin,backup}.ts'
   - 'src/lib/components/admin/**'
   - 'src/lib/server/admin/**'
   - src/lib/email-templates/welcome.ts
+  - src/lib/utils/welcome-email-state.ts
   - 'src/lib/utils/{age-declaration,timezones}.ts'
   - src/lib/components/AgeQuestionDialog.svelte
   - src/lib/components/MyPasswordInput.svelte
@@ -37,6 +38,8 @@ couvre:
 > [jeux-et-economie.md](jeux-et-economie.md) ; `api/admin/anti-fraud`,
 > `api/teacher/classes/[classId]/anti-fraud` → [srs.md](srs.md) ;
 > `api/teacher/classes/[classId]/analytics` et la page `analytics` → [analytique-prof.md](analytique-prof.md) ;
+> la page `classes/[classId]/carnet` et le bouton « Carnet de liaison » de la liste des classes →
+> [carnet-de-liaison.md](carnet-de-liaison.md) ;
 > `api/admin/elevate`, `api/admin/users/[id]/status`, `api/admin/users/[id]/password` → [auth.md](auth.md) ;
 > `dashboard/teacher/settings/google` → [outils-prof.md](outils-prof.md) ; `api/admin/health-stats`
 > et les widgets admin → [tableaux-de-bord-et-navigation.md](tableaux-de-bord-et-navigation.md).
@@ -85,13 +88,18 @@ de 2nde de répondre une fois à la question d'âge.
 - Organisation d'une école (années, trimestres, vacances, grille horaire, duplication d'une année) :
   `src/routes/(protected)/dashboard/admin/schools/[schoolId]/organisation/+page.server.ts`. Les
   schémas viennent de `src/lib/server/validation/academic.ts`, décrit dans
-  [cours-et-chapitres.md](cours-et-chapitres.md).
+  [cours-et-chapitres.md](cours-et-chapitres.md). Un doublon refusé par la base (nom déjà pris,
+  `unique_school_year` ; autre année déjà active, `idx_one_active_year_per_school`) rend un 409 au
+  message clair, via `schoolYearConflictMessage` (`src/lib/server/school-year-errors.ts`), dans
+  les actions qui créent, modifient ou dupliquent une année.
 
 ### Admin : classes
 
 - Page `src/routes/(protected)/dashboard/admin/classes/+page.server.ts` : actions `create`,
   `update`, `deactivate`, `activate`. Le code d'inscription est saisi ou tiré par la fonction SQL
-  `generate_join_code`.
+  `generate_join_code`. À la création, la classe prend l'**année active de son école**
+  (`school_year_id`) ; une école sans année active donne une classe sans année et un avertissement
+  à l'admin, une classe sans école reste sans année. `update` ne touche pas à l'année.
 - **Composer une classe** pour une nouvelle année : page
   `src/routes/(protected)/dashboard/admin/classes/composer/+page.server.ts` (destinations = classes
   actives d'une année non terminée), candidats lus par
@@ -167,7 +175,18 @@ de 2nde de répondre une fois à la question d'âge.
   (aperçu), envoi par `src/routes/api/teacher/send-welcome-email/+server.ts` via Brevo
   (`sendWelcomeEmail` dans `src/lib/server/email/brevo.ts`). Texte unique :
   `src/lib/email-templates/welcome.ts`. Chaque envoi est noté dans `welcome_emails_sent`.
-- Journal d'un élève : `src/routes/(protected)/dashboard/teacher/students/[studentId]/journal/+page.server.ts`.
+  **Enfant inscrit par son parent** (adresse fictive du domaine `CHILD_ACCOUNT_DOMAIN`) : jamais de
+  courriel de bienvenue. Dans la liste des classes, `welcomeEmailState`
+  (`src/lib/utils/welcome-email-state.ts`) affiche son identifiant et un bouton « Lien au parent »
+  vers `dashboard/teacher/consent` ; la page d'aperçu redirige (303) vers cette même page.
+  L'en-tête de « Mes classes » porte aussi un lien « Consentements parentaux », seul accès à cette
+  page depuis l'interface.
+- **Suivi d'un élève** : `src/routes/(protected)/dashboard/teacher/students/[studentId]/` — dans la liste
+  des classes, le nom de l'élève (en classe et « Non assignés ») y mène, comme le nom dans la grille A de
+  l'analytique ; voir
+  [analytique-prof.md](analytique-prof.md#suivi-dun-élève-page-à-part).
+- Journal d'un élève (récompenses) : `src/routes/(protected)/dashboard/teacher/students/[studentId]/journal/+page.server.ts`,
+  ouvert par l'icône à côté du nom ou depuis le suivi (`?depuis=suivi`, retour vers le suivi).
 - Chatterie d'un élève (lecture seule) : `src/routes/(protected)/dashboard/teacher/students/[studentId]/chatterie/`,
   même garde que le journal (`verifyTeacherStudentWithRole`) ; voir [mathoux.md](mathoux.md#vue-du-professeur).
 
@@ -181,7 +200,8 @@ de 2nde de répondre une fois à la question d'âge.
 - **Annuaire du personnel** : `src/lib/server/staff-directory.ts` (`fetchStaffDirectory`,
   `soleTeacher`, `indexStaffById`), sur la fonction SQL `get_staff_directory`. C'est ainsi qu'un
   élève lit le nom et l'avatar du prof.
-- Page « Mon profil » : `src/routes/(protected)/dashboard/profile/+page.svelte` (préférences,
+- Page « Mon profil » : `src/routes/(protected)/dashboard/profile/+page.svelte` (pour un élève, la
+  boutique d'avatars, voir [jeux-et-economie.md](jeux-et-economie.md) ; préférences,
   « Changer mon mot de passe » → `/auth/update-password?depuis=profil`, export des données,
   suppression du compte, déconnexion). Pour un enfant inscrit par son parent, elle affiche
   « Identifiant : noelie042 » au lieu de l'adresse fictive (`childLoginIdOf`).
@@ -201,7 +221,7 @@ de 2nde de répondre une fois à la question d'âge.
   (`locals.adminSupabase`) si l'élévation est active, sinon le client de l'admin connecté, sinon 403.
 - **Prof ou admin** (`requireRoles`) : approbation des comptes, liste des comptes en attente,
   avertissements, journal d'un élève. **Prof seul** (`requireRole(locals, 'teacher')`) : courriel de
-  bienvenue, codes d'inscription, `api/classes`.
+  bienvenue, codes d'inscription, `api/classes`, suivi d'un élève.
 - `verifyTeacherStudent` (`src/lib/server/middleware/student-access.ts`) vérifie seulement que
   l'appelant est prof ou admin et que la cible est un élève : la classe n'est pas une frontière.
 

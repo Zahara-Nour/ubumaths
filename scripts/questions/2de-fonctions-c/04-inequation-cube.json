@@ -1,10 +1,8 @@
 {
+	"id": "811f6004-df26-437a-976d-3ac11eec62be",
 	"title": "Résoudre x³ < k",
 	"description": "Inéquation x³ < k (cubes parfaits) par la croissance de la fonction cube : k entier ou fraction, positif ou négatif, les quatre sens (pièges : k au lieu de sa racine cubique, sens changé, partie négative oubliée, crochets)",
 	"grades": ["2"],
-	"theme": "Fonctions",
-	"domain": "Fonction cube",
-	"subdomain": "Résolution algébrique",
 	"level": 2,
 	"delay": 90,
 	"status": "draft",

@@ -39,9 +39,12 @@ import type {
 	VariationTableParseResult,
 	TableRow,
 	LimitValue,
-	LimitSide
+	LimitSide,
+	HiddenCell,
+	HiddenCellKind
 } from '../types/variation-table';
 import { specialBlockEnd } from './unclosed-block';
+import { unnestedLine } from './nested-line';
 
 /** Les clés du bloc : une ligne qui commence par l'une d'elles n'est jamais du texte (Q66) */
 const BLOCK_KEYS = [
@@ -54,7 +57,8 @@ const BLOCK_KEYS = [
 	'limit-top',
 	'limit-bottom',
 	'asymptote',
-	'forbidden'
+	'forbidden',
+	'case'
 ];
 
 // ============================================================================
@@ -78,7 +82,7 @@ const VARIABLE_REGEX = /^\s*variable\s*:\s*(.+?)\s*$/;
 
 /**
  * Regex to parse domain line with potential bounds
- * Supports: domain: -inf, 0, +inf OR domain: ]-inf, 0[, ]0, +inf[
+ * Supports: domain: -inf, 0, +inf OR domain: ]-inf, 0[, ]0, +inf[ OR domain: ]0, [2, [+inf[
  */
 const DOMAIN_REGEX = /^\s*domain\s*:\s*(.+?)\s*$/;
 
@@ -110,6 +114,51 @@ const SIGN_SYMBOL_MAP: Record<string, SignValue> = {
 	'|h|': { type: 'marker', marker: 'forbidden' },
 	d: { type: 'marker', marker: 'discontinuity' }
 };
+
+/** `case: N` : numéro de la case de la question, posé par le générateur de questions */
+const CASE_LINE_REGEX = /^\s*case\s*:\s*(.*?)\s*$/;
+const CASE_INDEX_REGEX = /^\d{1,3}$/;
+
+/** Valeur de x d'un tableau d'évaluation : jeton de rang `??1`, `??2`… */
+const MASK_TOKEN_REGEX = /^\?\d{1,3}$/;
+/** Le même jeton écrit en clé d'une ligne (`??1: 0, bottom`) */
+const MASKED_KEY_REGEX = /^\?\?\d{1,3}$/;
+
+/** Les infinis ne se cachent pas : ce ne sont pas des valeurs à calculer */
+const INFINITY_EXPRESSIONS = [
+	'-inf',
+	'+inf',
+	'inf',
+	'-∞',
+	'+∞',
+	'∞',
+	'-\\infty',
+	'+\\infty',
+	'\\infty'
+];
+
+/** Mot d'une flèche cachée dans une ligne `variation:` (`-2,2: ?flèche`) */
+const ARROW_WORDS = ['flèche', 'fleche'];
+
+/** Marques d'une ligne `variation:` (asymptote, valeur interdite, discontinuité) */
+const VARIATION_MARKERS = ['||', '|h|', 'd'];
+
+/**
+ * Déclare un refus lié à un `?` : erreur située, en français. Le bloc entier est
+ * alors invalide (nœud nul) plutôt que rendu avec une case en moins.
+ */
+type Refuse = (line: number, content: string, message: string) => void;
+
+/** Case cachée lue dans une ligne, validée une fois le domaine connu */
+interface PendingCell {
+	key: string;
+	kind: HiddenCellKind;
+	answer: string;
+	line: number;
+	content: string;
+	/** Flèche dont la réponse se lit sur les positions de la ligne (`?flèche`) */
+	derive?: boolean;
+}
 
 /**
  * Valid positions for variation values
@@ -173,7 +222,7 @@ export function isBlockEnd(line: string): boolean {
  * @param expr - Expression to parse (may include [ ] bounds)
  * @returns DomainPoint with expression and open status
  */
-function parseDomainPoint(expr: string): DomainPoint {
+function parseDomainPoint(expr: string, refuse: Refuse, line: number): DomainPoint {
 	let expression = expr.trim();
 	let open = false;
 
@@ -193,7 +242,63 @@ function parseDomainPoint(expr: string): DomainPoint {
 		expression = expression.slice(0, -1).trim();
 	}
 
-	return { expression, open: open || undefined };
+	const point: DomainPoint = open ? { expression, open: true } : { expression };
+
+	// `?` devant la valeur : case à compléter
+	if (expression.startsWith('?')) {
+		const rest = expression.slice(1).trim();
+		if (rest.startsWith('?')) {
+			// Jeton de masquage `??1` : l'expression est inconnue
+			if (MASK_TOKEN_REGEX.test(rest)) {
+				point.expression = `?${rest}`;
+				point.hidden = true;
+			} else {
+				refuse(line, expr, `jeton de masquage « ?${rest} » invalide : attendu ??1, ??2…`);
+			}
+		} else if (rest === '') {
+			refuse(line, expr, 'le ? doit précéder une valeur de x (par exemple ?-3)');
+		} else if (INFINITY_EXPRESSIONS.includes(rest)) {
+			refuse(
+				line,
+				expr,
+				`on ne peut pas cacher ${rest} : un infini n'est pas une valeur à calculer`
+			);
+		} else {
+			point.expression = rest;
+			point.hidden = true;
+		}
+	}
+
+	return point;
+}
+
+/** Le segment se termine par un crochet de borne (`0[`, `4]`). */
+function endsWithBracket(segment: string): boolean {
+	return segment.endsWith('[') || segment.endsWith(']');
+}
+
+/** Le segment commence par un crochet de borne (`]0`, `[0`). */
+function startsWithBracket(segment: string): boolean {
+	return segment.startsWith('[') || segment.startsWith(']');
+}
+
+/** Coupe aux virgules hors parenthèses et accolades (`f(1,2)`, `{{eval:min(a,b)}}`). */
+function splitTopLevelCommas(content: string): string[] {
+	const parts: string[] = [];
+	let depth = 0;
+	let current = '';
+	for (const char of content) {
+		if (char === '(' || char === '{') depth++;
+		else if ((char === ')' || char === '}') && depth > 0) depth--;
+		if (char === ',' && depth === 0) {
+			parts.push(current);
+			current = '';
+		} else {
+			current += char;
+		}
+	}
+	parts.push(current);
+	return parts;
 }
 
 /**
@@ -206,25 +311,39 @@ function parseDomainPoint(expr: string): DomainPoint {
  * @param content - Domain content after "domain:"
  * @returns Array of DomainPoint
  */
-function parseDomainContent(content: string): DomainPoint[] {
+function parseDomainContent(content: string, refuse: Refuse, line: number): DomainPoint[] {
 	const points: DomainPoint[] = [];
 
-	// Try to detect bound-style notation (contains [ or ])
+	// Notation à crochets : un crochet par point (`]0, [2, [+inf[`) ou réunion
+	// d'intervalles (`]-inf, 0[, ]0, +inf[`). Coupure à chaque virgule hors
+	// parenthèses et accolades ; un point commun à deux intervalles (`0[, ]0`)
+	// n'est gardé qu'une fois, ouvert s'il est exclu des deux.
 	if (content.includes('[') || content.includes(']')) {
-		// Split by comma but be careful with bounds notation
-		// The pattern ], [ indicates a boundary between intervals
-		const segments = content.split(/,\s*(?=[[\]])/);
+		const segments = splitTopLevelCommas(content)
+			.map((segment) => segment.trim())
+			.filter((segment) => segment !== '');
 
-		for (const segment of segments) {
-			const trimmed = segment.trim();
-			if (!trimmed) continue;
+		for (let i = 0; i < segments.length; i++) {
+			const point = parseDomainPoint(segments[i], refuse, line);
+			if (!point.expression) continue;
 
-			// Each segment may contain bounds at start/end
-			// e.g., ]-inf or 0[ or ]0
-			const point = parseDomainPoint(trimmed);
-			if (point.expression) {
-				points.push(point);
+			const next = segments[i + 1];
+			if (next && endsWithBracket(segments[i]) && startsWithBracket(next)) {
+				// Lecture muette : le segment suivant, s'il n'est pas fusionné, est lu
+				// (et ses erreurs signalées) au tour suivant
+				const nextPoint = parseDomainPoint(next, () => {}, line);
+				if (nextPoint.expression === point.expression) {
+					// Exclu à gauche (`0[`) ET à droite (`]0`) : ouvert ; sinon dans le domaine
+					const open = segments[i].endsWith('[') && next.startsWith(']');
+					const merged: DomainPoint = { ...point, ...nextPoint };
+					if (open) merged.open = true;
+					else delete merged.open;
+					points.push(merged);
+					i++;
+					continue;
+				}
 			}
+			points.push(point);
 		}
 	} else {
 		// Simple comma-separated format
@@ -232,7 +351,7 @@ function parseDomainContent(content: string): DomainPoint[] {
 		for (const part of parts) {
 			const trimmed = part.trim();
 			if (trimmed) {
-				points.push({ expression: trimmed });
+				points.push(parseDomainPoint(trimmed, refuse, line));
 			}
 		}
 	}
@@ -464,19 +583,70 @@ function parseVariationEntry(key: string, value: string): [string, VariationValu
 // ============================================================================
 
 /**
+ * Lit la valeur d'une cellule cachée (`?-`, `?z`, `?||`, `?rien`, `?`).
+ *
+ * @returns la valeur à ranger dans `values` (absente pour `rien` et `?`) et la
+ *          réponse attendue ; null si refusée (le refus est déjà déclaré)
+ */
+function parseHiddenSignValue(
+	rest: string,
+	isInterval: boolean,
+	refuse: (message: string) => void
+): { value?: SignValue; kind: HiddenCellKind; answer: string } | null {
+	const kind: HiddenCellKind = isInterval ? 'signe' : 'marque';
+
+	if (rest === '') return { kind, answer: '' };
+
+	if (rest === '+' || rest === '-') {
+		if (!isInterval) {
+			refuse(`un signe ne se cache que sur un intervalle, pas sur un point (?${rest})`);
+			return null;
+		}
+		return { value: { type: 'sign', value: rest }, kind, answer: rest };
+	}
+
+	if (rest === '|h|' || rest === 'd') {
+		refuse(`on ne peut pas cacher la marque « ${rest} » : seuls ?z, ?||, ?rien se cachent`);
+		return null;
+	}
+
+	if (rest === 'z' || rest === '0' || rest === '||' || rest === 'rien') {
+		if (isInterval) {
+			refuse(`une marque ne se cache que sur un point, pas sur un intervalle (?${rest})`);
+			return null;
+		}
+		if (rest === 'rien') return { kind, answer: 'rien' };
+		if (rest === '||') {
+			return { value: { type: 'marker', marker: 'asymptote' }, kind, answer: '||' };
+		}
+		return { value: { type: 'marker', marker: 'zero' }, kind, answer: 'z' };
+	}
+
+	refuse(`valeur cachée inconnue : « ?${rest} ». Attendu ?+, ?-, ?z, ?||, ?rien ou ?`);
+	return null;
+}
+
+/**
  * Parse entries for a sign row
  *
  * @param lines - Lines of entries (indented with 2+ spaces)
  * @param startLine - Line number for error reporting
  * @param errors - Error array to append to
- * @returns Map of key -> SignValue
+ * @param refuse - Déclare un refus lié à un `?`
+ * @returns les valeurs (key -> SignValue) et les cases cachées à valider
  */
 function parseSignRowEntries(
 	lines: string[],
 	startLine: number,
-	errors: VariationTableParseError[]
-): Map<string, SignValue> {
+	errors: VariationTableParseError[],
+	refuse: Refuse
+): { values: Map<string, SignValue>; hidden: PendingCell[] } {
 	const values = new Map<string, SignValue>();
+	const hidden = new Map<string, PendingCell>();
+	// Clés déjà écrites : une cellule cachée ne s'écrit qu'une fois
+	const written = new Set<string>();
+	const twiceMessage = (key: string) =>
+		`la cellule « ${key} » est écrite deux fois, l’une cachée : n’en garder qu’une`;
 
 	for (let i = 0; i < lines.length; i++) {
 		const match = lines[i].match(ROW_ENTRY_REGEX);
@@ -490,21 +660,57 @@ function parseSignRowEntries(
 		}
 
 		const [, key, value] = match;
-		const parsed = parseSignEntry(key, value);
+		const lineNumber = startLine + i;
 
-		if (!parsed) {
-			errors.push({
-				message: `Unknown sign value: "${value}". Expected +, -, z, ||, |h|, or d`,
-				line: startLine + i,
+		if (value.trim().startsWith('?')) {
+			const normalizedKey = key
+				.split(',')
+				.map((p) => p.trim())
+				.join(',');
+			const read = parseHiddenSignValue(
+				value.trim().slice(1).trim(),
+				normalizedKey.includes(','),
+				(m) => refuse(lineNumber, lines[i], m)
+			);
+			if (!read) continue;
+			// Écrite aussi en clair : le texte envoyé en évaluation garderait la réponse
+			if (written.has(normalizedKey)) {
+				refuse(lineNumber, lines[i], twiceMessage(normalizedKey));
+				continue;
+			}
+			written.add(normalizedKey);
+			if (read.value) values.set(normalizedKey, read.value);
+			else values.delete(normalizedKey);
+			hidden.set(normalizedKey, {
+				key: normalizedKey,
+				kind: read.kind,
+				answer: read.answer,
+				line: lineNumber,
 				content: lines[i]
 			});
 			continue;
 		}
 
+		const parsed = parseSignEntry(key, value);
+
+		if (!parsed) {
+			errors.push({
+				message: `Unknown sign value: "${value}". Expected +, -, z, ||, |h|, or d`,
+				line: lineNumber,
+				content: lines[i]
+			});
+			continue;
+		}
+
+		if (hidden.has(parsed[0])) {
+			refuse(lineNumber, lines[i], twiceMessage(parsed[0]));
+			continue;
+		}
+		written.add(parsed[0]);
 		values.set(parsed[0], parsed[1]);
 	}
 
-	return values;
+	return { values, hidden: [...hidden.values()] };
 }
 
 /**
@@ -518,11 +724,74 @@ function parseSignRowEntries(
 function parseVariationRowEntries(
 	lines: string[],
 	startLine: number,
-	errors: VariationTableParseError[]
-): Map<string, VariationValue> {
+	errors: VariationTableParseError[],
+	refuse: Refuse
+): { values: Map<string, VariationValue>; hidden: PendingCell[] } {
 	const values = new Map<string, VariationValue>();
+	const hidden: PendingCell[] = [];
+	// Clés écrites : une cellule cachée ne s'écrit qu'une fois (sinon elle partirait en clair)
+	const written = new Set<string>();
+	const hiddenKeys = new Set<string>();
 
 	for (let i = 0; i < lines.length; i++) {
+		// `?` en tête de valeur = cellule cachée ; ailleurs, simple texte. Une clé `??1`
+		// est une valeur de x masquée (énoncé d'évaluation), pas une cellule
+		const entry = lines[i].match(ROW_ENTRY_REGEX);
+		const entryKey = entry?.[1].trim() ?? '';
+		const maskedKey = MASKED_KEY_REGEX.test(entryKey);
+		const lineNumber = startLine + i;
+		if (entry && entryKey.startsWith('?') && !maskedKey) {
+			refuse(
+				lineNumber,
+				lines[i],
+				'on ne peut pas cacher une clé de ligne variation: (écrire le ? devant la valeur : -2: ?4, top)'
+			);
+			continue;
+		}
+		if (entry) {
+			const key = entryKey
+				.split(',')
+				.map((p) => p.trim())
+				.join(',');
+			const value = entry[2].trim();
+			if (value.startsWith('?')) {
+				const read = readHiddenVariationCell(key, value.slice(1).trim(), (m) =>
+					refuse(lineNumber, lines[i], m)
+				);
+				if (!read) continue;
+				if (written.has(key)) {
+					refuse(lineNumber, lines[i], hiddenTwiceMessage(key));
+					continue;
+				}
+				written.add(key);
+				hiddenKeys.add(key);
+				if (read.value) values.set(key, read.value);
+				hidden.push({
+					key,
+					kind: read.kind,
+					answer: read.answer,
+					line: lineNumber,
+					content: lines[i],
+					...(read.derive ? { derive: true } : {})
+				});
+				continue;
+			}
+			// Limite d'une asymptote cachée (`||, ?-inf, +inf`) : pas une case
+			const parts = value.split(',').map((p) => p.trim());
+			if (VARIATION_MARKERS.includes(parts[0]) && parts.slice(1).some((p) => p.startsWith('?'))) {
+				refuse(
+					lineNumber,
+					lines[i],
+					`on ne peut pas cacher une limite autour de « ${parts[0]} » : seules une valeur (?4, top) et une flèche (?flèche) se cachent`
+				);
+				continue;
+			}
+			if (hiddenKeys.has(key)) {
+				refuse(lineNumber, lines[i], hiddenTwiceMessage(key));
+				continue;
+			}
+			written.add(key);
+		}
 		const match = lines[i].match(ROW_ENTRY_REGEX);
 		if (!match) {
 			errors.push({
@@ -548,7 +817,166 @@ function parseVariationRowEntries(
 		values.set(parsed[0], parsed[1]);
 	}
 
-	return values;
+	return { values, hidden };
+}
+
+/** Une cellule écrite deux fois, l'une cachée */
+const hiddenTwiceMessage = (key: string) =>
+	`la cellule « ${key} » est écrite deux fois, l’une cachée : n’en garder qu’une`;
+
+/**
+ * Lit une cellule cachée d'une ligne `variation:` (`rest` = ce qui suit le `?`) :
+ * - sur un intervalle : `flèche` (réponse déduite des positions, `derive`) ou rien
+ *   (énoncé d'évaluation, réponse inconnue) ;
+ * - sur un point : `valeur, position` (ou `, position` en évaluation).
+ *
+ * @returns null si refusée (le refus est déjà déclaré)
+ */
+function readHiddenVariationCell(
+	key: string,
+	rest: string,
+	refuse: (message: string) => void
+): { value?: VariationValue; kind: HiddenCellKind; answer: string; derive?: boolean } | null {
+	const isArrowWord = ARROW_WORDS.includes(rest);
+	if (key.includes(',')) {
+		if (rest === '') return { kind: 'fleche', answer: '' };
+		if (isArrowWord) return { kind: 'fleche', answer: '', derive: true };
+		refuse(`sur un intervalle, seule la flèche se cache : écrire ?flèche (et non « ?${rest} »)`);
+		return null;
+	}
+	if (isArrowWord) {
+		refuse(`une flèche se cache sur un intervalle (-2,2: ?flèche), pas sur un point (${key})`);
+		return null;
+	}
+	const parts = rest.split(',').map((p) => p.trim());
+	if (VARIATION_MARKERS.includes(parts[0])) {
+		refuse(
+			`on ne peut pas cacher « ${parts[0]} » : seules une valeur (?4, top) et une flèche (?flèche) se cachent`
+		);
+		return null;
+	}
+	const position = parts.length === 2 ? parsePosition(parts[1]) : null;
+	if (position === null) {
+		refuse(`valeur cachée : attendu ?valeur, position (par exemple ?4, top), et non « ?${rest} »`);
+		return null;
+	}
+	if (INFINITY_EXPRESSIONS.includes(parts[0])) {
+		refuse(`on ne peut pas cacher ${parts[0]} : un infini n'est pas une valeur à calculer`);
+		return null;
+	}
+	return { value: { expression: parts[0], position }, kind: 'valeur', answer: parts[0] };
+}
+
+/** Hauteur d'une valeur pour lire une flèche : 1 en haut, -1 en bas, null sinon */
+function heightOf(value: VariationValue | undefined): 1 | -1 | null {
+	if (!value || value.marker) return null;
+	if (value.position === 'top' || value.position === 'limit-top') return 1;
+	if (value.position === 'bottom' || value.position === 'limit-bottom') return -1;
+	return null;
+}
+
+/**
+ * Réponse d'une flèche cachée, lue sur les positions écrites (bornes implicites
+ * comprises) : ↗ si l'arrivée est plus haute que le départ, ↘ si plus basse.
+ *
+ * @returns null s'il n'y a pas de flèche sur l'intervalle
+ */
+function arrowAnswer(row: VariationRow, domain: DomainPoint[], key: string): '↗' | '↘' | null {
+	const filled = withImplicitEndpoints(row, domain);
+	const [from, to] = key.split(',');
+	const start = heightOf(filled.values.get(from));
+	const end = heightOf(filled.values.get(to));
+	if (start === null || end === null || start === end) return null;
+	return end > start ? '↗' : '↘';
+}
+
+// ============================================================================
+// CASES CACHÉES
+// ============================================================================
+
+/**
+ * Numérote les cases cachées dans l'ORDRE DE LECTURE : le domaine de gauche à
+ * droite, puis chaque ligne (`sign:` ou `variation:`) dans son ordre, ses cellules
+ * par colonne (point, intervalle, point…). L'ordre d'écriture de l'auteur ne compte pas.
+ *
+ * Refuse (via `refuse`) une clé cachée qui n'est pas une cellule du domaine, et une
+ * flèche cachée là où la ligne n'en dessine pas.
+ */
+function buildHiddenCells(
+	domain: DomainPoint[],
+	rows: TableRow[],
+	hiddenByRow: Map<number, PendingCell[]>,
+	refuse: Refuse,
+	domainLine: number
+): HiddenCell[] {
+	const cells: HiddenCell[] = [];
+	// Une valeur de x répétée rendrait deux cellules indiscernables (clés identiques)
+	const seen = new Set<string>();
+	for (const point of domain) {
+		if (seen.has(point.expression)) {
+			refuse(
+				domainLine,
+				`domain: … ${point.expression} …`,
+				`la valeur de x « ${point.expression} » est répétée dans le domaine`
+			);
+			return [];
+		}
+		seen.add(point.expression);
+	}
+	const push = (cell: Omit<HiddenCell, 'index'>) => cells.push({ index: cells.length, ...cell });
+
+	for (const point of domain) {
+		if (point.hidden) {
+			push({
+				row: 'domain',
+				key: point.expression,
+				kind: 'valeur',
+				// Un jeton `??n` ne porte pas la réponse
+				answer: point.expression.startsWith('??') ? '' : point.expression
+			});
+		}
+	}
+
+	// Cellules d'une ligne de signes, en colonnes : point, intervalle, point…
+	const columnKeys: string[] = [];
+	domain.forEach((point, j) => {
+		columnKeys.push(point.expression);
+		if (j < domain.length - 1) columnKeys.push(`${point.expression},${domain[j + 1].expression}`);
+	});
+
+	for (const rowIndex of [...hiddenByRow.keys()].sort((a, b) => a - b)) {
+		const pending = hiddenByRow.get(rowIndex) ?? [];
+		for (const cell of pending) {
+			if (!columnKeys.includes(cell.key)) {
+				refuse(
+					cell.line,
+					cell.content,
+					`la cellule « ${cell.key} » n'est pas dans le domaine du tableau`
+				);
+			}
+		}
+		for (const key of columnKeys) {
+			const cell = pending.find((p) => p.key === key);
+			if (!cell) continue;
+			let answer = cell.answer;
+			const row = rows[rowIndex];
+			if (cell.derive && row.type === 'variation') {
+				const arrow = arrowAnswer(row, domain, key);
+				if (arrow === null) {
+					refuse(
+						cell.line,
+						cell.content,
+						`pas de flèche à cacher sur « ${key} » : les deux valeurs doivent être l’une en haut, l’autre en bas (ni centrée, ni asymptote)`
+					);
+					continue;
+				}
+				answer = arrow;
+			}
+			push({ row: rowIndex, key, kind: cell.kind, answer });
+		}
+	}
+
+	return cells;
 }
 
 // ============================================================================
@@ -580,6 +1008,15 @@ export function parseVariationTableContent(lines: string[]): VariationTableParse
 	let variable: string | null = null;
 	let domain: DomainPoint[] = [];
 	const rows: TableRow[] = [];
+	const hiddenByRow = new Map<number, PendingCell[]>();
+	let caseIndex: number | undefined;
+	let domainLine = 0;
+	let refused = false;
+
+	const refuse: Refuse = (line, content, message) => {
+		refused = true;
+		errors.push({ message: `Ligne ${line} : ${message}`, line, content });
+	};
 
 	let i = 0;
 
@@ -639,7 +1076,8 @@ export function parseVariationTableContent(lines: string[]): VariationTableParse
 					content: line
 				});
 			}
-			domain = parseDomainContent(domainMatch[1]);
+			domain = parseDomainContent(domainMatch[1], refuse, lineNum);
+			domainLine = lineNum;
 			i++;
 			continue;
 		}
@@ -648,10 +1086,14 @@ export function parseVariationTableContent(lines: string[]): VariationTableParse
 		const signMatch = line.match(SIGN_HEADER_REGEX);
 		if (signMatch) {
 			const label = signMatch[1];
+			if (label.trimStart().startsWith('?')) {
+				refuse(lineNum, line, 'on ne peut pas cacher une étiquette de ligne (sign: …)');
+			}
 			i++;
 			const entryStartLine = i + 1;
 			const entryLines = collectEntryLines();
-			const values = parseSignRowEntries(entryLines, entryStartLine, errors);
+			const { values, hidden } = parseSignRowEntries(entryLines, entryStartLine, errors, refuse);
+			if (hidden.length > 0) hiddenByRow.set(rows.length, hidden);
 
 			const signRow: SignRow = {
 				type: 'sign',
@@ -666,10 +1108,19 @@ export function parseVariationTableContent(lines: string[]): VariationTableParse
 		const variationMatch = line.match(VARIATION_HEADER_REGEX);
 		if (variationMatch) {
 			const label = variationMatch[1];
+			if (label.trimStart().startsWith('?')) {
+				refuse(lineNum, line, 'on ne peut pas cacher une étiquette de ligne (variation: …)');
+			}
 			i++;
 			const entryStartLine = i + 1;
 			const entryLines = collectEntryLines();
-			const values = parseVariationRowEntries(entryLines, entryStartLine, errors);
+			const { values, hidden } = parseVariationRowEntries(
+				entryLines,
+				entryStartLine,
+				errors,
+				refuse
+			);
+			if (hidden.length > 0) hiddenByRow.set(rows.length, hidden);
 
 			const variationRow: VariationRow = {
 				type: 'variation',
@@ -677,6 +1128,22 @@ export function parseVariationTableContent(lines: string[]): VariationTableParse
 				values
 			};
 			rows.push(variationRow);
+			continue;
+		}
+
+		// Numéro de case posé par le générateur de questions
+		const caseMatch = line.match(CASE_LINE_REGEX);
+		if (caseMatch) {
+			if (!CASE_INDEX_REGEX.test(caseMatch[1])) {
+				errors.push({
+					message: `Ligne ${lineNum} : case: attend un numéro de case (0, 1, 2…)`,
+					line: lineNum,
+					content: line
+				});
+			} else {
+				caseIndex = Number(caseMatch[1]);
+			}
+			i++;
 			continue;
 		}
 
@@ -702,8 +1169,12 @@ export function parseVariationTableContent(lines: string[]): VariationTableParse
 		errors.push({ message: 'No sign or variation rows defined' });
 	}
 
+	const hasHidden = hiddenByRow.size > 0 || domain.some((point) => point.hidden);
+	const cases =
+		refused || !hasHidden ? [] : buildHiddenCells(domain, rows, hiddenByRow, refuse, domainLine);
+
 	// If we have critical errors, return null node
-	if (!variable || domain.length === 0) {
+	if (!variable || domain.length === 0 || refused) {
 		return { node: null, errors };
 	}
 
@@ -713,6 +1184,11 @@ export function parseVariationTableContent(lines: string[]): VariationTableParse
 		domain,
 		rows
 	};
+	if (cases.length > 0) {
+		node.cases = cases;
+		node.source = lines.join('\n');
+	}
+	if (caseIndex !== undefined) node.caseIndex = caseIndex;
 
 	return { node, errors };
 }
@@ -787,6 +1263,85 @@ export function findVariationBlocks(lines: string[]): VariationBlockRange[] {
 	}
 
 	return blocks;
+}
+
+/** Un `?` en tête d'une valeur (`domain: -inf, ?-3`, `  -3: ?z`, `sign: ?f`) */
+const LEADING_MARK_REGEX = /[:,]\s*[[\]]?\s*\?/;
+
+/** Tableau à compléter d'un énoncé : délimité comme le parseur, et ce qu'il en lit */
+export interface VariationToFill {
+	startIndex: number;
+	/** Corps sans clôtures (lignes sans ce qui les imbrique) */
+	body: string[];
+	closed: boolean;
+	/** Bloc en retrait ou cité : l'élève ne pourrait pas y répondre */
+	nested: boolean;
+	/** Le nœud lu, null si le parseur refuse le bloc (`errors` dit pourquoi) */
+	node: VariationTableNode | null;
+	errors: VariationTableParseError[];
+}
+
+/**
+ * Les tableaux à compléter d'un énoncé : ceux qui ont au moins une case cachée
+ * (`?`), ou que le parseur refuse à cause d'un `?` en tête de valeur (le
+ * générateur dira pourquoi, plutôt que de rendre le bloc en source).
+ */
+export function findVariationsToFill(markdown: string): VariationToFill[] {
+	const lines = markdown.split('\n');
+	const found: VariationToFill[] = [];
+	let i = 0;
+	while (i < lines.length) {
+		const fence = unnestedLine(lines[i]);
+		if (isVariationBlockStart(fence)) {
+			// Le retrait des lignes du corps compte (`  -3: z`) : seul ce qui imbrique la
+			// fence (citation, retrait de liste) est retiré, sur toutes les lignes
+			const nesting = lines[i].length - fence.length;
+			const plain = lines.map((line, k) =>
+				k < i ? line : line.slice(Math.min(nesting, /^[\s>]*/.exec(line)![0].length))
+			);
+			const { endIndex, closed } = specialBlockEnd(plain, i, isBlockEnd, BLOCK_KEYS);
+			const body = plain.slice(i + 1, closed ? endIndex : endIndex + 1);
+			const { node, errors } = parseVariationTableContent(body);
+			const refusedMark = node === null && body.some((line) => LEADING_MARK_REGEX.test(line));
+			if ((node?.cases?.length ?? 0) > 0 || refusedMark) {
+				found.push({ startIndex: i, body, closed, nested: nesting > 0, node, errors });
+			}
+			i = endIndex;
+		}
+		i++;
+	}
+	return found;
+}
+
+/**
+ * `?` en tête d'une valeur du domaine (`, ?-3`, `]?3[`, `(?3`), pas le `??n` d'un
+ * énoncé masqué ; mêmes bornes que `parseDomainPoint`
+ */
+const HIDDEN_DOMAIN_MARK = /([:,]\s*[[\]()]?\s*)\?(?!\?)/g;
+/** Ligne d'une cellule cachée : `  clé: ?valeur` */
+const HIDDEN_ENTRY = /^(\s{2,}[^:]+:\s*)\?(?!\?)\s*(.*)$/;
+
+/**
+ * Le même tableau, cellules cachées révélées : sans `case:`, sans `?` ; une marque
+ * « rien » cachée (`?rien`) n'a pas de ligne (aucune marque à ce point), une flèche
+ * cachée (`?flèche`) non plus (les positions dessinent la flèche). Pour le
+ * corrigé imprimé, qui dessine le tableau rempli comme un tableau ordinaire.
+ */
+export function revealVariationBody(body: readonly string[]): string[] {
+	return body.flatMap((line) => {
+		if (CASE_LINE_REGEX.test(line)) return [];
+		if (DOMAIN_REGEX.test(line)) return [line.replace(HIDDEN_DOMAIN_MARK, '$1')];
+		const entry = HIDDEN_ENTRY.exec(line);
+		if (!entry) return [line];
+		const rest = entry[2].trim();
+		// Ni marque « rien », ni flèche cachée : la ligne n'a pas de cellule à écrire
+		return rest === 'rien' || ARROW_WORDS.includes(rest) ? [] : [`${entry[1]}${entry[2]}`];
+	});
+}
+
+/** L'énoncé a-t-il un tableau à compléter ? */
+export function hasVariationToFill(markdown: string): boolean {
+	return findVariationsToFill(markdown).length > 0;
 }
 
 // ============================================================================
@@ -873,6 +1428,35 @@ export function withImplicitEndpoints(row: VariationRow, domain: DomainPoint[]):
 	fill(domain[domain.length - 1], domain.slice(0, -1).reverse());
 
 	return { ...row, values };
+}
+
+/**
+ * La ligne `variation:` n° `rowIndex` telle qu'on la dessine pour l'élève : bornes
+ * implicites posées (`withImplicitEndpoints`), et rien qui dise une flèche cachée —
+ * les deux valeurs qui l'encadrent passent au milieu, une borne implicite qui la
+ * toucherait n'est pas posée. Sans flèche cachée, c'est `withImplicitEndpoints`.
+ *
+ * Les bornes implicites se lisent sur les VRAIES positions (avant le centrage) : une
+ * flèche donnée à côté d'une flèche cachée reste dessinée.
+ *
+ * @returns une nouvelle ligne ; l'arbre (la correction) n'est pas modifié
+ */
+export function variationRowForDisplay(node: VariationTableNode, rowIndex: number): VariationRow {
+	const row = node.rows[rowIndex];
+	if (row?.type !== 'variation') throw new Error(`ligne ${rowIndex} : pas une ligne variation:`);
+	const filled = withImplicitEndpoints(row, node.domain);
+	const arrows = (node.cases ?? []).filter(
+		(cell) => cell.kind === 'fleche' && cell.row === rowIndex
+	);
+	if (arrows.length === 0) return filled;
+
+	const values = new Map(filled.values);
+	for (const point of arrows.flatMap((cell) => cell.key.split(','))) {
+		const value = row.values.get(point);
+		if (value === undefined) values.delete(point);
+		else if (!value.marker) values.set(point, { ...value, position: 'center' });
+	}
+	return { ...filled, values };
 }
 
 /** Position opposée (haut ↔ bas), ou null pour une valeur centrée */

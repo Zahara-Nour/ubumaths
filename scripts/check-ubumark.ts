@@ -14,22 +14,25 @@
  */
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
-import { extractMath } from '$lib/ubumark/parser/math-extractor';
-import { expressionToLatex } from '$lib/components/markdown/utils/math-utils';
-import { findBareGreekNames } from '$lib/exercises/bare-greek-warnings';
-import { parseMarkdown } from '$lib/ubumark';
-import type { CourbeNode } from '$lib/ubumark/types/courbe';
-import { buildCourbeScene } from '$lib/ubumark/utils/courbe-scene';
-import type { FigureNode } from '$lib/ubumark/types/figure';
-import { buildFigureScene } from '$lib/ubumark/utils/figure-scene';
-import type { HorlogeNode } from '$lib/ubumark/types/horloge';
-import type { OperationNode } from '$lib/ubumark/types/operation';
-import type { CollectionNode } from '$lib/ubumark/types/collection';
-import type { MonnaieNode } from '$lib/ubumark/types/monnaie';
-import type { PartageNode } from '$lib/ubumark/types/partage';
-import type { EspaceNode } from '$lib/ubumark/types/espace';
-import type { ScratchNode } from '$lib/ubumark/types/scratch';
-import { checkScratchProgram } from '$lib/ubumark/utils/scratch-check';
+import { extractMath } from '#lib/ubumark/parser/math-extractor.ts';
+import { expressionToLatex } from '#lib/components/markdown/utils/math-utils.ts';
+import { findBareGreekNames } from '#lib/exercises/bare-greek-warnings.ts';
+import { parseMarkdown } from '#lib/ubumark/index.ts';
+import type { CourbeNode } from '#lib/ubumark/types/courbe.ts';
+import { buildCourbeScene } from '#lib/ubumark/utils/courbe-scene.ts';
+import type { FigureNode } from '#lib/ubumark/types/figure.ts';
+import { buildFigureScene } from '#lib/ubumark/utils/figure-scene.ts';
+import type { HorlogeNode } from '#lib/ubumark/types/horloge.ts';
+import type { TortueNode } from '#lib/ubumark/types/tortue.ts';
+import type { CalculNode } from '#lib/ubumark/types/calcul.ts';
+import type { RobotNode } from '#lib/ubumark/types/robot.ts';
+import type { OperationNode } from '#lib/ubumark/types/operation.ts';
+import type { CollectionNode } from '#lib/ubumark/types/collection.ts';
+import type { MonnaieNode } from '#lib/ubumark/types/monnaie.ts';
+import type { PartageNode } from '#lib/ubumark/types/partage.ts';
+import type { EspaceNode } from '#lib/ubumark/types/espace.ts';
+import type { ScratchNode } from '#lib/ubumark/types/scratch.ts';
+import { checkScratchProgram } from '#lib/ubumark/utils/scratch-check.ts';
 
 type BlocNode =
 	| CourbeNode
@@ -40,9 +43,12 @@ type BlocNode =
 	| MonnaieNode
 	| PartageNode
 	| EspaceNode
-	| ScratchNode;
+	| ScratchNode
+	| TortueNode
+	| CalculNode
+	| RobotNode;
 
-/** Blocs ```courbe, ```figure, ```horloge, ```operation, ```collection, ```monnaie, ```partage, ```cubes, ```solide, ```patron et ```scratch d'un arbre ubumark, listes et choix compris. */
+/** Blocs ```courbe, ```figure, ```horloge, ```tortue, ```calcul, ```robot, ```operation, ```collection, ```monnaie, ```partage, ```cubes, ```solide, ```patron et ```scratch d'un arbre ubumark, listes et choix compris. */
 function blocs(node: unknown, found: BlocNode[] = []): BlocNode[] {
 	if (Array.isArray(node)) {
 		for (const child of node) blocs(child, found);
@@ -51,6 +57,9 @@ function blocs(node: unknown, found: BlocNode[] = []): BlocNode[] {
 		if (record.type === 'courbe') found.push(node as CourbeNode);
 		else if (record.type === 'figure') found.push(node as FigureNode);
 		else if (record.type === 'horloge') found.push(node as HorlogeNode);
+		else if (record.type === 'tortue') found.push(node as TortueNode);
+		else if (record.type === 'calcul') found.push(node as CalculNode);
+		else if (record.type === 'robot') found.push(node as RobotNode);
 		else if (record.type === 'operation') found.push(node as OperationNode);
 		else if (record.type === 'collection') found.push(node as CollectionNode);
 		else if (record.type === 'monnaie') found.push(node as MonnaieNode);
@@ -84,6 +93,9 @@ function blocMessages(bloc: BlocNode): string[] {
 	if (bloc.type === 'partage' || bloc.type === 'espace') return bloc.errors;
 	if (
 		bloc.type === 'horloge' ||
+		bloc.type === 'tortue' ||
+		bloc.type === 'calcul' ||
+		bloc.type === 'robot' ||
 		bloc.type === 'operation' ||
 		bloc.type === 'collection' ||
 		bloc.type === 'monnaie'

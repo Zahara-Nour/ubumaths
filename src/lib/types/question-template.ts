@@ -15,20 +15,18 @@
  *   falls back to `draft` (the template stays out of the students' reach) and
  *   an unknown grade is dropped rather than smuggled into `GradeLevel[]`.
  */
-import type { QuestionTemplate, QuestionVariation, TestSpec } from '$lib/questions/types';
-import type { DisplayOptions } from '$lib/questions/types';
-import type { GradeLevel } from '$lib/questions/types';
-import { isGradeCode } from '$lib/types/grades';
-import type { Json } from '$lib/types/database';
+import type { QuestionTemplate, QuestionVariation, TestSpec } from '#lib/questions/types.ts';
+import type { DisplayOptions } from '#lib/questions/types.ts';
+import type { GradeLevel } from '#lib/questions/types.ts';
+import { isGradeCode } from '#lib/types/grades.ts';
+import type { Json } from '#lib/types/database.ts';
 
 /** Row shape shared by every `question_templates` select (`select('*')`). */
 export interface QuestionTemplateRow {
 	id: string;
 	title: string;
 	description: string | null;
-	theme: string;
-	domain: string;
-	subdomain: string | null;
+	classification_node_id?: string | null;
 	level: number;
 	status: string;
 	grades: string[];
@@ -68,9 +66,9 @@ export function toQuestionTemplate(row: QuestionTemplateRow): QuestionTemplate {
 		id: row.id,
 		title: row.title,
 		description: row.description ?? undefined,
-		theme: row.theme,
-		domain: row.domain,
-		subdomain: row.subdomain ?? undefined,
+		...(row.classification_node_id !== undefined && {
+			classification_node_id: row.classification_node_id
+		}),
 		level: row.level,
 		status: asTemplateStatus(row.status),
 		grades: asGradeLevels(row.grades),

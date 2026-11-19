@@ -27,13 +27,13 @@
  * - Student progress is filtered to only show their own data
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { getChapterWithContent } from '$lib/server/chapters';
-import { uuidSchema } from '$lib/server/validation/common';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { getChapterWithContent } from '#lib/server/chapters.ts';
+import { uuidSchema } from '#lib/server/validation/common.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/student/chapters/[id]/+server');
 
@@ -73,7 +73,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			throw error(404, 'Chapter not found');
 		}
 
-		return json({
+		return Response.json({
 			chapter: result.data
 		});
 	} catch (err) {

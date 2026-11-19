@@ -1,10 +1,8 @@
 {
+	"id": "84227334-c406-4d8f-a25a-ca0024599ae3",
 	"title": "Critère de colinéarité",
 	"description": "u et v colinéaires ? par le déterminant (case choix), puis trouver m pour que u(m ; a) et v(b ; c) soient colinéaires (pièges : déterminant nul lu « non », m = b·c/a)",
 	"grades": ["2"],
-	"theme": "Géométrie",
-	"domain": "Vecteurs du plan",
-	"subdomain": "Colinéarité",
 	"level": 2,
 	"delay": 90,
 	"status": "draft",

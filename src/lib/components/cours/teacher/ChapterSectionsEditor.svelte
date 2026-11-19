@@ -44,7 +44,7 @@
 	@module components/cours/teacher/ChapterSectionsEditor
 -->
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import type {
 		ChapterContentType,
 		ChapterSection,
@@ -53,19 +53,19 @@
 		ChapterChecklistItem,
 		ChapterSeries,
 		ChapterWorksheet
-	} from '$lib/types/chapters';
-	import type { SectionContentKind } from '$lib/server/validation/chapter-sections';
+	} from '#lib/types/chapters.ts';
+	import type { SectionContentKind } from '#lib/server/validation/chapter-sections.ts';
 	import { dndzone, SHADOW_PLACEHOLDER_ITEM_ID, TRIGGERS, type DndEvent } from 'svelte-dnd-action';
 	import { flip } from 'svelte/animate';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Label } from '$lib/components/ui/label';
-	import { Switch } from '$lib/components/ui/switch';
-	import * as Card from '$lib/components/ui/card';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
-	import { ConfirmDialog } from '$lib/components/ui/confirm-dialog';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import { Switch } from '#lib/components/ui/switch/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import * as DropdownMenu from '#lib/components/ui/dropdown-menu/index.ts';
+	import { ConfirmDialog } from '#lib/components/ui/confirm-dialog/index.ts';
 	import PublicationToggle from './PublicationToggle.svelte';
 	import { enhance } from '$app/forms';
 	import {
@@ -291,7 +291,7 @@
 		{ label: string; autre: ChapterSeries['form'] }
 	> = {
 		flash: { label: 'Flash-cards', autre: 'interactive' },
-		interactive: { label: 'Entraînement', autre: 'flash' }
+		interactive: { label: 'Contrôle blanc', autre: 'flash' }
 	};
 
 	/** Le menu « Ajouter », dans l'ordre où le professeur les cherche. */
@@ -490,7 +490,7 @@
 	 * ⚠️ Deux exigences contraires se rencontrent ici. L'état local doit rester
 	 * la source de vérité PENDANT un glisser, sinon le geste saccade ; mais tout
 	 * ce que le professeur change depuis le plan revient par les props, après
-	 * `invalidateAll()`.
+	 * `refreshAll()`.
 	 *
 	 * ⚠️⚠️ Les IDENTIFIANTS ne suffisent pas, et c'est contre-intuitif : publier
 	 * un contenu ou corriger le texte d'un objectif ne change aucun identifiant.

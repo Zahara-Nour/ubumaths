@@ -1,0 +1,265 @@
+{
+	"id": "befab91c-c77e-464e-a5bf-79206462928d",
+	"title": "Programme pour un résultat donné",
+	"description": "Écrire en blocs un programme qui affiche un résultat donné pour un nombre choisi donné.",
+	"grades": ["6"],
+	"level": 1,
+	"delay": 300,
+	"status": "published",
+	"variations": [
+		{
+			"blanks": [],
+			"statement": "Écris un programme qui **affiche ${{r}}$** quand on choisit le nombre ${{n}}$. Utilise le bloc « nombre choisi » et une addition.\n\n```calcul\nattendu: afficher nombre + {{a}}\nessais: {{n}}\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2..9"
+				},
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "r",
+					"expression": "eval:n+a"
+				}
+			],
+			"conditions": [],
+			"correction": {
+				"steps": [
+					"On cherche ce qu'il faut ajouter à ${{n}}$ pour obtenir ${{r}}$ : ${{r}} - {{n}} = {{a}}$.",
+					"Un programme juste : afficher nombre $+\\ {{a}}$. Avec ${{n}}$, il affiche ${{n}} + {{a}} = {{r}}$.",
+					"D'autres programmes sont justes aussi, pourvu qu'ils utilisent le nombre choisi et affichent ${{r}}$ avec ${{n}}$."
+				]
+			}
+		},
+		{
+			"blanks": [],
+			"statement": "Écris un programme qui **affiche ${{r}}$** quand on choisit le nombre ${{n}}$. Utilise le bloc « nombre choisi » et une multiplication.\n\n```calcul\nattendu: afficher nombre × {{a}}\nessais: {{n}}\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2..6"
+				},
+				{
+					"name": "a",
+					"expression": "2..5"
+				},
+				{
+					"name": "r",
+					"expression": "eval:n*a"
+				}
+			],
+			"conditions": [],
+			"correction": {
+				"steps": [
+					"On cherche par combien multiplier ${{n}}$ pour obtenir ${{r}}$ : ${{r}} \\div {{n}} = {{a}}$.",
+					"Un programme juste : afficher nombre $\\times {{a}}$. Avec ${{n}}$, il affiche ${{n}} \\times {{a}} = {{r}}$.",
+					"D'autres programmes sont justes aussi, pourvu qu'ils utilisent le nombre choisi et affichent ${{r}}$ avec ${{n}}$."
+				]
+			}
+		},
+		{
+			"blanks": [],
+			"statement": "Écris un programme qui **affiche ${{r}}$** quand on choisit le nombre ${{n}}$. Utilise le bloc « nombre choisi », une multiplication puis une addition.\n\n```calcul\nattendu: mettre résultat à nombre × {{a}} ; mettre résultat à résultat + {{b}} ; afficher résultat\nessais: {{n}}\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2..5"
+				},
+				{
+					"name": "a",
+					"expression": "2..4"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "p",
+					"expression": "eval:n*a"
+				},
+				{
+					"name": "r",
+					"expression": "eval:p+b"
+				}
+			],
+			"conditions": [],
+			"correction": {
+				"steps": [
+					"Une façon de chercher : multiplier ${{n}}$ par ${{a}}$ donne ${{n}} \\times {{a}} = {{p}}$ ; il manque ${{r}} - {{p}} = {{b}}$.",
+					"Un programme juste : résultat prend la valeur nombre $\\times {{a}}$, puis résultat $+\\ {{b}}$, et on affiche résultat.",
+					"D'autres programmes sont justes aussi, pourvu qu'ils utilisent le nombre choisi et affichent ${{r}}$ avec ${{n}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["afficher nombre + 7"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "7",
+				"n": "3",
+				"r": "10"
+			},
+			"description": "Pour 3, affiche 10 : nombre + 7",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["afficher nombre × 3 + 1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "7",
+				"n": "3",
+				"r": "10"
+			},
+			"description": "Pour 3, affiche 10 : autre programme juste (3 × 3 + 1)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["afficher 10"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "7",
+				"n": "3",
+				"r": "10"
+			},
+			"description": "Pour 3, affiche 10 : afficher 10 (faux : ne dépend pas du nombre choisi)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["afficher nombre + 10"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "7",
+				"n": "3",
+				"r": "10"
+			},
+			"description": "Erreur : ajoute 10",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["mettre résultat à nombre + 7"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "7",
+				"n": "3",
+				"r": "10"
+			},
+			"description": "Erreur : rien d'affiché",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["afficher nombre × 3"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"n": "4",
+				"r": "12"
+			},
+			"description": "Pour 4, affiche 12 : nombre × 3",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["afficher nombre + 8"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"n": "4",
+				"r": "12"
+			},
+			"description": "Pour 4, affiche 12 : nombre + 8 (juste aussi)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["afficher nombre × 12"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"n": "4",
+				"r": "12"
+			},
+			"description": "Erreur : multiplie par 12",
+			"variationIndex": 1
+		},
+		{
+			"answers": [
+				"mettre résultat à nombre × 2 ; mettre résultat à résultat + 5 ; afficher résultat"
+			],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "5",
+				"n": "3",
+				"p": "6",
+				"r": "11"
+			},
+			"description": "Pour 3, affiche 11 : × 2 puis + 5",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["afficher nombre × 2 + 5"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "5",
+				"n": "3",
+				"p": "6",
+				"r": "11"
+			},
+			"description": "Pour 3, affiche 11 : en une ligne",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["afficher (nombre + 5) × 2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "5",
+				"n": "3",
+				"p": "6",
+				"r": "11"
+			},
+			"description": "Erreur : additionne avant de multiplier",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["afficher nombre × 2 ; afficher nombre × 2 + 5"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "5",
+				"n": "3",
+				"p": "6",
+				"r": "11"
+			},
+			"description": "Erreur : affiche deux nombres",
+			"variationIndex": 2
+		}
+	]
+}

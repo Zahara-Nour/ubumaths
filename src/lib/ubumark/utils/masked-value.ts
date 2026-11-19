@@ -5,7 +5,7 @@
  * En évaluation notée, le serveur envoie l'énoncé SANS la réponse : dans chaque
  * bloc à geste, la valeur que l'élève doit trouver (`placer: A=3`, `construire: 35`,
  * `colorier: 3/8`, effectif d'une barre à construire) devient `?`
- * (`maskGestureAnswers`, `$lib/questions/masked-statement`).
+ * (`maskGestureAnswers`, `#lib/questions/masked-statement.ts`).
  *
  * Les parseurs lisent `?` comme une valeur de remplacement : l'écran garde les noms,
  * le nombre de points ou de barres, la forme ; la valeur ne sert qu'au dessin de la
@@ -19,14 +19,59 @@
 /** La valeur masquée, telle qu'écrite dans le bloc */
 export const MASKED_VALUE = '?';
 
-/** Ligne de la réponse d'un bloc à geste : `placer:`, `construire:`, `colorier:` */
-const ANSWER_KEY_LINE = /^(?:placer|construire|colorier)\s*:(.*)$/i;
+/**
+ * Ligne de la réponse d'un bloc à geste : `placer:`, `tracer:`, `construire:`,
+ * `colorier:`, `representer:`, `attendu:` (programme tortue)
+ */
+const ANSWER_KEY_LINE = /^(?:placer|tracer|construire|colorier|representer|attendu)\s*:(.*)$/i;
 
 /**
  * Donnée masquée : une barre (`Natation = ?`) ou une boîte à moustaches
  * (`Notes = ? ; ? ; ? ; ? ; ?`)
  */
 const MASKED_DATUM_LINE = /=\s*\?(?:\s*;\s*\?)*\s*;?\s*$/;
+
+/** Valeur d'un vecteur à tracer : `vecteur u = (3 ; -2) depuis A` */
+const VECTOR_VALUE = /^\s*vecteur\b/i;
+
+/**
+ * `?` à la place des coordonnées d'un vecteur (`vecteur ?`, `vecteur u = ? depuis A`,
+ * et `vecteur?` écrit collé)
+ */
+const MASKED_VECTOR_COORDS = /(?:^|[\s=]|vecteur)\?(?:\s|$)/i;
+
+/** La valeur est-elle celle d'un vecteur à tracer (`tracer: vecteur …`) ? */
+export function isVectorValue(value: string): boolean {
+	return VECTOR_VALUE.test(value);
+}
+
+/**
+ * Vecteur à tracer écrit en combinaison (`vecteur u + v depuis A`, chantier
+ * `somme-vecteurs`) : la combinaison est la tâche, il n'y a rien à masquer
+ */
+export function isCombinationVectorValue(value: string): boolean {
+	if (!isVectorValue(value)) return false;
+	const body = value
+		.trim()
+		.replace(VECTOR_VALUE, '')
+		.replace(/\s+depuis\s+\S+$/, '')
+		.trim();
+	return body !== '' && !/^(?:[a-z]\s*=\s*)?[(?]/.test(body);
+}
+
+/** Les coordonnées d'un vecteur à tracer sont-elles masquées ? */
+export function isMaskedVectorValue(value: string): boolean {
+	return isVectorValue(value) && !value.includes('(') && MASKED_VECTOR_COORDS.test(value);
+}
+
+/**
+ * Masquer un vecteur à tracer : seules ses coordonnées deviennent `?` ; le mot
+ * `vecteur`, son nom et l'origine imposée restent (l'écran en a besoin)
+ */
+export function maskVectorValue(value: string): string {
+	// Une espace avant le `?` : `vecteur(3;-2)` → `vecteur ?`, `u = (3 ; -2)` → `u = ?`
+	return value.trim().replace(/\s*\([^)]*\)/, ` ${MASKED_VALUE}`);
+}
 
 /** La valeur écrite est-elle masquée ? */
 export function isMaskedValue(value: string): boolean {
@@ -45,6 +90,7 @@ export function hasMaskedValue(source: string): boolean {
 		const line = raw.trim();
 		const answer = ANSWER_KEY_LINE.exec(line);
 		if (answer) {
+			if (isVectorValue(answer[1])) return isMaskedVectorValue(answer[1]);
 			return answer[1]
 				.split(';')
 				.some((part) =>

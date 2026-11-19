@@ -29,27 +29,28 @@ import type {
 	DisplayOptions,
 	TemplateMarkdown,
 	ResolvedMarkdown
-} from '$lib/ubumark';
-import type { AnswerAssumptions } from '$lib/math';
+} from '#lib/ubumark/index.ts';
+import type { AnswerAssumptions } from '#lib/math/index.ts';
 
 // Re-export shared types for convenience
 export type NumberOrVariable = SharedNumberOrVariable;
 export type Exclusion = SharedExclusion;
-export type { DisplayOptions } from '$lib/ubumark';
+export type { DisplayOptions } from '#lib/ubumark/index.ts';
 
 // ============================================================================
 // GRADE LEVELS (re-exported from unified system)
 // ============================================================================
 
 // Import from unified grade system - single source of truth
-import { type GradeCode } from '$lib/types/grades';
-export { GRADE_CODES, GRADES, type GradeCode } from '$lib/types/grades';
+import { type GradeCode } from '#lib/types/grades.ts';
+export { GRADE_CODES, GRADES, type GradeCode } from '#lib/types/grades.ts';
 
 // Import from mathAST pedagogical layer (used by Mode B `generatedSteps`)
-import type { RenderedStep, SchoolLevel } from '$lib/mathAST/common/step-renderer-base';
-import type { CapitalPairs } from '$lib/mathAST/parser/types';
-import type { SuperfluRuleId } from '$lib/mathAST/superflu/rules';
-import type { ConstructionCheck } from '$lib/ubumark/types/construction';
+import type { RenderedStep, SchoolLevel } from '#lib/mathAST/common/step-renderer-base.ts';
+import type { CapitalPairs } from '#lib/mathAST/parser/types.ts';
+import type { SuperfluRuleId } from '#lib/mathAST/superflu/rules.ts';
+import type { ConstructionCheck } from '#lib/ubumark/types/construction.ts';
+import type { HiddenCellKind } from '#lib/ubumark/types/variation-table.ts';
 
 /**
  * French educational grade levels
@@ -609,17 +610,15 @@ export interface QuestionTemplate {
 
 	// ---- Categorization ----
 
-	/** Question theme (e.g., Algèbre, Géométrie) - independent from grades */
-	theme: string;
-
-	/** Question domain within theme (e.g., Équations, Polynômes) */
-	domain: string;
-
-	/** Optional subdomain for finer categorization (e.g., Linéaires, Quadratiques) */
-	subdomain?: string;
-
 	/** Difficulty level as positive integer (no max) - independent from grades */
 	level: number;
+
+	/**
+	 * Nœud de l'arbre des notions (notion ou sous-notion, ADR 0019). Nom de
+	 * colonne brut : la liste publique (`/api/questions/templates/all`) ne passe
+	 * pas par `mapDbTemplateToForm`.
+	 */
+	classification_node_id?: string | null;
 
 	/** Template status: 'draft' (work-in-progress) or 'published' (active) */
 	status: 'draft' | 'published';
@@ -636,6 +635,21 @@ export interface QuestionTemplate {
 	updated_at?: string;
 	created_by?: string; // UUID of creator
 }
+
+/**
+ * Modèle de la liste publique `/api/questions/templates/all`
+ * (`questionTemplatesCache` : catalogue Automaths, panier, test).
+ *
+ * La liste n'envoie pas les cas de test (colonnes listées dans son
+ * `+server.ts` : c'est là qu'est la vraie protection) ; seul l'éditeur les lit,
+ * et il charge le modèle complet par son id. Le type refuse de les lire sous
+ * leurs deux noms : `testSpecs` (retiré ici) et `test_specs` (jamais déclaré).
+ *
+ * Le cache passe chaque ligne par `mapDbTemplateToForm` : les noms de
+ * l'éditeur (`exerciseInstruction`, `defaultDisplayOptions`) s'ajoutent à
+ * ceux de la base, que le catalogue lit encore (`classification_node_id`).
+ */
+export type CatalogueTemplate = Omit<QuestionTemplate, 'testSpecs'>;
 
 /**
  * Map a raw Supabase question_templates row (snake_case) to QuestionTemplate (camelCase).
@@ -679,10 +693,12 @@ export type ResolvedVariable = SharedResolvedVariable;
 /**
  * Genre d'un bloc qui porte sa case et dont la réponse est sa valeur : à construire
  * (```collection, ```monnaie, `construire:`) ou à placer (```line, ```horloge,
- * ```barres, ```boite-a-moustaches, `placer:`), des étiquettes à ranger (```ranger), ou une figure à colorier
+ * ```barres, ```boite-a-moustaches, `placer:`), des étiquettes à ranger (```ranger), des
+ * éléments à associer (```associer), un texte à trous (```trous), ou une figure à colorier
  * (```partage, `colorier:`), ou un assemblage de cubes à geste (```cubes, `dessiner:` / `retrouver:`),
  * ou un patron à geste (```patron, `designer:` / `completer:`), ou des points à placer
- * dans un repère (```courbe, `placer:`) ou sur le cercle trigonométrique (```trig, `placer:`)
+ * dans un repère (```courbe, `placer:`) ou sur le cercle trigonométrique (```trig, `placer:`),
+ * ou un vecteur à tracer sur un solide (```solide, `tracer:`)
  */
 export type BuildKind =
 	| 'collection'
@@ -692,11 +708,17 @@ export type BuildKind =
 	| 'barres'
 	| 'boite-a-moustaches'
 	| 'ranger'
+	| 'associer'
+	| 'trous'
 	| 'partage'
 	| 'cubes'
 	| 'patron'
 	| 'courbe'
-	| 'trig';
+	| 'trig'
+	| 'solide'
+	| 'tortue'
+	| 'calcul'
+	| 'robot';
 
 /** Nom du bloc pour les messages au prof : « bloc collection », « droite graduée », « horloge » */
 export function buildKindName(kind: BuildKind): string {
@@ -704,11 +726,17 @@ export function buildKindName(kind: BuildKind): string {
 	if (kind === 'barres') return 'diagramme en barres';
 	if (kind === 'boite-a-moustaches') return 'boîte à moustaches';
 	if (kind === 'ranger') return 'étiquettes à ranger';
+	if (kind === 'associer') return 'éléments à associer';
+	if (kind === 'trous') return 'texte à trous';
 	if (kind === 'partage') return 'figure à colorier';
 	if (kind === 'cubes') return 'assemblage de cubes';
 	if (kind === 'patron') return 'patron à geste';
+	if (kind === 'solide') return 'solide à geste';
 	if (kind === 'courbe') return 'repère';
 	if (kind === 'trig') return 'cercle trigonométrique';
+	if (kind === 'tortue') return 'programme tortue';
+	if (kind === 'calcul') return 'programme de calcul';
+	if (kind === 'robot') return 'robot à produire';
 	return kind === 'horloge' ? 'horloge' : `bloc ${kind}`;
 }
 
@@ -764,9 +792,19 @@ export interface InstanceBlank extends CalculusBlankFields {
 	 * sur le cercle trigonométrique (```trig, `placer: M = 2*pi/3`) : une case par point,
 	 * réponse = sa mesure principale en LaTeX (`\frac{2\pi}{3}`), l'élève pose le point
 	 * sur un cran de π/12 (sa case porte le cran, `8`), juge à part
-	 * (`isPlacedAngleCorrect`) : le même cran, modulo 2π.
+	 * (`isPlacedAngleCorrect`) : le même cran, modulo 2π. Vecteur à tracer sur un
+	 * solide (```solide, `tracer: vecteur AB + AD depuis A`) : réponse attendue = les
+	 * couples justes (`A/C`, ou `A/C|E/G` quand l'origine est libre), l'élève touche
+	 * deux points (`A/C`), juge à part (`isSolideAnswerCorrect`) : l'un des couples.
 	 */
 	construire?: BuildKind;
+	/**
+	 * Case d'un tableau de signes à compléter (```variation à `?`) : la nature de la
+	 * cellule cachée. Réponse attendue tirée du bloc : valeur de x (`valeur`, case
+	 * `math`, juge ordinaire), signe `+`/`-` (`signe`) ou marque `z`/`||`/`rien`
+	 * (`marque`), cases `text` jugées à l'égalité exacte (`isSignCellCorrect`).
+	 */
+	cellule?: HiddenCellKind;
 	/**
 	 * Case « figure » portée par un bloc ```figure-a-completer ou ```figure-de-travail (`type: 'graphical'`) :
 	 * texte du bloc (variables résolues, sans `case:`) et vérifications. Le juge
@@ -903,9 +941,6 @@ export interface QuestionInstance {
 	capitalPairs?: CapitalPairs;
 
 	grades: GradeLevel[];
-	theme: string;
-	domain: string;
-	subdomain?: string;
 	level: number;
 	delay?: number;
 

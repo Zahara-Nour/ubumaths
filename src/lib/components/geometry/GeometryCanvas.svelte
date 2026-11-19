@@ -1,20 +1,20 @@
 <script lang="ts">
-	import '$lib/utils/mathlive-styles';
+	import '#lib/utils/mathlive-styles.ts';
 	import ElementPopover from './ElementPopover.svelte';
 	import SliderControl from './SliderControl.svelte';
 	import type { Snippet } from 'svelte';
-	import type { InlineNode } from '$lib/ubumark';
-	import { parseMarkdown } from '$lib/ubumark';
+	import type { InlineNode } from '#lib/ubumark/index.ts';
+	import { parseMarkdown } from '#lib/ubumark/index.ts';
 	import { convertLatexToMarkup } from 'mathlive';
-	import { expressionToLatex } from '$lib/components/markdown/utils/math-utils';
-	import { readContentLocale } from '$lib/components/markdown/content-locale';
-	import { Figure } from '$lib/geometry-core/graph/figure';
-	import type { GeoElement, GeoSlider } from '$lib/geometry-core/types/elements';
+	import { expressionToLatex } from '#lib/components/markdown/utils/math-utils.ts';
+	import { readContentLocale } from '#lib/components/markdown/content-locale.ts';
+	import { Figure } from '#lib/geometry-core/graph/figure.ts';
+	import type { GeoElement, GeoSlider } from '#lib/geometry-core/types/elements.ts';
 	import {
 		createTransformer,
 		type CoordinateTransformer
-	} from '$lib/geometry-core/viewport/viewport';
-	import type { Viewport } from '$lib/geometry-core/viewport/types';
+	} from '#lib/geometry-core/viewport/viewport.ts';
+	import type { Viewport } from '#lib/geometry-core/viewport/types.ts';
 	import {
 		pointToSVG,
 		segmentToSVG,
@@ -46,23 +46,23 @@
 		sectorToSVG,
 		annulusToSVG,
 		imageToSVG
-	} from '$lib/geometry-core/rendering/svg-primitives';
-	import { computeGridStep } from '$lib/geometry-core/viewport/grid';
+	} from '#lib/geometry-core/rendering/svg-primitives.ts';
+	import { computeGridStep } from '#lib/geometry-core/viewport/grid.ts';
 	import {
 		findPointNear,
 		findElementNear,
 		findElementsNear
-	} from '$lib/geometry-core/interaction/hit-testing';
-	import { snapToGrid } from '$lib/geometry-core/interaction/snap';
-	import { numeric } from '$lib/geometry-core/types/geo-value';
+	} from '#lib/geometry-core/interaction/hit-testing.ts';
+	import { snapToGrid } from '#lib/geometry-core/interaction/snap.ts';
+	import { numeric } from '#lib/geometry-core/types/geo-value.ts';
 	import {
 		isPointElement,
 		isVector,
 		type GeoArcByAngles,
 		type GeoArcByPoints
-	} from '$lib/geometry-core/types/elements';
-	import { conicClosestParam } from '$lib/geometry-core/graph/conic-helpers';
-	import { geoToNumber } from '$lib/geometry-core/compute/to-number';
+	} from '#lib/geometry-core/types/elements.ts';
+	import { conicClosestParam } from '#lib/geometry-core/graph/conic-helpers.ts';
+	import { geoToNumber } from '#lib/geometry-core/compute/to-number.ts';
 	import rough from 'roughjs';
 	import {
 		seedFromId,
@@ -75,7 +75,7 @@
 		roughAngleHTML,
 		roughSegmentMarkHTML,
 		roughVectorHTML
-	} from '$lib/geometry-core/rendering/rough-geometry';
+	} from '#lib/geometry-core/rendering/rough-geometry.ts';
 	import type { PointDrag } from './point-drag';
 	import type { CanvasTool } from './canvas-tool';
 

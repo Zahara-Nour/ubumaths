@@ -1,0 +1,249 @@
+{
+	"id": "fc27769e-ad53-4b35-8b97-b0d86acef03a",
+	"title": "Lire sur la courbe d'une fonction exponentielle",
+	"description": "f(x) = k × aˣ : lire une image, résoudre f(x) = b graphiquement, lire a",
+	"grades": ["1_GEN"],
+	"level": 1,
+	"delay": 40,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $[0\\,;6]$.\n\n```courbe\nx: -0.5 ; 6.5\ny: -0.5 ; 17\ngrille: 1 ; 1\nf(x) = {{k}}*{{a}}^x sur [0 ; 6]   bleu   nom=\\mathcal{C}_f\ntaille: moyenne\ndescription: Courbe croissante de f(x) = {{k}} × {{a}}^x sur [0 ; 6], repère gradué de 1 en 1.\n```\n\nLis $f({{x}})$, à une demi-graduation près.\n\n$f({{x}})\\approx ?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1|2"
+				},
+				{
+					"name": "a",
+					"expression": "1.4|1.5"
+				},
+				{
+					"name": "x",
+					"expression": "2..5"
+				}
+			],
+			"conditions": ["k*a^6 <= 16"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:round(10*k*a^x)/10;d}}",
+					"precision": {
+						"type": "tolerance",
+						"tolerance": 0.5,
+						"mode": "absolute"
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f({{x}})$ est l'ordonnée du point de $\\mathcal{C}_f$ d'abscisse ${{x}}$ : on monte verticalement depuis ${{x}}$ jusqu'à la courbe, puis on lit l'ordonnée sur l'axe.",
+					"On lit $f({{x}})\\approx\\textcolor{{{color:primary.0}}}{{{eval:round(10*k*a^x)/10;d}}}$ (par le calcul, $f({{x}})={{k}}\\times{{a}}^{ {{x}} }\\approx{{eval:round(100*k*a^x)/100;d}}$)."
+				]
+			}
+		},
+		{
+			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $[0\\,;6]$.\n\n```courbe\nx: -0.5 ; 6.5\ny: -0.5 ; 17\ngrille: 0.5 ; 1\nf(x) = {{k}}*{{a}}^x sur [0 ; 6]   bleu   nom=\\mathcal{C}_f\ntaille: moyenne\ndescription: Courbe décroissante de f(x) = {{k}} × {{a}}^x sur [0 ; 6] ; abscisses graduées de 0,5 en 0,5, ordonnées de 1 en 1.\n```\n\nRésous graphiquement l'équation $f(x)={{y}}$, à une demi-graduation près.\n\n$x\\approx ?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "10|12|16"
+				},
+				{
+					"name": "a",
+					"expression": "0.5|0.6|0.7"
+				},
+				{
+					"name": "y",
+					"expression": "2|3|4|5|6|8"
+				}
+			],
+			"conditions": ["y < k", "ln(y/k)/ln(a) >= 0.5", "ln(y/k)/ln(a) <= 5.5"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:round(100*ln(y/k)/ln(a))/100;d}}",
+					"precision": {
+						"type": "tolerance",
+						"tolerance": 0.25,
+						"mode": "absolute"
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche l'abscisse du point de $\\mathcal{C}_f$ d'ordonnée ${{y}}$ : on part de ${{y}}$ sur l'axe des ordonnées, on va horizontalement jusqu'à la courbe, puis on descend lire l'abscisse.",
+					"On lit $x\\approx\\textcolor{{{color:primary.0}}}{{{eval:round(10*ln(y/k)/ln(a))/10;d}}}$."
+				]
+			}
+		},
+		{
+			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $[0\\,;6]$.\n\n```courbe\nx: -0.5 ; 6.5\ny: -0.5 ; 8\ngrille: 1 ; 0.5\nf(x) = {{a}}^x sur [0 ; 6]   bleu   nom=\\mathcal{C}_f\ntaille: moyenne\ndescription: Courbe de f(x) = a^x sur [0 ; 6], abscisses graduées de 1 en 1, ordonnées de 0,5 en 0,5.\n```\n\n$f$ est de la forme $f(x)=a^x$, avec $a>0$. Lis la valeur de $a$.\n\n$a=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "0.5|1.5|2|2.5"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}",
+					"precision": {
+						"type": "tolerance",
+						"tolerance": 0.25,
+						"mode": "absolute"
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $f(x)=a^x$ : $f(1)=a^1=a$. On lit donc l'ordonnée du point d'abscisse $1$.",
+					"Le point de $\\mathcal{C}_f$ d'abscisse $1$ a pour ordonnée ${{a}}$ : $a=\\textcolor{{{color:primary.0}}}{{{a}}}$. (La courbe passe aussi par $(0\\,;1)$, comme toute courbe de $x\\mapsto a^x$.)"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "1,5^4 ≈ 5,06 : 5 accepté",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"a": "1.5",
+				"x": "4"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "1,5^4 ≈ 5,06 : 5,5 accepté",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"a": "1.5",
+				"x": "4"
+			},
+			"answers": ["5,5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : f(3) lu (3,4)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"a": "1.5",
+				"x": "4"
+			},
+			"answers": ["3,4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1,5 × 4 = 6 (lecture fausse)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"a": "1.5",
+				"x": "4"
+			},
+			"answers": ["6,1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "16 × 0,5^x = 4 : x = 2",
+			"variationIndex": 1,
+			"variables": {
+				"k": "16",
+				"a": "0.5",
+				"y": "4"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "16 × 0,5^x = 4 : 2,2 accepté",
+			"variationIndex": 1,
+			"variables": {
+				"k": "16",
+				"a": "0.5",
+				"y": "4"
+			},
+			"answers": ["2,2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : image de 4 lue (f(4) = 1)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "16",
+				"a": "0.5",
+				"y": "4"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 2,5 (une graduation de trop)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "16",
+				"a": "0.5",
+				"y": "4"
+			},
+			"answers": ["2,5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "a = 1,5",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1.5"
+			},
+			"answers": ["1,5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : f(0) = 1 lu",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1.5"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : f(2) = 2,25 lu",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1.5"
+			},
+			"answers": ["2,25"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

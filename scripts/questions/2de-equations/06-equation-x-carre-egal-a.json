@@ -1,10 +1,8 @@
 {
+	"id": "ac9579d6-7d48-4b88-8d2f-e8c5319867db",
 	"title": "Résoudre une équation x² = a",
 	"description": "Ensemble des solutions de x² = a : carré parfait, racine non entière, a = 0 ou a < 0, racine à simplifier (x² = 12)",
 	"grades": ["2"],
-	"theme": "Calcul littéral",
-	"domain": "Equations",
-	"subdomain": "Ensemble des solutions",
 	"level": 6,
 	"delay": 60,
 	"status": "draft",

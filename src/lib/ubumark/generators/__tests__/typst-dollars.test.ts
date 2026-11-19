@@ -9,7 +9,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { markdownToTypst } from '../typst-generator';
+import { TYPST_BREAK_MARKER, markdownToTypst } from '../typst-generator';
 
 /** Corps du document Typst, sans le préambule */
 async function body(markdown: string): Promise<string> {
@@ -24,7 +24,7 @@ describe('formules du PDF : `\\$` et `$` dans un `\\text{…}`', () => {
 
 	it('`\\$` dans une formule de bloc', async () => {
 		expect(await body('Bloc :\n\n$$5\\$$$\n')).toBe(
-			'#block(width: 100%, sticky: true)[\nBloc :\n]\n\n$ 5\\$ $'
+			`${TYPST_BREAK_MARKER}\n#context block(width: 100%, sticky: ubu-colle())[\nBloc :\n]\n\n$ 5\\$ $`
 		);
 	});
 

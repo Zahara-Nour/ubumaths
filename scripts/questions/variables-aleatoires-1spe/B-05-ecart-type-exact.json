@@ -1,10 +1,8 @@
 {
+	"id": "bad86bec-f4e9-4b2d-b238-7a7339e3f77f",
 	"title": "Écart-type : valeur exacte",
 	"description": "Calculer l'espérance, la variance puis la valeur exacte de l'écart-type d'une variable aléatoire donnée par sa loi",
 	"grades": ["1_SPE"],
-	"theme": "Probabilités",
-	"domain": "Variables aléatoires",
-	"subdomain": "Variance et écart-type",
 	"level": 3,
 	"status": "draft",
 	"delay": 120,

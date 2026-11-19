@@ -13,7 +13,9 @@ joignent par **Tailscale** : adresse du Mac mini `100.79.226.105`, nom
    cookies en `Secure`. Sur `http://100.79.226.105:<port>`, le navigateur jette le cookie : la
    connexion « ne fait rien » (côté serveur : « login successful » puis « Profile missing »).
    `crypto.randomUUID` n'existe pas non plus en HTTP sur une adresse IP (commit c05eadaa1, tableau de
-   variations).
+   variations). ⚠️ **L'Atelier plante alors au premier objet créé** (rien ne se trace, l'expression
+   disparaît de sa carte, 2026-11-14) : même page publique, l'Atelier se teste en HTTPS (Tailscale
+   Serve) ou par le tunnel SSH, jamais par `http://100.79.226.105`.
 2. **Le navigateur appelle Supabase lui-même**, à l'adresse `PUBLIC_SUPABASE_URL` de `.env.local`
    (`http://127.0.0.1:54321`, la base LOCALE). Sur un autre appareil, `127.0.0.1` désigne cet
    appareil : il faut lui rendre le port 54321 du Mac mini, ou changer cette adresse.
@@ -125,6 +127,16 @@ corriger dans les commandes ; deux points de mise en route :
   d'activation.
 - Vérifier avant de donner le lien : `tailscale serve status` affiche **(tailnet only)** sur les
   deux ports.
+- **Le port 443 est peut-être celui d'une autre session** (`tailscale serve status` le montre).
+  Ne pas le reprendre : publier son serveur sur `--https=10000` (lien
+  `https://serveur.tail99357e.ts.net:10000/`), et ne jamais faire `tailscale serve reset`, qui
+  couperait le lien de l'autre. Arrêter le sien seul : `tailscale serve --https=10000 off`.
+- **Avant de pointer Serve sur un port, vérifier qu'il sert SON serveur** :
+  `lsof -nP -iTCP:<port> -sTCP:LISTEN`, puis le dossier du processus
+  (`lsof -p <pid> | awk '$4=="cwd"'`). Les worktrees occupent 5176 et au-delà, sans ordre fixe.
+- **« Failed to fetch dynamically imported module » qui résiste au rechargement forcé**, alors que
+  les modules répondent en 200 : le serveur de dev tourne depuis avant un `git pull` ou un merge
+  (2026-11-19). Relancer un serveur neuf et y pointer Serve.
 
 ## Limiteur de connexion
 

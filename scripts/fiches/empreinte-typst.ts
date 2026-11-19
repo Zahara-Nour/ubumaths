@@ -17,9 +17,9 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { createClient } from '@supabase/supabase-js';
 import { config as dotenv } from 'dotenv';
-import { parseMarkdown } from '$lib/ubumark';
-import { generateTypst } from '$lib/ubumark/generators/typst-generator';
-import type { Database } from '$lib/types/database';
+import { parseMarkdown } from '#lib/ubumark/index.ts';
+import { generateTypst } from '#lib/ubumark/generators/typst-generator.ts';
+import type { Database } from '#lib/types/database.ts';
 
 dotenv({ path: '.env' });
 

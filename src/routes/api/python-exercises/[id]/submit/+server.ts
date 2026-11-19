@@ -3,18 +3,19 @@
  * POST - Submit solution to exercise
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { requireRole } from '#lib/server/middleware/auth.ts';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import {
 	submitExerciseSchema,
 	validationResultSchema,
 	type SubmitExerciseInput
-} from '$lib/server/validation/python-exercises';
-import type { Database } from '$lib/types/database';
-import { requireConsent } from '$lib/server/middleware/consent';
-import { validateUuidParam } from '$lib/server/validation/params';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/validation/python-exercises.ts';
+import type { Database } from '#lib/types/database.ts';
+import { requireConsent } from '#lib/server/middleware/consent.ts';
+import { validateUuidParam } from '#lib/server/validation/params.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/python-exercises/[id]/submit/+server');
 
@@ -35,22 +36,8 @@ type ZodIssue = { path: (string | number)[]; message: string };
  */
 export const POST: RequestHandler = async ({ locals, params, request }) => {
 	const exerciseId = validateUuidParam(params.id);
-	const { user, supabase } = locals;
-
-	if (!user) {
-		throw error(401, 'Connexion requise');
-	}
-
-	// Verify student role and check consent
-	const { data: profile, error: profileError } = await supabase
-		.from('profiles')
-		.select('role, consent_required, consent_granted_at, consent_grace_period_ends')
-		.eq('id', user.id)
-		.single();
-
-	if (profileError || !profile || profile.role !== 'student') {
-		throw error(403, 'Réservé aux élèves');
-	}
+	const { user, profile } = await requireRole(locals, 'student');
+	const { supabase } = locals;
 
 	requireConsent(profile, 'submit_exercise');
 
@@ -194,7 +181,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		throw error(500, 'Impossible d’enregistrer la solution');
 	}
 
-	return json(
+	return Response.json(
 		{
 			submission,
 			message: validationResult.valid

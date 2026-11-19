@@ -1,10 +1,8 @@
 {
+	"id": "5b20321f-e86a-4a13-b478-1cf4f441e920",
 	"title": "À quels ensembles de nombres appartient ce nombre ?",
 	"description": "Reconnaître l'appartenance d'une fraction, d'une racine carrée ou d'un décimal à ℕ, ℤ, 𝔻, ℚ et ℝ (plusieurs bonnes réponses)",
 	"grades": ["1_SPE"],
-	"theme": "Logique",
-	"domain": "Ensembles",
-	"subdomain": "Appartenance et inclusion",
 	"level": 1,
 	"status": "draft",
 	"delay": 60,

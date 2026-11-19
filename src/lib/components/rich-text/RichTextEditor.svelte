@@ -21,15 +21,15 @@
 	</script>
 -->
 <script lang="ts">
-	import '$lib/utils/mathlive-styles';
-	import { lore } from '$lib/config/lore';
+	import '#lib/utils/mathlive-styles.ts';
+	import { lore } from '#lib/config/lore.ts';
 	import { onMount } from 'svelte';
 	import { Editor } from '@tiptap/core';
-	import { Button } from '$lib/components/ui/button';
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
-	import { getListColumns } from '$lib/extensions/list-columns-extension';
-	import * as Tabs from '$lib/components/ui/tabs';
-	import { Input } from '$lib/components/ui/input';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as DropdownMenu from '#lib/components/ui/dropdown-menu/index.ts';
+	import { getListColumns } from '#lib/extensions/list-columns-extension.ts';
+	import * as Tabs from '#lib/components/ui/tabs/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
 	import {
 		Bold,
 		Italic,
@@ -75,16 +75,20 @@
 		Ruler,
 		Table2,
 		Grid3x3,
+		LoaderCircle,
 		QrCode
 	} from '@lucide/svelte';
-	import { QR_TEMPLATE } from '$lib/ubumark/parser/qr-parser';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import ImageAttributePanel from '$lib/components/exercises/ImageAttributePanel.svelte';
+	import { QR_TEMPLATE } from '#lib/ubumark/parser/qr-parser.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import ImageAttributePanel from '#lib/components/exercises/ImageAttributePanel.svelte';
 	import ImageGalleryModal from './ImageGalleryModal.svelte';
 	import type { GalleryImageInfo } from './types';
-	import { parseMarkdown } from '$lib/ubumark/parser';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import { browser } from '$app/environment';
+	import { parseMarkdown } from '#lib/ubumark/parser/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import { browser } from '$app/env';
+	// Import NU : côté serveur, `mathlive` résout vers `mathlive-ssr`, qui n'exporte pas
+	// `MathfieldElement` — un import nommé casserait le rendu serveur en build (garde :
+	// `__tests__/mathlive-imports-ssr.test.ts`). La classe est prise dans `onMount`.
 	import 'mathlive';
 
 	// Shared configuration imports
@@ -99,9 +103,9 @@
 	import { createEditorExtensions, getEditorProps } from './editor-config';
 	import { tipTapToMarkdown } from './markdown-export';
 	import { markdownToTipTap } from './markdown-import';
-	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
+	import MarkdownRenderer from '#lib/components/markdown/MarkdownRenderer.svelte';
 	import MarkdownCodeEditor from './MarkdownCodeEditor.svelte';
-	import type { MarkdownDisplayMode } from '$lib/components/markdown/types';
+	import type { MarkdownDisplayMode } from '#lib/components/markdown/types.ts';
 	import type {
 		RichTextMode,
 		MathTemplateLevel,
@@ -109,7 +113,7 @@
 		EditorPreset,
 		ImageUploadConfig
 	} from './types';
-	import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
+	import type { GenericFunctionConfig } from '#lib/mathAST/parser/types.ts';
 
 	// Component Props
 	interface Props {
@@ -192,6 +196,10 @@
 	// Editor State
 	let editorElement = $state<HTMLElement | null>(null);
 	let editor = $state<Editor | null>(null);
+	// Rendu serveur et hydratation : la barre est là mais aucun éditeur derrière
+	// (plusieurs secondes sur une connexion lente) → « en-cours », barre inerte.
+	// « erreur » : la création de l'éditeur a levé — dit plutôt qu'un éditeur muet.
+	let chargement = $state<'en-cours' | 'pret' | 'erreur'>('en-cours');
 
 	// Le sélecteur `[[` lit ce niveau au moment de chaque recherche. On l'écrit
 	// dans le STOCKAGE de l'extension et non dans ses options, parce que
@@ -484,6 +492,15 @@
 	}
 
 	/**
+	 * L'éditeur est-il créé ? Avant (import de MathLive en cours, ou échoué),
+	 * `getMarkdown()` rend `''` : un appelant qui lit le contenu à l'envoi doit
+	 * alors garder le sien, sous peine d'enregistrer un texte vide.
+	 */
+	export function isReady(): boolean {
+		return editor !== null && editor !== undefined;
+	}
+
+	/**
 	 * Get markdown content on-demand (exported method)
 	 */
 	export function getMarkdown(): string {
@@ -496,71 +513,86 @@
 	 */
 	onMount(() => {
 		if (!editorElement) return;
+		// Démonté avant la fin de l'import : ne pas créer un éditeur orphelin
+		let demonte = false;
 
-		// Async initialization wrapped in an IIFE
+		// Création après l'import de MathLive, comme toujours : la créer dès le montage
+		// changeait le moment où l'éditeur apparaît (essayé, des tests cliquaient pendant
+		// que la mise en page bougeait encore).
 		(async () => {
-			// Disable MathLive sounds globally (client-side only)
-			const { MathfieldElement } = await import('mathlive');
-			MathfieldElement.soundsDirectory = null;
+			try {
+				// Disable MathLive sounds globally (client-side only)
+				const { MathfieldElement } = await import('mathlive');
+				if (demonte) return;
+				MathfieldElement.soundsDirectory = null;
 
-			const extensions = createEditorExtensions({ headingLevels: 6 });
-			const editorProps = getEditorProps({ minHeight });
+				const extensions = createEditorExtensions({ headingLevels: 6 });
+				const editorProps = getEditorProps({ minHeight });
 
-			// Prevent reactive updates during initialization
-			isUpdatingFromProp = true;
+				// Prevent reactive updates during initialization
+				isUpdatingFromProp = true;
 
-			// TipTap accepts both HTML string and JSON object for content
-			// Priority: markdownValue > jsonValue (if object) > htmlValue (if string) > empty
-			const initialContent =
-				mode === 'form'
-					? markdownValue !== undefined
-						? markdownToTipTap(markdownValue, {
-								genericFunctions: genericFunctions ?? undefined
-							})
-						: jsonValue && typeof jsonValue === 'object'
-							? jsonValue
-							: htmlValue || ''
-					: '';
+				// TipTap accepts both HTML string and JSON object for content
+				// Priority: markdownValue > jsonValue (if object) > htmlValue (if string) > empty
+				const initialContent =
+					mode === 'form'
+						? markdownValue !== undefined
+							? markdownToTipTap(markdownValue, {
+									genericFunctions: genericFunctions ?? undefined
+								})
+							: jsonValue && typeof jsonValue === 'object'
+								? jsonValue
+								: htmlValue || ''
+						: '';
 
-			editor = new Editor({
-				element: editorElement,
-				extensions,
-				content: initialContent,
-				editorProps,
-				editable: !disabled,
-				onCreate: () => {
-					// TipTap signals it's fully initialized - now safe to track user changes
-					hasInitialized = true;
-					isUpdatingFromProp = false;
-					updateFormattingState();
-				},
-				onUpdate: ({ editor: ed }) => {
-					if (isUpdatingFromProp || !hasInitialized) return;
+				editor = new Editor({
+					element: editorElement,
+					extensions,
+					content: initialContent,
+					editorProps,
+					editable: !disabled,
+					onCreate: () => {
+						// TipTap signals it's fully initialized - now safe to track user changes
+						hasInitialized = true;
+						isUpdatingFromProp = false;
+						updateFormattingState();
+					},
+					onUpdate: ({ editor: ed }) => {
+						if (isUpdatingFromProp || !hasInitialized) return;
 
-					// Update bound values in form mode
-					if (mode === 'form') {
-						htmlValue = ed.getHTML();
-						if (jsonValue !== undefined) {
-							jsonValue = ed.getJSON();
+						// Update bound values in form mode
+						if (mode === 'form') {
+							htmlValue = ed.getHTML();
+							if (jsonValue !== undefined) {
+								jsonValue = ed.getJSON();
+							}
+							// Update markdown binding (debounced) - only if bound
+							if (markdownValue !== undefined) {
+								updateMarkdownDebounced();
+							}
 						}
-						// Update markdown binding (debounced) - only if bound
-						if (markdownValue !== undefined) {
-							updateMarkdownDebounced();
-						}
+						updateFormattingState();
+						updatePreviewDebounced();
+
+						// Notify parent of user-initiated change
+						onchange?.();
+					},
+					onSelectionUpdate: () => {
+						updateFormattingState();
 					}
-					updateFormattingState();
-					updatePreviewDebounced();
-
-					// Notify parent of user-initiated change
-					onchange?.();
-				},
-				onSelectionUpdate: () => {
-					updateFormattingState();
-				}
-			});
+				});
+				chargement = 'pret';
+			} catch (erreur) {
+				// Import de MathLive en échec, contenu illisible, extension qui lève… :
+				// l'éditeur ne peut pas naître — le dire plutôt qu'un éditeur muet
+				console.error('[RichTextEditor] création de l’éditeur impossible', erreur);
+				isUpdatingFromProp = false;
+				if (!demonte) chargement = 'erreur';
+			}
 		})();
 
 		return () => {
+			demonte = true;
 			if (previewTimeout) {
 				clearTimeout(previewTimeout);
 				previewTimeout = null;
@@ -684,6 +716,10 @@
 			latex
 		);
 		editor?.commands.focus();
+	}
+
+	function insertCalculAligne() {
+		(editor?.commands as unknown as Record<string, () => boolean>).insertCalculAligne?.();
 	}
 
 	/**
@@ -1153,8 +1189,13 @@
 			? 'flex min-h-0 flex-1 flex-col overflow-y-auto'
 			: 'contents'}
 	>
-		<!-- Toolbar -->
-		<div class="border-b border-border bg-muted">
+		<!-- Toolbar : inerte tant que l'éditeur n'existe pas (ses boutons n'agiraient sur rien) -->
+		<div
+			class="border-b border-border bg-muted transition-opacity {chargement === 'pret'
+				? ''
+				: 'opacity-50'}"
+			inert={chargement !== 'pret'}
+		>
 			<!-- Main Toolbar Row -->
 			<div class="flex flex-wrap items-center gap-1 p-2">
 				<!-- Text Section Toggle -->
@@ -1897,6 +1938,18 @@
 					>
 						$$...$$
 					</Button>
+
+					<!-- Calcul aligné : une ligne par étape, alignées sur leur relation -->
+					<Button
+						type="button"
+						variant="ghost"
+						size="sm"
+						onclick={insertCalculAligne}
+						{disabled}
+						title="Calcul aligné — Cmd+Entrée (Ctrl+Entrée) dans la formule pour ajouter une ligne"
+					>
+						Calcul aligné
+					</Button>
 				</div>
 			{/if}
 		</div>
@@ -1933,9 +1986,36 @@
 
 		<!-- Editor Content Area with Split View -->
 		<div
-			class="flex min-h-0 flex-1 {isPreviewMode ? 'flex-col md:flex-row' : ''}"
+			class="relative flex min-h-0 flex-1 {isPreviewMode ? 'flex-col md:flex-row' : ''}"
 			style={isFullscreen ? '' : `min-height: ${minHeight}`}
 		>
+			<!-- Région toujours présente : un lecteur d'écran n'annonce que ce qui CHANGE
+			     dans une région déjà montée -->
+			<span role="status" class="sr-only">
+				{chargement === 'en-cours' ? 'Chargement de l’éditeur…' : ''}
+			</span>
+			<!-- Éditeur pas encore créé ou en échec. Posé ICI, sur la zone qui a la hauteur
+			     minimale : le panneau de l'éditeur, vide, fait 0 px et cachait l'indicateur -->
+			{#if chargement === 'en-cours'}
+				<div
+					aria-hidden="true"
+					data-chargement
+					class="pointer-events-none absolute inset-0 flex items-center justify-center gap-2 text-sm text-muted-foreground"
+				>
+					<LoaderCircle class="h-4 w-4 animate-spin" />
+					Chargement de l’éditeur…
+				</div>
+			{:else if chargement === 'erreur'}
+				<div
+					role="alert"
+					class="absolute inset-0 z-20 flex flex-col items-center justify-center gap-2 bg-background p-4 text-center text-sm"
+				>
+					<p>L’éditeur n’a pas pu se charger.</p>
+					<Button type="button" size="sm" variant="outline" onclick={() => location.reload()}>
+						Recharger la page
+					</Button>
+				</div>
+			{/if}
 			<!-- Editor Panel -->
 			<div
 				bind:this={editorPanelRef}
@@ -1953,7 +2033,7 @@
 						: ''}"
 					title={isMarkdownEditMode ? 'Retour à TipTap' : 'Éditer le markdown'}
 					aria-label={isMarkdownEditMode ? 'Retour à TipTap' : 'Éditer le markdown brut'}
-					{disabled}
+					disabled={disabled || chargement !== 'pret'}
 				>
 					<FileCode class="h-4 w-4" />
 				</button>

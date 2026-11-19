@@ -9,13 +9,13 @@
  * Security: Admin only
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAdmin } from '$lib/server/middleware/auth';
-import { createTemplateSchema } from '$lib/server/validation/vip-card-admin';
-import { templateToResponse } from '$lib/types/vip-card-admin';
-import { toVipCardTemplate } from '$lib/types/vip-card-admin';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireAdmin } from '#lib/server/middleware/auth.ts';
+import { createTemplateSchema } from '#lib/server/validation/vip-card-admin.ts';
+import { templateToResponse } from '#lib/types/vip-card-admin.ts';
+import { toVipCardTemplate } from '#lib/types/vip-card-admin.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/admin/vip-cards/templates/+server');
 
@@ -102,7 +102,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		}
 
 		// 6. Return created template (convert snake_case to camelCase)
-		return json(templateToResponse(toVipCardTemplate(created)), { status: 201 });
+		return Response.json(templateToResponse(toVipCardTemplate(created)), { status: 201 });
 	} catch (err) {
 		logger.error('Error in POST /api/admin/vip-cards/templates:', err);
 
@@ -148,7 +148,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 		// 4. Convert to camelCase and return
 		const response = (templates ?? []).map(toVipCardTemplate).map(templateToResponse);
 
-		return json(response);
+		return Response.json(response);
 	} catch (err) {
 		logger.error('Error in GET /api/admin/vip-cards/templates:', err);
 

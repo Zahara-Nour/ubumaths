@@ -1,10 +1,8 @@
 {
+	"id": "7d6cf480-b062-4e45-a593-2e85fbeb28b3",
 	"title": "Pente d'une droite passant par deux points",
 	"description": "m = (y_B − y_A)/(x_B − x_A) : pente entière, puis fractionnaire ; (AB) a-t-elle une pente ? (pas si x_A = x_B) (pièges : Δx/Δy, différences dans des ordres différents)",
 	"grades": ["2"],
-	"theme": "Géométrie",
-	"domain": "Droites du plan",
-	"subdomain": "Pente et vecteur directeur",
 	"level": 1,
 	"delay": 90,
 	"status": "draft",

@@ -1,10 +1,8 @@
 {
+	"id": "f9eeeffe-1157-4f94-b3c1-d12037184de6",
 	"title": "Problèmes multiplicatifs : le tout",
 	"description": "n paquets de p : 6 paquets de 4 biscuits, 10 paquets de 25 gâteaux, 7 paquets de 20",
 	"grades": ["CE1"],
-	"theme": "Entiers",
-	"domain": "Problèmes",
-	"subdomain": "Multiplicatifs",
 	"level": 6,
 	"delay": 90,
 	"status": "draft",

@@ -23,7 +23,7 @@
 	@module components/markdown/nodes/PartageColorier
 -->
 <script lang="ts">
-	import { partageSpecTotal, partageTotal, type PartageNode } from '$lib/ubumark/types/partage';
+	import { partageSpecTotal, partageTotal, type PartageNode } from '#lib/ubumark/types/partage.ts';
 	import {
 		PARTAGE_CM_PER_UNIT,
 		PARTAGE_MARGIN,
@@ -31,12 +31,12 @@
 		buildPartageScenes,
 		partAtPoint,
 		partageFigureLabel
-	} from '$lib/ubumark/utils/partage-scene';
+	} from '#lib/ubumark/utils/partage-scene.ts';
 	import {
 		coloredAnswer,
 		coloringMistakes,
 		ranksOfAnswer
-	} from '$lib/ubumark/utils/partage-colorier';
+	} from '#lib/ubumark/utils/partage-colorier.ts';
 	import type { BuildCase } from './CollectionConstruire.svelte';
 
 	type ScenePoint = { x: number; y: number };

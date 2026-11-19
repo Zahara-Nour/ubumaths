@@ -1,10 +1,8 @@
 {
+	"id": "57c73be1-c98c-45a0-8828-94987041ab60",
 	"title": "Calculer une longueur ou un angle (trigonométrie)",
 	"description": "Calculer une longueur ou un angle dans un triangle rectangle avec cos, sin ou tan : longueur au numérateur, au dénominateur, avec la tangente, puis un angle ; arrondis",
 	"grades": ["3"],
-	"theme": "Géométrie",
-	"domain": "Trigonométrie",
-	"subdomain": "Calculer",
 	"level": 1,
 	"delay": 150,
 	"status": "draft",

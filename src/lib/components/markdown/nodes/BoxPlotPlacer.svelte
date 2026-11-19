@@ -28,14 +28,14 @@
 -->
 <script lang="ts">
 	import { untrack } from 'svelte';
-	import { COURBE_COLORS } from '$lib/ubumark/types/courbe';
-	import type { StatChartNode } from '$lib/ubumark/types/stat-chart';
-	import { namedColorScreen, namedColorTable } from '$lib/theme/named-colors';
+	import { COURBE_COLORS } from '#lib/ubumark/types/courbe.ts';
+	import type { StatChartNode } from '#lib/ubumark/types/stat-chart.ts';
+	import { namedColorScreen, namedColorTable } from '#lib/theme/named-colors.ts';
 	import {
 		buildStatChartScene,
 		SCATTER_LABEL_CHAR_PX,
 		scatterTick
-	} from '$lib/ubumark/utils/stat-chart-scene';
+	} from '#lib/ubumark/utils/stat-chart-scene.ts';
 	import {
 		BOX_TRAIT_BUTTONS,
 		BOX_TRAITS,
@@ -48,7 +48,7 @@
 		solvedBoxPlotSpec,
 		stepValue,
 		traitText
-	} from '$lib/ubumark/utils/boxplot-placer';
+	} from '#lib/ubumark/utils/boxplot-placer.ts';
 	import { readContentLocale } from '../content-locale';
 	import type { BuildCase } from './CollectionConstruire.svelte';
 	import StatChart from './StatChart.svelte';

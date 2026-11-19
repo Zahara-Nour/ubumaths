@@ -6,9 +6,21 @@
  * For DB row types, see database-helpers.ts (StudentBuddy, BuddySkin).
  */
 
-import type { PalotinType } from '$lib/config/buddy-messages';
+import type { PalotinType } from '#lib/config/buddy-messages.ts';
 
 /** Current buddy state for client-side rendering */
+/**
+ * Moments de la semaine qui devient active, fêtés par le Palotin (chantier
+ * `regularite`, B2) : 1re activité de la semaine, 3/5/10 semaines d'affilée.
+ */
+export const WEEK_MOMENTS = [
+	'week_first_activity',
+	'active_weeks_3',
+	'active_weeks_5',
+	'active_weeks_10'
+] as const;
+export type WeekMoment = (typeof WEEK_MOMENTS)[number];
+
 export interface BuddyState {
 	student_id: string;
 	palotin_type: PalotinType;

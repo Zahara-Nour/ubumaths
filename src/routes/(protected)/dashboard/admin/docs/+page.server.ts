@@ -1,7 +1,7 @@
 import type { PageServerLoad } from './$types';
-import { requireAdmin } from '$lib/server/middleware/auth';
-import { scanDocumentation } from '$lib/server/docs-scanner';
-import { parseMarkdown } from '$lib/server/markdown-parser';
+import { requireAdmin } from '#lib/server/middleware/auth.ts';
+import { scanDocumentation } from '#lib/server/docs-scanner.ts';
+import { parseMarkdown } from '#lib/server/markdown-parser.ts';
 import { readFile } from 'fs/promises';
 import { join } from 'path';
 

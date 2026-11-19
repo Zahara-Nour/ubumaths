@@ -101,9 +101,6 @@
 			}
 		],
 		"grades": ["5"],
-		"theme": "Calcul littéral",
-		"domain": "Calculs",
-		"subdomain": "Par substitution",
 		"level": 1,
 		"status": "draft",
 		"delay": 30,

@@ -1,5 +1,5 @@
 // Accessibility: detect user's reduced motion preference (Svelte 5 version)
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 
 const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)';
 

@@ -37,16 +37,17 @@
  * - If studentId provided, must be a valid student in the assignment
  */
 
-import { exerciseCapitalPairs } from '$lib/questions/capital-pairs';
-import { error, json } from '@sveltejs/kit';
+import { exerciseCapitalPairs } from '#lib/questions/capital-pairs.ts';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
 import { z } from 'zod';
-import { getCorrectionVisibilityMap } from '$lib/server/worksheets/correction-visibility';
+import { getCorrectionVisibilityMap } from '#lib/server/worksheets/correction-visibility.ts';
 import {
 	fetchAssignmentClasses,
 	formatClassNames
-} from '$lib/server/worksheets/assignment-classes';
-import type { ExerciseResource } from '$lib/exercises/types';
+} from '#lib/server/worksheets/assignment-classes.ts';
+import type { ExerciseResource } from '#lib/exercises/types.ts';
 import {
 	assignmentCopyScope,
 	copyExerciseOrder,
@@ -54,7 +55,7 @@ import {
 	resolveWorksheetExerciseCopy,
 	type ExerciseContentRow,
 	type WorksheetForCopy
-} from '$lib/worksheets/worksheet-copy';
+} from '#lib/worksheets/worksheet-copy.ts';
 import {
 	localizedText,
 	asRowTranslations,
@@ -62,22 +63,22 @@ import {
 	asWorksheetConfig,
 	viewTypeOptions,
 	type RowTranslations
-} from '$lib/types/worksheets';
+} from '#lib/types/worksheets.ts';
 import type {
 	StudentExerciseView,
 	StudentSectionView,
 	StudentWorksheetView,
 	WorksheetType
-} from '$lib/types/worksheets';
-import { isStudentOfAssignment } from '$lib/server/worksheets/assignment-recipients';
-import { loadAuthorStyleTemplate } from '$lib/server/worksheets/worksheet-styles';
-import { worksheetHeader } from '$lib/worksheets/worksheet-header';
-import { estimateAnswerFrames } from '$lib/worksheets/document/answer-frames';
+} from '#lib/types/worksheets.ts';
+import { isStudentOfAssignment } from '#lib/server/worksheets/assignment-recipients.ts';
+import { loadAuthorStyleTemplate } from '#lib/server/worksheets/worksheet-styles.ts';
+import { worksheetHeader } from '#lib/worksheets/worksheet-header.ts';
+import { estimateAnswerFrames } from '#lib/worksheets/document/answer-frames.ts';
 import {
 	resolveAnswerFrames,
 	toAnswerFrameLines
-} from '$lib/worksheets/document/answer-frame-lines';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/worksheets/document/answer-frame-lines.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/worksheets/assignments/[assignmentId]/preview/+server');
 
@@ -158,10 +159,7 @@ async function verifyTeacherAccess(
 
 export const GET: RequestHandler = async ({ locals, params, url }) => {
 	// Auth check
-	const { user } = await locals.safeGetSession();
-	if (!user) {
-		throw error(401, 'Connexion requise');
-	}
+	const { user } = await requireAuth(locals);
 
 	// Validate assignment ID parameter
 	const paramValidation = assignmentParamSchema.safeParse({
@@ -529,7 +527,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 			per_student_copies: perStudentCopies
 		};
 
-		return json(response);
+		return Response.json(response);
 	} catch (err) {
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;

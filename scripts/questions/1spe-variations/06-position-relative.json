@@ -1,10 +1,8 @@
 {
+	"id": "1e097d3d-0fdf-4fdc-9549-836d1a0efb48",
 	"title": "Position relative de deux courbes",
 	"description": "Position relative par le signe de f(x) − g(x) : parabole et droite, deux paraboles (f − g affine), x³ et a²x sur [0 ; +∞[",
 	"grades": ["1_SPE"],
-	"theme": "Fonctions",
-	"domain": "Dérivation",
-	"subdomain": "Position relative",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

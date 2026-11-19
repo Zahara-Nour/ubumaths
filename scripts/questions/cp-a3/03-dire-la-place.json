@@ -1,10 +1,8 @@
 {
+	"id": "7dc1629e-182a-48b0-a37c-05a25804cfc3",
 	"title": "Dire la place (jusqu'à vingtième)",
 	"description": "Dire en lettres la place d'une perle ou d'un enfant, de gauche à droite",
 	"grades": ["CP"],
-	"theme": "Entiers",
-	"domain": "Apprivoiser",
-	"subdomain": "Ordinaux",
 	"level": 3,
 	"delay": 45,
 	"status": "draft",

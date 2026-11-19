@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { privateMessages } from '$lib/stores/privateMessages.svelte';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
+	import { privateMessages } from '#lib/stores/privateMessages.svelte.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
 	import {
 		Loader2,
 		Star,
@@ -18,8 +18,8 @@
 	} from '@lucide/svelte';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { cn } from '$lib/utils';
-	import UserAvatar from '$lib/components/UserAvatar.svelte';
+	import { cn } from '#lib/utils.ts';
+	import UserAvatar from '#lib/components/UserAvatar.svelte';
 
 	let searchQuery = $state('');
 	let selectedIndex = $state(-1);

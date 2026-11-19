@@ -1,10 +1,8 @@
 {
+	"id": "f24bb468-6194-4dfa-b9b8-3eeb29086adc",
 	"title": "Trouver le terme manquant",
 	"description": "Tables d'addition dans l'autre sens : 8 + ? = 15",
 	"grades": ["CM1"],
-	"theme": "Entiers",
-	"domain": "Additionner",
-	"subdomain": "A trou",
 	"level": 15,
 	"delay": 20,
 	"status": "draft",

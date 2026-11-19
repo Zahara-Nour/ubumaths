@@ -6,9 +6,9 @@
  */
 
 import type { PageServerLoad } from './$types';
-import { requireRoles } from '$lib/server/middleware/auth';
-import { CONSTRUCTION_AUTHOR_ROLES } from '$lib/server/constructions-access';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import { CONSTRUCTION_AUTHOR_ROLES } from '#lib/server/constructions-access.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('(protected)/constructions/conversion/+page.server');
 

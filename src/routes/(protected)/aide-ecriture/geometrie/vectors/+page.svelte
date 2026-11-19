@@ -1,11 +1,11 @@
 <script lang="ts">
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import GeometryCanvas from '$lib/components/geometry/GeometryCanvas.svelte';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import GeometryCanvas from '#lib/components/geometry/GeometryCanvas.svelte';
 	import DslDemo from '../DslDemo.svelte';
-	import { Figure } from '$lib/geometry-core/graph/figure';
-	import { exact } from '$lib/geometry-core/types/geo-value';
-	import { numericNode } from '$lib/mathAST';
-	import { runDsl } from '$lib/geometry-core/dsl';
+	import { Figure } from '#lib/geometry-core/graph/figure.ts';
+	import { exact } from '#lib/geometry-core/types/geo-value.ts';
+	import { numericNode } from '#lib/mathAST/index.ts';
+	import { runDsl } from '#lib/geometry-core/dsl/index.ts';
 
 	function pt(x: number, y: number) {
 		return { x: exact(numericNode(x)), y: exact(numericNode(y)) };

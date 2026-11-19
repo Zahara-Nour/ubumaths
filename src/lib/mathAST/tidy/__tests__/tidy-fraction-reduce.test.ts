@@ -71,17 +71,49 @@ describe('témoins : rien à simplifier, rien ne bouge', () => {
 
 /**
  * Cas de la revue de la PR (2026-10-20) : la réduction se fait sur le terme
- * ACCUMULÉ — elle ne dépend donc pas de l'écriture — et ne fait jamais
- * apparaître une somme qui s'annulerait avec un autre facteur.
+ * ACCUMULÉ — elle ne dépend donc pas de l'écriture — et ne simplifie jamais
+ * par une somme (domaine). Une somme réduite égale à un facteur de l'autre côté
+ * de la barre y reste des deux côtés, comme une base déjà écrite des deux côtés
+ * (S3) : même résultat que `2(x+1)/(4(x+1))` (`signes-06`, David, 2026-11-02).
  */
 describe('revue : jamais de simplification par une somme (domaine)', () => {
 	it.each([
-		['(2x+2)/(4(x+1))', '{2x+2}/{4(x+1)}'],
-		['(2x+2)/(2(x+1))', '{2x+2}/{2(x+1)}'],
-		['(2x+2)/(4(x+1)^2)', '{2x+2}/{4(x+1)^2}']
+		['(2x+2)/(4(x+1))', '{x+1}/{2(x+1)}'],
+		['(2x+2)/(2(x+1))', '{x+1}/{x+1}'],
+		['(4x+4)/(2(x+1))', '{2(x+1)}/{x+1}'],
+		['(6x+3)/(3(2x+1))', '{2x+1}/{2x+1}'],
+		['(3x+3)/(6(x+1))', '{x+1}/{2(x+1)}'],
+		['(2x-2)/(4(x-1))', '{x-1}/{2(x-1)}'],
+		['(2x+2)/(4(x+1)(x-1))', '{x+1}/{2(x+1)(x-1)}'],
+		['(2x+2)/(4(x+1)^2)', '1/{2(x+1)}'],
+		['(2x+2)^2/(4(x+1))', '{(x+1)^2}/{x+1}'],
+		// Q9 et signes-06 ensemble
+		['(0.5x+0.5)/(x+1)', '{x+1}/{2(x+1)}']
 	])('tidy(%s) = %s', (input, expected) => {
 		expect(t(input)).toBe(expected);
 	});
+
+	it.each([
+		['(2x+2)/(4(x+1))', '2(x+1)/(4(x+1))'],
+		['(4x+4)/(2(x+1))', '2(x+1)/(x+1)'],
+		['(2x+2)/(4(x+1)^2)', '(x+1)/(2(x+1)^2)'],
+		['(2x+2)^2/(4(x+1))', '(x+1)^2/(x+1)'],
+		// Revue : sans nombre commun à simplifier aussi
+		['(2x+2)/(x+1)', '2(x+1)/(x+1)'],
+		['(3x+3)/(x+1)^2', '3(x+1)/(x+1)^2']
+	])('même résultat que l’écriture réduite : %s ≡ %s', (input, other) => {
+		expect(t(input)).toBe(t(other));
+	});
+
+	it.each(['(2x+2)/(4(x+1))', '(4x+4)/(2(x+1))', '(2x+2)/(4(x+1)^2)', '(0.5x+0.5)/(x+1)'])(
+		'idempotent et valeur conservée : %s',
+		(input) => {
+			const node = parseCustom(input);
+			const once = tidy(node);
+			expect(toCustom(tidy(once))).toBe(toCustom(once));
+			expect(areEquivalent(once, node)).toBe(true);
+		}
+	);
 });
 
 describe('revue : même résultat quelle que soit l’écriture', () => {

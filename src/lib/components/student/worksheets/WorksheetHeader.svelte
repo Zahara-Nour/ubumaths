@@ -9,13 +9,13 @@
 -->
 
 <script lang="ts">
-	import { worksheetPdfFileName } from '$lib/worksheets/pdf-file-name';
-	import { WORKSHEET_TYPE_LABELS } from '$lib/utils/worksheet-type-labels';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Button } from '$lib/components/ui/button';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import * as Card from '$lib/components/ui/card';
-	import * as Dialog from '$lib/components/ui/dialog';
+	import { worksheetPdfFileName } from '#lib/worksheets/pdf-file-name.ts';
+	import { WORKSHEET_TYPE_LABELS } from '#lib/utils/worksheet-type-labels.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
 	import {
 		Calendar,
 		CheckCircle,
@@ -28,16 +28,16 @@
 		Download,
 		Loader2
 	} from '@lucide/svelte';
-	import { generateAndDownloadPdf } from '$lib/typst/pdf-generator';
+	import { generateAndDownloadPdf } from '#lib/typst/pdf-generator.ts';
 	import {
 		generateStudentWorksheetTypst,
 		type StudentPdfEnding
-	} from '$lib/worksheets/student-worksheet-typst';
-	import { fallbackWarning } from '$lib/typst/compiler/correction-fonts-compiler';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import type { StudentWorksheetView, WorksheetType } from '$lib/types/worksheets';
-	import TextSizeSelect from '$lib/components/worksheets/TextSizeSelect.svelte';
-	import type { TextSize } from '$lib/typst/text-size';
+	} from '#lib/worksheets/student-worksheet-typst.ts';
+	import { fallbackWarning } from '#lib/typst/compiler/correction-fonts-compiler.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import type { StudentWorksheetView, WorksheetType } from '#lib/types/worksheets.ts';
+	import TextSizeSelect from '#lib/components/worksheets/TextSizeSelect.svelte';
+	import type { TextSize } from '#lib/typst/text-size.ts';
 
 	interface Props {
 		worksheet: StudentWorksheetView;

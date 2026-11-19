@@ -1,6 +1,6 @@
 """Écrit les 12 modèles du lot 5 du CE2 (problèmes) dans scripts/questions/ce2-5/.
 
-Phase 0 validée par David le 2026-11-01 (§ 9 du journal `docs/wip/questions-ce2-progress.md`).
+Phase 0 validée par David le 2026-11-01 (§ 9 du journal `docs/archive/wip/questions-ce2-progress.md`).
 Bornes `cycle2.json`, CE2-029 à 034 et 079 : entiers jusqu'à 10 000 (réponses sous 10 000 : « 10000 » sans espace serait jugé non optimal), prix à virgule, fractions de même
 dénominateur ; plus de deux étapes : nombres < 100 ; nombre de parts : quantité totale ≤ 1 000 ;
 valeur d'une part : appui sur les tables ; « fois plus » distingué de « de plus ». Exemples du BO

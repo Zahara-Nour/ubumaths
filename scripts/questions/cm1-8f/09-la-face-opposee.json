@@ -1,0 +1,257 @@
+{
+	"id": "ebc05cbb-69cd-4689-a562-48b9c2fb0252",
+	"title": "La face opposée",
+	"description": "Toucher, sur un patron de cube, la face qui sera en face de la face grise : la croix, puis les 10 autres patrons, tournés, retournés",
+	"grades": ["CM1", "CM2"],
+	"level": 5,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "On plie ce patron pour fabriquer un cube. Touche la face qui sera **en face** de la face grise, une fois le cube fermé.\n\n```patron\nsolide: cube\nforme: 1\nmarquer: face {{m}}\ndesigner: opposee\ntourner: {{eval:90*t}}\n```",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "1..6"
+				},
+				{
+					"name": "t",
+					"expression": "0..3"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une fois le cube fermé, la face opposée à la face grise ne la touche pas, même par un coin.",
+					"Dans une rangée de carrés, deux carrés séparés par un seul carré deviennent des faces opposées."
+				]
+			}
+		},
+		{
+			"statement": "On plie ce patron pour fabriquer un cube. Touche la face qui sera **en face** de la face grise, une fois le cube fermé.\n\n```patron\nsolide: cube\nforme: {{k}}\nmarquer: face {{m}}\ndesigner: opposee\ntourner: {{eval:90*t}}\nretourner: {{if:r==1|oui|non}}\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..11"
+				},
+				{
+					"name": "m",
+					"expression": "1..6"
+				},
+				{
+					"name": "t",
+					"expression": "0..3"
+				},
+				{
+					"name": "r",
+					"expression": "0..1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une fois le cube fermé, la face opposée à la face grise ne la touche pas, même par un coin.",
+					"Dans une rangée de carrés, deux carrés séparés par un seul carré deviennent des faces opposées."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Patron 1, face 2 : la face 4",
+			"variationIndex": 0,
+			"variables": {
+				"m": "2",
+				"t": "0"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : une face voisine (3)",
+			"variationIndex": 0,
+			"variables": {
+				"m": "2",
+				"t": "0"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : la face grise elle-même",
+			"variationIndex": 0,
+			"variables": {
+				"m": "2",
+				"t": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Patron 1, face 1 : la face 6",
+			"variationIndex": 0,
+			"variables": {
+				"m": "1",
+				"t": "1"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : une face voisine (2)",
+			"variationIndex": 0,
+			"variables": {
+				"m": "1",
+				"t": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : la face grise elle-même",
+			"variationIndex": 0,
+			"variables": {
+				"m": "1",
+				"t": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Patron 7, face 2 : la face 6",
+			"variationIndex": 1,
+			"variables": {
+				"k": "7",
+				"m": "2",
+				"t": "0",
+				"r": "0"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : une face voisine (1)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "7",
+				"m": "2",
+				"t": "0",
+				"r": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : la face grise elle-même",
+			"variationIndex": 1,
+			"variables": {
+				"k": "7",
+				"m": "2",
+				"t": "0",
+				"r": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Patron 11, face 1 : la face 3",
+			"variationIndex": 1,
+			"variables": {
+				"k": "11",
+				"m": "1",
+				"t": "2",
+				"r": "1"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : une face voisine (2)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "11",
+				"m": "1",
+				"t": "2",
+				"r": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : la face grise elle-même",
+			"variationIndex": 1,
+			"variables": {
+				"k": "11",
+				"m": "1",
+				"t": "2",
+				"r": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Patron 4, face 3 : la face 5",
+			"variationIndex": 1,
+			"variables": {
+				"k": "4",
+				"m": "3",
+				"t": "3",
+				"r": "0"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : une face voisine (4)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "4",
+				"m": "3",
+				"t": "3",
+				"r": "0"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : la face grise elle-même",
+			"variationIndex": 1,
+			"variables": {
+				"k": "4",
+				"m": "3",
+				"t": "3",
+				"r": "0"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

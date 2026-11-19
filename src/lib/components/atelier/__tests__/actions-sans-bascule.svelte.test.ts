@@ -12,7 +12,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import AtelierContainer from '../AtelierContainer.svelte';
-import { Atelier } from '$lib/atelier/atelier.svelte';
+import { Atelier } from '#lib/atelier/atelier.svelte.ts';
 import { chooseCardAction } from './harness/function-card';
 import { onDesktopScreen } from './harness/desktop-screen';
 

@@ -8,7 +8,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { Atelier } from '../atelier.svelte';
-import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
+import { WebReplEngine } from '#lib/mathAST/cli/web/web-repl-engine.ts';
 import { runInput, promote, type CalcSession } from '../calcul';
 
 function session(): CalcSession {
@@ -261,6 +261,19 @@ describe('garder un résultat sous un nom', () => {
 
 		expect(promote(s, result).ok).toBe(false);
 	});
+
+	// Une comparaison tranchée (`\text{vrai}`, décision C du lot 2 du registre) n'est pas une
+	// valeur : la garder créait `a = true` (revue de #2303)
+	it.each(['2=2', '2 < 3', '1<2<3', '2=3 \\land 1<2'])(
+		'refuse de garder la comparaison %s',
+		(line) => {
+			const s = session();
+			const kept = promote(s, runInput(s, line), 'a');
+
+			expect(kept).toEqual({ ok: false, message: 'Il n’y a rien à garder dans cette ligne.' });
+			expect(s.atelier.get('a')).toBeUndefined();
+		}
+	);
 
 	it('refuse de garder une définition — l’objet existe déjà', () => {
 		const s = session();

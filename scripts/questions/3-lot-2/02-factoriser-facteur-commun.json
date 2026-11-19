@@ -1,10 +1,8 @@
 {
+	"id": "dcaabf69-d84c-4498-a0d3-4584d5972cd4",
 	"title": "Factoriser avec un facteur commun",
 	"description": "Factoriser quand le facteur commun est une expression entre parenthèses : (x + 2)(3x − 1) + (x + 2)(x + 4), avec un −, facteur en tête puis en queue, facteur au carré, facteur seul (le 1 caché)",
 	"grades": ["3"],
-	"theme": "Calcul littéral",
-	"domain": "Transformation",
-	"subdomain": "Factorisation",
 	"level": 12,
 	"delay": 90,
 	"status": "draft",

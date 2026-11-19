@@ -45,9 +45,6 @@
 			}
 		},
 		"grades": ["4"],
-		"theme": "Puissances",
-		"domain": "Calculer",
-		"subdomain": "Diviser",
 		"level": 3,
 		"status": "draft",
 		"delay": 20,

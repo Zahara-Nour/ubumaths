@@ -1,10 +1,8 @@
 {
+	"id": "4f47f8d6-48ad-46e3-a237-57ce5ad64b9a",
 	"title": "Problèmes parties-tout avec des fractions",
 	"description": "Des parts de même taille : 3/8 d'une tablette mangés, quelle fraction reste ? ; 3/10 + 4/10 d'un livre lu ; 9/12 en deux jours dont 4/12 le premier",
 	"grades": ["CE2"],
-	"theme": "Fractions",
-	"domain": "Calculer",
-	"subdomain": "Addition et Soustraction",
 	"level": 22,
 	"delay": 90,
 	"status": "draft",

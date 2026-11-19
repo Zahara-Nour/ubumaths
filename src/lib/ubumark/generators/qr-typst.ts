@@ -17,7 +17,7 @@
  * @module ubumark/generators/qr-typst
  */
 
-import { encodeQr, qrSvg } from '$lib/qr/qr-code';
+import { encodeQr, qrSvg } from '#lib/qr/qr-code.ts';
 import { QR_UNAVAILABLE, type QrNode } from '../types/qr';
 
 // ============================================================================
@@ -31,24 +31,33 @@ const UNAVAILABLE_TYPST = `#block(stroke: 0.5pt + luma(160), inset: 6pt, radius:
 // ============================================================================
 
 /** Une chaîne Typst littérale : seuls `\` et `"` s'échappent */
-function typstString(text: string): string {
+export function typstString(text: string): string {
 	return `"${text.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`;
 }
 
 const cm = (value: number) => `${Number(value.toFixed(4))}cm`;
 
+/**
+ * L'image Typst du QR stylé de `url`, `width` en cm ; `null` si l'adresse est
+ * trop longue pour un QR lisible. Sert au bloc ```qr et à l'en-tête des fiches.
+ */
+export function qrImageTypst(url: string, widthCm: number): string | null {
+	const qr = encodeQr(url);
+	if (qr === null) return null;
+	const svg = qrSvg(qr, `QR code vers ${url}`);
+	return `image(bytes(${typstString(svg)}), format: "svg", width: ${cm(widthCm)})`;
+}
+
 /** Typst d'un bloc ```qr */
 export function generateQrTypst(node: QrNode): string {
 	if (node.errors.length > 0 || node.url === null) return UNAVAILABLE_TYPST;
-	const qr = encodeQr(node.url);
-	if (qr === null) return UNAVAILABLE_TYPST;
-
-	const svg = qrSvg(qr, `QR code vers ${node.url}`);
+	const image = qrImageTypst(node.url, node.sizeCm);
+	if (image === null) return UNAVAILABLE_TYPST;
 
 	const label = node.caption ?? node.url.replace(/^https:\/\//, '');
 	return [
 		'#align(center)[#block(breakable: false)[',
-		`  #image(bytes(${typstString(svg)}), format: "svg", width: ${cm(node.sizeCm)})`,
+		`  #${image}`,
 		'  #v(2pt, weak: true)',
 		`  #text(size: 8pt, ${typstString(label)})`,
 		']]'

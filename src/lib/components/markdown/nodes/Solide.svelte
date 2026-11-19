@@ -4,7 +4,9 @@
 
 	Solide en perspective cavalière (cube, pavé, prisme, pyramide, cylindre,
 	cône, boule) : arêtes cachées en tirets, face marquée teintée, noms des
-	sommets et cotes, section (`section:`, lot 6). Affichage seul. Dessiné
+	sommets et cotes, section (`section:`, lot 6), points déclarés (`points:`)
+	et vecteurs donnés en flèches (`vecteurs:`, chantier `solide-vecteur`).
+	Affichage seul. Dessiné
 	depuis `buildSolideScene`, la même scène que le PDF.
 
 	- Traits `var(--color-foreground)`, face marquée en gris translucide (les
@@ -19,16 +21,17 @@
 	@module components/markdown/nodes/Solide
 -->
 <script lang="ts">
-	import { ESPACE_UNAVAILABLE, type EspaceNode } from '$lib/ubumark/types/espace';
-	import { ESPACE_MARGIN, ESPACE_STROKE } from '$lib/ubumark/utils/espace-scene';
+	import { ESPACE_UNAVAILABLE, type EspaceNode } from '#lib/ubumark/types/espace.ts';
+	import { ESPACE_MARGIN, ESPACE_STROKE } from '#lib/ubumark/utils/espace-scene.ts';
 	import {
 		SOLIDE_DASH,
 		SOLIDE_DOT_RADIUS,
 		SOLIDE_LABEL_SIZE,
-		SOLIDE_THICK_STROKE,
+		SOLIDE_SUB_SCALE,
 		buildSolideScene,
+		solideLineStroke,
 		solideLabel
-	} from '$lib/ubumark/utils/espace-solides';
+	} from '#lib/ubumark/utils/espace-solides.ts';
 	import { readAuthoringErrors } from '../authoring-errors';
 
 	interface Props {
@@ -97,9 +100,20 @@
 					class="solide-trait"
 					class:solide-cache={line.dashed}
 					points={pointsOf(line.points)}
-					stroke-width={line.thick ? SOLIDE_THICK_STROKE : ESPACE_STROKE}
+					stroke-width={solideLineStroke(line)}
 					stroke-dasharray={line.dashed ? SOLIDE_DASH.join(' ') : undefined}
 				/>
+			{/each}
+			{#each scene.arrows as arrow, i (i)}
+				<line
+					class="solide-trait"
+					x1={arrow.shaft[0].x + ESPACE_MARGIN}
+					y1={arrow.shaft[0].y + ESPACE_MARGIN}
+					x2={arrow.shaft[1].x + ESPACE_MARGIN}
+					y2={arrow.shaft[1].y + ESPACE_MARGIN}
+					stroke-width={arrow.small ? ESPACE_STROKE * 0.8 : ESPACE_STROKE}
+				/>
+				<polygon class="solide-pointe" points={pointsOf(arrow.head)} />
 			{/each}
 			{#each scene.dots as dot, i (i)}
 				<circle
@@ -116,7 +130,11 @@
 					y={label.at.y + ESPACE_MARGIN}
 					font-size={SOLIDE_LABEL_SIZE}
 					text-anchor="middle"
-					dominant-baseline="central">{label.text}</text
+					dominant-baseline="central"
+					>{label.text}{#if label.sub}<tspan
+							font-size={SOLIDE_LABEL_SIZE * SOLIDE_SUB_SCALE}
+							dy={SOLIDE_LABEL_SIZE * 0.3}>{label.sub}</tspan
+						>{/if}</text
 				>
 			{/each}
 		</svg>
@@ -146,6 +164,7 @@
 	}
 
 	.solide-point,
+	.solide-pointe,
 	.solide-etiquette {
 		fill: var(--color-foreground);
 		stroke: none;

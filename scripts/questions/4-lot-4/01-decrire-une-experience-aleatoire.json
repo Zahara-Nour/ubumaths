@@ -1,10 +1,8 @@
 {
+	"id": "4d716358-ccc6-42c1-a862-f738aa134357",
 	"title": "Décrire une expérience aléatoire",
 	"description": "Écrire l'univers d'une expérience aléatoire et un évènement comme un ensemble d'issues : dé à six faces, « obtenir un nombre pair » = {2 ; 4 ; 6}",
 	"grades": ["4"],
-	"theme": "Probabilités",
-	"domain": "Évènements",
-	"subdomain": "Univers",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

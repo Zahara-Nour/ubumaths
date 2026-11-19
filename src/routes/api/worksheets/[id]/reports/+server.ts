@@ -7,13 +7,13 @@
  * GET - List all error reports with pagination, filtering by status and assignment
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRoles } from '$lib/server/middleware/auth';
-import { fetchCopyNumbering } from '$lib/server/worksheets/display-number';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import { fetchCopyNumbering } from '#lib/server/worksheets/display-number.ts';
 import { z } from 'zod';
-import type { ErrorReportStatus } from '$lib/types/worksheets';
-import { createServerLogger } from '$lib/utils/logger';
+import type { ErrorReportStatus } from '#lib/types/worksheets.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/worksheets/[id]/reports/+server');
 
@@ -155,7 +155,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 
 		if (!assignments || assignments.length === 0) {
 			// No assignments, return empty result
-			return json({
+			return Response.json({
 				reports: [],
 				counts: { pending: 0, fixed: 0, rejected: 0, total: 0 },
 				assignments: [],
@@ -300,7 +300,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 		// Build assignments list for filter dropdown
 		const assignmentsList: AssignmentInfo[] = Array.from(assignmentMap.values());
 
-		return json({
+		return Response.json({
 			reports: reportViews,
 			counts,
 			assignments: assignmentsList,

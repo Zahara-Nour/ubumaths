@@ -122,9 +122,6 @@
 			}
 		},
 		"grades": ["5"],
-		"theme": "Calcul littéral",
-		"domain": "Transformation",
-		"subdomain": "Simplification d'écriture",
 		"level": 2,
 		"status": "draft",
 		"delay": 30,

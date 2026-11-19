@@ -9,13 +9,13 @@
 
 import { describe, it, expect, vi } from 'vitest';
 import { Atelier } from '../atelier.svelte';
-import { GrapheurStore } from '$lib/stores/grapheur.svelte';
+import { GrapheurStore } from '#lib/stores/grapheur.svelte.ts';
 import { syncPlots } from '../plot-sync';
 import { CalcDesk } from '../desk.svelte';
 import { termsOf } from '../engine';
 import { actionsFor } from '../actions';
 import { isSequence } from '../types';
-import type { SequencePlottable } from '$lib/grapheur/types';
+import type { SequencePlottable } from '#lib/grapheur/types.ts';
 
 // =============================================================================
 // Décor

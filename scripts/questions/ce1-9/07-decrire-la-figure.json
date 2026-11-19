@@ -1,10 +1,8 @@
 {
+	"id": "0fa9f1f8-268c-421c-b5dd-b21dc3f7a826",
 	"title": "Décrire une figure : côtés et angles droits",
 	"description": "Combien d'angles droits a un carré, un rectangle, un triangle rectangle, un triangle ; qui suis-je ?",
 	"grades": ["CE1"],
-	"theme": "Géométrie",
-	"domain": "Figures planes",
-	"subdomain": "Propriétés",
 	"level": 5,
 	"delay": 90,
 	"status": "draft",
@@ -78,7 +76,7 @@
 			],
 			"correction": {
 				"steps": [
-					"{{if:q==1|C'est un \\textcolor{{{color:primary.0}}}{rectangle} : $4$ angles droits, deux grands côtés et deux petits.|{{if:q==2|C'est un \\textcolor{{{color:primary.0}}}{triangle rectangle} : $3$ côtés, un angle droit.|{{if:q==3|C'est un \\textcolor{{{color:primary.0}}}{carré} : $4$ côtés de la même longueur, $4$ angles droits.|C'est un \\textcolor{{{color:primary.0}}}{cercle}.}}}}}}"
+					"{{if:q==1|C'est un $\\textcolor{{{color:primary.0}}}{rectangle}$ : $4$ angles droits, deux grands côtés et deux petits.|{{if:q==2|C'est un $\\textcolor{{{color:primary.0}}}{triangle rectangle}$ : $3$ côtés, un angle droit.|{{if:q==3|C'est un $\\textcolor{{{color:primary.0}}}{carré}$ : $4$ côtés de la même longueur, $4$ angles droits.|C'est un $\\textcolor{{{color:primary.0}}}{cercle}$.}}}}}}"
 				]
 			}
 		}

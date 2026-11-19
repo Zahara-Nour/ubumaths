@@ -1,10 +1,8 @@
 {
+	"id": "7981dab0-c1f9-4e87-961f-91be61e698dc",
 	"title": "Repérer double, moitié, quadruple, quart et tiers",
 	"description": "Nommer la relation entre deux nombres (12 est le tiers de 36) ou retrouver le nombre (12 est le tiers de 36 : 12 × 3)",
 	"grades": ["6"],
-	"theme": "Proportionnalité",
-	"domain": "Situations de proportionnalité",
-	"subdomain": "Relations multiplicatives",
 	"level": 1,
 	"delay": 30,
 	"status": "draft",

@@ -1,10 +1,8 @@
 {
+	"id": "36507fc9-df87-46a4-865d-aec7935580c3",
 	"title": "Lire et écrire une fraction décimale",
 	"description": "Vingt-trois centièmes ↔ 23/100 : écrire en chiffres une fraction décimale donnée en lettres, la lire parmi quatre écritures ; dénominateur 10 ou 100",
 	"grades": ["CM1"],
-	"theme": "Fractions",
-	"domain": "Apprivoiser",
-	"subdomain": "Ecriture",
 	"level": 7,
 	"delay": 30,
 	"status": "draft",

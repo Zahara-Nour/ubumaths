@@ -1,10 +1,8 @@
 {
+	"id": "c73dfcd0-855c-417d-93ec-cae6d8e45138",
 	"title": "Additionner des fractions dont un dénominateur est multiple de l'autre",
 	"description": "1/2 + 1/4 ; 1/3 + 1/6 : on écrit les deux fractions avec le même dénominateur",
 	"grades": ["CE2"],
-	"theme": "Fractions",
-	"domain": "Calculer",
-	"subdomain": "Addition et Soustraction",
 	"level": 19,
 	"delay": 60,
 	"status": "draft",

@@ -1,10 +1,8 @@
 {
+	"id": "10ec8633-a1e1-47e3-9c0e-a755bcea1951",
 	"title": "Heures et minutes",
 	"description": "1 h = 60 min ; demi-heure, quarts d'heure ; 2 h = 120 min ; 1 h 15 min = 75 min ; heure ou minute ?",
 	"grades": ["CE1"],
-	"theme": "Grandeurs",
-	"domain": "Durées",
-	"subdomain": "Unités",
 	"level": 1,
 	"delay": 90,
 	"status": "draft",

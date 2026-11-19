@@ -11,8 +11,8 @@
 
 import { error } from '@sveltejs/kit';
 import { z } from 'zod';
-import { sortCopyRecipients } from '$lib/worksheets/student-copies';
-import { loadTextSizes } from '$lib/server/worksheets/print-settings';
+import { sortCopyRecipients } from '#lib/worksheets/student-copies.ts';
+import { loadTextSizes } from '#lib/server/worksheets/print-settings.ts';
 import type { PageServerLoad } from './$types';
 
 const paramsSchema = z.object({

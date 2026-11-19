@@ -1,0 +1,198 @@
+{
+	"id": "aac77fdb-a502-41a2-9937-0d7042129cab",
+	"title": "Reconnaître des angles alternes-internes ou correspondants",
+	"description": "Deux droites coupées par une sécante : dire si deux angles marqués sont alternes-internes, correspondants, ou ni l'un ni l'autre",
+	"grades": ["5"],
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Les droites $(d)$ et $(d')$ sont coupées par la sécante $(t)$.\n\n```figure\nfenetre: -6 ; 6 ; -4.6 ; 4.6\ndescription: Deux droites (d) et (d') coupées par une sécante (t) ; un angle bleu en haut, un angle rouge en bas.\n---\nE = point(0, 1.5, visible=faux)\nF = point(({{fx}}), -1.5, visible=faux)\nD1 = point(-6, 1.5, visible=faux)\nD2 = point(6, 1.5, visible=faux)\nG1 = point(-6, -1.5 + (-6 - ({{fx}}))*{{m}}, visible=faux)\nG2 = point(6, -1.5 + (6 - ({{fx}}))*{{m}}, visible=faux)\nT1 = point(-0.9*({{fx}}), 4.2, visible=faux)\nT2 = point(1.9*({{fx}}), -4.2, visible=faux)\ndroite(D1, D2)\ndroite(G1, G2)\ndroite(T1, T2)\ntexte(-5.2, 1.85, \"(d)\")\ntexte(-5.2, -1.15 + (-5.2 - ({{fx}}))*{{m}}, \"(d')\")\ntexte(-0.9*({{fx}}) + 0.45, 4.1, \"(t)\")\nangle({{if:k==1|F, E, D2|{{if:k==2|D2, E, T1|{{if:k==3|F, E, D2|{{if:k==4|D1, E, F|{{if:k==5|D1, E, F|T1, E, D1}}}}}}}}}}, couleur=\"bleu\")\nangle({{if:k==1|E, F, G1|{{if:k==2|G2, F, E|{{if:k==3|G2, F, E|{{if:k==4|G2, F, E|{{if:k==5|G1, F, T2|G2, F, E}}}}}}}}}}, couleur=\"rouge\")\n```\n\nL'angle bleu et l'angle rouge sont :\n\n```choix\nmelanger: non\n- alternes-internes\n- correspondants\n- ni alternes-internes ni correspondants\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..6"
+				},
+				{
+					"name": "s",
+					"expression": "1..2"
+				},
+				{
+					"name": "p",
+					"expression": "1..2"
+				},
+				{
+					"name": "fx",
+					"expression": "eval:3.2*s-4.8"
+				},
+				{
+					"name": "m",
+					"expression": "eval:0.12*(p-1)"
+				},
+				{
+					"name": "j",
+					"expression": "eval:(1)*(k-1)*(k-3)*(k-4)*(k-5)*(k-6)/(24)+(2)*(k-1)*(k-2)*(k-4)*(k-5)*(k-6)/(-12)+(1)*(k-1)*(k-2)*(k-3)*(k-4)*(k-6)/(-24)+(2)*(k-1)*(k-2)*(k-3)*(k-4)*(k-5)/(120)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{j}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Deux droites $(d)$ et $(d')$ coupées par une sécante $(t)$.** Deux angles sont **alternes-internes** s'ils sont **entre** $(d)$ et $(d')$ et **de part et d'autre** de $(t)$. Ils sont **correspondants** s'ils sont **du même côté** de $(t)$ et placés de la même façon : l'un au-dessus de $(d)$, l'autre au-dessus de $(d')$ (ou les deux en dessous).",
+					"{{if:k==1|L'angle bleu et l'angle rouge sont entre les deux droites, de part et d'autre de la sécante : ils sont $\\textcolor{{{color:primary.0}}}{\\text{alternes-internes}}$.|{{if:k==2|L'angle bleu et l'angle rouge sont du même côté de la sécante, tous deux au-dessus de leur droite : ils sont $\\textcolor{{{color:primary.0}}}{\\text{correspondants}}$.|{{if:k==3|Ils sont entre les deux droites, mais **du même côté** de la sécante : ils ne sont $\\textcolor{{{color:primary.0}}}{\\text{ni alternes-internes ni correspondants}}$.|{{if:k==4|L'angle bleu et l'angle rouge sont entre les deux droites, de part et d'autre de la sécante : ils sont $\\textcolor{{{color:primary.0}}}{\\text{alternes-internes}}$.|{{if:k==5|L'angle bleu et l'angle rouge sont du même côté de la sécante, tous deux en dessous de leur droite : ils sont $\\textcolor{{{color:primary.0}}}{\\text{correspondants}}$.|L'angle bleu est au-dessus de $(d)$, l'angle rouge au-dessus de $(d')$, mais ils ne sont pas du même côté de la sécante : ils ne sont $\\textcolor{{{color:primary.0}}}{\\text{ni alternes-internes ni correspondants}}$.}}}}}}}}}}",
+					"Le nom dépend seulement de la **position** des angles : les droites $(d)$ et $(d')$ n'ont pas besoin d'être parallèles."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Alternes-internes (E bas-droite, F haut-gauche)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"s": "1",
+				"p": "1",
+				"fx": "-1.6",
+				"m": "0",
+				"j": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : correspondants au lieu d'alternes-internes",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"s": "1",
+				"p": "1",
+				"fx": "-1.6",
+				"m": "0",
+				"j": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Correspondants (haut-droite), droites non parallèles",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"s": "2",
+				"p": "2",
+				"fx": "1.6",
+				"m": "0.12",
+				"j": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Ni l'un ni l'autre (même côté, entre les droites)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"s": "1",
+				"p": "1",
+				"fx": "-1.6",
+				"m": "0",
+				"j": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : alternes-internes quand ils sont du même côté",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"s": "1",
+				"p": "1",
+				"fx": "-1.6",
+				"m": "0",
+				"j": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Alternes-internes (E bas-gauche, F haut-droite)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4",
+				"s": "2",
+				"p": "1",
+				"fx": "1.6",
+				"m": "0",
+				"j": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Correspondants (bas-gauche)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "5",
+				"s": "1",
+				"p": "2",
+				"fx": "-1.6",
+				"m": "0.12",
+				"j": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Ni l'un ni l'autre (au-dessus, côtés opposés)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "6",
+				"s": "2",
+				"p": "1",
+				"fx": "1.6",
+				"m": "0",
+				"j": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : correspondants (tous deux au-dessus, mais pas du même côté)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "6",
+				"s": "2",
+				"p": "1",
+				"fx": "1.6",
+				"m": "0",
+				"j": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

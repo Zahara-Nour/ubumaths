@@ -1,25 +1,23 @@
 /**
  * QuestionPreviewCard — tuile de la grille Automaths
  *
- * La tuile EST la flash-card (non interactive, retournable), sous « Thème /
- * Domaine » ; un clic sur la tuile n'ouvre rien ; ajout au panier en dessous.
+ * La tuile EST la flash-card (non interactive, retournable), sous le titre et la
+ * description du modèle ; un clic sur la tuile n'ouvre rien ; ajout au panier en dessous.
  */
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { page } from 'vitest/browser';
 import QuestionPreviewCard from '../QuestionPreviewCard.svelte';
-import { previewCartItem } from '$lib/questions/cart-preview';
-import type { QuestionTemplate } from '$lib/questions/types';
+import { questionCart } from '#lib/stores/questionCart.svelte.ts';
+import { PREVIEW_SEED } from '#lib/questions/cart-preview.ts';
+import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
+import type { QuestionTemplate } from '#lib/questions/types.ts';
 // Modèle réel relu (Entiers #139) : « Le double de … est … », avec un trou
 import fixture from '../../../../data/relecture/entiers/139.json';
 
 const TEMPLATE = { ...(fixture.template as unknown as QuestionTemplate), id: 'modele-139' };
-const { instance } = previewCartItem([TEMPLATE], {
-	theme: TEMPLATE.theme,
-	domain: TEMPLATE.domain,
-	subdomain: TEMPLATE.subdomain ?? null,
-	level: TEMPLATE.level
-});
+const generated = generateInstance(TEMPLATE, PREVIEW_SEED);
+const instance = generated.success ? generated.instance : undefined;
 
 async function renderTile() {
 	expect(instance).toBeDefined();
@@ -34,6 +32,10 @@ async function renderTile() {
 }
 
 describe('QuestionPreviewCard', () => {
+	beforeEach(() => {
+		questionCart.clearCart();
+	});
+
 	it("affiche l'énoncé dans la flash-card, sans champ de saisie", async () => {
 		const screen = await renderTile();
 
@@ -41,23 +43,22 @@ describe('QuestionPreviewCard', () => {
 		expect(screen.container.querySelector('math-field, input, textarea')).toBeNull();
 	});
 
-	it('propose le retournement et l’ajout au panier', async () => {
+	it('propose le retournement et l’ajout à « Ma série »', async () => {
 		await renderTile();
 
 		await expect
 			.element(page.getByRole('button', { name: 'Voir la correction' }).first())
 			.toBeInTheDocument();
-		await expect.element(page.getByRole('button', { name: /panier/ })).toBeInTheDocument();
+		await expect.element(page.getByRole('button', { name: /ma série/ })).toBeInTheDocument();
 	});
 
-	it('intitulé : sous-domaine, titre et description du modèle, pas « Thème / Domaine »', async () => {
+	it('intitulé : titre et description du modèle (la rubrique dit la sous-notion)', async () => {
 		const screen = await renderTile();
 		const heading = screen.container.querySelector<HTMLElement>('[data-tile-heading]');
 
 		expect(heading).not.toBeNull();
-		expect(heading!.textContent).toContain(TEMPLATE.subdomain!);
 		expect(heading!.textContent).toContain(TEMPLATE.title);
-		// La description distingue les modèles d'un même sous-domaine (même titre)
+		// La description distingue les modèles d'une même rubrique (même titre)
 		const description = heading!.querySelector<HTMLElement>('[data-tile-description] p');
 		expect(description).not.toBeNull();
 		// Plus petite que le titre (le rendu Markdown imposait sa propre taille)
@@ -65,8 +66,6 @@ describe('QuestionPreviewCard', () => {
 		expect(parseFloat(getComputedStyle(description!).fontSize)).toBeLessThan(
 			parseFloat(getComputedStyle(title!).fontSize)
 		);
-		// Thème et domaine sont déjà affichés par la page (sélecteur, onglet)
-		expect(heading!.textContent).not.toContain(`${TEMPLATE.theme} /`);
 	});
 
 	it("un clic sur l'énoncé n'ouvre rien", async () => {
@@ -80,5 +79,31 @@ describe('QuestionPreviewCard', () => {
 		await page.elementLocator(statement!).click();
 
 		await expect.element(page.getByRole('dialog')).not.toBeInTheDocument();
+	});
+
+	it('« Dans ma série » retire la question : le bouton redevient « Ajouter »', async () => {
+		await renderTile();
+
+		await page.getByRole('button', { name: 'Ajouter à ma série' }).click();
+		const inCart = page.getByRole('button', { name: 'Dans ma série : retirer' });
+		await expect.element(inCart).toBeEnabled();
+		await expect.element(inCart).toHaveAttribute('title', 'Retirer de ma série');
+		expect(questionCart.hasTemplate(TEMPLATE.id)).toBe(true);
+
+		await inCart.click();
+
+		await expect.element(page.getByRole('button', { name: 'Ajouter à ma série' })).toBeVisible();
+		expect(questionCart.hasTemplate(TEMPLATE.id)).toBe(false);
+	});
+
+	it('retrait : répétitions et durée (45 s) réglées dans le panier partent avec la question', async () => {
+		questionCart.addToCart(TEMPLATE.id, 3, 45);
+		await renderTile();
+
+		await page.getByRole('button', { name: 'Dans ma série : retirer' }).click();
+		await page.getByRole('button', { name: 'Ajouter à ma série' }).click();
+
+		expect(questionCart.getItem(TEMPLATE.id)).toMatchObject({ quantity: 1 });
+		expect(questionCart.getItem(TEMPLATE.id)?.delay).not.toBe(45);
 	});
 });

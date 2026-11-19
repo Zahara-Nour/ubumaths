@@ -1,10 +1,8 @@
 {
+	"id": "e6552232-b549-4966-8863-1cba6f945fcc",
 	"title": "Équation d'une droite par un point et sa pente",
 	"description": "Droite de pente m passant par A : y = mx + p, p tiré de A, pente entière puis fractionnaire ; forme libre (pièges : p = y_A, p = y_A + m x_A, x et y échangés)",
 	"grades": ["2"],
-	"theme": "Géométrie",
-	"domain": "Droites du plan",
-	"subdomain": "Équations de droites",
 	"level": 3,
 	"delay": 120,
 	"status": "draft",

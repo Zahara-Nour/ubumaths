@@ -9,8 +9,8 @@
 	ligne → `<math-span>`, locale fr.
 -->
 <script lang="ts">
-	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
-	import { colorLatex } from '$lib/questions/expected-result-markdown';
+	import InlineMarkdown from '#lib/components/markdown/InlineMarkdown.svelte';
+	import { colorLatex } from '#lib/questions/expected-result-markdown.ts';
 
 	// Types
 	interface Sample {

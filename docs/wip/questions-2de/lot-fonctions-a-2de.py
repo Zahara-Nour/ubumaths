@@ -74,6 +74,11 @@ def col(x, k=0):
     return '\\textcolor{{{color:primary.' + str(k) + '}}}{' + x + '}'
 
 
+def colt(x, k=0):
+    """Valeur colorée en plein texte : `\\textcolor` hors `$…$` s'afficherait en LaTeX brut."""
+    return '$' + col(x, k) + '$'
+
+
 def point(nom, x, y):
     return nom + '(' + x + '\\,;\\,' + y + ')'
 
@@ -204,8 +209,8 @@ APPARTIENT = variation(
     [case('0;2;4')],
     ['$A(x\\,;\\,y)$ est sur $\\mathcal{C}_f$ si et seulement si $y=f(x)$ : l\'**abscisse** est le nombre de'
      ' départ, l\'**ordonnée** son image.',
-     'Ici $' + col('f({{a}})={{b}}') + '$ : ' + col('${{b}}$ est l\'image de ${{a}}$') + ', et '
-     + col('${{a}}$ est un antécédent de ${{b}}$') + '.'],
+     'Ici $' + col('f({{a}})={{b}}') + '$ : ' + colt('{{b}}\\text{ est l\'image de }{{a}}') + ', et '
+     + colt('{{a}}\\text{ est un antécédent de }{{b}}') + '.'],
     ['a != b'])
 
 POINT_DE_LA_COURBE = variation(

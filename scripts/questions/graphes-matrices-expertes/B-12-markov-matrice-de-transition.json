@@ -1,13 +1,14 @@
 {
+	"id": "c7d06dad-757d-4f44-ad7a-faa84a7871f0",
 	"title": "Chaîne de Markov : matrice de transition et graphe pondéré",
 	"description": "Écrire la matrice de transition d'une chaîne de Markov à deux ou trois états, donnée par un énoncé ou par son graphe orienté pondéré (pièges : matrice transposée — lignes et colonnes inversées —, probabilité de rester oubliée, ligne de somme différente de 1)",
 	"grades": ["T_EXP"],
-	"theme": "Graphes et matrices",
-	"domain": "Chaînes de Markov",
-	"subdomain": "Chaînes de Markov",
 	"level": 2,
 	"status": "draft",
 	"delay": 60,
+	"shared": {
+		"capitalPairs": "product"
+	},
 	"variations": [
 		{
 			"statement": "Chaque semaine, un client choisit l'enseigne $A$ ou l'enseigne $B$. Un client de $A$ passe chez $B$ la semaine suivante avec la probabilité ${{eval:p/10;d}}$ ; un client de $B$ passe chez $A$ avec la probabilité ${{eval:q/10;d}}$.\n\nOn note $P = \\begin{pmatrix} c_{11} & c_{12} \\\\ c_{21} & c_{22} \\end{pmatrix}$ sa matrice de transition (état $A$ puis état $B$).\n\n$c_{11}=?$\n\n$c_{12}=?$\n\n$c_{21}=?$\n\n$c_{22}=?$",

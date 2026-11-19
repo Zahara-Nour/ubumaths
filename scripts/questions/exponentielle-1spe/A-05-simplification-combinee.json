@@ -1,10 +1,8 @@
 {
+	"id": "a4272b10-cb61-42d1-8127-6c0224fc1d9b",
 	"title": "Simplifier une expression exponentielle",
 	"description": "Puissance, produit et quotient combinés : réponse e^{ax+b} réduite",
 	"grades": ["1_SPE"],
-	"theme": "Fonctions",
-	"domain": "Fonction exponentielle",
-	"subdomain": "Propriétés algébriques",
 	"level": 5,
 	"status": "draft",
 	"delay": 90,

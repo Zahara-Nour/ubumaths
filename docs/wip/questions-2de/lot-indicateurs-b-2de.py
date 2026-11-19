@@ -65,6 +65,11 @@ def col(x, k=0):
     return '\\textcolor{{{color:primary.' + str(k) + '}}}{' + x + '}'
 
 
+def colt(x, k=0):
+    """Valeur colorée en plein texte : `\\textcolor` hors `$…$` s'afficherait en LaTeX brut."""
+    return '$' + col(x, k) + '$'
+
+
 def choix(question, options, melanger=True):
     entete = '' if melanger else 'melanger: non\n'
     return question + '\n\n```choix\n' + entete + ''.join('- ' + o + '\n' for o in options) + '```'
@@ -175,7 +180,7 @@ COMPARER_SIGMA = variation(
     ['L\'écart type mesure la **dispersion** des valeurs autour de la moyenne : plus les valeurs'
      ' sont éloignées de la moyenne, plus il est grand.',
      'Les valeurs de A s\'écartent de ${{a}}$ de la moyenne, celles de B de ${{b}}$ : c\'est '
-     + col('\\text{la série {{if:a>b|A|B}}}') + ' qui a le plus grand écart type.'],
+     + colt('\\text{la série {{if:a>b|A|B}}}') + ' qui a le plus grand écart type.'],
     ['a != b', 'm > a', 'm > b'])
 
 SP_5 = {'m': 15, 'k': 2}
@@ -231,10 +236,10 @@ SENS_VALEUR = variation(
     ['Une valeur ajoutée **au-dessus** de la moyenne la fait augmenter, **au-dessous** la fait'
      ' diminuer, **égale** à la moyenne ne la change pas.',
      '{{if:s==0|${{v}}>{{m}}$ : la valeur est au-dessus de la moyenne, qui '
-     + col('\\text{augmente}') + '.| }}'
-     '{{if:s==1|${{v}}={{m}}$ : la valeur est égale à la moyenne, qui ' + col('\\text{ne change pas}')
+     + colt('\\text{augmente}') + '.| }}'
+     '{{if:s==1|${{v}}={{m}}$ : la valeur est égale à la moyenne, qui ' + colt('\\text{ne change pas}')
      + '.| }}'
-     '{{if:s==2|${{v}}<{{m}}$ : la valeur est au-dessous de la moyenne, qui ' + col('\\text{diminue}')
+     '{{if:s==2|${{v}}<{{m}}$ : la valeur est au-dessous de la moyenne, qui ' + colt('\\text{diminue}')
      + '.| }}'])
 
 SP_AJV = {'n': 4, 'm': 10, 'v': 20}
@@ -333,7 +338,7 @@ SENS_QUARTILE = variation(
     ['0'],
     ['$' + QNOM + '$ est la plus petite valeur de la série telle qu\'**au moins** $' + QUART
      + '\\,\\%$ des valeurs lui soient inférieures ou égales.',
-     'Donc ' + col('\\text{au moins }' + QUART + '\\,\\%\\text{ des valeurs sont} \\leqslant {{q}}')
+     'Donc ' + colt('\\text{au moins }' + QUART + '\\,\\%\\text{ des valeurs sont} \\leqslant {{q}}')
      + '. Le quartile ne dit rien de la moyenne.'])
 
 COMBIEN_QUARTILE = variation(
@@ -377,7 +382,7 @@ MS_MOYENNE = variation(
     VARS_MS,
     ['{{if:ma>mb|0|1}}'],
     ['La **moyenne** indique le niveau : on compare ${{eval:(ma)/10;d}}$ et ${{eval:(mb)/10;d}}$.',
-     'C\'est ' + col('\\text{la classe {{if:ma>mb|A|B}}}') + ' qui a la meilleure moyenne.'],
+     'C\'est ' + colt('\\text{la classe {{if:ma>mb|A|B}}}') + ' qui a la meilleure moyenne.'],
     COND_MS)
 
 MS_HOMOGENE = variation(
@@ -388,7 +393,7 @@ MS_HOMOGENE = variation(
     ['L\'**écart type** mesure la dispersion autour de la moyenne : le plus petit écart type'
      ' correspond aux résultats les plus homogènes.',
      'On compare ${{eval:(sa)/10;d}}$ et ${{eval:(sb)/10;d}}$ : c\'est '
-     + col('\\text{la classe {{if:sa<sb|A|B}}}') + '.'],
+     + colt('\\text{la classe {{if:sa<sb|A|B}}}') + '.'],
     COND_MS)
 
 SP_MS = {'ma': 112, 'mb': 108, 'sa': 45, 'sb': 21}
@@ -431,7 +436,7 @@ MQ_DISPERSION = variation(
     ['{{if:ia>ib|0|1}}'],
     ['L\'**écart interquartile** $Q_3-Q_1$ mesure la dispersion de la moitié centrale des valeurs.',
      'Lycée A : ${{ra}}-{{qa}}={{ia}}$ ; lycée B : ${{rb}}-{{qb}}={{ib}}$.'
-     ' Les temps les plus dispersés sont ceux du ' + col('\\text{lycée {{if:ia>ib|A|B}}}') + '.'],
+     ' Les temps les plus dispersés sont ceux du ' + colt('\\text{lycée {{if:ia>ib|A|B}}}') + '.'],
     ['ia != ib'])
 
 SP_MQ = {'qa': 8, 'ga': 4, 'ha': 3, 'ma': 12, 'ra': 15, 'qb': 6, 'gb': 4, 'hb': 8, 'mb': 10, 'rb': 18,

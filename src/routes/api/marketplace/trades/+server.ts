@@ -1,18 +1,19 @@
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
 // Supabase client is now accessed via locals.supabase
-import { createTradeSchema } from '$lib/server/marketplace/validation';
-import { dailyTradeLimitSchema } from '$lib/server/validation/marketplace-rpc';
+import { createTradeSchema } from '#lib/server/marketplace/validation.ts';
+import { dailyTradeLimitSchema } from '#lib/server/validation/marketplace-rpc.ts';
 import {
 	validateCardOwnership,
 	isMarketplaceEnabled,
 	verifyFriendship,
 	createMarketplaceNotification,
 	getStudentGidouilles
-} from '$lib/server/marketplace/helpers';
-import { requireConsent, hasConsentFields } from '$lib/server/middleware/consent';
+} from '#lib/server/marketplace/helpers.ts';
+import { requireConsent, hasConsentFields } from '#lib/server/middleware/consent.ts';
 import { z } from 'zod';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/marketplace/trades/+server');
 
@@ -35,11 +36,8 @@ const tradesQuerySchema = z.object({
  */
 export const GET: RequestHandler = async ({ url, locals }) => {
 	const supabase = locals.supabase;
-	const userId = locals.user?.id;
-
-	if (!userId) {
-		throw error(401, 'Non authentifié');
-	}
+	const { user } = await requireAuth(locals);
+	const userId = user.id;
 
 	// Validate query parameters
 	const queryValidation = tradesQuerySchema.safeParse({
@@ -145,7 +143,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		latest_offer: trade.latest_offer?.[0] || null
 	}));
 
-	return json({
+	return Response.json({
 		trades: processedTrades,
 		pagination: {
 			page,
@@ -162,15 +160,12 @@ export const GET: RequestHandler = async ({ url, locals }) => {
  */
 export const POST: RequestHandler = async ({ request, locals }) => {
 	const supabase = locals.supabase;
-	const userId = locals.user?.id;
-
-	if (!userId) {
-		throw error(401, 'Non authentifié');
-	}
+	const { user, profile } = await requireAuth(locals);
+	const userId = user.id;
 
 	// Check consent for students (teachers/admins can trade without consent)
-	if (locals.profile && hasConsentFields(locals.profile)) {
-		requireConsent(locals.profile, 'purchase_items');
+	if (hasConsentFields(profile)) {
+		requireConsent(profile, 'purchase_items');
 	}
 
 	// Validate request body
@@ -374,5 +369,5 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		)
 	};
 
-	return json(processedTrade, { status: 201 });
+	return Response.json(processedTrade, { status: 201 });
 };

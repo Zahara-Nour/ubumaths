@@ -20,8 +20,8 @@ import {
 } from '../interval';
 import { atelierFromCurves } from '../grapheur-link';
 import { syncPlots } from '../plot-sync';
-import { GrapheurStore } from '$lib/stores/grapheur.svelte';
-import { isExplicitFunction, type ExplicitFunction } from '$lib/grapheur/types';
+import { GrapheurStore } from '#lib/stores/grapheur.svelte.ts';
+import { isExplicitFunction, type ExplicitFunction } from '#lib/grapheur/types.ts';
 
 // =============================================================================
 // Décor
@@ -171,9 +171,9 @@ describe('d) une fonction qui cite une fonction à intervalle en hérite', () =>
 	it('l’incohérence disparaît : .résoudre g(x)=5 et f(x)+1=5 donnent 2', () => {
 		const d = desk('f(x) = x^2 sur [0;+∞[', 'g(x) = f(x) + 1');
 		d.submit('.résoudre g(x)=5');
-		expect(last(d).latex).toBe('x = 2');
+		expect(last(d).latex).toBe('S = \\left\\{ 2 \\right\\}');
 		d.submit('.résoudre f(x)+1=5');
-		expect(last(d).latex).toBe('x = 2');
+		expect(last(d).latex).toBe('S = \\left\\{ 2 \\right\\}');
 	});
 
 	it('g(−2) refusé, g(1) calculé', () => {

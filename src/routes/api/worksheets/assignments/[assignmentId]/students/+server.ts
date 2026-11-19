@@ -14,10 +14,11 @@
  * - Validates student_id is actually a student role
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
 import { z } from 'zod';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/worksheets/assignments/[assignmentId]/students/+server');
 
@@ -131,10 +132,7 @@ async function verifyAssignmentAccess(
  * }
  */
 export const GET: RequestHandler = async ({ params, locals }) => {
-	const { user } = await locals.safeGetSession();
-	if (!user) {
-		throw error(401, 'Connexion requise');
-	}
+	const { user } = await requireAuth(locals);
 
 	const assignmentId = params.assignmentId;
 	if (!assignmentId) {
@@ -255,7 +253,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 			return (a.first_name || '').localeCompare(b.first_name || '');
 		});
 
-		return json({
+		return Response.json({
 			success: true,
 			students,
 			count: students.length,
@@ -294,10 +292,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
  * }
  */
 export const POST: RequestHandler = async ({ params, locals, request }) => {
-	const { user } = await locals.safeGetSession();
-	if (!user) {
-		throw error(401, 'Connexion requise');
-	}
+	const { user } = await requireAuth(locals);
 
 	const assignmentId = params.assignmentId;
 	if (!assignmentId) {
@@ -358,7 +353,7 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 			throw error(500, 'Impossible d’ajouter les élèves');
 		}
 
-		return json(
+		return Response.json(
 			{
 				success: true,
 				message: `Élèves ajoutés : ${inserted?.length || 0}`,
@@ -398,10 +393,7 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
  * }
  */
 export const DELETE: RequestHandler = async ({ params, locals, url }) => {
-	const { user } = await locals.safeGetSession();
-	if (!user) {
-		throw error(401, 'Connexion requise');
-	}
+	const { user } = await requireAuth(locals);
 
 	const assignmentId = params.assignmentId;
 	if (!assignmentId) {
@@ -435,7 +427,7 @@ export const DELETE: RequestHandler = async ({ params, locals, url }) => {
 			throw error(404, 'Cet élève n’est pas affecté individuellement');
 		}
 
-		return json({
+		return Response.json({
 			success: true,
 			message: 'Élève retiré de l’affectation'
 		});

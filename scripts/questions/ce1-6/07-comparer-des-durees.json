@@ -1,10 +1,8 @@
 {
+	"id": "739d58e3-77f5-4cda-a453-cdc456d279a2",
 	"title": "Quelle durée est la plus longue ?",
 	"description": "Le film ou le match, lu sur quatre horloges ; 2 h ou 130 min ; 1 h 30 min ou 90 min",
 	"grades": ["CE1"],
-	"theme": "Grandeurs",
-	"domain": "Durées",
-	"subdomain": "Durée écoulée",
 	"level": 2,
 	"delay": 120,
 	"status": "draft",

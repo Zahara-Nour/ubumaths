@@ -23,7 +23,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { describe, it, expect } from 'vitest';
-import { createMockSupabase, createMockLocals } from '$tests/helpers';
+import { createMockSupabase, createMockLocals } from '#tests/helpers/index.ts';
 import { requireAdmin } from '../auth';
 
 const TEST_IDS = {

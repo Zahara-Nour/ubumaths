@@ -62,9 +62,6 @@
 			}
 		],
 		"grades": ["4"],
-		"theme": "Relatifs",
-		"domain": "Multiplier et Diviser",
-		"subdomain": "Quotient",
 		"level": 3,
 		"status": "draft",
 		"delay": 20,

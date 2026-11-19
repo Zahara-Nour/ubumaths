@@ -4,10 +4,10 @@
  * produit est perfectible, la recopie est refusée, la valeur passe avant la forme).
  */
 import { describe, expect, it } from 'vitest';
-import { validateAnswer } from '$lib/utils/answer-validator';
-import { gradeQuestion } from '$lib/questions/grading';
-import { REQUIRED_FORM_FEEDBACK } from '$lib/questions/required-form-validator';
-import type { QuestionInstance } from '$lib/questions/types';
+import { validateAnswer } from '#lib/utils/answer-validator.ts';
+import { gradeQuestion } from '#lib/questions/grading.ts';
+import { REQUIRED_FORM_FEEDBACK } from '#lib/questions/required-form-validator.ts';
+import type { QuestionInstance } from '#lib/questions/types.ts';
 import { FORM_DEMO } from '../tour';
 
 const instance = {

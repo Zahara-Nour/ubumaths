@@ -1,10 +1,8 @@
 {
+	"id": "b6ab5599-6995-4eea-9701-cde577c43541",
 	"title": "Compléter un tableau croisé avec une fréquence conditionnelle",
 	"description": "Marges données et « p % des filles » : cases du tableau croisé",
 	"grades": ["2"],
-	"theme": "Statistiques",
-	"domain": "Tableaux croisés",
-	"subdomain": "Fréquences conditionnelles",
 	"level": 3,
 	"delay": 150,
 	"status": "draft",

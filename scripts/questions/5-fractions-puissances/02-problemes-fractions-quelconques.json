@@ -1,10 +1,8 @@
 {
+	"id": "b30d199c-28ee-4c6d-9482-d5361838c58e",
 	"title": "Problèmes : ajouter ou retrancher des fractions",
 	"description": "Résoudre un problème qui additionne ou soustrait deux fractions de dénominateurs quelconques : 2/3 d'une pizza et 1/4 de la même pizza ; ce qui reste d'un réservoir ; la part d'un jardin qui reste",
 	"grades": ["5"],
-	"theme": "Fractions",
-	"domain": "Problèmes",
-	"subdomain": "Additionner et soustraire",
 	"level": 2,
 	"delay": 120,
 	"status": "draft",

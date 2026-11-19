@@ -9,10 +9,13 @@
 import { describe, expect, it } from 'vitest';
 import { solveSteps } from '../solve-steps';
 import { conclusionAgrees } from '../solve-steps-check';
-import { generateEquationSteps, generateInequalitySteps } from '$lib/mathAST/pedagogical-solve';
-import { parseLatex } from '$lib/mathAST/parser';
-import { isRelation } from '$lib/mathAST/guards';
-import type { RelationNode } from '$lib/mathAST/types';
+import {
+	generateEquationSteps,
+	generateInequalitySteps
+} from '#lib/mathAST/pedagogical-solve/index.ts';
+import { parseLatex } from '#lib/mathAST/parser/index.ts';
+import { isRelation } from '#lib/mathAST/guards.ts';
+import type { RelationNode } from '#lib/mathAST/types.ts';
 
 function rel(latex: string): RelationNode {
 	const node = parseLatex(latex);
@@ -31,12 +34,12 @@ function lastStepOf(latex: string) {
 
 describe('solveSteps — cas frères de (2x-4)=0 : bonne réponse, ou repli', () => {
 	it.each([
-		['(2x-4)=0', 'x = 2'],
-		['(x+1)=3', 'x = 2'],
-		['((x))=5', 'x = 5'],
-		['\\left(2x-4\\right)=0', 'x = 2'],
-		['(x-1)>0', 'x > 1'],
-		['(x-1)(x+2)=0', 'S = \\left\\{ 1 \\,;\\, -2 \\right\\}']
+		['(2x-4)=0', 'S = \\left\\{ 2 \\right\\}'],
+		['(x+1)=3', 'S = \\left\\{ 2 \\right\\}'],
+		['((x))=5', 'S = \\left\\{ 5 \\right\\}'],
+		['\\left(2x-4\\right)=0', 'S = \\left\\{ 2 \\right\\}'],
+		['(x-1)>0', 'S = ]1 ; +\\infty['],
+		['(x-1)(x+2)=0', 'S = \\left\\{ -2 \\,;\\, 1 \\right\\}']
 	])('%s répond %s', (input, expected) => {
 		expect(solveSteps(input)?.answer).toBe(expected);
 	});
@@ -44,9 +47,9 @@ describe('solveSteps — cas frères de (2x-4)=0 : bonne réponse, ou repli', ()
 	// Repli sur le moteur jusqu'au 2026-10-25 ; défaits avant les étapes depuis
 	// Q52 (`linear-unwrap.ts`) : la bonne réponse, jamais x = 0
 	it.each([
-		['2(x-1)=4', 'x = 3'],
-		['-(x-3)=0', 'x = 3'],
-		['(2x-4)/2=0', 'x = 2']
+		['2(x-1)=4', 'S = \\left\\{ 3 \\right\\}'],
+		['-(x-3)=0', 'S = \\left\\{ 3 \\right\\}'],
+		['(2x-4)/2=0', 'S = \\left\\{ 2 \\right\\}']
 	])('%s répond %s, jamais x = 0', (input, expected) => {
 		expect(solveSteps(input)?.answer).toBe(expected);
 	});
@@ -80,7 +83,7 @@ describe('conclusionAgrees — le garde-fou', () => {
 
 describe('garde-fou — un ÉCHEC du moteur ne confirme pas « S = ∅ »', () => {
 	it('x|x| = 4 : le moteur ne sait pas (status no-solution + error), ∅ refusé', async () => {
-		const { solve } = await import('$lib/mathAST/solve');
+		const { solve } = await import('#lib/mathAST/solve/index.ts');
 		const equation = rel('x\\left|x\\right|=4');
 		// Le décor : le moteur échoue, avec le statut d'une absence de solution
 		const engine = solve(equation, { variable: 'x' });

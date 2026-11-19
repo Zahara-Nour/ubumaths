@@ -10,7 +10,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { Atelier } from '../atelier.svelte';
-import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
+import { WebReplEngine } from '#lib/mathAST/cli/web/web-repl-engine.ts';
 import { runInput } from '../calcul';
 
 // =============================================================================
@@ -173,7 +173,7 @@ describe('.résoudre — la valeur d’abord, avec son étape', () => {
 	// ce que montre la ligne, plus « On divise par 1/2 » devant `cos(π/3)`
 	it('cos(π/3)x = 1 : la valeur, puis on multiplie par 2', () => {
 		const { latex, titles, shown } = line('.résoudre cos(π/3)x=1');
-		expect(latex).toBe('x = 2');
+		expect(latex).toBe('S = \\left\\{ 2 \\right\\}');
 		expect(titles[0]).toBe(`On utilise une valeur remarquable : ${COS_PI_3}`);
 		expect(titles[2]).toBe('On multiplie les deux membres par $2$');
 		// Une équation ne s'enchaîne pas par « = » : jamais `= ½x = 1`
@@ -183,7 +183,7 @@ describe('.résoudre — la valeur d’abord, avec son étape', () => {
 
 	it('x + cos(π/3) = 1 : la valeur, puis on soustrait 1/2', () => {
 		const { latex, titles } = line('.résoudre x+cos(π/3)=1');
-		expect(latex).toBe(String.raw`x = \dfrac{1}{2}`);
+		expect(latex).toBe(String.raw`S = \left\{ \dfrac{1}{2} \right\}`);
 		expect(titles[0]).toBe(`On utilise une valeur remarquable : ${COS_PI_3}`);
 	});
 
@@ -199,8 +199,8 @@ describe('.développer et .résoudre — en degrés', () => {
 	const COS_60 = String.raw`$\cos\left( 60{}^{\circ} \right) = \dfrac{1}{2}$`;
 
 	it.each([
-		['.résoudre cos(60°)x=1', 'x = 2'],
-		['.résoudre cos(-60°)x=1', 'x = 2'],
+		['.résoudre cos(60°)x=1', 'S = \\left\\{ 2 \\right\\}'],
+		['.résoudre cos(-60°)x=1', 'S = \\left\\{ 2 \\right\\}'],
 		['.développer (x+cos(60°))^2', String.raw`x^2 + x + \dfrac{1}{4}`]
 	])('%s → %s, l’étape dit cos(60°)', (input, expected) => {
 		const { latex, titles } = line(input);
@@ -212,16 +212,17 @@ describe('.développer et .résoudre — en degrés', () => {
 
 	it('.résoudre x + cos(420°) = 1 : la période, la valeur, puis on soustrait', () => {
 		const { latex, titles } = line('.résoudre x+cos(420°)=1');
-		expect(latex).toBe(String.raw`x = \dfrac{1}{2}`);
+		expect(latex).toBe(String.raw`S = \left\{ \dfrac{1}{2} \right\}`);
 		expect(titles.slice(0, 2)).toEqual([
 			'cos est 2π-périodique',
 			`On utilise une valeur remarquable : ${COS_60}`
 		]);
 	});
 
-	it('hors table : .résoudre en radians exacts, comme avant', () => {
+	// Q1 de la PR 2c (registre-reference, David, 2026-11-09) : en degrés, comme tapé
+	it('hors table : .résoudre garde les degrés, comme .simplifier', () => {
 		const { latex, titles } = line('.résoudre cos(20°)x=1');
-		expect(latex).toBe(String.raw`x = \dfrac{1}{\cos\left( \dfrac{\pi}{9} \right)}`);
+		expect(latex).toBe(String.raw`S = \left\{ \dfrac{1}{\cos\left( 20{}^{\circ} \right)} \right\}`);
 		expect(titles[0]).toBe('Équation du premier degré');
 	});
 
@@ -232,20 +233,20 @@ describe('.développer et .résoudre — en degrés', () => {
 	});
 });
 
-// Revue (2026-10-27) : le moteur de `.résoudre` reçoit les radians PARTIE par
-// partie — sur le texte entier, `pour x` se collait à l'équation (`x^4=1pourx`)
+// Revue (2026-10-27) : `pour x` ne se colle pas à l'équation (`x^4=1pourx`) ; le
+// registre lit les degrés lui-même depuis la PR 2c (registre-reference)
 describe('.résoudre — degrés, mots-clés et repli du moteur', () => {
 	it.each([
 		['.résoudre x^4 = cos(0°) pour x', String.raw`S = \left\{ -1 \,;\, 1 \right\}`],
-		['.résoudre x^3 = cos(60°) pour x', String.raw`x = \sqrt[3]{\dfrac{1}{2}}`],
-		['.résoudre cos(60°)t = 1', 't = 2'],
+		['.résoudre x^3 = cos(60°) pour x', String.raw`S = \left\{ \sqrt[3]{\dfrac{1}{2}} \right\}`],
+		['.résoudre cos(60°)t = 1', 'S = \\left\\{ 2 \\right\\}'],
 		[
 			'.résoudre sin(x) = cos(60°) dans [0 ; 2\\pi]',
 			String.raw`S = \left\{ \dfrac{\pi}{6} \,;\, \dfrac{5 \pi}{6} \right\}`
 		],
 		[
 			'.résoudre x^2 = cos(20°) dans [0;5]',
-			String.raw`x = \sqrt{\cos\left( \dfrac{\pi}{9} \right)}`
+			String.raw`S = \left\{ \sqrt{\cos\left( 20{}^{\circ} \right)} \right\}`
 		]
 	])('%s → %s', (input, expected) => {
 		expect(line(input).latex).toBe(expected);

@@ -66,6 +66,11 @@ def col(x, k=0):
     return '\\textcolor{{{color:primary.' + str(k) + '}}}{' + x + '}'
 
 
+def colt(x, k=0):
+    """Valeur colorée en plein texte : `\\textcolor` hors `$…$` s'afficherait en LaTeX brut."""
+    return '$' + col(x, k) + '$'
+
+
 def choix(question, options, melanger=False):
     entete = '' if melanger else 'melanger: non\n'
     return question + '\n\n```choix\n' + entete + ''.join('- ' + o + '\n' for o in options) + '```'
@@ -153,7 +158,7 @@ DEFINITION = variation(
     [case('{{if:g==0|0|1}}')],
     ['{{if:g==0|$f$ **croissante** sur $I$ : les images sont rangées **dans le même ordre** que les nombres.|'
      '$f$ **décroissante** sur $I$ : les images sont rangées **dans l\'ordre contraire** des nombres.}}',
-     '$a<b$ donc ' + col('{{if:g==0|f(a)\\leqslant f(b)|f(a)\\geqslant f(b)}}') + '.'])
+     '$a<b$ donc ' + colt('{{if:g==0|f(a)\\leqslant f(b)|f(a)\\geqslant f(b)}}') + '.'])
 
 SP_P = {'h': 1, 'k': -2, 's': 1}
 SP_N = {'h': -1, 'k': 2, 's': -1}
@@ -458,29 +463,29 @@ CMP = [
     # carré, 0 < u < v : croissante sur [0 ; +∞[
     comparer('carré', 'x^2', P10, Q10, '0',
              ['$u$ et $v$ sont dans $\\left[0\\,;+\\infty\\right[$, où la fonction carré est **croissante** :'
-              ' les images sont dans le même ordre.', '$u<v$ donc ' + col('f(u)<f(v)') + '.']),
+              ' les images sont dans le même ordre.', '$u<v$ donc ' + colt('f(u)<f(v)') + '.']),
     # carré, u < v < 0 : décroissante sur ]−∞ ; 0]
     comparer('carré', 'x^2', MQ10, MP10, '2',
              ['$u$ et $v$ sont dans $\\left]-\\infty\\,;0\\right]$, où la fonction carré est **décroissante** :'
-              ' les images sont dans l\'ordre contraire.', '$u<v$ donc ' + col('f(u)>f(v)') + '.']),
+              ' les images sont dans l\'ordre contraire.', '$u<v$ donc ' + colt('f(u)>f(v)') + '.']),
     # inverse, 0 < u < v : décroissante sur ]0 ; +∞[
     comparer('inverse', '\\dfrac{1}{x}', P10, Q10, '2',
              ['$u$ et $v$ sont dans $\\left]0\\,;+\\infty\\right[$, où la fonction inverse est **décroissante** :'
-              ' les images sont dans l\'ordre contraire.', '$u<v$ donc ' + col('f(u)>f(v)') + '.']),
+              ' les images sont dans l\'ordre contraire.', '$u<v$ donc ' + colt('f(u)>f(v)') + '.']),
     # inverse, u < v < 0 : décroissante sur ]−∞ ; 0[
     comparer('inverse', '\\dfrac{1}{x}', MQ10, MP10, '2',
              ['$u$ et $v$ sont dans $\\left]-\\infty\\,;0\\right[$, où la fonction inverse est **décroissante** :'
-              ' les images sont dans l\'ordre contraire.', '$u<v$ donc ' + col('f(u)>f(v)') + '.']),
+              ' les images sont dans l\'ordre contraire.', '$u<v$ donc ' + colt('f(u)>f(v)') + '.']),
     # valeur absolue, u < 0 < v : distances à 0
     comparer('valeur absolue', '\\lvert x\\rvert', MQ10, P10, '2',
              ['$u$ et $v$ ne sont pas du même côté de $0$ : on compare leurs **distances à $0$**.',
-              '$\\lvert u\\rvert=' + Q10 + '$ et $\\lvert v\\rvert=' + P10 + '$, donc ' + col('f(u)>f(v)') + '.']),
+              '$\\lvert u\\rvert=' + Q10 + '$ et $\\lvert v\\rvert=' + P10 + '$, donc ' + colt('f(u)>f(v)') + '.']),
     # carré, u < 0 < v, u plus près de 0
     comparer('carré', 'x^2', MP10, Q10, '0',
              ['$u$ et $v$ ne sont pas du même côté de $0$ : la fonction carré n\'est pas monotone sur un intervalle'
               ' qui les contient. On compare leurs **distances à $0$** : $(-a)^2=a^2$.',
               '$f(u)=f(' + P10 + ')$ et $' + P10 + '<' + Q10 + '$ dans $\\left[0\\,;+\\infty\\right[$, donc '
-              + col('f(u)<f(v)') + '.']),
+              + colt('f(u)<f(v)') + '.']),
 ]
 
 SP_C = {'p': 3, 'q': 7}
@@ -517,9 +522,9 @@ def graphique(nom, expression, y, image, desc, rep, egal=False, valeurs='-4..4!0
          var('fv', 'eval:' + image.replace('X', '(v)'))],
         [case(rep)],
         ['$f(u)$ et $f(v)$ sont les **ordonnées** de $A$ et de $B$ : on compare leurs hauteurs.',
-         ('$A$ et $B$ sont à la même hauteur : ' + col('f(u)=f(v)') + '.') if egal else
-         ('{{if:fu<fv|$A$ est plus bas que $B$ : ' + col('f(u)<f(v)') + '.|$A$ est plus haut que $B$ : '
-          + col('f(u)>f(v)') + '.}}')],
+         ('$A$ et $B$ sont à la même hauteur : ' + colt('f(u)=f(v)') + '.') if egal else
+         ('{{if:fu<fv|$A$ est plus bas que $B$ : ' + colt('f(u)<f(v)') + '.|$A$ est plus haut que $B$ : '
+          + colt('f(u)>f(v)') + '.}}')],
         conditions if not egal else ['u != 0'])
 
 

@@ -16,8 +16,8 @@
 import type { Unit } from './types';
 import { exactBaseValue, parseLatexQuantity, type ExactBaseValue } from './parser';
 import { unitsAreCompatible } from './operations';
-import { convertAffine } from '$lib/mathAST/units/conversion';
-import { equalRational, isZero } from '$lib/mathAST/normal/rational';
+import { convertAffine } from '#lib/mathAST/units/conversion.ts';
+import { equalRational, isZero } from '#lib/mathAST/normal/rational.ts';
 
 // ============================================================================
 // TYPES

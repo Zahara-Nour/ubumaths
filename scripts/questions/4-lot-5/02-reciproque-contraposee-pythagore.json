@@ -1,10 +1,8 @@
 {
+	"id": "5e85f283-4f72-4ad0-8758-f980e1c75289",
 	"title": "Réciproque et contraposée de Pythagore",
 	"description": "Dire si un triangle est rectangle par la réciproque ou la contraposée du théorème de Pythagore : trois longueurs données, puis le théorème qui permet de conclure",
 	"grades": ["4"],
-	"theme": "Géométrie",
-	"domain": "Théorème de Pythagore",
-	"subdomain": "Réciproque et contraposée",
 	"level": 1,
 	"delay": 90,
 	"status": "draft",

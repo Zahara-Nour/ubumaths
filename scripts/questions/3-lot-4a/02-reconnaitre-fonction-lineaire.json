@@ -1,10 +1,8 @@
 {
+	"id": "0612be84-01ce-42a3-aa33-2e2051502450",
 	"title": "Reconnaître une fonction linéaire",
 	"description": "Reconnaître une fonction linéaire : parmi quatre expressions, écrite autrement (x/4), ou parmi quatre tracés (droite passant par l'origine)",
 	"grades": ["3"],
-	"theme": "Fonctions",
-	"domain": "Fonctions linéaires",
-	"subdomain": "Reconnaître",
 	"level": 1,
 	"delay": 45,
 	"status": "draft",

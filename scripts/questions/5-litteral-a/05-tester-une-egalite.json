@@ -1,10 +1,8 @@
 {
+	"id": "13d31ece-3fe2-4db3-b860-e13caccebe10",
 	"title": "L'égalité est-elle vraie pour cette valeur ?",
 	"description": "Tester une égalité à une variable pour une valeur donnée en calculant chaque membre : 5x + 3 = 2x + 15 est vraie pour x = 4 ; 4(x + 1) = 2x + 11 est fausse pour x = 3",
 	"grades": ["5"],
-	"theme": "Calcul littéral",
-	"domain": "Calculs",
-	"subdomain": "Tester une égalité",
 	"level": 1,
 	"delay": 45,
 	"status": "draft",

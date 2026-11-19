@@ -1,10 +1,8 @@
 {
+	"id": "06f246e4-eda1-44f5-a65f-9f55c360833d",
 	"title": "Repérer un point par un nombre décimal",
 	"description": "Lire le nombre décimal qui repère un point d'une demi-droite graduée en dixièmes (2,8), ou d'un morceau agrandi gradué en centièmes (2,37 ; 339,16)",
 	"grades": ["CM1"],
-	"theme": "Décimaux",
-	"domain": "Apprivoiser",
-	"subdomain": "Repérage",
 	"level": 3,
 	"delay": 45,
 	"status": "draft",

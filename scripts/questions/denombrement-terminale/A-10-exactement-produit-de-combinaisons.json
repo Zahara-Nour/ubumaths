@@ -1,10 +1,8 @@
 {
+	"id": "0feeabaf-e90d-45a1-b5f1-997b3da067a7",
 	"title": "« Exactement » : produit de combinaisons",
 	"description": "Choisir dans deux groupes à la fois : comité de a filles et b garçons, main avec exactement k cœurs, tirage avec exactement 2 rouges (pièges : additionner, choisir les a + b dans le groupe entier)",
 	"grades": ["T_SPE"],
-	"theme": "Probabilités",
-	"domain": "Dénombrement",
-	"subdomain": "Dénombrer avec des contraintes",
 	"level": 2,
 	"status": "draft",
 	"delay": 60,

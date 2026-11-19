@@ -1,10 +1,8 @@
 {
+	"id": "0e3f82a1-0bce-4ec8-bef2-5712cb9a7af5",
 	"title": "Placer une fraction sur une demi-droite graduée",
 	"description": "Placer une fraction sur une demi-droite graduée (place 3/4) en touchant la droite ; unité partagée en 2 à 10 parts",
 	"grades": ["CM1"],
-	"theme": "Fractions",
-	"domain": "Apprivoiser",
-	"subdomain": "Repérage",
 	"level": 3,
 	"delay": 45,
 	"status": "draft",

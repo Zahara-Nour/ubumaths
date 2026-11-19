@@ -89,9 +89,6 @@
 			}
 		],
 		"grades": ["5"],
-		"theme": "Fractions",
-		"domain": "Calculer",
-		"subdomain": "Addition et Soustraction",
 		"level": 4,
 		"status": "draft",
 		"delay": 30,

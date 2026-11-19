@@ -4,7 +4,7 @@
  * Produces a #cetz.canvas({...}) block using the cetz drawing library.
  */
 
-import { HEX_COLOR } from '$lib/theme/named-colors';
+import { HEX_COLOR } from '#lib/theme/named-colors.ts';
 import type { Figure } from '../graph/figure';
 import { conicPointFromParam } from '../graph/conic-helpers';
 import type { Viewport } from '../viewport/types';
@@ -47,6 +47,11 @@ export interface TypstExportOptions {
 	 * unités du repère : repère et grille d'un bloc ```figure. Vide par défaut.
 	 */
 	underlay?: readonly string[];
+	/**
+	 * Lignes cetz dessinées AU-DESSUS de tout (après les objets et leur découpe),
+	 * en unités du repère : rapporteur posé d'une figure à compléter. Vide par défaut.
+	 */
+	overlay?: readonly string[];
 	/**
 	 * Découpe les objets à la fenêtre, comme l'écran (SVG `overflow: hidden`) :
 	 * traits et remplissages dans une boîte Typst `clip: true` aux dimensions de
@@ -746,6 +751,7 @@ export function exportToTypst(
 		const body = lines.splice(bodyStart);
 		lines.push(...clipToViewportLines(body, viewport, scale));
 	}
+	if (options?.overlay) lines.push(...options.overlay);
 	lines.push('})');
 	// Défense en profondeur : une primitive avec un nombre non fini est omise
 	return lines.filter((line) => !hasNonFiniteNumber(line)).join('\n');

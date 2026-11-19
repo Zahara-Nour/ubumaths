@@ -1,10 +1,8 @@
 {
+	"id": "d7df43c4-0a25-49a6-832e-6d8d00da705b",
 	"title": "Ranger cinq nombres (jusqu'à $999\\,999$)",
 	"description": "Ranger cinq entiers de 5 et 6 chiffres dans l'ordre croissant ou décroissant",
 	"grades": ["CM1"],
-	"theme": "Entiers",
-	"domain": "Apprivoiser",
-	"subdomain": "Comparer",
 	"level": 13,
 	"delay": 60,
 	"status": "draft",

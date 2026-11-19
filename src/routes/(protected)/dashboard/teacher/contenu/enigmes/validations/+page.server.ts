@@ -1,10 +1,10 @@
 import type { PageServerLoad } from './$types';
-import type { AttemptWithDetails } from '$lib/types/riddle';
+import type { AttemptWithDetails } from '#lib/types/riddle.ts';
 import { error, redirect } from '@sveltejs/kit';
-import { getTeacherTestMode } from '$lib/server/test-mode';
-import { RIDDLE_COLUMNS, toDbRiddle, toDbRiddleAttempt } from '$lib/types/riddle';
-import { fetchRiddleSolutions } from '$lib/server/riddle-solutions';
-import { createServerLogger } from '$lib/utils/logger';
+import { getTeacherTestMode } from '#lib/server/test-mode.ts';
+import { RIDDLE_COLUMNS, toDbRiddle, toDbRiddleAttempt } from '#lib/types/riddle.ts';
+import { fetchRiddleSolutions } from '#lib/server/riddle-solutions.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger(
 	'(protected)/dashboard/teacher/contenu/enigmes/validations/+page.server'

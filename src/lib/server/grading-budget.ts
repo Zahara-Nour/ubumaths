@@ -16,10 +16,14 @@
  * par l'appelant.
  */
 
-import { gradeQuestion, type QuestionVerdict, type SubmittedAnswer } from '$lib/questions/grading';
+import {
+	gradeQuestion,
+	type QuestionVerdict,
+	type SubmittedAnswer
+} from '#lib/questions/grading.ts';
 // Case « figure » : le juge lit les positions des points dans ce registre (cf. questions/construction/positions)
-import '$lib/questions/construction/positions-setup';
-import type { QuestionInstance } from '$lib/questions/types';
+import '#lib/questions/construction/positions-setup.ts';
+import type { QuestionInstance } from '#lib/questions/types.ts';
 
 // Types
 export interface GradingItem {

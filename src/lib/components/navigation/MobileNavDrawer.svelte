@@ -1,9 +1,10 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { resolve } from '$app/paths';
-	import * as Sheet from '$lib/components/ui/sheet';
-	import { theme } from '$lib/stores/theme.svelte';
-	import { fontSize } from '$lib/stores/fontSize.svelte';
+	import { resolvePath } from '#lib/navigation/resolve-path.ts';
+	import * as Sheet from '#lib/components/ui/sheet/index.ts';
+	import { theme } from '#lib/stores/theme.svelte.ts';
+	import { fontSize } from '#lib/stores/fontSize.svelte.ts';
+	import EasyReadingToggle from '#lib/components/EasyReadingToggle.svelte';
 	import { Sun, Moon, Minus, Plus } from '@lucide/svelte';
 	import type { LucideIcon } from '@lucide/svelte';
 
@@ -72,7 +73,7 @@
 
 {#snippet itemLink(item: NavItem)}
 	<a
-		href={resolve(item.href as '/')}
+		href={resolvePath(item.href)}
 		data-sveltekit-preload-data="tap"
 		onclick={handleNavClick}
 		class="flex items-center gap-3 px-4 py-3 text-base transition-colors
@@ -162,6 +163,9 @@
 							<Plus class="h-4 w-4" />
 						</button>
 					</div>
+				</div>
+				<div class="mt-2">
+					<EasyReadingToggle variant="menu" />
 				</div>
 			</div>
 		{/if}

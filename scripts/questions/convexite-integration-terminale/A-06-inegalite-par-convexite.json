@@ -1,10 +1,8 @@
 {
+	"id": "e814175b-95f0-4a2d-8689-e76c01ea91e6",
 	"title": "Inégalité déduite de la convexité (tangente)",
 	"description": "Courbe convexe au-dessus de sa tangente, concave en dessous : eˣ ≥ x + 1, ln x ≤ x − 1, x² ≥ 2ax − a², √x ≤ (x + 1)/2 (spécialité seulement)",
 	"grades": ["T_SPE"],
-	"theme": "Fonctions convexes",
-	"domain": "Convexité",
-	"subdomain": "Inégalités de convexité",
 	"level": 3,
 	"status": "draft",
 	"delay": 90,

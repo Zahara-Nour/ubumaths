@@ -1,10 +1,8 @@
 {
+	"id": "0fe6015f-ffa5-4cee-8bd4-9a57de401b84",
 	"title": "Problèmes avec des puissances",
 	"description": "Résoudre un problème avec des puissances : bactéries qui doublent, chaîne de messages, codes d'un cadenas, volume d'un cube d'arête 10ᵏ cm, pliages",
 	"grades": ["4"],
-	"theme": "Puissances",
-	"domain": "Problèmes",
-	"subdomain": "Situations",
 	"level": 1,
 	"delay": 90,
 	"status": "draft",

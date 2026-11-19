@@ -1,10 +1,8 @@
 {
+	"id": "b831b7b8-89e4-46a0-aba2-7da58719e343",
 	"title": "Le nombre qui suit, le nombre qui précède",
 	"description": "Suite écrite des nombres jusqu'à 100",
 	"grades": ["CP"],
-	"theme": "Entiers",
-	"domain": "Apprivoiser",
-	"subdomain": "Ecriture",
 	"level": 11,
 	"delay": 20,
 	"status": "draft",

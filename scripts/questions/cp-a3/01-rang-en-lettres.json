@@ -1,10 +1,8 @@
 {
+	"id": "d437959a-09d2-4441-bd8b-b8ad1893f8a8",
 	"title": "Le rang en lettres (jusqu'à vingtième)",
 	"description": "Écrire un rang en lettres : 7e → septième (leurres : sixième, huitième, sept)",
 	"grades": ["CP"],
-	"theme": "Entiers",
-	"domain": "Apprivoiser",
-	"subdomain": "Ordinaux",
 	"level": 1,
 	"delay": 30,
 	"status": "draft",

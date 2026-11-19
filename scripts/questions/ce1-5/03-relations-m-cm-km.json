@@ -1,10 +1,8 @@
 {
+	"id": "28c90fa4-2a97-4437-bf9b-7913af941e37",
 	"title": "Mètres, centimètres et kilomètres",
 	"description": "1 m = 100 cm, 1 km = 1 000 m ; 3 m = 300 cm ; 1 m + 46 cm = 146 cm ; 146 cm = 1 m 46 cm ; ce qu'il manque pour 1 km",
 	"grades": ["CE1"],
-	"theme": "Grandeurs",
-	"domain": "Longueurs",
-	"subdomain": "Unités",
 	"level": 7,
 	"delay": 90,
 	"status": "draft",

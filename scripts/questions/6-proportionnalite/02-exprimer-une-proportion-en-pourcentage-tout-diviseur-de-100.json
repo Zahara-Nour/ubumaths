@@ -1,10 +1,8 @@
 {
+	"id": "35754c24-2abf-4c9b-bebd-17b889f33d80",
 	"title": "Exprimer une proportion en pourcentage (tout diviseur de 100)",
 	"description": "Écrire la partie sur le tout, puis la fraction égale sur 100 : 7 billes sur 20, c'est 35/100, soit 35 % (le tout vaut 10, 20, 25 ou 50)",
 	"grades": ["6"],
-	"theme": "Proportionnalité",
-	"domain": "Pourcentages",
-	"subdomain": "Proportion",
 	"level": 1,
 	"delay": 30,
 	"status": "draft",

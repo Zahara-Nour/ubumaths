@@ -9,7 +9,7 @@
  * // Student components
  *
  * // Teacher components
- * import { ChapterSectionsEditor } from '$lib/components/cours/teacher';
+ * import { ChapterSectionsEditor } from '#lib/components/cours/teacher/index.ts';
  */
 
 // Student components

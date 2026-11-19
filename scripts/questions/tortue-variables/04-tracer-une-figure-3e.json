@@ -1,0 +1,172 @@
+{
+	"id": "d64ddd78-fd78-4e81-b41a-db25ce687111",
+	"title": "Tracer une figure avec un programme (3e)",
+	"description": "Écrire en blocs un programme qui trace une spirale avec « répéter jusqu'à » ou des créneaux alternés avec « si … sinon ».",
+	"grades": ["3"],
+	"level": 2,
+	"delay": 300,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Fais tracer à la tortue la spirale dessinée en gris : le premier trait mesure ${{a}}$, chaque trait est plus long de $1$ que le précédent, et le dernier mesure ${{m}}$.\n\nUtilise une variable **c** et le bloc **répéter jusqu'à** : la tortue s'arrête quand c dépasse ${{m}}$ (au plus $5$ blocs).\n\n```tortue\nniveau: 3e\nattendu: mettre c à {{a}} ; répéter jusqu’à c > {{m}} [ avancer c ; tourner à gauche 90 ; ajouter 1 à c ]\nmontrer: oui\nblocs: 5\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..2"
+				},
+				{
+					"name": "m",
+					"expression": "7..10"
+				}
+			],
+			"conditions": [],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"La variable **c** vaut ${{a}}$ au départ ; à chaque tour, la tortue avance de c, tourne à gauche de $90$, puis on ajoute $1$ à c.",
+					"Le dernier trait mesure ${{m}}$ : on s'arrête dès que c dépasse ${{m}}$, c'est-à-dire répéter jusqu'à c $> {{m}}$.",
+					"Un programme juste : mettre c à ${{a}}$ ; répéter jusqu'à c $> {{m}}$ [ avancer c ; tourner à gauche $90$ ; ajouter $1$ à c ]."
+				]
+			}
+		},
+		{
+			"statement": "Fais tracer à la tortue les ${{n}}$ créneaux dessinés en gris : leurs hauteurs alternent, $1$ carreau, puis $2$, puis $1$, puis $2$… Chaque créneau a $1$ carreau de large et il est suivi d'un creux de $1$ carreau.\n\nUtilise une variable **h** pour la hauteur, que tu changes après chaque créneau : au plus $13$ blocs.\n\n```tortue\nniveau: 3e\nattendu: mettre h à 1 ; répéter {{n}} [ tourner à gauche 90 ; avancer h ; tourner à droite 90 ; avancer 1 ; tourner à droite 90 ; avancer h ; tourner à gauche 90 ; avancer 1 ; si h = 1 alors [ mettre h à 2 ] sinon [ mettre h à 1 ] ]\nmontrer: oui\nblocs: 13\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "4..5"
+				}
+			],
+			"conditions": [],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"Un créneau de hauteur h : tourner à gauche, avancer h, tourner à droite, avancer $1$, tourner à droite, avancer h, tourner à gauche, avancer $1$ (le creux).",
+					"Après chaque créneau, h change : si h $= 1$ alors mettre h à $2$, sinon mettre h à $1$ (ou, sans « si » : mettre h à $3 - $ h).",
+					"On met h à $1$ au départ et on répète le créneau ${{n}}$ fois."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Spirale : juste",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"m": "8"
+			},
+			"answers": [
+				"mettre c à 1 ; répéter jusqu’à c > 8 [ avancer c ; tourner à gauche 90 ; ajouter 1 à c ]"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Spirale : juste, avec répéter 8",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"m": "8"
+			},
+			"answers": ["mettre c à 1 ; répéter 8 [ avancer c ; tourner à gauche 90 ; ajouter 1 à c ]"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : s'arrête un trait trop tôt",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"m": "8"
+			},
+			"answers": [
+				"mettre c à 1 ; répéter jusqu’à c = 8 [ avancer c ; tourner à gauche 90 ; ajouter 1 à c ]"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : sans variable, trop de blocs",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"m": "8"
+			},
+			"answers": [
+				"avancer 1 ; tourner à gauche 90 ; avancer 2 ; tourner à gauche 90 ; avancer 3 ; tourner à gauche 90 ; avancer 4 ; tourner à gauche 90 ; avancer 5 ; tourner à gauche 90 ; avancer 6 ; tourner à gauche 90 ; avancer 7 ; tourner à gauche 90 ; avancer 8 ; tourner à gauche 90"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Créneaux : juste",
+			"variationIndex": 1,
+			"variables": {
+				"n": "4"
+			},
+			"answers": [
+				"mettre h à 1 ; répéter 4 [ tourner à gauche 90 ; avancer h ; tourner à droite 90 ; avancer 1 ; tourner à droite 90 ; avancer h ; tourner à gauche 90 ; avancer 1 ; si h = 1 alors [ mettre h à 2 ] sinon [ mettre h à 1 ] ]"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Créneaux : juste, sans si",
+			"variationIndex": 1,
+			"variables": {
+				"n": "4"
+			},
+			"answers": [
+				"mettre h à 1 ; répéter 4 [ tourner à gauche 90 ; avancer h ; tourner à droite 90 ; avancer 1 ; tourner à droite 90 ; avancer h ; tourner à gauche 90 ; avancer 1 ; mettre h à 3 − h ]"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : hauteur qui ne change pas",
+			"variationIndex": 1,
+			"variables": {
+				"n": "4"
+			},
+			"answers": [
+				"répéter 4 [ tourner à gauche 90 ; avancer 1 ; tourner à droite 90 ; avancer 1 ; tourner à droite 90 ; avancer 1 ; tourner à gauche 90 ; avancer 1 ]"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : hauteur qui augmente",
+			"variationIndex": 1,
+			"variables": {
+				"n": "4"
+			},
+			"answers": [
+				"mettre h à 1 ; répéter 4 [ tourner à gauche 90 ; avancer h ; tourner à droite 90 ; avancer 1 ; tourner à droite 90 ; avancer h ; tourner à gauche 90 ; avancer 1 ; ajouter 1 à h ]"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : sans variable, trop de blocs",
+			"variationIndex": 1,
+			"variables": {
+				"n": "4"
+			},
+			"answers": [
+				"répéter 2 [ tourner à gauche 90 ; avancer 1 ; tourner à droite 90 ; avancer 1 ; tourner à droite 90 ; avancer 1 ; tourner à gauche 90 ; avancer 1 ; tourner à gauche 90 ; avancer 2 ; tourner à droite 90 ; avancer 1 ; tourner à droite 90 ; avancer 2 ; tourner à gauche 90 ; avancer 1 ]"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

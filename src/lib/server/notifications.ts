@@ -7,7 +7,7 @@
 
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { fetchStaffDirectory, indexStaffById } from './staff-directory';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 import type {
 	CreateNotificationData,
 	CreateSystemNotificationData,
@@ -17,13 +17,25 @@ import type {
 	NotificationPriority,
 	NotificationTargetType,
 	SystemEventType
-} from '$lib/types/notification';
-import { sanitizeNotificationHtml } from './sanitization';
-import { escapeHtml } from '$lib/utils/html-escape';
+} from '#lib/types/notification.ts';
+import { escapeHtml } from '#lib/utils/html-escape.ts';
 import { createServiceRoleClient } from './serviceRoleClient';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/notifications');
+
+/**
+ * Assainit le HTML d'une notification, en chargeant l'assainisseur à la demande.
+ *
+ * `./sanitization` s'appuie sur `isomorphic-dompurify`, donc sur jsdom (~650 modules,
+ * ~70 % du démarrage du serveur mesuré le 2026-11-09). Ce module est importé par
+ * `hooks.server.ts` (via `errorMonitoring`) : un import statique faisait payer jsdom à
+ * chaque démarrage à froid, alors qu'on n'en a besoin qu'à l'écriture d'une notification.
+ */
+async function sanitizeMessage(html: string): Promise<string> {
+	const { sanitizeNotificationHtml } = await import('./sanitization');
+	return sanitizeNotificationHtml(html);
+}
 
 type SupabaseClientType = SupabaseClient<Database>;
 type NotificationInsert = Database['public']['Tables']['notifications']['Insert'];
@@ -124,7 +136,7 @@ export async function createNotification(
 		// SECURITY: Sanitize message HTML to prevent stored XSS attacks
 		// User-submitted HTML could contain <script> tags, event handlers (onclick),
 		// or malicious URLs. Server-side sanitization is the ONLY reliable defense.
-		const sanitizedMessage = sanitizeNotificationHtml(data.message);
+		const sanitizedMessage = await sanitizeMessage(data.message);
 
 		// Create notification
 		const { data: notification, error: insertError } = await supabase
@@ -185,7 +197,7 @@ export async function insertSystemNotification(
 		.insert({
 			...row,
 			// Défense en profondeur : le message peut contenir un texte saisi par un élève.
-			message: sanitizeNotificationHtml(row.message),
+			message: await sanitizeMessage(row.message),
 			is_system: true,
 			created_by: null
 		});

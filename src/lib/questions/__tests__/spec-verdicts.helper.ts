@@ -2,8 +2,8 @@
  * Verdict du moteur de questions (runAllTestSpecs) pour une case unique :
  * énoncé, attendu, réponses → statut de chaque réponse.
  */
-import { runAllTestSpecs } from '$lib/questions/test-spec-runner';
-import type { QuestionTemplate } from '$lib/questions/types';
+import { runAllTestSpecs } from '#lib/questions/test-spec-runner.ts';
+import type { QuestionTemplate } from '#lib/questions/types.ts';
 
 export interface SpecVerdict {
 	status: string;
@@ -20,8 +20,6 @@ export function specVerdicts(
 		type: 'fill_in_blanks',
 		title: 't',
 		grades: ['1_SPE'],
-		theme: 'T',
-		domain: 'D',
 		level: 1,
 		delay: 20,
 		status: 'draft',

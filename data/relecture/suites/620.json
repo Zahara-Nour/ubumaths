@@ -46,9 +46,6 @@
 			}
 		],
 		"grades": ["1_SPE"],
-		"theme": "Suites",
-		"domain": "Apprivoiser",
-		"subdomain": "Calculer un terme",
 		"level": 3,
 		"status": "draft",
 		"delay": 30,

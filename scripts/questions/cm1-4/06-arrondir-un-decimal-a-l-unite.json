@@ -1,10 +1,8 @@
 {
+	"id": "ca08432a-cfcc-4372-809e-f5d0d9895eff",
 	"title": "Arrondir un nombre décimal à l'unité",
 	"description": "Donner l'arrondi à l'unité d'un nombre décimal à une ou deux décimales (3,7 → 4 ; 3,5 → 4 ; 5,49 → 5)",
 	"grades": ["CM1"],
-	"theme": "Décimaux",
-	"domain": "Apprivoiser",
-	"subdomain": "Arrondir",
 	"level": 5,
 	"delay": 30,
 	"status": "draft",

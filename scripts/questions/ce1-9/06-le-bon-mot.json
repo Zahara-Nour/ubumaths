@@ -1,10 +1,8 @@
 {
+	"id": "9733e97c-0313-429a-bd0e-bfe5b4ee82b1",
 	"title": "Le bon mot : sommet, côté, centre, milieu, droite, segment",
 	"description": "Nommer un élément montré sur une figure",
 	"grades": ["CE1"],
-	"theme": "Géométrie",
-	"domain": "Figures planes",
-	"subdomain": "Propriétés",
 	"level": 4,
 	"delay": 90,
 	"status": "draft",
@@ -28,7 +26,7 @@
 			],
 			"correction": {
 				"steps": [
-					"Les côtés du triangle se rejoignent en ${{if:v==1|A|{{if:v==2|B|C}}}}$ : c'est un \\textcolor{{{color:primary.0}}}{sommet}. Un triangle a $3$ sommets."
+					"Les côtés du triangle se rejoignent en ${{if:v==1|A|{{if:v==2|B|C}}}}$ : c'est un $\\textcolor{{{color:primary.0}}}{sommet}$. Un triangle a $3$ sommets."
 				]
 			}
 		},
@@ -51,7 +49,7 @@
 			],
 			"correction": {
 				"steps": [
-					"Le trait va d'un sommet à l'autre, il borde le rectangle : c'est un \\textcolor{{{color:primary.0}}}{côté}, le côté ${{if:t==1|[AB]|{{if:t==2|[BC]|{{if:t==3|[CD]|[DA]}}}}}}$."
+					"Le trait va d'un sommet à l'autre, il borde le rectangle : c'est un $\\textcolor{{{color:primary.0}}}{côté}$, le côté ${{if:t==1|[AB]|{{if:t==2|[BC]|{{if:t==3|[CD]|[DA]}}}}}}$."
 				]
 			}
 		},
@@ -74,7 +72,7 @@
 			],
 			"correction": {
 				"steps": [
-					"Tous les points du cercle sont à la même distance de $O$ : $O$ est le \\textcolor{{{color:primary.0}}}{centre} du cercle."
+					"Tous les points du cercle sont à la même distance de $O$ : $O$ est le $\\textcolor{{{color:primary.0}}}{centre}$ du cercle."
 				]
 			}
 		},
@@ -93,7 +91,7 @@
 			],
 			"correction": {
 				"steps": [
-					"Les petits traits disent que $AM$ et $MB$ ont la même longueur, et $M$ est sur le segment : $M$ est le \\textcolor{{{color:primary.0}}}{milieu} de $[AB]$."
+					"Les petits traits disent que $AM$ et $MB$ ont la même longueur, et $M$ est sur le segment : $M$ est le $\\textcolor{{{color:primary.0}}}{milieu}$ de $[AB]$."
 				]
 			}
 		},

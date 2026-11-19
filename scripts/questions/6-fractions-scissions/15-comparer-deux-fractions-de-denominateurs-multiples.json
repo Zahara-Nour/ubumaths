@@ -1,10 +1,8 @@
 {
+	"id": "228b1620-640c-4570-9c8f-2f3e960aca7d",
 	"title": "Comparer deux fractions de dénominateurs multiples",
 	"description": "Comparer deux fractions dont un dénominateur est multiple de l'autre (2/3 et 4/6 ; 3/4 et 7/8), en les écrivant avec le même dénominateur",
 	"grades": ["6"],
-	"theme": "Fractions",
-	"domain": "Apprivoiser",
-	"subdomain": "Comparer",
 	"level": 7,
 	"delay": 30,
 	"status": "draft",

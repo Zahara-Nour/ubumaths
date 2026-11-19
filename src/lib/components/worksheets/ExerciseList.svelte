@@ -41,14 +41,14 @@
 	import { flip } from 'svelte/animate';
 	import { SvelteSet } from 'svelte/reactivity';
 	import { dndzone, SHADOW_PLACEHOLDER_ITEM_ID, TRIGGERS, type DndEvent } from 'svelte-dnd-action';
-	import { lore } from '$lib/config/lore';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import { Textarea } from '$lib/components/ui/textarea';
-	import { Label } from '$lib/components/ui/label';
-	import * as Card from '$lib/components/ui/card';
-	import ConfirmDialog from '$lib/components/ui/confirm-dialog/ConfirmDialog.svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { lore } from '#lib/config/lore.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Textarea } from '#lib/components/ui/textarea/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import ConfirmDialog from '#lib/components/ui/confirm-dialog/ConfirmDialog.svelte';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import {
 		GripVertical,
 		Trash2,
@@ -60,7 +60,7 @@
 		Save,
 		X
 	} from '@lucide/svelte';
-	import { exerciseEditHref } from '$lib/worksheets/exercise-edit-link';
+	import { exerciseEditHref } from '#lib/worksheets/exercise-edit-link.ts';
 	import {
 		applyPlacements,
 		applySectionOrder,
@@ -69,8 +69,8 @@
 		worksheetOutline,
 		type ExercisePlacement,
 		type SectionPlacement
-	} from '$lib/worksheets/worksheet-outline';
-	import { estOmbre } from '$lib/components/cours/teacher/section-dnd';
+	} from '#lib/worksheets/worksheet-outline.ts';
+	import { estOmbre } from '#lib/components/cours/teacher/section-dnd.ts';
 	import AnswerFrameLinesEditor from './AnswerFrameLinesEditor.svelte';
 	import type {
 		AnswerFrameLines,
@@ -78,8 +78,8 @@
 		RowTranslations,
 		WorksheetExerciseWithExercise,
 		WorksheetSectionRow
-	} from '$lib/types/worksheets';
-	import type { ContentLocale } from '$lib/types/locale';
+	} from '#lib/types/worksheets.ts';
+	import type { ContentLocale } from '#lib/types/locale.ts';
 
 	// Types
 	interface Props {

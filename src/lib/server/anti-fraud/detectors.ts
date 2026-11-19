@@ -167,7 +167,7 @@ export function detectBurst(reviews: ReviewEntry[]): SignalResult | null {
 
 /**
  * Détecte un écart > 50 points entre taux succès SRS et taux succès Monde 1
- * sur une même capacité. Chaque côté nécessite ≥ 10 attempts.
+ * sur un même point du programme. Chaque côté nécessite ≥ 10 attempts.
  */
 export function detectSrsVsQuizGap(srs: AttemptEntry[], quiz: AttemptEntry[]): SignalResult | null {
 	if (srs.length < 10 || quiz.length < 10) return null;

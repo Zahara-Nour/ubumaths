@@ -1,0 +1,214 @@
+{
+	"id": "04e65a91-c47e-4aa9-a92f-aa652e03adbb",
+	"title": "Coefficients binomiaux au triangle de Pascal (n ⩽ 10)",
+	"description": "Lire un coefficient dans le triangle ; le calculer en construisant le triangle (n ⩽ 10) ; valeurs particulières et symétrie",
+	"grades": ["T_TECHNO"],
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Voici le triangle de Pascal jusqu'à la ligne $n=8$ ; la case de la ligne $n$ et de la colonne $k$ contient $\\binom{n}{k}$.\n\n| $n$ \\ $k$ | $0$ | $1$ | $2$ | $3$ | $4$ | $5$ | $6$ | $7$ | $8$ |\n|---|---|---|---|---|---|---|---|---|---|\n| $0$ | $1$ |   |   |   |   |   |   |   |   |\n| $1$ | $1$ | $1$ |   |   |   |   |   |   |   |\n| $2$ | $1$ | $2$ | $1$ |   |   |   |   |   |   |\n| $3$ | $1$ | $3$ | $3$ | $1$ |   |   |   |   |   |\n| $4$ | $1$ | $4$ | $6$ | $4$ | $1$ |   |   |   |   |\n| $5$ | $1$ | $5$ | $10$ | $10$ | $5$ | $1$ |   |   |   |\n| $6$ | $1$ | $6$ | $15$ | $20$ | $15$ | $6$ | $1$ |   |   |\n| $7$ | $1$ | $7$ | $21$ | $35$ | $35$ | $21$ | $7$ | $1$ |   |\n| $8$ | $1$ | $8$ | $28$ | $56$ | $70$ | $56$ | $28$ | $8$ | $1$ |\n\nDonne $\\binom{{{n}}}{{{k}}}$.\n\n$\\binom{{{n}}}{{{k}}}=?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "5..8"
+				},
+				{
+					"name": "k",
+					"expression": "2..3"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:binom(n,k)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On lit la ligne $n={{n}}$, colonne $k={{k}}$ (on compte les colonnes à partir de $0$).",
+					"$\\binom{{{n}}}{{{k}}}=\\textcolor{{{color:primary.0}}}{{{eval:binom(n,k)}}}$ : il y a ${{eval:binom(n,k)}}$ chemins à ${{k}}$ succès dans l'arbre à ${{n}}$ épreuves."
+				]
+			}
+		},
+		{
+			"statement": "En construisant le triangle de Pascal au brouillon, calcule $\\binom{{{n}}}{{{k}}}$.\n\n$\\binom{{{n}}}{{{k}}}=?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "9..10"
+				},
+				{
+					"name": "k",
+					"expression": "2..4"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:binom(n,k)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On construit les lignes une à une : chaque nombre est la somme des deux nombres situés au-dessus, et chaque ligne commence et finit par $1$.",
+					"Ligne $8$ : $1$ ; $8$ ; $28$ ; $56$ ; $70$ ; $56$ ; $28$ ; $8$ ; $1$.",
+					"Ligne $9$ : $1$ ; $9$ ; $36$ ; $84$ ; $126$ ; $126$ ; $84$ ; $36$ ; $9$ ; $1$.",
+					"{{if:n>=10|Ligne $10$ : $1$ ; $10$ ; $45$ ; $120$ ; $210$ ; $252$ ; $210$ ; $120$ ; $45$ ; $10$ ; $1$.|On lit la ligne $9$.}}",
+					"$\\binom{{{n}}}{{{k}}}=\\textcolor{{{color:primary.0}}}{{{eval:binom(n,k)}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On donne $\\binom{{{n}}}{{{k}}}={{c}}$.\n\nSans calcul, donne les coefficients suivants.\n\n$\\binom{{{n}}}{{{eval:n-k}}}=?$ ; $\\binom{{{n}}}{0}=?$ ; $\\binom{{{n}}}{1}=?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "6..10"
+				},
+				{
+					"name": "k",
+					"expression": "2..3"
+				},
+				{
+					"name": "c",
+					"expression": "eval:binom(n,k)"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{c}}"
+				},
+				{
+					"expectedAnswer": "1"
+				},
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Symétrie : choisir les ${{k}}$ épreuves réussies revient à choisir les ${{eval:n-k}}$ épreuves ratées, donc $\\binom{{{n}}}{{{eval:n-k}}}=\\binom{{{n}}}{{{k}}}=\\textcolor{{{color:primary.0}}}{{{c}}}$ (la ligne du triangle se lit de la même façon dans les deux sens).",
+					"$\\binom{{{n}}}{0}=\\textcolor{{{color:primary.0}}}{1}$ : un seul chemin sans aucun succès.",
+					"$\\binom{{{n}}}{1}=\\textcolor{{{color:primary.0}}}{{{n}}}$ : le succès unique peut être à n'importe laquelle des ${{n}}$ épreuves."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "C(6, 2) = 15",
+			"variationIndex": 0,
+			"variables": {
+				"n": "6",
+				"k": "2"
+			},
+			"answers": ["15"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : décalage de colonne, C(6, 3) = 20",
+			"variationIndex": 0,
+			"variables": {
+				"n": "6",
+				"k": "2"
+			},
+			"answers": ["20"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "C(8, 3) = 56",
+			"variationIndex": 0,
+			"variables": {
+				"n": "8",
+				"k": "3"
+			},
+			"answers": ["56"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "C(10, 4) = 210",
+			"variationIndex": 1,
+			"variables": {
+				"n": "10",
+				"k": "4"
+			},
+			"answers": ["210"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : C(10, 4) lu ligne 9 (126)",
+			"variationIndex": 1,
+			"variables": {
+				"n": "10",
+				"k": "4"
+			},
+			"answers": ["126"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "C(9, 2) = 36",
+			"variationIndex": 1,
+			"variables": {
+				"n": "9",
+				"k": "2"
+			},
+			"answers": ["36"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "n = 7, k = 2 : 21, 1, 7",
+			"variationIndex": 2,
+			"variables": {
+				"n": "7",
+				"k": "2",
+				"c": "21"
+			},
+			"answers": ["21", "1", "7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : C(n, 0) = 0",
+			"variationIndex": 2,
+			"variables": {
+				"n": "7",
+				"k": "2",
+				"c": "21"
+			},
+			"answers": ["21", "0", "7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "n = 10, k = 3 : 120, 1, 10",
+			"variationIndex": 2,
+			"variables": {
+				"n": "10",
+				"k": "3",
+				"c": "120"
+			},
+			"answers": ["120", "1", "10"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

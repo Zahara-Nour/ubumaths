@@ -32,13 +32,13 @@ import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { config } from 'dotenv';
-import { createExerciseSchema, updateExerciseSchema } from '$lib/server/validation/exercises';
+import { createExerciseSchema, updateExerciseSchema } from '#lib/server/validation/exercises.ts';
 import {
 	validateCreateWorksheetExercise,
 	validateCreateWorksheetSection
-} from '$lib/server/validation/worksheets';
-import { createExercise } from '$lib/server/exercises';
-import type { Database, Json } from '$lib/types/database';
+} from '#lib/server/validation/worksheets.ts';
+import { createExercise } from '#lib/server/exercises.ts';
+import type { Database, Json } from '#lib/types/database.ts';
 
 config({ path: '.env' });
 

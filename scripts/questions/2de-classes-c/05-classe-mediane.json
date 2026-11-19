@@ -1,10 +1,8 @@
 {
+	"id": "b7c71958-5d88-4828-87d7-5a4964fcb1d1",
 	"title": "Classe médiane d'une série regroupée en classes",
 	"description": "Effectifs de cinq classes : classe médiane par les effectifs cumulés (effectif total impair)",
 	"grades": ["2"],
-	"theme": "Statistiques",
-	"domain": "Indicateurs",
-	"subdomain": "Médiane",
 	"level": 4,
 	"delay": 90,
 	"status": "draft",
@@ -59,7 +57,7 @@
 			"correction": {
 				"steps": [
 					"Effectif total : ${{eval:(n1)+(n2)+(n3)+(n4)+(n5)}}$, impair : la médiane est la valeur de rang $\\dfrac{ {{eval:(n1)+(n2)+(n3)+(n4)+(n5)}}+1}{2}={{eval:((n1)+(n2)+(n3)+(n4)+(n5)+1)/2}}$.",
-					"Effectifs cumulés : ${{eval:(n1)}}$, ${{eval:(n1)+(n2)}}$, ${{eval:(n1)+(n2)+(n3)}}$, ${{eval:(n1)+(n2)+(n3)+(n4)}}$, ${{eval:(n1)+(n2)+(n3)+(n4)+(n5)}}$. La classe médiane est la première dont l'effectif cumulé atteint ${{eval:((n1)+(n2)+(n3)+(n4)+(n5)+1)/2}}$ : \\textcolor{{{color:primary.0}}}{\\left[{{eval:(x0)+(m)*(h)}}\\,;{{eval:(x0)+((m)+1)*(h)}}\\right[}."
+					"Effectifs cumulés : ${{eval:(n1)}}$, ${{eval:(n1)+(n2)}}$, ${{eval:(n1)+(n2)+(n3)}}$, ${{eval:(n1)+(n2)+(n3)+(n4)}}$, ${{eval:(n1)+(n2)+(n3)+(n4)+(n5)}}$. La classe médiane est la première dont l'effectif cumulé atteint ${{eval:((n1)+(n2)+(n3)+(n4)+(n5)+1)/2}}$ : $\\textcolor{{{color:primary.0}}}{\\left[{{eval:(x0)+(m)*(h)}}\\,;{{eval:(x0)+((m)+1)*(h)}}\\right[}$."
 				]
 			}
 		}

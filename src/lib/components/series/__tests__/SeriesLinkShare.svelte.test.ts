@@ -9,9 +9,9 @@ import { tick } from 'svelte';
 
 import SeriesLinkShare from '../SeriesLinkShare.svelte';
 
-const CATEGORIES = [
+const ITEMS = [
 	{
-		category: { theme: 'Calcul', domain: 'Tables', subdomain: null, level: 3 },
+		templateId: '11111111-1111-4111-8111-111111111111',
 		quantity: 4,
 		delay: 20
 	}
@@ -44,7 +44,7 @@ describe('le QR code d’une série', () => {
 	it('prof ou admin : le QR porte le lien court de la série, demandé avec son chemin', async () => {
 		const fetchMock = mockServer();
 		const { container } = await render(SeriesLinkShare, {
-			categories: CATEGORIES,
+			items: ITEMS,
 			canMakeQr: true
 		});
 		await userEvent.click(qrButton(container));
@@ -55,7 +55,7 @@ describe('le QR code d’une série', () => {
 		const [address, init] = fetchMock.mock.calls[0];
 		expect(address).toBe('/api/short-links');
 		const { target } = JSON.parse(String(init?.body)) as { target: string };
-		expect(target).toMatch(/^\/automaths\/panier\?categories=[!-~]+$/);
+		expect(target).toMatch(/^\/automaths\/panier\?modeles=[!-~]+$/);
 
 		const shown = document.querySelector(
 			'input[aria-label="Adresse du QR code"]'
@@ -65,7 +65,7 @@ describe('le QR code d’une série', () => {
 
 	it('élève ou visiteur : QR indisponible, avec sa raison, sans appel au serveur', async () => {
 		const fetchMock = mockServer();
-		const { container } = await render(SeriesLinkShare, { categories: CATEGORIES });
+		const { container } = await render(SeriesLinkShare, { items: ITEMS });
 		const button = qrButton(container);
 
 		expect(button.getAttribute('aria-disabled')).toBe('true');

@@ -1,10 +1,8 @@
 {
+	"id": "c4775a3a-114f-41bb-a469-d29c5484dde7",
 	"title": "Intervalle de convexité ou de concavité par le signe de f″",
 	"description": "Étudier le signe de f″ pour donner le plus grand intervalle où f est convexe (f″ ≥ 0) ou concave (f″ ≤ 0)",
 	"grades": ["T_SPE", "T_COMP"],
-	"theme": "Fonctions convexes",
-	"domain": "Convexité",
-	"subdomain": "Signe de f″",
 	"level": 2,
 	"status": "draft",
 	"delay": 60,

@@ -1,10 +1,8 @@
 {
+	"id": "3dd3b738-02d4-4b1e-85a6-7dcbbad9b27f",
 	"title": "Écrire en chiffres un nombre écrit en lettres (jusqu'à $10\\,000$)",
 	"description": "deux-mille-trois-cent-sept → 2 307 ; zéros intérieurs, 70 à 99, « mille » invariable",
 	"grades": ["CE2"],
-	"theme": "Entiers",
-	"domain": "Apprivoiser",
-	"subdomain": "Ecriture",
 	"level": 18,
 	"delay": 30,
 	"status": "draft",

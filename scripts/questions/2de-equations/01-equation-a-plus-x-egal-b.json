@@ -1,10 +1,8 @@
 {
+	"id": "58984eff-03a7-4cf6-9050-a486e7eefee9",
 	"title": "Résoudre une équation a + x = b",
 	"description": "Ensemble des solutions de x + a = b (entiers relatifs) et de a + x = b (décimaux)",
 	"grades": ["2"],
-	"theme": "Calcul littéral",
-	"domain": "Equations",
-	"subdomain": "Ensemble des solutions",
 	"level": 1,
 	"delay": 45,
 	"status": "draft",

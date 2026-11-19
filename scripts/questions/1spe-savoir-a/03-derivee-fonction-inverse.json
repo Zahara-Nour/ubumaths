@@ -1,10 +1,8 @@
 {
+	"id": "7201f3b2-bb5c-4963-a6a6-f64cdeb6f111",
 	"title": "Dérivée de la fonction inverse",
 	"description": "À savoir : (1/x)′ = −1/x² sur ]−∞ ; 0[ et ]0 ; +∞[, reconnue parmi des erreurs typiques (signe oublié, −1/x, 0), et dans l'autre sens",
 	"grades": ["1_SPE"],
-	"theme": "Fonctions",
-	"domain": "Dérivation",
-	"subdomain": "À savoir",
 	"level": 3,
 	"delay": 30,
 	"status": "draft",

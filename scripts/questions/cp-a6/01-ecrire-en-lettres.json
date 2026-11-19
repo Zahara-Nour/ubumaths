@@ -1,10 +1,8 @@
 {
+	"id": "92c8e499-865c-4e41-82d0-0679ae311afd",
 	"title": "Écrire un nombre en lettres (jusqu'à cinquante)",
 	"description": "Choisir l'écriture en lettres d'un nombre de 11 à 50 (leurres : orthographe, traits d'union, « et », accord, chiffres inversés ou lus un par un) ; orthographe rectifiée",
 	"grades": ["CP"],
-	"theme": "Entiers",
-	"domain": "Apprivoiser",
-	"subdomain": "Ecriture",
 	"level": 13,
 	"delay": 30,
 	"status": "draft",

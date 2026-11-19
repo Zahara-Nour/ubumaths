@@ -5,28 +5,28 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import type { Exercise, DistributionMode, InstanceGenerationResult } from '$lib/exercises/types';
-import type { GradeCode } from '$lib/types/grades';
-import type { Variable } from '$lib/ubumark';
+import type { Database } from '#lib/types/database.ts';
+import type { Exercise, DistributionMode, InstanceGenerationResult } from '#lib/exercises/types.ts';
+import type { GradeCode } from '#lib/types/grades.ts';
+import type { Variable } from '#lib/ubumark/index.ts';
 import {
 	generateExerciseInstance,
 	generateStudentSeed,
 	generateGroupSeed,
 	isParameterized
-} from '$lib/exercises/generator/instance-generator';
-import { generateExerciseSlug } from '$lib/exercises/slug-generator';
+} from '#lib/exercises/generator/instance-generator.ts';
+import { generateExerciseSlug } from '#lib/exercises/slug-generator.ts';
 import {
 	SearchIndexedRequiresPublicError,
 	consistentSearchIndexed
-} from '$lib/server/exercise-search-indexed';
+} from '#lib/server/exercise-search-indexed.ts';
 import {
 	fetchResourceIdsByAnyTag,
 	fetchResourceTagNames,
 	fetchTagNamesForResources,
 	syncResourceTags
-} from '$lib/server/resource-tags';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/resource-tags.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/exercises');
 

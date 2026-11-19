@@ -1,10 +1,8 @@
 {
+	"id": "7093b797-0fa4-44e1-8828-327d5d3c452b",
 	"title": "Quel segment est le plus long ?",
 	"description": "Comparer trois segments de directions différentes (1 cm d'écart au moins)",
 	"grades": ["CP"],
-	"theme": "Grandeurs",
-	"domain": "Longueurs",
-	"subdomain": "Comparaison et mesure",
 	"level": 1,
 	"delay": 30,
 	"status": "draft",

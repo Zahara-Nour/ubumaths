@@ -47,19 +47,19 @@
 -->
 
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import { onMount } from 'svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import { Button } from '$lib/components/ui/button';
-	import * as Switch from '$lib/components/ui/switch';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Switch from '#lib/components/ui/switch/index.ts';
 	import {
 		MetricCard,
 		HealthStatusCard,
 		TrendChart,
 		AlertBadge,
 		WidgetSkeleton
-	} from '$lib/components/admin/widgets';
-	import * as Card from '$lib/components/ui/card';
+	} from '#lib/components/admin/widgets/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
 	import {
 		Users,
 		UserPlus,
@@ -72,10 +72,10 @@
 		RefreshCw,
 		Clock
 	} from '@lucide/svelte';
-	import { cn } from '$lib/utils';
+	import { cn } from '#lib/utils.ts';
 
 	import type { PageData } from './$types';
-	import type { HealthStatsResponse } from '$lib/server/validation/health';
+	import type { HealthStatsResponse } from '#lib/server/validation/health.ts';
 
 	// Props
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars

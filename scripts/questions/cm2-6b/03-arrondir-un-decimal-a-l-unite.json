@@ -1,10 +1,8 @@
 {
+	"id": "e28629a0-7a21-47a1-86e8-34aa827abc79",
 	"title": "Arrondir un nombre décimal à l'unité",
 	"description": "Donner l'arrondi à l'unité d'un nombre décimal à une, deux ou trois décimales : cas francs (3,7 → 4 ; 5,781 → 6), puis cas pièges (3,5 → 4 ; 3,49 → 3 ; 9,7 → 10)",
 	"grades": ["CM2"],
-	"theme": "Décimaux",
-	"domain": "Apprivoiser",
-	"subdomain": "Arrondir",
 	"level": 7,
 	"delay": 30,
 	"status": "draft",

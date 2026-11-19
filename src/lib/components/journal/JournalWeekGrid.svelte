@@ -20,13 +20,13 @@
 -->
 
 <script lang="ts">
-	import { referencesToLabels } from '$lib/resources/references';
-	import { lore } from '$lib/config/lore';
-	import * as Card from '$lib/components/ui/card';
-	import { Badge } from '$lib/components/ui/badge';
+	import { journalContentPreview } from '#lib/journal/content.ts';
+	import { lore } from '#lib/config/lore.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
 	import { FileText, BookCheck, Globe, Plus, Calendar } from '@lucide/svelte';
-	import type { JournalWeekDay } from '$lib/types/journal';
-	import { cn } from '$lib/utils';
+	import type { JournalWeekDay } from '#lib/types/journal.ts';
+	import { cn } from '#lib/utils.ts';
 
 	interface Props {
 		/** Days of the week with entries */
@@ -70,15 +70,6 @@
 	function handleDayClick(day: JournalWeekDay) {
 		if (readonly || day.isWeekend || !onDayClick) return;
 		onDayClick(day.date);
-	}
-
-	/**
-	 * Strip HTML tags from content
-	 */
-	function stripHtml(html: string): string {
-		// Une référence citée dans la séance est réduite à son libellé : dans un
-		// aperçu de cinquante caractères, un uuid ne dirait rien à personne.
-		return referencesToLabels(html).replace(/<[^>]*>/g, '');
 	}
 </script>
 
@@ -133,7 +124,7 @@
 						<!-- Lesson content preview -->
 						{#if day.entry.lessonContent}
 							<p class="line-clamp-2 text-xs text-muted-foreground">
-								{stripHtml(day.entry.lessonContent).slice(0, 50)}...
+								{journalContentPreview(day.entry.lessonContent, 50)}
 							</p>
 						{/if}
 

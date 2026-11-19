@@ -1,8 +1,8 @@
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { addToClassSchema } from '$lib/server/validation/admin';
-import { requireAdmin } from '$lib/server/middleware/auth';
-import { createServerLogger } from '$lib/utils/logger';
+import { addToClassSchema } from '#lib/server/validation/admin.ts';
+import { requireAdmin } from '#lib/server/middleware/auth.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/admin/add-to-class/+server');
 
@@ -52,10 +52,13 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		if (reactivationError) {
 			logger.error('Réactivation impossible :', reactivationError);
-			return json({ error: reactivationError.message }, { status: 400 });
+			return Response.json({ error: reactivationError.message }, { status: 400 });
 		}
 	} else if (existing) {
-		return json({ error: 'Cet utilisateur est déjà inscrit dans cette classe' }, { status: 400 });
+		return Response.json(
+			{ error: 'Cet utilisateur est déjà inscrit dans cette classe' },
+			{ status: 400 }
+		);
 	}
 
 	// Add to class_members table
@@ -65,7 +68,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	if (insertError) {
 		logger.error('Insert error:', insertError);
-		return json({ error: insertError.message }, { status: 400 });
+		return Response.json({ error: insertError.message }, { status: 400 });
 	}
 
 	// Fetch the updated profile with all classes
@@ -77,7 +80,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	if (fetchError) {
 		logger.error('Fetch error:', fetchError);
-		return json({ error: fetchError.message }, { status: 400 });
+		return Response.json({ error: fetchError.message }, { status: 400 });
 	}
 
 	// Transform class_members array to class_ids array
@@ -86,5 +89,5 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		class_ids: updatedProfile.class_members?.map((cm: { class_id: string }) => cm.class_id) || []
 	};
 
-	return json({ success: true, profile: profileWithClasses });
+	return Response.json({ success: true, profile: profileWithClasses });
 };

@@ -22,7 +22,7 @@
  * ⚠️ Une nouvelle clé de travail s'ajoute ici, sinon elle survit au changement de compte.
  */
 
-import { clearFreezeDetectionData } from '$lib/utils/freezeDetection';
+import { clearFreezeDetectionData } from '#lib/utils/freezeDetection.ts';
 
 const OWNER_KEY = 'chiphre:work-data-owner';
 const ANONYMOUS = 'anonymous';
@@ -44,6 +44,8 @@ const WORK_DATA_KEYS: readonly string[] = [
 	'chiphre-whiteboard-sync-state',
 	'chiphre:depeches-du-czar',
 	'chiphre:depeches-du-czar:indices',
+	// Heure du dernier passage du Palotin (plafond de 10 min) : propre à l'élève de l'onglet
+	'chiphre:palotin:dernier-passage',
 	'minesweeper_game',
 	'2048-best-score',
 	'2048-game-state',

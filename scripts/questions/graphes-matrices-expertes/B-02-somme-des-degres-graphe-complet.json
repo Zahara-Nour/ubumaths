@@ -2,12 +2,12 @@
 	"title": "Somme des degrés et graphe complet",
 	"description": "Nombre d'arêtes d'un graphe complet, d'un graphe dont on connaît les degrés, degré d'un sommet du graphe complet (pièges : n(n − 1) sans diviser par 2, degré n au lieu de n − 1)",
 	"grades": ["T_EXP"],
-	"theme": "Graphes et matrices",
-	"domain": "Graphes",
-	"subdomain": "Vocabulaire des graphes",
 	"level": 2,
 	"status": "draft",
 	"delay": 60,
+	"shared": {
+		"capitalPairs": "product"
+	},
 	"variations": [
 		{
 			"statement": "Combien d'arêtes possède le graphe complet d'ordre ${{n}}$ ?\n\n$?$",

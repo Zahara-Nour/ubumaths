@@ -9,9 +9,9 @@
 	@module components/cours/ChapterProgressIndicator
 -->
 <script lang="ts">
-	import type { ChapterProgress } from '$lib/types/chapters';
-	import { Progress } from '$lib/components/ui/progress';
-	import { cn } from '$lib/utils';
+	import type { ChapterProgress } from '#lib/types/chapters.ts';
+	import { Progress } from '#lib/components/ui/progress/index.ts';
+	import { cn } from '#lib/utils.ts';
 	import { CheckCircle2, Circle, Target } from '@lucide/svelte';
 
 	// Props

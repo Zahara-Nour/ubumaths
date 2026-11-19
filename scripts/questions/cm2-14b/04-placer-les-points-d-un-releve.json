@@ -1,0 +1,273 @@
+{
+	"id": "76e184e8-a4f2-4168-8e21-600b3b2580c7",
+	"title": "Place les points d'un relevé (axes de 100, de 0,5, de 5)",
+	"description": "Relevé de 5 ou 6 valeurs, axes et graduations donnés : visiteurs d'un parc (de 100 en 100), hauteur d'une plante (de 0,5 en 0,5 cm), température toutes les deux heures (de 5 en 5 °C)",
+	"grades": ["CM2"],
+	"level": 6,
+	"delay": 240,
+	"status": "draft",
+	"options": null,
+	"variations": [
+		{
+			"statement": "On a compté les visiteurs d'un parc pendant cinq jours.\n\n| Point | Jour | Visiteurs |\n|---|---|---|\n| A | $1$ | ${{eval:100*u1}}$ |\n| B | $2$ | ${{eval:100*u2}}$ |\n| C | $3$ | ${{eval:100*u3}}$ |\n| D | $4$ | ${{eval:100*u4}}$ |\n| E | $5$ | ${{eval:100*u5}}$ |\n\nPlace les points A, B, C, D et E : le jour sur l'axe horizontal, le nombre de visiteurs sur l'axe vertical.\n\n```courbe\nx: 0 ; 6\ny: 0 ; 1000\ngrille: 1 ; 100\naxes: x = Jour ; y = Visiteurs\nplacer: A=(1 ; {{eval:100*u1}}) ; B=(2 ; {{eval:100*u2}}) ; C=(3 ; {{eval:100*u3}}) ; D=(4 ; {{eval:100*u4}}) ; E=(5 ; {{eval:100*u5}})\ntaille: moyenne\ndescription: Repère : jour en abscisse, de 1 en 1 ; visiteurs en ordonnée, de 0 à 1 000, de 100 en 100.\n```",
+			"variables": [
+				{
+					"name": "u1",
+					"expression": "1..10"
+				},
+				{
+					"name": "u2",
+					"expression": "1..10"
+				},
+				{
+					"name": "u3",
+					"expression": "1..10"
+				},
+				{
+					"name": "u4",
+					"expression": "1..10"
+				},
+				{
+					"name": "u5",
+					"expression": "1..10"
+				}
+			],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"Chaque colonne du tableau donne un point : on part de la valeur sur l'axe horizontal, puis on monte jusqu'à la valeur sur l'axe vertical (un carreau vaut $100$).",
+					"$A\\textcolor{{{color:primary.0}}}{(1 ; {{eval:100*u1}})}$ ; $B\\textcolor{{{color:primary.0}}}{(2 ; {{eval:100*u2}})}$ ; $C\\textcolor{{{color:primary.0}}}{(3 ; {{eval:100*u3}})}$ ; $D\\textcolor{{{color:primary.0}}}{(4 ; {{eval:100*u4}})}$ ; $E\\textcolor{{{color:primary.0}}}{(5 ; {{eval:100*u5}})}$."
+				]
+			}
+		},
+		{
+			"statement": "On a mesuré la hauteur d'une plante chaque semaine.\n\n| Point | Semaine | Hauteur (cm) |\n|---|---|---|\n| A | $1$ | ${{eval:h1/2;d}}$ |\n| B | $2$ | ${{eval:h2/2;d}}$ |\n| C | $3$ | ${{eval:h3/2;d}}$ |\n| D | $4$ | ${{eval:h4/2;d}}$ |\n| E | $5$ | ${{eval:h5/2;d}}$ |\n| F | $6$ | ${{eval:h6/2;d}}$ |\n\nPlace les points A, B, C, D, E et F : la semaine sur l'axe horizontal, la hauteur sur l'axe vertical.\n\n```courbe\nx: 0 ; 7\ny: 0 ; 8\ngrille: 1 ; 0,5\naxes: x = Semaine ; y = Hauteur (cm)\nplacer: A=(1 ; {{eval:h1/2;d}}) ; B=(2 ; {{eval:h2/2;d}}) ; C=(3 ; {{eval:h3/2;d}}) ; D=(4 ; {{eval:h4/2;d}}) ; E=(5 ; {{eval:h5/2;d}}) ; F=(6 ; {{eval:h6/2;d}})\ntaille: moyenne\ndescription: Repère : semaine en abscisse, de 1 en 1 ; hauteur en ordonnée, de 0 à 8 cm, de 0,5 en 0,5.\n```",
+			"variables": [
+				{
+					"name": "h1",
+					"expression": "2..4"
+				},
+				{
+					"name": "g2",
+					"expression": "1..2"
+				},
+				{
+					"name": "g3",
+					"expression": "1..2"
+				},
+				{
+					"name": "g4",
+					"expression": "1..2"
+				},
+				{
+					"name": "g5",
+					"expression": "1..2"
+				},
+				{
+					"name": "g6",
+					"expression": "1..2"
+				},
+				{
+					"name": "h2",
+					"expression": "eval:h1+g2"
+				},
+				{
+					"name": "h3",
+					"expression": "eval:h2+g3"
+				},
+				{
+					"name": "h4",
+					"expression": "eval:h3+g4"
+				},
+				{
+					"name": "h5",
+					"expression": "eval:h4+g5"
+				},
+				{
+					"name": "h6",
+					"expression": "eval:h5+g6"
+				}
+			],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"Chaque colonne du tableau donne un point : on part de la valeur sur l'axe horizontal, puis on monte jusqu'à la valeur sur l'axe vertical (un carreau vaut $0{,}5$).",
+					"$A\\textcolor{{{color:primary.0}}}{(1 ; {{eval:h1/2;d}})}$ ; $B\\textcolor{{{color:primary.0}}}{(2 ; {{eval:h2/2;d}})}$ ; $C\\textcolor{{{color:primary.0}}}{(3 ; {{eval:h3/2;d}})}$ ; $D\\textcolor{{{color:primary.0}}}{(4 ; {{eval:h4/2;d}})}$ ; $E\\textcolor{{{color:primary.0}}}{(5 ; {{eval:h5/2;d}})}$ ; $F\\textcolor{{{color:primary.0}}}{(6 ; {{eval:h6/2;d}})}$."
+				]
+			}
+		},
+		{
+			"statement": "On a relevé la température toutes les deux heures, de $8$ h à $18$ h.\n\n| Point | Heure (h) | Température (°C) |\n|---|---|---|\n| A | $8$ | ${{eval:5*w1}}$ |\n| B | $10$ | ${{eval:5*w2}}$ |\n| C | $12$ | ${{eval:5*w3}}$ |\n| D | $14$ | ${{eval:5*w4}}$ |\n| E | $16$ | ${{eval:5*w5}}$ |\n| F | $18$ | ${{eval:5*w6}}$ |\n\nPlace les points A, B, C, D, E et F : l'heure sur l'axe horizontal, la température sur l'axe vertical.\n\n```courbe\nx: 6 ; 20\ny: 0 ; 40\ngrille: 2 ; 5\naxes: x = Heure (h) ; y = Température (°C)\nplacer: A=(8 ; {{eval:5*w1}}) ; B=(10 ; {{eval:5*w2}}) ; C=(12 ; {{eval:5*w3}}) ; D=(14 ; {{eval:5*w4}}) ; E=(16 ; {{eval:5*w5}}) ; F=(18 ; {{eval:5*w6}})\ntaille: moyenne\ndescription: Repère : heure en abscisse, de 2 en 2 ; température en ordonnée, de 0 à 40 °C, de 5 en 5.\n```",
+			"variables": [
+				{
+					"name": "w1",
+					"expression": "1..2"
+				},
+				{
+					"name": "g2",
+					"expression": "0..2"
+				},
+				{
+					"name": "g3",
+					"expression": "0..2"
+				},
+				{
+					"name": "g4",
+					"expression": "0..2"
+				},
+				{
+					"name": "g5",
+					"expression": "0..1"
+				},
+				{
+					"name": "g6",
+					"expression": "0..1"
+				},
+				{
+					"name": "w2",
+					"expression": "eval:w1+g2"
+				},
+				{
+					"name": "w3",
+					"expression": "eval:w2+g3"
+				},
+				{
+					"name": "w4",
+					"expression": "eval:w3+g4"
+				},
+				{
+					"name": "w5",
+					"expression": "eval:w4-g5"
+				},
+				{
+					"name": "w6",
+					"expression": "eval:w5-g6"
+				}
+			],
+			"conditions": ["w6 >= 1"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"Chaque colonne du tableau donne un point : on part de la valeur sur l'axe horizontal, puis on monte jusqu'à la valeur sur l'axe vertical (un carreau vaut $5$).",
+					"$A\\textcolor{{{color:primary.0}}}{(8 ; {{eval:5*w1}})}$ ; $B\\textcolor{{{color:primary.0}}}{(10 ; {{eval:5*w2}})}$ ; $C\\textcolor{{{color:primary.0}}}{(12 ; {{eval:5*w3}})}$ ; $D\\textcolor{{{color:primary.0}}}{(14 ; {{eval:5*w4}})}$ ; $E\\textcolor{{{color:primary.0}}}{(16 ; {{eval:5*w5}})}$ ; $F\\textcolor{{{color:primary.0}}}{(18 ; {{eval:5*w6}})}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Parc : 1;400, 2;700, 3;900, 4;300, 5;600",
+			"variationIndex": 0,
+			"variables": {
+				"u1": "4",
+				"u2": "7",
+				"u3": "9",
+				"u4": "3",
+				"u5": "6"
+			},
+			"answers": ["1;400", "2;700", "3;900", "4;300", "5;600"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un carreau compté pour 1 visiteur",
+			"variationIndex": 0,
+			"variables": {
+				"u1": "4",
+				"u2": "7",
+				"u3": "9",
+				"u4": "3",
+				"u5": "6"
+			},
+			"answers": ["1;4", "2;7", "3;9", "4;3", "5;6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Plante : 1;1.5, 2;2.5, 3;3, 4;4, 5;4.5, 6;5.5",
+			"variationIndex": 1,
+			"variables": {
+				"h1": "3",
+				"g2": "2",
+				"g3": "1",
+				"g4": "2",
+				"g5": "1",
+				"g6": "2",
+				"h2": "5",
+				"h3": "6",
+				"h4": "8",
+				"h5": "9",
+				"h6": "11"
+			},
+			"answers": ["1;1.5", "2;2.5", "3;3", "4;4", "5;4.5", "6;5.5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un carreau compté pour 1 cm",
+			"variationIndex": 1,
+			"variables": {
+				"h1": "3",
+				"g2": "2",
+				"g3": "1",
+				"g4": "2",
+				"g5": "1",
+				"g6": "2",
+				"h2": "5",
+				"h3": "6",
+				"h4": "8",
+				"h5": "9",
+				"h6": "11"
+			},
+			"answers": ["1;3", "2;5", "3;6", "4;8", "5;9", "6;11"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Température : 8;10, 10;20, 12;25, 14;35, 16;30, 18;25",
+			"variationIndex": 2,
+			"variables": {
+				"w1": "2",
+				"g2": "2",
+				"g3": "1",
+				"g4": "2",
+				"g5": "1",
+				"g6": "1",
+				"w2": "4",
+				"w3": "5",
+				"w4": "7",
+				"w5": "6",
+				"w6": "5"
+			},
+			"answers": ["8;10", "10;20", "12;25", "14;35", "16;30", "18;25"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : A avec heure et température échangées",
+			"variationIndex": 2,
+			"variables": {
+				"w1": "2",
+				"g2": "2",
+				"g3": "1",
+				"g4": "2",
+				"g5": "1",
+				"g6": "1",
+				"w2": "4",
+				"w3": "5",
+				"w4": "7",
+				"w5": "6",
+				"w6": "5"
+			},
+			"answers": ["10;8", "10;20", "12;25", "14;35", "16;30", "18;25"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -34,28 +34,28 @@ import type {
 } from '../types/stat-chart';
 import { STAT_CHART_LIMITS } from '../types/stat-chart';
 import type { CourbeColor } from '../types/courbe';
-import type { ContentLocale } from '$lib/types/locale';
-import { groupNumberText } from '$lib/mathAST/digit-grouping';
-import { computeGridStep } from '$lib/geometry-core/viewport/grid';
-import { categoryFrequencies, describeList, summarizeTable } from '$lib/statistics/describe';
+import type { ContentLocale } from '#lib/types/locale.ts';
+import { groupNumberText } from '#lib/mathAST/digit-grouping.ts';
+import { computeGridStep } from '#lib/geometry-core/viewport/grid.ts';
+import { categoryFrequencies, describeList, summarizeTable } from '#lib/statistics/describe.ts';
 import {
 	estimateClassQuantile,
 	summarizeClasses,
 	type ClassSummary,
 	type StatClass
-} from '$lib/statistics/classes';
+} from '#lib/statistics/classes.ts';
 import { COURBE_PIXEL_WIDTH, formatTick } from './courbe-scene';
 import { carreauGrid, usesCarreaux } from './stat-chart-carreaux';
 import { SCALE_TICKS } from './barres-placer';
-import { crossTable } from '$lib/statistics/cross-table';
+import { crossTable } from '#lib/statistics/cross-table.ts';
 import {
 	formatApproxValue,
 	formatFraction,
 	formatLawApproxValue,
 	formatLawIndicators,
 	formatStatNumber
-} from '$lib/statistics/format';
-import { Fraction } from '$lib/statistics/fraction';
+} from '#lib/statistics/format.ts';
+import { Fraction } from '#lib/statistics/fraction.ts';
 import {
 	decimalFit,
 	relationPole,
@@ -63,9 +63,9 @@ import {
 	squaredSign,
 	transformValue,
 	type VariableChange
-} from '$lib/statistics/variable-change';
-import { bivariateFit, readExactValue, toSafeNumber } from '$lib/statistics/bivariate';
-import { randomVariable, type RandomVariableLaw } from '$lib/statistics/random-variable';
+} from '#lib/statistics/variable-change.ts';
+import { bivariateFit, readExactValue, toSafeNumber } from '#lib/statistics/bivariate.ts';
+import { randomVariable, type RandomVariableLaw } from '#lib/statistics/random-variable.ts';
 import {
 	discreteSampler,
 	exponentialSampler,
@@ -78,7 +78,7 @@ import {
 	uniformDensitySampler,
 	uniformSampler,
 	type LawSampler
-} from '$lib/statistics/simulation';
+} from '#lib/statistics/simulation.ts';
 // ⚠️ Import circulaire (simulation-scene construit ses histogrammes par
 // `buildStatChartScene`) : sans risque, rien n'y est appelé au chargement
 import { buildRunningMeanScene, buildSampleMeansScene } from './simulation-scene';
@@ -100,7 +100,7 @@ import {
 	scatterEquation,
 	scatterNumber
 } from './scatter-lines';
-import { createRandomSource } from '$lib/utils/random';
+import { createRandomSource } from '#lib/utils/random.ts';
 import {
 	binomialDistribution,
 	binomialInterval,
@@ -108,17 +108,17 @@ import {
 	binomialProbability,
 	binomialThreshold,
 	type BinomialDistribution
-} from '$lib/statistics/binomial';
-import { roundExact, roundNumber } from '$lib/statistics/rounding';
+} from '#lib/statistics/binomial.ts';
+import { roundExact, roundNumber } from '#lib/statistics/rounding.ts';
 import {
 	geometricConditional,
 	geometricMoments,
 	GEOMETRIC_MAX_K,
 	geometricProbability,
 	geometricThreshold
-} from '$lib/statistics/geometric';
-import type { ThresholdResult } from '$lib/statistics/threshold';
-import { uniformMoments, uniformProbability } from '$lib/statistics/uniform';
+} from '#lib/statistics/geometric.ts';
+import type { ThresholdResult } from '#lib/statistics/threshold.ts';
+import { uniformMoments, uniformProbability } from '#lib/statistics/uniform.ts';
 import {
 	exponentialDensity,
 	exponentialMoments,
@@ -128,7 +128,7 @@ import {
 	normalProbability,
 	uniformDensityMoments,
 	uniformDensityProbability
-} from '$lib/statistics/density';
+} from '#lib/statistics/density.ts';
 
 // ============================================================================
 // TYPES

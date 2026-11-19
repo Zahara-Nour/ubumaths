@@ -1,0 +1,269 @@
+{
+	"id": "a434bd68-a6e8-43b4-9c36-77114bce678b",
+	"title": "Place les points d'un relevé dans un repère",
+	"description": "Relevé de cinq valeurs (plante semaine par semaine, température heure par heure, hauteur d'eau mois par mois) : placer les points, axes et graduations donnés (de 2, 1 ou 5)",
+	"grades": ["CM1"],
+	"level": 3,
+	"delay": 240,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "On a mesuré la hauteur d'une plante chaque semaine.\n\n| Point | A | B | C | D | E |\n|---|---|---|---|---|---|\n| Semaine | $1$ | $2$ | $3$ | $4$ | $5$ |\n| Hauteur (cm) | ${{h1}}$ | ${{h2}}$ | ${{h3}}$ | ${{h4}}$ | ${{h5}}$ |\n\nPlace les points A, B, C, D et E : la semaine sur l'axe horizontal, la hauteur sur l'axe vertical.\n\n```courbe\nx: 0 ; 6\ny: 0 ; 30\ngrille: 1 ; 2\naxes: x = Semaine ; y = Hauteur (cm)\nplacer: A=(1 ; {{h1}}) ; B=(2 ; {{h2}}) ; C=(3 ; {{h3}}) ; D=(4 ; {{h4}}) ; E=(5 ; {{h5}})\ntaille: moyenne\ndescription: Repère : semaine en abscisse, de 1 en 1 ; hauteur en ordonnée, de 0 à 30 cm, de 2 en 2.\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3"
+				},
+				{
+					"name": "d1",
+					"expression": "1..3"
+				},
+				{
+					"name": "d2",
+					"expression": "1..3"
+				},
+				{
+					"name": "d3",
+					"expression": "1..3"
+				},
+				{
+					"name": "d4",
+					"expression": "1..3"
+				},
+				{
+					"name": "h1",
+					"expression": "eval:2*a"
+				},
+				{
+					"name": "h2",
+					"expression": "eval:h1+2*d1"
+				},
+				{
+					"name": "h3",
+					"expression": "eval:h2+2*d2"
+				},
+				{
+					"name": "h4",
+					"expression": "eval:h3+2*d3"
+				},
+				{
+					"name": "h5",
+					"expression": "eval:h4+2*d4"
+				}
+			],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"Chaque colonne du tableau donne un point : on part de la valeur sur l'axe horizontal, puis on monte jusqu'à la valeur sur l'axe vertical (un carreau vaut $2$).",
+					"$A\\textcolor{{{color:primary.0}}}{(1 ; {{h1}})}$ ; $B\\textcolor{{{color:primary.0}}}{(2 ; {{h2}})}$ ; $C\\textcolor{{{color:primary.0}}}{(3 ; {{h3}})}$ ; $D\\textcolor{{{color:primary.0}}}{(4 ; {{h4}})}$ ; $E\\textcolor{{{color:primary.0}}}{(5 ; {{h5}})}$."
+				]
+			}
+		},
+		{
+			"statement": "On a relevé la température toutes les heures, un matin.\n\n| Point | A | B | C | D | E |\n|---|---|---|---|---|---|\n| Heure (h) | $8$ | $9$ | $10$ | $11$ | $12$ |\n| Température (°C) | ${{t1}}$ | ${{t2}}$ | ${{t3}}$ | ${{t4}}$ | ${{t5}}$ |\n\nPlace les points A, B, C, D et E : l'heure sur l'axe horizontal, la température sur l'axe vertical.\n\n```courbe\nx: 7 ; 13\ny: 0 ; 20\ngrille: 1 ; 1\naxes: x = Heure (h) ; y = Température (°C)\nplacer: A=(8 ; {{t1}}) ; B=(9 ; {{t2}}) ; C=(10 ; {{t3}}) ; D=(11 ; {{t4}}) ; E=(12 ; {{t5}})\ntaille: moyenne\ndescription: Repère : heure en abscisse, de 1 en 1 ; température en ordonnée, de 0 à 20 °C, de 1 en 1.\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "3..6"
+				},
+				{
+					"name": "d1",
+					"expression": "0..3"
+				},
+				{
+					"name": "d2",
+					"expression": "1..3"
+				},
+				{
+					"name": "d3",
+					"expression": "0..3"
+				},
+				{
+					"name": "d4",
+					"expression": "1..3"
+				},
+				{
+					"name": "t1",
+					"expression": "eval:a"
+				},
+				{
+					"name": "t2",
+					"expression": "eval:t1+d1"
+				},
+				{
+					"name": "t3",
+					"expression": "eval:t2+d2"
+				},
+				{
+					"name": "t4",
+					"expression": "eval:t3+d3"
+				},
+				{
+					"name": "t5",
+					"expression": "eval:t4+d4"
+				}
+			],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"Chaque colonne du tableau donne un point : on part de la valeur sur l'axe horizontal, puis on monte jusqu'à la valeur sur l'axe vertical (un carreau vaut $1$).",
+					"$A\\textcolor{{{color:primary.0}}}{(8 ; {{t1}})}$ ; $B\\textcolor{{{color:primary.0}}}{(9 ; {{t2}})}$ ; $C\\textcolor{{{color:primary.0}}}{(10 ; {{t3}})}$ ; $D\\textcolor{{{color:primary.0}}}{(11 ; {{t4}})}$ ; $E\\textcolor{{{color:primary.0}}}{(12 ; {{t5}})}$."
+				]
+			}
+		},
+		{
+			"statement": "On a relevé chaque mois la hauteur d'eau d'un bassin.\n\n| Point | A | B | C | D | E |\n|---|---|---|---|---|---|\n| Mois | $1$ | $2$ | $3$ | $4$ | $5$ |\n| Hauteur (cm) | ${{b1}}$ | ${{b2}}$ | ${{b3}}$ | ${{b4}}$ | ${{b5}}$ |\n\nPlace les points A, B, C, D et E : le mois sur l'axe horizontal, la hauteur sur l'axe vertical.\n\n```courbe\nx: 0 ; 6\ny: 0 ; 60\ngrille: 1 ; 5\naxes: x = Mois ; y = Hauteur d'eau (cm)\nplacer: A=(1 ; {{b1}}) ; B=(2 ; {{b2}}) ; C=(3 ; {{b3}}) ; D=(4 ; {{b4}}) ; E=(5 ; {{b5}})\ntaille: moyenne\ndescription: Repère : mois en abscisse, de 1 en 1 ; hauteur en ordonnée, de 0 à 60 cm, de 5 en 5.\n```",
+			"variables": [
+				{
+					"name": "w1",
+					"expression": "2..12"
+				},
+				{
+					"name": "w2",
+					"expression": "2..12"
+				},
+				{
+					"name": "w3",
+					"expression": "2..12"
+				},
+				{
+					"name": "w4",
+					"expression": "2..12"
+				},
+				{
+					"name": "w5",
+					"expression": "2..12"
+				},
+				{
+					"name": "b1",
+					"expression": "eval:5*w1"
+				},
+				{
+					"name": "b2",
+					"expression": "eval:5*w2"
+				},
+				{
+					"name": "b3",
+					"expression": "eval:5*w3"
+				},
+				{
+					"name": "b4",
+					"expression": "eval:5*w4"
+				},
+				{
+					"name": "b5",
+					"expression": "eval:5*w5"
+				}
+			],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"Chaque colonne du tableau donne un point : on part de la valeur sur l'axe horizontal, puis on monte jusqu'à la valeur sur l'axe vertical (un carreau vaut $5$).",
+					"$A\\textcolor{{{color:primary.0}}}{(1 ; {{b1}})}$ ; $B\\textcolor{{{color:primary.0}}}{(2 ; {{b2}})}$ ; $C\\textcolor{{{color:primary.0}}}{(3 ; {{b3}})}$ ; $D\\textcolor{{{color:primary.0}}}{(4 ; {{b4}})}$ ; $E\\textcolor{{{color:primary.0}}}{(5 ; {{b5}})}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Plante : 1;4, 2;6, 3;12, 4;16, 5;20",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"d1": "1",
+				"d2": "3",
+				"d3": "2",
+				"d4": "2",
+				"h1": "4",
+				"h2": "6",
+				"h3": "12",
+				"h4": "16",
+				"h5": "20"
+			},
+			"answers": ["1;4", "2;6", "3;12", "4;16", "5;20"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : A avec semaine et hauteur échangées",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"d1": "1",
+				"d2": "3",
+				"d3": "2",
+				"d4": "2",
+				"h1": "4",
+				"h2": "6",
+				"h3": "12",
+				"h4": "16",
+				"h5": "20"
+			},
+			"answers": ["4;1", "2;6", "3;12", "4;16", "5;20"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Température : 8;4, 9;6, 10;9, 11;9, 12;11",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"d1": "2",
+				"d2": "3",
+				"d3": "0",
+				"d4": "2",
+				"t1": "4",
+				"t2": "6",
+				"t3": "9",
+				"t4": "9",
+				"t5": "11"
+			},
+			"answers": ["8;4", "9;6", "10;9", "11;9", "12;11"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Bassin : 1;20, 2;35, 3;45, 4;30, 5;55",
+			"variationIndex": 2,
+			"variables": {
+				"w1": "4",
+				"w2": "7",
+				"w3": "9",
+				"w4": "6",
+				"w5": "11",
+				"b1": "20",
+				"b2": "35",
+				"b3": "45",
+				"b4": "30",
+				"b5": "55"
+			},
+			"answers": ["1;20", "2;35", "3;45", "4;30", "5;55"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un carreau compté pour 1 cm",
+			"variationIndex": 2,
+			"variables": {
+				"w1": "4",
+				"w2": "7",
+				"w3": "9",
+				"w4": "6",
+				"w5": "11",
+				"b1": "20",
+				"b2": "35",
+				"b3": "45",
+				"b4": "30",
+				"b5": "55"
+			},
+			"answers": ["1;4", "2;7", "3;9", "4;6", "5;11"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

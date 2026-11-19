@@ -5,6 +5,8 @@ author: giron
 lede: L'incident s'est produit en plein cours de Syz'esme. Aucun blessé n'est à déplorer, mais le résultat court toujours.
 ---
 
+![Dans une rue pavée, un Galopin penaud tend sa calculatrice, dont l’écran affiche « ÷0 » ; un signe infini lumineux s’en échappe et s’envole, un garde saisit la calculatrice avec de longues pinces, un autre se cache derrière un coffre-fort ouvert, et Mère Ubu indique la sortie aux habitants qui évacuent.](/shtam/nombrilie-division-par-zero.webp){size=large}
+
 Il était 10 h 12 quand l'alarme a retenti dans tout Empoche-les-Bains. Un Galopin de Syz'esme, « pour voir », a tapé une division par zéro sur sa calculatrice. Selon les premiers témoignages, l'écran aurait affiché « Erreur mathématique », puis plus rien.
 
 Par mesure de précaution, la Gouverneure de Nombrilie, Mère Ubu, a fait évacuer la Province. « Nous ne savons pas encore combien vaut le résultat, ni s'il est dangereux », a-t-elle déclaré devant la grande gidouille de bronze. « Père Ubu ne sait pas compter, mais moi si, et je refuse de compter ça. »

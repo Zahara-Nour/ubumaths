@@ -1,0 +1,210 @@
+{
+	"id": "b916ab0f-73d5-4c3d-80d6-5300f4594f91",
+	"title": "Liste des premiers termes d'une suite en Python",
+	"description": "Fonction termes(n) : liste renvoyée (arithmétique, géométrique), élément d'indice 3, liste en compréhension",
+	"grades": ["1_TECHNO"],
+	"level": 2,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "La suite $(u(n))$ est définie par $u(0)={{a}}$ et $u(n+1)=u(n)+{{r}}$. La fonction Python suivante renvoie la liste de ses premiers termes.\n\n```python\ndef termes(n):\n    u = {{a}}\n    L = []\n    for k in range(n):\n        L.append(u)\n        u = u + {{r}}\n    return L\n```\n\nQue renvoie `termes(4)` ?\n\n```choix\n- `[{{eval:a}}, {{eval:a+r}}, {{eval:a+2*r}}, {{eval:a+3*r}}]`\n- `[{{eval:a+r}}, {{eval:a+2*r}}, {{eval:a+3*r}}, {{eval:a+4*r}}]`\n- `[{{eval:a}}, {{eval:a+r}}, {{eval:a+2*r}}, {{eval:a+3*r}}, {{eval:a+4*r}}]`\n- `[{{eval:a}}, {{eval:a+r}}, {{eval:a+2*r}}]`\n```",
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "r",
+					"expression": "2..7"
+				}
+			],
+			"correction": {
+				"steps": [
+					"`u` vaut d'abord $u(0)={{a}}$ : il est ajouté à `L` **avant** d'être augmenté de ${{r}}$.",
+					"La boucle tourne $4$ fois : `L` reçoit $u(0)$, $u(1)$, $u(2)$, $u(3)$, soit `[{{eval:a}}, {{eval:a+r}}, {{eval:a+2*r}}, {{eval:a+3*r}}]`."
+				]
+			}
+		},
+		{
+			"statement": "La suite $(u(n))$ est définie par $u(0)={{a}}$ et $u(n+1)={{q}}\\times u(n)$. La fonction Python suivante renvoie la liste de ses premiers termes.\n\n```python\ndef termes(n):\n    u = {{a}}\n    L = []\n    for k in range(n):\n        L.append(u)\n        u = {{q}} * u\n    return L\n```\n\nQue renvoie `termes(4)` ?\n\n```choix\n- `[{{eval:a}}, {{eval:a*q}}, {{eval:a*q^2}}, {{eval:a*q^3}}]`\n- `[{{eval:a*q}}, {{eval:a*q^2}}, {{eval:a*q^3}}, {{eval:a*q^4}}]`\n- `[{{eval:a}}, {{eval:a*q}}, {{eval:a*q^2}}, {{eval:a*q^3}}, {{eval:a*q^4}}]`\n- `[{{eval:a}}, {{eval:a+q}}, {{eval:a+2*q}}, {{eval:a+3*q}}]`\n```",
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5"
+				},
+				{
+					"name": "q",
+					"expression": "2|3"
+				}
+			],
+			"correction": {
+				"steps": [
+					"`u` vaut d'abord $u(0)={{a}}$ : il est ajouté à `L` **avant** d'être multiplié par ${{q}}$.",
+					"La boucle tourne $4$ fois : `L` reçoit $u(0)$, $u(1)$, $u(2)$, $u(3)$, soit `[{{eval:a}}, {{eval:a*q}}, {{eval:a*q^2}}, {{eval:a*q^3}}]`."
+				]
+			}
+		},
+		{
+			"statement": "La suite $(u(n))$ est définie par $u(0)={{a}}$ et $u(n+1)=u(n)+{{r}}$. La fonction Python suivante renvoie la liste de ses premiers termes.\n\n```python\ndef termes(n):\n    u = {{a}}\n    L = []\n    for k in range(n):\n        L.append(u)\n        u = u + {{r}}\n    return L\n```\n\nOn exécute `L = termes(6)`. Que vaut `L[3]` ?\n\n$?$",
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a+3*r}}"
+				}
+			],
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "r",
+					"expression": "2..7"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les indices d'une liste commencent à $0$ : `L[0]` est $u(0)$, `L[1]` est $u(1)$, etc.",
+					"`L[3]` est donc $u(3)={{a}}+3\\times{{r}}=\\textcolor{{{color:primary.0}}}{{{eval:a+3*r}}}$, le quatrième élément de la liste."
+				]
+			}
+		},
+		{
+			"statement": "On considère l'instruction Python suivante.\n\n```python\nL = [{{a}} + {{r}} * n for n in range(5)]\n```\n\nQue vaut le dernier élément de la liste `L` ?\n\n$?$",
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a+4*r}}"
+				}
+			],
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "r",
+					"expression": "2..7"
+				}
+			],
+			"correction": {
+				"steps": [
+					"`n` prend les valeurs $0$, $1$, $2$, $3$, $4$ : `range(5)` s'arrête juste avant $5$.",
+					"Le dernier élément est obtenu pour $n=4$ : ${{a}}+{{r}}\\times4=\\textcolor{{{color:primary.0}}}{{{eval:a+4*r}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Bonne liste (arithmétique)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"r": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : commence à u(1)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"r": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Bonne liste (géométrique)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"q": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un terme de trop",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"q": "3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "L[3] = u(3)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"r": "2"
+			},
+			"answers": ["11"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : troisième élément",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"r": "2"
+			},
+			"answers": ["9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "n = 4 : a + 4r",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"r": "5"
+			},
+			"answers": ["23"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : n = 5",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"r": "5"
+			},
+			"answers": ["28"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

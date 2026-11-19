@@ -1,10 +1,8 @@
 {
+	"id": "05e8453d-71c7-443b-8045-72291ed5e860",
 	"title": "Résoudre √x = k",
 	"description": "Équation √x = k par la croissance de la fonction racine carrée : k entier, décimal (√x = 1,2), fraction ; k < 0 → ∅ (pièges : √k au lieu de k², solution négative ajoutée, 2k, k² pour k < 0)",
 	"grades": ["2"],
-	"theme": "Fonctions",
-	"domain": "Fonction racine carrée",
-	"subdomain": "Résolution algébrique",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

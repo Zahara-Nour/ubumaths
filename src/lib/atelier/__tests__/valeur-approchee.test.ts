@@ -6,7 +6,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
+import { WebReplEngine } from '#lib/mathAST/cli/web/web-repl-engine.ts';
 import { Atelier } from '../atelier.svelte';
 import { runInput, runAction, type CalcResult } from '../calcul';
 
@@ -89,7 +89,7 @@ describe('les valeurs approchées des solutions', () => {
 		expect(result.kind === 'commande' && result.latex).toMatch(/^S = /);
 
 		expect(alternativeOf(result)?.latex).toBe(
-			'S \\approx \\left\\{ 1{,}6180 \\,;\\, -0{,}6180 \\right\\}'
+			'S \\approx \\left\\{ -0{,}6180 \\,;\\, 1{,}6180 \\right\\}'
 		);
 	});
 

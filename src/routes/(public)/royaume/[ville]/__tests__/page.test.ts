@@ -5,7 +5,7 @@
 import { describe, expect, it } from 'vitest';
 import { isHttpError } from '@sveltejs/kit';
 import { load } from '../+page';
-import { CITIES } from '$lib/kingdom-tour/cities';
+import { CITIES } from '#lib/kingdom-tour/cities.ts';
 
 type LoadEvent = Parameters<typeof load>[0];
 

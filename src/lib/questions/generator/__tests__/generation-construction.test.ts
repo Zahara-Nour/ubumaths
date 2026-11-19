@@ -7,13 +7,13 @@
  * dans le registre (inscrit ici comme à l'écran de l'élève).
  */
 import { describe, it, expect } from 'vitest';
-import '$lib/questions/construction/positions-setup';
+import '#lib/questions/construction/positions-setup.ts';
 import { generateInstance } from '../instance-generator';
 import type { QuestionTemplate, QuestionVariation } from '../../types';
-import { templateMarkdown } from '$lib/ubumark';
-import { validateAnswer } from '$lib/utils/answer-validator';
-import { toPublicQuestion } from '$lib/questions/public-question';
-import { validateTemplate } from '$lib/questions/validators/template-validator';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
+import { validateAnswer } from '#lib/utils/answer-validator.ts';
+import { toPublicQuestion } from '#lib/questions/public-question.ts';
+import { validateTemplate } from '#lib/questions/validators/template-validator.ts';
 
 function template(variation: Omit<QuestionVariation, 'statement'> & { statement: string }) {
 	return {
@@ -23,8 +23,6 @@ function template(variation: Omit<QuestionVariation, 'statement'> & { statement:
 		type: 'fill_in_blanks',
 		variations: [{ ...variation, statement: templateMarkdown(variation.statement) }],
 		grades: ['CP'],
-		theme: 'Test',
-		domain: 'Test',
 		level: 1
 	} as QuestionTemplate;
 }

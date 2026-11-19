@@ -1,0 +1,357 @@
+{
+	"id": "a047650a-0f85-4bc8-b0e0-51b51b18aeb4",
+	"title": "Comparer deux collections organisées",
+	"description": "Deux collections au matériel, l'une avec plus de dix plaques ; deux collections de timbres en paquets de 100 000, 10 000 et 1 000 ; A, B ou autant",
+	"grades": ["CM1"],
+	"level": 15,
+	"delay": 60,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Quelle collection a le plus de petits cubes ?\n\n```collection\nmilliers: {{mA}} ; {{mB}}\ncentaines: {{cA}} ; {{cB}}\ndizaines: {{r}} ; {{r}}\nunités: {{u}} ; {{u}}\ndessin: barres\nlégendes: A ; B\n```\n\n```choix\nmelanger: non\n- La collection A\n- Elles en ont autant\n- La collection B\n```",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..7"
+				},
+				{
+					"name": "q",
+					"expression": "13..19"
+				},
+				{
+					"name": "k",
+					"expression": "0..4"
+				},
+				{
+					"name": "ecart",
+					"expression": "eval:k-2"
+				},
+				{
+					"name": "s",
+					"expression": "0..1"
+				},
+				{
+					"name": "r",
+					"expression": "1..9"
+				},
+				{
+					"name": "u",
+					"expression": "1..9"
+				},
+				{
+					"name": "mA",
+					"expression": "eval:p+s"
+				},
+				{
+					"name": "cA",
+					"expression": "eval:q+s*(ecart-10)"
+				},
+				{
+					"name": "mB",
+					"expression": "eval:p+1-s"
+				},
+				{
+					"name": "cB",
+					"expression": "eval:q+(1-s)*(ecart-10)"
+				},
+				{
+					"name": "vA",
+					"expression": "eval:1000*mA+100*cA+10*r+u"
+				},
+				{
+					"name": "vB",
+					"expression": "eval:1000*mB+100*cB+10*r+u"
+				},
+				{
+					"name": "z",
+					"expression": "eval:sign(vB-vA)+1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{z}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dix plaques font un gros cube : on **regroupe** avant de comparer.",
+					"A : ${{mA}}$ {{if:mA<=1|gros cube|gros cubes}} et ${{cA}}$ {{if:cA<=1|plaque|plaques}}, c'est ${{vA}}$ cubes.",
+					"B : ${{mB}}$ {{if:mB<=1|gros cube|gros cubes}} et ${{cB}}$ {{if:cB<=1|plaque|plaques}}, c'est ${{vB}}$ cubes.",
+					"{{if:z==0|$\\textcolor{{{color:primary.0}}}{\\text{A}}$ a le plus de cubes.|{{if:z==1|$\\textcolor{{{color:primary.0}}}{\\text{Elles en ont autant}}$.|$\\textcolor{{{color:primary.0}}}{\\text{B}}$ a le plus de cubes.}}}}"
+				]
+			}
+		},
+		{
+			"statement": "Deux collections de timbres sont rangées en paquets.\n\n- Collection A : ${{mA}}$ {{if:mA<=1|paquet|paquets}} de $100\\,000$, ${{cA}}$ {{if:cA<=1|paquet|paquets}} de $10\\,000$ et ${{r}}$ {{if:r<=1|paquet|paquets}} de $1\\,000$.\n- Collection B : ${{mB}}$ {{if:mB<=1|paquet|paquets}} de $100\\,000$, ${{cB}}$ {{if:cB<=1|paquet|paquets}} de $10\\,000$ et ${{r}}$ {{if:r<=1|paquet|paquets}} de $1\\,000$.\n\nQuelle collection a le plus de timbres ?\n\n```choix\nmelanger: non\n- La collection A\n- Elles en ont autant\n- La collection B\n```",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..7"
+				},
+				{
+					"name": "q",
+					"expression": "13..19"
+				},
+				{
+					"name": "k",
+					"expression": "0..4"
+				},
+				{
+					"name": "ecart",
+					"expression": "eval:k-2"
+				},
+				{
+					"name": "s",
+					"expression": "0..1"
+				},
+				{
+					"name": "r",
+					"expression": "1..9"
+				},
+				{
+					"name": "u",
+					"expression": "1..9"
+				},
+				{
+					"name": "mA",
+					"expression": "eval:p+s"
+				},
+				{
+					"name": "cA",
+					"expression": "eval:q+s*(ecart-10)"
+				},
+				{
+					"name": "mB",
+					"expression": "eval:p+1-s"
+				},
+				{
+					"name": "cB",
+					"expression": "eval:q+(1-s)*(ecart-10)"
+				},
+				{
+					"name": "vA",
+					"expression": "eval:100000*mA+10000*cA+1000*r"
+				},
+				{
+					"name": "vB",
+					"expression": "eval:100000*mB+10000*cB+1000*r"
+				},
+				{
+					"name": "z",
+					"expression": "eval:sign(vB-vA)+1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{z}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dix paquets de $10\\,000$ font un paquet de $100\\,000$ : on **regroupe** avant de comparer.",
+					"A : ${{vA}}$ timbres ; B : ${{vB}}$ timbres.",
+					"{{if:z==0|$\\textcolor{{{color:primary.0}}}{\\text{A}}$ a le plus de timbres.|{{if:z==1|$\\textcolor{{{color:primary.0}}}{\\text{Elles en ont autant}}$.|$\\textcolor{{{color:primary.0}}}{\\text{B}}$ a le plus de timbres.}}}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "A 3534 > B 3434 : A",
+			"variationIndex": 0,
+			"variables": {
+				"p": "2",
+				"q": "15",
+				"k": "1",
+				"ecart": "-1",
+				"s": "0",
+				"r": "3",
+				"u": "4",
+				"mA": "2",
+				"cA": "15",
+				"mB": "3",
+				"cB": "4",
+				"vA": "3534",
+				"vB": "3434",
+				"z": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : B choisi parce qu'il a plus de gros cubes",
+			"variationIndex": 0,
+			"variables": {
+				"p": "2",
+				"q": "15",
+				"k": "1",
+				"ecart": "-1",
+				"s": "0",
+				"r": "3",
+				"u": "4",
+				"mA": "2",
+				"cA": "15",
+				"mB": "3",
+				"cB": "4",
+				"vA": "3534",
+				"vB": "3434",
+				"z": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "A 3534 < B 3634 : B",
+			"variationIndex": 0,
+			"variables": {
+				"p": "2",
+				"q": "15",
+				"k": "3",
+				"ecart": "1",
+				"s": "0",
+				"r": "3",
+				"u": "4",
+				"mA": "2",
+				"cA": "15",
+				"mB": "3",
+				"cB": "6",
+				"vA": "3534",
+				"vB": "3634",
+				"z": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "autant : A 3534, B 3534",
+			"variationIndex": 0,
+			"variables": {
+				"p": "2",
+				"q": "15",
+				"k": "2",
+				"ecart": "0",
+				"s": "0",
+				"r": "3",
+				"u": "4",
+				"mA": "2",
+				"cA": "15",
+				"mB": "3",
+				"cB": "5",
+				"vA": "3534",
+				"vB": "3534",
+				"z": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : autant, B choisi (plus de gros cubes)",
+			"variationIndex": 0,
+			"variables": {
+				"p": "2",
+				"q": "15",
+				"k": "2",
+				"ecart": "0",
+				"s": "0",
+				"r": "3",
+				"u": "4",
+				"mA": "2",
+				"cA": "15",
+				"mB": "3",
+				"cB": "5",
+				"vA": "3534",
+				"vB": "3534",
+				"z": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "timbres, échangés : A 445000 < B 465000 : B",
+			"variationIndex": 1,
+			"variables": {
+				"p": "3",
+				"q": "16",
+				"k": "0",
+				"ecart": "-2",
+				"s": "1",
+				"r": "5",
+				"u": "0",
+				"mA": "4",
+				"cA": "4",
+				"mB": "3",
+				"cB": "16",
+				"vA": "445000",
+				"vB": "465000",
+				"z": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : timbres, A choisi (plus de gros paquets)",
+			"variationIndex": 1,
+			"variables": {
+				"p": "3",
+				"q": "16",
+				"k": "0",
+				"ecart": "-2",
+				"s": "1",
+				"r": "5",
+				"u": "0",
+				"mA": "4",
+				"cA": "4",
+				"mB": "3",
+				"cB": "16",
+				"vA": "445000",
+				"vB": "465000",
+				"z": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "timbres : A 582000 > B 562000 : A",
+			"variationIndex": 1,
+			"variables": {
+				"p": "4",
+				"q": "18",
+				"k": "0",
+				"ecart": "-2",
+				"s": "0",
+				"r": "2",
+				"u": "0",
+				"mA": "4",
+				"cA": "18",
+				"mB": "5",
+				"cB": "6",
+				"vA": "582000",
+				"vB": "562000",
+				"z": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

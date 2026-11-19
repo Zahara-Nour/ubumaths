@@ -3,7 +3,7 @@
  *
  * Building block schemas (displayOptionsSchema, variableSchema, correctionSchema,
  * blankSchema, etc.) are imported from the single source of truth:
- * $lib/questions/template-schema.ts
+ * #lib/questions/template-schema.ts
  */
 
 import { z } from 'zod';
@@ -20,10 +20,10 @@ import {
 	testSpecSchema,
 	QCM_RETIRED_MESSAGE,
 	retiredQcmFieldSchema
-} from '$lib/questions/template-schema';
-import { refineAssumptionCollisions } from '$lib/questions/answer-assumptions';
-import { genericFunctionNamesSchema } from '$lib/questions/generic-functions';
-import { capitalPairsSchema } from '$lib/questions/capital-pairs';
+} from '#lib/questions/template-schema.ts';
+import { refineAssumptionCollisions } from '#lib/questions/answer-assumptions.ts';
+import { genericFunctionNamesSchema } from '#lib/questions/generic-functions.ts';
+import { capitalPairsSchema } from '#lib/questions/capital-pairs.ts';
 
 // Re-export building blocks for downstream consumers (index.ts)
 export {
@@ -36,7 +36,7 @@ export {
 	validationRuleSchema,
 	requiredFormSchema,
 	testSpecSchema
-} from '$lib/questions/template-schema';
+} from '#lib/questions/template-schema.ts';
 
 /**
  * Question types (le QCM est une case choix depuis l'ADR 0033 : plus de `multiple_choice`)
@@ -79,9 +79,11 @@ const questionTemplateFieldsSchema = z.object({
 	defaultDisplayOptions: displayOptionsSchema.optional().nullable(),
 	options: optionsSchema.optional().nullable(),
 	grades: z.array(gradeSchema).min(1, 'Au moins un niveau requis'),
-	theme: z.string().min(1, 'Thème requis').max(100),
-	domain: z.string().min(1, 'Domaine requis').max(100),
-	subdomain: z.string().max(100).optional().nullable(),
+	// Un vieil onglet peut encore envoyer l'ancien quadruplet (thème, domaine, sous-domaine) :
+	// l'objet n'est pas `.strict()`, ces clés sont retirées à la lecture, jamais écrites.
+	// Le rangement est `classification_node_id`.
+	/** Notion ou sous-notion de l'arbre (ADR 0035) ; le trigger de la base refuse une branche */
+	classification_node_id: z.string().uuid('Identifiant de nœud invalide').nullable().optional(),
 	level: z.number().int().nonnegative('Le niveau doit être >= 0'),
 	status: z.enum(['draft', 'published']).default('published'),
 	delay: z.number().int().nonnegative().optional().nullable(),
@@ -202,7 +204,7 @@ export const generateQuestionSchema = z.object({
 /**
  * Publication par lot : changer le statut de plusieurs modèles en une requête.
  * Le client envoie des paquets de 50 (`BULK_CLIENT_CHUNK_SIZE`, voir
- * `$lib/questions/bulk-status`) ; 100 laisse la place à un groupe de rivaux
+ * `#lib/questions/bulk-status.ts`) ; 100 laisse la place à un groupe de rivaux
  * d'une même catégorie qui déborde un paquet, jamais coupé en deux.
  */
 export const MAX_BULK_TEMPLATE_IDS = 100;
@@ -213,15 +215,6 @@ export const bulkTemplateStatusSchema = z.object({
 		.min(1, 'Aucun modèle sélectionné')
 		.max(MAX_BULK_TEMPLATE_IDS, `Au plus ${MAX_BULK_TEMPLATE_IDS} modèles par lot`),
 	status: z.enum(['published', 'draft'])
-});
-
-/**
- * Schema for question categories
- */
-export const questionCategorySchema = z.object({
-	theme: z.string().min(1).max(100),
-	domain: z.string().min(1).max(100),
-	subdomain: z.string().max(100).optional().nullable()
 });
 
 // ============================================================================
@@ -243,9 +236,7 @@ export const questionTemplateResponseSchema = z.object({
 	options: z.unknown().nullable().optional(),
 	precision: z.unknown().nullable().optional(),
 	grades: z.array(gradeSchema),
-	theme: z.string(),
-	domain: z.string(),
-	subdomain: z.string().nullable().optional(),
+	classification_node_id: z.string().uuid().nullable().optional(),
 	level: z.number().int().nonnegative(),
 	status: z.enum(['draft', 'published']),
 	delay: z.number().int().nonnegative().nullable().optional(),
@@ -293,19 +284,4 @@ export const generatedQuestionResponseSchema = z.object({
 		seed: z.number().int().nonnegative(),
 		variationIndex: z.number().int().nonnegative().optional()
 	})
-});
-
-/**
- * Question categories response schema (GET /api/questions/categories)
- */
-export const questionCategoriesResponseSchema = z.object({
-	categories: z.array(
-		z.object({
-			id: z.string().uuid(),
-			theme: z.string(),
-			domain: z.string(),
-			subdomain: z.string().nullable().optional(),
-			question_count: z.number().int().nonnegative()
-		})
-	)
 });

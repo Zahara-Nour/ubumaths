@@ -32,10 +32,10 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import type { Profile, UserRole } from '$lib/server/middleware/auth';
+import type { Database } from '#lib/types/database.ts';
+import type { Profile, UserRole } from '#lib/server/middleware/auth.ts';
 import { error, redirect } from '@sveltejs/kit';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/auth.ts');
 
@@ -126,13 +126,13 @@ export async function getUserProfile(
  *   const { user } = await safeGetSession();
  *
  *   // Protect all dashboard routes - redirect to login if not authenticated
- *   requireAuth(user);
+ *   requireUserOrRedirect(user);
  *
  *   // User is authenticated, continue...
  * };
  * ```
  */
-export function requireAuth(user: { id: string } | null) {
+export function requireUserOrRedirect(user: { id: string } | null) {
 	if (!user) {
 		// User is not authenticated - redirect to login page
 		// 303 status ensures a GET request is made to /auth/login

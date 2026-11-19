@@ -2,10 +2,10 @@
  * Bloc ```solide : sections (`section:`) — chantier `solides`, lot 6 (§ 11 du journal)
  */
 import { describe, expect, it } from 'vitest';
-import { generateEspaceTypst } from '$lib/ubumark/generators/espace-typst';
-import { parseEspaceContent } from '$lib/ubumark/parser/espace-parser';
-import type { SolideSpec } from '$lib/ubumark/types/espace';
-import { buildSolideScene, solideLabel } from '$lib/ubumark/utils/espace-solides';
+import { generateEspaceTypst } from '#lib/ubumark/generators/espace-typst.ts';
+import { parseEspaceContent } from '#lib/ubumark/parser/espace-parser.ts';
+import type { SolideSpec } from '#lib/ubumark/types/espace.ts';
+import { buildSolideScene, solideLabel } from '#lib/ubumark/utils/espace-solides.ts';
 
 const read = (...lines: string[]) => parseEspaceContent(lines.join('\n'), 'solide');
 const errors = (...lines: string[]) => read(...lines).errors;

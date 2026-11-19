@@ -7,9 +7,9 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { parseLatex } from '$lib/mathAST/parser';
-import { compile } from '$lib/mathAST/eval/compile';
-import type { MathNode } from '$lib/mathAST/types';
+import { parseLatex } from '#lib/mathAST/parser/index.ts';
+import { compile } from '#lib/mathAST/eval/compile.ts';
+import type { MathNode } from '#lib/mathAST/types.ts';
 import { exactAsymptotes } from '../asymptotes-exactes';
 import { analyzeFunction, buildAnalysisAST } from '../analysis';
 

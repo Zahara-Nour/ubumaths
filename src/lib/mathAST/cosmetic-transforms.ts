@@ -444,7 +444,7 @@ export function isPercentWriting(node: MathNode): boolean {
  * Une écriture finale de nombre, signe compris : un nombre (`0,2`, `-3`) ou une
  * fraction de deux nombres (`\frac{1}{5}`). Ni calcul, ni pourcentage.
  */
-function isFinalNumberWriting(node: MathNode): boolean {
+export function isFinalNumberWriting(node: MathNode): boolean {
 	let current = node;
 	while (current.type === 'delimiter') current = current.content;
 	if (current.type === 'opposite' || current.type === 'positive') current = current.operand;

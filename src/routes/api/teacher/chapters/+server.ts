@@ -4,14 +4,14 @@
  * POST - Create a new chapter
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import { getTeacherChapters, createChapter } from '$lib/server/chapters';
-import { createChapterSchema, type CreateChapterInput } from '$lib/server/validation/chapters';
-import { uuidSchema } from '$lib/server/validation/common';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { getTeacherChapters, createChapter } from '#lib/server/chapters.ts';
+import { createChapterSchema, type CreateChapterInput } from '#lib/server/validation/chapters.ts';
+import { uuidSchema } from '#lib/server/validation/common.ts';
 import { z } from 'zod';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/teacher/chapters/+server');
 
@@ -52,7 +52,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		throw error(500, 'Failed to fetch chapters');
 	}
 
-	return json({
+	return Response.json({
 		chapters: result.data,
 		count: result.count
 	});
@@ -103,5 +103,5 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		throw error(500, 'Failed to create chapter');
 	}
 
-	return json({ chapter: result.data }, { status: 201 });
+	return Response.json({ chapter: result.data }, { status: 201 });
 };

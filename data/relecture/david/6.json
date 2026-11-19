@@ -6,9 +6,7 @@
 	"template": {
 		"delay": 20,
 		"level": 7,
-		"theme": "Entiers",
 		"title": "Ecrire un grand nombre entier sans les zéros inutiles",
-		"domain": "Apprivoiser",
 		"grades": ["CM1"],
 		"shared": {
 			"statement": "Réécris ce nombre entier en enlevant les zéros inutiles.\n\n$$?$$",
@@ -38,7 +36,6 @@
 				"zeros": "strict"
 			}
 		},
-		"subdomain": "Ecriture",
 		"variations": [
 			{
 				"blanks": [

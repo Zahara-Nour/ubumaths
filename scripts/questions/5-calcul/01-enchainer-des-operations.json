@@ -1,10 +1,8 @@
 {
+	"id": "8e571049-5485-4812-bdbd-3ae0b2b0942b",
 	"title": "Enchaîner des opérations",
 	"description": "Calculer en respectant les priorités, sur des entiers : multiplication avant addition (5 + 3 × 4), parenthèses d'abord (10 − (1 + 6))",
 	"grades": ["5"],
-	"theme": "Décimaux",
-	"domain": "Priorités opératoires",
-	"subdomain": "Enchaînements",
 	"level": 1,
 	"delay": 45,
 	"status": "draft",

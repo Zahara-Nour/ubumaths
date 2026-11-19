@@ -1,10 +1,8 @@
 {
+	"id": "acaa7317-3003-4b1a-bde4-ac95bcd3016c",
 	"title": "Quartiles d'une série à effectifs",
 	"description": "Donner les quartiles d'une série donnée par un tableau d'effectifs ou un diagramme en barres, par les effectifs cumulés (convention du programme)",
 	"grades": ["3"],
-	"theme": "Statistiques",
-	"domain": "Indicateurs",
-	"subdomain": "Quartiles",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

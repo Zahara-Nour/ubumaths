@@ -3,8 +3,8 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { parseMarkdown, type ListNode } from '$lib/ubumark';
-import type { QrNode } from '$lib/ubumark/types/qr';
+import { parseMarkdown, type ListNode } from '#lib/ubumark/index.ts';
+import type { QrNode } from '#lib/ubumark/types/qr.ts';
 
 const doc = (...lines: string[]) => parseMarkdown(lines.join('\n')).children;
 

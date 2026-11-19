@@ -10,7 +10,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { REQUIRED_FORM_FEEDBACK, requiredFormVerdict } from '../required-form-validator';
-import { validateAnswer } from '$lib/utils/answer-validator';
+import { validateAnswer } from '#lib/utils/answer-validator.ts';
 import { generateInstance } from '../generator/instance-generator';
 import { requiredFormSchema, questionTemplateSchema } from '../template-schema';
 import { acceptableOf, customRequiredForm } from '../form-options';
@@ -117,8 +117,6 @@ describe('générateur : variables tirées dans les deux motifs', () => {
 				}
 			],
 			grades: ['2'],
-			theme: 'Calcul littéral',
-			domain: 'Transformation',
 			level: 1
 		} as unknown as QuestionTemplate;
 		const generated = generateInstance(template, 1);
@@ -146,8 +144,6 @@ describe('schémas Zod', () => {
 				}
 			],
 			grades: ['2'],
-			theme: 'Calcul littéral',
-			domain: 'Transformation',
 			level: 1
 		};
 		const parsed = questionTemplateSchema.safeParse(template);
@@ -246,8 +242,6 @@ describe('générateur : variables tirées dans les motifs', () => {
 				}
 			],
 			grades: ['2'],
-			theme: 'Calcul littéral',
-			domain: 'Transformation',
 			level: 1
 		} as unknown as QuestionTemplate;
 		const generated = generateInstance(template, 1);

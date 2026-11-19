@@ -8,7 +8,7 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 import type {
 	Exercise,
 	ExerciseExport,
@@ -16,21 +16,21 @@ import type {
 	ExerciseExportV2,
 	ImportResult,
 	ImportOptions
-} from '$lib/exercises/types';
-import { getExerciseContentSafe } from '$lib/exercises/types';
+} from '#lib/exercises/types.ts';
+import { getExerciseContentSafe } from '#lib/exercises/types.ts';
 import {
 	validateExerciseExport,
 	sanitizeExerciseForInsert,
 	type ValidatedExerciseExport
-} from '$lib/exercises/validation';
+} from '#lib/exercises/validation.ts';
 import {
 	serializeToMarkdown,
 	parseMarkdownWithFrontmatter
-} from '$lib/exercises/markdown-frontmatter';
+} from '#lib/exercises/markdown-frontmatter.ts';
 import { createExercise } from './exercises';
 import { syncResourceTags } from './resource-tags';
 import { createHash } from 'crypto';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/exercise-import-export');
 

@@ -1,6 +1,6 @@
 /**
  * Re-export from shared utils.
- * The pure calculation functions live in $lib/utils/buddy-xp.ts
+ * The pure calculation functions live in #lib/utils/buddy-xp.ts
  * so they can be imported by both server and client code.
  */
 export {
@@ -14,4 +14,4 @@ export {
 	calculateXpGain,
 	calculateConstanceBonus,
 	scoreQuiz
-} from '$lib/utils/buddy-xp';
+} from '#lib/utils/buddy-xp.ts';

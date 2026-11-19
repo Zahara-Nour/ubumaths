@@ -5,17 +5,18 @@
  * DELETE - Delete exercise
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { requireRole } from '#lib/server/middleware/auth.ts';
 import {
 	updateExerciseSchema,
 	type UpdateExerciseInput
-} from '$lib/server/validation/python-exercises';
-import type { PythonExercise, PythonExerciseStudentView } from '$lib/types/python-exercises';
-import { validateUuidParam } from '$lib/server/validation/params';
-import { toJson } from '$lib/types/database-helpers';
-import { fetchResourceTagNames, syncResourceTags } from '$lib/server/resource-tags';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/validation/python-exercises.ts';
+import type { PythonExercise, PythonExerciseStudentView } from '#lib/types/python-exercises.ts';
+import { validateUuidParam } from '#lib/server/validation/params.ts';
+import { toJson } from '#lib/types/database-helpers.ts';
+import { fetchResourceTagNames, syncResourceTags } from '#lib/server/resource-tags.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/python-exercises/[id]/+server');
 
@@ -67,11 +68,11 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 
 	// Author sees full exercise (including solution_code); everyone else stripped.
 	if (user && exercise.author_id === user.id) {
-		return json({ exercise: exerciseWithTags as unknown as PythonExercise });
+		return Response.json({ exercise: exerciseWithTags as unknown as PythonExercise });
 	}
 
 	const { solution_code: _solution_code, ...studentView } = exerciseWithTags;
-	return json({ exercise: studentView as unknown as PythonExerciseStudentView });
+	return Response.json({ exercise: studentView as unknown as PythonExerciseStudentView });
 };
 
 /**
@@ -85,22 +86,8 @@ export const GET: RequestHandler = async ({ locals, params }) => {
  */
 export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	const exerciseId = validateUuidParam(params.id);
-	const { user, supabase } = locals;
-
-	if (!user) {
-		throw error(401, 'Connexion requise');
-	}
-
-	// Verify teacher role
-	const { data: profile, error: profileError } = await supabase
-		.from('profiles')
-		.select('role')
-		.eq('id', user.id)
-		.single();
-
-	if (profileError || !profile || profile.role !== 'teacher') {
-		throw error(403, 'Réservé aux professeurs');
-	}
+	const { user } = await requireRole(locals, 'teacher');
+	const { supabase } = locals;
 
 	// Check if exercise exists and user is the author
 	const { data: existingExercise, error: fetchError } = await supabase
@@ -173,7 +160,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	// Return exercise with current tag set
 	const tags = await fetchResourceTagNames(supabase, 'python_exercise', exerciseId).catch(() => []);
 
-	return json({ exercise: { ...updatedExercise, tags } });
+	return Response.json({ exercise: { ...updatedExercise, tags } });
 };
 
 /**
@@ -186,22 +173,8 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
  */
 export const DELETE: RequestHandler = async ({ locals, params }) => {
 	const exerciseId = validateUuidParam(params.id);
-	const { user, supabase } = locals;
-
-	if (!user) {
-		throw error(401, 'Connexion requise');
-	}
-
-	// Verify teacher role
-	const { data: profile, error: profileError } = await supabase
-		.from('profiles')
-		.select('role')
-		.eq('id', user.id)
-		.single();
-
-	if (profileError || !profile || profile.role !== 'teacher') {
-		throw error(403, 'Réservé aux professeurs');
-	}
+	const { user } = await requireRole(locals, 'teacher');
+	const { supabase } = locals;
 
 	// Check if exercise exists and user is the author
 	const { data: existingExercise, error: fetchError } = await supabase
@@ -229,5 +202,5 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 		throw error(500, 'Impossible de supprimer la corvée Python');
 	}
 
-	return json({ success: true });
+	return Response.json({ success: true });
 };

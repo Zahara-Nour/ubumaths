@@ -1,5 +1,7 @@
 /**
- * Les grandeurs dans `tidy` : l'unité adaptée à l'ordre de grandeur, en décimal.
+ * Les grandeurs dans `tidy` en mode scolaire (`unitChoice: 'school'`) : l'unité
+ * adaptée à l'ordre de grandeur, en décimal. Depuis le 2026-11-02, le défaut est
+ * l'unité tapée (`tidy-written-unit.test.ts`) ; le mode scolaire reste une option.
  *
  * Contrat : docs/systeme/mathast/tidy-spec.md §D.3 (décision 3 de David, 2026-09-20).
  * Une grandeur NUMÉRIQUE est écrite dans l'unité qui place sa valeur entre
@@ -16,7 +18,7 @@ import { areEquivalent } from '../../equivalence';
 import { withUnit, number } from '../../factory';
 import { dimensionless } from '../../units/factory';
 
-const t = (s: string) => toCustom(tidy(parseCustom(s)));
+const t = (s: string) => toCustom(tidy(parseCustom(s), { unitChoice: 'school' }));
 const simp = (s: string) => toCustom(simplify(parseCustom(s)).result);
 
 describe('grandeurs numériques — l’unité adaptée, en décimal', () => {
@@ -41,14 +43,14 @@ describe('grandeurs numériques — l’unité adaptée, en décimal', () => {
 
 	it('idempotent', () => {
 		for (const input of ['12000[m]', '12[km]+500[m]', '90[km/h]*2[h]']) {
-			const once = tidy(parseCustom(input));
-			expect(toCustom(tidy(once))).toBe(toCustom(once));
+			const once = tidy(parseCustom(input), { unitChoice: 'school' });
+			expect(toCustom(tidy(once, { unitChoice: 'school' }))).toBe(toCustom(once));
 		}
 	});
 
-	it('simplify rend la même écriture', () => {
+	it('simplify garde une unité tapée (règle commune, 2026-11-02)', () => {
 		expect(simp('12[km]+500[m]')).toBe('12.5[km]');
-		expect(simp('12000[m]')).toBe('12[km]');
+		expect(simp('12000[m]')).toBe('12000[m]');
 	});
 });
 
@@ -109,9 +111,9 @@ describe('B1 — unités scolaires seulement, valeur ≥ 1 préférée', () => {
 		expect(t(input)).toBe(expected);
 	});
 
-	it('simplify rend la même chose', () => {
+	it('simplify garde une unité tapée (règle commune, 2026-11-02)', () => {
 		expect(simp('5[m]')).toBe('5[m]');
-		expect(simp('0.3[kg]')).toBe('300[g]');
+		expect(simp('0.3[kg]')).toBe('0.3[kg]');
 	});
 });
 
@@ -126,8 +128,8 @@ describe('I2 — volumes et aires : leurs familles', () => {
 		expect(t(input)).toBe(expected);
 	});
 
-	it('simplify ne retombe pas en unité de base', () => {
-		expect(simp('2500[mL]')).toBe('2.5[L]');
+	it('simplify ne retombe pas en unité de base, garde l’unité tapée', () => {
+		expect(simp('2500[mL]')).toBe('2500[mL]');
 	});
 });
 

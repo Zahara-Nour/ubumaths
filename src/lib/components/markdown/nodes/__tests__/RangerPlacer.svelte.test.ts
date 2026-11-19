@@ -8,12 +8,12 @@ import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import RangerPlacer from '../RangerPlacer.svelte';
 import MarkdownRenderer from '../../MarkdownRenderer.svelte';
-import FillBlanksInput from '$lib/components/question-inputs/FillBlanksInput.svelte';
-import BuildAnswer from '$lib/components/questions/BuildAnswer.svelte';
-import { parseRangerContent } from '$lib/ubumark/parser/ranger-parser';
-import type { QuestionTemplate } from '$lib/questions/types';
-import { generateInstance } from '$lib/questions/generator/instance-generator';
-import { templateMarkdown } from '$lib/ubumark';
+import FillBlanksInput from '#lib/components/question-inputs/FillBlanksInput.svelte';
+import BuildAnswer from '#lib/components/questions/BuildAnswer.svelte';
+import { parseRangerContent } from '#lib/ubumark/parser/ranger-parser.ts';
+import type { QuestionTemplate } from '#lib/questions/types.ts';
+import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 
 let mains: HTMLElement[] = [];
 function mainElement(): HTMLElement {
@@ -64,6 +64,53 @@ describe('Étiquettes à ranger — le geste', () => {
 		expect(placeText(root)).toEqual(['', '', '']);
 		expect(root.querySelectorAll('.ranger-signe')).toHaveLength(2);
 		expect(root.querySelector('.ranger-signe')?.textContent).toBe('<');
+	});
+
+	it('signe: aucun : places numérotées en colonne, aucun signe, consigne « étapes »', async () => {
+		const screen = await render(RangerPlacer, {
+			target: mainElement(),
+			props: {
+				node: shown('signe: aucun', '- b', '- c', '- a'),
+				answers: answersProbe(3).answers()
+			}
+		});
+		const root = screen.container;
+		expect(root.querySelectorAll('.ranger-signe')).toHaveLength(0);
+		expect([...root.querySelectorAll('.ranger-numero')].map((n) => n.textContent?.trim())).toEqual([
+			'1.',
+			'2.',
+			'3.'
+		]);
+		// Une colonne : chaque place sous la précédente
+		const [first, second] = places(root).map((p) => p.getBoundingClientRect());
+		expect(second.top).toBeGreaterThanOrEqual(first.bottom);
+		expect(root.textContent).toContain(
+			'Étapes à remettre dans l’ordre, de la première à la dernière'
+		);
+		expect(root.textContent).not.toContain('plus petit que');
+	});
+
+	it('signe: aucun : une étape longue passe à la ligne, rien ne déborde à 360 px', async () => {
+		const main = mainElement();
+		main.style.width = '360px';
+		const long = `- ${'une étape de démonstration assez longue '.repeat(4)}`;
+		const screen = await render(RangerPlacer, {
+			target: main,
+			props: {
+				node: shown('signe: aucun', long, '- b', '- c'),
+				answers: answersProbe(3).answers()
+			}
+		});
+		const root = screen.container;
+		await userEvent.click(tray(root)[0]);
+		await userEvent.click(places(root)[0]);
+		const ranger = root.querySelector<HTMLElement>('.ranger');
+		expect(ranger?.scrollWidth).toBeLessThanOrEqual(360);
+		for (const box of [...tray(root), ...places(root)]) {
+			expect(box.getBoundingClientRect().right).toBeLessThanOrEqual(
+				main.getBoundingClientRect().right + 0.5
+			);
+		}
 	});
 
 	it('toucher une étiquette puis une place : posée, réponse = sa position affichée', async () => {
@@ -193,8 +240,6 @@ describe('FillBlanksInput — étiquettes à ranger', () => {
 			}
 		],
 		grades: ['6'],
-		theme: 'Test',
-		domain: 'Test',
 		level: 1
 	} as QuestionTemplate;
 

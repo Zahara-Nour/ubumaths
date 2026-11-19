@@ -1,10 +1,8 @@
 {
+	"id": "ddf4a07c-1a2b-43a9-9a31-83e797e0efbd",
 	"title": "Les angles de l'équerre",
 	"description": "Connaître les angles des équerres : 90°, 30° et 60°, ou 90°, 45° et 45°",
 	"grades": ["5"],
-	"theme": "Grandeurs",
-	"domain": "Angles",
-	"subdomain": "Angles de l'équerre",
 	"level": 1,
 	"delay": 20,
 	"status": "draft",

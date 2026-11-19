@@ -1,10 +1,8 @@
 {
+	"id": "cd2ffd9b-287b-4409-9384-9060b5ad3fe0",
 	"title": "Probabilité de A ou B, de A et B",
 	"description": "Appliquer la relation P(A ∪ B) + P(A ∩ B) = P(A) + P(B) : réunion, intersection, « ou » exclusif, en équiprobabilité",
 	"grades": ["3"],
-	"theme": "Probabilités",
-	"domain": "Évènements",
-	"subdomain": "Réunion et intersection",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

@@ -1,9 +1,9 @@
 import type { RequestHandler } from './$types';
-import { error, json } from '@sveltejs/kit';
-import { requireRoles } from '$lib/server/middleware/auth';
-import { requireConsent } from '$lib/server/middleware/consent';
-import { startGameSchema } from '$lib/server/validation/minesweeper';
-import { sanitizePostgresError } from '$lib/server/utils/error-handler';
+import { error } from '@sveltejs/kit';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import { requireConsent } from '#lib/server/middleware/consent.ts';
+import { startGameSchema } from '#lib/server/validation/minesweeper.ts';
+import { sanitizePostgresError } from '#lib/server/utils/error-handler.ts';
 
 /**
  * Difficulty configurations for Minesweeper game
@@ -92,7 +92,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			throw error(500, 'Erreur lors de la création de la partie');
 		}
 
-		return json({
+		return Response.json({
 			success: true,
 			game: {
 				id: game.id,

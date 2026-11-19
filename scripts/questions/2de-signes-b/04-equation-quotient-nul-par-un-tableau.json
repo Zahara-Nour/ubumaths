@@ -1,10 +1,8 @@
 {
+	"id": "284bc012-619b-4692-b0b0-6a26097ca326",
 	"title": "Résoudre B(x) = 0 avec un tableau de signes (quotient)",
 	"description": "Lire la solution de B(x) = 0 sur le tableau de signes d'un quotient (pièges : valeur interdite comptée comme solution, valeur interdite seule)",
 	"grades": ["2"],
-	"theme": "Calcul littéral",
-	"domain": "Inéquations",
-	"subdomain": "Produit et quotient",
 	"level": 6,
 	"delay": 90,
 	"status": "draft",

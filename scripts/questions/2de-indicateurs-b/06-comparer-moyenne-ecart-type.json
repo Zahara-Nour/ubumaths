@@ -1,10 +1,8 @@
 {
+	"id": "893eb3cd-4c8e-4957-b739-844bcb4caaa7",
 	"title": "Comparer deux séries : moyenne et écart type",
 	"description": "Deux séries résumées par (moyenne, écart type) : la meilleure moyenne, la plus homogène",
 	"grades": ["2"],
-	"theme": "Statistiques",
-	"domain": "Problèmes",
-	"subdomain": "Comparer des séries",
 	"level": 2,
 	"delay": 60,
 	"status": "draft",
@@ -43,7 +41,7 @@
 			"correction": {
 				"steps": [
 					"La **moyenne** indique le niveau : on compare ${{eval:(ma)/10;d}}$ et ${{eval:(mb)/10;d}}$.",
-					"C'est \\textcolor{{{color:primary.0}}}{\\text{la classe {{if:ma>mb|A|B}}}} qui a la meilleure moyenne."
+					"C'est $\\textcolor{{{color:primary.0}}}{\\text{la classe {{if:ma>mb|A|B}}}}$ qui a la meilleure moyenne."
 				]
 			}
 		},
@@ -76,7 +74,7 @@
 			"correction": {
 				"steps": [
 					"L'**écart type** mesure la dispersion autour de la moyenne : le plus petit écart type correspond aux résultats les plus homogènes.",
-					"On compare ${{eval:(sa)/10;d}}$ et ${{eval:(sb)/10;d}}$ : c'est \\textcolor{{{color:primary.0}}}{\\text{la classe {{if:sa<sb|A|B}}}}."
+					"On compare ${{eval:(sa)/10;d}}$ et ${{eval:(sb)/10;d}}$ : c'est $\\textcolor{{{color:primary.0}}}{\\text{la classe {{if:sa<sb|A|B}}}}$."
 				]
 			}
 		}

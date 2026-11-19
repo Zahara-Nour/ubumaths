@@ -7,8 +7,8 @@
 -->
 
 <script lang="ts">
-	import * as Card from '$lib/components/ui/card';
-	import * as Collapsible from '$lib/components/ui/collapsible';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import * as Collapsible from '#lib/components/ui/collapsible/index.ts';
 	import MyCheckbox from './MyCheckbox.svelte';
 	import { ChevronDown } from '@lucide/svelte';
 

@@ -128,6 +128,8 @@ beforeEach(() => {
 	// « running » : la CI tourne, donc « CI Summary » n'existe pas encore ;
 	// « running-then-success » : deux lectures en cours, puis vert ;
 	// « plantage » : rouge sur le plantage connu des tests navigateur ;
+	// « client-rouge » : vrai test client rouge, wrapDynamicImport au log mais
+	// navigateur resté ouvert ;
 	// « mixte » : un job sur ce plantage, un autre vraiment rouge ;
 	// « muet » : rouge, logs illisibles ;
 	// « plantage-et-silencieux » : un job sur le plantage connu, un autre rouge
@@ -157,7 +159,7 @@ case "$1 $2" in
 "run view")
 	if printf '%s\\n' "$@" | grep -qx jobs; then
 		case "$etat" in
-		plantage) printf 'Client Tests (browser, shard 1/2)\\nCI Summary\\n' ;;
+		plantage | client-rouge) printf 'Client Tests (browser, shard 1/2)\\nCI Summary\\n' ;;
 		mixte) printf 'Client Tests (browser, shard 1/2)\\nServer Tests\\nCI Summary\\n' ;;
 		plantage-et-silencieux) printf 'Client Tests (browser, shard 1/2)\\nBuild\\nCI Summary\\n' ;;
 		*) printf 'Server Tests\\nCI Summary\\n' ;;
@@ -170,10 +172,20 @@ case "$1 $2" in
 	fi
 	case "$etat" in
 	plantage | plantage-et-silencieux)
+		# Comme le vrai log : l'erreur wrapDynamicImport, la fermeture du navigateur,
+		# puis des milliers de lignes du même job (au-delà du tampon d'un tuyau).
 		printf 'Client Tests (browser, shard 1/2)\\tUNKNOWN STEP\\t09:22:29Z TypeError: Cannot read properties of undefined (reading %swrapDynamicImport%s)\\n' "'" "'"
+		printf 'Client Tests (browser, shard 1/2)\\tUNKNOWN STEP\\t09:22:29Z Error: [vitest] Browser connection was closed while running tests. Was the page closed unexpectedly?\\n'
+		for i in $(seq 1 5000); do printf 'Client Tests (browser, shard 1/2)\\tUNKNOWN STEP\\t09:22:30Z  ✓ src/lib/f%s.test.ts (3 tests) 12ms\\n' "$i"; done
+		printf 'CI Summary\\tUNKNOWN STEP\\t09:29:30Z ❌ Client Tests: failure\\n' ;;
+	client-rouge)
+		# Vrai test client rouge : wrapDynamicImport est dans TOUS les logs du job
+		# client, verts compris, mais le navigateur ne s'est pas fermé.
+		printf 'Client Tests (browser, shard 1/2)\\tUNKNOWN STEP\\t09:22:29Z TypeError: Cannot read properties of undefined (reading %swrapDynamicImport%s)\\n' "'" "'"
+		printf 'Client Tests (browser, shard 1/2)\\tUNKNOWN STEP\\t09:22:30Z AssertionError: expected 2 to be 3\\n'
 		printf 'CI Summary\\tUNKNOWN STEP\\t09:29:30Z ❌ Client Tests: failure\\n' ;;
 	mixte)
-		printf 'Client Tests (browser, shard 1/2)\\tUNKNOWN STEP\\t09:22:29Z TypeError: Cannot read properties of undefined (reading %swrapDynamicImport%s)\\n' "'" "'"
+		printf 'Client Tests (browser, shard 1/2)\\tUNKNOWN STEP\\t09:22:29Z Error: [vitest] Browser connection was closed while running tests. Was the page closed unexpectedly?\\n'
 		printf 'Server Tests\\tUNKNOWN STEP\\t09:22:30Z AssertionError: expected 2 to be 3\\n'
 		printf 'CI Summary\\tUNKNOWN STEP\\t09:29:30Z ❌ failure\\n' ;;
 	muet) exit 1 ;;
@@ -188,7 +200,7 @@ case "$1 $2" in
 		case "$etat" in running) echo in_progress ;; '') echo aucun ;; *) echo completed ;; esac
 	fi ;;
 *)
-	case "$etat" in running | '') echo absent ;; plantage | plantage-et-silencieux | mixte | muet) echo failure ;; *) echo "$etat" ;; esac ;;
+	case "$etat" in running | '') echo absent ;; plantage | plantage-et-silencieux | client-rouge | mixte | muet) echo failure ;; *) echo "$etat" ;; esac ;;
 esac
 `
 	);
@@ -494,6 +506,17 @@ describe('deploy-prod.sh — relancer sous le verrou, au lieu de le rendre', () 
 		expect(r.status, r.sortie).toBe(1);
 		expect(relances()).toEqual([]);
 		expect(r.sortie).toContain('--relancer-ci');
+		expect(production()).toBeNull();
+	});
+
+	// 2026-11-08 : wrapDynamicImport est aussi dans les logs verts du job client ;
+	// seule la fermeture du navigateur signe le plantage.
+	it('vrai test client rouge (wrapDynamicImport au log, navigateur ouvert) : aucune relance', () => {
+		pousser('success', 'src/a.ts');
+		ciVersion = 'client-rouge';
+		const r = lancer();
+		expect(r.status, r.sortie).toBe(1);
+		expect(relances()).toEqual([]);
 		expect(production()).toBeNull();
 	});
 

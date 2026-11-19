@@ -1,10 +1,8 @@
 {
+	"id": "286a68a8-49c1-4d7d-b845-452457e8dab8",
 	"title": "Calculer un taux de variation",
 	"description": "Taux de variation (f(b) − f(a))/(b − a) d'un polynôme du second degré, de la fonction inverse, de la racine carrée entre deux carrés",
 	"grades": ["1_SPE"],
-	"theme": "Fonctions",
-	"domain": "Dérivation",
-	"subdomain": "Taux de variation",
 	"level": 2,
 	"delay": 60,
 	"status": "draft",

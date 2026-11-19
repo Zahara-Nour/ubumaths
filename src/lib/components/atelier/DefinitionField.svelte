@@ -1,5 +1,5 @@
 <script lang="ts">
-	import '$lib/utils/mathlive-styles';
+	import '#lib/utils/mathlive-styles.ts';
 	/**
 	 * Le champ de définition d'une carte : `f(x) =` puis un champ MathLive.
 	 *
@@ -11,15 +11,20 @@
 	import { onMount } from 'svelte';
 	import { on } from 'svelte/events';
 	import type { MathfieldElement } from 'mathlive';
-	import MathField from '$lib/components/MathField.svelte';
-	import { useAtelier } from '$lib/atelier/context';
-	import { definitionFromField, fieldLatexOf } from '$lib/atelier/mathfield';
-	import { internalDefinition, typedLetterOf } from '$lib/atelier/letter';
-	import { intervalWord, ONLY_FUNCTIONS, readInterval, splitInterval } from '$lib/atelier/interval';
-	import { parseDefinition } from '$lib/atelier/parse';
-	import { displayName } from '$lib/atelier/names';
-	import type { AtelierObject } from '$lib/atelier/types';
-	import { isConstruction } from '$lib/atelier/construction';
+	import MathField from '#lib/components/MathField.svelte';
+	import { useAtelier } from '#lib/atelier/context.ts';
+	import { definitionFromField, fieldLatexOf } from '#lib/atelier/mathfield.ts';
+	import { internalDefinition, typedLetterOf } from '#lib/atelier/letter.ts';
+	import {
+		intervalWord,
+		ONLY_FUNCTIONS,
+		readInterval,
+		splitInterval
+	} from '#lib/atelier/interval.ts';
+	import { parseDefinition } from '#lib/atelier/parse.ts';
+	import { displayName } from '#lib/atelier/names.ts';
+	import type { AtelierObject } from '#lib/atelier/types.ts';
+	import { isConstruction } from '#lib/atelier/construction.ts';
 
 	interface Props {
 		object: AtelierObject;

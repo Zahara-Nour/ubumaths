@@ -17,7 +17,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import type { VipCardTemplate } from '$lib/stores/vipCardTemplates.svelte';
+import type { VipCardTemplate } from '#lib/stores/vipCardTemplates.svelte.ts';
 
 // ============================================================================
 // TEST FIXTURES

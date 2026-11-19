@@ -1,0 +1,128 @@
+{
+	"id": "b1f51780-5a7a-4aeb-b4ae-8428090cc84a",
+	"title": "Tracer un cercle de rayon donné en cm",
+	"description": "Papier uni : règle graduée posée en O, compas ouvert sur le rayon (2 à 6 cm)",
+	"grades": ["CE2"],
+	"level": 5,
+	"delay": 240,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Avec la règle graduée et le compas, trace le cercle de $\\textcolor{{{color:primary.0}}}{\\text{centre}}$ $O$ et de $\\textcolor{{{color:primary.1}}}{\\text{rayon}}$ $\\textcolor{{{color:primary.1}}}{{{r}}\\text{ cm}}$.\n\n```figure-a-completer\nfenetre: 0 ; 14 ; 0 ; 14\nverifier: cercle c = cercle(O, rayon={{r}} cm)\n---\nO = point(7, 7)\n```",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "2..6"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On pose la règle graduée, son 0 sur le $\\textcolor{{{color:primary.0}}}{\\text{centre}}$ $O$.",
+					"On pique le compas en $O$ et on l'ouvre jusqu'à la graduation $\\textcolor{{{color:primary.1}}}{{{r}}\\text{ cm}}$ : c'est le $\\textcolor{{{color:primary.1}}}{\\text{rayon}}$.",
+					"On trace le cercle sans changer l'écartement."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Cercle juste (4 cm)",
+			"variationIndex": 0,
+			"variables": {
+				"r": "4"
+			},
+			"answers": ["regle(7;7;8;7;1)|cercle(7;7;11;7)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Cercle juste, règle posée vers le haut",
+			"variationIndex": 0,
+			"variables": {
+				"r": "4"
+			},
+			"answers": ["regle(7;7;7;8;1)|cercle(7;7;7;11)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : compas ouvert à l'œil, sans la règle",
+			"variationIndex": 0,
+			"variables": {
+				"r": "4"
+			},
+			"answers": ["cercle(7;7;11;7)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : rayon trop long de 2 mm",
+			"variationIndex": 0,
+			"variables": {
+				"r": "4"
+			},
+			"answers": ["regle(7;7;8;7;1)|cercle(7;7;11.2;7)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : compas piqué ailleurs qu'en O",
+			"variationIndex": 0,
+			"variables": {
+				"r": "4"
+			},
+			"answers": ["regle(8;7;9;7;1)|cercle(8;7;12;7)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : deux cercles de centre O",
+			"variationIndex": 0,
+			"variables": {
+				"r": "4"
+			},
+			"answers": ["regle(7;7;8;7;1)|cercle(7;7;11;7)|cercle(7;7;10;7)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Rien de tracé",
+			"variationIndex": 0,
+			"variables": {
+				"r": "4"
+			},
+			"answers": [""],
+			"expected": {
+				"status": "empty"
+			}
+		},
+		{
+			"description": "Cercle juste (6 cm)",
+			"variationIndex": 0,
+			"variables": {
+				"r": "6"
+			},
+			"answers": ["regle(7;7;8;7;1)|cercle(7;7;13;7)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Cercle juste (2 cm)",
+			"variationIndex": 0,
+			"variables": {
+				"r": "2"
+			},
+			"answers": ["regle(7;7;8;7;1)|cercle(7;7;9;7)"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

@@ -45,9 +45,6 @@
 			}
 		],
 		"grades": ["CE2"],
-		"theme": "Entiers",
-		"domain": "Multiplier",
-		"subdomain": "A trou",
 		"level": 11,
 		"status": "draft",
 		"delay": 20,

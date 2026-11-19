@@ -5,7 +5,7 @@
 import { describe, it, expect } from 'vitest';
 import { runTestSpec } from '../test-spec-runner';
 import type { QuestionTemplate, TestSpec } from '../types';
-import { templateMarkdown } from '$lib/ubumark';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 
 function makeTemplate(statement: string, expectedAnswers: string[]): QuestionTemplate {
 	return {
@@ -20,8 +20,6 @@ function makeTemplate(statement: string, expectedAnswers: string[]): QuestionTem
 			}
 		],
 		grades: ['6'],
-		theme: 'Test',
-		domain: 'Test',
 		level: 1
 	};
 }

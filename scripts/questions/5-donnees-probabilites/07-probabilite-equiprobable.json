@@ -1,10 +1,8 @@
 {
+	"id": "5d0dc0e5-2de4-4528-abd3-a6627f076af1",
 	"title": "Probabilité : issues équiprobables",
 	"description": "Calculer la probabilité d'un évènement à plusieurs issues quand elles sont équiprobables : nombre pair au dé (3/6), jeton d'une couleur, voyelle d'un mot",
 	"grades": ["5"],
-	"theme": "Probabilités",
-	"domain": "Expériences aléatoires",
-	"subdomain": "équiprobabilité",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

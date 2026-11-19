@@ -2,7 +2,7 @@
 dans scripts/questions/tspe-4-integrales-primitives/.
 
 Phase 0 validée par David le 2026-11-02 (« go » sur les recos, § 17 du journal
-« docs/wip/questions-tspe-progress.md »), un point par modèle :
+« docs/archive/wip/questions-tspe-progress.md »), un point par modèle :
 
 | # | Point    | Titre                                           | Catégorie, niveau                                         |
 | 1 | TSPE-461 | Résoudre l'équation y′ = f                      | Primitives › Notion de primitive, 3                       |

@@ -1,0 +1,164 @@
+{
+	"id": "6243c462-ef78-41c1-8f24-b5545d06fda3",
+	"title": "Aire d'un carré",
+	"description": "Calculer l'aire d'un carré de côté entier (côté × côté) : en cm, sur un dessin, ou dans un petit problème en m ou en dm",
+	"grades": ["CM2"],
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Quelle est l'aire d'un carré de ${{c}}~\\unit{cm}$ de côté ?\n\n$\\text{Aire} = ?~\\unit{cm^2}$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "2..12"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:c*c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Aire d'un carré : **côté × côté**.",
+					"$${{c}} \\times {{c}} = \\textcolor{{{color:primary.0}}}{{{eval:c*c}}}$$",
+					"L'aire du carré est $\\textcolor{{{color:primary.0}}}{{{eval:c*c}}}~\\unit{cm^2}$."
+				]
+			}
+		},
+		{
+			"statement": "Ce carré a des côtés de ${{c}}~\\unit{cm}$. Quelle est son aire ?\n\n```figure\nfenetre: -1 ; {{eval:c+3}} ; -2 ; {{eval:c+1}}\ndescription: Un carré dont les côtés mesurent {{c}} cm.\n---\nA = point(0, 0, visible=faux)\nB = point({{c}}, 0, visible=faux)\nC = point({{c}}, {{c}}, visible=faux)\nD = point(0, {{c}}, visible=faux)\npolygone(A, B, C, D, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.2)\nM = milieu(A, B, visible=faux)\nN = milieu(B, C, visible=faux)\ntexte(M, \"{{c}} cm\", dy=-0.4, ancre=\"haut\")\ntexte(N, \"{{c}} cm\", dx=0.3, ancre=\"gauche\")\n```\n\n$\\text{Aire} = ?~\\unit{cm^2}$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:c*c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Aire d'un carré : **côté × côté**.",
+					"$${{c}} \\times {{c}} = \\textcolor{{{color:primary.0}}}{{{eval:c*c}}}$$",
+					"L'aire du carré est $\\textcolor{{{color:primary.0}}}{{{eval:c*c}}}~\\unit{cm^2}$."
+				]
+			}
+		},
+		{
+			"statement": "{{if:j==1|Le sol d'une chambre carrée a des côtés de ${{c}}~\\unit{m}$.|Un carreau de faïence carré a des côtés de ${{c}}~\\unit{dm}$.}} Quelle est son aire ?\n\n$\\text{Aire} = ?~\\unit{{{if:j==1|m^2|dm^2}}}$",
+			"variables": [
+				{
+					"name": "j",
+					"expression": "1..2"
+				},
+				{
+					"name": "c",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:c*c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Aire d'un carré : **côté × côté**.",
+					"$${{c}} \\times {{c}} = \\textcolor{{{color:primary.0}}}{{{eval:c*c}}}$$",
+					"L'aire est $\\textcolor{{{color:primary.0}}}{{{eval:c*c}}}~\\unit{{{if:j==1|m^2|dm^2}}}$ : les côtés sont en ${{if:j==1|\\unit{m}|\\unit{dm}}}$, l'aire est en $\\unit{{{if:j==1|m^2|dm^2}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "côté 7 cm : 49",
+			"variationIndex": 0,
+			"variables": {
+				"c": "7"
+			},
+			"answers": ["49"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4 × 7 (le périmètre, 28)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "7"
+			},
+			"answers": ["28"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 7 + 7 (14)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "7"
+			},
+			"answers": ["14"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "dessin, côté 6 cm : 36",
+			"variationIndex": 1,
+			"variables": {
+				"c": "6"
+			},
+			"answers": ["36"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4 × 6 (24)",
+			"variationIndex": 1,
+			"variables": {
+				"c": "6"
+			},
+			"answers": ["24"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "chambre de 4 m : 16",
+			"variationIndex": 2,
+			"variables": {
+				"j": "1",
+				"c": "4"
+			},
+			"answers": ["16"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4 + 4 (8)",
+			"variationIndex": 2,
+			"variables": {
+				"j": "1",
+				"c": "4"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

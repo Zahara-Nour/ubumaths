@@ -1,0 +1,421 @@
+{
+	"id": "0ea43bcd-661b-41f9-a034-81a5f3ebe90d",
+	"title": "Reconnaître une pyramide, un cône",
+	"description": "Reconnaître et nommer une pyramide ou un cône de révolution en perspective ; sommet, base et faces latérales d'une pyramide SABCD ; compter faces, arêtes et sommets d'une pyramide ; base et sommet d'un cône",
+	"grades": ["4"],
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Comment s'appelle ce solide ?\n\n```solide\nforme: {{if:k==0|pyramide carree {{a}} {{h}}|}}{{if:k==1|pyramide rectangle {{a}} 2 {{h}}|}}{{if:k==2|pyramide triangle {{a}} {{h}}|}}{{if:k==3|cone {{r}} {{h}}|}}\n```\n\n\n\n```choix\n- {{if:k==3|un cône|une pyramide}}\n- {{if:k==3|une pyramide|un prisme droit}}\n- {{if:k==3|un cylindre|un cône}}\n- {{if:k==3|un prisme droit|un cylindre}}\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..3"
+				},
+				{
+					"name": "a",
+					"expression": "3..5"
+				},
+				{
+					"name": "r",
+					"expression": "2..3"
+				},
+				{
+					"name": "h",
+					"expression": "4..6"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:k==3|**Cône de révolution** : une base qui est un **disque**, et une surface **courbe** qui monte jusqu'à un point, le **sommet** du cône.|**Pyramide** : une base qui est un **polygone**, et des faces latérales **triangulaires** qui se rejoignent en un même point, le **sommet** de la pyramide.}}",
+					"{{if:k==3|Sa base est un disque et il n'a qu'un sommet : c'est $\\textcolor{{{color:primary.0}}}{\\text{un cône}}$. Un cylindre a **deux** disques.|Sa base est un{{if:k==0| carré|}}{{if:k==1| rectangle|}}{{if:k==2| triangle|}}{{if:k==3||}} et ses faces latérales sont des triangles : c'est $\\textcolor{{{color:primary.0}}}{\\text{une pyramide}}$. Un prisme droit a **deux** bases et des faces latérales **rectangulaires**.}}"
+				]
+			}
+		},
+		{
+			"statement": "Lequel de ces solides est {{if:t==1|une pyramide|un cône}} ?\n\n````choix\n- ```solide\n  forme: {{if:t==1|pyramide {{if:q==1|carree 3 4|triangle 3.5 4}}|cone 1.5 4}}\n  ```\n- ```solide\n  forme: {{if:t==1|prisme triangle 3 3 4|cylindre 1.5 4}}\n  ```\n- ```solide\n  forme: {{if:t==1|cone 1.5 4|pyramide carree 3 4}}\n  ```\n- ```solide\n  forme: {{if:t==1|pave 3 3 4|boule 2}}\n  ```\n````",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "1|2"
+				},
+				{
+					"name": "q",
+					"expression": "1|2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:t==1|**Pyramide** : une base qui est un **polygone**, et des faces latérales **triangulaires** qui se rejoignent en un même point, le **sommet** de la pyramide.|**Cône de révolution** : une base qui est un **disque**, et une surface **courbe** qui monte jusqu'à un point, le **sommet** du cône.}}",
+					"{{if:t==1|Le prisme a aussi des triangles, mais **deux** (ses bases), reliées par des rectangles : il n'a pas de sommet où tout se rejoint.|Le cylindre a aussi une base en disque, mais **deux** bases, et pas de sommet.}}"
+				]
+			}
+		},
+		{
+			"statement": "Voici la pyramide $SABCD$.\n\n```solide\nforme: {{if:k==0|pyramide carree 4 4|pyramide rectangle 5 3 4}}\nsommets: S A B C D\n```\n\n{{if:q==0||}}{{if:q==1|Quel est le sommet de cette pyramide ?|}}{{if:q==2|Quelle est la base de cette pyramide ?|}}{{if:q==3|Quelle est la nature des faces latérales de cette pyramide ?|}}\n\n```choix\n- {{if:q==0||}}{{if:q==1|le point $S$|}}{{if:q==2|la face $ABCD$|}}{{if:q==3|des triangles|}}\n- {{if:q==0||}}{{if:q==1|le point $A$|}}{{if:q==2|la face $SAB$|}}{{if:q==3|des rectangles|}}\n- {{if:q==0||}}{{if:q==1|le point $C$|}}{{if:q==2|la face $SBC$|}}{{if:q==3|des {{if:k==0|carrés|trapèzes}}|}}\n- {{if:q==0||}}{{if:q==1|la face $ABCD$|}}{{if:q==2|le point $S$|}}{{if:q==3|des parallélogrammes|}}\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..1"
+				},
+				{
+					"name": "q",
+					"expression": "1..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Pyramide** : une base qui est un **polygone**, et des faces latérales **triangulaires** qui se rejoignent en un même point, le **sommet** de la pyramide.",
+					"Dans le nom $SABCD$, on écrit d'abord le sommet $\\textcolor{{{color:primary.0}}}{S}$, puis les sommets de la base $ABCD$.",
+					"La base $ABCD$ est un {{if:k==0|carré|rectangle}} ; les faces latérales $SAB$, $SBC$, $SCD$ et $SDA$ sont des triangles."
+				]
+			}
+		},
+		{
+			"statement": "La base d'une pyramide est un {{if:n==0||}}{{if:n==1||}}{{if:n==2||}}{{if:n==3|triangle|}}{{if:n==4|carré|}}{{if:n==5|pentagone|}}{{if:n==6|hexagone|}}{{if:n==7|heptagone|}}{{if:n==8|octogone|}} : un polygone à ${{n}}$ côtés.{{if:n==3|\n\n```solide\nforme: pyramide triangle 4 4\n```\n\n|}}{{if:n==4|\n\n```solide\nforme: pyramide carree 4 4\n```\n\n|}}\n\nNombre de faces : $?$\n\nNombre d'arêtes : $?$\n\nNombre de sommets : $?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "3..8"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n+1}}"
+				},
+				{
+					"expectedAnswer": "{{eval:2*n}}"
+				},
+				{
+					"expectedAnswer": "{{eval:n+1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Faces** : une face latérale par côté de la base, ${{n}}$, **plus la base** : ${{n}} + 1 = \\textcolor{{{color:primary.0}}}{{{eval:n+1}}}$.",
+					"**Arêtes** : ${{n}}$ autour de la base, et ${{n}}$ qui montent au sommet : ${{n}} + {{n}} = \\textcolor{{{color:primary.1}}}{{{eval:2*n}}}$.",
+					"**Sommets** : les ${{n}}$ sommets de la base, **plus le sommet** de la pyramide : ${{n}} + 1 = \\textcolor{{{color:primary.2}}}{{{eval:n+1}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Voici un cône de révolution.\n\n```solide\nforme: cone {{r}} {{h}}\nsommets: S O\n```\n\n{{if:q==1|Quelle est la nature de sa base ?|Quel est son sommet ?}}\n\n```choix\n- {{if:q==1|un disque|le point $S$}}\n- {{if:q==1|un cercle|le point $O$}}\n- {{if:q==1|un triangle|le cercle de la base}}\n- {{if:q==1|un rectangle|il n'a pas de sommet}}\n```",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "1|2"
+				},
+				{
+					"name": "r",
+					"expression": "2..3"
+				},
+				{
+					"name": "h",
+					"expression": "4..6"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Cône de révolution** : une base qui est un **disque**, et une surface **courbe** qui monte jusqu'à un point, le **sommet** du cône.",
+					"{{if:q==1|La base est la surface **pleine** : $\\textcolor{{{color:primary.0}}}{\\text{un disque}}$. Le cercle n'en est que le bord.|Le sommet est le point $\\textcolor{{{color:primary.0}}}{S}$, où la surface courbe se referme. $O$ est le centre de la base.}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Pyramide à base carrée",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0",
+				"a": "4",
+				"r": "2",
+				"h": "5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la pyramide prise pour un prisme",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0",
+				"a": "4",
+				"r": "2",
+				"h": "5"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Cône",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"a": "4",
+				"r": "2",
+				"h": "5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le cône pris pour un cylindre",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"a": "4",
+				"r": "2",
+				"h": "5"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "La pyramide parmi 4 solides",
+			"variationIndex": 1,
+			"variables": {
+				"t": "1",
+				"q": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le prisme pris pour une pyramide",
+			"variationIndex": 1,
+			"variables": {
+				"t": "1",
+				"q": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Le cône parmi 4 solides",
+			"variationIndex": 1,
+			"variables": {
+				"t": "2",
+				"q": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le cylindre pris pour le cône",
+			"variationIndex": 1,
+			"variables": {
+				"t": "2",
+				"q": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Sommet S",
+			"variationIndex": 2,
+			"variables": {
+				"k": "0",
+				"q": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : A pris pour le sommet",
+			"variationIndex": 2,
+			"variables": {
+				"k": "0",
+				"q": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Base ABCD",
+			"variationIndex": 2,
+			"variables": {
+				"k": "1",
+				"q": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : une face latérale prise pour la base",
+			"variationIndex": 2,
+			"variables": {
+				"k": "1",
+				"q": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Faces latérales : des triangles",
+			"variationIndex": 2,
+			"variables": {
+				"k": "0",
+				"q": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : des rectangles (prisme)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "0",
+				"q": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Base pentagone : 6, 10, 6",
+			"variationIndex": 3,
+			"variables": {
+				"n": "5"
+			},
+			"answers": ["6", "10", "6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : base oubliée (5 faces)",
+			"variationIndex": 3,
+			"variables": {
+				"n": "5"
+			},
+			"answers": ["5", "10", "6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : n + 1 arêtes",
+			"variationIndex": 3,
+			"variables": {
+				"n": "5"
+			},
+			"answers": ["6", "6", "6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Base triangle, dessinée : 4, 6, 4",
+			"variationIndex": 3,
+			"variables": {
+				"n": "3"
+			},
+			"answers": ["4", "6", "4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Base du cône : un disque",
+			"variationIndex": 4,
+			"variables": {
+				"q": "1",
+				"r": "2",
+				"h": "5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un cercle",
+			"variationIndex": 4,
+			"variables": {
+				"q": "1",
+				"r": "2",
+				"h": "5"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Sommet du cône : S",
+			"variationIndex": 4,
+			"variables": {
+				"q": "2",
+				"r": "2",
+				"h": "5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le centre O",
+			"variationIndex": 4,
+			"variables": {
+				"q": "2",
+				"r": "2",
+				"h": "5"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

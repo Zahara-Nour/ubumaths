@@ -2378,7 +2378,7 @@
 	{
 		"modele": "0bb7a4ca",
 		"graine": 1,
-		"attendu": "178[min]",
+		"attendu": "{2[h]}{58[min]}",
 		"famille": "juste",
 		"saisie": "178\\min",
 		"juste": true,
@@ -2387,7 +2387,7 @@
 	{
 		"modele": "0bb7a4ca",
 		"graine": 1,
-		"attendu": "178[min]",
+		"attendu": "{2[h]}{58[min]}",
 		"famille": "juste-clavier",
 		"saisie": "178 min",
 		"juste": true,
@@ -2396,7 +2396,7 @@
 	{
 		"modele": "0bb7a4ca",
 		"graine": 1,
-		"attendu": "178[min]",
+		"attendu": "{2[h]}{58[min]}",
 		"famille": "juste-colle",
 		"saisie": "178min",
 		"juste": true,
@@ -2405,7 +2405,7 @@
 	{
 		"modele": "0bb7a4ca",
 		"graine": 1,
-		"attendu": "178[min]",
+		"attendu": "{2[h]}{58[min]}",
 		"famille": "sans-unite",
 		"saisie": "178",
 		"juste": false,
@@ -2414,7 +2414,7 @@
 	{
 		"modele": "0bb7a4ca",
 		"graine": 1,
-		"attendu": "178[min]",
+		"attendu": "{2[h]}{58[min]}",
 		"famille": "valeur-fausse",
 		"saisie": "179\\min",
 		"juste": false,
@@ -2423,7 +2423,7 @@
 	{
 		"modele": "0bb7a4ca",
 		"graine": 1,
-		"attendu": "178[min]",
+		"attendu": "{2[h]}{58[min]}",
 		"famille": "autre-grandeur",
 		"saisie": "178\\operatorname{\\mathrm{kg}}",
 		"juste": false,
@@ -2432,7 +2432,7 @@
 	{
 		"modele": "0bb7a4ca",
 		"graine": 1,
-		"attendu": "178[min]",
+		"attendu": "{2[h]}{58[min]}",
 		"famille": "convertie",
 		"saisie": "10680\\operatorname{\\mathrm{s}}",
 		"juste": true,
@@ -2441,7 +2441,7 @@
 	{
 		"modele": "0bb7a4ca",
 		"graine": 1,
-		"attendu": "178[min]",
+		"attendu": "{2[h]}{58[min]}",
 		"famille": "non-convertie",
 		"saisie": "178\\operatorname{\\mathrm{s}}",
 		"juste": false,
@@ -2450,7 +2450,7 @@
 	{
 		"modele": "0bb7a4ca",
 		"graine": 1,
-		"attendu": "178[min]",
+		"attendu": "{2[h]}{58[min]}",
 		"famille": "duree-composee",
 		"saisie": "2\\operatorname{\\mathrm{h}}\\,58\\min",
 		"juste": true,
@@ -2459,7 +2459,7 @@
 	{
 		"modele": "0bb7a4ca",
 		"graine": 1,
-		"attendu": "178[min]",
+		"attendu": "{2[h]}{58[min]}",
 		"famille": "heures-decimales-arrondie",
 		"saisie": "2{,}97\\operatorname{\\mathrm{h}}",
 		"juste": false,
@@ -2468,7 +2468,7 @@
 	{
 		"modele": "0bb7a4ca",
 		"graine": 2,
-		"attendu": "112[min]",
+		"attendu": "{1[h]}{52[min]}",
 		"famille": "juste",
 		"saisie": "112\\min",
 		"juste": true,
@@ -2477,7 +2477,7 @@
 	{
 		"modele": "0bb7a4ca",
 		"graine": 2,
-		"attendu": "112[min]",
+		"attendu": "{1[h]}{52[min]}",
 		"famille": "juste-clavier",
 		"saisie": "112 min",
 		"juste": true,
@@ -2486,7 +2486,7 @@
 	{
 		"modele": "0bb7a4ca",
 		"graine": 2,
-		"attendu": "112[min]",
+		"attendu": "{1[h]}{52[min]}",
 		"famille": "juste-colle",
 		"saisie": "112min",
 		"juste": true,
@@ -2495,7 +2495,7 @@
 	{
 		"modele": "0bb7a4ca",
 		"graine": 2,
-		"attendu": "112[min]",
+		"attendu": "{1[h]}{52[min]}",
 		"famille": "sans-unite",
 		"saisie": "112",
 		"juste": false,
@@ -2504,7 +2504,7 @@
 	{
 		"modele": "0bb7a4ca",
 		"graine": 2,
-		"attendu": "112[min]",
+		"attendu": "{1[h]}{52[min]}",
 		"famille": "valeur-fausse",
 		"saisie": "113\\min",
 		"juste": false,
@@ -2513,7 +2513,7 @@
 	{
 		"modele": "0bb7a4ca",
 		"graine": 2,
-		"attendu": "112[min]",
+		"attendu": "{1[h]}{52[min]}",
 		"famille": "autre-grandeur",
 		"saisie": "112\\operatorname{\\mathrm{kg}}",
 		"juste": false,
@@ -2522,7 +2522,7 @@
 	{
 		"modele": "0bb7a4ca",
 		"graine": 2,
-		"attendu": "112[min]",
+		"attendu": "{1[h]}{52[min]}",
 		"famille": "convertie",
 		"saisie": "6720\\operatorname{\\mathrm{s}}",
 		"juste": true,
@@ -2531,7 +2531,7 @@
 	{
 		"modele": "0bb7a4ca",
 		"graine": 2,
-		"attendu": "112[min]",
+		"attendu": "{1[h]}{52[min]}",
 		"famille": "non-convertie",
 		"saisie": "112\\operatorname{\\mathrm{s}}",
 		"juste": false,
@@ -2540,7 +2540,7 @@
 	{
 		"modele": "0bb7a4ca",
 		"graine": 2,
-		"attendu": "112[min]",
+		"attendu": "{1[h]}{52[min]}",
 		"famille": "duree-composee",
 		"saisie": "1\\operatorname{\\mathrm{h}}\\,52\\min",
 		"juste": true,
@@ -2549,7 +2549,7 @@
 	{
 		"modele": "0bb7a4ca",
 		"graine": 2,
-		"attendu": "112[min]",
+		"attendu": "{1[h]}{52[min]}",
 		"famille": "heures-decimales-arrondie",
 		"saisie": "1{,}87\\operatorname{\\mathrm{h}}",
 		"juste": false,
@@ -2558,7 +2558,7 @@
 	{
 		"modele": "0bb7a4ca",
 		"graine": 3,
-		"attendu": "106[min]",
+		"attendu": "{1[h]}{46[min]}",
 		"famille": "juste",
 		"saisie": "106\\min",
 		"juste": true,
@@ -2567,7 +2567,7 @@
 	{
 		"modele": "0bb7a4ca",
 		"graine": 3,
-		"attendu": "106[min]",
+		"attendu": "{1[h]}{46[min]}",
 		"famille": "juste-clavier",
 		"saisie": "106 min",
 		"juste": true,
@@ -2576,7 +2576,7 @@
 	{
 		"modele": "0bb7a4ca",
 		"graine": 3,
-		"attendu": "106[min]",
+		"attendu": "{1[h]}{46[min]}",
 		"famille": "juste-colle",
 		"saisie": "106min",
 		"juste": true,
@@ -2585,7 +2585,7 @@
 	{
 		"modele": "0bb7a4ca",
 		"graine": 3,
-		"attendu": "106[min]",
+		"attendu": "{1[h]}{46[min]}",
 		"famille": "sans-unite",
 		"saisie": "106",
 		"juste": false,
@@ -2594,7 +2594,7 @@
 	{
 		"modele": "0bb7a4ca",
 		"graine": 3,
-		"attendu": "106[min]",
+		"attendu": "{1[h]}{46[min]}",
 		"famille": "valeur-fausse",
 		"saisie": "107\\min",
 		"juste": false,
@@ -2603,7 +2603,7 @@
 	{
 		"modele": "0bb7a4ca",
 		"graine": 3,
-		"attendu": "106[min]",
+		"attendu": "{1[h]}{46[min]}",
 		"famille": "autre-grandeur",
 		"saisie": "106\\operatorname{\\mathrm{kg}}",
 		"juste": false,
@@ -2612,7 +2612,7 @@
 	{
 		"modele": "0bb7a4ca",
 		"graine": 3,
-		"attendu": "106[min]",
+		"attendu": "{1[h]}{46[min]}",
 		"famille": "convertie",
 		"saisie": "6360\\operatorname{\\mathrm{s}}",
 		"juste": true,
@@ -2621,7 +2621,7 @@
 	{
 		"modele": "0bb7a4ca",
 		"graine": 3,
-		"attendu": "106[min]",
+		"attendu": "{1[h]}{46[min]}",
 		"famille": "non-convertie",
 		"saisie": "106\\operatorname{\\mathrm{s}}",
 		"juste": false,
@@ -2630,7 +2630,7 @@
 	{
 		"modele": "0bb7a4ca",
 		"graine": 3,
-		"attendu": "106[min]",
+		"attendu": "{1[h]}{46[min]}",
 		"famille": "duree-composee",
 		"saisie": "1\\operatorname{\\mathrm{h}}\\,46\\min",
 		"juste": true,
@@ -2639,7 +2639,7 @@
 	{
 		"modele": "0bb7a4ca",
 		"graine": 3,
-		"attendu": "106[min]",
+		"attendu": "{1[h]}{46[min]}",
 		"famille": "heures-decimales-arrondie",
 		"saisie": "1{,}77\\operatorname{\\mathrm{h}}",
 		"juste": false,
@@ -2648,7 +2648,7 @@
 	{
 		"modele": "0bb7a4ca",
 		"graine": 4,
-		"attendu": "74[min]",
+		"attendu": "{1[h]}{14[min]}",
 		"famille": "juste",
 		"saisie": "74\\min",
 		"juste": true,
@@ -2657,7 +2657,7 @@
 	{
 		"modele": "0bb7a4ca",
 		"graine": 4,
-		"attendu": "74[min]",
+		"attendu": "{1[h]}{14[min]}",
 		"famille": "juste-clavier",
 		"saisie": "74 min",
 		"juste": true,
@@ -2666,7 +2666,7 @@
 	{
 		"modele": "0bb7a4ca",
 		"graine": 4,
-		"attendu": "74[min]",
+		"attendu": "{1[h]}{14[min]}",
 		"famille": "juste-colle",
 		"saisie": "74min",
 		"juste": true,
@@ -2675,7 +2675,7 @@
 	{
 		"modele": "0bb7a4ca",
 		"graine": 4,
-		"attendu": "74[min]",
+		"attendu": "{1[h]}{14[min]}",
 		"famille": "sans-unite",
 		"saisie": "74",
 		"juste": false,
@@ -2684,7 +2684,7 @@
 	{
 		"modele": "0bb7a4ca",
 		"graine": 4,
-		"attendu": "74[min]",
+		"attendu": "{1[h]}{14[min]}",
 		"famille": "valeur-fausse",
 		"saisie": "75\\min",
 		"juste": false,
@@ -2693,7 +2693,7 @@
 	{
 		"modele": "0bb7a4ca",
 		"graine": 4,
-		"attendu": "74[min]",
+		"attendu": "{1[h]}{14[min]}",
 		"famille": "autre-grandeur",
 		"saisie": "74\\operatorname{\\mathrm{kg}}",
 		"juste": false,
@@ -2702,7 +2702,7 @@
 	{
 		"modele": "0bb7a4ca",
 		"graine": 4,
-		"attendu": "74[min]",
+		"attendu": "{1[h]}{14[min]}",
 		"famille": "convertie",
 		"saisie": "4440\\operatorname{\\mathrm{s}}",
 		"juste": true,
@@ -2711,7 +2711,7 @@
 	{
 		"modele": "0bb7a4ca",
 		"graine": 4,
-		"attendu": "74[min]",
+		"attendu": "{1[h]}{14[min]}",
 		"famille": "non-convertie",
 		"saisie": "74\\operatorname{\\mathrm{s}}",
 		"juste": false,
@@ -2720,7 +2720,7 @@
 	{
 		"modele": "0bb7a4ca",
 		"graine": 4,
-		"attendu": "74[min]",
+		"attendu": "{1[h]}{14[min]}",
 		"famille": "duree-composee",
 		"saisie": "1\\operatorname{\\mathrm{h}}\\,14\\min",
 		"juste": true,
@@ -2729,7 +2729,7 @@
 	{
 		"modele": "0bb7a4ca",
 		"graine": 4,
-		"attendu": "74[min]",
+		"attendu": "{1[h]}{14[min]}",
 		"famille": "heures-decimales-arrondie",
 		"saisie": "1{,}23\\operatorname{\\mathrm{h}}",
 		"juste": false,
@@ -2738,71 +2738,8 @@
 	{
 		"modele": "0bb7a4ca",
 		"graine": 5,
-		"attendu": "1.1[h]",
+		"attendu": "{1[h]}{6[min]}",
 		"famille": "juste",
-		"saisie": "1{,}1\\operatorname{\\mathrm{h}}",
-		"juste": true,
-		"message": null
-	},
-	{
-		"modele": "0bb7a4ca",
-		"graine": 5,
-		"attendu": "1.1[h]",
-		"famille": "juste-clavier",
-		"saisie": "1,1 h",
-		"juste": true,
-		"message": null
-	},
-	{
-		"modele": "0bb7a4ca",
-		"graine": 5,
-		"attendu": "1.1[h]",
-		"famille": "juste-colle",
-		"saisie": "1,1h",
-		"juste": true,
-		"message": null
-	},
-	{
-		"modele": "0bb7a4ca",
-		"graine": 5,
-		"attendu": "1.1[h]",
-		"famille": "sans-unite",
-		"saisie": "1{,}1",
-		"juste": false,
-		"message": "N’oublie pas l’unité."
-	},
-	{
-		"modele": "0bb7a4ca",
-		"graine": 5,
-		"attendu": "1.1[h]",
-		"famille": "valeur-fausse",
-		"saisie": "2{,}1\\operatorname{\\mathrm{h}}",
-		"juste": false,
-		"message": "Les blancs suivants sont incorrects: 1"
-	},
-	{
-		"modele": "0bb7a4ca",
-		"graine": 5,
-		"attendu": "1.1[h]",
-		"famille": "autre-grandeur",
-		"saisie": "1{,}1\\operatorname{\\mathrm{kg}}",
-		"juste": false,
-		"message": "Cette unité ne mesure pas la bonne grandeur."
-	},
-	{
-		"modele": "0bb7a4ca",
-		"graine": 5,
-		"attendu": "1.1[h]",
-		"famille": "point-decimal",
-		"saisie": "1.1\\operatorname{\\mathrm{h}}",
-		"juste": true,
-		"message": null
-	},
-	{
-		"modele": "0bb7a4ca",
-		"graine": 5,
-		"attendu": "1.1[h]",
-		"famille": "convertie",
 		"saisie": "66\\min",
 		"juste": true,
 		"message": null
@@ -2810,16 +2747,70 @@
 	{
 		"modele": "0bb7a4ca",
 		"graine": 5,
-		"attendu": "1.1[h]",
-		"famille": "non-convertie",
-		"saisie": "1{,}1\\min",
+		"attendu": "{1[h]}{6[min]}",
+		"famille": "juste-clavier",
+		"saisie": "66 min",
+		"juste": true,
+		"message": null
+	},
+	{
+		"modele": "0bb7a4ca",
+		"graine": 5,
+		"attendu": "{1[h]}{6[min]}",
+		"famille": "juste-colle",
+		"saisie": "66min",
+		"juste": true,
+		"message": null
+	},
+	{
+		"modele": "0bb7a4ca",
+		"graine": 5,
+		"attendu": "{1[h]}{6[min]}",
+		"famille": "sans-unite",
+		"saisie": "66",
+		"juste": false,
+		"message": "N’oublie pas l’unité."
+	},
+	{
+		"modele": "0bb7a4ca",
+		"graine": 5,
+		"attendu": "{1[h]}{6[min]}",
+		"famille": "valeur-fausse",
+		"saisie": "67\\min",
 		"juste": false,
 		"message": "Les blancs suivants sont incorrects: 1"
 	},
 	{
 		"modele": "0bb7a4ca",
 		"graine": 5,
-		"attendu": "1.1[h]",
+		"attendu": "{1[h]}{6[min]}",
+		"famille": "autre-grandeur",
+		"saisie": "66\\operatorname{\\mathrm{kg}}",
+		"juste": false,
+		"message": "Cette unité ne mesure pas la bonne grandeur."
+	},
+	{
+		"modele": "0bb7a4ca",
+		"graine": 5,
+		"attendu": "{1[h]}{6[min]}",
+		"famille": "convertie",
+		"saisie": "3960\\operatorname{\\mathrm{s}}",
+		"juste": true,
+		"message": null
+	},
+	{
+		"modele": "0bb7a4ca",
+		"graine": 5,
+		"attendu": "{1[h]}{6[min]}",
+		"famille": "non-convertie",
+		"saisie": "66\\operatorname{\\mathrm{s}}",
+		"juste": false,
+		"message": "Les blancs suivants sont incorrects: 1"
+	},
+	{
+		"modele": "0bb7a4ca",
+		"graine": 5,
+		"attendu": "{1[h]}{6[min]}",
 		"famille": "duree-composee",
 		"saisie": "1\\operatorname{\\mathrm{h}}\\,6\\min",
 		"juste": true,
@@ -2828,16 +2819,16 @@
 	{
 		"modele": "0bb7a4ca",
 		"graine": 5,
-		"attendu": "1.1[h]",
-		"famille": "heures-decimales-lues-minutes",
-		"saisie": "1\\operatorname{\\mathrm{h}}\\,10\\min",
-		"juste": false,
-		"message": "Les blancs suivants sont incorrects: 1"
+		"attendu": "{1[h]}{6[min]}",
+		"famille": "heures-decimales",
+		"saisie": "1{,}1\\operatorname{\\mathrm{h}}",
+		"juste": true,
+		"message": null
 	},
 	{
 		"modele": "0bb7a4ca",
 		"graine": 6,
-		"attendu": "152[min]",
+		"attendu": "{2[h]}{32[min]}",
 		"famille": "juste",
 		"saisie": "152\\min",
 		"juste": true,
@@ -2846,7 +2837,7 @@
 	{
 		"modele": "0bb7a4ca",
 		"graine": 6,
-		"attendu": "152[min]",
+		"attendu": "{2[h]}{32[min]}",
 		"famille": "juste-clavier",
 		"saisie": "152 min",
 		"juste": true,
@@ -2855,7 +2846,7 @@
 	{
 		"modele": "0bb7a4ca",
 		"graine": 6,
-		"attendu": "152[min]",
+		"attendu": "{2[h]}{32[min]}",
 		"famille": "juste-colle",
 		"saisie": "152min",
 		"juste": true,
@@ -2864,7 +2855,7 @@
 	{
 		"modele": "0bb7a4ca",
 		"graine": 6,
-		"attendu": "152[min]",
+		"attendu": "{2[h]}{32[min]}",
 		"famille": "sans-unite",
 		"saisie": "152",
 		"juste": false,
@@ -2873,7 +2864,7 @@
 	{
 		"modele": "0bb7a4ca",
 		"graine": 6,
-		"attendu": "152[min]",
+		"attendu": "{2[h]}{32[min]}",
 		"famille": "valeur-fausse",
 		"saisie": "153\\min",
 		"juste": false,
@@ -2882,7 +2873,7 @@
 	{
 		"modele": "0bb7a4ca",
 		"graine": 6,
-		"attendu": "152[min]",
+		"attendu": "{2[h]}{32[min]}",
 		"famille": "autre-grandeur",
 		"saisie": "152\\operatorname{\\mathrm{kg}}",
 		"juste": false,
@@ -2891,7 +2882,7 @@
 	{
 		"modele": "0bb7a4ca",
 		"graine": 6,
-		"attendu": "152[min]",
+		"attendu": "{2[h]}{32[min]}",
 		"famille": "convertie",
 		"saisie": "9120\\operatorname{\\mathrm{s}}",
 		"juste": true,
@@ -2900,7 +2891,7 @@
 	{
 		"modele": "0bb7a4ca",
 		"graine": 6,
-		"attendu": "152[min]",
+		"attendu": "{2[h]}{32[min]}",
 		"famille": "non-convertie",
 		"saisie": "152\\operatorname{\\mathrm{s}}",
 		"juste": false,
@@ -2909,7 +2900,7 @@
 	{
 		"modele": "0bb7a4ca",
 		"graine": 6,
-		"attendu": "152[min]",
+		"attendu": "{2[h]}{32[min]}",
 		"famille": "duree-composee",
 		"saisie": "2\\operatorname{\\mathrm{h}}\\,32\\min",
 		"juste": true,
@@ -2918,7 +2909,7 @@
 	{
 		"modele": "0bb7a4ca",
 		"graine": 6,
-		"attendu": "152[min]",
+		"attendu": "{2[h]}{32[min]}",
 		"famille": "heures-decimales-arrondie",
 		"saisie": "2{,}53\\operatorname{\\mathrm{h}}",
 		"juste": false,
@@ -2927,7 +2918,7 @@
 	{
 		"modele": "0bb7a4ca",
 		"graine": 7,
-		"attendu": "151[min]",
+		"attendu": "{2[h]}{31[min]}",
 		"famille": "juste",
 		"saisie": "151\\min",
 		"juste": true,
@@ -2936,7 +2927,7 @@
 	{
 		"modele": "0bb7a4ca",
 		"graine": 7,
-		"attendu": "151[min]",
+		"attendu": "{2[h]}{31[min]}",
 		"famille": "juste-clavier",
 		"saisie": "151 min",
 		"juste": true,
@@ -2945,7 +2936,7 @@
 	{
 		"modele": "0bb7a4ca",
 		"graine": 7,
-		"attendu": "151[min]",
+		"attendu": "{2[h]}{31[min]}",
 		"famille": "juste-colle",
 		"saisie": "151min",
 		"juste": true,
@@ -2954,7 +2945,7 @@
 	{
 		"modele": "0bb7a4ca",
 		"graine": 7,
-		"attendu": "151[min]",
+		"attendu": "{2[h]}{31[min]}",
 		"famille": "sans-unite",
 		"saisie": "151",
 		"juste": false,
@@ -2963,7 +2954,7 @@
 	{
 		"modele": "0bb7a4ca",
 		"graine": 7,
-		"attendu": "151[min]",
+		"attendu": "{2[h]}{31[min]}",
 		"famille": "valeur-fausse",
 		"saisie": "152\\min",
 		"juste": false,
@@ -2972,7 +2963,7 @@
 	{
 		"modele": "0bb7a4ca",
 		"graine": 7,
-		"attendu": "151[min]",
+		"attendu": "{2[h]}{31[min]}",
 		"famille": "autre-grandeur",
 		"saisie": "151\\operatorname{\\mathrm{kg}}",
 		"juste": false,
@@ -2981,7 +2972,7 @@
 	{
 		"modele": "0bb7a4ca",
 		"graine": 7,
-		"attendu": "151[min]",
+		"attendu": "{2[h]}{31[min]}",
 		"famille": "convertie",
 		"saisie": "9060\\operatorname{\\mathrm{s}}",
 		"juste": true,
@@ -2990,7 +2981,7 @@
 	{
 		"modele": "0bb7a4ca",
 		"graine": 7,
-		"attendu": "151[min]",
+		"attendu": "{2[h]}{31[min]}",
 		"famille": "non-convertie",
 		"saisie": "151\\operatorname{\\mathrm{s}}",
 		"juste": false,
@@ -2999,7 +2990,7 @@
 	{
 		"modele": "0bb7a4ca",
 		"graine": 7,
-		"attendu": "151[min]",
+		"attendu": "{2[h]}{31[min]}",
 		"famille": "duree-composee",
 		"saisie": "2\\operatorname{\\mathrm{h}}\\,31\\min",
 		"juste": true,
@@ -3008,7 +2999,7 @@
 	{
 		"modele": "0bb7a4ca",
 		"graine": 7,
-		"attendu": "151[min]",
+		"attendu": "{2[h]}{31[min]}",
 		"famille": "heures-decimales-arrondie",
 		"saisie": "2{,}52\\operatorname{\\mathrm{h}}",
 		"juste": false,
@@ -3017,7 +3008,7 @@
 	{
 		"modele": "0bb7a4ca",
 		"graine": 8,
-		"attendu": "95[min]",
+		"attendu": "{1[h]}{35[min]}",
 		"famille": "juste",
 		"saisie": "95\\min",
 		"juste": true,
@@ -3026,7 +3017,7 @@
 	{
 		"modele": "0bb7a4ca",
 		"graine": 8,
-		"attendu": "95[min]",
+		"attendu": "{1[h]}{35[min]}",
 		"famille": "juste-clavier",
 		"saisie": "95 min",
 		"juste": true,
@@ -3035,7 +3026,7 @@
 	{
 		"modele": "0bb7a4ca",
 		"graine": 8,
-		"attendu": "95[min]",
+		"attendu": "{1[h]}{35[min]}",
 		"famille": "juste-colle",
 		"saisie": "95min",
 		"juste": true,
@@ -3044,7 +3035,7 @@
 	{
 		"modele": "0bb7a4ca",
 		"graine": 8,
-		"attendu": "95[min]",
+		"attendu": "{1[h]}{35[min]}",
 		"famille": "sans-unite",
 		"saisie": "95",
 		"juste": false,
@@ -3053,7 +3044,7 @@
 	{
 		"modele": "0bb7a4ca",
 		"graine": 8,
-		"attendu": "95[min]",
+		"attendu": "{1[h]}{35[min]}",
 		"famille": "valeur-fausse",
 		"saisie": "96\\min",
 		"juste": false,
@@ -3062,7 +3053,7 @@
 	{
 		"modele": "0bb7a4ca",
 		"graine": 8,
-		"attendu": "95[min]",
+		"attendu": "{1[h]}{35[min]}",
 		"famille": "autre-grandeur",
 		"saisie": "95\\operatorname{\\mathrm{kg}}",
 		"juste": false,
@@ -3071,7 +3062,7 @@
 	{
 		"modele": "0bb7a4ca",
 		"graine": 8,
-		"attendu": "95[min]",
+		"attendu": "{1[h]}{35[min]}",
 		"famille": "convertie",
 		"saisie": "5700\\operatorname{\\mathrm{s}}",
 		"juste": true,
@@ -3080,7 +3071,7 @@
 	{
 		"modele": "0bb7a4ca",
 		"graine": 8,
-		"attendu": "95[min]",
+		"attendu": "{1[h]}{35[min]}",
 		"famille": "non-convertie",
 		"saisie": "95\\operatorname{\\mathrm{s}}",
 		"juste": false,
@@ -3089,7 +3080,7 @@
 	{
 		"modele": "0bb7a4ca",
 		"graine": 8,
-		"attendu": "95[min]",
+		"attendu": "{1[h]}{35[min]}",
 		"famille": "duree-composee",
 		"saisie": "1\\operatorname{\\mathrm{h}}\\,35\\min",
 		"juste": true,
@@ -3098,7 +3089,7 @@
 	{
 		"modele": "0bb7a4ca",
 		"graine": 8,
-		"attendu": "95[min]",
+		"attendu": "{1[h]}{35[min]}",
 		"famille": "heures-decimales-arrondie",
 		"saisie": "1{,}58\\operatorname{\\mathrm{h}}",
 		"juste": false,
@@ -3683,7 +3674,7 @@
 	{
 		"modele": "2f3b42a3",
 		"graine": 1,
-		"attendu": "340[min]",
+		"attendu": "{5[h]}{40[min]}",
 		"famille": "juste",
 		"saisie": "340\\min",
 		"juste": true,
@@ -3692,7 +3683,7 @@
 	{
 		"modele": "2f3b42a3",
 		"graine": 1,
-		"attendu": "340[min]",
+		"attendu": "{5[h]}{40[min]}",
 		"famille": "juste-clavier",
 		"saisie": "340 min",
 		"juste": true,
@@ -3701,7 +3692,7 @@
 	{
 		"modele": "2f3b42a3",
 		"graine": 1,
-		"attendu": "340[min]",
+		"attendu": "{5[h]}{40[min]}",
 		"famille": "juste-colle",
 		"saisie": "340min",
 		"juste": true,
@@ -3710,7 +3701,7 @@
 	{
 		"modele": "2f3b42a3",
 		"graine": 1,
-		"attendu": "340[min]",
+		"attendu": "{5[h]}{40[min]}",
 		"famille": "sans-unite",
 		"saisie": "340",
 		"juste": false,
@@ -3719,7 +3710,7 @@
 	{
 		"modele": "2f3b42a3",
 		"graine": 1,
-		"attendu": "340[min]",
+		"attendu": "{5[h]}{40[min]}",
 		"famille": "valeur-fausse",
 		"saisie": "341\\min",
 		"juste": false,
@@ -3728,7 +3719,7 @@
 	{
 		"modele": "2f3b42a3",
 		"graine": 1,
-		"attendu": "340[min]",
+		"attendu": "{5[h]}{40[min]}",
 		"famille": "autre-grandeur",
 		"saisie": "340\\operatorname{\\mathrm{kg}}",
 		"juste": false,
@@ -3737,7 +3728,7 @@
 	{
 		"modele": "2f3b42a3",
 		"graine": 1,
-		"attendu": "340[min]",
+		"attendu": "{5[h]}{40[min]}",
 		"famille": "convertie",
 		"saisie": "20400\\operatorname{\\mathrm{s}}",
 		"juste": true,
@@ -3746,7 +3737,7 @@
 	{
 		"modele": "2f3b42a3",
 		"graine": 1,
-		"attendu": "340[min]",
+		"attendu": "{5[h]}{40[min]}",
 		"famille": "non-convertie",
 		"saisie": "340\\operatorname{\\mathrm{s}}",
 		"juste": false,
@@ -3755,7 +3746,7 @@
 	{
 		"modele": "2f3b42a3",
 		"graine": 1,
-		"attendu": "340[min]",
+		"attendu": "{5[h]}{40[min]}",
 		"famille": "duree-composee",
 		"saisie": "5\\operatorname{\\mathrm{h}}\\,40\\min",
 		"juste": true,
@@ -3764,7 +3755,7 @@
 	{
 		"modele": "2f3b42a3",
 		"graine": 1,
-		"attendu": "340[min]",
+		"attendu": "{5[h]}{40[min]}",
 		"famille": "heures-decimales-arrondie",
 		"saisie": "5{,}67\\operatorname{\\mathrm{h}}",
 		"juste": false,
@@ -3773,7 +3764,7 @@
 	{
 		"modele": "2f3b42a3",
 		"graine": 2,
-		"attendu": "320[min]",
+		"attendu": "{5[h]}{20[min]}",
 		"famille": "juste",
 		"saisie": "320\\min",
 		"juste": true,
@@ -3782,7 +3773,7 @@
 	{
 		"modele": "2f3b42a3",
 		"graine": 2,
-		"attendu": "320[min]",
+		"attendu": "{5[h]}{20[min]}",
 		"famille": "juste-clavier",
 		"saisie": "320 min",
 		"juste": true,
@@ -3791,7 +3782,7 @@
 	{
 		"modele": "2f3b42a3",
 		"graine": 2,
-		"attendu": "320[min]",
+		"attendu": "{5[h]}{20[min]}",
 		"famille": "juste-colle",
 		"saisie": "320min",
 		"juste": true,
@@ -3800,7 +3791,7 @@
 	{
 		"modele": "2f3b42a3",
 		"graine": 2,
-		"attendu": "320[min]",
+		"attendu": "{5[h]}{20[min]}",
 		"famille": "sans-unite",
 		"saisie": "320",
 		"juste": false,
@@ -3809,7 +3800,7 @@
 	{
 		"modele": "2f3b42a3",
 		"graine": 2,
-		"attendu": "320[min]",
+		"attendu": "{5[h]}{20[min]}",
 		"famille": "valeur-fausse",
 		"saisie": "321\\min",
 		"juste": false,
@@ -3818,7 +3809,7 @@
 	{
 		"modele": "2f3b42a3",
 		"graine": 2,
-		"attendu": "320[min]",
+		"attendu": "{5[h]}{20[min]}",
 		"famille": "autre-grandeur",
 		"saisie": "320\\operatorname{\\mathrm{kg}}",
 		"juste": false,
@@ -3827,7 +3818,7 @@
 	{
 		"modele": "2f3b42a3",
 		"graine": 2,
-		"attendu": "320[min]",
+		"attendu": "{5[h]}{20[min]}",
 		"famille": "convertie",
 		"saisie": "19200\\operatorname{\\mathrm{s}}",
 		"juste": true,
@@ -3836,7 +3827,7 @@
 	{
 		"modele": "2f3b42a3",
 		"graine": 2,
-		"attendu": "320[min]",
+		"attendu": "{5[h]}{20[min]}",
 		"famille": "non-convertie",
 		"saisie": "320\\operatorname{\\mathrm{s}}",
 		"juste": false,
@@ -3845,7 +3836,7 @@
 	{
 		"modele": "2f3b42a3",
 		"graine": 2,
-		"attendu": "320[min]",
+		"attendu": "{5[h]}{20[min]}",
 		"famille": "duree-composee",
 		"saisie": "5\\operatorname{\\mathrm{h}}\\,20\\min",
 		"juste": true,
@@ -3854,7 +3845,7 @@
 	{
 		"modele": "2f3b42a3",
 		"graine": 2,
-		"attendu": "320[min]",
+		"attendu": "{5[h]}{20[min]}",
 		"famille": "heures-decimales-arrondie",
 		"saisie": "5{,}33\\operatorname{\\mathrm{h}}",
 		"juste": false,
@@ -3863,7 +3854,7 @@
 	{
 		"modele": "2f3b42a3",
 		"graine": 3,
-		"attendu": "230[min]",
+		"attendu": "{3[h]}{50[min]}",
 		"famille": "juste",
 		"saisie": "230\\min",
 		"juste": true,
@@ -3872,7 +3863,7 @@
 	{
 		"modele": "2f3b42a3",
 		"graine": 3,
-		"attendu": "230[min]",
+		"attendu": "{3[h]}{50[min]}",
 		"famille": "juste-clavier",
 		"saisie": "230 min",
 		"juste": true,
@@ -3881,7 +3872,7 @@
 	{
 		"modele": "2f3b42a3",
 		"graine": 3,
-		"attendu": "230[min]",
+		"attendu": "{3[h]}{50[min]}",
 		"famille": "juste-colle",
 		"saisie": "230min",
 		"juste": true,
@@ -3890,7 +3881,7 @@
 	{
 		"modele": "2f3b42a3",
 		"graine": 3,
-		"attendu": "230[min]",
+		"attendu": "{3[h]}{50[min]}",
 		"famille": "sans-unite",
 		"saisie": "230",
 		"juste": false,
@@ -3899,7 +3890,7 @@
 	{
 		"modele": "2f3b42a3",
 		"graine": 3,
-		"attendu": "230[min]",
+		"attendu": "{3[h]}{50[min]}",
 		"famille": "valeur-fausse",
 		"saisie": "231\\min",
 		"juste": false,
@@ -3908,7 +3899,7 @@
 	{
 		"modele": "2f3b42a3",
 		"graine": 3,
-		"attendu": "230[min]",
+		"attendu": "{3[h]}{50[min]}",
 		"famille": "autre-grandeur",
 		"saisie": "230\\operatorname{\\mathrm{kg}}",
 		"juste": false,
@@ -3917,7 +3908,7 @@
 	{
 		"modele": "2f3b42a3",
 		"graine": 3,
-		"attendu": "230[min]",
+		"attendu": "{3[h]}{50[min]}",
 		"famille": "convertie",
 		"saisie": "13800\\operatorname{\\mathrm{s}}",
 		"juste": true,
@@ -3926,7 +3917,7 @@
 	{
 		"modele": "2f3b42a3",
 		"graine": 3,
-		"attendu": "230[min]",
+		"attendu": "{3[h]}{50[min]}",
 		"famille": "non-convertie",
 		"saisie": "230\\operatorname{\\mathrm{s}}",
 		"juste": false,
@@ -3935,7 +3926,7 @@
 	{
 		"modele": "2f3b42a3",
 		"graine": 3,
-		"attendu": "230[min]",
+		"attendu": "{3[h]}{50[min]}",
 		"famille": "duree-composee",
 		"saisie": "3\\operatorname{\\mathrm{h}}\\,50\\min",
 		"juste": true,
@@ -3944,7 +3935,7 @@
 	{
 		"modele": "2f3b42a3",
 		"graine": 3,
-		"attendu": "230[min]",
+		"attendu": "{3[h]}{50[min]}",
 		"famille": "heures-decimales-arrondie",
 		"saisie": "3{,}83\\operatorname{\\mathrm{h}}",
 		"juste": false,
@@ -3953,71 +3944,8 @@
 	{
 		"modele": "2f3b42a3",
 		"graine": 4,
-		"attendu": "3.5[h]",
+		"attendu": "{3[h]}{30[min]}",
 		"famille": "juste",
-		"saisie": "3{,}5\\operatorname{\\mathrm{h}}",
-		"juste": true,
-		"message": null
-	},
-	{
-		"modele": "2f3b42a3",
-		"graine": 4,
-		"attendu": "3.5[h]",
-		"famille": "juste-clavier",
-		"saisie": "3,5 h",
-		"juste": true,
-		"message": null
-	},
-	{
-		"modele": "2f3b42a3",
-		"graine": 4,
-		"attendu": "3.5[h]",
-		"famille": "juste-colle",
-		"saisie": "3,5h",
-		"juste": true,
-		"message": null
-	},
-	{
-		"modele": "2f3b42a3",
-		"graine": 4,
-		"attendu": "3.5[h]",
-		"famille": "sans-unite",
-		"saisie": "3{,}5",
-		"juste": false,
-		"message": "N’oublie pas l’unité."
-	},
-	{
-		"modele": "2f3b42a3",
-		"graine": 4,
-		"attendu": "3.5[h]",
-		"famille": "valeur-fausse",
-		"saisie": "4{,}5\\operatorname{\\mathrm{h}}",
-		"juste": false,
-		"message": "Les blancs suivants sont incorrects: 1"
-	},
-	{
-		"modele": "2f3b42a3",
-		"graine": 4,
-		"attendu": "3.5[h]",
-		"famille": "autre-grandeur",
-		"saisie": "3{,}5\\operatorname{\\mathrm{kg}}",
-		"juste": false,
-		"message": "Cette unité ne mesure pas la bonne grandeur."
-	},
-	{
-		"modele": "2f3b42a3",
-		"graine": 4,
-		"attendu": "3.5[h]",
-		"famille": "point-decimal",
-		"saisie": "3.5\\operatorname{\\mathrm{h}}",
-		"juste": true,
-		"message": null
-	},
-	{
-		"modele": "2f3b42a3",
-		"graine": 4,
-		"attendu": "3.5[h]",
-		"famille": "convertie",
 		"saisie": "210\\min",
 		"juste": true,
 		"message": null
@@ -4025,16 +3953,70 @@
 	{
 		"modele": "2f3b42a3",
 		"graine": 4,
-		"attendu": "3.5[h]",
-		"famille": "non-convertie",
-		"saisie": "3{,}5\\min",
+		"attendu": "{3[h]}{30[min]}",
+		"famille": "juste-clavier",
+		"saisie": "210 min",
+		"juste": true,
+		"message": null
+	},
+	{
+		"modele": "2f3b42a3",
+		"graine": 4,
+		"attendu": "{3[h]}{30[min]}",
+		"famille": "juste-colle",
+		"saisie": "210min",
+		"juste": true,
+		"message": null
+	},
+	{
+		"modele": "2f3b42a3",
+		"graine": 4,
+		"attendu": "{3[h]}{30[min]}",
+		"famille": "sans-unite",
+		"saisie": "210",
+		"juste": false,
+		"message": "N’oublie pas l’unité."
+	},
+	{
+		"modele": "2f3b42a3",
+		"graine": 4,
+		"attendu": "{3[h]}{30[min]}",
+		"famille": "valeur-fausse",
+		"saisie": "211\\min",
 		"juste": false,
 		"message": "Les blancs suivants sont incorrects: 1"
 	},
 	{
 		"modele": "2f3b42a3",
 		"graine": 4,
-		"attendu": "3.5[h]",
+		"attendu": "{3[h]}{30[min]}",
+		"famille": "autre-grandeur",
+		"saisie": "210\\operatorname{\\mathrm{kg}}",
+		"juste": false,
+		"message": "Cette unité ne mesure pas la bonne grandeur."
+	},
+	{
+		"modele": "2f3b42a3",
+		"graine": 4,
+		"attendu": "{3[h]}{30[min]}",
+		"famille": "convertie",
+		"saisie": "12600\\operatorname{\\mathrm{s}}",
+		"juste": true,
+		"message": "Les chiffres sont mal espacés."
+	},
+	{
+		"modele": "2f3b42a3",
+		"graine": 4,
+		"attendu": "{3[h]}{30[min]}",
+		"famille": "non-convertie",
+		"saisie": "210\\operatorname{\\mathrm{s}}",
+		"juste": false,
+		"message": "Les blancs suivants sont incorrects: 1"
+	},
+	{
+		"modele": "2f3b42a3",
+		"graine": 4,
+		"attendu": "{3[h]}{30[min]}",
 		"famille": "duree-composee",
 		"saisie": "3\\operatorname{\\mathrm{h}}\\,30\\min",
 		"juste": true,
@@ -4043,16 +4025,16 @@
 	{
 		"modele": "2f3b42a3",
 		"graine": 4,
-		"attendu": "3.5[h]",
-		"famille": "heures-decimales-lues-minutes",
-		"saisie": "3\\operatorname{\\mathrm{h}}\\,50\\min",
-		"juste": false,
-		"message": "Les blancs suivants sont incorrects: 1"
+		"attendu": "{3[h]}{30[min]}",
+		"famille": "heures-decimales",
+		"saisie": "3{,}5\\operatorname{\\mathrm{h}}",
+		"juste": true,
+		"message": null
 	},
 	{
 		"modele": "2f3b42a3",
 		"graine": 5,
-		"attendu": "350[min]",
+		"attendu": "{5[h]}{50[min]}",
 		"famille": "juste",
 		"saisie": "350\\min",
 		"juste": true,
@@ -4061,7 +4043,7 @@
 	{
 		"modele": "2f3b42a3",
 		"graine": 5,
-		"attendu": "350[min]",
+		"attendu": "{5[h]}{50[min]}",
 		"famille": "juste-clavier",
 		"saisie": "350 min",
 		"juste": true,
@@ -4070,7 +4052,7 @@
 	{
 		"modele": "2f3b42a3",
 		"graine": 5,
-		"attendu": "350[min]",
+		"attendu": "{5[h]}{50[min]}",
 		"famille": "juste-colle",
 		"saisie": "350min",
 		"juste": true,
@@ -4079,7 +4061,7 @@
 	{
 		"modele": "2f3b42a3",
 		"graine": 5,
-		"attendu": "350[min]",
+		"attendu": "{5[h]}{50[min]}",
 		"famille": "sans-unite",
 		"saisie": "350",
 		"juste": false,
@@ -4088,7 +4070,7 @@
 	{
 		"modele": "2f3b42a3",
 		"graine": 5,
-		"attendu": "350[min]",
+		"attendu": "{5[h]}{50[min]}",
 		"famille": "valeur-fausse",
 		"saisie": "351\\min",
 		"juste": false,
@@ -4097,7 +4079,7 @@
 	{
 		"modele": "2f3b42a3",
 		"graine": 5,
-		"attendu": "350[min]",
+		"attendu": "{5[h]}{50[min]}",
 		"famille": "autre-grandeur",
 		"saisie": "350\\operatorname{\\mathrm{kg}}",
 		"juste": false,
@@ -4106,7 +4088,7 @@
 	{
 		"modele": "2f3b42a3",
 		"graine": 5,
-		"attendu": "350[min]",
+		"attendu": "{5[h]}{50[min]}",
 		"famille": "convertie",
 		"saisie": "21000\\operatorname{\\mathrm{s}}",
 		"juste": true,
@@ -4115,7 +4097,7 @@
 	{
 		"modele": "2f3b42a3",
 		"graine": 5,
-		"attendu": "350[min]",
+		"attendu": "{5[h]}{50[min]}",
 		"famille": "non-convertie",
 		"saisie": "350\\operatorname{\\mathrm{s}}",
 		"juste": false,
@@ -4124,7 +4106,7 @@
 	{
 		"modele": "2f3b42a3",
 		"graine": 5,
-		"attendu": "350[min]",
+		"attendu": "{5[h]}{50[min]}",
 		"famille": "duree-composee",
 		"saisie": "5\\operatorname{\\mathrm{h}}\\,50\\min",
 		"juste": true,
@@ -4133,7 +4115,7 @@
 	{
 		"modele": "2f3b42a3",
 		"graine": 5,
-		"attendu": "350[min]",
+		"attendu": "{5[h]}{50[min]}",
 		"famille": "heures-decimales-arrondie",
 		"saisie": "5{,}83\\operatorname{\\mathrm{h}}",
 		"juste": false,
@@ -4142,7 +4124,7 @@
 	{
 		"modele": "2f3b42a3",
 		"graine": 6,
-		"attendu": "290[min]",
+		"attendu": "{4[h]}{50[min]}",
 		"famille": "juste",
 		"saisie": "290\\min",
 		"juste": true,
@@ -4151,7 +4133,7 @@
 	{
 		"modele": "2f3b42a3",
 		"graine": 6,
-		"attendu": "290[min]",
+		"attendu": "{4[h]}{50[min]}",
 		"famille": "juste-clavier",
 		"saisie": "290 min",
 		"juste": true,
@@ -4160,7 +4142,7 @@
 	{
 		"modele": "2f3b42a3",
 		"graine": 6,
-		"attendu": "290[min]",
+		"attendu": "{4[h]}{50[min]}",
 		"famille": "juste-colle",
 		"saisie": "290min",
 		"juste": true,
@@ -4169,7 +4151,7 @@
 	{
 		"modele": "2f3b42a3",
 		"graine": 6,
-		"attendu": "290[min]",
+		"attendu": "{4[h]}{50[min]}",
 		"famille": "sans-unite",
 		"saisie": "290",
 		"juste": false,
@@ -4178,7 +4160,7 @@
 	{
 		"modele": "2f3b42a3",
 		"graine": 6,
-		"attendu": "290[min]",
+		"attendu": "{4[h]}{50[min]}",
 		"famille": "valeur-fausse",
 		"saisie": "291\\min",
 		"juste": false,
@@ -4187,7 +4169,7 @@
 	{
 		"modele": "2f3b42a3",
 		"graine": 6,
-		"attendu": "290[min]",
+		"attendu": "{4[h]}{50[min]}",
 		"famille": "autre-grandeur",
 		"saisie": "290\\operatorname{\\mathrm{kg}}",
 		"juste": false,
@@ -4196,7 +4178,7 @@
 	{
 		"modele": "2f3b42a3",
 		"graine": 6,
-		"attendu": "290[min]",
+		"attendu": "{4[h]}{50[min]}",
 		"famille": "convertie",
 		"saisie": "17400\\operatorname{\\mathrm{s}}",
 		"juste": true,
@@ -4205,7 +4187,7 @@
 	{
 		"modele": "2f3b42a3",
 		"graine": 6,
-		"attendu": "290[min]",
+		"attendu": "{4[h]}{50[min]}",
 		"famille": "non-convertie",
 		"saisie": "290\\operatorname{\\mathrm{s}}",
 		"juste": false,
@@ -4214,7 +4196,7 @@
 	{
 		"modele": "2f3b42a3",
 		"graine": 6,
-		"attendu": "290[min]",
+		"attendu": "{4[h]}{50[min]}",
 		"famille": "duree-composee",
 		"saisie": "4\\operatorname{\\mathrm{h}}\\,50\\min",
 		"juste": true,
@@ -4223,7 +4205,7 @@
 	{
 		"modele": "2f3b42a3",
 		"graine": 6,
-		"attendu": "290[min]",
+		"attendu": "{4[h]}{50[min]}",
 		"famille": "heures-decimales-arrondie",
 		"saisie": "4{,}83\\operatorname{\\mathrm{h}}",
 		"juste": false,
@@ -4232,7 +4214,7 @@
 	{
 		"modele": "2f3b42a3",
 		"graine": 7,
-		"attendu": "370[min]",
+		"attendu": "{6[h]}{10[min]}",
 		"famille": "juste",
 		"saisie": "370\\min",
 		"juste": true,
@@ -4241,7 +4223,7 @@
 	{
 		"modele": "2f3b42a3",
 		"graine": 7,
-		"attendu": "370[min]",
+		"attendu": "{6[h]}{10[min]}",
 		"famille": "juste-clavier",
 		"saisie": "370 min",
 		"juste": true,
@@ -4250,7 +4232,7 @@
 	{
 		"modele": "2f3b42a3",
 		"graine": 7,
-		"attendu": "370[min]",
+		"attendu": "{6[h]}{10[min]}",
 		"famille": "juste-colle",
 		"saisie": "370min",
 		"juste": true,
@@ -4259,7 +4241,7 @@
 	{
 		"modele": "2f3b42a3",
 		"graine": 7,
-		"attendu": "370[min]",
+		"attendu": "{6[h]}{10[min]}",
 		"famille": "sans-unite",
 		"saisie": "370",
 		"juste": false,
@@ -4268,7 +4250,7 @@
 	{
 		"modele": "2f3b42a3",
 		"graine": 7,
-		"attendu": "370[min]",
+		"attendu": "{6[h]}{10[min]}",
 		"famille": "valeur-fausse",
 		"saisie": "371\\min",
 		"juste": false,
@@ -4277,7 +4259,7 @@
 	{
 		"modele": "2f3b42a3",
 		"graine": 7,
-		"attendu": "370[min]",
+		"attendu": "{6[h]}{10[min]}",
 		"famille": "autre-grandeur",
 		"saisie": "370\\operatorname{\\mathrm{kg}}",
 		"juste": false,
@@ -4286,7 +4268,7 @@
 	{
 		"modele": "2f3b42a3",
 		"graine": 7,
-		"attendu": "370[min]",
+		"attendu": "{6[h]}{10[min]}",
 		"famille": "convertie",
 		"saisie": "22200\\operatorname{\\mathrm{s}}",
 		"juste": true,
@@ -4295,7 +4277,7 @@
 	{
 		"modele": "2f3b42a3",
 		"graine": 7,
-		"attendu": "370[min]",
+		"attendu": "{6[h]}{10[min]}",
 		"famille": "non-convertie",
 		"saisie": "370\\operatorname{\\mathrm{s}}",
 		"juste": false,
@@ -4304,7 +4286,7 @@
 	{
 		"modele": "2f3b42a3",
 		"graine": 7,
-		"attendu": "370[min]",
+		"attendu": "{6[h]}{10[min]}",
 		"famille": "duree-composee",
 		"saisie": "6\\operatorname{\\mathrm{h}}\\,10\\min",
 		"juste": true,
@@ -4313,7 +4295,7 @@
 	{
 		"modele": "2f3b42a3",
 		"graine": 7,
-		"attendu": "370[min]",
+		"attendu": "{6[h]}{10[min]}",
 		"famille": "heures-decimales-arrondie",
 		"saisie": "6{,}17\\operatorname{\\mathrm{h}}",
 		"juste": false,
@@ -4322,7 +4304,7 @@
 	{
 		"modele": "2f3b42a3",
 		"graine": 8,
-		"attendu": "370[min]",
+		"attendu": "{6[h]}{10[min]}",
 		"famille": "juste",
 		"saisie": "370\\min",
 		"juste": true,
@@ -4331,7 +4313,7 @@
 	{
 		"modele": "2f3b42a3",
 		"graine": 8,
-		"attendu": "370[min]",
+		"attendu": "{6[h]}{10[min]}",
 		"famille": "juste-clavier",
 		"saisie": "370 min",
 		"juste": true,
@@ -4340,7 +4322,7 @@
 	{
 		"modele": "2f3b42a3",
 		"graine": 8,
-		"attendu": "370[min]",
+		"attendu": "{6[h]}{10[min]}",
 		"famille": "juste-colle",
 		"saisie": "370min",
 		"juste": true,
@@ -4349,7 +4331,7 @@
 	{
 		"modele": "2f3b42a3",
 		"graine": 8,
-		"attendu": "370[min]",
+		"attendu": "{6[h]}{10[min]}",
 		"famille": "sans-unite",
 		"saisie": "370",
 		"juste": false,
@@ -4358,7 +4340,7 @@
 	{
 		"modele": "2f3b42a3",
 		"graine": 8,
-		"attendu": "370[min]",
+		"attendu": "{6[h]}{10[min]}",
 		"famille": "valeur-fausse",
 		"saisie": "371\\min",
 		"juste": false,
@@ -4367,7 +4349,7 @@
 	{
 		"modele": "2f3b42a3",
 		"graine": 8,
-		"attendu": "370[min]",
+		"attendu": "{6[h]}{10[min]}",
 		"famille": "autre-grandeur",
 		"saisie": "370\\operatorname{\\mathrm{kg}}",
 		"juste": false,
@@ -4376,7 +4358,7 @@
 	{
 		"modele": "2f3b42a3",
 		"graine": 8,
-		"attendu": "370[min]",
+		"attendu": "{6[h]}{10[min]}",
 		"famille": "convertie",
 		"saisie": "22200\\operatorname{\\mathrm{s}}",
 		"juste": true,
@@ -4385,7 +4367,7 @@
 	{
 		"modele": "2f3b42a3",
 		"graine": 8,
-		"attendu": "370[min]",
+		"attendu": "{6[h]}{10[min]}",
 		"famille": "non-convertie",
 		"saisie": "370\\operatorname{\\mathrm{s}}",
 		"juste": false,
@@ -4394,7 +4376,7 @@
 	{
 		"modele": "2f3b42a3",
 		"graine": 8,
-		"attendu": "370[min]",
+		"attendu": "{6[h]}{10[min]}",
 		"famille": "duree-composee",
 		"saisie": "6\\operatorname{\\mathrm{h}}\\,10\\min",
 		"juste": true,
@@ -4403,7 +4385,7 @@
 	{
 		"modele": "2f3b42a3",
 		"graine": 8,
-		"attendu": "370[min]",
+		"attendu": "{6[h]}{10[min]}",
 		"famille": "heures-decimales-arrondie",
 		"saisie": "6{,}17\\operatorname{\\mathrm{h}}",
 		"juste": false,
@@ -6860,162 +6842,144 @@
 	{
 		"modele": "64e55fc7",
 		"graine": 3,
-		"attendu": "1.005[kL]",
+		"attendu": "1005[L]",
 		"famille": "juste",
-		"saisie": "1{,}005\\operatorname{\\mathrm{kL}}",
+		"saisie": "1005\\operatorname{\\mathrm{L}}",
 		"juste": true,
 		"message": null
 	},
 	{
 		"modele": "64e55fc7",
 		"graine": 3,
-		"attendu": "1.005[kL]",
+		"attendu": "1005[L]",
 		"famille": "juste-clavier",
-		"saisie": "1,005 kL",
+		"saisie": "1005 L",
 		"juste": true,
 		"message": null
 	},
 	{
 		"modele": "64e55fc7",
 		"graine": 3,
-		"attendu": "1.005[kL]",
+		"attendu": "1005[L]",
 		"famille": "juste-colle",
-		"saisie": "1,005kL",
+		"saisie": "1005L",
 		"juste": true,
 		"message": null
 	},
 	{
 		"modele": "64e55fc7",
 		"graine": 3,
-		"attendu": "1.005[kL]",
+		"attendu": "1005[L]",
 		"famille": "sans-unite",
-		"saisie": "1{,}005",
+		"saisie": "1005",
 		"juste": false,
 		"message": "N’oublie pas l’unité."
 	},
 	{
 		"modele": "64e55fc7",
 		"graine": 3,
-		"attendu": "1.005[kL]",
+		"attendu": "1005[L]",
 		"famille": "valeur-fausse",
-		"saisie": "2{,}005\\operatorname{\\mathrm{kL}}",
+		"saisie": "1006\\operatorname{\\mathrm{L}}",
 		"juste": false,
 		"message": "Les blancs suivants sont incorrects: 1"
 	},
 	{
 		"modele": "64e55fc7",
 		"graine": 3,
-		"attendu": "1.005[kL]",
+		"attendu": "1005[L]",
 		"famille": "autre-grandeur",
-		"saisie": "1{,}005\\operatorname{\\mathrm{kg}}",
+		"saisie": "1005\\operatorname{\\mathrm{kg}}",
 		"juste": false,
 		"message": "Cette unité ne mesure pas la bonne grandeur."
 	},
 	{
 		"modele": "64e55fc7",
 		"graine": 3,
-		"attendu": "1.005[kL]",
-		"famille": "point-decimal",
-		"saisie": "1.005\\operatorname{\\mathrm{kL}}",
-		"juste": true,
-		"message": null
-	},
-	{
-		"modele": "64e55fc7",
-		"graine": 3,
-		"attendu": "1.005[kL]",
+		"attendu": "1005[L]",
 		"famille": "convertie",
-		"saisie": "10{,}05\\operatorname{\\mathrm{hL}}",
+		"saisie": "10050\\operatorname{\\mathrm{dL}}",
 		"juste": true,
-		"message": null
+		"message": "Les chiffres sont mal espacés."
 	},
 	{
 		"modele": "64e55fc7",
 		"graine": 3,
-		"attendu": "1.005[kL]",
+		"attendu": "1005[L]",
 		"famille": "non-convertie",
-		"saisie": "1{,}005\\operatorname{\\mathrm{hL}}",
+		"saisie": "1005\\operatorname{\\mathrm{dL}}",
 		"juste": false,
 		"message": "Les blancs suivants sont incorrects: 1"
 	},
 	{
 		"modele": "64e55fc7",
 		"graine": 4,
-		"attendu": "3.002[kL]",
+		"attendu": "3002[L]",
 		"famille": "juste",
-		"saisie": "3{,}002\\operatorname{\\mathrm{kL}}",
+		"saisie": "3002\\operatorname{\\mathrm{L}}",
 		"juste": true,
 		"message": null
 	},
 	{
 		"modele": "64e55fc7",
 		"graine": 4,
-		"attendu": "3.002[kL]",
+		"attendu": "3002[L]",
 		"famille": "juste-clavier",
-		"saisie": "3,002 kL",
+		"saisie": "3002 L",
 		"juste": true,
 		"message": null
 	},
 	{
 		"modele": "64e55fc7",
 		"graine": 4,
-		"attendu": "3.002[kL]",
+		"attendu": "3002[L]",
 		"famille": "juste-colle",
-		"saisie": "3,002kL",
+		"saisie": "3002L",
 		"juste": true,
 		"message": null
 	},
 	{
 		"modele": "64e55fc7",
 		"graine": 4,
-		"attendu": "3.002[kL]",
+		"attendu": "3002[L]",
 		"famille": "sans-unite",
-		"saisie": "3{,}002",
+		"saisie": "3002",
 		"juste": false,
 		"message": "N’oublie pas l’unité."
 	},
 	{
 		"modele": "64e55fc7",
 		"graine": 4,
-		"attendu": "3.002[kL]",
+		"attendu": "3002[L]",
 		"famille": "valeur-fausse",
-		"saisie": "4{,}002\\operatorname{\\mathrm{kL}}",
+		"saisie": "3003\\operatorname{\\mathrm{L}}",
 		"juste": false,
 		"message": "Les blancs suivants sont incorrects: 1"
 	},
 	{
 		"modele": "64e55fc7",
 		"graine": 4,
-		"attendu": "3.002[kL]",
+		"attendu": "3002[L]",
 		"famille": "autre-grandeur",
-		"saisie": "3{,}002\\operatorname{\\mathrm{kg}}",
+		"saisie": "3002\\operatorname{\\mathrm{kg}}",
 		"juste": false,
 		"message": "Cette unité ne mesure pas la bonne grandeur."
 	},
 	{
 		"modele": "64e55fc7",
 		"graine": 4,
-		"attendu": "3.002[kL]",
-		"famille": "point-decimal",
-		"saisie": "3.002\\operatorname{\\mathrm{kL}}",
-		"juste": true,
-		"message": null
-	},
-	{
-		"modele": "64e55fc7",
-		"graine": 4,
-		"attendu": "3.002[kL]",
+		"attendu": "3002[L]",
 		"famille": "convertie",
-		"saisie": "30{,}02\\operatorname{\\mathrm{hL}}",
+		"saisie": "30020\\operatorname{\\mathrm{dL}}",
 		"juste": true,
-		"message": null
+		"message": "Les chiffres sont mal espacés."
 	},
 	{
 		"modele": "64e55fc7",
 		"graine": 4,
-		"attendu": "3.002[kL]",
+		"attendu": "3002[L]",
 		"famille": "non-convertie",
-		"saisie": "3{,}002\\operatorname{\\mathrm{hL}}",
+		"saisie": "3002\\operatorname{\\mathrm{dL}}",
 		"juste": false,
 		"message": "Les blancs suivants sont incorrects: 1"
 	},
@@ -7094,81 +7058,72 @@
 	{
 		"modele": "64e55fc7",
 		"graine": 6,
-		"attendu": "1.06[hg]",
+		"attendu": "106[g]",
 		"famille": "juste",
-		"saisie": "1{,}06\\operatorname{\\mathrm{hg}}",
+		"saisie": "106\\operatorname{\\mathrm{g}}",
 		"juste": true,
 		"message": null
 	},
 	{
 		"modele": "64e55fc7",
 		"graine": 6,
-		"attendu": "1.06[hg]",
+		"attendu": "106[g]",
 		"famille": "juste-clavier",
-		"saisie": "1,06 hg",
+		"saisie": "106 g",
 		"juste": true,
 		"message": null
 	},
 	{
 		"modele": "64e55fc7",
 		"graine": 6,
-		"attendu": "1.06[hg]",
+		"attendu": "106[g]",
 		"famille": "juste-colle",
-		"saisie": "1,06hg",
+		"saisie": "106g",
 		"juste": true,
 		"message": null
 	},
 	{
 		"modele": "64e55fc7",
 		"graine": 6,
-		"attendu": "1.06[hg]",
+		"attendu": "106[g]",
 		"famille": "sans-unite",
-		"saisie": "1{,}06",
+		"saisie": "106",
 		"juste": false,
 		"message": "N’oublie pas l’unité."
 	},
 	{
 		"modele": "64e55fc7",
 		"graine": 6,
-		"attendu": "1.06[hg]",
+		"attendu": "106[g]",
 		"famille": "valeur-fausse",
-		"saisie": "2{,}06\\operatorname{\\mathrm{hg}}",
+		"saisie": "107\\operatorname{\\mathrm{g}}",
 		"juste": false,
 		"message": "Les blancs suivants sont incorrects: 1"
 	},
 	{
 		"modele": "64e55fc7",
 		"graine": 6,
-		"attendu": "1.06[hg]",
+		"attendu": "106[g]",
 		"famille": "autre-grandeur",
-		"saisie": "1{,}06\\operatorname{\\mathrm{m}}",
+		"saisie": "106\\operatorname{\\mathrm{m}}",
 		"juste": false,
 		"message": "Cette unité ne mesure pas la bonne grandeur."
 	},
 	{
 		"modele": "64e55fc7",
 		"graine": 6,
-		"attendu": "1.06[hg]",
-		"famille": "point-decimal",
-		"saisie": "1.06\\operatorname{\\mathrm{hg}}",
-		"juste": true,
-		"message": null
-	},
-	{
-		"modele": "64e55fc7",
-		"graine": 6,
-		"attendu": "1.06[hg]",
+		"attendu": "106[g]",
 		"famille": "convertie",
-		"saisie": "10{,}6\\operatorname{\\mathrm{dag}}",
+		"saisie": "1060\\operatorname{\\mathrm{dg}}",
 		"juste": true,
 		"message": null
 	},
 	{
 		"modele": "64e55fc7",
 		"graine": 6,
-		"attendu": "1.06[hg]",
+		"attendu": "106[g]",
 		"famille": "non-convertie",
-		"saisie": "1{,}06\\operatorname{\\mathrm{dag}}",
+		"saisie": "106\\operatorname{\\mathrm{dg}}",
 		"juste": false,
 		"message": "Les blancs suivants sont incorrects: 1"
 	},
@@ -9803,7 +9758,7 @@
 	{
 		"modele": "75956b22",
 		"graine": 1,
-		"attendu": "356[min]",
+		"attendu": "{5[h]}{56[min]}",
 		"famille": "juste",
 		"saisie": "356\\min",
 		"juste": true,
@@ -9812,7 +9767,7 @@
 	{
 		"modele": "75956b22",
 		"graine": 1,
-		"attendu": "356[min]",
+		"attendu": "{5[h]}{56[min]}",
 		"famille": "juste-clavier",
 		"saisie": "356 min",
 		"juste": true,
@@ -9821,7 +9776,7 @@
 	{
 		"modele": "75956b22",
 		"graine": 1,
-		"attendu": "356[min]",
+		"attendu": "{5[h]}{56[min]}",
 		"famille": "juste-colle",
 		"saisie": "356min",
 		"juste": true,
@@ -9830,7 +9785,7 @@
 	{
 		"modele": "75956b22",
 		"graine": 1,
-		"attendu": "356[min]",
+		"attendu": "{5[h]}{56[min]}",
 		"famille": "sans-unite",
 		"saisie": "356",
 		"juste": false,
@@ -9839,7 +9794,7 @@
 	{
 		"modele": "75956b22",
 		"graine": 1,
-		"attendu": "356[min]",
+		"attendu": "{5[h]}{56[min]}",
 		"famille": "valeur-fausse",
 		"saisie": "357\\min",
 		"juste": false,
@@ -9848,7 +9803,7 @@
 	{
 		"modele": "75956b22",
 		"graine": 1,
-		"attendu": "356[min]",
+		"attendu": "{5[h]}{56[min]}",
 		"famille": "autre-grandeur",
 		"saisie": "356\\operatorname{\\mathrm{kg}}",
 		"juste": false,
@@ -9857,7 +9812,7 @@
 	{
 		"modele": "75956b22",
 		"graine": 1,
-		"attendu": "356[min]",
+		"attendu": "{5[h]}{56[min]}",
 		"famille": "convertie",
 		"saisie": "21360\\operatorname{\\mathrm{s}}",
 		"juste": true,
@@ -9866,7 +9821,7 @@
 	{
 		"modele": "75956b22",
 		"graine": 1,
-		"attendu": "356[min]",
+		"attendu": "{5[h]}{56[min]}",
 		"famille": "non-convertie",
 		"saisie": "356\\operatorname{\\mathrm{s}}",
 		"juste": false,
@@ -9875,7 +9830,7 @@
 	{
 		"modele": "75956b22",
 		"graine": 1,
-		"attendu": "356[min]",
+		"attendu": "{5[h]}{56[min]}",
 		"famille": "duree-composee",
 		"saisie": "5\\operatorname{\\mathrm{h}}\\,56\\min",
 		"juste": true,
@@ -9884,7 +9839,7 @@
 	{
 		"modele": "75956b22",
 		"graine": 1,
-		"attendu": "356[min]",
+		"attendu": "{5[h]}{56[min]}",
 		"famille": "heures-decimales-arrondie",
 		"saisie": "5{,}93\\operatorname{\\mathrm{h}}",
 		"juste": false,
@@ -9893,71 +9848,8 @@
 	{
 		"modele": "75956b22",
 		"graine": 2,
-		"attendu": "5.4[h]",
+		"attendu": "{5[h]}{24[min]}",
 		"famille": "juste",
-		"saisie": "5{,}4\\operatorname{\\mathrm{h}}",
-		"juste": true,
-		"message": null
-	},
-	{
-		"modele": "75956b22",
-		"graine": 2,
-		"attendu": "5.4[h]",
-		"famille": "juste-clavier",
-		"saisie": "5,4 h",
-		"juste": true,
-		"message": null
-	},
-	{
-		"modele": "75956b22",
-		"graine": 2,
-		"attendu": "5.4[h]",
-		"famille": "juste-colle",
-		"saisie": "5,4h",
-		"juste": true,
-		"message": null
-	},
-	{
-		"modele": "75956b22",
-		"graine": 2,
-		"attendu": "5.4[h]",
-		"famille": "sans-unite",
-		"saisie": "5{,}4",
-		"juste": false,
-		"message": "N’oublie pas l’unité."
-	},
-	{
-		"modele": "75956b22",
-		"graine": 2,
-		"attendu": "5.4[h]",
-		"famille": "valeur-fausse",
-		"saisie": "6{,}4\\operatorname{\\mathrm{h}}",
-		"juste": false,
-		"message": "Les blancs suivants sont incorrects: 1"
-	},
-	{
-		"modele": "75956b22",
-		"graine": 2,
-		"attendu": "5.4[h]",
-		"famille": "autre-grandeur",
-		"saisie": "5{,}4\\operatorname{\\mathrm{kg}}",
-		"juste": false,
-		"message": "Cette unité ne mesure pas la bonne grandeur."
-	},
-	{
-		"modele": "75956b22",
-		"graine": 2,
-		"attendu": "5.4[h]",
-		"famille": "point-decimal",
-		"saisie": "5.4\\operatorname{\\mathrm{h}}",
-		"juste": true,
-		"message": null
-	},
-	{
-		"modele": "75956b22",
-		"graine": 2,
-		"attendu": "5.4[h]",
-		"famille": "convertie",
 		"saisie": "324\\min",
 		"juste": true,
 		"message": null
@@ -9965,16 +9857,70 @@
 	{
 		"modele": "75956b22",
 		"graine": 2,
-		"attendu": "5.4[h]",
-		"famille": "non-convertie",
-		"saisie": "5{,}4\\min",
+		"attendu": "{5[h]}{24[min]}",
+		"famille": "juste-clavier",
+		"saisie": "324 min",
+		"juste": true,
+		"message": null
+	},
+	{
+		"modele": "75956b22",
+		"graine": 2,
+		"attendu": "{5[h]}{24[min]}",
+		"famille": "juste-colle",
+		"saisie": "324min",
+		"juste": true,
+		"message": null
+	},
+	{
+		"modele": "75956b22",
+		"graine": 2,
+		"attendu": "{5[h]}{24[min]}",
+		"famille": "sans-unite",
+		"saisie": "324",
+		"juste": false,
+		"message": "N’oublie pas l’unité."
+	},
+	{
+		"modele": "75956b22",
+		"graine": 2,
+		"attendu": "{5[h]}{24[min]}",
+		"famille": "valeur-fausse",
+		"saisie": "325\\min",
 		"juste": false,
 		"message": "Les blancs suivants sont incorrects: 1"
 	},
 	{
 		"modele": "75956b22",
 		"graine": 2,
-		"attendu": "5.4[h]",
+		"attendu": "{5[h]}{24[min]}",
+		"famille": "autre-grandeur",
+		"saisie": "324\\operatorname{\\mathrm{kg}}",
+		"juste": false,
+		"message": "Cette unité ne mesure pas la bonne grandeur."
+	},
+	{
+		"modele": "75956b22",
+		"graine": 2,
+		"attendu": "{5[h]}{24[min]}",
+		"famille": "convertie",
+		"saisie": "19440\\operatorname{\\mathrm{s}}",
+		"juste": true,
+		"message": "Les chiffres sont mal espacés."
+	},
+	{
+		"modele": "75956b22",
+		"graine": 2,
+		"attendu": "{5[h]}{24[min]}",
+		"famille": "non-convertie",
+		"saisie": "324\\operatorname{\\mathrm{s}}",
+		"juste": false,
+		"message": "Les blancs suivants sont incorrects: 1"
+	},
+	{
+		"modele": "75956b22",
+		"graine": 2,
+		"attendu": "{5[h]}{24[min]}",
 		"famille": "duree-composee",
 		"saisie": "5\\operatorname{\\mathrm{h}}\\,24\\min",
 		"juste": true,
@@ -9983,80 +9929,17 @@
 	{
 		"modele": "75956b22",
 		"graine": 2,
-		"attendu": "5.4[h]",
-		"famille": "heures-decimales-lues-minutes",
-		"saisie": "5\\operatorname{\\mathrm{h}}\\,40\\min",
-		"juste": false,
-		"message": "Les blancs suivants sont incorrects: 1"
+		"attendu": "{5[h]}{24[min]}",
+		"famille": "heures-decimales",
+		"saisie": "5{,}4\\operatorname{\\mathrm{h}}",
+		"juste": true,
+		"message": null
 	},
 	{
 		"modele": "75956b22",
 		"graine": 3,
-		"attendu": "3.85[h]",
+		"attendu": "{3[h]}{51[min]}",
 		"famille": "juste",
-		"saisie": "3{,}85\\operatorname{\\mathrm{h}}",
-		"juste": true,
-		"message": null
-	},
-	{
-		"modele": "75956b22",
-		"graine": 3,
-		"attendu": "3.85[h]",
-		"famille": "juste-clavier",
-		"saisie": "3,85 h",
-		"juste": true,
-		"message": null
-	},
-	{
-		"modele": "75956b22",
-		"graine": 3,
-		"attendu": "3.85[h]",
-		"famille": "juste-colle",
-		"saisie": "3,85h",
-		"juste": true,
-		"message": null
-	},
-	{
-		"modele": "75956b22",
-		"graine": 3,
-		"attendu": "3.85[h]",
-		"famille": "sans-unite",
-		"saisie": "3{,}85",
-		"juste": false,
-		"message": "N’oublie pas l’unité."
-	},
-	{
-		"modele": "75956b22",
-		"graine": 3,
-		"attendu": "3.85[h]",
-		"famille": "valeur-fausse",
-		"saisie": "4{,}85\\operatorname{\\mathrm{h}}",
-		"juste": false,
-		"message": "Les blancs suivants sont incorrects: 1"
-	},
-	{
-		"modele": "75956b22",
-		"graine": 3,
-		"attendu": "3.85[h]",
-		"famille": "autre-grandeur",
-		"saisie": "3{,}85\\operatorname{\\mathrm{kg}}",
-		"juste": false,
-		"message": "Cette unité ne mesure pas la bonne grandeur."
-	},
-	{
-		"modele": "75956b22",
-		"graine": 3,
-		"attendu": "3.85[h]",
-		"famille": "point-decimal",
-		"saisie": "3.85\\operatorname{\\mathrm{h}}",
-		"juste": true,
-		"message": null
-	},
-	{
-		"modele": "75956b22",
-		"graine": 3,
-		"attendu": "3.85[h]",
-		"famille": "convertie",
 		"saisie": "231\\min",
 		"juste": true,
 		"message": null
@@ -10064,16 +9947,70 @@
 	{
 		"modele": "75956b22",
 		"graine": 3,
-		"attendu": "3.85[h]",
-		"famille": "non-convertie",
-		"saisie": "3{,}85\\min",
+		"attendu": "{3[h]}{51[min]}",
+		"famille": "juste-clavier",
+		"saisie": "231 min",
+		"juste": true,
+		"message": null
+	},
+	{
+		"modele": "75956b22",
+		"graine": 3,
+		"attendu": "{3[h]}{51[min]}",
+		"famille": "juste-colle",
+		"saisie": "231min",
+		"juste": true,
+		"message": null
+	},
+	{
+		"modele": "75956b22",
+		"graine": 3,
+		"attendu": "{3[h]}{51[min]}",
+		"famille": "sans-unite",
+		"saisie": "231",
+		"juste": false,
+		"message": "N’oublie pas l’unité."
+	},
+	{
+		"modele": "75956b22",
+		"graine": 3,
+		"attendu": "{3[h]}{51[min]}",
+		"famille": "valeur-fausse",
+		"saisie": "232\\min",
 		"juste": false,
 		"message": "Les blancs suivants sont incorrects: 1"
 	},
 	{
 		"modele": "75956b22",
 		"graine": 3,
-		"attendu": "3.85[h]",
+		"attendu": "{3[h]}{51[min]}",
+		"famille": "autre-grandeur",
+		"saisie": "231\\operatorname{\\mathrm{kg}}",
+		"juste": false,
+		"message": "Cette unité ne mesure pas la bonne grandeur."
+	},
+	{
+		"modele": "75956b22",
+		"graine": 3,
+		"attendu": "{3[h]}{51[min]}",
+		"famille": "convertie",
+		"saisie": "13860\\operatorname{\\mathrm{s}}",
+		"juste": true,
+		"message": "Les chiffres sont mal espacés."
+	},
+	{
+		"modele": "75956b22",
+		"graine": 3,
+		"attendu": "{3[h]}{51[min]}",
+		"famille": "non-convertie",
+		"saisie": "231\\operatorname{\\mathrm{s}}",
+		"juste": false,
+		"message": "Les blancs suivants sont incorrects: 1"
+	},
+	{
+		"modele": "75956b22",
+		"graine": 3,
+		"attendu": "{3[h]}{51[min]}",
 		"famille": "duree-composee",
 		"saisie": "3\\operatorname{\\mathrm{h}}\\,51\\min",
 		"juste": true,
@@ -10082,16 +10019,16 @@
 	{
 		"modele": "75956b22",
 		"graine": 3,
-		"attendu": "3.85[h]",
-		"famille": "heures-decimales-lues-minutes",
-		"saisie": "3\\operatorname{\\mathrm{h}}\\,85\\min",
-		"juste": false,
-		"message": "Les blancs suivants sont incorrects: 1"
+		"attendu": "{3[h]}{51[min]}",
+		"famille": "heures-decimales",
+		"saisie": "3{,}85\\operatorname{\\mathrm{h}}",
+		"juste": true,
+		"message": null
 	},
 	{
 		"modele": "75956b22",
 		"graine": 4,
-		"attendu": "199[min]",
+		"attendu": "{3[h]}{19[min]}",
 		"famille": "juste",
 		"saisie": "199\\min",
 		"juste": true,
@@ -10100,7 +10037,7 @@
 	{
 		"modele": "75956b22",
 		"graine": 4,
-		"attendu": "199[min]",
+		"attendu": "{3[h]}{19[min]}",
 		"famille": "juste-clavier",
 		"saisie": "199 min",
 		"juste": true,
@@ -10109,7 +10046,7 @@
 	{
 		"modele": "75956b22",
 		"graine": 4,
-		"attendu": "199[min]",
+		"attendu": "{3[h]}{19[min]}",
 		"famille": "juste-colle",
 		"saisie": "199min",
 		"juste": true,
@@ -10118,7 +10055,7 @@
 	{
 		"modele": "75956b22",
 		"graine": 4,
-		"attendu": "199[min]",
+		"attendu": "{3[h]}{19[min]}",
 		"famille": "sans-unite",
 		"saisie": "199",
 		"juste": false,
@@ -10127,7 +10064,7 @@
 	{
 		"modele": "75956b22",
 		"graine": 4,
-		"attendu": "199[min]",
+		"attendu": "{3[h]}{19[min]}",
 		"famille": "valeur-fausse",
 		"saisie": "200\\min",
 		"juste": false,
@@ -10136,7 +10073,7 @@
 	{
 		"modele": "75956b22",
 		"graine": 4,
-		"attendu": "199[min]",
+		"attendu": "{3[h]}{19[min]}",
 		"famille": "autre-grandeur",
 		"saisie": "199\\operatorname{\\mathrm{kg}}",
 		"juste": false,
@@ -10145,7 +10082,7 @@
 	{
 		"modele": "75956b22",
 		"graine": 4,
-		"attendu": "199[min]",
+		"attendu": "{3[h]}{19[min]}",
 		"famille": "convertie",
 		"saisie": "11940\\operatorname{\\mathrm{s}}",
 		"juste": true,
@@ -10154,7 +10091,7 @@
 	{
 		"modele": "75956b22",
 		"graine": 4,
-		"attendu": "199[min]",
+		"attendu": "{3[h]}{19[min]}",
 		"famille": "non-convertie",
 		"saisie": "199\\operatorname{\\mathrm{s}}",
 		"juste": false,
@@ -10163,7 +10100,7 @@
 	{
 		"modele": "75956b22",
 		"graine": 4,
-		"attendu": "199[min]",
+		"attendu": "{3[h]}{19[min]}",
 		"famille": "duree-composee",
 		"saisie": "3\\operatorname{\\mathrm{h}}\\,19\\min",
 		"juste": true,
@@ -10172,7 +10109,7 @@
 	{
 		"modele": "75956b22",
 		"graine": 4,
-		"attendu": "199[min]",
+		"attendu": "{3[h]}{19[min]}",
 		"famille": "heures-decimales-arrondie",
 		"saisie": "3{,}32\\operatorname{\\mathrm{h}}",
 		"juste": false,
@@ -10181,7 +10118,7 @@
 	{
 		"modele": "75956b22",
 		"graine": 5,
-		"attendu": "343[min]",
+		"attendu": "{5[h]}{43[min]}",
 		"famille": "juste",
 		"saisie": "343\\min",
 		"juste": true,
@@ -10190,7 +10127,7 @@
 	{
 		"modele": "75956b22",
 		"graine": 5,
-		"attendu": "343[min]",
+		"attendu": "{5[h]}{43[min]}",
 		"famille": "juste-clavier",
 		"saisie": "343 min",
 		"juste": true,
@@ -10199,7 +10136,7 @@
 	{
 		"modele": "75956b22",
 		"graine": 5,
-		"attendu": "343[min]",
+		"attendu": "{5[h]}{43[min]}",
 		"famille": "juste-colle",
 		"saisie": "343min",
 		"juste": true,
@@ -10208,7 +10145,7 @@
 	{
 		"modele": "75956b22",
 		"graine": 5,
-		"attendu": "343[min]",
+		"attendu": "{5[h]}{43[min]}",
 		"famille": "sans-unite",
 		"saisie": "343",
 		"juste": false,
@@ -10217,7 +10154,7 @@
 	{
 		"modele": "75956b22",
 		"graine": 5,
-		"attendu": "343[min]",
+		"attendu": "{5[h]}{43[min]}",
 		"famille": "valeur-fausse",
 		"saisie": "344\\min",
 		"juste": false,
@@ -10226,7 +10163,7 @@
 	{
 		"modele": "75956b22",
 		"graine": 5,
-		"attendu": "343[min]",
+		"attendu": "{5[h]}{43[min]}",
 		"famille": "autre-grandeur",
 		"saisie": "343\\operatorname{\\mathrm{kg}}",
 		"juste": false,
@@ -10235,7 +10172,7 @@
 	{
 		"modele": "75956b22",
 		"graine": 5,
-		"attendu": "343[min]",
+		"attendu": "{5[h]}{43[min]}",
 		"famille": "convertie",
 		"saisie": "20580\\operatorname{\\mathrm{s}}",
 		"juste": true,
@@ -10244,7 +10181,7 @@
 	{
 		"modele": "75956b22",
 		"graine": 5,
-		"attendu": "343[min]",
+		"attendu": "{5[h]}{43[min]}",
 		"famille": "non-convertie",
 		"saisie": "343\\operatorname{\\mathrm{s}}",
 		"juste": false,
@@ -10253,7 +10190,7 @@
 	{
 		"modele": "75956b22",
 		"graine": 5,
-		"attendu": "343[min]",
+		"attendu": "{5[h]}{43[min]}",
 		"famille": "duree-composee",
 		"saisie": "5\\operatorname{\\mathrm{h}}\\,43\\min",
 		"juste": true,
@@ -10262,7 +10199,7 @@
 	{
 		"modele": "75956b22",
 		"graine": 5,
-		"attendu": "343[min]",
+		"attendu": "{5[h]}{43[min]}",
 		"famille": "heures-decimales-arrondie",
 		"saisie": "5{,}72\\operatorname{\\mathrm{h}}",
 		"juste": false,
@@ -10271,7 +10208,7 @@
 	{
 		"modele": "75956b22",
 		"graine": 6,
-		"attendu": "284[min]",
+		"attendu": "{4[h]}{44[min]}",
 		"famille": "juste",
 		"saisie": "284\\min",
 		"juste": true,
@@ -10280,7 +10217,7 @@
 	{
 		"modele": "75956b22",
 		"graine": 6,
-		"attendu": "284[min]",
+		"attendu": "{4[h]}{44[min]}",
 		"famille": "juste-clavier",
 		"saisie": "284 min",
 		"juste": true,
@@ -10289,7 +10226,7 @@
 	{
 		"modele": "75956b22",
 		"graine": 6,
-		"attendu": "284[min]",
+		"attendu": "{4[h]}{44[min]}",
 		"famille": "juste-colle",
 		"saisie": "284min",
 		"juste": true,
@@ -10298,7 +10235,7 @@
 	{
 		"modele": "75956b22",
 		"graine": 6,
-		"attendu": "284[min]",
+		"attendu": "{4[h]}{44[min]}",
 		"famille": "sans-unite",
 		"saisie": "284",
 		"juste": false,
@@ -10307,7 +10244,7 @@
 	{
 		"modele": "75956b22",
 		"graine": 6,
-		"attendu": "284[min]",
+		"attendu": "{4[h]}{44[min]}",
 		"famille": "valeur-fausse",
 		"saisie": "285\\min",
 		"juste": false,
@@ -10316,7 +10253,7 @@
 	{
 		"modele": "75956b22",
 		"graine": 6,
-		"attendu": "284[min]",
+		"attendu": "{4[h]}{44[min]}",
 		"famille": "autre-grandeur",
 		"saisie": "284\\operatorname{\\mathrm{kg}}",
 		"juste": false,
@@ -10325,7 +10262,7 @@
 	{
 		"modele": "75956b22",
 		"graine": 6,
-		"attendu": "284[min]",
+		"attendu": "{4[h]}{44[min]}",
 		"famille": "convertie",
 		"saisie": "17040\\operatorname{\\mathrm{s}}",
 		"juste": true,
@@ -10334,7 +10271,7 @@
 	{
 		"modele": "75956b22",
 		"graine": 6,
-		"attendu": "284[min]",
+		"attendu": "{4[h]}{44[min]}",
 		"famille": "non-convertie",
 		"saisie": "284\\operatorname{\\mathrm{s}}",
 		"juste": false,
@@ -10343,7 +10280,7 @@
 	{
 		"modele": "75956b22",
 		"graine": 6,
-		"attendu": "284[min]",
+		"attendu": "{4[h]}{44[min]}",
 		"famille": "duree-composee",
 		"saisie": "4\\operatorname{\\mathrm{h}}\\,44\\min",
 		"juste": true,
@@ -10352,7 +10289,7 @@
 	{
 		"modele": "75956b22",
 		"graine": 6,
-		"attendu": "284[min]",
+		"attendu": "{4[h]}{44[min]}",
 		"famille": "heures-decimales-arrondie",
 		"saisie": "4{,}73\\operatorname{\\mathrm{h}}",
 		"juste": false,
@@ -10361,7 +10298,7 @@
 	{
 		"modele": "75956b22",
 		"graine": 7,
-		"attendu": "373[min]",
+		"attendu": "{6[h]}{13[min]}",
 		"famille": "juste",
 		"saisie": "373\\min",
 		"juste": true,
@@ -10370,7 +10307,7 @@
 	{
 		"modele": "75956b22",
 		"graine": 7,
-		"attendu": "373[min]",
+		"attendu": "{6[h]}{13[min]}",
 		"famille": "juste-clavier",
 		"saisie": "373 min",
 		"juste": true,
@@ -10379,7 +10316,7 @@
 	{
 		"modele": "75956b22",
 		"graine": 7,
-		"attendu": "373[min]",
+		"attendu": "{6[h]}{13[min]}",
 		"famille": "juste-colle",
 		"saisie": "373min",
 		"juste": true,
@@ -10388,7 +10325,7 @@
 	{
 		"modele": "75956b22",
 		"graine": 7,
-		"attendu": "373[min]",
+		"attendu": "{6[h]}{13[min]}",
 		"famille": "sans-unite",
 		"saisie": "373",
 		"juste": false,
@@ -10397,7 +10334,7 @@
 	{
 		"modele": "75956b22",
 		"graine": 7,
-		"attendu": "373[min]",
+		"attendu": "{6[h]}{13[min]}",
 		"famille": "valeur-fausse",
 		"saisie": "374\\min",
 		"juste": false,
@@ -10406,7 +10343,7 @@
 	{
 		"modele": "75956b22",
 		"graine": 7,
-		"attendu": "373[min]",
+		"attendu": "{6[h]}{13[min]}",
 		"famille": "autre-grandeur",
 		"saisie": "373\\operatorname{\\mathrm{kg}}",
 		"juste": false,
@@ -10415,7 +10352,7 @@
 	{
 		"modele": "75956b22",
 		"graine": 7,
-		"attendu": "373[min]",
+		"attendu": "{6[h]}{13[min]}",
 		"famille": "convertie",
 		"saisie": "22380\\operatorname{\\mathrm{s}}",
 		"juste": true,
@@ -10424,7 +10361,7 @@
 	{
 		"modele": "75956b22",
 		"graine": 7,
-		"attendu": "373[min]",
+		"attendu": "{6[h]}{13[min]}",
 		"famille": "non-convertie",
 		"saisie": "373\\operatorname{\\mathrm{s}}",
 		"juste": false,
@@ -10433,7 +10370,7 @@
 	{
 		"modele": "75956b22",
 		"graine": 7,
-		"attendu": "373[min]",
+		"attendu": "{6[h]}{13[min]}",
 		"famille": "duree-composee",
 		"saisie": "6\\operatorname{\\mathrm{h}}\\,13\\min",
 		"juste": true,
@@ -10442,7 +10379,7 @@
 	{
 		"modele": "75956b22",
 		"graine": 7,
-		"attendu": "373[min]",
+		"attendu": "{6[h]}{13[min]}",
 		"famille": "heures-decimales-arrondie",
 		"saisie": "6{,}22\\operatorname{\\mathrm{h}}",
 		"juste": false,
@@ -10451,7 +10388,7 @@
 	{
 		"modele": "75956b22",
 		"graine": 8,
-		"attendu": "377[min]",
+		"attendu": "{6[h]}{17[min]}",
 		"famille": "juste",
 		"saisie": "377\\min",
 		"juste": true,
@@ -10460,7 +10397,7 @@
 	{
 		"modele": "75956b22",
 		"graine": 8,
-		"attendu": "377[min]",
+		"attendu": "{6[h]}{17[min]}",
 		"famille": "juste-clavier",
 		"saisie": "377 min",
 		"juste": true,
@@ -10469,7 +10406,7 @@
 	{
 		"modele": "75956b22",
 		"graine": 8,
-		"attendu": "377[min]",
+		"attendu": "{6[h]}{17[min]}",
 		"famille": "juste-colle",
 		"saisie": "377min",
 		"juste": true,
@@ -10478,7 +10415,7 @@
 	{
 		"modele": "75956b22",
 		"graine": 8,
-		"attendu": "377[min]",
+		"attendu": "{6[h]}{17[min]}",
 		"famille": "sans-unite",
 		"saisie": "377",
 		"juste": false,
@@ -10487,7 +10424,7 @@
 	{
 		"modele": "75956b22",
 		"graine": 8,
-		"attendu": "377[min]",
+		"attendu": "{6[h]}{17[min]}",
 		"famille": "valeur-fausse",
 		"saisie": "378\\min",
 		"juste": false,
@@ -10496,7 +10433,7 @@
 	{
 		"modele": "75956b22",
 		"graine": 8,
-		"attendu": "377[min]",
+		"attendu": "{6[h]}{17[min]}",
 		"famille": "autre-grandeur",
 		"saisie": "377\\operatorname{\\mathrm{kg}}",
 		"juste": false,
@@ -10505,7 +10442,7 @@
 	{
 		"modele": "75956b22",
 		"graine": 8,
-		"attendu": "377[min]",
+		"attendu": "{6[h]}{17[min]}",
 		"famille": "convertie",
 		"saisie": "22620\\operatorname{\\mathrm{s}}",
 		"juste": true,
@@ -10514,7 +10451,7 @@
 	{
 		"modele": "75956b22",
 		"graine": 8,
-		"attendu": "377[min]",
+		"attendu": "{6[h]}{17[min]}",
 		"famille": "non-convertie",
 		"saisie": "377\\operatorname{\\mathrm{s}}",
 		"juste": false,
@@ -10523,7 +10460,7 @@
 	{
 		"modele": "75956b22",
 		"graine": 8,
-		"attendu": "377[min]",
+		"attendu": "{6[h]}{17[min]}",
 		"famille": "duree-composee",
 		"saisie": "6\\operatorname{\\mathrm{h}}\\,17\\min",
 		"juste": true,
@@ -10532,7 +10469,7 @@
 	{
 		"modele": "75956b22",
 		"graine": 8,
-		"attendu": "377[min]",
+		"attendu": "{6[h]}{17[min]}",
 		"famille": "heures-decimales-arrondie",
 		"saisie": "6{,}28\\operatorname{\\mathrm{h}}",
 		"juste": false,
@@ -11189,71 +11126,8 @@
 	{
 		"modele": "90aaf9dd",
 		"graine": 1,
-		"attendu": "2.5[h]",
+		"attendu": "{2[h]}{30[min]}",
 		"famille": "juste",
-		"saisie": "2{,}5\\operatorname{\\mathrm{h}}",
-		"juste": true,
-		"message": null
-	},
-	{
-		"modele": "90aaf9dd",
-		"graine": 1,
-		"attendu": "2.5[h]",
-		"famille": "juste-clavier",
-		"saisie": "2,5 h",
-		"juste": true,
-		"message": null
-	},
-	{
-		"modele": "90aaf9dd",
-		"graine": 1,
-		"attendu": "2.5[h]",
-		"famille": "juste-colle",
-		"saisie": "2,5h",
-		"juste": true,
-		"message": null
-	},
-	{
-		"modele": "90aaf9dd",
-		"graine": 1,
-		"attendu": "2.5[h]",
-		"famille": "sans-unite",
-		"saisie": "2{,}5",
-		"juste": false,
-		"message": "N’oublie pas l’unité."
-	},
-	{
-		"modele": "90aaf9dd",
-		"graine": 1,
-		"attendu": "2.5[h]",
-		"famille": "valeur-fausse",
-		"saisie": "3{,}5\\operatorname{\\mathrm{h}}",
-		"juste": false,
-		"message": "Les blancs suivants sont incorrects: 1"
-	},
-	{
-		"modele": "90aaf9dd",
-		"graine": 1,
-		"attendu": "2.5[h]",
-		"famille": "autre-grandeur",
-		"saisie": "2{,}5\\operatorname{\\mathrm{kg}}",
-		"juste": false,
-		"message": "Cette unité ne mesure pas la bonne grandeur."
-	},
-	{
-		"modele": "90aaf9dd",
-		"graine": 1,
-		"attendu": "2.5[h]",
-		"famille": "point-decimal",
-		"saisie": "2.5\\operatorname{\\mathrm{h}}",
-		"juste": true,
-		"message": null
-	},
-	{
-		"modele": "90aaf9dd",
-		"graine": 1,
-		"attendu": "2.5[h]",
-		"famille": "convertie",
 		"saisie": "150\\min",
 		"juste": true,
 		"message": null
@@ -11261,16 +11135,70 @@
 	{
 		"modele": "90aaf9dd",
 		"graine": 1,
-		"attendu": "2.5[h]",
-		"famille": "non-convertie",
-		"saisie": "2{,}5\\min",
+		"attendu": "{2[h]}{30[min]}",
+		"famille": "juste-clavier",
+		"saisie": "150 min",
+		"juste": true,
+		"message": null
+	},
+	{
+		"modele": "90aaf9dd",
+		"graine": 1,
+		"attendu": "{2[h]}{30[min]}",
+		"famille": "juste-colle",
+		"saisie": "150min",
+		"juste": true,
+		"message": null
+	},
+	{
+		"modele": "90aaf9dd",
+		"graine": 1,
+		"attendu": "{2[h]}{30[min]}",
+		"famille": "sans-unite",
+		"saisie": "150",
+		"juste": false,
+		"message": "N’oublie pas l’unité."
+	},
+	{
+		"modele": "90aaf9dd",
+		"graine": 1,
+		"attendu": "{2[h]}{30[min]}",
+		"famille": "valeur-fausse",
+		"saisie": "151\\min",
 		"juste": false,
 		"message": "Les blancs suivants sont incorrects: 1"
 	},
 	{
 		"modele": "90aaf9dd",
 		"graine": 1,
-		"attendu": "2.5[h]",
+		"attendu": "{2[h]}{30[min]}",
+		"famille": "autre-grandeur",
+		"saisie": "150\\operatorname{\\mathrm{kg}}",
+		"juste": false,
+		"message": "Cette unité ne mesure pas la bonne grandeur."
+	},
+	{
+		"modele": "90aaf9dd",
+		"graine": 1,
+		"attendu": "{2[h]}{30[min]}",
+		"famille": "convertie",
+		"saisie": "9000\\operatorname{\\mathrm{s}}",
+		"juste": true,
+		"message": null
+	},
+	{
+		"modele": "90aaf9dd",
+		"graine": 1,
+		"attendu": "{2[h]}{30[min]}",
+		"famille": "non-convertie",
+		"saisie": "150\\operatorname{\\mathrm{s}}",
+		"juste": false,
+		"message": "Les blancs suivants sont incorrects: 1"
+	},
+	{
+		"modele": "90aaf9dd",
+		"graine": 1,
+		"attendu": "{2[h]}{30[min]}",
 		"famille": "duree-composee",
 		"saisie": "2\\operatorname{\\mathrm{h}}\\,30\\min",
 		"juste": true,
@@ -11279,16 +11207,16 @@
 	{
 		"modele": "90aaf9dd",
 		"graine": 1,
-		"attendu": "2.5[h]",
-		"famille": "heures-decimales-lues-minutes",
-		"saisie": "2\\operatorname{\\mathrm{h}}\\,50\\min",
-		"juste": false,
-		"message": "Les blancs suivants sont incorrects: 1"
+		"attendu": "{2[h]}{30[min]}",
+		"famille": "heures-decimales",
+		"saisie": "2{,}5\\operatorname{\\mathrm{h}}",
+		"juste": true,
+		"message": null
 	},
 	{
 		"modele": "90aaf9dd",
 		"graine": 2,
-		"attendu": "169[min]",
+		"attendu": "{2[h]}{49[min]}",
 		"famille": "juste",
 		"saisie": "169\\min",
 		"juste": true,
@@ -11297,7 +11225,7 @@
 	{
 		"modele": "90aaf9dd",
 		"graine": 2,
-		"attendu": "169[min]",
+		"attendu": "{2[h]}{49[min]}",
 		"famille": "juste-clavier",
 		"saisie": "169 min",
 		"juste": true,
@@ -11306,7 +11234,7 @@
 	{
 		"modele": "90aaf9dd",
 		"graine": 2,
-		"attendu": "169[min]",
+		"attendu": "{2[h]}{49[min]}",
 		"famille": "juste-colle",
 		"saisie": "169min",
 		"juste": true,
@@ -11315,7 +11243,7 @@
 	{
 		"modele": "90aaf9dd",
 		"graine": 2,
-		"attendu": "169[min]",
+		"attendu": "{2[h]}{49[min]}",
 		"famille": "sans-unite",
 		"saisie": "169",
 		"juste": false,
@@ -11324,7 +11252,7 @@
 	{
 		"modele": "90aaf9dd",
 		"graine": 2,
-		"attendu": "169[min]",
+		"attendu": "{2[h]}{49[min]}",
 		"famille": "valeur-fausse",
 		"saisie": "170\\min",
 		"juste": false,
@@ -11333,7 +11261,7 @@
 	{
 		"modele": "90aaf9dd",
 		"graine": 2,
-		"attendu": "169[min]",
+		"attendu": "{2[h]}{49[min]}",
 		"famille": "autre-grandeur",
 		"saisie": "169\\operatorname{\\mathrm{kg}}",
 		"juste": false,
@@ -11342,7 +11270,7 @@
 	{
 		"modele": "90aaf9dd",
 		"graine": 2,
-		"attendu": "169[min]",
+		"attendu": "{2[h]}{49[min]}",
 		"famille": "convertie",
 		"saisie": "10140\\operatorname{\\mathrm{s}}",
 		"juste": true,
@@ -11351,7 +11279,7 @@
 	{
 		"modele": "90aaf9dd",
 		"graine": 2,
-		"attendu": "169[min]",
+		"attendu": "{2[h]}{49[min]}",
 		"famille": "non-convertie",
 		"saisie": "169\\operatorname{\\mathrm{s}}",
 		"juste": false,
@@ -11360,7 +11288,7 @@
 	{
 		"modele": "90aaf9dd",
 		"graine": 2,
-		"attendu": "169[min]",
+		"attendu": "{2[h]}{49[min]}",
 		"famille": "duree-composee",
 		"saisie": "2\\operatorname{\\mathrm{h}}\\,49\\min",
 		"juste": true,
@@ -11369,7 +11297,7 @@
 	{
 		"modele": "90aaf9dd",
 		"graine": 2,
-		"attendu": "169[min]",
+		"attendu": "{2[h]}{49[min]}",
 		"famille": "heures-decimales-arrondie",
 		"saisie": "2{,}82\\operatorname{\\mathrm{h}}",
 		"juste": false,
@@ -11378,7 +11306,7 @@
 	{
 		"modele": "90aaf9dd",
 		"graine": 3,
-		"attendu": "92[min]",
+		"attendu": "{1[h]}{32[min]}",
 		"famille": "juste",
 		"saisie": "92\\min",
 		"juste": true,
@@ -11387,7 +11315,7 @@
 	{
 		"modele": "90aaf9dd",
 		"graine": 3,
-		"attendu": "92[min]",
+		"attendu": "{1[h]}{32[min]}",
 		"famille": "juste-clavier",
 		"saisie": "92 min",
 		"juste": true,
@@ -11396,7 +11324,7 @@
 	{
 		"modele": "90aaf9dd",
 		"graine": 3,
-		"attendu": "92[min]",
+		"attendu": "{1[h]}{32[min]}",
 		"famille": "juste-colle",
 		"saisie": "92min",
 		"juste": true,
@@ -11405,7 +11333,7 @@
 	{
 		"modele": "90aaf9dd",
 		"graine": 3,
-		"attendu": "92[min]",
+		"attendu": "{1[h]}{32[min]}",
 		"famille": "sans-unite",
 		"saisie": "92",
 		"juste": false,
@@ -11414,7 +11342,7 @@
 	{
 		"modele": "90aaf9dd",
 		"graine": 3,
-		"attendu": "92[min]",
+		"attendu": "{1[h]}{32[min]}",
 		"famille": "valeur-fausse",
 		"saisie": "93\\min",
 		"juste": false,
@@ -11423,7 +11351,7 @@
 	{
 		"modele": "90aaf9dd",
 		"graine": 3,
-		"attendu": "92[min]",
+		"attendu": "{1[h]}{32[min]}",
 		"famille": "autre-grandeur",
 		"saisie": "92\\operatorname{\\mathrm{kg}}",
 		"juste": false,
@@ -11432,7 +11360,7 @@
 	{
 		"modele": "90aaf9dd",
 		"graine": 3,
-		"attendu": "92[min]",
+		"attendu": "{1[h]}{32[min]}",
 		"famille": "convertie",
 		"saisie": "5520\\operatorname{\\mathrm{s}}",
 		"juste": true,
@@ -11441,7 +11369,7 @@
 	{
 		"modele": "90aaf9dd",
 		"graine": 3,
-		"attendu": "92[min]",
+		"attendu": "{1[h]}{32[min]}",
 		"famille": "non-convertie",
 		"saisie": "92\\operatorname{\\mathrm{s}}",
 		"juste": false,
@@ -11450,7 +11378,7 @@
 	{
 		"modele": "90aaf9dd",
 		"graine": 3,
-		"attendu": "92[min]",
+		"attendu": "{1[h]}{32[min]}",
 		"famille": "duree-composee",
 		"saisie": "1\\operatorname{\\mathrm{h}}\\,32\\min",
 		"juste": true,
@@ -11459,7 +11387,7 @@
 	{
 		"modele": "90aaf9dd",
 		"graine": 3,
-		"attendu": "92[min]",
+		"attendu": "{1[h]}{32[min]}",
 		"famille": "heures-decimales-arrondie",
 		"saisie": "1{,}53\\operatorname{\\mathrm{h}}",
 		"juste": false,
@@ -11468,7 +11396,7 @@
 	{
 		"modele": "90aaf9dd",
 		"graine": 4,
-		"attendu": "139[min]",
+		"attendu": "{2[h]}{19[min]}",
 		"famille": "juste",
 		"saisie": "139\\min",
 		"juste": true,
@@ -11477,7 +11405,7 @@
 	{
 		"modele": "90aaf9dd",
 		"graine": 4,
-		"attendu": "139[min]",
+		"attendu": "{2[h]}{19[min]}",
 		"famille": "juste-clavier",
 		"saisie": "139 min",
 		"juste": true,
@@ -11486,7 +11414,7 @@
 	{
 		"modele": "90aaf9dd",
 		"graine": 4,
-		"attendu": "139[min]",
+		"attendu": "{2[h]}{19[min]}",
 		"famille": "juste-colle",
 		"saisie": "139min",
 		"juste": true,
@@ -11495,7 +11423,7 @@
 	{
 		"modele": "90aaf9dd",
 		"graine": 4,
-		"attendu": "139[min]",
+		"attendu": "{2[h]}{19[min]}",
 		"famille": "sans-unite",
 		"saisie": "139",
 		"juste": false,
@@ -11504,7 +11432,7 @@
 	{
 		"modele": "90aaf9dd",
 		"graine": 4,
-		"attendu": "139[min]",
+		"attendu": "{2[h]}{19[min]}",
 		"famille": "valeur-fausse",
 		"saisie": "140\\min",
 		"juste": false,
@@ -11513,7 +11441,7 @@
 	{
 		"modele": "90aaf9dd",
 		"graine": 4,
-		"attendu": "139[min]",
+		"attendu": "{2[h]}{19[min]}",
 		"famille": "autre-grandeur",
 		"saisie": "139\\operatorname{\\mathrm{kg}}",
 		"juste": false,
@@ -11522,7 +11450,7 @@
 	{
 		"modele": "90aaf9dd",
 		"graine": 4,
-		"attendu": "139[min]",
+		"attendu": "{2[h]}{19[min]}",
 		"famille": "convertie",
 		"saisie": "8340\\operatorname{\\mathrm{s}}",
 		"juste": true,
@@ -11531,7 +11459,7 @@
 	{
 		"modele": "90aaf9dd",
 		"graine": 4,
-		"attendu": "139[min]",
+		"attendu": "{2[h]}{19[min]}",
 		"famille": "non-convertie",
 		"saisie": "139\\operatorname{\\mathrm{s}}",
 		"juste": false,
@@ -11540,7 +11468,7 @@
 	{
 		"modele": "90aaf9dd",
 		"graine": 4,
-		"attendu": "139[min]",
+		"attendu": "{2[h]}{19[min]}",
 		"famille": "duree-composee",
 		"saisie": "2\\operatorname{\\mathrm{h}}\\,19\\min",
 		"juste": true,
@@ -11549,7 +11477,7 @@
 	{
 		"modele": "90aaf9dd",
 		"graine": 4,
-		"attendu": "139[min]",
+		"attendu": "{2[h]}{19[min]}",
 		"famille": "heures-decimales-arrondie",
 		"saisie": "2{,}32\\operatorname{\\mathrm{h}}",
 		"juste": false,
@@ -11558,7 +11486,7 @@
 	{
 		"modele": "90aaf9dd",
 		"graine": 5,
-		"attendu": "290[min]",
+		"attendu": "{4[h]}{50[min]}",
 		"famille": "juste",
 		"saisie": "290\\min",
 		"juste": true,
@@ -11567,7 +11495,7 @@
 	{
 		"modele": "90aaf9dd",
 		"graine": 5,
-		"attendu": "290[min]",
+		"attendu": "{4[h]}{50[min]}",
 		"famille": "juste-clavier",
 		"saisie": "290 min",
 		"juste": true,
@@ -11576,7 +11504,7 @@
 	{
 		"modele": "90aaf9dd",
 		"graine": 5,
-		"attendu": "290[min]",
+		"attendu": "{4[h]}{50[min]}",
 		"famille": "juste-colle",
 		"saisie": "290min",
 		"juste": true,
@@ -11585,7 +11513,7 @@
 	{
 		"modele": "90aaf9dd",
 		"graine": 5,
-		"attendu": "290[min]",
+		"attendu": "{4[h]}{50[min]}",
 		"famille": "sans-unite",
 		"saisie": "290",
 		"juste": false,
@@ -11594,7 +11522,7 @@
 	{
 		"modele": "90aaf9dd",
 		"graine": 5,
-		"attendu": "290[min]",
+		"attendu": "{4[h]}{50[min]}",
 		"famille": "valeur-fausse",
 		"saisie": "291\\min",
 		"juste": false,
@@ -11603,7 +11531,7 @@
 	{
 		"modele": "90aaf9dd",
 		"graine": 5,
-		"attendu": "290[min]",
+		"attendu": "{4[h]}{50[min]}",
 		"famille": "autre-grandeur",
 		"saisie": "290\\operatorname{\\mathrm{kg}}",
 		"juste": false,
@@ -11612,7 +11540,7 @@
 	{
 		"modele": "90aaf9dd",
 		"graine": 5,
-		"attendu": "290[min]",
+		"attendu": "{4[h]}{50[min]}",
 		"famille": "convertie",
 		"saisie": "17400\\operatorname{\\mathrm{s}}",
 		"juste": true,
@@ -11621,7 +11549,7 @@
 	{
 		"modele": "90aaf9dd",
 		"graine": 5,
-		"attendu": "290[min]",
+		"attendu": "{4[h]}{50[min]}",
 		"famille": "non-convertie",
 		"saisie": "290\\operatorname{\\mathrm{s}}",
 		"juste": false,
@@ -11630,7 +11558,7 @@
 	{
 		"modele": "90aaf9dd",
 		"graine": 5,
-		"attendu": "290[min]",
+		"attendu": "{4[h]}{50[min]}",
 		"famille": "duree-composee",
 		"saisie": "4\\operatorname{\\mathrm{h}}\\,50\\min",
 		"juste": true,
@@ -11639,7 +11567,7 @@
 	{
 		"modele": "90aaf9dd",
 		"graine": 5,
-		"attendu": "290[min]",
+		"attendu": "{4[h]}{50[min]}",
 		"famille": "heures-decimales-arrondie",
 		"saisie": "4{,}83\\operatorname{\\mathrm{h}}",
 		"juste": false,
@@ -11648,7 +11576,7 @@
 	{
 		"modele": "90aaf9dd",
 		"graine": 6,
-		"attendu": "112[min]",
+		"attendu": "{1[h]}{52[min]}",
 		"famille": "juste",
 		"saisie": "112\\min",
 		"juste": true,
@@ -11657,7 +11585,7 @@
 	{
 		"modele": "90aaf9dd",
 		"graine": 6,
-		"attendu": "112[min]",
+		"attendu": "{1[h]}{52[min]}",
 		"famille": "juste-clavier",
 		"saisie": "112 min",
 		"juste": true,
@@ -11666,7 +11594,7 @@
 	{
 		"modele": "90aaf9dd",
 		"graine": 6,
-		"attendu": "112[min]",
+		"attendu": "{1[h]}{52[min]}",
 		"famille": "juste-colle",
 		"saisie": "112min",
 		"juste": true,
@@ -11675,7 +11603,7 @@
 	{
 		"modele": "90aaf9dd",
 		"graine": 6,
-		"attendu": "112[min]",
+		"attendu": "{1[h]}{52[min]}",
 		"famille": "sans-unite",
 		"saisie": "112",
 		"juste": false,
@@ -11684,7 +11612,7 @@
 	{
 		"modele": "90aaf9dd",
 		"graine": 6,
-		"attendu": "112[min]",
+		"attendu": "{1[h]}{52[min]}",
 		"famille": "valeur-fausse",
 		"saisie": "113\\min",
 		"juste": false,
@@ -11693,7 +11621,7 @@
 	{
 		"modele": "90aaf9dd",
 		"graine": 6,
-		"attendu": "112[min]",
+		"attendu": "{1[h]}{52[min]}",
 		"famille": "autre-grandeur",
 		"saisie": "112\\operatorname{\\mathrm{kg}}",
 		"juste": false,
@@ -11702,7 +11630,7 @@
 	{
 		"modele": "90aaf9dd",
 		"graine": 6,
-		"attendu": "112[min]",
+		"attendu": "{1[h]}{52[min]}",
 		"famille": "convertie",
 		"saisie": "6720\\operatorname{\\mathrm{s}}",
 		"juste": true,
@@ -11711,7 +11639,7 @@
 	{
 		"modele": "90aaf9dd",
 		"graine": 6,
-		"attendu": "112[min]",
+		"attendu": "{1[h]}{52[min]}",
 		"famille": "non-convertie",
 		"saisie": "112\\operatorname{\\mathrm{s}}",
 		"juste": false,
@@ -11720,7 +11648,7 @@
 	{
 		"modele": "90aaf9dd",
 		"graine": 6,
-		"attendu": "112[min]",
+		"attendu": "{1[h]}{52[min]}",
 		"famille": "duree-composee",
 		"saisie": "1\\operatorname{\\mathrm{h}}\\,52\\min",
 		"juste": true,
@@ -11729,7 +11657,7 @@
 	{
 		"modele": "90aaf9dd",
 		"graine": 6,
-		"attendu": "112[min]",
+		"attendu": "{1[h]}{52[min]}",
 		"famille": "heures-decimales-arrondie",
 		"saisie": "1{,}87\\operatorname{\\mathrm{h}}",
 		"juste": false,
@@ -11738,7 +11666,7 @@
 	{
 		"modele": "90aaf9dd",
 		"graine": 7,
-		"attendu": "160[min]",
+		"attendu": "{2[h]}{40[min]}",
 		"famille": "juste",
 		"saisie": "160\\min",
 		"juste": true,
@@ -11747,7 +11675,7 @@
 	{
 		"modele": "90aaf9dd",
 		"graine": 7,
-		"attendu": "160[min]",
+		"attendu": "{2[h]}{40[min]}",
 		"famille": "juste-clavier",
 		"saisie": "160 min",
 		"juste": true,
@@ -11756,7 +11684,7 @@
 	{
 		"modele": "90aaf9dd",
 		"graine": 7,
-		"attendu": "160[min]",
+		"attendu": "{2[h]}{40[min]}",
 		"famille": "juste-colle",
 		"saisie": "160min",
 		"juste": true,
@@ -11765,7 +11693,7 @@
 	{
 		"modele": "90aaf9dd",
 		"graine": 7,
-		"attendu": "160[min]",
+		"attendu": "{2[h]}{40[min]}",
 		"famille": "sans-unite",
 		"saisie": "160",
 		"juste": false,
@@ -11774,7 +11702,7 @@
 	{
 		"modele": "90aaf9dd",
 		"graine": 7,
-		"attendu": "160[min]",
+		"attendu": "{2[h]}{40[min]}",
 		"famille": "valeur-fausse",
 		"saisie": "161\\min",
 		"juste": false,
@@ -11783,7 +11711,7 @@
 	{
 		"modele": "90aaf9dd",
 		"graine": 7,
-		"attendu": "160[min]",
+		"attendu": "{2[h]}{40[min]}",
 		"famille": "autre-grandeur",
 		"saisie": "160\\operatorname{\\mathrm{kg}}",
 		"juste": false,
@@ -11792,7 +11720,7 @@
 	{
 		"modele": "90aaf9dd",
 		"graine": 7,
-		"attendu": "160[min]",
+		"attendu": "{2[h]}{40[min]}",
 		"famille": "convertie",
 		"saisie": "9600\\operatorname{\\mathrm{s}}",
 		"juste": true,
@@ -11801,7 +11729,7 @@
 	{
 		"modele": "90aaf9dd",
 		"graine": 7,
-		"attendu": "160[min]",
+		"attendu": "{2[h]}{40[min]}",
 		"famille": "non-convertie",
 		"saisie": "160\\operatorname{\\mathrm{s}}",
 		"juste": false,
@@ -11810,7 +11738,7 @@
 	{
 		"modele": "90aaf9dd",
 		"graine": 7,
-		"attendu": "160[min]",
+		"attendu": "{2[h]}{40[min]}",
 		"famille": "duree-composee",
 		"saisie": "2\\operatorname{\\mathrm{h}}\\,40\\min",
 		"juste": true,
@@ -11819,7 +11747,7 @@
 	{
 		"modele": "90aaf9dd",
 		"graine": 7,
-		"attendu": "160[min]",
+		"attendu": "{2[h]}{40[min]}",
 		"famille": "heures-decimales-arrondie",
 		"saisie": "2{,}67\\operatorname{\\mathrm{h}}",
 		"juste": false,

@@ -20,18 +20,18 @@
 	@module components/markdown/nodes/PatronGeste
 -->
 <script lang="ts">
-	import type { EspaceNode, PatronSpec } from '$lib/ubumark/types/espace';
-	import { ESPACE_MARGIN, ESPACE_STROKE } from '$lib/ubumark/utils/espace-scene';
+	import type { EspaceNode, PatronSpec } from '#lib/ubumark/types/espace.ts';
+	import { ESPACE_MARGIN, ESPACE_STROKE } from '#lib/ubumark/utils/espace-scene.ts';
 	import {
 		SOLIDE_DASH,
 		SOLIDE_DOT_RADIUS,
 		SOLIDE_LABEL_SIZE
-	} from '$lib/ubumark/utils/espace-solides';
+	} from '#lib/ubumark/utils/espace-solides.ts';
 	import {
 		PATRON_FOLD_STROKE,
 		buildPatronScene,
 		patronLabel
-	} from '$lib/ubumark/utils/espace-patrons';
+	} from '#lib/ubumark/utils/espace-patrons.ts';
 	import {
 		OTHER_SOLUTIONS,
 		completerAnswer,
@@ -45,7 +45,7 @@
 		readCompleterAnswer,
 		readFacesAnswer,
 		type CompleterCell
-	} from '$lib/ubumark/utils/patron-gestes';
+	} from '#lib/ubumark/utils/patron-gestes.ts';
 	import type { BuildCase } from './CollectionConstruire.svelte';
 
 	interface Props {

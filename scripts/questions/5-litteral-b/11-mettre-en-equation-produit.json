@@ -1,10 +1,8 @@
 {
+	"id": "d4668b2d-5eba-4836-8661-b13776b9c422",
 	"title": "Quelle équation traduit le problème ?",
 	"description": "Choisir, parmi quatre, l'équation ax = c qui traduit un problème de multiplication à trou (prix d'un cahier, longueur d'un rectangle, masse d'un sachet) ; piège : x = a × c",
 	"grades": ["5"],
-	"theme": "Calcul littéral",
-	"domain": "Equations",
-	"subdomain": "Mettre en équation",
 	"level": 2,
 	"delay": 45,
 	"status": "draft",

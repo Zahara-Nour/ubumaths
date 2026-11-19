@@ -1,10 +1,8 @@
 {
+	"id": "9a9026fc-8baf-4d1f-b1ff-0d6758de63fe",
 	"title": "Construire une boîte à moustaches",
 	"description": "Construire une boîte à moustaches à partir de ses indicateurs, d'une série de notes à ranger, ou d'un tableau d'effectifs (quartiles du programme)",
 	"grades": ["3"],
-	"theme": "Statistiques",
-	"domain": "Indicateurs",
-	"subdomain": "Boîte à moustaches",
 	"level": 2,
 	"delay": 300,
 	"status": "draft",

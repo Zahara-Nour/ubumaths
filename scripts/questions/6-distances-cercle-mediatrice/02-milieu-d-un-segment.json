@@ -1,10 +1,8 @@
 {
+	"id": "3ec74bbc-fe33-4362-a3ad-184a6bac2649",
 	"title": "Milieu d'un segment",
 	"description": "Le milieu I de [AB] est le point du segment à égale distance de A et de B : calculer AI ou AB, puis dire si un point est le milieu (sur le segment ET à égale distance)",
 	"grades": ["6"],
-	"theme": "Géométrie",
-	"domain": "Figures planes",
-	"subdomain": "Distances",
 	"level": 2,
 	"delay": 60,
 	"status": "draft",

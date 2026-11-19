@@ -1,10 +1,8 @@
 {
+	"id": "cf796fab-520e-4d68-9d6f-756e7c2afaa9",
 	"title": "Résoudre une inéquation ax ⩾ b",
 	"description": "Ensemble des solutions de ax ⩾ b : a positif, puis a négatif (le sens change), les quatre sens",
 	"grades": ["2"],
-	"theme": "Calcul littéral",
-	"domain": "Inéquations",
-	"subdomain": "Premier degré",
 	"level": 2,
 	"delay": 60,
 	"status": "draft",

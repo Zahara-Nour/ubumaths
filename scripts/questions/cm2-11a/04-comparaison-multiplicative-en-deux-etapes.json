@@ -1,0 +1,341 @@
+{
+	"id": "ac39b933-cc90-4b96-a8f4-87a467dfae57",
+	"title": "Comparaison multiplicative en deux étapes",
+	"description": "« k fois plus », « k fois moins » avec le total connu (une trottinette 4 fois plus chère que le casque, 161,25 € en tout) ou l'écart connu ; « fois plus » puis « de plus » ; schéma en barres dans le corrigé",
+	"grades": ["CM2"],
+	"level": 7,
+	"delay": 120,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true,
+			"zeros": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Axel achète une trottinette et un casque. La trottinette coûte {{if:k==2|deux|{{if:k==3|trois|{{if:k==4|quatre|{{if:k==5|cinq|{{if:k==6|six|{{if:k==7|sept|{{if:k==8|huit|neuf}}}}}}}}}}}}}} fois plus cher que le casque. Axel paie ${{eval:floor(((k+1)*c)/100)}}.{{eval:floor(mod((k+1)*c,100)/10)}}{{eval:mod((k+1)*c,10)}}~\\unit{€}$ en tout.\n\nCombien coûte la trottinette ?\n\nLa trottinette coûte $?~\\text{€}$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..9"
+				},
+				{
+					"name": "cE",
+					"expression": "12..49"
+				},
+				{
+					"name": "cC",
+					"expression": "5..95"
+				},
+				{
+					"name": "c",
+					"expression": "eval:100*cE+cC"
+				}
+			],
+			"conditions": ["mod(cC,5) == 0", "(k + 1) * c <= 99999"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(k*c)/100;d}}",
+					"requiredForm": {
+						"pattern": "a:number"
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le casque, c'est **une part** ; la trottinette en fait ${{k}}$. En tout, cela fait ${{eval:k+1}}$ parts égales, pour ${{eval:floor(((k+1)*c)/100)}}.{{eval:floor(mod((k+1)*c,100)/10)}}{{eval:mod((k+1)*c,10)}}~\\unit{€}$.\n\n```schema-barres\nCasque : ? (2)\nTrottinette : ? (2) ; ? (2){{if:k>2| ; ? (2)|}}{{if:k>3| ; ? (2)|}}{{if:k>4| ; ? (2)|}}{{if:k>5| ; ? (2)|}}{{if:k>6| ; ? (2)|}}{{if:k>7| ; ? (2)|}}{{if:k>8| ; ? (2)|}}\ntotal : {{eval:floor(((k+1)*c)/100)}},{{eval:floor(mod(((k+1)*c),100)/10)}}{{eval:mod(((k+1)*c),10)}} €\n```",
+					"**Une part (le casque).** ${{eval:floor(((k+1)*c)/100)}}.{{eval:floor(mod((k+1)*c,100)/10)}}{{eval:mod((k+1)*c,10)}} \\div {{eval:k+1}} = {{eval:floor((c)/100)}}.{{eval:floor(mod(c,100)/10)}}{{eval:mod(c,10)}}$",
+					"**La trottinette.** ${{k}} \\times {{eval:floor((c)/100)}}.{{eval:floor(mod(c,100)/10)}}{{eval:mod(c,10)}} = \\textcolor{{{color:primary.0}}}{{{eval:floor((k*c)/100)}}.{{eval:floor(mod(k*c,100)/10)}}{{eval:mod(k*c,10)}}}$",
+					"La trottinette coûte ${{eval:floor((k*c)/100)}}.{{eval:floor(mod(k*c,100)/10)}}{{eval:mod(k*c,10)}}~\\unit{€}$.",
+					"On vérifie : ${{eval:floor((c)/100)}}.{{eval:floor(mod(c,100)/10)}}{{eval:mod(c,10)}} + {{eval:floor((k*c)/100)}}.{{eval:floor(mod(k*c,100)/10)}}{{eval:mod(k*c,10)}} = {{eval:floor(((k+1)*c)/100)}}.{{eval:floor(mod((k+1)*c,100)/10)}}{{eval:mod((k+1)*c,10)}}$, et ${{eval:floor((k*c)/100)}}.{{eval:floor(mod(k*c,100)/10)}}{{eval:mod(k*c,10)}}$ est bien ${{k}}$ fois ${{eval:floor((c)/100)}}.{{eval:floor(mod(c,100)/10)}}{{eval:mod(c,10)}}~\\unit{€}$."
+				]
+			}
+		},
+		{
+			"statement": "La ville de Mirande compte {{if:k==2|deux|{{if:k==3|trois|{{if:k==4|quatre|{{if:k==5|cinq|{{if:k==6|six|{{if:k==7|sept|{{if:k==8|huit|neuf}}}}}}}}}}}}}} fois plus d'habitants que le village de Lerne. Elle en compte ${{eval:(k-1)*c}}$ de plus.\n\nCombien d'habitants le village de Lerne compte-t-il ?\n\nLerne compte $?$ habitants.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..9"
+				},
+				{
+					"name": "c",
+					"expression": "1200..60000"
+				}
+			],
+			"conditions": ["(k - 1) * c <= 480000"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Lerne, c'est **une part** ; Mirande en fait ${{k}}$. L'écart entre les deux, c'est ${{eval:k-1}}$ parts égales.\n\n```schema-barres\nLerne : ? (2)\nMirande : ? (2) ; ? (2){{if:k>2| ; ? (2)|}}{{if:k>3| ; ? (2)|}}{{if:k>4| ; ? (2)|}}{{if:k>5| ; ? (2)|}}{{if:k>6| ; ? (2)|}}{{if:k>7| ; ? (2)|}}{{if:k>8| ; ? (2)|}}\n```",
+					"$${{eval:(k-1)*c}} \\div {{eval:k-1}} = \\textcolor{{{color:primary.0}}}{{{c}}}$$",
+					"Le village de Lerne compte ${{c}}$ habitants.",
+					"On vérifie : Mirande compte ${{k}} \\times {{c}} = {{eval:k*c}}$ habitants, et ${{eval:k*c}} - {{c}} = {{eval:(k-1)*c}}$."
+				]
+			}
+		},
+		{
+			"statement": "Un vélo et une sonnette coûtent ${{eval:floor(((k+1)*c)/100)}}.{{eval:floor(mod((k+1)*c,100)/10)}}{{eval:mod((k+1)*c,10)}}~\\unit{€}$ ensemble. La sonnette coûte {{if:k==2|deux|{{if:k==3|trois|{{if:k==4|quatre|{{if:k==5|cinq|{{if:k==6|six|{{if:k==7|sept|{{if:k==8|huit|neuf}}}}}}}}}}}}}} fois moins cher que le vélo.\n\nCombien coûte la sonnette ?\n\nLa sonnette coûte $?~\\text{€}$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..9"
+				},
+				{
+					"name": "cE",
+					"expression": "4..24"
+				},
+				{
+					"name": "cC",
+					"expression": "5..95"
+				},
+				{
+					"name": "c",
+					"expression": "eval:100*cE+cC"
+				}
+			],
+			"conditions": ["mod(cC,5) == 0", "k * c >= 5000"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(c)/100;d}}",
+					"requiredForm": {
+						"pattern": "a:number"
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"« ${{k}}$ fois moins cher » : le vélo coûte ${{k}}$ fois le prix de la sonnette. La sonnette, c'est **une part** ; en tout, ${{eval:k+1}}$ parts égales.",
+					"$${{eval:floor(((k+1)*c)/100)}}.{{eval:floor(mod((k+1)*c,100)/10)}}{{eval:mod((k+1)*c,10)}} \\div {{eval:k+1}} = \\textcolor{{{color:primary.0}}}{{{eval:floor((c)/100)}}.{{eval:floor(mod(c,100)/10)}}{{eval:mod(c,10)}}}$$",
+					"La sonnette coûte ${{eval:floor((c)/100)}}.{{eval:floor(mod(c,100)/10)}}{{eval:mod(c,10)}}~\\unit{€}$.",
+					"On vérifie : le vélo coûte ${{k}} \\times {{eval:floor((c)/100)}}.{{eval:floor(mod(c,100)/10)}}{{eval:mod(c,10)}} = {{eval:floor((k*c)/100)}}.{{eval:floor(mod(k*c,100)/10)}}{{eval:mod(k*c,10)}}$, et ${{eval:floor((k*c)/100)}}.{{eval:floor(mod(k*c,100)/10)}}{{eval:mod(k*c,10)}} + {{eval:floor((c)/100)}}.{{eval:floor(mod(c,100)/10)}}{{eval:mod(c,10)}} = {{eval:floor(((k+1)*c)/100)}}.{{eval:floor(mod((k+1)*c,100)/10)}}{{eval:mod((k+1)*c,10)}}$."
+				]
+			}
+		},
+		{
+			"statement": "Léa a ${{a}}$ billes. Tom en a {{if:k==2|deux|{{if:k==3|trois|{{if:k==4|quatre|{{if:k==5|cinq|{{if:k==6|six|{{if:k==7|sept|{{if:k==8|huit|neuf}}}}}}}}}}}}}} fois plus que Léa. Inès en a ${{d}}$ de plus que Tom.\n\nCombien de billes Inès a-t-elle ?\n\nInès a $?$ billes.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..9"
+				},
+				{
+					"name": "a",
+					"expression": "12..95"
+				},
+				{
+					"name": "d",
+					"expression": "3..40"
+				}
+			],
+			"conditions": ["d != a"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:k*a+d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Deux étapes : d'abord les billes de Tom (« fois plus » : on multiplie), puis celles d'Inès (« de plus » : on ajoute).",
+					"**Tom.** ${{k}} \\times {{a}} = {{eval:k*a}}$",
+					"**Inès.** ${{eval:k*a}} + {{d}} = \\textcolor{{{color:primary.0}}}{{{eval:k*a+d}}}$",
+					"Inès a ${{eval:k*a+d}}$ billes.",
+					"Inès en a un peu plus que Tom, et bien plus que Léa : c'est cohérent."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "trottinette : 161,25 ÷ 5 × 4 = 129 €",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4",
+				"cE": "32",
+				"cC": "25",
+				"c": "3225"
+			},
+			"answers": ["129"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : trottinette, le prix du casque (32,25)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4",
+				"cE": "32",
+				"cC": "25",
+				"c": "3225"
+			},
+			"answers": ["32,25"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : trottinette, 161,25 ÷ 4 (40,31)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4",
+				"cE": "32",
+				"cC": "25",
+				"c": "3225"
+			},
+			"answers": ["40,31"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : trottinette, 4 × 161,25 (645)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4",
+				"cE": "32",
+				"cC": "25",
+				"c": "3225"
+			},
+			"answers": ["645"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "écart : 5 fois plus, 18 000 de plus → 4 500",
+			"variationIndex": 1,
+			"variables": {
+				"k": "5",
+				"c": "4500"
+			},
+			"answers": ["4\\,500"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : écart, 18 000 ÷ 5 (3 600)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "5",
+				"c": "4500"
+			},
+			"answers": ["3\\,600"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : écart, la ville (22 500)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "5",
+				"c": "4500"
+			},
+			"answers": ["22\\,500"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "sonnette : 3 fois moins, 86,40 € → 21,60 €",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3",
+				"cE": "21",
+				"cC": "60",
+				"c": "2160"
+			},
+			"answers": ["21,6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sonnette, 86,40 ÷ 3 (28,80)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3",
+				"cE": "21",
+				"cC": "60",
+				"c": "2160"
+			},
+			"answers": ["28,8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : sonnette, le vélo (64,80)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3",
+				"cE": "21",
+				"cC": "60",
+				"c": "2160"
+			},
+			"answers": ["64,8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "billes : 3 × 24 + 5 = 77",
+			"variationIndex": 3,
+			"variables": {
+				"k": "3",
+				"a": "24",
+				"d": "5"
+			},
+			"answers": ["77"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : billes, Tom seulement (72)",
+			"variationIndex": 3,
+			"variables": {
+				"k": "3",
+				"a": "24",
+				"d": "5"
+			},
+			"answers": ["72"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : billes, 3 × (24 + 5) (87)",
+			"variationIndex": 3,
+			"variables": {
+				"k": "3",
+				"a": "24",
+				"d": "5"
+			},
+			"answers": ["87"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : billes, « fois plus » lu « de plus » (32)",
+			"variationIndex": 3,
+			"variables": {
+				"k": "3",
+				"a": "24",
+				"d": "5"
+			},
+			"answers": ["32"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

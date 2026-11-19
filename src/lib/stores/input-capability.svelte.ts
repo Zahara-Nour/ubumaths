@@ -19,7 +19,7 @@
  * Usage:
  * ```svelte
  * <script>
- *   import { inputCapability } from '$lib/stores/input-capability.svelte';
+ *   import { inputCapability } from '#lib/stores/input-capability.svelte.ts';
  * </script>
  *
  * <!-- Adapt UI based on touch capability -->

@@ -1,0 +1,190 @@
+{
+	"id": "3ffa86cd-4aa8-46d8-90aa-cec9e81ae256",
+	"title": "Motif évolutif : le calcul pour l'étape n",
+	"description": "Motif dessiné en trois étapes : choisir, parmi quatre, le calcul qui donne le nombre d'éléments à une étape lointaine (carrés, triangles, deux étages d'allumettes, croix de jetons)",
+	"grades": ["CM2"],
+	"level": 1,
+	"delay": 120,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Voici les trois premières étapes d'un motif d'allumettes.\n\n```figure\nfenetre: -0.5 ; 9.5 ; -1.5 ; 1.5\ndescription: Trois étapes d'un motif d'allumettes : une rangée de 1, 2 puis 3 carrés accolés, soit 4, 7 puis 10 allumettes.\n---\nC0B0 = point(0, 0, visible=faux)\nC0H0 = point(0, 1, visible=faux)\nC0B1 = point(1, 0, visible=faux)\nC0H1 = point(1, 1, visible=faux)\nsegment(C0B0, C0B1, couleur=\"marron\", epaisseur=3)\nsegment(C0H0, C0H1, couleur=\"marron\", epaisseur=3)\nsegment(C0B0, C0H0, couleur=\"marron\", epaisseur=3)\nsegment(C0B1, C0H1, couleur=\"marron\", epaisseur=3)\nC1B0 = point(2.5, 0, visible=faux)\nC1H0 = point(2.5, 1, visible=faux)\nC1B1 = point(3.5, 0, visible=faux)\nC1H1 = point(3.5, 1, visible=faux)\nC1B2 = point(4.5, 0, visible=faux)\nC1H2 = point(4.5, 1, visible=faux)\nsegment(C1B0, C1B1, couleur=\"marron\", epaisseur=3)\nsegment(C1H0, C1H1, couleur=\"marron\", epaisseur=3)\nsegment(C1B1, C1B2, couleur=\"marron\", epaisseur=3)\nsegment(C1H1, C1H2, couleur=\"marron\", epaisseur=3)\nsegment(C1B0, C1H0, couleur=\"marron\", epaisseur=3)\nsegment(C1B1, C1H1, couleur=\"marron\", epaisseur=3)\nsegment(C1B2, C1H2, couleur=\"marron\", epaisseur=3)\nC2B0 = point(6, 0, visible=faux)\nC2H0 = point(6, 1, visible=faux)\nC2B1 = point(7, 0, visible=faux)\nC2H1 = point(7, 1, visible=faux)\nC2B2 = point(8, 0, visible=faux)\nC2H2 = point(8, 1, visible=faux)\nC2B3 = point(9, 0, visible=faux)\nC2H3 = point(9, 1, visible=faux)\nsegment(C2B0, C2B1, couleur=\"marron\", epaisseur=3)\nsegment(C2H0, C2H1, couleur=\"marron\", epaisseur=3)\nsegment(C2B1, C2B2, couleur=\"marron\", epaisseur=3)\nsegment(C2H1, C2H2, couleur=\"marron\", epaisseur=3)\nsegment(C2B2, C2B3, couleur=\"marron\", epaisseur=3)\nsegment(C2H2, C2H3, couleur=\"marron\", epaisseur=3)\nsegment(C2B0, C2H0, couleur=\"marron\", epaisseur=3)\nsegment(C2B1, C2H1, couleur=\"marron\", epaisseur=3)\nsegment(C2B2, C2H2, couleur=\"marron\", epaisseur=3)\nsegment(C2B3, C2H3, couleur=\"marron\", epaisseur=3)\ntexte(0.5, -0.9, \"Étape 1\")\ntexte(3.5, -0.9, \"Étape 2\")\ntexte(7.5, -0.9, \"Étape 3\")\n```\n\nQuel calcul donne le nombre d'allumettes à l'étape ${{s}}$ ?\n\n```choix\n- $3 \\times {{s}} + 1$\n- $4 \\times {{s}}$\n- $3 \\times {{s}}$\n- ${{s}} + 3$\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "20..60"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**La règle.** À chaque étape, on ajoute $3$ allumettes. Pourquoi : un carré de plus ne demande que $3$ allumettes : il prend un côté au carré d'avant.",
+					"**Par le numéro de l'étape.** À l'étape ${{s}}$ : $1$ allumette au départ, puis $3$ allumettes par carré, soit $\\textcolor{{{color:primary.0}}}{3 \\times {{s}} + 1} = {{eval:3*s+1}}$.",
+					"On vérifie à l'étape $3$ : $3 \\times 3 + 1 = 10$, le nombre compté sur le dessin."
+				]
+			}
+		},
+		{
+			"statement": "Voici les trois premières étapes d'un motif de jetons.\n\n```figure\nfenetre: -0.7 ; 17.7 ; -4.6 ; 3.7\ntaille: grande\ndescription: Trois étapes d'un motif de jetons en croix : un jeton au centre et quatre bras de 1, 2 puis 3 jetons, soit 5, 9 puis 13 jetons.\n---\nX0O = point(1, 0, visible=faux)\ncercle(X0O, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1)\nX0D1 = point(2, 0, visible=faux)\ncercle(X0D1, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1)\nX0G1 = point(0, 0, visible=faux)\ncercle(X0G1, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1)\nX0H1 = point(1, 1, visible=faux)\ncercle(X0H1, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1)\nX0B1 = point(1, -1, visible=faux)\ncercle(X0B1, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1)\nX1O = point(6.5, 0, visible=faux)\ncercle(X1O, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1)\nX1D1 = point(7.5, 0, visible=faux)\ncercle(X1D1, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1)\nX1G1 = point(5.5, 0, visible=faux)\ncercle(X1G1, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1)\nX1H1 = point(6.5, 1, visible=faux)\ncercle(X1H1, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1)\nX1B1 = point(6.5, -1, visible=faux)\ncercle(X1B1, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1)\nX1D2 = point(8.5, 0, visible=faux)\ncercle(X1D2, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1)\nX1G2 = point(4.5, 0, visible=faux)\ncercle(X1G2, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1)\nX1H2 = point(6.5, 2, visible=faux)\ncercle(X1H2, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1)\nX1B2 = point(6.5, -2, visible=faux)\ncercle(X1B2, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1)\nX2O = point(14, 0, visible=faux)\ncercle(X2O, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1)\nX2D1 = point(15, 0, visible=faux)\ncercle(X2D1, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1)\nX2G1 = point(13, 0, visible=faux)\ncercle(X2G1, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1)\nX2H1 = point(14, 1, visible=faux)\ncercle(X2H1, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1)\nX2B1 = point(14, -1, visible=faux)\ncercle(X2B1, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1)\nX2D2 = point(16, 0, visible=faux)\ncercle(X2D2, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1)\nX2G2 = point(12, 0, visible=faux)\ncercle(X2G2, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1)\nX2H2 = point(14, 2, visible=faux)\ncercle(X2H2, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1)\nX2B2 = point(14, -2, visible=faux)\ncercle(X2B2, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1)\nX2D3 = point(17, 0, visible=faux)\ncercle(X2D3, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1)\nX2G3 = point(11, 0, visible=faux)\ncercle(X2G3, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1)\nX2H3 = point(14, 3, visible=faux)\ncercle(X2H3, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1)\nX2B3 = point(14, -3, visible=faux)\ncercle(X2B3, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1)\ntexte(1, -4, \"Étape 1\")\ntexte(6.5, -4, \"Étape 2\")\ntexte(14, -4, \"Étape 3\")\n```\n\nQuel calcul donne le nombre de jetons à l'étape ${{s}}$ ?\n\n```choix\n- $4 \\times {{s}} + 1$\n- $4 \\times {{s}}$\n- $5 \\times {{s}}$\n- ${{s}} + 4$\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "20..60"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**La règle.** À chaque étape, on ajoute $4$ jetons. Pourquoi : chaque bras gagne un jeton.",
+					"**Par le numéro de l'étape.** À l'étape ${{s}}$ : $1$ jeton au centre, puis $4$ bras de ${{s}}$ jetons, soit $\\textcolor{{{color:primary.0}}}{4 \\times {{s}} + 1} = {{eval:4*s+1}}$.",
+					"On vérifie à l'étape $3$ : $4 \\times 3 + 1 = 13$, le nombre compté sur le dessin."
+				]
+			}
+		},
+		{
+			"statement": "Voici les trois premières étapes d'un motif d'allumettes.\n\n```figure\nfenetre: -0.5 ; 7 ; -1.5 ; 1.4\ndescription: Trois étapes d'un motif d'allumettes : une bande de 1, 2 puis 3 triangles accolés, soit 3, 5 puis 7 allumettes.\n---\nT0B0 = point(0, 0, visible=faux)\nT0B1 = point(1, 0, visible=faux)\nT0H0 = point(0.5, 0.87, visible=faux)\nsegment(T0B0, T0B1, couleur=\"marron\", epaisseur=3)\nsegment(T0B0, T0H0, couleur=\"marron\", epaisseur=3)\nsegment(T0H0, T0B1, couleur=\"marron\", epaisseur=3)\nT1B0 = point(1.75, 0, visible=faux)\nT1B1 = point(2.75, 0, visible=faux)\nT1H0 = point(2.25, 0.87, visible=faux)\nT1H1 = point(3.25, 0.87, visible=faux)\nsegment(T1B0, T1B1, couleur=\"marron\", epaisseur=3)\nsegment(T1H0, T1H1, couleur=\"marron\", epaisseur=3)\nsegment(T1B0, T1H0, couleur=\"marron\", epaisseur=3)\nsegment(T1H0, T1B1, couleur=\"marron\", epaisseur=3)\nsegment(T1B1, T1H1, couleur=\"marron\", epaisseur=3)\nT2B0 = point(4, 0, visible=faux)\nT2B1 = point(5, 0, visible=faux)\nT2B2 = point(6, 0, visible=faux)\nT2H0 = point(4.5, 0.87, visible=faux)\nT2H1 = point(5.5, 0.87, visible=faux)\nsegment(T2B0, T2B1, couleur=\"marron\", epaisseur=3)\nsegment(T2B1, T2B2, couleur=\"marron\", epaisseur=3)\nsegment(T2H0, T2H1, couleur=\"marron\", epaisseur=3)\nsegment(T2B0, T2H0, couleur=\"marron\", epaisseur=3)\nsegment(T2H0, T2B1, couleur=\"marron\", epaisseur=3)\nsegment(T2B1, T2H1, couleur=\"marron\", epaisseur=3)\nsegment(T2H1, T2B2, couleur=\"marron\", epaisseur=3)\ntexte(0.5, -0.9, \"Étape 1\")\ntexte(2.75, -0.9, \"Étape 2\")\ntexte(5.5, -0.9, \"Étape 3\")\n```\n\nQuel calcul donne le nombre d'allumettes à l'étape ${{s}}$ ?\n\n```choix\n- $2 \\times {{s}} + 1$\n- $3 \\times {{s}}$\n- $2 \\times {{s}}$\n- ${{s}} + 2$\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "20..60"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**La règle.** À chaque étape, on ajoute $2$ allumettes. Pourquoi : un triangle de plus ne demande que $2$ allumettes : il prend un côté au triangle d'avant.",
+					"**Par le numéro de l'étape.** À l'étape ${{s}}$ : $1$ allumette au départ, puis $2$ allumettes par triangle, soit $\\textcolor{{{color:primary.0}}}{2 \\times {{s}} + 1} = {{eval:2*s+1}}$.",
+					"On vérifie à l'étape $3$ : $2 \\times 3 + 1 = 7$, le nombre compté sur le dessin."
+				]
+			}
+		},
+		{
+			"statement": "Voici les trois premières étapes d'un motif d'allumettes.\n\n```figure\nfenetre: -0.5 ; 9.5 ; -1.5 ; 2.5\ndescription: Trois étapes d'un motif d'allumettes : deux étages de 1, 2 puis 3 carrés accolés, soit 7, 12 puis 17 allumettes.\n---\nE0P00 = point(0, 0, visible=faux)\nE0P01 = point(0, 1, visible=faux)\nE0P02 = point(0, 2, visible=faux)\nE0P10 = point(1, 0, visible=faux)\nE0P11 = point(1, 1, visible=faux)\nE0P12 = point(1, 2, visible=faux)\nsegment(E0P00, E0P10, couleur=\"marron\", epaisseur=3)\nsegment(E0P01, E0P11, couleur=\"marron\", epaisseur=3)\nsegment(E0P02, E0P12, couleur=\"marron\", epaisseur=3)\nsegment(E0P00, E0P01, couleur=\"marron\", epaisseur=3)\nsegment(E0P01, E0P02, couleur=\"marron\", epaisseur=3)\nsegment(E0P10, E0P11, couleur=\"marron\", epaisseur=3)\nsegment(E0P11, E0P12, couleur=\"marron\", epaisseur=3)\nE1P00 = point(2.5, 0, visible=faux)\nE1P01 = point(2.5, 1, visible=faux)\nE1P02 = point(2.5, 2, visible=faux)\nE1P10 = point(3.5, 0, visible=faux)\nE1P11 = point(3.5, 1, visible=faux)\nE1P12 = point(3.5, 2, visible=faux)\nE1P20 = point(4.5, 0, visible=faux)\nE1P21 = point(4.5, 1, visible=faux)\nE1P22 = point(4.5, 2, visible=faux)\nsegment(E1P00, E1P10, couleur=\"marron\", epaisseur=3)\nsegment(E1P10, E1P20, couleur=\"marron\", epaisseur=3)\nsegment(E1P01, E1P11, couleur=\"marron\", epaisseur=3)\nsegment(E1P11, E1P21, couleur=\"marron\", epaisseur=3)\nsegment(E1P02, E1P12, couleur=\"marron\", epaisseur=3)\nsegment(E1P12, E1P22, couleur=\"marron\", epaisseur=3)\nsegment(E1P00, E1P01, couleur=\"marron\", epaisseur=3)\nsegment(E1P01, E1P02, couleur=\"marron\", epaisseur=3)\nsegment(E1P10, E1P11, couleur=\"marron\", epaisseur=3)\nsegment(E1P11, E1P12, couleur=\"marron\", epaisseur=3)\nsegment(E1P20, E1P21, couleur=\"marron\", epaisseur=3)\nsegment(E1P21, E1P22, couleur=\"marron\", epaisseur=3)\nE2P00 = point(6, 0, visible=faux)\nE2P01 = point(6, 1, visible=faux)\nE2P02 = point(6, 2, visible=faux)\nE2P10 = point(7, 0, visible=faux)\nE2P11 = point(7, 1, visible=faux)\nE2P12 = point(7, 2, visible=faux)\nE2P20 = point(8, 0, visible=faux)\nE2P21 = point(8, 1, visible=faux)\nE2P22 = point(8, 2, visible=faux)\nE2P30 = point(9, 0, visible=faux)\nE2P31 = point(9, 1, visible=faux)\nE2P32 = point(9, 2, visible=faux)\nsegment(E2P00, E2P10, couleur=\"marron\", epaisseur=3)\nsegment(E2P10, E2P20, couleur=\"marron\", epaisseur=3)\nsegment(E2P20, E2P30, couleur=\"marron\", epaisseur=3)\nsegment(E2P01, E2P11, couleur=\"marron\", epaisseur=3)\nsegment(E2P11, E2P21, couleur=\"marron\", epaisseur=3)\nsegment(E2P21, E2P31, couleur=\"marron\", epaisseur=3)\nsegment(E2P02, E2P12, couleur=\"marron\", epaisseur=3)\nsegment(E2P12, E2P22, couleur=\"marron\", epaisseur=3)\nsegment(E2P22, E2P32, couleur=\"marron\", epaisseur=3)\nsegment(E2P00, E2P01, couleur=\"marron\", epaisseur=3)\nsegment(E2P01, E2P02, couleur=\"marron\", epaisseur=3)\nsegment(E2P10, E2P11, couleur=\"marron\", epaisseur=3)\nsegment(E2P11, E2P12, couleur=\"marron\", epaisseur=3)\nsegment(E2P20, E2P21, couleur=\"marron\", epaisseur=3)\nsegment(E2P21, E2P22, couleur=\"marron\", epaisseur=3)\nsegment(E2P30, E2P31, couleur=\"marron\", epaisseur=3)\nsegment(E2P31, E2P32, couleur=\"marron\", epaisseur=3)\ntexte(0.5, -0.9, \"Étape 1\")\ntexte(3.5, -0.9, \"Étape 2\")\ntexte(7.5, -0.9, \"Étape 3\")\n```\n\nQuel calcul donne le nombre d'allumettes à l'étape ${{s}}$ ?\n\n```choix\n- $5 \\times {{s}} + 2$\n- $7 \\times {{s}}$\n- $5 \\times {{s}}$\n- ${{s}} + 5$\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "20..60"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**La règle.** À chaque étape, on ajoute $5$ allumettes. Pourquoi : une colonne de deux carrés de plus demande $3$ allumettes couchées et $2$ debout.",
+					"**Par le numéro de l'étape.** À l'étape ${{s}}$ : $2$ allumettes debout au départ, puis $5$ allumettes par colonne, soit $\\textcolor{{{color:primary.0}}}{5 \\times {{s}} + 2} = {{eval:5*s+2}}$.",
+					"On vérifie à l'étape $3$ : $5 \\times 3 + 2 = 17$, le nombre compté sur le dessin."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Carrés : 3 × s + 1",
+			"variationIndex": 0,
+			"variables": {
+				"s": "50"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3 × s (le + 1 oublié)",
+			"variationIndex": 0,
+			"variables": {
+				"s": "50"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Croix : 4 × s + 1",
+			"variationIndex": 1,
+			"variables": {
+				"s": "50"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4 × s (le centre oublié)",
+			"variationIndex": 1,
+			"variables": {
+				"s": "50"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Triangles : 2 × s + 1",
+			"variationIndex": 2,
+			"variables": {
+				"s": "50"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3 × s (3 allumettes par triangle)",
+			"variationIndex": 2,
+			"variables": {
+				"s": "50"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Deux étages : 5 × s + 2",
+			"variationIndex": 3,
+			"variables": {
+				"s": "50"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 7 × s (7 allumettes par colonne)",
+			"variationIndex": 3,
+			"variables": {
+				"s": "50"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

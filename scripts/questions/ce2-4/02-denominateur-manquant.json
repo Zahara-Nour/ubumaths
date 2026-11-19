@@ -1,10 +1,8 @@
 {
+	"id": "176b6b93-fc2b-4f68-9b77-e5d26303d5a2",
 	"title": "Égalité de fractions : le dénominateur manquant",
 	"description": "1/2 = 4/? ; 6/8 = 3/?",
 	"grades": ["CE2"],
-	"theme": "Fractions",
-	"domain": "Apprivoiser",
-	"subdomain": "Egalité de fractions",
 	"level": 7,
 	"delay": 45,
 	"status": "draft",

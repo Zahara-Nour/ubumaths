@@ -1,0 +1,163 @@
+{
+	"id": "aaebfe52-5740-47ab-8c5c-799023a6d906",
+	"title": "Dénombrer des plaques, des barres et des cubes",
+	"description": "Matériel multibase jusqu'à 999 → nombre de cubes ; avec une dizaine vide (304)",
+	"grades": ["CE2"],
+	"level": 11,
+	"delay": 60,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Combien de petits cubes y a-t-il en tout ?\n\n```collection\ncentaines: {{c}}\ndizaines: {{d}}\nunités: {{u}}\n```\n\nIl y a $?$ cubes en tout.",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..9"
+				},
+				{
+					"name": "d",
+					"expression": "1..9"
+				},
+				{
+					"name": "u",
+					"expression": "1..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:100*c+10*d+1*u}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{c}}$ {{if:c<=1|plaque|plaques}} : ${{c}}$ {{if:c<=1|centaine|centaines}}, c'est ${{eval:100*c}}$ cubes.",
+					"${{d}}$ {{if:d<=1|barre|barres}} : ${{d}}$ {{if:d<=1|dizaine|dizaines}}, c'est ${{eval:10*d}}$ cubes.",
+					"${{u}}$ {{if:u<=1|petit cube|petits cubes}} : ${{u}}$ {{if:u<=1|unité|unités}}.",
+					"$${{eval:100*c}}+{{eval:10*d}}+{{u}}={{solution}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Combien de petits cubes y a-t-il en tout ?\n\n```collection\ncentaines: {{c}}\nunités: {{u}}\n```\n\nIl y a $?$ cubes en tout.",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..9"
+				},
+				{
+					"name": "u",
+					"expression": "1..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:100*c+u}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{c}}$ {{if:c<=1|plaque|plaques}} : ${{c}}$ {{if:c<=1|centaine|centaines}}, c'est ${{eval:100*c}}$ cubes.",
+					"Aucune barre : $0$ dizaine.",
+					"${{u}}$ {{if:u<=1|petit cube|petits cubes}} : ${{u}}$ {{if:u<=1|unité|unités}}.",
+					"$${{eval:100*c}}+0+{{u}}={{solution}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3 plaques, 4 barres, 7 cubes : 347",
+			"variationIndex": 0,
+			"variables": {
+				"c": "3",
+				"d": "4",
+				"u": "7"
+			},
+			"answers": ["347"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : plaques comptées comme barres (3 + 4 = 7 dizaines, 77)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "3",
+				"d": "4",
+				"u": "7"
+			},
+			"answers": ["77"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : rangs inversés (374)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "3",
+				"d": "4",
+				"u": "7"
+			},
+			"answers": ["374"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : objets comptés un à un (14)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "3",
+				"d": "4",
+				"u": "7"
+			},
+			"answers": ["14"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "borne : 9 plaques, 9 barres, 9 cubes : 999",
+			"variationIndex": 0,
+			"variables": {
+				"c": "9",
+				"d": "9",
+				"u": "9"
+			},
+			"answers": ["999"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "3 plaques, 4 cubes : 304",
+			"variationIndex": 1,
+			"variables": {
+				"c": "3",
+				"u": "4"
+			},
+			"answers": ["304"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : zéro oublié (34)",
+			"variationIndex": 1,
+			"variables": {
+				"c": "3",
+				"u": "4"
+			},
+			"answers": ["34"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

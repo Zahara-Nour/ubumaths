@@ -24,7 +24,7 @@ import {
 import { isSafeLatex } from '../safe-latex';
 import { commandCatalog, stageExampleSetup } from '../commands';
 import { messageParts } from '../reciprocal';
-import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
+import { WebReplEngine } from '#lib/mathAST/cli/web/web-repl-engine.ts';
 import { keepCalcHistory } from '../session';
 import { decodeAtelier, encodeAtelier } from '../url';
 

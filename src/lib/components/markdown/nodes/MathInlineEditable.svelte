@@ -18,7 +18,7 @@
 	@see MathInline.svelte for read-only display
 -->
 <script lang="ts">
-	import '$lib/utils/mathlive-styles';
+	import '#lib/utils/mathlive-styles.ts';
 	import 'mathlive';
 
 	interface Props {

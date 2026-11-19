@@ -14,9 +14,9 @@
 	 */
 
 	import { Cat } from '@lucide/svelte';
-	import ChatterieRaces from '$lib/components/mathoux/ChatterieRaces.svelte';
-	import ChatterieDecorer from '$lib/components/mathoux/ChatterieDecorer.svelte';
-	import { collectionCountsPhrase } from '$lib/mathoux/collection-logic';
+	import ChatterieRaces from '#lib/components/mathoux/ChatterieRaces.svelte';
+	import ChatterieDecorer from '#lib/components/mathoux/ChatterieDecorer.svelte';
+	import { collectionCountsPhrase } from '#lib/mathoux/collection-logic.ts';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();

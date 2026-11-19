@@ -245,9 +245,6 @@
 			}
 		],
 		"grades": ["6"],
-		"theme": "Proportionnalité",
-		"domain": "Echelle d'une carte",
-		"subdomain": "Utiliser l'échelle",
 		"level": 1,
 		"status": "draft",
 		"delay": 20,

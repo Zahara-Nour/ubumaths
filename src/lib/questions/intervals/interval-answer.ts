@@ -21,31 +21,31 @@
  * @module questions/intervals/interval-answer
  */
 
-import type { ConstraintMode, ValidationStatus } from '$lib/questions/types';
-import type { Domain } from '$lib/mathAST/domain/types';
-import type { StudentDomainPiece } from '$lib/mathAST/domain/validation';
+import type { ConstraintMode, ValidationStatus } from '#lib/questions/types.ts';
+import type { Domain } from '#lib/mathAST/domain/types.ts';
+import type { StudentDomainPiece } from '#lib/mathAST/domain/validation/index.ts';
 import {
 	parseStudentDomainPieces,
 	domainsAreEqual,
 	compareDomains,
 	detectDomainMistakes,
 	MISTAKE_DESCRIPTIONS
-} from '$lib/mathAST/domain/validation';
-import { expandExcludedPoints } from '$lib/mathAST/domain/validation/compare-domains';
-import { isBoundTooComplex } from '$lib/mathAST/domain/validation';
-import { difference } from '$lib/mathAST/domain/algebra';
-import { formatEndpointValue } from '$lib/math/intervals/format';
-import { intervalDomain } from '$lib/mathAST/domain/factory';
-import type { Interval } from '$lib/mathAST/domain/types';
-import { toLatex } from '$lib/mathAST/latex-generator';
-import type { MathNode } from '$lib/mathAST/types';
-import { variable } from '$lib/mathAST/factory';
-import { isInfinity, isPositiveInfinity } from '$lib/mathAST/guards';
-import { compareNumericNodes } from '$lib/mathAST/eval/compare-numeric';
-import { checkReducedFractions } from '$lib/questions/constraint-validators';
-import { parseLatexSafe } from '$lib/mathAST';
-import { reduceRadicalsAST } from '$lib/mathAST/superflu/transforms';
-import { nodesEqual } from '$lib/mathAST/normal/hash';
+} from '#lib/mathAST/domain/validation/index.ts';
+import { expandExcludedPoints } from '#lib/mathAST/domain/validation/compare-domains.ts';
+import { isBoundTooComplex } from '#lib/mathAST/domain/validation/index.ts';
+import { difference } from '#lib/mathAST/domain/algebra.ts';
+import { formatEndpointValue } from '#lib/math/intervals/format.ts';
+import { intervalDomain } from '#lib/mathAST/domain/factory.ts';
+import type { Interval } from '#lib/mathAST/domain/types.ts';
+import { toLatex } from '#lib/mathAST/latex-generator.ts';
+import type { MathNode } from '#lib/mathAST/types.ts';
+import { variable } from '#lib/mathAST/factory.ts';
+import { isInfinity, isPositiveInfinity } from '#lib/mathAST/guards.ts';
+import { compareNumericNodes } from '#lib/mathAST/eval/compare-numeric.ts';
+import { checkReducedFractions } from '#lib/questions/constraint-validators.ts';
+import { parseLatexSafe } from '#lib/mathAST/index.ts';
+import { reduceRadicalsAST } from '#lib/mathAST/superflu/transforms.ts';
+import { nodesEqual } from '#lib/mathAST/normal/hash.ts';
 import { judgeComplexFiniteSet, readExpectedComplexSet } from './complex-finite-set';
 
 // Types
@@ -466,15 +466,41 @@ function boundLatex(value: MathNode): string {
 	);
 }
 
-function intervalLatex(interval: Interval): string {
+/** Intervalle réduit à un point (`[a;a]`) */
+function isSingleton(interval: Interval): boolean {
 	const { lower, upper } = interval;
-	if (
+	return (
 		lower.type === 'closed' &&
 		upper.type === 'closed' &&
 		compareNumericNodes(lower.value, upper.value) === 0
-	) {
-		return `\\{${boundLatex(lower.value)}\\}`;
+	);
+}
+
+/**
+ * Réunion d'intervalles en LaTeX ; des points isolés consécutifs forment un seul
+ * ensemble fini : `\{-3;-1;1\}`, pas `\{-3\}\cup\{-1\}\cup\{1\}`
+ */
+function intervalsLatex(intervals: readonly Interval[]): string {
+	const parts: string[] = [];
+	let points: string[] = [];
+	const flushPoints = () => {
+		if (points.length > 0) parts.push(`\\{${points.join(';')}\\}`);
+		points = [];
+	};
+	for (const interval of intervals) {
+		if (isSingleton(interval)) {
+			points.push(boundLatex(interval.lower.value));
+		} else {
+			flushPoints();
+			parts.push(intervalLatex(interval));
+		}
 	}
+	flushPoints();
+	return parts.join('\\cup');
+}
+
+function intervalLatex(interval: Interval): string {
+	const { lower, upper } = interval;
 	const open = lower.type === 'closed' ? '[' : ']';
 	const close = upper.type === 'closed' ? ']' : '[';
 	return `${open}${boundLatex(lower.value)};${boundLatex(upper.value)}${close}`;
@@ -503,7 +529,7 @@ function domainLatex(domain: Domain): string {
 	) {
 		return '\\mathbb{R}';
 	}
-	return expanded.intervals.map(intervalLatex).join('\\cup');
+	return intervalsLatex(expanded.intervals);
 }
 
 /**

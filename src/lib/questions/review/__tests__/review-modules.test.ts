@@ -7,8 +7,8 @@ import { describe, it, expect } from 'vitest';
 import { checkTemplate, formatCheckReport } from '../check-template';
 import { toTemplateInsertRow } from '../template-insert-row';
 import { draftTemplate, parseReviewFile } from '../review-file';
-import type { QuestionTemplate, TestSpec } from '$lib/questions/types';
-import { templateMarkdown } from '$lib/ubumark';
+import type { QuestionTemplate, TestSpec } from '#lib/questions/types.ts';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 
 // ============================================================================
 // FIXTURES
@@ -42,8 +42,6 @@ function doubleTemplate(overrides: Partial<QuestionTemplate> = {}): QuestionTemp
 			}
 		],
 		grades: ['6'],
-		theme: 'Entiers',
-		domain: 'Multiplier',
 		level: 1,
 		testSpecs: SPECS,
 		...overrides
@@ -133,7 +131,7 @@ describe('toTemplateInsertRow', () => {
 		expect(row.status).toBe('draft');
 	});
 
-	it('écrit les specs et les colonnes de la route API', () => {
+	it('écrit les specs et les colonnes de la route API, sans l’ancien quadruplet (ADR 0035)', () => {
 		const row = toTemplateInsertRow(doubleTemplate(), DAVID);
 		expect(row.test_specs).toEqual(SPECS);
 		expect(row.created_by).toBe(DAVID);
@@ -149,9 +147,6 @@ describe('toTemplateInsertRow', () => {
 				'exercise_instruction',
 				'options',
 				'grades',
-				'theme',
-				'domain',
-				'subdomain',
 				'level',
 				'status',
 				'delay',

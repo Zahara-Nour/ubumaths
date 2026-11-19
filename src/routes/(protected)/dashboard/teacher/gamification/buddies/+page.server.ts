@@ -7,9 +7,9 @@
  */
 
 import type { PageServerLoad } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import { createServerLogger } from '$lib/utils/logger';
-import { displayedConstance, utcDay } from '$lib/utils/buddy-constance';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
+import { displayedConstance, utcDay } from '#lib/utils/buddy-constance.ts';
 
 const logger = createServerLogger(
 	'(protected)/dashboard/teacher/gamification/buddies/+page.server'

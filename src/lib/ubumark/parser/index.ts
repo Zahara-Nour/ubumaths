@@ -145,6 +145,25 @@ export {
 	isHorlogeBlockStart
 } from './horloge-parser';
 
+// Bloc ```tortue
+export {
+	parseTortue,
+	parseTortueContent,
+	findTortueBlocks,
+	isTortueBlockStart
+} from './tortue-parser';
+
+// Bloc ```calcul
+export {
+	parseCalcul,
+	parseCalculContent,
+	findCalculBlocks,
+	isCalculBlockStart
+} from './calcul-parser';
+
+// Bloc ```robot
+export { parseRobot, parseRobotContent, findRobotBlocks, isRobotBlockStart } from './robot-parser';
+
 // Bloc ```partage
 export {
 	parsePartage,
@@ -184,6 +203,14 @@ export {
 	findMonnaieBlocks,
 	isMonnaieBlockStart
 } from './monnaie-parser';
+
+// Bloc ```schema-barres
+export {
+	parseSchemaBarres,
+	parseSchemaBarresContent,
+	findSchemaBarresBlocks,
+	isSchemaBarresBlockStart
+} from './schema-barres-parser';
 
 // Bloc ```courbe
 export {

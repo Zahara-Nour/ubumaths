@@ -7,9 +7,9 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import StoredFigurePreview from '../StoredFigurePreview.svelte';
-import { evaluateStoredFigure } from '$lib/utils/geometry-figure-script';
-import { geoToNumber } from '$lib/geometry-core/compute/to-number';
-import type { Figure } from '$lib/geometry-core/graph/figure';
+import { evaluateStoredFigure } from '#lib/utils/geometry-figure-script.ts';
+import { geoToNumber } from '#lib/geometry-core/compute/to-number.ts';
+import type { Figure } from '#lib/geometry-core/graph/figure.ts';
 
 const SCRIPT = 's = slider(min=0, max=4, valeur=1)\nA = point(1, 1)\nB = point(s, 0)';
 

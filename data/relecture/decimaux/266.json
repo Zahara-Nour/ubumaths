@@ -48,9 +48,6 @@
 			}
 		],
 		"grades": ["6"],
-		"theme": "Décimaux",
-		"domain": "Multiplier",
-		"subdomain": "Produit",
 		"level": 2,
 		"status": "draft",
 		"delay": 20,

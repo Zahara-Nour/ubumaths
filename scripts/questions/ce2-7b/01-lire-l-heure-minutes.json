@@ -1,10 +1,8 @@
 {
+	"id": "0d41a45e-e8fb-4297-8007-7afbf12f09c8",
 	"title": "Quelle heure est-il ? (heures et minutes)",
 	"description": "Lire l'heure à la minute près sur une horloge à aiguilles (8 h 35, 6 h 18) ; l'après-midi, 15 h 22",
 	"grades": ["CE2"],
-	"theme": "Grandeurs",
-	"domain": "Durées",
-	"subdomain": "Lire l'heure",
 	"level": 5,
 	"delay": 120,
 	"status": "draft",

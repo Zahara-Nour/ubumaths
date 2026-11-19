@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button';
-	import * as Tooltip from '$lib/components/ui/tooltip';
-	import { cn } from '$lib/utils';
-	import gidouilleImg from '$lib/assets/images/gidouille.png';
-	import { storageUrl } from '$lib/utils/storage';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Tooltip from '#lib/components/ui/tooltip/index.ts';
+	import { cn } from '#lib/utils.ts';
+	import gidouilleImg from '#lib/assets/images/gidouille.png';
+	import { storageUrl } from '#lib/utils/storage.ts';
 
 	const powerImg = (id: string) => storageUrl('vip-card-images', `${id}@0.5x.webp`);
 

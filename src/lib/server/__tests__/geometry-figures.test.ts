@@ -8,7 +8,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { called, createFakeSupabase, methods } from './helpers/fake-supabase';
 
-vi.mock('$lib/server/resource-tags', () => ({
+vi.mock('#lib/server/resource-tags.ts', () => ({
 	fetchResourceIdsByAnyTag: vi.fn(),
 	fetchResourceTagNames: vi.fn(),
 	fetchTagNamesForResources: vi.fn(),
@@ -20,7 +20,7 @@ import {
 	fetchResourceTagNames,
 	fetchTagNamesForResources,
 	syncResourceTags
-} from '$lib/server/resource-tags';
+} from '#lib/server/resource-tags.ts';
 import {
 	createGeometryFigure,
 	deleteGeometryFigure,

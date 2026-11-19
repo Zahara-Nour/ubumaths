@@ -1042,7 +1042,7 @@ Trois niveaux à phaser plus tard :
 
 Chiphre adopte un **système de progression à deux dimensions** :
 
-1. **L'Ordre de la Grande Passoire (OGP)** — système **transversal**, fondé sur le **mérite pataphysique** (gidouilles cumulées, achievements, défis réussis). Le grade suit le **parcours de gloire**, pas l'âge.
+1. **L'Ordre de la Grande Passoire (OGP)** — système **transversal**, fondé sur le **travail réel** du Galopin : les points du programme qu'il a acquis, jamais les gidouilles. Le grade raconte son **voyage**, de son arrivée à la Phinalle, pas son âge.
 2. **L'Échelle du Décervelage** — système **administratif**, strictement aligné sur les niveaux scolaires réels (6ᵉ → Terminale). Le Galopin gravit l'Eschelle, échelon après échelon, **un par année scolaire**, automatiquement à chaque rentrée. **Attention à ne pas tomber** : tout Galopin qui redouble son année descend d'un eschelon — ce qui est canoniquement appelé un _« retombage pataphysique »_.
 
 Les deux dimensions **coexistent** et s'affichent ensemble dans les cinématiques solennelles :
@@ -1101,11 +1101,29 @@ C'est une **progression de la naïveté à la sagesse**, du voyageur novice au c
 
 #### Mécanique d'attribution
 
-Le passage d'un grade au grade suivant se fait **par seuil de gidouilles cumulées**. Les **achievements** (défis réussis, fêtes provinciales validées, examens passés, cartes légendaires obtenues, exercices résolus, etc.) donnent des **gidouilles** qui s'accumulent dans la **bouzine** du Galopin (compteur permanent de gidouilles cumulées).
+Règle validée par David le 2026-11-17 (le détail et les situations : `docs/archive/wip/ordre-grande-passoire-progress.md`).
 
-**Note d'implémentation** : les **valeurs numériques précises des seuils** ainsi que l'**échelle de gain par activité** restent à calibrer en conditions réelles (test pédagogique). À ce stade, ce document fixe **les noms et l'ordre des 7 grades** ; les paramètres mathématiques seront déterminés ultérieurement en fonction de la **philosophie pédagogique** (sprint vs marathon) et de la **fréquence d'engagement** observée chez les Galopins.
+**Le grade se gagne par le travail réel.** Il se fonde sur les **points du programme acquis** par le Galopin. Il ne s'achète pas, ne se distribue pas à la main et ne s'obtient pas en jouant. Les gidouilles restent une **monnaie** qu'on dépense en boutique : elles ne font monter dans aucun grade.
 
-**Décrets royaux exceptionnels** : le Père Ubu peut toujours **décréter un saut de grade** pour récompenser un achievement exceptionnel hors barème (concours national de mathématiques, performance brillante au brevet ou au bac, contribution marquante au Royaume). Ces décrets restent **rares** et **publiquement célébrés**.
+**Le voyage.** Tout Galopin qui arrive pour la première fois dans Chiphre est **Embarqué Phollet**, quelle que soit sa classe, primaire compris. Son voyage va de sa classe d'arrivée jusqu'à la **Phinalle** (toutes les Terminales). Les grades qui lui restent se répartissent sur les années qui lui restent ; le partage est refait à chaque rentrée et à chaque retour.
+
+**Chaque année a ses grades à gagner.** Ce sont des parts du programme de sa classe à acquérir : la moitié pour un seul grade ; 30 % puis 60 % pour deux ; même étalement au-delà. Un grade manqué n'est pas perdu : il est reporté sur les années suivantes, et le Galopin peut rattraper.
+
+**Patanaute Yllustre ne se gagne qu'en Phinalle** : c'est la fin du voyage. Il faut être déjà Cartographe Royal et avoir acquis au moins les **trois quarts du programme** de sa Terminale.
+
+**Les galons.** Une année qui n'a aucun grade à donner donne un **galon** dans le grade, gagné par le travail de l'année (« Matelot Phlibustier, 1 galon »). C'est une marque, pas un 8e grade. Le Galopin progresse ainsi chaque année, même sur un long voyage commencé à l'école.
+
+**Le grade ne redescend jamais.** Départ puis retour : le Galopin garde son grade, et les grades restants se répartissent sur les années restantes. Redoublement : il garde son grade, et les grades s'étalent sur une année de plus (le _retombage pataphysique_ ne touche que l'Eschelle du Décervelage). Saut de classe : les grades se resserrent. Phinalle finie sans Patanaute : le voyage s'arrête au grade atteint.
+
+| Arrivée         | Le voyage                                                                                                       |
+| --------------- | --------------------------------------------------------------------------------------------------------------- |
+| Syz'esme (6ᵉ)   | 6ᵉ Moussaillon · 5ᵉ Matelot · 4ᵉ Marinier · 3ᵉ Quartier-Maître · 2ᵈʳᵉ Cartographe · 1ᵃˡᵉ galon · φᵃˡᵉ Patanaute |
+| Quatr'esme (4ᵉ) | 4ᵉ Moussaillon et Matelot · 3ᵉ Marinier · 2ᵈʳᵉ Quartier-Maître · 1ᵃˡᵉ Cartographe · φᵃˡᵉ Patanaute              |
+| Phinalle (Tle)  | les six grades dans l'année, Patanaute compris                                                                  |
+
+**Note d'implémentation** : les parts (50 %, 30/60 %, 75 %) sont un **pari** : les données d'acquisition ne remplissent que depuis novembre 2026. Elles seront revues après une année d'usage. L'Ordre n'existe pas encore dans le code.
+
+**Pas de décret royal.** Le Père Ubu ne saute aucun grade à la main : seul le travail fait monter dans l'Ordre.
 
 ### L'Eschelle du Décervelage (système administratif)
 
@@ -1986,7 +2004,7 @@ Ces deux symboles peuvent **coexister visuellement** : la spirale ubuesque et la
 
 ### Iconographie
 
-À constituer en kit graphique réutilisable (SVG dans `$lib/assets/icons/ubu/`) :
+À constituer en kit graphique réutilisable (SVG dans `#lib/assets/icons/ubu/`) :
 
 #### Icônes ubuesques principales
 
@@ -2096,6 +2114,48 @@ Grande carte et sept cartes de capitales validées par David (2026-10-29 au 2026
   - Une image de style en 2e pièce jointe est copiée telle quelle : ne pas la joindre.
   - Nano Banana compte mal (tours de spirale, tours d'enceinte) et ne suit pas les proportions demandées.
 - **Contenu** : pas de formes géométriques plaquées sur le paysage ; la discipline de chaque province ne se montre que dans sa ville. Références sans texte ; jamais de personne réelle nommée ; fichiers pour l'IA copiés dans `~/Downloads`.
+
+#### Avatars par défaut 🟡
+
+Décision de David (2026-11-06) : l'avatar affiché quand un compte n'a pas de photo est un **emblème du rôle**, sans visage : lisible dans un rond de 32 à 40 px, sans genre (règle RGPD de `getAvatarFallback`) et sans confusion avec un personnage qui parle (Père Ubu, Bordure).
+
+| Rôle                   | Emblème                                                                                                                   | Fichier            |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------- | ------------------ |
+| Galopin (élève)        | bonnet vert à plume blanche, insigne doré à la gidouille                                                                  | `avatar-galopin`   |
+| Capitaine (professeur) | konfederatka pourpre à aigle doré, sur deux sabres croisés                                                                | `avatar-capitaine` |
+| Admin                  | attributs d'Ubu (la Chambre du Conseil Privé lui est réservée) : couronne d'or et bâton-à-physique à pommeau en gidouille | `avatar-admin`     |
+
+Originaux 1024×1024 (Nano Banana, nuancier numérique seul en pièce jointe) : `docs/Chiphres/illustrations/avatars/` ; dans l'appli, `.webp` 256×256 sous `src/lib/assets/images/avatars/`. Le bonnet du Galopin est une invention 🟡, sur le modèle des couvre-chefs des Palotins.
+
+```text
+Draw a single emblem object for a round profile picture: a Galopin's cap — a soft, floppy beret-like cap of a young apprentice adventurer, slightly tilted, emerald green, with a small round marigold yellow badge on the front showing a navy ink spiral, and a short white feather tucked into the band. Playful and friendly, for students aged 11 to 17. No person, no face, no head under the cap: the cap alone.
+
+Style: 1896 Montmartre lithographic poster in the manner of Théophile-Alexandre Steinlen. Bold thick dark contours, flat color areas, no gradients, no 3D, no shading beyond flat shadow shapes.
+
+Colors: use only the colors of the attached palette image: navy ink for the outlines and the spiral, emerald green for the cap, marigold yellow for the badge, white for the feather.
+
+Composition: square 1:1 format, the object centered and filling about 65% of the image, entirely inside the central circle (the image will be cropped to a circle), plain flat cream parchment background. No text, no letters, no numbers, no signature.
+```
+
+```text
+Draw a single emblem object for a round profile picture: a Polish captain's konfederatka cap (square-topped military cap with a short black visor), deep crimson, with a small golden emblem on the front and a thin golden cord, resting at a slight angle on two crossed sabres with golden hilts behind it. Proud and a bit pompous, but friendly, for students aged 11 to 17. No person, no face, no head under the cap.
+
+Style: 1896 Montmartre lithographic poster in the manner of Théophile-Alexandre Steinlen. Bold thick dark contours, flat color areas, no gradients, no 3D, no shading beyond flat shadow shapes.
+
+Colors: use only the colors of the attached palette image: navy ink for the outlines and the visor, deep crimson for the cap, marigold yellow for the emblem, the cord and the hilts, white for the sabre blades.
+
+Composition: square 1:1 format, the object centered and filling about 65% of the image, entirely inside the central circle (the image will be cropped to a circle), plain flat cream parchment background. No text, no letters, no numbers, no signature.
+```
+
+```text
+Draw a single emblem for a round profile picture: the attributes of Père Ubu, the greedy and pompous king from Alfred Jarry's play "Ubu Roi" (1896). A small, slightly too ornate golden crown, sitting in front of a short, stout wooden baton (his "physics stick", a royal staff carried under the arm) placed diagonally behind it; the baton ends in a round golden knob engraved with a navy ink spiral. Gaudy and comically self-important, never scary, for students aged 11 to 17. No person, no face.
+
+Style: 1896 Montmartre lithographic poster in the manner of Théophile-Alexandre Steinlen. Bold thick dark contours, flat color areas, no gradients, no 3D, no shading beyond flat shadow shapes.
+
+Colors: use only the colors of the attached palette image: navy ink for the outlines and the spiral, marigold yellow for the crown and the knob, emerald green for the jewels of the crown, warm brown for the wooden baton.
+
+Composition: square 1:1 format, the emblem centered and filling about 65% of the image, entirely inside the central circle (the image will be cropped to a circle), plain flat cream parchment background. No text, no letters, no numbers, no signature.
+```
 
 #### Prompt de référence — Père Ubu 🟡
 

@@ -11,12 +11,12 @@
  */
 
 import type { PageServerLoad } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import type { VipCardInstance } from '$lib/types/vip-card';
-import { asStudentVipCards } from '$lib/types/vip-card';
-import type { VipCardTemplate } from '$lib/stores/vipCardTemplates.svelte';
-import { toVipCardTemplate } from '$lib/types/vip-card-admin';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import type { VipCardInstance } from '#lib/types/vip-card.ts';
+import { asStudentVipCards } from '#lib/types/vip-card.ts';
+import type { VipCardTemplate } from '#lib/stores/vipCardTemplates.svelte.ts';
+import { toVipCardTemplate } from '#lib/types/vip-card-admin.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('(protected)/dashboard/student/inventory/+page.server');
 

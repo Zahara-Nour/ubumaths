@@ -1,10 +1,8 @@
 {
+	"id": "8cb2cdfd-d905-4e37-bff4-cceeb774fdc9",
 	"title": "Résoudre x² = a graphiquement",
 	"description": "Résoudre graphiquement une équation x² = a, parabole et droite y = a tracées : a carré parfait (deux solutions), a = 0 (une solution), a négatif (aucune solution)",
 	"grades": ["3"],
-	"theme": "Fonctions",
-	"domain": "Fonction carré",
-	"subdomain": "x² = a",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",
@@ -74,7 +72,7 @@
 			"correction": {
 				"steps": [
 					"Les solutions seraient les abscisses des points où la droite $y={{a}}$ coupe $\\mathcal{C}_f$.",
-					"La droite est **sous** la courbe et ne la coupe pas : un carré n'est jamais négatif. L'équation n'a \\textcolor{{{color:primary.0}}}{\\text{aucune solution}}.",
+					"La droite est **sous** la courbe et ne la coupe pas : un carré n'est jamais négatif. L'équation n'a $\\textcolor{{{color:primary.0}}}{\\text{aucune solution}}$.",
 					"${{eval:-sqrt(-(a))}}$ ne convient pas : $({{eval:-sqrt(-(a))}})^2={{eval:-(a)}}$, et non ${{a}}$."
 				]
 			}

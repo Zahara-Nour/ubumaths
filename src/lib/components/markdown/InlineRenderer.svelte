@@ -17,12 +17,12 @@
 	@see ShapeLabel.svelte for primary usage
 -->
 <script lang="ts">
-	import type { InlineNode } from '$lib/ubumark';
-	import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
+	import type { InlineNode } from '#lib/ubumark/index.ts';
+	import type { GenericFunctionConfig } from '#lib/mathAST/parser/types.ts';
 	import MathInline from './nodes/MathInline.svelte';
 	import TextNode from './nodes/TextNode.svelte';
 	import { inlineDetailClass } from './detail-styles';
-	import { sanitizeUrl } from '$lib/utils/sanitize';
+	import { sanitizeUrl } from '#lib/utils/sanitize.ts';
 
 	interface Props {
 		/** Inline nodes to render */

@@ -1,0 +1,290 @@
+{
+	"id": "4241d466-9668-49b2-8f36-015be0af4ae9",
+	"title": "Lire un nombre sur une demi-droite graduée",
+	"description": "Pas de 1 à 100 000, à déduire de deux graduations écrites ; nombres jusqu'à 999 999",
+	"grades": ["CM1"],
+	"level": 4,
+	"delay": 45,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Quel nombre repère le point $A$ ?\n\n```line\nstart: {{a}}\nend: {{fin}}\nstep: {{s}}\nmajor: 5\nlabels: {{a}}, {{l}}\npoints: A={{x}}\n```\n\n$$A : ?$$",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "1|10|100"
+				},
+				{
+					"name": "b",
+					"expression": "1..99"
+				},
+				{
+					"name": "a",
+					"expression": "eval:10*s*b"
+				},
+				{
+					"name": "l",
+					"expression": "eval:a+5*s"
+				},
+				{
+					"name": "fin",
+					"expression": "eval:a+10*s"
+				},
+				{
+					"name": "k",
+					"expression": "1..9"
+				},
+				{
+					"name": "x",
+					"expression": "eval:a+k*s"
+				}
+			],
+			"conditions": ["k!=5"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{x}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Le pas.** De ${{a}}$ à ${{l}}$, il y a $5$ intervalles : un intervalle vaut $({{l}} - {{a}}) \\div 5 = {{s}}$.",
+					"Le point $A$ est à ${{k}}$ intervalle{{if:k>1|s|}} de ${{a}}$ : il repère ${{a}} + {{k}} \\times {{s}} = \\textcolor{{{color:primary.0}}}{{{x}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Quel nombre repère le point $A$ ?\n\n```line\nstart: {{a}}\nend: {{fin}}\nstep: {{s}}\nmajor: 5\nlabels: {{a}}, {{l}}\npoints: A={{x}}\n```\n\n$$A : ?$$",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "1000|10000"
+				},
+				{
+					"name": "b2",
+					"expression": "1..98"
+				},
+				{
+					"name": "b",
+					"expression": "eval:1+mod(b2,floor(100000/s)-2)"
+				},
+				{
+					"name": "a",
+					"expression": "eval:10*s*b"
+				},
+				{
+					"name": "l",
+					"expression": "eval:a+5*s"
+				},
+				{
+					"name": "fin",
+					"expression": "eval:a+10*s"
+				},
+				{
+					"name": "k",
+					"expression": "1..9"
+				},
+				{
+					"name": "x",
+					"expression": "eval:a+k*s"
+				}
+			],
+			"conditions": ["k!=5"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{x}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Le pas.** De ${{a}}$ à ${{l}}$, il y a $5$ intervalles : un intervalle vaut $({{l}} - {{a}}) \\div 5 = {{s}}$.",
+					"Le point $A$ est à ${{k}}$ intervalle{{if:k>1|s|}} de ${{a}}$ : il repère ${{a}} + {{k}} \\times {{s}} = \\textcolor{{{color:primary.0}}}{{{x}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Quel nombre repère le point $A$ ?\n\n```line\nstart: {{a}}\nend: {{fin}}\nstep: {{s}}\nmajor: 5\nlabels: {{a}}, {{l}}\npoints: A={{x}}\n```\n\n$$A : ?$$",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "100000"
+				},
+				{
+					"name": "a",
+					"expression": "0"
+				},
+				{
+					"name": "l",
+					"expression": "500000"
+				},
+				{
+					"name": "fin",
+					"expression": "900000"
+				},
+				{
+					"name": "k",
+					"expression": "1..9"
+				},
+				{
+					"name": "x",
+					"expression": "eval:a+k*s"
+				}
+			],
+			"conditions": ["k!=5"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{x}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Le pas.** De ${{a}}$ à ${{l}}$, il y a $5$ intervalles : un intervalle vaut $({{l}} - {{a}}) \\div 5 = {{s}}$.",
+					"Le point $A$ est à ${{k}}$ intervalle{{if:k>1|s|}} de ${{a}}$ : il repère ${{a}} + {{k}} \\times {{s}} = \\textcolor{{{color:primary.0}}}{{{x}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "A repère 34 300",
+			"variationIndex": 0,
+			"variables": {
+				"s": "100",
+				"b": "34",
+				"a": "34000",
+				"l": "34500",
+				"fin": "35000",
+				"k": "3",
+				"x": "34300"
+			},
+			"answers": ["34\\,300"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 34 003 (intervalle compté pour 1)",
+			"variationIndex": 0,
+			"variables": {
+				"s": "100",
+				"b": "34",
+				"a": "34000",
+				"l": "34500",
+				"fin": "35000",
+				"k": "3",
+				"x": "34300"
+			},
+			"answers": ["34\\,003"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 34 200 (graduation voisine)",
+			"variationIndex": 0,
+			"variables": {
+				"s": "100",
+				"b": "34",
+				"a": "34000",
+				"l": "34500",
+				"fin": "35000",
+				"k": "3",
+				"x": "34300"
+			},
+			"answers": ["34\\,200"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Sans espaces : forme à améliorer",
+			"variationIndex": 0,
+			"variables": {
+				"s": "100",
+				"b": "34",
+				"a": "34000",
+				"l": "34500",
+				"fin": "35000",
+				"k": "3",
+				"x": "34300"
+			},
+			"answers": ["34300"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["spaces"]
+			}
+		},
+		{
+			"description": "A repère 347 000",
+			"variationIndex": 1,
+			"variables": {
+				"s": "1000",
+				"b": "34",
+				"a": "340000",
+				"l": "345000",
+				"fin": "350000",
+				"b2": "33",
+				"k": "7",
+				"x": "347000"
+			},
+			"answers": ["347\\,000"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 340 700 (pas de 100)",
+			"variationIndex": 1,
+			"variables": {
+				"s": "1000",
+				"b": "34",
+				"a": "340000",
+				"l": "345000",
+				"fin": "350000",
+				"b2": "33",
+				"k": "7",
+				"x": "347000"
+			},
+			"answers": ["340\\,700"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "A repère 300 000",
+			"variationIndex": 2,
+			"variables": {
+				"s": "100000",
+				"a": "0",
+				"l": "500000",
+				"fin": "900000",
+				"k": "3",
+				"x": "300000"
+			},
+			"answers": ["300\\,000"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3 (intervalle compté pour 1)",
+			"variationIndex": 2,
+			"variables": {
+				"s": "100000",
+				"a": "0",
+				"l": "500000",
+				"fin": "900000",
+				"k": "3",
+				"x": "300000"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -16,9 +16,9 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { generateCorrection } from '../correction-generator';
-import { resolvedMarkdown } from '$lib/ubumark';
+import { resolvedMarkdown } from '#lib/ubumark/index.ts';
 import type { QuestionInstance } from '../../types';
-import type { GradeCode } from '$lib/types/grades';
+import type { GradeCode } from '#lib/types/grades.ts';
 
 // =============================================================================
 // Helpers
@@ -36,8 +36,6 @@ function makeInstance(overrides: Overrides = {}): QuestionInstance {
 		statement: resolvedMarkdown('Test statement'),
 		resolvedVariables: [...(overrides.resolvedVariables ?? [])],
 		grades: [...(overrides.grades ?? ['CM2'])],
-		theme: 'Test',
-		domain: 'Test',
 		level: 1,
 		generatedAt: '2026-05-05T00:00:00Z',
 		correction: overrides.correction

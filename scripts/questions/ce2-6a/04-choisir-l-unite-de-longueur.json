@@ -1,10 +1,8 @@
 {
+	"id": "adbbb55d-8859-45d9-b6b8-4a66cd4fe41c",
 	"title": "Quelle unité pour mesurer ?",
 	"description": "Choisir parmi mm, cm, dm, m et km : une pièce de 2 mm, un crayon de 15 cm, un bus de 12 m, un trajet de 3 km",
 	"grades": ["CE2"],
-	"theme": "Grandeurs",
-	"domain": "Longueurs",
-	"subdomain": "Unités",
 	"level": 9,
 	"delay": 45,
 	"status": "draft",

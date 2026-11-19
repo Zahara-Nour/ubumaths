@@ -1,10 +1,8 @@
 {
+	"id": "a362079f-ec81-44c8-84f9-a994048b2f0e",
 	"title": "Événements {X = a} et {X ⩽ a}",
 	"description": "Notations {X = a}, {X ⩽ a}, P(X = a), P(X ⩽ a) : compter les issues de l'événement puis calculer sa probabilité (somme de deux dés à quatre faces, nombre de piles sur trois pièces)",
 	"grades": ["1_SPE"],
-	"theme": "Probabilités",
-	"domain": "Variables aléatoires",
-	"subdomain": "Loi d'une variable aléatoire",
 	"level": 5,
 	"delay": 60,
 	"status": "draft",

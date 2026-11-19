@@ -1,0 +1,187 @@
+{
+	"id": "2bf630e5-d983-4123-a5b8-17a9a0eddbe6",
+	"title": "Simuler un échantillon d'une loi de Bernoulli",
+	"description": "Fonction Python qui compte les 1 de n épreuves de Bernoulli : valeur renvoyée pour six tirages donnés, renvoyer la fréquence, sens d'un appel",
+	"grades": ["1_TECHNO", "1_SPE"],
+	"level": 2,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "La fonction `random()` renvoie un nombre aléatoire de l'intervalle $[0\\,;1[$. On considère la fonction Python suivante.\n\n```python\nfrom random import random\n\ndef echantillon(n, p):\n    c = 0\n    for k in range(n):\n        if random() < p:\n            c = c + 1\n    return c\n```\n\nOn appelle `echantillon(6, 0.{{pt}})`. Les six appels à `random()` renvoient, dans l'ordre : $0{,}{{r1}}$ ; $0{,}{{r2}}$ ; $0{,}{{r3}}$ ; $0{,}{{r4}}$ ; $0{,}{{r5}}$ ; $0{,}{{r6}}$.\n\nQue renvoie la fonction ?\n\n$?$",
+			"blanks": [
+				{
+					"expectedAnswer": "{{nb}}"
+				}
+			],
+			"variables": [
+				{
+					"name": "pt",
+					"expression": "2..8"
+				},
+				{
+					"name": "r1",
+					"expression": "11..99"
+				},
+				{
+					"name": "r2",
+					"expression": "11..99"
+				},
+				{
+					"name": "r3",
+					"expression": "11..99"
+				},
+				{
+					"name": "r4",
+					"expression": "11..99"
+				},
+				{
+					"name": "r5",
+					"expression": "11..99"
+				},
+				{
+					"name": "r6",
+					"expression": "11..99"
+				},
+				{
+					"name": "nb",
+					"expression": "eval:min(max(10*pt-r1,0),1)+min(max(10*pt-r2,0),1)+min(max(10*pt-r3,0),1)+min(max(10*pt-r4,0),1)+min(max(10*pt-r5,0),1)+min(max(10*pt-r6,0),1)"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À chaque tour, `c` augmente de $1$ quand `random()` renvoie un nombre inférieur à $0{,}{{pt}}$ (issue $1$) :\n\n| `random()` | $0{,}{{r1}}$ | $0{,}{{r2}}$ | $0{,}{{r3}}$ | $0{,}{{r4}}$ | $0{,}{{r5}}$ | $0{,}{{r6}}$ |\n| --- | --- | --- | --- | --- | --- | --- |\n| Issue | ${{eval:min(max(10*pt-r1,0),1)}}$ | ${{eval:min(max(10*pt-r2,0),1)}}$ | ${{eval:min(max(10*pt-r3,0),1)}}$ | ${{eval:min(max(10*pt-r4,0),1)}}$ | ${{eval:min(max(10*pt-r5,0),1)}}$ | ${{eval:min(max(10*pt-r6,0),1)}}$ |",
+					"La fonction renvoie le nombre de $1$ de l'échantillon : $\\textcolor{{{color:primary.0}}}{{{nb}}}$."
+				]
+			},
+			"conditions": [
+				"mod(r1,10) != 0",
+				"mod(r2,10) != 0",
+				"mod(r3,10) != 0",
+				"mod(r4,10) != 0",
+				"mod(r5,10) != 0",
+				"mod(r6,10) != 0",
+				"nb >= 1",
+				"nb <= 5"
+			]
+		},
+		{
+			"statement": "La fonction `random()` renvoie un nombre aléatoire de l'intervalle $[0\\,;1[$. On considère la fonction Python suivante.\n\n```python\nfrom random import random\n\ndef echantillon(n, p):\n    c = 0\n    for k in range(n):\n        if random() < p:\n            c = c + 1\n    return c\n```\n\nOn veut qu'elle renvoie la **fréquence** des $1$ dans l'échantillon, et non leur nombre. Par quelle instruction faut-il remplacer `return c` ?\n\n```choix\n- `return c / n`\n- `return c`\n- `return n / c`\n- `return c / p`\n```",
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"variables": [],
+			"correction": {
+				"steps": [
+					"À la fin de la boucle, `c` est le nombre de $1$ parmi les `n` épreuves.",
+					"La fréquence des $1$ est ce nombre divisé par l'effectif `n` : `return c / n`."
+				]
+			}
+		},
+		{
+			"statement": "La fonction `random()` renvoie un nombre aléatoire de l'intervalle $[0\\,;1[$. On considère la fonction Python suivante.\n\n```python\nfrom random import random\n\ndef echantillon(n, p):\n    c = 0\n    for k in range(n):\n        if random() < p:\n            c = c + 1\n    return c\n```\n\nOn appelle `echantillon(100, 0.{{pt}})`. Que renvoie cet appel ?\n\n```choix\n- le nombre de $1$ dans un échantillon de taille $100$, qui change d'un appel à l'autre\n- toujours ${{eval:10*pt}}$\n- la fréquence des $1$ dans l'échantillon\n- la probabilité d'obtenir $1$\n```",
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"variables": [
+				{
+					"name": "pt",
+					"expression": "2..8"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La fonction simule $100$ épreuves de Bernoulli de paramètre $0{,}{{pt}}$ et compte les $1$.",
+					"Le résultat est aléatoire : il est souvent proche de ${{eval:10*pt}}$, mais pas toujours égal. C'est le **nombre de $1$** de l'échantillon, pas une fréquence ni une probabilité."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "p = 0,5 : quatre tirages sous 0,5",
+			"variationIndex": 0,
+			"variables": {
+				"pt": "5",
+				"r1": "42",
+				"r2": "18",
+				"r3": "91",
+				"r4": "25",
+				"r5": "67",
+				"r6": "13",
+				"nb": "4"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : compter ceux au-dessus",
+			"variationIndex": 0,
+			"variables": {
+				"pt": "5",
+				"r1": "42",
+				"r2": "18",
+				"r3": "91",
+				"r4": "25",
+				"r5": "67",
+				"r6": "13",
+				"nb": "4"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "return c / n",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : return c",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Nombre de 1, aléatoire",
+			"variationIndex": 2,
+			"variables": {
+				"pt": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : toujours 30",
+			"variationIndex": 2,
+			"variables": {
+				"pt": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

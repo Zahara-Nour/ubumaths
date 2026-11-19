@@ -1,7 +1,8 @@
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { isMarketplaceEnabled } from '$lib/server/marketplace/helpers';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { isMarketplaceEnabled } from '#lib/server/marketplace/helpers.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/marketplace/proposals/my/+server');
 
@@ -32,11 +33,8 @@ function formatCardNames(names: string[]): string {
 
 export const GET: RequestHandler = async ({ locals }) => {
 	const supabase = locals.supabase;
-	const userId = locals.user?.id;
-
-	if (!userId) {
-		throw error(401, 'Non authentifié');
-	}
+	const { user } = await requireAuth(locals);
+	const userId = user.id;
 
 	const marketplaceEnabled = await isMarketplaceEnabled(supabase, userId);
 	if (!marketplaceEnabled) {
@@ -69,7 +67,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 	}
 
 	if (!proposals || proposals.length === 0) {
-		return json([]);
+		return Response.json([]);
 	}
 
 	// DEBUG: log the first proposal's listing structure
@@ -224,5 +222,5 @@ export const GET: RequestHandler = async ({ locals }) => {
 		return { ...p, summary };
 	});
 
-	return json(enriched);
+	return Response.json(enriched);
 };

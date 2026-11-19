@@ -1,10 +1,8 @@
 {
+	"id": "5062197a-5ffa-47bf-805d-8ec39d4445b8",
 	"title": "Vrai ou faux : inclusion",
 	"description": "Décider si une inclusion entre intervalles, ensembles de nombres ou ensembles finis est vraie ; contre-exemple sinon",
 	"grades": ["1_SPE"],
-	"theme": "Logique",
-	"domain": "Ensembles",
-	"subdomain": "Appartenance et inclusion",
 	"level": 2,
 	"status": "draft",
 	"delay": 60,

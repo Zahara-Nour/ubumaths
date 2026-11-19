@@ -5,17 +5,17 @@
  * DELETE - Delete a section
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRoles } from '$lib/server/middleware/auth';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
 import {
 	validateUpdateWorksheetSection,
 	worksheetSectionResponseSchema
-} from '$lib/server/validation/worksheets';
-import { uuidSchema } from '$lib/server/validation/common';
-import { validateJsonResponse } from '$lib/server/validation/response-utils';
-import type { TablesUpdate } from '$lib/types/database';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/validation/worksheets.ts';
+import { uuidSchema } from '#lib/server/validation/common.ts';
+import { validateJsonResponse } from '#lib/server/validation/response-utils.ts';
+import type { TablesUpdate } from '#lib/types/database.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/worksheets/[id]/sections/[sectionId]/+server');
 
@@ -100,7 +100,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		'GET /api/worksheets/[id]/sections/[sectionId]'
 	);
 
-	return json({ section: validated });
+	return Response.json({ section: validated });
 };
 
 /**
@@ -173,7 +173,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		'PUT /api/worksheets/[id]/sections/[sectionId]'
 	);
 
-	return json({ section: validated });
+	return Response.json({ section: validated });
 };
 
 /**
@@ -256,5 +256,5 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 		throw error(500, 'Impossible de supprimer la section');
 	}
 
-	return json({ success: true, message: 'Section supprimée' });
+	return Response.json({ success: true, message: 'Section supprimée' });
 };

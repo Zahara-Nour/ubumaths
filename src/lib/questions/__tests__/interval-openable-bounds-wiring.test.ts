@@ -11,10 +11,10 @@ import { generateInstance } from '../generator/instance-generator';
 import { questionTemplateSchema, blankSchema, blankDefaultsSchema } from '../template-schema';
 import { runTestSpec } from '../test-spec-runner';
 import { gradeQuestion } from '../grading';
-import { validateAnswer, validateBlanksDetailed } from '$lib/utils/answer-validator';
-import { computeBlankVerdicts } from '$lib/components/questions/blank-verdicts';
+import { validateAnswer, validateBlanksDetailed } from '#lib/utils/answer-validator.ts';
+import { computeBlankVerdicts } from '#lib/components/questions/blank-verdicts.ts';
 import type { InstanceBlank, QuestionInstance, QuestionTemplate } from '../types';
-import { templateMarkdown, type ResolvedMarkdown } from '$lib/ubumark';
+import { templateMarkdown, type ResolvedMarkdown } from '#lib/ubumark/index.ts';
 
 // Fixtures
 const INCREASING = '[2;+\\infty[';
@@ -28,8 +28,6 @@ function instanceWith(
 		statement: 'Intervalle où f est croissante' as ResolvedMarkdown,
 		blanks,
 		grades: ['1_SPE'],
-		theme: 'Fonctions',
-		domain: 'Dérivation',
 		level: 2,
 		generatedAt: new Date().toISOString(),
 		...(options && { options })
@@ -74,8 +72,6 @@ function variationsTemplate(where: 'blank' | 'blankDefaults'): QuestionTemplate 
 			}
 		],
 		grades: ['1_SPE'],
-		theme: 'Fonctions',
-		domain: 'Dérivation',
 		level: 2
 	} as QuestionTemplate;
 }

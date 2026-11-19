@@ -16,7 +16,8 @@ export const CLEARABLE_TEMPLATE_KEYS = [
 	'defaultDisplayOptions',
 	'exerciseInstruction',
 	'options',
-	'subdomain',
+	// Le rangement vidé dans l'éditeur doit effacer le nœud en base
+	'classification_node_id',
 	'delay',
 	'testSpecs'
 ] as const satisfies ReadonlyArray<keyof QuestionTemplate>;

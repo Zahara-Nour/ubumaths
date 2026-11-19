@@ -1,10 +1,8 @@
 {
+	"id": "a80a780f-bed5-404c-b5fe-db4211437ac8",
 	"title": "Caractérisations de la convexité et du point d'inflexion",
 	"description": "QCM : f convexe ⟺ f′ croissante ⟺ f″ ≥ 0 ⟺ courbe au-dessus de ses tangentes ; point d'inflexion = la courbe traverse sa tangente",
 	"grades": ["T_SPE", "T_COMP"],
-	"theme": "Fonctions convexes",
-	"domain": "Convexité",
-	"subdomain": "Caractérisations",
 	"level": 1,
 	"status": "draft",
 	"delay": 90,

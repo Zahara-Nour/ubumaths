@@ -1,0 +1,156 @@
+[
+	{
+		"id": "13322c55-ec45-43c5-9c84-3fb034df583e",
+		"parent_id": "808d6f9c-1b5d-4796-86dd-0bdb185b34f1",
+		"kind": "notion",
+		"name": "Produit scalaire",
+		"archived_at": null
+	},
+	{
+		"id": "26b15bc5-3885-432e-9cb7-518da9d73fd0",
+		"parent_id": "13322c55-ec45-43c5-9c84-3fb034df583e",
+		"kind": "subnotion",
+		"name": "lieux de points",
+		"archived_at": null
+	},
+	{
+		"id": "26ca7245-f68b-423b-a1e3-ba8f10edb5f4",
+		"parent_id": "b138aafc-ad8a-4c13-8865-46fa2684e888",
+		"kind": "notion",
+		"name": "Fonctions trigonométriques",
+		"archived_at": null
+	},
+	{
+		"id": "2adca282-538d-4779-81aa-84b368d1765f",
+		"parent_id": "c90700c5-6111-437b-b66f-fdc76f3b1720",
+		"kind": "subnotion",
+		"name": "somme des termes",
+		"archived_at": null
+	},
+	{
+		"id": "34c8c2c8-8911-4952-bd9a-edbe69e61552",
+		"parent_id": "51bba43f-bb50-41e8-8e91-865ffc8e1fc1",
+		"kind": "subnotion",
+		"name": "discriminant",
+		"archived_at": null
+	},
+	{
+		"id": "35cfd263-d25e-4680-ae51-471ef852b8ac",
+		"parent_id": "13322c55-ec45-43c5-9c84-3fb034df583e",
+		"kind": "subnotion",
+		"name": "angles et longueurs",
+		"archived_at": null
+	},
+	{
+		"id": "3890b49e-ea75-49dd-8ecf-8a82671a79f1",
+		"parent_id": "7ed1251c-fd0a-4319-8715-aeac8e2dee22",
+		"kind": "subnotion",
+		"name": "somme des termes",
+		"archived_at": null
+	},
+	{
+		"id": "3cfed021-5c0a-4150-8b81-2558a8561682",
+		"parent_id": "ccfd8ed9-1edf-411b-a540-f41afd66103a",
+		"kind": "subnotion",
+		"name": "dérivabilité en un point",
+		"archived_at": null
+	},
+	{
+		"id": "51bba43f-bb50-41e8-8e91-865ffc8e1fc1",
+		"parent_id": "600d983b-da8d-4d22-8c9a-e5e8eda869fa",
+		"kind": "notion",
+		"name": "Équations : second degré",
+		"archived_at": null
+	},
+	{
+		"id": "51c396af-438d-4b70-9e45-0dc7ffb39549",
+		"parent_id": "7ed1251c-fd0a-4319-8715-aeac8e2dee22",
+		"kind": "subnotion",
+		"name": "terme général",
+		"archived_at": null
+	},
+	{
+		"id": "600d983b-da8d-4d22-8c9a-e5e8eda869fa",
+		"parent_id": null,
+		"kind": "branch",
+		"name": "Algèbre",
+		"archived_at": null
+	},
+	{
+		"id": "7ed1251c-fd0a-4319-8715-aeac8e2dee22",
+		"parent_id": "bfe69202-e5bb-4f9b-9f5e-6ce92f176542",
+		"kind": "notion",
+		"name": "Suites arithmétiques",
+		"archived_at": null
+	},
+	{
+		"id": "808d6f9c-1b5d-4796-86dd-0bdb185b34f1",
+		"parent_id": null,
+		"kind": "branch",
+		"name": "Géométrie",
+		"archived_at": null
+	},
+	{
+		"id": "9f11f79d-6065-4361-a40f-df8d9dd52a9a",
+		"parent_id": "ccfd8ed9-1edf-411b-a540-f41afd66103a",
+		"kind": "subnotion",
+		"name": "fonctions dérivées",
+		"archived_at": null
+	},
+	{
+		"id": "a4c971ee-ce04-4d1b-bf4f-22653977b4b7",
+		"parent_id": "ccfd8ed9-1edf-411b-a540-f41afd66103a",
+		"kind": "subnotion",
+		"name": "opérations sur les dérivées",
+		"archived_at": null
+	},
+	{
+		"id": "b138aafc-ad8a-4c13-8865-46fa2684e888",
+		"parent_id": null,
+		"kind": "branch",
+		"name": "Fonctions",
+		"archived_at": null
+	},
+	{
+		"id": "bfe69202-e5bb-4f9b-9f5e-6ce92f176542",
+		"parent_id": null,
+		"kind": "branch",
+		"name": "Suites",
+		"archived_at": null
+	},
+	{
+		"id": "c89e6615-e4f2-447e-baba-ac49c14dee5a",
+		"parent_id": "c90700c5-6111-437b-b66f-fdc76f3b1720",
+		"kind": "subnotion",
+		"name": "terme général",
+		"archived_at": null
+	},
+	{
+		"id": "c90700c5-6111-437b-b66f-fdc76f3b1720",
+		"parent_id": "bfe69202-e5bb-4f9b-9f5e-6ce92f176542",
+		"kind": "notion",
+		"name": "Suites géométriques",
+		"archived_at": null
+	},
+	{
+		"id": "ccfd8ed9-1edf-411b-a540-f41afd66103a",
+		"parent_id": "b138aafc-ad8a-4c13-8865-46fa2684e888",
+		"kind": "notion",
+		"name": "Dérivation",
+		"archived_at": null
+	},
+	{
+		"id": "e7f414da-e4fa-49cb-9b96-b1b2e0f1068d",
+		"parent_id": "ccfd8ed9-1edf-411b-a540-f41afd66103a",
+		"kind": "subnotion",
+		"name": "tangente",
+		"archived_at": null
+	},
+	{
+		"id": "f7e20059-daa8-400c-bab1-42c02f37f252",
+		"parent_id": "26ca7245-f68b-423b-a1e3-ba8f10edb5f4",
+		"kind": "subnotion",
+		"name": "cosinus et sinus d'un réel",
+		"archived_at": null
+	}
+]

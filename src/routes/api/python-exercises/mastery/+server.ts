@@ -13,21 +13,19 @@
  * single-exercise lookup, prefer GET /api/python-exercises/[id]/mastery.
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { pythonMasteryQuerySchema } from '$lib/server/validation/python-exercises';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { pythonMasteryQuerySchema } from '#lib/server/validation/python-exercises.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/python-exercises/mastery/+server');
 
 type ZodIssue = { path: (string | number)[]; message: string };
 
 export const GET: RequestHandler = async ({ locals, url }) => {
-	const { user, supabase } = locals;
-
-	if (!user) {
-		throw error(401, 'Connexion requise');
-	}
+	const { user } = await requireAuth(locals);
+	const { supabase } = locals;
 
 	const parsed = pythonMasteryQuerySchema.safeParse({
 		student_id: url.searchParams.get('student_id') ?? undefined,
@@ -55,5 +53,5 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		throw error(500, 'Impossible de charger les statuts de maîtrise');
 	}
 
-	return json({ mastery: data ?? [] });
+	return Response.json({ mastery: data ?? [] });
 };

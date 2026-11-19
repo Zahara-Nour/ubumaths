@@ -9,7 +9,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { Atelier } from '../atelier.svelte';
-import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
+import { WebReplEngine } from '#lib/mathAST/cli/web/web-repl-engine.ts';
 import { runInput, runAction, type CalcResult, type CalcSession } from '../calcul';
 import {
 	SERIES_HINT,
@@ -19,7 +19,7 @@ import {
 	decimalCommaProse,
 	decimalCommaText
 } from '../decimal-comma';
-import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
+import type { RenderedStep } from '#lib/mathAST/common/step-renderer-base.ts';
 
 // =============================================================================
 // Outils
@@ -190,7 +190,7 @@ describe('chaque commande de la vue Calcul écrit la virgule', () => {
 	it('.résoudre (mode décimal) : la valeur approchée', () => {
 		const result = commande(runInput(decimalSession(), '.résoudre e^x=3'));
 
-		expect(result.output).toContain('x ≈ 1,0986');
+		expect(result.output).toContain('S ≈ {1,0986}');
 		expectNoDotDecimal(result);
 	});
 
@@ -331,7 +331,7 @@ describe('la saisie lit la virgule que l’affichage écrit', () => {
 	it.each(['0{,}5x+3=1', '0,5x+3=1'])('aller-retour : la sortie recopiée se relit (%s)', (out) => {
 		const result = commande(runInput(session(), `.résoudre ${out}`));
 
-		expect(result.latex).toBe('x = -4');
+		expect(result.latex).toBe('S = \\left\\{ -4 \\right\\}');
 		expect(result.output).toContain('x = -4');
 	});
 });

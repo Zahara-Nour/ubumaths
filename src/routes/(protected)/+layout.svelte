@@ -17,7 +17,7 @@
 
 <script lang="ts">
 	import type { Snippet } from 'svelte';
-	import PomodoroEffects from '$lib/stores/pomodoro/PomodoroEffects.svelte';
+	import PomodoroEffects from '#lib/stores/pomodoro/PomodoroEffects.svelte';
 
 	let { children }: { children: Snippet } = $props();
 </script>

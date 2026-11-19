@@ -8,26 +8,26 @@
 	 * tel quel dans le panneau « Propriétés » (`ObjectProperties`, 2026-10-23).
 	 */
 	import { tick } from 'svelte';
-	import { useAtelier } from '$lib/atelier/context';
+	import { useAtelier } from '#lib/atelier/context.ts';
 	import {
 		isSequence,
 		type CurveDisplay,
 		type FunctionObject,
 		type SequenceObject
-	} from '$lib/atelier/types';
-	import { displayName } from '$lib/atelier/names';
+	} from '#lib/atelier/types.ts';
+	import { displayName } from '#lib/atelier/names.ts';
 	import {
 		CURVE_COLORS,
 		CURVE_COLOR_LABELS,
 		curveColorValue,
 		isCurveColor
-	} from '$lib/grapheur/colors';
+	} from '#lib/grapheur/colors.ts';
 	import {
 		LINE_STYLES,
 		LINE_STYLE_DASHARRAY,
 		LINE_WIDTHS,
 		type LineStyle
-	} from '$lib/grapheur/types';
+	} from '#lib/grapheur/types.ts';
 	import { rovingRadioGroup } from './roving-radio-group';
 
 	interface Props {

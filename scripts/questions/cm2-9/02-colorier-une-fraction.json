@@ -1,0 +1,233 @@
+{
+	"id": "549c7f1c-d885-45d3-9fc1-6deefd1fea62",
+	"title": "Colorier une fraction d'une figure",
+	"description": "Colorier les parts d'une grille pour représenter une fraction de dénominateur au plus 60 : 3/4 sur 24 parts, 17/24 ; au-delà de 1, sur 2 ou 3 bandes (11/4)",
+	"grades": ["CM2"],
+	"level": 13,
+	"delay": 60,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"reducedFractions": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Colorie $\\frac{{{n}}}{{{d}}}$ de la figure.\n\n```partage\nforme: grille {{l}}×{{c}}\ncolorier: {{n}}/{{d}}\n```",
+			"variables": [
+				{
+					"name": "j",
+					"expression": "0..14"
+				},
+				{
+					"name": "l",
+					"expression": "{{if:j==0|4|{{if:j==1|4|{{if:j==2|4|{{if:j==3|3|{{if:j==4|3|{{if:j==5|4|{{if:j==6|4|{{if:j==7|3|{{if:j==8|4|{{if:j==9|4|{{if:j==10|5|{{if:j==11|5|{{if:j==12|6|{{if:j==13|6|3}}}}}}}}}}}}}}}}}}}}}}}}}}}}"
+				},
+				{
+					"name": "c",
+					"expression": "{{if:j==0|6|{{if:j==1|6|{{if:j==2|6|{{if:j==3|8|{{if:j==4|8|{{if:j==5|5|{{if:j==6|5|{{if:j==7|10|{{if:j==8|10|{{if:j==9|10|{{if:j==10|8|{{if:j==11|10|{{if:j==12|10|{{if:j==13|10|6}}}}}}}}}}}}}}}}}}}}}}}}}}}}"
+				},
+				{
+					"name": "d",
+					"expression": "{{if:j==0|3|{{if:j==1|4|{{if:j==2|8|{{if:j==3|4|{{if:j==4|6|{{if:j==5|4|{{if:j==6|5|{{if:j==7|6|{{if:j==8|5|{{if:j==9|8|{{if:j==10|8|{{if:j==11|10|{{if:j==12|12|{{if:j==13|5|9}}}}}}}}}}}}}}}}}}}}}}}}}}}}"
+				},
+				{
+					"name": "N",
+					"expression": "eval:l*c"
+				},
+				{
+					"name": "m",
+					"expression": "eval:N/d"
+				},
+				{
+					"name": "n",
+					"expression": "1..{{eval:d-1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**La grille a ${{N}}$ parts, pas ${{d}}$** : on les regroupe par ${{m}}$. $${{N}} = {{d}} \\times {{m}}$$",
+					"Un {{if:d==3|tiers|{{if:d==4|quart|{{if:d==5|cinquième|{{if:d==6|sixième|{{if:d==8|huitième|{{if:d==9|neuvième|{{if:d==10|dixième|douzième}}}}}}}}}}}}}} de la figure, c'est ${{m}}$ parts : $\\frac{{{n}}}{{{d}}} = \\frac{{{eval:n*m}}}{{{N}}}$.",
+					"On colorie $\\textcolor{{{color:primary.0}}}{{{eval:n*m}}}$ part{{if:n*m>1|s|}}, n'importe lesquelles."
+				]
+			}
+		},
+		{
+			"statement": "Colorie $\\frac{{{n}}}{{{N}}}$ de la figure.\n\n```partage\nforme: grille {{l}}×{{c}}\ncolorier: {{n}}/{{N}}\n```",
+			"variables": [
+				{
+					"name": "j",
+					"expression": "0..12"
+				},
+				{
+					"name": "l",
+					"expression": "{{if:j==0|3|{{if:j==1|4|{{if:j==2|3|{{if:j==3|4|{{if:j==4|3|{{if:j==5|4|{{if:j==6|5|{{if:j==7|3|{{if:j==8|4|{{if:j==9|4|{{if:j==10|5|{{if:j==11|5|6}}}}}}}}}}}}}}}}}}}}}}}}"
+				},
+				{
+					"name": "c",
+					"expression": "{{if:j==0|5|{{if:j==1|4|{{if:j==2|6|{{if:j==3|5|{{if:j==4|8|{{if:j==5|6|{{if:j==6|5|{{if:j==7|10|{{if:j==8|8|{{if:j==9|10|{{if:j==10|8|{{if:j==11|10|10}}}}}}}}}}}}}}}}}}}}}}}}"
+				},
+				{
+					"name": "N",
+					"expression": "eval:l*c"
+				},
+				{
+					"name": "n",
+					"expression": "1..{{eval:N-1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**La grille est partagée en ${{l}} \\times {{c}} = {{N}}$ parts égales** : une part, c'est $\\frac{1}{{{N}}}$ de la figure.",
+					"On colorie $\\textcolor{{{color:primary.0}}}{{{n}}}$ part{{if:n>1|s|}}, n'importe lesquelles."
+				]
+			}
+		},
+		{
+			"statement": "Chaque bande est une unité. Colorie $\\frac{{{n}}}{{{d}}}$ de l'unité.\n\n```partage\nforme: bande {{d}}\nunites: {{u}}\ncolorier: {{n}}/{{d}}\n```",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "3..8"
+				},
+				{
+					"name": "n",
+					"expression": "{{eval:d+1}}..{{eval:3*d-1}}"
+				},
+				{
+					"name": "u",
+					"expression": "eval:(n-mod(n,d))/d+1"
+				}
+			],
+			"conditions": ["mod(n,d)!=0"],
+			"correction": {
+				"steps": [
+					"**Chaque bande est partagée en ${{d}}$ parts égales** : une part, c'est $\\frac{1}{{{d}}}$ de l'unité.",
+					"$\\frac{{{n}}}{{{d}}}$, c'est ${{n}}$ parts : plus d'une bande. On colorie $\\textcolor{{{color:primary.0}}}{{{n}}}$ parts, sur les bandes qu'il faut."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3/4 sur 24 parts : 18 parts",
+			"variationIndex": 0,
+			"variables": {
+				"j": "1",
+				"l": "4",
+				"c": "6",
+				"d": "4",
+				"N": "24",
+				"m": "6",
+				"n": "3"
+			},
+			"answers": ["1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "18 parts quelconques",
+			"variationIndex": 0,
+			"variables": {
+				"j": "1",
+				"l": "4",
+				"c": "6",
+				"d": "4",
+				"N": "24",
+				"m": "6",
+				"n": "3"
+			},
+			"answers": ["5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3 parts (dénominateur lu comme le nombre de parts)",
+			"variationIndex": 0,
+			"variables": {
+				"j": "1",
+				"l": "4",
+				"c": "6",
+				"d": "4",
+				"N": "24",
+				"m": "6",
+				"n": "3"
+			},
+			"answers": ["1, 2, 3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "17/24 : 17 parts",
+			"variationIndex": 1,
+			"variables": {
+				"j": "5",
+				"l": "4",
+				"c": "6",
+				"N": "24",
+				"n": "17"
+			},
+			"answers": ["1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 7 parts (les non coloriées)",
+			"variationIndex": 1,
+			"variables": {
+				"j": "5",
+				"l": "4",
+				"c": "6",
+				"N": "24",
+				"n": "17"
+			},
+			"answers": ["1, 2, 3, 4, 5, 6, 7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "11/4 : 11 parts sur trois bandes",
+			"variationIndex": 2,
+			"variables": {
+				"d": "4",
+				"n": "11",
+				"u": "3"
+			},
+			"answers": ["1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3 parts (2 + 3/4 lu 3/4)",
+			"variationIndex": 2,
+			"variables": {
+				"d": "4",
+				"n": "11",
+				"u": "3"
+			},
+			"answers": ["1, 2, 3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Rien colorié : case vide",
+			"variationIndex": 2,
+			"variables": {
+				"d": "4",
+				"n": "11",
+				"u": "3"
+			},
+			"answers": [""],
+			"expected": {
+				"status": "empty"
+			}
+		}
+	]
+}

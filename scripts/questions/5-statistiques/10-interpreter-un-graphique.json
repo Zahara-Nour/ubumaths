@@ -1,10 +1,8 @@
 {
+	"id": "927b676b-e483-44f8-9fab-865d8af44202",
 	"title": "Interpréter un graphique",
 	"description": "Exploiter un graphique d'évolution : entre quelles années la valeur a le plus augmenté, entre quelles années elle a baissé",
 	"grades": ["5"],
-	"theme": "Statistiques",
-	"domain": "Représenter des données",
-	"subdomain": "courbes et repères",
 	"level": 2,
 	"delay": 90,
 	"status": "draft",

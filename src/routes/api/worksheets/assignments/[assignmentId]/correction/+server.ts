@@ -19,26 +19,27 @@
  *   corrigé qui ne vaudrait pour personne. `per_student_copies` le dit.
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
 import { z } from 'zod';
-import { sanitizeForFileName } from '$lib/worksheets/pdf-file-name';
-import { generateWorksheetTypst } from '$lib/typst/generators';
-import { canAccessCorrections } from '$lib/server/worksheets/correction-release';
+import { sanitizeForFileName } from '#lib/worksheets/pdf-file-name.ts';
+import { generateWorksheetTypst } from '#lib/typst/generators/index.ts';
+import { canAccessCorrections } from '#lib/server/worksheets/correction-release.ts';
 import {
 	fetchAssignmentClasses,
 	formatClassNames
-} from '$lib/server/worksheets/assignment-classes';
-import { worksheetLocale } from '$lib/types/worksheets';
-import type { WorksheetAssignmentRow } from '$lib/types/worksheets';
+} from '#lib/server/worksheets/assignment-classes.ts';
+import { worksheetLocale } from '#lib/types/worksheets.ts';
+import type { WorksheetAssignmentRow } from '#lib/types/worksheets.ts';
 import {
 	assignmentCopyScope,
 	buildWorksheetCopy,
 	hasPerStudentCopies,
 	type WorksheetForCopy
-} from '$lib/worksheets/worksheet-copy';
-import { isStudentOfAssignment } from '$lib/server/worksheets/assignment-recipients';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/worksheets/worksheet-copy.ts';
+import { isStudentOfAssignment } from '#lib/server/worksheets/assignment-recipients.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/worksheets/assignments/[assignmentId]/correction/+server');
 
@@ -57,10 +58,7 @@ const querySchema = z.object({
 
 export const GET: RequestHandler = async ({ params, locals, url }) => {
 	// Check authentication
-	const { user } = await locals.safeGetSession();
-	if (!user) {
-		throw error(401, 'Connexion requise');
-	}
+	const { user, profile } = await requireAuth(locals);
 
 	const assignmentId = params.assignmentId;
 	if (!assignmentId) {
@@ -111,27 +109,8 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 			throw error(404, 'Affectation introuvable');
 		}
 
-		// Check if user is a student with access to this assignment
-		// `profiles` porte `class_ids`, un TABLEAU (un élève peut appartenir à
-		// plusieurs classes) — il n'existe pas de `class_id`. La colonne inexistante
-		// faisait rejeter la requête ENTIÈRE par PostgREST : `profile` valait donc
-		// toujours `null`, `isTeacher` toujours `false`, et seul le créateur du
-		// devoir pouvait ouvrir la correction. Échec en mode fermé, mais un
-		// professeur non créateur et les élèves concernés étaient écartés à tort.
-		const { data: profile, error: profileError } = await locals.supabase
-			.from('profiles')
-			.select('role, class_ids')
-			.eq('id', user.id)
-			.single();
-
-		// PGRST116 = pas de profil, et le refus qui suit est légitime. Toute AUTRE
-		// panne produisait le même refus, indiscernable d'un refus mérité.
-		if (profileError && profileError.code !== 'PGRST116') {
-			logger.error('Rôle illisible :', profileError);
-			throw error(500, 'Impossible de vérifier les droits d’accès');
-		}
-
-		const isTeacher = profile?.role === 'teacher' || profile?.role === 'admin';
+		// Rôle fourni par la garde commune (requireAuth)
+		const isTeacher = profile.role === 'teacher' || profile.role === 'admin';
 		const isAssignmentCreator = assignment.created_by === user.id;
 
 		// L'accès élève est délégué à `can_access_assignment`, qui connaît les DEUX
@@ -158,7 +137,7 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 
 		logger.info('[Correction API] Access check:', {
 			userId: user.id,
-			role: profile?.role,
+			role: profile.role,
 			isTeacher,
 			isAssignmentCreator,
 			isStudentInClass,
@@ -204,7 +183,7 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 		// prof (D6), destinataire de l'affectation ; sans élève, on le demande.
 		const perStudentCopies = hasPerStudentCopies(worksheet, classScope);
 		if (perStudentCopies && !studentId) {
-			return json({ success: true, needs_student: true, per_student_copies: true });
+			return Response.json({ success: true, needs_student: true, per_student_copies: true });
 		}
 		if (perStudentCopies && studentId) {
 			if (!(await isStudentOfAssignment(locals.supabase, assignmentId, studentId))) {
@@ -226,7 +205,7 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 
 		// If JSON format requested, return correction data
 		if (format === 'json') {
-			return json({
+			return Response.json({
 				success: true,
 				worksheet: {
 					id: worksheet.id,
@@ -270,7 +249,7 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 		// Return Typst source (PDF generation must be done client-side)
 		const filename = `${sanitizeForFileName(worksheet.title)}_correction_${sanitizeForFileName(studentName)}.pdf`;
 
-		return json({
+		return Response.json({
 			success: true,
 			typst: typstContent,
 			filename,

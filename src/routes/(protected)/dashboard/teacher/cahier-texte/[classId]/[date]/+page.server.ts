@@ -8,27 +8,27 @@
 
 import type { PageServerLoad, Actions } from './$types';
 import { error, fail, redirect } from '@sveltejs/kit';
-import { requireRole } from '$lib/server/middleware/auth';
-import { createJournalEntry, updateJournalEntry, deleteJournalEntry } from '$lib/server/journal';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { createJournalEntry, updateJournalEntry, deleteJournalEntry } from '#lib/server/journal.ts';
 import {
 	parseHomeworkItems,
 	validateCreateJournalEntry,
 	validateUpdateJournalEntry
-} from '$lib/server/validation/journal';
-import { getProgrammeTreeKeeping } from '$lib/server/programme-tree';
-import { keepCheckablePointIds } from '$lib/server/curriculum-point-status';
-import { reconcileAutoCoverage, type ReconcileReport } from '$lib/server/curriculum-coverage';
-import { parsePendingActivities } from '$lib/server/journal-activities';
+} from '#lib/server/validation/journal.ts';
+import { getProgrammeTreeKeeping } from '#lib/server/programme-tree.ts';
+import { keepCheckablePointIds } from '#lib/server/curriculum-point-status.ts';
+import { reconcileAutoCoverage, type ReconcileReport } from '#lib/server/curriculum-coverage.ts';
+import { parsePendingActivities } from '#lib/server/journal-activities.ts';
 import {
 	getHomeworkForEntry,
 	prepareHomeworkForEntry,
 	setHomeworkForEntry,
 	type HomeworkItemInput
-} from '$lib/server/journal-homework';
-import { getUpcomingSessionDates } from '$lib/server/class-sessions';
+} from '#lib/server/journal-homework.ts';
+import { getUpcomingSessionDates } from '#lib/server/class-sessions.ts';
 import { z } from 'zod';
-import { formLabel } from '$lib/types/evaluation';
-import { createServerLogger } from '$lib/utils/logger';
+import { formLabel } from '#lib/types/evaluation.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger(
 	'(protected)/dashboard/teacher/cahier-texte/[classId]/[date]/+page.server'
@@ -183,7 +183,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		const [{ data: qs }, { data: evals }] = await Promise.all([
 			locals.supabase
 				.from('question_templates')
-				.select('id, title, theme, domain, level')
+				.select('id, title, level')
 				.contains('grades', [classData.grade])
 				.order('title', { ascending: true })
 				.limit(500),
@@ -198,9 +198,8 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		]);
 		questionOptions = (qs ?? []).map((q) => ({
 			value: q.id,
-			// Le titre seul se répète beaucoup d'une question à l'autre ; la
-			// catégorie est ce qui les distingue dans la liste.
-			label: `${q.title} — ${q.theme} / ${q.domain} (niv. ${q.level})`
+			// Un modèle neuf n'a plus de thème ni de domaine (ADR 0035) : titre et niveau
+			label: `${q.title} (niv. ${q.level})`
 		}));
 		evaluationOptions = (evals ?? [])
 			.map((e) => ({

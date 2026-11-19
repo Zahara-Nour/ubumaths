@@ -16,7 +16,7 @@ import {
 } from '../../helpers/database/trigger-test-helpers';
 import { TestData } from '../../helpers/database/test-data-factory';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 
 /**
  * Tables with updated_at triggers

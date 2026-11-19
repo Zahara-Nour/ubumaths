@@ -1,10 +1,8 @@
 {
+	"id": "59f818c4-e3e0-460c-8635-857236c61b13",
 	"title": "Coordonnées du milieu d'un segment",
 	"description": "Milieu de [AB], extrémité B connaissant A et le milieu, centre d'un parallélogramme (pièges : différence / 2, moitié de x_I)",
 	"grades": ["2"],
-	"theme": "Géométrie",
-	"domain": "Vecteurs du plan",
-	"subdomain": "Milieu",
 	"level": 1,
 	"delay": 90,
 	"status": "draft",

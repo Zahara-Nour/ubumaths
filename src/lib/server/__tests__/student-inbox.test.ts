@@ -13,7 +13,7 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 import { getStudentWorkInbox } from '../student-inbox';
 
 // ============================================================================
@@ -613,7 +613,7 @@ describe('getStudentWorkInbox — évaluations (chantier 4)', () => {
 		});
 	});
 
-	it('C21 : affiche « Entraînement » ; le lien ne porte pas de mode (la forme vient de l’évaluation)', async () => {
+	it('C21 : affiche « Contrôle blanc » ; le lien ne porte pas de mode (la forme vient de l’évaluation)', async () => {
 		const mock = createMockSupabase();
 		mock.enqueue('class_members', []);
 		mock.enqueue('evaluation_assignments', [evaluationAssignment('interactive')]);
@@ -621,7 +621,7 @@ describe('getStudentWorkInbox — évaluations (chantier 4)', () => {
 		enqueueOthers(mock);
 
 		const inbox = await getStudentWorkInbox(mock.client, STUDENT);
-		expect(inbox.thisWeek[0].formLabel).toBe('Entraînement');
+		expect(inbox.thisWeek[0].formLabel).toBe('Contrôle blanc');
 		expect(inbox.thisWeek[0].href).toBe('/automaths/test?assignment=ea-1');
 	});
 

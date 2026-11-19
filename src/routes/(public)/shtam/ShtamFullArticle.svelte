@@ -1,9 +1,9 @@
 <!-- Un article en entier, sur une page intérieure du journal : corps en colonnes, puis son vrai du faux -->
 <script lang="ts">
 	import { resolve } from '$app/paths';
-	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
-	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
-	import type { ShtamArticleView } from '$lib/server/shtam/present';
+	import InlineMarkdown from '#lib/components/markdown/InlineMarkdown.svelte';
+	import MarkdownRenderer from '#lib/components/markdown/MarkdownRenderer.svelte';
+	import type { ShtamArticleView } from '#lib/server/shtam/present.ts';
 
 	// Types
 

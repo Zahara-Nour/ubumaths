@@ -63,6 +63,27 @@ export const solideEntry: BlockCatalogEntry = {
 					defaultValue: null,
 					description:
 						'Coupe le solide par un plan ; la section est teintée, le plan n’est pas dessiné. Cube, pavé : plan parallèle à une face (par ses sommets ou sa place), à la distance donnée de cette face ; quatre noms à la fin nomment les sommets de la section (le premier sur l’arête qui part du premier sommet de la face). Cylindre : perpendiculaire à l’axe, à la hauteur donnée au-dessus de la base du bas ; ou parallèle à l’axe, plan de face à la distance donnée de l’axe (0 : par l’axe). Boule : plan horizontal à la distance donnée du centre (0 : un grand cercle). Sans distance, le plan passe au milieu. Avec cotes:, la distance est écrite ; les dimensions de la section jamais, ni sa nature au lecteur d’écran : ce sont les réponses.'
+				},
+				{
+					key: 'points',
+					values: 'I milieu AE | O centre ABCD | O centre ABCDEFGH (séparés par des virgules)',
+					defaultValue: null,
+					description:
+						'Cube, pavé, prisme, pyramide : des points de plus, marqués d’un point et nommés (une majuscule, puis éventuellement ’ ou un nombre). milieu : le milieu de deux points, sommets ou points déjà déclarés (J milieu IG). centre : le centre d’une face, ou pour un cube ou un pavé ses huit sommets, le centre du solide. Les sommets doivent être nommés ; au plus 8 points.'
+				},
+				{
+					key: 'vecteurs',
+					values: 'AB | u = AE (séparés par des virgules)',
+					defaultValue: null,
+					description:
+						'Cube, pavé, prisme, pyramide : des flèches entre deux points nommés (sommets ou points de points:). u = AE écrit la lettre u près de la flèche, sous une petite flèche (une minuscule, puis éventuellement un chiffre). Les flèches sont en trait plein, même à travers le solide. Au plus 8 vecteurs.'
+				},
+				{
+					key: 'tracer',
+					values: 'vecteur AB + AD + AE | vecteur AB + AD depuis A | vecteur 2 u - v',
+					defaultValue: null,
+					description:
+						'Geste de l’élève, dans une question : il touche un point pour l’origine, puis un point pour l’extrémité, et une flèche se dessine. La combinaison : au plus 6 vecteurs entre points nommés, ou nommés dans vecteurs: (2 u - v), signes + et -, coefficients entiers ou fractions irréductibles de dénominateur 2, 3 ou 4 (2 AB, 1/2 AE, 1/3 SA). depuis A impose l’origine (posée d’office, l’élève ne touche que l’extrémité) ; sans lui, tout représentant du vecteur est juste. Les points à toucher : les sommets nommés, puis les points de points: (pas de milieux automatiques) ; l’extrémité doit tomber sur l’un d’eux. Polyèdres seulement, sommets nommés. Faux : une phrase, et la flèche juste en vert. Réponse de la case : les noms des deux points (A/G).'
 				}
 			]
 		}
@@ -144,6 +165,65 @@ export const solideEntry: BlockCatalogEntry = {
 			explanation: 'Le plan est à 2 cm du centre ; section: 0 donne un grand cercle.'
 		},
 		{
+			title: 'Des vecteurs sur un cube',
+			source: fence(
+				'solide',
+				'forme: cube 3',
+				'sommets: A B C D E F G H',
+				'points: I milieu EF',
+				'vecteurs: u = AB, v = AD, w = AI'
+			),
+			explanation:
+				'Trois vecteurs donnés, nommés u, v et w ; I est le milieu de [EF]. Pour représenter u + v ou AB + ½ AE.'
+		},
+		{
+			title: 'Le centre d’une face d’un tétraèdre',
+			source: fence(
+				'solide',
+				'forme: pyramide triangle 4 3',
+				'sommets: S A B C',
+				'points: G centre ABC',
+				'vecteurs: SG'
+			),
+			explanation: 'G est le centre de gravité de la base ABC ; la flèche va du sommet S à G.'
+		},
+		{
+			title: 'Un vecteur à tracer, origine imposée',
+			source: fence(
+				'solide',
+				'forme: cube 3',
+				'sommets: A B C D E F G H',
+				'points: I milieu CG',
+				'tracer: vecteur AB + AD + 1/2 AE depuis A'
+			),
+			explanation:
+				'L’élève touche l’extrémité, ici I, le milieu de [CG] : l’origine A est posée d’office. Les huit sommets et I se touchent.'
+		},
+		{
+			title: 'Un vecteur à tracer, origine libre',
+			source: fence(
+				'solide',
+				'forme: cube 3',
+				'sommets: A B C D E F G H',
+				'tracer: vecteur AB + AD'
+			),
+			explanation:
+				'L’élève touche l’origine puis l’extrémité : A puis C est juste, comme E puis G : toute flèche égale à AB + AD est juste.'
+		},
+		{
+			title: 'Une combinaison de vecteurs donnés',
+			source: fence(
+				'solide',
+				'forme: pyramide triangle 4 3',
+				'sommets: S A B C',
+				'points: G centre ABC',
+				'vecteurs: u = SA, v = SB, w = SC',
+				'tracer: vecteur 1/3 u + 1/3 v + 1/3 w depuis S'
+			),
+			explanation:
+				'Les vecteurs u, v, w sont dessinés et nommés ; l’élève touche l’extrémité, ici G, le centre de gravité de ABC. Une phrase de correction écrit la combinaison avec u, v, w.'
+		},
+		{
 			title: 'Sans arêtes cachées',
 			source: fence('solide', 'forme: pave 4 2 3', 'cachees: non'),
 			explanation: 'Toutes les arêtes en trait plein : une perspective à corriger.'
@@ -179,6 +259,35 @@ export const solideEntry: BlockCatalogEntry = {
 			source: fence('solide', 'forme: cube 2', 'marquer: arete AE'),
 			message: 'nomme les sommets',
 			explanation: 'Sans sommets:, une face se désigne par sa place : marquer: face dessus.'
+		},
+		{
+			title: 'Un vecteur vers un point inconnu',
+			source: fence('solide', 'forme: cube 2', 'sommets: A B C D E F G H', 'vecteurs: AI'),
+			message: 'aucun point ne s’appelle I',
+			explanation: 'Déclarer d’abord le point : points: I milieu EF.'
+		},
+		{
+			title: 'Un vecteur à tracer qui n’arrive nulle part',
+			source: fence(
+				'solide',
+				'forme: cube 2',
+				'sommets: A B C D E F G H',
+				'tracer: vecteur AB + 1/2 AE depuis A'
+			),
+			message: 'l’extrémité ne tombe sur aucun point',
+			explanation: 'Déclarer le milieu : points: I milieu BF, puis il devient un point à toucher.'
+		},
+		{
+			title: 'Une fraction à simplifier',
+			source: fence(
+				'solide',
+				'forme: cube 2',
+				'sommets: A B C D E F G H',
+				'points: I milieu AE',
+				'tracer: vecteur 2/4 AE depuis A'
+			),
+			message: 'écrire 1/2',
+			explanation: 'La phrase de correction reprend l’écriture : 1/2 AE.'
 		},
 		{
 			title: 'Un plan qui ne coupe pas le solide',

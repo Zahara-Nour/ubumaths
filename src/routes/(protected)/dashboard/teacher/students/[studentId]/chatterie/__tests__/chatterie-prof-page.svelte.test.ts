@@ -8,12 +8,12 @@
 import { describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { page } from 'vitest/browser';
-import type { MathouCollection } from '$lib/mathoux/collection-logic';
+import type { MathouCollection } from '#lib/mathoux/collection-logic.ts';
 import ChatterieProfPage from '../+page.svelte';
 
-const CATEGORIES = [
+const TRAINING_ITEMS = [
 	{
-		category: { theme: 'Nombres', domain: 'Fractions', subdomain: null, level: 1 },
+		templateId: '00000000-0000-4000-8000-000000000001',
 		quantity: 1,
 		delay: 20
 	}
@@ -38,7 +38,7 @@ const COLLECTION: MathouCollection = {
 					collar: null,
 					glasses: null,
 					hat: null,
-					trainingCategories: CATEGORIES,
+					trainingItems: TRAINING_ITEMS,
 					stars: ['2'],
 					workablePoints: 4,
 					acquiredPoints: 2,
@@ -56,7 +56,7 @@ const COLLECTION: MathouCollection = {
 					collar: null,
 					glasses: null,
 					hat: null,
-					trainingCategories: CATEGORIES,
+					trainingItems: TRAINING_ITEMS,
 					stars: [],
 					workablePoints: 2,
 					acquiredPoints: 0,

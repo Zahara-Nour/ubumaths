@@ -4,13 +4,12 @@
  * POST - Track that a student viewed an exercise
  */
 
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { markExerciseAsViewed } from '$lib/server/exercise-assignments';
-import { validateViewExercise } from '$lib/server/validation';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { validateUuidParam } from '$lib/server/validation/params';
-import { createServerLogger } from '$lib/utils/logger';
+import { markExerciseAsViewed } from '#lib/server/exercise-assignments.ts';
+import { validateViewExercise } from '#lib/server/validation/index.ts';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { validateUuidParam } from '#lib/server/validation/params.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/exercises/[id]/view/+server');
 
@@ -38,7 +37,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 		const errorMsg = validation.error.issues
 			.map((e) => `${(e as ZodIssue).path.join('.')}: ${(e as ZodIssue).message}`)
 			.join('; ');
-		return json({ error: `Données invalides : ${errorMsg}` }, { status: 400 });
+		return Response.json({ error: `Données invalides : ${errorMsg}` }, { status: 400 });
 	}
 
 	const assignmentId = validation.data.assignment_id;
@@ -53,8 +52,8 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 
 	if (viewError) {
 		logger.error('Failed to track exercise view:', viewError);
-		return json({ error: 'Impossible d’enregistrer la consultation' }, { status: 500 });
+		return Response.json({ error: 'Impossible d’enregistrer la consultation' }, { status: 500 });
 	}
 
-	return json(completion);
+	return Response.json(completion);
 };

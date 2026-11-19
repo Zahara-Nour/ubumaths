@@ -1,10 +1,8 @@
 {
+	"id": "8cd98206-8da7-4209-a574-ef85826b9720",
 	"title": "Unités, dizaines et centaines",
 	"description": "1 c = 10 d = 100 u ; nombre de dizaines dans 347",
 	"grades": ["CE1"],
-	"theme": "Entiers",
-	"domain": "Apprivoiser",
-	"subdomain": "Décomposition",
 	"level": 13,
 	"delay": 20,
 	"status": "draft",

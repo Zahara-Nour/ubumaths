@@ -7,8 +7,8 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { parseNumberLineContent } from '$lib/ubumark/parser/number-line-parser';
-import { numVal } from '$lib/ubumark/utils/number-line-render';
+import { parseNumberLineContent } from '#lib/ubumark/parser/number-line-parser.ts';
+import { numVal } from '#lib/ubumark/utils/number-line-render.ts';
 
 const LINE = ['start: 0', 'end: 20', 'step: 1'];
 const parse = (placer: string) => parseNumberLineContent([...LINE, `placer: ${placer}`]);

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import TemplateFactSheet from '../TemplateFactSheet.svelte';
-import type { TemplateFactSheet as Sheet } from '$lib/questions/template-fact-sheet';
+import type { TemplateFactSheet as Sheet } from '#lib/questions/template-fact-sheet.ts';
 
 /**
  * Fiche du modèle : ce que l'admin LIT en tête de l'aperçu (et, en court, de l'éditeur).

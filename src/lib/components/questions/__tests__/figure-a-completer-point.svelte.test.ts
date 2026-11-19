@@ -3,17 +3,17 @@
  * =================================================================
  *
  * Chantier `controles-figure`, lot 2a (phase 0 validée par David le 2026-11-02,
- * `docs/wip/controles-figure-progress.md` § 5) : un toucher place un point, au
+ * `docs/archive/wip/controles-figure-progress.md` § 5) : un toucher place un point, au
  * nœud le plus proche ; juste → en vert ; pas à la même distance → le message,
  * et A' en pointillés avec son nom et [AA'] codé.
  */
 import { describe, it, expect, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import FlashCard from '../FlashCard.svelte';
-import { generateInstance } from '$lib/questions/generator/instance-generator';
-import type { QuestionInstance, QuestionTemplate } from '$lib/questions/types';
-import { templateMarkdown } from '$lib/ubumark';
-import { notSameDistanceFeedback } from '$lib/questions/construction/point';
+import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
+import type { QuestionInstance, QuestionTemplate } from '#lib/questions/types.ts';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
+import { notSameDistanceFeedback } from '#lib/questions/construction/point.ts';
 
 // Fenêtre 0..12 × 0..8 ; axe x = 6 ; A(2 ; 5) → A'(10 ; 5)
 const BLOCK = [
@@ -40,8 +40,6 @@ const TEMPLATE = {
 		}
 	],
 	grades: ['CM1'],
-	theme: 'Test',
-	domain: 'Test',
 	level: 1
 } as unknown as QuestionTemplate;
 

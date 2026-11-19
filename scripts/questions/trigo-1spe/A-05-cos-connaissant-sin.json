@@ -1,10 +1,8 @@
 {
+	"id": "ee4e2ac6-c683-47ec-91bd-524409ef241e",
 	"title": "Calculer cos x connaissant sin x",
 	"description": "cos²x + sin²x = 1 : sin x donné (3/5, 2/3…) et un intervalle pour le signe de cos x ; fraction réduite, avec une racine si besoin",
 	"grades": ["1_SPE"],
-	"theme": "Fonctions",
-	"domain": "Fonctions trigonométriques",
-	"subdomain": "Cosinus et sinus d'un réel",
 	"level": 3,
 	"status": "draft",
 	"delay": 60,

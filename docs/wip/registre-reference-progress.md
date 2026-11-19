@@ -1,26 +1,29 @@
 ---
 title: Le registre des commandes, référence commune (pnpm math, Atelier, calculatrice) — journal
 date: 2026-11-01
-status: PR 0 mergée (#2163), lot 2 en cours (A-D tranchées)
+status: PR 2c mergée (#2501), .intégrer à préparer
 ---
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2231 (corpus lot 2 mergé)._
+_Mis à jour le 2026-11-09, après #2501._
 
-- **État** : corpus complet (193 entrées : PR 0 + lot 2), juge étendu (grandeurs, degrés,
-  factorielles, écriture décimale). Connues fausses : registre 69, Atelier 21.
-- **Prochaine action** : PR 1 (`.dériver` réduite, D1) selon le § Découpage — ou d'abord les PR
-  à part de tidy (Q9 rouverte, `signes-06`, tidy-units:24) ; demander à David l'ordre.
-- **En attente de David** : portée de Q9 rouverte (seulement `0.5/x`, ou aussi `1.5/x`,
-  `0.5/(x+1)`, `(0.5x+0.5)/(x+1)` ?) — avant la PR de tidy.
-- **Tranché** : A-D du lot 2 ; `decimal` en LaTeX ; `plafond-02` → 1000 ; Q24 gardée ; `12000 m`
-  gardé ; `signes-06` → `(x+1)/(2(x+1))` ; ordre des termes, S3, R-point, domaine — NE PAS reposer.
-- **Pièges** : greper TOUT le journal avant une question ; sonde = vitest jetable sous `src/` ;
-  revue du juge (#2231) : `\sin^2 x` / `\sin x^2` jugés `forme`, `parseLatex('@@@')` ne lève pas
-  (contrôle d'attendu plus faible que « se parse ») — non corrigés.
-- **Worktree / branche** : `../ubumaths-wt-registre-reference` · `refactor/registre-reference`
-  (gardée pour la suite du chantier, comme après #2163).
+- **État** : PR 2c (`.résoudre` lit comme l'Atelier : V57, Q46, degrés, virgule, texte en S)
+  mergée (#2501). Détail : § PR 2c.
+- **Prochaine action** : `.intégrer`, phase 0 d'abord. À poser aussi à David : `.solve x^2=a dans
+[0;1]` → `S = ∅`, FAUX, déjà sur main (§ PR 2c — revue) — PR à part ou dans le lot ?
+- **En attente de David** : rien.
+- **Tranché** : `unitChoice: 'school'` GARDÉE exprès — ne pas proposer de la retirer ; Q9 EN
+  ENTIER, A-D du lot 2, `decimal` en LaTeX, `plafond-02` → 1000, Q24, `signes-06` — NE PAS
+  reposer. Fraction devant ou division après : `(x²/3 + 2x/3)eˣ` ; tableau : `x(x + 2)eˣ/3`.
+  `.simplifier` : calcul descendu, `avec`/`dans` à l'étape H. `.résoudre` : S partout, texte
+  compris ; angle quelconque en degrés (`1/cos(20°)`), texte au point décimal, virgule lue
+  (PR 2c, 2026-11-09).
+- **Pièges** : `docs:check-a-jour` local ne voit que le COMMITÉ ; commitlint refuse « merge … »
+  et un corps > 100 colonnes ; le juge du corpus confond `{,}` et `.` ; limites connues :
+  `.diff cos(60°)*x`, `2 ≈ 2`, `(t>1)`, `5 m * 25!/24!`, `20000!/19999!`, `2×π` ; mineurs de la
+  revue 2c (M2-M4) dans § PR 2c.
+- **Worktree / branche** : `../ubumaths-wt-registre-reference` · nouvelle branche à créer.
 
 ---
 
@@ -350,3 +353,438 @@ Sonde jetable (vitest sous `src/`, `produceRegistre` / `produceAtelier`), 25 lig
 - **PR à part, à venir** : tidy — Q9 rouverte (portée à faire préciser), `signes-06` (garde-fou de
   `mergeFactors`, spec + `tidy-fraction-reduce.test.ts:77-84`), `tidy-units.test.ts:24` (12000 m → 12 km,
   contraire à `grandeurs-01`).
+
+## Ordre et Q9 (David, 2026-11-02, « je valide »)
+
+- **Q9 de simplify-carte rouverte en entier** : un décimal sous une barre se chasse aussi quand le
+  dénominateur a une lettre — `0.5/x → 1/(2x)`, `1.5/x → 3/(2x)`, `0.5/(x+1) → 1/(2(x+1))`,
+  `(x+0.5)/(x−1) → (2x+1)/(2(x−1))`, `x/(0.5x+1) → 2x/(x+2)`, `(0.5x+0.5)/(x+1) → (x+1)/(2(x+1))`
+  (comme `signes-06`), `0.5x/x → x/(2x)` (S3 : x/x gardé). Raisons de 2026-10-23 tombées : S3 (David
+  accepte `(x+1)/(2(x+1))`) et piste A (David corrige `0.5/x` en `1/(2x)`) ; une règle limitée à
+  `0.5/x` dépendrait de l'écriture. Source : `docs/archive/wip/simplify-carte-progress.md` § 38.
+- **Ordre** : (1) PR tidy Q9 + `signes-06` (même mécanisme ; `(0.5x+0.5)/(x+1)` a besoin des deux) ;
+  (2) petite PR `tidy-units.test.ts:24` (vérifier d'abord qui utilise la conversion) ; (3) PR 1
+  `.dériver`. Revue de la PR tidy : `code-reviewer` opus (change l'affichage élève).
+
+## PR tidy Q9 + `signes-06` — phase 0 (David, 2026-11-02, « je te suis »)
+
+- **Q9 en entier** : `0,5/x → 1/(2x)`, `1,5/x → 3/(2x)`, `0,5/(x+1) → 1/(2(x+1))`,
+  `(x+0,5)/(x−1) → (2x+1)/(2(x−1))`, `x/(0,5x+1) → 2x/(x+2)`, `(0,5x+1)/(x+1) → (x+2)/(2(x+1))`,
+  `(1,2x+0,6)/(x+3) → (6x+3)/(5(x+3))`, `0,5x/x → x/(2x)` (S3).
+- **Q-a** (reco suivie) : quel que soit le dénominateur — `0,5√2/x → √2/(2x)`, `0,5/√x → 1/(2√x)`,
+  `0,5/eˣ → 1/(2eˣ)`, `0,5/ln x → 1/(2 ln x)`.
+- **`signes-06`** : une somme réduite égale à un facteur de l'autre côté y reste des deux côtés
+  (comme S3), au lieu d'abandonner la réduction : `(2x+2)/(4(x+1)) → (x+1)/(2(x+1))`,
+  `(4x+4)/(2(x+1)) → 2(x+1)/(x+1)`, `(2x+2)/(4(x+1)²) → 1/(2(x+1))` — chaque fois le résultat de
+  l'écriture déjà réduite.
+- **Limites** : L1 sans barre rien ne bouge (`0,5x`, `0,5(x+1)`, `0,5√2`, `0,4⁻¹ → 2,5`) ; L2 une
+  lettre à puissance négative = dénominateur (`0,5x⁻¹ → 1/(2x)`, idempotence B1) ; L3 somme terme
+  par terme (`0,5/x + 0,5 → 0,5 + 1/(2x)`) ; L4 idempotence ; L5 `tidyWithConditions` pareil pour
+  les deux écritures (`1/2`, x ≠ −1).
+- **Erreurs** : division par zéro, grandeurs, écriture gardée : inchangés ; `checkForm` n'utilise
+  pas `tidy` (correction des élèves non touchée).
+
+## PR tidy Q9 + `signes-06` — écriture (2026-11-02)
+
+- **Code** (`collect.ts`) : `readsFraction` — une barre est une fraction quel que soit le
+  dénominateur, un facteur resté au dénominateur aussi (`0,5x⁻¹`) ; `reduceFractionOfSums` ne garde
+  plus les décimaux sous une barre à lettre ; `mergeKeepingDomain` remplace `mergeFactors` dans la
+  réduction (S3 via `keepDomain`, au lieu d'abandonner) ; `meetsAcross` envoie le nombre d'une
+  somme qui rejoint un facteur de l'autre côté au coefficient (`(4x+4)/(2(x+1)) → 2(x+1)/(x+1)`,
+  sinon `(2x+2)/(x+1)`). `mergeFactors` reste pour `flipNumerator`.
+- **Changement de plus, voulu** : Atelier, `0,5x/x` → « 1/2, pour x ≠ 0 » (avant « 0,5 » : revue du
+  2026-10-26 qui découlait de l'ancienne Q9) — `domaine-garde.test.ts`.
+- **Corpus** : `decimal-10`, `signes-06` justes pour l'Atelier (retirés) ; le registre reste connu
+  faux sur ces deux lignes, pour la décision D (il recopie la ligne à lettres).
+- **Mesures** : 41 rouges avant ; suite serveur 63 709 verts, 2 rouges (`domaine-garde`, corrigé ;
+  `deploy-prod` « CI toujours en cours », rouge aussi sur main) ; banc **1 982 modèles de prod × 8
+  tirages (15 856) : 0 différence** (témoin non construit) ; `check:incremental` 0 ; cliquet tenu ;
+  `lint:fast` propre.
+- **Revue `code-reviewer` opus, corrigé (8 rouges d'abord)** : (1) une grandeur passait en fraction
+  (`0,5 m/x → (1/(2x)) m`) et (2) une division par zéro aussi (`1,5/0 → 3/(2·0)`) — contraires à
+  E1 : `readsFraction` n'applique Q9 ni à un terme avec unité ni à un dénominateur nul ; (3)
+  `(2x+2)/(x+1)` restait (pas de nombre commun) alors que `(4x+4)/(2(x+1)) → 2(x+1)/(x+1)` :
+  réécrit aussi (`(3x+3)/(x+1)² → 3/(x+1)`). **Laissé (avant la PR, déjà ainsi)** : (4)
+  `meetsAcross` ne reconnaît que l'autre côté écrit primitif — `(2x+2)/(4x+4) → (x+1)/(2x+2)`,
+  `(4x+4)/(6x+6) → (2x+2)/(3x+3)`, `(2−2x)/(4(x−1))` sans `−1/2` conditionnel. Rien vu sur valeur,
+  domaine, idempotence (74 entrées), narration. Après correction : banc 0 différence,
+  `check:incremental` 0, cliquet tenu.
+
+## Unité du résultat — reprise à zéro (David, 2026-11-02)
+
+- **Constat** : deux choix d'unité. `tidy` par défaut (`'school'`, 12000 m → 12 km, contraire à
+  l'ADR 0026) atteint l'Atelier par `f(4)` (f(x)=3000[m]·x → 12 km) et le registre par `.simplify`.
+  `cli/quantities.ts` refait un choix par-dessus (`expressedInWritten`, écriture la plus courte) :
+  `tidy` 21 600 000 J contre Atelier 6 kW·h, `tidy` 2,5 h contre Atelier 2 h 30 min.
+- **Principes** (validés) : (1) indépendant de l'ordre d'écriture ; (2) indépendant du chemin, une
+  seule fonction ; (3) pas de conversion non demandée → candidats = unités TAPÉES dans le calcul,
+  `.convertir` sinon ; (4) lisible et exact.
+- **Règle** (validée) : parmi les unités tapées, celle où la valeur s'écrit avec le MOINS DE
+  CHIFFRES (zéros compris : `0,001` = 4, `5000` = 4) ; à égalité la plus petite unité ; produit /
+  quotient : une unité tapée par dimension de base, ou l'unité composée tapée (`kW·h`). Sans écriture
+  finie : la fraction la plus courte. Écartés : première tapée (ordre), plus petite toujours
+  (`5000 m`), plus grande ≥ 1 (seuil arbitraire), toutes les unités usuelles (convertit à la place
+  de l'élève).
+- **Recos validées** : durées h-min-s quand ≥ 2 de h/min/s tapées et durée juste en secondes,
+  DANS la règle commune ; terme à lettre inchangé (`x km + 0,5 km`) ; banc prod avant de coder ;
+  retirer le second choix de `quantities.ts`. Ordre : banc → page à cocher → PR.
+- **Mesures du prototype** : `12[km]+500[m]` 12,5 km ; `2000[m]+3[km]` 5 km (les deux ordres) ;
+  `1[m]+1[km]` 1001 m ; `7[mm]×5[cm]` 3,5 cm² ; `2[cm]×3[mm]` 60 mm² ; `3[kW]×2[h]` 6 kW·h ;
+  `2500[mL]` par `simplify` gardé (garde : le candidat développé ne gagne pas s'il écrit une unité
+  absente). Tests : 31 rouges, tous des attentes de l'ancienne règle (dont `octets-calcul`
+  `1[Ko]+1[o]` → 1001 o, `5[km]+3[m]` → 5003 m, `1[h]+45[min]+30[min]` → 135 min avant durées).
+- **Banc** (25 modèles de `tests/fixtures/correction-cases-unite/`, 8 graines) : 5/200 changent,
+  réponse attendue seule, énoncés « tu choisis l'unité » : `0bb7a4ca` 1,1 h → 66 min, `75956b22`
+  3,85 h → 231 min (→ h-min avec la reco durées), `64e55fc7` 1,005 kL → 1005 L, 1,06 hg → 106 g.
+  Oracle : 1 724 réponses, 0 verdict changé.
+- **Banc prod** (12 modèles lus par David : 10 absents des fixtures + 2 peut-être périmés, 96
+  tirages) : 0 différence. Total : 35 modèles à unités, 5 tirages changent (les 3 modèles ci-dessus).
+- **Page à cocher** publiée : 5 cas réels, 24 cas types (avant : tidy / {{eval}} / Atelier
+  mesurés, souvent en désaccord), 5 durées (prévues, pas codées).
+
+## Unité du résultat — avis et PR (2026-11-03)
+
+- **Avis** : 34/34 « ok », aucun commentaire (collection `avis`).
+- **Durées** : `typesDurations` lit les unités tapées dans TOUT le calcul (`2*(1[h] 30[min])` → 3 h,
+  comme l'Atelier avant) ; une partie suffit (`1[min]+3540[s]` → 1 h) ; négative : `-(2[h] 30[min])`
+  sans parenthèses. `{{eval}}` : `{2[h]}{30[min]}` (format de `;hms`), négative ou `;sci` → une grandeur.
+- **Mesure qui a changé le plan** : l'attendu h-min-s rendait FAUSSES toutes les réponses justes des
+  4 modèles de durées (oracle : 160 verdicts ; corpus 462-468 rouge). Correctif : la correction et
+  le clavier lisent l'attendu comme une durée dans sa plus petite unité. Après : 1 724/1 724 verdicts
+  inchangés (sonde), oracle régénéré (1 647 saisies communes : verdict ET message identiques).
+- **Portée réelle** : avec les durées, les 4 modèles de durées (0bb7a4ca, 2f3b42a3, 75956b22,
+  90aaf9dd) changent l'AFFICHAGE de l'attendu à presque chaque tirage (34 attendus sur 200), pas
+  seulement les 5 du banc d'avant ; verdicts inchangés.
+- **Perf** : banc `tidy` (9 expressions × 3000) égal à `main` une fois la machine calmée.
+
+## Revue de #2276 et correctifs (2026-11-03)
+
+- **Findings** (code-reviewer Opus) : (1) une variable `{{eval}}` de durée en h-min-s cassait
+  `{{eval:{{t}}*2}}` ; (2) unité imposée : l'attendu change d'unité (`1.5[km]` pour `m` imposé) →
+  bonne réponse refusée ; l'oracle ne le voyait pas (0 modèle avec `required` dans les fixtures) ;
+  (3) `1[h]+30[min]` sans étape ; (4) `;+ ;() ;d` perdus sur h-min-s ; (5) simplify ≠ tidy avec un
+  terme à lettre (dimension invalide, laissé) ; (6) défaut `'hms'` pour tous (gardé : choix « tout
+  sauf les variables »).
+- **Prod (lecture seule)** : 0 modèle sur 2 013 avec `required` ; les seuls `{{eval}}` à plusieurs
+  unités de durée sans `;hms` sont les attendus des 4 modèles de durées.
+- **Décisions de David** : h-min-s partout sauf la valeur d'une variable ; attendu réécrit dans
+  l'unité imposée au tirage ; dire le geste (`tidy-write-duration` « On décompose la durée en
+  heures, minutes, secondes »).
+- **Piège** : `1[h]+30[min]` en une grandeur donne `90[min]` (1,5 et 90 : 2 chiffres, la plus petite).
+
+## Lot 2 — correction du registre (2026-11-03)
+
+Relevé : 61 lignes du registre connues fausses (lot 2), 5 familles. Ordre (le contrat d'abord) :
+
+1. **A/B** — `decimal` + `decimalExact` (14 lignes `décimal : absente`).
+2. **D** — expression à lettres rangée comme l'Atelier (`tidy`, ordre gardé, S3) : 23 lignes.
+3. **Lecture de l'entrée** — degrés, `π`, refus de `pi` (11 lignes).
+4. **C** — égalité seule → `\text{vrai}`/`\text{faux}` (5 registre, 5 Atelier dont `comparer-13`).
+5. **Plafond** — `1000!/999!` → 1000 (les deux outils) ; réponse de l'écriture gardée (4 lignes).
+
+**PR 1 (A/B), mergée (#2281)** : `ReplExecutionResult.decimal` (LaTeX au point, sans signe,
+`approximationLatex`) et `decimalExact`, pour un calcul tapé (dans les deux modes, nombre déjà
+écrit compris) et une grandeur seule (`QuantityOutcome.decimalWriting`, `0.3333~\mathrm{km}`) ;
+`answer` posée par le calcul, exacte même en mode décimal (avant : `0.3333` pour `1/3`). Pas pour
+`.convert` (aucune réponse brute encore), ni l'écriture gardée (`answer` absente, PR 5). Le juge
+lit `decimalExact` (le signe pour l'Atelier). Preuve rouge : 14 lignes du corpus + 6/9 tests de
+`reponse-decimale.test.ts`. Suites `cli` + `atelier` : 8 038 verts. L'Atelier lit encore
+`approximateLatex` (bouton ≈) : passer au champ `decimal` = travail de R1, plus tard.
+Revue `code-reviewer` (Sonnet) : aucun bloquant ; corrigé — « sans signe » = sans `=`/`≈`, le
+moins reste (doc + tests `-1/3`, `-3`, `2[h]-3[h]`) ; `decimal` d'une grandeur en `\unit{…}`
+comme `answer` (le juge lit `\unit` = `\mathrm`).
+
+**PR 2 (D), 2026-11-03** : une expression à lettres non liées (`createExpressionDisplayResult`)
+répond par sa forme rangée, `tidiedExpression` = `tidy(…, { order: 'kept' })` sauf grandeur — la
+règle de `resultToShow` de l'Atelier — dans `answer` ET `output` ; `ast` reste l'entrée (l'Atelier
+la range lui-même ; ses autres lecteurs y lisent la saisie, non audités un par un). Justes : 21
+lignes de D + `remarquables-06` (`2*45°` → 90°). Rendu changé, toujours faux (lecture, PR 3) :
+`remarquables-08`, `racines-06`, `approche-08`. Preuve rouge : 25 tests du corpus en échec avant
+la mise à jour de la liste. Test mis à jour : `reciproque-a-la-volee` `x^-1` → texte `1/x` (l'écran
+affichait déjà `\dfrac{1}{x}`, seul le texte retardait). 1re retouche (dans `resultToShow` du
+registre) sans effet, annulée : ce chemin ne voit que les lettres liées.
+
+**PR 3 (lecture de l'entrée), 2026-11-03** : la lecture de l'Atelier descend dans le registre
+(`mathAST/cli/core/`) : `degrees.ts` déplacé tel quel, `typed-line.ts` (`readTypedLine` :
+`PI_IN_LETTERS` et `withPiCommand` venus de `names.ts`/`parse.ts`, `DEGREE_POWER` et
+`ANGLE_POWER_MESSAGE` de `calcul.ts`), `angle-radians.ts` (`radiansInTrigonometry` venu de
+l'Atelier, qui garde ses passages texte/LaTeX). `WebReplEngine.executeInput` lit chaque ligne
+ainsi, sauf `.stats`, `.linreg`, `.convert` (le `°` de `.convert °` est l'unité cible : 3 tests de
+`degres-revue` l'ont montré). Une commande de calcul reçoit `remarkableValuesInTrigonometry` :
+valeur exacte seulement, sinon l'angle reste écrit — `.simplifier cos(20°)x` garde ses degrés
+(`valeurs-remarquables.test.ts`, règle de l'Atelier ; une 1re version qui convertissait tout
+rendait `cos(π/9)`). L'Atelier lit toujours avant d'appeler le moteur : relecture idempotente
+(testé). Justes : `remarquables-01…04, 08, 12`, `racines-06`, `approche-08, 09, 12`. Preuve rouge :
+6/12 tests de `lecture-saisie.test.ts` avec le moteur de `main`. Suites `mathAST` +
+`geometry-core` (29 939) et composants de l'Atelier (651) vertes. Non fait : `.diff sin(x°)`
+(échoue toujours, hors corpus), les commandes qui relisent `ctx.input` (`.solve`, `.eval`…) ne
+reçoivent pas les radians — pas d'écart du corpus.
+
+**Revue de la PR 3 (`code-reviewer`, Sonnet)** : un bloquant corrigé — `cos(60°)=1/2` et
+`.equiv cos(60°) === 1/2` répondaient faux sans erreur (lus en degrés, jamais réduits) :
+`remarkableValuesInTrigonometry` aussi dans `executeEquality` et `compareExpressions` de
+`equiv.command.ts`. Corrigés aussi : un sin, cos, tan imbriqué (`sin(cos(60°))` → `sin(1/2)`, le
+transformateur descend quand l'externe n'a pas de valeur), `.help pi` n'est plus refusé. Preuve
+rouge : 4/16 tests. **Limite notée, non corrigée** : les commandes qui relisent `ctx.input`
+(`.diff cos(60°)*x` → `cos(60[°])`, `.integrate`, `.taylor`) ne reçoivent pas la valeur
+remarquable — aucune ligne du corpus ; à reprendre avec la descente des commandes (Q1).
+
+**PR 4 (C), 2026-11-03** : une égalité ou une comparaison tranchée répond `\text{vrai}` /
+`\text{faux}` dans `answer` et `latex`, avec un nœud booléen (`booleanResult` de
+`web-repl-engine.ts`) — l'égalité `a = b` (`createEqualityResult`) n'en posait aucun, et le booléen
+d'une chaîne (`2 = 2 = 3`, lue par `executeExpression` sans `withExpressionAnswer`) non plus. Le
+texte reste `true` / `false` (une chaîne s'arrête au premier maillon qui n'est pas `true`). Une
+comparaison que le calcul ne tranche pas (`2 \approx 2`, `isBooleanExpression` exporté
+d'`evaluate.ts`) rend le code `RELATION_UNDECIDABLE`, ajouté aux `STUDENT_FACING_ERRORS` de
+l'Atelier : refus au lieu de la ligne « Erreur de calcul : … ». Sonde avant/après : `x > 1`,
+`!5 > 1`, `y < y+1` inchangés. Justes : `comparer-01, 05, 09, 12, 14` (registre),
+`comparer-01, 05, 12, 13, 14` (Atelier). Preuve rouge : 10/10 tests du corpus. Suites `mathAST`
+
+- `atelier` (32 426) et composants de l'Atelier (651) vertes. **Vu, hors périmètre** : `2 ≈ 2` avec
+  le caractère `≈` (pas `\approx`) répond « Nombre « 2 » écrit après un facteur » dans les deux outils.
+
+**Revue de la PR 4 (`code-reviewer`, Sonnet)** : aucun bloquant. Corrigé — « Garder » une
+comparaison tranchée créait `a = true` (`promote` acceptait tout `ast` ; `2=2` n'en avait pas
+avant, `2<3` déjà) : refusée comme une ligne sans valeur, preuve rouge 4/4 (`calcul.test.ts`).
+**Limite notée, non corrigée** (antérieure, plus visible) : une variable libre entre parenthèses
+est tranchée fausse — `(t>1)` → `\text{faux}`, `\lnot (t>1)` → `\text{vrai}`, `2<3<t` →
+`\text{faux}` (`t>1` seul reste la relation). Aussi : `1/0=1` → « normalize: division by zero », en anglais.
+
+**PR 5 (plafond), 2026-11-03** : deux causes. (1) `1000!/999!` : le moteur (`evaluate`) ne réduit
+aucune factorielle au-delà de 2⁵³ et rendait `\dfrac{1000!}{999!}` (pas une affaire de plafond : la
+mesure lisait déjà 1000). `shortFactorialValue` (`exact-size.ts`) : un résultat calculé fait de
+factorielles / coefficients binomiaux, sans symbole, dont la valeur tient en 1 000 caractères, est
+remplacé par sa valeur (`withFactorialsReduced` de `web-repl-engine.ts`) — l'Atelier suit, il lit
+l'arbre. (2) L'écriture gardée (`exactTooLong`) n'avait pas d'`answer` : elle répond par l'arbre
+affiché (`toLatex(exactShown)`, la règle de `render.ts`), dans les deux modes. Justes :
+`plafond-02` (les deux outils), `plafond-04, 05, 06`, `approche-11`. Preuve rouge : 5 + 1 tests du
+corpus, 10/11 de `plafond-reponse.test.ts` avec le moteur de `main`. Suites `mathAST` + `atelier` +
+`geometry-core` (36 228) vertes. **Liste du lot 2 vide** côté registre ; restent les entrées du lot 1
+(`.dériver`, `.simplifier`, `.résoudre`, `equivalent-04`, refus) et celles de l'Atelier.
+
+**Revue de la PR 5 (`code-reviewer`, Sonnet)** : aucun bloquant. Corrigé — faux silencieux
+antérieur, devenu incohérent : `1000!/999! = 1000` → `\text{faux}`, `1000!/999! > 999` refusé
+(« non évaluable ») ; `boundedComparison` remplace un membre de factorielles courtes par sa valeur
+(chaînes et `et` compris). Preuve rouge : 5/5 tests. **Limites notées, non corrigées** (antérieures) :
+une grandeur garde ses factorielles (`5 m * 25!/24!`, chemin `quantityResult`) ;
+`20000!/19999!` passe pour trop long (prévision par somme des tailles : `exactTooLong` 154 672 pour
+une valeur de 20000), écriture gardée.
+
+## PR 1 — `.dériver` réduite (2026-11-03)
+
+Étape 1 du découpage (validé avec Q1-Q6), reprise après le lot 2 sur le « go » de David.
+
+- **Registre** : `diff.command.ts` passait la dérivée du moteur par `tidyTerms` seul (`eˣ + xeˣ`) ;
+  elle passe maintenant par `finalDerivative` (`final-form.ts`, ADR 0032 D1), la forme de la
+  dernière étape de l'Atelier. Justes : `deriver-03, 04, 09, 10, 12` (liste du registre).
+- **Mesure avant de brancher l'Atelier** (sonde jetable sur l'oracle des dérivées, 319 saisies de
+  l'atelier) : registre et Atelier identiques à la virgule décimale près (habillage).
+- **Atelier** : `.dériver` tapé et le bouton « Dériver » affichent la réponse du registre
+  (`result.answer`, `f'(x) = …` pour le bouton) ; repli sur la réponse des étapes si le registre
+  n'en rend pas. Les étapes ne changent pas.
+- **Garde R5** : `src/lib/atelier/__tests__/deriver-registre.test.ts` — la réponse de
+  `deriveSteps` = celle du registre, sur l'oracle (variable `t` comprise, lignes à `setup` et sans
+  étapes — `sec`, valeur absolue — hors du test). Preuve rouge : 78 échecs avec le
+  `diff.command.ts` de `main` (73 lignes de l'oracle + 5 du corpus).
+- Tests mis à jour (ils figeaient l'ancienne forme du registre) : `diff-tidy.test.ts`
+  (`xe^{−2x}`, `x²eˣ`), `derivee-exponentielle.test.ts` (`xeˣ`).
+- Suites `mathAST` + `atelier` + `geometry-core` (36 535) et client `atelier` + `routes` (741)
+  vertes ; `check:incremental` 0 erreur.
+- **Revue** (`code-reviewer` opus) : aucun bloquant. Ajouté : `derivation-chemins.test.ts`, bouton
+  et commande sur `xeˣ` (garde la forme affichée ; le branchement ne se distingue pas, étapes =
+  registre). Mergée : #2316. CI : intégration rouge héritée de #2311 (`safeGetSession` absent des
+  doublures), corrigée sur `main` par #2322 ; puis `wrapDynamicImport` au shard client 1, job relancé.
+
+## PR 1 bis — exponentielle commune sous une barre de nombre (2026-11-03)
+
+Relevée par la revue de #2316 : `.dériver (1/3)x²eˣ` → `2xeˣ/3 + x²eˣ/3` (l'exponentielle sous la
+barre n'est pas vue), alors que `0,5x²eˣ` → `(0,5x² + x)eˣ`. David : « oui » à la règle, puis page à
+cocher (https://claude.ai/artifact/XjzdKUR9M1SY1qdkVPVqXE, 11/11 relues) : famille A (coefficient
+devant) validée ; famille B (division après) écrite **comme A**, `(x²/3 + 2x/3)eˣ`, et non
+`\dfrac{(x² + 2x)eˣ}{3}` ; témoin `3xeˣ/2` aussi → `(3x/2 + 3/2)eˣ` (coquille `3x²/2` de David
+corrigée, à confirmer).
+
+- Corpus : `deriver-13` à `deriver-23` (dont 2 témoins inchangés). Rouges avant : 9 × 2 outils.
+- Code (`final-form.ts`) : `commonExponential` / `withoutFactor` voient à travers `a/q` (q nombre) ;
+  `withCommonExponential` distribue d'abord une somme divisée par un nombre ; le chemin du quotient
+  essaie la distribution sur le numérateur avant sa mise en facteur (`(u′·3 − u·0)/3²` ne devient
+  `…/3` qu'après `simplifiedQuotient`). Sans exponentielle commune, rien ne change
+  (`((x³+x)/3)′ = (3x² + 1)/3`).
+- Tests : `final-form-fraction.test.ts` (preuve rouge : 4/6 avec le `final-form.ts` de `main`, les
+  2 témoins verts) ; sonde avant/après sur l'oracle des dérivées (308 lignes) : **aucune**
+  différence. Suites `mathAST` + `atelier` + `questions` + `geometry-core` (42 643) vertes.
+- **Revue** (`code-reviewer` opus) : 2 importants, corrigés. (1) Fraction négative : tidy écrit
+  `−(a/3)` (nœud `opposite`), `-\frac{x^2e^x}{3}` tapé en LaTeX (questions) gardait sa barre alors
+  que la saisie de l'atelier la distribuait → `distributable` traverse le −. (2) Tableau de
+  variations : `factoredForSign` donnait `x(x/3 + 2/3)eˣ` → la barre commune ressort d'abord
+  (`overCommonDenominator`, `display.ts`) : `x(x + 2)eˣ/3`, règle D2 (numérateur factorisé,
+  dénominateur gardé). Mesuré : sur `main` ces cas n'étaient PAS factorisés au tableau
+  (`\dfrac{x²eˣ + 2xeˣ}{3}`), contrairement à ce que disait la revue. Preuves rouges : 2/12 et
+  5/7 ; sonde avant/après sur l'oracle (626 formes factorisées du tableau) : 0 différence.
+
+## PR 2a — `.simplifier` garde le domaine (2026-11-03)
+
+Étape 2 du découpage, sur le « go » de David.
+
+- **Mesure** (sonde jetable, 208 lignes `.simplifier` des tests de l'Atelier, registre contre
+  Atelier) : 126 écarts, ~90 réels. Hors hypothèses, l'Atelier a raison chaque fois : domaine gardé
+  (`x/x`, `e^(ln x)`, `ln(x) − ln(x)`, `(x²−1)/(x+1)`) et exponentielles simplifiées
+  (`e^{2x}/e^x → eˣ`, `ln(x³) → 3 ln x`, `e^x/e → e^{x−1}`). Le registre ne lit pas `avec`/`dans`
+  (étape H). Remarque : `ln(2x) − ln(2x)` → `ln(x) − ln(x)` à l'Atelier (juste pour x > 0 : coupé
+  avant l'étape qui change le domaine), inchangé ici.
+- **Décision de David** (question posée) : descendre le calcul. `keepingDomain`,
+  `writtenKeepingDomain` passent de `atelier/domain-guard.ts` à
+  `mathAST/pedagogical-simplify/keep-domain.ts`, avec `simplifiedKeepingDomain` (moteur
+  pédagogique, coupé avant la première étape qui change le domaine) et `simplifyKeepingDomain`
+  (réponse brute ; repli : moteur de calcul gardé). `simplify.command.ts` l'appelle ; l'Atelier
+  (`simplifySteps`) part du même calcul pour ses étapes et ses boutons, et affiche `result.answer`
+  (repli sur la réponse des étapes si le registre n'en rend pas).
+- **Trouvé en route** : (1) le registre lisait `(1/2)` en division « en ligne » (`1 / 2` en LaTeX) :
+  la commande écrit les divisions tapées en fraction. (2) `2·x` (et `⋅`, `×`) tombait dans le repli
+  LaTeX de `detectInputFormat`, qui lit `·` comme une lettre : `.dériver 2·x^2` → `4x·` au registre
+  (et à l'Atelier depuis #2316). Le signe du produit est maintenant un motif de la syntaxe maison.
+- **Sonde avant/après** (Atelier de `main` contre la branche, mêmes 208 lignes) : une seule ligne
+  change, `(1/2)^x·(1/2)` tapé avec un point médian dans une phrase de test.
+- Corpus : `simplifier-01`, `-10` justes (retirés de `connues-fausses.ts`). Garde R5 :
+  `simplifier-registre.test.ts` (140 lignes, dernière étape = réponse du registre) ; détection :
+  `input-detector-signe-produit.test.ts`.
+- **Revue `code-reviewer` opus** (2026-11-03) : (1) `x/x*0` affiché `\dfrac{x}{x} * 0` — l'étoile
+  du parseur LaTeX (`displayStyle: 'star'`) : la commande l'écrit en croix (`typedSigns`) ;
+  (2) `(x²)^{1/2}` → `x`, faux pour x < 0 : `pow-of-pow` (moteur pédagogique, Atelier de `main`
+  compris) ne s'applique plus pour m pair, n non entier, base de signe inconnu
+  (`evenPowerLosesSign`) → `|x|` ; (3) avec des étapes, l'Atelier affiche leur fin
+  (`simplified.answer`) : même calcul, mais sur SA lecture — `x*0/x` est lu `(x·0)/x` par le
+  registre (repli LaTeX), `x·(0/x)` par l'Atelier (`READ_DIFFERENTLY` du test). Lire `*` en
+  syntaxe maison au portier changeait 6 tests dont `grands-08` du corpus : écarté. Laissés,
+  antérieurs : `2×π` → `2 \pi ×` (`×` à côté de π, syntaxe maison) ; `.simplifier` calcule deux
+  fois le moteur pédagogique (registre puis `simplifySteps`).
+
+## PR 2b — `.résoudre` répond par S (2026-11-03)
+
+Étape 2 du découpage, sur le « go » de David.
+
+- **Mesure** (sonde jetable, 193 lignes `.résoudre` des tests de l'Atelier, registre contre
+  Atelier) : 81 écarts, dont ~55 titres de tests pris pour des lignes. Écarts réels : (1) solution
+  unique `x = 3` (les deux outils ; `≈` dans la réponse pour `ln`) ; (2) inéquation : l'Atelier
+  conclut `x < 3` (dernière étape `divide-both-sides`), le registre `S = ]−∞ ; 3[` ; (3) ordre :
+  `-x^2+x+1=0` et produit nul non rangés à l'Atelier ; (4) paramètre : registre `x = 4/a`, Atelier
+  refuse (V57) ; (5) décimaux tapés : registre `3/2`, Atelier `1,5` (Q46) ; (6) degrés : registre
+  `1/cos(π/3 rad)`, Atelier `2` (limite notée à la PR 3 : `.solve` relit `ctx.input`). Familles
+  périodiques et seuils de suites : même réponse, `x = … , k ∈ ℤ` et `n > … ≈ …`.
+- **Décisions de David** (questions posées, recos suivies) : famille périodique
+  `S = \{ π/4 + kπ, k ∈ ℤ \}` (deux familles : `S = \{ π/6 + 2kπ ; 5π/6 + 2kπ, k ∈ ℤ \}`) ; **seuil
+  d'une suite gardé tel quel, `≈` compris** (exception assumée à Q2) ; paramètre : **le registre
+  refuse aussi** (V57 descend) ; décimaux tapés : **Q46 descend dans le registre** (`1,5`).
+- **Découpage** : PR 2b = la FORME (1-3 + périodiques) ; PR 2c = la LECTURE et les refus (4-6).
+
+### Phase 0 de la PR 2b — comportements
+
+- **Nominal** : `.résoudre 2x+1=7` → `S = \{3\}` (registre et Atelier) ; `e^x=3` → `S = \{\ln(3)\}`,
+  `≈ 1,10` au bouton ; `2x+1<7` → `S = ]−∞ ; 3[` dans l'Atelier, dernière étape comprise (les
+  étapes passent par `x < 3`, Q2) ; `cos(x)=sin(x)` → `S = \{ π/4 + kπ, k ∈ ℤ \}`.
+- **Limites** : solutions rangées par valeur croissante (R-ordre), produit nul compris ; seuil
+  `0.8^n<0.1 ; n` inchangé ; solution sous condition (`\text{si}`) : S aussi, condition gardée.
+- **Erreurs** : aucun refus ne change.
+
+### PR 2b — écriture (2026-11-03)
+
+- **Registre** (`solve-latex.ts`, `solve.command.ts`) : une solution → `S = \{3\}` ; famille
+  périodique → `S = \{ a + 2kπ ; b + 2kπ, k ∈ ℤ \}` ; solution en ln sans `≈`
+  (`logarithmicExactLatex`), décimaux du ln gardés (S1) ; le bouton ≈ suit la forme
+  (`S ≈ \{1,0986\}`). Seuil d'inéquation inchangé (`thresholdOf`, `n > … ≈ …`, `x > ln 5 ≈ 1,61`
+  aussi : même mécanisme, variable x comprise). Terminal (texte) inchangé.
+- **Atelier** (`solve-steps.ts`) : `concludedOn` ajoute « L'ensemble des solutions » (explication
+  en détaillé seulement) ou réécrit l'ensemble de la conclusion dans l'ordre de la réponse ;
+  `inequalitySet` (`<`, `≤`, `>`, `≥`, `≠` → `S = ℝ \ {3}`) ; `ascending` (R-ordre, produit nul et
+  a < 0). L'Atelier affiche encore la fin de ses étapes, pas `result.answer` : sinon `x+0.5=2`,
+  `cos(60°)x=1`, `a x = 4` régresseraient avant la PR 2c.
+- **Corpus** : `resoudre-12` à `-17` (périodiques, a < 0, `dans`, variable t, racine double) ;
+  juge : famille périodique lue (`periodic`). Justes, retirées de `connues-fausses.ts` : registre
+  `resoudre-01, 06, 07` ; Atelier `resoudre-01, 02, 06, 07, 09, 10`.
+- **Garde R5** : `atelier/__tests__/resoudre-registre.test.ts` (92 lignes `.résoudre` des tests de
+  l'Atelier) : dernière étape = ligne affichée = réponse du registre ; si l'Atelier refuse, le
+  registre ne répond pas ; 11 écarts de la PR 2c figés (`READ_DIFFERENTLY` : degrés ×7, `x+0.5=2`,
+  paramètre ×3). Preuve rouge : 34 échecs (garde + corpus) avec les trois fichiers de `main`.
+- ~200 attendus de tests mis à jour (`x = …` → `S = \{…\}`, étape de conclusion en plus), par
+  script puis à la main ; une entrée de test réécrite par erreur par le script (`u_{n+1}=3`)
+  rétablie.
+- Suites `atelier` + `mathAST/cli` (8 549), `mathAST` + `questions` + `geometry-core` + `routes`
+  (38 284) et client `atelier` + `routes` (741) vertes.
+
+### PR 2b — revue et merge (2026-11-04)
+
+- `docs/systeme/mathast/README.md` : la forme de `.solve` décrite (ligne `cli/`, champ `answer`).
+- Revue `code-reviewer` (opus), rien de bloquant. Corrigé : plusieurs solutions en ln
+  s'écrivaient au point dans `answer` (`S = {ln(0.5) ; ln 3}`) → virgule pour chacune ; garde :
+  `(e^x-0.5)(e^x-3)=0`, avec et sans `dans`, dans `resoudre-registre.test.ts`, rouge avant.
+  `approximateSolutionsLatex` perd `variable` et `asSet`.
+- Relevé par la revue, laissé pour la PR 2c (David : « je te suis ») : le champ `text` de
+  `.résoudre` reste `x = 3`, `x = ln(3) ≈ 1.10`, `x = π/6 + 2kπ ou …`. Seul le terminal de
+  `pnpm math` l'affiche ; l'Atelier montre toujours le LaTeX.
+- Mergée : #2360.
+
+## PR 2c — `.résoudre` lit comme l'Atelier (2026-11-09)
+
+Étape 3 du découpage (lecture et refus), plus le texte brut. Branche
+`feat/registre-reference-lecture`.
+
+- **Sonde** (21 lignes, registre contre Atelier, branche rebasée sur `main`) : paramètre (`a x = 4`)
+  registre `S = {4/a}`, Atelier refuse ; `x+0.5=2` registre `3/2`, Atelier `1,5` ; `cos(60°)x=1`
+  registre `1/cos(π/3 rad)`, Atelier `2` ; `cos(20°)x=1` registre `1/cos(π/9 rad)`, Atelier
+  `1/cos(π/9)` ; `2x = 0,6` registre refuse la lecture, Atelier `S = {0,3}` ; texte de `2x+1=7` :
+  `x = 3`.
+
+### Phase 0 de la PR 2c — comportements (validée par David le 2026-11-09 : « je suis tes recos »)
+
+- **Nominal** : (1) paramètre (V57 descend) : le registre refuse `a x = 4`, `a t = 3 pour t`,
+  `b*x+5=14` avec le message de l'Atelier ; une lettre posée (`.let a = 2`) compte comme donnée ;
+  (2) décimaux (Q46 descend) : `x+0.5=2` → `S = {1,5}`, `0.5x+3=1` → `S = {−4}` ;
+  (3) degrés : `.solve` passe par les valeurs remarquables — `cos(60°)x=1` → `S = {2}`,
+  `x+cos(420°)=1` → `S = {1/2}`, `x^3=cos(60°)` → `S = {∛(1/2)}` ; `READ_DIFFERENTLY` disparaît.
+- **Q1 angle non remarquable** : `cos(20°)x=1` → `S = {1/cos(20°)}`, degrés gardés comme
+  `.simplifier` (l'Atelier change : il écrivait `1/cos(π/9)`).
+- **Q2 texte brut** (terminal) : étapes inchangées, dernière ligne `x = 3` → `S = {3}` ;
+  `e^x=3` → `S = {ln(3)}`, mode décimal `S ≈ {1.0986}` ; deux solutions `S = {−2 ; 2}` ; seuil
+  `n > … ≈ …` gardé ; point décimal dans le texte (le LaTeX garde la virgule).
+- **Q3 virgule décimale** : le registre lit `2x = 0,6` comme l'Atelier, dans cette PR.
+- **Limites** : `x + a = 0`, `x^2 = a` (« si a ⩾ 0 »), `(x−a)(x−1)=0`, `ln x = a` restent résolus.
+- **Erreurs** : aucun autre refus ne change.
+
+### PR 2c — écriture (2026-11-09)
+
+- **Registre** (`solve.command.ts`) : virgule décimale lue (`decimalCommaInput`, importée de
+  `atelier/decimal-comma.ts` comme `cosmetic-transforms.ts`) ; valeurs remarquables
+  (`remarkableValuesInTrigonometry`) ; lettre posée remplacée (`a := 2`, `a x = 4` → `S = {2}`) ;
+  écriture des solutions `SolutionWriting` (`solve-latex.ts`) : registre décimal (Q46) et
+  `anglesAsTyped` (`core/angle-radians.ts`, Q1). Refus V57 : `core/parameter-refusal.ts`
+  (descendu de `calcul.ts`, avec `dependsOnMessage`/`lettersText` de `atelier/types.ts`, qui les
+  réexporte), code `PARAMETER_DEPENDS`, après le moteur comme avant. Texte (Q2) :
+  `solutionsSetText`, `approximateSolutionsText` (mode décimal), familles `S = {…, k ∈ ℤ}`, `dans`
+  compris. Laissés tels quels : « Pas de solution… », « Solutions infinies… ».
+- **Atelier** : l'argument de `.résoudre` n'est plus converti en radians (`engineArgument`) ; le
+  refus V57 est celui du registre ; `solveSteps` passe ses étapes par `anglesAsTyped`
+  (`stepsAsShown`, nouveau paramètre) et écrit les unités comme `.simplifier`
+  (`degreeSignWritten(displayUnitsInLatex(…))`) — `cos(20°)x=1` : étapes et réponse en degrés.
+- **Garde R5** (`resoudre-registre.test.ts`) : `READ_DIFFERENTLY` retiré ; contrôle dans les deux
+  sens (l'Atelier répond ⇒ le registre aussi). Registre : `solve-lecture.test.ts` (30 cas).
+  Preuve rouge : 37 échecs avec les sources de `main`.
+- ~45 attendus de texte mis à jour (`x = 3` → `S = {3}`) ; `ax+e=0 x` (solve-euler) devient
+  `2x+e=0` : la première divise par a, refusée maintenant (V57).
+- Suites : `atelier` + `mathAST/cli` (8 666), `mathAST` + `questions` + `geometry-core` + `routes`
+  (38 699), reste du projet serveur (65 622 ; `deploy-prod` en délai dépassé sous charge, vert
+  seul), client `atelier` + `routes` (749) vertes.
+
+### PR 2c — revue (2026-11-09)
+
+- Revue `code-reviewer` (opus), rien de bloquant, aucune réponse fausse introduite. Corrigé :
+  (I1) famille périodique venue de degrés : `rad` affiché (`cos(x) = cos(20°)`) → `writing` passé
+  aux familles, LaTeX et texte ; (I2) `sin(-20°)x=1` perdait les degrés (le moteur sort le
+  signe) → `anglesAsTyped` reconnaît l'angle opposé (`withOppositeAngle`) ; (M1) texte d'une
+  inéquation écrit comme son LaTeX (`domainWritten`, `x^2>0.25` → `]-∞ ; -0.5[ ∪ …`). Gardes :
+  3 cas dans `solve-lecture.test.ts`, 3 lignes dans `resoudre-registre.test.ts`.
+- Laissés (mineurs, notés) : (M2) `cos(20°)x = cos(π/9)` → `cos(20°)/cos(20°)` (angle tapé en
+  radians réécrit en degrés, fraction non réduite) ; (M3) `x = max(1,5 ; 2)` → `max(3/2, 2)` non
+  évalué ; (M4) `a := 2` puis `.solve a^2 = 4` → « Solutions infinies » (main : refus).
+- **Hors PR, déjà sur main, FAUX** : `.solve x^2=a dans [0;1]` → `S = ∅` (a = 0,25 : x = 0,5) ;
+  V57 ne le voit pas (coefficient dominant 1, ni condition ni dénominateur). À traiter. Aussi :
+  le message de `dans [-3,3]` cite « [-3.3] ».

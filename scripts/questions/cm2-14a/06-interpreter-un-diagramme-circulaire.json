@@ -1,0 +1,353 @@
+{
+	"id": "ebd55761-821b-42bb-8f09-dc9c59d609f4",
+	"title": "Que dit le diagramme circulaire ?",
+	"description": "Moyens de transport des élèves : le plus utilisé, le moins utilisé (case choix, secteurs bien distincts), combien d'élèves de plus en bus qu'à pied (effectifs de la légende), plus de la moitié des élèves en bus ? (oui / non, à l'œil)",
+	"grades": ["CM2"],
+	"level": 2,
+	"delay": 90,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Ce diagramme montre comment les élèves de l'école viennent le matin.\n\n```circulaire\ntitre: Venir à l'école\nÀ pied = {{a}}\nVélo = {{b}}\nBus = {{c}}\nVoiture = {{d}}\nétiquettes: aucune\n```\n\nQuel moyen de transport est le plus utilisé ?\n\n```choix\nmelanger: non\n- À pied\n- Vélo\n- Bus\n- Voiture\n```",
+			"variables": [
+				{
+					"name": "w0",
+					"expression": "2..5"
+				},
+				{
+					"name": "w1",
+					"expression": "2..5"
+				},
+				{
+					"name": "w2",
+					"expression": "2..5"
+				},
+				{
+					"name": "w3",
+					"expression": "2..5"
+				},
+				{
+					"name": "t",
+					"expression": "9..12"
+				},
+				{
+					"name": "k",
+					"expression": "0..3"
+				},
+				{
+					"name": "a",
+					"expression": "eval:(w0)+((t)-(w0))*((k-1)*(k-2)*(k-3))/(-6)"
+				},
+				{
+					"name": "b",
+					"expression": "eval:(w1)+((t)-(w1))*((k-0)*(k-2)*(k-3))/(2)"
+				},
+				{
+					"name": "c",
+					"expression": "eval:(w2)+((t)-(w2))*((k-0)*(k-1)*(k-3))/(-2)"
+				},
+				{
+					"name": "d",
+					"expression": "eval:(w3)+((t)-(w3))*((k-0)*(k-1)*(k-2))/(6)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le plus utilisé : le plus grand secteur.",
+					"C'est « {{if:k==0|À pied|{{if:k==1|Vélo|{{if:k==2|Bus|Voiture}}}}}} »."
+				]
+			}
+		},
+		{
+			"statement": "Ce diagramme montre comment les élèves de l'école viennent le matin.\n\n```circulaire\ntitre: Venir à l'école\nÀ pied = {{a}}\nVélo = {{b}}\nBus = {{c}}\nVoiture = {{d}}\nétiquettes: aucune\n```\n\nQuel moyen de transport est le moins utilisé ?\n\n```choix\nmelanger: non\n- À pied\n- Vélo\n- Bus\n- Voiture\n```",
+			"variables": [
+				{
+					"name": "w0",
+					"expression": "5..9"
+				},
+				{
+					"name": "w1",
+					"expression": "5..9"
+				},
+				{
+					"name": "w2",
+					"expression": "5..9"
+				},
+				{
+					"name": "w3",
+					"expression": "5..9"
+				},
+				{
+					"name": "t",
+					"expression": "1..2"
+				},
+				{
+					"name": "k",
+					"expression": "0..3"
+				},
+				{
+					"name": "a",
+					"expression": "eval:(w0)+((t)-(w0))*((k-1)*(k-2)*(k-3))/(-6)"
+				},
+				{
+					"name": "b",
+					"expression": "eval:(w1)+((t)-(w1))*((k-0)*(k-2)*(k-3))/(2)"
+				},
+				{
+					"name": "c",
+					"expression": "eval:(w2)+((t)-(w2))*((k-0)*(k-1)*(k-3))/(-2)"
+				},
+				{
+					"name": "d",
+					"expression": "eval:(w3)+((t)-(w3))*((k-0)*(k-1)*(k-2))/(6)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le moins utilisé : le plus petit secteur.",
+					"C'est « {{if:k==0|À pied|{{if:k==1|Vélo|{{if:k==2|Bus|Voiture}}}}}} »."
+				]
+			}
+		},
+		{
+			"statement": "Ce diagramme montre comment les élèves de l'école viennent le matin.\n\n```circulaire\ntitre: Venir à l'école\nÀ pied = {{a}}\nVélo = {{b}}\nBus = {{c}}\nVoiture = {{d}}\nétiquettes: effectifs\n```\n\nCombien d'élèves de plus viennent en bus qu'à pied ?\n\n$?$ élèves de plus",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "8..40"
+				},
+				{
+					"name": "b",
+					"expression": "5..30"
+				},
+				{
+					"name": "c",
+					"expression": "20..60"
+				},
+				{
+					"name": "d",
+					"expression": "5..30"
+				},
+				{
+					"name": "n",
+					"expression": "eval:c-a"
+				}
+			],
+			"conditions": ["c > a"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La légende donne les effectifs : en bus ${{c}}$ élèves, à pied ${{a}}$ élèves.",
+					"« Combien de plus » : l'écart, ${{c}} - {{a}} = \\textcolor{{{color:primary.0}}}{{{n}}}$ élèves."
+				]
+			}
+		},
+		{
+			"statement": "Ce diagramme montre comment les élèves de l'école viennent le matin.\n\n```circulaire\ntitre: Venir à l'école\nÀ pied = {{a}}\nVélo = {{b}}\nBus = {{c}}\nVoiture = {{d}}\nétiquettes: aucune\n```\n\nPlus de la moitié des élèves viennent-ils en bus ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "0..1"
+				},
+				{
+					"name": "o",
+					"expression": "13..15"
+				},
+				{
+					"name": "l",
+					"expression": "5..8"
+				},
+				{
+					"name": "a",
+					"expression": "1..6"
+				},
+				{
+					"name": "b",
+					"expression": "1..6"
+				},
+				{
+					"name": "c",
+					"expression": "eval:o*(1-q)+l*q"
+				},
+				{
+					"name": "d",
+					"expression": "eval:20-a-b-c"
+				}
+			],
+			"conditions": ["d >= 1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{q}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La moitié du disque, c'est un demi-disque : on regarde si le secteur « Bus » dépasse un demi-disque.",
+					"{{if:q==0|Le secteur « Bus » fait plus d'un demi-disque : $\\textcolor{{{color:primary.0}}}{\\text{oui}}$.|Le secteur « Bus » fait moins d'un demi-disque : $\\textcolor{{{color:primary.0}}}{\\text{non}}$.}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Le plus utilisé : le bus",
+			"variationIndex": 0,
+			"variables": {
+				"w0": "3",
+				"w1": "5",
+				"w2": "2",
+				"w3": "4",
+				"t": "10",
+				"k": "2",
+				"a": "3",
+				"b": "5",
+				"c": "10",
+				"d": "4"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le vélo",
+			"variationIndex": 0,
+			"variables": {
+				"w0": "3",
+				"w1": "5",
+				"w2": "2",
+				"w3": "4",
+				"t": "10",
+				"k": "2",
+				"a": "3",
+				"b": "5",
+				"c": "10",
+				"d": "4"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Le moins utilisé : la voiture",
+			"variationIndex": 1,
+			"variables": {
+				"w0": "6",
+				"w1": "8",
+				"w2": "5",
+				"w3": "7",
+				"t": "1",
+				"k": "3",
+				"a": "6",
+				"b": "8",
+				"c": "5",
+				"d": "1"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Bus 34, à pied 19 : 15",
+			"variationIndex": 2,
+			"variables": {
+				"a": "19",
+				"b": "12",
+				"c": "34",
+				"d": "9",
+				"n": "15"
+			},
+			"answers": ["15"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la somme (53)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "19",
+				"b": "12",
+				"c": "34",
+				"d": "9",
+				"n": "15"
+			},
+			"answers": ["53"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Bus 14 sur 20 : oui",
+			"variationIndex": 3,
+			"variables": {
+				"q": "0",
+				"o": "14",
+				"l": "6",
+				"a": "2",
+				"b": "3",
+				"c": "14",
+				"d": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Bus 6 sur 20 : non",
+			"variationIndex": 3,
+			"variables": {
+				"q": "1",
+				"o": "14",
+				"l": "6",
+				"a": "2",
+				"b": "3",
+				"c": "6",
+				"d": "9"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : oui avec 6 sur 20",
+			"variationIndex": 3,
+			"variables": {
+				"q": "1",
+				"o": "14",
+				"l": "6",
+				"a": "2",
+				"b": "3",
+				"c": "6",
+				"d": "9"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

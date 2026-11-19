@@ -1,10 +1,8 @@
 {
+	"id": "9102bbb0-1e20-45d0-9af6-575a6a6f1f86",
 	"title": "Point d'inflexion lu sur la courbe de f′",
 	"description": "Lire sur la courbe de f′ l'abscisse des points d'inflexion de f : extremums de f′ (piège : les zéros de f′, extremums de f)",
 	"grades": ["T_SPE"],
-	"theme": "Fonctions",
-	"domain": "Convexité",
-	"subdomain": "Point d'inflexion",
 	"level": 3,
 	"delay": 60,
 	"status": "draft",

@@ -14,8 +14,8 @@
 import { describe, it, expect } from 'vitest';
 import { analyzeSign } from '../analyze';
 import { parseLatex } from '../../parser';
-import { endpointToNumber } from '$lib/math/intervals/endpoint';
-import type { Interval } from '$lib/math/intervals/types';
+import { endpointToNumber } from '#lib/math/intervals/endpoint.ts';
+import type { Interval } from '#lib/math/intervals/types.ts';
 
 function getEndpointNumeric(end: { value: unknown }): number {
 	return endpointToNumber(end.value as never);

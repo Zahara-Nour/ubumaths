@@ -6,13 +6,13 @@
 
 import { redirect, error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { validateUuidParam } from '$lib/server/validation/params';
+import { validateUuidParam } from '#lib/server/validation/params.ts';
 import {
 	EvaluationError,
 	getAssignmentWithEvaluation,
 	isAssignmentRecipient
-} from '$lib/server/evaluations';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/evaluations.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger(
 	'(protected)/dashboard/student/assessments/[id]/results/+page.server'

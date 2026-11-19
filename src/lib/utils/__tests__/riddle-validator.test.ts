@@ -11,7 +11,7 @@ import {
 	getAnswerPlaceholder,
 	sanitizeAnswer
 } from '../riddle-validator';
-import type { AnswerConfig } from '$lib/types/riddle';
+import type { AnswerConfig } from '#lib/types/riddle.ts';
 
 describe('validateRiddleAnswer', () => {
 	describe('Numerical Validation', () => {

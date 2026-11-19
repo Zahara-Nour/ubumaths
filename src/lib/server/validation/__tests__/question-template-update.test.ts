@@ -9,7 +9,7 @@ import { describe, it, expect } from 'vitest';
 import {
 	createQuestionTemplateSchema,
 	updateQuestionTemplateSchema
-} from '$lib/server/validation/questions';
+} from '#lib/server/validation/questions.ts';
 
 describe('updateQuestionTemplateSchema', () => {
 	it('corps sans statut → aucune clé `status` dans la sortie', () => {
@@ -30,8 +30,6 @@ describe('updateQuestionTemplateSchema', () => {
 		const parsed = createQuestionTemplateSchema.parse({
 			title: 'T',
 			grades: ['CE1'],
-			theme: 'Entiers',
-			domain: 'Multiplier',
 			level: 1
 		});
 		expect(parsed.status).toBe('published');

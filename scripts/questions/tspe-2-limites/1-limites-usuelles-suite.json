@@ -1,10 +1,8 @@
 {
+	"id": "3d7d1d25-98eb-47c1-9841-299b2d6666ae",
 	"title": "Limites usuelles d'une suite",
 	"description": "Limite de k·nᵖ, k/nᵖ, k√n, k/√n, k·eⁿ, k·e⁻ⁿ (pièges : signe de k, k/nᵖ → +∞, e⁻ⁿ → +∞)",
 	"grades": ["T_SPE"],
-	"theme": "Suites",
-	"domain": "Limites de suites",
-	"subdomain": "Limites usuelles",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

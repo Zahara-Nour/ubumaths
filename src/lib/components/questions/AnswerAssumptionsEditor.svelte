@@ -18,11 +18,11 @@
 		isSequenceCategory,
 		validateAssumptionRows,
 		type AnswerAssumptionRow
-	} from '$lib/questions/answer-assumptions';
-	import type { AnswerAssumptionKind } from '$lib/math';
-	import * as Card from '$lib/components/ui/card';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
+	} from '#lib/questions/answer-assumptions.ts';
+	import type { AnswerAssumptionKind } from '#lib/math/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
 	import MySelect from '../MySelect.svelte';
 	import { Plus, Trash2 } from '@lucide/svelte';
 
@@ -30,11 +30,13 @@
 		rows: AnswerAssumptionRow[];
 		/** Variables tirées du modèle : une hypothèse ne peut pas les viser */
 		drawnNames: string[];
-		theme: string;
-		domain: string;
+		/** Branche de l'arbre où le modèle est rangé (vide : pas encore rangé) */
+		branch: string;
+		/** Notion de l'arbre où le modèle est rangé */
+		notion: string;
 	}
 
-	let { rows = $bindable(), drawnNames, theme, domain }: Props = $props();
+	let { rows = $bindable(), drawnNames, branch, notion }: Props = $props();
 
 	const KIND_ITEMS = ANSWER_ASSUMPTION_KINDS.map((kind) => ({
 		value: kind,
@@ -45,7 +47,7 @@
 
 	// Proposition « n ∈ ℕ » : Suites, n ni déjà décrit, ni tiré
 	let proposeNatural = $derived(
-		isSequenceCategory(theme, domain) &&
+		isSequenceCategory(branch, notion) &&
 			!rows.some((row) => row.name.trim() === 'n') &&
 			!drawnNames.includes('n')
 	);

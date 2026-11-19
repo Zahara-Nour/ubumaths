@@ -1,10 +1,8 @@
 {
+	"id": "593cb70b-4e39-4a9a-a971-35cc010f5f14",
 	"title": "Lire un diagramme circulaire",
 	"description": "Lire la part d'une catégorie sur un diagramme circulaire sans étiquettes, en quarts ou en huitièmes (quelle part des élèves vient à vélo ?)",
 	"grades": ["5"],
-	"theme": "Statistiques",
-	"domain": "Représenter des données",
-	"subdomain": "diagrammes circulaires",
 	"level": 1,
 	"delay": 90,
 	"status": "draft",

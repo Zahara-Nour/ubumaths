@@ -1,10 +1,8 @@
 {
+	"id": "5cd25c2b-1def-492c-a81f-998255ea4f1d",
 	"title": "Problèmes de fractions",
 	"description": "Problèmes : ce qui reste d'un gâteau (un quart et un sixième), fraction d'un effectif (3/4 de 28 élèves), argent restant après une dépense, deux parts d'un même mur (2/5 + 3/10)",
 	"grades": ["6"],
-	"theme": "Fractions",
-	"domain": "Problèmes",
-	"subdomain": "Parts et restes",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

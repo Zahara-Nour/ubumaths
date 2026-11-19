@@ -24,9 +24,10 @@
  * - {{teacher_name}} - Teacher's name
  */
 
-import type { TemplatePlaceholder } from '$lib/types/worksheets';
-import { TYPST_LANGS } from '$lib/types/locale';
+import type { TemplatePlaceholder } from '#lib/types/worksheets.ts';
+import { TYPST_LANGS } from '#lib/types/locale.ts';
 import { labelPlaceholders } from '../labels';
+import { SITE_GIDOUILLE_TYPST, SITE_NAME, SITE_QR_TYPST } from './site-mark';
 
 export interface DefaultTemplate {
 	id: string;
@@ -1574,10 +1575,19 @@ const studentStyleCommon = (
     length: 100% - 3cm,
     stroke: 0.3pt + luma(75%)
   )),
+  // Titre de la fiche à gauche, pour retrouver la fiche d'une feuille imprimée ;
+  // numéro de page au centre ; gidouille + « chiph.re » à droite à partir de la
+  // page 2 (la page 1 a le QR de l'en-tête)
   footer: context [
-    #set align(center)
     #set text(size: 9pt, fill: gray)
-    #counter(page).display("1 / 1", both: true)
+    #grid(
+      columns: (1fr, auto, 1fr),
+      column-gutter: 1em,
+      align: (left, center, right),
+      [{{#if show_title}}{{title}}{{/if}}{{#if show_level}} · {{level_short}}{{/if}}],
+      counter(page).display("1 / 1", both: true),
+      if counter(page).get().first() > 1 [{{#if site_gidouille}}#{{site_gidouille}}#h(0.3em){{/if}}{{site_name}}]
+    )
   ]
 )
 
@@ -1609,7 +1619,15 @@ const studentStyleHeader = (
 // Le fond blanc masque le filet vertical derrière le bandeau.
 #place(top + center, scope: "parent", float: true)[
   #block(width: 100%, fill: white, inset: (bottom: 6pt), below: 1.2em)[
-${banner}    {{#if show_title}}#align(center)[#text(size: 1.5em, weight: "bold")[{{title}}]]
+${banner}    // Titre, identité et notes à gauche ; QR du site à droite (« chiph.re » dessous)
+    #grid(
+      columns: (1fr, auto),
+      column-gutter: 1em,
+      align: (horizon, center + top),
+      [
+    {{#if show_title}}#align(center)[#text(size: 1.5em, weight: "bold")[{{title}}]]
+    #v(0.4em){{/if}}
+    {{#if show_level}}#align(center)[#text(fill: luma(90))[{{level}}]]
     #v(0.4em){{/if}}
     {{#if show_identity}}#grid(
       columns: (1fr, auto, 1fr),
@@ -1621,6 +1639,12 @@ ${banner}    {{#if show_title}}#align(center)[#text(size: 1.5em, weight: "bold")
     #v(0.3em){{/if}}
     {{#if show_header_notes}}#text(size: 0.9em)[${HEADER_NOTES}]
     #v(0.3em){{/if}}
+      ],
+      [{{#if site_qr}}#{{site_qr}}
+      #v(2pt, weak: true)
+      #text(size: 8pt, fill: gray)[{{site_name}}]{{/if}}]
+    )
+    #v(0.3em)
     #line(length: 100%, stroke: 0.5pt + gray)
   ]
 ]
@@ -1768,10 +1792,17 @@ export const SAMPLE_PREVIEW_DATA = {
 	// French: the application UI is French, whatever a worksheet's own language.
 	...labelPlaceholders('fr'),
 	lang: TYPST_LANGS.fr,
+	// Chiphre : QR du site en tête de la page 1, nom du site en bas des suivantes
+	site_qr: SITE_QR_TYPST,
+	site_name: SITE_NAME,
+	site_gidouille: SITE_GIDOUILLE_TYPST,
+	level: '1ère spécialité maths',
+	level_short: '1ère Spé',
 	// Display-option flags: previews always show every field, whatever a given
 	// worksheet's config says. Kept last so the editor's placeholder panel, which
 	// lists the first entries, keeps showing content fields.
 	show_title: 'true',
+	show_level: 'true',
 	show_identity: 'true',
 	show_date: 'true',
 	show_class: 'true',

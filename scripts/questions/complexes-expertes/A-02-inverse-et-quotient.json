@@ -1,10 +1,8 @@
 {
+	"id": "2dcb4b3c-e5ad-4b8b-9728-1b4e614bcba1",
 	"title": "Inverse et quotient de nombres complexes",
 	"description": "Inverse 1/(a+ib), quotient par multiplication par le conjugué du dénominateur (pièges : conjugué du numérateur, a²−b² au dénominateur, i² = 1)",
 	"grades": ["T_EXP"],
-	"theme": "Nombres complexes",
-	"domain": "Forme algébrique",
-	"subdomain": "Inverse et quotient",
 	"level": 2,
 	"status": "draft",
 	"delay": 60,

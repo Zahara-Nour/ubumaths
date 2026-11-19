@@ -4,28 +4,23 @@
 	Fiche d'un modèle dans la revue `/dev/modeles` : en-tête toujours visible (titre, statut,
 	verdict, alertes), corps dépliable (point et bornes, rangement, consigne, plages des variables,
 	conditions, specs, aperçu de chaque variation) et verdict « validé / à revoir » + commentaire.
-	Le verdict s'enregistre par l'action `?/saveReview` ; un échec se dit par un toast, et le
-	verdict affiché ne change pas (il vient de la base, relue après chaque enregistrement).
+	Le verdict : `ReviewVerdictForm`.
 -->
 <script lang="ts">
 	// Imports
-	import { enhance } from '$app/forms';
 	import { resolve } from '$app/paths';
-	import type { SubmitFunction } from '@sveltejs/kit';
-	import type { QuestionTemplateRow } from '$lib/types/question-template';
-	import { toQuestionTemplate } from '$lib/types/question-template';
-	import type { SheetPoint, TemplateReview, Verdict } from '$lib/questions/template-review';
-	import { VERDICT_LABELS } from '$lib/questions/template-review';
+	import type { QuestionTemplateRow } from '#lib/types/question-template.ts';
+	import { toQuestionTemplate } from '#lib/types/question-template.ts';
+	import type { SheetPoint, TemplateReview } from '#lib/questions/template-review.ts';
+	import { VERDICT_LABELS } from '#lib/questions/template-review.ts';
 	import {
 		QUESTION_TYPE_LABELS,
 		getQuestionType,
 		type ValidationStatus
-	} from '$lib/questions/types';
-	import VariationPreview from '$lib/components/dev/VariationPreview.svelte';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Button } from '$lib/components/ui/button';
-	import { Textarea } from '$lib/components/ui/textarea';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	} from '#lib/questions/types.ts';
+	import VariationPreview from '#lib/components/dev/VariationPreview.svelte';
+	import ReviewVerdictForm from '#lib/components/dev/ReviewVerdictForm.svelte';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
 	import { ChevronDown, ChevronRight, TriangleAlert } from '@lucide/svelte';
 
 	// Types
@@ -35,6 +30,8 @@
 		review: TemplateReview | null;
 		alerts: string[];
 		nodePath: string[];
+		/** Ligne de la série choisie dans la revue : répétitions et durée (secondes) */
+		seriesLine?: { quantity: number; delay: number } | null;
 		open?: boolean;
 	}
 
@@ -48,7 +45,15 @@
 	};
 
 	// Variables
-	let { row, points, review, alerts, nodePath, open = $bindable(false) }: Props = $props();
+	let {
+		row,
+		points,
+		review,
+		alerts,
+		nodePath,
+		seriesLine = null,
+		open = $bindable(false)
+	}: Props = $props();
 
 	const template = $derived(toQuestionTemplate(row));
 	const typeLabel = $derived(QUESTION_TYPE_LABELS[getQuestionType(template)]);
@@ -62,37 +67,10 @@
 	const sharedVariables = $derived(template.shared?.variables ?? []);
 	const sharedConditions = $derived(template.shared?.conditions ?? []);
 
-	// Brouillon du verdict : modifiable, il repart de la base à chaque relecture de la fiche
-	// Dérivé de valeurs simples : relire la page (verdict d'une AUTRE fiche) recrée l'objet `review`
-	// sans changer ces valeurs, et ne doit pas effacer ce qui est en cours de saisie ici
-	const savedVerdict = $derived<Verdict | null>(review?.verdict ?? null);
-	const savedComment = $derived(review?.comment ?? '');
-	let draftVerdict = $derived<Verdict | null>(savedVerdict);
-	let draftComment = $derived(savedComment);
-	let saving = $state(false);
-
 	// Functions
 	function formatDate(iso: string): string {
 		return new Date(iso).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' });
 	}
-
-	const submitReview: SubmitFunction = () => {
-		saving = true;
-		return async ({ result, update }) => {
-			saving = false;
-			if (result.type === 'success') {
-				toaster.success(result.data?.deleted ? 'Verdict retiré' : 'Verdict enregistré');
-				await update({ reset: false });
-			} else if (result.type === 'failure') {
-				const message = result.data?.message;
-				toaster.error(typeof message === 'string' ? message : 'Verdict non enregistré');
-				draftVerdict = review?.verdict ?? null;
-			} else {
-				toaster.error('Verdict non enregistré');
-				draftVerdict = review?.verdict ?? null;
-			}
-		};
-	};
 </script>
 
 <article class="rounded-lg border bg-card" id="modele-{row.id}">
@@ -119,6 +97,9 @@
 					</span>
 				{:else}
 					<span class="verdict" data-verdict="none">Sans verdict</span>
+				{/if}
+				{#if seriesLine}
+					<Badge variant="secondary">× {seriesLine.quantity} · {seriesLine.delay} s</Badge>
 				{/if}
 				<span class="text-muted-foreground">
 					niveau {row.level} · {points.map((p) => p.code).join(', ') || 'sans point'} ·
@@ -238,52 +219,7 @@
 				{/each}
 			</section>
 
-			<form
-				method="POST"
-				action="?/saveReview"
-				use:enhance={submitReview}
-				class="space-y-2 rounded-md border p-3"
-			>
-				<input type="hidden" name="templateId" value={row.id} />
-				<input type="hidden" name="verdict" value={draftVerdict ?? ''} />
-				<div class="flex flex-wrap items-center gap-2">
-					<Button
-						type="button"
-						variant={draftVerdict === 'valide' ? 'default' : 'outline'}
-						aria-pressed={draftVerdict === 'valide'}
-						onclick={() => (draftVerdict = 'valide')}>✅ Validé</Button
-					>
-					<Button
-						type="button"
-						variant={draftVerdict === 'a_revoir' ? 'default' : 'outline'}
-						aria-pressed={draftVerdict === 'a_revoir'}
-						onclick={() => (draftVerdict = 'a_revoir')}>🔶 À revoir</Button
-					>
-					{#if review}
-						<span class="text-xs text-muted-foreground">
-							verdict du {formatDate(review.reviewedAt)}
-						</span>
-					{/if}
-				</div>
-				<Textarea
-					name="comment"
-					bind:value={draftComment}
-					maxlength={4000}
-					rows={3}
-					placeholder="Commentaire (ce qu'il faut modifier, ou rien)"
-					aria-label="Commentaire du verdict"
-				/>
-				<div class="flex flex-wrap gap-2">
-					<Button type="submit" disabled={saving || draftVerdict === null}>
-						Enregistrer le verdict
-					</Button>
-					{#if review}
-						<Button type="submit" variant="ghost" formaction="?/deleteReview" disabled={saving}
-							>Retirer le verdict</Button
-						>
-					{/if}
-				</div>
-			</form>
+			<ReviewVerdictForm templateId={row.id} {review} />
 		</div>
 	{/if}
 </article>

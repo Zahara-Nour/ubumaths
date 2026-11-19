@@ -1,10 +1,8 @@
 {
+	"id": "463d8266-b02f-4af6-98f6-25274c6e257d",
 	"title": "Pose la somme en euros et centimes",
 	"description": "Poser des centimes, une somme à virgule, des euros et des centimes ; sans pièce de 1 €",
 	"grades": ["CE1"],
-	"theme": "Grandeurs",
-	"domain": "Monnaie",
-	"subdomain": "Pièces et billets",
 	"level": 10,
 	"delay": 120,
 	"status": "draft",

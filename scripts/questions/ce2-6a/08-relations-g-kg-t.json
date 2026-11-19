@@ -1,10 +1,8 @@
 {
+	"id": "f4d95001-1193-47c5-a8e2-efb17d47be4d",
 	"title": "Grammes, kilogrammes et tonnes",
 	"description": "1 kg = 1 000 g, 1 t = 1 000 kg ; 5 462 g = 5 kg 462 g ; 5 350 kg = 5 t 350 kg",
 	"grades": ["CE2"],
-	"theme": "Grandeurs",
-	"domain": "Masses",
-	"subdomain": "Unités",
 	"level": 5,
 	"delay": 90,
 	"status": "draft",

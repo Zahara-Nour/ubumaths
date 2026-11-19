@@ -1,7 +1,8 @@
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
 import { z } from 'zod';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/moderation/reports/[id]/+server');
 
@@ -38,15 +39,8 @@ const reviewReportSchema = z.object({
  * - 500: Database error
  */
 export const PUT: RequestHandler = async ({ request, params, locals }) => {
-	// 1. Check authentication
-	if (!locals.user || !locals.profile) {
-		throw error(401, 'Not authenticated');
-	}
-
-	// 2. Check teacher role
-	if (!['teacher', 'admin'].includes(locals.profile.role)) {
-		throw error(403, 'Only teachers can review reports');
-	}
+	// 1-2. Authentification + rôle enseignant/admin
+	await requireRoles(locals, ['teacher', 'admin']);
 
 	// 3. Validate report ID
 	const reportId = params.id;
@@ -114,5 +108,5 @@ export const PUT: RequestHandler = async ({ request, params, locals }) => {
 		throw error(500, 'Failed to review report');
 	}
 
-	return json({ success: true });
+	return Response.json({ success: true });
 };

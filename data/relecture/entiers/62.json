@@ -96,9 +96,6 @@
 			}
 		],
 		"grades": ["CP"],
-		"theme": "Entiers",
-		"domain": "Additionner",
-		"subdomain": "A trou",
 		"level": 2,
 		"status": "draft",
 		"delay": 15,

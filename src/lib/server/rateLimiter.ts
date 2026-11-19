@@ -31,8 +31,8 @@
 
 import { createClient } from '@supabase/supabase-js';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import { createServerLogger } from '$lib/utils/logger';
+import type { Database } from '#lib/types/database.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 import { config } from 'dotenv';
 
 // Load environment variables from .env file
@@ -1297,4 +1297,24 @@ export async function checkKanbanCardMutationRateLimit(userId: string): Promise<
 	}
 
 	return result;
+}
+
+// ============================================================================
+// GARDES DES ENDPOINTS (ex-limiteur en mémoire, T8)
+// ============================================================================
+
+/**
+ * Limite générique d'un endpoint : `maxRequests` appels par fenêtre de `windowSeconds`
+ * pour une clé (`search:<userId>`, `error-log:<ip>`…). Compte en base, donc tient entre
+ * instances Vercel et démarrages à froid. Échoue **ouvert** (panne de la base → passe).
+ *
+ * Appelée par `rateLimit()` (`middleware/rateLimit.ts`), qui lève le 429, et par le
+ * déclencheur manuel des tâches cron.
+ */
+export async function checkEndpointRateLimit(
+	key: string,
+	maxRequests: number,
+	windowSeconds: number
+): Promise<RateLimitResult> {
+	return checkRateLimitWithMessage(key, maxRequests, windowSeconds, 'Trop de requêtes.');
 }

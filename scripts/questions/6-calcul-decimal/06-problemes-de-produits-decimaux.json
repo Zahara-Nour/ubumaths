@@ -1,10 +1,8 @@
 {
+	"id": "32b7a9bc-300c-44a1-af0d-a811ca688eb2",
 	"title": "Problèmes de produits décimaux",
 	"description": "Prix à payer, calculs de tête : masse × prix au kilo (1,5 kg à 2,40 €), 10, 20, 30 ou 40 litres × prix du litre, 0,2 ou 0,5 kg (le produit est plus petit)",
 	"grades": ["6"],
-	"theme": "Décimaux",
-	"domain": "Problèmes",
-	"subdomain": "Multiplication",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

@@ -18,7 +18,7 @@ import {
 	lessThanOrEqualInterval,
 	excludedPoint
 } from '../factory';
-import { number, opposite } from '$lib/mathAST/factory';
+import { number, opposite } from '#lib/mathAST/factory.ts';
 
 describe('formatDomainInterval()', () => {
 	describe('special domains', () => {

@@ -11,10 +11,10 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import FlashCard from '../FlashCard.svelte';
-import { generateInstance } from '$lib/questions/generator/instance-generator';
-import type { QuestionInstance, QuestionTemplate } from '$lib/questions/types';
-import { templateMarkdown } from '$lib/ubumark';
-import { NOT_A_SQUARE_FEEDBACK } from '$lib/questions/construction/judge';
+import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
+import type { QuestionInstance, QuestionTemplate } from '#lib/questions/types.ts';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
+import { NOT_A_SQUARE_FEEDBACK } from '#lib/questions/construction/judge.ts';
 
 // Fenêtre 0..10 × 0..7 ; côté donné [AB] de (2 ; 3) à (5 ; 3), sommets sans lettre
 const BLOCK = [
@@ -37,8 +37,6 @@ const TEMPLATE = {
 	type: 'fill_in_blanks',
 	variations: [{ statement: templateMarkdown(`Termine le carré.\n\n${BLOCK}`) }],
 	grades: ['CP'],
-	theme: 'Test',
-	domain: 'Test',
 	level: 1
 } as unknown as QuestionTemplate;
 

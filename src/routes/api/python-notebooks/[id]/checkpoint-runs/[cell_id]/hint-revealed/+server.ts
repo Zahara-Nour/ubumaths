@@ -14,11 +14,12 @@
  *   has access to the notebook).
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
 import { z } from 'zod';
-import { validateUuidParam } from '$lib/server/validation/params';
-import { createServerLogger } from '$lib/utils/logger';
+import { validateUuidParam } from '#lib/server/validation/params.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger(
 	'api/python-notebooks/[id]/checkpoint-runs/[cell_id]/hint-revealed/+server'
@@ -28,11 +29,8 @@ const cellIdSchema = z.string().min(1).max(100);
 
 export const PATCH: RequestHandler = async ({ locals, params }) => {
 	const notebookId = validateUuidParam(params.id);
-	const { user, supabase } = locals;
-
-	if (!user) {
-		throw error(401, 'Connexion requise');
-	}
+	await requireAuth(locals);
+	const { supabase } = locals;
 
 	const cellIdValidation = cellIdSchema.safeParse(params.cell_id);
 	if (!cellIdValidation.success) {
@@ -54,5 +52,5 @@ export const PATCH: RequestHandler = async ({ locals, params }) => {
 		throw error(500, 'Impossible d’enregistrer l’indice');
 	}
 
-	return json({ run });
+	return Response.json({ run });
 };

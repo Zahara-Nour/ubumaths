@@ -12,7 +12,7 @@
  */
 
 import { MAX_LIST_VALUES } from './types';
-import { readListValue } from '$lib/statistics/read-value';
+import { readListValue } from '#lib/statistics/read-value.ts';
 
 // =============================================================================
 // Types

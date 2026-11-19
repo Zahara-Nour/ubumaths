@@ -8,24 +8,24 @@
  * POST /api/questions/templates - Create new template
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import type { QuestionTemplate } from '$lib/questions/types';
-import { getQuestionType } from '$lib/questions/types';
-import { choiceAnswerCountErrors } from '$lib/questions/validators/choice-answer-count';
-import { categoryTakenMessage, checkCategoryUniqueness } from '$lib/questions/category-validation';
+import type { QuestionTemplate } from '#lib/questions/types.ts';
+import { getQuestionType } from '#lib/questions/types.ts';
+import { choiceAnswerCountErrors } from '#lib/questions/validators/choice-answer-count.ts';
+import { classificationNodeErrorMessage } from '#lib/server/classification-node-error.ts';
 import {
 	createQuestionTemplateSchema,
 	validateRequest,
 	createQuestionTemplateResponseSchema,
 	listQuestionsQuerySchema,
 	questionTemplatesListResponseSchema
-} from '$lib/server/validation';
-import { validateJsonResponse } from '$lib/server/validation/response-utils';
-import { requireRoles, requireRole } from '$lib/server/middleware/auth';
-import { toJson } from '$lib/types/database-helpers';
-import { templatePublicationErrors } from '$lib/server/template-publication';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/validation/index.ts';
+import { validateJsonResponse } from '#lib/server/validation/response-utils.ts';
+import { requireAdmin, requireRoles } from '#lib/server/middleware/auth.ts';
+import { toJson } from '#lib/types/database-helpers.ts';
+import { templatePublicationErrors } from '#lib/server/template-publication.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/questions/templates/+server');
 
@@ -106,7 +106,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			'GET /api/questions/templates'
 		);
 
-		return json(validated);
+		return Response.json(validated);
 	} catch (err) {
 		logger.error('Error in GET /api/questions/templates:', err);
 
@@ -128,7 +128,8 @@ export const GET: RequestHandler = async ({ url, locals }) => {
  * Returns: { success: true, template: QuestionTemplate } | { success: false, errors: string[] }
  */
 export const POST: RequestHandler = async ({ request, locals }) => {
-	const { user } = await requireRole(locals, 'admin');
+	// Prof en mode administration, ou vrai compte admin : la RLS réserve l'écriture à l'admin
+	const { supabase, adminUserId } = await requireAdmin(locals);
 
 	try {
 		// ====================================================================
@@ -138,7 +139,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		const validation = validateRequest(createQuestionTemplateSchema, body);
 
 		if (!validation.success) {
-			return json(
+			return Response.json(
 				{
 					success: false,
 					errors: [validation.error]
@@ -147,10 +148,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			);
 		}
 
-		// Le schéma Zod garantit déjà `title`, `grades`, `theme`, `domain`, `level`
-		// et `status`. Le double cast vers `Partial<QuestionTemplate>` effaçait
-		// précisément ces garanties, et l'insertion ne pouvait donc plus prouver
-		// qu'elle fournissait les colonnes obligatoires.
+		// Le schéma Zod garantit déjà `title`, `grades`, `level` et `status`. Le double
+		// cast vers `Partial<QuestionTemplate>` effaçait précisément ces garanties.
+		// Un modèle se range par `classification_node_id` (ADR 0035) ; l'ancien quadruplet
+		// d'un vieil onglet a déjà été retiré par le schéma.
 		const templateData = validation.data;
 
 		// Case choix (V1) : jamais plusieurs bonnes réponses sans `plusieurs: oui`, même
@@ -160,7 +161,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				draft: true
 			});
 			if (countErrors.length > 0) {
-				return json({ success: false, errors: countErrors }, { status: 400 });
+				return Response.json({ success: false, errors: countErrors }, { status: 400 });
 			}
 		}
 
@@ -170,27 +171,12 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			const { type: _ignoredType, ...candidate } = templateData;
 			const errors = templatePublicationErrors(candidate as QuestionTemplate);
 			if (errors.length > 0) {
-				return json({ success: false, errors }, { status: 400 });
-			}
-		}
-
-		// Catégorie occupée : refus, comme le PUT et le lot — jamais de décalage
-		// automatique du niveau (l'éditeur propose un niveau libre avant l'envoi)
-		if (templateData.status === 'published') {
-			const category = {
-				theme: templateData.theme,
-				domain: templateData.domain,
-				subdomain: templateData.subdomain,
-				level: templateData.level
-			};
-			const categoryCheck = await checkCategoryUniqueness(locals.supabase, category);
-			if (!categoryCheck.isUnique) {
-				return json({ success: false, errors: [categoryTakenMessage(category)] }, { status: 400 });
+				return Response.json({ success: false, errors }, { status: 400 });
 			}
 		}
 
 		// Insert template (map camelCase to snake_case for database)
-		const { data: template, error: insertError } = await locals.supabase
+		const { data: template, error: insertError } = await supabase
 			.from('question_templates')
 			.insert({
 				type: getQuestionType({ options: templateData.options }),
@@ -204,24 +190,25 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				exercise_instruction: templateData.exerciseInstruction || null,
 				options: toJson(templateData.options ?? null),
 				grades: templateData.grades,
-				// Categorization fields (independent from grades)
-				// - theme: Broad subject area (e.g., "Algèbre", "Géométrie") [required]
-				// - domain: Specific topic (e.g., "Équations", "Triangles") [required]
-				// - subdomain: Optional sub-topic (e.g., "Linéaires") [nullable]
-				// - level: Difficulty (positive integer, 1=easy, higher=harder) [required]
-				theme: templateData.theme,
-				domain: templateData.domain,
-				subdomain: templateData.subdomain || null,
+				// Rangement : notion ou sous-notion de l'arbre (facultatif). Ni thème, ni
+				// domaine, ni sous-domaine : ils ne s'écrivent plus.
+				classification_node_id: templateData.classification_node_id ?? null,
+				// Niveau de difficulté : ordonne les modèles d'une même rubrique
 				level: templateData.level,
 				status: templateData.status || 'published',
 				delay: templateData.delay || null,
 				test_specs: toJson(templateData.testSpecs ?? null),
-				created_by: user.id
+				created_by: adminUserId
 			})
 			.select()
 			.single();
 
 		if (insertError) {
+			// Nœud refusé par la base (branche, archivé, inexistant) : faute de saisie, pas panne
+			const nodeMessage = classificationNodeErrorMessage(insertError);
+			if (nodeMessage) {
+				return Response.json({ success: false, errors: [nodeMessage] }, { status: 400 });
+			}
 			logger.error('Error inserting template:', insertError);
 			throw error(500, 'Failed to create template');
 		}
@@ -236,7 +223,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			'POST /api/questions/templates'
 		);
 
-		return json(validated, { status: 201 });
+		return Response.json(validated, { status: 201 });
 	} catch (err) {
 		logger.error('Error in POST /api/questions/templates:', err);
 
@@ -244,7 +231,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			throw err;
 		}
 
-		return json({
+		return Response.json({
 			success: false,
 			errors: ['Internal server error']
 		});

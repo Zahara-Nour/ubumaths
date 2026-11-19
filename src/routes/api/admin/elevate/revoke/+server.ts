@@ -30,9 +30,9 @@
  * - 401: not authenticated
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { ADMIN_ELEVATION_COOKIE } from '$lib/server/adminElevation';
+import { ADMIN_ELEVATION_COOKIE } from '#lib/server/adminElevation.ts';
 
 export const POST: RequestHandler = async ({ locals, cookies }) => {
 	// Must be authenticated (401 otherwise). A bare user check is sufficient here
@@ -62,5 +62,5 @@ export const POST: RequestHandler = async ({ locals, cookies }) => {
 	// SameSite=Strict mirrors the cookie's `set` options.
 	cookies.delete(ADMIN_ELEVATION_COOKIE, { path: '/', sameSite: 'strict' });
 
-	return json({ success: true });
+	return Response.json({ success: true });
 };

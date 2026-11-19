@@ -1,13 +1,14 @@
 {
+	"id": "9a6087c5-34e9-448e-9805-b05a4484d144",
 	"title": "Systèmes linéaires et calcul matriciel",
 	"description": "Écrire un système 2 × 2 sous la forme AX = B et le résoudre avec A⁻¹ (donnée ou à calculer) : X = A⁻¹B (pièges : BA⁻¹ ou AB au lieu de A⁻¹B, x et y échangés)",
 	"grades": ["T_EXP"],
-	"theme": "Graphes et matrices",
-	"domain": "Matrices",
-	"subdomain": "Systèmes linéaires",
 	"level": 2,
 	"status": "draft",
 	"delay": 60,
+	"shared": {
+		"capitalPairs": "product"
+	},
 	"variations": [
 		{
 			"statement": "On considère le système\n\n$$\\begin{cases} {{a1}}x {{a2;+}}y = {{e1}} \\\\ {{a3}}x {{a4;+}}y = {{e2}} \\end{cases}$$\n\nIl s'écrit $AX = B$ avec $A = \\begin{pmatrix}{{a1}}&{{a2}}\\\\{{a3}}&{{a4}}\\end{pmatrix}$, $X = \\begin{pmatrix}x\\\\y\\end{pmatrix}$, $B = \\begin{pmatrix}{{e1}}\\\\{{e2}}\\end{pmatrix}$, et $A^{-1} = \\begin{pmatrix}{{a4}}&{{eval:-a2}}\\\\{{eval:-a3}}&{{a1}}\\end{pmatrix}$.\n\n$x=?$\n\n$y=?$",

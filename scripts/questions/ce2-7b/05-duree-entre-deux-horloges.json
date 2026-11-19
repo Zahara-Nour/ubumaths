@@ -1,10 +1,8 @@
 {
+	"id": "4c75f053-a59e-4d89-92bd-5201f54562b3",
 	"title": "Combien de temps a-t-il duré ? (deux horloges)",
 	"description": "Durée entre deux horloges : 8 h 30 → 8 h 50 ; 15 h 40 → 16 h 05 ; 9 h 15 → 10 h 30",
 	"grades": ["CE2"],
-	"theme": "Grandeurs",
-	"domain": "Durées",
-	"subdomain": "Durée écoulée",
 	"level": 5,
 	"delay": 120,
 	"status": "draft",

@@ -13,7 +13,7 @@
  * avec ces polices échoue → le même corrigé, recompilé dans la police standard,
  * l'erreur Typst étant rendue à l'appelant (avertissement) et écrite en console.
  *
- * Sert aussi la page /dev/polices (PDF de démonstration).
+ * Sert aussi les pages /dev/polices et /dev/polices/luciole (PDF de démonstration).
  *
  * @module typst/compiler/correction-fonts-compiler
  */
@@ -86,11 +86,18 @@ export function getCorrectionFontsCompiler(): Promise<DocumentCompiler> {
 	// Un échec de construction reste en mémoire jusqu'au rechargement de la page :
 	// les Corrigés suivants (un lot entier) passent directement au repli, sans
 	// refaire la tentative pour chaque élève
-	fontsCompiler ??= buildCorrectionFontsCompiler();
+	fontsCompiler ??= createFontsCompiler(CORRECTION_FONT_FILES);
 	return fontsCompiler;
 }
 
-async function buildCorrectionFontsCompiler(): Promise<TypstSnippetInstance> {
+/**
+ * Un compilateur à part qui charge ces polices (adresses servies par `static/`),
+ * en plus des polices de texte par défaut de Typst. Sert au Corrigé, et à
+ * `/dev/polices/luciole` pour essayer d'autres polices sans toucher au Corrigé.
+ */
+export async function createFontsCompiler(
+	fontFiles: readonly string[]
+): Promise<TypstSnippetInstance> {
 	// Charge le bundle typst.ts : il expose la classe TypstSnippet
 	await getTypstCompiler();
 	const TypstSnippet = (window as unknown as { TypstSnippet: TypstSnippetClass }).TypstSnippet;
@@ -101,7 +108,7 @@ async function buildCorrectionFontsCompiler(): Promise<TypstSnippetInstance> {
 	snippet.setRendererInitOptions({ getModule: () => RENDERER_WASM_URL });
 	snippet.use(
 		// Nos polices, en plus des polices de texte par défaut de Typst
-		...CORRECTION_FONT_FILES.map((path) =>
+		...fontFiles.map((path) =>
 			TypstSnippet.preloadFontFromUrl(new URL(path, window.location.origin).href)
 		),
 		// Les paquets @preview (cetz : tableaux de variations, cercle…)

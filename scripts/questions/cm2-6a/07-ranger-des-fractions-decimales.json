@@ -1,10 +1,8 @@
 {
+	"id": "169b9eaf-deee-4b7c-a3cd-a1d8eab3c377",
 	"title": "Ranger des fractions décimales",
 	"description": "Ranger dans l'ordre croissant ou décroissant quatre nombres : un entier, des dixièmes, des centièmes et des millièmes (9/10 ; 1 201/1 000 ; 140/100 ; 2)",
 	"grades": ["CM2"],
-	"theme": "Fractions",
-	"domain": "Apprivoiser",
-	"subdomain": "Ordonner",
 	"level": 4,
 	"delay": 60,
 	"status": "draft",

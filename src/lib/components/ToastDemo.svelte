@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import { Button } from '$lib/components/ui/button';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
 
 	function showSuccessToast() {
 		toaster.success('Success! Operation completed successfully.');

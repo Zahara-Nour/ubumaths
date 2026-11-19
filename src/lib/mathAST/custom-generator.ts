@@ -1651,8 +1651,8 @@ export class CustomGenerator {
  *
  * @example
  * ```typescript
- * import { toCustom } from '$lib/mathAST/custom-generator';
- * import { parseCustom } from '$lib/mathAST/parser/custom';
+ * import { toCustom } from '#lib/mathAST/custom-generator.ts';
+ * import { parseCustom } from '#lib/mathAST/parser/custom/index.ts';
  *
  * const ast = parseCustom('2x^2+3x+1');
  * const output = toCustom(ast);

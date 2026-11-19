@@ -1,11 +1,9 @@
 {
+	"id": "80489c90-34aa-4212-bf2e-62438ab017a0",
 	"title": "Lire le signe de a et de Δ sur une parabole",
 	"description": "Ouverture de la parabole → signe de a ; points communs avec l'axe des abscisses → signe de Δ",
 	"grades": ["1_SPE"],
-	"theme": "Fonctions",
-	"domain": "Polynôme du second degré",
 	"status": "draft",
-	"subdomain": "Signe et inéquations",
 	"level": 1,
 	"delay": 20,
 	"variations": [

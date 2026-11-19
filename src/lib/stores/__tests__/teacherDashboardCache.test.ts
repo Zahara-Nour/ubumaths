@@ -31,8 +31,8 @@ import type {
 	StudentWarningCounts,
 	ClassInfo,
 	SchoolInfo
-} from '$lib/types/teacher-cache';
-import type { StudentVipCards } from '$lib/types/vip-card';
+} from '#lib/types/teacher-cache.ts';
+import type { StudentVipCards } from '#lib/types/vip-card.ts';
 
 // ============================================================================
 // TEST SETUP

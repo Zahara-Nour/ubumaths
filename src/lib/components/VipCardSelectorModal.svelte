@@ -23,11 +23,11 @@
 -->
 
 <script lang="ts">
-	import * as Dialog from '$lib/components/ui/dialog';
-	import VipCard from '$lib/components/VipCard.svelte';
-	import { cn } from '$lib/utils';
-	import { templateToVipCard } from '$lib/stores/vipCardTemplates.svelte';
-	import type { VipCardTemplate } from '$lib/stores/vipCardTemplates.svelte';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import VipCard from '#lib/components/VipCard.svelte';
+	import { cn } from '#lib/utils.ts';
+	import { templateToVipCard } from '#lib/stores/vipCardTemplates.svelte.ts';
+	import type { VipCardTemplate } from '#lib/stores/vipCardTemplates.svelte.ts';
 
 	// Component Props
 	interface Props {

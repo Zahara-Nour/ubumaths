@@ -10,8 +10,8 @@
 
 import { describe, it, expect } from 'vitest';
 import { isBlankValueCorrect, validateAnswer } from '../answer-validator';
-import type { InstanceBlank, QuestionInstance, ValidationRule } from '$lib/questions/types';
-import type { ResolvedMarkdown } from '$lib/ubumark';
+import type { InstanceBlank, QuestionInstance, ValidationRule } from '#lib/questions/types.ts';
+import type { ResolvedMarkdown } from '#lib/ubumark/index.ts';
 
 // ============================================================================
 // HELPERS
@@ -30,8 +30,6 @@ function createInstance(blanks: InstanceBlank[]): QuestionInstance {
 		statement: 'Trouve un diviseur de 12' as ResolvedMarkdown,
 		blanks,
 		grades: ['6'],
-		theme: 'Entiers',
-		domain: 'Diviser',
 		level: 1,
 		generatedAt: new Date().toISOString(),
 		resolvedVariables: [

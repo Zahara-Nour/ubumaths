@@ -13,7 +13,7 @@
  * USAGE:
  * ```svelte
  * <script>
- * import { testMode } from '$lib/stores/test-mode.svelte';
+ * import { testMode } from '#lib/stores/test-mode.svelte.ts';
  *
  * // In Svelte component, use $testMode to access reactive value
  * {#if $testMode}

@@ -274,9 +274,6 @@
 			}
 		],
 		"grades": ["6"],
-		"theme": "Grandeurs",
-		"domain": "Unités",
-		"subdomain": "Unités simples",
 		"level": 1,
 		"status": "draft",
 		"delay": 20,

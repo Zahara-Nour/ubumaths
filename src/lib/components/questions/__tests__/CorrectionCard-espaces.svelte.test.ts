@@ -6,9 +6,9 @@
 import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import CorrectionCard from '../CorrectionCard.svelte';
-import type { QuestionInstance } from '$lib/questions/types';
-import type { TestAnswerResult } from '$lib/types/test';
-import { resolvedMarkdown } from '$lib/ubumark';
+import type { QuestionInstance } from '#lib/questions/types.ts';
+import type { TestAnswerResult } from '#lib/types/test.ts';
+import { resolvedMarkdown } from '#lib/ubumark/index.ts';
 
 function result(options?: QuestionInstance['options']): TestAnswerResult {
 	return {
@@ -18,8 +18,6 @@ function result(options?: QuestionInstance['options']): TestAnswerResult {
 			statement: resolvedMarkdown('Calcule $7900+100 = \\placeholder[0]{}$'),
 			blanks: [{ expectedAnswer: '8000', expectedAnswerLatex: '8000', type: 'math' }],
 			grades: ['CM1'],
-			theme: 'Entiers',
-			domain: 'Additionner',
 			level: 1,
 			generatedAt: new Date().toISOString(),
 			options

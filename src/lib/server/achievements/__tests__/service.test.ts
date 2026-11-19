@@ -8,7 +8,7 @@
 
 import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 import {
 	getAchievementsByContext,
 	getStudentAchievements,
@@ -18,7 +18,7 @@ import {
 	getAchievementLeaderboard,
 	AchievementServiceError
 } from '../service';
-import type { Achievement } from '$lib/types/achievements';
+import type { Achievement } from '#lib/types/achievements.ts';
 
 // ============================================================================
 // MOCKS AND FIXTURES
@@ -27,7 +27,7 @@ import type { Achievement } from '$lib/types/achievements';
 // processEvent passe par le client service (lot 3, Q141) : le mock renvoie le
 // client factice du test en cours.
 let serviceRoleMock: SupabaseClient<Database>;
-vi.mock('$lib/server/serviceRoleClient', () => ({
+vi.mock('#lib/server/serviceRoleClient.ts', () => ({
 	createServiceRoleClient: () => serviceRoleMock
 }));
 

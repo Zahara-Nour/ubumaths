@@ -11,16 +11,16 @@ import {
 	findLinesToPlace,
 	hasLineToPlace,
 	parseNumberLineContent
-} from '$lib/ubumark/parser/number-line-parser';
+} from '#lib/ubumark/parser/number-line-parser.ts';
 import {
 	graduationCount,
 	indexOfAnswer,
 	indexOfValue,
 	placerAnswer,
 	placerText
-} from '$lib/ubumark/utils/number-line-placer';
-import { generateNumberLineTypst } from '$lib/ubumark/generators/number-line-typst';
-import { numVal } from '$lib/ubumark/utils/number-line-render';
+} from '#lib/ubumark/utils/number-line-placer.ts';
+import { generateNumberLineTypst } from '#lib/ubumark/generators/number-line-typst.ts';
+import { numVal } from '#lib/ubumark/utils/number-line-render.ts';
 
 const parse = (...lines: string[]) => parseNumberLineContent(lines);
 const config = (...lines: string[]) => {

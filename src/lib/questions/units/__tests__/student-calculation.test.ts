@@ -13,10 +13,10 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { validateAnswer } from '$lib/utils/answer-validator';
+import { validateAnswer } from '#lib/utils/answer-validator.ts';
 import { markStudentUnits } from '../student-calculation';
-import type { InstanceBlank, QuestionInstance } from '$lib/questions/types';
-import type { ResolvedMarkdown } from '$lib/ubumark';
+import type { InstanceBlank, QuestionInstance } from '#lib/questions/types.ts';
+import type { ResolvedMarkdown } from '#lib/ubumark/index.ts';
 
 // ============================================================================
 // HELPERS
@@ -38,8 +38,6 @@ function createInstance(blank: InstanceBlank): QuestionInstance {
 		statement: 'Test' as ResolvedMarkdown,
 		blanks: [blank],
 		grades: ['5'],
-		theme: 'Test',
-		domain: 'Test',
 		level: 1,
 		generatedAt: new Date().toISOString()
 	};

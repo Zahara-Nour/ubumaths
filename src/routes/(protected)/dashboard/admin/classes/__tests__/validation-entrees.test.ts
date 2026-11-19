@@ -11,7 +11,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { createWriteVerdictSupabase } from '$tests/helpers/write-verdict-supabase';
+import { createWriteVerdictSupabase } from '#tests/helpers/write-verdict-supabase.ts';
 
 const ADMIN_ID = '550e8400-e29b-41d4-a716-446655440001';
 const CLASS_ID = '550e8400-e29b-41d4-a716-446655440020';
@@ -94,6 +94,8 @@ describe('admin/classes : entrée invalide → 400, sans requête', () => {
 	);
 });
 
+const YEAR_ID = '550e8400-e29b-41d4-a716-446655440041';
+
 describe('admin/classes : entrée valide → écrite normalisée', () => {
 	beforeEach(() => {
 		vi.resetModules();
@@ -105,7 +107,9 @@ describe('admin/classes : entrée valide → écrite normalisée', () => {
 				// Test d'unicité du code : aucune classe ne le porte.
 				single: { data: null, error: { code: 'PGRST116' } },
 				awaited: { data: null, error: null }
-			}
+			},
+			// Année active de l'école, posée sur la classe.
+			school_years: { maybeSingle: { data: { id: YEAR_ID }, error: null } }
 		});
 		const { actions } = await import('../+page.server');
 		const result = await actions.create({
@@ -125,6 +129,7 @@ describe('admin/classes : entrée valide → écrite normalisée', () => {
 			school_id: SCHOOL_ID,
 			grade: '6',
 			join_code: 'MATH3B',
+			school_year_id: YEAR_ID,
 			is_active: true
 		});
 	});

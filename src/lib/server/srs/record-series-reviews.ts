@@ -2,31 +2,38 @@
  * Révisions d'une séance de série → FSRS, traces, paquet Programme
  * =================================================================
  *
- * Chemin commun à `/api/tests/save` (verdict du navigateur : Entraînement libre,
- * Course libre, flash-cards, ADR 0001) et à l'envoi d'une évaluation (verdict du
- * SERVEUR, Q39, ADR 0015). Extrait tel quel de `/api/tests/save`.
+ * Chemin de l'envoi d'une évaluation (verdict du SERVEUR, Q39, ADR 0015).
+ * Extrait de l'ancien `/api/tests/save`, qui ne l'appelle plus : depuis le
+ * chantier `formes-de-serie` (PR 4), une série libre envoie une trace par
+ * question à `/api/skill-attempts` (ADR 0038).
  *
  * - FSRS AVANT la trace, par réponse : pas de FSRS, pas d'attempt (invariant de
  *   `/api/skill-attempts`). Une carte qui échoue n'empêche pas les autres.
  * - Auto-évaluation (flash-cards, carte de cours) : la fiche ne garde que le
  *   MEILLEUR résultat du jour (ADR 0016), trace `student_self`. Réponse corrigée
- *   par l'application (Entraînement, Course, évaluation) : révision ordinaire,
+ *   par l'application (évaluation) : révision ordinaire,
  *   trace `auto`.
  * - Modèle tagué à un point de programme → ajouté au paquet Programme, sauf
  *   question de cours ou brouillon (`entersProgrammeDeck`, Q113) et les modèles
  *   de `neverInDeck` (cartes de cours lues par le serveur, décision 2026-09-28).
  *
+ * - Traces d'un contrôle (PR 4 bis) : colonnes du lieu `evaluation` (durées,
+ *   fin) portées par chaque révision, écrites au client `attemptsClient`
+ *   (service : la policy élève refuse ce lieu). FSRS et paquet restent au
+ *   client passé en premier.
+ *
  * Non bloquant : la séance est déjà enregistrée ; les échecs se journalisent.
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import { FSRS } from '$lib/srs/fsrs';
-import { Grade } from '$lib/srs/types';
-import { applyFsrsReview } from '$lib/server/srs/fsrs-actions';
-import { ensureProgrammeDeckCard } from '$lib/server/srs/programme-deck';
-import { entersProgrammeDeck } from '$lib/server/srs/programme-deck-rule';
-import { createServerLogger } from '$lib/utils/logger';
+import type { Database } from '#lib/types/database.ts';
+import { FSRS } from '#lib/srs/fsrs.ts';
+import { Grade } from '#lib/srs/types.ts';
+import { applyFsrsReview } from '#lib/server/srs/fsrs-actions.ts';
+import { ensureProgrammeDeckCard } from '#lib/server/srs/programme-deck.ts';
+import { entersProgrammeDeck } from '#lib/server/srs/programme-deck-rule.ts';
+import type { EvaluationTraceColumns } from '#lib/server/evaluation-trace.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/srs/record-series-reviews');
 
@@ -36,6 +43,8 @@ export interface SeriesReview {
 	success: boolean;
 	/** Auto-évaluation de l'élève (flash-cards, carte de cours) */
 	selfAssessed: boolean;
+	/** Colonnes de trace d'une question de contrôle (lieu, durées, fin) */
+	trace?: EvaluationTraceColumns;
 }
 
 // Functions
@@ -43,7 +52,12 @@ export async function recordSeriesReviews(
 	supabase: SupabaseClient<Database>,
 	userId: string,
 	reviews: readonly SeriesReview[],
-	options: { neverInDeck?: ReadonlySet<string>; logLabel?: string } = {}
+	options: {
+		neverInDeck?: ReadonlySet<string>;
+		logLabel?: string;
+		/** Client qui écrit les traces (défaut : `supabase`) ; service pour un contrôle */
+		attemptsClient?: SupabaseClient<Database>;
+	} = {}
 ): Promise<void> {
 	const label = options.logLabel ?? '[series-reviews]';
 	const templateIds = [...new Set(reviews.map((review) => review.templateId))];
@@ -69,14 +83,16 @@ export async function recordSeriesReviews(
 
 	const now = new Date();
 	const fsrs = new FSRS();
-	const attemptsToInsert: {
-		student_id: string;
-		template_id: string;
-		success: boolean;
-		grade: Grade;
-		source: 'auto' | 'student_self';
-		with_help: boolean;
-	}[] = [];
+	const attemptsToInsert: Array<
+		{
+			student_id: string;
+			template_id: string;
+			success: boolean;
+			grade: Grade;
+			source: 'auto' | 'student_self';
+			with_help: boolean;
+		} & Partial<EvaluationTraceColumns>
+	> = [];
 
 	for (const review of reviews) {
 		const grade: Grade = review.success ? Grade.GOOD : Grade.AGAIN;
@@ -112,13 +128,14 @@ export async function recordSeriesReviews(
 			success: review.success,
 			grade,
 			source: review.selfAssessed ? 'student_self' : 'auto',
-			with_help: false
+			with_help: false,
+			...review.trace
 		});
 	}
 
 	if (attemptsToInsert.length > 0) {
 		// `.select()` : vérifie que toutes les lignes ont été écrites
-		const { data: attemptsRows, error: attemptsError } = await supabase
+		const { data: attemptsRows, error: attemptsError } = await (options.attemptsClient ?? supabase)
 			.from('skill_attempts')
 			.insert(attemptsToInsert)
 			.select('id');

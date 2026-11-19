@@ -3,7 +3,7 @@
 	Chaque page déplacée sous `/dev` s'ajoute à `DEV_PAGES`.
 -->
 <script lang="ts">
-	import PageIndex, { type IndexedPage } from '$lib/components/PageIndex.svelte';
+	import PageIndex, { type IndexedPage } from '#lib/components/PageIndex.svelte';
 
 	const DEV_PAGES: IndexedPage[] = [
 		{
@@ -61,6 +61,12 @@
 			href: '/dev/polices',
 			title: 'Polices des formules',
 			description: 'Comparaison des polices de rendu, et PDF de démonstration du corrigé.'
+		},
+		{
+			href: '/dev/polices/luciole',
+			title: 'Essai Luciole',
+			description:
+				'Lecture facilitée : consignes en Luciole, formules en Luciole Math, à l’écran et en PDF.'
 		},
 		{
 			href: '/dev/modeles',
@@ -132,11 +138,6 @@
 			href: '/dev/theme',
 			title: 'Thème',
 			description: 'Modes clair et sombre, palette de couleurs, composants Shadcn.'
-		},
-		{
-			href: '/dev/blockly',
-			title: 'Blockly',
-			description: 'Bac à sable de programmation par blocs (pas encore ouvert aux élèves).'
 		}
 	];
 </script>

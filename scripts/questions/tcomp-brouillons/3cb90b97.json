@@ -1,0 +1,125 @@
+{
+	"id": "3cb90b97-2ec4-4050-973e-4b194aa65fb3",
+	"title": "Loi uniforme sur {1, …, n} : probabilités",
+	"description": "X uniforme sur {1, …, n} : P(X ⩽ k) = k/n, P(a ⩽ X ⩽ b) = (b − a + 1)/n (piège : b − a au lieu de b − a + 1)",
+	"grades": ["T_COMP"],
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:k/n}}"
+				}
+			],
+			"statement": "La variable aléatoire $X$ suit la loi uniforme sur $\\{1, 2, \\ldots, {{n}}\\}$.\n\nCalcule $P(X\\leqslant {{k}})$.\n\n$P(X\\leqslant {{k}})=?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "6..20"
+				},
+				{
+					"name": "k",
+					"expression": "2..{{eval:n-1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque valeur a la probabilité $\\dfrac{1}{ {{n}} }$, et $X\\leqslant {{k}}$ regroupe les ${{k}}$ valeurs $1, \\ldots, {{k}}$.",
+					"$P(X\\leqslant {{k}})=\\dfrac{ {{k}} }{ {{n}} }=\\textcolor{{{color:primary.0}}}{{{eval:k/n}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(b-a+1)/n}}"
+				}
+			],
+			"statement": "La variable aléatoire $X$ suit la loi uniforme sur $\\{1, 2, \\ldots, {{n}}\\}$.\n\nCalcule $P({{a}}\\leqslant X\\leqslant {{b}})$.\n\n$P({{a}}\\leqslant X\\leqslant {{b}})=?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "10..20"
+				},
+				{
+					"name": "a",
+					"expression": "2..5"
+				},
+				{
+					"name": "b",
+					"expression": "{{eval:a+2}}..{{eval:n-1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"De ${{a}}$ à ${{b}}$ inclus, il y a ${{b}}-{{a}}+1={{eval:b-a+1}}$ valeurs, chacune de probabilité $\\dfrac{1}{ {{n}} }$.",
+					"$P({{a}}\\leqslant X\\leqslant {{b}})=\\dfrac{ {{eval:b-a+1}} }{ {{n}} }=\\textcolor{{{color:primary.0}}}{{{eval:(b-a+1)/n}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["\\frac{2}{5}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "4",
+				"n": "10"
+			},
+			"description": "v0 : n = 10, k = 4 → 2/5",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{3}{10}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "4",
+				"n": "10"
+			},
+			"description": "v0 : (k − 1)/n",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{5}{12}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "7",
+				"n": "12"
+			},
+			"description": "v1 : n = 12, de 3 à 7 → 5/12",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\frac{1}{3}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "7",
+				"n": "12"
+			},
+			"description": "v1 : (b − a)/n = 1/3",
+			"variationIndex": 1
+		}
+	]
+}

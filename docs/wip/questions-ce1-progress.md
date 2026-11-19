@@ -5,14 +5,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, lot 11 écrit (§ 18)._
+_Mis à jour le 2026-11-19, relevé prod (§ 19)._
 
-- **État** : lots 0 à 10 publiés. Lot 11 écrit et joué en local (§ 18) : 01-04 (`ce1-11/`), 05 (`ce1-11-figure/`).
-- **Prochaine action** : PR des fichiers → merge → David : `create-questions --publier` sur les deux dossiers → migration
-  nœud + tag (5 neufs) et niveau 2 de `a7dfe502` → page à cocher → publication de `ce1-11/` ; `ce1-11-figure/` (05 +
-  instantané de `a7dfe502`) après l'essai tablette. Puis chantier `centaines:` de `collection` (001, 002).
-- **En attente de David** : essai tablette des cases « figure » (CP-060, CP-058) ; chantier `verrou-deploy` ; futur
-  chantier « `\textcolor` hors formule » (53 fichiers de lots).
+- **État** : lots 0 à 10 publiés ; robot à produire (CE1-080) publié dans `scripts/questions/ce1-11/` (#2687, #2689).
+  Prod : **95 points sur 107** à modèle publié. Lot 11 (§ 18, validé) écrit, **PR #2234 ouverte depuis le 2026-11-02,
+  jamais mergée** ; son dossier `ce1-11/` entre en collision avec celui du robot.
+- **Prochaine action** : reprendre #2234 dans un worktree : mise à jour depuis `main`, dossier renommé `ce1-12/`,
+  niveaux relevés, publication du lot entier (05 et `a7dfe502` compris, § 19). Puis un lot 001, 002, 003
+  (`centaines:` livré, #2420) + 074 et la fin de 072 (règle, équerre, compas, triangle, cercle : outils livrés).
+- **En attente de David** : essai tablette des cases « figure » (`verifications-manuelles.md`, ne bloque plus) ;
+  futur chantier « `\textcolor` hors formule » (53 fichiers de lots).
 - **Pièges en cours** : jamais de variable `e` ni `i` ; **mots en couleur dans le texte = `colt()`
   (`$\textcolor{…}{\text{…}}$`), jamais `\textcolor` nu** ; points invisibles (`visible=faux`) jamais nommés dans le
   corrigé ; **niveaux : relever la catégorie juste avant la publication** ; `publier-lot` = tout le dossier ou rien ;
@@ -850,29 +852,6 @@ Réponse de David (« tes recos ? » puis « go », 2026-11-02) : les cinq recom
 - 2026-11-02 : #2230 mergée ; migration jouée (niveau 6 vérifié au MCP, contenu intact) ; `publier-lot` simulé 9/9 ;
   publié par David, 9/9 `published` (MCP). **Lot 10 clos.**
 
-## 18. Relevé après le lot 10 (prod, MCP lecture seule, 2026-11-02)
-
-144 modèles CE1 publiés, 2 brouillons : `47f97c9f` (doublon dépublié au lot 0, voulu) et `a7dfe502` (CE1-073).
-
-13 points sans modèle publié :
-
-| Points             | Classe (§ 3) | État                                                                        |
-| ------------------ | ------------ | --------------------------------------------------------------------------- |
-| 023, 066, 067, 071 | A            | **jamais mis dans un lot** (oubli du découpage des lots 1 à 5)              |
-| 073                | B            | brouillon `a7dfe502` repris au lot 9 (tag, nœud), **jamais relu ni publié** |
-| 001, 002           | C partiel    | `centaines:` de `collection` toujours réservée (`collection-parser.ts`)     |
-| 092, 048, 068, 078 | D            | sans modèle (décision 5 du § 4 bis)                                         |
-| 072, 074           | D            | après la case « figure » de `figure-et-choix` (décision 5)                  |
-
-Questions à David :
-
-1. **Lot 11** = les 4 points A oubliés : 023 (« × » lu « fois », 7 × 20 biscuits), 066 et 067 avec ` ```solide `
-   (faces, sommets, arêtes ; nature des faces), 071 (angles droits, côtés égaux du carré et du rectangle, sur
-   `figure`) ? Recommandation : oui, un seul lot de 4 modèles.
-2. **`a7dfe502`** (073) : le mettre dans la page à cocher du lot 11 et le publier avec lui ? Recommandation : oui.
-3. **`centaines:` de `collection`** (001, 002, et le CE2) : ouvrir le petit chantier à part après le lot 11 ?
-   Recommandation : oui ; ce sera la fin du CE1 (hors points D).
-
 ## 18. Relevé de fin de découpage et lot 11 — phase 0 (2026-11-02)
 
 Relevé MCP du 2026-11-02 : **12 points sans modèle** — 001, 002 (`centaines:`), 092, 048, 068, 078 (D), 072, 074
@@ -929,3 +908,17 @@ Réponse de David (« je suis tes recos », 2026-11-02) : les trois recommandati
   600 blocs et `sonde-figures` 451 blocs, 0 problème ; 5 brouillons en base locale, joués dans l'aperçu (rectangle coté,
   cube coté, carré oblique terminé : « juste »). **Piège trouvé à l'aperçu** : le corrigé du 05 nommait $A$, $B$, $C$,
   points invisibles à l'écran → corrigé sans lettres (« carreaux en largeur, en hauteur »).
+
+## 19. Relevé du 2026-11-19 et suite (David, « ok » aux recos)
+
+Relevé MCP : **12 points sans modèle publié sur 107** — 023, 066, 067, 071 (lot 11, PR #2234 non mergée) ; 073
+(`a7dfe502`, brouillon) ; 001, 002 ; 074 ; 092, 048, 068, 078 (D, hors appli). 072 a désormais un modèle publié.
+
+Décisions :
+
+1. **Lot 11 publié d'un coup**, 05 et `a7dfe502` compris : la condition « après l'essai tablette » est tombée, des
+   cases « figure » sont déjà publiées (lot 12b du CE2 avec deux modèles CE1, lot 13 du CE2). L'essai reste noté.
+   Dossier renommé `ce1-12/` (`ce1-11/` = robot CE1-080).
+2. **Plus de chantier `centaines:`** : l'outil est livré (#2420). Lot de contenu 001, 002, 003, avec 074 et la fin de
+   072 (triangle, triangle rectangle, cercle : `controles-figure` les juge ; règle graduée, ADR 0036).
+3. Les 4 points D restent hors appli : CE1 couvert une fois ces deux lots publiés (103 points faisables).

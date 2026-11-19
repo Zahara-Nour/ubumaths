@@ -9,7 +9,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { generateInstance } from '../generator/instance-generator';
 import type { QuestionTemplate } from '../types';
-import { templateMarkdown } from '$lib/ubumark';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 
 vi.mock('../masked-statement', async (importOriginal) => ({
 	...(await importOriginal<typeof import('../masked-statement')>()),
@@ -28,8 +28,6 @@ function generated(statement: string) {
 			type: 'fill_in_blanks',
 			variations: [{ statement: templateMarkdown(statement) }],
 			grades: ['CE1'],
-			theme: 'Test',
-			domain: 'Test',
 			level: 1
 		} as unknown as QuestionTemplate,
 		42

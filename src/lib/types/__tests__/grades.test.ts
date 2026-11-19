@@ -157,7 +157,7 @@ describe('getGradesAtOrAbove', () => {
 		expect(eligibles).toContain('T_TECHNO');
 	});
 
-	// C’est tout l’objet du garde : une capacité de seconde peut être remobilisée
+	// C’est tout l’objet du garde : un point du programme de seconde peut être remobilisé
 	// en première, jamais rétrogradée au collège.
 	it('exclut les niveaux antérieurs', () => {
 		const eligibles = getGradesAtOrAbove(['2']);

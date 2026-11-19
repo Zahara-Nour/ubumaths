@@ -1,10 +1,8 @@
 {
+	"id": "86c59a05-936c-41a5-a05e-d85ab56a2bfb",
 	"title": "Variations de ln : comparer, signe",
 	"description": "ln strictement croissante sur ]0 ; +∞[ : sens de variation, comparer ln a et ln b, signe de ln x (pièges : croissante sur ℝ, signe confondu avec le sens)",
 	"grades": ["T_SPE"],
-	"theme": "Fonctions",
-	"domain": "Logarithmes",
-	"subdomain": "Dérivée",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",
@@ -25,7 +23,7 @@
 			"correction": {
 				"steps": [
 					"$\\ln$ est définie sur $\\left]0\\,;+\\infty\\right[$ seulement, et $\\ln'(x)=\\dfrac{1}{x}>0$ sur cet intervalle.",
-					"$\\ln$ est donc \\textcolor{{{color:primary.0}}}{strictement croissante sur \\left]0\\,;+\\infty\\right[}.",
+					"$\\ln$ est donc $\\textcolor{{{color:primary.0}}}{strictement croissante sur \\left]0\\,;+\\infty\\right[}$.",
 					"$\\ln x$ est négatif sur $\\left]0\\,;1\\right[$, mais il augmente quand même : le signe et le sens de variation sont deux choses différentes."
 				]
 			}

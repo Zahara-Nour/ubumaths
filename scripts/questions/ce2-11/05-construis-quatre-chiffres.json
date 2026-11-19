@@ -1,0 +1,196 @@
+{
+	"id": "156dc0bd-0520-4855-b1ed-4f4c6da40c29",
+	"title": "Construire un nombre de 1 000 à 9 999 avec le matériel",
+	"description": "Gros cubes, plaques, barres et cubes ; zéros intérieurs (3 045, 6 900)",
+	"grades": ["CE2"],
+	"level": 12,
+	"delay": 120,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Construis ${{m}}\\,{{c}}{{d}}{{u}}$ avec le matériel.\n\n```collection\nconstruire: {{n}}\n```",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "1..9"
+				},
+				{
+					"name": "c",
+					"expression": "1..9"
+				},
+				{
+					"name": "d",
+					"expression": "1..9"
+				},
+				{
+					"name": "u",
+					"expression": "1..9"
+				},
+				{
+					"name": "n",
+					"expression": "eval:1000*m+100*c+10*d+1*u"
+				}
+			],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"${{m}}\\,{{c}}{{d}}{{u}}$, c'est ${{m}}$ {{if:m<=1|millier|milliers}}, ${{c}}$ {{if:c<=1|centaine|centaines}}, ${{d}}$ {{if:d<=1|dizaine|dizaines}} et ${{u}}$ {{if:u<=1|unité|unités}}.",
+					"On pose ${{m}}$ {{if:m<=1|gros cube|gros cubes}}, ${{c}}$ {{if:c<=1|plaque|plaques}}, ${{d}}$ {{if:d<=1|barre|barres}} et ${{u}}$ {{if:u<=1|petit cube|petits cubes}}."
+				]
+			}
+		},
+		{
+			"statement": "Construis ${{m}}\\,0{{d}}{{u}}$ avec le matériel.\n\n```collection\nconstruire: {{n}}\n```",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "1..9"
+				},
+				{
+					"name": "d",
+					"expression": "1..9"
+				},
+				{
+					"name": "u",
+					"expression": "1..9"
+				},
+				{
+					"name": "n",
+					"expression": "eval:1000*m+10*d+1*u"
+				}
+			],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"${{m}}\\,0{{d}}{{u}}$, c'est ${{m}}$ {{if:m<=1|millier|milliers}}, ${{d}}$ {{if:d<=1|dizaine|dizaines}} et ${{u}}$ {{if:u<=1|unité|unités}}, aucune centaine.",
+					"On pose ${{m}}$ {{if:m<=1|gros cube|gros cubes}}, ${{d}}$ {{if:d<=1|barre|barres}} et ${{u}}$ {{if:u<=1|petit cube|petits cubes}}."
+				]
+			}
+		},
+		{
+			"statement": "Construis ${{m}}\\,{{c}}00$ avec le matériel.\n\n```collection\nconstruire: {{n}}\n```",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "1..9"
+				},
+				{
+					"name": "c",
+					"expression": "1..9"
+				},
+				{
+					"name": "n",
+					"expression": "eval:1000*m+100*c"
+				}
+			],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"${{m}}\\,{{c}}00$, c'est ${{m}}$ {{if:m<=1|millier|milliers}} et ${{c}}$ {{if:c<=1|centaine|centaines}}, ni dizaine ni unité.",
+					"On pose ${{m}}$ {{if:m<=1|gros cube|gros cubes}} et ${{c}}$ {{if:c<=1|plaque|plaques}}."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "4 635 construit",
+			"variationIndex": 0,
+			"variables": {
+				"m": "4",
+				"c": "6",
+				"d": "3",
+				"u": "5",
+				"n": "4635"
+			},
+			"answers": ["4635"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4 365 construit",
+			"variationIndex": 0,
+			"variables": {
+				"m": "4",
+				"c": "6",
+				"d": "3",
+				"u": "5",
+				"n": "4635"
+			},
+			"answers": ["4365"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "borne : 9 999 construit",
+			"variationIndex": 0,
+			"variables": {
+				"m": "9",
+				"c": "9",
+				"d": "9",
+				"u": "9",
+				"n": "9999"
+			},
+			"answers": ["9999"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "3 045 construit",
+			"variationIndex": 1,
+			"variables": {
+				"m": "3",
+				"d": "4",
+				"u": "5",
+				"n": "3045"
+			},
+			"answers": ["3045"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 345 construit (zéro oublié)",
+			"variationIndex": 1,
+			"variables": {
+				"m": "3",
+				"d": "4",
+				"u": "5",
+				"n": "3045"
+			},
+			"answers": ["345"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "6 900 construit",
+			"variationIndex": 2,
+			"variables": {
+				"m": "6",
+				"c": "9",
+				"n": "6900"
+			},
+			"answers": ["6900"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 69 construit",
+			"variationIndex": 2,
+			"variables": {
+				"m": "6",
+				"c": "9",
+				"n": "6900"
+			},
+			"answers": ["69"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

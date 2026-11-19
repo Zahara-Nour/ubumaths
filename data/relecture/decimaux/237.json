@@ -38,9 +38,6 @@
 			}
 		],
 		"grades": ["CM2"],
-		"theme": "Décimaux",
-		"domain": "Apprivoiser",
-		"subdomain": "Ecriture",
 		"level": 10,
 		"status": "draft",
 		"delay": 10,

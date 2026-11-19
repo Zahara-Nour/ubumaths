@@ -17,16 +17,22 @@ import { findNumberLineBlocks } from './number-line-parser';
 import { findQrBlocks } from './qr-parser';
 import { findScratchBlocks } from './scratch-parser';
 import { findHorlogeBlocks } from './horloge-parser';
+import { findTortueBlocks } from './tortue-parser';
+import { findCalculBlocks } from './calcul-parser';
+import { findRobotBlocks } from './robot-parser';
 import { findPartageBlocks } from './partage-parser';
 import { findEspaceBlocks } from './espace-parser';
 import { findOperationBlocks } from './operation-parser';
 import { findCollectionBlocks } from './collection-parser';
 import { findMonnaieBlocks } from './monnaie-parser';
+import { findSchemaBarresBlocks } from './schema-barres-parser';
 import { findCourbeBlocks } from './courbe-parser';
 import { findFigureBlocks } from './figure-parser';
 import { findStatChartBlocks } from './stat-chart-parser';
 import { findChoiceBlocks } from './choix-parser';
 import { findRangerBlocks } from './ranger-parser';
+import { findAssocierBlocks } from './associer-parser';
+import { findTrousBlocks } from './trous-parser';
 
 /**
  * La fin d'un bloc spécial : ``` seul, à la marge — la même règle que les
@@ -49,16 +55,22 @@ export function blockLineRanges(lines: string[]): [number, number][] {
 		...findQrBlocks(lines),
 		...findScratchBlocks(lines),
 		...findHorlogeBlocks(lines),
+		...findTortueBlocks(lines),
+		...findCalculBlocks(lines),
+		...findRobotBlocks(lines),
 		...findPartageBlocks(lines),
 		...findEspaceBlocks(lines),
 		...findOperationBlocks(lines),
 		...findCollectionBlocks(lines),
 		...findMonnaieBlocks(lines),
+		...findSchemaBarresBlocks(lines),
 		...findCourbeBlocks(lines),
 		...findFigureBlocks(lines),
 		...findStatChartBlocks(lines),
 		...findChoiceBlocks(lines),
-		...findRangerBlocks(lines)
+		...findRangerBlocks(lines),
+		...findAssocierBlocks(lines),
+		...findTrousBlocks(lines)
 	].map((r): [number, number] => [r.startIndex, r.endIndex]);
 	// Les blocs de code, une fois les blocs spéciaux masqués (comme parseBlocks)
 	const masked = lines.map((line, index) =>

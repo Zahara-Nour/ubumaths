@@ -65,21 +65,21 @@ Points travaillables par niveau en prod (2026-10-18, modèles publiés / tous le
   nouvellement tagué le fait baisser sans oubli). Une silhouette ne dort jamais : elle n'est pas
   encore un Mathou. Le Mathou n'est jamais perdu ; une révision le réveille. `Mathou.dueForRevision`
   dit si une carte due est en cause (sinon, seul un point perdu l'endort).
-- **Faire grandir** (v1.1, spec de David du 2026-10-18) : chaque Mathou **né** porte les catégories d'un
-  **Entraînement** sur sa notion (`Mathou.trainingCategories`) ; la page en fait le lien au rendu
+- **Faire grandir** (v1.1, spec de David du 2026-10-18) : chaque Mathou **né** porte les lignes d'un
+  **Entraînement** sur sa notion (`Mathou.trainingItems`, `{ templateId, quantity: 1, delay }`) ; la page en fait le lien au rendu
   (`resolve('/automaths/test')` + `?` + `trainingQuery`, encodé par `buildSeriesLink`, relu par
   `resolveTestLaunch` ; mode interactif). Il est fait des modèles **publiés**
   qui taguent les points de la notion, sur tout le parcours (`selectTrainingTemplates`) : d'abord
   ceux des points **perdus**, puis des points **non acquis** (jamais travaillés compris), puis des
   autres ; **au plus 10**, **une question par modèle** (un modèle qui tague plusieurs points vient
   une fois, au rang du plus prioritaire). À priorité égale, les points sont servis tour à tour
-  (ordre du parcours, puis id), les modèles d'un point par id. Un modèle dont la catégorie
-  dépasserait les bornes d'un lien de série (`cartItemSchema`) est écarté
-  (`trainingTemplateFrom`) ; durée = celle du modèle, 20 s sinon, 600 s au plus. Silhouette, ou
+  (ordre du parcours, puis id), les modèles d'un point par id. `trainingTemplateFrom` écarte un
+  brouillon ; durée = celle du modèle, 20 s sinon, 600 s au plus. Silhouette, ou
   notion sans modèle publié : `null`, pas de bouton. Avec 10 modèles aux noms longs et accentués, le
   lien fait environ 4 Ko (test : moins de 6 000 caractères) ; c'est pourquoi les données de la page
-  portent les catégories (≈ 1,5 Ko par Mathou) et non le lien : pour 40 Mathoux de 10 modèles,
-  172 Ko de données avec les liens, 80 Ko avec les catégories (mesuré le 2026-10-18).
+  portent les lignes et non le lien : pour 40 Mathoux de 10 modèles, 172 Ko de données avec les
+  liens, 80 Ko avec les anciennes catégories (mesuré le 2026-10-18, avant l'ADR 0035 : une ligne
+  par identifiant est plus courte encore).
 - **Nom** (`mathouName`) : d'abord le **nom propre** de la notion (`mathou-noms.ts`, 134 noms,
   clé = nom de la notion comme dans la migration de seed, car les identifiants diffèrent entre la
   base locale et la prod) : « Tangentin » pour « Dérivation ». Relus en partie par David le
@@ -208,7 +208,7 @@ Cinq allers-retours (six s'il y a du nouveau à retenir) :
    alors que le parcours entier d'une Terminale dépasserait le plafond de 1 000 lignes de
    PostgREST) ;
 3. en parallèle : les tags par un modèle publié (lots de 100 points, chaque lot lu par pages de
-   1 000 lignes avec `.range()` ; la jointure rapporte aussi la catégorie et la durée du modèle,
+   1 000 lignes avec `.range()` ; la jointure rapporte aussi le statut et la durée du modèle,
    d'où « Faire grandir » sans requête de plus), l'arbre (branches et notions, environ 160 lignes) et les
    sous-notions référencées (lots de 100 nœuds) ;
 4. sur les seuls points **travaillables** : les états de l'élève, et les tags de
@@ -222,7 +222,7 @@ Mathou qui grandit.
 
 Les tags sont lus par pages : un lot de 100 points peut dépasser 1 000 tags (14 au plus par point,
 1 499 en tout en prod), et PostgREST tronquerait en silence. ⚠️ `computePointBadges`
-(`src/lib/server/srs/capacity-badge.ts`) garde ce plafond latent sur ses propres lots : il est
+(`src/lib/server/srs/curriculum-point-badge.ts`) garde ce plafond latent sur ses propres lots : il est
 partagé avec le tableau de bord, et n'est pas corrigé ici.
 
 C'est trop pour `dashboard/student/+layout.server.ts`, qui tourne à chaque page de l'espace élève :
@@ -319,7 +319,7 @@ et « Lunettes et chapeaux » ci-dessous.
 - **Où** : dans la Chatterie, « Décorer » sur chaque Mathou né ouvre `ChatterieDecorer` : les six
   dessinées sur CE Mathou, avec le prix, « Achetée » ou « Portée par … », et « Acheter »,
   « Poser » ou « Retirer » ; « Il te manque N gidouilles » à la place d'« Acheter » ; sans
-  consentement, « Acheter » est grisé et une phrase le dit. Après chaque action, `invalidateAll`.
+  consentement, « Acheter » est grisé et une phrase le dit. Après chaque action, `refreshAll`.
   Une lecture des achats en échec n'empêche pas la Chatterie : pas de « Décorer ». Dans l'onglet
   Boutique du Marché, `MathouDecorationsShowcase` montre les six sur un matou noir avec leur prix et
   mène à la Chatterie, **sans achat** (le Marché peut être fermé).
@@ -343,7 +343,7 @@ de perles.
   partiel, contraintes CHECK : chaque colonne n'accepte que les clés de son emplacement).
   `buy_mathou_decoration` pose à l'emplacement de la clé ; `set_mathou_collar` (service seul) pose,
   déplace ou retire ; `set_mathou_decoration` refuse un collier.
-- **Code** : `MATHOU_COLLARS` / `MATHOU_COLLAR_IDS` dans `$lib/mathoux/decorations.ts` (égalité avec
+- **Code** : `MATHOU_COLLARS` / `MATHOU_COLLAR_IDS` dans `#lib/mathoux/decorations.ts` (égalité avec
   la base vérifiée par `tests/integration/mathoux-colliers.test.ts`) ; `readOwnedDecorations` rend
   les deux sortes d'achats ; `readMathouMemory` lit `collar`, `Mathou.collar` le porte jusqu'au
   dessin (Chatterie, vue prof, carte de fin de séance).
@@ -381,7 +381,7 @@ Lot D des accessoires, décisions de David du 2026-10-25
   catalogue ; `mathou_decoration_slot` rend aussi `eyes` / `head` ; `student_mathoux.glasses` et
   `.hat` (mêmes garanties que `collar`) ; `buy_mathou_decoration` pose à l'emplacement de la clé ;
   `set_mathou_glasses` et `set_mathou_hat` (service seul) posent, déplacent ou retirent.
-- **Code** : `MATHOU_GLASSES` / `MATHOU_HATS` (et leurs `_IDS`) dans `$lib/mathoux/decorations.ts`
+- **Code** : `MATHOU_GLASSES` / `MATHOU_HATS` (et leurs `_IDS`) dans `#lib/mathoux/decorations.ts`
   (égalité avec la base vérifiée par `tests/integration/mathoux-lunettes-chapeaux.test.ts`) ;
   `readMathouMemory` lit `glasses` et `hat`, `Mathou.glasses` / `.hat` les portent jusqu'au dessin.
 - **Routes** : l'achat par `…/decorations/buy` ; la pose par `…/decorations/wear-glasses`

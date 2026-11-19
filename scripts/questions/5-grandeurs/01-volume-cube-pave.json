@@ -1,10 +1,8 @@
 {
+	"id": "0761124d-6ca7-47bd-bd16-eaa31d47025f",
 	"title": "Volume d'un cube ou d'un pavé droit",
 	"description": "Calculer le volume d'un cube (arête 4 cm : 64 cm³) ou d'un pavé droit (5 cm, 3 cm, 2 cm : 30 cm³)",
 	"grades": ["5"],
-	"theme": "Grandeurs",
-	"domain": "Volumes",
-	"subdomain": "Volume d'un pavé droit",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

@@ -1,0 +1,365 @@
+{
+	"id": "67cb8e74-fa1a-4171-8ae2-ab1e62ded92c",
+	"title": "Problèmes de dénombrement",
+	"description": "Compter par un tableau, un arbre ou une liste : 6 hauts × 3 bas ; entrée, plat, dessert ; les façons d'obtenir une somme avec deux dés ; les dominos de 0 à 4",
+	"grades": ["CM1"],
+	"level": 2,
+	"delay": 90,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Pour la photo de classe, Maëlle hésite entre ${{h}}$ hauts et ${{b}}$ bas (jupes et pantalons).\n\nCombien de tenues différentes (un haut et un bas) peut-elle composer ?\n\nElle peut composer $?$ tenues.",
+			"variables": [
+				{
+					"name": "h",
+					"expression": "3..8"
+				},
+				{
+					"name": "b",
+					"expression": "2..5"
+				}
+			],
+			"conditions": ["h != b"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:h*b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Avec **un** haut, Maëlle peut mettre chacun des ${{b}}$ bas : ${{b}}$ tenues. Dans un tableau, il y aurait ${{h}}$ lignes (les hauts) et ${{b}}$ colonnes (les bas) : chaque case est une tenue.",
+					"On compte les cases : $${{h}} \\times {{b}} = \\textcolor{{{color:primary.0}}}{{{eval:h*b}}}$$",
+					"Maëlle peut composer ${{eval:h*b}}$ tenues.",
+					"On vérifie : ${{b}}$ tenues pour chacun des ${{h}}$ hauts, c'est bien plus que les ${{eval:h+b}}$ vêtements."
+				]
+			}
+		},
+		{
+			"statement": "À la cantine, le menu propose ${{a}}$ entrées, ${{b}}$ plats et ${{c}}$ desserts. On choisit une entrée, un plat et un dessert.\n\nCombien de repas différents peut-on composer ?\n\nOn peut composer $?$ repas.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5"
+				},
+				{
+					"name": "b",
+					"expression": "2..5"
+				},
+				{
+					"name": "c",
+					"expression": "2..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*b*c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On construit un arbre : ${{a}}$ branches pour les entrées ; au bout de chacune, ${{b}}$ branches pour les plats ; au bout de chacune, ${{c}}$ branches pour les desserts.",
+					"Chaque chemin de l'arbre est un repas : $${{a}} \\times {{b}} \\times {{c}} = \\textcolor{{{color:primary.0}}}{{{eval:a*b*c}}}$$",
+					"On peut composer ${{eval:a*b*c}}$ repas différents.",
+					"On vérifie : avec une seule entrée, il y a déjà ${{b}} \\times {{c}} = {{eval:b*c}}$ repas ; ${{a}}$ entrées en donnent ${{a}}$ fois plus."
+				]
+			}
+		},
+		{
+			"statement": "On lance deux dés à six faces, un rouge et un bleu, et on ajoute les deux nombres obtenus. Un $1$ sur le dé rouge et un $2$ sur le dé bleu, ce n'est pas la même façon qu'un $2$ sur le dé rouge et un $1$ sur le dé bleu.\n\nDe combien de façons différentes peut-on obtenir une somme de ${{s}}$ ?\n\nOn peut l'obtenir de $?$ façons.",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "3..11"
+				},
+				{
+					"name": "w",
+					"expression": "eval:6-abs(s-7)"
+				},
+				{
+					"name": "v1",
+					"expression": "eval:min(max(s-1,0),1)*min(max(8-s,0),1)"
+				},
+				{
+					"name": "v2",
+					"expression": "eval:min(max(s-2,0),1)*min(max(9-s,0),1)"
+				},
+				{
+					"name": "v3",
+					"expression": "eval:min(max(s-3,0),1)*min(max(10-s,0),1)"
+				},
+				{
+					"name": "v4",
+					"expression": "eval:min(max(s-4,0),1)*min(max(11-s,0),1)"
+				},
+				{
+					"name": "v5",
+					"expression": "eval:min(max(s-5,0),1)*min(max(12-s,0),1)"
+				},
+				{
+					"name": "v6",
+					"expression": "eval:min(max(s-6,0),1)*min(max(13-s,0),1)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{w}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On note chaque façon (dé rouge ; dé bleu) et on liste les valeurs du dé rouge de $1$ à $6$ : le dé bleu doit compléter jusqu'à ${{s}}$, avec un nombre de $1$ à $6$.",
+					"Les façons : {{if:v1==1|$(1\\,;\\,{{eval:s-1}})$ |}}{{if:v2==1|$(2\\,;\\,{{eval:s-2}})$ |}}{{if:v3==1|$(3\\,;\\,{{eval:s-3}})$ |}}{{if:v4==1|$(4\\,;\\,{{eval:s-4}})$ |}}{{if:v5==1|$(5\\,;\\,{{eval:s-5}})$ |}}{{if:v6==1|$(6\\,;\\,{{eval:s-6}})$ |}}",
+					"On peut obtenir ${{s}}$ de $\\textcolor{{{color:primary.0}}}{{{w}}}$ façons.",
+					"On vérifie : $(a\\,;\\,b)$ et $(b\\,;\\,a)$ comptent pour deux façons quand les deux nombres sont différents ; la somme $7$ est celle qui a le plus de façons ($6$)."
+				]
+			}
+		},
+		{
+			"statement": "Un jeu contient tous les dominos différents que l'on peut faire avec les nombres de $0$ à ${{n}}$. Un domino porte deux nombres ; un double (comme $2$-$2$) compte. Les dominos $1$-$3$ et $3$-$1$ sont le même domino.\n\nCombien de dominos ce jeu contient-il ?\n\nIl contient $?$ dominos.",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "3..6"
+				},
+				{
+					"name": "w",
+					"expression": "eval:(n+1)*(n+2)/2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{w}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On range les dominos par leur plus petit nombre, pour compter chaque domino une seule fois.",
+					"Avec $0$ : $0$-$0$, $0$-$1$, …, $0$-${{n}}$, soit ${{eval:n+1}}$ dominos ; avec $1$ comme plus petit nombre : $1$-$1$ à $1$-${{n}}$, soit ${{n}}$ dominos ; et ainsi de suite jusqu'à ${{n}}$-${{n}}$, un seul domino.",
+					"$${{if:n>5|7 + |}}{{if:n>4|6 + |}}{{if:n>3|5 + |}}4 + 3 + 2 + 1 = \\textcolor{{{color:primary.0}}}{{{w}}}$$",
+					"Le jeu contient ${{w}}$ dominos.",
+					"On vérifie : chaque double n'est compté qu'une fois, et $1$-$3$ n'est pas recompté en $3$-$1$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "BO : 6 hauts × 3 bas = 18",
+			"variationIndex": 0,
+			"variables": {
+				"h": "6",
+				"b": "3"
+			},
+			"answers": ["18"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : tenues, 6 + 3 (9)",
+			"variationIndex": 0,
+			"variables": {
+				"h": "6",
+				"b": "3"
+			},
+			"answers": ["9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "repas : 3 × 4 × 2 = 24",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"c": "2"
+			},
+			"answers": ["24"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : repas, 3 + 4 + 2 (9)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"c": "2"
+			},
+			"answers": ["9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : repas, les desserts oubliés (12)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"c": "2"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "dés : la somme 7, 6 façons",
+			"variationIndex": 2,
+			"variables": {
+				"s": "7",
+				"w": "6",
+				"v1": "1",
+				"v2": "1",
+				"v3": "1",
+				"v4": "1",
+				"v5": "1",
+				"v6": "1"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la somme 7, (3 ; 4) et (4 ; 3) comptés une fois (3)",
+			"variationIndex": 2,
+			"variables": {
+				"s": "7",
+				"w": "6",
+				"v1": "1",
+				"v2": "1",
+				"v3": "1",
+				"v4": "1",
+				"v5": "1",
+				"v6": "1"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "dés : la somme 4, 3 façons",
+			"variationIndex": 2,
+			"variables": {
+				"s": "4",
+				"w": "3",
+				"v1": "1",
+				"v2": "1",
+				"v3": "1",
+				"v4": "0",
+				"v5": "0",
+				"v6": "0"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la somme 4, (1 ; 3) et (3 ; 1) comptés une fois (2)",
+			"variationIndex": 2,
+			"variables": {
+				"s": "4",
+				"w": "3",
+				"v1": "1",
+				"v2": "1",
+				"v3": "1",
+				"v4": "0",
+				"v5": "0",
+				"v6": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "dés : la somme 10, 3 façons",
+			"variationIndex": 2,
+			"variables": {
+				"s": "10",
+				"w": "3",
+				"v1": "0",
+				"v2": "0",
+				"v3": "0",
+				"v4": "1",
+				"v5": "1",
+				"v6": "1"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "BO : dominos de 0 à 4 = 15",
+			"variationIndex": 3,
+			"variables": {
+				"n": "4",
+				"w": "15"
+			},
+			"answers": ["15"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : dominos, les doubles oubliés (10)",
+			"variationIndex": 3,
+			"variables": {
+				"n": "4",
+				"w": "15"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : dominos, 1-3 et 3-1 comptés deux fois (25)",
+			"variationIndex": 3,
+			"variables": {
+				"n": "4",
+				"w": "15"
+			},
+			"answers": ["25"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : dominos, les doubles comptés deux fois (20)",
+			"variationIndex": 3,
+			"variables": {
+				"n": "4",
+				"w": "15"
+			},
+			"answers": ["20"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "dominos de 0 à 6 = 28",
+			"variationIndex": 3,
+			"variables": {
+				"n": "6",
+				"w": "28"
+			},
+			"answers": ["28"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

@@ -4,9 +4,9 @@
 
 import type { PageServerLoad, Actions } from './$types';
 import { error, fail } from '@sveltejs/kit';
-import { unlockSpellSchema } from '$lib/server/validation/navadra';
-import { toGameSpell, toGamePlayer } from '$lib/types/game';
-import { createServerLogger } from '$lib/utils/logger';
+import { unlockSpellSchema } from '#lib/server/validation/navadra.ts';
+import { toGameSpell, toGamePlayer } from '#lib/types/game.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('(protected)/dashboard/navadra/spells/+page.server');
 

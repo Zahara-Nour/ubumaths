@@ -8,7 +8,7 @@ import { generateInstance } from '../generator/instance-generator';
 import { questionTemplateSchema, blankSchema, blankDefaultsSchema } from '../template-schema';
 import { runTestSpec } from '../test-spec-runner';
 import type { QuestionTemplate, QuestionVariation } from '../types';
-import { templateMarkdown } from '$lib/ubumark';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 
 // ============================================================================
 // HELPERS
@@ -36,8 +36,6 @@ function rootTemplate(
 			}
 		],
 		grades: ['2'],
-		theme: 'Fonctions',
-		domain: 'Affines',
 		level: 1
 	};
 }

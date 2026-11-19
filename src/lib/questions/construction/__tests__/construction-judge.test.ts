@@ -7,7 +7,7 @@
 import { describe, it, expect } from 'vitest';
 import { judgeConstruction } from '../judge';
 import { parseConstructionAnswer, serializeConstructionAnswer } from '../answer';
-import type { ConstructionCheck } from '$lib/ubumark/types/construction';
+import type { ConstructionCheck } from '#lib/ubumark/types/construction.ts';
 
 const POINTS = new Map([
 	['A', { x: 1, y: 2 }],
@@ -40,7 +40,7 @@ describe('réponse de l’élève : lecture', () => {
 		expect(parseConstructionAnswer('droite(1e9;2;7;2)')).toBeNull();
 		expect(parseConstructionAnswer('droite(NaN;2;7;2)')).toBeNull();
 		expect(parseConstructionAnswer(Array(21).fill('droite(1;2;7;2)').join('|'))).toBeNull();
-		expect(parseConstructionAnswer('droite(1;2;7;2)'.padEnd(2000, ' '))).toBeNull();
+		expect(parseConstructionAnswer('droite(1;2;7;2)'.padEnd(2001, ' '))).toBeNull();
 	});
 });
 

@@ -8,16 +8,14 @@ import { describe, it, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { flushSync } from 'svelte';
 import QuestionCard from '../QuestionCard.svelte';
-import type { QuestionInstance } from '$lib/questions/types';
-import { resolvedMarkdown } from '$lib/ubumark';
+import type { QuestionInstance } from '#lib/questions/types.ts';
+import { resolvedMarkdown } from '#lib/ubumark/index.ts';
 
 function choiceQuestion(): QuestionInstance {
 	return {
 		templateId: 'tpl-choix',
 		statement: resolvedMarkdown('Combien font 2 + 2 ?\n\n```choix\ncase: 0\n- 3\n- 4\n```'),
 		grades: ['6'],
-		theme: 'Entiers',
-		domain: 'Calcul',
 		level: 1,
 		generatedAt: new Date().toISOString(),
 		blanks: [

@@ -8,8 +8,8 @@
 	Usage:
 	```svelte
 	<script lang="ts">
-	  import GradeBadgeSelector from '$lib/components/GradeBadgeSelector.svelte';
-	  import type { GradeCode } from '$lib/types/grades';
+	  import GradeBadgeSelector from '#lib/components/GradeBadgeSelector.svelte';
+	  import type { GradeCode } from '#lib/types/grades.ts';
 
 	  let selectedGrades = $state<GradeCode[]>(['6', '5', '4']);
 	</script>
@@ -18,10 +18,10 @@
 	```
 -->
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Button } from '$lib/components/ui/button';
-	import * as Dialog from '$lib/components/ui/dialog';
+	import { lore } from '#lib/config/lore.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
 	import { X, Plus } from '@lucide/svelte';
 	import {
 		GRADES,
@@ -30,8 +30,8 @@
 		HIGH_GRADES,
 		type GradeCode,
 		type SchoolLevel
-	} from '$lib/types/grades';
-	import { formatGradeShort } from '$lib/utils/grades';
+	} from '#lib/types/grades.ts';
+	import { formatGradeShort } from '#lib/utils/grades.ts';
 
 	// Props interface
 	interface Props {

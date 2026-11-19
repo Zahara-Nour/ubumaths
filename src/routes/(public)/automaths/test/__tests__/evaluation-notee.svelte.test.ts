@@ -10,8 +10,8 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { page } from 'vitest/browser';
-import type { PublicQuestion } from '$lib/questions/public-question';
-import type { EvaluationStartResponse } from '$lib/types/evaluation-attempt';
+import type { PublicQuestion } from '#lib/questions/public-question.ts';
+import type { EvaluationStartResponse } from '#lib/types/evaluation-attempt.ts';
 
 const url = vi.hoisted(() => ({ current: new URL('http://localhost/automaths/test') }));
 vi.mock('$app/state', () => ({
@@ -21,17 +21,18 @@ vi.mock('$app/state', () => ({
 		}
 	}
 }));
-vi.mock('$app/navigation', async (importOriginal) => ({
-	...(await importOriginal<typeof import('$app/navigation')>()),
-	goto: vi.fn(async () => {}),
-	replaceState: vi.fn()
-}));
+vi.mock('$app/navigation', async () =>
+	(await import('#tests/helpers/app-navigation-mock.ts')).appNavigationMock({
+		goto: vi.fn(async () => {}),
+		replaceState: vi.fn()
+	})
+);
 
 import Page from '../+page.svelte';
 import { goto, replaceState } from '$app/navigation';
 
 // Le dictionnaire arrive de /api/dictionnaire (ADR 0022) : ici, le jeu de référence figé
-vi.mock('$lib/dictionary/fetch-dictionary', async () => {
+vi.mock('#lib/dictionary/fetch-dictionary.ts', async () => {
 	const { REFERENCE_DICTIONARY: entries } =
 		await import('../../../../../../tests/fixtures/lexique/dictionnaire-reference');
 	return { fetchDictionary: async () => entries };
@@ -88,8 +89,6 @@ const SUBMIT_RESPONSE = {
 				}
 			],
 			grades: ['6'],
-			theme: 'T',
-			domain: 'D',
 			level: 1,
 			generatedAt: ''
 		},
@@ -135,7 +134,7 @@ async function renderPage() {
 	const main = document.body.appendChild(document.createElement('main'));
 	return await render(Page, {
 		target: main,
-		props: { data: { templates: [], user: { id: 'eleve' } } } as never
+		props: { data: { user: { id: 'eleve' } } } as never
 	});
 }
 

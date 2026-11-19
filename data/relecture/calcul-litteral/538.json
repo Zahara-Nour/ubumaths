@@ -257,9 +257,6 @@
 			}
 		],
 		"grades": ["4"],
-		"theme": "Calcul littéral",
-		"domain": "Transformation",
-		"subdomain": "Factorisation",
 		"level": 4,
 		"status": "draft",
 		"delay": 30,

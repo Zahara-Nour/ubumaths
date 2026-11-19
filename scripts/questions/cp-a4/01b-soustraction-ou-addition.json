@@ -1,10 +1,8 @@
 {
+	"id": "3bde8d25-64d3-4361-9765-85f38b198656",
 	"title": "Soustraction ou addition ?",
 	"description": "Choisir la soustraction : retrait, écart (un ajout en leurre)",
 	"grades": ["CP"],
-	"theme": "Entiers",
-	"domain": "Additionner",
-	"subdomain": "Sens",
 	"level": 4,
 	"delay": 30,
 	"status": "draft",

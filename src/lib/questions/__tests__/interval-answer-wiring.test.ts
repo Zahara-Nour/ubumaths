@@ -15,10 +15,10 @@ import {
 	validateAnswer,
 	validateBlanksDetailed,
 	isBlankValueCorrect
-} from '$lib/utils/answer-validator';
-import { computeBlankVerdicts } from '$lib/components/questions/blank-verdicts';
+} from '#lib/utils/answer-validator.ts';
+import { computeBlankVerdicts } from '#lib/components/questions/blank-verdicts.ts';
 import type { InstanceBlank, QuestionInstance, QuestionTemplate } from '../types';
-import { templateMarkdown, type ResolvedMarkdown } from '$lib/ubumark';
+import { templateMarkdown, type ResolvedMarkdown } from '#lib/ubumark/index.ts';
 
 // Fixtures
 const SOLUTION = ']-\\infty;-2[\\cup]3;+\\infty[';
@@ -32,8 +32,6 @@ function instanceWith(
 		statement: 'Résoudre' as ResolvedMarkdown,
 		blanks,
 		grades: ['1_SPE'],
-		theme: 'Fonctions',
-		domain: 'Second degré',
 		level: 3,
 		generatedAt: new Date().toISOString(),
 		...(options && { options })
@@ -62,8 +60,6 @@ function inequalityTemplate(
 			}
 		],
 		grades: ['1_SPE'],
-		theme: 'Fonctions',
-		domain: 'Second degré',
 		level: 3
 	};
 }

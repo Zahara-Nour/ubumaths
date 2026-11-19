@@ -4,7 +4,9 @@
  * Défaut mesuré (2026-10-06) : la dérivée BRUTE du moteur s'affichait telle
  * quelle — `e^{3 x} 3`, `2 \left( -e^{-x} \right)`, `3 2 x - 1`,
  * `\cos(x) + \left( -\sin(x) \right)`. La mise au propre est celle de
- * l'atelier (`tidyTerms`) : `tidy` terme à terme, l'ordre de la règle gardé.
+ * l'atelier : la forme finale de f′ (`finalDerivative`, ADR 0032 D1) — numérateur
+ * réduit, exponentielle commune en facteur (`(x+1)eˣ`, chantier
+ * registre-reference) ; un simple réordonnement garde l'ordre de la règle.
  */
 
 import { describe, it, expect } from 'vitest';
@@ -20,8 +22,9 @@ describe('.diff : la dérivée est rangée', () => {
 	it.each([
 		[
 			'x e^{-2x}',
-			'd/dx(xe^{-2x}) = e^{-2x}-2xe^{-2x}\nLaTeX: \\exponentialE^{-2 x} - 2 x \\exponentialE^{-2 x}'
+			'd/dx(xe^{-2x}) = (1-2x)e^{-2x}\nLaTeX: \\left( 1 - 2 x \\right) \\exponentialE^{-2 x}'
 		],
+		['x^2 e^x', 'd/dx(x^2e^x) = (x^2+2x)e^x\nLaTeX: \\left( x^2 + 2 x \\right) \\exponentialE^x'],
 		['2e^{-x}', 'd/dx(2e^{-x}) = -2e^{-x}\nLaTeX: -2 \\exponentialE^{-x}'],
 		['e^{3x}', 'd/dx(e^{3x}) = 3e^{3x}\nLaTeX: 3 \\exponentialE^{3 x}'],
 		[
@@ -42,7 +45,6 @@ describe('.diff : témoins déjà propres, inchangés', () => {
 			'x\\sin(x)',
 			'd/dx(xsin(x)) = sin(x)+xcos(x)\nLaTeX: \\sin\\left( x \\right) + x \\cos\\left( x \\right)'
 		],
-		['x^2 e^x', 'd/dx(x^2e^x) = 2xe^x+x^2e^x\nLaTeX: 2 x \\exponentialE^x + x^2 \\exponentialE^x'],
 		['\\ln(x)', 'd/dx(ln(x)) = 1/x\nLaTeX: \\dfrac{1}{x}']
 	])('.diff %s', (input, expected) => {
 		expect(diff(input)).toBe(expected);

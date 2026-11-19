@@ -21,7 +21,7 @@
  *
  * Le périmètre est la fermeture transitive des imports des tests
  * (`tests/integration/**`) et du global-setup, calculée par esbuild en mode
- * analyse (rien n'est exécuté). `$lib` est résolu vers `src/lib` ; les modules
+ * analyse (rien n'est exécuté). `#lib` est résolu vers `src/lib` ; les modules
  * virtuels de SvelteKit (`$env`, `$app`) et les paquets npm sont exclus ; le
  * `<script>` des composants `.svelte` est suivi. Un autre alias `$…` fait
  * échouer la garde plutôt que de disparaître en silence.
@@ -117,8 +117,8 @@ export async function integrationClosure(root: string): Promise<string[]> {
 	const sveltekit: Plugin = {
 		name: 'sveltekit-aliases',
 		setup(b) {
-			b.onResolve({ filter: /^\$lib(\/|$)/ }, async (args) => {
-				const target = args.path.replace(/^\$lib/, join(root, 'src/lib'));
+			b.onResolve({ filter: /^#lib(\/|$)/ }, async (args) => {
+				const target = args.path.replace(/^#lib/, join(root, 'src/lib'));
 				const r = await b.resolve(target, { kind: args.kind, resolveDir: root });
 				if (r.errors.length) {
 					unresolved.push(args.path);
@@ -131,7 +131,7 @@ export async function integrationClosure(root: string): Promise<string[]> {
 				path: args.path,
 				external: true
 			}));
-			// Tout autre alias `$…` (ex. `$tests` de svelte.config.js) : non suivi ici,
+			// Tout autre alias `$…` : non suivi ici,
 			// donc signalé plutôt que traité comme un paquet externe.
 			b.onResolve({ filter: /^\$/ }, (args) => {
 				unresolved.push(args.path);

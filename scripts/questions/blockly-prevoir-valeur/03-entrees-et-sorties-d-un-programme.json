@@ -1,0 +1,189 @@
+{
+	"id": "b9e88a6e-40ea-43fa-b763-ad0c12c16d5f",
+	"title": "Entrées et sorties d'un programme",
+	"description": "Reconnaître l'entrée et la sortie d'un programme Scratch, et calculer les sorties d'un programme à deux entrées.",
+	"grades": ["5"],
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Voici un programme.\n\n```scratch\nquand le drapeau vert pressé\ndemander [Choisis un nombre.] et attendre\nmettre [résultat v] à ((réponse) * ({{a}}))\nmettre [résultat v] à ((résultat) + ({{b}}))\ndire (résultat)\n```\n\nQuelle est l'**entrée** de ce programme ?\n\n````choix\n- le nombre tapé au clavier, en réponse à la question\n- le nombre que dit le lutin à la fin\n- le nombre ${{a}}$, écrit dans le programme\n````",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une **entrée** est une donnée que le programme reçoit pendant qu'il tourne (ici, ce qu'on tape au clavier) ; une **sortie** est ce qu'il communique à la fin (ici, ce que dit le lutin).",
+					"Le bloc « demander » attend que l'utilisateur tape un nombre : c'est l'entrée.",
+					"Le nombre ${{a}}$ est écrit dans le programme : il est le même à chaque exécution, ce n'est pas une entrée.",
+					"L'entrée est **le nombre tapé au clavier**."
+				]
+			}
+		},
+		{
+			"statement": "Voici un programme.\n\n```scratch\nquand le drapeau vert pressé\ndemander [Choisis un nombre.] et attendre\nmettre [résultat v] à ((réponse) * ({{a}}))\nmettre [résultat v] à ((résultat) + ({{b}}))\ndire (résultat)\n```\n\nQuelle est la **sortie** de ce programme ?\n\n````choix\n- le nombre que dit le lutin à la fin\n- le nombre tapé au clavier, en réponse à la question\n- le nombre ${{b}}$, écrit dans le programme\n````",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une **entrée** est une donnée que le programme reçoit pendant qu'il tourne (ici, ce qu'on tape au clavier) ; une **sortie** est ce qu'il communique à la fin (ici, ce que dit le lutin).",
+					"Le bloc « dire » montre le contenu de la variable « résultat » : c'est la sortie.",
+					"La sortie est **le nombre que dit le lutin**."
+				]
+			}
+		},
+		{
+			"statement": "Voici un programme qui travaille sur un rectangle.\n\n```scratch\nquand le drapeau vert pressé\ndemander [Longueur ?] et attendre\nmettre [longueur v] à (réponse)\ndemander [Largeur ?] et attendre\nmettre [largeur v] à (réponse)\ndire ((2) * ((longueur) + (largeur))) pendant (2) secondes\ndire ((longueur) * (largeur))\n```\n\nCe programme a deux entrées et deux sorties. On tape ${{p}}$, puis ${{q}}$. Quelles sont ses deux sorties, dans l'ordre ?\n\nPremière sortie : $?$\n\nSeconde sortie : $?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "3..12"
+				},
+				{
+					"name": "q",
+					"expression": "2..9"
+				}
+			],
+			"conditions": ["p>q"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2*(p+q)}}"
+				},
+				{
+					"expectedAnswer": "{{eval:p*q}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les deux **entrées** sont les nombres tapés : *longueur* $= {{p}}$ et *largeur* $= {{q}}$.",
+					"Première sortie : $2 \\times ({{p}} + {{q}}) = \\textcolor{{{color:primary.0}}}{{{eval:2*(p+q)}}}$ (le périmètre).",
+					"Seconde sortie : ${{p}} \\times {{q}} = \\textcolor{{{color:primary.1}}}{{{eval:p*q}}}$ (l'aire)."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Entrée : le nombre tapé",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "4"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la sortie prise pour l'entrée",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "4"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : la constante prise pour l'entrée",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "4"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Sortie : le nombre dit",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "4"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : l'entrée prise pour la sortie",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "4"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "7 et 4 : 22 puis 28",
+			"variationIndex": 2,
+			"variables": {
+				"p": "7",
+				"q": "4"
+			},
+			"answers": ["22", "28"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sorties inversées",
+			"variationIndex": 2,
+			"variables": {
+				"p": "7",
+				"q": "4"
+			},
+			"answers": ["28", "22"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : demi-périmètre (11)",
+			"variationIndex": 2,
+			"variables": {
+				"p": "7",
+				"q": "4"
+			},
+			"answers": ["11", "28"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

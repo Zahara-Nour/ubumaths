@@ -11,7 +11,7 @@
  * reste au parseur du bloc (`parseFigureContent`), qui n'a pas de doublon.
  */
 
-import { findFigureSeparator, readFigureHeaderLine } from '$lib/ubumark/parser/figure-parser';
+import { findFigureSeparator, readFigureHeaderLine } from '#lib/ubumark/parser/figure-parser.ts';
 
 // ============================================================================
 // TYPES

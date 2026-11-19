@@ -9,7 +9,7 @@
  *
  * @example
  * ```typescript
- * import { generateStudentWorksheetTypst } from '$lib/worksheets/student-worksheet-typst';
+ * import { generateStudentWorksheetTypst } from '#lib/worksheets/student-worksheet-typst.ts';
  *
  * const typstContent = generateStudentWorksheetTypst(worksheet, 'correction');
  * // Compile with TypstService
@@ -23,9 +23,9 @@ import type {
 	WorksheetConfig,
 	WorksheetRow,
 	WorksheetTemplateRow
-} from '$lib/types/worksheets';
-import { WorksheetGenerator } from '$lib/typst/generators/worksheet-generator';
-import type { TextSize } from '$lib/typst/text-size';
+} from '#lib/types/worksheets.ts';
+import { WorksheetGenerator } from '#lib/typst/generators/worksheet-generator.ts';
+import type { TextSize } from '#lib/typst/text-size.ts';
 import { documentFromStudentView } from './document/student-adapter';
 
 // ============================================================================

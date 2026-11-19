@@ -1,10 +1,8 @@
 {
+	"id": "b4527dd3-16ba-47ed-be5d-b3cc358f06a9",
 	"title": "Construis le diagramme en barres",
 	"description": "Monter deux barres d'après un tableau, puis toutes les barres ; compter une liste de 12 réponses puis construire",
 	"grades": ["CE1"],
-	"theme": "Statistiques",
-	"domain": "Représenter des données",
-	"subdomain": "Diagrammes en barres",
 	"level": 3,
 	"delay": 180,
 	"status": "draft",

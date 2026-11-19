@@ -12,7 +12,7 @@
 	 */
 
 	import { whiteboardStore } from '../stores/whiteboard.svelte';
-	import { Button } from '$lib/components/ui/button';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import {
 		Pen,
 		Highlighter,

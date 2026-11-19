@@ -5,8 +5,8 @@
 -->
 
 <script lang="ts">
-	import type { QuizQuestion } from '$lib/config/buddy-quiz';
-	import { Button } from '$lib/components/ui/button';
+	import type { QuizQuestion } from '#lib/config/buddy-quiz.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import { fade } from 'svelte/transition';
 
 	interface Props {

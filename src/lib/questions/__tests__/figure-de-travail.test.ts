@@ -8,18 +8,22 @@
  * avant toute autre règle (cases vides, appariement libre, « figure vide → 0 »).
  */
 import { describe, it, expect } from 'vitest';
-import '$lib/questions/construction/positions-setup';
-import { generateInstance } from '$lib/questions/generator/instance-generator';
-import { assignBlankIndices } from '$lib/questions/generator/assign-blank-indices';
-import { gradeQuestion } from '$lib/questions/grading';
-import { isWorkFigureBlank } from '$lib/questions/graded-part';
-import { toDisplayInstance, toPublicQuestion } from '$lib/questions/public-question';
-import { validateAnswer, validateAnswerDetailed } from '$lib/utils/answer-validator';
-import { parseMarkdown } from '$lib/ubumark/parser';
-import { WORK_FIGURE_ALONE_MESSAGE } from '$lib/ubumark/parser/construction-parser';
-import { templateMarkdown } from '$lib/ubumark';
-import type { FigureNode } from '$lib/ubumark/types/figure';
-import type { QuestionInstance, QuestionTemplate, QuestionVariation } from '$lib/questions/types';
+import '#lib/questions/construction/positions-setup.ts';
+import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
+import { assignBlankIndices } from '#lib/questions/generator/assign-blank-indices.ts';
+import { gradeQuestion } from '#lib/questions/grading.ts';
+import { isWorkFigureBlank } from '#lib/questions/graded-part.ts';
+import { toDisplayInstance, toPublicQuestion } from '#lib/questions/public-question.ts';
+import { validateAnswer, validateAnswerDetailed } from '#lib/utils/answer-validator.ts';
+import { parseMarkdown } from '#lib/ubumark/parser/index.ts';
+import { WORK_FIGURE_ALONE_MESSAGE } from '#lib/ubumark/parser/construction-parser.ts';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
+import type { FigureNode } from '#lib/ubumark/types/figure.ts';
+import type {
+	QuestionInstance,
+	QuestionTemplate,
+	QuestionVariation
+} from '#lib/questions/types.ts';
 
 // Constantes
 const BODY = [
@@ -45,8 +49,6 @@ function template(
 		type: 'fill_in_blanks',
 		variations: [{ ...variation, statement: templateMarkdown(variation.statement) }],
 		grades: ['CP'],
-		theme: 'Test',
-		domain: 'Test',
 		level: 1,
 		...(options && { options })
 	} as QuestionTemplate;
@@ -124,10 +126,10 @@ describe('lecture du bloc ```figure-de-travail', () => {
 
 	it('outil inconnu refusé, comme pour la figure à compléter', () => {
 		const node = figureNode(
-			['```figure-de-travail', BODY[0], 'outils: compas', ...BODY.slice(2), '```'].join('\n')
+			['```figure-de-travail', BODY[0], 'outils: crayon', ...BODY.slice(2), '```'].join('\n')
 		);
 		expect(node.errors.map((e) => e.message)).toEqual([
-			'Ligne 2 : outil « compas » inconnu (droite, segment, point)'
+			'Ligne 2 : outil « crayon » inconnu (droite, segment, point, equerre, compas, report, rapporteur, regle)'
 		]);
 	});
 

@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { Badge } from '$lib/components/ui/badge';
-	import { Card } from '$lib/components/ui/card';
-	import { cn } from '$lib/utils';
-	import { DIFFICULTY_LABELS, type Difficulty } from '$lib/types/minesweeper';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { Card } from '#lib/components/ui/card/index.ts';
+	import { cn } from '#lib/utils.ts';
+	import { DIFFICULTY_LABELS, type Difficulty } from '#lib/types/minesweeper.ts';
 
 	// Types - only includes properties used by this component
 	interface TournamentData {

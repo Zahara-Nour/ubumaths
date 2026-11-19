@@ -5,6 +5,8 @@ author: pile
 lede: La pièce, entendue par les enquêteurs, affirme n'avoir « aucun souvenir » des lancers précédents. Le Palotin Pile, de son côté, envisage de porter plainte pour usurpation d'identité.
 ---
 
+![Dans un tripot enfumé, un parieur ruiné en haut-de-forme retourne ses poches vides et pointe du doigt une pièce d’or géante, debout sur la table de jeu, qui hausse les épaules d’un air innocent ; derrière la table, le Cheval à Phynances ratisse les dernières pièces.](/shtam/pifometrie-pile-ou-face.webp){size=large}
+
 Bonneteau-sur-Vistule retient son souffle. Samedi soir, au Grand Tripot du Pif, un Polonais a assisté à douze Pile consécutifs. Convaincu que « Face ne pouvait plus attendre », il a misé l'intégralité de ses gidouilles sur le treizième lancer. C'est tombé sur Pile.
 
 « C'est une injustice statistique », a déclaré le parieur, désormais ruiné. « Face avait du retard. Tout le monde le sait. Il fallait qu'elle le rattrape. »

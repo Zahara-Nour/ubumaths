@@ -2,12 +2,12 @@
 	"title": "Chaîne, cycle, connexité",
 	"description": "Reconnaître une chaîne, sa longueur, un cycle, un graphe connexe, sur une figure (pièges : longueur comptée en sommets, arête inexistante, graphe dessiné en un seul bloc mais non connexe)",
 	"grades": ["T_EXP"],
-	"theme": "Graphes et matrices",
-	"domain": "Graphes",
-	"subdomain": "Chaînes et connexité",
 	"level": 2,
 	"status": "draft",
 	"delay": 60,
+	"shared": {
+		"capitalPairs": "product"
+	},
 	"variations": [
 		{
 			"statement": "On considère le graphe ci-dessous.\n\n```figure\nfenetre: -0.8 ; 6.8 ; -0.8 ; 4.8\ntaille: petite\ndescription: Graphe non orienté à 5 sommets A, B, C, D, E ; arêtes AB, AE, BC, BE, CD, BD.\n---\nA = point(0, 2, etiquette=\"gauche\")\nB = point(2, 4, etiquette=\"haut\")\nC = point(6, 4, etiquette=\"haut\")\nD = point(6, 0, etiquette=\"bas\")\nE = point(2, 0, etiquette=\"bas\")\nsegment(A, B)\nsegment(A, E)\nsegment(B, C)\nsegment(B, E)\nsegment(C, D)\nsegment(B, D)\n```\n\nQue peut-on dire de la suite de sommets $A - B - C - D$ ?\n\n```choix\n- C'est une chaîne de longueur $3$.\n- C'est une chaîne de longueur $4$.\n- C'est un cycle.\n- Ce n'est pas une chaîne.\n```",

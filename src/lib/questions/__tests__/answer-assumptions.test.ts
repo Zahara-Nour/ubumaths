@@ -30,8 +30,8 @@ import { mapDbTemplateToForm, type GradeLevel, type QuestionTemplate } from '../
 import {
 	createQuestionTemplateSchema,
 	updateQuestionTemplateSchema
-} from '$lib/server/validation/questions';
-import { templateMarkdown } from '$lib/ubumark';
+} from '#lib/server/validation/questions.ts';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 
 // ============================================================================
 // FIXTURES
@@ -42,8 +42,6 @@ const GRADES: GradeLevel[] = ['2'];
 const baseTemplate = {
 	title: 'Puissances',
 	grades: GRADES,
-	theme: 'Algèbre',
-	domain: 'Puissances',
 	level: 1,
 	status: 'published' as const,
 	variations: [
@@ -320,7 +318,7 @@ describe('validateAssumptionRows (éditeur)', () => {
 });
 
 describe('isSequenceCategory (proposition « n ∈ ℕ »)', () => {
-	it('reconnaît le thème ou le domaine Suites', () => {
+	it('reconnaît la branche ou la notion Suites', () => {
 		expect(isSequenceCategory('Suites', 'Généralités')).toBe(true);
 		expect(isSequenceCategory('Analyse', 'Suites arithmétiques')).toBe(true);
 		expect(isSequenceCategory(' suites ', '')).toBe(true);

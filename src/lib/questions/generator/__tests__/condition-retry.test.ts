@@ -9,7 +9,7 @@
 import { describe, it, expect } from 'vitest';
 import { generateInstance } from '../instance-generator';
 import type { QuestionTemplate } from '../../types';
-import { templateMarkdown } from '$lib/ubumark';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 
 function makeTemplate(overrides: Partial<QuestionTemplate> = {}): QuestionTemplate {
 	return {
@@ -18,8 +18,6 @@ function makeTemplate(overrides: Partial<QuestionTemplate> = {}): QuestionTempla
 		status: 'draft',
 		variations: [],
 		grades: ['6'],
-		theme: 'Test',
-		domain: 'Test',
 		level: 1,
 		...overrides
 	};

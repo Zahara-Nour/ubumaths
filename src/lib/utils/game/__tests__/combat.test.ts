@@ -16,8 +16,8 @@ import {
 	calculateSpellPower,
 	generateRandomMonster
 } from '../combat';
-import { seedRandom, resetRandom } from '$tests/helpers/fixtures';
-import type { GameSpell, GameMonster } from '$lib/types/game';
+import { seedRandom, resetRandom } from '#tests/helpers/fixtures/index.ts';
+import type { GameSpell, GameMonster } from '#lib/types/game.ts';
 
 describe('Combat Calculations', () => {
 	describe('calculateDamage', () => {

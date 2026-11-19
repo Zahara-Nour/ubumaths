@@ -100,19 +100,19 @@ const SECTION = {
 
 const loggerError = vi.hoisted(() => vi.fn());
 
-vi.mock('$lib/server/middleware/auth', () => ({
+vi.mock('#lib/server/middleware/auth.ts', () => ({
 	requireRoles: async () => ({
 		user: { id: TEACHER_ID },
 		profile: { role: 'teacher', school_id: null }
 	})
 }));
 
-vi.mock('$lib/server/resource-tags', () => ({
+vi.mock('#lib/server/resource-tags.ts', () => ({
 	fetchResourceTagNames: async () => [],
 	syncResourceTags: async () => undefined
 }));
 
-vi.mock('$lib/utils/logger', () => ({
+vi.mock('#lib/utils/logger.ts', () => ({
 	createServerLogger: () => ({
 		error: loggerError,
 		warn: vi.fn(),

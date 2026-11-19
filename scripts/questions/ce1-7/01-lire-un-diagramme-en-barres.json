@@ -1,10 +1,8 @@
 {
+	"id": "f756fc4b-73cc-4a31-ab9f-c68fb3610505",
 	"title": "Lis le diagramme en barres",
 	"description": "Lire l'effectif d'une barre, axe gradué de un en un : 3, 4 puis 5 barres (sports, fruits, animaux), 20 au plus par barre",
 	"grades": ["CE1"],
-	"theme": "Statistiques",
-	"domain": "Représenter des données",
-	"subdomain": "Diagrammes en barres",
 	"level": 1,
 	"delay": 90,
 	"status": "draft",

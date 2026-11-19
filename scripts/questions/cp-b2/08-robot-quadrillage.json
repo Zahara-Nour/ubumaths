@@ -1,10 +1,8 @@
 {
+	"id": "f7167af7-564a-481d-8059-47624bdf59a3",
 	"title": "Le robot sur le quadrillage",
 	"description": "Suivre un code de flèches sur un quadrillage, ou choisir le code qui mène à un point",
 	"grades": ["CP"],
-	"theme": "Géométrie",
-	"domain": "Repérage et déplacements",
-	"subdomain": "Coder un déplacement",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

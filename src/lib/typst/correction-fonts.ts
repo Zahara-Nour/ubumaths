@@ -23,11 +23,16 @@
 // CONSTANTES
 // ============================================================================
 
-/** Les trois fichiers, servis depuis `static/` : téléchargés pour un Corrigé seulement */
+/**
+ * Les trois fichiers, servis depuis `static/` : téléchargés pour un Corrigé seulement.
+ * `/fonts/` est gardé 30 jours en cache (`vercel.json`) : changer une police =
+ * changer son `?v=`, sinon un navigateur garde l'ancienne (2026-11-03 : gras
+ * mathématique ajouté à Chiphre Math ; 2026-11-12 : z redessiné à coins).
+ */
 export const CORRECTION_FONT_FILES = [
 	'/fonts/chiphre-math-typst/ShantellSans-Light.ttf',
 	'/fonts/chiphre-math-typst/ShantellSans-Bold.ttf',
-	'/fonts/chiphre-math-typst/ChiphreMath.ttf'
+	'/fonts/chiphre-math-typst/ChiphreMath.ttf?v=2026-11-12'
 ] as const;
 
 const START_MARK = '// <polices-du-corrige>';
@@ -81,17 +86,18 @@ function endOfTypstCall(typst: string, start: number): number | null {
  *   (pied de page, numéros de page) ;
  * - après le DERNIER `#set text(…)` de premier niveau, sinon la police du
  *   modèle l'emporterait sur tout le contenu.
+ *
+ * @param rules - d'autres règles de police (essai de `/dev/polices/luciole`) ;
+ *   par défaut celles du Corrigé
  */
-export function withCorrectionFonts(typst: string): string {
+export function withCorrectionFonts(typst: string, rules: string = CORRECTION_FONT_RULES): string {
 	let insertAt: number | null = null;
 	for (const match of typst.matchAll(TOP_LEVEL_SET_TEXT)) {
 		insertAt = endOfTypstCall(typst, match.index) ?? insertAt;
 	}
 	const body =
-		insertAt === null
-			? typst
-			: `${typst.slice(0, insertAt)}\n${CORRECTION_FONT_RULES}${typst.slice(insertAt)}`;
-	return `${CORRECTION_FONT_RULES}\n${body}`;
+		insertAt === null ? typst : `${typst.slice(0, insertAt)}\n${rules}${typst.slice(insertAt)}`;
+	return `${rules}\n${body}`;
 }
 
 /** Le document porte-t-il les règles de police du Corrigé ? */

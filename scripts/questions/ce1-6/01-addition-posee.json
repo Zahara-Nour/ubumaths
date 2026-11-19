@@ -1,10 +1,8 @@
 {
+	"id": "c26cc664-8ce1-4de3-9f03-34a8e99116fb",
 	"title": "Pose et calcule une addition",
 	"description": "Addition posée en colonnes, deux ou trois termes, avec retenues, somme ≤ 1 000 (245 + 437 ; 218 + 48 ; 76 + 7 + 568)",
 	"grades": ["CE1"],
-	"theme": "Nombres",
-	"domain": "Addition",
-	"subdomain": "Calcul posé",
 	"level": 2,
 	"delay": 180,
 	"status": "draft",

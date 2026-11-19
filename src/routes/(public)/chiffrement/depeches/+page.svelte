@@ -1,6 +1,6 @@
 <script lang="ts">
-	import DispatchCampaign from '$lib/components/ciphers/DispatchCampaign.svelte';
-	import SeoHead from '$lib/seo/SeoHead.svelte';
+	import DispatchCampaign from '#lib/components/ciphers/DispatchCampaign.svelte';
+	import SeoHead from '#lib/seo/SeoHead.svelte';
 </script>
 
 <SeoHead

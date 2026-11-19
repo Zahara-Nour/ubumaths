@@ -1,10 +1,8 @@
 {
+	"id": "7179a3b5-580a-4696-a22e-cd5f89c32c29",
 	"title": "Résoudre une équation du type eᵘ = eᵛ",
 	"description": "e^u = e^v ⇔ u = v avec u et v affines, et e^u = 1/e^v",
 	"grades": ["1_SPE"],
-	"theme": "Fonctions",
-	"domain": "Fonction exponentielle",
-	"subdomain": "Équations et inéquations",
 	"level": 2,
 	"status": "draft",
 	"delay": 60,

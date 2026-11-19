@@ -14,7 +14,8 @@
  *   `valeur`. Une faute de frappe dans un attendu se voit ainsi comme un
  *   écart de valeur sur TOUS les outils à la fois, pas comme un moteur faux.
  * - **Ensemble** (`S = …`, `D = …`) : `checkForm` ne les lit pas. Ils sont
- *   découpés (réunion, intervalle, ℝ privé de, ensemble fini, vide) et chaque
+ *   découpés (réunion, intervalle, ℝ privé de, ensemble fini, famille
+ *   périodique `, k \in \mathbb{Z}`, vide) et chaque
  *   borne ou élément est jugé comme une expression ; l'ordre des éléments
  *   compte (rangés dans l'ordre croissant).
  * - **Grandeur, angle** (`12.5~\mathrm{km}`, `90{}^{\circ}`) : même unité
@@ -24,16 +25,17 @@
  * - **Verdict** (`\text{vrai}`) et **refus** (message) : texte exact.
  * - **Écriture décimale** (`decimal`, décision A du lot 2) : jugée une fois la
  *   réponse juste, au texte près (virgule ou point, `\times 10^{n}` ou
- *   `*10^n`), `=` ou `≈` compris. Le registre DOIT la rendre (décision B) ;
+ *   `*10^n`), `=` ou `≈` compris (le registre le dit par `decimalExact`, un
+ *   outil par son signe). Le registre DOIT la rendre (décision B) ;
  *   un outil qui l'habille n'est jugé que s'il l'affiche.
  * - Lisible = se parse : `1000!` ne se calcule pas, mais se compare au texte.
  */
 
-import { checkForm } from '$lib/mathAST/cosmetic-transforms';
-import { parseLatex } from '$lib/mathAST/parser';
-import { compile } from '$lib/mathAST/eval/compile';
-import { findNodes } from '$lib/mathAST/transforms';
-import { isVariable } from '$lib/mathAST/guards';
+import { checkForm } from '#lib/mathAST/cosmetic-transforms.ts';
+import { parseLatex } from '#lib/mathAST/parser/index.ts';
+import { compile } from '#lib/mathAST/eval/compile.ts';
+import { findNodes } from '#lib/mathAST/transforms.ts';
+import { isVariable } from '#lib/mathAST/guards.ts';
 import type { RegistreCase } from '../../../../../../tests/fixtures/mathast/registre-corpus';
 
 // =============================================================================
@@ -45,8 +47,13 @@ export type Produced =
 	| {
 			readonly kind: 'reponse';
 			readonly latex: string;
-			/** L'écriture décimale affichée, `=` ou `\approx` devant (`\approx 0{,}8333`) */
+			/**
+			 * L'écriture décimale : celle du registre, sans signe (`0.8333`), ou
+			 * celle qu'affiche l'outil, `=` ou `\approx` devant (`\approx 0{,}8333`)
+			 */
 			readonly decimal?: string;
+			/** Le registre dit si elle est exacte (`decimalExact`) ; sinon, le signe le dit */
+			readonly decimalExact?: boolean;
 	  }
 	| { readonly kind: 'refus'; readonly message: string }
 	/** Ni réponse brute lisible ni refus (sortie texte seule, champ absent) */
@@ -77,6 +84,8 @@ type Part =
 	| { readonly kind: 'reals' }
 	| { readonly kind: 'reals-minus'; readonly points: readonly string[] }
 	| { readonly kind: 'finite'; readonly elements: readonly string[] }
+	/** Une ou plusieurs familles `\{ a + 2k\pi ; b + 2k\pi, k \in \mathbb{Z} \}` */
+	| { readonly kind: 'periodic'; readonly elements: readonly string[] }
 	| {
 			readonly kind: 'interval';
 			readonly open: string;
@@ -125,7 +134,7 @@ export function judge(c: RegistreCase, produced: Produced, options: JudgeOptions
 	if (verdict.status !== 'juste' || produced.kind !== 'reponse' || c.decimal === undefined) {
 		return verdict;
 	}
-	return judgeDecimal(c.decimal, c.decimalExact === true, produced.decimal, options);
+	return judgeDecimal(c.decimal, c.decimalExact === true, produced, options);
 }
 
 function judgeAnswer(c: RegistreCase, produced: Produced): Verdict {
@@ -294,7 +303,11 @@ function judgeQuantity(expected: Quantity, rendered: string): Verdict {
 /** `\approx 4{,}0239 \times 10^{2567}` → `{ text: '4.0239*10^2567', exact: false }` ; sans signe : `exact` absent */
 function readDecimal(latex: string): { readonly text: string; readonly exact?: boolean } | null {
 	// `\text{,}` avant `compact`, qui en ferait `\text,`
-	let text = compact(latex.replace(/\\text\{,\}/g, '.')).replace(/,/g, '.');
+	// `\unit{km}` du registre vaut `\mathrm{km}` d'un outil
+	let text = compact(latex.replace(/\\text\{,\}/g, '.').replace(/\\unit\{/g, '\\mathrm{')).replace(
+		/,/g,
+		'.'
+	);
 	let exact: boolean | undefined;
 	const sign = /^(=|\\approx|≈)/.exec(text);
 	if (sign !== null) {
@@ -308,9 +321,10 @@ function readDecimal(latex: string): { readonly text: string; readonly exact?: b
 function judgeDecimal(
 	expected: string,
 	expectedExact: boolean,
-	rendered: string | undefined,
+	produced: { readonly decimal?: string; readonly decimalExact?: boolean },
 	options: JudgeOptions
 ): Verdict {
+	const rendered = produced.decimal;
 	if (rendered === undefined) {
 		return options.decimalRequired === true
 			? { status: 'décimal', rendu: 'absente' }
@@ -319,7 +333,7 @@ function judgeDecimal(
 	const want = readDecimal(expected);
 	const got = readDecimal(rendered);
 	if (want === null || got === null) return { status: 'décimal', rendu: rendered };
-	return got.text === want.text && (got.exact ?? true) === expectedExact
+	return got.text === want.text && (produced.decimalExact ?? got.exact ?? true) === expectedExact
 		? { status: 'juste' }
 		: { status: 'décimal', rendu: rendered };
 }
@@ -346,6 +360,9 @@ function readPart(piece: string): Part | null {
 	if (piece === '\\mathbb{R}') return { kind: 'reals' };
 	const minus = /^\\mathbb\{R\}\\setminus\\\{(.*)\\\}$/.exec(piece);
 	if (minus !== null) return { kind: 'reals-minus', points: splitTop(minus[1], ';') };
+	// Avant l'ensemble fini, qui la lirait comme un seul élément illisible
+	const periodic = /^\\\{(.*),k\\in\\mathbb\{Z\}\\\}$/.exec(piece);
+	if (periodic !== null) return { kind: 'periodic', elements: splitTop(periodic[1], ';') };
 	const finite = /^\\\{(.*)\\\}$/.exec(piece);
 	if (finite !== null) return { kind: 'finite', elements: splitTop(finite[1], ';') };
 	const interval = /^([[\]])(.*)([[\]])$/.exec(piece);
@@ -390,6 +407,7 @@ function partExpressions(part: Part): string[] {
 		case 'reals-minus':
 			return [...part.points];
 		case 'finite':
+		case 'periodic':
 			return [...part.elements];
 		case 'interval':
 			return [part.lower, part.upper].filter((b) => !/\\infty/.test(b));

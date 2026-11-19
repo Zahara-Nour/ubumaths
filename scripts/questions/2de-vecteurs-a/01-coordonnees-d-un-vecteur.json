@@ -1,10 +1,8 @@
 {
+	"id": "583398f7-dc30-4f9d-bf81-7ae39e6a0d91",
 	"title": "Coordonnées d'un vecteur dans une base",
 	"description": "Lire les coordonnées de u = a i + b j (une coordonnée nulle, une fraction), et écrire u à partir de ses coordonnées (pièges : coordonnées échangées, 0 oublié, signe)",
 	"grades": ["2"],
-	"theme": "Géométrie",
-	"domain": "Vecteurs du plan",
-	"subdomain": "Coordonnées",
 	"level": 1,
 	"delay": 90,
 	"status": "draft",

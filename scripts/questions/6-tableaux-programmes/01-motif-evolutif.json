@@ -1,10 +1,8 @@
 {
+	"id": "39bafe0e-3b01-49d8-97d9-a723136a34cf",
 	"title": "Motif évolutif : trouver la régularité",
 	"description": "Motif dessiné en trois étapes (carrés ou triangles d'allumettes, rectangle de jetons) : compter l'étape suivante, ce qu'on ajoute à chaque étape, une étape lointaine, l'étape qui compte un nombre donné",
 	"grades": ["6"],
-	"theme": "Calcul littéral",
-	"domain": "Pensée algébrique",
-	"subdomain": "Motifs évolutifs",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

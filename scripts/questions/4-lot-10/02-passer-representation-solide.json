@@ -1,0 +1,490 @@
+{
+	"id": "235df57a-25f4-4701-b787-8ced5e050d81",
+	"title": "Passer d'une représentation à l'autre",
+	"description": "Passer du patron au solide et du solide au patron : nommer le solide d'un patron, choisir le patron d'un solide, désigner la face opposée ou les faces qui contiennent un sommet, longueur du rectangle du patron d'un cylindre, dimensions d'une face du patron d'un pavé",
+	"grades": ["4"],
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "On plie ce patron. Quel solide obtient-on ?\n\n```patron\nsolide: {{if:k==0|cube|}}{{if:k==1|pave 4 2 3|}}{{if:k==2|prisme triangle 3 2 4|}}{{if:k==3|pyramide carree 3 3|}}{{if:k==4|cylindre 1 3|}}\nforme: {{if:k==0|{{f}}|}}{{if:k==1|{{f}}|}}{{if:k==2|{{g}}|}}{{if:k==3|1|}}{{if:k==4|1|}}\n```\n\n\n\n```choix\n- {{if:k==0|un cube|}}{{if:k==1|un pavé droit|}}{{if:k==2|un prisme droit|}}{{if:k==3|une pyramide|}}{{if:k==4|un cylindre|}}\n- {{if:k==0|un pavé droit|}}{{if:k==1|un cube|}}{{if:k==2|une pyramide|}}{{if:k==3|un prisme droit|}}{{if:k==4|un cône|}}\n- {{if:k==0|une pyramide|}}{{if:k==1|un prisme droit|}}{{if:k==2|un pavé droit|}}{{if:k==3|un cône|}}{{if:k==4|un prisme droit|}}\n- {{if:k==0|un prisme droit|}}{{if:k==1|une pyramide|}}{{if:k==2|un cylindre|}}{{if:k==3|un cube|}}{{if:k==4|un pavé droit|}}\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..4"
+				},
+				{
+					"name": "f",
+					"expression": "1..11"
+				},
+				{
+					"name": "g",
+					"expression": "1..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un **patron** est un dessin à plat qui, plié le long des traits, forme le solide sans recouvrement ni trou.",
+					"Indices : **6 faces** carrées → cube ; 6 faces rectangulaires → pavé droit ; **2 triangles** et des rectangles → prisme droit ; un polygone entouré de **triangles** → pyramide ; **2 disques** et un rectangle → cylindre.",
+					"Ce patron donne $\\textcolor{{{color:primary.0}}}{\\text{{{if:k==0|un cube|}}{{if:k==1|un pavé droit|}}{{if:k==2|un prisme droit|}}{{if:k==3|une pyramide|}}{{if:k==4|un cylindre|}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Lequel de ces patrons est celui de ce solide ?\n\n```solide\nforme: {{if:k==0|cube 3|}}{{if:k==1|pave 4 2 3|}}{{if:k==2|prisme triangle 3 2 4|}}{{if:k==3|pyramide carree 3 3|}}{{if:k==4|cylindre 1 3|}}\n```\n\n\n\n````choix\n- ```patron\n  solide: {{if:k==0|cube|}}{{if:k==1|pave 4 2 3|}}{{if:k==2|prisme triangle 3 2 4|}}{{if:k==3|pyramide carree 3 3|}}{{if:k==4|cylindre 1 3|}}\n  forme: {{if:k==0|{{f}}|}}{{if:k==1|{{f}}|}}{{if:k==2|{{g}}|}}{{if:k==3|1|}}{{if:k==4|1|}}\n  ```\n- ```patron\n  solide: {{if:k==0|pave 4 2 3|}}{{if:k==1|cube|}}{{if:k==2|pyramide carree 3 3|}}{{if:k==3|prisme triangle 3 2 4|}}{{if:k==4|prisme triangle 3 2 4|}}\n  forme: {{if:k==0|{{f}}|}}{{if:k==1|{{f}}|}}{{if:k==2|1|}}{{if:k==3|{{g}}|}}{{if:k==4|{{g}}|}}\n  ```\n- ```patron\n  solide: {{if:k==0|pyramide carree 3 3|}}{{if:k==1|prisme triangle 3 2 4|}}{{if:k==2|pave 4 2 3|}}{{if:k==3|cube|}}{{if:k==4|pave 4 2 3|}}\n  forme: {{if:k==0|1|}}{{if:k==1|{{g}}|}}{{if:k==2|{{f}}|}}{{if:k==3|{{f}}|}}{{if:k==4|{{f}}|}}\n  ```\n````",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..4"
+				},
+				{
+					"name": "f",
+					"expression": "1..11"
+				},
+				{
+					"name": "g",
+					"expression": "1..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un **patron** est un dessin à plat qui, plié le long des traits, forme le solide sans recouvrement ni trou.",
+					"Indices : **6 faces** carrées → cube ; 6 faces rectangulaires → pavé droit ; **2 triangles** et des rectangles → prisme droit ; un polygone entouré de **triangles** → pyramide ; **2 disques** et un rectangle → cylindre.",
+					"Le solide est $\\textcolor{{{color:primary.0}}}{\\text{{{if:k==0|un cube|}}{{if:k==1|un pavé droit|}}{{if:k==2|un prisme droit|}}{{if:k==3|une pyramide|}}{{if:k==4|un cylindre|}}}}$ : on cherche le patron qui a les mêmes faces."
+				]
+			}
+		},
+		{
+			"statement": "Ce patron se plie en {{if:c==1|un cube|un pavé droit}}. Touche la face qui sera **opposée** à la face grise (la face d'en face, qui ne la touche pas).\n\n```patron\nsolide: {{if:c==1|cube|pave 4 2 3}}\nforme: {{f}}\nmarquer: face {{m}}\ndesigner: opposee\n```\n\n",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1|2"
+				},
+				{
+					"name": "f",
+					"expression": "1..11"
+				},
+				{
+					"name": "m",
+					"expression": "1..6"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une face a **4 voisines** (une arête commune) et **une seule** face opposée, qui ne la touche pas une fois le patron plié.",
+					"Sur le patron, deux faces séparées par une seule face, dans une même rangée, sont opposées : on plie en pensée autour de la face grise."
+				]
+			}
+		},
+		{
+			"statement": "Voici le cube $ABCDEFGH$ et un de ses patrons, où l'on a écrit les sommets $A$, $B$, $C$, $D$.\n\n```solide\nforme: cube 3\nsommets: A B C D E F G H\n```\n\n\n\n```patron\nsolide: cube\nforme: {{f}}\nsommets: A B C D - - - -\ndesigner: sommet {{if:s==0|E|}}{{if:s==1|F|}}{{if:s==2|G|}}{{if:s==3|H|}}\n```\n\nTouche les faces du patron qui contiennent le sommet ${{if:s==0|E|}}{{if:s==1|F|}}{{if:s==2|G|}}{{if:s==3|H|}}$.",
+			"variables": [
+				{
+					"name": "f",
+					"expression": "1..11"
+				},
+				{
+					"name": "s",
+					"expression": "0..3"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un sommet du cube appartient à **3 faces**.",
+					"Sur le cube, ${{if:s==0|E|}}{{if:s==1|F|}}{{if:s==2|G|}}{{if:s==3|H|}}$ est au-dessus de ${{if:s==0|A|}}{{if:s==1|B|}}{{if:s==2|C|}}{{if:s==3|D|}}$ : il est sur la face du dessus $EFGH$ et sur les deux faces latérales qui contiennent ${{if:s==0|A|}}{{if:s==1|B|}}{{if:s==2|C|}}{{if:s==3|D|}}$.",
+					"Sur le patron, on les repère en pliant en pensée autour de la face $ABCD$."
+				]
+			}
+		},
+		{
+			"statement": "Voici le patron d'un cylindre de révolution de rayon ${{r}}~\\unit{cm}$ et de hauteur ${{h}}~\\unit{cm}$.\n\n```patron\nsolide: cylindre {{r}} {{h}}\ncotes: cm\n```\n\nQuelle est la longueur du rectangle, au dixième de centimètre ?\n\n$L \\approx ?~\\unit{cm}$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "2..10"
+				},
+				{
+					"name": "h",
+					"expression": "2..10"
+				}
+			],
+			"conditions": ["abs(10*(2*\\pi*r) - round(10*(2*\\pi*r))) < 0.4"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:round(10*(2*\\pi*r))/10;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Plié, le rectangle fait le tour du disque : sa longueur est le **périmètre** du cercle de rayon ${{r}}~\\unit{cm}$.",
+					"$$L = 2 \\times \\pi \\times {{r}} \\approx \\textcolor{{{color:primary.0}}}{{{eval:round(10*(2*\\pi*r))/10;d}}~\\unit{cm}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Voici un pavé droit et un de ses patrons.\n\n```solide\nforme: pave {{l}} {{p}} {{h}}\ncotes: cm\n```\n\n\n\n```patron\nsolide: pave {{l}} {{p}} {{h}}\nforme: {{f}}\nmarquer: face {{if:w==0|dessus|}}{{if:w==1|devant|}}{{if:w==2|droite|}}\n```\n\nQuelles sont les dimensions de la face grise du patron ?\n\nLongueur : $?~\\unit{cm}$\n\nLargeur : $?~\\unit{cm}$",
+			"variables": [
+				{
+					"name": "l",
+					"expression": "5..8"
+				},
+				{
+					"name": "p",
+					"expression": "3..4"
+				},
+				{
+					"name": "h",
+					"expression": "1..2"
+				},
+				{
+					"name": "f",
+					"expression": "1..11"
+				},
+				{
+					"name": "w",
+					"expression": "0..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:w==0|{{l}}|}}{{if:w==1|{{l}}|}}{{if:w==2|{{p}}|}}"
+				},
+				{
+					"expectedAnswer": "{{if:w==0|{{p}}|}}{{if:w==1|{{h}}|}}{{if:w==2|{{h}}|}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque face du patron est une face du pavé : elle a les dimensions d'une face du solide.",
+					"La face grise touche des faces de même longueur qu'elle ; on compare ses côtés à ceux du pavé : $\\textcolor{{{color:primary.0}}}{{{if:w==0|{{l}}|}}{{if:w==1|{{l}}|}}{{if:w==2|{{p}}|}}}~\\unit{cm}$ sur $\\textcolor{{{color:primary.1}}}{{{if:w==0|{{p}}|}}{{if:w==1|{{h}}|}}{{if:w==2|{{h}}|}}}~\\unit{cm}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Patron du cube",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0",
+				"f": "3",
+				"g": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Patron du pavé",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"f": "7",
+				"g": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le pavé pris pour un cube",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"f": "7",
+				"g": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Patron de la pyramide",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"f": "1",
+				"g": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la pyramide prise pour un prisme",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"f": "1",
+				"g": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Patron du cylindre",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4",
+				"f": "1",
+				"g": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le cylindre pris pour un cône",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4",
+				"f": "1",
+				"g": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Le patron du prisme",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"f": "1",
+				"g": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le patron de la pyramide",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"f": "1",
+				"g": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Le patron du cube",
+			"variationIndex": 1,
+			"variables": {
+				"k": "0",
+				"f": "4",
+				"g": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le patron du pavé pour le cube",
+			"variationIndex": 1,
+			"variables": {
+				"k": "0",
+				"f": "4",
+				"g": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Face opposée à la face 3 de la croix : 5",
+			"variationIndex": 2,
+			"variables": {
+				"c": "1",
+				"f": "1",
+				"m": "3"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la face voisine sur la bande",
+			"variationIndex": 2,
+			"variables": {
+				"c": "1",
+				"f": "1",
+				"m": "3"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : la face voisine du bas",
+			"variationIndex": 2,
+			"variables": {
+				"c": "1",
+				"f": "1",
+				"m": "3"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Pavé, forme 5, face 2 : opposée 4",
+			"variationIndex": 2,
+			"variables": {
+				"c": "2",
+				"f": "5",
+				"m": "2"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Faces qui contiennent G (forme 7) : 2, 4, 5",
+			"variationIndex": 3,
+			"variables": {
+				"f": "7",
+				"s": "2"
+			},
+			"answers": ["2,4,5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : une seule face",
+			"variationIndex": 3,
+			"variables": {
+				"f": "7",
+				"s": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : les faces de C (au-dessous de G)",
+			"variationIndex": 3,
+			"variables": {
+				"f": "7",
+				"s": "2"
+			},
+			"answers": ["1,2,5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Cylindre r = 3 : 18,8",
+			"variationIndex": 4,
+			"variables": {
+				"r": "3",
+				"h": "5"
+			},
+			"answers": ["18{,}8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : π × r",
+			"variationIndex": 4,
+			"variables": {
+				"r": "3",
+				"h": "5"
+			},
+			"answers": ["9{,}4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 2 × r",
+			"variationIndex": 4,
+			"variables": {
+				"r": "3",
+				"h": "5"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Face du dessus 7 × 3",
+			"variationIndex": 5,
+			"variables": {
+				"l": "7",
+				"p": "3",
+				"h": "2",
+				"f": "2",
+				"w": "0"
+			},
+			"answers": ["7", "3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la face de devant (7 × 2)",
+			"variationIndex": 5,
+			"variables": {
+				"l": "7",
+				"p": "3",
+				"h": "2",
+				"f": "2",
+				"w": "0"
+			},
+			"answers": ["7", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Face de droite 3 × 2",
+			"variationIndex": 5,
+			"variables": {
+				"l": "7",
+				"p": "3",
+				"h": "2",
+				"f": "9",
+				"w": "2"
+			},
+			"answers": ["3", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

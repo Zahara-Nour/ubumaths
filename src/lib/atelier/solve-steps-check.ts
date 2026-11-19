@@ -11,13 +11,13 @@
  * @module atelier/solve-steps-check
  */
 
-import type { EquationStep } from '$lib/mathAST/pedagogical-solve';
-import type { MathNode, RelationNode } from '$lib/mathAST/types';
-import { solve } from '$lib/mathAST/solve';
-import { isSolverFailure } from '$lib/mathAST/solve/types';
-import { solveInequality } from '$lib/mathAST/solve/inequality';
-import { containsValue } from '$lib/mathAST/domain/algebra';
-import { compile } from '$lib/mathAST/eval/compile';
+import type { EquationStep } from '#lib/mathAST/pedagogical-solve/index.ts';
+import type { MathNode, RelationNode } from '#lib/mathAST/types.ts';
+import { solve } from '#lib/mathAST/solve/index.ts';
+import { isSolverFailure } from '#lib/mathAST/solve/types.ts';
+import { solveInequality } from '#lib/mathAST/solve/inequality/index.ts';
+import { containsValue } from '#lib/mathAST/domain/algebra.ts';
+import { compile } from '#lib/mathAST/eval/compile.ts';
 
 // =============================================================================
 // Constantes

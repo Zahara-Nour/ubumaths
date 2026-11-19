@@ -1,10 +1,8 @@
 {
+	"id": "4b666c28-0357-41b6-ae08-daae13ac0642",
 	"title": "Poser une division euclidienne",
 	"description": "Division euclidienne posée, diviseur à un chiffre : 157 ÷ 6 ; 9 456 ÷ 7 ; un 0 au quotient (2 418 ÷ 4) ; cinq chiffres (23 875 ÷ 6)",
 	"grades": ["CM1"],
-	"theme": "Entiers",
-	"domain": "Diviser",
-	"subdomain": "Calcul posé",
 	"level": 1,
 	"delay": 240,
 	"status": "draft",

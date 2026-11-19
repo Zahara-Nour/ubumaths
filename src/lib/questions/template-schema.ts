@@ -14,7 +14,7 @@
  */
 
 import { z } from 'zod';
-import { SUPERFLU_RULE_IDS, bySuperfluRule } from '$lib/mathAST/superflu/rules';
+import { SUPERFLU_RULE_IDS, bySuperfluRule } from '#lib/mathAST/superflu/rules.ts';
 import { findRulesSufficeBlanksWithoutRules } from './rules-suffice';
 import { answerAssumptionsSchema, refineAssumptionCollisions } from './answer-assumptions';
 import {
@@ -682,9 +682,7 @@ export const questionTemplateSchema = z
 		exerciseInstruction: z.string().optional().nullable(),
 		options: optionsStrictZ.optional().nullable(),
 		grades: z.array(z.string()),
-		theme: z.string(),
-		domain: z.string(),
-		subdomain: z.string().optional().nullable(),
+		classification_node_id: z.string().optional().nullable(),
 		level: z.number(),
 		status: z.enum(['draft', 'published']),
 		delay: z.number().optional().nullable(),

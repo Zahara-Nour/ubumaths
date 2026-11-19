@@ -10,9 +10,9 @@
 
 import { describe, it, expect } from 'vitest';
 import { checkTemplate, formatCheckReport } from '../check-template';
-import { validateTemplate } from '$lib/questions/validators/template-validator';
-import type { FinalForm, QuestionTemplate, RequiredForm } from '$lib/questions/types';
-import { templateMarkdown } from '$lib/ubumark';
+import { validateTemplate } from '#lib/questions/validators/template-validator.ts';
+import type { FinalForm, QuestionTemplate, RequiredForm } from '#lib/questions/types.ts';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 
 // ============================================================================
 // FIXTURES
@@ -46,8 +46,6 @@ function derivativeTemplate(finalForm?: FinalForm, requiredForm?: RequiredForm):
 			}
 		],
 		grades: ['1_SPE'],
-		theme: 'Dérivation',
-		domain: 'Dériver',
 		level: 1,
 		testSpecs: [
 			{
@@ -81,8 +79,6 @@ function definiteIntegralTemplate(finalForm?: FinalForm): QuestionTemplate {
 			}
 		],
 		grades: ['T_SPE'],
-		theme: 'Intégration',
-		domain: 'Intégrer',
 		level: 1,
 		testSpecs: [
 			{

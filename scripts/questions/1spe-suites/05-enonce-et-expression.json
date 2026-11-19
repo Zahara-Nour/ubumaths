@@ -1,10 +1,8 @@
 {
+	"id": "45da9678-f16d-4168-9e19-aefcd4197edb",
 	"title": "De l'énoncé à l'expression de la suite",
 	"description": "Traduire un énoncé en langage naturel : forme explicite (u₀ ou u₁ premier terme), relation de récurrence uₙ₊₁ = a × uₙ + b (deux cases)",
 	"grades": ["1_SPE"],
-	"theme": "Suites",
-	"domain": "Modélisation",
-	"subdomain": "De l'énoncé à la suite",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

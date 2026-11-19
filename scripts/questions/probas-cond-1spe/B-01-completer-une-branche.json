@@ -1,10 +1,8 @@
 {
+	"id": "9d7c4d98-c7fe-4c2e-8993-d162294e1dde",
 	"title": "Compléter une branche d'un arbre pondéré",
 	"description": "Arbre à deux niveaux dont une pondération manque : la somme des branches issues d'un même nœud vaut 1",
 	"grades": ["2"],
-	"theme": "Probabilités",
-	"domain": "Probabilités conditionnelles",
-	"subdomain": "Arbres pondérés",
 	"level": 1,
 	"status": "draft",
 	"delay": 30,

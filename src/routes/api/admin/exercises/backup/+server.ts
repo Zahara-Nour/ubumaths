@@ -9,18 +9,18 @@
  * Security: Admin only
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
-import { requireAdmin } from '$lib/server/middleware/auth';
-import { assertTypedConfirmation } from '$lib/server/confirmAction';
+import { requireAdmin } from '#lib/server/middleware/auth.ts';
+import { assertTypedConfirmation } from '#lib/server/confirmAction.ts';
 import {
 	exportBackupJSON,
 	exportBackupSQL,
 	restoreFromBackup
-} from '$lib/server/admin/exercise-backup';
-import { isBackupSizeValid, getMaxFileSizeDisplay } from '$lib/server/validation/backup';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/admin/exercise-backup.ts';
+import { isBackupSizeValid, getMaxFileSizeDisplay } from '#lib/server/validation/backup.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/admin/exercises/backup/+server');
 
@@ -179,10 +179,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		// Return result with appropriate status
 		if (!result.success) {
-			return json(result, { status: 207 }); // Multi-Status (partial success)
+			return Response.json(result, { status: 207 }); // Multi-Status (partial success)
 		}
 
-		return json(result);
+		return Response.json(result);
 	} catch (err) {
 		logger.error('Error restoring backup:', err);
 		throw error(500, 'Impossible de restaurer la sauvegarde');

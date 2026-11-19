@@ -23,11 +23,10 @@ import { called, createFakeSupabase, type Call, type Result } from './helpers/fa
 const TEACHER = '1a2b3c4d-1111-4111-8111-111111111111';
 const SERIES_ID = '2b3c4d5e-2222-4222-8222-222222222222';
 const COPY_ID = '3c4d5e6f-3333-4333-8333-333333333333';
-const ITEM = {
-	category: { theme: 'Calcul', domain: 'Tables', subdomain: null, level: 3 },
-	quantity: 4,
-	delay: 20
-};
+const TEMPLATE_ID = '4d5e6f70-4444-4444-8444-444444444444';
+const ITEM = { templateId: TEMPLATE_ID, quantity: 4, delay: 20 };
+/** Ancienne ligne (avant l'ADR 0035) : une catégorie, plus relue */
+const LEGACY_ITEM = { category: { level: 3 }, quantity: 4, delay: 20 };
 
 function seriesRow(overrides: Record<string, unknown> = {}) {
 	return {
@@ -35,7 +34,7 @@ function seriesRow(overrides: Record<string, unknown> = {}) {
 		title: 'Tables de 7',
 		description: null,
 		grade: '6',
-		categories: [ITEM],
+		items: [ITEM],
 		created_by: TEACHER,
 		created_at: '2026-09-30T10:00:00Z',
 		updated_at: '2026-09-30T10:00:00Z',
@@ -55,7 +54,7 @@ describe('createSeries (B11)', () => {
 
 		const series = await createSeries(
 			fake.client,
-			{ title: 'Tables de 7', grade: '6', description: null, categories: [ITEM] },
+			{ title: 'Tables de 7', grade: '6', description: null, items: [ITEM] },
 			TEACHER
 		);
 
@@ -65,11 +64,11 @@ describe('createSeries (B11)', () => {
 				title: 'Tables de 7',
 				grade: '6',
 				description: null,
-				categories: [ITEM],
+				items: [ITEM],
 				created_by: TEACHER
 			})
 		).toBe(true);
-		expect(series).toMatchObject({ id: SERIES_ID, categories: [ITEM] });
+		expect(series).toMatchObject({ id: SERIES_ID, items: [ITEM] });
 	});
 
 	it('une panne à l’insertion est une erreur 500, pas un succès', async () => {
@@ -77,7 +76,7 @@ describe('createSeries (B11)', () => {
 		await expect(
 			createSeries(
 				fake.client,
-				{ title: 'T', grade: '6', description: null, categories: [ITEM] },
+				{ title: 'T', grade: '6', description: null, items: [ITEM] },
 				TEACHER
 			)
 		).rejects.toMatchObject({ status: 500 });
@@ -101,7 +100,7 @@ describe('duplicateSeries (B12)', () => {
 		>;
 		expect(payload).toMatchObject({
 			title: 'Copie de Tables de 7',
-			categories: [ITEM],
+			items: [ITEM],
 			created_by: TEACHER
 		});
 		// Nouvelle ligne : jamais rattachée à une évaluation, donc jamais verrouillée
@@ -252,11 +251,19 @@ describe('getTeacherSeries (C17)', () => {
 		expect(called(fake.on('test_sessions')[0], 'in', 'evaluation_id', [EVAL_A, EVAL_B])).toBe(true);
 	});
 
-	it('catégories illisibles en base : liste vide, pas de plantage', async () => {
+	it('une série d’ancienne forme (catégories) n’est plus relue : liste vide, pas de plantage', async () => {
 		const fake = createFakeSupabase((table) =>
-			table === 'series' ? { data: [seriesRow({ categories: { oups: true } })] } : { data: [] }
+			table === 'series' ? { data: [seriesRow({ items: [LEGACY_ITEM] })] } : { data: [] }
 		);
 		const [series] = await getTeacherSeries(fake.client, TEACHER);
-		expect(series.categories).toEqual([]);
+		expect(series.items).toEqual([]);
+	});
+
+	it('composition illisible en base : liste vide, pas de plantage', async () => {
+		const fake = createFakeSupabase((table) =>
+			table === 'series' ? { data: [seriesRow({ items: { oups: true } })] } : { data: [] }
+		);
+		const [series] = await getTeacherSeries(fake.client, TEACHER);
+		expect(series.items).toEqual([]);
 	});
 });

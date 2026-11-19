@@ -1,10 +1,8 @@
 {
+	"id": "376a2264-d460-4d48-88e8-b443177bfa33",
 	"title": "Les multiples d'un nombre",
 	"description": "Écrire un multiple de 6 entre 22 et 26, de 25 entre 65 et 85 ; 24 = 6 × ?",
 	"grades": ["CE2"],
-	"theme": "Entiers",
-	"domain": "Multiplier",
-	"subdomain": "Sens",
 	"level": 5,
 	"delay": 20,
 	"status": "draft",

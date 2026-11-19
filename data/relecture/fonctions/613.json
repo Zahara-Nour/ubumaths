@@ -65,9 +65,6 @@
 			"orderIndependent": true
 		},
 		"grades": ["1_SPE"],
-		"theme": "Fonctions",
-		"domain": "Polynôme du second degré",
-		"subdomain": "Racines",
 		"level": 4,
 		"status": "draft",
 		"delay": 20,

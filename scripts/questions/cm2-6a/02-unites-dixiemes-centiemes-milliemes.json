@@ -1,10 +1,8 @@
 {
+	"id": "25b269de-5019-4ecf-90bf-7feed86eb444",
 	"title": "Unités, dixièmes, centièmes, millièmes",
 	"description": "Relations entre unité, dixième, centième et millième : 1 unité = 1 000 millièmes ; 4 dixièmes = 40 centièmes ; 300 millièmes = 3 dixièmes ; 35 centièmes = 3 dixièmes et 5 centièmes",
 	"grades": ["CM2"],
-	"theme": "Décimaux",
-	"domain": "Apprivoiser",
-	"subdomain": "Décomposition",
 	"level": 8,
 	"delay": 30,
 	"status": "draft",

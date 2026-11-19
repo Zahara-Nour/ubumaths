@@ -27,10 +27,10 @@ import {
 import { createAuthenticatedClient } from '../helpers/database/supabase-client';
 import { getPostgresClient } from '../helpers/database/postgres-client';
 import { TestData } from '../helpers/database/test-data-factory';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 
 // Le consentement parental est hors sujet ici (testé ailleurs).
-vi.mock('$lib/server/middleware/consent', () => ({ requireConsent: vi.fn() }));
+vi.mock('#lib/server/middleware/consent.ts', () => ({ requireConsent: vi.fn() }));
 
 import { POST as rejoindreFile } from '../../src/routes/api/games/minesweeper/multiplayer/queue/+server';
 

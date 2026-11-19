@@ -9,7 +9,11 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { findAllIntersections, deduplicateIntersections } from '../intersections';
+import {
+	findAllIntersections,
+	findIntersections,
+	deduplicateIntersections
+} from '../intersections';
 import type { IntersectionResult } from '../intersections';
 import { toAnalysisInputs } from '../analysis';
 import { parseFunction } from '../evaluator';
@@ -148,5 +152,51 @@ describe('deduplicateIntersections', () => {
 
 	it('accepte un tableau vide', () => {
 		expect(deduplicateIntersections([])).toEqual([]);
+	});
+});
+
+/**
+ * Chaque changement de fenêtre relance les intersections de toutes les paires :
+ * deux composants les demandent (points d'intersection, survol), et ajouter une
+ * courbe ne crée que des paires nouvelles. Le cache rend le même résultat, par
+ * référence, tant que les deux expressions et la fenêtre n'ont pas changé.
+ */
+describe('findIntersections — cache par paire et par fenêtre', () => {
+	const [f, g] = toAnalysisInputs([curve('x^2'), curve('x')]);
+
+	it('rend le même résultat, sans le recalculer, pour la même paire et la même fenêtre', () => {
+		const first = findIntersections(f, g, viewport);
+
+		expect(findIntersections(f, g, viewport)).toBe(first);
+		expect(findIntersections(f, g, { ...viewport })).toBe(first);
+	});
+
+	it('recalcule quand la fenêtre change', () => {
+		const wide = findIntersections(f, g, viewport);
+		const narrow = findIntersections(f, g, { xMin: 0.5, xMax: 10, yMin: -10, yMax: 10 });
+
+		expect(narrow).not.toBe(wide);
+		expect(narrow).toHaveLength(1);
+		expect(narrow[0].x).toBeCloseTo(1);
+	});
+
+	it('recalcule quand une des deux expressions change', () => {
+		const [, other] = toAnalysisInputs([curve('x^2'), curve('2x')]);
+
+		const withX = findIntersections(f, g, viewport);
+		const with2x = findIntersections(f, other, viewport);
+
+		expect(with2x).not.toBe(withX);
+		expect(with2x.map((p) => p.x).sort((a, b) => a - b)[1]).toBeCloseTo(2);
+	});
+
+	it('applique toujours la restriction de chaque courbe, après le cache', () => {
+		const restricted = {
+			...g,
+			restriction: [{ from: 0.5, to: Infinity, fromClosed: true, toClosed: false }]
+		};
+
+		expect(abscissas(findAllIntersections([f, g], viewport))).toHaveLength(2);
+		expect(abscissas(findAllIntersections([f, restricted], viewport))).toHaveLength(1);
 	});
 });

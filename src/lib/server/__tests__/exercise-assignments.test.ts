@@ -12,15 +12,15 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 import * as assignments from '../exercise-assignments';
 import type {
 	ExerciseAssignment,
 	ExerciseCompletion,
 	CreateExerciseAssignment,
 	BulkAssignmentData
-} from '$lib/exercises/types';
-import { validateAssignmentData } from '$lib/exercises/types';
+} from '#lib/exercises/types.ts';
+import { validateAssignmentData } from '#lib/exercises/types.ts';
 
 // ============================================================================
 // MOCK SETUP

@@ -17,7 +17,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { createMockSupabase, createMockLocals, createMockRequest } from '$tests/helpers';
+import { createMockSupabase, createMockLocals, createMockRequest } from '#tests/helpers/index.ts';
+
+// Garde commune : session/profil lus dans `locals` (cf. helper)
+vi.mock('#lib/server/middleware/auth.ts', async (importActual) =>
+	(await import('#tests/helpers/garde-auth-locals.ts')).gardeAuthDepuisLocals(importActual)
+);
 
 // ============================================================================
 // TEST DATA
@@ -96,7 +101,7 @@ describe('POST /api/moderation/restrict-user - Authentication & Authorization', 
 		} catch (err: unknown) {
 			const error = err as { status: number; body: { message: string } };
 			expect(error.status).toBe(401);
-			expect(error.body.message).toBe('Not authenticated');
+			expect(error.body.message).toBe('Non autorisé - Authentification requise');
 		}
 	});
 
@@ -121,7 +126,7 @@ describe('POST /api/moderation/restrict-user - Authentication & Authorization', 
 		} catch (err: unknown) {
 			const error = err as { status: number; body: { message: string } };
 			expect(error.status).toBe(403);
-			expect(error.body.message).toBe('Only teachers and admins can restrict users');
+			expect(error.body.message).toBe('Interdit - Enseignants, Administrateurs uniquement');
 		}
 	});
 

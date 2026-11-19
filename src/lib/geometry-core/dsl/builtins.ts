@@ -4,7 +4,7 @@
  * Maps French DSL function names to Figure factory method calls.
  */
 
-import { resolveNamedColor } from '$lib/theme/named-colors';
+import { resolveNamedColor } from '#lib/theme/named-colors.ts';
 import type { Figure } from '../graph/figure';
 import type { GeoValue, ScalarParam, ScalarRef } from '../types/geo-value';
 import { exact, isScalarRef } from '../types/geo-value';
@@ -32,13 +32,13 @@ import {
 	getVariables,
 	substitute,
 	piConstant
-} from '$lib/mathAST';
-import type { MathNode, CompiledFn } from '$lib/mathAST';
+} from '#lib/mathAST/index.ts';
+import type { MathNode, CompiledFn } from '#lib/mathAST/index.ts';
 import {
 	findCriticalZeros,
 	findCriticalExtrema,
 	findCriticalInflections
-} from '$lib/mathAST/analysis';
+} from '#lib/mathAST/analysis/index.ts';
 import { classifyConic } from '../geometry/conic-classify';
 import { curveShapeOf } from '../geometry/curve-nature';
 import {
@@ -48,9 +48,9 @@ import {
 	fociPoints as computeFociPoints,
 	eccentricity as computeEccentricity
 } from '../geometry/conic-properties';
-import { legacyDecimalCommas } from '$lib/mathAST/parser/custom/legacy-decimal-commas';
-import { isZeroExpression } from '$lib/mathAST/normal';
-import { differentiate } from '$lib/mathAST/differentiation';
+import { legacyDecimalCommas } from '#lib/mathAST/parser/custom/legacy-decimal-commas.ts';
+import { isZeroExpression } from '#lib/mathAST/normal/index.ts';
+import { differentiate } from '#lib/mathAST/differentiation/index.ts';
 import { numeric } from '../types/geo-value';
 import { applyTransformationToElement } from './transform-apply';
 import type { GeoElement } from '../types/elements';
@@ -1483,7 +1483,7 @@ function handleCriticalPoints(ctx: BuiltinCtx): BuiltinMultiResult | BuiltinResu
 	const xMin = FUNCTION_SEARCH_XMIN;
 	const xMax = FUNCTION_SEARCH_XMAX;
 
-	let points: import('$lib/mathAST/analysis').CriticalPoint[];
+	let points: import('#lib/mathAST/analysis/index.ts').CriticalPoint[];
 
 	if (name === 'zeros') {
 		points = findCriticalZeros(cpFnEl.expression, cpFnEl.compiledFn, 'x', xMin, xMax);

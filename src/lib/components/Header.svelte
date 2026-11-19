@@ -36,14 +36,15 @@
      - Updated props flow to this component → Login button appears
 -->
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import { Button } from '$lib/components/ui/button';
-	import UserAvatar from '$lib/components/UserAvatar.svelte';
-	import * as Sheet from '$lib/components/ui/sheet';
-	import { theme } from '$lib/stores/theme.svelte';
-	import { fontSize } from '$lib/stores/fontSize.svelte';
+	import { lore } from '#lib/config/lore.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import UserAvatar from '#lib/components/UserAvatar.svelte';
+	import * as Sheet from '#lib/components/ui/sheet/index.ts';
+	import { theme } from '#lib/stores/theme.svelte.ts';
+	import { fontSize } from '#lib/stores/fontSize.svelte.ts';
+	import EasyReadingToggle from '#lib/components/EasyReadingToggle.svelte';
 	import type { User } from '@supabase/supabase-js';
-	import type { Profile } from '$lib/types/database-helpers';
+	import type { Profile } from '#lib/types/database-helpers.ts';
 	import type { LucideIcon } from '@lucide/svelte';
 	import {
 		Menu,
@@ -63,14 +64,17 @@
 		Home,
 		Gamepad2,
 		Terminal,
+		Turtle,
+		Blocks,
 		Calculator,
 		PenTool,
 		Laugh
 	} from '@lucide/svelte';
-	import gidouille from '$lib/assets/images/gidouille.png';
+	import gidouille from '#lib/assets/images/gidouille.png';
 	import { resolve } from '$app/paths';
+	import { resolvePath } from '#lib/navigation/resolve-path.ts';
 	import { page } from '$app/state';
-	import { submitLogoutForm } from '$lib/utils/auth';
+	import { submitLogoutForm } from '#lib/utils/auth.ts';
 
 	// Fullscreen state
 	let isFullscreen = $state(false);
@@ -120,6 +124,10 @@
 				icon: Terminal,
 				roles: ['student', 'teacher']
 			},
+			// La Tortue (chantier blockly, PR 3) : publique, aucune donnée serveur
+			{ label: 'La Tortue', href: '/tortue', icon: Turtle },
+			// Programmes de calcul (chantier blockly) : publique, aucune donnée serveur
+			{ label: 'Programmes de calcul', href: '/programmes-de-calcul', icon: Blocks },
 			{ label: 'Upsilon', href: '/upsilon', icon: Calculator },
 			// Sans `roles` : ni l'atelier, ni Automaths, ni le Shtam ne lisent de
 			// donnée serveur réservée, ils sont donc ouverts, y compris hors connexion.
@@ -190,7 +198,7 @@
 
 		<!-- Gidouille + Title - centered on mobile, left-aligned on desktop -->
 		<a
-			href={resolve('/')}
+			href={resolve('')}
 			class="flex flex-1 items-center justify-center gap-2 transition-opacity hover:opacity-80 md:flex-none md:justify-start"
 		>
 			<img src={gidouille} alt="Gidouille" class="h-6 w-6" />
@@ -210,7 +218,7 @@
 			{#if user}
 				<div class="border-l pl-2">
 					<a
-						href={resolve('/dashboard')}
+						href={resolve('dashboard')}
 						class="relative block h-10 w-10 cursor-pointer rounded-full transition-all hover:ring-2 hover:ring-ring focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
 						aria-label="Aller à mon cabinet"
 					>
@@ -264,6 +272,8 @@
 					</Button>
 				</div>
 
+				<EasyReadingToggle />
+
 				<!-- Dark mode toggle -->
 				<Button
 					onclick={(e: MouseEvent) => {
@@ -310,7 +320,7 @@
 		<nav class="flex flex-1 flex-col py-2" aria-label="Navigation principale">
 			{#each visibleItems as item (item.href)}
 				<a
-					href={resolve(item.href as '/')}
+					href={resolvePath(item.href)}
 					data-sveltekit-preload-data="tap"
 					onclick={handleNavClick}
 					class="flex items-center gap-3 px-4 py-3 text-base transition-colors
@@ -364,6 +374,9 @@
 					</button>
 				</div>
 			</div>
+			<div class="mt-2">
+				<EasyReadingToggle variant="menu" />
+			</div>
 		</div>
 
 		{#if user}
@@ -372,7 +385,7 @@
 				<p class="mb-2 text-xs font-medium text-muted-foreground uppercase">Compte</p>
 				<div class="flex flex-col gap-1">
 					<a
-						href={resolve('/dashboard')}
+						href={resolve('dashboard')}
 						onclick={handleNavClick}
 						class="flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors hover:bg-muted"
 					>

@@ -1,9 +1,10 @@
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { deleteMessageSchema } from '$lib/server/validation/moderation';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import { deleteMessageSchema } from '#lib/server/validation/moderation.ts';
 import { z } from 'zod';
-import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServiceRoleClient } from '#lib/server/serviceRoleClient.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/moderation/messages/[id]/+server');
 
@@ -28,15 +29,8 @@ const logger = createServerLogger('api/moderation/messages/[id]/+server');
  * - 500: Database error
  */
 export const DELETE: RequestHandler = async ({ request, locals, params }) => {
-	// 1. Check authentication
-	if (!locals.user) {
-		throw error(401, 'Not authenticated');
-	}
-
-	// 2. Check teacher role
-	if (!locals.profile || !['teacher', 'admin'].includes(locals.profile.role ?? '')) {
-		throw error(403, 'Only teachers and admins can delete messages');
-	}
+	// 1-2. Authentification + rôle enseignant/admin
+	const { user, profile } = await requireRoles(locals, ['teacher', 'admin']);
 
 	// 3. Validate message ID from URL params with Zod
 	const messageParamsSchema = z.object({
@@ -91,7 +85,7 @@ export const DELETE: RequestHandler = async ({ request, locals, params }) => {
 	// they participate in, or any student-only conversation — class membership is
 	// no longer the access boundary. Admins may moderate anything.
 
-	if (locals.profile?.role === 'admin') {
+	if (profile.role === 'admin') {
 		// Admins can delete any message - skip authorization checks
 	} else {
 		// Check if teacher is a participant in the conversation
@@ -99,7 +93,7 @@ export const DELETE: RequestHandler = async ({ request, locals, params }) => {
 			.from('conversation_participants')
 			.select('user_id')
 			.eq('conversation_id', message.conversation_id)
-			.eq('user_id', locals.user.id)
+			.eq('user_id', user.id)
 			.maybeSingle();
 
 		// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
@@ -167,7 +161,7 @@ export const DELETE: RequestHandler = async ({ request, locals, params }) => {
 		// Décision de David (2026-10-10) : le prof ne supprime que des messages écrits par
 		// un élève (ou les siens) — jamais ceux de l'admin. Un message sans auteur (compte
 		// supprimé) reste supprimable.
-		if (message.sender_id && message.sender_id !== locals.user.id) {
+		if (message.sender_id && message.sender_id !== user.id) {
 			const { data: sender, error: senderError } = await locals.supabase
 				.from('profiles')
 				.select('role')
@@ -230,5 +224,5 @@ export const DELETE: RequestHandler = async ({ request, locals, params }) => {
 		// Don't fail the request if logging fails
 	}
 
-	return json({ success: true, message: 'Message deleted successfully' }, { status: 200 });
+	return Response.json({ success: true, message: 'Message deleted successfully' }, { status: 200 });
 };

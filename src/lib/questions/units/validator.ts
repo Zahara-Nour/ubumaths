@@ -17,7 +17,7 @@ import {
 	parseUnitExpression,
 	readsAsNumber
 } from './parser';
-import { unitWritingProblem } from '$lib/mathAST/units/parser';
+import { unitWritingProblem } from '#lib/mathAST/units/parser.ts';
 import {
 	UNIT_FEEDBACK,
 	ambiguousUnitMessage,
@@ -27,18 +27,22 @@ import {
 } from './feedback';
 import { normalizeStudentQuantity, studentNumericLatex } from './student-input';
 import { readStudentCalculation, type StudentCalculation } from './student-calculation';
-import { readCompositeDuration, type DurationFormIssue } from './composite-duration';
+import {
+	readCompositeDuration,
+	singleExpectedDuration,
+	type DurationFormIssue
+} from './composite-duration';
 import { compareQuantities, type Tolerance } from './quantity-comparison';
 import { isDuration, unitsAreCompatible } from './operations';
-import type { PrecisionType } from '$lib/questions/types';
+import type { PrecisionType } from '#lib/questions/types.ts';
 import type { Unit } from './types';
-import { convertAffine } from '$lib/mathAST/units/conversion';
+import { convertAffine } from '#lib/mathAST/units/conversion.ts';
 import {
 	judgeRounding,
 	roundToPrecision,
 	roundingFeedback,
 	type RoundingVerdict
-} from '$lib/questions/rounding';
+} from '#lib/questions/rounding.ts';
 
 // ============================================================================
 // TYPES
@@ -234,8 +238,9 @@ const HOUSE_QUANTITY_REGEX = /^(-?\d+(?:\.\d+)?)\[([^[\]]+)\]$/;
  * Toute autre écriture est rendue telle quelle.
  */
 function houseQuantityToLatex(expected: string): string {
-	// Écriture de `;()` (`(-3[m])`) et de `;+` (`+3[m]`) : même grandeur
-	const bare = expected
+	// Écriture de `;()` (`(-3[m])`) et de `;+` (`+3[m]`) : même grandeur ; une durée
+	// en h-min-s (`{2[h]}{30[min]}`) : UNE grandeur, `150[min]`
+	const bare = singleExpectedDuration(expected)
 		.trim()
 		.replace(/^\((.*)\)$/, '$1')
 		.replace(/^\+/, '');

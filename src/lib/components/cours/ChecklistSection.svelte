@@ -9,11 +9,11 @@
 	@module components/cours/ChecklistSection
 -->
 <script lang="ts">
-	import type { ChapterChecklistItem, ChapterProgress } from '$lib/types/chapters';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
-	import * as Card from '$lib/components/ui/card';
-	import { Progress } from '$lib/components/ui/progress';
-	import { cn } from '$lib/utils';
+	import type { ChapterChecklistItem, ChapterProgress } from '#lib/types/chapters.ts';
+	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Progress } from '#lib/components/ui/progress/index.ts';
+	import { cn } from '#lib/utils.ts';
 	import { CheckCircle2, Circle, Target } from '@lucide/svelte';
 	import { enhance } from '$app/forms';
 

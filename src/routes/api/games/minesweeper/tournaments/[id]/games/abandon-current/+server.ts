@@ -1,8 +1,8 @@
 import type { RequestHandler } from './$types';
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import { z } from 'zod';
-import { requireRole } from '$lib/server/middleware/auth';
-import { sanitizeRPCError, sanitizePostgresError } from '$lib/server/utils/error-handler';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { sanitizeRPCError, sanitizePostgresError } from '#lib/server/utils/error-handler.ts';
 
 /**
  * UUID schema for path parameters
@@ -56,7 +56,7 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 
 		if (!game) {
 			// No in-progress game found - that's okay, return success
-			return json({
+			return Response.json({
 				success: true,
 				game_id: null
 			});
@@ -73,7 +73,7 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 			// Handle specific RPC errors
 			if (rpcError.message?.includes('not in progress')) {
 				// Game already ended, that's fine
-				return json({
+				return Response.json({
 					success: true,
 					game_id: game.id
 				});
@@ -86,7 +86,7 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 			throw error(500, "Erreur lors de l'abandon de la partie");
 		}
 
-		return json({
+		return Response.json({
 			success: true,
 			game_id: game.id
 		});

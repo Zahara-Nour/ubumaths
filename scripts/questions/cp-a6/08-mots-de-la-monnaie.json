@@ -1,10 +1,8 @@
 {
+	"id": "35426707-aba5-4ab7-aef8-b1fde807aa69",
 	"title": "Les mots de la monnaie",
 	"description": "Plus cher, moins cher, pièce ou billet, rendre la monnaie (euros entiers)",
 	"grades": ["CP"],
-	"theme": "Grandeurs",
-	"domain": "Monnaie",
-	"subdomain": "Lexique",
 	"level": 1,
 	"delay": 30,
 	"status": "draft",

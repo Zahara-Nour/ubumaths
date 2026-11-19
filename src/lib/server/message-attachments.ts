@@ -12,15 +12,15 @@
  */
 import { z } from 'zod';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import { sanitizeForStorage } from '$lib/utils/filename';
+import type { Database } from '#lib/types/database.ts';
+import { sanitizeForStorage } from '#lib/utils/filename.ts';
 import {
 	isServerAttachmentPath,
 	MESSAGE_ATTACHMENT_BUCKET,
 	MESSAGE_ATTACHMENT_MAX_COUNT,
 	MESSAGE_ATTACHMENT_MAX_SIZE,
 	MESSAGE_ATTACHMENT_TYPES
-} from '$lib/utils/message-attachment-rules';
+} from '#lib/utils/message-attachment-rules.ts';
 
 // ============================================================================
 // TYPES

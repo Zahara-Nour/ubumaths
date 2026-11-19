@@ -1,10 +1,8 @@
 {
+	"id": "f1a880e9-707a-4cee-a78a-b2d3968b7250",
 	"title": "Écrire un entier plus une fraction comme une fraction",
 	"description": "Écrire la somme d'un entier et d'une fraction inférieure à 1 comme une seule fraction (2 + 2/3 = 8/3) ; dénominateur au plus 20",
 	"grades": ["CM1"],
-	"theme": "Fractions",
-	"domain": "Apprivoiser",
-	"subdomain": "Décomposition",
 	"level": 5,
 	"delay": 30,
 	"status": "draft",

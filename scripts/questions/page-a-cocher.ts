@@ -20,7 +20,7 @@
 import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { createScriptClient } from '../relecture/common';
-import { apparierLot, lireLot, titresDuLot, valeurArgument } from '../lib/lot-questions';
+import { apparierLot, idsDuLot, lireLot, valeurArgument } from '../lib/lot-questions';
 import {
 	assemblerPage,
 	cheminDuNoeud,
@@ -69,8 +69,8 @@ async function main(): Promise<number> {
 
 	const { data, error } = await supabase
 		.from('question_templates')
-		.select('id, title, theme, domain, subdomain, level, status, classification_node_id')
-		.in('title', titresDuLot(lot));
+		.select('id, title, level, status, classification_node_id')
+		.in('id', idsDuLot(lot));
 	if (error) throw new Error(`lecture des modèles impossible — ${error.message}`);
 	const appariement = apparierLot(lot, data ?? [], { niveau: false });
 	if (!appariement.ok) {
@@ -110,8 +110,8 @@ async function main(): Promise<number> {
 	}
 
 	const bornes = lireBornes();
-	const fiches = appariement.paires.map(({ modele, ligne, ecartes }) => {
-		const fiche = ficheDuModele(
+	const fiches = appariement.paires.map(({ modele, ligne }) =>
+		ficheDuModele(
 			modele,
 			{
 				id: ligne.id,
@@ -126,14 +126,8 @@ async function main(): Promise<number> {
 					.sort()
 			},
 			bornes
-		);
-		// Départage par le niveau : l'homonyme écarté pourrait être le vrai modèle (lot renuméroté)
-		for (const autre of ecartes ?? [])
-			fiche.alertes.push(
-				`homonyme ${autre.id.slice(0, 8)} (niveau ${autre.level}) écarté : vérifier que c'est le bon modèle`
-			);
-		return fiche;
-	});
+		)
+	);
 	writeFileSync(sortie, assemblerPage(readFileSync(GABARIT, 'utf8'), { titre, intro, fiches }));
 
 	for (const f of fiches) {

@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Button } from '$lib/components/ui/button';
-	import { cn } from '$lib/utils';
-	import { DIFFICULTY_LABELS } from '$lib/types/minesweeper';
-	import type { Difficulty } from '$lib/types/minesweeper';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { cn } from '#lib/utils.ts';
+	import { DIFFICULTY_LABELS } from '#lib/types/minesweeper.ts';
+	import type { Difficulty } from '#lib/types/minesweeper.ts';
 
 	interface Achievement {
 		name: string;

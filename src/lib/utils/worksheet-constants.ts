@@ -2,8 +2,8 @@
  * Shared constants and utilities for worksheet views
  */
 
-import type { WorksheetType, WorksheetStatus } from '$lib/types/worksheets';
-import { WORKSHEET_TYPE_LABELS, WORKSHEET_TYPE_ORDER } from '$lib/utils/worksheet-type-labels';
+import type { WorksheetType, WorksheetStatus } from '#lib/types/worksheets.ts';
+import { WORKSHEET_TYPE_LABELS, WORKSHEET_TYPE_ORDER } from '#lib/utils/worksheet-type-labels.ts';
 import { FileText, ClipboardCheck, BookOpen, Home } from '@lucide/svelte';
 
 // =============================================================================

@@ -9,9 +9,9 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { parseLatex } from '$lib/mathAST/parser';
-import { toLatex } from '$lib/mathAST/latex-generator';
-import { compile } from '$lib/mathAST/eval/compile';
+import { parseLatex } from '#lib/mathAST/parser/index.ts';
+import { toLatex } from '#lib/mathAST/latex-generator.ts';
+import { compile } from '#lib/mathAST/eval/compile.ts';
 import { computeDomain } from '../compute';
 import { formatInterval } from '../format';
 import type { Domain } from '../types';

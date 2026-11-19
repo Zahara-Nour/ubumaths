@@ -13,7 +13,7 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, it, expect } from 'vitest';
-import { runDsl } from '$lib/geometry-core/dsl';
+import { runDsl } from '#lib/geometry-core/dsl/index.ts';
 
 // Constantes
 const ROOT = 'src/routes/(protected)/aide-ecriture/geometrie';

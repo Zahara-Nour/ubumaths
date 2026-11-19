@@ -12,10 +12,10 @@ import { questionTemplateSchema, blankSchema, blankDefaultsSchema } from '../tem
 import { runTestSpec } from '../test-spec-runner';
 import { gradeQuestion } from '../grading';
 import { toPublicQuestion } from '../public-question';
-import { validateAnswer, validateBlanksDetailed } from '$lib/utils/answer-validator';
-import { computeBlankVerdicts } from '$lib/components/questions/blank-verdicts';
+import { validateAnswer, validateBlanksDetailed } from '#lib/utils/answer-validator.ts';
+import { computeBlankVerdicts } from '#lib/components/questions/blank-verdicts.ts';
 import type { InstanceBlank, QuestionInstance, QuestionTemplate } from '../types';
-import { templateMarkdown, type ResolvedMarkdown } from '$lib/ubumark';
+import { templateMarkdown, type ResolvedMarkdown } from '#lib/ubumark/index.ts';
 
 // Fixtures
 const M = '\\begin{pmatrix}2&-1\\\\0&3\\end{pmatrix}';
@@ -29,8 +29,6 @@ function instanceWith(
 		statement: 'Calculer AB' as ResolvedMarkdown,
 		blanks,
 		grades: ['T_EXP'],
-		theme: 'Graphes et matrices',
-		domain: 'Matrices',
 		level: 1,
 		generatedAt: new Date().toISOString(),
 		...(options && { options })
@@ -69,8 +67,6 @@ function productTemplate(expected = M): QuestionTemplate {
 			}
 		],
 		grades: ['T_EXP'],
-		theme: 'Graphes et matrices',
-		domain: 'Matrices',
 		level: 1
 	};
 }

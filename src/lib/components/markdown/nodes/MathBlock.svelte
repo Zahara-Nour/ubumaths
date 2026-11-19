@@ -19,14 +19,20 @@
 	@see ExerciseDisplay.svelte for rendering context
 -->
 <script lang="ts">
-	import '$lib/utils/mathlive-styles';
+	import '#lib/utils/mathlive-styles.ts';
 	import 'mathlive';
 	import { expressionToLatex } from '../utils/math-utils';
 	import { readContentLocale } from '../content-locale';
 	import { readCapitalPairs } from '../content-capital-pairs';
 	import { readDigitGrouping } from '../content-digit-grouping';
-	import { isRefusedRestrictedFormula, readRestrictedRendering } from '../restricted-rendering';
-	import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
+	import {
+		hasUnsafeMathCommand,
+		isRefusedRestrictedFormula,
+		readProjectMediaOnly,
+		readRestrictedRendering
+	} from '../restricted-rendering';
+	import { normaliserCalcul } from '#lib/extensions/calcul-aligne.ts';
+	import type { GenericFunctionConfig } from '#lib/mathAST/parser/types.ts';
 
 	interface Props {
 		expression: string;
@@ -46,7 +52,7 @@
 	const digitGrouping = readDigitGrouping();
 
 	// Convert to LaTeX for rendering
-	let latex = $derived(
+	let converti = $derived(
 		expressionToLatex(
 			expression,
 			syntax,
@@ -56,6 +62,8 @@
 			digitGrouping()
 		)
 	);
+	// Calcul centré écrit avant les fractions au grand format : affiché comme un neuf
+	let latex = $derived(normaliserCalcul(converti) ?? converti);
 
 	// Mode restreint (chat élève) : une commande MathLive de style, classe,
 	// identifiant, données ou lien ne part pas dans MathLive — texte (S1) ; une
@@ -63,8 +71,13 @@
 	// `expression` d'abord : hors bornes, `latex` n'est jamais calculé (`$derived`
 	// paresseux) — sa conversion lèverait sur une entrée géante.
 	const isRestricted = readRestrictedRendering();
+	// Cahier de texte (lecteurs anonymes du lien public, décision du 2026-11-08) : une
+	// commande à attributs ferait charger une adresse choisie — texte, comme au chat
+	const isProjectMediaOnly = readProjectMediaOnly();
 	let unsafe = $derived(
-		isRestricted() && (isRefusedRestrictedFormula(expression) || isRefusedRestrictedFormula(latex))
+		(isRestricted() &&
+			(isRefusedRestrictedFormula(expression) || isRefusedRestrictedFormula(latex))) ||
+			(isProjectMediaOnly() && (hasUnsafeMathCommand(expression) || hasUnsafeMathCommand(latex)))
 	);
 </script>
 

@@ -22,13 +22,13 @@
 
 import type { Atelier } from './atelier.svelte';
 import type { CalcResult } from './calcul';
-import type { MathNode } from '$lib/mathAST/types';
-import type { LimitDirection, LimitResult } from '$lib/mathAST/limits/types';
-import { evaluateLimit } from '$lib/mathAST/limits';
-import { LimitError } from '$lib/mathAST/limits/types';
-import { parse as parseCommandExpression } from '$lib/mathAST/cli/core/pipeline';
-import { getVariables } from '$lib/mathAST/eval/substitute';
-import { infinity, mathConstant, number, opposite, power } from '$lib/mathAST/factory';
+import type { MathNode } from '#lib/mathAST/types.ts';
+import type { LimitDirection, LimitResult } from '#lib/mathAST/limits/types.ts';
+import { evaluateLimit } from '#lib/mathAST/limits/index.ts';
+import { LimitError } from '#lib/mathAST/limits/types.ts';
+import { parse as parseCommandExpression } from '#lib/mathAST/cli/core/pipeline.ts';
+import { getVariables } from '#lib/mathAST/eval/substitute.ts';
+import { infinity, mathConstant, number, opposite, power } from '#lib/mathAST/factory.ts';
 import {
 	isAddition,
 	isInfinity,
@@ -36,18 +36,18 @@ import {
 	isNumber,
 	isOpposite,
 	isSubtraction
-} from '$lib/mathAST/guards';
-import type { Domain } from '$lib/mathAST/domain/types';
-import { containsValue } from '$lib/mathAST/domain/algebra';
-import { evaluateNodeToApproximatedNumber } from '$lib/mathAST/eval/evaluate';
-import { toLatex } from '$lib/mathAST/latex-generator';
-import { toCustom } from '$lib/mathAST/custom-generator';
-import { transformAST, visitAST } from '$lib/mathAST/visitor';
+} from '#lib/mathAST/guards.ts';
+import type { Domain } from '#lib/mathAST/domain/types.ts';
+import { containsValue } from '#lib/mathAST/domain/algebra.ts';
+import { evaluateNodeToApproximatedNumber } from '#lib/mathAST/eval/evaluate.ts';
+import { toLatex } from '#lib/mathAST/latex-generator.ts';
+import { toCustom } from '#lib/mathAST/custom-generator.ts';
+import { transformAST, visitAST } from '#lib/mathAST/visitor.ts';
 import {
 	findUnknownFunctionCall,
 	unknownFunctionMessage
-} from '$lib/mathAST/parser/custom/tokenizer';
-import { bareFunctionMessage, bareFunctionName } from '$lib/mathAST/cli/core/variable-argument';
+} from '#lib/mathAST/parser/custom/tokenizer.ts';
+import { bareFunctionMessage, bareFunctionName } from '#lib/mathAST/cli/core/variable-argument.ts';
 import { astOf } from './parse';
 import { listCitedMessage } from './list-cited';
 import {

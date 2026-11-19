@@ -13,14 +13,15 @@
 	@see types.ts BlockquoteNode for the AST node type
 -->
 <script lang="ts">
-	import type { BlockNode, CalloutKind, InlineNode, ListItemNode } from '$lib/ubumark';
-	import { detailKindLabel } from '$lib/ubumark';
+	import type { BlockNode, CalloutKind, InlineNode, ListItemNode } from '#lib/ubumark/index.ts';
+	import { detailKindLabel } from '#lib/ubumark/index.ts';
 	import { readContentLocale } from '../content-locale';
 	import { CALLOUT_CLASSES, CALLOUT_LABEL_CLASSES } from '../detail-styles';
 	import ParagraphNode from './ParagraphNode.svelte';
 	import HeadingNode from './HeadingNode.svelte';
 	import MathBlock from './MathBlock.svelte';
 	import ImageDisplay from './ImageDisplay.svelte';
+	import VideoDisplay from './VideoDisplay.svelte';
 	import ListNode from './ListNode.svelte';
 	import TableNode from './TableNode.svelte';
 	import HorizontalRule from './HorizontalRule.svelte';
@@ -138,6 +139,20 @@
 				caption={child.caption}
 				originalWidth={child.originalWidth}
 				originalHeight={child.originalHeight}
+			/>
+		{:else if child.type === 'video'}
+			<VideoDisplay
+				src={child.src}
+				alt={child.alt}
+				provider={child.provider}
+				videoId={child.videoId}
+				sizeClass={child.sizeClass}
+				widthPercent={child.widthPercent}
+				alignment={child.alignment}
+				controls={child.controls}
+				autoplay={child.autoplay}
+				loop={child.loop}
+				muted={child.muted}
 			/>
 		{:else if isBlockquoteNode(child)}
 			<!-- Recursive blockquote rendering -->

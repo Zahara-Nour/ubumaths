@@ -1,10 +1,8 @@
 {
+	"id": "34c58018-b588-4c93-85fb-40eb94879cfb",
 	"title": "Encadrer une fraction décimale par deux entiers",
 	"description": "Encadrer une fraction décimale par deux entiers consécutifs (2 < 237/100 < 3) ; dénominateur 10 ou 100",
 	"grades": ["CM1"],
-	"theme": "Fractions",
-	"domain": "Apprivoiser",
-	"subdomain": "Encadrer",
 	"level": 3,
 	"delay": 30,
 	"status": "draft",

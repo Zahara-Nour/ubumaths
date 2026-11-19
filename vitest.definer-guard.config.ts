@@ -12,12 +12,12 @@ import { dbTestConfig } from './vitest.base.config';
  * connexion directe au port 54322 (SUPABASE_DB_*) : il lui faut une base
  * migrée (`supabase db start`), ni GoTrue, ni PostgREST, ni clés d'API.
  *
- * Pas de plugin sveltekit (le test n'importe aucun `$lib`) ni de
+ * Pas de plugin sveltekit (le test n'importe aucun `#lib`) ni de
  * `global-setup` de la suite d'intégration : celui-ci supprime les comptes
  * prof, ce dont ce test n'a aucun besoin.
  *
  * Vite 8 transforme le TypeScript avec oxc, qui lit `tsconfig.json` — lequel
- * étend `.svelte-kit/tsconfig.json`, absent tant que `svelte-kit sync` n'a pas
+ * étend `$app/tsconfig` (`node_modules/$app/`), absent tant que `svelte-kit sync` n'a pas
  * tourné (job CI sans build) : `pnpm test:definer-guard` lance donc
  * `svelte-kit sync` d'abord. (L'ancien `esbuild.tsconfigRaw` ne sert plus.)
  */

@@ -59,7 +59,7 @@ Supabase, pour fonctionner base gelée) → `supabaseHandle` (`src/lib/server/su
 `userProfileHandle` (`locals.user`, `locals.profile`) → `accountStatusHandle` (compte non
 approuvé : 403 sur API et écritures) → `passwordChangeHandle` (mot de passe provisoire à
 changer) → `studentPresenceHandle` (présence de l'élève, une fois par jour, pages seulement :
-« tu m'as manqué » du Palotin) → `adminElevationHandle` → `reservedAreasHandle` (`/dev`
+retour après une pause fêté par le Palotin) → `adminElevationHandle` → `reservedAreasHandle` (`/dev`
 admin seul, `/aide-ecriture` prof seul) →
 `csrfHandle` → `securityHeadersHandle` → `errorMonitoringHandle`. Détail de chaque maillon :
 [auth.md](auth.md#la-chaîne-de-handles) · ce que les hooks font pour tous les endpoints :
@@ -79,7 +79,7 @@ Les parenthèses créent des groupes de layout SvelteKit, absents de l'URL
 | `(protected)/` | `src/routes/(protected)/+layout.server.ts`, avant toute route enfant                                      |
 | `api/`         | par endpoint : `requireAuth` / `requireRole` / `requireRoles` (`src/lib/server/middleware/auth.ts`) + Zod |
 
-La garde de `(protected)/` : `requireAuth(user)` (`src/lib/server/auth.ts`, redirige vers
+La garde de `(protected)/` : `requireUserOrRedirect(user)` (`src/lib/server/auth.ts`, redirige vers
 `/auth/login`), profil obligatoire (sinon 500 + `logError`), puis **refus par défaut** sur
 `profile.status` (`pending` → `/auth/pending-approval` ; tout autre statut que `approved` →
 `signOut()` + `/auth/login?error=…`). Elle renvoie aussi l'état du consentement
@@ -110,7 +110,10 @@ Deux `load` racine, dans l'ordre :
 vérifiée) ; il appelle `invalidate('supabase:auth')`, qui relance le `load` racine et la
 vérification serveur. `SIGNED_IN` du même utilisateur (HMR, retour sur l'onglet) est ignoré, et
 `TOKEN_REFRESHED` n'invalide que toutes les 30 min au plus (`REFRESH_INTERVAL_MS`), via
-`sessionStorage`.
+`sessionStorage`, et jamais quand une nouvelle version de l'appli a été déployée depuis le
+chargement de l'onglet ([coquille-et-caches.md](coquille-et-caches.md#onglet-resté-ouvert-pendant-un-déploiement)).
+Si l'import de `$app/navigation` échoue (fichier supprimé par un déploiement), la connexion ou la
+déconnexion recharge la page entière.
 
 ### ⚠️ Safari/WebKit TDZ — le chunk du layout racine
 
@@ -138,6 +141,10 @@ Détail : [safari-webkit-tdz.md](../pratiques/safari-webkit-tdz.md).
   KaTeX restent déclarées dans le document, comme `<math-field>` l'exige à son montage. Le
   plugin Vite `mathliveFontDisplay` (`vite.config.ts`) corrige le `font-display:"swap"` entre
   guillemets que MathLive écrit (invalide : le texte restait invisible jusqu'à 3 s).
+- **Un seul script inline dans `src/app.html`**, avant `%sveltekit.head%` : il lit le réglage
+  `easyReading` du navigateur et pose la classe `lecture-facilitee` sur `<html>` avant le premier
+  affichage (sinon le texte passait d'Inter à Luciole au chargement). Cf.
+  [coquille-et-caches.md](coquille-et-caches.md) § Réglage « Lecture facilitée ».
 - **Cache de `static/`** : règles `headers` de `vercel.json` (polices 30 j, images, sons et CSS
   1 j, avec `stale-while-revalidate`) ; ces fichiers étaient revalidés à chaque visite.
 

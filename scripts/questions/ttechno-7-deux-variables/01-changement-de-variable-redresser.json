@@ -1,0 +1,204 @@
+{
+	"id": "50bf587d-30e5-42c5-a214-cf0b69895bea",
+	"title": "Quel changement de variable redresse le nuage ?",
+	"description": "Nuage (x ; y) courbé et deux nuages obtenus par changement de variable (t = x², z = 1/y, z = log(y)) : lequel donne des points alignés",
+	"grades": ["T_TECHNO"],
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "On étudie une série statistique $(x_i\\,;y_i)$. Voici son nuage de points, puis les nuages obtenus avec deux changements de variable.\n\n```nuage\ntitre: Nuage (x ; y)\nnom x: x\nnom y: y\nx: 1 ; 2 ; 3 ; 4 ; 5 ; 6\ny: {{eval:a*1+b;d}} ; {{eval:a*4+b;d}} ; {{eval:a*9+b;d}} ; {{eval:a*16+b;d}} ; {{eval:a*25+b;d}} ; {{eval:a*36+b;d}}\ntaille: petite\ndescription: Nuage (x ; y) : les points montent de plus en plus vite, le nuage est courbé.\n```\n\n```nuage\ntitre: Nuage (t ; y), t = x²\nnom x: t\nnom y: y\nx: 1 ; 4 ; 9 ; 16 ; 25 ; 36\ny: {{eval:a*1+b;d}} ; {{eval:a*4+b;d}} ; {{eval:a*9+b;d}} ; {{eval:a*16+b;d}} ; {{eval:a*25+b;d}} ; {{eval:a*36+b;d}}\ntaille: petite\ndescription: Nuage (t ; y) avec t = x².\n```\n\n```nuage\ntitre: Nuage (x ; z), z = 1/y\nnom x: x\nnom y: z\nx: 1 ; 2 ; 3 ; 4 ; 5 ; 6\ny: {{eval:round(1000/(a*1+b))/1000;d}} ; {{eval:round(1000/(a*4+b))/1000;d}} ; {{eval:round(1000/(a*9+b))/1000;d}} ; {{eval:round(1000/(a*16+b))/1000;d}} ; {{eval:round(1000/(a*25+b))/1000;d}} ; {{eval:round(1000/(a*36+b))/1000;d}}\ntaille: petite\ndescription: Nuage (x ; z) avec z = 1/y.\n```\n\nLequel des deux changements de variable donne un nuage de points presque alignés, qui permet un ajustement affine ?\n\n```choix\nmelanger: non\n- $t=x^2$ : le nuage $(t\\,;y)$\n- $z=\\dfrac{1}{y}$ : le nuage $(x\\,;z)$\n- Aucun des deux\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "0.5|2|3"
+				},
+				{
+					"name": "b",
+					"expression": "1..5"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un ajustement affine n'a de sens que si les points du nuage sont presque alignés : on regarde la forme de chaque nuage.",
+					"Le nuage $(t\\,;y)$ avec $t=x^2$ a ses points alignés : on peut conjecturer une relation $y=at+b$, c'est-à-dire $y=ax^2+b$. Réponse : $\\textcolor{{{color:primary.0}}}{t=x^2}$.",
+					"Le nuage $(x\\,;z)$ avec $z=\\dfrac{1}{y}$ reste courbé : ce changement de variable ne convient pas."
+				]
+			}
+		},
+		{
+			"statement": "On étudie une série statistique $(x_i\\,;y_i)$. Voici son nuage de points, puis les nuages obtenus avec deux changements de variable.\n\n```nuage\ntitre: Nuage (x ; y)\nnom x: x\nnom y: y\nx: 1 ; 2 ; 3 ; 4 ; 5 ; 6\ny: {{eval:round(10000/(a*1+b))/100;d}} ; {{eval:round(10000/(a*2+b))/100;d}} ; {{eval:round(10000/(a*3+b))/100;d}} ; {{eval:round(10000/(a*4+b))/100;d}} ; {{eval:round(10000/(a*5+b))/100;d}} ; {{eval:round(10000/(a*6+b))/100;d}}\ntaille: petite\ndescription: Nuage (x ; y) : les points descendent de moins en moins vite, le nuage est courbé.\n```\n\n```nuage\ntitre: Nuage (t ; y), t = x²\nnom x: t\nnom y: y\nx: 1 ; 4 ; 9 ; 16 ; 25 ; 36\ny: {{eval:round(10000/(a*1+b))/100;d}} ; {{eval:round(10000/(a*2+b))/100;d}} ; {{eval:round(10000/(a*3+b))/100;d}} ; {{eval:round(10000/(a*4+b))/100;d}} ; {{eval:round(10000/(a*5+b))/100;d}} ; {{eval:round(10000/(a*6+b))/100;d}}\ntaille: petite\ndescription: Nuage (t ; y) avec t = x².\n```\n\n```nuage\ntitre: Nuage (x ; z), z = 1/y\nnom x: x\nnom y: z\nx: 1 ; 2 ; 3 ; 4 ; 5 ; 6\ny: {{eval:(a*1+b)/100;d}} ; {{eval:(a*2+b)/100;d}} ; {{eval:(a*3+b)/100;d}} ; {{eval:(a*4+b)/100;d}} ; {{eval:(a*5+b)/100;d}} ; {{eval:(a*6+b)/100;d}}\ntaille: petite\ndescription: Nuage (x ; z) avec z = 1/y.\n```\n\nLequel des deux changements de variable donne un nuage de points presque alignés, qui permet un ajustement affine ?\n\n```choix\nmelanger: non\n- $t=x^2$ : le nuage $(t\\,;y)$\n- $z=\\dfrac{1}{y}$ : le nuage $(x\\,;z)$\n- Aucun des deux\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2|4|5"
+				},
+				{
+					"name": "b",
+					"expression": "5|10|20"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un ajustement affine n'a de sens que si les points du nuage sont presque alignés : on regarde la forme de chaque nuage.",
+					"Le nuage $(t\\,;y)$ avec $t=x^2$ reste courbé : ce changement de variable ne convient pas.",
+					"Le nuage $(x\\,;z)$ avec $z=\\dfrac{1}{y}$ a ses points alignés : on peut conjecturer une relation $z=ax+b$, c'est-à-dire $\\dfrac{1}{y}=ax+b$. Réponse : $\\textcolor{{{color:primary.0}}}{z=\\dfrac{1}{y}}$."
+				]
+			}
+		},
+		{
+			"statement": "On étudie une série statistique $(x_i\\,;y_i)$. Voici son nuage de points, puis les nuages obtenus avec deux changements de variable.\n\n```nuage\ntitre: Nuage (x ; y)\nnom x: x\nnom y: y\nx: 0 ; 1 ; 2 ; 3 ; 4 ; 5\ny: {{eval:round(10^(p*0+q))}} ; {{eval:round(10^(p*1+q))}} ; {{eval:round(10^(p*2+q))}} ; {{eval:round(10^(p*3+q))}} ; {{eval:round(10^(p*4+q))}} ; {{eval:round(10^(p*5+q))}}\ntaille: petite\ndescription: Nuage (x ; y) : les points montent de plus en plus vite, le nuage est courbé.\n```\n\n```nuage\ntitre: Nuage (t ; y), t = x²\nnom x: t\nnom y: y\nx: 0 ; 1 ; 4 ; 9 ; 16 ; 25\ny: {{eval:round(10^(p*0+q))}} ; {{eval:round(10^(p*1+q))}} ; {{eval:round(10^(p*2+q))}} ; {{eval:round(10^(p*3+q))}} ; {{eval:round(10^(p*4+q))}} ; {{eval:round(10^(p*5+q))}}\ntaille: petite\ndescription: Nuage (t ; y) avec t = x².\n```\n\n```nuage\ntitre: Nuage (x ; z), z = log(y)\nnom x: x\nnom y: z\nx: 0 ; 1 ; 2 ; 3 ; 4 ; 5\ny: {{eval:p*0+q;d}} ; {{eval:p*1+q;d}} ; {{eval:p*2+q;d}} ; {{eval:p*3+q;d}} ; {{eval:p*4+q;d}} ; {{eval:p*5+q;d}}\ntaille: petite\ndescription: Nuage (x ; z) avec z = log(y).\n```\n\nLequel des deux changements de variable donne un nuage de points presque alignés, qui permet un ajustement affine ?\n\n```choix\nmelanger: non\n- $t=x^2$ : le nuage $(t\\,;y)$\n- $z=\\log(y)$ : le nuage $(x\\,;z)$\n- Aucun des deux\n```",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "0.25|0.5"
+				},
+				{
+					"name": "q",
+					"expression": "0.5|1"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un ajustement affine n'a de sens que si les points du nuage sont presque alignés : on regarde la forme de chaque nuage.",
+					"Le nuage $(t\\,;y)$ avec $t=x^2$ reste courbé : ce changement de variable ne convient pas.",
+					"Le nuage $(x\\,;z)$ avec $z=\\log(y)$ a ses points alignés : on peut conjecturer une relation $z=ax+b$, c'est-à-dire $\\log(y)=ax+b$. Réponse : $\\textcolor{{{color:primary.0}}}{z=\\log(y)}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "choix : bonne réponse 0",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : z = 1/y",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : aucun",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "choix : bonne réponse 1",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"b": "10"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : t = x²",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"b": "10"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : aucun",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"b": "10"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "choix : bonne réponse 1",
+			"variationIndex": 2,
+			"variables": {
+				"p": "0.5",
+				"q": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : t = x²",
+			"variationIndex": 2,
+			"variables": {
+				"p": "0.5",
+				"q": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : aucun",
+			"variationIndex": 2,
+			"variables": {
+				"p": "0.5",
+				"q": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -1,0 +1,703 @@
+[
+	{
+		"id": "2e15c33a-d21b-449b-ba3b-b9591db2bd1c",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CM1", "CM2"],
+		"delay": 120,
+		"level": 1,
+		"variations": [
+			{
+				"statement": "Trace le cercle de centre $O$ et de rayon ${{r}}\\,\\text{cm}$. Pose le $0$ de la règle graduée sur $O$, puis ouvre le compas jusqu'à la bonne graduation.\n\n```figure-a-completer\nfenetre: 0 ; 14 ; 0 ; 14\nverifier: cercle c = cercle(O, rayon={{r}} cm)\n---\nO = point(7, 7)\n```",
+				"variables": [
+					{
+						"name": "r",
+						"expression": "2..6"
+					}
+				],
+				"correction": {
+					"steps": [
+						"La règle posée avec son $0$ sur $O$ ; le compas piqué en $O$, ouvert jusqu'à la graduation ${{r}}\\,\\text{cm}$ : on trace le $\\textcolor{{{color:primary.0}}}{\\text{cercle}}$."
+					]
+				}
+			},
+			{
+				"statement": "Trace le cercle de centre $O$ et de rayon ${{eval:x/10;d}}\\,\\text{cm}$. Pose le $0$ de la règle graduée sur $O$, puis ouvre le compas jusqu'à la bonne graduation.\n\n```figure-a-completer\nfenetre: 0 ; 14 ; 0 ; 14\nverifier: cercle c = cercle(O, rayon={{eval:x/10;d}} cm)\n---\nO = point(7, 7)\n```",
+				"variables": [
+					{
+						"name": "c",
+						"expression": "2..5"
+					},
+					{
+						"name": "m",
+						"expression": "1..9"
+					},
+					{
+						"name": "x",
+						"expression": "eval:10*c+m"
+					}
+				],
+				"correction": {
+					"steps": [
+						"${{eval:x/10;d}}\\,\\text{cm} = {{c}}\\,\\text{cm}\\,{{m}}\\,\\text{mm}$ : sur la règle, ${{m}}$ petites graduations après le ${{c}}\\,\\text{cm}$.",
+						"Le compas piqué en $O$, ouvert jusqu'à cette graduation : on trace le $\\textcolor{{{color:primary.0}}}{\\text{cercle}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Tracer un cercle de rayon donné",
+		"description": "Tracer au compas un cercle de centre donné et de rayon donné en cm (ou en cm et mm), l'ouverture prise sur la règle graduée",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["regle(7;7;8;7;1)|cercle(7;7;11;7)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"r": "4"
+				},
+				"description": "Rayon 4 cm",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["regle(7;7;8;7;1)|cercle(7;7;13;7)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"r": "6"
+				},
+				"description": "Rayon 6 cm",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["regle(7;7;8;7;1)|cercle(7;7;11.2;7)"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"r": "4"
+				},
+				"description": "Erreur : rayon 4,2 cm au lieu de 4 cm",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["cercle(7;7;11;7)"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"r": "4"
+				},
+				"description": "Erreur : compas ouvert sans la règle",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["regle(7;7;8;7;1)|cercle(7.5;7;11.5;7)"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"r": "4"
+				},
+				"description": "Erreur : compas piqué à côté de O",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["regle(7;7;8;7;1)|cercle(7;7;10.5;7)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "3",
+					"m": "5",
+					"x": "35"
+				},
+				"description": "Rayon 3,5 cm",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["regle(7;7;8;7;1)|cercle(7;7;10;7)"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "3",
+					"m": "5",
+					"x": "35"
+				},
+				"description": "Erreur : rayon 3 cm au lieu de 3,5 cm",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["regle(7;7;8;7;1)|cercle(7;7;8.7;7)"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "3",
+					"m": "5",
+					"x": "35"
+				},
+				"description": "Erreur : diamètre de 3,5 cm (rayon 1,75)",
+				"variationIndex": 1
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "3a888b08-c7a1-495a-845b-c7540f351c74",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CM1", "CM2"],
+		"delay": 180,
+		"level": 2,
+		"variations": [
+			{
+				"statement": "Le côté $[AB]$, de ${{l}}\\,\\text{cm}$, est tracé. Construis le triangle $ABC$ rectangle en $A$, tel que $AC = {{h}}\\,\\text{cm}$. Trace l'angle droit avec l'équerre et prends la longueur sur la règle graduée.\n\n```figure-a-completer\nfenetre: 0 ; 14 ; 0 ; 9\nverifier: triangle ABC : CAB = 90 ; AC = {{h}} cm\n---\nA = point(2, 1.5, etiquette=\"bas\")\nB = point({{eval:2+l}}, 1.5, etiquette=\"bas\")\ns = segment(A, B)\n```",
+				"variables": [
+					{
+						"name": "l",
+						"expression": "5..10"
+					},
+					{
+						"name": "h",
+						"expression": "3..7"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**L'angle droit en $A$** : l'équerre le long de $[AB]$, l'angle droit en $A$ ; on trace la perpendiculaire à $[AB]$ en $A$.",
+						"**La longueur** : la règle posée avec son $0$ sur $A$, le long de la perpendiculaire ; $\\textcolor{{{color:primary.0}}}{C}$ est sur la graduation ${{h}}\\,\\text{cm}$. On trace $[AC]$ et $[BC]$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Construire un triangle rectangle de côtés donnés",
+		"description": "Construire sur papier uni un triangle rectangle dont un côté de l'angle droit est tracé : l'angle droit à l'équerre, l'autre côté à la règle graduée",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": [
+					"droite(2;1.5;2;11.5)|regle(2;1.5;2;2.5;1)|segment(2;1.5;2;7.5)|segment(12;1.5;2;7.5)"
+				],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"h": "6",
+					"l": "10"
+				},
+				"description": "AB = 10 cm, AC = 6 cm",
+				"variationIndex": 0
+			},
+			{
+				"answers": [
+					"droite(2;1.5;2;6.5)|regle(2;1.5;2;2.5;1)|segment(2;1.5;2;8.5)|segment(7;1.5;2;8.5)"
+				],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"h": "7",
+					"l": "5"
+				},
+				"description": "AB = 5 cm, AC = 7 cm",
+				"variationIndex": 0
+			},
+			{
+				"answers": [
+					"droite(2;1.5;2;11.5)|regle(2;1.5;2;2.5;1)|segment(2;1.5;2;7.1)|segment(12;1.5;2;7.1)"
+				],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"h": "6",
+					"l": "10"
+				},
+				"description": "Erreur : AC = 5,6 cm au lieu de 6 cm",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["segment(2;1.5;2.25;7.5)|segment(12;1.5;2.25;7.5)"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"h": "6",
+					"l": "10"
+				},
+				"description": "Erreur : C placé à l'œil, sans équerre",
+				"variationIndex": 0
+			},
+			{
+				"answers": [
+					"droite(12;1.5;12;11.5)|regle(12;1.5;12;2.5;1)|segment(12;1.5;12;7.5)|segment(2;1.5;12;7.5)"
+				],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"h": "6",
+					"l": "10"
+				},
+				"description": "Erreur : angle droit en B au lieu de A",
+				"variationIndex": 0
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "7d048525-862b-425b-9037-c455303bd68f",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CM1", "CM2"],
+		"delay": 120,
+		"level": 1,
+		"variations": [
+			{
+				"statement": "Trace un segment $[AB]$ de ${{l}}\\,\\text{cm}$ qui part du point $A$. Pose le $0$ de la règle graduée sur $A$, puis trace le segment jusqu'à la bonne graduation.\n\n```figure-a-completer\nfenetre: 0 ; 14 ; 0 ; 8\nverifier: segment AB = {{l}} cm\n---\nA = point(1, 4, etiquette=\"gauche\")\n```",
+				"variables": [
+					{
+						"name": "l",
+						"expression": "3..12"
+					}
+				],
+				"correction": {
+					"steps": [
+						"La règle graduée posée avec son $0$ sur $A$ ; on trace depuis $A$ jusqu'à la graduation ${{l}}\\,\\text{cm}$ : c'est le point $\\textcolor{{{color:primary.0}}}{B}$."
+					]
+				}
+			},
+			{
+				"statement": "Trace un segment $[AB]$ de ${{eval:x/10;d}}\\,\\text{cm}$ qui part du point $A$. Pose le $0$ de la règle graduée sur $A$, puis trace le segment jusqu'à la bonne graduation.\n\n```figure-a-completer\nfenetre: 0 ; 14 ; 0 ; 8\nverifier: segment AB = {{eval:x/10;d}} cm\n---\nA = point(1, 4, etiquette=\"gauche\")\n```",
+				"variables": [
+					{
+						"name": "c",
+						"expression": "3..9"
+					},
+					{
+						"name": "m",
+						"expression": "1..9"
+					},
+					{
+						"name": "x",
+						"expression": "eval:10*c+m"
+					}
+				],
+				"correction": {
+					"steps": [
+						"${{eval:x/10;d}}\\,\\text{cm} = {{c}}\\,\\text{cm}\\,{{m}}\\,\\text{mm}$ : sur la règle, ${{m}}$ petites graduations après le ${{c}}\\,\\text{cm}$.",
+						"La règle posée avec son $0$ sur $A$ ; on trace depuis $A$ jusqu'à cette graduation : c'est le point $\\textcolor{{{color:primary.0}}}{B}$."
+					]
+				}
+			},
+			{
+				"statement": "Sur la demi-droite $[Ax)$, trace un segment $[AB]$ de ${{l}}\\,\\text{cm}$. Pose le $0$ de la règle graduée sur $A$, le long de la demi-droite.\n\n```figure-a-completer\nfenetre: 0 ; 14 ; 0 ; 8\nverifier: segment AB = {{l}} cm sur [Ax)\n---\nA = point(1, 2, etiquette=\"bas\")\nX = point(13, {{y}}, visible=faux)\nx = demidroite(A, X)\ntexte(13, {{eval:y+0.45;d}}, \"x\")\n```",
+				"variables": [
+					{
+						"name": "y",
+						"expression": "2..7"
+					},
+					{
+						"name": "l",
+						"expression": "3..10"
+					}
+				],
+				"correction": {
+					"steps": [
+						"La règle posée avec son $0$ sur $A$, le long de $[Ax)$ ; on trace jusqu'à la graduation ${{l}}\\,\\text{cm}$ : c'est le point $\\textcolor{{{color:primary.0}}}{B}$, sur la demi-droite."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Tracer un segment de longueur donnée",
+		"description": "Tracer à la règle graduée un segment de longueur donnée, en cm ou en cm et mm, depuis un point ou sur une demi-droite",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["regle(1;4;2;4;1)|segment(1;4;8;4)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"l": "7"
+				},
+				"description": "7 cm vers la droite",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["regle(1;4;4;8;1)|segment(1;4;2.8;6.4)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"l": "3"
+				},
+				"description": "3 cm en oblique",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["regle(1;4;2;4;1)|segment(1;4;13;4)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"l": "12"
+				},
+				"description": "12 cm vers la droite",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["regle(1;4;2;4;1)|segment(1;4;8.2;4)"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"l": "7"
+				},
+				"description": "Erreur : 7,2 cm au lieu de 7 cm",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["segment(1;4;8;4)"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"l": "7"
+				},
+				"description": "Erreur : tracé sans la règle",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["regle(1;4;2;4;1)|segment(1;4;6.3;4)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "5",
+					"m": "3",
+					"x": "53"
+				},
+				"description": "5,3 cm",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["regle(1;4;2;4;1)|segment(1;4;10.9;4)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "9",
+					"m": "9",
+					"x": "99"
+				},
+				"description": "9,9 cm vers la droite",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["regle(1;4;1;0;1)|segment(1;4;1;0.6)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "3",
+					"m": "4",
+					"x": "34"
+				},
+				"description": "3,4 cm vers le bas",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["regle(1;4;2;4;1)|segment(1;4;6;4)"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "5",
+					"m": "3",
+					"x": "53"
+				},
+				"description": "Erreur : 5 cm au lieu de 5,3 cm (millimètres oubliés)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["regle(1;4;2;4;1)|segment(1;4;4.5;4)"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "5",
+					"m": "3",
+					"x": "53"
+				},
+				"description": "Erreur : 3,5 cm au lieu de 5,3 cm",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["regle(1;2;13;2;1)|segment(1;2;7;2)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"l": "6",
+					"y": "2"
+				},
+				"description": "Demi-droite horizontale, 6 cm",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["regle(1;2;13;6;1)|segment(1;2;5.743416490253;3.581138830084)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"l": "5",
+					"y": "6"
+				},
+				"description": "Demi-droite oblique, 5 cm",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["regle(1;2;13;7;1)|segment(1;2;10.230769230769;5.846153846154)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"l": "10",
+					"y": "7"
+				},
+				"description": "Demi-droite oblique, 10 cm",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["regle(1;2;13;2;1)|segment(1;2;6;2)"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"l": "5",
+					"y": "6"
+				},
+				"description": "Erreur : 5 cm, mais pas sur la demi-droite",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["regle(1;2;13;6;1)|segment(1;2;5.269074841227;3.423024947076)"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"l": "5",
+					"y": "6"
+				},
+				"description": "Erreur : 4,5 cm au lieu de 5 cm sur la demi-droite",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "82351474-f11f-430d-b74e-f850c00b684b",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CM1", "CM2"],
+		"delay": 240,
+		"level": 2,
+		"variations": [
+			{
+				"statement": "Le côté $[AB]$, de ${{l}}\\,\\text{cm}$, est tracé. Construis le rectangle $ABCD$ tel que $BC = {{h}}\\,\\text{cm}$. Trace les angles droits avec l'équerre et prends les longueurs sur la règle graduée.\n\n```figure-a-completer\nfenetre: 0 ; 12 ; 0 ; 9\nverifier: rectangle A ; B ; C ; D : BC = {{h}} cm\n---\nA = point(2, 1, etiquette=\"bas\")\nB = point({{eval:2+l}}, 1, etiquette=\"bas\")\ns = segment(A, B)\n```",
+				"variables": [
+					{
+						"name": "l",
+						"expression": "6..9"
+					},
+					{
+						"name": "h",
+						"expression": "2..5"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**En $B$** : l'équerre le long de $[AB]$, l'angle droit en $B$ ; on trace la perpendiculaire. La règle posée avec son $0$ sur $B$ : $\\textcolor{{{color:primary.0}}}{C}$ est à ${{h}}\\,\\text{cm}$.",
+						"**En $A$** : de même, $\\textcolor{{{color:primary.0}}}{D}$ sur la perpendiculaire en $A$, à ${{h}}\\,\\text{cm}$. On trace $[BC]$, $[AD]$ et $[CD]$."
+					]
+				}
+			},
+			{
+				"statement": "Le côté $[AB]$, de ${{c}}\\,\\text{cm}$, est tracé. Construis le carré $ABCD$. Trace les angles droits avec l'équerre et prends les longueurs sur la règle graduée.\n\n```figure-a-completer\nfenetre: 0 ; 12 ; 0 ; 9\nverifier: carre A ; B ; C ; D\n---\nA = point(2, 1, etiquette=\"bas\")\nB = point({{eval:2+c}}, 1, etiquette=\"bas\")\ns = segment(A, B)\n```",
+				"variables": [
+					{
+						"name": "c",
+						"expression": "4..7"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Les quatre côtés d'un carré ont la même longueur, ${{c}}\\,\\text{cm}$, et ses angles sont droits.",
+						"**En $B$** : l'équerre le long de $[AB]$, la perpendiculaire en $B$ ; la règle posée avec son $0$ sur $B$ : $\\textcolor{{{color:primary.0}}}{C}$ est à ${{c}}\\,\\text{cm}$. De même $\\textcolor{{{color:primary.0}}}{D}$ en $A$. On trace $[BC]$, $[AD]$ et $[CD]$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Construire un rectangle ou un carré de dimensions données",
+		"description": "Construire sur papier uni, à l'équerre et à la règle graduée, un rectangle ou un carré dont un côté est tracé et les dimensions données en cm",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": [
+					"droite(9;1;9;8)|regle(9;1;9;2;1)|segment(9;1;9;4)|droite(2;1;2;8)|regle(2;1;2;2;1)|segment(2;1;2;4)|segment(9;4;2;4)"
+				],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"h": "3",
+					"l": "7"
+				},
+				"description": "Rectangle 7 × 3",
+				"variationIndex": 0
+			},
+			{
+				"answers": [
+					"droite(11;1;11;10)|regle(11;1;11;2;1)|segment(11;1;11;6)|droite(2;1;2;10)|regle(2;1;2;2;1)|segment(2;1;2;6)|segment(11;6;2;6)"
+				],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"h": "5",
+					"l": "9"
+				},
+				"description": "Rectangle 9 × 5",
+				"variationIndex": 0
+			},
+			{
+				"answers": [
+					"droite(9;1;9;8)|regle(9;1;9;2;1)|segment(9;1;9;4.5)|droite(2;1;2;8)|regle(2;1;2;2;1)|segment(2;1;2;4.5)|segment(9;4.5;2;4.5)"
+				],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"h": "3",
+					"l": "7"
+				},
+				"description": "Erreur : BC = 3,5 cm au lieu de 3 cm",
+				"variationIndex": 0
+			},
+			{
+				"answers": [
+					"droite(9;1;9;8)|regle(9;1;9;2;1)|segment(9;1;9;8)|droite(2;1;2;8)|regle(2;1;2;2;1)|segment(2;1;2;8)|segment(9;8;2;8)"
+				],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"h": "3",
+					"l": "7"
+				},
+				"description": "Erreur : BC = 7 cm (longueur de [AB])",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["segment(9;1;9.15;4)|segment(2;1;1.9;4)|segment(9.15;4;1.9;4)"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"h": "3",
+					"l": "7"
+				},
+				"description": "Erreur : côtés tracés sans équerre",
+				"variationIndex": 0
+			},
+			{
+				"answers": [
+					"droite(9;1;9;8)|regle(9;1;9;2;1)|segment(9;1;9;4)|droite(2;1;2;8)|regle(2;1;2;2;1)|segment(2;1;2;4)"
+				],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"h": "3",
+					"l": "7"
+				},
+				"description": "Erreur : figure non fermée",
+				"variationIndex": 0
+			},
+			{
+				"answers": [
+					"droite(8;1;8;7)|regle(8;1;8;2;1)|segment(8;1;8;7)|droite(2;1;2;7)|regle(2;1;2;2;1)|segment(2;1;2;7)|segment(8;7;2;7)"
+				],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "6"
+				},
+				"description": "Carré de 6 cm",
+				"variationIndex": 1
+			},
+			{
+				"answers": [
+					"droite(6;1;6;5)|regle(6;1;6;2;1)|segment(6;1;6;5)|droite(2;1;2;5)|regle(2;1;2;2;1)|segment(2;1;2;5)|segment(6;5;2;5)"
+				],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "4"
+				},
+				"description": "Carré de 4 cm",
+				"variationIndex": 1
+			},
+			{
+				"answers": [
+					"droite(8;1;8;7)|regle(8;1;8;2;1)|segment(8;1;8;6)|droite(2;1;2;7)|regle(2;1;2;2;1)|segment(2;1;2;6)|segment(8;6;2;6)"
+				],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "6"
+				},
+				"description": "Erreur : côtés de 5 cm sur [AB] de 6 cm (rectangle)",
+				"variationIndex": 1
+			},
+			{
+				"answers": [
+					"droite(8;1;8;7)|regle(8;1;8;2;1)|segment(8;1;8;7)|droite(2;1;2;7)|regle(2;1;2;2;1)|segment(2;1;2;7.4)|segment(8;7;2;7.4)"
+				],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "6"
+				},
+				"description": "Erreur : [AD] plus long que [BC]",
+				"variationIndex": 1
+			}
+		],
+		"classification_node_id": null
+	}
+]

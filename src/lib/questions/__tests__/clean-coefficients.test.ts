@@ -11,19 +11,19 @@
 import { describe, it, expect } from 'vitest';
 import { generateInstance } from '../generator/instance-generator';
 import { questionTemplateSchema } from '../template-schema';
-import { createQuestionTemplateSchema } from '$lib/server/validation/questions';
-import { validateAnswer } from '$lib/utils/answer-validator';
+import { createQuestionTemplateSchema } from '#lib/server/validation/questions.ts';
+import { validateAnswer } from '#lib/utils/answer-validator.ts';
 import {
 	cleanCoefficientsAst,
 	cleanCoefficientsCustom,
 	keepsValue,
 	latexRelationsToCustom
 } from '../clean-coefficients';
-import { coefficientCleanupSteps } from '$lib/mathAST/cosmetic-transforms';
-import { parseCustomSafe, toLatex } from '$lib/mathAST';
+import { coefficientCleanupSteps } from '#lib/mathAST/cosmetic-transforms.ts';
+import { parseCustomSafe, toLatex } from '#lib/mathAST/index.ts';
 import { templateGenericFunctions } from '../generic-functions';
 import type { QuestionInstance, QuestionTemplate, SharedVariationDefaults } from '../types';
-import { templateMarkdown } from '$lib/ubumark';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 
 // ============================================================================
 // HELPERS
@@ -67,8 +67,6 @@ function template(
 			}
 		],
 		grades: ['1_SPE'],
-		theme: 'Géométrie',
-		domain: 'Géométrie repérée',
 		level: 1
 	};
 }

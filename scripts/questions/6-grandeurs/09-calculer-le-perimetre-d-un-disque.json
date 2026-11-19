@@ -1,10 +1,8 @@
 {
+	"id": "cfb4c692-04d8-4cd9-9849-3b5cb94628e5",
 	"title": "Calculer le périmètre d'un disque",
 	"description": "Calculer le périmètre d'un disque avec 3,14 pour π : 3,14 × D avec le diamètre, 2 × 3,14 × R avec le rayon",
 	"grades": ["6"],
-	"theme": "Grandeurs",
-	"domain": "Périmètres",
-	"subdomain": "Périmètre d'un disque",
 	"level": 3,
 	"delay": 30,
 	"status": "draft",

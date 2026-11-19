@@ -1,6 +1,6 @@
 /**
  * Question à points à placer dans un repère (` ```courbe ` + `placer:`, chantier
- * `docs/wip/points-repere-progress.md` § 3, lot 1)
+ * `docs/archive/wip/points-repere-progress.md` § 3, lot 1)
  *
  * Même patron que la droite à placer : une case par point, réponse attendue =
  * les coordonnées du point (`2;3`), jamais écrite dans le modèle ; la réponse
@@ -13,8 +13,8 @@ import { generateInstance } from '../instance-generator';
 import { assignBlankIndices } from '../assign-blank-indices';
 import { validateTemplate } from '../../validators/template-validator';
 import type { QuestionTemplate, QuestionVariation } from '../../types';
-import { templateMarkdown } from '$lib/ubumark';
-import { isBlankValueCorrect, validateAnswer } from '$lib/utils/answer-validator';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
+import { isBlankValueCorrect, validateAnswer } from '#lib/utils/answer-validator.ts';
 import { buildExpectedResult } from '../../expected-result';
 
 function template(variation: Omit<QuestionVariation, 'statement'> & { statement: string }) {
@@ -24,8 +24,6 @@ function template(variation: Omit<QuestionVariation, 'statement'> & { statement:
 		status: 'draft',
 		variations: [{ ...variation, statement: templateMarkdown(variation.statement) }],
 		grades: ['5'],
-		theme: 'Test',
-		domain: 'Test',
 		level: 1
 	} as QuestionTemplate;
 }

@@ -47,6 +47,36 @@ Les incertitudes du cycle 3 sont tranchées (détail : `questions.json`, champ `
 
 ## CM1
 
+### Couverture en modèles de questions (prod, 2026-11-19)
+
+Chantier `questions-cm1` (démarche [couvrir-un-niveau.md](../../../pratiques/couvrir-un-niveau.md)), du 2026-10-27 au
+2026-11-19 ; journal dans `docs/archive/wip/questions-cm1-progress.md`, scripts d'écriture dans
+`docs/wip/questions/lot-cm1-*.py`, fichiers des lots dans `scripts/questions/cm1-*`.
+
+- **219 modèles publiés** contiennent le niveau `CM1`, tous rangés et tagués ; **168 points sur 171** ont au moins un
+  modèle publié (relevé MCP du 2026-11-19).
+- **3 points sans modèle, par décision de David** : 140 (suite orale) et 114 (construire un solide en vrai) sont non
+  évaluables dans l'appli ; 105 (reproduire une figure composée) attend l'outil « figure composée »
+  (`docs/wip/outils-manquants.md`, n° 45).
+- **Lot 0, l'existant** (#1893) : 18 modèles marqués CM1 à tort passés au niveau de leur point (14 en CM2, dont 2
+  réécrits, 4 en 6e) ; 8 modèles sans aucun point du CP à la 6e (calculs en ligne avec retenue, zéros inutiles) **repassés
+  en brouillon, niveau CM1 gardé, à ne pas republier** : `cda36cc2`, `08fbcd26`, `09f22a2f`, `17a3c039`,
+  `61baef92`, `fe9df9ba`, `4ee04b22`, `5d4dfd32`.
+- **Lots écrits** (fichiers, puis rangement et tags) : 1 calcul mental (#1904, #1913) ; 2 numération des entiers
+  (#1964, #1976) ; 3a fractions (#2001, #2007) ; 3b fractions décimales (#2043, #2045) ; 3c partages (#2070, #2082) ;
+  4 décimaux (#2115, #2124) ; 4b calcul posé (#2149, #2159) ; 5a longueurs (#2201, #2207) ; 5b masses et contenances
+  (#2216, #2222) ; 5d périmètres (#2694, #2697, #2698) ; 6 problèmes (#2701, #2706) ; 6 bis rattrapage (#2726,
+  #2729) ; 6 ter algèbre (#2734, #2740) ; 7 données (#2751, #2759) ; 8a heures et durées (#2782, #2785) ; 8b aires
+  et angles (#2803, #2812) ; 8c géométrie plane (#2823, #2824) ; 8d figures à compléter (#2838, #2840) ; 8e solides
+  et patrons (#2855, #2857, correction #2869) ; 8f déplacements (#2872, #2873) ; 9a + 9b probabilités et
+  proportionnalité (#2881, #2888) ; 9c constructions à la règle graduée (#2894, #2897).
+- **Choix de forme** (décisions de David) : case « choix » partout, jamais l'ancien QCM ; tables de 0 à 10
+  mélangées dans des modèles CM1 propres (035, 161, 036) ; 093 en horloge à placer, 107, 108, 167, 168 en figure à
+  compléter ; probabilités sans aucun calcul de probabilité (borne de 123) ; 130 en une seule utilisation de la
+  linéarité (÷ compris) ; 129, 130 en modèles CM1 seuls, ceux du CM2 dépassant le CM1.
+- **Modèles communs au CM2** (`grades` CM1 + CM2, tag des deux points) : CM1-124 / CM2-109, CM1-097 / CM2-087,
+  CM1-104 / CM2-094, et les jumeaux des lots 8c à 8f ; le chantier `questions-cm2` a été prévenu à chaque fois.
+
 ### Bornes générales
 
 | Borne                                                                                                                                                                     | Force        | Source                                                             |
@@ -598,6 +628,24 @@ Les incertitudes du cycle 3 sont tranchées (détail : `questions.json`, champ `
 | CM2-116 | Savoir résoudre un problème de proportionnalité | _format_ — Linéarité multiplicative une ou deux fois, puis additive ; pas de tableau, pas de coefficient, pas de produit en croix. (**BO**, BO c3 p.27)<br>_autre_ — Retour à l'unité hors du point : seuls les problèmes résolubles par linéarité (× ou +) ; un problème sans relation simple entre les nombres (3 plaques → 5 plaques) relève de la 6e. (**décision**, Décision de David, 2026-10-18 (question c3-1) ; d'après BO c3 p.27 et Livret CM2 2026 p.16) | L'exemple de réussite CM2 p.25 (« passer par l'unité ») reste un exemple de classe : un modèle qui impose le retour à l'unité se tague sur le point de 6e. |
 
 ## 6e
+
+### Couverture en modèles de questions (prod, 2026-11-13)
+
+Chantier `questions-6` (démarche [couvrir-un-niveau.md](../../../pratiques/couvrir-un-niveau.md)), du 2026-10-26 au
+2026-11-13 ; journal dans `docs/archive/wip/questions-6-progress.md`.
+
+- **195 modèles publiés** contenant le niveau `6` (187 de 6e seule, 8 partagés avec le cours moyen : `[CM2, 6]`,
+  `[CM1, 6]`) ; **105 points sur 111** ont au moins un modèle publié (relevé MCP du 2026-11-13).
+- **6 points sans modèle, par décision de David (2026-10-26)** : 129 (graduer un segment), 138 (inventer des
+  problèmes), 182 (planifier une enquête), 183 (réaliser des mesures) sont **non évaluables** dans l'appli ; 197 et
+  210 (programmer) sont **en attente de Blockly** (`docs/wip/outils-manquants.md`, n° 10).
+- **Ordonner** (110, 134, 204) : trois cases `$? < ? < ?$`, ou ` ```ranger ` une fois l'outil livré (décision du
+  2026-10-26).
+- **Modèles marqués 6e à tort** (2026-10-26) : un modèle dont le contenu relève d'un autre niveau prend le niveau du
+  point qui le décrit (niveau suivant : `grades` remplacé ; cours moyen : niveau ajouté, `6` gardé).
+- **Outils livrés pour la 6e** : ` ```cubes ` (assemblages, 154, 155, 181, 208, 209), rapporteur posé sur une
+  figure (169, 170), contrôles de la figure à compléter (modèles témoins, lot 11a), ` ```schema-barres ` (142).
+- **Brouillon gardé** : 3a7a5711 (« Trouver la largeur d'un rectangle »), doublon de 059e3fc9, **à ne pas publier**.
 
 ### Bornes générales
 

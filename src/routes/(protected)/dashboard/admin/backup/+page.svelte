@@ -1,15 +1,15 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import { Button } from '$lib/components/ui/button';
-	import * as Card from '$lib/components/ui/card';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Label } from '$lib/components/ui/label';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
-	import { Separator } from '$lib/components/ui/separator';
-	import * as Alert from '$lib/components/ui/alert';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import TypedConfirmDialog from '$lib/components/admin/TypedConfirmDialog.svelte';
+	import { lore } from '#lib/config/lore.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
+	import { Separator } from '#lib/components/ui/separator/index.ts';
+	import * as Alert from '#lib/components/ui/alert/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import TypedConfirmDialog from '#lib/components/admin/TypedConfirmDialog.svelte';
 	import {
 		Download,
 		Upload,
@@ -21,7 +21,7 @@
 		CheckCircle2,
 		RefreshCw
 	} from '@lucide/svelte';
-	import type { BackupStats, RestoreResult } from '$lib/server/validation/backup';
+	import type { BackupStats, RestoreResult } from '#lib/server/validation/backup.ts';
 
 	let { data } = $props();
 	// svelte-ignore state_referenced_locally

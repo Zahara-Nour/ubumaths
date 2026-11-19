@@ -1,10 +1,8 @@
 {
+	"id": "c23f5a94-269d-4f2d-915a-ca234cec67a6",
 	"title": "Deux droites données par leurs équations : parallèles ou sécantes ?",
 	"description": "Positions relatives de deux droites par leurs équations (deux cartésiennes : déterminant des vecteurs directeurs ; réduite et cartésienne : pentes) ; m pour que deux droites soient parallèles (pièges : pente a/b, vecteur (a ; b))",
 	"grades": ["2"],
-	"theme": "Géométrie",
-	"domain": "Droites du plan",
-	"subdomain": "Positions relatives",
 	"level": 2,
 	"delay": 120,
 	"status": "draft",

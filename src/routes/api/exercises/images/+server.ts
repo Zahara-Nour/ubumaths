@@ -22,24 +22,24 @@
  * @module api/exercises/images
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRoles } from '$lib/server/middleware/auth';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
 import {
 	uploadExerciseImage,
 	validateImageFile,
 	ALLOWED_IMAGE_TYPES
-} from '$lib/exercises/services/image-upload';
-import { extractDimensionsFromFile } from '$lib/exercises/services/image-dimension-extractor';
+} from '#lib/exercises/services/image-upload.ts';
+import { extractDimensionsFromFile } from '#lib/exercises/services/image-dimension-extractor.ts';
 import {
 	validateFileSignature,
 	isAllowedMimeType,
 	imageUploadSuccessResponseSchema,
 	type ImageUploadResponse,
 	type ImageMetadata
-} from '$lib/server/validation/image-upload';
-import { validateJsonResponse } from '$lib/server/validation/response-utils';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/validation/image-upload.ts';
+import { validateJsonResponse } from '#lib/server/validation/response-utils.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/exercises/images/+server');
 
@@ -210,5 +210,5 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		'POST /api/exercises/images'
 	);
 
-	return json(validated, { status: 201 });
+	return Response.json(validated, { status: 201 });
 };

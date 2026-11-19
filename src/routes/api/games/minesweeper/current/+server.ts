@@ -1,7 +1,6 @@
 import type { RequestHandler } from './$types';
-import { json } from '@sveltejs/kit';
-import { requireRoles } from '$lib/server/middleware/auth';
-import { sanitizePostgresError } from '$lib/server/utils/error-handler';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import { sanitizePostgresError } from '#lib/server/utils/error-handler.ts';
 
 /**
  * Load current in-progress Minesweeper game
@@ -55,7 +54,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 		}
 
 		// Return game or null if none found
-		return json({ game: game || null });
+		return Response.json({ game: game || null });
 	} catch (err) {
 		sanitizePostgresError(err, 'MINESWEEPER_CURRENT');
 	}

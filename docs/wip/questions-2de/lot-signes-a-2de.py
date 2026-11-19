@@ -70,6 +70,11 @@ def col(x, k=0):
     return '\\textcolor{{{color:primary.' + str(k) + '}}}{' + x + '}'
 
 
+def colt(x, k=0):
+    """Valeur colorée en plein texte : `\\textcolor` hors `$…$` s'afficherait en LaTeX brut."""
+    return '$' + col(x, k) + '$'
+
+
 def choix(question, options, melanger=True, plusieurs=False):
     entete = ('plusieurs: oui\n' if plusieurs else '') + ('' if melanger else 'melanger: non\n')
     return question + '\n\n```choix\n' + entete + ''.join('- ' + o + '\n' for o in options) + '```'
@@ -125,8 +130,8 @@ SIGNE_CARRE = variation(
     [var('g', '0|1')],
     [case('{{eval:1-(g)}}')],
     ['Un carré est toujours positif ou nul : $x^2\\geqslant 0$, et $x^2=0$ seulement pour $x=0$.',
-     '{{if:g==1|Ici $x\\neq 0$ : $x^2$ est ' + col('\\text{strictement positif}') + '.|Il vaut $0$ pour'
-     ' $x=0$ : $x^2$ est ' + col('\\text{positif ou nul}') + '.}}'])
+     '{{if:g==1|Ici $x\\neq 0$ : $x^2$ est ' + colt('\\text{strictement positif}') + '.|Il vaut $0$ pour'
+     ' $x=0$ : $x^2$ est ' + colt('\\text{positif ou nul}') + '.}}'])
 
 SIGNE_INVERSE = variation(
     choix('Pour tout réel $x{{if:g==1|<|>}}0$, le nombre $\\dfrac{1}{x}$ est :', SIGNES, melanger=False),
@@ -134,7 +139,7 @@ SIGNE_INVERSE = variation(
     [case('{{eval:2*(g)}}')],
     ['$\\dfrac{1}{x}$ est du **signe de $x$** (on divise $1$, positif, par $x$) et n\'est jamais nul.',
      'Ici $x{{if:g==1|<|>}}0$ : $\\dfrac{1}{x}$ est '
-     + col('\\text{strictement {{if:g==1|négatif|positif}}}') + '.'])
+     + colt('\\text{strictement {{if:g==1|négatif|positif}}}') + '.'])
 
 SIGNE_VA = variation(
     choix('Pour tout réel $x${{if:g==1| non nul|}}, le nombre $\\lvert x\\rvert$ est :', SIGNES,
@@ -143,8 +148,8 @@ SIGNE_VA = variation(
     [case('{{eval:1-(g)}}')],
     ['$\\lvert x\\rvert$ est la distance de $x$ à $0$ : elle est positive ou nulle, et nulle seulement pour'
      ' $x=0$.',
-     '{{if:g==1|Ici $x\\neq 0$ : $\\lvert x\\rvert$ est ' + col('\\text{strictement positif}') + '.|Elle vaut'
-     ' $0$ pour $x=0$ : $\\lvert x\\rvert$ est ' + col('\\text{positif ou nul}') + '.}}'])
+     '{{if:g==1|Ici $x\\neq 0$ : $\\lvert x\\rvert$ est ' + colt('\\text{strictement positif}') + '.|Elle vaut'
+     ' $0$ pour $x=0$ : $\\lvert x\\rvert$ est ' + colt('\\text{positif ou nul}') + '.}}'])
 
 # Signe d'une image sans calcul : f carré, inverse ou valeur absolue en un négatif
 IMAGE_INVERSE = variation(
@@ -154,7 +159,7 @@ IMAGE_INVERSE = variation(
     [var('p', '1..9'), var('q', '2..9')],
     [case('1')],
     ['$\\dfrac{1}{x}$ est du signe de $x$.',
-     '$-\\dfrac{ {{p}} }{ {{q}} }<0$, donc son image est ' + col('\\text{strictement négative}') + '.'],
+     '$-\\dfrac{ {{p}} }{ {{q}} }<0$, donc son image est ' + colt('\\text{strictement négative}') + '.'],
     ['gcd(p, q) == 1', 'p != q'])
 
 IMAGE_CARRE = variation(
@@ -164,7 +169,7 @@ IMAGE_CARRE = variation(
     [var('p', '1..9'), var('q', '2..9')],
     [case('0')],
     ['Un carré est positif ou nul, et nul seulement en $0$.',
-     '$-\\dfrac{ {{p}} }{ {{q}} }\\neq 0$, donc son carré est ' + col('\\text{strictement positif}')
+     '$-\\dfrac{ {{p}} }{ {{q}} }\\neq 0$, donc son carré est ' + colt('\\text{strictement positif}')
      + ', même si le nombre est négatif.'],
     ['gcd(p, q) == 1', 'p != q'])
 
@@ -212,7 +217,7 @@ MOINS_VA = variation(
     [var('k', '1..5')],
     [case('3')],
     ['$\\lvert x\\rvert\\geqslant 0$ ; multiplié par $-{{k}}$, négatif, il change de signe.',
-     '$-{{k}}\\lvert x\\rvert\\leqslant 0$, nul pour $x=0$ : il est ' + col('\\text{négatif ou nul}') + '.'])
+     '$-{{k}}\\lvert x\\rvert\\leqslant 0$, nul pour $x=0$ : il est ' + colt('\\text{négatif ou nul}') + '.'])
 
 MODELES.append(modele(
     '02-signe-de-la-valeur-absolue', 'Signe de la fonction valeur absolue',
@@ -245,7 +250,7 @@ MOINS_CARRE = variation(
     [var('k', '1..5')],
     [case('3')],
     ['$x^2\\geqslant 0$ ; multiplié par $-{{k}}$, négatif, il change de signe.',
-     '$-{{k}}x^2\\leqslant 0$, nul pour $x=0$ : il est ' + col('\\text{négatif ou nul}') + '.'])
+     '$-{{k}}x^2\\leqslant 0$, nul pour $x=0$ : il est ' + colt('\\text{négatif ou nul}') + '.'])
 
 CARRE_DECALE = variation(
     choix('Pour tout réel $x$, le nombre $(x{{eval:-(a);+}})^2$ est :', SIGNES, melanger=False)
@@ -253,7 +258,7 @@ CARRE_DECALE = variation(
     [var('a', '1..9;±')],
     [case('1'), case('{{a}}')],
     ['Un carré est positif ou nul, et nul seulement quand le nombre élevé au carré est nul.',
-     '$(x{{eval:-(a);+}})^2$ est ' + col('\\text{positif ou nul}') + ', nul pour $x{{eval:-(a);+}}=0$, soit $x='
+     '$(x{{eval:-(a);+}})^2$ est ' + colt('\\text{positif ou nul}') + ', nul pour $x{{eval:-(a);+}}=0$, soit $x='
      + col('{{a}}', 1) + '$.'])
 
 MODELES.append(modele(
@@ -319,7 +324,7 @@ AFFINE_TABLEAU = variation(
     [var('r', '-5..5'), var('s', '-1|1')],
     [case('{{if:s>0|0|1}}')],
     ['Une fonction affine non constante qui passe {{if:s>0|du négatif au positif|du positif au négatif}}'
-     ' est ' + col('\\text{{{if:s>0|croissante|décroissante}}}') + ' : son coefficient directeur est'
+     ' est ' + colt('\\text{{{if:s>0|croissante|décroissante}}}') + ' : son coefficient directeur est'
      ' {{if:s>0|positif|négatif}}.'])
 
 SP_AF_P = {'m': 2, 'r': 3, 'p': -6}
@@ -375,7 +380,7 @@ PRODUIT_VALEUR = variation(
     [case('{{if:v>0|0|1}}')],
     ['En $x={{x0}}$, le facteur $' + F1 + '$ vaut ${{u}}$ et le facteur $' + F2 + '$ vaut ${{w}}$.',
      'Un facteur ' + signe_txt('u') + ', un facteur ' + signe_txt('w') + ' : par la **règle des signes**,'
-     ' $A({{x0}})$ est ' + col('\\text{strictement {{if:v>0|positif|négatif}}}') + '.'],
+     ' $A({{x0}})$ est ' + colt('\\text{strictement {{if:v>0|positif|négatif}}}') + '.'],
     ['r1 != r2', 'x0 != r1', 'x0 != r2'])
 
 PRODUIT_RACINE = variation(
@@ -384,7 +389,7 @@ PRODUIT_RACINE = variation(
     FACTEURS,
     [case('2')],
     ['En $x={{r1}}$, le facteur $' + F1 + '$ vaut $0$.',
-     'Un produit dont un facteur est nul est nul : $A({{r1}})$ est ' + col('\\text{nul}') + '.'],
+     'Un produit dont un facteur est nul est nul : $A({{r1}})$ est ' + colt('\\text{nul}') + '.'],
     ['r1 != r2'])
 
 # Sur un intervalle : facteurs (x − p) ou (p − x), racines p < q
@@ -407,7 +412,7 @@ def intervalle_variation(enonce_avant, expression, intervalle, t, operation):
         ['Pour $x\\in' + intervalle + '$ : $' + FACTEUR_P + '$ est ' + signe_txt('u') + ' et $' + FACTEUR_Q
          + '$ est ' + signe_txt('w') + '.',
          'Par la **règle des signes** ' + ('du produit' if produit else 'du quotient') + ', $'
-         + ('A' if produit else 'B') + '(x)$ est ' + col('\\text{strictement {{if:v>0|positif|négatif}}}')
+         + ('A' if produit else 'B') + '(x)$ est ' + colt('\\text{strictement {{if:v>0|positif|négatif}}}')
          + '.'])
 
 
@@ -462,7 +467,7 @@ QUOTIENT_VALEUR = variation(
     [case('{{if:v>0|0|1}}')],
     ['En $x={{x0}}$, le numérateur $' + F1 + '$ vaut ${{u}}$ et le dénominateur $' + F2 + '$ vaut ${{w}}$.',
      'Numérateur ' + signe_txt('u') + ', dénominateur ' + signe_txt('w') + ' : par la **règle des signes**,'
-     ' $B({{x0}})$ est ' + col('\\text{strictement {{if:v>0|positif|négatif}}}') + '.'],
+     ' $B({{x0}})$ est ' + colt('\\text{strictement {{if:v>0|positif|négatif}}}') + '.'],
     QUOTIENT_COND + ['x0 != r1', 'x0 != r2'])
 
 QUOTIENT_NUL = variation(
@@ -472,7 +477,7 @@ QUOTIENT_NUL = variation(
     [case('2')],
     ['En $x={{r1}}$, le numérateur $' + F1 + '$ vaut $0$ et le dénominateur $' + F2 + '$ vaut'
      ' ${{eval:(c)*(r1)+(d)}}\\neq 0$.',
-     'Un quotient de numérateur nul est nul : $B({{r1}})$ est ' + col('\\text{nul}') + '.'],
+     'Un quotient de numérateur nul est nul : $B({{r1}})$ est ' + colt('\\text{nul}') + '.'],
     QUOTIENT_COND)
 
 QUOTIENT_INTERDIT = variation(
@@ -481,7 +486,7 @@ QUOTIENT_INTERDIT = variation(
     FACTEURS,
     [case('3')],
     ['En $x={{r2}}$, le dénominateur $' + F2 + '$ vaut $0$.',
-     'On ne divise pas par $0$ : $B({{r2}})$ ' + col('\\text{n\'existe pas}') + ' ($' + '{{r2}}' + '$ est une'
+     'On ne divise pas par $0$ : $B({{r2}})$ ' + colt('\\text{n\'existe pas}') + ' ($' + '{{r2}}' + '$ est une'
      ' **valeur interdite**).'],
     QUOTIENT_COND)
 

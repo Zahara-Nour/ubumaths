@@ -1,7 +1,7 @@
 """Écrit les 9 modèles du lot 2 du CE2 (numération) dans scripts/questions/ce2-2/.
 
 Phase 0 validée par David le 2026-10-28 (« je valide », § 6 du journal
-`docs/wip/questions-ce2-progress.md`). Plages : bornes `cycle2.json`, CE2 (nombres ≤ 10 000 ;
+`docs/archive/wip/questions-ce2-progress.md`). Plages : bornes `cycle2.json`, CE2 (nombres ≤ 10 000 ;
 groupes de dix, cent, mille ; 1 235 filtres par lots de 100 ; 3 d et 46 c et 5 u ;
 17 u, 8 d, 32 c et 2 milliers ; (4 × 1 000) + (6 × 100) + … ; 4 000 + 600 + 30 + 5 ; ranger
 6 234, 6 243, 6 239, 6 300, 5 229 ; … < 6 239 < … ; 2 393 < … < 2 396 ; bande 2 391 … 2 398).

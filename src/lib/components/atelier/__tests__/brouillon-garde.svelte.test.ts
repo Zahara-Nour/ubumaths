@@ -8,8 +8,8 @@ import { render } from 'vitest-browser-svelte';
 import { page, userEvent } from 'vitest/browser';
 import type { MathfieldElement } from 'mathlive';
 import AtelierContainer from '../AtelierContainer.svelte';
-import { Atelier } from '$lib/atelier/atelier.svelte';
-import { INPUT_MODE_KEY } from '$lib/atelier/input-mode';
+import { Atelier } from '#lib/atelier/atelier.svelte.ts';
+import { INPUT_MODE_KEY } from '#lib/atelier/input-mode.ts';
 import { chooseObjectAction } from './harness/function-card';
 import { onDesktopScreen } from './harness/desktop-screen';
 
