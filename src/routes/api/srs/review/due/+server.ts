@@ -8,7 +8,6 @@
  * (À remédier = states=relearning ; À renforcer = states=learning,review).
  */
 
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import type { CardState, DueCardsResponse, DueReviewCard } from '#lib/srs/types.ts';
 import { generateSRSInstance } from '#lib/srs/generator.ts';
@@ -46,7 +45,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	const validation = dueCardsQuerySchema.safeParse(queryRaw);
 
 	if (!validation.success) {
-		return json({ error: validation.error.issues[0].message }, { status: 400 });
+		return Response.json({ error: validation.error.issues[0].message }, { status: 400 });
 	}
 
 	const { deck_id: deckId, states, all: revisionForcee } = validation.data;
@@ -64,7 +63,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			.single();
 
 		if (deckError || !deck) {
-			return json({ error: 'Deck introuvable ou accès refusé' }, { status: 404 });
+			return Response.json({ error: 'Deck introuvable ou accès refusé' }, { status: 404 });
 		}
 
 		// Get due cards using helper function
@@ -81,14 +80,17 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 		if (dueCardsError) {
 			logger.error('Error fetching due cards:', dueCardsError);
-			return json({ error: 'Impossible de charger les cartes à réviser' }, { status: 500 });
+			return Response.json(
+				{ error: 'Impossible de charger les cartes à réviser' },
+				{ status: 500 }
+			);
 		}
 
 		logger.info(`[SRS] RPC returned ${dueCards?.length || 0} due cards`);
 
 		if (!dueCards || dueCards.length === 0) {
 			logger.info('[SRS] No due cards found - returning empty array');
-			return json({ cards: [] });
+			return Response.json({ cards: [] });
 		}
 
 		// `get_due_cards_for_deck` ne renvoie que
@@ -238,9 +240,12 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			logger.error(`[SRS] ${skipped.length} carte(s) écartée(s) de la session :`, skipped);
 		}
 		// Au client : le seul NOMBRE de cartes écartées (le détail reste dans les logs)
-		return json({ cards: reviewCards, skipped: skipped.length } satisfies DueCardsResponse);
+		return Response.json({
+			cards: reviewCards,
+			skipped: skipped.length
+		} satisfies DueCardsResponse);
 	} catch (error) {
 		logger.error('Unexpected error in GET /api/srs/review/due:', error);
-		return json({ error: 'Une erreur inattendue s’est produite' }, { status: 500 });
+		return Response.json({ error: 'Une erreur inattendue s’est produite' }, { status: 500 });
 	}
 };

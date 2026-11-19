@@ -19,7 +19,7 @@
  * - Requires Google integration with drive.file scope
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { GoogleNotConnectedError, GoogleTokenExpiredError } from '#lib/server/google/errors.ts';
 import { requireRole } from '#lib/server/middleware/auth.ts';
@@ -95,7 +95,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		// Filter out autosave files from the gallery
 		const visibleFiles = files.filter((f) => f.appProperties?.isAutosave !== 'true');
 
-		return json({
+		return Response.json({
 			files: visibleFiles.map((f) => {
 				const thumbnailFileId = f.appProperties?.thumbnailFileId;
 				return {

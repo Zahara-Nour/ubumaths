@@ -14,7 +14,7 @@
  *   has access to the notebook).
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '#lib/server/middleware/auth.ts';
 import { z } from 'zod';
@@ -52,5 +52,5 @@ export const PATCH: RequestHandler = async ({ locals, params }) => {
 		throw error(500, 'Impossible d’enregistrer l’indice');
 	}
 
-	return json({ run });
+	return Response.json({ run });
 };

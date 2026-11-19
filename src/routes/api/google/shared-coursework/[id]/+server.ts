@@ -29,7 +29,7 @@
  * - All inputs validated with Zod
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import { assertGoogleClassroomEnabled } from '#lib/server/google/feature-guard.ts';
 import type { RequestHandler } from './$types';
 import { requireRole } from '#lib/server/middleware/auth.ts';
@@ -239,7 +239,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 		const categoryData = updatedRecord.coursework_categories as unknown as { name: string } | null;
 
 		// Transform to camelCase and include enriched data
-		return json({
+		return Response.json({
 			success: true,
 			sharedCoursework: {
 				id: updatedRecord.id,
@@ -332,7 +332,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 			throw error(500, 'Impossible de supprimer le devoir Classroom partagé');
 		}
 
-		return json({
+		return Response.json({
 			success: true
 		});
 	} catch (err) {

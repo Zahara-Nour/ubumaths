@@ -6,7 +6,7 @@
  * DELETE - Revoke a share token
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '#lib/server/middleware/auth.ts';
 import { getExercise } from '#lib/server/exercises.ts';
@@ -49,5 +49,5 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 		throw error(500, 'Impossible de révoquer le lien de partage');
 	}
 
-	return json({ success: true });
+	return Response.json({ success: true });
 };

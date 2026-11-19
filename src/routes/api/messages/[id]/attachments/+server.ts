@@ -7,7 +7,7 @@
  * enregistre la ligne `message_attachments_v2` sous le chemin rendu ici.
  * Voir `src/lib/server/message-attachments.ts`.
  */
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '#lib/server/middleware/auth.ts';
 import { requireConsent } from '#lib/server/middleware/consent.ts';
@@ -40,5 +40,5 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 	if (!result.ok) {
 		throw error(result.status, result.message);
 	}
-	return json({ path: result.path, token: result.token });
+	return Response.json({ path: result.path, token: result.token });
 };

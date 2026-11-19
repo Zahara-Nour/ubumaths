@@ -13,7 +13,7 @@
  * 400 = corps invalide ; 401/403 = pas admin ; 500 = base illisible.
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAdmin } from '#lib/server/middleware/auth.ts';
 import { bulkTemplateStatusSchema } from '#lib/server/validation/questions.ts';
@@ -41,5 +41,5 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			? await publishTemplates(supabase, ids)
 			: await unpublishTemplates(supabase, ids);
 
-	return json(result);
+	return Response.json(result);
 };

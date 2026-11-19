@@ -1,4 +1,4 @@
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import {
 	sentMessagesResponseSchema,
@@ -52,7 +52,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			'GET /api/messages/sent'
 		);
 
-		return json(validated);
+		return Response.json(validated);
 	} catch (err) {
 		logger.error('Error in sent messages API:', err);
 		if (err && typeof err === 'object' && 'status' in err) {

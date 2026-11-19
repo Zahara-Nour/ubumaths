@@ -3,7 +3,7 @@
  * Log a new error (from client or server)
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { logError, getUserContext, type LogErrorData } from '#lib/server/errorMonitoring.ts';
 import { logErrorSchema } from '#lib/server/validation/errors.ts';
@@ -56,7 +56,7 @@ export const POST: RequestHandler = async ({ request, locals, getClientAddress }
 			throw error(500, result.error || 'Failed to log error');
 		}
 
-		return json({ success: true, id: result.id });
+		return Response.json({ success: true, id: result.id });
 	} catch (err) {
 		// If this is already a SvelteKit error, rethrow it
 		if (err && typeof err === 'object' && 'status' in err) {

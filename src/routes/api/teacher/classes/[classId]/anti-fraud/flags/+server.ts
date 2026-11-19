@@ -7,7 +7,7 @@
  * Cf. spec TDD : docs/archive/wip/srs-anti-fraud-spec-tdd.md §B9
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireTeacherOfClass } from '#lib/server/stats/teacher-class-auth.ts';
 import { classIdParamSchema } from '#lib/server/validation/teacher-analytics.ts';
@@ -22,7 +22,7 @@ const DEFAULT_SINCE_DAYS = 30;
 export const GET: RequestHandler = async ({ params, url, locals }) => {
 	const paramCheck = classIdParamSchema.safeParse(params);
 	if (!paramCheck.success) {
-		return json({ error: paramCheck.error.issues[0].message }, { status: 400 });
+		return Response.json({ error: paramCheck.error.issues[0].message }, { status: 400 });
 	}
 
 	const queryCheck = flagsListQuerySchema.safeParse({
@@ -32,7 +32,7 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 		point: url.searchParams.get('point') ?? undefined
 	});
 	if (!queryCheck.success) {
-		return json({ error: queryCheck.error.issues[0].message }, { status: 400 });
+		return Response.json({ error: queryCheck.error.issues[0].message }, { status: 400 });
 	}
 
 	const { classId } = paramCheck.data;
@@ -55,7 +55,7 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 
 	const studentIds = (memberRows ?? []).map((m) => m.student_id);
 	if (studentIds.length === 0) {
-		return json({ flags: [], total: 0, resolved_count: 0 });
+		return Response.json({ flags: [], total: 0, resolved_count: 0 });
 	}
 
 	// 2. Construit la query flags avec filtres.
@@ -79,7 +79,7 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 
 	const { data: flagRows, error: flagErr } = await q;
 	if (flagErr) {
-		return json({ error: flagErr.message }, { status: 500 });
+		return Response.json({ error: flagErr.message }, { status: 500 });
 	}
 
 	type FlagRow = {
@@ -132,7 +132,7 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 		.eq('resolved', true)
 		.gte('created_at', sinceIso);
 
-	return json({
+	return Response.json({
 		flags,
 		total: flags.length,
 		resolved_count: resolvedCount ?? 0

@@ -9,7 +9,7 @@
  * POST /api/teacher/chapters/[id]/documents
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '#lib/server/middleware/auth.ts';
 import { uuidSchema } from '#lib/server/validation/common.ts';
@@ -131,5 +131,5 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		}
 	}
 
-	return json({ success: true, placed }, { status: 201 });
+	return Response.json({ success: true, placed }, { status: 201 });
 };

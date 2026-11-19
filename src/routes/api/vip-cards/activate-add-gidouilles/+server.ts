@@ -25,7 +25,7 @@
  * - Card must not be already used
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '#lib/server/middleware/auth.ts';
 import { z } from 'zod';
@@ -179,7 +179,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	// Audit trail for card consumption is handled by the use_vip_card RPC
 	// (inserts action='used' into vip_cards_activity)
 
-	return json({
+	return Response.json({
 		success: true,
 		gidouillesAdded: amount,
 		cardName: template.name

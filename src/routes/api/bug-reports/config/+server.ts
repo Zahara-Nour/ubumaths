@@ -8,7 +8,7 @@
  * AUTH: GET = authenticated, PATCH = admin only
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAdmin, requireAuth } from '#lib/server/middleware/auth.ts';
 import { updateBugReportsConfigSchema } from '#lib/server/validation/bug-reports.ts';
@@ -52,7 +52,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			updatedAt: config.updated_at
 		};
 
-		return json(response);
+		return Response.json(response);
 	} catch (err) {
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
@@ -131,7 +131,7 @@ export const PATCH: RequestHandler = async ({ request, locals }) => {
 			updatedAt: updatedConfig.updated_at
 		};
 
-		return json(response);
+		return Response.json(response);
 	} catch (err) {
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;

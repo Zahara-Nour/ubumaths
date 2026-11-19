@@ -11,7 +11,7 @@
  * `/dashboard/admin/cron` (POST). AUTH : `Bearer CRON_SECRET` seulement.
  * Journal : `background_job_runs` (job `deleted_account_files`).
  */
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { verifyCronAuth } from '#lib/server/auth/cron.ts';
 import { createServiceRoleClient } from '#lib/server/serviceRoleClient.ts';
@@ -55,7 +55,7 @@ const handler: RequestHandler = async ({ request }) => {
 				p_metadata: { ...result, orphan_files: orphanFiles }
 			});
 		}
-		return json({ success, ...result, orphan_files: orphanFiles });
+		return Response.json({ success, ...result, orphan_files: orphanFiles });
 	} catch (err) {
 		const message = err instanceof Error ? err.message : 'Erreur inconnue';
 		if (runId) {

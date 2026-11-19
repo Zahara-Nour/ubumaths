@@ -1,4 +1,4 @@
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '#lib/server/middleware/auth.ts';
 // Supabase client is now accessed via locals.supabase
@@ -195,7 +195,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 		return { ...p, summary: `${iGot} contre ${iGave}` };
 	});
 
-	return json(result);
+	return Response.json(result);
 };
 
 /**
@@ -454,7 +454,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 			await notifyProposalRejected(proposerId, 'Annonce', 'Autre proposition acceptée');
 		}
 
-		return json(
+		return Response.json(
 			{
 				...(await enrichWithParticipants(supabase, [proposal]))[0],
 				status: 'accepted',
@@ -476,5 +476,5 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 	await notifyNewProposal(supabase, listing.creator_id, userId, 'Annonce', proposal.id);
 
 	const [avecProposant] = await enrichWithParticipants(supabase, [proposal]);
-	return json(avecProposant, { status: 201 });
+	return Response.json(avecProposant, { status: 201 });
 };

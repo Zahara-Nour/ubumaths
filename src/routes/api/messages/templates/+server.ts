@@ -7,7 +7,7 @@
  * POST - Create new template (admin/teacher only)
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import { requireAuth, requireRoles } from '#lib/server/middleware/auth.ts';
 import type { RequestHandler } from './$types';
 import { validateTemplate } from '#lib/templates/templateEngine.ts';
@@ -122,7 +122,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		class_name: (t.classes as { name?: string } | null)?.name || null
 	}));
 
-	return json({
+	return Response.json({
 		templates: formattedTemplates || [],
 		count: formattedTemplates?.length || 0
 	});
@@ -164,7 +164,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 	});
 
 	if (!templateValidation.valid) {
-		return json(
+		return Response.json(
 			{
 				error: 'Validation échouée',
 				errors: templateValidation.errors
@@ -227,7 +227,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		return error(500, 'Erreur lors de la création du template');
 	}
 
-	return json(
+	return Response.json(
 		{
 			template: newTemplate,
 			message: 'Template créé avec succès',

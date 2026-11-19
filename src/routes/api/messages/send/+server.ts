@@ -1,4 +1,4 @@
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { sendMessageSchema } from '#lib/server/validation/messages.ts';
 import { requireAuth } from '#lib/server/middleware/auth.ts';
@@ -64,7 +64,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			throw error(500, sendError.message || "Erreur lors de l'envoi du message");
 		}
 
-		return json({ success: true, messageId });
+		return Response.json({ success: true, messageId });
 	} catch (err) {
 		logger.error('Error in send message API:', err);
 		if (err && typeof err === 'object' && 'status' in err) {

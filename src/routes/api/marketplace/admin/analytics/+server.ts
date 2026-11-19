@@ -1,4 +1,4 @@
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRoles } from '#lib/server/middleware/auth.ts';
 import { z } from 'zod';
@@ -100,7 +100,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 	if (studentIds.length === 0) {
 		// Return empty analytics
-		return json({
+		return Response.json({
 			analytics: {
 				engagement: {
 					totalStudents: 0,
@@ -345,7 +345,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			: 0;
 
 	// Return analytics
-	return json({
+	return Response.json({
 		analytics: {
 			engagement: {
 				totalStudents: studentIds.length,

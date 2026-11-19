@@ -13,7 +13,7 @@
  * fêter (deuxième appel, autre onglet).
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '#lib/server/middleware/auth.ts';
 import { acknowledgeWelcomeBack } from '#lib/server/buddy-queries.ts';
@@ -42,5 +42,5 @@ export const POST: RequestHandler = async ({ locals }) => {
 			logger.error('Semaine non marquée fêtée après le retour :', err);
 		}
 	}
-	return json({ acknowledged });
+	return Response.json({ acknowledged });
 };

@@ -5,7 +5,7 @@
  * DELETE - Delete exercise
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import {
 	getExercise,
@@ -45,7 +45,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		throw error(404, 'Exercice introuvable');
 	}
 
-	return json({ exercise: result.data });
+	return Response.json({ exercise: result.data });
 };
 
 /**
@@ -93,7 +93,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		throw error(500, 'Impossible de modifier l’exercice');
 	}
 
-	return json({ exercise: result.data });
+	return Response.json({ exercise: result.data });
 };
 
 /**
@@ -123,5 +123,5 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 		throw error(500, 'Impossible de supprimer l’exercice');
 	}
 
-	return json({ success: true });
+	return Response.json({ success: true });
 };

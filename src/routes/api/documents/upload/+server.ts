@@ -8,7 +8,7 @@
  * - metadata: JSON string with title, grades, topics, etc.
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import type { GradeCode } from '#lib/types/grades.ts';
 import { requireAuth } from '#lib/server/middleware/auth.ts';
@@ -140,7 +140,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		// ====================================================================
 		// Return success response
 		// ====================================================================
-		return json({
+		return Response.json({
 			success: true,
 			documentId: result.documentId,
 			chunksCreated: result.chunksCreated,

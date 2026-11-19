@@ -1,4 +1,4 @@
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '#lib/server/middleware/auth.ts';
 // Supabase client is now accessed via locals.supabase
@@ -152,7 +152,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 		if (fetchError || !updatedProposal) {
 			logger.error('Error fetching updated proposal:', fetchError);
 			// Still return success since the operation completed
-			return json({
+			return Response.json({
 				...proposal,
 				status: 'accepted',
 				response_message,
@@ -185,7 +185,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 		// await invalidateMarketplaceCaches(listing.creator_id, proposal.proposer_id);
 		// await invalidateTeacherCachesForStudents(supabase, [listing.creator_id, proposal.proposer_id]);
 
-		return json({
+		return Response.json({
 			...updatedProposal,
 			response_message,
 			trade_completed: true
@@ -229,7 +229,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 		// Create notification for proposer
 		await notifyProposalRejected(proposal.proposer_id, 'Annonce', response_message);
 
-		return json({
+		return Response.json({
 			...proposal,
 			status: 'rejected',
 			response_message,
@@ -324,5 +324,5 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 		}
 	}
 
-	return json({ success: true });
+	return Response.json({ success: true });
 };

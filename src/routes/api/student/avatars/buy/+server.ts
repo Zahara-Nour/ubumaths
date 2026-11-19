@@ -19,7 +19,7 @@
  * insuffisant (« Il te manque N gidouilles ») ; 429 trop d’appels ; 500 panne.
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import { z } from 'zod';
 import type { RequestHandler } from './$types';
 import { requireRole } from '#lib/server/middleware/auth.ts';
@@ -62,5 +62,5 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			avatarRefusalStatus(outcome.reason),
 			avatarRefusalMessage(outcome.reason, outcome.missing)
 		);
-	return json({ balance: outcome.balance });
+	return Response.json({ balance: outcome.balance });
 };

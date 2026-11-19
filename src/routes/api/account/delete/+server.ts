@@ -27,7 +27,7 @@
  * 8. Update audit entry with result
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '#lib/server/middleware/auth.ts';
 import { deleteAccountSchema } from '#lib/server/validation/account.ts';
@@ -206,7 +206,7 @@ export const DELETE: RequestHandler = async ({ request, locals, getClientAddress
 
 		logger.info('Account deletion completed successfully', { userId });
 
-		return json({
+		return Response.json({
 			success: true,
 			message: 'Votre compte a ete supprime avec succes.'
 		});

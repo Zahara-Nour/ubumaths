@@ -13,7 +13,7 @@
  * Spec : docs/archive/wip/srs-fsrs-spec-tdd.md §2
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import type { CardStats } from '#lib/srs/types.ts';
 import { FSRS } from '#lib/srs/fsrs.ts';
@@ -40,7 +40,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		const bodyRaw = await request.json();
 		const validation = submitReviewSchema.safeParse(bodyRaw);
 		if (!validation.success) {
-			return json({ error: validation.error.issues[0].message }, { status: 400 });
+			return Response.json({ error: validation.error.issues[0].message }, { status: 400 });
 		}
 
 		const body = validation.data;
@@ -56,11 +56,14 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			.single();
 
 		if (cardError || !card) {
-			return json({ error: 'Carte de révision introuvable' }, { status: 404 });
+			return Response.json({ error: 'Carte de révision introuvable' }, { status: 404 });
 		}
 
 		if (card.deck_id !== body.deckId) {
-			return json({ error: 'Cette carte n’appartient pas au deck indiqué' }, { status: 400 });
+			return Response.json(
+				{ error: 'Cette carte n’appartient pas au deck indiqué' },
+				{ status: 400 }
+			);
 		}
 
 		const { data: deck, error: deckError } = await supabase
@@ -71,7 +74,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			.single();
 
 		if (deckError || !deck) {
-			return json({ error: 'Deck introuvable ou accès refusé' }, { status: 404 });
+			return Response.json({ error: 'Deck introuvable ou accès refusé' }, { status: 404 });
 		}
 
 		// Référence carte : template ou custom
@@ -79,7 +82,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		const cardReferenceId = card.card_type === 'template' ? card.template_id : card.id;
 
 		if (!cardReferenceId) {
-			return json({ error: 'Référence de carte invalide' }, { status: 400 });
+			return Response.json({ error: 'Référence de carte invalide' }, { status: 400 });
 		}
 
 		// FSRS toujours instancié avec la config par défaut (PO 2026-06-10 :
@@ -100,7 +103,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			);
 		} catch (upsertError) {
 			logger.error('[srs/review/submit] UPSERT stats failed:', upsertError);
-			return json({ error: 'Impossible d’enregistrer la révision' }, { status: 500 });
+			return Response.json({ error: 'Impossible d’enregistrer la révision' }, { status: 500 });
 		}
 
 		// ----- NOUVEAU : INSERT skill_attempts pour cartes template-based -----
@@ -189,7 +192,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			}
 		}
 
-		return json({
+		return Response.json({
 			success: true,
 			buddy_xp: buddyXp,
 			review_gidouilles: reviewGidouilles,
@@ -203,6 +206,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		});
 	} catch (error) {
 		logger.error('Unexpected error in POST /api/srs/review/submit:', error);
-		return json({ error: 'Une erreur inattendue s’est produite' }, { status: 500 });
+		return Response.json({ error: 'Une erreur inattendue s’est produite' }, { status: 500 });
 	}
 };

@@ -25,7 +25,7 @@
  * }
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRoles } from '#lib/server/middleware/auth.ts';
 import { verifyTeacherStudentWithRole } from '#lib/server/middleware/student-access.ts';
@@ -137,7 +137,7 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 			}
 		};
 
-		return json(response);
+		return Response.json(response);
 	} catch (err) {
 		// Re-throw SvelteKit errors
 		if (err && typeof err === 'object' && 'status' in err) {

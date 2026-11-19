@@ -11,7 +11,7 @@
  * @param studentId - UUID of the student who requested activation
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
 import { requireAuth } from '#lib/server/middleware/auth.ts';
@@ -63,7 +63,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(400, rpcResult.error || 'Impossible de refuser l’activation');
 	}
 
-	return json({
+	return Response.json({
 		success: true,
 		message: 'Demande d’activation refusée',
 		cardName: rpcResult.cardName

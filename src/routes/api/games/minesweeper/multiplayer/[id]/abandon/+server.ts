@@ -6,7 +6,7 @@
  * Awards win to opponent and updates stats
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '#lib/server/middleware/auth.ts';
 import { abandonMatchSchema } from '#lib/server/validation/minesweeper-multiplayer.ts';
@@ -43,5 +43,5 @@ export const POST: RequestHandler = async ({ request, params, locals }) => {
 		sanitizeRPCError(rpcError, 'abandon_multiplayer_match');
 	}
 
-	return json(data);
+	return Response.json(data);
 };

@@ -5,7 +5,7 @@
  * POST: Create new conversation
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import {
 	getTutorConversationQuerySchema,
@@ -58,7 +58,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		throw error(500, 'Erreur lors de la recherche de la conversation');
 	}
 
-	return json({ conversation });
+	return Response.json({ conversation });
 };
 
 /**
@@ -151,5 +151,5 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(500, 'Erreur lors de la création de la conversation');
 	}
 
-	return json({ conversation }, { status: 201 });
+	return Response.json({ conversation }, { status: 201 });
 };

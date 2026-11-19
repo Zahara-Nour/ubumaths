@@ -13,7 +13,7 @@
  * @module api/admin/users/[id]/status
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
 import { updateUserStatusSchema } from '#lib/server/validation/admin.ts';
@@ -219,7 +219,7 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 
 		const extendedProfile: ExtendedProfile = updatedProfile;
 
-		return json({
+		return Response.json({
 			success: true,
 			profile: extendedProfile
 		});

@@ -3,7 +3,7 @@
  * POST - Share notebook with a class
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '#lib/server/middleware/auth.ts';
 import { uuidSchema } from '#lib/server/validation/common.ts';
@@ -143,7 +143,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		throw error(500, 'Impossible de partager le carnet');
 	}
 
-	return json(
+	return Response.json(
 		{
 			assignment,
 			message: `Carnet « ${notebook.title} » partagé avec la classe « ${teacherClass.name} »`

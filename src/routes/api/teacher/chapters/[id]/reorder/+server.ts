@@ -5,7 +5,7 @@
  * Note: The [id] here refers to the class ID, not a chapter ID
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '#lib/server/middleware/auth.ts';
 import { reorderChapters } from '#lib/server/chapters.ts';
@@ -75,5 +75,5 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		throw error(500, 'Failed to reorder chapters');
 	}
 
-	return json({ success: true });
+	return Response.json({ success: true });
 };

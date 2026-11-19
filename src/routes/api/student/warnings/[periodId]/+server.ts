@@ -41,7 +41,7 @@
  * ```
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '#lib/server/middleware/auth.ts';
 import type { StudentWarnings } from '#lib/types/student-cache.ts';
@@ -110,7 +110,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			warnings
 		};
 
-		return json({ warnings: studentWarnings });
+		return Response.json({ warnings: studentWarnings });
 	} catch (err) {
 		// Re-throw SvelteKit errors
 		if (err && typeof err === 'object' && 'status' in err) {

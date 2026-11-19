@@ -18,7 +18,7 @@
  * son niveau viennent de la session.
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '#lib/server/middleware/auth.ts';
 import { loadMathouCollectionWithNews } from '#lib/server/mathoux/collection.ts';
@@ -43,5 +43,5 @@ export const GET: RequestHandler = async ({ locals }) => {
 		throw error(500, 'Chatterie indisponible');
 	}
 
-	return json(summary);
+	return Response.json(summary);
 };

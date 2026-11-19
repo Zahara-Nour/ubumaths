@@ -35,7 +35,7 @@
  * Spec : docs/archive/wip/srs-fsrs-spec-tdd.md §1
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '#lib/server/middleware/auth.ts';
 import { skillAttemptInputSchema } from '#lib/server/validation/skill-attempts.ts';
@@ -79,7 +79,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	// démo passent par la même `FlashCard` : un admin ou un professeur y répond
 	// sans polluer les statistiques (ni tentative, ni fiche FSRS, ni deck).
 	if (profile.role !== 'student') {
-		return json({ success: true, recorded: false });
+		return Response.json({ success: true, recorded: false });
 	}
 
 	// Modèle, FSRS, trace et deck Programme : cœur commun avec la Descente
@@ -101,8 +101,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	if (!result.ok) {
 		if (result.reason === 'template_check_failed') throw error(500, 'Failed to verify template');
 		if (result.reason === 'template_not_found') throw error(404, 'template_not_found');
-		return json({ error: result.reason }, { status: 500 });
+		return Response.json({ error: result.reason }, { status: 500 });
 	}
 
-	return json({ inserted: 1, point_ids: result.pointIds });
+	return Response.json({ inserted: 1, point_ids: result.pointIds });
 };

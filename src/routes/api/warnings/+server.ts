@@ -19,7 +19,7 @@
  * - counts: StudentWarningCounts (updated counts for student)
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { addWarningSchema } from '#lib/server/validation/warnings.ts';
 import { addWarning } from '#lib/server/warnings.ts';
@@ -50,7 +50,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			supabase
 		});
 
-		return json({
+		return Response.json({
 			success: true,
 			counts: updatedCounts
 		});

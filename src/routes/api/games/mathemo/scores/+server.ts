@@ -13,7 +13,7 @@
  * AUTH: Student only (authenticated)
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '#lib/server/middleware/auth.ts';
 import type { SupabaseClient } from '@supabase/supabase-js';
@@ -64,7 +64,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			'GET /api/games/mathemo/scores'
 		);
 
-		return json(validated);
+		return Response.json(validated);
 	} catch (err) {
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
@@ -222,7 +222,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			'POST /api/games/mathemo/scores'
 		);
 
-		return json(validated);
+		return Response.json(validated);
 	} catch (err) {
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;

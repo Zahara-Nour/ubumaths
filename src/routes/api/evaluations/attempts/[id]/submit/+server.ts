@@ -15,7 +15,6 @@
  * reconstruite depuis la base (null si impossible), 429 (trop d'envois).
  */
 
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '#lib/server/middleware/auth.ts';
 import { uuidSchema } from '#lib/server/validation/common.ts';
@@ -35,13 +34,13 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 
 	const idValidation = uuidSchema.safeParse(params.id);
 	if (!idValidation.success) {
-		return json({ error: 'Tentative introuvable' }, { status: 404 });
+		return Response.json({ error: 'Tentative introuvable' }, { status: 404 });
 	}
 
 	const body: unknown = await request.json().catch(() => null);
 	const validation = submitAttemptSchema.safeParse(body);
 	if (!validation.success) {
-		return json({ error: validation.error.issues[0].message }, { status: 400 });
+		return Response.json({ error: validation.error.issues[0].message }, { status: 400 });
 	}
 
 	try {
@@ -55,12 +54,13 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 			idValidation.data,
 			validation.data
 		);
-		return json(result);
+		return Response.json(result);
 	} catch (e) {
 		if (e instanceof AttemptAlreadySubmittedError) {
-			return json({ error: e.message, result: e.result }, { status: 409 });
+			return Response.json({ error: e.message, result: e.result }, { status: 409 });
 		}
-		if (e instanceof EvaluationError) return json({ error: e.message }, { status: e.status });
+		if (e instanceof EvaluationError)
+			return Response.json({ error: e.message }, { status: e.status });
 		throw e;
 	}
 };

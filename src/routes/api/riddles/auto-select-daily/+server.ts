@@ -1,4 +1,4 @@
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { createServerLogger } from '#lib/utils/logger.ts';
 
@@ -36,7 +36,7 @@ export const GET: RequestHandler = async ({ locals: { supabase } }) => {
 		throw error(500, 'Impossible de vérifier l’énigme du jour');
 	}
 
-	return json({
+	return Response.json({
 		date: today,
 		hasRiddle: !!existing,
 		riddle: existing

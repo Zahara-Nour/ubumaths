@@ -22,7 +22,7 @@
  * - Google integration with drive.file scope required
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import { assertGoogleClassroomEnabled } from '#lib/server/google/feature-guard.ts';
 import type { RequestHandler } from './$types';
 import {
@@ -253,7 +253,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			`[Export to Classroom] Created material ${material.id} in course ${courseData.google_course_id} for class ${classData.name}`
 		);
 
-		return json({
+		return Response.json({
 			success: true,
 			materialId: material.id,
 			alternateLink: material.alternateLink,

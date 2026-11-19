@@ -16,7 +16,7 @@
  * - Requires Google integration with drive.file scope
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import {
 	GoogleNotConnectedError,
@@ -174,7 +174,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			);
 		}
 
-		return json({
+		return Response.json({
 			success: true,
 			fileId: result.id,
 			modifiedTime: result.modifiedTime || new Date().toISOString()

@@ -13,7 +13,7 @@
  * role client when needed.
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '#lib/types/database.ts';
 import { fetchStaffDirectory, indexStaffById } from './staff-directory';
@@ -75,7 +75,7 @@ export interface KanbanCardWithExtras extends KanbanCard {
  */
 export function rateLimitResponse(result: RateLimitResult): Response | null {
 	if (result.allowed) return null;
-	return json(
+	return Response.json(
 		{ message: result.message ?? 'Trop de requêtes' },
 		{
 			status: 429,

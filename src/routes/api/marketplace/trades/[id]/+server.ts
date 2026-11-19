@@ -1,4 +1,4 @@
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '#lib/server/middleware/auth.ts';
 // Supabase client is now accessed via locals.supabase
@@ -97,7 +97,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 		);
 	}
 
-	return json(enrichWithUsernames(trade));
+	return Response.json(enrichWithUsernames(trade));
 };
 
 /**
@@ -164,5 +164,5 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 		cancelled_by: userId
 	});
 
-	return json({ success: true });
+	return Response.json({ success: true });
 };

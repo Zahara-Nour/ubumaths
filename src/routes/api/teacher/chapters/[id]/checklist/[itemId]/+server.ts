@@ -4,7 +4,7 @@
  * DELETE - Delete a checklist item
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '#lib/server/middleware/auth.ts';
 import {
@@ -106,7 +106,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		throw error(500, 'Failed to update checklist item');
 	}
 
-	return json({ item: result.data });
+	return Response.json({ item: result.data });
 };
 
 /**
@@ -146,5 +146,5 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 		throw error(500, 'Failed to delete checklist item');
 	}
 
-	return json({ success: true });
+	return Response.json({ success: true });
 };

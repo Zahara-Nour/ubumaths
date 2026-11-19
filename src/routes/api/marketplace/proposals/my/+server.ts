@@ -1,4 +1,4 @@
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '#lib/server/middleware/auth.ts';
 import { isMarketplaceEnabled } from '#lib/server/marketplace/helpers.ts';
@@ -67,7 +67,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 	}
 
 	if (!proposals || proposals.length === 0) {
-		return json([]);
+		return Response.json([]);
 	}
 
 	// DEBUG: log the first proposal's listing structure
@@ -222,5 +222,5 @@ export const GET: RequestHandler = async ({ locals }) => {
 		return { ...p, summary };
 	});
 
-	return json(enriched);
+	return Response.json(enriched);
 };

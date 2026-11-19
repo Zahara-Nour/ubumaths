@@ -1,4 +1,4 @@
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRoles } from '#lib/server/middleware/auth.ts';
 import { z } from 'zod';
@@ -108,5 +108,5 @@ export const PUT: RequestHandler = async ({ request, params, locals }) => {
 		throw error(500, 'Failed to review report');
 	}
 
-	return json({ success: true });
+	return Response.json({ success: true });
 };

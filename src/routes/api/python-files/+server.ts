@@ -4,7 +4,7 @@
  * POST - Create new Python file
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '#lib/server/middleware/auth.ts';
 import {
@@ -175,7 +175,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 
 	const totalPages = count ? Math.ceil(count / limit) : 0;
 
-	return json({
+	return Response.json({
 		files: files ?? [],
 		assignedFiles,
 		pagination: {
@@ -250,5 +250,5 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		throw error(500, 'Impossible de créer le fichier Python');
 	}
 
-	return json({ file: data }, { status: 201 });
+	return Response.json({ file: data }, { status: 201 });
 };

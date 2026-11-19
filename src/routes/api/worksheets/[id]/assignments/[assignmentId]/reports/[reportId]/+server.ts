@@ -7,7 +7,7 @@
  * PUT - Review an error report (mark as fixed/rejected with optional response)
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRoles } from '#lib/server/middleware/auth.ts';
 import { fetchCopyNumbering } from '#lib/server/worksheets/display-number.ts';
@@ -258,7 +258,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			'GET /api/worksheets/[id]/assignments/[assignmentId]/reports/[reportId]'
 		);
 
-		return json(validated);
+		return Response.json(validated);
 	} catch (err) {
 		// Re-throw SvelteKit errors
 		if (err && typeof err === 'object' && 'status' in err) {
@@ -614,7 +614,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 			'PUT /api/worksheets/[id]/assignments/[assignmentId]/reports/[reportId]'
 		);
 
-		return json(validated);
+		return Response.json(validated);
 	} catch (err) {
 		// Re-throw SvelteKit errors
 		if (err && typeof err === 'object' && 'status' in err) {

@@ -4,7 +4,7 @@
  * POST - Add a checklist item to a chapter
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '#lib/server/middleware/auth.ts';
 import { addChecklistItem } from '#lib/server/chapters.ts';
@@ -63,7 +63,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		throw error(500, 'Failed to fetch checklist items');
 	}
 
-	return json({
+	return Response.json({
 		items: items || [],
 		count: items?.length || 0
 	});
@@ -115,5 +115,5 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		throw error(500, 'Failed to add checklist item');
 	}
 
-	return json({ item: result.data }, { status: 201 });
+	return Response.json({ item: result.data }, { status: 201 });
 };

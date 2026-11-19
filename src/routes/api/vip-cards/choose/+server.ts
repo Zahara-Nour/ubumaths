@@ -32,7 +32,7 @@
  * 9. Répondre avec les cartes reçues
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '#lib/server/middleware/auth.ts';
 import { requireConsent } from '#lib/server/middleware/consent.ts';
@@ -233,7 +233,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		earnedAt
 	}));
 
-	return json({
+	return Response.json({
 		success: true,
 		actionCardUsed: {
 			cardId: actionCardInstance.cardId,
