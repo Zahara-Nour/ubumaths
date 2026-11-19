@@ -2,7 +2,7 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, avant la PR._
+_Mis à jour le 2026-11-19, PR #2880 ouverte._
 
 - **État** : PR ouverte · **Prochaine action** : revue + CI verte → merge · **En attente de David** : rien · **Pièges en cours** : aucun · **Worktree / branche** : `../ubumaths-wt-qr-chiphre-entete` / `feat/qr-chiphre-entete`
 
