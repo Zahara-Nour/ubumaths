@@ -5,13 +5,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, lot 12 (ex-lot 11) remis à jour (§ 19)._
+_Mis à jour le 2026-11-19, après #2234 ; PR #2913 ouverte._
 
-- **État** : lots 0 à 10 et robot CE1-080 (`ce1-11/`) publiés. Prod : 95 points sur 107. Lot 11 de la PR #2234 devenu
-  **lot 12** : `lot-ce1-12.py` → `scripts/questions/ce1-12/` (01 à 05), format sans `theme` (ADR 0035), simulé 5/5.
-- **Prochaine action** : CI + merge de #2234 → David : `create-questions --publier` sur `ce1-12/` → migration nœud +
-  tag (5 neufs) et niveau 2 de `a7dfe502` → page à cocher (`ce1-12/` et `cp-figure/`) → publication des deux dossiers.
-  Puis un lot 001, 002, 003 + 074 et la fin de 072 (outils livrés).
+- **État** : #2234 mergée ; 5 brouillons créés en prod (`ce1-12/`, ids : PR #2913). **PR #2913** (ids + migration
+  `20261119195540_questions_ce1_lot12_rangement_tags`, nœud + tag des 5) : test rouge sans (11), vert avec (19/19) ;
+  `security-auditor` : aucun finding bloquant ; CI à suivre. Niveau 2 de `a7dfe502` **abandonné** : aucune unicité de
+  niveau depuis l'ADR 0035.
+- **Prochaine action** : CI verte de #2913 → `pnpm check:migrations --pr 2913` → merge → `migration list --linked`
+  (deux autres migrations du jour : `cm1_08_noeud`, `cm2_lot15` ; une autre en attente → stop) → `db:migrate` →
+  vérif MCP → page à cocher `ce1-12/` + `cp-figure/` → David : `publier-lot --publier` sur les deux. Puis le lot 001,
+  002, 003 + 074 et fin de 072. Au merge : `git stash list` du dépôt principal, stash « ids du lot 12 » = copie.
 - **En attente de David** : essai tablette des cases « figure » (`verifications-manuelles.md`, ne bloque plus) ;
   futur chantier « `\textcolor` hors formule » (53 fichiers de lots).
 - **Pièges en cours** : jamais de variable `e` ni `i` ; **mots en couleur dans le texte = `colt()`
@@ -927,3 +930,5 @@ Décisions :
 - 2026-11-19 : #2234 mise à jour depuis `main` ; `lot-ce1-11.py` de `main` (robot) gardé, celui de la PR renommé
   `lot-ce1-12.py`, un seul dossier `ce1-12/` ; contenu identique à la PR (vérifié fichier par fichier, sans les trois
   clés retirées) ; `create-questions` simulé : 5 à créer, 80 specs.
+- 2026-11-19 : #2234 mergée ; `create-questions --publier` (David) : 5 brouillons ; PR #2913 (ids, rangement, tags),
+  relevé `etat-prod-2026-11-19-ce1-12/`, générateur `lot-ce1-12-rangement.py`.
