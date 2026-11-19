@@ -7,8 +7,8 @@ Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) · bornes 
 
 _Mis à jour le 2026-11-19, lot 7 : migration écrite (§ 51)._
 
-- **État** : lots 0 à 6 publiés (sauf L7, L8 du 5b). Lot 7 : 6 brouillons en prod (§ 51) ; migration de rangement et de tags + test écrits et commités sur `feat/questions-ttechno-lot7-tags` (9 verts, 5 rouges sans le corps), **PR pas encore ouverte**.
-- **Prochaine action** : verdict `security-auditor` sur la migration (lancé en fin de session ; s'il n'est pas noté au § 51, le relancer) → ouvrir la PR, CI verte, `check:migrations --pr <n>`, merge, `migration list --linked` puis `db:migrate` (4 conditions), vérifier en prod (MCP), page à cocher du lot 7.
+- **État** : lots 0 à 6 publiés (sauf L7, L8 du 5b). Lot 7 : 6 brouillons en prod (§ 51) ; migration de rangement et de tags + test écrits et commités sur `feat/questions-ttechno-lot7-tags` (9 verts, 5 rouges sans le corps), `security-auditor` sans finding ; PR ouverte.
+- **Prochaine action** : PR de la migration : CI verte, `check:migrations --pr <n>`, merge, `migration list --linked` puis `db:migrate` (4 conditions), vérifier en prod (MCP), page à cocher du lot 7.
 - **En attente de David** : le `deploy:prod` qui livre #2839 (L7, L8).
 - **Pièges en cours** : `$` littéral (tableur) = `\$` ; un point TTECHNO par modèle (trigger) ; tag = nœud DU POINT ; `publier-lot.ts` et `create-questions --publier` visent la prod : David les lance (`!`) ; dépôt principal : `1techno.md` modifié par une autre session bloque le pre-push (commit ffa0f252a de `main` local passe par cette branche).
 - **Worktree / branche** : `ubumaths-wt-questions-ttechno`, `feat/questions-ttechno-lot7-tags`.
@@ -1145,3 +1145,5 @@ dans les fichiers du dépôt principal (lancé d'ailleurs) : ids reportés à la
   affine »).
 - Test `tests/integration/questions-ttechno-lot7-rangement-tags.test.ts` : 9 verts ; corps retiré → 5 rouges ;
   fichier restauré d'une copie, identique. `types:cliquet` tenu.
+- `security-auditor` : aucun finding (diff avec le lot 6 = en-tête, ids, codes, chemins, table temporaire, compte ;
+  prod relue en lecture : 6 points non archivés sur les nœuds attendus, 6 brouillons sans nœud ni tag).
