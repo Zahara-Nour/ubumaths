@@ -5,21 +5,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, après #2881 (fichiers 9ab mergés)._
+_Mis à jour le 2026-11-19, PR de rangement du lot 9ab ouverte (§ 26 quater)._
 
-- **État** : lots 0 à 8f publiés, **158 points du CM1 sur 171**. Lot 9a + 9b (8 modèles, probabilités 123 à 128,
-  proportionnalité 129, 130) mergés dans `scripts/questions/cm1-9ab/` (#2881), pas encore créés en prod ;
-  9c (097, 104 : 4 constructions) reste à écrire. `questions-cm2` prévenue (109, 087, 094 pris ici ; § 21.1 de
-  son journal).
-- **Prochaine action** : David lance, depuis le worktree,
-  `pnpm tsx scripts/create-questions.ts --dir scripts/questions/cm1-9ab --publier` ; puis relevé MCP et
-  migration nœud + tag (124 tague aussi CM2-109), sur une branche neuve tirée de `origin/main`.
-- **En attente de David** : la création en prod du lot 9ab.
+- **État** : lots 0 à 8f publiés, **158 points du CM1 sur 171**. Lot 9ab (8 modèles) créé en brouillon en prod ;
+  migration de rangement `20261119145503` écrite, testée (20/20, rouge prouvé), PR en cours ; 9c (097, 104 : 4
+  constructions) reste à écrire.
+- **Prochaine action** : `security-auditor`, CI, merge, `db:migrate` depuis le worktree (seule migration en attente),
+  vérification MCP ; puis page à cocher du lot 9ab, verdicts de David, `publier-lot`.
+- **En attente de David** : rien.
 - **Pièges en cours** : `--mettre-a-jour` ne touche JAMAIS un publié : le lancer AVANT `publier-lot` ;
   commitlint refuse le type `content` et un corps > 100 caractères par ligne ; David lance `publier-lot
 --publier` et `garde-niveaux-tags` ; ranger : réponses = positions AFFICHÉES (`ranger-attendus.ts`) ;
   `pnpm -s` refusé (pnpm 12).
-- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, branche `content/questions-cm1-lot9ab` (mergée).
+- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, branche `feat/questions-cm1-lot9ab-rangement`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -2311,3 +2309,19 @@ figure) ; 130 V3 (÷ une fois) = une seule utilisation de la linéarité ; jumea
   horizontal, aucune erreur de console ; vus : rangement (attendu juste), roue à 4 parts, prix « 2,00 € ».
 - #2881 ouverte, CI verte, mergée (aucune revue : contenu). `questions-cm2` prévenue par message : CM2-109 (lot 15),
   CM2-087 et CM2-094 (lot 18) pris ici ; noté au § 21.1 de son journal.
+
+### 26 quater. Lot 9ab — création en prod et rangement (2026-11-19)
+
+- `create-questions.ts --dir scripts/questions/cm1-9ab --publier` lancé : 8 brouillons (19b2b250, 5081e180,
+  ae90499d, 63675a23, 41e84aa6, 78940a45, 833b120a, 1dd68bdd), vérifiés au MCP (draft, sans nœud, 0 tag ;
+  5081e180 en CM1 + CM2, les autres CM1), ids commités. (PR #2887, ouverte par erreur sur la branche déjà
+  mergée, fermée : les ids partent avec le rangement.)
+- Relevé `etat-prod-2026-11-19-cm1-9ab/`, script `lot-cm1-9ab-rangement.py` (gabarit 8f) → migration
+  `20261119145503_questions_cm1_lot9ab_rangement_tags` et fixture : chacun sur le nœud de son point (règle des
+  lots précédents) : 01 sur Probabilités > Expériences aléatoires ; 02 > événements ; 03, 04 > probabilité
+  simple ; 05, 06 > équiprobabilité ; 07 sur Proportionnalité > Situations de proportionnalité >
+  caractérisation ; 08 sur la notion Situations de proportionnalité (le modèle CM2 voisin `5343077e` est sur
+  la sous-notion « quatrième proportionnelle » : déplaçable à la main si David le préfère). 9 tags posés
+  (CM1-123 à 130, CM2-109), aucun niveau ni statut changé, aucun nœud créé.
+- Test `questions-cm1-lot9ab-rangement-tags.test.ts` : 20/20 vert ; corps neutralisé (`select 1;`) : 9 échecs,
+  7 sautés. `types:cliquet` tenu. Seule migration en attente (`migration list --linked`).

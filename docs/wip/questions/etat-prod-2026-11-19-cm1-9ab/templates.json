@@ -1,0 +1,1696 @@
+[
+	{
+		"id": "19b2b250-35c8-451d-b4fe-51374dbd2c13",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 60,
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{r}}"
+					}
+				],
+				"statement": "{{if:s==1|On lance un dé et on regarde le nombre obtenu.|{{if:s==2|On lance une pièce de monnaie et on regarde si elle tombe sur pile ou sur face.|{{if:s==3|On tire une boule dans un sac sans regarder et on note sa couleur.|{{if:s==4|On fait tourner une roue de loterie et on regarde la case où elle s'arrête.|{{if:s==5|On tire une carte au hasard dans un jeu de cartes et on regarde si c'est un cœur.|{{if:s==6|On calcule $25 + 17$ et on note le résultat.|{{if:s==7|On lâche une balle au-dessus du sol et on regarde si elle tombe.|{{if:s==8|On regarde quel jour de la semaine vient après lundi.|{{if:s==9|On compte les jours du mois de janvier.|On multiplie $6$ par $7$ avec une calculatrice et on lit l'écran.}}}}}}}}}}}}}}}}}}\n\nEst-ce une expérience aléatoire ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+				"variables": [
+					{
+						"name": "s",
+						"expression": "1..10"
+					},
+					{
+						"name": "r",
+						"expression": "eval:min(floor(s/6),1)"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Une **expérience aléatoire**, c'est une expérience dont on ne peut pas connaître le résultat à l'avance : c'est le hasard qui décide.",
+						"{{if:s==1|On ne peut pas savoir à l'avance quelle face sera dessus : c'est le hasard qui décide.|{{if:s==2|Personne ne peut dire à l'avance si la pièce tombera sur pile ou sur face.|{{if:s==3|Sans regarder, on ne sait pas quelle boule on va prendre : c'est le hasard.|{{if:s==4|On ne sait pas à l'avance où la roue va s'arrêter.|{{if:s==5|Les cartes sont mélangées : on ne sait pas à l'avance quelle carte on tirera.|{{if:s==6|Le résultat est toujours $42$ : on le connaît avant de commencer, le hasard n'y est pour rien.|{{if:s==7|La balle tombe à chaque fois : on sait à l'avance ce qui va se passer.|{{if:s==8|Après lundi vient toujours mardi : aucun hasard.|{{if:s==9|Janvier a toujours $31$ jours : le résultat est connu d'avance.|La calculatrice affiche toujours $42$ : on le sait avant d'appuyer.}}}}}}}}}}}}}}}}}}",
+						"Réponse : $\\textcolor{{{color:primary.0}}}{\\text{{{if:r==0|oui|non}}}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0;1"
+					}
+				],
+				"statement": "Dans quelles situations est-ce le hasard qui décide du résultat ?\n\n```choix\nplusieurs: oui\n- {{if:t==1|On lance un dé et on regarde le nombre obtenu.|{{if:t==2|On lance une pièce de monnaie et on regarde la face du dessus.|On tire une carte dans un jeu de cartes bien mélangé.}}}}\n- {{if:t==1|On tire un jeton dans un sac sans regarder et on note son numéro.|{{if:t==2|On fait tourner une roue de loterie et on regarde sa couleur.|On tire une boule dans une urne sans regarder et on note sa couleur.}}}}\n- {{if:t==1|On compte les doigts d'une main.|{{if:t==2|On lâche une pierre dans l'eau et on regarde si elle coule.|On compte les roues d'un vélo.}}}}\n- {{if:t==1|On calcule $10 \\times 10$.|{{if:t==2|On regarde quel mois vient après mars.|On calcule la moitié de $20$.}}}}\n```",
+				"variables": [
+					{
+						"name": "t",
+						"expression": "1..3"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Le hasard décide quand on **ne peut pas savoir à l'avance** le résultat.",
+						"Expériences aléatoires : « {{if:t==1|On lance un dé et on regarde le nombre obtenu.|{{if:t==2|On lance une pièce de monnaie et on regarde la face du dessus.|On tire une carte dans un jeu de cartes bien mélangé.}}}} » et « {{if:t==1|On tire un jeton dans un sac sans regarder et on note son numéro.|{{if:t==2|On fait tourner une roue de loterie et on regarde sa couleur.|On tire une boule dans une urne sans regarder et on note sa couleur.}}}} ».",
+						"Les deux autres ont un résultat connu d'avance : ce ne sont pas des expériences aléatoires."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Est-ce une expérience aléatoire ?",
+		"description": "Reconnaître une expérience aléatoire (dé, pièce, sac, roue, cartes) parmi des situations au résultat connu d'avance (calcul, balle lâchée, jour suivant), une ou plusieurs à cocher",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"r": "0",
+					"s": "1"
+				},
+				"description": "Dé : oui",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"r": "0",
+					"s": "1"
+				},
+				"description": "Erreur : dé, non",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"r": "1",
+					"s": "7"
+				},
+				"description": "Balle lâchée : non",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"r": "1",
+					"s": "7"
+				},
+				"description": "Erreur : balle lâchée, oui",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0;1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"t": "1"
+				},
+				"description": "Série 1 : dé et jeton",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0;1;3"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"t": "1"
+				},
+				"description": "Erreur : le calcul coché en plus",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "unoptimal_form"
+				},
+				"variables": {
+					"t": "1"
+				},
+				"description": "Un seul coché : partiel",
+				"variationIndex": 1
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "1dd68bdd-2c62-4dd5-8908-b82b6a013a7d",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"zeros": "off",
+				"spacesFromFourDigits": true
+			}
+		},
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 90,
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:k*w}}"
+					}
+				],
+				"statement": "{{if:c==1|${{n}}$ manuels identiques pèsent ${{w}}~\\unit{kg}$.\n\nCombien pèsent ${{K}}$ de ces manuels ?\n\nIls pèsent $?~\\text{kg}$.|{{if:c==2|Pour ${{n}}$ personnes, une recette demande ${{w}}$ œufs.\n\nCombien d'œufs faut-il pour ${{K}}$ personnes ?\n\nIl faut $?$ œufs.|Une imprimante imprime ${{w}}$ pages en ${{n}}$ minutes, toujours à la même vitesse.\n\nCombien de pages imprime-t-elle en ${{K}}$ minutes ?\n\nElle imprime $?$ pages.}}}}",
+				"variables": [
+					{
+						"name": "c",
+						"expression": "1..3"
+					},
+					{
+						"name": "n",
+						"expression": "2..6"
+					},
+					{
+						"name": "w",
+						"expression": "2..9"
+					},
+					{
+						"name": "k",
+						"expression": "2|3|4|5|10"
+					},
+					{
+						"name": "K",
+						"expression": "eval:k*n"
+					}
+				],
+				"correction": {
+					"steps": [
+						"${{K}}$ {{if:c==1|manuels|{{if:c==2|personnes|minutes}}}}, c'est ${{k}}$ fois ${{n}}$ {{if:c==1|manuels|{{if:c==2|personnes|minutes}}}} : ${{n}} \\times {{k}} = {{K}}$.",
+						"C'est ${{k}}$ fois plus, donc ${{k}}$ fois plus de {{if:c==1|kg|{{if:c==2|œufs|pages}}}} : $$\\textcolor{{{color:primary.0}}}{{{k}} \\times {{w}} = {{eval:k*w}}}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:k*P/10;d}}"
+					}
+				],
+				"statement": "À la boulangerie, ${{n}}$ croissants coûtent ${{eval:floor((P)/10)}}.{{eval:mod(P,10)}}0~\\unit{€}$.\n\nCombien coûtent ${{K}}$ croissants ?\n\nIls coûtent $?~\\text{€}$.",
+				"variables": [
+					{
+						"name": "n",
+						"expression": "2..4"
+					},
+					{
+						"name": "u",
+						"expression": "11..19"
+					},
+					{
+						"name": "P",
+						"expression": "eval:n*u"
+					},
+					{
+						"name": "k",
+						"expression": "2|3|4|5"
+					},
+					{
+						"name": "K",
+						"expression": "eval:k*n"
+					}
+				],
+				"correction": {
+					"steps": [
+						"${{K}}$ croissants, c'est ${{k}}$ fois ${{n}}$ croissants : ${{n}} \\times {{k}} = {{K}}$.",
+						"Ils coûtent ${{k}}$ fois plus : $$\\textcolor{{{color:primary.0}}}{{{k}} \\times {{eval:floor((P)/10)}}.{{eval:mod(P,10)}}0 = {{eval:floor((k*P)/10)}}.{{eval:mod(k*P,10)}}0}$$",
+						"Ils coûtent ${{eval:floor((k*P)/10)}}.{{eval:mod(k*P,10)}}0~\\unit{€}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{w}}"
+					}
+				],
+				"statement": "${{K}}$ stylos identiques coûtent ${{W}}~\\unit{€}$.\n\nCombien coûtent ${{n}}$ de ces stylos ?\n\nIls coûtent $?~\\text{€}$.",
+				"variables": [
+					{
+						"name": "n",
+						"expression": "2..5"
+					},
+					{
+						"name": "w",
+						"expression": "2..9"
+					},
+					{
+						"name": "k",
+						"expression": "2|3|4|5"
+					},
+					{
+						"name": "K",
+						"expression": "eval:k*n"
+					},
+					{
+						"name": "W",
+						"expression": "eval:k*w"
+					}
+				],
+				"correction": {
+					"steps": [
+						"${{n}}$ stylos, c'est ${{k}}$ fois moins que ${{K}}$ stylos : ${{K}} \\div {{k}} = {{n}}$.",
+						"Ils coûtent ${{k}}$ fois moins : $$\\textcolor{{{color:primary.0}}}{{{W}} \\div {{k}} = {{w}}}$$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Résoudre un problème de proportionnalité",
+		"description": "Une seule étape : k fois plus (masses, œufs, pages ; prix décimal) ou k fois moins, avec k de 2 à 5 ou 10 ; sans tableau ni retour à l'unité",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["16"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"K": "12",
+					"c": "1",
+					"k": "4",
+					"n": "3",
+					"w": "4"
+				},
+				"description": "3 manuels 4 kg → 12 manuels : 16",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["13"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"K": "12",
+					"c": "1",
+					"k": "4",
+					"n": "3",
+					"w": "4"
+				},
+				"description": "Erreur : additif, 4 + 9 = 13",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["48"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"K": "12",
+					"c": "1",
+					"k": "4",
+					"n": "3",
+					"w": "4"
+				},
+				"description": "Erreur : 4 × 12 = 48 (multiplié par le nombre de manuels)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["30"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"K": "20",
+					"c": "2",
+					"k": "10",
+					"n": "2",
+					"w": "3"
+				},
+				"description": "Œufs : 2 personnes 3 œufs → 20 personnes : 30",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["10,80"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"K": "9",
+					"P": "36",
+					"k": "3",
+					"n": "3",
+					"u": "12"
+				},
+				"description": "3 croissants 3,60 € → 9 croissants : 10,80",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["10,8"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"K": "9",
+					"P": "36",
+					"k": "3",
+					"n": "3",
+					"u": "12"
+				},
+				"description": "10,8 accepté",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["32,40"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"K": "9",
+					"P": "36",
+					"k": "3",
+					"n": "3",
+					"u": "12"
+				},
+				"description": "Erreur : 3,60 × 9 = 32,40",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"K": "12",
+					"W": "15",
+					"k": "3",
+					"n": "4",
+					"w": "5"
+				},
+				"description": "12 stylos 15 € → 4 stylos : 5",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"K": "12",
+					"W": "15",
+					"k": "3",
+					"n": "4",
+					"w": "5"
+				},
+				"description": "Erreur : 15 − 8 = 7 (additif)",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "41e84aa6-9a14-4108-9dbe-b8d061cfc1e0",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 60,
+		"level": 2,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{r}}"
+					}
+				],
+				"statement": "Une roue est partagée en ${{N}}$ parts égales. On la fait tourner : la flèche montre une part coloriée ou une part blanche. Il y a donc deux issues.\n\n```partage\nforme: disque {{N}}\ngris: {{g}}\n```\n\nA-t-on une chance sur deux que la flèche montre une part coloriée ?\n\n```choix\nmelanger: non\n- Oui, une chance sur deux\n- Non, moins d'une chance sur deux\n- Non, plus d'une chance sur deux\n```",
+				"variables": [
+					{
+						"name": "N",
+						"expression": "4|6|8"
+					},
+					{
+						"name": "g",
+						"expression": "1..{{eval:N-1}}"
+					},
+					{
+						"name": "s",
+						"expression": "eval:max(min(2*g-N,1),-1)"
+					},
+					{
+						"name": "r",
+						"expression": "eval:(3*s*s+s)/2"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Deux issues, ce n'est pas forcément une chance sur deux : il faut regarder combien de parts a chaque couleur.",
+						"${{g}}$ part{{if:g>1|s}} coloriée{{if:g>1|s}}, ${{eval:N-g}}$ blanche{{if:N-g>1|s}}.{{if:s==-1| Moins de parts coloriées que de blanches.|{{if:s==0| Autant de chaque couleur.| Plus de parts coloriées que de blanches.}}}}",
+						"Réponse : $\\textcolor{{{color:primary.0}}}{\\text{{{if:r==0|oui, une chance sur deux|{{if:r==1|non, moins d'une chance sur deux|non, plus d'une chance sur deux}}}}}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{r}}"
+					}
+				],
+				"statement": "Un sac contient ${{R}}$ boule{{if:R>1|s}} rouge{{if:R>1|s}} et ${{B}}$ boule{{if:B>1|s}} bleue{{if:B>1|s}}. On tire une boule sans regarder : elle est rouge ou bleue, il y a deux issues.\n\nA-t-on une chance sur deux de tirer une boule rouge ?\n\n```choix\nmelanger: non\n- Oui, une chance sur deux\n- Non, moins d'une chance sur deux\n- Non, plus d'une chance sur deux\n```",
+				"variables": [
+					{
+						"name": "R",
+						"expression": "1..6"
+					},
+					{
+						"name": "B",
+						"expression": "1..6"
+					},
+					{
+						"name": "s",
+						"expression": "eval:max(min(R-B,1),-1)"
+					},
+					{
+						"name": "r",
+						"expression": "eval:(3*s*s+s)/2"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Deux issues, ce n'est pas forcément une chance sur deux : il faut comparer le nombre de boules de chaque couleur.",
+						"{{if:s==-1|Il y a moins de rouges (${{R}}$) que de bleues (${{B}}$).|{{if:s==0|Il y a autant de rouges que de bleues.|Il y a plus de rouges (${{R}}$) que de bleues (${{B}}$).}}}}",
+						"Réponse : $\\textcolor{{{color:primary.0}}}{\\text{{{if:r==0|oui, une chance sur deux|{{if:r==1|non, moins d'une chance sur deux|non, plus d'une chance sur deux}}}}}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Deux issues, pas forcément une chance sur deux",
+		"description": "Une roue à parts coloriées ou un sac de deux couleurs : deux issues, mais une chance sur deux seulement si les deux couleurs sont aussi nombreuses",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"N": "4",
+					"g": "1",
+					"r": "1",
+					"s": "-1"
+				},
+				"description": "1 part sur 4 : moins",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"N": "4",
+					"g": "1",
+					"r": "1",
+					"s": "-1"
+				},
+				"description": "Erreur : 1 part sur 4, une chance sur deux",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"N": "6",
+					"g": "3",
+					"r": "0",
+					"s": "0"
+				},
+				"description": "3 parts sur 6 : une chance sur deux",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"N": "8",
+					"g": "6",
+					"r": "2",
+					"s": "1"
+				},
+				"description": "6 parts sur 8 : plus",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"B": "3",
+					"R": "1",
+					"r": "1",
+					"s": "-1"
+				},
+				"description": "1 rouge, 3 bleues : moins",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"B": "3",
+					"R": "1",
+					"r": "1",
+					"s": "-1"
+				},
+				"description": "Erreur : 1 rouge, 3 bleues, une chance sur deux",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"B": "4",
+					"R": "4",
+					"r": "0",
+					"s": "0"
+				},
+				"description": "4 et 4 : une chance sur deux",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"B": "2",
+					"R": "5",
+					"r": "2",
+					"s": "1"
+				},
+				"description": "5 rouges, 2 bleues : plus",
+				"variationIndex": 1
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "5081e180-a313-4003-b57a-3f51316b93d5",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CM1", "CM2"],
+		"delay": 60,
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{n}}"
+					}
+				],
+				"statement": "{{if:k==0|On lance un dé à $6$ faces numérotées de $1$ à $6$ et on note le nombre obtenu.|{{if:k==1|On lance une pièce de monnaie et on note la face du dessus.|Un sac contient ${{a}}$ boules rouges, ${{b}}$ boules bleues et ${{c}}$ boules vertes. On tire une boule sans regarder et on note sa couleur.}}}}\n\nCombien y a-t-il d'issues possibles ?\n\nIl y en a $?$.",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "0..2"
+					},
+					{
+						"name": "a",
+						"expression": "2..5"
+					},
+					{
+						"name": "b",
+						"expression": "2..5"
+					},
+					{
+						"name": "c",
+						"expression": "2..5"
+					},
+					{
+						"name": "n",
+						"expression": "eval:(1-min(abs(k-0),1))*6+(1-min(abs(k-1),1))*2+(1-min(abs(k-2),1))*3"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Une **issue**, c'est un résultat possible de l'expérience.",
+						"{{if:k==0|Le dé peut montrer $1$, $2$, $3$, $4$, $5$ ou $6$.|{{if:k==1|La pièce peut tomber sur pile ou sur face.|On note la couleur : la boule tirée peut être rouge, bleue ou verte. Le nombre de boules ne change pas les couleurs possibles.}}}}",
+						"Il y a $\\textcolor{{{color:primary.0}}}{{{n}}}$ issues possibles."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0;1;2"
+					}
+				],
+				"statement": "Un sac contient ${{a}}$ boules rouges, ${{b}}$ boules bleues et ${{c}}$ boules vertes. On tire une boule sans regarder et on note sa couleur.\n\nCoche toutes les issues possibles.\n\n```choix\nplusieurs: oui\n- une boule rouge\n- une boule bleue\n- une boule verte\n- une boule jaune\n```",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..5"
+					},
+					{
+						"name": "b",
+						"expression": "2..5"
+					},
+					{
+						"name": "c",
+						"expression": "2..5"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Dans le sac, il n'y a que des boules rouges, bleues et vertes.",
+						"Issues possibles : $\\textcolor{{{color:primary.0}}}{\\text{rouge, bleue, verte}}$. Il n'y a pas de boule jaune : tirer une boule jaune est impossible."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0;1"
+					}
+				],
+				"statement": "On lance un dé à $6$ faces numérotées de $1$ à $6$.\n\nCoche les nombres qu'on peut obtenir.\n\n```choix\nplusieurs: oui\n- ${{x}}$\n- ${{y}}$\n- $0$\n- $7$\n- $10$\n```",
+				"variables": [
+					{
+						"name": "x",
+						"expression": "1..3"
+					},
+					{
+						"name": "y",
+						"expression": "4..6"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Les faces du dé portent les nombres de $1$ à $6$ : ce sont les seules issues.",
+						"On peut obtenir $\\textcolor{{{color:primary.0}}}{{{x}}}$ et $\\textcolor{{{color:primary.0}}}{{{y}}}$. On ne peut obtenir ni $0$, ni $7$, ni $10$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Toutes les issues possibles",
+		"description": "Compter ou cocher les issues d'un dé, d'une pièce, d'un sac de boules de trois couleurs (le nombre de boules n'est pas le nombre d'issues)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["6"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "2",
+					"c": "4",
+					"k": "0",
+					"n": "6"
+				},
+				"description": "Dé : 6 issues",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "2",
+					"c": "4",
+					"k": "1",
+					"n": "2"
+				},
+				"description": "Pièce : 2 issues",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["3"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "2",
+					"c": "4",
+					"k": "2",
+					"n": "3"
+				},
+				"description": "Sac : 3 couleurs",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["9"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3",
+					"b": "2",
+					"c": "4",
+					"k": "2",
+					"n": "3"
+				},
+				"description": "Erreur : sac, 9 (les boules comptées)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0;1;2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "2",
+					"c": "4"
+				},
+				"description": "Rouge, bleue, verte",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0;1;2;3"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3",
+					"b": "2",
+					"c": "4"
+				},
+				"description": "Erreur : jaune cochée",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0;1"],
+				"expected": {
+					"status": "unoptimal_form"
+				},
+				"variables": {
+					"a": "3",
+					"b": "2",
+					"c": "4"
+				},
+				"description": "Verte oubliée : partiel",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0;1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"x": "2",
+					"y": "5"
+				},
+				"description": "Dé : 2 et 5",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["0;1;2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"x": "2",
+					"y": "5"
+				},
+				"description": "Erreur : 0 coché",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "63675a23-2b10-4881-b096-66ed5e7da700",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 60,
+		"level": 2,
+		"variations": [
+			{
+				"statement": "Un sac contient ${{R}}$ boules rouges, ${{B}}$ boules bleues et ${{G}}$ boules vertes. On tire une boule sans regarder.\n\nRange ces tirages du **moins probable** au **plus probable**.\n\n```ranger\nsigne: <\n- une boule {{if:p==0|rouge|{{if:p==1|bleue|verte}}}}\n- une boule {{if:p==0|bleue|{{if:p==1|verte|rouge}}}}\n- une boule {{if:p==0|verte|{{if:p==1|rouge|bleue}}}}\n```",
+				"variables": [
+					{
+						"name": "p",
+						"expression": "0..2"
+					},
+					{
+						"name": "x",
+						"expression": "1..3"
+					},
+					{
+						"name": "y",
+						"expression": "5..7"
+					},
+					{
+						"name": "z",
+						"expression": "10..12"
+					},
+					{
+						"name": "R",
+						"expression": "eval:(1-min(abs(p-0),1))*x+(1-min(abs(p-2),1))*y+(1-min(abs(p-1),1))*z"
+					},
+					{
+						"name": "B",
+						"expression": "eval:(1-min(abs(p-1),1))*x+(1-min(abs(p-0),1))*y+(1-min(abs(p-2),1))*z"
+					},
+					{
+						"name": "G",
+						"expression": "eval:(1-min(abs(p-2),1))*x+(1-min(abs(p-1),1))*y+(1-min(abs(p-0),1))*z"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Plus il y a de boules d'une couleur, plus on a de chances de la tirer.",
+						"On range les couleurs de la moins nombreuse (${{x}}$ boules) à la plus nombreuse (${{z}}$ boules).",
+						"$$\\textcolor{{{color:primary.0}}}{\\text{une boule {{if:p==0|rouge|{{if:p==1|bleue|verte}}}}} < \\text{une boule {{if:p==0|bleue|{{if:p==1|verte|rouge}}}}} < \\text{une boule {{if:p==0|verte|{{if:p==1|rouge|bleue}}}}}}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{r}}"
+					}
+				],
+				"statement": "Une roue est partagée en $8$ parts égales. On la fait tourner : quand elle s'arrête, la flèche montre une part au hasard.\n\n```partage\nforme: disque 8\ngris: {{g}}\n```\n\nQuelle couleur a le plus de chances d'être montrée par la flèche ?\n\n```choix\nmelanger: non\n- une part coloriée\n- une part blanche\n- les deux ont autant de chances\n```",
+				"variables": [
+					{
+						"name": "g",
+						"expression": "1..7"
+					},
+					{
+						"name": "r",
+						"expression": "eval:(1-min(abs(g-1),1))*1+(1-min(abs(g-2),1))*1+(1-min(abs(g-3),1))*1+(1-min(abs(g-4),1))*2+(1-min(abs(g-5),1))*0+(1-min(abs(g-6),1))*0+(1-min(abs(g-7),1))*0"
+					}
+				],
+				"correction": {
+					"steps": [
+						"On compte les parts : ${{g}}$ coloriée{{if:g>1|s}} et ${{eval:8-g}}$ blanche{{if:g<7|s}}.",
+						"Les parts sont égales : la couleur qui a le plus de parts a le plus de chances.",
+						"Réponse : $\\textcolor{{{color:primary.0}}}{\\text{{{if:r==0|une part coloriée|{{if:r==1|une part blanche|les deux ont autant de chances}}}}}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Du moins probable au plus probable",
+		"description": "Ranger trois tirages d'un sac selon le nombre de boules de chaque couleur ; dire quelle couleur d'une roue a le plus de chances (sans calcul)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["2", "0", "1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"B": "6",
+					"G": "11",
+					"R": "2",
+					"p": "0",
+					"x": "2",
+					"y": "6",
+					"z": "11"
+				},
+				"description": "Rouge < bleue < verte",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1", "0", "2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"B": "6",
+					"G": "11",
+					"R": "2",
+					"p": "0",
+					"x": "2",
+					"y": "6",
+					"z": "11"
+				},
+				"description": "Erreur : ordre inverse",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2", "0", "1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"B": "1",
+					"G": "5",
+					"R": "12",
+					"p": "1",
+					"x": "1",
+					"y": "5",
+					"z": "12"
+				},
+				"description": "Bleue < verte < rouge",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"g": "3",
+					"r": "1"
+				},
+				"description": "3 parts coloriées : la blanche",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"g": "3",
+					"r": "1"
+				},
+				"description": "Erreur : 3 parts, la coloriée",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"g": "6",
+					"r": "0"
+				},
+				"description": "6 parts coloriées : la coloriée",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"g": "4",
+					"r": "2"
+				},
+				"description": "4 parts : autant",
+				"variationIndex": 1
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "78940a45-009a-442c-9d4c-f5eb37252a30",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 60,
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{r}}"
+					}
+				],
+				"statement": "{{if:s==1|On lance un dé ordinaire à $6$ faces. Chaque nombre de $1$ à $6$ est une issue.|{{if:s==2|On lance une pièce de monnaie : pile ou face.|{{if:s==3|Un sac contient $4$ boules rouges et $4$ boules bleues. On tire une boule : rouge ou bleue.|{{if:s==4|Un jeu de cartes contient autant de cartes de chaque couleur : pique, cœur, carreau, trèfle. On tire une carte et on regarde sa couleur.|{{if:s==5|Un sac contient $6$ boules rouges et $2$ boules bleues. On tire une boule : rouge ou bleue.|{{if:s==6|Un dé a six faces qui portent $1$, $2$, $3$, $4$, $6$ et $6$. On le lance et on regarde le nombre obtenu.|{{if:s==7|Un sachet contient $9$ bonbons à la fraise et $1$ bonbon au citron. On en prend un sans regarder : fraise ou citron.|Une roue est partagée en $4$ parts égales : $3$ bleues et $1$ jaune. On la fait tourner : bleu ou jaune.}}}}}}}}}}}}}}\n\nLes issues ont-elles toutes autant de chances de se réaliser ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+				"variables": [
+					{
+						"name": "s",
+						"expression": "1..8"
+					},
+					{
+						"name": "r",
+						"expression": "eval:min(floor(s/5),1)"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Les issues ont **autant de chances** quand aucune n'est favorisée.",
+						"{{if:s==1|Les six faces sont pareilles : chaque nombre a la même chance.|{{if:s==2|La pièce a deux faces pareilles : pile et face ont la même chance.|{{if:s==3|Il y a autant de rouges que de bleues : même chance.|{{if:s==4|Chaque couleur a autant de cartes : même chance.|{{if:s==5|Il y a plus de rouges que de bleues : la rouge a plus de chances.|{{if:s==6|Le $6$ est sur deux faces, les autres nombres sur une seule : le $6$ a plus de chances.|{{if:s==7|Il y a beaucoup plus de bonbons à la fraise : la fraise a plus de chances.|Le bleu occupe trois parts, le jaune une seule : le bleu a plus de chances.}}}}}}}}}}}}}}",
+						"Réponse : $\\textcolor{{{color:primary.0}}}{\\text{{{if:r==0|oui|non}}}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{r}}"
+					}
+				],
+				"statement": "Une roue est partagée en ${{N}}$ parts égales. On la fait tourner : la flèche montre une part coloriée ou une part blanche.\n\n```partage\nforme: disque {{N}}\ngris: {{g}}\n```\n\nPart coloriée ou part blanche : ont-elles autant de chances ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+				"variables": [
+					{
+						"name": "N",
+						"expression": "4|6|8"
+					},
+					{
+						"name": "g",
+						"expression": "1..{{eval:N-1}}"
+					},
+					{
+						"name": "r",
+						"expression": "eval:min(abs(2*g-N),1)"
+					}
+				],
+				"correction": {
+					"steps": [
+						"On compte les parts de chaque couleur : ${{g}}$ coloriée{{if:g>1|s}}, ${{eval:N-g}}$ blanche{{if:N-g>1|s}}.",
+						"Autant de chances seulement s'il y a autant de parts de chaque couleur.",
+						"Réponse : $\\textcolor{{{color:primary.0}}}{\\text{{{if:r==0|oui|non}}}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Chaque issue a-t-elle autant de chances ?",
+		"description": "Reconnaître une situation d'équiprobabilité : dé ordinaire, pièce, sac de deux couleurs en nombres égaux, roue moitié coloriée ; dé truqué, sac déséquilibré",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"r": "0",
+					"s": "1"
+				},
+				"description": "Dé ordinaire : oui",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"r": "0",
+					"s": "1"
+				},
+				"description": "Erreur : dé ordinaire, non",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"r": "1",
+					"s": "6"
+				},
+				"description": "Dé à deux 6 : non",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"r": "1",
+					"s": "6"
+				},
+				"description": "Erreur : dé à deux 6, oui",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"N": "8",
+					"g": "4",
+					"r": "0"
+				},
+				"description": "4 parts sur 8 : oui",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"N": "4",
+					"g": "1",
+					"r": "1"
+				},
+				"description": "1 part sur 4 : non",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"N": "4",
+					"g": "1",
+					"r": "1"
+				},
+				"description": "Erreur : 1 part sur 4, oui",
+				"variationIndex": 1
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "833b120a-b1a7-456f-b8cd-c194865deed3",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 60,
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{r}}"
+					}
+				],
+				"statement": "{{if:s==1|Des cahiers identiques sont vendus au même prix chacun. Le prix à payer est-il proportionnel au nombre de cahiers achetés ?|{{if:s==2|Des manuels sont tous identiques. La masse d'une pile de ces manuels est-elle proportionnelle au nombre de manuels ?|{{if:s==3|Pour une pâte à crêpes, on met toujours $250~\\unit{g}$ de farine pour $2$ œufs. La masse de farine est-elle proportionnelle au nombre d'œufs ?|{{if:s==4|Au marché, les pommes coûtent $3~\\unit{€}$ le kilogramme. Le prix payé est-il proportionnel à la masse de pommes ?|{{if:s==5|La taille d'un enfant est-elle proportionnelle à son âge ?|{{if:s==6|Un taxi fait payer $4~\\unit{€}$ dès qu'on monte, puis $2~\\unit{€}$ par kilomètre. Le prix de la course est-il proportionnel au nombre de kilomètres ?|{{if:s==7|Un magasin vend un stylo $1~\\unit{€}$, et le lot de $10$ stylos $7~\\unit{€}$. Le prix payé est-il proportionnel au nombre de stylos ?|Un forfait de téléphone coûte $15~\\unit{€}$ par mois, quel que soit le nombre d'appels. Le prix payé est-il proportionnel au nombre d'appels ?}}}}}}}}}}}}}}\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+				"variables": [
+					{
+						"name": "s",
+						"expression": "1..8"
+					},
+					{
+						"name": "r",
+						"expression": "eval:min(floor(s/5),1)"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Deux grandeurs sont **proportionnelles** quand, si l'une devient deux fois, trois fois… plus grande, l'autre aussi.",
+						"{{if:s==1|Deux fois plus de cahiers coûtent deux fois plus cher, trois fois plus, trois fois plus cher : oui.|{{if:s==2|Chaque manuel ajoute la même masse : deux fois plus de manuels pèsent deux fois plus.|{{if:s==3|Avec deux fois plus d'œufs, on met deux fois plus de farine : oui.|{{if:s==4|Chaque kilogramme coûte le même prix : deux fois plus de pommes coûtent deux fois plus.|{{if:s==5|Un enfant de $10$ ans n'est pas deux fois plus grand qu'un enfant de $5$ ans : non.|{{if:s==6|$1~\\unit{km}$ coûte $6~\\unit{€}$, $2~\\unit{km}$ coûtent $8~\\unit{€}$ et pas $12~\\unit{€}$ : les $4~\\unit{€}$ du départ ne doublent pas. Non.|{{if:s==7|$10$ stylos devraient coûter $10~\\unit{€}$ ; le lot coûte moins : non.|On paie toujours $15~\\unit{€}$, même en appelant deux fois plus : non.}}}}}}}}}}}}}}",
+						"Réponse : $\\textcolor{{{color:primary.0}}}{\\text{{{if:r==0|oui|non}}}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{o}}"
+					}
+				],
+				"statement": "À la papeterie, ${{n}}$ cahiers identiques coûtent ${{A}}~\\unit{€}$ et ${{M}}$ cahiers coûtent ${{P}}~\\unit{€}$.\n\nLe prix est-il proportionnel au nombre de cahiers ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+				"variables": [
+					{
+						"name": "n",
+						"expression": "2..4"
+					},
+					{
+						"name": "m",
+						"expression": "2..3"
+					},
+					{
+						"name": "u",
+						"expression": "2..4"
+					},
+					{
+						"name": "o",
+						"expression": "0..1"
+					},
+					{
+						"name": "d",
+						"expression": "1..2"
+					},
+					{
+						"name": "A",
+						"expression": "eval:n*u"
+					},
+					{
+						"name": "M",
+						"expression": "eval:m*n"
+					},
+					{
+						"name": "P",
+						"expression": "eval:m*n*u-o*d"
+					}
+				],
+				"correction": {
+					"steps": [
+						"${{M}}$ cahiers, c'est ${{m}}$ fois ${{n}}$ cahiers. Si le prix était proportionnel, on paierait ${{m}}$ fois plus : ${{m}} \\times {{A}} = {{eval:m*A}}$.",
+						"On paie ${{P}}~\\unit{€}${{if:o==0| : c'est bien ${{m}}$ fois plus.| et non ${{eval:m*A}}~\\unit{€}$.}}",
+						"Réponse : $\\textcolor{{{color:primary.0}}}{\\text{{{if:o==0|oui|non}}}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Proportionnel ou pas ?",
+		"description": "Deux grandeurs en contexte : prix d'objets identiques, pile de manuels, recette, prix au kilo (oui) ; taille et âge, taxi, lot, forfait (non) ; deux achats chiffrés à comparer",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"r": "0",
+					"s": "1"
+				},
+				"description": "Cahiers : oui",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"r": "0",
+					"s": "1"
+				},
+				"description": "Erreur : cahiers, non",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"r": "1",
+					"s": "6"
+				},
+				"description": "Taxi : non",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"r": "1",
+					"s": "6"
+				},
+				"description": "Erreur : taxi, oui (le prix augmente)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"A": "6",
+					"M": "6",
+					"P": "12",
+					"d": "1",
+					"m": "2",
+					"n": "3",
+					"o": "0",
+					"u": "2"
+				},
+				"description": "3 cahiers 6 €, 6 cahiers 12 € : oui",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"A": "6",
+					"M": "6",
+					"P": "11",
+					"d": "1",
+					"m": "2",
+					"n": "3",
+					"o": "1",
+					"u": "2"
+				},
+				"description": "3 cahiers 6 €, 6 cahiers 11 € : non",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"A": "6",
+					"M": "6",
+					"P": "11",
+					"d": "1",
+					"m": "2",
+					"n": "3",
+					"o": "1",
+					"u": "2"
+				},
+				"description": "Erreur : 11 €, oui (le prix augmente)",
+				"variationIndex": 1
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "ae90499d-8da4-43e3-9d5b-bd387fd03e3a",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 60,
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{r}}"
+					}
+				],
+				"statement": "On lance un dé à $6$ faces numérotées de $1$ à $6$.\n\n« {{if:k==1|obtenir $7$|{{if:k==2|obtenir un nombre plus petit que $7$|{{if:k==3|obtenir ${{n}}$|{{if:k==4|obtenir $0$|{{if:k==5|obtenir un nombre entre $1$ et $6$|obtenir un nombre pair}}}}}}}}}} » : est-ce impossible, possible ou certain ?\n\n```choix\nmelanger: non\n- impossible\n- possible\n- certain\n```",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "1..6"
+					},
+					{
+						"name": "n",
+						"expression": "1..6"
+					},
+					{
+						"name": "r",
+						"expression": "eval:(1-min(abs(k-1),1))*0+(1-min(abs(k-2),1))*2+(1-min(abs(k-3),1))*1+(1-min(abs(k-4),1))*0+(1-min(abs(k-5),1))*2+(1-min(abs(k-6),1))*1"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Impossible** : cela n'arrive jamais. **Certain** : cela arrive à chaque fois. **Possible** : cela peut arriver, ou pas.",
+						"{{if:k==1|Aucune face ne porte $7$ : c'est impossible.|{{if:k==2|Toutes les faces portent un nombre plus petit que $7$ : c'est certain.|{{if:k==3|Une face porte ${{n}}$, mais le dé peut aussi tomber sur une autre : c'est possible, pas certain.|{{if:k==4|Aucune face ne porte $0$ : c'est impossible.|{{if:k==5|Toutes les faces portent un nombre entre $1$ et $6$ : c'est certain.|Trois faces portent un nombre pair ($2$, $4$, $6$), les autres non : c'est possible, pas certain.}}}}}}}}}}",
+						"Réponse : $\\textcolor{{{color:primary.0}}}{\\text{{{if:r==0|impossible|{{if:r==1|possible|certain}}}}}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{k}}"
+					}
+				],
+				"statement": "Un sac contient ${{R}}$ boules rouges et ${{B}}$ boules bleues. On tire une boule sans regarder.\n\nTirer une boule rouge, c'est :\n\n```choix\nmelanger: non\n- probable\n- peu probable\n- une chance sur deux\n```",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "0..2"
+					},
+					{
+						"name": "x",
+						"expression": "9..12"
+					},
+					{
+						"name": "y",
+						"expression": "1..2"
+					},
+					{
+						"name": "z",
+						"expression": "3..8"
+					},
+					{
+						"name": "R",
+						"expression": "eval:(1-min(abs(k-0),1))*x+(1-min(abs(k-1),1))*y+(1-min(abs(k-2),1))*z"
+					},
+					{
+						"name": "B",
+						"expression": "eval:(1-min(abs(k-0),1))*y+(1-min(abs(k-1),1))*x+(1-min(abs(k-2),1))*z"
+					}
+				],
+				"correction": {
+					"steps": [
+						"On compare le nombre de boules rouges au nombre de boules bleues.",
+						"{{if:k==0|Il y a beaucoup plus de rouges (${{R}}$) que de bleues (${{B}}$) : on a de grandes chances de tirer une rouge.|{{if:k==1|Il y a beaucoup moins de rouges (${{R}}$) que de bleues (${{B}}$) : on a peu de chances de tirer une rouge.|Il y a autant de rouges que de bleues (${{R}}$ chacune) : rouge ou bleue, la même chance.}}}}",
+						"Réponse : $\\textcolor{{{color:primary.0}}}{\\text{{{if:k==0|probable|{{if:k==1|peu probable|une chance sur deux}}}}}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{r}}"
+					}
+				],
+				"statement": "Un sac contient ${{a}}$ boules rouges et ${{b}}$ boules bleues, et rien d'autre. On tire une boule sans regarder.\n\n« {{if:k==1|tirer une boule verte|{{if:k==2|tirer une boule rouge ou une boule bleue|tirer une boule rouge}}}} » : est-ce impossible, possible ou certain ?\n\n```choix\nmelanger: non\n- impossible\n- possible\n- certain\n```",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "1..3"
+					},
+					{
+						"name": "a",
+						"expression": "2..8"
+					},
+					{
+						"name": "b",
+						"expression": "2..8"
+					},
+					{
+						"name": "r",
+						"expression": "eval:(1-min(abs(k-1),1))*0+(1-min(abs(k-2),1))*2+(1-min(abs(k-3),1))*1"
+					}
+				],
+				"correction": {
+					"steps": [
+						"{{if:k==1|Il n'y a aucune boule verte dans le sac : c'est impossible.|{{if:k==2|Toutes les boules sont rouges ou bleues : c'est certain.|On peut tirer une rouge, mais aussi une bleue : c'est possible, pas certain.}}}}",
+						"Réponse : $\\textcolor{{{color:primary.0}}}{\\text{{{if:r==0|impossible|{{if:r==1|possible|certain}}}}}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Impossible, possible ou certain ?",
+		"description": "Le vocabulaire du hasard sur un dé et un sac de boules : impossible, possible, certain ; probable, peu probable, une chance sur deux (sans calcul)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "1",
+					"n": "4",
+					"r": "0"
+				},
+				"description": "Obtenir 7 : impossible",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "1",
+					"n": "4",
+					"r": "0"
+				},
+				"description": "Erreur : obtenir 7, possible",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "2",
+					"n": "4",
+					"r": "2"
+				},
+				"description": "Plus petit que 7 : certain",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "3",
+					"n": "4",
+					"r": "1"
+				},
+				"description": "Obtenir 4 : possible",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "3",
+					"n": "4",
+					"r": "1"
+				},
+				"description": "Erreur : obtenir 4, certain",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"B": "2",
+					"R": "10",
+					"k": "0",
+					"x": "10",
+					"y": "2",
+					"z": "5"
+				},
+				"description": "10 rouges, 2 bleues : probable",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"B": "2",
+					"R": "10",
+					"k": "0",
+					"x": "10",
+					"y": "2",
+					"z": "5"
+				},
+				"description": "Erreur : 10 rouges, peu probable",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"B": "11",
+					"R": "1",
+					"k": "1",
+					"x": "11",
+					"y": "1",
+					"z": "5"
+				},
+				"description": "1 rouge, 11 bleues : peu probable",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"B": "5",
+					"R": "5",
+					"k": "2",
+					"x": "10",
+					"y": "2",
+					"z": "5"
+				},
+				"description": "5 et 5 : une chance sur deux",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "5",
+					"k": "1",
+					"r": "0"
+				},
+				"description": "Verte : impossible",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "5",
+					"k": "2",
+					"r": "2"
+				},
+				"description": "Rouge ou bleue : certain",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3",
+					"b": "5",
+					"k": "2",
+					"r": "2"
+				},
+				"description": "Erreur : rouge ou bleue, possible",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "5",
+					"k": "3",
+					"r": "1"
+				},
+				"description": "Rouge : possible",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	}
+]
