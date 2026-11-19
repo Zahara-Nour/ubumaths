@@ -23,7 +23,7 @@ _Mis à jour le 2026-11-19, après #2234 ; PR #2913 ouverte._
   horodatage `pnpm migration:horodatage`, `check:migrations --pr <n>` ; `db:migrate` : dry-run d'abord ; commitlint :
   sujet sans majuscule, corps ≤ 100 colonnes ; shards navigateur : « Browser connection was closed » = relancer ;
   `create-questions --mettre-a-jour` refusé au mode auto ; worktree neuf : `svelte-kit sync` avant `tsx`.
-- **Worktree / branche** : `../ubumaths-wt-questions-ce1`, `content/questions-ce1-lot11`.
+- **Worktree / branche** : `../ubumaths-wt-questions-ce1`, `chore/questions-ce1-lot12-rangement` (PR 2913).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-26)
 
