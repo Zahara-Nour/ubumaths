@@ -6,21 +6,23 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, après la publication du lot 14a._
+_Mis à jour le 2026-11-19, après #2893._
 
-- **État** : lots 0 à 14a publiés (lot 14a : 6 modèles, § 21.5). Restent les lots 14b à 19 du § 14 (15 sans 109,
-  18 sans 087 ni 094 : § 21.1 ; 19 réduit à CM2-102 : § 19.4).
-- **Prochaine action** : phase 0 du lot 14b (courbes, construire, problèmes : 125, 159, 121, 122, 108).
-- **En attente de David** : rien.
+- **État** : lots 0 à 14a publiés ; lot 14b (6 modèles, § 22) en fichiers sur `main` (#2893), pas encore en prod.
+  Restent ensuite les lots 15 à 19 du § 14 (15 sans 109, 18 sans 087 ni 094 : § 21.1 ; 19 réduit à CM2-102 : § 19.4).
+- **Prochaine action** : David lance `create-questions --dir scripts/questions/cm2-14b --publier` (depuis le worktree) ;
+  puis ids commités, migration nœud + tag (courbes et repères ×3, diagrammes en barres, notion « Représenter des
+  données » ×2), page à cocher, publication.
+- **En attente de David** : la commande `create-questions` ci-dessus.
 - **Pièges en cours** : `Doc-inchangée:` dans un COMMIT ; sujet de commit en minuscule, corps ≤ 100 caractères par ligne.
   `migration:horodatage` = heure réelle UTC ; une autre migration en attente → stop avant `db:migrate` (worktree remis
   sur `origin/main` d'abord). `db:migrate` depuis le worktree : `supabase/.temp` copié. `create-questions` /
   `publier-lot` refusés au classifieur : David les lance (`!`). Port 5179 pris par `questions-ttechno` : serveur
-  d'essai sur 5186. `de` + `{{if}}` ne s'élide pas. Une spec qui recalcule une donnée par la formule du modèle ne la
-  vérifie pas : contrôler l'invariant (§ 21.3). La page à cocher ne dessine pas ` ```circulaire ` (§ 21.4).
-- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, détaché sur `origin/main` ; 7 fichiers
-  `scripts/questions/ttechno-8-loi-binomiale/` modifiés dedans (ids du lot 8 de `questions-ttechno`, déjà sur sa
-  branche, PR #2886) : pas à ce chantier, ne pas toucher.
+  d'essai sur 5186. `de` + `{{if}}` ne s'élide pas. Contrôler les invariants à part (§ 21.3, 22.2 : il a trouvé un
+  défaut que les specs ne voyaient pas). La page à cocher ne dessine pas ` ```circulaire ` (§ 21.4). Index du dépôt
+  principal partagé : `git commit -- <fichier>`, et un `push` de `main` emporte les commits locaux des autres sessions.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, branche `feat/questions-cm2-lot14b` (mergée) : la migration
+  partira d'une branche neuve sur `origin/main`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
