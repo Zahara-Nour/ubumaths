@@ -5,22 +5,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, lot 12 et `cp-figure/` publiés._
+_Mis à jour le 2026-11-19, lot 13 écrit (§ 20)._
 
-- **État** : lot 12 (`ce1-12/`, 5 modèles) et `cp-figure/` (3 modèles, dont `a7dfe502` = CE1-073) **publiés** ;
-  migration du lot jouée et vérifiée. Prod : 100 points sur 107 (restent 001, 002, 074 ; 4 points D hors appli).
-- **Prochaine action** : phase 0 du lot 001, 002, 003 + 074 et fin de 072 (triangle, triangle rectangle, cercle)
-  dans un worktree neuf depuis `origin/main` (l'ancien, `chore/questions-ce1-lot12-rangement`, est mergé).
+- **État** : lot 13 (`ce1-13/`, 5 modèles : 001, 002, 003, 074 ×2) écrit, tout vert ; PR des fichiers ouverte.
+  Prod : 100 points sur 107 ; après ce lot, 001, 002, 074 couverts (103, les 4 D hors appli).
+- **Prochaine action** : merge de la PR ; `create-questions --publier` (David) ; PR rangement + tags : 5 neufs, et
+  `aaebfe52` → CE1-001, `2fafe84d` → CE1-002 avec le niveau CE1 ajouté (§ 20, décision 1) ; page à cocher ; publication.
 - **En attente de David** : essai tablette des cases « figure » (`verifications-manuelles.md`, ne bloque plus) ;
   futur chantier « `\textcolor` hors formule » (53 fichiers de lots).
-- **Pièges en cours** : jamais de variable `e` ni `i` ; **mots en couleur dans le texte = `colt()`
-  (`$\textcolor{…}{\text{…}}$`), jamais `\textcolor` nu** ; points invisibles (`visible=faux`) jamais nommés dans le
-  corrigé ; **niveaux : relever la catégorie juste avant la publication** ; `publier-lot` = tout le dossier ou rien ;
-  horodatage `pnpm migration:horodatage`, `check:migrations --pr <n>` ; `db:migrate` : dry-run d'abord ; commitlint :
-  sujet sans majuscule, corps ≤ 100 colonnes ; shards navigateur : « Browser connection was closed » = relancer ;
-  `create-questions --mettre-a-jour` refusé au mode auto ; worktree neuf : `svelte-kit sync` avant `tsx`.
-- **Worktree / branche** : `../ubumaths-wt-questions-ce1` sur `chore/questions-ce1-lot12-rangement` (mergée) :
-  à retirer, nouvelle branche pour le lot suivant.
+- **Pièges en cours** : jamais de variable `e` ni `i` ; mots en couleur = `colt()` ; `{{if:…}}` : jamais `||` dans la
+  condition (le `|` sépare les branches), `mod(d,10)` ; droite de l'équerre orientée par $[AB]$ (§ 20) ; niveaux relevés
+  juste avant la publication ; `publier-lot` = tout le dossier ou rien ; port 5176 pris par une autre session.
+- **Worktree / branche** : `../ubumaths-wt-questions-ce1` sur `feat/questions-ce1-lot13`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-26)
 
@@ -970,5 +966,15 @@ segment tracé d'une graduation de trop (7 cm pour 6).
 **Question d'accès** : personne ne lit rien de plus — modèles neufs en brouillon (admin seul) ; la migration range,
 tague et ajoute le niveau CE1 à deux modèles déjà publiés, aucune règle d'accès ne change.
 
-Questions à David : voir le message du 2026-11-19 (taguer les deux modèles du CE2 ; triangle quelconque ; 074 en
-deux modèles).
+Décisions (David, « je te suis », 2026-11-19) :
+
+1. `aaebfe52` → CE1-001 et `2fafe84d` → CE1-002, niveau CE1 ajouté (une seule note de difficulté pour les deux
+   niveaux).
+2. Triangle quelconque de 072 : ligne 47 de `outils-manquants.md`, hors du lot.
+3. 074 en deux modèles (règle graduée ; équerre et compas) ; milieu par pliage hors appli.
+
+- 2026-11-19 : lot 13 écrit (`lot-ce1-13.py`, `scripts/questions/ce1-13/`) : 5 modèles, 66 specs ; `create-questions`
+  simulé 5/5 ; `question:specs` 7 000 tirages verts, aucun `\textcolor` hors formule ; `sonde-collections` 600 blocs
+  et `sonde-figures` 600 blocs, 0 problème ; 5 brouillons en base locale. **Piège** : la droite de l'équerre s'écrit
+  `droite(A ; A + AB tourné d'un quart de tour)` (`perpendicularThrough`) : avec $B$ à gauche de $A$, le second point
+  part vers le bas. Aperçu admin non joué : Chrome n'ouvre pas `http://[::1]:5177`.
