@@ -88,12 +88,14 @@ export function drawSeriesQuestions(
 		const template = byId.get(item.templateId);
 		if (!template) {
 			console.warn(`Série : modèle ${item.templateId} absent, ligne sautée`);
-			continue;
 		}
 
 		const delaySeconds = item.delay && item.delay > 0 ? item.delay : DEFAULT_QUESTION_DELAY_SECONDS;
 		for (let repetition = 0; repetition < item.quantity; repetition++) {
-			draws.push({ template, seed: nextSeed(), delaySeconds });
+			// Graine tirée même pour une ligne sautée : avec une graine de série
+			// (« Mêmes nombres pour tous »), les lignes suivantes gardent les leurs
+			const seed = nextSeed();
+			if (template) draws.push({ template, seed, delaySeconds });
 		}
 	}
 

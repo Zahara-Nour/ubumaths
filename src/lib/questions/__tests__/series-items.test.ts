@@ -149,7 +149,8 @@ describe('buildSeriesItems', () => {
 
 describe('drawSeriesQuestions (évaluation : le serveur tire modèle + graine)', () => {
 	it('même règle que buildSeriesItems : un tirage par répétition, durée du modèle de la ligne', () => {
-		const seeds = [5, 6, 7];
+		// La ligne au modèle absent consomme sa graine (7) sans tirage : « mul » garde la sienne
+		const seeds = [5, 6, 7, 8];
 		const draws = drawSeriesQuestions(
 			[line('add', 2, 15), line('absent', 1, 50), line('mul', 1, 0)],
 			[template('Additionner', 'add'), template('Multiplier', 'mul')],
@@ -158,7 +159,7 @@ describe('drawSeriesQuestions (évaluation : le serveur tire modèle + graine)',
 		expect(draws.map((d) => [d.template.id, d.seed, d.delaySeconds])).toEqual([
 			['add', 5, 15],
 			['add', 6, 15],
-			['mul', 7, DEFAULT_QUESTION_DELAY_SECONDS]
+			['mul', 8, DEFAULT_QUESTION_DELAY_SECONDS]
 		]);
 	});
 
@@ -215,5 +216,24 @@ describe('seriesSeedSequence (mêmes nombres pour tous)', () => {
 		const eleve2 = seedsOf();
 		expect(eleve1).toEqual(eleve2);
 		expect(new Set(eleve1).size).toBe(5);
+	});
+});
+
+describe('mêmes nombres pour tous : un modèle absent ne décale pas les autres', () => {
+	it('une ligne au modèle absent laisse inchangées les graines des lignes suivantes', () => {
+		const templates = [template('Additionner', 'add'), template('Multiplier', 'mul')];
+		const complete = buildSeriesItems([line('add', 2, 15), line('mul', 2, 30)], templates, {
+			nextSeed: seriesSeedSequence(42)
+		});
+		// Chez un autre élève, le modèle « add » manque (retiré, cache d'onglet en retard)
+		const sansAdd = buildSeriesItems(
+			[line('add', 2, 15), line('mul', 2, 30)],
+			[template('Multiplier', 'mul')],
+			{ nextSeed: seriesSeedSequence(42) }
+		);
+
+		expect(sansAdd.map((item) => item.instance.seed)).toEqual(
+			complete.filter((item) => item.templateId === 'mul').map((item) => item.instance.seed)
+		);
 	});
 });

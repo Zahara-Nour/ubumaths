@@ -40,3 +40,4 @@ _Mis à jour le 2026-11-19, ouverture du chantier._
 ## Historique
 
 - 2026-11-19 : graine `graine=<n>` dans le lien (`SERIES_SEED_PARAM`), `seriesSeedSequence`, case dans `SeriesLinkShare`, libellé de Recommencer (`sameQuestions`) dans Flash, Saisie, Contrôle blanc ; tests de rendu (deux ouvertures du lien, Recommencer) ; doc `evaluations.md` et `questions.md`.
+- 2026-11-19 : revue (`code-reviewer`) : une ligne au modèle absent décalait les graines suivantes → `drawSeriesQuestions` tire la graine même pour une ligne sautée (test).
