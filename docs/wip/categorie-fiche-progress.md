@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, PR 1 relue, prête à ouvrir._
+_Mis à jour le 2026-11-19, après #2901._
 
-- **État** : PR 1 écrite dans le worktree — ADR 0041, migration `20261119173341_categorie_notions_fiche.sql` (appliquée en LOCAL seulement), 38 tests d'intégration verts (rouges sans la migration) ; revues code (Opus) + sécurité : aucun bloquant, findings corrigés (verrou `for update` dans la garde, rollback, tests du différé) · **Prochaine action** : PR, CI, merge, puis `db:migrate` (4 conditions, `migration list --linked` d'abord) et `db:types` ; puis PR 2 · **En attente de David** : rien · **Pièges en cours** : mono-professeur (un seul compte teacher en test → l'admin tient le rôle du second auteur) ; les liens de partage transmettaient DÉJÀ `grades` (la note « Lié » plus bas se trompait) · **Worktree / branche** : `../ubumaths-wt-categorie-fiche` · `feat/categorie-fiche` · **Maquette** : https://claude.ai/artifact/4NVjLSrbd7J7XNPzaC3cur
+- **État** : PR 1 mergée (#2901, ADR 0041) et **migration jouée en prod** (`20261119173341`, vérifiée : colonne, RLS, 4 policies, 2 fonctions de partage) · **Prochaine action** : PR 2 — `pnpm db:types` puis éditeur (catégorie + notions) et PDF (titre composé, badge du niveau, bas de page, tous les cas de la synthèse) ; nouveau worktree `../ubumaths-wt-categorie-fiche` (`feat/categorie-fiche-editeur`) · **En attente de David** : rien · **Pièges en cours** : retirer les notions en trop AVANT de passer en catégorie à une notion (garde 23514 à chaque requête PostgREST) ; la duplication de fiche (`api/worksheets/[id]/duplicate`) et la publication en chapitre doivent recopier catégorie + notions ; la route élève ne sélectionne pas `grades` (badge absent sinon) ; FK RESTRICT : un nœud cité ne se supprime pas ; mono-professeur en test · **Maquette** : https://claude.ai/artifact/4NVjLSrbd7J7XNPzaC3cur
 
 ## Synthèse de la phase 0 (2026-11-19)
 
@@ -34,9 +34,9 @@ _Mis à jour le 2026-11-19, PR 1 relue, prête à ouvrir._
   partage pourront lire la catégorie, les notions ET le niveau de la fiche** (imprimés sur leur
   PDF ; migration en attente depuis #2891, faite dans la même PR). Noms des nœuds déjà publics.
 
-## Découpage proposé (à valider)
+## Découpage (validé par David, 2026-11-19)
 
-1. **PR 1 — ADR + migration** : table, colonne, garde de la règle, fonction SQL du PDF élève /
+1. ✅ **PR 1 — ADR + migration** (#2901, migration jouée le 2026-11-19) : table, colonne, garde de la règle, fonction SQL du PDF élève /
    partage (catégorie, notions, niveaux), tests d'intégration rouges puis verts ; `db:migrate`,
    `db:types`.
 2. **PR 2 — éditeur + PDF** : choix catégorie/notions dans l'éditeur, titre composé, badge du
