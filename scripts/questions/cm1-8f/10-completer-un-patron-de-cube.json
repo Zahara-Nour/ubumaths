@@ -1,4 +1,5 @@
 {
+	"id": "9fe0fee6-5e3b-4fa2-9594-a245d6688ff6",
 	"title": "Compléter un patron de cube",
 	"description": "Poser une, puis deux faces manquantes d'un patron de cube ; toute pose qui se plie en cube est juste",
 	"grades": ["CM1", "CM2"],

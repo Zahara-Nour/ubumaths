@@ -1,4 +1,5 @@
 {
+	"id": "10f2e60e-6ecf-494b-9573-e55c805dc4f3",
 	"title": "Où arrive le robot ? (code en mots)",
 	"description": "Code « avance de… / pivote… / demi-tour » de 4 à 7 instructions sur un quadrillage ; trois points, dont l'arrivée si l'on échange droite et gauche",
 	"grades": ["CM1", "CM2"],
