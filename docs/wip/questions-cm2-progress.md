@@ -6,21 +6,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, après la publication du lot 16._
+_Mis à jour le 2026-11-19, après #2927 (rangement du lot 17) et son `db:migrate`._
 
-- **État** : lots 0 à 16 publiés (lot 16 : 081, 088 ×2, 092, 093, 5/5 `published`, § 24.4). Reste le **dernier lot 17**
-  (095 figure composée, 097 symétrique sur quadrillage, 102 patron du pavé) ; tous les autres points des anciens lots
-  16 à 19 sont couverts par les jumeaux CM1 + CM2 (§ 24).
-- **Prochaine action** : phase 0 du lot 17 : relevé MCP (095, 097, 102 toujours sans modèle ?), bornes, outils (case
-  « figure » : construire, symétrique ; ` ```patron `), tableau des modèles, puis attendre le go.
-- **En attente de David** : rien.
+- **État** : lots 0 à 16 publiés ; lot 17 (097 `0cb5aa4f`, 102 `0a155341`) en brouillon, rangé et tagué en prod
+  (§ 25.3). 095 reste D (outils manquants n° 45). C'est le **dernier lot** du chantier.
+- **Prochaine action** : lire les verdicts de la page à cocher (https://claude.ai/artifact/BCLEK25ZYEb5QALukL4zRq,
+  collection `verdicts`, vide au départ), puis `publier-lot --dir scripts/questions/cm2-17` en simulation ; ensuite
+  recompte de clôture (découpage contre PR mergées et MCP) et versement.
+- **En attente de David** : la relecture des 2 fiches ; puis `publier-lot --publier` (`!`).
 - **Pièges en cours** : `Doc-inchangée:` dans un COMMIT ; sujet de commit en minuscule, corps ≤ 100 caractères par ligne.
-  `db:migrate` : `migration list --linked` d'abord (une autre session peut l'avoir déjà poussée, vu au lot 16).
-  `create-questions --publier` et `publier-lot --publier` : David les lance (`!`). Serveur d'essai sur 5186. Choix
-  multiple : une partie des bonnes cases = `unoptimal_form`. `sonde-figures` ne lit pas les figures DANS un choix.
-  Index du dépôt principal partagé : `git commit -- <fichier>`.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, détaché sur `origin/main` : nouvelle branche du lot
-  suivant depuis `origin/main`.
+  `db:migrate` : `migration list --linked` d'abord. `create-questions --publier` et `publier-lot --publier` : David
+  (`!`). Serveur d'essai sur 5186. La page à cocher ne dessine pas ` ```patron ` : le jouer dans l'aperçu. Index du
+  dépôt principal partagé : `git commit -- <fichier>`.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, détaché sur `origin/main`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -1974,3 +1972,9 @@ Recommandations suivies (« je te suis ») : (a) 095 reste D (outils manquants n
   patrons »). Test `questions-cm2-lot17-rangement-tags` : 9 verts ; corps remplacé par `select 1;` → 3 rouges, 4
   sautés ; fichier restauré (`cmp`) ; 9/9 rejoué après le commit. `security-auditor` : aucun finding (chemin
   « notion seule » vérifié strict).
+- #2927 : CI verte, `check:migrations` sortie 0, mergée. `migration list --linked` : seule la nôtre en attente →
+  `db:migrate` depuis le dépôt principal. MCP : 2 brouillons rangés (« Symétrie axiale », « patrons »), un tag chacun
+  (097, 102), `updated_at` = création.
+- `garde-niveaux-tags` : aucun niveau manquant. Page à cocher (2 fiches, base prod ; alerte attendue : ` ```patron `
+  non dessiné) : https://claude.ai/artifact/BCLEK25ZYEb5QALukL4zRq ; `verdicts` vide au départ. Rendu à 390 px
+  (Playwright, fichier local) : pas de débordement, 0 erreur.
