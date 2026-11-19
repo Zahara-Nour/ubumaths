@@ -1380,3 +1380,11 @@ Tableau du § 19 gardé.
   5 brouillons sur « suites de motifs », un tag chacun (068 ×2, 069, 070 ×2), `updated_at` = création.
 - `garde-niveaux-tags` : aucun niveau manquant. Page à cocher (5 fiches, aucune alerte, base prod) :
   https://claude.ai/artifact/1v98tpiPCLMLkMkA9nQeS8 ; `verdicts` vide au départ.
+
+### 19.4 Lot 19 réduit par le chantier `questions-cm1` (2026-11-19)
+
+Message de la session `questions-cm1` : son lot 8e a tagué CM2-098 et 099 (vérifié au MCP : 1 modèle publié chacun) ; son
+lot 8f (décidé par David le 2026-11-18, § 25 bis de `questions-cm1-progress.md`, `scripts/questions/cm1-8f/`, branche
+`feat/questions-cm1-lot8f`) écrit 7 modèles CM1 et CM2, tagués aussi CM2-100, 101, 103, 104, 105 (0 modèle en prod au
+2026-11-19). **Notre lot 19 se réduit à CM2-102 (patron du pavé)** ; ne pas écrire les autres en double. À la phase 0 du
+lot 19 : revérifier au MCP que le lot 8f est bien tagué.
