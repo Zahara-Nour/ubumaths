@@ -9,11 +9,10 @@ _Mis à jour le 2026-11-19, après #2857 (rangement du lot 8e) ; page à cocher 
 
 - **État** : lots 0 à 8d publiés, **148 points du CM1 sur 171** ; lot 8e : 5 brouillons en prod, rangés et tagués
   (#2857, migration passée) ; page à cocher publiée (§ 25 sexies).
-- **Prochaine action** : verdicts de David sur la page ; corriger ce qui est « à revoir » (dont le débordement de
-  la correction du modèle 04, § 25 sexies) ; `publier-lot` (David). Ensuite le lot 8f (modèles 8 à 14 du § 25),
-  puis 9.
-- **En attente de David** : la page à cocher https://claude.ai/artifact/J4kWSo45dx1hDoQZh1UXV8 ; go sur la
-  correction du modèle 04.
+- **Prochaine action** : 5 OK sur 5 ; correction du modèle 04 faite (§ 25 sexies) : PR, CI, merge ; David lance
+  `create-questions.ts --dir scripts/questions/cm1-8e --publier --mettre-a-jour` puis `publier-lot` ; recompte.
+  Ensuite le lot 8f (modèles 8 à 14 du § 25), puis 9.
+- **En attente de David** : rien avant le merge.
 - **Pièges en cours** : création en prod = `pnpm tsx scripts/create-questions.ts --dir … --publier` (pas de script
   `pnpm create-questions`) ; la lancer, comme `db:migrate`, **depuis le worktree** (lien `supabase/.temp/` copié) ;
   commitlint refuse le type `content` et un corps > 100 caractères par ligne ; le mode auto refuse `publier-lot`
@@ -2141,3 +2140,7 @@ reste en D ; niveaux **CM1 et CM2** et tag des deux points (109/098, 110/099, 11
   Publiée : https://claude.ai/artifact/J4kWSo45dx1hDoQZh1UXV8 (`verdicts`, capacité `db`, vide).
 - Verdicts (2026-11-19) : 5 « OK » sur 5, aucun commentaire. La correction du modèle 04 (débordement à 390 px)
   reste à trancher.
+- Correction du modèle 04 (go de David, 2026-11-19) : seul « triangles » reste coloré (`lot-cm1-8e.py`, fichier
+  régénéré, id gardé ; diff d'une ligne). Simulation `create-questions` : 04 « CONTENU DIFFÉRENT », les 4 autres
+  identiques. Page régénérée : 390 px sans défilement horizontal, aucune erreur de console. À la mise en prod :
+  `create-questions.ts --dir scripts/questions/cm1-8e --publier --mettre-a-jour`, puis `publier-lot`.

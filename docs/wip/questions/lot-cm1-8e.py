@@ -372,8 +372,8 @@ VRAIE = variation(
     ['Une pyramide peut avoir une base carrée, rectangle, triangulaire ou à plus de côtés : ni sa'
      ' base, ni son nombre de faces ne sont toujours les mêmes, et sa base n\'est un triangle que'
      ' parfois.',
-     'Ce qui est toujours vrai : ' + colt('ses faces latérales sont des triangles qui se'
-                                         ' rejoignent au sommet') + '.'])
+     'Ce qui est toujours vrai : ses faces latérales sont des ' + colt('triangles')
+     + ' qui se rejoignent au sommet.'])
 
 SPECS_PYR = [
     spec('Base carrée : 4 et 5', 0, {'q': 1, 'n': 4}, ['4', '5'], 'correct'),
