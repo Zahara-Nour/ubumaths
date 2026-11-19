@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, après #2884._
+_Mis à jour le 2026-11-19, après l'avis de David sur la page d'essai (#2884)._
 
-- **État** : PR 1 mergée (#2884) : page d'essai `/dev/polices/luciole` (3 versions à l'écran + PDF Typst Luciole/Luciole Math), polices dans `static/fonts/luciole/`.
-- **Prochaine action** : PR 2, réglage « Lecture facilitée » à l'écran pour le texte (D2, D3), avec le crédit des polices sur `/a-propos` (D5). Nouveau worktree `../ubumaths-wt-lecture-facilitee`, branche `feat/lecture-facilitee-reglage`.
-- **En attente de David** : son avis sur la version C et les PDF de la page d'essai (décide de la PR 3 = Luciole Math à l'écran) ; voir « Observations de l'essai ».
-- **Pièges en cours** : rien renommer de ce qui porte le nom KaTeX ; Luciole texte CC-BY 4.0 → crédit ; l'aperçu MathML de Chrome laisse un espace après une racine (absent du PDF) ; revue #2884 : `luciole-pdf.ts` garde un échec de chargement jusqu'au rechargement (mineur, laissé).
-- **Worktree / branche** : aucun (retiré après #2884).
+- **État** : PR 1 mergée (#2884). David a regardé la page d'essai : « C plutôt pas mal », il faut voir **avec MathLive et toutes les expressions possibles** → D6 ci-dessous : la PR 3 passe avant la PR 2.
+- **Prochaine action** : PR 3, nouveau jeu de polices écran `luciole` pour MathLive (fichiers `KaTeX_*.woff2` construits depuis Luciole / Luciole-Math avec `tools/chiphre-math`, sans effet manuscrit), ajouté à côté de `katex` et `shantell` dans `mathlive-fonts.ts` ; 3e bouton « Luciole Math » sur `/dev/polices`, dont la vitrine montre déjà tous les symboles, la galerie, le texte mixte et les exercices. Worktree `../ubumaths-wt-lecture-facilitee`, branche `feat/lecture-facilitee-mathlive`.
+- **En attente de David** : rien ; il jugera la PR 3 sur `/dev/polices`.
+- **Pièges en cours** : ne rien renommer ni retirer de ce qui porte le nom KaTeX ; les métriques des polices sont codées dans MathLive (pas lues dans les fichiers) → un glyphe Luciole plus large/haut que celui de KaTeX déborde (voir comment `tools/chiphre-math` l'a traité : `build_metrics.py`, `docs/TECHNICAL.md`) ; venv Python à recréer (`tools/chiphre-math/README.md`) ; Tailscale Serve `:8445` → 5175 encore ouvert (le couper : `tailscale serve --https=8445 off`).
+- **Worktree / branche** : aucun.
 
 ## Ce qui existe déjà (vérifié le 2026-11-19)
 
@@ -53,6 +53,8 @@ Conséquence pour l'étude :
 - **D3 (Q3)** : s'applique au **contenu** de la page seulement, comme la taille du texte ; menus et en-tête inchangés.
 - **D4 (Q4)** : PR 1 page d'essai → PR 2 réglage écran (texte), sans attendre D1 → PR 3 jeu écran Luciole Math si D1 → PR 4 PDF (peut-être plus tôt : Typst lit Luciole-Math telle quelle).
 - **D5 (Q5)** : crédit dans une section « Polices » de `/a-propos` (ou `/legal`), qui cite Luciole et Shantell.
+
+- **D6 (2026-11-19, après l'essai)** : version C jugée « plutôt pas mal » ; avant de décider, la voir rendue **par MathLive** sur toutes les expressions → PR 3 (jeu écran Luciole Math, sur `/dev/polices` seulement) avant la PR 2.
 
 ## Observations de l'essai (2026-11-19)
 
