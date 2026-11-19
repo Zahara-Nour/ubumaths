@@ -1,6 +1,6 @@
 """Écrit les 9 modèles du lot 7b du CE2 (horloge et droite graduée) dans scripts/questions/ce2-7b/.
 
-Phase 0 validée par David le 2026-11-02 (§ 12 du journal `docs/wip/questions-ce2-progress.md`,
+Phase 0 validée par David le 2026-11-02 (§ 12 du journal `docs/archive/wip/questions-ce2-progress.md`,
 « tes recos ? » puis « ok »). Bornes `cycle2.json` : CE2-057 (lire l'heure : huit heures et demie,
 sept heures moins le quart, quatre heures moins vingt, quinze heures quarante-deux, midi),
 CE2-058 (poser les aiguilles : cinq heures et quart, treize heures vingt, six heures dix-huit),

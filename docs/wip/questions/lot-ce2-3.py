@@ -1,7 +1,7 @@
 """Écrit les 6 modèles du lot 3 du CE2 (vocabulaire des opérations) dans scripts/questions/ce2-3/.
 
 Phase 0 validée par David le 2026-10-29 (« je te suis », § 7 du journal
-`docs/wip/questions-ce2-progress.md`) : réponses en nombres seulement ; les réponses par un mot
+`docs/archive/wip/questions-ce2-progress.md`) : réponses en nombres seulement ; les réponses par un mot
 (« somme » ou « différence ? », « oui / non ») attendent le lot à QCM. Plages : bornes
 `cycle2.json`, CE2 (« la somme de 12 et de 25 est 37 », « la différence entre 60 et 37 est 23 »,
 « le produit de 3 et de 25 est 75 », « 3 et 25 sont les facteurs », « 75 est un multiple de 25 »,

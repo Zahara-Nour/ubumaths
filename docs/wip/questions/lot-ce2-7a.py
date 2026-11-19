@@ -1,6 +1,6 @@
 """Écrit les 10 modèles du lot 7a du CE2 (calcul posé et monnaie) dans scripts/questions/ce2-7a/.
 
-Phase 0 validée par David le 2026-11-02 (§ 11 du journal `docs/wip/questions-ce2-progress.md`,
+Phase 0 validée par David le 2026-11-02 (§ 11 du journal `docs/archive/wip/questions-ce2-progress.md`,
 « tes recos ? » puis « ok »). Bornes `cycle2.json` : CE2-016 et 090 (entiers ≤ 10 000), CE2-019
 (2 ou 3 chiffres × 1 ou 2 chiffres, produit ≤ 10 000 ; 16 × 548 = 8 768), CE2-055 et 056
 (montants à virgule, 3 termes au plus, unités mêlées : 43,45 € + 68 centimes ; 143 € + 3,67 € +

@@ -1,7 +1,7 @@
 """Écrit les 6 modèles du lot 11 du CE2 (matériel multibase) dans scripts/questions/ce2-11/.
 
 Phase 0 validée par David le 2026-11-06 (« je suis tes recos », § 17 du journal
-`docs/wip/questions-ce2-progress.md`) : pas de QCM de dessins (grand bloc illisible imprimé dans
+`docs/archive/wip/questions-ce2-progress.md`) : pas de QCM de dessins (grand bloc illisible imprimé dans
 un choix) ; au plus 20 centaines dessinées, puis 15 (vu à l'écran, 2026-11-06) ; brouillons neufs, migration nœud + tag sans règle
 neuve. Outil : bloc ```collection, `centaines:` et `milliers:` (#2420), `construire:` jusqu'à
 9 999 (réserve déduite de la valeur, seule la valeur est jugée). Bornes `cycle2.json`, CE2-001,

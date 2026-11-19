@@ -424,6 +424,13 @@ pnpm tsx scripts/series/creer-serie.ts --fichier scripts/series/<nom>.json --pub
   `eval:x0-12` ; dans un ` ```figure `, `{{eval:a/2}}` sort `\dfrac{27}{5}`, refusé par le moteur → `{{eval:a/2;d}}`
   (`evd` de `lot-cm1-5d.py`) ; une `validationRules` custom à `{{if:}}` imbriqué juge fausse la bonne réponse → la
   retirer ; deux figures côte à côte donnent des carreaux de 13 px à 390 px → les empiler.
+- **Pièges vus au CE2** (2026-10-27 au 2026-11-19) : la page à cocher n'affiche pas l'italique `_…_` (l'appli oui) ;
+  la sonde ne passe pas les figures d'un choix → les relire dans l'aperçu ; `{{if}}` autour d'un bloc `choix` est
+  refusé (« bloc non fermé ») → faire varier le contenu d'une figure, jamais le bloc ; un dessin dans un choix est
+  rapetissé (le code de l'angle droit y disparaît) → une seule figure aux objets numérotés ; `sonde-figures` exige
+  une fenêtre de rapport hauteur / largeur ≥ 1/4 (règle graduée : hauteur 3,6) ; coordonnées calculées en
+  flottants → toujours arrondies (`0.20000000000000018` a fait dépasser la limite de longueur des réponses du
+  corpus) ; contour `gris` invisible sur fond sombre.
 - **Modèle commun à deux niveaux qu'un autre chantier couvre** (CM1 + CM2) : `grades` des deux niveaux, tag des deux
   points, et prévenir la session de l'autre niveau (message, plus une ligne dans son journal) pour qu'elle retire
   ces points de ses lots.

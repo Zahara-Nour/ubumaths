@@ -1,6 +1,6 @@
 """Écrit les 8 modèles du lot 9 du CE2 (longueurs, fraction de l'unité, masses) dans scripts/questions/ce2-9/.
 
-Phase 0 validée par David le 2026-11-06 (§ 15 du journal `docs/wip/questions-ce2-progress.md`,
+Phase 0 validée par David le 2026-11-06 (§ 15 du journal `docs/archive/wip/questions-ce2-progress.md`,
 « tes recos ? » puis « ok »). Bornes `cycle2.json` : CE2-012 (règle en quarts et en dixièmes d'une
 unité, huitièmes du livret ; « 2 u + 1/4 u », encadrer entre deux dixièmes), CE2-040 (longueurs de
 référence : objets familiers et distances), CE2-041 (estimer), CE2-042 (le périmètre), CE2-044

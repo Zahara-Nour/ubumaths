@@ -1,19 +1,19 @@
 # Chantier « questions-ce2 » — couvrir les points du CE2 en modèles de questions
 
-> Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) (skill `couvrir-niveau`).
-> Chantiers de référence : le CP ([questions-progress.md](questions-progress.md)), le CE1
-> ([questions-ce1-progress.md](questions-ce1-progress.md)).
+> Démarche : [couvrir-un-niveau.md](../../pratiques/couvrir-un-niveau.md) (skill `couvrir-niveau`).
+> Chantiers de référence : le CP ([questions-progress.md](../../wip/questions-progress.md)), le CE1
+> ([questions-ce1-progress.md](../../wip/questions-ce1-progress.md)).
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, après la publication du lot 13._
+_Mis à jour le 2026-11-19 : **chantier clos**, journal archivé._
 
-- **État** : lots 1 à 13 publiés (lot 13 : 5/5 `published`, relevé MCP). Restent sans modèle, par décision : 086, 043,
-  051, 065. Page à cocher du lot 13 : 5 « ok ».
-- **Prochaine action** : clôture du chantier (versement : le durable vers `docs/systeme/`, journal archivé) — attend le go.
-- **En attente de David** : le go de clôture ; vérification manuelle des lots 12b et 13.
-- **Pièges en cours** : aucun.
-- **Worktree / branche** : `../ubumaths-wt-questions-ce2`, HEAD détaché sur `origin/main`.
+- **État** : chantier terminé, **93 points du CE2 sur 97** (recompte MCP du 2026-11-19) ; 086, 043, 051, 065 sans
+  modèle (D, décidé). Aucune PR ouverte ; 2 brouillons voulus (`427c735c`, `44c46578`, § 4 bis).
+- **Versé** : couverture dans `docs/systeme/programmes/bornes/cycle2.md` (CE2) ; pièges dans
+  `docs/pratiques/couvrir-un-niveau.md` § 9.
+- **En attente de David** : vérifications manuelles des lots 12b et 13 (`docs/wip/verifications-manuelles.md`).
+- **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -1155,3 +1155,5 @@ phrase périmée de `couvrir-un-niveau.md` est corrigée dans la PR du lot.
   (collection `verdicts` vide) → relecture non prouvée. **Lot 13 clos.**
 - 2026-11-19 : relecture de David (page rouverte) : 5 verdicts « ok », sans commentaire (base `verdicts` comptée),
   posés en 2,7 s → relecture du tracé non prouvée ; la ligne de `verifications-manuelles.md` (lot 13) reste à faire.
+- 2026-11-19 : **clôture** (go de David) : recompte MCP 93/97 ; couverture versée dans `cycle2.md`, pièges du CE2 dans
+  `couvrir-un-niveau.md` ; journal archivé dans `docs/archive/wip/`.

@@ -1,6 +1,6 @@
 """Écrit les 5 modèles du lot 13 du CE2 (règle graduée) dans scripts/questions/ce2-13/.
 
-Phase 0 validée par David le 2026-11-19 (§ 20 du journal `docs/wip/questions-ce2-progress.md`,
+Phase 0 validée par David le 2026-11-19 (§ 20 du journal `docs/archive/wip/questions-ce2-progress.md`,
 « je te suis ») : CE2-039 (tracer un segment de longueur donnée) et CE2-070 coté en cm. Outils
 livrés par le chantier `regle-graduee` (ADR 0036, 1 unité de la figure = 1 cm), papier uni :
 

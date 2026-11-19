@@ -236,6 +236,34 @@ Un point dont la colonne Bornes est vide n'a pas de borne propre : il hérite de
 
 ## CE2 — 97 points
 
+### Couverture en modèles de questions (prod, 2026-11-19)
+
+Chantier `questions-ce2` (démarche [couvrir-un-niveau.md](../../../pratiques/couvrir-un-niveau.md)), du 2026-10-27 au
+2026-11-19 ; journal dans `docs/archive/wip/questions-ce2-progress.md`, scripts d'écriture dans
+`docs/wip/questions/lot-ce2-*.py`, fichiers des lots dans `scripts/questions/ce2-*`.
+
+- **190 modèles publiés** contiennent le niveau `CE2`, tous rangés ; **93 points sur 97** ont au moins un modèle
+  publié (relevé MCP du 2026-11-19).
+- **4 points sans modèle, par décision de David**, non évaluables sans manipulation : 086 (suite orale), 043
+  (comparer des périmètres au compas), 051 (comparer des contenances en transvasant), 065 (construire un solide).
+- **Existant laissé tel quel** : 36 modèles publiés au niveau CE2 sans point du CE2 (sommes, différences et
+  compléments hors des points de calcul mental, triple / tiers / quart, division euclidienne du cycle 3, 4 modèles
+  venus du CE1) ; aucun point du CE2 ne les décrit. Les jumeaux « addition » de la moitié et du double (`427c735c`,
+  `44c46578`) sont **repassés en brouillon**, le corrigé multiplicatif gardé, comme au CE1. Les plages étroites des
+  modèles déjà tagués (4 × 37, × 10, + 28 / + 38, × 30 à × 90…) sont élargies par des modèles **neufs**, jamais en
+  touchant un publié.
+- **Lots écrits** (fichiers, puis rangement et tags) : 1 calcul mental (#1889, #1894, #1903) ; 2 numération (#1920,
+  #1932, #1956) ; 3 vocabulaire des opérations (#1967, #1975) ; 4 fractions (#1996, #2020, #2051) ; 5 problèmes
+  (#2081, #2090) ; 6a longueurs et masses (#2111, #2158) ; 6b contenances et durées (#2178, #2180, #2183) ; 7a calcul
+  posé et monnaie (#2194, #2200) ; 7b horloge et droite graduée (#2221, #2387) ; 7c statistiques (#2393, #2394) ;
+  8 figures planes et symétrie (#2408, #2409) ; 9 longueurs, fraction de l'unité, masses (#2414, #2418) ; 10 solides
+  (#2426, #2428) ; 11 matériel multibase (#2433, #2437) ; 12 constructions sur quadrillage et au compas (#2445,
+  #2448) ; 12b cercle de centre donné et triangle rectangle (#2475, #2477) ; 13 règle graduée, segments et
+  constructions cotées en cm (#2896, #2899).
+- **Choix de forme** (décisions de David) : QCM écrits en case « choix », après sa mise en prod ; 039 et 070 en case
+  « figure » (papier uni, 1 unité = 1 cm, ADR 0036), après l'outil règle graduée ; 001, 002 et le matériel de 005
+  avec le matériel multibase (`collection`, centaines et milliers) ; 082 avec les barres à monter.
+
 ### Bornes générales
 
 - **tout le niveau** — Nombres entiers naturels jusqu'à 10 000 ; au plus tard en période 2. _(BO c2 p.19, texte d'introduction de la rubrique « Les nombres entiers »)_

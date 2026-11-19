@@ -1,6 +1,6 @@
 """Écrit les 4 modèles du lot 6b du CE2 (contenances et durées) dans scripts/questions/ce2-6b/.
 
-Phase 0 validée par David le 2026-11-01 (§ 10 du journal `docs/wip/questions-ce2-progress.md`).
+Phase 0 validée par David le 2026-11-01 (§ 10 du journal `docs/archive/wip/questions-ce2-progress.md`).
 Bornes `cycle2.json` : CE2-052 : L, dL, cL (symboles compris) ; CE2-053 : 1 L = 10 dL = 100 cL
 (780 cL = 7 L + 80 cL) ; CE2-060 : une ou deux étapes, axe chronologique (8 h 30 -> 12 h 30 ;
 départ 7 h 10 + 1 h 30 + 40 min). L'axe chronologique est la suite de repères du corrigé

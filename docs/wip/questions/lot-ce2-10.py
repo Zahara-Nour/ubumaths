@@ -1,6 +1,6 @@
 """Écrit les 7 modèles du lot 10 du CE2 (solides) dans scripts/questions/ce2-10/.
 
-Phase 0 validée par David le 2026-11-06 (§ 16 du journal `docs/wip/questions-ce2-progress.md`,
+Phase 0 validée par David le 2026-11-06 (§ 16 du journal `docs/archive/wip/questions-ce2-progress.md`,
 « tes recos ? » puis « je te suis »). Bornes `cycle2.json` : CE2-061 (nommer cube, boule, pavé,
 cône, pyramide, cylindre), CE2-062 (décrire cube, pavé, pyramide avec face, sommet, arête ;
 perspective, arêtes cachées en pointillés, à identifier), CE2-063 (nombre et nature des faces du
