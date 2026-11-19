@@ -5,18 +5,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, lot 13 en prod en brouillon (§ 20)._
+_Mis à jour le 2026-11-19, après #2924 et la publication du lot 13._
 
-- **État** : lot 13 (`ce1-13/`, 5 modèles : 001, 002, 003, 074 ×2) écrit, tout vert ; #2920 mergée ; 5 brouillons en prod ; PR rangement + tags ouverte.
-  Prod : 100 points sur 107 ; après ce lot, 001, 002, 074 couverts (103, les 4 D hors appli).
-- **Prochaine action** : PR rangement + tags (CI, `check:migrations`, merge, `db:migrate` par David après
-  `migration list --linked`, vérification MCP) ; page à cocher ; `publier-lot` (David).
-- **En attente de David** : essai tablette des cases « figure » (`verifications-manuelles.md`, ne bloque plus) ;
-  futur chantier « `\textcolor` hors formule » (53 fichiers de lots).
-- **Pièges en cours** : jamais de variable `e` ni `i` ; mots en couleur = `colt()` ; `{{if:…}}` : jamais `||` dans la
-  condition (le `|` sépare les branches), `mod(d,10)` ; droite de l'équerre orientée par $[AB]$ (§ 20) ; niveaux relevés
-  juste avant la publication ; `publier-lot` = tout le dossier ou rien ; port 5176 pris par une autre session.
-- **Worktree / branche** : `../ubumaths-wt-questions-ce1` sur `chore/questions-ce1-lot13-rangement`.
+- **État** : lot 13 publié (5 modèles) ; `aaebfe52` et `2fafe84d` ouverts au CE1. **CE1 couvert** : 103 points sur 107
+  ont un modèle publié ; les 4 D (092, 048, 068, 078) restent hors appli (§ 19).
+- **Prochaine action** : clôture du chantier, après accord de David : recompter le découpage validé contre la prod,
+  puis versement (le durable dans `docs/systeme/`, journal archivé).
+- **En attente de David** : essai tablette des cases « figure » (`verifications-manuelles.md`) ; aperçu admin des
+  deux modèles 074 (solutions de tracé non dessinées sur la page à cocher) ; futur chantier « `\textcolor` hors
+  formule » (53 fichiers de lots) ; triangle quelconque sur quadrillage (`outils-manquants.md`, ligne 47).
+- **Pièges en cours** : `{{if:…}}` sans `||` dans la condition ; droite de l'équerre orientée par $[AB]$ (§ 20) ;
+  `db:migrate` depuis un worktree : copier `supabase/.temp` du dépôt principal, `--dry-run` d'abord.
+- **Worktree / branche** : `../ubumaths-wt-questions-ce1`, détaché sur `origin/main` (branches du lot mergées) : à
+  retirer.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-26)
 
@@ -985,3 +986,9 @@ Décisions (David, « je te suis », 2026-11-19) :
   21 verts, rouge sans la migration (10 échecs, suite principale arrêtée).
 - 2026-11-19 : `security-auditor` : aucun finding bloquant (personne ne gagne ni ne perd de lecture ; `updated_at`
   préservé, nécessaire aux statistiques d'erreurs de `point-errors.ts` ; prod conforme au relevé).
+- 2026-11-19 : #2924 mergée (CI verte, `check:migrations` OK) ; `db:migrate` (David, depuis le worktree : dépôt
+  principal bloqué par l'index d'une autre session ; `db push --dry-run` : la seule migration en attente) ; 7 modèles
+  vérifiés au MCP (nœud, niveaux, tags, `updated_at` intact). Page à cocher
+  https://claude.ai/artifact/4eo9rEFYS5N2iVV6UJwtiD (5 fiches ; alertes : solutions de `figure-a-completer` non
+  dessinées) ; aucun verdict enregistré. `publier-lot` simulé 5/5, puis `--publier` (David) : 5 publiés, vérifiés en
+  base. **Lot 13 clos. CE1 couvert** : 103 points faisables sur 107, les 4 D (092, 048, 068, 078) hors appli.
