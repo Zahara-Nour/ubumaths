@@ -1,7 +1,7 @@
 """Écrit les modèles du lot 2 « second degré sans formule » de la 1re techno dans
 scripts/questions/1techno-2/.
 
-Phase 0 validée par David le 2026-11-17 (journal docs/wip/questions-1techno-progress.md, § 24).
+Phase 0 validée par David le 2026-11-17 (journal docs/archive/wip/questions-1techno-progress.md, § 24).
 Sept modèles COMMUNS à la 1re générale et à la 1re techno (points identiques, accord de
 questions-1gen : c'est tout son lot 5), un modèle propre à la 1re techno (064) :
 

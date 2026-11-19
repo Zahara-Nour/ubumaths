@@ -1,7 +1,7 @@
 """Écrit les modèles du lot 1 « connaissances des suites » de la 1re techno dans
 scripts/questions/1techno-1/.
 
-Phase 0 validée par David le 2026-11-17 (journal docs/wip/questions-1techno-progress.md, § 23).
+Phase 0 validée par David le 2026-11-17 (journal docs/archive/wip/questions-1techno-progress.md, § 23).
 Deux questions de cours (`options.courseQuestion`), notation u(n) (décision Q6) :
 - M1 → 1TECHNO-039 (sens de variation d'une suite arithmétique) ;
 - M2 → 1TECHNO-040 (sens de variation d'une suite géométrique), premier terme et raison

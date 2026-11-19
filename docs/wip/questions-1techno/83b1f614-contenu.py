@@ -82,7 +82,7 @@ ENTETE = f"""-- ================================================================
 --   réponses attendues, variables, specs, titre, nœud, tags, niveaux, statut : inchangés.
 -- ============================================================================
 -- Chantier `questions-1techno`, décision Q4 bis (a) de David le 2026-11-17 (journal
--- docs/wip/questions-1techno-progress.md § 7). questions-1gen et questions-ttechno prévenus.
+-- docs/archive/wip/questions-1techno-progress.md § 7). questions-1gen et questions-ttechno prévenus.
 -- Fichier GÉNÉRÉ par docs/wip/questions-1techno/83b1f614-contenu.py — ne pas éditer à la main.
 -- Instantané prod : {AVANT} ; source : {APRES}.
 --

@@ -1,6 +1,6 @@
 # Chantier « questions-1techno » — couvrir la 1re STMG en modèles de questions
 
-> Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) (skill `couvrir-niveau`).
+> Démarche : [couvrir-un-niveau.md](../../pratiques/couvrir-un-niveau.md) (skill `couvrir-niveau`).
 > Bornes : `docs/systeme/programmes/bornes/lycee/1techno.md` (décisions l1t-1 à l1t-8). En base, la
 > 1re STMG n'a pas de niveau propre : c'est le programme commun de 1re technologique, niveau `1_TECHNO`
 > (points `1TECHNO-*`). Pour la STMG, tout ce programme **sauf** la rubrique « Activités géométriques
@@ -8,16 +8,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, après la publication du lot 6._
+_Mis à jour le 2026-11-19 : **chantier clos**._
 
-- **État** : les 6 lots du découpage (§ 23) sont clos. Relevé prod : 114 points STMG sur 117 ont un modèle publié ;
-  restent 012 et 143 (Q8 : sans modèle) et 042, dont le seul modèle, c90fa022 (brouillon commun 1SPE/1GEN/1TECHNO),
-  n'a jamais été publié.
-- **Prochaine action** : selon la réponse de David sur c90fa022, puis clôture (recompter le découpage, versement
-  dans `docs/systeme/`, archivage du journal).
-- **En attente de David** : publier c90fa022 (relu à la Q4 : v3 gardée) ou le laisser ?
-- **Pièges en cours** : questions-1gen à prévenir (4 communs du lot 5). `Doc-inchangée:` dans un COMMIT.
-- **Worktree / branche** : aucun.
+- **État** : lots T1, T2, 0, G, R, 1 à 6 mergés et publiés ; relevé MCP de clôture : 151 modèles publiés contenant
+  `1_TECHNO`, **115 points STMG sur 117** avec au moins un modèle publié (012 et 143 sans modèle, Q8) (§ 32).
+- **Durable versé** dans `docs/systeme/programmes/bornes/lycee/1techno.md`, « Couverture en modèles de questions ».
+- Fichiers des lots laissés dans `scripts/questions/1techno-*` (ids des modèles, corrections futures).
 
 ## 1. Relevé (prod, 2026-11-17)
 
@@ -988,3 +984,17 @@ Verdicts P1-P5 : 5 « ok » sur 5, sans commentaire. David a lancé `publier-lot
 Vérifié MCP : les 5 `published`. **Lot 6 clos ; découpage du § 23 terminé.**
 Relevé prod (2026-11-19) : 117 points STMG, 3 sans modèle publié — 012, 143 (Q8) et 042 (c90fa022 brouillon,
 `{1_SPE,1_TECHNO,1_GEN}`, créé le 2026-10-01, jamais publié).
+
+## 32. Clôture (2026-11-19)
+
+- Découpage du § 23 recompté contre les PR : lots 1 (#2779, #2783), 2 (#2787, #2796), 3 (#2801, #2805), 4 (#2833,
+  #2836), 5 (#2843, #2844), 6 (#2856, #2861) mergés ; avant lui T1 (#2743), T2 (#2748), lot 0 (#2753), G (#2758),
+  83b1f614 (#2764), R (#2772).
+- c90fa022 (042) : relu (3 variations, corrigés justes, specs), publié par David (`publier-lot.ts` sur un export du
+  modèle). Vérifié MCP : `published`.
+- Relevé MCP : 117 points STMG actifs, 115 avec un modèle publié ; 012 et 143 sans modèle (Q8). 151 modèles publiés
+  contenant `1_TECHNO` (27 de 1re techno seule). Brouillon restant : 0495289a (D11 de questions-1spe).
+- Défaut signalé au lot 6 sur 89e928a4 (coin du tableau croisé) : relu en prod, une seule barre oblique, comme P5 ;
+  rien à corriger.
+- questions-1gen, clos le 2026-11-18, n'est plus à prévenir des communs du lot 5 (sa couverture les cite déjà).
+- Commentaires des tests d'intégration et des migrations laissés sur l'ancien chemin du journal (comme questions-1gen).
