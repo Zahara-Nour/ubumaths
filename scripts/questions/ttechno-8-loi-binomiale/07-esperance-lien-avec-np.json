@@ -1,4 +1,5 @@
 {
+	"id": "8ad50484-b694-4109-8e4b-183bb7dbdf91",
 	"title": "Espérance de la loi binomiale : le lien avec np",
 	"description": "Calculer Σ k·P(X = k) sur la loi de B(3 ou 4 ; p) et comparer à np ; moyenne d'une simulation ; boucle Python de l'espérance",
 	"grades": ["T_TECHNO"],
