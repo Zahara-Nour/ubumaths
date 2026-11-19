@@ -6,15 +6,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, lot 15 écrit (§ 23.2), pas encore en PR._
+_Mis à jour le 2026-11-19, captures du lot 15 lues et 114 corrigé (§ 23.2), PR à ouvrir._
 
-- **État** : lots 0 à 14b publiés. Lot 15 (probabilités, 5 modèles : 110 à 114) écrit sur `feat/questions-cm2-lot15`
-  (poussée) : specs vertes, invariants 0 défaut, `create-questions` simulation verte, 5 brouillons en base LOCALE
-  (`4530b442`, `0a56c35f`, `e0588bdd`, `50dad94f`, `da0e69b3`). Aperçu à 390 px : 19 variations sans erreur console ni
-  débordement, mais captures à refaire (la page défile dans un conteneur : `apercu15b.mjs` du scratchpad, hauteur 4200,
-  à relancer ; m2 V3, la roue, pas vue). Restent ensuite les lots 16 à 19 du § 14.
-- **Prochaine action** : serveur d'essai sur 5186, refaire et lire les captures du lot 15 ; puis PR des fichiers
-  (« revue : aucune, contenu », `Doc-inchangée: contenu`), CI, merge ; puis David lance `create-questions --publier`.
+- **État** : lots 0 à 14b publiés. Lot 15 (probabilités, 5 modèles : 110 à 114) sur `feat/questions-cm2-lot15` :
+  specs vertes, invariants 0 défaut, simulation verte, 5 brouillons en base LOCALE (`4530b442`, `0a56c35f`,
+  `e0588bdd`, `50dad94f`, `da0e69b3`). Les 19 captures à 390 px sont lues, et 114 est corrigé (`**` littéraux, V3
+  tronquée). Restent ensuite les lots 16 à 19 du § 14.
+- **Prochaine action** : PR (« revue : aucune, contenu », `Doc-inchangée: contenu`), CI, merge ; puis David lance
+  `create-questions --publier`.
 - **En attente de David** : rien.
 - **Pièges en cours** : `Doc-inchangée:` dans un COMMIT ; sujet de commit en minuscule, corps ≤ 100 caractères par ligne.
   `migration:horodatage` = heure réelle UTC ; une autre migration en attente → stop avant `db:migrate` (worktree remis
@@ -1767,3 +1766,12 @@ message (« compte toutes les issues ») ; (c) 114 : arbre ou tableau donné, l'
 - Écart à la phase 0 : 112 en 5 variations (deux sacs de même total ; à « une chance sur deux » ; deux sacs de même
   nombre de rouges, l'erreur « le sac le plus plein » ; deux roues de 4 et 8 parts ; deux évènements d'un dé) ; 110 V3
   (roue numérotée) remplacée par le jeu de 52 cartes (le bloc ` ```partage ` ne numérote pas ses parts).
+- **Captures à 390 px lues** (19 variations, 0 erreur console). 114 corrigé : (1) les `**Pile**` des en-têtes de ligne
+  s'affichaient avec leurs astérisques, car une cellule de tableau SANS trou ne rend que texte et formules
+  (`TableNode.svelte`, `cellContent`) ; gras retiré des 3 variations. (2) V3, pièce puis dé : 7 colonnes, le tableau
+  défilait dans son cadre et les colonnes 5 et 6 étaient cachées (le défilement de la PAGE restait à 0) ; tableau
+  retourné (dé en lignes, pièce en colonnes), « $6 \times 2$ » dans le corrigé. Specs revertes, brouillon local mis à
+  jour, captures relues.
+- **Même défaut en prod, lot 14b** : CM2 « Problèmes avec un tableau ou des barres » V2 (tableau des distances, sans
+  trou) affiche `**Brumeval**`, etc. Les lots CE1-7, CE2-7c et CM1-7 ne l'ont pas (leurs tableaux ont des trous, rendu
+  par `tableCellInlineNodes`, qui lit le gras). Question posée à David.

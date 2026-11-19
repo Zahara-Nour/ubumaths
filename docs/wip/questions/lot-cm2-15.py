@@ -407,7 +407,7 @@ ecrire('04-le-hasard-n-a-pas-de-memoire', modele(
 PIECES = ("On lance deux fois une pièce de monnaie bien équilibrée. Le tableau donne toutes les issues "
           "(P pour pile, F pour face ; la première lettre est celle du premier lancer).\n\n"
           "| 1er lancer ↓, 2e lancer → | Pile | Face |\n| --- | --- | --- |\n"
-          "| **Pile** | PP | PF |\n| **Face** | FP | FF |")
+          "| Pile | PP | PF |\n| Face | FP | FF |")
 EVT_PIECES = ['deux fois pile', 'un pile et un face', 'au moins un face']
 v1 = variation(
     PIECES + "\n\nCombien y a-t-il d'issues ?\n\n$?$ issues\n\nComplète : on a $?$ chances sur $?$ "
@@ -421,7 +421,7 @@ v1 = variation(
 SOMMES = ("Une roue a $4$ secteurs égaux, numérotés de $1$ à $4$. On la fait tourner deux fois et on "
           "ajoute les deux nombres. Le tableau donne la somme pour chaque issue.\n\n"
           "| 1er tour ↓, 2e tour → | $1$ | $2$ | $3$ | $4$ |\n| --- | --- | --- | --- | --- |\n"
-          + ''.join(f"| **${x}$** | " + ' | '.join(f'${x + y}$' for y in range(1, 5)) + ' |\n'
+          + ''.join(f"| ${x}$ | " + ' | '.join(f'${x + y}$' for y in range(1, 5)) + ' |\n'
                     for x in range(1, 5)))
 v2 = variation(
     SOMMES + "\nCombien y a-t-il d'issues ?\n\n$?$ issues\n\nComplète : on a $?$ chances sur $?$ "
@@ -433,16 +433,15 @@ v2 = variation(
      "On a $" + col('{{a}}') + "$ chance{{if:a>1|s}} sur $" + col('16') + "$."])
 PIECE_DE = ("On lance une pièce de monnaie, puis un dé à $6$ faces, tous deux bien équilibrés. Le tableau "
             "donne toutes les issues.\n\n"
-            "| Pièce ↓, dé → | $1$ | $2$ | $3$ | $4$ | $5$ | $6$ |\n| --- | --- | --- | --- | --- | --- | --- |\n"
-            + ''.join(f"| **{p}** | " + ' | '.join(f'{p[0]}{d}' for d in range(1, 7)) + ' |\n'
-                      for p in ['Pile', 'Face']))
+            "| Dé ↓, pièce → | Pile | Face |\n| --- | --- | --- |\n"
+            + ''.join(f"| ${d}$ | P{d} | F{d} |\n" for d in range(1, 7)))
 EVT_PD = ['face et un nombre pair', 'pile et un nombre plus grand que $4$', 'un $6$']
 v3 = variation(
     PIECE_DE + "\nCombien y a-t-il d'issues ?\n\n$?$ issues\n\nComplète : on a $?$ chances sur $?$ "
     "d'obtenir " + si('k', EVT_PD) + ".",
     [var('k', '0..2'), var('a', 'eval:' + selon(['3', '2', '2']))],
     ['12', '{{a}}', '12'],
-    ["Le tableau a $2 \\times 6 = " + col('12') + "$ cases : $12$ issues, qui ont autant de chances.",
+    ["Le tableau a $6 \\times 2 = " + col('12') + "$ cases : $12$ issues, qui ont autant de chances.",
      si('k', ["Face et un nombre pair : F2, F4, F6.", "Pile et plus grand que $4$ : P5, P6.",
               "Un $6$, avec pile ou avec face : P6, F6."]),
      "On a $" + col('{{a}}') + "$ chances sur $" + col('12') + "$."])
