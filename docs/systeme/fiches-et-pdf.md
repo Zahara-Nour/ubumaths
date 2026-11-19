@@ -360,7 +360,11 @@ place de `{{style_common}}`). **« 2 colonnes - paysage »** (`studentStyleLands
 (`STUDENT_LANDSCAPE_STYLE_COMMON` : la même page, `flipped: true`) : tout le document, corrigé
 compris, est en A4 paysage. Le **pied de page** de ces deux styles porte le titre de la fiche à
 gauche (sous `{{#if show_title}}`) et « n / N » à droite, pour retrouver la fiche d'une feuille
-imprimée (David, 2026-11-19 ; `titre-pied-de-page.test.ts`). Les onze autres n'ont que leur fiche et prennent les autres formes du
+imprimée (David, 2026-11-19 ; `titre-pied-de-page.test.ts`). **Chiphre** sur ces deux styles, toutes
+formes (fiche, réponses, corrigé) : QR code vers `https://www.chiph.re` (1,6 cm) à droite du titre
+en tête de la page 1, « chiph.re » dessous ; au centre du pied de page à partir de la page 2
+(placeholders `{{site_qr}}` et `{{site_name}}`, `templates/site-mark.ts`, remplis par le générateur
+et par `SAMPLE_PREVIEW_DATA` pour l'aperçu des styles ; `qr-chiphre-entete.test.ts`). Les onze autres n'ont que leur fiche et prennent les autres formes du
 style par défaut. Le style ne décide plus des **points** : le type de la fiche s'en charge,
 quel que soit le style (ADR 0030, qui remplace D8 : « Fiche élève » imprime les points d'une
 évaluation écrite qui les demande). `resolveTemplate(style, forme, gabarit lu en base)` : le style
