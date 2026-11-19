@@ -942,4 +942,9 @@ trop, met à jour type / catégorie / titre, écrit les notions. Une panne entre
 étapes (nœud supprimé entre-temps, coupure) laisserait la fiche sans ses nouvelles notions ;
 réenregistrer répare. Une fonction SQL `security invoker` réunirait les trois écritures. 9. **Fiche anglaise au titre composé sans catégorie** : sans noms anglais des notions, le PDF
 imprime `title` (le titre composé, en français). Disparaît avec les noms anglais des notions
-(chantier séparé).
+(chantier séparé). 10. **`escapeTypst` n'échappe pas `[` `]`** (`src/lib/ubumark/generators/typst-generator.ts`) : un
+texte venu de la base, posé dans une cellule `[…]` d'un gabarit, peut fermer la cellule et
+être lu comme du code Typst (audit de sécurité de la PR #2912). Corrigé pour le titre, la ligne
+sous le titre et le bas de page (`escapeTypstBrackets`) ; reste les autres textes de la fiche
+(consignes, nom de section…), écrits par le prof ou l'admin seulement. Passer chacun par
+`escapeTypstBrackets` ou `typstTextLiteral`.
