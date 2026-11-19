@@ -420,7 +420,7 @@ Où la taille est choisie :
 David le 2026-11-19 ; `src/lib/typst/easy-reading.ts`) : le document **entier** en Luciole (bandeau,
 titres, consignes, réponses, corrigé), les formules en Luciole Math (police de maths OpenType que
 Typst lit telle quelle) ; lettres + 0,02 em, mots + 0,08 em, interligne 0,9 em, comme les écarts de
-l'écran (formules non espacées). Option `easyReading` du générateur (`WorksheetGeneratorOptions`,
+l'écran (formules non espacées) ; texte aligné à gauche, jamais justifié (David, 2026-11-19). Option `easyReading` du générateur (`WorksheetGeneratorOptions`,
 `GenerateTypstParams`, `StudentPdfOptions`, `CopyRecipient.easy_reading`) : `withEasyReading` pose
 les règles (encadrées de `// <lecture-facilitee>`) sur le **gabarit**, avant d'y placer les
 exercices (un `#set` d'exercice ne peut pas les attirer dans son bloc), en tête et après le dernier

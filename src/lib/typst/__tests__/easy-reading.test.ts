@@ -25,7 +25,11 @@ describe('EASY_READING_RULES', () => {
 	it('lettres, mots et lignes un peu espacés (comme à l’écran)', () => {
 		expect(EASY_READING_RULES).toContain('tracking: 0.02em');
 		expect(EASY_READING_RULES).toContain('spacing: 100% + 0.08em');
-		expect(EASY_READING_RULES).toMatch(/#set par\(leading: [\d.]+em\)/);
+		expect(EASY_READING_RULES).toMatch(/#set par\(leading: [\d.]+em/);
+	});
+
+	it('texte aligné à gauche, jamais justifié (blancs irréguliers gênants pour un dys)', () => {
+		expect(EASY_READING_RULES).toMatch(/#set par\([^)]*justify: false/);
 	});
 
 	it('les formules ne sont pas espacées (lettres des formules à leur place)', () => {

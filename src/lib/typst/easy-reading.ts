@@ -47,12 +47,14 @@ const END_MARK = '// </lecture-facilitee>';
 /**
  * Les règles, encadrées. Écarts de l'écran : lettres + 0,02 em, mots
  * + 0,08 em ; interligne 0,9 em (0,65 em par défaut dans Typst, essai de
- * `/dev/polices/luciole`). Les formules gardent leurs écarts : l'espacement des
+ * `/dev/polices/luciole`). Texte aligné à gauche, jamais justifié : la
+ * justification creuse des blancs irréguliers entre les mots, gênants pour un
+ * lecteur dys (David, 2026-11-19). Les formules gardent leurs écarts : l'espacement des
  * lettres décalerait indices et exposants.
  */
 export const EASY_READING_RULES = `${START_MARK}
 #set text(font: "Luciole", tracking: 0.02em, spacing: 100% + 0.08em)
-#set par(leading: 0.9em)
+#set par(leading: 0.9em, justify: false)
 #show math.equation: set text(font: "Luciole Math", tracking: 0em, spacing: 100%)
 ${END_MARK}`;
 
