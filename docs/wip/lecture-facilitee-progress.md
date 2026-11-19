@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, PR « racine et délimiteurs » ouverte (après #2889)._
+_Mis à jour le 2026-11-19, après #2892._
 
-- **État** : David aime beaucoup Luciole Math (« franchement j'aime beaucoup ») ; restaient la racine et des brisures des grands délimiteurs → corrigés sur `fix/lecture-facilitee-racine-delimiteurs`.
-- **Prochaine action** : merger cette PR ; puis PR 2 = réglage « Lecture facilitée » (texte) et jeu Luciole Math branché derrière (D1 tranché par l'avis de David, à lui confirmer).
-- **En attente de David** : confirmer que les maths passent aussi en Luciole Math avec le réglage (D1) ; écarts restants : `\cdot` gros, `∯` petit.
-- **Pièges en cours** : trait fin entre deux lignes d'une matrice = artefact de MathLive (aussi en KaTeX), pas une brisure ; polices `.woff2` en cache du navigateur ; serveurs du worktree : 5181 (Tailscale `:8446`, Supabase par le tailnet) et 5182 (local) ; `:8445` → 5175 peut-être encore ouvert.
-- **Worktree / branche** : `../ubumaths-wt-lecture-facilitee` · `fix/lecture-facilitee-racine-delimiteurs`.
+- **État** : jeu écran Luciole Math sur `/dev/polices` (#2889), racine et grands délimiteurs corrigés (#2892) ; David : « franchement j'aime beaucoup ». D7 : l'interrupteur passera aussi les formules en Luciole Math.
+- **Prochaine action** : PR 2 = réglage « Lecture facilitée » (phase 0 validée en A, D2, D3) : texte en Luciole ET formules en Luciole Math (D7) ; phase 0 à compléter pour les formules (bascule du jeu MathLive selon le réglage, hors `/dev`).
+- **En attente de David** : rien.
+- **Pièges en cours** : trait fin entre deux lignes d'une matrice = artefact de MathLive (aussi en KaTeX) ; polices `.woff2` en cache du navigateur ; serveurs du worktree 5181 (Tailscale `:8446`) et 5182 à arrêter ; `:8445` → 5175 peut-être encore ouvert.
+- **Worktree / branche** : `../ubumaths-wt-lecture-facilitee` (branche mergée) à retirer une fois les serveurs arrêtés.
 
 ## Ce qui existe déjà (vérifié le 2026-11-19)
 
@@ -55,6 +55,8 @@ Conséquence pour l'étude :
 - **D5 (Q5)** : crédit dans une section « Polices » de `/a-propos` (ou `/legal`), qui cite Luciole et Shantell.
 
 - **D6 (2026-11-19, après l'essai)** : version C jugée « plutôt pas mal » ; avant de décider, la voir rendue **par MathLive** sur toutes les expressions → PR 3 (jeu écran Luciole Math, sur `/dev/polices` seulement) avant la PR 2.
+
+- **D7 (2026-11-19, après #2892)** : David trouve le jeu écran Luciole Math réussi (« franchement j'aime beaucoup ») et répond « oui » : l'interrupteur « Lecture facilitée » passe aussi les **formules** en Luciole Math (D1 tranché).
 
 ## Observations de l'essai (2026-11-19)
 
