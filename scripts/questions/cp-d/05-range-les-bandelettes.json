@@ -1,4 +1,5 @@
 {
+	"id": "59ffdd9e-1a90-412a-9eb1-f04374042bb6",
 	"title": "Range les bandelettes",
 	"description": "Ranger 3, 4 puis 5 bandelettes alignées à gauche, de la plus courte à la plus longue (5 au plus, borne du programme), étiquettes à ranger",
 	"grades": ["CP"],
