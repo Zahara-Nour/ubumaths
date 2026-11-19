@@ -1963,3 +1963,14 @@ Recommandations suivies (« je te suis ») : (a) 095 reste D (outils manquants n
   (Playwright, port 5186), les 8 variations : aucun débordement, 0 erreur. Corrigé : en V2 du pavé, les patrons cotés
   des options étaient réduits et le faux, sans cotes, restait grand (il se repérait à sa taille) → plus de cotes dans
   les options, le pavé de l'énoncé garde les siennes.
+
+### 25.3 Lot 17 : prod, rangement (2026-11-19)
+
+- #2925 (fichiers) : CI verte, mergée. David lance `create-questions --dir scripts/questions/cm2-17 --publier` depuis le
+  worktree. MCP : 2 brouillons [CM2], niveaux 4 et 7, sans nœud ni tag, `updated_at` = création (`0cb5aa4f`,
+  `0a155341`).
+- Migration `20261119222623_questions_cm2_lot17_rangement_tags.sql`, dérivée de celle du lot 16 par substitution
+  (097 sur la **notion** « Géométrie > Symétrie axiale », le point y est posé ; 102 sur « Géométrie > Solides >
+  patrons »). Test `questions-cm2-lot17-rangement-tags` : 9 verts ; corps remplacé par `select 1;` → 3 rouges, 4
+  sautés ; fichier restauré (`cmp`) ; 9/9 rejoué après le commit. `security-auditor` : aucun finding (chemin
+  « notion seule » vérifié strict).
