@@ -1,4 +1,4 @@
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { searchUsersSchema } from '#lib/server/validation/admin.ts';
 import { requireAdmin } from '#lib/server/middleware/auth.ts';
@@ -27,7 +27,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 	// Return empty array for short queries (less than 3 chars)
 	if (searchTerm.length < 3) {
-		return json({ users: [] });
+		return Response.json({ users: [] });
 	}
 
 	// Use RPC function for accent-insensitive search (e.g., "zoe" finds "Zoé")
@@ -65,5 +65,5 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		})
 	);
 
-	return json({ users: usersWithSchools || [] });
+	return Response.json({ users: usersWithSchools || [] });
 };

@@ -83,7 +83,7 @@ Trois boucles distinctes :
 - Autres émetteurs directs de `/api/errors/log` : `src/lib/stores/minesweeper.svelte.ts`.
 - `src/lib/utils/errors.ts` sert à **afficher** une erreur, pas à la remonter :
   - `readApiErrorMessage(response)` lit le message d'une réponse d'API en échec :
-    `{ message }` (erreur SvelteKit) ou `{ error }` (`json({ error })`), sinon
+    `{ message }` (erreur SvelteKit) ou `{ error }` (`Response.json({ error })`), sinon
     « Erreur <statut> ». Jamais le corps brut. Sans appelant depuis le
     retrait de `VariantPreview.svelte` (testée seule) ;
   - `formatUserError(error)` : message lisible d'une exception (champ `details` de

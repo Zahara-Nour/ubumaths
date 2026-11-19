@@ -1,4 +1,4 @@
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '#lib/server/middleware/auth.ts';
 // Supabase client is now accessed via locals.supabase
@@ -113,7 +113,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 	const [avecCreateur] = await enrichWithParticipants(supabase, [listing]);
 	const propositions = proposals ? await enrichWithParticipants(supabase, proposals) : undefined;
 
-	return json({ ...avecCreateur, proposals: propositions });
+	return Response.json({ ...avecCreateur, proposals: propositions });
 };
 
 /**
@@ -189,7 +189,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 	// TODO: await invalidateListingCaches(supabase, userId);
 
 	const [avecParticipant] = await enrichWithParticipants(supabase, [updatedListing]);
-	return json(avecParticipant);
+	return Response.json(avecParticipant);
 };
 
 /**
@@ -266,5 +266,5 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 	// Invalidate caches
 	// TODO: await invalidateListingCaches(supabase, userId);
 
-	return json({ success: true });
+	return Response.json({ success: true });
 };

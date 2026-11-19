@@ -17,7 +17,7 @@
  * - Includes metadata (export date, data categories)
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '#lib/server/middleware/auth.ts';
 import { rateLimit } from '#lib/server/middleware/rateLimit.ts';
@@ -454,7 +454,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 		});
 
 		// Return with appropriate headers for download
-		return json(exportData, {
+		return Response.json(exportData, {
 			headers: {
 				'Content-Disposition': `attachment; filename="chiphre-export-${userId.slice(0, 8)}-${new Date().toISOString().split('T')[0]}.json"`,
 				'Cache-Control': 'no-store, no-cache, must-revalidate'

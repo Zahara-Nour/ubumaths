@@ -1,4 +1,4 @@
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { getTeacherTestMode } from '#lib/server/test-mode.ts';
 import { getClassGidouillesSchema } from '#lib/server/validation/classes.ts';
@@ -118,7 +118,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 			)
 			.sort((a, b) => (a?.firstname || '').localeCompare(b?.firstname || '')); // Sort alphabetically by firstname
 
-		return json({ students });
+		return Response.json({ students });
 	} catch (err) {
 		logger.error('[API /api/classes/students] Error:', err);
 

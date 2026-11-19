@@ -3,7 +3,7 @@
  * POST - Convert InstrumenPoche XML to Chiphre JSON
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
 import { requireRoles } from '#lib/server/middleware/auth.ts';
@@ -85,7 +85,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		}
 
 		// Return conversion result with warnings
-		return json(
+		return Response.json(
 			{
 				script: result.script,
 				warnings: result.warnings

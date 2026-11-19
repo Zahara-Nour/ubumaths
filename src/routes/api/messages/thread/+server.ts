@@ -1,4 +1,4 @@
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import {
 	messageThreadResponseSchema,
@@ -90,7 +90,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			'GET /api/messages/thread'
 		);
 
-		return json(validated);
+		return Response.json(validated);
 	} catch (err) {
 		logger.error('Error in thread API:', err);
 		if (err && typeof err === 'object' && 'status' in err) {

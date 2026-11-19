@@ -4,7 +4,7 @@
  * seule, sous la RLS du professeur.
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import { z } from 'zod';
 import type { RequestHandler } from './$types';
 import { requireRoles } from '#lib/server/middleware/auth.ts';
@@ -42,7 +42,7 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 			})),
 			query.data.template
 		);
-		return json(errors);
+		return Response.json(errors);
 	} catch (e) {
 		if (e instanceof EvaluationError) throw error(e.status, e.message);
 		throw e;

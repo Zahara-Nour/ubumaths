@@ -1,4 +1,4 @@
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRoles } from '#lib/server/middleware/auth.ts';
 import { createServerLogger } from '#lib/utils/logger.ts';
@@ -64,5 +64,5 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 		throw error(500, 'Failed to get message context');
 	}
 
-	return json({ messages: data || [] });
+	return Response.json({ messages: data || [] });
 };

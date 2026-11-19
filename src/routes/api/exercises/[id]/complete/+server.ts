@@ -5,7 +5,6 @@
  * DELETE - Mark an exercise as incomplete/unmark (student)
  */
 
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import {
 	markExerciseAsComplete,
@@ -40,10 +39,13 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 
 	if (completeError) {
 		logger.error('Failed to mark exercise as complete:', completeError);
-		return json({ error: 'Impossible de marquer l’exercice comme terminé' }, { status: 500 });
+		return Response.json(
+			{ error: 'Impossible de marquer l’exercice comme terminé' },
+			{ status: 500 }
+		);
 	}
 
-	return json(completion);
+	return Response.json(completion);
 };
 
 /**
@@ -68,8 +70,8 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 
 	if (incompleteError) {
 		logger.error('Failed to mark exercise as incomplete:', incompleteError);
-		return json({ error: 'Impossible de retirer la marque « terminé »' }, { status: 500 });
+		return Response.json({ error: 'Impossible de retirer la marque « terminé »' }, { status: 500 });
 	}
 
-	return json(completion);
+	return Response.json(completion);
 };

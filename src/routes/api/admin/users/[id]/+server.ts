@@ -11,7 +11,7 @@
  * @module api/admin/users/[id]
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAdmin } from '#lib/server/middleware/auth.ts';
 import { updateUserFieldsSchema } from '#lib/server/validation/admin.ts';
@@ -185,7 +185,7 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 		};
 
 		// 6. Return success response
-		return json({
+		return Response.json({
 			success: true,
 			profile: extendedProfile
 		});

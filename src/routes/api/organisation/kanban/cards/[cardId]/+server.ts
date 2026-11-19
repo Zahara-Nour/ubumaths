@@ -9,7 +9,7 @@
  * we verify the destination column belongs to the same board as the source.
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '#lib/server/middleware/auth.ts';
 import { parseKanbanId, updateCardSchema } from '#lib/server/validation/kanban.ts';
@@ -234,7 +234,7 @@ export const PATCH: RequestHandler = async ({ locals, params, request }) => {
 		cardRow = data as KanbanCard;
 	}
 
-	return json({ card: cardRow });
+	return Response.json({ card: cardRow });
 };
 
 export const DELETE: RequestHandler = async ({ locals, params }) => {
@@ -259,5 +259,5 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 		throw error(500, 'Erreur lors de la suppression de la carte');
 	}
 
-	return json({ success: true });
+	return Response.json({ success: true });
 };

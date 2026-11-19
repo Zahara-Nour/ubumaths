@@ -4,7 +4,7 @@
  * POST - Create a new tag
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import {
 	validateCreateTag,
@@ -74,7 +74,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 	// Validate response
 	const validated = validateJsonResponse(tagListResponseSchema, { tags }, 'GET /api/tags');
 
-	return json(validated);
+	return Response.json(validated);
 };
 
 /**
@@ -139,7 +139,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 				fullTag,
 				'POST /api/tags (existing)'
 			);
-			return json(validated, { status: 200 });
+			return Response.json(validated, { status: 200 });
 		}
 	}
 
@@ -165,5 +165,5 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 	// Validate response
 	const validated = validateJsonResponse(createTagResponseSchema, newTag, 'POST /api/tags');
 
-	return json(validated, { status: 201 });
+	return Response.json(validated, { status: 201 });
 };

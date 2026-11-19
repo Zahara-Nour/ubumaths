@@ -26,7 +26,6 @@
  * }
  */
 
-import { json } from '@sveltejs/kit';
 import { assertGoogleClassroomEnabled } from '#lib/server/google/feature-guard.ts';
 import type { RequestHandler } from './$types';
 import { getAuthUrl } from '#lib/server/google/oauth.ts';
@@ -69,5 +68,5 @@ export const POST: RequestHandler = async ({ locals, cookies }) => {
 
 	logger.info('[Google OAuth] Generated authorization URL');
 
-	return json({ url });
+	return Response.json({ url });
 };

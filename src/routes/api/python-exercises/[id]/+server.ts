@@ -5,7 +5,7 @@
  * DELETE - Delete exercise
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '#lib/server/middleware/auth.ts';
 import {
@@ -68,11 +68,11 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 
 	// Author sees full exercise (including solution_code); everyone else stripped.
 	if (user && exercise.author_id === user.id) {
-		return json({ exercise: exerciseWithTags as unknown as PythonExercise });
+		return Response.json({ exercise: exerciseWithTags as unknown as PythonExercise });
 	}
 
 	const { solution_code: _solution_code, ...studentView } = exerciseWithTags;
-	return json({ exercise: studentView as unknown as PythonExerciseStudentView });
+	return Response.json({ exercise: studentView as unknown as PythonExerciseStudentView });
 };
 
 /**
@@ -160,7 +160,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	// Return exercise with current tag set
 	const tags = await fetchResourceTagNames(supabase, 'python_exercise', exerciseId).catch(() => []);
 
-	return json({ exercise: { ...updatedExercise, tags } });
+	return Response.json({ exercise: { ...updatedExercise, tags } });
 };
 
 /**
@@ -202,5 +202,5 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 		throw error(500, 'Impossible de supprimer la corvée Python');
 	}
 
-	return json({ success: true });
+	return Response.json({ success: true });
 };

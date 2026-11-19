@@ -1,4 +1,4 @@
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import { assertGoogleClassroomEnabled } from '#lib/server/google/feature-guard.ts';
 import type { RequestHandler } from './$types';
 import { requireRole } from '#lib/server/middleware/auth.ts';
@@ -40,7 +40,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 				return acc;
 			}, []) || [];
 
-		return json({ topics: uniqueTopics });
+		return Response.json({ topics: uniqueTopics });
 	} catch (err) {
 		logger.error('[API] Error in topics endpoint:', err);
 		throw error(500, 'Une erreur inattendue s’est produite');

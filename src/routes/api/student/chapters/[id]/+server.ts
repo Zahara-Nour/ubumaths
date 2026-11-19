@@ -27,7 +27,7 @@
  * - Student progress is filtered to only show their own data
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
 import { requireAuth } from '#lib/server/middleware/auth.ts';
@@ -73,7 +73,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			throw error(404, 'Chapter not found');
 		}
 
-		return json({
+		return Response.json({
 			chapter: result.data
 		});
 	} catch (err) {

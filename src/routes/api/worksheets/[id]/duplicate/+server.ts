@@ -3,7 +3,7 @@
  * POST - Duplicate a worksheet
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { fetchResourceTagNames, syncResourceTags } from '#lib/server/resource-tags.ts';
 import { requireRoles } from '#lib/server/middleware/auth.ts';
@@ -209,5 +209,5 @@ export const POST: RequestHandler = async ({ locals, params }) => {
 		'POST /api/worksheets/[id]/duplicate'
 	);
 
-	return json(validated, { status: 201 });
+	return Response.json(validated, { status: 201 });
 };

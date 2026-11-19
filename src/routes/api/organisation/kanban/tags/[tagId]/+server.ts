@@ -10,7 +10,7 @@
  * cleanly instead of a silent 0-rows-affected.
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '#lib/server/middleware/auth.ts';
 import { parseKanbanId, updateTagSchema } from '#lib/server/validation/kanban.ts';
@@ -80,7 +80,7 @@ export const PATCH: RequestHandler = async ({ locals, params, request }) => {
 		throw error(500, 'Erreur lors de la mise à jour du tag');
 	}
 
-	return json({ tag: data as KanbanTag });
+	return Response.json({ tag: data as KanbanTag });
 };
 
 export const DELETE: RequestHandler = async ({ locals, params }) => {
@@ -102,5 +102,5 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 		throw error(500, 'Erreur lors de la suppression du tag');
 	}
 
-	return json({ success: true });
+	return Response.json({ success: true });
 };

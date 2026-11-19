@@ -10,7 +10,7 @@
  * AUTH: élève seulement
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '#lib/server/middleware/auth.ts';
 import { loadBuddyPresence } from '#lib/server/buddy-presence.ts';
@@ -22,7 +22,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 	const { user } = await requireRole(locals, 'student');
 
 	try {
-		return json(await loadBuddyPresence(locals.supabase, user.id));
+		return Response.json(await loadBuddyPresence(locals.supabase, user.id));
 	} catch (err) {
 		logger.error('❌ [API] GET /api/student/buddy/presence:', err);
 		throw error(500, 'Palotin illisible');

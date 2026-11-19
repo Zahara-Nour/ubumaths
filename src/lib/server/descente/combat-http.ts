@@ -7,7 +7,6 @@
  * (tracé), sans détail.
  */
 
-import { json } from '@sveltejs/kit';
 import { CombatError } from '#lib/server/descente/combat.ts';
 import { createServerLogger } from '#lib/utils/logger.ts';
 
@@ -15,8 +14,8 @@ const logger = createServerLogger('server/descente/combat-http');
 
 export function combatErrorResponse(err: unknown, where: string): Response {
 	if (err instanceof CombatError) {
-		return json({ error: err.code }, { status: err.code === 'not_found' ? 404 : 409 });
+		return Response.json({ error: err.code }, { status: err.code === 'not_found' ? 404 : 409 });
 	}
 	logger.error(`[descente] ${where} :`, err);
-	return json({ error: 'server_error' }, { status: 500 });
+	return Response.json({ error: 'server_error' }, { status: 500 });
 }

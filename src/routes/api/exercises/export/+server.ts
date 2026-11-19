@@ -3,7 +3,7 @@
  * Export exercises to JSON or Markdown format
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { getExercise } from '#lib/server/exercises.ts';
 import type { Exercise } from '#lib/exercises/types.ts';
@@ -78,7 +78,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 			filename = `exercises-export-${new Date().toISOString().split('T')[0]}.json`;
 		}
 
-		return json({
+		return Response.json({
 			filename,
 			content,
 			mime_type: 'application/json'
@@ -89,7 +89,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 			const content = exportExerciseToMarkdown(exercises[0]);
 			const filename = generateExportFilename(exercises[0], 'md');
 
-			return json({
+			return Response.json({
 				filename,
 				content,
 				mime_type: 'text/markdown'
@@ -101,7 +101,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 				content: exportExerciseToMarkdown(ex)
 			}));
 
-			return json({
+			return Response.json({
 				files,
 				mime_type: 'text/markdown',
 				message: 'Plusieurs fichiers Markdown : à télécharger en ZIP ou un par un.'

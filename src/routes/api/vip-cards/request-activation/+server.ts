@@ -21,7 +21,7 @@
  * - Profile update + audit trail in a single transaction
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
 import { requireAuth } from '#lib/server/middleware/auth.ts';
@@ -124,7 +124,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		? (updatedProfile.vip_cards as Record<string, unknown>)[instanceId]
 		: null;
 
-	return json({
+	return Response.json({
 		success: true,
 		message: 'Demande d’activation envoyée',
 		instance: updatedInstance,

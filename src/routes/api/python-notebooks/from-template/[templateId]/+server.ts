@@ -19,7 +19,7 @@
  *     the RLS SELECT policy on `python_notebooks` enforces this
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '#lib/server/middleware/auth.ts';
 import { uuidSchema } from '#lib/server/validation/common.ts';
@@ -159,5 +159,5 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		throw error(500, 'Impossible de créer le carnet à partir du modèle');
 	}
 
-	return json({ notebook: inserted }, { status: 201 });
+	return Response.json({ notebook: inserted }, { status: 201 });
 };

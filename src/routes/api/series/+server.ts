@@ -5,7 +5,6 @@
  * Réponse 201 : { series }.
  */
 
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRoles } from '#lib/server/middleware/auth.ts';
 import { createSeriesSchema } from '#lib/server/validation/evaluations.ts';
@@ -18,19 +17,19 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 	try {
 		body = await request.json();
 	} catch {
-		return json({ error: 'Corps de requête illisible' }, { status: 400 });
+		return Response.json({ error: 'Corps de requête illisible' }, { status: 400 });
 	}
 
 	const validation = createSeriesSchema.safeParse(body);
 	if (!validation.success) {
-		return json({ error: validation.error.issues[0].message }, { status: 400 });
+		return Response.json({ error: validation.error.issues[0].message }, { status: 400 });
 	}
 
 	try {
 		const series = await createSeries(locals.supabase, validation.data, user.id);
-		return json({ series }, { status: 201 });
+		return Response.json({ series }, { status: 201 });
 	} catch (e) {
-		if (e instanceof SeriesError) return json({ error: e.message }, { status: e.status });
+		if (e instanceof SeriesError) return Response.json({ error: e.message }, { status: e.status });
 		throw e;
 	}
 };

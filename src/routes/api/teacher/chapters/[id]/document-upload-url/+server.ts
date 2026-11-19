@@ -10,7 +10,7 @@
  * POST /api/teacher/chapters/[id]/document-upload-url
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '#lib/server/middleware/auth.ts';
 import { uuidSchema } from '#lib/server/validation/common.ts';
@@ -86,5 +86,5 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		throw error(500, "Erreur lors de la préparation de l'envoi");
 	}
 
-	return json({ storagePath: data.path, token: data.token }, { status: 201 });
+	return Response.json({ storagePath: data.path, token: data.token }, { status: 201 });
 };

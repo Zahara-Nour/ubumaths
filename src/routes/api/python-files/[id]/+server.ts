@@ -5,7 +5,7 @@
  * DELETE - Delete Python file
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '#lib/server/middleware/auth.ts';
 import { updatePythonFileSchema } from '#lib/server/validation/python-files.ts';
@@ -156,7 +156,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		}
 	}
 
-	return json({
+	return Response.json({
 		file: data,
 		assignment,
 		isOwner
@@ -228,7 +228,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		throw error(500, 'Impossible de modifier le fichier Python');
 	}
 
-	return json({ file: data });
+	return Response.json({ file: data });
 };
 
 /**
@@ -267,5 +267,5 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 		throw error(500, 'Impossible de supprimer le fichier Python');
 	}
 
-	return json({ success: true });
+	return Response.json({ success: true });
 };

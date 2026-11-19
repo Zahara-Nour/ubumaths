@@ -7,7 +7,7 @@
  * Body: { action: 'approve' | 'reject', notes?: string }
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import { requireAdmin } from '#lib/server/middleware/auth.ts';
 import type { RequestHandler } from './$types';
 import { approveTemplateSchema } from '#lib/server/validation/message-templates.ts';
@@ -67,7 +67,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		p_metadata: notes ? { notes: notes } : null
 	});
 
-	return json({
+	return Response.json({
 		template: updated,
 		message: `Template ${action === 'approve' ? 'approuvé' : 'rejeté'} avec succès`
 	});

@@ -1,4 +1,4 @@
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import { z } from 'zod';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '#lib/server/middleware/auth.ts';
@@ -184,7 +184,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		await enrichListingsWithCardData(supabase, listings || [])
 	);
 
-	return json({
+	return Response.json({
 		listings: enrichedListings,
 		pagination: {
 			page,
@@ -304,5 +304,5 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	const [enrichedListing] = await enrichListingsWithCardData(supabase, [listing]);
 
 	const [avecParticipant] = await enrichWithParticipants(supabase, [enrichedListing]);
-	return json(avecParticipant, { status: 201 });
+	return Response.json(avecParticipant, { status: 201 });
 };

@@ -5,7 +5,7 @@
  * POST /api/questions/generate/[id] - Generate instance from template
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { generateInstance } from '#lib/questions/index.ts';
 import { generateQuestionSchema } from '#lib/server/validation/questions.ts';
@@ -71,9 +71,9 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 
 		// Return appropriate status code
 		if (result.success) {
-			return json(result, { status: 200 });
+			return Response.json(result, { status: 200 });
 		} else {
-			return json(result, { status: 400 });
+			return Response.json(result, { status: 400 });
 		}
 	} catch (err) {
 		logger.error('Error in POST /api/questions/generate/[id]:', err);
@@ -82,7 +82,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 			throw err;
 		}
 
-		return json({
+		return Response.json({
 			success: false,
 			errors: ['Internal server error: ' + (err instanceof Error ? err.message : String(err))]
 		});

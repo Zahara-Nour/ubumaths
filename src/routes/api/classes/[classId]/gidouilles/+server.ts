@@ -1,4 +1,4 @@
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { getTeacherTestMode } from '#lib/server/test-mode.ts';
 import { getClassGidouillesSchema } from '#lib/server/validation/classes.ts';
@@ -113,7 +113,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 				} => g !== null
 			);
 
-		return json({ gidouilles });
+		return Response.json({ gidouilles });
 	} catch (err) {
 		logger.error('[API /api/classes/gidouilles] Error:', err);
 

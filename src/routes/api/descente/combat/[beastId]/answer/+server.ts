@@ -15,7 +15,7 @@
  * repartie (`{ error: <code> }`) · 500.
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '#lib/server/middleware/auth.ts';
 import { validateUuidParam } from '#lib/server/validation/params.ts';
@@ -48,7 +48,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 			answerParts: body.answer_parts,
 			partVerdicts: body.part_verdicts
 		});
-		return json(result);
+		return Response.json(result);
 	} catch (err) {
 		return combatErrorResponse(err, 'réponse');
 	}

@@ -1,4 +1,4 @@
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRoles } from '#lib/server/middleware/auth.ts';
 import { unrestrictUserSchema } from '#lib/server/validation/moderation.ts';
@@ -114,5 +114,8 @@ export const DELETE: RequestHandler = async ({ request, locals }) => {
 		// Don't fail the request if logging fails
 	}
 
-	return json({ success: true, message: 'Restriction removed successfully' }, { status: 200 });
+	return Response.json(
+		{ success: true, message: 'Restriction removed successfully' },
+		{ status: 200 }
+	);
 };

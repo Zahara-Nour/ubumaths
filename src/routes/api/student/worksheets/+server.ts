@@ -24,7 +24,7 @@
  * - Access via class membership or individual assignment
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '#lib/server/middleware/auth.ts';
 import {
@@ -228,7 +228,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 			'GET /api/student/worksheets'
 		);
 
-		return json(validated);
+		return Response.json(validated);
 	} catch (err) {
 		// Re-throw SvelteKit errors
 		if (err && typeof err === 'object' && 'status' in err) {

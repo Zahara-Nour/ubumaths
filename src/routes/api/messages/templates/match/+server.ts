@@ -11,7 +11,7 @@
  *   - entity_id: Related entity ID (optional)
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import { requireAuth } from '#lib/server/middleware/auth.ts';
 import type { RequestHandler } from './$types';
 import type { TriggerType } from '#lib/types/messageTemplates.ts';
@@ -90,7 +90,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 			.single();
 
 		if (!classError && classTemplate) {
-			return json({
+			return Response.json({
 				template: {
 					...classTemplate,
 					class_name: classTemplate.classes?.name || null
@@ -113,7 +113,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		.single();
 
 	if (systemError || !systemTemplate) {
-		return json(
+		return Response.json(
 			{
 				template: null,
 				match_type: 'none',
@@ -123,7 +123,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		);
 	}
 
-	return json({
+	return Response.json({
 		template: systemTemplate,
 		match_type: 'system',
 		message: 'Template système trouvé'

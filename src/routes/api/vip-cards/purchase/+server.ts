@@ -23,7 +23,7 @@
  * - All validation happens in purchase_vip_card RPC for atomicity
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '#lib/server/middleware/auth.ts';
 import { requireConsent } from '#lib/server/middleware/consent.ts';
@@ -104,7 +104,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	}
 
 	// Return success response
-	return json({
+	return Response.json({
 		success: true,
 		instance: result.instance,
 		newBalance: result.newBalance

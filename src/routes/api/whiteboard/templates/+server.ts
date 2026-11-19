@@ -14,7 +14,7 @@
  * - POST: Teacher or Admin role required
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth, requireRoles } from '#lib/server/middleware/auth.ts';
 import {
@@ -95,7 +95,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			.filter((row) => row !== null)
 			.map((row) => rowToTemplateWithFavorite(row, favoriteIds.has(row.id)));
 
-		return json({ templates });
+		return Response.json({ templates });
 	} catch (err) {
 		// Re-throw SvelteKit errors
 		if (err && typeof err === 'object' && 'status' in err) {
@@ -160,7 +160,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		}
 		const template = rowToTemplate(validatedRow);
 
-		return json({ template }, { status: 201 });
+		return Response.json({ template }, { status: 201 });
 	} catch (err) {
 		// Re-throw SvelteKit errors
 		if (err && typeof err === 'object' && 'status' in err) {

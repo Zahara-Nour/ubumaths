@@ -3,7 +3,7 @@
  * POST - Assign exercise to class or student
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '#lib/server/middleware/auth.ts';
 import {
@@ -129,5 +129,5 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		throw error(500, 'Impossible de créer l’affectation');
 	}
 
-	return json({ assignment }, { status: 201 });
+	return Response.json({ assignment }, { status: 201 });
 };

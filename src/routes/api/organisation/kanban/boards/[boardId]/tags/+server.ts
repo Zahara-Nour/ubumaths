@@ -10,7 +10,7 @@
  * French message.
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '#lib/server/middleware/auth.ts';
 import { parseKanbanId, createTagSchema } from '#lib/server/validation/kanban.ts';
@@ -70,5 +70,5 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		throw error(500, 'Erreur lors de la création du tag');
 	}
 
-	return json({ tag: data as KanbanTag }, { status: 201 });
+	return Response.json({ tag: data as KanbanTag }, { status: 201 });
 };

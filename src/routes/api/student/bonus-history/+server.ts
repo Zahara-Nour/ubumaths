@@ -22,7 +22,7 @@
  * - created_by_name: string | null - name of teacher who made the change
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '#lib/server/middleware/auth.ts';
 import { z } from 'zod';
@@ -96,7 +96,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 			};
 		});
 
-		return json({ history });
+		return Response.json({ history });
 	} catch (err) {
 		// Re-throw SvelteKit errors
 		if (err && typeof err === 'object' && 'status' in err) {

@@ -6,7 +6,7 @@
  * Admin seulement (élévation ou compte admin) : `requireAdmin`.
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import { z } from 'zod';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { RequestHandler } from './$types';
@@ -28,10 +28,10 @@ export const PATCH: RequestHandler = async ({ locals, params, request }) => {
 
 	const result = await updateEntry(supabase as SupabaseClient<Database>, params.id, parsed.data);
 	if (!result.ok) {
-		return json(
+		return Response.json(
 			{ message: result.problems.join('\n'), problems: result.problems },
 			{ status: result.status }
 		);
 	}
-	return json(result.row);
+	return Response.json(result.row);
 };

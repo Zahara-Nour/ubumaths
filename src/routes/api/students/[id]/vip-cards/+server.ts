@@ -15,7 +15,7 @@
  * - vipCards: StudentVipCards object (JSONB from profiles table)
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '#lib/server/middleware/auth.ts';
 import { verifyTeacherStudentWithRole } from '#lib/server/middleware/student-access.ts';
@@ -64,7 +64,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 
 	const vipCards = asStudentVipCards(studentProfile?.vip_cards);
 
-	return json({
+	return Response.json({
 		vipCards
 	});
 };

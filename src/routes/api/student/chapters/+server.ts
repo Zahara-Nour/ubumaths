@@ -20,7 +20,7 @@
  * - is_visible = true filter applied
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
 import { requireAuth } from '#lib/server/middleware/auth.ts';
@@ -64,7 +64,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 			throw error(500, 'Failed to fetch chapters');
 		}
 
-		return json({
+		return Response.json({
 			chapters: result.data,
 			count: result.count
 		});

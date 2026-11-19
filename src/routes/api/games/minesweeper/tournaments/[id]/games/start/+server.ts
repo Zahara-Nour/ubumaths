@@ -1,5 +1,5 @@
 import type { RequestHandler } from './$types';
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import { requireRole } from '#lib/server/middleware/auth.ts';
 import { startTournamentGameSchema } from '#lib/server/validation/minesweeper-tournament.ts';
 import { sanitizeRPCError, sanitizePostgresError } from '#lib/server/utils/error-handler.ts';
@@ -94,7 +94,7 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 		// Type the response
 		const gameData = data as TournamentGameStartResponse;
 
-		return json(
+		return Response.json(
 			{
 				game_id: gameData.game_id,
 				seed: gameData.seed,

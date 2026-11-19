@@ -10,7 +10,7 @@
  * POST /api/teacher/chapter-templates/[id]/documents
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '#lib/server/middleware/auth.ts';
 import { requireOwnedTemplate } from '#lib/server/template-guard.ts';
@@ -94,5 +94,5 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		throw error(500, "Erreur lors de l'enregistrement");
 	}
 
-	return json({ success: true, placed }, { status: 201 });
+	return Response.json({ success: true, placed }, { status: 201 });
 };

@@ -10,7 +10,7 @@
  * - allPeriods: All periods for active school year
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRoles } from '#lib/server/middleware/auth.ts';
 import {
@@ -51,7 +51,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			}).catch(() => []);
 		}
 
-		return json({
+		return Response.json({
 			currentPeriod: period,
 			allPeriods
 		});

@@ -3,7 +3,7 @@
  * POST - Réordonne les sections d'un chapitre
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '#lib/server/middleware/auth.ts';
 import { reorderSections } from '#lib/server/chapter-sections.ts';
@@ -48,5 +48,5 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		throw error(500, 'Impossible de réordonner les sections');
 	}
 
-	return json({ success: true });
+	return Response.json({ success: true });
 };

@@ -7,7 +7,7 @@
  * Body: { new_title?: string, class_id?: string }
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import { requireRoles } from '#lib/server/middleware/auth.ts';
 import type { RequestHandler } from './$types';
 import { duplicateTemplateSchema } from '#lib/server/validation/message-templates.ts';
@@ -79,7 +79,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		return error(500, 'Template dupliqué mais erreur lors de la récupération');
 	}
 
-	return json(
+	return Response.json(
 		{
 			template: newTemplate,
 			message: 'Template dupliqué avec succès'

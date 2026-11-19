@@ -28,7 +28,7 @@
  * - Emails now sent from noreply@ubumaths.fr
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import {
 	closePendingConsentRequest,
 	consentRequestPlan
@@ -272,7 +272,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		`[Send Consent Email] Email sent successfully to ${parent_email} for student ${student_id} by teacher ${user.id}`
 	);
 
-	return json({
+	return Response.json({
 		success: true,
 		message: 'Email de consentement envoyé avec succès !',
 		messageId: result.messageId,

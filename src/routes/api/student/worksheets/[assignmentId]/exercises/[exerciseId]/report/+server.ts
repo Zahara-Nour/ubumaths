@@ -39,7 +39,7 @@
  *   a notification for the worksheet owner (teacher)
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '#lib/server/middleware/auth.ts';
 import {
@@ -237,7 +237,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 			'POST /api/student/worksheets/[assignmentId]/exercises/[exerciseId]/report'
 		);
 
-		return json(validated, { status: 201 });
+		return Response.json(validated, { status: 201 });
 	} catch (err) {
 		// Re-throw SvelteKit errors
 		if (err && typeof err === 'object' && 'status' in err) {

@@ -5,7 +5,7 @@
  * PUT - Reorder sections in the worksheet
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRoles } from '#lib/server/middleware/auth.ts';
 import {
@@ -99,7 +99,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		'GET /api/worksheets/[id]/sections'
 	);
 
-	return json(validated);
+	return Response.json(validated);
 };
 
 /**
@@ -169,7 +169,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		'POST /api/worksheets/[id]/sections'
 	);
 
-	return json(validated, { status: 201 });
+	return Response.json(validated, { status: 201 });
 };
 
 /**
@@ -267,5 +267,5 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		'PUT /api/worksheets/[id]/sections'
 	);
 
-	return json(validated);
+	return Response.json(validated);
 };

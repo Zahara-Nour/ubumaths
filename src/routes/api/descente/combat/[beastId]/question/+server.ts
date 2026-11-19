@@ -10,7 +10,7 @@
  * coup fermé, aucune question (`{ error: <code> }`) · 500.
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '#lib/server/middleware/auth.ts';
 import { validateUuidParam } from '#lib/server/validation/params.ts';
@@ -38,7 +38,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 			province: parsed.data.province,
 			recentTemplateIds: parsed.data.recent
 		});
-		return json({ instance });
+		return Response.json({ instance });
 	} catch (err) {
 		return combatErrorResponse(err, 'question');
 	}

@@ -6,7 +6,7 @@
  * GET - List all error reports with pagination, filtering, and counts per status
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRoles } from '#lib/server/middleware/auth.ts';
 import { fetchCopyNumbering } from '#lib/server/worksheets/display-number.ts';
@@ -234,7 +234,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 			'GET /api/worksheets/[id]/assignments/[assignmentId]/reports'
 		);
 
-		return json(validated);
+		return Response.json(validated);
 	} catch (err) {
 		// Re-throw SvelteKit errors
 		if (err && typeof err === 'object' && 'status' in err) {

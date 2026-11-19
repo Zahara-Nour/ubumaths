@@ -8,7 +8,7 @@
  * Security: Admin only
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAdmin } from '#lib/server/middleware/auth.ts';
 import { getBackupStats } from '#lib/server/admin/exercise-backup.ts';
@@ -36,7 +36,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 
 	try {
 		const stats = await getBackupStats(supabase);
-		return json(stats);
+		return Response.json(stats);
 	} catch (err) {
 		logger.error('Error fetching backup stats:', err);
 		throw error(500, 'Impossible de charger les statistiques');

@@ -3,7 +3,6 @@
  * Serves the generated OpenAPI 3.1 specification
  */
 
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { generateOpenAPISpec } from '#lib/server/openapi/generator.ts';
 import { requireAdmin } from '#lib/server/middleware/auth.ts';
@@ -23,7 +22,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 	try {
 		const spec = generateOpenAPISpec();
 
-		return json(spec, {
+		return Response.json(spec, {
 			headers: {
 				'Content-Type': 'application/json',
 				'Cache-Control': 'private, no-store'
@@ -32,7 +31,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 	} catch (error) {
 		logger.error('Failed to generate OpenAPI spec:', error);
 
-		return json(
+		return Response.json(
 			{
 				error: {
 					message: 'Failed to generate OpenAPI specification',
