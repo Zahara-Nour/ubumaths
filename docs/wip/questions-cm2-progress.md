@@ -1943,3 +1943,23 @@ ne prenant que les diagonales ? Reco : **oui**.
 (d) 102 V1 : un « faux » est un des 8 faux patrons du cube, dessiné en rectangles (deux faces l'une sur l'autre, ou
 un trou). Le faux « les bonnes formes, mais des faces de tailles qui ne vont pas ensemble » n'existe pas dans le bloc :
 on s'en passe ? Reco : **oui** (la V2 « patron d'un autre pavé » couvre ce raisonnement).
+
+### 25.1 Lot 17 : décisions (David, 2026-11-19)
+
+Recommandations suivies (« je te suis ») : (a) 095 reste D (outils manquants n° 45), lot 17 = **2 modèles** ;
+(b) 097 V1 à V3 sur une diagonale du quadrillage, V4 tous axes ; (c) niveaux : Symétrie axiale 4, patrons 7 ;
+(d) faux patrons du pavé = les 8 faux du cube en rectangles.
+
+### 25.2 Lot 17 : écriture (2026-11-19)
+
+- `docs/wip/questions/lot-cm2-17.py` → `scripts/questions/cm2-17/` (2 modèles, 8 variations, gabarits `lot-cm1-8d.py`
+  et `lot-cm1-8f.py`). `question:specs --instances 300` : 32 + 31 specs vertes, 2 400 tirages réussis, aucun
+  `\textcolor` hors `$` ; `sonde-figures` : 0 problème ; `create-questions` en simulation (prod) : 2 à créer.
+- 097 : fenêtre 12 × 12 ; axes `y = x + c` et `x + y = c` ; figure à 2 carreaux en biais au moins de l'axe (un seul
+  laisserait un demi-carreau). Erreur typique en specs : carreaux comptés à l'horizontale jusqu'à l'axe en biais.
+- 102 : les 11 patrons et les 8 faux de chaque pavé passent le parseur (`patron-sonde.ts`) ; V3 avec des pavés à base
+  carrée (4 faces de même forme) pour que la réponse ne soit pas toujours 2.
+- Base locale (copie dans le scratchpad, `.env.local`, `with-db-lock.sh`) : 2 brouillons ; aperçu admin à 390 px
+  (Playwright, port 5186), les 8 variations : aucun débordement, 0 erreur. Corrigé : en V2 du pavé, les patrons cotés
+  des options étaient réduits et le faux, sans cotes, restait grand (il se repérait à sa taille) → plus de cotes dans
+  les options, le pavé de l'énoncé garde les siennes.
