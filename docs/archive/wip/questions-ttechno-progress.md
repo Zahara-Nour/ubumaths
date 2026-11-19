@@ -1,20 +1,18 @@
 # Chantier questions-ttechno — couvrir la Terminale technologique (STMG)
 
-Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) · bornes :
-[ttechno.md](../systeme/programmes/bornes/lycee/ttechno.md) (BO n° 14 du 2026-04-02).
+Démarche : [couvrir-un-niveau.md](../../pratiques/couvrir-un-niveau.md) · bornes :
+[ttechno.md](../../systeme/programmes/bornes/lycee/ttechno.md) (BO n° 14 du 2026-04-02).
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, après la publication du lot 8 et de L7, L8 (§ 58)._
+_Mis à jour le 2026-11-19 : **chantier clos**._
 
-- **État** : lots 0 à 8 publiés ; bilan MCP : les 75 points STMG ont un modèle publié (017, 019 de fait, Q17) ; seuls
-  les 17 points STD2A restent sans modèle (hors périmètre).
-- **Prochaine action** : clôture du chantier (versement), sur le go de David : le durable vers `docs/systeme/`, le
-  journal vers `docs/archive/`, mémoire et `outils-manquants.md` (n° 42 reste « plus tard »).
-- **En attente de David** : le go de clôture.
-- **Pièges en cours** : `create-questions --publier` et `publier-lot.ts` visent la prod : David les lance (`!`) ;
-  un `--publier` peut ne rien écrire sans bruit : relire le statut en base.
-- **Worktree / branche** : aucun.
+- **État** : lots 0 à 8 mergés et publiés ; relevé MCP de clôture : 91 modèles publiés contenant `T_TECHNO` (52
+  neufs, 39 existants tagués), **75 points STMG sur 75** couverts (017, 019 de fait, Q17) ; aucun brouillon `T_TECHNO`
+  (§ 58).
+- **Durable versé** dans `docs/systeme/programmes/bornes/lycee/ttechno.md`, « Couverture en modèles de questions ».
+- Fichiers des lots laissés dans `scripts/questions/ttechno-*` (ids des modèles, corrections futures) ; outil
+  manquant n° 42 (log et 1/√ dans ` ```nuage `) reste « plus tard » dans `docs/wip/outils-manquants.md`.
 
 ## 1. Périmètre
 
@@ -1286,3 +1284,8 @@ dans le dépôt principal : reportés à la main dans `scripts/questions/ttechno
 - David a lancé `--publier` : relu en base (MCP), L7 `52b884ee` et L8 `10bd7075` `published`, `{T_TECHNO}` (L9
   `becf24bc` inchangée). **Les 75 points STMG sont couverts** (017, 019 de fait, Q17) ; seuls les 17 STD2A restent
   sans modèle, hors périmètre.
+
+## 59. Clôture (2026-11-19)
+
+- Versement dans `ttechno.md` (« Couverture en modèles de questions ») ; journal archivé ; renvois des
+  `lot-ttechno-*.py` et de `outils-manquants.md` mis à jour.

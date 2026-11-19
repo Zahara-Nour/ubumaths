@@ -1,7 +1,7 @@
 """Écrit les 4 modèles du lot 3a « propriétés » de la Terminale technologique (STMG)
 dans scripts/questions/ttechno-3a-proprietes/.
 
-Phase 0 validée par David le 2026-11-18 (journal docs/wip/questions-ttechno-progress.md § 22,
+Phase 0 validée par David le 2026-11-18 (journal docs/archive/wip/questions-ttechno-progress.md § 22,
 Q19, Q20 : « je suis tes recos »). Compléments à exposants NÉGATIFS du modèle commun E2
 (60971c9a, exposants positifs, tagué 081) et de E1 (e4e65a69, x ⩾ 0, tagué 031) :
 

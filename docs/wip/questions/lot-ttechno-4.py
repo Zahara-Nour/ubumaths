@@ -1,7 +1,7 @@
 """Écrit les 2 modèles du lot 4 « fonctions aˣ » de la Terminale technologique (STMG)
 dans scripts/questions/ttechno-4-fonctions/.
 
-Phase 0 validée par David le 2026-11-18 (journal docs/wip/questions-ttechno-progress.md § 29,
+Phase 0 validée par David le 2026-11-18 (journal docs/archive/wip/questions-ttechno-progress.md § 29,
 Q21–Q23 : « je te suis ») :
 
 | #  | Point        | Nœud (posé par la migration)                       | Niveau | Réponse              |

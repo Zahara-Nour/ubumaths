@@ -1,7 +1,7 @@
 """Écrit les 8 modèles du lot 2a « suites » de la Terminale technologique (STMG)
 dans scripts/questions/ttechno-2a-suites/.
 
-Phase 0 validée par David le 2026-11-17 (journal docs/wip/questions-ttechno-progress.md § 12,
+Phase 0 validée par David le 2026-11-17 (journal docs/archive/wip/questions-ttechno-progress.md § 12,
 Q16 à Q18 : « je suis tes recos ») :
 
 | #  | Point        | Nœud (posé par la migration)            | Niveau |

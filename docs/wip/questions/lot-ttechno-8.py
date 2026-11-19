@@ -1,7 +1,7 @@
 """Écrit les 7 modèles du lot 8 « loi binomiale » de la Terminale technologique (STMG)
 dans scripts/questions/ttechno-8-loi-binomiale/.
 
-Phase 0 validée par David le 2026-11-19 (journal docs/wip/questions-ttechno-progress.md § 54,
+Phase 0 validée par David le 2026-11-19 (journal docs/archive/wip/questions-ttechno-progress.md § 54,
 Q36 à Q40 : « je suis tes recos ») :
 
 | #  | Point        | Nœud (posé par la migration)                      | Niveau | Réponse              |

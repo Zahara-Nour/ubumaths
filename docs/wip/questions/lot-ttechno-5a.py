@@ -1,7 +1,7 @@
 """Écrit les 6 modèles du lot 5a « logarithme décimal : définition, variations, propriétés » de la
 Terminale technologique (STMG) dans scripts/questions/ttechno-5a-logarithme/.
 
-Phase 0 validée par David le 2026-11-18 (journal docs/wip/questions-ttechno-progress.md § 34,
+Phase 0 validée par David le 2026-11-18 (journal docs/archive/wip/questions-ttechno-progress.md § 34,
 Q24–Q26 : « je suis tes recos ») :
 
 | #  | Point        | Nœud (posé par la migration)                   | Niveau | Réponse                       |

@@ -1,7 +1,7 @@
 """Écrit les 4 modèles du lot 1 « automatismes » de la Terminale technologique (STMG)
 dans scripts/questions/ttechno-1-automatismes/.
 
-Phase 0 validée par David le 2026-11-17 (journal docs/wip/questions-ttechno-progress.md § 11) :
+Phase 0 validée par David le 2026-11-17 (journal docs/archive/wip/questions-ttechno-progress.md § 11) :
 
 | #  | Point        | Nœud (posé par la migration)       | Niveau |
 | I1 | TTECHNO-073  | Évolutions › indices                | 1 |

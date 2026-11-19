@@ -1,7 +1,7 @@
 """Écrit les 6 modèles du lot 7 « deux variables » de la Terminale technologique (STMG)
 dans scripts/questions/ttechno-7-deux-variables/.
 
-Phase 0 validée par David le 2026-11-19 (journal docs/wip/questions-ttechno-progress.md § 49,
+Phase 0 validée par David le 2026-11-19 (journal docs/archive/wip/questions-ttechno-progress.md § 49,
 Q32 à Q35 : « je te suis ») :
 
 | #  | Point        | Nœud (posé par la migration)                        | Niveau | Réponse                  |

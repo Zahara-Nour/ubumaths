@@ -1,7 +1,7 @@
 """Écrit les 3 modèles du lot 2b « Python » de la Terminale technologique (STMG)
 dans scripts/questions/ttechno-2b-python/.
 
-Phase 0 validée par David le 2026-11-17 (journal docs/wip/questions-ttechno-progress.md § 12,
+Phase 0 validée par David le 2026-11-17 (journal docs/archive/wip/questions-ttechno-progress.md § 12,
 Q18 : lot 2a « suites », puis lot 2b « Python ») :
 
 | #  | Point        | Contenu                                                           | Niveau |

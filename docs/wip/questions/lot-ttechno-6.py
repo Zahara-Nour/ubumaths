@@ -1,7 +1,7 @@
 """Écrit les 5 modèles du lot 6 « fonction inverse » de la Terminale technologique (STMG)
 dans scripts/questions/ttechno-6-inverse/.
 
-Phase 0 validée par David le 2026-11-19 (journal docs/wip/questions-ttechno-progress.md § 44,
+Phase 0 validée par David le 2026-11-19 (journal docs/archive/wip/questions-ttechno-progress.md § 44,
 Q28 à Q31 : « je te suis ») :
 
 | #  | Point        | Nœud (posé par la migration)                   | Niveau | Réponse                    |

@@ -1,7 +1,7 @@
 """Écrit les 4 modèles du lot 3b « fonctions » de la Terminale technologique (STMG)
 dans scripts/questions/ttechno-3b-fonctions/.
 
-Phase 0 validée par David le 2026-11-18 (journal docs/wip/questions-ttechno-progress.md § 22,
+Phase 0 validée par David le 2026-11-18 (journal docs/archive/wip/questions-ttechno-progress.md § 22,
 Q19, Q20 : « je suis tes recos »). Compléments sur ℝ (x < 0 compris) des modèles communs E3
 (2a9c316a, tagué 032) et E4 (065eea60, tagué 033), écrits sur [0 ; +∞[ pour la 1re générale,
 et la forme x ↦ k·aˣ avec k < 0, absente des modèles existants :

@@ -1,7 +1,7 @@
 """Écrit les 3 modèles du lot 5b « logarithme décimal : équations, inéquations, seuils » de la
 Terminale technologique (STMG) dans scripts/questions/ttechno-5b-log-resolutions/.
 
-Phase 0 validée par David le 2026-11-18 (journal docs/wip/questions-ttechno-progress.md § 34,
+Phase 0 validée par David le 2026-11-18 (journal docs/archive/wip/questions-ttechno-progress.md § 34,
 Q24–Q25 : « je suis tes recos ») :
 
 | #  | Point        | Nœud (posé par la migration)                   | Niveau | Réponse                          |
