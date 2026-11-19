@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, PR 2b ouverte (n° dans `gh pr list --search head:feat/categorie-fiche-editeur-ui`)._
+_Mis à jour le 2026-11-19, après #2912._
 
-- **État** : PR 2b (éditeur + PDF) poussée sur `feat/categorie-fiche-editeur-ui`, revues faites (code-reviewer Opus + security-auditor : 0 bloquant, corrections intégrées) · **Prochaine action** : CI verte → merger, puis PR 3 (reprise des 50 fiches, page à cocher) · **En attente de David** : essayer l'éditeur sur le serveur du worktree (`pnpm dev --port 5176`, compte `teacher@local.test`, fiche « Essai catégorie ») ; noms anglais des catégories (Technical practice, Applications, Automatisms, Review) à valider · **Pièges en cours** : PUT = trois requêtes, pas une transaction (écart 8 de `docs/systeme/fiches-et-pdf.md`, fonction SQL à envisager) ; notion archivée encore acceptée par le serveur (l'éditeur ne la propose pas) ; `escapeTypst` n'échappe pas `[` `]` ailleurs (défaut de `main`, corrigé ici pour titre / sous-titre / bas de page seulement) · **Worktree** : `../ubumaths-wt-categorie-fiche`
+- **État** : PR 1 (#2901), 2a (#2903) et 2b (#2912, éditeur + PDF) mergées ; rien en prod tant que David n'a pas fait `deploy:prod` · **Prochaine action** : PR 3 — reprise des 50 fiches de prod (catégorie + notions déduites du titre, page à cocher, écriture en prod par David), nouveau worktree `../ubumaths-wt-categorie-fiche` depuis `origin/main` · **En attente de David** : noms anglais des catégories (Technical practice, Applications, Automatisms, Review) ; essai de l'éditeur (ligne #2912 de `verifications-manuelles.md`) · **Pièges en cours** : PUT = trois requêtes, pas une transaction (écart 8 de `docs/systeme/fiches-et-pdf.md`) ; notion archivée encore acceptée par le serveur ; `escapeTypst` n'échappe pas `[` `]` hors titre / sous-titre / bas de page (défaut de `main`) ; tests de routes à maquette (`table-mock.ts`) : une table nouvelle lue par la copie y prend une réponse neutre ; `check:integration-paths` exige chaque nouveau fichier de `src/lib` dans le filtre de la CI d'intégration · **Worktree** : rangé après #2912
 
 ## Synthèse de la phase 0 (2026-11-19)
 
@@ -54,7 +54,7 @@ _Mis à jour le 2026-11-19, PR 2b ouverte (n° dans `gh pr list --search head:fe
    partage (catégorie, notions, niveaux), tests d'intégration rouges puis verts ; `db:migrate`,
    `db:types`.
 2. ✅ **PR 2a — case « titre libre »** (#2903, migration `20261119182829` jouée le 2026-11-19).
-   **PR 2b — éditeur + PDF** (ouverte le 2026-11-19) : choix catégorie/notions dans l'éditeur,
+   ✅ **PR 2b — éditeur + PDF** (#2912, mergée le 2026-11-19) : choix catégorie/notions dans l'éditeur,
    titre composé, badge du niveau, bas de page, tous les cas de la synthèse. Fait aussi : la vue
    élève, l'aperçu d'affectation, le corrigé de classe et le lien de cours transmettent niveau,
    catégorie, case et notions au PDF ; la duplication les recopie ; crochets échappés.
