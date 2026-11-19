@@ -235,7 +235,7 @@
 	<!-- Breadcrumb -->
 
 	<!-- Header -->
-	<WorksheetHeader {worksheet} textSize={data.textSize} />
+	<WorksheetHeader {worksheet} textSize={data.textSize} easyReading={data.easyReading} />
 
 	{#if readOnly}
 		<!-- Le dire franchement : sans ce bandeau, l'élève constaterait

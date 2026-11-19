@@ -97,4 +97,27 @@ describe('copies par élève : chargement de la page', () => {
 			[S2, 'x_large']
 		]);
 	});
+
+	it('chaque élève porte sa lecture facilitée ; sans réglage, éteinte', async () => {
+		const students = [
+			{ id: S1, first_name: 'Ondine', last_name: 'Abricot', class_name: '3e Lune' },
+			{ id: S2, first_name: 'Élise', last_name: 'Écureuil', class_name: null }
+		];
+		const fetch = vi.fn(async () => new Response(JSON.stringify({ students })));
+		const supabase = tableMock({
+			student_print_settings: {
+				data: [{ student_id: S2, text_size: 'normal', easy_reading: true }],
+				error: null
+			}
+		}).client;
+		const data = (await load({
+			params: { id: WORKSHEET_ID, assignmentId: ASSIGNMENT_ID },
+			locals: { safeGetSession: async () => ({ user: { id: 'prof' } }), supabase },
+			fetch
+		} as never)) as { students: { id: string; easy_reading: boolean }[] };
+		expect(data.students.map((s) => [s.id, s.easy_reading])).toEqual([
+			[S1, false],
+			[S2, true]
+		]);
+	});
 });

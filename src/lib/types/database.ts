@@ -12212,16 +12212,19 @@ export type Database = {
       }
       student_print_settings: {
         Row: {
+          easy_reading: boolean
           student_id: string
           text_size: string
           updated_at: string
         }
         Insert: {
+          easy_reading?: boolean
           student_id: string
           text_size?: string
           updated_at?: string
         }
         Update: {
+          easy_reading?: boolean
           student_id?: string
           text_size?: string
           updated_at?: string

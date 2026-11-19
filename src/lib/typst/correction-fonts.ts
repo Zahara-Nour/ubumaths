@@ -56,9 +56,10 @@ const TOP_LEVEL_SET_TEXT = /^#set text\(/gm;
 
 /**
  * Position juste après l'appel Typst qui commence à `start` (parenthèses
- * équilibrées, chaînes ignorées), ou null s'il n'est pas fermé.
+ * équilibrées, chaînes ignorées), ou null s'il n'est pas fermé. Sert aussi à la
+ * lecture facilitée (`easy-reading.ts`).
  */
-function endOfTypstCall(typst: string, start: number): number | null {
+export function endOfTypstCall(typst: string, start: number): number | null {
 	const open = typst.indexOf('(', start);
 	if (open === -1) return null;
 
@@ -107,20 +108,28 @@ export function hasCorrectionFonts(typst: string): boolean {
 
 /** Le même document sans les règles de police du Corrigé (repli : police standard) */
 export function withoutCorrectionFonts(typst: string): string {
+	return withoutMarkedRules(typst, START_MARK, END_MARK);
+}
+
+/**
+ * Le même document sans chaque bloc de règles encadré par `startMark` et
+ * `endMark` (repli). Sert aussi à la lecture facilitée (`easy-reading.ts`).
+ */
+export function withoutMarkedRules(typst: string, startMark: string, endMark: string): string {
 	let result = typst;
 	for (;;) {
-		const start = result.indexOf(START_MARK);
+		const start = result.indexOf(startMark);
 		if (start === -1) return result;
-		const end = result.indexOf(END_MARK, start);
+		const end = result.indexOf(endMark, start);
 		if (end === -1) return result;
 		// En tête, le saut de ligne qui suit les règles part avec elles ; ailleurs,
 		// celui qui les précède
 		if (start === 0) {
-			const after = end + END_MARK.length;
+			const after = end + endMark.length;
 			result = result.slice(result[after] === '\n' ? after + 1 : after);
 		} else {
 			const from = result[start - 1] === '\n' ? start - 1 : start;
-			result = result.slice(0, from) + result.slice(end + END_MARK.length);
+			result = result.slice(0, from) + result.slice(end + endMark.length);
 		}
 	}
 }
