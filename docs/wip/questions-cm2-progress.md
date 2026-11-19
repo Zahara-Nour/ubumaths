@@ -1597,3 +1597,53 @@ juste, corrigé simplifié ; (d) un seul lot de 6 modèles.
 - Page à cocher : 6 verdicts « OK », sans commentaire ; les 6 ids concordent avec `scripts/questions/cm2-14a/*.json`.
 - `publier-lot` en simulation : 6 brouillons passent le contrôle. David lance `--publier`. MCP : 6/6 `published`, [CM2],
   rangés et tagués (107, 156, 123, 157, 124, 158). **Lot 14a clos.**
+
+## 22. Lot 14b — courbes, construire, problèmes (125, 159, 121, 122, 108) : phase 0 (proposée le 2026-11-19)
+
+Relevé MCP du 2026-11-19 : aucun modèle sur les 5 points. Nœuds : 125, 159, 122 sur « courbes et repères » (niveaux 1 à
+3 pris : CM1, 5e) ; 121 sur « diagrammes en barres » (1 à 9 pris, 8 et 9 par le lot 14a) ; 108 sur la notion
+« Représenter des données » (1 à 3 pris ; CM1-122 au niveau 3). Jumeaux CM1 publiés (lot 7 du CM1) : `5291dc9f` (139,
+température toutes les deux heures, axe de 2 en 2), `da976537` (172 : plus haute, plus basse, écart, « entre quelles
+heures elle baisse »), `a434bd68` (136, 5 points, axes donnés, grille de 1 sur 2), `01b73ca2` (135, tableau donné,
+`axe: à choisir`), `ae74fe73` et `f1f7b2d1` (122, problèmes : tableau ; barres et courbe). Décision § 4 bis : modèles
+CM2 propres.
+
+Bornes : générales du CM2 ; 108, une ou deux étapes, tableau, barres, **circulaire**, courbe ; 121, échelle adaptée
+(limites actuelles de `axe: à choisir` : 1, 2, 5, 10, données ≤ 100, § 14.1 c) ; 122, points éventuellement reliés,
+échelle adaptée. Outils : ` ```courbe ` + `données:` (lire), ` ```courbe ` + `placer:` (au plus 6 points, sur un nœud
+de la grille, virgule permise), ` ```barres ` + `placer: toutes` (`données:` = série brute que l'élève compte).
+
+Ce qui distingue le CM2 du CM1 : relevés heure par heure et valeurs entre deux traits, courbes d'autres grandeurs
+(masse en kg avec dixièmes, distance parcourue), la courbe « à plat » qui veut dire « rien ne change » ; un relevé brut
+à compter avant de construire ; des repères de 100 en 100 ou de 0,5 en 0,5 ; le diagramme circulaire dans les problèmes.
+
+| #     | Point   | Sous-notion, niveau        | Modèle                                                        | Variations, plages                                                                                                                                                                                                                                                                                                                                                                                                        |
+| ----- | ------- | -------------------------- | ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 14b-1 | CM2-125 | courbes et repères, 4      | Lis la courbe                                                 | V1 température **heure par heure** (8 h à 18 h), axe de 2 en 2 °C, valeur parfois à mi-chemin entre deux traits (17 °C) ; V2 l'inverse, « à quelle heure faisait-il N °C ? » (une seule heure) ; V3 masse d'un bébé mois par mois (0 à 8 mois), axe de 0,5 en 0,5 kg, réponse décimale ; V4 distance parcourue par un randonneur heure par heure, axe de 2 en 2 km                                                        |
+| 14b-2 | CM2-159 | courbes et repères, 5      | Que dit la courbe ?                                           | V1 « entre quelles heures la température augmente-t-elle ? » (une montée puis une descente, deux cases « de … h à … h ») ; V2 la plus forte hausse en une heure (entre quelles heures ?) ; V3 randonneur : « pendant combien de temps s'est-il arrêté ? » (un palier) ; V4 bébé : « combien de kg a-t-il pris entre N et M mois ? »                                                                                       |
+| 14b-3 | CM2-121 | diagrammes en barres, 10   | Compte, puis construis le diagramme                           | V1 **relevé brut** : le nombre de frères et sœurs de 20 à 24 élèves (0 à 4), en liste dans l'énoncé, axe donné de 1 en 1, `données:` puis `placer: toutes` ; V2 tableau donné, effectifs jusqu'à 100, `axe: à choisir` (échelle 5 ou 10) ; V3 relevé brut de 30 à 40 élèves, `axe: à choisir` (échelle 2)                                                                                                                 |
+| 14b-4 | CM2-122 | courbes et repères, 6      | Place les points du relevé                                    | Axes donnés, 5 ou 6 points. V1 visiteurs d'un parc jour par jour, axe de 100 en 100 (jusqu'à 1 000) ; V2 hauteur d'une plante semaine par semaine, axe de 0,5 en 0,5 cm ; V3 température toutes les deux heures (abscisses 8, 10, … 18), axe de 5 en 5 °C                                                                                                                                                                 |
+| 14b-5 | CM2-108 | Représenter des données, 4 | Résous un problème avec un tableau ou des barres              | V1 tableau des prix de la cantine (décimaux : 3,85 €…), le coût d'une semaine pour deux enfants (deux étapes) ; V2 tableau à double entrée (élèves par classe et par sport), une différence puis un total ; V3 barres de 100 en 100, visiteurs d'un musée : total de deux mois, puis l'écart à un objectif                                                                                                                |
+| 14b-6 | CM2-108 | Représenter des données, 4 | Résous un problème avec un diagramme circulaire ou une courbe | V1 **cocktail** : diagramme circulaire sans étiquettes (moitié, quart, quart), « pour N L de cocktail, combien de cL de jus d'ananas ? » ; V2 circulaire avec effectifs, combien d'élèves de plus en car qu'à vélo, puis la part du total ; V3 courbe de température : la hausse entre deux heures, puis la prévision « si elle monte encore de … » ; V4 randonneur : distance avant la pause, puis ce qui reste sur N km |
+
+Forme commune : une case par réponse, l'unité après la case ; « lequel » en case « choix » ; corrigé : où lire (le
+point de la courbe, le haut de la barre, la part), puis le calcul. Erreurs typiques en `testSpecs` : 125 V1, la
+graduation du dessous au lieu de la moitié ; 125 V3, un carreau compté pour 1 kg ; 159 V1, l'heure du sommet prise pour
+le début ; 159 V2, la plus haute valeur au lieu de la plus forte hausse ; 159 V3, la durée de marche au lieu de la
+pause ; 108-5 V1, un seul enfant ou un seul jour ; 108-6 V1, la part de 1 L au lieu de N L, le quart pris pour 1/3.
+121 : barre fausse jugée par le bloc, pas par les specs.
+
+**Question d'accès** : 6 brouillons neufs, puis nœud + tag → personne ne lit rien de plus avant la publication.
+
+**À trancher** :
+
+(a) Niveaux : courbes 4, 5, 6 (à la suite du CM1 et de la 5e), barres 10, notion 4 et 4 ? Reco : **oui**.
+
+(b) 108 en **deux modèles** (tableau ou barres ; circulaire ou courbe), comme les deux du CM1 ? Reco : **oui**, lot de
+6 modèles.
+
+(c) 121 : le **relevé brut à compter** (l'élève compte chaque valeur, puis construit), dans les limites actuelles de
+l'échelle à choisir ? Reco : **oui** ; c'est ce que dit « recueillir des données ».
+
+(d) Cocktail (108-6 V1) : parts lues à l'œil (moitié, quart), le bloc n'écrivant pas les fractions sur les secteurs
+(n° 44 de `outils-manquants.md`) ? Reco : **oui**, comme au lot 14a.
