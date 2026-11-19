@@ -65,7 +65,7 @@ export const CATEGORY_LABELS: Record<ContentLocale, Record<WorksheetCategory, st
 	en: {
 		technical_practice: 'Technical practice',
 		applications: 'Applications',
-		automatisms: 'Automatisms',
+		automatisms: 'Fluency',
 		review: 'Review'
 	}
 };
