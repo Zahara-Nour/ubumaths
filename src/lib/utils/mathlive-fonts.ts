@@ -81,10 +81,13 @@ const LUCIOLE_FONT_SIZE = `.ML__latex { font-size: ${(100 / 0.9).toFixed(2)}%; }
 function fontSetRules(fontSet: MathFontSet): string[] {
 	const stroke = STROKE[fontSet];
 	if (!stroke) return [];
+	// Luciole : barre de racine posée au haut du signe, sans la remontée de 0,04 em de
+	// MathLive ; sinon elle passait au-dessus du coin de la grande racine empilée (marche)
+	const sqrtMargin = fontSet === 'luciole' ? '0' : `-${MATHLIVE_STROKE}`;
 	const rules = [
 		`.ML__frac-line:after { min-height: ${stroke} !important; margin-top: -${MATHLIVE_STROKE} !important; border-radius: ${stroke}; }`,
 		`.ML__sqrt-line { height: ${stroke} !important; }`,
-		`.ML__sqrt-line:before { min-height: ${stroke} !important; margin-top: -${MATHLIVE_STROKE} !important; border-radius: ${stroke}; }`
+		`.ML__sqrt-line:before { min-height: ${stroke} !important; margin-top: ${sqrtMargin} !important; border-radius: ${stroke}; }`
 	];
 	if (fontSet === 'luciole') return [...rules, LUCIOLE_FONT_SIZE];
 	if (fontSet !== 'shantell') return rules;

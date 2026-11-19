@@ -51,6 +51,12 @@ GLYPH_SCALE = 0.9
 # MathLive les met déjà en exposant (celui de Luciole, à hauteur de lettre, montait trop)
 FIT_EVERYWHERE = {0x221A, 0x2032, 0x2033, 0x2034}
 
+# Radical et morceaux de la racine empilée : MathLive commence la barre à l'avance du
+# signe. Avance = bout droit du dessin, moins un léger chevauchement (sinon la barre
+# flottait à 77 unités du √ de Main, dont la boîte KaTeX est plus large que le dessin).
+RADICALS = {0x221A, 0xE000, 0xE001, 0x23B7}
+RADICAL_OVERLAP = 20
+
 # Glyphe centré sur la boîte KaTeX, avance de KaTeX : barre de \not, que MathLive
 # superpose au signe suivant en la calant à droite sur l'avance de KaTeX (778)
 CENTER_IN_KATEX_BOX = {0xE020}
@@ -129,11 +135,18 @@ class Source:
         self.cmap = self.font.getBestCmap()
         self.glyphs = self.font.getGlyphSet()
         self.variants: dict[str, list[str]] = {}
+        # Morceaux d'empilement (GlyphAssembly) : dessinés dans un même repère horizontal ;
+        # pour chacun, les morceaux des délimiteurs où il sert
+        self.parts: dict[str, set[str]] = {}
         if 'MATH' in self.font and self.font['MATH'].table.MathVariants:
             mv = self.font['MATH'].table.MathVariants
             if mv.VertGlyphCoverage:
                 for name, construction in zip(mv.VertGlyphCoverage.glyphs, mv.VertGlyphConstruction):
                     self.variants[name] = [r.VariantGlyph for r in construction.MathGlyphVariantRecord]
+                    if construction.GlyphAssembly:
+                        group = {p.glyph for p in construction.GlyphAssembly.PartRecords}
+                        for part in group:
+                            self.parts.setdefault(part, set()).update(group)
 
     def bounds(self, name: str):
         pen = BoundsPen(self.glyphs)
@@ -162,7 +175,8 @@ def draw_into(source: Source, name: str, transform) -> object:
 
 
 def copy_glyph(
-    target: TTFont, target_name: str, source: Source, source_name: str, fit: bool, center: bool = False
+    target: TTFont, target_name: str, source: Source, source_name: str, fit: bool,
+    center: bool = False, radical: bool = False,
 ) -> None:
     glyf = target['glyf']
     hmtx = target['hmtx']
@@ -180,10 +194,26 @@ def copy_glyph(
         source_name = min(candidates, key=lambda c: abs((source.bounds(c)[3] - source.bounds(c)[1]) - k_height))
         sb = source.bounds(source_name)
         sy = k_height / (sb[3] - sb[1])
-        dx = kb[0] - sb[0]
+        if source_name in source.parts:
+            # Morceau d'empilement : position horizontale de Luciole, la même pour tous les
+            # morceaux du délimiteur (caler chacun sur le bord gauche de sa boîte KaTeX les
+            # décalait : crans des accolades, crochets et de la grande racine). Même avance
+            # pour tous : dans une formule centrée (`gathered`), MathLive centre chaque
+            # morceau dans sa colonne, et un milieu plus étroit (crochet : 371 contre 510)
+            # se décalait. Racine : bout du morceau le plus large, barre soudée.
+            dx = 0
+            group = source.parts[source_name]
+            if radical:
+                advance = round(max(source.bounds(p)[2] for p in group)) - RADICAL_OVERLAP
+            else:
+                advance = max(source.advance(p) for p in group)
+        else:
+            dx = kb[0] - sb[0]
+            # Pas d'avance plus courte que le dessin (sauf morceau sans chasse)
+            advance = max(katex_advance, round(sb[2] + dx)) if katex_advance > 0 else 0
         transform = (1, 0, 0, sy, dx, kb[1] - sb[1] * sy)
-        # Pas d'avance plus courte que le dessin (sauf morceau sans chasse)
-        advance = max(katex_advance, round(sb[2] + dx)) if katex_advance > 0 else 0
+        if radical and source_name not in source.parts:
+            advance = round(sb[2] + dx) - RADICAL_OVERLAP
     elif (center or katex_advance == 0) and kb is not None:
         # Marque sans chasse (accents combinants) ou barre de \not : même centre que KaTeX
         dx = (kb[0] + kb[2]) / 2 - (sb[0] + sb[2]) / 2 * GLYPH_SCALE
@@ -268,6 +298,7 @@ def build_one(stem: str, sources: dict[str, Source], report: bool) -> None:
             copy_glyph(
                 target, target_name, math_source, GLYPH_ALIASES[cp],
                 fit_all or cp in FIT_EVERYWHERE, center=cp in CENTER_IN_KATEX_BOX,
+                radical=cp in RADICALS,
             )
             done.add(target_name)
             replaced += 1
@@ -292,7 +323,10 @@ def build_one(stem: str, sources: dict[str, Source], report: bool) -> None:
         if not found:
             kept.append(cp)
             continue
-        copy_glyph(target, target_name, found[0], found[1], fit_all or cp in FIT_EVERYWHERE)
+        copy_glyph(
+            target, target_name, found[0], found[1], fit_all or cp in FIT_EVERYWHERE,
+            radical=cp in RADICALS,
+        )
         done.add(target_name)
         replaced += 1
 
