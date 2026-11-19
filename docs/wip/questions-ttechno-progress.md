@@ -5,13 +5,13 @@ Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) · bornes 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, lot 8 écrit (PR en cours)._
+_Mis à jour le 2026-11-19, après #2882._
 
-- **État** : lots 0 à 7 publiés (sauf L7, L8 du 5b) ; lot 8 (loi binomiale, 7 modèles B1–B7) écrit, simulation verte, essayé en local (§ 55). PR des fichiers en cours, branche `feat/questions-ttechno-lot8`.
-- **Prochaine action** : merge de la PR, puis David lance `create-questions --dir scripts/questions/ttechno-8-loi-binomiale --publier` ; ensuite migration nœud + tag (gabarit lot 7 ; 057, 067, 090 sur la notion « Loi binomiale » 7f0932c3, 060 sur d78d5a6b, 061 sur 49cafc5f, 069 et 091 sur aa1217ed), page à cocher, publication.
+- **État** : lots 0 à 7 publiés (sauf L7, L8 du 5b) ; lot 8 (loi binomiale, 7 modèles B1–B7) écrit, simulation verte, essayé en local (§ 55). Fichiers mergés (#2882).
+- **Prochaine action** : David lance `create-questions --dir scripts/questions/ttechno-8-loi-binomiale --publier` ; ensuite migration nœud + tag (gabarit lot 7 ; 057, 067, 090 sur la notion « Loi binomiale » 7f0932c3, 060 sur d78d5a6b, 061 sur 49cafc5f, 069 et 091 sur aa1217ed), page à cocher, publication.
 - **En attente de David** : le `deploy:prod` qui livre #2839 (L7, L8), s'il ne vient pas d'être fait (vérifier `production`).
 - **Pièges en cours** : `$` littéral (tableur) = `\$` ; un point TTECHNO par modèle (trigger) ; tag = nœud DU POINT ; `publier-lot.ts` et `create-questions --publier` visent la prod : David les lance (`!`), ids reportés à la main si besoin ; `p^floor(…)` refusé par eval (passer par une variable) ; Chrome refuse `[::1]` : serveur `--host 127.0.0.1`.
-- **Worktree / branche** : `ubumaths-wt-questions-ttechno`, `feat/questions-ttechno-lot8`.
+- **Worktree / branche** : aucun (retiré après #2882) ; la migration se fera sur une nouvelle branche.
 
 ## 1. Périmètre
 
@@ -1240,3 +1240,4 @@ pour les brouillons, Tle techno à la publication.
 - Base locale : 7 brouillons ; aperçu admin (Chrome, `127.0.0.1:5182`) : B4 bâtons et corrigé, B5 tableau
   effectif / fréquence / probabilité, B6 5 points placés jugés justes, B7 courbe des moyennes et droite de
   l'espérance, Python.
+- **#2882 mergée (2026-11-19)**, CI verte. Worktree retiré.
