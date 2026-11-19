@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, PR 2 « réglage Lecture facilitée » ouverte (après #2892)._
+_Mis à jour le 2026-11-19, après #2898._
 
-- **État** : PR 2 sur `feat/lecture-facilitee-reglage` : interrupteur « Lecture facilitée » (en-têtes, menus mobiles, profil), texte du contenu en Luciole + formules en Luciole Math (D7), crédit des polices dans `/a-propos` (D5).
-- **Prochaine action** : merger la PR 2 ; puis PR 4 = PDF en Luciole / Luciole Math (Typst lit `Luciole-Math.otf` telle quelle) : phase 0 à poser à David.
-- **En attente de David** : essayer le réglage (serveurs 5181 / 5182 du worktree).
-- **Pièges en cours** : `\cdot` gros et `∯` petit laissés tels quels (D8) ; polices `.woff2` en cache du navigateur ; `:8445` → 5175 peut-être encore ouvert.
-- **Worktree / branche** : `../ubumaths-wt-lecture-facilitee` · `feat/lecture-facilitee-reglage`.
+- **État** : réglage « Lecture facilitée » mergé (#2898) : texte du contenu en Luciole, formules en Luciole Math, crédit dans `/a-propos` ; vérification manuelle notée.
+- **Prochaine action** : petite PR de suite si David dit oui : (1) interligne élargi aussi pour les `text-xs/sm/base/lg/xl` de `.dashboard-content` (leurs `!important` battent la règle) ; (2) script inline dans `app.html` qui pose la classe avant le premier affichage (pas de saut Inter → Luciole). Puis PR 4 = PDF en Luciole / Luciole Math (phase 0 à poser).
+- **En attente de David** : oui / non sur (1) et (2) ; recos : garder le réglage dans le navigateur (poste partagé : sans gravité), rien à faire sur `/dev/polices`.
+- **Pièges en cours** : `\cdot` gros et `∯` petit laissés (D8) ; polices `.woff2` en cache ; serveurs 5181 / 5182 du worktree encore lancés ; `:8445` → 5175 peut-être ouvert.
+- **Worktree / branche** : `../ubumaths-wt-lecture-facilitee` · `feat/lecture-facilitee-reglage` (mergée, à remplacer par une branche neuve depuis `origin/main`).
 
 ## Ce qui existe déjà (vérifié le 2026-11-19)
 
