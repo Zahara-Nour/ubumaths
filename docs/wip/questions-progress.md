@@ -2,10 +2,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, après #2909 (fichiers du lot D) ; #2911 (migration) ouverte._
+_Mis à jour le 2026-11-19, après #2911 (migration jouée)._
 
-- **État** : relevé prod du 2026-11-19 : **70 points CP sur 84** ont un modèle publié. Lot D (CP-001, 070, 008, 033, 072 : 6 modèles, § 4 septdecies) : fichiers mergés (#2909), **6 brouillons créés en prod par David**, ids commités. PR **#2911** (migration `20261119195149_questions_cp_d_rangement_tags`, nœud + tag) ouverte : test d'intégration rouge sans (5/9) et vert avec (9/9) ; `security-auditor` **non bloquant** (deux faibles hérités du patron CM2 lot 15) ; question d'accès tranchée (personne).
-- **Prochaine action** : CI de #2911 verte → `pnpm check:migrations --pr 2911` → merge → depuis le dépôt principal, `migration list --linked` (aucune autre en attente, sinon stop) → `db:migrate` → vérifier nœuds et tags en prod (MCP) → page à cocher (`page-a-cocher.ts --dir scripts/questions/cp-d`) → publication par David.
+- **État** : relevé prod du 2026-11-19 : **70 points CP sur 84** ont un modèle publié. Lot D (CP-001, 070, 008, 033, 072 : 6 modèles, § 4 septdecies) : 6 brouillons en prod, **rangés et tagués** (migration `20261119195149`, #2911, jouée par David, vérifiée au MCP). Page à cocher publiée : https://claude.ai/artifact/Jw3Uin7HLh73Ni4NUPthP9 (verdicts en base de l'artefact, collection `verdicts`).
+- **Alertes de la page** : `03` (CP-008), V2 « 0 à 20 » : graduations à 12 px sur téléphone, trop serrées au doigt → proposition : V2 = demi-droite de 0 à 10 sans le 5 écrit (`--mettre-a-jour` par David) ; `05` (ranger) non dessiné sur la page : le jouer dans l'aperçu admin.
+- **Prochaine action** : lire et compter les verdicts de David → corrections éventuelles (`--mettre-a-jour`) → `publier-lot.ts --dir scripts/questions/cp-d` en simulation → **David** `--publier` → relevé de couverture final.
 - **En attente de David** : publication des brouillons CP-058, 059, 060 (chantier `geometrie-validation`) ; vérification manuelle #1702.
 - **Reste du CP après le lot D** : groupe D seul (074, 053, 063, 064, 065, 066 : non évaluables à l'écran).
 - **Pièges en cours** : un modèle porte au plus UN point (ADR 0020) ; QCM OU cases ; case dans un tableau = `$?$` ; **`{{if:…}}` imbriqué non résolu dans `correctChoiceIndex`** ; jamais de variable `e` ; **niveaux numérotés dès l'écriture** ; montants en `$n~\unit{€}$` ; **écriture en prod : David la lance (`!`)** ; **`gh pr checks --watch` / `gh run watch` peuvent rendre la main avant la fin : suivre le statut du run** ; `create-questions` et les deux scripts visent `.env` (prod) : `set -a; . ./.env.local; set +a` pour la locale ; fichiers des anciens lots CP en retard sur la base (niveaux B1, B3, H renumérotés ; sous-domaines B2 changés) ; les 4 modèles C sont publiés en base LOCALE (essais).
