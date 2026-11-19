@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, après #2866._
+_Mis à jour le 2026-11-19, PR 4 « Ma série » commencée._
 
-- **État** : PR 1 (#2842), 2 (#2847), 3a (#2854) et 3b vue « Programme » (#2866) mergées. Rien en prod tant que David n'a pas fait `deploy:prod` (pas de migration).
-- **Prochaine action** : PR 4 « Ma série » (recommandation 3 du 2026-11-18 : colonne ≥ 1 280 px, panneau en dessous, barre en bas sur téléphone) — phase 0 à écrire et faire valider.
+- **État** : PR 1 (#2842), 2 (#2847), 3a (#2854), 3b (#2866) mergées. PR 4 « Ma série » : phase 0 validée le 2026-11-19, réalisation en cours sur `feat/automaths-ma-serie`.
+- **Prochaine action** : tests rouges (colonne / panneau / barre, retrait, durée totale, libellés « Ma série »), puis code.
 - **En attente de David** : vérification manuelle #2866 notée dans `verifications-manuelles.md`.
 - **Pièges en cours** : séparateur de `rubrique` = « > » en base ; liste servie sans `points` (cache Vercel d'avant le déploiement) → vue Notions seule ; cartes de test : fixture `data/relecture/entiers/139.json` ; `getByRole('navigation', { name: 'Notions' })` → `exact: true` ; `deploy-prod.test.ts` dépasse parfois 5 s en CI (relancer le job).
-- **Worktree / branche** : `../ubumaths-wt-automaths` gardé tant que David teste par `https://serveur.tail99357e.ts.net` (serveur 5176, Serve 443 et 8443) ; puis arrêter le serveur, `tailscale serve --https=443 off` et `--https=8443 off`, `git worktree remove` + `git branch -d feat/automaths-programme`.
+- **Worktree / branche** : PR 4 dans `../ubumaths-wt-automaths-serie` · `feat/automaths-ma-serie`. `../ubumaths-wt-automaths` FIGÉ (serveur de test 5176 de David, Serve 443 et 8443) ; à la fin de ses tests : arrêter le serveur, `tailscale serve --https=443 off` et `--https=8443 off`, `git worktree remove` + `git branch -d feat/automaths-programme`.
 
 ### 2026-11-18 — recherche
 
@@ -145,3 +145,14 @@ Lecture des questions sous un point : **A** — les questions rattachées au poi
 ### 2026-11-19 — PR 3b mergée (#2866)
 
 - CI : conflit avec `main` (`json` → `Response.json` dans l'API) résolu par merge ; `deploy-prod.test.ts` en dépassement de délai (sans rapport), job relancé, vert. Mergée. Vérification manuelle notée.
+
+### 2026-11-19 — PR 4 « Ma série », phase 0 validée par David
+
+1. Aperçu « Ma série · 3 questions · environ 2 min 30 » : chaque question (titre, « ×4 » répétitions) avec une croix qui la retire ; durée totale = somme des répétitions × durée.
+2. Aucun réglage dans l'aperçu : durées, répétitions, PDF, lancement restent sur la page détaillée (« Ouvrir ma série »).
+3. Ordre d'ajout.
+4. Série vide : « Ta série est vide : ajoute des questions avec « Ajouter ». »
+5. Grand écran (≥ 1 280 px) : colonne à droite, collante, défile seule si longue ; plus de bouton rond.
+6. Tablette / petit ordinateur : bouton rond conservé → ouvre « Ma série » dans un panneau à droite (plus de changement de page).
+7. Téléphone : barre fine en bas « Ma série · 3 questions · 2 min 30 ▴ » → panneau du bas ; série vide → pas de barre.
+8. « Ma série » partout où l'on voyait « panier » (titre « Mon Panier », « Dans le panier : retirer », « Vider le panier ») ; l'adresse `/automaths/panier` ne change pas.
