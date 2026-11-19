@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, PR 3b en cours (pas encore de PR ouverte)._
+_Mis à jour le 2026-11-19, après #2866._
 
-- **État** : PR 1 (#2842), 2 (#2847), 3a (#2854) mergées. PR 3b vue « Programme » codée et commitée sur `feat/automaths-programme` (tests verts, `check:incremental` 0, `lint:fast` propre, doc `questions.md` à jour), revue `code-reviewer` faite : aucun bloquant.
-- **Prochaine action** : PR ouverte → CI, merger. Puis PR 4 « Ma série ».
-- **En attente de David** : rien (choix de la réalisation validés le 2026-11-19).
-- **Pièges en cours** : séparateur de `rubrique` = « > » en base ; une liste servie sans `points` (cache Vercel d'avant le déploiement) → vue Notions seule ; les cartes de test n'apparaissent qu'avec la fixture `data/relecture/entiers/139.json` ; `getByRole('navigation', { name: 'Notions' })` → `exact: true` ; Chrome (extension) refusait la page en dev le 2026-11-19.
-- **Worktree / branche** : `../ubumaths-wt-automaths` · `feat/automaths-programme`.
+- **État** : PR 1 (#2842), 2 (#2847), 3a (#2854) et 3b vue « Programme » (#2866) mergées. Rien en prod tant que David n'a pas fait `deploy:prod` (pas de migration).
+- **Prochaine action** : PR 4 « Ma série » (recommandation 3 du 2026-11-18 : colonne ≥ 1 280 px, panneau en dessous, barre en bas sur téléphone) — phase 0 à écrire et faire valider.
+- **En attente de David** : vérification manuelle #2866 notée dans `verifications-manuelles.md`.
+- **Pièges en cours** : séparateur de `rubrique` = « > » en base ; liste servie sans `points` (cache Vercel d'avant le déploiement) → vue Notions seule ; cartes de test : fixture `data/relecture/entiers/139.json` ; `getByRole('navigation', { name: 'Notions' })` → `exact: true` ; `deploy-prod.test.ts` dépasse parfois 5 s en CI (relancer le job).
+- **Worktree / branche** : `../ubumaths-wt-automaths` gardé tant que David teste par `https://serveur.tail99357e.ts.net` (serveur 5176, Serve 443 et 8443) ; puis arrêter le serveur, `tailscale serve --https=443 off` et `--https=8443 off`, `git worktree remove` + `git branch -d feat/automaths-programme`.
 
 ### 2026-11-18 — recherche
 
@@ -141,3 +141,7 @@ Lecture des questions sous un point : **A** — les questions rattachées au poi
 - David valide les quatre choix de la réalisation (« Questions de « … » », « Programme » en premier, ancien lien `?notion=` → Notions, repli si les rattachées sont hors niveau).
 - Revue traitée : identifiant de chapitre jamais vide ni en double (partie devant, puis numéro ; test rouge puis vert). Les autres points sont dits dans la PR.
 - Lien de test tailnet : `https://serveur.tail99357e.ts.net/automaths?niveau=5` (Serve 443 → 5176, 8443 → 54321 ; le 10000 → 5175 est à une autre session, pas de `serve reset`).
+
+### 2026-11-19 — PR 3b mergée (#2866)
+
+- CI : conflit avec `main` (`json` → `Response.json` dans l'API) résolu par merge ; `deploy-prod.test.ts` en dépassement de délai (sans rapport), job relancé, vert. Mergée. Vérification manuelle notée.
