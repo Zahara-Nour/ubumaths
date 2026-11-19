@@ -1,6 +1,6 @@
 """Écrit les 8 modèles du lot 4 du CM1 (décimaux) dans scripts/questions/cm1-4/.
 
-Phase 0 du 2026-11-01 (§ 12 du journal `docs/wip/questions-cm1-progress.md`), validée par David
+Phase 0 du 2026-11-01 (§ 12 du journal `docs/archive/wip/questions-cm1-progress.md`), validée par David
 (« go », § 12 bis) : 031, écriture à virgule exigée (motif `a:number` : 325/100 et 3 + 25/100
 refusés) ; 156, un seul modèle « colorier » ; 157 et 032, modèles CM1 propres (10 intervalles) ;
 160, toute réponse strictement entre les bornes est juste (règle `range`).

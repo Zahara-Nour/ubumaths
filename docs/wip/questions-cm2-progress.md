@@ -10,8 +10,8 @@ _Mis à jour le 2026-11-19, phase 0 du lot 15 proposée._
 
 - **État** : lots 0 à 14b publiés (lot 14b : 6 modèles, § 22.4). Restent les lots 15 à 19 du § 14 (15 sans 109,
   18 sans 087 ni 094 : § 21.1 ; 19 réduit à CM2-102 : § 19.4).
-- **Prochaine action** : écrire le lot 15 (§ 23) une fois tranché.
-- **En attente de David** : les 4 questions du § 23 (niveaux, « 1 chance sur 3 », 114 affiché, lot de 5).
+- **Prochaine action** : écrire le lot 15 (§ 23.1 : décisions prises).
+- **En attente de David** : rien.
 - **Pièges en cours** : `Doc-inchangée:` dans un COMMIT ; sujet de commit en minuscule, corps ≤ 100 caractères par ligne.
   `migration:horodatage` = heure réelle UTC ; une autre migration en attente → stop avant `db:migrate` (worktree remis
   sur `origin/main` d'abord). `db:migrate` depuis le worktree : `supabase/.temp` copié. `create-questions` /
@@ -1738,3 +1738,10 @@ tout ? ») ; simplifier, c'est la fraction égale, qui n'est pas au programme de
 un arbre à compléter n'existe pas en ` ```probtree ` (à inscrire dans `outils-manquants.md` si tu le veux).
 
 (d) Un seul lot de **5 modèles** ? Reco : **oui**.
+
+### 23.1 Lot 15 : décisions (David, 2026-11-19)
+
+Recommandations suivies (« je valide ») : (a) niveaux 3 et 4 (événements : 110, 114), 3 et 4 (probabilité simple :
+111, 112), 3 (Expériences aléatoires : 113) ; (b) 111 : « 1 chance sur 3 » pour « 2 chances sur 6 » refusé, avec un
+message (« compte toutes les issues ») ; (c) 114 : arbre ou tableau donné, l'élève compte (rien à inscrire dans
+`outils-manquants.md`) ; (d) un seul lot de 5 modèles.

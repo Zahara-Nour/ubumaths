@@ -1,6 +1,6 @@
 """Écrit les 4 modèles du lot 3c du CM1 (partages) dans scripts/questions/cm1-3c/.
 
-Phase 0 du 2026-11-01 (§ 11 du journal `docs/wip/questions-cm1-progress.md`), suivie par David
+Phase 0 du 2026-11-01 (§ 11 du journal `docs/archive/wip/questions-cm1-progress.md`), suivie par David
 (« je te suis ») : sous-domaine neuf « Partage » (Fractions / Apprivoiser) ; parts coloriées
 d'affilée, éparpillées dans une variation de plus quand le tirage se fait sans outil neuf ;
 « 1 + 3/4 » refusé (`requiredForm: 'fraction'`), entier + fraction est le point 147.

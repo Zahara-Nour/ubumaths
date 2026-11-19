@@ -1,7 +1,7 @@
 """Écrit les 4 modèles du lot 8d du CM1 (figures à compléter) dans scripts/questions/cm1-8d/.
 
 Phase 0 validée par David le 2026-11-18 (§ 24 et 24 bis du journal
-`docs/wip/questions-cm1-progress.md`, « je suis tes recos ») : 4 modèles en case « figure »
+`docs/archive/wip/questions-cm1-progress.md`, « je suis tes recos ») : 4 modèles en case « figure »
 (` ```figure-a-completer `), tous sur quadrillage ; 107, 108 en CM1 seul (le CM2-097 ajoute l'axe
 en diagonale) ; 167, 168 en CM1 et CM2 (jumeaux CM2-154, 155) ; 107 écrit pour le CM1 (pas de CM1
 ajouté au modèle CE2 `49b8dc0b`).

@@ -3,7 +3,7 @@ réécrits, sans modèle neuf, qui passent du CM1 au CM2 et reçoivent le tag de
 24 autres modèles du lot (niveaux, tags, nœuds, statut, sans contenu) sont dans la migration
 suivante, `20261028100100_questions_cm1_rangement_tags.sql`, écrite à la main.
 
-Phase 0 validée par David (2026-10-28, § 5 du journal `docs/wip/questions-cm1-progress.md`) :
+Phase 0 validée par David (2026-10-28, § 5 du journal `docs/archive/wip/questions-cm1-progress.md`) :
 
 - `edc5d7d4` (Trouver la moitié, CM2-037) : impairs de 1 à 15 (aujourd'hui 1 à 29) ;
 - `322f3479` (Forme décimale d'une fraction, CM2-039) : liste du point (1/10, 1/100, 1/1 000, 1/2,
@@ -193,7 +193,7 @@ ENTETE = """-- =================================================================
 -- Nœuds inchangés. Les 24 autres modèles du lot (niveaux, tags, nœuds, statut) sont dans la
 -- migration suivante (20261028100100_questions_cm1_rangement_tags).
 -- ============================================================================
--- Phase 0 validée par David le 2026-10-28 (journal docs/wip/questions-cm1-progress.md § 5).
+-- Phase 0 validée par David le 2026-10-28 (journal docs/archive/wip/questions-cm1-progress.md § 5).
 -- Fichier GÉNÉRÉ par docs/wip/questions/lot-corrections-cm1.py — ne pas éditer à la main.
 --
 -- Les modèles n'existent qu'en production : en base locale (vide), la migration ne touche aucun

@@ -1,7 +1,7 @@
 """Écrit les 8 modèles du lot 6 ter du CM1 (algèbre) dans scripts/questions/cm1-6ter/.
 
 Phase 0 validée par David le 2026-11-16 (§ 18 et 18 bis du journal
-`docs/wip/questions-cm1-progress.md`, « je te suis » après mes cinq recommandations) : un lot de
+`docs/archive/wip/questions-cm1-progress.md`, « je te suis » après mes cinq recommandations) : un lot de
 8 modèles (CM1-062 à 066) ; schéma en barres de 6t-3 dans l'énoncé ET dans le corrigé ; « formuler
 la règle » en case « choix » (6t-6, 6t-8) ; niveau 1 dans chaque nœud, sans renuméroter personne ;
 065 rangé sous « suites de motifs », le nœud de son point.

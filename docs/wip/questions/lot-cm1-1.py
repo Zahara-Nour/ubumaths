@@ -1,7 +1,7 @@
 """Écrit les 9 modèles du lot 1 du CM1 (calcul mental) dans scripts/questions/cm1-1/.
 
 Phase 0 validée par David le 2026-10-28 (« je suis tes recos », § 7 et § 7 bis du journal
-`docs/wip/questions-cm1-progress.md`). Plages : bornes `cycle3.json`, CM1 (tables : termes et
+`docs/archive/wip/questions-cm1-progress.md`). Plages : bornes `cycle3.json`, CM1 (tables : termes et
 facteurs de 2 à 10, 0 et 1 laissés de côté ; + / − 8, 9, 18, 19, 28, 29, 38, 39 à un nombre de 2
 ou 3 chiffres ; × 5 avec n < 200, sans 5 × 20, 5 × 100, 5 × 25 ; × 8 jusqu'à n = 199 ; relations
 entre 1/4, 1/2, 1, 1/10, 1/100 ; 1/10 = 0,1 et 1/100 = 0,01 seulement). Un point par modèle ;

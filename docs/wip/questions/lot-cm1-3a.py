@@ -1,6 +1,6 @@
 """Écrit les 10 modèles du lot 3a du CM1 (fractions) dans scripts/questions/cm1-3a/.
 
-Phase 0 du 2026-10-30 (§ 9 du journal `docs/wip/questions-cm1-progress.md`), suivie par David
+Phase 0 du 2026-10-30 (§ 9 du journal `docs/archive/wip/questions-cm1-progress.md`), suivie par David
 (« je te suis ») : CM1-147 en deux cases, sous-notion « Repérage » neuve, découpage 3a / 3b / 3c.
 Bornes : `cycle3.json`, CM1 (dénominateurs au plus 20, fractions éventuellement supérieures à 1 ;
 fraction d'une quantité UNITAIRE, résultat éventuellement décimal ; soustraction de même

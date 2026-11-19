@@ -2,7 +2,7 @@
 scripts/questions/cm1-9c/.
 
 Phase 0 validée par David le 2026-11-19 (§ 26 et 26 bis du journal
-`docs/wip/questions-cm1-progress.md`) : CM1-097 (segment de longueur donnée) et CM1-104
+`docs/archive/wip/questions-cm1-progress.md`) : CM1-097 (segment de longueur donnée) et CM1-104
 (rectangle, carré, triangle rectangle, cercle de rayon donné) ; jumeaux CM2-087 et CM2-094 :
 niveaux CM1 et CM2 pour les quatre modèles.
 

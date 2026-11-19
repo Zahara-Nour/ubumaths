@@ -1,7 +1,7 @@
 """Lot 0 (corrections) du CM1, rangement : migration 20261028100100_questions_cm1_rangement_tags + fixture du test.
 
 Lit l'instantané `etat-prod-2026-10-28/` (releve-prod-cm1.ts) et applique les décisions de David du
-2026-10-28 (journal `docs/wip/questions-cm1-progress.md` § 5) sur les 24 modèles du lot dont le
+2026-10-28 (journal `docs/archive/wip/questions-cm1-progress.md` § 5) sur les 24 modèles du lot dont le
 contenu ne change pas (les 2 réécrits, edc5d7d4 et 322f3479, sont dans la migration de contenu) :
   - 12 modèles du CM1 relèvent d'un point du CM2 : niveaux [CM1] → [CM2], tag du point posé ; les
     3 égalités à trous (CM2-065) passent sur le nœud de leur point (R2) ;
@@ -180,7 +180,7 @@ w(f"""-- =======================================================================
 -- contenu ne change pas ici (les 2 modèles réécrits sont dans 20261028100000_questions_cm1_contenu
 -- et ne figurent pas dans celle-ci) : `updated_at` est PRÉSERVÉ.
 -- ============================================================================
--- Décisions de David le 2026-10-28 (journal docs/wip/questions-cm1-progress.md § 5). Fichier GÉNÉRÉ
+-- Décisions de David le 2026-10-28 (journal docs/archive/wip/questions-cm1-progress.md § 5). Fichier GÉNÉRÉ
 -- par docs/wip/questions/lot-rangement-cm1.py (relevé de la prod du 2026-10-28) — ne pas éditer à
 -- la main.
 --
