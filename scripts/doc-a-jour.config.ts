@@ -42,7 +42,10 @@ export const COVERAGE_CONFIG: CoverageConfig = {
 		'scripts/with-db-lock.sh',
 		'scripts/vercel-ignore-build.sh',
 		'scripts/releve-web-vitals.ts',
-		'scripts/check-production-health.ts'
+		'scripts/check-production-health.ts',
+		'scripts/garde-dev-depot-principal.sh',
+		'scripts/surveillance-machine.sh',
+		'scripts/surveillance-machine-installer.sh'
 	],
 	excluded: [
 		'**/__tests__/**',
