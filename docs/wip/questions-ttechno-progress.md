@@ -5,17 +5,15 @@ Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) · bornes 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, lot 6 écrit (PR de fichiers ouverte)._
+_Mis à jour le 2026-11-19, après #2862._
 
 - **État** : lots 0 à 5a publiés ; lot 5b : L9 publiée, L7 et L8 en brouillon (relus, prêts) ; **lot 6 (fonction
-  inverse, 5 modèles I1–I5) écrit** (§ 45), PR des fichiers. Restent les lots 7 et 8 (§ 33).
-- **Prochaine action** : merge de la PR du lot 6, puis David lance `create-questions --dir
-scripts/questions/ttechno-6-inverse --publier` ; migration nœud + tag (045, 086 sur « définition et courbe »
-  96c8b0bd ; 049, 087 sur « variations et extremums » 2e77d4d9). Dès que #2839 est en prod : publier L7 et L8.
-- **En attente de David** : rien (le `deploy:prod` qui livre #2839 débloquera L7 et L8).
+  inverse, 5 modèles I1–I5) écrit et mergé** (§ 45, #2862). Restent les lots 7 et 8 (§ 33).
+- **Prochaine action** : David crée les 5 brouillons en prod depuis le worktree (`create-questions --dir scripts/questions/ttechno-6-inverse --publier`) ; puis migration nœud + tag (045, 086 sur « définition et courbe » 96c8b0bd ; 049, 087 sur « variations et extremums » 2e77d4d9). Dès que #2839 est en prod : publier L7 et L8.
+- **En attente de David** : la création des 5 brouillons du lot 6 en prod ; le `deploy:prod` de #2839 (L7, L8).
 - **Pièges en cours** : un point TTECHNO par modèle (trigger) ; tag = nœud DU POINT ; `publier-lot.ts`,
   `create-questions --publier` visent la prod : David les lance (`!`) ; L7 et L8 après le `deploy:prod` de #2839.
-- **Worktree / branche** : `ubumaths-wt-questions-ttechno`, `feat/questions-ttechno-lot6`.
+- **Worktree / branche** : `ubumaths-wt-questions-ttechno`, `feat/questions-ttechno-lot6-rangement` (ids + migration).
 
 ## 1. Périmètre
 
@@ -1041,3 +1039,4 @@ publication.
 - Base locale : 5 brouillons ; aperçu admin (Chrome, `[::1]:5179`) : I3 tableau ]0 ; 3] ‖ − 0 + et minimum 13 ;
   I5 tableau → courbes, 4 courbes sans points d'extrémité (fenêtre x ⩾ 0, plus de `sur […]`) ; I5 placer
   (b = −3) 5 points → juste ; I2 courbe de −2 − 3/x. Deux brouillons de sonde locaux supprimés.
+- **#2862 mergée (2026-11-19)**, CI verte.
