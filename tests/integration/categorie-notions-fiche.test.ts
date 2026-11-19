@@ -324,6 +324,7 @@ describe('notions : une seule, sauf Révisions et Automatismes', () => {
 		const id = await worksheet('worksheet');
 		expect(await addNode(teacherClient, id, suitesId)).toBeNull();
 		expect(await addNode(teacherClient, id, derivationId, 1)).toBe('23514');
+		expect(await nodesInDb(id)).toEqual([suitesId]);
 	});
 
 	it.each(['review', 'automatisms'])('%s : plusieurs notions acceptées', async (category) => {
@@ -357,9 +358,74 @@ describe('notions : une seule, sauf Révisions et Automatismes', () => {
 		expect(await setCategory(id, 'technical_practice')).toBeNull();
 	});
 
+	it('évaluation à deux notions → fiche d’exercices sans catégorie : refusé (23514)', async () => {
+		const id = await worksheet('assessment');
+		await resetNodes(id, [suitesId, derivationId]);
+		const { error } = await teacherClient
+			.from('worksheets')
+			.update({ type: 'worksheet' } as never)
+			.eq('id', id)
+			.select('id');
+		expect(error?.code).toBe('23514');
+		const [row] = await sql('select type from public.worksheets where id = $1', [id]);
+		expect(row?.type).toBe('assessment');
+	});
+
+	it('différé : dans une transaction, 2 notions puis Révisions → accepté au commit', async () => {
+		const id = await worksheet('worksheet', 'applications');
+		const pg = await getPostgresClient();
+		await pg.query('begin');
+		try {
+			await pg.query(
+				`insert into public.worksheet_classifications (worksheet_id, node_id, position)
+				 values ($1, $2, 0), ($1, $3, 1)`,
+				[id, suitesId, derivationId]
+			);
+			await pg.query(`update public.worksheets set category = 'review' where id = $1`, [id]);
+			await pg.query('commit');
+		} catch (err) {
+			await pg.query('rollback');
+			throw err;
+		}
+		expect(await nodesInDb(id)).toHaveLength(2);
+		expect(await categoryInDb(id)).toBe('review');
+	});
+
+	it('différé : 2 notions sans la bonne catégorie → refusé au commit', async () => {
+		const id = await worksheet('worksheet', 'applications');
+		const pg = await getPostgresClient();
+		await pg.query('begin');
+		await pg.query(
+			`insert into public.worksheet_classifications (worksheet_id, node_id, position)
+			 values ($1, $2, 0), ($1, $3, 1)`,
+			[id, suitesId, derivationId]
+		);
+		await expect(pg.query('commit')).rejects.toMatchObject({ code: '23514' });
+		expect(await nodesInDb(id)).toEqual([]);
+	});
+
+	it('différé : notions ajoutées puis fiche supprimée dans la transaction → accepté', async () => {
+		const id = await worksheet('worksheet', 'applications');
+		const pg = await getPostgresClient();
+		await pg.query('begin');
+		try {
+			await pg.query(
+				`insert into public.worksheet_classifications (worksheet_id, node_id, position)
+				 values ($1, $2, 0), ($1, $3, 1)`,
+				[id, suitesId, derivationId]
+			);
+			await pg.query('delete from public.worksheets where id = $1', [id]);
+			await pg.query('commit');
+		} catch (err) {
+			await pg.query('rollback');
+			throw err;
+		}
+		expect(await sql('select 1 from public.worksheets where id = $1', [id])).toHaveLength(0);
+	});
+
 	it('refuse une branche : notion ou sous-notion seulement', async () => {
 		const id = await worksheet('worksheet', 'applications');
-		expect(await addNode(teacherClient, id, branchId)).not.toBeNull();
+		expect(await addNode(teacherClient, id, branchId)).toBe('23514');
 		expect(await nodesInDb(id)).toEqual([]);
 	});
 });
@@ -427,11 +493,13 @@ describe('qui lit les notions', () => {
 	});
 
 	it('anon ne lit pas la table', async () => {
-		const { data } = await visitor
+		const { data, error } = await visitor
 			.from('worksheet_classifications')
 			.select('node_id')
 			.eq('worksheet_id', worksheetId);
-		expect(data ?? []).toEqual([]);
+		// Aucun droit pour anon (privilèges par défaut sans anon) : refus franc
+		expect(error?.code).toBe('42501');
+		expect(data).toBeNull();
 	});
 });
 

@@ -36,8 +36,9 @@
 --     drop constraint if exists worksheets_category_type_check, drop column if exists category;
 --   puis recréer les deux fonctions avec le corps de
 --   supabase/migrations/20261019221542_retrait_worksheets_template_id.sql
---   (à partir de « create or replace function public.get_worksheet_by_share_token »),
---   REVOKE/GRANT compris.
+--   (à partir de « create or replace function public.get_worksheet_by_share_token »
+--   et jusqu'au dernier « grant execute » inclus — PAS le « drop column template_id »
+--   qui suit : la colonne n'existe plus).
 
 -- ============================================================================
 -- 1. worksheets.category
@@ -167,8 +168,12 @@ begin
 		v_worksheet_id := new.worksheet_id;
 	end if;
 
+	-- FOR UPDATE : deux transactions qui ajoutent chacune une notion à une fiche
+	-- vide compteraient chacune 1 ; le verrou sur la ligne de la fiche les met
+	-- en file (la seconde compte 2).
 	select w.type, w.category into v_type, v_category
-	from public.worksheets w where w.id = v_worksheet_id;
+	from public.worksheets w where w.id = v_worksheet_id
+	for update;
 	-- Fiche supprimée dans la même transaction : rien à vérifier.
 	if not found then
 		return null;
