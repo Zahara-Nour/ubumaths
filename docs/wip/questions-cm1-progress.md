@@ -2211,3 +2211,5 @@ reste en D ; niveaux **CM1 et CM2** et tag des deux points (109/098, 110/099, 11
   changé, aucun nœud créé.
 - Test `questions-cm1-lot8f-rangement-tags.test.ts` : 20/20 vert ; corps neutralisé (`select 1;`) : 9 échecs,
   7 sautés. `types:cliquet` tenu. Seule migration en attente (`migration list --linked`).
+- `security-auditor` : aucun finding bloquant (diff avec le 8e limité aux données ; état « avant » remesuré au
+  MCP). Non bloquant, déjà connu : les tags (pas le contenu) des brouillons sont lisibles par tout compte connecté.
