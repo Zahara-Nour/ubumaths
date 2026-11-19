@@ -6,15 +6,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, après #2905 (lot 15 mergé)._
+_Mis à jour le 2026-11-19, après #2907 (lot 15 rangé en prod)._
 
-- **État** : lots 0 à 14b publiés. Lot 15 (probabilités, 110 à 114) mergé (#2905), pas encore en prod. Les 5 brouillons
-  sont en base LOCALE. Restent ensuite les lots 16 à 19 du § 14.
-- **Prochaine action** : David lance `create-questions --publier` sur `scripts/questions/cm2-15` (prod), puis nœud + tag
-  par migration et page à cocher, comme aux lots précédents ; puis lot 16.
-- **En attente de David** : (1) le `--publier` du lot 15 ; (2) le 14b en prod affiche `**Brumeval**` (gras d'une cellule
-  sans trou, § 23.2, ligne 46 d'`outils-manquants.md`) : corriger le rendu des tableaux (recommandé) ou le contenu du
-  14b par migration ?
+- **État** : lots 0 à 14b publiés. Lot 15 (probabilités, 110 à 114) : 5 brouillons en prod, rangés et tagués (#2907,
+  `db:migrate` fait, MCP vérifié). Page à cocher publiée : https://claude.ai/artifact/FcxbrRRwWXPKeit927pogK
+  (`verdicts` vide). Restent ensuite les lots 16 à 19 du § 14.
+- **Prochaine action** : David relit la page ; compter les verdicts (`ArtifactData list verdicts`) ; `publier-lot` en
+  simulation, David lance `--publier` ; MCP. Puis lot 16.
+- **En attente de David** : la relecture du lot 15. Chantier voisin ouvert : `gras-cellule-tableau` (phase 0 validée,
+  répare le `**Brumeval**` du 14b en prod).
 - **Pièges en cours** : `Doc-inchangée:` dans un COMMIT ; sujet de commit en minuscule, corps ≤ 100 caractères par ligne.
   `migration:horodatage` = heure réelle UTC ; une autre migration en attente → stop avant `db:migrate` (worktree remis
   sur `origin/main` d'abord). `db:migrate` depuis le worktree : `supabase/.temp` copié. `create-questions` /
@@ -22,8 +22,8 @@ _Mis à jour le 2026-11-19, après #2905 (lot 15 mergé)._
   d'essai sur 5186. `de` + `{{if}}` ne s'élide pas. ` ```probtree ` impose des nombres sur ses branches,
   ` ```tableau-croise ` refuse le texte (§ 23.2). Aucun message par réponse fausse (`feedback.incorrect` jamais affiché).
   Index du dépôt principal partagé : `git commit -- <fichier>`.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, encore sur `feat/questions-cm2-lot15` (mergée) : nouvelle
-  branche du lot suivant depuis `origin/main`.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, détaché sur `origin/main` : nouvelle branche du lot
+  suivant depuis `origin/main`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -1776,3 +1776,21 @@ message (« compte toutes les issues ») ; (c) 114 : arbre ou tableau donné, l'
 - **Même défaut en prod, lot 14b** : CM2 « Problèmes avec un tableau ou des barres » V2 (tableau des distances, sans
   trou) affiche `**Brumeval**`, etc. Les lots CE1-7, CE2-7c et CM1-7 ne l'ont pas (leurs tableaux ont des trous, rendu
   par `tableCellInlineNodes`, qui lit le gras). Question posée à David.
+
+### 23.3 Lot 15 : prod, rangement, page à cocher (2026-11-19)
+
+- #2905 (fichiers) : CI verte, mergée. David lance `create-questions --dir scripts/questions/cm2-15 --publier` (depuis le
+  dépôt principal : ids écrits dans les fichiers de `main`, déplacés sur la branche du rangement, `main` restauré). MCP :
+  5 brouillons [CM2], niveaux 3, 3, 4, 3, 4, sans nœud ni tag, `updated_at` = création (`c8ea1f9a`, `07fdaf1b`,
+  `0f60db1a`, `400f5c43`, `bf378626`).
+- Migration `20261119191121_questions_cm2_lot15_rangement_tags.sql`, dérivée de celle du lot 14b par substitution
+  (110 et 114 sur « événements », 111 et 112 sur « probabilité simple », 113 sur la notion « Expériences aléatoires »).
+  Test `questions-cm2-lot15-rangement-tags` : 9 verts ; corps remplacé par `select 1;` → 3 rouges (4 sautés) ; fichier
+  restauré (`cmp`).
+- `security-auditor` : aucun finding bloquant. #2907 : CI verte, `check:migrations` vert, mergée. Worktree remis sur
+  `origin/main`, `migration list --linked` → seule la nôtre en attente ; `db:migrate`. MCP : 5 brouillons rangés
+  (« événements » ×2, « probabilité simple » ×2, notion « Expériences aléatoires »), un tag chacun (110 à 114),
+  `updated_at` = création.
+- `garde-niveaux-tags` : aucun niveau manquant. Page à cocher (5 fiches, base prod, aucune alerte) :
+  https://claude.ai/artifact/FcxbrRRwWXPKeit927pogK ; `verdicts` vide au départ. Rendu à 390 px (Playwright, fichier
+  local) : pas de débordement, 0 erreur.

@@ -37,20 +37,30 @@
 	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import type { StudentWorksheetView, WorksheetType } from '#lib/types/worksheets.ts';
 	import TextSizeSelect from '#lib/components/worksheets/TextSizeSelect.svelte';
+	import EasyReadingPdfCheckbox from '#lib/components/worksheets/EasyReadingPdfCheckbox.svelte';
 	import type { TextSize } from '#lib/typst/text-size.ts';
 
 	interface Props {
 		worksheet: StudentWorksheetView;
 		/** Taille du texte enregistrée pour l'élève (accessibilité) */
 		textSize?: TextSize;
+		/** Lecture facilitée enregistrée pour l'élève (PDF en Luciole) */
+		easyReading?: boolean;
 	}
 
-	let { worksheet, textSize: savedTextSize = 'normal' }: Props = $props();
+	let {
+		worksheet,
+		textSize: savedTextSize = 'normal',
+		easyReading: savedEasyReading = false
+	}: Props = $props();
 
 	// L'élève peut la changer (dérivé réassignable : le choix l'emporte jusqu'au
 	// prochain chargement) ; enregistrée pour toutes ses fiches
 	let textSize = $derived<TextSize>(savedTextSize);
 	let isSavingTextSize = $state(false);
+	// Même principe pour la lecture facilitée
+	let easyReading = $derived(savedEasyReading);
+	let isSavingEasyReading = $state(false);
 
 	let readOnly = $derived(worksheet.read_only === true);
 
@@ -85,7 +95,7 @@
 
 		const kind = ending === 'none' ? 'worksheet' : ending;
 		const result = await generateAndDownloadPdf(
-			() => generateStudentWorksheetTypst(worksheet, ending, { textSize }),
+			() => generateStudentWorksheetTypst(worksheet, ending, { textSize, easyReading }),
 			worksheetPdfFileName(worksheet.title, kind)
 		);
 
@@ -117,6 +127,31 @@
 			toaster.error("La taille du texte n'a pas pu être enregistrée");
 		} finally {
 			isSavingTextSize = false;
+		}
+	}
+
+	/** Allume ou éteint la lecture facilitée de toutes les fiches de l'élève */
+	async function handleEasyReadingChange(checked: boolean) {
+		const previous = easyReading;
+		easyReading = checked;
+		isSavingEasyReading = true;
+		try {
+			const response = await fetch('/api/worksheets/print-settings', {
+				method: 'PUT',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ easyReading: checked })
+			});
+			if (!response.ok) throw new Error(`HTTP ${response.status}`);
+			toaster.success(
+				checked
+					? 'Lecture facilitée enregistrée pour toutes tes fiches'
+					: 'Lecture facilitée retirée de toutes tes fiches'
+			);
+		} catch {
+			easyReading = previous;
+			toaster.error("La lecture facilitée n'a pas pu être enregistrée");
+		} finally {
+			isSavingEasyReading = false;
 		}
 	}
 
@@ -237,6 +272,12 @@
 					value={textSize}
 					onchange={handleTextSizeChange}
 					disabled={isSavingTextSize}
+				/>
+
+				<EasyReadingPdfCheckbox
+					checked={easyReading}
+					onchange={handleEasyReadingChange}
+					disabled={isSavingEasyReading}
 				/>
 
 				<!-- PDF Download Button -->

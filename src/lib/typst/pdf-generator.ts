@@ -35,6 +35,7 @@ import {
 import { fetchExternalImages, urlToVirtualPath } from '#lib/typst/image-loader.ts';
 import { createLogger } from '#lib/utils/logger.ts';
 import { hasCorrectionFonts } from '#lib/typst/correction-fonts.ts';
+import { hasEasyReading } from '#lib/typst/easy-reading.ts';
 import { compileTypstDocument } from '#lib/typst/compiler/correction-fonts-compiler.ts';
 
 const logger = createLogger('pdf-generator');
@@ -133,8 +134,9 @@ export async function generatePdfFromTypst(
 				? await fetchExternalImages(externalImageUrls, { timeout: imageFetchTimeout })
 				: new Map<string, Uint8Array>();
 
-		// Corrigé : compilateur dédié (Shantell Sans, Chiphre Math), avec repli
-		if (hasCorrectionFonts(typstContent)) {
+		// Corrigé (Shantell Sans, Chiphre Math) ou lecture facilitée (Luciole) :
+		// compilateur dédié, avec repli
+		if (hasCorrectionFonts(typstContent) || hasEasyReading(typstContent)) {
 			// Repli dans la police standard : par la file du service, comme les autres PDF
 			const result = await compileTypstDocument(typstContent, {
 				images: imageData,

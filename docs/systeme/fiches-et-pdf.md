@@ -77,6 +77,7 @@ policies → [base-de-donnees.md](base-de-donnees.md) § Fiches, colonnes →
 | `src/lib/typst/templates/default-templates.ts`                                    | 13 gabarits intégrés (ids `DEFAULT_TEMPLATE_IDS`), formes du style « Fiche élève » (`STUDENT_STYLE_FORMS`, `STUDENT_STYLE_COMMON`, et `STUDENT_LANDSCAPE_STYLE_COMMON` pour sa version paysage), `renderTemplate`.                                                                                                                                                                                                                                                                                                                                                 |
 | `src/lib/typst/templates/styles.ts`                                               | Styles (`BUILT_IN_STYLES`, `BUILT_IN_STYLE_OPTIONS`, `DEFAULT_STYLE_ID`, `isBuiltInStyle`), style retenu (`styleIdOf`) et `resolveTemplate` : le gabarit d'une forme dans le style de la fiche.                                                                                                                                                                                                                                                                                                                                                                    |
 | `src/lib/typst/text-size.ts`                                                      | **Taille du texte** (accessibilité) : `TEXT_SIZES` (`normal`, `large`, `x_large`), `TEXT_SIZE_OPTIONS` (menu), `textSizeOf` (inconnue → normale), `withTextSize` (gabarit transformé, voir « Taille du texte »).                                                                                                                                                                                                                                                                                                                                                   |
+| `src/lib/typst/easy-reading.ts`                                                   | **Lecture facilitée** (accessibilité, élèves dys) : `EASY_READING_FONT_FILES` (Luciole, Luciole Math), `EASY_READING_RULES`, `withEasyReading`, `hasEasyReading`, `withoutEasyReading` (voir « Lecture facilitée »).                                                                                                                                                                                                                                                                                                                                               |
 | `src/lib/typst/labels.ts`                                                         | Habillage traduit : `documentLabels(locale)`, `labelPlaceholders(locale)`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | `src/lib/typst/worksheet-palette.ts`                                              | Charte commune prof / élève : `BADGE_FILL`, `SECTION_COLOR`, `exerciseBadge`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | `src/lib/typst/image-loader.ts`                                                   | Le WASM ne lit pas d'URL : `fetchExternalImages`, `urlToVirtualPath` (→ `/virtual/images/…`, posé par `mapShadow`), conversion **WebP → PNG** par canvas. **Image introuvable** (2026-10-17) : cadre « Image indisponible » à sa place, au format de son chemin virtuel (`placeholderUrlFor` → `static/images/pdf/image-indisponible.{png,jpg,gif,svg}`, Typst décode d'après l'extension) — le PDF sort quand même ; avant, une seule image manquante faisait échouer tout le PDF (« failed to load file »). Test : `typst/__tests__/image-indisponible.test.ts`. |
@@ -100,7 +101,7 @@ Le Markdown → Typst lui-même vit dans ubumark : `src/lib/ubumark/generators/t
 | `src/lib/server/worksheets/worksheet-classification.ts` | Catégorie, notions, titre (ADR 0041), client de l'appelant : `loadWorksheetClassifications` (notions nommées, ordre d'impression, sous la RLS de la fiche) ; `prepareClassification` (règle du nombre de notions, nœud = notion ou sous-notion, titre composé relu des noms en base ; refus = message 400, rien d'écrit) ; `applyClassification` (notions en trop retirées, PUIS fiche mise à jour, PUIS notions écrites : l'ordre qui passe la garde différée de la base ; chaque écriture relue). |
 | `src/lib/server/worksheets/citations.ts`                | `fetchWorksheetCitations` : où la fiche est citée (cahier de texte, chapitres).                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | `src/lib/server/worksheets/worksheet-styles.ts`         | Styles d'une fiche (lot 3b), client du prof : `listWorksheetStyles` (menu « Style »), `loadStyleTemplate` (fiche d'un style du prof) ; gabarit et style liés (D10) : `insertTemplateWithStyle`, `syncTemplateStyle`, `countWorksheetsUsingTemplate`, `deleteTemplateWithStyle`.                                                                                                                                                                                                                     |
-| `src/lib/server/worksheets/print-settings.ts`           | Taille du texte d'un élève (`student_print_settings`), client de l'appelant : `loadTextSize`, `loadTextSizes` (par paquets de 200 ; lecture en échec → normale, jamais une erreur), `saveTextSize` (relit la ligne écrite : zéro ligne = refus de la RLS → faux).                                                                                                                                                                                                                                   |
+| `src/lib/server/worksheets/print-settings.ts`           | Réglages d'impression d'un élève (`student_print_settings` : taille du texte, lecture facilitée), client de l'appelant : `loadPrintSettings`, `loadPrintSettingsMany` (par paquets de 200 ; lecture en échec → par défaut, jamais une erreur), `savePrintSettings` (un réglage absent n'est pas réécrit ; relit la ligne écrite : zéro ligne = refus de la RLS → faux) ; `loadTextSize`, `loadTextSizes`, `saveTextSize` passent par elles.                                                         |
 | `src/lib/server/validation/worksheets.ts`               | Zod des routes : `createWorksheetSchema`, `worksheetConfigSchema`, `createWorksheetExerciseSchema`, `reorderExercisesSchema`, `updateCorrectionSettingsSchema`…                                                                                                                                                                                                                                                                                                                                     |
 | `src/lib/types/worksheets.ts`                           | Types de lignes et JSONB (`WorksheetConfig`, `VariantConfig`, `ResolvedExercise`, `InstanceData`), gardes `asWorksheetConfig`, `asInstanceData`, `toWorksheetRow`, langue `worksheetLocale`, `localizedText`.                                                                                                                                                                                                                                                                                       |
 
@@ -117,7 +118,7 @@ Le Markdown → Typst lui-même vit dans ubumark : `src/lib/ubumark/generators/t
   404 pour tout refus.
 - API : `src/routes/api/worksheets/` (CRUD, `sections/`, `exercises/`, `duplicate/`,
   `exercise-number/[number]/`, `assignments/`, `templates/`, `pdf/`,
-  `print-settings/` : taille du texte d'un élève, GET / PUT),
+  `print-settings/` : taille du texte et lecture facilitée d'un élève, GET / PUT),
   `src/routes/api/student/worksheets/` (vue résolue, signalements),
   `src/routes/api/teacher/chapters/[id]/worksheets/` (fiche dans un chapitre).
 
@@ -439,6 +440,29 @@ Où la taille est choisie :
   (« taille du texte »), `worksheets/__tests__/copies-par-eleve.test.ts`,
   `server/worksheets/__tests__/print-settings.test.ts`, route `api/worksheets/print-settings/__tests__/`.
 
+**Lecture facilitée** (accessibilité, élèves dys ; chantier `lecture-facilitee`, phase 0 validée par
+David le 2026-11-19 ; `src/lib/typst/easy-reading.ts`) : le document **entier** en Luciole (bandeau,
+titres, consignes, réponses, corrigé), les formules en Luciole Math (police de maths OpenType que
+Typst lit telle quelle) ; lettres + 0,02 em, mots + 0,08 em, interligne 0,9 em, comme les écarts de
+l'écran (formules non espacées) ; texte aligné à gauche, jamais justifié (David, 2026-11-19). Option `easyReading` du générateur (`WorksheetGeneratorOptions`,
+`GenerateTypstParams`, `StudentPdfOptions`, `CopyRecipient.easy_reading`) : `withEasyReading` pose
+les règles (encadrées de `// <lecture-facilitee>`) sur le **gabarit**, avant d'y placer les
+exercices (un `#set` d'exercice ne peut pas les attirer dans son bloc), en tête et après le dernier
+`#set text(…)` ou `#set par(…)` de premier niveau, gabarit d'un prof compris ; les corrections ne
+prennent alors pas les polices du Corrigé. Se cumule avec la taille du texte. Les cinq fichiers
+(`static/fonts/luciole/`, ≈ 810 ko) ne sont chargés que par un compilateur à part
+(`getEasyReadingCompiler`), avec le même repli que le Corrigé. Dans un lot de copies, chaque copie
+garde le réglage de son élève (bloc `#[ … ]` par copie). Où le réglage est choisi : comme la taille
+du texte — **réglage de l'élève** (`student_print_settings.easy_reading`, case « Lecture
+facilitée » à côté du menu « Taille du texte » sur sa fiche ; sa copie nominative ; l'aperçu « vue
+élève » du prof, qui l'enregistre pour lui), **au coup par coup** dans `PdfPreview` et l'aperçu en
+vue prof. Séparé de l'interrupteur « Lecture facilitée » de l'écran (ce navigateur ; D11).
+Composant `EasyReadingPdfCheckbox.svelte`. Tests : `typst/__tests__/easy-reading.test.ts`,
+`generators/__tests__/worksheet-generator.test.ts` (« lecture facilitée »),
+`compiler/__tests__/correction-fonts-compiler.test.ts`, `copies-par-eleve.test.ts`,
+`student/worksheets/__tests__/lecture-facilitee-pdf.svelte.test.ts`,
+`tests/integration/lecture-facilitee-fiches-eleve.test.ts`.
+
 **L'en-tête selon le type** (ADR 0030, lot 1) : le générateur appelle `worksheetHeader` et pose les
 conditions des gabarits : `show_title` (toujours), `show_identity` (bloc nom / classe / date),
 `show_student_name`, `show_class`, `show_date` (ligne **à remplir**, plus la date du jour),
@@ -667,10 +691,10 @@ Les trois fichiers (`static/fonts/chiphre-math-typst/`, 870 ko) ne sont chargés
 compilateur à part (`src/lib/typst/compiler/correction-fonts-compiler.ts`, construit au premier
 Corrigé, partagé avec `/dev/polices`) : la fiche et les Réponses ne les téléchargent pas.
 `createFontsCompiler(fichiers)` construit un tel compilateur pour d'autres polices (essai Luciole).
-`compileTypstDocument` choisit le compilateur d'après le document et porte le **repli** : la
-compilation avec ces polices lève une erreur → le même corrigé recompilé sans elles,
-`console.error` du message Typst et `toaster.warning` (« Corrigé imprimé dans la police standard :
-… »). `generateWorksheetTypst({ correctionFonts: false })` et
+`compileTypstDocument` choisit le compilateur d'après le document (`fontSetOf` : `standard`,
+`correction`, `easy-reading`) et porte le **repli** : la compilation avec ces polices lève une
+erreur → le même document recompilé sans elles, `console.error` du message Typst et
+`toaster.warning` (« PDF imprimé dans la police standard : … »). `generateWorksheetTypst({ correctionFonts: false })` et
 `generateStudentWorksheetTypst(…, { correctionFonts: false })` produisent ce corrigé sans polices.
 Glyphes absents de Chiphre Math (`≠`, `·`, lettres calligraphiques, `″`, lettres accentuées en
 mode math) et de Shantell Sans (grec en texte) : Typst prend une autre police pour ce glyphe, sans

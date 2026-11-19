@@ -1698,10 +1698,15 @@ export function validateStudentReportIdParam(params: Record<string, string>) {
  * PUT /api/worksheets/print-settings : la taille du texte d'un élève. L'élève
  * omet `studentId` (c'est le sien) ; le prof et l'admin le donnent.
  */
-export const printSettingsUpdateSchema = z.object({
-	studentId: uuidSchema.optional(),
-	textSize: z.enum(TEXT_SIZES)
-});
+export const printSettingsUpdateSchema = z
+	.object({
+		studentId: uuidSchema.optional(),
+		textSize: z.enum(TEXT_SIZES).optional(),
+		easyReading: z.boolean().optional()
+	})
+	.refine((body) => body.textSize !== undefined || body.easyReading !== undefined, {
+		message: 'Aucun réglage à enregistrer'
+	});
 
 /** GET /api/worksheets/print-settings?studentId= */
 export const printSettingsQuerySchema = z.object({

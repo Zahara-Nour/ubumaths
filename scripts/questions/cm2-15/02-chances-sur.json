@@ -1,4 +1,5 @@
 {
+	"id": "07fdaf1b-0faf-47ba-90a9-89fece48b2ac",
 	"title": "… chances sur …",
 	"description": "Écrire la probabilité d'un évènement sous la forme « a chances sur b » (a issues qui le réalisent, b issues en tout, sans simplifier) : dé, sac de boules, roue, jeu de 52 cartes",
 	"grades": ["CM2"],

@@ -16,7 +16,7 @@
 		"node": "22.x"
 	},
 	"scripts": {
-		"dev": "vite dev",
+		"dev": "bash scripts/garde-dev-depot-principal.sh && vite dev",
 		"build": "bash scripts/gros-process.sh 'Un pnpm build' vite build",
 		"analyze": "ANALYZE=1 pnpm build",
 		"preview": "vite preview",
@@ -67,6 +67,8 @@
 		"maintenance:off": "bash scripts/vercel-maintenance.sh off",
 		"maintenance:status": "bash scripts/vercel-maintenance.sh status",
 		"kill:servers": "bash scripts/kill-servers.sh",
+		"surveillance:installer": "bash scripts/surveillance-machine-installer.sh",
+		"surveillance:essai": "bash scripts/surveillance-machine.sh --essai",
 		"db:types": "pnpm supabase gen types typescript --project-id cnevnzsvixxpnurautls --schema public > src/lib/types/database.ts && tsx scripts/generate-db-doc.ts",
 		"db:doc": "tsx scripts/generate-db-doc.ts",
 		"check:barrels": "tsx scripts/check-barrel-exports.ts",

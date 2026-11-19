@@ -5,23 +5,22 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, relevé prod (§ 19)._
+_Mis à jour le 2026-11-19, lot 12 (ex-lot 11) remis à jour (§ 19)._
 
-- **État** : lots 0 à 10 publiés ; robot à produire (CE1-080) publié dans `scripts/questions/ce1-11/` (#2687, #2689).
-  Prod : **95 points sur 107** à modèle publié. Lot 11 (§ 18, validé) écrit, **PR #2234 ouverte depuis le 2026-11-02,
-  jamais mergée** ; son dossier `ce1-11/` entre en collision avec celui du robot.
-- **Prochaine action** : reprendre #2234 dans un worktree : mise à jour depuis `main`, dossier renommé `ce1-12/`,
-  niveaux relevés, publication du lot entier (05 et `a7dfe502` compris, § 19). Puis un lot 001, 002, 003
-  (`centaines:` livré, #2420) + 074 et la fin de 072 (règle, équerre, compas, triangle, cercle : outils livrés).
+- **État** : lots 0 à 10 et robot CE1-080 (`ce1-11/`) publiés. Prod : 95 points sur 107. Lot 11 de la PR #2234 devenu
+  **lot 12** : `lot-ce1-12.py` → `scripts/questions/ce1-12/` (01 à 05), format sans `theme` (ADR 0035), simulé 5/5.
+- **Prochaine action** : CI + merge de #2234 → David : `create-questions --publier` sur `ce1-12/` → migration nœud +
+  tag (5 neufs) et niveau 2 de `a7dfe502` → page à cocher (`ce1-12/` et `cp-figure/`) → publication des deux dossiers.
+  Puis un lot 001, 002, 003 + 074 et la fin de 072 (outils livrés).
 - **En attente de David** : essai tablette des cases « figure » (`verifications-manuelles.md`, ne bloque plus) ;
   futur chantier « `\textcolor` hors formule » (53 fichiers de lots).
 - **Pièges en cours** : jamais de variable `e` ni `i` ; **mots en couleur dans le texte = `colt()`
-  (`$\textcolor{…}{\text{…}}$`), jamais `\textcolor` nu** ; `{{if:}}` à condition contenant `{{eval:}}` non résolu →
-  relire `--apercu` ; **niveaux : relever la catégorie juste avant la publication** ; `publier-lot` = tout le dossier
-  ou rien ; horodatage `pnpm migration:horodatage`, `check:migrations --pr <n>` ; `db:migrate` : dry-run d'abord ;
-  commitlint : sujet sans majuscule, corps ≤ 100 colonnes ; shards navigateur : « Browser connection was closed » =
-  relancer ; `create-questions --mettre-a-jour` refusé au mode auto.
-- **Worktree / branche** : aucun. `!` de David : toujours préfixer `cd /Users/david/Coding/js/ubumaths &&`.
+  (`$\textcolor{…}{\text{…}}$`), jamais `\textcolor` nu** ; points invisibles (`visible=faux`) jamais nommés dans le
+  corrigé ; **niveaux : relever la catégorie juste avant la publication** ; `publier-lot` = tout le dossier ou rien ;
+  horodatage `pnpm migration:horodatage`, `check:migrations --pr <n>` ; `db:migrate` : dry-run d'abord ; commitlint :
+  sujet sans majuscule, corps ≤ 100 colonnes ; shards navigateur : « Browser connection was closed » = relancer ;
+  `create-questions --mettre-a-jour` refusé au mode auto ; worktree neuf : `svelte-kit sync` avant `tsx`.
+- **Worktree / branche** : `../ubumaths-wt-questions-ce1`, `content/questions-ce1-lot11`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-26)
 
@@ -899,6 +898,16 @@ Questions à David :
 3. **Niveaux** : premiers libres (Sens 6 ; Reconnaître et décrire 9, 10 ; Propriétés 6 ; Carrés et rectangles 2 ;
    Droites 2 pour `a7dfe502`). Recommandation : oui, relevés de nouveau avant la publication.
 
+Réponse de David (« je suis tes recos », 2026-11-02) : les trois recommandations — publication en deux fois
+(`ce1-11/` : 01 à 04 ; `ce1-11-figure/` : 05 et `a7dfe502`, après l'essai des cases « figure »), pavé à base carrée au
+067, premiers niveaux libres.
+
+- 2026-11-02 : lot 11 écrit (`lot-ce1-11.py`, `scripts/questions/ce1-11/` et `ce1-11-figure/`) : 5 modèles, 80 specs ;
+  `create-questions` simulé 5/5 ; `question:specs` 7 200 tirages verts, aucune accolade résiduelle ; `sonde-cubes`
+  600 blocs et `sonde-figures` 451 blocs, 0 problème ; 5 brouillons en base locale, joués dans l'aperçu (rectangle coté,
+  cube coté, carré oblique terminé : « juste »). **Piège trouvé à l'aperçu** : le corrigé du 05 nommait $A$, $B$, $C$,
+  points invisibles à l'écran → corrigé sans lettres (« carreaux en largeur, en hauteur »).
+
 ## 19. Relevé du 2026-11-19 et suite (David, « ok » aux recos)
 
 Relevé MCP : **12 points sans modèle publié sur 107** — 023, 066, 067, 071 (lot 11, PR #2234 non mergée) ; 073
@@ -912,3 +921,9 @@ Décisions :
 2. **Plus de chantier `centaines:`** : l'outil est livré (#2420). Lot de contenu 001, 002, 003, avec 074 et la fin de
    072 (triangle, triangle rectangle, cercle : `controles-figure` les juge ; règle graduée, ADR 0036).
 3. Les 4 points D restent hors appli : CE1 couvert une fois ces deux lots publiés (103 points faisables).
+4. **`cp-figure/` publié en entier avec le lot** (David, 2026-11-19) : `a7dfe502` (CE1-073 et CP-058), `010d81a5`
+   (CP-059), `1cf6eaa9` (CP-060), tous trois déjà rangés et tagués.
+
+- 2026-11-19 : #2234 mise à jour depuis `main` ; `lot-ce1-11.py` de `main` (robot) gardé, celui de la PR renommé
+  `lot-ce1-12.py`, un seul dossier `ce1-12/` ; contenu identique à la PR (vérifié fichier par fichier, sans les trois
+  clés retirées) ; `create-questions` simulé : 5 à créer, 80 specs.

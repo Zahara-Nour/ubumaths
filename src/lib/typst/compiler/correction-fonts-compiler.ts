@@ -13,6 +13,10 @@
  * avec ces polices échoue → le même corrigé, recompilé dans la police standard,
  * l'erreur Typst étant rendue à l'appelant (avertissement) et écrite en console.
  *
+ * Lecture facilitée (`easy-reading.ts`) : même principe, un troisième
+ * compilateur qui charge Luciole et Luciole Math (≈ 810 ko), construit au
+ * premier PDF en lecture facilitée ; repli dans la police habituelle.
+ *
  * Sert aussi les pages /dev/polices et /dev/polices/luciole (PDF de démonstration).
  *
  * @module typst/compiler/correction-fonts-compiler
@@ -24,11 +28,18 @@ import {
 	hasCorrectionFonts,
 	withoutCorrectionFonts
 } from '../correction-fonts';
+import { EASY_READING_FONT_FILES, hasEasyReading, withoutEasyReading } from '../easy-reading';
 import { COMPILER_WASM_URL, RENDERER_WASM_URL, getTypstCompiler } from './typst-compiler';
 
 // ============================================================================
 // TYPES
 // ============================================================================
+
+/**
+ * Les polices d'un document : celles de Typst (compilateur partagé), celles du
+ * Corrigé, ou celles de la lecture facilitée
+ */
+export type FontSet = 'standard' | 'correction' | 'easy-reading';
 
 /** Fournisseur de configuration d'un compilateur typst.ts (polices, paquets…) */
 type SnippetProvider = { key: string };
@@ -61,7 +72,7 @@ export interface FallbackResult<T> {
 	data: T;
 	/** Le Typst réellement compilé (sans les règles de police après un repli) */
 	typst: string;
-	/** Erreur Typst de la compilation avec les polices du Corrigé ; `null` sans repli */
+	/** Erreur Typst de la compilation avec les polices du document ; `null` sans repli */
 	fallbackError: string | null;
 }
 
@@ -76,6 +87,7 @@ export interface CompiledDocument {
 // ============================================================================
 
 let fontsCompiler: Promise<TypstSnippetInstance> | null = null;
+let easyReadingCompiler: Promise<TypstSnippetInstance> | null = null;
 
 // ============================================================================
 // FONCTIONS
@@ -88,6 +100,13 @@ export function getCorrectionFontsCompiler(): Promise<DocumentCompiler> {
 	// refaire la tentative pour chaque élève
 	fontsCompiler ??= createFontsCompiler(CORRECTION_FONT_FILES);
 	return fontsCompiler;
+}
+
+/** Le compilateur de la lecture facilitée, créé au premier appel et gardé */
+export function getEasyReadingCompiler(): Promise<DocumentCompiler> {
+	// Comme pour le Corrigé : un échec reste en mémoire, un lot passe au repli
+	easyReadingCompiler ??= createFontsCompiler(EASY_READING_FONT_FILES);
+	return easyReadingCompiler;
 }
 
 /**
@@ -123,33 +142,47 @@ function errorMessage(error: unknown): string {
 	return typeof error === 'string' ? error : JSON.stringify(error);
 }
 
+/** Les polices que demande un document (la lecture facilitée l'emporte) */
+export function fontSetOf(typst: string): FontSet {
+	if (hasEasyReading(typst)) return 'easy-reading';
+	return hasCorrectionFonts(typst) ? 'correction' : 'standard';
+}
+
+/** Le document sans ses règles de police (repli) */
+function withoutFontRules(typst: string): string {
+	return withoutCorrectionFonts(withoutEasyReading(typst));
+}
+
 /**
- * Compile un document ; s'il porte les polices du Corrigé et que la compilation
- * échoue, recompile le même document sans elles. Une erreur de la compilation
- * sans polices remonte : jamais de PDF vide.
+ * Compile un document ; s'il porte des polices à part (Corrigé, lecture
+ * facilitée) et que la compilation échoue, recompile le même document sans
+ * elles. Une erreur de la compilation sans polices remonte : jamais de PDF vide.
  *
- * @param compile - compile `typst`, avec le compilateur du Corrigé si `withFonts`
+ * @param compile - compile `typst` avec le compilateur de ces polices
  */
 export async function compileWithFontFallback<T>(
 	typst: string,
-	compile: (typst: string, withFonts: boolean) => Promise<T>
+	compile: (typst: string, fonts: FontSet) => Promise<T>
 ): Promise<FallbackResult<T>> {
-	if (!hasCorrectionFonts(typst)) {
-		return { data: await compile(typst, false), typst, fallbackError: null };
+	const fonts = fontSetOf(typst);
+	if (fonts === 'standard') {
+		return { data: await compile(typst, 'standard'), typst, fallbackError: null };
 	}
 	try {
-		return { data: await compile(typst, true), typst, fallbackError: null };
+		return { data: await compile(typst, fonts), typst, fallbackError: null };
 	} catch (error) {
 		const message = errorMessage(error);
-		console.error('[Corrigé] Compilation en Shantell Sans / Chiphre Math impossible :', message);
-		const plain = withoutCorrectionFonts(typst);
-		return { data: await compile(plain, false), typst: plain, fallbackError: message };
+		const label =
+			fonts === 'easy-reading' ? 'Luciole / Luciole Math' : 'Shantell Sans / Chiphre Math';
+		console.error(`[PDF] Compilation en ${label} impossible :`, message);
+		const plain = withoutFontRules(typst);
+		return { data: await compile(plain, 'standard'), typst: plain, fallbackError: message };
 	}
 }
 
 /**
  * Compile un document Typst en PDF (et en SVG si demandé), avec ses images,
- * dans le bon compilateur et avec le repli du Corrigé.
+ * dans le bon compilateur et avec le repli (Corrigé, lecture facilitée).
  *
  * @param options.images - images du document, par adresse d'origine (`fetchExternalImages`)
  * @param options.svg - rendre aussi le SVG (aperçu)
@@ -159,10 +192,13 @@ export async function compileTypstDocument(
 	typst: string,
 	options: { images?: Map<string, Uint8Array>; svg?: boolean; compiler?: DocumentCompiler } = {}
 ): Promise<FallbackResult<CompiledDocument>> {
-	return compileWithFontFallback(typst, async (source, withFonts) => {
-		const compiler: DocumentCompiler = withFonts
-			? await getCorrectionFontsCompiler()
-			: (options.compiler ?? (await getTypstCompiler()));
+	return compileWithFontFallback(typst, async (source, fonts) => {
+		const compiler: DocumentCompiler =
+			fonts === 'correction'
+				? await getCorrectionFontsCompiler()
+				: fonts === 'easy-reading'
+					? await getEasyReadingCompiler()
+					: (options.compiler ?? (await getTypstCompiler()));
 		for (const [url, data] of options.images ?? []) {
 			await compiler.mapShadow(urlToVirtualPath(url), data);
 		}
@@ -179,5 +215,5 @@ export async function compileTypstDocument(
 
 /** L'avertissement montré au professeur ou à l'élève après un repli */
 export function fallbackWarning(fallbackError: string): string {
-	return `Corrigé imprimé dans la police standard : ${fallbackError.slice(0, 200)}`;
+	return `PDF imprimé dans la police standard : ${fallbackError.slice(0, 200)}`;
 }
