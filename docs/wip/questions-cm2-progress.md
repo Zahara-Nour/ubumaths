@@ -1776,3 +1776,14 @@ message (« compte toutes les issues ») ; (c) 114 : arbre ou tableau donné, l'
 - **Même défaut en prod, lot 14b** : CM2 « Problèmes avec un tableau ou des barres » V2 (tableau des distances, sans
   trou) affiche `**Brumeval**`, etc. Les lots CE1-7, CE2-7c et CM1-7 ne l'ont pas (leurs tableaux ont des trous, rendu
   par `tableCellInlineNodes`, qui lit le gras). Question posée à David.
+
+### 23.3 Lot 15 : prod, rangement, page à cocher (2026-11-19)
+
+- #2905 (fichiers) : CI verte, mergée. David lance `create-questions --dir scripts/questions/cm2-15 --publier` (depuis le
+  dépôt principal : ids écrits dans les fichiers de `main`, déplacés sur la branche du rangement, `main` restauré). MCP :
+  5 brouillons [CM2], niveaux 3, 3, 4, 3, 4, sans nœud ni tag, `updated_at` = création (`c8ea1f9a`, `07fdaf1b`,
+  `0f60db1a`, `400f5c43`, `bf378626`).
+- Migration `20261119191121_questions_cm2_lot15_rangement_tags.sql`, dérivée de celle du lot 14b par substitution
+  (110 et 114 sur « événements », 111 et 112 sur « probabilité simple », 113 sur la notion « Expériences aléatoires »).
+  Test `questions-cm2-lot15-rangement-tags` : 9 verts ; corps remplacé par `select 1;` → 3 rouges (4 sautés) ; fichier
+  restauré (`cmp`).
