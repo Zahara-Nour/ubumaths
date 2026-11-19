@@ -5,19 +5,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, PR de rangement du lot 9ab ouverte (§ 26 quater)._
+_Mis à jour le 2026-11-19, après #2888 (rangement 9ab joué en prod), page à cocher publiée._
 
-- **État** : lots 0 à 8f publiés, **158 points du CM1 sur 171**. Lot 9ab (8 modèles) créé en brouillon en prod ;
-  migration de rangement `20261119145503` écrite, testée (20/20, rouge prouvé), PR en cours ; 9c (097, 104 : 4
-  constructions) reste à écrire.
-- **Prochaine action** : `security-auditor`, CI, merge, `db:migrate` depuis le worktree (seule migration en attente),
-  vérification MCP ; puis page à cocher du lot 9ab, verdicts de David, `publier-lot`.
-- **En attente de David** : rien.
+- **État** : lots 0 à 8f publiés, **158 points du CM1 sur 171**. Lot 9ab (8 brouillons) rangé et tagué en prod
+  (#2888, migration `20261119145503` jouée) ; page à cocher publiée
+  (https://claude.ai/artifact/T3W2rVufrWynVffhQfQeyk) ; 9c (097, 104 : 4 constructions) reste à écrire.
+- **Prochaine action** : lire les verdicts (`ArtifactData list verdicts`, compter 8) ; `publier-lot` en simulation,
+  David lance `--publier` et `garde-niveaux-tags` ; recompte MCP ; puis lot 9c.
+- **En attente de David** : les verdicts de la page à cocher ; 08 sur « quatrième proportionnelle » plutôt que
+  sur la notion ? (facultatif).
 - **Pièges en cours** : `--mettre-a-jour` ne touche JAMAIS un publié : le lancer AVANT `publier-lot` ;
   commitlint refuse le type `content` et un corps > 100 caractères par ligne ; David lance `publier-lot
 --publier` et `garde-niveaux-tags` ; ranger : réponses = positions AFFICHÉES (`ranger-attendus.ts`) ;
   `pnpm -s` refusé (pnpm 12).
-- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, branche `feat/questions-cm1-lot9ab-rangement`.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, branche `feat/questions-cm1-lot9ab-rangement` (mergée).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -2325,3 +2326,13 @@ figure) ; 130 V3 (÷ une fois) = une seule utilisation de la linéarité ; jumea
   (CM1-123 à 130, CM2-109), aucun niveau ni statut changé, aucun nœud créé.
 - Test `questions-cm1-lot9ab-rangement-tags.test.ts` : 20/20 vert ; corps neutralisé (`select 1;`) : 9 échecs,
   7 sautés. `types:cliquet` tenu. Seule migration en attente (`migration list --linked`).
+- `security-auditor` : aucun finding bloquant (diff avec le 8f limité aux données ; état « avant » vérifié au MCP).
+- #2888 mergée (CI verte du premier coup). `db:migrate` : « à jour » (migration déjà poussée, sans doute par une
+  autre session) ; vérifié au MCP : `20261119145503` jouée, 8 brouillons sur leur nœud, 9 tags, `updated_at`
+  préservé.
+
+### 26 quinquies. Lot 9ab — page à cocher (2026-11-19)
+
+- Page `page-a-cocher.ts --dir scripts/questions/cm1-9ab` : 8 fiches (19 exemples) ; 1 alerte « bloc non dessiné »
+  (` ```ranger ` : 04), vu juste dans l'aperçu local (§ 26 ter). Publiée :
+  https://claude.ai/artifact/T3W2rVufrWynVffhQfQeyk (`verdicts`, capacité `db`), base vide à la publication.
