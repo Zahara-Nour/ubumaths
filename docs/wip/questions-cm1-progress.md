@@ -2139,3 +2139,5 @@ reste en D ; niveaux **CM1 et CM2** et tag des deux points (109/098, 110/099, 11
   l'appli. Reco : ne colorer que le mot-clé (« ses faces latérales sont des $\textcolor{…}{\text{triangles}}$
   qui se rejoignent au sommet »), à corriger dans `lot-cm1-8e.py` puis re-créer (mise à jour par id).
   Publiée : https://claude.ai/artifact/J4kWSo45dx1hDoQZh1UXV8 (`verdicts`, capacité `db`, vide).
+- Verdicts (2026-11-19) : 5 « OK » sur 5, aucun commentaire. La correction du modèle 04 (débordement à 390 px)
+  reste à trancher.
