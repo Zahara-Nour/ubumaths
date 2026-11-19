@@ -2,7 +2,7 @@
 	import { page } from '$app/state';
 	import { goto, replaceState } from '$app/navigation';
 	import { onMount } from 'svelte';
-	import { buildSeriesItems } from '#lib/questions/series-items.ts';
+	import { buildSeriesItems, seriesSeedSequence } from '#lib/questions/series-items.ts';
 	import { isCourseCard, seriesFormExcludesCourseCards } from '#lib/questions/course-card.ts';
 	import { questionTemplatesCache } from '#lib/stores/questionTemplates.svelte.ts';
 	import { toaster } from '#lib/stores/toaster.svelte.ts';
@@ -47,6 +47,11 @@
 	let error = $state<string | null>(null);
 	let assignmentId = $state<string | null>(null);
 	let assessmentTitle = $state<string | null>(null);
+	/**
+	 * « Mêmes nombres pour tous » : graine de série lue dans le lien. Chaque tirage
+	 * (Recommencer compris) repart d'elle : les mêmes questions pour tous.
+	 */
+	let seriesSeed = $state<number | undefined>(undefined);
 
 	// Évaluation notée (chantier 5, ADR 0015) : le SERVEUR tire, corrige et note.
 	// La page ne reçoit que des questions publiques ; la correction arrive à l'envoi.
@@ -115,6 +120,7 @@
 				return;
 			}
 
+			seriesSeed = launch.seed;
 			startSeries(launch.mode, launch.lines, launch.timeLimit);
 			isLoading = false;
 		} catch (err) {
@@ -248,7 +254,8 @@
 
 	/**
 	 * Questions d'une série, chacune avec sa durée et son modèle
-	 * (`buildSeriesItems`) ; modèles lus dans le cache de l'onglet.
+	 * (`buildSeriesItems`) ; modèles lus dans le cache de l'onglet. Avec une graine
+	 * de série, les graines des questions en sont tirées, à neuf à chaque appel.
 	 */
 	function generateSeriesItems(
 		series: SeriesItem[],
@@ -262,12 +269,16 @@
 				'Aucun modèle disponible. Veuillez vous reconnecter à Internet et recharger la page.'
 			);
 		}
-		return buildSeriesItems(series, templates, options);
+		return buildSeriesItems(series, templates, {
+			...options,
+			nextSeed: seriesSeed === undefined ? undefined : seriesSeedSequence(seriesSeed)
+		});
 	}
 
 	/**
 	 * « En classe », « Contrôle blanc » : Recommencer tire de nouvelles questions
-	 * (Contrôle blanc et évaluation : sans carte de cours)
+	 * (Contrôle blanc et évaluation : sans carte de cours) ; avec une graine de
+	 * série, les mêmes questions
 	 */
 	function handleSeriesRestart() {
 		if (!testSession) return;
@@ -290,7 +301,7 @@
 
 	/**
 	 * « Flash-cards », « Saisie » : Recommencer tire de nouvelles questions (cartes
-	 * de cours comprises)
+	 * de cours comprises) ; avec une graine de série, les mêmes questions
 	 */
 	function handleFlashRestart() {
 		if (!testSession) return;
@@ -551,6 +562,7 @@
 					items={seriesItems}
 					isLoggedIn={!!data.user}
 					onComplete={handleTestComplete}
+					sameQuestions={seriesSeed !== undefined}
 					onRestart={handleSeriesRestart}
 					onBack={handleBack}
 					assessmentTitle={assignmentId ? assessmentTitle || undefined : undefined}
@@ -584,6 +596,7 @@
 					instances={testSession.instances}
 					isLoggedIn={!!data.user}
 					onComplete={handleTestComplete}
+					sameQuestions={seriesSeed !== undefined}
 					onRestart={handleFlashRestart}
 					onBack={handleBackToCart}
 					traceRecorder={seriesTraceRecorder}
@@ -596,6 +609,7 @@
 					instances={testSession.instances}
 					isLoggedIn={!!data.user}
 					onComplete={handleTestComplete}
+					sameQuestions={seriesSeed !== undefined}
 					onRestart={handleFlashRestart}
 					onBack={handleBackToCart}
 					traceRecorder={seriesTraceRecorder}

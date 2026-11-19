@@ -65,6 +65,8 @@
 		loginNote?: boolean;
 		onComplete: (result: TestResult) => void;
 		onRestart: () => void;
+		/** « Mêmes nombres pour tous » : Recommencer redonne les mêmes questions */
+		sameQuestions?: boolean;
 		onBack: () => void;
 		inEvaluation?: boolean;
 		assessmentTitle?: string;
@@ -86,6 +88,7 @@
 		loginNote = true,
 		onComplete,
 		onRestart,
+		sameQuestions = false,
 		onBack,
 		assessmentTitle,
 		inEvaluation = false,
@@ -288,6 +291,7 @@
 		<TestResults
 			result={testResult}
 			{onRestart}
+			{sameQuestions}
 			onBackToCart={onBack}
 			{inEvaluation}
 			{buddyGain}

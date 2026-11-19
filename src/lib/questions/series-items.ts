@@ -16,6 +16,7 @@ import { excludeCourseCards as withoutCourseCards } from '#lib/questions/course-
 import type { GenerationResult, QuestionTemplate } from '#lib/questions/types.ts';
 import type { SeriesItem } from '#lib/validation/series.ts';
 import type { ClassroomItem } from '#lib/types/test.ts';
+import { createRandomSource } from '#lib/utils/random.ts';
 
 // ============================================================================
 // TYPES
@@ -47,6 +48,16 @@ export const MAX_QUESTION_SEED = 2 ** 31 - 1;
 /** Graine entière tirée au hasard, dans [0, MAX_QUESTION_SEED] */
 function randomSeed(): number {
 	return Math.floor(Math.random() * (MAX_QUESTION_SEED + 1));
+}
+
+/**
+ * « Mêmes nombres pour tous » : suite des graines de questions tirée de la
+ * graine de la série. Deux suites de même graine sont identiques ; chaque
+ * question (répétitions d'une ligne comprises) a sa propre graine.
+ */
+export function seriesSeedSequence(seriesSeed: number): () => number {
+	const random = createRandomSource(seriesSeed);
+	return () => Math.floor(random() * (MAX_QUESTION_SEED + 1));
 }
 
 /** Un tirage : le modèle et la graine d'une question, avec sa durée */

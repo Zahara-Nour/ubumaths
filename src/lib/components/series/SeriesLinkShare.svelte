@@ -5,6 +5,9 @@
 	  panier du destinataire ;
 	- une forme : le lien lance directement la série sous cette forme ; une Course
 	  aux nombres porte son temps limite (mêmes réglages que la fenêtre du panier).
+	- « Mêmes nombres pour tous » (avec une forme seulement, décochée par défaut) :
+	  le lien porte une graine, tirée quand on coche ; tous ceux qui l'ouvrent ont
+	  les mêmes questions. Décocher puis recocher tire une autre graine.
 
 	Utilisé par le panier et par la page « Séries » (Q46).
 
@@ -18,11 +21,13 @@
 	import { Button } from '#lib/components/ui/button/index.ts';
 	import { Input } from '#lib/components/ui/input/index.ts';
 	import { Label } from '#lib/components/ui/label/index.ts';
+	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
 	import MySelect from '#lib/components/MySelect.svelte';
 	import QrCodeButton from '#lib/components/qr/QrCodeButton.svelte';
 	import { fetchShortLinkPath } from '#lib/qr/short-link.ts';
 	import { Link } from '@lucide/svelte';
 	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import { MAX_QUESTION_SEED } from '#lib/questions/series-items.ts';
 	import { buildSeriesLink, type SeriesItem } from '#lib/validation/series.ts';
 	import {
 		COURSE_TIME_LIMIT_MAX_MINUTES,
@@ -58,6 +63,9 @@
 	const uid = $props.id();
 	let selectedForm = $state<string>(NO_FORM);
 	let courseMinutes = $state(String(DEFAULT_COURSE_MINUTES));
+	/** « Mêmes nombres pour tous » : la graine tirée quand la case a été cochée */
+	let sameNumbers = $state(false);
+	let seriesSeed = $state<number | undefined>(undefined);
 
 	let isCourse = $derived(selectedForm === 'course');
 	/** La cible du lien court du QR (chemin seul), ou la raison de son absence */
@@ -74,6 +82,16 @@
 		return TEST_MODES.includes(value);
 	}
 
+	/** Cocher tire une graine neuve ; décocher la retire */
+	function handleSameNumbersChange(checked: boolean) {
+		seriesSeed = checked ? Math.floor(Math.random() * (MAX_QUESTION_SEED + 1)) : undefined;
+	}
+
+	/** Graine du lien : seulement avec une forme et la case cochée */
+	function linkSeed(): number | undefined {
+		return sameNumbers ? seriesSeed : undefined;
+	}
+
 	/**
 	 * Lien à copier, ou message si le temps limite est hors bornes. Le QR code
 	 * le demande sans origine : il prend toujours celle du domaine canonique.
@@ -83,7 +101,7 @@
 			return { link: buildSeriesLink(origin, items) };
 		}
 		if (selectedForm !== 'course') {
-			return { link: buildSeriesLink(origin, items, { mode: selectedForm }) };
+			return { link: buildSeriesLink(origin, items, { mode: selectedForm, seed: linkSeed() }) };
 		}
 
 		const minutes = Number(courseMinutes);
@@ -97,7 +115,11 @@
 			};
 		}
 		return {
-			link: buildSeriesLink(origin, items, { mode: 'course', timeLimit: minutes * 60 })
+			link: buildSeriesLink(origin, items, {
+				mode: 'course',
+				timeLimit: minutes * 60,
+				seed: linkSeed()
+			})
 		};
 	}
 
@@ -137,6 +159,16 @@
 				min={COURSE_TIME_LIMIT_MIN_MINUTES}
 				max={COURSE_TIME_LIMIT_MAX_MINUTES}
 				class="h-9 w-24"
+			/>
+		</div>
+	{/if}
+
+	{#if selectedForm !== NO_FORM}
+		<div class="self-center">
+			<MyCheckbox
+				bind:checked={sameNumbers}
+				onchange={handleSameNumbersChange}
+				label="Mêmes nombres pour tous"
 			/>
 		</div>
 	{/if}

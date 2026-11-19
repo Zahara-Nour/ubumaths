@@ -55,6 +55,8 @@
 		loginNote?: boolean;
 		onComplete: (result: TestResult) => void;
 		onRestart: () => void;
+		/** « Mêmes nombres pour tous » : Recommencer redonne les mêmes questions */
+		sameQuestions?: boolean;
 		onBack: () => void;
 		traceRecorder?: TraceRecorder | null;
 		buddyGain?: BuddyGainView | null;
@@ -67,6 +69,7 @@
 		loginNote = true,
 		onComplete,
 		onRestart,
+		sameQuestions = false,
 		onBack,
 		traceRecorder = null,
 		buddyGain = null,
@@ -251,7 +254,9 @@
 					{/if}
 					<Button variant="outline" onclick={onRestart}>
 						<RefreshCw class="mr-2 h-4 w-4" aria-hidden="true" />
-						Recommencer avec de nouvelles questions
+						{sameQuestions
+							? 'Recommencer les mêmes questions'
+							: 'Recommencer avec de nouvelles questions'}
 					</Button>
 					<Button variant="ghost" onclick={onBack}>
 						<ArrowLeft class="mr-2 h-4 w-4" aria-hidden="true" />

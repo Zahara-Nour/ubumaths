@@ -3,6 +3,7 @@
  * une graine donne les mêmes questions à tous ceux qui l'ouvrent.
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { tick } from 'svelte';
 import { render } from 'vitest-browser-svelte';
 import { SERIES_SEED_PARAM, SERIES_LINK_PARAM, encodeSeriesParam } from '#lib/validation/series.ts';
 import { questionTemplatesCache } from '#lib/stores/questionTemplates.svelte.ts';
@@ -95,5 +96,69 @@ describe('« Mêmes nombres pour tous » : deux élèves ouvrent le même lien',
 		const b = await numbersShown(link());
 
 		expect(b).not.toEqual(a);
+	});
+});
+
+describe('« Mêmes nombres pour tous » : Recommencer', () => {
+	function button(main: HTMLElement, label: string): HTMLButtonElement | undefined {
+		return [...main.querySelectorAll<HTMLButtonElement>('button')].find(
+			(b) => b.getAttribute('aria-label') === label || b.textContent?.trim() === label
+		);
+	}
+
+	async function click(main: HTMLElement, label: string) {
+		await vi.waitFor(() => expect(button(main, label)).toBeDefined());
+		button(main, label)!.click();
+		await tick();
+	}
+
+	function shown(main: HTMLElement): string {
+		return main.textContent?.match(/Nombre tiré : (\d{6})/)?.[1] ?? '';
+	}
+
+	/** Flash-cards, une carte : la joue, puis clique le bouton de fin donné */
+	async function playThenRestart(query: Record<string, string>, restartLabel: string) {
+		url.current = new URL(`http://localhost/automaths/test?${new URLSearchParams(query)}`);
+		await seedTemplatesCache();
+		const main = document.body.appendChild(document.createElement('main'));
+		const screen = await render(Page, { target: main, props: { data: { user: null } } as never });
+		await vi.waitFor(() => expect(shown(main)).not.toBe(''));
+		const before = shown(main);
+
+		await click(main, 'Voir la correction');
+		await click(main, 'Réussi');
+		await click(main, restartLabel);
+		await vi.waitFor(() => expect(button(main, 'Voir la correction')).toBeDefined());
+		const after = shown(main);
+
+		screen.unmount();
+		main.remove();
+		return { before, after };
+	}
+
+	function flashLink(extra: Record<string, string> = {}): Record<string, string> {
+		return {
+			[SERIES_LINK_PARAM]: encodeSeriesParam([{ templateId: TEMPLATE_ID, quantity: 1, delay: 20 }]),
+			mode: 'flash',
+			...extra
+		};
+	}
+
+	it('avec une graine : « Recommencer les mêmes questions » redonne les mêmes nombres', async () => {
+		const { before, after } = await playThenRestart(
+			flashLink({ [SERIES_SEED_PARAM]: '123456' }),
+			'Recommencer les mêmes questions'
+		);
+
+		expect(after).toBe(before);
+	});
+
+	it('sans graine : « Recommencer avec de nouvelles questions » tire d’autres nombres', async () => {
+		const { before, after } = await playThenRestart(
+			flashLink(),
+			'Recommencer avec de nouvelles questions'
+		);
+
+		expect(after).not.toBe(before);
 	});
 });
