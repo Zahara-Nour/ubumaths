@@ -1848,3 +1848,10 @@ Puis un dernier lot 17 pour 095, 097, 102 (case « figure », ` ```patron `), et
 
 (d) 092, le trapèze : son parallélisme écrit sous la figure ($(AB) \parallel (CD)$), puisqu'il n'y a pas de code du
 parallélisme ; et « nom le plus précis » (un rectangle est aussi un trapèze : on attend « rectangle ») ? Reco : **oui**.
+
+### 24.1 Lot 16 : décisions (David, 2026-11-19)
+
+Recommandations suivies (« je te suis ») : (a) les jumeaux CM1 + CM2 couvrent 076, 077, 078 et les 13 points des lots
+17 à 19 ; (b) lot 16 élargi à **5 modèles** (081, 088 ×2, 092, 093), puis un **dernier lot 17** (095, 097, 102) ;
+(c) niveaux : mesure en degrés 2, propriétés 11 à 14 ; (d) trapèze : `(AB) // (CD)` écrit sous la figure, et le nom
+le plus précis attendu.
