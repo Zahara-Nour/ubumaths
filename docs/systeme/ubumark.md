@@ -1807,6 +1807,17 @@ Points à retenir :
   `~…~` comme un paragraphe (`customInlineMathToTypst`). Tests :
   `src/lib/ubumark/generators/__tests__/tilde-tableau-typst.test.ts`,
   `src/lib/components/markdown/__tests__/tilde-tableau.svelte.test.ts`.
+- **Marques dans une cellule sans trou** (écran, 2026-11-19) : `**gras**`, `*italique*` /
+  `_italique_` et `` `code` `` sont rendus comme dans un paragraphe (`tableCellMarkedInline`,
+  `table-cell-inline.ts`), seulement si la cellule se lit comme UN paragraphe de texte et de
+  formules portant au moins une marque. Sinon, rendu ordinaire ci-dessus : `- 3` ou `1. a` (lus
+  comme listes), lien, trou, mention restent du texte — aucune cellule n'affiche de lien ni de
+  champ, chat élève restreint compris. Deux gardes contre le parseur de paragraphe, plus large que
+  CommonMark : une marque qui s'ouvre ou se ferme sur une espace (`3 * 4 * 5`) et un `_` ou un `*`
+  dans un mot hors formule (`x_1`, `snake_case`, `a*b*c`, donc aussi `**un**deux`) laissent la
+  cellule telle quelle. Les cellules à trous
+  passent par `tableCellInlineNodes` (`FillBlanksInput`) ; le PDF n'est pas concerné. Tests :
+  `src/lib/components/markdown/__tests__/gras-cellule-tableau.svelte.test.ts`.
 - **Dans une liste**, un autre chemin : `parseContentWithCodeBlocks` et `textWithUnclosedBlocks`
   (`markdown-parser.ts`), avec `SPECIAL_BLOCK_KINDS` pour variation / probtree / trig / line.
   Les formules du bloc y sont restaurées (`restoreMathPlaceholders`) avant le parseur du bloc.
