@@ -6,14 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, après #2893._
+_Mis à jour le 2026-11-19, après #2895._
 
-- **État** : lots 0 à 14a publiés ; lot 14b (6 modèles, § 22) en fichiers sur `main` (#2893), pas encore en prod.
+- **État** : lots 0 à 14a publiés ; lot 14b (6 modèles, § 22) en brouillons rangés et tagués en prod (§ 22.3).
   Restent ensuite les lots 15 à 19 du § 14 (15 sans 109, 18 sans 087 ni 094 : § 21.1 ; 19 réduit à CM2-102 : § 19.4).
-- **Prochaine action** : David lance `create-questions --dir scripts/questions/cm2-14b --publier` (depuis le worktree) ;
-  puis ids commités, migration nœud + tag (courbes et repères ×3, diagrammes en barres, notion « Représenter des
-  données » ×2), page à cocher, publication.
-- **En attente de David** : la commande `create-questions` ci-dessus.
+- **Prochaine action** : relecture de David sur la page à cocher (https://claude.ai/artifact/VzSotRtECKkdN5SSpSUNMF),
+  compter les verdicts, puis `publier-lot --dir scripts/questions/cm2-14b` en simulation ; David lance `--publier`.
+- **En attente de David** : la relecture des 6 fiches.
 - **Pièges en cours** : `Doc-inchangée:` dans un COMMIT ; sujet de commit en minuscule, corps ≤ 100 caractères par ligne.
   `migration:horodatage` = heure réelle UTC ; une autre migration en attente → stop avant `db:migrate` (worktree remis
   sur `origin/main` d'abord). `db:migrate` depuis le worktree : `supabase/.temp` copié. `create-questions` /
@@ -21,8 +20,8 @@ _Mis à jour le 2026-11-19, après #2893._
   d'essai sur 5186. `de` + `{{if}}` ne s'élide pas. Contrôler les invariants à part (§ 21.3, 22.2 : il a trouvé un
   défaut que les specs ne voyaient pas). La page à cocher ne dessine pas ` ```circulaire ` (§ 21.4). Index du dépôt
   principal partagé : `git commit -- <fichier>`, et un `push` de `main` emporte les commits locaux des autres sessions.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, branche `feat/questions-cm2-lot14b` (mergée) : la migration
-  partira d'une branche neuve sur `origin/main`.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, détaché sur `origin/main` (#2895 mergée, branches locales
+  supprimées) ; la publication ne demande pas de branche.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -1674,3 +1673,20 @@ Recommandations suivies (« je te suis ») : (a) niveaux 4, 5, 6 (courbes et rep
   quatre villes (le détour par une ville), pas un tableau élèves × sports (déjà au CM1, `ae74fe73`) ; 108-6 V2, car et
   vélo ensemble contre à pied (une réponse) ; 108-6 V3, cuve d'eau et arrosoirs (la prévision de température est déjà
   au CM1, `f1f7b2d1`).
+
+### 22.3 Lot 14b : prod, rangement, page à cocher (2026-11-19)
+
+- #2893 (fichiers) : CI verte, mergée. David lance `create-questions --dir scripts/questions/cm2-14b --publier` (depuis le
+  worktree) : MCP, 6 brouillons [CM2], sans nœud ni tag (`4e196673`, `d88cabf0`, `cad4418d`, `76e184e8`, `dd7065d9`,
+  `837b6cfb`), ids commités.
+- Migration `20261119165705_questions_cm2_lot14b_rangement_tags.sql`, dérivée de celle du lot 14a par substitution
+  (deux modèles sur la notion « Représenter des données », CM2-108). Test `questions-cm2-lot14b-rangement-tags` :
+  9 verts ; corps remplacé par `select 1;` → 5 rouges ; fichier restauré (`cmp`). `security-auditor` : aucun finding
+  bloquant (non bloquant : la résolution par nom ne détecte pas un doublon de nœud ; aucun en prod).
+- #2895 : CI verte, `check:migrations` vert, mergée. Worktree remis sur `origin/main`, `migration list --linked` → seule
+  la nôtre en attente ; `db:migrate`. MCP : 6 brouillons rangés (« courbes et repères » ×3, « diagrammes en barres »,
+  notion « Représenter des données » ×2), un tag chacun (125, 159, 122, 121, 108 ×2), `updated_at` = création.
+- `garde-niveaux-tags` : aucun niveau manquant. Page à cocher (6 fiches, base prod) :
+  https://claude.ai/artifact/VzSotRtECKkdN5SSpSUNMF ; `verdicts` vide au départ. Les 2 diagrammes circulaires
+  (108-6) dessinés après coup par le script du lot 14a (`buildStatChartScene`), alerte retirée. Rendu à 390 px
+  (Playwright, fichier local) : pas de débordement, 0 erreur.
