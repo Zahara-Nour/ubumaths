@@ -77,7 +77,7 @@ describe('WorksheetHeader : lecture facilitée du PDF', () => {
 
 	it('éteinte par défaut ; le PDF sort sans Luciole', async () => {
 		vi.stubGlobal('fetch', vi.fn());
-		render(WorksheetHeader, { worksheet });
+		await render(WorksheetHeader, { worksheet });
 
 		await expect
 			.element(page.getByRole('checkbox', { name: 'Lecture facilitée' }))
@@ -89,7 +89,7 @@ describe('WorksheetHeader : lecture facilitée du PDF', () => {
 
 	it('réglage enregistré : case cochée, PDF en Luciole', async () => {
 		vi.stubGlobal('fetch', vi.fn());
-		render(WorksheetHeader, { worksheet, easyReading: true });
+		await render(WorksheetHeader, { worksheet, easyReading: true });
 
 		await expect.element(page.getByRole('checkbox', { name: 'Lecture facilitée' })).toBeChecked();
 		await page.getByRole('button', { name: /PDF/i }).click();
@@ -100,7 +100,7 @@ describe('WorksheetHeader : lecture facilitée du PDF', () => {
 	it('cocher la case : enregistrée pour l’élève, puis PDF en Luciole', async () => {
 		const fetchMock = vi.fn(async () => new Response(JSON.stringify({ easyReading: true })));
 		vi.stubGlobal('fetch', fetchMock);
-		render(WorksheetHeader, { worksheet });
+		await render(WorksheetHeader, { worksheet });
 
 		await page.getByRole('checkbox', { name: 'Lecture facilitée' }).click();
 		await vi.waitFor(() => expect(putBodies(fetchMock)).toEqual([{ easyReading: true }]));
@@ -113,7 +113,7 @@ describe('WorksheetHeader : lecture facilitée du PDF', () => {
 	it('enregistrement refusé : la case revient comme avant', async () => {
 		const fetchMock = vi.fn(async () => new Response('', { status: 403 }));
 		vi.stubGlobal('fetch', fetchMock);
-		render(WorksheetHeader, { worksheet });
+		await render(WorksheetHeader, { worksheet });
 
 		const checkbox = page.getByRole('checkbox', { name: 'Lecture facilitée' });
 		await checkbox.click();
