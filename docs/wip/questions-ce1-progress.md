@@ -5,16 +5,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, après #2234 ; PR #2913 ouverte._
+_Mis à jour le 2026-11-19, après #2913._
 
-- **État** : #2234 mergée ; 5 brouillons créés en prod (`ce1-12/`, ids : PR #2913). **PR #2913** (ids + migration
-  `20261119195540_questions_ce1_lot12_rangement_tags`, nœud + tag des 5) : test rouge sans (11), vert avec (19/19) ;
-  `security-auditor` : aucun finding bloquant ; CI à suivre. Niveau 2 de `a7dfe502` **abandonné** : aucune unicité de
-  niveau depuis l'ADR 0035.
-- **Prochaine action** : CI verte de #2913 → `pnpm check:migrations --pr 2913` → merge → `migration list --linked`
-  (deux autres migrations du jour : `cm1_08_noeud`, `cm2_lot15` ; une autre en attente → stop) → `db:migrate` →
-  vérif MCP → page à cocher `ce1-12/` + `cp-figure/` → David : `publier-lot --publier` sur les deux. Puis le lot 001,
-  002, 003 + 074 et fin de 072. Au merge : `git stash list` du dépôt principal, stash « ids du lot 12 » = copie.
+- **État** : #2234 et #2913 mergées (5 brouillons `ce1-12/` en prod ; migration
+  `20261119195540_questions_ce1_lot12_rangement_tags` sur `main`, **pas encore jouée en prod**). Niveau 2 de
+  `a7dfe502` abandonné (ADR 0035).
+- **Prochaine action** : `migration list --linked` ; `db:migrate` bloqué tant que
+  `20261119195149_questions_cp_d_rangement_tags` (#2911, chantier CP) attend → David tranche (la jouer avec, ou
+  attendre la session CP) → dry-run → `db:migrate` → vérif MCP → page à cocher `ce1-12/` + `cp-figure/` → David :
+  `publier-lot --publier` sur les deux. Puis le lot 001, 002, 003 + 074 et fin de 072. Stash « ids du lot 12 » du
+  dépôt principal = copie, à jeter.
 - **En attente de David** : essai tablette des cases « figure » (`verifications-manuelles.md`, ne bloque plus) ;
   futur chantier « `\textcolor` hors formule » (53 fichiers de lots).
 - **Pièges en cours** : jamais de variable `e` ni `i` ; **mots en couleur dans le texte = `colt()`
@@ -23,7 +23,8 @@ _Mis à jour le 2026-11-19, après #2234 ; PR #2913 ouverte._
   horodatage `pnpm migration:horodatage`, `check:migrations --pr <n>` ; `db:migrate` : dry-run d'abord ; commitlint :
   sujet sans majuscule, corps ≤ 100 colonnes ; shards navigateur : « Browser connection was closed » = relancer ;
   `create-questions --mettre-a-jour` refusé au mode auto ; worktree neuf : `svelte-kit sync` avant `tsx`.
-- **Worktree / branche** : `../ubumaths-wt-questions-ce1`, `chore/questions-ce1-lot12-rangement` (PR 2913).
+- **Worktree / branche** : `../ubumaths-wt-questions-ce1`, `chore/questions-ce1-lot12-rangement` (mergée ; à
+  recycler pour le lot suivant).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-26)
 
@@ -932,3 +933,5 @@ Décisions :
   clés retirées) ; `create-questions` simulé : 5 à créer, 80 specs.
 - 2026-11-19 : #2234 mergée ; `create-questions --publier` (David) : 5 brouillons ; PR #2913 (ids, rangement, tags),
   relevé `etat-prod-2026-11-19-ce1-12/`, générateur `lot-ce1-12-rangement.py`.
+- 2026-11-19 : #2913 mergée (CI verte, `check:migrations` OK) ; `db:migrate` suspendu : la migration du lot D du CP
+  (#2911) attend aussi en prod.
