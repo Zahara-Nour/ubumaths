@@ -1,4 +1,5 @@
 {
+	"id": "c8ea1f9a-f793-4b6b-9acd-e35e82c1227d",
 	"title": "Les issues qui réalisent l'évènement",
 	"description": "Cocher ou compter les issues qui réalisent un évènement : dé (pair, impair, multiple de 3, plus grand que N), jeu de 52 cartes (roi, cœur, figure, as rouge, carte rouge), boules numérotées (multiple de 3, 4 ou 5)",
 	"grades": ["CM2"],
