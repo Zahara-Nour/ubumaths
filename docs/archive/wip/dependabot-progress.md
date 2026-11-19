@@ -2,13 +2,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, après #2879._
+_Mis à jour le 2026-11-19 : chantier clos par David._
 
-- **État** : #2879 mergée (Brevo 3.0.4 → 6.2.0, `maxRetries: 0`, erreurs réduites au statut et au code) ; #2075 fermée. **Aucune PR Dependabot ouverte.** Rien de déployé (`deploy:prod` sur demande de David).
-- **Prochaine action** : demander à David s'il clôt le chantier (versement + archivage du journal) ou le garde ouvert pour les prochaines PR Dependabot.
-- **En attente de David** : clore ou garder ouvert.
-- **Pièges en cours** : Dependabot ne monte pas `.nvmrc` (à la main, vide le cache ESLint jusqu'au nocturne suivant) ; typst.ts ignoré exprès (`.github/dependabot.yml`) ; l'envoi de courriels touche des adresses réelles → tests sans envoi (`fetch` simulé) ; la garde SECURITY DEFINER de la CI peut rater au démarrage de Docker (relancer le job).
-- **Worktree / branche** : aucun (supprimés après #2879).
+- **État** : **clos.** #2879 mergée (Brevo 3.0.4 → 6.2.0), #2075 fermée, aucune PR Dependabot ouverte.
+- **Versement** : rien de neuf à verser. `.nvmrc` à la main et typst.ts ignoré sont déjà dans `docs/pratiques/environnement-de-dev.md` ; la raison de `maxRetries: 0` est en commentaire dans `src/lib/server/email/brevo.ts`.
+- **Prochaine action** : aucune. Prochaines PR Dependabot : nouveau chantier si une majeure demande du code.
 
 ---
 
