@@ -96,7 +96,8 @@ pas des notes.
 Une série est une liste de lignes `{ templateId, quantity, delay }` : tel **modèle**, tant de fois,
 tant de secondes ([ADR 0035](../adr/0035-une-serie-enregistre-des-modeles.md)). Elle est tirée **à
 neuf à chaque usage** : `drawSeriesQuestions` (`src/lib/questions/series-items.ts`) prend, pour
-chaque ligne et chaque répétition, le modèle de la ligne et une graine neuve. Un modèle retiré (plus
+chaque ligne et chaque répétition, le modèle de la ligne et une graine neuve (sauf lien « Mêmes
+nombres pour tous », ci-dessous). Un modèle retiré (plus
 publié) est sauté, et signalé au prof dans le panier et l'éditeur de série (« Modèle retiré ») ;
 chaque question porte la durée de **sa** ligne (`delay`, 20 s par défaut :
 `DEFAULT_QUESTION_DELAY_SECONDS`). Bornes de la composition : 1 à 50 modèles, 99 répétitions, 600 s
@@ -122,8 +123,16 @@ chantier `automaths-arbre`.
 
 Lancement (`resolveTestLaunch`) : `?assignment=<id>` → contrôle (forme et temps viennent du serveur,
 le `mode` de l'URL est ignoré) ; `?modeles=…` (ou un ancien `?categories=…`, signalé sans être relu) sans `mode` → le panier ;
-`?modeles=…&mode=…[&time=…]` → démarrage direct. `SeriesLinkShare` fabrique ces liens. Visiteur non connecté : la série se joue,
+`?modeles=…&mode=…[&time=…][&graine=…]` → démarrage direct. `SeriesLinkShare` fabrique ces liens. Visiteur non connecté : la série se joue,
 rien n'est enregistré.
+
+**« Mêmes nombres pour tous »** (chantier `memes-nombres`) : case de `SeriesLinkShare`, proposée avec une
+forme seulement, décochée par défaut. Cochée, elle tire une graine de série (`graine=<n>`,
+`SERIES_SEED_PARAM`), gardée par le lien court du QR ; décocher puis recocher en tire une autre. La page
+de test en tire la suite des graines des questions (`seriesSeedSequence`, `series-items.ts`) : tous
+ceux qui ouvrent le lien ont les mêmes questions, dans le même ordre, et « Recommencer » les redonne
+(libellé « Recommencer les mêmes questions », prop `sameQuestions`). Une graine abîmée est ignorée
+sans message (nombres au hasard). Un modèle modifié entre l'envoi et l'ouverture peut changer ses nombres.
 
 **Quitter** ([composants-ui.md § BackLink](../pratiques/composants-ui.md#backlink--bouton-retour-obligatoire)) : pendant la série, l'en-tête porte un lien « Quitter »
 (`BackLink kind="quit"`). Contrôle blanc et course y mènent au panier, ou à « Mes contrôles »
@@ -495,4 +504,4 @@ assignés (`src/lib/server/students.ts` et cinq pages prof).
 
 ---
 
-Vérifié contre le code le 2026-10-11 ; `GET /api/student/reports` le 2026-10-14 ; `notionLevel` le 2026-10-21 ; séries sans ancienne forme (lot 4a) le 2026-11-04 ; réactions du Palotin dans l'Entraînement le 2026-11-11 ; traces par question et fin de série réduite au gain (PR 4 `formes-de-serie`) le 2026-11-11 ; erreurs d'une question du bilan (`erreurs-frequentes`) le 2026-11-14 ; panneau partagé (PR 2) le 2026-11-14 ; durée sans doute trop courte (`durees-trop-courtes`, PR 1) le 2026-11-14, dans le panier et l'éditeur de série (PR 2) le 2026-11-14 ; durée observée (`durees-ajustees`) le 2026-11-15.
+Vérifié contre le code le 2026-10-11 ; `GET /api/student/reports` le 2026-10-14 ; `notionLevel` le 2026-10-21 ; séries sans ancienne forme (lot 4a) le 2026-11-04 ; réactions du Palotin dans l'Entraînement le 2026-11-11 ; traces par question et fin de série réduite au gain (PR 4 `formes-de-serie`) le 2026-11-11 ; erreurs d'une question du bilan (`erreurs-frequentes`) le 2026-11-14 ; panneau partagé (PR 2) le 2026-11-14 ; durée sans doute trop courte (`durees-trop-courtes`, PR 1) le 2026-11-14, dans le panier et l'éditeur de série (PR 2) le 2026-11-14 ; durée observée (`durees-ajustees`) le 2026-11-15 ; « Mêmes nombres pour tous » (`memes-nombres`) le 2026-11-19.

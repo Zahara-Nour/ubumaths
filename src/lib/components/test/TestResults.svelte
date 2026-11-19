@@ -13,6 +13,7 @@
 	Props:
 	- result: TestResult - Test result data
 	- onRestart: () => void - Callback to restart test
+	- sameQuestions: « Mêmes nombres pour tous » (lien avec graine) → Recommencer redonne les mêmes questions
 	- onBackToCart: () => void - Callback to return to cart
 	- inEvaluation: évaluation assignée → ni « Recommencer » ni « Retour à ma série »,
 	  seulement « Mes évaluations » (une nouvelle tentative passe par la vérification
@@ -38,6 +39,7 @@
 		result: TestResult;
 		onRestart: () => void;
 		onBackToCart: () => void;
+		sameQuestions?: boolean;
 		inEvaluation?: boolean;
 		buddyGain?: BuddyGainView | null;
 		mathouNews?: MathouNews | null;
@@ -47,6 +49,7 @@
 		result,
 		onRestart,
 		onBackToCart,
+		sameQuestions = false,
 		inEvaluation = false,
 		buddyGain = null,
 		mathouNews = null
@@ -183,7 +186,9 @@
 			</Button>
 			<Button onclick={onRestart}>
 				<RotateCw class="mr-2 h-4 w-4" />
-				Recommencer avec de nouvelles questions
+				{sameQuestions
+					? 'Recommencer les mêmes questions'
+					: 'Recommencer avec de nouvelles questions'}
 			</Button>
 		{/if}
 	</div>

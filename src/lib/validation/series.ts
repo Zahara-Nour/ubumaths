@@ -36,6 +36,9 @@ export const MAX_SERIES_QUESTIONS = 500;
 /** Paramètre d'un lien de série : la composition, en JSON */
 export const SERIES_LINK_PARAM = 'modeles';
 
+/** Paramètre du lien de série « Mêmes nombres pour tous » : la graine de la série */
+export const SERIES_SEED_PARAM = 'graine';
+
 /** Nombre de questions d'une ligne */
 export const itemQuantitySchema = z
 	.number()
@@ -111,10 +114,14 @@ export function encodeSeriesParam(items: readonly SeriesItem[]): string {
 	return encodeURIComponent(JSON.stringify(items));
 }
 
-/** Forme portée par un lien de série (Q44) ; `timeLimit` en secondes, Course seulement */
+/**
+ * Forme portée par un lien de série (Q44) ; `timeLimit` en secondes, Course
+ * seulement ; `seed` : « Mêmes nombres pour tous », la graine de la série.
+ */
 export interface SeriesLinkForm {
 	mode: TestMode;
 	timeLimit?: number;
+	seed?: number;
 }
 
 /**
@@ -122,7 +129,8 @@ export interface SeriesLinkForm {
  *
  * - sans forme : ouvre le PANIER du destinataire, qui y met la série (Q44, Q45) ;
  * - avec une forme : lance directement la série sous cette forme ; une Course
- *   aux nombres porte son temps limite.
+ *   aux nombres porte son temps limite ; avec une graine, tous ceux qui
+ *   l'ouvrent ont les mêmes questions (« Mêmes nombres pour tous »).
  */
 export function buildSeriesLink(
 	origin: string,
@@ -137,6 +145,9 @@ export function buildSeriesLink(
 	params.set('mode', form.mode);
 	if (form.mode === 'course' && form.timeLimit !== undefined) {
 		params.set('time', String(form.timeLimit));
+	}
+	if (form.seed !== undefined) {
+		params.set(SERIES_SEED_PARAM, String(form.seed));
 	}
 	return `${origin}/automaths/test?${params.toString()}`;
 }
