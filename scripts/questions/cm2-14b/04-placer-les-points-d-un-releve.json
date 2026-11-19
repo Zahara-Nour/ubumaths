@@ -1,4 +1,5 @@
 {
+	"id": "76e184e8-a4f2-4168-8e21-600b3b2580c7",
 	"title": "Place les points d'un relevé (axes de 100, de 0,5, de 5)",
 	"description": "Relevé de 5 ou 6 valeurs, axes et graduations donnés : visiteurs d'un parc (de 100 en 100), hauteur d'une plante (de 0,5 en 0,5 cm), température toutes les deux heures (de 5 en 5 °C)",
 	"grades": ["CM2"],

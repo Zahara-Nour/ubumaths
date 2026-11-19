@@ -1,4 +1,5 @@
 {
+	"id": "dd7065d9-700a-4df4-af1c-ef0a2deab347",
 	"title": "Résous un problème avec un tableau ou un diagramme en barres",
 	"description": "En une ou deux étapes : le prix d'une semaine de cantine (repas et goûters, décimaux), le détour par une ville (tableau des distances), les visiteurs qui manquent à un musée (barres de 100 en 100)",
 	"grades": ["CM2"],

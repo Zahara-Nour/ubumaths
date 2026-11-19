@@ -1,4 +1,5 @@
 {
+	"id": "4e196673-02f1-43e1-b895-394185bad8d2",
 	"title": "Lis la courbe (heure par heure, kg, km)",
 	"description": "La température heure par heure (axe de 2 en 2, valeur entre deux traits), l'heure d'une température donnée, la masse d'un bébé (axe de 0,5 en 0,5 kg), la distance d'un randonneur",
 	"grades": ["CM2"],
