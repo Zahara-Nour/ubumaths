@@ -1797,3 +1797,54 @@ message (« compte toutes les issues ») ; (c) 114 : arbre ou tableau donné, l'
 - Page à cocher : 5 verdicts « OK », sans commentaire ; les 5 ids concordent avec `scripts/questions/cm2-15/*.json`.
 - `publier-lot` en simulation : 5 brouillons passent le contrôle. David lance `--publier`. MCP : 5/5 `published`, [CM2],
   rangés et tagués (110 à 114). **Lot 15 clos.**
+
+## 24. Lot 16 — angle droit et figures (081, 088, 092, 093) : phase 0 (proposée le 2026-11-19)
+
+Relevé MCP du 2026-11-19, avant la phase 0 du lot 16 : le chantier `questions-cm1` (lots 8 et 9, clos, journal
+archivé) a écrit des jumeaux **CM1 + CM2**, publiés et tagués, sur la plupart des points des lots 16 à 19 :
+
+- angles : 076 (`8da9f669`), 077 (`4c1ce174`), 078 (`97f2374b`) ;
+- géométrie : 089 (`54c0f87f`), 090 (`265ed3cc`), 091 (`f988f07a`) ; constructions 087 (`7d048525`), 094 (×3), tracés
+  154 (`66b4d4ed`), 155 (`6452c31c`) ;
+- solides et déplacements : 098, 099, 100, 101 (×2), 103, 104 (×2), 105.
+
+Même règle qu'au § 21.1 (un jumeau CM1 + CM2 couvre le point). **Restent 7 points sans modèle** : 081 (angle droit),
+088 (codes), 092 (nommer les figures), 093 (propriétés), 095 (figure composée), 097 (symétrique), 102 (patron du
+pavé). Le CM1 n'a pas tagué 088, 092, 093 : le CM2 y ajoute les angles égaux et ⊥, //, ∈, ∉ (088) ; le trapèze, le
+trapèze rectangle, le pentagone et l'hexagone (092, 093). Ses modèles `6108cc4c`, `273dce6f`, `20907b18` (CM1-098, 102, 103) servent de gabarit (` ```figure ` codée + case « choix », `lot-cm1-8c.py`).
+
+Nœuds : 081 sur « mesure en degrés » (niveau 1 pris : 6e) ; 088, 092, 093 sur « propriétés » (niveaux 1 à 10 pris :
+CP à CE2, CM1). Aucun modèle d'un autre niveau à taguer (6e : rapporteur, hors CM2).
+
+Bornes : 081, angle droit = 90°, sa moitié 45° par pliage, **pas de rapporteur**, angles saillants seulement ; 088,
+codes des angles droits, des angles égaux, des longueurs égales, symboles ⊥, //, ∈, ∉ ; 092 et 093, la liste du BO
+(triangles rectangle, isocèle, équilatéral, quadrilatère, carré, rectangle, losange, trapèze, trapèze rectangle,
+pentagone, hexagone pour 092).
+
+| #    | Point   | Sous-notion, niveau | Modèle                                | Variations, plages                                                                                                                                                                                                                                                                                                    |
+| ---- | ------- | ------------------- | ------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 16-1 | CM2-081 | mesure en degrés, 2 | L'angle droit mesure 90°              | V1 figure codée (un angle droit parmi 3 ou 4) : « quel angle mesure 90° ? » (choix) ; V2 un angle droit plié en deux : chaque moitié mesure ? (45) ; V3 un angle de N° (N de 10 à 170, ≠ 90) : plus petit qu'un angle droit, droit, plus grand ? (choix) ; V4 combien d'angles de 45° pour faire un angle droit ? (2) |
+| 16-2 | CM2-088 | propriétés, 11      | Les codes : angles et longueurs égaux | V1 quadrilatère ou triangle, deux angles codés du même arc (`arc`, `arcs2`) : quel angle a la même mesure que $\widehat{ABC}$ ? (choix) ; V2 figure codée (carrés, traits, arcs) : quelle phrase est vraie ? (choix) ; V3 que disent les codes ? cocher toutes les phrases vraies (`plusieurs: oui`)                  |
+| 16-3 | CM2-088 | propriétés, 12      | Les symboles ⊥, //, ∈, ∉              | V1 deux droites dessinées (d) et (d') : quelle écriture est vraie, $(d) \perp (d')$ ou $(d) \parallel (d')$ ? ; V2 lire $(d) \perp (d')$ en phrase (choix) ; V3 droite (d) et points A, B, C (deux sur la droite) : cocher les écritures vraies parmi $A \in (d)$, $B \notin (d)$… (`plusieurs: oui`)                 |
+| 16-4 | CM2-092 | propriétés, 13      | Nommer une figure (CM2)               | V1 figure codée → nom le plus précis, trapèze et trapèze rectangle compris (parallélisme donné par $(AB) \parallel (CD)$ sous la figure, faute de code) ; V2 définition → nom (choix parmi les 12) ; V3 polygone quelconque dessiné, 5 ou 6 côtés : pentagone, hexagone ?                                             |
+| 16-5 | CM2-093 | propriétés, 14      | Propriétés des figures usuelles (CM2) | V1 quelle phrase est vraie ? (trapèze, trapèze rectangle compris) ; V2 $ABCD$ trapèze de bases $[AB]$ et $[CD]$ : quel côté est parallèle à $[AB]$ ? ; V3 cocher les figures dont les côtés opposés sont parallèles deux à deux (pas le trapèze) ; V4 combien d'angles droits a un trapèze rectangle ? (2)            |
+
+Erreurs typiques en `testSpecs` : 081, 180 pour l'angle droit ; 90 pour la moitié ; 088, l'angle voisin pris pour
+l'angle de même arc, ⊥ et // confondus, $\in$ pour un point hors de la droite ; 092, « rectangle » pour un carré,
+« quadrilatère » pour un trapèze, « hexagone » pour 5 côtés ; 093, le trapèze parmi les figures à côtés opposés
+parallèles deux à deux, 1 angle droit pour le trapèze rectangle.
+
+**Question d'accès** : 5 brouillons neufs, puis nœud + tag → personne ne lit rien de plus avant la publication.
+
+**À trancher** :
+
+(a) Les jumeaux CM1 + CM2 couvrent 076, 077, 078 et 13 points des lots 17 à 19 : acceptés comme couverture (règle du
+§ 21.1), sans modèle CM2 propre ? Reco : **oui**.
+
+(b) Lot 16 élargi aux points restants du lot 17 (088, 092, 093) : **5 modèles**, deux pour 088 (codes ; symboles) ?
+Puis un dernier lot 17 pour 095, 097, 102 (case « figure », ` ```patron `), et le chantier est fini. Reco : **oui**.
+
+(c) Niveaux : mesure en degrés 2 ; propriétés 11, 12, 13, 14 ? Reco : **oui**.
+
+(d) 092, le trapèze : son parallélisme écrit sous la figure ($(AB) \parallel (CD)$), puisqu'il n'y a pas de code du
+parallélisme ; et « nom le plus précis » (un rectangle est aussi un trapèze : on attend « rectangle ») ? Reco : **oui**.
