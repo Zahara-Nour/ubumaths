@@ -6,13 +6,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-08, après #2477 : lot 12b publié. Chantier EN PAUSE, en attente d'outil._
+_Mis à jour le 2026-11-19 : reprise, phase 0 du lot 13 proposée._
 
-- **État** : lots 1 à 12b publiés (12b : 4 modèles CE2-070, 2 modèles CE1-072). Restent au CE2 : 086, 043, 051, 065
-  (non évaluables sans manipulation) et 039, plus les constructions cotées en cm de 070 (règle graduée, n° 18).
-- **En attente** : `outils-manquants.md` n° 18, règle graduée (« à décider avec David » ; `feat/regle-graduee` citée).
-- **Prochaine action** : à la reprise, regarder la section « Livré » de `outils-manquants.md` ; n° 18 livré → 039 et
-  070 coté. Vérification manuelle du lot 12b dans `verifications-manuelles.md` (relecture non prouvée).
+- **État** : lots 1 à 12b publiés. Le n° 18 (règle graduée) est livré (chantier `regle-graduee`, clos le
+  2026-11-09) : 039 et 070 coté en cm sont débloqués. Restent sans modèle, par décision : 086, 043, 051, 065.
+- **Prochaine action** : lot 13 (§ 20) une fois la phase 0 validée ; puis clôture du chantier (versement).
+- **En attente de David** : Q1-Q3 du § 20 ; vérification manuelle du lot 12b (`verifications-manuelles.md`).
 - **Pièges en cours** : coordonnées en flottants → arrondies (garde de complexité) ; `db:migrate` depuis un worktree :
   copier `supabase/.temp/{project-ref,linked-project.json,pooler-url}` ; commitlint : corps ≤ 100 caractères par ligne.
 - **Worktree / branche** : `../ubumaths-wt-questions-ce2`, HEAD détaché sur `origin/main` (aucune branche en cours).
@@ -1090,3 +1089,30 @@ Décisions de David (« je suis tes recos », 2026-11-08) : Q1 oui (07 et 08 pou
   relecture du tracé non prouvée, ligne ajoutée à `verifications-manuelles.md`. `deploy:prod` (v0.78.1, livre #2463 et
   #2473, vérifié sur `origin/production`) ; `publier-lot` simulation puis `--publier` (David) ; relevé MCP : 6/6
   `published`. **Lot 12b clos.**
+
+## 20. Lot 13 — règle graduée : tracer un segment, constructions cotées en cm (phase 0, 2026-11-19, à valider)
+
+Débloqué par le chantier `regle-graduee` (clos le 2026-11-09, `outils-manquants.md` ex-n° 18). Relevé MCP du
+2026-11-19 : aucun modèle de prod n'a de vérification en cm ou en mm hors de `f06e45e8` (6-173) et `a95aedfd` (4-038).
+CE2-039 est sur le nœud des longueurs (niveaux pris : 1 à 7, CE2 en 4, 5, 6) ; CE2-070 sur « constructions » (1 à 4).
+Vérifications utilisées (`docs/systeme/questions.md`), toutes sur papier uni, 1 unité de la figure = 1 cm (ADR 0036) :
+`segment AB = 6 cm`, `carre A ; B ; C ; D`, `rectangle A ; B ; C ; D : BC = 3 cm`,
+`triangle ABC : CAB = 90 ; AC = 4 cm`, `cercle c = cercle(O, rayon=4 cm)`.
+
+| Fichier                      | Point   | Catégorie · niveau                 | Variations                                                                                       |
+| ---------------------------- | ------- | ---------------------------------- | ------------------------------------------------------------------------------------------------ |
+| `01-trace-un-segment-cm`     | CE2-039 | Grandeurs · longueurs · 8          | A donné, direction libre : [AB] de 3 à 12 cm entiers                                             |
+| `02-trace-un-segment-mm`     | CE2-039 | Grandeurs · longueurs · 9          | « 5 cm et 3 mm » (cm et mm) ; « 72 mm » (en mm seulement), de 2 cm à 12 cm                       |
+| `03-carre-rectangle-cotes`   | CE2-070 | Figures planes · constructions · 5 | [AB] tracé : carré de côté AB (4 à 8 cm) ; rectangle, [AB] de 5 à 9 cm, BC de 2 à 5 cm (BC ≠ AB) |
+| `04-triangle-rectangle-cote` | CE2-070 | Figures planes · constructions · 5 | [AB] tracé (6 à 10 cm) : angle droit en A à l'équerre, AC de 3 à 6 cm à la règle                 |
+| `05-cercle-de-rayon-en-cm`   | CE2-070 | Figures planes · constructions · 5 | O donné : cercle de rayon 2 à 6 cm, règle posée en O puis compas                                 |
+
+Erreurs typiques des `testSpecs` : segment arrêté à l'œil, 1 mm de trop ou de moins, deux segments depuis A ; côté
+tracé sans l'équerre, sommet placé à l'œil, côté de 5,8 cm au lieu de 6 ; compas ouvert à l'œil, mauvais rayon.
+Hors lot : les assemblages du BO (carré de 6 cm + cercle de rayon 4 cm) — une case = une vérification (décision Q14
+du chantier `regle-graduee` : « après ») ; les longueurs décimales (« 5,3 cm ») : cycle 3.
+
+**Question d'accès** : personne ne lit rien de plus — brouillons (admin seul) ; migration nœud + tag sans règle neuve
+(comme les lots 12 et 12b).
+
+Questions à David : voir le message du 2026-11-19 (Q1 découpage, Q2 niveaux, Q3 reste du lot 11).
