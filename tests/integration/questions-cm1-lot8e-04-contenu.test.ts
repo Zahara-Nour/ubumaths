@@ -6,7 +6,7 @@
  * la variation 3 change. Le modèle n'existe qu'en production : le test fabrique une copie portant le
  * vrai identifiant et les variations relevées en prod (fixture, md5 vérifié), puis rejoue la migration
  * **depuis son fichier**, dans une transaction annulée à la fin. Journal :
- * docs/wip/questions-cm1-progress.md (§ 25 septies).
+ * docs/archive/wip/questions-cm1-progress.md (§ 25 septies).
  *
  * @vitest-environment node
  */

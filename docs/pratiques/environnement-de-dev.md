@@ -134,8 +134,8 @@ un commit (`Doc-inchangée: …` / `Doc-reportée: …`). `--no-verify` n'a plus
 ⚠️ **Un worktree sans `pnpm install` n'a AUCUN hook** : husky s'installe par le script `prepare`.
 `.env` et `node_modules` ne suivent pas non plus le worktree ([worktrees.md](worktrees.md)).
 
-**Ports.** 5173 = le serveur de David, jamais touché · 5175 = dépôt principal · 5176 et suivants =
-worktrees. Toujours `pnpm dev --port <n> --strictPort` (sans `--` : il ferait ignorer le port).
+**Ports.** 5173 = le serveur de David, jamais touché · 5176 et suivants = worktrees. ⛔ **Aucun serveur de dev
+dans le dépôt principal** (cf. [claude-md-pourquoi.md](claude-md-pourquoi.md#commandes)). Toujours `pnpm dev --port <n> --strictPort` (sans `--` : il ferait ignorer le port).
 `pnpm kill:servers` est interdit depuis un worktree (il tue 5173 et Supabase).
 
 **Tester depuis le MacBook ou l'iPhone (Tailscale)** : [tester-sur-un-autre-appareil.md](tester-sur-un-autre-appareil.md)

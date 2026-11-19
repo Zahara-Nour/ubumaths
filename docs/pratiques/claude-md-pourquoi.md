@@ -20,6 +20,7 @@ Machine : **Mac mini Apple M6, 24 Go**. Mesuré le 2026-09-29, **swap +0 partout
 ## Commandes
 
 - `pnpm dev -- --port 5175` ne marche pas — le `--` en trop devient un argument que vite ignore, port compris : le serveur démarre sur **5173**, celui de David (mesuré le 2026-09-10). Sans `--strictPort`, un 5175 déjà pris fait dériver vite en silence.
+- **Pas de serveur de dev dans le dépôt principal** : toutes les sessions y tirent et y commitent. Le 2026-11-19, un `pnpm dev` laissé 4 h 20 sur le port 5175 avait absorbé 101 commits (252 fichiers, ~45 000 lignes) : 2,5 Go de mémoire, ~200 % de CPU sans aucun visiteur. Avec les onglets Chrome laissés ouverts, il a gelé le Mac mini (charge 103, swap à 11,5 Go sur 12).
 
 ## Git
 

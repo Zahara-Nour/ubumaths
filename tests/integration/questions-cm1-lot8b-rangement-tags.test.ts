@@ -6,7 +6,7 @@
  * (« Grandeurs et mesures > Aires > aires sur quadrillage ») ; les 6 brouillons du lot 8b (aires et
  * angles, créés sans nœud ni tag) vont sur leur nœud, tags posés (CM1-086 à 091, CM2-071, 072, 076
  * à 078). Aucun niveau ni statut ne change. Décisions de David du 2026-11-18 (journal
- * docs/wip/questions-cm1-progress.md § 22, 22 bis, 22 ter).
+ * docs/archive/wip/questions-cm1-progress.md § 22, 22 bis, 22 ter).
  *
  * Les modèles n'existent qu'en production. Le test fabrique donc l'état de la prod — des copies
  * minimales portant les VRAIS identifiants, à leur nœud (ou sans), à leurs niveaux, à leur statut et

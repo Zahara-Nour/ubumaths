@@ -2,7 +2,8 @@
  * Catégorie et notions d'une fiche (ADR 0041)
  * ============================================
  *
- * Migration : 20261119173341_categorie_notions_fiche.sql
+ * Migrations : 20261119173341_categorie_notions_fiche.sql,
+ * 20261119182829_titre_libre_fiche.sql (case « titre libre »)
  *
  * Décisions de David (2026-11-19) :
  * - catégorie de fiche, liste fermée, fiche d'exercices seulement :
@@ -54,6 +55,7 @@ interface SharedClassification {
 }
 
 interface SharedWorksheet {
+	custom_title: boolean;
 	category: string | null;
 	classifications: SharedClassification[];
 	[key: string]: unknown;
@@ -530,5 +532,73 @@ describe('liens de partage : catégorie et notions de la fiche citée', () => {
 		const shared = await open();
 		expect(shared?.classifications).toEqual([]);
 		await resetNodes(worksheetId, [derivationId, suitesId]);
+	});
+});
+
+describe('titre libre : la case qui dit si le titre est écrit à la main', () => {
+	async function customTitleInDb(id: string): Promise<unknown> {
+		const [row] = await sql('select custom_title from public.worksheets where id = $1', [id]);
+		return row?.custom_title;
+	}
+
+	async function setCustomTitle(id: string, value: boolean): Promise<void> {
+		const { data, error } = await teacherClient
+			.from('worksheets')
+			.update({ custom_title: value } as never)
+			.eq('id', id)
+			.select('id');
+		expect(error).toBeNull();
+		// Un refus de la RLS rendrait 0 ligne sans erreur
+		expect(data).toHaveLength(1);
+	}
+
+	it('une fiche créée sans préciser la case a un titre libre', async () => {
+		const id = await worksheet('worksheet');
+		expect(await customTitleInDb(id)).toBe(true);
+	});
+
+	it('le prof passe sa fiche en titre composé, puis en titre libre', async () => {
+		const id = await worksheet('worksheet', 'applications');
+		await setCustomTitle(id, false);
+		expect(await customTitleInDb(id)).toBe(false);
+		await setCustomTitle(id, true);
+		expect(await customTitleInDb(id)).toBe(true);
+	});
+
+	it('l’élève lit la case de la fiche qu’on lui a donnée, pas un élève sans la fiche', async () => {
+		await sql('update public.worksheets set custom_title = false where id = $1', [worksheetId]);
+		const { data } = await studentClient
+			.from('worksheets')
+			.select('custom_title')
+			.eq('id', worksheetId);
+		expect(data).toEqual([{ custom_title: false }]);
+		const { data: outsider } = await outsiderStudentClient
+			.from('worksheets')
+			.select('custom_title')
+			.eq('id', worksheetId);
+		expect(outsider ?? []).toEqual([]);
+	});
+
+	it('l’élève ne peut pas changer la case de la fiche qu’on lui a donnée', async () => {
+		await sql('update public.worksheets set custom_title = false where id = $1', [worksheetId]);
+		const { data, error } = await studentClient
+			.from('worksheets')
+			.update({ custom_title: true } as never)
+			.eq('id', worksheetId)
+			.select('id');
+		// Refus de la RLS : aucune erreur, zéro ligne
+		expect(error).toBeNull();
+		expect(data).toEqual([]);
+		expect(await customTitleInDb(worksheetId)).toBe(false);
+	});
+
+	it.each([
+		['cahier de texte', viaJournal],
+		['cours partagé', viaCourse]
+	] as const)('%s : le lien de partage transmet la case', async (_label, open) => {
+		await sql('update public.worksheets set custom_title = false where id = $1', [worksheetId]);
+		expect((await open())?.custom_title).toBe(false);
+		await sql('update public.worksheets set custom_title = true where id = $1', [worksheetId]);
+		expect((await open())?.custom_title).toBe(true);
 	});
 });

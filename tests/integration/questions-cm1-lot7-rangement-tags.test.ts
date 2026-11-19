@@ -6,7 +6,7 @@
  * (créés sans nœud ni tag) vont sur le nœud de « Statistiques > Représenter des données » qui porte
  * leur point, tag posé (CM1-120, 121, 169, 137, 170, 138, 171, 135, 139, 172, 136 ; CM1-122 deux
  * fois, sur la notion). Aucun niveau ni statut ne change, aucun nœud créé. Décisions de David du
- * 2026-11-17 (journal docs/wip/questions-cm1-progress.md § 19, 19 bis).
+ * 2026-11-17 (journal docs/archive/wip/questions-cm1-progress.md § 19, 19 bis).
  *
  * Les modèles n'existent qu'en production. Le test fabrique donc l'état de la prod — des copies
  * minimales portant les VRAIS identifiants, à leur nœud (ou sans), à leurs niveaux, à leur statut et

@@ -6,7 +6,7 @@
  * (créés sans nœud ni tag) vont sur la sous-notion d'« Algèbre > Premiers pas algébriques » qui porte
  * leur point, tag posé (CM1-062 deux fois, 063, 064, 065 deux fois, 066 deux fois). Aucun niveau ni
  * statut ne change, aucun nœud créé. Décisions de David du 2026-11-16 (journal
- * docs/wip/questions-cm1-progress.md § 18, 18 bis).
+ * docs/archive/wip/questions-cm1-progress.md § 18, 18 bis).
  *
  * Les modèles n'existent qu'en production. Le test fabrique donc l'état de la prod — des copies
  * minimales portant les VRAIS identifiants, à leur nœud (ou sans), à leurs niveaux, à leur statut et

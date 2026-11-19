@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, après #2901._
+_Mis à jour le 2026-11-19, PR 2a commitée et poussée, PR pas encore ouverte._
 
-- **État** : PR 1 mergée (#2901, ADR 0041) et **migration jouée en prod** (`20261119173341`, vérifiée : colonne, RLS, 4 policies, 2 fonctions de partage) · **Prochaine action** : PR 2 — `pnpm db:types` puis éditeur (catégorie + notions) et PDF (titre composé, badge du niveau, bas de page, tous les cas de la synthèse) ; nouveau worktree `../ubumaths-wt-categorie-fiche` (`feat/categorie-fiche-editeur`) · **En attente de David** : rien · **Pièges en cours** : retirer les notions en trop AVANT de passer en catégorie à une notion (garde 23514 à chaque requête PostgREST) ; la duplication de fiche (`api/worksheets/[id]/duplicate`) et la publication en chapitre doivent recopier catégorie + notions ; la route élève ne sélectionne pas `grades` (badge absent sinon) ; FK RESTRICT : un nœud cité ne se supprime pas ; mono-professeur en test · **Maquette** : https://claude.ai/artifact/4NVjLSrbd7J7XNPzaC3cur
+- **État** : PR 1 mergée (#2901, migration jouée) · **PR 2a prête** sur `feat/categorie-fiche-editeur` (poussée) : migration `20261119182829_titre_libre_fiche.sql` (case `worksheets.custom_title`, vrai par défaut, + les deux fonctions de partage), tests d'intégration **vérifiés rouges sans elle** (6) puis verts (60), `security-auditor` sans finding bloquant, `code-reviewer` corrigé, `check:incremental` 0, cliquet tenu · **Prochaine action** : ouvrir la PR 2a → CI verte → `pnpm check:migrations --pr <n>` → merge → `migration list --linked` (seule `20261119182829` en attente) → `db:migrate` (4 conditions réunies) → `db:types` → PR 2b (éditeur + PDF), nouvelle branche dans le même worktree ; retirer alors les `as never` des tests · **En attente de David** : rien · **Pièges en cours** : `title` toujours rempli (titre composé écrit par l'éditeur quand `custom_title` est faux) ; retirer les notions en trop AVANT de passer en catégorie à une notion (23514) ; duplication (`api/worksheets/[id]/duplicate`) et publication en chapitre recopient catégorie + notions + `custom_title` ; la route élève ne sélectionne pas `grades` ; FK RESTRICT ; maquette : catégorie en italique minuscule gris `#5a5a5a` · **Worktree** : `../ubumaths-wt-categorie-fiche` (migration déjà appliquée en local) · **Maquette** : https://claude.ai/artifact/4NVjLSrbd7J7XNPzaC3cur
 
 ## Synthèse de la phase 0 (2026-11-19)
 
@@ -34,12 +34,27 @@ _Mis à jour le 2026-11-19, après #2901._
   partage pourront lire la catégorie, les notions ET le niveau de la fiche** (imprimés sur leur
   PDF ; migration en attente depuis #2891, faite dans la même PR). Noms des nœuds déjà publics.
 
+## Titre en base (David, 2026-11-19)
+
+- Le titre s'affiche à ~27 endroits de l'appli (listes, tableau de bord de l'élève, cahier…).
+  **Choix de David : titre composé stocké.** `title` reste toujours rempli ; sans titre libre,
+  l'éditeur y écrit « Suites · Entraînement technique » et le tient à jour ; la case
+  `worksheets.custom_title` (vrai par défaut : les 50 fiches existantes) dit si c'est un titre libre.
+  Écartés : titre vide recalculé partout (PR énorme, fiche sans nom au premier oubli) ; deviner
+  le titre libre en comparant au texte composé (fragile).
+- **Question d'accès tranchée (David, « oui » sur ma reco)** : la case se lit comme la fiche ; le
+  lien de partage la transmet (son PDF doit être celui de la classe ; il recevait déjà titre et
+  notions, rien de nouveau, rien de personnel).
+- Découpage : la PR 2 devient **2a** (migration de la case) puis **2b** (éditeur + PDF), après
+  `db:migrate` + `db:types`.
+
 ## Découpage (validé par David, 2026-11-19)
 
 1. ✅ **PR 1 — ADR + migration** (#2901, migration jouée le 2026-11-19) : table, colonne, garde de la règle, fonction SQL du PDF élève /
    partage (catégorie, notions, niveaux), tests d'intégration rouges puis verts ; `db:migrate`,
    `db:types`.
-2. **PR 2 — éditeur + PDF** : choix catégorie/notions dans l'éditeur, titre composé, badge du
+2. **PR 2a — case « titre libre »** (migration `20261119182829`, tests d'intégration).
+   **PR 2b — éditeur + PDF** : choix catégorie/notions dans l'éditeur, titre composé, badge du
    niveau, bas de page, tous les cas de la synthèse.
 3. **PR 3 — reprise des 50 fiches** : page à cocher (déduit du titre), écriture en prod par David.
 4. **PR 4 — script des automatismes** (ADR 0011) : pose catégorie + notions.
