@@ -70,6 +70,12 @@ Conséquence pour l'étude :
 
 ## Historique
 
+### 2026-11-19 — PR de suite : interligne du tableau de bord, classe dès le chargement
+
+- `app.css` : `html.lecture-facilitee .dashboard-content :is(p, li).text-xs…xl`, interligne × 7/6 (les `!important` de `.dashboard-content .text-*` battaient la règle de `main p`).
+- `app.html` : script inline (CSP : `'unsafe-inline'` déjà permis) qui lit `easyReading` et pose `lecture-facilitee` avant le premier affichage.
+- Vérifié dans Chrome (5181) : page servie sans le JS de l'appli → classe posée ; interlignes 16→18,7, 20→23,3, 24→28, 28→32,7 px ; un `div.text-sm` inchangé.
+
 ### 2026-11-19 — PR 2 : réglage « Lecture facilitée »
 
 - `src/lib/stores/easyReading.svelte.ts` : réglage gardé sous `easyReading`, classe `lecture-facilitee` sur `<html>`, bascule `switchMathFonts('luciole' | 'katex')` ; tests `easyReading.svelte.test.ts`.

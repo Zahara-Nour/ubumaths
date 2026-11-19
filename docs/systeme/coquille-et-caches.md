@@ -82,6 +82,10 @@ Luciole (titres et `.exercise-content` compris), lettres +0,02 em, mots +0,08 em
 × taille du texte ; l'en-tête et les menus gardent Inter. Les formules passent au jeu Luciole Math
 (`switchMathFonts('luciole')`, cf. [utilitaires-et-demos.md](utilitaires-et-demos.md)). Police
 absente → repli sur Inter. Crédit des polices : section « Polices » de `/a-propos`.
+Les lignes plus espacées valent aussi pour les `p` / `li` du tableau de bord qui portent une
+classe `text-xs` à `text-xl` (leurs règles `.dashboard-content .text-*` l'emportaient) : même
+facteur 7/6. Un petit script inline de `app.html` pose la classe avant le premier affichage
+(pas de passage Inter → Luciole au chargement) ; les formules basculent quand le store démarre.
 
 ## Comment c'est construit
 
