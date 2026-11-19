@@ -2198,3 +2198,18 @@ reste en D ; niveaux **CM1 et CM2** et tag des deux points (109/098, 110/099, 11
 - Base locale (18 copies, une variation chacune), aperçus à 390 px (Playwright, port 5183) : aucun défilement
   horizontal, aucune erreur de console ; vus : patrons, face grise, cases en pointillés, robot, mur gris.
 - #2872 mergée (CI verte du premier coup).
+
+### 25 decies. Lot 8f — création en prod et rangement (2026-11-19)
+
+- `create-questions.ts --dir scripts/questions/cm1-8f --publier` lancé par David : 7 brouillons (0da1780b,
+  ebc05cbb, 9fe0fee6, a36679be, 10f2e60e, 7714c08c, 08337d34), vérifiés au MCP (draft, CM1 + CM2, sans nœud,
+  0 tag), ids commités.
+- Relevé `etat-prod-2026-11-19-cm1-8f/`, script `lot-cm1-8f-rangement.py` (gabarit 8e) → migration
+  `20261119085732_questions_cm1_lot8f_rangement_tags` et fixture : 08, 09, 10 sur Solides > patrons ; 11, 12, 13
+  sur Repérage et déplacements > coder un déplacement ; 14 sur Solides > constructions (CM1-119 et CM2-105 sont
+  sur la notion Solides) ; 14 tags posés (CM1-115 à 119 ; CM2-100, 101, 103, 104, 105), aucun niveau ni statut
+  changé, aucun nœud créé.
+- Test `questions-cm1-lot8f-rangement-tags.test.ts` : 20/20 vert ; corps neutralisé (`select 1;`) : 9 échecs,
+  7 sautés. `types:cliquet` tenu. Seule migration en attente (`migration list --linked`).
+- `security-auditor` : aucun finding bloquant (diff avec le 8e limité aux données ; état « avant » remesuré au
+  MCP). Non bloquant, déjà connu : les tags (pas le contenu) des brouillons sont lisibles par tout compte connecté.
