@@ -115,6 +115,7 @@ on:
       - 'src/lib/typst/text-size.ts'
       - 'src/lib/typst/templates/default-templates.ts'
       - 'src/lib/typst/templates/styles.ts'
+      - 'src/lib/typst/templates/site-mark.ts'
       - 'src/lib/typst/templates/index.ts'
       - 'src/lib/worksheets/exercise-numbering.ts'
       - 'src/lib/worksheets/exercise-anchor.ts'
