@@ -135,15 +135,18 @@ class Source:
         self.cmap = self.font.getBestCmap()
         self.glyphs = self.font.getGlyphSet()
         self.variants: dict[str, list[str]] = {}
-        # Morceaux d'empilement (GlyphAssembly) : dessinés dans un même repère horizontal
-        self.parts: set[str] = set()
+        # Morceaux d'empilement (GlyphAssembly) : dessinés dans un même repère horizontal ;
+        # pour chacun, les morceaux des délimiteurs où il sert
+        self.parts: dict[str, set[str]] = {}
         if 'MATH' in self.font and self.font['MATH'].table.MathVariants:
             mv = self.font['MATH'].table.MathVariants
             if mv.VertGlyphCoverage:
                 for name, construction in zip(mv.VertGlyphCoverage.glyphs, mv.VertGlyphConstruction):
                     self.variants[name] = [r.VariantGlyph for r in construction.MathGlyphVariantRecord]
                     if construction.GlyphAssembly:
-                        self.parts |= {p.glyph for p in construction.GlyphAssembly.PartRecords}
+                        group = {p.glyph for p in construction.GlyphAssembly.PartRecords}
+                        for part in group:
+                            self.parts.setdefault(part, set()).update(group)
 
     def bounds(self, name: str):
         pen = BoundsPen(self.glyphs)
@@ -194,15 +197,22 @@ def copy_glyph(
         if source_name in source.parts:
             # Morceau d'empilement : position horizontale de Luciole, la même pour tous les
             # morceaux du délimiteur (caler chacun sur le bord gauche de sa boîte KaTeX les
-            # décalait : crans des accolades, crochets et de la grande racine)
+            # décalait : crans des accolades, crochets et de la grande racine). Même avance
+            # pour tous : dans une formule centrée (`gathered`), MathLive centre chaque
+            # morceau dans sa colonne, et un milieu plus étroit (crochet : 371 contre 510)
+            # se décalait. Racine : bout du morceau le plus large, barre soudée.
             dx = 0
-            advance = source.advance(source_name)
+            group = source.parts[source_name]
+            if radical:
+                advance = round(max(source.bounds(p)[2] for p in group)) - RADICAL_OVERLAP
+            else:
+                advance = max(source.advance(p) for p in group)
         else:
             dx = kb[0] - sb[0]
             # Pas d'avance plus courte que le dessin (sauf morceau sans chasse)
             advance = max(katex_advance, round(sb[2] + dx)) if katex_advance > 0 else 0
         transform = (1, 0, 0, sy, dx, kb[1] - sb[1] * sy)
-        if radical:
+        if radical and source_name not in source.parts:
             advance = round(sb[2] + dx) - RADICAL_OVERLAP
     elif (center or katex_advance == 0) and kb is not None:
         # Marque sans chasse (accents combinants) ou barre de \not : même centre que KaTeX

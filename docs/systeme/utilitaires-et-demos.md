@@ -357,7 +357,9 @@ il y ajoute la vérification des instructions (`checkScratchProgram`), faite hor
   grande racine avec E001, E000, ⎷) : `build_luciole_katex.py` désigne les glyphes par leur nom
   (`GLYPH_ALIASES`) et laisse les autres codes privés à KaTeX. Les morceaux d'un délimiteur
   empilé gardent la position horizontale de Luciole (`Source.parts`) : calés chacun sur le
-  bord gauche de leur boîte KaTeX, ils se décalaient (crans). La barre de racine part au bout
+  bord gauche de leur boîte KaTeX, ils se décalaient (crans). Ils ont aussi tous la même
+  avance : dans une formule centrée (`gathered`, la vitrine), MathLive centre chaque morceau,
+  et un milieu plus étroit se décalait. La barre de racine part au bout
   du dessin du √ (`RADICALS`), et `mathlive-fonts.ts` la pose sans la remontée de 0,04 em de
   MathLive. Après une reconstruction, le
   navigateur garde les anciens `.woff2` en cache : recharger les fichiers (`fetch(…, {cache:

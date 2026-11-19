@@ -70,6 +70,7 @@ Conséquence pour l'étude :
 
 - Morceaux empilés (accolades, crochets, grande racine) : décalés de 25 à 70 unités parce que chacun était calé sur le bord gauche de sa boîte KaTeX ; ils gardent maintenant la position de Luciole (même repère pour tout le délimiteur).
 - Petite racine : la barre flottait à 77 unités du √ (avance KaTeX plus large que le dessin) ; avance = bout du dessin − 20.
+- Retour de David (capture de la vitrine) : crans encore visibles dans une formule centrée (`gathered`) : MathLive y centre chaque morceau, et le milieu du crochet (371) est plus étroit que ses bouts (510) → même avance pour tous les morceaux d'un délimiteur.
 - Grande racine : MathLive remonte sa barre de 0,04 em (aussi visible en KaTeX) ; pour Luciole, barre posée sans cette marge.
 
 ### 2026-11-19 — PR 3 : jeu écran Luciole Math
