@@ -1013,3 +1013,8 @@ centaines d'unités, x ∈ [1 ; 20].
 - **Q30 — Découpage** : un seul lot de 5 modèles ? Reco : **oui** (une page à cocher de 5 fiches).
 - **Question d'accès** (migration de tags, après écriture) : brouillons, personne ne les voit ; publiés, ils
   apparaissent au catalogue et au cahier de texte de Tle techno seulement. Personne ne perd rien.
+
+**Décisions (David, 2026-11-19, « je te suis »)** : **Q27** ]0 ; +∞[ partout, plus une variation sur ℝ privé de 0
+avec la double barre (I3) ; **Q28** une seule variation x² + k/x (I3) ; **Q29** I5 fait placer des points ET choisir
+l'allure ; **Q30** un seul lot de 5 modèles ; question d'accès : personne pour les brouillons, Tle techno à la
+publication.
