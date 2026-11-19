@@ -127,6 +127,16 @@ corriger dans les commandes ; deux points de mise en route :
   d'activation.
 - Vérifier avant de donner le lien : `tailscale serve status` affiche **(tailnet only)** sur les
   deux ports.
+- **Le port 443 est peut-être celui d'une autre session** (`tailscale serve status` le montre).
+  Ne pas le reprendre : publier son serveur sur `--https=10000` (lien
+  `https://serveur.tail99357e.ts.net:10000/`), et ne jamais faire `tailscale serve reset`, qui
+  couperait le lien de l'autre. Arrêter le sien seul : `tailscale serve --https=10000 off`.
+- **Avant de pointer Serve sur un port, vérifier qu'il sert SON serveur** :
+  `lsof -nP -iTCP:<port> -sTCP:LISTEN`, puis le dossier du processus
+  (`lsof -p <pid> | awk '$4=="cwd"'`). Les worktrees occupent 5176 et au-delà, sans ordre fixe.
+- **« Failed to fetch dynamically imported module » qui résiste au rechargement forcé**, alors que
+  les modules répondent en 200 : le serveur de dev tourne depuis avant un `git pull` ou un merge
+  (2026-11-19). Relancer un serveur neuf et y pointer Serve.
 
 ## Limiteur de connexion
 
