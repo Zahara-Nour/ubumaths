@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount, tick } from 'svelte';
+	import { onMount, tick, type Snippet } from 'svelte';
 	import { page } from '$app/state';
 	import { replaceState } from '$app/navigation';
 	import { resolve } from '$app/paths';
@@ -9,8 +9,9 @@
 	import MySelect from '#lib/components/MySelect.svelte';
 	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
 	import CatalogueGallery from '#lib/components/questions/CatalogueGallery.svelte';
-	import CatalogueNotionNav from '#lib/components/questions/CatalogueNotionNav.svelte';
+	import CatalogueTreeNav from '#lib/components/questions/CatalogueTreeNav.svelte';
 	import CatalogueNotionSections from '#lib/components/questions/CatalogueNotionSections.svelte';
+	import CatalogueProgrammeSections from '#lib/components/questions/CatalogueProgrammeSections.svelte';
 	import CartFloatingButton from '#lib/components/CartFloatingButton.svelte';
 	import { Input } from '#lib/components/ui/input/index.ts';
 	import { Button } from '#lib/components/ui/button/index.ts';
@@ -22,6 +23,11 @@
 		notionTemplateCount
 	} from '#lib/questions/catalogue.ts';
 	import { initiallyOpenGroups, searchCatalogue } from '#lib/questions/catalogue-search.ts';
+	import {
+		buildProgramme,
+		chapterTemplateCount,
+		partTemplateCount
+	} from '#lib/questions/catalogue-programme.ts';
 	import { GRADE_CODES, GRADES, isGradeCode, type GradeCode } from '#lib/types/grades.ts';
 
 	const UNCLASSIFIED_VALUE = 'non-classes';
@@ -32,11 +38,20 @@
 	const LOWER_GRADES_PARAM = 'inferieurs';
 	const NOTION_PARAM = 'notion';
 	const SEARCH_PARAM = 'q';
+	const VIEW_PARAM = 'vue';
+	const CHAPTER_PARAM = 'chapitre';
+	const PROGRAMME_VIEW = 'programme';
+	const NOTIONS_VIEW = 'notions';
 	// Délai entre la frappe et la recherche (les cartes ne se recalculent pas à chaque lettre)
 	const SEARCH_DELAY_MS = 200;
 	// Dernière adresse du catalogue, retenue le temps de la visite (onglet) :
 	// revenu sans paramètre (retour du panier), on la reprend
 	const MEMORY_KEY = 'chiphre_automaths_adresse';
+	type CatalogueView = typeof PROGRAMME_VIEW | typeof NOTIONS_VIEW;
+	const VIEW_OPTIONS: { view: CatalogueView; label: string }[] = [
+		{ view: PROGRAMME_VIEW, label: 'Programme' },
+		{ view: NOTIONS_VIEW, label: 'Notions' }
+	];
 	const GRADE_ITEMS = [
 		{ value: ALL_GRADES_VALUE, label: 'Tous les niveaux' },
 		...GRADE_CODES.map((code) => ({ value: code, label: GRADES[code].displayName }))
@@ -99,10 +114,66 @@
 		selectedBranch?.notions.find((n) => n.id === chosenNotionId) ?? selectedBranch?.notions[0]
 	);
 
-	// Téléphone : liste des notions dans un panneau du bas
-	let notionSheetOpen = $state(false);
-	// Haut de la notion affichée : on y remonte en changeant de notion
-	let notionTop = $state<HTMLElement | null>(null);
+	// Vue « Programme » : le programme du niveau choisi (seul), questions selon le filtre
+	let programme = $derived(
+		buildProgramme(
+			questionTemplatesCache.points,
+			chosenGrade,
+			filteredTemplates,
+			questionTemplatesCache.templatePoints,
+			questionTemplatesCache.nodes
+		)
+	);
+	// Vue choisie (adresse) ; sans choix, « Programme » dès qu'un niveau en a un.
+	// Un ancien lien qui ne porte qu'une notion garde la vue « Notions ».
+	const initialView = initialParams.get(VIEW_PARAM);
+	let chosenView = $state<CatalogueView | null>(
+		initialView === PROGRAMME_VIEW || initialView === NOTIONS_VIEW
+			? initialView
+			: initialParams.has(NOTION_PARAM)
+				? NOTIONS_VIEW
+				: null
+	);
+	// « Tous les niveaux », niveau sans programme, liste sans programme : Notions seule
+	let activeView = $derived<CatalogueView>(
+		programme.length > 0 ? (chosenView ?? PROGRAMME_VIEW) : NOTIONS_VIEW
+	);
+	let chosenChapterId = $state<string | undefined>(initialParams.get(CHAPTER_PARAM) ?? undefined);
+	// Chapitre affiché : le choisi s'il existe au niveau, sinon le premier
+	let selectedChapter = $derived(
+		programme.flatMap((part) => part.chapters).find((c) => c.id === chosenChapterId) ??
+			programme[0]?.chapters[0]
+	);
+
+	// Listes de la colonne : branches → notions, ou parties → chapitres, à compteurs
+	let notionGroups = $derived(
+		catalogue.branches.map((branch) => {
+			const items = branch.notions.map((n) => ({
+				id: n.id,
+				name: n.name,
+				count: notionTemplateCount(n)
+			}));
+			return {
+				id: branch.id,
+				name: branch.name,
+				count: items.reduce((sum, item) => sum + item.count, 0),
+				items
+			};
+		})
+	);
+	let chapterGroups = $derived(
+		programme.map((part) => ({
+			id: part.id,
+			name: part.name,
+			count: partTemplateCount(part),
+			items: part.chapters.map((c) => ({ id: c.id, name: c.name, count: chapterTemplateCount(c) }))
+		}))
+	);
+
+	// Téléphone : liste des notions (ou des chapitres) dans un panneau du bas
+	let navSheetOpen = $state(false);
+	// Haut de la notion (ou du chapitre) affiché : on y remonte en en changeant
+	let contentTop = $state<HTMLElement | null>(null);
 	let openUnclassified = $state<string[]>([]);
 
 	/**
@@ -120,18 +191,25 @@
 		return new URLSearchParams();
 	}
 
-	async function handleNotionSelect(notionId: string) {
-		chosenNotionId = notionId;
-		notionSheetOpen = false;
+	/** Notion (vue « Notions ») ou chapitre (vue « Programme ») choisi dans la liste */
+	async function handleNavSelect(id: string) {
+		if (activeView === PROGRAMME_VIEW) chosenChapterId = id;
+		else chosenNotionId = id;
+		navSheetOpen = false;
 		writeChoicesToUrl();
-		// Panneau refermé et notion rendue avant de défiler (le panneau bloque le défilement)
+		// Panneau refermé et contenu rendu avant de défiler (le panneau bloque le défilement)
 		await tick();
-		// Choisie après avoir descendu : on remonte au début de la notion
-		if (notionTop && notionTop.getBoundingClientRect().top < 0) {
-			notionTop.scrollIntoView({ block: 'start' });
+		// Choisi après avoir descendu : on remonte au début
+		if (contentTop && contentTop.getBoundingClientRect().top < 0) {
+			contentTop.scrollIntoView({ block: 'start' });
 		}
-		// Clavier, lecteur d'écran : le focus passe au titre de la notion choisie
-		document.getElementById('notion-titre')?.focus({ preventScroll: true });
+		// Clavier, lecteur d'écran : le focus passe au titre choisi
+		document.getElementById('catalogue-titre')?.focus({ preventScroll: true });
+	}
+
+	function handleViewChange(view: CatalogueView) {
+		chosenView = view;
+		writeChoicesToUrl();
 	}
 
 	/**
@@ -142,7 +220,12 @@
 		const params = new URLSearchParams();
 		if (chosenGrade) params.set(GRADE_PARAM, chosenGrade);
 		if (chosenGrade && withLowerGrades) params.set(LOWER_GRADES_PARAM, '1');
-		if (selectedNotion) params.set(NOTION_PARAM, selectedNotion.id);
+		if (programme.length > 0) params.set(VIEW_PARAM, activeView);
+		if (activeView === PROGRAMME_VIEW && selectedChapter) {
+			params.set(CHAPTER_PARAM, selectedChapter.id);
+		} else if (activeView === NOTIONS_VIEW && selectedNotion) {
+			params.set(NOTION_PARAM, selectedNotion.id);
+		}
 		const query = searchQuery.trim();
 		if (query) params.set(SEARCH_PARAM, query);
 		const search = params.size > 0 ? `?${params.toString()}` : '';
@@ -237,6 +320,47 @@
 
 <svelte:window onkeydown={handleWindowKeydown} />
 
+<!-- Liste (colonne à gauche sur grand écran, panneau du bas sur téléphone) et contenu affiché -->
+{#snippet browser(
+	navLabel: string,
+	groups: typeof notionGroups,
+	selectedId: string,
+	sheetButtonLabel: string,
+	content: Snippet
+)}
+	<div class="lg:grid lg:grid-cols-[16rem_minmax(0,1fr)] lg:gap-8">
+		<aside class="hidden lg:block">
+			<div class="sticky top-4 max-h-[calc(100vh-2rem)] overflow-y-auto pr-2">
+				<CatalogueTreeNav label={navLabel} {groups} {selectedId} onselect={handleNavSelect} />
+			</div>
+		</aside>
+
+		<div bind:this={contentTop} class="min-w-0 scroll-mt-4">
+			<Button
+				variant="outline"
+				class="mb-4 w-full justify-between lg:hidden"
+				onclick={() => (navSheetOpen = true)}
+			>
+				<span class="truncate">{sheetButtonLabel}</span>
+				<ChevronDown class="h-4 w-4 shrink-0" aria-hidden="true" />
+			</Button>
+
+			{@render content()}
+		</div>
+	</div>
+
+	<Sheet.Root bind:open={navSheetOpen}>
+		<Sheet.Content side="bottom" class="max-h-[80vh] overflow-y-auto">
+			<Sheet.Header>
+				<Sheet.Title>{navLabel}</Sheet.Title>
+			</Sheet.Header>
+			<div class="px-4 pb-6">
+				<CatalogueTreeNav label={navLabel} {groups} {selectedId} onselect={handleNavSelect} />
+			</div>
+		</Sheet.Content>
+	</Sheet.Root>
+{/snippet}
+
 <SeoHead
 	title="Automaths - Banque de questions | Chiphre"
 	description="Banque de questions de mathématiques : composez une série d’exercices et lancez-la en classe, en contrôle blanc, en flash-cards ou en course aux nombres."
@@ -320,6 +444,27 @@
 					/>
 				{/if}
 			</div>
+
+			<!-- Bascule : seulement quand le niveau choisi a un programme ; la recherche remplace les deux vues -->
+			{#if programme.length > 0 && !searchResult}
+				<div
+					role="group"
+					aria-label="Parcourir par"
+					class="inline-flex rounded-md border border-border p-0.5"
+				>
+					{#each VIEW_OPTIONS as option (option.view)}
+						{@const pressed = activeView === option.view}
+						<button
+							type="button"
+							class="rounded px-3 py-1 text-sm {pressed
+								? 'bg-primary text-primary-foreground'
+								: 'text-muted-foreground hover:text-foreground'}"
+							aria-pressed={pressed}
+							onclick={() => handleViewChange(option.view)}>{option.label}</button
+						>
+					{/each}
+				</div>
+			{/if}
 		</div>
 
 		{#if searchResult}
@@ -361,61 +506,43 @@
 					{/each}
 				</Accordion.Root>
 			{/if}
-		{:else if catalogue.branches.length === 0 && catalogue.unclassified.length === 0}
+		{:else if activeView === NOTIONS_VIEW && catalogue.branches.length === 0 && catalogue.unclassified.length === 0}
 			<p class="rounded-lg border border-dashed p-12 text-center text-muted-foreground">
 				Aucune question pour ce niveau.
 			</p>
 		{/if}
 
-		{#if selectedBranch && selectedNotion && !searchResult}
+		{#if !searchResult && activeView === PROGRAMME_VIEW && selectedChapter}
+			{@const chapter = selectedChapter}
+			{@render browser(
+				'Chapitres',
+				chapterGroups,
+				chapter.id,
+				`Chapitre : ${chapter.name} · ${chapterTemplateCount(chapter)}`,
+				programmeContent
+			)}
+			{#snippet programmeContent()}
+				{#key chapter.id}
+					<CatalogueProgrammeSections {chapter} />
+				{/key}
+			{/snippet}
+		{:else if !searchResult && activeView === NOTIONS_VIEW && selectedBranch && selectedNotion}
 			{@const notion = selectedNotion}
-			<!-- Notions : colonne à gauche (grand écran), panneau du bas (téléphone) -->
-			<div class="lg:grid lg:grid-cols-[16rem_minmax(0,1fr)] lg:gap-8">
-				<aside class="hidden lg:block">
-					<div class="sticky top-4 max-h-[calc(100vh-2rem)] overflow-y-auto pr-2">
-						<CatalogueNotionNav
-							branches={catalogue.branches}
-							selectedNotionId={notion.id}
-							onselect={handleNotionSelect}
-						/>
-					</div>
-				</aside>
-
-				<div bind:this={notionTop} class="min-w-0 scroll-mt-4">
-					<Button
-						variant="outline"
-						class="mb-4 w-full justify-between lg:hidden"
-						onclick={() => (notionSheetOpen = true)}
-					>
-						<span class="truncate">
-							Notion : {notion.name} · {notionTemplateCount(notion)}
-						</span>
-						<ChevronDown class="h-4 w-4 shrink-0" aria-hidden="true" />
-					</Button>
-
-					{#key notion.id}
-						<CatalogueNotionSections {notion} />
-					{/key}
-				</div>
-			</div>
-
-			<Sheet.Root bind:open={notionSheetOpen}>
-				<Sheet.Content side="bottom" class="max-h-[80vh] overflow-y-auto">
-					<Sheet.Header>
-						<Sheet.Title>Notions</Sheet.Title>
-					</Sheet.Header>
-					<div class="px-4 pb-6">
-						<CatalogueNotionNav
-							branches={catalogue.branches}
-							selectedNotionId={notion.id}
-							onselect={handleNotionSelect}
-						/>
-					</div>
-				</Sheet.Content>
-			</Sheet.Root>
+			{@render browser(
+				'Notions',
+				notionGroups,
+				notion.id,
+				`Notion : ${notion.name} · ${notionTemplateCount(notion)}`,
+				notionContent
+			)}
+			{#snippet notionContent()}
+				{#key notion.id}
+					<CatalogueNotionSections {notion} />
+				{/key}
+			{/snippet}
 		{/if}
 
-		{#if catalogue.unclassified.length > 0 && !searchResult}
+		{#if catalogue.unclassified.length > 0 && !searchResult && activeView === NOTIONS_VIEW}
 			<!-- Modèles hors de l'arbre lu : ne devrait pas arriver, jamais perdus pour autant.
 			     Repliés : leurs aperçus ne se calculent qu'à l'ouverture. -->
 			<Accordion.Root type="multiple" bind:value={openUnclassified} class="mt-10">
