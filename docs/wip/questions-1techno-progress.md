@@ -8,16 +8,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après #2856 et la création des brouillons du lot 6._
+_Mis à jour le 2026-11-19, migration du lot 6 écrite et auditée._
 
-- **État** : lots 1 à 5 clos. Lot 6 (§ 30-31) : phase 0 validée, P1-P5 écrits
-  (`scripts/questions/1techno-6`), simulation verte, rendus vérifiés (Chrome), PR #2856 mergée.
-- **Prochaine action** : migration de rangement P1-P5 + retrait de 137 et `1_TECHNO` de 97b3a376 (gabarit lot 2,
-  ids au § « Lot 6 — brouillons en prod ») → test rouge/vert → `security-auditor` → go de David (destructif) → PR.
-- **En attente de David** : go pour la partie destructive (97b3a376), une fois la migration écrite.
-- **Pièges en cours** : dépôt principal sale (fichiers d'autres sessions) → commit 827809b06 local sur `main` = 4606c8101
-  déjà poussé ; questions-1gen à prévenir (4 communs). `Doc-inchangée:` dans un COMMIT.
-- **Worktree / branche** : `../ubumaths-wt-questions-1techno`, `feat/questions-1techno-lot6-migration` (ids des brouillons commités).
+- **État** : lots 1 à 5 clos. Lot 6 : P1-P5 brouillons en prod ; migration `20261119052352_..._lot6_rangement_tags`
+  écrite (rouge sans le corps, 15 verts), `security-auditor` sans bloquant ; PR ouverte, à ne PAS merger sans go.
+- **Prochaine action** : go de David → merge → `migration list --linked` (seule la nôtre en attente, sinon stop) →
+  `db:migrate` → vérif MCP → page à cocher P1-P5 → publication (`publier-lot.ts`, par David).
+- **En attente de David** : go pour la partie destructive (97b3a376 perd 1TECHNO-137 et `1_TECHNO` ; 0 donnée d'élève).
+- **Pièges en cours** : questions-1gen à prévenir (4 communs du lot 5). `Doc-inchangée:` dans un COMMIT.
+- **Worktree / branche** : `../ubumaths-wt-questions-1techno`, `feat/questions-1techno-lot6-migration`.
 
 ## 1. Relevé (prod, 2026-11-17)
 
@@ -971,3 +970,6 @@ rangé sur 4e871e12 (nœud de 1SPE-353 et 1TECHNO-137), tags 1SPE-353 + 1TECHNO-
 sur le nœud de leur point, 5 tags (090, 097, 136, 137, 013) ; (B) 97b3a376 perd 1TECHNO-137 et `1_TECHNO`. Test
 `questions-1techno-lot6-rangement-tags.test.ts` : corps vidé → 7 rouges et le bloc nominal ne démarre pas ; migration
 rendue → 14 verts.
+`security-auditor` : aucun bloquant. Faible (hérité du gabarit) : la garde du rollback ne vérifiait pas que les 5 sont
+encore des brouillons (un P4 publié aurait perdu son nœud et son tag) → garde ajoutée, test de plus : 15 verts.
+Info : 1TECHNO-137 sans modèle publié de 1re techno tant que P4 n'est pas publié.

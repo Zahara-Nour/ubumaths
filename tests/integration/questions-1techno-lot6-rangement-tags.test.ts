@@ -344,6 +344,21 @@ describe('1re techno lot 6 : les branches d’échec de la migration', () => {
 		});
 	});
 
+	it('rollback refusé si un des 5 a été publié depuis la migration', async () => {
+		await enTransaction(async () => {
+			await poserEtatProd(pg, auteur);
+			await pg.query(readFileSync(MIGRATION, 'utf-8'));
+			await sansTriggerDeDate(
+				pg,
+				`update public.question_templates set status = 'published' where id = $1`,
+				[P4]
+			);
+			await expect(pg.query(extractRollback(MIGRATION))).rejects.toThrow(
+				/rollback : un des 5 modèles n'est plus un brouillon/
+			);
+		});
+	});
+
 	it('rollback refusé si 97b3a376 a repris `1_TECHNO` depuis la migration', async () => {
 		await enTransaction(async () => {
 			await poserEtatProd(pg, auteur);

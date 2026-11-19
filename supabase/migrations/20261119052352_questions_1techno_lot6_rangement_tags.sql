@@ -52,7 +52,8 @@
 --
 -- Rollback (aucune donnée d'élève). Il retire les 5 tags posés, rend les 5 brouillons sans nœud,
 -- et rend à 97b3a376 le niveau `1_TECHNO` et le tag 1TECHNO-137. Garde : il refuse si un des 5
--- tags manque, ou si 97b3a376 a repris `1_TECHNO` ou un point 1TECHNO depuis.
+-- tags manque, si un des 5 n'est plus un brouillon (un modèle publié perdrait son nœud et son
+-- tag), ou si 97b3a376 a repris `1_TECHNO` ou un point 1TECHNO depuis.
 -- Bloc éprouvé par le test d'intégration, à jouer dans UNE transaction
 -- (`psql -1 -v ON_ERROR_STOP=1 -f`, ou l'éditeur SQL en un seul envoi) :
 -- ROLLBACK:BEGIN
@@ -88,6 +89,10 @@
 -- 	  join public.question_template_points t on t.template_id = r.id and t.point_id = p.id;
 -- 	if v_tags <> 5 then
 -- 		raise exception 'rollback : tags changés depuis la migration : % sur 5 présents', v_tags;
+-- 	end if;
+-- 	if exists (select 1 from public.question_templates
+-- 	            where id in (select id from _q1t6_retour) and status <> 'draft') then
+-- 		raise exception 'rollback : un des 5 modèles n''est plus un brouillon (publié depuis la migration)';
 -- 	end if;
 -- 	select count(*) into v_retire from public.question_templates q
 -- 	 where q.id = '97b3a376-01de-42cd-8297-b0f7937e38f1' and not ('1_TECHNO' = any(q.grades))
