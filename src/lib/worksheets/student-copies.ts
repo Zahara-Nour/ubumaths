@@ -36,6 +36,8 @@ export interface CopyRecipient {
 	class_name: string | null;
 	/** Taille du texte de ses fiches (accessibilité) ; absente : normale */
 	text_size?: TextSize;
+	/** Lecture facilitée de ses fiches (Luciole) ; absente : éteinte */
+	easy_reading?: boolean;
 }
 
 /** La copie d'un élève telle que l'aperçu la rend */
@@ -162,7 +164,8 @@ export function studentCopyTypst(view: StudentCopyView, recipient: CopyRecipient
 	return generateStudentWorksheetTypst({ ...view, show_student_name: true }, 'none', {
 		studentName: copyRecipientName(recipient) ?? undefined,
 		className: recipient.class_name,
-		textSize: recipient.text_size
+		textSize: recipient.text_size,
+		easyReading: recipient.easy_reading
 	});
 }
 
