@@ -6,20 +6,22 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, après la publication du lot 12._
+_Mis à jour le 2026-11-19, après #2877 (fichiers du lot 13 mergés)._
 
-- **État** : lots 0 à 12 publiés (lot 12 : 5/5, § 19.5). Restent les lots 13 à 19 du § 14 ; le lot 19 se réduit à
-  CM2-102 (§ 19.4).
-- **Prochaine action** : phase 0 du lot 13 (aires : 071, 072, 073, 074, 075, 120), nouvelle branche dans le worktree.
-- **En attente de David** : stash « cm2-9 ids » du dépôt principal, à supprimer.
-- **Pièges en cours** : `Doc-inchangée:` dans un COMMIT ; sujet de commit en minuscule. `migration:horodatage` = heure
-  réelle UTC ; une autre migration en attente → stop avant `db:migrate` (une migration distante absente de la branche :
-  mettre le worktree à jour sur `origin/main` d'abord). `db:migrate` depuis le worktree : `supabase/.temp` copié.
-  `create-questions` lancé par David dans le dépôt principal → copier les fichiers avec leurs ids dans le worktree, puis
-  `git restore` côté dépôt principal. `create-questions` / `publier-lot` refusés au classifieur : David les lance (`!`).
-  Port 5179 pris par `questions-ttechno` : serveur d'essai sur 5186. Un titre déjà porté au même nœud et niveau (autre
-  classe) : `create-questions` le bloque → renommer.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, détaché sur `main` (nouvelle branche au lot 13).
+- **État** : lots 0 à 12 publiés. Lot 13 (aires, 5 modèles : 073, 074, 075, 120, 072 encadrement ; 071 déjà couvert)
+  écrit et mergé (#2877, § 20). Restent les lots 14a à 19 du § 14 ; le lot 19 se réduit à CM2-102 (§ 19.4).
+- **Prochaine action** : David lance `create-questions --dir scripts/questions/cm2-13 --publier` (dépôt principal, `main`
+  à jour) ; copier les ids dans le worktree ; migration nœud + tag (gabarit du lot 12 : « unités et conversions » ×2,
+  « carré », « rectangle », « aires sur quadrillage ») ; page à cocher.
+- **En attente de David** : la création des 5 brouillons en prod.
+- **Pièges en cours** : `Doc-inchangée:` dans un COMMIT ; sujet de commit en minuscule, corps ≤ 100 caractères par ligne.
+  `migration:horodatage` = heure réelle UTC ; une autre migration en attente → stop avant `db:migrate` (worktree remis
+  sur `origin/main` d'abord). `db:migrate` depuis le worktree : `supabase/.temp` copié. `create-questions` /
+  `publier-lot` refusés au classifieur : David les lance (`!`), puis copier les fichiers avec ids dans le worktree et
+  `git restore` côté dépôt principal. Port 5179 pris par `questions-ttechno` : serveur d'essai sur 5186. Un titre déjà
+  porté au même nœud et niveau : `create-questions` le bloque → renommer.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, détaché sur `main` après #2877 (nouvelle branche pour la
+  migration du lot 13).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
