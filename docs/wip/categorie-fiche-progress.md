@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, après #2903._
+_Mis à jour le 2026-11-19, PR 2b ouverte (n° dans `gh pr list --search head:feat/categorie-fiche-editeur-ui`)._
 
-- **État** : PR 1 (#2901) et PR 2a (#2903, case `worksheets.custom_title`) mergées, migrations jouées en prod (`migration list --linked` vide) · branche `feat/categorie-fiche-editeur-ui` ouverte (pas encore poussée) : 1er commit = `db:types` + retrait des `as never` de `categorie-notions-fiche.test.ts` (cliquet tenu) · **Prochaine action** : PR 2b (éditeur + PDF) — choix catégorie/notions dans l'éditeur, titre composé, badge du niveau, bas de page, tous les cas de la synthèse ; tests d'abord · **En attente de David** : rien · **Pièges en cours** : `title` toujours rempli (titre composé écrit par l'éditeur quand `custom_title` est faux) ; retirer les notions en trop AVANT de passer en catégorie à une notion (23514) ; duplication (`api/worksheets/[id]/duplicate`) et publication en chapitre recopient catégorie + notions + `custom_title` ; la route élève ne sélectionne pas `grades` ; FK RESTRICT ; `as never` restant dans `cadres-lignes-partage.test.ts` (valeur `unknown` voulue) ; maquette : catégorie en italique minuscule gris `#5a5a5a` · **Worktree** : `../ubumaths-wt-categorie-fiche` · **Maquette** : https://claude.ai/artifact/4NVjLSrbd7J7XNPzaC3cur
+- **État** : PR 2b (éditeur + PDF) poussée sur `feat/categorie-fiche-editeur-ui`, revues faites (code-reviewer Opus + security-auditor : 0 bloquant, corrections intégrées) · **Prochaine action** : CI verte → merger, puis PR 3 (reprise des 50 fiches, page à cocher) · **En attente de David** : essayer l'éditeur sur le serveur du worktree (`pnpm dev --port 5176`, compte `teacher@local.test`, fiche « Essai catégorie ») ; noms anglais des catégories (Technical practice, Applications, Automatisms, Review) à valider · **Pièges en cours** : PUT = trois requêtes, pas une transaction (écart 8 de `docs/systeme/fiches-et-pdf.md`, fonction SQL à envisager) ; notion archivée encore acceptée par le serveur (l'éditeur ne la propose pas) ; `escapeTypst` n'échappe pas `[` `]` ailleurs (défaut de `main`, corrigé ici pour titre / sous-titre / bas de page seulement) · **Worktree** : `../ubumaths-wt-categorie-fiche`
 
 ## Synthèse de la phase 0 (2026-11-19)
 
@@ -54,8 +54,13 @@ _Mis à jour le 2026-11-19, après #2903._
    partage (catégorie, notions, niveaux), tests d'intégration rouges puis verts ; `db:migrate`,
    `db:types`.
 2. ✅ **PR 2a — case « titre libre »** (#2903, migration `20261119182829` jouée le 2026-11-19).
-   **PR 2b — éditeur + PDF** : choix catégorie/notions dans l'éditeur, titre composé, badge du
-   niveau, bas de page, tous les cas de la synthèse.
+   **PR 2b — éditeur + PDF** (ouverte le 2026-11-19) : choix catégorie/notions dans l'éditeur,
+   titre composé, badge du niveau, bas de page, tous les cas de la synthèse. Fait aussi : la vue
+   élève, l'aperçu d'affectation, le corrigé de classe et le lien de cours transmettent niveau,
+   catégorie, case et notions au PDF ; la duplication les recopie ; crochets échappés.
+   Décidé en cours de route (sans changer la synthèse) : fiche d'exercices au titre composé passée
+   en évaluation → titre libre (notions seules, sans catégorie) ; gabarit de prof sans
+   `{{title_sub}}` → titre complet « notions · catégorie ».
 3. **PR 3 — reprise des 50 fiches** : page à cocher (déduit du titre), écriture en prod par David.
 4. **PR 4 — script des automatismes** (ADR 0011) : pose catégorie + notions.
 
