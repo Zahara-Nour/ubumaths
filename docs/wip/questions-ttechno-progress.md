@@ -5,13 +5,13 @@ Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) · bornes 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, après la publication du lot 7._
+_Mis à jour le 2026-11-19, lot 8 écrit (PR en cours)._
 
-- **État** : lots 0 à 7 publiés (sauf L7, L8 du 5b) ; lot 7 (deux variables, 6 modèles) publié le 2026-11-19 (§ 53). Reste le lot 8 (§ 33).
-- **Prochaine action** : lot 8 (loi binomiale : 057, 060, 061, 067, 069, 090, 091), phase 0 (relevé prod, bornes, proposition, questions à David).
+- **État** : lots 0 à 7 publiés (sauf L7, L8 du 5b) ; lot 8 (loi binomiale, 7 modèles B1–B7) écrit, simulation verte, essayé en local (§ 55). PR des fichiers en cours, branche `feat/questions-ttechno-lot8`.
+- **Prochaine action** : merge de la PR, puis David lance `create-questions --dir scripts/questions/ttechno-8-loi-binomiale --publier` ; ensuite migration nœud + tag (gabarit lot 7 ; 057, 067, 090 sur la notion « Loi binomiale » 7f0932c3, 060 sur d78d5a6b, 061 sur 49cafc5f, 069 et 091 sur aa1217ed), page à cocher, publication.
 - **En attente de David** : le `deploy:prod` qui livre #2839 (L7, L8), s'il ne vient pas d'être fait (vérifier `production`).
-- **Pièges en cours** : `$` littéral (tableur) = `\$` ; un point TTECHNO par modèle (trigger) ; tag = nœud DU POINT ; `publier-lot.ts` (simulation comprise) et `create-questions --publier` visent la prod : David les lance (`!`) et le script peut ne pas écrire les ids dans le dépôt principal (les reporter à la main).
-- **Worktree / branche** : aucun (retiré après #2876).
+- **Pièges en cours** : `$` littéral (tableur) = `\$` ; un point TTECHNO par modèle (trigger) ; tag = nœud DU POINT ; `publier-lot.ts` et `create-questions --publier` visent la prod : David les lance (`!`), ids reportés à la main si besoin ; `p^floor(…)` refusé par eval (passer par une variable) ; Chrome refuse `[::1]` : serveur `--host 127.0.0.1`.
+- **Worktree / branche** : `ubumaths-wt-questions-ttechno`, `feat/questions-ttechno-lot8`.
 
 ## 1. Périmètre
 
@@ -1215,3 +1215,28 @@ p à un chiffre après la virgule ; calcul exact de Σ k·P(X = k) seulement pou
 B2, B3 neufs, n ⩽ 10, originaux intacts ; **Q38** ` ```simulation ` à graine fixe, questions indépendantes du
 tirage ; **Q39** Python dans B4, B5, B7, tableur dans B6 ; **Q40** un seul lot de 7 ; question d'accès : personne
 pour les brouillons, Tle techno à la publication.
+
+## 55. Lot 8 : écriture (2026-11-19)
+
+`docs/wip/questions/lot-ttechno-8.py` → `scripts/questions/ttechno-8-loi-binomiale/` (7 fichiers, 88 specs),
+`grades ['T_TECHNO']`, brouillons. Worktree `ubumaths-wt-questions-ttechno`, branche `feat/questions-ttechno-lot8`.
+
+- B1 (057) : pièces défectueuses, X ~ B(n ; p) : valeurs 0 à n (choix), « au moins une » → {X ⩾ 1}, « toutes en bon
+  état » → {X = 0}, plus grande valeur et nombre de valeurs (n, n + 1). B2 (060) : ligne n (5 à 9) donnée, trois
+  coefficients de la ligne n + 1 ; relation de Pascal sur deux coefficients donnés ; la relation (choix). B3 (061) :
+  triangle donné jusqu'à n = 8, lire C(n ; k) ; C(9 ou 10 ; 2 à 4) en construisant le triangle ; symétrie, C(n ; 0),
+  C(n ; 1) pour n ⩽ 10. B4 (067) : ` ```barres ` de B(10 ; p) en % (sans tableau) : valeur la plus probable ;
+  p = 0,2 / 0,5 / 0,8 d'après la forme ; Python `C[k] * p**k * (1-p)**(10-k)`. B5 (090) : ` ```simulation ` de N
+  échantillons (graine 1 à 30) : la loi du nombre de 1, fréquences → probabilités quand N grandit, `random() < p`.
+  B6 (069) : placer (n ; np) pour n = 10 à 50, p ∈ {0,1 ; … ; 0,4} ; droite par l'origine de coefficient p
+  (choix) ; n fixé : coefficient n, espérance pour p donné ; tableur `=A2*\$D\$1`. B7 (091) : ` ```loi `
+  B(3 ou 4 ; 0,1 / 0,2 / 0,5), `arrondi: 4` (probabilités exactes) : Σ k·P(X = k) et np ; ` ```simulation ` en
+  mode `moyenne` (n ⩽ 25) : la moyenne se rapproche de n × p ; Python `s + k*L[k]`.
+- Simulation `create-questions` verte contre la prod (aucun homonyme) ; `question:specs` 7 / 7 importables ;
+  `sonde-courbes` 0 problème ; sonde jetable des ` ```barres ` / ` ```loi ` / ` ```simulation ` (300 tirages) :
+  633 blocs, 0 problème ; 611 formules distinctes : accolades et `validateLatex` 0 problème.
+- Vu en route : `p^floor(11*p)` refusé par eval (« Expected exponent ») → variable `m` ; une simulation de B(n ; p)
+  est bornée à n ⩽ 29 (B7 : n = 30 retiré) ; ` ```barres ` refuse un effectif décimal → probabilités en %.
+- Base locale : 7 brouillons ; aperçu admin (Chrome, `127.0.0.1:5182`) : B4 bâtons et corrigé, B5 tableau
+  effectif / fréquence / probabilité, B6 5 points placés jugés justes, B7 courbe des moyennes et droite de
+  l'espérance, Python.
