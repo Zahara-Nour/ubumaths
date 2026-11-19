@@ -5,18 +5,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, après #2897 (lot 9c rangé en prod, page à cocher, § 26 septies)._
+_Mis à jour le 2026-11-19, lot 9c publié (§ 26 septies)._
 
-- **État** : lots 0 à 9ab publiés, **166 points du CM1 sur 171**. Lot 9c (4 modèles, CM1 + CM2 : 097/087,
-  104/094) en brouillons en prod, rangés et tagués (#2897, migration jouée) ; page à cocher publiée.
+- **État** : lots 0 à 9c publiés, **168 points du CM1 sur 171**. Lot 9c : 4 verdicts « ok » sur 4,
+  `publier-lot --publier` lancé par David, 4 `published` vérifiés au MCP (CM1 + CM2).
   105, 114, 140 restent sans modèle (D).
-- **Prochaine action** : lire et compter les verdicts de https://claude.ai/artifact/M3j3FBF47PAATrDk2cgwcf
-  (collection `verdicts`) ; puis `publier-lot --dir scripts/questions/cm1-9c` en simulation, David `--publier`.
+- **Prochaine action** : recompter le découpage validé (§ 3, § 26) contre les PR mergées et la base, puis
+  proposer la clôture à David (versement dans `docs/systeme/`, archive du journal).
 - **En attente de David** : facultatif, 08 (`1dd68bdd`, CM1-130) sur « quatrième proportionnelle » plutôt que sur
   la notion Situations de proportionnalité ?
 - **Pièges en cours** : `--mettre-a-jour` ne touche JAMAIS un publié ; commitlint : pas de type `content`, corps
   ≤ 100 caractères par ligne ; David lance `publier-lot --publier` et `garde-niveaux-tags`.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, branche `feat/questions-cm1-lot9c-rangement` (mergée).
+- **Worktree / branche** : aucun (branche `feat/questions-cm1-lot9c-rangement` mergée, worktree retiré).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -2376,3 +2376,5 @@ figure) ; 130 V3 (÷ une fois) = une seule utilisation de la linéarité ; jumea
   dessinée » (segment, rectangle, carré, triangle, cercle : vérifications non dessinées par la page), solutions
   vues dans l'aperçu local (§ 26 sexies). Publiée : https://claude.ai/artifact/M3j3FBF47PAATrDk2cgwcf
   (`verdicts`, capacité `db`), base vide à la publication.
+- Verdicts : 4 « ok » sur 4, sans commentaire (ids = ceux des 4 fichiers). David a lancé la simulation,
+  `garde-niveaux-tags` et `publier-lot --publier` ; vérifié au MCP : les 4 `published`, `grades` CM1 + CM2.
