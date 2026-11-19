@@ -17,8 +17,10 @@
  *
  * @vitest-environment node
  */
-import { describe, it, expect, beforeAll, afterAll } from 'vitest';
-import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+import { describe, it, expect, beforeAll, afterAll, vi } from 'vitest';
+import { createClient, type SupabaseClient, type User } from '@supabase/supabase-js';
+import { isHttpError } from '@sveltejs/kit';
+import { GET, PUT } from '../../src/routes/api/worksheets/[id]/+server';
 import { cleanupAllTestData } from '../helpers/database/trigger-test-helpers';
 import { DEFAULT_TEST_PASSWORD } from '../helpers/database/supabase-client';
 import { getPostgresClient } from '../helpers/database/postgres-client';
@@ -351,5 +353,68 @@ describe('lecture', () => {
 		]);
 		expect(await save(id, {})).toBeNull();
 		expect((await stored(id)).title).toBe(`${RUN} Probas · Applications`);
+	});
+});
+
+describe('route PUT puis GET /api/worksheets/[id]', () => {
+	/** Les `locals` de la route, avec le client CONNECTÉ du prof */
+	function locals(): App.Locals {
+		return {
+			supabase: teacherClient,
+			safeGetSession: vi.fn().mockResolvedValue({ user: { id: teacherId } as User }),
+			requestId: crypto.randomUUID()
+		} as unknown as App.Locals;
+	}
+
+	async function put(id: string, body: unknown): Promise<{ status: number; json: unknown }> {
+		const request = new Request(`http://localhost/api/worksheets/${id}`, {
+			method: 'PUT',
+			body: JSON.stringify(body)
+		});
+		try {
+			const response = await PUT({ locals: locals(), params: { id }, request } as never);
+			return { status: response.status, json: await response.json() };
+		} catch (cause) {
+			if (isHttpError(cause)) return { status: cause.status, json: cause.body };
+			throw cause;
+		}
+	}
+
+	it('enregistre, puis relit catégorie, case et notions nommées (le schéma ne les retire pas)', async () => {
+		const id = await worksheet('worksheet', null);
+		const saved = await put(id, {
+			category: 'technical_practice',
+			custom_title: false,
+			notions: [suitesId]
+		});
+		expect(saved.status).toBe(200);
+		expect(saved.json).toMatchObject({
+			worksheet: {
+				title: `${RUN} Suites · Entraînement technique`,
+				classifications: [{ node_id: suitesId, name: `${RUN} Suites`, position: 0 }]
+			}
+		});
+
+		const response = await GET({ locals: locals(), params: { id } } as never);
+		const { worksheet: read } = (await response.json()) as { worksheet: Record<string, unknown> };
+		expect(read).toMatchObject({
+			category: 'technical_practice',
+			custom_title: false,
+			classifications: [{ node_id: suitesId, name: `${RUN} Suites`, kind: 'notion', position: 0 }]
+		});
+	});
+
+	it('deux notions en Entraînement technique : 400 avec la raison', async () => {
+		const id = await worksheet('worksheet', 'technical_practice', [suitesId]);
+		const saved = await put(id, { notions: [suitesId, derivationId] });
+		expect(saved.status).toBe(400);
+		expect(JSON.stringify(saved.json)).toMatch(/une seule notion/i);
+	});
+
+	it('notions seules, sans autre champ : acceptées', async () => {
+		const id = await worksheet('assessment', null);
+		const saved = await put(id, { notions: [derivationId, suitesId] });
+		expect(saved.status).toBe(200);
+		expect((await stored(id)).notions).toEqual([derivationId, suitesId]);
 	});
 });

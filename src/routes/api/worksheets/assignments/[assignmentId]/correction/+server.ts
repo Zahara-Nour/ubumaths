@@ -26,6 +26,7 @@ import { z } from 'zod';
 import { sanitizeForFileName } from '#lib/worksheets/pdf-file-name.ts';
 import { generateWorksheetTypst } from '#lib/typst/generators/index.ts';
 import { canAccessCorrections } from '#lib/server/worksheets/correction-release.ts';
+import { loadWorksheetClassifications } from '#lib/server/worksheets/worksheet-classification.ts';
 import {
 	fetchAssignmentClasses,
 	formatClassNames
@@ -236,7 +237,11 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 
 		// Generate Typst content for correction
 		const typstContent = generateWorksheetTypst({
-			worksheet: worksheet,
+			// Notions de la fiche (ADR 0041) : titre composé et bas de page
+			worksheet: {
+				...worksheet,
+				classifications: await loadWorksheetClassifications(locals.supabase, worksheet.id)
+			},
 			instance: instanceData,
 			config: worksheet.config || {},
 			mode: 'correction',

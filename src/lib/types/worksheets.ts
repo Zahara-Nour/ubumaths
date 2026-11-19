@@ -905,6 +905,15 @@ export interface StudentWorksheetView {
 	/** Cartouche du gabarit, comme le PDF du prof (lot 4b) : total, durée */
 	total_points?: number | null;
 	estimated_duration_minutes?: number | null;
+	/**
+	 * Niveau, catégorie, titre libre et notions de la fiche (ADR 0041) : badge
+	 * et titre composé du PDF, comme celui du prof. Absents : titre tel quel,
+	 * sans badge.
+	 */
+	grades?: string[];
+	category?: string | null;
+	custom_title?: boolean;
+	classifications?: WorksheetClassificationView[];
 }
 
 /**

@@ -71,6 +71,8 @@ import type {
 	WorksheetType
 } from '#lib/types/worksheets.ts';
 import { isStudentOfAssignment } from '#lib/server/worksheets/assignment-recipients.ts';
+import { loadWorksheetClassifications } from '#lib/server/worksheets/worksheet-classification.ts';
+import { isWorksheetCategory } from '#lib/worksheets/worksheet-title.ts';
 import { loadAuthorStyleTemplate } from '#lib/server/worksheets/worksheet-styles.ts';
 import { worksheetHeader } from '#lib/worksheets/worksheet-header.ts';
 import { estimateAnswerFrames } from '#lib/worksheets/document/answer-frames.ts';
@@ -245,7 +247,10 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 					style_id,
 					created_by,
 					total_points,
-					estimated_duration_minutes
+					estimated_duration_minutes,
+					grades,
+					category,
+					custom_title
 				)
 			`
 			)
@@ -271,6 +276,9 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 				created_by: string;
 				total_points: number | null;
 				estimated_duration_minutes: number | null;
+				grades: string[] | null;
+				category: string | null;
+				custom_title: boolean;
 			}
 		);
 		// Les classes visées, lues dans la jonction. Cet endpoint est réservé au
@@ -519,6 +527,12 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 			// Cartouche du gabarit, comme le PDF du prof
 			total_points: worksheet.total_points,
 			estimated_duration_minutes: worksheet.estimated_duration_minutes,
+			// Badge du niveau et titre composé du PDF (ADR 0041) : l'accès à la
+			// fiche est vérifié plus haut ; les notions se lisent sous sa RLS
+			grades: worksheet.grades ?? [],
+			category: isWorksheetCategory(worksheet.category) ? worksheet.category : null,
+			custom_title: worksheet.custom_title,
+			classifications: await loadWorksheetClassifications(locals.supabase, worksheet.id),
 			// Preview metadata
 			preview_mode: isTeacherMode ? 'teacher' : 'student',
 			preview_student_id: studentId ?? null,
