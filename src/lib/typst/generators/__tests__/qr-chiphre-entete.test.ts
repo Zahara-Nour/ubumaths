@@ -57,6 +57,8 @@ function sheet(styleId: string | null, mode: Mode): string {
 interface Piece {
 	str: string;
 	x: number;
+	/** Largeur, en part de la largeur de la page */
+	w: number;
 }
 
 /** Morceaux de texte de chaque page du PDF compilé */
@@ -72,7 +74,9 @@ async function pieces(typst: string): Promise<Piece[][]> {
 		const content = await page.getTextContent();
 		out.push(
 			content.items.flatMap((item) =>
-				'str' in item ? [{ str: item.str, x: item.transform[4] / width }] : []
+				'str' in item
+					? [{ str: item.str, x: item.transform[4] / width, w: item.width / width }]
+					: []
 			)
 		);
 	}
@@ -142,6 +146,18 @@ describe('Chiphre sur le PDF', () => {
 				// « chiph.re » à droite
 				expect(xOf(page, SITE), where).toBeGreaterThan(0.8);
 			}
+		},
+		60_000
+	);
+
+	it.each(STYLES)(
+		'« %s » : le titre centré sur la page, QR à droite (David, 2026-11-19)',
+		async (_name, id) => {
+			const [first] = await pieces(sheet(id, 'worksheet'));
+			const title = first.find((p) => p.str.includes('Fiche test'));
+			if (!title) throw new Error('titre introuvable');
+			expect(title.x + title.w / 2).toBeGreaterThan(0.49);
+			expect(title.x + title.w / 2).toBeLessThan(0.51);
 		},
 		60_000
 	);

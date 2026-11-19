@@ -1624,25 +1624,24 @@ const studentStyleHeader = (
 // Le fond blanc masque le filet vertical derrière le bandeau.
 #place(top + center, scope: "parent", float: true)[
   #block(width: 100%, fill: white, inset: (bottom: 6pt), below: 1.2em)[
-${banner}    // Titre, identité et notes à gauche ; QR du site à droite (« chiph.re » dessous)
+${banner}    // Première ligne, trois colonnes de même largeur sur les côtés : badge du
+    // niveau à gauche, titre au CENTRE DE LA PAGE, QR du site à droite
+    // (« chiph.re » dessous). Dessous le titre, en petit gris : la catégorie, ou
+    // les notions sous un titre libre (ADR 0041).
     #grid(
-      columns: (1fr, auto),
-      column-gutter: 1em,
-      align: (horizon, center + top),
-      [
-    // Badge du niveau à gauche, titre au centre ; dessous, en petit gris :
-    // la catégorie, ou les notions sous un titre libre (ADR 0041)
-    {{#if show_title}}#grid(
-      columns: (1fr, 4fr, 1fr),
+      columns: (1fr, 3fr, 1fr),
       column-gutter: 0.5em,
-      align: (left + horizon, center + horizon, right),
+      align: (left + horizon, center + horizon, right + horizon),
       [{{#if show_level}}{{level_badges}}{{/if}}],
-      [#text(size: 1.5em, weight: "bold")[{{title}}]{{#if show_title_sub}}
+      [{{#if show_title}}#text(size: 1.5em, weight: "bold")[{{title}}]{{#if show_title_sub}}
         #v(0.2em, weak: true)
-        #text(size: 0.85em, style: "italic", fill: rgb("#5a5a5a"))[{{title_sub}}]{{/if}}],
-      []
+        #text(size: 0.85em, style: "italic", fill: rgb("#5a5a5a"))[{{title_sub}}]{{/if}}{{/if}}],
+      [{{#if site_qr}}#box[#align(center)[#{{site_qr}}
+      #v(2pt, weak: true)
+      #text(size: 8pt, fill: gray)[{{site_name}}]]]{{/if}}]
     )
-    #v(0.4em){{/if}}
+    #v(0.4em)
+    // Identité et notes sur toute la largeur
     {{#if show_identity}}#grid(
       columns: (1fr, auto, 1fr),
       align: (left, center, right),
@@ -1653,11 +1652,6 @@ ${banner}    // Titre, identité et notes à gauche ; QR du site à droite (« c
     #v(0.3em){{/if}}
     {{#if show_header_notes}}#text(size: 0.9em)[${HEADER_NOTES}]
     #v(0.3em){{/if}}
-      ],
-      [{{#if site_qr}}#{{site_qr}}
-      #v(2pt, weak: true)
-      #text(size: 8pt, fill: gray)[{{site_name}}]{{/if}}]
-    )
     #v(0.3em)
     #line(length: 100%, stroke: 0.5pt + gray)
   ]
