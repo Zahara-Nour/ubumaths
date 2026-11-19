@@ -6,22 +6,23 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, après #2877 (fichiers du lot 13 mergés)._
+_Mis à jour le 2026-11-19, après #2878 (lot 13 rangé et tagué en prod)._
 
-- **État** : lots 0 à 12 publiés. Lot 13 (aires, 5 modèles : 073, 074, 075, 120, 072 encadrement ; 071 déjà couvert)
-  écrit et mergé (#2877, § 20). Restent les lots 14a à 19 du § 14 ; le lot 19 se réduit à CM2-102 (§ 19.4).
-- **Prochaine action** : David lance `create-questions --dir scripts/questions/cm2-13 --publier` (dépôt principal, `main`
-  à jour) ; copier les ids dans le worktree ; migration nœud + tag (gabarit du lot 12 : « unités et conversions » ×2,
-  « carré », « rectangle », « aires sur quadrillage ») ; page à cocher.
-- **En attente de David** : la création des 5 brouillons en prod.
+- **État** : lots 0 à 12 publiés. Lot 13 (aires) : 5 brouillons rangés et tagués en prod (#2878, `db:migrate` fait,
+  § 20.3) ; page à cocher publiée, verdicts attendus. Restent les lots 14a à 19 du § 14 ; le lot 19 se réduit à
+  CM2-102 (§ 19.4).
+- **Prochaine action** : quand David a coché, lire et compter les verdicts (`ArtifactData list verdicts`,
+  https://claude.ai/artifact/6G45jabTk2DLAXfhojXQcb) ; puis `publier-lot --dir scripts/questions/cm2-13` (David lance
+  simulation et `--publier`). Ensuite phase 0 du lot 14a (données lues : 107, 156, 123, 157, 124, 158).
+- **En attente de David** : la relecture du lot 13.
 - **Pièges en cours** : `Doc-inchangée:` dans un COMMIT ; sujet de commit en minuscule, corps ≤ 100 caractères par ligne.
   `migration:horodatage` = heure réelle UTC ; une autre migration en attente → stop avant `db:migrate` (worktree remis
   sur `origin/main` d'abord). `db:migrate` depuis le worktree : `supabase/.temp` copié. `create-questions` /
   `publier-lot` refusés au classifieur : David les lance (`!`), puis copier les fichiers avec ids dans le worktree et
   `git restore` côté dépôt principal. Port 5179 pris par `questions-ttechno` : serveur d'essai sur 5186. Un titre déjà
-  porté au même nœud et niveau : `create-questions` le bloque → renommer.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, détaché sur `main` après #2877 (nouvelle branche pour la
-  migration du lot 13).
+  porté au même nœud et niveau : `create-questions` le bloque → renommer. `de` + `{{if}}` ne s'élide pas : écrire les
+  compléments élidés ; un milieu calculé dans une figure s'écrit `\dfrac` → `milieu()`.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, détaché sur `main` après #2878 (nouvelle branche au lot 14a).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -1481,3 +1482,10 @@ du dépôt principal (5 fichiers identiques à `origin/main`) est supprimé.
 - Migration `20261119104838_questions_cm2_lot13_rangement_tags.sql`, dérivée de celle du lot 12 par substitution (aucun
   reste). Test `questions-cm2-lot13-rangement-tags` : 9 verts ; corps remplacé par `select 1;` → 5 rouges ; fichier
   restauré (`cmp`).
+- `security-auditor` : aucun finding bloquant (non bloquant : l'état de la prod vaut à l'instant de l'audit ; les
+  gardes arrêtent la migration si un modèle a été rangé à la main entre-temps).
+- #2878 : CI verte, `check:migrations` vert, mergée. Worktree remis sur `origin/main`, `migration list --linked` → seule
+  la nôtre en attente ; `db:migrate`. MCP : 5 brouillons rangés (« unités et conversions » ×2, « carré », « rectangle »,
+  « aires sur quadrillage »), un tag chacun (073, 074, 075, 120, 072), `updated_at` = création.
+- `garde-niveaux-tags` : aucun niveau manquant. Page à cocher (5 fiches, aucune alerte, base prod) :
+  https://claude.ai/artifact/6G45jabTk2DLAXfhojXQcb ; `verdicts` vide au départ.
