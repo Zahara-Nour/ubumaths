@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, après #2900._
+_Mis à jour le 2026-11-19, phase 0 de la PR 4 validée._
 
-- **État** : réglage « Lecture facilitée » livré (#2898) et complété (#2900 : interligne des petits textes du tableau de bord, classe posée avant le premier affichage) ; vérifications manuelles notées.
-- **Prochaine action** : PR 4 = PDF en Luciole / Luciole Math (Typst lit `Luciole-Math.otf` telle quelle) : phase 0 à poser à David.
-- **En attente de David** : rien (essai du réglage via `verifications-manuelles.md`).
-- **Pièges en cours** : `\cdot` gros et `∯` petit laissés (D8) ; polices `.woff2` en cache ; serveurs 5181 / 5182 du worktree encore lancés ; `:8445` → 5175 peut-être ouvert.
-- **Worktree / branche** : `../ubumaths-wt-lecture-facilitee` · `feat/lecture-facilitee-suite` (mergée, à remplacer par une branche neuve depuis `origin/main` pour la PR 4).
+- **État** : PR 4 (PDF en Luciole) : phase 0 validée (D9–D13) ; en deux PR (règle `db:types`) : 4a migration (colonne `easy_reading` de `student_print_settings`) + tests d'intégration, puis 4b le code des PDF.
+- **Prochaine action** : PR 4a ouverte → merge → `db:migrate` → `db:types` ; puis PR 4b sur une branche neuve.
+- **En attente de David** : rien.
+- **Pièges en cours** : `\cdot` gros et `∯` petit laissés (D8) ; polices `.woff2` en cache ; serveurs 5181 / 5182 du worktree peut-être encore lancés.
+- **Worktree / branche** : `../ubumaths-wt-lecture-facilitee` · `feat/lecture-facilitee-pdf`.
 
 ## Ce qui existe déjà (vérifié le 2026-11-19)
 
@@ -59,6 +59,17 @@ Conséquence pour l'étude :
 - **D7 (2026-11-19, après #2892)** : David trouve le jeu écran Luciole Math réussi (« franchement j'aime beaucoup ») et répond « oui » : l'interrupteur « Lecture facilitée » passe aussi les **formules** en Luciole Math (D1 tranché).
 - **D8 (2026-11-19)** : David reconfirme D7 (« Oui, maths aussi ») et laisse `\cdot` (gros) et `∯` (petit) tels quels.
 - **Phase 0 des formules (complète A, découle de D7)** : nominal : réglage allumé → toutes les formules (champs MathLive et formules rendues) en Luciole Math ; limite : `/dev/polices` rend, en partant, le jeu du réglage (et non plus KaTeX) ; erreur : police absente → repli du navigateur, rien ne casse. Le jeu de polices des maths vaut pour toute la page (en-tête compris : il n'y en a guère).
+
+### Phase 0 de la PR 4 — PDF en Luciole (validée par David le 2026-11-19, « ok » sur les recommandations)
+
+- **Nominal** : fiche imprimée en lecture facilitée → tout le document en Luciole, formules en Luciole Math (bandeau, titres, consignes, réponses, corrigé : le corrigé quitte Shantell / Chiphre Math) ; lettres, mots et lignes un peu espacés comme à l'écran.
+- **Limite** : se cumule avec la taille du texte ; un gabarit de prof passe aussi en Luciole ; réglage éteint → rien ne change, rien de plus téléchargé (Luciole + Luciole Math ≈ 810 ko).
+- **Erreur** : compilation avec Luciole en échec → PDF dans la police habituelle + avertissement (comme le corrigé).
+- **D9 (Q1)** : comme la taille du texte : enregistré **par élève** (`student_print_settings`, colonne `easy_reading`) ; interrupteur à côté du menu « Taille du texte » sur la fiche de l'élève ; vaut pour sa copie nominative ; le prof le règle dans l'aperçu « vue élève » ; au coup par coup (jamais enregistré) dans l'aperçu générique.
+- **D10 (Q1 bis, question d'accès)** : personne de nouveau ne lit quoi que ce soit : l'élève, son prof et l'admin, comme la taille ; ni ami, ni autre élève, ni anon.
+- **D11 (Q2)** : réglage PDF et interrupteur écran **séparés** (écran = ce navigateur ; PDF = l'élève).
+- **D12 (Q3)** : fiches seulement (fiche, réponses, corrigé, copies par élève) ; autres PDF plus tard si David le veut.
+- **D13 (Q4)** : mêmes petits écarts qu'à l'écran, quitte à une page de plus.
 
 ## Observations de l'essai (2026-11-19)
 

@@ -397,7 +397,8 @@ Code : `src/lib/server/` (`chapters.ts`, `chapters-publication.ts`, `chapter-tem
   (test `tests/integration/styles-de-fiche.test.ts`).
 - `student_print_settings` (`20261016104200`) : **taille du texte** des PDF de fiche d'un élève
   (`text_size` : `normal` 10 pt, `large` 14 pt, `x_large` 18 pt ; pas de ligne = normale), pour
-  les élèves malvoyants. Une ligne par élève (`student_id` clé primaire, compte `student`
+  les élèves malvoyants, et **lecture facilitée** (`easy_reading`, `20261119182535` : PDF en
+  Luciole et Luciole Math ; `false` par défaut), pour les élèves dys. Une ligne par élève (`student_id` clé primaire, compte `student`
   seulement). L'élève lit et modifie la sienne ; le prof et l'admin, celle de tout élève
   (`is_my_student`) ; personne d'autre. ⚠️ Volontairement **hors de `profiles`** : un ami lit la
   ligne `profiles` entière, et ce réglage révèle un trouble de la vue (test :
