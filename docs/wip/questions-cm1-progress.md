@@ -5,18 +5,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, lot 9ab publié (§ 26 quinquies)._
+_Mis à jour le 2026-11-19, lot 9c écrit (§ 26 sexies), PR des fichiers ouverte._
 
-- **État** : lots 0 à 9ab publiés, **166 points du CM1 sur 171** (recompte MCP). Restent : 9c (097, 104 : 4
-  constructions à la règle graduée, CM1 + CM2-087/094, § 26) ; 105, 114, 140 restent sans modèle (D).
-- **Prochaine action** : écrire le lot 9c (§ 26, modèles 9 à 12) sur une branche neuve tirée de `origin/main`.
+- **État** : lots 0 à 9ab publiés, **166 points du CM1 sur 171**. Lot 9c (4 modèles, CM1 + CM2 : 097/087,
+  104/094) écrit, specs et aperçus locaux verts ; PR des fichiers en cours. 105, 114, 140 restent sans modèle (D).
+- **Prochaine action** : CI, merge ; puis **David** lance `create-questions --dir scripts/questions/cm1-9c
+--publier` (brouillons) ; ids commités, rangement + tags (migration, gabarit 9ab), page à cocher, `publier-lot`.
 - **En attente de David** : facultatif, 08 (`1dd68bdd`, CM1-130) sur « quatrième proportionnelle » plutôt que sur
   la notion Situations de proportionnalité ?
-- **Pièges en cours** : `--mettre-a-jour` ne touche JAMAIS un publié : le lancer AVANT `publier-lot` ;
-  commitlint refuse le type `content` et un corps > 100 caractères par ligne ; David lance `publier-lot
---publier` et `garde-niveaux-tags` ; ranger : réponses = positions AFFICHÉES (`ranger-attendus.ts`) ;
-  `pnpm -s` refusé (pnpm 12).
-- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, branche `feat/questions-cm1-lot9ab-rangement` (mergée) ; nouvelle branche pour 9c.
+- **Pièges en cours** : `create-questions --publier` en LOCAL écrit l'id local dans les fichiers : relancer le
+  script du lot avant de commiter ; `--mettre-a-jour` ne touche JAMAIS un publié ; commitlint : pas de type
+  `content`, corps ≤ 100 caractères par ligne ; David lance `publier-lot --publier` et `garde-niveaux-tags`.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, branche `feat/questions-cm1-lot9c`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -2337,3 +2337,22 @@ figure) ; 130 V3 (÷ une fois) = une seule utilisation de la linéarité ; jumea
 - Verdicts : 8 « OK » sur 8, aucun commentaire. `publier-lot` en simulation : 8/8 ; `--publier` et
   `garde-niveaux-tags` lancés par David. Vérifié au MCP : 8 modèles `published`.
 - Recompte MCP (points non archivés ayant un modèle publié) : **CM1 166/171** ; CM2 134/158.
+
+### 26 sexies. Lot 9c — écrit (2026-11-19)
+
+- Script `docs/wip/questions/lot-cm1-9c.py` → `scripts/questions/cm1-9c/` (4 modèles, 8 variations, 38 specs) ;
+  grades CM1 + CM2 pour les quatre (jumeaux CM2-087, 094). Niveaux : 1 (09, 12), 2 (10, 11). Figures à
+  compléter sur papier uni, palettes par défaut (syntaxe : `block-catalog/figure-a-completer.ts`).
+  - 09 segment : V1 3 à 12 cm ; V2 cm et mm (3,1 à 9,9 cm) ; V3 sur [Ax) (3 à 10 cm, 6 directions).
+  - 10 : V1 rectangle ([AB] 6 à 9 cm, BC 2 à 5 cm) ; V2 carré (4 à 7 cm).
+  - 11 triangle rectangle en A : [AB] 5 à 10 cm, AC 3 à 7 cm.
+  - 12 cercle de centre O : V1 rayon 2 à 6 cm ; V2 2,1 à 5,9 cm.
+- Écart au § 26 : V3 du 09, étiquette « x » ajoutée au bout de la demi-droite (`texte(…)`), absente du rendu
+  sans elle alors que l'énoncé dit $[Ax)$.
+- Specs : justes et erreurs typiques (longueur à 2-5 mm près, mm oubliés, tracé sans règle ni équerre,
+  pas sur la demi-droite, angle droit en B, rayon = moitié du diamètre, figure non fermée) ; `question:specs`
+  300 tirages par variation, tous réussis ; `sonde-figures` 0 problème ; `create-questions` en simulation contre
+  la prod : 4 « à créer ».
+- Base locale (9 copies, une variation chacune), aperçus à 390 px (Playwright, port 5184) : aucun défilement
+  horizontal, aucune erreur de console ; vus : les 8 figures et leurs palettes (Règle graduée · Segment ;
+  Segment · Équerre · Règle graduée ; Règle graduée · Compas).
