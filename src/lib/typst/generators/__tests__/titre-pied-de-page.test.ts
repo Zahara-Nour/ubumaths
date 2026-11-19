@@ -3,6 +3,11 @@
  * « 2 colonnes - paysage ») : feuilles imprimées mélangées, on retrouve la
  * fiche de chacune. Titre à gauche, numéro de page au centre.
  *
+ * Le niveau de la fiche (David, 2026-11-19) : nom complet sous le titre en
+ * page 1, forme courte après le titre au bas de chaque page ; plusieurs
+ * niveaux du plus petit au plus grand, séparés par « · » ; aucun → rien.
+ * Fiche en anglais : pas de niveau (aucun nom anglais des niveaux).
+ *
  * Rendu vérifié avec le compilateur de prod (typst.ts en WebAssembly) : texte
  * de la page 2, qui n'a pas d'en-tête, lu par pdfjs.
  */
@@ -28,18 +33,23 @@ const INSTANCE: InstanceData = {
 	}))
 };
 
-function sheet(styleId: string | null): string {
+function sheet(
+	styleId: string | null,
+	grades: string[] = [],
+	language: 'fr' | 'en' = 'fr'
+): string {
 	const worksheet = {
 		id: 'w',
 		title: TITLE,
 		description: null,
 		type: 'worksheet',
-		config: {},
+		config: { language },
+		grades,
 		style_id: styleId,
 		estimated_duration_minutes: null,
 		total_points: null
 	} as unknown as WorksheetRow;
-	return new WorksheetGenerator({}, undefined, { mode: 'worksheet' }).generate({
+	return new WorksheetGenerator({ language }, undefined, { mode: 'worksheet' }).generate({
 		worksheet,
 		instance: INSTANCE
 	}).typstContent;
@@ -90,4 +100,25 @@ describe('titre de la fiche au pied de page', () => {
 		},
 		60_000
 	);
+
+	it('niveau : nom complet sous le titre en page 1, forme courte au bas de chaque page', async () => {
+		const all = await pages(sheet(null, ['1_SPE']));
+		expect(all[0]).toContain('1ère spécialité maths');
+		for (const [index, page] of all.entries()) {
+			expect(page, `page ${index + 1}`).toContain(`${TITLE} · 1ère Spé`);
+		}
+	}, 60_000);
+
+	it('deux niveaux : du plus petit au plus grand', () => {
+		const typst = sheet(null, ['1_SPE', '2']);
+		expect(typst).toContain('2nde · 1ère spécialité maths');
+		expect(typst).toContain('2nde · 1ère Spé');
+	});
+
+	it('aucun niveau, ou fiche en anglais : rien', () => {
+		for (const typst of [sheet(null, []), sheet(null, ['1_SPE'], 'en')]) {
+			expect(typst).not.toContain('Spé');
+			expect(typst).not.toContain(`${TITLE} ·`);
+		}
+	});
 });

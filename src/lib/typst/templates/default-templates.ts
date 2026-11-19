@@ -1584,7 +1584,7 @@ const studentStyleCommon = (
       columns: (1fr, auto, 1fr),
       column-gutter: 1em,
       align: (left, center, right),
-      [{{#if show_title}}{{title}}{{/if}}],
+      [{{#if show_title}}{{title}}{{/if}}{{#if show_level}} · {{level_short}}{{/if}}],
       counter(page).display("1 / 1", both: true),
       if counter(page).get().first() > 1 [{{#if site_gidouille}}#{{site_gidouille}}#h(0.3em){{/if}}{{site_name}}]
     )
@@ -1626,6 +1626,8 @@ ${banner}    // Titre, identité et notes à gauche ; QR du site à droite (« c
       align: (horizon, center + top),
       [
     {{#if show_title}}#align(center)[#text(size: 1.5em, weight: "bold")[{{title}}]]
+    #v(0.4em){{/if}}
+    {{#if show_level}}#align(center)[#text(fill: luma(90))[{{level}}]]
     #v(0.4em){{/if}}
     {{#if show_identity}}#grid(
       columns: (1fr, auto, 1fr),
@@ -1794,10 +1796,13 @@ export const SAMPLE_PREVIEW_DATA = {
 	site_qr: SITE_QR_TYPST,
 	site_name: SITE_NAME,
 	site_gidouille: SITE_GIDOUILLE_TYPST,
+	level: '1ère spécialité maths',
+	level_short: '1ère Spé',
 	// Display-option flags: previews always show every field, whatever a given
 	// worksheet's config says. Kept last so the editor's placeholder panel, which
 	// lists the first entries, keeps showing content fields.
 	show_title: 'true',
+	show_level: 'true',
 	show_identity: 'true',
 	show_date: 'true',
 	show_class: 'true',
