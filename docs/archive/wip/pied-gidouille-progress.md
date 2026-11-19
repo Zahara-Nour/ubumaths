@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, avant la PR._
+_Mis à jour le 2026-11-19, après #2891._
 
-- **État** : pied de page (numéro au centre, gidouille + chiph.re à droite) et niveau de la fiche (nom complet sous le titre, forme courte au bas de page) commités sur la branche, PR pas encore ouverte (accord de David pour la même PR) · **Prochaine action** : écouter l'autre modification demandée par David, puis PR · **En attente de David** : sa nouvelle modification · **Pièges en cours** : le PDF de l'élève et celui d'un lien de partage n'ont pas les niveaux (vue SQL sans `grades`) → pas de niveau imprimé ; l'ajouter demande une migration (question d'accès à poser) · **Worktree / branche** : `../ubumaths-wt-pied-gidouille` / `feat/pied-gidouille`
+- **État** : chantier clos, #2891 mergée (numéro au centre, gidouille + chiph.re à droite, niveau sous le titre et au bas de page). Pas encore en prod (attend `deploy:prod`). Suite : chantier `categorie-fiche` (phase 0) ; niveau sur le PDF de l'élève / d'un lien de partage = migration à décider (noté dans son journal).
 
 ## Historique
 
