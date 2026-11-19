@@ -61,6 +61,7 @@ import {
 import { MATH_LIMITS_SETUP } from '#lib/worksheets/document/math-limits.ts';
 import { TITLE_ONLY_HEADER, worksheetHeader } from '#lib/worksheets/worksheet-header.ts';
 import type { DocumentForm, WorksheetDocument } from '#lib/worksheets/document/types.ts';
+import { SITE_NAME, SITE_QR_TYPST } from '../templates/site-mark';
 
 // ============================================================================
 // TYPES
@@ -373,6 +374,9 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 			show_duration: flag(showDuration),
 			// La ligne d'informations (durée, calculatrice, total) : seulement si elle a du contenu
 			show_header_notes: flag(showDuration || calculator !== '' || showTotal),
+			// Chiphre : QR du site en tête de la page 1, nom du site en bas des suivantes
+			site_qr: SITE_QR_TYPST,
+			site_name: SITE_NAME,
 			title: escapeTypst(
 				mode === 'worksheet' && this.options.inlineCorrections
 					? `${this.title(worksheet)} — ${this.labels.correction}`
