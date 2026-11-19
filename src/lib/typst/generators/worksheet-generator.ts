@@ -63,6 +63,12 @@ import { MATH_LIMITS_SETUP } from '#lib/worksheets/document/math-limits.ts';
 import { TITLE_ONLY_HEADER, worksheetHeader } from '#lib/worksheets/worksheet-header.ts';
 import type { DocumentForm, WorksheetDocument } from '#lib/worksheets/document/types.ts';
 import { SITE_GIDOUILLE_TYPST, SITE_NAME, SITE_QR_TYPST } from '../templates/site-mark';
+import { levelBadge } from '../worksheet-palette';
+import {
+	isWorksheetCategory,
+	printedTitle,
+	type PrintedTitle
+} from '#lib/worksheets/worksheet-title.ts';
 
 // ============================================================================
 // TYPES
@@ -239,19 +245,42 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 	}
 
 	/**
-	 * Les niveaux de la fiche, du plus petit au plus grand, séparés par « · » :
-	 * noms complets (sous le titre) et courts (bas de page). Fiche en anglais :
-	 * aucun, faute de noms anglais des niveaux. Une vue sans niveaux (PDF de
-	 * l'élève, lien de partage) : aucun.
+	 * Ce que le PDF imprime en titre (ADR 0041) : notions et catégorie, ou le
+	 * titre libre. Une fiche sans la case (construite hors de la base) garde son
+	 * titre tel quel.
 	 */
-	private levels(worksheet: WorksheetRow): { full: string; short: string } {
+	private printedTitle(worksheet: WorksheetRow): PrintedTitle {
+		const notions = [...(worksheet.classifications ?? [])]
+			.sort((a, b) => a.position - b.position || a.name.localeCompare(b.name, 'fr'))
+			.map((notion) => notion.name);
+		return printedTitle({
+			type: worksheet.type,
+			category: isWorksheetCategory(worksheet.category) ? worksheet.category : null,
+			customTitle: worksheet.custom_title ?? true,
+			title: this.title(worksheet),
+			notions,
+			locale: this.locale
+		});
+	}
+
+	/**
+	 * Les niveaux de la fiche, du plus petit au plus grand : noms complets et
+	 * courts séparés par « · » (gabarits des profs qui les impriment encore),
+	 * badges (forme courte, ADR 0041) en tête de la page 1 et au bas de page.
+	 * Fiche en anglais : aucun, faute de noms anglais des niveaux. Une vue sans
+	 * niveaux : aucun.
+	 */
+	private levels(worksheet: WorksheetRow): { full: string; short: string; badges: string } {
 		const grades: unknown[] = Array.isArray(worksheet.grades) ? worksheet.grades : [];
 		const known = grades.filter(isGradeCode);
-		if (this.locale !== 'fr' || known.length === 0) return { full: '', short: '' };
+		if (this.locale !== 'fr' || known.length === 0) return { full: '', short: '', badges: '' };
 		const sorted = [...new Set(known)].sort((a, b) => GRADES[a].schoolYear - GRADES[b].schoolYear);
 		return {
 			full: sorted.map((grade) => GRADES[grade].displayName).join(' · '),
-			short: sorted.map((grade) => GRADES[grade].shortName).join(' · ')
+			short: sorted.map((grade) => GRADES[grade].shortName).join(' · '),
+			badges: sorted
+				.map((grade) => `#${levelBadge(escapeTypst(GRADES[grade].shortName))}`)
+				.join('#h(0.3em)')
 		};
 	}
 
@@ -370,6 +399,7 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 		const showTotal = header.points && totalPoints !== '';
 
 		const levels = this.levels(worksheet);
+		const printed = this.printedTitle(worksheet);
 
 		// Prepare template data
 		const templateData: Record<string, string> = {
@@ -380,10 +410,17 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 			lang: TYPST_LANGS[this.locale],
 			// Le titre s'imprime toujours ; le reste selon le type
 			show_title: 'true',
-			// Le niveau de la fiche : sous le titre (page 1) et au bas de chaque page
+			// Le niveau de la fiche : badges à gauche du titre (page 1) et au début
+			// du bas de page (ADR 0041) ; noms en texte pour les gabarits des profs
 			show_level: flag(levels.full !== ''),
 			level: escapeTypst(levels.full),
 			level_short: escapeTypst(levels.short),
+			level_badges: levels.badges,
+			// Sous le titre, en petit : la catégorie, ou les notions sous un titre libre
+			show_title_sub: flag(printed.sub !== ''),
+			title_sub: escapeTypst(printed.sub),
+			// Au bas de chaque page : notions et catégorie, ou le titre libre
+			footer_title: escapeTypst(printed.footer),
 			show_student_name: flag(header.studentName),
 			show_class: flag(header.className),
 			show_date: flag(header.dateLine),
@@ -404,8 +441,8 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 			site_gidouille: SITE_GIDOUILLE_TYPST,
 			title: escapeTypst(
 				mode === 'worksheet' && this.options.inlineCorrections
-					? `${this.title(worksheet)} — ${this.labels.correction}`
-					: this.title(worksheet)
+					? `${printed.main} — ${this.labels.correction}`
+					: printed.main
 			),
 			// Lignes à remplir par l'élève, sauf ce que le PDF connaît déjà
 			date: fillLine('3cm'),

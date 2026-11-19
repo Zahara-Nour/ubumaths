@@ -378,6 +378,14 @@ export interface WorksheetTemplateRow {
 	updated_at: string;
 }
 
+/** Une notion de la fiche, telle que lue avec son nom (ADR 0041) */
+export interface WorksheetClassificationView {
+	node_id: string;
+	name: string;
+	kind?: string;
+	position: number;
+}
+
 export interface WorksheetRow {
 	id: string;
 	title: string;
@@ -399,6 +407,23 @@ export interface WorksheetRow {
 	estimated_duration_minutes: number | null;
 	total_points: number | null;
 	grades: string[];
+	/**
+	 * Catégorie de la fiche d'exercices (ADR 0041) ; vide hors fiche
+	 * d'exercices. Optionnelle : les fiches construites hors de la base n'en ont
+	 * pas. Lue par `isWorksheetCategory` avant usage (colonne `text`).
+	 */
+	category?: string | null;
+	/**
+	 * Vrai : `title` est un titre libre, imprimé tel quel ; faux : le titre
+	 * composé des notions et de la catégorie (ADR 0041). Absente : vrai.
+	 */
+	custom_title?: boolean;
+	/**
+	 * Notions de la fiche, dans l'ordre d'impression (`worksheet_classifications`,
+	 * ADR 0041). Pas une colonne : lues à part, comme `tags` ; absentes, rien
+	 * ne s'imprime.
+	 */
+	classifications?: WorksheetClassificationView[];
 	/**
 	 * ⚠️ Optionnel, et ça n'est pas un oubli : `tags` n'est plus une colonne de
 	 * `worksheets` depuis 20260908180000. Les étiquettes vivent dans
