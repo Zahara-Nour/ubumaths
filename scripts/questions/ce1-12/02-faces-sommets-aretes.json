@@ -1,4 +1,5 @@
 {
+	"id": "a690369b-fb5d-4333-ae34-8deecfe46864",
 	"title": "Faces, arêtes et sommets : cube, pavé, pyramide",
 	"description": "Compter les faces, les arêtes, les sommets d'un cube, d'un pavé, d'une pyramide à base carrée",
 	"grades": ["CE1"],
