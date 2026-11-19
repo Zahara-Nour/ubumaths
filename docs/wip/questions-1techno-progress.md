@@ -8,16 +8,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, lot 6 en cours (avant sa PR)._
+_Mis à jour le 2026-11-19, migration du lot 6 écrite et auditée._
 
-- **État** : lots 1 à 5 clos. Lot 6 (§ 30-31) : phase 0 validée, P1-P5 écrits
-  (`scripts/questions/1techno-6`), simulation verte, rendus vérifiés (Chrome), PR des fichiers ouverte.
-- **Prochaine action** : rendus de P1-P5 par David → fermer l'aperçu → PR des fichiers → David `create-questions
---publier` → migration de rangement + retrait de 137 et `1_TECHNO` de 97b3a376 (destructif : mesurer l'usage, go).
-- **En attente de David** : rien avant le merge ; ensuite `create-questions --publier` (lot 6).
-- **Pièges en cours** : dépôt principal sale (fichiers d'autres sessions) → commit de journal 827809b06 resté local sur
-  `main`, repris sur la branche ; questions-1gen à prévenir (4 communs). `Doc-inchangée:` dans un COMMIT.
-- **Worktree / branche** : `../ubumaths-wt-questions-1techno`, `feat/questions-1techno-lot6`.
+- **État** : lots 1 à 5 clos. Lot 6 : P1-P5 brouillons en prod ; migration `20261119052352_..._lot6_rangement_tags`
+  écrite (rouge sans le corps, 15 verts), `security-auditor` sans bloquant ; PR ouverte, à ne PAS merger sans go.
+- **Prochaine action** : go de David → merge → `migration list --linked` (seule la nôtre en attente, sinon stop) →
+  `db:migrate` → vérif MCP → page à cocher P1-P5 → publication (`publier-lot.ts`, par David).
+- **En attente de David** : go pour la partie destructive (97b3a376 perd 1TECHNO-137 et `1_TECHNO` ; 0 donnée d'élève).
+- **Pièges en cours** : questions-1gen à prévenir (4 communs du lot 5). `Doc-inchangée:` dans un COMMIT.
+- **Worktree / branche** : `../ubumaths-wt-questions-1techno`, `feat/questions-1techno-lot6-migration`.
 
 ## 1. Relevé (prod, 2026-11-17)
 
@@ -949,3 +948,28 @@ dans MathLive ne passe pas par l'automate : validation des réponses laissée au
 tableau croisé s'écrit avec **une** barre oblique inverse (`coin: Sexe \ Régime`, cf. `cross-table.test.ts`) ;
 deux affichent « Sexe \\ Régime ». Le modèle de 2de 89e928a4 (en prod, recopié) a ce défaut : signalé à David.
 Aperçu fermé, serveur 5179 arrêté, Tailscale :443/:8443 retirés.
+
+### Lot 6 — fichiers mergés (2026-11-18)
+
+PR #2856 mergée (CI verte : 7 réussis, 7 ignorés). Usage de 97b3a376 mesuré (MCP) : 0 carte, 0 tentative, 0 évaluation,
+0 réponse de test, 0 activité de cahier de texte ; sur 1TECHNO-137 : 0 entrée de cahier de texte, 0 état de point,
+0 exercice, 0 automatisme. Le retrait ne coupe rien à personne.
+
+### Lot 6 — brouillons en prod (2026-11-18)
+
+David a lancé `create-questions --publier` depuis le worktree : P1 `699b1aae-eada-468e-af95-25f74aede343`, P2
+`ef34cc66-8aac-4e06-8cb0-d6c4acf93997`, P3 `4ccf75c2-eae2-4d85-8045-50bdf26add73`, P4
+`b342c534-4dfd-4a37-ba06-0c48e7d50ae2`, P5 `2405ca31-d856-454d-9e1e-682ec371e088` ; brouillons `{1_TECHNO}`, sans nœud
+ni tag (vérifié MCP). 97b3a376 inchangé : publié, `{1_SPE,1_TECHNO}`, 2 tags (1SPE-353, 1TECHNO-137).
+
+### Lot 6 — migration de rangement (2026-11-19)
+
+Relevé prod (MCP, 2026-11-19) : P1-P5 brouillons `{1_TECHNO}`, sans nœud ni tag ; 97b3a376 publié `{1_SPE,1_TECHNO}`,
+rangé sur 4e871e12 (nœud de 1SPE-353 et 1TECHNO-137), tags 1SPE-353 + 1TECHNO-137. Migration
+`20261119052352_questions_1techno_lot6_rangement_tags` (gabarit du lot 2, sans point 1GEN) : (A) 5 brouillons rangés
+sur le nœud de leur point, 5 tags (090, 097, 136, 137, 013) ; (B) 97b3a376 perd 1TECHNO-137 et `1_TECHNO`. Test
+`questions-1techno-lot6-rangement-tags.test.ts` : corps vidé → 7 rouges et le bloc nominal ne démarre pas ; migration
+rendue → 14 verts.
+`security-auditor` : aucun bloquant. Faible (hérité du gabarit) : la garde du rollback ne vérifiait pas que les 5 sont
+encore des brouillons (un P4 publié aurait perdu son nœud et son tag) → garde ajoutée, test de plus : 15 verts.
+Info : 1TECHNO-137 sans modèle publié de 1re techno tant que P4 n'est pas publié.

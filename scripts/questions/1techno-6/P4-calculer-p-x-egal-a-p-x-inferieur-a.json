@@ -1,4 +1,5 @@
 {
+	"id": "b342c534-4dfd-4a37-ba06-0c48e7d50ae2",
 	"title": "Calculer P(X = a) et P(X ⩽ a)",
 	"description": "P(X = a), P(X ⩽ a) et P(X > a) par le contraire, d'après le tableau de la loi ou un énoncé (urne, dé)",
 	"grades": ["1_TECHNO"],
