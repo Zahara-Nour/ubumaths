@@ -422,9 +422,10 @@ titres, consignes, réponses, corrigé), les formules en Luciole Math (police de
 Typst lit telle quelle) ; lettres + 0,02 em, mots + 0,08 em, interligne 0,9 em, comme les écarts de
 l'écran (formules non espacées). Option `easyReading` du générateur (`WorksheetGeneratorOptions`,
 `GenerateTypstParams`, `StudentPdfOptions`, `CopyRecipient.easy_reading`) : `withEasyReading` pose
-les règles (encadrées de `// <lecture-facilitee>`) en tête et après le dernier `#set text(…)` ou
-`#set par(…)` de premier niveau, gabarit d'un prof compris ; les corrections ne prennent alors pas
-les polices du Corrigé. Se cumule avec la taille du texte. Les cinq fichiers
+les règles (encadrées de `// <lecture-facilitee>`) sur le **gabarit**, avant d'y placer les
+exercices (un `#set` d'exercice ne peut pas les attirer dans son bloc), en tête et après le dernier
+`#set text(…)` ou `#set par(…)` de premier niveau, gabarit d'un prof compris ; les corrections ne
+prennent alors pas les polices du Corrigé. Se cumule avec la taille du texte. Les cinq fichiers
 (`static/fonts/luciole/`, ≈ 810 ko) ne sont chargés que par un compilateur à part
 (`getEasyReadingCompiler`), avec le même repli que le Corrigé. Dans un lot de copies, chaque copie
 garde le réglage de son élève (bloc `#[ … ]` par copie). Où le réglage est choisi : comme la taille

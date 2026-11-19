@@ -316,9 +316,8 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 		const resolved = resolveTemplate(styleId, this.form, custom);
 		// Corrigé : Shantell Sans et Chiphre Math sur chaque correction seulement,
 		// posées par le rendu des exercices (`render-exercise.ts`) ; en lecture
-		// facilitée, tout le document en Luciole
-		const filled = this.generateFromTemplate(input, resolved);
-		const typstContent = this.options.easyReading ? withEasyReading(filled) : filled;
+		// facilitée, tout le document en Luciole (règles posées sur le gabarit)
+		const typstContent = this.generateFromTemplate(input, resolved);
 
 		return {
 			typstContent,
@@ -336,7 +335,11 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 		const { worksheet } = input;
 		// À la taille du texte voulue, avant d'y placer les exercices (qui n'ont
 		// aucune taille fixe : ils suivent celle du texte)
-		const templateContent = withTextSize(resolved.content, this.options.textSize ?? 'normal');
+		const sized = withTextSize(resolved.content, this.options.textSize ?? 'normal');
+		// Lecture facilitée : règles posées sur le GABARIT, avant d'y placer les
+		// exercices — un `#set` d'exercice (opération posée, tableau de variations,
+		// trous) ne peut pas les attirer dans son bloc
+		const templateContent = this.options.easyReading ? withEasyReading(sized) : sized;
 		const mode = this.pdfMode;
 		const ending = mode === 'worksheet' ? this.options.withCorrections : undefined;
 

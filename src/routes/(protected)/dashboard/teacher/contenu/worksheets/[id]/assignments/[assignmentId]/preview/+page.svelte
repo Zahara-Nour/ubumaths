@@ -218,6 +218,7 @@
 		const previous = easyReading;
 		easyReading = checked;
 		const studentId = selectedStudentId;
+		const studentName = previewStudentName;
 		if (!studentId) return;
 
 		isSavingEasyReading = true;
@@ -229,10 +230,11 @@
 			});
 			if (!response.ok) throw new Error(`HTTP ${response.status}`);
 			toaster.success(
-				`Lecture facilitée ${checked ? 'enregistrée' : 'retirée'} pour ${previewStudentName ?? 'cet élève'} (toutes ses fiches)`
+				`Lecture facilitée ${checked ? 'enregistrée' : 'retirée'} pour ${studentName ?? 'cet élève'} (toutes ses fiches)`
 			);
 		} catch {
-			easyReading = previous;
+			// Un autre élève choisi entre-temps : sa case vient de sa propre lecture
+			if (selectedStudentId === studentId) easyReading = previous;
 			toaster.error("La lecture facilitée n'a pas pu être enregistrée");
 		} finally {
 			isSavingEasyReading = false;
