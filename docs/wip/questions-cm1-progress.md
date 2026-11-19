@@ -5,18 +5,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, lot 9c écrit (§ 26 sexies), PR des fichiers ouverte._
+_Mis à jour le 2026-11-19, après #2894 (lot 9c écrit, § 26 sexies)._
 
 - **État** : lots 0 à 9ab publiés, **166 points du CM1 sur 171**. Lot 9c (4 modèles, CM1 + CM2 : 097/087,
-  104/094) écrit, specs et aperçus locaux verts ; PR des fichiers en cours. 105, 114, 140 restent sans modèle (D).
-- **Prochaine action** : CI, merge ; puis **David** lance `create-questions --dir scripts/questions/cm1-9c
+  104/094) écrit, specs et aperçus locaux verts, fichiers mergés (#2894). 105, 114, 140 restent sans modèle (D).
+- **Prochaine action** : **David** lance `create-questions --dir scripts/questions/cm1-9c
 --publier` (brouillons) ; ids commités, rangement + tags (migration, gabarit 9ab), page à cocher, `publier-lot`.
 - **En attente de David** : facultatif, 08 (`1dd68bdd`, CM1-130) sur « quatrième proportionnelle » plutôt que sur
   la notion Situations de proportionnalité ?
 - **Pièges en cours** : `create-questions --publier` en LOCAL écrit l'id local dans les fichiers : relancer le
   script du lot avant de commiter ; `--mettre-a-jour` ne touche JAMAIS un publié ; commitlint : pas de type
   `content`, corps ≤ 100 caractères par ligne ; David lance `publier-lot --publier` et `garde-niveaux-tags`.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, branche `feat/questions-cm1-lot9c`.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, branche `feat/questions-cm1-lot9c` (mergée) ; nouvelle branche pour les ids et le rangement.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -2353,6 +2353,7 @@ figure) ; 130 V3 (÷ une fois) = une seule utilisation de la linéarité ; jumea
   pas sur la demi-droite, angle droit en B, rayon = moitié du diamètre, figure non fermée) ; `question:specs`
   300 tirages par variation, tous réussis ; `sonde-figures` 0 problème ; `create-questions` en simulation contre
   la prod : 4 « à créer ».
+- #2894 ouverte, CI verte, mergée (aucune revue : contenu).
 - Base locale (9 copies, une variation chacune), aperçus à 390 px (Playwright, port 5184) : aucun défilement
   horizontal, aucune erreur de console ; vus : les 8 figures et leurs palettes (Règle graduée · Segment ;
   Segment · Équerre · Règle graduée ; Règle graduée · Compas).
