@@ -31,7 +31,7 @@
 -- Données d'élèves : aucune (modèles neufs, en brouillon).
 --
 -- Accès : personne ne gagne ni ne perd d'accès (question posée à David AVANT le SQL, en phase 0,
--- tranchée par lui le 2026-11-19 : personne, journal § 21 et 21.2). Aucune règle ne change. Effet visible : les 5
+-- tranchée par lui le 2026-11-19 : personne, journal § 21 et 21.2). Aucune règle ne change. Effet visible : les 6
 -- brouillons apparaissent sous leur nœud et sous leur point dans l'admin ; les élèves ne les voient
 -- qu'une fois publiés par David.
 --
