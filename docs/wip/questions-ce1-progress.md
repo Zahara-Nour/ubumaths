@@ -5,13 +5,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, phase 0 du lot 11 écrite (§ 18)._
+_Mis à jour le 2026-11-19, relevé prod (§ 19)._
 
-- **État** : lots 0 à 10 publiés. Relevé de fin de découpage (§ 18) : 023, 066, 067, 071 oubliés, `a7dfe502` (073)
-  jamais publié. Décidé : lot 11 (ces points + 072 en partie), puis chantier `centaines:` de `collection` (001, 002).
-- **Prochaine action** : phase 0 du lot 11 (§ 18) à valider, puis écrire `lot-ce1-11.py` dans un worktree.
-- **En attente de David** : 3 questions du § 18 ; essai tablette des cases « figure » (CP-060, CP-058) ; chantier
-  `verrou-deploy` ; futur chantier « `\textcolor` hors formule » (53 fichiers de lots).
+- **État** : lots 0 à 10 publiés ; robot à produire (CE1-080) publié dans `scripts/questions/ce1-11/` (#2687, #2689).
+  Prod : **95 points sur 107** à modèle publié. Lot 11 (§ 18, validé) écrit, **PR #2234 ouverte depuis le 2026-11-02,
+  jamais mergée** ; son dossier `ce1-11/` entre en collision avec celui du robot.
+- **Prochaine action** : reprendre #2234 dans un worktree : mise à jour depuis `main`, dossier renommé `ce1-12/`,
+  niveaux relevés, publication du lot entier (05 et `a7dfe502` compris, § 19). Puis un lot 001, 002, 003
+  (`centaines:` livré, #2420) + 074 et la fin de 072 (règle, équerre, compas, triangle, cercle : outils livrés).
+- **En attente de David** : essai tablette des cases « figure » (`verifications-manuelles.md`, ne bloque plus) ;
+  futur chantier « `\textcolor` hors formule » (53 fichiers de lots).
 - **Pièges en cours** : jamais de variable `e` ni `i` ; **mots en couleur dans le texte = `colt()`
   (`$\textcolor{…}{\text{…}}$`), jamais `\textcolor` nu** ; `{{if:}}` à condition contenant `{{eval:}}` non résolu →
   relire `--apercu` ; **niveaux : relever la catégorie juste avant la publication** ; `publier-lot` = tout le dossier
@@ -895,3 +898,17 @@ Questions à David :
    oui, c'est le cas qui distingue le CE1 du CP.
 3. **Niveaux** : premiers libres (Sens 6 ; Reconnaître et décrire 9, 10 ; Propriétés 6 ; Carrés et rectangles 2 ;
    Droites 2 pour `a7dfe502`). Recommandation : oui, relevés de nouveau avant la publication.
+
+## 19. Relevé du 2026-11-19 et suite (David, « ok » aux recos)
+
+Relevé MCP : **12 points sans modèle publié sur 107** — 023, 066, 067, 071 (lot 11, PR #2234 non mergée) ; 073
+(`a7dfe502`, brouillon) ; 001, 002 ; 074 ; 092, 048, 068, 078 (D, hors appli). 072 a désormais un modèle publié.
+
+Décisions :
+
+1. **Lot 11 publié d'un coup**, 05 et `a7dfe502` compris : la condition « après l'essai tablette » est tombée, des
+   cases « figure » sont déjà publiées (lot 12b du CE2 avec deux modèles CE1, lot 13 du CE2). L'essai reste noté.
+   Dossier renommé `ce1-12/` (`ce1-11/` = robot CE1-080).
+2. **Plus de chantier `centaines:`** : l'outil est livré (#2420). Lot de contenu 001, 002, 003, avec 074 et la fin de
+   072 (triangle, triangle rectangle, cercle : `controles-figure` les juge ; règle graduée, ADR 0036).
+3. Les 4 points D restent hors appli : CE1 couvert une fois ces deux lots publiés (103 points faisables).
