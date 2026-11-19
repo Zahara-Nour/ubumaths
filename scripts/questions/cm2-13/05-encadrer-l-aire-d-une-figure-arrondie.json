@@ -1,4 +1,5 @@
 {
+	"id": "678a72a7-2a8d-4240-819f-03d5283540ed",
 	"title": "Encadrer l'aire d'une figure arrondie",
 	"description": "Figure à bord arrondi (disque, ovale) sur un quadrillage : encadrer son aire entre les carreaux entièrement dedans et les carreaux touchés",
 	"grades": ["CM2"],

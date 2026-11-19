@@ -1470,3 +1470,14 @@ du dépôt principal (5 fichiers identiques à `origin/main`) est supprimé.
 - Base locale (copie du dossier dans le scratchpad, `.env.local`, sous `with-db-lock.sh`) : 5 brouillons ; aperçu admin à
   390 px (Playwright, port 5186), les 20 variations vues : aucun débordement, 0 erreur console ; décimaux groupés,
   case « choix » A à C, carreaux comptables.
+
+### 20.3 Lot 13 : prod, rangement (2026-11-19)
+
+- #2877 (fichiers) : CI verte, mergée. David lance `create-questions --dir scripts/questions/cm2-13 --publier` : MCP,
+  5 brouillons [CM2], niveau 1, sans nœud ni tag (`087df1a4`, `302c7dcd`, `6243c462`, `d2e2f75d`, `678a72a7`), ids
+  commités.
+- Points vérifiés au MCP : 073, 074 sur « unités et conversions », 075 sur « carré », 120 sur « rectangle » ; 072 sur
+  la **notion** « Aires » → modèle rangé sur sa sous-notion « aires sur quadrillage » (comme `31d64c00`).
+- Migration `20261119104838_questions_cm2_lot13_rangement_tags.sql`, dérivée de celle du lot 12 par substitution (aucun
+  reste). Test `questions-cm2-lot13-rangement-tags` : 9 verts ; corps remplacé par `select 1;` → 5 rouges ; fichier
+  restauré (`cmp`).
