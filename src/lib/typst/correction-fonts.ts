@@ -86,17 +86,18 @@ function endOfTypstCall(typst: string, start: number): number | null {
  *   (pied de page, numéros de page) ;
  * - après le DERNIER `#set text(…)` de premier niveau, sinon la police du
  *   modèle l'emporterait sur tout le contenu.
+ *
+ * @param rules - d'autres règles de police (essai de `/dev/polices/luciole`) ;
+ *   par défaut celles du Corrigé
  */
-export function withCorrectionFonts(typst: string): string {
+export function withCorrectionFonts(typst: string, rules: string = CORRECTION_FONT_RULES): string {
 	let insertAt: number | null = null;
 	for (const match of typst.matchAll(TOP_LEVEL_SET_TEXT)) {
 		insertAt = endOfTypstCall(typst, match.index) ?? insertAt;
 	}
 	const body =
-		insertAt === null
-			? typst
-			: `${typst.slice(0, insertAt)}\n${CORRECTION_FONT_RULES}${typst.slice(insertAt)}`;
-	return `${CORRECTION_FONT_RULES}\n${body}`;
+		insertAt === null ? typst : `${typst.slice(0, insertAt)}\n${rules}${typst.slice(insertAt)}`;
+	return `${rules}\n${body}`;
 }
 
 /** Le document porte-t-il les règles de police du Corrigé ? */

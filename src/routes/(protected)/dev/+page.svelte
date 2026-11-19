@@ -63,6 +63,12 @@
 			description: 'Comparaison des polices de rendu, et PDF de démonstration du corrigé.'
 		},
 		{
+			href: '/dev/polices/luciole',
+			title: 'Essai Luciole',
+			description:
+				'Lecture facilitée : consignes en Luciole, formules en Luciole Math, à l’écran et en PDF.'
+		},
+		{
 			href: '/dev/modeles',
 			title: 'Revue des modèles',
 			description:

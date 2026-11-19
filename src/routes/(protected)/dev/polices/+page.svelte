@@ -233,6 +233,10 @@
 
 <div class="container mx-auto p-4">
 	<h1 class="mb-4 text-2xl font-bold">Test Police Chiphre Math</h1>
+	<p class="mb-4 text-sm">
+		<a href="/dev/polices/luciole" class="text-primary underline">Essai Luciole</a> : consignes en Luciole,
+		formules en Luciole Math (lecture facilitée).
+	</p>
 
 	<!-- Direct font test without MathLive -->
 	<div class="mb-8 rounded-lg border-2 border-orange-300 bg-card p-4">
