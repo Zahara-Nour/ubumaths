@@ -5,10 +5,10 @@ Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) · bornes 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, après #2876._
+_Mis à jour le 2026-11-19, après #2876 et la page à cocher du lot 7._
 
-- **État** : lots 0 à 6 publiés (sauf L7, L8 du 5b). **Lot 7 (deux variables, 6 modèles) en brouillon en prod, rangé et tagué** (§ 51, `db:migrate` fait). Reste le lot 8 (§ 33).
-- **Prochaine action** : page à cocher du lot 7 (6 fiches, gabarit lot 6 § 47) ; après la relecture de David, `publier-lot.ts --dir scripts/questions/ttechno-7-deux-variables` (simulation puis `--publier`, par David). Ensuite lot 8 (loi binomiale : 057, 060, 061, 067, 069, 090, 091), phase 0.
+- **État** : lots 0 à 6 publiés (sauf L7, L8 du 5b). **Lot 7 (deux variables, 6 modèles) en brouillon en prod, rangé, tagué ; page à cocher publiée** (§ 52 : https://claude.ai/artifact/NG5nfwbeMXwSwCNhTXuNS9). Reste le lot 8 (§ 33).
+- **Prochaine action** : lire et compter les verdicts de la page du lot 7 ; après la relecture de David, `publier-lot.ts --dir scripts/questions/ttechno-7-deux-variables` (simulation puis `--publier`, par David). Ensuite lot 8 (loi binomiale : 057, 060, 061, 067, 069, 090, 091), phase 0.
 - **En attente de David** : le `deploy:prod` qui livre #2839 (L7, L8), s'il ne vient pas d'être fait (vérifier `production`).
 - **Pièges en cours** : `$` littéral (tableur) = `\$` ; un point TTECHNO par modèle (trigger) ; tag = nœud DU POINT ; `publier-lot.ts` (simulation comprise) et `create-questions --publier` visent la prod : David les lance (`!`) et le script peut ne pas écrire les ids dans le dépôt principal (les reporter à la main).
 - **Worktree / branche** : aucun (retiré après #2876).
@@ -1148,3 +1148,9 @@ dans les fichiers du dépôt principal (lancé d'ailleurs) : ids reportés à la
 - `security-auditor` : aucun finding (diff avec le lot 6 = en-tête, ids, codes, chemins, table temporaire, compte ;
   prod relue en lecture : 6 points non archivés sur les nœuds attendus, 6 brouillons sans nœud ni tag).
 - **#2876 mergée (2026-11-19)**, CI verte (conflit du journal avec main : la version de la branche le contenait), `check:migrations --pr 2876` vert. `migration list --linked` : seule `20261119100631` en attente → `db:migrate` depuis le dépôt principal (4 conditions). Prod vérifiée (MCP) : les 6 sur leur nœud, un tag chacun, `draft`, `updated_at` inchangés. Worktree retiré.
+
+## 52. Lot 7 : page à cocher (2026-11-19)
+
+- Page à cocher : https://claude.ai/artifact/NG5nfwbeMXwSwCNhTXuNS9 (6 fiches, 21 exemples ; nœuds et points lus en
+  base ; `verdicts` vide). Deux alertes attendues : bloc ` ```nuage ` non dessiné par la page (D1, D3), à jouer dans
+  l'aperçu. Rendu à 390 px non vérifié.
