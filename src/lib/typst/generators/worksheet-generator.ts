@@ -400,6 +400,9 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 
 		const levels = this.levels(worksheet);
 		const printed = this.printedTitle(worksheet);
+		// Un gabarit sans ligne sous le titre (style d'un prof, écrit avant
+		// l'ADR 0041) reçoit le titre complet : notions · catégorie
+		const mainTitle = templateContent.includes('{{title_sub}}') ? printed.main : printed.footer;
 
 		// Prepare template data
 		const templateData: Record<string, string> = {
@@ -443,8 +446,8 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 			// un `]` venu de la base fermerait la cellule (audit de sécurité, ADR 0041)
 			title: escapeTypstBrackets(
 				mode === 'worksheet' && this.options.inlineCorrections
-					? `${printed.main} — ${this.labels.correction}`
-					: printed.main
+					? `${mainTitle} — ${this.labels.correction}`
+					: mainTitle
 			),
 			// Lignes à remplir par l'élève, sauf ce que le PDF connaît déjà
 			date: fillLine('3cm'),

@@ -145,7 +145,7 @@ async function save(
 	const plan = await prepareClassification(
 		teacherClient,
 		row as { id: string; type: string; category: string | null; custom_title: boolean },
-		request
+		{ ...request, ...(title !== undefined ? { title } : {}) }
 	);
 	if (!plan.ok) return plan.message;
 	// Comme la route : le titre et le type demandés, puis ce que décide le plan
@@ -324,6 +324,17 @@ describe('type de la fiche', () => {
 		});
 	});
 
+	it('fiche d’exercices au titre composé → évaluation, sans titre envoyé : titre libre, sans la catégorie', async () => {
+		const id = await worksheet('worksheet', 'applications', [suitesId], false);
+		expect(await save(id, { type: 'assessment' })).toBeNull();
+		expect(await stored(id)).toMatchObject({
+			type: 'assessment',
+			category: null,
+			custom_title: true,
+			title: `${RUN} Suites`
+		});
+	});
+
 	it('évaluation : une catégorie demandée est refusée', async () => {
 		const id = await worksheet('assessment', null);
 		expect(await save(id, { category: 'review' })).toMatch(/catégorie/i);
@@ -409,6 +420,26 @@ describe('route PUT puis GET /api/worksheets/[id]', () => {
 		const saved = await put(id, { notions: [suitesId, derivationId] });
 		expect(saved.status).toBe(400);
 		expect(JSON.stringify(saved.json)).toMatch(/une seule notion/i);
+	});
+
+	it('style refusé dans le même enregistrement : 403, aucune notion retirée', async () => {
+		// Un seul prof par base (mono-professeur) : le style d'un admin
+		const other = await TestData.profile().withRole('admin').create();
+		const [{ id: styleId }] = await sql(
+			'insert into public.worksheet_styles (owner_id, name) values ($1, $2) returning id',
+			[other.id, `${RUN} style d’un autre`]
+		);
+		const id = await worksheet('worksheet', 'review', [suitesId, derivationId, probabilitesId]);
+		const saved = await put(id, {
+			category: 'applications',
+			notions: [suitesId],
+			style_id: styleId
+		});
+		expect(saved.status).toBe(403);
+		expect(await stored(id)).toMatchObject({
+			category: 'review',
+			notions: [suitesId, derivationId, probabilitesId]
+		});
 	});
 
 	it('notions seules, sans autre champ : acceptées', async () => {

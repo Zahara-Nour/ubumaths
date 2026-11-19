@@ -237,7 +237,8 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 			type: data.type,
 			category: data.category,
 			custom_title: data.custom_title,
-			notions: data.notions
+			notions: data.notions,
+			title: data.title
 		}
 	).catch((cause: unknown) => {
 		logger.error('Failed to prepare classification:', cause);
@@ -252,29 +253,49 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		throw error(400, 'Aucune modification demandée');
 	}
 
-	// Notions en trop retirées, fiche mise à jour, notions écrites : dans cet
-	// ordre, la garde de la base (une notion sauf Révisions / Automatismes) passe
-	let worksheet: Awaited<ReturnType<typeof getWorksheetWithAuth>> = existingWorksheet;
-	try {
-		await applyClassification(locals.supabase, params.id, plan, async () => {
-			if (Object.keys(updateData).length === 0) return;
-			const { data: updated, error: dbError } = await locals.supabase
-				.from('worksheets')
-				.update(updateData)
-				.eq('id', params.id)
-				.select()
-				.single();
+	// Deux mises à jour de la fiche : d'abord les champs sans rapport avec les
+	// notions (un refus, style d'un autre auteur par exemple, arrive AVANT que
+	// la moindre notion soit retirée) ; puis type, catégorie, case et titre
+	// composé, entre le retrait des notions en trop et l'écriture des nouvelles
+	// (l'ordre qui passe la garde de la base : une notion sauf Révisions /
+	// Automatismes). Trois requêtes, donc trois transactions : une fonction SQL
+	// les réunirait (écart connu, docs/systeme/fiches-et-pdf.md).
+	const CLASSIFICATION_FIELDS = ['type', 'category', 'custom_title', 'title'] as const;
+	const classificationUpdate: TablesUpdate<'worksheets'> = {};
+	const otherUpdate: TablesUpdate<'worksheets'> = { ...updateData };
+	for (const field of CLASSIFICATION_FIELDS) {
+		if (field in updateData) {
+			Object.assign(classificationUpdate, { [field]: updateData[field] });
+			delete otherUpdate[field];
+		}
+	}
 
-			if (dbError || !updated) {
-				// Trigger de `worksheets.style_id` : style d'un autre auteur
-				if (dbError?.code === '42501') {
-					throw error(403, 'Ce style n’est pas disponible pour cette fiche');
-				}
-				logger.error('Failed to update worksheet:', dbError);
-				throw error(500, 'Impossible de modifier la fiche');
+	let worksheet: Awaited<ReturnType<typeof getWorksheetWithAuth>> = existingWorksheet;
+	async function writeWorksheet(fields: TablesUpdate<'worksheets'>): Promise<void> {
+		if (Object.keys(fields).length === 0) return;
+		const { data: updated, error: dbError } = await locals.supabase
+			.from('worksheets')
+			.update(fields)
+			.eq('id', params.id)
+			.select()
+			.single();
+
+		if (dbError || !updated) {
+			// Trigger de `worksheets.style_id` : style d'un autre auteur
+			if (dbError?.code === '42501') {
+				throw error(403, 'Ce style n’est pas disponible pour cette fiche');
 			}
-			worksheet = updated;
-		});
+			logger.error('Failed to update worksheet:', dbError);
+			throw error(500, 'Impossible de modifier la fiche');
+		}
+		worksheet = updated;
+	}
+
+	await writeWorksheet(otherUpdate);
+	try {
+		await applyClassification(locals.supabase, params.id, plan, () =>
+			writeWorksheet(classificationUpdate)
+		);
 	} catch (cause) {
 		if (isHttpError(cause)) throw cause;
 		logger.error('Failed to save classification:', cause);
@@ -288,8 +309,13 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	}
 
 	const tags = await fetchResourceTagNames(locals.supabase, 'worksheet', params.id).catch(() => []);
+	// Sans les notions relues, l'éditeur réafficherait celles d'avant : 500, le
+	// prof réenregistre (même résultat)
 	const classifications = await loadWorksheetClassifications(locals.supabase, params.id).catch(
-		() => undefined
+		(cause: unknown) => {
+			logger.error('Failed to reread classifications:', cause);
+			throw error(500, 'Fiche enregistrée, mais ses notions n’ont pas pu être relues');
+		}
 	);
 
 	return Response.json({ worksheet: { ...worksheet, tags, classifications } });

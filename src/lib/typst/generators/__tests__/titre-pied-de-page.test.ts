@@ -169,4 +169,29 @@ describe('titre de la fiche au pied de page', () => {
 		const all = await pages(typst);
 		expect(all[0]).toContain('PIEGE');
 	}, 60_000);
+
+	it('style d’un prof sans {{title_sub}} : la catégorie reste dans le titre', () => {
+		const worksheet = {
+			id: 'w',
+			title: 'Suites · Entraînement technique',
+			custom_title: false,
+			category: 'technical_practice',
+			classifications: [{ node_id: 'n1', name: 'Suites', kind: 'notion', position: 0 }],
+			description: null,
+			type: 'worksheet',
+			config: { language: 'fr' },
+			grades: [],
+			style_id: '6f1c2a4e-0000-4000-8000-00000000abcd',
+			estimated_duration_minutes: null,
+			total_points: null
+		} as unknown as WorksheetRow;
+		const typst = new WorksheetGenerator({ language: 'fr' }, undefined, {
+			mode: 'worksheet'
+		}).generate({
+			worksheet,
+			instance: INSTANCE,
+			template: { template_content: 'TITRE<{{title}}>' } as never
+		}).typstContent;
+		expect(typst).toContain('TITRE<Suites · Entraînement technique>');
+	});
 });

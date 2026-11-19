@@ -145,6 +145,21 @@ const publicWorksheetSchema = z.object({
 	config: z.unknown(),
 	status: z.string(),
 	grades: z.array(z.string()).nullable(),
+	// Catégorie, titre libre et notions (ADR 0041) : le PDF du lien est celui de
+	// la classe ; sans ces clés, le schéma les retire
+	category: z.string().nullable().optional(),
+	custom_title: z.boolean().optional(),
+	classifications: z
+		.array(
+			z.object({
+				node_id: z.string().uuid(),
+				name: z.string(),
+				kind: z.string().optional(),
+				position: z.number().int()
+			})
+		)
+		.max(1000)
+		.optional(),
 	translations: z.unknown(),
 	total_points: z.number().nullable(),
 	estimated_duration_minutes: z.number().nullable(),

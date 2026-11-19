@@ -415,7 +415,11 @@
 						<MySelect
 							type="single"
 							value={worksheet.type || undefined}
-							onchange={(v) => onFieldChange?.('type', v || null)}
+							onchange={(v) => {
+								onFieldChange?.('type', v || null);
+								// Seule une fiche d'exercices a une catégorie (ADR 0041)
+								if (v !== 'worksheet') onFieldChange?.('category', null);
+							}}
 							items={typeOptions}
 							placeholder="Type"
 						/>

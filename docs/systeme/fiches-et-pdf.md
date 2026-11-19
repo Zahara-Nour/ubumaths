@@ -391,7 +391,7 @@ la catégorie. En anglais : catégorie traduite, aucune notion (pas de noms angl
 (`worksheets.grades`) : un badge par niveau, forme courte (« 1ère Spé »), plein orange texte blanc
 (`levelBadge`, `worksheet-palette.ts`), du plus petit au plus grand ; aucun, ou fiche en anglais →
 rien (`{{level_badges}}`, `levels()` du générateur ; `{{level}}` / `{{level_short}}` restent
-remplis pour les gabarits des profs). Ces données arrivent au PDF par chaque chemin : éditeur du
+remplis pour les gabarits des profs ; un gabarit sans `{{title_sub}}`, style d'un prof écrit avant, reçoit dans `{{title}}` le titre complet « notions · catégorie »). Ces données arrivent au PDF par chaque chemin : éditeur du
 prof (`GET /api/worksheets/[id]`, `classifications`), vue de l'élève et aperçu d'affectation
 (`grades`, `category`, `custom_title`, `classifications` de `StudentWorksheetView`), corrigé de
 classe, liens de partage (fonctions SQL). Les onze autres n'ont que leur fiche et prennent les autres formes du
@@ -911,4 +911,11 @@ Aucun test ne compile un vrai PDF dans la CI : la compilation se vérifie par `p
    corrigé de classe et aperçu « vue prof » d'une affectation individualisée d'après la copie d'un
    élève choisi, signalements de l'élève sur le numéro de sa copie.
 
-Vérifié contre le code le 2026-10-15 (lot 1 de l'ADR 0030 : le type décide de l'en-tête).
+Vérifié contre le code le 2026-10-15 (lot 1 de l'ADR 0030 : le type décide de l'en-tête). 8. **Catégorie et notions : trois requêtes, pas une transaction** (ADR 0041, revue de la PR 2b,
+2026-11-19). `PUT /api/worksheets/[id]` écrit d'abord les champs sans rapport avec les notions
+(un refus, style d'un autre auteur, arrive avant tout retrait), puis retire les notions en
+trop, met à jour type / catégorie / titre, écrit les notions. Une panne entre les deux dernières
+étapes (nœud supprimé entre-temps, coupure) laisserait la fiche sans ses nouvelles notions ;
+réenregistrer répare. Une fonction SQL `security invoker` réunirait les trois écritures. 9. **Fiche anglaise au titre composé sans catégorie** : sans noms anglais des notions, le PDF
+imprime `title` (le titre composé, en français). Disparaît avec les noms anglais des notions
+(chantier séparé).

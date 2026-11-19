@@ -42,6 +42,8 @@ export interface ClassificationRequest {
 	custom_title?: boolean;
 	/** Identifiants des notions, dans l'ordre d'impression ; absent : inchangées */
 	notions?: string[];
+	/** Titre envoyé (gardé tel quel s'il est libre) */
+	title?: string;
 }
 
 /** La fiche telle qu'elle est en base, avant la requête */
@@ -169,6 +171,20 @@ export async function prepareClassification(
 	const update: Extract<ClassificationPlan, { ok: true }>['update'] = {};
 	if (category !== existingCategory) update.category = category;
 	if (request.custom_title !== undefined) update.custom_title = request.custom_title;
+	// Une fiche d'exercices au titre composé change de type : les autres types
+	// n'ont pas de titre composé ni de catégorie (ADR 0041). Le titre devient
+	// libre ; sans titre envoyé, celui des notions seules, sans la catégorie.
+	const leavesExerciseSheet =
+		type !== 'worksheet' && asWorksheetType(existing.type) === 'worksheet';
+	if (leavesExerciseSheet && !customTitle) {
+		update.custom_title = true;
+		const notionsTitle = composedTitle(
+			null,
+			notions.map((id) => names.get(id) ?? '')
+		);
+		if (request.title === undefined && notionsTitle !== '') update.title = notionsTitle;
+	}
+
 	if (type === 'worksheet' && !customTitle) {
 		const title = composedTitle(
 			category,

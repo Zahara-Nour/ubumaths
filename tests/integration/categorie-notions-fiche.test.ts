@@ -28,6 +28,8 @@ import { cleanupAllTestData } from '../helpers/database/trigger-test-helpers';
 import { DEFAULT_TEST_PASSWORD } from '../helpers/database/supabase-client';
 import { getPostgresClient } from '../helpers/database/postgres-client';
 import { TestData } from '../helpers/database/test-data-factory';
+import { resolveCourseWorksheetByShareToken } from '#lib/server/course-share-tokens.ts';
+import { resolveWorksheetByShareToken } from '#lib/server/journal-share-tokens.ts';
 
 // ============================================================================
 // CONSTANTES
@@ -523,6 +525,30 @@ describe('liens de partage : catégorie et notions de la fiche citée', () => {
 			{ node_id: suitesId, name: `${RUN} Suites`, kind: 'notion', position: 1 }
 		]);
 	});
+
+	it.each([
+		[
+			'cahier de texte',
+			() => resolveWorksheetByShareToken(visitor as never, JOURNAL_TOKEN, worksheetId)
+		],
+		[
+			'cours partagé',
+			() => resolveCourseWorksheetByShareToken(visitor as never, COURSE_TOKEN, worksheetId)
+		]
+	] as const)(
+		'%s : la lecture côté serveur garde catégorie, case et notions (le PDF du lien)',
+		async (_label, open) => {
+			const shared = (await open()) as unknown as SharedWorksheet | null;
+			expect(shared).toMatchObject({
+				category: 'review',
+				custom_title: expect.any(Boolean),
+				classifications: [
+					{ node_id: derivationId, name: `${RUN} Dérivation`, position: 0 },
+					{ node_id: suitesId, name: `${RUN} Suites`, position: 1 }
+				]
+			});
+		}
+	);
 
 	it.each([
 		['cahier de texte', viaJournal],
