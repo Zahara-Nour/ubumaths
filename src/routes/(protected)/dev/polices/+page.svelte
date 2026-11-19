@@ -1,6 +1,6 @@
 <script lang="ts">
 	import '#lib/utils/mathlive-styles.ts';
-	import { onMount } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import { browser } from '$app/env';
 	import InlineMarkdown from '#lib/components/markdown/InlineMarkdown.svelte';
 	import MarkdownRenderer from '#lib/components/markdown/MarkdownRenderer.svelte';
@@ -183,6 +183,12 @@
 			isReady = true;
 		}
 	});
+
+	// En partant, retour au jeu KaTeX : sinon une navigation côté client garderait le jeu
+	// choisi partout (et, pour Luciole, les formules grossies de 1/0,9)
+	onDestroy(() => {
+		if (browser) void switchMathFonts('katex');
+	});
 </script>
 
 <svelte:head>
@@ -241,6 +247,13 @@
 			font-family: 'Luciole';
 			src: url('/fonts/luciole/Luciole-Italic.woff2') format('woff2');
 			font-weight: 400;
+			font-style: italic;
+			font-display: swap;
+		}
+		@font-face {
+			font-family: 'Luciole';
+			src: url('/fonts/luciole/Luciole-BoldItalic.woff2') format('woff2');
+			font-weight: 700;
 			font-style: italic;
 			font-display: swap;
 		}

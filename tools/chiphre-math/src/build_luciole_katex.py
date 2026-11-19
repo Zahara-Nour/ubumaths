@@ -93,7 +93,7 @@ GREEK_START = {'bold': 0x1D6A8, 'italic': 0x1D6E2, 'bolditalic': 0x1D71C}
 # (points de code privés), accents d'espacement ˉ ˊ ˋ (Luciole : ¯ ´ `)
 ALIASES = {0xE131: 0x1D6A4, 0xE237: 0x1D6A5, 0x02C9: 0x00AF, 0x02CA: 0x00B4, 0x02CB: 0x0060}
 
-# Alphabet de repli, essayé après le caractère lui-même (grec gras absent de Luciole-Bold)
+# Alphabet gras du grec, essayé avant le caractère lui-même (Luciole-Bold n'a pas de grec)
 FALLBACK_ALPHABET = {
     'KaTeX_Main-Bold': 'bold',
     'KaTeX_SansSerif-Bold': 'bold',
@@ -213,6 +213,7 @@ ADDED: dict[str, list[int]] = {
 def add_glyph(target: TTFont, cp: int, source: Source, source_name: str) -> None:
     """Ajoute un glyphe neuf (réduit à GLYPH_SCALE) et son entrée dans les cmap Unicode."""
     name = f'uni{cp:04X}'
+    assert name not in target.getGlyphOrder(), f'{name} existe déjà'
     target.setGlyphOrder(target.getGlyphOrder() + [name])
     target['glyf'].glyphOrder = target.getGlyphOrder()
     glyph = draw_into(source, source_name, (GLYPH_SCALE, 0, 0, GLYPH_SCALE, 0, 0))
@@ -252,7 +253,8 @@ PLAN: dict[str, tuple[list[str], str | None, bool]] = {
 
 def build_one(stem: str, sources: dict[str, Source], report: bool) -> None:
     source_names, alphabet, fit_all = PLAN[stem]
-    target = TTFont(KATEX_DIR / f'{stem}.woff2')
+    # Date de KaTeX gardée : relancer le script redonne les mêmes fichiers
+    target = TTFont(KATEX_DIR / f'{stem}.woff2', recalcTimestamp=False)
     target.flavor = None
     cmap = target.getBestCmap()
     done: set[str] = set()
@@ -271,9 +273,11 @@ def build_one(stem: str, sources: dict[str, Source], report: bool) -> None:
             replaced += 1
             continue
         lookups = [letter_target(alphabet, cp)] if alphabet else []
-        lookups += [ALIASES.get(cp), cp]
-        if stem in FALLBACK_ALPHABET:
+        # Grec d'un fichier gras : l'alphabet gras d'abord, sinon Luciole-Math (cherchée
+        # après Luciole-Bold) donnerait le grec normal ; latin et chiffres : Luciole-Bold
+        if stem in FALLBACK_ALPHABET and not chr(cp).isascii():
             lookups.append(letter_target(FALLBACK_ALPHABET[stem], cp))
+        lookups += [ALIASES.get(cp), cp]
         found = None
         for wanted in lookups:
             if wanted is None or (0xE000 <= wanted <= 0xF8FF):

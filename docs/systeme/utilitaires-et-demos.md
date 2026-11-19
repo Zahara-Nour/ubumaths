@@ -358,10 +358,10 @@ il y ajoute la vérification des instructions (`checkScratchProgram`), faite hor
   (`GLYPH_ALIASES`) et laisse les autres codes privés à KaTeX. Après une reconstruction, le
   navigateur garde les anciens `.woff2` en cache : recharger les fichiers (`fetch(…, {cache:
 'reload'})`) avant de juger.
-- **`/dev/polices` ne rétablit pas les polices en partant.** `switchMathFonts('shantell')` pose un
-  `<link>` dans `<head>` et change `MathfieldElement.fontsDirectory` ; la page n'a ni `onDestroy`
-  ni retour à `katex`. Après une visite, une navigation côté client garde Shantell partout
-  jusqu'au rechargement.
+- **`/dev/polices` rétablit KaTeX en partant** (`onDestroy` → `switchMathFonts('katex')`).
+  Un jeu pose un `<link>` dans `<head>`, change `MathfieldElement.fontsDirectory` et ajoute ses
+  règles aux feuilles de MathLive : sans ce retour, une navigation côté client garderait le jeu
+  partout jusqu'au rechargement (avec Luciole, toutes les formules grossies de 1/0,9).
 - **Navigateur en français : minuscules grecques droites.** MathLive choisit `letterShapeStyle`
   d'après la langue du navigateur (« french » si elle commence par `fr`) et écrit alors α, π…
   droits, pris dans KaTeX_Main-Regular. KaTeX n'y a pas de minuscules grecques : le navigateur
