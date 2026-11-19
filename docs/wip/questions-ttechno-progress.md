@@ -5,13 +5,13 @@ Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) · bornes 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, après #2868._
+_Mis à jour le 2026-11-19, après la publication du lot 6 (§ 48)._
 
-- **État** : lots 0 à 5a publiés ; lot 5b : L9 publiée, L7 et L8 en brouillon (relus, prêts) ; **lot 6 (fonction inverse, 5 modèles) en brouillon en prod, rangé et tagué** (§ 46), page à cocher publiée (§ 47). Restent les lots 7 et 8 (§ 33).
-- **Prochaine action** : lire et compter les verdicts de la page du lot 6, puis `publier-lot.ts --dir scripts/questions/ttechno-6-inverse` (simulation, puis `--publier` par David). Ensuite lot 7 (deux variables : 050, 051, 052, 088, 053, 054), phase 0.
-- **En attente de David** : la relecture de la page du lot 6 ; le `deploy:prod` qui livre #2839 (L7, L8).
-- **Pièges en cours** : un point TTECHNO par modèle (trigger) ; tag = nœud DU POINT ; `publier-lot.ts`, `create-questions --publier` visent la prod : David les lance (`!`) ; L7 et L8 après le `deploy:prod` de #2839.
-- **Worktree / branche** : aucun (retiré après #2868).
+- **État** : lots 0 à 5a et lot 6 publiés ; lot 5b : L9 publiée, L7 et L8 en brouillon (relus, prêts). Restent les lots 7 et 8 (§ 33).
+- **Prochaine action** : lot 7 (deux variables : 050, 051, 052, 088, 053, 054), phase 0 : comportements en français, attendre la validation de David.
+- **En attente de David** : le `deploy:prod` qui livre #2839 (L7, L8).
+- **Pièges en cours** : un point TTECHNO par modèle (trigger) ; tag = nœud DU POINT ; `publier-lot.ts` (simulation comprise) et `create-questions --publier` visent la prod : David les lance (`!`) ; L7 et L8 après le `deploy:prod` de #2839.
+- **Worktree / branche** : aucun.
 
 ## 1. Périmètre
 
@@ -1058,3 +1058,10 @@ David a lancé `create-questions --publier` : 5 brouillons (a6fa11c8 I1, b34c8c9
 
 - Page à cocher : https://claude.ai/artifact/W3RrCufGJ6wqLqF3EgSM5q (5 fiches, 24 exemples ; aucune alerte ; nœuds
   et points lus en base ; `verdicts` vide). Rendu à 390 px non vérifié (fenêtre de Chrome non réduite).
+
+## 48. Lot 6 : publication (2026-11-19)
+
+- Page à cocher relue : 5 verdicts sur 5 « ok », sans commentaire.
+- `publier-lot.ts --dir scripts/questions/ttechno-6-inverse` : simulation puis `--publier`, lancées par David (le
+  classifieur refuse aussi la simulation, qui lit la prod). Statut relu en base (MCP) : 5/5 `published`,
+  `{T_TECHNO}` (a6fa11c8, b34c8c9b, 912caf72, bb7bcab6, 9d6896cc).
