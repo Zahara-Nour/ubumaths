@@ -1,0 +1,276 @@
+{
+	"id": "b423785d-cfe4-4387-a617-d71ab18838a1",
+	"md5Prod": "3dda5f67f392331228894921999ca1ee",
+	"md5SpecsProd": "954a7dcc524728cb9b6c17a7197432e0",
+	"grades": ["CM1"],
+	"status": "published",
+	"avant": [
+		{
+			"statement": "Combien cette pyramide a-t-elle de faces latérales, et combien de faces en tout ?\n\n```solide\nforme: pyramide {{if:q==1|carree 3 3.5|{{if:q==2|rectangle 4 2.5 3.5|triangle 3.5 3.5}}}}\nmarquer: face dessous\n```\n\nLa base est grisée.\n\n[_] faces latérales et [_] faces en tout",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "1..3"
+				},
+				{
+					"name": "n",
+					"expression": "{{if:q==1|4|{{if:q==2|4|3}}}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				},
+				{
+					"expectedAnswer": "{{eval:n+1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque côté de la base porte une face latérale, un triangle qui monte jusqu'au sommet.",
+					"La base a $\\textcolor{{{color:primary.0}}}{{{n}}}$ côtés : $\\textcolor{{{color:primary.0}}}{{{n}}}$ faces latérales, et avec la base, $\\textcolor{{{color:primary.0}}}{{{eval:n+1}}}$ faces en tout."
+				]
+			}
+		},
+		{
+			"statement": "La base d'une pyramide a ${{n}}$ côtés{{if:n==1||{{if:n==2||{{if:n==3||{{if:n==4||{{if:n==5| (un pentagone)|{{if:n==6| (un hexagone)|{{if:n==7|| (un octogone)}}}}}}}}}}}}}}. Combien cette pyramide a-t-elle de faces latérales, et combien de faces en tout ?\n\n[_] faces latérales et [_] faces en tout",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "5..8"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				},
+				{
+					"expectedAnswer": "{{eval:n+1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque côté de la base porte une face latérale, un triangle qui monte jusqu'au sommet : $\\textcolor{{{color:primary.0}}}{{{n}}}$ faces latérales.",
+					"Avec la base : ${{n}} + 1 = \\textcolor{{{color:primary.0}}}{{{eval:n+1}}}$ faces en tout."
+				]
+			}
+		},
+		{
+			"statement": "Quelle phrase est vraie pour toutes les pyramides ?\n\n```choix\n- Ses faces latérales sont des triangles qui se rejoignent en un même sommet.\n- Toutes ses faces sont des triangles.\n- Sa base est un carré.\n- Elle a $5$ faces.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une pyramide peut avoir une base carrée, rectangle, triangulaire ou à plus de côtés : ni sa base, ni son nombre de faces ne sont toujours les mêmes, et sa base n'est un triangle que parfois.",
+					"Ce qui est toujours vrai : $\\textcolor{{{color:primary.0}}}{\\text{ses faces latérales sont des triangles qui se rejoignent au sommet}}$."
+				]
+			}
+		}
+	],
+	"apres": [
+		{
+			"statement": "Combien cette pyramide a-t-elle de faces latérales, et combien de faces en tout ?\n\n```solide\nforme: pyramide {{if:q==1|carree 3 3.5|{{if:q==2|rectangle 4 2.5 3.5|triangle 3.5 3.5}}}}\nmarquer: face dessous\n```\n\nLa base est grisée.\n\n[_] faces latérales et [_] faces en tout",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "1..3"
+				},
+				{
+					"name": "n",
+					"expression": "{{if:q==1|4|{{if:q==2|4|3}}}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				},
+				{
+					"expectedAnswer": "{{eval:n+1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque côté de la base porte une face latérale, un triangle qui monte jusqu'au sommet.",
+					"La base a $\\textcolor{{{color:primary.0}}}{{{n}}}$ côtés : $\\textcolor{{{color:primary.0}}}{{{n}}}$ faces latérales, et avec la base, $\\textcolor{{{color:primary.0}}}{{{eval:n+1}}}$ faces en tout."
+				]
+			}
+		},
+		{
+			"statement": "La base d'une pyramide a ${{n}}$ côtés{{if:n==1||{{if:n==2||{{if:n==3||{{if:n==4||{{if:n==5| (un pentagone)|{{if:n==6| (un hexagone)|{{if:n==7|| (un octogone)}}}}}}}}}}}}}}. Combien cette pyramide a-t-elle de faces latérales, et combien de faces en tout ?\n\n[_] faces latérales et [_] faces en tout",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "5..8"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				},
+				{
+					"expectedAnswer": "{{eval:n+1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque côté de la base porte une face latérale, un triangle qui monte jusqu'au sommet : $\\textcolor{{{color:primary.0}}}{{{n}}}$ faces latérales.",
+					"Avec la base : ${{n}} + 1 = \\textcolor{{{color:primary.0}}}{{{eval:n+1}}}$ faces en tout."
+				]
+			}
+		},
+		{
+			"statement": "Quelle phrase est vraie pour toutes les pyramides ?\n\n```choix\n- Ses faces latérales sont des triangles qui se rejoignent en un même sommet.\n- Toutes ses faces sont des triangles.\n- Sa base est un carré.\n- Elle a $5$ faces.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une pyramide peut avoir une base carrée, rectangle, triangulaire ou à plus de côtés : ni sa base, ni son nombre de faces ne sont toujours les mêmes, et sa base n'est un triangle que parfois.",
+					"Ce qui est toujours vrai : ses faces latérales sont des $\\textcolor{{{color:primary.0}}}{\\text{triangles}}$ qui se rejoignent au sommet."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Base carrée : 4 et 5",
+			"variationIndex": 0,
+			"variables": {
+				"q": "1",
+				"n": "4"
+			},
+			"answers": ["4", "5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : base oubliée",
+			"variationIndex": 0,
+			"variables": {
+				"q": "1",
+				"n": "4"
+			},
+			"answers": ["4", "4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Base rectangle : 4 et 5",
+			"variationIndex": 0,
+			"variables": {
+				"q": "2",
+				"n": "4"
+			},
+			"answers": ["4", "5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Base triangle : 3 et 4",
+			"variationIndex": 0,
+			"variables": {
+				"q": "3",
+				"n": "3"
+			},
+			"answers": ["3", "4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : base triangle comptée parmi les faces latérales",
+			"variationIndex": 0,
+			"variables": {
+				"q": "3",
+				"n": "3"
+			},
+			"answers": ["4", "4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Base à 5 côtés : 5 et 6",
+			"variationIndex": 1,
+			"variables": {
+				"n": "5"
+			},
+			"answers": ["5", "6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Base à 8 côtés : 8 et 9",
+			"variationIndex": 1,
+			"variables": {
+				"n": "8"
+			},
+			"answers": ["8", "9"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : comme un prisme (deux bases)",
+			"variationIndex": 1,
+			"variables": {
+				"n": "6"
+			},
+			"answers": ["6", "8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : base oubliée",
+			"variationIndex": 1,
+			"variables": {
+				"n": "7"
+			},
+			"answers": ["7", "7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "La phrase vraie",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : toutes les faces sont des triangles",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : toujours 5 faces",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"ancienne": "Ce qui est toujours vrai : $\\textcolor{{{color:primary.0}}}{\\text{ses faces latérales sont des triangles qui se rejoignent au sommet}}$.",
+	"nouvelle": "Ce qui est toujours vrai : ses faces latérales sont des $\\textcolor{{{color:primary.0}}}{\\text{triangles}}$ qui se rejoignent au sommet."
+}

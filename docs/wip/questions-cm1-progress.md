@@ -5,22 +5,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, après #2863 ; lot 8e publié, correction du modèle 04 PAS passée en prod._
+_Mis à jour le 2026-11-19 ; PR de la migration de contenu du 04 en cours (§ 25 octies)._
 
-- **État** : lots 0 à 8e publiés, **153 points du CM1 sur 171** (CM2 115/158) ; lot 8e publié (§ 25 septies)
-  mais le modèle 04 (b423785d) a encore en prod l'ancienne correction qui déborde à 390 px : il était déjà
-  publié quand `--mettre-a-jour` est passé (qui ne touche jamais un modèle publié). Le fichier du dépôt est juste.
-- **Prochaine action** : faire passer la correction du 04 en prod **sans geste manuel de David** (exigence du
-  2026-11-19). Deux voies proposées, mots simples : (a) migration de données qui remplace cette phrase du
-  modèle publié (patron des migrations de rangement, garde « contenu = relevé ») ; (b) outil : option de
-  `create-questions` qui met à jour un modèle publié (lève une garde voulue : décision de David). Reco : (a).
-  Puis noter l'outil manquant dans `docs/wip/outils-manquants.md`. Ensuite le lot 8f (modèles 8 à 14 du § 25), puis 9.
-- **En attente de David** : rien ; **(a) tranché** (« je te suis », 2026-11-19) : migration de données.
+- **État** : lots 0 à 8e publiés, **153 points du CM1 sur 171** (CM2 115/158). Le modèle 04 (b423785d) porte
+  encore en prod l'ancienne correction (déborde à 390 px) ; migration `20261119060346_questions_cm1_lot8e_04_contenu`
+  écrite, test d'intégration rouge sans elle puis 9/9 vert (md5 de la prod vérifié).
+- **Prochaine action** : PR → CI verte → merge → `db:migrate` depuis la branche mergée (additive, 4 conditions
+  réunies : accès inchangé, preuve rouge, contenu seul, rollback écrit) → vérifier au MCP (`strpos` nouvelle
+  phrase). Ensuite le lot 8f (modèles 8 à 14 du § 25), puis 9.
+- **En attente de David** : rien.
 - **Pièges en cours** : création en prod = `pnpm tsx scripts/create-questions.ts --dir … --publier
-[--mettre-a-jour]`, depuis le worktree ; `--mettre-a-jour` AVANT `publier-lot`, et vérifier au MCP entre les
-  deux ; commitlint refuse le type `content` et un corps > 100 caractères par ligne ; le mode auto refuse
-  `publier-lot` et `garde-niveaux-tags` : David les lance ; `lot-cm1-8e.py` réécrit les JSON SANS leur `id` :
-  générer à part et reporter l'id ; `ci-lint-fichiers.test.ts` dépasse parfois ses 5 s en CI (relancer le job).
+[--mettre-a-jour]`, depuis le worktree ; `--mettre-a-jour` ne touche JAMAIS un publié : le lancer AVANT
+  `publier-lot`, et vérifier au MCP entre les deux ; commitlint refuse le type `content` et un corps > 100
+  caractères par ligne ; le mode auto refuse `publier-lot` et `garde-niveaux-tags` : David les lance ;
+  `lot-cm1-8e.py` réécrit les JSON SANS leur `id` ; `ci-lint-fichiers.test.ts` dépasse parfois ses 5 s en CI.
 - **Worktree / branche** : `../ubumaths-wt-questions-cm1`, branche `feat/questions-cm1-lot8e-correctif`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
@@ -2158,3 +2156,17 @@ reste en D ; niveaux **CM1 et CM2** et tag des deux points (109/098, 110/099, 11
 - David : « je ne veux rien faire manuellement » (pas d'édition dans l'appli). Voies (a) migration de données,
   (b) option de `create-questions` sur modèle publié : à trancher (Reprendre ici).
 - David : « je te suis » → voie (a), migration de données qui remplace la phrase du modèle 04 publié.
+
+### 25 octies. Migration de contenu du modèle 04 (2026-11-19)
+
+- Relevé MCP : b423785d `published`, `{CM1}`, md5(variations) `3dda5f67…`, md5(test_specs) `954a7dcc…`, ancienne
+  phrase présente. « Avant » reconstruit depuis le fichier du lot (ancienne phrase remise) : même md5 que la
+  prod, donc aucun contenu recopié à la main.
+- Générateur `docs/wip/questions/cm1-8e-04-contenu.py` (gabarit `questions-1techno/83b1f614-contenu.py`) →
+  migration `20261119060346_questions_cm1_lot8e_04_contenu.sql` et fixture
+  `tests/integration/fixtures/questions-cm1-lot8e-04-contenu.json`. Garde : variations EXACTEMENT celles de la
+  prod, sinon refus ; modèle absent (base locale) : rien. Rollback écrit, gardé.
+- Test `tests/integration/questions-cm1-lot8e-04-contenu.test.ts` : rouge migration vidée (2 échecs + bloc
+  principal en échec au `beforeAll`), 9/9 vert avec elle.
+- Accès : aucune policy ne change ; seule une phrase de corrigé change.
+- Outil manquant noté : `outils-manquants.md` n° 41 (corriger un publié sans migration écrite par modèle).
