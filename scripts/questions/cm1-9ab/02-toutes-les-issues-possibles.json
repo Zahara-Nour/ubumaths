@@ -1,4 +1,5 @@
 {
+	"id": "5081e180-a313-4003-b57a-3f51316b93d5",
 	"title": "Toutes les issues possibles",
 	"description": "Compter ou cocher les issues d'un dé, d'une pièce, d'un sac de boules de trois couleurs (le nombre de boules n'est pas le nombre d'issues)",
 	"grades": ["CM1", "CM2"],
