@@ -5,20 +5,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, après #2888 (rangement 9ab joué en prod), page à cocher publiée._
+_Mis à jour le 2026-11-19, lot 9ab publié (§ 26 quinquies)._
 
-- **État** : lots 0 à 8f publiés, **158 points du CM1 sur 171**. Lot 9ab (8 brouillons) rangé et tagué en prod
-  (#2888, migration `20261119145503` jouée) ; page à cocher publiée
-  (https://claude.ai/artifact/T3W2rVufrWynVffhQfQeyk) ; 9c (097, 104 : 4 constructions) reste à écrire.
-- **Prochaine action** : lire les verdicts (`ArtifactData list verdicts`, compter 8) ; `publier-lot` en simulation,
-  David lance `--publier` et `garde-niveaux-tags` ; recompte MCP ; puis lot 9c.
-- **En attente de David** : les verdicts de la page à cocher ; 08 sur « quatrième proportionnelle » plutôt que
-  sur la notion ? (facultatif).
+- **État** : lots 0 à 9ab publiés, **166 points du CM1 sur 171** (recompte MCP). Restent : 9c (097, 104 : 4
+  constructions à la règle graduée, CM1 + CM2-087/094, § 26) ; 105, 114, 140 restent sans modèle (D).
+- **Prochaine action** : écrire le lot 9c (§ 26, modèles 9 à 12) sur une branche neuve tirée de `origin/main`.
+- **En attente de David** : facultatif, 08 (`1dd68bdd`, CM1-130) sur « quatrième proportionnelle » plutôt que sur
+  la notion Situations de proportionnalité ?
 - **Pièges en cours** : `--mettre-a-jour` ne touche JAMAIS un publié : le lancer AVANT `publier-lot` ;
   commitlint refuse le type `content` et un corps > 100 caractères par ligne ; David lance `publier-lot
 --publier` et `garde-niveaux-tags` ; ranger : réponses = positions AFFICHÉES (`ranger-attendus.ts`) ;
   `pnpm -s` refusé (pnpm 12).
-- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, branche `feat/questions-cm1-lot9ab-rangement` (mergée).
+- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, branche `feat/questions-cm1-lot9ab-rangement` (mergée) ; nouvelle branche pour 9c.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -2336,3 +2334,6 @@ figure) ; 130 V3 (÷ une fois) = une seule utilisation de la linéarité ; jumea
 - Page `page-a-cocher.ts --dir scripts/questions/cm1-9ab` : 8 fiches (19 exemples) ; 1 alerte « bloc non dessiné »
   (` ```ranger ` : 04), vu juste dans l'aperçu local (§ 26 ter). Publiée :
   https://claude.ai/artifact/T3W2rVufrWynVffhQfQeyk (`verdicts`, capacité `db`), base vide à la publication.
+- Verdicts : 8 « OK » sur 8, aucun commentaire. `publier-lot` en simulation : 8/8 ; `--publier` et
+  `garde-niveaux-tags` lancés par David. Vérifié au MCP : 8 modèles `published`.
+- Recompte MCP (points non archivés ayant un modèle publié) : **CM1 166/171** ; CM2 134/158.
