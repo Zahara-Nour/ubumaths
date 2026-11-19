@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, phase 0 : 7 questions tranchées (rien de codé)._
+_Mis à jour le 2026-11-19, phase 0 close, stockage et accès validés (rien de codé)._
 
-- **État** : comportements tranchés, voir « Synthèse de la phase 0 » · **Prochaine action** : faire valider la synthèse à David, puis poser la question d'accès et proposer le stockage (liste de nœuds par fiche, à ne pas trancher seul) avant ADR + migration · **En attente de David** : validation de la synthèse · **Pièges en cours** : « thème » est un mot retiré (CONTEXT.md) → la fiche pointe des nœuds de l'arbre (ADR 0019) ; la « Proposition » plus bas (deux colonnes, catégorie au-dessus) est **périmée** · **Worktree / branche** : aucun (à créer : `feat/categorie-fiche`) · **Maquette** : https://claude.ai/artifact/4NVjLSrbd7J7XNPzaC3cur (à mettre à jour : plusieurs notions)
+- **État** : phase 0 close : synthèse, stockage et accès validés · **Prochaine action** : PR 1 (ADR + migration) dans le worktree `ubumaths-wt-categorie-fiche` · **En attente de David** : validation du découpage · **Pièges en cours** : « thème » est un mot retiré (CONTEXT.md) → la fiche pointe des nœuds de l'arbre (ADR 0019) ; la « Proposition » plus bas (deux colonnes, catégorie au-dessus) est **périmée** · **Worktree / branche** : aucun (à créer : `feat/categorie-fiche`) · **Maquette** : https://claude.ai/artifact/4NVjLSrbd7J7XNPzaC3cur (à mettre à jour : plusieurs notions)
 
 ## Synthèse de la phase 0 (2026-11-19)
 
@@ -21,6 +21,28 @@ _Mis à jour le 2026-11-19, phase 0 : 7 questions tranchées (rien de codé)._
   pas de notion imprimée sur une fiche anglaise.
 - **Automatismes (ADR 0011)** : le script pose catégorie + notions.
 - **Reprise** : les 50 fiches de prod reclassées (page à cocher pour les déductibles du titre).
+- **Synthèse validée par David** (2026-11-19).
+
+## Stockage et accès (validés par David, 2026-11-19)
+
+- **Stockage A** : table « fiche → notions » calquée sur `exercise_classifications` (fiche, nœud,
+  position), nœud = notion ou sous-notion (pas de branche, comme les exercices) ; catégorie = une
+  colonne de `worksheets` (liste fermée, vide hors fiche d'exercices). Règle « 1 notion sauf
+  Révisions / Automatismes » vérifiée par l'éditeur ET par la base. Écarté : colonne + liste (B).
+- **Question d'accès tranchée** : le prof lit/écrit catégorie et notions de ses fiches (on voit les
+  notions d'une fiche quand on voit la fiche) ; **l'élève affecté et le visiteur d'un lien de
+  partage pourront lire la catégorie, les notions ET le niveau de la fiche** (imprimés sur leur
+  PDF ; migration en attente depuis #2891, faite dans la même PR). Noms des nœuds déjà publics.
+
+## Découpage proposé (à valider)
+
+1. **PR 1 — ADR + migration** : table, colonne, garde de la règle, fonction SQL du PDF élève /
+   partage (catégorie, notions, niveaux), tests d'intégration rouges puis verts ; `db:migrate`,
+   `db:types`.
+2. **PR 2 — éditeur + PDF** : choix catégorie/notions dans l'éditeur, titre composé, badge du
+   niveau, bas de page, tous les cas de la synthèse.
+3. **PR 3 — reprise des 50 fiches** : page à cocher (déduit du titre), écriture en prod par David.
+4. **PR 4 — script des automatismes** (ADR 0011) : pose catégorie + notions.
 
 ## L'idée (David, 2026-11-19)
 
