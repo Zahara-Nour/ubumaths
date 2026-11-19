@@ -33,6 +33,8 @@
 		pointCodes?: string[];
 		tab: PreviewTab;
 		firstSeed: number;
+		/** Clé de la rangée (un modèle peut figurer deux fois dans une série) : id d'ancre unique */
+		anchor: string;
 	}
 
 	// Variables
@@ -44,14 +46,15 @@
 		seriesLine = null,
 		pointCodes = [],
 		tab,
-		firstSeed
+		firstSeed,
+		anchor
 	}: Props = $props();
 
 	const template = $derived(toQuestionTemplate(row));
 	const count = $derived(template.variations.length);
 </script>
 
-<article class="rounded-lg border bg-card p-3" id="parcours-{row.id}">
+<article class="rounded-lg border bg-card p-3" id="parcours-{anchor}">
 	<div class="flex flex-col gap-3 lg:flex-row">
 		<header class="space-y-1.5 lg:w-56 lg:shrink-0">
 			<p class="font-semibold break-words">

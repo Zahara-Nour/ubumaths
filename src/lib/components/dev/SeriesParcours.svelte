@@ -114,6 +114,7 @@
 				review={entry.sheet.review}
 				alerts={entry.sheet.alerts}
 				rank={i + 1}
+				anchor={entry.key}
 				seriesLine={entry.seriesLine}
 				{tab}
 				{firstSeed}
@@ -143,8 +144,13 @@
 		{/if}
 		{#if parcours.neighbourCount > neighbours.length}
 			<p class="rounded bg-warning/10 p-2 text-sm">
-				{parcours.neighbourCount} modèles : seuls les {neighbours.length} premiers sont affichés. Poser
-				un filtre pour voir les autres.
+				{#if neighbours.length === 0}
+					{parcours.neighbourCount} modèles, non affichés : la série occupe déjà toute la page. Poser
+					un filtre pour les voir.
+				{:else}
+					{parcours.neighbourCount} modèles : seuls les {neighbours.length} premiers sont affichés. Poser
+					un filtre pour voir les autres.
+				{/if}
 			</p>
 		{/if}
 		{#each neighbours as entry (entry.key)}
@@ -154,6 +160,7 @@
 					review={entry.sheet.review}
 					alerts={entry.sheet.alerts}
 					pointCodes={entry.sheet.points.map((p) => p.code)}
+					anchor={entry.key}
 					{tab}
 					{firstSeed}
 				/>
