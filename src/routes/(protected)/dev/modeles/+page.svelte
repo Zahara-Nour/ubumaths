@@ -13,6 +13,7 @@
 -->
 <script lang="ts">
 	// Imports
+	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import { SvelteURLSearchParams } from 'svelte/reactivity';
@@ -31,9 +32,11 @@
 	import ReviewTree from '#lib/components/dev/ReviewTree.svelte';
 	import TemplateReviewSheet from '#lib/components/dev/TemplateReviewSheet.svelte';
 	import SeriesParcours from '#lib/components/dev/SeriesParcours.svelte';
+	import { PanelLeftClose, PanelLeftOpen } from '@lucide/svelte';
 
 	// Constantes
 	const MAX_UNFOLD = 20;
+	const TREE_KEY = 'dev-modeles-arbre';
 	const VERDICT_ITEMS = [
 		{ value: 'tous', label: 'Tous les verdicts' },
 		{ value: 'a_revoir', label: '🔶 À revoir' },
@@ -53,6 +56,8 @@
 	let openSheets = $state<Record<string, boolean>>({});
 	// Code de point mal formé : aide sous la case, sans quitter la page (le serveur le refuserait)
 	let pointHelp = $state<string | null>(null);
+	// Arbre des programmes replié : préférence de ce navigateur seulement (rien de grave si perdue)
+	let treeOpen = $state(readTreeOpen());
 
 	const totals = $derived(data.totals);
 	const openKeys = $derived(new Set(data.path.map((p) => p.key)));
@@ -92,6 +97,24 @@
 		}
 		pointHelp = null;
 		setFilter('point', value);
+	}
+
+	function readTreeOpen(): boolean {
+		if (!browser) return true;
+		try {
+			return localStorage.getItem(TREE_KEY) !== 'replie';
+		} catch {
+			return true;
+		}
+	}
+
+	function toggleTree() {
+		treeOpen = !treeOpen;
+		try {
+			localStorage.setItem(TREE_KEY, treeOpen ? 'ouvert' : 'replie');
+		} catch {
+			// Stockage indisponible (navigation privée) : le choix vaut pour cette page seulement
+		}
 	}
 
 	function setAllSheets(open: boolean) {
@@ -178,15 +201,37 @@
 		<p id="point-help" class="text-sm text-destructive">{pointHelp}</p>
 	{/if}
 
-	<div class="grid gap-4 md:grid-cols-[minmax(16rem,22rem)_1fr]">
-		<nav aria-label="Arbre des modèles" class="max-h-[80vh] overflow-y-auto rounded-lg border p-2">
-			<ReviewTree
-				nodes={data.tree}
-				{openKeys}
-				selectedKey={data.nodeKey}
-				queryFor={(key) => queryWith({ noeud: key })}
-			/>
-		</nav>
+	<div class={treeOpen ? 'grid gap-4 md:grid-cols-[minmax(16rem,22rem)_1fr]' : 'space-y-4'}>
+		<div class="space-y-2">
+			<Button
+				variant="outline"
+				size="sm"
+				aria-expanded={treeOpen}
+				aria-controls="arbre-modeles"
+				onclick={toggleTree}
+			>
+				{#if treeOpen}
+					<PanelLeftClose class="mr-1 h-4 w-4" aria-hidden="true" />
+					Replier les programmes
+				{:else}
+					<PanelLeftOpen class="mr-1 h-4 w-4" aria-hidden="true" />
+					Programmes
+				{/if}
+			</Button>
+			<nav
+				id="arbre-modeles"
+				hidden={!treeOpen}
+				aria-label="Arbre des modèles"
+				class="max-h-[80vh] overflow-y-auto rounded-lg border p-2"
+			>
+				<ReviewTree
+					nodes={data.tree}
+					{openKeys}
+					selectedKey={data.nodeKey}
+					queryFor={(key) => queryWith({ noeud: key })}
+				/>
+			</nav>
+		</div>
 
 		<main class="min-w-0 space-y-3">
 			{#if data.pointUnknown}
