@@ -6,17 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, après #2899 (lot 13 rangé en prod)._
+_Mis à jour le 2026-11-19, après la publication du lot 13._
 
-- **État** : lots 1 à 12b publiés ; lot 13 (§ 20 : CE2-039 ×2, CE2-070 coté en cm ×3) en brouillons, rangés et tagués
-  en prod (#2899 + `db:migrate`, relevé MCP 5/5). `publier-lot` en simulation : 5/5 passent. Restent sans modèle, par
-  décision : 086, 043, 051, 065.
-- **Prochaine action** : compter les verdicts de la page à cocher (https://claude.ai/artifact/3nwHajwut1oF2XdTgGG2kN) ;
-  puis David lance `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/ce2-13 --publier` depuis le
-  worktree (pas de `deploy:prod` : la règle graduée est en prod) ; relevé MCP ; puis clôture du chantier (versement).
-- **En attente de David** : la relecture (page à cocher), le `publier-lot --publier` ; vérification manuelle des lots 12b et 13.
-- **Pièges en cours** : `db:migrate` depuis un worktree : copier `supabase/.temp/{project-ref,linked-project.json,pooler-url}`
-  (fait) ; Chrome ne lit pas `[::1]` (aperçu local non jouable).
+- **État** : lots 1 à 13 publiés (lot 13 : 5/5 `published`, relevé MCP). Restent sans modèle, par décision : 086, 043,
+  051, 065. Page à cocher du lot 13 : 0 verdict en base.
+- **Prochaine action** : clôture du chantier (versement : le durable vers `docs/systeme/`, journal archivé) — attend le go.
+- **En attente de David** : le go de clôture ; la relecture du lot 13 (0 verdict) ; vérification manuelle des lots 12b et 13.
+- **Pièges en cours** : aucun.
 - **Worktree / branche** : `../ubumaths-wt-questions-ce2`, HEAD détaché sur `origin/main`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
@@ -1155,3 +1151,5 @@ phrase périmée de `couvrir-un-niveau.md` est corrigée dans la PR du lot.
   attente ; `db:migrate` (David) depuis le worktree ; relevé MCP : 5/5 sur leur nœud, un point chacun, brouillons,
   `updated_at` intact. Page à cocher publiée (https://claude.ai/artifact/3nwHajwut1oF2XdTgGG2kN), alerte attendue
   (case « figure » non dessinée) ; `publier-lot` en simulation : 5/5.
+- 2026-11-19 : `publier-lot --publier` (David) ; relevé MCP : 5/5 `published`. Page à cocher : **0 verdict** en base
+  (collection `verdicts` vide) → relecture non prouvée. **Lot 13 clos.**
