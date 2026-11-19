@@ -6,21 +6,23 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, après la publication du lot 14a._
+_Mis à jour le 2026-11-19, après #2893._
 
-- **État** : lots 0 à 14a publiés (lot 14a : 6 modèles, § 21.5). Restent les lots 14b à 19 du § 14 (15 sans 109,
-  18 sans 087 ni 094 : § 21.1 ; 19 réduit à CM2-102 : § 19.4).
-- **Prochaine action** : phase 0 du lot 14b (courbes, construire, problèmes : 125, 159, 121, 122, 108).
-- **En attente de David** : rien.
+- **État** : lots 0 à 14a publiés ; lot 14b (6 modèles, § 22) en fichiers sur `main` (#2893), pas encore en prod.
+  Restent ensuite les lots 15 à 19 du § 14 (15 sans 109, 18 sans 087 ni 094 : § 21.1 ; 19 réduit à CM2-102 : § 19.4).
+- **Prochaine action** : David lance `create-questions --dir scripts/questions/cm2-14b --publier` (depuis le worktree) ;
+  puis ids commités, migration nœud + tag (courbes et repères ×3, diagrammes en barres, notion « Représenter des
+  données » ×2), page à cocher, publication.
+- **En attente de David** : la commande `create-questions` ci-dessus.
 - **Pièges en cours** : `Doc-inchangée:` dans un COMMIT ; sujet de commit en minuscule, corps ≤ 100 caractères par ligne.
   `migration:horodatage` = heure réelle UTC ; une autre migration en attente → stop avant `db:migrate` (worktree remis
   sur `origin/main` d'abord). `db:migrate` depuis le worktree : `supabase/.temp` copié. `create-questions` /
   `publier-lot` refusés au classifieur : David les lance (`!`). Port 5179 pris par `questions-ttechno` : serveur
-  d'essai sur 5186. `de` + `{{if}}` ne s'élide pas. Une spec qui recalcule une donnée par la formule du modèle ne la
-  vérifie pas : contrôler l'invariant (§ 21.3). La page à cocher ne dessine pas ` ```circulaire ` (§ 21.4).
-- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, détaché sur `origin/main` ; 7 fichiers
-  `scripts/questions/ttechno-8-loi-binomiale/` modifiés dedans (ids du lot 8 de `questions-ttechno`, déjà sur sa
-  branche, PR #2886) : pas à ce chantier, ne pas toucher.
+  d'essai sur 5186. `de` + `{{if}}` ne s'élide pas. Contrôler les invariants à part (§ 21.3, 22.2 : il a trouvé un
+  défaut que les specs ne voyaient pas). La page à cocher ne dessine pas ` ```circulaire ` (§ 21.4). Index du dépôt
+  principal partagé : `git commit -- <fichier>`, et un `push` de `main` emporte les commits locaux des autres sessions.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, branche `feat/questions-cm2-lot14b` (mergée) : la migration
+  partira d'une branche neuve sur `origin/main`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -1653,3 +1655,22 @@ l'échelle à choisir ? Reco : **oui** ; c'est ce que dit « recueillir des donn
 Recommandations suivies (« je te suis ») : (a) niveaux 4, 5, 6 (courbes et repères), 10 (barres), 4 et 4 (notion
 « Représenter des données ») ; (b) 108 en deux modèles, lot de 6 ; (c) 121 avec un relevé brut à compter, échelles 1,
 2, 5, 10 et effectifs ≤ 100 ; (d) cocktail : parts lues à l'œil (moitié, quart).
+
+### 22.2 Lot 14b : écriture (2026-11-19)
+
+- `docs/wip/questions/lot-cm2-14b.py` → `scripts/questions/cm2-14b/` (6 modèles, 21 variations, sans `theme` / `domain` /
+  `subdomain`). `question:specs --instances 300` : 45 specs vertes, 6 300 tirages réussis, aucun `\textcolor` hors `$` ;
+  `create-questions` en simulation (prod) : 6 à créer, 0 en base.
+- **Contrôle des invariants à part** (script du scratchpad, 3 000 tirages par variation, comme le § 21.3) : réponse
+  unique et au bon rang (heure d'une température, montée, plus forte hausse, arrêt du randonneur), comptages du relevé
+  brut, points dans la fenêtre. Il a trouvé un défaut que les specs ne voyaient pas : 159 V1, la fin de journée pouvait
+  descendre sous le minimum du matin, ou le départ égaler le sommet (corrigé faux : « le point le plus bas ») ;
+  conditions ajoutées. `question:specs` a trouvé une température négative (122 V3) : condition ajoutée. Puis 0 défaut.
+- Base locale (copie du dossier dans le scratchpad, `.env.local`, sous `with-db-lock.sh`) : 6 brouillons ; aperçu admin
+  à 390 px (Playwright, port 5186), les 21 variations vues, 0 erreur console, aucun débordement de page. Corrigés : le
+  tableau du relevé (6 points) débordait à 390 px → une ligne par point ; l'axe vertical numérote de 4 en 4 quand un
+  carreau vaut 2 → corrigés en « un carreau vaut 2 km » (température, cuve de même).
+- Écarts à la phase 0 : 121 V2 en échelle 10 seulement (voix de 15 à 100) ; 108-5 V2, tableau des distances entre
+  quatre villes (le détour par une ville), pas un tableau élèves × sports (déjà au CM1, `ae74fe73`) ; 108-6 V2, car et
+  vélo ensemble contre à pied (une réponse) ; 108-6 V3, cuve d'eau et arrosoirs (la prévision de température est déjà
+  au CM1, `f1f7b2d1`).
