@@ -1,4 +1,5 @@
 {
+	"id": "d2e2f75d-dc9b-4494-a4f7-911e1ebb71cf",
 	"title": "Aire d'un rectangle",
 	"description": "Calculer l'aire d'un rectangle de côtés entiers (longueur × largeur) : en cm, sur un dessin, ou dans un petit problème en m ou en dm",
 	"grades": ["CM2"],
