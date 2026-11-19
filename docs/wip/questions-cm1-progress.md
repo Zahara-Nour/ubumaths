@@ -5,19 +5,22 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, après #2869._
+_Mis à jour le 2026-11-19 ; lot 8f écrit, PR des fichiers en cours (§ 25 nonies)._
 
-- **État** : lots 0 à 8e publiés, **153 points du CM1 sur 171** (CM2 115/158) ; correction du modèle 04
-  (b423785d) **en prod** (migration `20261119060346` jouée, vérifiée au MCP : md5 = fichier du dépôt).
-- **Prochaine action** : lot 8f (modèles 8 à 14 du § 25), sur une nouvelle branche depuis `origin/main`, puis 9.
-- **En attente de David** : rien (vérification téléphone du 04 notée dans `verifications-manuelles.md`).
+- **État** : lots 0 à 8e publiés, **153 points du CM1 sur 171** (CM2 115/158). Lot 8f (modèles 8 à 14 du § 25,
+  7 modèles CM1 + CM2) écrit et vérifié (simulation, sondes, base locale à 390 px).
+- **Prochaine action** : PR des fichiers → CI verte → merge ; puis David lance `create-questions --dir
+scripts/questions/cm1-8f --publier` depuis le worktree ; ids commités ; migration nœud + tag (gabarit 8e) ;
+  page à cocher ; publication. Ensuite le lot 9.
+- **En attente de David** : rien.
 - **Pièges en cours** : création en prod = `pnpm tsx scripts/create-questions.ts --dir … --publier
 [--mettre-a-jour]`, depuis le worktree ; `--mettre-a-jour` ne touche JAMAIS un publié (sinon migration de
   contenu, gabarit `docs/wip/questions/cm1-8e-04-contenu.py`) : le lancer AVANT `publier-lot`, vérifier au MCP
   entre les deux ; commitlint refuse le type `content` et un corps > 100 caractères par ligne ; le mode auto
   refuse `publier-lot` et `garde-niveaux-tags` : David les lance ; les scripts de lot réécrivent les JSON SANS
-  leur `id` ; `ci-lint-fichiers.test.ts` dépasse parfois ses 5 s en CI.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm1` ; branche `feat/questions-cm1-lot8e-correctif` mergée.
+  leur `id` ; `ci-lint-fichiers.test.ts` dépasse parfois ses 5 s en CI. Rangement du 8f : 14 sur Solides ›
+  constructions (pas sur la notion Solides où est le point 119), voir § 25 nonies.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm1` ; branche `feat/questions-cm1-lot8f`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -2170,3 +2173,26 @@ reste en D ; niveaux **CM1 et CM2** et tag des deux points (109/098, 110/099, 11
 - Outil manquant noté : `outils-manquants.md` n° 41 (corriger un publié sans migration écrite par modèle).
 - #2869 mergée ; `db:migrate` (seule migration en attente, vérifié par `migration list --linked`) ; MCP :
   nouvelle phrase présente, ancienne absente, md5(variations) `c120baed…` = fichier du dépôt, specs inchangées.
+
+### 25 nonies. Lot 8f — écrit (2026-11-19)
+
+- Script `docs/wip/questions/lot-cm1-8f.py` → `scripts/questions/cm1-8f/` (7 modèles, 17 variations, 89 specs),
+  grades **CM1 + CM2** pour les 7. Sonde `docs/wip/questions/patron-sonde.ts` (pliage de l'appli) : réponses
+  attendues des gestes `designer:` / `completer:`, combinaisons (patron, faces retirées) qui laissent des faces
+  reliées (31 à une face, 47 à deux), poses fausses des specs jugées par `isPatronAnswerCorrect`.
+- **Niveaux** (relevé MCP du 2026-11-19), à la suite de ceux de chaque nœud : Solides › patrons a 1, 2 (CE2) et
+  3 (5e) → 08, 09, 10 en 4, 5, 6 (le modèle de 5e reste au 3, plus bas que le CM1 : à revoir au rangement si
+  David le veut) ; Repérage et déplacements › coder un déplacement a 1 à 5 → 11, 12, 13 en 6, 7, 8.
+- **Rangement prévu du 14** : sur Solides › constructions (CE1 en 4, 5) au niveau 6, pas sur la notion Solides
+  où sont les points CM1-119, CM2-105 et les modèles de 6e (1 à 3) ; la règle de l'ADR 0020 (point sur le nœud
+  du modèle ou sur sa notion) l'autorise.
+- Écarts à la phase 0, d'écriture seulement : 08 V2 coupé en trois variations (6, 5, 7 carrés) ; 12 dessiné en
+  ` ```figure ` comme le CE1 `e3bacfdc` (le bloc robot ne numérote pas de points), 12 scènes tirées une fois
+  (graine fixe), une sur deux avec un demi-tour, jamais « avance de n, demi-tour, avance de n » ; pièges : droite
+  et gauche échangées, demi-tour oublié ou une case de trop ; 13 : mur gris d'une colonne à une seule ouverture,
+  chemin de 15 cases au plus (conditions) ; 11 V4 « recule » : choix « la case juste au-dessus… ».
+- `create-questions` en simulation contre la prod : 7 « à créer » ; `question:specs` 300 tirages par variation,
+  tous réussis ; `sonde-cubes` 1 200 blocs, `sonde-figures` 300 tirages : 0 problème.
+- `questions-cm2` prévenue par message : CM2-100, 101, 103, 104, 105 pris ici, son lot 19 garde 102.
+- Base locale (18 copies, une variation chacune), aperçus à 390 px (Playwright, port 5183) : aucun défilement
+  horizontal, aucune erreur de console ; vus : patrons, face grise, cases en pointillés, robot, mur gris.
