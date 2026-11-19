@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après #2854._
+_Mis à jour le 2026-11-19, PR 3b en cours (pas encore de PR ouverte)._
 
-- **État** : PR 1 (#2842), PR 2 recherche (#2847) et PR 3a vue « Notions » (#2854) mergées. Rien en prod tant que David n'a pas fait `deploy:prod`.
-- **Prochaine action** : PR 3b vue « Programme » (points 8-13 de la phase 0 du 2026-11-18, lecture A : questions rattachées au point, sinon celles de son nœud), nouveau worktree `../ubumaths-wt-automaths`, branche `feat/automaths-programme`. Phase 0 déjà validée : coder directement (tests d'abord). Puis PR 4 « Ma série ».
-- **En attente de David** : rien (vérification manuelle #2854 notée dans `verifications-manuelles.md`).
-- **Pièges en cours** : `getByRole('navigation', { name: 'Notions' })` attrape « Sous-notions » → `exact: true` ; la page défile dans un conteneur interne (pas `window`) ; garde `block-css-vars` : un composant ne lit que les variables CSS qu'il déclare ; `curriculum_points.rubrique` = « Partie › Chapitre [› Automatismes] », lisible par `anon` (pas de migration) ; non mesuré : ~111 aperçus calculés d'un coup par la dernière pastille d'une grosse notion ; la tuile reste la flash-card ; un test qui rend la page vide `sessionStorage` ; carte asserte avec la fixture `data/relecture/entiers/139.json`.
-- **Worktree / branche** : aucun (celui de la PR 3a est supprimé).
+- **État** : PR 1 (#2842), 2 (#2847), 3a (#2854) mergées. PR 3b vue « Programme » codée et commitée sur `feat/automaths-programme` (tests verts, `check:incremental` 0, `lint:fast` propre, doc `questions.md` à jour), revue `code-reviewer` faite : aucun bloquant.
+- **Prochaine action** : traiter la revue (voir « PR 3b, revue » plus bas), relancer les tests du catalogue, pousser, ouvrir la PR, CI, merger. Puis PR 4 « Ma série ».
+- **En attente de David** : regarder la vue sur `http://localhost:5176/automaths?niveau=5` (serveur du worktree, base locale) ; valider les choix non écrits en phase 0 (section « réalisation »).
+- **Pièges en cours** : séparateur de `rubrique` = « > » en base ; une liste servie sans `points` (cache Vercel d'avant le déploiement) → vue Notions seule ; les cartes de test n'apparaissent qu'avec la fixture `data/relecture/entiers/139.json` ; `getByRole('navigation', { name: 'Notions' })` → `exact: true` ; Chrome (extension) refusait la page en dev le 2026-11-19.
+- **Worktree / branche** : `../ubumaths-wt-automaths` · `feat/automaths-programme`.
 
 ### 2026-11-18 — recherche
 
@@ -116,3 +116,22 @@ Lecture des questions sous un point : **A** — les questions rattachées au poi
 ### 2026-11-18 — PR 3a mergée (#2854)
 
 - CI rouge au 1er passage : garde `block-css-vars` (variable `--catalogue-card-height` lue par la tuile, déclarée par la grille) → hauteur déclarée dans `QuestionPreviewCard` (`.tile`, `@media`). CI verte, mergée. Vérification manuelle notée.
+
+### 2026-11-19 — PR 3b vue « Programme », réalisation
+
+- Mesures prod (lecture seule) : séparateur de `rubrique` = « > » (pas « › ») ; formes « Partie > Chapitre », « Partie > Chapitre > Automatismes » (5e : 2 points), ou une seule partie (« La pensée informatique ») ; `display_order` = ordre du BO par niveau ; 2 529 points non archivés, tous avec un niveau. Liste des modèles : 1,8 Mo compressés (9,6 Mo bruts) ; les points ajoutent ~6 %.
+- API : `points` (id, name, grade, rubrique, display_order, node_id) + `templatePoints` (ids) remplacent `pointNames`, que le cache dérive ; une liste d'avant le déploiement (cache Vercel) garde ses `pointNames` et n'affiche pas la vue Programme.
+- `buildProgramme` (`catalogue-programme.ts`) ; `CatalogueNotionNav` → `CatalogueTreeNav` (deux étages génériques, partie sans chapitre = une entrée) ; `CatalogueProgrammeSections` ; page : bascule `aria-pressed`, snippet commun colonne / panneau, `?vue=` + `?chapitre=<slug>`.
+- Choix non écrits en phase 0 (à signaler à David) : questions venues du nœud signalées « Questions de « Fractions » » ; « Programme » listé en premier dans la bascule ; un ancien lien `?notion=` sans `vue` garde la vue Notions ; rattachées hors du filtre de niveau → repli sur le nœud.
+- Tests : `catalogue-programme.test.ts` (9), `catalogue-programme.svelte.test.ts` (12, rouges 11/12 sur l'ancienne page), API et cache adaptés ; 62 verts sur le dossier du catalogue.
+- Chrome (extension) refusait la page en dev : rendu non vu à l'œil.
+
+### 2026-11-19 — PR 3b, revue `code-reviewer` (Sonnet) : aucun bloquant
+
+À traiter à la reprise :
+
+- Écarté d'avance : « vue Notions affichée avant l'arrivée de la liste » — faux, la page montre « Chargement des questions… » tant que la liste n'est pas lue. Poids de l'API : déjà mesuré (+~6 % compressé).
+- Slug de chapitre vide (nom fait de symboles) ou doublon de casse/accents → garantir un id non vide et unique (repli sur l'indice) + test.
+- `CatalogueTreeNav` : une branche dont la seule notion porte son nom devient une entrée simple aussi dans la vue Notions — acceptable, le dire dans la PR.
+- Points sans niveau exclus de la recherche (aucun aujourd'hui) — le dire dans la PR.
+- Onglet ouvert avec l'ancien code + nouvelle API : recherche sans intitulés de points jusqu'au rechargement (fenêtre de déploiement seulement).

@@ -82,7 +82,7 @@ let previews = new WeakMap<QuestionTemplate, QuestionInstance | null>();
 // ============================================================================
 
 /** Dans une rubrique : niveau croissant (numérique : 10 après 2), puis titre */
-function compareTemplates(a: QuestionTemplate, b: QuestionTemplate): number {
+export function compareTemplates(a: QuestionTemplate, b: QuestionTemplate): number {
 	return (a.level ?? 0) - (b.level ?? 0) || (a.title ?? '').localeCompare(b.title ?? '', 'fr');
 }
 

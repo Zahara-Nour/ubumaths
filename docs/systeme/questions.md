@@ -195,7 +195,7 @@ Seul `series.ts` concerne les questions : composition d'une série (`seriesItemS
   (`src/lib/questions/catalogue.ts` : `buildCatalogue`) — branches, notions et sous-notions
   (rubriques) dans l'ordre de l'arbre (`position`, puis nom), puis par niveau et titre. **Navigation**
   (PR 3a, phase 0 du 2026-11-18) : liste des branches et notions à compteurs
-  (`CatalogueNotionNav`, `notionTemplateCount`), colonne de gauche sur grand écran (`lg`), panneau
+  (`CatalogueTreeNav`, liste à deux étages commune aux deux vues ; `notionTemplateCount`), colonne de gauche sur grand écran (`lg`), panneau
   du bas sur téléphone (bouton « Notion : … · n ») ; seule la branche de la notion affichée est
   dépliée au départ. La notion (`CatalogueNotionSections`) montre ses sous-notions toutes dépliées,
   avec des pastilles à compteurs collées en haut qui y descendent (les sections du dessus sont
@@ -210,11 +210,27 @@ Seul `series.ts` concerne les questions : composition d'une série (`seriesItemS
   sont gardés dans l'adresse (`?niveau=4&inferieurs=1&notion=<id>`, sans entrée d'historique ; la
   notion désigne aussi sa branche ; notion inconnue ou absente au niveau choisi → première notion), et
   retenus pour la visite (`sessionStorage`, clé `chiphre_automaths_adresse`) : revenu sur `/automaths`
-  sans paramètre (retour du panier), le catalogue reprend la dernière adresse. **Recherche**
+  sans paramètre (retour du panier), le catalogue reprend la dernière adresse. **Vue « Programme »**
+  (PR 3b, phase 0 du 2026-11-18 ; `src/lib/questions/catalogue-programme.ts` : `buildProgramme`,
+  `CatalogueProgrammeSections`) : bascule « Programme | Notions » (`aria-pressed`) dès que le niveau
+  choisi a un programme, « Programme » par défaut ; « Tous les niveaux », ou une liste servie sans
+  programme (cache de Vercel d'avant le déploiement) → Notions seule. Colonne (ou panneau « Chapitre :
+  … · n ») : parties → chapitres du **programme du niveau choisi seul**, tirés de la `rubrique` des
+  points (« Partie > Chapitre [> Automatismes] » : le 3e étage rejoint son chapitre, une rubrique d'un
+  seul mot est son propre chapitre), dans l'ordre du BO (`display_order`) ; compteurs = questions
+  distinctes. Chapitre : une section par point (intitulé), ses questions dessous (lecture A) : celles
+  rattachées au point dans la liste filtrée par niveau ; aucune → celles du nœud du point, sous-notions
+  comprises (« Questions de « Fractions » ») ; rien → « Pas encore de question ». « Et niveaux
+  inférieurs » ne change que les questions. Adresse `?vue=programme&chapitre=<slug du chapitre>` (ou
+  `?vue=notions&notion=<id>`) ; un lien qui ne porte qu'une notion garde la vue Notions ; chapitre
+  inconnu → premier chapitre. Les points (`points` : non archivés, avec niveau, tous niveaux) et les
+  ids des points de chaque modèle publié (`templatePoints`) arrivent avec la liste des modèles (+~6 %
+  compressé). **Recherche**
   (`src/lib/questions/catalogue-search.ts` : `searchCatalogue`, phase 0 du 2026-11-18) : champ en
   haut, sans curseur automatique, « / » l'y met ; elle porte sur le titre, la description, les noms
   de notion et de sous-notion (pas la branche : « calcul » ramenait « Nombres et calculs » entier)
-  et les intitulés des points du programme du modèle (`pointNames`) ; sans accents ni majuscules,
+  et les intitulés des points du programme du modèle (`pointNames`, dérivés par le cache de `points` et
+  `templatePoints`) ; sans accents ni majuscules,
   tous les mots, chacun au **début d'un mot** (« aire » ne trouve pas « linéaire ») ; dès 2 lettres,
   200 ms après la frappe. Les résultats (filtrés par le niveau) remplacent la liste des notions,
   groupés par sous-notion dans l'ordre de l'arbre (« Branche › Notion › sous-notion · n ») avec un
@@ -243,16 +259,19 @@ Seul `series.ts` concerne les questions : composition d'une série (`seriesItemS
     Un panier d'avant l'ADR 0035 (catégories) n'est plus relu : au chargement ses lignes sont
     retirées, le panier réécrit, et un message le dit.
   - `questionTemplates.svelte.ts` (`questionTemplatesCache`) : modèles publiés et arbre des
-    notions (`nodes`, nœuds non archivés), intitulés des points de chaque modèle (`pointNames`,
-    pour la recherche ; `{}` si la réponse n'en porte pas), **seule source des pages Automaths** (catalogue, panier, `test`) — leurs `load` n'en envoient aucun.
+    notions (`nodes`, nœuds non archivés), points du programme (`points`) et ids des points de
+    chaque modèle (`templatePoints`), d'où il tire leurs intitulés (`pointNames`, pour la
+    recherche ; une réponse d'avant le déploiement apporte ses `pointNames` et aucun `points`), **seule source des pages Automaths** (catalogue, panier, `test`) — leurs `load` n'en envoient aucun.
     `fetchTemplates()` lit `/api/questions/templates/all` une fois par onglet (lectures
     simultanées partagées) ; naviguer entre ces pages ne recharge rien. Les pages admin
     invalident les deux caches après écriture : la relecture passe par `?frais=…`, adresse que
     le cache de Vercel ne connaît pas.
-- `/api/questions/templates/all` : liste publique (`{ templates, nodes, pointNames }` : modèles
-  publiés, nœuds non archivés de l'arbre, colonnes du rangement seulement, et intitulés des points
-  non archivés de chaque modèle — lus en anonyme, policy `20261118204254` ; leur lecture en échec
-  sert la liste sans eux, `pointNames: {}`) gardée **5 min par Vercel**
+- `/api/questions/templates/all` : liste publique (`{ templates, nodes, points, templatePoints }` :
+  modèles publiés, nœuds non archivés de l'arbre, colonnes du rangement seulement, points du
+  programme non archivés avec un niveau (`id, name, grade, rubrique, display_order, node_id`, tous
+  niveaux, ~2 500) et ids des points de chaque modèle publié — liens lus en anonyme, policy
+  `20261118204254` ; leur lecture en échec sert la liste sans eux, `points: []`,
+  `templatePoints: {}`) gardée **5 min par Vercel**
   (`s-maxage=300, stale-while-revalidate=300`) — un modèle publié ou dépublié l'est pour les
   élèves en 5 à 10 min. Servie à tous : lue par un client **anonyme** (`createAnonymousSupabase`),
   jamais par la session ; un échec répond 500, sans cache. Le hook passe en `private, no-store`

@@ -65,7 +65,7 @@
 
 <!-- tabindex -1 : la page y met le focus quand on choisit une notion (clavier, lecteur d'écran) -->
 <h2
-	id="notion-titre"
+	id="catalogue-titre"
 	tabindex="-1"
 	class="mb-2 text-2xl font-semibold tracking-tight focus:outline-none"
 >

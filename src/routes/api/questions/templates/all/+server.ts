@@ -6,9 +6,10 @@
  * navigateur (`questionTemplatesCache`) : catalogue Automaths, panier, test.
  * Elle porte aussi l'arbre des notions (nœuds non archivés, colonnes du
  * rangement seulement), qui range le catalogue : même cache, une seule requête.
- * Et, pour la recherche du catalogue, les intitulés des points du programme de
- * chaque modèle (`pointNames`, points archivés exclus) ; leur lecture en échec
- * ne prive pas du catalogue : il est servi sans eux.
+ * Et le programme : les points non archivés de tous les niveaux (`points`, pour
+ * la vue « Programme » du catalogue) et les points de chaque modèle publié
+ * (`templatePoints`, ids ; la recherche y lit leurs intitulés). Leur lecture en
+ * échec ne prive pas du catalogue : il est servi sans eux.
  *
  * Gardée 5 min par Vercel (`s-maxage=300`), puis servie périmée pendant qu'il
  * la relit en arrière-plan : la base n'est plus relue à chaque visite. Un
@@ -31,6 +32,7 @@ import { createServerLogger } from '#lib/utils/logger.ts';
 import { readAllRows } from '#lib/server/read-all-rows.ts';
 import { createAnonymousSupabase } from '#lib/server/anonymous-supabase.ts';
 import type { Database } from '#lib/types/database.ts';
+import type { CatalogueProgrammePoint } from '#lib/questions/catalogue-programme.ts';
 
 type TemplateColumn = keyof Database['public']['Tables']['question_templates']['Row'];
 
@@ -72,8 +74,14 @@ const TEMPLATE_COLUMNS = TEMPLATE_COLUMN_LIST.join(', ');
 /** Colonnes de l'arbre dont le catalogue a besoin (`CatalogueNode`) */
 const NODE_COLUMNS = 'id, kind, name, parent_id, position';
 
-/** Intitulés des points du programme, par modèle (recherche du catalogue) */
-type PointNames = Record<string, string[]>;
+/** Colonnes d'un point du programme dont le catalogue a besoin (`CatalogueProgrammePoint`) */
+const POINT_COLUMNS = 'id, name, grade, rubrique, display_order, node_id';
+
+/** Points du programme, et ids des points de chaque modèle publié */
+interface Programme {
+	points: CatalogueProgrammePoint[];
+	templatePoints: Record<string, string[]>;
+}
 
 const logger = createServerLogger('api/questions/templates/all/+server');
 
@@ -122,10 +130,10 @@ export const GET: RequestHandler = async ({ setHeaders }) => {
 
 	// Colonnes jointes en une chaîne : PostgREST ne type pas les lignes, on lit l'id à la main
 	const publishedIds = new Set(templates.flatMap((row: unknown) => rowId(row) ?? []));
-	const pointNames = await readPointNames(supabase, publishedIds);
+	const { points, templatePoints } = await readProgramme(supabase, publishedIds);
 
 	setHeaders({ 'cache-control': CACHE_CONTROL });
-	return json({ templates, nodes, pointNames });
+	return json({ templates, nodes, points, templatePoints });
 };
 
 /** `id` d'une ligne lue, ou `null` */
@@ -136,16 +144,17 @@ function rowId(row: unknown): string | null {
 }
 
 /**
- * Intitulés des points non archivés de chaque modèle publié (la RLS d'`anon`
- * ne rend que les liens des modèles publiés). Lecture en échec : aucun
- * intitulé, la recherche porte alors sur les titres et les notions seulement.
+ * Points non archivés (avec un niveau) et liens des modèles publiés vers eux
+ * (la RLS d'`anon` ne rend que les liens des modèles publiés). Lecture en
+ * échec : programme vide, la recherche porte alors sur les titres et les
+ * notions seulement, et la vue « Programme » ne s'affiche pas.
  */
-async function readPointNames(
+async function readProgramme(
 	supabase: ReturnType<typeof createAnonymousSupabase>,
 	publishedIds: ReadonlySet<string>
-): Promise<PointNames> {
+): Promise<Programme> {
 	try {
-		const [links, points] = await Promise.all([
+		const [links, rows] = await Promise.all([
 			readAllRows(
 				(from, to) =>
 					supabase
@@ -161,25 +170,26 @@ async function readPointNames(
 				(from, to) =>
 					supabase
 						.from('curriculum_points')
-						.select('id, name')
+						.select(POINT_COLUMNS)
 						.is('archived_at', null)
+						.not('grade', 'is', null)
 						.order('id')
 						.range(from, to),
 				'des points du programme'
 			)
 		]);
-		const nameById = new Map(points.map((p) => [p.id, p.name]));
-		const pointNames: PointNames = {};
+		const points = rows.flatMap((p) => (p.grade === null ? [] : [{ ...p, grade: p.grade }]));
+		const pointIds = new Set(points.map((p) => p.id));
+		const templatePoints: Record<string, string[]> = {};
 		for (const link of links) {
 			// La RLS ne rend que les liens des publiés ; le filtre le garantit aussi
 			// si la lecture passait un jour par un autre client
-			const name = nameById.get(link.point_id);
-			if (!name || !publishedIds.has(link.template_id)) continue;
-			(pointNames[link.template_id] ??= []).push(name);
+			if (!pointIds.has(link.point_id) || !publishedIds.has(link.template_id)) continue;
+			(templatePoints[link.template_id] ??= []).push(link.point_id);
 		}
-		return pointNames;
+		return { points, templatePoints };
 	} catch (readError) {
-		logger.warn('[GET /api/questions/templates/all] Points des modèles illisibles :', readError);
-		return {};
+		logger.warn('[GET /api/questions/templates/all] Programme illisible :', readError);
+		return { points: [], templatePoints: {} };
 	}
 }
