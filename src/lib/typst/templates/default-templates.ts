@@ -1574,10 +1574,17 @@ const studentStyleCommon = (
     length: 100% - 3cm,
     stroke: 0.3pt + luma(75%)
   )),
+  // Titre de la fiche à gauche, pour retrouver la fiche d'une feuille imprimée ;
+  // numéro de page à droite
   footer: context [
-    #set align(center)
     #set text(size: 9pt, fill: gray)
-    #counter(page).display("1 / 1", both: true)
+    #grid(
+      columns: (1fr, auto),
+      column-gutter: 1em,
+      align: (left, right),
+      [{{#if show_title}}{{title}}{{/if}}],
+      counter(page).display("1 / 1", both: true)
+    )
   ]
 )
 
