@@ -5,17 +5,17 @@ Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) · bornes 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après #2851._
+_Mis à jour le 2026-11-19, lot 6 écrit (PR de fichiers ouverte)._
 
-- **État** : lots 0 à 5a publiés ; lot 5b relu (3/3 ok), **L9 publiée** (§ 43), L7 et L8 en brouillon (relus,
-  prêts). Restent ensuite les lots 6 à 8 (§ 33).
-- **Prochaine action** : lot 6, fonction inverse (045, 086, 049, 087) : phase 0. Dès que #2839 est en prod :
-  `publier-lot.ts --dir scripts/questions/ttechno-5b-log-resolutions` pour L7 et L8 (David lance `--publier`).
+- **État** : lots 0 à 5a publiés ; lot 5b : L9 publiée, L7 et L8 en brouillon (relus, prêts) ; **lot 6 (fonction
+  inverse, 5 modèles I1–I5) écrit** (§ 45), PR des fichiers. Restent les lots 7 et 8 (§ 33).
+- **Prochaine action** : merge de la PR du lot 6, puis David lance `create-questions --dir
+scripts/questions/ttechno-6-inverse --publier` ; migration nœud + tag (045, 086 sur « définition et courbe »
+  96c8b0bd ; 049, 087 sur « variations et extremums » 2e77d4d9). Dès que #2839 est en prod : publier L7 et L8.
 - **En attente de David** : rien (le `deploy:prod` qui livre #2839 débloquera L7 et L8).
-- **Pièges en cours** : un point TTECHNO par modèle (trigger) ; tag = nœud DU POINT (relevé MCP) ; `publier-lot.ts`,
-  `create-questions --publier` visent la prod : David les lance (`!`) ; **L7 et L8 demandent de taper log : à
-  publier seulement après le `deploy:prod` qui livre #2839** (L9 n'en dépend pas) ; port 5176 pris par `automaths`.
-- **Worktree / branche** : aucun (retiré après #2851).
+- **Pièges en cours** : un point TTECHNO par modèle (trigger) ; tag = nœud DU POINT ; `publier-lot.ts`,
+  `create-questions --publier` visent la prod : David les lance (`!`) ; L7 et L8 après le `deploy:prod` de #2839.
+- **Worktree / branche** : `ubumaths-wt-questions-ttechno`, `feat/questions-ttechno-lot6`.
 
 ## 1. Périmètre
 
@@ -1004,17 +1004,40 @@ centaines d'unités, x ∈ [1 ; 20].
 
 **Questions à David** :
 
-- **Q27 — Ensemble d'étude** : ]0 ; +∞[ partout (les contextes l'imposent), plus une variation sur ℝ privé de 0
+- **Q28 — Ensemble d'étude** : ]0 ; +∞[ partout (les contextes l'imposent), plus une variation sur ℝ privé de 0
   avec la double barre dans I3 ? Reco : **oui**.
-- **Q28 — Polynôme de degré 2 ou 3** : une variation x² + k/x dans I3 (f′ = (2x³ − k)/x², k = 16 ou 54, racine
+- **Q29 — Polynôme de degré 2 ou 3** : une variation x² + k/x dans I3 (f′ = (2x³ − k)/x², k = 16 ou 54, racine
   cubique entière) ? Reco : **oui, une seule**, le reste en ax + b + k/x.
-- **Q29 — « Représenter » (087)** : faire placer des points dans un repère et choisir l'allure, ou seulement
+- **Q30 — « Représenter » (087)** : faire placer des points dans un repère et choisir l'allure, ou seulement
   choisir l'allure ? Reco : **les deux** (c'est le verbe du point).
-- **Q30 — Découpage** : un seul lot de 5 modèles ? Reco : **oui** (une page à cocher de 5 fiches).
+- **Q31 — Découpage** : un seul lot de 5 modèles ? Reco : **oui** (une page à cocher de 5 fiches).
 - **Question d'accès** (migration de tags, après écriture) : brouillons, personne ne les voit ; publiés, ils
   apparaissent au catalogue et au cahier de texte de Tle techno seulement. Personne ne perd rien.
 
-**Décisions (David, 2026-11-19, « je te suis »)** : **Q27** ]0 ; +∞[ partout, plus une variation sur ℝ privé de 0
-avec la double barre (I3) ; **Q28** une seule variation x² + k/x (I3) ; **Q29** I5 fait placer des points ET choisir
-l'allure ; **Q30** un seul lot de 5 modèles ; question d'accès : personne pour les brouillons, Tle techno à la
+**Décisions (David, 2026-11-19, « je te suis »)** : **Q28** ]0 ; +∞[ partout, plus une variation sur ℝ privé de 0
+avec la double barre (I3) ; **Q29** une seule variation x² + k/x (I3) ; **Q30** I5 fait placer des points ET choisir
+l'allure ; **Q31** un seul lot de 5 modèles ; question d'accès : personne pour les brouillons, Tle techno à la
 publication.
+
+## 45. Lot 6 : écriture (2026-11-19)
+
+`docs/wip/questions/lot-ttechno-6.py` → `scripts/questions/ttechno-6-inverse/` (5 fichiers, 69 specs),
+`grades ['T_TECHNO']`, brouillons. Worktree `ubumaths-wt-questions-ttechno`, branche `feat/questions-ttechno-lot6`.
+
+- I1 (045) : inverses de ±10⁻ⁿ et de 10ⁿ ; x très grand, x proche de 0 (choix) ; lim de a ± k/x en +∞ (nombre),
+  de ±k/x en 0 avec x > 0 (choix −∞ / 0 / +∞). I2 (086) : courbe de ±k/x (les deux axes), de a ± k/x (y = a, axe des
+  ordonnées), équation de l'asymptote horizontale sans courbe. I3 (049) : dérivée, même dénominateur, intervalle
+  où f′ ⩾ 0, minimum ; x + k/x sur ℝ privé de 0 (choix, tableau de signes à double barre) ; x² + k/x
+  (k = 2c³). I4 (049) : C_M(x) = x + p + q/x, production et coût moyen minimaux (q = m², x ∈ [1 ; 20]) ; prix
+  unitaire c + F/n : valeur limite, seuil n ⩾ F/d. I5 (087) : 5 points de x + 12/x + b à placer ; courbe de x + 4/x
+  parmi 4 ; courbe d'après un tableau de variations (maximum 6 en 2).
+- Simulation `create-questions` verte contre la prod (aucun homonyme) ; `question:specs` 5 / 5 importables,
+  300 tirages par variation, 0 `\textcolor` hors `$` ; 490 formules distinctes : accolades et `validateLatex`
+  0 problème ; `sonde-courbes` 0 problème.
+- Vu en route : `{{eval:10^(-n)}}` rend `\dfrac{1}{100}` → `;d` ; `\substack` et `\limits` inconnus de MathLive →
+  `\lim_{x\to0,\ x>0}` ; `x\mapsto{{if…}}x` collait `\mapstox` ; un `?` dans `$…$` d'une variation à choix crée
+  une 2e case (« aucune bonne réponse ») ; forme quotient de f′ en `bad_form` (spec retirée, la question demande
+  f′(x)) ; ligne `variation:` avec `||` exige des valeurs (limites) → tableau de SIGNES seul sur ℝ privé de 0.
+- Base locale : 5 brouillons ; aperçu admin (Chrome, `[::1]:5179`) : I3 tableau ]0 ; 3] ‖ − 0 + et minimum 13 ;
+  I5 tableau → courbes, 4 courbes sans points d'extrémité (fenêtre x ⩾ 0, plus de `sur […]`) ; I5 placer
+  (b = −3) 5 points → juste ; I2 courbe de −2 − 3/x. Deux brouillons de sonde locaux supprimés.
