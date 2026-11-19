@@ -574,9 +574,9 @@
 			{/if}
 		</div>
 
-		<aside aria-label="Ma série" class="hidden xl:block">
+		<aside aria-labelledby="ma-serie-titre" class="hidden xl:block">
 			<div data-series-sticky class="sticky top-4 max-h-[calc(100vh-2rem)] overflow-y-auto">
-				<MySeriesPreview />
+				<MySeriesPreview titleId="ma-serie-titre" />
 			</div>
 		</aside>
 	</div>

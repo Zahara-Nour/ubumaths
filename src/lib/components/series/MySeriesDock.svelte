@@ -18,6 +18,10 @@
 		seriesTotalSeconds
 	} from '#lib/questions/series-summary.ts';
 
+	// Constantes
+
+	const DESCRIPTION = 'Questions de ta série, à retirer ou à ouvrir sur la page détaillée.';
+
 	let sideOpen = $state(false);
 	let bottomOpen = $state(false);
 
@@ -56,7 +60,7 @@
 	<button
 		type="button"
 		onclick={() => (bottomOpen = true)}
-		class="fixed inset-x-0 bottom-0 z-50 flex items-center justify-between gap-2 border-t border-border bg-primary px-4 py-3 text-sm font-medium text-primary-foreground shadow-lg sm:hidden"
+		class="fixed inset-x-0 bottom-0 z-50 flex items-center justify-between gap-2 border-t border-border bg-primary px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] text-sm font-medium text-primary-foreground shadow-lg sm:hidden"
 	>
 		<span class="truncate">{barLabel}</span>
 		<ChevronUp class="h-4 w-4 shrink-0" aria-hidden="true" />
@@ -67,6 +71,7 @@
 	<Sheet.Content side="right" class="w-full overflow-y-auto sm:max-w-sm">
 		<Sheet.Header>
 			<Sheet.Title>Ma série</Sheet.Title>
+			<Sheet.Description class="sr-only">{DESCRIPTION}</Sheet.Description>
 		</Sheet.Header>
 		<div class="px-4 pb-6">
 			<MySeriesPreview showTitle={false} />
@@ -78,6 +83,7 @@
 	<Sheet.Content side="bottom" class="max-h-[80vh] overflow-y-auto">
 		<Sheet.Header>
 			<Sheet.Title>Ma série</Sheet.Title>
+			<Sheet.Description class="sr-only">{DESCRIPTION}</Sheet.Description>
 		</Sheet.Header>
 		<div class="px-4 pb-6">
 			<MySeriesPreview showTitle={false} />

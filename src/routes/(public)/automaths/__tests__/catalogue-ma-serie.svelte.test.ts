@@ -53,6 +53,16 @@ const TEMPLATES = [
 		grades: ['6'],
 		status: 'published',
 		variations: [{ statement: 'Combien font $$1+1$$ ? ____', blanks: [{ expectedAnswer: '2' }] }]
+	},
+	{
+		id: 'moitie',
+		type: 'fill_in_blanks',
+		title: 'Moitié de $\\frac{1}{2}$',
+		classification_node_id: 'n-frac',
+		level: 1,
+		grades: ['6'],
+		status: 'published',
+		variations: [{ statement: 'Combien font $$1+1$$ ? ____', blanks: [{ expectedAnswer: '2' }] }]
 	}
 ];
 
@@ -104,15 +114,40 @@ describe('Ma série — grand écran (≥ 1 280 px)', () => {
 
 	it('la colonne est à droite du contenu et reste visible quand on descend', async () => {
 		fillSeries();
+		await page.viewport(1280, 400);
 		await render(Page);
+		await expect.element(seriesColumn()).toBeVisible();
 
 		const column = seriesColumn().element();
 		const search = page.getByRole('searchbox', { name: 'Chercher une question' }).element();
 		expect(column.getBoundingClientRect().left).toBeGreaterThan(
 			search.getBoundingClientRect().right
 		);
-		const sticky = column.querySelector('[data-series-sticky]');
-		expect(sticky && getComputedStyle(sticky).position).toBe('sticky');
+
+		// Page défilée tout en bas : l'aperçu reste collé en haut de l'écran (top-4)
+		// Contenu de test court : la grille est allongée pour que la page défile ;
+		// le banc de test bloque le défilement (overflow: hidden sur html et body)
+		const grid = column.parentElement!;
+		grid.style.minHeight = '3000px';
+		document.documentElement.style.overflow = 'auto';
+		document.body.style.overflow = 'visible';
+		window.scrollTo(0, 1500);
+		await expect.poll(() => window.scrollY).toBeGreaterThan(100);
+		const sticky = column.querySelector<HTMLElement>('[data-series-sticky]')!;
+		await expect.poll(() => Math.round(sticky.getBoundingClientRect().top)).toBe(16);
+		window.scrollTo(0, 0);
+		grid.style.minHeight = '';
+		document.documentElement.style.overflow = '';
+		document.body.style.overflow = '';
+	});
+
+	it('titre avec formule : la croix porte un nom neutre', async () => {
+		questionCart.addToCart('moitie', 1, 20);
+		await render(Page);
+
+		await expect
+			.element(seriesColumn().getByRole('button', { name: 'Retirer la question 1' }))
+			.toBeVisible();
 	});
 
 	it('pas de bouton rond ni de barre', async () => {
@@ -227,6 +262,23 @@ describe('Ma série — téléphone', () => {
 		const panel = page.getByRole('dialog', { name: 'Ma série' });
 		await expect.element(panel).toBeVisible();
 		await expect.element(panel.getByText('Somme de deux entiers')).toBeVisible();
+	});
+
+	it('retrait depuis le panneau : le focus passe à la croix suivante, puis au message', async () => {
+		fillSeries();
+		await render(Page);
+		await page.getByRole('button', { name: /^Ma série ·/ }).click();
+		const panel = page.getByRole('dialog', { name: 'Ma série' });
+
+		await panel.getByRole('button', { name: 'Retirer « Somme de deux entiers »' }).click();
+		await expect
+			.element(panel.getByRole('button', { name: 'Retirer « Fractions égales »' }))
+			.toHaveFocus();
+		await expect.element(panel.getByText('1 question · environ 20 s')).toBeVisible();
+
+		await panel.getByRole('button', { name: 'Retirer « Fractions égales »' }).click();
+		await expect.element(panel.getByText('Ta série est vide', { exact: false })).toHaveFocus();
+		expect(questionCart.totalItems).toBe(0);
 	});
 
 	it('série vide : pas de barre', async () => {

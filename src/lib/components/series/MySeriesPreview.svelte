@@ -6,6 +6,7 @@
 	 * répétitions, PDF et lancement restent sur la page détaillée (« Ouvrir ma série »).
 	 * Utilisé par la colonne (grand écran) et par les panneaux (tablette, téléphone).
 	 */
+	import { tick } from 'svelte';
 	import { resolve } from '$app/paths';
 	import { X } from '@lucide/svelte';
 	import { Button } from '#lib/components/ui/button/index.ts';
@@ -20,11 +21,20 @@
 	} from '#lib/questions/series-summary.ts';
 
 	let {
-		showTitle = true
+		showTitle = true,
+		titleId
 	}: {
 		/** Faux dans un panneau, qui porte déjà le titre « Ma série » */
 		showTitle?: boolean;
+		/** id du titre, pour nommer la colonne qui l'entoure (`aria-labelledby`) */
+		titleId?: string;
 	} = $props();
+
+	// Colonne et panneau sont tous deux dans le DOM : ids propres à chaque aperçu
+	const uid = $props.id();
+	const EMPTY_ID = `${uid}-vide`;
+
+	let list = $state<HTMLUListElement | null>(null);
 
 	// Dans l'ordre d'ajout ; un modèle absent de la liste lue garde une ligne
 	let lines = $derived(
@@ -33,6 +43,21 @@
 			template: questionTemplatesCache.getTemplateById(item.templateId)
 		}))
 	);
+	/** Nom de la croix : le titre s'il est lisible tel quel, sinon un nom neutre (formule) */
+	function removeLabel(title: string, index: number): string {
+		return /[\\$]/.test(title) ? `Retirer la question ${index + 1}` : `Retirer « ${title} »`;
+	}
+
+	/** Retrait : le focus passe à la croix suivante (ou précédente), sinon au message « série vide » */
+	async function remove(templateId: string, index: number) {
+		questionCart.removeFromCart(templateId);
+		await tick();
+		const buttons = list?.querySelectorAll<HTMLButtonElement>('button[data-remove]');
+		const next =
+			buttons && buttons.length > 0 ? buttons[Math.min(index, buttons.length - 1)] : null;
+		(next ?? document.getElementById(EMPTY_ID))?.focus();
+	}
+
 	let summary = $derived(
 		`${seriesQuestionCount(lines.length)} · environ ${formatSeriesDuration(seriesTotalSeconds(questionCart.allItems))}`
 	);
@@ -40,18 +65,18 @@
 
 <div class="space-y-4">
 	{#if showTitle}
-		<h2 class="text-lg font-semibold">Ma série</h2>
+		<h2 id={titleId} class="text-lg font-semibold">Ma série</h2>
 	{/if}
 
 	{#if lines.length === 0}
-		<p class="text-sm text-muted-foreground">
+		<p id={EMPTY_ID} tabindex="-1" class="text-sm text-muted-foreground outline-none">
 			Ta série est vide : ajoute des questions avec « Ajouter ».
 		</p>
 	{:else}
-		<p class="text-sm text-muted-foreground">{summary}</p>
+		<p class="text-sm text-muted-foreground" aria-live="polite">{summary}</p>
 
-		<ul class="divide-y divide-border rounded-md border border-border">
-			{#each lines as { item, template } (item.templateId)}
+		<ul bind:this={list} class="divide-y divide-border rounded-md border border-border">
+			{#each lines as { item, template }, index (item.templateId)}
 				{@const title = template?.title ?? 'Question indisponible'}
 				<li class="flex items-start gap-2 px-3 py-2">
 					<div class="series-line-title min-w-0 flex-1">
@@ -67,10 +92,11 @@
 					>
 					<button
 						type="button"
-						class="shrink-0 rounded p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
-						aria-label={`Retirer « ${title} »`}
+						data-remove
+						class="-my-1 flex size-10 shrink-0 items-center justify-center rounded text-muted-foreground hover:bg-muted hover:text-foreground"
+						aria-label={removeLabel(title, index)}
 						title="Retirer de ma série"
-						onclick={() => questionCart.removeFromCart(item.templateId)}
+						onclick={() => remove(item.templateId, index)}
 					>
 						<X class="h-4 w-4" aria-hidden="true" />
 					</button>
