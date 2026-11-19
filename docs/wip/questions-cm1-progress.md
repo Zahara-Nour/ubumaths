@@ -2223,3 +2223,68 @@ reste en D ; niveaux **CM1 et CM2** et tag des deux points (109/098, 110/099, 11
 - Verdicts : 7 « OK » sur 7, aucun commentaire. `publier-lot` en simulation : 7/7 ; `--publier` et
   `garde-niveaux-tags` lancés par David. Vérifié au MCP : 7 modèles `published`.
 - Recompte MCP (points non archivés ayant un modèle publié) : **CM1 158/171** (153 + 5) ; CM2 120/158 (115 + 5).
+
+## 26. Lot 9 — les 13 derniers points : phase 0 (à valider, 2026-11-19)
+
+Relevé MCP : aucun modèle, ni brouillon, sur les 13 points. Jumeaux CM2 **sans modèle** : CM2-087 (= CM1-097),
+094 (= 104), 095 (= 105), 109 (= 124) ; CM2-115 et 116 (= 129, 130) ont chacun un modèle CM2 (`90d6612d`,
+`5343077e`), trop larges pour le CM1 (aire du carré ; deux étapes, linéarité additive). Le lot 15 du CM2
+(probabilités 109 à 114) n'est pas commencé.
+
+**Changement depuis le § 4 bis** : 097 et 104 peuvent sortir du D. La figure à compléter construit maintenant
+sur papier uni, à la règle graduée : segment de longueur donnée (`segment AB = 6 cm`), rectangle et carré cotés,
+triangle rectangle en cm, cercle de rayon donné (`cercle(O, rayon=4 cm)`). Aucun modèle de CE2 à 6e ne s'en
+sert en cm. 105 (figure composée) reste hors d'atteinte : une figure à compléter ne vérifie qu'une construction
+à la fois, et la perpendiculaire / parallèle à l'équerre sur papier uni manque (outils-manquants n° 40).
+
+Trois lots, tout en cases et case « choix » (`plusieurs:` quand il y a plusieurs bonnes réponses), roues dessinées
+en ` ```partage ` (`disque N`, parts grisées), rangement en ` ```ranger `.
+
+### 9a — probabilités (6 modèles, sans aucun calcul de probabilité : borne de 123)
+
+| #   | Point           | Titre                                     | Variations                                                                                                                                                                                                      |
+| --- | --------------- | ----------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | 123             | Est-ce une expérience aléatoire ?         | V1 une situation, Oui / Non (dé, pièce, carte, boule tirée sans regarder, roue : oui ; 3 + 4, balle lâchée, jour après lundi : non) ; V2 quatre situations, cocher celles où le hasard décide (`plusieurs:`)    |
+| 2   | 124 (+ CM2-109) | Toutes les issues possibles               | V1 dé à 6 faces ou pièce : combien d'issues ? (case) ; V2 sac de boules de 3 couleurs : cocher les issues (une couleur absente en piège) ; V3 jeu de 32 cartes : cocher les couleurs possibles (pique, cœur…)   |
+| 3   | 125             | Impossible, possible ou certain ?         | V1 dé : « obtenir 7 », « obtenir un nombre plus petit que 7 », « obtenir 3 » → impossible / certain / possible ; V2 sac (9 rouges, 1 bleue ; 5 et 5) : probable / peu probable / une chance sur deux            |
+| 4   | 126             | Du moins probable au plus probable        | V1 sac de 3 couleurs aux nombres nettement différents (2, 5, 9) : ranger les trois tirages ; V2 roue de 8 parts : quelle zone a le plus de chances ? (choix)                                                    |
+| 5   | 127             | Deux issues, mais pas une chance sur deux | roue de 4 parts dont 1 grise, sac de 1 rouge et 3 bleues : « deux issues ; une chance sur deux chacune ? » → plus / moins / une chance sur deux ; une variation sur trois où c'est vraiment une chance sur deux |
+| 6   | 128             | Chaque issue a-t-elle autant de chances ? | Oui / Non : dé ordinaire, pièce, sac 4 et 4, roue moitié grise → oui ; sac 6 et 2, roue 1 part sur 4, dé truqué « deux faces 6 » → non                                                                          |
+
+### 9b — proportionnalité (2 modèles, CM1 seul)
+
+| #   | Point | Titre                                      | Variations                                                                                                                                                                                                                                                 |
+| --- | ----- | ------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 7   | 129   | Est-ce une situation de proportionnalité ? | V1 banque en contexte, Oui / Non (cahiers identiques, pile de manuels, recette, prix au kilo : oui ; taille et âge, taxi avec prise en charge, lot promotionnel, forfait : non) ; V2 deux achats chiffrés, entiers (3 cahiers 6 €, 6 cahiers 12 € ou 11 €) |
+| 8   | 130   | Résoudre un problème de proportionnalité   | une seule étape, rapport entier 2 à 5 ou 10 (borne) : V1 entiers (5 manuels 4 kg → 15 manuels) ; V2 prix décimal (2,40 € → × 3) ; V3 dans l'autre sens, ÷ (12 crêpes, 3 œufs → 4 crêpes) — voir question 3                                                 |
+
+### 9c — constructions à la règle graduée (4 modèles, CM1 + CM2)
+
+| #   | Point           | Titre                                                     | Variations                                                                                                          |
+| --- | --------------- | --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| 9   | 097 (+ CM2-087) | Tracer un segment de longueur donnée                      | papier uni, Règle graduée · Segment : V1 cm entiers (3 à 12) ; V2 cm et mm (5,3 cm) ; V3 sur une demi-droite donnée |
+| 10  | 104 (+ CM2-094) | Construire un rectangle ou un carré de dimensions données | [AB] tracé, Segment · Équerre · Règle graduée : V1 rectangle (7 × 3 cm) ; V2 carré (8 cm)                           |
+| 11  | 104 (+ CM2-094) | Construire un triangle rectangle de côtés donnés          | [AB] tracé, angle droit en A, [AC] en cm (10 et 6 cm), Segment · Équerre · Règle graduée                            |
+| 12  | 104 (+ CM2-094) | Tracer un cercle de rayon donné                           | centre O donné, rayon 2 à 6 cm (V2 en mm : 3,5 cm), Règle graduée · Compas                                          |
+
+**Restent sans modèle (D)** : 105 (figure composée, ci-dessus), 114 (construire un solide en vrai, § 25 bis),
+140 (suite orale). Fin du chantier : **168 points sur 171**.
+
+**Nœuds** : ceux des points (Expériences aléatoires, événements, probabilité simple, équiprobabilité,
+caractérisation, Situations de proportionnalité, constructions) ; sous-notions à relever au moment de la
+migration, comme aux lots précédents.
+
+**Question d'accès** (migration nœud + tag, comme aux 8c à 8f) : personne ne pourra lire quelque chose qu'il ne
+pouvait pas lire avant.
+
+**Questions à David** :
+
+1. Les 12 modèles et leurs variations : OK ?
+2. 097 et 104 sortent du D (outil de la règle graduée en prod) ; 105, 114, 140 y restent ? Reco : oui. 105 s'ajoute
+   aux outils manquants (« figure composée : plusieurs constructions vérifiées dans une même figure ») ?
+3. 130 : la V3 (÷, revenir de 12 crêpes à 4) est-elle encore « une seule utilisation de la linéarité » ? Reco : oui.
+4. Jumeaux CM2 (124/109, 097/087, 104/094) : niveaux CM1 + CM2 et tag des deux points, comme aux 8c à 8f, et le
+   CM2 prévenu (son lot 15 perd 109, son lot 18 perd 087 et 094) ? Reco : oui. 129, 130 : modèles CM1 seuls
+   (ceux du CM2 dépassent le CM1).
+5. Ordre : 9a → 9b → 9c, une PR de fichiers et une migration par lot, ou 9a + 9b ensemble (8 modèles, sans
+   géométrie) ? Reco : 9a + 9b ensemble, puis 9c.
