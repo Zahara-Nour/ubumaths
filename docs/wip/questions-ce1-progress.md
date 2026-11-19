@@ -5,19 +5,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, après #2924 et la publication du lot 13._
+_Mis à jour le 2026-11-19, clôture en cours (§ 21)._
 
-- **État** : lot 13 publié (5 modèles) ; `aaebfe52` et `2fafe84d` ouverts au CE1. **CE1 couvert** : 103 points sur 107
-  ont un modèle publié ; les 4 D (092, 048, 068, 078) restent hors appli (§ 19).
-- **Prochaine action** : clôture du chantier, après accord de David : recompter le découpage validé contre la prod,
-  puis versement (le durable dans `docs/systeme/`, journal archivé).
+- **État** : CE1 couvert (recompté en prod : 103 points sur 107, les 4 sans modèle = les D 092, 048, 068, 078).
+  Clôture : #2926 (2 tags sur des modèles d'avant le chantier, § 21) ouverte, puis `db:migrate`.
+- **Prochaine action** : après le merge et `db:migrate`, vérifier les 2 tags au MCP, puis versement (le durable dans
+  `docs/systeme/`, journal archivé).
 - **En attente de David** : essai tablette des cases « figure » (`verifications-manuelles.md`) ; aperçu admin des
-  deux modèles 074 (solutions de tracé non dessinées sur la page à cocher) ; futur chantier « `\textcolor` hors
-  formule » (53 fichiers de lots) ; triangle quelconque sur quadrillage (`outils-manquants.md`, ligne 47).
-- **Pièges en cours** : `{{if:…}}` sans `||` dans la condition ; droite de l'équerre orientée par $[AB]$ (§ 20) ;
-  `db:migrate` depuis un worktree : copier `supabase/.temp` du dépôt principal, `--dry-run` d'abord.
-- **Worktree / branche** : `../ubumaths-wt-questions-ce1`, détaché sur `origin/main` (branches du lot mergées) : à
-  retirer.
+  deux modèles 074 ; futur chantier « `\textcolor` hors formule » ; triangle quelconque sur quadrillage
+  (`outils-manquants.md`, ligne 47).
+- **Pièges en cours** : `db:migrate` depuis un worktree : copier `supabase/.temp` du dépôt principal, `--dry-run`
+  d'abord.
+- **Worktree / branche** : `../ubumaths-wt-questions-ce1`, `chore/questions-ce1-tags`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-26)
 
@@ -992,3 +991,27 @@ Décisions (David, « je te suis », 2026-11-19) :
   https://claude.ai/artifact/4eo9rEFYS5N2iVV6UJwtiD (5 fiches ; alertes : solutions de `figure-a-completer` non
   dessinées) ; aucun verdict enregistré. `publier-lot` simulé 5/5, puis `--publier` (David) : 5 publiés, vérifiés en
   base. **Lot 13 clos. CE1 couvert** : 103 points faisables sur 107, les 4 D (092, 048, 068, 078) hors appli.
+
+## 21. Clôture : recompte et modèles d'avant le chantier sans tag (2026-11-19)
+
+Recompte en prod (MCP) : 107 points CE1 ; **103 ont un modèle publié** ; les 4 sans modèle sont les D (092, 048,
+068, 078). 161 modèles publiés au CE1, tous rangés sur un nœud ; un seul brouillon, `47f97c9f` (doublon dépublié
+au lot 0). Aucun modèle tagué CE1 sans le niveau CE1.
+
+**Trou du découpage** : 23 modèles publiés au CE1 n'ont **aucun tag** ; ce sont les « Non tagués » du § 2, jamais
+mis en question en phase 0. Deux avaient un point proposé (§ 2) : `3d6def48` (abc − ? = …, centaines) → CE1-103,
+`27bf3101` (ab − ? = …, un chiffre) → CE1-033 ; tous deux déjà sur « calcul astucieux », le nœud de ces points.
+Les 21 autres n'ont pas de point au CE1 : Additionner par regroupements (5), Calculer une somme (9), Calculer une
+différence (6), Compléter une addition à trou (8), Compléter une soustraction à trou (4, 6), Trouver le
+complément (4), Trouver le triple (4), Trouver le tiers (2).
+
+Décision (David, « je valide », 2026-11-19) : les **2 tags posés** par une migration ; les 21 autres laissés tels
+quels, notés au versement comme modèles du CE1 hors programme, à reprendre avec le chantier du CE2.
+
+**Question d'accès** : personne ne gagne ni ne perd de lecture — modèles déjà publiés au CE1 ; seuls deux tags
+s'ajoutent.
+
+- 2026-11-19 : relevé `etat-prod-2026-11-19-ce1-tags/`, générateur `lot-ce1-tags-rangement.py` (gabarit du lot 13),
+  migration `20261119221550` (2 tags posés, rien d'autre) ; test d'intégration 19 verts, rouge sans la migration
+  (7 échecs, suite principale arrêtée).
+- 2026-11-19 : `security-auditor` : aucun finding bloquant (SQL exécutable identique au lot 13 hors données ; seul l'`insert` des 2 tags agit ; personne ne gagne ni ne perd de lecture).
