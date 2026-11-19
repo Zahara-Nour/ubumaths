@@ -1,7 +1,7 @@
 """Écrit les 13 modèles du lot 7 du CM1 (données) dans scripts/questions/cm1-7/.
 
 Phase 0 validée par David le 2026-11-17 (§ 19 et 19 bis du journal
-`docs/wip/questions-cm1-progress.md`) : un lot de 13 modèles (CM1-120, 121, 122, 135 à 139, 169 à
+`docs/archive/wip/questions-cm1-progress.md`) : un lot de 13 modèles (CM1-120, 121, 122, 135 à 139, 169 à
 172) ; villes inventées (7-2, 7-3) ; 7-8 dans les limites de `axe: à choisir` (1, 2, 5, 10 par
 graduation, données ≤ 100) ; repère de 7-11 à axes donnés ; niveaux : celui qui suit le modèle CE2
 de même geste dans le nœud (aux courbes, sans CE2 : celui du modèle de 5e de même geste), partagé,

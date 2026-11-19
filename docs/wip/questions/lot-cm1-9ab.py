@@ -2,7 +2,7 @@
 scripts/questions/cm1-9ab/.
 
 Phase 0 validée par David le 2026-11-19 (§ 26 et 26 bis du journal
-`docs/wip/questions-cm1-progress.md`) : 6 modèles de probabilités (CM1-123 à 128), sans aucun
+`docs/archive/wip/questions-cm1-progress.md`) : 6 modèles de probabilités (CM1-123 à 128), sans aucun
 calcul de probabilité ; 2 de proportionnalité (CM1-129, 130), une seule étape ; niveaux CM1 et CM2
 pour 124 (jumeau CM2-109), CM1 seul pour les autres.
 

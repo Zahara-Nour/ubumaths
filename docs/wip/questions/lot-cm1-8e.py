@@ -1,7 +1,7 @@
 """Écrit les 5 modèles du lot 8e du CM1 (solides) dans scripts/questions/cm1-8e/.
 
 Phase 0 validée par David le 2026-11-18 (§ 25, 25 bis du journal
-`docs/wip/questions-cm1-progress.md`, « je valide »). Exemples de mise en œuvre CM1 p. 20 :
+`docs/archive/wip/questions-cm1-progress.md`, « je valide »). Exemples de mise en œuvre CM1 p. 20 :
 nommer les sept solides, prisme droit compris ; décrire par le nombre et la nature des faces, les
 sommets, les arêtes ; faces d'une pyramide (triangles qui se rejoignent au sommet + une base qui
 est un polygone de 3 côtés ou plus) ; faces d'un prisme droit (2 bases superposables + faces

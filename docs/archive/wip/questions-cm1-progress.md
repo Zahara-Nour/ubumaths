@@ -1,11 +1,11 @@
 # Chantier « questions-cm1 » — couvrir les points du CM1 en modèles de questions
 
-> Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) (skill `couvrir-niveau`).
-> Chantier de référence : le CP ([questions-progress.md](questions-progress.md)).
+> Démarche : [couvrir-un-niveau.md](../../pratiques/couvrir-un-niveau.md) (skill `couvrir-niveau`).
+> Chantier de référence : le CP ([questions-progress.md](../../wip/questions-progress.md)).
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, recompte de clôture fait (§ 26 octies)._
+_Mis à jour le 2026-11-19 : **chantier clos** (§ 26 octies, nonies)._
 
 - **État** : chantier terminé, **168 points du CM1 sur 171** (recompte MCP du 2026-11-19) ; 105, 114, 140 sans
   modèle (D, décidé) ; 105 noté aux outils manquants (n° 45). Aucune PR ouverte, aucun brouillon en attente
@@ -2385,6 +2385,13 @@ figure) ; 130 V3 (÷ une fois) = une seule utilisation de la linéarité ; jumea
 - Modèles `grades ∋ CM1` : 219 publiés, tous rangés et tagués ; 8 brouillons sans tag ni point (`cda36cc2`,
   `08fbcd26`, `09f22a2f`, `17a3c039`, `61baef92`, `fe9df9ba`, `4ee04b22`, `5d4dfd32`) = ceux du § 5.4, dépubliés
   au lot 0 (§ 5.6), voulus.
-- Découpage : lots 0 à 9c tous publiés (§ 3, 4 bis, 14 bis, 16 bis, 20 bis, 26 bis) ; 73 PR mergées, 1 fermée
+- Découpage : lots 0 à 9c tous publiés (§ 3, 4 bis, 14 bis, 16 bis, 20 bis, 26 bis) ; 53 PR mergées, 1 fermée
   (#2887), aucune ouverte.
 - Reste de la décision du § 26 bis : 105 ajouté aux outils manquants (n° 45, figure composée).
+
+### 26 nonies. Clôture (2026-11-19)
+
+- Versé dans `docs/systeme/programmes/bornes/cycle3.md` (§ CM1, « Couverture en modèles de questions ») et dans
+  `docs/pratiques/couvrir-un-niveau.md` § 9 (pièges du CM1, modèles communs à deux niveaux). Journal archivé.
+- 08 (`1dd68bdd`, CM1-130) : David veut le voir sur la sous-notion « quatrième proportionnelle » (à côté du
+  `5343077e` du CM2) ; déplacement par une migration de rangement, hors de ce journal.

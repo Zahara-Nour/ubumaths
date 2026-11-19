@@ -1,7 +1,7 @@
 """Écrit les 4 modèles du lot 5d du CM1 (périmètres) dans scripts/questions/cm1-5d/.
 
 Phase 0 validée par David le 2026-11-02 (§ 15 et 15 bis du journal
-`docs/wip/questions-cm1-progress.md`). Bornes `cycle3.json`, CM1-073 à 075 :
+`docs/archive/wip/questions-cm1-progress.md`). Bornes `cycle3.json`, CM1-073 à 075 :
 - aucune formule de périmètre (BO c3 p.17) ; le périmètre, c'est la longueur du tour ;
 - 074 : longueurs mesurées à la règle graduée ou fournies ;
 - 075 : problèmes, « rectangle de côté 8 cm et de périmètre 27 cm » ; le quadruple du côté d'un

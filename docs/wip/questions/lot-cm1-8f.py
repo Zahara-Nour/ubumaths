@@ -1,7 +1,7 @@
 """Écrit les 7 modèles du lot 8f du CM1 (patrons, déplacements, assemblages) dans scripts/questions/cm1-8f/.
 
 Phase 0 validée par David le 2026-11-18 (§ 25, 25 bis du journal
-`docs/wip/questions-cm1-progress.md`, « je valide ») : modèles 8 à 14 ; 116 et 119 sortent du D ;
+`docs/archive/wip/questions-cm1-progress.md`, « je valide ») : modèles 8 à 14 ; 116 et 119 sortent du D ;
 niveaux CM1 et CM2 sur tous (jumeaux 100, 101, 103, 104, 105).
 
 Règles d'écriture :

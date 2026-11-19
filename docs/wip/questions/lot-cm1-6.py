@@ -1,7 +1,7 @@
 """Écrit les 10 modèles du lot 6 du CM1 (problèmes) dans scripts/questions/cm1-6/.
 
 Phase 0 validée par David le 2026-11-15 (§ 16 et 16 bis du journal
-`docs/wip/questions-cm1-progress.md`, « je te suis ») : un seul lot de 10 modèles ; un schéma en
+`docs/archive/wip/questions-cm1-progress.md`, « je te suis ») : un seul lot de 10 modèles ; un schéma en
 barres (` ```schema-barres `) dans le **corrigé** de 6-1, 6-3 et 6-7, jamais dans l'énoncé.
 Patrons : `lot-ce2-5.py` (énoncés, phrases-réponses, corrigés), champ numérique monté au CM1.
 

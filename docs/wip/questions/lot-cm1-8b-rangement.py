@@ -1,7 +1,7 @@
 """Lot 8b (aires et angles) du CM1, rangement : migration 20261118071618_questions_cm1_lot8b_rangement_tags + fixture du test.
 
 Lit l'instantané `etat-prod-2026-11-18-cm1-8b/` (releve-prod-cm1.ts) et applique les décisions de
-David (journal `docs/wip/questions-cm1-progress.md` § 22, 22 bis, 22 ter) sur les 6 brouillons du
+David (journal `docs/archive/wip/questions-cm1-progress.md` § 22, 22 bis, 22 ter) sur les 6 brouillons du
 lot 8b (scripts/questions/cm1-8b/, #2803 et #2806), créés sans nœud ni tag le 2026-11-18 : chacun
 va sur son nœud, tags posés. UNE sous-notion neuve est créée (« Aires > aires sur quadrillage »).
 Gabarit : docs/wip/questions/lot-cm1-8a-rangement.py (+ la création de nœud de
@@ -177,7 +177,7 @@ w(f"""-- =======================================================================
 -- Bilan : {N_DEPLACES} rangés sur un nœud, {len(NEUVES)} sous-notion créée, {N_NIVEAUX} niveau changé, {N_RETIRES} tag retiré, {N_POSES} posés, {N_GARDES} gardé.
 -- Aucun statut ne change. Le contenu ne change pas : `updated_at` est PRÉSERVÉ.
 -- ============================================================================
--- Phase 0 validée par David le 2026-11-18 (journal docs/wip/questions-cm1-progress.md § 22, 22 bis,
+-- Phase 0 validée par David le 2026-11-18 (journal docs/archive/wip/questions-cm1-progress.md § 22, 22 bis,
 -- 22 ter). Les 6 brouillons ont été créés le 2026-11-18 par scripts/create-questions.ts
 -- (scripts/questions/cm1-8b/, #2803 et #2806), qui ne pose ni nœud ni tag. Fichier GÉNÉRÉ par
 -- docs/wip/questions/lot-cm1-8b-rangement.py (relevé de la prod du 2026-11-18) — ne pas éditer à la main.

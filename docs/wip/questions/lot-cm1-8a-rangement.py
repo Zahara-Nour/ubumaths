@@ -1,7 +1,7 @@
 """Lot 8a (heures et durées) du CM1, rangement : migration 20261117210204_questions_cm1_lot8a_rangement_tags + fixture du test.
 
 Lit l'instantané `etat-prod-2026-11-17-cm1-8a/` (releve-prod-cm1.ts) et applique les décisions de
-David (journal `docs/wip/questions-cm1-progress.md` § 21, 21 bis) sur les 5 brouillons du lot 8a
+David (journal `docs/archive/wip/questions-cm1-progress.md` § 21, 21 bis) sur les 5 brouillons du lot 8a
 (scripts/questions/cm1-8a/, #2782), créés sans nœud ni tag le 2026-11-17 : chacun va sur la
 sous-notion qui porte son point, tag posé.
 Gabarit : docs/wip/questions/lot-cm1-7-rangement.py.
@@ -156,7 +156,7 @@ w(f"""-- =======================================================================
 -- Bilan : {N_DEPLACES} rangés sur un nœud, {N_NIVEAUX} niveau changé, {N_RETIRES} tag retiré, {N_POSES} posés, {N_GARDES} gardé.
 -- Aucun statut ne change. Le contenu ne change pas : `updated_at` est PRÉSERVÉ.
 -- ============================================================================
--- Phase 0 validée par David le 2026-11-17 (journal docs/wip/questions-cm1-progress.md § 21, 21 bis ;
+-- Phase 0 validée par David le 2026-11-17 (journal docs/archive/wip/questions-cm1-progress.md § 21, 21 bis ;
 -- aucun nœud créé). Les 5 brouillons ont été créés le 2026-11-17 par scripts/create-questions.ts
 -- (scripts/questions/cm1-8a/, #2782), qui ne pose
 -- ni nœud ni tag. Fichier GÉNÉRÉ par docs/wip/questions/lot-cm1-8a-rangement.py (relevé de la prod

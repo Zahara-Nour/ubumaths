@@ -81,7 +81,7 @@ ENTETE = f"""-- ================================================================
 --   titre, nœud, tags, niveaux, statut : inchangés.
 -- ============================================================================
 -- Chantier `questions-cm1`, voie (a) tranchée par David le 2026-11-19 (journal
--- docs/wip/questions-cm1-progress.md § 25 septies) : `create-questions --mettre-a-jour` ne
+-- docs/archive/wip/questions-cm1-progress.md § 25 septies) : `create-questions --mettre-a-jour` ne
 -- touche pas un modèle publié.
 -- Fichier GÉNÉRÉ par docs/wip/questions/cm1-8e-04-contenu.py — ne pas éditer à la main.
 -- Source : {SOURCE}.

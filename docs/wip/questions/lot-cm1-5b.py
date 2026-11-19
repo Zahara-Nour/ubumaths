@@ -1,7 +1,7 @@
 """Écrit les 10 modèles du lot 5b du CM1 (masses + contenances) dans scripts/questions/cm1-5b/.
 
 Phase 0 validée par David le 2026-11-02 (§ 14 et 14 bis du journal
-`docs/wip/questions-cm1-progress.md`, lignes 5b-1 à 5c-4). Bornes `cycle3.json`, CM1-076 à 085 :
+`docs/archive/wip/questions-cm1-progress.md`, lignes 5b-1 à 5c-4). Bornes `cycle3.json`, CM1-076 à 085 :
 - masses : du milligramme au kilogramme et la tonne (pas de quintal) ; 3 g + 5 cg = 305 cg ;
   6,2 t = 6 200 kg ; 1/4 kg = 250 g ; ranger jusqu'à trois masses ; 8,2 kg + 840 g ;
 - contenances : du millilitre à l'hectolitre ; 23 dL en L ; 6,4 L en cL ; ranger jusqu'à quatre

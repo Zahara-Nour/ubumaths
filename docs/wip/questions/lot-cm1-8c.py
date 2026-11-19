@@ -1,7 +1,7 @@
 """Écrit les 7 modèles du lot 8c du CM1 (géométrie plane) dans scripts/questions/cm1-8c/.
 
 Phase 0 validée par David le 2026-11-18 (§ 23 et 23 bis du journal
-`docs/wip/questions-cm1-progress.md`) : 7 modèles (CM1-098 à 103, 106), tout en bloc ```figure ;
+`docs/archive/wip/questions-cm1-progress.md`) : 7 modèles (CM1-098 à 103, 106), tout en bloc ```figure ;
 niveaux CM1 et CM2 pour 099, 100, 101 (jumeaux CM2-091, 089, 090) ; CM1 seul pour 098, 102,
 103, 106 (le CM2 ajoute angles égaux, ⊥, //, trapèze, pentagone, hexagone).
 

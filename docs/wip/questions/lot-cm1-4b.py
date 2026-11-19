@@ -1,6 +1,6 @@
 """Écrit les 6 modèles du lot 4b du CM1 (calcul posé) dans scripts/questions/cm1-4b/.
 
-Phase 0 du 2026-11-01 (§ 13 du journal `docs/wip/questions-cm1-progress.md`), validée par David
+Phase 0 du 2026-11-01 (§ 13 du journal `docs/archive/wip/questions-cm1-progress.md`), validée par David
 (« go », § 13 bis) : 1. le bloc pose l'opération, l'élève effectue (limite acceptée ; le corrigé
 commence par « on aligne les virgules ») ; 2. soustraction : deux modèles, compensation et
 cassage, comme au CE1 ; 3. 050 et 165 rangés sous « Décimaux : calculs › addition » et

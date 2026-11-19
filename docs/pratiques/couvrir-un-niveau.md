@@ -418,6 +418,15 @@ pnpm tsx scripts/series/creer-serie.ts --fichier scripts/series/<nom>.json --pub
   ` ```probtree ` : `G_1` s'écrit tel quel (indicé à l'écran et dans le PDF depuis le 2026-11-05) ;
   `\mathrm{G}_1` reste juste.
 - **`sonde-courbes` ne voit pas les courbes d'une case choix** : les relire dans l'aperçu.
+- **Pièges vus au CM1** (2026-10-27 au 2026-11-19) : ` ```tableau-croise ` affiche ses totaux par défaut →
+  `totaux: non` dès que le total donne la réponse ; une case à « 04 » (minutes) est jugée « forme non optimale » par
+  la règle `zeros` → `constraints.zeros: off` ; une plage négative (`-12..12`) ne se tire pas → tirer `x0`, puis
+  `eval:x0-12` ; dans un ` ```figure `, `{{eval:a/2}}` sort `\dfrac{27}{5}`, refusé par le moteur → `{{eval:a/2;d}}`
+  (`evd` de `lot-cm1-5d.py`) ; une `validationRules` custom à `{{if:}}` imbriqué juge fausse la bonne réponse → la
+  retirer ; deux figures côte à côte donnent des carreaux de 13 px à 390 px → les empiler.
+- **Modèle commun à deux niveaux qu'un autre chantier couvre** (CM1 + CM2) : `grades` des deux niveaux, tag des deux
+  points, et prévenir la session de l'autre niveau (message, plus une ligne dans son journal) pour qu'elle retire
+  ces points de ses lots.
 - **Tag : le point doit être sur le nœud du modèle OU sur sa notion** (`question_template_points_check_rules`) :
   une migration de tags écrite sans cette règle a vu 8 tags sur 13 refusés (Tle spé, Q3). Relever les
   nœuds avec `archived_at is null`. Modèle rangé sur une notion : la garde « notion sans

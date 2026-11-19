@@ -1,7 +1,7 @@
 """Lot 8f (patrons, déplacements, assemblages) du CM1, rangement : migration 20261119085732_questions_cm1_lot8f_rangement_tags + fixture du test.
 
 Lit l'instantané `etat-prod-2026-11-19-cm1-8f/` (releve-prod-cm1.ts) et applique les décisions de
-David (journal `docs/wip/questions-cm1-progress.md` § 25, 25 bis, 25 nonies) sur les 7 brouillons du lot 8f
+David (journal `docs/archive/wip/questions-cm1-progress.md` § 25, 25 bis, 25 nonies) sur les 7 brouillons du lot 8f
 (scripts/questions/cm1-8f/, #2872), créés sans nœud ni tag le 2026-11-19 : 08 à 13 vont sur le
 nœud qui porte leur point, 14 sur Solides › constructions (son point est sur la notion Solides) ;
 tag du point et de son jumeau du CM2 posés pour les 7.
@@ -164,7 +164,7 @@ w(f"""-- =======================================================================
 -- Bilan : {N_DEPLACES} rangés sur un nœud, {N_NIVEAUX} niveau changé, {N_RETIRES} tag retiré, {N_POSES} posés, {N_GARDES} gardé.
 -- Aucun statut ne change. Le contenu ne change pas : `updated_at` est PRÉSERVÉ.
 -- ============================================================================
--- Phase 0 validée par David le 2026-11-18 (journal docs/wip/questions-cm1-progress.md § 25, 25 bis,
+-- Phase 0 validée par David le 2026-11-18 (journal docs/archive/wip/questions-cm1-progress.md § 25, 25 bis,
 -- 25 nonies ; aucun nœud créé). Les 7 brouillons ont été créés le 2026-11-19 par
 -- scripts/create-questions.ts (scripts/questions/cm1-8f/, #2872), qui ne pose
 -- ni nœud ni tag. Fichier GÉNÉRÉ par docs/wip/questions/lot-cm1-8f-rangement.py (relevé de la prod

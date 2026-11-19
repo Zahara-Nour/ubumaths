@@ -1,7 +1,7 @@
 """Écrit les 7 modèles du lot 6 bis du CM1 (rattrapage) dans scripts/questions/cm1-6bis/.
 
 Phase 0 validée par David le 2026-11-16 (§ 17 et 17 bis du journal
-`docs/wip/questions-cm1-progress.md`, « go » après mes trois recommandations) : un modèle par
+`docs/archive/wip/questions-cm1-progress.md`, « go » après mes trois recommandations) : un modèle par
 point (CM1-001, 002, 131, 143, 010, 024, 048), outils en prod seulement.
 
 Bornes `cycle3.json` : entiers jusqu'à 999 999 ; le bloc `collection` s'arrête à 9 999 (milliers

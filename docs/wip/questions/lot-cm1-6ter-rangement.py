@@ -1,7 +1,7 @@
 """Lot 6 ter (algèbre) du CM1, rangement : migration 20261117113333_questions_cm1_lot6ter_rangement_tags + fixture du test.
 
 Lit l'instantané `etat-prod-2026-11-17-cm1-6ter/` (releve-prod-cm1.ts) et applique les décisions de
-David (journal `docs/wip/questions-cm1-progress.md` § 18, 18 bis) sur les 8 brouillons du lot 6 ter
+David (journal `docs/archive/wip/questions-cm1-progress.md` § 18, 18 bis) sur les 8 brouillons du lot 6 ter
 (scripts/questions/cm1-6ter/, #2734), créés sans nœud ni tag le 2026-11-16 : chacun va sur la
 sous-notion qui porte son point, tag posé.
 Gabarit : docs/wip/questions/lot-cm1-6bis-rangement.py.
@@ -161,7 +161,7 @@ w(f"""-- =======================================================================
 -- Bilan : {N_DEPLACES} rangés sur un nœud, {N_NIVEAUX} niveau changé, {N_RETIRES} tag retiré, {N_POSES} posés, {N_GARDES} gardé.
 -- Aucun statut ne change. Le contenu ne change pas : `updated_at` est PRÉSERVÉ.
 -- ============================================================================
--- Phase 0 validée par David le 2026-11-16 (journal docs/wip/questions-cm1-progress.md § 18, 18 bis ;
+-- Phase 0 validée par David le 2026-11-16 (journal docs/archive/wip/questions-cm1-progress.md § 18, 18 bis ;
 -- aucun nœud créé). Les 8 brouillons ont été créés le 2026-11-16 par scripts/create-questions.ts
 -- (scripts/questions/cm1-6ter/, #2734), qui ne pose
 -- ni nœud ni tag. Fichier GÉNÉRÉ par docs/wip/questions/lot-cm1-6ter-rangement.py (relevé de la prod

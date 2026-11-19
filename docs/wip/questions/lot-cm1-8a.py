@@ -1,6 +1,6 @@
 """Écrit les 5 modèles du lot 8a du CM1 (heures et durées) dans scripts/questions/cm1-8a/.
 
-Phase 0 validée par David le 2026-11-17 (§ 21 du journal `docs/wip/questions-cm1-progress.md`,
+Phase 0 validée par David le 2026-11-17 (§ 21 du journal `docs/archive/wip/questions-cm1-progress.md`,
 « je te suis ») : 5 modèles (CM1-092, 093, 094, 166, 095) ; cadran nu (`chiffres: quarts` puis
 `aucun`) pour lire et placer ; une variation « jours et heures » (095) ; 166 en case « choix » à trois
 issues ; niveaux : celui qui suit le modèle CE2 de même geste dans le nœud, partagé, sans renuméroter.

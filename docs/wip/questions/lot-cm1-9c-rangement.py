@@ -1,7 +1,7 @@
 """Lot 9c (constructions à la règle graduée) du CM1, rangement : migration 20261119165723_questions_cm1_lot9c_rangement_tags + fixture du test.
 
 Lit l'instantané `etat-prod-2026-11-19-cm1-9c/` (releve-prod-cm1.ts) et applique les décisions de
-David (journal `docs/wip/questions-cm1-progress.md` § 26, 26 bis) sur les 4 brouillons du lot 9c
+David (journal `docs/archive/wip/questions-cm1-progress.md` § 26, 26 bis) sur les 4 brouillons du lot 9c
 (scripts/questions/cm1-9c/, #2894), créés sans nœud ni tag le 2026-11-19 : chacun va sur le nœud
 qui porte son point ; tag du point posé, et de son jumeau du CM2 (097/087, 104/094).
 Gabarit : docs/wip/questions/lot-cm1-9ab-rangement.py.
@@ -156,7 +156,7 @@ w(f"""-- =======================================================================
 -- Bilan : {N_DEPLACES} rangés sur un nœud, {N_NIVEAUX} niveau changé, {N_RETIRES} tag retiré, {N_POSES} posés, {N_GARDES} gardé.
 -- Aucun statut ne change. Le contenu ne change pas : `updated_at` est PRÉSERVÉ.
 -- ============================================================================
--- Phase 0 validée par David le 2026-11-19 (journal docs/wip/questions-cm1-progress.md § 26, 26 bis ;
+-- Phase 0 validée par David le 2026-11-19 (journal docs/archive/wip/questions-cm1-progress.md § 26, 26 bis ;
 -- aucun nœud créé). Les 4 brouillons ont été créés le 2026-11-19 par scripts/create-questions.ts
 -- (scripts/questions/cm1-9c/, #2894), qui ne pose ni nœud ni tag. Fichier GÉNÉRÉ par
 -- docs/wip/questions/lot-cm1-9c-rangement.py (relevé de la prod

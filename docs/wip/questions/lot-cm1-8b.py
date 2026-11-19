@@ -1,7 +1,7 @@
 """Écrit les 6 modèles du lot 8b du CM1 (aires et angles) dans scripts/questions/cm1-8b/.
 
 Phase 0 validée par David le 2026-11-18 (§ 22 et 22 bis du journal
-`docs/wip/questions-cm1-progress.md`) : 6 modèles (CM1-086 à 091), tout en bloc ```figure ;
+`docs/archive/wip/questions-cm1-progress.md`) : 6 modèles (CM1-086 à 091), tout en bloc ```figure ;
 niveaux CM1 et CM2 sauf le 088 (cm², CM1 seul : le CM2 ajoute dm² et m²) ; sous-notion neuve
 « aires sur quadrillage » (créée par la migration nœud + tag) pour 086 et 087.
 

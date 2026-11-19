@@ -1,7 +1,7 @@
 """Lot 5d (périmètres) du CM1, rangement : migration 20261115192344_questions_cm1_lot5d_rangement_tags + fixture du test.
 
 Lit l'instantané `etat-prod-2026-11-15-cm1-5d/` (releve-prod-cm1.ts) et applique les décisions de
-David (journal `docs/wip/questions-cm1-progress.md` § 15, 15 bis, 15 quater) sur 4 modèles : les 3
+David (journal `docs/archive/wip/questions-cm1-progress.md` § 15, 15 bis, 15 quater) sur 4 modèles : les 3
 brouillons du lot 5d (scripts/questions/cm1-5d/, #2694, #2697), créés sans nœud ni tag le
 2026-11-15, sur la notion « Périmètres », tag posé ; et le modèle CE2 publié a43667e9 (« Qu'est-ce
 que le périmètre ? »), qui reçoit le niveau CM1 et le tag CM1-073 en gardant CE2-042.
@@ -158,7 +158,7 @@ w(f"""-- =======================================================================
 -- Bilan : {N_DEPLACES} rangés sur un nœud, {N_NIVEAUX} niveau changé, {N_RETIRES} tag retiré, {N_POSES} posés, {N_GARDES} gardé.
 -- Aucun statut ne change. Le contenu ne change pas : `updated_at` est PRÉSERVÉ.
 -- ============================================================================
--- Phase 0 validée par David le 2026-11-02 (journal docs/wip/questions-cm1-progress.md § 15, 15 bis)
+-- Phase 0 validée par David le 2026-11-02 (journal docs/archive/wip/questions-cm1-progress.md § 15, 15 bis)
 -- et le 2026-11-15 pour a43667e9 (§ 15 quater ; aucun nœud créé). Les 3 brouillons ont été créés le
 -- 2026-11-15 par scripts/create-questions.ts (scripts/questions/cm1-5d/, #2694, #2697), qui ne pose
 -- ni nœud ni tag. Fichier GÉNÉRÉ par docs/wip/questions/lot-cm1-5d-rangement.py (relevé de la prod
