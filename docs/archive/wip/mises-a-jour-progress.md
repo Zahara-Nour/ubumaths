@@ -2,13 +2,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, après #2870._
+_Mis à jour le 2026-11-19 : chantier clos._
 
-- **État** : #2814 à #2830 en prod (0.96.0). #2835, #2850, #2853, #2859, #2867, #2870 mergées (pas encore en prod). **Cache ESLint réparé** (#2867, `.nvmrc` = `22.23.5`) : nocturne n° 1 sur main 21 min (remplit), n° 2 **5 s** (run 44475305359). Attente de `deploy:prod` gardée à 2700 s (plafond utile quand le cache est vide), commentaire corrigé.
-- **Prochaine action** : clore le chantier (versement du durable dans `docs/systeme/`, journal archivé).
-- **En attente de David** : rien.
-- **Pièges en cours** : `.nvmrc` se monte à la main (Dependabot ne le lit pas) et vide le cache ESLint jusqu'au nocturne suivant ; `#lib` exige l'extension écrite ; props importées d'un autre `.svelte` ou type indirect → seul le nocturne les voit ; commitlint : sujet sans majuscule, corps ≤ 100 caractères ; `docs:check-a-jour` ne voit que les COMMITS ; `page-demo-lexique` instable en CI.
-- **Worktree / branche** : aucun.
+- **État** : clos. Mises à jour faites (SvelteKit 2.70.4 puis 3.2.0, adapter-vercel 7, TypeScript 6, `#lib`, `json`/`invalidateAll`/`$env`), cache ESLint réparé (#2867). #2711 fermée (périmée), #2738 (contrôle de santé lu sur `production`) reprise dans ce chantier.
+- **Versé** : `docs/pratiques/svelte-typescript.md` § SvelteKit 3, `docs/pratiques/tests.md` (pièges vitest), `docs/pratiques/environnement-de-dev.md` (cache ESLint et `.nvmrc`, déjà versé par #2867).
+- **Laissé à Dependabot** : #2075 (Brevo 6, CI rouge) et les versions en retard listées plus bas.
 
 ## `json()` → `Response.json` (2026-11-19)
 
