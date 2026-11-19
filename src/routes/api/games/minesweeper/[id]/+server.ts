@@ -1,5 +1,5 @@
 import type { RequestHandler } from './$types';
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import { requireRoles } from '#lib/server/middleware/auth.ts';
 import { saveGameSchema, validateGridState } from '#lib/server/validation/minesweeper.ts';
 import { sanitizePostgresError } from '#lib/server/utils/error-handler.ts';
@@ -97,7 +97,7 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 			sanitizePostgresError(updateError, 'MINESWEEPER_SAVE');
 		}
 
-		return json({ success: true });
+		return Response.json({ success: true });
 	} catch (err) {
 		sanitizePostgresError(err, 'MINESWEEPER_SAVE');
 	}

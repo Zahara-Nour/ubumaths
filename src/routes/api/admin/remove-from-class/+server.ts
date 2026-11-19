@@ -1,4 +1,4 @@
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { removeFromClassSchema } from '#lib/server/validation/admin.ts';
 import { requireAdmin } from '#lib/server/middleware/auth.ts';
@@ -44,11 +44,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	if (archiveError) {
 		logger.error('Archive error:', archiveError);
-		return json({ error: archiveError.message }, { status: 400 });
+		return Response.json({ error: archiveError.message }, { status: 400 });
 	}
 
 	if (!archivedMemberships || archivedMemberships.length === 0) {
-		return json(
+		return Response.json(
 			{ error: 'Inscription introuvable : élève non retiré de la classe' },
 			{ status: 404 }
 		);
@@ -63,7 +63,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	if (fetchError) {
 		logger.error('Fetch error:', fetchError);
-		return json({ error: fetchError.message }, { status: 400 });
+		return Response.json({ error: fetchError.message }, { status: 400 });
 	}
 
 	// Transform class_members array to class_ids array
@@ -72,5 +72,5 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		class_ids: updatedProfile.class_members?.map((cm: { class_id: string }) => cm.class_id) || []
 	};
 
-	return json({ success: true, profile: profileWithClasses });
+	return Response.json({ success: true, profile: profileWithClasses });
 };

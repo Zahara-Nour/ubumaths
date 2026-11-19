@@ -64,7 +64,7 @@ describe('CartQuestionCard', () => {
 
 		await expect.element(screen.getByText('Modèle retiré')).toBeInTheDocument();
 		expect(screen.container.querySelector('.flip-card-front')).toBeNull();
-		await screen.getByRole('button', { name: 'Retirer du panier' }).click();
+		await screen.getByRole('button', { name: 'Retirer de ma série' }).click();
 
 		expect(onRemove).toHaveBeenCalledWith(ITEM.templateId);
 	});

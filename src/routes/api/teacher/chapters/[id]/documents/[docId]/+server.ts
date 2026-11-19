@@ -7,7 +7,7 @@
  * chapitre : elle se masque. Son fichier, celui du modèle, n'est jamais touché.
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '#lib/server/middleware/auth.ts';
 import { updateChapterDocument, deleteChapterDocument } from '#lib/server/chapters.ts';
@@ -105,7 +105,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		throw error(500, 'Failed to update document');
 	}
 
-	return json({ document: result.data });
+	return Response.json({ document: result.data });
 };
 
 /**
@@ -144,5 +144,5 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 		throw error(500, 'Failed to delete document');
 	}
 
-	return json({ success: true });
+	return Response.json({ success: true });
 };

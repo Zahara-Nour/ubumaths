@@ -20,7 +20,7 @@
  * }
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { getUnreadNotifications } from '#lib/server/notifications.ts';
 import { requireAuth } from '#lib/server/middleware/auth.ts';
@@ -61,5 +61,5 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	// Fetch paginated notifications
 	const result = await getUnreadNotifications(supabase, user.id, { page, limit });
 
-	return json(result);
+	return Response.json(result);
 };

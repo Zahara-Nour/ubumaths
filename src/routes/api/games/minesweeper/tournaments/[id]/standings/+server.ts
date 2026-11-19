@@ -1,5 +1,5 @@
 import type { RequestHandler } from './$types';
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import { requireAuth } from '#lib/server/middleware/auth.ts';
 import {
 	getTournamentSchema,
@@ -122,7 +122,7 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 			.select('*', { count: 'exact', head: true })
 			.eq('tournament_id', tournamentId);
 
-		return json({
+		return Response.json({
 			tournament: {
 				id: tournament.id,
 				name: tournament.name,

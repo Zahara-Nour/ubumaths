@@ -1,0 +1,154 @@
+{
+	"id": "78940a45-009a-442c-9d4c-f5eb37252a30",
+	"title": "Chaque issue a-t-elle autant de chances ?",
+	"description": "Reconnaître une situation d'équiprobabilité : dé ordinaire, pièce, sac de deux couleurs en nombres égaux, roue moitié coloriée ; dé truqué, sac déséquilibré",
+	"grades": ["CM1"],
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "{{if:s==1|On lance un dé ordinaire à $6$ faces. Chaque nombre de $1$ à $6$ est une issue.|{{if:s==2|On lance une pièce de monnaie : pile ou face.|{{if:s==3|Un sac contient $4$ boules rouges et $4$ boules bleues. On tire une boule : rouge ou bleue.|{{if:s==4|Un jeu de cartes contient autant de cartes de chaque couleur : pique, cœur, carreau, trèfle. On tire une carte et on regarde sa couleur.|{{if:s==5|Un sac contient $6$ boules rouges et $2$ boules bleues. On tire une boule : rouge ou bleue.|{{if:s==6|Un dé a six faces qui portent $1$, $2$, $3$, $4$, $6$ et $6$. On le lance et on regarde le nombre obtenu.|{{if:s==7|Un sachet contient $9$ bonbons à la fraise et $1$ bonbon au citron. On en prend un sans regarder : fraise ou citron.|Une roue est partagée en $4$ parts égales : $3$ bleues et $1$ jaune. On la fait tourner : bleu ou jaune.}}}}}}}}}}}}}}\n\nLes issues ont-elles toutes autant de chances de se réaliser ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "1..8"
+				},
+				{
+					"name": "r",
+					"expression": "eval:min(floor(s/5),1)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les issues ont **autant de chances** quand aucune n'est favorisée.",
+					"{{if:s==1|Les six faces sont pareilles : chaque nombre a la même chance.|{{if:s==2|La pièce a deux faces pareilles : pile et face ont la même chance.|{{if:s==3|Il y a autant de rouges que de bleues : même chance.|{{if:s==4|Chaque couleur a autant de cartes : même chance.|{{if:s==5|Il y a plus de rouges que de bleues : la rouge a plus de chances.|{{if:s==6|Le $6$ est sur deux faces, les autres nombres sur une seule : le $6$ a plus de chances.|{{if:s==7|Il y a beaucoup plus de bonbons à la fraise : la fraise a plus de chances.|Le bleu occupe trois parts, le jaune une seule : le bleu a plus de chances.}}}}}}}}}}}}}}",
+					"Réponse : $\\textcolor{{{color:primary.0}}}{\\text{{{if:r==0|oui|non}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Une roue est partagée en ${{N}}$ parts égales. On la fait tourner : la flèche montre une part coloriée ou une part blanche.\n\n```partage\nforme: disque {{N}}\ngris: {{g}}\n```\n\nPart coloriée ou part blanche : ont-elles autant de chances ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+			"variables": [
+				{
+					"name": "N",
+					"expression": "4|6|8"
+				},
+				{
+					"name": "g",
+					"expression": "1..{{eval:N-1}}"
+				},
+				{
+					"name": "r",
+					"expression": "eval:min(abs(2*g-N),1)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On compte les parts de chaque couleur : ${{g}}$ coloriée{{if:g>1|s}}, ${{eval:N-g}}$ blanche{{if:N-g>1|s}}.",
+					"Autant de chances seulement s'il y a autant de parts de chaque couleur.",
+					"Réponse : $\\textcolor{{{color:primary.0}}}{\\text{{{if:r==0|oui|non}}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Dé ordinaire : oui",
+			"variationIndex": 0,
+			"variables": {
+				"s": "1",
+				"r": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : dé ordinaire, non",
+			"variationIndex": 0,
+			"variables": {
+				"s": "1",
+				"r": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Dé à deux 6 : non",
+			"variationIndex": 0,
+			"variables": {
+				"s": "6",
+				"r": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : dé à deux 6, oui",
+			"variationIndex": 0,
+			"variables": {
+				"s": "6",
+				"r": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "4 parts sur 8 : oui",
+			"variationIndex": 1,
+			"variables": {
+				"N": "8",
+				"g": "4",
+				"r": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "1 part sur 4 : non",
+			"variationIndex": 1,
+			"variables": {
+				"N": "4",
+				"g": "1",
+				"r": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 part sur 4, oui",
+			"variationIndex": 1,
+			"variables": {
+				"N": "4",
+				"g": "1",
+				"r": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

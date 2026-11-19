@@ -1,5 +1,5 @@
 import type { RequestHandler } from './$types';
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import { z } from 'zod';
 import { requireRole } from '#lib/server/middleware/auth.ts';
 import { sanitizeRPCError, sanitizePostgresError } from '#lib/server/utils/error-handler.ts';
@@ -77,7 +77,7 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 		// Type the response
 		const result = data as { success: boolean };
 
-		return json({
+		return Response.json({
 			success: result.success
 		});
 	} catch (err) {

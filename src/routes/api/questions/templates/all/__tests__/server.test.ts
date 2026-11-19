@@ -7,8 +7,9 @@
  * par la session de l'appelant ; un échec ne doit pas être mis en cache.
  *
  * Elle porte aussi l'arbre des notions (nœuds non archivés), qui range le
- * catalogue Automaths : même cache, une seule requête. Et, pour la recherche du
- * catalogue, les intitulés des points du programme de chaque modèle.
+ * catalogue Automaths : même cache, une seule requête. Et le programme : les
+ * points non archivés de tous les niveaux (vue « Programme ») et les ids des
+ * points de chaque modèle publié (vue « Programme » et recherche).
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { isHttpError } from '@sveltejs/kit';
@@ -23,8 +24,22 @@ const liens = [
 	{ template_id: 'brouillon', point_id: 'p1' }
 ];
 const points = [
-	{ id: 'p1', name: 'Utiliser la double distributivité' },
-	{ id: 'p2', name: 'Réduire une expression' }
+	{
+		id: 'p1',
+		name: 'Utiliser la double distributivité',
+		grade: '3',
+		rubrique: 'Nombres > Calcul littéral',
+		display_order: 1,
+		node_id: 'n1'
+	},
+	{
+		id: 'p2',
+		name: 'Réduire une expression',
+		grade: '3',
+		rubrique: 'Nombres > Calcul littéral',
+		display_order: 2,
+		node_id: 'n1'
+	}
 ];
 const lignesParTable: Record<string, unknown[]> = {
 	classification_nodes: nodes,
@@ -43,6 +58,10 @@ function requete(table: string, lignes: unknown[]) {
 		),
 		is: (colonne: string, valeur: unknown) => (
 			filtres.push([table, `is:${colonne}`, valeur]),
+			query
+		),
+		not: (colonne: string, op: string, valeur: unknown) => (
+			filtres.push([table, `not:${colonne}:${op}`, valeur]),
 			query
 		),
 		order: (colonne: string) => (filtres.push([table, 'order', colonne]), query),
@@ -88,9 +107,8 @@ describe('GET /api/questions/templates/all', () => {
 		expect(await reponse.json()).toEqual({
 			templates: rows,
 			nodes,
-			pointNames: {
-				m1: ['Utiliser la double distributivité', 'Réduire une expression']
-			}
+			points,
+			templatePoints: { m1: ['p1', 'p2'] }
 		});
 	});
 
@@ -108,18 +126,33 @@ describe('GET /api/questions/templates/all', () => {
 		expect(filtres).toContainEqual(['classification_nodes', 'is:archived_at', null]);
 	});
 
-	it('porte les intitulés des points de chaque modèle (recherche) : points archivés exclus', async () => {
+	it('porte le programme : points non archivés avec un niveau, colonnes de la vue seulement', async () => {
+		const { event } = evenement();
+
+		const reponse = await GET(event as never);
+
+		expect(filtres).toContainEqual([
+			'curriculum_points',
+			'select',
+			'id, name, grade, rubrique, display_order, node_id'
+		]);
+		expect(filtres).toContainEqual(['curriculum_points', 'is:archived_at', null]);
+		expect(filtres).toContainEqual(['curriculum_points', 'not:grade:is', null]);
+		const corps = (await reponse.json()) as { points: unknown[] };
+		expect(corps.points).toEqual(points);
+	});
+
+	it('points de chaque modèle : liens vers un point archivé (absent de la lecture) écartés', async () => {
 		const { event } = evenement();
 
 		const reponse = await GET(event as never);
 
 		expect(anonFrom).toHaveBeenCalledWith('question_template_points');
-		expect(filtres).toContainEqual(['curriculum_points', 'is:archived_at', null]);
-		const { pointNames } = (await reponse.json()) as { pointNames: Record<string, string[]> };
-		// m2 n'a qu'un point archivé : aucun intitulé
-		expect(pointNames).toEqual({
-			m1: ['Utiliser la double distributivité', 'Réduire une expression']
-		});
+		const { templatePoints } = (await reponse.json()) as {
+			templatePoints: Record<string, string[]>;
+		};
+		// m2 n'a qu'un point archivé : aucun lien
+		expect(templatePoints).toEqual({ m1: ['p1', 'p2'] });
 	});
 
 	it('liens lus page par page dans un ordre stable (clé du lien : modèle puis point)', async () => {
@@ -138,15 +171,15 @@ describe('GET /api/questions/templates/all', () => {
 	it('lien d’un modèle absent de la liste des publiés : jamais rendu', async () => {
 		const { event } = evenement();
 
-		const { pointNames } = (await (await GET(event as never)).json()) as {
-			pointNames: Record<string, string[]>;
+		const { templatePoints } = (await (await GET(event as never)).json()) as {
+			templatePoints: Record<string, string[]>;
 		};
 
-		expect(Object.keys(pointNames)).toEqual(['m1']);
+		expect(Object.keys(templatePoints)).toEqual(['m1']);
 	});
 
 	it.each(['question_template_points', 'curriculum_points'])(
-		'lecture de %s en échec : le catalogue reste servi, sans intitulés de points',
+		'lecture de %s en échec : le catalogue reste servi, sans programme',
 		async (table) => {
 			tableEnEchec = table;
 			vi.spyOn(console, 'error').mockImplementation(() => {});
@@ -155,7 +188,12 @@ describe('GET /api/questions/templates/all', () => {
 
 			const reponse = await GET(event as never);
 
-			expect(await reponse.json()).toEqual({ templates: rows, nodes, pointNames: {} });
+			expect(await reponse.json()).toEqual({
+				templates: rows,
+				nodes,
+				points: [],
+				templatePoints: {}
+			});
 		}
 	);
 

@@ -9,7 +9,7 @@
  * Cf. spec TDD : docs/archive/wip/srs-anti-fraud-spec-tdd.md §B7
  */
 
-import { error, json, type RequestHandler } from '@sveltejs/kit';
+import { error, type RequestHandler } from '@sveltejs/kit';
 import { requireAdmin } from '#lib/server/middleware/auth.ts';
 import { runAntiFraudJob } from '#lib/server/anti-fraud/index.ts';
 import { runJobOptionsSchema } from '#lib/server/validation/anti-fraud.ts';
@@ -36,5 +36,5 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 	}
 
 	const report = await runAntiFraudJob(supabase, parsed.data);
-	return json(report);
+	return Response.json(report);
 };

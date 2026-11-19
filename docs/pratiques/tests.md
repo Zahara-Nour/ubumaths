@@ -250,6 +250,13 @@ par `createAuthenticatedClient`.
   Un `render` sans `await` monte quand même le composant : aucun test ne rougit. Garde AST
   `pnpm check:await-render` (`scripts/check-await-render.ts`), lancée par le job Lint et par
   `pnpm lint:fast` quand un test client a changé.
+- **`$app/navigation` (SvelteKit 3)** : `vi.mock('$app/navigation', async (importOriginal) => …)`
+  ne se termine jamais, et le fichier figé bloque toute la suite client. Mock partagé
+  `appNavigationMock({ goto })` de `tests/helpers/app-navigation-mock.ts`.
+- **Tests navigateur et `$app/env/public`** : il lit `globalThis.__sveltekit_dev`, que pose la page
+  de kit et pas vitest → posé dans `vitest-setup-client.ts`.
+- **Reproduire la suite client de la CI** : `CI=true pnpm exec vitest run --project=client` (sans
+  `CI`, les tests Pyodide réels `*-real` tournent aussi).
 - **MathLive** : `await import('mathlive')` dans les tests client (l'import statique produit des
   erreurs SSR au démontage).
 

@@ -2,13 +2,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après #2853._
+_Mis à jour le 2026-11-19 : chantier clos._
 
-- **État** : #2814 à #2830 en prod (0.96.0). #2835, #2850, #2853 mergées (pas encore en prod). #2853 = dépréciations de kit 3 sans effet de bord : `invalidateAll` → `refreshAll`, options `goto` `replace`/`refreshAll`, `error(N, message)` ; revues code + sécurité sans finding.
-- **Prochaine action** : clore le chantier (versement du durable dans `docs/systeme/`, journal archivé). Restent hors lot, décidés : `pushState`/`replaceState` **laissés** (§ « Dépréciations de kit 3 » : leur remplaçant déclenche les hooks de navigation) ; `json()`/`text()` (≈ 368 fichiers) REPORTÉS ; cache ESLint en CI : cause NON trouvée (§ « Cache ESLint en CI »), recherche mise de côté.
-- **En attente de David** : rien.
-- **Pièges en cours** : `#lib` exige l'extension écrite (garde `imports-lib-avec-extension`, qui exclut le test de `migrer:diese`) ; limite connue du lint de PR : props importées d'un autre `.svelte` ou type indirect → seul le nocturne les voit ; commitlint refuse un sujet qui commence par une majuscule (« ESLint… ») ; `appNavigationMock` ; suite client en local avec `CI=true`.
-- **Worktree / branche** : aucun.
+- **État** : clos. Mises à jour faites (SvelteKit 2.70.4 puis 3.2.0, adapter-vercel 7, TypeScript 6, `#lib`, `json`/`invalidateAll`/`$env`), cache ESLint réparé (#2867). #2711 fermée (périmée), #2738 (contrôle de santé lu sur `production`) reprise dans ce chantier.
+- **Versé** : `docs/pratiques/svelte-typescript.md` § SvelteKit 3, `docs/pratiques/tests.md` (pièges vitest), `docs/pratiques/environnement-de-dev.md` (cache ESLint et `.nvmrc`, déjà versé par #2867).
+- **Laissé à Dependabot** : #2075 (Brevo 6, CI rouge) et les versions en retard listées plus bas.
+
+## `json()` → `Response.json` (2026-11-19)
+
+- Décidé par David le 2026-11-19 (« on fait le 2 »). `text()` de kit : aucun appel.
+- Différences lues dans `@sveltejs/kit` 3.2.0 (`src/exports/index.js`) : (1) kit pose `Content-Length`, pas `Response.json` → le serveur envoie par morceaux ; aucun code ne lit cet en-tête sur nos propres réponses ; (2) `json(undefined)` rend un corps vide, `Response.json(undefined)` **lève une `TypeError`**. `Content-Type` : identique (`application/json` si absent).
+- Preuve pour (2) : passe de détection où les 867 appels passaient par une fonction temporaire `jsonStrict<T>(data: 0 extends 1 & T ? never : undefined extends T ? never : T)` → typecheck : **0 appel** dont la donnée peut être `undefined`, `unknown` ou `any`. Sonde vérifiée rouge sur les trois cas, dans `src/lib/server` et dans un `+server.ts`.
+- Transformation par script (import retiré de la ligne `@sveltejs/kit`, `json(` → `Response.json(` hors `.json(`), puis `pnpm format`. Piège : le `sed` de macOS ignore `\b` → perl.
 
 ## Dépréciations de kit 3 (2026-11-18)
 
@@ -119,7 +124,13 @@ Constats dans le code de kit 3.2.0 (pas dans le guide) :
 - 2026-11-18 : #2814 mergée (CI verte, 16 contrôles) : SvelteKit 2.70.3 → 2.70.4.
 - 2026-11-18 : #2821 mergée (CI verte, 17 contrôles) : TypeScript 5.9.3 → 6.0.3 ; `pnpm check` local 0 erreur sur 11 653 fichiers, cliquet tenu, aucune correction de code nécessaire.
 
-## Cache ESLint en CI (2026-11-18, cause non trouvée)
+## Cache ESLint en CI (2026-11-18 ; cause trouvée le 2026-11-19)
+
+**Cause (2026-11-19)** : ESLint calcule l'empreinte de config à partir de `${version d'ESLint}_${process.version}_${config}` (`lint-result-cache.js`, `hashOfConfigFor`). `.nvmrc` valait `22` : `setup-node` prend le Node 22 de l'image du runner, et GitHub déploie ses images progressivement. Nocturnes du 2026-11-18 : 17:34 image 20261111, Node 22.23.4 ; 19:28 image 20261116, **22.23.5** ; 20:46 image 20261111, 22.23.4 → cache de 19:28 restauré (même clé), tout relu, 31 min. Les jobs du diagnostic d'hier étaient tombés sur la même image, d'où « Node identique ». Contre-épreuve : la config sérialisée de `.lintstagedrc.js` en local (autre commit, autre machine) est identique au caractère près à celle de la CI. Correctif : `.nvmrc` = `22.23.5` (choix de David : la version exacte dans `.nvmrc`, pas seulement dans les jobs ESLint).
+
+Vérifié après #2867 : nocturne sur main n° 1 (Node 22.23.5) 21 min, n° 2 restaure ce cache et relit tout l'arbre en 5 s.
+
+Ce que le diagnostic d'hier avait établi :
 
 Établi par une branche jetable (`diag/eslint-cache`, supprimée) et en local :
 

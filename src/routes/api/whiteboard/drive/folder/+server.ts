@@ -14,7 +14,7 @@
  * - Requires Google integration with drive.file scope
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import {
 	GoogleNotConnectedError,
@@ -61,7 +61,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		logger.info(`[Whiteboard Drive] Created folder "${name}" (${folderId}) for teacher ${user.id}`);
 
-		return json({
+		return Response.json({
 			success: true,
 			folderId,
 			name

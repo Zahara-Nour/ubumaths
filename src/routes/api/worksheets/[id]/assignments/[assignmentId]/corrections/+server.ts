@@ -7,7 +7,7 @@
  * PUT - Update correction settings (global, per-exercise, or bulk)
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRoles } from '#lib/server/middleware/auth.ts';
 import {
@@ -142,7 +142,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		'GET /api/worksheets/[id]/assignments/[assignmentId]/corrections'
 	);
 
-	return json(validated);
+	return Response.json(validated);
 };
 
 // ============================================================================
@@ -241,7 +241,7 @@ async function handleGlobalUpdate(
 		'PUT /api/worksheets/[id]/assignments/[assignmentId]/corrections (global)'
 	);
 
-	return json(validated);
+	return Response.json(validated);
 }
 
 /**
@@ -295,7 +295,7 @@ async function handleExerciseUpdate(
 		'PUT /api/worksheets/[id]/assignments/[assignmentId]/corrections (exercise)'
 	);
 
-	return json(validated);
+	return Response.json(validated);
 }
 
 /**
@@ -358,5 +358,5 @@ async function handleBulkUpdate(
 		'PUT /api/worksheets/[id]/assignments/[assignmentId]/corrections (bulk)'
 	);
 
-	return json(validated);
+	return Response.json(validated);
 }

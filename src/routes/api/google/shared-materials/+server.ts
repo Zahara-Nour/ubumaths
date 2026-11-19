@@ -50,7 +50,7 @@
  * - Array size limits to prevent DoS
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import { assertGoogleClassroomEnabled } from '#lib/server/google/feature-guard.ts';
 import type { RequestHandler } from './$types';
 import { requireRole } from '#lib/server/middleware/auth.ts';
@@ -249,7 +249,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		// Calculate pagination metadata
 		const totalPages = Math.ceil((count || 0) / limit);
 
-		return json({
+		return Response.json({
 			sharedMaterials: enrichedData,
 			pagination: {
 				page,
@@ -417,7 +417,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(500, 'Impossible de partager le support');
 	}
 
-	return json({
+	return Response.json({
 		success: true,
 		sharesCreated: sharesToInsert.length
 	});
@@ -489,7 +489,7 @@ export const DELETE: RequestHandler = async ({ request, locals }) => {
 		throw error(500, 'Impossible d’arrêter le partage du support');
 	}
 
-	return json({
+	return Response.json({
 		success: true,
 		message: 'Partage du support arrêté'
 	});
@@ -622,7 +622,7 @@ export const PATCH: RequestHandler = async ({ locals, request }) => {
 		}
 
 		// Transform to camelCase
-		return json({
+		return Response.json({
 			success: true,
 			sharedMaterial: {
 				id: updatedRecord.id,

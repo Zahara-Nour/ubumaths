@@ -8,7 +8,6 @@
  * Phase 0 : docs/archive/wip/liens-courts-phase0.md.
  */
 
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRoles } from '#lib/server/middleware/auth.ts';
 import { createShortLink, ShortLinkError } from '#lib/server/short-links.ts';
@@ -21,19 +20,20 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 	try {
 		body = await request.json();
 	} catch {
-		return json({ error: 'Corps de requête illisible' }, { status: 400 });
+		return Response.json({ error: 'Corps de requête illisible' }, { status: 400 });
 	}
 
 	const validation = createShortLinkSchema.safeParse(body);
 	if (!validation.success) {
-		return json({ error: validation.error.issues[0].message }, { status: 400 });
+		return Response.json({ error: validation.error.issues[0].message }, { status: 400 });
 	}
 
 	try {
 		const code = await createShortLink(locals.supabase, validation.data.target);
-		return json({ code, path: shortLinkPath(code) });
+		return Response.json({ code, path: shortLinkPath(code) });
 	} catch (e) {
-		if (e instanceof ShortLinkError) return json({ error: e.message }, { status: e.status });
+		if (e instanceof ShortLinkError)
+			return Response.json({ error: e.message }, { status: e.status });
 		throw e;
 	}
 };

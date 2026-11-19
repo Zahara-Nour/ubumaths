@@ -9,7 +9,7 @@
  * préparer un chapitre avant le cours et de distribuer au fur et à mesure.
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '#lib/server/middleware/auth.ts';
 import { linkWorksheet } from '#lib/server/chapters.ts';
@@ -63,7 +63,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		throw error(500, 'Failed to fetch worksheets');
 	}
 
-	return json({
+	return Response.json({
 		worksheets: worksheetLinks || [],
 		count: worksheetLinks?.length || 0
 	});
@@ -138,5 +138,5 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		throw error(500, 'Failed to link worksheet');
 	}
 
-	return json({ worksheet: result.data }, { status: 201 });
+	return Response.json({ worksheet: result.data }, { status: 201 });
 };

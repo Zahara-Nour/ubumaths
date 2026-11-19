@@ -17,10 +17,6 @@ vi.mock('#lib/server/middleware/auth.ts', () => ({
 
 // Mock SvelteKit
 vi.mock('@sveltejs/kit', () => ({
-	json: (data: unknown, opts?: { status?: number }) => ({
-		data,
-		status: opts?.status || 200
-	}),
 	error: (status: number, message: string) => {
 		const err = new Error(message);
 		Object.assign(err, { status });
@@ -71,10 +67,8 @@ describe('GET /api/chat/conversations', () => {
 			p_user_id: 'user-123'
 		});
 
-		expect(response).toMatchObject({
-			data: { conversations: mockConversations },
-			status: 200
-		});
+		expect(response.status).toBe(200);
+		expect(await response.json()).toEqual({ conversations: mockConversations });
 	});
 
 	it('should handle database errors gracefully', async () => {
@@ -183,10 +177,8 @@ describe('POST /api/chat/conversations', () => {
 			p_user2_id: '456e7890-e89b-12d3-a456-426614174000'
 		});
 
-		expect(response).toMatchObject({
-			data: { conversationId },
-			status: 201
-		});
+		expect(response.status).toBe(201);
+		expect(await response.json()).toEqual({ conversationId });
 	});
 
 	it('should return 403 when users are not friends', async () => {

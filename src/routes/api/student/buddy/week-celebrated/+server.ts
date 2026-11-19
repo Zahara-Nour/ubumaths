@@ -13,7 +13,7 @@
  * vient de la session, la semaine est calculée ici. SORTIE : `{ acknowledged }`.
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '#lib/server/middleware/auth.ts';
 import { markWeekCelebrated } from '#lib/server/buddy-weeks.ts';
@@ -25,7 +25,7 @@ export const POST: RequestHandler = async ({ locals }) => {
 	const { user } = await requireRole(locals, 'student');
 
 	try {
-		return json({ acknowledged: await markWeekCelebrated(user.id, 'celebrated') });
+		return Response.json({ acknowledged: await markWeekCelebrated(user.id, 'celebrated') });
 	} catch (err) {
 		logger.error('Semaine fêtée non retenue :', err);
 		throw error(500, 'Semaine non enregistrée');

@@ -46,6 +46,8 @@ couvre:
   - 'src/routes/(protected)/dev/polices/+page.svelte'
   - 'src/routes/(protected)/dev/polices/exercices-demo.json'
   - 'src/routes/(protected)/dev/polices/shantell-pdf.ts'
+  - 'src/routes/(protected)/dev/polices/luciole/+page.svelte'
+  - 'src/routes/(protected)/dev/polices/luciole/luciole-pdf.ts'
   - 'src/routes/(public)/upsilon/+page.svelte'
   - src/lib/stores/listNumbering.svelte.ts
   - src/lib/styles/list-numbering.css
@@ -183,6 +185,7 @@ sont de vraies pages.
 | `/aide-ecriture/blocs/<bloc>` | prof (`/aide-ecriture`)                    | `/aide-ecriture/blocs`                                 | Fiche d'un bloc : réglages, exemples à copier, erreurs fréquentes, zone « Essayer »                                                                                  | Aide à l'écriture     |
 | `/dev/cadres`                 | admin (`/dev`)                             | `/dev`                                                 | Cadres arrondis autour d'une formule : `\htmlStyle` (`colorLatex`) contre `\enclose{roundedbox}`                                                                     | Mise au point, gardée |
 | `/dev/polices`                | admin (`/dev`)                             | `/dev`                                                 | Bascule des polices de formules KaTeX ↔ Shantell (`mathlive-fonts.ts`)                                                                                               | Mise au point, gardée |
+| `/dev/polices/luciole`        | admin (`/dev`)                             | `/dev`, `/dev/polices`                                 | Essai « Lecture facilitée » : consignes en Luciole, formules en Luciole Math (écran en MathML, PDF Typst)                                                            | **Chantier vivant**   |
 | `/dev/structure`              | admin (`/dev`)                             | `/dev`                                                 | « Structure d'une expression » au survol (`#lib/mathAST/structure/index.ts`)                                                                                         | **Chantier vivant**   |
 | `/demo/structure`             | tous                                       | `/demo`, sitemap                                       | Vitrine : la formule de `/dev/structure` seule, 6 exemples, réglages par défaut                                                                                      | Vitrine               |
 | `/demo/cercle-trigo`          | tous                                       | `/demo`, sitemap                                       | Vitrine : 4 exemples du bloc `trig` (exploration, π/6, cos x = 1/2, cos x > 1/2), sans le texte du bloc                                                              | Vitrine               |
@@ -326,6 +329,16 @@ il y ajoute la vérification des instructions (`checkScratchProgram`), faite hor
   police OpenType MATH construite depuis le jeu KaTeX par
   `tools/chiphre-math/src/build_typst_math_font.py`), et pose les mêmes règles de police
   (`withCorrectionFonts`). Le compilateur partagé des fiches n'est pas touché.
+- **`/dev/polices/luciole`** (chantier `lecture-facilitee`) : les mêmes consignes de collège en trois
+  versions : police habituelle ; texte en Luciole, formules de MathLive ; texte en Luciole et
+  formules en **Luciole Math**. MathLive ne lit pas une police de maths OpenType : la 3e version
+  convertit les formules en MathML (`convertLatexToMathMl`, plus deux retouches : virgule décimale,
+  lettres calligraphiques Unicode) et laisse le navigateur les mettre en page. Ce n'est qu'un aperçu
+  (espace parasite après une racine dans Chrome, absent du PDF). En bas, PDF Typst des exercices de
+  `../exercices-demo.json` : `luciole-pdf.ts`, compilateur à part (`createFontsCompiler`), règles
+  passées à `withCorrectionFonts`. Polices : `static/fonts/luciole/` (paquet CTAN `luciole`,
+  Luciole 2.001 en CC-BY 4.0, Luciole-Math 0.76 en SIL OFL 1.1), `.ttf`/`.otf` pour Typst, `.woff2`
+  pour l'écran.
 - **`/dev/cadres`** (ex-`/test-cadres`) : garde la trace du choix `\htmlStyle` pour le cadre des solutions
   (`\bbox` perd sa bordure en MathLive 0.111.1, `roundedbox` est décalé).
 

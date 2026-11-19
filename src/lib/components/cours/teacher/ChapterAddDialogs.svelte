@@ -296,7 +296,7 @@
 					rel="noopener noreferrer"
 					class="text-sm text-primary underline-offset-4 hover:underline"
 				>
-					Composer une nouvelle série au panier
+					Composer une nouvelle série dans Automaths
 				</a>
 			</div>
 

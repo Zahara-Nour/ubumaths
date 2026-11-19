@@ -19,7 +19,7 @@
  *     matches the persistent dual-existence we now have in the DB
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '#lib/server/middleware/auth.ts';
 import { uuidSchema } from '#lib/server/validation/common.ts';
@@ -150,5 +150,5 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		throw error(500, 'Impossible de créer le modèle de carnet');
 	}
 
-	return json({ template: inserted }, { status: 201 });
+	return Response.json({ template: inserted }, { status: 201 });
 };

@@ -1,4 +1,4 @@
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAdmin } from '#lib/server/middleware/auth.ts';
 import {
@@ -86,7 +86,7 @@ export const GET: RequestHandler = async ({ url, fetch, locals }) => {
 			academy: r.libelle_academie ?? ''
 		}));
 
-	return json({
+	return Response.json({
 		schools,
 		total: validated.data.total_count,
 		page: parsed.data.page,

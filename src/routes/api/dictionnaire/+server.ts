@@ -8,7 +8,6 @@
  * ignoré : n'importe qui ne doit pas pouvoir faire relire la base à volonté).
  */
 
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import {
 	DICTIONARY_ADMIN_CACHE,
@@ -27,8 +26,8 @@ export const GET: RequestHandler = async ({ locals, url, setHeaders }) => {
 		entries = await loadDictionary(locals.supabase, { fresh });
 	} catch (cause) {
 		logger.error('[dictionnaire] lecture impossible', cause);
-		return json({ message: 'Dictionnaire indisponible' }, { status: 503 });
+		return Response.json({ message: 'Dictionnaire indisponible' }, { status: 503 });
 	}
 	setHeaders({ 'cache-control': fresh ? DICTIONARY_ADMIN_CACHE : DICTIONARY_PUBLIC_CACHE });
-	return json(entries);
+	return Response.json(entries);
 };

@@ -1,4 +1,4 @@
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '#lib/server/middleware/auth.ts';
 import { createConversationSchema } from '#lib/server/validation/chat.ts';
@@ -40,7 +40,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			throw error(500, 'Failed to load conversations');
 		}
 
-		return json({ conversations: data || [] }, { status: 200 });
+		return Response.json({ conversations: data || [] }, { status: 200 });
 	} catch (err) {
 		// Re-throw SvelteKit errors
 		if (err && typeof err === 'object' && 'status' in err) {
@@ -129,7 +129,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			throw error(500, 'Échec de la création de la conversation');
 		}
 
-		return json({ conversationId }, { status: 201 });
+		return Response.json({ conversationId }, { status: 201 });
 	} catch (err) {
 		// Re-throw SvelteKit errors
 		if (err && typeof err === 'object' && 'status' in err) {

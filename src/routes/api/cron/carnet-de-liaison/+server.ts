@@ -13,7 +13,6 @@
  * d'envois seulement — jamais une adresse. Un passage en cours (moins de
  * 30 min) bloque le suivant : 409.
  */
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { verifyCronAuth } from '#lib/server/auth/cron.ts';
 import { runCarnetDaily } from '#lib/server/carnet/courriels.ts';
@@ -43,10 +42,10 @@ const handler: RequestHandler = async ({ request }) => {
 		.limit(1);
 	if (runningError) {
 		logger.error('[CRON] Passages en cours illisibles :', runningError);
-		return json({ success: false, message: 'Erreur serveur' }, { status: 500 });
+		return Response.json({ success: false, message: 'Erreur serveur' }, { status: 500 });
 	}
 	if ((running?.length ?? 0) > 0) {
-		return json({ success: false, message: 'Passage déjà en cours' }, { status: 409 });
+		return Response.json({ success: false, message: 'Passage déjà en cours' }, { status: 409 });
 	}
 
 	const { data: runId, error: startError } = await serviceClient.rpc('start_job_run', {
@@ -64,7 +63,7 @@ const handler: RequestHandler = async ({ request }) => {
 				p_metadata: { ...report }
 			});
 		}
-		return json({ success: true, report });
+		return Response.json({ success: true, report });
 	} catch (err) {
 		if (runId) {
 			await serviceClient.rpc('complete_job_run', {
@@ -74,7 +73,7 @@ const handler: RequestHandler = async ({ request }) => {
 			});
 		}
 		logger.error('[CRON] Carnet de liaison :', err);
-		return json({ success: false, message: 'Erreur serveur' }, { status: 500 });
+		return Response.json({ success: false, message: 'Erreur serveur' }, { status: 500 });
 	}
 };
 

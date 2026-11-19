@@ -11,7 +11,7 @@
  * Allowed types: image/jpeg, image/png, image/gif, image/webp
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '#lib/server/middleware/auth.ts';
 import {
@@ -157,7 +157,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 			throw error(500, 'Impossible de charger les données');
 		}
 
-		return json({
+		return Response.json({
 			success: true,
 			data: {
 				url: signed?.signedUrl ?? null,

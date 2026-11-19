@@ -205,13 +205,13 @@ describe('FlashSeries — fin de série', () => {
 		expect(findButton(container, REVIEW)).toBeUndefined();
 	});
 
-	it('« Recommencer avec de nouvelles questions » et « Retour au panier »', async () => {
+	it('« Recommencer avec de nouvelles questions » et « Retour à ma série »', async () => {
 		const { container, onRestart, onBack } = await open([makeInstance('Énoncé A')]);
 
 		await answer(container, false);
 		await click(container, 'Recommencer avec de nouvelles questions');
 		expect(onRestart).toHaveBeenCalledTimes(1);
-		await click(container, 'Retour au panier');
+		await click(container, 'Retour à ma série');
 		expect(onBack).toHaveBeenCalledTimes(1);
 	});
 });
@@ -277,7 +277,7 @@ describe('FlashSeries — clavier et série vide', () => {
 		const { container, onBack, onComplete } = await open([]);
 
 		expect(container.textContent).toContain('Aucune carte à afficher');
-		await click(container, 'Retour au panier');
+		await click(container, 'Retour à ma série');
 		expect(onBack).toHaveBeenCalledTimes(1);
 		expect(onComplete).not.toHaveBeenCalled();
 	});

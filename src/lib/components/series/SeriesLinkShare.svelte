@@ -47,7 +47,7 @@
 	const TEST_MODES: readonly string[] = ['display', 'interactive', 'course', 'flash', 'typing'];
 
 	const formItems: { value: TestMode | typeof NO_FORM; label: string }[] = [
-		{ value: NO_FORM, label: 'Sans forme (ouvre le panier)' },
+		{ value: NO_FORM, label: 'Sans forme (ouvre « Ma série »)' },
 		{ value: 'display', label: 'En classe' },
 		{ value: 'interactive', label: 'Contrôle blanc' },
 		{ value: 'course', label: 'Course aux nombres' },

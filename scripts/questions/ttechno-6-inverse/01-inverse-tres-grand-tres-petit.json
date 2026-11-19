@@ -1,4 +1,5 @@
 {
+	"id": "a6fa11c8-0059-4fc3-8336-15bf17edeb87",
 	"title": "Inverse d'un nombre très grand ou très proche de 0",
 	"description": "Ordres de grandeur de 1/x pour x = ±10⁻ⁿ et 10ⁿ ; ce que devient 1/x quand x devient très grand ou très proche de 0 ; notation lim pour a + k/x et k/x",
 	"grades": ["T_TECHNO"],

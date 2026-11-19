@@ -11,7 +11,7 @@
  * @param studentId - UUID of the student who owns the card
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '#lib/server/middleware/auth.ts';
 import { useCardSchema } from '#lib/server/validation/vip-cards.ts';
@@ -62,7 +62,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(400, rpcResult.error || 'Impossible de valider la carte VIP');
 	}
 
-	return json({
+	return Response.json({
 		success: true,
 		message: 'Activation validée : l’élève peut maintenant activer sa carte VIP.',
 		cardName: rpcResult.cardName

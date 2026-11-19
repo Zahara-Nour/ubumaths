@@ -1,0 +1,204 @@
+{
+	"id": "68ee10e5-d587-493e-b2cb-75b0e124708b",
+	"title": "Conjecturer une relation linéaire entre de nouvelles variables",
+	"description": "Après un changement de variable : y proportionnel à t = x² (coefficient), z = 1/y affine en x (coefficients), log(y) affine en x (choix de la conjecture)",
+	"grades": ["T_TECHNO"],
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "On étudie la série statistique suivante et on pose $t=x^2$.\n\n| $x_i$ | $1$ | $2$ | $3$ | $4$ | $5$ |\n|---|---|---|---|---|---|\n| $t_i$ | $1$ | $4$ | $9$ | $16$ | $25$ |\n| $y_i$ | ${{eval:a*1;d}}$ | ${{eval:a*4;d}}$ | ${{eval:a*9;d}}$ | ${{eval:a*16;d}}$ | ${{eval:a*25;d}}$ |\n\n```nuage\ntitre: Nuage (t ; y), t = x²\nnom x: t\nnom y: y\nx: 1 ; 4 ; 9 ; 16 ; 25\ny: {{eval:a*1;d}} ; {{eval:a*4;d}} ; {{eval:a*9;d}} ; {{eval:a*16;d}} ; {{eval:a*25;d}}\ntaille: petite\ndescription: Nuage (t ; y) : les points sont alignés avec l'origine du repère.\n```\n\nLes points $(t_i\\,;y_i)$ semblent alignés avec l'origine : on conjecture une relation de la forme $y=kt$. Donne $k$.\n\n$k=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "0.5|1.5|2|3|4"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Si $y=kt$, alors $k=\\dfrac{y}{t}$ pour chaque point.",
+					"$\\dfrac{y_1}{t_1}=\\dfrac{{{eval:a*1;d}}}{1}={{eval:a*1;d}}$, $\\dfrac{y_2}{t_2}=\\dfrac{{{eval:a*4;d}}}{4}={{eval:a*1;d}}$ : le quotient est le même pour tous les points.",
+					"$k=\\textcolor{{{color:primary.0}}}{{{a}}}$ : on conjecture $y={{a}}t$, c'est-à-dire $y={{a}}x^2$."
+				]
+			}
+		},
+		{
+			"statement": "On étudie une série statistique $(x_i\\,;y_i)$ et on pose $z=\\dfrac{1}{y}$.\n\n| $x_i$ | $0$ | $1$ | $2$ | $3$ | $4$ |\n|---|---|---|---|---|---|\n| $z_i$ | ${{eval:p*0+q;d}}$ | ${{eval:p*1+q;d}}$ | ${{eval:p*2+q;d}}$ | ${{eval:p*3+q;d}}$ | ${{eval:p*4+q;d}}$ |\n\n```nuage\ntitre: Nuage (x ; z), z = 1/y\nnom x: x\nnom y: z\nx: 0 ; 1 ; 2 ; 3 ; 4\ny: {{eval:p*0+q;d}} ; {{eval:p*1+q;d}} ; {{eval:p*2+q;d}} ; {{eval:p*3+q;d}} ; {{eval:p*4+q;d}}\ntaille: petite\ndescription: Nuage (x ; z) : les points sont alignés.\n```\n\nLes points $(x_i\\,;z_i)$ semblent alignés : on conjecture une relation de la forme $z=ax+b$. Donne $a$ et $b$.\n\n$a=?$\n\n$b=?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "0.05|0.1|0.2"
+				},
+				{
+					"name": "q",
+					"expression": "0.1|0.3|0.5"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{p}}"
+				},
+				{
+					"expectedAnswer": "{{q}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$b$ est la valeur de $z$ pour $x=0$ : $b=\\textcolor{{{color:primary.0}}}{{{q}}}$.",
+					"Quand $x$ augmente de $1$, $z$ augmente toujours de ${{p}}$ : $a=\\textcolor{{{color:primary.0}}}{{{p}}}$.",
+					"On conjecture $z={{p}}x+{{q}}$, c'est-à-dire $\\dfrac{1}{y}={{p}}x+{{q}}$."
+				]
+			}
+		},
+		{
+			"statement": "On étudie une série statistique $(x_i\\,;y_i)$ et on pose $z=\\log(y)$. Voici le nuage des points $(x_i\\,;z_i)$.\n\n```nuage\ntitre: Nuage (x ; z), z = log(y)\nnom x: x\nnom y: z\nx: 0 ; 1 ; 2 ; 3 ; 4 ; 5\ny: {{eval:0.5*0+q+(0.03);d}} ; {{eval:0.5*1+q+(-0.04);d}} ; {{eval:0.5*2+q+(0.02);d}} ; {{eval:0.5*3+q+(-0.03);d}} ; {{eval:0.5*4+q+(0.04);d}} ; {{eval:0.5*5+q+(-0.02);d}}\ntaille: petite\ndescription: Nuage (x ; z) : les points sont presque alignés sur une droite qui monte.\n```\n\nQuelle conjecture peut-on faire ?\n\n```choix\nmelanger: non\n- $y$ semble être une fonction affine de $x$\n- $\\log(y)$ semble être une fonction affine de $x$\n- $y$ semble proportionnel à $\\log(x)$\n- On ne peut rien conjecturer\n```",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "0.5|1|1.5"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les points $(x_i\\,;z_i)$ sont presque alignés : $z$ semble être une fonction affine de $x$.",
+					"Comme $z=\\log(y)$, c'est $\\textcolor{{{color:primary.0}}}{\\log(y)}$ qui semble être une fonction affine de $x$ : $\\log(y)\\approx ax+b$.",
+					"Le nuage $(x\\,;y)$ lui-même n'est pas forcément aligné : on ne peut rien dire de $y$ directement."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "a = 3 : k = 3",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : y/x au lieu de y/t (k = 3x)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "a = 0,5 : k = 0,5",
+			"variationIndex": 0,
+			"variables": {
+				"a": "0.5"
+			},
+			"answers": ["0,5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "p = 0,1, q = 0,3",
+			"variationIndex": 1,
+			"variables": {
+				"p": "0.1",
+				"q": "0.3"
+			},
+			"answers": ["0,1", "0,3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : a et b inversés",
+			"variationIndex": 1,
+			"variables": {
+				"p": "0.1",
+				"q": "0.3"
+			},
+			"answers": ["0,3", "0,1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "p = 0,05, q = 0,5",
+			"variationIndex": 1,
+			"variables": {
+				"p": "0.05",
+				"q": "0.5"
+			},
+			"answers": ["0,05", "0,5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "choix : bonne réponse 1",
+			"variationIndex": 2,
+			"variables": {
+				"q": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : y affine en x",
+			"variationIndex": 2,
+			"variables": {
+				"q": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : y proportionnel à log(x)",
+			"variationIndex": 2,
+			"variables": {
+				"q": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : rien",
+			"variationIndex": 2,
+			"variables": {
+				"q": "1"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

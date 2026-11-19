@@ -10,7 +10,7 @@
  *   - RPC jobs: "rpc:cleanup_stale_trades" (pg_cron functions)
  */
 
-import { json, error, isHttpError } from '@sveltejs/kit';
+import { error, isHttpError } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAdmin } from '#lib/server/middleware/auth.ts';
 import { assertTypedConfirmation } from '#lib/server/confirmAction.ts';
@@ -104,7 +104,7 @@ export const POST: RequestHandler = async ({ request, locals, url }) => {
 				triggered_at: new Date().toISOString()
 			};
 
-			return json(triggerResponse, { status: response.status });
+			return Response.json(triggerResponse, { status: response.status });
 		}
 
 		// Parse job response for details
@@ -125,7 +125,7 @@ export const POST: RequestHandler = async ({ request, locals, url }) => {
 		};
 
 		// Include job result if available
-		return json({
+		return Response.json({
 			...triggerResponse,
 			result: jobResult
 		});
@@ -142,7 +142,7 @@ export const POST: RequestHandler = async ({ request, locals, url }) => {
 			triggered_at: new Date().toISOString()
 		};
 
-		return json(triggerResponse, { status: 500 });
+		return Response.json(triggerResponse, { status: 500 });
 	}
 };
 
@@ -166,7 +166,7 @@ async function triggerRpcJob(functionName: string, job_path: string): Promise<Re
 			triggered_at: new Date().toISOString()
 		};
 
-		return json(triggerResponse, { status: 500 });
+		return Response.json(triggerResponse, { status: 500 });
 	}
 
 	logger.info(`[CRON Trigger] RPC job completed successfully:`, functionName);
@@ -178,5 +178,5 @@ async function triggerRpcJob(functionName: string, job_path: string): Promise<Re
 		triggered_at: new Date().toISOString()
 	};
 
-	return json(triggerResponse);
+	return Response.json(triggerResponse);
 }

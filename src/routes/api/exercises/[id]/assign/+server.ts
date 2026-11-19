@@ -5,7 +5,7 @@
  * GET - List all assignments for an exercise (teacher only)
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import {
 	createExerciseAssignment,
@@ -77,7 +77,7 @@ export const POST: RequestHandler = async ({ request, params, locals }) => {
 			throw error(400, bulkError);
 		}
 
-		return json(
+		return Response.json(
 			{
 				count,
 				message: `Affectations créées : ${count}`
@@ -115,7 +115,7 @@ export const POST: RequestHandler = async ({ request, params, locals }) => {
 		throw error(400, assignmentError);
 	}
 
-	return json(assignment, { status: 201 });
+	return Response.json(assignment, { status: 201 });
 };
 
 /**
@@ -138,7 +138,7 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 		const errorMsg = queryValidation.error.issues
 			.map((e) => `${(e as ZodIssue).path.join('.')}: ${e.message}`)
 			.join('; ');
-		return json({ error: `Paramètres invalides : ${errorMsg}` }, { status: 400 });
+		return Response.json({ error: `Paramètres invalides : ${errorMsg}` }, { status: 400 });
 	}
 
 	const filters: TeacherAssignmentFilters = {
@@ -164,8 +164,8 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 
 	if (fetchError) {
 		logger.error('Failed to fetch assignments:', fetchError);
-		return json({ error: 'Impossible de charger les affectations' }, { status: 500 });
+		return Response.json({ error: 'Impossible de charger les affectations' }, { status: 500 });
 	}
 
-	return json(assignments);
+	return Response.json(assignments);
 };

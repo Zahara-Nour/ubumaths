@@ -4,7 +4,7 @@
  * POST - Create new exercise
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { getExercises, createExercise, type ExerciseFilters } from '#lib/server/exercises.ts';
 import type { Database } from '#lib/types/database.ts';
@@ -94,7 +94,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		'GET /api/exercises'
 	);
 
-	return json(validated);
+	return Response.json(validated);
 };
 
 /**
@@ -144,5 +144,5 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		'POST /api/exercises'
 	);
 
-	return json(validated, { status: 201 });
+	return Response.json(validated, { status: 201 });
 };

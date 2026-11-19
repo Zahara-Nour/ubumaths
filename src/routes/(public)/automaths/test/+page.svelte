@@ -511,7 +511,7 @@
 					<h2 class="text-xl font-semibold text-destructive">Erreur</h2>
 					<p class="mt-2 text-sm text-muted-foreground">{error}</p>
 					<Button onclick={handleBack} class="mt-6">
-						{assignmentId ? 'Mes contrôles' : 'Retour au panier'}
+						{assignmentId ? 'Mes contrôles' : 'Retour à ma série'}
 					</Button>
 				</div>
 			</Card.Content>

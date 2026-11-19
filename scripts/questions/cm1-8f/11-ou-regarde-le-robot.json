@@ -1,0 +1,276 @@
+{
+	"id": "a36679be-05f8-4efe-bc5c-97fd34155039",
+	"title": "Où regarde le robot ?",
+	"description": "Quart de tour à droite, à gauche (celles du robot), demi-tour, deux ou trois pivots de suite ; reculer d'une case",
+	"grades": ["CM1", "CM2"],
+	"level": 6,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Le robot regarde dans le sens de son nez.\n\n```robot\nquadrillage: 5 x 5\ncodage: avance-pivote\ndépart: 3, 3, {{if:s==1|haut|{{if:s==2|droite|{{if:s==3|bas|gauche}}}}}}\n```\n\nIl pivote d'un **quart de tour à {{if:w==1|gauche|droite}}**. Où regarde-t-il maintenant ?\n\n```choix\nmelanger: non\n- Vers le haut.\n- Vers la droite.\n- Vers le bas.\n- Vers la gauche.\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "1..4"
+				},
+				{
+					"name": "w",
+					"expression": "0..1"
+				},
+				{
+					"name": "a",
+					"expression": "{{eval:mod(s+2*w,4)+1}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a-1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Sa droite et sa gauche sont celles du robot, pas les tiennes : on se met à sa place, le nez dans son sens.",
+					"Il regardait {{if:s==1|vers le haut|{{if:s==2|vers la droite|{{if:s==3|vers le bas|vers la gauche}}}}}} ; après un quart de tour à {{if:w==1|gauche|droite}}, il regarde {{if:a==1|$\\textcolor{{{color:primary.0}}}{\\text{vers le haut}}$|{{if:a==2|$\\textcolor{{{color:primary.0}}}{\\text{vers la droite}}$|{{if:a==3|$\\textcolor{{{color:primary.0}}}{\\text{vers le bas}}$|$\\textcolor{{{color:primary.0}}}{\\text{vers la gauche}}$}}}}}}."
+				]
+			}
+		},
+		{
+			"statement": "Le robot regarde dans le sens de son nez.\n\n```robot\nquadrillage: 5 x 5\ncodage: avance-pivote\ndépart: 3, 3, {{if:s==1|haut|{{if:s==2|droite|{{if:s==3|bas|gauche}}}}}}\n```\n\nIl fait **demi-tour**. Où regarde-t-il maintenant ?\n\n```choix\nmelanger: non\n- Vers le haut.\n- Vers la droite.\n- Vers le bas.\n- Vers la gauche.\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "1..4"
+				},
+				{
+					"name": "a",
+					"expression": "{{eval:mod(s+1,4)+1}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a-1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un demi-tour, c'est deux quarts de tour : le robot regarde dans le sens opposé.",
+					"Il regardait {{if:s==1|vers le haut|{{if:s==2|vers la droite|{{if:s==3|vers le bas|vers la gauche}}}}}} ; il regarde maintenant {{if:a==1|$\\textcolor{{{color:primary.0}}}{\\text{vers le haut}}$|{{if:a==2|$\\textcolor{{{color:primary.0}}}{\\text{vers la droite}}$|{{if:a==3|$\\textcolor{{{color:primary.0}}}{\\text{vers le bas}}$|$\\textcolor{{{color:primary.0}}}{\\text{vers la gauche}}$}}}}}}."
+				]
+			}
+		},
+		{
+			"statement": "Le robot regarde dans le sens de son nez.\n\n```robot\nquadrillage: 5 x 5\ncodage: avance-pivote\ndépart: 3, 3, {{if:s==1|haut|{{if:s==2|droite|{{if:s==3|bas|gauche}}}}}}\n```\n\nLe robot {{if:j==1|pivote à droite, puis pivote à droite|{{if:j==2|pivote à gauche, puis pivote à gauche|{{if:j==3|pivote à droite, puis pivote à gauche|{{if:j==4|pivote à gauche, puis fait demi-tour|{{if:j==5|fait demi-tour, puis pivote à gauche|{{if:j==6|pivote à droite, puis fait demi-tour|{{if:j==7|pivote à droite, pivote à droite, puis pivote à droite|{{if:j==8|pivote à gauche, pivote à gauche, puis pivote à gauche|{{if:j==9|pivote à gauche, pivote à droite, puis pivote à gauche|pivote à droite, fait demi-tour, puis pivote à droite}}}}}}}}}}}}}}}}}}. Où regarde-t-il à la fin ?\n\n```choix\nmelanger: non\n- Vers le haut.\n- Vers la droite.\n- Vers le bas.\n- Vers la gauche.\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "1..4"
+				},
+				{
+					"name": "j",
+					"expression": "1..10"
+				},
+				{
+					"name": "o",
+					"expression": "{{if:j==1|2|{{if:j==2|2|{{if:j==3|0|{{if:j==4|1|{{if:j==5|1|{{if:j==6|3|{{if:j==7|3|{{if:j==8|1|{{if:j==9|3|0}}}}}}}}}}}}}}}}}}"
+				},
+				{
+					"name": "a",
+					"expression": "{{eval:mod(s-1+o,4)+1}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a-1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Sa droite et sa gauche sont celles du robot, pas les tiennes : on se met à sa place, le nez dans son sens. On le fait tourner une instruction après l'autre.",
+					"Il regardait {{if:s==1|vers le haut|{{if:s==2|vers la droite|{{if:s==3|vers le bas|vers la gauche}}}}}} ; à la fin, il regarde {{if:a==1|$\\textcolor{{{color:primary.0}}}{\\text{vers le haut}}$|{{if:a==2|$\\textcolor{{{color:primary.0}}}{\\text{vers la droite}}$|{{if:a==3|$\\textcolor{{{color:primary.0}}}{\\text{vers le bas}}$|$\\textcolor{{{color:primary.0}}}{\\text{vers la gauche}}$}}}}}}."
+				]
+			}
+		},
+		{
+			"statement": "Le robot regarde dans le sens de son nez.\n\n```robot\nquadrillage: 5 x 5\ncodage: avance-pivote\ndépart: 3, 3, {{if:s==1|haut|{{if:s==2|droite|{{if:s==3|bas|gauche}}}}}}\n```\n\nIl **recule d'une case**, sans tourner. Où arrive-t-il ?\n\n```choix\nmelanger: non\n- Sur la case juste au-dessus.\n- Sur la case juste à droite.\n- Sur la case juste en dessous.\n- Sur la case juste à gauche.\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "1..4"
+				},
+				{
+					"name": "a",
+					"expression": "{{eval:mod(s+1,4)+1}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a-1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Reculer, c'est aller en arrière, dans le dos du robot, sans changer le sens où il regarde.",
+					"Il regarde {{if:s==1|vers le haut|{{if:s==2|vers la droite|{{if:s==3|vers le bas|vers la gauche}}}}}} : il recule {{if:a==1|$\\textcolor{{{color:primary.0}}}{\\text{vers le haut}}$|{{if:a==2|$\\textcolor{{{color:primary.0}}}{\\text{vers la droite}}$|{{if:a==3|$\\textcolor{{{color:primary.0}}}{\\text{vers le bas}}$|$\\textcolor{{{color:primary.0}}}{\\text{vers la gauche}}$}}}}}}."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Regarde en haut, quart à droite : droite",
+			"variationIndex": 0,
+			"variables": {
+				"s": "1",
+				"w": "0",
+				"a": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Regarde en bas, quart à droite : gauche",
+			"variationIndex": 0,
+			"variables": {
+				"s": "3",
+				"w": "0",
+				"a": "4"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sa droite prise pour la mienne",
+			"variationIndex": 0,
+			"variables": {
+				"s": "3",
+				"w": "0",
+				"a": "4"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Regarde à gauche, quart à gauche : bas",
+			"variationIndex": 0,
+			"variables": {
+				"s": "4",
+				"w": "1",
+				"a": "3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sens contraire",
+			"variationIndex": 0,
+			"variables": {
+				"s": "4",
+				"w": "1",
+				"a": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Demi-tour depuis droite : gauche",
+			"variationIndex": 1,
+			"variables": {
+				"s": "2",
+				"a": "4"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : demi-tour pris pour un quart de tour",
+			"variationIndex": 1,
+			"variables": {
+				"s": "2",
+				"a": "4"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Droite puis droite, depuis haut : bas",
+			"variationIndex": 2,
+			"variables": {
+				"s": "1",
+				"j": "1",
+				"o": "2",
+				"a": "3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Trois fois à gauche, depuis haut : droite",
+			"variationIndex": 2,
+			"variables": {
+				"s": "1",
+				"j": "8",
+				"o": "1",
+				"a": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un seul pivot compté",
+			"variationIndex": 2,
+			"variables": {
+				"s": "1",
+				"j": "8",
+				"o": "1",
+				"a": "2"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Recule en regardant en haut : en dessous",
+			"variationIndex": 3,
+			"variables": {
+				"s": "1",
+				"a": "3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : avance au lieu de reculer",
+			"variationIndex": 3,
+			"variables": {
+				"s": "1",
+				"a": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

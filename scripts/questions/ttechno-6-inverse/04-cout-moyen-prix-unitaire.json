@@ -1,4 +1,5 @@
 {
+	"id": "bb7bcab6-0a5b-4af4-8ec4-2761300f1cf0",
 	"title": "Coût moyen, prix unitaire",
 	"description": "Coût moyen C(x)/x écrit x + p + q/x ; production qui rend le coût moyen minimal et ce coût ; prix unitaire c + F/n : valeur limite et seuil",
 	"grades": ["T_TECHNO"],

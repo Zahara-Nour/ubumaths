@@ -19,7 +19,7 @@
 	- loginNote?: boolean - false : pas de message « Connecte-toi… » (vitrine `/demo/questions`)
 	- onComplete: (result: TestResult) => void - Appelé à la fin de la série
 	- onRestart: () => void - Nouvelles questions (la page régénère)
-	- onBack: () => void - Retour au panier (à « Mes évaluations » pour une évaluation)
+	- onBack: () => void - Retour à ma série (à « Mes évaluations » pour une évaluation)
 	- inEvaluation: évaluation assignée → pas de « Recommencer »
 	- assessmentTitle?: string - Titre d'une évaluation assignée
 	- collectOnly: évaluation notée → réponses collectées SANS correction (le
@@ -97,7 +97,7 @@
 		traceRecorder = null
 	}: Props = $props();
 
-	let backLabel = $derived(inEvaluation ? 'Mes contrôles' : 'Retour au panier');
+	let backLabel = $derived(inEvaluation ? 'Mes contrôles' : 'Retour à ma série');
 	// « Quitter » : « Mes contrôles » (avec confirmation) en contrôle, le panier sinon
 	const quit = $derived(
 		automathsQuitLink({ inEvaluation, attemptOpen: collectOnly, timed: false })

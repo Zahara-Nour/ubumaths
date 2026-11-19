@@ -6,7 +6,7 @@
  * `(section_id, template_id)` refuse une section d'un autre modèle.
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '#lib/server/middleware/auth.ts';
 import { requireOwnedTemplate } from '#lib/server/template-guard.ts';
@@ -46,5 +46,5 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		throw error(500, 'Impossible de ranger les éléments');
 	}
 
-	return json({ success: true });
+	return Response.json({ success: true });
 };

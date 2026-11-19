@@ -4,7 +4,6 @@
  * GET - List all exercises assigned to the current student
  */
 
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { getAssignmentsForStudent } from '#lib/server/exercise-assignments.ts';
 import type { StudentExerciseFilters } from '#lib/exercises/types.ts';
@@ -39,7 +38,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		const errorMsg = queryValidation.error.issues
 			.map((e) => `${(e as ZodIssue).path.join('.')}: ${(e as ZodIssue).message}`)
 			.join('; ');
-		return json({ error: `Paramètres invalides : ${errorMsg}` }, { status: 400 });
+		return Response.json({ error: `Paramètres invalides : ${errorMsg}` }, { status: 400 });
 	}
 
 	// Build filters
@@ -72,8 +71,8 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 	if (fetchError) {
 		logger.error('Failed to fetch assigned exercises:', fetchError);
-		return json({ error: 'Impossible de charger les exercices' }, { status: 500 });
+		return Response.json({ error: 'Impossible de charger les exercices' }, { status: 500 });
 	}
 
-	return json(exercises);
+	return Response.json(exercises);
 };

@@ -90,7 +90,7 @@
 		>
 			Ce modèle n'est plus publié : il sera sauté.
 			<Button size="sm" variant="outline" onclick={() => onRemove(item.templateId)}>
-				Retirer du panier
+				Retirer de ma série
 			</Button>
 		</div>
 	{:else if instance}

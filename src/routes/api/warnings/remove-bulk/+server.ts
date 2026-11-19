@@ -19,7 +19,7 @@
  * - removed: number (how many warnings were removed)
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { removeWarningsBulkSchema } from '#lib/server/validation/warnings.ts';
 import { removeWarningsBulk } from '#lib/server/warnings.ts';
@@ -52,7 +52,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			supabase
 		});
 
-		return json({
+		return Response.json({
 			success: true,
 			counts: result.counts,
 			removed: result.removed

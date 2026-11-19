@@ -5,20 +5,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, après #2857 (rangement du lot 8e) ; page à cocher publiée._
+_Mis à jour le 2026-11-19, PR de rangement du lot 9ab ouverte (§ 26 quater)._
 
-- **État** : lots 0 à 8d publiés, **148 points du CM1 sur 171** ; lot 8e : 5 brouillons en prod, rangés et tagués
-  (#2857, migration passée) ; page à cocher publiée (§ 25 sexies).
-- **Prochaine action** : 5 OK sur 5 ; correction du modèle 04 faite (§ 25 sexies) : PR, CI, merge ; David lance
-  `create-questions.ts --dir scripts/questions/cm1-8e --publier --mettre-a-jour` puis `publier-lot` ; recompte.
-  Ensuite le lot 8f (modèles 8 à 14 du § 25), puis 9.
-- **En attente de David** : rien avant le merge.
-- **Pièges en cours** : création en prod = `pnpm tsx scripts/create-questions.ts --dir … --publier` (pas de script
-  `pnpm create-questions`) ; la lancer, comme `db:migrate`, **depuis le worktree** (lien `supabase/.temp/` copié) ;
-  commitlint refuse le type `content` et un corps > 100 caractères par ligne ; le mode auto refuse `publier-lot`
-  et `garde-niveaux-tags` : David les lance ; 17 copies `[essai 8e]` en base locale ; `ci-lint-fichiers.test.ts`
-  dépasse parfois ses 5 s en CI (relancer le job) ; `\text{…}` long dans une formule ne se coupe pas à 390 px.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, branche `feat/questions-cm1-lot8e-relecture`.
+- **État** : lots 0 à 8f publiés, **158 points du CM1 sur 171**. Lot 9ab (8 modèles) créé en brouillon en prod ;
+  migration de rangement `20261119145503` écrite, testée (20/20, rouge prouvé), PR en cours ; 9c (097, 104 : 4
+  constructions) reste à écrire.
+- **Prochaine action** : `security-auditor`, CI, merge, `db:migrate` depuis le worktree (seule migration en attente),
+  vérification MCP ; puis page à cocher du lot 9ab, verdicts de David, `publier-lot`.
+- **En attente de David** : rien.
+- **Pièges en cours** : `--mettre-a-jour` ne touche JAMAIS un publié : le lancer AVANT `publier-lot` ;
+  commitlint refuse le type `content` et un corps > 100 caractères par ligne ; David lance `publier-lot
+--publier` et `garde-niveaux-tags` ; ranger : réponses = positions AFFICHÉES (`ranger-attendus.ts`) ;
+  `pnpm -s` refusé (pnpm 12).
+- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, branche `feat/questions-cm1-lot9ab-rangement`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -2144,3 +2143,185 @@ reste en D ; niveaux **CM1 et CM2** et tag des deux points (109/098, 110/099, 11
   régénéré, id gardé ; diff d'une ligne). Simulation `create-questions` : 04 « CONTENU DIFFÉRENT », les 4 autres
   identiques. Page régénérée : 390 px sans défilement horizontal, aucune erreur de console. À la mise en prod :
   `create-questions.ts --dir scripts/questions/cm1-8e --publier --mettre-a-jour`, puis `publier-lot`.
+
+### 25 septies. Lot 8e — publié, correction du 04 manquée (2026-11-19)
+
+- #2863 mergée. David a lancé `create-questions … --publier --mettre-a-jour` et `publier-lot … --publier`.
+  Vérifié au MCP : 5 modèles `published` ; recompte **CM1 153/171** (148 + 5), CM2 115/158.
+- Le modèle 04 (b423785d) porte encore l'ancienne phrase (`strpos` au MCP : ancienne vraie, nouvelle fausse) ;
+  la simulation dit toujours « CONTENU DIFFÉRENT ». Cause probable : modèle déjà publié au passage de
+  `--mettre-a-jour`, qui laisse les modèles publiés. Je n'ai pas vérifié au MCP entre les deux commandes.
+- David : « je ne veux rien faire manuellement » (pas d'édition dans l'appli). Voies (a) migration de données,
+  (b) option de `create-questions` sur modèle publié : à trancher (Reprendre ici).
+- David : « je te suis » → voie (a), migration de données qui remplace la phrase du modèle 04 publié.
+
+### 25 octies. Migration de contenu du modèle 04 (2026-11-19)
+
+- Relevé MCP : b423785d `published`, `{CM1}`, md5(variations) `3dda5f67…`, md5(test_specs) `954a7dcc…`, ancienne
+  phrase présente. « Avant » reconstruit depuis le fichier du lot (ancienne phrase remise) : même md5 que la
+  prod, donc aucun contenu recopié à la main.
+- Générateur `docs/wip/questions/cm1-8e-04-contenu.py` (gabarit `questions-1techno/83b1f614-contenu.py`) →
+  migration `20261119060346_questions_cm1_lot8e_04_contenu.sql` et fixture
+  `tests/integration/fixtures/questions-cm1-lot8e-04-contenu.json`. Garde : variations EXACTEMENT celles de la
+  prod, sinon refus ; modèle absent (base locale) : rien. Rollback écrit, gardé.
+- Test `tests/integration/questions-cm1-lot8e-04-contenu.test.ts` : rouge migration vidée (2 échecs + bloc
+  principal en échec au `beforeAll`), 9/9 vert avec elle.
+- Accès : aucune policy ne change ; seule une phrase de corrigé change.
+- Outil manquant noté : `outils-manquants.md` n° 41 (corriger un publié sans migration écrite par modèle).
+- #2869 mergée ; `db:migrate` (seule migration en attente, vérifié par `migration list --linked`) ; MCP :
+  nouvelle phrase présente, ancienne absente, md5(variations) `c120baed…` = fichier du dépôt, specs inchangées.
+
+### 25 nonies. Lot 8f — écrit (2026-11-19)
+
+- Script `docs/wip/questions/lot-cm1-8f.py` → `scripts/questions/cm1-8f/` (7 modèles, 17 variations, 89 specs),
+  grades **CM1 + CM2** pour les 7. Sonde `docs/wip/questions/patron-sonde.ts` (pliage de l'appli) : réponses
+  attendues des gestes `designer:` / `completer:`, combinaisons (patron, faces retirées) qui laissent des faces
+  reliées (31 à une face, 47 à deux), poses fausses des specs jugées par `isPatronAnswerCorrect`.
+- **Niveaux** (relevé MCP du 2026-11-19), à la suite de ceux de chaque nœud : Solides › patrons a 1, 2 (CE2) et
+  3 (5e) → 08, 09, 10 en 4, 5, 6 (le modèle de 5e reste au 3, plus bas que le CM1 : à revoir au rangement si
+  David le veut) ; Repérage et déplacements › coder un déplacement a 1 à 5 → 11, 12, 13 en 6, 7, 8.
+- **Rangement prévu du 14** : sur Solides › constructions (CE1 en 4, 5) au niveau 6, pas sur la notion Solides
+  où sont les points CM1-119, CM2-105 et les modèles de 6e (1 à 3) ; la règle de l'ADR 0020 (point sur le nœud
+  du modèle ou sur sa notion) l'autorise.
+- Écarts à la phase 0, d'écriture seulement : 08 V2 coupé en trois variations (6, 5, 7 carrés) ; 12 dessiné en
+  ` ```figure ` comme le CE1 `e3bacfdc` (le bloc robot ne numérote pas de points), 12 scènes tirées une fois
+  (graine fixe), une sur deux avec un demi-tour, jamais « avance de n, demi-tour, avance de n » ; pièges : droite
+  et gauche échangées, demi-tour oublié ou une case de trop ; 13 : mur gris d'une colonne à une seule ouverture,
+  chemin de 15 cases au plus (conditions) ; 11 V4 « recule » : choix « la case juste au-dessus… ».
+- `create-questions` en simulation contre la prod : 7 « à créer » ; `question:specs` 300 tirages par variation,
+  tous réussis ; `sonde-cubes` 1 200 blocs, `sonde-figures` 300 tirages : 0 problème.
+- `questions-cm2` prévenue par message : CM2-100, 101, 103, 104, 105 pris ici, son lot 19 garde 102.
+- Base locale (18 copies, une variation chacune), aperçus à 390 px (Playwright, port 5183) : aucun défilement
+  horizontal, aucune erreur de console ; vus : patrons, face grise, cases en pointillés, robot, mur gris.
+- #2872 mergée (CI verte du premier coup).
+
+### 25 decies. Lot 8f — création en prod et rangement (2026-11-19)
+
+- `create-questions.ts --dir scripts/questions/cm1-8f --publier` lancé par David : 7 brouillons (0da1780b,
+  ebc05cbb, 9fe0fee6, a36679be, 10f2e60e, 7714c08c, 08337d34), vérifiés au MCP (draft, CM1 + CM2, sans nœud,
+  0 tag), ids commités.
+- Relevé `etat-prod-2026-11-19-cm1-8f/`, script `lot-cm1-8f-rangement.py` (gabarit 8e) → migration
+  `20261119085732_questions_cm1_lot8f_rangement_tags` et fixture : 08, 09, 10 sur Solides > patrons ; 11, 12, 13
+  sur Repérage et déplacements > coder un déplacement ; 14 sur Solides > constructions (CM1-119 et CM2-105 sont
+  sur la notion Solides) ; 14 tags posés (CM1-115 à 119 ; CM2-100, 101, 103, 104, 105), aucun niveau ni statut
+  changé, aucun nœud créé.
+- Test `questions-cm1-lot8f-rangement-tags.test.ts` : 20/20 vert ; corps neutralisé (`select 1;`) : 9 échecs,
+  7 sautés. `types:cliquet` tenu. Seule migration en attente (`migration list --linked`).
+- `security-auditor` : aucun finding bloquant (diff avec le 8e limité aux données ; état « avant » remesuré au
+  MCP). Non bloquant, déjà connu : les tags (pas le contenu) des brouillons sont lisibles par tout compte connecté.
+- #2873 mergée (premier passage rouge : garde « doc à jour », `Doc-inchangée:` ajouté). `db:migrate` lancé par
+  David (au second essai : le premier n'avait rien joué). Vérifié au MCP : `20261119085732` jouée ; 7 brouillons
+  sur leur nœud, 14 tags, `updated_at` préservé.
+
+### 25 undecies. Lot 8f — page à cocher et publication (2026-11-19)
+
+- Page `page-a-cocher.ts --dir scripts/questions/cm1-8f` : 7 fiches (18 exemples) ; 5 alertes « bloc non
+  dessiné » (` ```patron ` : 08, 09, 10 ; ` ```robot ` : 11, 13), jouées dans l'aperçu. 1200 px sans défilement ni
+  erreur de console ; à 390 px, la source d'un patron (`000 000/…`) déborde (page seulement). Outils-manquants
+  n° 43. Publiée : https://claude.ai/artifact/3tRyJQfLE7fJiNcb2S2toG (`verdicts`, capacité `db`).
+- Verdicts : 7 « OK » sur 7, aucun commentaire. `publier-lot` en simulation : 7/7 ; `--publier` et
+  `garde-niveaux-tags` lancés par David. Vérifié au MCP : 7 modèles `published`.
+- Recompte MCP (points non archivés ayant un modèle publié) : **CM1 158/171** (153 + 5) ; CM2 120/158 (115 + 5).
+
+## 26. Lot 9 — les 13 derniers points : phase 0 (à valider, 2026-11-19)
+
+Relevé MCP : aucun modèle, ni brouillon, sur les 13 points. Jumeaux CM2 **sans modèle** : CM2-087 (= CM1-097),
+094 (= 104), 095 (= 105), 109 (= 124) ; CM2-115 et 116 (= 129, 130) ont chacun un modèle CM2 (`90d6612d`,
+`5343077e`), trop larges pour le CM1 (aire du carré ; deux étapes, linéarité additive). Le lot 15 du CM2
+(probabilités 109 à 114) n'est pas commencé.
+
+**Changement depuis le § 4 bis** : 097 et 104 peuvent sortir du D. La figure à compléter construit maintenant
+sur papier uni, à la règle graduée : segment de longueur donnée (`segment AB = 6 cm`), rectangle et carré cotés,
+triangle rectangle en cm, cercle de rayon donné (`cercle(O, rayon=4 cm)`). Aucun modèle de CE2 à 6e ne s'en
+sert en cm. 105 (figure composée) reste hors d'atteinte : une figure à compléter ne vérifie qu'une construction
+à la fois, et la perpendiculaire / parallèle à l'équerre sur papier uni manque (outils-manquants n° 40).
+
+Trois lots, tout en cases et case « choix » (`plusieurs:` quand il y a plusieurs bonnes réponses), roues dessinées
+en ` ```partage ` (`disque N`, parts grisées), rangement en ` ```ranger `.
+
+### 9a — probabilités (6 modèles, sans aucun calcul de probabilité : borne de 123)
+
+| #   | Point           | Titre                                     | Variations                                                                                                                                                                                                      |
+| --- | --------------- | ----------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | 123             | Est-ce une expérience aléatoire ?         | V1 une situation, Oui / Non (dé, pièce, carte, boule tirée sans regarder, roue : oui ; 3 + 4, balle lâchée, jour après lundi : non) ; V2 quatre situations, cocher celles où le hasard décide (`plusieurs:`)    |
+| 2   | 124 (+ CM2-109) | Toutes les issues possibles               | V1 dé à 6 faces ou pièce : combien d'issues ? (case) ; V2 sac de boules de 3 couleurs : cocher les issues (une couleur absente en piège) ; V3 jeu de 32 cartes : cocher les couleurs possibles (pique, cœur…)   |
+| 3   | 125             | Impossible, possible ou certain ?         | V1 dé : « obtenir 7 », « obtenir un nombre plus petit que 7 », « obtenir 3 » → impossible / certain / possible ; V2 sac (9 rouges, 1 bleue ; 5 et 5) : probable / peu probable / une chance sur deux            |
+| 4   | 126             | Du moins probable au plus probable        | V1 sac de 3 couleurs aux nombres nettement différents (2, 5, 9) : ranger les trois tirages ; V2 roue de 8 parts : quelle zone a le plus de chances ? (choix)                                                    |
+| 5   | 127             | Deux issues, mais pas une chance sur deux | roue de 4 parts dont 1 grise, sac de 1 rouge et 3 bleues : « deux issues ; une chance sur deux chacune ? » → plus / moins / une chance sur deux ; une variation sur trois où c'est vraiment une chance sur deux |
+| 6   | 128             | Chaque issue a-t-elle autant de chances ? | Oui / Non : dé ordinaire, pièce, sac 4 et 4, roue moitié grise → oui ; sac 6 et 2, roue 1 part sur 4, dé truqué « deux faces 6 » → non                                                                          |
+
+### 9b — proportionnalité (2 modèles, CM1 seul)
+
+| #   | Point | Titre                                      | Variations                                                                                                                                                                                                                                                 |
+| --- | ----- | ------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 7   | 129   | Est-ce une situation de proportionnalité ? | V1 banque en contexte, Oui / Non (cahiers identiques, pile de manuels, recette, prix au kilo : oui ; taille et âge, taxi avec prise en charge, lot promotionnel, forfait : non) ; V2 deux achats chiffrés, entiers (3 cahiers 6 €, 6 cahiers 12 € ou 11 €) |
+| 8   | 130   | Résoudre un problème de proportionnalité   | une seule étape, rapport entier 2 à 5 ou 10 (borne) : V1 entiers (5 manuels 4 kg → 15 manuels) ; V2 prix décimal (2,40 € → × 3) ; V3 dans l'autre sens, ÷ (12 crêpes, 3 œufs → 4 crêpes) — voir question 3                                                 |
+
+### 9c — constructions à la règle graduée (4 modèles, CM1 + CM2)
+
+| #   | Point           | Titre                                                     | Variations                                                                                                          |
+| --- | --------------- | --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| 9   | 097 (+ CM2-087) | Tracer un segment de longueur donnée                      | papier uni, Règle graduée · Segment : V1 cm entiers (3 à 12) ; V2 cm et mm (5,3 cm) ; V3 sur une demi-droite donnée |
+| 10  | 104 (+ CM2-094) | Construire un rectangle ou un carré de dimensions données | [AB] tracé, Segment · Équerre · Règle graduée : V1 rectangle (7 × 3 cm) ; V2 carré (8 cm)                           |
+| 11  | 104 (+ CM2-094) | Construire un triangle rectangle de côtés donnés          | [AB] tracé, angle droit en A, [AC] en cm (10 et 6 cm), Segment · Équerre · Règle graduée                            |
+| 12  | 104 (+ CM2-094) | Tracer un cercle de rayon donné                           | centre O donné, rayon 2 à 6 cm (V2 en mm : 3,5 cm), Règle graduée · Compas                                          |
+
+**Restent sans modèle (D)** : 105 (figure composée, ci-dessus), 114 (construire un solide en vrai, § 25 bis),
+140 (suite orale). Fin du chantier : **168 points sur 171**.
+
+**Nœuds** : ceux des points (Expériences aléatoires, événements, probabilité simple, équiprobabilité,
+caractérisation, Situations de proportionnalité, constructions) ; sous-notions à relever au moment de la
+migration, comme aux lots précédents.
+
+**Question d'accès** (migration nœud + tag, comme aux 8c à 8f) : personne ne pourra lire quelque chose qu'il ne
+pouvait pas lire avant.
+
+**Questions à David** :
+
+1. Les 12 modèles et leurs variations : OK ?
+2. 097 et 104 sortent du D (outil de la règle graduée en prod) ; 105, 114, 140 y restent ? Reco : oui. 105 s'ajoute
+   aux outils manquants (« figure composée : plusieurs constructions vérifiées dans une même figure ») ?
+3. 130 : la V3 (÷, revenir de 12 crêpes à 4) est-elle encore « une seule utilisation de la linéarité » ? Reco : oui.
+4. Jumeaux CM2 (124/109, 097/087, 104/094) : niveaux CM1 + CM2 et tag des deux points, comme aux 8c à 8f, et le
+   CM2 prévenu (son lot 15 perd 109, son lot 18 perd 087 et 094) ? Reco : oui. 129, 130 : modèles CM1 seuls
+   (ceux du CM2 dépassent le CM1).
+5. Ordre : 9a → 9b → 9c, une PR de fichiers et une migration par lot, ou 9a + 9b ensemble (8 modèles, sans
+   géométrie) ? Reco : 9a + 9b ensemble, puis 9c.
+
+### 26 bis. Lot 9 : décisions (David, 2026-11-19)
+
+« go » sur les cinq recommandations du § 26 : les 12 modèles et leurs variations ; 097 et 104 sortent du D,
+105, 114, 140 y restent (105 à ajouter aux outils manquants : plusieurs constructions vérifiées dans une même
+figure) ; 130 V3 (÷ une fois) = une seule utilisation de la linéarité ; jumeaux CM1 + CM2 et tag des deux points
+(124/109, 097/087, 104/094), le CM2 prévenu ; 129, 130 CM1 seuls ; ordre 9a + 9b ensemble, puis 9c.
+
+### 26 ter. Lots 9a + 9b — écrits (2026-11-19)
+
+- Script `docs/wip/questions/lot-cm1-9ab.py` → `scripts/questions/cm1-9ab/` (8 modèles, 19 variations, 67 specs) ;
+  grades CM1 + CM2 pour 02 (CM1-124, CM2-109), CM1 pour les autres. Niveaux : 1, sauf 04 et 05 (2).
+- Écarts au § 26 : 07 s'appelle « Proportionnel ou pas ? » (titre du CM2 `90d6612d` déjà pris au même niveau,
+  `create-questions` bloque) ; sa V2 parle de cahiers, pas de pains au chocolat (prix trop hauts) ; 08 V2, prix
+  d'un croissant de 1,10 à 1,90 € (1,00 € rendait le calcul trivial).
+- Rangement (04 V1) : positions affichées relevées par `ranger-attendus.ts` (`['2', '0', '1']` aux deux tirages).
+- `create-questions` en simulation contre la prod : 8 « à créer » ; `question:specs` 300 tirages par variation,
+  tous réussis, aucun `\textcolor` hors `$`.
+- Base locale (19 copies, une variation chacune), aperçus à 390 px (Playwright, port 5184) : aucun défilement
+  horizontal, aucune erreur de console ; vus : rangement (attendu juste), roue à 4 parts, prix « 2,00 € ».
+- #2881 ouverte, CI verte, mergée (aucune revue : contenu). `questions-cm2` prévenue par message : CM2-109 (lot 15),
+  CM2-087 et CM2-094 (lot 18) pris ici ; noté au § 21.1 de son journal.
+
+### 26 quater. Lot 9ab — création en prod et rangement (2026-11-19)
+
+- `create-questions.ts --dir scripts/questions/cm1-9ab --publier` lancé : 8 brouillons (19b2b250, 5081e180,
+  ae90499d, 63675a23, 41e84aa6, 78940a45, 833b120a, 1dd68bdd), vérifiés au MCP (draft, sans nœud, 0 tag ;
+  5081e180 en CM1 + CM2, les autres CM1), ids commités. (PR #2887, ouverte par erreur sur la branche déjà
+  mergée, fermée : les ids partent avec le rangement.)
+- Relevé `etat-prod-2026-11-19-cm1-9ab/`, script `lot-cm1-9ab-rangement.py` (gabarit 8f) → migration
+  `20261119145503_questions_cm1_lot9ab_rangement_tags` et fixture : chacun sur le nœud de son point (règle des
+  lots précédents) : 01 sur Probabilités > Expériences aléatoires ; 02 > événements ; 03, 04 > probabilité
+  simple ; 05, 06 > équiprobabilité ; 07 sur Proportionnalité > Situations de proportionnalité >
+  caractérisation ; 08 sur la notion Situations de proportionnalité (le modèle CM2 voisin `5343077e` est sur
+  la sous-notion « quatrième proportionnelle » : déplaçable à la main si David le préfère). 9 tags posés
+  (CM1-123 à 130, CM2-109), aucun niveau ni statut changé, aucun nœud créé.
+- Test `questions-cm1-lot9ab-rangement-tags.test.ts` : 20/20 vert ; corps neutralisé (`select 1;`) : 9 échecs,
+  7 sautés. `types:cliquet` tenu. Seule migration en attente (`migration list --linked`).

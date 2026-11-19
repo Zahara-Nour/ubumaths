@@ -9,7 +9,7 @@
  * AUTH: Authenticated users (own reports) or admin
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '#lib/server/middleware/auth.ts';
 import {
@@ -72,7 +72,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 			throw error(403, 'Accès non autorisé');
 		}
 
-		return json({ report });
+		return Response.json({ report });
 	} catch (err) {
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
@@ -151,7 +151,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 				throw error(500, 'Erreur lors de la mise à jour du rapport');
 			}
 
-			return json({ success: true, report: updatedReport });
+			return Response.json({ success: true, report: updatedReport });
 		} else {
 			// User can only update their own pending reports
 			if (existingReport.user_id !== user.id) {
@@ -191,7 +191,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 				throw error(500, 'Erreur lors de la mise à jour du rapport');
 			}
 
-			return json({ success: true, report: updatedReport });
+			return Response.json({ success: true, report: updatedReport });
 		}
 	} catch (err) {
 		if (err && typeof err === 'object' && 'status' in err) {
@@ -238,7 +238,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 			throw error(404, 'Rapport non trouvé : rien n’a été supprimé');
 		}
 
-		return json({ success: true });
+		return Response.json({ success: true });
 	} catch (err) {
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;

@@ -1,4 +1,5 @@
 {
+	"id": "912caf72-fdaa-4394-b71d-805ec1547e7e",
 	"title": "Étudier une fonction ax + b + k/x",
 	"description": "Dérivée a − k/x² ; même dénominateur ; signe de f′ et sens de variation sur ]0 ; +∞[ ; minimum ; x + k/x sur ℝ privé de 0 ; x² + k/x",
 	"grades": ["T_TECHNO"],

@@ -5,7 +5,7 @@
  * DELETE - Delete Python notebook
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '#lib/server/middleware/auth.ts';
 import { updateNotebookSchema } from '#lib/server/validation/notebooks.ts';
@@ -98,7 +98,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		throw error(403, 'Accès refusé à ce carnet');
 	}
 
-	return json({ notebook });
+	return Response.json({ notebook });
 };
 
 /**
@@ -177,7 +177,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		throw error(500, 'Impossible de modifier le carnet');
 	}
 
-	return json({ notebook: data });
+	return Response.json({ notebook: data });
 };
 
 /**
@@ -226,5 +226,5 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 		throw error(500, 'Impossible de supprimer le carnet');
 	}
 
-	return json({ success: true, message: 'Carnet supprimé' });
+	return Response.json({ success: true, message: 'Carnet supprimé' });
 };

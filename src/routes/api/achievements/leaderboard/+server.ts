@@ -17,7 +17,7 @@
  * - Status 500: Server error
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { leaderboardQuerySchema } from '#lib/server/validation/achievements.ts';
 import {
@@ -67,7 +67,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		// Fetch leaderboard from service layer
 		const leaderboard = await getAchievementLeaderboard(supabase, validatedContext, limit);
 
-		return json({
+		return Response.json({
 			success: true,
 			leaderboard,
 			count: leaderboard.length

@@ -128,7 +128,7 @@
 	 * Clear entire cart with confirmation
 	 */
 	function handleClearCart() {
-		if (confirm('Êtes-vous sûr de vouloir vider votre panier ? Cette action est irréversible.')) {
+		if (confirm('Vider ta série ? Cette action est irréversible.')) {
 			questionCart.clearCart();
 		}
 	}
@@ -195,10 +195,10 @@
 	function resolveIncomingSeries(choice: 'replace' | 'add' | 'cancel') {
 		if (incomingSeries && choice === 'replace') {
 			questionCart.replaceWith(incomingSeries);
-			toaster.success('Série chargée dans ton panier');
+			toaster.success('Série chargée dans « Ma série »');
 		} else if (incomingSeries && choice === 'add') {
 			questionCart.mergeItems(incomingSeries);
-			toaster.success('Série ajoutée à ton panier');
+			toaster.success('Questions ajoutées à ta série');
 		}
 		incomingSeries = null;
 		incomingDialogOpen = false;
@@ -230,7 +230,7 @@
 		}
 		if (questionCart.totalItems === 0) {
 			questionCart.replaceWith(parsed.lines);
-			toaster.success('Série chargée dans ton panier');
+			toaster.success('Série chargée dans « Ma série »');
 			clearSoon();
 			return;
 		}
@@ -240,7 +240,7 @@
 </script>
 
 <svelte:head>
-	<title>Panier - Automaths | Chiphre</title>
+	<title>Ma série - Automaths | Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto max-w-6xl px-4 py-8">
@@ -251,7 +251,7 @@
 			<div>
 				<h1 class="flex items-center gap-3 text-3xl font-bold tracking-tight">
 					<ShoppingCart class="h-8 w-8" />
-					Mon Panier
+					Ma série
 				</h1>
 			</div>
 		</div>
@@ -259,7 +259,7 @@
 		{#if !isEmpty}
 			<Button variant="outline" onclick={handleClearCart}>
 				<Trash2 class="mr-2 h-4 w-4" />
-				Vider le panier
+				Vider ma série
 			</Button>
 		{/if}
 	</div>
@@ -270,7 +270,7 @@
 			class="mb-6 flex items-start gap-3 rounded-lg border border-destructive/50 bg-destructive/10 p-4 text-sm"
 		>
 			<AlertCircle class="mt-0.5 h-4 w-4 shrink-0 text-destructive" />
-			<p>{linkError} Ton panier n'a pas été modifié.</p>
+			<p>{linkError} Ta série n'a pas été modifiée.</p>
 		</div>
 	{/if}
 
@@ -280,9 +280,9 @@
 			<Card.Content class="flex min-h-96 items-center justify-center p-12">
 				<div class="text-center">
 					<ShoppingCart class="mx-auto mb-4 h-16 w-16 text-muted-foreground/50" />
-					<h2 class="text-xl font-semibold text-muted-foreground">Votre panier est vide</h2>
+					<h2 class="text-xl font-semibold text-muted-foreground">Ta série est vide</h2>
 					<p class="mt-2 text-sm text-muted-foreground">
-						Ajoutez des questions depuis la page Automaths pour commencer.
+						Ajoute des questions depuis la page Automaths pour commencer.
 					</p>
 					<Button onclick={handleBackToSelection} class="mt-6">
 						<ArrowLeft class="mr-2 h-4 w-4" />
@@ -371,8 +371,8 @@
 						<div>
 							<p class="font-semibold">Partager cette série</p>
 							<p class="text-xs text-muted-foreground">
-								Sans forme, le lien met la série dans le panier de qui l'ouvre ; avec une forme, il
-								la lance directement.
+								Sans forme, le lien met la série dans « Ma série » de qui l'ouvre ; avec une forme,
+								il la lance directement.
 							</p>
 						</div>
 						<SeriesLinkShare items={cartItems} canMakeQr={isTeacher} />
@@ -387,11 +387,11 @@
 <Dialog.Root bind:open={incomingDialogOpen} onOpenChange={handleIncomingOpenChange}>
 	<Dialog.Content class="max-w-md">
 		<Dialog.Header>
-			<Dialog.Title>Remplacer ton panier par cette série ?</Dialog.Title>
+			<Dialog.Title>Remplacer ta série par celle du lien ?</Dialog.Title>
 			<Dialog.Description>
 				{#if incomingSeries}
 					Ce lien contient {incomingSeries.length} modèle{incomingSeries.length > 1 ? 's' : ''}
-					de questions. Tu peux aussi les ajouter à ton panier actuel.
+					de questions. Tu peux aussi les ajouter à ta série actuelle.
 				{/if}
 			</Dialog.Description>
 		</Dialog.Header>

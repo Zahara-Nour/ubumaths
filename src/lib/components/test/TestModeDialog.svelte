@@ -133,7 +133,7 @@
 		<Dialog.Header>
 			<Dialog.Title>Choisissez un mode de test</Dialog.Title>
 			<Dialog.Description>
-				Cliquez sur une forme pour lancer la série avec les questions de votre panier.
+				Cliquez sur une forme pour lancer la série avec les questions de votre série.
 			</Dialog.Description>
 		</Dialog.Header>
 

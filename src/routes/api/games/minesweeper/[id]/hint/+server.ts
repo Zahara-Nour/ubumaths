@@ -1,5 +1,5 @@
 import type { RequestHandler } from './$types';
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import { z } from 'zod';
 import { requireRole } from '#lib/server/middleware/auth.ts';
 import { sanitizeRPCError, sanitizePostgresError } from '#lib/server/utils/error-handler.ts';
@@ -113,7 +113,7 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 		const result = useHintResultSchema.parse(data);
 
 		// Return success response with hint usage details
-		return json({
+		return Response.json({
 			success: result.success,
 			hints_used: result.hints_used,
 			hints_remaining: result.hints_remaining,

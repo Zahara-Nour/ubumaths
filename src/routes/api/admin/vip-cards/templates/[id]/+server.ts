@@ -9,7 +9,7 @@
  * Security: Admin only
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import { z } from 'zod';
 import type { RequestHandler } from './$types';
 import { requireAdmin } from '#lib/server/middleware/auth.ts';
@@ -108,7 +108,7 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 		}
 
 		// 7. Return updated template (convert snake_case to camelCase)
-		return json(templateToResponse(toVipCardTemplate(updated)));
+		return Response.json(templateToResponse(toVipCardTemplate(updated)));
 	} catch (err) {
 		logger.error('Error in PATCH /api/admin/vip-cards/templates/[id]:', err);
 
@@ -204,7 +204,7 @@ export const DELETE: RequestHandler = async ({ request, locals, params }) => {
 		}
 
 		// 6. Return success
-		return json({
+		return Response.json({
 			success: true,
 			message: `Modèle de carte VIP « ${templateId} » supprimé`
 		});

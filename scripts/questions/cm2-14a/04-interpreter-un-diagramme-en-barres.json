@@ -1,0 +1,378 @@
+{
+	"id": "aff8498b-3e20-4d2b-9ca9-ba5150a33d87",
+	"title": "Que dit le diagramme en barres ? (visiteurs du musée)",
+	"description": "Combien de visiteurs de plus un mois que le précédent (axe de 250), le mois du plus petit nombre de visiteurs (case choix, axe de 500), pendant combien de mois le musée a dépassé un seuil",
+	"grades": ["CM2"],
+	"level": 9,
+	"delay": 120,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Ce diagramme donne le nombre de visiteurs d'un musée, chaque mois.\n\n```barres\ntitre: Visiteurs du musée\naxes: Mois ; Visiteurs\nJanvier = {{a1}}\nFévrier = {{a2}}\nMars = {{a3}}\nAvril = {{a4}}\nMai = {{a5}}\naxe: 0 à 2500, de 250 en 250\n```\n\nCombien de visiteurs le musée a-t-il reçus de plus en {{if:k==0|février|{{if:k==1|mars|{{if:k==2|avril|mai}}}}}} qu'en {{if:k==0|janvier|{{if:k==1|février|{{if:k==2|mars|avril}}}}}} ?\n\n$?$ visiteurs de plus",
+			"variables": [
+				{
+					"name": "u1",
+					"expression": "1..10"
+				},
+				{
+					"name": "u2",
+					"expression": "1..10"
+				},
+				{
+					"name": "u3",
+					"expression": "1..10"
+				},
+				{
+					"name": "u4",
+					"expression": "1..10"
+				},
+				{
+					"name": "u5",
+					"expression": "1..10"
+				},
+				{
+					"name": "a1",
+					"expression": "eval:250*u1"
+				},
+				{
+					"name": "a2",
+					"expression": "eval:250*u2"
+				},
+				{
+					"name": "a3",
+					"expression": "eval:250*u3"
+				},
+				{
+					"name": "a4",
+					"expression": "eval:250*u4"
+				},
+				{
+					"name": "a5",
+					"expression": "eval:250*u5"
+				},
+				{
+					"name": "k",
+					"expression": "0..3"
+				},
+				{
+					"name": "x",
+					"expression": "eval:(a1)*((k-1)*(k-2)*(k-3))/(-6)+(a2)*((k-0)*(k-2)*(k-3))/(2)+(a3)*((k-0)*(k-1)*(k-3))/(-2)+(a4)*((k-0)*(k-1)*(k-2))/(6)"
+				},
+				{
+					"name": "y",
+					"expression": "eval:(a2)*((k-1)*(k-2)*(k-3))/(-6)+(a3)*((k-0)*(k-2)*(k-3))/(2)+(a4)*((k-0)*(k-1)*(k-3))/(-2)+(a5)*((k-0)*(k-1)*(k-2))/(6)"
+				},
+				{
+					"name": "d",
+					"expression": "eval:y-x"
+				}
+			],
+			"conditions": ["y > x"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'axe est gradué de $250$ en $250$.",
+					"On lit les deux barres : {{if:k==0|février|{{if:k==1|mars|{{if:k==2|avril|mai}}}}}} ${{y}}$ visiteurs, {{if:k==0|janvier|{{if:k==1|février|{{if:k==2|mars|avril}}}}}} ${{x}}$ visiteurs.",
+					"« Combien de plus » : l'écart, ${{y}} - {{x}} = \\textcolor{{{color:primary.0}}}{{{d}}}$ visiteurs."
+				]
+			}
+		},
+		{
+			"statement": "Ce diagramme donne le nombre de visiteurs d'un musée, chaque mois.\n\n```barres\ntitre: Visiteurs du musée\naxes: Mois ; Visiteurs\nJanvier = {{a1}}\nFévrier = {{a2}}\nMars = {{a3}}\nAvril = {{a4}}\nMai = {{a5}}\naxe: 0 à 5000, de 500 en 500\n```\n\nQuel mois le musée a-t-il reçu le moins de visiteurs ?\n\n```choix\nmelanger: non\n- Janvier\n- Février\n- Mars\n- Avril\n- Mai\n```",
+			"variables": [
+				{
+					"name": "u1",
+					"expression": "3..10"
+				},
+				{
+					"name": "u2",
+					"expression": "3..10"
+				},
+				{
+					"name": "u3",
+					"expression": "3..10"
+				},
+				{
+					"name": "u4",
+					"expression": "3..10"
+				},
+				{
+					"name": "u5",
+					"expression": "3..10"
+				},
+				{
+					"name": "c",
+					"expression": "1..2"
+				},
+				{
+					"name": "k",
+					"expression": "0..4"
+				},
+				{
+					"name": "a1",
+					"expression": "eval:(500*u1)+((500*c)-(500*u1))*((k-1)*(k-2)*(k-3)*(k-4))/(24)"
+				},
+				{
+					"name": "a2",
+					"expression": "eval:(500*u2)+((500*c)-(500*u2))*((k-0)*(k-2)*(k-3)*(k-4))/(-6)"
+				},
+				{
+					"name": "a3",
+					"expression": "eval:(500*u3)+((500*c)-(500*u3))*((k-0)*(k-1)*(k-3)*(k-4))/(4)"
+				},
+				{
+					"name": "a4",
+					"expression": "eval:(500*u4)+((500*c)-(500*u4))*((k-0)*(k-1)*(k-2)*(k-4))/(-6)"
+				},
+				{
+					"name": "a5",
+					"expression": "eval:(500*u5)+((500*c)-(500*u5))*((k-0)*(k-1)*(k-2)*(k-3))/(24)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le moins de visiteurs : la barre la plus basse.",
+					"C'est {{if:k==0|janvier|{{if:k==1|février|{{if:k==2|mars|{{if:k==3|avril|mai}}}}}}}}, avec ${{eval:500*c}}$ visiteurs."
+				]
+			}
+		},
+		{
+			"statement": "Ce diagramme donne le nombre de visiteurs d'un musée, de janvier à juin.\n\n```barres\ntitre: Visiteurs du musée\naxes: Mois ; Visiteurs\nJanvier = {{a1}}\nFévrier = {{a2}}\nMars = {{a3}}\nAvril = {{a4}}\nMai = {{a5}}\nJuin = {{a6}}\naxe: 0 à 1000, de 100 en 100\n```\n\nPendant combien de mois le musée a-t-il reçu plus de ${{eval:100*s}}$ visiteurs ?\n\n$?$ mois",
+			"variables": [
+				{
+					"name": "u1",
+					"expression": "1..10"
+				},
+				{
+					"name": "u2",
+					"expression": "1..10"
+				},
+				{
+					"name": "u3",
+					"expression": "1..10"
+				},
+				{
+					"name": "u4",
+					"expression": "1..10"
+				},
+				{
+					"name": "u5",
+					"expression": "1..10"
+				},
+				{
+					"name": "u6",
+					"expression": "1..10"
+				},
+				{
+					"name": "s",
+					"expression": "3..7"
+				},
+				{
+					"name": "a1",
+					"expression": "eval:100*u1"
+				},
+				{
+					"name": "a2",
+					"expression": "eval:100*u2"
+				},
+				{
+					"name": "a3",
+					"expression": "eval:100*u3"
+				},
+				{
+					"name": "a4",
+					"expression": "eval:100*u4"
+				},
+				{
+					"name": "a5",
+					"expression": "eval:100*u5"
+				},
+				{
+					"name": "a6",
+					"expression": "eval:100*u6"
+				},
+				{
+					"name": "n",
+					"expression": "eval:min(1,max(0,u1-s))+min(1,max(0,u2-s))+min(1,max(0,u3-s))+min(1,max(0,u4-s))+min(1,max(0,u5-s))+min(1,max(0,u6-s))"
+				}
+			],
+			"conditions": [
+				"(u1-s)*(u1-s) > 0",
+				"(u2-s)*(u2-s) > 0",
+				"(u3-s)*(u3-s) > 0",
+				"(u4-s)*(u4-s) > 0",
+				"(u5-s)*(u5-s) > 0",
+				"(u6-s)*(u6-s) > 0",
+				"n > 0",
+				"n < 6"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On repère le trait ${{eval:100*s}}$ sur l'axe, et on compte les barres qui le dépassent.",
+					"Il y en a $\\textcolor{{{color:primary.0}}}{{{n}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Mars − février : 2 250 − 1 750 = 500",
+			"variationIndex": 0,
+			"variables": {
+				"u1": "4",
+				"u2": "7",
+				"u3": "9",
+				"u4": "3",
+				"u5": "6",
+				"a1": "1000",
+				"a2": "1750",
+				"a3": "2250",
+				"a4": "750",
+				"a5": "1500",
+				"k": "1",
+				"x": "1750",
+				"y": "2250",
+				"d": "500"
+			},
+			"answers": ["500"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la somme (4 000)",
+			"variationIndex": 0,
+			"variables": {
+				"u1": "4",
+				"u2": "7",
+				"u3": "9",
+				"u4": "3",
+				"u5": "6",
+				"a1": "1000",
+				"a2": "1750",
+				"a3": "2250",
+				"a4": "750",
+				"a5": "1500",
+				"k": "1",
+				"x": "1750",
+				"y": "2250",
+				"d": "500"
+			},
+			"answers": ["4 000"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Le moins : avril (1 000)",
+			"variationIndex": 1,
+			"variables": {
+				"u1": "4",
+				"u2": "7",
+				"u3": "8",
+				"u4": "3",
+				"u5": "6",
+				"c": "2",
+				"k": "3",
+				"a1": "2000",
+				"a2": "3500",
+				"a3": "4000",
+				"a4": "1000",
+				"a5": "3000"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : janvier",
+			"variationIndex": 1,
+			"variables": {
+				"u1": "4",
+				"u2": "7",
+				"u3": "8",
+				"u4": "3",
+				"u5": "6",
+				"c": "2",
+				"k": "3",
+				"a1": "2000",
+				"a2": "3500",
+				"a3": "4000",
+				"a4": "1000",
+				"a5": "3000"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Plus de 500 : 6, 8, 9, 7 → 4 mois",
+			"variationIndex": 2,
+			"variables": {
+				"u1": "6",
+				"u2": "3",
+				"u3": "8",
+				"u4": "9",
+				"u5": "2",
+				"u6": "7",
+				"s": "5",
+				"a1": "600",
+				"a2": "300",
+				"a3": "800",
+				"a4": "900",
+				"a5": "200",
+				"a6": "700",
+				"n": "4"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : les mois en dessous (2)",
+			"variationIndex": 2,
+			"variables": {
+				"u1": "6",
+				"u2": "3",
+				"u3": "8",
+				"u4": "9",
+				"u5": "2",
+				"u6": "7",
+				"s": "5",
+				"a1": "600",
+				"a2": "300",
+				"a3": "800",
+				"a4": "900",
+				"a5": "200",
+				"a6": "700",
+				"n": "4"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

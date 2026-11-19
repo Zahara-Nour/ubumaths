@@ -16,7 +16,7 @@
  * - Only accesses files created by the app (drive.file scope)
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import {
 	GoogleNotConnectedError,
@@ -68,7 +68,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 
 		logger.info(`[Whiteboard Drive] Loaded file ${fileId} for teacher ${user.id}`);
 
-		return json({
+		return Response.json({
 			document: docValidation.document,
 			fileId,
 			name: metadata.name,

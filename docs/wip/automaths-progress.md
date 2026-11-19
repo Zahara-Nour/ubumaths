@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après #2854._
+_Mis à jour le 2026-11-19, après #2875._
 
-- **État** : PR 1 (#2842), PR 2 recherche (#2847) et PR 3a vue « Notions » (#2854) mergées. Rien en prod tant que David n'a pas fait `deploy:prod`.
-- **Prochaine action** : PR 3b vue « Programme » (points 8-13 de la phase 0 du 2026-11-18, lecture A : questions rattachées au point, sinon celles de son nœud), nouveau worktree `../ubumaths-wt-automaths`, branche `feat/automaths-programme`. Phase 0 déjà validée : coder directement (tests d'abord). Puis PR 4 « Ma série ».
-- **En attente de David** : rien (vérification manuelle #2854 notée dans `verifications-manuelles.md`).
-- **Pièges en cours** : `getByRole('navigation', { name: 'Notions' })` attrape « Sous-notions » → `exact: true` ; la page défile dans un conteneur interne (pas `window`) ; garde `block-css-vars` : un composant ne lit que les variables CSS qu'il déclare ; `curriculum_points.rubrique` = « Partie › Chapitre [› Automatismes] », lisible par `anon` (pas de migration) ; non mesuré : ~111 aperçus calculés d'un coup par la dernière pastille d'une grosse notion ; la tuile reste la flash-card ; un test qui rend la page vide `sessionStorage` ; carte asserte avec la fixture `data/relecture/entiers/139.json`.
-- **Worktree / branche** : aucun (celui de la PR 3a est supprimé).
+- **État** : les 4 PR du découpage sont mergées : 1 (#2842), 2 (#2847), 3a (#2854), 3b (#2866), 4 « Ma série » (#2875). Rien en prod tant que David n'a pas fait `deploy:prod` (pas de migration).
+- **Prochaine action** : retours de David sur #2866 et #2875 ; s'il n'y a rien, clore le chantier (recompter le découpage, verser le durable dans `docs/systeme/questions.md`, archiver ce journal). Laissés par la revue de #2875 : aperçu monté sous 1 280 px, panneau ouvert à la rotation, texte OpenAPI « panier ».
+- **En attente de David** : vérifications manuelles #2866 et #2875 (`verifications-manuelles.md`).
+- **Pièges en cours** : séparateur de `rubrique` = « > » en base ; liste servie sans `points` (cache Vercel d'avant le déploiement) → vue Notions seule ; banc de test : `overflow: hidden` sur html et body (pas de défilement sans le lever) ; élément `display: none` absent de `getByRole`.
+- **Worktree / branche** : `../ubumaths-wt-automaths` (5176, Serve 443 et 8443) et `../ubumaths-wt-automaths-serie` (5180, Serve 8444) gardés pour les tests de David ; ensuite arrêter les serveurs, `tailscale serve --https=443 off`, `--https=8444 off` (8443 : Supabase, partagé), `git worktree remove` les deux, `git branch -d feat/automaths-programme feat/automaths-ma-serie`.
 
 ### 2026-11-18 — recherche
 
@@ -116,3 +116,60 @@ Lecture des questions sous un point : **A** — les questions rattachées au poi
 ### 2026-11-18 — PR 3a mergée (#2854)
 
 - CI rouge au 1er passage : garde `block-css-vars` (variable `--catalogue-card-height` lue par la tuile, déclarée par la grille) → hauteur déclarée dans `QuestionPreviewCard` (`.tile`, `@media`). CI verte, mergée. Vérification manuelle notée.
+
+### 2026-11-19 — PR 3b vue « Programme », réalisation
+
+- Mesures prod (lecture seule) : séparateur de `rubrique` = « > » (pas « › ») ; formes « Partie > Chapitre », « Partie > Chapitre > Automatismes » (5e : 2 points), ou une seule partie (« La pensée informatique ») ; `display_order` = ordre du BO par niveau ; 2 529 points non archivés, tous avec un niveau. Liste des modèles : 1,8 Mo compressés (9,6 Mo bruts) ; les points ajoutent ~6 %.
+- API : `points` (id, name, grade, rubrique, display_order, node_id) + `templatePoints` (ids) remplacent `pointNames`, que le cache dérive ; une liste d'avant le déploiement (cache Vercel) garde ses `pointNames` et n'affiche pas la vue Programme.
+- `buildProgramme` (`catalogue-programme.ts`) ; `CatalogueNotionNav` → `CatalogueTreeNav` (deux étages génériques, partie sans chapitre = une entrée) ; `CatalogueProgrammeSections` ; page : bascule `aria-pressed`, snippet commun colonne / panneau, `?vue=` + `?chapitre=<slug>`.
+- Choix non écrits en phase 0 (à signaler à David) : questions venues du nœud signalées « Questions de « Fractions » » ; « Programme » listé en premier dans la bascule ; un ancien lien `?notion=` sans `vue` garde la vue Notions ; rattachées hors du filtre de niveau → repli sur le nœud.
+- Tests : `catalogue-programme.test.ts` (9), `catalogue-programme.svelte.test.ts` (12, rouges 11/12 sur l'ancienne page), API et cache adaptés ; 62 verts sur le dossier du catalogue.
+- Chrome (extension) refusait la page en dev : rendu non vu à l'œil.
+
+### 2026-11-19 — PR 3b, revue `code-reviewer` (Sonnet) : aucun bloquant
+
+À traiter à la reprise :
+
+- Écarté d'avance : « vue Notions affichée avant l'arrivée de la liste » — faux, la page montre « Chargement des questions… » tant que la liste n'est pas lue. Poids de l'API : déjà mesuré (+~6 % compressé).
+- Slug de chapitre vide (nom fait de symboles) ou doublon de casse/accents → garantir un id non vide et unique (repli sur l'indice) + test.
+- `CatalogueTreeNav` : une branche dont la seule notion porte son nom devient une entrée simple aussi dans la vue Notions — acceptable, le dire dans la PR.
+- Points sans niveau exclus de la recherche (aucun aujourd'hui) — le dire dans la PR.
+- Onglet ouvert avec l'ancien code + nouvelle API : recherche sans intitulés de points jusqu'au rechargement (fenêtre de déploiement seulement).
+
+### 2026-11-19 — PR 3b, suite
+
+- David valide les quatre choix de la réalisation (« Questions de « … » », « Programme » en premier, ancien lien `?notion=` → Notions, repli si les rattachées sont hors niveau).
+- Revue traitée : identifiant de chapitre jamais vide ni en double (partie devant, puis numéro ; test rouge puis vert). Les autres points sont dits dans la PR.
+- Lien de test tailnet : `https://serveur.tail99357e.ts.net/automaths?niveau=5` (Serve 443 → 5176, 8443 → 54321 ; le 10000 → 5175 est à une autre session, pas de `serve reset`).
+
+### 2026-11-19 — PR 3b mergée (#2866)
+
+- CI : conflit avec `main` (`json` → `Response.json` dans l'API) résolu par merge ; `deploy-prod.test.ts` en dépassement de délai (sans rapport), job relancé, vert. Mergée. Vérification manuelle notée.
+
+### 2026-11-19 — PR 4 « Ma série », phase 0 validée par David
+
+1. Aperçu « Ma série · 3 questions · environ 2 min 30 » : chaque question (titre, « ×4 » répétitions) avec une croix qui la retire ; durée totale = somme des répétitions × durée.
+2. Aucun réglage dans l'aperçu : durées, répétitions, PDF, lancement restent sur la page détaillée (« Ouvrir ma série »).
+3. Ordre d'ajout.
+4. Série vide : « Ta série est vide : ajoute des questions avec « Ajouter ». »
+5. Grand écran (≥ 1 280 px) : colonne à droite, collante, défile seule si longue ; plus de bouton rond.
+6. Tablette / petit ordinateur : bouton rond conservé → ouvre « Ma série » dans un panneau à droite (plus de changement de page).
+7. Téléphone : barre fine en bas « Ma série · 3 questions · 2 min 30 ▴ » → panneau du bas ; série vide → pas de barre.
+8. « Ma série » partout où l'on voyait « panier » (titre « Mon Panier », « Dans le panier : retirer », « Vider le panier ») ; l'adresse `/automaths/panier` ne change pas.
+
+### 2026-11-19 — PR 4, réalisation
+
+- `series-summary.ts` (`seriesTotalSeconds` avec `effectiveDelay`, `formatSeriesDuration`, `seriesQuestionCount`) ; « 3 questions » = nombre de modèles (comme l'exemple validé), répétitions sur chaque ligne.
+- `MySeriesPreview` (aperçu, croix, « Ouvrir ma série ») ; `MySeriesDock` (bouton rond `sm`–`xl`, barre `< sm`, deux panneaux) remplace `CartFloatingButton` (supprimé) ; colonne `xl` collante dans la page (conteneur élargi à 96rem en `xl`).
+- Point 8 : libellés « panier » visibles → « Ma série » (tuile « Ajouter » / « Dans ma série », page détaillée, « Retour à ma série » des formes, messages du panier, lien sans forme, prof). CONTEXT.md : « panier (à l'écran) » → **Ma série**.
+- Tests : `catalogue-ma-serie.svelte.test.ts` (12, rouges 12/12 avant le code), `series-summary.test.ts` (8) ; anciens tests adaptés (libellés ; bloc « bouton rond » déplacé).
+- Piège de test : un élément en `display: none` n'est pas dans l'arbre d'accessibilité → `getByRole(...).elements()` vide, pas `not.toBeVisible()` (qui attend l'élément et expire).
+
+### 2026-11-19 — PR 4, revue `code-reviewer` (Sonnet) : aucun bloquant
+
+- Corrigés : barre du téléphone avec marge `safe-area-inset-bottom` ; croix d'un titre à formule → nom neutre « Retirer la question n » ; retrait → focus sur la croix suivante, sinon le message « série vide », résumé en `aria-live` ; `Sheet.Description` (sr-only) dans les deux panneaux ; croix de 40 px ; colonne nommée par son titre (`aria-labelledby`). Test de la colonne collante qui défile pour de vrai (le banc met `overflow: hidden` sur html et body), rouge sans `sticky`.
+- Laissés : aperçu de la colonne monté aussi sous 1 280 px (`display: none`, coût non mesuré) ; panneau resté ouvert si l'écran change de taille (rotation) ; texte OpenAPI « Enregistre le panier comme série » (doc d'API, pas l'écran).
+
+### 2026-11-19 — PR 4 mergée (#2875)
+
+- CI verte au premier passage, mergée. Vérification manuelle notée.

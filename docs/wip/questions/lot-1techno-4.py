@@ -1,6 +1,6 @@
 """Écrit les modèles du lot 4 « algorithmique » de la 1re techno dans scripts/questions/1techno-4/.
 
-Phase 0 validée par David le 2026-11-18 (journal docs/wip/questions-1techno-progress.md, § 26).
+Phase 0 validée par David le 2026-11-18 (journal docs/archive/wip/questions-1techno-progress.md, § 26).
 Huit modèles en Python ; aucun jumeau en 1re générale (accord de questions-1gen) :
 
 - M1 simuler une loi de Bernoulli avec random() → 1TECHNO-003 ;

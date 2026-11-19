@@ -3,7 +3,7 @@
  * GET - Fetch assignments for a notebook (which classes it's shared with)
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '#lib/server/middleware/auth.ts';
 import { uuidSchema } from '#lib/server/validation/common.ts';
@@ -128,7 +128,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		};
 	});
 
-	return json({
+	return Response.json({
 		assignments: transformedAssignments
 	});
 };

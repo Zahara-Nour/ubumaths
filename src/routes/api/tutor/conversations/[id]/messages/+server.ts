@@ -5,7 +5,7 @@
  * DELETE: Clear all messages from a conversation
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
 import { getTutorMessagesQuerySchema } from '#lib/server/validation/chat.ts';
@@ -84,7 +84,7 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 		throw error(500, 'Erreur lors du chargement des messages');
 	}
 
-	return json({ messages: messages ?? [] });
+	return Response.json({ messages: messages ?? [] });
 };
 
 /**
@@ -144,5 +144,5 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 		// Messages are deleted, but metadata update failed - not critical
 	}
 
-	return json({ success: true });
+	return Response.json({ success: true });
 };

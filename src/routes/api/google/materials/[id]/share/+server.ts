@@ -25,7 +25,7 @@
  * - All input validated with Zod
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import { assertGoogleClassroomEnabled } from '#lib/server/google/feature-guard.ts';
 import type { RequestHandler } from './$types';
 import { requireRole } from '#lib/server/middleware/auth.ts';
@@ -133,7 +133,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 		throw error(500, 'Impossible de partager le support');
 	}
 
-	return json({ success: true, classesShared: classIds.length });
+	return Response.json({ success: true, classesShared: classIds.length });
 };
 
 /**
@@ -205,5 +205,5 @@ export const DELETE: RequestHandler = async ({ params, request, locals }) => {
 		throw error(500, 'Impossible de retirer le partage du support');
 	}
 
-	return json({ success: true, classesUnshared: classIds.length });
+	return Response.json({ success: true, classesUnshared: classIds.length });
 };

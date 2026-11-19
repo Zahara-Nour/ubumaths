@@ -18,7 +18,7 @@
  *   - context optional
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '#lib/server/middleware/auth.ts';
 import { requireConsent } from '#lib/server/middleware/consent.ts';
@@ -98,7 +98,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(400, errorMessage);
 	}
 
-	return json({
+	return Response.json({
 		success: true,
 		cardName: rpcResult.cardName,
 		instanceId: rpcResult.instanceId,

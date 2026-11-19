@@ -2,10 +2,10 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après l'étude des 9 propositions et l'ajout de la 10e._
+_Mis à jour le 2026-11-19 : la proposition 4 est devenue le chantier `lecture-facilitee`._
 
 - **État** : une autre plateforme d'exercices étudiée ; 9 propositions passées une par une avec David. **5 retenues** (2, 3, 4, 5, et 10 = course de chevaux en réseau, apportée par David), **3 gardées pour plus tard** (7, 8, 9), **2 mises de côté** (1, 6). Rien de codé.
-- **Prochaine action** : choisir avec David laquelle des 5 retenues ouvre un chantier (chacun = son worktree, sa phase 0 en français avant de coder).
+- **Prochaine action** : 4 ouverte le 2026-11-19 (chantier `lecture-facilitee`, avec l'étude d'une police de maths Luciole) ; restent 2, 3, 5, 10 : choisir avec David la suivante (chacun = son worktree, sa phase 0 en français avant de coder).
 - **En attente de David** : ce choix.
 - **Pièges en cours** : le bouton « Export PDF » de `/automaths/panier` n'est qu'une alerte « Fonctionnalité à venir » (`handleExportPDF`) : il n'existe aucun PDF de série.
 - **Worktree / branche** : aucun.
@@ -28,7 +28,7 @@ _Mis à jour le 2026-11-18, après l'étude des 9 propositions et l'ajout de la 
 - c) un son discret entre deux questions. **Pas de carton** (vérifier que le numéro de question est déjà affiché).
 - Les derniers réglages sont retenus dans le navigateur (rien en base).
 
-**4. « Lecture facilitée ».**
+**4. « Lecture facilitée ».** → chantier `lecture-facilitee` ouvert le 2026-11-19.
 
 - D'abord à l'écran, réglage de l'élève à côté de la taille du texte, gardé dans le navigateur : texte en **Luciole** + espacement des lettres et des lignes.
 - Les maths gardent la police KaTeX de Chiphre (rien renommé ni retiré).

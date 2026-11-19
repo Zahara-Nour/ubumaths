@@ -1,0 +1,466 @@
+{
+	"id": "9d601156-86e1-4b56-ac11-f6cbf96182b4",
+	"title": "Lis le diagramme en barres (axe de 100, 200 ou 500)",
+	"description": "Visiteurs d'un musée chaque mois : lire une barre sur un axe gradué de 100 en 100, de 500 en 500, une barre entre deux traits (axe de 200 en 200), puis le mois d'une barre donnée (case choix)",
+	"grades": ["CM2"],
+	"level": 8,
+	"delay": 90,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Ce diagramme donne le nombre de visiteurs d'un musée, chaque mois.\n\n```barres\ntitre: Visiteurs du musée\naxes: Mois ; Visiteurs\nJanvier = {{a1}}\nFévrier = {{a2}}\nMars = {{a3}}\nAvril = {{a4}}\nMai = {{a5}}\naxe: 0 à 1000, de 100 en 100\n```\n\nCombien de visiteurs le musée a-t-il reçus en {{if:k==0|janvier|{{if:k==1|février|{{if:k==2|mars|{{if:k==3|avril|mai}}}}}}}} ?\n\n$?$ visiteurs",
+			"variables": [
+				{
+					"name": "u1",
+					"expression": "1..10"
+				},
+				{
+					"name": "u2",
+					"expression": "1..10"
+				},
+				{
+					"name": "u3",
+					"expression": "1..10"
+				},
+				{
+					"name": "u4",
+					"expression": "1..10"
+				},
+				{
+					"name": "u5",
+					"expression": "1..10"
+				},
+				{
+					"name": "a1",
+					"expression": "eval:100*u1+0"
+				},
+				{
+					"name": "a2",
+					"expression": "eval:100*u2+0"
+				},
+				{
+					"name": "a3",
+					"expression": "eval:100*u3+0"
+				},
+				{
+					"name": "a4",
+					"expression": "eval:100*u4+0"
+				},
+				{
+					"name": "a5",
+					"expression": "eval:100*u5+0"
+				},
+				{
+					"name": "k",
+					"expression": "0..4"
+				},
+				{
+					"name": "n",
+					"expression": "eval:(a1)*((k-1)*(k-2)*(k-3)*(k-4))/(24)+(a2)*((k-0)*(k-2)*(k-3)*(k-4))/(-6)+(a3)*((k-0)*(k-1)*(k-3)*(k-4))/(4)+(a4)*((k-0)*(k-1)*(k-2)*(k-4))/(-6)+(a5)*((k-0)*(k-1)*(k-2)*(k-3))/(24)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche la barre « {{if:k==0|Janvier|{{if:k==1|Février|{{if:k==2|Mars|{{if:k==3|Avril|Mai}}}}}}}} », puis on suit son haut jusqu'à l'axe vertical.",
+					"L'axe est gradué de $100$ en $100$ : chaque trait compte pour $100$ visiteurs.",
+					"En {{if:k==0|janvier|{{if:k==1|février|{{if:k==2|mars|{{if:k==3|avril|mai}}}}}}}} : $\\textcolor{{{color:primary.0}}}{{{n}}}$ visiteurs."
+				]
+			}
+		},
+		{
+			"statement": "Ce diagramme donne le nombre de visiteurs d'un musée, chaque mois.\n\n```barres\ntitre: Visiteurs du musée\naxes: Mois ; Visiteurs\nJanvier = {{a1}}\nFévrier = {{a2}}\nMars = {{a3}}\nAvril = {{a4}}\nMai = {{a5}}\naxe: 0 à 5000, de 500 en 500\n```\n\nCombien de visiteurs le musée a-t-il reçus en {{if:k==0|janvier|{{if:k==1|février|{{if:k==2|mars|{{if:k==3|avril|mai}}}}}}}} ?\n\n$?$ visiteurs",
+			"variables": [
+				{
+					"name": "u1",
+					"expression": "1..10"
+				},
+				{
+					"name": "u2",
+					"expression": "1..10"
+				},
+				{
+					"name": "u3",
+					"expression": "1..10"
+				},
+				{
+					"name": "u4",
+					"expression": "1..10"
+				},
+				{
+					"name": "u5",
+					"expression": "1..10"
+				},
+				{
+					"name": "a1",
+					"expression": "eval:500*u1+0"
+				},
+				{
+					"name": "a2",
+					"expression": "eval:500*u2+0"
+				},
+				{
+					"name": "a3",
+					"expression": "eval:500*u3+0"
+				},
+				{
+					"name": "a4",
+					"expression": "eval:500*u4+0"
+				},
+				{
+					"name": "a5",
+					"expression": "eval:500*u5+0"
+				},
+				{
+					"name": "k",
+					"expression": "0..4"
+				},
+				{
+					"name": "n",
+					"expression": "eval:(a1)*((k-1)*(k-2)*(k-3)*(k-4))/(24)+(a2)*((k-0)*(k-2)*(k-3)*(k-4))/(-6)+(a3)*((k-0)*(k-1)*(k-3)*(k-4))/(4)+(a4)*((k-0)*(k-1)*(k-2)*(k-4))/(-6)+(a5)*((k-0)*(k-1)*(k-2)*(k-3))/(24)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche la barre « {{if:k==0|Janvier|{{if:k==1|Février|{{if:k==2|Mars|{{if:k==3|Avril|Mai}}}}}}}} », puis on suit son haut jusqu'à l'axe vertical.",
+					"L'axe est gradué de $500$ en $500$ : chaque trait compte pour $500$ visiteurs.",
+					"En {{if:k==0|janvier|{{if:k==1|février|{{if:k==2|mars|{{if:k==3|avril|mai}}}}}}}} : $\\textcolor{{{color:primary.0}}}{{{n}}}$ visiteurs."
+				]
+			}
+		},
+		{
+			"statement": "Ce diagramme donne le nombre de visiteurs d'un musée, chaque mois.\n\n```barres\ntitre: Visiteurs du musée\naxes: Mois ; Visiteurs\nJanvier = {{a1}}\nFévrier = {{a2}}\nMars = {{a3}}\nAvril = {{a4}}\nMai = {{a5}}\naxe: 0 à 2000, de 200 en 200\n```\n\nCombien de visiteurs le musée a-t-il reçus en {{if:k==0|janvier|{{if:k==1|février|{{if:k==2|mars|{{if:k==3|avril|mai}}}}}}}} ?\n\n$?$ visiteurs",
+			"variables": [
+				{
+					"name": "u1",
+					"expression": "0..9"
+				},
+				{
+					"name": "u2",
+					"expression": "0..9"
+				},
+				{
+					"name": "u3",
+					"expression": "0..9"
+				},
+				{
+					"name": "u4",
+					"expression": "0..9"
+				},
+				{
+					"name": "u5",
+					"expression": "0..9"
+				},
+				{
+					"name": "a1",
+					"expression": "eval:200*u1+100"
+				},
+				{
+					"name": "a2",
+					"expression": "eval:200*u2+100"
+				},
+				{
+					"name": "a3",
+					"expression": "eval:200*u3+100"
+				},
+				{
+					"name": "a4",
+					"expression": "eval:200*u4+100"
+				},
+				{
+					"name": "a5",
+					"expression": "eval:200*u5+100"
+				},
+				{
+					"name": "k",
+					"expression": "0..4"
+				},
+				{
+					"name": "n",
+					"expression": "eval:(a1)*((k-1)*(k-2)*(k-3)*(k-4))/(24)+(a2)*((k-0)*(k-2)*(k-3)*(k-4))/(-6)+(a3)*((k-0)*(k-1)*(k-3)*(k-4))/(4)+(a4)*((k-0)*(k-1)*(k-2)*(k-4))/(-6)+(a5)*((k-0)*(k-1)*(k-2)*(k-3))/(24)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche la barre « {{if:k==0|Janvier|{{if:k==1|Février|{{if:k==2|Mars|{{if:k==3|Avril|Mai}}}}}}}} », puis on suit son haut jusqu'à l'axe vertical.",
+					"L'axe est gradué de $200$ en $200$ ; le haut de la barre tombe au milieu, entre deux traits : la moitié de $200$, c'est $100$.",
+					"En {{if:k==0|janvier|{{if:k==1|février|{{if:k==2|mars|{{if:k==3|avril|mai}}}}}}}} : $\\textcolor{{{color:primary.0}}}{{{n}}}$ visiteurs."
+				]
+			}
+		},
+		{
+			"statement": "Ce diagramme donne le nombre de visiteurs d'un musée, chaque mois.\n\n```barres\ntitre: Visiteurs du musée\naxes: Mois ; Visiteurs\nJanvier = {{a1}}\nFévrier = {{a2}}\nMars = {{a3}}\nAvril = {{a4}}\nMai = {{a5}}\naxe: 0 à 1000, de 100 en 100\n```\n\nQuel mois le musée a-t-il reçu ${{n}}$ visiteurs ?\n\n```choix\nmelanger: non\n- Janvier\n- Février\n- Mars\n- Avril\n- Mai\n```",
+			"variables": [
+				{
+					"name": "h1",
+					"expression": "1..10"
+				},
+				{
+					"name": "h2",
+					"expression": "1..10"
+				},
+				{
+					"name": "h3",
+					"expression": "1..10"
+				},
+				{
+					"name": "h4",
+					"expression": "1..10"
+				},
+				{
+					"name": "h5",
+					"expression": "1..10"
+				},
+				{
+					"name": "w",
+					"expression": "1..10"
+				},
+				{
+					"name": "k",
+					"expression": "0..4"
+				},
+				{
+					"name": "a1",
+					"expression": "eval:(100*h1)+((100*w)-(100*h1))*((k-1)*(k-2)*(k-3)*(k-4))/(24)"
+				},
+				{
+					"name": "a2",
+					"expression": "eval:(100*h2)+((100*w)-(100*h2))*((k-0)*(k-2)*(k-3)*(k-4))/(-6)"
+				},
+				{
+					"name": "a3",
+					"expression": "eval:(100*h3)+((100*w)-(100*h3))*((k-0)*(k-1)*(k-3)*(k-4))/(4)"
+				},
+				{
+					"name": "a4",
+					"expression": "eval:(100*h4)+((100*w)-(100*h4))*((k-0)*(k-1)*(k-2)*(k-4))/(-6)"
+				},
+				{
+					"name": "a5",
+					"expression": "eval:(100*h5)+((100*w)-(100*h5))*((k-0)*(k-1)*(k-2)*(k-3))/(24)"
+				},
+				{
+					"name": "n",
+					"expression": "eval:100*w"
+				}
+			],
+			"conditions": [
+				"(h1-w)*(h1-w) > 0",
+				"(h2-w)*(h2-w) > 0",
+				"(h3-w)*(h3-w) > 0",
+				"(h4-w)*(h4-w) > 0",
+				"(h5-w)*(h5-w) > 0"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'axe est gradué de $100$ en $100$ : ${{n}}$, c'est le trait n° ${{w}}$. On cherche la barre dont le haut arrive à ce trait.",
+					"C'est {{if:k==0|janvier|{{if:k==1|février|{{if:k==2|mars|{{if:k==3|avril|mai}}}}}}}}."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "De 100 en 100 : mars, 900",
+			"variationIndex": 0,
+			"variables": {
+				"u1": "4",
+				"u2": "7",
+				"u3": "9",
+				"u4": "3",
+				"u5": "6",
+				"a1": "400",
+				"a2": "700",
+				"a3": "900",
+				"a4": "300",
+				"a5": "600",
+				"k": "2",
+				"n": "900"
+			},
+			"answers": ["900"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : les traits comptés (9)",
+			"variationIndex": 0,
+			"variables": {
+				"u1": "4",
+				"u2": "7",
+				"u3": "9",
+				"u4": "3",
+				"u5": "6",
+				"a1": "400",
+				"a2": "700",
+				"a3": "900",
+				"a4": "300",
+				"a5": "600",
+				"k": "2",
+				"n": "900"
+			},
+			"answers": ["9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "De 500 en 500 : février, 3 500",
+			"variationIndex": 1,
+			"variables": {
+				"u1": "4",
+				"u2": "7",
+				"u3": "9",
+				"u4": "3",
+				"u5": "6",
+				"a1": "2000",
+				"a2": "3500",
+				"a3": "4500",
+				"a4": "1500",
+				"a5": "3000",
+				"k": "1",
+				"n": "3500"
+			},
+			"answers": ["3 500"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : de 100 en 100 (700)",
+			"variationIndex": 1,
+			"variables": {
+				"u1": "4",
+				"u2": "7",
+				"u3": "9",
+				"u4": "3",
+				"u5": "6",
+				"a1": "2000",
+				"a2": "3500",
+				"a3": "4500",
+				"a4": "1500",
+				"a5": "3000",
+				"k": "1",
+				"n": "3500"
+			},
+			"answers": ["700"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Entre deux traits : janvier, 900",
+			"variationIndex": 2,
+			"variables": {
+				"u1": "4",
+				"u2": "7",
+				"u3": "9",
+				"u4": "3",
+				"u5": "6",
+				"a1": "900",
+				"a2": "1500",
+				"a3": "1900",
+				"a4": "700",
+				"a5": "1300",
+				"k": "0",
+				"n": "900"
+			},
+			"answers": ["900"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le trait du dessous (800)",
+			"variationIndex": 2,
+			"variables": {
+				"u1": "4",
+				"u2": "7",
+				"u3": "9",
+				"u4": "3",
+				"u5": "6",
+				"a1": "900",
+				"a2": "1500",
+				"a3": "1900",
+				"a4": "700",
+				"a5": "1300",
+				"k": "0",
+				"n": "900"
+			},
+			"answers": ["800"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "500 visiteurs : mai",
+			"variationIndex": 3,
+			"variables": {
+				"h1": "4",
+				"h2": "7",
+				"h3": "9",
+				"h4": "3",
+				"h5": "6",
+				"w": "5",
+				"k": "4",
+				"a1": "400",
+				"a2": "700",
+				"a3": "900",
+				"a4": "300",
+				"a5": "500",
+				"n": "500"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : avril",
+			"variationIndex": 3,
+			"variables": {
+				"h1": "4",
+				"h2": "7",
+				"h3": "9",
+				"h4": "3",
+				"h5": "6",
+				"w": "5",
+				"k": "4",
+				"a1": "400",
+				"a2": "700",
+				"a3": "900",
+				"a4": "300",
+				"a5": "500",
+				"n": "500"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

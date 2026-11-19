@@ -8,7 +8,7 @@
  * Security: Admin only
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAdmin } from '#lib/server/middleware/auth.ts';
 import type { VipCardConfig } from '#lib/types/vip-card-admin.ts';
@@ -86,7 +86,7 @@ export const PATCH: RequestHandler = async ({ locals, params }) => {
 		}
 
 		// 6. Return activated config (convert snake_case to camelCase)
-		return json(configToResponse(activated as VipCardConfig));
+		return Response.json(configToResponse(activated as VipCardConfig));
 	} catch (err) {
 		logger.error('Error in PATCH /api/admin/vip-cards/configs/[id]/activate:', err);
 

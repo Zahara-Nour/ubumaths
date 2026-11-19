@@ -97,9 +97,14 @@ les PR restaurent (`main` ne lance pas le Lint sur push).
 passe au parseur. SvelteKit y met `Date.now()` à chaque chargement ; ESLint compte la config dans
 l'empreinte de son cache, qui changeait donc à chaque lancement : les ~1 300 fichiers Svelte étaient
 relus à chaque fois, cache restauré ou non (Lint de la CI de version : 25 min le 2026-11-18). Une
-valeur qui varie d'un lancement à l'autre ne doit pas entrer dans la config ESLint. En CI, le cache de `main` n'est
-pourtant toujours pas repris d'un job à l'autre (cause inconnue au 2026-11-18, cf. journal
-`docs/wip/mises-a-jour-progress.md`) : `pnpm deploy:prod` attend jusqu'à 45 min la CI de version.
+valeur qui varie d'un lancement à l'autre ne doit pas entrer dans la config ESLint.
+
+**Cache ESLint et version de Node** : l'empreinte compte aussi la version exacte de Node
+(`process.version`). Avec `22` dans `.nvmrc`, chaque runner prenait le Node 22 de son image, et les
+images de GitHub ne changent pas toutes en même temps : 22.23.4 sur l'une, 22.23.5 sur l'autre, et
+tout l'arbre relu (nocturne du 2026-11-18 : 31 min, cache pourtant restauré). `.nvmrc` porte donc
+la version exacte, montée à la main (Dependabot ne la lit pas) ; la monter vide le cache une fois,
+jusqu'au nocturne suivant. `pnpm deploy:prod` attend jusqu'à 45 min la CI de version.
 
 **Variables d'environnement lues par l'appli : `src/env.ts`.** Depuis SvelteKit 3, `$app/env/*` (et
 `$env/*`, qui le réexporte) n'expose que les variables déclarées là (`defineEnvVars`) ; une
@@ -189,7 +194,7 @@ pour de vrai ; `EMAIL_CAPTURE_DIR` change le dossier. Base distante (worktree sa
 | `nightly-integration.yml`   | chaque nuit 02:17 UTC ; PR touchant la base ou ce qu'atteint la suite | `test:integration` contre un Supabase local ; job `paths-filter` qui vérifie que le filtre suit les imports. Jamais check obligatoire.                                                                                                                                                |
 | `nightly-pyodide.yml`       | chaque nuit 03:00 UTC ; manuel                                        | tests Pyodide réels (`*-real.svelte.test.ts`), exclus de la CI.                                                                                                                                                                                                                       |
 | `codeql.yml`                | push sur main hors doc ; lundi 04:00 UTC                              | analyse de sécurité `security-extended`. Pas sur les PR : il bloquait l'auto-merge sans être requis.                                                                                                                                                                                  |
-| `production-health.yml`     | chaque jour 06:00 UTC ; manuel                                        | appelle les pages publiques du sitemap (`scripts/check-production-health.ts`), ouvre / commente / referme l'issue « Pages publiques en échec ».                                                                                                                                       |
+| `production-health.yml`     | chaque jour 06:00 UTC ; manuel                                        | appelle les pages publiques du sitemap lu sur la branche `production`, celle qui est en ligne (`scripts/check-production-health.ts`), ouvre / commente / referme l'issue « Pages publiques en échec ».                                                                                |
 | `web-vitals.yml`            | le 1er du mois 06:00 UTC ; manuel                                     | relevé Speed Insights 28 j (`scripts/releve-web-vitals.ts`) publié en issue « Core Web Vitals — relevé AAAA-MM ».                                                                                                                                                                     |
 | `release.yml`               | push d'un tag `v*`                                                    | publie la GitHub Release, notes tirées du CHANGELOG.                                                                                                                                                                                                                                  |
 | `dependabot-auto-merge.yml` | PR de Dependabot (`pull_request_target`)                              | active l'auto-merge (merge commit) des montées patch et mineures ; les majeures restent à relire. Durci le 2026-10-11 : auteur de la PR et dépôt d'origine vérifiés, `fetch-metadata` épinglé par SHA.                                                                                |

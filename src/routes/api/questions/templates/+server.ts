@@ -8,7 +8,7 @@
  * POST /api/questions/templates - Create new template
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import type { QuestionTemplate } from '#lib/questions/types.ts';
 import { getQuestionType } from '#lib/questions/types.ts';
@@ -106,7 +106,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			'GET /api/questions/templates'
 		);
 
-		return json(validated);
+		return Response.json(validated);
 	} catch (err) {
 		logger.error('Error in GET /api/questions/templates:', err);
 
@@ -139,7 +139,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		const validation = validateRequest(createQuestionTemplateSchema, body);
 
 		if (!validation.success) {
-			return json(
+			return Response.json(
 				{
 					success: false,
 					errors: [validation.error]
@@ -161,7 +161,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				draft: true
 			});
 			if (countErrors.length > 0) {
-				return json({ success: false, errors: countErrors }, { status: 400 });
+				return Response.json({ success: false, errors: countErrors }, { status: 400 });
 			}
 		}
 
@@ -171,7 +171,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			const { type: _ignoredType, ...candidate } = templateData;
 			const errors = templatePublicationErrors(candidate as QuestionTemplate);
 			if (errors.length > 0) {
-				return json({ success: false, errors }, { status: 400 });
+				return Response.json({ success: false, errors }, { status: 400 });
 			}
 		}
 
@@ -207,7 +207,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			// Nœud refusé par la base (branche, archivé, inexistant) : faute de saisie, pas panne
 			const nodeMessage = classificationNodeErrorMessage(insertError);
 			if (nodeMessage) {
-				return json({ success: false, errors: [nodeMessage] }, { status: 400 });
+				return Response.json({ success: false, errors: [nodeMessage] }, { status: 400 });
 			}
 			logger.error('Error inserting template:', insertError);
 			throw error(500, 'Failed to create template');
@@ -223,7 +223,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			'POST /api/questions/templates'
 		);
 
-		return json(validated, { status: 201 });
+		return Response.json(validated, { status: 201 });
 	} catch (err) {
 		logger.error('Error in POST /api/questions/templates:', err);
 
@@ -231,7 +231,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			throw err;
 		}
 
-		return json({
+		return Response.json({
 			success: false,
 			errors: ['Internal server error']
 		});

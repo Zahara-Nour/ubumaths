@@ -19,7 +19,7 @@
  *   « Progression » d'une affectation de fiche — pas par cette route.
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '#lib/server/middleware/auth.ts';
 import type { ExerciseMasteryListResponse, MasteryStatus } from '#lib/types/exercise-mastery.ts';
@@ -52,7 +52,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			}))
 		};
 
-		return json(response);
+		return Response.json(response);
 	} catch (err) {
 		// Re-throw SvelteKit errors
 		if (err && typeof err === 'object' && 'status' in err) {

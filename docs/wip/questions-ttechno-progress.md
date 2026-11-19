@@ -5,17 +5,13 @@ Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) · bornes 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, lot 6 écrit (PR de fichiers ouverte)._
+_Mis à jour le 2026-11-19, après #2882._
 
-- **État** : lots 0 à 5a publiés ; lot 5b : L9 publiée, L7 et L8 en brouillon (relus, prêts) ; **lot 6 (fonction
-  inverse, 5 modèles I1–I5) écrit** (§ 45), PR des fichiers. Restent les lots 7 et 8 (§ 33).
-- **Prochaine action** : merge de la PR du lot 6, puis David lance `create-questions --dir
-scripts/questions/ttechno-6-inverse --publier` ; migration nœud + tag (045, 086 sur « définition et courbe »
-  96c8b0bd ; 049, 087 sur « variations et extremums » 2e77d4d9). Dès que #2839 est en prod : publier L7 et L8.
-- **En attente de David** : rien (le `deploy:prod` qui livre #2839 débloquera L7 et L8).
-- **Pièges en cours** : un point TTECHNO par modèle (trigger) ; tag = nœud DU POINT ; `publier-lot.ts`,
-  `create-questions --publier` visent la prod : David les lance (`!`) ; L7 et L8 après le `deploy:prod` de #2839.
-- **Worktree / branche** : `ubumaths-wt-questions-ttechno`, `feat/questions-ttechno-lot6`.
+- **État** : lots 0 à 7 publiés (sauf L7, L8 du 5b) ; lot 8 (loi binomiale, 7 modèles B1–B7) écrit, simulation verte, essayé en local (§ 55). Fichiers mergés (#2882).
+- **Prochaine action** : David lance `create-questions --dir scripts/questions/ttechno-8-loi-binomiale --publier` ; ensuite migration nœud + tag (gabarit lot 7 ; 057, 067, 090 sur la notion « Loi binomiale » 7f0932c3, 060 sur d78d5a6b, 061 sur 49cafc5f, 069 et 091 sur aa1217ed), page à cocher, publication.
+- **En attente de David** : le `deploy:prod` qui livre #2839 (L7, L8), s'il ne vient pas d'être fait (vérifier `production`).
+- **Pièges en cours** : `$` littéral (tableur) = `\$` ; un point TTECHNO par modèle (trigger) ; tag = nœud DU POINT ; `publier-lot.ts` et `create-questions --publier` visent la prod : David les lance (`!`), ids reportés à la main si besoin ; `p^floor(…)` refusé par eval (passer par une variable) ; Chrome refuse `[::1]` : serveur `--host 127.0.0.1`.
+- **Worktree / branche** : aucun (retiré après #2882) ; la migration se fera sur une nouvelle branche.
 
 ## 1. Périmètre
 
@@ -1041,3 +1037,207 @@ publication.
 - Base locale : 5 brouillons ; aperçu admin (Chrome, `[::1]:5179`) : I3 tableau ]0 ; 3] ‖ − 0 + et minimum 13 ;
   I5 tableau → courbes, 4 courbes sans points d'extrémité (fenêtre x ⩾ 0, plus de `sur […]`) ; I5 placer
   (b = −3) 5 points → juste ; I2 courbe de −2 − 3/x. Deux brouillons de sonde locaux supprimés.
+- **#2862 mergée (2026-11-19)**, CI verte.
+
+## 46. Lot 6 : prod, rangement et tags (2026-11-19)
+
+David a lancé `create-questions --publier` : 5 brouillons (a6fa11c8 I1, b34c8c9b I2, 912caf72 I3, bb7bcab6 I4,
+9d6896cc I5), vérifiés par MCP (`draft`, `{T_TECHNO}`, sans nœud ni tag) ; ids commités avec la migration.
+
+- Migration `20261119060317_questions_ttechno_lot6_rangement_tags` (gabarit lot 5b ; 045, 086 sur « Fonction
+  inverse > définition et courbe », 049 ×2 et 087 sur « Dérivation > variations et extremums »).
+- Test `tests/integration/questions-ttechno-lot6-rangement-tags.test.ts` : 9 verts ; corps retiré → 5 rouges ;
+  fichier restauré d'une copie, identique. `types:cliquet` tenu.
+- `security-auditor` : aucun finding (diff avec le lot 5b = en-tête, ids, chemins, codes, compte, table temporaire ;
+  doublon 049 sans effet sur gardes, vérification et rollback ; état prod conforme).
+- **#2868 mergée (2026-11-19)**, CI verte, `check:migrations --pr 2868` vert. `migration list --linked` : seule
+  `20261119060317` en attente → `db:migrate` depuis le dépôt principal (4 conditions). Prod vérifiée (MCP) : les 5 sur
+  leur nœud, un tag chacun, `draft`, `updated_at` inchangés. Worktree retiré.
+
+## 47. Lot 6 : page à cocher (2026-11-19)
+
+- Page à cocher : https://claude.ai/artifact/W3RrCufGJ6wqLqF3EgSM5q (5 fiches, 24 exemples ; aucune alerte ; nœuds
+  et points lus en base ; `verdicts` vide). Rendu à 390 px non vérifié (fenêtre de Chrome non réduite).
+
+## 48. Lot 6 : publication (2026-11-19)
+
+- Page à cocher relue : 5 verdicts sur 5 « ok », sans commentaire.
+- `publier-lot.ts --dir scripts/questions/ttechno-6-inverse` : simulation puis `--publier`, lancées par David (le
+  classifieur refuse aussi la simulation, qui lit la prod). Statut relu en base (MCP) : 5/5 `published`,
+  `{T_TECHNO}` (a6fa11c8, b34c8c9b, 912caf72, bb7bcab6, 9d6896cc).
+
+## 49. Lot 7 : phase 0, deux variables (2026-11-19)
+
+**Relevé prod (MCP, lecture seule)** :
+
+| Point              | Nœud (sous-notion)                                                  | Modèles rangés aujourd'hui                                                                                  |
+| ------------------ | ------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| 050, 051, 052, 088 | « changement de variable » (aed5064f, Statistique à deux variables) | 17f35a67 « z = ln(y) » (T_COMP) : ln et e hors programme STMG (Q3) → rien à taguer                          |
+| 053, 054           | « ajustement affine » (61aaeaa9, Statistique à deux variables)      | a573d517, 3fec6b41, 49fac266, ef8ade24 : droite donnée, interpréter, interpoler ; aucun Σ des carrés → rien |
+
+- Bornes : ajustements au jugé, droite de Mayer, moindres carrés, sans théorie (051) ; changements donnés (u², 1/t,
+  1/√n, log(y)) (052) ; Python ou tableur (053, 054) ; couples en nombre fini (054).
+- Outils : ` ```nuage ` avec `ajustement: z = 1/y` (ou `t = x²`, `√`, `ln`) et `nuage: z` (nuage transformé,
+  droite) ; **ni log décimal ni 1/√n** dans le bloc. ` ```courbe ` + `placer:` + `axes:` pour placer des points
+  (lot 6, I5). Python : forme des modèles du lot 2b (compléter une ligne, choix).
+
+**Proposition** (6 modèles neufs, un point chacun, `grades ['T_TECHNO']`, brouillons) :
+
+| #   | Modèle                                        | Point | Contenu (variations)                                                                                                                                     | Niv. |
+| --- | --------------------------------------------- | ----- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- |
+| D1  | Quel changement de variable redresse le nuage | 050   | nuage (x ; y) courbé ; nuages (x ; z) pour deux ou trois changements proposés (`nuage: z`) : lequel donne des points presque alignés (choix)             | 1    |
+| D2  | Représenter le nuage transformé               | 052   | tableau x, y : compléter t = x² (ou z = 1/y, z = log(y) avec y puissance de 10) ; placer les points transformés dans un repère (`placer:`, `axes:`)      | 1–2  |
+| D3  | Conjecturer une relation linéaire             | 088   | nuage transformé et tableau (u ; v) presque proportionnels ou affines : quelle relation semble lier les nouvelles variables (choix) ; coefficient (case) | 1–2  |
+| D4  | Ajustement par changement de variable         | 051   | z = 1/y (ou t = x², z = log(y)) et droite z = ax + b donnée ; droite de Mayer sur 4 à 6 points (deux points moyens) ; en déduire y ; estimer y pour x₀   | 2–3  |
+| D5  | Somme des carrés des écarts (Python, tableur) | 053   | 3 ou 4 points, a et b donnés : calculer Σ(yᵢ − (axᵢ + b))² (case) ; ligne Python de la boucle (choix) ; formule de tableur d'une colonne (choix)         | 2    |
+| D6  | Chercher le couple (a ; b) qui minimise       | 054   | tableau de S pour quelques couples : lequel garder (choix) ; deux couples à départager par le calcul (case) ; balayage Python : la ligne de comparaison  | 2    |
+
+Plages : 4 à 6 points ; valeurs transformées exactes (1/y décimal fini, x² entiers, log(y) avec y = 10ᵏ ou donné
+arrondi) ; a, b décimaux à un chiffre après la virgule.
+
+**Questions à David** :
+
+- **Q32 — log(y)** (l'exemple du BO) : le bloc ` ```nuage ` ne connaît que ln, carré, √, inverse. Je mets
+  z = log(y) **en texte seulement** (tableaux, calculs, sans tracé du bloc) et je note l'outil manquant
+  (« log et 1/√n dans ` ```nuage ` ») dans `outils-manquants.md` ? Reco : **oui**.
+- **Q33 — Droite de Mayer** (D4) : la faire calculer (deux points moyens, puis la droite), ou la donner comme les
+  calculatrices et ne faire que la suite (en déduire y, estimer) ? Reco : **les deux**, une variation chacune.
+- **Q34 — Python et tableur** (D5, D6) : une variation de chaque, comme M2 (lot 4) ? Reco : **oui**.
+- **Q35 — Découpage** : un seul lot de 6 modèles (une page à cocher) ? Reco : **oui**.
+- **Question d'accès** (migration de tags, après écriture) : brouillons, personne ne les voit ; publiés, ils
+  apparaissent au catalogue et au cahier de texte de Tle techno seulement. Personne ne perd rien.
+
+**Décisions (David, 2026-11-19, « je te suis »)** : **Q32** log(y) en texte seulement (y = 10ᵏ, sans tracé du bloc),
+outil manquant « log et 1/√n dans ` ```nuage ` » noté dans `outils-manquants.md` ; **Q33** droite de Mayer
+calculée ET donnée, une variation chacune (D4) ; **Q34** une variation Python et une tableur (D5, D6) ; **Q35** un
+seul lot de 6 modèles ; question d'accès : personne pour les brouillons, Tle techno à la publication.
+
+## 50. Lot 7 : écriture (2026-11-19)
+
+`docs/wip/questions/lot-ttechno-7.py` → `scripts/questions/ttechno-7-deux-variables/` (6 fichiers, 71 specs),
+`grades ['T_TECHNO']`, brouillons. Worktree `ubumaths-wt-questions-ttechno`, branche `feat/questions-ttechno-lot7`.
+
+- D1 (050) : trois nuages (x ; y), (t ; y), (x ; z), valeurs transformées calculées (`nuage` sans `ajustement:`) ;
+  y = ax² + b → t = x² ; y = 100/(ax + b) → z = 1/y ; log(y) affine → z = log(y). D2 (052) : compléter t = x²,
+  z = 1/y (décimaux finis), z = log(10ᵏ) ; placer 4 points (t ; y) (` ```courbe ` + `placer:` + `axes:`). D3 (088) :
+  y = kt (k), z = ax + b lu dans un tableau (a, b), conjecture « log(y) affine en x » (choix). D4 (051) : z = 1/y,
+  t = x², z = log(y) avec droite donnée (estimer y ; y = 10ᶻ exact) ; droite de Mayer (G₁, G₂, a et b entiers). D5
+  (053) : S sur 3 points ; ligne Python `(Y[i] - (a*X[i] + b))**2` ; formule de tableur à références absolues.
+  D6 (054) : couple de plus petite S (tableau) ; S₁, S₂ pour deux droites ; balayage Python `s < smin` ; `=MIN`.
+- Simulation `create-questions` verte contre la prod (aucun homonyme) ; `question:specs` 6 / 6 importables ;
+  `sonde-courbes` 0 problème ; sonde des ` ```nuage ` (script jetable, `parseStatChartContent`, 300 tirages) :
+  1 200 blocs, 0 problème ; 449 formules distinctes des aperçus : accolades et `validateLatex` 0 problème.
+- Vu en route : `$F$1` entre accents graves est lu comme une formule (rendu « 1 ») → `\$F\$1` sans accents
+  graves ; une réponse 1/2 pour 0,5 est `bad_form` (spec retirée).
+- Base locale : 6 brouillons ; aperçu admin (Chrome, `[::1]:5180`) : D1 trois nuages titrés ; D5 tableur
+  `$F$1` affiché, réponse juste ; D2 repère t / y à 4 points.
+- **#2874 mergée (2026-11-19)**, CI verte. Worktree retiré.
+
+## 51. Lot 7 : prod, rangement et tags (2026-11-19)
+
+David a lancé `create-questions --publier` : 6 brouillons (50bf587d D1, 007822c5 D2, 68ee10e5 D3, 80850db7 D4,
+f88cc70d D5, 43f1fd84 D6), vérifiés par MCP (`draft`, `{T_TECHNO}`, sans nœud ni tag). Le script ne les a pas écrits
+dans les fichiers du dépôt principal (lancé d'ailleurs) : ids reportés à la main dans
+`scripts/questions/ttechno-7-deux-variables/`, d'après les titres.
+
+- Migration `20261119100631_questions_ttechno_lot7_rangement_tags` (gabarit lot 6 ; 050, 051, 052, 088 sur
+  « Statistiques > Statistique à deux variables > changement de variable », 053 et 054 sur « … > ajustement
+  affine »).
+- Test `tests/integration/questions-ttechno-lot7-rangement-tags.test.ts` : 9 verts ; corps retiré → 5 rouges ;
+  fichier restauré d'une copie, identique. `types:cliquet` tenu.
+- `security-auditor` : aucun finding (diff avec le lot 6 = en-tête, ids, codes, chemins, table temporaire, compte ;
+  prod relue en lecture : 6 points non archivés sur les nœuds attendus, 6 brouillons sans nœud ni tag).
+- **#2876 mergée (2026-11-19)**, CI verte (conflit du journal avec main : la version de la branche le contenait), `check:migrations --pr 2876` vert. `migration list --linked` : seule `20261119100631` en attente → `db:migrate` depuis le dépôt principal (4 conditions). Prod vérifiée (MCP) : les 6 sur leur nœud, un tag chacun, `draft`, `updated_at` inchangés. Worktree retiré.
+
+## 52. Lot 7 : page à cocher (2026-11-19)
+
+- Page à cocher : https://claude.ai/artifact/NG5nfwbeMXwSwCNhTXuNS9 (6 fiches, 21 exemples ; nœuds et points lus en
+  base ; `verdicts` vide). Deux alertes attendues : bloc ` ```nuage ` non dessiné par la page (D1, D3), à jouer dans
+  l'aperçu. Rendu à 390 px non vérifié.
+
+## 53. Lot 7 : publication (2026-11-19)
+
+- Page à cocher relue : 6 verdicts sur 6 « ok », sans commentaire.
+- `publier-lot.ts --dir scripts/questions/ttechno-7-deux-variables` : simulation puis `--publier`, lancées par David.
+  Statut relu en base (MCP) : 6/6 `published`, `{T_TECHNO}` (50bf587d, 007822c5, 68ee10e5, 80850db7, f88cc70d,
+  43f1fd84).
+
+## 54. Lot 8 : phase 0, loi binomiale (2026-11-19)
+
+**Relevé prod (MCP, lecture seule)** :
+
+| Point         | Nœud                                                 | Modèles rangés aujourd'hui                                                                                                   |
+| ------------- | ---------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| 057, 067, 090 | notion « Probabilités > Loi binomiale » (7f0932c3)   | aucun sur la notion ; ses sous-notions portent déjà 089, 062, 063, 064, 065, 058 (un seul point TTECHNO par modèle) → rien   |
+| 060           | « Combinaisons > triangle de Pascal » (d78d5a6b)     | ef3c495c (relation et triangle, n jusqu'à 15 : « en partie », § 9), deux démonstrations, 96be181c (déjà 066) → rien à taguer |
+| 061           | « Combinaisons > coefficients binomiaux » (49cafc5f) | 4dcbae71 (n jusqu'à 40), 970dab52 (n jusqu'à 20) : « en partie », § 9 ; 7d9d9b81 (factorielles) ; 07ebdcbe (déjà 059) → rien |
+| 069, 091      | « Loi binomiale > espérance et variance » (aa1217ed) | dbee4649 (déjà 058), variance et démonstrations (hors bornes) → rien                                                         |
+
+- Bornes : coefficients au triangle pour n ⩽ 10, pas de factorielle ; espérance admise, pas de variance ; 066, 067,
+  068, 069, 090, 091 « Python ou tableur ».
+- Outils : ` ```loi ` `X ~ B(n ; p)` + `diagramme: oui` (bâtons, n ⩽ 29) ; ` ```simulation ` `X ~ B(n ; p)` en mode
+  `tirages` (tableau des effectifs observés à côté des probabilités) et `moyenne` (courbe des moyennes et droite
+  E(X) = np), `graine:` fixe ; ` ```courbe ` + `placer:` + `axes:` ; Python et tableur sous la forme du lot 2b.
+
+**Proposition** (7 modèles neufs, un point chacun, `grades ['T_TECHNO']`, brouillons) :
+
+| #   | Modèle                                      | Point | Contenu (variations)                                                                                                                                                                                                                                 | Niv. |
+| --- | ------------------------------------------- | ----- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- |
+| B1  | La loi binomiale B(n ; p)                   | 057   | situation (n épreuves, succès p) : ce que compte X (choix) ; valeurs prises, de 0 à n (case) ; traduire « exactement 2 », « au moins un », « aucun » (choix)                                                                                         | 1    |
+| B2  | Triangle de Pascal                          | 060   | compléter la ligne suivante d'une ligne donnée (n ⩽ 10) ; relation de Pascal sur deux coefficients donnés ; repérer le nombre faux d'une ligne (choix)                                                                                               | 1–2  |
+| B3  | Coefficients binomiaux au triangle (n ⩽ 10) | 061   | triangle donné jusqu'à n : lire un coefficient ; construire jusqu'à n = 6 puis lire ; valeurs (n ; 0), (n ; 1), (n ; n) et symétrie, n ⩽ 10                                                                                                          | 1–2  |
+| B4  | Diagramme en bâtons de B(n ; p)             | 067   | ` ```loi ` en bâtons : valeur la plus probable ; comparer deux bâtons ; quel diagramme pour p = 0,2 / 0,5 / 0,8 (choix) ; Python : ligne de la hauteur                                                                                               | 2    |
+| B5  | Simulation et loi binomiale                 | 090   | ` ```simulation ` de N échantillons de taille n (graine fixe) à côté de la loi : ce que compte la simulation, quel tableau est la loi, la fréquence observée de k est proche de quelle probabilité (choix) ; Python : compter les 1 d'un échantillon | 2    |
+| B6  | Représenter l'espérance quand n ou p varie  | 069   | placer les points (n ; np) pour n = 1 à 5, p fixé, puis (p ; np), n fixé (`placer:`) ; ils sont alignés sur une droite passant par l'origine, de coefficient p (ou n) (choix) ; tableur : formule de la colonne E                                    | 2    |
+| B7  | Espérance : le lien avec np                 | 091   | loi de B(3 ou 4 ; p) donnée : calculer Σ k·P(X = k) (case) et comparer à np ; ` ```simulation ` en mode `moyenne` : vers quelle valeur va la moyenne (case) ; Python : la boucle `E = E + k*P[k]`                                                    | 2    |
+
+Plages : coefficients n ⩽ 10 ; diagrammes et simulations n de 5 à 20 (l'élève ne calcule rien, le bloc le fait) ;
+p à un chiffre après la virgule ; calcul exact de Σ k·P(X = k) seulement pour n ⩽ 4 et p ∈ {0,5 ; 0,2 ; 0,1}.
+
+**Questions à David** :
+
+- **Q36 — 057 (« Loi binomiale B(n ; p) »)** : le point est un simple titre du BO. Je fais un modèle de définition
+  (B1 : ce que compte X, ses valeurs, traduire « au moins un » en {X ⩾ 1}), sans refaire 062 (reconnaître) ni 089
+  (paramètres) ? Reco : **oui**.
+- **Q37 — 060 et 061** : les modèles de Tle spé (ef3c495c, 4dcbae71, 970dab52) vont jusqu'à n = 40. J'écris deux
+  modèles neufs limités à n ⩽ 10 (B2, B3), sans toucher aux originaux, comme pour les autres jumeaux ? Reco : **oui**.
+- **Q38 — Simulation (B5, B7)** : le bloc tire au hasard, mais avec une graine fixe le tirage est toujours le même.
+  Je ne pose que des questions dont la réponse ne dépend pas du tirage (par exemple : « la moyenne semble se
+  rapprocher de quelle valeur ? » → np), ou je fixe les effectifs observés à la main dans le modèle (tableau en dur) ?
+  Reco : **le bloc avec graine fixe, et des questions qui ne dépendent pas du tirage**.
+- **Q39 — Python / tableur** : une variation Python ou tableur dans B4, B5, B6, B7 (le BO le demande pour ces
+  points) ? Reco : **oui** (B4, B5, B7 en Python ; B6 en tableur).
+- **Q40 — Découpage** : un seul lot de 7 modèles, une page à cocher ? Reco : **oui**.
+- **Question d'accès** (migration de tags, après écriture) : personne ne voit les brouillons ; une fois publiés, ils
+  apparaissent au catalogue et au cahier de texte de Tle techno seulement. Personne ne perd rien.
+
+**Décisions (David, 2026-11-19, « je suis tes recos »)** : **Q36** B1 modèle de définition (ni 062 ni 089) ; **Q37**
+B2, B3 neufs, n ⩽ 10, originaux intacts ; **Q38** ` ```simulation ` à graine fixe, questions indépendantes du
+tirage ; **Q39** Python dans B4, B5, B7, tableur dans B6 ; **Q40** un seul lot de 7 ; question d'accès : personne
+pour les brouillons, Tle techno à la publication.
+
+## 55. Lot 8 : écriture (2026-11-19)
+
+`docs/wip/questions/lot-ttechno-8.py` → `scripts/questions/ttechno-8-loi-binomiale/` (7 fichiers, 88 specs),
+`grades ['T_TECHNO']`, brouillons. Worktree `ubumaths-wt-questions-ttechno`, branche `feat/questions-ttechno-lot8`.
+
+- B1 (057) : pièces défectueuses, X ~ B(n ; p) : valeurs 0 à n (choix), « au moins une » → {X ⩾ 1}, « toutes en bon
+  état » → {X = 0}, plus grande valeur et nombre de valeurs (n, n + 1). B2 (060) : ligne n (5 à 9) donnée, trois
+  coefficients de la ligne n + 1 ; relation de Pascal sur deux coefficients donnés ; la relation (choix). B3 (061) :
+  triangle donné jusqu'à n = 8, lire C(n ; k) ; C(9 ou 10 ; 2 à 4) en construisant le triangle ; symétrie, C(n ; 0),
+  C(n ; 1) pour n ⩽ 10. B4 (067) : ` ```barres ` de B(10 ; p) en % (sans tableau) : valeur la plus probable ;
+  p = 0,2 / 0,5 / 0,8 d'après la forme ; Python `C[k] * p**k * (1-p)**(10-k)`. B5 (090) : ` ```simulation ` de N
+  échantillons (graine 1 à 30) : la loi du nombre de 1, fréquences → probabilités quand N grandit, `random() < p`.
+  B6 (069) : placer (n ; np) pour n = 10 à 50, p ∈ {0,1 ; … ; 0,4} ; droite par l'origine de coefficient p
+  (choix) ; n fixé : coefficient n, espérance pour p donné ; tableur `=A2*\$D\$1`. B7 (091) : ` ```loi `
+  B(3 ou 4 ; 0,1 / 0,2 / 0,5), `arrondi: 4` (probabilités exactes) : Σ k·P(X = k) et np ; ` ```simulation ` en
+  mode `moyenne` (n ⩽ 25) : la moyenne se rapproche de n × p ; Python `s + k*L[k]`.
+- Simulation `create-questions` verte contre la prod (aucun homonyme) ; `question:specs` 7 / 7 importables ;
+  `sonde-courbes` 0 problème ; sonde jetable des ` ```barres ` / ` ```loi ` / ` ```simulation ` (300 tirages) :
+  633 blocs, 0 problème ; 611 formules distinctes : accolades et `validateLatex` 0 problème.
+- Vu en route : `p^floor(11*p)` refusé par eval (« Expected exponent ») → variable `m` ; une simulation de B(n ; p)
+  est bornée à n ⩽ 29 (B7 : n = 30 retiré) ; ` ```barres ` refuse un effectif décimal → probabilités en %.
+- Base locale : 7 brouillons ; aperçu admin (Chrome, `127.0.0.1:5182`) : B4 bâtons et corrigé, B5 tableau
+  effectif / fréquence / probabilité, B6 5 points placés jugés justes, B7 courbe des moyennes et droite de
+  l'espérance, Python.
+- **#2882 mergée (2026-11-19)**, CI verte. Worktree retiré.

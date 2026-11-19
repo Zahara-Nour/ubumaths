@@ -14,7 +14,7 @@
  * }
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '#lib/server/middleware/auth.ts';
 import { changeStudentPalotin } from '#lib/server/buddy-queries.ts';
@@ -55,7 +55,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 			case 'conflict':
 				throw error(409, 'Palotin modifié entre-temps, réessaie');
 			case 'changed':
-				return json({ buddy: result.buddy, cost: result.cost });
+				return Response.json({ buddy: result.buddy, cost: result.cost });
 		}
 	} catch (err) {
 		if (err && typeof err === 'object' && 'status' in err) throw err;

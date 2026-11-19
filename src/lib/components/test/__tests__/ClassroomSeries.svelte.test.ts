@@ -263,10 +263,10 @@ describe('ClassroomSeries — fin de série', () => {
 		expect(text(container, 'classroom-position')).toBe('Question 1 / 2');
 	});
 
-	it('« Retour au panier » appelle onBack', async () => {
+	it('« Retour à ma série » appelle onBack', async () => {
 		const { container, onBack } = await openFinished();
 
-		click(container, 'Retour au panier');
+		click(container, 'Retour à ma série');
 		expect(onBack).toHaveBeenCalledTimes(1);
 	});
 

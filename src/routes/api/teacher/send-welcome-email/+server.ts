@@ -32,7 +32,7 @@
  * 8. Return success/error
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
 import { requireRole } from '#lib/server/middleware/auth.ts';
@@ -132,7 +132,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		`[Send Welcome Email] Email sent successfully to student ${student.id} by teacher ${user.id}`
 	);
 
-	return json({
+	return Response.json({
 		success: true,
 		message: 'Email de bienvenue envoye avec succes !',
 		messageId: result.messageId

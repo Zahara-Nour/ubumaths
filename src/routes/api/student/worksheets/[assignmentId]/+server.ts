@@ -41,7 +41,7 @@
  */
 
 import { exerciseCapitalPairs } from '#lib/questions/capital-pairs.ts';
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '#lib/server/middleware/auth.ts';
 import { resolveAssignmentAccess } from '#lib/server/worksheets/assignment-access.ts';
@@ -407,7 +407,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			'GET /api/student/worksheets/[assignmentId]'
 		);
 
-		return json(validated);
+		return Response.json(validated);
 	} catch (err) {
 		// Re-throw SvelteKit errors
 		if (err && typeof err === 'object' && 'status' in err) {

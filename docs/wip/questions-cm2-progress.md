@@ -6,21 +6,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, PR des fichiers du lot 12 ouverte._
+_Mis à jour le 2026-11-19, après #2885 (lot 14a rangé)._
 
-- **État** : lots 0 à 11b publiés. Lot 12 (suites et motifs, § 19) : 5 fichiers écrits, vérifiés, essayés en base
-  locale (§ 19.2) ; PR des fichiers ouverte. « d'allumettes » corrigé dans 5 modèles publiés : #2860 mergée, écriture
-  en prod à lancer par David (§ 19.2).
-- **Prochaine action** : PR des fichiers mergée → David lance `create-questions --dir scripts/questions/cm2-12 --publier`
-  (brouillons) ; ids commités ; migration de rangement et tags (gabarit du lot 11b) ; page à cocher.
-- **En attente de David** : `pnpm tsx scripts/update-published-questions.ts --lot motifs-allumettes --publier` ; stash
-  « cm2-9 ids » du dépôt principal, à supprimer.
-- **Pièges en cours** : `Doc-inchangée:` dans un COMMIT ; sujet de commit en minuscule. `migration:horodatage` = heure
-  réelle UTC ; une autre migration en attente → stop avant `db:migrate`. `db:migrate` depuis le worktree : copier
-  `supabase/.temp/{project-ref,linked-project.json,pooler-url,postgres-version}` du dépôt principal (ignorés par git).
-  `create-questions` / `publier-lot` peuvent être refusés par le classifieur : David les lance (`!`). Port 5179 pris par
-  le worktree `questions-ttechno` : serveur d'essai sur 5186.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, `feat/questions-cm2-lot12-fichiers`.
+- **État** : lots 0 à 13 publiés ; lot 14a (6 modèles, § 21) en brouillon en prod, rangé et tagué (§ 21.4), page à
+  cocher publiée. Restent les lots 14b à 19 du § 14 (15 sans 109, 18 sans 087 ni 094 : § 21.1 ; 19 réduit à CM2-102).
+- **Prochaine action** : lire les verdicts de la page à cocher (https://claude.ai/artifact/UueCSUdzRztFPHQS6V3h6g) ;
+  tout OK → `publier-lot` en simulation, puis David lance `--publier`. Ensuite phase 0 du lot 14b.
+- **En attente de David** : la relecture du lot 14a.
+- **Pièges en cours** : `Doc-inchangée:` dans un COMMIT ; sujet de commit en minuscule, corps ≤ 100 caractères par ligne.
+  `migration:horodatage` = heure réelle UTC ; une autre migration en attente → stop avant `db:migrate` (worktree remis
+  sur `origin/main` d'abord). `db:migrate` depuis le worktree : `supabase/.temp` copié. `create-questions` /
+  `publier-lot` refusés au classifieur : David les lance (`!`). Port 5179 pris par `questions-ttechno` : serveur
+  d'essai sur 5186. `de` + `{{if}}` ne s'élide pas. Une spec qui recalcule une donnée par la formule du modèle ne la
+  vérifie pas : contrôler l'invariant (§ 21.3). La page à cocher ne dessine pas ` ```circulaire ` (§ 21.4).
+- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, détaché sur `origin/main` ; 7 fichiers
+  `scripts/questions/ttechno-8-loi-binomiale/` modifiés dedans, pas à ce chantier (à signaler, ne pas toucher).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -1366,3 +1366,228 @@ Tableau du § 19 gardé.
 - Base locale (copie du dossier dans le scratchpad, `.env.local`, sous `with-db-lock.sh`) : 5 brouillons ; aperçu admin à
   390 px (Playwright, port 5186) : croix de jetons d'abord collées entre étapes (bras bout à bout) → étapes écartées ; les
   6 motifs lisibles, case « choix » A à D, nombres groupés (9 519), aucun débordement, 0 erreur console.
+
+### 19.3 Lot 12 : prod, rangement, page à cocher (2026-11-19)
+
+- David lance `update-published-questions --lot motifs-allumettes --publier` : MCP, les 5 modèles sans « de allumettes »,
+  toujours `published`. Puis `create-questions --dir scripts/questions/cm2-12 --publier` : 5 brouillons [CM2], niveau 1,
+  sans nœud ni tag (`4d75350c`, `1b122322`, `4baa1364`, `6223743f`, `3ffa86cd`), ids commités.
+- Migration `20261119054950_questions_cm2_lot12_rangement_tags.sql`, dérivée de celle du lot 11b par substitution (aucun
+  reste). Test `questions-cm2-lot12-rangement-tags` : 9 verts ; corps remplacé par `select 1;` → 5 rouges ; fichier
+  restauré (`cmp`). `security-auditor` : aucun finding bloquant (non bloquant : aucun test ne contrôle les 5 modèles
+  CM1 / 6e du même nœud, intouchés par construction).
+- #2865 : CI verte, `check:migrations` vert, mergée. Prod portait `20261119052352` (lot 6 de `questions-1techno`, sur
+  `main`) : worktree remis sur `origin/main`, `migration list --linked` → seule la nôtre en attente ; `db:migrate`. MCP :
+  5 brouillons sur « suites de motifs », un tag chacun (068 ×2, 069, 070 ×2), `updated_at` = création.
+- `garde-niveaux-tags` : aucun niveau manquant. Page à cocher (5 fiches, aucune alerte, base prod) :
+  https://claude.ai/artifact/1v98tpiPCLMLkMkA9nQeS8 ; `verdicts` vide au départ.
+
+### 19.4 Lot 19 réduit par le chantier `questions-cm1` (2026-11-19)
+
+Message de la session `questions-cm1` : son lot 8e a tagué CM2-098 et 099 (vérifié au MCP : 1 modèle publié chacun) ; son
+lot 8f (décidé par David le 2026-11-18, § 25 bis de `questions-cm1-progress.md`, `scripts/questions/cm1-8f/`, branche
+`feat/questions-cm1-lot8f`) écrit 7 modèles CM1 et CM2, tagués aussi CM2-100, 101, 103, 104, 105 (0 modèle en prod au
+2026-11-19). **Notre lot 19 se réduit à CM2-102 (patron du pavé)** ; ne pas écrire les autres en double. À la phase 0 du
+lot 19 : revérifier au MCP que le lot 8f est bien tagué.
+
+### 19.5 Lot 12 : relecture, publication (2026-11-19)
+
+- Page à cocher : 5 verdicts « OK », sans commentaire ; les 5 ids concordent avec `scripts/questions/cm2-12/*.json`.
+- David lance `publier-lot --dir scripts/questions/cm2-12` (simulation puis `--publier`). MCP : 5/5 `published`, [CM2],
+  sur « suites de motifs », un tag chacun (068 ×2, 069, 070 ×2). **Lot 12 clos.**
+
+## 20. Lot 13 — aires (071, 072, 073, 074, 075, 120) : phase 0 (proposée le 2026-11-19)
+
+Relevé MCP du 2026-11-19 (sous-notions de Grandeurs et mesures > Aires) :
+
+- **CM2-071 et CM2-072 sont déjà couverts** depuis le § 14 par deux modèles publiés **CM1 + CM2** (chantier
+  `questions-cm1`), sur « aires sur quadrillage » : `d623374d` « Comparer les aires de deux figures » (niveau 1, 3
+  variations, dont « le plus long tour a-t-il la plus grande aire ? ») et `31d64c00` « Aire en carreaux » (niveau 2,
+  3 variations, demi-carreaux et autre unité « u »). **Aucun n'encadre une aire**, alors que la borne de 072 le demande
+  (« carreaux entiers et demi-carreaux ; encadrement », Exemples de réussite CM2 p. 16).
+- 073, 074, 075, 120 : aucun modèle CM2. Voisins : « unités et conversions », `614048c9` CM1 (aire en cm² sur
+  quadrillage, niveau 1), `82748db8` 6e (conversions m² ↔ dm² ↔ cm², niveau 1, corrigé par tableau à deux colonnes par
+  unité), `f628c809` 5e (niveau 1) ; « carré », `01e205ed` 6e (aire, niveau 1), `9f33998e` 6e (côté, niveau 2) ;
+  « rectangle », `fdd849f5` 6e (aire, niveau 1), `059e3fc9` 6e (largeur, niveau 2). Les modèles de 6e tirent aussi mm²,
+  dam², hm², hors CM2.
+
+Bornes (`cycle3.json`) : 073, cm², dm², m² seulement (BO) ; 074, conversions entre m², dm², cm² (« 3,7 dm² en cm² ») ;
+075 et 120, côtés entiers en cm, formule connue.
+
+| #    | Point   | Sous-notion, niveau             | Modèle                              | Variations, plages                                                                                                                                                                                                                                                            |
+| ---- | ------- | ------------------------------- | ----------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 13-1 | CM2-073 | unités et conversions, voir (a) | Choisir l'unité d'aire              | Case « choix » cm² / dm² / m² : V1 « l'aire d'un timbre / d'une feuille de cahier / d'une salle de classe se mesure en… » ; V2 « l'aire de ce terrain est 420 … » (nombre donné, l'unité à choisir) ; V3 inverse, la mesure plausible parmi « 6 cm² », « 6 dm² », « 6 m² »    |
+| 13-2 | CM2-074 | unités et conversions, (a)      | Convertir des aires                 | V1 m² → dm² ou dm² → cm² (× 100, entiers) ; V2 cm² → dm² ou dm² → m² (: 100, résultat entier ou décimal) ; V3 décimal vers l'unité plus petite (« 3,7 dm² = ? cm² ») ; V4 deux sauts m² ↔ cm², voir (c) ; corrigé par le tableau à deux colonnes par unité (comme `82748db8`) |
+| 13-3 | CM2-075 | carré, (a)                      | Aire d'un carré                     | V1 côté donné en texte, de 2 à 12 cm ; V2 carré dessiné sur fond blanc, côté coté ; V3 petit problème (« un carreau carré de 9 cm de côté »), voir (d) ; réponse en cm², l'unité après la case                                                                                |
+| 13-4 | CM2-120 | rectangle, (a)                  | Aire d'un rectangle                 | V1 longueur de 3 à 15 cm, largeur de 2 à 9 cm (L > l) ; V2 rectangle dessiné, côtés cotés ; V3 petit problème (« une étiquette de 8 cm sur 5 cm ») ; réponse en cm²                                                                                                           |
+| 13-5 | CM2-072 | aires sur quadrillage, (b)      | Encadrer l'aire d'une figure courbe | Figure à bord courbe (disque, ovale, tache) sur quadrillage : deux cases, « au moins … carreaux » (carreaux entièrement dedans) et « au plus … carreaux » (carreaux touchés) ; comptes calculés par le générateur                                                             |
+
+Erreurs typiques en `testSpecs` : 13-3, 4 × c (le périmètre) ou c + c ; 13-4, 2 × (L + l) ou L + l ; 13-2, × 10 au lieu
+de × 100 (« 3,7 dm² = 37 cm² ») ; 13-5, cases inversées.
+
+**Question d'accès** : 4 ou 5 brouillons neufs, puis nœud + tag → personne ne lit rien de plus avant la publication.
+
+**À trancher** :
+
+(a) Les modèles au **niveau 1** de leur sous-notion, comme les voisins de CM1 et de 6e (personne n'est renuméroté) ?
+Reco : **oui** (même règle qu'au lot 12).
+
+(b) 071 et 072 sont déjà couverts : on n'écrit **rien de plus pour 071**, et **un seul modèle pour 072**, l'encadrement
+(13-5), seul morceau de la borne que les modèles CM1 + CM2 ne tirent pas ? Reco : **oui**.
+
+(c) 13-2 V4 : les **deux sauts** m² ↔ cm² (« 2 m² = 20 000 cm² ») ? La 6e les a exclus (décision c3-12 du 2026-10-18,
+« seulement m² ↔ dm² et dm² ↔ cm² ») ; la borne du CM2 ne tranche pas. Reco : **non**, comme la 6e (un saut à la fois,
+le CM2 n'en fait pas plus que la 6e) ; 13-2 garde 3 variations.
+
+(d) 13-3 et 13-4 : côtés **en cm seulement**, comme la borne, ou aussi en m et en dm dans les problèmes (« une pièce
+carrée de 4 m de côté », réponse en m², ce qui sert aussi 073) ? Reco : **cm en V1 et V2, m ou dm en V3** (le BO du
+CM2 nomme les trois unités d'aire ; les nombres restent entiers).
+
+(e) Un seul lot de **5 modèles** ? Reco : **oui**.
+
+### 20.1 Lot 13 : décisions (David, 2026-11-19)
+
+Recommandations suivies (« je suis tes recos ») : (a) les 5 modèles au niveau 1 de leur sous-notion ; (b) rien de plus
+pour 071, un seul modèle pour 072 (encadrement, 13-5) ; (c) pas de deux sauts m² ↔ cm², 13-2 en 3 variations ; (d) côtés
+en cm en V1 et V2, en m ou dm dans le problème (V3), nombres entiers ; (e) un seul lot de 5 modèles. Le stash « cm2-9 ids »
+du dépôt principal (5 fichiers identiques à `origin/main`) est supprimé.
+
+### 20.2 Lot 13 : écriture (2026-11-19)
+
+- `docs/wip/questions/lot-cm2-13.py` → `scripts/questions/cm2-13/` (5 modèles, 20 variations, niveau 1, sans `theme` /
+  `domain` / `subdomain`). `question:specs --instances 300` : 43 specs vertes, 6 000 tirages réussis, aucun
+  `\textcolor` hors `$` ; `sonde-figures` : 508 blocs, 0 problème ; `create-questions` en simulation (prod) : 5 à créer,
+  0 en base.
+- **Écarts à la phase 0** : 13-1 en 4 variations (objets en cm², en dm², en m², puis la mesure plausible parmi
+  « 6 cm² / 6 dm² / 6 m² ») ; compléments écrits élidés (« d'une salle », « du sol ») : `de` + `{{if}}` ne s'élide
+  pas. 13-2 V2 de 120 à 9 999 (unités ≠ 0 : deux chiffres après la virgule). 13-3 V2 côté de 2 à 9 cm, 13-4 V2 jusqu'à
+  14 cm sur 8 cm : dessinés à l'échelle, fenêtre à la taille de la figure, côtés cotés par `milieu()` (un milieu
+  calculé s'écrivait `\dfrac` pour un côté impair, refusé par le bloc). 13-5 titré « figure arrondie », une variation
+  par figure (4 disques, 3 ovales en polygones de 48 côtés), comptes calculés sur la figure dessinée, sans tangence
+  aux lignes (marge 0,12) et stables à l'échantillonnage ; lignes du quadrillage tracées **par-dessus** le remplissage
+  (la grille de fond se perdait dessous).
+- Base locale (copie du dossier dans le scratchpad, `.env.local`, sous `with-db-lock.sh`) : 5 brouillons ; aperçu admin à
+  390 px (Playwright, port 5186), les 20 variations vues : aucun débordement, 0 erreur console ; décimaux groupés,
+  case « choix » A à C, carreaux comptables.
+
+### 20.3 Lot 13 : prod, rangement (2026-11-19)
+
+- #2877 (fichiers) : CI verte, mergée. David lance `create-questions --dir scripts/questions/cm2-13 --publier` : MCP,
+  5 brouillons [CM2], niveau 1, sans nœud ni tag (`087df1a4`, `302c7dcd`, `6243c462`, `d2e2f75d`, `678a72a7`), ids
+  commités.
+- Points vérifiés au MCP : 073, 074 sur « unités et conversions », 075 sur « carré », 120 sur « rectangle » ; 072 sur
+  la **notion** « Aires » → modèle rangé sur sa sous-notion « aires sur quadrillage » (comme `31d64c00`).
+- Migration `20261119104838_questions_cm2_lot13_rangement_tags.sql`, dérivée de celle du lot 12 par substitution (aucun
+  reste). Test `questions-cm2-lot13-rangement-tags` : 9 verts ; corps remplacé par `select 1;` → 5 rouges ; fichier
+  restauré (`cmp`).
+- `security-auditor` : aucun finding bloquant (non bloquant : l'état de la prod vaut à l'instant de l'audit ; les
+  gardes arrêtent la migration si un modèle a été rangé à la main entre-temps).
+- #2878 : CI verte, `check:migrations` vert, mergée. Worktree remis sur `origin/main`, `migration list --linked` → seule
+  la nôtre en attente ; `db:migrate`. MCP : 5 brouillons rangés (« unités et conversions » ×2, « carré », « rectangle »,
+  « aires sur quadrillage »), un tag chacun (073, 074, 075, 120, 072), `updated_at` = création.
+- `garde-niveaux-tags` : aucun niveau manquant. Page à cocher (5 fiches, aucune alerte, base prod) :
+  https://claude.ai/artifact/6G45jabTk2DLAXfhojXQcb ; `verdicts` vide au départ.
+
+### 20.4 Lot 13 : relecture, publication (2026-11-19)
+
+- Page à cocher : 5 verdicts « OK », sans commentaire ; les 5 ids concordent avec `scripts/questions/cm2-13/*.json`.
+- `publier-lot` en simulation : 5 brouillons passent le contrôle. David lance `--publier`. MCP : 5/5 `published`, [CM2],
+  rangés et tagués (073, 074, 075, 120, 072). **Lot 13 clos.**
+
+## 21. Lot 14a — données lues (107, 156, 123, 157, 124, 158) : phase 0 (proposée le 2026-11-19)
+
+Relevé MCP du 2026-11-19 : aucun modèle CM2 sur les 6 points. Nœuds : « tableaux » (107, 156 ; niveaux 1 à 5 pris),
+« diagrammes en barres » (123, 157 ; 1 à 7 pris), « diagrammes circulaires » (124, 158 ; 1 et 2 pris par la 5e et la
+1re). Jumeaux CM1 publiés (lot 7 du CM1) : `f5742b78` (121, lire un tableau, populations à 6 chiffres), `40dcbbcc` (169,
+la ville la plus peuplée), `cc52549c` (138, axes de 10, 20, 25, 50, jusqu'à 500), `c245f0cc` (171, combien de plus,
+mois le plus fort, total). **Aucun diagramme circulaire au CM1.** Décision § 4 bis : modèles CM2 propres.
+
+Bornes : générales du CM2 (entiers jusqu'à 999 999 999, décimaux jusqu'aux millièmes, **pas de pourcentages au cours
+moyen**) ; 124, « diagramme circulaire avec légende ; parts simples (1/5, 3/10, 2/5) ». L'exemple de réussite du CM2
+(cocktail) écrit **les fractions sur les secteurs** ; le bloc ` ```circulaire ` ne sait afficher que des pourcentages,
+des effectifs, des angles ou rien (`étiquettes:`), et ne trace pas de parts égales : voir (b).
+
+Ce qui distingue le CM2 du CM1 : grands nombres (millions) et décimaux dans les tableaux, tableau à double entrée
+dans le même point, axes de 100 à 1 000 en barres, diagramme circulaire.
+
+| #     | Point   | Sous-notion, niveau       | Modèle                                | Variations, plages                                                                                                                                                                                                                                                                                   |
+| ----- | ------- | ------------------------- | ------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 14a-1 | CM2-107 | tableaux, 6               | Lire un tableau                       | V1 populations de 5 pays fictifs, 1 000 000 à 999 999 999, case nombre ; V2 l'inverse, « quel pays a … habitants ? » (case « choix », nombres de même longueur) ; V3 masses de 5 animaux en kg, millièmes (0,125 à 9,875) ; V4 double entrée, 5 villes × 3 années, pluie en mm                       |
+| 14a-2 | CM2-156 | tableaux, 7               | Que dit le tableau ?                  | V1 le pays le plus peuplé (7 à 9 chiffres, trois de même longueur et même premier chiffre) ; V2 l'animal le plus léger, décimaux de longueurs différentes (2,5 et 2,375) ; V3 double entrée, l'année la plus pluvieuse d'une ville (choix) ; V4 combien de kg de plus (décimaux)                     |
+| 14a-3 | CM2-123 | diagrammes en barres, 8   | Lis le diagramme (axe de 100 à 1 000) | V1 axe de 100 en 100, jusqu'à 1 000, barres sur une graduation ; V2 axe de 500 en 500 ou de 1 000 en 1 000, jusqu'à 10 000 (visiteurs d'un musée) ; V3 axe de 200 en 200, barres à mi-graduation ; V4 l'inverse, « quel mois … ? » (choix)                                                           |
+| 14a-4 | CM2-157 | diagrammes en barres, 9   | Que dit le diagramme en barres ?      | V1 combien de plus en mars qu'en février (axe de 100 ou de 250) ; V2 le mois le plus fort ou le plus faible (choix) ; V3 combien de mois dépassent un seuil (une graduation de l'axe)                                                                                                                |
+| 14a-5 | CM2-124 | diagrammes circulaires, 1 | Lis le diagramme circulaire           | Case fraction. V1 sans étiquettes, secteurs d'une moitié et de quarts (1/2, 1/4, 3/4) ; V2 `étiquettes: effectifs`, total de 10, 20, 30, 40 ou 50 élèves donné dans l'énoncé, parts en cinquièmes ou dixièmes (6 sur 30 → 1/5) ; V3 l'inverse, « quel moyen concerne le quart des élèves ? » (choix) |
+| 14a-6 | CM2-158 | diagrammes circulaires, 2 | Que dit le diagramme circulaire ?     | V1 le moyen le plus utilisé (choix, sans étiquettes, secteurs bien distincts) ; V2 le moins utilisé ; V3 avec effectifs, combien d'élèves de plus en bus qu'à pied ; V4 « plus de la moitié des élèves viennent-ils en bus ? » (oui / non)                                                           |
+
+Erreurs typiques en `testSpecs` : 14a-2 V2, le décimal le plus long pris pour le plus grand ; 14a-3 V3, la graduation du
+dessous ; 14a-5 V2, l'effectif au lieu de la part (6 au lieu de 6/30), la part sur le mauvais total ; 14a-4 V1, la
+somme au lieu de l'écart.
+
+**Question d'accès** : 6 brouillons neufs, puis nœud + tag → personne ne lit rien de plus avant la publication.
+
+**À trancher** :
+
+(a) Niveaux : tableaux 6 et 7, barres 8 et 9 (à la suite du CM1), circulaires 1 et 2 (à côté de la 5e, qui commence
+aussi ces niveaux) ? Reco : **oui**.
+
+(b) Fractions écrites sur les secteurs (exemple du CM2) : le bloc ne le sait pas. Reco : **écrire 124 et 158 sans elles**
+(moitiés et quarts reconnaissables à l'œil, puis parts calculées à partir des effectifs), et inscrire une option
+`étiquettes: fractions` dans `outils-manquants.md` : petite, elle servirait aussi le problème du cocktail (108, lot 14b).
+La faire avant le lot = un chantier à part.
+
+(c) 14a-5 : toute fraction égale est juste (6/30 comme 1/5), le corrigé simplifie ? Reco : **oui**, comme au lot 9.
+
+(d) Un seul lot de **6 modèles** ? Reco : **oui**.
+
+### 21.1 Lots 15 et 18 réduits par le chantier `questions-cm1` (2026-11-19)
+
+Message de la session `questions-cm1` (décision de David, § 26 bis de son journal) : ses modèles jumeaux CM1 + CM2
+couvrent **CM2-109** (« Toutes les issues possibles », lot 9ab, #2881, migration qui tague les deux points),
+**CM2-087** et **CM2-094** (constructions, lot 9c, pas encore écrit). Le lot 15 perd 109 ; le lot 18 perd 094, et 087
+(classé D au § 14) est couvert. À vérifier au MCP avant la phase 0 de ces lots. 129 et 130 (proportionnalité) restent
+CM1 seulement.
+
+### 21.2 Lot 14a : décisions (David, 2026-11-19)
+
+Recommandations suivies (« je te suis ») : (a) niveaux 6 et 7 (tableaux), 8 et 9 (barres), 1 et 2 (circulaires) ;
+(b) 124 et 158 écrits sans fractions sur les secteurs (moitiés et quarts à l'œil, parts calculées sur les effectifs),
+option `étiquettes: fractions` inscrite au n° 44 de `outils-manquants.md`, pour plus tard ; (c) toute fraction égale
+juste, corrigé simplifié ; (d) un seul lot de 6 modèles.
+
+### 21.3 Lot 14a : écriture (2026-11-19)
+
+- `docs/wip/questions/lot-cm2-14a.py` → `scripts/questions/cm2-14a/` (6 modèles, 22 variations, sans `theme` / `domain` /
+  `subdomain`). `question:specs --instances 300` : 50 specs vertes, 6 600 tirages réussis, aucun `\textcolor` hors `$` ;
+  `create-questions` en simulation (prod) : 6 à créer, 0 en base.
+- **Sonde des blocs de statistiques** (aucune dans `scripts/questions/`) : script du scratchpad, chaque bloc ` ```barres `,
+  ` ```circulaire `, ` ```tableau-croise ` de 300 tirages par modèle passé à `parseStatChartContent` puis
+  `buildStatChartScene` → 0 problème (témoin : `étiquettes: fractions` et une barre au-dessus de l'axe signalés).
+- **Bug trouvé à l'aperçu, pas par les specs** : `posee()` n'entourait pas sa base de parenthèses ; avec une base
+  composée (`2000+100*u1`, colis de 156 V2), les masses sortaient de leur plage (3,305 kg) et le plus léger n'était pas
+  toujours le colis attendu. Les specs calculent avec la même expression : vertes. Corrigé (parenthèses) ; contrôle des
+  extrêmes sur les 10 variations à choix (réponse = l'unique plus grand, plus petit, la moitié…) : 3 000 tirages justes,
+  300 faux sur l'ancienne version. **Piège** : une spec qui recalcule la donnée par la formule du modèle ne la vérifie
+  pas ; contrôler l'invariant (l'extrême est unique et au bon rang).
+- **Écarts à la phase 0** : 156 V2 et V4 sur des colis (plus léger, combien de kg de plus), pas des animaux : plages
+  libres pour le piège 2,1xx contre 2,2…2,9 ; 156 V1 tout en neuf chiffres (950 à 999 millions contre 800 à 949) ; 123 V2
+  de 500 en 500 jusqu'à 5 000 (pas de 1 000 en 1 000) ; 157 V3 sur six mois.
+- Base locale (copie du dossier dans le scratchpad, `.env.local`, sous `with-db-lock.sh`) : 6 brouillons ; aperçu admin
+  à 390 px (Playwright, port 5186), les 22 variations vues : aucun débordement, 0 erreur console.
+
+### 21.4 Lot 14a : prod, rangement, page à cocher (2026-11-19)
+
+- #2883 (fichiers) : CI verte, mergée. David lance `create-questions --dir scripts/questions/cm2-14a --publier` (depuis le
+  worktree) : MCP, 6 brouillons [CM2], niveaux 6, 7, 8, 9, 1, 2, sans nœud ni tag (`c382e240`, `e1f02c23`, `9d601156`,
+  `aff8498b`, `d8a1484c`, `ebd55761`), ids commités.
+- Migration `20261119144118_questions_cm2_lot14a_rangement_tags.sql`, dérivée de celle du lot 13 par substitution.
+  Test `questions-cm2-lot14a-rangement-tags` : 9 verts ; corps remplacé par `select 1;` → 5 rouges ; fichier restauré
+  (`cmp`). `security-auditor` : aucun finding bloquant ; un reste du gabarit (« les 5 brouillons » dans un commentaire)
+  corrigé.
+- #2885 : CI verte, `check:migrations` vert, mergée. Worktree remis sur `origin/main`, `migration list --linked` → seule
+  la nôtre en attente ; `db:migrate`. MCP : 6 brouillons rangés (« tableaux » ×2, « diagrammes en barres » ×2,
+  « diagrammes circulaires » ×2), un tag chacun (107, 156, 123, 157, 124, 158), `updated_at` = création.
+- `garde-niveaux-tags` : aucun niveau manquant. Page à cocher (6 fiches, base prod) :
+  https://claude.ai/artifact/UueCSUdzRztFPHQS6V3h6g ; `verdicts` vide au départ. `page-a-cocher.ts` ne dessine pas
+  ` ```circulaire ` (alerte sur 2 fiches) : les 7 diagrammes de la page ont été dessinés après coup depuis
+  `buildStatChartScene` (script du scratchpad, y de la scène vers le haut), alertes retirées. À ajouter à
+  `page-a-cocher.ts` un jour (comme le n° 43 de `outils-manquants.md`).

@@ -1,6 +1,6 @@
 """Écrit les modèles neufs du lot 6 « probabilités » de la 1re techno dans scripts/questions/1techno-6/.
 
-Phase 0 validée par David le 2026-11-18 (« je suis tes recos », journal docs/wip/questions-1techno-progress.md,
+Phase 0 validée par David le 2026-11-18 (« je suis tes recos », journal docs/archive/wip/questions-1techno-progress.md,
 § 30) :
 
 - P1 cours : formule des probabilités totales → 1TECHNO-090 (partition {A, Ā} seulement, l1t-1) ;

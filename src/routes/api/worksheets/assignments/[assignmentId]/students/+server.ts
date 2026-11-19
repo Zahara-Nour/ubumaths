@@ -14,7 +14,7 @@
  * - Validates student_id is actually a student role
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '#lib/server/middleware/auth.ts';
 import { z } from 'zod';
@@ -253,7 +253,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 			return (a.first_name || '').localeCompare(b.first_name || '');
 		});
 
-		return json({
+		return Response.json({
 			success: true,
 			students,
 			count: students.length,
@@ -353,7 +353,7 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 			throw error(500, 'Impossible d’ajouter les élèves');
 		}
 
-		return json(
+		return Response.json(
 			{
 				success: true,
 				message: `Élèves ajoutés : ${inserted?.length || 0}`,
@@ -427,7 +427,7 @@ export const DELETE: RequestHandler = async ({ params, locals, url }) => {
 			throw error(404, 'Cet élève n’est pas affecté individuellement');
 		}
 
-		return json({
+		return Response.json({
 			success: true,
 			message: 'Élève retiré de l’affectation'
 		});

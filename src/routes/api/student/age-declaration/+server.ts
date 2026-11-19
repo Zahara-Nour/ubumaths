@@ -17,7 +17,7 @@
  * la réponse existante sont relus en base par requireAuth, jamais pris du client.
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import { z } from 'zod';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '#lib/server/middleware/auth.ts';
@@ -100,5 +100,5 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(409, 'Réponse déjà enregistrée pour cette question');
 	}
 
-	return json({ success: true, ageDeclaration: declaration });
+	return Response.json({ success: true, ageDeclaration: declaration });
 };

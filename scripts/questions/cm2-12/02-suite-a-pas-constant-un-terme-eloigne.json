@@ -1,4 +1,5 @@
 {
+	"id": "1b122322-0ce2-4ca4-b366-55f130f11366",
 	"title": "Suite à pas constant : un terme éloigné",
 	"description": "Suite où l'on ajoute toujours le même nombre : le 100e nombre, le 20e, 30e ou 50e, ou le rang d'un nombre donné",
 	"grades": ["CM2"],

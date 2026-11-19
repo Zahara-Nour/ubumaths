@@ -389,6 +389,24 @@ const store = getStore();
 
 ---
 
+## SvelteKit 3 — ce qui a changé chez nous
+
+Passage de kit 2 à kit 3.2.0 le 2026-11-18 (#2825). Ce que le guide de migration ne dit pas, ou ce qui nous a coûté :
+
+- **`goto`** : `keepFocus` et `noScroll` sont retirés (erreur en dev) → `reset: false`. Une route inconnue fait **rejeter** `goto` (kit 2 affichait une 404) : pour un lien venu des données (notification), passer par `gotoNotification`, qui retombe sur `location.assign`.
+- **`data-sveltekit-noscroll` / `keepfocus`** sont ignorés → `data-sveltekit-reset="false"`.
+- **`resolve('/x')`** attend un id de route ; un chemin s'écrit sans `/` (`resolve('shtam')`). Chemin porté par une variable → `resolvePath` (`#lib/navigation/resolve-path.ts`).
+- **`pushState` / `replaceState` gardés** malgré la dépréciation : leur remplaçant `goto(url, { state, shallow: true })` déclenche les hooks de navigation (barre de chargement à chaque frappe de la recherche du catalogue, rechargement complet si une nouvelle version est en ligne). À rouvrir seulement si kit 4 les retire. **`replaceState` est asynchrone** et rejette quand le routeur n'est pas démarré : un `try/catch` synchrone ne voit pas l'échec → `.catch`.
+- **`invalidateAll` → `refreshAll`**, **`json()` de kit → `Response.json`** (attention : `Response.json(undefined)` lève une `TypeError`, `json(undefined)` rendait un corps vide). Deux caches ont aussi une méthode `invalidateAll` (`teacherDashboardCache`, `studentDashboardCache`) : ce ne sont pas celles de kit.
+- **`$env/*`** ne rend plus que les variables déclarées dans `src/env.ts` → on importe `$app/env/public` / `$app/env/private`. `$app/stores` → `$app/state`, `$app/environment` → `$app/env`.
+- **`redirect()` vers une autre origine** exige `{ external }` : seule la connexion Google sort du site (liste blanche = origine Supabase).
+- **`fail()` répond avec son vrai statut** (plus de 200) : lire le corps, pas `response.ok`.
+- **`handleError` client** reçoit aussi les `error(...)` voulus, avec `kind` (`app`/`framework`/`unknown`) : ils ne sont pas journalisés.
+- **CSRF** : un POST/PUT/PATCH/DELETE d'une autre origine **sans `Content-Type`** est refusé (nos crons Vercel sont en GET).
+- **`page.url`** est en lecture seule : `new URL(page.url.href)` pour la modifier.
+
+---
+
 ## Anti-patterns clés (récapitulatif)
 
 | ❌ À éviter                                         | ✅ Correct                                              |

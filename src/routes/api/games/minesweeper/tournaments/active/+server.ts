@@ -1,5 +1,5 @@
 import type { RequestHandler } from './$types';
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import { requireRole } from '#lib/server/middleware/auth.ts';
 import { listActiveTournamentsSchema } from '#lib/server/validation/minesweeper-tournament.ts';
 import { sanitizePostgresError } from '#lib/server/utils/error-handler.ts';
@@ -221,7 +221,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		// Filter out null values (tournaments student can't participate in)
 		const filteredTournaments = eligibleTournaments.filter((t) => t !== null);
 
-		return json({
+		return Response.json({
 			tournaments: filteredTournaments
 		});
 	} catch (err) {

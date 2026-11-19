@@ -1,0 +1,454 @@
+{
+	"id": "c382e240-277c-44eb-a79d-e6a763daa8bf",
+	"title": "Lis un tableau (grands nombres, décimaux, double entrée)",
+	"description": "Pays inventés : le nombre d'habitants d'un pays (jusqu'à 999 999 999), le pays qui a un nombre d'habitants donné (case choix, neuf chiffres) ; la masse d'un animal en kg (millièmes) ; la pluie d'une ville une année (tableau à double entrée)",
+	"grades": ["CM2"],
+	"level": 6,
+	"delay": 120,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true,
+			"zeros": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Ce tableau donne le nombre d'habitants de cinq pays.\n\n| Pays | Nombre d'habitants |\n|---|---|\n| Valdorie | ${{p1}}$ |\n| Morvanie | ${{p2}}$ |\n| Brévanie | ${{p3}}$ |\n| Talessie | ${{p4}}$ |\n| Norlande | ${{p5}}$ |\n\nQuel est le nombre d'habitants de la {{if:k==0|Valdorie|{{if:k==1|Morvanie|{{if:k==2|Brévanie|{{if:k==3|Talessie|Norlande}}}}}}}} ?\n\n$?$ habitants",
+			"variables": [
+				{
+					"name": "p1",
+					"expression": "1000000..999999999"
+				},
+				{
+					"name": "p2",
+					"expression": "1000000..999999999"
+				},
+				{
+					"name": "p3",
+					"expression": "1000000..999999999"
+				},
+				{
+					"name": "p4",
+					"expression": "1000000..999999999"
+				},
+				{
+					"name": "p5",
+					"expression": "1000000..999999999"
+				},
+				{
+					"name": "k",
+					"expression": "0..4"
+				},
+				{
+					"name": "n",
+					"expression": "eval:(p1)*((k-1)*(k-2)*(k-3)*(k-4))/(24)+(p2)*((k-0)*(k-2)*(k-3)*(k-4))/(-6)+(p3)*((k-0)*(k-1)*(k-3)*(k-4))/(4)+(p4)*((k-0)*(k-1)*(k-2)*(k-4))/(-6)+(p5)*((k-0)*(k-1)*(k-2)*(k-3))/(24)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche la ligne « {{if:k==0|Valdorie|{{if:k==1|Morvanie|{{if:k==2|Brévanie|{{if:k==3|Talessie|Norlande}}}}}}}} », puis on lit la case de la colonne « Nombre d'habitants ».",
+					"La {{if:k==0|Valdorie|{{if:k==1|Morvanie|{{if:k==2|Brévanie|{{if:k==3|Talessie|Norlande}}}}}}}} a $\\textcolor{{{color:primary.0}}}{{{n}}}$ habitants."
+				]
+			}
+		},
+		{
+			"statement": "Ce tableau donne le nombre d'habitants de cinq pays.\n\n| Pays | Nombre d'habitants |\n|---|---|\n| Valdorie | ${{p1}}$ |\n| Morvanie | ${{p2}}$ |\n| Brévanie | ${{p3}}$ |\n| Talessie | ${{p4}}$ |\n| Norlande | ${{p5}}$ |\n\nQuel pays a ${{n}}$ habitants ?\n\n```choix\nmelanger: non\n- Valdorie\n- Morvanie\n- Brévanie\n- Talessie\n- Norlande\n```",
+			"variables": [
+				{
+					"name": "h1",
+					"expression": "100000000..999999999"
+				},
+				{
+					"name": "h2",
+					"expression": "100000000..999999999"
+				},
+				{
+					"name": "h3",
+					"expression": "100000000..999999999"
+				},
+				{
+					"name": "h4",
+					"expression": "100000000..999999999"
+				},
+				{
+					"name": "h5",
+					"expression": "100000000..999999999"
+				},
+				{
+					"name": "n",
+					"expression": "100000000..999999999"
+				},
+				{
+					"name": "k",
+					"expression": "0..4"
+				},
+				{
+					"name": "p1",
+					"expression": "eval:(h1)+((n)-(h1))*((k-1)*(k-2)*(k-3)*(k-4))/(24)"
+				},
+				{
+					"name": "p2",
+					"expression": "eval:(h2)+((n)-(h2))*((k-0)*(k-2)*(k-3)*(k-4))/(-6)"
+				},
+				{
+					"name": "p3",
+					"expression": "eval:(h3)+((n)-(h3))*((k-0)*(k-1)*(k-3)*(k-4))/(4)"
+				},
+				{
+					"name": "p4",
+					"expression": "eval:(h4)+((n)-(h4))*((k-0)*(k-1)*(k-2)*(k-4))/(-6)"
+				},
+				{
+					"name": "p5",
+					"expression": "eval:(h5)+((n)-(h5))*((k-0)*(k-1)*(k-2)*(k-3))/(24)"
+				}
+			],
+			"conditions": [
+				"(h1-n)*(h1-n) > 0",
+				"(h2-n)*(h2-n) > 0",
+				"(h3-n)*(h3-n) > 0",
+				"(h4-n)*(h4-n) > 0",
+				"(h5-n)*(h5-n) > 0"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Tous les nombres ont neuf chiffres : on cherche ${{n}}$ classe par classe (millions, milliers, unités), puis on lit le pays sur la même ligne.",
+					"C'est la {{if:k==0|Valdorie|{{if:k==1|Morvanie|{{if:k==2|Brévanie|{{if:k==3|Talessie|Norlande}}}}}}}}."
+				]
+			}
+		},
+		{
+			"statement": "Ce tableau donne la masse de cinq animaux.\n\n| Animal | Masse (kg) |\n|---|---|\n| Lapin | ${{eval:m1/1000;d}}$ |\n| Chat | ${{eval:m2/1000;d}}$ |\n| Hérisson | ${{eval:m3/1000;d}}$ |\n| Poule | ${{eval:m4/1000;d}}$ |\n| Cochon d'Inde | ${{eval:m5/1000;d}}$ |\n\nQuelle est la masse {{if:k==0|du lapin|{{if:k==1|du chat|{{if:k==2|du hérisson|{{if:k==3|de la poule|du cochon d'Inde}}}}}}}} ?\n\n$?$ kg",
+			"variables": [
+				{
+					"name": "m1",
+					"expression": "1200..2500"
+				},
+				{
+					"name": "m2",
+					"expression": "3000..5500"
+				},
+				{
+					"name": "m3",
+					"expression": "600..1200"
+				},
+				{
+					"name": "m4",
+					"expression": "1500..2900"
+				},
+				{
+					"name": "m5",
+					"expression": "700..1200"
+				},
+				{
+					"name": "k",
+					"expression": "0..4"
+				},
+				{
+					"name": "n",
+					"expression": "eval:(m1)*((k-1)*(k-2)*(k-3)*(k-4))/(24)+(m2)*((k-0)*(k-2)*(k-3)*(k-4))/(-6)+(m3)*((k-0)*(k-1)*(k-3)*(k-4))/(4)+(m4)*((k-0)*(k-1)*(k-2)*(k-4))/(-6)+(m5)*((k-0)*(k-1)*(k-2)*(k-3))/(24)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n/1000;d}}",
+					"requiredForm": {
+						"pattern": "a:number"
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche la ligne « {{if:k==0|Lapin|{{if:k==1|Chat|{{if:k==2|Hérisson|{{if:k==3|Poule|Cochon d'Inde}}}}}}}} », puis on lit la colonne « Masse (kg) ».",
+					"La masse {{if:k==0|du lapin|{{if:k==1|du chat|{{if:k==2|du hérisson|{{if:k==3|de la poule|du cochon d'Inde}}}}}}}} : $\\textcolor{{{color:primary.0}}}{{{eval:n/1000;d}}}$ kg."
+				]
+			}
+		},
+		{
+			"statement": "Ce tableau donne la hauteur de pluie tombée en un an (en mm) dans cinq villes, trois années de suite.\n\n```tableau-croise\nlignes: Brumeval ; Castelroc ; Pontaval ; Mirelande ; Sablonnière\ncolonnes: 2023 ; 2024 ; 2025\nBrumeval = {{r10}} ; {{r11}} ; {{r12}}\nCastelroc = {{r20}} ; {{r21}} ; {{r22}}\nPontaval = {{r30}} ; {{r31}} ; {{r32}}\nMirelande = {{r40}} ; {{r41}} ; {{r42}}\nSablonnière = {{r50}} ; {{r51}} ; {{r52}}\ncoin: Ville \\ Année\ntotaux: non\n```\n\nCombien de millimètres de pluie sont tombés à {{if:k==0|Brumeval|{{if:k==1|Castelroc|{{if:k==2|Pontaval|{{if:k==3|Mirelande|Sablonnière}}}}}}}} en {{if:q==0|2023|{{if:q==1|2024|2025}}}} ?\n\n$?$ mm",
+			"variables": [
+				{
+					"name": "r10",
+					"expression": "400..1200"
+				},
+				{
+					"name": "r11",
+					"expression": "400..1200"
+				},
+				{
+					"name": "r12",
+					"expression": "400..1200"
+				},
+				{
+					"name": "r20",
+					"expression": "400..1200"
+				},
+				{
+					"name": "r21",
+					"expression": "400..1200"
+				},
+				{
+					"name": "r22",
+					"expression": "400..1200"
+				},
+				{
+					"name": "r30",
+					"expression": "400..1200"
+				},
+				{
+					"name": "r31",
+					"expression": "400..1200"
+				},
+				{
+					"name": "r32",
+					"expression": "400..1200"
+				},
+				{
+					"name": "r40",
+					"expression": "400..1200"
+				},
+				{
+					"name": "r41",
+					"expression": "400..1200"
+				},
+				{
+					"name": "r42",
+					"expression": "400..1200"
+				},
+				{
+					"name": "r50",
+					"expression": "400..1200"
+				},
+				{
+					"name": "r51",
+					"expression": "400..1200"
+				},
+				{
+					"name": "r52",
+					"expression": "400..1200"
+				},
+				{
+					"name": "k",
+					"expression": "0..4"
+				},
+				{
+					"name": "q",
+					"expression": "0..2"
+				},
+				{
+					"name": "n",
+					"expression": "eval:((r10)*((k-1)*(k-2)*(k-3)*(k-4))/(24)+(r20)*((k-0)*(k-2)*(k-3)*(k-4))/(-6)+(r30)*((k-0)*(k-1)*(k-3)*(k-4))/(4)+(r40)*((k-0)*(k-1)*(k-2)*(k-4))/(-6)+(r50)*((k-0)*(k-1)*(k-2)*(k-3))/(24))*((q-1)*(q-2))/(2)+((r11)*((k-1)*(k-2)*(k-3)*(k-4))/(24)+(r21)*((k-0)*(k-2)*(k-3)*(k-4))/(-6)+(r31)*((k-0)*(k-1)*(k-3)*(k-4))/(4)+(r41)*((k-0)*(k-1)*(k-2)*(k-4))/(-6)+(r51)*((k-0)*(k-1)*(k-2)*(k-3))/(24))*((q-0)*(q-2))/(-1)+((r12)*((k-1)*(k-2)*(k-3)*(k-4))/(24)+(r22)*((k-0)*(k-2)*(k-3)*(k-4))/(-6)+(r32)*((k-0)*(k-1)*(k-3)*(k-4))/(4)+(r42)*((k-0)*(k-1)*(k-2)*(k-4))/(-6)+(r52)*((k-0)*(k-1)*(k-2)*(k-3))/(24))*((q-0)*(q-1))/(2)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La ligne « {{if:k==0|Brumeval|{{if:k==1|Castelroc|{{if:k==2|Pontaval|{{if:k==3|Mirelande|Sablonnière}}}}}}}} » et la colonne « {{if:q==0|2023|{{if:q==1|2024|2025}}}} » : la réponse est dans la case où elles se croisent.",
+					"Cette case : $\\textcolor{{{color:primary.0}}}{{{n}}}$ mm."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Brévanie : 312 004 987",
+			"variationIndex": 0,
+			"variables": {
+				"p1": "48273615",
+				"p2": "6120450",
+				"p3": "312004987",
+				"p4": "87650300",
+				"p5": "1538210",
+				"k": "2",
+				"n": "312004987"
+			},
+			"answers": ["312 004 987"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la ligne voisine (Morvanie)",
+			"variationIndex": 0,
+			"variables": {
+				"p1": "48273615",
+				"p2": "6120450",
+				"p3": "312004987",
+				"p4": "87650300",
+				"p5": "1538210",
+				"k": "2",
+				"n": "312004987"
+			},
+			"answers": ["6 120 450"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "876 503 004 : Talessie",
+			"variationIndex": 1,
+			"variables": {
+				"h1": "482736150",
+				"h2": "612045012",
+				"h3": "312004987",
+				"h4": "876503004",
+				"h5": "153821075",
+				"n": "876503004",
+				"k": "3",
+				"p1": "482736150",
+				"p2": "612045012",
+				"p3": "312004987",
+				"p4": "876503004",
+				"p5": "153821075"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : Morvanie",
+			"variationIndex": 1,
+			"variables": {
+				"h1": "482736150",
+				"h2": "612045012",
+				"h3": "312004987",
+				"h4": "876503004",
+				"h5": "153821075",
+				"n": "876503004",
+				"k": "3",
+				"p1": "482736150",
+				"p2": "612045012",
+				"p3": "312004987",
+				"p4": "876503004",
+				"p5": "153821075"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Chat : 4,125 kg",
+			"variationIndex": 2,
+			"variables": {
+				"m1": "1850",
+				"m2": "4125",
+				"m3": "875",
+				"m4": "2300",
+				"m5": "960",
+				"k": "1",
+				"n": "4125"
+			},
+			"answers": ["4,125"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : les grammes (4 125)",
+			"variationIndex": 2,
+			"variables": {
+				"m1": "1850",
+				"m2": "4125",
+				"m3": "875",
+				"m4": "2300",
+				"m5": "960",
+				"k": "1",
+				"n": "4125"
+			},
+			"answers": ["4 125"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Hérisson : 0,875 kg",
+			"variationIndex": 2,
+			"variables": {
+				"m1": "1850",
+				"m2": "4125",
+				"m3": "875",
+				"m4": "2300",
+				"m5": "960",
+				"k": "2",
+				"n": "875"
+			},
+			"answers": ["0,875"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Pontaval en 2024 : 624 mm",
+			"variationIndex": 3,
+			"variables": {
+				"r10": "437",
+				"r11": "550",
+				"r12": "663",
+				"r20": "474",
+				"r21": "587",
+				"r22": "700",
+				"r30": "511",
+				"r31": "624",
+				"r32": "737",
+				"r40": "548",
+				"r41": "661",
+				"r42": "774",
+				"r50": "585",
+				"r51": "698",
+				"r52": "811",
+				"k": "2",
+				"q": "1",
+				"n": "624"
+			},
+			"answers": ["624"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la colonne voisine (2025)",
+			"variationIndex": 3,
+			"variables": {
+				"r10": "437",
+				"r11": "550",
+				"r12": "663",
+				"r20": "474",
+				"r21": "587",
+				"r22": "700",
+				"r30": "511",
+				"r31": "624",
+				"r32": "737",
+				"r40": "548",
+				"r41": "661",
+				"r42": "774",
+				"r50": "585",
+				"r51": "698",
+				"r52": "811",
+				"k": "2",
+				"q": "1",
+				"n": "624"
+			},
+			"answers": ["737"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
