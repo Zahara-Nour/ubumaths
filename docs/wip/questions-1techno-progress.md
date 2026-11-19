@@ -8,15 +8,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, migration du lot 6 écrite et auditée._
+_Mis à jour le 2026-11-19, après #2861 (migration du lot 6 appliquée)._
 
-- **État** : lots 1 à 5 clos. Lot 6 : P1-P5 brouillons en prod ; migration `20261119052352_..._lot6_rangement_tags`
-  écrite (rouge sans le corps, 15 verts), `security-auditor` sans bloquant ; PR ouverte, à ne PAS merger sans go.
-- **Prochaine action** : go de David → merge → `migration list --linked` (seule la nôtre en attente, sinon stop) →
-  `db:migrate` → vérif MCP → page à cocher P1-P5 → publication (`publier-lot.ts`, par David).
-- **En attente de David** : go pour la partie destructive (97b3a376 perd 1TECHNO-137 et `1_TECHNO` ; 0 donnée d'élève).
+- **État** : lots 1 à 5 clos. Lot 6 : P1-P5 brouillons rangés et tagués en prod ; 97b3a376 retiré de la 1re techno.
+- **Prochaine action** : lire les verdicts de la page à cocher https://claude.ai/artifact/Suw63yXmSoVJwy2NTCfS9Y
+  (collection `verdicts`) → corrections éventuelles → publication par David (`publier-lot.ts`, simulation puis
+  `--publier`) → lot 6 clos ; puis lot suivant du découpage (§ 23).
+- **En attente de David** : verdicts de P1-P5. 1TECHNO-137 n'a pas de modèle publié de 1re techno tant que P4 ne l'est pas.
 - **Pièges en cours** : questions-1gen à prévenir (4 communs du lot 5). `Doc-inchangée:` dans un COMMIT.
-- **Worktree / branche** : `../ubumaths-wt-questions-1techno`, `feat/questions-1techno-lot6-migration`.
+- **Worktree / branche** : aucun (worktree du lot 6 retiré) ; nouveau worktree pour le prochain lot de code.
 
 ## 1. Relevé (prod, 2026-11-17)
 
@@ -973,3 +973,10 @@ rendue → 14 verts.
 `security-auditor` : aucun bloquant. Faible (hérité du gabarit) : la garde du rollback ne vérifiait pas que les 5 sont
 encore des brouillons (un P4 publié aurait perdu son nœud et son tag) → garde ajoutée, test de plus : 15 verts.
 Info : 1TECHNO-137 sans modèle publié de 1re techno tant que P4 n'est pas publié.
+
+### Lot 6 — migré, page à cocher (2026-11-19)
+
+PR #2861 mergée (go de David sur la partie destructive ; CI verte, `check:migrations --pr 2861` OK). `migration list
+--linked` : seule `20261119052352` en attente → `db:migrate`. Vérifié MCP : P1-P5 brouillons `{1_TECHNO}` sur le nœud de
+leur point, tag 090, 097, 136, 137, 013 ; 97b3a376 publié `{1_SPE}`, seul tag 1SPE-353, nœud inchangé ; `updated_at`
+inchangés. Page à cocher (`db`, collection `verdicts`) : https://claude.ai/artifact/Suw63yXmSoVJwy2NTCfS9Y
