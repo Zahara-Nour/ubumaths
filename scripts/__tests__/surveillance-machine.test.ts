@@ -108,6 +108,7 @@ function lancer(extra: NodeJS.ProcessEnv = {}, args: string[] = []) {
 			SURVEILLANCE_ETAT: join(racine, 'etat'),
 			SURVEILLANCE_CONFIG: join(racine, 'config'),
 			SURVEILLANCE_TUER: join(faux, 'tuer'),
+			SURVEILLANCE_DEPOT: principal,
 			NTFY_SERVEUR: 'https://ntfy.example.test',
 			...extra
 		},
@@ -172,6 +173,36 @@ describe('surveillance-machine', () => {
 		expect(tues().trim()).toBe('200');
 		expect(envois()).toContain('Serveur de dev :5175 arrêté');
 		expect(envois()).toContain('https://ntfy.example.test/canal-de-test');
+	});
+
+	it('n’arrête pas le serveur d’un autre projet, ni celui d’un worktree d’agent', () => {
+		const autre = join(racine, 'autre-projet');
+		mkdirSync(autre);
+		gitJetable(autre, 'init', '-q', '-b', 'main');
+		const agent = join(principal, '.claude', 'worktrees', 'agent-1');
+		gitJetable(principal, 'worktree', 'add', '-q', '-b', 'agent', agent);
+		machine({
+			processus: [vite(400, 300_000, '10:00', 5180), vite(401, 300_000, '10:00', 5177)],
+			dossiers: { '400': autre, '401': agent },
+			swap: SWAP_CALME,
+			chrome: []
+		});
+		lancer();
+		expect(tues()).toBe('');
+		expect(envois()).toBe('');
+	});
+
+	it('envoi en échec : l’alerte est retentée au passage suivant', () => {
+		machine({
+			processus: [],
+			dossiers: {},
+			swap: 'total = 12288.00M  used = 11540.94M  free = 747.06M  (encrypted)',
+			chrome: []
+		});
+		ecrireFaux('curl', `printf '%s\\n' "$@" >>"${racine}/curl.log"; exit 7`);
+		lancer();
+		lancer();
+		expect(envois().match(/Swap/g)).toHaveLength(2);
 	});
 
 	it('ignore l’enveloppe pnpm et le sh -c du script dev', () => {

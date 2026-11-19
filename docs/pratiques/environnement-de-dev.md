@@ -147,7 +147,7 @@ démarrer dans le dépôt principal (pas en CI). Un `pnpm dev` qui sort en ⛔ =
 **Surveillance du Mac mini** (après le gel du 2026-11-19) : `scripts/surveillance-machine.sh`, lancé
 toutes les 5 min par launchd (`pnpm surveillance:installer`, `--desinstaller` pour la retirer).
 
-- serveur de dev dans le dépôt principal → **arrêté**, et signalé ;
+- serveur de dev dans le dépôt principal de Chiphre → **arrêté**, et signalé (jamais celui d'un worktree ni d'un autre projet) ;
 - serveur de dev de plus de 1,5 Go ou de plus de 6 h, Chrome au-delà de 300 % de CPU ou de 60
   onglets, swap au-delà de 85 % → **signalés seulement** (seuils en tête du script) ;
 - signalement = notification ntfy.sh sur l'iPhone (canal aléatoire dans

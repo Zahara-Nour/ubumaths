@@ -72,8 +72,11 @@ envoyer() {
 	fi
 	local canal
 	canal="$(tr -d '[:space:]' <"$fichier_canal")"
-	curl -s -m 10 -o /dev/null -H "Title: Mac mini" -H "Tags: warning" \
-		-d "$message" "$NTFY_SERVEUR/$canal" || journaliser "échec de l'envoi ntfy"
+	if ! curl -sf -m 10 -o /dev/null -H "Title: Mac mini" -H "Tags: warning" \
+		-d "$message" "$NTFY_SERVEUR/$canal"; then
+		journaliser "échec de l'envoi ntfy : alerte retentée au prochain passage"
+		return 1
+	fi
 }
 
 # Vrai si l'alerte <cle> n'a pas été envoyée depuis SURVEILLANCE_RAPPEL_MIN minutes.
@@ -86,8 +89,10 @@ a_renvoyer() {
 	[ $((maintenant - derniere)) -ge $((SURVEILLANCE_RAPPEL_MIN * 60)) ]
 }
 
+# Les alertes de ce passage ; marquées seulement une fois l'envoi réussi.
+a_marquer=()
 marquer() {
-	[ "$essai" = 1 ] || date +%s >"$ETAT/alerte-$1"
+	a_marquer+=("$1")
 }
 
 # Âge en secondes d'un champ etime de ps : [[jj-]hh:]mm:ss.
@@ -106,12 +111,18 @@ secondes_depuis_etime() {
 	echo $(((10#$jours * 86400) + (10#$h * 3600) + (10#$m * 60) + 10#$s))
 }
 
-# Vrai si <dossier> est dans le dépôt principal (même règle que garde-dev-depot-principal.sh).
+# Dossier git commun de NOTRE dépôt (celui du script, ou SURVEILLANCE_DEPOT) : un
+# `vite dev` d'un autre projet n'est jamais arrêté.
+DEPOT_COMMUN="$(git -C "${SURVEILLANCE_DEPOT:-$(dirname "$0")}" rev-parse --path-format=absolute --git-common-dir 2>/dev/null || true)"
+
+# Vrai si <dossier> est dans le dépôt principal de NOTRE dépôt (pas un worktree
+# lié, pas un autre projet) : même règle que garde-dev-depot-principal.sh.
 dans_depot_principal() {
+	[ -n "$DEPOT_COMMUN" ] || return 1
 	local dossier_git dossier_commun
 	dossier_git="$(git -C "$1" rev-parse --path-format=absolute --git-dir 2>/dev/null)" || return 1
 	dossier_commun="$(git -C "$1" rev-parse --path-format=absolute --git-common-dir 2>/dev/null)" || return 1
-	[ "$dossier_git" = "$dossier_commun" ]
+	[ "$dossier_commun" = "$DEPOT_COMMUN" ] && [ "$dossier_git" = "$dossier_commun" ]
 }
 
 # ── Contrôles ──────────────────────────────────────────────────────────────────
@@ -190,7 +201,11 @@ fi
 # ── Envoi groupé ───────────────────────────────────────────────────────────────
 
 if [ "${#alertes[@]}" -gt 0 ]; then
-	envoyer "$(printf '%s\n' "${alertes[@]}")"
+	if envoyer "$(printf '%s\n' "${alertes[@]}")" && [ "$essai" = 0 ] && [ "${#a_marquer[@]}" -gt 0 ]; then
+		for cle in "${a_marquer[@]}"; do
+			date +%s >"$ETAT/alerte-$cle"
+		done
+	fi
 elif [ "$essai" = 1 ]; then
 	echo "RAS"
 fi
