@@ -5,13 +5,13 @@ Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) · bornes 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, après #2886 et `db:migrate`._
+_Mis à jour le 2026-11-19, page à cocher du lot 8 publiée (§ 57)._
 
-- **État** : lots 0 à 7 publiés (sauf L7, L8 du 5b) ; lot 8 (loi binomiale, 7 brouillons B1–B7) en prod, rangés et tagués (§ 55, § 56).
-- **Prochaine action** : page à cocher du lot 8 (`page-a-cocher.ts --dir scripts/questions/ttechno-8-loi-binomiale`, artefact avec `db`, 390 px), puis `publier-lot.ts` (simulation, puis David `--publier`). Après le lot 8, bilan MCP des points STMG restants.
-- **En attente de David** : le `deploy:prod` qui livre #2839 (L7, L8), s'il ne vient pas d'être fait (vérifier `production`).
+- **État** : lots 0 à 7 publiés (sauf L7, L8 du 5b) ; lot 8 (loi binomiale, 7 brouillons B1–B7) en prod, rangés, tagués ; page à cocher publiée (§ 57).
+- **Prochaine action** : lire les verdicts de la page (`ArtifactData list verdicts`), corriger les « à revoir », puis `publier-lot.ts --dir scripts/questions/ttechno-8-loi-binomiale` (simulation, puis David `--publier`). Ensuite, bilan MCP des points STMG restants.
+- **En attente de David** : relecture de la page à cocher du lot 8.
 - **Pièges en cours** : `$` littéral (tableur) = `\$` ; un point TTECHNO par modèle ; tag = nœud DU POINT ; `create-questions --publier` et `publier-lot.ts` visent la prod : David les lance (`!`), ids reportés à la main ; `Doc-inchangée:` dans un COMMIT (pas la PR) pour une migration ; `db push` « inserted before » → `--dry-run --include-all` ; Chrome refuse `[::1]` : serveur `--host 127.0.0.1`.
-- **Worktree / branche** : aucun (retiré après #2886).
+- **Worktree / branche** : aucun.
 
 ## 1. Périmètre
 
@@ -1261,3 +1261,10 @@ dans le dépôt principal : reportés à la main dans `scripts/questions/ttechno
   `20261119144747` en attente ; `db push` refusé (« inserted before ») → `--include-all --dry-run` (elle seule), puis
   `--include-all`, depuis le dépôt principal (4 conditions). Prod vérifiée (MCP) : les 7 sur leur nœud, un tag chacun,
   `draft`, `updated_at` inchangés. Worktree retiré.
+
+## 57. Lot 8 : page à cocher (2026-11-19)
+
+- `deploy:prod` de #2839 (L7, L8) : fait (commit présent sur `production`).
+- Page à cocher : https://claude.ai/artifact/Bj4AcBkkpiPnZ9Z25tmtfv (7 fiches, 23 exemples ; nœuds et points lus en
+  base ; `verdicts` vide). Une alerte attendue (B7) : bloc ` ```loi ` et scène « moyenne-selon-n » de la
+  ` ```simulation ` non dessinés par la page, à jouer dans l'aperçu. Rendu à 390 px non vérifié.
