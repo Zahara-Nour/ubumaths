@@ -6,15 +6,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-20 : PR 1 (syntaxe et écran) en cours sur `feat/texte-colore`._
+_Mis à jour le 2026-11-20, après #2933 et #2934._
 
-- **État** : § 3 et § 4 validés (« je suis tes recos », 2026-11-20), Q1 comprise ; PR 1 codée, tests verts.
-- **Prochaine action** : PR 1 ouverte → revue + CI → merge ; puis PR 2 (PDF), PR 3 (filet `\textcolor`).
-- **En attente de David** : Q2 (éditeur riche) et Q3 (réécriture de l'existant) — sans recommandation de ma
-  part au moment de « je suis tes recos », donc **non tranchées** ; elles ne bloquent que le point 4.
+- **État** : PR 1 (syntaxe, écran, chat) mergée (#2933, test rouge corrigé par #2934). Q2 et Q3 tranchées (§ 3).
+- **Prochaine action** : PR 2 — la couleur au PDF (Typst, teinte claire `namedColorTypst`) ; puis PR 3 (filet
+  `\textcolor` hors formule) ; puis réécriture des fichiers de lots + liste des modèles en prod pour David.
+- **En attente de David** : rien.
 - **Pièges connus** : la garde `review/textcolor-hors-maths.ts` ne tourne que dans `pnpm question:specs` ; le chat
-  des élèves ne doit rien gagner (rendu `restricted`) ; `.def=cible` doit rester la dernière classe.
-- **Worktree / branche** : `../ubumaths-wt-texte-colore` · `feat/texte-colore`.
+  ne doit rien gagner (couleur retirée dans `restrictDocument` ET dans les composants) ; `.def=cible` en dernière
+  classe ; l'éditeur riche perd `color` / `detail` / `lexicon` à l'enregistrement (`markdown-import.ts`, Q2 : plus tard).
+- **Worktree / branche** : `../ubumaths-wt-texte-colore` · `feat/texte-colore-pdf`.
 
 ## 1. Le défaut
 
@@ -92,9 +93,12 @@ publiés), à recompter. Depuis le 2026-11-03, `question:specs` refuse un `\text
   un seul message, au rendu, à l'endroit du marquage.
 - **Q2** — L'éditeur riche (TipTap) sait colorer du texte, mais la couleur se perd à l'enregistrement. Le brancher
   sur `[…]{.nom}` (12 couleurs dans son menu) : dans ce chantier, ou plus tard ?
+  → **Plus tard, chantier à part** (David, 2026-11-20 : « ok je te suis » à cette proposition).
 - **Q3** — Les modèles publiés en prod qui contiennent `\textcolor` hors formule seront lisibles grâce au filet.
   Les réécrire en `[…]{.nom}` (fichiers de lots + liste pour une mise à jour en prod par toi) : dans ce chantier,
   ou les laisser au filet ?
+  → **Dans ce chantier, après le filet** : fichiers de lots réécrits, liste des modèles en prod pour David
+  (David, 2026-11-20 : « ok je te suis »).
 
 ## 4. Découpage (validé le 2026-11-20)
 
@@ -113,3 +117,9 @@ publiés), à recompter. Depuis le 2026-11-03, `question:specs` refuse un `\text
 - Rendu : `inline-color.ts`, `InlineColor.svelte` (formules), `TextNode.svelte` (couleur + message au prof),
   cellules de tableau (`table-cell-inline.ts`) ; restreint → aucune couleur.
 - Vu en capture (thèmes clair et sombre) : texte, gras, formule et cellule colorés ; message au prof lisible.
+- Revue (`code-reviewer`) : un détail dans un passage sans détail (`[la règle [à retenir]{.rappel}]{.orange}`)
+  restait en concis — corrigé (`lastIndex` relu) ; `{.Def}` lu. Audit (`security-auditor`) : rien de bloquant ;
+  seconde défense ajoutée (`restrictDocument` retire `color`). Regex mesurée sans retour arrière catastrophique.
+- ⚠️ **Incident** : #2933 mergée avec un test client rouge (CorrectionView D5 attendait `[x]{.truc}` littéral) —
+  `gh pr checks | tail -15` masquait l'échec. Corrigé par #2934. Désormais : grep des checks non `pass` vide avant
+  tout merge.
