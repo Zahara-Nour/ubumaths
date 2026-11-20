@@ -5,7 +5,7 @@
 _Mis à jour le 2026-11-20, réflexion seulement, aucun chantier ouvert._
 
 - **État** : liste d'idées, rien n'est tranché ni codé.
-- **Prochaine action** : David choisit une piste, puis phase 0 (comportements en français) avant tout code.
+- **Prochaine action** : David valide (ou non) la § Sélection, puis phase 0 (comportements en français) avant tout code.
 - **En attente de David** : le choix de la piste, et la question d'accès pour toute idée sociale ou partagée (« qui pourra voir quoi ? »).
 - **Pièges** : le Kanban et le Pomodoro existent déjà, mais aucun élève ne peut les trouver (cf. § Existant).
 
@@ -79,6 +79,35 @@ _Mis à jour le 2026-11-20, réflexion seulement, aucun chantier ouvert._
 38. **Vue prof de la charge** : combien de travail tombe sur une même semaine.
 39. **Rappels automatiques** (J-3 et J-1 d'un rendu), en notification ou dans l'appli. Recoupe les rappels du Palotin.
 40. **Carnet de liaison** : partager aux parents, si l'élève le veut, le bilan de la semaine ou le temps de travail. ⚠️ Question d'accès à trancher.
+
+## Sélection : plus forte valeur et meilleure intégration à Chiphre (2026-11-20, non validée)
+
+Critère : l'outil se nourrit de ce que l'appli sait déjà, pour que l'élève n'ait presque rien à saisir. Un outil d'organisation qu'il faut remplir à la main est abandonné en deux semaines.
+
+Briques vérifiées dans le code :
+
+- échéances des devoirs du cahier de texte, toujours un jour de cours de la classe (`src/lib/server/journal-homework.ts`, `src/lib/utils/class-sessions.ts`) ;
+- contrôles assignés avec `deadline` et série (`evaluations`) ;
+- cartes de révision dues (FSRS) ;
+- les cinq formes de série ;
+- jours travaillés et bonus de constance du Mathoux (`src/lib/server/buddy-xp-service.ts`) ;
+- forfait du Palotin qui récompense l'effort et non la réussite (`src/lib/server/srs/review-session-reward.ts`, décision du 2026-10-18).
+
+0. **Préalable : Kanban et Pomodoro dans le menu élève.**
+1. **« Ma semaine »** (idées 1, 7, 39) : une page qui assemble toute seule les devoirs à rendre, les contrôles à venir et les cartes de révision dues, plus les tâches perso de l'élève. Les échéances tombent déjà sur les jours de cours. C'est le socle des autres.
+2. **« Préparer mon contrôle »** (2, 29, 31, 32) : à partir d'un contrôle daté, un plan qui enchaîne les formes de série existantes. Par exemple J-7 flash-cards sur les notions, J-3 Saisie, J-1 Contrôle blanc. Auto-évaluation avant / après, reliée à Ma progression. C'est l'idée la plus propre à Chiphre.
+3. **Séance de travail** (13, 15, 37) : on lance le Pomodoro depuis un devoir ou une carte, le temps est rattaché à la tâche, le mode concentration masque le chat, la boutique et les jeux, et un petit minuteur flotte pendant les exercices. Rejoint le futur chantier « limite de temps sur les jeux ».
+4. **Régularité récompensée** (22, 34) : un calendrier des jours travaillés, à partir de ce que le Mathoux enregistre déjà. Une séance finie compte comme un effort pour le Mathoux ou le Palotin, dans la logique « effort, pas réussite ».
+5. **Bilan de la semaine** (23, 6, 25) : ce qui a été fait, prérempli à partir des traces et des séances, avec l'estimation comparée au temps réel. L'élève ajoute trois phrases. Le partage au carnet de liaison viendrait plus tard (question d'accès).
+6. **Le Palotin comme voix des rappels** (39) : « ton DM est pour jeudi », « 12 cartes t'attendent ». C'est le futur chantier « rappels du Palotin », qui se branche sur « Ma semaine ».
+7. **Bonus peu coûteux : Pomodoro collectif en classe** (20) : la forme « En classe » a déjà un minuteur projeté.
+
+Écartées pour l'instant :
+
+- Eisenhower, grenouille, SMART, budget temps : génériques, sans lien avec les données de l'appli.
+- Emploi du temps perso : les jours de cours sont déjà connus.
+- Ambiance sonore, badges seuls : faible valeur.
+- Révision silencieuse en groupe : social entre mineurs, coût RGPD élevé pour un gain faible.
 
 ## Ordre proposé (non validé)
 

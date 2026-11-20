@@ -17,6 +17,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '#lib/types/database.ts';
 import { generateShareTokenString } from '#lib/server/exercise-share-tokens.ts';
 import { createServerLogger } from '#lib/utils/logger.ts';
+import { withBranches } from '#lib/server/worksheets/worksheet-classification.ts';
 
 const logger = createServerLogger('server/journal-share-tokens');
 
@@ -67,7 +68,13 @@ export interface PublicWorksheet {
 	/** Catégorie, titre libre, notions (ADR 0041) : le PDF du lien est celui de la classe */
 	category?: string | null;
 	custom_title?: boolean;
-	classifications?: Array<{ node_id: string; name: string; kind?: string; position: number }>;
+	classifications?: Array<{
+		node_id: string;
+		name: string;
+		kind?: string;
+		branch?: string | null;
+		position: number;
+	}>;
 	translations: unknown;
 	total_points: number | null;
 	estimated_duration_minutes: number | null;
@@ -253,5 +260,8 @@ export async function resolveWorksheetByShareToken(
 		return null;
 	}
 
-	return (data as PublicWorksheet | null) ?? null;
+	const worksheet = (data as PublicWorksheet | null) ?? null;
+	// Branche des notions, pour le titre imprimé (ADR 0041) : lue dans l'arbre, public
+	if (!worksheet?.classifications) return worksheet;
+	return { ...worksheet, classifications: await withBranches(supabase, worksheet.classifications) };
 }

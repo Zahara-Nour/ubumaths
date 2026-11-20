@@ -33,6 +33,7 @@ import {
 import { buildSeriesLink, seriesItemsSchema, totalQuestions } from '#lib/validation/series.ts';
 import { readStoredSeriesMany } from '#lib/server/series-lines.ts';
 import { createServerLogger } from '#lib/utils/logger.ts';
+import { withBranches } from '#lib/server/worksheets/worksheet-classification.ts';
 
 const logger = createServerLogger('server/course-share-tokens');
 
@@ -155,6 +156,7 @@ const publicWorksheetSchema = z.object({
 				node_id: z.string().uuid(),
 				name: z.string(),
 				kind: z.string().optional(),
+				branch: z.string().nullable().optional(),
 				position: z.number().int()
 			})
 		)
@@ -523,7 +525,10 @@ export async function resolveCourseWorksheetByShareToken(
 		logger.error('[course-share] fiche de forme inattendue:', parsed.error.issues[0]);
 		return null;
 	}
-	return parsed.data;
+	// Branche des notions, pour le titre imprimé (ADR 0041) : lue dans l'arbre, public
+	const { classifications } = parsed.data;
+	if (!classifications) return parsed.data;
+	return { ...parsed.data, classifications: await withBranches(supabase, classifications) };
 }
 
 /**

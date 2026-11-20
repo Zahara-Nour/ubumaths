@@ -112,24 +112,25 @@ défilement automatique. ≠ le **Deck** de révision SRS (voir CONTEXT.md).
 
 ### Carte du code
 
-| Fichier                                          | Rôle                                                                                          |
-| ------------------------------------------------ | --------------------------------------------------------------------------------------------- |
-| `src/lib/slides/index.ts`                        | Exports : `Deck`, `Slide`, `UbuMarkSlide`, `AnnotatableSlide`, `WhiteboardSlide`…             |
-| `src/lib/slides/core/Deck.svelte`                | Conteneur : contexte, clavier, mise à l'échelle, transitions                                  |
-| `src/lib/slides/stores/deckStore.svelte.ts`      | `createDeckStore` : position `{ h, v, f }`, navigation                                        |
-| `src/lib/slides/stores/autoSlideTimer.svelte.ts` | `createAutoSlideTimer` : défilement automatique                                               |
-| `src/lib/slides/navigation/hash.ts`              | `parseHash` / `formatHash` / `syncHashEffect` : position dans l'URL                           |
-| `src/lib/slides/actions/`                        | `keyboard.ts`, `swipe.ts`, `editableTarget.ts` (`isFromEditableField`)                        |
-| `src/lib/slides/core/config.ts`                  | `defaultConfig`, `mergeConfig`                                                                |
-| `src/lib/slides/core/slide-theme.ts`             | `slideColorScheme` : thème du contenu d'une diapositive d'après son fond (ou sa prop `theme`) |
-| `src/lib/slides/transitions/`                    | slide, fade, zoom, convex, concave                                                            |
+| Fichier                                          | Rôle                                                                                                                                          |
+| ------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/lib/slides/index.ts`                        | Exports : `Deck`, `Slide`, `UbuMarkSlide`, `AnnotatableSlide`, `WhiteboardSlide`…                                                             |
+| `src/lib/slides/core/Deck.svelte`                | Conteneur : contexte, clavier, mise à l'échelle, transitions ; `holdOnExpire` : à la fin du compte d'une diapositive, pause au lieu d'avancer |
+| `src/lib/slides/stores/deckStore.svelte.ts`      | `createDeckStore` : position `{ h, v, f }`, navigation                                                                                        |
+| `src/lib/slides/stores/autoSlideTimer.svelte.ts` | `createAutoSlideTimer` : défilement automatique                                                                                               |
+| `src/lib/slides/navigation/hash.ts`              | `parseHash` / `formatHash` / `syncHashEffect` : position dans l'URL                                                                           |
+| `src/lib/slides/actions/`                        | `keyboard.ts`, `swipe.ts`, `editableTarget.ts` (`isFromEditableField`)                                                                        |
+| `src/lib/slides/core/config.ts`                  | `defaultConfig`, `mergeConfig`                                                                                                                |
+| `src/lib/slides/core/slide-theme.ts`             | `slideColorScheme` : thème du contenu d'une diapositive d'après son fond (ou sa prop `theme`)                                                 |
+| `src/lib/slides/transitions/`                    | slide, fade, zoom, convex, concave                                                                                                            |
 
 ### Consommateurs (seuls points d'entrée)
 
 - `src/lib/components/notebook/presentation/NotebookPresentation.svelte` — mode présentation
   du notebook Python (`/python-notebook/[id]/present`) : `Deck`, `Slide`, `UbuMarkSlide`.
 - `src/lib/components/test/ClassroomSeries.svelte` — série de questions projetée en classe,
-  montée par `QuestionPreviewTabs.svelte` et `/automaths/test`.
+  montée par `QuestionPreviewTabs.svelte` et `/automaths/test` ; se sert de `holdOnExpire` pour
+  « Pause à la fin du temps » (cf. `docs/systeme/evaluations.md`).
 - `/dev/diaporama` (`src/routes/(protected)/dev/diaporama/`, admin seul, ex-`/slides/demo`,
   `/slides/demo-embedded` et `/slides/test-transitions`) — `DemoDeck.svelte` démontre tout le
   moteur (transitions, fragments, arrière-plans, code, UbuMark, case choix en `FlashCard`, annotation,

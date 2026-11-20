@@ -37,8 +37,7 @@ import type {
 	HintReferenceNode,
 	LineBreakNode,
 	InternalLinkNode,
-	InternalLinkReferenceType,
-	LexiconMark
+	InternalLinkReferenceType
 } from '../types';
 import {
 	extractMathOutside,
@@ -66,10 +65,9 @@ import { dedentIndentedFences } from './indented-fences';
 import { blockLineRanges, isSpecialBlockEnd } from './block-ranges';
 import {
 	INLINE_CODE_REGEX,
-	INLINE_DETAIL_REGEX,
-	LEXICON_MARK_REGEX,
+	SPAN_MARK_REGEX,
 	maskSpans,
-	parseDetailKind
+	parseSpanClasses
 } from '../utils/detail-kinds';
 import {
 	findVariationBlocks,
@@ -1077,6 +1075,7 @@ function parseInlineContent(
 			if (hasPlaceholders) {
 				// Split this text node by placeholders
 				const segments = splitTextWithPlaceholders(node.content, placeholders);
+				let unknownPlaced = false;
 
 				for (const segment of segments) {
 					if (typeof segment === 'string') {
@@ -1090,8 +1089,14 @@ function parseInlineContent(
 								...(node.code && { code: true }),
 								...(node.strikethrough && { strikethrough: true }),
 								...(node.highlight && { highlight: true }),
-								...(node.detail && { detail: node.detail })
+								...(node.detail && { detail: node.detail }),
+								...(node.lexicon && { lexicon: node.lexicon }),
+								...(node.color && { color: node.color }),
+								// Le message au prof ne se répète pas sur chaque morceau
+								...(node.unknownClasses &&
+									!unknownPlaced && { unknownClasses: node.unknownClasses })
 							});
+							if (node.unknownClasses) unknownPlaced = true;
 						}
 					} else {
 						// Math placeholder → inline math node
@@ -1103,8 +1108,9 @@ function parseInlineContent(
 							...(exprInfo.expressionName && {
 								expressionName: exprInfo.expressionName
 							}),
-							// Une formule dans un détail en ligne en hérite le type
-							...(node.detail && { detail: node.detail })
+							// Une formule dans un détail en ligne en hérite le type, et la couleur
+							...(node.detail && { detail: node.detail }),
+							...(node.color && { color: node.color })
 						});
 					}
 				}
@@ -1567,43 +1573,45 @@ function parseTextFormattingSegment(text: string): InlineNode[] {
  * @returns Array of inline nodes (text, blank, hint-reference, internal-link, link, hashtag, mention)
  */
 function parseTextFormatting(text: string): InlineNode[] {
-	// Étape 0 : détails en ligne `[texte]{.rappel}` (ADR 0017). Leur texte suit
-	// le même pipeline, puis chaque nœud texte est marqué du type de détail.
-	// Type inconnu : laissé littéral.
+	// Étape 0 : marquages en ligne `[texte]{.classe …}` — détail de correction
+	// (ADR 0017), mot du dictionnaire, couleur (ADR 0042). Deux passes du même
+	// motif : la première lit le marquage extérieur, la seconde celui qu'il
+	// contient (`[le [grand]{.rouge} cône]{.bleu}`). Le texte suit ensuite le
+	// pipeline ordinaire, puis chaque nœud reçoit les marques.
+	return parseWithSpanMarks(text, SPAN_MARK_REGEX, OUTER_BOUNDS, parseInnerSpanMarks, spanMarkOf);
+}
+
+/** Seconde passe de {@link parseTextFormatting} : le marquage intérieur. */
+function parseInnerSpanMarks(text: string): InlineNode[] {
 	return parseWithSpanMarks(
 		text,
-		INLINE_DETAIL_REGEX,
-		DETAIL_BOUNDS,
-		parseTextFormattingPipeline,
-		(match) => {
-			const kind = parseDetailKind(match[2]);
-			return kind ? (node) => ({ ...node, detail: kind }) : null;
-		}
+		SPAN_MARK_REGEX,
+		INNER_BOUNDS,
+		parseTextFormattingCore,
+		spanMarkOf
 	);
 }
 
 /**
- * Pipeline de {@link parseTextFormatting}, hors détails en ligne : d'abord les
- * mots du lexique marqués à la main (`[mot]{.def}`, `{.def=…}`, `{.nodef}`),
- * dont le texte suit le pipeline ordinaire puis reçoit la marque.
+ * Marque d'un marquage `{.…}`. Une marque déjà posée par un marquage
+ * intérieur l'emporte (la couleur la plus proche gagne). Classe inconnue : le
+ * texte est gardé sans crochets ni marque, et le premier nœud du passage
+ * retient les classes inconnues pour le message au prof (Q1 du 2026-11-20).
  */
-function parseTextFormattingPipeline(text: string): InlineNode[] {
-	return parseWithSpanMarks(
-		text,
-		LEXICON_MARK_REGEX,
-		LEXICON_BOUNDS,
-		parseTextFormattingCore,
-		(match) => {
-			const target = match[3]?.trim();
-			const lexicon: LexiconMark =
-				match[2] === 'nodef'
-					? { mode: 'block' }
-					: target
-						? { mode: 'force', target }
-						: { mode: 'force' };
-			return (node) => ({ ...node, lexicon });
+function spanMarkOf(match: RegExpExecArray): (node: TextNode) => TextNode {
+	const { detail, lexicon, color, unknown } = parseSpanClasses(match[2]);
+	let unknownPending = unknown.length > 0;
+	return (node) => {
+		const marked: TextNode = { ...node };
+		if (detail && !marked.detail) marked.detail = detail;
+		if (lexicon && !marked.lexicon) marked.lexicon = lexicon;
+		if (color && !marked.color) marked.color = color;
+		if (unknownPending) {
+			marked.unknownClasses = [...(marked.unknownClasses ?? []), ...unknown];
+			unknownPending = false;
 		}
-	);
+		return marked;
+	};
 }
 
 /**
@@ -1611,8 +1619,8 @@ function parseTextFormattingPipeline(text: string): InlineNode[] {
  * peut contenir un mot marqué, les deux passes s'imbriquent. Dans une plage,
  * le premier code ferme, les suivants ouvrent (un par marquage).
  */
-const DETAIL_BOUNDS = 0xe000;
-const LEXICON_BOUNDS = 0xe800;
+const OUTER_BOUNDS = 0xe000;
+const INNER_BOUNDS = 0xe800;
 const BOUNDS_SIZE = 0x800;
 
 /**

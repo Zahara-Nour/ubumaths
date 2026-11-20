@@ -6,15 +6,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-20 : ADR 0042 écrit, comportements et découpage proposés (§ 3-4)._
+_Mis à jour le 2026-11-20, après #2937._
 
-- **État** : worktree ouvert, aucune ligne de code.
-- **Prochaine action** : faire valider § 3 (comportements) et § 4 (découpage), puis PR 1, tests d'abord.
-- **En attente de David** : validation des § 3 et 4, et réponse aux questions Q1 à Q3 (§ 3).
+- **État** : PR 1 (syntaxe, écran, chat, #2933 + #2934), PR 2 (PDF, #2935) et PR 3 (nettoyage au lieu du filet,
+  #2937, § 7) mergées. Q2 (éditeur riche) = chantier à part, plus tard.
+- **Prochaine action** : après la commande de David, vérifier en prod (lecture seule) qu'aucun modèle n'affiche
+  `\textcolor` hors formule (`findTextcolorOutsideMath` sur toute la prod, § 7) ; puis clôture (versement, archive).
+- **En attente de David** : `pnpm corrections:retouches --lot texte-colore --publier` (prod, depuis le dépôt principal
+  à jour ; d'abord sans `--publier`) ; `deploy:prod` pour livrer #2933 → #2937.
 - **Pièges connus** : la garde `review/textcolor-hors-maths.ts` ne tourne que dans `pnpm question:specs` ; le chat
-  des élèves ne doit rien gagner (rendu `restricted`) ; un `{.x}` inconnu déclenche déjà le message « type inconnu »
-  de `src/lib/questions/correction-detail.ts` (liste des détails seulement).
-- **Worktree / branche** : `../ubumaths-wt-texte-colore` · `feat/texte-colore`.
+  ne doit rien gagner (couleur retirée dans `restrictDocument` ET dans les composants) ; `.def=cible` en dernière
+  classe ; l'éditeur riche perd `color` / `detail` / `lexicon` à l'enregistrement (`markdown-import.ts`, Q2 : plus tard).
+- **Worktree / branche** : `../ubumaths-wt-texte-colore` · aucune (worktree détaché sur `origin/main`, à retirer à la clôture).
 
 ## 1. Le défaut
 
@@ -53,7 +56,7 @@ publiés), à recompter. Depuis le 2026-11-03, `question:specs` refuse un `\text
    si `primary.N` ou nom connu, sinon texte normal), jamais en LaTeX brut ; les modèles publiés sont réparés dès la
    livraison. La garde de `question:specs` continue de les signaler, pour réécriture en `[…]{.nom}`.
 
-## 3. Comportements attendus (proposés le 2026-11-20, à valider)
+## 3. Comportements attendus (validés par David le 2026-11-20 : « je suis tes recos »)
 
 **Cas normaux**
 
@@ -88,17 +91,71 @@ publiés), à recompter. Depuis le 2026-11-03, `question:specs` refuse un `\text
 
 - **Q1** — Aujourd'hui, un `[texte]{.rapel}` (faute de frappe) s'affiche tel quel pour l'élève, crochets compris.
   Je propose de l'aligner sur la couleur inconnue : « texte » en texte normal, message au prof. D'accord ?
+  → **Validé** (proposition suivie, 2026-11-20). Le message « type inconnu » de `correction-detail.ts` disparaît :
+  un seul message, au rendu, à l'endroit du marquage.
 - **Q2** — L'éditeur riche (TipTap) sait colorer du texte, mais la couleur se perd à l'enregistrement. Le brancher
   sur `[…]{.nom}` (12 couleurs dans son menu) : dans ce chantier, ou plus tard ?
+  → **Plus tard, chantier à part** (David, 2026-11-20 : « ok je te suis » à cette proposition).
 - **Q3** — Les modèles publiés en prod qui contiennent `\textcolor` hors formule seront lisibles grâce au filet.
   Les réécrire en `[…]{.nom}` (fichiers de lots + liste pour une mise à jour en prod par toi) : dans ce chantier,
   ou les laisser au filet ?
+  → **Dans ce chantier, après le filet** : fichiers de lots réécrits, liste des modèles en prod pour David
+  (David, 2026-11-20 : « ok je te suis »).
 
-## 4. Découpage proposé (à valider)
+## 4. Découpage (validé le 2026-11-20)
 
 1. **PR 1 — syntaxe et écran** : `[…]{.nom}` lu par le parseur (plusieurs classes, variable tirée, nom inconnu),
    affichage à l'écran, chat sans couleur, message au prof. Doc d'ubumark et règle de rédaction
    (`corrections-redaction.md`). Revue : `code-reviewer` (+ `security-auditor` pour le chat des élèves).
 2. **PR 2 — PDF** : la couleur dans Typst (teinte claire).
-3. **PR 3 — filet** : `\textcolor{…}{…}` hors formule lu comme `[…]{.nom}` (écran et PDF).
+3. ~~**PR 3 — filet**~~ → **PR 3 — nettoyage** (David, 2026-11-20, § 7) : modèles réécrits, pas de filet.
 4. Selon Q2 et Q3 : éditeur riche ; réécriture de l'existant.
+
+## 5. PR 1 — syntaxe et écran (2026-11-20)
+
+- Un seul motif `SPAN_MARK_REGEX` + `parseSpanClasses` (`src/lib/ubumark/utils/detail-kinds.ts`) remplace les
+  deux motifs (détail, dictionnaire) ; deux passes du même motif dans le parseur (extérieur, puis intérieur).
+- `TextNode.color`, `TextNode.unknownClasses`, `MathInlineNode.color` ; une marque intérieure l'emporte.
+- Rendu : `inline-color.ts`, `InlineColor.svelte` (formules), `TextNode.svelte` (couleur + message au prof),
+  cellules de tableau (`table-cell-inline.ts`) ; restreint → aucune couleur.
+- Vu en capture (thèmes clair et sombre) : texte, gras, formule et cellule colorés ; message au prof lisible.
+- Revue (`code-reviewer`) : un détail dans un passage sans détail (`[la règle [à retenir]{.rappel}]{.orange}`)
+  restait en concis — corrigé (`lastIndex` relu) ; `{.Def}` lu. Audit (`security-auditor`) : rien de bloquant ;
+  seconde défense ajoutée (`restrictDocument` retire `color`). Regex mesurée sans retour arrière catastrophique.
+- ⚠️ **Incident** : #2933 mergée avec un test client rouge (CorrectionView D5 attendait `[x]{.truc}` littéral) —
+  `gh pr checks | tail -15` masquait l'échec. Corrigé par #2934. Désormais : grep des checks non `pass` vide avant
+  tout merge.
+
+## 6. PR 2 — PDF (2026-11-20)
+
+- `wrapInlineColor` (`typst-generator.ts`) : `#text(fill: namedColorTypst(nom))[…];` autour du texte (après le
+  gras, avant italique / barré / surligné) et de la formule ; à l'intérieur du détail (`wrapInlineDetail`), pour
+  que la couleur l'emporte sur le gris d'un calcul et se lise dans le surlignage d'un rappel, comme à l'écran.
+- Cellules de tableau : `processTableCellContent` lisait la chaîne brute (le marquage s'imprimait tel quel). Les
+  marquages y sont cherchés hors formules (`maskSpans`), chaque passage rendu à son tour (imbrication), classe
+  inconnue → texte normal ; `**[a]{.orange}**` lu avant le marquage (sinon `**` imprimés), `**` hors marquage
+  appariés deux par deux (revue : `**a** [b]{.orange} **c**` appariait le fermant de a et l’ouvrant de c). Sans `]{.` dans la
+  cellule : chemin d'avant, inchangé. Bonus : un `[…]{.rappel}` de cellule est enfin surligné au PDF.
+- Rendu réel : `texte-colore-typst.test.ts` compile le PDF et lit ses couleurs de remplissage (pdfjs) — vérifié
+  rouge en coupant `wrapInlineColor`. Le rendu SVG de typst.ts n'est pas installé : PDF seulement.
+
+## 7. PR 3 — nettoyage plutôt que filet (2026-11-20)
+
+**Décision (David, 2026-11-20)** : « nettoyer les modèles plutôt que d'avoir un garde-fou à maintenir » → le filet
+(§ 2 point 6, § 4 point 3) est abandonné ; ADR 0042 amendée.
+
+- **Mesure** : garde du rendu (`findTextcolorOutsideMath`, 10 tirages par variation) sur **toute la prod**, lecture
+  seule : 2 077 modèles portent `\textcolor`, **2 publiés** l'affichent hors formule — `78feafed` « Traduire une phrase
+  en expression mathématique » (4 étapes) et `e4784c78` « Lire une fonction Python plus complexe » (1 étape).
+  Exercices : aucun hors formule. Fichiers de lots du dépôt : 2 copies de `e4784c78` seulement.
+- **Retouches** (`scripts/corrections/lib/retouches-texte-colore.ts`, `pnpm corrections:retouches --lot
+texte-colore`) : `primary.1` → `{.bleu}`, `primary.0` → `{.orange}` ; les formules entièrement colorées des mêmes
+  phrases passent en `[$…$]{.orange}` (sinon deux oranges dans une phrase) ; plus aucun `\textcolor` dans les deux
+  modèles. Simulation sur la prod : 2/2 prêtes, `checkTemplate` vert ; vérificateur vert pour `78feafed` (20 000
+  tirages).
+- **Vérificateur et `e4784c78`** : déjà rouge AVANT retouche (hors lot → classe N : « aucun calcul aligné » ;
+  `written` : la réponse n'est pas dans l'énoncé, elle se lit dans le code). Ajout `Retouche.skipVerifier` (raison
+  affichée), `checkTemplate` toujours exigé ; le fond intact est prouvé par le test « rien d'autre ne change ».
+- Fichiers de lots réécrits : `scripts/questions/1techno-t2/e4784c78.json`,
+  `scripts/questions/2de-programmes-11b/13-fonction-complexe.json` (specs 8/8, garde 0/60).
+- Instantané de test : `data/corrections/texte-colore/_modeles.json` (sans identifiant d'utilisateur).

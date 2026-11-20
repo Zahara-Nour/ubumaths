@@ -481,6 +481,10 @@ Ce que lit un visiteur sans compte, par trois portes seulement :
   la fiche (lot 4b : `style_id`, mise en page d'un style de l'auteur), avec son niveau, sa
   catégorie, sa case « titre libre » et ses notions (ADR 0041 : `publicWorksheetSchema` les garde,
   sinon le PDF du lien ne serait pas celui de la classe ; voir [fiches-et-pdf.md](fiches-et-pdf.md)).
+  La branche de chaque notion est ajoutée après la RPC (`withBranches`, lecture publique de
+  l'arbre ; en échec, les notions sans branche) : deux notions d'une même branche impriment la
+  branche en titre, comme le PDF de la classe. Même ajout pour la fiche du cahier de textes
+  (`resolveWorksheetByShareToken`).
 - `/cours/[token]/document/[id]` — RPC `get_course_document_by_share_token`, **réservée au service
   role** (le chemin de stockage ne sort jamais vers le navigateur) ; fichier → URL signée de
   **60 s** (téléchargement forcé hors PDF et images), Drive → l'URL Drive si elle est en `https:`.

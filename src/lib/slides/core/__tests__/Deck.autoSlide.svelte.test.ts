@@ -13,6 +13,7 @@ interface Setup {
 	durations: Array<number | undefined>;
 	config?: Partial<DeckConfig>;
 	onend?: () => void;
+	holdOnExpire?: (position: { h: number; v: number }) => boolean;
 	fragments?: number[];
 }
 
@@ -68,6 +69,35 @@ describe('défilement automatique', () => {
 		elapse(10_000);
 		expect(onend).toHaveBeenCalledTimes(1);
 		expect(deck.getIndices().h).toBe(1);
+	});
+
+	it('holdOnExpire vrai : pause sur la diapositive au lieu d’avancer, ni onend', async () => {
+		const onend = vi.fn();
+		const holdOnExpire = vi.fn(({ h }: { h: number }) => h === 0 || h === 1);
+		const { deck } = await open({ durations: [1000, 1000], onend, holdOnExpire });
+
+		elapse(1000);
+		expect(holdOnExpire).toHaveBeenCalledWith({ h: 0, v: 0 });
+		expect(deck.getIndices().h).toBe(0);
+		expect(deck.isPaused()).toBe(true);
+		elapse(10_000);
+		expect(deck.getIndices().h).toBe(0);
+
+		// La suite est décidée par l'appelant
+		deck.next();
+		deck.resume();
+		flushSync();
+		elapse(1000);
+		expect(deck.getIndices().h).toBe(1);
+		expect(onend).not.toHaveBeenCalled();
+	});
+
+	it('holdOnExpire faux : avance comme d’habitude', async () => {
+		const { deck } = await open({ durations: [1000, 1000], holdOnExpire: () => false });
+
+		elapse(1000);
+		expect(deck.getIndices().h).toBe(1);
+		expect(deck.isPaused()).toBe(false);
 	});
 
 	it('la durée de la diapositive l’emporte sur celle du deck', async () => {
