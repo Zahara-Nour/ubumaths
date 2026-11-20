@@ -2,13 +2,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-20 : relevé fait, aucun code écrit._
+_Mis à jour le 2026-11-20 : phase 0 du lot « Ensembles de nombres » posée, en attente de David._
 
-- **État** : 6 exercices d'une autre plateforme (Seconde, « Ensembles de nombres ») comparés à nos modèles de questions publiés : 4 manques repérés (tableau ci-dessous). Rien de créé.
-- **Prochaine action** : David choisit par où commencer ; recommandation : manque 1 (plus petit ensemble qui contient le résultat d'un calcul).
-- **En attente de David** : le choix du premier manque à traiter.
-- **Pièges en cours** : ne jamais nommer la plateforme d'origine dans un commit, une branche, une PR ou ce journal (consigne de David, 2026-11-20).
+- **État** : relevé fait (tableau ci-dessous) ; décisions de David notées ; phase 0 du lot proposée (section « Lot 1 : phase 0 proposée »). Rien d'écrit.
+- **Prochaine action** : après les réponses de David, écrire le lot (skill `couvrir-niveau`, gabarit `docs/wip/questions-2de/lot-ensembles-10a-2de.py`), dans un worktree.
+- **En attente de David** : validation des modèles 1 et 2 ; point du modèle 3 (2-206, hors BO strict) ou abandon ; petits ajouts plus tard ou maintenant ; question d'accès (proposée : personne).
+- **Pièges en cours** : ne jamais nommer la plateforme d'origine (commits, branches, PR, journal) ; les petits ajouts touchent des modèles publiés (deux migrations).
 - **Worktree / branche** : aucun.
+
+## Décisions de David (2026-11-20)
+
+- **But** : pouvoir créer des séries qui travaillent les automatismes officiels du lycée ; compléter nos modèles avec les idées d'une autre plateforme.
+- **Sens** : on parcourt la plateforme **rubrique par rubrique** et on rattache ensuite chaque idée à un point. Les idées hors automatismes sont **gardées** : elles complètent nos modèles existants.
+- **Ordre** : la **Seconde** d'abord (ses points nourrissent les listes de 1re et de Terminale).
+- **Les 4 manques d'« Ensembles de nombres »** : à créer tout de suite, en brouillon, publication par David.
 
 ## Relevé (2026-11-20)
 
@@ -30,3 +37,10 @@ _Mis à jour le 2026-11-20 : relevé fait, aucun code écrit._
 ## Comment un modèle devient « automatisme » (rappel, 2026-11-20)
 
 Un modèle ne porte aucune marque « automatisme ». Il est relié à des **points** (`question_template_points`) ; un point figure dans la liste d'automatismes d'un ou plusieurs programmes (`curriculum_point_automatismes`). Exemple : « Réunion de deux ensembles finis » → point 2-404 (Seconde) → listes de 1re spé, 1re techno, Tle spé, Tle compl., Tle techno.
+
+## Lot 1 : phase 0 proposée (2026-11-20, sans réponse)
+
+1. **Le plus petit ensemble qui contient le résultat** — point 2-243, sous-notion ℕ, ℤ, 𝔻, ℚ, ℝ ; choix parmi ℕ, ℤ, 𝔻, ℚ, ℝ ; 6 variations : différence d'entiers (ℤ), racines parfaites (ℤ), fractions qui font un entier (ℕ), fractions décimales (𝔻), entier + fraction non décimale (ℚ), entier + racine non parfaite (ℝ).
+2. **∈, ∉, ⊂ ou ⊄ ?** — point 2-203, sous-notion Opérations sur les ensembles ; 4 variations : nombre / ensemble fini, deux ensembles finis, nombre / ensemble de nombres, deux ensembles de nombres.
+3. **A privé de B** — point proposé 2-206 (complémentaire), hors BO strict ; réponse entre accolades ; A∖B, B∖A, cas inclus (∅).
+4. **Petits ajouts** (π, 5,78, −123) sur modèles publiés : proposés pour plus tard.
