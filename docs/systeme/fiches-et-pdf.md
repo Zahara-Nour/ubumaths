@@ -396,7 +396,9 @@ par une majuscule (`notionLabel`). En anglais : catégorie traduite (Technical p
 (`worksheets.grades`) : un badge par niveau, forme courte (« 1ère Spé »), plein orange texte blanc
 (`levelBadge`, `worksheet-palette.ts`), du plus petit au plus grand ; aucun, ou fiche en anglais →
 rien (`{{level_badges}}`, `levels()` du générateur ; `{{level}}` / `{{level_short}}` restent
-remplis pour les gabarits des profs ; un gabarit sans `{{title_sub}}`, style d'un prof écrit avant, reçoit dans `{{title}}` le titre complet « notions · catégorie »). Ces données arrivent au PDF par chaque chemin : éditeur du
+remplis pour les gabarits des profs ; un gabarit sans `{{title_sub}}`, style d'un prof écrit avant, reçoit dans `{{title}}` le titre complet « notions · catégorie » ; un gabarit avec
+`{{title_sub}}` mais sans `{{title_notions}}`, écrit avant le 2026-11-20, garde les notions en
+grand au lieu de la branche, `PrintedTitle.flat` et `notions`). Ces données arrivent au PDF par chaque chemin : éditeur du
 prof (`GET /api/worksheets/[id]`, `classifications`), vue de l'élève et aperçu d'affectation
 (`grades`, `category`, `custom_title`, `classifications` de `StudentWorksheetView`), corrigé de
 classe, liens de partage (fonctions SQL). Les onze autres n'ont que leur fiche et prennent les autres formes du

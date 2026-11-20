@@ -376,6 +376,12 @@ describe('type de la fiche', () => {
 		});
 	});
 
+	it('→ évaluation avec deux notions d’une même branche : les notions en toutes lettres, pas la branche', async () => {
+		const id = await worksheet('worksheet', 'applications', [suitesId, probabilitesId], false);
+		expect(await save(id, { type: 'assessment' })).toBeNull();
+		expect((await stored(id)).title).toBe(`${RUN} Suites · ${RUN} Probabilités`);
+	});
+
 	it('évaluation : une catégorie demandée est refusée', async () => {
 		const id = await worksheet('assessment', null);
 		expect(await save(id, { category: 'review' })).toMatch(/catégorie/i);

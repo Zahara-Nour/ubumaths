@@ -415,8 +415,16 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 		const levels = this.levels(worksheet);
 		const printed = this.printedTitle(worksheet);
 		// Un gabarit sans ligne sous le titre (style d'un prof, écrit avant
-		// l'ADR 0041) reçoit le titre complet : notions · catégorie
-		const mainTitle = templateContent.includes('{{title_sub}}') ? printed.main : printed.footer;
+		// l'ADR 0041) reçoit le titre complet : notions · catégorie. Un gabarit sans
+		// ligne des notions (écrit avant le 2026-11-20) : les notions en grand, comme
+		// avant, plutôt que la branche qui les cacherait
+		const hasSubLine = templateContent.includes('{{title_sub}}');
+		const hasNotionsLine = templateContent.includes('{{title_notions}}');
+		const mainTitle = !hasSubLine
+			? printed.flat
+			: printed.notions !== '' && !hasNotionsLine
+				? printed.notions
+				: printed.main;
 
 		// Prepare template data
 		const templateData: Record<string, string> = {

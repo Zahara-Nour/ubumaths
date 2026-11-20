@@ -171,10 +171,11 @@ export async function loadWorksheetClassifications(
 	if (error) throw new Error(`notions de la fiche illisibles : ${error.message}`);
 
 	const rows = data ?? [];
+	// Arbre illisible : la fiche s'affiche quand même, le titre reprend les notions
 	const branches = await loadBranches(
 		supabase,
 		rows.map((row) => row.node_id)
-	);
+	).catch(() => new Map<string, string | null>());
 	return rows
 		.map((row) => ({
 			node_id: row.node_id,
@@ -248,7 +249,12 @@ export async function prepareClassification(
 		type !== 'worksheet' && asWorksheetType(existing.type) === 'worksheet';
 	if (leavesExerciseSheet && !customTitle) {
 		update.custom_title = true;
-		const notionsTitle = composedTitle(null, ordered);
+		// Titre devenu libre : les notions en toutes lettres, pas leur branche, car
+		// une évaluation n'imprime que son titre
+		const notionsTitle = composedTitle(
+			null,
+			ordered.map((notion) => ({ name: notion.name }))
+		);
 		if (request.title === undefined && notionsTitle !== '') update.title = notionsTitle;
 	}
 

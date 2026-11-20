@@ -54,6 +54,12 @@ export interface PrintedTitle {
 	sub: string;
 	/** Au bas de chaque page, après le badge du niveau */
 	footer: string;
+	/**
+	 * Le titre complet sur une ligne, notions comprises (« Notion A · Notion B ·
+	 * Entraînement technique ») : pour un gabarit de prof écrit avant la ligne
+	 * des notions, qui ne doit pas les perdre
+	 */
+	flat: string;
 }
 
 export interface PrintedTitleInput {
@@ -165,28 +171,27 @@ export function printedTitle(input: PrintedTitleInput): PrintedTitle {
 		const categoryLabel = category ? CATEGORY_LABELS[locale][category] : '';
 		const sub = categoryLabel.toLocaleLowerCase(locale);
 		// Notions d'une même branche : la branche en grand, les notions dessous
+		const flat = [notionsText, categoryLabel].filter((part) => part !== '').join(SEPARATOR);
 		if (branch) {
 			return {
 				main: branch,
 				notions: notionsText,
 				sub,
-				footer: [branch, categoryLabel].filter((part) => part !== '').join(SEPARATOR)
+				footer: [branch, categoryLabel].filter((part) => part !== '').join(SEPARATOR),
+				flat
 			};
 		}
-		if (notionsText !== '') {
-			return {
-				main: notionsText,
-				notions: '',
-				sub,
-				footer: [notionsText, categoryLabel].filter((part) => part !== '').join(SEPARATOR)
-			};
-		}
-		if (categoryLabel !== '')
-			return { main: categoryLabel, notions: '', sub: '', footer: categoryLabel };
-		return { main: title, notions: '', sub: '', footer: title };
+		if (notionsText !== '') return { main: notionsText, notions: '', sub, footer: flat, flat };
+		if (categoryLabel !== '') return alone(categoryLabel);
+		return alone(title);
 	}
 
 	// Titre libre, ou titre écrit à la main des autres types : le titre seul,
 	// ni catégorie ni notions dessous (David, 2026-11-20)
-	return { main: title, notions: '', sub: '', footer: title };
+	return alone(title);
+}
+
+/** Un titre imprimé seul, partout */
+function alone(text: string): PrintedTitle {
+	return { main: text, notions: '', sub: '', footer: text, flat: text };
 }

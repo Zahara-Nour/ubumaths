@@ -102,7 +102,8 @@ describe('printedTitle', () => {
 			main: 'Suites',
 			notions: '',
 			sub: 'entraînement technique',
-			footer: 'Suites · Entraînement technique'
+			footer: 'Suites · Entraînement technique',
+			flat: 'Suites · Entraînement technique'
 		});
 	});
 
@@ -113,7 +114,8 @@ describe('printedTitle', () => {
 			main: 'Suites · Dérivation',
 			notions: '',
 			sub: 'automatismes',
-			footer: 'Suites · Dérivation · Automatismes'
+			footer: 'Suites · Dérivation · Automatismes',
+			flat: 'Suites · Dérivation · Automatismes'
 		});
 	});
 
@@ -122,7 +124,8 @@ describe('printedTitle', () => {
 			main: 'Révisions',
 			notions: '',
 			sub: '',
-			footer: 'Révisions'
+			footer: 'Révisions',
+			flat: 'Révisions'
 		});
 	});
 
@@ -132,7 +135,8 @@ describe('printedTitle', () => {
 				main: 'Fiche 3',
 				notions: '',
 				sub: '',
-				footer: 'Fiche 3'
+				footer: 'Fiche 3',
+				flat: 'Fiche 3'
 			}
 		);
 	});
@@ -142,14 +146,16 @@ describe('printedTitle', () => {
 			main: 'Le produit scalaire',
 			notions: '',
 			sub: '',
-			footer: 'Le produit scalaire'
+			footer: 'Le produit scalaire',
+			flat: 'Le produit scalaire'
 		});
 	});
 
 	it('sous-notion en minuscule : majuscule en tête', () => {
 		expect(printedTitle({ ...base, notions: notions('loi géométrique') })).toMatchObject({
 			main: 'Loi géométrique',
-			footer: 'Loi géométrique · Entraînement technique'
+			footer: 'Loi géométrique · Entraînement technique',
+			flat: 'Loi géométrique · Entraînement technique'
 		});
 	});
 
@@ -166,7 +172,8 @@ describe('printedTitle', () => {
 			main: 'Préparation Bac Blanc 1',
 			notions: '',
 			sub: '',
-			footer: 'Préparation Bac Blanc 1'
+			footer: 'Préparation Bac Blanc 1',
+			flat: 'Préparation Bac Blanc 1'
 		});
 	});
 
@@ -181,7 +188,13 @@ describe('printedTitle', () => {
 					title: 'Contrôle n° 2',
 					notions: notions('Suites', 'Dérivation')
 				})
-			).toEqual({ main: 'Contrôle n° 2', notions: '', sub: '', footer: 'Contrôle n° 2' });
+			).toEqual({
+				main: 'Contrôle n° 2',
+				notions: '',
+				sub: '',
+				footer: 'Contrôle n° 2',
+				flat: 'Contrôle n° 2'
+			});
 		}
 	});
 
@@ -190,7 +203,8 @@ describe('printedTitle', () => {
 			main: 'Technical practice',
 			notions: '',
 			sub: '',
-			footer: 'Technical practice'
+			footer: 'Technical practice',
+			flat: 'Technical practice'
 		});
 	});
 
@@ -209,7 +223,7 @@ describe('printedTitle', () => {
 				title: 'Mock exam',
 				notions: notions('Suites')
 			})
-		).toEqual({ main: 'Mock exam', notions: '', sub: '', footer: 'Mock exam' });
+		).toEqual({ main: 'Mock exam', notions: '', sub: '', footer: 'Mock exam', flat: 'Mock exam' });
 	});
 });
 
@@ -288,7 +302,8 @@ describe('titre d’une fiche dont les notions ont une branche commune', () => {
 			main: 'Suites',
 			notions: 'Généralités sur les suites · Suites arithmétiques · Suites géométriques',
 			sub: 'entraînement technique',
-			footer: 'Suites · Entraînement technique'
+			footer: 'Suites · Entraînement technique',
+			flat: 'Généralités sur les suites · Suites arithmétiques · Suites géométriques · Entraînement technique'
 		});
 	});
 
@@ -317,7 +332,8 @@ describe('titre d’une fiche dont les notions ont une branche commune', () => {
 			main: 'Automatismes : suites (1)',
 			notions: '',
 			sub: '',
-			footer: 'Automatismes : suites (1)'
+			footer: 'Automatismes : suites (1)',
+			flat: 'Automatismes : suites (1)'
 		});
 	});
 
@@ -326,7 +342,8 @@ describe('titre d’une fiche dont les notions ont une branche commune', () => {
 			main: 'Technical practice',
 			notions: '',
 			sub: '',
-			footer: 'Technical practice'
+			footer: 'Technical practice',
+			flat: 'Technical practice'
 		});
 	});
 });
