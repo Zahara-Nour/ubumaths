@@ -269,10 +269,11 @@
 		showScrollTop = window.scrollY > 300;
 	}
 
-	// Listen to scroll events
-	if (typeof window !== 'undefined') {
+	// Écoute du défilement, retirée au démontage (composant remonté à chaque « Recommencer »)
+	$effect(() => {
 		window.addEventListener('scroll', handleScroll);
-	}
+		return () => window.removeEventListener('scroll', handleScroll);
+	});
 </script>
 
 {#if !isCompleted}
