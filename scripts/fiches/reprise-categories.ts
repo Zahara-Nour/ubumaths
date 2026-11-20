@@ -26,6 +26,7 @@ import { createClient } from '@supabase/supabase-js';
 import { config as dotenv } from 'dotenv';
 import { z } from 'zod';
 import type { Database } from '#lib/types/database.ts';
+import { loadBranches } from '#lib/server/worksheets/worksheet-classification.ts';
 import { type FicheEnBase, type NoeudConnu, planFiche } from './reprise-categories-plan.ts';
 
 dotenv({ path: '.env' });
@@ -101,8 +102,18 @@ async function main() {
 		.select('id, name, kind, archived_at')
 		.in('id', idsNoeuds);
 	if (e3) throw e3;
+	// Branche de chaque notion, lue dans l'arbre comme le fait l'éditeur (ADR 0041, 2026-11-20)
+	const branches = await loadBranches(supabase, idsNoeuds);
 	const noeuds = new Map<string, NoeudConnu>(
-		lus.map((n) => [n.id, { name: n.name, kind: n.kind, archived: n.archived_at !== null }])
+		lus.map((n) => [
+			n.id,
+			{
+				name: n.name,
+				kind: n.kind,
+				archived: n.archived_at !== null,
+				branch: branches.get(n.id) ?? null
+			}
+		])
 	);
 
 	let ecrites = 0;

@@ -2,9 +2,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-20, PR 3b en cours (branche `feat/reprise-fiches`)._
+_Mis à jour le 2026-11-20, PR 3b prête (branche `feat/reprise-fiches`), après #2938._
 
-- **État** : PR 1, 2a, 2b, #2919, #2928 (3a) mergées, code **pas en prod**. PR 3b commencée : page à cocher publiée (https://claude.ai/artifact/Ks8MnFXhRHiWMsMQW17o49, réponses dans la collection `reponses`), script `scripts/fiches/reprise-categories.ts` (simulation par défaut, `--appliquer` écrit ; fiche modifiée depuis le relevé = sautée) essayé en local · **Prochaine action** : quand David a tout validé, exporter les réponses (ArtifactData `list`) vers `data/fiches/reprise-categories/reponses.json`, simulation contre la prod (lecture), PR ; David lance `--appliquer` après son `deploy:prod` · **En attente de David** : relecture de la page ; `deploy:prod` · **Pièges en cours** : PUT = trois requêtes (écart 8 de `docs/systeme/fiches-et-pdf.md`) ; notion archivée acceptée par le serveur ; `cadres-lignes.test.ts` lent sous charge ; le script lit `.env` (prod) sauf variables déjà posées (essai local : `supabase status -o env`) · **Worktree** : `../ubumaths-wt-reprise-fiches`, branche `feat/reprise-fiches`
+- **État** : PR 1, 2a, 2b, #2919, #2928 (3a), #2938 (branche en titre, ADR 0041 amendé) mergées, code **pas en prod**. Page à cocher relue par David : 49 « Valider », aucune correction (ESSAI exclue). Réponses versées dans `data/fiches/reprise-categories/reponses.json` ; simulation contre la prod : 49 à écrire, 0 sautée · **Prochaine action** : merger la PR 3b ; après le `deploy:prod` de David, il lance `pnpm tsx scripts/fiches/reprise-categories.ts` (simulation) puis `--appliquer` depuis ce worktree ; vérifier en prod (MCP lecture) · **En attente de David** : `deploy:prod`, puis `--appliquer` · **Pièges en cours** : le script lit `.env` (prod) sauf variables déjà posées ; écrire seulement après le deploy (l'éditeur en prod recomposerait les titres sans la branche) ; échapper `/` dans `escapeTypst` (faible, PR à part) · **Worktree** : `../ubumaths-wt-reprise-fiches`, branche `feat/reprise-fiches`
+
+### 2026-11-20 — relecture de la page, règle de la branche
+
+- David a proposé de classer sous une branche ; tranché : on classe toujours sous des notions, et
+  deux notions ou plus d'une même branche impriment la branche en titre (« Suites · Entraînement
+  technique » ; PDF : branche en grand, notions dessous, catégorie en petit). #2938, sans migration.
+- Page cochée : 49 réponses « ok », identiques aux propositions (Produit scalaire en évaluation
+  compris). Fichier de réponses : 49 lignes, ordre du relevé.
 
 ## Synthèse de la phase 0 (2026-11-19)
 

@@ -23,14 +23,22 @@ const ARITH = '00000000-0000-4000-8000-000000000002';
 const LOI_GEO = '00000000-0000-4000-8000-000000000003';
 const ARCHIVEE = '00000000-0000-4000-8000-000000000004';
 const BRANCHE = '00000000-0000-4000-8000-000000000005';
+const DERIVATION = '00000000-0000-4000-8000-000000000006';
 const FICHE = '00000000-0000-4000-8000-0000000000aa';
 
 const NOEUDS = new Map<string, NoeudConnu>([
-	[SUITES, { name: 'Généralités sur les suites', kind: 'notion', archived: false }],
-	[ARITH, { name: 'Suites arithmétiques', kind: 'notion', archived: false }],
-	[LOI_GEO, { name: 'loi géométrique', kind: 'subnotion', archived: false }],
-	[ARCHIVEE, { name: 'Ancienne notion', kind: 'notion', archived: true }],
-	[BRANCHE, { name: 'Suites', kind: 'branch', archived: false }]
+	[
+		SUITES,
+		{ name: 'Généralités sur les suites', kind: 'notion', archived: false, branch: 'Suites' }
+	],
+	[ARITH, { name: 'Suites arithmétiques', kind: 'notion', archived: false, branch: 'Suites' }],
+	[DERIVATION, { name: 'Dérivation', kind: 'notion', archived: false, branch: 'Fonctions' }],
+	[
+		LOI_GEO,
+		{ name: 'loi géométrique', kind: 'subnotion', archived: false, branch: 'Probabilités' }
+	],
+	[ARCHIVEE, { name: 'Ancienne notion', kind: 'notion', archived: true, branch: 'Suites' }],
+	[BRANCHE, { name: 'Suites', kind: 'branch', archived: false, branch: 'Suites' }]
 ]);
 
 function fiche(champs: Partial<FicheEnBase> = {}): FicheEnBase {
@@ -66,7 +74,7 @@ function raison(plan: ReturnType<typeof planFiche>): string {
 // =============================================================================
 
 describe('planFiche — nominal', () => {
-	it('titre composé : notions dans l’ordre puis catégorie, case titre libre décochée', () => {
+	it('titre composé, notions d’une même branche : la branche puis la catégorie', () => {
 		const plan = planFiche(reponse(), fiche(), NOEUDS);
 		expect(plan).toEqual({
 			action: 'ecrire',
@@ -76,10 +84,17 @@ describe('planFiche — nominal', () => {
 				type: 'worksheet',
 				category: 'technical_practice',
 				custom_title: false,
-				title: 'Généralités sur les suites · Suites arithmétiques · Entraînement technique',
+				title: 'Suites · Entraînement technique',
 				notions: [SUITES, ARITH]
 			}
 		});
+	});
+
+	it('notions de branches différentes : les notions dans l’ordre puis la catégorie', () => {
+		const plan = planFiche(reponse({ notions: [DERIVATION, SUITES] }), fiche(), NOEUDS);
+		expect(plan.action === 'ecrire' && plan.apres.title).toBe(
+			'Dérivation · Généralités sur les suites · Entraînement technique'
+		);
 	});
 
 	it('sous-notion en minuscule : majuscule dans le titre composé', () => {

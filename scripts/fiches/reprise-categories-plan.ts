@@ -48,6 +48,8 @@ export interface NoeudConnu {
 	name: string;
 	kind: string;
 	archived: boolean;
+	/** Nom de sa branche dans l'arbre : deux notions d'une même branche → la branche en titre */
+	branch: string | null;
 }
 
 export interface ChangementFiche {
@@ -112,8 +114,11 @@ export function planFiche(
 		category = reponse.categorie;
 	}
 	const customTitle = exercices ? reponse.titreLibre : true;
-	const noms = reponse.notions.map((id) => noeuds.get(id)?.name ?? '');
-	const title = customTitle ? fiche.title : composedTitle(category, noms);
+	const notions = reponse.notions.map((id) => ({
+		name: noeuds.get(id)?.name ?? '',
+		branch: noeuds.get(id)?.branch ?? null
+	}));
+	const title = customTitle ? fiche.title : composedTitle(category, notions);
 	if (title === '') return sauter('titre composé vide (ni catégorie ni notion)');
 
 	return {
