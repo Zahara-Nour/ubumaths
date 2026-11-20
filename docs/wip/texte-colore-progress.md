@@ -1,18 +1,20 @@
 # Chantier « texte-colore » — du texte coloré dans ubumark, hors formule
 
 > Né de la clôture de [questions-ce1](../archive/wip/questions-ce1-progress.md) (§ 17 et après), le 2026-11-20.
-> Chantier **pas encore ouvert** (ni worktree ni branche) : phase 0 validée, rien codé.
+> Ouvert le 2026-11-20 : worktree `ubumaths-wt-texte-colore`, branche `feat/texte-colore`. Décision :
+> [ADR 0042](../adr/0042-texte-colore-dans-la-prose.md).
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-20 : phase 0 validée par David, chantier à ouvrir._
+_Mis à jour le 2026-11-20 : ADR 0042 écrit, comportements et découpage proposés (§ 3-4)._
 
-- **État** : syntaxe et règles tranchées (§ 2) ; aucune ligne de code.
-- **Prochaine action** : ouvrir le chantier (worktree `ubumaths-wt-texte-colore`), écrire l'ADR, puis les comportements
-  en français (nominal / limite / erreur) et le découpage en PR, à faire valider.
-- **En attente de David** : rien.
+- **État** : worktree ouvert, aucune ligne de code.
+- **Prochaine action** : faire valider § 3 (comportements) et § 4 (découpage), puis PR 1, tests d'abord.
+- **En attente de David** : validation des § 3 et 4, et réponse aux questions Q1 à Q3 (§ 3).
 - **Pièges connus** : la garde `review/textcolor-hors-maths.ts` ne tourne que dans `pnpm question:specs` ; le chat
-  des élèves ne doit rien gagner (rendu `restricted`).
+  des élèves ne doit rien gagner (rendu `restricted`) ; un `{.x}` inconnu déclenche déjà le message « type inconnu »
+  de `src/lib/questions/correction-detail.ts` (liste des détails seulement).
+- **Worktree / branche** : `../ubumaths-wt-texte-colore` · `feat/texte-colore`.
 
 ## 1. Le défaut
 
@@ -50,3 +52,53 @@ publiés), à recompter. Depuis le 2026-11-03, `question:specs` refuse un `\text
 6. **Filet pour l'existant** : un `\textcolor{…}{…}` hors formule est rendu comme du texte coloré (nom correspondant
    si `primary.N` ou nom connu, sinon texte normal), jamais en LaTeX brut ; les modèles publiés sont réparés dès la
    livraison. La garde de `question:specs` continue de les signaler, pour réécriture en `[…]{.nom}`.
+
+## 3. Comportements attendus (proposés le 2026-11-20, à valider)
+
+**Cas normaux**
+
+- `C'est [le cône]{.orange}.` → l'élève lit « C'est le cône. », « le cône » en orange, de la même teinte que l'objet
+  orange d'une figure, en thème clair comme en sombre.
+- Nom anglais `{.blue}` → bleu (comme dans les figures). Majuscules ignorées : `{.Orange}` = orange.
+- `[le cône]{.orange .def}` → orange, et le mot ouvre sa fiche du dictionnaire. `[la règle]{.rappel .vert}` → vert,
+  et masqué en vue concise comme tout rappel.
+- Mise en forme : `**[le cône]{.orange}**` et `[**le** cône]{.orange}` → gras et orange. Une formule dans le
+  passage, `[$x^2$]{.orange}`, est orange elle aussi.
+- Partout où le texte d'ubumark s'affiche : énoncé, choix d'un QCM, tableau, liste, encadré, correction, cours.
+- Couleur tirée : `[le cône]{.{{c}}}` avec `c` tiré à `rouge` → rouge.
+- PDF : même nom, teinte de la version claire.
+- Chat des élèves : « le cône » sans couleur ni crochets.
+
+**Cas limites**
+
+- Deux couleurs l'une dans l'autre, `[le [grand]{.rouge} cône]{.bleu}` → « grand » rouge, le reste bleu.
+- `{.noir}` et `{.blanc}` suivent la page, comme dans les figures (`blanc` disparaît sur fond blanc : à éviter,
+  pas interdit).
+- Crochets sans accolade, `[x]`, ou dans une formule `$[0;1]$` → rien ne change.
+- Ancienne écriture hors formule (filet) : `\textcolor{red}{le cône}` → rouge ; `\textcolor{primary.0}{…}` → orange
+  (table du § 2) ; `\textcolor{#FF5722}{…}` → texte normal, sans LaTeX visible. `question:specs` les signale toujours.
+
+**Erreurs**
+
+- Nom inconnu, `[le cône]{.turquoise}` → l'élève lit « le cône » en texte normal ; le prof voit « « {.turquoise} » :
+  ni un type de détail, ni une couleur. Couleurs possibles : bleu, rouge, … ».
+- Variable tirée à une valeur qui n'est pas un nom (`c` = `#ff0000`) → texte normal, même message.
+
+**Questions**
+
+- **Q1** — Aujourd'hui, un `[texte]{.rapel}` (faute de frappe) s'affiche tel quel pour l'élève, crochets compris.
+  Je propose de l'aligner sur la couleur inconnue : « texte » en texte normal, message au prof. D'accord ?
+- **Q2** — L'éditeur riche (TipTap) sait colorer du texte, mais la couleur se perd à l'enregistrement. Le brancher
+  sur `[…]{.nom}` (12 couleurs dans son menu) : dans ce chantier, ou plus tard ?
+- **Q3** — Les modèles publiés en prod qui contiennent `\textcolor` hors formule seront lisibles grâce au filet.
+  Les réécrire en `[…]{.nom}` (fichiers de lots + liste pour une mise à jour en prod par toi) : dans ce chantier,
+  ou les laisser au filet ?
+
+## 4. Découpage proposé (à valider)
+
+1. **PR 1 — syntaxe et écran** : `[…]{.nom}` lu par le parseur (plusieurs classes, variable tirée, nom inconnu),
+   affichage à l'écran, chat sans couleur, message au prof. Doc d'ubumark et règle de rédaction
+   (`corrections-redaction.md`). Revue : `code-reviewer` (+ `security-auditor` pour le chat des élèves).
+2. **PR 2 — PDF** : la couleur dans Typst (teinte claire).
+3. **PR 3 — filet** : `\textcolor{…}{…}` hors formule lu comme `[…]{.nom}` (écran et PDF).
+4. Selon Q2 et Q3 : éditeur riche ; réécriture de l'existant.
