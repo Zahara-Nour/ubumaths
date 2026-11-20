@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-20, après #2946 et la publication du gros lot._
+_Mis à jour le 2026-11-20, relecture rouverte dans `/dev/modeles`._
 
-- **État** : gros lot « nombres et calculs » **livré** — 36 modèles neufs publiés (rangés, 31 tags, 5 hors programme sans point) ; 21 variations ajoutées à 16 publiés, en prod (migration de contenu jouée, prod = fichiers).
-- **Prochaine action** : rien d'engagé. Restent « plus tard » (phase 0) : fiches 16 (retrouver A et B), 17 (Python et intervalle), 34 (prochain multiple, fraction entre deux entiers), 52 (puissances rares). À David : clore le chantier ou ouvrir une autre rubrique.
-- **En attente de David** : vérifications à l'œil (ligne du 2026-11-20 de `verifications-manuelles.md`).
-- **Pièges en cours** : ne jamais nommer la plateforme d'origine ; `create-questions --publier` en LOCAL écrit les ids locaux → `git restore` ; branche locale `feat/ensembles-2de-lot-rangement` restée (contenu sur `main` par cherry-pick, `-D` = liste `ask`).
-- **Worktree / branche** : `../ubumaths-wt-ensembles-2de`, détaché sur `origin/main` (à retirer si le chantier est clos).
+- **État** : gros lot publié (36 neufs + 21 variations de 16 publiés). David relit tout dans `/dev/modeles` : séries de relecture `54d77552` (36 nouveaux) et `d580e46d` (16 complétés), fichiers `scripts/series/2-relecture-nombres-{nouveaux,publies}.json`.
+- **Prochaine action** : lire les verdicts « À revoir » et leurs commentaires en base (verdicts de `/dev/modeles`), corriger : brouillons → aucun (tous publiés) ; modèles publiés → fichiers + `migration-contenu.ts` (variation corrigée = signalée) ou nouvelle variation.
+- **En attente de David** : la relecture dans `/dev/modeles`, dont les 6 choix (rationaliser, décomposition, entier + fraction, téra, arrondi, puissances) qu'il a validés sans les voir ; « plusieurs choses me paraissent bizarres ».
+- **Pièges en cours** : ne jamais nommer la plateforme d'origine ; corriger une variation d'un publié change ce que voient les élèves qui y ont répondu (indice gardé) ; branche locale `feat/ensembles-2de-lot-rangement` restée (`-D` = liste `ask`).
+- **Worktree / branche** : `../ubumaths-wt-ensembles-2de`, `chore/ensembles-2de-series-relecture`.
 
 ## Décisions de David (2026-11-20)
 
@@ -133,3 +133,8 @@ Cinq agents (`pedagogy-expert`), un par dossier ; specs à 300 tirages par varia
 - #2946 mergé (CI verte, intégration 90 s, `security-auditor` sans bloquant) ; `db:migrate` le 2026-11-20 ; `migration-contenu.ts` relancé ensuite : 16 « inchangé » (prod = fichiers).
 - Relecture : David « je valide toute la relecture » (aucun verdict saisi sur la page) ; les 6 choix restent tels que réglés (rationaliser à demi-point pour 3/2 × √2, décomposition en cases ordonnées, entier + fraction en 2 cases, T affiché seulement, arrondi et puissances en `bad_form`).
 - Publication : David a lancé `publier-lot.ts --publier` sur les 4 dossiers ; prod : 36/36 `published`.
+
+## Relecture dans `/dev/modeles` (2026-11-20)
+
+- David : « je veux refaire une lecture des 52 fiches mais dans /dev/modeles […] je veux vérifier les 6 choix que j'ai validés sans regarder et plusieurs choses me paraissent bizarres. Pour les prochaines fois, les vérifications doivent se faire dans /dev/modeles. » → règle ajoutée à `couvrir-un-niveau.md` § 8, à la skill `couvrir-niveau` et en mémoire.
+- Deux séries (50 modèles au plus par série) enregistrées par David : `54d77552-9438-40f3-8773-e3d848a5e219` (36 nouveaux), `d580e46d-d9c7-4505-a158-b42335883050` (16 complétés) ; vérifiées en base.
