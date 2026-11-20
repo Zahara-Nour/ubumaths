@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-20, après #2944 (fichiers du gros lot mergés)._
+_Mis à jour le 2026-11-20, après #2945 et son `db:migrate`._
 
-- **État** : 36 nouveaux modèles écrits (`scripts/questions/2de-nombres-{a,b,c1,c2}/`, 36/36 verts en simulation, créés en base locale) + 21 variations ajoutées à 16 publiés (`2de-nombres-publies/`, migration générée, test d'intégration 12/12, **non commitée** : `supabase/migrations/20261120145050_…_contenu.sql` + fixture, hors PR des fichiers).
-- **Prochaine action** : David lance `create-questions --publier` sur les 4 dossiers (brouillons prod) → ids commités → page à cocher (nouveaux + variations des publiés) → migration rangement + tags (36) et migration de contenu (régénérée après relecture) → publication.
-- **En attente de David** : les points à trancher du § « Gros lot : écrit » (forme de 3/2 × √2, décomposition en cases ordonnées, entier + fraction en 2 cases, préfixe T).
-- **Pièges en cours** : `create-questions --publier` en LOCAL écrit les ids locaux dans les fichiers → `git restore` aussitôt ; le hook de commit laisse une copie non formatée dans l'index → `git restore --staged`. Ne jamais merger la migration de contenu avant la relecture (le `db:migrate` de n'importe quelle session la jouerait). Ne jamais nommer la plateforme d'origine.
-- **Worktree / branche** : `../ubumaths-wt-ensembles-2de`, `feat/ensembles-2de-lot-rangement` (ids, page à cocher, migrations).
+- **État** : 36 brouillons en prod, rangés (36 nœuds, 31 tags ; 5 hors programme sans point), vérifié en base. 21 variations de 16 publiés dans les fichiers (mergés, #2944) ; migration de contenu générée (`20261120145050_…_contenu.sql` + fixture, **non commitée**, test 12/12).
+- **Prochaine action** : lire et compter les verdicts de la page à cocher https://claude.ai/artifact/WSKrRGYdQ9yaNuFcYPgb4S (52 fiches) ; corriger les « À revoir » ; régénérer la migration de contenu (horodatage neuf) → PR → `db:migrate` ; `publier-lot.ts` en simulation sur les 4 dossiers, puis David `--publier`.
+- **En attente de David** : la relecture, et les 6 choix (rationaliser, décomposition, entier + fraction, téra, arrondi, puissances) — en commentaire sur les fiches.
+- **Pièges en cours** : `create-questions --publier` en LOCAL écrit les ids locaux → `git restore` ; le hook de commit laisse une copie non formatée dans l'index → `git restore --staged`. Migration de contenu : jamais mergée avant la relecture. Pas de nom de la plateforme d'origine. Job d'intégration de la PR de rangement : 109 s.
+- **Worktree / branche** : `../ubumaths-wt-ensembles-2de`, `feat/ensembles-2de-lot-rangement` (mergée ; prochaine PR sur une branche neuve depuis `origin/main`, avec le commit de journal local).
 
 ## Décisions de David (2026-11-20)
 
@@ -122,3 +122,11 @@ Cinq agents (`pedagogy-expert`), un par dossier ; specs à 300 tirages par varia
   5. Arrondi : `zeros: off` (3,00 et 3 justes) ; 7,27 au dixième = `bad_form` (contrainte d'arrondi), pas faux.
   6. Puissances : (−3)² répondu 3², (−10)³ répondu −10³ → `bad_form`.
 - Pas joué dans l'aperçu admin un par un (36 modèles) : relecture par la page à cocher, puis aperçu ciblé des blocs à risque (ranger, droite, intervalles).
+
+## Gros lot : brouillons en prod, rangement (2026-11-20)
+
+- #2944 mergé (fichiers). David a lancé `create-questions --publier` : 36 brouillons en prod (vérifié : 36 `draft`, sans nœud) ; ids commités.
+- Migration `20261120150926_questions_2de_nombres_rangement_tags.sql` (36 nœuds, 31 tags, 5 hors programme sans point) + test d'intégration : rouge sans (6), vert avec (11/11). PR #2945.
+- Page à cocher : 52 fiches (36 neufs + 16 publiés, intro : ne relire que les nouvelles variations), générée APRÈS le `db:migrate` (sinon 36 alertes « sans nœud »).
+- Hors lot, à signaler à David : « Placer un réel sur une droite graduée » (3b0a04c0), variations 1 à 3 **déjà en prod** : graduations de 11 à 15 px sur téléphone (alerte de la page à cocher). La nouvelle variation 4 (10 graduations) n'est pas concernée.
+- #2945 mergé (CI verte, intégration 109 s, `security-auditor` sans bloquant) ; `db:migrate` le 2026-11-20 (seule migration en attente) ; prod : 36 rangés, 31 tags, 36 brouillons. Page à cocher publiée : https://claude.ai/artifact/WSKrRGYdQ9yaNuFcYPgb4S (alertes restantes attendues : 5 sans point, 2 blocs ranger à jouer dans l'aperçu, graduations des anciennes variations de 3b0a04c0).
