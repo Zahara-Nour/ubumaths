@@ -609,6 +609,51 @@ describe('ClassroomSeries — réglages pendant la série', () => {
 		expect(activeSlideText(container)).toContain('Énoncé B');
 	});
 
+	it('panneau ouvert : Espace et les flèches ne relancent ni ne déplacent le diaporama', async () => {
+		const { container } = await open(threeItems());
+		elapse(4000);
+
+		click(container, 'Réglages');
+		// Le panneau prend le focus : les touches ne vont plus au diaporama
+		const panel = container.querySelector('[data-testid="classroom-settings-panel"]');
+		expect(panel?.contains(document.activeElement)).toBe(true);
+		await userEvent.keyboard(' ');
+		flushSync();
+		await userEvent.keyboard('{ArrowRight}');
+		flushSync();
+		elapse(60_000);
+		expect(activeSlideText(container)).toContain('Énoncé A');
+		expect(text(container, 'classroom-remaining')).toBe('6');
+	});
+
+	it('Échap ferme le panneau et reprend', async () => {
+		const { container } = await open(threeItems());
+		elapse(4000);
+
+		click(container, 'Réglages');
+		await userEvent.keyboard('{Escape}');
+		flushSync();
+		expect(container.querySelector('[data-testid="classroom-settings-panel"]')).toBeNull();
+		elapse(6000);
+		expect(activeSlideText(container)).toContain('Énoncé B');
+	});
+
+	it('« Temps écoulé » puis correction allumée : la question repart, sans « Temps écoulé »', async () => {
+		useSettings({ pauseAtEnd: true });
+		const { container } = await open(threeItems());
+		elapse(10_000);
+		expect(container.textContent).toContain('Temps écoulé');
+
+		click(container, 'Réglages');
+		toggle(container, 'Correction après chaque question');
+		click(container, 'Fermer les réglages');
+		await tick();
+		flushSync();
+
+		expect(container.textContent).not.toContain('Temps écoulé');
+		expect(text(container, 'classroom-position')).toBe('Question 1 / 3');
+	});
+
 	it('allumer la correction en cours de route garde la question affichée', async () => {
 		const { container } = await open(threeItems());
 		elapse(10_000);

@@ -175,7 +175,10 @@
 	function connectDeck(node: HTMLElement, deck: DeckContext): ActionReturn<DeckContext> {
 		deckContext = deck;
 		// Les raccourcis du Deck n'agissent que s'il a le focus : on le lui donne
-		node.closest<HTMLElement>('[role="application"]')?.focus({ preventScroll: true });
+		// (pas pendant les réglages : le panneau garde le focus)
+		if (!settingsOpen) {
+			node.closest<HTMLElement>('[role="application"]')?.focus({ preventScroll: true });
+		}
 		void tick().then(() => prepareDeck(deck));
 		return {
 			destroy() {
@@ -187,6 +190,8 @@
 	// Deck tout juste monté : plein écran demandé, retour à la question affichée
 	function prepareDeck(deck: DeckContext) {
 		if (deckContext !== deck) return;
+		// Le Deck neuf a oublié les minuteurs : plus rien n'est « Temps écoulé »
+		heldH = null;
 		if (fullscreenPending) {
 			fullscreenPending = false;
 			// Refus du navigateur : la série continue sans plein écran
@@ -198,6 +203,8 @@
 		if (target > 0) {
 			restoring = true;
 			deck.slide(target);
+			// Pas de changement de diapositive : pas d'événement à attendre
+			if (deck.getIndices().h !== target) restoring = false;
 		}
 		if (settingsOpen) deck.pause();
 	}
@@ -227,6 +234,8 @@
 
 	// Espace ou ▶ : après « Temps écoulé », la suite ; sinon pause / reprise
 	function playOrPause(deck: DeckContext) {
+		// Réglages ouverts : le diaporama reste en pause jusqu'à leur fermeture
+		if (settingsOpen) return;
 		if (!isHeld(deck)) {
 			deck.togglePause();
 			return;
@@ -251,6 +260,26 @@
 		settingsOpen = false;
 		if (resumeOnSettingsClose) deckContext?.resume();
 		resumeOnSettingsClose = false;
+		// Le Deck reprend le focus pour ses raccourcis
+		document
+			.querySelector<HTMLElement>('.classroom-projection [role="application"]')
+			?.focus({ preventScroll: true });
+	}
+
+	// Action du panneau de réglages : il prend le focus à son ouverture (et après
+	// un remontage du Deck), et ses touches s'arrêtent à lui. Écouteur natif : un
+	// `onkeydown` de Svelte est délégué à la racine, donc vu APRÈS le Deck
+	function settingsPanel(node: HTMLElement): ActionReturn {
+		const stop = (event: KeyboardEvent) => {
+			if (event.key !== 'Escape') event.stopPropagation();
+		};
+		node.addEventListener('keydown', stop);
+		node.focus({ preventScroll: true });
+		return {
+			destroy() {
+				node.removeEventListener('keydown', stop);
+			}
+		};
 	}
 
 	function isFromSettingsPanel(event: Event): boolean {
@@ -259,9 +288,27 @@
 		);
 	}
 
+	// Réglages ouverts : Échap les ferme ; aucune touche n'atteint le Deck
+	// (ni Espace qui relancerait, ni flèches qui changeraient de question)
+	function handleKeydownWhileSettingsOpen(event: KeyboardEvent) {
+		if (event.key === 'Escape') {
+			event.preventDefault();
+			event.stopPropagation();
+			closeSettings();
+			return;
+		}
+		// Dans le panneau, la touche va à sa case ; il l'arrête lui-même avant le Deck
+		// (action `settingsPanel`)
+		if (!isFromSettingsPanel(event)) event.stopPropagation();
+	}
+
 	// Espace : pause / reprise. Intercepté en phase de capture, avant le Deck
 	// qui en ferait « question suivante »
 	function handleKeydownCapture(event: KeyboardEvent) {
+		if (settingsOpen) {
+			handleKeydownWhileSettingsOpen(event);
+			return;
+		}
 		if (event.key !== ' ') return;
 		if (event.metaKey || event.ctrlKey || event.altKey) return;
 		if (isFromEditableField(event) || isFromSettingsPanel(event)) return;
@@ -282,6 +329,7 @@
 
 	function handleEnd() {
 		settingsOpen = false;
+		resumeOnSettingsClose = false;
 		phase = 'questions';
 	}
 
@@ -472,7 +520,7 @@
 										role="dialog"
 										tabindex="-1"
 										aria-label="Réglages"
-										onkeydown={(event) => event.stopPropagation()}
+										use:settingsPanel
 									>
 										<div class="mb-3 flex items-center justify-between">
 											<h2 class="text-lg font-semibold">Réglages</h2>
