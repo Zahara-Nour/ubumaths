@@ -15,11 +15,13 @@
  *
  * Usage : pnpm tsx scripts/fiches/reprise-categories.ts [--appliquer] [--reponses <fichier>]
  *
- * Écriture fiche par fiche : `worksheets` (type, catégorie, case titre libre,
- * titre), puis les notions (`worksheet_classifications`, position 0, 1, …). Pas de
- * transaction possible par l'API : une fiche écrite à moitié (notions en échec)
- * est signalée, et le relancer la saute (catégorie déjà posée) ; la finir dans
- * l'éditeur.
+ * Écriture fiche par fiche : les notions d'abord (`worksheet_classifications`,
+ * position 0, 1, …), puis `worksheets` (type, catégorie, case titre libre, titre),
+ * seulement si la fiche a encore son titre du relevé et aucune catégorie. Pas de
+ * transaction possible par l'API : une fiche écrite à moitié (notions posées,
+ * fiche en échec) est signalée, garde son ancien titre, et une relance la saute
+ * (notions déjà posées) ; la finir dans l'éditeur. Jamais de titre composé sans
+ * ses notions.
  */
 import { readFileSync } from 'node:fs';
 import { createClient } from '@supabase/supabase-js';
@@ -133,24 +135,13 @@ async function main() {
 		console.log(`     catégorie : ${apres.category ?? '(aucune)'} · notions : ${noms}`);
 		if (apres.title !== avant.title)
 			console.log(`     titre : « ${avant.title} » → « ${apres.title} » (composé)`);
+		// Branche introuvable : le titre retombe sur les notions, sans erreur
+		if (apres.notions.length > 1 && apres.notions.some((id) => !noeuds.get(id)?.branch))
+			console.warn('     ⚠️ branche introuvable pour une notion : titre composé des notions');
 		if (!appliquer) continue;
 
-		// RLS contournée (clé de service) mais .select() quand même : zéro ligne = échec visible
-		const { data: maj, error: e4 } = await supabase
-			.from('worksheets')
-			.update({
-				type: apres.type,
-				category: apres.category,
-				custom_title: apres.custom_title,
-				title: apres.title
-			})
-			.eq('id', plan.id)
-			.select('id');
-		if (e4 || maj.length !== 1) {
-			echecs++;
-			console.error(`     ❌ fiche non écrite : ${e4?.message ?? 'aucune ligne mise à jour'}`);
-			continue;
-		}
+		// Notions d'abord : une fiche à moitié écrite n'a jamais un titre composé sans notions.
+		// RLS contournée (clé de service) mais .select() quand même : lignes comptées
 		if (apres.notions.length > 0) {
 			const { data: ins, error: e5 } = await supabase
 				.from('worksheet_classifications')
@@ -161,10 +152,31 @@ async function main() {
 			if (e5 || ins.length !== apres.notions.length) {
 				echecs++;
 				console.error(
-					`     ❌ notions non écrites (fiche écrite à moitié, à finir dans l’éditeur) : ${e5?.message ?? 'lignes manquantes'}`
+					`     ❌ notions non écrites, fiche inchangée : ${e5?.message ?? 'lignes manquantes'}`
 				);
 				continue;
 			}
+		}
+		// Seulement si la fiche est encore telle qu'au relevé : un prof qui l'a reprise
+		// entre la lecture et l'écriture garde son choix (zéro ligne = échec visible)
+		const { data: maj, error: e4 } = await supabase
+			.from('worksheets')
+			.update({
+				type: apres.type,
+				category: apres.category,
+				custom_title: apres.custom_title,
+				title: apres.title
+			})
+			.eq('id', plan.id)
+			.eq('title', avant.title)
+			.is('category', null)
+			.select('id');
+		if (e4 || maj.length !== 1) {
+			echecs++;
+			console.error(
+				`     ❌ fiche écrite à moitié (notions posées, titre et catégorie non), à finir dans l’éditeur : ${e4?.message ?? 'fiche modifiée entre-temps'}`
+			);
+			continue;
 		}
 		ecrites++;
 	}
