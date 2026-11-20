@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-20 : lot 1 écrit, PR des fichiers ouverte._
+_Mis à jour le 2026-11-20, après #2940._
 
-- **État** : lot 1 écrit (`scripts/questions/2de-ensembles-calculs/`, script `docs/wip/questions-2de/lot-ensembles-calculs-2de.py`) : 3 modèles, 40 specs vertes, essai en base locale joué dans l'aperçu. PR des fichiers ouverte.
-- **Prochaine action** : merge de la PR des fichiers ; puis `create-questions --publier` (David), commit des ids, migration nœud + tag (2-243, 2-203, 2-206).
-- **En attente de David** : `pnpm tsx scripts/create-questions.ts --dir scripts/questions/2de-ensembles-calculs --publier` (prod, `!`), après le merge.
-- **Pièges en cours** : ne jamais nommer la plateforme d'origine ; Chrome piloté depuis le laptop de David : `[::1]` y désigne le laptop → aperçu joué par Playwright sur le Mac mini.
-- **Worktree / branche** : `../ubumaths-wt-ensembles-2de` · `feat/questions-ensembles-2de`.
+- **État** : lot 1 (3 modèles, `scripts/questions/2de-ensembles-calculs/`) mergé (#2940) ; pas encore en prod.
+- **Prochaine action** : après le `--publier` de David, vérifier les 3 brouillons en prod, commiter les ids (nouveau worktree `../ubumaths-wt-ensembles-2de`, branche `feat/questions-ensembles-2de-rangement`), migration nœud + tag (2-243 niv. 4, 2-203 niv. 5, 2-206 niv. 2), puis page à cocher.
+- **En attente de David** : `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/2de-ensembles-calculs --publier` depuis le dépôt principal.
+- **Pièges en cours** : ne jamais nommer la plateforme d'origine ; Chrome piloté depuis le laptop de David (`[::1]` = le laptop) → aperçu par Playwright sur le Mac mini ; petits ajouts (π, 5,78, −123) reportés à un lot de corrections.
+- **Worktree / branche** : aucun (retiré après #2940).
 
 ## Décisions de David (2026-11-20)
 
