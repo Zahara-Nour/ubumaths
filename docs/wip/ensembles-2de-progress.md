@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-20 : brouillons en prod, PR de rangement ouverte._
+_Mis à jour le 2026-11-20, après #2941 et `db:migrate`._
 
-- **État** : les 3 brouillons sont en prod (da94a049, e41081cc, 776c4918) ; PR des ids + migration nœud + tag ouverte (test rouge sans, vert avec, audit sans finding bloquant).
-- **Prochaine action** : CI verte → `check:migrations --pr`, merge, `migration list --linked` puis `db:migrate` depuis le dépôt principal, vérification en prod ; puis page à cocher.
-- **En attente de David** : rien avant la page à cocher.
-- **Pièges en cours** : ne jamais nommer la plateforme d'origine ; Chrome piloté depuis le laptop de David (`[::1]` = le laptop) → aperçu par Playwright sur le Mac mini ; petits ajouts (π, 5,78, −123) reportés.
-- **Worktree / branche** : `../ubumaths-wt-ensembles-2de` · `feat/questions-ensembles-2de-rangement`.
+- **État** : lot 1 en prod en brouillon, rangé et tagué (da94a049 → 2-243, e41081cc → 2-203, 776c4918 → 2-206), vérifié en base.
+- **Prochaine action** : page à cocher du lot (`scripts/questions/page-a-cocher.ts --dir scripts/questions/2de-ensembles-calculs`), puis publication (`publier-lot.ts`, David).
+- **En attente de David** : relecture sur la page à cocher (à produire).
+- **Pièges en cours** : ne jamais nommer la plateforme d'origine ; Chrome piloté depuis le laptop de David (`[::1]` = le laptop) → aperçu par Playwright sur le Mac mini ; `migration list --linked` sort du JSON (jq) ; petits ajouts (π, 5,78, −123) reportés. CI : #2942 cible le test d'une PR de rangement (à mesurer à la prochaine).
+- **Worktree / branche** : aucun.
 
 ## Décisions de David (2026-11-20)
 
