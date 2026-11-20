@@ -1,3 +1,8 @@
+---
+couvre:
+  - src/lib/utils/enhance-stay-on-page.ts
+---
+
 # Best Practices
 
 Référence synthétique pour Claude : **Svelte 5 runes**, **TypeScript**, **SvelteKit patterns**, **organisation du code**. Règles non négociables dans [CLAUDE.md](../../CLAUDE.md). Tests/Zod : [quality-standards.md](qualite.md).
