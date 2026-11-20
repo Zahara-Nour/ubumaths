@@ -261,7 +261,7 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 	private printedTitle(worksheet: WorksheetRow): PrintedTitle {
 		const notions = [...(worksheet.classifications ?? [])]
 			.sort((a, b) => a.position - b.position || a.name.localeCompare(b.name, 'fr'))
-			.map((notion) => notion.name);
+			.map((notion) => ({ name: notion.name, branch: notion.branch }));
 		return printedTitle({
 			type: worksheet.type,
 			category: isWorksheetCategory(worksheet.category) ? worksheet.category : null,
@@ -433,6 +433,9 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 			level: escapeTypst(levels.full),
 			level_short: escapeTypst(levels.short),
 			level_badges: levels.badges,
+			// Sous un titre qui est la branche commune : les notions (ADR 0041, 2026-11-20)
+			show_title_notions: flag(printed.notions !== ''),
+			title_notions: escapeTypstBrackets(printed.notions),
 			// Sous le titre, en petit : la catégorie d'un titre composé ; rien sous un titre libre
 			show_title_sub: flag(printed.sub !== ''),
 			title_sub: escapeTypstBrackets(printed.sub),

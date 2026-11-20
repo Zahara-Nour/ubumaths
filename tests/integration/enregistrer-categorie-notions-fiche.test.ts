@@ -53,6 +53,8 @@ let teacherId: string;
 let teacherClient: SupabaseClient<Database>;
 
 let branchId: string;
+/** Seconde branche : Dérivation n'est pas de la branche des suites */
+let analyseId: string;
 let suitesId: string;
 let derivationId: string;
 let probabilitesId: string;
@@ -178,7 +180,8 @@ beforeAll(async () => {
 
 	branchId = await node('branch', null, `${RUN} branche`);
 	suitesId = await node('notion', branchId, `${RUN} Suites`);
-	derivationId = await node('notion', branchId, `${RUN} Dérivation`);
+	analyseId = await node('branch', null, `${RUN} Analyse`);
+	derivationId = await node('notion', analyseId, `${RUN} Dérivation`);
 	probabilitesId = await node('notion', branchId, `${RUN} Probabilités`);
 });
 
@@ -302,10 +305,32 @@ describe('nombre de notions', () => {
 		});
 	});
 
+	it('deux notions d’une même branche : la branche en titre (David, 2026-11-20)', async () => {
+		const id = await worksheet('worksheet', 'technical_practice', [suitesId], false);
+		expect(await save(id, { notions: [suitesId, probabilitesId] })).toBeNull();
+		expect(await stored(id)).toMatchObject({
+			notions: [suitesId, probabilitesId],
+			title: `${RUN} branche · Entraînement technique`
+		});
+	});
+
+	it('une seule notion : son nom en titre, pas la branche', async () => {
+		const id = await worksheet('worksheet', 'applications', [suitesId, probabilitesId], false);
+		expect(await save(id, { notions: [probabilitesId] })).toBeNull();
+		expect((await stored(id)).title).toBe(`${RUN} Probabilités · Applications`);
+	});
+
 	it('titre composé de plus de 255 caractères : refusé, rien d’écrit', async () => {
 		const longIds: string[] = [];
 		for (let i = 0; i < 6; i++) {
-			longIds.push(await node('notion', branchId, `${RUN} ${'notion longue '.repeat(3)}${i}`));
+			// Deux branches : des notions d'une seule se titreraient par la branche
+			longIds.push(
+				await node(
+					'notion',
+					i % 2 ? branchId : analyseId,
+					`${RUN} ${'notion longue '.repeat(3)}${i}`
+				)
+			);
 		}
 		const id = await worksheet('worksheet', 'technical_practice', [suitesId], false);
 		expect(await save(id, { notions: longIds })).toMatch(/trop long/i);
@@ -370,8 +395,20 @@ describe('lecture', () => {
 	it('les notions avec leur nom, dans l’ordre', async () => {
 		const id = await worksheet('worksheet', 'review', [derivationId, suitesId]);
 		expect(await loadWorksheetClassifications(teacherClient, id)).toEqual([
-			{ node_id: derivationId, name: `${RUN} Dérivation`, kind: 'notion', position: 0 },
-			{ node_id: suitesId, name: `${RUN} Suites`, kind: 'notion', position: 1 }
+			{
+				node_id: derivationId,
+				name: `${RUN} Dérivation`,
+				kind: 'notion',
+				branch: `${RUN} Analyse`,
+				position: 0
+			},
+			{
+				node_id: suitesId,
+				name: `${RUN} Suites`,
+				kind: 'notion',
+				branch: `${RUN} branche`,
+				position: 1
+			}
 		]);
 	});
 

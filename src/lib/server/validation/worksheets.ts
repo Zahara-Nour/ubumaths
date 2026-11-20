@@ -832,6 +832,7 @@ export const worksheetClassificationViewSchema = z.object({
 	node_id: z.string().uuid(),
 	name: z.string(),
 	kind: z.string().optional(),
+	branch: z.string().nullable().optional(),
 	position: z.number().int()
 });
 

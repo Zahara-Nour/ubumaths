@@ -13,7 +13,9 @@
  *
  * `title` reste toujours rempli : sans titre libre, le titre composé
  * (« Suites · Entraînement technique ») y est réécrit à chaque enregistrement,
- * ce qui suit aussi une notion renommée.
+ * ce qui suit aussi une notion renommée. Deux notions ou plus d'une même
+ * branche → la branche en titre (« Suites · Entraînement technique », ADR 0041
+ * amendé le 2026-11-20) : la branche se lit dans l'arbre, lisible de tous.
  */
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database, TablesUpdate } from '#lib/types/database.ts';
@@ -23,8 +25,11 @@ import {
 	type WorksheetType
 } from '#lib/types/worksheets.ts';
 import {
+	branchOf,
 	composedTitle,
 	isWorksheetCategory,
+	type TitleNotion,
+	type TitleTreeNode,
 	type WorksheetCategory
 } from '#lib/worksheets/worksheet-title.ts';
 
@@ -72,6 +77,9 @@ export type ClassificationPlan =
 /** Ce qu'une fiche peut porter : une notion ou une sous-notion, jamais une branche */
 const CLASSIFIABLE_KINDS = new Set(['notion', 'subnotion']);
 
+/** Niveaux lus au-dessus d'une notion pour trouver sa branche (sous-notion → notion → branche) */
+const TREE_LEVELS = 3;
+
 /** Longueur maximale d'un titre (contrainte `worksheets_title_check`) */
 const TITLE_MAX_LENGTH = 255;
 
@@ -94,8 +102,60 @@ function asWorksheetType(value: string): WorksheetType {
 }
 
 /**
- * Les notions d'une fiche avec leur nom, dans l'ordre d'impression. Lues sous
- * la RLS de l'appelant : on voit les notions d'une fiche quand on voit la fiche.
+ * La branche de chaque nœud demandé, lue dans l'arbre en remontant les parents
+ * (une requête par niveau, trois au plus). Une seule notion n'a pas besoin de
+ * sa branche (le titre garde son nom) : rien n'est lu.
+ *
+ * @throws si la lecture échoue
+ */
+export async function loadBranches(
+	supabase: SB,
+	nodeIds: readonly string[]
+): Promise<Map<string, string | null>> {
+	const branches = new Map<string, string | null>();
+	if (nodeIds.length < 2) return branches;
+
+	const tree = new Map<string, TitleTreeNode>();
+	let toRead = [...new Set(nodeIds)];
+	for (let level = 0; level < TREE_LEVELS && toRead.length > 0; level++) {
+		const { data, error } = await supabase
+			.from('classification_nodes')
+			.select('id, name, kind, parent_id')
+			.in('id', toRead);
+		if (error) throw new Error(`arbre des notions illisible : ${error.message}`);
+		for (const node of data ?? []) tree.set(node.id, node);
+		toRead = (data ?? [])
+			.filter((node) => node.kind !== 'branch' && node.parent_id && !tree.has(node.parent_id))
+			.map((node) => node.parent_id as string);
+	}
+	for (const id of nodeIds) branches.set(id, branchOf(id, tree));
+	return branches;
+}
+
+/**
+ * Ajoute à chaque notion le nom de sa branche (`loadBranches`). Pour un chemin
+ * qui imprime sans écrire (lien de partage) : une lecture en échec laisse les
+ * notions sans branche, le titre imprimé reprend alors les notions.
+ */
+export async function withBranches<T extends { node_id: string }>(
+	supabase: SB,
+	notions: T[]
+): Promise<Array<T & { branch?: string | null }>> {
+	try {
+		const branches = await loadBranches(
+			supabase,
+			notions.map((notion) => notion.node_id)
+		);
+		return notions.map((notion) => ({ ...notion, branch: branches.get(notion.node_id) ?? null }));
+	} catch {
+		return notions;
+	}
+}
+
+/**
+ * Les notions d'une fiche avec leur nom et leur branche, dans l'ordre
+ * d'impression. Lues sous la RLS de l'appelant : on voit les notions d'une
+ * fiche quand on voit la fiche ; l'arbre est lisible de tous.
  *
  * @throws si la lecture échoue : jamais de liste partielle
  */
@@ -110,18 +170,24 @@ export async function loadWorksheetClassifications(
 		.order('position', { ascending: true });
 	if (error) throw new Error(`notions de la fiche illisibles : ${error.message}`);
 
-	return (data ?? [])
+	const rows = data ?? [];
+	const branches = await loadBranches(
+		supabase,
+		rows.map((row) => row.node_id)
+	);
+	return rows
 		.map((row) => ({
 			node_id: row.node_id,
 			name: row.node?.name ?? '',
 			kind: row.node?.kind ?? '',
+			branch: branches.get(row.node_id) ?? null,
 			position: row.position
 		}))
 		.sort((a, b) => a.position - b.position || a.name.localeCompare(b.name, 'fr'));
 }
 
-/** Nom des nœuds demandés ; `null` si l'un manque ou n'est pas une notion */
-async function notionNames(supabase: SB, ids: string[]): Promise<Map<string, string> | null> {
+/** Nom et branche des nœuds demandés ; `null` si l'un manque ou n'est pas une notion */
+async function titleNotions(supabase: SB, ids: string[]): Promise<Map<string, TitleNotion> | null> {
 	if (ids.length === 0) return new Map();
 	const { data, error } = await supabase
 		.from('classification_nodes')
@@ -131,7 +197,11 @@ async function notionNames(supabase: SB, ids: string[]): Promise<Map<string, str
 	const names = new Map(
 		(data ?? []).filter((n) => CLASSIFIABLE_KINDS.has(n.kind)).map((n) => [n.id, n.name])
 	);
-	return ids.every((id) => names.has(id)) ? names : null;
+	if (!ids.every((id) => names.has(id))) return null;
+	const branches = await loadBranches(supabase, ids);
+	return new Map(
+		ids.map((id) => [id, { name: names.get(id) ?? '', branch: branches.get(id) ?? null }])
+	);
 }
 
 /**
@@ -164,8 +234,9 @@ export async function prepareClassification(
 	if (new Set(notions).size !== notions.length) return { ok: false, message: MESSAGES.duplicate };
 
 	// Noms relus en base (et non pris du client) : le titre composé suit l'arbre
-	const names = await notionNames(supabase, notions);
-	if (!names) return { ok: false, message: MESSAGES.unknownNode };
+	const known = await titleNotions(supabase, notions);
+	if (!known) return { ok: false, message: MESSAGES.unknownNode };
+	const ordered = notions.map((id) => known.get(id) ?? { name: '' });
 
 	const update: Extract<ClassificationPlan, { ok: true }>['update'] = {};
 	if (category !== existingCategory) update.category = category;
@@ -177,18 +248,12 @@ export async function prepareClassification(
 		type !== 'worksheet' && asWorksheetType(existing.type) === 'worksheet';
 	if (leavesExerciseSheet && !customTitle) {
 		update.custom_title = true;
-		const notionsTitle = composedTitle(
-			null,
-			notions.map((id) => names.get(id) ?? '')
-		);
+		const notionsTitle = composedTitle(null, ordered);
 		if (request.title === undefined && notionsTitle !== '') update.title = notionsTitle;
 	}
 
 	if (type === 'worksheet' && !customTitle) {
-		const title = composedTitle(
-			category,
-			notions.map((id) => names.get(id) ?? '')
-		);
+		const title = composedTitle(category, ordered);
 		if (title === '') return { ok: false, message: MESSAGES.emptyTitle };
 		if (title.length > TITLE_MAX_LENGTH) return { ok: false, message: MESSAGES.titleTooLong };
 		update.title = title;

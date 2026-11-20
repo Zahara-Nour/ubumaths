@@ -28,10 +28,28 @@ export const WORKSHEET_CATEGORIES = [
 ] as const;
 export type WorksheetCategory = (typeof WORKSHEET_CATEGORIES)[number];
 
+/**
+ * Une notion telle que le titre la lit : son nom, et le nom de sa branche
+ * quand on le connaît (lu dans l'arbre, `branchOf`)
+ */
+export interface TitleNotion {
+	name: string;
+	branch?: string | null;
+}
+
+/** Un nœud de l'arbre, juste ce qu'il faut pour remonter à sa branche */
+export interface TitleTreeNode {
+	name: string;
+	kind: string;
+	parent_id: string | null;
+}
+
 /** Ce que le PDF imprime de la fiche */
 export interface PrintedTitle {
 	/** En grand, en tête de la page 1 */
 	main: string;
+	/** Dessous, en moyen : les notions quand le titre est leur branche commune ; vide : rien */
+	notions: string;
 	/** En petit dessous : la catégorie d'un titre composé ; vide : rien */
 	sub: string;
 	/** Au bas de chaque page, après le badge du niveau */
@@ -45,8 +63,8 @@ export interface PrintedTitleInput {
 	customTitle: boolean;
 	/** Titre en base, dans la langue du document */
 	title: string;
-	/** Noms des notions, dans l'ordre d'impression */
-	notions: readonly string[];
+	/** Notions, dans l'ordre d'impression */
+	notions: readonly TitleNotion[];
 	locale: ContentLocale;
 }
 
@@ -73,6 +91,9 @@ export const CATEGORY_LABELS: Record<ContentLocale, Record<WorksheetCategory, st
 /** Séparateur des notions, et de la catégorie au bas de page */
 const SEPARATOR = ' · ';
 
+/** Garde contre un arbre bouclé : une notion est à deux niveaux au plus sous sa branche */
+const MAX_DEPTH = 5;
+
 // ============================================================================
 // Fonctions
 // ============================================================================
@@ -91,15 +112,42 @@ export function notionLabel(name: string): string {
 }
 
 /**
+ * Nom de la branche d'un nœud de l'arbre (notion, sous-notion), en remontant
+ * ses parents ; `null` si on ne la trouve pas.
+ */
+export function branchOf(nodeId: string, nodes: ReadonlyMap<string, TitleTreeNode>): string | null {
+	let node = nodes.get(nodeId);
+	for (let depth = 0; node && depth < MAX_DEPTH; depth++) {
+		if (node.kind === 'branch') return node.name;
+		node = node.parent_id ? nodes.get(node.parent_id) : undefined;
+	}
+	return null;
+}
+
+/**
+ * La branche commune qui sert de titre : au moins deux notions, toutes de la
+ * même branche (« Suites » pour les suites arithmétiques et géométriques).
+ * Une seule notion garde son nom (David, 2026-11-20).
+ */
+export function sharedBranch(notions: readonly TitleNotion[]): string | null {
+	const first = notions[0]?.branch;
+	if (notions.length < 2 || !first) return null;
+	return notions.every((notion) => notion.branch === first) ? notionLabel(first) : null;
+}
+
+/**
  * Le titre composé écrit en base (en français) : « Suites · Entraînement
  * technique ». Une fiche peut avoir plusieurs notions, quels que soient son
- * type et sa catégorie (ADR 0041, amendé le 2026-11-19).
+ * type et sa catégorie (ADR 0041, amendé le 2026-11-19) ; deux notions ou plus
+ * d'une même branche → la branche seule (amendé le 2026-11-20).
  */
 export function composedTitle(
 	category: WorksheetCategory | null,
-	notions: readonly string[]
+	notions: readonly TitleNotion[]
 ): string {
-	return [...notions.map(notionLabel), category ? CATEGORY_LABELS.fr[category] : '']
+	const branch = sharedBranch(notions);
+	const head = branch ? [branch] : notions.map((notion) => notionLabel(notion.name));
+	return [...head, category ? CATEGORY_LABELS.fr[category] : '']
 		.filter((part) => part !== '')
 		.join(SEPARATOR);
 }
@@ -108,24 +156,37 @@ export function composedTitle(
 export function printedTitle(input: PrintedTitleInput): PrintedTitle {
 	const { type, category, customTitle, title, locale } = input;
 	// Les notions n'ont pas encore de nom anglais : rien d'imprimé en anglais
-	const notions = locale === 'fr' ? input.notions.map(notionLabel) : [];
-	const notionsText = notions.join(SEPARATOR);
+	const notions = locale === 'fr' ? input.notions : [];
+	const notionsText = notions.map((notion) => notionLabel(notion.name)).join(SEPARATOR);
+	const branch = sharedBranch(notions);
 
 	// Titre composé : fiche d'exercices sans titre libre
 	if (type === 'worksheet' && !customTitle) {
 		const categoryLabel = category ? CATEGORY_LABELS[locale][category] : '';
+		const sub = categoryLabel.toLocaleLowerCase(locale);
+		// Notions d'une même branche : la branche en grand, les notions dessous
+		if (branch) {
+			return {
+				main: branch,
+				notions: notionsText,
+				sub,
+				footer: [branch, categoryLabel].filter((part) => part !== '').join(SEPARATOR)
+			};
+		}
 		if (notionsText !== '') {
 			return {
 				main: notionsText,
-				sub: categoryLabel.toLocaleLowerCase(locale),
+				notions: '',
+				sub,
 				footer: [notionsText, categoryLabel].filter((part) => part !== '').join(SEPARATOR)
 			};
 		}
-		if (categoryLabel !== '') return { main: categoryLabel, sub: '', footer: categoryLabel };
-		return { main: title, sub: '', footer: title };
+		if (categoryLabel !== '')
+			return { main: categoryLabel, notions: '', sub: '', footer: categoryLabel };
+		return { main: title, notions: '', sub: '', footer: title };
 	}
 
 	// Titre libre, ou titre écrit à la main des autres types : le titre seul,
 	// ni catégorie ni notions dessous (David, 2026-11-20)
-	return { main: title, sub: '', footer: title };
+	return { main: title, notions: '', sub: '', footer: title };
 }
