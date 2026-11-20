@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-20, après #2945 et son `db:migrate`._
+_Mis à jour le 2026-11-20, après #2946 et la publication du gros lot._
 
-- **État** : 36 brouillons en prod, rangés (36 nœuds, 31 tags ; 5 hors programme sans point), vérifié en base. 21 variations de 16 publiés dans les fichiers (mergés, #2944) ; migration de contenu générée (`20261120145050_…_contenu.sql` + fixture, **non commitée**, test 12/12).
-- **Prochaine action** : lire et compter les verdicts de la page à cocher https://claude.ai/artifact/WSKrRGYdQ9yaNuFcYPgb4S (52 fiches) ; corriger les « À revoir » ; régénérer la migration de contenu (horodatage neuf) → PR → `db:migrate` ; `publier-lot.ts` en simulation sur les 4 dossiers, puis David `--publier`.
-- **En attente de David** : la relecture, et les 6 choix (rationaliser, décomposition, entier + fraction, téra, arrondi, puissances) — en commentaire sur les fiches.
-- **Pièges en cours** : `create-questions --publier` en LOCAL écrit les ids locaux → `git restore` ; le hook de commit laisse une copie non formatée dans l'index → `git restore --staged`. Migration de contenu : jamais mergée avant la relecture. Pas de nom de la plateforme d'origine. Job d'intégration de la PR de rangement : 109 s.
-- **Worktree / branche** : `../ubumaths-wt-ensembles-2de`, `feat/ensembles-2de-lot-rangement` (mergée ; prochaine PR sur une branche neuve depuis `origin/main`, avec le commit de journal local).
+- **État** : gros lot « nombres et calculs » **livré** — 36 modèles neufs publiés (rangés, 31 tags, 5 hors programme sans point) ; 21 variations ajoutées à 16 publiés, en prod (migration de contenu jouée, prod = fichiers).
+- **Prochaine action** : rien d'engagé. Restent « plus tard » (phase 0) : fiches 16 (retrouver A et B), 17 (Python et intervalle), 34 (prochain multiple, fraction entre deux entiers), 52 (puissances rares). À David : clore le chantier ou ouvrir une autre rubrique.
+- **En attente de David** : vérifications à l'œil (ligne du 2026-11-20 de `verifications-manuelles.md`).
+- **Pièges en cours** : ne jamais nommer la plateforme d'origine ; `create-questions --publier` en LOCAL écrit les ids locaux → `git restore` ; branche locale `feat/ensembles-2de-lot-rangement` restée (contenu sur `main` par cherry-pick, `-D` = liste `ask`).
+- **Worktree / branche** : `../ubumaths-wt-ensembles-2de`, détaché sur `origin/main` (à retirer si le chantier est clos).
 
 ## Décisions de David (2026-11-20)
 
@@ -130,3 +130,6 @@ Cinq agents (`pedagogy-expert`), un par dossier ; specs à 300 tirages par varia
 - Page à cocher : 52 fiches (36 neufs + 16 publiés, intro : ne relire que les nouvelles variations), générée APRÈS le `db:migrate` (sinon 36 alertes « sans nœud »).
 - Hors lot, à signaler à David : « Placer un réel sur une droite graduée » (3b0a04c0), variations 1 à 3 **déjà en prod** : graduations de 11 à 15 px sur téléphone (alerte de la page à cocher). La nouvelle variation 4 (10 graduations) n'est pas concernée.
 - #2945 mergé (CI verte, intégration 109 s, `security-auditor` sans bloquant) ; `db:migrate` le 2026-11-20 (seule migration en attente) ; prod : 36 rangés, 31 tags, 36 brouillons. Page à cocher publiée : https://claude.ai/artifact/WSKrRGYdQ9yaNuFcYPgb4S (alertes restantes attendues : 5 sans point, 2 blocs ranger à jouer dans l'aperçu, graduations des anciennes variations de 3b0a04c0).
+- #2946 mergé (CI verte, intégration 90 s, `security-auditor` sans bloquant) ; `db:migrate` le 2026-11-20 ; `migration-contenu.ts` relancé ensuite : 16 « inchangé » (prod = fichiers).
+- Relecture : David « je valide toute la relecture » (aucun verdict saisi sur la page) ; les 6 choix restent tels que réglés (rationaliser à demi-point pour 3/2 × √2, décomposition en cases ordonnées, entier + fraction en 2 cases, T affiché seulement, arrondi et puissances en `bad_form`).
+- Publication : David a lancé `publier-lot.ts --publier` sur les 4 dossiers ; prod : 36/36 `published`.
