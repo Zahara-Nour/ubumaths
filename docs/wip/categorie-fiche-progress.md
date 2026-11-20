@@ -2,9 +2,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-20, après #2928._
+_Mis à jour le 2026-11-20, PR 3b prête (branche `feat/reprise-fiches`), après #2938._
 
-- **État** : PR 1, 2a, 2b, #2919, **#2928 (3a) mergées**, code **pas en prod** (`deploy:prod` à faire par David). 3a : plusieurs notions pour toute fiche, garde retirée en prod (`db:migrate` du 2026-11-20, vérifié), majuscule en tête des notions ; titre libre imprimé **seul**, ni notions ni catégorie dessous (David, 2026-11-20) · **Prochaine action** : PR 3b, la reprise des 50 fiches : page à cocher d'après le relevé en bas du journal, puis écriture en prod par David après son `deploy:prod` · **En attente de David** : `deploy:prod` · **Pièges en cours** : PUT = trois requêtes (écart 8 de `docs/systeme/fiches-et-pdf.md`) ; notion archivée acceptée par le serveur ; `cadres-lignes.test.ts` lent sous charge · **Worktree** : à recréer pour la 3b (`feat/reprise-fiches` par exemple)
+- **État** : PR 1, 2a, 2b, #2919, #2928 (3a), #2938 (branche en titre, ADR 0041 amendé) mergées, code **pas en prod**. Page à cocher relue par David : 49 « Valider », aucune correction (ESSAI exclue). Réponses versées dans `data/fiches/reprise-categories/reponses.json` ; simulation contre la prod : 49 à écrire, 0 sautée · **Prochaine action** : merger la PR 3b ; après le `deploy:prod` de David, il lance `pnpm tsx scripts/fiches/reprise-categories.ts` (simulation) puis `--appliquer` depuis ce worktree ; vérifier en prod (MCP lecture) · **En attente de David** : `deploy:prod`, puis `--appliquer` · **Pièges en cours** : le script lit `.env` (prod) sauf variables déjà posées ; écrire seulement après le deploy (l'éditeur en prod recomposerait les titres sans la branche) ; échapper `/` dans `escapeTypst` (faible, PR à part) · **Worktree** : `../ubumaths-wt-reprise-fiches`, branche `feat/reprise-fiches`
+
+### 2026-11-20 — relecture de la page, règle de la branche
+
+- David a proposé de classer sous une branche ; tranché : on classe toujours sous des notions, et
+  deux notions ou plus d'une même branche impriment la branche en titre (« Suites · Entraînement
+  technique » ; PDF : branche en grand, notions dessous, catégorie en petit). #2938, sans migration.
+- Page cochée : 49 réponses « ok », identiques aux propositions (Produit scalaire en évaluation
+  compris). Fichier de réponses : 49 lignes, ordre du relevé.
 
 ## Synthèse de la phase 0 (2026-11-19)
 
