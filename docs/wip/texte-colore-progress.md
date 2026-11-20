@@ -10,13 +10,15 @@ _Mis à jour le 2026-11-20, après #2935._
 
 - **État** : PR 1 (syntaxe, écran, chat) mergée (#2933 + #2934) ; PR 2 (PDF, paragraphes et cellules) mergée
   (#2935, § 6). Q2 et Q3 tranchées (§ 3).
-- **Prochaine action** : PR 3 — filet `\textcolor{…}{…}` hors formule lu comme `[…]{.nom}` (écran et PDF ; table
-  `primary.N` du § 2) ; puis réécriture des fichiers de lots + liste des modèles en prod pour David.
-- **En attente de David** : rien.
+- **Revue PR 3** : `--lot` mal écrit (`--lot=…`, sans valeur) retombait en silence sur l'ancienne liste → refusé ; test
+  « rien d'autre ne change » au caractère près.
+- **Prochaine action** : PR 3 (nettoyage, § 7) — revue + CI → merge ; puis David applique les retouches en prod
+  (`pnpm corrections:retouches --lot texte-colore --publier`, depuis le dépôt principal à jour).
+- **En attente de David** : après le merge de la PR 3, appliquer les 2 retouches en prod (commande ci-dessus).
 - **Pièges connus** : la garde `review/textcolor-hors-maths.ts` ne tourne que dans `pnpm question:specs` ; le chat
   ne doit rien gagner (couleur retirée dans `restrictDocument` ET dans les composants) ; `.def=cible` en dernière
   classe ; l'éditeur riche perd `color` / `detail` / `lexicon` à l'enregistrement (`markdown-import.ts`, Q2 : plus tard).
-- **Worktree / branche** : `../ubumaths-wt-texte-colore` · `feat/texte-colore-filet` (créée, vide).
+- **Worktree / branche** : `../ubumaths-wt-texte-colore` · `feat/texte-colore-nettoyage`.
 
 ## 1. Le défaut
 
@@ -107,7 +109,7 @@ publiés), à recompter. Depuis le 2026-11-03, `question:specs` refuse un `\text
    affichage à l'écran, chat sans couleur, message au prof. Doc d'ubumark et règle de rédaction
    (`corrections-redaction.md`). Revue : `code-reviewer` (+ `security-auditor` pour le chat des élèves).
 2. **PR 2 — PDF** : la couleur dans Typst (teinte claire).
-3. **PR 3 — filet** : `\textcolor{…}{…}` hors formule lu comme `[…]{.nom}` (écran et PDF).
+3. ~~**PR 3 — filet**~~ → **PR 3 — nettoyage** (David, 2026-11-20, § 7) : modèles réécrits, pas de filet.
 4. Selon Q2 et Q3 : éditeur riche ; réécriture de l'existant.
 
 ## 5. PR 1 — syntaxe et écran (2026-11-20)
@@ -137,3 +139,24 @@ publiés), à recompter. Depuis le 2026-11-03, `question:specs` refuse un `\text
   cellule : chemin d'avant, inchangé. Bonus : un `[…]{.rappel}` de cellule est enfin surligné au PDF.
 - Rendu réel : `texte-colore-typst.test.ts` compile le PDF et lit ses couleurs de remplissage (pdfjs) — vérifié
   rouge en coupant `wrapInlineColor`. Le rendu SVG de typst.ts n'est pas installé : PDF seulement.
+
+## 7. PR 3 — nettoyage plutôt que filet (2026-11-20)
+
+**Décision (David, 2026-11-20)** : « nettoyer les modèles plutôt que d'avoir un garde-fou à maintenir » → le filet
+(§ 2 point 6, § 4 point 3) est abandonné ; ADR 0042 amendée.
+
+- **Mesure** : garde du rendu (`findTextcolorOutsideMath`, 10 tirages par variation) sur **toute la prod**, lecture
+  seule : 2 077 modèles portent `\textcolor`, **2 publiés** l'affichent hors formule — `78feafed` « Traduire une phrase
+  en expression mathématique » (4 étapes) et `e4784c78` « Lire une fonction Python plus complexe » (1 étape).
+  Exercices : aucun hors formule. Fichiers de lots du dépôt : 2 copies de `e4784c78` seulement.
+- **Retouches** (`scripts/corrections/lib/retouches-texte-colore.ts`, `pnpm corrections:retouches --lot
+texte-colore`) : `primary.1` → `{.bleu}`, `primary.0` → `{.orange}` ; les formules entièrement colorées des mêmes
+  phrases passent en `[$…$]{.orange}` (sinon deux oranges dans une phrase) ; plus aucun `\textcolor` dans les deux
+  modèles. Simulation sur la prod : 2/2 prêtes, `checkTemplate` vert ; vérificateur vert pour `78feafed` (20 000
+  tirages).
+- **Vérificateur et `e4784c78`** : déjà rouge AVANT retouche (hors lot → classe N : « aucun calcul aligné » ;
+  `written` : la réponse n'est pas dans l'énoncé, elle se lit dans le code). Ajout `Retouche.skipVerifier` (raison
+  affichée), `checkTemplate` toujours exigé ; le fond intact est prouvé par le test « rien d'autre ne change ».
+- Fichiers de lots réécrits : `scripts/questions/1techno-t2/e4784c78.json`,
+  `scripts/questions/2de-programmes-11b/13-fonction-complexe.json` (specs 8/8, garde 0/60).
+- Instantané de test : `data/corrections/texte-colore/_modeles.json` (sans identifiant d'utilisateur).
