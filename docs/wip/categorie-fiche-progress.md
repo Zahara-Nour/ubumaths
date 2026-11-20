@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-20, PR 3b prête (branche `feat/reprise-fiches`), après #2938._
+_Mis à jour le 2026-11-20, après #2939._
 
-- **État** : PR 1, 2a, 2b, #2919, #2928 (3a), #2938 (branche en titre, ADR 0041 amendé) mergées, code **pas en prod**. Page à cocher relue par David : 49 « Valider », aucune correction (ESSAI exclue). Réponses versées dans `data/fiches/reprise-categories/reponses.json` ; simulation contre la prod : 49 à écrire, 0 sautée · **Prochaine action** : merger la PR 3b ; après le `deploy:prod` de David, il lance `pnpm tsx scripts/fiches/reprise-categories.ts` (simulation) puis `--appliquer` depuis ce worktree ; vérifier en prod (MCP lecture) · **En attente de David** : `deploy:prod`, puis `--appliquer` · **Pièges en cours** : le script lit `.env` (prod) sauf variables déjà posées ; écrire seulement après le deploy (l'éditeur en prod recomposerait les titres sans la branche) ; échapper `/` dans `escapeTypst` (faible, PR à part) · **Worktree** : `../ubumaths-wt-reprise-fiches`, branche `feat/reprise-fiches`
+- **État** : PR 1, 2a, 2b, #2919, #2928 (3a), #2938 (branche en titre), #2939 (3b : script + 49 réponses validées) mergées, code **pas en prod** ; simulation prod : 49 à écrire, 0 sautée · **Prochaine action** : après le `deploy:prod` de David, il lance depuis le dépôt principal à jour `pnpm tsx scripts/fiches/reprise-categories.ts` (simulation) puis la même avec `--appliquer` ; je vérifie en prod (MCP lecture : 49 fiches catégorisées, notions posées) ; puis PR 4 (script des automatismes, ADR 0011) · **En attente de David** : `deploy:prod`, puis `--appliquer` · **Pièges en cours** : le script lit `.env` (prod) sauf variables déjà posées ; écrire seulement après le deploy (l'éditeur en prod recomposerait les titres sans la branche) ; échapper `/` dans `escapeTypst` (faible, PR à part) · **Worktree** : aucun (worktrees `reprise-fiches` et `titre-branche` supprimés)
 
 ### 2026-11-20 — relecture de la page, règle de la branche
 
