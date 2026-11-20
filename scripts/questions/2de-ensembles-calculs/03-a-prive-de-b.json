@@ -1,4 +1,5 @@
 {
+	"id": "776c4918-08a1-4208-a898-8af3f4cccf79",
 	"title": "A privé de B",
 	"description": "A = {1 ; 3 ; 5 ; 7}, B = {5 ; 7 ; 10 ; 12} : écrire A \\ B, B \\ A ; A ⊂ B donne A \\ B = ∅ (pièges : A \\ B et B \\ A échangés, A ∩ B à la place)",
 	"grades": ["2"],
