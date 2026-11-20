@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, PR 3a en cours._
+_Mis à jour le 2026-11-20, après #2928._
 
-- **État** : PR 1, 2a, 2b, #2919 mergées, **pas en prod** (`deploy:prod` à faire par David). PR 3a (branche `feat/categorie-fiche`) : plusieurs notions pour toute fiche (migration `20261119222741` qui retire la garde, DROP sans perte, go de David), éditeur en liste seule, majuscule en tête de chaque notion, ADR 0041 amendé · **Prochaine action** : ouvrir la PR 3a, revue, merge ; `db:migrate` = **go de David** (DROP, pas additive) ; puis PR 3b, la reprise des 50 fiches (relevé en bas du journal) · **En attente de David** : `deploy:prod` ; go `db:migrate` de la 3a · **Pièges en cours** : migration 3a appliquée À LA MAIN en base locale (psql, sans ligne dans `schema_migrations`) ; PUT = trois requêtes (écart 8 de `docs/systeme/fiches-et-pdf.md`) ; notion archivée acceptée par le serveur ; `cadres-lignes.test.ts` lent sous charge · **Worktree** : `../ubumaths-wt-categorie-fiche`, branche `feat/categorie-fiche`
+- **État** : PR 1, 2a, 2b, #2919, **#2928 (3a) mergées**, code **pas en prod** (`deploy:prod` à faire par David). 3a : plusieurs notions pour toute fiche, garde retirée en prod (`db:migrate` du 2026-11-20, vérifié), majuscule en tête des notions ; titre libre imprimé **seul**, ni notions ni catégorie dessous (David, 2026-11-20) · **Prochaine action** : PR 3b, la reprise des 50 fiches : page à cocher d'après le relevé en bas du journal, puis écriture en prod par David après son `deploy:prod` · **En attente de David** : `deploy:prod` · **Pièges en cours** : PUT = trois requêtes (écart 8 de `docs/systeme/fiches-et-pdf.md`) ; notion archivée acceptée par le serveur ; `cadres-lignes.test.ts` lent sous charge · **Worktree** : à recréer pour la 3b (`feat/reprise-fiches` par exemple)
 
 ## Synthèse de la phase 0 (2026-11-19)
 
