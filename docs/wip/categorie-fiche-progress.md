@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-20, après #2928._
+_Mis à jour le 2026-11-20, PR 3b en cours (branche `feat/reprise-fiches`)._
 
-- **État** : PR 1, 2a, 2b, #2919, **#2928 (3a) mergées**, code **pas en prod** (`deploy:prod` à faire par David). 3a : plusieurs notions pour toute fiche, garde retirée en prod (`db:migrate` du 2026-11-20, vérifié), majuscule en tête des notions ; titre libre imprimé **seul**, ni notions ni catégorie dessous (David, 2026-11-20) · **Prochaine action** : PR 3b, la reprise des 50 fiches : page à cocher d'après le relevé en bas du journal, puis écriture en prod par David après son `deploy:prod` · **En attente de David** : `deploy:prod` · **Pièges en cours** : PUT = trois requêtes (écart 8 de `docs/systeme/fiches-et-pdf.md`) ; notion archivée acceptée par le serveur ; `cadres-lignes.test.ts` lent sous charge · **Worktree** : à recréer pour la 3b (`feat/reprise-fiches` par exemple)
+- **État** : PR 1, 2a, 2b, #2919, #2928 (3a) mergées, code **pas en prod**. PR 3b commencée : page à cocher publiée (https://claude.ai/artifact/Ks8MnFXhRHiWMsMQW17o49, réponses dans la collection `reponses`), script `scripts/fiches/reprise-categories.ts` (simulation par défaut, `--appliquer` écrit ; fiche modifiée depuis le relevé = sautée) essayé en local · **Prochaine action** : quand David a tout validé, exporter les réponses (ArtifactData `list`) vers `data/fiches/reprise-categories/reponses.json`, simulation contre la prod (lecture), PR ; David lance `--appliquer` après son `deploy:prod` · **En attente de David** : relecture de la page ; `deploy:prod` · **Pièges en cours** : PUT = trois requêtes (écart 8 de `docs/systeme/fiches-et-pdf.md`) ; notion archivée acceptée par le serveur ; `cadres-lignes.test.ts` lent sous charge ; le script lit `.env` (prod) sauf variables déjà posées (essai local : `supabase status -o env`) · **Worktree** : `../ubumaths-wt-reprise-fiches`, branche `feat/reprise-fiches`
 
 ## Synthèse de la phase 0 (2026-11-19)
 
