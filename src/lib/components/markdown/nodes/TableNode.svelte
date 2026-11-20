@@ -29,6 +29,7 @@
 	import type { GenericFunctionConfig } from '#lib/mathAST/parser/types.ts';
 	import { escapeHtml } from '../utils';
 	import MathInline from './MathInline.svelte';
+	import InlineColor from './InlineColor.svelte';
 	import TextNode from './TextNode.svelte';
 	import { tableCellMarkedInline } from '../table-cell-inline';
 
@@ -148,7 +149,9 @@
 		<!-- Cellule à marques : texte avec gras / italique / code, et formules -->
 		{#each marked as node, i (i)}
 			{#if node.type === 'math-inline'}
-				<MathInline expression={node.expression} syntax={node.syntax} {genericFunctions} />
+				<InlineColor color={node.color}>
+					<MathInline expression={node.expression} syntax={node.syntax} {genericFunctions} />
+				</InlineColor>
 			{:else}
 				<TextNode
 					content={node.content}
@@ -156,6 +159,8 @@
 					italic={node.italic}
 					code={node.code}
 					detail={node.detail}
+					color={node.color}
+					unknownClasses={node.unknownClasses}
 				/>
 			{/if}
 		{/each}

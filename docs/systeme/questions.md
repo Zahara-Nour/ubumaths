@@ -1456,7 +1456,11 @@ est un chantier à venir (David). Tests : `correction-forme-demandee.test.ts`,
 
 Concise / détaillée (ADR 0017) : `splitCorrectionDetail` retire ou garde `\detail{…}`, les blocs
 `> [!méthode]`, `> [!rappel]`, `> [!attention]` et les spans `{.rappel}`… ; un seul interrupteur
-(`correction-view-preference.ts`). Rédaction : [corrections-redaction](../pratiques/corrections-redaction.md).
+(`correction-view-preference.ts`). Un span est un détail dès qu'une de ses classes est un type de
+détail (`{.rappel .vert}` : détail coloré, retiré en concis) ; les autres (`{.def}`, `{.orange}`,
+classe inconnue) restent dans les deux versions, et une classe inconnue est signalée au prof par
+le rendu, plus par `splitCorrectionDetail` ([ADR 0042](../adr/0042-texte-colore-dans-la-prose.md)).
+Rédaction : [corrections-redaction](../pratiques/corrections-redaction.md).
 
 ### 8. Publication
 
