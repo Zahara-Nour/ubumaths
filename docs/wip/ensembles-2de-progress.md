@@ -122,3 +122,10 @@ Cinq agents (`pedagogy-expert`), un par dossier ; specs à 300 tirages par varia
   5. Arrondi : `zeros: off` (3,00 et 3 justes) ; 7,27 au dixième = `bad_form` (contrainte d'arrondi), pas faux.
   6. Puissances : (−3)² répondu 3², (−10)³ répondu −10³ → `bad_form`.
 - Pas joué dans l'aperçu admin un par un (36 modèles) : relecture par la page à cocher, puis aperçu ciblé des blocs à risque (ranger, droite, intervalles).
+
+## Gros lot : brouillons en prod, rangement (2026-11-20)
+
+- #2944 mergé (fichiers). David a lancé `create-questions --publier` : 36 brouillons en prod (vérifié : 36 `draft`, sans nœud) ; ids commités.
+- Migration `20261120150926_questions_2de_nombres_rangement_tags.sql` (36 nœuds, 31 tags, 5 hors programme sans point) + test d'intégration : rouge sans (6), vert avec (11/11). PR #2945.
+- Page à cocher : 52 fiches (36 neufs + 16 publiés, intro : ne relire que les nouvelles variations), générée APRÈS le `db:migrate` (sinon 36 alertes « sans nœud »).
+- Hors lot, à signaler à David : « Placer un réel sur une droite graduée » (3b0a04c0), variations 1 à 3 **déjà en prod** : graduations de 11 à 15 px sur téléphone (alerte de la page à cocher). La nouvelle variation 4 (10 graduations) n'est pas concernée.
