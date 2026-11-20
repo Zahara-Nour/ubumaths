@@ -19,6 +19,10 @@ import { dirname, join, resolve, sep } from 'node:path';
 const SCRIPT = resolve(__dirname, '../ci-integration-ciblee.sh');
 const MIGRATION = 'supabase/migrations/20261120120749_questions_x_rangement_tags.sql';
 const TEST = 'tests/integration/questions-x-rangement-tags.test.ts';
+const MIGRATION_CONTENU = 'supabase/migrations/20261120130500_questions_x_contenu.sql';
+const FIXTURE_CONTENU =
+	'tests/integration/fixtures/contenu-publie/20261120130500_questions_x_contenu.json';
+const TEST_CONTENU = 'tests/integration/migrations-contenu-publie.test.ts';
 
 let racine: string;
 
@@ -125,6 +129,44 @@ describe('ci-integration-ciblee', () => {
 			pr(MIGRATION, TEST, f);
 			expect(verdict(), f).toBe('fichiers=');
 		}
+	});
+
+	it('migration de contenu de publiés et sa fixture : le test qui rejoue les fixtures', () => {
+		pr(MIGRATION_CONTENU, FIXTURE_CONTENU, 'scripts/questions/2de-lot/01-a.json');
+		expect(verdict()).toBe(`fichiers=${TEST_CONTENU}`);
+	});
+
+	it('rangement et contenu dans la même PR : les deux tests, chacun une fois', () => {
+		pr(MIGRATION, TEST, MIGRATION_CONTENU, FIXTURE_CONTENU, TEST_CONTENU);
+		expect(verdict()).toBe(`fichiers=${TEST_CONTENU} ${TEST}`);
+	});
+
+	it('fixture de contenu ou migration de contenu existantes modifiées : suite complète', () => {
+		depot(FIXTURE_CONTENU);
+		pr(MIGRATION_CONTENU, FIXTURE_CONTENU);
+		expect(verdict()).toBe('fichiers=');
+		depot(MIGRATION_CONTENU);
+		pr(MIGRATION_CONTENU, FIXTURE_CONTENU);
+		expect(verdict()).toBe('fichiers=');
+	});
+
+	it('migration de contenu sans fixture ni test : suite complète', () => {
+		pr(MIGRATION_CONTENU);
+		expect(verdict()).toBe('fichiers=');
+	});
+
+	it('deux migrations de contenu, une seule fixture : suite complète', () => {
+		pr(
+			MIGRATION_CONTENU,
+			FIXTURE_CONTENU,
+			'supabase/migrations/20261120130600_questions_y_contenu.sql'
+		);
+		expect(verdict()).toBe('fichiers=');
+	});
+
+	it('migration finissant par _contenu.sql mais pas au nom du générateur : suite complète', () => {
+		pr('supabase/migrations/20261120130600_rls_chat_contenu.sql', FIXTURE_CONTENU, TEST);
+		expect(verdict()).toBe('fichiers=');
 	});
 
 	it('une migration qui n’est pas un rangement (règles d’accès, schéma) : suite complète', () => {

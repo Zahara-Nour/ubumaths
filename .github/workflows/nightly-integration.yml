@@ -48,6 +48,8 @@ on:
       - 'scripts/lib/lock.py'
       # portée d'une PR (suite complète ou tests d'une migration de données)
       - 'scripts/ci-integration-ciblee.sh'
+      # générateur des migrations de contenu de publiés, rejoué par la suite
+      - 'scripts/lib/migration-contenu.ts'
       # dépendances : version de la CLI Supabase, de supabase-js, de vitest
       - 'package.json'
       - 'pnpm-lock.yaml'

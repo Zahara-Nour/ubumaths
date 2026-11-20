@@ -10,6 +10,8 @@ couvre:
   - scripts/questions/sonde-collections.ts
   - scripts/lib/page-a-cocher.ts
   - scripts/lib/lot-questions.ts
+  - scripts/lib/migration-contenu.ts
+  - scripts/questions/migration-contenu.ts
   - scripts/lib/niveaux-des-tags.ts
   - scripts/questions/garde-niveaux-tags.ts
   - scripts/series/creer-serie.ts
@@ -267,10 +269,27 @@ de lot, `checkTemplate` vert ; **David** lance `create-questions --publier --met
 (remplace contenu, description et délai). Le script de lot réécrit les fichiers **sans leur `id`** :
 le remettre (`git diff`) avant de lancer, sinon le lot est bloqué (homonyme en base). Retrait de tag ou niveaux seuls → migration à la main.
 
-Modèle **publié** (`--mettre-a-jour` ne le touche pas) → deux migrations, gabarits du lot 0 du
-CE1 : contenu générée par un script de lot (`docs/wip/questions/lot-corrections-ce1.py` →
-`20261027000000_questions_ce1_contenu.sql`, test `decrireLotModifier`), puis rangement, tags,
-niveaux et statut à la main (`20261027000100_questions_ce1_rangement_tags.sql` et son test). Le
+Modèle **publié** (`--mettre-a-jour` ne le touche pas) : **contenu** (variations, specs,
+description) → migration **générée** pour tout le lot, jamais écrite à la main :
+
+```bash
+pnpm tsx scripts/questions/migration-contenu.ts --dir scripts/questions/<lot>   # lit la PROD (.env)
+```
+
+Partir du fichier exporté de la prod (`scripts/export-question-templates.ts`), le modifier,
+lancer. Le script relève chaque modèle du dossier en prod (apparié par l'`id` du fichier, titre et
+niveau concordants) : brouillon → ignoré ; publié identique → rien ; publié qui diffère → migré.
+Variation **ajoutée à la fin** ou **corrigée** (signalée en en-tête) : acceptée ; variation
+**retirée ou déplacée** : refus (les réponses des élèves gardent l'indice de leur variation) ;
+autre champ différent de la prod, `checkTemplate` rouge : refus, rien n'est écrit. Sortie :
+`supabase/migrations/<horodatage>_questions_<lot>_contenu.sql` (un seul bloc, tout ou rien ;
+garde = contenu exact relevé ; modèle absent → rien ; rollback gardé en commentaire) et sa
+fixture `tests/integration/fixtures/contenu-publie/`, rejouée par
+`tests/integration/migrations-contenu-publie.test.ts` (la CI ciblée ne lance que lui). Règles :
+`scripts/lib/migration-contenu.ts`.
+
+Rangement, tags, niveaux, statut d'un publié → migration à la main, gabarit du lot 0 du CE1
+(`20261027000100_questions_ce1_rangement_tags.sql` et son test). Le
 rollback écrit **garde l'état laissé par la migration** (nœud, niveaux, statut, tags) : sans
 cette garde, une saisie faite depuis serait écrasée en silence. Copies de test publiées : un
 niveau chacune (`idx_question_templates_unique_category`).
