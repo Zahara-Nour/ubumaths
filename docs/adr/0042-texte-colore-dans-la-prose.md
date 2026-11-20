@@ -24,7 +24,7 @@ touchés, beaucoup publiés ; `question:specs` refuse un `\textcolor` hors `$` d
 | Nom inconnu         | Texte normal pour l'élève, message pour le prof (comme un `{.rappel}` mal formé)                                                                                                                                  |
 | Chat des élèves     | Aucune couleur : texte normal, crochets retirés (rendu restreint)                                                                                                                                                 |
 | PDF noir et blanc   | Pas de gras automatique. Règle de rédaction (`corrections-redaction.md`) : la couleur souligne un mot qui porte déjà le sens, jamais seule (« le terme [qu'on transforme]{.orange} », jamais « le terme orange ») |
-| Contenu existant    | Filet : un `\textcolor{…}{…}` hors formule est rendu comme du texte coloré (nom correspondant, sinon texte normal), jamais en LaTeX brut. La garde de `question:specs` continue de le signaler, pour réécriture   |
+| Contenu existant    | **Nettoyage** (amendement du 2026-11-20, ci-dessous) : les modèles réécrits en `[…]{.nom}`, sans filet de rendu. La garde de `question:specs` refuse tout nouveau `\textcolor` hors formule                       |
 | Anciens `primary.N` | 0 → orange, 1 → bleu, 2 → vert, 3 → jaune, 4 → violet, 5 → orange, 6 → cyan, 7 → rose (rôles de `corrections-redaction.md` : orange = ce qu'on transforme, bleu = l'étape, vert = la conclusion)                  |
 
 ## Écarté
@@ -48,5 +48,19 @@ touchés, beaucoup publiés ; `question:specs` refuse un `\textcolor` hors `$` d
 - Le nom de couleur devient un **contrat avec le contenu stocké** : un synonyme ajouté l'est pour
   toujours (déjà vrai pour les figures).
 - Rendus touchés : écran (composants markdown), PDF (Typst), rendu restreint (couleur retirée).
-- Les modèles publiés qui ont du `\textcolor` hors formule sont lisibles dès la livraison du filet,
-  avant leur réécriture.
+- Les modèles publiés qui ont du `\textcolor` hors formule sont réécrits (retouches
+  `pnpm corrections:retouches --lot texte-colore`, appliquées en prod par David).
+
+## Amendement du 2026-11-20 — nettoyage plutôt que filet
+
+La décision d'origine prévoyait un **filet** : un `\textcolor{…}{…}` hors formule rendu comme du
+texte coloré, à l'écran et au PDF. Écarté par David le 2026-11-20 (« nettoyer les modèles plutôt
+que d'avoir un garde-fou à maintenir »), sur mesure : la garde du rendu passée sur **toute la
+prod** (2 077 modèles portent `\textcolor`) n'en trouve que **2 publiés** qui l'affichent hors
+formule (5 occurrences), aucun exercice. Les réécrire coûte moins qu'un traducteur de l'ancienne
+syntaxe gardé pour toujours.
+
+- Prix accepté : un `\textcolor` hors formule écrit hors des fichiers de lots (à la main, dans
+  l'éditeur) s'affiche en LaTeX brut ; aucun cas en prod à cette date.
+- Dans les deux modèles, les formules entièrement colorées des mêmes phrases passent aussi en
+  `[$…$]{.orange}`, pour qu'une phrase n'ait qu'une teinte d'orange.

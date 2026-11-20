@@ -112,7 +112,10 @@ réponse`, et la valeur trouvée vérifie l'égalité posée ; plusieurs cases :
   tableau de numération, chiffre et valeur en orange, zéros ajoutés en bleu).
 - Stratégies générées : `R-PASS` (`lib/r-pass.ts`), `R-INV` (`lib/r-inv.ts` : `a + ? = s → ? = s − a`,
   `a × ? = s → ? = s : a`, `? : a = s → ? = s × a`…).
-- Retouches ponctuelles hors lots : `pnpm corrections:retouches` (`lib/retouches.ts`) ; marquage
+- Retouches ponctuelles hors lots : `pnpm corrections:retouches` (`lib/retouches.ts`) ; autre liste par
+  `--lot texte-colore` (`lib/retouches-texte-colore.ts` : `\textcolor` hors formule réécrit en `[…]{.nom}`,
+  ADR 0042) ; une retouche hors des classes du vérificateur peut le sauter en donnant sa raison
+  (`skipVerifier`, affichée ; `checkTemplate` toujours exigé) ; marquage
   « Espaces dès 4 chiffres » des modèles qui gardent la règle de l'école :
   `pnpm corrections:marquage-espaces` (`lib/marquage-espaces.ts` : 51 modèles marqués, specs de
   5 brouillons de 1re spé corrigées au BIPM ; listes figées, que la règle doit retrouver sur la

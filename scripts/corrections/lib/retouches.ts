@@ -29,6 +29,12 @@ export interface Retouche {
 	/** Ce que fait la retouche, en français (affiché dans la simulation) */
 	note: string;
 	apply: (template: QuestionTemplate) => QuestionTemplate;
+	/**
+	 * Raison de ne PAS passer la correction au vérificateur (affichée) : modèle hors
+	 * de ses classes (R, N), dont la retouche ne touche pas le fond. `checkTemplate`
+	 * reste exigé.
+	 */
+	skipVerifier?: string;
 }
 
 /** Colonnes qu'une retouche peut modifier (toute autre modification est refusée) */
