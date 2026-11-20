@@ -1,7 +1,7 @@
 {
 	"id": "d03e49c0-ba65-4e1b-80ef-c595bba65d10",
 	"title": "Calculer la valeur d'une valeur absolue",
-	"description": "D'une expression dont il faut étudier le signe",
+	"description": "D'une expression dont il faut étudier le signe : |√b − a|, |π − a|",
 	"grades": ["2"],
 	"level": 7,
 	"delay": 20,
@@ -31,6 +31,25 @@
 			"correction": {
 				"steps": [
 					"{{if:{{a}}>{{b}}^2|$\\sqrt{{{a}}} \\gt {{b}}$ donc $\\sqrt{{{a}}}-{{b}} \\gt 0$ et $\\left\\lvert \\sqrt{{{a}}}-{{b}} \\right\\rvert=\\sqrt{{{a}}}-{{b}}$|$\\sqrt{{{a}}} \\lt {{b}}$ donc $\\sqrt{{{a}}}-{{b}} \\lt 0$ et $\\left\\lvert \\sqrt{{{a}}}-{{b}} \\right\\rvert={{b}}-\\sqrt{{{a}}}$}}"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:b>3|{{b}}-\\pi|\\pi-{{b}}}}"
+				}
+			],
+			"statement": "Calcule.\n\n$$\\left\\lvert \\pi-{{b}} \\right\\rvert=?$$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "1..6"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:b>3|$\\pi\\approx3{,}14 \\lt {{b}}$ donc $\\pi-{{b}} \\lt 0$ et $\\left\\lvert \\pi-{{b}} \\right\\rvert=\\textcolor{{{color:primary.0}}}{{{b}}-\\pi}$|$\\pi\\approx3{,}14 \\gt {{b}}$ donc $\\pi-{{b}} \\gt 0$ et $\\left\\lvert \\pi-{{b}} \\right\\rvert=\\textcolor{{{color:primary.0}}}{\\pi-{{b}}}$}}"
 				]
 			}
 		}
@@ -100,6 +119,72 @@
 			},
 			"description": "|√7-1| : √7+1 refusé",
 			"variationIndex": 0
+		},
+		{
+			"answers": ["4-\\pi"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"b": "4"
+			},
+			"description": "|π − 4| = 4 − π",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-\\pi+4"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"b": "4"
+			},
+			"description": "|π − 4| : ordre libre −π + 4",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\pi-4"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"b": "4"
+			},
+			"description": "|π − 4| : π − 4 (signe non étudié)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\pi+4"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"b": "4"
+			},
+			"description": "|π − 4| : π + 4 refusé",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\pi-3"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"b": "3"
+			},
+			"description": "|π − 3| = π − 3",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["3-\\pi"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"b": "3"
+			},
+			"description": "|π − 3| : 3 − π refusé",
+			"variationIndex": 1
 		}
 	]
 }

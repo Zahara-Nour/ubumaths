@@ -1,7 +1,7 @@
 {
 	"id": "73514cdb-b018-4aa9-b379-586fa8cd1d74",
 	"title": "Puissance d'un quotient",
-	"description": "Écrire sans parenthèses (x/k)ⁿ et (k/x)ⁿ ; (p/q)⁻ⁿ en fraction irréductible",
+	"description": "Écrire sans parenthèses (x/k)ⁿ et (k/x)ⁿ ; (p/q)⁻ⁿ en fraction irréductible ; à l'envers, avec des nombres relatifs : 6⁴ / 3⁴ = 2⁴",
 	"grades": ["2"],
 	"level": 1,
 	"delay": 45,
@@ -91,6 +91,38 @@
 				"steps": [
 					"**Exposant négatif** : $a^{-n}=\\dfrac{1}{a^n}$ ; pour une fraction, c'est la puissance de son **inverse** : $\\left(\\dfrac{a}{b}\\right)^{-n}=\\left(\\dfrac{b}{a}\\right)^{n}$.",
 					"$$\\left(\\dfrac{ {{p}} }{ {{q}} }\\right)^{-{{n}} }=\\textcolor{{{color:primary.0}}}{\\left(\\dfrac{ {{q}} }{ {{p}} }\\right)^{ {{n}} }}=\\dfrac{ {{q}}^{ {{n}} } }{ {{p}}^{ {{n}} } }=\\textcolor{{{color:primary.1}}}{\\dfrac{ {{eval:(q)^(n)}} }{ {{eval:(p)^(n)}} }}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:s==1|(-{{k}})|{{k}}}}^{ {{n}} }"
+				}
+			],
+			"statement": "Écris sous la forme d'une seule puissance.\n\n$$\\dfrac{ {{if:s==1|(-{{eval:(k)*(q)}})|{{eval:(k)*(q)}}}}^{ {{n}} } }{ {{q}}^{ {{n}} } }=?$$",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "2..5"
+				},
+				{
+					"name": "k",
+					"expression": "2..5"
+				},
+				{
+					"name": "n",
+					"expression": "2..5"
+				},
+				{
+					"name": "s",
+					"expression": "0|1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Puissance d'un quotient**, lue de droite à gauche : $\\dfrac{a^n}{b^n}=\\left(\\dfrac{a}{b}\\right)^n$ : même exposant, on divise les bases.",
+					"$$\\dfrac{ {{if:s==1|(-{{eval:(k)*(q)}})|{{eval:(k)*(q)}}}}^{ {{n}} } }{ {{q}}^{ {{n}} } }=\\left(\\textcolor{{{color:primary.0}}}{\\dfrac{ {{if:s==1|-{{eval:(k)*(q)}}|{{eval:(k)*(q)}}}} }{ {{q}} }}\\right)^{ {{n}} }=\\textcolor{{{color:primary.0}}}{{{if:s==1|(-{{k}})|{{k}}}}^{ {{n}} }}$$"
 				]
 			}
 		}
@@ -186,6 +218,91 @@
 			},
 			"description": "Erreur : exposant négatif lu comme un signe (−4/9)",
 			"variationIndex": 2
+		},
+		{
+			"answers": ["2^4"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"q": "3",
+				"k": "2",
+				"n": "4",
+				"s": "0"
+			},
+			"description": "6⁴ / 3⁴ = 2⁴",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["2^0"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"q": "3",
+				"k": "2",
+				"n": "4",
+				"s": "0"
+			},
+			"description": "Erreur : exposants soustraits (2⁰)",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["16"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"q": "3",
+				"k": "2",
+				"n": "4",
+				"s": "0"
+			},
+			"description": "Forme : 16 au lieu d'une puissance",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["3^4"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"q": "3",
+				"k": "2",
+				"n": "4",
+				"s": "0"
+			},
+			"description": "Erreur : bases soustraites (3⁴)",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["(-2)^3"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"q": "3",
+				"k": "2",
+				"n": "3",
+				"s": "1"
+			},
+			"description": "(−6)³ / 3³ = (−2)³",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["2^3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"q": "3",
+				"k": "2",
+				"n": "3",
+				"s": "1"
+			},
+			"description": "Erreur : signe perdu (2³)",
+			"variationIndex": 3
 		}
 	]
 }

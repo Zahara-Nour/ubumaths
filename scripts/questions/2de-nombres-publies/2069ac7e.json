@@ -1,7 +1,7 @@
 {
 	"id": "2069ac7e-ce15-41f3-9b8d-b0ff52fdcb68",
 	"title": "Représenter un intervalle sur la droite graduée",
-	"description": "Représenter x ⩾ a, x < a (demi-droites) et un intervalle borné [a ; b[ : bornes, côté, crochets",
+	"description": "Représenter x ⩾ a, x < a (demi-droites), un intervalle borné [a ; b[ et deux inégalités à la fois (x ⩾ −1 et x < 5) : bornes, côté, crochets",
 	"grades": ["2"],
 	"level": 4,
 	"delay": 90,
@@ -77,6 +77,43 @@
 				"steps": [
 					"Une borne comprise a un crochet **tourné vers l'intervalle**, une borne exclue un crochet **tourné vers l'extérieur** ; vers $\\pm\\infty$, le trait va jusqu'au bout de la droite.",
 					"${{a}}$ est {{if:sa==1|compris|exclu}}, ${{b}}$ est {{if:sb==1|compris|exclu}}."
+				]
+			}
+		},
+		{
+			"statement": "Représente sur la droite graduée l'ensemble des réels $x$ tels que $x{{if:sa==1|\\geqslant|>}}{{a}}$ et $x{{if:sb==1|\\leqslant|<}}{{b}}$.\n\n```line\nstart: -6\nend: 6\nstep: 1\nrepresenter: {{if:sa==1|[|]}}{{a}}, {{b}}{{if:sb==1|]|[}}\n```",
+			"variables": [
+				{
+					"name": "a0",
+					"expression": "0..7"
+				},
+				{
+					"name": "a",
+					"expression": "eval:(a0)-5"
+				},
+				{
+					"name": "l",
+					"expression": "2..6"
+				},
+				{
+					"name": "b",
+					"expression": "eval:(a)+(l)"
+				},
+				{
+					"name": "sa",
+					"expression": "0|1"
+				},
+				{
+					"name": "sb",
+					"expression": "0|1"
+				}
+			],
+			"conditions": ["b <= 5"],
+			"correction": {
+				"steps": [
+					"Une borne comprise a un crochet **tourné vers l'intervalle**, une borne exclue un crochet **tourné vers l'extérieur** ; vers $\\pm\\infty$, le trait va jusqu'au bout de la droite.",
+					"$x{{if:sa==1|\\geqslant|>}}{{a}}$ : à droite de ${{a}}$, {{if:sa==1|compris|exclu}} ; $x{{if:sb==1|\\leqslant|<}}{{b}}$ : à gauche de ${{b}}$, {{if:sb==1|compris|exclu}}. Les deux à la fois : entre ${{a}}$ et ${{b}}$.",
+					"$$x\\in\\textcolor{{{color:primary.0}}}{{{if:sa==1|[|]}}{{a}}\\,;\\,{{b}}{{if:sb==1|]|[}}}$$"
 				]
 			}
 		}
@@ -171,6 +208,54 @@
 			},
 			"description": "Erreur : crochets échangés",
 			"variationIndex": 2
+		},
+		{
+			"answers": ["[-1 ; 5["],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a0": "4",
+				"a": "-1",
+				"l": "6",
+				"b": "5",
+				"sa": "1",
+				"sb": "0"
+			},
+			"description": "x ⩾ −1 et x < 5 : [−1 ; 5[",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["[-1 ; 5]"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a0": "4",
+				"a": "-1",
+				"l": "6",
+				"b": "5",
+				"sa": "1",
+				"sb": "0"
+			},
+			"description": "Erreur : 5 compris",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["[-1 ; +∞["],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a0": "4",
+				"a": "-1",
+				"l": "6",
+				"b": "5",
+				"sa": "1",
+				"sb": "0"
+			},
+			"description": "Erreur : seulement x ⩾ −1",
+			"variationIndex": 3
 		}
 	]
 }

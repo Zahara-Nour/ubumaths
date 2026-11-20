@@ -1,7 +1,7 @@
 {
 	"id": "04b1cc7f-8630-4ff2-981c-95c2f57d1161",
 	"title": "Puissance d'un produit",
-	"description": "Écrire sans parenthèses (kx)ⁿ, (−kx)ⁿ et (kxᵐ)ⁿ",
+	"description": "Écrire sans parenthèses (kx)ⁿ, (−kx)ⁿ et (kxᵐ)ⁿ ; à l'envers, avec des nombres relatifs : 2⁵ × 5⁵ = 10⁵, (−2)³ × 5³ = (−10)³",
 	"grades": ["2"],
 	"level": 1,
 	"delay": 45,
@@ -95,6 +95,39 @@
 				"steps": [
 					"**Puissance d'un produit** : $(ab)^n=a^n\\times b^n$ : chaque facteur est élevé à la puissance $n$. Puis **puissance d'une puissance** : $(a^m)^n=a^{m\\times n}$.",
 					"$$\\left({{k}}{{L}}^{ {{m}} }\\right)^{ {{n}} }=\\textcolor{{{color:primary.0}}}{{{k}}^{ {{n}} }}\\times\\textcolor{{{color:primary.1}}}{\\left({{L}}^{ {{m}} }\\right)^{ {{n}} }}=\\textcolor{{{color:primary.0}}}{{{eval:(k)^(n)}}}\\times\\textcolor{{{color:primary.1}}}{{{L}}^{ {{m}}\\times{{n}} }}=\\textcolor{{{color:primary.0}}}{{{eval:(k)^(n)}}{{L}}^{ {{eval:(m)*(n)}} }}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:s==1|(-{{eval:(p)*(q)}})|{{eval:(p)*(q)}}}}^{ {{n}} }"
+				}
+			],
+			"statement": "Écris sous la forme d'une seule puissance.\n\n$${{if:s==1|(-{{p}})|{{p}}}}^{ {{n}} }\\times{{q}}^{ {{n}} }=?$$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "2..5"
+				},
+				{
+					"name": "q",
+					"expression": "2..7"
+				},
+				{
+					"name": "n",
+					"expression": "2..6"
+				},
+				{
+					"name": "s",
+					"expression": "0|1"
+				}
+			],
+			"conditions": ["p < q"],
+			"correction": {
+				"steps": [
+					"**Puissance d'un produit**, lue de droite à gauche : $a^n\\times b^n=(ab)^n$ : même exposant, on multiplie les bases.",
+					"$${{if:s==1|(-{{p}})|{{p}}}}^{ {{n}} }\\times{{q}}^{ {{n}} }=\\left(\\textcolor{{{color:primary.0}}}{{{if:s==1|(-{{p}})|{{p}}}}\\times{{q}}}\\right)^{ {{n}} }=\\textcolor{{{color:primary.0}}}{{{if:s==1|(-{{eval:(p)*(q)}})|{{eval:(p)*(q)}}}}^{ {{n}} }}$$"
 				]
 			}
 		}
@@ -220,6 +253,91 @@
 			},
 			"description": "Erreur : coefficient oublié (2x⁶)",
 			"variationIndex": 2
+		},
+		{
+			"answers": ["10^5"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "2",
+				"q": "5",
+				"n": "5",
+				"s": "0"
+			},
+			"description": "2⁵ × 5⁵ = 10⁵",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["10^{10}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"p": "2",
+				"q": "5",
+				"n": "5",
+				"s": "0"
+			},
+			"description": "Erreur : exposants additionnés (10¹⁰)",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["100\\,000"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"p": "2",
+				"q": "5",
+				"n": "5",
+				"s": "0"
+			},
+			"description": "Forme : 100 000 au lieu d'une puissance",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["7^5"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"p": "2",
+				"q": "5",
+				"n": "5",
+				"s": "0"
+			},
+			"description": "Erreur : bases additionnées (7⁵)",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["(-10)^3"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "2",
+				"q": "5",
+				"n": "3",
+				"s": "1"
+			},
+			"description": "(−2)³ × 5³ = (−10)³",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["10^3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"p": "2",
+				"q": "5",
+				"n": "3",
+				"s": "1"
+			},
+			"description": "Erreur : signe perdu (10³)",
+			"variationIndex": 3
 		}
 	]
 }

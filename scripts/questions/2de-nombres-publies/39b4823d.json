@@ -1,7 +1,7 @@
 {
 	"id": "39b4823d-0241-408b-b04e-1fb6620b1951",
 	"title": "Calculer le tout connaissant une partie",
-	"description": "Effectif total à partir d'une partie et de sa proportion (fraction, décimal ou pourcentage)",
+	"description": "Effectif total ou masse totale à partir d'une partie et de sa proportion (fraction, décimal ou pourcentage)",
 	"grades": ["2"],
 	"level": 6,
 	"delay": 60,
@@ -43,6 +43,36 @@
 					"Partie $=$ proportion $\\times$ tout, donc tout $=\\dfrac{\\text{partie}}{\\text{proportion}}$.",
 					"Ici la proportion vaut $\\dfrac{ {{a}} }{ {{b}} }$ : $\\dfrac{ {{eval:(a)*(m)}} }{ \\frac{ {{a}} }{ {{b}} } }={{eval:(a)*(m)}}\\times\\dfrac{ {{b}} }{ {{a}} }=\\textcolor{{{color:primary.0}}}{{{eval:(b)*(m)}}}$ adhérents.",
 					"Vérification : $\\dfrac{ {{eval:(a)*(m)}} }{ {{eval:(b)*(m)}} }=\\dfrac{ {{a}} }{ {{b}} }$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(b)*(m)}}"
+				}
+			],
+			"statement": "{{if:a==1|Le|Les}} $\\dfrac{ {{a}} }{ {{b}} }$ d'un gâteau {{if:a==1|pèse|pèsent}} ${{eval:(a)*(m)}}~\\unit{g}$.\n\nCombien pèse le gâteau entier ?\n\n$?~\\unit{g}$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "3|4|5|6|8"
+				},
+				{
+					"name": "a",
+					"expression": "1..7"
+				},
+				{
+					"name": "m",
+					"expression": "20|25|30|40|50|60|75|100|150"
+				}
+			],
+			"conditions": ["a < b", "gcd(a,b) == 1"],
+			"correction": {
+				"steps": [
+					"Partie $=$ proportion $\\times$ tout, donc tout $=\\dfrac{\\text{partie}}{\\text{proportion}}$.",
+					"$\\dfrac{ {{eval:(a)*(m)}} }{ \\frac{ {{a}} }{ {{b}} } }={{eval:(a)*(m)}}\\times{{if:a==1|{{b}}|\\dfrac{ {{b}} }{ {{a}} }}}=\\textcolor{{{color:primary.0}}}{{{eval:(b)*(m)}}}~\\unit{g}$.",
+					"Vérification : $\\dfrac{ {{a}} }{ {{b}} }\\times{{eval:(b)*(m)}}={{eval:(a)*(m)}}$."
 				]
 			}
 		}
@@ -131,6 +161,58 @@
 			},
 			"description": "Erreur : 35 % de 21",
 			"variationIndex": 0
+		},
+		{
+			"answers": ["450"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"b": "3",
+				"a": "2",
+				"m": "150"
+			},
+			"description": "Les 2/3 pèsent 300 g : 450 g",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["200"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"b": "3",
+				"a": "2",
+				"m": "150"
+			},
+			"description": "Erreur : 2/3 de 300 (200)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["900"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"b": "3",
+				"a": "2",
+				"m": "150"
+			},
+			"description": "Erreur : 300 × 3 (900)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["1\\,200"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"b": "8",
+				"a": "5",
+				"m": "150"
+			},
+			"description": "Les 5/8 pèsent 750 g : 1 200 g",
+			"variationIndex": 1
 		}
 	]
 }

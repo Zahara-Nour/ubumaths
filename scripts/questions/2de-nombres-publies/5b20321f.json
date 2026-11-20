@@ -1,7 +1,7 @@
 {
 	"id": "5b20321f-e86a-4a13-b478-1cf4f441e920",
 	"title": "À quels ensembles de nombres appartient ce nombre ?",
-	"description": "Reconnaître l'appartenance d'une fraction, d'une racine carrée ou d'un décimal à ℕ, ℤ, 𝔻, ℚ et ℝ (plusieurs bonnes réponses)",
+	"description": "Reconnaître l'appartenance d'une fraction, d'une racine carrée, d'un décimal ou d'un nombre écrit avec π à ℕ, ℤ, 𝔻, ℚ et ℝ (plusieurs bonnes réponses)",
 	"grades": ["2"],
 	"level": 1,
 	"delay": 60,
@@ -152,6 +152,27 @@
 				"steps": [
 					"{{if:u=1|$x={{eval:m/100}}$ est un entier naturel : $x\\in\\mathbb{N}$ et $x\\in\\mathbb{Z}$.}}{{if:z=1 && u=0|$x={{eval:m/100}}$ est un entier négatif : $x\\in\\mathbb{Z}$ mais $x\\notin\\mathbb{N}$.}}{{if:z=0|$x$ n'est pas entier : $x\\notin\\mathbb{Z}$ et $x\\notin\\mathbb{N}$.}}",
 					"$x=\\dfrac{ {{m}} }{100}$ : c'est un nombre décimal, donc $x\\in 𝔻$, $x\\in\\mathbb{Q}$ et $x\\in\\mathbb{R}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "4"
+				}
+			],
+			"statement": "On considère le nombre $x={{if:k==0|\\pi|{{if:k==1|-\\pi|{{if:k==2|2\\pi|{{if:k==3|\\dfrac{\\pi}{2}|\\pi+1}}}}}}}}$.\n\nÀ quels ensembles le nombre $x$ appartient-il ?\n\n```choix\nplusieurs: oui\nmelanger: non\n- $\\mathbb{N}$\n- $\\mathbb{Z}$\n- $𝔻$\n- $\\mathbb{Q}$\n- $\\mathbb{R}$\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..4"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\pi$ est **irrationnel** (admis) : il n'est pas le quotient de deux entiers.",
+					"{{if:k==0|Donc $x=\\pi\\notin\\mathbb{Q}$.|Si $x$ était rationnel, {{if:k==0|$x=\\pi$|{{if:k==1|$\\pi=-x$|{{if:k==2|$\\pi=\\dfrac{x}{2}$|{{if:k==3|$\\pi=2x$|$\\pi=x-1$}}}}}}}} le serait aussi, ce qui est faux : $x\\notin\\mathbb{Q}$.}}",
+					"$x$ n'est donc ni rationnel, ni décimal, ni entier : $x\\notin\\mathbb{Q}$, $x\\notin 𝔻$, $x\\notin\\mathbb{Z}$, $x\\notin\\mathbb{N}$. Seulement $\\textcolor{{{color:primary.0}}}{x\\in\\mathbb{R}}$."
 				]
 			}
 		}
@@ -404,6 +425,50 @@
 			},
 			"description": "v2 27 : ℕ oublié (½)",
 			"variationIndex": 2
+		},
+		{
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "0"
+			},
+			"description": "v3 π : ℝ seul",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["3;4"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "0"
+			},
+			"description": "v3 π : ℚ coché à tort",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["2;3;4"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "0"
+			},
+			"description": "v3 π : 𝔻 coché à tort (3,14)",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "3"
+			},
+			"description": "v3 π/2 : ℝ seul",
+			"variationIndex": 3
 		}
 	]
 }

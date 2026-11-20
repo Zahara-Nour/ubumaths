@@ -1,7 +1,7 @@
 {
 	"id": "bfcbf381-d454-41f3-9097-939f72c0df16",
 	"title": "Le plus petit ensemble de nombres",
-	"description": "Choisir le plus petit des ensembles ℕ ⊂ ℤ ⊂ 𝔻 ⊂ ℚ ⊂ ℝ qui contient 12/4, −√49, 7/4, 5/3, √7",
+	"description": "Choisir le plus petit des ensembles ℕ ⊂ ℤ ⊂ 𝔻 ⊂ ℚ ⊂ ℝ qui contient 12/4, −√49, −123, 7/4, 5/3, √7",
 	"grades": ["2"],
 	"level": 1,
 	"delay": 60,
@@ -124,6 +124,26 @@
 					"${{k}}$ n'est pas le carré d'un entier : $\\sqrt{ {{k}} }$ est **irrationnel** (admis), il n'est dans aucun des quatre premiers ensembles : $x\\in\\textcolor{{{color:primary.0}}}{\\mathbb{R}}$."
 				]
 			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"statement": "Quel est le **plus petit** ensemble de nombres qui contient $x=-{{a}}$ ?\n\n```choix\nmelanger: non\n- $\\mathbb{N}$\n- $\\mathbb{Z}$\n- $𝔻$\n- $\\mathbb{Q}$\n- $\\mathbb{R}$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..999"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On a $\\mathbb{N}\\subset\\mathbb{Z}\\subset𝔻\\subset\\mathbb{Q}\\subset\\mathbb{R}$ : chaque ensemble contient le précédent.",
+					"$x=-{{a}}$ est un entier négatif : $x\\notin\\mathbb{N}$ mais $x\\in\\textcolor{{{color:primary.0}}}{\\mathbb{Z}}$."
+				]
+			}
 		}
 	],
 	"testSpecs": [
@@ -242,6 +262,39 @@
 			},
 			"description": "Erreur : ℚ",
 			"variationIndex": 4
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "123"
+			},
+			"description": "−123 : ℤ",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "123"
+			},
+			"description": "Erreur : ℕ (un entier)",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "123"
+			},
+			"description": "Erreur : ℚ",
+			"variationIndex": 5
 		}
 	]
 }

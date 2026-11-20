@@ -1,7 +1,7 @@
 {
 	"id": "9660771f-b3e2-47ad-8f11-9afc4a0f3927",
 	"title": "Comparer deux nombres par leur différence",
-	"description": "Signe de a − b pour comparer deux fractions ; A = x² + k², B = 2kx : A − B = (x − k)² ⩾ 0",
+	"description": "Signe de a − b pour comparer deux fractions ou p − √n et q + √n ; A = x² + k², B = 2kx : A − B = (x − k)² ⩾ 0",
 	"grades": ["2"],
 	"level": 1,
 	"delay": 60,
@@ -79,6 +79,47 @@
 					"On calcule la différence et on reconnaît une identité remarquable :",
 					"$$A-B=x^2-{{eval:2*(k)}}x+{{eval:(k)^2}}=\\textcolor{{{color:primary.0}}}{(x-{{k}})^2}$$",
 					"Un carré est toujours positif ou nul : $A-B\\geqslant 0$, donc $\\textcolor{{{color:primary.1}}}{A\\geqslant B}$ pour tout réel $x$ (égalité pour $x={{k}}$)."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{d}}-2\\sqrt{ {{n}} }"
+				},
+				{
+					"expectedAnswer": "{{t}}"
+				}
+			],
+			"statement": "On veut comparer $a={{p}}-\\sqrt{ {{n}} }$ et $b={{q}}+\\sqrt{ {{n}} }$ en calculant leur différence.\n\n$$a-b=?$$\n\nOn en déduit :\n\n```choix\nmelanger: non\n- $a<b$\n- $a>b$\n- $a=b$\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2|3|5|7"
+				},
+				{
+					"name": "q",
+					"expression": "1..5"
+				},
+				{
+					"name": "d",
+					"expression": "1..5"
+				},
+				{
+					"name": "p",
+					"expression": "eval:(q)+(d)"
+				},
+				{
+					"name": "t",
+					"expression": "eval:min(max((d)^2-4*(n),0),1)"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Comparer par la différence** : si $a-b>0$ alors $a>b$ ; si $a-b<0$ alors $a<b$.",
+					"$$a-b=\\left({{p}}-\\sqrt{ {{n}} }\\right)-\\left({{q}}+\\sqrt{ {{n}} }\\right)={{p}}-\\sqrt{ {{n}} }-{{q}}-\\sqrt{ {{n}} }=\\textcolor{{{color:primary.0}}}{{{d}}-2\\sqrt{ {{n}} }}$$",
+					"On compare ${{d}}$ et $2\\sqrt{ {{n}} }$, deux nombres positifs, par leurs carrés : ${{d}}^2={{eval:(d)^2}}$ et $\\left(2\\sqrt{ {{n}} }\\right)^2=4\\times{{n}}={{eval:4*(n)}}$. Donc ${{d}}{{if:t>0|>|<}}2\\sqrt{ {{n}} }$.",
+					"La différence est {{if:t>0|positive|négative}}, donc $\\textcolor{{{color:primary.1}}}{a{{if:t>0|>|<}}b}$."
 				]
 			}
 		}
@@ -161,6 +202,81 @@
 			},
 			"description": "Erreur : (x − 6)²",
 			"variationIndex": 1
+		},
+		{
+			"answers": ["2-2\\sqrt{2}", "0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n": "2",
+				"q": "1",
+				"d": "2",
+				"p": "3",
+				"t": "0"
+			},
+			"description": "3 − √2 et 1 + √2 : 2 − 2√2 < 0, a < b",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["-2\\sqrt{2}+2", "0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n": "2",
+				"q": "1",
+				"d": "2",
+				"p": "3",
+				"t": "0"
+			},
+			"description": "Même différence, écrite autrement",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["2", "1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "2",
+				"q": "1",
+				"d": "2",
+				"p": "3",
+				"t": "0"
+			},
+			"description": "Erreur : racines « simplifiées » (2), a > b",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["2-2\\sqrt{2}", "1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "2",
+				"q": "1",
+				"d": "2",
+				"p": "3",
+				"t": "0"
+			},
+			"description": "Erreur : conclusion inversée",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["3-2\\sqrt{2}", "1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n": "2",
+				"q": "2",
+				"d": "3",
+				"p": "5",
+				"t": "1"
+			},
+			"description": "5 − √2 et 2 + √2 : 3 − 2√2 > 0, a > b",
+			"variationIndex": 2
 		}
 	]
 }

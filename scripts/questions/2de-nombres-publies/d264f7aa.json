@@ -1,7 +1,7 @@
 {
 	"id": "d264f7aa-1867-43cc-93e1-f66912786117",
 	"title": "Pair ou impair : écrire 2k ou 2k + 1",
-	"description": "Parité de an + b selon les coefficients ; (2n + 1) + (2m + 3) = 2(n + m + 2) ; 4n + 3 = 2(2n + 1) + 1 ; 2n(2m + 3) = 2(2nm + 3n)",
+	"description": "Parité de an + b selon les coefficients ; (2n + 1) + (2m + 3) = 2(n + m + 2) ; 4n + 3 = 2(2n + 1) + 1 ; 2n(2m + 3) = 2(2nm + 3n) ; parité de n² + n, n(n + 1), 2n + 1, n² + 1, 3n + 1 selon celle de n",
 	"grades": ["2"],
 	"level": 2,
 	"delay": 60,
@@ -115,6 +115,35 @@
 					"Un entier est **pair** s'il s'écrit $2k$, **impair** s'il s'écrit $2k+1$, avec $k$ **entier**.",
 					"$$2n\\times(2m+{{a}})=2\\times\\textcolor{{{color:primary.0}}}{n(2m+{{a}})}=2\\times\\textcolor{{{color:primary.0}}}{\\left(2nm+{{a}}n\\right)}$$",
 					"$k=\\textcolor{{{color:primary.0}}}{2nm+{{a}}n}$ est un entier : le produit d'un pair par un entier est **pair**."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(1-min(abs((x)-2),1))+min(max((x)-2,0),1)*(1-(p))}}"
+				}
+			],
+			"statement": "$n$ est un entier **{{if:p==0|pair|impair}}**.\n\nLe nombre $A={{if:x==0|n^2+n|{{if:x==1|n(n+1)|{{if:x==2|2n+1|{{if:x==3|n^2+1|3n+1}}}}}}}}$ est-il pair ou impair ?\n\n```choix\nmelanger: non\n- pair\n- impair\n```",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "0..4"
+				},
+				{
+					"name": "p",
+					"expression": "0|1"
+				},
+				{
+					"name": "m",
+					"expression": "eval:2*(x)+(p)"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un entier est **pair** s'il s'écrit $2k$, **impair** s'il s'écrit $2k+1$, avec $k$ **entier**.",
+					"{{if:x==2|Quel que soit $n$ :|$n$ est {{if:p==0|pair : $n=2k$|impair : $n=2k+1$}}, avec $k$ entier.}}",
+					"{{if:m==0|$A=(2k)^2+2k=4k^2+2k=2\\left(2k^2+k\\right)$ s'écrit $2\\times(\\ldots)$ : $A$ est **pair**.|{{if:m==1|$A=(2k+1)^2+(2k+1)=4k^2+6k+2=2\\left(2k^2+3k+1\\right)$ s'écrit $2\\times(\\ldots)$ : $A$ est **pair**.|{{if:m==2|$A=2k(2k+1)=2\\left(k(2k+1)\\right)$ s'écrit $2\\times(\\ldots)$ : $A$ est **pair**.|{{if:m==3|$A=(2k+1)(2k+2)=2\\left((2k+1)(k+1)\\right)$ s'écrit $2\\times(\\ldots)$ : $A$ est **pair**.|{{if:m==4|$A=2n+1=2\\times n+1$ s'écrit $2\\times(\\ldots)+1$ : $A$ est **impair**.|{{if:m==5|$A=2n+1=2\\times n+1$ s'écrit $2\\times(\\ldots)+1$ : $A$ est **impair**.|{{if:m==6|$A=(2k)^2+1=2\\left(2k^2\\right)+1$ s'écrit $2\\times(\\ldots)+1$ : $A$ est **impair**.|{{if:m==7|$A=(2k+1)^2+1=4k^2+4k+2=2\\left(2k^2+2k+1\\right)$ s'écrit $2\\times(\\ldots)$ : $A$ est **pair**.|{{if:m==8|$A=3\\times2k+1=2\\times3k+1$ s'écrit $2\\times(\\ldots)+1$ : $A$ est **impair**.|$A=3(2k+1)+1=6k+4=2(3k+2)$ s'écrit $2\\times(\\ldots)$ : $A$ est **pair**.}}}}}}}}}}}}}}}}}}"
 				]
 			}
 		}
@@ -282,6 +311,110 @@
 			},
 			"description": "Erreur : 2 laissé dedans (4nm + 6n)",
 			"variationIndex": 3
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"x": "0",
+				"p": "1",
+				"m": "1"
+			},
+			"description": "n impair : n² + n est pair",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"x": "0",
+				"p": "1",
+				"m": "1"
+			},
+			"description": "Erreur : n² + n impair (impair + impair)",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"x": "1",
+				"p": "0",
+				"m": "2"
+			},
+			"description": "n pair : n(n + 1) est pair",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"x": "2",
+				"p": "0",
+				"m": "4"
+			},
+			"description": "2n + 1 est impair",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"x": "3",
+				"p": "1",
+				"m": "7"
+			},
+			"description": "n impair : n² + 1 est pair",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"x": "3",
+				"p": "0",
+				"m": "6"
+			},
+			"description": "n pair : n² + 1 est impair",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"x": "4",
+				"p": "1",
+				"m": "9"
+			},
+			"description": "n impair : 3n + 1 est pair",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"x": "4",
+				"p": "1",
+				"m": "9"
+			},
+			"description": "Erreur : 3n + 1 impair",
+			"variationIndex": 4
 		}
 	]
 }
