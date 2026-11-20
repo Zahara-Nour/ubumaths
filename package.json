@@ -70,6 +70,7 @@
 		"surveillance:installer": "bash scripts/surveillance-machine-installer.sh",
 		"surveillance:essai": "bash scripts/surveillance-machine.sh --essai",
 		"surveillance:historique": "bash scripts/surveillance-machine.sh --historique",
+		"surveillance:worktrees": "bash scripts/surveillance-machine.sh --worktrees",
 		"menage": "bash scripts/menage-machine.sh",
 		"db:types": "pnpm supabase gen types typescript --project-id cnevnzsvixxpnurautls --schema public > src/lib/types/database.ts && tsx scripts/generate-db-doc.ts",
 		"db:doc": "tsx scripts/generate-db-doc.ts",

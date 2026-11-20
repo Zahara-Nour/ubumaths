@@ -245,8 +245,28 @@ le reste de la fiche (l'ancienne définition le laissait souvent en drapeau). Te
 | `Le [nombre]{.def} est pair.`            | mot cliquable forcé (lexique)                  | `src/lib/ubumark/__tests__/parser/lexicon-marks.test.ts`                          |
 | `[x]{.rappel}`                           | détail en ligne typé                           | `src/lib/ubumark/__tests__/parser/detail-callouts.test.ts`                        |
 | `**un [mot]{.def} pair**`                | marquage dans une mise en forme (tout en gras) | `src/lib/ubumark/__tests__/parser/lexicon-marks.test.ts`                          |
+| `C'est [le cône]{.orange}.`              | texte coloré (ADR 0042)                        | `src/lib/ubumark/__tests__/parser/texte-colore.test.ts`                           |
+| `[la règle]{.rappel .vert}`              | plusieurs classes : détail coloré              | `src/lib/ubumark/__tests__/parser/texte-colore.test.ts`                           |
 
 Le marqueur `<<expr:…>>` est posé par le générateur de questions, pas par l'auteur.
+
+**Marquages `[texte]{.classe …}`** ([ADR 0042](../adr/0042-texte-colore-dans-la-prose.md)). Un seul
+motif (`SPAN_MARK_REGEX`, `src/lib/ubumark/utils/detail-kinds.ts`) lu en deux passes (marquage
+extérieur, puis celui qu'il contient : `[le [grand]{.rouge} cône]{.bleu}`) ; chaque classe est lue
+par `parseSpanClasses` : type de détail (ADR 0017), `def` / `nodef` / `def=cible` (dictionnaire, la
+cible en dernier), ou l'un des **12 noms de la palette des figures** (`TextNode.color`, synonymes
+anglais ramenés au français ; la formule du passage hérite `MathInlineNode.color`). Le marquage le
+plus proche l'emporte. Une classe inconnue (`{.turquoise}`, `{.rapel}`, `{.#ff0000}`) : texte normal
+sans crochets, et `TextNode.unknownClasses` sur le premier nœud du passage → message au prof
+(`TextNode.svelte`, contexte `showAuthoringErrors`), rien pour l'élève. Écran :
+`var(--color-fig-<nom>)` (`inline-color.ts`, `InlineColor.svelte` autour d'une formule) ; rendu
+restreint (chat des élèves) : aucune couleur. Une cellule de tableau à marquage passe par
+`tableCellMarkedInline`. PDF (`typst-generator.ts`, `wrapInlineColor`) : `#text(fill: …)[…]` dans
+la variante claire du nom (`namedColorTypst`, celle des figures ; noir et blanc purs), au plus près du
+texte (il l'emporte sur le gris d'un calcul, dans le surlignage d'un rappel) ; une cellule de tableau
+lit ses marquages hors formules (`processTableCellContent`, un passage rendu à son tour) ; une classe
+inconnue y donne du texte normal. Rendu réel vérifié : `texte-colore-typst.test.ts` (couleurs de
+remplissage du PDF compilé).
 
 ### Marques de bloc propres à ubumark
 

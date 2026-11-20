@@ -255,7 +255,26 @@ export const RESTRICTED_BLOCK_PLACEHOLDER = '[bloc non affiché dans la discussi
  * conteneurs de blocs sont parcourus.
  */
 export function restrictDocument(doc: DocumentNode): DocumentNode {
-	return { ...doc, children: doc.children.map(restrictBlock) };
+	return withoutInlineColor({ ...doc, children: doc.children.map(restrictBlock) });
+}
+
+/**
+ * Texte coloré `[…]{.orange}` (ADR 0042) : le chat n'affiche aucune couleur.
+ * Les composants l'ignorent déjà en rendu restreint ; on la retire aussi de
+ * l'arbre (seconde défense, audit de #2933). Copie : l'entrée n'est pas modifiée.
+ */
+function withoutInlineColor<T>(value: T): T {
+	if (Array.isArray(value)) return value.map(withoutInlineColor) as T;
+	if (value === null || typeof value !== 'object') return value;
+	const copy: Record<string, unknown> = {};
+	for (const [key, child] of Object.entries(value)) {
+		if (key === 'color' || key === 'unknownClasses') {
+			const type = (value as { type?: unknown }).type;
+			if (type === 'text' || type === 'math-inline') continue;
+		}
+		copy[key] = withoutInlineColor(child);
+	}
+	return copy as T;
 }
 
 function restrictBlock(node: BlockNode): BlockNode {
