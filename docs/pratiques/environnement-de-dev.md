@@ -166,7 +166,13 @@ toutes les 5 min par launchd (`pnpm surveillance:installer`, `--desinstaller` po
 - moins de **15 Go libres** sur le volume des données (`/System/Volumes/Data`, pas `/` qui ne
   montre que le système) → **signalé** ;
 - **« RAS » quotidien** : au premier passage après 9 h, une notification (charge, swap, disque) qui
-  prouve que la surveillance tourne, même un jour d'alertes ; Mac endormi à 9 h → au réveil ;
+  prouve que la surveillance tourne, même un jour d'alertes ; Mac endormi à 9 h → au réveil. Il
+  ajoute « · N worktrees en danger » quand des worktrees portent des fichiers non commités ou des
+  commits poussés nulle part, intouchés depuis 7 jours (dépôt principal exclu) ; les noms :
+  `pnpm surveillance:worktrees` (jamais dans la notification) ;
+- **redémarrage** du Mac → **signalé** (« Le Mac a redémarré le 20/11 à 3 h 12 »), avec « (plantage
+  du système) » si un rapport de plantage de macOS est apparu depuis le démarrage précédent. La
+  surveillance ne tourne qu'une fois la session ouverte : l'heure donnée est celle du redémarrage ;
 - charge au-delà de 36 (3 × 12 cœurs) deux passages de suite, pression mémoire de macOS « tendue »
   ou « critique » → **signalées**, avec les 3 programmes qui prennent le plus (CPU pour la charge,
   mémoire pour la pression et le swap ; noms de programmes seulement, jamais de chemin) ;
