@@ -699,9 +699,9 @@ describe('surveillance-machine : orphelins de test', () => {
 			]
 		});
 		lancer();
-		expect(tues().trim().split('\n')).toEqual(['699', '996', '700', '701', '702']);
+		expect(tues().trim().split('\n')).toEqual(['699', '700', '701', '702']);
 		expect(envois()).toContain(
-			'Orphelins de test fermés : Playwright × 2, vitest × 1, svelte-check × 1, tsgo × 1 (le plus vieux : 10 j).'
+			'Orphelins de test fermés : Playwright × 1, vitest × 1, svelte-check × 1, tsgo × 1 (le plus vieux : 10 j).'
 		);
 		expect(envois()).not.toContain('/Users/x');
 	});
@@ -716,7 +716,10 @@ describe('surveillance-machine : orphelins de test', () => {
 				`800 4321 5:00:00 300000 ${VITEST}`, // session vivante
 				`801 1 29:00 300000 ${VITEST}`, // moins de 30 min
 				'802 1 3-00:00:00 50000 /Applications/Google Chrome.app/Contents/MacOS/Google Chrome', // appli
-				'803 1 3-00:00:00 50000 node /x/node_modules/vite/bin/vite.js dev --port 5176' // serveur de dev
+				'803 1 3-00:00:00 50000 node /x/node_modules/vite/bin/vite.js dev --port 5176', // serveur de dev
+				`804 1 3-00:00:00 1184 ${CRASHPAD}`, // toujours détaché, même navigateur vivant
+				'805 1 3-00:00:00 1000 /usr/bin/tail -f /x/node_modules/vitest/log.txt', // chemin cité en argument
+				'806 1 3-00:00:00 1000 /bin/sh -c cat /x/ms-playwright/notes' // idem
 			]
 		});
 		lancer();
@@ -814,6 +817,15 @@ describe('surveillance-machine : RAS quotidien', () => {
 		machine({ processus: [], dossiers: {}, swap: SWAP_CALME, chrome: [] });
 		const r = lancer({ SURVEILLANCE_HEURE_RAS: '0' }, ['--essai']);
 		expect(r.stdout).toContain('ENVOI : RAS');
+		lancer({ SURVEILLANCE_HEURE_RAS: '0' });
+		expect(envois().match(/RAS/g)).toHaveLength(1);
+	});
+
+	it('sans canal : pas marqué, le canal créé dans la journée reçoit son « RAS »', () => {
+		rmSync(join(racine, 'config', 'ntfy-topic'));
+		machine({ processus: [], dossiers: {}, swap: SWAP_CALME, chrome: [] });
+		lancer({ SURVEILLANCE_HEURE_RAS: '0' });
+		writeFileSync(join(racine, 'config', 'ntfy-topic'), 'canal-de-test\n');
 		lancer({ SURVEILLANCE_HEURE_RAS: '0' });
 		expect(envois().match(/RAS/g)).toHaveLength(1);
 	});

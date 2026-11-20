@@ -342,11 +342,13 @@ if [ "$swap_pourcent" -ge "$SEUIL_MENAGE_SWAP" ]; then
 fi
 
 # ── « RAS » quotidien : marqué seulement une fois l'envoi réussi ───────────────
+# Sans canal, rien n'est marqué : le canal créé dans la journée reçoit son « RAS ».
 
 marque_ras="$ETAT/ras"
 aujourdhui="$(date +%F)"
 if [ $((10#$(date +%H))) -ge "$SURVEILLANCE_HEURE_RAS" ] &&
-	[ "$(cat "$marque_ras" 2>/dev/null)" != "$aujourdhui" ]; then
+	[ "$(cat "$marque_ras" 2>/dev/null)" != "$aujourdhui" ] &&
+	{ [ "$essai" = 1 ] || [ -s "$CONFIG/ntfy-topic" ]; }; then
 	if envoyer "RAS : surveillance active · charge $charge · swap $swap_pourcent % · disque ${disque_libre:-?} Go libres." white_check_mark &&
 		[ "$essai" = 0 ]; then
 		echo "$aujourdhui" >"$marque_ras"
