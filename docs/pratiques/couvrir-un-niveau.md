@@ -296,6 +296,14 @@ niveau chacune (`idx_question_templates_unique_category`).
 
 ## 8. Page à cocher, puis publication
 
+**La vérification de David se fait dans `/dev/modeles`** (vraie appli : modèles joués, blocs dessinés,
+réponses jugées), demandé le 2026-11-20 après un lot validé sur la seule page à cocher. Lui donner
+l'adresse qui montre tout le lot : brouillons → filtre nœud ou point (`?noeud=`, `?point=`) ; modèles
+publiés → série de relecture `scripts/series/<niveau>-relecture-<lot>.json` (50 modèles au plus par
+série), simulée par `scripts/series/creer-serie.ts` puis enregistrée par David (`--publier`), ouverte
+par `/dev/modeles?serie=<id>`. Les choix de jugement à trancher (forme refusée, demi-point) s'y testent
+en jouant le modèle. La page à cocher ci-dessous reste le relevé des verdicts.
+
 1. **Page à cocher** :
    ```bash
    pnpm tsx scripts/questions/page-a-cocher.ts --dir scripts/questions/<niveau>-<lot> \

@@ -75,7 +75,10 @@ couvre (ce niveau et les suivants) et sa place dans l'ordre des lots. David déc
 5. **Page à cocher** : `pnpm tsx scripts/questions/page-a-cocher.ts --dir … --titre … --intro …
    --sortie <scratchpad>/….html` (lit la base ; alertes : sans point, sans nœud, niveau, bloc non
    dessiné), publiée en artefact avec la capacité `db`, rendu vérifié à 390 px, ouverte dans
-   Chrome ; lire et **compter** les verdicts en base.
+   Chrome ; lire et **compter** les verdicts en base. **La vérification de David se fait dans
+   `/dev/modeles`** (demandé le 2026-11-20) : lui donner l'adresse qui montre le lot (brouillons :
+   filtre nœud ou point ; modèles publiés : série de relecture, `scripts/series/creer-serie.ts`, 50
+   modèles au plus par série) ; les choix de jugement à trancher s'y testent en jouant le modèle.
 6. **Publication** : `pnpm tsx scripts/questions/publier-lot.ts --dir …` en simulation (tous les
    brouillons du lot, ou rien), puis **David** le lance avec `--publier` ; le script relit
    `published` en base. Journal + « Reprendre ici » à jour, commit direct.
