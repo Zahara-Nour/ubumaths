@@ -1,4 +1,5 @@
 {
+	"id": "37b3a637-bd6e-46ae-bf85-a19175d41c9a",
 	"title": "Résoudre |x − a| > r",
 	"description": "Inéquation |x − a| > r ou ⩾ r par la distance à a : réunion de deux intervalles (pièges : intervalle entre a − r et a + r, crochets, centre −a pour |x + a|)",
 	"grades": ["2"],

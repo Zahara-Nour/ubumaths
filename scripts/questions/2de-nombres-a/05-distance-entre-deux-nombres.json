@@ -1,4 +1,5 @@
 {
+	"id": "a0018475-8694-4bfb-8823-b722394687d0",
 	"title": "Distance entre deux nombres",
 	"description": "Distance |a − b| entre deux positifs, deux nombres de signes contraires, deux négatifs, deux décimaux (pièges : soustraire les distances à 0, réponse négative)",
 	"grades": ["2"],

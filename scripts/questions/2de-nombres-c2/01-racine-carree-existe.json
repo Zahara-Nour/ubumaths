@@ -1,4 +1,5 @@
 {
+	"id": "516273a4-899d-4e12-8fe6-6cc1fa055442",
 	"title": "Une racine carrée existe-t-elle ?",
 	"description": "Dire si √x existe (Oui / Non) : √(3 − π), √(−4), √((−4)²), √(−4²), √(2 − √5) (pièges : (−4)² positif, −4² négatif, comparer a et √b par les carrés)",
 	"grades": ["2"],

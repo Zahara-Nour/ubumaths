@@ -1,4 +1,5 @@
 {
+	"id": "2be2c495-9f07-4d76-8e21-65e189c8345d",
 	"title": "Division euclidienne",
 	"description": "Écrire 157 = 12 × 13 + 1 (quotient et reste), puis 157 bonbons en sachets de 12 : 13 sachets pleins, il en reste 1 (piège : reste plus grand que le diviseur, 12 × 12 + 13)",
 	"grades": ["2"],

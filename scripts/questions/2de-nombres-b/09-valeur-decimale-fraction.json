@@ -1,4 +1,5 @@
 {
+	"id": "a1a20304-015a-4c63-807e-aa69a58cbb7d",
 	"title": "Valeur décimale d'une fraction simple",
 	"description": "Écrire en décimal une fraction de dénominateur 2, 4, 5, 8, 10, 20, 25 ou 50 : 7/4 = 1,75 ; 13/5 = 2,6 (pièges : 7/4 lu 7,4, décimales oubliées)",
 	"grades": ["2"],

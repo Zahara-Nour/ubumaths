@@ -1,4 +1,5 @@
 {
+	"id": "3e4a8f6c-55fe-49d1-bf7d-0ae352e1451a",
 	"title": "Produit de fractions, en simplifiant avant",
 	"description": "Calculer un produit de fractions en simplifiant avant de multiplier (14/15 × 3/7 = 2/5), avec un facteur négatif, puis entier × fraction (pièges : multiplier aussi le dénominateur par l'entier, ne pas simplifier)",
 	"grades": ["2"],

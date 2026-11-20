@@ -1,4 +1,5 @@
 {
+	"id": "ca1a1201-e819-4ad2-8237-dd61c3d1dbc2",
 	"title": "Ordre de grandeur : est-ce vraisemblable ?",
 	"description": "Juger si une valeur annoncée (aire, masse, taille, durée, volume, distance) est vraisemblable (piège : valeur à un facteur 10 de l'ordre de grandeur réaliste)",
 	"grades": ["2"],

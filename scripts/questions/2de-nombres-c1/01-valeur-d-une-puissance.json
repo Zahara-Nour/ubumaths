@@ -1,4 +1,5 @@
 {
+	"id": "8fb1a23a-6e98-4b58-8745-caf5fec3dc88",
 	"title": "Valeur d'une puissance",
 	"description": "Calculer (−a)ⁿ, a⁻ⁿ, 0,dⁿ et a⁰ (pièges : (−2)³ = 8, 5⁻² = −25, 0,3² = 0,6, 7⁰ = 0)",
 	"grades": ["2"],

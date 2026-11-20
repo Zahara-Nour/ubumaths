@@ -1,4 +1,5 @@
 {
+	"id": "9f01ca57-6330-40b6-a423-997ff357a6f3",
 	"title": "Encadrer entre deux puissances de 10",
 	"description": "Trouver n et n + 1 tels que 10ⁿ ≤ x < 10ⁿ⁺¹ pour 0,003 2 ou 32 000 (pièges : compter les zéros ou les chiffres, bornes échangées)",
 	"grades": ["2"],

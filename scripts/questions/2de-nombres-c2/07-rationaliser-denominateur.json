@@ -1,4 +1,5 @@
 {
+	"id": "96ede34c-259b-43f0-b920-d9e90003576e",
 	"title": "Rationaliser un dénominateur",
 	"description": "Écrire 3/√2, 5/(2√3) ou 1/(√5 − 2) sans racine au dénominateur (pièges : dénominateur oublié, racine laissée au dénominateur, conjuguée de mauvais signe)",
 	"grades": ["2"],

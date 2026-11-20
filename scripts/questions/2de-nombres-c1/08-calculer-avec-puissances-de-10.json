@@ -1,4 +1,5 @@
 {
+	"id": "0369c9ac-5e72-4175-b40b-a23617f23615",
 	"title": "Calculer avec des puissances de 10",
 	"description": "Calculer 10³ + 10², 10⁵ × 10⁻³ / 10², 4,57 × 10³, et trouver un exposant manquant (pièges : 10³ + 10² = 10⁵, signe d'un exposant négatif, exposants multipliés)",
 	"grades": ["2"],

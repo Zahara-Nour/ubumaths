@@ -1,4 +1,5 @@
 {
+	"id": "747d5773-0e0d-4094-9c3b-11daef5e2463",
 	"title": "Écrire un nombre comme une puissance",
 	"description": "Trouver l'exposant ou la base : 64 = 2⁶, 0,04 = 0,2², 1/8 = 2⁻³ (pièges : 64 = 2³², 0,04 = 0,02², 1/8 = 2³)",
 	"grades": ["2"],

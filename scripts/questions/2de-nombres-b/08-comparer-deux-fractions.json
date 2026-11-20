@@ -1,4 +1,5 @@
 {
+	"id": "3326ea25-4329-40a9-a3e9-536de7abbb47",
 	"title": "Comparer deux fractions",
 	"description": "Choisir < ou > entre deux fractions : 7/5 et 9/11 (comparer à 1), 13/12 et 12/11 (signe de la différence), même dénominateur, même numérateur (piège : le plus grand dénominateur ne donne pas la plus grande fraction)",
 	"grades": ["2"],

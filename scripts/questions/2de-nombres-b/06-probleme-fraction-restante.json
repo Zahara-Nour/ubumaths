@@ -1,4 +1,5 @@
 {
+	"id": "502e4f97-26fa-42e1-b247-e9c57b96f664",
 	"title": "Problème : fraction faite, fraction restante",
 	"description": "Il peint 2/5 du mur le matin et 1/3 l'après-midi : quelle fraction reste à peindre ? (4/15) ; mêmes dénominateurs, puis multiples, puis quelconques (pièges : donner la fraction faite, additionner numérateurs et dénominateurs)",
 	"grades": ["2"],

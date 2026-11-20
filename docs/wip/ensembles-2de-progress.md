@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-20, gros lot écrit (PR des fichiers à ouvrir)._
+_Mis à jour le 2026-11-20, après #2944 (fichiers du gros lot mergés)._
 
 - **État** : 36 nouveaux modèles écrits (`scripts/questions/2de-nombres-{a,b,c1,c2}/`, 36/36 verts en simulation, créés en base locale) + 21 variations ajoutées à 16 publiés (`2de-nombres-publies/`, migration générée, test d'intégration 12/12, **non commitée** : `supabase/migrations/20261120145050_…_contenu.sql` + fixture, hors PR des fichiers).
-- **Prochaine action** : PR des fichiers → merge → David lance `create-questions --publier` sur les 4 dossiers (brouillons prod) → ids commités → page à cocher (nouveaux + variations des publiés) → migration rangement + tags (36) et migration de contenu (régénérée après relecture) → publication.
+- **Prochaine action** : David lance `create-questions --publier` sur les 4 dossiers (brouillons prod) → ids commités → page à cocher (nouveaux + variations des publiés) → migration rangement + tags (36) et migration de contenu (régénérée après relecture) → publication.
 - **En attente de David** : les points à trancher du § « Gros lot : écrit » (forme de 3/2 × √2, décomposition en cases ordonnées, entier + fraction en 2 cases, préfixe T).
 - **Pièges en cours** : `create-questions --publier` en LOCAL écrit les ids locaux dans les fichiers → `git restore` aussitôt ; le hook de commit laisse une copie non formatée dans l'index → `git restore --staged`. Ne jamais merger la migration de contenu avant la relecture (le `db:migrate` de n'importe quelle session la jouerait). Ne jamais nommer la plateforme d'origine.
-- **Worktree / branche** : `../ubumaths-wt-ensembles-2de`, `feat/ensembles-2de-lot`.
+- **Worktree / branche** : `../ubumaths-wt-ensembles-2de`, `feat/ensembles-2de-lot-rangement` (ids, page à cocher, migrations).
 
 ## Décisions de David (2026-11-20)
 
