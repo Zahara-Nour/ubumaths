@@ -4,7 +4,7 @@ status: clos
 
 # Chantier « monnaie-centimes » : des centimes et les billets de 200 / 500 € dans ` ```monnaie `
 
-> Ouvert le 2026-11-01 depuis [questions-ce1](questions-ce1-progress.md) § 12. Il sert à faire le lot monnaie du CE1
+> Ouvert le 2026-11-01 depuis [questions-ce1](../archive/wip/questions-ce1-progress.md) § 12. Il sert à faire le lot monnaie du CE1
 > (054, 055, 056, 057, 086), puis le CE2 (054, 080). Bloc d'origine : [monnaie](../archive/wip/monnaie-progress.md),
 > doc durable : [ubumark.md](../systeme/ubumark.md) (§ « Pièces et billets », « Monnaie à construire »).
 

@@ -1,6 +1,6 @@
 """Écrit les 10 modèles du lot 4 du CE1 (problèmes) dans scripts/questions/ce1-4/.
 
-Phase 0 validée par David le 2026-10-29 (§ 10 du journal `docs/wip/questions-ce1-progress.md`).
+Phase 0 validée par David le 2026-10-29 (§ 10 du journal `docs/archive/wip/questions-ce1-progress.md`).
 Bornes `cycle2.json`, CE1-036 à 040 : données entières ≤ 1 000 ; prix à virgule admis, en euros
 seulement (décision c2-1). Exemples du BO (p.17-19) : coffres de 227 billes ; 56 images
 distribuées, il en reste 217 ; album de 350 photos ; 1,20 € + 90 centimes + 12 € ; Léo 188, Lucie

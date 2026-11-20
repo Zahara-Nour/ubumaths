@@ -1,6 +1,6 @@
 """Écrit les modèles du lot 13 du CE1 : CE1-001, 002, 003 (collection à centaines) et CE1-074 (instruments).
 
-Phase 0 validée par David le 2026-11-19 (§ 20 du journal `docs/wip/questions-ce1-progress.md`,
+Phase 0 validée par David le 2026-11-19 (§ 20 du journal `docs/archive/wip/questions-ce1-progress.md`,
 « je te suis »). Bornes `cycle2.json` : CE1-001 à 003 (groupes de dix et de cent ; plus de dix
 éléments d'une unité de numération : 17 u, 8 d et 2 c ; 2 c, 27 d et 14 u ; 235 timbres par
 plaques de 100, carnets de 10 ou à l'unité), CE1-074 (règle graduée, équerre, compas). Décisions :

@@ -1,6 +1,6 @@
 """Écrit les 9 modèles du lot 3 du CE1 (fractions) dans scripts/questions/ce1-3/.
 
-Phase 0 validée par David le 2026-10-28 (§ 9 du journal `docs/wip/questions-ce1-progress.md`).
+Phase 0 validée par David le 2026-10-28 (§ 9 du journal `docs/archive/wip/questions-ce1-progress.md`).
 Bornes `cycle2.json`, CE1-016 à 021 et 099 : fractions d'un tout, toutes ≤ 1, dénominateur dans
 {2, 3, 4, 5, 6, 8, 10} ; somme et différence de même dénominateur, résultat ≤ 1. Exemples du BO
 (p.12-13) : 3/8 = 1/8 + 1/8 + 1/8 ; 2/5 < 3/5 ; 1/5 < 1/3 ; 2/5 + 3/5 = 1 ; Lucie, 3/10 en bleu.

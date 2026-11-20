@@ -1,6 +1,6 @@
 """Écrit les 6 modèles du lot 5 du CE1 (longueurs) dans scripts/questions/ce1-5/.
 
-Phase 0 validée par David le 2026-10-30 (§ 11 du journal `docs/wip/questions-ce1-progress.md`).
+Phase 0 validée par David le 2026-10-30 (§ 11 du journal `docs/archive/wip/questions-ce1-progress.md`).
 Bornes `cycle2.json`, CE1-041 à 043 et 045 à 047 ; BO CE1 p.27 : m, cm, km ; 1 m = 100 cm,
 1 km = 1 000 m ; 1 m + 46 cm = 146 cm ; trousse « plutôt 2 cm, 20 cm ou 2 m » ; longueurs
 d'objets familiers et distances de référence. Décisions :

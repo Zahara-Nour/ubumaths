@@ -1,7 +1,7 @@
 """Écrit les 7 modèles du lot 2 du CE1 (numération) dans scripts/questions/ce1-2/.
 
 Phase 0 validée par David le 2026-10-27 (« je te suis », § 7 du journal
-`docs/wip/questions-ce1-progress.md`). Plages : bornes `cycle2.json`, CE1 (nombres ≤ 1 000 ;
+`docs/archive/wip/questions-ce1-progress.md`). Plages : bornes `cycle2.json`, CE1 (nombres ≤ 1 000 ;
 unités non canoniques 63 d et 5 u, 5 u 5 c et 13 d, 2 c 27 d et 14 u ; ranger jusqu'à cinq nombres
 comme 234, 243, 239, 300, 229 ; 391 < … < 396). Un point par modèle ; case seule, aucun QCM.
 Niveaux : places libres des catégories, relevées en prod le 2026-10-27.

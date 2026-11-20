@@ -1,7 +1,7 @@
 """Écrit les 7 modèles du lot 2 bis du CE1 (ordinaux) dans scripts/questions/ce1-2bis/.
 
 Phase 0 validée par David le 2026-10-28 (« je te suis », § 8 du journal
-`docs/wip/questions-ce1-progress.md`). Bornes `cycle2.json`, CE1-011 à 015 : rangs jusqu'au
+`docs/archive/wip/questions-ce1-progress.md`). Bornes `cycle2.json`, CE1-011 à 015 : rangs jusqu'au
 centième ; suites répétitives ET évolutives (exemples du BO p.11 : ABAB… 89e, △ ▢ ○ 60e,
 △ ✕ ▢ ○ 80e, ABGF 17e, 1, 2, 4, 7, 11… 11e, 1, 2, 4, 8… 9e, △ ✕ △ ✕✕… 20e) ; 167 cyclistes,
 combien avant le 48e. Décisions :

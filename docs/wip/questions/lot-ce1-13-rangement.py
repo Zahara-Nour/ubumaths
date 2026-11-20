@@ -1,7 +1,7 @@
 """CE1 lot 13, rangement : migration 20261119213641_questions_ce1_lot13_rangement_tags + fixture du test.
 
 Lit l'instantané `etat-prod-2026-11-19-ce1-13/` (docs/wip/questions/releve-prod-ce1-ce2.ts) et
-applique les décisions de David (journal `docs/wip/questions-ce1-progress.md` § 20, validé le
+applique les décisions de David (journal `docs/archive/wip/questions-ce1-progress.md` § 20, validé le
 2026-11-19) sur 7 modèles : les 5 brouillons de scripts/questions/ce1-13/ (#2920), créés sans nœud
 ni tag le 2026-11-19, chacun sur le nœud de son point, tag posé ; et deux modèles du CE2 déjà publiés
 (`aaebfe52`, `2fafe84d`, nœud « dénombrement ») qui gagnent le niveau CE1 et un point CE1 du même
@@ -164,7 +164,7 @@ w(f"""-- =======================================================================
 -- Bilan : {N_DEPLACES} rangés sur un nœud, {N_NIVEAUX} niveaux changés (CE2 → CE1, CE2), {N_RETIRES} tag retiré,
 -- {N_POSES} posés, {N_GARDES} gardés. Aucun statut ne change. Le contenu ne change pas : `updated_at` est PRÉSERVÉ.
 -- ============================================================================
--- Phase 0 validée par David le 2026-11-19 (journal docs/wip/questions-ce1-progress.md § 20, « je te
+-- Phase 0 validée par David le 2026-11-19 (journal docs/archive/wip/questions-ce1-progress.md § 20, « je te
 -- suis » ; aucun nœud créé). Les 5 brouillons ont été créés le 2026-11-19 par David avec
 -- scripts/create-questions.ts (scripts/questions/ce1-13/, #2920), qui ne pose ni nœud ni tag.
 -- Fichier GÉNÉRÉ par docs/wip/questions/lot-ce1-13-rangement.py (relevé de la prod du 2026-11-19) — ne pas

@@ -1,22 +1,16 @@
 # Chantier « questions-ce1 » — couvrir les points du CE1 en modèles de questions
 
-> Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) (skill `couvrir-niveau`).
-> Chantier de référence : le CP ([questions-progress.md](questions-progress.md)).
+> Démarche : [couvrir-un-niveau.md](../../pratiques/couvrir-un-niveau.md) (skill `couvrir-niveau`).
+> Chantier de référence : le CP ([questions-progress.md](../../wip/questions-progress.md)).
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, clôture en cours (§ 21)._
+_Mis à jour le 2026-11-20 : chantier CLOS, journal archivé._
 
-- **État** : CE1 couvert (recompté en prod : 103 points sur 107, les 4 sans modèle = les D 092, 048, 068, 078).
-  Clôture : #2926 (2 tags sur des modèles d'avant le chantier, § 21) ouverte, puis `db:migrate`.
-- **Prochaine action** : après le merge et `db:migrate`, vérifier les 2 tags au MCP, puis versement (le durable dans
-  `docs/systeme/`, journal archivé).
-- **En attente de David** : essai tablette des cases « figure » (`verifications-manuelles.md`) ; aperçu admin des
-  deux modèles 074 ; futur chantier « `\textcolor` hors formule » ; triangle quelconque sur quadrillage
-  (`outils-manquants.md`, ligne 47).
-- **Pièges en cours** : `db:migrate` depuis un worktree : copier `supabase/.temp` du dépôt principal, `--dry-run`
-  d'abord.
-- **Worktree / branche** : `../ubumaths-wt-questions-ce1`, `chore/questions-ce1-tags`.
+- **État** : CE1 couvert, 103 points sur 107 (les 4 D hors appli) ; couverture versée dans
+  `docs/systeme/programmes/bornes/cycle2.md` (§ CE1), pièges dans `docs/pratiques/couvrir-un-niveau.md`.
+- **Reste ailleurs** : essai tablette des cases « figure » (`verifications-manuelles.md`) ; triangle quelconque sur
+  quadrillage (`outils-manquants.md`, ligne 47) ; 21 modèles du CE1 sans point, à reprendre avec le CE2.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-26)
 
@@ -1015,3 +1009,7 @@ s'ajoutent.
   migration `20261119221550` (2 tags posés, rien d'autre) ; test d'intégration 19 verts, rouge sans la migration
   (7 échecs, suite principale arrêtée).
 - 2026-11-19 : `security-auditor` : aucun finding bloquant (SQL exécutable identique au lot 13 hors données ; seul l'`insert` des 2 tags agit ; personne ne gagne ni ne perd de lecture).
+- 2026-11-20 : #2926 mergée (CI verte, `check:migrations` OK) ; `db:migrate --include-all` (David ; la seule
+  migration en attente) ; vérifié au MCP : 2 tags posés, nœud, niveau, statut et `updated_at` intacts ; 21 modèles
+  sans tag, 4 points sans modèle. **Chantier clos** : versement dans `cycle2.md` et `couvrir-un-niveau.md`, journal
+  archivé.

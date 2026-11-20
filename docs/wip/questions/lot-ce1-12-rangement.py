@@ -1,7 +1,7 @@
 """CE1 lot 12, rangement : migration 20261119195540_questions_ce1_lot12_rangement_tags + fixture du test.
 
 Lit l'instantané `etat-prod-2026-11-19-ce1-12/` (docs/archive/wip/suite-fleches/releve-prod.ts) et
-applique les décisions de David (journal `docs/wip/questions-ce1-progress.md` § 18, validé le
+applique les décisions de David (journal `docs/archive/wip/questions-ce1-progress.md` § 18, validé le
 2026-11-02, et § 19) sur 5 modèles : les 5 brouillons de scripts/questions/ce1-12/ (#2234), créés
 sans nœud ni tag le 2026-11-19, chacun sur le nœud de son point, tag posé, aucun nœud créé.
 Gabarit : docs/wip/questions/lot-tortue-variables-rangement.py.
@@ -157,7 +157,7 @@ w(f"""-- =======================================================================
 -- Bilan : {N_DEPLACES} rangés sur un nœud, {N_NIVEAUX} niveau changé, {N_RETIRES} tag retiré, {N_POSES} posés. Aucun
 -- statut ne change (5 brouillons). Le contenu ne change pas : `updated_at` est PRÉSERVÉ.
 -- ============================================================================
--- Phase 0 validée par David le 2026-11-02 (journal docs/wip/questions-ce1-progress.md § 18 ; aucun
+-- Phase 0 validée par David le 2026-11-02 (journal docs/archive/wip/questions-ce1-progress.md § 18 ; aucun
 -- nœud créé). Les 5 brouillons ont été créés le 2026-11-19 par David avec
 -- scripts/create-questions.ts (scripts/questions/ce1-12/, #2234), qui ne pose ni nœud ni tag.
 -- Fichier GÉNÉRÉ par docs/wip/questions/lot-ce1-12-rangement.py (relevé de la prod du 2026-11-19) — ne pas

@@ -424,6 +424,13 @@ pnpm tsx scripts/series/creer-serie.ts --fichier scripts/series/<nom>.json --pub
   `eval:x0-12` ; dans un ` ```figure `, `{{eval:a/2}}` sort `\dfrac{27}{5}`, refusé par le moteur → `{{eval:a/2;d}}`
   (`evd` de `lot-cm1-5d.py`) ; une `validationRules` custom à `{{if:}}` imbriqué juge fausse la bonne réponse → la
   retirer ; deux figures côte à côte donnent des carreaux de 13 px à 390 px → les empiler.
+- **Pièges vus au CE1** (2026-10-26 au 2026-11-20) : un `{{if:}}` dont la condition contient un `{{eval:}}` (ou
+  un `||`) n'est pas résolu et les specs restent vertes → relire les blocs rendus (`--apercu`) ; une case
+  d'opération posée n'a pas d'`expectedAnswer` (le bloc la calcule) ; un point nommé `e` casse une figure sans que
+  simulation ni specs ne le voient → noms `abcdfghj` ; un corrigé ne nomme jamais un point invisible à l'écran ; la
+  droite de l'équerre `droite(A ; A + AB tourné d'un quart de tour)` s'oriente d'après $[AB]$ (avec $B$ à gauche de
+  $A$, elle part vers le bas) ; un modèle publié d'avant le chantier resté sans tag se retrouve au recompte de
+  clôture → trancher les « non tagués » du relevé dès la phase 0.
 - **Pièges vus au CE2** (2026-10-27 au 2026-11-19) : la page à cocher n'affiche pas l'italique `_…_` (l'appli oui) ;
   la sonde ne passe pas les figures d'un choix → les relire dans l'aperçu ; `{{if}}` autour d'un bloc `choix` est
   refusé (« bloc non fermé ») → faire varier le contenu d'une figure, jamais le bloc ; un dessin dans un choix est

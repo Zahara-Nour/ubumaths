@@ -2,7 +2,7 @@
 réécrits, sans modèle neuf ; ni tag, ni nœud, ni niveau, ni statut ne changent ici (c'est la migration
 suivante, `20261027000100_questions_ce1_rangement_tags.sql`, écrite à la main).
 
-Phase 0 validée par David (2026-10-26, § 5 du journal `docs/wip/questions-ce1-progress.md`) :
+Phase 0 validée par David (2026-10-26, § 5 du journal `docs/archive/wip/questions-ce1-progress.md`) :
 
 - `c96ecf4d` (Trouver la moitié, CE1-034) : moitié par décomposition, trois variations (2 chiffres à
   dizaines paires ; 2 chiffres à dizaines impaires ; 3 chiffres, centaines 2 à 6) ;
@@ -183,7 +183,7 @@ ENTETE = """-- =================================================================
 -- Ni tag, ni nœud, ni niveau, ni statut ne changent ici : rangement, tags, niveaux et statut dans
 -- la migration suivante (20261027000100_questions_ce1_rangement_tags).
 -- ============================================================================
--- Phase 0 validée par David le 2026-10-26 (journal docs/wip/questions-ce1-progress.md § 5).
+-- Phase 0 validée par David le 2026-10-26 (journal docs/archive/wip/questions-ce1-progress.md § 5).
 -- Fichier GÉNÉRÉ par docs/wip/questions/lot-corrections-ce1.py — ne pas éditer à la main.
 --
 -- Les modèles n'existent qu'en production : en base locale (vide), la migration ne touche aucun

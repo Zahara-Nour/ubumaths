@@ -110,6 +110,36 @@ Un point dont la colonne Bornes est vide n'a pas de borne propre : il hérite de
 
 ## CE1 — 107 points
 
+### Couverture en modèles de questions (prod, 2026-11-20)
+
+Chantier `questions-ce1` (démarche [couvrir-un-niveau.md](../../../pratiques/couvrir-un-niveau.md)), du 2026-10-26 au
+2026-11-20 ; journal dans `docs/archive/wip/questions-ce1-progress.md`, scripts d'écriture dans
+`docs/wip/questions/lot-ce1-*.py`, fichiers des lots dans `scripts/questions/ce1-*`.
+
+- **161 modèles publiés** contiennent le niveau `CE1`, tous rangés ; **103 points sur 107** ont au moins un modèle
+  publié (relevé MCP du 2026-11-20).
+- **4 points sans modèle, par décision de David**, non évaluables sans manipulation : 092 (suite orale), 048
+  (soupeser), 068 (construire un solide), 078.
+- **Existant** : lot 0 (#1843) — trois décompositions retaguées CE1-005, moitié réécrite par décomposition (CE1-034),
+  distributivité élargie à 11-19, parité jusqu'à 999 ; 4 modèles à nombres > 1 000 passés au CE2 ; le jumeau du double
+  (`47f97c9f`) **repassé en brouillon**, le corrigé multiplicatif gardé. Clôture (#2926) : deux soustractions à trou
+  d'avant le chantier taguées CE1-103 (`3d6def48`) et CE1-033 (`27bf3101`). **21 modèles publiés au CE1 restent sans
+  point**, aucun point du CE1 ne les décrivant : additionner par regroupements (5), calculer une somme, une
+  différence, compléter une addition à trou, une soustraction à trou (2), trouver le complément (4), le triple (4), le
+  tiers (2) ; à reprendre avec le CE2.
+- **Lots écrits** (fichiers, puis rangement et tags) : 1 calcul mental (#1847, #1856, #1870, #1874) ; 2 numération
+  (#1884, #1886, #1891) ; 2 bis ordinaux (#1910) ; 3 fractions (#1936, #1939, #1953, #1963, #1972) ; 4 problèmes
+  (#1987, #1992) ; 5 grandeurs (#2022, #2025, #2028, #2030) ; 6 calcul posé et heure (#2071, #2083) ; 7 données
+  (#2102, #2105) ; 8 monnaie, après le chantier `monnaie-centimes` (#2127, #2134, #2135, #2141) ; 9 fractions
+  dessinées et géométrie (#2168, #2176, #2181, #2185) ; 10 espace et mesure (#2203, #2211, #2217, #2219, #2230) ;
+  11 robot qui pivote, écrit par le chantier `suite-fleches` (CE1-080) ; 12 signe ×, solides, carré et rectangle
+  (#2234, #2913) ; 13 matériel multibase et constructions (#2920, #2924).
+- **Choix de forme** (décisions de David) : QCM en case « choix » ; 072 (carré, rectangle à côtés obliques sur
+  quadrillage) et 074 (règle graduée ; équerre et compas, papier uni, ADR 0036) en case « figure » ; 001 et 002 avec
+  le matériel multibase (`collection`, centaines), deux modèles du CE2 dans les bornes du CE1 tagués aussi au CE1 ;
+  072 couvert par trois modèles (carré et rectangle, cercle, triangle rectangle), le triangle quelconque sur
+  quadrillage attend un contrôle (`outils-manquants.md`, ligne 47) ; milieu par pliage (074) hors appli.
+
 ### Bornes générales
 
 - **tout le niveau** — Nombres entiers naturels jusqu'à mille (0 à 1 000) ; centaine abordée dès la période 1, jusqu'à 1 000 au plus tard en période 2. _(BO c2 p.10, texte d'introduction de la rubrique « Les nombres entiers »)_

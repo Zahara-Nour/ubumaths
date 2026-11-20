@@ -1,6 +1,6 @@
 """Écrit les 7 modèles du lot 6 du CE1 (calcul posé et heure) dans scripts/questions/ce1-6/.
 
-Phase 0 validée par David le 2026-11-01 (§ 13 du journal `docs/wip/questions-ce1-progress.md`).
+Phase 0 validée par David le 2026-11-01 (§ 13 du journal `docs/archive/wip/questions-ce1-progress.md`).
 Bornes `cycle2.json`, CE1-022, 100, 059, 060, 063, 104 ; BO c2 p.13 et p.28-29 : 245 + 437 ;
 218 + 48 ; 76 + 7 + 568 ; somme ≤ 1 000 ; soustraction « par cassage » ou « par compensation » ;
 heures entières, demies, quarts (« 2 heures et quart » = 14 h 15) ; durées dans la même journée

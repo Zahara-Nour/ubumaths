@@ -1,6 +1,6 @@
 """Écrit les 9 modèles du lot 9 du CE1 (fractions dessinées et géométrie) dans scripts/questions/ce1-9/.
 
-Phase 0 validée par David le 2026-11-01 (§ 16 du journal `docs/wip/questions-ce1-progress.md`,
+Phase 0 validée par David le 2026-11-01 (§ 16 du journal `docs/archive/wip/questions-ce1-progress.md`,
 « je suis tes recos »). Bornes `cycle2.json` : CE1-095 à 098 (dénominateurs 2, 3, 4, 5, 6, 8, 10,
 fraction ≤ 1 ; partages de disques, carrés, bandes), CE1-069, 070, 105 (cercle, carré, rectangle,
 triangle, triangle rectangle ; côté, sommet, angle, centre, milieu, droite, segment ; ni losange,

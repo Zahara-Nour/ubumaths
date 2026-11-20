@@ -1,6 +1,6 @@
 """Écrit les modèles du lot 12 du CE1 (ex-lot 11, PR #2234 ; points oubliés du découpage).
 
-Phase 0 validée par David le 2026-11-02 (§ 18 du journal `docs/wip/questions-ce1-progress.md`,
+Phase 0 validée par David le 2026-11-02 (§ 18 du journal `docs/archive/wip/questions-ce1-progress.md`,
 « je suis tes recos »). Bornes `cycle2.json` : CE1-023 (« × » lu « fois » ; 7 × 20 biscuits),
 CE1-066 (cube, pavé, pyramide à base carrée : faces, arêtes, sommets), CE1-067 (faces du cube et du
 pavé : carrés ou rectangles), CE1-071 (carré, rectangle : angles droits, côtés égaux), CE1-072

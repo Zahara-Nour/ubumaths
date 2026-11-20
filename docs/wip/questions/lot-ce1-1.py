@@ -1,7 +1,7 @@
 """Écrit les 6 modèles du lot 1 du CE1 (calcul mental) dans scripts/questions/ce1-1/.
 
 Phase 0 validée par David le 2026-10-26 (« je suis tes recos », § 6 du journal
-`docs/wip/questions-ce1-progress.md`). Plages : bornes `cycle2.json`, CE1 (nombres ≤ 1 000 ;
+`docs/archive/wip/questions-ce1-progress.md`). Plages : bornes `cycle2.json`, CE1 (nombres ≤ 1 000 ;
 dizaines entières 10 à 90, centaines entières 100 à 900 ; − dizaines sans retenue seulement ;
 multiples de 25 : 1 × 25 à 4 × 25). Un point par modèle ; case seule, aucun QCM.
 

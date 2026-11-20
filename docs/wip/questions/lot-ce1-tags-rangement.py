@@ -1,7 +1,7 @@
 """CE1, tags d'avant le chantier : migration 20261119221550_questions_ce1_tags_soustractions_a_trou + fixture du test.
 
 Lit l'instantané `etat-prod-2026-11-19-ce1-tags/` (docs/wip/questions/releve-prod-ce1-ce2.ts) et
-applique la décision de David (journal `docs/wip/questions-ce1-progress.md` § 21, validée le
+applique la décision de David (journal `docs/archive/wip/questions-ce1-progress.md` § 21, validée le
 2026-11-19) sur 2 modèles publiés d'avant le chantier, relevés sans tag au § 2 : `3d6def48`
 (soustraction à trou, centaines) → CE1-103, `27bf3101` (soustraction à trou, un chiffre) → CE1-033. Ils sont
 déjà sur le nœud de leur point (« calcul astucieux ») : ni nœud, ni niveau, ni statut ne change.
@@ -153,7 +153,7 @@ w(f"""-- =======================================================================
 -- Bilan : {N_DEPLACES} rangé sur un nœud, {N_NIVEAUX} niveau changé, {N_RETIRES} tag retiré,
 -- {N_POSES} posés, {N_GARDES} gardé. Aucun statut ne change. Le contenu ne change pas : `updated_at` est PRÉSERVÉ.
 -- ============================================================================
--- Décision de David du 2026-11-19 (journal docs/wip/questions-ce1-progress.md § 21, « je valide » ;
+-- Décision de David du 2026-11-19 (journal docs/archive/wip/questions-ce1-progress.md § 21, « je valide » ;
 -- aucun nœud créé). Fichier GÉNÉRÉ par docs/wip/questions/lot-ce1-tags-rangement.py (relevé de la
 -- prod du 2026-11-19) — ne pas éditer à la main.
 --
