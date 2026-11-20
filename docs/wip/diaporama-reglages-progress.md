@@ -4,13 +4,13 @@ Proposition 3 du chantier `inspiration` (cf. `docs/wip/inspiration-progress.md`)
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-20 : phase 0 validée, PR 1 en cours._
+_Mis à jour le 2026-11-20, après #2936._
 
-- **État** : PR 1 (En classe) écrite, relue (`code-reviewer`, points 1-3 et 6 corrigés), tests verts ; PR ouverte, CI en cours.
-- **Prochaine action** : merge à CI verte ; puis PR 2 (autres formes), phase 0 à écrire.
-- **En attente de David** : rien.
-- **Pièges en cours** : un `onkeydown` Svelte est délégué à la racine : pour arrêter une touche avant le `Deck`, écouteur natif (action `settingsPanel`). `Slide` prend son index par ordre de montage (`claimNextH`) : la liste des diapositives ne peut pas changer en cours de route sans remonter le `Deck`.
-- **Worktree / branche** : `../ubumaths-wt-diaporama-reglages` · `feat/diaporama-reglages`.
+- **État** : PR 1 (En classe : page d'attente, réglages, correction, pause, son, plein écran) **mergée** (#2936), pas encore en prod.
+- **Prochaine action** : PR 2 — page d'attente pour les autres formes (Course aux nombres, Contrôle blanc dont évaluation, Flash-cards, Saisie) : écrire sa phase 0 et la faire valider (cf. § Découpage).
+- **En attente de David** : son essai de la PR 1 (serveur de test 5176 sur le worktree) ; puis la phase 0 de la PR 2.
+- **Pièges en cours** : un `onkeydown` Svelte est délégué à la racine : pour arrêter une touche avant le `Deck`, écouteur natif (action `settingsPanel`). `Slide` prend son index par ordre de montage (`claimNextH`) : changer la liste des diapositives = remonter le `Deck`. `ClassroomSeries` est aussi monté par `/demo/questions` (sous son `h1`).
+- **Worktree / branche** : `../ubumaths-wt-diaporama-reglages` (branche mergée, gardée le temps de l'essai de David).
 
 ## Phase 0 (validée par David le 2026-11-20)
 
