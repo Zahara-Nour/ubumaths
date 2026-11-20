@@ -386,13 +386,19 @@ styles ; `qr-chiphre-entete.test.ts`, positions lues dans le PDF rendu). **Titre
 page 1, une grille badge(s) du niveau à gauche, titre au centre, et dessous en petit gris italique
 (`{{title_sub}}`) ; fiche d'exercices sans titre libre (`custom_title` faux) → les notions en grand
 (« Suites · Dérivation »), la catégorie en minuscules dessous, bas de page « Suites · Entraînement
-technique » ; sans notion → la catégorie seule ; ni l'une ni l'autre → `title`. Titre libre, ou
+technique » ; deux notions ou plus d'une même branche (`sharedBranch`, branche lue dans l'arbre
+par `loadBranches` / `withBranches` de `worksheet-classification.ts`, liens de partage compris)
+→ la branche en grand, les notions dessous (`{{title_notions}}`), la catégorie en petit, bas de
+page et titre en base « Suites · Entraînement technique » (amendement du 2026-11-20) ; sans
+notion → la catégorie seule ; ni l'une ni l'autre → `title`. Titre libre, ou
 autres types → le titre seul, ni notions ni catégorie dessous. Chaque notion commence
 par une majuscule (`notionLabel`). En anglais : catégorie traduite (Technical practice, Applications, Fluency, Review ; « Fluency » pour Automatismes, David, 2026-11-19), aucune notion (pas de noms anglais). Le **niveau**
 (`worksheets.grades`) : un badge par niveau, forme courte (« 1ère Spé »), plein orange texte blanc
 (`levelBadge`, `worksheet-palette.ts`), du plus petit au plus grand ; aucun, ou fiche en anglais →
 rien (`{{level_badges}}`, `levels()` du générateur ; `{{level}}` / `{{level_short}}` restent
-remplis pour les gabarits des profs ; un gabarit sans `{{title_sub}}`, style d'un prof écrit avant, reçoit dans `{{title}}` le titre complet « notions · catégorie »). Ces données arrivent au PDF par chaque chemin : éditeur du
+remplis pour les gabarits des profs ; un gabarit sans `{{title_sub}}`, style d'un prof écrit avant, reçoit dans `{{title}}` le titre complet « notions · catégorie » ; un gabarit avec
+`{{title_sub}}` mais sans `{{title_notions}}`, écrit avant le 2026-11-20, garde les notions en
+grand au lieu de la branche, `PrintedTitle.flat` et `notions`). Ces données arrivent au PDF par chaque chemin : éditeur du
 prof (`GET /api/worksheets/[id]`, `classifications`), vue de l'élève et aperçu d'affectation
 (`grades`, `category`, `custom_title`, `classifications` de `StudentWorksheetView`), corrigé de
 classe, liens de partage (fonctions SQL). Les onze autres n'ont que leur fiche et prennent les autres formes du

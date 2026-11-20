@@ -28,6 +28,7 @@
 	import type { TreeNode } from '#lib/questions/classification-tree.ts';
 	import {
 		CATEGORY_LABELS,
+		branchOf,
 		composedTitle,
 		isWorksheetCategory,
 		WORKSHEET_CATEGORIES
@@ -230,10 +231,13 @@
 	let notions = $derived<WorksheetClassificationView[]>(worksheet.classifications ?? []);
 	// Sans titre libre, une fiche d'exercices prend le titre composé (le serveur l'écrit)
 	let composed = $derived(isExerciseSheet && worksheet.custom_title === false);
+	// Branche de chaque notion lue dans l'arbre (une notion ajoutée n'a pas encore
+	// celle du serveur) : deux notions d'une même branche → la branche en titre
+	let treeById = $derived(new Map(nodes.map((node) => [node.id, node])));
 	let composedPreview = $derived(
 		composedTitle(
 			category,
-			notions.map((n) => n.name)
+			notions.map((n) => ({ name: n.name, branch: branchOf(n.node_id, treeById) ?? n.branch }))
 		)
 	);
 

@@ -383,6 +383,8 @@ export interface WorksheetClassificationView {
 	node_id: string;
 	name: string;
 	kind?: string;
+	/** Nom de la branche de la notion, pour le titre (ADR 0041) ; absent : non lu */
+	branch?: string | null;
 	position: number;
 }
 

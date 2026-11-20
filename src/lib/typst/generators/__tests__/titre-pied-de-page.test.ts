@@ -205,4 +205,72 @@ describe('titre de la fiche au pied de page', () => {
 		}).typstContent;
 		expect(typst).toContain('TITRE<Suites · Entraînement technique>');
 	});
+
+	describe('notions d’une même branche (David, 2026-11-20)', () => {
+		const SUITES = [
+			{
+				node_id: 'n1',
+				name: 'Suites arithmétiques',
+				kind: 'notion',
+				branch: 'Suites',
+				position: 0
+			},
+			{ node_id: 'n2', name: 'Suites géométriques', kind: 'notion', branch: 'Suites', position: 1 }
+		];
+
+		function withTemplate(content: string): string {
+			const worksheet = {
+				id: 'w',
+				title: 'Suites · Entraînement technique',
+				custom_title: false,
+				category: 'technical_practice',
+				classifications: SUITES,
+				description: null,
+				type: 'worksheet',
+				config: { language: 'fr' },
+				grades: [],
+				style_id: '6f1c2a4e-0000-4000-8000-00000000abcd',
+				estimated_duration_minutes: null,
+				total_points: null
+			} as unknown as WorksheetRow;
+			return new WorksheetGenerator({ language: 'fr' }, undefined, { mode: 'worksheet' }).generate({
+				worksheet,
+				instance: INSTANCE,
+				template: { template_content: content } as never
+			}).typstContent;
+		}
+
+		it('style par défaut : la branche en grand, les notions dessous, la catégorie en petit', async () => {
+			const all = await pages(
+				sheet(null, ['1_SPE'], 'fr', {
+					title: 'Suites · Entraînement technique',
+					custom_title: false,
+					category: 'technical_practice',
+					classifications: SUITES
+				})
+			);
+			expect(all[0]).toMatch(
+				/Suites\s*Suites arithmétiques · Suites géométriques\s*entraînement technique/
+			);
+			expect(all.at(-1)).toMatch(/1ère Spé\s*Suites · Entraînement technique/);
+		}, 60_000);
+
+		it('style d’un prof avec la ligne des notions : la branche, puis les notions', () => {
+			expect(withTemplate('T<{{title}}>N<{{title_notions}}>S<{{title_sub}}>')).toContain(
+				'T<Suites>N<Suites arithmétiques · Suites géométriques>S<entraînement technique>'
+			);
+		});
+
+		it('style d’un prof d’avant la ligne des notions : les notions en grand, jamais perdues', () => {
+			expect(withTemplate('T<{{title}}>S<{{title_sub}}>')).toContain(
+				'T<Suites arithmétiques · Suites géométriques>S<entraînement technique>'
+			);
+		});
+
+		it('style d’un prof sans {{title_sub}} : le titre complet, notions comprises', () => {
+			expect(withTemplate('T<{{title}}>')).toContain(
+				'T<Suites arithmétiques · Suites géométriques · Entraînement technique>'
+			);
+		});
+	});
 });

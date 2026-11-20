@@ -4,6 +4,7 @@
  * These templates use Typst markup with placeholders in {{placeholder}} format.
  * Available placeholders:
  * - {{title}} - Worksheet title as printed (ADR 0041: the notions, or the free title)
+ * - {{title_notions}} - Line under a title that is the notions' shared branch: the notions (empty otherwise)
  * - {{title_sub}} - Small line under the title: category of a composed title (empty under a free title)
  * - {{footer_title}} - Title at the foot of each page (notions · category, or free title)
  * - {{level_badges}} - Level badges (short names, orange), Typst markup
@@ -1627,13 +1628,16 @@ const studentStyleHeader = (
 ${banner}    // Première ligne, trois colonnes de même largeur sur les côtés : badge du
     // niveau à gauche, titre au CENTRE DE LA PAGE, QR du site à droite
     // (« chiph.re » dessous). Dessous le titre, en petit gris : la catégorie d'un
-    // titre composé ; rien sous un titre libre (ADR 0041).
+    // titre composé ; rien sous un titre libre (ADR 0041). Titre = branche commune
+    // des notions : les notions entre les deux.
     #grid(
       columns: (1fr, 3fr, 1fr),
       column-gutter: 0.5em,
       align: (left + horizon, center + horizon, right + horizon),
       [{{#if show_level}}{{level_badges}}{{/if}}],
-      [{{#if show_title}}#text(size: 1.5em, weight: "bold")[{{title}}]{{#if show_title_sub}}
+      [{{#if show_title}}#text(size: 1.5em, weight: "bold")[{{title}}]{{#if show_title_notions}}
+        #v(0.2em, weak: true)
+        #text(size: 1.05em)[{{title_notions}}]{{/if}}{{#if show_title_sub}}
         #v(0.2em, weak: true)
         #text(size: 0.85em, style: "italic", fill: rgb("#5a5a5a"))[{{title_sub}}]{{/if}}{{/if}}],
       [{{#if site_qr}}#box[#align(center)[#{{site_qr}}
