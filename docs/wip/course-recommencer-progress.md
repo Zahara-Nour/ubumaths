@@ -4,7 +4,7 @@
 
 _Mis à jour le 2026-11-20, ouverture._
 
-- **État** : correctif écrit, PR à ouvrir.
+- **État** : PR #2929 ouverte ; revue faite (écouteur de défilement retiré au démontage).
 - **Prochaine action** : CI verte → merge → archiver ce journal.
 - **En attente de David** : rien.
 - **Pièges en cours** : aucun.
@@ -19,3 +19,4 @@ Relevé pendant `memes-nombres` (#2922) : la Course aux nombres affichait « Rec
 ## Historique
 
 - 2026-11-20 : `TestCourse` reçoit `onRestart` (la page tire, `{#key}` remonte le composant, chrono à neuf) et `sameQuestions` ; tests de rendu dans `memes-nombres.svelte.test.ts` (rouges puis verts).
+- 2026-11-20 : revue `code-reviewer` : écouteur `scroll` de `TestCourse` jamais retiré, désormais remonté à chaque Recommencer → `$effect` avec retrait.
