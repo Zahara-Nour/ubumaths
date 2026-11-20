@@ -1,4 +1,5 @@
 {
+	"id": "fa0dd978-a74e-4488-bcfd-026aef0288cc",
 	"title": "Puissances : bases cachées",
 	"description": "Écrire 8² × 4³ / 2⁵ ou 9⁴ / 27² comme une puissance de 2, 3 ou 5 en repérant 8 = 2³, 4 = 2² (pièges : exposants ajoutés sans convertir les bases, exposants additionnés au lieu de multipliés)",
 	"grades": ["2"],

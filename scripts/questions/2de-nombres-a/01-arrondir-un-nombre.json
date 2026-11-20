@@ -1,4 +1,5 @@
 {
+	"id": "10a51999-6d45-41fb-80db-03b70dfeecb8",
 	"title": "Arrondir un nombre décimal",
 	"description": "Arrondir à l'unité, au dixième, au centième, au millième, dont une retenue (2,996 → 3,00) (pièges : tronquer au lieu d'arrondir, garder trop de chiffres, oublier la retenue)",
 	"grades": ["2"],

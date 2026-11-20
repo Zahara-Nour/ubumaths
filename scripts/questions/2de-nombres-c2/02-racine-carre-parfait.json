@@ -1,4 +1,5 @@
 {
+	"id": "5ddd58db-f08b-44d4-bc9c-67ee47250ace",
 	"title": "Racine d'un carré parfait",
 	"description": "Calculer √144, √0,09, √0,0049 ou le nombre positif de carré 144 (pièges : √0,09 = 0,03, la réponse négative)",
 	"grades": ["2"],

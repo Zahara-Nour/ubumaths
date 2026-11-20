@@ -1,4 +1,5 @@
 {
+	"id": "73bceb97-6f47-4e93-97c4-70606e8813a7",
 	"title": "Nombre premier, décomposition en facteurs premiers",
 	"description": "91 est-il premier ? (non, 7 × 13) ; décomposer 84 = 2 × 2 × 3 × 7, facteurs rangés du plus petit au plus grand (pièges : nombre impair pris pour premier, facteur non premier comme 4)",
 	"grades": ["2"],

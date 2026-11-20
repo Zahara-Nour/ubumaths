@@ -1,4 +1,5 @@
 {
+	"id": "204ac445-03a6-4c17-b4a3-67704cf664fd",
 	"title": "Préfixes et puissances de 10",
 	"description": "Relier les préfixes k, M, G, T, m, μ, n à 10³ … 10⁻⁹ (m, W, g), dans les deux sens : 1 nm = 10⁻⁹ m, 3 GW = 3 × 10⁹ W (pièges : micro et milli confondus, signe de l'exposant)",
 	"grades": ["2"],

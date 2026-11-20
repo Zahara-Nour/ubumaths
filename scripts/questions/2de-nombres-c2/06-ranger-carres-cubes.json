@@ -1,4 +1,5 @@
 {
+	"id": "c7840c10-3e06-4aa7-ab97-257f80cd16d2",
 	"title": "Ranger des carrés et des cubes",
 	"description": "Ranger x³, x², x (et √x) dans l'ordre croissant pour x = 0,5 ou x = 1,5 (piège : croire x² > x même quand 0 < x < 1)",
 	"grades": ["2"],

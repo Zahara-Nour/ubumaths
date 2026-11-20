@@ -1,4 +1,5 @@
 {
+	"id": "51f08367-a8db-4714-a119-821107398cdb",
 	"title": "Comparer une fraction à 1, un entier et une fraction, ranger",
 	"description": "Comparer p/q et 1, un entier et une fraction, puis ranger fractions et décimaux dans l'ordre croissant (pièges : 0,68 > 0,7 parce que 68 > 7, fraction jugée sans la comparer)",
 	"grades": ["2"],

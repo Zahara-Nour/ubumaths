@@ -1,4 +1,5 @@
 {
+	"id": "0bd51758-ede5-4969-b76a-a6608f4a4df1",
 	"title": "Problèmes de PGCD et de PPCM",
 	"description": "Plus grand nombre de sachets identiques avec 84 billes et 60 bonbons (12), plus grande longueur de morceaux, deux phares qui se rallument ensemble (PPCM) (pièges : un diviseur commun qui n'est pas le plus grand, confondre PGCD et PPCM)",
 	"grades": ["2"],

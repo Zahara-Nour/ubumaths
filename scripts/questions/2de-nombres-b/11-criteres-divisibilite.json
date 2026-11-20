@@ -1,4 +1,5 @@
 {
+	"id": "943033bf-3420-4660-8941-14bf2c2030d9",
 	"title": "Critères de divisibilité",
 	"description": "Cocher les diviseurs d'un nombre de 4 chiffres parmi 2, 3, 4, 5, 9 (2 340 : tous) ; réponses variées (pièges : 4 jugé sur le dernier chiffre seul, 9 confondu avec 3)",
 	"grades": ["2"],

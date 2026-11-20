@@ -1,4 +1,5 @@
 {
+	"id": "4c79b893-f663-4e49-9e33-9fd3bacb7e3b",
 	"title": "Calculs directs avec des racines",
 	"description": "Calculer (√7)², √7 × √7, 3√2 × 5√2, (2√3)², √5 + √5 (pièges : (2√3)² = 6, √a + √a = √(2a), (√7)² = 49)",
 	"grades": ["2"],

@@ -1,4 +1,5 @@
 {
+	"id": "896125d8-9c88-44e3-a1eb-9cf070077634",
 	"title": "Calculer avec plusieurs valeurs absolues",
 	"description": "Somme, différence, produit de valeurs absolues, valeur absolue imbriquée (pièges : |b − c| gardé négatif, |−a| = −a, ordre des calculs)",
 	"grades": ["2"],

@@ -1,4 +1,5 @@
 {
+	"id": "c6634cf8-b7d9-42f6-b12d-a504fd32bc34",
 	"title": "Compter les entiers d'un intervalle",
 	"description": "Nombre d'entiers d'un intervalle à bornes décimales ou entières (crochets ouverts ou fermés), plus petit entier d'un intervalle (pièges : bornes exclues comptées, −2,5 → −3)",
 	"grades": ["2"],
