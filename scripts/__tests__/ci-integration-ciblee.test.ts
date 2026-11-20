@@ -155,6 +155,20 @@ describe('ci-integration-ciblee', () => {
 		expect(verdict()).toBe('fichiers=');
 	});
 
+	it('deux migrations de contenu, une seule fixture : suite complète', () => {
+		pr(
+			MIGRATION_CONTENU,
+			FIXTURE_CONTENU,
+			'supabase/migrations/20261120130600_questions_y_contenu.sql'
+		);
+		expect(verdict()).toBe('fichiers=');
+	});
+
+	it('migration finissant par _contenu.sql mais pas au nom du générateur : suite complète', () => {
+		pr('supabase/migrations/20261120130600_rls_chat_contenu.sql', FIXTURE_CONTENU, TEST);
+		expect(verdict()).toBe('fichiers=');
+	});
+
 	it('une migration qui n’est pas un rangement (règles d’accès, schéma) : suite complète', () => {
 		pr('supabase/migrations/20261120130000_rls_chat_messages.sql', TEST);
 		expect(verdict()).toBe('fichiers=');

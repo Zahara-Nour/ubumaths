@@ -86,7 +86,7 @@ async function main(): Promise<number> {
 			}
 			const c = examen.modele.changements;
 			console.log(
-				`  ${id8} migré     ${fichier} — +${c.ajoutees.length} variation(s), ${c.corrigees.length} corrigée(s)${c.specs ? ', specs' : ''}${c.description ? ', description' : ''}`
+				`  ${id8} migré     ${fichier} — +${c.ajoutees.length} variation(s), ${c.corrigees.length} corrigée(s)${c.corrigees.length > 0 ? ` (⚠️ n° ${c.corrigees.join(', ')} : relire leur diff, \`git diff\` du fichier)` : ''}${c.specs ? ', specs' : ''}${c.description ? ', description' : ''}`
 			);
 			migres.push(examen.modele);
 		}
@@ -113,10 +113,12 @@ async function main(): Promise<number> {
 	const migration = `supabase/migrations/${nom}.sql`;
 	const date = new Date().toISOString().slice(0, 10);
 	const lotNom = dossier.replace(/\/+$/, '').split('/').at(-1) ?? dossier;
-	writeFileSync(migration, genererMigration({ lot: lotNom, source: dossier, date }, migres));
-	mkdirSync(FIXTURES, { recursive: true });
+	const sql = genererMigration({ lot: lotNom, source: dossier, date }, migres);
 	const fixture: FixtureContenu = { migration, modeles: migres };
+	// Fixture d'abord : une migration sans sa fixture ne serait jamais rejouée par le test
+	mkdirSync(FIXTURES, { recursive: true });
 	writeFileSync(join(FIXTURES, `${nom}.json`), `${JSON.stringify(fixture, null, '\t')}\n`);
+	writeFileSync(migration, sql);
 	console.log(`\n✓ ${migration}\n✓ ${join(FIXTURES, `${nom}.json`)}`);
 	console.log(`  test : pnpm test:integration tests/integration/migrations-contenu-publie.test.ts`);
 	return 0;

@@ -18,6 +18,9 @@
  *    un passage muet) ; modèle absent (base locale) → rien ;
  *  - un seul bloc `do` pour tous les modèles : tout ou rien ;
  *  - rollback en commentaire (`ROLLBACK:BEGIN` / `ROLLBACK:END`), gardé de même.
+ * Limite : la comparaison se fait indice par indice, à l'identique. Une variation REMPLACÉE par une
+ * autre, ou déplacée ET retouchée, passe pour « corrigée » : d'où le ⚠️ de l'en-tête et de la
+ * sortie du script, qui demandent de relire le diff de ces variations.
  * Tests : scripts/__tests__/migration-contenu.test.ts (logique),
  * tests/integration/migrations-contenu-publie.test.ts (SQL rejoué sur Postgres).
  */
@@ -143,6 +146,12 @@ export function analyserVariations(avant: unknown[], apres: unknown[]): AnalyseV
 		if (egaux(ancienne, apres[i])) continue;
 		const ailleurs = apres.findIndex((v, j) => j !== i && egaux(v, ancienne));
 		const venue = avant.findIndex((v, j) => j !== i && egaux(v, apres[i]));
+		if (venue >= 0 && egaux(apres[venue], avant[venue])) {
+			return {
+				ok: false,
+				erreur: `variation ${i + 1} remplacée par une copie de la variation ${venue + 1} : les réponses des élèves gardent l'indice de leur variation`
+			};
+		}
 		if (ailleurs >= 0 || venue >= 0) {
 			const [de, vers] = ailleurs >= 0 ? [i, ailleurs] : [venue, i];
 			return {
@@ -175,6 +184,21 @@ export function examinerModele(fichier: string, modele: ModeleFichier, ligne: Li
 			erreur: `${fichier} : champ(s) que la migration ne touche pas — ${figes.join(' ; ')}`
 		};
 	}
+	// Clé absente du fichier = « garder » (sémantique de l'éditeur), jamais « effacer » : refus
+	const effaces = [
+		['testSpecs', ligne.test_specs],
+		['description', ligne.description]
+	]
+		.filter(
+			([cle, prod]) => brut[cle as string] === undefined && prod !== null && prod !== undefined
+		)
+		.map(([cle]) => cle as string);
+	if (effaces.length > 0) {
+		return {
+			sorte: 'refuse',
+			erreur: `${fichier} : ${effaces.join(', ')} absent(s) du fichier mais présent(s) en prod — la migration les effacerait (repartir de export-question-templates.ts)`
+		};
+	}
 	if (!Array.isArray(ligne.variations)) {
 		return { sorte: 'refuse', erreur: `${fichier} : variations de la prod illisibles` };
 	}
@@ -194,7 +218,7 @@ export function examinerModele(fichier: string, modele: ModeleFichier, ligne: Li
 		ajoutees: analyse.ajoutees,
 		corrigees: analyse.corrigees,
 		specs: !egaux(avant.testSpecs, apres.testSpecs),
-		description: (avant.description ?? '') !== (apres.description ?? '')
+		description: avant.description !== apres.description
 	};
 	const rien =
 		changements.ajoutees.length === 0 &&
@@ -214,7 +238,7 @@ export function nomMigration(horodatage: string, dossier: string): string {
 	return `${horodatage}_questions_${lot.replace(/[^a-z0-9]+/gi, '_').toLowerCase()}_contenu`;
 }
 
-/** Suffixe tel qu'aucune balise de dollar n'apparaisse dans le contenu */
+/** Suffixe tel qu'aucune balise de dollar n'apparaisse dans le contenu, les titres ou les fichiers */
 function suffixeLibre(textes: readonly string[]): string {
 	for (let n = 0; ; n++) {
 		const s = n === 0 ? '' : String(n);
@@ -256,7 +280,7 @@ function bloc(
 		const id8 = m.id.slice(0, 8);
 		const a = litteraux(depuis(m), q);
 		const b = litteraux(vers(m), q);
-		return `	-- ${id8} « ${m.title.replace(/\n/g, ' ')} »
+		return `	-- ${id8} « ${m.title.replace(/[\r\n]+/g, ' ')} »
 	select true, ${condition('q.', a)}
 	  into v_present, v_conforme
 	  from public.question_templates q where q.id = '${m.id}' for update;
@@ -292,7 +316,7 @@ function ligneDeModele(m: ModeleMigre): string {
 		c.specs ? 'specs modifiées' : '',
 		c.description ? 'description modifiée' : ''
 	].filter(Boolean);
-	return `--   ${m.id.slice(0, 8)} « ${m.title.replace(/\n/g, ' ')} » (${m.fichier}) : ${parties.join(' ; ')}`;
+	return `--   ${m.id.slice(0, 8)} « ${m.title.replace(/[\r\n]+/g, ' ')} » (${m.fichier.replace(/[\r\n]+/g, ' ')}) : ${parties.join(' ; ')}`;
 }
 
 /** Le texte complet de la migration : en-tête, rollback commenté, bloc unique */
@@ -301,6 +325,8 @@ export function genererMigration(entete: EnteteMigration, modeles: readonly Mode
 	const s = suffixeLibre(
 		modeles.flatMap((m) =>
 			[m.avant, m.apres].flatMap((c) => [
+				m.title,
+				m.fichier,
 				JSON.stringify(c.variations),
 				JSON.stringify(c.testSpecs),
 				JSON.stringify(c.description)

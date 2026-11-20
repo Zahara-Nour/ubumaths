@@ -129,6 +129,12 @@ describe('analyserVariations', () => {
 		expect(!r.ok && r.erreur).toMatch(/déplacée/);
 	});
 
+	it('variation remplacée par une copie d’une autre : refusée, message exact', () => {
+		const r = analyserVariations([V1, V2], [V1, V1]);
+		expect(r.ok).toBe(false);
+		expect(!r.ok && r.erreur).toMatch(/variation 2 remplacée par une copie de la variation 1/);
+	});
+
 	it('variation insérée au milieu : refusée (les suivantes sont déplacées)', () => {
 		const r = analyserVariations([V1, V2], [V1, V3, V2]);
 		expect(r.ok).toBe(false);
@@ -182,6 +188,23 @@ describe('examinerModele', () => {
 		expect(examinerModele('01.json', fichier(), ligne({ description: null })).sorte).toBe(
 			'inchange'
 		);
+	});
+
+	it('specs absentes du fichier mais présentes en prod : refusé (jamais effacées en silence)', () => {
+		const sansSpecs = fichier({ variations: [V1, V2, V3] }) as unknown as Record<string, unknown>;
+		delete sansSpecs.testSpecs;
+		const e = examinerModele('01.json', sansSpecs as unknown as ModeleFichier, ligne());
+		expect(e.sorte === 'refuse' && e.erreur).toMatch(/testSpecs.*effacerait/);
+	});
+
+	it('description absente du fichier mais présente en prod : refusé', () => {
+		const e = examinerModele('01.json', fichier(), ligne({ description: 'Somme' }));
+		expect(e.sorte === 'refuse' && e.erreur).toMatch(/description.*effacerait/);
+	});
+
+	it('description vide dans le fichier, nulle en prod : changement annoncé', () => {
+		const e = examinerModele('01.json', fichier({ description: '' }), ligne());
+		expect(e.sorte === 'migre' && e.modele.changements.description).toBe(true);
 	});
 
 	it('variation retirée : refusé', () => {
@@ -258,6 +281,12 @@ describe('genererMigration', () => {
 		for (const b of [`$q${s}$`, `$contenu${s}$`, `$retour${s}$`]) {
 			expect(JSON.stringify(piege)).not.toContain(b);
 		}
+	});
+
+	it('balise de dollar dans un titre : évitée aussi', () => {
+		const sql = genererMigration(ENTETE, [migre({ title: 'Le piège $contenu$ et $q$' })]);
+		expect(sql).toMatch(/^do \$contenu1\$$/m);
+		expect(sql).toContain('$q1$[');
 	});
 
 	it('description multiligne : encodée sur une seule ligne (rollback commenté ligne à ligne)', () => {

@@ -38,6 +38,8 @@ interface Cas {
 }
 
 interface Etat extends Contenu {
+	/** Colonnes que la migration ne doit pas toucher */
+	autres: Record<string, unknown>;
 	title: string;
 	status: string;
 	grades: string[];
@@ -75,6 +77,45 @@ const SYNTHETIQUES: ModeleMigre[] = [
 			description: 'Nouvelle « description » avec $q$'
 		},
 		changements: { ajoutees: [], corrigees: [1], specs: true, description: true }
+	},
+	{
+		// Forme de la prod : LaTeX avec `$$` et `$q$`, décimaux, clés hors de l'ordre de jsonb
+		id: 'c0a7e000-0000-4000-8000-00000000000c',
+		title: 'Le prix $q$ en $$',
+		fichier: '03-prix.json',
+		avant: {
+			variations: [
+				{
+					variables: [{ name: 'q', expression: '0.5..2.5' }],
+					statement: 'Le prix $q$ vaut $$q \\times 1{,}25$$ €.',
+					expectedAnswers: ['{{q*1.25}}'],
+					options: { tolerance: 0.01, precision: 2 }
+				}
+			],
+			testSpecs: [{ variationIndex: 0, variables: { q: '0.5' }, answers: ['0.625'] }],
+			description: null
+		},
+		apres: {
+			variations: [
+				{
+					variables: [{ name: 'q', expression: '0.5..2.5' }],
+					statement: 'Le prix $q$ vaut $$q \\times 1{,}25$$ €.',
+					expectedAnswers: ['{{q*1.25}}'],
+					options: { tolerance: 0.01, precision: 2 }
+				},
+				{
+					zeta: 1.5e-7,
+					statement: 'Combien font $$0{,}1 + 0{,}2$$ ? $contenu$ $retour$',
+					expectedAnswers: ['0.3']
+				}
+			],
+			testSpecs: [
+				{ variationIndex: 0, variables: { q: '0.5' }, answers: ['0.625'] },
+				{ variationIndex: 1, answers: ['0.3'] }
+			],
+			description: null
+		},
+		changements: { ajoutees: [2], corrigees: [], specs: true, description: false }
 	}
 ];
 
@@ -141,8 +182,14 @@ async function lireEtat(pg: Client, id: string): Promise<Etat> {
 		title: string;
 		status: string;
 		grades: string[];
+		autres: Record<string, unknown>;
 	}>(
-		`select variations, test_specs, description, title, status, grades
+		`select variations, test_specs, description, title, status, grades,
+		        jsonb_build_object('title', title, 'status', status, 'grades', grades, 'level', level,
+		          'delay', delay, 'type', type, 'options', options, 'shared', shared,
+		          'classification_node_id', classification_node_id,
+		          'default_display_options', default_display_options,
+		          'exercise_instruction', exercise_instruction, 'created_at', created_at) as autres
 		   from public.question_templates where id = $1`,
 		[id]
 	);
@@ -153,7 +200,8 @@ async function lireEtat(pg: Client, id: string): Promise<Etat> {
 		description: l.description,
 		title: l.title,
 		status: l.status,
-		grades: l.grades
+		grades: l.grades,
+		autres: l.autres
 	};
 }
 
@@ -198,15 +246,22 @@ describe.each(TOUS)('$nom', ({ migration, modeles }) => {
 			for (const [i, m] of modeles.entries()) {
 				const apres = await lireEtat(pg, m.id);
 				expect(contenuDe(apres)).toEqual(m.apres);
-				expect([apres.title, apres.status, apres.grades]).toEqual([
-					TITRE,
-					'published',
-					avant[i].grades
-				]);
+				expect([apres.title, apres.status]).toEqual([TITRE, 'published']);
+				expect(apres.autres).toEqual(avant[i].autres);
 			}
 
 			await pg.query(extractRollback(migration));
 			for (const m of modeles) expect(contenuDe(await lireEtat(pg, m.id))).toEqual(m.avant);
+		});
+	});
+
+	it('un modèle absent parmi d’autres : les présents sont migrés, sans erreur', async () => {
+		const [absent, ...presents] = modeles;
+		await enTransaction(async () => {
+			await poserEtatProd(pg, modeles);
+			await pg.query('delete from public.question_templates where id = $1', [absent.id]);
+			await pg.query(readFileSync(migration, 'utf-8'));
+			for (const m of presents) expect(contenuDe(await lireEtat(pg, m.id))).toEqual(m.apres);
 		});
 	});
 
