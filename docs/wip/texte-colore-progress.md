@@ -6,17 +6,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-20, après #2933 et #2934._
+_Mis à jour le 2026-11-20, après #2935._
 
-- **État** : PR 1 (syntaxe, écran, chat) mergée (#2933, test rouge corrigé par #2934). Q2 et Q3 tranchées (§ 3).
-  PR 2 (PDF) codée, tests verts (§ 6), en cours de PR sur `feat/texte-colore-pdf`.
-- **Prochaine action** : PR 2 — revue + CI → merge ; puis PR 3 (filet
-  `\textcolor` hors formule) ; puis réécriture des fichiers de lots + liste des modèles en prod pour David.
+- **État** : PR 1 (syntaxe, écran, chat) mergée (#2933 + #2934) ; PR 2 (PDF, paragraphes et cellules) mergée
+  (#2935, § 6). Q2 et Q3 tranchées (§ 3).
+- **Prochaine action** : PR 3 — filet `\textcolor{…}{…}` hors formule lu comme `[…]{.nom}` (écran et PDF ; table
+  `primary.N` du § 2) ; puis réécriture des fichiers de lots + liste des modèles en prod pour David.
 - **En attente de David** : rien.
 - **Pièges connus** : la garde `review/textcolor-hors-maths.ts` ne tourne que dans `pnpm question:specs` ; le chat
   ne doit rien gagner (couleur retirée dans `restrictDocument` ET dans les composants) ; `.def=cible` en dernière
   classe ; l'éditeur riche perd `color` / `detail` / `lexicon` à l'enregistrement (`markdown-import.ts`, Q2 : plus tard).
-- **Worktree / branche** : `../ubumaths-wt-texte-colore` · `feat/texte-colore-pdf`.
+- **Worktree / branche** : `../ubumaths-wt-texte-colore` · `feat/texte-colore-filet` (créée, vide).
 
 ## 1. Le défaut
 
