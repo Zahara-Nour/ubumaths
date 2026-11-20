@@ -1,0 +1,258 @@
+{
+	"title": "Division euclidienne",
+	"description": "Écrire 157 = 12 × 13 + 1 (quotient et reste), puis 157 bonbons en sachets de 12 : 13 sachets pleins, il en reste 1 (piège : reste plus grand que le diviseur, 12 × 12 + 13)",
+	"grades": ["2"],
+	"level": 14,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Effectue la division euclidienne de ${{n}}$ par ${{b}}$ : complète l'égalité, avec un reste plus petit que ${{b}}$.\n\n${{n}}={{b}}\\times ?+?$",
+			"variables": [
+				{
+					"name": "w",
+					"expression": "0..2"
+				},
+				{
+					"name": "b",
+					"expression": "6..25"
+				},
+				{
+					"name": "q",
+					"expression": "5..40"
+				},
+				{
+					"name": "r",
+					"expression": "1..24"
+				},
+				{
+					"name": "n",
+					"expression": "eval:b*q+r"
+				},
+				{
+					"name": "bq",
+					"expression": "eval:b*q"
+				},
+				{
+					"name": "q1",
+					"expression": "eval:q+1"
+				},
+				{
+					"name": "bq1",
+					"expression": "eval:b*(q+1)"
+				}
+			],
+			"conditions": ["r<b", "n<=999"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{q}}"
+				},
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche le plus grand multiple de ${{b}}$ qui ne dépasse pas ${{n}}$ : ${{b}}\\times{{q}}={{bq}}\\leqslant{{n}}<{{b}}\\times{{q1}}={{bq1}}$.",
+					"Le reste est ${{n}}-{{bq}}={{r}}$, bien **plus petit que** ${{b}}$.",
+					"$$\\textcolor{{{color:primary.0}}}{{{n}}={{b}}\\times{{q}}+{{r}}}$$",
+					"Le quotient est ${{q}}$ et le reste ${{r}}$."
+				]
+			}
+		},
+		{
+			"statement": "{{if:w==0|Nina|{{if:w==1|Ilyes|Margaux}}}} a ${{n}}$ bonbons. {{if:w==1|Il|Elle}} les range dans des sachets de ${{b}}$ bonbons.\n\nCombien de sachets pleins peut-{{if:w==1|il|elle}} remplir ? Combien de bonbons reste-t-il ?\n\nSachets pleins : $?$\n\nBonbons restants : $?$",
+			"variables": [
+				{
+					"name": "w",
+					"expression": "0..2"
+				},
+				{
+					"name": "b",
+					"expression": "6..25"
+				},
+				{
+					"name": "q",
+					"expression": "5..40"
+				},
+				{
+					"name": "r",
+					"expression": "1..24"
+				},
+				{
+					"name": "n",
+					"expression": "eval:b*q+r"
+				},
+				{
+					"name": "bq",
+					"expression": "eval:b*q"
+				},
+				{
+					"name": "q1",
+					"expression": "eval:q+1"
+				},
+				{
+					"name": "bq1",
+					"expression": "eval:b*(q+1)"
+				}
+			],
+			"conditions": ["r<b", "n<=999"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{q}}"
+				},
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche le plus grand multiple de ${{b}}$ qui ne dépasse pas ${{n}}$ : ${{b}}\\times{{q}}={{bq}}\\leqslant{{n}}<{{b}}\\times{{q1}}={{bq1}}$.",
+					"Le reste est ${{n}}-{{bq}}={{r}}$, bien **plus petit que** ${{b}}$.",
+					"$$\\textcolor{{{color:primary.0}}}{{{n}}={{b}}\\times{{q}}+{{r}}}$$",
+					"On remplit $\\textcolor{{{color:primary.0}}}{{{q}}}$ sachets et il reste $\\textcolor{{{color:primary.0}}}{{{r}}}$ bonbons."
+				]
+			}
+		},
+		{
+			"statement": "Pour un tournoi, ${{n}}$ élèves forment des équipes de ${{b}}$.\n\nCombien d'équipes complètes peut-on former ? Combien d'élèves restent sans équipe ?\n\nÉquipes complètes : $?$\n\nÉlèves sans équipe : $?$",
+			"variables": [
+				{
+					"name": "w",
+					"expression": "0..2"
+				},
+				{
+					"name": "b",
+					"expression": "6..25"
+				},
+				{
+					"name": "q",
+					"expression": "5..40"
+				},
+				{
+					"name": "r",
+					"expression": "1..24"
+				},
+				{
+					"name": "n",
+					"expression": "eval:b*q+r"
+				},
+				{
+					"name": "bq",
+					"expression": "eval:b*q"
+				},
+				{
+					"name": "q1",
+					"expression": "eval:q+1"
+				},
+				{
+					"name": "bq1",
+					"expression": "eval:b*(q+1)"
+				}
+			],
+			"conditions": ["r<b", "n<=999"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{q}}"
+				},
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche le plus grand multiple de ${{b}}$ qui ne dépasse pas ${{n}}$ : ${{b}}\\times{{q}}={{bq}}\\leqslant{{n}}<{{b}}\\times{{q1}}={{bq1}}$.",
+					"Le reste est ${{n}}-{{bq}}={{r}}$, bien **plus petit que** ${{b}}$.",
+					"$$\\textcolor{{{color:primary.0}}}{{{n}}={{b}}\\times{{q}}+{{r}}}$$",
+					"On forme $\\textcolor{{{color:primary.0}}}{{{q}}}$ équipes complètes et $\\textcolor{{{color:primary.0}}}{{{r}}}$ élèves restent sans équipe."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "157 = 12 × 13 + 1",
+			"variationIndex": 0,
+			"variables": {
+				"w": "0",
+				"b": "12",
+				"q": "13",
+				"r": "1"
+			},
+			"answers": ["13", "1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 12 × 12 + 13 (reste trop grand)",
+			"variationIndex": 0,
+			"variables": {
+				"w": "0",
+				"b": "12",
+				"q": "13",
+				"r": "1"
+			},
+			"answers": ["12", "13"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : quotient décimal 13,08",
+			"variationIndex": 0,
+			"variables": {
+				"w": "0",
+				"b": "12",
+				"q": "13",
+				"r": "1"
+			},
+			"answers": ["13{,}08", "0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "157 bonbons, sachets de 12 : 13 et 1",
+			"variationIndex": 1,
+			"variables": {
+				"w": "0",
+				"b": "12",
+				"q": "13",
+				"r": "1"
+			},
+			"answers": ["13", "1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 14 sachets (sachet incomplet compté)",
+			"variationIndex": 1,
+			"variables": {
+				"w": "0",
+				"b": "12",
+				"q": "13",
+				"r": "1"
+			},
+			"answers": ["14", "1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "230 élèves, équipes de 7 : 32 et 6",
+			"variationIndex": 2,
+			"variables": {
+				"w": "0",
+				"b": "7",
+				"q": "32",
+				"r": "6"
+			},
+			"answers": ["32", "6"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

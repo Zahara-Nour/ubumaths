@@ -1,0 +1,233 @@
+{
+	"title": "Problèmes de PGCD et de PPCM",
+	"description": "Plus grand nombre de sachets identiques avec 84 billes et 60 bonbons (12), plus grande longueur de morceaux, deux phares qui se rallument ensemble (PPCM) (pièges : un diviseur commun qui n'est pas le plus grand, confondre PGCD et PPCM)",
+	"grades": ["2"],
+	"level": 17,
+	"delay": 120,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "{{if:w==0|Mehdi|{{if:w==1|Clara|Louis}}}} a ${{A}}$ billes et ${{B}}$ bonbons. {{if:w==1|Elle|Il}} veut faire des sachets **tous identiques** (même nombre de billes, même nombre de bonbons), en utilisant toutes les billes et tous les bonbons.\n\nQuel est le plus grand nombre de sachets possible ?\n\n$?$ sachets",
+			"variables": [
+				{
+					"name": "w",
+					"expression": "0..2"
+				},
+				{
+					"name": "g",
+					"expression": "3..15"
+				},
+				{
+					"name": "u",
+					"expression": "2..9"
+				},
+				{
+					"name": "v",
+					"expression": "2..9"
+				},
+				{
+					"name": "A",
+					"expression": "eval:g*u"
+				},
+				{
+					"name": "B",
+					"expression": "eval:g*v"
+				}
+			],
+			"conditions": ["u>v", "gcd(u,v)==1", "g*u<=200"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{g}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le nombre cherché doit diviser ${{A}}$ et ${{B}}$ : c'est un **diviseur commun**. On cherche le plus grand : le PGCD.",
+					"${{A}}={{g}}\\times{{u}}$ et ${{B}}={{g}}\\times{{v}}$, et ${{u}}$ et ${{v}}$ n'ont aucun diviseur commun autre que $1$ : on ne peut pas faire plus grand que ${{g}}$.",
+					"On fait $\\textcolor{{{color:primary.0}}}{{{g}}}$ sachets de ${{u}}$ billes et ${{v}}$ bonbons."
+				]
+			}
+		},
+		{
+			"statement": "On coupe deux rubans de ${{A}}~\\unit{cm}$ et de ${{B}}~\\unit{cm}$ en morceaux **tous de même longueur**, sans aucune chute, les plus longs possible.\n\nQuelle est la longueur d'un morceau ?\n\n$?~\\unit{cm}$",
+			"variables": [
+				{
+					"name": "w",
+					"expression": "0..2"
+				},
+				{
+					"name": "g",
+					"expression": "3..15"
+				},
+				{
+					"name": "u",
+					"expression": "2..9"
+				},
+				{
+					"name": "v",
+					"expression": "2..9"
+				},
+				{
+					"name": "A",
+					"expression": "eval:g*u"
+				},
+				{
+					"name": "B",
+					"expression": "eval:g*v"
+				}
+			],
+			"conditions": ["u>v", "gcd(u,v)==1", "g*u<=200"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{g}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le nombre cherché doit diviser ${{A}}$ et ${{B}}$ : c'est un **diviseur commun**. On cherche le plus grand : le PGCD.",
+					"${{A}}={{g}}\\times{{u}}$ et ${{B}}={{g}}\\times{{v}}$, et ${{u}}$ et ${{v}}$ n'ont aucun diviseur commun autre que $1$ : on ne peut pas faire plus grand que ${{g}}$.",
+					"Chaque morceau mesure $\\textcolor{{{color:primary.0}}}{{{g}}~\\unit{cm}}$ : on obtient ${{u}}$ et ${{v}}$ morceaux."
+				]
+			}
+		},
+		{
+			"statement": "Deux phares s'allument en même temps. Le premier se rallume toutes les ${{A}}~\\unit{s}$, le second toutes les ${{B}}~\\unit{s}$.\n\nAu bout de combien de secondes se rallumeront-ils de nouveau **ensemble**, pour la première fois ?\n\nAu bout de $?$ secondes.",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "2..6"
+				},
+				{
+					"name": "u",
+					"expression": "2..7"
+				},
+				{
+					"name": "v",
+					"expression": "2..7"
+				},
+				{
+					"name": "A",
+					"expression": "eval:g*u"
+				},
+				{
+					"name": "B",
+					"expression": "eval:g*v"
+				},
+				{
+					"name": "L",
+					"expression": "eval:g*u*v"
+				}
+			],
+			"conditions": ["u>v", "gcd(u,v)==1", "g*u*v<=200"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{L}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le premier phare se rallume aux multiples de ${{A}}$, le second aux multiples de ${{B}}$. On cherche le plus petit **multiple commun** : le PPCM.",
+					"On parcourt les multiples de ${{A}}$ : ${{A}}\\times{{v}}={{L}}={{B}}\\times{{u}}$ est le premier qui est aussi un multiple de ${{B}}$.",
+					"Ils se rallument ensemble au bout de $\\textcolor{{{color:primary.0}}}{{{L}}~\\unit{s}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "84 billes et 60 bonbons : 12 sachets",
+			"variationIndex": 0,
+			"variables": {
+				"w": "0",
+				"g": "12",
+				"u": "7",
+				"v": "5"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 6, diviseur commun pas le plus grand",
+			"variationIndex": 0,
+			"variables": {
+				"w": "0",
+				"g": "12",
+				"u": "7",
+				"v": "5"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : PPCM 420",
+			"variationIndex": 0,
+			"variables": {
+				"w": "0",
+				"g": "12",
+				"u": "7",
+				"v": "5"
+			},
+			"answers": ["420"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Rubans de 90 et 54 cm : 18",
+			"variationIndex": 1,
+			"variables": {
+				"w": "0",
+				"g": "18",
+				"u": "5",
+				"v": "3"
+			},
+			"answers": ["18"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Phares 12 s et 18 s : 36",
+			"variationIndex": 2,
+			"variables": {
+				"g": "6",
+				"u": "3",
+				"v": "2"
+			},
+			"answers": ["36"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 12 × 18 = 216",
+			"variationIndex": 2,
+			"variables": {
+				"g": "6",
+				"u": "3",
+				"v": "2"
+			},
+			"answers": ["216"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : PGCD 6",
+			"variationIndex": 2,
+			"variables": {
+				"g": "6",
+				"u": "3",
+				"v": "2"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
