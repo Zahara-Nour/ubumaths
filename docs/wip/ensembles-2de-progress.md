@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-20, après #2943._
+_Mis à jour le 2026-11-20, gros lot écrit (PR des fichiers à ouvrir)._
 
-- **État** : lot 1 publié ; phase 0 du gros lot « nombres et calculs » tranchée ; outil de migration de contenu des publiés mergé (#2943) : `pnpm tsx scripts/questions/migration-contenu.ts --dir <lot>` (`couvrir-un-niveau.md` § 7).
-- **Prochaine action** : nouveau worktree, écrire TOUT le gros lot en local — nouveaux modèles (brouillons) + variations de publiés (fiches 4-9, 12, 13, 27, 30, 31, 39, 48, 53, 54) via l'outil, dans un dossier à part exporté de la prod ; hors programme gardés sans point ; puis envoi unique.
-- **En attente de David** : rien.
-- **Pièges en cours** : ne jamais nommer la plateforme d'origine (sources : mémoire `reference_source-plateforme-exercices`) ; variations d'un publié : partir de `export-question-templates.ts`, ajouter À LA FIN, une spec « correct » par variation (`variationIndex`), garder `testSpecs` et `description` dans le fichier ; valeur absolue : BO = distance et |x − a| ⩽ r seulement ; Chrome piloté = celui du laptop de David. CI : mesurer le job d'intégration à la prochaine PR de rangement et le dire à David.
-- **Worktree / branche** : aucun (à créer : `git worktree add -b feat/ensembles-2de-lot ../ubumaths-wt-ensembles-2de origin/main`).
+- **État** : 36 nouveaux modèles écrits (`scripts/questions/2de-nombres-{a,b,c1,c2}/`, 36/36 verts en simulation, créés en base locale) + 21 variations ajoutées à 16 publiés (`2de-nombres-publies/`, migration générée, test d'intégration 12/12, **non commitée** : `supabase/migrations/20261120145050_…_contenu.sql` + fixture, hors PR des fichiers).
+- **Prochaine action** : PR des fichiers → merge → David lance `create-questions --publier` sur les 4 dossiers (brouillons prod) → ids commités → page à cocher (nouveaux + variations des publiés) → migration rangement + tags (36) et migration de contenu (régénérée après relecture) → publication.
+- **En attente de David** : les points à trancher du § « Gros lot : écrit » (forme de 3/2 × √2, décomposition en cases ordonnées, entier + fraction en 2 cases, préfixe T).
+- **Pièges en cours** : `create-questions --publier` en LOCAL écrit les ids locaux dans les fichiers → `git restore` aussitôt ; le hook de commit laisse une copie non formatée dans l'index → `git restore --staged`. Ne jamais merger la migration de contenu avant la relecture (le `db:migrate` de n'importe quelle session la jouerait). Ne jamais nommer la plateforme d'origine.
+- **Worktree / branche** : `../ubumaths-wt-ensembles-2de`, `feat/ensembles-2de-lot`.
 
 ## Décisions de David (2026-11-20)
 
@@ -107,3 +107,18 @@ Worktree `../ubumaths-wt-ensembles-2de`, branche `feat/ensembles-2de-lot`. Point
   - `c1` (9) : valeur (2-260, 4) · signe (5) · notation (6) · écrire comme puissance (7) · bases cachées (8) · priorités (9) — 2-260 · écriture scientifique (2-270, 10) · puissances de 10 (11) · préfixes (12) — 2-270.
   - `c2` (7) : racine existe ? (2-261, 4) · carré parfait (5) · calculs directs (6) · développer (7) — 2-261 · entre deux puissances de 10 (2-254, 13) · ranger carrés et cubes (2-264, 10) · rationaliser (sans point, « techniques de calcul », 3).
 - **Publiés** : 16 modèles exportés de la prod dans `scripts/questions/2de-nombres-publies/` (commit d'export d'abord : le diff = les ajouts) ; migration générée par `migration-contenu.ts`.
+
+## Gros lot : écrit (2026-11-20)
+
+Cinq agents (`pedagogy-expert`), un par dossier ; specs à 300 tirages par variation, `validateLatex` + accolades sur les aperçus (0 problème hors `\unit`), grep plateforme vide.
+
+- `a` 7 modèles · `b` 13 · `c1` 9 · `c2` 7 : 36/36 « à créer » en simulation ; créés en base locale (ids locaux retirés des fichiers).
+- Publiés : 21 variations sur 16 modèles, aucune variation existante touchée (diff contrôlé) ; `migration-contenu.ts` : 16 « migré » ; test d'intégration 12/12. 5,78 non ajouté à 5b20321f : la variation 2 (m/100) le couvre déjà.
+- **À trancher par David** :
+  1. Rationaliser : 3√2/2 juste ; 3/2 × √2 et 1,5√2 = demi-point (un motif n'accepte qu'une forme) — outil « sans racine au dénominateur » si ces formes doivent être justes.
+  2. Décomposition en facteurs premiers : cases dans l'ordre croissant (`orderIndependent` refusé à côté d'une case choix) — séparer en deux modèles pour l'ordre libre ?
+  3. Entier + fraction < 1 : deux cases (entier, fraction) ; une case unique demanderait un outil (un motif ne sait pas exiger a < b).
+  4. Préfixe T (téra) absent du moteur d'unités : affichage seulement, à voir à l'écran.
+  5. Arrondi : `zeros: off` (3,00 et 3 justes) ; 7,27 au dixième = `bad_form` (contrainte d'arrondi), pas faux.
+  6. Puissances : (−3)² répondu 3², (−10)³ répondu −10³ → `bad_form`.
+- Pas joué dans l'aperçu admin un par un (36 modèles) : relecture par la page à cocher, puis aperçu ciblé des blocs à risque (ranger, droite, intervalles).
