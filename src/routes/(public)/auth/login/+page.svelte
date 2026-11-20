@@ -63,9 +63,11 @@
 
 		<Card.Content class="space-y-6">
 			<!-- Display errors from OAuth callback, form actions, or rate limiting -->
-			{#if urlError || form?.error}
+			<!-- L'erreur du formulaire d'abord : l'adresse reste après un échec (stayOnPage), un
+			     `?error=` venu d'un lien ne doit pas masquer « Identifiants invalides » -->
+			{#if form?.error || urlError}
 				<Alert.Root variant="destructive">
-					<Alert.Description>{urlError || form?.error}</Alert.Description>
+					<Alert.Description>{form?.error || urlError}</Alert.Description>
 				</Alert.Root>
 			{/if}
 
@@ -77,7 +79,7 @@
 					use:enhance={() => {
 						isGoogleLoading = true;
 						return async ({ update }) => {
-							await update();
+							await update({ navigate: false });
 							isGoogleLoading = false;
 						};
 					}}
@@ -155,7 +157,7 @@
 						use:enhance={() => {
 							isEmailLoading = true;
 							return async ({ update }) => {
-								await update();
+								await update({ navigate: false });
 								isEmailLoading = false;
 							};
 						}}

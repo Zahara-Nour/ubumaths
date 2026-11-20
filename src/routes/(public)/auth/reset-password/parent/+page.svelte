@@ -6,6 +6,7 @@
 -->
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import { stayOnPage } from '#lib/utils/enhance-stay-on-page.ts';
 	import { resolve } from '$app/paths';
 	import type { ActionData, PageData } from './$types';
 	import { Button } from '#lib/components/ui/button/index.ts';
@@ -60,7 +61,7 @@
 					>
 				</div>
 			{:else}
-				<form method="POST" action="?/setPassword" use:enhance class="space-y-4">
+				<form method="POST" action="?/setPassword" use:enhance={stayOnPage} class="space-y-4">
 					<input type="hidden" name="userId" value={link?.userId} />
 					<input type="hidden" name="token" value={link?.token} />
 

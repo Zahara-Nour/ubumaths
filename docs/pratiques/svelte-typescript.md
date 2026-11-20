@@ -1,3 +1,8 @@
+---
+couvre:
+  - src/lib/utils/enhance-stay-on-page.ts
+---
+
 # Best Practices
 
 Référence synthétique pour Claude : **Svelte 5 runes**, **TypeScript**, **SvelteKit patterns**, **organisation du code**. Règles non négociables dans [CLAUDE.md](../../CLAUDE.md). Tests/Zod : [quality-standards.md](qualite.md).
@@ -404,6 +409,7 @@ Passage de kit 2 à kit 3.2.0 le 2026-11-18 (#2825). Ce que le guide de migratio
 - **`handleError` client** reçoit aussi les `error(...)` voulus, avec `kind` (`app`/`framework`/`unknown`) : ils ne sont pas journalisés.
 - **CSRF** : un POST/PUT/PATCH/DELETE d'une autre origine **sans `Content-Type`** est refusé (nos crons Vercel sont en GET).
 - **`page.url`** est en lecture seule : `new URL(page.url.href)` pour la modifier.
+- **`use:enhance` : `update()` navigue** (succès comme échec) vers l'adresse de l'action privée de `?/save` ; sur une page dont l'adresse porte une recherche (`?class=…&week=…`, `?serie=…`, un jeton `?u=…&t=…`), cette recherche est **perdue**. Formulaire `action="?/…"` → `use:enhance={stayOnPage}` (`#lib/utils/enhance-stay-on-page.ts`) au lieu d'un `use:enhance` nu, ou `await update({ navigate: false })` dans un callback. Relevé des 91 formulaires et correctif du 2026-11-20 (5 pages cassées : verdict de `/dev/modeles`, cahier de texte, modèles de fiches, mot de passe, mot de passe parent).
 
 ---
 

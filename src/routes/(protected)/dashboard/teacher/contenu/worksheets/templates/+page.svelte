@@ -215,7 +215,7 @@
 											use:enhance={() => {
 												duplicatingId = template.id;
 												return async ({ result, update }) => {
-													await update();
+													await update({ navigate: false });
 													if (result.type === 'success') {
 														toaster.success('Modèle dupliqué');
 														await refreshAll();
@@ -243,7 +243,7 @@
 												use:enhance={() => {
 													deletingId = template.id;
 													return async ({ result, update }) => {
-														await update();
+														await update({ navigate: false });
 														if (result.type === 'success') {
 															toaster.success('Modèle supprimé');
 															await refreshAll();
@@ -354,7 +354,7 @@
 						showDefaultsDialog = false;
 						return async ({ result, update }) => {
 							if (result.type === 'redirect') {
-								await update();
+								await update({ navigate: false });
 							} else if (result.type === 'failure') {
 								toaster.error('Erreur lors de la creation');
 							}
