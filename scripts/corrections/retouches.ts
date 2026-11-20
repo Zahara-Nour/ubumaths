@@ -115,6 +115,11 @@ function verifyExistingCorrection(template: QuestionTemplate): { passed: boolean
 async function main(): Promise<number> {
 	const publish = hasFlag('--publier');
 	const lot = argValue('--lot');
+	// Revue : `--lot=texte-colore` ou `--lot` sans valeur retombaient en silence sur
+	// l'ancienne liste (écriture en prod possible) : refusé
+	if (!lot && process.argv.some((arg) => arg.startsWith('--lot'))) {
+		throw new Error('écrire `--lot <nom>` (avec une espace, et un nom)');
+	}
 	const retouches = lot ? RETOUCHE_LOTS[lot] : RETOUCHES;
 	if (!retouches)
 		throw new Error(`lot inconnu : ${lot} (connus : ${Object.keys(RETOUCHE_LOTS).join(', ')})`);

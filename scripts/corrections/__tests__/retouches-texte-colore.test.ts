@@ -26,6 +26,33 @@ function patched(prefix: string): QuestionTemplate {
 	return retouche.apply(original(prefix));
 }
 
+/**
+ * `\textcolor{{{color:primary.N}}}{X}` → `X` (accolades appariées : X peut contenir
+ * `{{a}}`), dans le JSON du modèle (barres obliques doublées).
+ */
+function withoutTextcolor(json: string): string {
+	const head = /\\\\textcolor\{\{\{color:primary\.\d\}\}\}\{/g;
+	let out = '';
+	let last = 0;
+	for (let match = head.exec(json); match; match = head.exec(json)) {
+		let depth = 1;
+		let i = head.lastIndex;
+		for (; depth > 0; i++) {
+			if (json[i] === '{') depth++;
+			else if (json[i] === '}') depth--;
+		}
+		out += json.slice(last, match.index) + json.slice(head.lastIndex, i - 1);
+		last = i;
+		head.lastIndex = i;
+	}
+	return out + json.slice(last);
+}
+
+/** `[X]{.orange}` / `[X]{.bleu}` → `X` (X sans crochets, comme dans ces retouches) */
+function withoutSpanMarks(json: string): string {
+	return json.replace(/\[([^[\]]*)\]\{\.(?:orange|bleu)\}/g, '$1');
+}
+
 describe('retouches texte-colore', () => {
 	it('deux modèles visés, chacun dans l’instantané', () => {
 		expect(TEXTE_COLORE_RETOUCHES.map((r) => r.templateId.slice(0, 8)).sort()).toEqual([
@@ -67,15 +94,29 @@ describe('retouches texte-colore', () => {
 		expect(all).toContain('[${{N}}$]{.orange}');
 	});
 
-	it('rien d’autre ne change que les `\\textcolor` (même texte, marquage retiré)', () => {
-		const plain = (t: QuestionTemplate) =>
-			JSON.stringify(t)
-				.replace(/\\\\textcolor\{\{\{color:primary\.\d\}\}\}/g, '')
-				.replace(/\]\{\.(?:orange|bleu)\}/g, ']')
-				.replace(/[[\]{}$ ]/g, '');
+	// Revue : comparer au caractère près, `$` et `{{variables}}` compris (seul le
+	// marquage de couleur est retiré des deux côtés)
+	it('rien d’autre ne change que le marquage de couleur (au caractère près)', () => {
+		const plain = (t: QuestionTemplate) => withoutSpanMarks(withoutTextcolor(JSON.stringify(t)));
 		for (const prefix of ['78feafed', 'e4784c78']) {
 			expect(plain(patched(prefix)), prefix).toBe(plain(original(prefix)));
 		}
+		// Témoin : un `$` perdu ou une variable abîmée ne passerait pas
+		const json = JSON.stringify(patched('78feafed'));
+		const reference = withoutSpanMarks(withoutTextcolor(JSON.stringify(original('78feafed'))));
+		for (const [from, to] of [
+			['[${{b}} - {{c}}$]', '[{{b}} - {{c}}$]'],
+			['${{a}}$ par', '${a}$ par']
+		]) {
+			expect(withoutSpanMarks(json.replace(from, to)), from).not.toBe(reference);
+		}
+	});
+
+	it('les trois autres formules de 78feafed, en orange', () => {
+		const all = JSON.stringify(patched('78feafed').variations);
+		expect(all).toContain('la différence [${{b}} - {{c}}$]{.orange}, à calculer');
+		expect(all).toContain('le quotient [${{b}} : {{c}}$]{.orange} ;');
+		expect(all).toContain('la somme [${{a}} + {{c}}$]{.orange}, à calculer');
 	});
 
 	it('une ligne déjà retouchée est refusée (texte attendu introuvable)', () => {
