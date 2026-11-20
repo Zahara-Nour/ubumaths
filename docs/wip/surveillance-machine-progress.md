@@ -2,13 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-20, PR worktrees en danger + redémarrage en cours._
+_Mis à jour le 2026-11-20, après #2931._
 
-- **État** : #2906, #2910, #2916, #2921, #2930 mergés. En cours : worktrees en danger comptés dans le « RAS » (`pnpm surveillance:worktrees` pour les noms) et redémarrage signalé (idées 1 et 3 du 2026-11-20).
-- **À reprendre à tête reposée** (§ « 2026-11-20 — disque et worktrees ») : 6 worktrees portent du travail qui n'existe nulle part ailleurs (2 articles du Shtam jamais commités !) ; 7 worktrees finis + 4 dossiers vides supprimables sur go de David ; Time Machine non configuré.
-- **Prochaine action** : merger la PR ; puis idée 2 (alerte sauvegarde) une fois Time Machine configuré par David ; ou clore le chantier.
-- **Pièges** : `ps time=` sur macOS = « minutes:secondes.cc » ; disque = `/System/Volumes/Data`, pas `/` ; `chrome_crashpad_handler` toujours en ppid 1 ; commits « non poussés » = `rev-list HEAD --not --remotes` ; index du dépôt principal : `git commit -- <mes fichiers>`.
-- **Worktree / branche** : `../ubumaths-wt-surveillance-worktrees-redemarrage` · `chore/surveillance-worktrees-redemarrage`.
+- **État** : #2906, #2910, #2916, #2921, #2930, #2931 mergés ; dépôt principal à jour, launchd lance les scripts. #2931 : worktrees en danger comptés dans le « RAS » (`pnpm surveillance:worktrees` pour les noms), redémarrage signalé (« plantage du système » si rapport `*panic*`).
+- **À reprendre à tête reposée** (§ « 2026-11-20 — disque et worktrees ») : 6 worktrees portent du travail qui n'existe nulle part ailleurs (2 articles du Shtam jamais commités !) ; 7 worktrees finis + 4 dossiers vides supprimables sur go de David ; Time Machine non configuré ; mise à jour de macOS en attente (~15 Go).
+- **À vérifier** : premier « RAS » demain matin (avec « · 4 worktrees en danger ») ; Playwright orphelin (pid 699) fermé.
+- **Prochaine action** : idée 2 (alerte sauvegarde) une fois Time Machine configuré par David ; sinon clore le chantier (archivage du journal ; doc déjà dans `docs/pratiques/environnement-de-dev.md`).
+- **Pièges** : CI sous Linux → `date_modif` / `date_de` (machine-commun.sh), jamais `stat -f` ni `date -r` nus ; `kern.boottime` bouge de quelques secondes (tolérance 2 min) ; `git status` quote les accents sans `core.quotePath=false` ; disque = `/System/Volumes/Data` ; `chrome_crashpad_handler` toujours en ppid 1.
+- **Worktree / branche** : aucun.
 
 ## Contexte
 
