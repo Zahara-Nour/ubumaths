@@ -957,6 +957,29 @@ describe('surveillance-machine : worktrees en danger', () => {
 		expect(envois()).toContain(' · 1 worktree en danger.');
 	});
 
+	it('nom accentué modifié aujourd’hui, dossier suivi supprimé à l’instant : pas comptés', () => {
+		avecDistant();
+		mkdirSync(join(worktree, 'éléments'));
+		fichierDate(join(worktree, 'éléments', 'é.txt'), IL_Y_A_10_JOURS);
+		gitJetable(worktree, 'add', '.');
+		gitJetable(worktree, 'commit', '-q', '-m', 'accents');
+		gitJetable(worktree, 'push', '-q', 'origin', 'chantier');
+		for (const d of [join(worktree, 'éléments'), worktree])
+			utimesSync(d, IL_Y_A_10_JOURS, IL_Y_A_10_JOURS); // seul le fichier est récent
+		writeFileSync(join(worktree, 'éléments', 'é.txt'), 'modifié aujourd’hui\n'); // dossier inchangé
+		const w2 = worktreeDe('suppression');
+		mkdirSync(join(w2, 'sous'));
+		writeFileSync(join(w2, 'sous', 'x.txt'), 'x\n');
+		gitJetable(w2, 'add', '.');
+		gitJetable(w2, 'commit', '-q', '-m', 'sous');
+		gitJetable(w2, 'push', '-q', 'origin', 'suppression');
+		rmSync(join(w2, 'sous'), { recursive: true, force: true }); // supprimé à l'instant
+		machine({ processus: [], dossiers: {}, swap: SWAP_CALME, chrome: [] });
+		lancer({ SURVEILLANCE_HEURE_RAS: '0' });
+		expect(envois()).toContain('RAS : ');
+		expect(envois()).not.toContain('worktree');
+	});
+
 	it('worktree supprimé à la main (dossier absent) : sauté sans erreur', () => {
 		avecDistant();
 		const w2 = worktreeDe('disparu');
@@ -981,6 +1004,37 @@ describe('surveillance-machine : worktrees en danger', () => {
 });
 
 describe('surveillance-machine : redémarrage', () => {
+	it('horloge recalée (démarrage décalé de quelques secondes) : pas un redémarrage', () => {
+		machine({ processus: [], dossiers: {}, swap: SWAP_CALME, chrome: [] });
+		lancer();
+		machine({
+			processus: [],
+			dossiers: {},
+			swap: SWAP_CALME,
+			chrome: [],
+			demarrage: DEMARRAGE + 2
+		});
+		lancer();
+		expect(envois()).toBe('');
+	});
+
+	it('sans canal : redémarrage gardé pour le canal créé ensuite', () => {
+		machine({ processus: [], dossiers: {}, swap: SWAP_CALME, chrome: [] });
+		lancer();
+		rmSync(join(racine, 'config', 'ntfy-topic'));
+		machine({
+			processus: [],
+			dossiers: {},
+			swap: SWAP_CALME,
+			chrome: [],
+			demarrage: DEMARRAGE + JOUR
+		});
+		lancer();
+		writeFileSync(join(racine, 'config', 'ntfy-topic'), 'canal-de-test\n');
+		lancer();
+		expect(envois().match(/redémarré/g)).toHaveLength(1);
+	});
+
 	it('premier passage : heure de démarrage notée, rien d’envoyé', () => {
 		machine({ processus: [], dossiers: {}, swap: SWAP_CALME, chrome: [] });
 		lancer();

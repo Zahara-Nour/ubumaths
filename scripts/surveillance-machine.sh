@@ -187,10 +187,14 @@ worktrees_en_danger() {
 				chemin="${chemin##* -> }"
 				chemin="${chemin#\"}"
 				chemin="${chemin%\"}"
-				# Fichier supprimé : la date de son dossier.
-				m="$(stat -f %m "$w/$chemin" 2>/dev/null || stat -f %m "$(dirname "$w/$chemin")" 2>/dev/null || echo 0)"
+				# Fichier supprimé : la date du premier dossier parent qui existe encore.
+				chemin="$w/$chemin"
+				while [ ! -e "$chemin" ] && [ "$chemin" != "$w" ] && [ "$chemin" != / ]; do
+					chemin="$(dirname "$chemin")"
+				done
+				m="$(stat -f %m "$chemin" 2>/dev/null || echo 0)"
 				[ "$m" -gt "$dernier" ] && dernier="$m"
-			done < <(git -C "$w" status --porcelain --untracked-files=all 2>/dev/null)
+			done < <(git -C "$w" -c core.quotePath=false status --porcelain --untracked-files=all 2>/dev/null)
 			nc="$(git -C "$w" rev-list --count HEAD --not --remotes 2>/dev/null || echo 0)"
 			if [ "$nc" -gt 0 ]; then
 				t="$(git -C "$w" log -1 --format=%ct HEAD 2>/dev/null || echo 0)"
@@ -383,9 +387,10 @@ if [ -n "${disque_libre:-}" ] && [ "$disque_libre" -lt "$SEUIL_DISQUE_GO" ] && a
 	journaliser "alerte : disque $disque_libre Go libres sur $disque_total Go ($VOLUME_DISQUE)"
 fi
 
-# 3 quinquies. Redémarrage : heure de démarrage changée depuis le passage précédent.
-#    Premier passage : notée sans rien envoyer. Marque mise à jour une fois
-#    l'envoi réussi (plus bas).
+# 3 quinquies. Redémarrage : heure de démarrage avancée de plus de 2 min depuis le
+#    passage précédent (macOS la décale d'une ou deux secondes quand il recale
+#    l'horloge : pas un redémarrage). Premier passage : notée sans rien envoyer.
+#    Marque mise à jour une fois l'envoi réussi, et jamais sans canal (plus bas).
 demarrage="$(sysctl -n kern.boottime 2>/dev/null | sed -n 's/.*sec = \([0-9]*\),.*/\1/p')"
 marque_demarrage="$ETAT/demarrage"
 nouveau_demarrage=""
@@ -393,9 +398,9 @@ if [ -n "$demarrage" ]; then
 	precedent="$(cat "$marque_demarrage" 2>/dev/null)"
 	if [ -z "$precedent" ]; then
 		[ "$essai" = 1 ] || echo "$demarrage" >"$marque_demarrage"
-	elif [ "$demarrage" != "$precedent" ]; then
+	elif [ "$demarrage" -gt $((precedent + 120)) ] || [ "$demarrage" -lt $((precedent - 120)) ]; then
 		plantage=""
-		for rapport in "$RAPPORTS"/*panic* "$RAPPORTS"/Kernel*; do
+		for rapport in "$RAPPORTS"/*panic*; do
 			[ -f "$rapport" ] || continue
 			if [ "$(stat -f %m "$rapport" 2>/dev/null || echo 0)" -gt "$precedent" ]; then
 				plantage=" (plantage du système)"
@@ -448,7 +453,7 @@ fi
 
 if [ "${#alertes[@]}" -gt 0 ]; then
 	if envoyer "$(printf '%s\n' "${alertes[@]}")" && [ "$essai" = 0 ]; then
-		[ -n "$nouveau_demarrage" ] && echo "$nouveau_demarrage" >"$marque_demarrage"
+		[ -n "$nouveau_demarrage" ] && [ -s "$CONFIG/ntfy-topic" ] && echo "$nouveau_demarrage" >"$marque_demarrage"
 		if [ "${#a_marquer[@]}" -gt 0 ]; then
 			for cle in "${a_marquer[@]}"; do
 				date +%s >"$ETAT/alerte-$cle"
