@@ -46,6 +46,8 @@ on:
       - '.github/ci.env'
       - 'scripts/with-db-lock.sh'
       - 'scripts/lib/lock.py'
+      # portée d'une PR (suite complète ou tests d'une migration de données)
+      - 'scripts/ci-integration-ciblee.sh'
       # dépendances : version de la CLI Supabase, de supabase-js, de vitest
       - 'package.json'
       - 'pnpm-lock.yaml'
@@ -229,6 +231,17 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
+        with:
+          # Le commit de merge et la base (HEAD^1) : scripts/ci-integration-ciblee.sh
+          fetch-depth: 2
+
+      - name: Portée (suite complète, ou seulement les tests d'une migration de données)
+        # PR qui ne fait qu'AJOUTER une migration avec son test (rangement d'un lot de
+        # modèles : ~19 min de suite complète pour 3 brouillons, 2026-11-20) : seuls ses
+        # tests tournent, la stack appliquant quand même toutes les migrations. Toute
+        # autre PR, le cron et workflow_dispatch : suite complète. Le cron est le filet.
+        id: portee
+        run: bash scripts/ci-integration-ciblee.sh >> "$GITHUB_OUTPUT" || echo "fichiers=" >> "$GITHUB_OUTPUT"
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v6
@@ -327,7 +340,11 @@ jobs:
           } >> "$GITHUB_ENV"
 
       - name: Run integration tests
-        run: pnpm test:integration
+        env:
+          FICHIERS: ${{ steps.portee.outputs.fichiers }}
+        # $FICHIERS vide = suite complète ; sinon la liste des tests de la PR (non citée :
+        # un argument par fichier, les chemins n'ont pas d'espace).
+        run: pnpm test:integration $FICHIERS
 
       - name: Stop Supabase
         if: always()
