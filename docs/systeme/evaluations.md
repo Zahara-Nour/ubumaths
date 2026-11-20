@@ -126,6 +126,9 @@ le `mode` de l'URL est ignoré) ; `?modeles=…` (ou un ancien `?categories=…`
 `?modeles=…&mode=…[&time=…][&graine=…]` → démarrage direct. `SeriesLinkShare` fabrique ces liens. Visiteur non connecté : la série se joue,
 rien n'est enregistré.
 
+**Recommencer** (hors contrôle) : dans les cinq formes, la page tire de nouvelles questions (Course aux
+nombres comprise depuis le 2026-11-20 : `onRestart` de `TestCourse`, composant remonté, chrono à neuf).
+
 **« Mêmes nombres pour tous »** (chantier `memes-nombres`) : case de `SeriesLinkShare`, proposée avec une
 forme seulement, décochée par défaut. Cochée, elle tire une graine de série (`graine=<n>`,
 `SERIES_SEED_PARAM`), gardée par le lien court du QR ; décocher puis recocher en tire une autre. La page
@@ -504,4 +507,4 @@ assignés (`src/lib/server/students.ts` et cinq pages prof).
 
 ---
 
-Vérifié contre le code le 2026-10-11 ; `GET /api/student/reports` le 2026-10-14 ; `notionLevel` le 2026-10-21 ; séries sans ancienne forme (lot 4a) le 2026-11-04 ; réactions du Palotin dans l'Entraînement le 2026-11-11 ; traces par question et fin de série réduite au gain (PR 4 `formes-de-serie`) le 2026-11-11 ; erreurs d'une question du bilan (`erreurs-frequentes`) le 2026-11-14 ; panneau partagé (PR 2) le 2026-11-14 ; durée sans doute trop courte (`durees-trop-courtes`, PR 1) le 2026-11-14, dans le panier et l'éditeur de série (PR 2) le 2026-11-14 ; durée observée (`durees-ajustees`) le 2026-11-15 ; « Mêmes nombres pour tous » (`memes-nombres`) le 2026-11-19.
+Vérifié contre le code le 2026-10-11 ; `GET /api/student/reports` le 2026-10-14 ; `notionLevel` le 2026-10-21 ; séries sans ancienne forme (lot 4a) le 2026-11-04 ; réactions du Palotin dans l'Entraînement le 2026-11-11 ; traces par question et fin de série réduite au gain (PR 4 `formes-de-serie`) le 2026-11-11 ; erreurs d'une question du bilan (`erreurs-frequentes`) le 2026-11-14 ; panneau partagé (PR 2) le 2026-11-14 ; durée sans doute trop courte (`durees-trop-courtes`, PR 1) le 2026-11-14, dans le panier et l'éditeur de série (PR 2) le 2026-11-14 ; durée observée (`durees-ajustees`) le 2026-11-15 ; « Mêmes nombres pour tous » (`memes-nombres`) le 2026-11-19 ; Recommencer de la Course aux nombres le 2026-11-20.

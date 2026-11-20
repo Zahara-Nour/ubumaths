@@ -1,5 +1,6 @@
 /**
- * Course aux nombres : « Recommencer » relance la même série hors évaluation ;
+ * Course aux nombres : « Recommencer » proposé hors évaluation (la page tire de
+ * nouvelles questions, cf. memes-nombres.svelte.test.ts) ;
  * pendant une évaluation, jamais (une tentative de plus ne passe que par
  * « Mes évaluations », où date limite et tentatives sont vérifiées).
  */
