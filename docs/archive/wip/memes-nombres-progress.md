@@ -4,13 +4,10 @@ Proposition 5 du chantier `inspiration` (docs/wip/inspiration-progress.md, déci
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, après #2922._
+_Mis à jour le 2026-11-20 : chantier clos et archivé._
 
-- **État** : **chantier livré** (#2922 mergée, pas encore déployée) ; vérification manuelle notée dans `verifications-manuelles.md`.
-- **Prochaine action** : aucune ; à clore (versement dans `docs/systeme/` déjà fait, journal à archiver).
-- **En attente de David** : correction à part du libellé de fin de la Course aux nombres ? (« Recommencer avec de nouvelles questions » alors qu'elle redonne les mêmes, `TestCourse.handleRestart`, antérieur au chantier).
-- **Pièges en cours** : aucun.
-- **Worktree / branche** : supprimés.
+- **État** : **clos**. #2922 livrée en prod (v0.98.0, 2026-11-19) ; durable versé dans `docs/systeme/evaluations.md` et `questions.md`. Suite : « Recommencer » de la Course aux nombres corrigé (#2929, journal `course-recommencer` archivé).
+- **Prochaine action** : aucune.
 
 ---
 

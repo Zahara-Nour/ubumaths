@@ -2,13 +2,10 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-20, ouverture._
+_Mis à jour le 2026-11-20, après #2929 : chantier clos et archivé._
 
-- **État** : PR #2929 ouverte ; revue faite (écouteur de défilement retiré au démontage).
-- **Prochaine action** : CI verte → merge → archiver ce journal.
-- **En attente de David** : rien.
-- **Pièges en cours** : aucun.
-- **Worktree / branche** : `../ubumaths-wt-course-recommencer` · `fix/course-recommencer`.
+- **État** : **clos**. #2929 mergée (pas encore déployée) ; durable dans `docs/systeme/evaluations.md` (§ Recommencer).
+- **Prochaine action** : aucune ; vérification manuelle notée dans `verifications-manuelles.md`.
 
 ---
 
