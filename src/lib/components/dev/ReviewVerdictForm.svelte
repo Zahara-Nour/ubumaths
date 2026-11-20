@@ -48,7 +48,9 @@
 			saving = false;
 			if (result.type === 'success') {
 				toaster.success(result.data?.deleted ? 'Verdict retiré' : 'Verdict enregistré');
-				await update({ reset: false });
+				// `navigate: false` : depuis SvelteKit 3, `update()` va par défaut à l'adresse de
+				// l'action (`?/saveReview`), qui perd la recherche de la page (`?serie=…`, `?noeud=…`)
+				await update({ reset: false, navigate: false });
 			} else if (result.type === 'failure') {
 				const message = result.data?.message;
 				toaster.error(typeof message === 'string' ? message : 'Verdict non enregistré');
