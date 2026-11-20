@@ -2,7 +2,7 @@
 
 > Demande de David du 2026-11-15 (n° 9 de [`outils-manquants.md`](../../wip/outils-manquants.md)). Point visé : CE1-080
 > (« coder un déplacement », volet « produire »). Aujourd'hui, les modèles `08-le-robot-pivote` (e3bacfdc) et
-> `09-le-long-code` (8cbd4fb3) du lot 10 de [`questions-ce1`](../../wip/questions-ce1-progress.md) (§ 3 C 4, l. 807) font
+> `09-le-long-code` (8cbd4fb3) du lot 10 de [`questions-ce1`](questions-ce1-progress.md) (§ 3 C 4, l. 807) font
 > choisir le bon code parmi trois (QCM). Piste notée alors : glisser-déposer (`StructureField`), **pas Blockly** (le
 > BO ne parle que d'un robot « si un robot est disponible », d'aucun logiciel).
 

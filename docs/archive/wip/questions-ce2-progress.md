@@ -2,7 +2,7 @@
 
 > Démarche : [couvrir-un-niveau.md](../../pratiques/couvrir-un-niveau.md) (skill `couvrir-niveau`).
 > Chantiers de référence : le CP ([questions-progress.md](../../wip/questions-progress.md)), le CE1
-> ([questions-ce1-progress.md](../../wip/questions-ce1-progress.md)).
+> ([questions-ce1-progress.md](questions-ce1-progress.md)).
 
 ## Reprendre ici
 
