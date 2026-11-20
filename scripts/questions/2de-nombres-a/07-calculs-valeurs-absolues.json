@@ -1,0 +1,283 @@
+{
+	"title": "Calculer avec plusieurs valeurs absolues",
+	"description": "Somme, différence, produit de valeurs absolues, valeur absolue imbriquée (pièges : |b − c| gardé négatif, |−a| = −a, ordre des calculs)",
+	"grades": ["2"],
+	"level": 10,
+	"delay": 45,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Calcule $A=\\lvert -{{a}}\\rvert+\\lvert {{b}}-{{c}}\\rvert$.\n\n$A=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "c",
+					"expression": "2..15"
+				}
+			],
+			"conditions": ["b < c"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a+c-b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\lvert -{{a}}\\rvert={{a}}$ et $\\lvert {{b}}-{{c}}\\rvert=\\lvert {{eval:b-c}}\\rvert={{eval:c-b}}$ : une valeur absolue n'est jamais négative.",
+					"$A={{a}}+{{eval:c-b}}=\\textcolor{{{color:primary.0}}}{{{eval:a+c-b}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Calcule $A=\\lvert {{b}}-{{c}}\\rvert-\\lvert -{{a}}\\rvert$.\n\n$A=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "c",
+					"expression": "2..15"
+				}
+			],
+			"conditions": ["b < c"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:c-b-a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\lvert {{b}}-{{c}}\\rvert=\\lvert {{eval:b-c}}\\rvert={{eval:c-b}}$ et $\\lvert -{{a}}\\rvert={{a}}$.",
+					"$A={{eval:c-b}}-{{a}}=\\textcolor{{{color:primary.0}}}{{{eval:c-b-a}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Calcule $A=\\lvert -{{a}}\\rvert\\times\\lvert {{b}}-{{c}}\\rvert$.\n\n$A=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "c",
+					"expression": "2..12"
+				}
+			],
+			"conditions": ["b < c"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*(c-b)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\lvert -{{a}}\\rvert={{a}}$ et $\\lvert {{b}}-{{c}}\\rvert=\\lvert {{eval:b-c}}\\rvert={{eval:c-b}}$.",
+					"$A={{a}}\\times{{eval:c-b}}=\\textcolor{{{color:primary.0}}}{{{eval:a*(c-b)}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Calcule $A=\\left\\lvert \\lvert -{{a}}\\rvert-{{b}}\\right\\rvert$.\n\n$A=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "w",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "eval:a+w"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:b-a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On calcule d'abord la valeur absolue **intérieure** : $\\lvert -{{a}}\\rvert={{a}}$.",
+					"$A=\\lvert {{a}}-{{b}}\\rvert=\\lvert {{eval:a-b}}\\rvert=\\textcolor{{{color:primary.0}}}{{{eval:b-a}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "|−3| + |5 − 8| = 6",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "5",
+				"c": "8"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : |5 − 8| gardé négatif (0)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "5",
+				"c": "8"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : |−3| lu −3 et |5 − 8| lu −3 (−6)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "5",
+				"c": "8"
+			},
+			"answers": ["-6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "|2 − 9| − |−4| = 3",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"b": "2",
+				"c": "9"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 7 + 4 = 11",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"b": "2",
+				"c": "9"
+			},
+			"answers": ["11"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "|7 − 9| − |−6| = −4",
+			"variationIndex": 1,
+			"variables": {
+				"a": "6",
+				"b": "7",
+				"c": "9"
+			},
+			"answers": ["-4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : résultat sans signe 4",
+			"variationIndex": 1,
+			"variables": {
+				"a": "6",
+				"b": "7",
+				"c": "9"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "|−3| × |2 − 7| = 15",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"c": "7"
+			},
+			"answers": ["15"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : |−3| lu −3 (−15)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"c": "7"
+			},
+			"answers": ["-15"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "||−2| − 5| = 3",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"w": "3",
+				"b": "5"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : −3",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"w": "3",
+				"b": "5"
+			},
+			"answers": ["-3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : |−2 − 5| = 7",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"w": "3",
+				"b": "5"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

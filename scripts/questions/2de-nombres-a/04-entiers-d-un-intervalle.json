@@ -1,0 +1,375 @@
+{
+	"title": "Compter les entiers d'un intervalle",
+	"description": "Nombre d'entiers d'un intervalle à bornes décimales ou entières (crochets ouverts ou fermés), plus petit entier d'un intervalle (pièges : bornes exclues comptées, −2,5 → −3)",
+	"grades": ["2"],
+	"level": 5,
+	"delay": 45,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Combien de nombres **entiers** l'intervalle $\\left[{{eval:(10*la+fa)/10;d}}\\,;{{eval:(10*lb+fb)/10;d}}\\right]$ contient-il ?\n\n$?$ entiers",
+			"variables": [
+				{
+					"name": "la",
+					"expression": "-9..4"
+				},
+				{
+					"name": "w",
+					"expression": "2..8"
+				},
+				{
+					"name": "lb",
+					"expression": "eval:la+w"
+				},
+				{
+					"name": "fa",
+					"expression": "1..9"
+				},
+				{
+					"name": "fb",
+					"expression": "1..9"
+				},
+				{
+					"name": "m",
+					"expression": "eval:la+1"
+				},
+				{
+					"name": "M",
+					"expression": "eval:lb"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:w}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les bornes ne sont pas entières. Le plus petit entier de l'intervalle est ${{eval:la+1}}$ (le premier entier **après** ${{eval:(10*la+fa)/10;d}}$), le plus grand est ${{eval:lb}}$.",
+					"On compte les entiers de ${{eval:la+1}}$ à ${{eval:lb}}$ : {{if:m<0|${{eval:M}}-({{eval:m}})+1=\\textcolor{{{color:primary.0}}}{{{eval:M-(m)+1}}}$|${{eval:M}}-{{eval:m}}+1=\\textcolor{{{color:primary.0}}}{{{eval:M-(m)+1}}}$}}."
+				]
+			}
+		},
+		{
+			"statement": "Combien de nombres **entiers** l'intervalle $\\left{{if:o1==0|[|]}}{{a}}\\,;{{b}}\\right{{if:o2==0|]|[}}$ contient-il ?\n\n$?$ entiers",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-9..5"
+				},
+				{
+					"name": "w",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "eval:a+w"
+				},
+				{
+					"name": "o1",
+					"expression": "0|1"
+				},
+				{
+					"name": "o2",
+					"expression": "0|1"
+				},
+				{
+					"name": "m",
+					"expression": "eval:a+o1"
+				},
+				{
+					"name": "M",
+					"expression": "eval:b-o2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:w+1-o1-o2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:o1==0|Le crochet est **fermé** en ${{a}}$ : ${{a}}$ est dans l'intervalle.|Le crochet est **ouvert** en ${{a}}$ : ${{a}}$ n'est **pas** dans l'intervalle.}} {{if:o2==0|Le crochet est **fermé** en ${{b}}$ : ${{b}}$ est dans l'intervalle.|Le crochet est **ouvert** en ${{b}}$ : ${{b}}$ n'est **pas** dans l'intervalle.}}",
+					"Les entiers vont de ${{eval:m}}$ à ${{eval:M}}$ : {{if:m<0|${{eval:M}}-({{eval:m}})+1=\\textcolor{{{color:primary.0}}}{{{eval:M-(m)+1}}}$|${{eval:M}}-{{eval:m}}+1=\\textcolor{{{color:primary.0}}}{{{eval:M-(m)+1}}}$}}."
+				]
+			}
+		},
+		{
+			"statement": "Quel est le **plus petit** nombre entier de l'intervalle $\\left{{if:o1==0|[|]}}{{a}}\\,;{{b}}\\right]$ ?\n\n$?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-9..5"
+				},
+				{
+					"name": "w",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "eval:a+w"
+				},
+				{
+					"name": "o1",
+					"expression": "0|1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a+o1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:o1==0|Le crochet est **fermé** en ${{a}}$ : ${{a}}$ est dans l'intervalle, c'est son plus petit entier : $\\textcolor{{{color:primary.0}}}{{{a}}}$.|Le crochet est **ouvert** en ${{a}}$ : ${{a}}$ n'est **pas** dans l'intervalle. Le plus petit entier est le suivant : $\\textcolor{{{color:primary.0}}}{{{eval:a+1}}}$.}}"
+				]
+			}
+		},
+		{
+			"statement": "Quel est le **plus petit** nombre entier de l'intervalle $\\left[{{eval:(10*la+fa)/10;d}}\\,;{{eval:(10*lb+fb)/10;d}}\\right]$ ?\n\n$?$",
+			"variables": [
+				{
+					"name": "la",
+					"expression": "-9..-1"
+				},
+				{
+					"name": "w",
+					"expression": "2..8"
+				},
+				{
+					"name": "lb",
+					"expression": "eval:la+w"
+				},
+				{
+					"name": "fa",
+					"expression": "1..9"
+				},
+				{
+					"name": "fb",
+					"expression": "1..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:la+1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Sur la droite graduée, ${{eval:(10*la+fa)/10;d}}$ est entre ${{eval:la}}$ et ${{eval:la+1}}$.",
+					"Les nombres de l'intervalle sont **après** ${{eval:(10*la+fa)/10;d}}$ : le plus petit entier est $\\textcolor{{{color:primary.0}}}{{{eval:la+1}}}$ (et non ${{eval:la}}$, qui est plus petit que ${{eval:(10*la+fa)/10;d}}$)."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "[−2,5 ; 3,7] : 6 entiers",
+			"variationIndex": 0,
+			"variables": {
+				"la": "-3",
+				"w": "6",
+				"lb": "3",
+				"fa": "5",
+				"fb": "7",
+				"m": "-2",
+				"M": "3"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : de −3 à 3 (7)",
+			"variationIndex": 0,
+			"variables": {
+				"la": "-3",
+				"w": "6",
+				"lb": "3",
+				"fa": "5",
+				"fb": "7",
+				"m": "-2",
+				"M": "3"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 3 − (−2) = 5",
+			"variationIndex": 0,
+			"variables": {
+				"la": "-3",
+				"w": "6",
+				"lb": "3",
+				"fa": "5",
+				"fb": "7",
+				"m": "-2",
+				"M": "3"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "]−2 ; 4] : 6 entiers",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-2",
+				"w": "6",
+				"b": "4",
+				"o1": "1",
+				"o2": "0",
+				"m": "-1",
+				"M": "4"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : crochet ouvert ignoré (7)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-2",
+				"w": "6",
+				"b": "4",
+				"o1": "1",
+				"o2": "0",
+				"m": "-1",
+				"M": "4"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "[1 ; 5] : 5 entiers",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"w": "4",
+				"b": "5",
+				"o1": "0",
+				"o2": "0",
+				"m": "1",
+				"M": "5"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 5 − 1 = 4",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"w": "4",
+				"b": "5",
+				"o1": "0",
+				"o2": "0",
+				"m": "1",
+				"M": "5"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "]1 ; 5[ : 3 entiers",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"w": "4",
+				"b": "5",
+				"o1": "1",
+				"o2": "1",
+				"m": "2",
+				"M": "4"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "]−3 ; 4] : −2",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-3",
+				"w": "7",
+				"b": "4",
+				"o1": "1"
+			},
+			"answers": ["-2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : −3 (crochet ouvert)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-3",
+				"w": "7",
+				"b": "4",
+				"o1": "1"
+			},
+			"answers": ["-3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "[2 ; 7] : 2",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"w": "5",
+				"b": "7",
+				"o1": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "[−2,5 ; 3,7] : −2",
+			"variationIndex": 3,
+			"variables": {
+				"la": "-3",
+				"w": "6",
+				"lb": "3",
+				"fa": "5",
+				"fb": "7"
+			},
+			"answers": ["-2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : −3",
+			"variationIndex": 3,
+			"variables": {
+				"la": "-3",
+				"w": "6",
+				"lb": "3",
+				"fa": "5",
+				"fb": "7"
+			},
+			"answers": ["-3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
