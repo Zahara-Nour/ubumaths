@@ -6,19 +6,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-20, après #2935._
+_Mis à jour le 2026-11-20, après #2937._
 
-- **État** : PR 1 (syntaxe, écran, chat) mergée (#2933 + #2934) ; PR 2 (PDF, paragraphes et cellules) mergée
-  (#2935, § 6). Q2 et Q3 tranchées (§ 3).
-- **Revue PR 3** : `--lot` mal écrit (`--lot=…`, sans valeur) retombait en silence sur l'ancienne liste → refusé ; test
-  « rien d'autre ne change » au caractère près.
-- **Prochaine action** : PR 3 (nettoyage, § 7) — revue + CI → merge ; puis David applique les retouches en prod
-  (`pnpm corrections:retouches --lot texte-colore --publier`, depuis le dépôt principal à jour).
-- **En attente de David** : après le merge de la PR 3, appliquer les 2 retouches en prod (commande ci-dessus).
+- **État** : PR 1 (syntaxe, écran, chat, #2933 + #2934), PR 2 (PDF, #2935) et PR 3 (nettoyage au lieu du filet,
+  #2937, § 7) mergées. Q2 (éditeur riche) = chantier à part, plus tard.
+- **Prochaine action** : après la commande de David, vérifier en prod (lecture seule) qu'aucun modèle n'affiche
+  `\textcolor` hors formule (`findTextcolorOutsideMath` sur toute la prod, § 7) ; puis clôture (versement, archive).
+- **En attente de David** : `pnpm corrections:retouches --lot texte-colore --publier` (prod, depuis le dépôt principal
+  à jour ; d'abord sans `--publier`) ; `deploy:prod` pour livrer #2933 → #2937.
 - **Pièges connus** : la garde `review/textcolor-hors-maths.ts` ne tourne que dans `pnpm question:specs` ; le chat
   ne doit rien gagner (couleur retirée dans `restrictDocument` ET dans les composants) ; `.def=cible` en dernière
   classe ; l'éditeur riche perd `color` / `detail` / `lexicon` à l'enregistrement (`markdown-import.ts`, Q2 : plus tard).
-- **Worktree / branche** : `../ubumaths-wt-texte-colore` · `feat/texte-colore-nettoyage`.
+- **Worktree / branche** : `../ubumaths-wt-texte-colore` · aucune (worktree détaché sur `origin/main`, à retirer à la clôture).
 
 ## 1. Le défaut
 
