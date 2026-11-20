@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-20, après la publication du lot 1 (David)._
+_Mis à jour le 2026-11-20, après le relevé du gros lot « nombres et calculs »._
 
-- **État** : lot 1 **publié** en prod (da94a049 → 2-243, e41081cc → 2-203, 776c4918 → 2-206) ; relu 3/3 OK sur la page à cocher (https://claude.ai/artifact/RhVSrYcGGvn5jTPUnzDqAD) ; `publier-lot.ts` confirme « tout le lot est déjà publié ». Les manques 1 à 3 d'« Ensembles de nombres » sont couverts.
-- **Prochaine action** : à choisir par David — rubrique suivante de la plateforme (relevé, puis phase 0), ou lot de corrections des petits ajouts (π et 5,78 dans « À quels ensembles… », −123 dans « Le plus petit ensemble… »).
-- **En attente de David** : ce choix.
-- **Pièges en cours** : ne jamais nommer la plateforme d'origine ; Chrome piloté depuis le laptop de David (`[::1]` = le laptop) → aperçu par Playwright sur le Mac mini ; `migration list --linked` sort du JSON (jq). CI : #2942 mergée — une PR de rangement ne lance que son test d'intégration ; mesurer le job à la prochaine et le dire à David.
-- **Worktree / branche** : aucun.
+- **État** : lot 1 publié. David veut désormais de **gros lots** (tout préparer, un seul envoi). Relevé de 122 exercices « calcul numérique » de Seconde fait ([relevé](ensembles-2de-releve-nombres.md)) ; phase 0 publiée en page à cocher : https://claude.ai/artifact/RXH98rLprzZFXk78ZKuntq (4 questions d'ensemble Q1-Q4 + 54 fiches, collection `verdicts`).
+- **Prochaine action** : lire les verdicts (`ArtifactData list verdicts`, compter 58), puis écrire tout le lot en local ; si Q1 = oui, d'abord l'outil de migration de contenu d'un modèle publié (ligne 41 d'`outils-manquants.md`).
+- **En attente de David** : ses réponses sur la page de phase 0.
+- **Pièges en cours** : ne jamais nommer la plateforme d'origine (sources : voir mémoire `reference_source-plateforme-exercices`) ; `create-questions --mettre-a-jour` ne touche jamais un modèle publié → toute variation d'un publié passe par une migration ; valeur absolue : BO = distance et |x − a| ⩽ r seulement ; Chrome piloté = celui du laptop de David. CI : mesurer le job d'intégration à la prochaine PR de rangement et le dire à David.
+- **Worktree / branche** : aucun (à créer pour écrire le lot).
 
 ## Décisions de David (2026-11-20)
 
@@ -60,3 +60,12 @@ Décisions (David, 2026-11-20, « je suis tes recos ») : modèles 1 et 2 tels q
 
 - Page à cocher : 3/3 « OK », sans commentaire (verdicts comptés dans la base de l'artefact).
 - `publier-lot.ts --publier` lancé par David ; nouvelle simulation : les 3 modèles au statut publié.
+
+## Gros lot « nombres et calculs » : relevé et phase 0 (2026-11-20)
+
+- David (2026-11-20) : fini les cycles complets pour 1-2 modèles ; préparer le plus de modèles possible et tout envoyer d'un coup. Périmètre choisi : toutes les rubriques « nombres et calcul » de Seconde de la plateforme, plus les petits ajouts reportés (π, 5,78, −123). Proposer de nouveaux outils si une question en demande.
+- Relevé : [ensembles-2de-releve-nombres.md](ensembles-2de-releve-nombres.md) — groupe A (droite graduée, intervalles, valeur absolue, comparer, arrondir) 37 ex. : 7 ✅ 16 🟡 14 ❌ ; groupe B (arithmétique, fractions) 41 : 2 / 23 / 16 ; groupe C (puissances, écriture scientifique, racines) 44 : 6 / 14 / 24.
+- BO de Seconde vérifié (`src/lib/server/programmes/transcriptions/2.md`) : valeur absolue limitée à la distance et à |x − a| ⩽ r (« toute autre utilisation est hors programme ») ; arithmétique = multiples, diviseurs, parité, plus grand multiple de a ⩽ b (ni premiers, ni PGCD) ; pas de rationalisation.
+- Douze propositions sont des variations de modèles **publiés** : `create-questions --mettre-a-jour` les refuse (garde voulue) → Q1 de la phase 0 (outil de la ligne 41 d'`outils-manquants.md`, ou nouveaux modèles à côté).
+- Outils à essayer avant d'en créer : forme exigée « écriture scientifique » (motif `mathAST/pattern`), « entier + fraction < 1 » accepté sous toute écriture juste, décomposition en facteurs premiers (cases + `isPrime`). Aucun nouveau bloc ni geste demandé par le relevé.
+- Phase 0 : page à cocher https://claude.ai/artifact/RXH98rLprzZFXk78ZKuntq (Q1-Q4, fiches 1-54, recommandation sur chacune).
