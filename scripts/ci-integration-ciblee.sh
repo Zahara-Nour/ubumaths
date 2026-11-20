@@ -10,8 +10,12 @@
 #
 # Ciblé seulement si TOUS les fichiers de la PR sont :
 #   - une migration de rangement AJOUTÉE (`A supabase/migrations/*rangement*.sql`, nom de toutes
-#     les migrations de lots) — une migration modifiée, ou d'un autre nom (schéma, règles
-#     d'accès, fonctions) → suite complète ;
+#     les migrations de lots) ou de contenu de modèles publiés AJOUTÉE
+#     (`A supabase/migrations/*_contenu.sql`, `scripts/questions/migration-contenu.ts`) — une
+#     migration modifiée, ou d'un autre nom (schéma, règles d'accès, fonctions) → suite complète ;
+#   - la fixture AJOUTÉE d'une migration de contenu
+#     (`A tests/integration/fixtures/contenu-publie/*.json`) : elle ajoute à la liste le test qui
+#     rejoue toutes ces fixtures, `tests/integration/migrations-contenu-publie.test.ts` ;
 #   - un test d'intégration ajouté ou modifié (`tests/integration/*.test.ts`, à la racine du
 #     dossier : ni helpers, ni fixtures, ni global-setup) ;
 #   - du contenu (`scripts/questions/**/*.json`), de la doc (`docs/**`), un `.md` hors
@@ -38,11 +42,16 @@ lignes="$(git diff --name-status --no-renames HEAD^1 HEAD 2>/dev/null)" || compl
 [ -n "$lignes" ] || complete "aucun fichier changé"
 
 tests=()
+contenu=""
 while IFS=$'\t' read -r statut f; do
 	case "$f" in
 	src/* | static/* | data/*) complete "$f touche le code ou des données servies" ;;
-	supabase/migrations/*rangement*.sql)
+	supabase/migrations/*rangement*.sql | supabase/migrations/*_contenu.sql)
 		[ "$statut" = "A" ] || complete "$f : migration existante modifiée ($statut)"
+		;;
+	tests/integration/fixtures/contenu-publie/*.json)
+		[ "$statut" = "A" ] || complete "$f : fixture de contenu existante modifiée ($statut)"
+		contenu=1
 		;;
 	supabase/migrations/*) complete "$f : migration autre qu'un rangement" ;;
 	tests/integration/*/*) complete "$f : outillage de la suite" ;;
@@ -54,6 +63,12 @@ while IFS=$'\t' read -r statut f; do
 	*) complete "$f n'est ni une migration ajoutée, ni un test d'intégration, ni du contenu" ;;
 	esac
 done <<<"$lignes"
+
+# Le test qui rejoue les fixtures de contenu, une seule fois (s'il est déjà dans la PR, il y est)
+if [ -n "$contenu" ]; then
+	t=tests/integration/migrations-contenu-publie.test.ts
+	case " ${tests[*]-} " in *" $t "*) ;; *) tests+=("$t") ;; esac
+fi
 
 [ "${#tests[@]}" -gt 0 ] || complete "aucun test d'intégration dans la PR"
 

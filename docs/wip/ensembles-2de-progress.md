@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-20, après le relevé du gros lot « nombres et calculs »._
+_Mis à jour le 2026-11-20, outil de migration de contenu écrit (PR en cours)._
 
-- **État** : lot 1 publié. David veut désormais de **gros lots** (tout préparer, un seul envoi). Relevé de 122 exercices « calcul numérique » de Seconde fait ([relevé](ensembles-2de-releve-nombres.md)) ; phase 0 publiée en page à cocher : https://claude.ai/artifact/RXH98rLprzZFXk78ZKuntq (4 questions d'ensemble Q1-Q4 + 54 fiches, collection `verdicts`).
-- **Prochaine action** : phase 0 tranchée (section « Phase 0 tranchée », réponse dans la conversation, pas sur la page). D'abord l'outil de migration de contenu d'un modèle publié (ligne 41) : comportements à faire valider, puis worktree + PR ; ensuite écrire tout le lot en local.
-- **En attente de David** : validation des comportements de l'outil (section « Outil … phase 0 proposée », en bas). Au go : worktree `ensembles-2de`, outil en 1re PR, puis tout le lot en local, puis envoi unique.
-- **Pièges en cours** : ne jamais nommer la plateforme d'origine (sources : voir mémoire `reference_source-plateforme-exercices`) ; `create-questions --mettre-a-jour` ne touche jamais un modèle publié → toute variation d'un publié passe par une migration ; valeur absolue : BO = distance et |x − a| ⩽ r seulement ; Chrome piloté = celui du laptop de David. CI : mesurer le job d'intégration à la prochaine PR de rangement et le dire à David.
-- **Worktree / branche** : aucun (à créer pour écrire le lot).
+- **État** : lot 1 publié ; phase 0 du gros lot « nombres et calculs » tranchée ; comportements de l'outil de migration de contenu **validés** (David, 2026-11-20, « je valide »), outil écrit : `scripts/questions/migration-contenu.ts` (PR de `feat/ensembles-2de`).
+- **Prochaine action** : merger l'outil ; puis écrire TOUT le gros lot en local (nouveaux modèles + variations de publiés : fiches 4-9, 12, 13, 27, 30, 31, 39, 48, 53, 54, via l'outil ; hors programme gardés sans point), puis envoi unique.
+- **En attente de David** : rien.
+- **Pièges en cours** : ne jamais nommer la plateforme d'origine (sources : voir mémoire `reference_source-plateforme-exercices`) ; variations d'un publié = `migration-contenu.ts` (partir de `export-question-templates.ts`, ajouter À LA FIN, une spec « correct » par variation) ; valeur absolue : BO = distance et |x − a| ⩽ r seulement ; Chrome piloté = celui du laptop de David. CI : mesurer le job d'intégration à la prochaine PR de rangement et le dire à David.
+- **Worktree / branche** : `../ubumaths-wt-ensembles-2de`, `feat/ensembles-2de`.
 
 ## Décisions de David (2026-11-20)
 
@@ -79,7 +79,7 @@ Décisions (David, 2026-11-20, « je suis tes recos ») : modèles 1 et 2 tels q
 - **Plus tard** (rares mais au programme) : 16, 17, 34, 52.
 - Tout le reste « oui » selon les recommandations de la page.
 
-### Outil « migration de contenu d'un modèle publié » : phase 0 proposée (2026-11-20, en attente de David)
+### Outil « migration de contenu d'un modèle publié » : phase 0 validée (David, 2026-11-20)
 
 - Commande : `pnpm tsx scripts/questions/migration-contenu.ts --dir scripts/questions/<lot>` → **une** migration pour tous les modèles **publiés** du lot dont le fichier diffère de la prod.
 - Par modèle : garde (contenu exact relevé en prod, md5), rollback en commentaire gardé de même, test d'intégration (copie du modèle de prod, rejoue la migration, vérifie, rejoue le rollback) — sur le modèle de `supabase/migrations/20261119060346_questions_cm1_lot8e_04_contenu.sql` (généré par `docs/wip/questions/cm1-8e-04-contenu.py`).
@@ -87,3 +87,11 @@ Décisions (David, 2026-11-20, « je suis tes recos ») : modèles 1 et 2 tels q
 - Erreurs : sans id / id absent / titre différent → refus avec la différence ; contenu prod changé avant `db:migrate` → la migration ÉCHOUE (jamais un passage muet) ; base locale sans le modèle → rien.
 - Champs touchés : variations, specs, description ; jamais titre, nœud, points, tags, statut.
 - Question d'accès : personne (aucune policy touchée).
+
+### Outil : écrit (2026-11-20)
+
+- `scripts/lib/migration-contenu.ts` (règles, SQL), `scripts/questions/migration-contenu.ts` (lit la prod, écrit migration + fixture `tests/integration/fixtures/contenu-publie/<nom>.json`), test générique `tests/integration/migrations-contenu-publie.test.ts` (cas synthétique + chaque fixture : migration, gardes, tout ou rien, rollback).
+- Écart avec la phase 0 : pas de md5 dans la garde — elle compare le contenu EXACT (jsonb), ce qui couvre le md5. Autre champ du fichier ≠ prod (niveaux, délai, options…) → refus ; `checkTemplate` rouge → refus.
+- Essai de bout en bout (fichiers retirés) : 776c4918 « A privé de B » relevé en prod, variation 4 ajoutée + variation 2 retouchée → migration générée (38 ko), 10/10 au test d'intégration. Lot 1 tel quel → « inchangé » ×3.
+- Mutations : garde `v_conforme` retirée → 3 rouges ; garde de description retirée → 1 rouge.
+- CI ciblée étendue : `*_contenu.sql` ajoutée + fixture `contenu-publie/` ajoutée → seul le test générique tourne ; filtre `paths` de `nightly-integration.yml` complété (`check:integration-paths` vert).
