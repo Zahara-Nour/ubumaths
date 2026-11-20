@@ -5,8 +5,8 @@
  * - fiche d'exercices sans titre libre : les notions en grand (« Suites ·
  *   Dérivation »), la catégorie en petit dessous ; bas de page « Suites ·
  *   Entraînement technique » ;
- * - titre libre (ou titre des autres types) : lui seul en grand, les notions
- *   dessous ; jamais la catégorie ;
+ * - titre libre (ou titre des autres types) : lui seul en grand, ni notions
+ *   ni catégorie dessous (précisé par David le 2026-11-20) ;
  * - amendé le 2026-11-19 (reprise des 50 fiches) : plusieurs notions pour
  *   toute fiche ; chaque notion commence par une majuscule (sous-notions de
  *   l'arbre écrites en minuscule) ;
@@ -110,25 +110,22 @@ describe('printedTitle', () => {
 		});
 	});
 
-	it('titre libre sur une fiche à une notion : lui en grand, la notion dessous, pas la catégorie', () => {
+	it('titre libre : lui seul, ni notion ni catégorie dessous', () => {
 		expect(printedTitle({ ...base, customTitle: true, title: 'Le produit scalaire' })).toEqual({
 			main: 'Le produit scalaire',
-			sub: 'Suites',
+			sub: '',
 			footer: 'Le produit scalaire'
 		});
 	});
 
-	it('sous-notion en minuscule : majuscule en tête, en grand comme dessous', () => {
+	it('sous-notion en minuscule : majuscule en tête', () => {
 		expect(printedTitle({ ...base, notions: ['loi géométrique'] })).toMatchObject({
 			main: 'Loi géométrique',
 			footer: 'Loi géométrique · Entraînement technique'
 		});
-		expect(
-			printedTitle({ ...base, customTitle: true, title: 'Fiche', notions: ['loi géométrique'] })
-		).toMatchObject({ sub: 'Loi géométrique' });
 	});
 
-	it('titre libre en Révisions : les notions dessous, jamais la catégorie', () => {
+	it('titre libre en Révisions : le titre seul, ni notions ni catégorie', () => {
 		expect(
 			printedTitle({
 				...base,
@@ -139,12 +136,12 @@ describe('printedTitle', () => {
 			})
 		).toEqual({
 			main: 'Préparation Bac Blanc 1',
-			sub: 'Suites · Dérivation',
+			sub: '',
 			footer: 'Préparation Bac Blanc 1'
 		});
 	});
 
-	it('évaluation : titre écrit à la main, notions dessous, case ignorée', () => {
+	it('évaluation : titre écrit à la main, seul, case ignorée', () => {
 		for (const customTitle of [true, false]) {
 			expect(
 				printedTitle({
@@ -155,7 +152,7 @@ describe('printedTitle', () => {
 					title: 'Contrôle n° 2',
 					notions: ['Suites', 'Dérivation']
 				})
-			).toEqual({ main: 'Contrôle n° 2', sub: 'Suites · Dérivation', footer: 'Contrôle n° 2' });
+			).toEqual({ main: 'Contrôle n° 2', sub: '', footer: 'Contrôle n° 2' });
 		}
 	});
 

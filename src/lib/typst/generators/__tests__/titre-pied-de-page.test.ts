@@ -10,7 +10,7 @@
  *
  * Titre composé (ADR 0041) : sans titre libre, les notions en grand et la
  * catégorie en petit dessous ; bas de page « Suites · Entraînement technique ».
- * Titre libre : lui seul, les notions dessous si la fiche en admet plusieurs.
+ * Titre libre : lui seul, ni notions ni catégorie dessous (David, 2026-11-20).
  *
  * Rendu vérifié avec le compilateur de prod (typst.ts en WebAssembly) : texte
  * de la page 2, qui n'a pas d'en-tête, lu par pdfjs.
@@ -142,7 +142,7 @@ describe('titre de la fiche au pied de page', () => {
 		}
 	}, 60_000);
 
-	it('titre libre en Révisions : les notions dessous, le titre seul au bas de page', () => {
+	it('titre libre en Révisions : le titre seul, ni notions ni catégorie (David, 2026-11-20)', () => {
 		const typst = sheet(null, [], 'fr', {
 			title: 'Préparation Bac Blanc 1',
 			custom_title: true,
@@ -152,7 +152,9 @@ describe('titre de la fiche au pied de page', () => {
 				{ node_id: 'n1', name: 'Suites', kind: 'notion', position: 0 }
 			]
 		});
-		expect(typst).toContain('Suites · Dérivation');
+		expect(typst).toContain('Préparation Bac Blanc 1');
+		expect(typst).not.toContain('Suites');
+		expect(typst).not.toContain('Dérivation');
 		expect(typst).not.toContain('Révisions');
 		expect(typst).not.toContain('révisions');
 	});
@@ -168,6 +170,15 @@ describe('titre de la fiche au pied de page', () => {
 		expect(typst).not.toContain(']], text(red)');
 		const all = await pages(typst);
 		expect(all[0]).toContain('PIEGE');
+		// La notion ne s'imprime qu'au titre composé
+		const composed = sheet(null, [], 'fr', {
+			title: 'Fiche',
+			custom_title: false,
+			category: 'review',
+			classifications: [{ node_id: 'n1', name: evil, kind: 'notion', position: 0 }]
+		});
+		expect(composed).not.toContain(']], text(red)');
+		expect((await pages(composed))[0]).toContain('PIEGE');
 	}, 60_000);
 
 	it('style d’un prof sans {{title_sub}} : la catégorie reste dans le titre', () => {

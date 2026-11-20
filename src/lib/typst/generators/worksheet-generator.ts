@@ -433,7 +433,7 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 			level: escapeTypst(levels.full),
 			level_short: escapeTypst(levels.short),
 			level_badges: levels.badges,
-			// Sous le titre, en petit : la catégorie, ou les notions sous un titre libre
+			// Sous le titre, en petit : la catégorie d'un titre composé ; rien sous un titre libre
 			show_title_sub: flag(printed.sub !== ''),
 			title_sub: escapeTypstBrackets(printed.sub),
 			// Au bas de chaque page : notions et catégorie, ou le titre libre

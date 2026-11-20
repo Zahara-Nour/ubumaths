@@ -4,7 +4,7 @@
  * These templates use Typst markup with placeholders in {{placeholder}} format.
  * Available placeholders:
  * - {{title}} - Worksheet title as printed (ADR 0041: the notions, or the free title)
- * - {{title_sub}} - Small line under the title: category, or notions under a free title
+ * - {{title_sub}} - Small line under the title: category of a composed title (empty under a free title)
  * - {{footer_title}} - Title at the foot of each page (notions · category, or free title)
  * - {{level_badges}} - Level badges (short names, orange), Typst markup
  * - {{date}} - Current date or assignment date
@@ -1626,8 +1626,8 @@ const studentStyleHeader = (
   #block(width: 100%, fill: white, inset: (bottom: 6pt), below: 1.2em)[
 ${banner}    // Première ligne, trois colonnes de même largeur sur les côtés : badge du
     // niveau à gauche, titre au CENTRE DE LA PAGE, QR du site à droite
-    // (« chiph.re » dessous). Dessous le titre, en petit gris : la catégorie, ou
-    // les notions sous un titre libre (ADR 0041).
+    // (« chiph.re » dessous). Dessous le titre, en petit gris : la catégorie d'un
+    // titre composé ; rien sous un titre libre (ADR 0041).
     #grid(
       columns: (1fr, 3fr, 1fr),
       column-gutter: 0.5em,

@@ -14,8 +14,8 @@ _Mis à jour le 2026-11-19, PR 3a en cours._
   et Automatismes** ; évaluation, examen, quiz, devoir maison → 0 à N notions, pas de catégorie.
 - **Rendu page 1** : badge(s) du niveau à gauche (forme courte, plein orange, texte blanc), QR à
   droite. Au centre : sans titre libre → notion(s) en grand (« Suites · Dérivation »), catégorie
-  en petit gris dessous ; titre libre (ou titre des autres types) → lui en grand, et dessous les
-  notions **seulement si la fiche en admet plusieurs** ; jamais la catégorie sous un titre libre.
+  en petit gris dessous ; titre libre (ou titre des autres types) → lui seul, **ni notions ni
+  catégorie dessous** (David, 2026-11-20).
 - **Bas de page** : `[1ère Spé] Suites · Entraînement technique   n / N   gidouille chiph.re`.
 - **Anglais** : catégories traduites ; notions en anglais = **chantier séparé** ; en attendant,
   pas de notion imprimée sur une fiche anglaise.

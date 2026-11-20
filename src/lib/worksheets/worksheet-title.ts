@@ -32,7 +32,7 @@ export type WorksheetCategory = (typeof WORKSHEET_CATEGORIES)[number];
 export interface PrintedTitle {
 	/** En grand, en tête de la page 1 */
 	main: string;
-	/** En petit dessous (catégorie, ou notions sous un titre libre) ; vide : rien */
+	/** En petit dessous : la catégorie d'un titre composé ; vide : rien */
 	sub: string;
 	/** Au bas de chaque page, après le badge du niveau */
 	footer: string;
@@ -125,7 +125,7 @@ export function printedTitle(input: PrintedTitleInput): PrintedTitle {
 		return { main: title, sub: '', footer: title };
 	}
 
-	// Titre libre, ou titre écrit à la main des autres types : jamais la
-	// catégorie ; les notions en petit dessous
-	return { main: title, sub: notionsText, footer: title };
+	// Titre libre, ou titre écrit à la main des autres types : le titre seul,
+	// ni catégorie ni notions dessous (David, 2026-11-20)
+	return { main: title, sub: '', footer: title };
 }
