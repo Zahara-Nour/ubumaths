@@ -6,10 +6,10 @@ Proposition 3 du chantier `inspiration` (cf. `docs/wip/inspiration-progress.md`)
 
 _Mis à jour le 2026-11-20 : phase 0 validée, PR 1 en cours._
 
-- **État** : PR 1 (En classe) écrite, tests verts (33 + store + Deck), relecture et PR en cours.
-- **Prochaine action** : relecture `code-reviewer`, PR, CI, merge ; puis PR 2 (autres formes), phase 0 à écrire.
+- **État** : PR 1 (En classe) écrite, relue (`code-reviewer`, points 1-3 et 6 corrigés), tests verts ; PR ouverte, CI en cours.
+- **Prochaine action** : merge à CI verte ; puis PR 2 (autres formes), phase 0 à écrire.
 - **En attente de David** : rien.
-- **Pièges en cours** : `Slide` prend son index par ordre de montage (`claimNextH`) : la liste des diapositives ne peut pas changer en cours de route sans remonter le `Deck`.
+- **Pièges en cours** : un `onkeydown` Svelte est délégué à la racine : pour arrêter une touche avant le `Deck`, écouteur natif (action `settingsPanel`). `Slide` prend son index par ordre de montage (`claimNextH`) : la liste des diapositives ne peut pas changer en cours de route sans remonter le `Deck`.
 - **Worktree / branche** : `../ubumaths-wt-diaporama-reglages` · `feat/diaporama-reglages`.
 
 ## Phase 0 (validée par David le 2026-11-20)
@@ -67,3 +67,9 @@ Vérifié : « Question i / n » est déjà affiché en haut à gauche (`classro
 ### 2026-11-20 — ouverture
 
 Phase 0 discutée et validée avec David (réglages avant ET pendant, page d'attente, plein écran allumé par défaut, 10 s de correction, deux PR).
+
+### 2026-11-20 — PR 1 écrite et relue
+
+- Fichiers : `SeriesStartScreen.svelte` (cadre commun), `ClassroomSettingsPanel.svelte`, `classroomSettings.svelte.ts`, `utils/chime.ts`, `Deck.svelte` (`holdOnExpire`), `ClassroomSeries.svelte`.
+- Relecture : corrigés — panneau ⚙ ouvert, Espace / flèches allaient encore au Deck (délégation des événements Svelte) ; Échap ferme le panneau ; « Temps écoulé » périmé après remontage du Deck ; `restoring` jamais coincé. Gardés tels quels : flèche après « Temps écoulé » = question suivante en pause (comme la navigation manuelle) ; pas de son pour la 1re question (phase 0 : « entre deux questions »).
+- Test d'environnement : les diapositives de correction (verso en grand) chargent le dictionnaire des mots cliquables ; en test, sans API, avertissement `wrapDynamicImport` en fin de fichier, sans échec (exit 0).
