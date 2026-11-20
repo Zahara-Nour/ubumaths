@@ -9,6 +9,7 @@
 -->
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import { stayOnPage } from '#lib/utils/enhance-stay-on-page.ts';
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 	import type { ActionData, PageData } from './$types';
@@ -57,7 +58,7 @@
 		</Card.Header>
 
 		<Card.Content>
-			<form method="POST" action="?/updatePassword" use:enhance class="space-y-4">
+			<form method="POST" action="?/updatePassword" use:enhance={stayOnPage} class="space-y-4">
 				{#if data.needsCurrentPassword}
 					<div class="space-y-2">
 						<Label for="currentPassword">Mot de passe actuel</Label>

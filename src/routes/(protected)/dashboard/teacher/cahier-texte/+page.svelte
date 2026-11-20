@@ -21,6 +21,7 @@
 	import QrCodeButton from '#lib/components/qr/QrCodeButton.svelte';
 	import { BookOpen, GraduationCap, Calendar, Link2, Copy, Check } from '@lucide/svelte';
 	import { enhance } from '$app/forms';
+	import { stayOnPage } from '#lib/utils/enhance-stay-on-page.ts';
 	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import { GRADES, type GradeCode } from '#lib/types/grades.ts';
 	import type { PageData } from './$types';
@@ -252,11 +253,11 @@
 							</p>
 						{/if}
 						<div class="flex flex-wrap gap-2">
-							<form method="POST" action="?/shareLink" use:enhance>
+							<form method="POST" action="?/shareLink" use:enhance={stayOnPage}>
 								<input type="hidden" name="classId" value={data.selectedClassId} />
 								<Button type="submit" size="sm" variant="ghost">Renouveler</Button>
 							</form>
-							<form method="POST" action="?/revokeShareLink" use:enhance>
+							<form method="POST" action="?/revokeShareLink" use:enhance={stayOnPage}>
 								<input type="hidden" name="classId" value={data.selectedClassId} />
 								<Button type="submit" size="sm" variant="ghost">Révoquer</Button>
 							</form>
@@ -266,7 +267,7 @@
 							Aucun lien actif. En créer un rendra les séances publiées de cette classe consultables
 							par toute personne ayant le lien, sans compte.
 						</p>
-						<form method="POST" action="?/shareLink" use:enhance>
+						<form method="POST" action="?/shareLink" use:enhance={stayOnPage}>
 							<input type="hidden" name="classId" value={data.selectedClassId} />
 							<Button type="submit" size="sm">Créer le lien</Button>
 						</form>

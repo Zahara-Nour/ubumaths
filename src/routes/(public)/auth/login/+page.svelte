@@ -77,7 +77,7 @@
 					use:enhance={() => {
 						isGoogleLoading = true;
 						return async ({ update }) => {
-							await update();
+							await update({ navigate: false });
 							isGoogleLoading = false;
 						};
 					}}
@@ -155,7 +155,7 @@
 						use:enhance={() => {
 							isEmailLoading = true;
 							return async ({ update }) => {
-								await update();
+								await update({ navigate: false });
 								isEmailLoading = false;
 							};
 						}}
