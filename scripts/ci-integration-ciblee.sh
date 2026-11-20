@@ -9,8 +9,9 @@
 # Le cron nocturne rejoue la suite complète sur main : c'est le filet.
 #
 # Ciblé seulement si TOUS les fichiers de la PR sont :
-#   - une migration AJOUTÉE (`A supabase/migrations/*.sql`) — modifier une migration existante
-#     → suite complète ;
+#   - une migration de rangement AJOUTÉE (`A supabase/migrations/*rangement*.sql`, nom de toutes
+#     les migrations de lots) — une migration modifiée, ou d'un autre nom (schéma, règles
+#     d'accès, fonctions) → suite complète ;
 #   - un test d'intégration ajouté ou modifié (`tests/integration/*.test.ts`, à la racine du
 #     dossier : ni helpers, ni fixtures, ni global-setup) ;
 #   - du contenu (`scripts/questions/**/*.json`), de la doc (`docs/**`), un `.md` hors
@@ -40,9 +41,10 @@ tests=()
 while IFS=$'\t' read -r statut f; do
 	case "$f" in
 	src/* | static/* | data/*) complete "$f touche le code ou des données servies" ;;
-	supabase/migrations/*.sql)
+	supabase/migrations/*rangement*.sql)
 		[ "$statut" = "A" ] || complete "$f : migration existante modifiée ($statut)"
 		;;
+	supabase/migrations/*) complete "$f : migration autre qu'un rangement" ;;
 	tests/integration/*/*) complete "$f : outillage de la suite" ;;
 	tests/integration/*.test.ts)
 		[ "$statut" = "D" ] && complete "$f : test supprimé"
@@ -55,5 +57,5 @@ done <<<"$lignes"
 
 [ "${#tests[@]}" -gt 0 ] || complete "aucun test d'intégration dans la PR"
 
-echo "ci-integration-ciblee : migration de données et son test → ${tests[*]}" >&2
+echo "ci-integration-ciblee : migration de rangement et son test → ${tests[*]}" >&2
 echo "fichiers=${tests[*]}"

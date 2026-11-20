@@ -127,6 +127,11 @@ describe('ci-integration-ciblee', () => {
 		}
 	});
 
+	it('une migration qui n’est pas un rangement (règles d’accès, schéma) : suite complète', () => {
+		pr('supabase/migrations/20261120130000_rls_chat_messages.sql', TEST);
+		expect(verdict()).toBe('fichiers=');
+	});
+
 	it('une migration sans test d’intégration : suite complète', () => {
 		pr(MIGRATION, 'docs/a.md');
 		expect(verdict()).toBe('fichiers=');
