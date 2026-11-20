@@ -2,15 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-20, après #2930._
+_Mis à jour le 2026-11-20, PR worktrees en danger + redémarrage en cours._
 
-- **État** : #2906, #2910, #2916, #2921, #2930 mergés ; le dépôt principal est à jour, launchd lance les scripts. #2930 : orphelins de test fermés d'office (reconnus par l'exécutable, crashpad épargné), « RAS » quotidien à 9 h, alerte disque sous 15 Go.
-- **Écartés par David le 2026-11-20** : bouton « Faire le ménage » dans ntfy (canal sans authentification) ; nombre de sessions Claude.
-- **À vérifier** : au prochain passage, le Playwright orphelin de 10 jours (pid 699) doit être fermé et signalé ; demain après 9 h, le premier « RAS » doit arriver sur l'iPhone.
+- **État** : #2906, #2910, #2916, #2921, #2930 mergés. En cours : worktrees en danger comptés dans le « RAS » (`pnpm surveillance:worktrees` pour les noms) et redémarrage signalé (idées 1 et 3 du 2026-11-20).
 - **À reprendre à tête reposée** (§ « 2026-11-20 — disque et worktrees ») : 6 worktrees portent du travail qui n'existe nulle part ailleurs (2 articles du Shtam jamais commités !) ; 7 worktrees finis + 4 dossiers vides supprimables sur go de David ; Time Machine non configuré.
-- **Prochaine action** : clore le chantier (versement du durable dans `docs/systeme/` ou `docs/pratiques/environnement-de-dev.md`, déjà à jour ; archivage du journal).
-- **Pièges** : `ps time=` sur macOS = « minutes:secondes.cc » ; noms de programmes = liste blanche ; disque = `/System/Volumes/Data`, pas `/` ; `chrome_crashpad_handler` toujours en ppid 1 ; index du dépôt principal : `git commit -- <mes fichiers>`.
-- **Worktree / branche** : aucun.
+- **Prochaine action** : merger la PR ; puis idée 2 (alerte sauvegarde) une fois Time Machine configuré par David ; ou clore le chantier.
+- **Pièges** : `ps time=` sur macOS = « minutes:secondes.cc » ; disque = `/System/Volumes/Data`, pas `/` ; `chrome_crashpad_handler` toujours en ppid 1 ; commits « non poussés » = `rev-list HEAD --not --remotes` ; index du dépôt principal : `git commit -- <mes fichiers>`.
+- **Worktree / branche** : `../ubumaths-wt-surveillance-worktrees-redemarrage` · `chore/surveillance-worktrees-redemarrage`.
 
 ## Contexte
 
@@ -49,3 +47,10 @@ Restent, côté David :
    - commits poussés sans PR : `script-koch` (exercice « Le flocon de Von Koch », 2026-10-13), `verifs-auto` (lot 10, 5 commits, 2026-10-26), `corrections-modeles` (page de démo, 2026-11-18) ;
    - en attente de David : `boutique-avatars` (images de la PR 3), `evaluation-numerique` (son point suivant, depuis le 2026-10-28), `fusion-moteurs` (phase 0 jamais commencée) ;
    - `diaporama-reglages` : créé le 2026-11-20, sans commit — session sans doute active, ne pas toucher.
+
+## 2026-11-20 — worktrees en danger, redémarrage
+
+- Idées proposées : (1) travail en danger dans les worktrees, (2) alerte sauvegarde (après configuration de Time Machine), (3) redémarrage imprévu ; bilan hebdomadaire et disque qui fond vite, moins prioritaires. David : « je te suis » → 1 et 3 en une PR, 2 plus tard.
+- Phase 0 : « en danger » = fichiers non commités ou commits poussés nulle part, intouchés depuis 7 jours, dépôt principal exclu, worktrees d'agents compris. Question posée : rappel quotidien dans le « RAS » (ma recommandation) ou notification du lundi → David : « je te suis » en réponse à cette question → rappel dans le « RAS ».
+- Redémarrage : `kern.boottime` comparé à la marque `demarrage` ; premier passage = noté sans envoi ; « (plantage du système) » si `*panic*` ou `Kernel*` dans `/Library/Logs/DiagnosticReports` est plus récent que le démarrage précédent.
+- Essai réel : 4 worktrees en danger (relecture 40 j, shtam-rsa 44 j, questions-2de 14 j, evaluation-numerique 18 j), les mêmes que le relevé à la main ; 2,3 s pour les 18 worktrees (une fois par jour seulement).

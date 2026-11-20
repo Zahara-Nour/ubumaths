@@ -27,16 +27,23 @@
 # - moins de SEUIL_DISQUE_GO Go libres sur le volume des données → prévient ;
 # - une fois par jour, au premier passage après SURVEILLANCE_HEURE_RAS h, un
 #   « RAS » qui prouve que la surveillance tourne (envoyé même s'il y a eu des
-#   alertes : une surveillance morte ne se distingue pas d'une machine saine).
+#   alertes : une surveillance morte ne se distingue pas d'une machine saine) ;
+#   il compte les worktrees « en danger » (fichiers jamais commités ou commits
+#   non poussés, intouchés depuis SEUIL_WORKTREE_JOURS jours : 2026-11-20, deux
+#   articles dormaient 6 semaines dans des worktrees). Le message ne donne que le
+#   nombre ; les noms : `pnpm surveillance:worktrees` ;
+# - redémarrage du Mac → prévient, avec « (plantage du système) » si macOS a
+#   laissé un rapport de plantage depuis le démarrage précédent.
 # Alerte = notification ntfy.sh (canal au nom aléatoire, lu dans
 # ~/.config/surveillance-machine/ntfy-topic) + ligne dans le journal. Le message
 # envoyé ne contient que des chiffres et des ports : ni chemin, ni nom de projet.
 # Une même alerte n'est renvoyée qu'après SURVEILLANCE_RAPPEL_MIN minutes.
 #
-# Usage : surveillance-machine.sh [--essai] [--test] [--historique]
+# Usage : surveillance-machine.sh [--essai] [--test] [--historique] [--worktrees]
 #   --essai      : affiche ce qu'elle ferait, n'arrête rien, n'envoie ni n'écrit rien ;
 #   --test       : envoie une notification de test ;
-#   --historique : affiche les 2 dernières heures de l'historique.
+#   --historique : affiche les 2 dernières heures de l'historique ;
+#   --worktrees  : affiche les worktrees en danger, avec leur nom (rien n'est envoyé).
 #
 # Tests : scripts/__tests__/surveillance-machine.test.ts.
 set -uo pipefail
@@ -60,6 +67,8 @@ SEUIL_DISQUE_GO="${SEUIL_DISQUE_GO:-15}"             # Go libres du volume des d
 SURVEILLANCE_HEURE_RAS="${SURVEILLANCE_HEURE_RAS:-9}" # heure du « RAS » quotidien (24 = jamais)
 VOLUME_DISQUE="${SURVEILLANCE_DISQUE:-/System/Volumes/Data}" # « / » = le système seul, il tromperait
 [ -d "$VOLUME_DISQUE" ] || VOLUME_DISQUE=/
+SEUIL_WORKTREE_JOURS="${SEUIL_WORKTREE_JOURS:-7}"    # travail non sauvé intouché depuis
+RAPPORTS="${SURVEILLANCE_RAPPORTS:-/Library/Logs/DiagnosticReports}" # rapports de plantage
 
 ETAT="${SURVEILLANCE_ETAT:-$HOME/.local/state/surveillance-machine}"
 CONFIG="${SURVEILLANCE_CONFIG:-$HOME/.config/surveillance-machine}"
@@ -73,13 +82,15 @@ ENTETE_HISTORIQUE="date;charge;pression;swap_pct;chrome_cpu;brave_cpu;serveurs_d
 essai=0
 test_notif=0
 voir_historique=0
+voir_worktrees=0
 for arg in "$@"; do
 	case "$arg" in
 	--essai) essai=1 ;;
 	--test) test_notif=1 ;;
 	--historique) voir_historique=1 ;;
+	--worktrees) voir_worktrees=1 ;;
 	*)
-		echo "Usage : $0 [--essai] [--test] [--historique]" >&2
+		echo "Usage : $0 [--essai] [--test] [--historique] [--worktrees]" >&2
 		exit 2
 		;;
 	esac
@@ -155,6 +166,42 @@ marquer() {
 source "$(dirname "$0")/machine-commun.sh"
 initialiser_depot "$(dirname "$0")"
 
+# Worktrees de NOTRE dépôt (dépôt principal exclu) qui portent du travail non
+# sauvé — fichiers jamais commités, commits sur aucune branche distante — auquel
+# personne n'a touché depuis SEUIL_WORKTREE_JOURS jours. Une ligne
+# « dossier|fichiers|commits|jours » par worktree. Dossier disparu : sauté.
+worktrees_en_danger() {
+	[ -n "${DEPOT_COMMUN:-}" ] || return 0
+	local maintenant w ligne chemin m dernier nf nc t
+	maintenant="$(date +%s)"
+	git -C "$DEPOT_COMMUN" worktree list --porcelain 2>/dev/null | sed -n 's/^worktree //p' |
+		while IFS= read -r w; do
+			[ -d "$w" ] || continue
+			dans_depot_principal "$w" && continue
+			dernier=0
+			nf=0
+			while IFS= read -r ligne; do
+				[ -n "$ligne" ] || continue
+				nf=$((nf + 1))
+				chemin="${ligne:3}"
+				chemin="${chemin##* -> }"
+				chemin="${chemin#\"}"
+				chemin="${chemin%\"}"
+				# Fichier supprimé : la date de son dossier.
+				m="$(stat -f %m "$w/$chemin" 2>/dev/null || stat -f %m "$(dirname "$w/$chemin")" 2>/dev/null || echo 0)"
+				[ "$m" -gt "$dernier" ] && dernier="$m"
+			done < <(git -C "$w" status --porcelain --untracked-files=all 2>/dev/null)
+			nc="$(git -C "$w" rev-list --count HEAD --not --remotes 2>/dev/null || echo 0)"
+			if [ "$nc" -gt 0 ]; then
+				t="$(git -C "$w" log -1 --format=%ct HEAD 2>/dev/null || echo 0)"
+				[ "$t" -gt "$dernier" ] && dernier="$t"
+			fi
+			[ $((nf + nc)) -gt 0 ] || continue
+			[ $((maintenant - dernier)) -ge $((SEUIL_WORKTREE_JOURS * 86400)) ] || continue
+			echo "$w|$nf|$nc|$(((maintenant - dernier) / 86400))"
+		done
+}
+
 # ── Contrôles ──────────────────────────────────────────────────────────────────
 
 if [ "$test_notif" = 1 ]; then
@@ -168,6 +215,18 @@ if [ "$voir_historique" = 1 ]; then
 		{ head -1 "$HISTORIQUE"; tail -n +2 "$HISTORIQUE" | tail -n 24; } | column -t -s ';'
 	else
 		echo "Pas encore d'historique ($HISTORIQUE)."
+	fi
+	exit 0
+fi
+
+if [ "$voir_worktrees" = 1 ]; then
+	liste="$(worktrees_en_danger)"
+	if [ -z "$liste" ]; then
+		echo "Aucun worktree en danger (travail non sauvé intouché depuis $SEUIL_WORKTREE_JOURS jours)."
+	else
+		while IFS='|' read -r w nf nc jours; do
+			echo "$w : $nf fichier(s) non commité(s), $nc commit(s) non poussé(s), intouché depuis $jours j"
+		done <<<"$liste"
 	fi
 	exit 0
 fi
@@ -324,6 +383,32 @@ if [ -n "${disque_libre:-}" ] && [ "$disque_libre" -lt "$SEUIL_DISQUE_GO" ] && a
 	journaliser "alerte : disque $disque_libre Go libres sur $disque_total Go ($VOLUME_DISQUE)"
 fi
 
+# 3 quinquies. Redémarrage : heure de démarrage changée depuis le passage précédent.
+#    Premier passage : notée sans rien envoyer. Marque mise à jour une fois
+#    l'envoi réussi (plus bas).
+demarrage="$(sysctl -n kern.boottime 2>/dev/null | sed -n 's/.*sec = \([0-9]*\),.*/\1/p')"
+marque_demarrage="$ETAT/demarrage"
+nouveau_demarrage=""
+if [ -n "$demarrage" ]; then
+	precedent="$(cat "$marque_demarrage" 2>/dev/null)"
+	if [ -z "$precedent" ]; then
+		[ "$essai" = 1 ] || echo "$demarrage" >"$marque_demarrage"
+	elif [ "$demarrage" != "$precedent" ]; then
+		plantage=""
+		for rapport in "$RAPPORTS"/*panic* "$RAPPORTS"/Kernel*; do
+			[ -f "$rapport" ] || continue
+			if [ "$(stat -f %m "$rapport" 2>/dev/null || echo 0)" -gt "$precedent" ]; then
+				plantage=" (plantage du système)"
+				break
+			fi
+		done
+		quand="le $(date -r "$demarrage" '+%d/%m') à $((10#$(date -r "$demarrage" +%H))) h $(date -r "$demarrage" +%M)"
+		alertes+=("Le Mac a redémarré $quand$plantage.")
+		nouveau_demarrage="$demarrage"
+		journaliser "redémarrage $quand$plantage"
+	fi
+fi
+
 ecrire_historique "$(date '+%Y-%m-%d %H:%M');$charge;${pression:-?};$swap_pourcent;$(valeur_programme Chrome 2 <<<"$PROGRAMMES");$(valeur_programme Brave 2 <<<"$PROGRAMMES");$nb_serveurs;$(valeur_programme claude 4 <<<"$PROGRAMMES");${disque_libre:-?}"
 
 # 4. Gel proche : ménage automatique (au plus une fois par SURVEILLANCE_MENAGE_PAUSE_MIN).
@@ -349,7 +434,11 @@ aujourdhui="$(date +%F)"
 if [ $((10#$(date +%H))) -ge "$SURVEILLANCE_HEURE_RAS" ] &&
 	[ "$(cat "$marque_ras" 2>/dev/null)" != "$aujourdhui" ] &&
 	{ [ "$essai" = 1 ] || [ -s "$CONFIG/ntfy-topic" ]; }; then
-	if envoyer "RAS : surveillance active · charge $charge · swap $swap_pourcent % · disque ${disque_libre:-?} Go libres." white_check_mark &&
+	nb_danger="$(worktrees_en_danger | grep -c .)"
+	en_danger=""
+	[ "$nb_danger" -eq 1 ] && en_danger=" · 1 worktree en danger"
+	[ "$nb_danger" -gt 1 ] && en_danger=" · $nb_danger worktrees en danger"
+	if envoyer "RAS : surveillance active · charge $charge · swap $swap_pourcent % · disque ${disque_libre:-?} Go libres$en_danger." white_check_mark &&
 		[ "$essai" = 0 ]; then
 		echo "$aujourdhui" >"$marque_ras"
 	fi
@@ -358,10 +447,13 @@ fi
 # ── Envoi groupé ───────────────────────────────────────────────────────────────
 
 if [ "${#alertes[@]}" -gt 0 ]; then
-	if envoyer "$(printf '%s\n' "${alertes[@]}")" && [ "$essai" = 0 ] && [ "${#a_marquer[@]}" -gt 0 ]; then
-		for cle in "${a_marquer[@]}"; do
-			date +%s >"$ETAT/alerte-$cle"
-		done
+	if envoyer "$(printf '%s\n' "${alertes[@]}")" && [ "$essai" = 0 ]; then
+		[ -n "$nouveau_demarrage" ] && echo "$nouveau_demarrage" >"$marque_demarrage"
+		if [ "${#a_marquer[@]}" -gt 0 ]; then
+			for cle in "${a_marquer[@]}"; do
+				date +%s >"$ETAT/alerte-$cle"
+			done
+		fi
 	fi
 elif [ "$essai" = 1 ]; then
 	echo "RAS"

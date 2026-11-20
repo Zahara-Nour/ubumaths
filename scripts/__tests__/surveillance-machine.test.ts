@@ -13,7 +13,10 @@
  * - le message envoyé ne contient aucun chemin ;
  * - processus de test orphelins (parent mort, plus de 30 min) → fermés et signalés ;
  * - « RAS » une fois par jour, au premier passage après SURVEILLANCE_HEURE_RAS ;
- * - disque sous SEUIL_DISQUE_GO Go libres → signalé.
+ * - disque sous SEUIL_DISQUE_GO Go libres → signalé ;
+ * - worktrees au travail jamais commité ou non poussé, intouchés depuis
+ *   SEUIL_WORKTREE_JOURS jours → comptés dans le « RAS » (noms : --worktrees) ;
+ * - redémarrage du Mac (et plantage du système) → signalé.
  *
  * `ps`, `lsof`, `sysctl`, `df`, `curl` sont des faux posés en tête du PATH ; l'arrêt
  * passe par SURVEILLANCE_TUER, qui note le pid au lieu de tuer.
@@ -64,15 +67,27 @@ type Machine = {
 	orphelins?: string[];
 	/** Go libres du volume des données (100 par défaut ; null = df en échec) */
 	disqueLibreGo?: number | null;
+	/** secondes de `sysctl -n kern.boottime` */
+	demarrage?: number;
 };
 
 const SWAP_CALME = 'total = 12288.00M  used = 2048.00M  free = 10240.00M  (encrypted)';
 
+const DEMARRAGE = 1_794_248_514; // 2026-11-09 19:21:54
+
 function gitJetable(cwd: string, ...args: string[]): void {
+	gitDate(cwd, undefined, ...args);
+}
+
+/** git dans le décor jetable, avec une date de commit imposée (secondes) si donnée. */
+function gitDate(cwd: string, date: number | undefined, ...args: string[]): void {
+	const quand =
+		date === undefined ? {} : { GIT_COMMITTER_DATE: `@${date}`, GIT_AUTHOR_DATE: `@${date}` };
 	const r = spawnSync('git', args, {
 		cwd,
 		env: {
 			...process.env,
+			...quand,
 			HOME: racine,
 			GIT_CONFIG_NOSYSTEM: '1',
 			GIT_CEILING_DIRECTORIES: dirname(racine),
@@ -106,6 +121,10 @@ function machine(m: Machine): void {
 	writeFileSync(join(racine, 'ps-programmes.txt'), (m.programmes ?? []).join('\n') + '\n');
 	writeFileSync(join(racine, 'charge.txt'), (m.charge ?? '{ 2.00 2.00 2.00 }') + '\n');
 	writeFileSync(join(racine, 'pression.txt'), m.pression ?? '1');
+	writeFileSync(
+		join(racine, 'boot.txt'),
+		`{ sec = ${m.demarrage ?? DEMARRAGE}, usec = 0 } Mon Nov  9 19:21:54 2026\n`
+	);
 	writeFileSync(join(racine, 'ps-orphelins.txt'), (m.orphelins ?? []).join('\n') + '\n');
 	const libre = m.disqueLibreGo === undefined ? 100 : m.disqueLibreGo;
 	ecrireFaux(
@@ -130,7 +149,7 @@ function machine(m: Machine): void {
 	ecrireFaux(
 		'sysctl',
 		`case "$*" in *vm.swapusage*) cat "${racine}/swap.txt" ;; *vm.loadavg*) cat "${racine}/charge.txt" ;;
-*hw.ncpu*) echo 12 ;; *pressure*) [ -s "${racine}/pression.txt" ] || exit 1; cat "${racine}/pression.txt"; echo ;; esac`
+*hw.ncpu*) echo 12 ;; *boottime*) cat "${racine}/boot.txt" ;; *pressure*) [ -s "${racine}/pression.txt" ] || exit 1; cat "${racine}/pression.txt"; echo ;; esac`
 	);
 	ecrireFaux('curl', `printf '%s\\n' "$@" >>"${racine}/curl.log"`);
 	ecrireFaux('tuer', `printf '%s\\n' "$@" >>"${racine}/tues.log"`);
@@ -150,6 +169,7 @@ function lancer(extra: NodeJS.ProcessEnv = {}, args: string[] = [], script = SCR
 			SURVEILLANCE_DEPOT: principal,
 			NTFY_SERVEUR: 'https://ntfy.example.test',
 			SURVEILLANCE_HEURE_RAS: '24', // pas de « RAS » sauf dans ses tests
+			SURVEILLANCE_RAPPORTS: join(racine, 'rapports'),
 			...extra
 		},
 		encoding: 'utf8'
@@ -871,5 +891,172 @@ describe('surveillance-machine : disque', () => {
 		expect(historique()[0]).toMatch(/;disque_libre_go$/);
 		expect(historique()).toHaveLength(2);
 		expect(existsSync(join(racine, 'etat', 'historique-ancien.csv'))).toBe(true);
+	});
+});
+
+const JOUR = 86_400;
+const IL_Y_A_10_JOURS = Math.floor(Date.now() / 1000) - 10 * JOUR;
+const IL_Y_A_2_JOURS = Math.floor(Date.now() / 1000) - 2 * JOUR;
+
+/** Un dépôt distant où `main` est poussée : les commits de main ne sont pas « non poussés ». */
+function avecDistant(): void {
+	const distant = join(racine, 'distant.git');
+	gitJetable(racine, 'init', '-q', '--bare', distant);
+	gitJetable(principal, 'remote', 'add', 'origin', distant);
+	gitJetable(principal, 'push', '-q', 'origin', 'main', 'chantier');
+}
+
+/** Un worktree de plus, branche <nom>, partie de main. */
+function worktreeDe(nom: string): string {
+	const w = join(racine, nom);
+	gitJetable(principal, 'worktree', 'add', '-q', '-b', nom, w);
+	return w;
+}
+
+function fichierDate(chemin: string, date: number): void {
+	writeFileSync(chemin, 'brouillon\n');
+	utimesSync(chemin, date, date);
+}
+
+describe('surveillance-machine : worktrees en danger', () => {
+	it('fichier jamais commité ou commit non poussé, intouchés depuis 7 jours : comptés dans le RAS', () => {
+		avecDistant();
+		fichierDate(join(worktree, 'article.md'), IL_Y_A_10_JOURS); // non suivi, vieux
+		const w2 = worktreeDe('commits');
+		writeFileSync(join(w2, 'b.txt'), 'b\n');
+		gitJetable(w2, 'add', 'b.txt');
+		gitDate(w2, IL_Y_A_10_JOURS, 'commit', '-q', '-m', 'jamais pousse');
+		machine({ processus: [], dossiers: {}, swap: SWAP_CALME, chrome: [] });
+		lancer({ SURVEILLANCE_HEURE_RAS: '0' });
+		expect(envois()).toMatch(/RAS : .* · 2 worktrees en danger\./);
+		expect(envois()).not.toContain('article');
+		expect(envois()).not.toContain('commits');
+	});
+
+	it('travail récent, worktree propre ou poussé, dépôt principal : pas comptés', () => {
+		avecDistant();
+		fichierDate(join(worktree, 'recent.md'), IL_Y_A_2_JOURS); // touché il y a 2 jours
+		const w2 = worktreeDe('pousse');
+		writeFileSync(join(w2, 'b.txt'), 'b\n');
+		gitJetable(w2, 'add', 'b.txt');
+		gitDate(w2, IL_Y_A_10_JOURS, 'commit', '-q', '-m', 'pousse');
+		gitJetable(w2, 'push', '-q', 'origin', 'pousse');
+		worktreeDe('propre');
+		fichierDate(join(principal, 'notes.md'), IL_Y_A_10_JOURS); // dépôt principal : hors sujet
+		machine({ processus: [], dossiers: {}, swap: SWAP_CALME, chrome: [] });
+		lancer({ SURVEILLANCE_HEURE_RAS: '0' });
+		expect(envois()).toContain('RAS : ');
+		expect(envois()).not.toContain('worktree');
+	});
+
+	it('un seul : au singulier (fichier suivi modifié il y a 10 jours)', () => {
+		avecDistant();
+		fichierDate(join(worktree, 'a.txt'), IL_Y_A_10_JOURS); // fichier suivi modifié
+		machine({ processus: [], dossiers: {}, swap: SWAP_CALME, chrome: [] });
+		lancer({ SURVEILLANCE_HEURE_RAS: '0' });
+		expect(envois()).toContain(' · 1 worktree en danger.');
+	});
+
+	it('worktree supprimé à la main (dossier absent) : sauté sans erreur', () => {
+		avecDistant();
+		const w2 = worktreeDe('disparu');
+		rmSync(w2, { recursive: true, force: true });
+		machine({ processus: [], dossiers: {}, swap: SWAP_CALME, chrome: [] });
+		expect(lancer({ SURVEILLANCE_HEURE_RAS: '0' }).status).toBe(0);
+		expect(envois()).toContain('RAS : ');
+		expect(envois()).not.toContain('worktree');
+	});
+
+	it('--worktrees : les noms et le détail, sur la machine seulement', () => {
+		avecDistant();
+		fichierDate(join(worktree, 'article.md'), IL_Y_A_10_JOURS);
+		machine({ processus: [], dossiers: {}, swap: SWAP_CALME, chrome: [] });
+		const r = lancer({}, ['--worktrees']);
+		expect(r.status).toBe(0);
+		expect(r.stdout).toContain(worktree);
+		expect(r.stdout).toContain('1 fichier(s) non commité(s)');
+		expect(r.stdout).toMatch(/1[01] j/);
+		expect(envois()).toBe('');
+	});
+});
+
+describe('surveillance-machine : redémarrage', () => {
+	it('premier passage : heure de démarrage notée, rien d’envoyé', () => {
+		machine({ processus: [], dossiers: {}, swap: SWAP_CALME, chrome: [] });
+		lancer();
+		lancer();
+		expect(envois()).toBe('');
+	});
+
+	it('démarrage changé : signalé avec la date', () => {
+		machine({ processus: [], dossiers: {}, swap: SWAP_CALME, chrome: [] });
+		lancer();
+		const nouveau = new Date(2026, 10, 20, 3, 12).getTime() / 1000;
+		machine({ processus: [], dossiers: {}, swap: SWAP_CALME, chrome: [], demarrage: nouveau });
+		lancer();
+		lancer();
+		expect(envois().match(/redémarré/g)).toHaveLength(1);
+		expect(envois()).toContain('Le Mac a redémarré le 20/11 à 3 h 12.');
+	});
+
+	it('rapport de plantage depuis le démarrage précédent : « (plantage du système) »', () => {
+		machine({ processus: [], dossiers: {}, swap: SWAP_CALME, chrome: [] });
+		lancer();
+		mkdirSync(join(racine, 'rapports'));
+		const nouveau = DEMARRAGE + 3 * JOUR;
+		fichierDate(join(racine, 'rapports', 'panic-full-2026-11-12-031000.panic'), nouveau - 60);
+		fichierDate(join(racine, 'rapports', 'panic-full-2026-11-01-000000.panic'), DEMARRAGE - JOUR); // ancien
+		machine({ processus: [], dossiers: {}, swap: SWAP_CALME, chrome: [], demarrage: nouveau });
+		lancer();
+		expect(envois()).toContain('redémarré');
+		expect(envois()).toContain('(plantage du système)');
+	});
+
+	it('vieux rapport seulement : pas de « plantage »', () => {
+		machine({ processus: [], dossiers: {}, swap: SWAP_CALME, chrome: [] });
+		lancer();
+		mkdirSync(join(racine, 'rapports'));
+		fichierDate(join(racine, 'rapports', 'panic-full-2026-11-01-000000.panic'), DEMARRAGE - JOUR);
+		machine({
+			processus: [],
+			dossiers: {},
+			swap: SWAP_CALME,
+			chrome: [],
+			demarrage: DEMARRAGE + JOUR
+		});
+		lancer();
+		expect(envois()).toContain('redémarré');
+		expect(envois()).not.toContain('plantage');
+	});
+
+	it('envoi en échec : redémarrage signalé au passage suivant', () => {
+		machine({ processus: [], dossiers: {}, swap: SWAP_CALME, chrome: [] });
+		lancer();
+		machine({
+			processus: [],
+			dossiers: {},
+			swap: SWAP_CALME,
+			chrome: [],
+			demarrage: DEMARRAGE + JOUR
+		});
+		ecrireFaux('curl', `printf '%s\\n' "$@" >>"${racine}/curl.log"; exit 7`);
+		lancer();
+		lancer();
+		expect(envois().match(/redémarré/g)).toHaveLength(2);
+	});
+
+	it('--essai : dit ce qu’il enverrait, ne note rien', () => {
+		machine({ processus: [], dossiers: {}, swap: SWAP_CALME, chrome: [] });
+		lancer();
+		machine({
+			processus: [],
+			dossiers: {},
+			swap: SWAP_CALME,
+			chrome: [],
+			demarrage: DEMARRAGE + JOUR
+		});
+		expect(lancer({}, ['--essai']).stdout).toContain('redémarré');
+		lancer();
+		expect(envois().match(/redémarré/g)).toHaveLength(1);
 	});
 });
