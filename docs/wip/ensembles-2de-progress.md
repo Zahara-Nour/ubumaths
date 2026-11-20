@@ -96,3 +96,14 @@ Décisions (David, 2026-11-20, « je suis tes recos ») : modèles 1 et 2 tels q
 - Mutations : garde `v_conforme` retirée → 3 rouges ; garde de description retirée → 1 rouge.
 - CI ciblée étendue : `*_contenu.sql` ajoutée + fixture `contenu-publie/` ajoutée → seul le test générique tourne ; filtre `paths` de `nightly-integration.yml` complété (`check:integration-paths` vert).
 - Revue `code-reviewer` (#2943) : 0 bloquant. Corrigé : clé `testSpecs` / `description` absente du fichier mais présente en prod → refus (jamais d'effacement muet) ; CI ciblée seulement pour `<14 chiffres>_questions_<lot>_contenu.sql` AVEC sa fixture du même nom ; titre et fichier pris en compte pour les balises de dollar ; `''` ≠ `null` pour la description ; message « copie » exact ; décor du test à la forme de la prod (`$$`, `$q$`, décimaux, autres colonnes intactes, modèle absent parmi d'autres) ; fixture écrite avant la migration ; n° des variations corrigées affichés. Laissé : `jsonb 'null'` dans `test_specs` (0 ligne en prod, échouerait bruyamment).
+
+## Gros lot : écriture (2026-11-20)
+
+Worktree `../ubumaths-wt-ensembles-2de`, branche `feat/ensembles-2de-lot`. Points et niveaux relevés en prod (MCP, lecture seule) ; niveau = suite du plus haut niveau du nœud du point.
+
+- **Nouveaux modèles** (brouillons), scripts `docs/wip/questions/lot-2de-nombres-<x>.py` → `scripts/questions/2de-nombres-<x>/` :
+  - `a` (7) : arrondir (2-254, niv. 11) · ordre de grandeur (2-254, 12) · comparer à 1 / ranger (2-264, 8) · entiers dans un intervalle (2-244, 5) · distance (2-420, 9) · |x − a| > r (sans point, nœud « équations et inéquations », 3) · plusieurs valeurs absolues (sans point, « définition et distance », 10).
+  - `b` (13) : somme (2-272, 2) · produit (3) · quotient (4) · entier + fraction (5) · priorités (6) · fraction restante (7) · fraction du reste (8) — tous 2-272 · comparer deux fractions (2-264, 9) · valeur décimale (2-248, 9) · division euclidienne (2-236, 14) · critères (2-236, 15) · premier / décomposition (sans point, « multiples et diviseurs », 16) · PGCD / PPCM (sans point, 17).
+  - `c1` (9) : valeur (2-260, 4) · signe (5) · notation (6) · écrire comme puissance (7) · bases cachées (8) · priorités (9) — 2-260 · écriture scientifique (2-270, 10) · puissances de 10 (11) · préfixes (12) — 2-270.
+  - `c2` (7) : racine existe ? (2-261, 4) · carré parfait (5) · calculs directs (6) · développer (7) — 2-261 · entre deux puissances de 10 (2-254, 13) · ranger carrés et cubes (2-264, 10) · rationaliser (sans point, « techniques de calcul », 3).
+- **Publiés** : 16 modèles exportés de la prod dans `scripts/questions/2de-nombres-publies/` (commit d'export d'abord : le diff = les ajouts) ; migration générée par `migration-contenu.ts`.
