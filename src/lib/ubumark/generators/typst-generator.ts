@@ -89,7 +89,15 @@ import type { ProbabilityTreeNode } from '../types/probability-tree';
 import type { TrigCircleNode } from '../types/trig-circle';
 import type { NumberLineNode } from '../types/number-line';
 import { createLogger } from '#lib/utils/logger.ts';
-import { detailKindLabel, type CalloutKind, type DetailKind } from '../utils/detail-kinds';
+import {
+	detailKindLabel,
+	maskSpans,
+	parseSpanClasses,
+	SPAN_MARK_REGEX,
+	type CalloutKind,
+	type DetailKind
+} from '../utils/detail-kinds';
+import { namedColorTypst, type NamedColor } from '#lib/theme/named-colors.ts';
 import { urlToVirtualPath, isExternalUrl as checkExternalUrl } from '#lib/typst/image-loader.ts';
 
 const logger = createLogger('typst-generator');
@@ -615,6 +623,9 @@ function generateInline(node: InlineNode, options: ResolvedTypstTranspilerOption
 			// qu'un `]` d'intervalle (`]2 ; 3[`) fermerait trop tôt
 			let text = escapeTypstBrackets(unescapedContent);
 			if (node.bold) text = `*${text}*`;
+			// Texte coloré `[…]{.orange}` (ADR 0042) : au plus près du texte, pour qu'il
+			// l'emporte sur le gris d'un calcul intermédiaire (comme à l'écran)
+			text = wrapInlineColor(text, node.color);
 			// `;` final : sans lui, un `(`, `[` ou `.lettre` collé après serait lu comme la suite de l'appel
 			// Use #emph[] instead of _..._ for italic - more reliable in content blocks
 			if (node.italic) text = `#emph[${text}];`;
@@ -668,7 +679,7 @@ function generateInline(node: InlineNode, options: ResolvedTypstTranspilerOption
 			//
 			// Future: When Typst fixes bug #4796, we can reconsider using box().
 			// ============================================================================
-			return wrapInlineDetail(`$${typstMath}$`, node.detail);
+			return wrapInlineDetail(wrapInlineColor(`$${typstMath}$`, node.color), node.detail);
 		}
 
 		case 'line-break':
@@ -1558,6 +1569,15 @@ function generateCallout(kind: CalloutKind, content: string, language?: string):
  * Typst comme la suite de l'appel, et toute la fiche échouerait (revue du
  * 2026-10-11, compilateur de la prod). Typst consomme le `;`.
  */
+/**
+ * Texte coloré `[…]{.orange}` (ADR 0042) : la variante claire du nom, celle des
+ * figures au PDF. Seul un nom de la palette arrive ici, jamais une chaîne d'auteur.
+ */
+function wrapInlineColor(content: string, color: NamedColor | undefined): string {
+	if (!color) return content;
+	return `#text(fill: ${namedColorTypst(color)})[${content}];`;
+}
+
 function wrapInlineDetail(content: string, kind: DetailKind | undefined): string {
 	if (!kind) return content;
 	if (kind === 'calculation') return `#text(fill: rgb("${CALCULATION_GRAY}"))[${content}];`;
@@ -3750,6 +3770,73 @@ export function processTableCellContent(
 	genericFunctions?: ResolvedTypstTranspilerOptions['genericFunctions'],
 	capitalPairs?: ResolvedTypstTranspilerOptions['capitalPairs']
 ): string {
+	const masked = maskSpans(content, [CELL_MATH_SPANS]);
+	if (!masked.includes(']{.')) {
+		return cellPlainContent(content, language, genericFunctions, capitalPairs);
+	}
+	// Gras autour d'un marquage (`**[a]{.orange}**`) : lu avant lui, sinon ses `**`
+	// tomberaient de part et d'autre du passage et s'imprimeraient tels quels
+	const parts: string[] = [];
+	let lastIndex = 0;
+	for (const match of masked.matchAll(CELL_BOLD_AROUND_MARK)) {
+		const start = match.index;
+		parts.push(
+			cellMarkedContent(content.slice(lastIndex, start), language, genericFunctions, capitalPairs)
+		);
+		const inner = content.slice(start + 2, start + match[0].length - 2);
+		parts.push(
+			`#strong[${processTableCellContent(inner, language, genericFunctions, capitalPairs)}]`
+		);
+		lastIndex = start + match[0].length;
+	}
+	parts.push(cellMarkedContent(content.slice(lastIndex), language, genericFunctions, capitalPairs));
+	return parts.join('');
+}
+
+/** `**…**` qui contient un marquage `[…]{.…}` (cherché dans la cellule aux formules masquées) */
+const CELL_BOLD_AROUND_MARK = /\*\*((?:(?!\*\*)[^\n])*\]\{\.(?:(?!\*\*)[^\n])*)\*\*/g;
+
+/**
+ * Morceau de cellule à marquages `[texte]{.…}` (texte coloré, ADR 0042 ; détail,
+ * ADR 0017), cherchés hors formules ; chaque passage est rendu à son tour (il peut
+ * en contenir un autre).
+ */
+function cellMarkedContent(
+	content: string,
+	language?: string,
+	genericFunctions?: ResolvedTypstTranspilerOptions['genericFunctions'],
+	capitalPairs?: ResolvedTypstTranspilerOptions['capitalPairs']
+): string {
+	const masked = maskSpans(content, [CELL_MATH_SPANS]);
+	const parts: string[] = [];
+	let lastIndex = 0;
+	for (const match of masked.matchAll(new RegExp(SPAN_MARK_REGEX.source, SPAN_MARK_REGEX.flags))) {
+		const start = match.index;
+		const inner = content.slice(start + 1, start + 1 + match[1].length);
+		const classes = parseSpanClasses(match[2]);
+		parts.push(
+			cellPlainContent(content.slice(lastIndex, start), language, genericFunctions, capitalPairs)
+		);
+		const rendered = processTableCellContent(inner, language, genericFunctions, capitalPairs);
+		// Classe inconnue : texte normal (le message au prof n'est qu'à l'écran)
+		parts.push(wrapInlineDetail(wrapInlineColor(rendered, classes.color), classes.detail));
+		lastIndex = start + match[0].length;
+	}
+	parts.push(cellPlainContent(content.slice(lastIndex), language, genericFunctions, capitalPairs));
+	return parts.join('');
+}
+
+/** Formules d'une cellule (`$…$`, `~…~`), masquées avant de chercher un marquage */
+const CELL_MATH_SPANS = /\$[^$\n]+\$|(?<![\\~])~(?!~)[^~\n]+~(?!~)/g;
+
+/** Morceau de cellule sans marquage `[…]{.…}` : texte échappé, formules converties. */
+function cellPlainContent(
+	content: string,
+	language?: string,
+	genericFunctions?: ResolvedTypstTranspilerOptions['genericFunctions'],
+	capitalPairs?: ResolvedTypstTranspilerOptions['capitalPairs']
+): string {
+	if (content === '') return '';
 	// `$…$` ou `~…~` (sans retour à la ligne)
 	const parts: string[] = [];
 	let lastIndex = 0;

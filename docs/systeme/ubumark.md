@@ -261,7 +261,12 @@ sans crochets, et `TextNode.unknownClasses` sur le premier nœud du passage → 
 (`TextNode.svelte`, contexte `showAuthoringErrors`), rien pour l'élève. Écran :
 `var(--color-fig-<nom>)` (`inline-color.ts`, `InlineColor.svelte` autour d'une formule) ; rendu
 restreint (chat des élèves) : aucune couleur. Une cellule de tableau à marquage passe par
-`tableCellMarkedInline`. PDF : texte non coloré pour l'instant (chantier `texte-colore`, PR 2).
+`tableCellMarkedInline`. PDF (`typst-generator.ts`, `wrapInlineColor`) : `#text(fill: …)[…]` dans
+la variante claire du nom (`namedColorTypst`, celle des figures ; noir et blanc purs), au plus près du
+texte (il l'emporte sur le gris d'un calcul, dans le surlignage d'un rappel) ; une cellule de tableau
+lit ses marquages hors formules (`processTableCellContent`, un passage rendu à son tour) ; une classe
+inconnue y donne du texte normal. Rendu réel vérifié : `texte-colore-typst.test.ts` (couleurs de
+remplissage du PDF compilé).
 
 ### Marques de bloc propres à ubumark
 

@@ -9,7 +9,8 @@
 _Mis à jour le 2026-11-20, après #2933 et #2934._
 
 - **État** : PR 1 (syntaxe, écran, chat) mergée (#2933, test rouge corrigé par #2934). Q2 et Q3 tranchées (§ 3).
-- **Prochaine action** : PR 2 — la couleur au PDF (Typst, teinte claire `namedColorTypst`) ; puis PR 3 (filet
+  PR 2 (PDF) codée, tests verts (§ 6), en cours de PR sur `feat/texte-colore-pdf`.
+- **Prochaine action** : PR 2 — revue + CI → merge ; puis PR 3 (filet
   `\textcolor` hors formule) ; puis réécriture des fichiers de lots + liste des modèles en prod pour David.
 - **En attente de David** : rien.
 - **Pièges connus** : la garde `review/textcolor-hors-maths.ts` ne tourne que dans `pnpm question:specs` ; le chat
@@ -123,3 +124,15 @@ publiés), à recompter. Depuis le 2026-11-03, `question:specs` refuse un `\text
 - ⚠️ **Incident** : #2933 mergée avec un test client rouge (CorrectionView D5 attendait `[x]{.truc}` littéral) —
   `gh pr checks | tail -15` masquait l'échec. Corrigé par #2934. Désormais : grep des checks non `pass` vide avant
   tout merge.
+
+## 6. PR 2 — PDF (2026-11-20)
+
+- `wrapInlineColor` (`typst-generator.ts`) : `#text(fill: namedColorTypst(nom))[…];` autour du texte (après le
+  gras, avant italique / barré / surligné) et de la formule ; à l'intérieur du détail (`wrapInlineDetail`), pour
+  que la couleur l'emporte sur le gris d'un calcul et se lise dans le surlignage d'un rappel, comme à l'écran.
+- Cellules de tableau : `processTableCellContent` lisait la chaîne brute (le marquage s'imprimait tel quel). Les
+  marquages y sont cherchés hors formules (`maskSpans`), chaque passage rendu à son tour (imbrication), classe
+  inconnue → texte normal ; `**[a]{.orange}**` lu avant le marquage (sinon `**` imprimés). Sans `]{.` dans la
+  cellule : chemin d'avant, inchangé. Bonus : un `[…]{.rappel}` de cellule est enfin surligné au PDF.
+- Rendu réel : `texte-colore-typst.test.ts` compile le PDF et lit ses couleurs de remplissage (pdfjs) — vérifié
+  rouge en coupant `wrapInlineColor`. Le rendu SVG de typst.ts n'est pas installé : PDF seulement.
