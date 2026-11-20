@@ -67,6 +67,10 @@ describe('texte coloré — cas normaux', () => {
 		}
 	});
 
+	it('casse ignorée aussi pour le dictionnaire : {.Def}', () => {
+		expect(textNodes('[a]{.Def}')[0].lexicon).toEqual({ mode: 'force' });
+	});
+
 	it('combiné avec le dictionnaire : [le cône]{.orange .def}', () => {
 		const node = textNodes('Voici [le cône]{.orange .def}.').find((n) => n.content === 'le cône');
 		expect(node).toMatchObject({ color: 'orange', lexicon: { mode: 'force' } });

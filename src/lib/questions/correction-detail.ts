@@ -336,8 +336,12 @@ function transformInlineDetails(text: string, mode: Mode, ctx: Context): string 
 		const end = start + match[0].length;
 		// Sans type de détail (mot du dictionnaire, couleur, classe inconnue) : le
 		// marquage reste dans les deux versions ; une classe inconnue est signalée
-		// au rendu (ADR 0042), pas ici.
-		if (!parseSpanClasses(match[2]).detail) continue;
+		// au rendu (ADR 0042), pas ici. Son contenu est relu : il peut contenir un
+		// détail (`[la règle [à retenir]{.rappel}]{.orange}`, revue #2933).
+		if (!parseSpanClasses(match[2]).detail) {
+			regex.lastIndex = start + 1;
+			continue;
+		}
 		ctx.found = true;
 		if (mode === 'detailed') continue;
 		// Concis : l'espace qui précédait le détail disparaît avec lui devant une

@@ -227,6 +227,18 @@ describe('splitCorrectionDetail — D5 marqueurs mal formés', () => {
 		expect(r.detailed).toBe('A [x]{.rappel .vert} B');
 	});
 
+	it('détail DANS un passage coloré : retiré en concis (revue #2933)', () => {
+		const r = splitCorrectionDetail('A [la règle [à retenir]{.rappel}]{.orange} B');
+		expect(r.hasDetails).toBe(true);
+		expect(r.concise).toBe('A [la règle ]{.orange} B');
+	});
+
+	it('détail dans un mot du dictionnaire : retiré en concis', () => {
+		const r = splitCorrectionDetail('A [le [x]{.rappel} cône]{.def} B');
+		expect(r.hasDetails).toBe(true);
+		expect(r.concise).not.toContain('{.rappel}');
+	});
+
 	it('couleur puis détail [x]{.vert .rappel} : détail aussi', () => {
 		const r = splitCorrectionDetail('A [x]{.vert .rappel} B');
 		expect(r.concise).toBe('A B');

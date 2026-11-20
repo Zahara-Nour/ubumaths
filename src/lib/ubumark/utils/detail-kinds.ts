@@ -96,13 +96,17 @@ export interface SpanClasses {
 export function parseSpanClasses(raw: string): SpanClasses {
 	const result: SpanClasses = { unknown: [] };
 	for (const token of raw.trim().split(/\s+(?=\.)/)) {
-		const word = token.slice(1);
+		// Casse ignorée, comme pour les couleurs et les détails : `{.Def}` = `{.def}`
+		const raw = token.slice(1);
+		const equals0 = raw.indexOf('=');
+		const word =
+			equals0 >= 0 ? raw.slice(0, equals0).toLowerCase() + raw.slice(equals0) : raw.toLowerCase();
 		const equals = word.indexOf('=');
 		if (equals >= 0) {
 			const name = word.slice(0, equals);
 			const target = word.slice(equals + 1).trim();
 			if (name === 'def' && target) result.lexicon ??= { mode: 'force', target };
-			else result.unknown.push(word);
+			else result.unknown.push(raw);
 			continue;
 		}
 		if (word === 'def') {
@@ -123,7 +127,7 @@ export function parseSpanClasses(raw: string): SpanClasses {
 			result.color ??= color;
 			continue;
 		}
-		result.unknown.push(word);
+		result.unknown.push(raw);
 	}
 	return result;
 }
