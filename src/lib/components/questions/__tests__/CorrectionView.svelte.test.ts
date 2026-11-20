@@ -142,9 +142,19 @@ describe('CorrectionView', () => {
 
 	it('D5 : marqueur mal formé → élève : version détaillée, sans message', async () => {
 		const { container } = await render(CorrectionView, {
+			markdown: '> [!truc] Une règle.\n\nTexte fin.'
+		});
+		expect(container.textContent).toContain('Une règle.');
+		expect(container.querySelector('[data-authoring-errors]')).toBeNull();
+		expect(toggle(container)).toBeNull();
+	});
+
+	it('classe en ligne inconnue → élève : texte normal, sans crochets ni message (ADR 0042)', async () => {
+		const { container } = await render(CorrectionView, {
 			markdown: 'Texte [x]{.truc} fin.'
 		});
-		expect(container.textContent).toContain('[x]{.truc}');
+		expect(container.textContent).toContain('Texte x fin.');
+		expect(container.textContent).not.toContain('{.truc}');
 		expect(container.querySelector('[data-authoring-errors]')).toBeNull();
 		expect(toggle(container)).toBeNull();
 	});
