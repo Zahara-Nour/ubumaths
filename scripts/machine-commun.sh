@@ -2,6 +2,17 @@
 # Outils communs de surveillance-machine.sh et menage-machine.sh (à sourcer).
 # Compatibles avec le bash 3.2 de macOS (/bin/bash, celui de launchd).
 
+# Date de modification d'un fichier (secondes) et date formatée d'un instant :
+# macOS (BSD) en vrai, Linux (GNU) dans la CI qui joue les tests.
+STAT_GNU=0
+stat -c %Y / >/dev/null 2>&1 && STAT_GNU=1
+date_modif() {
+	if [ "$STAT_GNU" = 1 ]; then stat -c %Y "$1"; else stat -f %m "$1"; fi 2>/dev/null
+}
+date_de() {
+	date -r "$1" "$2" 2>/dev/null || date -d "@$1" "$2"
+}
+
 # Âge en secondes d'un champ etime de ps : [[jj-]hh:]mm:ss.
 secondes_depuis_etime() {
 	local e="$1" jours=0 h=0 m=0 s=0

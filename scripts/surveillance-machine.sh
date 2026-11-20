@@ -192,7 +192,7 @@ worktrees_en_danger() {
 				while [ ! -e "$chemin" ] && [ "$chemin" != "$w" ] && [ "$chemin" != / ]; do
 					chemin="$(dirname "$chemin")"
 				done
-				m="$(stat -f %m "$chemin" 2>/dev/null || echo 0)"
+				m="$(date_modif "$chemin" || echo 0)"
 				[ "$m" -gt "$dernier" ] && dernier="$m"
 			done < <(git -C "$w" -c core.quotePath=false status --porcelain --untracked-files=all 2>/dev/null)
 			nc="$(git -C "$w" rev-list --count HEAD --not --remotes 2>/dev/null || echo 0)"
@@ -402,12 +402,12 @@ if [ -n "$demarrage" ]; then
 		plantage=""
 		for rapport in "$RAPPORTS"/*panic*; do
 			[ -f "$rapport" ] || continue
-			if [ "$(stat -f %m "$rapport" 2>/dev/null || echo 0)" -gt "$precedent" ]; then
+			if [ "$(date_modif "$rapport" || echo 0)" -gt "$precedent" ]; then
 				plantage=" (plantage du système)"
 				break
 			fi
 		done
-		quand="le $(date -r "$demarrage" '+%d/%m') à $((10#$(date -r "$demarrage" +%H))) h $(date -r "$demarrage" +%M)"
+		quand="le $(date_de "$demarrage" '+%d/%m') à $((10#$(date_de "$demarrage" +%H))) h $(date_de "$demarrage" +%M)"
 		alertes+=("Le Mac a redémarré $quand$plantage.")
 		nouveau_demarrage="$demarrage"
 		journaliser "redémarrage $quand$plantage"
