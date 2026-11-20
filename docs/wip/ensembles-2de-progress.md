@@ -2,12 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-20, après #2941, `db:migrate` et #2942._
+_Mis à jour le 2026-11-20, après la publication du lot 1 (David)._
 
-- **État** : lot 1 en prod en brouillon, rangé et tagué (da94a049 → 2-243, e41081cc → 2-203, 776c4918 → 2-206), vérifié en base.
-- **Prochaine action** : page à cocher du lot (`scripts/questions/page-a-cocher.ts --dir scripts/questions/2de-ensembles-calculs`), puis publication (`publier-lot.ts`, David).
-- **En attente de David** : relecture sur la page à cocher (à produire).
-- **Pièges en cours** : ne jamais nommer la plateforme d'origine ; Chrome piloté depuis le laptop de David (`[::1]` = le laptop) → aperçu par Playwright sur le Mac mini ; `migration list --linked` sort du JSON (jq) ; petits ajouts (π, 5,78, −123) reportés. CI : #2942 mergée — une PR de rangement ne lance que son test d'intégration ; mesurer le job à la prochaine et le dire à David.
+- **État** : lot 1 **publié** en prod (da94a049 → 2-243, e41081cc → 2-203, 776c4918 → 2-206) ; relu 3/3 OK sur la page à cocher (https://claude.ai/artifact/RhVSrYcGGvn5jTPUnzDqAD) ; `publier-lot.ts` confirme « tout le lot est déjà publié ». Les manques 1 à 3 d'« Ensembles de nombres » sont couverts.
+- **Prochaine action** : à choisir par David — rubrique suivante de la plateforme (relevé, puis phase 0), ou lot de corrections des petits ajouts (π et 5,78 dans « À quels ensembles… », −123 dans « Le plus petit ensemble… »).
+- **En attente de David** : ce choix.
+- **Pièges en cours** : ne jamais nommer la plateforme d'origine ; Chrome piloté depuis le laptop de David (`[::1]` = le laptop) → aperçu par Playwright sur le Mac mini ; `migration list --linked` sort du JSON (jq). CI : #2942 mergée — une PR de rangement ne lance que son test d'intégration ; mesurer le job à la prochaine et le dire à David.
 - **Worktree / branche** : aucun.
 
 ## Décisions de David (2026-11-20)
@@ -55,3 +55,8 @@ Décisions (David, 2026-11-20, « je suis tes recos ») : modèles 1 et 2 tels q
 - `03-a-prive-de-b` (2-206, niv. 2) : A∖B, B∖A, A ⊂ B → ∅ ; réponse `answerKind: intervalles` ; 9 specs.
 - `question:specs` : 300 tirages par variation, 0 `\textcolor` hors `$`, aucun `{{if}}` non résolu. Base locale : créés, joués dans l'aperçu (faux jugé faux, juste jugé juste, ensemble tapé accepté).
 - Base locale : un admin orphelin d'un test d'intégration (`…@test.com`) bloquait `create-questions` (« exactement 1 profil admin ») → supprimé.
+
+## Lot 1 : relu et publié (2026-11-20)
+
+- Page à cocher : 3/3 « OK », sans commentaire (verdicts comptés dans la base de l'artefact).
+- `publier-lot.ts --publier` lancé par David ; nouvelle simulation : les 3 modèles au statut publié.
