@@ -828,6 +828,9 @@ comparer avant / après un correctif du générateur). Mode d'emploi :
    écrans qui affichent un corrigé d'exercice montrent la version détaillée (`detailedCorrection`).
    Aucun marqueur brut n'atteint Typst. Encadrés et détails en ligne mis en forme au PDF : voir
    [ubumark.md](ubumark.md) (« Détails d'une correction au PDF »). Tests : `src/lib/worksheets/__tests__/correction-imprimee.test.ts`.
+   Texte coloré `[texte]{.orange}` ([ADR 0042](../adr/0042-texte-colore-dans-la-prose.md)) : imprimé
+   dans la variante claire du nom (celle des figures), paragraphes et cellules de tableau compris ;
+   une classe inconnue donne du texte normal (détail dans [ubumark.md](ubumark.md), « Marquages »).
 
 10. **Un type de fiche a un seul libellé**, en langage courant (« Fiche d'exercices »,
     « Évaluation écrite », « Devoir maison », « Examen blanc » ; décision de David du 2026-10-12,
