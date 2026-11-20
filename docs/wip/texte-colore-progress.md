@@ -132,7 +132,8 @@ publiés), à recompter. Depuis le 2026-11-03, `question:specs` refuse un `\text
   que la couleur l'emporte sur le gris d'un calcul et se lise dans le surlignage d'un rappel, comme à l'écran.
 - Cellules de tableau : `processTableCellContent` lisait la chaîne brute (le marquage s'imprimait tel quel). Les
   marquages y sont cherchés hors formules (`maskSpans`), chaque passage rendu à son tour (imbrication), classe
-  inconnue → texte normal ; `**[a]{.orange}**` lu avant le marquage (sinon `**` imprimés). Sans `]{.` dans la
+  inconnue → texte normal ; `**[a]{.orange}**` lu avant le marquage (sinon `**` imprimés), `**` hors marquage
+  appariés deux par deux (revue : `**a** [b]{.orange} **c**` appariait le fermant de a et l’ouvrant de c). Sans `]{.` dans la
   cellule : chemin d'avant, inchangé. Bonus : un `[…]{.rappel}` de cellule est enfin surligné au PDF.
 - Rendu réel : `texte-colore-typst.test.ts` compile le PDF et lit ses couleurs de remplissage (pdfjs) — vérifié
   rouge en coupant `wrapInlineColor`. Le rendu SVG de typst.ts n'est pas installé : PDF seulement.

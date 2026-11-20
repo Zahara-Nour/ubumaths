@@ -3775,26 +3775,45 @@ export function processTableCellContent(
 		return cellPlainContent(content, language, genericFunctions, capitalPairs);
 	}
 	// Gras autour d'un marquage (`**[a]{.orange}**`) : lu avant lui, sinon ses `**`
-	// tomberaient de part et d'autre du passage et s'imprimeraient tels quels
+	// tomberaient de part et d'autre du passage et s'imprimeraient tels quels. Les `**`
+	// hors marquage sont appariés deux par deux, de gauche à droite (jamais le fermant
+	// d'un gras avec l'ouvrant du suivant) ; ceux d'un passage sont lus avec lui.
 	const parts: string[] = [];
 	let lastIndex = 0;
-	for (const match of masked.matchAll(CELL_BOLD_AROUND_MARK)) {
-		const start = match.index;
+	for (const [open, close] of boldPairsAroundMarks(masked)) {
 		parts.push(
-			cellMarkedContent(content.slice(lastIndex, start), language, genericFunctions, capitalPairs)
+			cellMarkedContent(content.slice(lastIndex, open), language, genericFunctions, capitalPairs)
 		);
-		const inner = content.slice(start + 2, start + match[0].length - 2);
+		const inner = content.slice(open + 2, close);
 		parts.push(
 			`#strong[${processTableCellContent(inner, language, genericFunctions, capitalPairs)}]`
 		);
-		lastIndex = start + match[0].length;
+		lastIndex = close + 2;
 	}
 	parts.push(cellMarkedContent(content.slice(lastIndex), language, genericFunctions, capitalPairs));
 	return parts.join('');
 }
 
-/** `**…**` qui contient un marquage `[…]{.…}` (cherché dans la cellule aux formules masquées) */
-const CELL_BOLD_AROUND_MARK = /\*\*((?:(?!\*\*)[^\n])*\]\{\.(?:(?!\*\*)[^\n])*)\*\*/g;
+/**
+ * Paires `**…**` hors marquage qui contiennent un marquage `[…]{.…}` entier :
+ * positions de l'ouvrant et du fermant, dans la cellule aux formules masquées.
+ */
+function boldPairsAroundMarks(masked: string): [number, number][] {
+	const marks = [...masked.matchAll(new RegExp(SPAN_MARK_REGEX.source, SPAN_MARK_REGEX.flags))].map(
+		(match) => [match.index, match.index + match[0].length] as const
+	);
+	const insideMark = (i: number) => marks.some(([start, end]) => i >= start && i < end);
+	const delimiters: number[] = [];
+	for (let i = masked.indexOf('**'); i >= 0; i = masked.indexOf('**', i + 2)) {
+		if (!insideMark(i)) delimiters.push(i);
+	}
+	const pairs: [number, number][] = [];
+	for (let k = 0; k + 1 < delimiters.length; k += 2) {
+		const [open, close] = [delimiters[k], delimiters[k + 1]];
+		if (marks.some(([start, end]) => start > open && end <= close)) pairs.push([open, close]);
+	}
+	return pairs;
+}
 
 /**
  * Morceau de cellule à marquages `[texte]{.…}` (texte coloré, ADR 0042 ; détail,

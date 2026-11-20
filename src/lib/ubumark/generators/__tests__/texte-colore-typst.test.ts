@@ -92,6 +92,20 @@ describe('texte coloré dans une cellule de tableau', () => {
 		expect(processTableCellContent('[**a** b]{.orange}')).toBe(`${orange}#strong[a] b];`);
 	});
 
+	// Revue : les `**` de deux gras différents étaient appariés (Typst invalide)
+	it('deux gras dans la cellule, un marquage dans l’un ou entre eux', () => {
+		const orange = fill(NAMED_COLOR_PRINT.orange);
+		expect(processTableCellContent('[**a**]{.orange} et **b**')).toBe(
+			`${orange}#strong[a]]; et #strong[b]`
+		);
+		expect(processTableCellContent('**a** [b]{.orange} **c**')).toBe(
+			`#strong[a] ${orange}b]; #strong[c]`
+		);
+		expect(processTableCellContent('**a** et **[b]{.orange}**')).toBe(
+			`#strong[a] et #strong[${orange}b];]`
+		);
+	});
+
 	it('classe inconnue : texte normal', () => {
 		expect(processTableCellContent('[a]{.turquoise}')).toBe('a');
 	});
