@@ -9,7 +9,8 @@
 #   Playwright (installé hors de /Applications, il porterait des tests en cours) ;
 # - serveurs de dev de NOTRE dépôt lancés depuis plus de SEUIL_MENAGE_SERVEUR_HEURES h,
 #   ou lancés dans le dépôt principal → arrêtés (jamais ceux d'un autre projet, ni
-#   le serveur de test de David sur le port PORT_DAVID).
+#   le serveur de test de David sur le port PORT_DAVID) ;
+# - processus de test orphelins (orphelins_de_test de machine-commun.sh) → fermés.
 # Dernière ligne de la sortie = le résumé (repris tel quel dans la notification).
 #
 # Tests : scripts/__tests__/surveillance-machine.test.ts.
@@ -66,9 +67,19 @@ while read -r pid rss etime commande; do
 	fi
 done < <(serveurs_vite)
 
+# 3. Processus de test orphelins.
+orphelins=0
+while read -r pid nom age rss; do
+	[ -n "$pid" ] || continue
+	[ "$essai" = 1 ] && echo "orphelin de test $nom (pid $pid, $(duree_lisible "$age"), $((rss / 1024)) Mo)"
+	arreter "$pid"
+	orphelins=$((orphelins + 1))
+done < <(orphelins_de_test)
+
 prefixe="Ménage"
 [ "$essai" = 1 ] && prefixe="Ménage (essai, rien n'est fermé)"
 resume="$prefixe : $onglets onglet(s) Chrome/Brave fermé(s), $serveurs serveur(s) de dev arrêté(s)"
 [ -n "$ports" ] && resume="$resume ($(echo "$ports" | sed 's/^ //'))"
+[ "$orphelins" -gt 0 ] && resume="$resume, $orphelins orphelin(s) de test fermé(s)"
 echo "$resume."
 exit 0

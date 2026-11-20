@@ -47,6 +47,61 @@ serveurs_vite() {
 	ps -Ao pid=,rss=,etime=,command= | awk '$4 ~ /(^|\/)node$/ && /vite(\.js)? dev/ {print}'
 }
 
+# Durée lisible d'un nombre de secondes : « 10 j », « 2 h », « 45 min ».
+duree_lisible() {
+	if [ "$1" -ge 86400 ]; then
+		echo "$(($1 / 86400)) j"
+	elif [ "$1" -ge 3600 ]; then
+		echo "$(($1 / 3600)) h"
+	else
+		echo "$(($1 / 60)) min"
+	fi
+}
+
+# Processus de test orphelins : « pid nom âge_s rss_ko » des vitest, svelte-check,
+# tsgo et navigateurs de Playwright dont le parent est mort (rattachés à launchd,
+# ppid 1) depuis plus de SEUIL_ORPHELIN_MIN minutes. Personne ne lira plus leur
+# résultat : les fermer ne perd rien (2026-11-19 : un Chrome for Testing seul
+# depuis 10 jours). Un processus dont la session vit encore a un autre parent :
+# jamais compté. Le nom vient d'une liste fermée : jamais un chemin.
+# On regarde l'EXÉCUTABLE (et, pour node, le script lancé), jamais un chemin cité
+# dans les arguments d'une autre commande. Épargné : chrome_crashpad_handler, que
+# Chrome détache toujours (ppid 1) même quand son navigateur est vivant.
+SEUIL_ORPHELIN_MIN="${SEUIL_ORPHELIN_MIN:-30}"
+nom_outil_de_test() {
+	local commande="$1" premier script
+	case "$commande" in *crashpad_handler*) return ;; esac
+	# Navigateur de Playwright : son chemin (qui contient des espaces) EST le début de la commande.
+	if [[ "$commande" == /*/ms-playwright/* && "${commande%%/ms-playwright/*}" != *" "* ]]; then
+		echo Playwright
+		return
+	fi
+	premier="${commande%% *}"
+	case "$premier" in
+	*/tsgo) echo tsgo ;;
+	node | */node)
+		script="${commande#* }"
+		script="${script%% *}"
+		case "$script" in
+		*/@playwright/* | */playwright-core/* | */playwright/*) echo Playwright ;;
+		*/svelte-check/*) echo svelte-check ;;
+		*/vitest/*) echo vitest ;;
+		esac
+		;;
+	esac
+}
+orphelins_de_test() {
+	local pid ppid etime rss commande nom age
+	ps -Ao pid=,ppid=,etime=,rss=,command= | while read -r pid ppid etime rss commande; do
+		[ "$ppid" = 1 ] || continue
+		nom="$(nom_outil_de_test "$commande")"
+		[ -n "$nom" ] || continue
+		age="$(secondes_depuis_etime "$etime")"
+		[ "$age" -ge $((SEUIL_ORPHELIN_MIN * 60)) ] || continue
+		echo "$pid $nom $age $rss"
+	done
+}
+
 # Dossier courant d'un processus.
 dossier_du_processus() {
 	lsof -a -p "$1" -d cwd -Fn 2>/dev/null | sed -n 's/^n//p' | head -1

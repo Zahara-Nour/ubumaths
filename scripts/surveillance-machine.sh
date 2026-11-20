@@ -20,7 +20,14 @@
 #   est monté avant (`pnpm surveillance:historique`) ;
 # - swap au-delà de SEUIL_MENAGE_SWAP (gel proche) → lance menage-machine.sh
 #   (onglets Chrome gourmands fermés, serveurs de dev oubliés arrêtés) et en
-#   envoie le résumé.
+#   envoie le résumé ;
+# - processus de test orphelins (vitest, svelte-check, tsgo, Playwright dont le
+#   parent est mort depuis plus de SEUIL_ORPHELIN_MIN min) → les FERME (cas sûr :
+#   personne ne lira plus leur résultat) et prévient ;
+# - moins de SEUIL_DISQUE_GO Go libres sur le volume des données → prévient ;
+# - une fois par jour, au premier passage après SURVEILLANCE_HEURE_RAS h, un
+#   « RAS » qui prouve que la surveillance tourne (envoyé même s'il y a eu des
+#   alertes : une surveillance morte ne se distingue pas d'une machine saine).
 # Alerte = notification ntfy.sh (canal au nom aléatoire, lu dans
 # ~/.config/surveillance-machine/ntfy-topic) + ligne dans le journal. Le message
 # envoyé ne contient que des chiffres et des ports : ni chemin, ni nom de projet.
@@ -49,6 +56,10 @@ SEUIL_MENAGE_SWAP="${SEUIL_MENAGE_SWAP:-95}"         # swap au-delà duquel le m
 SURVEILLANCE_RAPPEL_MIN="${SURVEILLANCE_RAPPEL_MIN:-60}"
 SURVEILLANCE_MENAGE_PAUSE_MIN="${SURVEILLANCE_MENAGE_PAUSE_MIN:-15}"
 SURVEILLANCE_HISTORIQUE_LIGNES="${SURVEILLANCE_HISTORIQUE_LIGNES:-4032}" # 14 jours à 5 min
+SEUIL_DISQUE_GO="${SEUIL_DISQUE_GO:-15}"             # Go libres du volume des données
+SURVEILLANCE_HEURE_RAS="${SURVEILLANCE_HEURE_RAS:-9}" # heure du « RAS » quotidien (24 = jamais)
+VOLUME_DISQUE="${SURVEILLANCE_DISQUE:-/System/Volumes/Data}" # « / » = le système seul, il tromperait
+[ -d "$VOLUME_DISQUE" ] || VOLUME_DISQUE=/
 
 ETAT="${SURVEILLANCE_ETAT:-$HOME/.local/state/surveillance-machine}"
 CONFIG="${SURVEILLANCE_CONFIG:-$HOME/.config/surveillance-machine}"
@@ -57,7 +68,7 @@ TUER="${SURVEILLANCE_TUER:-kill}"
 MENAGE="${SURVEILLANCE_MENAGE:-$(dirname "$0")/menage-machine.sh}"
 JOURNAL="$ETAT/journal.log"
 HISTORIQUE="$ETAT/historique.csv"
-ENTETE_HISTORIQUE="date;charge;pression;swap_pct;chrome_cpu;brave_cpu;serveurs_dev;processus_claude"
+ENTETE_HISTORIQUE="date;charge;pression;swap_pct;chrome_cpu;brave_cpu;serveurs_dev;processus_claude;disque_libre_go"
 
 essai=0
 test_notif=0
@@ -83,9 +94,10 @@ journaliser() {
 	printf '%s %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$1" >>"$JOURNAL"
 }
 
-# Envoie le message ntfy (sauf en --essai). Sans canal configuré : journal seul.
+# Envoie le message ntfy (sauf en --essai), avec l'étiquette <tags> (warning par
+# défaut). Sans canal configuré : journal seul.
 envoyer() {
-	local message="$1"
+	local message="$1" tags="${2:-warning}"
 	if [ "$essai" = 1 ]; then
 		printf 'ENVOI : %s\n' "$message"
 		return 0
@@ -97,7 +109,7 @@ envoyer() {
 	fi
 	local canal
 	canal="$(tr -d '[:space:]' <"$fichier_canal")"
-	if ! curl -sf -m 10 -o /dev/null -H "Title: Mac mini" -H "Tags: warning" \
+	if ! curl -sf -m 10 -o /dev/null -H "Title: Mac mini" -H "Tags: $tags" \
 		-d "$message" "$NTFY_SERVEUR/$canal"; then
 		journaliser "échec de l'envoi ntfy : alerte retentée au prochain passage"
 		return 1
@@ -120,6 +132,10 @@ a_renvoyer() {
 ecrire_historique() {
 	[ "$essai" = 1 ] && return 0
 	[ -e "$HISTORIQUE" ] && [ ! -f "$HISTORIQUE" ] && return 0
+	# Colonnes changées : l'ancien fichier est mis de côté, pas mélangé.
+	if [ -s "$HISTORIQUE" ] && [ "$(head -1 "$HISTORIQUE")" != "$ENTETE_HISTORIQUE" ]; then
+		mv "$HISTORIQUE" "$ETAT/historique-ancien.csv" 2>/dev/null || return 0
+	fi
 	{ [ -s "$HISTORIQUE" ] || echo "$ENTETE_HISTORIQUE"; echo "$1"; } 2>/dev/null >>"$HISTORIQUE" || return 0
 	local lignes=$(($(wc -l <"$HISTORIQUE") - 1))
 	if [ "$lignes" -gt "$SURVEILLANCE_HISTORIQUE_LIGNES" ]; then
@@ -189,6 +205,31 @@ while read -r pid rss etime commande; do
 		fi
 	fi
 done < <(serveurs_vite)
+
+# 1 bis. Processus de test orphelins : fermés à chaque passage, signalés une fois
+#    par SURVEILLANCE_RAPPEL_MIN (un orphelin qui résiste ne spamme pas).
+orphelins_signales=()
+orphelin_plus_vieux=0
+while read -r pid nom age rss; do
+	[ -n "$pid" ] || continue
+	if [ "$essai" = 1 ]; then
+		echo "ARRÊT : orphelin de test $nom (pid $pid, $(duree_lisible "$age"))"
+	else
+		"$TUER" "$pid" 2>/dev/null
+		journaliser "fermé : orphelin de test $nom (pid $pid, $(duree_lisible "$age"), $((rss / 1024)) Mo)"
+	fi
+	if a_renvoyer "orphelin-$pid"; then
+		orphelins_signales+=("$nom")
+		marquer "orphelin-$pid"
+		[ "$age" -gt "$orphelin_plus_vieux" ] && orphelin_plus_vieux="$age"
+	fi
+done < <(orphelins_de_test)
+if [ "${#orphelins_signales[@]}" -gt 0 ]; then
+	par_programme="$(printf '%s\n' "${orphelins_signales[@]}" | awk '
+		!(n[$0]++) { ordre[++k] = $0 }
+		END { for (i = 1; i <= k; i++) printf "%s%s × %d", (i > 1 ? ", " : ""), ordre[i], n[ordre[i]] }')"
+	alertes+=("Orphelins de test fermés : $par_programme (le plus vieux : $(duree_lisible "$orphelin_plus_vieux")).")
+fi
 
 # 2. Chrome : CPU cumulé et nombre de processus d'onglets (Chrome de /Applications
 #    seulement : le Chrome for Testing de Playwright n'est pas celui de David).
@@ -274,7 +315,16 @@ if [ -n "$etat_memoire" ] && a_renvoyer "pression-$etat_memoire"; then
 	journaliser "alerte : pression mémoire $etat_memoire ($pression)"
 fi
 
-ecrire_historique "$(date '+%Y-%m-%d %H:%M');$charge;${pression:-?};$swap_pourcent;$(valeur_programme Chrome 2 <<<"$PROGRAMMES");$(valeur_programme Brave 2 <<<"$PROGRAMMES");$nb_serveurs;$(valeur_programme claude 4 <<<"$PROGRAMMES")"
+# 3 quater. Disque : Go libres du volume des données (df en échec : sauté).
+read -r disque_total disque_libre < <(df -k "$VOLUME_DISQUE" 2>/dev/null |
+	awk 'NR == 2 { printf "%d %d\n", $2 / 1048576, $4 / 1048576 }')
+if [ -n "${disque_libre:-}" ] && [ "$disque_libre" -lt "$SEUIL_DISQUE_GO" ] && a_renvoyer disque; then
+	alertes+=("Disque : $disque_libre Go libres sur $disque_total Go.")
+	marquer disque
+	journaliser "alerte : disque $disque_libre Go libres sur $disque_total Go ($VOLUME_DISQUE)"
+fi
+
+ecrire_historique "$(date '+%Y-%m-%d %H:%M');$charge;${pression:-?};$swap_pourcent;$(valeur_programme Chrome 2 <<<"$PROGRAMMES");$(valeur_programme Brave 2 <<<"$PROGRAMMES");$nb_serveurs;$(valeur_programme claude 4 <<<"$PROGRAMMES");${disque_libre:-?}"
 
 # 4. Gel proche : ménage automatique (au plus une fois par SURVEILLANCE_MENAGE_PAUSE_MIN).
 if [ "$swap_pourcent" -ge "$SEUIL_MENAGE_SWAP" ]; then
@@ -288,6 +338,20 @@ if [ "$swap_pourcent" -ge "$SEUIL_MENAGE_SWAP" ]; then
 		[ "$essai" = 1 ] || date +%s >"$marque_menage"
 		alertes+=("${resume:-Ménage : échec du lancement.}")
 		journaliser "ménage automatique (swap $swap_pourcent %) : $resume"
+	fi
+fi
+
+# ── « RAS » quotidien : marqué seulement une fois l'envoi réussi ───────────────
+# Sans canal, rien n'est marqué : le canal créé dans la journée reçoit son « RAS ».
+
+marque_ras="$ETAT/ras"
+aujourdhui="$(date +%F)"
+if [ $((10#$(date +%H))) -ge "$SURVEILLANCE_HEURE_RAS" ] &&
+	[ "$(cat "$marque_ras" 2>/dev/null)" != "$aujourdhui" ] &&
+	{ [ "$essai" = 1 ] || [ -s "$CONFIG/ntfy-topic" ]; }; then
+	if envoyer "RAS : surveillance active · charge $charge · swap $swap_pourcent % · disque ${disque_libre:-?} Go libres." white_check_mark &&
+		[ "$essai" = 0 ]; then
+		echo "$aujourdhui" >"$marque_ras"
 	fi
 fi
 

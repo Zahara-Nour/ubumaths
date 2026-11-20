@@ -150,6 +150,10 @@ démarrer dans le dépôt principal (pas en CI). Un `pnpm dev` qui sort en ⛔ =
 toutes les 5 min par launchd (`pnpm surveillance:installer`, `--desinstaller` pour la retirer).
 
 - serveur de dev dans le dépôt principal de Chiphre → **arrêté**, et signalé (jamais celui d'un worktree ni d'un autre projet) ;
+- processus de test **orphelins** (vitest, svelte-check, tsgo, navigateur de Playwright dont le
+  parent est mort depuis plus de 30 min : session fermée, terminal quitté) → **fermés**, et signalés
+  par programme (« Playwright × 3 (le plus vieux : 10 j) »). Personne ne lira plus leur résultat ;
+  un test dont la session vit encore n'est jamais touché ;
 - serveur de dev de plus de 1,5 Go ou de plus de 6 h, Chrome au-delà de 600 % de CPU ou de 60
   onglets, swap au-delà de 85 %, extension de Chrome ou de Brave bloquée (plus de 90 % de CPU et
   plus d'une heure de CPU cumulée) → **signalés seulement** (seuils en tête du script). Une extension
@@ -159,19 +163,24 @@ toutes les 5 min par launchd (`pnpm surveillance:installer`, `--desinstaller` po
   `~/.local/state/surveillance-machine/journal.log` ; même alerte renvoyée au plus une fois par heure.
 - swap au-delà de 95 % (gel proche) → **ménage automatique** (au plus une fois par quart d'heure),
   résumé dans la notification ;
+- moins de **15 Go libres** sur le volume des données (`/System/Volumes/Data`, pas `/` qui ne
+  montre que le système) → **signalé** ;
+- **« RAS » quotidien** : au premier passage après 9 h, une notification (charge, swap, disque) qui
+  prouve que la surveillance tourne, même un jour d'alertes ; Mac endormi à 9 h → au réveil ;
 - charge au-delà de 36 (3 × 12 cœurs) deux passages de suite, pression mémoire de macOS « tendue »
   ou « critique » → **signalées**, avec les 3 programmes qui prennent le plus (CPU pour la charge,
   mémoire pour la pression et le swap ; noms de programmes seulement, jamais de chemin) ;
 - **historique** : une ligne par passage dans `~/.local/state/surveillance-machine/historique.csv`
-  (charge, pression, swap, CPU de Chrome et Brave, serveurs de dev, processus Claude), 14 jours
-  gardés. Après un gel : `pnpm surveillance:historique` (2 dernières heures) ;
+  (charge, pression, swap, CPU de Chrome et Brave, serveurs de dev, processus Claude, Go libres du
+  disque), 14 jours gardés ; colonnes changées → l'ancien fichier devient `historique-ancien.csv`. Après un gel : `pnpm surveillance:historique` (2 dernières heures) ;
 - `pnpm surveillance:essai` : ce qu'elle ferait maintenant, sans rien arrêter, envoyer ni écrire.
 
 **Ménage quand la charge est trop grande** : `pnpm menage` (`--essai` pour voir sans rien fermer),
 `scripts/menage-machine.sh`. Ferme les onglets Chrome et Brave au-delà de 20 % de CPU (le navigateur
 reste ouvert, l'onglet se recharge d'un clic ; épargnés : les extensions et le Chrome for Testing de
 Playwright) et arrête les serveurs de dev de Chiphre lancés depuis plus de 6 h ou dans le dépôt
-principal (jamais ceux d'un autre projet, ni le serveur de test de David sur le port 5173). À distance : demander
+principal (jamais ceux d'un autre projet, ni le serveur de test de David sur le port 5173), et ferme
+les processus de test orphelins (même règle que la surveillance). À distance : demander
 « fais le ménage » à n'importe quelle session.
 
 **Tester depuis le MacBook ou l'iPhone (Tailscale)** : [tester-sur-un-autre-appareil.md](tester-sur-un-autre-appareil.md)

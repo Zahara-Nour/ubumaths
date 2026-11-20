@@ -10,9 +10,12 @@
  * - Chrome trop gourmand, swap trop plein → signalés ;
  * - machine calme → rien d'envoyé ;
  * - une même alerte n'est pas renvoyée avant le délai de rappel ;
- * - le message envoyé ne contient aucun chemin.
+ * - le message envoyé ne contient aucun chemin ;
+ * - processus de test orphelins (parent mort, plus de 30 min) → fermés et signalés ;
+ * - « RAS » une fois par jour, au premier passage après SURVEILLANCE_HEURE_RAS ;
+ * - disque sous SEUIL_DISQUE_GO Go libres → signalé.
  *
- * `ps`, `lsof`, `sysctl`, `curl` sont des faux posés en tête du PATH ; l'arrêt
+ * `ps`, `lsof`, `sysctl`, `df`, `curl` sont des faux posés en tête du PATH ; l'arrêt
  * passe par SURVEILLANCE_TUER, qui note le pid au lieu de tuer.
  */
 
@@ -57,6 +60,10 @@ type Machine = {
 	charge?: string;
 	/** sortie de `sysctl -n kern.memorystatus_vm_pressure_level` ('' = indisponible) */
 	pression?: string;
+	/** lignes « pid ppid etime rss(Ko) commande » (candidats orphelins) */
+	orphelins?: string[];
+	/** Go libres du volume des données (100 par défaut ; null = df en échec) */
+	disqueLibreGo?: number | null;
 };
 
 const SWAP_CALME = 'total = 12288.00M  used = 2048.00M  free = 10240.00M  (encrypted)';
@@ -99,14 +106,22 @@ function machine(m: Machine): void {
 	writeFileSync(join(racine, 'ps-programmes.txt'), (m.programmes ?? []).join('\n') + '\n');
 	writeFileSync(join(racine, 'charge.txt'), (m.charge ?? '{ 2.00 2.00 2.00 }') + '\n');
 	writeFileSync(join(racine, 'pression.txt'), m.pression ?? '1');
+	writeFileSync(join(racine, 'ps-orphelins.txt'), (m.orphelins ?? []).join('\n') + '\n');
+	const libre = m.disqueLibreGo === undefined ? 100 : m.disqueLibreGo;
+	ecrireFaux(
+		'df',
+		libre === null
+			? 'exit 1'
+			: `echo 'Filesystem 1024-blocks Used Available Capacity Mounted on'\necho '/dev/disk3s5 ${228 * 1048576} 0 ${libre * 1048576} 50% /System/Volumes/Data'`
+	);
 	const lsof = Object.entries(m.dossiers)
 		.map(([pid, d]) => `[ "$pid" = "${pid}" ] && printf 'p${pid}\\nfcwd\\nn%s\\n' "${d}"`)
 		.join('\n');
 	// ps -Ao pid=,rss=,etime=,command= → serveurs ; ps -Ao pcpu=,command= → Chrome ;
-	// ps -Ao pid=,pcpu=,time=,command= → extensions
+	// ps -Ao pid=,pcpu=,time=,command= → extensions ; ps -Ao pid=,ppid=,… → orphelins
 	ecrireFaux(
 		'ps',
-		`case "$*" in *pid=,pcpu=,time=*) cat "${racine}/ps-extensions.txt" ;; *pid=,pcpu=*) cat "${racine}/ps-chrome-pid.txt" ;; *pcpu=,rss=*) cat "${racine}/ps-programmes.txt" ;; *pcpu*) cat "${racine}/ps-chrome.txt" ;; *) cat "${racine}/ps-vite.txt" ;; esac`
+		`case "$*" in *ppid=*) cat "${racine}/ps-orphelins.txt" ;; *pid=,pcpu=,time=*) cat "${racine}/ps-extensions.txt" ;; *pid=,pcpu=*) cat "${racine}/ps-chrome-pid.txt" ;; *pcpu=,rss=*) cat "${racine}/ps-programmes.txt" ;; *pcpu*) cat "${racine}/ps-chrome.txt" ;; *) cat "${racine}/ps-vite.txt" ;; esac`
 	);
 	ecrireFaux(
 		'lsof',
@@ -134,6 +149,7 @@ function lancer(extra: NodeJS.ProcessEnv = {}, args: string[] = [], script = SCR
 			SURVEILLANCE_TUER: join(faux, 'tuer'),
 			SURVEILLANCE_DEPOT: principal,
 			NTFY_SERVEUR: 'https://ntfy.example.test',
+			SURVEILLANCE_HEURE_RAS: '24', // pas de « RAS » sauf dans ses tests
 			...extra
 		},
 		encoding: 'utf8'
@@ -526,9 +542,9 @@ describe('surveillance-machine : historique', () => {
 		const h = historique();
 		expect(h).toHaveLength(3);
 		expect(h[0]).toBe(
-			'date;charge;pression;swap_pct;chrome_cpu;brave_cpu;serveurs_dev;processus_claude'
+			'date;charge;pression;swap_pct;chrome_cpu;brave_cpu;serveurs_dev;processus_claude;disque_libre_go'
 		);
-		expect(h[1]).toMatch(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2};16;1;16;640;95;0;2$/);
+		expect(h[1]).toMatch(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2};16;1;16;640;95;0;2;100$/);
 	});
 
 	it('ne garde que les SURVEILLANCE_HISTORIQUE_LIGNES dernières lignes', () => {
@@ -656,5 +672,204 @@ describe('surveillance-machine : alertes précoces', () => {
 		});
 		lancer();
 		expect(envois()).toContain('Swap : 89 % (10 Go sur 12 Go). En tête : Chrome 4,1 Go');
+	});
+});
+
+const PLAYWRIGHT =
+	'/Users/x/Library/Caches/ms-playwright/chromium-1248/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing';
+const CRASHPAD =
+	'/Users/x/Library/Caches/ms-playwright/chromium-1248/chrome-mac-arm64/Google Chrome for Testing.app/Contents/Frameworks/x/Helpers/chrome_crashpad_handler --monitor-self';
+const VITEST = 'node /x/node_modules/.pnpm/vitest@4/node_modules/vitest/vitest.mjs run';
+const SVELTE_CHECK = 'node /x/node_modules/svelte-check/bin/svelte-check --tsgo';
+const TSGO = '/x/node_modules/@typescript/native-preview-darwin-arm64/lib/tsgo --noEmit';
+
+describe('surveillance-machine : orphelins de test', () => {
+	it('orphelins de plus de 30 min : fermés et signalés, regroupés par programme', () => {
+		machine({
+			processus: [],
+			dossiers: {},
+			swap: SWAP_CALME,
+			chrome: [],
+			orphelins: [
+				`699 1 10-03:56:57 71472 ${PLAYWRIGHT}`,
+				`996 1 10-03:56:53 1184 ${CRASHPAD}`,
+				`700 1 02:10:00 300000 ${VITEST}`,
+				`701 1 45:00 200000 ${SVELTE_CHECK}`,
+				`702 1 1:00:00 100000 ${TSGO}`
+			]
+		});
+		lancer();
+		expect(tues().trim().split('\n')).toEqual(['699', '700', '701', '702']);
+		expect(envois()).toContain(
+			'Orphelins de test fermés : Playwright × 1, vitest × 1, svelte-check × 1, tsgo × 1 (le plus vieux : 10 j).'
+		);
+		expect(envois()).not.toContain('/Users/x');
+	});
+
+	it('parent vivant, trop jeune ou pas un outil de test : jamais touché', () => {
+		machine({
+			processus: [],
+			dossiers: {},
+			swap: SWAP_CALME,
+			chrome: [],
+			orphelins: [
+				`800 4321 5:00:00 300000 ${VITEST}`, // session vivante
+				`801 1 29:00 300000 ${VITEST}`, // moins de 30 min
+				'802 1 3-00:00:00 50000 /Applications/Google Chrome.app/Contents/MacOS/Google Chrome', // appli
+				'803 1 3-00:00:00 50000 node /x/node_modules/vite/bin/vite.js dev --port 5176', // serveur de dev
+				`804 1 3-00:00:00 1184 ${CRASHPAD}`, // toujours détaché, même navigateur vivant
+				'805 1 3-00:00:00 1000 /usr/bin/tail -f /x/node_modules/vitest/log.txt', // chemin cité en argument
+				'806 1 3-00:00:00 1000 /bin/sh -c cat /x/ms-playwright/notes' // idem
+			]
+		});
+		lancer();
+		expect(tues()).toBe('');
+		expect(envois()).toBe('');
+	});
+
+	it('--essai : ne ferme rien, dit ce qu’il fermerait', () => {
+		machine({
+			processus: [],
+			dossiers: {},
+			swap: SWAP_CALME,
+			chrome: [],
+			orphelins: [`700 1 02:10:00 300000 ${VITEST}`]
+		});
+		const r = lancer({}, ['--essai']);
+		expect(tues()).toBe('');
+		expect(r.stdout).toContain('ARRÊT : orphelin de test vitest (pid 700, 2 h)');
+	});
+
+	it('orphelin qui résiste : fermeture retentée, alerte pas renvoyée avant le rappel', () => {
+		machine({
+			processus: [],
+			dossiers: {},
+			swap: SWAP_CALME,
+			chrome: [],
+			orphelins: [`700 1 02:10:00 300000 ${VITEST}`]
+		});
+		lancer();
+		lancer();
+		expect(tues().trim().split('\n')).toEqual(['700', '700']);
+		expect(envois().match(/Orphelins/g)).toHaveLength(1);
+	});
+
+	it('pnpm menage ferme aussi les orphelins', () => {
+		machine({
+			processus: [],
+			dossiers: {},
+			swap: SWAP_CALME,
+			chrome: [],
+			orphelins: [`700 1 02:10:00 300000 ${VITEST}`]
+		});
+		const r = lancer({}, [], MENAGE);
+		expect(tues().trim()).toBe('700');
+		expect(r.stdout.trim().split('\n').at(-1)).toBe(
+			'Ménage : 0 onglet(s) Chrome/Brave fermé(s), 0 serveur(s) de dev arrêté(s), 1 orphelin(s) de test fermé(s).'
+		);
+	});
+});
+
+describe('surveillance-machine : RAS quotidien', () => {
+	it('premier passage après l’heure : un « RAS » avec les chiffres du jour', () => {
+		machine({
+			processus: [],
+			dossiers: {},
+			swap: SWAP_CALME,
+			chrome: [],
+			charge: '{ 8.20 7.00 6.00 }',
+			disqueLibreGo: 24
+		});
+		lancer({ SURVEILLANCE_HEURE_RAS: '0' });
+		expect(envois()).toContain(
+			'RAS : surveillance active · charge 8 · swap 16 % · disque 24 Go libres.'
+		);
+	});
+
+	it('une seule fois par jour, même si des alertes partent aussi', () => {
+		machine({
+			processus: [],
+			dossiers: {},
+			swap: 'total = 12288.00M  used = 11000.00M  free = 1288.00M  (encrypted)',
+			chrome: []
+		});
+		lancer({ SURVEILLANCE_HEURE_RAS: '0' });
+		lancer({ SURVEILLANCE_HEURE_RAS: '0', SURVEILLANCE_RAPPEL_MIN: '0' });
+		expect(envois().match(/RAS/g)).toHaveLength(1);
+		expect(envois().match(/Swap/g)).toHaveLength(2);
+	});
+
+	it('avant l’heure : rien', () => {
+		machine({ processus: [], dossiers: {}, swap: SWAP_CALME, chrome: [] });
+		lancer({ SURVEILLANCE_HEURE_RAS: '24' });
+		expect(envois()).toBe('');
+	});
+
+	it('envoi en échec : « RAS » retenté au passage suivant', () => {
+		machine({ processus: [], dossiers: {}, swap: SWAP_CALME, chrome: [] });
+		ecrireFaux('curl', `printf '%s\\n' "$@" >>"${racine}/curl.log"; exit 7`);
+		lancer({ SURVEILLANCE_HEURE_RAS: '0' });
+		lancer({ SURVEILLANCE_HEURE_RAS: '0' });
+		expect(envois().match(/RAS/g)).toHaveLength(2);
+	});
+
+	it('--essai : dit ce qu’il enverrait, ne marque rien', () => {
+		machine({ processus: [], dossiers: {}, swap: SWAP_CALME, chrome: [] });
+		const r = lancer({ SURVEILLANCE_HEURE_RAS: '0' }, ['--essai']);
+		expect(r.stdout).toContain('ENVOI : RAS');
+		lancer({ SURVEILLANCE_HEURE_RAS: '0' });
+		expect(envois().match(/RAS/g)).toHaveLength(1);
+	});
+
+	it('sans canal : pas marqué, le canal créé dans la journée reçoit son « RAS »', () => {
+		rmSync(join(racine, 'config', 'ntfy-topic'));
+		machine({ processus: [], dossiers: {}, swap: SWAP_CALME, chrome: [] });
+		lancer({ SURVEILLANCE_HEURE_RAS: '0' });
+		writeFileSync(join(racine, 'config', 'ntfy-topic'), 'canal-de-test\n');
+		lancer({ SURVEILLANCE_HEURE_RAS: '0' });
+		expect(envois().match(/RAS/g)).toHaveLength(1);
+	});
+});
+
+describe('surveillance-machine : disque', () => {
+	it('sous 15 Go libres : signalé', () => {
+		machine({ processus: [], dossiers: {}, swap: SWAP_CALME, chrome: [], disqueLibreGo: 12 });
+		lancer();
+		expect(envois()).toContain('Disque : 12 Go libres sur 228 Go.');
+		expect(historique()[1]).toMatch(/;12$/);
+	});
+
+	it('au-dessus du seuil : rien', () => {
+		machine({ processus: [], dossiers: {}, swap: SWAP_CALME, chrome: [], disqueLibreGo: 24 });
+		lancer();
+		expect(envois()).toBe('');
+	});
+
+	it('df en échec : contrôle sauté, les autres tournent', () => {
+		machine({
+			processus: [],
+			dossiers: {},
+			swap: SWAP_CALME,
+			chrome: [],
+			disqueLibreGo: null,
+			pression: '4'
+		});
+		expect(lancer().status).toBe(0);
+		expect(envois()).toContain('Mémoire critique');
+		expect(envois()).not.toContain('Disque');
+		expect(historique()[1]).toMatch(/;\?$/);
+	});
+
+	it('ancien historique sans la colonne disque : mis de côté, nouvel en-tête', () => {
+		mkdirSync(join(racine, 'etat'), { recursive: true });
+		writeFileSync(
+			join(racine, 'etat', 'historique.csv'),
+			'date;charge;pression;swap_pct;chrome_cpu;brave_cpu;serveurs_dev;processus_claude\n2026-11-19 10:00;1;1;1;1;1;0;1\n'
+		);
+		machine({ processus: [], dossiers: {}, swap: SWAP_CALME, chrome: [] });
+		lancer();
+		expect(historique()[0]).toMatch(/;disque_libre_go$/);
+		expect(historique()).toHaveLength(2);
+		expect(existsSync(join(racine, 'etat', 'historique-ancien.csv'))).toBe(true);
 	});
 });
