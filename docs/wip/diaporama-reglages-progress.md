@@ -6,8 +6,8 @@ Proposition 3 du chantier `inspiration` (cf. `docs/wip/inspiration-progress.md`)
 
 _Mis à jour le 2026-11-20 : phase 0 validée, PR 1 en cours._
 
-- **État** : phase 0 validée (ci-dessous). PR 1 (En classe) en cours d'écriture.
-- **Prochaine action** : tests rouges de la PR 1, puis implémentation.
+- **État** : PR 1 (En classe) écrite, tests verts (33 + store + Deck), relecture et PR en cours.
+- **Prochaine action** : relecture `code-reviewer`, PR, CI, merge ; puis PR 2 (autres formes), phase 0 à écrire.
 - **En attente de David** : rien.
 - **Pièges en cours** : `Slide` prend son index par ordre de montage (`claimNextH`) : la liste des diapositives ne peut pas changer en cours de route sans remonter le `Deck`.
 - **Worktree / branche** : `../ubumaths-wt-diaporama-reglages` · `feat/diaporama-reglages`.
