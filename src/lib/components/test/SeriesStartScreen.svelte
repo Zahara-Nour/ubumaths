@@ -46,13 +46,13 @@
 	<BackLink href={quitHref} label="Quitter" kind="quit" class="mb-0" />
 
 	<header class="space-y-1 text-center">
-		<h1 class="text-3xl font-bold">{title}</h1>
+		<h2 class="text-3xl font-bold">{title}</h2>
 		<p class="text-lg text-muted-foreground" data-testid="series-start-summary">{summary}</p>
 	</header>
 
 	{#if settings}
 		<section class="rounded-lg border bg-card p-4" aria-labelledby="series-start-settings-title">
-			<h2 id="series-start-settings-title" class="mb-3 text-lg font-semibold">Réglages</h2>
+			<h3 id="series-start-settings-title" class="mb-3 text-lg font-semibold">Réglages</h3>
 			{@render settings()}
 		</section>
 	{/if}
