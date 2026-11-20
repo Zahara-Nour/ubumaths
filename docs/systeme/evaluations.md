@@ -8,6 +8,8 @@ couvre:
   - 'src/lib/components/{test,assessments,series}/**'
   - src/lib/components/teacher/TestModeToggle.svelte
   - src/lib/stores/test-mode.svelte.ts
+  - src/lib/stores/classroomSettings.svelte.ts
+  - src/lib/utils/chime.ts
   - 'src/lib/server/{evaluations,evaluation-attempts,evaluation-breakdown,evaluation-question-errors,evaluation-trace,series,series-lines,chapter-series,test-mode}.ts'
   - 'src/lib/server/validation/{evaluations,tests,parody-evaluations,grades,chapter-series}.ts'
   - 'src/lib/types/{evaluation,evaluation-attempt,evaluation-breakdown,duration-signals,test,grades,skills}.ts'
