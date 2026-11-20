@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-20, outil de migration de contenu écrit (PR en cours)._
+_Mis à jour le 2026-11-20, après #2943._
 
-- **État** : lot 1 publié ; phase 0 du gros lot « nombres et calculs » tranchée ; comportements de l'outil de migration de contenu **validés** (David, 2026-11-20, « je valide »), outil écrit : `scripts/questions/migration-contenu.ts` (PR de `feat/ensembles-2de`).
-- **Prochaine action** : merger l'outil ; puis écrire TOUT le gros lot en local (nouveaux modèles + variations de publiés : fiches 4-9, 12, 13, 27, 30, 31, 39, 48, 53, 54, via l'outil ; hors programme gardés sans point), puis envoi unique.
+- **État** : lot 1 publié ; phase 0 du gros lot « nombres et calculs » tranchée ; outil de migration de contenu des publiés mergé (#2943) : `pnpm tsx scripts/questions/migration-contenu.ts --dir <lot>` (`couvrir-un-niveau.md` § 7).
+- **Prochaine action** : nouveau worktree, écrire TOUT le gros lot en local — nouveaux modèles (brouillons) + variations de publiés (fiches 4-9, 12, 13, 27, 30, 31, 39, 48, 53, 54) via l'outil, dans un dossier à part exporté de la prod ; hors programme gardés sans point ; puis envoi unique.
 - **En attente de David** : rien.
-- **Pièges en cours** : ne jamais nommer la plateforme d'origine (sources : voir mémoire `reference_source-plateforme-exercices`) ; variations d'un publié = `migration-contenu.ts` (partir de `export-question-templates.ts`, ajouter À LA FIN, une spec « correct » par variation) ; valeur absolue : BO = distance et |x − a| ⩽ r seulement ; Chrome piloté = celui du laptop de David. CI : mesurer le job d'intégration à la prochaine PR de rangement et le dire à David.
-- **Worktree / branche** : `../ubumaths-wt-ensembles-2de`, `feat/ensembles-2de`.
+- **Pièges en cours** : ne jamais nommer la plateforme d'origine (sources : mémoire `reference_source-plateforme-exercices`) ; variations d'un publié : partir de `export-question-templates.ts`, ajouter À LA FIN, une spec « correct » par variation (`variationIndex`), garder `testSpecs` et `description` dans le fichier ; valeur absolue : BO = distance et |x − a| ⩽ r seulement ; Chrome piloté = celui du laptop de David. CI : mesurer le job d'intégration à la prochaine PR de rangement et le dire à David.
+- **Worktree / branche** : aucun (à créer : `git worktree add -b feat/ensembles-2de-lot ../ubumaths-wt-ensembles-2de origin/main`).
 
 ## Décisions de David (2026-11-20)
 
