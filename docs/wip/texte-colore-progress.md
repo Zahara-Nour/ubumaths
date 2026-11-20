@@ -10,6 +10,8 @@ _Mis à jour le 2026-11-20, après #2935._
 
 - **État** : PR 1 (syntaxe, écran, chat) mergée (#2933 + #2934) ; PR 2 (PDF, paragraphes et cellules) mergée
   (#2935, § 6). Q2 et Q3 tranchées (§ 3).
+- **Revue PR 3** : `--lot` mal écrit (`--lot=…`, sans valeur) retombait en silence sur l'ancienne liste → refusé ; test
+  « rien d'autre ne change » au caractère près.
 - **Prochaine action** : PR 3 (nettoyage, § 7) — revue + CI → merge ; puis David applique les retouches en prod
   (`pnpm corrections:retouches --lot texte-colore --publier`, depuis le dépôt principal à jour).
 - **En attente de David** : après le merge de la PR 3, appliquer les 2 retouches en prod (commande ci-dessus).
