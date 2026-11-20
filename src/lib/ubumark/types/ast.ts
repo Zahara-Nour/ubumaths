@@ -14,6 +14,7 @@
  */
 
 import type { CalloutKind, DetailKind } from '../utils/detail-kinds';
+import type { NamedColor } from '#lib/theme/named-colors.ts';
 
 // ============================================================================
 // BASE NODE
@@ -45,6 +46,13 @@ export interface TextNode extends BaseNode {
 	detail?: DetailKind;
 	/** Marquage à la main d'un mot du lexique : `[mot]{.def}`, `{.def=…}`, `{.nodef}` */
 	lexicon?: LexiconMark;
+	/** Texte coloré `[texte]{.orange}` : un nom de la palette des figures (ADR 0042) */
+	color?: NamedColor;
+	/**
+	 * Classes inconnues d'un marquage `[texte]{.turquoise}` : le texte est rendu
+	 * normalement, le prof voit un message. Posé sur le premier nœud du passage.
+	 */
+	unknownClasses?: string[];
 	/**
 	 * Mots du dictionnaire repérés dans ce texte (mots cliquables) : positions
 	 * dans `content`. Le texte n'est pas découpé : l'arbre garde sa forme, et les
@@ -83,6 +91,8 @@ export interface MathInlineNode extends BaseNode {
 	expressionName?: string;
 	/** Détail de correction en ligne `[texte]{.rappel}` (ADR 0017) */
 	detail?: DetailKind;
+	/** Formule dans un texte coloré `[…]{.orange}` (ADR 0042) */
+	color?: NamedColor;
 }
 
 /**

@@ -21,8 +21,11 @@ import type { MathInlineNode, TextNode } from '#lib/ubumark/index.ts';
 /** Morceaux d'une cellule à marques : texte (avec ses marques) ou formule */
 export type TableCellInline = TextNode | MathInlineNode;
 
-/** Caractères sans lesquels aucune marque n'est possible : évite de relire chaque cellule */
-const MARK_HINT = /[*_`]/;
+/**
+ * Sans ces caractères, aucune marque n'est possible : évite de relire chaque cellule.
+ * `]{.` : marquage en ligne (texte coloré `[a]{.orange}`, ADR 0042 ; détail).
+ */
+const MARK_HINT = /[*_`]|\]\{\./;
 
 /** Formules `$…$` et `~…~`, retirées avant de chercher un `_` dans un mot */
 const MATH_SPANS = /\$[^$]*\$|~[^~\n]*~/g;
@@ -31,7 +34,8 @@ const MATH_SPANS = /\$[^$]*\$|~[^~\n]*~/g;
 const INTRAWORD_DELIMITER = /[\p{L}\p{N}][*_]+[\p{L}\p{N}]/u;
 
 /**
- * Morceaux d'une cellule qui porte au moins une marque (gras, italique, code), ou
+ * Morceaux d'une cellule qui porte au moins une marque (gras, italique, code,
+ * marquage `[texte]{.…}`), ou
  * `null` pour garder le rendu ordinaire (texte + formules).
  */
 export function tableCellMarkedInline(content: string): TableCellInline[] | null {
@@ -46,7 +50,11 @@ export function tableCellMarkedInline(content: string): TableCellInline[] | null
 	const markedTexts = nodes.filter(
 		(node): node is TextNode => node.type === 'text' && !!(node.bold || node.italic || node.code)
 	);
-	if (markedTexts.length === 0) return null;
+	// Marquage `[texte]{.…}` : couleur, détail, classe inconnue (à signaler au prof)
+	const spanMarked = nodes.some((node) =>
+		node.type === 'text' ? !!(node.color || node.detail || node.unknownClasses) : !!node.color
+	);
+	if (markedTexts.length === 0) return spanMarked ? nodes : null;
 	// Le parseur de paragraphe est plus large que CommonMark : `3 * 4 * 5` y met « 4 » en
 	// italique, `x_1 et y_2` et `a*b*c` aussi. Une cellule déjà écrite ne doit pas changer pour
 	// ça : une marque ne s'ouvre ni ne se ferme sur une espace, et `_` ou `*` dans un mot n'en est

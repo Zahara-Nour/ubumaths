@@ -33,8 +33,18 @@ MathLive (tableau : `\begin{array}{|c|c|}` sans `\hline`).
 | ce que l'on conclut    | `primary.2` (vert)   | le signe du résultat, le choix de QCM                                            |
 
 La réponse finale `{{solution}}` reste **en noir** (usage des corrections existantes). Écriture :
-`\textcolor{{{color:primary.0}}}{…}` (palettes : `src/lib/questions/colors.ts`). Une couleur garde
-le même rôle dans la prose et dans le calcul d'une même correction.
+
+- **dans une formule** : `\textcolor{{{color:primary.0}}}{…}` (palettes : `src/lib/questions/colors.ts`) ;
+- **dans la prose, hors `$…$`** : `[le terme qu'on transforme]{.orange}`, avec les noms de la palette
+  des figures (orange, bleu, vert… : [ADR 0042](../adr/0042-texte-colore-dans-la-prose.md)) —
+  jamais `\textcolor` hors formule (l'élève lirait du LaTeX ; `pnpm question:specs` le refuse).
+  Équivalences : `primary.0` → `orange`, `primary.1` → `bleu`, `primary.2` → `vert`.
+
+Une couleur garde le même rôle dans la prose et dans le calcul d'une même correction.
+
+**La couleur ne porte jamais le sens seule** : une fiche imprimée en noir et blanc la perd. Elle
+souligne un mot qui dit déjà ce qu'il désigne : « le terme [qu'on transforme]{.orange} », jamais
+« le terme orange ».
 
 ### Exemple 1 — R-PASS, compléter à la dizaine (`26 + 5`)
 

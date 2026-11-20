@@ -26,6 +26,7 @@
 	import type { CapitalPairs, GenericFunctionConfig } from '#lib/mathAST/parser/types.ts';
 	import type { ExerciseHint } from '#lib/exercises/types.ts';
 	import MathInline from './MathInline.svelte';
+	import InlineColor from './InlineColor.svelte';
 	import MathPrompt from './MathPrompt.svelte';
 	import TextNode from './TextNode.svelte';
 	import { inlineDetailClass } from '../detail-styles';
@@ -180,6 +181,8 @@
 				italic={child.italic}
 				code={child.code}
 				detail={child.detail}
+				color={child.color}
+				unknownClasses={child.unknownClasses}
 				terms={child.terms}
 				termOffset={adjusted.hasLeadingSpace ? 1 : 0}
 			/>{#if adjusted.hasTrailingSpace}&ensp;{/if}
@@ -246,14 +249,19 @@
 			{:else if child.detail}
 				<!-- Formule d'un détail en ligne `[…]{.rappel}` (ADR 0017) -->
 				<span class={inlineDetailClass(child.detail)}>
+					<InlineColor color={child.color}>
+						{#key child.expression}
+							<MathInline expression={child.expression} syntax={child.syntax} {genericFunctions} />
+						{/key}
+					</InlineColor>
+				</span>
+			{:else}
+				<!-- Formule d'un texte coloré `[…]{.orange}` (ADR 0042) -->
+				<InlineColor color={child.color}>
 					{#key child.expression}
 						<MathInline expression={child.expression} syntax={child.syntax} {genericFunctions} />
 					{/key}
-				</span>
-			{:else}
-				{#key child.expression}
-					<MathInline expression={child.expression} syntax={child.syntax} {genericFunctions} />
-				{/key}
+				</InlineColor>
 			{/if}
 		{:else if child.type === 'blank'}
 			{#if flashMode}

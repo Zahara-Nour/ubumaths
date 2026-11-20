@@ -6,14 +6,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-20 : ADR 0042 écrit, comportements et découpage proposés (§ 3-4)._
+_Mis à jour le 2026-11-20 : PR 1 (syntaxe et écran) en cours sur `feat/texte-colore`._
 
-- **État** : worktree ouvert, aucune ligne de code.
-- **Prochaine action** : faire valider § 3 (comportements) et § 4 (découpage), puis PR 1, tests d'abord.
-- **En attente de David** : validation des § 3 et 4, et réponse aux questions Q1 à Q3 (§ 3).
+- **État** : § 3 et § 4 validés (« je suis tes recos », 2026-11-20), Q1 comprise ; PR 1 codée, tests verts.
+- **Prochaine action** : PR 1 ouverte → revue + CI → merge ; puis PR 2 (PDF), PR 3 (filet `\textcolor`).
+- **En attente de David** : Q2 (éditeur riche) et Q3 (réécriture de l'existant) — sans recommandation de ma
+  part au moment de « je suis tes recos », donc **non tranchées** ; elles ne bloquent que le point 4.
 - **Pièges connus** : la garde `review/textcolor-hors-maths.ts` ne tourne que dans `pnpm question:specs` ; le chat
-  des élèves ne doit rien gagner (rendu `restricted`) ; un `{.x}` inconnu déclenche déjà le message « type inconnu »
-  de `src/lib/questions/correction-detail.ts` (liste des détails seulement).
+  des élèves ne doit rien gagner (rendu `restricted`) ; `.def=cible` doit rester la dernière classe.
 - **Worktree / branche** : `../ubumaths-wt-texte-colore` · `feat/texte-colore`.
 
 ## 1. Le défaut
@@ -53,7 +53,7 @@ publiés), à recompter. Depuis le 2026-11-03, `question:specs` refuse un `\text
    si `primary.N` ou nom connu, sinon texte normal), jamais en LaTeX brut ; les modèles publiés sont réparés dès la
    livraison. La garde de `question:specs` continue de les signaler, pour réécriture en `[…]{.nom}`.
 
-## 3. Comportements attendus (proposés le 2026-11-20, à valider)
+## 3. Comportements attendus (validés par David le 2026-11-20 : « je suis tes recos »)
 
 **Cas normaux**
 
@@ -88,13 +88,15 @@ publiés), à recompter. Depuis le 2026-11-03, `question:specs` refuse un `\text
 
 - **Q1** — Aujourd'hui, un `[texte]{.rapel}` (faute de frappe) s'affiche tel quel pour l'élève, crochets compris.
   Je propose de l'aligner sur la couleur inconnue : « texte » en texte normal, message au prof. D'accord ?
+  → **Validé** (proposition suivie, 2026-11-20). Le message « type inconnu » de `correction-detail.ts` disparaît :
+  un seul message, au rendu, à l'endroit du marquage.
 - **Q2** — L'éditeur riche (TipTap) sait colorer du texte, mais la couleur se perd à l'enregistrement. Le brancher
   sur `[…]{.nom}` (12 couleurs dans son menu) : dans ce chantier, ou plus tard ?
 - **Q3** — Les modèles publiés en prod qui contiennent `\textcolor` hors formule seront lisibles grâce au filet.
   Les réécrire en `[…]{.nom}` (fichiers de lots + liste pour une mise à jour en prod par toi) : dans ce chantier,
   ou les laisser au filet ?
 
-## 4. Découpage proposé (à valider)
+## 4. Découpage (validé le 2026-11-20)
 
 1. **PR 1 — syntaxe et écran** : `[…]{.nom}` lu par le parseur (plusieurs classes, variable tirée, nom inconnu),
    affichage à l'écran, chat sans couleur, message au prof. Doc d'ubumark et règle de rédaction
@@ -102,3 +104,12 @@ publiés), à recompter. Depuis le 2026-11-03, `question:specs` refuse un `\text
 2. **PR 2 — PDF** : la couleur dans Typst (teinte claire).
 3. **PR 3 — filet** : `\textcolor{…}{…}` hors formule lu comme `[…]{.nom}` (écran et PDF).
 4. Selon Q2 et Q3 : éditeur riche ; réécriture de l'existant.
+
+## 5. PR 1 — syntaxe et écran (2026-11-20)
+
+- Un seul motif `SPAN_MARK_REGEX` + `parseSpanClasses` (`src/lib/ubumark/utils/detail-kinds.ts`) remplace les
+  deux motifs (détail, dictionnaire) ; deux passes du même motif dans le parseur (extérieur, puis intérieur).
+- `TextNode.color`, `TextNode.unknownClasses`, `MathInlineNode.color` ; une marque intérieure l'emporte.
+- Rendu : `inline-color.ts`, `InlineColor.svelte` (formules), `TextNode.svelte` (couleur + message au prof),
+  cellules de tableau (`table-cell-inline.ts`) ; restreint → aucune couleur.
+- Vu en capture (thèmes clair et sombre) : texte, gras, formule et cellule colorés ; message au prof lisible.

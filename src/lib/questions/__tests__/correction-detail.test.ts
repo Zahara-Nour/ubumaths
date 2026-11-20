@@ -206,10 +206,30 @@ describe('splitCorrectionDetail — D5 marqueurs mal formés', () => {
 		expect(r.concise).toBe(md);
 	});
 
-	it('type en ligne inconnu signalé', () => {
+	it('classe en ligne inconnue : ni détail ni erreur ici, le rendu la signale (ADR 0042)', () => {
 		const r = splitCorrectionDetail('A [x]{.truc} B');
-		expect(r.errors[0]).toMatch(/truc/);
-		expect(r.concise).toBe('A [x]{.truc} B');
+		expect(r.errors).toEqual([]);
+		expect(r.hasDetails).toBe(false);
+		expect(r.detailed).toBe('A [x]{.truc} B');
+	});
+
+	it('une couleur seule n’est pas un détail : gardée dans les deux versions', () => {
+		const r = splitCorrectionDetail('A [x]{.orange} B [y]{.rappel}');
+		expect(r.errors).toEqual([]);
+		expect(r.concise).toBe('A [x]{.orange} B');
+		expect(r.detailed).toBe('A [x]{.orange} B [y]{.rappel}');
+	});
+
+	it('détail coloré [x]{.rappel .vert} : retiré en concis comme tout détail', () => {
+		const r = splitCorrectionDetail('A [x]{.rappel .vert} B');
+		expect(r.hasDetails).toBe(true);
+		expect(r.concise).toBe('A B');
+		expect(r.detailed).toBe('A [x]{.rappel .vert} B');
+	});
+
+	it('couleur puis détail [x]{.vert .rappel} : détail aussi', () => {
+		const r = splitCorrectionDetail('A [x]{.vert .rappel} B');
+		expect(r.concise).toBe('A B');
 	});
 
 	it('une erreur annule tout le concis, même avec d’autres marqueurs corrects', () => {
