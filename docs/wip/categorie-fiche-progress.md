@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, après #2919._
+_Mis à jour le 2026-11-19, PR 3a en cours._
 
-- **État** : PR 1 (#2901), 2a (#2903), 2b (#2912) et #2919 (« Fluency » en anglais, badge aligné au bas de page, titre centré sur la page, sur retours de David) mergées ; rien en prod tant que David n'a pas fait `deploy:prod` · **Prochaine action** : après le `deploy:prod` de David, PR 3 — reprise des 50 fiches (fiches déduites sans ambiguïté en titre composé, titres vraiment libres gardés libres avec catégorie et notions ; page à cocher ; écriture en prod par David) · **En attente de David** : `deploy:prod` (essai de l'éditeur validé par David en dev le 2026-11-19), puis go pour la PR 3 · **Pièges en cours** : PUT = trois requêtes (écart 8 de `docs/systeme/fiches-et-pdf.md`) ; crochets Typst hors titre (écart 10) ; notion archivée acceptée par le serveur ; tests de routes à maquette (`table-mock.ts`) : réponse neutre pour une table nouvelle ; `check:integration-paths` : chaque nouveau fichier de `src/lib` dans le filtre ; `cadres-lignes.test.ts` dépasse parfois 5 s sous charge (passe seul) · **Worktree** : rangé après #2919 ; PR 3 = nouveau worktree depuis `origin/main`
+- **État** : PR 1, 2a, 2b, #2919 mergées, **pas en prod** (`deploy:prod` à faire par David). PR 3a (branche `feat/categorie-fiche`) : plusieurs notions pour toute fiche (migration `20261119222741` qui retire la garde, DROP sans perte, go de David), éditeur en liste seule, majuscule en tête de chaque notion, ADR 0041 amendé · **Prochaine action** : ouvrir la PR 3a, revue, merge ; `db:migrate` = **go de David** (DROP, pas additive) ; puis PR 3b, la reprise des 50 fiches (relevé en bas du journal) · **En attente de David** : `deploy:prod` ; go `db:migrate` de la 3a · **Pièges en cours** : migration 3a appliquée À LA MAIN en base locale (psql, sans ligne dans `schema_migrations`) ; PUT = trois requêtes (écart 8 de `docs/systeme/fiches-et-pdf.md`) ; notion archivée acceptée par le serveur ; `cadres-lignes.test.ts` lent sous charge · **Worktree** : `../ubumaths-wt-categorie-fiche`, branche `feat/categorie-fiche`
 
 ## Synthèse de la phase 0 (2026-11-19)
 
@@ -14,8 +14,8 @@ _Mis à jour le 2026-11-19, après #2919._
   et Automatismes** ; évaluation, examen, quiz, devoir maison → 0 à N notions, pas de catégorie.
 - **Rendu page 1** : badge(s) du niveau à gauche (forme courte, plein orange, texte blanc), QR à
   droite. Au centre : sans titre libre → notion(s) en grand (« Suites · Dérivation »), catégorie
-  en petit gris dessous ; titre libre (ou titre des autres types) → lui en grand, et dessous les
-  notions **seulement si la fiche en admet plusieurs** ; jamais la catégorie sous un titre libre.
+  en petit gris dessous ; titre libre (ou titre des autres types) → lui seul, **ni notions ni
+  catégorie dessous** (David, 2026-11-20).
 - **Bas de page** : `[1ère Spé] Suites · Entraînement technique   n / N   gidouille chiph.re`.
 - **Anglais** : catégories traduites ; notions en anglais = **chantier séparé** ; en attendant,
   pas de notion imprimée sur une fiche anglaise.
@@ -61,7 +61,12 @@ _Mis à jour le 2026-11-19, après #2919._
    Décidé en cours de route (sans changer la synthèse) : fiche d'exercices au titre composé passée
    en évaluation → titre libre (notions seules, sans catégorie) ; gabarit de prof sans
    `{{title_sub}}` → titre complet « notions · catégorie ».
-3. **PR 3 — reprise des 50 fiches** : page à cocher (déduit du titre), écriture en prod par David.
+3. **PR 3a — plusieurs notions pour toute fiche** (décidé par David le 2026-11-19, au relevé
+   des 50 fiches) : migration qui retire la garde (DROP de deux déclencheurs et d'une fonction,
+   sans perte), éditeur en liste seule, `allowsSeveralNotions` retiré, notions toujours sous un
+   titre libre, majuscule en tête de chaque notion (`notionLabel`), ADR 0041 amendé.
+   **PR 3b — reprise des 50 fiches** : page à cocher (relevé en bas du journal), écriture en
+   prod par David, après le `deploy:prod`.
 4. **PR 4 — script des automatismes** (ADR 0011) : pose catégorie + notions.
 
 ## L'idée (David, 2026-11-19)
@@ -130,3 +135,29 @@ titres libres (« Préparation Bac Blanc 1 », « Produit scalaire »…).
   ⚠️ Corrigé le 2026-11-19 : les deux fonctions de partage rendent DÉJÀ `grades` (prod = dépôt,
   md5 vérifié), et l'élève lit la ligne `worksheets` par la RLS. Aucune migration pour le niveau :
   c'est le code (route élève, vue partagée) qui ne le transmet pas au PDF → PR 2.
+
+## Reprise des 50 fiches : décisions et relevé (2026-11-19)
+
+Décisions de David (questions posées au relevé) :
+
+- **Automatismes (14)** : titre libre gardé (le numéro « (1) », « (2) » compte) ; catégorie
+  Automatismes et notions posées, imprimées en petit sous le titre.
+- **Plusieurs notions pour toute fiche** (« il faudrait finalement autoriser plusieurs notions
+  dans les fiches d'exercices ») → PR 3a.
+- **Suites** (« Entraînement technique — Suites », « Applications des suites ») : **titre composé
+  long** (« Généralités sur les suites · Suites arithmétiques · Suites géométriques »,
+  catégorie dessous).
+- **Sous-notion en minuscule** (loi géométrique) : majuscule mise par le code → PR 3a.
+
+Relevé en prod (MCP lecture, 2026-11-19) : 50 fiches, aucune catégorie ni notion posée, toutes
+`custom_title` vrai. Croisé avec les notions principales des exercices de chaque fiche
+(`exercise_classifications`). Déductibles du titre : « Entraînement technique — X » (12),
+« Applications de X » (11), « Fonctions affines : … » (2), « Automatismes : … » (14). À voir une
+à une : « Ensembles de nombres », « Fonctions : généralités », « Produit scalaire » (catégorie ?),
+« Avant de commencer les fonctions polynômes du second degré », trois « Préparation… »
+(Révisions ?), « Evaluation : Produit scalaire » (type fiche d'exercices : passer en
+évaluation ?), trois évaluations (notions seules), « ESSAI (copie) (copie) » (ne pas toucher).
+Correspondances non évidentes : Trigonométrie → « Fonctions trigonométriques » ; Polynômes du
+second degré → « Second degré » ; Loi géométrique → sous-notion « loi géométrique » (Probabilités >
+Autres lois). Les titres anglais (`translations.en.title`, une vingtaine de fiches) ne
+s'impriment plus au titre composé (catégorie seule en anglais, décision 5).

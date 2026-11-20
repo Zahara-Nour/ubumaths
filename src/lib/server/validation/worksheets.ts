@@ -307,9 +307,8 @@ export const updateWorksheetSchema = z.object({
 	tags: z.array(z.string().trim().min(1).max(50)).max(30, '30 mots-clés au maximum').optional(), // No default - won't be set if not in request
 	status: worksheetStatusSchema.optional(),
 	translations: rowTranslationsSchema.optional().nullable(),
-	// Catégorie, titre libre et notions (ADR 0041) : la règle du nombre de
-	// notions et le titre composé sont décidés par la route
-	// (`worksheet-classification.ts`)
+	// Catégorie, titre libre et notions (ADR 0041) : le titre composé est
+	// décidé par la route (`worksheet-classification.ts`)
 	category: z.enum(WORKSHEET_CATEGORIES).nullable().optional(),
 	custom_title: z.boolean().optional(),
 	notions: z.array(uuidSchema).max(20, '20 notions au maximum').optional()

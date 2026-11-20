@@ -8,9 +8,9 @@
  * Décisions de David (2026-11-19) :
  * - catégorie de fiche, liste fermée, fiche d'exercices seulement :
  *   Entraînement technique · Applications · Automatismes · Révisions ;
- * - notions de l'arbre (notion ou sous-notion) : une seule pour une fiche
- *   d'exercices, sauf en Révisions et en Automatismes ; autant qu'on veut pour
- *   les autres types ;
+ * - notions de l'arbre (notion ou sous-notion) : autant qu'on veut, pour
+ *   tout type de fiche (la règle « une seule, sauf Révisions et Automatismes »
+ *   a été retirée le 2026-11-19 : 20261119…_plusieurs_notions_fiche.sql) ;
  * - question d'accès : le prof (et l'admin) lit et écrit les notions de SES fiches ; on lit
  *   les notions d'une fiche quand on lit la fiche (élève à qui elle est donnée) ;
  *   le visiteur d'un lien de partage reçoit catégorie et notions de la fiche
@@ -313,31 +313,17 @@ describe('catégorie de la fiche', () => {
 	);
 });
 
-describe('notions : une seule, sauf Révisions et Automatismes', () => {
-	it.each(['technical_practice', 'applications'])(
-		'%s : une notion acceptée, la deuxième refusée (23514)',
+describe('notions : plusieurs pour toute fiche (ADR 0041, amendé le 2026-11-19)', () => {
+	it.each([null, 'technical_practice', 'applications', 'review', 'automatisms'])(
+		'fiche d’exercices (%s) : plusieurs notions acceptées, dans l’ordre',
 		async (category) => {
 			const id = await worksheet('worksheet', category);
-			expect(await addNode(teacherClient, id, suitesId)).toBeNull();
-			expect(await addNode(teacherClient, id, derivationId, 1)).toBe('23514');
-			expect(await nodesInDb(id)).toEqual([suitesId]);
+			expect(await addNode(teacherClient, id, suitesId, 0)).toBeNull();
+			expect(await addNode(teacherClient, id, derivationId, 1)).toBeNull();
+			expect(await addNode(teacherClient, id, probabilitesId, 2)).toBeNull();
+			expect(await nodesInDb(id)).toEqual([suitesId, derivationId, probabilitesId]);
 		}
 	);
-
-	it('sans catégorie : une seule notion aussi', async () => {
-		const id = await worksheet('worksheet');
-		expect(await addNode(teacherClient, id, suitesId)).toBeNull();
-		expect(await addNode(teacherClient, id, derivationId, 1)).toBe('23514');
-		expect(await nodesInDb(id)).toEqual([suitesId]);
-	});
-
-	it.each(['review', 'automatisms'])('%s : plusieurs notions acceptées', async (category) => {
-		const id = await worksheet('worksheet', category);
-		expect(await addNode(teacherClient, id, suitesId, 0)).toBeNull();
-		expect(await addNode(teacherClient, id, derivationId, 1)).toBeNull();
-		expect(await addNode(teacherClient, id, probabilitesId, 2)).toBeNull();
-		expect(await nodesInDb(id)).toEqual([suitesId, derivationId, probabilitesId]);
-	});
 
 	it.each(['assessment', 'exam', 'quiz', 'homework'])(
 		'%s : plusieurs notions acceptées, sans catégorie',
@@ -349,20 +335,15 @@ describe('notions : une seule, sauf Révisions et Automatismes', () => {
 		}
 	);
 
-	it('Révisions à deux notions → Entraînement technique : refusé, catégorie inchangée', async () => {
+	it('Révisions à deux notions → Entraînement technique : accepté, notions gardées', async () => {
 		const id = await worksheet('worksheet', 'review');
 		await resetNodes(id, [suitesId, derivationId]);
-		expect(await setCategory(id, 'technical_practice')).toBe('23514');
-		expect(await categoryInDb(id)).toBe('review');
-	});
-
-	it('Révisions à une notion → Entraînement technique : accepté', async () => {
-		const id = await worksheet('worksheet', 'review');
-		await resetNodes(id, [suitesId]);
 		expect(await setCategory(id, 'technical_practice')).toBeNull();
+		expect(await categoryInDb(id)).toBe('technical_practice');
+		expect(await nodesInDb(id)).toEqual([suitesId, derivationId]);
 	});
 
-	it('évaluation à deux notions → fiche d’exercices sans catégorie : refusé (23514)', async () => {
+	it('évaluation à deux notions → fiche d’exercices : accepté', async () => {
 		const id = await worksheet('assessment');
 		await resetNodes(id, [suitesId, derivationId]);
 		const { error } = await teacherClient
@@ -370,61 +351,10 @@ describe('notions : une seule, sauf Révisions et Automatismes', () => {
 			.update({ type: 'worksheet' })
 			.eq('id', id)
 			.select('id');
-		expect(error?.code).toBe('23514');
+		expect(error).toBeNull();
 		const [row] = await sql('select type from public.worksheets where id = $1', [id]);
-		expect(row?.type).toBe('assessment');
-	});
-
-	it('différé : dans une transaction, 2 notions puis Révisions → accepté au commit', async () => {
-		const id = await worksheet('worksheet', 'applications');
-		const pg = await getPostgresClient();
-		await pg.query('begin');
-		try {
-			await pg.query(
-				`insert into public.worksheet_classifications (worksheet_id, node_id, position)
-				 values ($1, $2, 0), ($1, $3, 1)`,
-				[id, suitesId, derivationId]
-			);
-			await pg.query(`update public.worksheets set category = 'review' where id = $1`, [id]);
-			await pg.query('commit');
-		} catch (err) {
-			await pg.query('rollback');
-			throw err;
-		}
-		expect(await nodesInDb(id)).toHaveLength(2);
-		expect(await categoryInDb(id)).toBe('review');
-	});
-
-	it('différé : 2 notions sans la bonne catégorie → refusé au commit', async () => {
-		const id = await worksheet('worksheet', 'applications');
-		const pg = await getPostgresClient();
-		await pg.query('begin');
-		await pg.query(
-			`insert into public.worksheet_classifications (worksheet_id, node_id, position)
-			 values ($1, $2, 0), ($1, $3, 1)`,
-			[id, suitesId, derivationId]
-		);
-		await expect(pg.query('commit')).rejects.toMatchObject({ code: '23514' });
-		expect(await nodesInDb(id)).toEqual([]);
-	});
-
-	it('différé : notions ajoutées puis fiche supprimée dans la transaction → accepté', async () => {
-		const id = await worksheet('worksheet', 'applications');
-		const pg = await getPostgresClient();
-		await pg.query('begin');
-		try {
-			await pg.query(
-				`insert into public.worksheet_classifications (worksheet_id, node_id, position)
-				 values ($1, $2, 0), ($1, $3, 1)`,
-				[id, suitesId, derivationId]
-			);
-			await pg.query('delete from public.worksheets where id = $1', [id]);
-			await pg.query('commit');
-		} catch (err) {
-			await pg.query('rollback');
-			throw err;
-		}
-		expect(await sql('select 1 from public.worksheets where id = $1', [id])).toHaveLength(0);
+		expect(row?.type).toBe('worksheet');
+		expect(await nodesInDb(id)).toEqual([suitesId, derivationId]);
 	});
 
 	it('refuse une branche : notion ou sous-notion seulement', async () => {

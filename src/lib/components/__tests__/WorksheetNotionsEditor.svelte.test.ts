@@ -1,12 +1,8 @@
 /**
  * Notions d'une fiche dans l'éditeur (ADR 0041)
  *
- * - une seule notion (Entraînement technique, Applications, sans catégorie) :
- *   le sélecteur choisit LA notion, il remplace la précédente ;
- * - plusieurs notions (Révisions, Automatismes, autres types) : la liste, un
- *   bouton pour ajouter la notion choisie, un pour retirer chacune ;
- * - trop de notions pour la catégorie choisie : la liste reste, avec la
- *   consigne de retirer les notions en trop (le serveur refuserait).
+ * Toute fiche admet plusieurs notions (ADR 0041, amendé le 2026-11-19) : la
+ * liste, un bouton pour ajouter la notion choisie, un pour retirer chacune.
  */
 import { describe, it, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
@@ -34,12 +30,12 @@ const DERIVATION: WorksheetClassificationView = {
 	position: 1
 };
 
-async function renderEditor(value: WorksheetClassificationView[], several: boolean) {
+async function renderEditor(value: WorksheetClassificationView[]) {
 	const onchange = vi.fn();
 	const main = document.body.appendChild(document.createElement('main'));
 	await render(WorksheetNotionsEditor, {
 		target: main,
-		props: { nodes: NODES, value, several, onchange }
+		props: { nodes: NODES, value, onchange }
 	});
 	return onchange;
 }
@@ -52,18 +48,17 @@ async function choose(branch: string, notion: string) {
 }
 
 describe('WorksheetNotionsEditor', () => {
-	it('une seule notion : le sélecteur relit la notion et la remplace', async () => {
-		const onchange = await renderEditor([SUITES], false);
-		await expect.element(page.getByRole('combobox', { name: 'Notion : Suites' })).toBeVisible();
+	it('aucune notion : la première s’ajoute à la liste vide', async () => {
+		const onchange = await renderEditor([]);
 
-		await page.getByRole('combobox', { name: /^Notion/ }).click();
-		await page.getByRole('option', { name: 'Dérivation' }).click();
+		await choose('Analyse', 'Suites');
+		await page.getByRole('button', { name: 'Ajouter la notion' }).click();
 
-		expect(onchange).toHaveBeenLastCalledWith([{ ...DERIVATION, position: 0 }]);
+		expect(onchange).toHaveBeenLastCalledWith([SUITES]);
 	});
 
 	it('plusieurs notions : ajouter la notion choisie à la fin', async () => {
-		const onchange = await renderEditor([SUITES], true);
+		const onchange = await renderEditor([SUITES]);
 		await expect.element(page.getByText('Suites', { exact: true })).toBeVisible();
 
 		await choose('Analyse', 'Dérivation');
@@ -73,7 +68,7 @@ describe('WorksheetNotionsEditor', () => {
 	});
 
 	it('plusieurs notions : retirer une notion renumérote les suivantes', async () => {
-		const onchange = await renderEditor([SUITES, DERIVATION], true);
+		const onchange = await renderEditor([SUITES, DERIVATION]);
 
 		await page.getByRole('button', { name: 'Retirer Suites' }).click();
 
@@ -81,19 +76,10 @@ describe('WorksheetNotionsEditor', () => {
 	});
 
 	it('une notion déjà dans la liste ne s’ajoute pas deux fois', async () => {
-		await renderEditor([SUITES], true);
+		await renderEditor([SUITES]);
 
 		await choose('Analyse', 'Suites');
 
 		await expect.element(page.getByRole('button', { name: 'Ajouter la notion' })).toBeDisabled();
-	});
-
-	it('trop de notions pour une catégorie à une notion : consigne, et la liste pour retirer', async () => {
-		const onchange = await renderEditor([SUITES, DERIVATION], false);
-
-		await expect.element(page.getByText(/une seule notion/i)).toBeVisible();
-		await page.getByRole('button', { name: 'Retirer Dérivation' }).click();
-
-		expect(onchange).toHaveBeenLastCalledWith([SUITES]);
 	});
 });

@@ -10,10 +10,9 @@
  * Décisions de David (2026-11-19) :
  * - `title` toujours rempli : sans titre libre, le titre composé
  *   (« Suites · Entraînement technique ») y est écrit et tenu à jour ;
- * - une notion au plus pour une fiche d'exercices, sauf Révisions et
- *   Automatismes ; autant qu'on veut pour les autres types, sans catégorie ;
- * - passer d'une catégorie à plusieurs notions à une catégorie à une notion
- *   retire d'abord les notions en trop (sinon la garde de la base refuse).
+ * - autant de notions qu'on veut, quel que soit le type ou la catégorie
+ *   (règle « une notion sauf Révisions et Automatismes » retirée le
+ *   2026-11-19, ADR 0041 amendé) ; pas de catégorie hors fiche d'exercices.
  *
  * @vitest-environment node
  */
@@ -43,7 +42,8 @@ const ANON_KEY =
 	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0';
 const CLIENT_OPTIONS = { auth: { persistSession: false, autoRefreshToken: false } };
 
-const RUN = `itest-enreg-cat-${Date.now().toString(36)}`;
+// Majuscule en tête : le titre composé met une majuscule à chaque notion
+const RUN = `Itest-enreg-cat-${Date.now().toString(36)}`;
 
 // ============================================================================
 // VARIABLES
@@ -284,16 +284,32 @@ describe('nombre de notions', () => {
 		});
 	});
 
-	it('deux notions en Applications : refusé, rien d’écrit', async () => {
-		const id = await worksheet('worksheet', 'applications', [suitesId]);
-		expect(await save(id, { notions: [suitesId, derivationId] })).toMatch(/une seule notion/i);
-		expect((await stored(id)).notions).toEqual([suitesId]);
+	it('deux notions en Applications : acceptées, titre composé des deux', async () => {
+		const id = await worksheet('worksheet', 'applications', [suitesId], false);
+		expect(await save(id, { notions: [suitesId, derivationId] })).toBeNull();
+		expect(await stored(id)).toMatchObject({
+			notions: [suitesId, derivationId],
+			title: `${RUN} Suites · ${RUN} Dérivation · Applications`
+		});
 	});
 
-	it('passer en Applications en gardant deux notions : refusé', async () => {
+	it('passer en Applications en gardant deux notions : accepté', async () => {
 		const id = await worksheet('worksheet', 'review', [suitesId, derivationId]);
-		expect(await save(id, { category: 'applications' })).toMatch(/une seule notion/i);
-		expect((await stored(id)).category).toBe('review');
+		expect(await save(id, { category: 'applications' })).toBeNull();
+		expect(await stored(id)).toMatchObject({
+			category: 'applications',
+			notions: [suitesId, derivationId]
+		});
+	});
+
+	it('titre composé de plus de 255 caractères : refusé, rien d’écrit', async () => {
+		const longIds: string[] = [];
+		for (let i = 0; i < 6; i++) {
+			longIds.push(await node('notion', branchId, `${RUN} ${'notion longue '.repeat(3)}${i}`));
+		}
+		const id = await worksheet('worksheet', 'technical_practice', [suitesId], false);
+		expect(await save(id, { notions: longIds })).toMatch(/trop long/i);
+		expect((await stored(id)).notions).toEqual([suitesId]);
 	});
 
 	it('une branche n’est pas une notion : refusé', async () => {
@@ -340,10 +356,13 @@ describe('type de la fiche', () => {
 		expect(await save(id, { category: 'review' })).toMatch(/catégorie/i);
 	});
 
-	it('évaluation à deux notions → fiche d’exercices sans catégorie : refusé', async () => {
+	it('évaluation à deux notions → fiche d’exercices sans catégorie : accepté', async () => {
 		const id = await worksheet('assessment', null, [suitesId, derivationId]);
-		expect(await save(id, { type: 'worksheet' })).toMatch(/une seule notion/i);
-		expect((await stored(id)).type).toBe('assessment');
+		expect(await save(id, { type: 'worksheet' })).toBeNull();
+		expect(await stored(id)).toMatchObject({
+			type: 'worksheet',
+			notions: [suitesId, derivationId]
+		});
 	});
 });
 
@@ -415,11 +434,11 @@ describe('route PUT puis GET /api/worksheets/[id]', () => {
 		});
 	});
 
-	it('deux notions en Entraînement technique : 400 avec la raison', async () => {
+	it('deux notions en Entraînement technique : 200, enregistrées dans l’ordre', async () => {
 		const id = await worksheet('worksheet', 'technical_practice', [suitesId]);
-		const saved = await put(id, { notions: [suitesId, derivationId] });
-		expect(saved.status).toBe(400);
-		expect(JSON.stringify(saved.json)).toMatch(/une seule notion/i);
+		const saved = await put(id, { notions: [derivationId, suitesId] });
+		expect(saved.status).toBe(200);
+		expect((await stored(id)).notions).toEqual([derivationId, suitesId]);
 	});
 
 	it('style refusé dans le même enregistrement : 403, aucune notion retirée', async () => {

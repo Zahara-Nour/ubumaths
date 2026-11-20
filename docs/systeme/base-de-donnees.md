@@ -362,8 +362,8 @@ Code : `src/lib/server/` (`chapters.ts`, `chapters-publication.ts`, `chapter-tem
   `review` ; NULL hors `type = 'worksheet'`, CHECK 23514) et `worksheet_classifications` (fiche →
   notion ou sous-notion, `position` = ordre d'impression ; FK RESTRICT : un nœud cité ne se supprime
   pas). Lecture quand on lit la fiche (RLS de `worksheets`), écriture par l'auteur ou l'admin, anon
-  rien. Garde différée (trigger de contrainte, verrou sur la fiche) : une fiche d'exercices a au plus
-  une notion, sauf en `review` et `automatisms` (23514). Les deux fonctions de partage rendent
+  rien. Autant de notions qu'on veut, pour toute fiche : la garde « au plus une notion
+  sauf `review` / `automatisms` » est retirée par `20261119222741` (ADR 0041 amendé). Les deux fonctions de partage rendent
   `category` et `classifications`. **Titre** (`20261119182829`) : `worksheets.title` toujours
   rempli ; `worksheets.custom_title` (vrai par défaut) dit s'il est libre (imprimé tel quel) ou
   composé par l'éditeur (« Suites · Entraînement technique », recomposé par le PDF) ; les liens de

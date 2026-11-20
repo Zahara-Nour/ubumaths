@@ -3,13 +3,13 @@
  * ==============================================================================
  *
  * La route `PUT /api/worksheets/[id]` enregistre en deux temps :
- * 1. `prepareClassification` lit ce qu'il faut, applique la règle du nombre de
- *    notions et compose le titre ; rien n'est écrit, un refus rend un message ;
- * 2. `applyClassification` écrit dans l'ordre qui passe la garde de la base
- *    (trigger différé, vérifié à la fin de chaque requête) : notions en trop
- *    retirées, PUIS fiche mise à jour (catégorie, type), PUIS notions écrites.
- *    Dans l'autre ordre, passer de Révisions (trois notions) à Applications
- *    (une) serait refusé (23514).
+ * 1. `prepareClassification` lit ce qu'il faut, vérifie les notions (connues,
+ *    sans doublon) et compose le titre ; rien n'est écrit, un refus rend un
+ *    message ;
+ * 2. `applyClassification` écrit : notions retirées, PUIS fiche mise à jour
+ *    (catégorie, type), PUIS notions écrites. Une fiche a autant de notions
+ *    qu'on veut, quels que soient son type et sa catégorie (ADR 0041, amendé
+ *    le 2026-11-19 : la garde « une seule notion » de la base est retirée).
  *
  * `title` reste toujours rempli : sans titre libre, le titre composé
  * (« Suites · Entraînement technique ») y est réécrit à chaque enregistrement,
@@ -23,7 +23,6 @@ import {
 	type WorksheetType
 } from '#lib/types/worksheets.ts';
 import {
-	allowsSeveralNotions,
 	composedTitle,
 	isWorksheetCategory,
 	type WorksheetCategory
@@ -73,12 +72,15 @@ export type ClassificationPlan =
 /** Ce qu'une fiche peut porter : une notion ou une sous-notion, jamais une branche */
 const CLASSIFIABLE_KINDS = new Set(['notion', 'subnotion']);
 
+/** Longueur maximale d'un titre (contrainte `worksheets_title_check`) */
+const TITLE_MAX_LENGTH = 255;
+
 const MESSAGES = {
-	oneNotion:
-		'Une seule notion pour cette fiche : plusieurs notions seulement en Révisions et en Automatismes.',
 	categoryType: 'Seule une fiche d’exercices a une catégorie.',
 	unknownNode: 'Choisis une notion ou une sous-notion de l’arbre.',
 	duplicate: 'Une même notion ne peut pas être choisie deux fois.',
+	titleTooLong:
+		'Le titre composé de ces notions est trop long (255 caractères au plus) : retire une notion, ou écris un titre libre.',
 	emptyTitle:
 		'Sans titre libre, la fiche a besoin d’une notion ou d’une catégorie : choisis-en une, ou écris un titre.'
 } as const;
@@ -134,7 +136,7 @@ async function notionNames(supabase: SB, ids: string[]): Promise<Map<string, str
 
 /**
  * Prépare l'enregistrement : la fiche visée (type, catégorie, case, notions),
- * la règle du nombre de notions, le titre composé. N'écrit rien.
+ * les notions (connues, sans doublon), le titre composé. N'écrit rien.
  *
  * @throws si une lecture échoue (erreur serveur, pas un refus)
  */
@@ -160,9 +162,6 @@ export async function prepareClassification(
 	const current = currentRows.map((row) => row.node_id);
 	const notions = request.notions ?? current;
 	if (new Set(notions).size !== notions.length) return { ok: false, message: MESSAGES.duplicate };
-	if (notions.length > 1 && !allowsSeveralNotions(type, category)) {
-		return { ok: false, message: MESSAGES.oneNotion };
-	}
 
 	// Noms relus en base (et non pris du client) : le titre composé suit l'arbre
 	const names = await notionNames(supabase, notions);
@@ -191,6 +190,7 @@ export async function prepareClassification(
 			notions.map((id) => names.get(id) ?? '')
 		);
 		if (title === '') return { ok: false, message: MESSAGES.emptyTitle };
+		if (title.length > TITLE_MAX_LENGTH) return { ok: false, message: MESSAGES.titleTooLong };
 		update.title = title;
 	}
 
@@ -198,8 +198,7 @@ export async function prepareClassification(
 }
 
 /**
- * Écrit dans l'ordre qui passe la garde de la base : notions en trop
- * retirées, fiche mise à jour (`updateWorksheet`, par la route), notions
+ * Écrit : notions retirées, fiche mise à jour (`updateWorksheet`, par la route), notions
  * écrites avec leur position. Chaque écriture est vérifiée (la RLS échoue en
  * silence).
  *
@@ -223,7 +222,7 @@ export async function applyClassification(
 				.in('node_id', removed)
 				.select('node_id');
 			if (error || data?.length !== removed.length) {
-				throw new Error(`notions en trop non retirées : ${error?.message ?? 'refus silencieux'}`);
+				throw new Error(`notions non retirées : ${error?.message ?? 'refus silencieux'}`);
 			}
 		}
 	}
