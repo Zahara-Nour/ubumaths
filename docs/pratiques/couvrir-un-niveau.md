@@ -250,6 +250,11 @@ principe, chaque bloc ``figure passé au moteur de l'appli (`parseFigure` puis
    migration rejouée depuis son fichier). Test **rouge sans la migration**, puis vert.
    Nom du fichier : l'heure réelle, `pnpm migration:horodatage` (jamais « max + 1 », collision du
    2026-11-01).
+   **PR de rangement courte** : si elle ne contient que la migration **ajoutée**, son test
+   d'intégration, les JSON du lot et la doc, la CI d'intégration ne lance que ce test (~1 min au lieu
+   de ~19 min de suite complète, `scripts/ci-integration-ciblee.sh`) ; la suite complète repasse
+   chaque nuit. Tout autre fichier (un `.ts`, une migration modifiée, un helper) relance la suite
+   complète : ne rien glisser d'autre dans cette PR.
 4. `security-auditor` (sans finding bloquant), CI verte, `pnpm check:migrations --pr <n>`, merge,
    `pnpm db:migrate` depuis le dépôt
    principal (les 4 conditions de `CLAUDE.md`), puis vérifier en prod : nœud, un tag, brouillon.
