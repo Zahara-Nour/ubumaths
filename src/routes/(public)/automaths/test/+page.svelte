@@ -276,7 +276,7 @@
 	}
 
 	/**
-	 * « En classe », « Contrôle blanc » : Recommencer tire de nouvelles questions
+	 * « En classe », « Contrôle blanc », « Course aux nombres » : Recommencer tire de nouvelles questions
 	 * (Contrôle blanc et évaluation : sans carte de cours) ; avec une graine de
 	 * série, les mêmes questions
 	 */
@@ -576,19 +576,23 @@
 				/>
 			{/key}
 		{:else if testSession.mode === 'course'}
-			<!-- Course mode -->
-			<TestCourse
-				session={testSession}
-				onComplete={handleTestComplete}
-				onBack={handleBack}
-				inEvaluation={!!assignmentId}
-				collectOnly={!!attemptId}
-				showResults={!attemptId}
-				unitKeys={attemptUnitKeys}
-				{buddyGain}
-				{mathouNews}
-				traceRecorder={seriesTraceRecorder}
-			/>
+			<!-- Course mode : nouvelles questions = nouveau composant (chrono à neuf) -->
+			{#key testSession.instances}
+				<TestCourse
+					session={testSession}
+					onComplete={handleTestComplete}
+					onBack={handleBack}
+					onRestart={handleSeriesRestart}
+					sameQuestions={seriesSeed !== undefined}
+					inEvaluation={!!assignmentId}
+					collectOnly={!!attemptId}
+					showResults={!attemptId}
+					unitKeys={attemptUnitKeys}
+					{buddyGain}
+					{mathouNews}
+					traceRecorder={seriesTraceRecorder}
+				/>
+			{/key}
 		{:else if testSession.mode === 'flash' && !assignmentId}
 			<!-- Forme « Flash-cards » : nouvelles questions = nouveau composant -->
 			{#key testSession.instances}

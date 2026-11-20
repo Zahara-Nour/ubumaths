@@ -161,4 +161,51 @@ describe('« Mêmes nombres pour tous » : Recommencer', () => {
 
 		expect(after).not.toBe(before);
 	});
+	/** Course aux nombres, une question : « Terminer » (sans répondre), puis le bouton de fin */
+	async function raceThenRestart(query: Record<string, string>, restartLabel: string) {
+		const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true);
+		url.current = new URL(`http://localhost/automaths/test?${new URLSearchParams(query)}`);
+		await seedTemplatesCache();
+		const main = document.body.appendChild(document.createElement('main'));
+		const screen = await render(Page, { target: main, props: { data: { user: null } } as never });
+		await vi.waitFor(() => expect(shown(main)).not.toBe(''));
+		const before = shown(main);
+
+		await click(main, 'Terminer');
+		await click(main, restartLabel);
+		await vi.waitFor(() => expect(button(main, 'Terminer')).toBeDefined());
+		const after = shown(main);
+
+		await screen.unmount();
+		main.remove();
+		confirmSpy.mockRestore();
+		return { before, after };
+	}
+
+	function courseLink(extra: Record<string, string> = {}): Record<string, string> {
+		return {
+			[SERIES_LINK_PARAM]: encodeSeriesParam([{ templateId: TEMPLATE_ID, quantity: 1, delay: 20 }]),
+			mode: 'course',
+			time: '300',
+			...extra
+		};
+	}
+
+	it('Course aux nombres, sans graine : « Recommencer avec de nouvelles questions » tire d’autres nombres', async () => {
+		const { before, after } = await raceThenRestart(
+			courseLink(),
+			'Recommencer avec de nouvelles questions'
+		);
+
+		expect(after).not.toBe(before);
+	});
+
+	it('Course aux nombres, avec une graine : « Recommencer les mêmes questions » redonne les mêmes', async () => {
+		const { before, after } = await raceThenRestart(
+			courseLink({ [SERIES_SEED_PARAM]: '123456' }),
+			'Recommencer les mêmes questions'
+		);
+
+		expect(after).toBe(before);
+	});
 });

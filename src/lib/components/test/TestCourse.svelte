@@ -17,6 +17,10 @@
 	- onBack: () => void - Callback to return to cart (« Mes évaluations » pour une évaluation)
 	- inEvaluation: évaluation assignée → pas de « Recommencer » (une tentative de
 	  plus ne passe que par « Mes évaluations »)
+	- onRestart: « Recommencer » demande de nouvelles questions à la page (comme les
+	  autres formes) ; absent → la même série, remise à zéro sur place
+	- sameQuestions: « Mêmes nombres pour tous » (lien avec graine) → Recommencer
+	  redonne les mêmes questions, et le bouton le dit
 	- collectOnly: évaluation notée → réponses collectées SANS correction (ADR 0015)
 	- showResults: false → pas d'écran de résultats (la page affiche la correction
 	  du serveur) ; « Envoi de ta copie… » en attendant
@@ -56,6 +60,8 @@
 		session: TestSession;
 		onComplete: (result: TestResult) => void;
 		onBack: () => void;
+		onRestart?: () => void;
+		sameQuestions?: boolean;
 		inEvaluation?: boolean;
 		collectOnly?: boolean;
 		showResults?: boolean;
@@ -69,6 +75,8 @@
 		session,
 		onComplete,
 		onBack,
+		onRestart,
+		sameQuestions = false,
 		inEvaluation = false,
 		collectOnly = false,
 		showResults = true,
@@ -231,9 +239,14 @@
 	}
 
 	/**
-	 * Handle restart test
+	 * « Recommencer » : la page tire de nouvelles questions (le composant est
+	 * remonté) ; sans elle, la même série est remise à zéro sur place
 	 */
 	function handleRestart() {
+		if (onRestart) {
+			onRestart();
+			return;
+		}
 		// Reset state
 		answers = new Map();
 		validated.clear();
@@ -256,10 +269,11 @@
 		showScrollTop = window.scrollY > 300;
 	}
 
-	// Listen to scroll events
-	if (typeof window !== 'undefined') {
+	// Écoute du défilement, retirée au démontage (composant remonté à chaque « Recommencer »)
+	$effect(() => {
 		window.addEventListener('scroll', handleScroll);
-	}
+		return () => window.removeEventListener('scroll', handleScroll);
+	});
 </script>
 
 {#if !isCompleted}
@@ -359,6 +373,7 @@
 	<TestResults
 		result={testResult}
 		onRestart={handleRestart}
+		{sameQuestions}
 		onBackToCart={onBack}
 		{inEvaluation}
 		{buddyGain}
