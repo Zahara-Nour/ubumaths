@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-20, après #2940._
+_Mis à jour le 2026-11-20 : brouillons en prod, PR de rangement ouverte._
 
-- **État** : lot 1 (3 modèles, `scripts/questions/2de-ensembles-calculs/`) mergé (#2940) ; pas encore en prod.
-- **Prochaine action** : après le `--publier` de David, vérifier les 3 brouillons en prod, commiter les ids (nouveau worktree `../ubumaths-wt-ensembles-2de`, branche `feat/questions-ensembles-2de-rangement`), migration nœud + tag (2-243 niv. 4, 2-203 niv. 5, 2-206 niv. 2), puis page à cocher.
-- **En attente de David** : `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/2de-ensembles-calculs --publier` depuis le dépôt principal.
-- **Pièges en cours** : ne jamais nommer la plateforme d'origine ; Chrome piloté depuis le laptop de David (`[::1]` = le laptop) → aperçu par Playwright sur le Mac mini ; petits ajouts (π, 5,78, −123) reportés à un lot de corrections.
-- **Worktree / branche** : aucun (retiré après #2940).
+- **État** : les 3 brouillons sont en prod (da94a049, e41081cc, 776c4918) ; PR des ids + migration nœud + tag ouverte (test rouge sans, vert avec, audit sans finding bloquant).
+- **Prochaine action** : CI verte → `check:migrations --pr`, merge, `migration list --linked` puis `db:migrate` depuis le dépôt principal, vérification en prod ; puis page à cocher.
+- **En attente de David** : rien avant la page à cocher.
+- **Pièges en cours** : ne jamais nommer la plateforme d'origine ; Chrome piloté depuis le laptop de David (`[::1]` = le laptop) → aperçu par Playwright sur le Mac mini ; petits ajouts (π, 5,78, −123) reportés.
+- **Worktree / branche** : `../ubumaths-wt-ensembles-2de` · `feat/questions-ensembles-2de-rangement`.
 
 ## Décisions de David (2026-11-20)
 
