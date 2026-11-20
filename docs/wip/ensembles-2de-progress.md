@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-20 : phase 0 du lot 1 validée par David._
+_Mis à jour le 2026-11-20 : lot 1 écrit, PR des fichiers ouverte._
 
-- **État** : phase 0 du lot 1 **validée** (« je suis tes recos », 2026-11-20) : modèles 1, 2, 3 à écrire ; petits ajouts reportés. Rien d'écrit.
-- **Prochaine action** : ouvrir le worktree `../ubumaths-wt-ensembles-2de` (branche `feat/questions-ensembles-2de`), écrire le lot (skill `couvrir-niveau` § 2, gabarit `docs/wip/questions-2de/lot-ensembles-10a-2de.py`), simulation verte, essai en base locale, PR des fichiers.
-- **En attente de David** : rien avant la PR ; ensuite `create-questions --publier` (David, `!`).
-- **Pièges en cours** : ne jamais nommer la plateforme d'origine (commits, branches, PR, journal) ; niveaux = premier libre de chaque sous-notion, relevés en prod avant d'écrire.
-- **Worktree / branche** : aucun pour l'instant.
+- **État** : lot 1 écrit (`scripts/questions/2de-ensembles-calculs/`, script `docs/wip/questions-2de/lot-ensembles-calculs-2de.py`) : 3 modèles, 40 specs vertes, essai en base locale joué dans l'aperçu. PR des fichiers ouverte.
+- **Prochaine action** : merge de la PR des fichiers ; puis `create-questions --publier` (David), commit des ids, migration nœud + tag (2-243, 2-203, 2-206).
+- **En attente de David** : `pnpm tsx scripts/create-questions.ts --dir scripts/questions/2de-ensembles-calculs --publier` (prod, `!`), après le merge.
+- **Pièges en cours** : ne jamais nommer la plateforme d'origine ; Chrome piloté depuis le laptop de David : `[::1]` y désigne le laptop → aperçu joué par Playwright sur le Mac mini.
+- **Worktree / branche** : `../ubumaths-wt-ensembles-2de` · `feat/questions-ensembles-2de`.
 
 ## Décisions de David (2026-11-20)
 
@@ -46,3 +46,12 @@ Un modèle ne porte aucune marque « automatisme ». Il est relié à des **poin
 4. **Petits ajouts** (π, 5,78, −123) sur modèles publiés : proposés pour plus tard.
 
 Décisions (David, 2026-11-20, « je suis tes recos ») : modèles 1 et 2 tels quels ; modèle 3 sur le point 2-206 ; petits ajouts reportés (à noter pour un lot de corrections de modèles publiés) ; question d'accès : personne (la migration range des brouillons, aucune règle d'accès ne change).
+
+## Lot 1 : écrit (2026-11-20)
+
+- Niveaux relevés en prod : ℕ, ℤ, 𝔻, ℚ, ℝ → **4** ; Opérations sur les ensembles → **5** ; complémentaire → **2**.
+- `01-plus-petit-ensemble-calcul` (2-243, niv. 4) : 6 variations, choix ℕ/ℤ/𝔻/ℚ/ℝ dans l'ordre ; 12 specs (erreurs : signe oublié, ℝ « à cause des racines », ℚ « à cause des fractions », 𝔻 pour une fraction non décimale).
+- `02-appartenance-inclusion` (2-203, niv. 5) : 4 variations, choix ∈/∉/⊂/⊄ (`\not\subset`, rendu vérifié) ; 19 specs.
+- `03-a-prive-de-b` (2-206, niv. 2) : A∖B, B∖A, A ⊂ B → ∅ ; réponse `answerKind: intervalles` ; 9 specs.
+- `question:specs` : 300 tirages par variation, 0 `\textcolor` hors `$`, aucun `{{if}}` non résolu. Base locale : créés, joués dans l'aperçu (faux jugé faux, juste jugé juste, ensemble tapé accepté).
+- Base locale : un admin orphelin d'un test d'intégration (`…@test.com`) bloquait `create-questions` (« exactement 1 profil admin ») → supprimé.
