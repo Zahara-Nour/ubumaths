@@ -1,6 +1,6 @@
 """Écrit les 8 modèles du lot 1 du CM2 (numération des entiers) dans scripts/questions/cm2-1/.
 
-Phase 0 validée par David le 2026-10-28 (§ 6 du journal `docs/wip/questions-cm2-progress.md`).
+Phase 0 validée par David le 2026-10-28 (§ 6 du journal `docs/archive/wip/questions-cm2-progress.md`).
 Bornes : `cycle3.json`, CM2 (entiers d'au plus neuf chiffres, neuf rangs, ranger jusqu'à cinq
 nombres ; exemples du programme : 3 405 270 … 3 450 207, 12 342 320 pailles en cartons de
 10 000, le nombre qui suit 999 999). Un point par modèle ; le nœud et le tag sont posés par la

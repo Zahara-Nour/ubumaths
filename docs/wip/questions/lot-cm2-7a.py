@@ -1,7 +1,7 @@
 """Écrit les 6 modèles du lot 7a du CM2 (droites graduées : entiers et fractions) dans
 scripts/questions/cm2-7a/.
 
-Phase 0 du 2026-11-02 (§ 12 du journal `docs/wip/questions-cm2-progress.md`), recommandations
+Phase 0 du 2026-11-02 (§ 12 du journal `docs/archive/wip/questions-cm2-progress.md`), recommandations
 suivies par David (§ 12.1) : 7a = 129, 007 (entiers), 018, 134, 017, 133 (fractions) ; #4 garde la
 variation « entier moins une fraction » (exemple du BO, 4 − 2/3).
 Bornes : `cycle3.json`, CM2 (graduations de 1 en 1, 10 en 10, 100 en 100, etc. ; fractions

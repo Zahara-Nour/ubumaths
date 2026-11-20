@@ -1,6 +1,6 @@
 """Écrit les 7 modèles du lot 6a du CM2 (fractions décimales) dans scripts/questions/cm2-6a/.
 
-Phase 0 du 2026-11-01 (§ 11 du journal `docs/wip/questions-cm2-progress.md`), recommandations
+Phase 0 du 2026-11-01 (§ 11 du journal `docs/archive/wip/questions-cm2-progress.md`), recommandations
 suivies par David (« tes recos ? » puis « je valide ») : découpage 6a (fractions décimales : 023,
 024, 027, 028, 139, 140, 029) / 6b (décimaux) ; pour intercaler (#6), une fraction décimale est
 exigée (`requiredForm: 'fraction'`, l'écriture à virgule reçoit un message de forme).

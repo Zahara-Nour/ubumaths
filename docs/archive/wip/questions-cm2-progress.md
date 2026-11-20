@@ -1,24 +1,17 @@
 # Chantier « questions-cm2 » — couvrir les points du CM2 en modèles de questions
 
-> Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) (skill `couvrir-niveau`).
-> Chantiers voisins : CE1 ([questions-ce1-progress.md](../archive/wip/questions-ce1-progress.md)), 6e
-> ([questions-6-progress.md](../archive/wip/questions-6-progress.md)).
+> Démarche : [couvrir-un-niveau.md](../../pratiques/couvrir-un-niveau.md) (skill `couvrir-niveau`).
+> Chantiers voisins : CE1 ([questions-ce1-progress.md](questions-ce1-progress.md)), 6e
+> ([questions-6-progress.md](questions-6-progress.md)).
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, après #2927 (rangement du lot 17) et son `db:migrate`._
+_Mis à jour le 2026-11-20 : chantier CLOS, journal archivé._
 
-- **État** : lots 0 à 16 publiés ; lot 17 (097 `0cb5aa4f`, 102 `0a155341`) en brouillon, rangé et tagué en prod
-  (§ 25.3). 095 reste D (outils manquants n° 45). C'est le **dernier lot** du chantier.
-- **Prochaine action** : lire les verdicts de la page à cocher (https://claude.ai/artifact/BCLEK25ZYEb5QALukL4zRq,
-  collection `verdicts`, vide au départ), puis `publier-lot --dir scripts/questions/cm2-17` en simulation ; ensuite
-  recompte de clôture (découpage contre PR mergées et MCP) et versement.
-- **En attente de David** : la relecture des 2 fiches ; puis `publier-lot --publier` (`!`).
-- **Pièges en cours** : `Doc-inchangée:` dans un COMMIT ; sujet de commit en minuscule, corps ≤ 100 caractères par ligne.
-  `db:migrate` : `migration list --linked` d'abord. `create-questions --publier` et `publier-lot --publier` : David
-  (`!`). Serveur d'essai sur 5186. La page à cocher ne dessine pas ` ```patron ` : le jouer dans l'aperçu. Index du
-  dépôt principal partagé : `git commit -- <fichier>`.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, détaché sur `origin/main`.
+- **État** : CM2 couvert, 152 points sur 158 (5 hors appli, 095 attend l'outil n° 45) ; couverture versée dans
+  `docs/systeme/programmes/bornes/cycle3.md` (§ CM2), pièges dans `docs/pratiques/couvrir-un-niveau.md`.
+- **Reste ailleurs** : figure composée (`outils-manquants.md`, n° 45, 095) ; fractions sur les secteurs (n° 44) ;
+  gras dans une cellule de tableau (#2914, `verifications-manuelles.md`, après `deploy:prod`).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -1978,3 +1971,21 @@ Recommandations suivies (« je te suis ») : (a) 095 reste D (outils manquants n
 - `garde-niveaux-tags` : aucun niveau manquant. Page à cocher (2 fiches, base prod ; alerte attendue : ` ```patron `
   non dessiné) : https://claude.ai/artifact/BCLEK25ZYEb5QALukL4zRq ; `verdicts` vide au départ. Rendu à 390 px
   (Playwright, fichier local) : pas de débordement, 0 erreur.
+
+### 25.4 Lot 17 : relecture, publication (2026-11-20)
+
+- Page à cocher : 2 fiches « ok », sans commentaire. David lance `publier-lot --dir scripts/questions/cm2-17
+--publier` (la simulation, qui lit la prod, a été refusée par le contrôle des permissions). MCP : `0cb5aa4f`,
+  `0a155341` `published`.
+
+## 26. Clôture (2026-11-20)
+
+Recompte MCP : **202 modèles publiés** au CM2 (168 CM2 seul, 27 CM1 + CM2, 7 CM2 + 6e), tous rangés, aucun publié sans
+tag CM2 ; 4 brouillons, tous voulus (lot 0 : `32351845`, `e58b1357`, `e009f9d0`, `322f3479`). **152 points sur 158**
+ont un modèle publié ; les 6 sans modèle sont ceux décidés : 126, 079, 080, 096, 106 (D) et 095 (outil n° 45). 087 et
+101 (anciens D) sont couverts par les jumeaux CM1 + CM2 `7d048525`, `9fe0fee6`, `ebc05cbb`. Découpage (§ 14, § 24.1,
+§ 25.1) contre les PR mergées : lots 0 à 17 tous mergés et publiés (liste des PR dans `cycle3.md`).
+
+Versement : couverture dans `docs/systeme/programmes/bornes/cycle3.md` (§ CM2), pièges dans
+`docs/pratiques/couvrir-un-niveau.md`, journal archivé. Le commentaire de
+`NumberLine-etiquettes-longues.svelte.test.ts` cite encore l'ancien chemin du journal (code : à corriger dans une PR).

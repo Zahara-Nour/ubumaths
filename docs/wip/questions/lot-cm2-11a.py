@@ -1,6 +1,6 @@
 """Écrit les 7 modèles du lot 11a du CM2 (problèmes en une étape) dans scripts/questions/cm2-11a/.
 
-Phase 0 validée par David le 2026-11-18 (§ 17 et 17.1 du journal `docs/wip/questions-cm2-progress.md`,
+Phase 0 validée par David le 2026-11-18 (§ 17 et 17.1 du journal `docs/archive/wip/questions-cm2-progress.md`,
 « je suis tes recos ») : 058 en deux modèles (parties-tout, comparaison additive) ; 061 sans variation en
 une étape ; 115 avec une variation chiffrée (le « oui » vient du contexte écrit) ; 116 avec des nombres
 propres à chaque variation ; niveaux : parties-tout 25, comparaison 6 et 7, multiplicatifs 14 ; nombre

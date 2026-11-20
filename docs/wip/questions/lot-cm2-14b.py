@@ -1,7 +1,7 @@
 """Écrit les 6 modèles du lot 14b du CM2 (courbes, construire, problèmes) dans scripts/questions/cm2-14b/.
 
 Phase 0 validée par David le 2026-11-19 (§ 22 et 22.1 du journal
-`docs/wip/questions-cm2-progress.md`, « je te suis ») : 6 modèles (CM2-125, 159, 121, 122, 108 ×2) ;
+`docs/archive/wip/questions-cm2-progress.md`, « je te suis ») : 6 modèles (CM2-125, 159, 121, 122, 108 ×2) ;
 niveaux 4, 5, 6 (courbes et repères), 10 (diagrammes en barres), 4 et 4 (notion « Représenter des
 données ») ; 121 avec un relevé brut à compter (échelles 1, 2, 5, 10, effectifs ≤ 100) ; cocktail :
 parts lues à l'œil (moitié, quart), le bloc n'écrit pas de fractions sur les secteurs.

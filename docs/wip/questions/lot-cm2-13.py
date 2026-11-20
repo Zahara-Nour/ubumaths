@@ -1,7 +1,7 @@
 """Écrit les 5 modèles du lot 13 du CM2 (aires) dans scripts/questions/cm2-13/.
 
 Phase 0 validée par David le 2026-11-19 (§ 20 et 20.1 du journal
-`docs/wip/questions-cm2-progress.md`, « je suis tes recos ») : 5 modèles (CM2-073, 074, 075, 120,
+`docs/archive/wip/questions-cm2-progress.md`, « je suis tes recos ») : 5 modèles (CM2-073, 074, 075, 120,
 072), tous au niveau 1 de leur sous-notion ; rien de plus pour 071 ; 13-2 sans les deux sauts
 m² ↔ cm² ; côtés en cm en V1 et V2, en m ou dm dans le problème (V3), nombres entiers.
 

@@ -367,6 +367,40 @@ Chantier `questions-cm1` (démarche [couvrir-un-niveau.md](../../../pratiques/co
 
 ## CM2
 
+### Couverture en modèles de questions (prod, 2026-11-20)
+
+Chantier `questions-cm2` (démarche [couvrir-un-niveau.md](../../../pratiques/couvrir-un-niveau.md)), du 2026-10-27 au
+2026-11-20 ; journal dans `docs/archive/wip/questions-cm2-progress.md`, scripts d'écriture dans
+`docs/wip/questions/lot-cm2-*.py`, fichiers des lots dans `scripts/questions/cm2-*`.
+
+- **202 modèles publiés** contiennent le niveau `CM2` (168 CM2 seul, 27 CM1 + CM2, 7 CM2 + 6e), tous rangés et tagués ;
+  **152 points sur 158** ont au moins un modèle publié (relevé MCP du 2026-11-20).
+- **6 points sans modèle, par décision de David** : 126 (suite orale), 079 et 080 (gabarit, pliage), 096 (rédiger un
+  programme de construction), 106 (recueillir des données) sont non évaluables dans l'appli ; 095 (construire une
+  figure composée) attend l'outil « figure composée » (`docs/wip/outils-manquants.md`, n° 45). 087 et 101, d'abord
+  classés hors appli, sont couverts par des modèles CM1 + CM2 (segment à la règle graduée, patron du cube à compléter).
+- **Lot 0, l'existant** (#1896) : les 12 modèles du CM1 « relève du CM2 » passés au CM2 par le lot 0 du CM1 (#1893) ;
+  8 modèles du CM2 hors programme passés en 6e ou en 5e (critères par 3 et par 9 : 5-010, 5-119) ; **4 repassés en
+  brouillon, à ne pas republier** : `32351845` (× 25), `e58b1357` (produits hors tables), `e009f9d0` (× 50, remplacé
+  au lot 4), `322f3479` (doublon de `dd7db98e`, CM2-039).
+- **Lots écrits** (fichiers, puis rangement et tags) : 1 numération des entiers (#1909, #1911, #1957) ; 2
+  divisibilité (#1971, #1985) ; 3 calcul mental sur les entiers (#2005, #2010, #2016) ; 4 calcul mental sur les
+  décimaux (#2056, #2060, #2086) ; 5a fractions, sens (#2103, #2117) ; 5b calculs sur les fractions (#2123, #2125,
+  #2129) ; 6a fractions décimales (#2156, #2174) ; 6b décimaux (#2186, #2193) ; 7a droites graduées, entiers et
+  fractions (#2212, #2218) ; 7b droites graduées décimales (#2236, #2770) ; 8 relations entre fractions, estimation,
+  opérations posées (#2777, #2780) ; 9 partages (#2789, #2794) ; 10 heures et durées à la seconde (#2807, #2816) ;
+  11a problèmes en une étape (#2837, #2841) ; 11b en plusieurs étapes (#2848, #2852) ; 12 suites et motifs (#2864,
+  #2865) ; 13 aires (#2877, #2878) ; 14a données lues (#2883, #2885) ; 14b courbes, construire, problèmes (#2893,
+  #2895) ; 15 probabilités (#2905, #2907) ; 16 angle droit et figures (#2915, #2917) ; 17 symétrique sur une
+  diagonale, patron du pavé (#2925, #2927). Hors lots : 067 et 152 en blocs Scratch (#2685, #2688, #2693, #2696).
+- **Choix de forme** (décisions de David) : case « choix » partout, jamais l'ancien QCM ; modèles CM2 propres dans les
+  bornes du CM2 plutôt que les jumeaux d'autres niveaux, sauf les tables (035, 148, 036 : modèles du CM1 étendus au
+  CM2) et les jumeaux CM1 + CM2 de la géométrie, qui couvrent 076 à 078 et les anciens lots 17 à 19 ; toute fraction
+  égale acceptée (`reducedFractions: off`), corrigé simplifié ; trotteuse lue sur un cadran à chiffres ; 121 dans les
+  limites des barres à construire (échelles 1, 2, 5, 10, effectifs ≤ 100) ; 124 et 158 sans fractions écrites sur les
+  secteurs (`outils-manquants.md`, n° 44) ; 111 refuse « 1 chance sur 3 » pour « 2 chances sur 6 », avec un message ;
+  trapèze : le nom le plus précis attendu.
+
 ### Bornes générales
 
 | Borne                                                                                                                                                             | Force        | Source                                                             |

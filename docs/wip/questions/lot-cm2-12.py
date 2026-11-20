@@ -1,7 +1,7 @@
 """Écrit les 5 modèles du lot 12 du CM2 (suites et motifs) dans scripts/questions/cm2-12/.
 
 Phase 0 validée par David le 2026-11-19 (§ 19 et 19.1 du journal
-`docs/wip/questions-cm2-progress.md`, « je te suis ») : 5 modèles (CM2-068, 069, 070), tous au
+`docs/archive/wip/questions-cm2-progress.md`, « je te suis ») : 5 modèles (CM2-068, 069, 070), tous au
 niveau 1 de « suites de motifs » ; 12-1 V2 avec des décimaux (deux chiffres après la virgule au
 plus) ; 12-5 en case « choix », une seule réponse juste.
 

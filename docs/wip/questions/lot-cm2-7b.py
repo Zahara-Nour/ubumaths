@@ -1,7 +1,7 @@
 """Écrit les 4 modèles du lot 7b du CM2 (droites graduées : fractions décimales et décimaux) dans
 scripts/questions/cm2-7b/.
 
-Phase 0 du 2026-11-02 (§ 12 du journal `docs/wip/questions-cm2-progress.md`), recommandations
+Phase 0 du 2026-11-02 (§ 12 du journal `docs/archive/wip/questions-cm2-progress.md`), recommandations
 suivies par David (§ 12.1) : 7b = 138, 025 (fractions décimales), 144, 032 (décimaux).
 Bornes : `cycle3.json`, CM2 (dénominateurs 10, 100, 1 000 ; décimaux en millièmes ou par
 agrandissement, 2,812 ; 33,916). Un point par modèle ; le nœud et le tag sont posés par la

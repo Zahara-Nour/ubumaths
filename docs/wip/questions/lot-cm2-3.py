@@ -1,6 +1,6 @@
 """Écrit les 5 modèles neufs du lot 3 du CM2 (calcul mental sur les entiers) dans scripts/questions/cm2-3/.
 
-Phase 0 validée par David le 2026-10-30 (§ 8 du journal `docs/wip/questions-cm2-progress.md`).
+Phase 0 validée par David le 2026-10-30 (§ 8 du journal `docs/archive/wip/questions-cm2-progress.md`).
 Bornes : `cycle3.json`, CM2 (tables : facteurs de 0 à 10 ; ± 8, 9, 18, 19, …, 98, 99, autre
 nombre de 10 à 9 999 ; ÷ 4 et ÷ 8 sans taille propre, quotient décimal admis). Les tables
 d'addition et de multiplication (CM2-035, 148, 036) reprennent trois modèles du CM1 (migration) ;

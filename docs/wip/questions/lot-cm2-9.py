@@ -1,6 +1,6 @@
 """Écrit les 5 modèles du lot 9 du CM2 (partages) dans scripts/questions/cm2-9/.
 
-Phase 0 du 2026-11-17 (§ 15 du journal `docs/wip/questions-cm2-progress.md`), recommandations
+Phase 0 du 2026-11-17 (§ 15 du journal `docs/archive/wip/questions-cm2-progress.md`), recommandations
 suivies par David (§ 15.1) : grilles à lire jusqu'à 60 parts (lignes de 10 au-delà de 30) ; un
 seul lot. Bornes : `cycle3.json`, CM2-131, 132 (dénominateur au plus 60), 136, 137, 143
 (dixièmes ou centièmes). Un point par modèle ; le nœud et le tag sont posés par la migration de

@@ -1,6 +1,6 @@
 """Écrit les 5 modèles du lot 10 du CM2 (heures et durées) dans scripts/questions/cm2-10/.
 
-Phase 0 validée par David le 2026-11-18 (§ 16 et 16.1 du journal `docs/wip/questions-cm2-progress.md`,
+Phase 0 validée par David le 2026-11-18 (§ 16 et 16.1 du journal `docs/archive/wip/questions-cm2-progress.md`,
 « je te suis ») : 5 modèles (CM2-082, 083, 153, 084, 085) ; trotteuse lue et posée sur un cadran à
 12 chiffres puis `chiffres: quarts`, pas de cadran nu ; pas d'« affichage digital » ; conversions dans
 les problèmes seulement ; niveaux après ceux pris : lire 9, placer 10 (lecture de l'heure) ; durée 9,

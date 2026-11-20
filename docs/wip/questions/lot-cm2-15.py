@@ -1,7 +1,7 @@
 """Écrit les 5 modèles du lot 15 du CM2 (probabilités) dans scripts/questions/cm2-15/.
 
 Phase 0 validée par David le 2026-11-19 (§ 23 et 23.1 du journal
-`docs/wip/questions-cm2-progress.md`, « je valide ») : 5 modèles (CM2-110, 111, 112, 113, 114) ;
+`docs/archive/wip/questions-cm2-progress.md`, « je valide ») : 5 modèles (CM2-110, 111, 112, 113, 114) ;
 niveaux 3 et 4 (événements : 110, 114), 3 et 4 (probabilité simple : 111, 112), 3 (Expériences
 aléatoires : 113) ; « 1 chance sur 3 » pour « 2 chances sur 6 » refusé (on compte toutes les issues) ;
 114 : issues données dans un tableau (l'arbre impose des fractions sur ses branches, § 23.2), l'élève

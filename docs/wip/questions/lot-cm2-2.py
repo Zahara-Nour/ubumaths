@@ -1,6 +1,6 @@
 """Écrit les 5 modèles du lot 2 du CM2 (multiples et diviseurs) dans scripts/questions/cm2-2/.
 
-Phase 0 validée par David le 2026-10-29 (§ 7 du journal `docs/wip/questions-cm2-progress.md`).
+Phase 0 validée par David le 2026-10-29 (§ 7 du journal `docs/archive/wip/questions-cm2-progress.md`).
 Bornes : `cycle3.json`, CM2 (CM2-130 diviseur de 2 à 10 ; CM2-009 nombre ≤ 100 ; CM2-010 et
 CM2-011 nombres ≤ 30 ; CM2-012 deux nombres < 15, multiples communs ≤ 100). Un point par
 modèle ; le nœud et le tag sont posés par la migration de rangement, après le `--publier` de

@@ -1,6 +1,6 @@
 """Écrit les 2 modèles du lot 17 du CM2 (symétrique, patron du pavé) dans scripts/questions/cm2-17/.
 
-Phase 0 validée par David le 2026-11-19 (§ 25 du journal `docs/wip/questions-cm2-progress.md`,
+Phase 0 validée par David le 2026-11-19 (§ 25 du journal `docs/archive/wip/questions-cm2-progress.md`,
 « je te suis ») : 095 reste D (outils manquants n° 45) ; 2 modèles ; 097 V1 à V3 sur une
 diagonale du quadrillage, V4 tous axes ; niveaux : Symétrie axiale 4, patrons 7 ; faux patrons du
 pavé = les 8 faux du cube en rectangles.

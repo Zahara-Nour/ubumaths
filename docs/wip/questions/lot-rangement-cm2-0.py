@@ -7,7 +7,7 @@ ils sortent de ce lot. Le sort de 322f3479 (doublon de dd7db98e sur CM2-039) res
 
 Corps (étapes 1 à 5) repris du lot 0 du CE1 (`20261027000100_questions_ce1_rangement_tags.sql`) ;
 seules les données et le rollback sont écrits ici. Phase 0 validée par David le 2026-10-28 (§ 5 du
-journal `docs/wip/questions-cm2-progress.md`). Relevé en prod le 2026-10-28 (MCP, lecture seule) :
+journal `docs/archive/wip/questions-cm2-progress.md`). Relevé en prod le 2026-10-28 (MCP, lecture seule) :
 chemins des nœuds, niveaux, statuts, aucun tag sur les 11 modèles, 0 donnée d'élève.
 
     python3 docs/wip/questions/lot-rangement-cm2-0.py
@@ -53,7 +53,7 @@ ENTETE = f"""-- ================================================================
 -- Le contenu ne change pas : `updated_at` est PRÉSERVÉ. Les modèles du CM1 passés au CM2 l'ont été par
 -- le chantier « questions-cm1 » (#1893).
 -- ============================================================================
--- Phase 0 validée par David le 2026-10-28 (journal docs/wip/questions-cm2-progress.md § 5).
+-- Phase 0 validée par David le 2026-10-28 (journal docs/archive/wip/questions-cm2-progress.md § 5).
 -- Fichier GÉNÉRÉ par docs/wip/questions/lot-rangement-cm2-0.py — ne pas éditer à la main ; corps
 -- (étapes 1 à 5) repris du lot 0 du CE1 (20261027000100_questions_ce1_rangement_tags).
 --

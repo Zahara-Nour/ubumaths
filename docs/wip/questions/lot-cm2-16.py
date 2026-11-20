@@ -1,7 +1,7 @@
 """Écrit les 5 modèles du lot 16 du CM2 (angle droit et figures) dans scripts/questions/cm2-16/.
 
 Phase 0 validée par David le 2026-11-19 (§ 24 et 24.1 du journal
-`docs/wip/questions-cm2-progress.md`, « je te suis ») : 5 modèles (CM2-081, 088 ×2, 092, 093) ;
+`docs/archive/wip/questions-cm2-progress.md`, « je te suis ») : 5 modèles (CM2-081, 088 ×2, 092, 093) ;
 niveaux : mesure en degrés 2 ; propriétés 11, 12, 13, 14. Trapèze : `(AB) // (CD)` écrit sous la
 figure (pas de code du parallélisme) ; nom le plus précis attendu.
 

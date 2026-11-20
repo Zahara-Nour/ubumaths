@@ -1,7 +1,7 @@
 """Écrit les 5 modèles du lot 8 du CM2 (restes du calcul : relations entre fractions usuelles,
 estimation, opérations posées) dans scripts/questions/cm2-8/.
 
-Phase 0 du 2026-11-17 (§ 13 du journal `docs/wip/questions-cm2-progress.md`), recommandations
+Phase 0 du 2026-11-17 (§ 13 du journal `docs/archive/wip/questions-cm2-progress.md`), recommandations
 suivies par David (§ 13.1) : 056 diviseur dans {2, 4, 5, 6, 8} ; 038 V3 gardée avec 3/4 ; 053 V1
 leurres du CM1 (× 10, ÷ 10, + 100) ; un seul lot. Bornes : `cycle3.json`, CM2-038, 053, 055-057.
 Un point par modèle ; le nœud et le tag sont posés par la migration de rangement, après le

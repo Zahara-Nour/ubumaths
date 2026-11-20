@@ -431,6 +431,14 @@ pnpm tsx scripts/series/creer-serie.ts --fichier scripts/series/<nom>.json --pub
   droite de l'équerre `droite(A ; A + AB tourné d'un quart de tour)` s'oriente d'après $[AB]$ (avec $B$ à gauche de
   $A$, elle part vers le bas) ; un modèle publié d'avant le chantier resté sans tag se retrouve au recompte de
   clôture → trancher les « non tagués » du relevé dès la phase 0.
+- **Pièges vus au CM2** (2026-10-27 au 2026-11-20) : les réponses des specs dès 4 chiffres s'écrivent avec espaces
+  (`1\,000`, `\frac{207}{1\,000}`), sinon `unoptimal_form` ; une droite **à placer** passe la réponse au juge de forme
+  sans espaces → `spaces: off` dès 5 chiffres ; un énoncé sans `?` → « Blank count mismatch » ; un quotient décimal
+  s'écrit `{{eval:n/4;d}}` (sinon `bad_form`) ; nombres décimaux tirés en entiers (millièmes) puis affichés par
+  `;d`, pas de flottants ; en case « choix » `plusieurs: oui`, un bon choix oublié vaut ½ point (`unoptimal_form`) ;
+  une spec qui recalcule la donnée par la formule du modèle ne la vérifie pas (bug de parenthèses de `posee()` passé
+  vert) → contrôler l'invariant sur des milliers de tirages ; la page à cocher ne dessine ni ` ```patron ` ni les
+  figures d'un choix → les relire dans l'aperçu.
 - **Pièges vus au CE2** (2026-10-27 au 2026-11-19) : la page à cocher n'affiche pas l'italique `_…_` (l'appli oui) ;
   la sonde ne passe pas les figures d'un choix → les relire dans l'aperçu ; `{{if}}` autour d'un bloc `choix` est
   refusé (« bloc non fermé ») → faire varier le contenu d'une figure, jamais le bloc ; un dessin dans un choix est

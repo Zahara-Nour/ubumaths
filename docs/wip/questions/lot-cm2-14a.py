@@ -1,7 +1,7 @@
 """Écrit les 6 modèles du lot 14a du CM2 (données lues) dans scripts/questions/cm2-14a/.
 
 Phase 0 validée par David le 2026-11-19 (§ 21 et 21.2 du journal
-`docs/wip/questions-cm2-progress.md`, « je te suis ») : 6 modèles (CM2-107, 156, 123, 157, 124,
+`docs/archive/wip/questions-cm2-progress.md`, « je te suis ») : 6 modèles (CM2-107, 156, 123, 157, 124,
 158) ; niveaux 6 et 7 (tableaux), 8 et 9 (barres), 1 et 2 (circulaires) ; diagrammes circulaires
 sans fractions écrites sur les secteurs (`outils-manquants.md` n° 44) : moitiés et quarts à l'œil,
 parts calculées sur les effectifs ; toute fraction égale juste (`reducedFractions: off`).

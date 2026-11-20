@@ -1,6 +1,6 @@
 """Écrit les 5 modèles du lot 11b du CM2 (problèmes en plusieurs étapes) dans scripts/questions/cm2-11b/.
 
-Phase 0 validée par David le 2026-11-18 (§ 18 et 18.1 du journal `docs/wip/questions-cm2-progress.md`) :
+Phase 0 validée par David le 2026-11-18 (§ 18 et 18.1 du journal `docs/archive/wip/questions-cm2-progress.md`) :
 064 en case choix à plusieurs réponses (cocher toutes les solutions) ; 062 sans les dominos (déjà au
 CM1) ; 064 au niveau 1 de « Préalgorithmique » ; 063, les deux sens de pose des torchons ; un seul lot.
 Niveaux : en deux étapes ou plus 12 et 13, produits cartésiens 3, optimisation 2, Préalgorithmique 1.
