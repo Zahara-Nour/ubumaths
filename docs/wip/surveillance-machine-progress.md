@@ -2,13 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-20, PR orphelins + RAS + disque en cours._
+_Mis à jour le 2026-11-20, après #2930._
 
-- **État** : #2906, #2910, #2916, #2921 mergés. En cours : orphelins de test fermés d'office, « RAS » quotidien à 9 h, alerte disque sous 15 Go (validés par David le 2026-11-20, avec ces seuils).
-- **Écartés par David le 2026-11-20** : bouton « Faire le ménage » dans ntfy (canal sans authentification) ; nombre de sessions Claude (les coupables nommés suffisent).
-- **Prochaine action** : merger la PR ; au premier passage de launchd, le Playwright orphelin de 10 jours (pid 699) sera fermé. Puis clore le chantier (versement + archivage du journal).
-- **Pièges** : `ps time=` sur macOS = « minutes:secondes.cc » ; noms de programmes = liste blanche (`PROGRAMMES_CONNUS`) ; disque = `/System/Volumes/Data`, pas `/` ; historique aux colonnes changées → `historique-ancien.csv` ; index du dépôt principal : `git commit -- <mes fichiers>`.
-- **Worktree / branche** : `../ubumaths-wt-surveillance-orphelins-ras-disque` · `chore/surveillance-orphelins-ras-disque`.
+- **État** : #2906, #2910, #2916, #2921, #2930 mergés ; le dépôt principal est à jour, launchd lance les scripts. #2930 : orphelins de test fermés d'office (reconnus par l'exécutable, crashpad épargné), « RAS » quotidien à 9 h, alerte disque sous 15 Go.
+- **Écartés par David le 2026-11-20** : bouton « Faire le ménage » dans ntfy (canal sans authentification) ; nombre de sessions Claude.
+- **À vérifier** : au prochain passage, le Playwright orphelin de 10 jours (pid 699) doit être fermé et signalé ; demain après 9 h, le premier « RAS » doit arriver sur l'iPhone.
+- **Prochaine action** : clore le chantier (versement du durable dans `docs/systeme/` ou `docs/pratiques/environnement-de-dev.md`, déjà à jour ; archivage du journal).
+- **Pièges** : `ps time=` sur macOS = « minutes:secondes.cc » ; noms de programmes = liste blanche ; disque = `/System/Volumes/Data`, pas `/` ; `chrome_crashpad_handler` toujours en ppid 1 ; index du dépôt principal : `git commit -- <mes fichiers>`.
+- **Worktree / branche** : aucun.
 
 ## Contexte
 
