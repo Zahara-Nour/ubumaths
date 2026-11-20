@@ -10,16 +10,17 @@
 		durations: Array<number | undefined>;
 		config?: Partial<DeckConfig>;
 		onend?: () => void;
+		holdOnExpire?: (position: { h: number; v: number }) => boolean;
 		onprobe: (context: DeckContext) => void;
 		/** Nombre de fragments de chaque diapositive (0 par défaut) */
 		fragments?: number[];
 	}
 
-	let { durations, config = {}, onend, onprobe, fragments = [] }: Props = $props();
+	let { durations, config = {}, onend, holdOnExpire, onprobe, fragments = [] }: Props = $props();
 </script>
 
 <div style="width: 800px; height: 450px;">
-	<Deck config={{ hash: false, ...config }} {onend}>
+	<Deck config={{ hash: false, ...config }} {onend} {holdOnExpire}>
 		{#each durations as duration, index (index)}
 			<Slide autoSlide={duration}>
 				<p>Diapositive {index}</p>
