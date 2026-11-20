@@ -5,8 +5,8 @@
 _Mis à jour le 2026-11-20, après le relevé du gros lot « nombres et calculs »._
 
 - **État** : lot 1 publié. David veut désormais de **gros lots** (tout préparer, un seul envoi). Relevé de 122 exercices « calcul numérique » de Seconde fait ([relevé](ensembles-2de-releve-nombres.md)) ; phase 0 publiée en page à cocher : https://claude.ai/artifact/RXH98rLprzZFXk78ZKuntq (4 questions d'ensemble Q1-Q4 + 54 fiches, collection `verdicts`).
-- **Prochaine action** : lire les verdicts (`ArtifactData list verdicts`, compter 58), puis écrire tout le lot en local ; si Q1 = oui, d'abord l'outil de migration de contenu d'un modèle publié (ligne 41 d'`outils-manquants.md`).
-- **En attente de David** : ses réponses sur la page de phase 0.
+- **Prochaine action** : phase 0 tranchée (section « Phase 0 tranchée », réponse dans la conversation, pas sur la page). D'abord l'outil de migration de contenu d'un modèle publié (ligne 41) : comportements à faire valider, puis worktree + PR ; ensuite écrire tout le lot en local.
+- **En attente de David** : validation des comportements de l'outil (section « Outil … phase 0 proposée », en bas). Au go : worktree `ensembles-2de`, outil en 1re PR, puis tout le lot en local, puis envoi unique.
 - **Pièges en cours** : ne jamais nommer la plateforme d'origine (sources : voir mémoire `reference_source-plateforme-exercices`) ; `create-questions --mettre-a-jour` ne touche jamais un modèle publié → toute variation d'un publié passe par une migration ; valeur absolue : BO = distance et |x − a| ⩽ r seulement ; Chrome piloté = celui du laptop de David. CI : mesurer le job d'intégration à la prochaine PR de rangement et le dire à David.
 - **Worktree / branche** : aucun (à créer pour écrire le lot).
 
@@ -69,3 +69,21 @@ Décisions (David, 2026-11-20, « je suis tes recos ») : modèles 1 et 2 tels q
 - Douze propositions sont des variations de modèles **publiés** : `create-questions --mettre-a-jour` les refuse (garde voulue) → Q1 de la phase 0 (outil de la ligne 41 d'`outils-manquants.md`, ou nouveaux modèles à côté).
 - Outils à essayer avant d'en créer : forme exigée « écriture scientifique » (motif `mathAST/pattern`), « entier + fraction < 1 » accepté sous toute écriture juste, décomposition en facteurs premiers (cases + `isPrime`). Aucun nouveau bloc ni geste demandé par le relevé.
 - Phase 0 : page à cocher https://claude.ai/artifact/RXH98rLprzZFXk78ZKuntq (Q1-Q4, fiches 1-54, recommandation sur chacune).
+
+### Phase 0 tranchée (David, 2026-11-20)
+
+- « Je valide toutes tes recommandations sauf pour les questions hors programme, que je veux garder (elles ne seront pas taguées sur un point du programme, comme convenu) » — ADR 0020 : rangé sans point = hors programme.
+- **Q1** oui : d'abord l'outil qui fabrique la migration de contenu d'un modèle publié (ligne 41 d'`outils-manquants.md`), puis les variations de publiés (fiches 4-9, 12, 13, 27, 30, 31, 39, 48, 53, 54).
+- **Q2, Q4 et hors programme gardés, sans point** : 14 (|x − a| > r), 15 (calculs avec plusieurs valeurs absolues), rationaliser un dénominateur (nouveau modèle, sans fiche), 32 (premier, décomposition), 33 (PGCD, PPCM).
+- **Q3** : 28-31 sur 2-236 / 2-419 (au BO).
+- **Plus tard** (rares mais au programme) : 16, 17, 34, 52.
+- Tout le reste « oui » selon les recommandations de la page.
+
+### Outil « migration de contenu d'un modèle publié » : phase 0 proposée (2026-11-20, en attente de David)
+
+- Commande : `pnpm tsx scripts/questions/migration-contenu.ts --dir scripts/questions/<lot>` → **une** migration pour tous les modèles **publiés** du lot dont le fichier diffère de la prod.
+- Par modèle : garde (contenu exact relevé en prod, md5), rollback en commentaire gardé de même, test d'intégration (copie du modèle de prod, rejoue la migration, vérifie, rejoue le rollback) — sur le modèle de `supabase/migrations/20261119060346_questions_cm1_lot8e_04_contenu.sql` (généré par `docs/wip/questions/cm1-8e-04-contenu.py`).
+- Limites : variation ajoutée à la fin → accepté ; variation existante corrigée → accepté, signalé en en-tête ; variation retirée ou déplacée → refusé (indices des réponses d'élèves) ; brouillon → ignoré (`create-questions --mettre-a-jour`).
+- Erreurs : sans id / id absent / titre différent → refus avec la différence ; contenu prod changé avant `db:migrate` → la migration ÉCHOUE (jamais un passage muet) ; base locale sans le modèle → rien.
+- Champs touchés : variations, specs, description ; jamais titre, nœud, points, tags, statut.
+- Question d'accès : personne (aucune policy touchée).
