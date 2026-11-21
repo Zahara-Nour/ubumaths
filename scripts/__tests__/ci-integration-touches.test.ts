@@ -329,7 +329,7 @@ function depot(): void {
 	ecrire('src/lib/b.ts', 'export const b = 2;\n');
 	ecrire('src/routes/page.ts', 'export const p = 3;\n');
 	ecrire('tests/integration/a.test.ts', "import { a } from '../../src/lib/a';\nconsole.log(a);\n");
-	ecrire('tests/integration/b.test.ts', "import { b } from '#lib/b';\nconsole.log(b);\n");
+	ecrire('tests/integration/b.test.ts', "import { b } from '#lib/b.ts';\nconsole.log(b);\n");
 	ecrire('tests/integration/global-setup.ts', 'export default () => {};\n');
 	git('commit', '-q', '-m', 'init');
 }
