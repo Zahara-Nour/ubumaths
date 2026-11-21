@@ -1373,8 +1373,11 @@ jugée fausse avec son message ; une spec peut nommer le message attendu
 Éditeur du prof : sous chaque case à écriture ordinaire d'`AnswerEditor`, `ExpectedErrorsEditor`
 (« Ajouter une erreur prévue ») ; trois champs : « Si l'élève répond » (`answer`), « Lui écrire »
 (`message`), « Nom court » facultatif (`label`, retiré quand il est vide : Zod refuse la chaîne
-vide) ; la dernière erreur retirée remet `expectedErrors` à `undefined`. Pas sur une case choix ni
-une figure de travail ; une case texte l'affiche mais la génération la refuse (message situé).
+vide) ; la dernière erreur retirée remet `expectedErrors` à `undefined`. Ligne sans réponse ou
+sans message : signalée sur la ligne (Zod refuse l'enregistrement). Pas sur une case choix ni une
+figure de travail : une telle case qui garde des erreurs prévues (case devenue choix) le dit et offre
+« Retirer » (sinon la génération échoue) ; une case texte l'affiche mais la génération la refuse
+(message situé).
 Garde : `AnswerEditor-erreurs-prevues.svelte.test.ts`.
 
 Case « figure » : une ligne `figure` (texte du bloc, réponse brute `droite(…)`, jamais rendue en

@@ -102,4 +102,29 @@ describe('AnswerEditor — erreurs prévues', () => {
 			.element(page.getByRole('button', { name: 'Ajouter une erreur prévue' }))
 			.not.toBeInTheDocument();
 	});
+	it('case devenue choix avec des erreurs prévues : dit, et se retire', async () => {
+		await render(AnswerEditorChoiceHarness, {
+			props: {
+				initialStatement: `Vrai ?\n\n${OUI_NON}`,
+				initialBlanks: [{ expectedAnswer: '1', expectedErrors: [{ answer: '0', message: 'M' }] }]
+			}
+		});
+		const stray = page.getByTestId('erreurs-prevues-orphelines');
+		await expect.element(stray).toHaveTextContent('le modèle ne se générera pas');
+		await stray.getByRole('button', { name: 'Retirer' }).click();
+		await expect.element(stray).not.toBeInTheDocument();
+		expect(readErrors()).toEqual([null]);
+	});
+
+	it('ligne incomplète : signalée sur la ligne, plus une fois remplie', async () => {
+		await render(AnswerEditorChoiceHarness, {
+			props: { initialStatement: '', initialAnswers: ['1'] }
+		});
+		await page.getByRole('button', { name: 'Ajouter une erreur prévue' }).click();
+		const hint = page.getByText('Réponse et message à remplir');
+		await expect.element(hint).toBeVisible();
+		await userEvent.fill(page.getByLabelText("Si l'élève répond"), '2');
+		await userEvent.fill(page.getByLabelText('Lui écrire'), 'M');
+		await expect.element(hint).not.toBeInTheDocument();
+	});
 });

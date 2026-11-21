@@ -129,6 +129,30 @@
 	}
 </script>
 
+<!-- Erreurs prévues restées sur une case devenue choix ou figure : la génération
+	les refuse, le prof doit pouvoir les voir et les retirer -->
+{#snippet strayErrors(blank: TemplateBlank)}
+	{#if (blank.expectedErrors?.length ?? 0) > 0}
+		<div
+			class="flex items-center justify-between gap-2 rounded-md border border-destructive/40 p-2 text-xs text-destructive"
+			data-testid="erreurs-prevues-orphelines"
+		>
+			<p>
+				Cette case garde {blank.expectedErrors?.length} erreur(s) prévue(s), qui ne vont que sur une case
+				à écriture mathématique : le modèle ne se générera pas.
+			</p>
+			<Button
+				variant="outline"
+				size="sm"
+				type="button"
+				onclick={() => (blank.expectedErrors = undefined)}
+			>
+				Retirer
+			</Button>
+		</div>
+	{/if}
+{/snippet}
+
 <div class="space-y-4">
 	<!-- Fill in Blanks -->
 	{#if questionType === 'fill_in_blanks'}
@@ -157,6 +181,7 @@
 									<p class="text-xs text-destructive">{message}</p>
 								{/each}
 							</div>
+							{@render strayErrors(blank)}
 						{:else if statement !== undefined && caseKinds[index] === 'choice'}
 							<ChoiceCaseEditor
 								bind:statement
@@ -165,6 +190,7 @@
 								bind:expectedAnswer={blank.expectedAnswer}
 								editable={!statementShared}
 							/>
+							{@render strayErrors(blank)}
 						{:else}
 							<div class="flex gap-3">
 								<div class="flex-1 space-y-2">

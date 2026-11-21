@@ -30,6 +30,9 @@
 	// Constantes
 	/** Plafond du schéma (`EXPECTED_ERRORS_MAX`) */
 	const ERRORS_MAX = 10;
+	/** Plafonds du schéma (`EXPECTED_ERROR_TEXT_MAX`, `EXPECTED_ERROR_LABEL_MAX`) */
+	const TEXT_MAX = 500;
+	const LABEL_MAX = 80;
 
 	// Functions
 	function addError() {
@@ -77,6 +80,7 @@
 					id="{id}-reponse"
 					class="font-mono"
 					placeholder={'{{eval:a-b}}'}
+					maxlength={TEXT_MAX}
 					value={error.answer}
 					oninput={(event) => setField(index, 'answer', event.currentTarget.value)}
 				/>
@@ -86,6 +90,7 @@
 				<Input
 					id="{id}-message"
 					placeholder="Tu as soustrait au lieu d'additionner."
+					maxlength={TEXT_MAX}
 					value={error.message}
 					oninput={(event) => setField(index, 'message', event.currentTarget.value)}
 				/>
@@ -95,10 +100,16 @@
 				<Input
 					id="{id}-nom"
 					placeholder="Soustraction au lieu d'addition"
+					maxlength={LABEL_MAX}
 					value={error.label ?? ''}
 					oninput={(event) => setLabel(index, event.currentTarget.value)}
 				/>
 			</div>
+			{#if error.answer.trim() === '' || error.message.trim() === ''}
+				<p class="text-xs text-destructive">
+					Réponse et message à remplir, sinon le modèle ne s'enregistre pas.
+				</p>
+			{/if}
 		</div>
 	{/each}
 
