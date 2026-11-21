@@ -48,6 +48,10 @@ on:
       - 'scripts/lib/lock.py'
       # portée d'une PR (suite complète ou tests d'une migration de données)
       - 'scripts/ci-integration-ciblee.sh'
+      # tests de migration de données laissés de côté sur les PR, et leur garde
+      - 'scripts/ci-integration-exclusions.sh'
+      - 'scripts/lib/migrations-de-donnees.ts'
+      - 'scripts/check-migrations-de-donnees.ts'
       # générateur des migrations de contenu de publiés, rejoué par la suite
       - 'scripts/lib/migration-contenu.ts'
       # dépendances : version de la CLI Supabase, de supabase-js, de vitest
@@ -225,6 +229,11 @@ jobs:
       - name: Check the paths filter against the suite's imports
         run: pnpm check:integration-paths
 
+      - name: Tests marqués @migration-de-donnees (aucun ne rejoue une migration de schéma)
+        # Les tests marqués ne tournent pas sur les PR (job `portee`) : la garde refuse la
+        # mention sur un test dont la migration touche le schéma ou les règles d'accès.
+        run: pnpm check:migrations-de-donnees
+
   portee:
     # Portée et découpage, calculés UNE fois pour tous les morceaux.
     name: Integration scope
@@ -232,6 +241,7 @@ jobs:
     timeout-minutes: 5
     outputs:
       fichiers: ${{ steps.portee.outputs.fichiers }}
+      exclure: ${{ steps.exclusions.outputs.exclure }}
       morceaux: ${{ steps.morceaux.outputs.morceaux }}
       total: ${{ steps.morceaux.outputs.total }}
 
@@ -249,6 +259,15 @@ jobs:
         # autre PR, le cron et workflow_dispatch : suite complète. Le cron est le filet.
         id: portee
         run: bash scripts/ci-integration-ciblee.sh >> "$GITHUB_OUTPUT" || echo "fichiers=" >> "$GITHUB_OUTPUT"
+
+      - name: Tests de migration de données laissés de côté (PR en suite complète)
+        # ~300 tests rejouent une migration qui ne fait que ranger, taguer ou corriger du
+        # contenu : ils ne prouvent quelque chose qu'avant son `db:migrate` (~5 min de suite,
+        # 2026-11-21). Sur une PR, seuls tournent ceux qu'elle touche (le test ou sa migration) ;
+        # la nuit et à la main, tous. Décision et tri : docs/wip/ci-integration-progress.md § 7.
+        id: exclusions
+        if: steps.portee.outputs.fichiers == ''
+        run: bash scripts/ci-integration-exclusions.sh >> "$GITHUB_OUTPUT" || echo "exclure=" >> "$GITHUB_OUTPUT"
 
       - name: Morceaux (4 pour la suite complète, 1 pour quelques tests)
         # Suite en série (un fichier à la fois, isolation par purge globale) : on ne peut
@@ -380,10 +399,17 @@ jobs:
       - name: Run integration tests (shard ${{ matrix.shard }}/${{ needs.portee.outputs.total }})
         env:
           FICHIERS: ${{ needs.portee.outputs.fichiers }}
+          EXCLURE: ${{ needs.portee.outputs.exclure }}
         # $FICHIERS vide = suite complète ; sinon la liste des tests de la PR (non citée :
-        # un argument par fichier, les chemins n'ont pas d'espace). `--shard` de vitest
-        # répartit les fichiers par nombre (empreinte du chemin), pas par durée.
-        run: pnpm test:integration $FICHIERS --shard=${{ matrix.shard }}/${{ needs.portee.outputs.total }}
+        # un argument par fichier, les chemins n'ont pas d'espace). $EXCLURE : tests de
+        # migration de données laissés de côté, un `--exclude` chacun (avant le découpage).
+        # `--shard` de vitest répartit les fichiers par nombre (empreinte du chemin), pas
+        # par durée.
+        run: |
+          exclusions=()
+          for f in $EXCLURE; do exclusions+=(--exclude "$f"); done
+          echo "Tests de migration de données laissés de côté : $(( ${#exclusions[@]} / 2 ))"
+          pnpm test:integration $FICHIERS "${exclusions[@]}" --shard=${{ matrix.shard }}/${{ needs.portee.outputs.total }}
 
       - name: Stop Supabase
         if: always()

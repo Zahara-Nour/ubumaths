@@ -9,6 +9,8 @@
  *
  * Le lot (fixture) est écrit par docs/wip/questions/lot-ce1-tags-rangement.py, avec la migration,
  * depuis le relevé de la prod du 2026-11-19.
+ *
+ * @migration-de-donnees : hors des PR, rejoué la nuit (scripts/ci-integration-exclusions.sh)
  */
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { readFileSync } from 'node:fs';

@@ -8,6 +8,8 @@
  *
  * Le lot (fixture) est écrit par docs/wip/questions/lot-tortue-variables-rangement.py, avec la
  * migration, depuis le relevé de la prod du 2026-11-17.
+ *
+ * @migration-de-donnees : hors des PR, rejoué la nuit (scripts/ci-integration-exclusions.sh)
  */
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { readFileSync } from 'node:fs';

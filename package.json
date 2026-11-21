@@ -77,6 +77,7 @@
 		"check:barrels": "tsx scripts/check-barrel-exports.ts",
 		"check:await-render": "tsx scripts/check-await-render.ts",
 		"check:integration-paths": "tsx scripts/check-integration-paths.ts",
+		"check:migrations-de-donnees": "tsx scripts/check-migrations-de-donnees.ts",
 		"check:migrations": "bash scripts/garde-migrations-horodatage.sh",
 		"migrer:diese": "tsx scripts/migrer-diese.ts",
 		"migration:horodatage": "bash scripts/garde-migrations-horodatage.sh --prochain",

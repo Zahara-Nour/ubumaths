@@ -8,6 +8,8 @@
  * annulée à la fin. Journal docs/wip/mots-cliquables-progress.md.
  *
  * @vitest-environment node
+ *
+ * @migration-de-donnees : hors des PR, rejoué la nuit (scripts/ci-integration-exclusions.sh)
  */
 import { describe, it, expect, beforeEach, afterEach, beforeAll, afterAll } from 'vitest';
 import { readFileSync } from 'node:fs';

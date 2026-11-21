@@ -23,6 +23,8 @@
  * 5. Le rollback ramène exactement l'état d'avant.
  *
  * @vitest-environment node
+ *
+ * @migration-de-donnees : hors des PR, rejoué la nuit (scripts/ci-integration-exclusions.sh)
  */
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { readFileSync } from 'node:fs';

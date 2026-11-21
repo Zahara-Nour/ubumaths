@@ -262,7 +262,9 @@ principe, chaque bloc ``figure passé au moteur de l'appli (`parseFigure` puis
    (garde « encore sans nœud ni tag », nœud résolu par son chemin et égal à celui du point,
    tout ou rien, `updated_at` préservé, rollback en commentaire) et son test
    `tests/integration/questions-cp-c-rangement-tags.test.ts` (copies des vrais identifiants, la
-   migration rejouée depuis son fichier). Test **rouge sans la migration**, puis vert.
+   migration rejouée depuis son fichier). Test **rouge sans la migration**, puis vert. Garder la
+   mention `@migration-de-donnees` de l'en-tête du gabarit : une fois la PR mergée, le test ne
+   tourne plus que la nuit (`scripts/ci-integration-exclusions.sh`).
    Nom du fichier : l'heure réelle, `pnpm migration:horodatage` (jamais « max + 1 », collision du
    2026-11-01).
    **PR de rangement courte** : si elle ne contient que la migration **ajoutée**, son test
