@@ -227,6 +227,7 @@ personne n'écrit directement dans l'historique.
 | `tests/integration/dictionnaire-lecture.test.ts`                                  | Lecture : base locale = référence + ajouts, filtre `hidden`, mémoire 90 s |
 | `tests/integration/dictionnaire-mots-lecture.test.ts`                             | Les 4 mots de la lecture : lus par un visiteur, cohérents                 |
 | `tests/integration/dictionnaire-verbes-consigne.test.ts`                          | Les 10 verbes de consigne jamais soulignés : migration, garde, rollback   |
+| `tests/integration/dictionnaire-exemples-seo.test.ts`                             | Les 14 exemples du chantier seo : migration, garde, rollback              |
 | `tests/integration/dictionnaire-admin.test.ts`                                    | Enregistrement admin : refus de cohérence, historique, masquage           |
 | `tests/integration/dictionnaire-slug.test.ts`                                     | Adresse fixe : calcul, figée au renommage, suffixe `-2`, masquée cachée   |
 | `src/lib/server/dictionary/__tests__/load.test.ts`                                | Mémoire, repli, lecture unique                                            |
