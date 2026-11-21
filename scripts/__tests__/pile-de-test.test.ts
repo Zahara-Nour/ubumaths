@@ -3,10 +3,13 @@
  */
 import { describe, expect, it } from 'vitest';
 import {
+	adresseDeTestPourLeCodeServeur,
 	configDeTest,
 	deciderPreparation,
 	empreinte,
 	environnementDeTest,
+	estUnModuleDEnvironnementGenere,
+	forcerLAdressePublique,
 	PORT_API,
 	PORT_DB,
 	PROJET
@@ -160,12 +163,65 @@ describe('deciderPreparation', () => {
 });
 
 describe('environnementDeTest', () => {
-	it('dirige les tests, et le code serveur qu’ils importent, vers la pile de test', () => {
+	it('dirige les aides de test vers la pile de test', () => {
 		const env = environnementDeTest();
 		expect(env.SUPABASE_TEST_URL).toBe(`http://127.0.0.1:${PORT_API}`);
-		expect(env.PUBLIC_SUPABASE_URL).toBe(env.SUPABASE_TEST_URL);
-		expect(env.SUPABASE_URL).toBe(env.SUPABASE_TEST_URL);
 		expect(env.SUPABASE_DB_PORT).toBe(String(PORT_DB));
 		expect(env.SUPABASE_DB_HOST).toBe('127.0.0.1');
+	});
+
+	it('ne pose pas PUBLIC_SUPABASE_URL : SvelteKit l’écrirait sur disque, sous le serveur de dev', () => {
+		expect(Object.keys(environnementDeTest())).not.toContain('PUBLIC_SUPABASE_URL');
+	});
+});
+
+describe('adresseDeTestPourLeCodeServeur', () => {
+	it('donne au code serveur l’adresse que les tests utilisent', () => {
+		expect(adresseDeTestPourLeCodeServeur({ SUPABASE_TEST_URL: 'http://127.0.0.1:55321' })).toEqual(
+			{ PUBLIC_SUPABASE_URL: 'http://127.0.0.1:55321', SUPABASE_URL: 'http://127.0.0.1:55321' }
+		);
+	});
+
+	it('hors lanceur : rien', () => {
+		expect(adresseDeTestPourLeCodeServeur({})).toEqual({});
+	});
+});
+
+describe('forcerLAdressePublique', () => {
+	const URL_TEST = 'http://127.0.0.1:55321';
+
+	it('remplace l’export statique', () => {
+		const code =
+			'export const PUBLIC_SUPABASE_URL = "http://127.0.0.1:54321";\nexport const PUBLIC_SUPABASE_ANON_KEY = "cle";';
+		const sortie = forcerLAdressePublique(code, URL_TEST);
+		expect(sortie).toContain(`export const PUBLIC_SUPABASE_URL = "${URL_TEST}";`);
+		expect(sortie).toContain('PUBLIC_SUPABASE_ANON_KEY = "cle"');
+	});
+
+	it('remplace l’affectation et l’objet du module dynamique', () => {
+		const code =
+			'explicit_public_env.PUBLIC_SUPABASE_URL = "http://127.0.0.1:54321";\nset_env({PUBLIC_SUPABASE_URL:"http://127.0.0.1:54321",AUTRE:"x"});';
+		const sortie = forcerLAdressePublique(code, URL_TEST);
+		expect(sortie).not.toContain('54321');
+		expect(sortie.match(/55321/g)).toHaveLength(2);
+		expect(sortie).toContain('AUTRE:"x"');
+	});
+
+	it('laisse un module sans cette variable tel quel', () => {
+		const code = 'export const AUTRE = "http://127.0.0.1:54321";';
+		expect(forcerLAdressePublique(code, URL_TEST)).toBe(code);
+	});
+});
+
+describe('estUnModuleDEnvironnementGenere', () => {
+	it('reconnaît les modules générés, pas le reste', () => {
+		expect(
+			estUnModuleDEnvironnementGenere('/x/.svelte-kit/generated/dev/env/public/server.js')
+		).toBe(true);
+		expect(estUnModuleDEnvironnementGenere('/x/.svelte-kit/generated/dev/env/config.js')).toBe(
+			true
+		);
+		expect(estUnModuleDEnvironnementGenere('/x/src/env.ts')).toBe(false);
+		expect(estUnModuleDEnvironnementGenere('/x/src/lib/generated/dev/env.ts')).toBe(false);
 	});
 });

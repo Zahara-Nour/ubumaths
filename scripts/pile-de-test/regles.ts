@@ -129,21 +129,55 @@ export function deciderPreparation(etat: EtatDeLaPile): Preparation {
 }
 
 /**
- * Variables posées pour la commande de test. `SUPABASE_TEST_*` et `SUPABASE_DB_*` sont lues par
- * les aides de test ; `PUBLIC_SUPABASE_URL` et `SUPABASE_URL` par le code serveur que des tests
- * importent (sans elles il parlerait à la base de dev de `.env.local`). Les clés d'API locales
+ * Variables posées pour la commande de test, lues par les aides de test. Les clés d'API locales
  * sont les mêmes pour toutes les piles (secret par défaut de la CLI) : rien à changer.
+ *
+ * `PUBLIC_SUPABASE_URL` n'y est PAS : SvelteKit écrit les variables d'environnement qu'il voit
+ * dans `.svelte-kit/generated`, et un serveur de dev du même worktree se mettrait à parler à la
+ * pile de test. Le code serveur importé par les tests reçoit l'adresse par
+ * `adresseDeTestPourLeCodeServeur` et `forcerLAdressePublique` (vitest.integration.config.ts).
  */
 export function environnementDeTest(): Record<string, string> {
-	const url = `http://127.0.0.1:${PORT_API}`;
 	return {
-		SUPABASE_TEST_URL: url,
-		PUBLIC_SUPABASE_URL: url,
-		SUPABASE_URL: url,
+		SUPABASE_TEST_URL: `http://127.0.0.1:${PORT_API}`,
 		SUPABASE_DB_HOST: '127.0.0.1',
 		SUPABASE_DB_PORT: String(PORT_DB),
 		SUPABASE_DB_NAME: 'postgres',
 		SUPABASE_DB_USER: 'postgres',
 		SUPABASE_DB_PASSWORD: 'postgres'
 	};
+}
+
+/**
+ * Variables du processus de test (`test.env` de vitest) : le code serveur qui lit
+ * `process.env.PUBLIC_SUPABASE_URL` (client de service) doit viser la même pile que les tests.
+ * Sans `SUPABASE_TEST_URL` (suite lancée hors lanceur), rien : le global-setup refusera.
+ */
+export function adresseDeTestPourLeCodeServeur(
+	env: Readonly<Record<string, string | undefined>>
+): Record<string, string> {
+	const url = env.SUPABASE_TEST_URL;
+	return url ? { PUBLIC_SUPABASE_URL: url, SUPABASE_URL: url } : {};
+}
+
+/**
+ * Remplace, dans un module d'environnement généré par SvelteKit (`$app/env`, `$app/env/public`),
+ * la valeur de `PUBLIC_SUPABASE_URL` par l'adresse de la pile de test.
+ *
+ * Ces modules sont des FICHIERS (`.svelte-kit/generated/…/env/`), réécrits par tout démarrage de
+ * vite dans le worktree : un `pnpm test:server` lancé pendant la suite y remettait l'adresse de
+ * la base de dev, et le code serveur importé par les tests suivants lui parlait (3 tests rouges
+ * sur une suite complète, 2026-11-21). La suite n'en dépend plus : elle impose l'adresse au
+ * chargement du module.
+ */
+export function forcerLAdressePublique(code: string, url: string): string {
+	return code.replace(
+		/(\bPUBLIC_SUPABASE_URL\s*[:=]\s*)"(?:[^"\\]|\\.)*"/g,
+		(_tout, debut: string) => `${debut}${JSON.stringify(url)}`
+	);
+}
+
+/** Le fichier est-il un module d'environnement généré par SvelteKit ? */
+export function estUnModuleDEnvironnementGenere(id: string): boolean {
+	return /\/generated\/[^/]+\/env\/.+\.js(\?.*)?$/.test(id);
 }
