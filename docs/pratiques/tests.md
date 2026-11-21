@@ -123,6 +123,28 @@ migration pose une règle d'accès, une fonction, un trigger ou une colonne : la
 `pnpm check:migrations-de-donnees` (job `paths-filter`) la refuse. Sans mention, le test tourne
 sur chaque PR : c'est plus lent, jamais dangereux.
 
+**PR de code : seuls les tests touchés.** Sur une PR qui ne modifie que `src/`, de la doc (`docs/`,
+`.md` de la racine) et des tests d'intégration, le job `portee` (étape « Tests touchés »,
+`scripts/ci-integration-touches.ts`) ne garde que les tests dont les imports atteignent un fichier
+modifié, plus les tests d'intégration que la PR ajoute ou modifie. Les fichiers chargés en lot
+(`import.meta.glob`, jusque sous `docs/`) comptent comme atteints par les tests qui atteignent
+leur chargeur. Aucun test atteint : les checks finissent en ✅ sans démarrer Supabase. Jusqu'à 40
+tests, un seul morceau ; au-delà, 4. **Suite complète** dès qu'un fichier est hors de ces trois
+zones (`.claude/`, `scripts/`, `supabase/`, racine…), qu'un fichier de `src/` est supprimé ou
+renommé, qu'il est atteint par le global-setup, que c'est `src/env.ts`, ou que le calcul échoue.
+Mesure (#2964, 2 tests retenus) : 3 min de bout en bout au lieu de 6 à 7 ; il reste 1 min 30 de
+démarrage de Supabase pour 10 s de tests.
+
+**Passage déjà vert : pas relancé.** Le job `portee` calcule une empreinte
+(`scripts/ci-integration-empreinte.sh` : fichiers du filtre `paths` lus sur le commit de merge,
+plus la portée retenue). Si un passage vert de la même empreinte est en cache
+(`integration-vert-v1-<empreinte>`, écrit par le job `memoriser`), les morceaux finissent en ✅
+sans relancer les tests et renvoient au run d'origine. Un push qui touche un fichier suivi, ou
+`main` qui avance sur l'un d'eux, change l'empreinte. Un passage rouge ou annulé n'est pas gardé.
+⚠️ Un test instable passé vert une fois reste vert pour cette empreinte : le cron est le filet.
+« Re-run all jobs » saute aussi : pour forcer, lancement à la main (`workflow_dispatch`). La nuit
+et à la main, toute la suite tourne toujours, sans lire ni écrire ce cache.
+
 Le **gate de régression** quotidien reste `test-server` (rapide, déterministe).
 
 ---

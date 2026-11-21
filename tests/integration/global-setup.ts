@@ -48,6 +48,21 @@ export async function setup(): Promise<void> {
 		// donc supprimées AVANT les comptes (incident du 2026-10-14).
 		await purgeTemplatesOf(client, `select id from public.profiles where role = 'teacher'`);
 
+		// Les liens de partage gardent leur auteur (`created_by`, clé sans
+		// `ON DELETE`) et ne suivent pas la cascade : une classe n'appartient à
+		// aucun compte. Un lien créé par le prof de dev bloquait la suppression
+		// des profs (23503, liens du cahier de texte du 2026-11-20).
+		for (const table of [
+			'class_journal_share_tokens',
+			'class_course_share_tokens',
+			'exercise_share_tokens'
+		]) {
+			await client.query(
+				`DELETE FROM public.${table}
+				 WHERE created_by IN (select id from public.profiles where role = 'teacher')`
+			);
+		}
+
 		// Deleting from auth.users cascades to profiles → classes → class_members,
 		// clearing the seeded demo teachers (and any leftover teacher from a prior run).
 		await client.query(
