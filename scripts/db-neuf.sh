@@ -9,7 +9,7 @@
 #
 # Pourquoi une commande : `pnpm db:reset && pnpm db:seed-riche` relâchait le verrou entre les deux
 # (une autre session pouvait s'y glisser), et effaçait la base avant de savoir si la prod, dont
-# vient le contenu, répondait (docs/wip/base-locale-progress.md § 14).
+# vient le contenu, répondait (docs/archive/wip/base-locale-progress.md § 14).
 #
 # Ordre, sous le verrou `supabase` d'un bout à l'autre :
 #   1. la prod répond-elle ? Sinon on s'arrête, rien n'est effacé ;

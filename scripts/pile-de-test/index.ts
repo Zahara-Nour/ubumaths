@@ -8,7 +8,7 @@
  *
  * Appelé sous le verrou `supabase-test` par scripts/pile-de-test.sh (`pnpm test:integration`,
  * `pnpm db:test:stop`, `pnpm db:test:reset`). Règles : ./regles.ts ; pourquoi :
- * docs/wip/base-locale-progress.md § 12.
+ * docs/archive/wip/base-locale-progress.md § 12.
  *
  * La base de dev (ports 5432x) n'est jamais touchée : tout passe par un dossier de travail à
  * part (`--workdir`), dont le `config.toml` porte un autre nom de projet et d'autres ports.

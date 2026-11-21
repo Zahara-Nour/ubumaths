@@ -4,7 +4,7 @@
  * `$app/env/public` est un fichier généré (`.svelte-kit/generated`), réécrit
  * par tout démarrage de vite dans le worktree avec l'adresse de la base de dev. Le 2026-11-21, un
  * `pnpm test:server` lancé pendant la suite a envoyé le code serveur des tests suivants sur la
- * base de dev (docs/wip/base-locale-progress.md § 12). vitest.integration.config.ts impose
+ * base de dev (docs/archive/wip/base-locale-progress.md § 12). vitest.integration.config.ts impose
  * l'adresse : ce test le garde.
  */
 import { describe, expect, it } from 'vitest';

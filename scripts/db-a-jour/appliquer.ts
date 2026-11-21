@@ -6,7 +6,7 @@
  * porte une version sans fichier (`MigrationMissingLocalError`), ce qui est l'état normal d'une
  * base partagée par des worktrees sur des branches différentes ; et elle s'arrête sur la
  * première migration de contenu dont les modèles sont déjà venus de la prod (mesuré le
- * 2026-11-21, docs/wip/base-locale-progress.md § 9).
+ * 2026-11-21, docs/archive/wip/base-locale-progress.md § 9).
  *
  * Chaque migration tourne dans SA transaction, avec sa ligne dans l'historique
  * (`supabase_migrations.schema_migrations`, le même que la CLI) : jouée en entier, ou pas du tout.

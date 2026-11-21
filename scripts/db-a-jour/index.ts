@@ -3,7 +3,7 @@
  *
  * Joue les migrations du dossier `supabase/migrations` qui manquent à la base locale
  * (127.0.0.1:54322). Rien n'est effacé : classes, comptes et contenu restent en place.
- * Règles : ./regles.ts ; exécution : ./appliquer.ts ; pourquoi : docs/wip/base-locale-progress.md.
+ * Règles : ./regles.ts ; exécution : ./appliquer.ts ; pourquoi : docs/archive/wip/base-locale-progress.md.
  *
  *   pnpm db:a-jour                    toutes les migrations en attente, celles de la branche comprises
  *   pnpm db:a-jour --essai            dit ce qui serait joué, n'écrit rien

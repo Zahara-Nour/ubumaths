@@ -7,7 +7,7 @@
 # (`postgres-version`, `rest-version`, `storage-version`, `gotrue-version`, `storage-migration`),
 # et la CLI les impose ensuite à la pile locale. La CI et les worktrees n'ont pas ce dossier
 # (ignoré par git) : le dépôt principal tournait sur d'autres images qu'eux, et avec le Postgres
-# de la prod la base ne se reconstruisait plus (docs/wip/base-locale-progress.md § 3.2).
+# de la prod la base ne se reconstruisait plus (docs/archive/wip/base-locale-progress.md § 3.2).
 #
 # Comment : la CLI travaille dans un dossier miroir (`--workdir`) qui montre tout `supabase/`
 # par des liens, sauf `.temp` et `.branches`. Sans `.temp`, elle prend ses versions par défaut,

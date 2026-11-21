@@ -5,7 +5,7 @@
 #   pile-de-test.sh stop | reset
 #
 # Pourquoi une pile à part : les tests d'intégration supprimaient le prof de dev et les classes
-# du seed-riche, et les données de dev les faisaient échouer (docs/wip/base-locale-progress.md
+# du seed-riche, et les données de dev les faisaient échouer (docs/archive/wip/base-locale-progress.md
 # § 3.3 et § 12). La base de dev (verrou `supabase`) n'est plus concernée : les tests ne bloquent
 # plus `pnpm dev` ni les `db:*`, et inversement. Deux suites en même temps restent interdites
 # (une seule pile de test pour tous les worktrees) : exit 2 = attendre, ne pas contourner.

@@ -1,20 +1,23 @@
+---
+status: clos
+---
+
 # Chantier `base-locale` : une base Supabase locale toujours à jour, sans y penser
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-21, pendant la PR 4._
+_Mis à jour le 2026-11-21, après #2970. **Chantier clos.**_
 
-- **État** : PR 4 sur 4 en cours : `pnpm db:neuf` (§ 14), remise à neuf de la base de dev en une
-  commande, avec sa doc. PR 1 (#2966) : `db:a-jour` ; PR 2 (#2967) : pile de test ; PR 3 (#2968) :
-  versions de la CI pour la pile de dev.
-- **Prochaine action** : merger la PR 4, puis **versement du chantier** (le durable est déjà dans
-  `docs/pratiques/` ; archiver ce journal et `base-locale-inventaire.md`, nettoyer le worktree).
-- **En attente de David** : rien.
-- **Pièges en cours** : `db:neuf` et `db:reset` effacent les données de dev de tous ; `db:migrate` =
-  **prod**. Jamais `pnpm exec supabase start|stop|db reset` à la main (le hook refuse) : `pnpm db:*`.
-  Ne jamais poser `PUBLIC_SUPABASE_URL` dans l'environnement d'un vite ou vitest (§ 12).
-  La garde « doc à jour » ne voit que le commité : la relancer APRÈS le commit, avant le push.
-- **Worktree / branche** : `../ubumaths-wt-base-locale`, `feat/base-locale-remise-a-neuf`.
+- **État** : les 4 PR sont mergées. #2966 : `pnpm db:a-jour` (base de dev à jour sans rien
+  effacer, toute seule avant `pnpm dev`) ; #2967 : pile de test à part ; #2968 : versions de la CI
+  pour la pile de dev ; #2970 : `pnpm db:neuf` (remise à neuf en une commande, § 14).
+- **Versé** : `docs/pratiques/environnement-de-dev.md`, `base-de-donnees.md`, `tests.md` § 4,
+  `commandes.md`, `worktrees.md`, `CLAUDE.md`. Ce journal et `base-locale-inventaire.md` sont archivés ici.
+- **Prochaine action** : aucune.
+- **En attente de David** : lancer une fois `pnpm db:neuf` sur la vraie base de dev, au moment de
+  son choix (ligne dans `docs/wip/verifications-manuelles.md`) ; jusque-là seule une copie isolée l'a vue.
+- **Pièges durables** : `db:neuf` et `db:reset` effacent les données de dev de tous ; `db:migrate` =
+  **prod**. Jamais `pnpm exec supabase start|stop|db reset` à la main : `pnpm db:*`.
 
 ---
 
@@ -187,7 +190,7 @@ Sources : journaux `docs/wip/*-progress.md` modifiés depuis le 2026-11-15, jour
 ### 4.3 `db:seed-riche`
 
 - `scripts/db-seed-riche/index.ts` (règles testées dans `regles.ts`, test
-  `scripts/__tests__/db-seed-riche.test.ts`, inventaire `docs/wip/base-locale-inventaire.md`).
+  `scripts/__tests__/db-seed-riche.test.ts`, inventaire `docs/archive/wip/base-locale-inventaire.md`).
 - Lit la prod en **lecture seule** (`.env`), écrit en local, déclencheurs suspendus ; aucune ligne
   d'un utilisateur autre que le prof et l'admin ; 30 élèves fictifs `eleveNN@local.test` /
   `local-eleve` + un hors classe ; activité générée.
@@ -525,5 +528,6 @@ Réalisation :
   main sautait confirmation et verrou) ; la vérification de la prod lit `question_templates` avec
   un délai maximum de 20 s (elle tourne sous le verrou) ; tests ajoutés : saisie de « oui » et de
   « non » dans un pseudo-terminal, verrou tenu aux quatre étapes, variable interne sans verrou.
+- **Mergée (#2970) le 2026-11-21.**
 - **Non fait** : `pnpm db:neuf` n'a pas été lancée sur la vraie base de dev (elle efface les données
   de toutes les sessions) : à David de choisir le moment.

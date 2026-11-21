@@ -4,7 +4,7 @@
  *
  * La base LOCALE de dev est partagée par tous les worktrees, et son contenu peut venir de la
  * prod (`pnpm db:seed-riche`). Deux conséquences, mesurées le 2026-11-21
- * (docs/wip/base-locale-progress.md § 9) :
+ * (docs/archive/wip/base-locale-progress.md § 9) :
  *
  * - une migration de contenu (rangement, tags, publication) trouve en local des modèles DÉJÀ
  *   dans l'état qu'elle doit produire : sa garde lève une exception, et tout ce qui suit reste
