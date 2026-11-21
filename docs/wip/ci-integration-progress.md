@@ -2,14 +2,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-21, phase 0 (aucune PR)._
+_Mis à jour le 2026-11-21, après #2956._
 
-- **État** : phase 0 rendue (rapport ci-dessous), rien modifié dans la CI.
-- **Prochaine action** : selon le go de David, PR 1 = découpage en 4 morceaux.
-- **En attente de David** : go sur l'ordre des PR (§ 4) ; question sur les tests de migration (§ 5).
-- **Pièges en cours** : la suite locale complète échoue au global-setup tant que le prof de dev a
-  créé un lien de partage du cahier de texte (§ 3.4) ; ne pas toucher à la base pour « réparer ».
-- **Worktree / branche** : `../ubumaths-wt-ci-integration`, `ci/integration-rapide`.
+- **État** : A mergée (4 morceaux) : 17,5 → 7,5 min (run 44891964659). Go de David sur A → F → B → C
+  et sur le correctif du global-setup (2026-11-21).
+- **Prochaine action** : F = tests de migration de données hors des PR (trier d'abord les 307
+  fichiers qui lisent une migration : données de modèles / règles d'accès), puis B, puis C.
+- **En attente de David** : rien.
+- **Pièges en cours** : suite locale cassée au global-setup par les liens de partage du prof de dev
+  (§ 3.4 ; clés sans `ON DELETE` : `class_journal_share_tokens`, `class_course_share_tokens`,
+  `exercise_share_tokens`…) ; morceaux déséquilibrés (212 à 318 s) → D si besoin.
+- **Worktree / branche** : `../ubumaths-wt-ci-integration`, `ci/integration-rapide` (mergée).
 
 ## 1. Ce que coûte la suite aujourd'hui (mesuré)
 
@@ -150,3 +153,10 @@ vrai run, ligne au tableau de `docs/pratiques/environnement-de-dev.md`. Nocturne
 Les 303 tests qui rejouent une migration de données (rangement, tags, contenu de modèles) servent
 avant le `db:migrate`. Une fois la migration passée en prod, le fichier SQL ne change plus :
 faut-il encore les rejouer sur chaque PR, ou seulement la nuit (et sur la PR qui les ajoute) ?
+
+## 6. Historique
+
+- **#2956 (A)** : job `portee` + matrice de 4 morceaux `vitest --shard`. Run 44891964659 :
+  bout en bout 7,5 min (avant 17,5) ; tests par morceau 222 / 271 / 212 / 318 s ; coût fixe
+  ~1 min 50 par morceau. Réponse de David sur les tests de migration : go pour les sortir des
+  PR (ils ne prouvent quelque chose qu'avant le `db:migrate`).
