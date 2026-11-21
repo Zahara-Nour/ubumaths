@@ -123,7 +123,7 @@
 	oninput={handleInput}
 	onkeydown={handleKeydown}
 	class={inputClasses}
-	aria-label="Reponse {index}"
+	aria-label="Réponse {index}"
 	aria-invalid={isCorrect === false ? 'true' : undefined}
 	aria-describedby={validationState ? stateId : undefined}
 	data-state={validationState}
