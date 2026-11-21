@@ -8,7 +8,7 @@ couvre:
   - src/lib/mathAST/cosmetic-transforms.ts
   - 'src/lib/questions/review/**'
   - 'src/lib/types/{question-display,question-template}.ts'
-  - 'src/lib/server/{evaluation-attempts,questions-bulk-status,template-publication,template-fact-sheet,grading-budget,corrected-detail,template-review,point-bounds,classification-node-error,classification-nodes}.ts'
+  - 'src/lib/server/{evaluation-attempts,questions-bulk-status,template-publication,template-fact-sheet,grading-budget,corrected-detail,template-review,point-bounds,classification-node-error,classification-nodes,question-template-columns}.ts'
   - 'src/routes/(protected)/dev/modeles/**'
   - src/lib/components/MathKeyboardClose.svelte
   - 'src/lib/components/dev/**'
