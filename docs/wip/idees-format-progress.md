@@ -79,7 +79,13 @@ vit déjà : série enregistrée, panier, lien partagé, évaluation.
 - **Q4. La révision espacée** (qui reprend les modèles des séries d'un chapitre) tient-elle compte
   du choix ? Reco : non, elle revoit le modèle entier.
 
-## Idée 3 — phase 0 (à valider par David)
+## Idée 3 — phase 0 validée (David, 2026-11-21)
+
+David suit mes recommandations (Q1 A, Q2 A, Q3 A, découpage en 3 PR), après une
+réexplication en mots simples. **Ajout de David** : les scripts qui écrivent les modèles (fichiers
+de lot, skills `couvrir-niveau` et `idees-rubrique`) proposent **déjà** des erreurs prévues ; le
+prof les modifie ou les complète ensuite dans l'éditeur. → PR 1 : champ dans les fichiers de lot +
+consigne dans `couvrir-un-niveau.md` et les deux skills.
 
 But : une case dit « si l'élève répond `(x − 3)²`, lui écrire : “Tu as confondu a² − b² et
 (a − b)².” ». Aujourd'hui, `error-kinds.ts` ne fait que **deviner** une relation (signe, ×10,
@@ -124,8 +130,8 @@ vérifie « faux + ce message ». Une spec peut aussi asserter le message (champ
   devine déjà un type) ; texte, choix, figures plus tard (l'idée 4 reprend les choix). B : aussi
   les cases texte tout de suite.
 
-**Découpage proposé** : PR 1 moteur (type de case, Zod, tirage, message à l'élève, rejeu, specs,
-fichiers de lot, retrait en évaluation notée) · PR 2 éditeur du prof (sous chaque case, « Ajouter
+**Découpage validé** : PR 1 moteur (type de case, Zod, tirage, message à l'élève, rejeu, specs,
+fichiers de lot et consigne des scripts, retrait en évaluation notée) · PR 2 éditeur du prof (sous chaque case, « Ajouter
 une erreur prévue ») · PR 3 ligne « Types d'erreur » côté prof.
 
 ## PR 1 — tirage (#2954, mergée le 2026-11-21)
