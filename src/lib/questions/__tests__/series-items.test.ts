@@ -22,7 +22,7 @@ vi.mock('#lib/questions/generator/instance-generator.ts', () => ({
 		(t: QuestionTemplate, seed?: number): GenerationResult =>
 			({
 				success: true,
-				instance: { templateId: t.id, seed } as QuestionInstance
+				instance: { templateId: t.id, seed, statement: `${t.id}-${seed}` } as QuestionInstance
 			}) as GenerationResult
 	)
 }));
@@ -41,12 +41,18 @@ function line(templateId: string, quantity: number, delay: number): SeriesItem {
 	return { templateId, quantity, delay };
 }
 
-/** Générateur factice : l'instance porte l'id du modèle ; `failing` échoue */
+/**
+ * Générateur factice : l'instance porte l'id du modèle et un énoncé propre à sa
+ * graine (sinon toutes seraient des doublons) ; `failing` échoue
+ */
 function fakeGenerate(failing: Set<string> = new Set()) {
-	return (t: QuestionTemplate): GenerationResult =>
+	return (t: QuestionTemplate, seed: number): GenerationResult =>
 		failing.has(t.id)
 			? { success: false, errors: ['échec'] }
-			: ({ success: true, instance: { templateId: t.id } as QuestionInstance } as GenerationResult);
+			: ({
+					success: true,
+					instance: { templateId: t.id, statement: `${t.id}-${seed}` } as QuestionInstance
+				} as GenerationResult);
 }
 
 describe('buildSeriesItems', () => {
@@ -111,23 +117,23 @@ describe('buildSeriesItems', () => {
 		expect(items).toEqual([]);
 	});
 
-	it('Q20 : une graine entière par question, passée à la génération', () => {
-		const seeds = [11, 22, 33];
+	it('Q20 : chaque question porte la graine avec laquelle elle a été générée', () => {
 		const generate = vi.fn(
 			(t: QuestionTemplate, seed?: number): GenerationResult =>
 				({
 					success: true,
-					instance: { templateId: t.id, seed } as QuestionInstance
+					instance: { templateId: t.id, seed, statement: `${t.id}-${seed}` } as QuestionInstance
 				}) as GenerationResult
 		);
+		const lineSeeds = [11, 22];
 		const items = buildSeriesItems(
 			[line('add', 2, 15), line('mul', 1, 30)],
 			[template('Additionner', 'add'), template('Multiplier', 'mul')],
-			{ generate, nextSeed: () => seeds.shift() ?? -1 }
+			{ generate, nextSeed: () => lineSeeds.shift() ?? -1 }
 		);
 
-		expect(generate.mock.calls.map((call) => call[1])).toEqual([11, 22, 33]);
-		expect(items.map((i) => i.instance.seed)).toEqual([11, 22, 33]);
+		expect(items).toHaveLength(3);
+		expect(items.map((i) => i.instance.seed)).toEqual(generate.mock.calls.map((call) => call[1]));
 	});
 
 	it('Q20 : par défaut, la graine est un entier positif tiré à chaque question', () => {
@@ -149,17 +155,14 @@ describe('buildSeriesItems', () => {
 
 describe('drawSeriesQuestions (évaluation : le serveur tire modèle + graine)', () => {
 	it('même règle que buildSeriesItems : un tirage par répétition, durée du modèle de la ligne', () => {
-		// La ligne au modèle absent consomme sa graine (7) sans tirage : « mul » garde la sienne
-		const seeds = [5, 6, 7, 8];
 		const draws = drawSeriesQuestions(
 			[line('add', 2, 15), line('absent', 1, 50), line('mul', 1, 0)],
-			[template('Additionner', 'add'), template('Multiplier', 'mul')],
-			{ nextSeed: () => seeds.shift() ?? -1 }
+			[template('Additionner', 'add'), template('Multiplier', 'mul')]
 		);
-		expect(draws.map((d) => [d.template.id, d.seed, d.delaySeconds])).toEqual([
-			['add', 5, 15],
-			['add', 6, 15],
-			['mul', 8, DEFAULT_QUESTION_DELAY_SECONDS]
+		expect(draws.map((d) => [d.template.id, d.delaySeconds])).toEqual([
+			['add', 15],
+			['add', 15],
+			['mul', DEFAULT_QUESTION_DELAY_SECONDS]
 		]);
 	});
 
@@ -175,11 +178,9 @@ describe('drawSeriesQuestions (évaluation : le serveur tire modèle + graine)',
 		expect(draws.map((d) => d.template.id)).toEqual(['add', 'add']);
 	});
 
-	it('ne génère rien (tirage seul)', () => {
-		const mocked = vi.mocked(generateInstance);
-		mocked.mockClear();
-		drawSeriesQuestions([line('add', 2, 15)], [template('Additionner', 'add')]);
-		expect(mocked).not.toHaveBeenCalled();
+	it('rend l’instance générée avec la graine du tirage (le serveur ne régénère pas)', () => {
+		const draws = drawSeriesQuestions([line('add', 2, 15)], [template('Additionner', 'add')]);
+		for (const d of draws) expect(d.instance.seed).toBe(d.seed);
 	});
 });
 
