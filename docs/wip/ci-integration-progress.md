@@ -2,18 +2,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-21, après #2959._
+_Mis à jour le 2026-11-21, après #2961._
 
-- **État** : A (#2956), F (#2957) et B (#2959) mergées. Mesuré : F → **5,9 min** de bout en bout
-  (run 44900263857) ; B → re-push sans fichier couvert : **40 s** (run de #2959 à 11:50). Go de David
-  sur A → F → B → C.
-- **Prochaine action** : C (tests touchés, § 9, phase 0 validée le 2026-11-21) : tests rouges,
-  script `scripts/ci-integration-touches.ts`, branchement dans le job `portee`, mesure sur un vrai run.
+- **État** : A (#2956), F (#2957), B (#2959) et C (#2961) mergées. C : sur une PR `src/` seule,
+  seuls les tests atteints tournent (`scripts/ci-integration-touches.ts`) ; rejoué sur 60 PR :
+  13 des 39 qui lancent la suite passent en sélection (0 à 20 tests). Gain de C pas encore mesuré.
+- **Prochaine action** : mesurer C sur la première PR de code concernée (job `portee`, étape
+  « Tests touchés » : durée de bout en bout, durée du job `portee` avec l'install) ; puis D
+  (morceaux par durée) seulement si le plus long morceau dépasse.
 - **En attente de David** : rien.
 - **Pièges en cours** : suite locale cassée au global-setup par les liens de partage du prof de dev
-  (§ 3.4) ; morceaux déséquilibrés (110 à 200 s depuis F) → D si besoin ; un test instable vert une
-  fois reste gardé par B (nocturne = filet) ; `point-bounds.ts` charge en lot des JSON de `docs/`.
-- **Worktree / branche** : `ubumaths-wt-ci-integration` · `ci/integration-tests-touches`.
+  (§ 3.4) ; morceaux déséquilibrés (110 à 200 s) → D si besoin ; un test instable vert une fois
+  reste gardé par B (nocturne = filet) ; `import.meta.glob` de code (pas `.md`/`.json`) → suite
+  complète ; job `portee` limité à 10 min (install ajoutée).
+- **Worktree / branche** : aucun.
 
 ## 1. Ce que coûte la suite aujourd'hui (mesuré)
 
@@ -244,3 +246,9 @@ Comportements validés :
 - **#2959 (B)** : `scripts/ci-integration-empreinte.sh`, job `memoriser`. Revue : `**` collé à
   un nom et espace après le guillemet refusés. Premier passage : empreinte gardée (run 44900263857).
   Push de doc suivant : empreinte retrouvée, 4 morceaux ✅ en 2 à 5 s, run de bout en bout **40 s**.
+- **#2961 (C)** : `scripts/ci-integration-touches.ts` (fermeture PAR test, `integrationClosures`
+  par parcours du graphe esbuild), `scripts/lib/chargements-en-lot.ts` (`import.meta.glob`, `.md`
+  et `.json` seulement ; la garde `check:integration-paths` vérifie aussi ces fichiers : 1625 →
+  1696 atteints). Revue : `.md` hors `docs/` et racine → suite complète. Run de la PR : suite
+  complète (workflow touché), 4 morceaux de 4 min 17 à 5 min 42 ; push suivant hors filtre :
+  passage déjà vert (B), morceaux en 3 à 5 s.
