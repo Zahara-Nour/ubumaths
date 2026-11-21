@@ -4,7 +4,7 @@
  *
  * Efface la base de dev, la reconstruit (migrations + seeds), puis la remplit avec le contenu de
  * la prod et les élèves fictifs (`db:seed-riche`), sous le verrou `supabase` d'un bout à l'autre
- * (docs/wip/base-locale-progress.md § 14).
+ * (docs/archive/wip/base-locale-progress.md § 14).
  *
  * Ce qui est gardé ici, avec une fausse CLI et un faux `tsx` qui notent leurs appels :
  * - rien n'est effacé sans confirmation, ni quand la prod est injoignable, ni quand une autre

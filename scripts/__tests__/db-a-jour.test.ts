@@ -3,7 +3,7 @@
  * =============================
  *
  * La base locale de dev est partagée par les worktrees et peut porter le contenu de la prod
- * (docs/wip/base-locale-progress.md). Gardé ici :
+ * (docs/archive/wip/base-locale-progress.md). Gardé ici :
  * - quelles migrations sont en attente (fichier ancien compris, version sans fichier ignorée) ;
  * - mode automatique : seules celles d'origin/main ;
  * - après un échec : noter comme faite seulement une migration de contenu, sur une base au

@@ -3,7 +3,7 @@
  * ==============================================================================================
  *
  * Les tests d'intégration tournaient sur la base de dev : ils supprimaient le prof de dev et les
- * classes du seed-riche, et les données de dev les faisaient échouer (docs/wip/base-locale-progress.md
+ * classes du seed-riche, et les données de dev les faisaient échouer (docs/archive/wip/base-locale-progress.md
  * § 3.3). Ils ont maintenant leur pile, construite comme celle de la CI : migrations de la
  * branche + seed simple, jamais de contenu de la prod.
  *

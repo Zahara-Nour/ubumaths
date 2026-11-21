@@ -2,7 +2,7 @@
  * `pnpm db:a-jour` sur une vraie base : jouer les migrations en attente sans rien effacer
  * ======================================================================================
  *
- * Panne rejouée le 2026-11-21 (docs/wip/base-locale-progress.md § 9) : une base locale au
+ * Panne rejouée le 2026-11-21 (docs/archive/wip/base-locale-progress.md § 9) : une base locale au
  * contenu de la prod restait bloquée sur la première migration de contenu déjà faite en prod,
  * et la CLI refusait de tourner dès que la base portait la migration d'une autre branche.
  *

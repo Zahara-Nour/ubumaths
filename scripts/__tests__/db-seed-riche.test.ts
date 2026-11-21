@@ -3,7 +3,7 @@
  * =====================================================================
  *
  * `pnpm db:seed-riche` lit le contenu de la prod et l'écrit dans la base
- * LOCALE (inventaire : docs/wip/base-locale-inventaire.md, décision de David
+ * LOCALE (inventaire : docs/archive/wip/base-locale-inventaire.md, décision de David
  * du 2026-10-10). Ce qui est gardé ici, sans réseau ni base :
  * - jamais d'écriture ailleurs qu'en local, jamais de lecture d'une base locale
  *   prise pour la prod ;

@@ -3,7 +3,7 @@
 #
 # Personne ne pensait à mettre la base locale à jour : le 2026-11-21 elle avait 96 migrations
 # de retard, et 218 fichiers de tests d'intégration échouaient pour cette seule raison
-# (docs/wip/base-locale-progress.md). Ce script la met à jour sans qu'on y pense.
+# (docs/archive/wip/base-locale-progress.md). Ce script la met à jour sans qu'on y pense.
 #
 # Il ne bloque JAMAIS le serveur de dev : sortie 0 dans tous les cas.
 # - en CI : rien (pas de serveur de dev, pas de base locale de dev) ;

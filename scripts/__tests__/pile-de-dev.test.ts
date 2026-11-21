@@ -5,7 +5,7 @@
  * `supabase link` écrit dans `supabase/.temp/` les versions des services de la prod
  * (`postgres-version`, `rest-version`, `storage-version`…), et la CLI les impose ensuite à la
  * pile locale. La CI et les worktrees n'ont pas ce dossier : le dépôt principal tournait donc sur
- * d'autres images qu'eux (docs/wip/base-locale-progress.md § 3.2).
+ * d'autres images qu'eux (docs/archive/wip/base-locale-progress.md § 3.2).
  *
  * `scripts/pile-de-dev.sh` lance la CLI sur un dossier de travail qui montre tout `supabase/`
  * sauf `.temp` : la CLI prend ses versions par défaut, celles de la CI. `supabase/.temp/` n'est

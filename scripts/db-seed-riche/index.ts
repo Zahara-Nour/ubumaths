@@ -1,7 +1,7 @@
 /**
  * `pnpm db:seed-riche` — remplir la base LOCALE : contenu de la prod, élèves fictifs.
  *
- * Décision de David du 2026-10-10. Inventaire : docs/wip/base-locale-inventaire.md.
+ * Décision de David du 2026-10-10. Inventaire : docs/archive/wip/base-locale-inventaire.md.
  * Règles (testées) : ./regles.ts.
  *
  * 1. Lit la prod (URL et clé de .env) en LECTURE SEULE : des `select`, rien d'autre.

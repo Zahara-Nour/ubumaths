@@ -2,7 +2,7 @@
  * Base locale remplie — les règles (sans réseau ni base, donc testables).
  *
  * Décision de David du 2026-10-10 : contenu copié depuis la prod, élèves
- * générés. Inventaire et raisons : docs/wip/base-locale-inventaire.md.
+ * générés. Inventaire et raisons : docs/archive/wip/base-locale-inventaire.md.
  * Tests : scripts/__tests__/db-seed-riche.test.ts.
  */
 
