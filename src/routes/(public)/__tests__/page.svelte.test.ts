@@ -40,6 +40,15 @@ describe('/+page.svelte', () => {
 		await expect.element(heading).toBeInTheDocument();
 	});
 
+	// Le nom du site est écrit dans le grand titre : c'est lui que les moteurs
+	// rapprochent d'une recherche du nom (2026-11-21).
+	it('le grand titre porte le nom du site', async () => {
+		await renderWith(5);
+
+		const heading = page.getByRole('heading', { level: 1 });
+		await expect.element(heading).toHaveTextContent('Chiphre, les maths de la chandelle verte');
+	});
+
 	it('Père Ubu mène au Tour du Royaume ; le lien texte a quitté l’accueil', async () => {
 		const screen = await renderWith(5);
 		const ubu = screen.container.querySelector('figure a');

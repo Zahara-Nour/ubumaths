@@ -30,7 +30,7 @@
 	let exemples = $derived(byGrade(term.exemples));
 </script>
 
-<SeoHead title="{termLabel(term)} : définition | Chiphre" description={data.description} />
+<SeoHead title="{termLabel(term)} : définition (maths) | Chiphre" description={data.description} />
 
 <div class="mx-auto max-w-3xl p-4 md:p-6">
 	<BackLink href="/glossaire" label="Retour au glossaire" />

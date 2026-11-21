@@ -47,7 +47,7 @@
 >
 	<div class="flex flex-col items-center gap-1 self-start">
 		<h1 class="titre text-3xl font-bold sm:text-4xl">
-			Les maths de la chandelle <span class="text-primary">verte</span>
+			Chiphre, les maths de la chandelle <span class="text-primary">verte</span>
 		</h1>
 	</div>
 
