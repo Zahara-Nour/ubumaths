@@ -34,6 +34,7 @@ Référence synthétique pour Claude : **workflow migrations**, **règle des typ
 pnpm db:start      # supabase start (pile de dev, Docker requis), versions de la CI
 pnpm db:stop       # supabase stop
 pnpm db:reset      # supabase db reset → recrée la base depuis le baseline + seed
+pnpm db:neuf       # remise à neuf de la base de dev : reset + contenu de la prod + élèves fictifs (rare)
 pnpm db:test:stop  # pile de TEST (celle de test:integration) : l'arrêter ; db:test:reset la reconstruit
 pnpm db:a-jour     # base LOCALE : joue les migrations en attente, sans rien effacer (--essai pour voir)
 pnpm db:migrate    # supabase db push → applique migrations en attente vers EU

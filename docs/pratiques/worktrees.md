@@ -92,11 +92,11 @@ Implémentation : `scripts/lib/lock.py`, appelé par `scripts/check-incremental.
 `build`, `lint` ; pas de verrou en CI ni sur Vercel), par `scripts/with-db-lock.sh` et par
 `scripts/pile-de-test.sh`.
 
-| Verrou          | Pris par                                                                                             | Ce qu'il évite                                                            |
-| --------------- | ---------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
-| `typecheck`     | `pnpm check:incremental`, `pnpm check`, `pnpm build`, `pnpm lint`                                    | Deux typechecks concurrents (un seul gros process à la fois)              |
-| `supabase`      | `db:start`, `db:stop`, `db:reset`, `db:a-jour`, `db:seed-riche`, `db:dev-accounts` (base de **dev**) | Deux commandes qui réécrivent la base de dev en même temps                |
-| `supabase-test` | `test:integration(:watch)`, `test:definer-guard`, `db:test:stop`, `db:test:reset` (pile de **test**) | Deux suites sur la même pile, ou une reconstruction au milieu d'une suite |
+| Verrou          | Pris par                                                                                                        | Ce qu'il évite                                                            |
+| --------------- | --------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| `typecheck`     | `pnpm check:incremental`, `pnpm check`, `pnpm build`, `pnpm lint`                                               | Deux typechecks concurrents (un seul gros process à la fois)              |
+| `supabase`      | `db:start`, `db:stop`, `db:reset`, `db:neuf`, `db:a-jour`, `db:seed-riche`, `db:dev-accounts` (base de **dev**) | Deux commandes qui réécrivent la base de dev en même temps                |
+| `supabase-test` | `test:integration(:watch)`, `test:definer-guard`, `db:test:stop`, `db:test:reset` (pile de **test**)            | Deux suites sur la même pile, ou une reconstruction au milieu d'une suite |
 
 **Où ils vivent** : `<répertoire git commun>/.locks/<nom>`, c'est-à-dire
 `.git/.locks/` du dépôt principal — le seul endroit que tous les worktrees

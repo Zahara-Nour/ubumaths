@@ -20,6 +20,8 @@
  *    « contenu de la prod » : `pnpm db:a-jour` sait alors qu'une migration de
  *    contenu déjà faite en prod n'a rien à faire ici.
  *
+ * `--verifier-prod` : dit seulement si la prod répond, sans rien ouvrir ni écrire en local.
+ *
  * Après `pnpm db:reset` (base repartie de zéro) ou pour rafraîchir le contenu,
  * sous le verrou Supabase : `pnpm db:seed-riche`.
  */
@@ -298,6 +300,16 @@ async function main() {
 	if (!cle) throw new Error('SUPABASE_SERVICE_ROLE_KEY absente de .env');
 
 	const prod = createClient(source, cle, { auth: { persistSession: false } });
+
+	// `--verifier-prod` : la source répond-elle ? Rien n'est écrit, la base locale n'est même pas
+	// ouverte. `pnpm db:neuf` le demande AVANT d'effacer la base de dev.
+	if (process.argv.includes('--verifier-prod')) {
+		const { error } = await prod.from('profiles').select('id').limit(1);
+		if (error) throw new Error(`la prod ne répond pas : ${error.message}`);
+		console.log('✓ la prod répond.');
+		return;
+	}
+
 	const db = new pg.Client({ connectionString: pgUrl });
 	await db.connect();
 
@@ -400,6 +412,15 @@ async function main() {
 		);
 		console.log(
 			`✅ Activité : ${plan.assignations.length} feuille(s) assignée(s), ${plan.maitrise.length} progressions, ${plan.gidouilles.length} mouvements de Gidouilles, ${plan.bonus.length} bonus, ${plan.avertissements.length} avertissement(s), ${plan.messages.length} messages, ${plan.amities.length} amitiés, ${plan.evaluationsAssignees.length} évaluation assignée.`
+		);
+		const etat = await db.query(
+			`select (select count(*)::int from supabase_migrations.schema_migrations) migrations,
+			        (select count(*)::int from public.question_templates) modeles,
+			        (select count(*)::int from auth.users) comptes`
+		);
+		const { migrations, modeles, comptes } = etat.rows[0];
+		console.log(
+			`✅ Base locale : ${migrations} migrations, ${modeles} modèles de questions, ${comptes} comptes.`
 		);
 	} catch (e) {
 		await db.query('rollback').catch(() => {});

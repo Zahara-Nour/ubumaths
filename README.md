@@ -19,7 +19,7 @@ Svelte 5 (runes) · SvelteKit · TypeScript strict · Tailwind 4 · shadcn-svelt
 pnpm install
 cp .env.example .env          # puis renseigner les clés Supabase
 pnpm db:start                 # Supabase local (Docker)
-pnpm db:reset && pnpm db:seed-riche   # base locale remplie : contenu + 30 élèves fictifs
+pnpm db:neuf --oui            # base locale remise à neuf : contenu + 30 élèves fictifs
 pnpm dev --port 5175 --strictPort
 ```
 

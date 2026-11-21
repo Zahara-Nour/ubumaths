@@ -29,7 +29,7 @@ pnpm test:server <path> / test:client <path> / test:integration
 pnpm db:start / db:reset / db:migrate / db:types
 pnpm db:test:stop / db:test:reset   # pile de TEST (démarrée et mise à jour seule par test:integration ; jamais la base de dev)
 pnpm db:a-jour                      # base LOCALE : migrations en attente, sans rien effacer (auto avant `pnpm dev`)
-pnpm db:reset && pnpm db:seed-riche # base locale remplie (eleveNN@local.test / local-eleve)
+pnpm db:neuf                        # base locale EFFACÉE puis remplie (eleveNN@local.test / local-eleve) ; rare, demande « oui »
 pnpm maintenance:on / :off          # mode maintenance prod
 pnpm deploy:prod                    # mise en prod + version — SUR DEMANDE DE DAVID SEULEMENT (--essai pour voir)
 ```

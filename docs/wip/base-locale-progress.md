@@ -2,21 +2,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-21, après #2968._
+_Mis à jour le 2026-11-21, pendant la PR 4._
 
-- **État** : PR 3 sur 4 mergée (#2968) : `pnpm db:start`, `db:stop`, `db:reset` lancent la CLI par
-  `scripts/pile-de-dev.sh` (dossier miroir de `supabase/` sans `.temp`), donc avec les versions de
-  la CI (§ 13). Pile de dev redémarrée le 2026-11-21 : PostgREST `v16.4`, Storage `v1.79.36`,
-  Postgres `17.11.0.004`, données intactes. PR 1 (#2966) : `db:a-jour` ; PR 2 (#2967) : pile de test.
-- **Prochaine action** : PR 4, **remise à neuf en une commande + doc** (§ 10, point 4), puis
-  versement du chantier (`docs/systeme/`, archivage du journal). À trancher avec David en phase 0 :
-  ce que fait exactement la commande (reset + seed-riche ?), et un éventuel `pnpm db:restart`.
+- **État** : PR 4 sur 4 en cours : `pnpm db:neuf` (§ 14), remise à neuf de la base de dev en une
+  commande, avec sa doc. PR 1 (#2966) : `db:a-jour` ; PR 2 (#2967) : pile de test ; PR 3 (#2968) :
+  versions de la CI pour la pile de dev.
+- **Prochaine action** : merger la PR 4, puis **versement du chantier** (le durable est déjà dans
+  `docs/pratiques/` ; archiver ce journal et `base-locale-inventaire.md`, nettoyer le worktree).
 - **En attente de David** : rien.
-- **Pièges en cours** : `db:reset` efface les données de dev de tous ; `db:migrate` = **prod**.
-  Jamais `pnpm exec supabase start|stop|db reset` à la main (le hook refuse) : `pnpm db:*`.
+- **Pièges en cours** : `db:neuf` et `db:reset` effacent les données de dev de tous ; `db:migrate` =
+  **prod**. Jamais `pnpm exec supabase start|stop|db reset` à la main (le hook refuse) : `pnpm db:*`.
   Ne jamais poser `PUBLIC_SUPABASE_URL` dans l'environnement d'un vite ou vitest (§ 12).
   La garde « doc à jour » ne voit que le commité : la relancer APRÈS le commit, avant le push.
-- **Worktree / branche** : aucun (nettoyés après #2968) ; PR 4 : `../ubumaths-wt-base-locale`.
+- **Worktree / branche** : `../ubumaths-wt-base-locale`, `feat/base-locale-remise-a-neuf`.
 
 ---
 
@@ -487,3 +485,40 @@ Comportement validé au § 10 (point 3) : la pile de dev ignore `supabase/.temp/
   dépôt principal, accord de David) : images PostgREST `v16.4`, Storage `v1.79.36`, Postgres
   `17.11.0.004`, GoTrue `v2.197.0` ; avant et après : 3 comptes, 3 profils, 628 migrations,
   7 objets Storage ; connexion du prof de dev et lecture par l'API vérifiées.
+
+## 14. PR 4 : `pnpm db:neuf`, remise à neuf en une commande (2026-11-21)
+
+Phase 0 validée par David le 2026-11-21 (« je te suis », sur les comportements et les trois
+recommandations) :
+
+- **Nom** : `pnpm db:neuf` (à côté de `db:a-jour` : à jour = sans rien effacer, neuf = de zéro).
+- **Confirmation** : taper « oui » avant d'effacer ; `--oui` pour s'en passer ; sans terminal ni
+  `--oui`, refus (pas d'attente sans fin).
+- **Pas de `pnpm db:restart`** : `pnpm db:stop` puis `pnpm db:start` suffisent.
+- **Nominal** : efface la base de dev, la reconstruit, la remplit comme `db:seed-riche` ; un seul
+  verrou `supabase` du début à la fin ; bilan court (migrations, modèles, comptes, durée).
+- **Limites** : pile arrêtée → démarrée par la commande ; verrou tenu par une autre session →
+  exit 2 sans rien effacer ; pile de test jamais touchée.
+- **Erreurs** : prod injoignable → vérifié AVANT d'effacer, arrêt sans rien toucher ; remplissage
+  en échec après l'effacement → le dire (base reconstruite, sans le contenu de la prod).
+- `db:reset` et `db:seed-riche` restent utilisables seuls.
+
+Réalisation :
+
+- `scripts/db-neuf.sh` : vérifie le verrou (sans le garder pendant la question), demande « oui »,
+  puis se relance sous `with-db-lock.sh` : `db-seed-riche --verifier-prod`, `pile-de-dev.sh start`,
+  `pile-de-dev.sh db reset`, `db-seed-riche`. `start` sur une pile déjà démarrée ne fait rien.
+- `scripts/db-seed-riche/index.ts` : option `--verifier-prod` (une lecture en prod, rien d'ouvert
+  ni d'écrit en local) ; ligne de bilan à la fin (migrations, modèles, comptes).
+- **Tests** : `scripts/__tests__/db-neuf.test.ts` (fausse CLI et faux `tsx`, dépôt git temporaire
+  pour avoir un verrou à soi) : ordre des 4 étapes, refus sans `--oui`, prod injoignable et pile
+  qui ne démarre pas → rien d'effacé, échecs du reset et du remplissage, verrou tenu → exit 2,
+  verrou tenu pendant le travail. La saisie de « oui » au clavier n'a pas de test automatique.
+- **Prouvé sur une copie isolée** (§ 9.1 : projet `ubumaths-essai`, ports `5442x`, verrou à part) :
+  pile éteinte et sans volume → **79 s** ; pile déjà démarrée → **45 s** ; chaque fois 628
+  migrations, 2 770 modèles, 34 comptes. Sans terminal ni `--oui` : refus, exit 1. Pile de dev
+  intacte pendant l'essai (628 migrations, 3 comptes), copie supprimée ensuite.
+- **Doc** : `environnement-de-dev.md`, `base-de-donnees.md`, `commandes.md`, `worktrees.md`,
+  `CLAUDE.md`, `README.md`.
+- **Non fait** : `pnpm db:neuf` n'a pas été lancée sur la vraie base de dev (elle efface les données
+  de toutes les sessions) : à David de choisir le moment.
