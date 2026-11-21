@@ -2,21 +2,25 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-21, pendant la PR 1 (pas encore mergée)._
+_Mis à jour le 2026-11-21, après #2977._
 
-- **État** : PR 1 (inventaire et garde) codée et prouvée sur une copie isolée (§ 7) ; en relecture.
-  Classement du § 3 et découpage du § 5 **validés** par David le 2026-11-21 (« go »).
-- **Prochaine action** : merger la PR 1 (CI verte, relectures), puis PR 2, suivi et travail
-  scolaire (§ 5) : règles testées sans base, preuve sur copie isolée, pages à ouvrir notées.
+- **État** : PR 1 mergée (#2977) : les 234 tables classées (`COPIE` 78, `INVENTE` 107,
+  `JAMAIS` 49), garde en place, 21 tables de contenu de plus copiées (§ 7). La base de dev
+  partagée ne reçoit ce contenu qu'au prochain `pnpm db:seed-riche` (pas encore lancé).
+- **Prochaine action** : PR 2, suivi et travail scolaire (§ 5) : évaluations passées, tests,
+  fiches et exercices assignés, Python, devinettes, révisions. Règles testées sans base (comme
+  `activite.ts`), preuve sur copie isolée, pages à ouvrir notées. Y ajouter la vérification des
+  liens orphelins après la copie, dans le seed lui-même (§ 7, relectures).
 - **En attente de David** : (1) tableau de tâches du prof (`kanban_*`) et signalements de bug
   (`bug_reports`) : en inventer, ou laisser vide ? (vides en attendant) ; (2) modèles de messages :
-  aucun en prod, non copiés (§ 7), à inventer en PR 4 ou à laisser tels quels ?
+  aucun en prod, non copiés (§ 7) : en inventer en PR 4, ou laisser tels quels ?
 - **Pièges en cours** : RGPD, **jamais de donnée d'élève en local** : une table d'activité
-  s'INVENTE, elle ne se copie pas. Essais sur une copie isolée de la pile
-  (`docs/archive/wip/base-locale-progress.md` § 9.1), jamais sur la base de dev partagée.
-  `avatar_catalog` est vide en prod : voir le chantier `boutique-avatars` avant d'inventer des achats.
-  Une table de `COPIE` vide en prod **vide** la table locale : regarder la base de dev avant d'en ajouter.
-- **Worktree / branche** : `../ubumaths-wt-seed-complet`, `feat/seed-complet-inventaire`.
+  s'INVENTE, elle ne se copie pas. Avant d'ajouter une table à `COPIE` : chercher une colonne
+  d'identifiants SANS clé étrangère ou un texte libre (les gardes ne voient ni l'un ni un prénom
+  seul), et regarder la base de dev (une table vide en prod vide la table locale). Essais sur une
+  copie isolée (`docs/archive/wip/base-locale-progress.md` § 9.1), jamais la base de dev partagée.
+- **Worktree / branche** : aucun (retirés après #2977) ; à recréer pour la PR 2 :
+  `../ubumaths-wt-seed-complet`, branche `feat/seed-complet-suivi`.
 
 ---
 
@@ -182,7 +186,7 @@ Déjà inventé : `worksheet_assignments`, `worksheet_assignment_classes`,
 Chaque PR d'activité : règles testées sans base (comme `activite.ts`), puis preuve sur une copie
 isolée de la pile, puis une liste de pages à ouvrir dans `docs/wip/verifications-manuelles.md`.
 
-## 7. PR 1 : inventaire et garde (2026-11-21)
+## 7. PR 1 : inventaire et garde (2026-11-21, #2977, mergée)
 
 Classement (§ 3) et découpage (§ 5) validés par David le 2026-11-21 (« go »).
 
