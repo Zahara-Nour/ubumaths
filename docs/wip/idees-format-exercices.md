@@ -126,3 +126,26 @@ faite dans le navigateur ; les barèmes au choix (notre 1 / ½ / 0 est une déci
   un modèle peut servir en évaluation sans rien révéler.
 - **Grandeurs avec conversion** et **arrondi demandé** (`PrecisionType`) : écrire `unit` et
   `precision` plutôt qu'accepter un nombre seul.
+
+## Décisions de David (2026-11-21)
+
+1. **Répartir les variations dans une série : oui.** L'ancien site (TinyMath, `extern/new-tinymath`,
+   `apps/ubumaths/src/lib/questions/generateQuestion.ts`) le faisait déjà :
+   - **quota par variation** : `limit = ceil(nbQuestions / nbVariations)`, recalculé quand une
+     variation atteint son quota ; le tirage se fait au hasard parmi les variations encore sous leur
+     quota (`availables`) ;
+   - **option `exhaust`** : chaque élément fixe (sans hasard) sort une seule fois, et le nombre de
+     questions est plafonné au nombre d'éléments ;
+   - **refus des doublons** : même variation et mêmes valeurs (variables, énoncé, expression,
+     choix, image) qu'une question déjà tirée → nouveau tirage (boucle `do … while`).
+     Point délicat chez nous : une évaluation régénère la copie par la graine (ADR 0015) ; la
+     variation imposée doit être enregistrée avec la graine.
+2. **Le prof choisit les variations d'une ligne de série : oui** (utile).
+3. **Erreurs prévues avec leur message : oui**, à recouper avec les chantiers sur les erreurs
+   (`type-erreur`, `erreurs-frequentes`).
+4. **Case ou QCM à partir des erreurs prévues : idée intéressante.** Les deux formes ont leurs
+   avantages ; piste de David : des variations pour les deux formes (à mesurer : un tirage au
+   hasard mêlerait alors deux difficultés, cf. idées 1 et 2).
+5. **Coup de pouce : oui**, à recouper avec la génération automatique des corrections (l'indice
+   pourrait être la première étape de la correction générée). Question ouverte : un indice ouvert
+   compte-t-il dans la révision espacée ?

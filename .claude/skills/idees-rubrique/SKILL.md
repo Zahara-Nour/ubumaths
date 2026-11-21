@@ -73,7 +73,8 @@ ignoré par git ; depuis un worktree, on y accède par ce chemin absolu.
   c'est son seul usage, les verdicts de relecture viennent de `/dev/modeles` (§ 5).
 - **On reprend l'idée, jamais la forme.** Chaque fiche dit « chez eux → chez nous » : la meilleure
   forme que **notre** format permet, choisie dans le catalogue des cases réponses, des blocs et des
-  gestes ([couvrir-un-niveau.md § 3 bis](../../../docs/pratiques/couvrir-un-niveau.md)). Exemples :
+  gestes ([couvrir-un-niveau.md § 3 bis](../../../docs/pratiques/couvrir-un-niveau.md), liste
+  complète : table « Natures de réponse » de [questions.md § 4](../../../docs/systeme/questions.md)). Exemples :
   un QCM chez eux devient une saisie jugée par nos règles quand la réponse se tape ; « placer un
   point » devient le geste `placer:` sur une droite ou un repère ; une réponse sous une forme imposée
   passe par `requiredForm` ou les règles de validation, pas par une comparaison de texte. Leur forme

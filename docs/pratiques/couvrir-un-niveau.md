@@ -115,7 +115,15 @@ coûte un chantier. Détail de chaque bloc : [ubumark.md § Blocs spéciaux](../
 
 **Répondre** (ce que l'élève saisit ou fait) :
 
+**Liste complète** : table « Natures de réponse » de [questions.md § 4](../systeme/questions.md)
+(à relire avant de dire qu'une forme n'existe pas ; complétée ici le 2026-11-21, il manquait les
+gestes `tracer:` / `representer:`, les blocs à associer, à trous, les tableaux à compléter, les
+programmes et les natures d'une case).
+
 - **case** (MathLive, jugée par le juge ordinaire), plusieurs cases, case dans un tableau (`$?$`) ;
+- **natures d'une case** : texte (`[_]` hors formule), grandeur avec unité (`unit`), ensemble en
+  intervalles, équation de droite ou de cercle, vecteur, matrice, primitive ou solution d'équation
+  différentielle (`answerKind`) ; forme exigée (`requiredForm`), règles de validation, précision ;
 - **QCM = case choix** (bloc ` ```choix `, [ADR 0033](../adr/0033-le-qcm-est-une-case.md)), en
   texte ou en dessins, mêlable à d'autres cases. Le type `multiple_choice` n'existe plus depuis le
   2026-10-28 : les anciens champs (`choices`, `correctChoiceIndex`…) sont refusés à l'enregistrement
@@ -127,6 +135,15 @@ coûte un chantier. Détail de chaque bloc : [ubumark.md § Blocs spéciaux](../
   (` ```horloge `), toutes avec `placer:` ; barres et boîte à moustaches à construire ; étiquettes à
   ranger (` ```ranger `) ; parts à colorier (` ```partage colorier:`) ; vues et faces (` ```cubes `,
   ` ```patron `) ;
+- **tracer, représenter** : droite ou vecteur dans un repère (` ```courbe ` `tracer:`, somme
+  `tracer: vecteur u + v`), vecteur sur un solide (` ```solide `), intervalle sur une droite graduée
+  (` ```line ` `representer:`) ;
+- **associer, texte à trous** : ` ```associer ` (`- élément -> étiquette`, intrus) et ` ```trous `
+  (`[étiquette]`, `intrus:`), étiquettes glissées ;
+- **tableau à compléter** : ` ```variation ` avec des cases `?` (valeur, signe, marque, flèche) :
+  tableau de signes ou de variations ;
+- **programmes** : programme tortue (` ```tortue `), programme de calcul (` ```calcul `), robot à
+  produire (` ```robot ` `produire: oui`), rejoués pour juger ;
 - **figure à compléter** (` ```figure-a-completer `, case « figure » : objets de l'élève retrouvés
   sur les nœuds) et **figure de travail** (` ```figure-de-travail `, jamais notée) ; figure d'énoncé
   à manipuler (` ```figure ` + `deplacable: oui`, rien de noté).
