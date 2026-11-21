@@ -22,6 +22,10 @@ Suite du chantier `amelioration` (`docs/wip/amelioration-progress.md`, « Reste,
 - `sanitizeUrl` déplacée telle quelle dans `sanitize-url.ts` (aucun import) ; 6 composants de
   markdown et `sanitize-url.test.ts` pointent dessus.
 - Test de garde vérifié rouge en remettant un import de `sanitize.ts` dans `ImageDisplay.svelte`.
+- Revue (`code-reviewer`) : rien de bloquant ; la garde ne suivait pas les imports en `.js` de
+  mathAST (faux vert possible) → corrigé, et un import local non résolu fait maintenant échouer le test.
+- `docs/systeme/ubumark.md` inchangée : elle ne parle ni de `sanitizeUrl` ni de DOMPurify, et le
+  rendu du markdown ne change pas.
 
 ## Reste à regarder (non traité)
 
