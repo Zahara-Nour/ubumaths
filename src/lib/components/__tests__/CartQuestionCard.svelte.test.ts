@@ -36,6 +36,7 @@ async function renderCard(
 		observedDelay?: number | null;
 		distinctMax?: number | null;
 		onUpdateQuantity?: (templateId: string, quantity: number) => void;
+		onUpdateVariations?: (templateId: string, variations: number[] | undefined) => void;
 	} = {}
 ) {
 	return await render(CartQuestionCard, {
@@ -49,7 +50,8 @@ async function renderCard(
 		onRemove: overrides.onRemove ?? vi.fn(),
 		tooShort: overrides.tooShort,
 		observedDelay: overrides.observedDelay,
-		distinctMax: overrides.distinctMax
+		distinctMax: overrides.distinctMax,
+		onUpdateVariations: overrides.onUpdateVariations
 	});
 }
 
@@ -230,5 +232,20 @@ describe('CartQuestionCard', () => {
 		const screen = await renderCard();
 
 		expect(screen.container.querySelector('[data-trop-de-repetitions]')).toBeNull();
+	});
+});
+
+describe('CartQuestionCard — variations choisies (idée 2)', () => {
+	const count = TEMPLATE_WITH_ID.variations.length;
+
+	it('prof : le choix des variations est proposé (modèle à plusieurs variations)', async () => {
+		expect(count).toBeGreaterThan(1);
+		const screen = await renderCard({ onUpdateVariations: vi.fn() });
+		await expect.element(screen.getByText(`Toutes les variations (${count})`)).toBeInTheDocument();
+	});
+
+	it('sans gestionnaire (élève) : rien', async () => {
+		const screen = await renderCard();
+		expect(screen.container.querySelector('[data-choix-variations]')).toBeNull();
 	});
 });

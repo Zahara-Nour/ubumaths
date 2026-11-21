@@ -2,7 +2,8 @@
  * Composition d'une série : schémas partagés client / serveur.
  *
  * Une série (et le panier) est une liste de lignes `{ templateId, quantity,
- * delay }` : tel MODÈLE, tant de fois, tant de secondes par question (ADR 0035).
+ * delay, variations? }` : tel MODÈLE, tant de fois, tant de secondes par question
+ * (ADR 0035), dans les variations choisies par le prof (toutes si absent).
  * Les mêmes bornes valent pour l'enregistrement d'une série (serveur, B11) et
  * pour un lien `/automaths/panier?modeles=…` relu par le navigateur (C19, Q45) :
  * un lien abîmé ou fabriqué ne doit jamais faire planter la page.
@@ -53,11 +54,33 @@ export const itemDelaySchema = z
 	.nonnegative('Durée invalide')
 	.max(MAX_QUESTION_DELAY_SECONDS, `Durée trop longue (${MAX_QUESTION_DELAY_SECONDS} s au plus)`);
 
-/** Une ligne de série : un modèle, son nombre de questions et sa durée par question */
+/** Variations d'un modèle (le plus grand en prod en a 126, mesuré le 2026-11-21) */
+export const MAX_TEMPLATE_VARIATIONS = 200;
+
+/**
+ * Variations choisies par le prof sur une ligne (chantier `idees-format`, idée 2) :
+ * leurs numéros, distincts, rangés dans l'ordre. Absent = toutes les variations.
+ * Un numéro qui n'existe plus dans le modèle est ignoré au tirage (`allowedVariations`).
+ */
+export const itemVariationsSchema = z
+	.array(
+		z
+			.number()
+			.int('Numéro de variation entier attendu')
+			.nonnegative('Numéro de variation invalide')
+			.max(MAX_TEMPLATE_VARIATIONS - 1, 'Numéro de variation invalide')
+	)
+	.min(1, 'Choisis au moins une variation')
+	.max(MAX_TEMPLATE_VARIATIONS, 'Trop de variations')
+	.refine((indexes) => new Set(indexes).size === indexes.length, 'Variation choisie deux fois')
+	.transform((indexes) => [...indexes].sort((a, b) => a - b));
+
+/** Une ligne de série : un modèle, son nombre de questions, sa durée par question, ses variations */
 export const seriesItemSchema = z.object({
 	templateId: z.string().uuid('Modèle invalide'),
 	quantity: itemQuantitySchema,
-	delay: itemDelaySchema
+	delay: itemDelaySchema,
+	variations: itemVariationsSchema.optional()
 });
 
 export type SeriesItem = z.infer<typeof seriesItemSchema>;

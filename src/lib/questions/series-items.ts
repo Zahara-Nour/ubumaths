@@ -121,7 +121,8 @@ export function drawSeriesQuestions(
 			lineSeed,
 			seen,
 			generate,
-			(errors) => onGenerationFailure(template.id, errors)
+			(errors) => onGenerationFailure(template.id, errors),
+			item.variations
 		);
 		for (const { seed, instance } of questions) {
 			draws.push({ template, seed, instance, delaySeconds });

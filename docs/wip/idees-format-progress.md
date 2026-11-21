@@ -6,16 +6,18 @@ Mettre en œuvre les idées retenues dans [idees-format-exercices.md](idees-form
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-21, après #2955._
+_Mis à jour le 2026-11-21, après #2958._
 
-- **État** : idée 1 terminée : tirage (#2954) et avertissement du panier (#2955), mergés.
-- **Prochaine action** : idée 2 (le prof choisit les variations d'une ligne de série) : phase 0
-  écrite (section « Idée 2 — phase 0 »), à faire valider avant tout code.
-- **En attente de David** : réponses aux questions Q1 à Q4 de la phase 0 de l'idée 2.
+- **État** : idée 1 terminée (#2954, #2955). Idée 2 : le panier propose le choix des variations
+  (#2958, mergée) ; une série enregistrée garde le choix mais son éditeur ne le propose pas encore.
+- **Prochaine action** : PR 4 de l'idée 2, choix des variations dans l'éditeur d'une série
+  enregistrée (`/dashboard/teacher/series/[id]/edit` : charger les modèles complets, réutiliser
+  `VariationPicker`). Puis idée 3.
+- **En attente de David** : rien (pas de `deploy:prod` demandé).
 - **Pièges en cours** : test d'intégration local bloqué par des données d'une autre session
   (`class_journal_share_tokens`), la CI fait foi ; le worktree `automaths-serie` touche aussi le
-  panier ; la CI d'intégration dure ~17 min (étude prévue dans une session `ci-integration`).
-- **Worktree / branche** : aucun ; à créer pour l'idée 2.
+  panier.
+- **Worktree / branche** : aucun ; à créer pour la PR 4.
 
 ## Idée 1 — phase 0 validée (David, 2026-11-21)
 
@@ -38,7 +40,11 @@ pas un doublon (David). « 2 + 3 » et « 3 + 2 » peuvent sortir tous les deux.
 d'implémentation, dite à David : l'empreinte des nombres n'est pas utilisée quand l'énoncé tire
 lui-même (`{{carré|rectangle}}`), sinon sa ligne tomberait à une question.
 
-## Idée 2 — phase 0 (proposée le 2026-11-21, en attente de David)
+## Idée 2 — phase 0 validée (David, 2026-11-21)
+
+David a suivi mes recommandations sur Q1 à Q4 (« je te suis ») : exemple par variation (A),
+panier + éditeur, numéros disparus ignorés (toutes s'il n'en reste aucun), révision espacée sur le
+modèle entier.
 
 Mesuré en prod (modèles publiés) : 468 à une variation, 678 à deux, 755 à trois, 473 à quatre,
 266 à cinq ou plus (126 au plus). Une variation n'a **pas de nom** aujourd'hui.
@@ -104,3 +110,20 @@ vit déjà : série enregistrée, panier, lien partagé, évaluation.
   0 » (le clic retirait la ligne) → échec = pas d'avertissement, rien en cache. Corrigé aussi :
   recherche au moins deux fois plus loin (monter de 1 à 99 recomptait à chaque pas), `role="status"`,
   bouton nommé « Passer à N répétitions ». Laissé : focus perdu après le clic (le bouton disparaît).
+
+## PR 3 — variations choisies : schéma, tirage, panier (#2958, mergée le 2026-11-21)
+
+- `validation/series.ts` : `variations?` sur une ligne (`itemVariationsSchema` : numéros distincts,
+  1 à 200, rangés ; absent = toutes). Ni migration ni colonne : la ligne est déjà du JSON.
+- `series-draw.ts` : `allowedVariations` (Q3), répartition parmi les variations permises,
+  `distinctLimit` compté par choix, `variationExample` (exemple à graine fixe, Q1).
+- `series-items.ts` : passe `item.variations` au tirage (évaluation comprise).
+- Panier : `setVariations`, choix gardé par une fusion (comme la durée) et par un lien ;
+  `VariationPicker` dans la tuile, prof seulement ; l'aperçu montre la 1re variation choisie.
+- Révision espacée : rien à faire, elle ne lit que le modèle de la ligne (Q4).
+- Tests : 12 de tirage / schéma / panier vérifiés rouges avant le code ; 6 du sélecteur, 2 de la
+  tuile.
+- Relecture (`code-reviewer` Sonnet + `security-auditor` Opus) : aucun bloquant. Ajouté : test de
+  deux lignes d'un même modèle à choix différents. Assumé : une fusion de panier garde le choix de
+  la ligne déjà là (comme la durée) ; l'élève qui ouvre un lien restreint ne voit pas le choix ;
+  un élève peut fabriquer un lien restreint à la variation facile (série libre, sans enjeu).

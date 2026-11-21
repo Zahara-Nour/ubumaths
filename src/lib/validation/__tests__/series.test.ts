@@ -179,3 +179,21 @@ describe('buildSeriesLink (Q44)', () => {
 		expect(decodeSeriesParamJson(encodeSeriesParam([ITEM]))).toEqual({ ok: true, value: [ITEM] });
 	});
 });
+
+describe('idée 2 : variations choisies sur une ligne', () => {
+	it('accepte une liste de numéros distincts, et une ligne sans choix', () => {
+		expect(seriesItemSchema.safeParse({ ...ITEM, variations: [0, 2] }).success).toBe(true);
+		expect(seriesItemSchema.safeParse(ITEM).success).toBe(true);
+	});
+
+	it('garde le choix à la relecture (série enregistrée, lien)', () => {
+		const parsed = seriesItemSchema.parse({ ...ITEM, variations: [2, 0] });
+		expect(parsed.variations).toEqual([0, 2]);
+	});
+
+	it('refuse une liste vide, un doublon, un numéro négatif ou non entier, une liste trop longue', () => {
+		for (const variations of [[], [1, 1], [-1], [1.5], Array.from({ length: 201 }, (_, i) => i)]) {
+			expect(seriesItemSchema.safeParse({ ...ITEM, variations }).success).toBe(false);
+		}
+	});
+});

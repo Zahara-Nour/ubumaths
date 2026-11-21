@@ -5,11 +5,13 @@
  */
 import { describe, it, expect } from 'vitest';
 import {
+	allowedVariations,
 	distinctQuestionCount,
 	distinctLimit,
 	drawLineQuestions,
 	emptySeen,
 	questionFingerprints,
+	variationExample,
 	variationOfSeed
 } from '#lib/questions/series-draw.ts';
 import { drawSeriesQuestions, seriesSeedSequence } from '#lib/questions/series-items.ts';
@@ -308,5 +310,91 @@ describe('génération impossible', () => {
 		);
 		expect(questions).toHaveLength(3);
 		expect(failures).toEqual([['échec']]);
+	});
+});
+
+describe('idée 2 : variations choisies par le prof', () => {
+	it('ne tire que dans les variations choisies, réparties à parts égales', () => {
+		const questions = drawLineQuestions(
+			FACTORISER,
+			10,
+			7,
+			emptySeen(),
+			generate,
+			undefined,
+			[0, 2]
+		);
+		const counts = lettersOf(questions.map((q) => String(q.instance.statement)));
+		expect(counts).toEqual({ A: 5, C: 5 });
+	});
+
+	it('la graine redonne la variation choisie (évaluation régénérée)', () => {
+		const questions = drawLineQuestions(FACTORISER, 6, 11, emptySeen(), generate, undefined, [1]);
+		for (const { seed, instance } of questions) {
+			expect(instance.selectedVariationIndex).toBe(1);
+			expect(variationOfSeed(FACTORISER, seed)).toBe(1);
+		}
+	});
+
+	it('Q3 : un numéro qui n’existe plus est ignoré', () => {
+		const questions = drawLineQuestions(FACTORISER, 4, 7, emptySeen(), generate, undefined, [2, 9]);
+		expect(lettersOf(questions.map((q) => String(q.instance.statement)))).toEqual({ C: 4 });
+	});
+
+	it('Q3 : plus aucun numéro valable → toutes les variations', () => {
+		const questions = drawLineQuestions(FACTORISER, 9, 7, emptySeen(), generate, undefined, [5, 9]);
+		expect(lettersOf(questions.map((q) => String(q.instance.statement)))).toEqual({
+			A: 3,
+			B: 3,
+			C: 3
+		});
+	});
+
+	it('allowedVariations : choix filtré, vide ou absent = toutes', () => {
+		expect(allowedVariations(FACTORISER, [2, 0])).toEqual([0, 2]);
+		expect(allowedVariations(FACTORISER, [7])).toEqual([0, 1, 2]);
+		expect(allowedVariations(FACTORISER, undefined)).toEqual([0, 1, 2]);
+		expect(allowedVariations(CINQ, [0])).toEqual([0]);
+	});
+
+	it('le compte du panier ne compte que les variations choisies', () => {
+		expect(distinctQuestionCount(AIRES, 10, generate, [0, 2])).toBe(2);
+		expect(distinctLimit(AIRES, 3, generate, [1])).toBe(1);
+		// Le même modèle, toutes variations : son propre compte, pas celui du choix
+		expect(distinctLimit(AIRES, 3, generate)).toBeNull();
+		expect(distinctLimit(AIRES, 4, generate)).toBe(3);
+	});
+
+	it('variationExample : un exemple de chaque variation, toujours le même', () => {
+		const examples = [0, 1, 2].map((index) => variationExample(AIRES, index, generate));
+		expect(examples.map((instance) => instance?.selectedVariationIndex)).toEqual([0, 1, 2]);
+		expect(String(examples[1]?.statement)).toContain('triangle');
+		expect(variationExample(FACTORISER, 1, generate)?.statement).toBe(
+			variationExample(FACTORISER, 1, generate)?.statement
+		);
+	});
+});
+
+describe('idée 2 : la série suit le choix de chaque ligne', () => {
+	it('drawSeriesQuestions passe les variations de la ligne au tirage', () => {
+		const draws = drawSeriesQuestions(
+			[{ templateId: 'factoriser', quantity: 4, delay: 20, variations: [1] }],
+			[FACTORISER],
+			{ generate, nextSeed: seriesSeedSequence(5) }
+		);
+		expect(draws.map((d) => d.instance.selectedVariationIndex)).toEqual([1, 1, 1, 1]);
+	});
+
+	it('deux lignes du même modèle, choix différents : chacune les siennes, sans doublon', () => {
+		const draws = drawSeriesQuestions(
+			[
+				{ templateId: 'aires', quantity: 1, delay: 20, variations: [1] },
+				{ templateId: 'aires', quantity: 2, delay: 20, variations: [0, 1] }
+			],
+			[AIRES],
+			{ generate, nextSeed: seriesSeedSequence(5) }
+		);
+		// La 2e ligne n'a plus que le disque : le triangle est déjà sorti, jamais répété
+		expect(draws.map((d) => d.instance.selectedVariationIndex)).toEqual([1, 0]);
 	});
 });

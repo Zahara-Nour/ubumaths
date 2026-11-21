@@ -280,15 +280,22 @@ pour tous », la graine de série `SERIES_SEED_PARAM`). L'ancienne forme (catég
   questions différentes → « Ce modèle n'a que N questions différentes. » (« qu'une question » pour 1)
   avec « Passer à N », compte de `distinctLimit` (`series-draw.ts`, même tirage que la série à graine
   fixe, mis en cache par modèle : un modèle épuisé n'est plus recompté, une recherche plus loin va au
-  moins deux fois plus loin ; une génération en échec n'avertit pas ; chantier `idees-format`).
+  moins deux fois plus loin ; une génération en échec n'avertit pas ; chantier `idees-format`) ;
+  pour un prof, le choix des variations de la ligne (`VariationPicker`, `components/series/`) :
+  « Toutes les variations (3) » ou « 2 variations sur 3 », qui ouvre une fenêtre où chaque variation
+  est montrée par un exemple (`variationExample`, graine fixe) à côté de sa case ; la dernière case
+  cochée ne se décoche pas ; un modèle à une variation n'affiche rien. Le compte de `distinctLimit`
+  et l'aperçu de la tuile suivent ce choix.
   Ce contrôle vit dans le panier seulement : l'éditeur de série et le serveur n'en font pas, une
   ligne trop longue est raccourcie au tirage). L'éditeur de série
   (`/dashboard/teacher/series/[id]/edit`) affiche la durée de chaque ligne en lecture, avec la même
   marque et la même suggestion (appliquée à la copie de travail, écrite à l'enregistrement).
 - Stores (`src/lib/stores/`) :
   - `questionCart.svelte.ts` (`questionCart`) : le **panier**, des lignes `SeriesItem`
-    (`templateId`, nombre de questions 1 à 99, durée par question) ; persistant en `localStorage`
-    (`chiphre_question_cart`). `replaceWith` / `mergeItems` y chargent une série (lien de série).
+    (`templateId`, nombre de questions 1 à 99, durée par question, variations choisies facultatives)
+    ; persistant en `localStorage` (`chiphre_question_cart`). `setVariations` règle le choix (vide =
+    toutes, le champ disparaît). `replaceWith` / `mergeItems` y chargent une série (lien de série) ;
+    une ligne déjà présente garde sa durée et ses variations.
     Un panier d'avant l'ADR 0035 (catégories) n'est plus relu : au chargement ses lignes sont
     retirées, le panier réécrit, et un message le dit.
   - `questionTemplates.svelte.ts` (`questionTemplatesCache`) : modèles publiés et arbre des
