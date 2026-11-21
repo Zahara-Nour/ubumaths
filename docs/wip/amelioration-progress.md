@@ -2,14 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-21, après #2975._
+_Mis à jour le 2026-11-21, après #2976._
 
-- **État** : mesures de performance chez nous, découpage en 3 PR (phase 0 validée, en fin de journal) ; **PR 1 faite** : #2973 mergée, migration `20261121205833` **jouée en prod** le 2026-11-21 (table anonyme `web_vital_samples`, vide ; purge à 90 jours ; lecture admin seul ; droits vérifiés en prod), types régénérés ; rien n'écrit encore dans la table ; #2969 mergée (pas en prod) : le markdown ne charge plus jsdom au rendu serveur ; workflow `web-vitals.yml` désactivé
-- **Prochaine action** : **PR 2**, envoi et réception des mesures (branche neuve depuis `origin/main`) : le navigateur envoie toutes les mesures, bonnes ou mauvaises ; le serveur valide et écrit ; registre des traitements T8 à compléter ; revues `code-reviewer` + `security-auditor` ; puis PR 3 (relevé, réactivation du workflow) ; après le prochain `deploy:prod`, recompter sur une build fraîche les pages qui chargent jsdom (79 sur 338 avant #2969)
-- **En attente de David** : rien
-- **Tranché** : ne rien payer à Vercel ; table anonyme chez nous, lecture admin seul, 90 jours, Q1 à Q4 validées (David, 2026-11-21) ; le reste inchangé, cf. sections ci-dessous
-- **Pièges en cours** : à tenir en PR 2 (findings des revues de #2973, détail en fin de journal) : envoyer `route.id`, jamais `url.pathname` ; à la réception, n'accepter que les routes connues (le filtre de la table laisserait passer un jeton en minuscules) ; lire sans ordre d'arrivée ; le serveur ne peut insérer que `route`, `metric`, `value`, `device_type` (droit par colonne) : un `insert` qui fixe `created_at` ou `id` est refusé (42501), malgré ce que dit le type `Insert` de `database.ts` ; notre suivi (`reportWebVital`) n'envoie que les mesures mauvaises ; le projet Vercel s'appelle `chiphre` (`.vercel/project.json` garde l'ancien nom) ; l'état d'avant le 2026-11-21 est dans l'historique git de ce bloc
-- **Worktree / branche** : aucun (retiré après #2975) ; worktree neuf pour la PR 2
+- **État** : mesures de performance chez nous, découpage en 3 PR (phase 0 validée, en fin de journal) ; **PR 1 et PR 2 faites** : table `web_vital_samples` en prod (#2973), envoi par le navigateur et réception par `POST /api/web-vitals` mergés (#2976, **pas encore en prod** : la table reste vide jusqu'au prochain `deploy:prod`) ; #2969 mergée (pas en prod) : le markdown ne charge plus jsdom au rendu serveur ; workflow `web-vitals.yml` désactivé
+- **Prochaine action** : **PR 3**, le relevé (worktree neuf depuis `origin/main`) : route protégée par un jeton dédié qui ne rend que des résultats calculés (p75 par page), `releve-web-vitals.ts` qui la lit, réactivation du workflow ; à faire de préférence après un `deploy:prod`, pour avoir de vraies lignes ; après ce `deploy:prod` : vérifier que des lignes arrivent (dont Safari et Firefox) et recompter sur une build fraîche les pages qui chargent jsdom (79 sur 338 avant #2969)
+- **En attente de David** : rien (option non demandée : empreinte de l'adresse IP avec un secret, donc une variable d'environnement de plus sur Vercel)
+- **Tranché** : ne rien payer à Vercel ; table anonyme chez nous, lecture admin seul, 90 jours, Q1 à Q4 validées ; une ligne par visite et par indicateur, envoyée au premier passage en arrière-plan (David, 2026-11-21) ; le reste inchangé, cf. sections ci-dessous
+- **Pièges en cours** : pour lire la table en PR 3 : l'accueil est `/(public)`, pas `/` ; lire sans ordre d'arrivée ; TTFB et CLS suivent la définition de Google (pas celle du journal des erreurs) ; pas de CLS sous Safari ; le CLS est rattaché à la page affichée à l'envoi ; pages d'admin et `/dev` absentes ; page de moins de 10 mesures = « peu fiable » ; le serveur ne peut insérer que `route`, `metric`, `value`, `device_type` ; le projet Vercel s'appelle `chiphre` (`.vercel/project.json` garde l'ancien nom)
+- **Worktree / branche** : aucun (retiré après #2976) ; worktree neuf pour la PR 3
 
 ## N° 26 — mesurer un segment en posant la règle : phase 0 (2026-11-12, validée)
 
@@ -721,7 +721,7 @@ registre des traitements (`docs/systeme/conformite/registre-traitements.md`) à 
   RLS active, une policy `is_admin()`, purge exécutable par le serveur seul, 0 ligne. `db:types`
   dans une PR à part (types et `base-de-donnees-tables.md`).
 
-## Mesures chez nous : PR 2, envoi et réception (2026-11-21)
+## Mesures chez nous : PR 2, envoi et réception (#2976, mergée le 2026-11-21)
 
 - **Navigateur** : `src/lib/utils/web-vitals-mesures.ts` (partagé avec le serveur : indicateurs,
   bornes, pages comptées, collecteur, CLS par rafales), branché dans `initWebVitals`
