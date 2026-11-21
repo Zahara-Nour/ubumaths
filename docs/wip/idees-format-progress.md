@@ -227,3 +227,6 @@ deviné partage son compte ; à égalité, erreurs prévues d'abord. `QuestionEr
 `$…$` rendues (`remarkSegments` + `InlineMarkdown`). Limite assumée : sans nom court, un message
 qui dit les nombres du tirage fait un compte par tirage. Tests : 7 de `error-kinds`, 4 du calcul
 serveur, 1 du panneau (vérifiés rouges avant le code). Doc : `evaluations.md`, `questions.md`.
+Relecture (`code-reviewer`, Sonnet) : aucun bloquant. Corrigé : la ligne des comptes rendue d'un
+seul tenant appariait le `$` isolé d'un nom avec celui du suivant → chaque compte rendu à part
+(test ajouté). Laissé : une erreur prévue nommée « Non reconnue » se confondrait avec cette ligne.

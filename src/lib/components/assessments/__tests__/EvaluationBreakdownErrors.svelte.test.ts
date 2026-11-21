@@ -263,6 +263,31 @@ describe('bilan par question : erreurs dépliables', () => {
 		expect(chip?.querySelector('math-span')).not.toBeNull();
 	});
 
+	it('un `$` isolé par nom ne s’apparie pas avec celui du nom suivant', async () => {
+		stubFetch(
+			ok({
+				errorKinds: [
+					{ label: 'Prix en $', count: 2 },
+					{ label: 'Coût en $', count: 1 }
+				],
+				groups: [group(['Ada'])]
+			})
+		);
+		const { container } = await render(EvaluationBreakdown, {
+			breakdown,
+			evaluationId: EVALUATION
+		});
+		await userEvent.click(toggle(container));
+		await vi.waitFor(() =>
+			expect(container.querySelector('[data-testid="error-kind-counts"]')).not.toBeNull()
+		);
+		const counts = container.querySelector('[data-testid="error-kind-counts"]');
+		expect(counts?.querySelector('math-span')).toBeNull();
+		expect((counts?.textContent ?? '').replace(/\s+/g, ' ')).toContain(
+			'Prix en $ : 2 · Coût en $ : 1'
+		);
+	});
+
 	it('aucun type reconnu : pas de ligne de comptes', async () => {
 		stubFetch(ok({ unrecognized: 3, groups: [group(['Ada'])] }));
 		const { container } = await render(EvaluationBreakdown, {

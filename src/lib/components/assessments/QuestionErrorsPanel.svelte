@@ -66,8 +66,8 @@
 </script>
 
 <!-- Texte d'un nom d'erreur prévue : ses formules `$…$` rendues, le reste en texte -->
-{#snippet withMath(text: string)}
-	{#each remarkSegments(text) as segment, j (j)}
+{#snippet withMath(text: string, before = '')}
+	{before}{#each remarkSegments(text) as segment, j (j)}
 		{#if segment.math}<InlineMarkdown content={segment.value} />{:else}{segment.value}{/if}
 	{/each}
 {/snippet}
@@ -88,7 +88,8 @@
 	{#if errors.errorKinds.length > 0}
 		<p class="text-sm" data-testid="error-kind-counts">
 			<span class="font-medium">Types d'erreur :</span>
-			{@render withMath(kindCounts.join(' · '))}
+			<!-- Chaque compte rendu à part : un `$` isolé ne s'apparie pas avec le nom suivant -->
+			{#each kindCounts as text, i (i)}{@render withMath(text, i > 0 ? ' · ' : '')}{/each}
 		</p>
 	{/if}
 	{#if errors.groups.length === 0}
