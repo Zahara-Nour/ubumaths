@@ -3,7 +3,15 @@
  *
  * Décision de David du 2026-10-10 : contenu copié depuis la prod, élèves
  * générés. Inventaire et raisons : docs/archive/wip/base-locale-inventaire.md.
+ * Classement de TOUTES les tables en trois familles (2026-11-21, chantier
+ * `seed-complet`) : docs/wip/seed-complet-progress.md § 3.
  * Tests : scripts/__tests__/db-seed-riche.test.ts.
+ *
+ * Une table du schéma est dans UNE des trois listes ci-dessous, et une seule :
+ * - COPIE   : du contenu (auteur prof, admin ou personne), copié depuis la prod ;
+ * - INVENTE : ce qui touche un élève, jamais copié, inventé pour les élèves fictifs ;
+ * - JAMAIS  : ni copié ni inventé, laissé vide (traces, secrets, liens vers l'extérieur).
+ * Le test échoue dès qu'une table nouvelle n'est dans aucune : on la classe avant de merger.
  */
 
 /** Tables copiées depuis la prod : le contenu pédagogique, sans élève. */
@@ -19,17 +27,24 @@ export const COPIE: readonly string[] = [
 	// Questions et exercices
 	'question_templates',
 	'question_template_points',
+	'question_template_reviews',
 	'exercises',
 	'exercise_classifications',
 	'exercise_curriculum_points',
+	'exercise_templates',
 	'tags',
 	'resource_tags',
 	'source_types',
+	// Dictionnaire
+	'dictionary_entries',
+	'dictionary_entry_versions',
 	// Feuilles, séries, évaluations (le contenu, pas les passages)
 	'worksheets',
 	'worksheet_sections',
 	'worksheet_exercises',
 	'worksheet_templates',
+	'worksheet_styles',
+	'worksheet_classifications',
 	'series',
 	'evaluations',
 	'evaluation_tasks',
@@ -37,95 +52,292 @@ export const COPIE: readonly string[] = [
 	'parody_evaluations',
 	// Chapitres
 	'chapter_templates',
+	'chapter_template_instantiations',
 	'class_chapters',
 	'chapter_sections',
 	'chapter_series',
 	'chapter_worksheets',
 	'chapter_exercises',
 	'chapter_checklist_items',
+	'coursework_categories',
 	// Python, géométrie, tableaux, devinettes
 	'python_exercises',
 	'python_notebooks',
 	'python_files',
 	'constructions',
 	'construction_demo_scripts',
+	'geometry_figures',
 	'whiteboard_templates',
 	'riddles',
 	// Copiée à part : le seed écrit en `replica`, le déclencheur de recopie ne tourne pas.
 	'riddle_solutions',
-	// Jeux : le contenu, pas les parties
+	'riddle_of_the_day',
+	// Jeux et boutique : le contenu et les réglages, pas les parties
 	'game_challenges',
+	'game_monsters',
+	'game_achievements',
+	'game_timeslots',
+	'game_class_settings',
 	'achievements',
 	'minesweeper_achievements',
 	'minesweeper_reference_times',
 	'minesweeper_tournament_3bv_reference',
+	'minesweeper_tournaments',
+	'minesweeper_tournament_classes',
 	'vip_card_templates',
 	'vip_card_config',
 	'buddy_skins',
+	'avatar_catalog',
 	// Calendrier, classes (noms seulement), réglages
 	'schools',
 	'school_years',
+	'school_year_closures',
 	'academic_periods',
 	'school_holidays',
 	'classes',
 	'class_schedules',
+	'class_carnet_settings',
 	'app_config',
 	'marketplace_config',
 	'bug_reports_config',
-	'achievement_stats_metadata'
+	'achievement_stats_metadata',
+	// Réglages personnels : seules les lignes du prof et de l'admin passent le filtre d'auteur.
+	'user_preferences',
+	'user_whiteboard_template_favorites',
+	'user_folders',
+	'exercise_favorites',
+	// Assistant (vides en prod le 2026-11-21)
+	'rag_documents',
+	'rag_chunks'
 ];
 
 /**
- * Tables qui ne doivent JAMAIS figurer dans COPIE (garde du test) : élèves,
- * activité, échanges, contenu créé par des élèves, cahier de texte, traces.
+ * Tables jamais copiées, dont le contenu est INVENTÉ pour les élèves fictifs :
+ * comptes, activité, échanges, famille. Une table citée ici n'est pas forcément
+ * déjà remplie : ce qui l'est se lit dans ./activite.ts (le reste arrive PR par PR,
+ * docs/wip/seed-complet-progress.md § 5).
  */
-export const JAMAIS: readonly string[] = [
+export const INVENTE: readonly string[] = [
+	// Comptes
 	'profiles',
 	'class_members',
-	'pending_students',
+	// Fiches et exercices assignés
+	'worksheet_assignments',
+	'worksheet_assignment_classes',
+	'worksheet_assignment_students',
+	'worksheet_assignment_exercise_settings',
+	'worksheet_instances',
+	'worksheet_error_reports',
+	'exercise_assignments',
+	'exercise_completions',
+	'student_exercise_mastery',
+	'student_print_settings',
+	// Évaluations et suivi
+	'evaluation_assignments',
+	'evaluation_attempt_questions',
+	'test_sessions',
+	'test_answers',
+	'skill_attempts',
+	'student_point_state',
+	'student_observable_state',
+	'student_competence_level',
+	'student_checklist_progress',
+	'student_last_visits',
+	'student_warnings',
+	// Récompenses et succès
+	'gidouilles_activity',
+	'bonus_history',
+	'reward_events',
+	'student_achievements',
+	'achievement_progress',
+	'achievement_events',
+	'daily_game_rewards',
+	'weekly_rewards',
+	'weekly_best_rewards',
+	'vip_cards_activity',
+	'daily_summaries',
+	// Boutique, Mathoux, Palotins
+	'student_avatars',
+	'student_mathoux',
+	'student_mathou_decorations',
+	'student_beasts',
+	'student_buddies',
+	// Jeux
+	'game_players',
+	'game_spells',
+	'game_spell_decks',
+	'game_combats',
+	'student_combat_moves',
+	'game_player_achievements',
+	'game_challenge_attempts',
+	'game_leaderboards',
+	'game_2048_scores',
+	'mathemo_scores',
+	'minesweeper_games',
+	'minesweeper_player_stats',
+	'minesweeper_student_achievements',
+	'minesweeper_tournament_games',
+	// Révisions (les sections suivent les paquets, qui appartiennent aux élèves)
+	'srs_decks',
+	'srs_deck_sections',
+	'srs_cards',
+	'srs_card_stats',
+	'srs_review_sessions',
+	'srs_deck_assignments',
+	// Devinettes et Python
+	'riddle_assignments',
+	'riddle_attempts',
+	'python_exercise_assignments',
+	'python_exercise_submissions',
+	'python_exercise_mastery',
+	'python_file_assignments',
+	'python_notebook_assignments',
+	'python_notebook_checkpoint_runs',
+	// Échanges et modération
+	'conversations',
+	'conversation_participants',
+	'messages',
+	'private_messages',
+	'message_reactions',
+	'message_reports',
+	'message_drafts',
+	'friendships',
+	'notifications',
+	'notification_reads',
+	'tutor_conversations',
+	'tutor_messages',
+	'user_restrictions',
+	'moderation_logs',
+	'message_moderation_logs',
+	// Modèles de messages et leurs favoris : aucun en prod le 2026-11-21, les copier viderait
+	// ceux de la base locale.
+	'message_templates',
+	'message_template_versions',
+	'user_favorite_templates',
+	// Marché
+	'marketplace_listings',
+	'marketplace_proposals',
+	'marketplace_trades',
+	'marketplace_trade_offers',
+	'marketplace_locked_cards',
+	'marketplace_chat_messages',
+	'marketplace_listing_views',
+	// Famille et inscription
 	'parental_consents',
 	'parent_contacts',
 	'parent_carnet_links',
 	'parent_notifications',
 	'parent_exception_episodes',
 	'student_carnet_opt_outs',
+	'pending_students',
 	'terms_acceptances',
-	'welcome_emails_sent',
-	'srs_decks',
-	'srs_cards',
-	'srs_card_stats',
-	'srs_review_sessions',
-	'game_spells',
-	'game_players',
-	'messages',
-	'conversations',
-	'conversation_participants',
-	'private_messages',
-	'tutor_conversations',
-	'tutor_messages',
-	'friendships',
-	'notifications',
+	// Cahier de texte : jamais copié (2026-10-10), inventé (2026-11-21)
 	'class_journal_entries',
 	'journal_entry_activities',
 	'journal_entry_homework',
 	'journal_entry_points',
+	// Liens de partage : de faux liens pour ouvrir les pages publiques
+	'class_course_share_tokens',
+	'class_journal_share_tokens',
+	'exercise_share_tokens'
+];
+
+/** Tables ni copiées ni inventées : elles restent vides en local. */
+export const JAMAIS: readonly string[] = [
+	// Traces et compteurs techniques
 	'audit_logs',
 	'error_logs',
-	'bug_reports',
-	'reward_events',
-	'gidouilles_activity',
-	'student_warnings',
-	'evaluation_assignments',
-	'evaluation_attempt_questions',
-	'worksheet_assignments',
-	'worksheet_assignment_students',
-	'minesweeper_games',
-	'marketplace_trades',
+	'error_occurrences',
+	'background_job_runs',
+	'rate_limits',
+	'server_cache',
+	'template_audit_log',
+	'account_deletion_audit',
+	'achievement_migrations',
+	'migration_images',
+	'orphaned_documents',
+	'web_vital_samples',
+	'whiteboard_export_counters',
+	'template_usage_stats',
+	'minesweeper_reference_times_history',
+	'welcome_emails_sent',
+	// Calculées ou éphémères
+	'message_search_index',
+	'message_inbox',
+	'user_presence',
+	'minesweeper_multiplayer_queue',
+	'minesweeper_multiplayer_matches',
+	'minesweeper_multiplayer_game_state',
+	'srs_anti_fraud_flags',
+	'short_links',
+	// Secrets et liens vers l'extérieur (Google, Drive, stockage de prod) : inutilisables
+	// en local, et la contrainte valid_upload_fields interdit de vider chapter_documents.
 	'google_integrations',
-	// Liens vers les fichiers de prod (Drive, stockage) : inutilisables en local,
-	// et la contrainte valid_upload_fields interdit de les vider.
-	'chapter_documents'
+	'google_classroom_courses',
+	'google_classroom_topics',
+	'google_classroom_coursework',
+	'google_classroom_materials',
+	'google_classroom_material_attachments',
+	'chapter_documents',
+	'chapter_decks',
+	'coursework_materials',
+	'shared_materials',
+	'shared_coursework',
+	'shared_coursework_students',
+	'message_attachments',
+	'message_attachments_v2',
+	// Pas encore tranché par David (inventer ou laisser vide) : vides en attendant.
+	'bug_reports',
+	'kanban_boards',
+	'kanban_columns',
+	'kanban_cards',
+	'kanban_card_assignees',
+	'kanban_card_tags',
+	'kanban_tags'
 ];
+
+/**
+ * Liens d'une table copiée vers une table qui ne l'est pas, tolérés parce que
+ * `neutraliser` met la colonne à vide (« table.colonne »).
+ */
+export const LIENS_COUPES: readonly string[] = ['classes.google_classroom_course_id'];
+
+export interface Lien {
+	colonne: string;
+	vers: string;
+}
+
+/**
+ * Tables du schéma `public` et leurs liens (clés étrangères), lus dans le texte
+ * de `src/lib/types/database.ts`. Les vues ne sont pas rendues.
+ */
+export function lireSchema(texte: string): Map<string, Lien[]> {
+	const lignes = texte.split('\n');
+	const debutPublic = lignes.findIndex((l) => /^ {2}public: \{$/.test(l));
+	const debut = lignes.findIndex((l, i) => i > debutPublic && /^ {4}Tables: \{$/.test(l));
+	const fin = lignes.findIndex((l, i) => i > debut && /^ {4}\}$/.test(l));
+	const schema = new Map<string, Lien[]>();
+	if (debutPublic >= 0 && debut >= 0 && fin >= 0) {
+		let liens: Lien[] = [];
+		let colonne = '';
+		for (const ligne of lignes.slice(debut + 1, fin)) {
+			const table = /^ {6}(\w+): \{$/.exec(ligne);
+			if (table) {
+				liens = [];
+				schema.set(table[1], liens);
+				continue;
+			}
+			const colonnes = /^ {12}columns: \["(\w+)"/.exec(ligne);
+			if (colonnes) colonne = colonnes[1];
+			const vers = /^ {12}referencedRelation: "(\w+)"$/.exec(ligne);
+			if (vers) liens.push({ colonne, vers: vers[1] });
+		}
+	}
+	if (schema.size === 0) {
+		throw new Error('lireSchema : aucune table trouvée, le format de database.ts a changé.');
+	}
+	return schema;
+}
 
 /** Refuse tout ce qui n'est pas « source distante → cible locale ». */
 export function verifierCibles(c: { source: string; cible: string; pg: string }): void {

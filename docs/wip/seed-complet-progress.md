@@ -2,20 +2,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-21, après la phase 0 (aucune PR)._
+_Mis à jour le 2026-11-21, pendant la PR 1 (pas encore mergée)._
 
-- **État** : chantier ouvert, rien n'est codé. Mesures (§ 2), classement proposé des 233 tables
-  (§ 3), découpage en 5 PR (§ 5). Les 4 questions du § 4 sont **tranchées** par David (§ 4).
-- **Prochaine action** : PR 1, inventaire et garde : trois listes dans `regles.ts` (copier /
-  inventer / jamais), test qui échoue quand une table du schéma n'est dans aucune, copie des
-  tables de contenu du § 3.1. Tests d'abord, preuve sur une copie isolée de la pile.
-- **En attente de David** : en une ligne, au début de la PR 1 : « le classement du § 3 et le
-  découpage du § 5 te vont ? ». Sa réponse du 2026-11-21 (« je suis tes recos ») porte sur les
-  4 questions ; le classement et le découpage lui ont été montrés en résumé, sans « je valide ».
+- **État** : PR 1 (inventaire et garde) codée et prouvée sur une copie isolée (§ 7) ; en relecture.
+  Classement du § 3 et découpage du § 5 **validés** par David le 2026-11-21 (« go »).
+- **Prochaine action** : merger la PR 1 (CI verte, relectures), puis PR 2, suivi et travail
+  scolaire (§ 5) : règles testées sans base, preuve sur copie isolée, pages à ouvrir notées.
+- **En attente de David** : (1) tableau de tâches du prof (`kanban_*`) et signalements de bug
+  (`bug_reports`) : en inventer, ou laisser vide ? (vides en attendant) ; (2) modèles de messages :
+  aucun en prod, non copiés (§ 7), à inventer en PR 4 ou à laisser tels quels ?
 - **Pièges en cours** : RGPD, **jamais de donnée d'élève en local** : une table d'activité
   s'INVENTE, elle ne se copie pas. Essais sur une copie isolée de la pile
   (`docs/archive/wip/base-locale-progress.md` § 9.1), jamais sur la base de dev partagée.
   `avatar_catalog` est vide en prod : voir le chantier `boutique-avatars` avant d'inventer des achats.
+  Une table de `COPIE` vide en prod **vide** la table locale : regarder la base de dev avant d'en ajouter.
 - **Worktree / branche** : `../ubumaths-wt-seed-complet`, `feat/seed-complet-inventaire`.
 
 ---
@@ -181,6 +181,36 @@ Déjà inventé : `worksheet_assignments`, `worksheet_assignment_classes`,
 
 Chaque PR d'activité : règles testées sans base (comme `activite.ts`), puis preuve sur une copie
 isolée de la pile, puis une liste de pages à ouvrir dans `docs/wip/verifications-manuelles.md`.
+
+## 7. PR 1 : inventaire et garde (2026-11-21)
+
+Classement (§ 3) et découpage (§ 5) validés par David le 2026-11-21 (« go »).
+
+- **Trois listes** dans `scripts/db-seed-riche/regles.ts`, une seule par table : `COPIE` 82,
+  `INVENTE` 107, `JAMAIS` 45, soit les **234 tables** de `src/lib/types/database.ts`
+  (`web_vital_samples` comprise, dans `JAMAIS`).
+- **Garde** (`scripts/__tests__/db-seed-riche.test.ts`, sans base : elle lit `database.ts`) : une
+  table dans aucune liste, dans deux listes, ou citée sans exister fait échouer le test ; une table
+  copiée qui pointe vers une table non copiée aussi (le contenu s'écrit sans vérification des
+  liens). Vérifiée rouge en retirant `worksheet_styles`. Limite : `database.ts` vient de la prod,
+  donc la garde voit une table nouvelle au `pnpm db:types` qui suit sa migration, pas avant.
+- **Trois écarts au § 3.1**, chacun imposé par une mesure :
+  - `srs_deck_sections` pointe vers `srs_decks` (paquets des élèves, inventés) : **inventée**.
+  - `message_templates`, `message_template_versions` : 0 ligne en prod, 13 et 19 dans la base de
+    dev ; les copier les aurait effacées. **Non copiées**, rangées dans `INVENTE` ;
+    `user_favorite_templates` les suit (elle pointe vers elles, la garde l'a signalé).
+  - `kanban_*` et `bug_reports` (non tranchés) : dans `JAMAIS` en attendant, rien ne change.
+- **Preuve sur copie isolée** (§ 9.1 de `base-locale-progress.md`, projet `ubumaths-essai`, port
+  `54422`, arrêtée ensuite) : 629 migrations, seed joué trois fois de suite sans erreur,
+  **14 013 lignes** copiées (13 103 avant), 34 comptes ; **431 liens vérifiés, 0 ligne orpheline** ;
+  aucune préférence d'élève. Nouvelles tables remplies : `dictionary_entries` 675,
+  `question_template_reviews` 189, `worksheet_styles` 13, `dictionary_entry_versions` 10,
+  `minesweeper_tournament_classes` 9, `game_monsters` 4, `minesweeper_tournaments` 4,
+  `chapter_template_instantiations` 2, `geometry_figures` 1, `school_year_closures` 1,
+  `user_preferences` 1, `user_whiteboard_template_favorites` 1 ; les autres sont vides en prod.
+- **Vu en passant, hors PR 1** : le seed annonce « 0 amitiés » (3 élèves par classe avec
+  11 classes) : à reprendre en PR 4. Tous les admins de prod deviennent le même compte local : une
+  table à une ligne par utilisateur casserait le seed le jour où la prod a deux admins.
 
 ## 6. Historique
 
