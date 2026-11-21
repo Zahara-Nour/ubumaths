@@ -9,9 +9,9 @@ Mettre en œuvre les idées retenues dans [idees-format-exercices.md](idees-form
 _Mis à jour le 2026-11-21, après #2955._
 
 - **État** : idée 1 terminée : tirage (#2954) et avertissement du panier (#2955), mergés.
-- **Prochaine action** : idée 2 (le prof choisit les variations d'une ligne de série) : phase 0 à
-  écrire et à faire valider par David avant tout code.
-- **En attente de David** : rien (pas de `deploy:prod` demandé).
+- **Prochaine action** : idée 2 (le prof choisit les variations d'une ligne de série) : phase 0
+  écrite (section « Idée 2 — phase 0 »), à faire valider avant tout code.
+- **En attente de David** : réponses aux questions Q1 à Q4 de la phase 0 de l'idée 2.
 - **Pièges en cours** : test d'intégration local bloqué par des données d'une autre session
   (`class_journal_share_tokens`), la CI fait foi ; le worktree `automaths-serie` touche aussi le
   panier ; la CI d'intégration dure ~17 min (étude prévue dans une session `ci-integration`).
@@ -37,6 +37,42 @@ ligne est **raccourcie** au moment de jouer la série.
 pas un doublon (David). « 2 + 3 » et « 3 + 2 » peuvent sortir tous les deux. Précision
 d'implémentation, dite à David : l'empreinte des nombres n'est pas utilisée quand l'énoncé tire
 lui-même (`{{carré|rectangle}}`), sinon sa ligne tomberait à une question.
+
+## Idée 2 — phase 0 (proposée le 2026-11-21, en attente de David)
+
+Mesuré en prod (modèles publiés) : 468 à une variation, 678 à deux, 755 à trois, 473 à quatre,
+266 à cinq ou plus (126 au plus). Une variation n'a **pas de nom** aujourd'hui.
+
+Ce qui ne change pas : grâce à l'idée 1, la variation se lit dans la graine. Une évaluation qui
+régénère sa copie retrouve donc la bonne question sans rien de plus : ni migration ni colonne. Le
+choix s'ajoute à la ligne de série (champ facultatif, absent = toutes les variations), là où elle
+vit déjà : série enregistrée, panier, lien partagé, évaluation.
+
+**Comportements**
+
+- Nominal : sur une ligne d'un modèle à plusieurs variations, le prof voit chaque variation avec un
+  exemple de question et une case cochée ; il décoche « (ax + b)² − c² », la série ne tire plus que
+  dans les autres, réparties à parts égales (idée 1).
+- Nominal : un modèle à une seule variation ne montre rien de neuf.
+- Limite : « Ce modèle n'a que N questions différentes » (#2955) compte dans les variations cochées
+  seulement.
+- Limite : toutes cochées = comme aujourd'hui ; le champ n'est pas enregistré.
+- Erreur : on ne peut pas tout décocher (la dernière case reste cochée).
+
+**Questions**
+
+- **Q1. Comment le prof reconnaît une variation ?** A (reco) : un exemple de question tiré de
+  chaque variation, à côté de sa case. B : l'auteur donne un nom à chaque variation (« forme
+  développée », « avec un carré ») ; les 2 200 modèles actuels n'en ont pas, il faudrait un repli.
+  C : A tout de suite, un nom facultatif plus tard.
+- **Q2. Où le prof choisit-il ?** Reco : dans le panier et dans l'éditeur d'une série enregistrée ;
+  le lien partagé et l'évaluation suivent ce qui est choisi.
+- **Q3. L'auteur modifie le modèle après coup** (variation retirée ou déplacée). Le choix est
+  enregistré par numéro de variation. Reco : un numéro qui n'existe plus est ignoré ; s'il n'en
+  reste aucun, la ligne repart sur toutes les variations. Défaut : si l'auteur inverse deux
+  variations, la série tire l'autre sans le dire (comme un modèle modifié aujourd'hui).
+- **Q4. La révision espacée** (qui reprend les modèles des séries d'un chapitre) tient-elle compte
+  du choix ? Reco : non, elle revoit le modèle entier.
 
 ## PR 1 — tirage (#2954, mergée le 2026-11-21)
 
