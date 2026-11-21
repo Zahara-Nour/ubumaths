@@ -175,7 +175,7 @@ Les fonctionnalités à présenter, et ce qu'il ne faut pas en promettre :
 - **Formules** : sous-titre canon « les Chiphres de la Chandelle Verte » (§ V, repris par
   `/a-propos`) ; slogan canon « l'Académie Pataphysique des Chiphres, sise au Royaume de Pologne »
   (§ XI, inemployé au 2026-10-11) ; « Un décor savoureux ; une pédagogie rigoureuse. » (manifeste,
-  `/a-propos`). « Les maths de la chandelle verte » (titre de l'accueil) est un héritage d'Ubumaths,
+  `/a-propos`). « Les maths de la chandelle verte » (dans le titre de l'accueil, après le nom du site) est un héritage d'Ubumaths,
   absent du Compendium.
 
 **Interdit** :

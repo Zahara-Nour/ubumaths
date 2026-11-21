@@ -124,7 +124,7 @@ personne n'écrit directement dans l'historique.
 - `/glossaire` liste les termes ; chaque terme est un **lien** vers sa page (plus de fenêtre,
   choix B1 de David). Un renvoi nu (sans définition, exemple ni histoire : « multiplier ») mène
   droit à la page du terme cité (`pageSlugFor`).
-- `/glossaire/<slug>` : titre « terme (sens) : définition », description = première définition
+- `/glossaire/<slug>` : titre d'onglet « terme (sens) : définition (maths) », description = première définition
   en texte brut (≤ 155 caractères), toutes les définitions et tous les exemples **chacun avec son
   niveau** (la page ne suit pas le filtre de niveau de la liste), histoire, synonymes, « Voir
   aussi », `BackLink` vers `/glossaire`. Un renvoi qui a sa propre définition (« Thalès », 6 en

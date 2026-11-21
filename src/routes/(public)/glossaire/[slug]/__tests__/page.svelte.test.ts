@@ -43,6 +43,13 @@ describe('/glossaire/[slug] : la page', () => {
 		await expect.element(page.getByText('produit', { exact: true })).toBeVisible();
 	});
 
+	// Le titre de l'onglet est la ligne cliquable des résultats de recherche : il dit
+	// « maths », car bien des termes existent hors des maths (« développement », « inclusion »).
+	it('le titre de l’onglet annonce une définition de maths', async () => {
+		await renderTerm({ term: MULTIPLICATION, description: 'd', cited: null });
+		await expect.poll(() => document.title).toBe('multiplication : définition (maths) | Chiphre');
+	});
+
 	it('ramène au glossaire et mène au Cabinet Noir', async () => {
 		await renderTerm({ term: MULTIPLICATION, description: 'd', cited: null });
 		await expect
