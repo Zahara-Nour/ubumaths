@@ -2,20 +2,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-21, après #2967._
+_Mis à jour le 2026-11-21, après #2968._
 
-- **État** : PR 2 sur 4 mergée (#2967) : les tests d'intégration tournent sur une **pile de test**
-  à part (`ubumaths-test`, ports `5532x`), démarrée et mise d'accord avec la branche à chaque
-  lancement (§ 12) ; la base de dev n'est plus touchée. PR 1 (#2966) : `pnpm db:a-jour` (§ 11).
-- **Prochaine action** : PR 3, **versions de la CI pour la pile de dev** (§ 10, point 3) : elle
-  ignore `supabase/.temp/*-version`, en gardant `project-ref` pour `db:migrate`. Demande un
-  redémarrage de la pile de dev : prévenir David avant. Puis PR 4 : remise à neuf + doc.
+- **État** : PR 3 sur 4 mergée (#2968) : `pnpm db:start`, `db:stop`, `db:reset` lancent la CLI par
+  `scripts/pile-de-dev.sh` (dossier miroir de `supabase/` sans `.temp`), donc avec les versions de
+  la CI (§ 13). Pile de dev redémarrée le 2026-11-21 : PostgREST `v16.4`, Storage `v1.79.36`,
+  Postgres `17.11.0.004`, données intactes. PR 1 (#2966) : `db:a-jour` ; PR 2 (#2967) : pile de test.
+- **Prochaine action** : PR 4, **remise à neuf en une commande + doc** (§ 10, point 4), puis
+  versement du chantier (`docs/systeme/`, archivage du journal). À trancher avec David en phase 0 :
+  ce que fait exactement la commande (reset + seed-riche ?), et un éventuel `pnpm db:restart`.
 - **En attente de David** : rien.
 - **Pièges en cours** : `db:reset` efface les données de dev de tous ; `db:migrate` = **prod**.
+  Jamais `pnpm exec supabase start|stop|db reset` à la main (le hook refuse) : `pnpm db:*`.
   Ne jamais poser `PUBLIC_SUPABASE_URL` dans l'environnement d'un vite ou vitest (§ 12).
-  Commiter avant de muter un fichier (`git checkout` efface aussi le non commité). Fichier de
-  `scripts/` importé par un test d'intégration → `pnpm check:integration-paths`.
-- **Worktree / branche** : aucun (nettoyés après #2967) ; PR 3 : `../ubumaths-wt-base-locale`.
+  La garde « doc à jour » ne voit que le commité : la relancer APRÈS le commit, avant le push.
+- **Worktree / branche** : aucun (nettoyés après #2968) ; PR 4 : `../ubumaths-wt-base-locale`.
 
 ---
 
@@ -482,3 +483,7 @@ Comportement validé au § 10 (point 3) : la pile de dev ignore `supabase/.temp/
   de dev de toutes les sessions une minute : **prévenir David avant**. Les données restent.
 - `supabase/.temp/postgres-version.bak` (renommé à la main au § 3.2) n'a plus d'effet dans un sens
   ni dans l'autre : laissé tel quel.
+- **Mergée (#2968) et pile redémarrée le 2026-11-21** (`pnpm db:stop` puis `pnpm db:start` depuis le
+  dépôt principal, accord de David) : images PostgREST `v16.4`, Storage `v1.79.36`, Postgres
+  `17.11.0.004`, GoTrue `v2.197.0` ; avant et après : 3 comptes, 3 profils, 628 migrations,
+  7 objets Storage ; connexion du prof de dev et lecture par l'API vérifiées.
