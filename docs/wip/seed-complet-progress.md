@@ -2,17 +2,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-21, à l'ouverture du chantier (aucune PR)._
+_Mis à jour le 2026-11-21, après la phase 0 (aucune PR)._
 
-- **État** : chantier ouvert. Mesures faites (§ 2), classement proposé des 233 tables (§ 3),
-  découpage proposé (§ 5). **Rien n'est codé.**
-- **Prochaine action** : phase 0. Faire valider par David le classement (§ 3), les questions (§ 4)
-  et le découpage (§ 5), puis PR 1 (inventaire + garde + tables de contenu manquantes).
-- **En attente de David** : les 4 questions du § 4, et le « je valide » sur le § 3 et le § 5.
-- **Pièges en cours** : RGPD, **jamais de donnée d'élève en local** (décision du 2026-10-10) : une
-  table d'activité s'INVENTE, elle ne se copie pas. Essais sur une copie isolée de la pile
+- **État** : chantier ouvert, rien n'est codé. Mesures (§ 2), classement proposé des 233 tables
+  (§ 3), découpage en 5 PR (§ 5). Les 4 questions du § 4 sont **tranchées** par David (§ 4).
+- **Prochaine action** : PR 1, inventaire et garde : trois listes dans `regles.ts` (copier /
+  inventer / jamais), test qui échoue quand une table du schéma n'est dans aucune, copie des
+  tables de contenu du § 3.1. Tests d'abord, preuve sur une copie isolée de la pile.
+- **En attente de David** : en une ligne, au début de la PR 1 : « le classement du § 3 et le
+  découpage du § 5 te vont ? ». Sa réponse du 2026-11-21 (« je suis tes recos ») porte sur les
+  4 questions ; le classement et le découpage lui ont été montrés en résumé, sans « je valide ».
+- **Pièges en cours** : RGPD, **jamais de donnée d'élève en local** : une table d'activité
+  s'INVENTE, elle ne se copie pas. Essais sur une copie isolée de la pile
   (`docs/archive/wip/base-locale-progress.md` § 9.1), jamais sur la base de dev partagée.
-  `pnpm db:neuf` et `db:reset` effacent la base de dev de toutes les sessions.
+  `avatar_catalog` est vide en prod : voir le chantier `boutique-avatars` avant d'inventer des achats.
 - **Worktree / branche** : `../ubumaths-wt-seed-complet`, `feat/seed-complet-inventaire`.
 
 ---
@@ -125,8 +128,11 @@ Déjà inventé : `worksheet_assignments`, `worksheet_assignment_classes`,
 - **Famille et inscription** : `parental_consents`, `parent_contacts`, `parent_carnet_links`,
   `parent_notifications`, `parent_exception_episodes`, `student_carnet_opt_outs`,
   `pending_students`, `terms_acceptances`.
-- **Selon la réponse de David (§ 4)** : cahier de texte (`class_journal_entries`,
-  `journal_entry_*`), tableau de tâches du prof (`kanban_*`), signalements de bug (`bug_reports`).
+- **Cahier de texte** (tranché au § 4) : `class_journal_entries`, `journal_entry_*`.
+- **Liens de partage** (tranché au § 4) : `class_course_share_tokens`,
+  `class_journal_share_tokens`, `exercise_share_tokens`.
+- **Non tranché, à poser si besoin** : tableau de tâches du prof (`kanban_*`), signalements de
+  bug (`bug_reports`).
 
 ### 3.3 Jamais copiées, laissées vides (technique, secrets, liens vers l'extérieur)
 
@@ -138,7 +144,6 @@ Déjà inventé : `worksheet_assignments`, `worksheet_assignment_classes`,
 - **Calculées ou éphémères** : `message_search_index`, `message_inbox`, `user_presence`,
   `minesweeper_multiplayer_*`, `srs_anti_fraud_flags`, `short_links`.
 - **Secrets et liens vers l'extérieur** : `google_integrations`, `google_classroom_*`,
-  `class_course_share_tokens`, `class_journal_share_tokens`, `exercise_share_tokens`,
   `chapter_documents`, `chapter_decks`, `coursework_materials`, `shared_materials`,
   `shared_coursework`, `shared_coursework_students`, `message_attachments`,
   `message_attachments_v2`.
@@ -153,6 +158,14 @@ Déjà inventé : `worksheet_assignments`, `worksheet_assignment_classes`,
    pièces jointes des élèves ni les captures des signalements ?
 4. **Liens de partage** (cours, cahier de texte, exercices) : en inventer des faux pour tester les
    pages publiques, ou laisser vide ?
+
+**Réponse de David le 2026-11-21 : « je suis tes recos ».** Donc :
+
+1. Cahier de texte : **inventé** (quelques séances et devoirs par classe), jamais copié.
+2. Documents de cours (Drive, Google Classroom) : **laissés vides**.
+3. Images : **celles du contenu sont copiées** (questions, exercices, cartes VIP) ; jamais les
+   pièces jointes des élèves ni les captures des signalements.
+4. Liens de partage : **inventés** (faux liens pour tester les pages publiques).
 
 ## 5. Découpage proposé (une PR = une session)
 
