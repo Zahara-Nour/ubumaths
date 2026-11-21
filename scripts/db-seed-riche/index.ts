@@ -341,7 +341,8 @@ async function main() {
 
 		// Le contenu de la prod suppose le schéma de la prod : une base en retard de migrations
 		// recevrait des lignes sans leurs colonnes. On la met à jour d'abord (fonction appelée
-		// directement : le verrou Supabase est déjà tenu par cette commande).
+		// directement : le verrou Supabase est déjà tenu par cette commande). Toutes les migrations
+		// du worktree courant sont jouées, celles de sa branche comprises : le seed est un geste voulu.
 		const bilan = await mettreAJour(db, {
 			dossier: 'supabase/migrations',
 			dire: (ligne) => console.log(ligne)

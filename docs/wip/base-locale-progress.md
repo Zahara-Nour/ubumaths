@@ -358,3 +358,15 @@ David, le 2026-11-21 : « Je valide » (comportements et découpage en 4 PR, deu
   bout en bout sur la copie : 3 migrations de contenu notées, 1 migration de schéma jouée, 0,18 s.
 - **Reste pour les PR suivantes** : `test:integration` ne lance pas encore `db:a-jour` (PR 2 : la
   pile de test aura sa propre mise à jour).
+- **Revue de code (`code-reviewer`, 2026-11-21)** : rien de bloquant. Corrigé dans la PR :
+  délai d'attente d'un verrou en mode automatique (`lock_timeout` 5 s : un `alter table` ne
+  bloque plus `pnpm dev` derrière la transaction d'un autre serveur) ; cible refusée si le compte
+  n'est pas `postgres` / `postgres` (un tunnel vers une base distante écoute aussi sur
+  `localhost`) ; migration qui porte son propre `begin` / `commit` (6 anciennes) jouée telle
+  quelle et jamais notée après un échec ; seule `P0001` compte comme garde (plus toute la classe
+  `P0`) ; tests de la ligne de commande, du délai de verrou et du signal à PostgREST.
+- **Choix assumés, à revoir si ça gêne** : (1) le mode automatique joue TOUTES les migrations
+  d'`origin/main`, destructives comprises : une branche pas encore remise à jour sur `main` peut
+  voir disparaître en local une colonne qu'elle lit encore (comme en CI, qui teste la branche
+  fusionnée à `main`). (2) La marque « contenu de la prod » reste posée si une suite d'intégration
+  interrompue vide une partie du contenu ; la PR 2 (pile de test séparée) supprime ce cas.

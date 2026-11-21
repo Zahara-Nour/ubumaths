@@ -17,7 +17,7 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type pg from 'pg';
-import { deciderApresEchec, enAttente, type Migration } from './regles';
+import { deciderApresEchec, enAttente, porteSaTransaction, type Migration } from './regles';
 
 // ============================================================================
 // Types
@@ -30,6 +30,11 @@ export interface Options {
 	seulement?: ReadonlySet<string>;
 	/** Ne rien écrire : rendre ce qui serait joué. */
 	essai?: boolean;
+	/**
+	 * Délai d'attente d'un verrou, par migration (ex. `'5s'`). Sans lui, un `alter table` attend
+	 * sans fin la transaction ouverte d'un autre serveur de dev. Le dépassement arrête la mise à jour.
+	 */
+	attenteVerrou?: string;
 	/** Une ligne par migration traitée. */
 	dire?: (ligne: string) => void;
 }
@@ -108,8 +113,22 @@ async function noter(db: pg.Client, m: Migration, sql: string | null): Promise<v
 	);
 }
 
-/** Joue une migration et l'inscrit à l'historique, dans une seule transaction. */
+/**
+ * Joue une migration et l'inscrit à l'historique, dans une seule transaction. Une migration qui
+ * porte sa propre transaction est jouée telle quelle, inscrite ensuite : son `commit` validerait
+ * la nôtre en cours de route.
+ */
 async function jouer(db: pg.Client, m: Migration, sql: string): Promise<void> {
+	if (porteSaTransaction(sql)) {
+		try {
+			await db.query(sql);
+		} catch (e) {
+			await db.query('rollback').catch(() => {});
+			throw e;
+		}
+		await noter(db, m, sql);
+		return;
+	}
 	await db.query('begin');
 	try {
 		await db.query(sql);
@@ -152,6 +171,9 @@ export async function mettreAJour(db: pg.Client, options: Options): Promise<Bila
 	}
 	if (retenues.length === 0) return bilan;
 
+	if (options.attenteVerrou) {
+		await db.query(`select set_config('lock_timeout', $1, false)`, [options.attenteVerrou]);
+	}
 	const contenuDeProd = await porteLeContenuDeProd(db);
 	for (const m of retenues) {
 		const sql = readFileSync(join(options.dossier, m.fichier), 'utf8');

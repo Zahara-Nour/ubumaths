@@ -14,11 +14,13 @@
  */
 
 import { describe, it, expect } from 'vitest';
+import { spawnSync } from 'node:child_process';
+import { resolve } from 'node:path';
 import {
 	deciderApresEchec,
 	enAttente,
 	lireFichier,
-	separerParOrigine,
+	porteSaTransaction,
 	verifierCibleLocale
 } from '../db-a-jour/regles';
 
@@ -90,12 +92,15 @@ describe('enAttente', () => {
 	});
 });
 
-describe('separerParOrigine', () => {
-	it('sépare les migrations mergées de celles de la branche', () => {
-		const attente = enAttente(['20261101000000_a.sql', '20261102000000_b.sql'], []);
-		const { mergees, deLaBranche } = separerParOrigine(attente, new Set(['20261101000000_a.sql']));
-		expect(mergees.map((m) => m.nom)).toEqual(['a']);
-		expect(deLaBranche.map((m) => m.nom)).toEqual(['b']);
+describe('porteSaTransaction', () => {
+	it('repère un `begin` / `commit` au niveau du fichier', () => {
+		expect(porteSaTransaction('begin;\nupdate t set a = 1;\ncommit;')).toBe(true);
+		expect(porteSaTransaction('START TRANSACTION;\nupdate t set a = 1;\nCOMMIT;')).toBe(true);
+	});
+
+	it('ne confond pas avec le `begin` d’un bloc DO, ni avec un commentaire', () => {
+		expect(porteSaTransaction(RANGEMENT)).toBe(false);
+		expect(porteSaTransaction('-- begin;\nupdate t set a = 1;')).toBe(false);
 	});
 });
 
@@ -107,6 +112,22 @@ describe('deciderApresEchec', () => {
 	it('note aussi une ligne déjà présente (contrainte, classe 23)', () => {
 		const doublon = { code: '23505', message: 'duplicate key value' };
 		expect(deciderApresEchec(RANGEMENT, doublon, true).action).toBe('noter');
+	});
+
+	it('arrête sur une erreur de logique (P0002, P0003), qui n’est pas une garde', () => {
+		const logique = { code: 'P0002', message: 'query returned no rows' };
+		expect(deciderApresEchec(RANGEMENT, logique, true).action).toBe('arreter');
+	});
+
+	it('arrête sur un verrou non obtenu (55P03) : la migration n’a pas été essayée', () => {
+		const verrou = { code: '55P03', message: 'canceling statement due to lock timeout' };
+		expect(deciderApresEchec(RANGEMENT, verrou, true).action).toBe('arreter');
+	});
+
+	it('arrête sur une migration qui porte sa propre transaction : une partie a pu être validée', () => {
+		const d = deciderApresEchec(`begin;\n${RANGEMENT}\ncommit;`, GARDE, true);
+		expect(d.action).toBe('arreter');
+		expect(d.raison).toContain('propre transaction');
 	});
 
 	it('arrête si la base ne porte pas le contenu de la prod', () => {
@@ -147,10 +168,19 @@ describe('verifierCibleLocale', () => {
 		).not.toThrow();
 	});
 
+	it('refuse un autre compte que celui de la pile locale (tunnel vers une base distante)', () => {
+		expect(() =>
+			verifierCibleLocale('postgresql://postgres:autre@localhost:5432/postgres')
+		).toThrow(/compte de la pile locale/);
+		expect(() =>
+			verifierCibleLocale('postgresql://admin:postgres@127.0.0.1:54322/postgres')
+		).toThrow(/compte de la pile locale/);
+	});
+
 	it('refuse un hôte distant', () => {
-		expect(() => verifierCibleLocale('postgresql://u:p@db.exemple.test:5432/postgres')).toThrow(
-			/pas locale/
-		);
+		expect(() =>
+			verifierCibleLocale('postgresql://postgres:postgres@db.exemple.test:5432/postgres')
+		).toThrow(/pas locale/);
 	});
 
 	it('refuse un paramètre de requête, qui peut remplacer l’hôte', () => {
@@ -163,5 +193,48 @@ describe('verifierCibleLocale', () => {
 
 	it('refuse une URL illisible', () => {
 		expect(() => verifierCibleLocale('pas une url')).toThrow(/illisible/);
+	});
+});
+
+describe('ligne de commande', () => {
+	const tsx = resolve(__dirname, '../../node_modules/.bin/tsx');
+	const index = resolve(__dirname, '../db-a-jour/index.ts');
+	const auto = resolve(__dirname, '../db-a-jour-auto.sh');
+	// port 9 (discard) : rien n'y écoute, la connexion est refusée tout de suite
+	const INJOIGNABLE = 'postgresql://postgres:postgres@127.0.0.1:9/postgres';
+
+	function lancer(args: string[], pgUrl: string) {
+		return spawnSync(tsx, [index, ...args], {
+			encoding: 'utf8',
+			env: { ...process.env, BASE_LOCALE_PG_URL: pgUrl }
+		});
+	}
+
+	it('--auto : base injoignable → un avertissement, sortie 0 (ne bloque pas `pnpm dev`)', () => {
+		const r = lancer(['--auto'], INJOIGNABLE);
+		expect(r.status).toBe(0);
+		expect(r.stdout).toContain('injoignable');
+	});
+
+	it('sans --auto : base injoignable → sortie 1', () => {
+		expect(lancer([], INJOIGNABLE).status).toBe(1);
+	});
+
+	it('cible distante : refus avant toute connexion, sortie 1', () => {
+		const r = lancer([], 'postgresql://postgres:postgres@db.exemple.test:5432/postgres');
+		expect(r.status).toBe(1);
+		expect(r.stderr).toContain('pas locale');
+	});
+
+	it('--noter sans version à 14 chiffres : usage, sortie 1', () => {
+		const r = lancer(['--noter', 'abc'], INJOIGNABLE);
+		expect(r.status).toBe(1);
+		expect(r.stderr).toContain('Usage');
+	});
+
+	it('script d’avant `pnpm dev` : ne fait rien en CI, sortie 0', () => {
+		const r = spawnSync('bash', [auto], { encoding: 'utf8', env: { ...process.env, CI: 'true' } });
+		expect(r.status).toBe(0);
+		expect(r.stdout + r.stderr).toBe('');
 	});
 });

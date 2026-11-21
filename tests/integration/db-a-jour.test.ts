@@ -230,6 +230,60 @@ describe('mettreAJour', () => {
 		expect(await historique()).toEqual(['20261101000000']);
 	});
 
+	it('une migration qui porte sa propre transaction est jouée, et jamais notée après un échec', async () => {
+		await mettreAJour(db, { dossier });
+		await marquerContenuDeProd(db);
+		ecrire(RANGEMENT, `begin;\ninsert into public.modeles values (5, null);\ncommit;`);
+		ecrire(
+			COLONNE,
+			`begin;\ninsert into public.modeles values (6, null);\ncommit;
+			 do $$ begin raise exception 'garde après le commit'; end $$;`
+		);
+
+		const bilan = await mettreAJour(db, { dossier });
+
+		expect(bilan.jouees.map((m) => m.fichier)).toEqual([RANGEMENT]);
+		expect(bilan.notees).toEqual([]);
+		expect(bilan.arret?.migration.fichier).toBe(COLONNE);
+		expect(bilan.arret?.raison).toContain('propre transaction');
+		expect(await historique()).toEqual(['20261101000000', '20261102000000']);
+		// la connexion reste utilisable : aucune transaction laissée ouverte
+		const { rows } = await db.query('select count(*)::int n from public.modeles');
+		expect(rows[0].n).toBe(2);
+	});
+
+	it('`attenteVerrou` : une table tenue par une autre connexion arrête la mise à jour, sans la bloquer', async () => {
+		await mettreAJour(db, { dossier });
+		const autre = new Client({ ...PG, database: base });
+		await autre.connect();
+		await autre.query('begin; lock table public.modeles in access exclusive mode');
+		ecrire(COLONNE, 'alter table public.modeles add column niveau int;');
+		try {
+			const bilan = await mettreAJour(db, { dossier, attenteVerrou: '200ms' });
+
+			expect(bilan.arret?.migration.fichier).toBe(COLONNE);
+			expect(bilan.arret?.message).toContain('lock timeout');
+			expect(await historique()).toEqual(['20261101000000']);
+		} finally {
+			await autre.query('rollback');
+			await autre.end();
+		}
+	});
+
+	it('prévient PostgREST quand une migration a été jouée, pas sinon', async () => {
+		const recus: string[] = [];
+		db.on('notification', (n) => recus.push(n.channel));
+		await db.query('listen pgrst');
+
+		await mettreAJour(db, { dossier });
+		await db.query('select 1');
+		expect(recus).toEqual(['pgrst']);
+
+		await mettreAJour(db, { dossier });
+		await db.query('select 1');
+		expect(recus).toEqual(['pgrst']);
+	});
+
 	it('`seulement` : ne joue que les fichiers désignés et rend les autres', async () => {
 		ecrire(COLONNE, 'alter table public.modeles add column niveau int;');
 

@@ -90,9 +90,11 @@ async function main(): Promise<number> {
 	const db = new pg.Client({ connectionString: PG_URL, connectionTimeoutMillis: 3000 });
 	try {
 		await db.connect();
-	} catch {
-		// Pile arrêtée : rien à mettre à jour, et ce n'est pas à cette commande de la démarrer.
-		console.log('ℹ️  Base locale arrêtée (`pnpm db:start`) : aucune migration jouée.');
+	} catch (e) {
+		// Pile arrêtée le plus souvent : rien à mettre à jour, et ce n'est pas à cette commande de la démarrer.
+		console.log(
+			`ℹ️  Base locale injoignable (${e instanceof Error ? e.message : String(e)}) : aucune migration jouée. Pile arrêtée ? \`pnpm db:start\`.`
+		);
 		return auto ? 0 : 1;
 	}
 
@@ -114,6 +116,8 @@ async function main(): Promise<number> {
 		const bilan = await mettreAJour(db, {
 			dossier: DOSSIER,
 			seulement,
+			// Avant `pnpm dev`, on n'attend pas : une table tenue par un autre serveur reporte la mise à jour.
+			attenteVerrou: auto ? '5s' : undefined,
 			essai,
 			dire: (ligne) => console.log(ligne)
 		});

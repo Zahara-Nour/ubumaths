@@ -16,7 +16,7 @@
  * tout autre échec arrête la mise à jour.
  */
 
-import { instructionDeSchema } from '../lib/migrations-de-donnees';
+import { instructionDeSchema, instructions } from '../lib/migrations-de-donnees';
 
 // ============================================================================
 // Types
@@ -46,11 +46,19 @@ export type Decision = { action: 'noter'; raison: string } | { action: 'arreter'
 const FICHIER = /^(\d{14})_([a-z0-9_]+)\.sql$/;
 
 /**
- * Classes SQLSTATE qui disent « le contenu n'est pas dans l'état du relevé » : `P0` (exception
- * levée par une garde, `raise exception`) et `23` (contrainte : la ligne existe déjà, ou son
- * parent manque). Une faute de syntaxe ou un objet inconnu (`42`) n'en fait pas partie.
+ * Codes SQLSTATE qui disent « le contenu n'est pas dans l'état du relevé » : `P0001` (exception
+ * levée par une garde, `raise exception`) et la classe `23` (contrainte : la ligne existe déjà,
+ * ou son parent manque). Une faute de syntaxe ou un objet inconnu (`42`), une erreur de logique
+ * (`P0002`, `P0003`) ou un verrou non obtenu (`55P03`) n'en font pas partie.
  */
-const CLASSES_ETAT_DU_CONTENU = ['P0', '23'];
+const GARDE_LEVEE = 'P0001';
+const CLASSE_CONTRAINTE = '23';
+
+/**
+ * Instruction ENTIÈRE qui ouvre ou valide une transaction. Ancrée aux deux bouts : le `begin` d'un
+ * corps PL/pgSQL est suivi de sa première instruction, et son `end` n'est pas retenu.
+ */
+const TRANSACTION = /^(begin|commit|start transaction)( (transaction|work))?$/i;
 
 // ============================================================================
 // Fonctions
@@ -76,17 +84,12 @@ export function enAttente(fichiers: readonly string[], appliquees: readonly stri
 }
 
 /**
- * Sépare les migrations en attente : celles qui sont sur `origin/main` (déjà mergées, donc sûres
- * à jouer sans rien demander) et celles qui n'existent que sur la branche du worktree.
+ * La migration ouvre-t-elle ou ferme-t-elle elle-même une transaction (`begin;` … `commit;`) ?
+ * Son `commit` validerait la nôtre avant la fin : elle est jouée telle quelle, et un échec ne
+ * peut jamais être noté comme fait (une partie a pu être validée).
  */
-export function separerParOrigine(
-	attente: readonly Migration[],
-	surMain: ReadonlySet<string>
-): { mergees: Migration[]; deLaBranche: Migration[] } {
-	return {
-		mergees: attente.filter((m) => surMain.has(m.fichier)),
-		deLaBranche: attente.filter((m) => !surMain.has(m.fichier))
-	};
+export function porteSaTransaction(sql: string): boolean {
+	return instructions(sql).some((texte) => TRANSACTION.test(texte));
 }
 
 /**
@@ -98,6 +101,12 @@ export function separerParOrigine(
  * schéma sautée en silence coûterait bien plus qu'un arrêt.
  */
 export function deciderApresEchec(sql: string, echec: Echec, contenuDeProd: boolean): Decision {
+	if (porteSaTransaction(sql)) {
+		return {
+			action: 'arreter',
+			raison: 'elle porte sa propre transaction (`begin` / `commit`) : une partie a pu être validée'
+		};
+	}
 	const schema = instructionDeSchema(sql);
 	if (schema) {
 		return {
@@ -111,7 +120,8 @@ export function deciderApresEchec(sql: string, echec: Echec, contenuDeProd: bool
 			raison: 'la base ne porte pas le contenu de la prod : une migration de contenu doit y passer'
 		};
 	}
-	if (!echec.code || !CLASSES_ETAT_DU_CONTENU.includes(echec.code.slice(0, 2))) {
+	const etatDuContenu = echec.code === GARDE_LEVEE || echec.code?.slice(0, 2) === CLASSE_CONTRAINTE;
+	if (!etatDuContenu) {
 		return {
 			action: 'arreter',
 			raison: `l'erreur (${echec.code ?? 'sans code'}) ne vient pas de l'état du contenu`
@@ -121,20 +131,27 @@ export function deciderApresEchec(sql: string, echec: Echec, contenuDeProd: bool
 }
 
 /**
- * Refuse toute cible qui n'est pas la machine locale : cette commande écrit, elle ne doit jamais
- * pouvoir atteindre la prod.
+ * Refuse toute cible qui n'est pas la pile Supabase locale : cette commande écrit, elle ne doit
+ * jamais pouvoir atteindre la prod. L'hôte local ne suffit pas (un tunnel SSH vers la prod écoute
+ * aussi sur `localhost`) : on exige le compte de la pile locale, `postgres` / `postgres`, que la
+ * prod ne porte pas.
  */
 export function verifierCibleLocale(url: string): void {
-	let hote: string;
+	let cible: URL;
 	try {
-		hote = new URL(url).hostname;
+		cible = new URL(url);
 	} catch {
 		throw new Error('URL Postgres illisible : refus d’écrire.');
 	}
 	if (url.includes('?')) {
 		throw new Error('URL Postgres refusée : un paramètre de requête peut remplacer l’hôte.');
 	}
-	if (!['127.0.0.1', 'localhost'].includes(hote)) {
+	if (!['127.0.0.1', 'localhost'].includes(cible.hostname)) {
 		throw new Error('La base visée n’est pas locale : refus d’écrire.');
+	}
+	if (cible.username !== 'postgres' || cible.password !== 'postgres') {
+		throw new Error(
+			'La base visée n’utilise pas le compte de la pile locale (postgres / postgres) : refus d’écrire.'
+		);
 	}
 }
