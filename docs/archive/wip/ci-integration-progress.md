@@ -9,11 +9,13 @@ _Mis à jour le 2026-11-21 : chantier clos, journal archivé._
   suite complète. Règles durables versées dans `docs/pratiques/tests.md` § 3.
 - **Correctif de clôture** : le global-setup efface les liens de partage créés par les profs
   avant de les supprimer (§ 3.4 : 23503, rouge puis vert en local).
-- **Reste hors chantier** : la base locale n'a pas 96 migrations (15 → 20 novembre) ; la suite
-  locale complète échoue donc dans les tests (218 fichiers), pas au global-setup. Un
-  `pnpm db:reset` la remettrait d'accord, à décider par David (il efface les données locales).
-- **Worktree / branche** : `ubumaths-wt-ci-integration` / `chore/ci-integration-cloture`,
-  à supprimer après le merge.
+- **Base locale remise d'accord le 2026-11-21 (après #2965)** : `supabase/.temp/postgres-version`
+  imposait l'image 17.6.1.127, qui ne reconstruit plus la base (migration du chat du 2026-10-04, 42501) ; renommé `.bak` (accord de David), stack sur 17.11.0.004 comme la CI. Suite locale
+  complète : **584/584 fichiers verts en 12 min 49**.
+- **Reste ouvert** : `supabase migration up --local` bute sur une migration de rangement déjà
+  jouée (journal `navadra`, 2026-11-18) ; la base locale reprendra du retard. Chantier à part si
+  David le veut.
+- **Worktree / branche** : aucun (supprimés après le merge de #2965).
 
 ## 1. Ce que coûte la suite aujourd'hui (mesuré)
 
