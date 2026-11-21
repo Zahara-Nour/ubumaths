@@ -186,11 +186,14 @@
 									</Button>
 								</div>
 								{#if template}
-									<VariationPicker
-										{template}
-										selected={item.variations}
-										onchange={(variations) => handleVariations(index, variations)}
-									/>
+									<!-- Sa propre ligne, comme les marques de durée -->
+									<div class="w-full">
+										<VariationPicker
+											{template}
+											selected={item.variations}
+											onchange={(variations) => handleVariations(index, variations)}
+										/>
+									</div>
 								{/if}
 								<TooShortMark
 									timing={tooShortAt(data.durationSignals, item.templateId, item.delay)}

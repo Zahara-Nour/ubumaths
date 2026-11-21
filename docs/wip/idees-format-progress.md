@@ -137,3 +137,8 @@ vit déjà : série enregistrée, panier, lien partagé, évaluation.
   publié, choix écrit dans la copie de travail (absent = toutes, la clé est retirée).
 - Tests : `variations.svelte.test.ts` (3, vérifiés rouges avant le code) : choix affiché, rien pour
   un modèle à une variation, décocher enregistre, tout recocher retire le choix.
+- Relecture (`code-reviewer`, Sonnet) : aucun bloquant. Corrigé : le sélecteur sur sa propre ligne
+  (`w-full`, comme les marques de durée). Mesuré (prod, 2 644 modèles publiés, taille en base) :
+  3,3 Ko en moyenne, 17 Ko au 99e centile, 127 Ko au plus → poids accepté (une série a au plus 50
+  lignes ; le panier charge déjà tout le catalogue). Laissé : chargeur sans test propre (mêmes
+  colonnes et même conversion que le catalogue).
