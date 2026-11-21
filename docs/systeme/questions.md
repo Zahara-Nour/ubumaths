@@ -279,7 +279,8 @@ pour tous », la graine de série `SERIES_SEED_PARAM`). L'ancienne forme (catég
   (`ObservedDelayHint`), voir [evaluations.md](evaluations.md) ; plus de répétitions que de
   questions différentes → « Ce modèle n'a que N questions différentes. » (« qu'une question » pour 1)
   avec « Passer à N », compte de `distinctLimit` (`series-draw.ts`, même tirage que la série à graine
-  fixe, mis en cache par modèle : un modèle épuisé n'est plus recompté ; chantier `idees-format`).
+  fixe, mis en cache par modèle : un modèle épuisé n'est plus recompté, une recherche plus loin va au
+  moins deux fois plus loin ; une génération en échec n'avertit pas ; chantier `idees-format`).
   Ce contrôle vit dans le panier seulement : l'éditeur de série et le serveur n'en font pas, une
   ligne trop longue est raccourcie au tirage). L'éditeur de série
   (`/dashboard/teacher/series/[id]/edit`) affiche la durée de chaque ligne en lecture, avec la même

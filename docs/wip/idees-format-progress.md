@@ -62,3 +62,7 @@ lui-même (`{{carré|rectangle}}`), sinon sa ligne tomberait à une question.
 - Panier seulement (décision Q2) : l'éditeur de série n'avertit pas, le tirage raccourcit.
 - Tests : 3 de `distinctLimit` (vérifiés rouges avant l'écriture), 3 de la tuile (rendu, singulier,
   rien quand assez).
+- Relecture (`code-reviewer`, Sonnet) : bloquant corrigé, une génération en échec donnait « Passer à
+  0 » (le clic retirait la ligne) → échec = pas d'avertissement, rien en cache. Corrigé aussi :
+  recherche au moins deux fois plus loin (monter de 1 à 99 recomptait à chaque pas), `role="status"`,
+  bouton nommé « Passer à N répétitions ». Laissé : focus perdu après le clic (le bouton disparaît).

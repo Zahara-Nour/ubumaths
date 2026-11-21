@@ -212,7 +212,7 @@ describe('CartQuestionCard', () => {
 		await expect
 			.element(screen.getByText("Ce modèle n'a que 2 questions différentes."))
 			.toBeInTheDocument();
-		await screen.getByRole('button', { name: 'Passer à 2' }).click();
+		await screen.getByRole('button', { name: 'Passer à 2 répétitions' }).click();
 
 		expect(onUpdateQuantity).toHaveBeenCalledWith(ITEM.templateId, 2);
 	});
@@ -221,7 +221,9 @@ describe('CartQuestionCard', () => {
 		const screen = await renderCard({ distinctMax: 1 });
 
 		await expect.element(screen.getByText("Ce modèle n'a qu'une question.")).toBeInTheDocument();
-		await expect.element(screen.getByRole('button', { name: 'Passer à 1' })).toBeInTheDocument();
+		await expect
+			.element(screen.getByRole('button', { name: 'Passer à 1 répétition' }))
+			.toBeInTheDocument();
 	});
 
 	it('assez de questions : aucun avertissement', async () => {

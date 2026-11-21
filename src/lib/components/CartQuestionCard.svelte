@@ -174,7 +174,11 @@
 
 	{#if distinctMax !== null}
 		<!-- Couleur d'accent sur l'icône seule : le texte garde son contraste -->
-		<p class="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm" data-trop-de-repetitions>
+		<p
+			class="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm"
+			role="status"
+			data-trop-de-repetitions
+		>
 			<CopyX class="h-4 w-4 shrink-0 text-warning" aria-hidden="true" />
 			<span>
 				{distinctMax === 1
@@ -186,6 +190,7 @@
 				size="sm"
 				variant="outline"
 				class="h-7 px-2"
+				aria-label="Passer à {distinctMax} {distinctMax === 1 ? 'répétition' : 'répétitions'}"
 				onclick={() => onUpdateQuantity(item.templateId, distinctMax)}
 			>
 				Passer à {distinctMax}

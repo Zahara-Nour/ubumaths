@@ -262,6 +262,37 @@ describe('distinctLimit (avertissement du panier)', () => {
 	});
 });
 
+describe('distinctLimit : génération en échec', () => {
+	it('ne dit rien et ne retient rien quand une génération échoue', () => {
+		let fail = true;
+		const flaky = (template: QuestionTemplate, seed: number) =>
+			fail
+				? ({ success: false, errors: ['panne'] } as ReturnType<typeof generateInstance>)
+				: generateInstance(template, seed);
+		const cinq = model('cinq-panne', CINQ.variations);
+
+		expect(distinctLimit(cinq, 8, flaky)).toBeNull();
+		fail = false;
+		expect(distinctLimit(cinq, 8, flaky)).toBe(5);
+	});
+
+	it('monter de 1 en 1 ne recompte pas à chaque pas', () => {
+		let calls = 0;
+		const counting = (template: QuestionTemplate, seed: number) => {
+			calls++;
+			return generateInstance(template, seed);
+		};
+		const large = model('large-montee', FACTORISER.variations);
+		let recounts = 0;
+		for (let quantity = 1; quantity <= 99; quantity++) {
+			const before = calls;
+			expect(distinctLimit(large, quantity, counting)).toBeNull();
+			if (calls > before) recounts++;
+		}
+		expect(recounts).toBeLessThanOrEqual(8);
+	});
+});
+
 describe('génération impossible', () => {
 	it('la question est omise, les autres restent', () => {
 		let calls = 0;
