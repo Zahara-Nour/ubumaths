@@ -13264,6 +13264,33 @@ export type Database = {
           },
         ]
       }
+      web_vital_samples: {
+        Row: {
+          created_at: string
+          device_type: string
+          id: string
+          metric: string
+          route: string
+          value: number
+        }
+        Insert: {
+          created_at?: string
+          device_type: string
+          id?: string
+          metric: string
+          route: string
+          value: number
+        }
+        Update: {
+          created_at?: string
+          device_type?: string
+          id?: string
+          metric?: string
+          route?: string
+          value?: number
+        }
+        Relationships: []
+      }
       weekly_best_rewards: {
         Row: {
           best_reward_game_id: string | null
@@ -16684,6 +16711,7 @@ export type Database = {
         Returns: Json
       }
       purge_trace_answers: { Args: never; Returns: number }
+      purge_web_vital_samples: { Args: never; Returns: number }
       rag_hybrid_search: {
         Args: {
           filter_grades?: string[]
