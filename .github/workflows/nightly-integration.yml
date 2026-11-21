@@ -225,10 +225,15 @@ jobs:
       - name: Check the paths filter against the suite's imports
         run: pnpm check:integration-paths
 
-  integration:
-    name: Integration tests (Supabase local)
+  portee:
+    # Portée et découpage, calculés UNE fois pour tous les morceaux.
+    name: Integration scope
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 5
+    outputs:
+      fichiers: ${{ steps.portee.outputs.fichiers }}
+      morceaux: ${{ steps.morceaux.outputs.morceaux }}
+      total: ${{ steps.morceaux.outputs.total }}
 
     steps:
       - name: Checkout code
@@ -244,6 +249,36 @@ jobs:
         # autre PR, le cron et workflow_dispatch : suite complète. Le cron est le filet.
         id: portee
         run: bash scripts/ci-integration-ciblee.sh >> "$GITHUB_OUTPUT" || echo "fichiers=" >> "$GITHUB_OUTPUT"
+
+      - name: Morceaux (4 pour la suite complète, 1 pour quelques tests)
+        # Suite en série (un fichier à la fois, isolation par purge globale) : on ne peut
+        # pas paralléliser DANS une stack. On découpe donc en jobs, une stack chacun
+        # (2026-11-21 : 584 fichiers, ~15 min de tests en un seul job). Coût fixe d'un
+        # job ~2 min (install, images, `supabase start`) : inutile pour quelques tests.
+        id: morceaux
+        env:
+          FICHIERS: ${{ steps.portee.outputs.fichiers }}
+        run: |
+          if [ -n "$FICHIERS" ]; then
+            echo 'morceaux=[1]' >> "$GITHUB_OUTPUT"; echo 'total=1' >> "$GITHUB_OUTPUT"
+          else
+            echo 'morceaux=[1,2,3,4]' >> "$GITHUB_OUTPUT"; echo 'total=4' >> "$GITHUB_OUTPUT"
+          fi
+
+  integration:
+    name: Integration tests (shard ${{ matrix.shard }}/${{ needs.portee.outputs.total }})
+    needs: portee
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      # Un morceau rouge n'annule pas les autres : on veut tous les échecs d'un coup.
+      fail-fast: false
+      matrix:
+        shard: ${{ fromJSON(needs.portee.outputs.morceaux) }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v6
@@ -299,7 +334,8 @@ jobs:
       - name: Save Supabase Docker images
         # Seulement si le cache manquait et que la stack a démarré : les images
         # présentes sont alors exactement celles de cette version de la CLI.
-        if: steps.supabase-images.outputs.cache-hit != 'true'
+        # Un seul morceau enregistre : les autres viseraient la même clé en même temps.
+        if: steps.supabase-images.outputs.cache-hit != 'true' && matrix.shard == 1
         run: |
           set -o pipefail
           images="$(docker images --format '{{.Repository}}:{{.Tag}}' | grep -E '(^|/)supabase/' | grep -v ':<none>$')"
@@ -309,7 +345,7 @@ jobs:
           ls -lh /tmp/supabase-images.tar.zst
 
       - name: Upload Supabase Docker images to the cache
-        if: steps.supabase-images.outputs.cache-hit != 'true'
+        if: steps.supabase-images.outputs.cache-hit != 'true' && matrix.shard == 1
         uses: actions/cache/save@v6
         with:
           path: /tmp/supabase-images.tar.zst
@@ -341,12 +377,13 @@ jobs:
             echo "SUPABASE_SERVICE_ROLE_KEY=$SUPABASE_TEST_SERVICE_ROLE_KEY"
           } >> "$GITHUB_ENV"
 
-      - name: Run integration tests
+      - name: Run integration tests (shard ${{ matrix.shard }}/${{ needs.portee.outputs.total }})
         env:
-          FICHIERS: ${{ steps.portee.outputs.fichiers }}
+          FICHIERS: ${{ needs.portee.outputs.fichiers }}
         # $FICHIERS vide = suite complète ; sinon la liste des tests de la PR (non citée :
-        # un argument par fichier, les chemins n'ont pas d'espace).
-        run: pnpm test:integration $FICHIERS
+        # un argument par fichier, les chemins n'ont pas d'espace). `--shard` de vitest
+        # répartit les fichiers par nombre (empreinte du chemin), pas par durée.
+        run: pnpm test:integration $FICHIERS --shard=${{ matrix.shard }}/${{ needs.portee.outputs.total }}
 
       - name: Stop Supabase
         if: always()
