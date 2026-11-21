@@ -44,6 +44,8 @@ export interface QuestionFingerprints {
 export interface SeenQuestions {
 	display: Set<string>;
 	values: Set<string>;
+	/** Variations sans question neuve : les lignes suivantes du modèle ne les cherchent plus */
+	exhausted: Set<number>;
 }
 
 export type Generate = (template: QuestionTemplate, seed: number) => GenerationResult;
@@ -61,7 +63,11 @@ export interface DrawnQuestion {
 /** Plus grande graine tirée (entier 32 bits positif, borne du schéma de sauvegarde) */
 export const MAX_QUESTION_SEED = 2 ** 31 - 1;
 
-/** Questions générées pour une variation avant de la déclarer épuisée */
+/**
+ * Questions générées pour une variation avant de la déclarer épuisée. Une
+ * variation presque vidée (55 questions vues sur 60 possibles) peut être dite
+ * épuisée à tort (~1 %) : la ligne est alors un peu plus courte, accepté.
+ */
 export const MAX_GENERATIONS_PER_QUESTION = 50;
 
 /** Graines lues (sans générer) par variation cherchée, pour une génération */
@@ -144,7 +150,7 @@ function remember(fingerprints: QuestionFingerprints, seen: SeenQuestions): void
 }
 
 export function emptySeen(): SeenQuestions {
-	return { display: new Set(), values: new Set() };
+	return { display: new Set(), values: new Set(), exhausted: new Set() };
 }
 
 /** Graine suivante de la suite d'une ligne */
@@ -234,7 +240,7 @@ export function drawLineQuestions(
 ): DrawnQuestion[] {
 	const random = createRandomSource(lineSeed);
 	const deal = variationDeal(Math.max(1, template.variations?.length ?? 0), random);
-	const exhausted = new Set<number>();
+	const { exhausted } = seen;
 	const questions: DrawnQuestion[] = [];
 
 	for (let repetition = 0; repetition < quantity; repetition++) {

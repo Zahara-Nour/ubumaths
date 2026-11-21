@@ -420,10 +420,12 @@ export async function startEvaluationAttempt(
 	const templates = await loadSeriesTemplates(userClient, items);
 	const draws = drawSeriesQuestions(items, templates, {
 		excludeCourseCards: true,
-		nextSeed: () => randomInt(MAX_QUESTION_SEED)
+		nextSeed: () => randomInt(MAX_QUESTION_SEED),
+		onGenerationFailure: (templateId, errors) =>
+			logger.error('[evaluation-attempts] Génération impossible :', templateId, errors)
 	});
 	const generated: Array<{ stored: StoredQuestion; instance: QuestionInstance }> = [];
-	// Une génération impossible est déjà omise (et journalisée) par le tirage
+	// Une génération impossible est déjà omise par le tirage (journalisée ci-dessus)
 	for (const draw of draws) {
 		// Énoncé masqué qui dirait encore la réponse (masque cassé) : écarté, jamais envoyé
 		const leaks = gestureAnswerLeaks(draw.instance);

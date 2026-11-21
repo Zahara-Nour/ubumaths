@@ -49,3 +49,6 @@ lui-même (`{{carré|rectangle}}`), sinon sa ligne tomberait à une question.
   questions après (même effet qu'un modèle modifié).
 - Tests : `series-draw.test.ts` (18, vrai générateur ; vérifiés rouges sans répartition, sans
   refus des doublons, sans la précaution des tirages dans le texte, sans le tri des choix).
+- Relecture (`code-reviewer`, Sonnet) : aucun bloquant. Corrigé : variations épuisées retenues pour
+  les lignes suivantes du même modèle (coût), échec de génération journalisé par le logger serveur
+  en évaluation. Accepté : une variation presque vidée peut être dite épuisée à tort (~1 %).

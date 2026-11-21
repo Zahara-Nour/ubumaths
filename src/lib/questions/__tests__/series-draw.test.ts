@@ -176,6 +176,21 @@ describe('doublons refusés', () => {
 	});
 });
 
+describe('coût : une variation épuisée ne se cherche plus', () => {
+	it('deuxième ligne d’un modèle épuisé : aucune génération', () => {
+		const seen = emptySeen();
+		let calls = 0;
+		const counting = (template: QuestionTemplate, seed: number) => {
+			calls++;
+			return generate(template, seed);
+		};
+		expect(drawLineQuestions(AIRES, 5, 1, seen, counting)).toHaveLength(3);
+		calls = 0;
+		expect(drawLineQuestions(AIRES, 5, 2, seen, counting)).toHaveLength(0);
+		expect(calls).toBe(0);
+	});
+});
+
 describe('empreintes', () => {
 	it('mêmes nombres tirés : même empreinte de valeurs ; autres nombres : autre empreinte', () => {
 		const a = generateInstance(CINQ, 1);

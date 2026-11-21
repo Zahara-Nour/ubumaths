@@ -36,6 +36,8 @@ interface BuildOptions {
 	generate?: (template: QuestionTemplate, seed: number) => GenerationResult;
 	/** Graine d'une LIGNE (d'où sortent celles de ses questions) ; injectable */
 	nextSeed?: () => number;
+	/** Génération impossible (question omise) : le serveur passe son logger */
+	onGenerationFailure?: (templateId: string, errors: unknown) => void;
 }
 
 // ============================================================================
@@ -94,6 +96,10 @@ export function drawSeriesQuestions(
 	const generate = options.generate ?? ((template, seed) => generateInstance(template, seed));
 	const available = options.excludeCourseCards ? withoutCourseCards([...templates]) : templates;
 	const byId = new Map(available.map((template) => [template.id, template]));
+	const onGenerationFailure =
+		options.onGenerationFailure ??
+		((templateId: string, errors: unknown) =>
+			console.error(`Série : génération impossible pour le modèle ${templateId}`, errors));
 	const seenByTemplate = new Map<string, SeenQuestions>();
 	const draws: SeriesDraw[] = [];
 
@@ -115,8 +121,7 @@ export function drawSeriesQuestions(
 			lineSeed,
 			seen,
 			generate,
-			(errors) =>
-				console.error(`Série : génération impossible pour le modèle ${template.id}`, errors)
+			(errors) => onGenerationFailure(template.id, errors)
 		);
 		for (const { seed, instance } of questions) {
 			draws.push({ template, seed, instance, delaySeconds });
