@@ -8,7 +8,7 @@ _Mis à jour le 2026-11-21, après #2971._
 - **Les 17 « noindex »** (15 termes, 2 articles du Shtam) : saines aujourd'hui, cause non trouvée. David a lancé « Valider la correction » le 2026-11-21.
 - **Décisions du 2026-11-21** (réponses de David) : chiph.re doit passer devant GitHub sur la recherche du nom du site ; dépôt gardé public ; libellé du titre de l'accueil ; « maths » dans les titres du glossaire.
 - **Prochaine action** : après la mise en prod, vérifier les deux titres sur chiph.re. Puis titres et descriptions des outils et des pages d'exercices. Nouvel export Search Console vers le 2026-12-20. Étoffer les 68 pages déjà en 1re ou 2e page : proposé, sans réponse de David (contenu pédagogique).
-- **En attente de David** : (1) rediriger l'ancienne adresse Vercel vers chiph.re (« Site URL » de Supabase vérifié bon) ; (2) le résultat de la validation Search Console ; (3) la mise en prod.
+- **En attente de David** : (1) le résultat de la validation Search Console ; (2) la mise en prod.
 - **Pièges en cours** : un nouveau fichier lu par l'intégration doit entrer dans `paths` de `nightly-integration.yml` (`pnpm check:integration-paths`). L'accueil porte déjà ses données structurées (WebSite + Organization) : ne pas les annoncer manquantes.
 - **Worktree / branche** : aucun (retirés après #2971) ; recréer `../ubumaths-wt-seo` pour la suite.
 
@@ -36,3 +36,4 @@ _Mis à jour le 2026-11-21, après #2971._
 - 2026-11-21 : exports Search Console analysés. Sortent en première page les expressions précises (« strictement positif », « compris entre », « tirage sans remise », « distance à zéro ») ; les mots courants (« calcul », « triangle », « médiatrice ») sont au-delà de la 5e page. 68 pages en 1re ou 2e page. Place moyenne : de 57 début novembre à 36 le 19.
 - 2026-11-21 : sur la recherche du nom du site, les pages du dépôt GitHub passent devant. Fiche du dépôt : champ « site web » sur l'ancienne adresse Vercel, qui sert encore une copie du site (canonique vers chiph.re). Titre du README changé.
 - 2026-11-21 : #2971 mergée (titre de l'accueil, titres d'onglet du glossaire). Rendu du titre vérifié à 320, 360, 390 et 1280 px : deux lignes au plus, sans défilement.
+- 2026-11-21 : ancienne adresse Vercel redirigée vers chiph.re par David (308, vérifié sur l'accueil et sur une page du glossaire).
