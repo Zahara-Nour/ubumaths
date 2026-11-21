@@ -18,6 +18,10 @@
  * redonne toujours la même question, partout (évaluation, statistiques
  * d'erreurs rejouées depuis la graine, ADR 0015) : rien de plus à enregistrer.
  *
+ * Variations choisies (idée 2) : le prof peut restreindre une ligne à
+ * certaines variations ; la répartition et le compte du panier se font alors
+ * parmi elles seules (`allowedVariations`).
+ *
  * Doublon (option « b + a » validée par David) : mêmes nombres tirés, OU même
  * énoncé affiché (choix d'un QCM comptés sans leur ordre). Deux calculs qui ont
  * la même réponse (« 12 × 5 », « 15 × 4 ») ne sont PAS un doublon.
@@ -86,6 +90,25 @@ export function variationOfSeed(template: QuestionTemplate, seed: number): numbe
 	const count = template.variations?.length ?? 0;
 	if (count <= 1) return 0;
 	return randomIndex(count, createRandomSource(seed));
+}
+
+/** Nombre de variations du modèle (au moins 1) */
+function variationCount(template: QuestionTemplate): number {
+	return Math.max(1, template.variations?.length ?? 0);
+}
+
+/**
+ * Variations où tirer, dans l'ordre (idée 2, Q3) : celles choisies qui existent
+ * encore dans le modèle ; aucun choix, ou plus aucune valable → toutes.
+ */
+export function allowedVariations(
+	template: QuestionTemplate,
+	chosen: readonly number[] | undefined
+): number[] {
+	const count = variationCount(template);
+	const all = Array.from({ length: count }, (_, index) => index);
+	const kept = all.filter((index) => chosen?.includes(index));
+	return kept.length > 0 ? kept : all;
 }
 
 /** Énoncé brut de la variation (le sien, sinon celui du tronc commun) */
@@ -164,7 +187,7 @@ function seedForVariation(
 	variationIndex: number,
 	random: RandomSource
 ): number | undefined {
-	const count = Math.max(1, template.variations?.length ?? 0);
+	const count = variationCount(template);
 	for (let tries = 0; tries < MAX_SEEDS_PER_VARIATION * count; tries++) {
 		const seed = nextSeed(random);
 		if (variationOfSeed(template, seed) === variationIndex) return seed;
@@ -200,18 +223,16 @@ function findNewQuestion(
 }
 
 /**
- * Distribution des variations : des tours mélangés de toutes les variations
+ * Distribution des variations : des tours mélangés des variations permises
  * encore disponibles (10 questions, 3 variations → 4 + 3 + 3). Une variation
  * épuisée ne sort plus ; sa place revient aux suivantes.
  */
-function variationDeal(count: number, random: RandomSource) {
+function variationDeal(allowed: readonly number[], random: RandomSource) {
 	let round: number[] = [];
 	return (exhausted: ReadonlySet<number>): number | undefined => {
 		for (;;) {
 			if (round.length === 0) {
-				const available = Array.from({ length: count }, (_, index) => index).filter(
-					(index) => !exhausted.has(index)
-				);
+				const available = allowed.filter((index) => !exhausted.has(index));
 				if (available.length === 0) return undefined;
 				round = shuffled(available, random);
 			}
@@ -228,7 +249,8 @@ function variationDeal(count: number, random: RandomSource) {
  * tous »). `seen` est partagé entre les lignes d'un même modèle.
  *
  * Une génération qui échoue omet sa question (journalisée par `onFailure`) ;
- * un modèle sans question neuve raccourcit la ligne.
+ * un modèle sans question neuve raccourcit la ligne. `variations` : celles
+ * choisies par le prof (toutes si absent, cf. `allowedVariations`).
  */
 export function drawLineQuestions(
 	template: QuestionTemplate,
@@ -236,10 +258,11 @@ export function drawLineQuestions(
 	lineSeed: number,
 	seen: SeenQuestions,
 	generate: Generate,
-	onFailure: (errors: unknown) => void = () => {}
+	onFailure: (errors: unknown) => void = () => {},
+	variations?: readonly number[]
 ): DrawnQuestion[] {
 	const random = createRandomSource(lineSeed);
-	const deal = variationDeal(Math.max(1, template.variations?.length ?? 0), random);
+	const deal = variationDeal(allowedVariations(template, variations), random);
 	const { exhausted } = seen;
 	const questions: DrawnQuestion[] = [];
 
@@ -273,16 +296,21 @@ const COUNT_SEED = 20261121;
 export function distinctQuestionCount(
 	template: QuestionTemplate,
 	upTo: number,
-	generate: Generate
+	generate: Generate,
+	variations?: readonly number[]
 ): number {
-	return drawLineQuestions(template, upTo, COUNT_SEED, emptySeen(), generate).length;
+	return drawLineQuestions(template, upTo, COUNT_SEED, emptySeen(), generate, undefined, variations)
+		.length;
 }
 
 /** Plafond des répétitions d'une ligne du panier (`MAX_ITEM_QUANTITY`) */
 const COUNT_CAP = 99;
 
-/** Comptes déjà faits par modèle : jusqu'où on a cherché, et ce qu'on a trouvé */
-const distinctCounts = new WeakMap<QuestionTemplate, { upTo: number; count: number }>();
+/** Comptes déjà faits par modèle et par choix de variations : jusqu'où on a cherché, et ce qu'on a trouvé */
+const distinctCounts = new WeakMap<
+	QuestionTemplate,
+	Map<string, { upTo: number; count: number }>
+>();
 
 /**
  * Avertissement du panier : le nombre de questions différentes du modèle quand
@@ -292,24 +320,60 @@ const distinctCounts = new WeakMap<QuestionTemplate, { upTo: number; count: numb
  * 1 à 99 par « + » ne refait que quelques tirages, pas 99).
  *
  * Une génération en échec n'est pas un épuisement : rien n'est dit (`null`) ni
- * retenu, le tirage de la série journalise l'échec.
+ * retenu, le tirage de la série journalise l'échec. `variations` : celles
+ * choisies sur la ligne (idée 2), comptées à part.
  */
 export function distinctLimit(
 	template: QuestionTemplate,
 	quantity: number,
-	generate: Generate
+	generate: Generate,
+	variations?: readonly number[]
 ): number | null {
-	let known = distinctCounts.get(template);
+	const allowed = allowedVariations(template, variations);
+	const key = allowed.join(',');
+	let byChoice = distinctCounts.get(template);
+	if (!byChoice) {
+		byChoice = new Map();
+		distinctCounts.set(template, byChoice);
+	}
+	let known = byChoice.get(key);
 	const exhausted = known !== undefined && known.count < known.upTo;
 	if (!known || (!exhausted && quantity > known.upTo)) {
 		const upTo = Math.max(quantity, Math.min(COUNT_CAP, 2 * (known?.upTo ?? 0)));
 		let failed = false;
-		const count = drawLineQuestions(template, upTo, COUNT_SEED, emptySeen(), generate, () => {
-			failed = true;
-		}).length;
+		const count = drawLineQuestions(
+			template,
+			upTo,
+			COUNT_SEED,
+			emptySeen(),
+			generate,
+			() => {
+				failed = true;
+			},
+			allowed
+		).length;
 		if (failed) return null;
 		known = { upTo, count };
-		distinctCounts.set(template, known);
+		byChoice.set(key, known);
 	}
 	return known.count < quantity ? known.count : null;
+}
+
+/** Graine fixe des exemples de variation : le même exemple à chaque ouverture */
+const EXAMPLE_SEED = 20261122;
+
+/**
+ * Un exemple de question de cette variation (idée 2, Q1) : le prof reconnaît
+ * une variation à son exemple, faute de nom. Toujours le même (graine fixe) ;
+ * `null` si aucune graine n'y mène ou si la génération échoue.
+ */
+export function variationExample(
+	template: QuestionTemplate,
+	variationIndex: number,
+	generate: Generate
+): QuestionInstance | null {
+	const seed = seedForVariation(template, variationIndex, createRandomSource(EXAMPLE_SEED));
+	if (seed === undefined) return null;
+	const result = generate(template, seed);
+	return result.success ? result.instance : null;
 }
