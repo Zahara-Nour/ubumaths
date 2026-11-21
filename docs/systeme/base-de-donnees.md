@@ -188,6 +188,10 @@ Deux référentiels, deux usages (la famille A, ex-`skills`, n'existe plus :
   Une trace `evaluation` (contrôle) est **écrite par le serveur seulement** : la policy
   `skill_attempts_insert_own_student` la refuse à l'élève (`place is distinct from 'evaluation'`,
   `20261111111212`) ; ses traces sans lieu restent acceptées.
+  **Répondu en QCM** (`20261121234509`, idée 4 du chantier `idees-format`) : `answered_as_choice`,
+  faux par défaut, vrai quand l'élève a répondu en QCM à une case que le prof a mise « en QCM » ;
+  CHECK : seulement en `source = 'auto'` et en `typing` / `mock_test` / `number_race` /
+  `evaluation`.
   **Purge de fin d'année** (L6, `20261111224115`) : chaque dimanche, `purge_trace_answers()`
   (appelée par `run_cleanup_expired_data`, serveur seul) remet `answer_parts` et `part_verdicts` à
   NULL pour les traces créées avant le 1er août de l'année scolaire en cours (minuit, heure de
