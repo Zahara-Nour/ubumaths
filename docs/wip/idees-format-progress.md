@@ -140,8 +140,9 @@ trois erreurs prévues, mélangées, sans doublon de valeur ; une erreur prévue
 réponse sur le tirage est retirée ; cliquer une erreur prévue affiche son message. En prod : aucun
 modèle n'a d'erreurs prévues (#2962 pas livré).
 
-- **Q1 → C** : le prof coche « en QCM » (par variation, sa proposition ; interprétation à
-  confirmer), et l'auteur peut interdire le QCM sur une case (« jamais en QCM »).
+- **Q1 → C** : le prof coche « en QCM » **pour chaque variation** (déjà choisi par David), et
+  l'auteur peut interdire le QCM sur une case (« jamais en QCM »). Case absente pour une variation
+  sans erreur prévue, à plusieurs cases (Q3) ou interdite par l'auteur.
 - **Q2 → A** : moins de choix s'il manque des erreurs prévues (2 au moins) ; aucune utilisable sur
   le tirage → la question reste en saisie.
 - **Q3 → B** : QCM seulement pour une question à **une seule case**.
