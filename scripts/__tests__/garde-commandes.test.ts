@@ -74,6 +74,32 @@ describe('garde-commandes — refusé, avec la raison', () => {
 		refuse('npx supabase status', /pnpm exec supabase/);
 	});
 
+	it('la pile de dev démarrée, arrêtée ou reconstruite sans passer par pnpm db:*', () => {
+		// Lancée ainsi dans le dépôt principal, la CLI impose les versions de la prod (supabase/.temp).
+		refuse('pnpm exec supabase start', /pnpm db:start/);
+		refuse('pnpm exec supabase start -x studio', /pnpm db:start/);
+		refuse('pnpm exec supabase stop', /pnpm db:stop/);
+		refuse('pnpm exec supabase db reset', /pnpm db:reset/);
+		refuse('pnpm exec supabase db reset --debug', /pnpm db:reset/);
+		// Les mêmes, écrites autrement.
+		refuse('pnpm exec supabase --debug start', /pnpm db:start/);
+		refuse('pnpm supabase start', /pnpm db:start/);
+		refuse('pnpm exec -- supabase stop', /pnpm db:stop/);
+		refuse('node_modules/.bin/supabase start', /pnpm db:start/);
+		refuse('./node_modules/.bin/supabase db reset', /pnpm db:reset/);
+		refuse('pnpm --filter x exec supabase start', /pnpm db:start/);
+		// `--workdir` vers le dépôt lui-même : c'est toujours la pile de dev.
+		refuse('pnpm exec supabase start --workdir .', /pnpm db:start/);
+		refuse('pnpm exec supabase --workdir=supabase/ stop', /pnpm db:stop/);
+	});
+
+	it('db reset --linked : la prod, avec un message qui ne renvoie pas vers pnpm db:reset', () => {
+		const r = hook('pnpm exec supabase db reset --linked');
+		expect(r.status).toBe(2);
+		expect(r.stderr).toMatch(/PROD/);
+		expect(r.stderr).not.toMatch(/pnpm db:reset/);
+	});
+
 	it('push sans les hooks, release seule, git -C vide', () => {
 		refuse('git push --no-verify origin main', /--no-verify/);
 		refuse('pnpm release', /deploy:prod/);
@@ -200,6 +226,15 @@ describe('garde-commandes — le reste passe sans bruit', () => {
 		passe('pnpm dev --port 5177 --strictPort');
 		passe('pnpm kill:servers');
 		passe('pnpm exec supabase migration list');
+		passe('pnpm exec supabase status');
+		passe('pnpm exec supabase db dump --local -f x.sql');
+		passe('pnpm exec supabase --workdir /tmp/copie start'); // copie isolée de la pile
+		passe('pnpm exec supabase --workdir /tmp/copie db start');
+		passe('pnpm exec supabase migration list --local');
+		passe('pnpm exec supabase db push --dry-run');
+		passe('pnpm exec supabase services');
+		passe('pnpm db:start');
+		passe('pnpm db:reset');
 		passe('pnpm db:migrate');
 		passe('git push origin main');
 		passe('git -C /tmp/x status');

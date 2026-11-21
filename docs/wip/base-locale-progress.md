@@ -444,3 +444,41 @@ Ce qui a été livré (#2967) :
   (décisions d'outillage), `tests.md` § 4, `base-de-donnees.md`, `worktrees.md` (trois verrous),
   `git-workflow.md` § 4, `rls-echecs-silencieux.md`. Reste pour la PR 4 : la remise à neuf en une
   commande, sa doc, et le versement du chantier.
+
+## 13. PR 3 : versions de la CI pour la pile de dev (2026-11-21)
+
+Comportement validé au § 10 (point 3) : la pile de dev ignore `supabase/.temp/*-version`.
+
+- **Mécanisme** : `scripts/pile-de-dev.sh` lance la CLI avec `--workdir node_modules/.cache/pile-de-dev`,
+  un dossier miroir refait à chaque lancement : des liens vers tout `supabase/`, sauf `.temp` et
+  `.branches`. Sans `.temp`, la CLI prend ses versions par défaut, celles de la CI. `pnpm db:start`,
+  `db:stop` et `db:reset` passent par lui (sous le verrou `supabase`, inchangé).
+- **Pourquoi pas écarter les fichiers `*-version`** : un `pnpm db:link` (ou un `supabase link` à la
+  main) les réécrit, et le problème reviendrait. Le miroir ne dépend pas de ce que contient
+  `supabase/.temp/`, et n'y touche jamais : `db:migrate`, `db:link`, `db:types` (la prod) y lisent
+  toujours `project-ref` et ne passent pas par le script.
+- **Mesuré dans le dépôt principal** (`supabase services`, lecture seule) : CLI directe → PostgREST
+  `v14.5`, Storage `v1.77.5` (prod) ; par le script → PostgREST `v16.4`, Storage `v1.79.36`,
+  Postgres `17.11.0.004`, GoTrue `v2.197.0`, les versions de la pile de test et de la CI. Même pile :
+  `status` par le script rend les ports `5432x` et le projet `ubumaths`.
+- **Prouvé sur une copie isolée** (§ 9.1 : projet `ubumaths-essai`, ports `5442x`, CLI lancée par
+  le script, un `postgres-version` = `17.6.1.127` planté dans le `.temp` de la copie) : `db start`
+  prend Postgres `17.11.0.004`, joue les 628 migrations et les 4 seeds à travers les liens ;
+  `db reset` idem (628 migrations, 3 comptes) ; `stop --no-backup` retire conteneur et volume ; le
+  fichier planté est intact. La pile de dev n'a pas été touchée.
+- **Garde** : le hook `garde-commandes.py` refuse `start`, `stop` et `db reset` de la CLI lancés à
+  la main (`pnpm exec supabase …`, `pnpm supabase …`, `node_modules/.bin/supabase …`, drapeaux
+  avant la commande compris), sauf avec un `--workdir` vers un autre dossier (copie isolée du
+  § 9.1). `db reset --linked` (la prod) a son propre refus. Garde-fou d'habitude, pas une
+  sécurité : une commande enrobée dans un script ou une variable passe.
+- **Relecture** (`code-reviewer`) : rien de bloquant ; corrigé dans la PR : preuve réelle
+  ci-dessus, contournements du hook, miroir construit à côté puis mis en place d'un coup, refus
+  sans CLI installée, tests du fichier retiré, du fichier caché et du chemin avec espace.
+- **Tests** : `scripts/__tests__/pile-de-dev.test.ts` (fausse CLI : elle voit config, migrations et
+  seeds, pas `.temp` ; `supabase/.temp` du dépôt intact ; arguments et code de sortie transmis),
+  `garde-commandes.test.ts`.
+- **Après le merge** : la pile de dev qui tourne garde ses images (PostgREST `v14.5`, Storage
+  `v1.77.5`) jusqu'à un `pnpm db:stop` puis `pnpm db:start` depuis le dépôt principal. Coupe la base
+  de dev de toutes les sessions une minute : **prévenir David avant**. Les données restent.
+- `supabase/.temp/postgres-version.bak` (renommé à la main au § 3.2) n'a plus d'effet dans un sens
+  ni dans l'autre : laissé tel quel.

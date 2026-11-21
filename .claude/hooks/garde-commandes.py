@@ -186,6 +186,23 @@ for brut in segments:
     if re.match(r"(?:npx\s+)?supabase\s", s + " "):
         refuser("la CLI Supabase du projet se lance par `pnpm exec supabase …` (ou les scripts `pnpm db:*`), jamais directement.")
 
+    # Pile de dev : `pnpm db:start|stop|reset` passent par scripts/pile-de-dev.sh, qui cache à la CLI
+    # les versions de la prod écrites dans supabase/.temp. Avec un `--workdir` vers un autre dossier,
+    # c'est une autre pile (copie isolée). Garde-fou d'habitude, pas une sécurité : une commande
+    # enrobée autrement (variable, script) passe.
+    cli = re.match(
+        r"(?:pnpm\s+(?:--?\S+\s+(?:(?!exec\b)[^-\s]\S*\s+)?)*(?:exec\s+(?:--\s+)?)?(?:\S*/)?|(?:\./)?(?:\S*/)?node_modules/\.bin/)supabase\s+(.*)",
+        s,
+    )
+    pile = cli and re.search(r"(?:^|\s)(start|stop|db\s+reset)(?:\s|$)", cli.group(1))
+    if pile:
+        if "--linked" in s:
+            refuser("`--linked` vise la base de PROD, pas la pile locale. Rien de tel ne se lance à la main : en parler à David.")
+        ailleurs = re.search(r"--workdir[ =](\S+)", s)
+        if not ailleurs or ailleurs.group(1).strip("'\"").rstrip("/") in (".", "supabase", "./supabase"):
+            script = "db:" + pile.group(1).split()[-1]
+            refuser(f"lancée ainsi, la CLI impose à la pile de dev les versions de la prod (supabase/.temp). Utiliser `pnpm {script}` (versions de la CI, sous le verrou).")
+
     if re.match(r"git\s+push\b", s) and "--no-verify" in s:
         refuser("`--no-verify` saute aussi `lint:fast` ; le hook pre-push est léger, il n'y a plus de raison de le contourner.")
 

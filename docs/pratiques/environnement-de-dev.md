@@ -20,6 +20,7 @@ couvre:
   - scripts/lint-fast.sh
   - scripts/lint-fast-fichiers.sh
   - scripts/with-db-lock.sh
+  - scripts/pile-de-dev.sh
   - scripts/pile-de-test.sh
   - 'scripts/pile-de-test/**'
   - scripts/ci-nature-changement.sh
@@ -206,6 +207,16 @@ Elle est construite comme celle de la CI (migrations + seed simple, mêmes servi
 après les tests (environ 0,7 Go) : `pnpm db:test:stop` l'arrête, `pnpm db:test:reset` la reconstruit.
 Lancée sans ce lanceur (`vitest --config vitest.integration.config.ts`), la suite refuse de tourner. En
 CI (`GITHUB_ACTIONS`), une seule pile, celle du workflow (`scripts/pile-de-test/`). CLI = devDependency exacte, lancée par `pnpm db:*` ou `pnpm exec supabase`.
+**Versions des services : celles de la CI, partout.** `pnpm db:start`, `db:stop` et `db:reset` lancent
+la CLI par `scripts/pile-de-dev.sh`, sur un dossier miroir (`node_modules/.cache/pile-de-dev`, des
+liens vers tout `supabase/` sauf `.temp`). Sans lui, la CLI imposerait à la pile de dev les versions
+de la prod que `supabase link` écrit dans le dossier `.temp` de `supabase/` (`postgres-version`, `rest-version`,
+`storage-version`…) : le dépôt principal, seul à avoir ce dossier, tournait sur d'autres images que
+la CI et les worktrees, et ne se reconstruisait plus avec le Postgres de la prod. Ce dossier `.temp`
+n'est pas touché (`db:migrate` y lit `project-ref`), et un nouveau `pnpm db:link` ne change rien à la
+pile de dev. Le hook refuse `pnpm exec supabase start`, `stop` et `db reset` lancés à la main (sauf
+avec `--workdir`, copie isolée). Une pile déjà démarrée garde ses images : `pnpm db:stop` puis
+`pnpm db:start` pour en changer (les données restent).
 `pnpm db:reset && pnpm db:seed-riche` remplit la base locale avec le contenu de la prod (lu en lecture
 seule) et **30 élèves fictifs** : aucune ligne d'un utilisateur autre que le prof ou l'admin n'est
 copiée, **jamais de données d'élèves en local** (`scripts/db-seed-riche/index.ts`).
