@@ -144,9 +144,36 @@ export const constraintIdSchema = z.enum([
 	'rounding'
 ]);
 
+/** Longueur maximale d'une réponse ou d'un message d'erreur prévue */
+const EXPECTED_ERROR_TEXT_MAX = 500;
+/** Longueur maximale du nom court d'une erreur prévue */
+const EXPECTED_ERROR_LABEL_MAX = 80;
+/** Nombre maximal d'erreurs prévues d'une case */
+const EXPECTED_ERRORS_MAX = 10;
+
+/** Erreur prévue d'une case (cf. `ExpectedError`) ; message et réponse non vides */
+const expectedErrorSchema = z
+	.object({
+		answer: z
+			.string()
+			.trim()
+			.min(1, 'Réponse de l’erreur prévue vide')
+			.max(EXPECTED_ERROR_TEXT_MAX),
+		message: z
+			.string()
+			.trim()
+			.min(1, 'Message de l’erreur prévue vide')
+			.max(EXPECTED_ERROR_TEXT_MAX),
+		label: z.string().trim().min(1).max(EXPECTED_ERROR_LABEL_MAX).optional()
+	})
+	.strict();
+
+const expectedErrorsSchema = z.array(expectedErrorSchema).max(EXPECTED_ERRORS_MAX);
+
 export const testSpecExpectedSchema = z.object({
 	status: z.enum(['correct', 'unoptimal_form', 'bad_form', 'incorrect', 'empty']),
-	constraintViolations: z.array(constraintIdSchema).optional()
+	constraintViolations: z.array(constraintIdSchema).optional(),
+	expectedErrorMessage: z.string().min(1).max(EXPECTED_ERROR_TEXT_MAX).optional()
 });
 
 export const testSpecSchema = z.object({
@@ -358,6 +385,7 @@ export const blankSchema = z.object({
 	vectorMode: z.enum(VECTOR_MODES).optional(),
 	openableBounds: z.boolean().optional(),
 	angleModulo: z.enum(ANGLE_MODULOS).optional(),
+	expectedErrors: expectedErrorsSchema.optional(),
 	...calculusFieldsShape,
 	unit: unitSchema.optional()
 });
@@ -613,6 +641,7 @@ const blankStrictZ = z
 		vectorMode: z.enum(VECTOR_MODES).optional(),
 		openableBounds: z.boolean().optional(),
 		angleModulo: z.enum(ANGLE_MODULOS).optional(),
+		expectedErrors: expectedErrorsSchema.optional(),
 		...calculusFieldsShape,
 		unit: unitStrictZ.optional()
 	})

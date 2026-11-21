@@ -6,17 +6,18 @@ Mettre en œuvre les idées retenues dans [idees-format-exercices.md](idees-form
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-21, après #2960._
+_Mis à jour le 2026-11-21, PR #2962 ouverte (idée 3, moteur), CI en cours._
 
-- **État** : idée 1 terminée (#2954, #2955). Idée 2 terminée : choix des variations dans le
-  panier (#2958) et dans l'éditeur d'une série enregistrée (#2960).
-- **Prochaine action** : idée 3, les erreurs prévues avec leur message (voir
-  [idees-format-exercices.md](idees-format-exercices.md)) : phase 0 à écrire et faire valider.
-- **En attente de David** : rien (pas de `deploy:prod` demandé).
-- **Pièges en cours** : test d'intégration local bloqué par des données d'une autre session
-  (`class_journal_share_tokens`), la CI fait foi ; le worktree `automaths-serie` touche aussi le
-  panier.
-- **Worktree / branche** : aucun ; à créer pour l'idée 3.
+- **État** : idées 1 et 2 terminées. Idée 3 : phase 0 validée (§ Idée 3) ; #2962 « moteur »
+  ouverte, revue Opus faite (aucun bloquant, 4 points corrigés : primitive/solution-ed refusées,
+  graine mélangée, message rogné, JSDoc).
+- **Prochaine action** : CI de #2962 verte → merge ; puis PR 6 (éditeur : « Ajouter une erreur
+  prévue » sous chaque case, champs réponse / message / nom court), PR 7 (ligne « Types d'erreur »
+  côté prof, `label` sinon message).
+- **En attente de David** : rien.
+- **Pièges en cours** : intégration locale bloquée par les données d'une autre session, la CI fait
+  foi ; fichiers de lot avec `expectedErrors` refusés en prod avant le `deploy:prod` de #2962.
+- **Worktree / branche** : `../ubumaths-wt-idees-format` · `feat/idees-format-erreurs-prevues`.
 
 ## Idée 1 — phase 0 validée (David, 2026-11-21)
 
@@ -78,6 +79,61 @@ vit déjà : série enregistrée, panier, lien partagé, évaluation.
   variations, la série tire l'autre sans le dire (comme un modèle modifié aujourd'hui).
 - **Q4. La révision espacée** (qui reprend les modèles des séries d'un chapitre) tient-elle compte
   du choix ? Reco : non, elle revoit le modèle entier.
+
+## Idée 3 — phase 0 validée (David, 2026-11-21)
+
+David suit mes recommandations (Q1 A, Q2 A, Q3 A, découpage en 3 PR), après une
+réexplication en mots simples. **Ajout de David** : les scripts qui écrivent les modèles (fichiers
+de lot, skills `couvrir-niveau` et `idees-rubrique`) proposent **déjà** des erreurs prévues ; le
+prof les modifie ou les complète ensuite dans l'éditeur. → PR 1 : champ dans les fichiers de lot +
+consigne dans `couvrir-un-niveau.md` et les deux skills.
+
+But : une case dit « si l'élève répond `(x − 3)²`, lui écrire : “Tu as confondu a² − b² et
+(a − b)².” ». Aujourd'hui, `error-kinds.ts` ne fait que **deviner** une relation (signe, ×10,
+inverse, double, moitié, carré) ; l'erreur prévue, c'est le prof qui l'écrit.
+
+Ce qui existe : une case fausse sans remarque reçoit la phrase de son type deviné
+(`blankErrorGuess`, `errorGuessSentence`), affichée par le seul chemin du résultat attendu
+(Saisie, Contrôle blanc, copie corrigée) ; côté prof, la ligne « Types d'erreur : Erreur de signe :
+4 · Non reconnue : 6 » (bilan d'un contrôle, erreurs par point). Les specs décrivent déjà les
+erreurs classiques en commentaire (« 10 (1 et 72 oubliés) ») sans pouvoir les nommer à l'élève.
+
+**Comportements**
+
+- Nominal : le prof ajoute à une case une erreur prévue : réponse fausse `{{eval:a-b}}` (variables
+  permises, comme la réponse attendue) et message « Tu as soustrait au lieu d'additionner. »
+  (variables et `$…$` permis). L'élève qui répond la valeur de cette erreur voit ce message à la
+  place de la phrase du type deviné. La note ne change pas : faux reste faux.
+- Nominal : côté prof, l'erreur prévue compte dans la ligne « Types d'erreur » à côté des types
+  devinés (« Soustraction au lieu d'addition : 3 · Erreur de signe : 2 »).
+- Limite : sur un tirage où l'erreur prévue tombe sur la bonne réponse (erreur de signe quand le
+  résultat vaut 0), elle est ignorée : l'élève a juste.
+- Limite : deux erreurs prévues de même valeur sur un tirage → la première écrite l'emporte.
+- Limite : bonne valeur, mauvaise forme → déjà « mauvaise forme », l'erreur prévue n'est pas lue.
+- Limite : une remarque de case (unité, %, arrondi) reste affichée après le message.
+- Limite : un contrôle déjà passé garde son énoncé tiré : pas de message rétroactif.
+- Erreur (auteur) : réponse fausse qui ne se calcule pas, ou message vide → publication refusée,
+  message situé (« Variation 2, case 1, erreur prévue 1 : … »).
+- Sécurité : en évaluation notée, les erreurs prévues sont retirées de l'énoncé envoyé à l'élève,
+  comme la réponse attendue (elles en disent trop).
+
+Vérification automatique : le rejeu de publication répond chaque erreur prévue sur ses tirages et
+vérifie « faux + ce message ». Une spec peut aussi asserter le message (champ facultatif).
+
+**Questions**
+
+- **Q1. Quand dit-on que l'élève a fait « cette erreur » ?** A (reco) : même valeur que l'erreur
+  prévue, quelle que soit l'écriture (`8/6` déclenche l'erreur `4/3`). B : même écriture exacte.
+- **Q2. Que lit le prof dans « Types d'erreur » ?** A (reco) : un nom court facultatif
+  (« Soustraction au lieu d'addition ») ; sans nom, le message de l'élève. B : nom court
+  obligatoire. C : le message de l'élève, toujours.
+- **Q3. Quelles cases ?** A (reco) : les cases à écriture mathématique ordinaire (celles où l'on
+  devine déjà un type) ; texte, choix, figures plus tard (l'idée 4 reprend les choix). B : aussi
+  les cases texte tout de suite.
+
+**Découpage validé** : PR 1 moteur (type de case, Zod, tirage, message à l'élève, rejeu, specs,
+fichiers de lot et consigne des scripts, retrait en évaluation notée) · PR 2 éditeur du prof (sous chaque case, « Ajouter
+une erreur prévue ») · PR 3 ligne « Types d'erreur » côté prof.
 
 ## PR 1 — tirage (#2954, mergée le 2026-11-21)
 
@@ -141,3 +197,15 @@ vit déjà : série enregistrée, panier, lien partagé, évaluation.
   3,3 Ko en moyenne, 17 Ko au 99e centile, 127 Ko au plus → poids accepté (une série a au plus 50
   lignes ; le panier charge déjà tout le catalogue). Laissé : chargeur sans test propre (mêmes
   colonnes et même conversion que le catalogue).
+
+## Idée 3, PR 5 — erreurs prévues : le moteur (2026-11-21)
+
+Branche `feat/idees-format-erreurs-prevues`. `expectedErrors` sur une case (`types.ts`, Zod strict
+et non strict) ; reconnaissance `expected-errors.ts` (`expectedErrorOf`, même valeur, case fausse
+seulement) ; message en tête des remarques (`expected-result.ts`, avant le type deviné) ;
+générateur : résolution sur une source de hasard à part (graine + 7919), refus situé hors case
+mathématique ordinaire ; rejeu `checkTemplate` ; spec `expected.expectedErrorMessage` ; consigne
+des scripts de lot (`couvrir-un-niveau.md` § 5, skills `couvrir-niveau`, `idees-rubrique`).
+L'éditeur actuel garde les cases telles quelles : un modèle modifié par le prof garde ses erreurs
+prévues avant même la PR de l'éditeur. ⚠️ Fichiers de lot avec erreurs prévues : la prod ne les
+accepte qu'après le `deploy:prod` qui livre cette PR.

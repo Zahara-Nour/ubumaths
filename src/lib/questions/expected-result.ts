@@ -59,6 +59,7 @@ import { findVariationsToFill } from '#lib/ubumark/parser/variation-table-parser
 import type { HiddenCellKind } from '#lib/ubumark/types/variation-table.ts';
 import { isSignTableCell, signCellToken } from './sign-table-case';
 import { blankErrorGuess, errorGuessSentence } from './error-kinds';
+import { expectedErrorOf } from './expected-errors';
 import {
 	validateAnswerDetailed,
 	type BlankVerdict,
@@ -599,10 +600,16 @@ function blankViews(
 }
 
 /**
- * Remarques d'une case : celles du validateur, sinon la phrase du type d'erreur
- * deviné (chantier `type-erreur`, PR 3) — un message existant prime toujours
+ * Remarques d'une case : le message de l'erreur prévue que fait l'élève
+ * (chantier `idees-format`, idée 3) en tête, puis celles du validateur (unité,
+ * arrondi…) ; sans erreur prévue, celles du validateur, sinon la phrase du type
+ * d'erreur deviné (chantier `type-erreur`, PR 3)
  */
 function blankRemarks(instance: QuestionInstance, detail: BlankVerdict): string[] {
+	const expected = expectedErrorOf(instance, detail);
+	if (expected) {
+		return [expected.message, ...detail.remarks.filter((remark) => remark !== expected.message)];
+	}
 	if (detail.remarks.length > 0) return detail.remarks;
 	const guess = blankErrorGuess(instance, detail);
 	return guess ? [errorGuessSentence(guess)] : [];

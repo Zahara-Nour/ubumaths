@@ -214,6 +214,22 @@ Dans un worktree (`git worktree add -b feat/questions-<lot> ../ubumaths-wt-quest
    gabarit. Il ne porte pas d'`id` tant que le modèle n'est pas créé.
 2. Chaque modèle a des `testSpecs` : un juste par variation, et les **erreurs typiques** de
    l'élève en `incorrect`.
+   **Erreurs prévues** (chantier `idees-format`, idée 3 ; décision de David du 2026-11-21) : le
+   script **propose déjà** les erreurs typiques d'une case avec leur message à l'élève ; le prof
+   les modifie ou les complète ensuite dans l'éditeur. Dans la case (écriture mathématique
+   ordinaire seulement : ni choix, ni geste, ni figure, ni primitive, ni solution d'équation
+   différentielle, ni `rulesSuffice`, ni `orderIndependent`) :
+   `"expectedErrors": [{"answer": "{{eval:a-b}}", "message": "Tu as soustrait au lieu
+d'additionner.", "label": "Soustraction au lieu d'addition"}]`. `answer` s'écrit comme la
+   réponse attendue (variables permises) ; `message` (variables, `$…$`) parle à l'élève de **son**
+   erreur, en une phrase, au tutoiement ; `label` (facultatif, ≤ 80 caractères) nomme l'erreur
+   pour le prof. L'élève dont la réponse a la **même valeur** reçoit le message (`8/6` pour `4/3`) ;
+   une erreur prévue qui tombe sur la bonne réponse d'un tirage est ignorée. Chaque erreur prévue
+   a sa spec `incorrect` qui nomme son message (`"expected": {"status": "incorrect",
+"expectedErrorMessage": "Tu as soustrait au lieu d'additionner."}`, message tel que résolu
+   pour les variables de la spec). Le rejeu de `checkTemplate` répond chaque erreur prévue sur
+   ses tirages et refuse le modèle si elle ne déclenche pas son message. ⚠️ La prod ne lit ce
+   champ qu'après le `deploy:prod` qui le livre.
 3. `pnpm tsx scripts/create-questions.ts --dir scripts/questions/<niveau>-<lot>` (simulation :
    `checkTemplate` sur chaque fichier, specs comprises) → tout vert.
    Lot qui dessine des courbes : `pnpm tsx scripts/questions/sonde-courbes.ts --dir …` tire
