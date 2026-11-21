@@ -133,6 +133,29 @@ vérifie « faux + ce message ». Une spec peut aussi asserter le message (champ
 fichiers de lot et consigne des scripts, retrait en évaluation notée) · PR 2 éditeur du prof (sous chaque case, « Ajouter
 une erreur prévue ») · PR 3 ligne « Types d'erreur » côté prof.
 
+## Idée 4 — phase 0 en cours (2026-11-21)
+
+But : une case à erreurs prévues (idée 3) peut se répondre en QCM : la bonne réponse et jusqu'à
+trois erreurs prévues, mélangées, sans doublon de valeur ; une erreur prévue égale à la bonne
+réponse sur le tirage est retirée ; cliquer une erreur prévue affiche son message. En prod : aucun
+modèle n'a d'erreurs prévues (#2962 pas livré).
+
+- **Q1 (qui décide)** : proposition de David, **case « en QCM » par variation**, à côté du choix
+  des variations (idée 2), visible seulement pour une variation qui a des erreurs prévues ; un
+  modèle à une variation → la case seule sur la ligne. Ma reco = celle-là. **Pas encore confirmée
+  explicitement.** Écartées pour l'instant : B (forme tirée au hasard par l'auteur), C (veto de
+  l'auteur, ajoutable plus tard).
+- **Q2 (pas assez d'erreurs prévues)** : reco A, moins de choix (2 au moins), sinon saisie sur ce
+  tirage. Ouverte.
+- **Q3 (plusieurs cases)** : reco A, chaque case à erreurs prévues passe en QCM. Ouverte.
+- **Q4 (mémoire de révision)** : reco **changée** de A en B, une réussite en QCM = demi-réussite,
+  comme l'indice de l'idée 5. Raison : la séance de révision est toujours en flash-card ; ce sont
+  les séries (Saisie, Course, Contrôle blanc, évaluation) qui mettent à jour la mémoire, et
+  reconnaître parmi quatre ≠ retrouver seul. Ouverte.
+- **Révision espacée en saisie** : jamais décidée (héritage du premier SRS, oct. 2025) ; David
+  (2026-11-21) → **chantier à part, futur**, l'idée 4 reste sur les séries.
+- Usage mesuré en prod (90 jours) : 101 traces, 2 élèves, aucune avec lieu → rien à en tirer.
+
 ## PR 1 — tirage (#2954, mergée le 2026-11-21)
 
 - `src/lib/questions/series-draw.ts` : `variationOfSeed`, `questionFingerprints`,
