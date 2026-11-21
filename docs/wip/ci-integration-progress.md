@@ -2,16 +2,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-21, F en cours._
+_Mis à jour le 2026-11-21, après #2957._
 
-- **État** : A mergée (#2956, 17,5 → 7,5 min). F validée par David le 2026-11-21 (§ 7), en cours
-  sur `ci/integration-migrations-hors-pr`. Ensuite B, puis C.
-- **Prochaine action** : F — mention `@migration-de-donnees` sur 297 tests, garde, exclusion dans
-  le job `portee`, mesure sur un vrai run.
+- **État** : A (#2956, 17,5 → 7,5 min) et F (#2957, 297 tests `@migration-de-donnees` hors des
+  PR, garde `check:migrations-de-donnees`) mergées. Go de David sur A → F → B → C.
+- **Prochaine action** : mesurer F sur la première PR en suite complète qui ne touche ni la règle
+  ni `supabase/` (ligne « laissés de côté : N » des morceaux, durée de bout en bout ; estimé
+  ~6,3 min) → ligne au tableau d'`environnement-de-dev.md`. Puis B (passage déjà vert).
 - **En attente de David** : rien.
 - **Pièges en cours** : suite locale cassée au global-setup par les liens de partage du prof de dev
   (§ 3.4) ; morceaux déséquilibrés (212 à 318 s) → D si besoin.
-- **Worktree / branche** : `../ubumaths-wt-ci-integration`, `ci/integration-migrations-hors-pr`.
+- **Worktree / branche** : aucun (B : nouveau worktree `ubumaths-wt-ci-integration`).
 
 ## 1. Ce que coûte la suite aujourd'hui (mesuré)
 
@@ -188,3 +189,9 @@ Gain estimé : ~5 min de somme, ~7,5 → ~6,3 min de bout en bout.
   bout en bout 7,5 min (avant 17,5) ; tests par morceau 222 / 271 / 212 / 318 s ; coût fixe
   ~1 min 50 par morceau. Réponse de David sur les tests de migration : go pour les sortir des
   PR (ils ne prouvent quelque chose qu'avant le `db:migrate`).
+- **#2957 (F)** : mention `@migration-de-donnees` sur 297 tests, `scripts/ci-integration-exclusions.sh`
+  (job `portee`, `--exclude` avant `--shard`), garde `pnpm check:migrations-de-donnees` (job
+  `paths-filter`). Revue : classeur SQL par instruction (chaînes, corps `$$`, triggers de garde) ;
+  toute migration ni rangement ni contenu, `supabase/`, fixtures, global-setup, configs vitest,
+  lockfile → tous les tests. Run 44898120634 : suite complète (la PR touche la règle), 4 × 146
+  fichiers verts, 6,1 à 6,7 min par morceau. Gain non mesuré encore.
