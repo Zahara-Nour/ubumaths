@@ -40,7 +40,7 @@ describe('VariationPicker', () => {
 	it('résume le choix : toutes, ou combien sur combien', async () => {
 		const all = await render(VariationPicker, { template: AIRES, onchange: vi.fn() });
 		await expect.element(all.getByText('Toutes les variations (3)')).toBeInTheDocument();
-		all.unmount();
+		await all.unmount();
 
 		const some = await render(VariationPicker, {
 			template: AIRES,
