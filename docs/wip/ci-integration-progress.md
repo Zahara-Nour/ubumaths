@@ -2,18 +2,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-21, B en cours (PR à ouvrir)._
+_Mis à jour le 2026-11-21, après #2959._
 
-- **État** : A (#2956) et F (#2957) mergées. B codé (§ 8, comportements validés) sur
-  `ci/integration-passage-deja-vert`. Go de David sur A → F → B → C.
-- **Prochaine action** : PR de B, CI, merge. Puis mesurer F et B sur de vraies PR : F sur la première
-  PR en suite complète partie d'un `main` qui contient #2957 (#2958 n'en est pas une, sa base est
-  antérieure) ; B sur le premier re-push sans fichier couvert (morceaux ~1 min ?). Lignes au tableau
-  d'`environnement-de-dev.md`. Puis C.
-- **En attente de David** : rien.
+- **État** : A (#2956), F (#2957) et B (#2959) mergées. Mesuré : F → **5,9 min** de bout en bout
+  (run 44900263857) ; B → re-push sans fichier couvert : **40 s** (run de #2959 à 11:50). Go de David
+  sur A → F → B → C.
+- **Prochaine action** : C (ne lancer que les tests touchés, PR `src/` seul, § 3.5) → **phase 0** :
+  comportements à écrire et à faire valider par David avant de coder.
+- **En attente de David** : rien (la phase 0 de C sera la prochaine question).
 - **Pièges en cours** : suite locale cassée au global-setup par les liens de partage du prof de dev
-  (§ 3.4) ; morceaux déséquilibrés (190 à 314 s) → D si besoin.
-- **Worktree / branche** : `../ubumaths-wt-ci-integration` · `ci/integration-passage-deja-vert`.
+  (§ 3.4) ; morceaux déséquilibrés (110 à 200 s depuis F) → D si besoin ; un test instable vert une
+  fois reste gardé par B (nocturne = filet).
+- **Worktree / branche** : aucun (C : nouveau worktree `ubumaths-wt-ci-integration`).
 
 ## 1. Ce que coûte la suite aujourd'hui (mesuré)
 
@@ -221,3 +221,4 @@ forcer, lancement à la main.
   fichiers, tests 127 / 195 / 110 / 200 s, bout en bout **5,9 min** (avant 7,5 ; estimé 6,3).
 - **#2959 (B)** : `scripts/ci-integration-empreinte.sh`, job `memoriser`. Revue : `**` collé à
   un nom et espace après le guillemet refusés. Premier passage : empreinte gardée (run 44900263857).
+  Push de doc suivant : empreinte retrouvée, 4 morceaux ✅ en 2 à 5 s, run de bout en bout **40 s**.
