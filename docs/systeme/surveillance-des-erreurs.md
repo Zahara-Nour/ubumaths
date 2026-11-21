@@ -1,12 +1,13 @@
 ---
 couvre:
-  - 'src/routes/api/{errors,bug-reports,search,openapi.json}/**'
+  - 'src/routes/api/{errors,bug-reports,search,openapi.json,web-vitals}/**'
   - 'src/routes/(protected)/dashboard/admin/{errors,bug-reports,docs,debug,integrite-donnees}/**'
   - 'src/routes/(protected)/dev/{session,rls,avatar,roue,champ-math,apercu-question,correction-generee,pdf-typst,pdf-latex,latex-vers-ubumark}/**'
   - 'src/routes/(protected)/dev/erreurs/surveillance/**'
   - 'src/routes/(protected)/dashboard/bug-reports/**'
   - 'src/lib/components/bug-reports/**'
-  - 'src/lib/utils/{errorMonitoring,freezeDetection,errors,version,web-vitals-visibilite,inp-tracker,analytics-redact}.ts'
+  - 'src/lib/utils/{errorMonitoring,freezeDetection,errors,version,web-vitals-visibilite,web-vitals-mesures,inp-tracker,analytics-redact}.ts'
+  - 'src/lib/server/web-vitals/**'
   - src/lib/stores/bugReportsConfig.svelte.ts
   - src/lib/types/bug-reports.ts
   - 'src/lib/server/{errorMonitoring,healthStats,bug-report-errors,bug-report-export,bug-report-screenshots,docs-scanner,markdown-parser,search}.ts'
@@ -67,6 +68,9 @@ Trois boucles distinctes :
     INP et CLS partent au passage en arrière-plan, mais seulement s'ils ont grandi depuis
     le dernier envoi (avant, un onglet ouvert des jours renvoyait le même INP dès la fin
     de la fenêtre anti-doublon de 5 minutes : jusqu'à 28 fois la même valeur) ;
+  - **mesures gardées chez nous** (depuis novembre 2026, cf. ci-dessous) : `initWebVitals`
+    remet aussi **toutes** les mesures, bonnes comprises, à `createSampleCollector`
+    (`web-vitals-mesures.ts`), qui les envoie à `/api/web-vitals` au passage en arrière-plan ;
   - INP (`inp-tracker.ts`) : seuls les événements d'une interaction comptent
     (`interactionId` non nul ; survol, défilement exclus) ; une interaction vaut son
     événement le plus lent ; la plus lente par tranche de 50 interactions est écartée
@@ -92,6 +96,42 @@ Trois boucles distinctes :
 
 ### Erreurs côté serveur
 
+- **Mesures de performance gardées chez nous** (`web_vital_samples`, chantier `amelioration`,
+  novembre 2026 : Vercel a rendu payant le détail de Speed Insights). Le journal des erreurs ne
+  reçoit que les mauvaises mesures, donc pas de quoi calculer un p75 ; cette table reçoit tout.
+  - **Navigateur** (`web-vitals-mesures.ts`, branché dans `initWebVitals`) : TTFB, FCP et LCP
+    sont rattachés à la page d'arrivée (le dernier LCP observé), le CLS (pire rafale de
+    décalages, définition de Google) à la page courante, l'INP à la page où l'interaction a
+    commencé. **Tout part une seule fois, au premier passage de la page
+    en arrière-plan** : une ligne par visite et par indicateur (la table est anonyme, rien ne
+    relierait deux envois d'une même visite) ; ce qui se passe après le retour sur l'onglet
+    n'est pas mesuré ici. Le TTFB envoyé ici
+    est compté depuis le début de la navigation (définition de Google), pas depuis l'envoi de
+    la requête comme celui du journal des erreurs. Sans prise en charge de `layout-shift`
+    (Safari), aucun CLS ne part. Rien n'est envoyé en développement. Limites à connaître pour
+    lire le relevé : un FCP ou un LCP arrivé après l'envoi est perdu ; le CLS est celui
+    de toute la visite, rattaché à la page affichée au moment de l'envoi, pas à celle où le
+    décalage a eu lieu ; une arrivée sur une page sans route (404) n'envoie pas son chargement.
+  - **Page = identifiant de route SvelteKit** (`/(public)/cours/[token]`), noté par le layout
+    racine (`afterNavigate` → `noteWebVitalsRoute`). Jamais `url.pathname` : l'adresse réelle
+    peut porter un jeton.
+  - **Pages comptées** (`isMeasuredRoute`) : toutes, sauf l'admin et `/dev`.
+  - **Serveur** (`POST /api/web-vitals`, `src/lib/server/web-vitals/reception.ts`) : route
+    ouverte, sans compte, qui **ne se sert pas de la session** (les hooks la lisent comme pour
+    toute requête). Elle n'écrit qu'en prod (`VERCEL_ENV=production`), limite à 30 envois par
+    minute et par adresse (préfixe /64 en IPv6 ; la clé du compteur est une empreinte de
+    l'adresse, un pseudonyme gardé dans `rate_limits` jusqu'à la purge quotidienne) et à 2 000
+    envois par heure pour tout le site (clé `web-vitals:global`), valide l'enveloppe (400 sinon),
+    puis écarte une à une les mesures hors bornes (durée > 10 min, CLS > 100) ou dont la route
+    n'est pas une **page du site** (`KNOWN_ROUTES`, tirée des fichiers `+page.svelte`). C'est
+    cette liste, pas la contrainte de la table, qui garantit qu'aucun jeton n'est écrit. Le
+    serveur n'insère que `route`, `metric`, `value`, `device_type` : la base fixe la date
+    (arrondie à l'heure) et l'identifiant.
+  - **Risque résiduel** : l'heure est arrondie, mais qui lit la base (admin, serveur) peut
+    retrouver l'ordre d'écriture des lignes (ordre physique, numéro de transaction) et les
+    situer entre deux lignes horodatées d'une autre table. Les deux limites de débit échouent
+    ouvertes (panne du compteur = pas de limite).
+  - Lecture : admin seul ; purge à 90 jours ; relevé : [core-web-vitals.md](../pratiques/core-web-vitals.md).
 - `src/lib/server/errorMonitoring.ts` est le seul écrivain de `error_logs` :
   - `logError` nettoie (`sanitizeErrorData`), tronque (message 1 000, pile 5 000, URL
     500 caractères), puis insère avec le **client service** (la RLS n'autorise

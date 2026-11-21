@@ -46,7 +46,8 @@
 	import { easyReading } from '#lib/stores/easyReading.svelte.ts';
 	import { initializeTemplates } from '#lib/stores/vipCardTemplates.svelte.ts';
 	import { page, updated } from '$app/state';
-	import { beforeNavigate } from '$app/navigation';
+	import { afterNavigate, beforeNavigate } from '$app/navigation';
+	import { noteWebVitalsRoute } from '#lib/utils/errorMonitoring.ts';
 	import { shouldReloadOnNavigate } from '#lib/utils/app-version.ts';
 	import { showsInfoButton } from '#lib/utils/footer.ts';
 	import InfoPanel from '#lib/components/InfoPanel.svelte';
@@ -82,6 +83,12 @@
 		}
 		cancel();
 		location.href = to.url.href;
+	});
+
+	// Mesures de performance : la page affichée, par son identifiant de route (jamais son
+	// adresse réelle), à l'arrivée et à chaque navigation interne
+	afterNavigate(({ to }) => {
+		noteWebVitalsRoute(to?.route.id ?? null);
 	});
 
 	// Check if we're in a dashboard route

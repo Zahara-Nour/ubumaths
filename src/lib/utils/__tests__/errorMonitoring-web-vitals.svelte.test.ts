@@ -9,7 +9,14 @@
  * gonflés d'autant.
  */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { captureError, flushErrors, initWebVitals } from '../errorMonitoring';
+import {
+	captureError,
+	flushErrors,
+	initWebVitals,
+	noteWebVitalsRoute,
+	sendSamplesToServer
+} from '../errorMonitoring';
+import type { WebVitalSample } from '../web-vitals-mesures';
 
 // Le module garde ses empreintes anti-doublon d'un test à l'autre
 // (`vi.resetModules` ne le recharge pas en mode navigateur) : chaque test
@@ -20,12 +27,19 @@ let sent: string[] = [];
 /** Les corps complets envoyés (adresse, contexte) */
 let bodies: { message: string; url: string; context?: Record<string, unknown> }[] = [];
 
+/** Les mesures remises à l'envoi vers notre serveur (table des mesures) */
+let samples: WebVitalSample[] = [];
+const sendSamples = (batch: WebVitalSample[]) => {
+	samples.push(...batch);
+};
+
 /** Rappels des PerformanceObserver, par type observé */
 const observers = new Map<string, (list: { getEntries: () => unknown[] }) => void>();
 
 let visibility: DocumentVisibilityState = 'visible';
 
 class FakeObserver {
+	static supportedEntryTypes = ['layout-shift', 'event', 'paint', 'navigation'];
 	private callback: (list: { getEntries: () => unknown[] }) => void;
 	constructor(callback: (list: { getEntries: () => unknown[] }) => void) {
 		this.callback = callback;
@@ -58,6 +72,7 @@ beforeEach(() => {
 	vi.useFakeTimers();
 	sent = [];
 	bodies = [];
+	samples = [];
 	observers.clear();
 	vi.stubGlobal('PerformanceObserver', FakeObserver);
 	vi.stubGlobal(
@@ -73,7 +88,7 @@ beforeEach(() => {
 		configurable: true,
 		get: () => visibility
 	});
-	initWebVitals();
+	initWebVitals({ sendSamples });
 });
 
 afterEach(() => {
@@ -192,5 +207,113 @@ describe('Web Vitals — INP compté sur les seules interactions', () => {
 
 		expect(sent).toEqual(['Web Vital INP: 1800ms (threshold: 200ms)']);
 		expect(new URL(bodies[0].url).pathname).toBe('/atelier-inp-reinit');
+	});
+});
+
+describe('Web Vitals — mesures gardées chez nous', () => {
+	it('remet les mesures de chargement, même bonnes, sur la route de la page', async () => {
+		noteWebVitalsRoute('/(public)/automaths');
+		emit('navigation', [{ responseStart: 120, requestStart: 100 }]);
+		emit('paint', [{ name: 'first-contentful-paint', startTime: 800 }]);
+		emit('largest-contentful-paint', [{ startTime: 1200 }]);
+		await hideAndShow();
+
+		expect(samples).toEqual([
+			{ route: '/(public)/automaths', metric: 'TTFB', value: 120 },
+			{ route: '/(public)/automaths', metric: 'FCP', value: 800 },
+			{ route: '/(public)/automaths', metric: 'LCP', value: 1200 },
+			{ route: '/(public)/automaths', metric: 'CLS', value: 0 }
+		]);
+		// Sous les seuils : rien dans le journal des erreurs
+		expect(sent).toEqual([]);
+	});
+
+	it('une mauvaise mesure part aux deux endroits', async () => {
+		noteWebVitalsRoute('/(public)/automaths');
+		emit('largest-contentful-paint', [{ startTime: 4321 }]);
+		await hideAndShow();
+
+		expect(samples).toContainEqual({ route: '/(public)/automaths', metric: 'LCP', value: 4321 });
+		expect(sent).toEqual(['Web Vital LCP: 4321ms (threshold: 2500ms)']);
+	});
+
+	it('rattache l’INP à la route où l’interaction a commencé', async () => {
+		noteWebVitalsRoute('/(public)/atelier');
+		const start = new PointerEvent('pointerdown', { bubbles: true });
+		window.dispatchEvent(start);
+		noteWebVitalsRoute('/(protected)/dashboard');
+		emit('event', [
+			{ duration: 96, interactionId: 51, name: 'pointerup', startTime: start.timeStamp + 3 }
+		]);
+		await hideAndShow();
+
+		expect(samples).toContainEqual({ route: '/(public)/atelier', metric: 'INP', value: 96 });
+	});
+
+	it('CLS : la pire rafale de décalages, sur la page courante', async () => {
+		noteWebVitalsRoute('/(public)/automaths');
+		emit('layout-shift', [
+			{ hadRecentInput: false, value: 0.04, startTime: 1000 },
+			{ hadRecentInput: false, value: 0.02, startTime: 1400 },
+			{ hadRecentInput: true, value: 0.5, startTime: 1500 },
+			{ hadRecentInput: false, value: 0.03, startTime: 9000 }
+		]);
+		await hideAndShow();
+
+		expect(samples).toEqual([{ route: '/(public)/automaths', metric: 'CLS', value: 0.06 }]);
+	});
+
+	it('ne remet pas deux fois les mêmes mesures', async () => {
+		noteWebVitalsRoute('/(public)/automaths');
+		emit('largest-contentful-paint', [{ startTime: 1200 }]);
+		await hideAndShow();
+		await hideAndShow();
+
+		expect(samples.filter((sample) => sample.metric === 'LCP')).toHaveLength(1);
+		expect(samples.filter((sample) => sample.metric === 'CLS')).toHaveLength(1);
+	});
+
+	it('ne remet rien pour une page d’admin', async () => {
+		noteWebVitalsRoute('/(protected)/dashboard/admin/errors');
+		emit('largest-contentful-paint', [{ startTime: 1200 }]);
+		await hideAndShow();
+
+		expect(samples).toEqual([]);
+	});
+});
+
+describe('Web Vitals — envoi à notre serveur', () => {
+	const batch: WebVitalSample[] = [{ route: '/(public)', metric: 'LCP', value: 1200 }];
+
+	it('part par sendBeacon, en JSON, sans second envoi', async () => {
+		const beacon = vi.spyOn(navigator, 'sendBeacon').mockReturnValue(true);
+
+		sendSamplesToServer(batch);
+
+		expect(beacon).toHaveBeenCalledTimes(1);
+		const [url, blob] = beacon.mock.calls[0] as [string, Blob];
+		expect(url).toBe('/api/web-vitals');
+		expect(blob.type).toBe('application/json');
+		expect(JSON.parse(await blob.text()).samples).toEqual(batch);
+		expect(fetch).not.toHaveBeenCalled();
+		beacon.mockRestore();
+	});
+
+	it.each([
+		['refusé', () => false],
+		[
+			'en erreur',
+			() => {
+				throw new Error('SecurityError');
+			}
+		]
+	])('sendBeacon %s : un seul envoi par fetch', (_cas, behaviour) => {
+		const beacon = vi.spyOn(navigator, 'sendBeacon').mockImplementation(behaviour);
+
+		sendSamplesToServer(batch);
+
+		expect(fetch).toHaveBeenCalledTimes(1);
+		expect(vi.mocked(fetch).mock.calls[0][0]).toBe('/api/web-vitals');
+		beacon.mockRestore();
 	});
 });

@@ -10,8 +10,13 @@
 > jours, par page (`https://vercel.com/zaharanours-projects/chiphre/speed-insights` ; le projet
 > Vercel s'appelle `chiphre`, plus `ubumaths-6op8`). Le workflow `web-vitals.yml` est **désactivé**
 > (`gh workflow enable web-vitals.yml` pour le rétablir). Les commandes et le relevé mensuel
-> décrits ci-dessous ne fonctionnent donc plus tels quels. Source de remplacement : à trancher
-> par David (journal `docs/wip/amelioration-progress.md`).
+> décrits ci-dessous ne fonctionnent donc plus tels quels. **Source de remplacement (décision du
+> 2026-11-21) : nos propres mesures**, table `web_vital_samples` : le navigateur envoie toutes
+> ses mesures à `/api/web-vitals`, sous l'identifiant de route de la page, sans rien qui désigne
+> le visiteur (fonctionnement :
+> [surveillance-des-erreurs.md](../systeme/surveillance-des-erreurs.md)). Le relevé mensuel
+> lira cette table (PR 3 du chantier, journal `docs/wip/amelioration-progress.md`) ; d'ici là,
+> l'admin peut la lire en SQL (`route` y est l'identifiant SvelteKit : l'accueil est `/(public)`).
 
 ## Les vraies mesures existent déjà
 

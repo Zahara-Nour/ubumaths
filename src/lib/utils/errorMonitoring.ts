@@ -13,13 +13,20 @@
  * - Privacy-aware (no sensitive data)
  */
 
-import { browser } from '$app/env';
+import { browser, dev } from '$app/env';
 import {
 	firstHiddenTime,
 	isPaintAfterHidden,
 	type VisibilityEntry
 } from '#lib/utils/web-vitals-visibilite.ts';
 import { createInpTracker, type InteractionEntry } from '#lib/utils/inp-tracker.ts';
+import {
+	createClsTracker,
+	createSampleCollector,
+	WEB_VITALS_ENDPOINT,
+	type SampleCollector,
+	type WebVitalSample
+} from '#lib/utils/web-vitals-mesures.ts';
 
 // =====================================================
 // TYPES
@@ -554,6 +561,10 @@ type WebVitalMetric = keyof typeof WEB_VITALS_THRESHOLDS;
 // Module-level state for Web Vitals
 let webVitalsInitialized = false;
 const webVitalsObservers: PerformanceObserver[] = [];
+/** Route SvelteKit de la page affichée (`noteWebVitalsRoute`) */
+let currentRouteId: string | null = null;
+/** Mesures de la visite à remettre à notre serveur ; `null` hors collecte */
+let sampleCollector: SampleCollector | null = null;
 
 /**
  * Sanitize URL by removing sensitive query parameters
@@ -642,18 +653,72 @@ function readFirstHiddenTime(): number {
 }
 
 /**
+ * Page affichée, par son identifiant de route SvelteKit (« /(public)/cours/[token] ») :
+ * appelé par le layout racine à l'arrivée et à chaque navigation interne. Les mesures
+ * gardées chez nous sont rattachées à cet identifiant, jamais à l'adresse réelle.
+ */
+export function noteWebVitalsRoute(routeId: string | null): void {
+	currentRouteId = routeId;
+	sampleCollector?.noteRoute(routeId);
+}
+
+/**
+ * Envoie les mesures à notre serveur, sans attendre de réponse : la page est en train
+ * d'être quittée. Un envoi raté est perdu, sans nouvel essai.
+ */
+export function sendSamplesToServer(samples: WebVitalSample[]): void {
+	const body = JSON.stringify({
+		device_type: parseBrowserInfo(navigator.userAgent).device_type,
+		samples
+	});
+	try {
+		const blob = new Blob([body], { type: 'application/json' });
+		if (navigator.sendBeacon?.(WEB_VITALS_ENDPOINT, blob)) return;
+	} catch {
+		// sendBeacon indisponible : on essaie fetch
+	}
+	fetch(WEB_VITALS_ENDPOINT, {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body,
+		keepalive: true
+	}).catch(() => {});
+}
+
+/** Vrai si le navigateur sait observer ce type d'entrée de performance */
+function supportsEntryType(type: string): boolean {
+	return PerformanceObserver.supportedEntryTypes?.includes(type) ?? false;
+}
+
+/**
  * Initialize Web Vitals collection using PerformanceObserver
  * Captures LCP, FID, CLS, FCP, TTFB, INP metrics
  *
+ * Deux destinations : les mauvaises mesures vont dans le journal des erreurs
+ * (`reportWebVital`) ; toutes, bonnes comprises, vont à notre table des mesures
+ * (`sendSamples`), sauf en développement.
+ *
+ * @param options.sendSamples - Remise des mesures (par défaut : envoi à notre serveur)
  * @see https://web.dev/vitals/
  */
-export function initWebVitals(): void {
+export function initWebVitals(
+	options: { sendSamples?: (samples: WebVitalSample[]) => void } = {}
+): void {
 	if (!CONFIG.ENABLED || typeof PerformanceObserver === 'undefined') return;
 	if (webVitalsInitialized) return; // Prevent duplicate initialization
+
+	const collector = createSampleCollector(
+		options.sendSamples ?? (dev ? () => {} : sendSamplesToServer)
+	);
+	sampleCollector = collector;
 
 	// Track CLS across page lifecycle
 	let clsValue = 0;
 	let clsShiftCount = 0;
+	// CLS de la table des mesures : pire rafale (définition de Google), pas le cumul.
+	// Sans prise en charge (Safari), aucun CLS ne part : 0 voudrait dire « page stable »
+	const clsTracker = createClsTracker();
+	const clsSupported = supportsEntryType('layout-shift');
 
 	// INP de la visite : interactions seules, adresse de la page où chacune a commencé
 	const inpTracker = createInpTracker();
@@ -681,6 +746,7 @@ export function initWebVitals(): void {
 			const lastEntry = entries[entries.length - 1] as PerformanceEntry & { startTime: number };
 			if (lastEntry && !isPaintAfterHidden(lastEntry.startTime, hiddenTime)) {
 				reportWebVital('LCP', lastEntry.startTime);
+				collector.recordLoad('LCP', lastEntry.startTime);
 			}
 		});
 		lcpObserver.observe({ type: 'largest-contentful-paint', buffered: true });
@@ -716,6 +782,7 @@ export function initWebVitals(): void {
 				if (!layoutShift.hadRecentInput) {
 					clsValue += layoutShift.value;
 					clsShiftCount++;
+					clsTracker.add(layoutShift.value, layoutShift.startTime);
 				}
 			}
 		});
@@ -732,6 +799,7 @@ export function initWebVitals(): void {
 			const fcpEntry = entries.find((e) => e.name === 'first-contentful-paint');
 			if (fcpEntry && !isPaintAfterHidden(fcpEntry.startTime, hiddenTime)) {
 				reportWebVital('FCP', fcpEntry.startTime);
+				collector.recordLoad('FCP', fcpEntry.startTime);
 			}
 		});
 		fcpObserver.observe({ type: 'paint', buffered: true });
@@ -748,6 +816,8 @@ export function initWebVitals(): void {
 			if (navEntry && navEntry.responseStart > 0) {
 				const ttfb = navEntry.responseStart - navEntry.requestStart;
 				reportWebVital('TTFB', ttfb);
+				// Table des mesures : TTFB au sens de Google, depuis le début de la navigation
+				collector.recordLoad('TTFB', navEntry.responseStart);
 			}
 		});
 		navObserver.observe({ type: 'navigation', buffered: true });
@@ -759,7 +829,11 @@ export function initWebVitals(): void {
 	// INP (Interaction to Next Paint) - aggregated across session
 	try {
 		const inpObserver = new PerformanceObserver((entryList) => {
-			inpTracker.add(entryList.getEntries() as unknown as InteractionEntry[], window.location.href);
+			inpTracker.add(
+				entryList.getEntries() as unknown as InteractionEntry[],
+				window.location.href,
+				currentRouteId
+			);
 		});
 		// durationThreshold is a valid option for event entries but not in TS types
 		inpObserver.observe({
@@ -771,7 +845,7 @@ export function initWebVitals(): void {
 		// Début de chaque interaction : l'adresse de la page à cet instant (un clic
 		// qui navigue est observé après la navigation)
 		const recordStart = (event: Event) =>
-			inpTracker.recordStart(event.timeStamp, window.location.href);
+			inpTracker.recordStart(event.timeStamp, window.location.href, currentRouteId);
 		window.addEventListener('pointerdown', recordStart, { capture: true, passive: true });
 		window.addEventListener('keydown', recordStart, { capture: true, passive: true });
 		removeInpListeners = () => {
@@ -804,6 +878,11 @@ export function initWebVitals(): void {
 				reportedInp = inp.value;
 			}
 
+			// Table des mesures : tout, bon ou mauvais, une seule fois par visite
+			if (clsSupported) collector.recordCls(clsTracker.value());
+			if (inp) collector.recordInp(inp.value, inp.routeId);
+			collector.flush();
+
 			// Note: We don't reset values - cumulative metrics continue across tab switches
 		}
 	});
@@ -813,6 +892,9 @@ export function initWebVitals(): void {
 		webVitalsObservers.forEach((observer) => observer.disconnect());
 		webVitalsObservers.length = 0;
 		removeInpListeners();
+		// Le collecteur reste en place : si la sortie est annulée ou la page reprise du
+		// cache du navigateur, l'écouteur de passage en arrière-plan envoie encore, et
+		// il lui faut la route courante
 		webVitalsInitialized = false;
 	});
 

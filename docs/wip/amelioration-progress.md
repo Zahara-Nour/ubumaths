@@ -720,3 +720,40 @@ registre des traitements (`docs/systeme/conformite/registre-traitements.md`) à 
   par `migration list --linked`) ; en prod : droits de la table `authenticated=r`, `service_role=r`,
   RLS active, une policy `is_admin()`, purge exécutable par le serveur seul, 0 ligne. `db:types`
   dans une PR à part (types et `base-de-donnees-tables.md`).
+
+## Mesures chez nous : PR 2, envoi et réception (2026-11-21)
+
+- **Navigateur** : `src/lib/utils/web-vitals-mesures.ts` (partagé avec le serveur : indicateurs,
+  bornes, pages comptées, collecteur, CLS par rafales), branché dans `initWebVitals`
+  (`errorMonitoring.ts`) ; le layout racine note la route (`afterNavigate` →
+  `noteWebVitalsRoute`). Envoi par `sendBeacon` au passage en arrière-plan, rien en développement.
+- **Serveur** : `POST /api/web-vitals` + `src/lib/server/web-vitals/reception.ts`. N'écrit qu'en
+  prod (`VERCEL_ENV`), ne se sert pas de la session, 30 envois par minute et par adresse (clé = empreinte),
+  enveloppe validée (400), mesures écartées une à une (bornes, route hors `KNOWN_ROUTES`, admin,
+  `/dev`). Route ouverte ajoutée aux comptes en attente et au changement de mot de passe obligatoire.
+- **Choix faits en codant, au-delà de la phase 0** (à connaître pour lire le relevé) :
+  - l'accueil a pour identifiant de route `/(public)`, pas `/` ;
+  - TTFB envoyé = depuis le début de la navigation (définition de Google, comparable aux seuils),
+    alors que celui du journal des erreurs reste compté depuis l'envoi de la requête ;
+  - CLS envoyé = pire rafale de décalages (définition de Google) ; celui du journal des erreurs
+    reste le cumul de la visite ; sans prise en charge (Safari), aucun CLS ne part ;
+  - **une ligne par visite et par indicateur** (tranché par David le 2026-11-21, « je te suis » sur
+    la proposition B) : tout part une seule fois, au premier passage en arrière-plan ; ce qui se
+    passe après le retour sur l'onglet n'est pas mesuré (pas d'identifiant de visite pour
+    dédoublonner, par anonymat) ;
+  - l'adresse IP passe dans le compteur de débit sous forme d'empreinte (un pseudonyme), gardée
+    jusqu'à la purge quotidienne de `rate_limits` (au plus ~26 h), sans lien avec les mesures.
+- **Revues sur la PR** : `code-reviewer` sans bloquant ; corrigés : chargement d'une 404 reporté
+  sur la page suivante, collecteur perdu après un `beforeunload`, envoi sans test. `security-auditor`
+  sans bloquant ; corrigés : limite par adresse 120 → 30 par minute, préfixe /64 en IPv6, plafond
+  de 2 000 envois par heure pour tout le site, registre T8 inexact (empreinte gardée ~26 h et non
+  une minute ; ordre d'écriture lisible en base, écrit comme risque résiduel). Laissé : empreinte
+  sans secret (HMAC = une variable d'environnement de plus), limiteur qui échoue ouvert.
+- **Vérifié en vrai** (serveur de dev du worktree, base locale, `VERCEL_ENV=production`) : un envoi
+  de 5 mesures écrit les 2 valables (route inconnue, valeur absurde et page d'admin écartées) ;
+  enveloppe fausse et corps illisible → 400. **Pas vérifié** : l'envoi par un vrai navigateur hors
+  développement (le navigateur n'envoie rien en dev) ; à regarder après le prochain `deploy:prod`.
+- Tests : `web-vitals-mesures.test.ts` (28), `reception.test.ts` et `web-vitals.test.ts` (36),
+  `inp-tracker.test.ts` (+2), `errorMonitoring-web-vitals.svelte.test.ts` (+6, navigateur).
+- Registre des traitements T8 complété ; docs : `surveillance-des-erreurs.md`, `core-web-vitals.md`,
+  `auth.md`, `serveur.md`.

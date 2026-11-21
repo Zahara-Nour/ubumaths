@@ -130,6 +130,27 @@ describe("createInpTracker — adresse de l'interaction", () => {
 		expect(tracker.current()?.url).toBe('/cours');
 	});
 
+	it('rend aussi la route du début de l’interaction', () => {
+		const tracker = createInpTracker();
+		tracker.recordStart(1000, 'https://chiph.re/cours/abc', '/(public)/cours/[token]');
+		tracker.add(
+			[entry({ interactionId: 1, duration: 700, startTime: 1005 })],
+			'https://chiph.re/dashboard',
+			'/(protected)/dashboard'
+		);
+		expect(tracker.current()?.routeId).toBe('/(public)/cours/[token]');
+	});
+
+	it('sans début connu, prend la route courante ; `null` si elle n’est pas donnée', () => {
+		const tracker = createInpTracker();
+		tracker.add([entry({ interactionId: 1, duration: 700 })], '/a', '/(public)/a');
+		expect(tracker.current()?.routeId).toBe('/(public)/a');
+
+		const sansRoute = createInpTracker();
+		sansRoute.add([entry({ interactionId: 1, duration: 700 })], '/a');
+		expect(sansRoute.current()?.routeId).toBeNull();
+	});
+
 	it("tolère 1 ms d'arrondi entre l'événement et l'entrée", () => {
 		const tracker = createInpTracker();
 		tracker.recordStart(1000, '/atelier');
