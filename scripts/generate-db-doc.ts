@@ -196,7 +196,8 @@ export const DOMAINS: Domain[] = [
 			'rate_limits',
 			'server_cache',
 			'orphaned_documents',
-			'daily_summaries'
+			'daily_summaries',
+			'web_vital_samples'
 		]
 	}
 ];
