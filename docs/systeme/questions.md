@@ -1369,7 +1369,8 @@ ne bouge. Une erreur prévue qui ne se calcule pas sur un tirage (`1/(a-5)` pour
 `checkTemplate` répond chaque erreur prévue de chaque tirage et refuse le modèle si elle n'est pas
 jugée fausse avec son message ; une spec peut nommer le message attendu
 (`expected.expectedErrorMessage`). La question publique d'une évaluation notée ne les porte pas
-(liste blanche de `public-question.ts`).
+(liste blanche de `public-question.ts`). Côté prof, l'erreur prévue compte sous son nom dans la
+ligne « Types d'erreur » des erreurs d'une question ([evaluations.md](evaluations.md)).
 Éditeur du prof : sous chaque case à écriture ordinaire d'`AnswerEditor`, `ExpectedErrorsEditor`
 (« Ajouter une erreur prévue ») ; trois champs : « Si l'élève répond » (`answer`), « Lui écrire »
 (`message`), « Nom court » facultatif (`label`, retiré quand il est vide : Zod refuse la chaîne

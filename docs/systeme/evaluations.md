@@ -402,6 +402,15 @@ l'analytique ([analytique-prof.md](analytique-prof.md)), qui y fait passer aussi
   (`part_verdicts`) ne garde aucune remarque, la règle « la remarque prime » n'y agit donc pas ; le
   % et l'unité restent écartés par le moteur lui-même (attendu en pourcentage ou non numérique). Calculé à la lecture, jamais stocké ; la note ne
   change pas.
+- **Erreurs prévues** (chantier `idees-format`, idée 3, PR 7) : une case fausse qui fait une erreur
+  prévue par l'auteur (`expectedErrorOf`, [questions.md](questions.md)) compte sous le **nom** de cette
+  erreur, à la place du type deviné et même quand la case a une remarque : son nom court (`label`),
+  sinon le message de l'élève (« Types d'erreur : Soustraction au lieu d'addition : 3 · Erreur de
+  signe : 2 »). Les comptes se font par nom (`ErrorKindCount.label`) : deux tirages de la même erreur
+  prévue nommée comptent ensemble ; sans nom court, un message qui dit les nombres du tirage fait un
+  compte par tirage ; une erreur prévue nommée comme un type deviné partage son compte. À égalité,
+  les erreurs prévues d'abord, puis les types devinés dans leur ordre. Formules `$…$` du nom rendues
+  comme dans la remarque de l'élève (`remarkSegments`).
 
 ## Les observations (compétences, famille B)
 

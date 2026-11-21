@@ -196,8 +196,8 @@ describe('bilan par question : erreurs dépliables', () => {
 		stubFetch(
 			ok({
 				errorKinds: [
-					{ kind: 'sign', count: 4 },
-					{ kind: 'power-of-ten', count: 2 }
+					{ label: 'Erreur de signe', count: 4 },
+					{ label: 'Puissance de 10', count: 2 }
 				],
 				unrecognized: 6,
 				groups: [
@@ -226,6 +226,41 @@ describe('bilan par question : erreurs dépliables', () => {
 			(el.textContent ?? '').trim()
 		);
 		expect(labels).toEqual(['Erreur de signe', 'Puissance de 10 (÷ 100)']);
+	});
+
+	it('erreur prévue : comptée sous son nom, formule rendue (idées-format, idée 3)', async () => {
+		stubFetch(
+			ok({
+				errorKinds: [
+					{ label: 'Tu as oublié le carré de $x$.', count: 3 },
+					{ label: 'Erreur de signe', count: 1 }
+				],
+				groups: [
+					{
+						...group(['Ada']),
+						errorKinds: [{ blank: 1, expected: 'Tu as oublié le carré de $x$.' }]
+					}
+				]
+			})
+		);
+		const { container } = await render(EvaluationBreakdown, {
+			breakdown,
+			evaluationId: EVALUATION
+		});
+		await userEvent.click(toggle(container));
+		await vi.waitFor(() =>
+			expect(container.querySelector('[data-testid="error-kind-counts"]')).not.toBeNull()
+		);
+		const counts = container.querySelector('[data-testid="error-kind-counts"]');
+		expect(counts?.textContent ?? '').not.toContain('$');
+		expect(counts?.querySelector('math-span')).not.toBeNull();
+		expect((counts?.textContent ?? '').replace(/\s+/g, ' ')).toContain('Tu as oublié le carré de');
+		expect((counts?.textContent ?? '').replace(/\s+/g, ' ')).toContain(
+			' : 3 · Erreur de signe : 1'
+		);
+		const chip = container.querySelector('[data-testid="error-kinds"]');
+		expect(chip?.textContent ?? '').toContain('Tu as oublié le carré de');
+		expect(chip?.querySelector('math-span')).not.toBeNull();
 	});
 
 	it('aucun type reconnu : pas de ligne de comptes', async () => {

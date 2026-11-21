@@ -20,6 +20,12 @@
  * - la case n'est pas jugée par ses règles seules (`rulesSuffice`) : son
  *   attendu n'est qu'un exemple de réponse juste.
  *
+ * Erreur prévue (chantier `idees-format`, idée 3) : une case fausse qui fait
+ * une erreur prévue par l'auteur (`expectedErrorOf`) compte sous le nom de
+ * cette erreur (son nom court, sinon le message de l'élève, Q2), à la place du
+ * type deviné, même quand la case a déjà une remarque : c'est son message que
+ * l'élève lit en tête.
+ *
  * Le prof lit le type en étiquette (`errorGuessLabel`, panneaux d'erreurs) ;
  * l'élève le lit en phrase sous sa réponse, à la correction
  * (`errorGuessSentence`, remarque de case du résultat attendu). Q3 : la phrase
@@ -31,16 +37,23 @@
 import { guessErrorKind, type ErrorGuess, type ErrorKind } from '#lib/mathAST/error-kind.ts';
 import type { CorrectedDetail } from '#lib/types/evaluation-attempt.ts';
 import type { BlankVerdict } from '#lib/utils/answer-validator.ts';
+import { expectedErrorOf } from './expected-errors';
 import { rulesDecide } from './rules-suffice';
-import type { InstanceBlank, QuestionInstance, ValidationStatus } from './types';
+import type {
+	InstanceBlank,
+	InstanceExpectedError,
+	QuestionInstance,
+	ValidationStatus
+} from './types';
 
 // Types
 
-/** Type d'erreur d'une case, numérotée à partir de 1 */
-export interface BlankErrorKind {
-	blank: number;
-	guess: ErrorGuess;
-}
+/**
+ * Type d'erreur d'une case, numérotée à partir de 1 : deviné (`guess`), ou
+ * erreur prévue par l'auteur (`expected` : son nom, cf. `expectedErrorName`)
+ */
+export type BlankErrorKind =
+	{ blank: number; guess: ErrorGuess } | { blank: number; expected: string };
 
 /** Cases fausses d'une réponse : celles typées, et le nombre des autres */
 export interface AnswerErrorKinds {
@@ -101,6 +114,16 @@ export function errorGuessLabel(guess: ErrorGuess): string {
 	if (guess.kind !== 'power-of-ten') return ERROR_KIND_LABELS[guess.kind];
 	const factor = powerOfTenFactor(guess.exponent);
 	return `${ERROR_KIND_LABELS['power-of-ten']} (${guess.exponent > 0 ? '×' : '÷'} ${factor})`;
+}
+
+/** Nom d'une erreur prévue pour le prof : son nom court, sinon le message de l'élève (Q2) */
+export function expectedErrorName(error: InstanceExpectedError): string {
+	return error.label ?? error.message;
+}
+
+/** Étiquette du type d'une case : type deviné (« × 100 » compris) ou nom de l'erreur prévue */
+export function blankErrorKindLabel(kind: BlankErrorKind): string {
+	return 'guess' in kind ? errorGuessLabel(kind.guess) : kind.expected;
 }
 
 /** Facteur d'une puissance de 10, écrit à la française (« 1 000 ») */
@@ -179,8 +202,15 @@ export function answerErrorKinds(
 	const kinds: BlankErrorKind[] = [];
 	let unrecognized = 0;
 	for (const verdict of judged) {
+		const blank = verdict.index + 1;
+		// L'erreur prévue prime sur le type deviné, comme pour l'élève
+		const expected = expectedErrorOf(instance, verdict);
+		if (expected) {
+			kinds.push({ blank, expected: expectedErrorName(expected) });
+			continue;
+		}
 		const guess = blankErrorGuess(instance, verdict);
-		if (guess) kinds.push({ blank: verdict.index + 1, guess });
+		if (guess) kinds.push({ blank, guess });
 		else unrecognized += 1;
 	}
 	return { kinds, unrecognized };
