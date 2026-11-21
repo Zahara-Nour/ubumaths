@@ -6,7 +6,6 @@
 
 import type { QuestionInstance, ValidationStatus } from '#lib/questions/types.ts';
 import type { CorrectedDetail } from '#lib/types/evaluation-attempt.ts';
-import type { ErrorKind } from '#lib/mathAST/error-kind.ts';
 import type { BlankErrorKind } from '#lib/questions/error-kinds.ts';
 
 /** Répartition des réponses : juste (1) / partiel (½) / faux, mauvaise forme comprise (0) / sans réponse */
@@ -126,9 +125,12 @@ export interface QuestionErrorGroup {
 	errorKinds: BlankErrorKind[];
 }
 
-/** Cases fausses d'un même type, tous élèves confondus */
+/**
+ * Cases fausses d'un même type, tous élèves confondus. `label` : nom du type
+ * deviné (« Erreur de signe ») ou de l'erreur prévue ; même nom, même compte.
+ */
 export interface ErrorKindCount {
-	kind: ErrorKind;
+	label: string;
 	count: number;
 }
 
@@ -143,7 +145,10 @@ export type EvaluationQuestionErrors =
 			blanks: BlankErrorStat[];
 			/** Réponses fausses ou partielles, regroupées ; vide : aucune erreur */
 			groups: QuestionErrorGroup[];
-			/** Cases fausses par type reconnu, du plus fréquent au moins fréquent */
+			/**
+			 * Cases fausses par type reconnu, du plus fréquent au moins fréquent ; à
+			 * égalité, les erreurs prévues d'abord, puis les types devinés dans leur ordre
+			 */
 			errorKinds: ErrorKindCount[];
 			/** Cases fausses sans type reconnu */
 			unrecognized: number;

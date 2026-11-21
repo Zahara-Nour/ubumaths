@@ -21,6 +21,8 @@
  * - **Types d'erreur** (chantier `type-erreur`, PR 2) : chaque case fausse d'un
  *   groupe porte son type quand il est reconnu (`answerErrorKinds`) ; la question
  *   compte les cases fausses par type, chaque élève du groupe compté une fois.
+ *   Une erreur prévue par l'auteur (chantier `idees-format`, idée 3) compte sous
+ *   son nom, à côté des types devinés ; deux types de même nom font un compte.
  *
  * Tout se lit avec le client du professeur, sous la RLS existante. Une lecture
  * en échec rend une erreur propre au panneau, jamais une exception.
@@ -39,8 +41,12 @@ import {
 	type EvaluationQuestionErrors,
 	type QuestionErrorGroup
 } from '#lib/types/evaluation-breakdown.ts';
-import type { ErrorKind } from '#lib/mathAST/error-kind.ts';
-import { ERROR_KIND_ORDER, answerErrorKinds } from '#lib/questions/error-kinds.ts';
+import {
+	ERROR_KIND_LABELS,
+	ERROR_KIND_ORDER,
+	answerErrorKinds,
+	type BlankErrorKind
+} from '#lib/questions/error-kinds.ts';
 import { detailsWithinBudget, type DetailBudget } from './corrected-detail';
 import {
 	BreakdownReadError,
@@ -91,6 +97,9 @@ const WRONG_STATUSES: readonly string[] = ['incorrect', 'bad_form', 'unoptimal_f
 const ANSWERED_STATUSES: readonly string[] = ['correct', ...WRONG_STATUSES];
 
 const DEFAULT_NAME = 'Élève';
+
+/** Rang des types devinés à égalité : après toutes les erreurs prévues */
+const GUESSED_RANK = Number.MAX_SAFE_INTEGER / 2;
 
 // Functions
 
@@ -224,19 +233,24 @@ export function computeQuestionErrors(
 		}
 	});
 
-	// Comptes par type : chaque case typée d'un groupe, une fois par élève
-	const kindCounts = new Map<ErrorKind, number>();
+	// Comptes par nom : chaque case typée d'un groupe, une fois par élève
+	const kindCounts = new Map<string, { count: number; rank: number }>();
 	let unrecognized = 0;
 	for (const [key, group] of groups) {
 		const weight = group.students.length;
-		for (const { guess } of group.errorKinds) {
-			kindCounts.set(guess.kind, (kindCounts.get(guess.kind) ?? 0) + weight);
+		for (const kind of group.errorKinds) {
+			const { label, rank } = countKey(kind, kindCounts.size);
+			const current = kindCounts.get(label);
+			kindCounts.set(label, {
+				count: (current?.count ?? 0) + weight,
+				rank: Math.min(current?.rank ?? rank, rank)
+			});
 		}
 		unrecognized += (unrecognizedByGroup.get(key) ?? 0) * weight;
 	}
-	const errorKinds: ErrorKindCount[] = ERROR_KIND_ORDER.filter((kind) => kindCounts.has(kind))
-		.map((kind) => ({ kind, count: kindCounts.get(kind) ?? 0 }))
-		.sort((a, b) => b.count - a.count);
+	const errorKinds: ErrorKindCount[] = [...kindCounts]
+		.sort(([, a], [, b]) => b.count - a.count || a.rank - b.rank)
+		.map(([label, { count }]) => ({ label, count }));
 
 	const sorted = [...groups.values()]
 		.map((g) => ({ ...g, students: [...g.students].sort((a, b) => a.localeCompare(b, 'fr')) }))
@@ -250,6 +264,19 @@ export function computeQuestionErrors(
 		groups: sorted,
 		errorKinds,
 		unrecognized
+	};
+}
+
+/**
+ * Nom sous lequel une case typée compte, et son rang à égalité : les erreurs
+ * prévues d'abord, dans l'ordre où elles apparaissent, puis les types devinés
+ * dans leur ordre (la puissance de 10 compte sans son facteur)
+ */
+function countKey(kind: BlankErrorKind, seen: number): { label: string; rank: number } {
+	if ('expected' in kind) return { label: kind.expected, rank: seen };
+	return {
+		label: ERROR_KIND_LABELS[kind.guess.kind],
+		rank: GUESSED_RANK + ERROR_KIND_ORDER.indexOf(kind.guess.kind)
 	};
 }
 

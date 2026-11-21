@@ -216,3 +216,17 @@ vide) ; dernière erreur retirée → `expectedErrors` absent ; ligne incomplèt
 `maxlength` des plafonds du schéma. Retenu de la revue : une case devenue choix ou figure qui garde
 des erreurs prévues le dit et offre « Retirer » (sinon la génération échoue sans recours). Tests :
 `AnswerEditor-erreurs-prevues.svelte.test.ts` (7). Doc : `docs/systeme/questions.md`.
+
+## Idée 3, PR 7 — erreurs prévues : ligne « Types d'erreur » côté prof (2026-11-21)
+
+Branche `feat/idees-format-types-erreur`. `answerErrorKinds` (`error-kinds.ts`) : une case fausse
+qui fait une erreur prévue (`expectedErrorOf`) donne `{ blank, expected: nom }` (nom court, sinon
+message, Q2), avant le type deviné et même avec une remarque. `ErrorKindCount` passe de `kind` à
+`label` : comptes par nom (`evaluation-question-errors.ts`), une erreur prévue nommée comme un type
+deviné partage son compte ; à égalité, erreurs prévues d'abord. `QuestionErrorsPanel` : formules
+`$…$` rendues (`remarkSegments` + `InlineMarkdown`). Limite assumée : sans nom court, un message
+qui dit les nombres du tirage fait un compte par tirage. Tests : 7 de `error-kinds`, 4 du calcul
+serveur, 1 du panneau (vérifiés rouges avant le code). Doc : `evaluations.md`, `questions.md`.
+Relecture (`code-reviewer`, Sonnet) : aucun bloquant. Corrigé : la ligne des comptes rendue d'un
+seul tenant appariait le `$` isolé d'un nom avec celui du suivant → chaque compte rendu à part
+(test ajouté). Laissé : une erreur prévue nommée « Non reconnue » se confondrait avec cette ligne.

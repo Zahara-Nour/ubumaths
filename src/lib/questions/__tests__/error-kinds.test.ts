@@ -5,6 +5,7 @@ import { describe, expect, it } from 'vitest';
 import {
 	answerErrorKinds,
 	blankErrorGuess,
+	blankErrorKindLabel,
 	errorGuessLabel,
 	errorGuessSentence
 } from '../error-kinds';
@@ -191,6 +192,87 @@ describe('answerErrorKinds — avec le vrai validateur', () => {
 		expect(answerErrorKinds(inst, detail, [answer], 'incorrect').kinds).toEqual([
 			{ blank: 1, guess }
 		]);
+	});
+});
+
+describe('answerErrorKinds — erreurs prévues (chantier idees-format, idée 3)', () => {
+	/** Attendu 7 (3 + 4) ; erreur prévue −1 (3 − 4) */
+	function withExpected(label?: string): QuestionInstance {
+		return instance([
+			{
+				...math('7'),
+				expectedErrors: [
+					{
+						answer: '-1',
+						answerLatex: '-1',
+						message: "Tu as soustrait au lieu d'additionner.",
+						...(label !== undefined && { label })
+					}
+				]
+			}
+		]);
+	}
+
+	it('nominal : la réponse de l’erreur prévue compte sous son nom court', () => {
+		const inst = withExpected('Soustraction au lieu d’addition');
+		const detail = validateAnswerDetailed(inst, { values: ['-1'] });
+		expect(answerErrorKinds(inst, detail, ['-1'], 'incorrect')).toEqual({
+			kinds: [{ blank: 1, expected: 'Soustraction au lieu d’addition' }],
+			unrecognized: 0
+		});
+	});
+
+	it('sans nom court : sous le message de l’élève (Q2)', () => {
+		const inst = withExpected();
+		const detail = validateAnswerDetailed(inst, { values: ['-1'] });
+		expect(answerErrorKinds(inst, detail, ['-1'], 'incorrect').kinds).toEqual([
+			{ blank: 1, expected: "Tu as soustrait au lieu d'additionner." }
+		]);
+	});
+
+	it('même valeur, autre écriture : la même erreur prévue (Q1)', () => {
+		const inst = withExpected('Soustraction');
+		const detail = validateAnswerDetailed(inst, { values: ['-\\frac{2}{2}'] });
+		expect(answerErrorKinds(inst, detail, ['-\\frac{2}{2}'], 'incorrect').kinds).toEqual([
+			{ blank: 1, expected: 'Soustraction' }
+		]);
+	});
+
+	it('autre réponse fausse : le type deviné, comme avant', () => {
+		const inst = withExpected('Soustraction');
+		const detail = validateAnswerDetailed(inst, { values: ['-7'] });
+		expect(answerErrorKinds(inst, detail, ['-7'], 'incorrect').kinds).toEqual([
+			{ blank: 1, guess: { kind: 'sign' } }
+		]);
+	});
+
+	it('erreur prévue ET remarque de la case : l’erreur prévue compte quand même', () => {
+		const result = answerErrorKinds(
+			withExpected('Soustraction'),
+			verdict([{ answer: '-1', remarks: ['Arrondis au dixième.'] }]),
+			['-1'],
+			'incorrect'
+		);
+		expect(result).toEqual({ kinds: [{ blank: 1, expected: 'Soustraction' }], unrecognized: 0 });
+	});
+
+	it('détail indisponible, une case : l’erreur prévue se lit sur la valeur saisie', () => {
+		const result = answerErrorKinds(
+			withExpected('Soustraction'),
+			{ unavailable: true, status: 'incorrect' },
+			['-1'],
+			'incorrect'
+		);
+		expect(result.kinds).toEqual([{ blank: 1, expected: 'Soustraction' }]);
+	});
+});
+
+describe('blankErrorKindLabel', () => {
+	it('type deviné : son étiquette ; erreur prévue : son nom', () => {
+		expect(blankErrorKindLabel({ blank: 1, guess: { kind: 'power-of-ten', exponent: 2 } })).toBe(
+			'Puissance de 10 (× 100)'
+		);
+		expect(blankErrorKindLabel({ blank: 1, expected: 'Soustraction' })).toBe('Soustraction');
 	});
 });
 

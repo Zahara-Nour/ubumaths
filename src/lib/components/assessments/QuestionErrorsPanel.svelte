@@ -7,6 +7,8 @@
 	en texte. Chantier `erreurs-frequentes` : bilan d'un contrôle (PR 1) et
 	erreurs par point du programme (PR 2). Chantier `type-erreur` (PR 2) : compte
 	des cases fausses par type d'erreur, et type de chaque réponse quand il est reconnu.
+	Chantier `idees-format` (idée 3) : les erreurs prévues par l'auteur y comptent
+	sous leur nom, formules (`$…$`) rendues comme dans la remarque de l'élève.
 
 	Props:
 	- errors: erreurs d'une question, déjà lues (statut `ok`)
@@ -14,7 +16,9 @@
 
 <script lang="ts">
 	import CorrectionCard from '#lib/components/questions/CorrectionCard.svelte';
-	import { ERROR_KIND_LABELS, errorGuessLabel } from '#lib/questions/error-kinds.ts';
+	import InlineMarkdown from '#lib/components/markdown/InlineMarkdown.svelte';
+	import { blankErrorKindLabel } from '#lib/questions/error-kinds.ts';
+	import { remarkSegments } from '#lib/questions/expected-result-markdown.ts';
 	import type {
 		EvaluationQuestionErrors,
 		QuestionErrorGroup
@@ -43,18 +47,16 @@
 	}
 
 	/** « Erreur de signe : 4 · Puissance de 10 : 2 · Non reconnue : 6 » */
-	let kindCountsText = $derived(
-		[
-			...errors.errorKinds.map((c) => `${ERROR_KIND_LABELS[c.kind]} : ${c.count}`),
-			...(errors.unrecognized > 0 ? [`Non reconnue : ${errors.unrecognized}`] : [])
-		].join(' · ')
-	);
+	let kindCounts = $derived([
+		...errors.errorKinds.map((c) => `${c.label} : ${c.count}`),
+		...(errors.unrecognized > 0 ? [`Non reconnue : ${errors.unrecognized}`] : [])
+	]);
 
 	/** Étiquette du type de chaque case typée ; numérotée sur une question à plusieurs cases */
 	function kindLabelsOf(group: QuestionErrorGroup): string[] {
 		const several = (group.instance.blanks?.length ?? 0) > 1;
-		return group.errorKinds.map(({ blank, guess }) =>
-			several ? `Case ${blank} : ${errorGuessLabel(guess)}` : errorGuessLabel(guess)
+		return group.errorKinds.map((kind) =>
+			several ? `Case ${kind.blank} : ${blankErrorKindLabel(kind)}` : blankErrorKindLabel(kind)
 		);
 	}
 
@@ -62,6 +64,13 @@
 		return `${n} ${n > 1 ? many : one}`;
 	}
 </script>
+
+<!-- Texte d'un nom d'erreur prévue : ses formules `$…$` rendues, le reste en texte -->
+{#snippet withMath(text: string, before = '')}
+	{before}{#each remarkSegments(text) as segment, j (j)}
+		{#if segment.math}<InlineMarkdown content={segment.value} />{:else}{segment.value}{/if}
+	{/each}
+{/snippet}
 
 <div class="space-y-4 py-3">
 	{#if errors.withoutAnswer > 0}
@@ -79,7 +88,8 @@
 	{#if errors.errorKinds.length > 0}
 		<p class="text-sm" data-testid="error-kind-counts">
 			<span class="font-medium">Types d'erreur :</span>
-			{kindCountsText}
+			<!-- Chaque compte rendu à part : un `$` isolé ne s'apparie pas avec le nom suivant -->
+			{#each kindCounts as text, i (i)}{@render withMath(text, i > 0 ? ' · ' : '')}{/each}
 		</p>
 	{/if}
 	{#if errors.groups.length === 0}
@@ -97,7 +107,9 @@
 					{#if group.errorKinds.length > 0}
 						<div class="flex flex-wrap gap-1" data-testid="error-kinds">
 							{#each kindLabelsOf(group) as label (label)}
-								<span class="rounded-full bg-muted px-2 py-0.5 text-xs font-medium">{label}</span>
+								<span class="rounded-full bg-muted px-2 py-0.5 text-xs font-medium"
+									>{@render withMath(label)}</span
+								>
 							{/each}
 						</div>
 					{/if}

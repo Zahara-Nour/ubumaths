@@ -241,8 +241,8 @@ describe('computeQuestionErrors — types d’erreur (chantier type-erreur)', ()
 			{ validate }
 		);
 		expect(result.errorKinds).toEqual([
-			{ kind: 'sign', count: 3 },
-			{ kind: 'power-of-ten', count: 1 }
+			{ label: 'Erreur de signe', count: 3 },
+			{ label: 'Puissance de 10', count: 1 }
 		]);
 		expect(result.unrecognized).toBe(1);
 		const ada = result.groups.find((g) => g.students.includes('Ada'));
@@ -256,8 +256,8 @@ describe('computeQuestionErrors — types d’erreur (chantier type-erreur)', ()
 			validate
 		});
 		expect(result.errorKinds).toEqual([
-			{ kind: 'sign', count: 1 },
-			{ kind: 'double', count: 1 }
+			{ label: 'Erreur de signe', count: 1 },
+			{ label: 'Double', count: 1 }
 		]);
 		expect(result.groups[0].errorKinds.map((k) => k.blank)).toEqual([1, 2]);
 	});
@@ -277,6 +277,78 @@ describe('computeQuestionErrors — types d’erreur (chantier type-erreur)', ()
 		);
 		expect(result.errorKinds).toEqual([]);
 		expect(result.unrecognized).toBe(0);
+	});
+
+	/** Attendu 7 (3 + 4) ; erreur prévue −1 (3 − 4), nommée ou non */
+	function withExpected(expected: string, error: string, label?: string): QuestionInstance {
+		const inst = drawn(expected);
+		return {
+			...inst,
+			blanks: inst.blanks?.map((blank) => ({
+				...blank,
+				expectedErrors: [
+					{
+						answer: error,
+						answerLatex: error,
+						message: "Tu as soustrait au lieu d'additionner.",
+						...(label !== undefined && { label })
+					}
+				]
+			}))
+		};
+	}
+
+	it('erreur prévue : comptée sous son nom, à côté des types devinés (idées-format, idée 3)', () => {
+		const result = computeQuestionErrors(
+			[
+				row('Ada', 'incorrect', ['-1'], withExpected('7', '-1', 'Soustraction')),
+				row('Bob', 'incorrect', ['-1'], withExpected('7', '-1', 'Soustraction')),
+				// Autre tirage, même erreur prévue : comptée avec les autres
+				row('Cléo', 'incorrect', ['-2'], withExpected('8', '-2', 'Soustraction')),
+				row('Dan', 'incorrect', ['-7'], withExpected('7', '-1', 'Soustraction')),
+				row('Eve', 'incorrect', ['13'], withExpected('7', '-1', 'Soustraction'))
+			],
+			{ validate }
+		);
+		expect(result.errorKinds).toEqual([
+			{ label: 'Soustraction', count: 3 },
+			{ label: 'Erreur de signe', count: 1 }
+		]);
+		expect(result.unrecognized).toBe(1);
+		const ada = result.groups.find((g) => g.students.includes('Ada'));
+		expect(ada?.errorKinds).toEqual([{ blank: 1, expected: 'Soustraction' }]);
+	});
+
+	it('sans nom court : comptée sous le message de l’élève', () => {
+		const result = computeQuestionErrors(
+			[row('Ada', 'incorrect', ['-1'], withExpected('7', '-1'))],
+			{ validate }
+		);
+		expect(result.errorKinds).toEqual([
+			{ label: "Tu as soustrait au lieu d'additionner.", count: 1 }
+		]);
+	});
+
+	it('à égalité : l’erreur prévue avant le type deviné', () => {
+		const result = computeQuestionErrors(
+			[
+				row('Ada', 'incorrect', ['-7'], withExpected('7', '-1', 'Soustraction')),
+				row('Bob', 'incorrect', ['-1'], withExpected('7', '-1', 'Soustraction'))
+			],
+			{ validate }
+		);
+		expect(result.errorKinds.map((c) => c.label)).toEqual(['Soustraction', 'Erreur de signe']);
+	});
+
+	it('erreur prévue nommée comme un type deviné : un seul compte', () => {
+		const result = computeQuestionErrors(
+			[
+				row('Ada', 'incorrect', ['-1'], withExpected('7', '-1', 'Erreur de signe')),
+				row('Bob', 'incorrect', ['-7'], withExpected('7', '-1', 'Erreur de signe'))
+			],
+			{ validate }
+		);
+		expect(result.errorKinds).toEqual([{ label: 'Erreur de signe', count: 2 }]);
 	});
 
 	it('aucune erreur : aucun compte', () => {
