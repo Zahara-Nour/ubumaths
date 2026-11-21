@@ -6,17 +6,18 @@ Mettre en œuvre les idées retenues dans [idees-format-exercices.md](idees-form
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-21, après #2960._
+_Mis à jour le 2026-11-21, PR 5 (idée 3, moteur) commitée, pas encore ouverte._
 
-- **État** : idée 1 terminée (#2954, #2955). Idée 2 terminée : choix des variations dans le
-  panier (#2958) et dans l'éditeur d'une série enregistrée (#2960).
-- **Prochaine action** : idée 3, les erreurs prévues avec leur message (voir
-  [idees-format-exercices.md](idees-format-exercices.md)) : phase 0 à écrire et faire valider.
-- **En attente de David** : rien (pas de `deploy:prod` demandé).
-- **Pièges en cours** : test d'intégration local bloqué par des données d'une autre session
-  (`class_journal_share_tokens`), la CI fait foi ; le worktree `automaths-serie` touche aussi le
-  panier.
-- **Worktree / branche** : aucun ; à créer pour l'idée 3.
+- **État** : idées 1 et 2 terminées. Idée 3 : phase 0 validée (§ Idée 3) ; PR 5 « moteur »
+  commitée sur `feat/idees-format-erreurs-prevues` (tests verts, `check:incremental` 0 erreur).
+- **Prochaine action** : revue `code-reviewer` (Opus, correction des réponses) du diff
+  `origin/main...HEAD` — à relancer si son rapport est perdu par un `/clear` ; corriger ; push ;
+  ouvrir la PR ; CI ; merge. Puis PR 6 (éditeur : « Ajouter une erreur prévue » sous chaque case),
+  PR 7 (ligne « Types d'erreur » côté prof, `label` sinon message).
+- **En attente de David** : rien.
+- **Pièges en cours** : intégration locale bloquée par les données d'une autre session, la CI fait
+  foi ; fichiers de lot avec `expectedErrors` refusés en prod avant le `deploy:prod` de la PR 5.
+- **Worktree / branche** : `../ubumaths-wt-idees-format` · `feat/idees-format-erreurs-prevues`.
 
 ## Idée 1 — phase 0 validée (David, 2026-11-21)
 
@@ -196,3 +197,15 @@ une erreur prévue ») · PR 3 ligne « Types d'erreur » côté prof.
   3,3 Ko en moyenne, 17 Ko au 99e centile, 127 Ko au plus → poids accepté (une série a au plus 50
   lignes ; le panier charge déjà tout le catalogue). Laissé : chargeur sans test propre (mêmes
   colonnes et même conversion que le catalogue).
+
+## Idée 3, PR 5 — erreurs prévues : le moteur (2026-11-21)
+
+Branche `feat/idees-format-erreurs-prevues`. `expectedErrors` sur une case (`types.ts`, Zod strict
+et non strict) ; reconnaissance `expected-errors.ts` (`expectedErrorOf`, même valeur, case fausse
+seulement) ; message en tête des remarques (`expected-result.ts`, avant le type deviné) ;
+générateur : résolution sur une source de hasard à part (graine + 7919), refus situé hors case
+mathématique ordinaire ; rejeu `checkTemplate` ; spec `expected.expectedErrorMessage` ; consigne
+des scripts de lot (`couvrir-un-niveau.md` § 5, skills `couvrir-niveau`, `idees-rubrique`).
+L'éditeur actuel garde les cases telles quelles : un modèle modifié par le prof garde ses erreurs
+prévues avant même la PR de l'éditeur. ⚠️ Fichiers de lot avec erreurs prévues : la prod ne les
+accepte qu'après le `deploy:prod` qui livre cette PR.
