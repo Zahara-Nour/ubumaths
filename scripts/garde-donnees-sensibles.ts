@@ -14,6 +14,10 @@
  *   comptes d'enfants (`eleves.chiph.re`), seuls les prénoms de `FICTIONAL_NAMES`
  *   — un vrai identifiant d'enfant ressemble trait pour trait à un faux.
  *
+ * - les **noms interdits** (la plateforme dont on reprend des idées) : lignes ajoutées ET
+ *   chemins de fichiers, sans exception possible ; racines lues hors du dépôt
+ *   (`scripts/noms-interdits.cjs`), introuvables → la garde échoue.
+ *
  * Elle ne voit pas un prénom ou un nom écrit en clair : la règle de CLAUDE.md
  * (données fictives seulement) reste la vraie protection.
  *
@@ -28,6 +32,7 @@
  */
 
 import { execFileSync } from 'node:child_process';
+import { createRequire } from 'node:module';
 
 export interface AddedLine {
 	file: string;
@@ -38,11 +43,17 @@ export interface AddedLine {
 export interface Hit {
 	file: string;
 	lineNo: number;
-	kind: 'secret' | 'adresse';
+	kind: 'secret' | 'adresse' | 'nom';
 	label: string;
 }
 
 const MARKER = 'garde-donnees:ok';
+
+const require = createRequire(import.meta.url);
+const { chargerRacines, trouverNomInterdit } = require('./noms-interdits.cjs') as {
+	chargerRacines: (options?: { env?: Record<string, string | undefined> }) => string[];
+	trouverNomInterdit: (texte: string, racines: string[]) => number;
+};
 
 const EXCLUDED_FILES = [/^pnpm-lock\.yaml$/, /^static\//, /\.min\.js$/, /^CHANGELOG\.md$/];
 
@@ -117,9 +128,22 @@ function isRealSupabaseJwt(payloadB64: string): boolean {
 	}
 }
 
-export function findSensitive(lines: AddedLine[]): Hit[] {
+/** `nomsInterdits` : racines normalisées (`chargerRacines`) ; vides = pas de contrôle de nom. */
+export function findSensitive(lines: AddedLine[], nomsInterdits: string[] = []): Hit[] {
 	const hits: Hit[] = [];
+	const fichiersVus = new Set<string>();
 	for (const { file, lineNo, text } of lines) {
+		// Noms interdits : aucun fichier exclu, aucune exception sur la ligne ; le chemin compte aussi.
+		if (nomsInterdits.length > 0) {
+			if (!fichiersVus.has(file)) {
+				fichiersVus.add(file);
+				const n = trouverNomInterdit(file, nomsInterdits);
+				if (n > 0)
+					hits.push({ file, lineNo: 0, kind: 'nom', label: `nom interdit n° ${n} (chemin)` });
+			}
+			const n = trouverNomInterdit(text, nomsInterdits);
+			if (n > 0) hits.push({ file, lineNo, kind: 'nom', label: `nom interdit n° ${n}` });
+		}
 		if (EXCLUDED_FILES.some((re) => re.test(file))) continue;
 		if (text.includes(MARKER)) continue;
 		// Rien de la ligne n'est recopié : les logs de CI d'un dépôt public sont lisibles par tous.
@@ -209,8 +233,32 @@ function main(argv: string[]): number {
 		console.error('Usage : garde-donnees-sensibles --staged | --depuis <ref>');
 		return 2;
 	}
+	let nomsInterdits: string[];
+	try {
+		nomsInterdits = chargerRacines();
+	} catch (erreur) {
+		// Dependabot n'a pas accès aux secrets du dépôt : seul cas où l'on s'en passe (CI).
+		if (process.env.NOMS_INTERDITS_FACULTATIF === '1') {
+			nomsInterdits = [];
+		} else {
+			console.error(`❌ Garde : ${(erreur as Error).message}`);
+			console.error('   Voir docs/pratiques/git-workflow.md (noms interdits).');
+			return 2;
+		}
+	}
 	const diff = execFileSync('git', args, { encoding: 'utf8', maxBuffer: 256 * 1024 * 1024 });
-	const hits = findSensitive(parseAddedLines(diff));
+	const hits = findSensitive(parseAddedLines(diff), nomsInterdits);
+	// Fichiers renommés ou copiés sans ligne ajoutée : leur chemin compte aussi.
+	const chemins = execFileSync('git', [...args, '--name-only'], { encoding: 'utf8' })
+		.split('\n')
+		.filter(Boolean);
+	for (const file of chemins) {
+		if (hits.some((h) => h.file === file && h.lineNo === 0)) continue;
+		const n = trouverNomInterdit(file, nomsInterdits);
+		if (nomsInterdits.length > 0 && n > 0) {
+			hits.push({ file, lineNo: 0, kind: 'nom', label: `nom interdit n° ${n} (chemin)` });
+		}
+	}
 	if (hits.length === 0) {
 		console.log('🔍 Données sensibles : rien dans les lignes ajoutées.');
 		return 0;
@@ -218,6 +266,11 @@ function main(argv: string[]): number {
 	console.error(`❌ Données sensibles : ${hits.length} ligne(s) ajoutée(s) à revoir.`);
 	for (const h of hits) {
 		console.error(`   ${h.file}:${h.lineNo}  ${h.label}`);
+	}
+	if (hits.some((h) => h.kind === 'nom')) {
+		console.error(
+			'\n   Nom interdit : le retirer (« l’autre plateforme »), aucune exception possible.'
+		);
 	}
 	console.error(
 		'\n   Remplacer par une donnée fictive (example.com, local.test, prénom fictif),' +
