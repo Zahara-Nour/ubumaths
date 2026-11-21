@@ -38,8 +38,7 @@ Chantier de référence : le CP ([journal](../../../docs/wip/questions-progress.
 **D'abord le catalogue** des outils existants (doc, § 3 bis) : tableau de variations, cercle
 trigo, courbes et grapheur, droite graduée, arbres, statistiques, géométrie (**en refonte** :
 lire `figure-et-choix`), horloge, opérations posées, collection,
-monnaie ; réponses en case, QCM (**en cours de réécriture en case « choix »**, chantier
-`figure-et-choix` : demander à David la forme à écrire tant que ce n'est pas en prod), construire,
+monnaie ; réponses en case, QCM écrit en case « choix » (ADR 0033 ; l'ancien QCM est refusé), construire,
 figure à compléter, gestes `placer:` (droite, repère, cercle trigo, horloge). Un point classé C à
 tort coûte un chantier. **Puis la liste unique des outils manquants,
 `docs/wip/outils-manquants.md`** : le geste y est peut-être déjà prévu ; un point classé C s'y ajoute

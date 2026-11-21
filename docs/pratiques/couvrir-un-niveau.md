@@ -116,14 +116,10 @@ coûte un chantier. Détail de chaque bloc : [ubumark.md § Blocs spéciaux](../
 **Répondre** (ce que l'élève saisit ou fait) :
 
 - **case** (MathLive, jugée par le juge ordinaire), plusieurs cases, case dans un tableau (`$?$`) ;
-- **QCM** : aujourd'hui `choices[{content, isCorrect}]` (question « QCM », jamais mêlée de cases),
-  choix en texte ou en dessins. ⚠️ **En cours de réécriture en case spéciale** : la case « choix »
-  (bloc ` ```choix `, [ADR 0033](../adr/0033-le-qcm-est-une-case.md))
-  remplace le QCM ; tous les QCM de la prod seront migrés et le type `multiple_choice` retiré. La
-  case choix n'est pas encore en prod : au premier lot qui a besoin d'un QCM, lire le « Reprendre ici » de
-  `figure-et-choix` et **demander à David** la forme à écrire (ancien QCM, migré avec les
-  autres, ou case choix, en brouillon jusqu'au `deploy:prod`). Une fois la migration faite : case
-  choix seulement, et « QCM ou cases » (§ 9) ne vaut plus.
+- **QCM = case choix** (bloc ` ```choix `, [ADR 0033](../adr/0033-le-qcm-est-une-case.md)), en
+  texte ou en dessins, mêlable à d'autres cases. Le type `multiple_choice` n'existe plus depuis le
+  2026-10-28 : les anciens champs (`choices`, `correctChoiceIndex`…) sont refusés à l'enregistrement
+  ([questions.md](../systeme/questions.md)). Plusieurs bonnes réponses : `plusieurs: oui` (§ 9) ;
 - **opération posée à compléter** (saisie chiffre par chiffre du bloc `operation`) ;
 - **construire** : `construire:` dans ` ```collection ` ou ` ```monnaie ` (la valeur posée est la réponse) ;
 - **placer, ranger, colorier** : point sur une droite graduée (` ```line `), points dans un repère
@@ -424,7 +420,6 @@ pnpm tsx scripts/series/creer-serie.ts --fichier scripts/series/<nom>.json --pub
 ## 9. Pièges
 
 - **Un point par modèle** (ADR 0020) ; deux points → deux modèles.
-- **QCM ou cases**, jamais les deux (tant que la case choix n'a pas remplacé le QCM, § 3 bis) ;
   une case dans un tableau s'écrit `$?$`.
 - **`{{if:…}}` imbriqué non résolu dans `correctChoiceIndex`** : passer par une variable.
 - Jamais de variable `e` (Euler) ; lettres parlantes, jamais P / E / V.
