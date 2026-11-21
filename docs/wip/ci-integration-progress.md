@@ -2,17 +2,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-21, après #2956._
+_Mis à jour le 2026-11-21, F en cours._
 
-- **État** : A mergée (4 morceaux) : 17,5 → 7,5 min (run 44891964659). Go de David sur A → F → B → C
-  et sur le correctif du global-setup (2026-11-21).
-- **Prochaine action** : F = tests de migration de données hors des PR (trier d'abord les 307
-  fichiers qui lisent une migration : données de modèles / règles d'accès), puis B, puis C.
+- **État** : A mergée (#2956, 17,5 → 7,5 min). F validée par David le 2026-11-21 (§ 7), en cours
+  sur `ci/integration-migrations-hors-pr`. Ensuite B, puis C.
+- **Prochaine action** : F — mention `@migration-de-donnees` sur 297 tests, garde, exclusion dans
+  le job `portee`, mesure sur un vrai run.
 - **En attente de David** : rien.
 - **Pièges en cours** : suite locale cassée au global-setup par les liens de partage du prof de dev
-  (§ 3.4 ; clés sans `ON DELETE` : `class_journal_share_tokens`, `class_course_share_tokens`,
-  `exercise_share_tokens`…) ; morceaux déséquilibrés (212 à 318 s) → D si besoin.
-- **Worktree / branche** : `../ubumaths-wt-ci-integration`, `ci/integration-rapide` (mergée).
+  (§ 3.4) ; morceaux déséquilibrés (212 à 318 s) → D si besoin.
+- **Worktree / branche** : `../ubumaths-wt-ci-integration`, `ci/integration-migrations-hors-pr`.
 
 ## 1. Ce que coûte la suite aujourd'hui (mesuré)
 
@@ -153,6 +152,33 @@ vrai run, ligne au tableau de `docs/pratiques/environnement-de-dev.md`. Nocturne
 Les 303 tests qui rejouent une migration de données (rangement, tags, contenu de modèles) servent
 avant le `db:migrate`. Une fois la migration passée en prod, le fichier SQL ne change plus :
 faut-il encore les rejouer sur chaque PR, ou seulement la nuit (et sur la PR qui les ajoute) ?
+
+## 7. F — tests de migration de données hors des PR (validé le 2026-11-21)
+
+Tri des 303 fichiers qui citent une migration (SQL de la migration lu, commentaires et tables
+temporaires écartés) :
+
+- **297 tests de migration de données** (copie de la prod, rejeu du fichier, rollback) : leurs
+  migrations ne font que ranger, taguer, corriger du contenu → **hors PR**.
+- **Restent sur les PR** : `tags-modeles-points` (trigger `security definer`),
+  `suppression-ancien-programme` (triggers, fonctions), `automaths-arbre-fin-ancienne-forme`
+  (colonnes, vue), `chapter-documents-size-limit` (contrainte, bucket) ;
+  `database/assignment-triggers` et `database/template-triggers` (schéma actuel, vieille
+  migration citée en commentaire) ; `migrations-contenu-publie` (teste aussi le générateur).
+
+Comportements validés :
+
+1. PR en suite complète : tout sauf les tests marqués `@migration-de-donnees` ; un test marqué
+   que la PR ajoute ou modifie tourne, de même qu'un test dont la PR modifie la migration.
+2. PR qui touche l'outillage commun (`tests/helpers/database/migration-rollback.ts`,
+   `lot-2bis-migration.ts`, `later-migrations.ts`, `postgres-client.ts`) : tout.
+3. PR ciblée (lot + migration + test) : inchangée.
+4. Nocturne, lancement à la main : tout. Dans le doute : le test tourne.
+
+Mécanisme : mention `@migration-de-donnees` dans l'en-tête (posée par script, puis par copie
+du gabarit dans les skills `couvrir-niveau` / `idees-rubrique`) ; garde : aucun fichier marqué
+ne cite une migration qui touche le schéma ou les règles d'accès. 4 morceaux gardés.
+Gain estimé : ~5 min de somme, ~7,5 → ~6,3 min de bout en bout.
 
 ## 6. Historique
 
