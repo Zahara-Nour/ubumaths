@@ -23,7 +23,7 @@ tests/
 ├── integration/             ← Supabase local ; 177 fichiers *.test.ts à plat (pas de sous-dossier par domaine)
 │   ├── database/            ← triggers PL/pgSQL (11 fichiers *.test.ts)
 │   ├── fixtures/            ← copies figées lues par la suite (seeds de l'arbre des notions, liste blanche DEFINER)
-│   └── global-setup.ts      ← supprime les profs seedés avant la suite, rejoue le seed de dev après
+│   └── global-setup.ts      ← refuse hors pile de test, puis supprime les profs seedés avant la suite
 ├── helpers/                 ← infra partagée (§4)
 ├── fixtures/                ← copies figées lues par des tests (lexique/, relecture/)
 ├── seed-test-data.ts        ← seed / nettoyage pour les e2e, lancés à la main (`npx tsx …`),
@@ -71,7 +71,7 @@ Détails qui comptent :
 - **Le projet `client`** exclut `src/lib/server/**` ; setup : `vitest-setup-client.ts`. Le projet
   `server` : `vitest-setup-server.ts`. Les deux en `silent: 'passed-only'` (logs des seuls tests en échec).
 - **`definer-guard`** n'a ni plugin sveltekit ni `global-setup` : il lit le catalogue Postgres
-  (port 54322) et n'a besoin que d'une base migrée.
+  (pile de test en local, port 55322) et n'a besoin que d'une base migrée.
 - **`pnpm test:changed`** (= `pnpm test`) : `vitest run --changed` sur les projets de
   `vite.config.ts` (server + client), jamais l'intégration.
 - **Couverture** : le bloc `coverage` de `vite.config.ts` est **inerte** — `@vitest/coverage-v8`
@@ -85,7 +85,7 @@ Détails qui comptent :
 
 | Où                                                      | Ce qui tourne                                                                                                                                                                                                                                                                                                                                       |
 | ------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Local**                                               | Ce que tu lances : tests **ciblés** (contrainte RAM, cf. CLAUDE.md). Intégration sous verrou Supabase.                                                                                                                                                                                                                                              |
+| **Local**                                               | Ce que tu lances : tests **ciblés** (contrainte RAM, cf. CLAUDE.md). Intégration sur la pile de test, sous le verrou `supabase-test`.                                                                                                                                                                                                               |
 | **Toute PR + push sur `main`** (`quality.yml`)          | `test-server` (**4 shards**), `test-client` (**2 shards**, hors `*-real`), `definer-guard` (Supabase `db start` + `pnpm test:definer-guard`) ; plus Lint (dont `check:await-render`), Type Check, Types des tests (cliquet), Build, Audit. Tous agrégés par **CI Summary**.                                                                         |
 | **PR filtrées par `paths`** (`nightly-integration.yml`) | **Integration tests (shard N/4)** : `pnpm test:integration --shard=N/4`, une pile Supabase complète par morceau (1 seul morceau quand l'intégration ciblée ne garde que quelques tests), + job **Integration paths filter** (`pnpm check:integration-paths`).                                                                                       |
 | **Nuit**                                                | Intégration (cron `17 2 * * *`, 02:17 UTC, `nightly-integration.yml`) ; Pyodide réel (cron `0 3 * * *`, `nightly-pyodide.yml`, `RUN_PYODIDE_REAL=1`, `vitest run --project client src/**/*-real.svelte.test.ts`).                                                                                                                                   |
@@ -93,7 +93,7 @@ Détails qui comptent :
 
 **`e2e/verifs/carnet.spec.ts` écrit dans la base locale** (décor du carnet de liaison :
 une classe remise à zéro, consentement, inactivité, limites de débit effacées ; garde : jamais
-avec `VERIFS_URL`). La lancer sous le verrou Supabase, serveur de dev déjà démarré :
+avec `VERIFS_URL`). La lancer sous le verrou `supabase` (celui de la base de dev, que le serveur de dev utilise), serveur de dev déjà démarré :
 `VERIFS_PORT=<port> bash scripts/with-db-lock.sh pnpm test:verifs carnet`. Les courriels sont lus
 dans `.captures/courriels/`, les captures d'écran (téléphone, clair et sombre) écrites dans
 `.captures/verifs/carnet/`.
@@ -154,22 +154,45 @@ Le **gate de régression** quotidien reste `test-server` (rapide, déterministe)
 ### Lancer
 
 ```bash
-pnpm db:start            # pile Supabase locale (ports 54321-54329), migrations appliquées
-pnpm test:integration    # ~180 s la suite entière
+pnpm test:integration    # suite entière (~13 min) : démarre et met à jour la pile de TEST toute seule
 pnpm test:integration tests/integration/mon-test.test.ts   # un seul fichier, sous verrou
 pnpm test:integration:watch
+pnpm db:test:stop        # arrêter la pile de test (elle reste allumée après les tests, ~0,7 Go)
+pnpm db:test:reset       # la reconstruire de zéro
 ```
 
-**Verrou Supabase** : `test:integration`, `test:integration:watch`, `test:definer-guard` et tous
-les `db:*` locaux passent par `scripts/with-db-lock.sh` (`flock` via `scripts/lib/lock.py`). Une
-seule pile Supabase pour tous les worktrees : un `db:reset` pendant une suite ne rend pas
-d'erreur, il rend des fichiers en échec sans test en échec. Le second arrivant sort en **exit 2**
-en nommant le détenteur — ça s'attend, ça ne se contourne pas.
+**Pile de test, pas la base de dev.** En local, la suite tourne sur une pile Supabase à part
+(`project_id` `ubumaths-test`, ports `5532x`), construite comme celle de la CI : migrations de la
+branche + seed simple, jamais de contenu de la prod. Aucun `pnpm db:start` à faire : la commande
+la démarre si elle est arrêtée, puis la met d'accord avec la branche avant les tests
+(`scripts/pile-de-test/`) :
+
+- migrations de la branche qui lui manquent : jouées ;
+- migration d'une autre branche, migration **modifiée depuis son passage**, seed, `config.toml` ou
+  version de la CLI changés : pile **reconstruite de zéro** (environ 35 s), avec un message qui dit
+  pourquoi. Corriger une migration puis relancer les tests suffit donc : pas de reset à la main ;
+- migration en échec : les tests ne sont pas lancés, le fichier et l'erreur sont affichés.
+
+La base de dev (ports `5432x`) n'est jamais touchée : le prof de dev et les classes du seed-riche
+restent, le serveur de dev continue de tourner pendant la suite. Lancée sans le lanceur
+(`vitest --config vitest.integration.config.ts`), la suite **refuse** de tourner.
+
+**Code serveur importé par un test.** Il vise la pile de test, quoi que dise
+`.svelte-kit/generated` : `vitest.integration.config.ts` impose l'adresse (`$app/env/public` et
+`process.env.PUBLIC_SUPABASE_URL`), gardé par `tests/integration/pile-de-test-adresse.test.ts`. Ne
+jamais poser `PUBLIC_SUPABASE_URL` dans l'environnement d'une commande vite ou vitest : SvelteKit
+l'écrit sur disque, et le serveur de dev du worktree changerait de base.
+
+**Verrou `supabase-test`** : `test:integration`, `test:integration:watch`, `test:definer-guard`,
+`db:test:stop` et `db:test:reset` passent par `scripts/pile-de-test.sh` (`flock` via
+`scripts/lib/lock.py`). Une seule pile de test pour tous les worktrees : une seule suite à la
+fois. Le second arrivant sort en **exit 2** en nommant le détenteur — ça s'attend, ça ne se
+contourne pas. Les `db:*` de la base de dev ont leur propre verrou (`supabase`) : ils ne bloquent
+plus les tests, et inversement.
 
 `global-setup.ts` supprime tous les comptes `teacher` avant la suite (le trigger
-`enforce_single_teacher` n'en admet qu'un) et rejoue en sortie le seed de développement
-`supabase/seed/dev_accounts.sql` (sinon le compte prof de David disparaît). Hors CI, si la base
-contenait `pnpm db:seed-riche` (classes `LOCAL…`), il la recrée aussi.
+`enforce_single_teacher` n'en admet qu'un). En local il vérifie d'abord que la base visée est la
+pile de test, et refuse sinon : il ne supprime jamais rien dans la base de dev.
 
 ### Les helpers réels (`tests/helpers/database/`)
 
@@ -249,7 +272,7 @@ par `createAuthenticatedClient`.
   termine par `ROLLBACK`, jamais `COMMIT`.
 - **`db:types` génère depuis la production** : une RPC pas encore migrée en prod n'est pas typée
   (cf. CLAUDE.md §Base de données).
-- **Sign-in local en erreur vide** : GoTrue dégradé → `pnpm db:stop` puis `pnpm db:start`.
+- **Sign-in local en erreur vide** : GoTrue dégradé → dans la suite d'intégration, `pnpm db:test:stop` puis relancer les tests ; sur le serveur de dev, `pnpm db:stop` puis `pnpm db:start`.
 
 ---
 

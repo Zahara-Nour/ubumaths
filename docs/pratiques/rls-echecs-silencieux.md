@@ -214,6 +214,6 @@ Entrée périmée → la retirer. `search_path` → `SET search_path = public, p
 Les fonctions laissées hors liste exprès (en attente de décision) sont nommées en tête du fichier de liste.
 **Bloquant en CI (Q162 b)** : job `Garde SECURITY DEFINER` de `quality.yml`, sur toutes les PR, compté dans « CI Summary » (check obligatoire) — un rouge empêche le merge.
 Il ne démarre que Postgres (`supabase db start`, migrations appliquées), sans la suite d'intégration ; config `vitest.definer-guard.config.ts`.
-En local : `pnpm db:start` puis `pnpm test:definer-guard` (sous le verrou `supabase`, < 1 s).
+En local : `pnpm test:definer-guard` (pile de test démarrée et mise à jour par la commande, verrou `supabase-test`, < 1 s une fois la pile à jour).
 
 Vérifié contre le code le 2026-10-10.

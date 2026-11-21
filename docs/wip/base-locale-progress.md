@@ -440,5 +440,7 @@ Ce qui a été livré (#2967) :
   appliquée après les autres (la CI les joue dans l'ordre) ; `pnpm db:test:reset` remet l'ordre.
   `test:verifs` (Playwright) reste sur la base de dev. `scripts/run-all-migration-tests.sh` vise
   toujours `54322` en dur (script ancien, hors `package.json`).
-- **Reste pour la PR 4** : `docs/pratiques/base-de-donnees.md`, `tests.md` et `worktrees.md`
-  parlent encore d'une seule base (`environnement-de-dev.md` et `CLAUDE.md` sont à jour).
+- **Doc mise à jour le 2026-11-21, après le merge** (demande de David) : `environnement-de-dev.md`
+  (décisions d'outillage), `tests.md` § 4, `base-de-donnees.md`, `worktrees.md` (trois verrous),
+  `git-workflow.md` § 4, `rls-echecs-silencieux.md`. Reste pour la PR 4 : la remise à neuf en une
+  commande, sa doc, et le versement du chantier.

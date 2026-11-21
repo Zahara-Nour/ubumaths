@@ -29,7 +29,7 @@ donc une garde mécanique ; ailleurs, une règle courte suffit.
 | Branche courante                            | ✅ (git refuse le doublon)      | Garde-fou gratuit                                                                                   |
 | `git stash`, refs, hooks                    | ❌ (`.git` commun)              | Un stash de hook n'est pas attribuable à un chantier                                                |
 | **RAM, CPU, cache de typecheck**            | ❌                              | Un seul gros process à la fois → verrou `typecheck` (`check:incremental`, `check`, `build`, `lint`) |
-| **Supabase local**                          | ❌ (`project_id` + ports figés) | Une seule base pour tout le dépôt → verrou `supabase`                                               |
+| **Supabase local**                          | ❌ (`project_id` + ports figés) | Deux piles pour tout le dépôt (dev, test) → verrous `supabase` et `supabase-test`                   |
 | **Ports dev (5173-5180)**                   | ❌                              | Collision, et `kill:servers` tue tout                                                               |
 
 ---
@@ -55,12 +55,14 @@ donc une garde mécanique ; ailleurs, une règle courte suffit.
 5. **Ports** : ⛔ jamais de serveur de dev dans le dépôt principal ; dans un worktree, un port libre à partir de 5176 (`--strictPort` échoue si le port est pris : prendre le suivant). Jamais 5173, celui de David.
    ⛔ **`pnpm kill:servers` est interdit depuis un worktree** : il tue les ports
    5173→5180 **et** Supabase (54321), donc le serveur de l'utilisateur et la base
-   d'une autre session.
+   de dev de toutes les sessions.
 6. **Fin de vie** dès la PR mergée (voir plus bas). Un worktree fantôme, c'est
    696 Mo et une branche morte de plus.
 
-**Convention Supabase** : un seul chantier « base » à la fois. Le verrou n'est
-qu'un filet, pas un ordonnanceur.
+**Convention Supabase** : un seul chantier « base » à la fois sur la base de dev. Le verrou
+n'est qu'un filet, pas un ordonnanceur. Les tests d'intégration, eux, ne gênent plus personne :
+ils tournent sur la pile de test, que chaque lancement remet d'accord avec SA branche (reconstruite
+si elle porte la migration d'une autre session, [tests.md § 4](tests.md#4-écrire-un-test-dintégration)).
 
 ---
 
@@ -83,16 +85,18 @@ pnpm install --prefer-offline
 
 ---
 
-## Les deux verrous
+## Les trois verrous
 
 Implémentation : `scripts/lib/lock.py`, appelé par `scripts/check-incremental.sh`
 (qui se ré-exécute sous le verrou), par `scripts/gros-process.sh` (`pnpm check`,
-`build`, `lint` ; pas de verrou en CI ni sur Vercel) et par `scripts/with-db-lock.sh`.
+`build`, `lint` ; pas de verrou en CI ni sur Vercel), par `scripts/with-db-lock.sh` et par
+`scripts/pile-de-test.sh`.
 
-| Verrou      | Pris par                                                                                                                             | Ce qu'il évite                                               |
-| ----------- | ------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------ |
-| `typecheck` | `pnpm check:incremental`, `pnpm check`, `pnpm build`, `pnpm lint`                                                                    | Deux typechecks concurrents (un seul gros process à la fois) |
-| `supabase`  | `db:start`, `db:stop`, `db:reset`, `db:a-jour`, `db:seed-riche`, `db:dev-accounts`, `test:integration(:watch)`, `test:definer-guard` | Un `db:reset` au milieu d'une suite d'intégration            |
+| Verrou          | Pris par                                                                                             | Ce qu'il évite                                                            |
+| --------------- | ---------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| `typecheck`     | `pnpm check:incremental`, `pnpm check`, `pnpm build`, `pnpm lint`                                    | Deux typechecks concurrents (un seul gros process à la fois)              |
+| `supabase`      | `db:start`, `db:stop`, `db:reset`, `db:a-jour`, `db:seed-riche`, `db:dev-accounts` (base de **dev**) | Deux commandes qui réécrivent la base de dev en même temps                |
+| `supabase-test` | `test:integration(:watch)`, `test:definer-guard`, `db:test:stop`, `db:test:reset` (pile de **test**) | Deux suites sur la même pile, ou une reconstruction au milieu d'une suite |
 
 **Où ils vivent** : `<répertoire git commun>/.locks/<nom>`, c'est-à-dire
 `.git/.locks/` du dépôt principal — le seul endroit que tous les worktrees
@@ -214,14 +218,14 @@ ne pas `--force` sans avoir regardé ce qui allait être détruit.
 
 ## Dépannage
 
-| Symptôme                                                  | Cause                                                     | Remède                                                |
-| --------------------------------------------------------- | --------------------------------------------------------- | ----------------------------------------------------- |
-| `⛔ … tourne déjà` mais rien ne tourne visiblement        | L'autre session est dans un autre worktree — c'est le but | Le message nomme le worktree ; attendre               |
-| Le détenteur est un processus zombie                      | Processus vivant mais bloqué                              | `kill <PID>` indiqué dans le message                  |
-| `kill <PID>` sans effet, le refus persiste                | Un enfant forké survivant tient le descripteur hérité     | `lsof <fichier de verrou>` puis tuer l'enfant         |
-| `git worktree list` montre un worktree supprimé à la main | Dossier effacé sans `git worktree remove`                 | `git worktree prune`                                  |
-| Tests d'intégration en échec sans test en échec           | `db:reset` concurrent, **ou** GoTrue dégradé              | Le verrou exclut la 1ʳᵉ cause → `db:stop && db:start` |
-| `?? .claude/worktrees/` dans `git status`                 | Un worktree a été créé **dans** le dépôt                  | Le déplacer en frère (voir ci-dessous)                |
+| Symptôme                                                  | Cause                                                     | Remède                                               |
+| --------------------------------------------------------- | --------------------------------------------------------- | ---------------------------------------------------- |
+| `⛔ … tourne déjà` mais rien ne tourne visiblement        | L'autre session est dans un autre worktree — c'est le but | Le message nomme le worktree ; attendre              |
+| Le détenteur est un processus zombie                      | Processus vivant mais bloqué                              | `kill <PID>` indiqué dans le message                 |
+| `kill <PID>` sans effet, le refus persiste                | Un enfant forké survivant tient le descripteur hérité     | `lsof <fichier de verrou>` puis tuer l'enfant        |
+| `git worktree list` montre un worktree supprimé à la main | Dossier effacé sans `git worktree remove`                 | `git worktree prune`                                 |
+| Tests d'intégration en échec sans test en échec           | Reconstruction concurrente, **ou** GoTrue dégradé         | Le verrou exclut la 1ʳᵉ cause → `pnpm db:test:reset` |
+| `?? .claude/worktrees/` dans `git status`                 | Un worktree a été créé **dans** le dépôt                  | Le déplacer en frère (voir ci-dessous)               |
 
 ---
 
