@@ -157,6 +157,14 @@ async function lireLEtat(db: pg.Client): Promise<{
 	empreintes: Map<string, string> | null;
 	decorEnBase: string | null;
 }> {
+	const present = await db.query<{ present: boolean }>(
+		`select to_regclass('supabase_migrations.schema_migrations') is not null as present`
+	);
+	if (!present.rows[0].present) {
+		throw new Echec(
+			'La pile de test répond, mais sans historique de migrations (construction interrompue ?) : `pnpm db:test:reset`.'
+		);
+	}
 	const historique = await db.query<{ version: string }>(
 		`select version from supabase_migrations.schema_migrations`
 	);
@@ -265,7 +273,9 @@ async function preparer(forcer = false): Promise<void> {
 		}
 		if (decision.action === 'appliquer') {
 			const bilan = await mettreAJour(db, { dossier: MIGRATIONS, dire });
-			const jouees = new Set(bilan.jouees.map((m) => m.version));
+			const jouees = new Set(
+				[...bilan.jouees, ...bilan.notees.map((n) => n.migration)].map((m) => m.version)
+			);
 			await noterLesEmpreintes(
 				db,
 				fichiers.filter((f) => jouees.has(f.version)),
@@ -287,7 +297,7 @@ async function preparer(forcer = false): Promise<void> {
 
 async function main(): Promise<number> {
 	const [commande, ...reste] = process.argv.slice(2);
-	if (process.env.CI) {
+	if (process.env.GITHUB_ACTIONS) {
 		throw new Echec('En CI, la pile de test est celle du workflow : cette commande ne fait rien.');
 	}
 	if (commande === 'stop') {
@@ -305,6 +315,7 @@ async function main(): Promise<number> {
 			stdio: 'inherit',
 			env: { ...process.env, ...environnementDeTest() }
 		});
+		if (r.error) throw new Echec(`Commande de test non lancée : ${r.error.message}`);
 		return r.status ?? 1;
 	}
 	throw new Echec('Usage : index.ts lancer -- <commande…> | stop | reset');

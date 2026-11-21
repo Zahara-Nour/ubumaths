@@ -11,13 +11,14 @@
 # (une seule pile de test pour tous les worktrees) : exit 2 = attendre, ne pas contourner.
 #
 # En CI, la pile est celle du workflow (`supabase start`, ports par défaut) : la commande est
-# lancée telle quelle, sous le verrou habituel.
+# lancée telle quelle, sous le verrou habituel. On reconnaît la CI à `GITHUB_ACTIONS`, pas à `CI` :
+# un shell ou un outil qui exporterait `CI` sur le poste enverrait la suite sur la base de dev.
 set -euo pipefail
 ici="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 action="${1:?usage : pile-de-test.sh lancer <commande…> | stop | reset}"
 shift
 
-if [ -n "${CI:-}" ]; then
+if [ -n "${GITHUB_ACTIONS:-}" ]; then
 	[ "$action" = lancer ] || { echo "⛔ En CI, pas de pile de test à part." >&2; exit 1; }
 	exec bash "$ici/with-db-lock.sh" "$@"
 fi

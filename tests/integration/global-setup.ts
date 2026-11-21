@@ -28,10 +28,11 @@ function makeClient(): Client {
  * En local, la suite ne tourne QUE sur la pile de test (`pnpm test:integration`,
  * scripts/pile-de-test/). Lancée à la main sur la base de dev (`vitest --config …` sans le
  * lanceur), elle supprimerait le prof de dev et les classes du seed-riche : on refuse avant de
- * supprimer quoi que ce soit. La CI n'a qu'une pile, jetable : rien à vérifier.
+ * supprimer quoi que ce soit. La CI n'a qu'une pile, jetable : rien à vérifier. On la reconnaît à
+ * `GITHUB_ACTIONS`, pas à `CI`, qu'un outil peut exporter sur le poste.
  */
 async function refuserHorsPileDeTest(client: Client): Promise<void> {
-	if (process.env.CI) return;
+	if (process.env.GITHUB_ACTIONS) return;
 	const { rows } = await client.query<{ present: boolean }>(
 		`select to_regclass('${TABLE_EMPREINTES}') is not null as present`
 	);
