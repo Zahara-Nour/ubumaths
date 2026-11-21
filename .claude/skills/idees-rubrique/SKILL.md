@@ -15,12 +15,11 @@ Le tableau des rubriques prises, c'est
 ## ⛔ Le nom de la plateforme
 
 **Aucune trace, nulle part** : ni dans un message de commit, une branche, une PR, un artefact, ni
-dans **aucun fichier** du dépôt (commentaire, exemple, test compris). Le hook `commit-msg` refuse
-les messages fautifs (règle `nom-interdit`). Les branches, les PR et le contenu des fichiers ne
-sont pas gardés : avant `git push` et après `gh pr create`, grep `claude|anthropic` plus les formes
-du nom (mémoire `feedback_nom-plateforme-interdit`), sur les messages ET sur
-`git diff origin/main`. Le résultat doit être vide. On écrit « idées reprises d'ailleurs », « l'autre
-plateforme ».
+dans **aucun fichier** du dépôt (commentaire, exemple, test compris). Les gardes refusent les
+messages de commit (hook `commit-msg`), le contenu des fichiers et leurs chemins (pre-commit et
+CI) : voir [git-workflow.md § Noms interdits](../../../docs/pratiques/git-workflow.md#noms-interdits).
+Seuls le **nom de branche** et le **titre ou le corps d'une PR** ne sont pas gardés : les choisir
+sans le nom. Dans les messages, on écrit « idées reprises d'ailleurs », « l'autre plateforme ».
 
 ## La copie locale des exercices
 
