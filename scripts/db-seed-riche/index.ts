@@ -16,8 +16,12 @@
  * 5. Génère leur activité (./activite.ts), déclencheurs ACTIFS : l'historique
  *    des récompenses se remplit comme si l'app avait tout fait.
  *
- * À lancer après `pnpm db:reset` (base repartie de zéro), sous le verrou
- * Supabase : `pnpm db:seed-riche`.
+ * 6. Met d'abord la base à jour de ses migrations (../db-a-jour), puis la marque
+ *    « contenu de la prod » : `pnpm db:a-jour` sait alors qu'une migration de
+ *    contenu déjà faite en prod n'a rien à faire ici.
+ *
+ * Après `pnpm db:reset` (base repartie de zéro) ou pour rafraîchir le contenu,
+ * sous le verrou Supabase : `pnpm db:seed-riche`.
  */
 
 import { createClient } from '@supabase/supabase-js';
@@ -35,6 +39,7 @@ import {
 	type Ligne
 } from './regles';
 import { planActivite } from './activite';
+import { marquerContenuDeProd, mettreAJour } from '../db-a-jour/appliquer';
 
 const PROF_LOCAL = '11111111-1111-4111-8111-111111111111';
 const ADMIN_LOCAL = '33333333-3333-4333-8333-333333333333';
@@ -334,6 +339,20 @@ async function main() {
 		}
 		console.log(`Personnel de prod : ${correspondance.size} compte(s) → comptes locaux.`);
 
+		// Le contenu de la prod suppose le schéma de la prod : une base en retard de migrations
+		// recevrait des lignes sans leurs colonnes. On la met à jour d'abord (fonction appelée
+		// directement : le verrou Supabase est déjà tenu par cette commande). Toutes les migrations
+		// du worktree courant sont jouées, celles de sa branche comprises : le seed est un geste voulu.
+		const bilan = await mettreAJour(db, {
+			dossier: 'supabase/migrations',
+			dire: (ligne) => console.log(ligne)
+		});
+		if (bilan.arret) {
+			throw new Error(
+				`Base locale en retard, et sa mise à jour s'arrête sur ${bilan.arret.migration.fichier} (${bilan.arret.message}). Rien n’est copié : \`pnpm db:a-jour\` pour le détail.`
+			);
+		}
+
 		// Les comptes locaux (prof, admin, élève de dev) doivent exister avant le contenu.
 		await db.query(readFileSync('supabase/seed/dev_accounts.sql', 'utf8'));
 
@@ -372,6 +391,7 @@ async function main() {
 		// Rejoué après la copie : la classe et la configuration de dev, effacées par
 		// le remplacement des tables, reviennent (on conflict do nothing).
 		await db.query(readFileSync('supabase/seed/dev_accounts.sql', 'utf8'));
+		await marquerContenuDeProd(db);
 		const nbClasses = await creerEleves(db);
 		const plan = await genererActivite(db);
 		console.log(`\n✅ ${total} lignes de contenu copiées.`);

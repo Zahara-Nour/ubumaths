@@ -197,6 +197,11 @@ verrou `supabase`. CLI = devDependency exacte, lancée par `pnpm db:*` ou `pnpm 
 `pnpm db:reset && pnpm db:seed-riche` remplit la base locale avec le contenu de la prod (lu en lecture
 seule) et **30 élèves fictifs** : aucune ligne d'un utilisateur autre que le prof ou l'admin n'est
 copiée, **jamais de données d'élèves en local** (`scripts/db-seed-riche/index.ts`).
+`pnpm db:a-jour` joue les migrations qui manquent à la base locale **sans rien effacer** ; `pnpm dev`
+le fait tout seul avant de démarrer (`scripts/db-a-jour-auto.sh` : migrations d'`origin/main`
+seulement, jamais bloquant). `db:seed-riche` met la base à jour avant de copier et la marque
+« contenu de la prod » (`base_locale.etat`, local seulement) : `db:a-jour` note alors comme faites,
+sans les jouer, les migrations de contenu déjà passées en prod (`scripts/db-a-jour/`).
 
 **Claude Code** ([.claude/README.md](../../.claude/README.md)) :
 

@@ -2,18 +2,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-21 : étape 1 faite (§ 9), rien n'est codé._
+_Mis à jour le 2026-11-21 : découpage validé par David, PR 1 en cours._
 
-- **État** : étape 1 du § 6 terminée, la panne du § 3.1 est **rejouée et établie** sur une copie
-  isolée (§ 9). Base partagée intacte (628/628, seed simple).
-- **Prochaine action** : attendre la validation par David des comportements et du découpage
-  (§ 10), puis PR 1 dans un worktree `../ubumaths-wt-base-locale`.
-- **En attente de David** : son accord sur le § 10 (comportements + découpage en 4 PR), présenté
-  le 2026-11-21.
+- **État** : étape 1 faite (§ 9). David a validé le 2026-11-21 les comportements et le découpage
+  en 4 PR du § 10, pile de test séparée comprise. PR 1 (`pnpm db:a-jour`) codée et testée (§ 11).
+- **Prochaine action** : PR 1 → CI verte → merge ; puis PR 2 (pile de test séparée), une
+  session neuve.
+- **En attente de David** : rien.
 - **Pièges en cours** : base locale partagée (verrou `supabase`, ne jamais le contourner) ;
   `db:reset` efface les données locales de tout le monde ; `db:migrate` = **prod**. Pour
-  expérimenter : copie isolée du § 9.1, jamais la base partagée.
-- **Worktree / branche** : aucun ; à créer au premier code (`../ubumaths-wt-base-locale`).
+  expérimenter : copie isolée du § 9.1, jamais la base partagée. `supabase migration up --local`
+  est inutilisable sur la base partagée (§ 11).
+- **Worktree / branche** : `../ubumaths-wt-base-locale`, `feat/base-locale-a-jour`.
 
 ---
 
@@ -328,3 +328,45 @@ Découpage proposé (une PR = une session) :
 3. **PR 3, versions de la CI** : la pile de dev ignore `supabase/.temp/*-version`.
 4. **PR 4, remise à neuf en une commande + doc** (`environnement-de-dev.md`,
    `base-de-donnees.md`, `CLAUDE.md`, `docs/pratiques/worktrees.md`), versement.
+
+David, le 2026-11-21 : « Je valide » (comportements et découpage en 4 PR, deuxième pile comprise).
+
+## 11. PR 1 : `pnpm db:a-jour` (2026-11-21)
+
+- **Constat qui a changé le plan** : `supabase migration up --local` refuse de tourner dès que la
+  base porte une version sans fichier (`MigrationMissingLocalError`, essayé sur la copie), avec ou
+  sans `--include-all`. C'est l'état normal d'une base partagée par des worktrees sur des branches
+  différentes. La mise à jour est donc écrite ici (`scripts/db-a-jour/`), par `pg` direct, une
+  transaction par migration, même historique que la CLI.
+- **Règles** (`regles.ts`) : fichiers présents dont la version manque, dans l'ordre (fichier
+  ancien compris, version sans fichier ignorée). Après un échec, la migration est notée comme
+  faite seulement si : base marquée « contenu de la prod » **et** migration sans instruction de
+  schéma (`instructionDeSchema`, déjà utilisée par la garde `@migration-de-donnees` ; sur les
+  628 migrations, 368 sont de contenu, 6 migrations de contenu anciennes sont classées « schéma »,
+  dans le sens sûr) **et** erreur de classe `P0` (garde) ou `23` (contrainte). Sinon : arrêt, avec
+  le fichier, l'erreur et la raison. Secours : `--noter <version>`.
+- **Marque « contenu de la prod »** : table `base_locale.etat`, créée par `db:seed-riche` après la
+  copie (jamais par une migration : elle n'existe pas en prod) ; un `db:reset` l'efface avec le
+  contenu. Une marque lue dans les données (classes `LOCAL…`) aurait disparu pendant une suite
+  d'intégration interrompue.
+- **Automatique** : `pnpm dev` lance `scripts/db-a-jour-auto.sh` (0,26 s quand il n'y a rien à
+  faire) : seulement les migrations présentes sur `origin/main` (celle d'une branche en cours,
+  peut-être destructive, demande un `pnpm db:a-jour` explicite), jamais bloquant (verrou tenu,
+  base arrêtée, échec : un avertissement). `db:seed-riche` met la base à jour avant de copier.
+- **Preuves** : 17 tests de règles ; 14 tests d'intégration sur une base jetable
+  (`create database`), rouges quand on casse la règle (2 mutations) ; panne du § 9.2 rejouée de
+  bout en bout sur la copie : 3 migrations de contenu notées, 1 migration de schéma jouée, 0,18 s.
+- **Reste pour les PR suivantes** : `test:integration` ne lance pas encore `db:a-jour` (PR 2 : la
+  pile de test aura sa propre mise à jour).
+- **Revue de code (`code-reviewer`, 2026-11-21)** : rien de bloquant. Corrigé dans la PR :
+  délai d'attente d'un verrou en mode automatique (`lock_timeout` 5 s : un `alter table` ne
+  bloque plus `pnpm dev` derrière la transaction d'un autre serveur) ; cible refusée si le compte
+  n'est pas `postgres` / `postgres` (un tunnel vers une base distante écoute aussi sur
+  `localhost`) ; migration qui porte son propre `begin` / `commit` (6 anciennes) jouée telle
+  quelle et jamais notée après un échec ; seule `P0001` compte comme garde (plus toute la classe
+  `P0`) ; tests de la ligne de commande, du délai de verrou et du signal à PostgREST.
+- **Choix assumés, à revoir si ça gêne** : (1) le mode automatique joue TOUTES les migrations
+  d'`origin/main`, destructives comprises : une branche pas encore remise à jour sur `main` peut
+  voir disparaître en local une colonne qu'elle lit encore (comme en CI, qui teste la branche
+  fusionnée à `main`). (2) La marque « contenu de la prod » reste posée si une suite d'intégration
+  interrompue vide une partie du contenu ; la PR 2 (pile de test séparée) supprime ce cas.

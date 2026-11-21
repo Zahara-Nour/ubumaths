@@ -89,10 +89,10 @@ Implémentation : `scripts/lib/lock.py`, appelé par `scripts/check-incremental.
 (qui se ré-exécute sous le verrou), par `scripts/gros-process.sh` (`pnpm check`,
 `build`, `lint` ; pas de verrou en CI ni sur Vercel) et par `scripts/with-db-lock.sh`.
 
-| Verrou      | Pris par                                                                                                                | Ce qu'il évite                                               |
-| ----------- | ----------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
-| `typecheck` | `pnpm check:incremental`, `pnpm check`, `pnpm build`, `pnpm lint`                                                       | Deux typechecks concurrents (un seul gros process à la fois) |
-| `supabase`  | `db:start`, `db:stop`, `db:reset`, `db:seed-riche`, `db:dev-accounts`, `test:integration(:watch)`, `test:definer-guard` | Un `db:reset` au milieu d'une suite d'intégration            |
+| Verrou      | Pris par                                                                                                                             | Ce qu'il évite                                               |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------ |
+| `typecheck` | `pnpm check:incremental`, `pnpm check`, `pnpm build`, `pnpm lint`                                                                    | Deux typechecks concurrents (un seul gros process à la fois) |
+| `supabase`  | `db:start`, `db:stop`, `db:reset`, `db:a-jour`, `db:seed-riche`, `db:dev-accounts`, `test:integration(:watch)`, `test:definer-guard` | Un `db:reset` au milieu d'une suite d'intégration            |
 
 **Où ils vivent** : `<répertoire git commun>/.locks/<nom>`, c'est-à-dire
 `.git/.locks/` du dépôt principal — le seul endroit que tous les worktrees
