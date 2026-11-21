@@ -737,8 +737,10 @@ registre des traitements (`docs/systeme/conformite/registre-traitements.md`) à 
     alors que celui du journal des erreurs reste compté depuis l'envoi de la requête ;
   - CLS envoyé = pire rafale de décalages (définition de Google) ; celui du journal des erreurs
     reste le cumul de la visite ; sans prise en charge (Safari), aucun CLS ne part ;
-  - CLS et INP repartent s'ils ont grandi après un retour sur l'onglet : une visite longue peut
-    donc laisser plusieurs lignes (pas d'identifiant de visite pour dédoublonner, par anonymat) ;
+  - **une ligne par visite et par indicateur** (tranché par David le 2026-11-21, « je te suis » sur
+    la proposition B) : tout part une seule fois, au premier passage en arrière-plan ; ce qui se
+    passe après le retour sur l'onglet n'est pas mesuré (pas d'identifiant de visite pour
+    dédoublonner, par anonymat) ;
   - l'adresse IP passe dans le compteur de débit sous forme d'empreinte (un pseudonyme), gardée
     jusqu'à la purge quotidienne de `rate_limits` (au plus ~26 h), sans lien avec les mesures.
 - **Revues sur la PR** : `code-reviewer` sans bloquant ; corrigés : chargement d'une 404 reporté

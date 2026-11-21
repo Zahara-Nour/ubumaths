@@ -161,25 +161,37 @@ describe('createSampleCollector', () => {
 		]);
 	});
 
-	it('ne renvoie CLS et INP que s’ils ont grandi depuis le dernier envoi', () => {
+	it('une ligne par visite : CLS et INP ne repartent pas après un retour sur l’onglet', () => {
 		const { send, collector } = collecteur();
 		collector.noteRoute('/');
 		collector.recordCls(0.1);
 		collector.recordInp(100, '/');
 		collector.flush();
 
-		collector.recordCls(0.1);
-		collector.recordInp(100, '/');
-		collector.flush();
-		expect(send).toHaveBeenCalledTimes(1);
-
+		// l'élève revient, une interaction lente survient, il repart
 		collector.recordCls(0.3);
 		collector.recordInp(250, '/');
 		collector.flush();
-		expect(send).toHaveBeenCalledTimes(2);
-		expect(send.mock.calls[1][0]).toEqual([
-			{ route: '/', metric: 'CLS', value: 0.3 },
-			{ route: '/', metric: 'INP', value: 250 }
+
+		expect(send).toHaveBeenCalledTimes(1);
+		expect(send.mock.calls[0][0]).toEqual([
+			{ route: '/', metric: 'CLS', value: 0.1 },
+			{ route: '/', metric: 'INP', value: 100 }
+		]);
+	});
+
+	it('un passage en arrière-plan avant que la page soit notée ne consomme pas l’envoi', () => {
+		const { send, collector } = collecteur();
+		collector.recordLoad('TTFB', 90);
+		collector.flush();
+		expect(send).not.toHaveBeenCalled();
+
+		collector.noteRoute('/');
+		collector.recordCls(0.2);
+		collector.flush();
+		expect(send.mock.calls[0][0]).toEqual([
+			{ route: '/', metric: 'TTFB', value: 90 },
+			{ route: '/', metric: 'CLS', value: 0.2 }
 		]);
 	});
 
@@ -217,15 +229,14 @@ describe('createSampleCollector', () => {
 		expect(send.mock.calls[0][0]).toEqual([{ route: '/', metric: 'TTFB', value: 90 }]);
 	});
 
-	it('une mesure écartée ne bloque pas l’envoi suivant', () => {
+	it('une mesure écartée ne fait pas perdre les autres du même envoi', () => {
 		const { send, collector } = collecteur();
 		collector.noteRoute('/');
 		collector.recordInp(900_000, '/');
-		collector.flush();
-		expect(send).not.toHaveBeenCalled();
-
 		collector.recordCls(0.2);
+
 		collector.flush();
+
 		expect(send.mock.calls[0][0]).toEqual([{ route: '/', metric: 'CLS', value: 0.2 }]);
 	});
 });

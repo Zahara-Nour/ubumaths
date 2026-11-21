@@ -98,14 +98,18 @@ function roundValue(metric: SampleMetric, value: number): number {
 }
 
 /**
- * Garde les mesures d'une visite et les remet à `send` à chaque `flush()` (page
- * passée en arrière-plan).
+ * Garde les mesures d'une visite et les remet à `send` **une seule fois**, au premier
+ * `flush()` (premier passage de la page en arrière-plan).
  *
- * - Chargement (TTFB, FCP, LCP) : envoyé une seule fois, sur la page d'arrivée ;
- *   le LCP retenu est le dernier observé avant l'envoi.
- * - CLS : cumul de la visite, rattaché à la page courante ; INP : rattaché à la
- *   page où l'interaction a commencé. Ils repartent s'ils ont grandi (onglet
- *   repris puis quitté de nouveau), jamais à l'identique.
+ * Une ligne par visite et par indicateur (décision du 2026-11-21) : la table est
+ * anonyme, rien ne relierait deux envois d'une même visite, et un élève qui va et
+ * vient entre ses onglets compterait plusieurs fois. Ce qui se passe après le
+ * retour sur l'onglet n'est donc pas mesuré ici (le journal des erreurs, lui,
+ * reçoit toujours une mauvaise mesure qui a grandi).
+ *
+ * - Chargement (TTFB, FCP, LCP) : sur la page d'arrivée ; le LCP retenu est le
+ *   dernier observé avant l'envoi.
+ * - CLS : rattaché à la page courante ; INP : à la page où l'interaction a commencé.
  * - Une mesure hors bornes ou d'une page non comptée est écartée.
  */
 export function createSampleCollector(send: (samples: WebVitalSample[]) => void) {
@@ -116,12 +120,10 @@ export function createSampleCollector(send: (samples: WebVitalSample[]) => void)
 	let currentRoute: string | null = null;
 
 	const load = new Map<LoadMetric, number>();
-	let loadSent = false;
-
 	let cls: number | null = null;
-	let sentCls = -1;
 	let inp: { value: number; route: string | null } | null = null;
-	let sentInp = -1;
+	/** Vrai après l'envoi de la visite : plus rien n'est gardé ni envoyé */
+	let sent = false;
 
 	function sample(route: string | null, metric: SampleMetric, value: number) {
 		if (!isMeasuredRoute(route) || !isPlausibleValue(metric, value)) return null;
@@ -141,10 +143,10 @@ export function createSampleCollector(send: (samples: WebVitalSample[]) => void)
 		},
 
 		recordLoad(metric: LoadMetric, value: number): void {
-			if (!loadSent) load.set(metric, value);
+			if (!sent) load.set(metric, value);
 		},
 
-		/** CLS cumulé de la visite */
+		/** CLS de la visite */
 		recordCls(value: number): void {
 			cls = value;
 		},
@@ -155,34 +157,22 @@ export function createSampleCollector(send: (samples: WebVitalSample[]) => void)
 		},
 
 		flush(): void {
+			// Tant qu'aucune page n'est notée (page pas encore démarrée), tout attend
+			if (sent || !landed) return;
+			sent = true;
+
 			const samples: WebVitalSample[] = [];
+			const keep = (item: WebVitalSample | null) => {
+				if (item) samples.push(item);
+			};
 
-			// Tant qu'aucune page n'est notée (page pas encore démarrée), le chargement attend
-			if (!loadSent && landed) {
-				for (const metric of LOAD_METRICS) {
-					const value = load.get(metric);
-					const item = value === undefined ? null : sample(landingRoute, metric, value);
-					if (item) samples.push(item);
-				}
-				loadSent = true;
-				load.clear();
+			for (const metric of LOAD_METRICS) {
+				const value = load.get(metric);
+				if (value !== undefined) keep(sample(landingRoute, metric, value));
 			}
-
-			if (cls !== null && cls > sentCls) {
-				const item = sample(currentRoute, 'CLS', cls);
-				if (item) {
-					samples.push(item);
-					sentCls = cls;
-				}
-			}
-
-			if (inp !== null && inp.value > sentInp) {
-				const item = sample(inp.route, 'INP', inp.value);
-				if (item) {
-					samples.push(item);
-					sentInp = inp.value;
-				}
-			}
+			load.clear();
+			if (cls !== null) keep(sample(currentRoute, 'CLS', cls));
+			if (inp !== null) keep(sample(inp.route, 'INP', inp.value));
 
 			if (samples.length > 0) send(samples);
 		}

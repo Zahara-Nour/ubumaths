@@ -878,7 +878,7 @@ export function initWebVitals(
 				reportedInp = inp.value;
 			}
 
-			// Table des mesures : tout ce qui n'est pas encore parti, bon ou mauvais
+			// Table des mesures : tout, bon ou mauvais, une seule fois par visite
 			if (clsSupported) collector.recordCls(clsTracker.value());
 			if (inp) collector.recordInp(inp.value, inp.routeId);
 			collector.flush();

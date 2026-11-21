@@ -100,13 +100,16 @@ Trois boucles distinctes :
   novembre 2026 : Vercel a rendu payant le détail de Speed Insights). Le journal des erreurs ne
   reçoit que les mauvaises mesures, donc pas de quoi calculer un p75 ; cette table reçoit tout.
   - **Navigateur** (`web-vitals-mesures.ts`, branché dans `initWebVitals`) : TTFB, FCP et LCP
-    partent une fois, sur la page d'arrivée (le dernier LCP observé) ; CLS (pire rafale de
-    décalages, définition de Google, sur la page courante) et INP (sur la page où l'interaction
-    a commencé) partent à chaque passage en arrière-plan s'ils ont grandi. Le TTFB envoyé ici
+    sont rattachés à la page d'arrivée (le dernier LCP observé), le CLS (pire rafale de
+    décalages, définition de Google) à la page courante, l'INP à la page où l'interaction a
+    commencé. **Tout part une seule fois, au premier passage de la page
+    en arrière-plan** : une ligne par visite et par indicateur (la table est anonyme, rien ne
+    relierait deux envois d'une même visite) ; ce qui se passe après le retour sur l'onglet
+    n'est pas mesuré ici. Le TTFB envoyé ici
     est compté depuis le début de la navigation (définition de Google), pas depuis l'envoi de
     la requête comme celui du journal des erreurs. Sans prise en charge de `layout-shift`
     (Safari), aucun CLS ne part. Rien n'est envoyé en développement. Limites à connaître pour
-    lire le relevé : un FCP ou un LCP arrivé après le premier envoi est perdu ; le CLS est celui
+    lire le relevé : un FCP ou un LCP arrivé après l'envoi est perdu ; le CLS est celui
     de toute la visite, rattaché à la page affichée au moment de l'envoi, pas à celle où le
     décalage a eu lieu ; une arrivée sur une page sans route (404) n'envoie pas son chargement.
   - **Page = identifiant de route SvelteKit** (`/(public)/cours/[token]`), noté par le layout
