@@ -31,45 +31,8 @@ import type { RequestHandler } from './$types';
 import { createServerLogger } from '#lib/utils/logger.ts';
 import { readAllRows } from '#lib/server/read-all-rows.ts';
 import { createAnonymousSupabase } from '#lib/server/anonymous-supabase.ts';
-import type { Database } from '#lib/types/database.ts';
+import { TEMPLATE_COLUMNS } from '#lib/server/question-template-columns.ts';
 import type { CatalogueProgrammePoint } from '#lib/questions/catalogue-programme.ts';
-
-type TemplateColumn = keyof Database['public']['Tables']['question_templates']['Row'];
-
-/** Colonnes du modèle que la liste envoie : toutes, sauf les cas de test */
-const TEMPLATE_COLUMN_LIST = [
-	'id',
-	'title',
-	'description',
-	'type',
-	'status',
-	'grades',
-	'level',
-	'classification_node_id',
-	'shared',
-	'variations',
-	'options',
-	'precision',
-	'delay',
-	'default_display_options',
-	'exercise_instruction',
-	'created_at',
-	'updated_at',
-	'created_by'
-] as const satisfies readonly TemplateColumn[];
-
-/**
- * Garde de compilation : une colonne ajoutée à `question_templates` doit être
- * rangée ici, dans la liste ou parmi les exclues — sinon `pnpm check` échoue.
- */
-type ForgottenColumn = Exclude<
-	TemplateColumn,
-	(typeof TEMPLATE_COLUMN_LIST)[number] | 'test_specs'
->;
-const NO_FORGOTTEN_COLUMN: [ForgottenColumn] extends [never] ? true : ForgottenColumn = true;
-void NO_FORGOTTEN_COLUMN;
-
-const TEMPLATE_COLUMNS = TEMPLATE_COLUMN_LIST.join(', ');
 
 /** Colonnes de l'arbre dont le catalogue a besoin (`CatalogueNode`) */
 const NODE_COLUMNS = 'id, kind, name, parent_id, position';
