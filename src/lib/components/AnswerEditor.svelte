@@ -18,6 +18,9 @@
 	- statementShared: l'énoncé est le partagé (la variation n'a pas le sien) :
 	  cartes en lecture seule (on coche seulement) et pas d'ajout de case choix,
 	  sinon les réponses des autres variations se décaleraient
+
+	Sous chaque case à écriture ordinaire : ses erreurs prévues
+	(`ExpectedErrorsEditor`, chantier idees-format, idée 3)
 -->
 
 <script lang="ts">
@@ -33,6 +36,7 @@
 	} from '#lib/questions/choice-case-editor.ts';
 	import { readWorkFigureCases, type WorkFigureCase } from '#lib/questions/work-figure-editor.ts';
 	import ChoiceCaseEditor from './ChoiceCaseEditor.svelte';
+	import ExpectedErrorsEditor from './ExpectedErrorsEditor.svelte';
 	import { Input } from '#lib/components/ui/input/index.ts';
 	import { Label } from '#lib/components/ui/label/index.ts';
 	import * as Card from '#lib/components/ui/card/index.ts';
@@ -172,6 +176,7 @@
 										bind:value={blank.expectedAnswer}
 										class="font-mono"
 									/>
+									<ExpectedErrorsEditor bind:errors={blank.expectedErrors} caseNumber={index + 1} />
 								</div>
 								<Button
 									variant="destructive"

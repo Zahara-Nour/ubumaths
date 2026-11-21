@@ -19,7 +19,7 @@ couvre:
   - 'src/lib/components/question-inputs/**'
   - src/lib/components/markdown/nodes/BlankInput.svelte
   - 'src/lib/components/{QuestionTemplateForm,SharedFieldsEditor,ChoiceCaseEditor}.svelte'
-  - 'src/lib/components/{QuestionTemplateCard,QuestionPreview*,QuestionCategoryFields,QuestionTemplateHelpDialogs,CategorySelector,CartQuestionCard,DisplayOptionsEditor,ValidationOptionsEditor,PrecisionEditor,VariableEditor,AnswerEditor,CourseQuestionToggle}.svelte'
+  - 'src/lib/components/{QuestionTemplateCard,QuestionPreview*,QuestionCategoryFields,QuestionTemplateHelpDialogs,CategorySelector,CartQuestionCard,DisplayOptionsEditor,ValidationOptionsEditor,PrecisionEditor,VariableEditor,AnswerEditor,ExpectedErrorsEditor,CourseQuestionToggle}.svelte'
   - 'src/lib/stores/{questionCart,questionCategories,questionTemplates}.svelte.ts'
   - 'src/lib/components/series/{MySeriesPreview,MySeriesDock}.svelte'
   - src/lib/components/exercises/VariationEditor.svelte
@@ -1370,6 +1370,12 @@ ne bouge. Une erreur prévue qui ne se calcule pas sur un tirage (`1/(a-5)` pour
 jugée fausse avec son message ; une spec peut nommer le message attendu
 (`expected.expectedErrorMessage`). La question publique d'une évaluation notée ne les porte pas
 (liste blanche de `public-question.ts`).
+Éditeur du prof : sous chaque case à écriture ordinaire d'`AnswerEditor`, `ExpectedErrorsEditor`
+(« Ajouter une erreur prévue ») ; trois champs : « Si l'élève répond » (`answer`), « Lui écrire »
+(`message`), « Nom court » facultatif (`label`, retiré quand il est vide : Zod refuse la chaîne
+vide) ; la dernière erreur retirée remet `expectedErrors` à `undefined`. Pas sur une case choix ni
+une figure de travail ; une case texte l'affiche mais la génération la refuse (message situé).
+Garde : `AnswerEditor-erreurs-prevues.svelte.test.ts`.
 
 Case « figure » : une ligne `figure` (texte du bloc, réponse brute `droite(…)`, jamais rendue en
 markdown, lue par le juge borné) au lieu de « Réponse attendue : `droite(A;B)` ». `FigureAnswer.svelte`
