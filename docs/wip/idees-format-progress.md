@@ -6,17 +6,17 @@ Mettre en œuvre les idées retenues dans [idees-format-exercices.md](idees-form
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-21, PR 5 (idée 3, moteur) commitée, pas encore ouverte._
+_Mis à jour le 2026-11-21, PR #2962 ouverte (idée 3, moteur), CI en cours._
 
-- **État** : idées 1 et 2 terminées. Idée 3 : phase 0 validée (§ Idée 3) ; PR 5 « moteur »
-  commitée sur `feat/idees-format-erreurs-prevues` (tests verts, `check:incremental` 0 erreur).
-- **Prochaine action** : revue `code-reviewer` (Opus, correction des réponses) du diff
-  `origin/main...HEAD` — à relancer si son rapport est perdu par un `/clear` ; corriger ; push ;
-  ouvrir la PR ; CI ; merge. Puis PR 6 (éditeur : « Ajouter une erreur prévue » sous chaque case),
-  PR 7 (ligne « Types d'erreur » côté prof, `label` sinon message).
+- **État** : idées 1 et 2 terminées. Idée 3 : phase 0 validée (§ Idée 3) ; #2962 « moteur »
+  ouverte, revue Opus faite (aucun bloquant, 4 points corrigés : primitive/solution-ed refusées,
+  graine mélangée, message rogné, JSDoc).
+- **Prochaine action** : CI de #2962 verte → merge ; puis PR 6 (éditeur : « Ajouter une erreur
+  prévue » sous chaque case, champs réponse / message / nom court), PR 7 (ligne « Types d'erreur »
+  côté prof, `label` sinon message).
 - **En attente de David** : rien.
 - **Pièges en cours** : intégration locale bloquée par les données d'une autre session, la CI fait
-  foi ; fichiers de lot avec `expectedErrors` refusés en prod avant le `deploy:prod` de la PR 5.
+  foi ; fichiers de lot avec `expectedErrors` refusés en prod avant le `deploy:prod` de #2962.
 - **Worktree / branche** : `../ubumaths-wt-idees-format` · `feat/idees-format-erreurs-prevues`.
 
 ## Idée 1 — phase 0 validée (David, 2026-11-21)
