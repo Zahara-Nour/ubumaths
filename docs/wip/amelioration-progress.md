@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-13, après #2611 (PR 2 du n° 26)._
+_Mis à jour le 2026-11-21, après #2969._
 
-- **État** : 0.82.0 en prod ; **n° 26 livré** (mesurer un segment en posant la règle) : #2606 + #2611 (énoncé PDF à 1 cm si la figure tient, sinon réduite) mergées ; ligne 26 de `outils-manquants.md` en « Livré », modèles CP-035 / CE1-044 aux sessions `questions-*` ; piste « où les élèves bloquent » **reportée** (prod au 2026-11-11 : 101 traces, 2 élèves sur 82) · **Prochaine action** : autres pistes, à choisir avec David : tri des journaux wip ; montées majeures : #2074 blockly remplacée par #2627 (chantier `blockly`, 2026-11-14), #2075 brevo (aucun gain, `brevo.ts` à réécrire) et #1667 SvelteKit 3 (alertes 96/97/100/101 sans effet chez nous) laissées ouvertes · **En attente de David** : le choix de la prochaine piste · **Après le prochain `deploy:prod`** : lignes #2545, #2553, #2555, #2564, #2572, #2577, #2606, #2611 de `verifications-manuelles.md` · **Tranché** : élève actif = réel, membre `active` d'une classe, hors-classe exclus ; INP = notre code corrigé ; cible = balise + `id` + `role`, jamais d'`aria-label` ; B et C de la piste 4 (c) écartés ; #1788 clos ; version : 5 min, rechargement sur lien et Précédent / Suivant seulement ; typst.ts hors de Dependabot ; comptes élèves inactifs gardés (scolarité + 5 ans) ; PDF de `mesure AB` : 1 cm si ça tient · **Pièges en cours** : monter un paquet de la config ESLint → Lint à froid ~28 min ; un `id` construit sur du texte saisi part dans `error_logs` ; module de `src/lib` qui agit au chargement hors de `scripts/side-effect-modules.ts` = absent du build ; `db:migrate` → `! pnpm db:migrate` ; cetz se vérifie par `scripts/fiches/compile-prod.mjs` (tests de compilation hors réseau, sans cetz) ; un commit de doc seule ne relance pas la CI · **Worktree / branche** : aucun
+- **État** : mesures de performance (2026-11-21) : Vercel a rendu payant le détail par indicateur → relevé mensuel cassé, workflow `web-vitals.yml` **désactivé** ; reste le score global gratuit sur 7 jours, à l'écran ; **#2969 mergée** (pas en prod) : le markdown ne charge plus jsdom au rendu serveur · **Prochaine action** : selon le choix de David, source de mesure de remplacement ; après le prochain `deploy:prod`, recompter sur une build fraîche les pages qui chargent jsdom (79 sur 338 avant #2969) · **En attente de David** : la source de mesure — table anonyme chez nous (toutes les mesures, pas seulement les mauvaises ; migration, question d'accès à poser), Lighthouse hebdomadaire en CI, ou rien ; puis le choix de la prochaine piste · **Tranché** : ne rien payer à Vercel (2026-11-21) ; le reste inchangé, cf. sections ci-dessous · **Pièges en cours** : notre suivi (`reportWebVital`) n'envoie que les mesures mauvaises → aucun p75 calculable depuis `error_logs` ; le projet Vercel s'appelle `chiphre` (`.vercel/project.json` garde l'ancien nom) ; l'état d'avant le 2026-11-21 (n° 26, vérifications manuelles d'après déploiement, pièges ESLint / `db:migrate`) est dans l'historique git de ce bloc · **Worktree / branche** : aucun
 
 ## N° 26 — mesurer un segment en posant la règle : phase 0 (2026-11-12, validée)
 
@@ -631,3 +631,19 @@ essai, 1280×800, 3 essais par case. 4G = CDP `emulateNetworkConditions` 9 Mbit/
   (`atelier-apercu-${list.name}`) → `${$props.id()}-apercu-<numéro>`. Non retenu (notes) :
   `sanitizeUrl` ne masque pas les UUID du chemin (déjà le cas avant) ; Zod du `context` non typé
   (route ouverte : la garde est côté client).
+
+## Mesures de performance : Vercel payant, jsdom (2026-11-21)
+
+- **Vercel** : `vercel metrics vercel.speed_insights.*` répond 402 « Speed Insights Plus is required »
+  pour toute fenêtre (7 j, 3 j, 24 h, 1 h), même CLI 63.1.0 et même projet que le relevé réussi du
+  2026-11-01. L'onglet Speed Insights (offre Hobby) ne donne plus que le « Real Experience Score »
+  sur 7 jours ; LCP, FCP, INP, CLS et TTFB sont « Available in Plus ». Speed Insights collecte
+  toujours. Workflow `web-vitals.yml` désactivé par `gh workflow disable` (fichier intact).
+- **Score gratuit du 2026-11-21** (7 j, ordinateurs, 124 mesures) : global 83 ; accueil 96 (33) ;
+  `/automaths/test` 84 (24) ; tableau de bord 88 (15) ; Atelier 100 (11) ; `/automaths` 55 (7).
+- **Notre suivi** : `reportWebVital` jette les valeurs « bonnes » ; `error_logs` ne contient que
+  les mauvaises (30 j : 104 LCP, 132 FCP, 46 INP, 7 TTFB), donc pas de dénominateur. Une valeur
+  absurde est encore passée sur l'accueil après #2512 (LCP 5 648 992 ms), non étudiée.
+- **jsdom (#2969)** : `sanitizeUrl` sortie dans `sanitize-url.ts` ; journal archivé
+  `docs/archive/wip/jsdom-sanitize-url-progress.md`. Chargent encore jsdom au rendu serveur :
+  `ReportErrorDialog`, `CellOutputs`, les deux pages de modèles de messages, les notifications.

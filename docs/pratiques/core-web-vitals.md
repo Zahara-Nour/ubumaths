@@ -3,6 +3,16 @@
 > Écrit le 2026-10-11, après le premier diagnostic : FCP p75 de l'accueil à 3,4 s pour un TTFB de
 > 0,5 s, que personne n'avait vu (corrigé par #1073).
 
+> ⚠️ **Depuis novembre 2026, le détail par indicateur est payant chez Vercel** (constaté le
+> 2026-11-21, offre Hobby). `vercel metrics vercel.speed_insights.*` répond « A subscription to
+> Speed Insights Plus is required », quelle que soit la fenêtre ; le relevé du 2026-11-01 (#2094)
+> est le dernier. Reste gratuit, à l'écran seulement : le « Real Experience Score » des 7 derniers
+> jours, par page (`https://vercel.com/zaharanours-projects/chiphre/speed-insights` ; le projet
+> Vercel s'appelle `chiphre`, plus `ubumaths-6op8`). Le workflow `web-vitals.yml` est **désactivé**
+> (`gh workflow enable web-vitals.yml` pour le rétablir). Les commandes et le relevé mensuel
+> décrits ci-dessous ne fonctionnent donc plus tels quels. Source de remplacement : à trancher
+> par David (journal `docs/wip/amelioration-progress.md`).
+
 ## Les vraies mesures existent déjà
 
 `@vercel/speed-insights` est branché dans `src/routes/+layout.svelte` : Vercel enregistre le

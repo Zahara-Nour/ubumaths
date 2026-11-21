@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-21, à l'ouverture de la PR._
+_Mis à jour le 2026-11-21, après #2969._
 
-- **État** : PR ouverte (`sanitizeUrl` sorti dans `src/lib/utils/sanitize-url.ts`, test de garde `markdown-sans-dompurify.test.ts`) · **Prochaine action** : merger à CI verte, puis archiver ce journal · **En attente de David** : rien · **Pièges en cours** : aucun · **Worktree / branche** : `../ubumaths-wt-jsdom-sanitize-url`, `perf/jsdom-sanitize-url`
+- **État** : livré, #2969 mergée le 2026-11-21 (pas en prod) ; journal archivé · **Prochaine action** : aucune ici ; suite dans `docs/wip/amelioration-progress.md` · **En attente de David** : rien · **Pièges en cours** : aucun · **Worktree / branche** : supprimés
 
 ## Constat (2026-11-21)
 
