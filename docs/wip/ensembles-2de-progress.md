@@ -2,12 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-20, relecture rouverte dans `/dev/modeles`._
+_Mis à jour le 2026-11-21, après le déploiement 0.99.0 (#2948, #2949) et #2951._
 
 - **État** : gros lot publié (36 neufs + 21 variations de 16 publiés). David relit tout dans `/dev/modeles` : séries de relecture `54d77552` (36 nouveaux) et `d580e46d` (16 complétés), fichiers `scripts/series/2-relecture-nombres-{nouveaux,publies}.json`.
 - **Prochaine action** : lire les verdicts « À revoir » et leurs commentaires en base (verdicts de `/dev/modeles`), corriger : brouillons → aucun (tous publiés) ; modèles publiés → fichiers + `migration-contenu.ts` (variation corrigée = signalée) ou nouvelle variation.
 - **En attente de David** : la relecture dans `/dev/modeles`, dont les 6 choix (rationaliser, décomposition, entier + fraction, téra, arrondi, puissances) qu'il a validés sans les voir ; « plusieurs choses me paraissent bizarres ».
-- **Pièges en cours** : `/dev/modeles` perd la série après un verdict tant que #2948 n'est pas déployé (rouvrir le lien) ; ne jamais nommer la plateforme d'origine ; corriger une variation d'un publié change ce que voient les élèves qui y ont répondu (indice gardé) ; branche locale `feat/ensembles-2de-lot-rangement` restée (`-D` = liste `ask`).
+- **Suite en parallèle** : skill `idees-rubrique`, une session par rubrique, tableau [idees-ailleurs-repartition.md](idees-ailleurs-repartition.md) ; exercices lus dans la copie locale nettoyée `extern/banque-exercices/` ; hook `nom-interdit` (#2951).
+- **Pièges en cours** : ne jamais nommer la plateforme d'origine ; corriger une variation d'un publié change ce que voient les élèves qui y ont répondu (indice gardé) ; branche locale `feat/ensembles-2de-lot-rangement` restée (`-D` = liste `ask`).
 - **Worktree / branche** : `../ubumaths-wt-ensembles-2de`, détaché sur `origin/main`.
 
 ## Décisions de David (2026-11-20)

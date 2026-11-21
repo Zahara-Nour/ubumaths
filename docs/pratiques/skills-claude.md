@@ -113,6 +113,18 @@ n'ont pas de modèle » ; il refuse de travailler sans **niveau**.
 - Rien n'est écrit en production par lui : `create-questions --publier` et la publication, c'est
   toi qui les lances.
 
+## `idees-rubrique` — une rubrique d'ailleurs par session
+
+`/idees-rubrique <niveau> <rubrique>` (ou « prends la rubrique fonctions de Seconde ») : la session
+réserve la rubrique dans [idees-ailleurs-repartition.md](../wip/idees-ailleurs-repartition.md), puis
+reprend les idées d'exercices d'une autre plateforme pour compléter nos modèles. Elle fait le relevé
+dans le code source, la phase 0 avec toi, le gros lot (modèles neufs et variations de modèles publiés,
+réservés eux aussi), la relecture dans `/dev/modeles` et la publication.
+
+- Plusieurs sessions tournent en même temps, une par rubrique. C'est la démarche du chantier
+  `ensembles-2de`, appliquée à n'importe quel niveau.
+- Jamais le nom de la plateforme dans un commit (le hook le refuse), une branche ou une PR.
+
 ## `reprendre` — repartir d'un chantier après un `/clear`
 
 `/reprendre <sujet>` (ou « reprends », « on en était où ? ») : la session retrouve le journal
