@@ -1,11 +1,11 @@
-# Chiphre (ex-UbuMaths)
+# UbuMaths
 
 [![CI](https://github.com/Zahara-Nour/ubumaths/actions/workflows/quality.yml/badge.svg)](https://github.com/Zahara-Nour/ubumaths/actions/workflows/quality.yml)
 [![CodeQL](https://github.com/Zahara-Nour/ubumaths/actions/workflows/codeql.yml/badge.svg)](https://github.com/Zahara-Nour/ubumaths/actions/workflows/codeql.yml)
 [![Release](https://img.shields.io/github/v/release/Zahara-Nour/ubumaths?sort=semver)](https://github.com/Zahara-Nour/ubumaths/releases)
 [![Node](https://img.shields.io/badge/node-22.x-339933?logo=node.js&logoColor=white)](.nvmrc)
 
-Application de mathématiques pour élèves francophones, écrite par leur professeur — [chiph.re](https://chiph.re). Le dépôt garde son nom historique, « ubumaths ».
+Application de mathématiques pour élèves francophones, écrite par leur professeur. Le site : [chiph.re](https://www.chiph.re). Le dépôt garde son nom historique.
 
 **Modèle mono-professeur** : un professeur et un admin ; l'école est la frontière sociale, la classe un sous-groupe d'organisation ([ADR 0002](docs/adr/0002-mono-professeur-ecole-frontiere-sociale.md)). Les données sont celles d'**élèves mineurs**, hébergées en Europe (RGPD : [docs/systeme/conformite/](docs/systeme/conformite/)).
 
