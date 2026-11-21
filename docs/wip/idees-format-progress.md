@@ -6,14 +6,16 @@ Mettre en œuvre les idées retenues dans [idees-format-exercices.md](idees-form
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-21, après #2954._
+_Mis à jour le 2026-11-21, après #2955._
 
-- **État** : idée 1, PR 1 mergée (#2954) ; PR 2 (avertissement du panier) en cours, sur sa branche.
-- **Prochaine action** : PR 2 : CI, relecture `code-reviewer` (Sonnet), merge. Puis idées 2 à 5.
+- **État** : idée 1 terminée : tirage (#2954) et avertissement du panier (#2955), mergés.
+- **Prochaine action** : idée 2 (le prof choisit les variations d'une ligne de série) : phase 0 à
+  écrire et à faire valider par David avant tout code.
 - **En attente de David** : rien (pas de `deploy:prod` demandé).
 - **Pièges en cours** : test d'intégration local bloqué par des données d'une autre session
-  (`class_journal_share_tokens`), la CI fait foi ; le worktree `automaths-serie` touche aussi le panier.
-- **Worktree / branche** : `../ubumaths-wt-idees-format` · `feat/idees-format-panier`.
+  (`class_journal_share_tokens`), la CI fait foi ; le worktree `automaths-serie` touche aussi le
+  panier ; la CI d'intégration dure ~17 min (étude prévue dans une session `ci-integration`).
+- **Worktree / branche** : aucun ; à créer pour l'idée 2.
 
 ## Idée 1 — phase 0 validée (David, 2026-11-21)
 
