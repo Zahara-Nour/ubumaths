@@ -1362,8 +1362,9 @@ des remarques de la case, à la place de la phrase du type deviné ; les autres 
 arrondi) suivent. La note ne change pas ; une mauvaise forme ou une réponse juste n'est jamais une
 erreur prévue (celle qui tombe sur la bonne réponse d'un tirage est donc ignorée) ; deux erreurs de
 même valeur : la première écrite. Le générateur résout réponses et messages (variables,
-`{{solution}}`) sur une **source de hasard à part** (graine décalée) : aucun tirage de l'instance
-ne bouge. Case autre qu'une écriture mathématique ordinaire (choix, geste, figure, tableau,
+`{{solution}}`) sur une **source de hasard à part** (graine mélangée) : aucun tirage de l'instance
+ne bouge. Une erreur prévue qui ne se calcule pas sur un tirage (`1/(a-5)` pour `a = 5`) fait
+échouer ce tirage : le rejeu le voit, l'auteur pose une condition. Case autre qu'une écriture mathématique ordinaire (choix, geste, figure, tableau,
 `rulesSuffice`, `orderIndependent`) : génération refusée, message situé. Le rejeu de
 `checkTemplate` répond chaque erreur prévue de chaque tirage et refuse le modèle si elle n'est pas
 jugée fausse avec son message ; une spec peut nommer le message attendu

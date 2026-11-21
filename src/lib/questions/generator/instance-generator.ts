@@ -216,10 +216,17 @@ function robotSceneImpossible(
 	});
 }
 
-/** Erreurs d'un bloc robot qui tiennent au tirage (`robotSceneImpossible`) */
-/** Décalage de graine de la source des erreurs prévues (distincte de celle de l'instance) */
-const EXPECTED_ERRORS_SEED_OFFSET = 7919;
+/**
+ * Graine de la source des erreurs prévues, MÉLANGÉE (pas `seed + k`, qui serait la
+ * source d'instance d'une autre graine). Exception assumée à « jamais `f(seed)` »
+ * (`utils/random.ts`) : la source principale ne doit pas être consommée, sinon tous
+ * les tirages suivants bougeraient ; une corrélation avec elle est sans effet ici.
+ */
+function expectedErrorsSeed(seed: number): number {
+	return Math.imul(seed ^ 0x9e3779b9, 0x85ebca6b) >>> 0;
+}
 
+/** Erreurs d'un bloc robot qui tiennent au tirage (`robotSceneImpossible`) */
 const ROBOT_TIRAGE_ERRORS = [/aucun code de/, /l’arrivée est le départ/, /est sur une case grise/];
 
 const ROBOT_RANDOM_MESSAGE =
@@ -594,7 +601,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 		// Erreurs prévues (idée 3) : leur propre source, pour ne décaler AUCUN tirage
 		// de l'instance (une copie régénérée par sa graine reste la même, ADR 0015)
 		const errorRandom = createRandomSource(
-			seed === undefined ? undefined : seed + EXPECTED_ERRORS_SEED_OFFSET
+			seed === undefined ? undefined : expectedErrorsSeed(seed)
 		);
 
 		// Select a variation
@@ -1529,10 +1536,14 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 						resolved.type !== 'math' ||
 						resolved.construire !== undefined ||
 						resolved.rulesSuffice === true ||
+						// Primitive, solution d'équation différentielle : jugées sur `integrand` /
+						// `equation`, jamais sur l'attendu — une erreur prévue n'y serait jamais vue
+						resolved.answerKind === 'primitive' ||
+						resolved.answerKind === 'solution-ed' ||
 						template.options?.orderIndependent === true
 					) {
 						throw new Error(
-							`Case ${i + 1} : une erreur prévue ne va que dans une case à écriture mathématique ordinaire (ni texte, ni geste, ni case jugée par ses règles seules, ni cases appariées librement)`
+							`Case ${i + 1} : une erreur prévue ne va que dans une case à écriture mathématique ordinaire (ni texte, ni geste, ni primitive, ni solution d'équation différentielle, ni case jugée par ses règles seules, ni cases appariées librement)`
 						);
 					}
 					resolved.expectedErrors = expectedErrors.map((error, k) => {
@@ -1757,7 +1768,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 							cleanCoefficients,
 							capitalPairs
 						)
-					)
+					).trim()
 				}));
 			}
 		}

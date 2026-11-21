@@ -155,7 +155,8 @@ describe('erreur prévue : le hasard de l’instance n’est pas décalé', () =
 			[
 				{
 					expectedAnswer: '{{eval:a+b}}',
-					expectedErrors: [{ answer: '{{eval:a-b}}', message: 'Soustraction.' }]
+					// `{{1..9}}` consomme un tirage : il doit venir d'une autre source
+					expectedErrors: [{ answer: '{{eval:a-b}}+{{1..9}}', message: 'Soustraction.' }]
 				}
 			],
 			{ variables }
@@ -213,6 +214,22 @@ describe('erreur prévue : erreurs de l’auteur', () => {
 		);
 		expect(refuse.passed).toBe(false);
 		expect(refuse.generation.failures[0]?.errors.join(' ')).toMatch(/erreur prévue/);
+	});
+});
+
+describe('erreur prévue : primitive', () => {
+	it('case primitive → génération refusée (jugée sur la fonction, jamais sur l’attendu)', () => {
+		const t = template('Une primitive de $2x$ : $?$', [
+			{
+				expectedAnswer: 'x^2',
+				answerKind: 'primitive',
+				integrand: '2x',
+				expectedErrors: [{ answer: '2', message: 'Tu as dérivé.' }]
+			} as TemplateBlank
+		]);
+		const r = generateInstance(t, 1);
+		expect(r.success).toBe(false);
+		if (!r.success) expect(r.errors.join(' ')).toMatch(/ni primitive/);
 	});
 });
 

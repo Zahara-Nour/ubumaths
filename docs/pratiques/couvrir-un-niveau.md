@@ -217,7 +217,8 @@ Dans un worktree (`git worktree add -b feat/questions-<lot> ../ubumaths-wt-quest
    **Erreurs prévues** (chantier `idees-format`, idée 3 ; décision de David du 2026-11-21) : le
    script **propose déjà** les erreurs typiques d'une case avec leur message à l'élève ; le prof
    les modifie ou les complète ensuite dans l'éditeur. Dans la case (écriture mathématique
-   ordinaire seulement : ni choix, ni geste, ni figure, ni `rulesSuffice`, ni `orderIndependent`) :
+   ordinaire seulement : ni choix, ni geste, ni figure, ni primitive, ni solution d'équation
+   différentielle, ni `rulesSuffice`, ni `orderIndependent`) :
    `"expectedErrors": [{"answer": "{{eval:a-b}}", "message": "Tu as soustrait au lieu
 d'additionner.", "label": "Soustraction au lieu d'addition"}]`. `answer` s'écrit comme la
    réponse attendue (variables permises) ; `message` (variables, `$…$`) parle à l'élève de **son**

@@ -35,16 +35,16 @@ function circularDependencyErrors(template: QuestionTemplate): string[] {
 	return errors;
 }
 
-/**
- * Raisons qui empêchent de publier `template` (vide = publiable). Le modèle
- * doit être débarrassé des colonnes de la base (`withoutDbMetadata`) : le
- * schéma strict les refuserait comme clés inconnues.
- */
 /** Messages d'erreurs prévues obtenus, pour l'auteur */
 function formatMessages(messages: string[]): string {
 	return messages.length === 0 ? 'aucun' : messages.map((message) => `« ${message} »`).join(', ');
 }
 
+/**
+ * Raisons qui empêchent de publier `template` (vide = publiable). Le modèle
+ * doit être débarrassé des colonnes de la base (`withoutDbMetadata`) : le
+ * schéma strict les refuserait comme clés inconnues.
+ */
 export function templatePublicationErrors(template: QuestionTemplate): string[] {
 	const report = checkTemplate(template);
 	const circularErrors = circularDependencyErrors(template);
