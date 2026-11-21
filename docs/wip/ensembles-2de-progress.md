@@ -2,14 +2,24 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-21, après le déploiement 0.99.0 (#2948, #2949), #2951 et #2952._
+_Mis à jour le 2026-11-21, après #2951, #2952, #2953 et la comparaison des formats d'exercice._
 
-- **État** : gros lot publié (36 neufs + 21 variations de 16 publiés). David relit tout dans `/dev/modeles` : séries de relecture `54d77552` (36 nouveaux) et `d580e46d` (16 complétés), fichiers `scripts/series/2-relecture-nombres-{nouveaux,publies}.json`.
-- **Prochaine action** : lire les verdicts « À revoir » et leurs commentaires en base (verdicts de `/dev/modeles`), corriger : brouillons → aucun (tous publiés) ; modèles publiés → fichiers + `migration-contenu.ts` (variation corrigée = signalée) ou nouvelle variation.
-- **En attente de David** : la relecture dans `/dev/modeles`, dont les 6 choix (rationaliser, décomposition, entier + fraction, téra, arrondi, puissances) qu'il a validés sans les voir ; « plusieurs choses me paraissent bizarres ».
-- **Suite en parallèle** : skill `idees-rubrique`, une session par rubrique, tableau [idees-ailleurs-repartition.md](idees-ailleurs-repartition.md) ; exercices lus dans la copie locale nettoyée `extern/banque-exercices/` ; noms interdits lus hors du dépôt (`~/.config/chiphre/noms-interdits`, secret CI `NOMS_INTERDITS`), contrôlés dans les messages, les fichiers et les chemins (#2952).
-- **Pièges en cours** : ne jamais nommer la plateforme d'origine ; corriger une variation d'un publié change ce que voient les élèves qui y ont répondu (indice gardé) ; branche locale `feat/ensembles-2de-lot-rangement` restée (`-D` = liste `ask`).
-- **Worktree / branche** : `../ubumaths-wt-ensembles-2de`, détaché sur `origin/main`.
+- **État** : gros lot « nombres et calculs » publié (36 neufs + 21 variations de 16 publiés), en relecture par David dans `/dev/modeles` (séries `54d77552` et `d580e46d`). Skill `idees-rubrique` prêt, rubriques suivantes **en pause**. Comparatif des formats : [idees-format-exercices.md](idees-format-exercices.md) (5 idées retenues).
+- **Ordre décidé par David (2026-11-21)** : (1) chantier `idees-format` dans une nouvelle session, idée 1 d'abord (répartition des variations dans une série) ; (2) **revoir les 52 modèles du lot** avec les critères d'aujourd'hui (meilleure case réponse de notre format, `testSpecs` justes + erreurs typiques, tags et bornes du niveau) — « il y a sûrement beaucoup de modifications » ; (3) les autres rubriques de Seconde, puis les autres niveaux.
+- **Prochaine action ici** : la revue des 52 modèles (étape 2), quand `idees-format` sera avancé ; lire aussi les verdicts « À revoir » de David (`question_template_reviews`).
+- **En attente de David** : ses verdicts dans `/dev/modeles`, dont les 6 choix (rationaliser, décomposition, entier + fraction, téra, arrondi, puissances).
+- **Pièges** : aucune trace du nom de la plateforme (racines hors du dépôt, cf. `git-workflow.md` § Noms interdits) ; exercices lus dans `extern/banque-exercices/` ; corriger une variation d'un publié change ce que voient les élèves qui y ont répondu.
+- **Worktree** : `../ubumaths-wt-ensembles-2de`, détaché sur `origin/main`.
+
+## Parallélisation, gardes du nom, idées de format (2026-11-21)
+
+- Déploiement 0.99.0 (#2948 verdict de `/dev/modeles`, #2949 formulaires SvelteKit 3).
+- Skill `idees-rubrique` + tableau [idees-ailleurs-repartition.md](idees-ailleurs-repartition.md) (rubriques et modèles publiés réservés ; les 16 publiés du lot réservés ici).
+- Copie locale nettoyée des exercices : `extern/banque-exercices/` (sans `.git`, nom remplacé partout).
+- Gardes du nom : #2951 (empreintes), puis #2952 (noms lus hors du dépôt, messages + fichiers + chemins, secret CI). Une racine trop courte attrapait une phrase ordinaire : racines allongées.
+- Skills harmonisés : relecture et verdicts dans `/dev/modeles` ; la page à cocher ne sert qu'en phase 0 ; `idees-rubrique` exige la meilleure forme de notre format, des `testSpecs`, le bon point et les bornes.
+- Catalogue des cases complété (`couvrir-un-niveau.md` § 3 bis, table de `questions.md` § 4 : 4 gestes ajoutés).
+- #2953 : noms accessibles des cases (« Réponse N », champ MathLive « Expression à compléter, N cases »).
 
 ## Décisions de David (2026-11-20)
 

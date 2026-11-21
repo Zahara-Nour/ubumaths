@@ -3,6 +3,9 @@
 Ce tableau coordonne les sessions du skill [`idees-rubrique`](../../.claude/skills/idees-rubrique/SKILL.md),
 qui travaillent en parallèle. On y voit une rubrique par ligne et chaque modèle publié réservé.
 
+- ⏸️ **En pause (David, 2026-11-21)** : on ne prend pas de nouvelle rubrique avant d'avoir fini le
+  chantier `idees-format` ([idées de format](idees-format-exercices.md), idées 1 à 5) et vérifié le
+  lot « nombres et calculs » de Seconde avec ces critères.
 - **Réserver** : `git pull --rebase`, modifier la ligne, commit direct sur `main`, push aussitôt. Si
   le push est refusé : pull, relire, et changer de ligne si elle a été prise entre-temps.
 - **États** : libre → prise (sujet, date) → phase 0 → écrite → en prod → publiée.

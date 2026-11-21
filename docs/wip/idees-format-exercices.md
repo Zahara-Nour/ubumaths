@@ -147,5 +147,11 @@ faite dans le navigateur ; les barèmes au choix (notre 1 / ½ / 0 est une déci
    avantages ; piste de David : des variations pour les deux formes (à mesurer : un tirage au
    hasard mêlerait alors deux difficultés, cf. idées 1 et 2).
 5. **Coup de pouce : oui**, à recouper avec la génération automatique des corrections (l'indice
-   pourrait être la première étape de la correction générée). Question ouverte : un indice ouvert
-   compte-t-il dans la révision espacée ?
+   pourrait être la première étape de la correction générée). **Révision espacée : un indice
+   ouvert puis une réponse juste = demi-réussite** (David, 2026-11-21) : la question revient plus
+   tôt, pour vérifier que l'élève sait faire seul.
+
+**Ordre (David, 2026-11-21)** : chantier `idees-format` dans une nouvelle session, idée 1 d'abord
+(répartition des variations), puis 2 à 5 ; puis vérification du lot « nombres et calculs » de
+Seconde au regard de ces critères ; ensuite seulement les autres rubriques de Seconde
+(`idees-rubrique`) et les autres niveaux.
