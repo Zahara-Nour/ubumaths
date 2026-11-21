@@ -13,6 +13,7 @@
 	 * puis la durée observée chez ses élèves, à appliquer (chantier `durees-ajustees`).
 	 * Plus de répétitions que de questions différentes (chantier `idees-format`) :
 	 * la tuile le dit et propose d'abaisser (une série ne répète jamais une question).
+	 * Prof seulement : le choix des variations de la ligne (idée 2), sous les réglages.
 	 */
 	import { Button } from '#lib/components/ui/button/index.ts';
 	import FlashCard from '#lib/components/questions/FlashCard.svelte';
@@ -25,6 +26,7 @@
 	import type { QuestionTiming } from '#lib/types/evaluation-breakdown.ts';
 	import TooShortMark from '#lib/components/series/TooShortMark.svelte';
 	import ObservedDelayHint from '#lib/components/series/ObservedDelayHint.svelte';
+	import VariationPicker from '#lib/components/series/VariationPicker.svelte';
 
 	// Bornes et pas de la durée (secondes)
 	const DELAY_STEP = 5;
@@ -45,6 +47,7 @@
 		onUpdateQuantity,
 		onUpdateDelay,
 		onRemove,
+		onUpdateVariations,
 		tooShort = null,
 		observedDelay = null,
 		distinctMax = null
@@ -58,6 +61,8 @@
 		onUpdateQuantity: (templateId: string, quantity: number) => void;
 		onUpdateDelay: (templateId: string, delay: number) => void;
 		onRemove: (templateId: string) => void;
+		/** Choix des variations (prof seulement) ; absent : rien */
+		onUpdateVariations?: (templateId: string, variations: number[] | undefined) => void;
 		/** Durée courante signalée trop courte (prof seulement) ; null : rien */
 		tooShort?: QuestionTiming | null;
 		/** Durée observée à suggérer (prof seulement) ; null : rien */
@@ -171,6 +176,14 @@
 			</Button>
 		</div>
 	</div>
+
+	{#if template && onUpdateVariations}
+		<VariationPicker
+			{template}
+			selected={item.variations}
+			onchange={(variations) => onUpdateVariations(item.templateId, variations)}
+		/>
+	{/if}
 
 	{#if distinctMax !== null}
 		<!-- Couleur d'accent sur l'icône seule : le texte garde son contraste -->

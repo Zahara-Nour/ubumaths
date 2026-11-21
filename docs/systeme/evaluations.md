@@ -95,8 +95,13 @@ pas des notes.
 
 ## Les formes d'une série
 
-Une série est une liste de lignes `{ templateId, quantity, delay }` : tel **modèle**, tant de fois,
-tant de secondes ([ADR 0035](../adr/0035-une-serie-enregistre-des-modeles.md)). Elle est tirée **à
+Une série est une liste de lignes `{ templateId, quantity, delay, variations? }` : tel **modèle**,
+tant de fois, tant de secondes ([ADR 0035](../adr/0035-une-serie-enregistre-des-modeles.md)),
+dans les **variations choisies** par le prof (numéros rangés ; absent = toutes ; idée 2 du chantier
+`idees-format`). Un numéro qui n'existe plus dans le modèle est ignoré ; s'il n'en reste aucun, la
+ligne tire dans toutes (`allowedVariations`). La variation se lit dans la graine : une évaluation
+régénérée retombe sur la même question sans rien enregistrer de plus. La révision espacée ne lit
+que le modèle de la ligne (le choix ne la restreint pas). Elle est tirée **à
 neuf à chaque usage** : `drawSeriesQuestions` (`src/lib/questions/series-items.ts`) donne à
 chaque ligne une graine neuve (sauf lien « Mêmes nombres pour tous », ci-dessous), d'où sortent les
 graines de ses questions. Une ligne qui répète un modèle **répartit ses variations à parts égales**

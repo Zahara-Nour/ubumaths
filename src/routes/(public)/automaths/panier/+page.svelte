@@ -32,7 +32,11 @@
 		type SeriesItem
 	} from '#lib/validation/series.ts';
 	import { templatePreview } from '#lib/questions/catalogue.ts';
-	import { distinctLimit } from '#lib/questions/series-draw.ts';
+	import {
+		allowedVariations,
+		distinctLimit,
+		variationExample
+	} from '#lib/questions/series-draw.ts';
 	import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
 	import { fetchDurationSignals } from '#lib/utils/duration-signals.ts';
 	import {
@@ -97,7 +101,9 @@
 	/**
 	 * Modèle et aperçu de chaque ligne du panier (graine fixe, calculé une fois
 	 * par modèle : changer une quantité ne relance aucun calcul). Modèle absent
-	 * de la liste des publiés : retiré (Q7).
+	 * de la liste des publiés : retiré (Q7). Variations choisies (idée 2) :
+	 * l'aperçu montre un exemple de la première d'entre elles, recalculé quand
+	 * le panier change (pas de cache : un tirage court, graine fixe).
 	 */
 	let cartItemsWithInstances = $derived(
 		cartItems.map((item) => {
@@ -105,14 +111,28 @@
 			return {
 				item,
 				template,
-				instance: template ? (templatePreview(template) ?? undefined) : undefined
+				instance: template ? (previewOf(template, item.variations) ?? undefined) : undefined
 			};
 		})
 	);
 
-	/** Questions différentes d'un modèle, quand la quantité les dépasse (compte mis en cache) */
-	function distinctMaxOf(template: QuestionTemplate | undefined, quantity: number) {
-		return template ? distinctLimit(template, quantity, generateInstance) : null;
+	/** Aperçu d'une ligne : celui du modèle, ou un exemple de la 1re variation choisie */
+	function previewOf(template: QuestionTemplate, variations: readonly number[] | undefined) {
+		if (!variations) return templatePreview(template);
+		return variationExample(template, allowedVariations(template, variations)[0], generateInstance);
+	}
+
+	/** Questions différentes d'un modèle (variations choisies), quand la quantité les dépasse */
+	function distinctMaxOf(
+		template: QuestionTemplate | undefined,
+		quantity: number,
+		variations: readonly number[] | undefined
+	) {
+		return template ? distinctLimit(template, quantity, generateInstance, variations) : null;
+	}
+
+	function handleUpdateVariations(templateId: string, variations: number[] | undefined) {
+		questionCart.setVariations(templateId, variations);
 	}
 
 	function handleUpdateQuantity(templateId: string, quantity: number) {
@@ -324,7 +344,8 @@
 							onDecrementQuantity={handleDecrementQuantity}
 							onUpdateQuantity={handleUpdateQuantity}
 							onUpdateDelay={handleUpdateDelay}
-							distinctMax={distinctMaxOf(template, item.quantity)}
+							distinctMax={distinctMaxOf(template, item.quantity, item.variations)}
+							onUpdateVariations={isTeacher ? handleUpdateVariations : undefined}
 							onRemove={handleRemove}
 							tooShort={tooShortAt(durationSignals?.signals, item.templateId, item.delay)}
 							observedDelay={observedSuggestion(

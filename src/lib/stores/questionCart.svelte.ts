@@ -3,7 +3,8 @@
  * ===================
  *
  * Le panier est une série en cours de composition : des lignes `{ templateId,
- * quantity, delay }` (ADR 0035), gardées dans le navigateur (localStorage).
+ * quantity, delay, variations? }` (ADR 0035 ; variations choisies, chantier
+ * `idees-format` idée 2), gardées dans le navigateur (localStorage).
  *
  * Un panier enregistré AVANT l'ADR 0035 porte des catégories (thème, domaine…) :
  * ces lignes ne sont plus relues. Au chargement elles sont retirées, le panier
@@ -19,6 +20,11 @@ import { MAX_ITEM_QUANTITY, seriesItemSchema, type SeriesItem } from '#lib/valid
 const DEFAULT_DELAY = 20;
 const MIN_DELAY = 5;
 const MAX_DELAY = 300;
+
+/** Numéros distincts, dans l'ordre */
+function sortedUnique(indexes: readonly number[]): number[] {
+	return [...new Set(indexes)].sort((a, b) => a - b);
+}
 
 /** Exportée pour les tests (un panier neuf relu du localStorage) ; l'appli utilise `questionCart` */
 export class QuestionCartStore {
@@ -110,13 +116,39 @@ export class QuestionCartStore {
 		return this.find(templateId);
 	}
 
-	/** Ajoute un modèle ; déjà présent → sa quantité augmente (99 au plus) et il garde sa durée */
-	addToCart(templateId: string, quantity: number = 1, delay: number = DEFAULT_DELAY) {
+	/**
+	 * Ajoute un modèle ; déjà présent → sa quantité augmente (99 au plus) et il
+	 * garde sa durée et ses variations choisies.
+	 */
+	addToCart(
+		templateId: string,
+		quantity: number = 1,
+		delay: number = DEFAULT_DELAY,
+		variations?: readonly number[]
+	) {
 		const existing = this.find(templateId);
 		if (existing) {
 			existing.quantity = Math.min(MAX_ITEM_QUANTITY, existing.quantity + quantity);
 		} else {
-			this.items.push({ templateId, quantity: Math.min(MAX_ITEM_QUANTITY, quantity), delay });
+			const item: SeriesItem = {
+				templateId,
+				quantity: Math.min(MAX_ITEM_QUANTITY, quantity),
+				delay
+			};
+			if (variations && variations.length > 0) item.variations = sortedUnique(variations);
+			this.items.push(item);
+		}
+		this.saveToStorage();
+	}
+
+	/** Variations choisies d'une ligne ; `undefined` ou liste vide = toutes (le champ disparaît) */
+	setVariations(templateId: string, variations: readonly number[] | undefined) {
+		const item = this.find(templateId);
+		if (!item) return;
+		if (variations && variations.length > 0) {
+			item.variations = sortedUnique(variations);
+		} else {
+			delete item.variations;
 		}
 		this.saveToStorage();
 	}
@@ -180,11 +212,11 @@ export class QuestionCartStore {
 
 	/**
 	 * Ajoute une série au panier (Q45) : un modèle déjà présent voit sa quantité
-	 * augmenter (99 au plus) et garde sa durée ; les autres s'ajoutent.
+	 * augmenter (99 au plus) et garde sa durée et ses variations ; les autres s'ajoutent.
 	 */
 	mergeItems(items: readonly SeriesItem[]) {
 		for (const item of items) {
-			this.addToCart(item.templateId, item.quantity, item.delay);
+			this.addToCart(item.templateId, item.quantity, item.delay, item.variations);
 		}
 	}
 
