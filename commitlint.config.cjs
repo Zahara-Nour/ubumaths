@@ -27,9 +27,15 @@
  * Example: feat!: redesign user dashboard
  */
 
+// eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS, lu par commitlint
+const { regleNomInterdit } = require('./scripts/commitlint-nom-interdit.cjs');
+
 module.exports = {
 	extends: ['@commitlint/config-conventional'],
+	// Règle locale : jamais le nom de la plateforme d'idées dans un message (cf. le fichier)
+	plugins: [{ rules: { 'nom-interdit': regleNomInterdit } }],
 	rules: {
+		'nom-interdit': [2, 'always'],
 		'type-enum': [
 			2,
 			'always',
