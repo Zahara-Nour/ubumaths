@@ -29,16 +29,16 @@
 
 import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
-import { matchesGlob, posix, resolve } from 'node:path';
+import { resolve } from 'node:path';
 import { integrationClosures } from './check-integration-paths';
+import { charge, chargementsDe, type Chargement } from './lib/chargements-en-lot';
 import { porteLaMention } from './lib/migrations-de-donnees';
+
+export { charge, chargementsDe, type Chargement };
 
 // Types
 
 export type Changement = { statut: string; fichier: string };
-
-/** Un fichier qui charge en lot (`import.meta.glob`) ; motifs relatifs à la racine, `!` = exclu. */
-export type Chargement = { chargeur: string; motifs: string[] };
 
 export type Verdict =
 	{ kind: 'complet'; raison: string } | { kind: 'aucun' } | { kind: 'tests'; tests: string[] };
@@ -67,53 +67,6 @@ const COMMUNS = new Set(['src/env.ts', GLOBAL_SETUP]);
 
 // Fonctions
 
-/** Les `import.meta.glob` d'un fichier ; erreur si un motif n'est pas une chaîne littérale lisible. */
-export function chargementsDe(source: string, chargeur: string): Chargement[] {
-	const appels = source.split('import.meta.glob').length - 1;
-	if (appels === 0) return [];
-	const re = /import\.meta\.glob\s*(?:<[^>()]*>)?\s*\(\s*(\[[^\]]*\]|'[^']*'|"[^"]*")\s*[,)]/g;
-	const motifs: string[] = [];
-	let lus = 0;
-	for (const [, argument] of source.matchAll(re)) {
-		lus++;
-		const corps = argument.startsWith('[') ? argument.slice(1, -1) : argument;
-		const morceaux = corps
-			.split(',')
-			.map((s) => s.trim())
-			.filter(Boolean);
-		for (const morceau of morceaux) {
-			const m = /^(['"])([^'"$`]*)\1$/.exec(morceau);
-			if (!m) throw new Error(`${chargeur} : motif de import.meta.glob illisible (${morceau})`);
-			motifs.push(versRacine(m[2], chargeur));
-		}
-	}
-	if (lus !== appels) throw new Error(`${chargeur} : import.meta.glob illisible`);
-	return [{ chargeur, motifs }];
-}
-
-/** Motif de Vite (`/` = racine du projet, `./` et `../` = dossier du chargeur) → relatif à la racine. */
-function versRacine(motif: string, chargeur: string): string {
-	const negatif = motif.startsWith('!');
-	const brut = negatif ? motif.slice(1) : motif;
-	let chemin: string;
-	if (brut.startsWith('/')) chemin = brut.slice(1);
-	else if (brut.startsWith('./') || brut.startsWith('../'))
-		chemin = posix.normalize(posix.join(posix.dirname(chargeur), brut));
-	else throw new Error(`${chargeur} : motif de import.meta.glob ni relatif ni absolu (${motif})`);
-	if (chemin.startsWith('../')) throw new Error(`${chargeur} : motif hors du dépôt (${motif})`);
-	return negatif ? `!${chemin}` : chemin;
-}
-
-function charge(fichier: string, c: Chargement): boolean {
-	let retenu = false;
-	for (const motif of c.motifs) {
-		if (motif.startsWith('!')) {
-			if (matchesGlob(fichier, motif.slice(1))) retenu = false;
-		} else if (matchesGlob(fichier, motif)) retenu = true;
-	}
-	return retenu;
-}
-
 /** Les fichiers de la suite (tests, global-setup) qui atteignent `fichier`, par import ou en lot. */
 function atteignants(fichier: string, e: Entree): string[] {
 	const chargeurs = e.chargements.filter((c) => charge(fichier, c)).map((c) => c.chargeur);
@@ -141,7 +94,10 @@ export function selectionner(e: Entree): Verdict {
 		}
 
 		const parCode = fichier.startsWith('src/');
-		const parDoc = fichier.startsWith('docs/') || fichier.endsWith('.md');
+		// La doc : `docs/` et les `.md` de la racine. Un `.md` ailleurs (fixture, `supabase/`) peut
+		// être lu par un test : suite complète.
+		const parDoc =
+			fichier.startsWith('docs/') || (fichier.endsWith('.md') && !fichier.includes('/'));
 		if (!parCode && !parDoc)
 			return { kind: 'complet', raison: `${fichier} : ni code, ni doc, ni test d'intégration` };
 		if (parCode && statut === 'D')

@@ -51,6 +51,7 @@ on:
       # tests touchés par une PR de code (et le calcul des imports qu'il partage avec la garde)
       - 'scripts/ci-integration-touches.ts'
       - 'scripts/check-integration-paths.ts'
+      - 'scripts/lib/chargements-en-lot.ts'
       # empreinte d'un passage (passage déjà vert sur la PR : tests non relancés)
       - 'scripts/ci-integration-empreinte.sh'
       # tests de migration de données laissés de côté sur les PR, et leur garde
@@ -243,7 +244,7 @@ jobs:
     # Portée et découpage, calculés UNE fois pour tous les morceaux.
     name: Integration scope
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10 # install + calcul des imports (tests touchés)
     outputs:
       fichiers: ${{ steps.selection.outputs.fichiers }}
       aucun: ${{ steps.touches.outputs.aucun == 'true' && 'true' || 'false' }}

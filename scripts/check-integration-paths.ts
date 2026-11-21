@@ -38,6 +38,7 @@ import { execFileSync } from 'node:child_process';
 import { globSync, readFileSync } from 'node:fs';
 import { join, relative, resolve } from 'node:path';
 import { parse } from 'yaml';
+import { charge, chargementsDe } from './lib/chargements-en-lot';
 
 const WORKFLOW = '.github/workflows/nightly-integration.yml';
 
@@ -214,6 +215,15 @@ if (process.argv[1] && resolve(process.argv[1]) === import.meta.filename) {
 	const tracked = execFileSync('git', ['ls-files'], { cwd: ROOT, encoding: 'utf8' })
 		.split('\n')
 		.filter(Boolean);
+
+	// Fichiers chargés en lot (`import.meta.glob`) par un fichier atteint : la suite les lit
+	// aussi, le filtre doit les couvrir (scripts/ci-integration-touches.ts les compte atteints).
+	for (const f of [...reached]) {
+		if (!/\.(ts|js|svelte)$/.test(f)) continue;
+		for (const c of chargementsDe(readFileSync(join(ROOT, f), 'utf8'), f)) {
+			for (const t of tracked) if (!reached.includes(t) && charge(t, c)) reached.push(t);
+		}
+	}
 
 	const uncovered = uncoveredFiles(reached, patterns);
 	const dead = deadPatterns(patterns, tracked);

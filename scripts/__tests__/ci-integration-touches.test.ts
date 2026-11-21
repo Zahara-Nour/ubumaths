@@ -75,10 +75,12 @@ describe('selectionner — code seul (cas 1)', () => {
 	});
 
 	it('la doc et les .md hors src/ ne comptent pas', () => {
-		expect(choisir(m('src/lib/math/x.ts', 'docs/systeme/a.md', 'README.md'))).toEqual({
-			kind: 'tests',
-			tests: [T_A]
-		});
+		expect(choisir(m('src/lib/math/x.ts', 'docs/systeme/a.md', 'README.md', 'CONTEXT.md'))).toEqual(
+			{
+				kind: 'tests',
+				tests: [T_A]
+			}
+		);
 	});
 });
 
@@ -174,7 +176,10 @@ describe('selectionner — suite complète (cas 6, 7, 8)', () => {
 			'scripts/questions/2de/a.json',
 			'tests/fixtures/lexique/dictionnaire-reference.ts',
 			'vite.config.ts',
-			'static/a.png'
+			'static/a.png',
+			'tests/integration/fixtures/a.md',
+			'supabase/a.md',
+			'scripts/a.md'
 		]) {
 			expect(choisir(m('src/lib/math/x.ts', f)).kind, f).toBe('complet');
 		}
@@ -253,7 +258,8 @@ describe('chargementsDe — lecture des import.meta.glob (cas 2, 10)', () => {
 			`import.meta.glob(MOTIFS)`,
 			'import.meta.glob(`./${dossier}/*.md`)',
 			`import.meta.glob('$lib/a/*.md')`,
-			`import.meta.glob(['./a/*.md', MOTIF])`
+			`import.meta.glob(['./a/*.md', MOTIF])`,
+			`import.meta.glob('./modules/*.ts')`
 		]) {
 			expect(() => chargementsDe(src, 'src/lib/a.ts'), src).toThrow();
 		}
