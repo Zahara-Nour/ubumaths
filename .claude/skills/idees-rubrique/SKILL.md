@@ -88,6 +88,28 @@ ignoré par git ; depuis un worktree, on y accède par ce chemin absolu.
 - **Question d'accès** de la migration (en général : personne, on range des modèles).
 - Une question sans réponse n'est pas tranchée. Tout consigner dans le journal.
 
+## 2 bis. Programme et bornes (comme `couvrir-niveau`)
+
+Une idée reprise d'ailleurs n'est pas forcément au programme du niveau, ni dans ses bornes :
+leur rubrique de Seconde déborde parfois sur la 3e ou sur la 1re. Avant d'écrire, et de nouveau
+avant la migration de rangement :
+
+- **Le bon point** : chaque idée au programme reçoit **un** point (ADR 0020), celui du niveau du
+  modèle ou d'un niveau **suivant** (permis), jamais d'un niveau précédent. Une idée d'un autre
+  niveau va à ce niveau : `grades` porte les deux niveaux, et la fiche le dit.
+- **Les règles du tag**, vérifiées en base avant d'écrire la migration (`couvrir-un-niveau.md` § 9) :
+  un seul point par programme sur un modèle, et le point **sur le nœud du modèle ou sur sa notion**
+  (`question_template_points_check_rules`). Un tag qui les viole est refusé à la migration.
+- **Les bornes** : `docs/systeme/programmes/bornes/` (cycles 2 à 4, `lycee/` pour le lycée). Chaque
+  variation se vérifie contre les bornes de son point : **plages tirées ET notions du corrigé**
+  (`pnpm question:specs --template <uuid> --apercu 5` montre des tirages réels). Une plage qui
+  déborde se resserre ; une notion du corrigé hors programme se réécrit.
+- **Hors programme** (David l'a voulu pour la Seconde) : le modèle est rangé **sans point**, et la
+  fiche dit pourquoi (ce que le BO exclut, citation de `src/lib/server/programmes/transcriptions/`).
+  Jamais un tag approximatif pour éviter le « sans point ».
+- **Garde des niveaux** avant la publication : `pnpm tsx scripts/questions/garde-niveaux-tags.ts`
+  (code 1 si un modèle tagué d'un point n'a pas le niveau de ce point dans `grades`).
+
 ## 3. Écrire le gros lot
 
 Tout le lot part d'un coup, pas un cycle par modèle (mémoire `feedback_gros-lots-de-modeles`).
