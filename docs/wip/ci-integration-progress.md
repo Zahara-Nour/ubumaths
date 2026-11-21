@@ -2,17 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-21, après #2961._
+_Mis à jour le 2026-11-21, après la mesure de C sur #2964._
 
-- **État** : A (#2956), F (#2957), B (#2959) et C (#2961) mergées. C : sur une PR `src/` seule,
-  seuls les tests atteints tournent (`scripts/ci-integration-touches.ts`) ; rejoué sur 60 PR :
-  13 des 39 qui lancent la suite passent en sélection (0 à 20 tests). Gain de C pas encore mesuré.
-- **Prochaine action** : mesurer C sur la première PR de code concernée (job `portee`, étape
-  « Tests touchés » : durée de bout en bout, durée du job `portee` avec l'install) ; puis D
-  (morceaux par durée) seulement si le plus long morceau dépasse.
-  ⚠️ La PR doit tomber dans le filtre `paths` du workflow : #2963 (composants `src/lib/components/`)
-  ne l'a pas lancé, rien à mesurer.
-- **En attente de David** : rien.
+- **État** : A (#2956), F (#2957), B (#2959) et C (#2961) mergées. C mesurée sur #2964 (§ 10) :
+  2 tests retenus, workflow de bout en bout en 3 min 03 au lieu de 6 à 7 min ; le morceau unique
+  dure 2 min 18, dont 10 s de tests et 1 min 32 de démarrage de Supabase.
+- **Prochaine action** : à trancher par David. Soit D (morceaux par durée, pour la suite complète :
+  plus long morceau 5 min 42 contre 4 min 17 pour les autres), soit clore le chantier.
+  Sur une PR en sélection, ce qui reste, c'est le démarrage de Supabase, pas les tests.
+- **En attente de David** : D ou clôture.
 - **Pièges en cours** : suite locale cassée au global-setup par les liens de partage du prof de dev
   (§ 3.4) ; morceaux déséquilibrés (110 à 200 s) → D si besoin ; un test instable vert une fois
   reste gardé par B (nocturne = filet) ; `import.meta.glob` de code (pas `.md`/`.json`) → suite
@@ -230,6 +228,23 @@ Comportements validés :
 11. ≤ 40 tests sélectionnés : 1 stack ; au-delà, 4 morceaux de la sélection.
 12. B inchangé : la sélection entre dans l'empreinte.
 13. PR ciblée « migration de rangement + son test » inchangée.
+
+## 10. Mesure de C (2026-11-21, #2964, run 44915248933)
+
+PR `src/` + `docs/` qui touche `src/lib/server/evaluation-question-errors.ts` et
+`src/lib/questions/error-kinds.ts` (dans le filtre `paths`). #2963 (composants seuls) ne lançait
+pas le workflow : il fallait une PR dans le filtre.
+
+- Tests retenus : 2 (`bilan-controle`, `durees-trop-courtes`) → 1 morceau.
+- De bout en bout : 14:41:40 → 14:44:43 = **3 min 03**.
+- Job `portee` : 30 s (install 5 s, étape « Tests touchés » 3 s).
+- Morceau 1/1 : 2 min 18 = checkout et install 23 s, chargement des images Supabase 43 s,
+  démarrage de Supabase avec les migrations 49 s, **tests 10 s**.
+- Comparaison, suite complète en 4 morceaux le même jour : #2961 (run 44907250598) 6 min 51,
+  #2962 (run 44907952216) 6 min 00 ; morceaux de 3 min 40 à 5 min 42.
+
+Lecture : sur une PR en sélection, le temps est dans le démarrage de Supabase (1 min 32 sur
+2 min 18), pas dans les tests. D ne concerne que les PR en suite complète.
 
 ## 6. Historique
 
