@@ -79,6 +79,55 @@ vit déjà : série enregistrée, panier, lien partagé, évaluation.
 - **Q4. La révision espacée** (qui reprend les modèles des séries d'un chapitre) tient-elle compte
   du choix ? Reco : non, elle revoit le modèle entier.
 
+## Idée 3 — phase 0 (à valider par David)
+
+But : une case dit « si l'élève répond `(x − 3)²`, lui écrire : “Tu as confondu a² − b² et
+(a − b)².” ». Aujourd'hui, `error-kinds.ts` ne fait que **deviner** une relation (signe, ×10,
+inverse, double, moitié, carré) ; l'erreur prévue, c'est le prof qui l'écrit.
+
+Ce qui existe : une case fausse sans remarque reçoit la phrase de son type deviné
+(`blankErrorGuess`, `errorGuessSentence`), affichée par le seul chemin du résultat attendu
+(Saisie, Contrôle blanc, copie corrigée) ; côté prof, la ligne « Types d'erreur : Erreur de signe :
+4 · Non reconnue : 6 » (bilan d'un contrôle, erreurs par point). Les specs décrivent déjà les
+erreurs classiques en commentaire (« 10 (1 et 72 oubliés) ») sans pouvoir les nommer à l'élève.
+
+**Comportements**
+
+- Nominal : le prof ajoute à une case une erreur prévue : réponse fausse `{{eval:a-b}}` (variables
+  permises, comme la réponse attendue) et message « Tu as soustrait au lieu d'additionner. »
+  (variables et `$…$` permis). L'élève qui répond la valeur de cette erreur voit ce message à la
+  place de la phrase du type deviné. La note ne change pas : faux reste faux.
+- Nominal : côté prof, l'erreur prévue compte dans la ligne « Types d'erreur » à côté des types
+  devinés (« Soustraction au lieu d'addition : 3 · Erreur de signe : 2 »).
+- Limite : sur un tirage où l'erreur prévue tombe sur la bonne réponse (erreur de signe quand le
+  résultat vaut 0), elle est ignorée : l'élève a juste.
+- Limite : deux erreurs prévues de même valeur sur un tirage → la première écrite l'emporte.
+- Limite : bonne valeur, mauvaise forme → déjà « mauvaise forme », l'erreur prévue n'est pas lue.
+- Limite : une remarque de case (unité, %, arrondi) reste affichée après le message.
+- Limite : un contrôle déjà passé garde son énoncé tiré : pas de message rétroactif.
+- Erreur (auteur) : réponse fausse qui ne se calcule pas, ou message vide → publication refusée,
+  message situé (« Variation 2, case 1, erreur prévue 1 : … »).
+- Sécurité : en évaluation notée, les erreurs prévues sont retirées de l'énoncé envoyé à l'élève,
+  comme la réponse attendue (elles en disent trop).
+
+Vérification automatique : le rejeu de publication répond chaque erreur prévue sur ses tirages et
+vérifie « faux + ce message ». Une spec peut aussi asserter le message (champ facultatif).
+
+**Questions**
+
+- **Q1. Quand dit-on que l'élève a fait « cette erreur » ?** A (reco) : même valeur que l'erreur
+  prévue, quelle que soit l'écriture (`8/6` déclenche l'erreur `4/3`). B : même écriture exacte.
+- **Q2. Que lit le prof dans « Types d'erreur » ?** A (reco) : un nom court facultatif
+  (« Soustraction au lieu d'addition ») ; sans nom, le message de l'élève. B : nom court
+  obligatoire. C : le message de l'élève, toujours.
+- **Q3. Quelles cases ?** A (reco) : les cases à écriture mathématique ordinaire (celles où l'on
+  devine déjà un type) ; texte, choix, figures plus tard (l'idée 4 reprend les choix). B : aussi
+  les cases texte tout de suite.
+
+**Découpage proposé** : PR 1 moteur (type de case, Zod, tirage, message à l'élève, rejeu, specs,
+fichiers de lot, retrait en évaluation notée) · PR 2 éditeur du prof (sous chaque case, « Ajouter
+une erreur prévue ») · PR 3 ligne « Types d'erreur » côté prof.
+
 ## PR 1 — tirage (#2954, mergée le 2026-11-21)
 
 - `src/lib/questions/series-draw.ts` : `variationOfSeed`, `questionFingerprints`,
