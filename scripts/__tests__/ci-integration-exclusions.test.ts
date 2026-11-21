@@ -138,8 +138,23 @@ describe('ci-integration-exclusions', () => {
 		expect(exclus()).toEqual([TEST_A]);
 	});
 
-	it('outillage de la suite ou règle elle-même : aucun test laissé de côté', () => {
+	it('migration de rangement d’un autre lot : seuls ses tests tournent, les autres restent de côté', () => {
+		const migration = 'supabase/migrations/20261121090000_questions_c_rangement_tags.sql';
+		pr({ [migration]: 'update public.x set y = 1;\n' });
+		expect(exclus()).toEqual([TEST_A, TEST_B]);
+	});
+
+	it('outillage, schéma ou règle elle-même : aucun test laissé de côté', () => {
 		for (const f of [
+			'supabase/migrations/20261121090000_garde_tags_noeud.sql',
+			'supabase/config.toml',
+			'supabase/seed.sql',
+			'tests/integration/fixtures/rangements.json',
+			'tests/integration/global-setup.ts',
+			'vitest.integration.config.ts',
+			'vitest.base.config.ts',
+			'scripts/with-db-lock.sh',
+			'pnpm-lock.yaml',
 			'tests/helpers/database/migration-rollback.ts',
 			'tests/helpers/database/prod-copies.ts',
 			'scripts/lib/migrations-de-donnees.ts',

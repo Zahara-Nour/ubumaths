@@ -8,8 +8,13 @@
 #
 #   - sauf un test marqué que la PR ajoute ou modifie ;
 #   - sauf un test marqué dont la PR modifie (ou ajoute) une migration citée ;
-#   - aucun n'est laissé de côté si la PR touche l'outillage de la suite (`tests/helpers/**`),
-#     la mention elle-même (`scripts/lib/migrations-de-donnees.ts`) ou ce script.
+#   - aucun n'est laissé de côté si la PR touche :
+#       · une migration qui n'est ni un rangement (`*rangement*.sql`) ni un contenu (`*_contenu.sql`),
+#         ou un autre fichier de `supabase/` : ces tests rejouent leur migration sous le schéma
+#         COURANT (triggers de garde des tags compris), qu'une telle PR peut changer ;
+#       · l'outillage de la suite (`tests/helpers/**`, `tests/integration/fixtures/**`, le
+#         global-setup, les configs vitest, le verrou, le lockfile) ;
+#       · la mention elle-même (`scripts/lib/migrations-de-donnees.ts`) ou ce script.
 #
 # La garde `pnpm check:migrations-de-donnees` refuse la mention sur un test dont la migration
 # touche le schéma ou les règles d'accès : ceux-là tournent toujours.
@@ -36,7 +41,12 @@ changes="$(git diff --name-only --no-renames HEAD^1 HEAD 2>/dev/null)" || aucune
 
 while IFS= read -r f; do
 	case "$f" in
-	tests/helpers/*) aucune "$f : outillage de la suite" ;;
+	supabase/migrations/*rangement*.sql | supabase/migrations/*_contenu.sql) ;;
+	supabase/*) aucune "$f : schéma ou base possiblement changés" ;;
+	tests/helpers/* | tests/integration/fixtures/* | tests/integration/global-setup.ts | \
+		vitest*.config.ts | scripts/with-db-lock.sh | scripts/lib/lock.py | pnpm-lock.yaml)
+		aucune "$f : outillage de la suite"
+		;;
 	scripts/lib/migrations-de-donnees.ts | scripts/ci-integration-exclusions.sh) aucune "$f : la règle elle-même" ;;
 	esac
 done <<<"$changes"

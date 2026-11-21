@@ -170,7 +170,9 @@ Comportements validés :
 
 1. PR en suite complète : tout sauf les tests marqués `@migration-de-donnees` ; un test marqué
    que la PR ajoute ou modifie tourne, de même qu'un test dont la PR modifie la migration.
-2. PR qui touche l'outillage commun (`tests/helpers/database/migration-rollback.ts`,
+2. PR qui touche une migration ni rangement ni contenu, un autre fichier de `supabase/`
+   (revue de #2957 : ces tests rejouent sous le schéma courant, triggers de garde compris),
+   les fixtures, le global-setup, les configs vitest ou le lockfile : tout. De même l'outillage commun (`tests/helpers/database/migration-rollback.ts`,
    `lot-2bis-migration.ts`, `later-migrations.ts`, `postgres-client.ts`) : tout.
 3. PR ciblée (lot + migration + test) : inchangée.
 4. Nocturne, lancement à la main : tout. Dans le doute : le test tourne.

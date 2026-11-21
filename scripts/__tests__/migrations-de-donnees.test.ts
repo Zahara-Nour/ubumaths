@@ -62,9 +62,33 @@ describe('instructionDeSchema', () => {
 		['alter table public.x enable row level security;'],
 		['create or replace view public.resources with (security_invoker = true) as select 1;'],
 		['create unique index x on public.y (z);'],
-		["update storage.buckets set file_size_limit = 1 where id = 'b';"]
+		["update storage.buckets set file_size_limit = 1 where id = 'b';"],
+		// Cas relevés par la revue de #2957 : ils passaient pour des données
+		['create constraint trigger t after insert on public.x for each row execute function f();'],
+		['create unlogged table public.journal (id int);'],
+		['alter role authenticated set statement_timeout = 0;'],
+		['alter database postgres set search_path = public;'],
+		['create publication p for table public.x;'],
+		['create or replace\nfunction public.f() returns void language sql as $$ select 1 $$;'],
+		['create\ntable public.t (id int);'],
+		['create temp table _t (id int); alter table public.q add column z int;'],
+		["update public.t set c = 'a--b'; create policy p on public.x using (true);"],
+		['do $$ begin execute $q$create policy p on public.x using (true)$q$; end $$;'],
+		['do $f$ begin alter table public.q drop column z; end $f$;'],
+		['alter table public.question_templates disable trigger question_templates_guard_tags;'],
+		['alter table public.question_templates disable trigger all;']
 	])('touche le schéma ou les règles : %s', (sql) => {
 		expect(instructionDeSchema(`update public.x set y = 1;\n${sql}\n`)).not.toBeNull();
+	});
+
+	// Le corps d'un $$ est aussi lu comme du SQL : un texte qui dirait « grant » serait refusé à
+	// tort (sens sûr : le test tournerait sur les PR). Aucun des 297 tests ne l'est.
+	it('texte d’un modèle entre $$ (apostrophes, point-virgule) : données', () => {
+		const sql = `insert into _m values ($$L'aire d'un carré ; le côté$$, 'b');
+update public.question_templates set title = $t$Mesure ; l'angle$t$ where id = 'a';
+alter table _m add primary key (id);
+create index on _m (id);`;
+		expect(instructionDeSchema(sql)).toBeNull();
 	});
 });
 
