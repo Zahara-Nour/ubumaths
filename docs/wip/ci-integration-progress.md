@@ -217,3 +217,7 @@ forcer, lancement à la main.
   toute migration ni rangement ni contenu, `supabase/`, fixtures, global-setup, configs vitest,
   lockfile → tous les tests. Run 44898120634 : suite complète (la PR touche la règle), 4 × 146
   fichiers verts, 6,1 à 6,7 min par morceau. Gain non mesuré encore.
+- **Mesure de F** (run 44900263857, PR #2959, base avec #2957) : 297 laissés de côté, 4 × 72
+  fichiers, tests 127 / 195 / 110 / 200 s, bout en bout **5,9 min** (avant 7,5 ; estimé 6,3).
+- **#2959 (B)** : `scripts/ci-integration-empreinte.sh`, job `memoriser`. Revue : `**` collé à
+  un nom et espace après le guillemet refusés. Premier passage : empreinte gardée (run 44900263857).
