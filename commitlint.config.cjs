@@ -27,6 +27,7 @@
  * Example: feat!: redesign user dashboard
  */
 
+// eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS, lu par commitlint
 const { regleNomInterdit } = require('./scripts/commitlint-nom-interdit.cjs');
 
 module.exports = {

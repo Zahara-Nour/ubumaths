@@ -4,10 +4,11 @@
  *
  * Le nom n'est écrit nulle part dans le dépôt (public) : on garde seulement l'empreinte
  * SHA-256 de chaque forme interdite. Le message est réduit à ses lettres, sans accents ni
- * majuscules ni séparateurs (« Math-ALÉA » compte), puis chaque fenêtre de la longueur
+ * majuscules ni séparateurs (un tiret ou une capitale ne le cachent pas), puis chaque fenêtre de la longueur
  * d'une forme interdite est comparée à son empreinte.
  */
 
+// eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS, lu par commitlint
 const { createHash } = require('node:crypto');
 
 // Empreintes SHA-256 des formes interdites, en minuscules sans accents (longueur → empreintes)
