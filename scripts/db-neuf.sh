@@ -28,11 +28,9 @@ tsx="$racine/node_modules/.bin/tsx"
 libelle="Une commande sur la base Supabase locale"
 
 oui=0
-sous_verrou=0
 for argument in "$@"; do
 	case "$argument" in
 		--oui) oui=1 ;;
-		--sous-verrou) sous_verrou=1 ;; # interne : le script se relance lui-même sous le verrou
 		*)
 			echo "⛔ usage : pnpm db:neuf [--oui]" >&2
 			exit 1
@@ -40,7 +38,14 @@ for argument in "$@"; do
 	esac
 done
 
-if [ "$sous_verrou" = 0 ]; then
+# Le script se relance lui-même sous le verrou, avec cette variable. Elle ne suffit pas : posée à la
+# main, sans le verrou, elle sauterait la confirmation. On exige donc que le verrou soit tenu.
+if [ -n "${DB_NEUF_SOUS_VERROU:-}" ] && ! python3 "$ici/lib/lock.py" --tenu supabase; then
+	echo "⛔ DB_NEUF_SOUS_VERROU est réservée au script : lancer \`pnpm db:neuf\`." >&2
+	exit 1
+fi
+
+if [ -z "${DB_NEUF_SOUS_VERROU:-}" ]; then
 	[ -f "$racine/supabase/config.toml" ] || {
 		echo "⛔ supabase/config.toml introuvable : lancer depuis la racine du dépôt." >&2
 		exit 1
@@ -64,7 +69,7 @@ if [ "$sous_verrou" = 0 ]; then
 		[ "$reponse" = "oui" ] || { echo "Abandon : rien n’est effacé."; exit 1; }
 	fi
 
-	exec bash "$ici/with-db-lock.sh" bash "${BASH_SOURCE[0]}" --sous-verrou
+	DB_NEUF_SOUS_VERROU=1 exec bash "$ici/with-db-lock.sh" bash "$ici/db-neuf.sh"
 fi
 
 # ── Sous le verrou ──────────────────────────────────────────────────────────────────────────────
@@ -72,7 +77,7 @@ SECONDS=0
 
 echo "▶ 1/4 La prod répond-elle ? (le contenu vient d'elle, en lecture seule)"
 "$tsx" "$ici/db-seed-riche/index.ts" --verifier-prod || {
-	echo "⛔ Contenu de la prod inaccessible : rien n’est effacé." >&2
+	echo "⛔ Vérification de la prod en échec (cause ci-dessus) : rien n’est effacé." >&2
 	exit 1
 }
 

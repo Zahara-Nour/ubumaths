@@ -35,6 +35,7 @@ const VERROU = resolve(__dirname, '../lib/lock.py');
 const FAUSSE_CLI = `#!/bin/bash
 shift 2
 echo "supabase $*" >> "$JOURNAL"
+python3 "$VERROU" --tenu supabase && echo "verrou tenu" >> "$JOURNAL"
 [ "$*" = "start" ] && exit "\${CODE_START:-0}"
 [ "$*" = "db reset" ] && exit "\${CODE_RESET:-0}"
 exit 0
@@ -44,9 +45,31 @@ exit 0
 const FAUX_TSX = `#!/bin/bash
 script="$(basename "$(dirname "$1")")/$(basename "$1")"
 shift
-echo "tsx $script $*" >> "$JOURNAL"
+echo "tsx $script\${*:+ $*}" >> "$JOURNAL"
+python3 "$VERROU" --tenu supabase && echo "verrou tenu" >> "$JOURNAL"
 [ "$*" = "--verifier-prod" ] && exit "\${CODE_VERIF:-0}"
 exit "\${CODE_SEED:-0}"
+`;
+
+// Pseudo-terminal : le script y voit un vrai terminal (`[ -t 0 ]`), on y tape la réponse.
+const AU_CLAVIER = `
+import os, pty, sys
+pid, fd = pty.fork()
+if pid == 0:
+    os.execvp(sys.argv[2], sys.argv[2:])
+os.write(fd, (sys.argv[1] + "\\n").encode())
+sortie = b""
+while True:
+    try:
+        morceau = os.read(fd, 4096)
+    except OSError:
+        break
+    if not morceau:
+        break
+    sortie += morceau
+_, etat = os.waitpid(pid, 0)
+sys.stdout.buffer.write(sortie)
+sys.exit(os.waitstatus_to_exitcode(etat))
 `;
 
 let racine: string;
@@ -55,15 +78,30 @@ let journal: string;
 function lancer(args: string[], env: Record<string, string> = {}) {
 	const r = spawnSync('bash', [SCRIPT, ...args], {
 		cwd: racine,
-		env: { ...process.env, JOURNAL: journal, ...env },
+		env: { ...process.env, JOURNAL: journal, VERROU, ...env },
 		encoding: 'utf8',
 		input: ''
 	});
 	return { status: r.status, sortie: r.stdout + r.stderr };
 }
 
-function appels(): string[] {
+function lignesDuJournal(): string[] {
 	return existsSync(journal) ? readFileSync(journal, 'utf8').trim().split('\n') : [];
+}
+
+/** Les commandes lancées, dans l'ordre (sans les lignes « verrou tenu »). */
+function appels(): string[] {
+	return lignesDuJournal().filter((l) => l !== 'verrou tenu');
+}
+
+/** Lance le script dans un pseudo-terminal et tape une réponse à la question. */
+function lancerAuClavier(reponse: string) {
+	const r = spawnSync('python3', ['-c', AU_CLAVIER, reponse, 'bash', SCRIPT], {
+		cwd: racine,
+		env: { ...process.env, JOURNAL: journal, VERROU },
+		encoding: 'utf8'
+	});
+	return { status: r.status, sortie: r.stdout + r.stderr };
 }
 
 beforeEach(() => {
@@ -121,7 +159,7 @@ describe('db-neuf.sh', () => {
 	it('reconstruction en échec : le dit, ne remplit pas', () => {
 		const r = lancer(['--oui'], { CODE_RESET: '1' });
 		expect(r.status).toBe(1);
-		expect(r.sortie).toMatch(/reconstruction/i);
+		expect(r.sortie).toMatch(/Reconstruction en échec/);
 		expect(r.sortie).toMatch(/pnpm db:neuf/);
 		expect(appels().at(-1)).toBe('supabase db reset');
 	});
@@ -131,13 +169,22 @@ describe('db-neuf.sh', () => {
 		expect(r.status).toBe(1);
 		expect(r.sortie).toMatch(/pnpm db:seed-riche/);
 		expect(r.sortie).not.toMatch(/remise à neuf en/);
+		expect(appels().slice(-2)).toEqual(['supabase db reset', 'tsx db-seed-riche/index.ts']);
 	});
 
 	it('verrou tenu par une autre commande : exit 2, rien n’est lancé', async () => {
 		const pret = join(racine, 'pret');
 		const autre = spawn(
 			'python3',
-			[VERROU, 'supabase', 'Une autre commande', '--', 'bash', '-c', `touch "${pret}"; sleep 30`],
+			[
+				VERROU,
+				'supabase',
+				'Une autre commande',
+				'--',
+				'bash',
+				'-c',
+				`touch "${pret}"; exec sleep 30`
+			],
 			{ cwd: racine, stdio: 'ignore' }
 		);
 		try {
@@ -154,14 +201,46 @@ describe('db-neuf.sh', () => {
 		}
 	});
 
-	it('le verrou est tenu pendant tout le travail', () => {
-		// Le faux tsx du remplissage regarde si le verrou est tenu (par son propre lanceur).
-		writeFileSync(
-			join(racine, 'node_modules/.bin/tsx'),
-			`#!/bin/bash\npython3 "${VERROU}" --tenu supabase < /dev/null && echo "tenu $2" >> "$JOURNAL"\nexit 0\n`
-		);
+	it('le verrou est tenu à chacune des quatre étapes', () => {
 		lancer(['--oui']);
-		expect(appels()).toContain('tenu --verifier-prod');
+		expect(lignesDuJournal()).toEqual([
+			'tsx db-seed-riche/index.ts --verifier-prod',
+			'verrou tenu',
+			'supabase start',
+			'verrou tenu',
+			'supabase db reset',
+			'verrou tenu',
+			'tsx db-seed-riche/index.ts',
+			'verrou tenu'
+		]);
+	});
+
+	it('au clavier, « oui » lance la remise à neuf', () => {
+		const r = lancerAuClavier('oui');
+		expect(r.status, r.sortie).toBe(0);
+		expect(r.sortie).toMatch(/Taper « oui »/);
+		expect(appels()).toHaveLength(4);
+	});
+
+	it('au clavier, toute autre réponse abandonne sans rien lancer', () => {
+		const r = lancerAuClavier('non');
+		expect(r.status).toBe(1);
+		expect(r.sortie).toMatch(/Abandon/);
+		expect(appels()).toEqual([]);
+	});
+
+	it('la variable interne posée à la main, sans le verrou, ne saute pas la confirmation', () => {
+		const r = lancer([], { DB_NEUF_SOUS_VERROU: '1' });
+		expect(r.status).toBe(1);
+		expect(r.sortie).toMatch(/réservée au script/);
+		expect(appels()).toEqual([]);
+	});
+
+	it('l’ancien drapeau interne n’existe pas', () => {
+		const r = lancer(['--sous-verrou']);
+		expect(r.status).toBe(1);
+		expect(r.sortie).toMatch(/usage/);
+		expect(appels()).toEqual([]);
 	});
 
 	it('refuse un argument inconnu', () => {

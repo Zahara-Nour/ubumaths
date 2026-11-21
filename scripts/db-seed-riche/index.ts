@@ -304,7 +304,13 @@ async function main() {
 	// `--verifier-prod` : la source répond-elle ? Rien n'est écrit, la base locale n'est même pas
 	// ouverte. `pnpm db:neuf` le demande AVANT d'effacer la base de dev.
 	if (process.argv.includes('--verifier-prod')) {
-		const { error } = await prod.from('profiles').select('id').limit(1);
+		// Délai maximum : cette vérification tourne sous le verrou Supabase, une lecture qui pend
+		// bloquerait les `db:*` de toutes les sessions.
+		const { error } = await prod
+			.from('question_templates')
+			.select('id')
+			.limit(1)
+			.abortSignal(AbortSignal.timeout(20_000));
 		if (error) throw new Error(`la prod ne répond pas : ${error.message}`);
 		console.log('✓ la prod répond.');
 		return;

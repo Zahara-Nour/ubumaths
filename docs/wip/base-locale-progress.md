@@ -506,19 +506,24 @@ recommandations) :
 Réalisation :
 
 - `scripts/db-neuf.sh` : vérifie le verrou (sans le garder pendant la question), demande « oui »,
-  puis se relance sous `with-db-lock.sh` : `db-seed-riche --verifier-prod`, `pile-de-dev.sh start`,
+  puis se relance sous `with-db-lock.sh` (variable `DB_NEUF_SOUS_VERROU`, refusée sans le verrou) : `db-seed-riche --verifier-prod`, `pile-de-dev.sh start`,
   `pile-de-dev.sh db reset`, `db-seed-riche`. `start` sur une pile déjà démarrée ne fait rien.
 - `scripts/db-seed-riche/index.ts` : option `--verifier-prod` (une lecture en prod, rien d'ouvert
   ni d'écrit en local) ; ligne de bilan à la fin (migrations, modèles, comptes).
 - **Tests** : `scripts/__tests__/db-neuf.test.ts` (fausse CLI et faux `tsx`, dépôt git temporaire
   pour avoir un verrou à soi) : ordre des 4 étapes, refus sans `--oui`, prod injoignable et pile
   qui ne démarre pas → rien d'effacé, échecs du reset et du remplissage, verrou tenu → exit 2,
-  verrou tenu pendant le travail. La saisie de « oui » au clavier n'a pas de test automatique.
+  verrou tenu aux quatre étapes, saisie au clavier (pseudo-terminal).
 - **Prouvé sur une copie isolée** (§ 9.1 : projet `ubumaths-essai`, ports `5442x`, verrou à part) :
   pile éteinte et sans volume → **79 s** ; pile déjà démarrée → **45 s** ; chaque fois 628
   migrations, 2 770 modèles, 34 comptes. Sans terminal ni `--oui` : refus, exit 1. Pile de dev
   intacte pendant l'essai (628 migrations, 3 comptes), copie supprimée ensuite.
 - **Doc** : `environnement-de-dev.md`, `base-de-donnees.md`, `commandes.md`, `worktrees.md`,
   `CLAUDE.md`, `README.md`.
+- **Relecture** (`code-reviewer`) : rien de bloquant ; corrigé dans la PR : le mode interne passe
+  par une variable d'environnement qui exige le verrou tenu (un drapeau `--sous-verrou` tapé à la
+  main sautait confirmation et verrou) ; la vérification de la prod lit `question_templates` avec
+  un délai maximum de 20 s (elle tourne sous le verrou) ; tests ajoutés : saisie de « oui » et de
+  « non » dans un pseudo-terminal, verrou tenu aux quatre étapes, variable interne sans verrou.
 - **Non fait** : `pnpm db:neuf` n'a pas été lancée sur la vraie base de dev (elle efface les données
   de toutes les sessions) : à David de choisir le moment.
