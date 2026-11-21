@@ -62,6 +62,9 @@ on:
       - 'scripts/lib/migration-contenu.ts'
       # mise à jour de la base locale, jouée sur une vraie base par tests/integration/db-a-jour.test.ts
       - 'scripts/db-a-jour/**'
+      # pile de test locale : le global-setup de la suite en importe les règles
+      - 'scripts/pile-de-test/**'
+      - 'scripts/pile-de-test.sh'
       # dépendances : version de la CLI Supabase, de supabase-js, de vitest
       - 'package.json'
       - 'pnpm-lock.yaml'

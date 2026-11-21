@@ -44,7 +44,8 @@ while IFS= read -r f; do
 	supabase/migrations/*rangement*.sql | supabase/migrations/*_contenu.sql) ;;
 	supabase/*) aucune "$f : schéma ou base possiblement changés" ;;
 	tests/helpers/* | tests/integration/fixtures/* | tests/integration/global-setup.ts | \
-		vitest*.config.ts | scripts/with-db-lock.sh | scripts/lib/lock.py | pnpm-lock.yaml)
+		vitest*.config.ts | scripts/with-db-lock.sh | scripts/lib/lock.py | \
+		scripts/pile-de-test.sh | scripts/pile-de-test/* | pnpm-lock.yaml)
 		aucune "$f : outillage de la suite"
 		;;
 	scripts/lib/migrations-de-donnees.ts | scripts/ci-integration-exclusions.sh) aucune "$f : la règle elle-même" ;;

@@ -3,25 +3,21 @@
 -- ==============================================================================
 -- Recréés à chaque `pnpm db:reset`, qui repart d'une base vide.
 --
--- ⚠️ `pnpm test:integration` DÉTRUIT le compte prof. Son global-setup supprime
--- tous les comptes `teacher` de la base locale, parce que le trigger
--- `enforce_single_teacher` (modèle mono-professeur) n'en tolère qu'un seul et
--- que chaque test a besoin de créer le sien. Le compte élève, lui, survit.
+-- `pnpm test:integration` ne touche plus à ces comptes : la suite tourne sur sa
+-- propre pile (scripts/pile-de-test/), où son global-setup supprime les comptes
+-- `teacher` (le trigger `enforce_single_teacher` n'en tolère qu'un, et chaque
+-- test crée le sien). `pnpm db:dev-accounts` rejoue ce fichier sur la base de
+-- dev si un compte a été abîmé à la main.
 --
---   Après une suite d'intégration : plus rien à faire — le `teardown` du
---   global-setup rejoue ce fichier en sortie. `pnpm db:dev-accounts` reste le
---   filet si la suite a été interrompue avant sa fin.
---
--- Ce n'est pas un défaut à corriger : c'est l'invariant métier qui rencontre le
--- design des tests. Seeder un prof permanent et laisser les tests en créer un
--- autre sont deux choses incompatibles par construction.
+-- Ce fichier est aussi joué sur la pile de test (seed de la CLI) : c'est là, et
+-- là seulement, que le prof seedé est supprimé avant la suite.
 --
 -- Pourquoi ils existent : la connexion Google ne fonctionne pas contre un
 -- Supabase local, et les pages prof exigent le rôle `teacher`. Sans compte
 -- mot de passe, /dashboard/teacher/* est inatteignable en développement.
 --
 -- ⚠️ Ces identifiants sont publics et c'est assumé : ils n'ouvrent que le
--- Postgres Docker sur 127.0.0.1:54322, dont les clés d'API sont elles-mêmes
+-- Postgres Docker local (127.0.0.1, ports 54322 et 55322), dont les clés d'API sont elles-mêmes
 -- publiques et fixes. Ne JAMAIS reprendre ces adresses ni ces mots de passe
 -- pour un compte réel — le domaine `.test` est réservé par la RFC 2606
 -- justement pour qu'ils ne puissent désigner personne.

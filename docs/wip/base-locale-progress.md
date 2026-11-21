@@ -376,3 +376,33 @@ David, le 2026-11-21 : « Je valide » (comportements et découpage en 4 PR, deu
   fusionnée à `main`). (2) La marque « contenu de la prod » reste posée si une suite d'intégration
   interrompue vide une partie du contenu ; la PR 2 (pile de test séparée) supprime ce cas.
 - 2026-11-21 : PR 1 mergée (#2966). CI rouge une fois : filtre `paths` de la suite d'intégration (deux fichiers de `scripts/db-a-jour/` non couverts), corrigé dans la PR.
+
+## 12. PR 2 : pile de test séparée, phase 0 (2026-11-21)
+
+Relevé avant de proposer :
+
+- Pile de dev mesurée (`docker stats`) : 1,24 Go pour 9 conteneurs ; sans studio, postgres-meta
+  ni mailpit (comme la CI, option `-x`), environ 0,9 Go. Docker dispose de 11,7 Go.
+- `.env.local` ne définit aucun `SUPABASE_TEST_*` ni `SUPABASE_DB_*` : en local les tests tombent
+  sur les valeurs de repli (`54321`, `54322`). Il suffit donc de poser ces variables au lancement.
+- Utilisent la base locale par ce chemin : `test:integration`, `test:integration:watch`,
+  `test:definer-guard`. `test:verifs` (Playwright) passe par un serveur de dev : reste sur la base
+  de dev.
+- Les clés d'API locales sont les mêmes pour toutes les piles (secret JWT par défaut de la CLI).
+
+Comportements proposés à David (en attente de sa validation) :
+
+- **Nominal** : `pnpm test:integration [fichier]` démarre la pile de test si elle est arrêtée,
+  lui applique les migrations de la branche, lance les tests. La base de dev n'est jamais touchée
+  (prof de dev, classes du seed-riche, serveur de dev). Pile de test = celle de la CI : migrations
+  - seed simple, versions de la CLI, jamais de contenu de la prod. `test:definer-guard` aussi.
+    Verrou à part (`supabase-test`) : les tests ne bloquent plus `db:*` ni `pnpm dev`, et inversement.
+- **Limite** : la pile porte une migration que la branche n'a pas (autre worktree) → reconstruite
+  de zéro avant les tests (environ 1 min), avec un message. Commandes `pnpm db:test:stop` et
+  `pnpm db:test:reset`.
+- **Erreur** : migration de la branche en échec → la suite ne démarre pas (fichier + erreur),
+  jamais « notée comme faite ». Docker arrêté ou port pris → message clair. En local, le
+  global-setup refuse de supprimer quoi que ce soit si la base visée n'est pas la pile de test.
+
+Questions posées : (1) la pile reste allumée après les tests, ou s'arrête ? (2) migration d'une
+autre branche dans la pile : reconstruire, ou tolérer ?
