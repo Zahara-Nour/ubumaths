@@ -4,7 +4,7 @@
 
 _Mis à jour le 2026-11-21, après #2969._
 
-- **État** : mesures de performance (2026-11-21) : Vercel a rendu payant le détail par indicateur → relevé mensuel cassé, workflow `web-vitals.yml` **désactivé** ; reste le score global gratuit sur 7 jours, à l'écran ; **#2969 mergée** (pas en prod) : le markdown ne charge plus jsdom au rendu serveur · **Prochaine action** : selon le choix de David, source de mesure de remplacement ; après le prochain `deploy:prod`, recompter sur une build fraîche les pages qui chargent jsdom (79 sur 338 avant #2969) · **En attente de David** : la source de mesure — table anonyme chez nous (toutes les mesures, pas seulement les mauvaises ; migration, question d'accès à poser), Lighthouse hebdomadaire en CI, ou rien ; puis le choix de la prochaine piste · **Tranché** : ne rien payer à Vercel (2026-11-21) ; le reste inchangé, cf. sections ci-dessous · **Pièges en cours** : notre suivi (`reportWebVital`) n'envoie que les mesures mauvaises → aucun p75 calculable depuis `error_logs` ; le projet Vercel s'appelle `chiphre` (`.vercel/project.json` garde l'ancien nom) ; l'état d'avant le 2026-11-21 (n° 26, vérifications manuelles d'après déploiement, pièges ESLint / `db:migrate`) est dans l'historique git de ce bloc · **Worktree / branche** : aucun
+- **État** : mesures de performance (2026-11-21) : Vercel a rendu payant le détail par indicateur → relevé mensuel cassé, workflow `web-vitals.yml` **désactivé** ; reste le score global gratuit sur 7 jours, à l'écran ; **#2969 mergée** (pas en prod) : le markdown ne charge plus jsdom au rendu serveur · **Prochaine action** : selon le choix de David, source de mesure de remplacement ; après le prochain `deploy:prod`, recompter sur une build fraîche les pages qui chargent jsdom (79 sur 338 avant #2969) · **En attente de David** : la validation de la phase 0 « mesures chez nous » (section en fin de journal) et ses 4 questions · **Tranché** : ne rien payer à Vercel ; source de mesure = table anonyme chez nous, lecture admin seul, 90 jours (David, 2026-11-21) ; le reste inchangé, cf. sections ci-dessous · **Pièges en cours** : notre suivi (`reportWebVital`) n'envoie que les mesures mauvaises → aucun p75 calculable depuis `error_logs` ; le projet Vercel s'appelle `chiphre` (`.vercel/project.json` garde l'ancien nom) ; l'état d'avant le 2026-11-21 (n° 26, vérifications manuelles d'après déploiement, pièges ESLint / `db:migrate`) est dans l'historique git de ce bloc · **Worktree / branche** : aucun
 
 ## N° 26 — mesurer un segment en posant la règle : phase 0 (2026-11-12, validée)
 
@@ -647,3 +647,38 @@ essai, 1280×800, 3 essais par case. 4G = CDP `emulateNetworkConditions` 9 Mbit/
 - **jsdom (#2969)** : `sanitizeUrl` sortie dans `sanitize-url.ts` ; journal archivé
   `docs/archive/wip/jsdom-sanitize-url-progress.md`. Chargent encore jsdom au rendu serveur :
   `ReportErrorDialog`, `CellOutputs`, les deux pages de modèles de messages, les notifications.
+
+## Mesures chez nous : phase 0 (2026-11-21, proposée, PAS encore validée)
+
+**Tranché par David le 2026-11-21** (« je suis tes recos », en réponse aux deux questions posées) :
+table anonyme dans notre base ; lisible par l'admin seul ; lignes gardées 90 jours.
+
+**Comportements proposés**
+
+- **Nominal** : à chaque page ouverte en prod, le navigateur envoie ses mesures, bonnes ou
+  mauvaises (LCP, FCP, TTFB au chargement ; INP et CLS quand on quitte la page). Le serveur écrit
+  une ligne par mesure : date, page sous sa forme générique (`/cours/[token]`), indicateur, valeur,
+  type d'appareil. Ni identifiant, ni adresse IP, ni adresse réelle de la page. Les mauvaises
+  mesures continuent d'aller aussi dans `error_logs`, comme aujourd'hui. Le relevé mensuel
+  (`releve-web-vitals.ts`) lit notre base et publie la même issue qu'avant. La purge hebdomadaire
+  existante (`run_cleanup_expired_data`) efface les lignes de plus de 90 jours.
+- **Limites** : onglet ouvert en arrière-plan → écarté (déjà le cas) ; navigation interne sans
+  rechargement → INP et CLS seulement ; navigateur qui ne fournit pas un indicateur → on garde ce
+  qu'on reçoit ; page de moins de 10 mesures → signalée « peu fiable » dans le relevé.
+- **Erreurs** : valeur absurde (au-delà d'une borne) ou page inconnue → refusée, rien d'écrit ;
+  envoi raté → perdu, sans nouvel essai, invisible pour l'élève ; trop d'envois d'une même adresse
+  → refusés (l'adresse sert à limiter, elle n'est pas enregistrée) ; hors prod → rien n'est envoyé.
+
+**Questions ouvertes** (défauts de Claude, NON tranchés)
+
+- **Q1 — Quelles visites compter ?** Défaut proposé : toutes, sauf les pages d'admin et `/dev`.
+- **Q2 — Où lire le résultat ?** Défaut proposé : l'issue mensuelle comme avant, plus le script à
+  la demande ; pas de page d'admin pour l'instant.
+- **Q3 — Comment le relevé de GitHub lit-il notre base ?** Défaut proposé : une route protégée par
+  un jeton dédié, qui ne rend que les résultats déjà calculés (p75 par page), jamais les lignes ;
+  pas de clé complète de la base dans GitHub.
+- **Q4 — Speed Insights de Vercel** : défaut proposé, le laisser branché (score gratuit à l'écran).
+
+**Découpage envisagé** : PR 1 migration (table, purge, lecture admin) + tests d'intégration +
+`security-auditor` ; PR 2 envoi et réception des mesures ; PR 3 relevé et réactivation du workflow ;
+registre des traitements (`docs/systeme/conformite/registre-traitements.md`) à compléter.
