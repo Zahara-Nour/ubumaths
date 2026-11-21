@@ -109,7 +109,8 @@ n'ont pas de modèle » ; il refuse de travailler sans **niveau**.
 - Il suit la démarche de [couvrir-un-niveau.md](couvrir-un-niveau.md), tirée du chantier du CP :
   relevé en lecture seule, vérification de l'existant contre les bornes, classement des points
   sans modèle, **proposition des outils qui manquent** (nouveaux blocs, gestes de réponse, en
-  chantiers à part), lots avec phase 0, migration nœud + tag, page à cocher, publication.
+  chantiers à part), lots avec phase 0 (page à cocher), migration nœud + tag, relecture dans
+  `/dev/modeles`, publication.
 - Rien n'est écrit en production par lui : `create-questions --publier` et la publication, c'est
   toi qui les lances.
 

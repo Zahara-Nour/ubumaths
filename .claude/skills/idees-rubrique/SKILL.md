@@ -69,7 +69,18 @@ ignoré par git ; depuis un worktree, on y accède par ce chemin absolu.
 
 - Une **fiche par idée**, avec ma recommandation : nouveau modèle, variation d'un modèle publié,
   variation d'un brouillon, ou rien. Pour chacune : point (un seul, ADR 0020), sous-notion,
-  variations, plages, forme de réponse. Le tout va dans une page à cocher en artefact (capacité `db`).
+  variations, plages, forme de réponse. Le tout va dans une page à cocher en artefact (capacité `db`) :
+  c'est son seul usage, les verdicts de relecture viennent de `/dev/modeles` (§ 5).
+- **On reprend l'idée, jamais la forme.** Chaque fiche dit « chez eux → chez nous » : la meilleure
+  forme que **notre** format permet, choisie dans le catalogue des cases réponses, des blocs et des
+  gestes ([couvrir-un-niveau.md § 3 bis](../../../docs/pratiques/couvrir-un-niveau.md)). Exemples :
+  un QCM chez eux devient une saisie jugée par nos règles quand la réponse se tape ; « placer un
+  point » devient le geste `placer:` sur une droite ou un repère ; une réponse sous une forme imposée
+  passe par `requiredForm` ou les règles de validation, pas par une comparaison de texte. Leur forme
+  n'est gardée que si la nôtre ne fait pas mieux, et la fiche le dit.
+- Le relevé note aussi ce que **leur** format fait et que le nôtre ne sait pas faire (une forme de
+  réponse, un affichage). C'est une idée d'outil : `outils-manquants.md`, jamais contournée en
+  silence dans un modèle.
 - **Hors programme** : la fiche est gardée, le modèle est rangé **sans point**, si David le veut.
   Pour le Seconde, il l'a voulu le 2026-11-20.
 - Un outil manque ? Le proposer, et l'ajouter à `docs/wip/outils-manquants.md` (jamais une liste à
@@ -82,7 +93,11 @@ ignoré par git ; depuis un worktree, on y accède par ce chemin absolu.
 Tout le lot part d'un coup, pas un cycle par modèle (mémoire `feedback_gros-lots-de-modeles`).
 
 - **Modèles neufs** : script `docs/wip/questions/<sujet>-<x>.py` → `scripts/questions/<sujet>-<x>/`.
-  `create-questions` en simulation, `question:specs`, puis essai dans la base **locale**.
+  Chaque modèle et chaque variation ajoutée a ses **`testSpecs`** : des réponses justes sous
+  plusieurs écritures (acceptées) **et** les erreurs typiques des élèves (refusées), comme dans
+  `couvrir-un-niveau.md` § 5. Une variation sans spec ne part pas. `create-questions` en
+  simulation, `question:specs`, puis essai dans la base **locale**, modèle joué dans l'aperçu
+  (réponse juste acceptée, erreur typique refusée).
   ⚠️ `--publier` en local écrit les ids locaux dans les fichiers : les restaurer (`git restore`)
   après avoir vérifié que le diff ne porte que les ids.
 - **Variations d'un modèle publié** :
@@ -110,7 +125,8 @@ Tout le lot part d'un coup, pas un cycle par modèle (mémoire `feedback_gros-lo
   `feedback_relecture-dans-dev-modeles`). Pour les brouillons : `?noeud=` ou `?point=`. Pour les
   publiés complétés : une série de relecture (`scripts/series/creer-serie.ts`, 50 modèles au plus,
   David la publie).
-- Je lis les verdicts « À revoir » et leurs commentaires en base, je corrige, puis
+- Je lis les verdicts « À revoir » et leurs commentaires en base (`question_template_reviews`,
+  `reviewed_at` postérieur au lot), je les compte, je corrige, puis
   `publier-lot.ts --dir …` en simulation, et David le lance avec `--publier`.
 
 ## 6. Finir

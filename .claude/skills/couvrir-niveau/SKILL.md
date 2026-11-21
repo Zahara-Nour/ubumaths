@@ -1,6 +1,6 @@
 ---
 name: couvrir-niveau
-description: Couvrir les points du programme d'un niveau en modèles de questions (relevé, vérification de l'existant, classement des points sans modèle, création des outils qui manquent (nouveaux blocs, gestes de réponse), lots, brouillons en prod, nœud + tag par migration, page à cocher, publication). Utiliser quand David dit « couvre le CE1 », « compléter les modèles de 6e », « quels points du niveau X n'ont pas de modèle », ou reprend un lot de modèles de questions. Exige le niveau avant tout travail.
+description: Couvrir les points du programme d'un niveau en modèles de questions (relevé, vérification de l'existant, classement des points sans modèle, création des outils qui manquent (nouveaux blocs, gestes de réponse), lots, brouillons en prod, nœud + tag par migration, relecture dans /dev/modeles, publication). Utiliser quand David dit « couvre le CE1 », « compléter les modèles de 6e », « quels points du niveau X n'ont pas de modèle », ou reprend un lot de modèles de questions. Exige le niveau avant tout travail.
 ---
 
 # Couvrir un niveau en modèles de questions
@@ -72,13 +72,13 @@ couvre (ce niveau et les suivants) et sa place dans l'ordre des lots. David déc
 4. **Migration nœud + tag** (gabarit `20261026210000_questions_cp_c_rangement_tags.sql` + son
    test d'intégration) : test rouge sans la migration puis vert, `security-auditor`, CI verte,
    `pnpm check:migrations --pr <n>`, merge, `db:migrate` depuis le dépôt principal, vérification en prod.
-5. **Page à cocher** : `pnpm tsx scripts/questions/page-a-cocher.ts --dir … --titre … --intro …
-   --sortie <scratchpad>/….html` (lit la base ; alertes : sans point, sans nœud, niveau, bloc non
-   dessiné), publiée en artefact avec la capacité `db`, rendu vérifié à 390 px, ouverte dans
-   Chrome ; lire et **compter** les verdicts en base. **La vérification de David se fait dans
-   `/dev/modeles`** (demandé le 2026-11-20) : lui donner l'adresse qui montre le lot (brouillons :
-   filtre nœud ou point ; modèles publiés : série de relecture, `scripts/series/creer-serie.ts`, 50
-   modèles au plus par série) ; les choix de jugement à trancher s'y testent en jouant le modèle.
+5. **Relecture dans `/dev/modeles`** (demandé le 2026-11-20 ; doc, § 8) : la vraie appli, modèles
+   joués, blocs dessinés, réponses jugées. Donner à David l'adresse qui montre tout le lot :
+   brouillons → `/dev/modeles?noeud=…` ou `?point=…` ; modèles publiés → série de relecture
+   (`scripts/series/creer-serie.ts`, 50 modèles au plus, David l'enregistre). **Les verdicts se lisent
+   en base** (`question_template_reviews` : « À revoir » + commentaire, `reviewed_at` postérieur au
+   lot) et se **comptent** avant de dire « tout est relu ». La page à cocher (`page-a-cocher.ts`,
+   artefact `db`) ne sert plus qu'en **phase 0**, pour trancher les fiches avant d'écrire.
 6. **Publication** : `pnpm tsx scripts/questions/publier-lot.ts --dir …` en simulation (tous les
    brouillons du lot, ou rien), puis **David** le lance avec `--publier` ; le script relit
    `published` en base. Journal + « Reprendre ici » à jour, commit direct.

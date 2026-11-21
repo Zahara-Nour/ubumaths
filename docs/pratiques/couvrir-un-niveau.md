@@ -294,7 +294,7 @@ rollback écrit **garde l'état laissé par la migration** (nœud, niveaux, stat
 cette garde, une saisie faite depuis serait écrasée en silence. Copies de test publiées : un
 niveau chacune (`idx_question_templates_unique_category`).
 
-## 8. Page à cocher, puis publication
+## 8. Relecture dans `/dev/modeles`, puis publication
 
 **La vérification de David se fait dans `/dev/modeles`** (vraie appli : modèles joués, blocs dessinés,
 réponses jugées), demandé le 2026-11-20 après un lot validé sur la seule page à cocher. Lui donner
@@ -302,9 +302,17 @@ l'adresse qui montre tout le lot : brouillons → filtre nœud ou point (`?noeud
 publiés → série de relecture `scripts/series/<niveau>-relecture-<lot>.json` (50 modèles au plus par
 série), simulée par `scripts/series/creer-serie.ts` puis enregistrée par David (`--publier`), ouverte
 par `/dev/modeles?serie=<id>`. Les choix de jugement à trancher (forme refusée, demi-point) s'y testent
-en jouant le modèle. La page à cocher ci-dessous reste le relevé des verdicts.
+en jouant le modèle.
 
-1. **Page à cocher** :
+**Les verdicts se lisent en base**, et seulement là : table `question_template_reviews` (un verdict
+par modèle, « À revoir » + commentaire ; ne compter que ceux dont `reviewed_at` suit l'écriture du
+lot). Harmonisé le 2026-11-21 avec le skill `idees-rubrique` : un seul endroit pour les verdicts.
+
+La **page à cocher** décrite ci-dessous sert désormais à la **phase 0** (trancher les fiches avant
+d'écrire, verdicts dans la base de l'artefact) ou à une vue d'ensemble d'un lot ; elle ne remplace
+plus la relecture dans `/dev/modeles`.
+
+1. **Page à cocher** (phase 0, vue d'ensemble) :
    ```bash
    pnpm tsx scripts/questions/page-a-cocher.ts --dir scripts/questions/<niveau>-<lot> \
      --titre "Relecture CP — lot C" --intro "<une phrase : ce que le lot apporte>" \
@@ -354,8 +362,11 @@ scripts/questions/<niveau>-0-<thème> --ids <id8>,…` ; chaque fichier porte so
    commentaire, filtre « Ce qui reste » par défaut, file d'écriture unique, nouvel essai
    automatique, bandeau tant qu'une réponse attend). Publier la page en artefact avec la capacité
    `db` ; vérifier le rendu à 390 px.
-2. David relit ; lire la base (`ArtifactData list verdicts`) et **compter** les réponses avant
-   de dire « tout est relu ». Un « À revoir » → corriger (§ 7), remettre le verdict à zéro.
+2. David relit dans `/dev/modeles` ; lire `question_template_reviews` (MCP en lecture seule) et
+   **compter** les verdicts du lot avant de dire « tout est relu ». Un « À revoir » → corriger
+   (§ 7 pour un publié, `--mettre-a-jour` pour un brouillon), puis David rejoue le modèle et
+   renouvelle son verdict. En phase 0, les réponses de la page à cocher se lisent par
+   `ArtifactData list verdicts`.
 3. **Publication** :
    ```bash
    pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/<niveau>-<lot>   # simulation
