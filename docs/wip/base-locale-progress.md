@@ -6,9 +6,10 @@ _Mis à jour le 2026-11-21 : étape 1 faite (§ 9), rien n'est codé._
 
 - **État** : étape 1 du § 6 terminée, la panne du § 3.1 est **rejouée et établie** sur une copie
   isolée (§ 9). Base partagée intacte (628/628, seed simple).
-- **Prochaine action** : attendre les réponses de David aux questions de phase 0 (§ 9.5), puis
-  étape 2 du § 6 dans un worktree `../ubumaths-wt-base-locale`.
-- **En attente de David** : les 4 questions du § 9.5, posées le 2026-11-21.
+- **Prochaine action** : attendre la validation par David des comportements et du découpage
+  (§ 10), puis PR 1 dans un worktree `../ubumaths-wt-base-locale`.
+- **En attente de David** : son accord sur le § 10 (comportements + découpage en 4 PR), présenté
+  le 2026-11-21.
 - **Pièges en cours** : base locale partagée (verrou `supabase`, ne jamais le contourner) ;
   `db:reset` efface les données locales de tout le monde ; `db:migrate` = **prod**. Pour
   expérimenter : copie isolée du § 9.1, jamais la base partagée.
@@ -299,3 +300,31 @@ puis les 3 migrations remises et `supabase migration up --local`.
    commande à lancer à la main ?
 3. Tests sur une **base séparée** de la base de dev (recommandé), ou une seule base ?
 4. Mêmes versions des services que la CI pour la pile locale (recommandé) ?
+
+## 10. Phase 0 : réponse de David et proposition (2026-11-21)
+
+Réponse de David aux 4 questions du § 9.5, mot pour mot : « je veux le travail le plus propre et
+fiable possible ». Lecture faite, **à confirmer par lui avec le découpage** : contenu noté comme
+fait sans être joué (Q1), mise à jour automatique (Q2), tests séparés du dev (Q3), versions de la
+CI (Q4).
+
+Correction sur la Q3 : « une deuxième base dans le même Postgres » ne marche pas. Les tests
+passent par l'API (`SUPABASE_TEST_URL`, 175 fichiers), et l'API d'une pile Supabase ne sert qu'une
+base. Séparer = une **deuxième pile** (`project_id` et ports à elle), construite comme celle de la
+CI : migrations + seed simple, jamais de contenu de la prod, mêmes versions. Faisable : les tests
+lisent leurs adresses dans l'environnement (`SUPABASE_TEST_*`, `SUPABASE_DB_*`), `54321` n'est
+qu'une valeur de repli (181 fichiers), `54322` n'est en dur que dans le global-setup. Coût : de la
+mémoire (pile actuelle ≈ 1,4 Go ; sans studio ni mailpit, moins).
+
+Découpage proposé (une PR = une session) :
+
+1. **PR 1, `pnpm db:a-jour`** : applique les migrations en attente sur la base de dev sans rien
+   effacer ; une migration de contenu est notée comme faite sans être jouée quand la base porte
+   le contenu de la prod ; lancée avant le serveur de dev ; `db:seed-riche` refuse une base en
+   retard.
+2. **PR 2, pile de test séparée** : `test:integration` démarre et met à jour sa propre pile, ne
+   touche plus à la base de dev ; le global-setup ne détruit plus rien chez le dev et ne relance
+   plus seed-riche.
+3. **PR 3, versions de la CI** : la pile de dev ignore `supabase/.temp/*-version`.
+4. **PR 4, remise à neuf en une commande + doc** (`environnement-de-dev.md`,
+   `base-de-donnees.md`, `CLAUDE.md`, `docs/pratiques/worktrees.md`), versement.
