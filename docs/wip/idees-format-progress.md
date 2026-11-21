@@ -6,16 +6,17 @@ Mettre en œuvre les idées retenues dans [idees-format-exercices.md](idees-form
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22, PR 1 de l'idée 4 en cours._
+_Mis à jour le 2026-11-22, après #2979._
 
 - **État** : idées 1 à 3 terminées (pas en prod). Idée 4 : phase 0 et découpage validés ; PR 1
-  (migration `answered_as_choice`) en cours.
-- **Prochaine action** : PR 1 → CI, merge, `db:migrate` (4 conditions), `db:types` ; puis PR 2
-  (moteur).
+  (#2979, colonne `answered_as_choice`) mergée et migrée en prod (vérifié).
+- **Prochaine action** : PR 2 (moteur) : nouveau worktree, `pnpm db:types` d'abord (la colonne
+  n'est pas encore dans `database.ts`), puis veto de l'auteur, variations « en QCM » de la ligne,
+  case → choix au tirage.
 - **En attente de David** : rien.
 - **Pièges en cours** : fichiers de lot avec `expectedErrors` refusés en prod avant le
   `deploy:prod` de #2962 ; export RGPD (`api/account/export`) à compléter de la colonne en PR 3.
-- **Worktree / branche** : `ubumaths-wt-idees-format` · `feat/idees-format-qcm-trace`.
+- **Worktree / branche** : aucun ; à créer pour la PR 2.
 
 ## Idée 1 — phase 0 validée (David, 2026-11-21)
 
@@ -168,7 +169,8 @@ Branche `feat/idees-format-qcm-trace`. Migration `20261121234509_trace_repondu_e
 `source = 'auto'` et lieu Saisie, Contrôle blanc, Course aux nombres ou contrôle (ni Flash-cards,
 ni révision, ni Descente). Aucune policy touchée. Test `trace-repondu-en-qcm.test.ts` (13, rouges
 sans la migration : colonne inconnue ; témoin « en saisie » pour chaque refus) ; suites voisines
-des traces vertes (98).
+des traces vertes (98). Relecture `security-auditor` : aucun finding. Mergée (#2979), `db:migrate`
+le 2026-11-22 (seule migration en attente), colonne vérifiée en prod.
 
 ## PR 1 — tirage (#2954, mergée le 2026-11-21)
 
