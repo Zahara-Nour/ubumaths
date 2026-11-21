@@ -111,6 +111,16 @@ recalcule les fichiers atteints et échoue sur un fichier non couvert ou un moti
 GitHub, `?` et `+` portent sur le caractère **précédent** et `[]` est une classe : un `+server.ts`
 s'écrit `*server.ts` dans le filtre. Ne pas vérifier un motif avec minimatch.
 
+**Tests de migration de données : la nuit, pas sur les PR.** Un test qui rejoue une migration
+ne faisant que ranger, taguer ou corriger du contenu (copie de la prod, rejeu du fichier,
+rollback) porte la mention `@migration-de-donnees` dans son en-tête. Sur une PR, il ne tourne que
+si la PR le touche, touche sa migration, ou touche `tests/helpers/**`
+(`scripts/ci-integration-exclusions.sh`) ; la nuit et à la main, il tourne toujours. Un nouveau
+test de ce genre copie la mention de son gabarit. ⛔ Jamais la mention sur un test dont la
+migration pose une règle d'accès, une fonction, un trigger ou une colonne : la garde
+`pnpm check:migrations-de-donnees` (job `paths-filter`) la refuse. Sans mention, le test tourne
+sur chaque PR : c'est plus lent, jamais dangereux.
+
 Le **gate de régression** quotidien reste `test-server` (rapide, déterministe).
 
 ---
