@@ -84,7 +84,7 @@
 </script>
 
 <SeoHead
-	title="L’Almanach des Chiphres — Chiphre"
+	title="L’Almanach des Chiphres | Chiphre"
 	description="L’Almanach des Chiphres : sept mois de cinquante-deux jours, la Cloche du Grand Reset, Le Surnuméraire et les fêtes du Royaume. Convertissez n’importe quelle date grégorienne en date pataphysique."
 />
 

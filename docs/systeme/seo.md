@@ -49,9 +49,21 @@ Props : `title`, `description`, `type` (`website` par défaut, `article` pour le
 L'URL canonique est `absoluteUrl(page.url.pathname)` : **le chemin seul**, la query string est
 ignorée (`?depuis=…` ne fait pas une autre page).
 
-Utilisé par 32 pages de `src/routes/(public)/` (accueil, Shtam, chiffrement, outils, pages
+Utilisé par 53 pages de `src/routes/(public)/` (accueil, Shtam, chiffrement, outils, jeux, pages
 légales, `/a-propos`, `/upsilon`, page d'un terme du glossaire `/glossaire/[slug]`…) et par `src/lib/components/kingdom-tour/AudienceView.svelte`
 (pages `/eleves`, `/parents`, `/professeurs`).
+
+### Règle des titres
+
+Le titre d'onglet d'une page du plan de site dit d'abord ce qu'on y fait, avec les mots qu'on
+tape dans un moteur (« Grapheur en ligne : tracer des fonctions et des suites »), puis finit par
+` | Chiphre`. Un seul séparateur avant le nom du site. Deux exceptions : l'accueil, qui commence
+par le nom du site, et les articles du Shtam, qui finissent par « — Le Shtam ».
+
+Garde : `src/lib/seo/__tests__/titres-pages.test.ts`. Toute page de `SITEMAP_PAGES` passe par
+`SeoHead` (ou `AudienceView`), n'écrit aucun `<title>` à la main, et n'emploie aucun autre
+séparateur ; les titres des démonstrations (`demoSeo`) et des trois pages de présentation suivent
+la même règle.
 
 ### `JsonLd.svelte`
 

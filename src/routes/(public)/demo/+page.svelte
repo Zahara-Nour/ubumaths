@@ -12,7 +12,7 @@
 	import { ArrowRight } from '@lucide/svelte';
 </script>
 
-<SeoHead title="Démonstrations — Chiphre" description={DEMO_HUB.description} />
+<SeoHead title="Démonstrations | Chiphre" description={DEMO_HUB.description} />
 
 <div class="container mx-auto max-w-5xl space-y-8 px-4 py-8">
 	<header class="space-y-2">

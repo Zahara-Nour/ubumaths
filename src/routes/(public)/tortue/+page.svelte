@@ -8,6 +8,7 @@
   est refusé au lancer).
 -->
 <script lang="ts">
+	import SeoHead from '#lib/seo/SeoHead.svelte';
 	import { resolve } from '$app/paths';
 	import { TortueBacASable } from '#lib/components/blockly/index.ts';
 	import { Button } from '#lib/components/ui/button/index.ts';
@@ -20,13 +21,10 @@
 	let niveau = $state<NiveauTortue>('base');
 </script>
 
-<svelte:head>
-	<title>La Tortue - Chiphre</title>
-	<meta
-		name="description"
-		content="Programme une tortue avec des blocs : avancer, tourner, répéter. Elle trace ta figure sur un quadrillage."
-	/>
-</svelte:head>
+<SeoHead
+	title="La Tortue : programmer par blocs et tracer des figures | Chiphre"
+	description="Programme une tortue avec des blocs : avancer, tourner, répéter. Elle trace ta figure sur un quadrillage."
+/>
 
 <div class="mx-auto flex w-full max-w-7xl flex-col gap-4 px-4 py-6">
 	<div>

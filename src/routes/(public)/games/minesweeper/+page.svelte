@@ -1,4 +1,5 @@
 <script lang="ts">
+	import SeoHead from '#lib/seo/SeoHead.svelte';
 	import { onDestroy, onMount } from 'svelte';
 	import { minesweeperStore } from '#lib/stores/minesweeper.svelte.ts';
 	import { Card } from '#lib/components/ui/card/index.ts';
@@ -109,10 +110,10 @@
 	});
 </script>
 
-<svelte:head>
-	<title>Démineur - Chiphre</title>
-	<meta name="description" content="Jouez au Démineur sur Chiphre et gagnez des gidouilles !" />
-</svelte:head>
+<SeoHead
+	title="Démineur : jeu de logique en ligne | Chiphre"
+	description="Le Démineur, jeu de logique et de déduction : joue sur Chiphre et gagne des gidouilles."
+/>
 
 <main class="min-h-screen bg-gradient-to-br from-background to-muted p-4 md:p-8">
 	<div class="mx-auto max-w-6xl">

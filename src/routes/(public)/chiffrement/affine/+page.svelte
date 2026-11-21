@@ -30,7 +30,7 @@
 </script>
 
 <SeoHead
-	title="Chiffre affine : clé, inverse modulaire et décryptage — Chiphre"
+	title="Chiffre affine : clé, inverse modulaire et décryptage | Chiphre"
 	description="Le chiffre affine pas à pas : y = ax + b modulo 26, pourquoi a doit être premier avec 26, l’inverse modulaire pour déchiffrer, et l’attaque par deux lettres pour décrypter."
 />
 

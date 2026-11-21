@@ -76,7 +76,7 @@
 </script>
 
 <SeoHead
-	title="RSA de poche : clés, Euclide étendu et exponentiation rapide — Chiphre"
+	title="RSA de poche : clés, Euclide étendu et exponentiation rapide | Chiphre"
 	description="Le chiffrement RSA avec de petits nombres : fabriquer les clés avec l’algorithme d’Euclide étendu, chiffrer par exponentiation rapide, et décrypter en factorisant n."
 />
 

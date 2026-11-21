@@ -74,8 +74,8 @@
 </script>
 
 <SeoHead
-	title="Python Playground - Chiphre"
-	description="Environnement Python interactif avec NumPy et Matplotlib pour les mathématiques"
+	title="Python en ligne pour les maths : NumPy et Matplotlib | Chiphre"
+	description="Écrire et exécuter du Python dans le navigateur, sans rien installer : NumPy et Matplotlib inclus, pour les mathématiques."
 />
 
 <main class="container mx-auto p-4">

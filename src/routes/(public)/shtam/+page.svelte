@@ -18,7 +18,7 @@
 </script>
 
 <SeoHead
-	title={data.page === 1 ? 'Le Shtam — Chiphre' : `Le Shtam, page ${data.page} — Chiphre`}
+	title={data.page === 1 ? 'Le Shtam | Chiphre' : `Le Shtam, page ${data.page} | Chiphre`}
 	description="Le Shtam, gazette parodique du Royaume : les fausses nouvelles des Mathres, chacune suivie de son vrai du faux."
 	noindex={data.page > 1}
 />

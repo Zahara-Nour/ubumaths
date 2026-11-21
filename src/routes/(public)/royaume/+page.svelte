@@ -115,7 +115,7 @@
 </script>
 
 <SeoHead
-	title="Le Tour du Royaume — Chiphre"
+	title="Le Tour du Royaume | Chiphre"
 	description="Visite Chiphre, le Royaume du Père Ubu : six Provinces pour les grands domaines des maths, Automaths, l’Atelier, le Cabinet Noir, des jeux et Python. Presque tout s’ouvre sans compte."
 />
 

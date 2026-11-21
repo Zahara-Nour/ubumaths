@@ -40,8 +40,8 @@
 <svelte:window onkeydown={handleKeydown} />
 
 <SeoHead
-	title="Calculatrice graphique Upsilon | Chiphre"
-	description="Simulateur de la calculatrice graphique Upsilon (fork d'Epsilon par NumWorks). Disponible directement dans le navigateur, accessible à tous."
+	title="Calculatrice graphique en ligne : le simulateur Upsilon | Chiphre"
+	description="Simulateur de la calculatrice graphique Upsilon (dérivée d’Epsilon, de NumWorks), gratuit, directement dans le navigateur."
 />
 
 <main class="container mx-auto p-4">

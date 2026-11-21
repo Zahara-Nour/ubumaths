@@ -15,7 +15,7 @@
 </script>
 
 <SeoHead
-	title="Chiphre, c’est quoi ? - Chiphre"
+	title="Chiphre, c’est quoi ? | Chiphre"
 	description="Chiphre en quelques mots, pour les parents : un royaume imaginaire à traverser, les mathématiques rigoureuses des programmes officiels, sans publicité ni revente de données."
 />
 

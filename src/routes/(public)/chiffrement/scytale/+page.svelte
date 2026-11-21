@@ -18,7 +18,7 @@
 </script>
 
 <SeoHead
-	title="La scytale spartiate : chiffre par transposition — Chiphre"
+	title="La scytale spartiate : chiffre par transposition | Chiphre"
 	description="La scytale pas à pas : enrouler une bande sur un bâton, écrire le message, dérouler. Un chiffre par transposition, et comment le décrypter en essayant tous les bâtons."
 />
 

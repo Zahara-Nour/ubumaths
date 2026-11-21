@@ -38,7 +38,7 @@
 </script>
 
 <SeoHead
-	title="Chiffre par substitution : mot-clé et analyse de fréquences — Chiphre"
+	title="Chiffre par substitution : mot-clé et analyse de fréquences | Chiphre"
 	description="Le chiffre par substitution pas à pas : fabriquer un alphabet chiffré à partir d’un mot-clé, chiffrer, déchiffrer, puis décrypter sans la clé grâce à l’analyse de fréquences."
 />
 

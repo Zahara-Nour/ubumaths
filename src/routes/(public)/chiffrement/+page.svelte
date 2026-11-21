@@ -70,7 +70,7 @@
 </script>
 
 <SeoHead
-	title="Le Cabinet Noir de Turingrad : chiffrer et déchiffrer — Chiphre"
+	title="Le Cabinet Noir de Turingrad : chiffrer et déchiffrer | Chiphre"
 	description="Chiffrer, déchiffrer et décrypter des messages secrets : chiffre de César, Atbash, substitution, scytale, carré de Polybe, Vigenère, chiffre affine, chiffre de Hill et RSA, avec les calculs pas à pas et l’analyse de fréquences."
 />
 
