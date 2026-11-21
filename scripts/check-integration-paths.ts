@@ -36,7 +36,7 @@
 import { build, type Plugin } from 'esbuild';
 import { execFileSync } from 'node:child_process';
 import { globSync, readFileSync } from 'node:fs';
-import { join, resolve } from 'node:path';
+import { join, relative, resolve } from 'node:path';
 import { parse } from 'yaml';
 
 const WORKFLOW = '.github/workflows/nightly-integration.yml';
@@ -108,6 +108,16 @@ export function deadPatterns(patterns: string[], tracked: string[]): string[] {
 
 /** Fermeture transitive des imports de la suite d'intégration (chemins relatifs à `root`). */
 export async function integrationClosure(root: string): Promise<string[]> {
+	const parTest = await integrationClosures(root);
+	return [...new Set([...parTest.values()].flat())].sort();
+}
+
+/**
+ * Fermeture transitive des imports de CHAQUE fichier de la suite (tests et global-setup) :
+ * fichier → fichiers qu'il atteint, lui compris (chemins relatifs à `root`). Sert aussi à
+ * `scripts/ci-integration-touches.ts` (ne lancer que les tests qu'une PR atteint).
+ */
+export async function integrationClosures(root: string): Promise<Map<string, string[]>> {
 	const entries = [
 		...globSync('tests/integration/**/*.{test,spec}.{js,ts}', { cwd: root }),
 		'tests/integration/global-setup.ts'
@@ -166,7 +176,26 @@ export async function integrationClosure(root: string): Promise<string[]> {
 	if (unresolved.length > 0) {
 		throw new Error(`Alias non résolus : ${[...new Set(unresolved)].join(', ')}`);
 	}
-	return Object.keys(result.metafile.inputs).sort();
+	// Parcours du graphe des imports depuis chaque fichier de la suite. (Les entrées d'une sortie
+	// esbuild ne suffisent pas : elles omettent les fichiers éliminés, ceux de types seuls par exemple.)
+	const graphe = result.metafile.inputs;
+	const parTest = new Map<string, string[]>();
+	for (const entree of entries) {
+		const depart = relative(root, entree);
+		if (!graphe[depart]) throw new Error(`${depart} : absent du graphe des imports`);
+		const vus = new Set([depart]);
+		const pile = [depart];
+		while (pile.length > 0) {
+			const f = pile.pop() as string;
+			for (const imp of graphe[f]?.imports ?? []) {
+				if (imp.external || vus.has(imp.path)) continue;
+				vus.add(imp.path);
+				pile.push(imp.path);
+			}
+		}
+		parTest.set(depart, [...vus].sort());
+	}
+	return parTest;
 }
 
 function pathsFilter(root: string): string[] {

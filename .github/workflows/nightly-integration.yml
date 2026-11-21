@@ -48,6 +48,9 @@ on:
       - 'scripts/lib/lock.py'
       # portée d'une PR (suite complète ou tests d'une migration de données)
       - 'scripts/ci-integration-ciblee.sh'
+      # tests touchés par une PR de code (et le calcul des imports qu'il partage avec la garde)
+      - 'scripts/ci-integration-touches.ts'
+      - 'scripts/check-integration-paths.ts'
       # empreinte d'un passage (passage déjà vert sur la PR : tests non relancés)
       - 'scripts/ci-integration-empreinte.sh'
       # tests de migration de données laissés de côté sur les PR, et leur garde
@@ -242,7 +245,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     outputs:
-      fichiers: ${{ steps.portee.outputs.fichiers }}
+      fichiers: ${{ steps.selection.outputs.fichiers }}
+      aucun: ${{ steps.touches.outputs.aucun == 'true' && 'true' || 'false' }}
+      sauter: ${{ (steps.deja-vert.outputs.cache-hit == 'true' || steps.touches.outputs.aucun == 'true') && 'true' || 'false' }}
       exclure: ${{ steps.exclusions.outputs.exclure }}
       morceaux: ${{ steps.morceaux.outputs.morceaux }}
       total: ${{ steps.morceaux.outputs.total }}
@@ -264,25 +269,61 @@ jobs:
         id: portee
         run: bash scripts/ci-integration-ciblee.sh >> "$GITHUB_OUTPUT" || echo "fichiers=" >> "$GITHUB_OUTPUT"
 
+      # Tests touchés (PR de code) : il faut les dépendances (esbuild) pour lire les imports.
+      - name: Setup pnpm
+        if: github.event_name == 'pull_request' && steps.portee.outputs.fichiers == ''
+        uses: pnpm/action-setup@v6
+
+      - name: Setup Node.js
+        if: github.event_name == 'pull_request' && steps.portee.outputs.fichiers == ''
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        if: github.event_name == 'pull_request' && steps.portee.outputs.fichiers == ''
+        run: pnpm install --frozen-lockfile
+
+      - name: Tests touchés (PR qui ne modifie que du code, de la doc, des tests d'intégration)
+        # Seuls tournent les tests dont les imports atteignent un fichier modifié ; aucun test
+        # atteint → rien à lancer (`aucun=true`). Hors de ce cas : suite complète. Sur les PR
+        # `src/` seules mesurées, 0 à 20 tests au lieu de toute la suite (2026-11-21).
+        # Décision : docs/wip/ci-integration-progress.md § 9.
+        id: touches
+        if: github.event_name == 'pull_request' && steps.portee.outputs.fichiers == ''
+        run: |
+          pnpm exec tsx scripts/ci-integration-touches.ts > touches.out || printf 'fichiers=\naucun=false\n' > touches.out
+          cat touches.out >> "$GITHUB_OUTPUT"
+
+      - name: Tests retenus
+        id: selection
+        env:
+          CIBLEE: ${{ steps.portee.outputs.fichiers }}
+          TOUCHES: ${{ steps.touches.outputs.fichiers }}
+        run: echo "fichiers=${CIBLEE:-$TOUCHES}" >> "$GITHUB_OUTPUT"
+
       - name: Tests de migration de données laissés de côté (PR en suite complète)
         # ~300 tests rejouent une migration qui ne fait que ranger, taguer ou corriger du
         # contenu : ils ne prouvent quelque chose qu'avant son `db:migrate` (~5 min de suite,
         # 2026-11-21). Sur une PR, seuls tournent ceux qu'elle touche (le test ou sa migration) ;
         # la nuit et à la main, tous. Décision et tri : docs/wip/ci-integration-progress.md § 7.
         id: exclusions
-        if: steps.portee.outputs.fichiers == ''
+        if: steps.selection.outputs.fichiers == '' && steps.touches.outputs.aucun != 'true'
         run: bash scripts/ci-integration-exclusions.sh >> "$GITHUB_OUTPUT" || echo "exclure=" >> "$GITHUB_OUTPUT"
 
-      - name: Morceaux (4 pour la suite complète, 1 pour quelques tests)
+      - name: Morceaux (4 pour la suite complète ou plus de 40 tests, 1 sinon)
         # Suite en série (un fichier à la fois, isolation par purge globale) : on ne peut
         # pas paralléliser DANS une stack. On découpe donc en jobs, une stack chacun
         # (2026-11-21 : 584 fichiers, ~15 min de tests en un seul job). Coût fixe d'un
         # job ~2 min (install, images, `supabase start`) : inutile pour quelques tests.
         id: morceaux
         env:
-          FICHIERS: ${{ steps.portee.outputs.fichiers }}
+          FICHIERS: ${{ steps.selection.outputs.fichiers }}
+          AUCUN: ${{ steps.touches.outputs.aucun }}
         run: |
-          if [ -n "$FICHIERS" ]; then
+          n=$(wc -w <<<"$FICHIERS")
+          if [ "$AUCUN" = "true" ] || { [ -n "$FICHIERS" ] && [ "$n" -le 40 ]; }; then
             echo 'morceaux=[1]' >> "$GITHUB_OUTPUT"; echo 'total=1' >> "$GITHUB_OUTPUT"
           else
             echo 'morceaux=[1,2,3,4]' >> "$GITHUB_OUTPUT"; echo 'total=4' >> "$GITHUB_OUTPUT"
@@ -295,7 +336,7 @@ jobs:
         id: empreinte
         if: github.event_name == 'pull_request'
         env:
-          FICHIERS: ${{ steps.portee.outputs.fichiers }}
+          FICHIERS: ${{ steps.selection.outputs.fichiers }}
           EXCLURE: ${{ steps.exclusions.outputs.exclure }}
           TOTAL: ${{ steps.morceaux.outputs.total }}
         run: bash scripts/ci-integration-empreinte.sh >> "$GITHUB_OUTPUT" || echo "empreinte=" >> "$GITHUB_OUTPUT"
@@ -334,32 +375,37 @@ jobs:
         run: |
           echo "Déjà vert sur l'empreinte ${{ needs.portee.outputs.empreinte }} : tests non relancés."
 
+      - name: Aucun test n'atteint les fichiers modifiés
+        # PR de code qu'aucun test d'intégration n'importe : rien à lancer, même affichage.
+        if: needs.portee.outputs.aucun == 'true' && needs.portee.outputs.deja_vert != 'true'
+        run: echo "Aucun test n'atteint les fichiers modifiés (job portee, étape « Tests touchés »)."
+
       - name: Checkout code
-        if: needs.portee.outputs.deja_vert != 'true'
+        if: needs.portee.outputs.sauter != 'true'
         uses: actions/checkout@v7
 
       - name: Setup pnpm
-        if: needs.portee.outputs.deja_vert != 'true'
+        if: needs.portee.outputs.sauter != 'true'
         uses: pnpm/action-setup@v6
 
       - name: Setup Node.js
-        if: needs.portee.outputs.deja_vert != 'true'
+        if: needs.portee.outputs.sauter != 'true'
         uses: actions/setup-node@v7
         with:
           node-version-file: '.nvmrc'
           cache: 'pnpm'
 
       - name: Install dependencies
-        if: needs.portee.outputs.deja_vert != 'true'
+        if: needs.portee.outputs.sauter != 'true'
         run: pnpm install --frozen-lockfile
 
       - name: Create CI env (placeholders)
-        if: needs.portee.outputs.deja_vert != 'true'
+        if: needs.portee.outputs.sauter != 'true'
         # Needed so svelte-kit sync can generate $env/static members.
         run: cp .github/ci.env .env
 
       - name: Supabase CLI version
-        if: needs.portee.outputs.deja_vert != 'true'
+        if: needs.portee.outputs.sauter != 'true'
         # Doit afficher la version exacte de la devDependency (package.json).
         # La version sert aussi de clé au cache des images Docker (étape suivante).
         id: supabase-cli
@@ -375,7 +421,7 @@ jobs:
       # sont fixées par la CLI et par `supabase/config.toml` : la clé en dépend.
       # `v1` : à incrémenter si la liste des services exclus (-x) change.
       - name: Restore Supabase Docker images
-        if: needs.portee.outputs.deja_vert != 'true'
+        if: needs.portee.outputs.sauter != 'true'
         id: supabase-images
         uses: actions/cache/restore@v6
         with:
@@ -383,11 +429,11 @@ jobs:
           key: supabase-images-v1-${{ runner.os }}-${{ steps.supabase-cli.outputs.version }}-${{ hashFiles('supabase/config.toml') }}
 
       - name: Load Supabase Docker images
-        if: (steps.supabase-images.outputs.cache-hit == 'true') && needs.portee.outputs.deja_vert != 'true'
+        if: (steps.supabase-images.outputs.cache-hit == 'true') && needs.portee.outputs.sauter != 'true'
         run: zstd -dc /tmp/supabase-images.tar.zst | docker load
 
       - name: Start Supabase (applies migrations)
-        if: needs.portee.outputs.deja_vert != 'true'
+        if: needs.portee.outputs.sauter != 'true'
         # Stack allégée : on exclut les services non requis (studio, edge, analytics,
         # mail, imgproxy). storage-api est GARDÉ : deux suites l'appellent
         # (chapter-documents-size-limit, chat-attachment-signing). Son image était
@@ -400,7 +446,7 @@ jobs:
         # Seulement si le cache manquait et que la stack a démarré : les images
         # présentes sont alors exactement celles de cette version de la CLI.
         # Un seul morceau enregistre : les autres viseraient la même clé en même temps.
-        if: (steps.supabase-images.outputs.cache-hit != 'true' && matrix.shard == 1) && needs.portee.outputs.deja_vert != 'true'
+        if: (steps.supabase-images.outputs.cache-hit != 'true' && matrix.shard == 1) && needs.portee.outputs.sauter != 'true'
         run: |
           set -o pipefail
           images="$(docker images --format '{{.Repository}}:{{.Tag}}' | grep -E '(^|/)supabase/' | grep -v ':<none>$')"
@@ -410,14 +456,14 @@ jobs:
           ls -lh /tmp/supabase-images.tar.zst
 
       - name: Upload Supabase Docker images to the cache
-        if: (steps.supabase-images.outputs.cache-hit != 'true' && matrix.shard == 1) && needs.portee.outputs.deja_vert != 'true'
+        if: (steps.supabase-images.outputs.cache-hit != 'true' && matrix.shard == 1) && needs.portee.outputs.sauter != 'true'
         uses: actions/cache/save@v6
         with:
           path: /tmp/supabase-images.tar.zst
           key: ${{ steps.supabase-images.outputs.cache-primary-key }}
 
       - name: Export local Supabase credentials
-        if: needs.portee.outputs.deja_vert != 'true'
+        if: needs.portee.outputs.sauter != 'true'
         # The test helpers read SUPABASE_TEST_* (with localhost defaults); export the
         # actual local stack keys so they match the CLI version that just started.
         # La CLI écrit `NOM="valeur"` ; $GITHUB_ENV garde les guillemets tels quels,
@@ -444,7 +490,7 @@ jobs:
           } >> "$GITHUB_ENV"
 
       - name: Run integration tests (shard ${{ matrix.shard }}/${{ needs.portee.outputs.total }})
-        if: needs.portee.outputs.deja_vert != 'true'
+        if: needs.portee.outputs.sauter != 'true'
         env:
           FICHIERS: ${{ needs.portee.outputs.fichiers }}
           EXCLURE: ${{ needs.portee.outputs.exclure }}
@@ -460,7 +506,7 @@ jobs:
           pnpm test:integration $FICHIERS "${exclusions[@]}" --shard=${{ matrix.shard }}/${{ needs.portee.outputs.total }}
 
       - name: Stop Supabase
-        if: (always()) && needs.portee.outputs.deja_vert != 'true'
+        if: (always()) && needs.portee.outputs.sauter != 'true'
         run: pnpm exec supabase stop
 
   memoriser:
