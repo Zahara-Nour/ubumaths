@@ -97,9 +97,24 @@ pas des notes.
 
 Une série est une liste de lignes `{ templateId, quantity, delay }` : tel **modèle**, tant de fois,
 tant de secondes ([ADR 0035](../adr/0035-une-serie-enregistre-des-modeles.md)). Elle est tirée **à
-neuf à chaque usage** : `drawSeriesQuestions` (`src/lib/questions/series-items.ts`) prend, pour
-chaque ligne et chaque répétition, le modèle de la ligne et une graine neuve (sauf lien « Mêmes
-nombres pour tous », ci-dessous). Un modèle retiré (plus
+neuf à chaque usage** : `drawSeriesQuestions` (`src/lib/questions/series-items.ts`) donne à
+chaque ligne une graine neuve (sauf lien « Mêmes nombres pour tous », ci-dessous), d'où sortent les
+graines de ses questions. Une ligne qui répète un modèle **répartit ses variations à parts égales**
+(10 questions, 3 variations → 4 + 3 + 3, ordre mélangé) et **refuse les doublons** dans toute la
+série (`src/lib/questions/series-draw.ts`, chantier `idees-format`) :
+
+- **on choisit la graine, on n'impose pas la variation** : la variation est le premier tirage de
+  l'instance, `variationOfSeed` la lit sans générer ; une graine redonne donc toujours la même
+  question (copie d'évaluation, erreurs rejouées dans les statistiques), sans rien enregistrer de
+  plus ;
+- **doublon** = mêmes nombres tirés (variation + variables), **ou** même énoncé affiché (choix d'un
+  QCM triés). Deux calculs de même réponse (« 12 × 5 », « 15 × 4 ») ne sont pas des doublons.
+  L'empreinte des nombres n'est pas utilisée quand l'énoncé tire lui-même (`{{carré|rectangle}}`) ;
+- **jamais de répétition** : un modèle qui n'a plus de question neuve (50 essais par variation)
+  raccourcit sa ligne. `distinctQuestionCount` compte les questions différentes d'un modèle, pour
+  que le panier propose d'abaisser une quantité trop élevée.
+
+Un modèle retiré (plus
 publié) est sauté, et signalé au prof dans le panier et l'éditeur de série (« Modèle retiré ») ;
 chaque question porte la durée de **sa** ligne (`delay`, 20 s par défaut :
 `DEFAULT_QUESTION_DELAY_SECONDS`). Bornes de la composition : 1 à 50 modèles, 99 répétitions, 600 s
@@ -136,7 +151,7 @@ nombres comprise depuis le 2026-11-20 : `onRestart` de `TestCourse`, composant r
 **« Mêmes nombres pour tous »** (chantier `memes-nombres`) : case de `SeriesLinkShare`, proposée avec une
 forme seulement, décochée par défaut. Cochée, elle tire une graine de série (`graine=<n>`,
 `SERIES_SEED_PARAM`), gardée par le lien court du QR ; décocher puis recocher en tire une autre. La page
-de test en tire la suite des graines des questions (`seriesSeedSequence`, `series-items.ts`) : tous
+de test en tire la suite des graines des lignes (`seriesSeedSequence`, `series-items.ts`) : tous
 ceux qui ouvrent le lien ont les mêmes questions, dans le même ordre, et « Recommencer » les redonne
 (libellé « Recommencer les mêmes questions », prop `sameQuestions`). Une graine abîmée est ignorée
 sans message (nombres au hasard). Un modèle modifié entre l'envoi et l'ouverture peut changer ses nombres.

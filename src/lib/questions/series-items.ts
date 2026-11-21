@@ -4,7 +4,8 @@
  *
  * Une série est une composition : des modèles, chacun avec un nombre de
  * répétitions et une durée (CONTEXT.md, ADR 0035). À chaque usage, on génère
- * une instance du modèle par répétition, chacune avec sa graine.
+ * une instance du modèle par répétition, chacune avec sa graine : variations
+ * réparties, doublons refusés (`series-draw.ts`).
  *
  * Chaque question porte SA durée et SON modèle : avant, les durées étaient
  * reconstruites à part depuis le panier et se décalaient dès qu'une ligne
@@ -13,7 +14,13 @@
 
 import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
 import { excludeCourseCards as withoutCourseCards } from '#lib/questions/course-card.ts';
-import type { GenerationResult, QuestionTemplate } from '#lib/questions/types.ts';
+import type { GenerationResult, QuestionInstance, QuestionTemplate } from '#lib/questions/types.ts';
+import {
+	drawLineQuestions,
+	emptySeen,
+	MAX_QUESTION_SEED,
+	type SeenQuestions
+} from '#lib/questions/series-draw.ts';
 import type { SeriesItem } from '#lib/validation/series.ts';
 import type { ClassroomItem } from '#lib/types/test.ts';
 import { createRandomSource } from '#lib/utils/random.ts';
@@ -27,8 +34,10 @@ interface BuildOptions {
 	excludeCourseCards?: boolean;
 	/** Injectable pour les tests */
 	generate?: (template: QuestionTemplate, seed: number) => GenerationResult;
-	/** Injectable pour les tests : graine d'une question */
+	/** Graine d'une LIGNE (d'où sortent celles de ses questions) ; injectable */
 	nextSeed?: () => number;
+	/** Génération impossible (question omise) : le serveur passe son logger */
+	onGenerationFailure?: (templateId: string, errors: unknown) => void;
 }
 
 // ============================================================================
@@ -39,7 +48,7 @@ interface BuildOptions {
 export const DEFAULT_QUESTION_DELAY_SECONDS = 20;
 
 /** Plus grande graine tirée (entier 32 bits positif, borne du schéma de sauvegarde) */
-export const MAX_QUESTION_SEED = 2 ** 31 - 1;
+export { MAX_QUESTION_SEED };
 
 // ============================================================================
 // FUNCTIONS
@@ -60,42 +69,62 @@ export function seriesSeedSequence(seriesSeed: number): () => number {
 	return () => Math.floor(random() * (MAX_QUESTION_SEED + 1));
 }
 
-/** Un tirage : le modèle et la graine d'une question, avec sa durée */
+/** Un tirage : le modèle, la graine et l'instance générée avec elle, avec sa durée */
 export interface SeriesDraw {
 	template: QuestionTemplate;
 	seed: number;
+	instance: QuestionInstance;
 	delaySeconds: number;
 }
 
 /**
- * Tirages d'une série, dans l'ordre de la composition, SANS générer : le modèle
- * de la ligne et une graine par répétition. Une ligne dont le modèle manque
- * (retiré, ou carte de cours exclue) est sautée. Le serveur d'une évaluation
- * enregistre ces tirages (modèle + graine) pour régénérer et corriger la copie
- * (ADR 0015).
+ * Tirages d'une série, dans l'ordre de la composition : variations réparties
+ * et doublons refusés (`series-draw.ts`). Chaque ligne reçoit UNE graine de
+ * la suite, d'où sortent les graines de ses questions : une ligne sautée
+ * (modèle retiré, carte de cours exclue) consomme la sienne, et les suivantes
+ * gardent les leurs (« mêmes nombres pour tous »). Une génération qui échoue
+ * est omise ; un modèle sans question neuve raccourcit sa ligne. Le serveur
+ * d'une évaluation enregistre (modèle, graine) et l'instance (ADR 0015) : la
+ * graine seule redonne la question.
  */
 export function drawSeriesQuestions(
 	items: readonly SeriesItem[],
 	templates: readonly QuestionTemplate[],
-	options: Omit<BuildOptions, 'generate'> = {}
+	options: BuildOptions = {}
 ): SeriesDraw[] {
 	const nextSeed = options.nextSeed ?? randomSeed;
+	const generate = options.generate ?? ((template, seed) => generateInstance(template, seed));
 	const available = options.excludeCourseCards ? withoutCourseCards([...templates]) : templates;
 	const byId = new Map(available.map((template) => [template.id, template]));
+	const onGenerationFailure =
+		options.onGenerationFailure ??
+		((templateId: string, errors: unknown) =>
+			console.error(`Série : génération impossible pour le modèle ${templateId}`, errors));
+	const seenByTemplate = new Map<string, SeenQuestions>();
 	const draws: SeriesDraw[] = [];
 
 	for (const item of items) {
+		// Graine tirée même pour une ligne sautée : les lignes suivantes gardent les leurs
+		const lineSeed = nextSeed();
 		const template = byId.get(item.templateId);
 		if (!template) {
 			console.warn(`Série : modèle ${item.templateId} absent, ligne sautée`);
+			continue;
 		}
 
 		const delaySeconds = item.delay && item.delay > 0 ? item.delay : DEFAULT_QUESTION_DELAY_SECONDS;
-		for (let repetition = 0; repetition < item.quantity; repetition++) {
-			// Graine tirée même pour une ligne sautée : avec une graine de série
-			// (« Mêmes nombres pour tous »), les lignes suivantes gardent les leurs
-			const seed = nextSeed();
-			if (template) draws.push({ template, seed, delaySeconds });
+		const seen = seenByTemplate.get(template.id) ?? emptySeen();
+		seenByTemplate.set(template.id, seen);
+		const questions = drawLineQuestions(
+			template,
+			item.quantity,
+			lineSeed,
+			seen,
+			generate,
+			(errors) => onGenerationFailure(template.id, errors)
+		);
+		for (const { seed, instance } of questions) {
+			draws.push({ template, seed, instance, delaySeconds });
 		}
 	}
 
@@ -103,33 +132,17 @@ export function drawSeriesQuestions(
 }
 
 /**
- * Questions d'une série, dans l'ordre de la composition. Une ligne sans
- * modèle est sautée ; une génération qui échoue est omise. Aucune des deux ne
- * décale la durée des autres questions.
- *
- * Chaque question est générée avec SA graine (Q20), que l'instance porte
- * (`instance.seed`).
+ * Questions d'une série, dans l'ordre de la composition (`drawSeriesQuestions`).
+ * Une ligne sans modèle est sautée ; une génération qui échoue est omise.
+ * Aucune des deux ne décale la durée des autres questions. Chaque instance
+ * porte sa graine (`instance.seed`, Q20).
  */
 export function buildSeriesItems(
 	seriesItems: readonly SeriesItem[],
 	templates: readonly QuestionTemplate[],
 	options: BuildOptions = {}
 ): ClassroomItem[] {
-	const generate = options.generate ?? ((template, seed) => generateInstance(template, seed));
-	const items: ClassroomItem[] = [];
-
-	for (const { template, seed, delaySeconds } of drawSeriesQuestions(
-		seriesItems,
-		templates,
-		options
-	)) {
-		const result = generate(template, seed);
-		if (result.success) {
-			items.push({ instance: result.instance, delaySeconds, templateId: template.id });
-		} else {
-			console.error(`Série : génération impossible pour le modèle ${template.id}`, result.errors);
-		}
-	}
-
-	return items;
+	return drawSeriesQuestions(seriesItems, templates, options).map(
+		({ instance, delaySeconds, template }) => ({ instance, delaySeconds, templateId: template.id })
+	);
 }

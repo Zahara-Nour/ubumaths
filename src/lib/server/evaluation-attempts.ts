@@ -420,21 +420,15 @@ export async function startEvaluationAttempt(
 	const templates = await loadSeriesTemplates(userClient, items);
 	const draws = drawSeriesQuestions(items, templates, {
 		excludeCourseCards: true,
-		nextSeed: () => randomInt(MAX_QUESTION_SEED)
+		nextSeed: () => randomInt(MAX_QUESTION_SEED),
+		onGenerationFailure: (templateId, errors) =>
+			logger.error('[evaluation-attempts] Génération impossible :', templateId, errors)
 	});
 	const generated: Array<{ stored: StoredQuestion; instance: QuestionInstance }> = [];
+	// Une génération impossible est déjà omise par le tirage (journalisée ci-dessus)
 	for (const draw of draws) {
-		const result = generateInstance(draw.template, draw.seed);
-		if (!result.success) {
-			logger.error(
-				'[evaluation-attempts] Génération impossible :',
-				draw.template.id,
-				result.errors
-			);
-			continue;
-		}
 		// Énoncé masqué qui dirait encore la réponse (masque cassé) : écarté, jamais envoyé
-		const leaks = gestureAnswerLeaks(result.instance);
+		const leaks = gestureAnswerLeaks(draw.instance);
 		if (leaks.length > 0) {
 			logger.error(
 				'[evaluation-attempts] Énoncé masqué qui dirait la réponse :',
@@ -450,7 +444,7 @@ export async function startEvaluationAttempt(
 				seed: draw.seed,
 				delay_seconds: draw.delaySeconds
 			},
-			instance: result.instance
+			instance: draw.instance
 		});
 	}
 	if (generated.length === 0) {
