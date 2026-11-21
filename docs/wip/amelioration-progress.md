@@ -2,14 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-21, après #2973._
+_Mis à jour le 2026-11-21, après #2975._
 
 - **État** : mesures de performance chez nous, découpage en 3 PR (phase 0 validée, en fin de journal) ; **PR 1 faite** : #2973 mergée, migration `20261121205833` **jouée en prod** le 2026-11-21 (table anonyme `web_vital_samples`, vide ; purge à 90 jours ; lecture admin seul ; droits vérifiés en prod), types régénérés ; rien n'écrit encore dans la table ; #2969 mergée (pas en prod) : le markdown ne charge plus jsdom au rendu serveur ; workflow `web-vitals.yml` désactivé
 - **Prochaine action** : **PR 2**, envoi et réception des mesures (branche neuve depuis `origin/main`) : le navigateur envoie toutes les mesures, bonnes ou mauvaises ; le serveur valide et écrit ; registre des traitements T8 à compléter ; revues `code-reviewer` + `security-auditor` ; puis PR 3 (relevé, réactivation du workflow) ; après le prochain `deploy:prod`, recompter sur une build fraîche les pages qui chargent jsdom (79 sur 338 avant #2969)
 - **En attente de David** : rien
 - **Tranché** : ne rien payer à Vercel ; table anonyme chez nous, lecture admin seul, 90 jours, Q1 à Q4 validées (David, 2026-11-21) ; le reste inchangé, cf. sections ci-dessous
 - **Pièges en cours** : à tenir en PR 2 (findings des revues de #2973, détail en fin de journal) : envoyer `route.id`, jamais `url.pathname` ; à la réception, n'accepter que les routes connues (le filtre de la table laisserait passer un jeton en minuscules) ; lire sans ordre d'arrivée ; le serveur ne peut insérer que `route`, `metric`, `value`, `device_type` (droit par colonne) : un `insert` qui fixe `created_at` ou `id` est refusé (42501), malgré ce que dit le type `Insert` de `database.ts` ; notre suivi (`reportWebVital`) n'envoie que les mesures mauvaises ; le projet Vercel s'appelle `chiphre` (`.vercel/project.json` garde l'ancien nom) ; l'état d'avant le 2026-11-21 est dans l'historique git de ce bloc
-- **Worktree / branche** : `../ubumaths-wt-amelioration`, à remettre sur une branche neuve pour la PR 2
+- **Worktree / branche** : aucun (retiré après #2975) ; worktree neuf pour la PR 2
 
 ## N° 26 — mesurer un segment en posant la règle : phase 0 (2026-11-12, validée)
 
