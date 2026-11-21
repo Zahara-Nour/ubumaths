@@ -7,13 +7,13 @@ _Mis à jour le 2026-11-21, après #2959._
 - **État** : A (#2956), F (#2957) et B (#2959) mergées. Mesuré : F → **5,9 min** de bout en bout
   (run 44900263857) ; B → re-push sans fichier couvert : **40 s** (run de #2959 à 11:50). Go de David
   sur A → F → B → C.
-- **Prochaine action** : C (ne lancer que les tests touchés, PR `src/` seul, § 3.5) → **phase 0** :
-  comportements à écrire et à faire valider par David avant de coder.
-- **En attente de David** : rien (la phase 0 de C sera la prochaine question).
+- **Prochaine action** : C (tests touchés, § 9, phase 0 validée le 2026-11-21) : tests rouges,
+  script `scripts/ci-integration-touches.ts`, branchement dans le job `portee`, mesure sur un vrai run.
+- **En attente de David** : rien.
 - **Pièges en cours** : suite locale cassée au global-setup par les liens de partage du prof de dev
   (§ 3.4) ; morceaux déséquilibrés (110 à 200 s depuis F) → D si besoin ; un test instable vert une
-  fois reste gardé par B (nocturne = filet).
-- **Worktree / branche** : aucun (C : nouveau worktree `ubumaths-wt-ci-integration`).
+  fois reste gardé par B (nocturne = filet) ; `point-bounds.ts` charge en lot des JSON de `docs/`.
+- **Worktree / branche** : `ubumaths-wt-ci-integration` · `ci/integration-tests-touches`.
 
 ## 1. Ce que coûte la suite aujourd'hui (mesuré)
 
@@ -204,6 +204,28 @@ sur `integration-vert-v1-<empreinte>` ; job `memoriser` (needs : filtre, portée
 l'enregistre, étapes conditionnées plutôt que le job (sinon « skipped »). Les étapes des morceaux
 sont conditionnées de même. « Re-run all jobs » d'un passage déjà vert le saute aussi : pour
 forcer, lancement à la main.
+
+## 9. C — tests touchés sur une PR de code (validé le 2026-11-21)
+
+Comportements validés :
+
+1. PR qui ne modifie que `src/` (plus doc, `.md`) : seuls tournent les tests dont les imports
+   atteignent un fichier modifié (fermeture PAR test, comme `check:integration-paths`).
+2. Fichiers chargés en lot (`import.meta.glob` : articles du Shtam, transcriptions du BO, bornes
+   des points — sous `docs/` !) : atteints par les tests qui atteignent leur chargeur.
+3. Aucun test atteint : checks ✅ sans démarrer la stack, message « aucun test n'atteint les
+   fichiers modifiés » (affichage de B).
+4. Code + tests d'intégration ajoutés ou modifiés : tests atteints + ces tests (outillage commun →
+   cas 6).
+5. Tests `@migration-de-donnees` atteints par le code : laissés de côté (sauf touchés, règle de F).
+6. Tout fichier hors `src/`, doc et tests d'intégration → suite complète.
+7. Fichier atteint par le global-setup, ou `src/env.ts` → suite complète.
+8. Fichier de `src/` supprimé ou renommé → suite complète.
+9. Nuit et lancement à la main : tout.
+10. Dans le doute (calcul en échec, chargement en lot illisible) : suite complète.
+11. ≤ 40 tests sélectionnés : 1 stack ; au-delà, 4 morceaux de la sélection.
+12. B inchangé : la sélection entre dans l'empreinte.
+13. PR ciblée « migration de rangement + son test » inchangée.
 
 ## 6. Historique
 
