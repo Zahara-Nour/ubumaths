@@ -279,7 +279,7 @@ export function distinctQuestionCount(
 }
 
 /** Comptes déjà faits par modèle : jusqu'où on a cherché, et ce qu'on a trouvé */
-let distinctCounts = new WeakMap<QuestionTemplate, { upTo: number; count: number }>();
+const distinctCounts = new WeakMap<QuestionTemplate, { upTo: number; count: number }>();
 
 /**
  * Avertissement du panier : le nombre de questions différentes du modèle quand
