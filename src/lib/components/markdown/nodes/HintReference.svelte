@@ -26,7 +26,7 @@
 	import MarkdownRenderer from '../MarkdownRenderer.svelte';
 	import { keepOutsideFocus } from '../outside-focus';
 	import { cn } from '#lib/utils.ts';
-	import { sanitizeUrl } from '#lib/utils/sanitize.ts';
+	import { sanitizeUrl } from '#lib/utils/sanitize-url.ts';
 	import { Lightbulb, AlertCircle, ExternalLink, FileText, Video } from '@lucide/svelte';
 
 	interface Props {

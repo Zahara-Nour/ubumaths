@@ -19,7 +19,7 @@
 	@see ParagraphNode.svelte for similar inline rendering
 -->
 <script lang="ts">
-	import { sanitizeUrl } from '#lib/utils/sanitize.ts';
+	import { sanitizeUrl } from '#lib/utils/sanitize-url.ts';
 	import type { InlineNode } from '#lib/ubumark/index.ts';
 	import type { ExerciseHint } from '#lib/exercises/types.ts';
 	import MathInline from './MathInline.svelte';

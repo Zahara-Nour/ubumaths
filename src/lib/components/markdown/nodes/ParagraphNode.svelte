@@ -21,7 +21,7 @@
 	@see BlankInput.svelte for blank input rendering
 -->
 <script lang="ts">
-	import { sanitizeUrl } from '#lib/utils/sanitize.ts';
+	import { sanitizeUrl } from '#lib/utils/sanitize-url.ts';
 	import type { InlineNode, InputState, InternalLinkReferenceType } from '#lib/ubumark/index.ts';
 	import type { CapitalPairs, GenericFunctionConfig } from '#lib/mathAST/parser/types.ts';
 	import type { ExerciseHint } from '#lib/exercises/types.ts';

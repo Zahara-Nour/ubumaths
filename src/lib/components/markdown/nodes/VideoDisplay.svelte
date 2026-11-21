@@ -20,7 +20,7 @@
 	import type { ImageSizeClass, ImageAlignment } from '#lib/ubumark/index.ts';
 	import { escapeHtml } from '../utils';
 	import { PUBLIC_SUPABASE_URL } from '$app/env/public';
-	import { sanitizeUrl } from '#lib/utils/sanitize.ts';
+	import { sanitizeUrl } from '#lib/utils/sanitize-url.ts';
 	import {
 		isProjectStorageImage,
 		readProjectMediaOnly,

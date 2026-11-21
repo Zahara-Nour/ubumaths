@@ -23,7 +23,7 @@
 	import TextNode from './nodes/TextNode.svelte';
 	import InlineColor from './nodes/InlineColor.svelte';
 	import { inlineDetailClass } from './detail-styles';
-	import { sanitizeUrl } from '#lib/utils/sanitize.ts';
+	import { sanitizeUrl } from '#lib/utils/sanitize-url.ts';
 
 	interface Props {
 		/** Inline nodes to render */

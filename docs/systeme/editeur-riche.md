@@ -9,6 +9,7 @@ couvre:
   - src/lib/components/rich-text/markdown-paste-extension.ts
   - src/lib/components/rich-text/types.ts
   - src/lib/utils/sanitize.ts
+  - src/lib/utils/sanitize-url.ts
   - src/lib/utils/sanitize-configs.ts
   - src/lib/utils/html-escape.ts
   - 'src/routes/(protected)/dev/editeur-riche/*.svelte'
@@ -93,20 +94,26 @@ image externes, `\htmlStyle`, couleur de texte y passaient (audit du 2026-10-03)
 dans un document inerte (`DOMParser`). Un JSON malformé s'affiche `[contenu illisible]` au lieu
 de planter. 8 appelants (messages, signalements de fiches, notebook).
 
-### Nettoyer du HTML : `sanitize.ts`, `sanitize-configs.ts`, `html-escape.ts`
+### Nettoyer du HTML : `sanitize.ts`, `sanitize-url.ts`, `sanitize-configs.ts`, `html-escape.ts`
 
-| Fonction                        | Ce qu'elle fait                                                                 | Appelants                                                                          |
-| ------------------------------- | ------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| `sanitizeHtml`                  | DOMPurify (`isomorphic-dompurify`), liste blanche de balises et d'attributs     | notebook, aperçu de variante, modèles de messages                                  |
-| `sanitizePlainText`             | retire toute balise, garde le texte                                             | `ReportErrorDialog.svelte`                                                         |
-| `sanitizeUrl`                   | lien inchangé si schéma `http`, `https`, `mailto` ou relatif ; sinon `'#'`      | rendu markdown : `InlineRenderer`, `ParagraphNode`, `HeadingNode`, `HintReference` |
-| `containsDangerousHtml`         | détecte `<script`, `<iframe`, `on…=`, `javascript:`…                            | aucun (doublon, voir Écarts)                                                       |
-| `NOTIFICATION_SANITIZE_CONFIG`  | 13 balises, aucun attribut : config partagée serveur / client des notifications | `server/sanitization.ts`, `utils/sanitize-notification.ts`                         |
-| `escapeHtml` (`html-escape.ts`) | échappe `< > & " '` ; `null`/`undefined` → `''`                                 | `server/notifications.ts`, `auto-notifications.ts`, marché                         |
+| Fonction                          | Ce qu'elle fait                                                                 | Appelants                                                                                                          |
+| --------------------------------- | ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `sanitizeHtml`                    | DOMPurify (`isomorphic-dompurify`), liste blanche de balises et d'attributs     | notebook, aperçu de variante, modèles de messages                                                                  |
+| `sanitizePlainText`               | retire toute balise, garde le texte                                             | `ReportErrorDialog.svelte`                                                                                         |
+| `sanitizeUrl` (`sanitize-url.ts`) | lien inchangé si schéma `http`, `https`, `mailto` ou relatif ; sinon `'#'`      | rendu markdown : `InlineRenderer`, `ParagraphNode`, `HeadingNode`, `HintReference`, `ImageDisplay`, `VideoDisplay` |
+| `containsDangerousHtml`           | détecte `<script`, `<iframe`, `on…=`, `javascript:`…                            | aucun (doublon, voir Écarts)                                                                                       |
+| `NOTIFICATION_SANITIZE_CONFIG`    | 13 balises, aucun attribut : config partagée serveur / client des notifications | `server/sanitization.ts`, `utils/sanitize-notification.ts`                                                         |
+| `escapeHtml` (`html-escape.ts`)   | échappe `< > & " '` ; `null`/`undefined` → `''`                                 | `server/notifications.ts`, `auto-notifications.ts`, marché                                                         |
 
 `sanitizeUrl` décide sur la forme que lira le **navigateur** : espaces et caractères de contrôle
 de tête retirés, tabulations et retours à la ligne supprimés partout (`java\nscript:` devient
 `javascript:`). Liste **blanche** de schémas, pas liste noire.
+
+`sanitizeUrl` vit dans son propre fichier, **sans aucun import** : `sanitize.ts` importe
+`isomorphic-dompurify`, qui charge jsdom côté serveur (~640 modules, ~140 ms, ~70 Mo mesurés le
+2026-11-21). Tant que le markdown importait `sanitizeUrl` de `sanitize.ts`, 79 pages sur 338
+chargeaient jsdom à leur rendu serveur. Garde : `markdown-sans-dompurify.test.ts` suit les imports
+statiques de `MarkdownRenderer.svelte` et échoue si l'un mène à `isomorphic-dompurify`.
 
 ## Pièges
 
@@ -174,7 +181,7 @@ est {{score}}.</p>` → `<p> .</p>` ; `$\sqrt{\frac{1}{2}}$ fin` → `$ fin` (ap
   (`html-escape.ts`), `NotificationSanitizeConfig` (`sanitize-configs.ts`).
 - **`containsDangerousHtml` existe deux fois** : `src/lib/utils/sanitize.ts` (sans appelant) et
   `src/lib/server/sanitization.ts` (celle qu'on utilise). De même, `src/lib/utils/errorMonitoring.ts`
-  a sa propre `sanitizeUrl` locale, sans rapport avec celle de `sanitize.ts`.
+  a sa propre `sanitizeUrl` locale, sans rapport avec celle de `sanitize-url.ts`.
 - **`escapeHtml` existe en cinq exemplaires** : `src/lib/utils/html-escape.ts`,
   `src/lib/components/markdown/utils.ts`, `src/lib/email-templates/parental-consent.ts`,
   `src/lib/components/geometry/GeometryCanvas.svelte`, `src/lib/whiteboard/core/pdf-export.ts`.

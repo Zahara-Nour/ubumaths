@@ -24,7 +24,7 @@
 	import { escapeHtml } from '../utils';
 	import { PUBLIC_SUPABASE_URL } from '$app/env/public';
 	import { getQuestionImageUrl } from '#lib/questions/constants.ts';
-	import { sanitizeUrl } from '#lib/utils/sanitize.ts';
+	import { sanitizeUrl } from '#lib/utils/sanitize-url.ts';
 	import {
 		isProjectStorageImage,
 		readProjectMediaOnly,

@@ -6,7 +6,7 @@
  * d'une URL, donc `java\nscript:alert(1)` passait le test ET s'exécutait.
  */
 import { describe, expect, it } from 'vitest';
-import { sanitizeUrl } from '../sanitize';
+import { sanitizeUrl } from '../sanitize-url';
 
 describe('sanitizeUrl — liens acceptés', () => {
 	it.each([
