@@ -74,6 +74,15 @@ describe('garde-commandes — refusé, avec la raison', () => {
 		refuse('npx supabase status', /pnpm exec supabase/);
 	});
 
+	it('la pile de dev démarrée, arrêtée ou reconstruite sans passer par pnpm db:*', () => {
+		// Lancée ainsi dans le dépôt principal, la CLI impose les versions de la prod (supabase/.temp).
+		refuse('pnpm exec supabase start', /pnpm db:start/);
+		refuse('pnpm exec supabase start -x studio', /pnpm db:start/);
+		refuse('pnpm exec supabase stop', /pnpm db:stop/);
+		refuse('pnpm exec supabase db reset', /pnpm db:reset/);
+		refuse('pnpm exec supabase db reset --debug', /pnpm db:reset/);
+	});
+
 	it('push sans les hooks, release seule, git -C vide', () => {
 		refuse('git push --no-verify origin main', /--no-verify/);
 		refuse('pnpm release', /deploy:prod/);
@@ -200,6 +209,11 @@ describe('garde-commandes — le reste passe sans bruit', () => {
 		passe('pnpm dev --port 5177 --strictPort');
 		passe('pnpm kill:servers');
 		passe('pnpm exec supabase migration list');
+		passe('pnpm exec supabase status');
+		passe('pnpm exec supabase db dump --local -f x.sql');
+		passe('pnpm exec supabase --workdir /tmp/copie start'); // copie isolée de la pile
+		passe('pnpm db:start');
+		passe('pnpm db:reset');
 		passe('pnpm db:migrate');
 		passe('git push origin main');
 		passe('git -C /tmp/x status');

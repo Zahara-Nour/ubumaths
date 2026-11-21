@@ -444,3 +444,30 @@ Ce qui a été livré (#2967) :
   (décisions d'outillage), `tests.md` § 4, `base-de-donnees.md`, `worktrees.md` (trois verrous),
   `git-workflow.md` § 4, `rls-echecs-silencieux.md`. Reste pour la PR 4 : la remise à neuf en une
   commande, sa doc, et le versement du chantier.
+
+## 13. PR 3 : versions de la CI pour la pile de dev (2026-11-21)
+
+Comportement validé au § 10 (point 3) : la pile de dev ignore `supabase/.temp/*-version`.
+
+- **Mécanisme** : `scripts/pile-de-dev.sh` lance la CLI avec `--workdir node_modules/.cache/pile-de-dev`,
+  un dossier miroir refait à chaque lancement : des liens vers tout `supabase/`, sauf `.temp` et
+  `.branches`. Sans `.temp`, la CLI prend ses versions par défaut, celles de la CI. `pnpm db:start`,
+  `db:stop` et `db:reset` passent par lui (sous le verrou `supabase`, inchangé).
+- **Pourquoi pas écarter les fichiers `*-version`** : un `pnpm db:link` (ou un `supabase link` à la
+  main) les réécrit, et le problème reviendrait. Le miroir ne dépend pas de ce que contient
+  `supabase/.temp/`, et n'y touche jamais : `db:migrate`, `db:link`, `db:types` (la prod) y lisent
+  toujours `project-ref` et ne passent pas par le script.
+- **Mesuré dans le dépôt principal** (`supabase services`, lecture seule) : CLI directe → PostgREST
+  `v14.5`, Storage `v1.77.5` (prod) ; par le script → PostgREST `v16.4`, Storage `v1.79.36`,
+  Postgres `17.11.0.004`, GoTrue `v2.197.0`, les versions de la pile de test et de la CI. Même pile :
+  `status` par le script rend les ports `5432x` et le projet `ubumaths`.
+- **Garde** : le hook `garde-commandes.py` refuse `pnpm exec supabase start`, `stop` et `db reset`
+  lancés à la main (ils contourneraient le miroir), sauf avec `--workdir` (copie isolée du § 9.1).
+- **Tests** : `scripts/__tests__/pile-de-dev.test.ts` (fausse CLI : elle voit config, migrations et
+  seeds, pas `.temp` ; `supabase/.temp` du dépôt intact ; arguments et code de sortie transmis),
+  `garde-commandes.test.ts`.
+- **Après le merge** : la pile de dev qui tourne garde ses images (PostgREST `v14.5`, Storage
+  `v1.77.5`) jusqu'à un `pnpm db:stop` puis `pnpm db:start` depuis le dépôt principal. Coupe la base
+  de dev de toutes les sessions une minute : **prévenir David avant**. Les données restent.
+- `supabase/.temp/postgres-version.bak` (renommé à la main au § 3.2) n'a plus d'effet dans un sens
+  ni dans l'autre : laissé tel quel.

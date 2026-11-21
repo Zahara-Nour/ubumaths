@@ -186,6 +186,13 @@ for brut in segments:
     if re.match(r"(?:npx\s+)?supabase\s", s + " "):
         refuser("la CLI Supabase du projet se lance par `pnpm exec supabase …` (ou les scripts `pnpm db:*`), jamais directement.")
 
+    # Pile de dev : `pnpm db:start|stop|reset` passent par scripts/pile-de-dev.sh, qui cache à la CLI
+    # les versions de la prod écrites dans supabase/.temp. Avec `--workdir`, c'est une autre pile.
+    pile = re.match(r"pnpm\s+exec\s+supabase\s+(start|stop|db\s+reset)\b", s)
+    if pile and "--workdir" not in s:
+        script = "db:" + pile.group(1).split()[-1]
+        refuser(f"lancée ainsi, la CLI impose à la pile de dev les versions de la prod (supabase/.temp). Utiliser `pnpm {script}` (versions de la CI, sous le verrou).")
+
     if re.match(r"git\s+push\b", s) and "--no-verify" in s:
         refuser("`--no-verify` saute aussi `lint:fast` ; le hook pre-push est léger, il n'y a plus de raison de le contourner.")
 
