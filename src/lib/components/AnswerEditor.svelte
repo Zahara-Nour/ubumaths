@@ -18,6 +18,9 @@
 	- statementShared: l'énoncé est le partagé (la variation n'a pas le sien) :
 	  cartes en lecture seule (on coche seulement) et pas d'ajout de case choix,
 	  sinon les réponses des autres variations se décaleraient
+
+	Sous chaque case à écriture ordinaire : ses erreurs prévues
+	(`ExpectedErrorsEditor`, chantier idees-format, idée 3)
 -->
 
 <script lang="ts">
@@ -33,6 +36,7 @@
 	} from '#lib/questions/choice-case-editor.ts';
 	import { readWorkFigureCases, type WorkFigureCase } from '#lib/questions/work-figure-editor.ts';
 	import ChoiceCaseEditor from './ChoiceCaseEditor.svelte';
+	import ExpectedErrorsEditor from './ExpectedErrorsEditor.svelte';
 	import { Input } from '#lib/components/ui/input/index.ts';
 	import { Label } from '#lib/components/ui/label/index.ts';
 	import * as Card from '#lib/components/ui/card/index.ts';
@@ -125,6 +129,30 @@
 	}
 </script>
 
+<!-- Erreurs prévues restées sur une case devenue choix ou figure : la génération
+	les refuse, le prof doit pouvoir les voir et les retirer -->
+{#snippet strayErrors(blank: TemplateBlank)}
+	{#if (blank.expectedErrors?.length ?? 0) > 0}
+		<div
+			class="flex items-center justify-between gap-2 rounded-md border border-destructive/40 p-2 text-xs text-destructive"
+			data-testid="erreurs-prevues-orphelines"
+		>
+			<p>
+				Cette case garde {blank.expectedErrors?.length} erreur(s) prévue(s), qui ne vont que sur une case
+				à écriture mathématique : le modèle ne se générera pas.
+			</p>
+			<Button
+				variant="outline"
+				size="sm"
+				type="button"
+				onclick={() => (blank.expectedErrors = undefined)}
+			>
+				Retirer
+			</Button>
+		</div>
+	{/if}
+{/snippet}
+
 <div class="space-y-4">
 	<!-- Fill in Blanks -->
 	{#if questionType === 'fill_in_blanks'}
@@ -153,6 +181,7 @@
 									<p class="text-xs text-destructive">{message}</p>
 								{/each}
 							</div>
+							{@render strayErrors(blank)}
 						{:else if statement !== undefined && caseKinds[index] === 'choice'}
 							<ChoiceCaseEditor
 								bind:statement
@@ -161,6 +190,7 @@
 								bind:expectedAnswer={blank.expectedAnswer}
 								editable={!statementShared}
 							/>
+							{@render strayErrors(blank)}
 						{:else}
 							<div class="flex gap-3">
 								<div class="flex-1 space-y-2">
@@ -172,6 +202,7 @@
 										bind:value={blank.expectedAnswer}
 										class="font-mono"
 									/>
+									<ExpectedErrorsEditor bind:errors={blank.expectedErrors} caseNumber={index + 1} />
 								</div>
 								<Button
 									variant="destructive"
