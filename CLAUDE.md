@@ -27,6 +27,7 @@ pnpm lint:fast                      # lint rapide
 pnpm format <ses fichiers>          # prettier --write, jamais de glob ni format:all
 pnpm test:server <path> / test:client <path> / test:integration
 pnpm db:start / db:reset / db:migrate / db:types
+pnpm db:test:stop / db:test:reset   # pile de TEST (démarrée et mise à jour seule par test:integration ; jamais la base de dev)
 pnpm db:a-jour                      # base LOCALE : migrations en attente, sans rien effacer (auto avant `pnpm dev`)
 pnpm db:reset && pnpm db:seed-riche # base locale remplie (eleveNN@local.test / local-eleve)
 pnpm maintenance:on / :off          # mode maintenance prod
@@ -70,7 +71,7 @@ cp ../ubumaths/.env ../ubumaths/.env.local . && pnpm install --prefer-offline
 
 - **Dépôt principal = `main`** (commits doc, `db:migrate` d'après-merge, lecture). **Jamais de chantier dedans, jamais de serveur de dev** (`pnpm dev`) : il faut un worktree.
 - **Un worktree = une branche = une session = un nom.** Le `<sujet>` du worktree nomme aussi le journal (`docs/wip/<sujet>-progress.md`) et la session (David : `/rename <sujet>`). Annoncer `git worktree list` + `pwd` + le nom du chantier au premier message.
-- Un worktree n'isole ni la RAM, ni Supabase local, ni les ports. Verrous partagés `typecheck` et `supabase` (`db:*` locaux, `test:integration`) : **exit 2 = attendre, ne pas contourner.**
+- Un worktree n'isole ni la RAM, ni Supabase local, ni les ports. Verrous partagés `typecheck`, `supabase` (`db:*` de la base de dev) et `supabase-test` (`test:integration`, pile de test à part) : **exit 2 = attendre, ne pas contourner.**
 - ⛔ **`pnpm kill:servers` interdit depuis un worktree** (tue 5173 et Supabase) : kill ciblé sur son port.
 - `docs/wip/<sujet>-progress.md` **commité au premier commit**, avec en tête un bloc **`## Reprendre ici`** (≤ 15 lignes, réécrit à chaque PR mergée — l'historique reste en dessous) :
   ```markdown

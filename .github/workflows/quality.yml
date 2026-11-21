@@ -557,7 +557,7 @@ jobs:
   # migrations appliquées, ~15 s) suffit — ni GoTrue, ni PostgREST, ni la suite
   # d'intégration complète (qui reste dans nightly-integration.yml).
   # Pas de filtre de chemins : un check obligatoire qui ne tourne pas bloque la PR.
-  # Local : `pnpm db:start` puis `pnpm test:definer-guard`.
+  # Local : `pnpm test:definer-guard` (démarre la pile de test, scripts/pile-de-test.sh).
   definer-guard:
     name: Garde SECURITY DEFINER
     needs: version

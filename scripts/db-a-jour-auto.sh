@@ -7,7 +7,7 @@
 #
 # Il ne bloque JAMAIS le serveur de dev : sortie 0 dans tous les cas.
 # - en CI : rien (pas de serveur de dev, pas de base locale de dev) ;
-# - verrou Supabase tenu (reset, suite d'intégration en cours) : on reporte, sans attendre ;
+# - verrou Supabase tenu (reset, seed en cours) : on reporte, sans attendre ;
 # - base arrêtée, git muet, migration en échec : un avertissement, c'est `db:a-jour --auto`
 #   qui le dit.
 # Seules les migrations présentes sur origin/main sont jouées : celle d'une branche en cours
@@ -18,7 +18,7 @@ set -uo pipefail
 ici="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 if python3 "$ici/lib/lock.py" --tenu supabase; then
-	echo "ℹ️  Base locale occupée (reset ou tests en cours) : mise à jour reportée au prochain \`pnpm dev\`."
+	echo "ℹ️  Base locale occupée (reset ou seed en cours) : mise à jour reportée au prochain \`pnpm dev\`."
 	exit 0
 fi
 bash "$ici/with-db-lock.sh" pnpm exec tsx "$ici/db-a-jour/index.ts" --auto || true

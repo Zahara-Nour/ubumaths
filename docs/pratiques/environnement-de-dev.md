@@ -20,6 +20,8 @@ couvre:
   - scripts/lint-fast.sh
   - scripts/lint-fast-fichiers.sh
   - scripts/with-db-lock.sh
+  - scripts/pile-de-test.sh
+  - 'scripts/pile-de-test/**'
   - scripts/ci-nature-changement.sh
   - scripts/ci-tests-contenu.sh
   - scripts/garde-migrations-horodatage.sh
@@ -68,8 +70,9 @@ Détail : [git-workflow.md](git-workflow.md) · [worktrees.md](worktrees.md) ·
 
 **Un gros process à la fois.** `pnpm check`, `pnpm build`, `pnpm lint` et `check:incremental`
 passent sous le même verrou noyau (`flock`, nom `typecheck`) via `scripts/gros-process.sh` ; tous les
-`db:*` locaux et `test:integration` passent sous le verrou `supabase` (`scripts/with-db-lock.sh`). Les
-deux sont partagés entre worktrees ; un second lanceur sort en **exit 2** en nommant le détenteur. Pas
+`db:*` de la base de dev passent sous le verrou `supabase` (`scripts/with-db-lock.sh`), et
+`test:integration` sous le verrou `supabase-test` (`scripts/pile-de-test.sh`). Les
+trois sont partagés entre worktrees ; un second lanceur sort en **exit 2** en nommant le détenteur. Pas
 de verrou en CI ni sur Vercel. Pourquoi et mesures : [worktrees.md](worktrees.md),
 [mesures-mac-mini.md](mesures-mac-mini.md).
 
@@ -192,8 +195,17 @@ les processus de test orphelins (même règle que la surveillance). À distance 
 **Tester depuis le MacBook ou l'iPhone (Tailscale)** : [tester-sur-un-autre-appareil.md](tester-sur-un-autre-appareil.md)
 (tunnel SSH, `--host`, Tailscale Serve ; cookie `Secure`, Supabase local, limiteur de connexion).
 
-**Supabase local.** Une seule pile pour tout le dépôt (ports 54321-54329, `project_id` figé), d'où le
-verrou `supabase`. CLI = devDependency exacte, lancée par `pnpm db:*` ou `pnpm exec supabase`.
+**Supabase local.** Deux piles pour tout le dépôt : celle de **dev** (ports 54321-54329, `project_id`
+`ubumaths`, verrou `supabase`) et celle de **test** (ports 5532x, `project_id` `ubumaths-test`, verrou
+`supabase-test`). `pnpm test:integration [fichier]`, `test:integration:watch` et `test:definer-guard`
+tournent sur la pile de test, jamais sur la base de dev : la commande la démarre si elle est arrêtée,
+joue les migrations de la branche qui lui manquent, et la **reconstruit de zéro** (environ 35 s) si
+elle porte la migration d'une autre branche, une migration modifiée depuis son passage, ou si le seed,
+`config.toml` ou la version de la CLI ont changé ; une migration en échec arrête tout avant les tests.
+Elle est construite comme celle de la CI (migrations + seed simple, mêmes services) et reste allumée
+après les tests (environ 0,7 Go) : `pnpm db:test:stop` l'arrête, `pnpm db:test:reset` la reconstruit.
+Lancée sans ce lanceur (`vitest --config vitest.integration.config.ts`), la suite refuse de tourner. En
+CI (`GITHUB_ACTIONS`), une seule pile, celle du workflow (`scripts/pile-de-test/`). CLI = devDependency exacte, lancée par `pnpm db:*` ou `pnpm exec supabase`.
 `pnpm db:reset && pnpm db:seed-riche` remplit la base locale avec le contenu de la prod (lu en lecture
 seule) et **30 élèves fictifs** : aucune ligne d'un utilisateur autre que le prof ou l'admin n'est
 copiée, **jamais de données d'élèves en local** (`scripts/db-seed-riche/index.ts`).
