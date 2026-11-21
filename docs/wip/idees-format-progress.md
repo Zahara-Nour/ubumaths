@@ -6,15 +6,16 @@ Mettre en œuvre les idées retenues dans [idees-format-exercices.md](idees-form
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-21, PR 1 (tirage) en cours._
+_Mis à jour le 2026-11-21, après #2954._
 
-- **État** : PR 1 = tirage d'une série (variations réparties, doublons refusés, ligne raccourcie).
+- **État** : idée 1, PR 1 mergée (#2954) : variations réparties, doublons refusés, ligne raccourcie.
 - **Prochaine action** : PR 2 = avertissement dans le panier (« Ce modèle n'a que N questions
-  différentes », bouton « Passer à N »), avec `distinctQuestionCount`.
-- **En attente de David** : rien.
+  différentes », bouton « Passer à N »), avec `distinctQuestionCount` (`series-draw.ts`, déjà écrit,
+  pas encore appelé). Vérification dans le panier seulement (décision : David suit mes recos).
+- **En attente de David** : rien (pas de `deploy:prod` demandé).
 - **Pièges en cours** : test d'intégration local bloqué par des données d'une autre session
-  (`class_journal_share_tokens`) ; la CI fait foi. Le worktree `automaths-serie` touche aussi le panier.
-- **Worktree / branche** : `../ubumaths-wt-idees-format` · `feat/idees-format-repartition`.
+  (`class_journal_share_tokens`), la CI fait foi ; le worktree `automaths-serie` touche aussi le panier.
+- **Worktree / branche** : à recréer pour la PR 2 (`git worktree add -b feat/idees-format-panier …`).
 
 ## Idée 1 — phase 0 validée (David, 2026-11-21)
 
@@ -37,7 +38,7 @@ pas un doublon (David). « 2 + 3 » et « 3 + 2 » peuvent sortir tous les deux.
 d'implémentation, dite à David : l'empreinte des nombres n'est pas utilisée quand l'énoncé tire
 lui-même (`{{carré|rectangle}}`), sinon sa ligne tomberait à une question.
 
-## PR 1 — tirage (2026-11-21)
+## PR 1 — tirage (#2954, mergée le 2026-11-21)
 
 - `src/lib/questions/series-draw.ts` : `variationOfSeed`, `questionFingerprints`,
   `drawLineQuestions` (tours mélangés de variations, 50 essais par variation avant de la dire
