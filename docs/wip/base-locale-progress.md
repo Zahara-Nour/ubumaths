@@ -461,8 +461,19 @@ Comportement validé au § 10 (point 3) : la pile de dev ignore `supabase/.temp/
   `v14.5`, Storage `v1.77.5` (prod) ; par le script → PostgREST `v16.4`, Storage `v1.79.36`,
   Postgres `17.11.0.004`, GoTrue `v2.197.0`, les versions de la pile de test et de la CI. Même pile :
   `status` par le script rend les ports `5432x` et le projet `ubumaths`.
-- **Garde** : le hook `garde-commandes.py` refuse `pnpm exec supabase start`, `stop` et `db reset`
-  lancés à la main (ils contourneraient le miroir), sauf avec `--workdir` (copie isolée du § 9.1).
+- **Prouvé sur une copie isolée** (§ 9.1 : projet `ubumaths-essai`, ports `5442x`, CLI lancée par
+  le script, un `postgres-version` = `17.6.1.127` planté dans le `.temp` de la copie) : `db start`
+  prend Postgres `17.11.0.004`, joue les 628 migrations et les 4 seeds à travers les liens ;
+  `db reset` idem (628 migrations, 3 comptes) ; `stop --no-backup` retire conteneur et volume ; le
+  fichier planté est intact. La pile de dev n'a pas été touchée.
+- **Garde** : le hook `garde-commandes.py` refuse `start`, `stop` et `db reset` de la CLI lancés à
+  la main (`pnpm exec supabase …`, `pnpm supabase …`, `node_modules/.bin/supabase …`, drapeaux
+  avant la commande compris), sauf avec un `--workdir` vers un autre dossier (copie isolée du
+  § 9.1). `db reset --linked` (la prod) a son propre refus. Garde-fou d'habitude, pas une
+  sécurité : une commande enrobée dans un script ou une variable passe.
+- **Relecture** (`code-reviewer`) : rien de bloquant ; corrigé dans la PR : preuve réelle
+  ci-dessus, contournements du hook, miroir construit à côté puis mis en place d'un coup, refus
+  sans CLI installée, tests du fichier retiré, du fichier caché et du chemin avec espace.
 - **Tests** : `scripts/__tests__/pile-de-dev.test.ts` (fausse CLI : elle voit config, migrations et
   seeds, pas `.temp` ; `supabase/.temp` du dépôt intact ; arguments et code de sortie transmis),
   `garde-commandes.test.ts`.

@@ -31,19 +31,26 @@ source="$racine/supabase"
 	exit 1
 }
 
+cli="$racine/node_modules/.bin/supabase"
+[ -x "$cli" ] || { echo "⛔ CLI Supabase introuvable ($cli) : \`pnpm install\` d'abord." >&2; exit 1; }
+
 travail="$racine/node_modules/.cache/pile-de-dev"
 miroir="$travail/supabase"
 
 # Refait à chaque lancement : il ne contient que des liens, plus le `.temp` de la CLI. Un fichier
 # ajouté ou retiré dans `supabase/` est donc toujours vu, et rien n'y survit d'un lancement à
-# l'autre. `rm -rf` retire les liens, jamais ce qu'ils désignent.
-rm -rf "$miroir"
-mkdir -p "$miroir"
+# l'autre. Construit à côté puis mis en place d'un coup : un autre lancement (hors verrou, à la
+# main) ne lit jamais un miroir à moitié fait. `rm -rf` retire les liens, jamais ce qu'ils désignent.
+mkdir -p "$travail"
+neuf="$(mktemp -d "$travail/supabase.XXXXXX")"
 for entree in "$source"/* "$source"/.[!.]*; do
-	[ -e "$entree" ] || continue
+	# Un motif sans correspondance reste tel quel ; un lien cassé (-L) est gardé, la CLI le dira.
+	[ -e "$entree" ] || [ -L "$entree" ] || continue
 	nom="$(basename "$entree")"
 	case "$nom" in .temp | .branches) continue ;; esac
-	ln -s "$entree" "$miroir/$nom"
+	ln -s "$entree" "$neuf/$nom"
 done
+rm -rf "$miroir"
+mv "$neuf" "$miroir"
 
-exec "$racine/node_modules/.bin/supabase" --workdir "$travail" "$@"
+exec "$cli" --workdir "$travail" "$@"
