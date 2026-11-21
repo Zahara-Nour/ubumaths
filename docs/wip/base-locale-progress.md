@@ -2,17 +2,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-21 : chantier ouvert, rien n'est codé._
+_Mis à jour le 2026-11-21 : étape 1 faite (§ 9), rien n'est codé._
 
-- **État** : chantier ouvert par la session `ci-integration` après une journée perdue sur la base
-  locale (§ 2). Base locale remise à neuf le 2026-11-21, suite d'intégration locale 584/584 verte ;
-  la cause principale (§ 3.1) n'est **pas** corrigée.
-- **Prochaine action** : étape 1 du § 6 (comprendre, mesurer, sans rien changer), puis une
-  **phase 0** à David en mots simples (§ 7).
-- **En attente de David** : rien avant le rapport de l'étape 1.
-- **Pièges en cours** : base locale partagée par toutes les sessions (verrou `supabase`, ne
-  jamais le contourner) ; `db:reset` efface les données locales de tout le monde ; `db:migrate`
-  = **prod** (`supabase db push`), jamais pour la base locale.
+- **État** : étape 1 du § 6 terminée, la panne du § 3.1 est **rejouée et établie** sur une copie
+  isolée (§ 9). Base partagée intacte (628/628, seed simple).
+- **Prochaine action** : attendre les réponses de David aux questions de phase 0 (§ 9.5), puis
+  étape 2 du § 6 dans un worktree `../ubumaths-wt-base-locale`.
+- **En attente de David** : les 4 questions du § 9.5, posées le 2026-11-21.
+- **Pièges en cours** : base locale partagée (verrou `supabase`, ne jamais le contourner) ;
+  `db:reset` efface les données locales de tout le monde ; `db:migrate` = **prod**. Pour
+  expérimenter : copie isolée du § 9.1, jamais la base partagée.
 - **Worktree / branche** : aucun ; à créer au premier code (`../ubumaths-wt-base-locale`).
 
 ---
@@ -240,3 +239,63 @@ Sources : journaux `docs/wip/*-progress.md` modifiés depuis le 2026-11-15, jour
 
 - 2026-11-21 : chantier ouvert par la session `ci-integration` à la demande de David, qui le
   lancera dans une session neuve. Rien n'est codé.
+- 2026-11-21 : étape 1 faite (§ 9), questions de phase 0 posées à David.
+
+## 9. Étape 1 : ce qui a été mesuré (2026-11-21)
+
+### 9.1 La copie isolée (pour expérimenter sans toucher à la base partagée)
+
+- Copie de `supabase/` (sans `.temp`) dans un dossier temporaire, `config.toml` modifié :
+  `project_id = "ubumaths-essai"`, ports `5442x` au lieu de `5432x`.
+- `pnpm exec supabase --workdir <copie> db start` : Postgres **seul** (un conteneur,
+  `supabase_db_ubumaths-essai`), aucun conflit avec la pile partagée.
+- `SEED_RICHE_PG_URL=postgresql://postgres:postgres@127.0.0.1:54422/postgres npx tsx
+scripts/db-seed-riche/index.ts` remplit la copie (le script écrit par `pg` direct).
+- Fin : `supabase --workdir <copie> stop --no-backup` (conteneur et volume supprimés).
+
+### 9.2 La panne du § 3.1 est ÉTABLIE
+
+Scénario rejoué : base construite avec 625 migrations (les 3 du 2026-11-20 retirées), seed-riche,
+puis les 3 migrations remises et `supabase migration up --local`.
+
+- Échec à la première : `20261120120749_questions_2de_ensembles_calculs_rangement_tags.sql`,
+  « modèles déjà rangés depuis le relevé : 3 ». La base reste à 625.
+- Jouées une à une (transaction annulée), les **trois** échouent : « déjà rangés : 3 »,
+  « déjà rangés : 36 », et `…_publies_contenu.sql` : « contenu différent de celui attendu ».
+- Condition exacte de la panne : le contenu local vient de la prod **et** la base locale a des
+  migrations de contenu en retard. `db:seed-riche` **remplace** le contenu à chaque passage
+  (`delete` puis insertion, table par table) et la fin de `test:integration` le **relance toute
+  seule** quand il était présent (`tests/integration/global-setup.ts`, `seedRicheARefaire`) :
+  chaque suite d'intégration remet donc le contenu « en avance » sur les migrations.
+- Sans seed-riche : les modèles n'existent pas, les gardes voient 0 modèle et laissent passer
+  (628/628 sur la base partagée).
+
+### 9.3 Combien de migrations sont concernées
+
+- 330 migrations sur 628 portent une garde de contenu (`déjà rangé`, `contenu différent`,
+  `depuis le relevé`, `partiellement présents`) ; 308 s'appellent `…_questions_…`.
+- Depuis le 2026-11-01 : 228 sur 260. Presque toutes les migrations récentes sont du contenu.
+- Elles ne touchent pas au schéma, à part suspendre un déclencheur le temps de l'écriture
+  (303 fois `alter table public.question_templates disable/enable trigger`).
+
+### 9.4 Autres mesures
+
+- `db start` sur une base existante avec 3 migrations en attente : **n'applique rien**
+  (« Starting database from backup », 11 s, toujours 625). § 3.4 établi.
+- Durées (Postgres seul) : reconstruction de zéro, 625 migrations + seeds : **53 s** ;
+  seed-riche : **12 s** (13 103 lignes, 2 770 modèles) ; `migration up --local` sans rien en
+  attente : **0,35 s** (peut donc tourner avant chaque `test:integration` sans coût).
+- Versions des services : dépôt principal (imposées par `supabase/.temp/`) PostgREST `v14.5`,
+  Storage `v1.77.5`, GoTrue `v2.197.0` ; CI et worktrees (défaut de la CLI 2.120.0,
+  `supabase services`) PostgREST **`v16.4`**, Storage **`v1.79.36`**, GoTrue `v2.197.0`,
+  Postgres `17.11.0.004`. Les tests locaux du dépôt principal tournent donc sur un PostgREST
+  et un Storage plus anciens que ceux de la CI.
+
+### 9.5 Questions de phase 0 posées à David (2026-11-21), en attente
+
+1. Migrations de contenu en local quand le contenu vient de la prod : les **noter comme faites
+   sans les jouer** (recommandé), ou autre chose ?
+2. Mise à jour **automatique** avant `test:integration` et au démarrage du serveur de dev, ou
+   commande à lancer à la main ?
+3. Tests sur une **base séparée** de la base de dev (recommandé), ou une seule base ?
+4. Mêmes versions des services que la CI pour la pile locale (recommandé) ?
