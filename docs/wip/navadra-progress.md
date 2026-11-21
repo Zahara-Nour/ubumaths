@@ -2,11 +2,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-18, après #2822._
+_Mis à jour le 2026-11-21, bestiaire proposé._
 
 - **État** : étapes 1 (#2808, #2810), 2 (#2817) et 3 (#2822 : combat de la recrue, page `/dashboard/student/descente/combat/[beastId]`) mergées. Aucune page n'y mène encore : sans carte, aucune Bête n'existe en prod.
-- **Prochaine action** : avant l'étape 4, écrire les vraies fiches du bestiaire (18 à 24 Bêtes : nom, Province, allure, caractère ; copie dans `~/Downloads` pour l'IA d'image) et les vrais noms des 6 coups, à faire valider par David. Puis l'étape 4 (carte, entrée de menu, carnet), en phase 0.
-- **En attente de David** : rien.
+- **Prochaine action** : lire les réponses de David sur la page à cocher (https://claude.ai/artifact/JNi8sKCy1uvJUnxqcD9qk6, collection `avis`, une fiche par clé) et corriger `navadra-bestiaire.md` (18 Bêtes, 6 coups, prompts d'image). Puis l'étape 4 (carte, entrée de menu, carnet), en phase 0, sur une branche neuve depuis `origin/main` (imports `#lib/….ts` depuis #2826).
+- **En attente de David** : la relecture du bestiaire sur la page à cocher.
 - **Façon de poser** : en mots simples, avec un exemple, sans noms de tables ni de colonnes.
 - **Pièges en cours** :
   - **PostgREST tronque un message d'erreur SQL accentué** et rend un 500 sans code : `raise exception` sans accent dans les fonctions appelées par l'API.
@@ -15,7 +15,7 @@ _Mis à jour le 2026-11-18, après #2822._
   - « Quitter le combat » mène à `/dashboard/student/descente`, créée à l'étape 4.
   - Une réponse en combat n'est jamais renvoyée par la page (un 500 peut suivre l'écriture).
   - L'analyse du jeu d'origine est dans `extern/navadra-jeu/CLAUDE.md`, **non versionné**.
-- **Worktree / branche** : `../ubumaths-wt-navadra` gardé pour le serveur de test (5177) ; à retirer après l'essai de David.
+- **Worktree / branche** : `../ubumaths-wt-navadra` gardé pour le serveur de test (5177, arrêté faute de mémoire le 2026-11-19) ; à retirer quand David n'en a plus besoin (branche mergée, aucun code à y ajouter).
 
 ## Phase 0 de l'étape 3 : combat de la recrue (validée par David le 2026-11-18)
 
