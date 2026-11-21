@@ -34,6 +34,8 @@ async function renderCard(
 		template?: boolean;
 		tooShort?: QuestionTiming | null;
 		observedDelay?: number | null;
+		distinctMax?: number | null;
+		onUpdateQuantity?: (templateId: string, quantity: number) => void;
 	} = {}
 ) {
 	return await render(CartQuestionCard, {
@@ -42,10 +44,12 @@ async function renderCard(
 		instance,
 		onIncrementQuantity: vi.fn(),
 		onDecrementQuantity: vi.fn(),
+		onUpdateQuantity: overrides.onUpdateQuantity ?? vi.fn(),
 		onUpdateDelay: overrides.onUpdateDelay ?? vi.fn(),
 		onRemove: overrides.onRemove ?? vi.fn(),
 		tooShort: overrides.tooShort,
-		observedDelay: overrides.observedDelay
+		observedDelay: overrides.observedDelay,
+		distinctMax: overrides.distinctMax
 	});
 }
 
@@ -199,5 +203,32 @@ describe('CartQuestionCard', () => {
 	it('sans durée observée : aucune suggestion', async () => {
 		const screen = await renderCard();
 		expect(screen.container.querySelector('[data-duree-observee]')).toBeNull();
+	});
+
+	it('trop de répétitions : le dit et propose d’abaisser au nombre de questions différentes', async () => {
+		const onUpdateQuantity = vi.fn();
+		const screen = await renderCard({ distinctMax: 2, onUpdateQuantity });
+
+		await expect
+			.element(screen.getByText("Ce modèle n'a que 2 questions différentes."))
+			.toBeInTheDocument();
+		await screen.getByRole('button', { name: 'Passer à 2 répétitions' }).click();
+
+		expect(onUpdateQuantity).toHaveBeenCalledWith(ITEM.templateId, 2);
+	});
+
+	it('une seule question possible : le dit au singulier', async () => {
+		const screen = await renderCard({ distinctMax: 1 });
+
+		await expect.element(screen.getByText("Ce modèle n'a qu'une question.")).toBeInTheDocument();
+		await expect
+			.element(screen.getByRole('button', { name: 'Passer à 1 répétition' }))
+			.toBeInTheDocument();
+	});
+
+	it('assez de questions : aucun avertissement', async () => {
+		const screen = await renderCard();
+
+		expect(screen.container.querySelector('[data-trop-de-repetitions]')).toBeNull();
 	});
 });

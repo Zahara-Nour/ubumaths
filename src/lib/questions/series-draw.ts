@@ -277,3 +277,39 @@ export function distinctQuestionCount(
 ): number {
 	return drawLineQuestions(template, upTo, COUNT_SEED, emptySeen(), generate).length;
 }
+
+/** Plafond des répétitions d'une ligne du panier (`MAX_ITEM_QUANTITY`) */
+const COUNT_CAP = 99;
+
+/** Comptes déjà faits par modèle : jusqu'où on a cherché, et ce qu'on a trouvé */
+const distinctCounts = new WeakMap<QuestionTemplate, { upTo: number; count: number }>();
+
+/**
+ * Avertissement du panier : le nombre de questions différentes du modèle quand
+ * `quantity` le dépasse, `null` sinon. Mis en cache par modèle : un modèle
+ * épuisé n'est plus recompté, et une quantité déjà atteinte non plus. Quand il
+ * faut chercher plus loin, on cherche au moins deux fois plus loin (monter de
+ * 1 à 99 par « + » ne refait que quelques tirages, pas 99).
+ *
+ * Une génération en échec n'est pas un épuisement : rien n'est dit (`null`) ni
+ * retenu, le tirage de la série journalise l'échec.
+ */
+export function distinctLimit(
+	template: QuestionTemplate,
+	quantity: number,
+	generate: Generate
+): number | null {
+	let known = distinctCounts.get(template);
+	const exhausted = known !== undefined && known.count < known.upTo;
+	if (!known || (!exhausted && quantity > known.upTo)) {
+		const upTo = Math.max(quantity, Math.min(COUNT_CAP, 2 * (known?.upTo ?? 0)));
+		let failed = false;
+		const count = drawLineQuestions(template, upTo, COUNT_SEED, emptySeen(), generate, () => {
+			failed = true;
+		}).length;
+		if (failed) return null;
+		known = { upTo, count };
+		distinctCounts.set(template, known);
+	}
+	return known.count < quantity ? known.count : null;
+}

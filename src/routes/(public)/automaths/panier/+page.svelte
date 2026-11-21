@@ -32,6 +32,8 @@
 		type SeriesItem
 	} from '#lib/validation/series.ts';
 	import { templatePreview } from '#lib/questions/catalogue.ts';
+	import { distinctLimit } from '#lib/questions/series-draw.ts';
+	import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
 	import { fetchDurationSignals } from '#lib/utils/duration-signals.ts';
 	import {
 		observedSuggestion,
@@ -39,6 +41,7 @@
 		type DurationSignalsResponse
 	} from '#lib/types/duration-signals.ts';
 	import type { TestMode } from '#lib/types/test.ts';
+	import type { QuestionTemplate } from '#lib/questions/types.ts';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
@@ -106,6 +109,15 @@
 			};
 		})
 	);
+
+	/** Questions différentes d'un modèle, quand la quantité les dépasse (compte mis en cache) */
+	function distinctMaxOf(template: QuestionTemplate | undefined, quantity: number) {
+		return template ? distinctLimit(template, quantity, generateInstance) : null;
+	}
+
+	function handleUpdateQuantity(templateId: string, quantity: number) {
+		questionCart.updateQuantity(templateId, quantity);
+	}
 
 	function handleIncrementQuantity(templateId: string) {
 		questionCart.incrementQuantity(templateId);
@@ -310,7 +322,9 @@
 							{instance}
 							onIncrementQuantity={handleIncrementQuantity}
 							onDecrementQuantity={handleDecrementQuantity}
+							onUpdateQuantity={handleUpdateQuantity}
 							onUpdateDelay={handleUpdateDelay}
+							distinctMax={distinctMaxOf(template, item.quantity)}
 							onRemove={handleRemove}
 							tooShort={tooShortAt(durationSignals?.signals, item.templateId, item.delay)}
 							observedDelay={observedSuggestion(
