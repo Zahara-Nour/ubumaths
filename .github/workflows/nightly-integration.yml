@@ -48,6 +48,8 @@ on:
       - 'scripts/lib/lock.py'
       # portée d'une PR (suite complète ou tests d'une migration de données)
       - 'scripts/ci-integration-ciblee.sh'
+      # empreinte d'un passage (passage déjà vert sur la PR : tests non relancés)
+      - 'scripts/ci-integration-empreinte.sh'
       # tests de migration de données laissés de côté sur les PR, et leur garde
       - 'scripts/ci-integration-exclusions.sh'
       - 'scripts/lib/migrations-de-donnees.ts'
@@ -244,6 +246,8 @@ jobs:
       exclure: ${{ steps.exclusions.outputs.exclure }}
       morceaux: ${{ steps.morceaux.outputs.morceaux }}
       total: ${{ steps.morceaux.outputs.total }}
+      empreinte: ${{ steps.empreinte.outputs.empreinte }}
+      deja_vert: ${{ steps.deja-vert.outputs.cache-hit == 'true' && 'true' || 'false' }}
 
     steps:
       - name: Checkout code
@@ -284,6 +288,33 @@ jobs:
             echo 'morceaux=[1,2,3,4]' >> "$GITHUB_OUTPUT"; echo 'total=4' >> "$GITHUB_OUTPUT"
           fi
 
+      - name: Empreinte du passage (fichiers dont dépend la suite + portée)
+        # Sur 37 pushes de correction, 20 ne touchaient aucun fichier de la suite et relançaient
+        # 16 à 20 min pour un résultat identique (2026-11-21). Seulement sur les PR ; vide dans
+        # le doute (la suite tourne). Décision : docs/wip/ci-integration-progress.md § 8.
+        id: empreinte
+        if: github.event_name == 'pull_request'
+        env:
+          FICHIERS: ${{ steps.portee.outputs.fichiers }}
+          EXCLURE: ${{ steps.exclusions.outputs.exclure }}
+          TOTAL: ${{ steps.morceaux.outputs.total }}
+        run: bash scripts/ci-integration-empreinte.sh >> "$GITHUB_OUTPUT" || echo "empreinte=" >> "$GITHUB_OUTPUT"
+
+      - name: Passage déjà vert sur cette empreinte ?
+        # Trace laissée par le job `memoriser` d'un passage entièrement vert de la même PR (le
+        # cache d'une PR n'est lu que par elle et par ses pushes suivants).
+        id: deja-vert
+        if: steps.empreinte.outputs.empreinte != ''
+        uses: actions/cache/restore@v6
+        with:
+          path: .integration-vert
+          key: integration-vert-v1-${{ steps.empreinte.outputs.empreinte }}
+
+      - name: Run d'origine
+        if: steps.deja-vert.outputs.cache-hit == 'true'
+        run: |
+          echo "Déjà vert, même empreinte : $(cat .integration-vert/run.txt)"
+
   integration:
     name: Integration tests (shard ${{ matrix.shard }}/${{ needs.portee.outputs.total }})
     needs: portee
@@ -296,26 +327,39 @@ jobs:
         shard: ${{ fromJSON(needs.portee.outputs.morceaux) }}
 
     steps:
+      - name: Passage déjà vert sur cette PR (même empreinte)
+        # Les étapes suivantes sont sautées, le job passe : le check garde son nom et finit en
+        # ✅ plutôt qu'en « skipped ». Run d'origine : job `portee`, étape « Run d'origine ».
+        if: needs.portee.outputs.deja_vert == 'true'
+        run: |
+          echo "Déjà vert sur l'empreinte ${{ needs.portee.outputs.empreinte }} : tests non relancés."
+
       - name: Checkout code
+        if: needs.portee.outputs.deja_vert != 'true'
         uses: actions/checkout@v7
 
       - name: Setup pnpm
+        if: needs.portee.outputs.deja_vert != 'true'
         uses: pnpm/action-setup@v6
 
       - name: Setup Node.js
+        if: needs.portee.outputs.deja_vert != 'true'
         uses: actions/setup-node@v7
         with:
           node-version-file: '.nvmrc'
           cache: 'pnpm'
 
       - name: Install dependencies
+        if: needs.portee.outputs.deja_vert != 'true'
         run: pnpm install --frozen-lockfile
 
       - name: Create CI env (placeholders)
+        if: needs.portee.outputs.deja_vert != 'true'
         # Needed so svelte-kit sync can generate $env/static members.
         run: cp .github/ci.env .env
 
       - name: Supabase CLI version
+        if: needs.portee.outputs.deja_vert != 'true'
         # Doit afficher la version exacte de la devDependency (package.json).
         # La version sert aussi de clé au cache des images Docker (étape suivante).
         id: supabase-cli
@@ -331,6 +375,7 @@ jobs:
       # sont fixées par la CLI et par `supabase/config.toml` : la clé en dépend.
       # `v1` : à incrémenter si la liste des services exclus (-x) change.
       - name: Restore Supabase Docker images
+        if: needs.portee.outputs.deja_vert != 'true'
         id: supabase-images
         uses: actions/cache/restore@v6
         with:
@@ -338,10 +383,11 @@ jobs:
           key: supabase-images-v1-${{ runner.os }}-${{ steps.supabase-cli.outputs.version }}-${{ hashFiles('supabase/config.toml') }}
 
       - name: Load Supabase Docker images
-        if: steps.supabase-images.outputs.cache-hit == 'true'
+        if: (steps.supabase-images.outputs.cache-hit == 'true') && needs.portee.outputs.deja_vert != 'true'
         run: zstd -dc /tmp/supabase-images.tar.zst | docker load
 
       - name: Start Supabase (applies migrations)
+        if: needs.portee.outputs.deja_vert != 'true'
         # Stack allégée : on exclut les services non requis (studio, edge, analytics,
         # mail, imgproxy). storage-api est GARDÉ : deux suites l'appellent
         # (chapter-documents-size-limit, chat-attachment-signing). Son image était
@@ -354,7 +400,7 @@ jobs:
         # Seulement si le cache manquait et que la stack a démarré : les images
         # présentes sont alors exactement celles de cette version de la CLI.
         # Un seul morceau enregistre : les autres viseraient la même clé en même temps.
-        if: steps.supabase-images.outputs.cache-hit != 'true' && matrix.shard == 1
+        if: (steps.supabase-images.outputs.cache-hit != 'true' && matrix.shard == 1) && needs.portee.outputs.deja_vert != 'true'
         run: |
           set -o pipefail
           images="$(docker images --format '{{.Repository}}:{{.Tag}}' | grep -E '(^|/)supabase/' | grep -v ':<none>$')"
@@ -364,13 +410,14 @@ jobs:
           ls -lh /tmp/supabase-images.tar.zst
 
       - name: Upload Supabase Docker images to the cache
-        if: steps.supabase-images.outputs.cache-hit != 'true' && matrix.shard == 1
+        if: (steps.supabase-images.outputs.cache-hit != 'true' && matrix.shard == 1) && needs.portee.outputs.deja_vert != 'true'
         uses: actions/cache/save@v6
         with:
           path: /tmp/supabase-images.tar.zst
           key: ${{ steps.supabase-images.outputs.cache-primary-key }}
 
       - name: Export local Supabase credentials
+        if: needs.portee.outputs.deja_vert != 'true'
         # The test helpers read SUPABASE_TEST_* (with localhost defaults); export the
         # actual local stack keys so they match the CLI version that just started.
         # La CLI écrit `NOM="valeur"` ; $GITHUB_ENV garde les guillemets tels quels,
@@ -397,6 +444,7 @@ jobs:
           } >> "$GITHUB_ENV"
 
       - name: Run integration tests (shard ${{ matrix.shard }}/${{ needs.portee.outputs.total }})
+        if: needs.portee.outputs.deja_vert != 'true'
         env:
           FICHIERS: ${{ needs.portee.outputs.fichiers }}
           EXCLURE: ${{ needs.portee.outputs.exclure }}
@@ -412,5 +460,30 @@ jobs:
           pnpm test:integration $FICHIERS "${exclusions[@]}" --shard=${{ matrix.shard }}/${{ needs.portee.outputs.total }}
 
       - name: Stop Supabase
-        if: always()
+        if: (always()) && needs.portee.outputs.deja_vert != 'true'
         run: pnpm exec supabase stop
+
+  memoriser:
+    # Passage entièrement vert d'une PR (garde du filtre, portée, tous les morceaux) : on garde
+    # son empreinte, qu'un push suivant de la même PR retrouvera (job `portee`). Pas de `if` au
+    # niveau du job : sauté, il s'afficherait « skipped » ; ses étapes le sont à la place.
+    # Un morceau rouge ou annulé : le job ne tourne pas, rien n'est gardé.
+    name: Integration green pass memo
+    needs: [paths-filter, portee, integration]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Trace du passage vert
+        if: needs.portee.outputs.empreinte != '' && needs.portee.outputs.deja_vert != 'true'
+        run: |
+          mkdir -p .integration-vert
+          echo "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" > .integration-vert/run.txt
+          cat .integration-vert/run.txt
+
+      - name: Garder l'empreinte
+        if: needs.portee.outputs.empreinte != '' && needs.portee.outputs.deja_vert != 'true'
+        uses: actions/cache/save@v6
+        with:
+          path: .integration-vert
+          key: integration-vert-v1-${{ needs.portee.outputs.empreinte }}
