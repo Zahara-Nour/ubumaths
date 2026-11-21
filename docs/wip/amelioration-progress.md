@@ -728,7 +728,7 @@ registre des traitements (`docs/systeme/conformite/registre-traitements.md`) à 
   (`errorMonitoring.ts`) ; le layout racine note la route (`afterNavigate` →
   `noteWebVitalsRoute`). Envoi par `sendBeacon` au passage en arrière-plan, rien en développement.
 - **Serveur** : `POST /api/web-vitals` + `src/lib/server/web-vitals/reception.ts`. N'écrit qu'en
-  prod (`VERCEL_ENV`), ne lit pas la session, 120 envois par minute et par adresse (clé = empreinte),
+  prod (`VERCEL_ENV`), ne se sert pas de la session, 30 envois par minute et par adresse (clé = empreinte),
   enveloppe validée (400), mesures écartées une à une (bornes, route hors `KNOWN_ROUTES`, admin,
   `/dev`). Route ouverte ajoutée aux comptes en attente et au changement de mot de passe obligatoire.
 - **Choix faits en codant, au-delà de la phase 0** (à connaître pour lire le relevé) :
@@ -739,7 +739,14 @@ registre des traitements (`docs/systeme/conformite/registre-traitements.md`) à 
     reste le cumul de la visite ; sans prise en charge (Safari), aucun CLS ne part ;
   - CLS et INP repartent s'ils ont grandi après un retour sur l'onglet : une visite longue peut
     donc laisser plusieurs lignes (pas d'identifiant de visite pour dédoublonner, par anonymat) ;
-  - l'adresse IP passe dans le compteur de débit sous forme d'empreinte, une minute.
+  - l'adresse IP passe dans le compteur de débit sous forme d'empreinte (un pseudonyme), gardée
+    jusqu'à la purge quotidienne de `rate_limits` (au plus ~26 h), sans lien avec les mesures.
+- **Revues sur la PR** : `code-reviewer` sans bloquant ; corrigés : chargement d'une 404 reporté
+  sur la page suivante, collecteur perdu après un `beforeunload`, envoi sans test. `security-auditor`
+  sans bloquant ; corrigés : limite par adresse 120 → 30 par minute, préfixe /64 en IPv6, plafond
+  de 2 000 envois par heure pour tout le site, registre T8 inexact (empreinte gardée ~26 h et non
+  une minute ; ordre d'écriture lisible en base, écrit comme risque résiduel). Laissé : empreinte
+  sans secret (HMAC = une variable d'environnement de plus), limiteur qui échoue ouvert.
 - **Vérifié en vrai** (serveur de dev du worktree, base locale, `VERCEL_ENV=production`) : un envoi
   de 5 mesures écrit les 2 valables (route inconnue, valeur absurde et page d'admin écartées) ;
   enveloppe fausse et corps illisible → 400. **Pas vérifié** : l'envoi par un vrai navigateur hors

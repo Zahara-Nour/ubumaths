@@ -104,10 +104,24 @@ describe('POST /api/web-vitals', () => {
 	it('limite les envois par adresse, sans mettre l’adresse dans la clé', async () => {
 		await POST(event(BATCH));
 
-		expect(rateLimitMock).toHaveBeenCalledTimes(1);
-		const key = rateLimitMock.mock.calls[0][0] as string;
+		const [key, max, windowMs] = rateLimitMock.mock.calls[0] as [string, number, number];
 		expect(key.startsWith('web-vitals:')).toBe(true);
 		expect(key).not.toContain('203.0.113.7');
+		expect([max, windowMs]).toEqual([30, 60_000]);
+	});
+
+	it('plafonne aussi les envois de tout le site, quelle que soit l’adresse', async () => {
+		await POST(event(BATCH));
+
+		expect(rateLimitMock).toHaveBeenCalledTimes(2);
+		expect(rateLimitMock.mock.calls[1]).toEqual(['web-vitals:global', 2000, 3_600_000]);
+	});
+
+	it('plafond du site atteint : refusé, rien d’écrit', async () => {
+		rateLimitMock.mockResolvedValueOnce(undefined).mockRejectedValueOnce({ status: 429 });
+
+		expect(await status(POST(event(BATCH)))).toBe(429);
+		expect(insertMock).not.toHaveBeenCalled();
 	});
 
 	it('trop d’envois : refusé, rien d’écrit', async () => {

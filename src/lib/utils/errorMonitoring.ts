@@ -666,7 +666,7 @@ export function noteWebVitalsRoute(routeId: string | null): void {
  * Envoie les mesures à notre serveur, sans attendre de réponse : la page est en train
  * d'être quittée. Un envoi raté est perdu, sans nouvel essai.
  */
-function sendSamplesToServer(samples: WebVitalSample[]): void {
+export function sendSamplesToServer(samples: WebVitalSample[]): void {
 	const body = JSON.stringify({
 		device_type: parseBrowserInfo(navigator.userAgent).device_type,
 		samples
@@ -892,7 +892,9 @@ export function initWebVitals(
 		webVitalsObservers.forEach((observer) => observer.disconnect());
 		webVitalsObservers.length = 0;
 		removeInpListeners();
-		if (sampleCollector === collector) sampleCollector = null;
+		// Le collecteur reste en place : si la sortie est annulée ou la page reprise du
+		// cache du navigateur, l'écouteur de passage en arrière-plan envoie encore, et
+		// il lui faut la route courante
 		webVitalsInitialized = false;
 	});
 

@@ -111,6 +111,8 @@ function roundValue(metric: SampleMetric, value: number): number {
 export function createSampleCollector(send: (samples: WebVitalSample[]) => void) {
 	/** Page d'arrivée (première route notée) et page courante */
 	let landingRoute: string | null = null;
+	/** Vrai dès la première page notée, même sans route (page d'erreur) */
+	let landed = false;
 	let currentRoute: string | null = null;
 
 	const load = new Map<LoadMetric, number>();
@@ -129,7 +131,12 @@ export function createSampleCollector(send: (samples: WebVitalSample[]) => void)
 	return {
 		/** À chaque page affichée (arrivée et navigations internes) */
 		noteRoute(routeId: string | null): void {
-			landingRoute ??= routeId;
+			// Arrivée sur une page sans route (404) : son chargement n'est pas reporté
+			// sur la page suivante
+			if (!landed) {
+				landingRoute = routeId;
+				landed = true;
+			}
 			currentRoute = routeId;
 		},
 
@@ -150,8 +157,8 @@ export function createSampleCollector(send: (samples: WebVitalSample[]) => void)
 		flush(): void {
 			const samples: WebVitalSample[] = [];
 
-			// Sans route d'arrivée (page pas encore démarrée), le chargement attend
-			if (!loadSent && landingRoute !== null) {
+			// Tant qu'aucune page n'est notée (page pas encore démarrée), le chargement attend
+			if (!loadSent && landed) {
 				for (const metric of LOAD_METRICS) {
 					const value = load.get(metric);
 					const item = value === undefined ? null : sample(landingRoute, metric, value);

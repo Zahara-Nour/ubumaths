@@ -105,20 +105,29 @@ Trois boucles distinctes :
     a commencé) partent à chaque passage en arrière-plan s'ils ont grandi. Le TTFB envoyé ici
     est compté depuis le début de la navigation (définition de Google), pas depuis l'envoi de
     la requête comme celui du journal des erreurs. Sans prise en charge de `layout-shift`
-    (Safari), aucun CLS ne part. Rien n'est envoyé en développement.
+    (Safari), aucun CLS ne part. Rien n'est envoyé en développement. Limites à connaître pour
+    lire le relevé : un FCP ou un LCP arrivé après le premier envoi est perdu ; le CLS est celui
+    de toute la visite, rattaché à la page affichée au moment de l'envoi, pas à celle où le
+    décalage a eu lieu ; une arrivée sur une page sans route (404) n'envoie pas son chargement.
   - **Page = identifiant de route SvelteKit** (`/(public)/cours/[token]`), noté par le layout
     racine (`afterNavigate` → `noteWebVitalsRoute`). Jamais `url.pathname` : l'adresse réelle
     peut porter un jeton.
   - **Pages comptées** (`isMeasuredRoute`) : toutes, sauf l'admin et `/dev`.
   - **Serveur** (`POST /api/web-vitals`, `src/lib/server/web-vitals/reception.ts`) : route
-    ouverte, sans compte, qui **ne lit pas la session**. Elle n'écrit qu'en prod
-    (`VERCEL_ENV=production`), limite à 120 envois par minute et par adresse (la clé du
-    compteur est une empreinte de l'adresse, pas l'adresse), valide l'enveloppe (400 sinon),
+    ouverte, sans compte, qui **ne se sert pas de la session** (les hooks la lisent comme pour
+    toute requête). Elle n'écrit qu'en prod (`VERCEL_ENV=production`), limite à 30 envois par
+    minute et par adresse (préfixe /64 en IPv6 ; la clé du compteur est une empreinte de
+    l'adresse, un pseudonyme gardé dans `rate_limits` jusqu'à la purge quotidienne) et à 2 000
+    envois par heure pour tout le site (clé `web-vitals:global`), valide l'enveloppe (400 sinon),
     puis écarte une à une les mesures hors bornes (durée > 10 min, CLS > 100) ou dont la route
     n'est pas une **page du site** (`KNOWN_ROUTES`, tirée des fichiers `+page.svelte`). C'est
     cette liste, pas la contrainte de la table, qui garantit qu'aucun jeton n'est écrit. Le
     serveur n'insère que `route`, `metric`, `value`, `device_type` : la base fixe la date
     (arrondie à l'heure) et l'identifiant.
+  - **Risque résiduel** : l'heure est arrondie, mais qui lit la base (admin, serveur) peut
+    retrouver l'ordre d'écriture des lignes (ordre physique, numéro de transaction) et les
+    situer entre deux lignes horodatées d'une autre table. Les deux limites de débit échouent
+    ouvertes (panne du compteur = pas de limite).
   - Lecture : admin seul ; purge à 90 jours ; relevé : [core-web-vitals.md](../pratiques/core-web-vitals.md).
 - `src/lib/server/errorMonitoring.ts` est le seul écrivain de `error_logs` :
   - `logError` nettoie (`sanitizeErrorData`), tronque (message 1 000, pile 5 000, URL

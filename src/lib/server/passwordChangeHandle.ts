@@ -21,7 +21,7 @@ const ROUTES_OUVERTES = new Set([
 	'/(public)/auth/update-password',
 	'/(public)/auth/logout',
 	'/api/errors/log',
-	// Mesures de performance, anonymes : la route ne lit pas la session
+	// Mesures de performance, anonymes : la route ne se sert pas de la session
 	'/api/web-vitals'
 ]);
 

@@ -35,7 +35,7 @@ const ROUTES_OUVERTES = new Set([
 	'/(public)/consent/[token]',
 	// Journal des erreurs client
 	'/api/errors/log',
-	// Mesures de performance, anonymes : la route ne lit pas la session
+	// Mesures de performance, anonymes : la route ne se sert pas de la session
 	'/api/web-vitals',
 	// Droits RGPD (art. 15, 17, 20)
 	'/api/account/export',

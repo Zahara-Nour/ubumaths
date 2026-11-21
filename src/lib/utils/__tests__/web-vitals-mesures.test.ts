@@ -103,6 +103,17 @@ describe('createSampleCollector', () => {
 		expect(send.mock.calls[0][0]).toEqual([{ route: '/', metric: 'LCP', value: 1000 }]);
 	});
 
+	it('arrivée sur une page sans route (404) : le chargement n’est pas reporté sur la suivante', () => {
+		const { send, collector } = collecteur();
+		collector.noteRoute(null);
+		collector.recordLoad('LCP', 1000);
+		collector.noteRoute('/(public)');
+
+		collector.flush();
+
+		expect(send).not.toHaveBeenCalled();
+	});
+
 	it('n’envoie le chargement qu’une fois, et ignore un LCP venu après', () => {
 		const { send, collector } = collecteur();
 		collector.noteRoute('/');

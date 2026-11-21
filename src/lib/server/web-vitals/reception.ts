@@ -6,6 +6,9 @@
  * la forme d'un segment de route) : la garantie est `KNOWN_ROUTES`, la liste des pages
  * du site. Une route qui n'y figure pas n'est jamais écrite.
  *
+ * Risque résiduel : qui lit la base (admin, serveur) peut retrouver l'ordre d'écriture
+ * des lignes (ordre physique, numéro de transaction) malgré l'heure arrondie.
+ *
  * Le serveur n'a le droit d'insérer que `route`, `metric`, `value` et `device_type` :
  * la date (arrondie à l'heure) et l'identifiant de ligne sont fixés par la base.
  */
@@ -77,11 +80,38 @@ export function keepValidSamples(
 }
 
 /**
- * Clé du compteur de débit : une empreinte de l'adresse du visiteur, pas l'adresse.
- * Elle ne sert qu'à limiter les envois et n'est jamais écrite à côté d'une mesure.
+ * Ce qui compte pour un visiteur dans le compteur de débit : l'adresse IPv4 entière,
+ * ou le préfixe /64 d'une adresse IPv6 (un abonné dispose de tout un /64 : compter
+ * par adresse ne limiterait rien).
+ */
+export function rateLimitSubject(clientAddress: string): string {
+	const address = clientAddress.toLowerCase();
+	const mapped = address.match(/^::ffff:(\d+\.\d+\.\d+\.\d+)$/);
+	if (mapped) return mapped[1];
+	if (!address.includes(':')) return address;
+
+	const [head, tail] = address.split('::');
+	const headGroups = head ? head.split(':') : [];
+	const tailGroups = tail ? tail.split(':') : [];
+	const missing = Math.max(8 - headGroups.length - tailGroups.length, 0);
+	const groups =
+		tail === undefined
+			? headGroups
+			: [...headGroups, ...Array<string>(missing).fill('0'), ...tailGroups];
+	return groups
+		.slice(0, 4)
+		.map((group) => group.replace(/^0+(?=.)/, ''))
+		.join(':');
+}
+
+/**
+ * Clé du compteur de débit : une empreinte de l'adresse du visiteur, pas l'adresse en
+ * clair. C'est un pseudonyme (une empreinte d'IPv4 se retrouve par essais), gardé dans
+ * `rate_limits` jusqu'à la purge quotidienne ; il n'est jamais écrit à côté d'une mesure.
  */
 export function rateLimitKey(clientAddress: string): string {
-	return `web-vitals:${createHash('sha256').update(clientAddress).digest('hex').slice(0, 32)}`;
+	const subject = rateLimitSubject(clientAddress);
+	return `web-vitals:${createHash('sha256').update(subject).digest('hex').slice(0, 32)}`;
 }
 
 /** Écrit une ligne par mesure. Rend l'erreur de la base, `null` si tout est écrit. */

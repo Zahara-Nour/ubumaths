@@ -356,8 +356,8 @@ mise à jour de `app_metadata` seule n'en ferme aucune.
   toute écriture** (actions de formulaire comprises). Le test porte sur `event.route.id`, jamais sur
   le chemin brut (SvelteKit route sur le chemin décodé : `/%61pi/…` atteint `/api/…`). Restent
   ouverts : déconnexion, connexion, inscription, `update-password`, `/consent/[token]`,
-  `/api/errors/log`, `/api/web-vitals` (mesures de performance anonymes, la route ne lit pas la
-  session), `/api/account/export` et `/api/account/delete` (droits RGPD).
+  `/api/errors/log`, `/api/web-vitals` (mesures de performance anonymes, la route ne se sert pas
+  de la session), `/api/account/export` et `/api/account/delete` (droits RGPD).
 - **La base ignore le statut, par décision** (David, 2026-10-11) : avec son jeton, un compte en
   attente garde via PostgREST ce qu'a un élève sans école ni classe — écrire ses propres données,
   écrire au prof. Aucun accès à un mineur (amitiés et conversations bornées à l'école ; données de

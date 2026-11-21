@@ -9,7 +9,13 @@
  * gonflés d'autant.
  */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { captureError, flushErrors, initWebVitals, noteWebVitalsRoute } from '../errorMonitoring';
+import {
+	captureError,
+	flushErrors,
+	initWebVitals,
+	noteWebVitalsRoute,
+	sendSamplesToServer
+} from '../errorMonitoring';
 import type { WebVitalSample } from '../web-vitals-mesures';
 
 // Le module garde ses empreintes anti-doublon d'un test à l'autre
@@ -273,5 +279,41 @@ describe('Web Vitals — mesures gardées chez nous', () => {
 		await hideAndShow();
 
 		expect(samples).toEqual([]);
+	});
+});
+
+describe('Web Vitals — envoi à notre serveur', () => {
+	const batch: WebVitalSample[] = [{ route: '/(public)', metric: 'LCP', value: 1200 }];
+
+	it('part par sendBeacon, en JSON, sans second envoi', async () => {
+		const beacon = vi.spyOn(navigator, 'sendBeacon').mockReturnValue(true);
+
+		sendSamplesToServer(batch);
+
+		expect(beacon).toHaveBeenCalledTimes(1);
+		const [url, blob] = beacon.mock.calls[0] as [string, Blob];
+		expect(url).toBe('/api/web-vitals');
+		expect(blob.type).toBe('application/json');
+		expect(JSON.parse(await blob.text()).samples).toEqual(batch);
+		expect(fetch).not.toHaveBeenCalled();
+		beacon.mockRestore();
+	});
+
+	it.each([
+		['refusé', () => false],
+		[
+			'en erreur',
+			() => {
+				throw new Error('SecurityError');
+			}
+		]
+	])('sendBeacon %s : un seul envoi par fetch', (_cas, behaviour) => {
+		const beacon = vi.spyOn(navigator, 'sendBeacon').mockImplementation(behaviour);
+
+		sendSamplesToServer(batch);
+
+		expect(fetch).toHaveBeenCalledTimes(1);
+		expect(vi.mocked(fetch).mock.calls[0][0]).toBe('/api/web-vitals');
+		beacon.mockRestore();
 	});
 });

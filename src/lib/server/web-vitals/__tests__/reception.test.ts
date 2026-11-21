@@ -10,6 +10,7 @@ import {
 	KNOWN_ROUTES,
 	keepValidSamples,
 	rateLimitKey,
+	rateLimitSubject,
 	routeIdFromPageFile,
 	webVitalsBatchSchema
 } from '../reception.ts';
@@ -122,7 +123,25 @@ describe('keepValidSamples', () => {
 	});
 });
 
+describe('rateLimitSubject', () => {
+	it('garde une adresse IPv4 entière, même sous sa forme IPv6', () => {
+		expect(rateLimitSubject('203.0.113.7')).toBe('203.0.113.7');
+		expect(rateLimitSubject('::ffff:203.0.113.7')).toBe('203.0.113.7');
+	});
+
+	it('réduit une adresse IPv6 à son préfixe /64, quelle que soit son écriture', () => {
+		expect(rateLimitSubject('2001:db8:12:34:aaaa:bbbb:cccc:dddd')).toBe('2001:db8:12:34');
+		expect(rateLimitSubject('2001:0DB8:0012:0034::1')).toBe('2001:db8:12:34');
+		expect(rateLimitSubject('2001:db8::1')).toBe('2001:db8:0:0');
+	});
+});
+
 describe('rateLimitKey', () => {
+	it('est la même pour deux adresses IPv6 du même abonné (/64)', () => {
+		expect(rateLimitKey('2001:db8:12:34::1')).toBe(rateLimitKey('2001:db8:12:34:ffff::2'));
+		expect(rateLimitKey('2001:db8:12:34::1')).not.toBe(rateLimitKey('2001:db8:12:35::1'));
+	});
+
 	it('ne contient pas l’adresse du visiteur', () => {
 		const key = rateLimitKey('203.0.113.7');
 		expect(key.startsWith('web-vitals:')).toBe(true);
