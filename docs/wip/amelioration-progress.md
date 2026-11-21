@@ -4,7 +4,7 @@
 
 _Mis à jour le 2026-11-21, PR 1 des mesures chez nous ouverte._
 
-- **État** : mesures de performance chez nous, découpage en 3 PR (phase 0 validée, en fin de journal) ; **PR 1 ouverte** (migration `20261121205833` : table anonyme `web_vital_samples`, purge à 90 jours, lecture admin seul ; 35 tests d'intégration) ; #2969 mergée (pas en prod) : le markdown ne charge plus jsdom au rendu serveur ; workflow `web-vitals.yml` désactivé
+- **État** : mesures de performance chez nous, découpage en 3 PR (phase 0 validée, en fin de journal) ; **PR 1 ouverte** (migration `20261121205833` : table anonyme `web_vital_samples`, purge à 90 jours, lecture admin seul ; tests d'intégration) ; #2969 mergée (pas en prod) : le markdown ne charge plus jsdom au rendu serveur ; workflow `web-vitals.yml` désactivé
 - **Prochaine action** : merger la PR 1 (CI verte, revues `code-reviewer` + `security-auditor`), `pnpm check:migrations --pr <n>`, puis `pnpm db:migrate` (vérifier d'abord `migration list --linked` : une seule en attente) et `pnpm db:types` ; ensuite **PR 2** (envoi et réception des mesures, registre des traitements T8 à compléter à ce moment-là), puis PR 3 (relevé, réactivation du workflow) ; après le prochain `deploy:prod`, recompter sur une build fraîche les pages qui chargent jsdom (79 sur 338 avant #2969)
 - **En attente de David** : rien
 - **Tranché** : ne rien payer à Vercel ; table anonyme chez nous, lecture admin seul, 90 jours, Q1 à Q4 validées (David, 2026-11-21) ; le reste inchangé, cf. sections ci-dessous
@@ -699,12 +699,20 @@ registre des traitements (`docs/systeme/conformite/registre-traitements.md`) à 
   journalisée `web_vital_samples_purge`), bloc ajouté à `run_cleanup_expired_data` (corps de la
   prod vérifié par md5 le 2026-11-21, identique à `20261111224115`).
 - Choix d'anonymat au-delà de la phase 0, tenus par la table : heure arrondie à l'heure (défaut
-  de colonne, que le serveur ne peut pas fixer) ; page refusée si elle porte `?`, `#` ou un début
-  d'UUID. Bornes : durées de 0 à 600 000 ms, CLS de 0 à 100 ; `FID` refusé (indicateur retiré
+  de colonne, que le serveur ne peut pas fixer) ; identifiant de ligne en UUID au hasard, pas en
+  compteur (finding de `security-auditor` : un numéro croissant garde l'ordre des envois, donc
+  un parcours) ; page acceptée seulement sous la forme d'un identifiant de route (segments en
+  minuscules, groupes `(…)`, paramètres `[…]`), début d'UUID refusé. Les 1 083 dossiers de
+  `src/routes` passent ce filtre, hors dossiers de tests et fichiers (`sitemap.xml`).
+- **À tenir en PR 2** (findings des deux revues) : envoyer `route.id`, jamais `url.pathname` ;
+  à la réception, n'accepter que les routes connues (liste tirée du manifeste SvelteKit) : le
+  filtre de la table laisserait passer un jeton écrit en minuscules ; lire sans ordre d'arrivée. Bornes : durées de 0 à 600 000 ms, CLS de 0 à 100 ; `FID` refusé (indicateur retiré
   par Google, absent du relevé).
 - Le serveur n'a que `SELECT` et `INSERT` sur quatre colonnes : ni `UPDATE`, ni `DELETE` (la
   purge est `SECURITY DEFINER`). L'admin lit, n'écrit pas.
 - Tests : `tests/integration/mesures-web-vitals.test.ts`, 35 tests, vus rouges sans la migration
-  (table absente), verts avec ; garde `SECURITY DEFINER` verte.
+  (table absente), verts avec (54 après les revues) ; garde `SECURITY DEFINER` verte.
+- Revues sur la PR : `code-reviewer` sans finding bloquant ni important ; `security-auditor`
+  sans finding bloquant, deux importants sur l'anonymat (compteur, filtre de page), corrigés.
 - Pas de fonction de calcul du p75 dans cette migration : la forme du relevé se décide en PR 3.
 - Registre des traitements (T8) : à compléter en PR 2, quand la collecte commence.

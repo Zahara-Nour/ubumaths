@@ -21,8 +21,13 @@
 --   - aucune colonne de compte, d'adresse IP, de navigateur ni de session ;
 --   - created_at arrondi à l'heure (une mesure ne se recoupe pas, à la seconde, avec
 --     l'activité d'un élève dans une autre table), et non réglable par le serveur ;
---   - route : forme générique de la page (« /cours/[token] »), sans paramètres, et
---     refusée si elle contient un début d'UUID (adresse réelle envoyée par erreur).
+--   - id : UUID tiré au hasard, pas un compteur. Un numéro croissant garderait l'ordre
+--     exact des envois, donc le parcours d'une personne dans l'heure ;
+--   - route : identifiant de route SvelteKit (« /(public)/cours/[token] »). Chaque
+--     segment est un mot en minuscules, chiffres et tirets, un groupe « (…) » ou un
+--     paramètre « […] » ; un début d'UUID est refusé. C'est un filet : un jeton écrit
+--     en minuscules passerait. La garantie est la liste des routes connues, tenue par
+--     le serveur à la réception (PR 2).
 --
 -- run_cleanup_expired_data : définition reprise de la prod (md5 du corps vérifié le
 -- 2026-11-21, 514ef722a64973c8f7f78b2396293382, identique à la migration
@@ -35,7 +40,7 @@
 -- ============================================================================
 
 CREATE TABLE public.web_vital_samples (
-	id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+	id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
 	created_at timestamptz NOT NULL DEFAULT date_trunc('hour', now()),
 	route text NOT NULL,
 	metric text NOT NULL,
@@ -43,8 +48,11 @@ CREATE TABLE public.web_vital_samples (
 	device_type text NOT NULL,
 	CONSTRAINT web_vital_samples_route_check CHECK (
 		char_length(route) <= 200
-		AND route ~ '^/[^?#]*$'
-		AND route !~* '[0-9a-f]{8}-[0-9a-f]{4}-'
+		AND (
+			route = '/'
+			OR route ~ '^(/([a-z0-9-]+|\([a-z0-9-]+\)|\[{1,2}(\.\.\.)?[A-Za-z0-9_]+(=[A-Za-z0-9_]+)?\]{1,2}))+$'
+		)
+		AND route !~ '[0-9a-f]{8}-[0-9a-f]{4}-'
 	),
 	CONSTRAINT web_vital_samples_metric_check CHECK (
 		metric IN ('LCP', 'FCP', 'TTFB', 'INP', 'CLS')

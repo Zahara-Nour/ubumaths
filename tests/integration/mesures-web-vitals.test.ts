@@ -11,7 +11,8 @@
  *   2. l'admin lit les lignes ; ni le prof, ni l'élève, ni le visiteur ne les lisent ;
  *   3. seul le serveur écrit : personne d'autre n'ajoute, ne modifie ni n'efface, admin compris ;
  *   4. une ligne mal formée est refusée (indicateur, valeur, page, appareil) ;
- *   5. l'heure d'une mesure est arrondie à l'heure ;
+ *   5. l'heure d'une mesure est arrondie à l'heure, son identifiant est tiré au hasard,
+ *      et le serveur ne fixe ni l'un ni l'autre ;
  *   6. la purge efface les lignes de plus de 90 jours, garde les autres, est journalisée,
  *      n'est lançable que par le serveur, et la purge hebdomadaire l'appelle.
  *
@@ -31,7 +32,7 @@ type Role = 'anon' | 'authenticated' | 'service_role';
 type Resultat<T> = { rows: T[]; code: string | null };
 
 // Constantes
-const PAGE = '/cours/[token]';
+const PAGE = '/(public)/cours/[token]';
 const INSERTION = `insert into public.web_vital_samples (route, metric, value, device_type)
 	values ($1, $2, $3, $4) returning id`;
 
@@ -146,6 +147,16 @@ describe('mesures de performance chez nous', () => {
 			expect(rows[0].arrondie).toBe(true);
 		});
 
+		it('l’identifiant d’une ligne est tiré au hasard, pas un compteur', async () => {
+			const pg = await getPostgresClient();
+			const { rows } = await pg.query<{ data_type: string; column_default: string }>(
+				`select data_type, column_default from information_schema.columns
+				 where table_schema = 'public' and table_name = 'web_vital_samples'
+				   and column_name = 'id'`
+			);
+			expect(rows[0]).toEqual({ data_type: 'uuid', column_default: 'gen_random_uuid()' });
+		});
+
 		it('une page qui contient un identifiant (adresse réelle) est refusée', async () => {
 			const { code } = await enTantQue('service_role', null, INSERTION, [
 				'/cours/0b9f6a52-4c1d-4e9a-9d0e-1f2a3b4c5d6e',
@@ -235,13 +246,37 @@ describe('mesures de performance chez nous', () => {
 			expect(code).toBe('42501');
 		});
 
-		it('le serveur ne peut pas modifier une mesure', async () => {
-			const { code } = await enTantQue(
-				'service_role',
-				null,
+		it.each([
+			['modifier', 'update public.web_vital_samples set value = 1'],
+			['effacer', 'delete from public.web_vital_samples'],
+			['vider', 'truncate public.web_vital_samples'],
+			[
+				'dater',
+				`insert into public.web_vital_samples (route, metric, value, device_type, created_at)
+				 values ('/', 'LCP', 100, 'mobile', now())`
+			],
+			[
+				'numéroter',
+				`insert into public.web_vital_samples (id, route, metric, value, device_type)
+				 values (gen_random_uuid(), '/', 'LCP', 100, 'mobile')`
+			]
+		])('le serveur ne peut pas %s une mesure', async (_geste, sql) => {
+			const { code } = await enTantQue('service_role', null, sql);
+			expect(code).toBe('42501');
+		});
+
+		it.each<[string, Role, () => string | null]>([
+			['le prof', 'authenticated', () => teacherId],
+			['l’élève', 'authenticated', () => studentId],
+			['le visiteur', 'anon', () => null]
+		])('%s ne peut ni modifier ni effacer', async (_qui, role, compte) => {
+			const modifier = await enTantQue(
+				role,
+				compte(),
 				'update public.web_vital_samples set value = 1'
 			);
-			expect(code).toBe('42501');
+			const effacer = await enTantQue(role, compte(), 'delete from public.web_vital_samples');
+			expect([modifier.code, effacer.code]).toEqual(['42501', '42501']);
 		});
 	});
 
@@ -252,8 +287,14 @@ describe('mesures de performance chez nous', () => {
 			['valeur au-delà de dix minutes', PAGE, 'LCP', 600001, 'mobile'],
 			['décalage de mise en page absurde', PAGE, 'CLS', 101, 'mobile'],
 			['valeur qui n’est pas un nombre', PAGE, 'LCP', 'NaN', 'mobile'],
+			['valeur infinie', PAGE, 'LCP', 'Infinity', 'mobile'],
 			['page sans barre initiale', 'cours', 'LCP', 100, 'mobile'],
 			['page avec ses paramètres', '/cours?eleve=1', 'LCP', 100, 'mobile'],
+			['page avec une ancre', '/cours#partie', 'LCP', 100, 'mobile'],
+			['page avec un jeton à majuscules', '/c/AbC123xYz', 'LCP', 100, 'mobile'],
+			['page avec une adresse de courriel', '/profil/eleve@local.test', 'LCP', 100, 'mobile'],
+			['page avec une espace', '/profil/prenom nom', 'LCP', 100, 'mobile'],
+			['page finissant par une barre', '/cours/', 'LCP', 100, 'mobile'],
 			['page trop longue', `/${'a'.repeat(200)}`, 'LCP', 100, 'mobile'],
 			['appareil inconnu', PAGE, 'LCP', 100, 'montre']
 		])('%s : refusée', async (_cas, route, metric, value, device) => {
@@ -266,11 +307,18 @@ describe('mesures de performance chez nous', () => {
 			expect(code).toBe('23514');
 		});
 
-		it('borne haute acceptée : dix minutes pile', async () => {
+		it.each([
+			['dix minutes pile', PAGE, 'INP', 600000],
+			['décalage de mise en page de 100 pile', PAGE, 'CLS', 100],
+			['page de 200 caractères pile', `/${'a'.repeat(199)}`, 'LCP', 100],
+			['l’accueil', '/', 'LCP', 100],
+			['paramètre facultatif', '/(protected)/dashboard/[[tab]]', 'LCP', 100],
+			['paramètre à matcher et reste', '/fiches/[id=uuid]/[...rest]', 'LCP', 100]
+		])('borne acceptée : %s', async (_cas, route, metric, value) => {
 			const { code } = await enTantQue('service_role', null, INSERTION, [
-				PAGE,
-				'INP',
-				600000,
+				route,
+				metric,
+				value,
 				'desktop'
 			]);
 			expect(code).toBeNull();
@@ -284,8 +332,20 @@ describe('mesures de performance chez nous', () => {
 		let parLaPurgeHebdo: string;
 		let premierPassage: number;
 		let secondPassage: number;
+		let passagesAvant: number;
+
+		/** Passages de la purge journalisés « réussi », depuis toujours. */
+		async function passagesJournalises(): Promise<number> {
+			const pg = await getPostgresClient();
+			const { rows } = await pg.query<{ n: number }>(
+				`select count(*)::int as n from background_job_runs
+				 where job_name = 'web_vital_samples_purge' and status = 'success'`
+			);
+			return rows[0].n;
+		}
 
 		beforeAll(async () => {
+			passagesAvant = await passagesJournalises();
 			ancienne = await ligne('91 days');
 			limite = await ligne('89 days');
 			recente = await ligne('1 hour');
@@ -344,14 +404,10 @@ describe('mesures de performance chez nous', () => {
 			expect(code).toBe('42501');
 		});
 
-		it('le passage est journalisé (page admin des tâches planifiées)', async () => {
-			const pg = await getPostgresClient();
-			const { rows } = await pg.query<{ n: number }>(
-				`select count(*)::int as n from background_job_runs
-				 where job_name = 'web_vital_samples_purge' and status = 'success'
-				   and started_at > now() - interval '5 minutes'`
-			);
-			expect(rows[0].n).toBeGreaterThanOrEqual(3);
+		it('chaque passage est journalisé (page admin des tâches planifiées)', async () => {
+			// Deux passages directs et celui de la purge hebdomadaire, comptés depuis le début
+			// de ce bloc : une relance du fichier ne les trouve pas déjà là.
+			expect((await passagesJournalises()) - passagesAvant).toBe(3);
 		});
 	});
 });

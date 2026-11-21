@@ -707,9 +707,12 @@ celles de tous les élèves. `rag_documents` → `rag_chunks` : documents du pro
 (tâches planifiées, lues par l'admin), `rate_limits` (`service_role` seul, via la RPC
 `check_and_increment_rate_limit` de `src/lib/server/rateLimiter.ts`), `server_cache`.
 `web_vital_samples` (`20261121205833`) : mesures de performance des visiteurs (LCP, FCP, TTFB, INP,
-CLS), **anonymes** : heure arrondie à l'heure, page sous sa forme générique (`/cours/[token]`,
-refusée si elle porte des paramètres ou un début d'UUID), indicateur, valeur, type d'appareil ;
-aucune colonne de compte, d'adresse ni de navigateur. Le serveur (`service_role`) ajoute des lignes
+CLS), **anonymes** : heure arrondie à l'heure, identifiant de ligne tiré au hasard (pas de
+compteur, qui garderait l'ordre des envois), page sous la forme de son identifiant de route
+(`/(public)/cours/[token]` ; chaque segment est un mot en minuscules, un groupe `(…)` ou un
+paramètre `[…]`, et un début d'UUID est refusé : un filet, la liste des routes connues étant
+tenue par le serveur), indicateur, valeur, type d'appareil ; aucune colonne de compte, d'adresse
+ni de navigateur. Le serveur (`service_role`) ajoute des lignes
 et ne peut ni les dater ni les modifier ; **l'admin seul les lit** (policy
 `admin_view_web_vital_samples`) ; personne d'autre n'y touche. `purge_web_vital_samples()`
 (appelée par `run_cleanup_expired_data`, serveur seul) efface les lignes de plus de **90 jours**.
