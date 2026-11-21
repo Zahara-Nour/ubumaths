@@ -91,7 +91,6 @@ export const COPIE: readonly string[] = [
 	// Calendrier, classes (noms seulement), réglages
 	'schools',
 	'school_years',
-	'school_year_closures',
 	'academic_periods',
 	'school_holidays',
 	'classes',
@@ -104,11 +103,7 @@ export const COPIE: readonly string[] = [
 	// Réglages personnels : seules les lignes du prof et de l'admin passent le filtre d'auteur.
 	'user_preferences',
 	'user_whiteboard_template_favorites',
-	'user_folders',
-	'exercise_favorites',
-	// Assistant (vides en prod le 2026-11-21)
-	'rag_documents',
-	'rag_chunks'
+	'exercise_favorites'
 ];
 
 /**
@@ -270,6 +265,14 @@ export const JAMAIS: readonly string[] = [
 	'minesweeper_multiplayer_game_state',
 	'srs_anti_fraud_flags',
 	'short_links',
+	// Clôtures d'année : la ligne garde les identifiants des inscriptions d'élèves, sans clé
+	// étrangère, donc invisibles pour le filtre d'auteur comme pour la garde de fuite.
+	'school_year_closures',
+	// Dossiers de messagerie : un nom libre (souvent un prénom), et aucun code ne les lit.
+	'user_folders',
+	// Corpus de l'assistant : il peut contenir des documents importés par le prof.
+	'rag_documents',
+	'rag_chunks',
 	// Secrets et liens vers l'extérieur (Google, Drive, stockage de prod) : inutilisables
 	// en local, et la contrainte valid_upload_fields interdit de vider chapter_documents.
 	'google_integrations',
@@ -303,40 +306,55 @@ export const JAMAIS: readonly string[] = [
 export const LIENS_COUPES: readonly string[] = ['classes.google_classroom_course_id'];
 
 export interface Lien {
-	colonne: string;
+	/** Une colonne, ou plusieurs pour un lien composé. */
+	colonnes: string[];
 	vers: string;
 }
 
-/**
- * Tables du schéma `public` et leurs liens (clés étrangères), lus dans le texte
- * de `src/lib/types/database.ts`. Les vues ne sont pas rendues.
- */
-export function lireSchema(texte: string): Map<string, Lien[]> {
+export interface Schema {
+	/** Tables du schéma `public`, chacune avec ses liens (clés étrangères). */
+	tables: Map<string, Lien[]>;
+	/** Vues : `database.ts` les cite comme cibles de liens, en double de la vraie table. */
+	vues: Set<string>;
+}
+
+/** Noms et lignes du bloc `    <titre>: { … }` qui suit la ligne `debut`. */
+function bloc(lignes: string[], debut: number, titre: string): string[] {
+	const ouverture = lignes.findIndex((l, i) => i > debut && l === `    ${titre}: {`);
+	const fermeture = lignes.findIndex((l, i) => i > ouverture && l === '    }');
+	return ouverture >= 0 && fermeture >= 0 ? lignes.slice(ouverture + 1, fermeture) : [];
+}
+
+/** Tables, liens et vues du schéma `public`, lus dans le texte de `src/lib/types/database.ts`. */
+export function lireSchema(texte: string): Schema {
 	const lignes = texte.split('\n');
-	const debutPublic = lignes.findIndex((l) => /^ {2}public: \{$/.test(l));
-	const debut = lignes.findIndex((l, i) => i > debutPublic && /^ {4}Tables: \{$/.test(l));
-	const fin = lignes.findIndex((l, i) => i > debut && /^ {4}\}$/.test(l));
-	const schema = new Map<string, Lien[]>();
-	if (debutPublic >= 0 && debut >= 0 && fin >= 0) {
+	const debutPublic = lignes.findIndex((l) => l === '  public: {');
+	const tables = new Map<string, Lien[]>();
+	const vues = new Set<string>();
+	if (debutPublic >= 0) {
 		let liens: Lien[] = [];
-		let colonne = '';
-		for (const ligne of lignes.slice(debut + 1, fin)) {
+		let colonnes: string[] = [];
+		for (const ligne of bloc(lignes, debutPublic, 'Tables')) {
 			const table = /^ {6}(\w+): \{$/.exec(ligne);
 			if (table) {
 				liens = [];
-				schema.set(table[1], liens);
+				tables.set(table[1], liens);
 				continue;
 			}
-			const colonnes = /^ {12}columns: \["(\w+)"/.exec(ligne);
-			if (colonnes) colonne = colonnes[1];
+			const cols = /^ {12}columns: \[(.*)\]$/.exec(ligne);
+			if (cols) colonnes = cols[1].split(',').map((c) => c.trim().replace(/"/g, ''));
 			const vers = /^ {12}referencedRelation: "(\w+)"$/.exec(ligne);
-			if (vers) liens.push({ colonne, vers: vers[1] });
+			if (vers) liens.push({ colonnes, vers: vers[1] });
+		}
+		for (const ligne of bloc(lignes, debutPublic, 'Views')) {
+			const vue = /^ {6}(\w+): \{$/.exec(ligne);
+			if (vue) vues.add(vue[1]);
 		}
 	}
-	if (schema.size === 0) {
+	if (tables.size === 0) {
 		throw new Error('lireSchema : aucune table trouvée, le format de database.ts a changé.');
 	}
-	return schema;
+	return { tables, vues };
 }
 
 /** Refuse tout ce qui n'est pas « source distante → cible locale ». */
@@ -422,6 +440,9 @@ export function neutraliser(table: string, ligne: Ligne, rang: number): Ligne {
 			};
 		case 'class_schedules':
 			return { ...ligne, notes: null };
+		case 'minesweeper_tournaments':
+			// Texte libre du prof, qui peut féliciter un élève par son prénom.
+			return { ...ligne, description: null };
 		default:
 			return ligne;
 	}

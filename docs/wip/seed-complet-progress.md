@@ -186,28 +186,41 @@ isolée de la pile, puis une liste de pages à ouvrir dans `docs/wip/verificatio
 
 Classement (§ 3) et découpage (§ 5) validés par David le 2026-11-21 (« go »).
 
-- **Trois listes** dans `scripts/db-seed-riche/regles.ts`, une seule par table : `COPIE` 82,
-  `INVENTE` 107, `JAMAIS` 45, soit les **234 tables** de `src/lib/types/database.ts`
+- **Trois listes** dans `scripts/db-seed-riche/regles.ts`, une seule par table : `COPIE` 78,
+  `INVENTE` 107, `JAMAIS` 49, soit les **234 tables** de `src/lib/types/database.ts`
   (`web_vital_samples` comprise, dans `JAMAIS`).
 - **Garde** (`scripts/__tests__/db-seed-riche.test.ts`, sans base : elle lit `database.ts`) : une
   table dans aucune liste, dans deux listes, ou citée sans exister fait échouer le test ; une table
   copiée qui pointe vers une table non copiée aussi (le contenu s'écrit sans vérification des
   liens). Vérifiée rouge en retirant `worksheet_styles`. Limite : `database.ts` vient de la prod,
   donc la garde voit une table nouvelle au `pnpm db:types` qui suit sa migration, pas avant.
-- **Trois écarts au § 3.1**, chacun imposé par une mesure :
+- **Écarts au § 3.1**, chacun imposé par une mesure ou par l'audit :
   - `srs_deck_sections` pointe vers `srs_decks` (paquets des élèves, inventés) : **inventée**.
   - `message_templates`, `message_template_versions` : 0 ligne en prod, 13 et 19 dans la base de
     dev ; les copier les aurait effacées. **Non copiées**, rangées dans `INVENTE` ;
     `user_favorite_templates` les suit (elle pointe vers elles, la garde l'a signalé).
+  - **Audit de sécurité** : `school_year_closures` garde dans `class_member_ids` les identifiants
+    des inscriptions d'élèves, sans clé étrangère : ni le filtre d'auteur ni la garde de fuite ne
+    les voient. Passée dans `JAMAIS` (aucun code de `src/` ne la lit), comme `user_folders` (nom
+    libre, souvent un prénom ; aucun code ne la lit) et `rag_documents` / `rag_chunks` (documents
+    importés par le prof). `minesweeper_tournaments.description` (texte libre) est vidée.
+    Laissé tel quel, à savoir : `question_template_reviews.comment` (commentaires de relecture de
+    l'admin) est copié ; la garde de fuite n'arrête qu'un nom COMPLET, pas un prénom seul.
   - `kanban_*` et `bug_reports` (non tranchés) : dans `JAMAIS` en attendant, rien ne change.
 - **Preuve sur copie isolée** (§ 9.1 de `base-locale-progress.md`, projet `ubumaths-essai`, port
-  `54422`, arrêtée ensuite) : 629 migrations, seed joué trois fois de suite sans erreur,
-  **14 013 lignes** copiées (13 103 avant), 34 comptes ; **431 liens vérifiés, 0 ligne orpheline** ;
+  `54422`, arrêtée ensuite) : 629 migrations, seed rejoué sans erreur après chaque correction,
+  **14 012 lignes** copiées (13 103 avant), 34 comptes ; **431 liens vérifiés, 0 ligne orpheline** ;
   aucune préférence d'élève. Nouvelles tables remplies : `dictionary_entries` 675,
   `question_template_reviews` 189, `worksheet_styles` 13, `dictionary_entry_versions` 10,
   `minesweeper_tournament_classes` 9, `game_monsters` 4, `minesweeper_tournaments` 4,
-  `chapter_template_instantiations` 2, `geometry_figures` 1, `school_year_closures` 1,
+  `chapter_template_instantiations` 2, `geometry_figures` 1,
   `user_preferences` 1, `user_whiteboard_template_favorites` 1 ; les autres sont vides en prod.
+- **Relectures** : `code-reviewer`, rien de bloquant ; corrigé : les vues sont lues à part (une
+  cible inconnue n'est plus prise pour une vue), liens composés lus en entier, un lien coupé doit
+  encore exister. `security-auditor` : un bloquant (`school_year_closures`), corrigé ci-dessus.
+  Limite connue de la garde : elle porte sur les tables, pas sur les lignes ; une ligne écartée par
+  le filtre d'auteur peut laisser une ligne orpheline. Mesuré à la main : 0 sur 431 liens. À
+  mettre dans le seed lui-même (vérification après la copie) dans une PR suivante.
 - **Vu en passant, hors PR 1** : le seed annonce « 0 amitiés » (3 élèves par classe avec
   11 classes) : à reprendre en PR 4. Tous les admins de prod deviennent le même compte local : une
   table à une ligne par utilisateur casserait le seed le jour où la prod a deux admins.
