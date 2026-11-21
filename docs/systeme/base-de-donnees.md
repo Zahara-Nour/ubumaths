@@ -706,6 +706,14 @@ celles de tous les élèves. `rag_documents` → `rag_chunks` : documents du pro
 `error_occurrences` (`src/lib/server/errorMonitoring.ts`), `bug_reports`, `background_job_runs`
 (tâches planifiées, lues par l'admin), `rate_limits` (`service_role` seul, via la RPC
 `check_and_increment_rate_limit` de `src/lib/server/rateLimiter.ts`), `server_cache`.
+`web_vital_samples` (`20261121205833`) : mesures de performance des visiteurs (LCP, FCP, TTFB, INP,
+CLS), **anonymes** : heure arrondie à l'heure, page sous sa forme générique (`/cours/[token]`,
+refusée si elle porte des paramètres ou un début d'UUID), indicateur, valeur, type d'appareil ;
+aucune colonne de compte, d'adresse ni de navigateur. Le serveur (`service_role`) ajoute des lignes
+et ne peut ni les dater ni les modifier ; **l'admin seul les lit** (policy
+`admin_view_web_vital_samples`) ; personne d'autre n'y touche. `purge_web_vital_samples()`
+(appelée par `run_cleanup_expired_data`, serveur seul) efface les lignes de plus de **90 jours**.
+Preuve : `tests/integration/mesures-web-vitals.test.ts`.
 `account_deletion_audit` (RLS sans policy : client service seul) trace chaque suppression de
 compte, par l'élève ou par la purge de conservation ; `cleanup_result.storage_paths` liste ses
 fichiers, et `storage_removed_at` (`20261016101000`) dit s'ils ont été retirés du storage

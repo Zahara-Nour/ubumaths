@@ -320,6 +320,11 @@ CRON_SECRET                   # Secret taches planifiees
 > (`skill_attempts.answer_parts`, `part_verdicts`) creees avant le 1er aout de l'annee scolaire en
 > cours (minuit, heure de Paris). Le reste de la trace (reussi/rate, lieu, durees, graine, date)
 > est garde ; les copies de controle (`test_answers`) ne sont pas touchees.
+>
+> **Mesures de performance (2026-11-21, chantier `amelioration`, migration `20261121205833`)** : la
+> meme purge appelle `purge_web_vital_samples()`, qui efface les lignes de `web_vital_samples`
+> de plus de **90 jours**. La table est anonyme (heure arrondie, page generique, indicateur,
+> valeur, type d'appareil), ecrite par le serveur seul et lue par l'admin seul.
 
 **Situation actuelle** (historique, 2026-01) :
 
