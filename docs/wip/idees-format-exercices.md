@@ -138,6 +138,11 @@ faite dans le navigateur ; les barèmes au choix (notre 1 / ½ / 0 est une déci
      questions est plafonné au nombre d'éléments ;
    - **refus des doublons** : même variation et mêmes valeurs (variables, énoncé, expression,
      choix, image) qu'une question déjà tirée → nouveau tirage (boucle `do … while`).
+     **Doublon, précision de David (2026-11-21)** : deux calculs différents qui ont la même réponse
+     (« 12 × 5 » et « 15 × 4 ») ne sont **pas** un doublon. Reste à trancher en phase 0 : « même
+     énoncé affiché » (TinyMath, à peu près) ou « mêmes valeurs à l'ordre près » (`2 + 3` = `3 + 2` ?).
+     TinyMath : même modèle, même variation, mêmes valeurs tirées (expressions remises en forme puis
+     comparées comme texte) et même texte ; 100 nouveaux tirages au plus, puis le doublon est gardé.
      Point délicat chez nous : une évaluation régénère la copie par la graine (ADR 0015) ; la
      variation imposée doit être enregistrée avec la graine.
 2. **Le prof choisit les variations d'une ligne de série : oui** (utile).
