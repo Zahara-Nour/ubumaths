@@ -16,7 +16,8 @@ Toutes les commandes `pnpm <script>` de `package.json`, par usage. Vérifié con
 ## Verrous (Mac mini, 24 Go)
 
 - **Gros process** (`scripts/gros-process.sh`) : `check`, `check:incremental`, `build`, `lint` passent sous **un seul verrou**. Un second sort en **exit 2** en nommant le détenteur : on attend, on ne contourne pas. Pas de verrou en CI ni sur Vercel.
-- **Supabase local** (`scripts/with-db-lock.sh`) : tous les `db:*` locaux, `test:integration`, `test:definer-guard`, `db:seed-riche`.
+- **Base de dev** (verrou `supabase`, `scripts/with-db-lock.sh`) : `db:start`, `db:stop`, `db:reset`, `db:neuf`, `db:a-jour`, `db:seed-riche`, `db:dev-accounts`.
+- **Pile de test** (verrou `supabase-test`, `scripts/pile-de-test.sh`) : `test:integration`, `test:definer-guard`, `db:test:stop`, `db:test:reset`. Les tests ne touchent plus la base de dev.
 - Mesures (durée, mémoire) : [mesures-mac-mini.md](mesures-mac-mini.md).
 
 ---
@@ -64,15 +65,15 @@ Toutes les commandes `pnpm <script>` de `package.json`, par usage. Vérifié con
 
 ## Tests
 
-| Commande                     | Effet                                           | Notes                             |
-| ---------------------------- | ----------------------------------------------- | --------------------------------- |
-| `pnpm test:server <chemin>`  | Tests serveur (env node)                        | Toujours ciblés en local          |
-| `pnpm test:client <chemin>`  | Tests navigateur (`*.svelte.test.ts`)           | Chromium / Playwright             |
-| `pnpm test:integration`      | Intégration + base (Supabase local), verrouillé | ~180 s ; `test:integration:watch` |
-| `pnpm test:definer-guard`    | Garde des fonctions `SECURITY DEFINER`          | Verrou Supabase                   |
-| `pnpm test` / `test:changed` | Vitest sur les fichiers modifiés                |                                   |
-| `pnpm test:e2e`              | Playwright end-to-end                           |                                   |
-| `pnpm test:lint-rules`       | Règles ESLint maison                            |                                   |
+| Commande                     | Effet                                             | Notes                             |
+| ---------------------------- | ------------------------------------------------- | --------------------------------- |
+| `pnpm test:server <chemin>`  | Tests serveur (env node)                          | Toujours ciblés en local          |
+| `pnpm test:client <chemin>`  | Tests navigateur (`*.svelte.test.ts`)             | Chromium / Playwright             |
+| `pnpm test:integration`      | Intégration, sur la pile de test (démarrée seule) | ~180 s ; `test:integration:watch` |
+| `pnpm test:definer-guard`    | Garde des fonctions `SECURITY DEFINER`            | Verrou Supabase                   |
+| `pnpm test` / `test:changed` | Vitest sur les fichiers modifiés                  |                                   |
+| `pnpm test:e2e`              | Playwright end-to-end                             |                                   |
+| `pnpm test:lint-rules`       | Règles ESLint maison                              |                                   |
 
 Architecture des tests : [tests.md](tests.md).
 
@@ -80,16 +81,18 @@ Architecture des tests : [tests.md](tests.md).
 
 ## Base de données (Supabase)
 
-| Commande                     | Effet                                                                | Notes                                  |
-| ---------------------------- | -------------------------------------------------------------------- | -------------------------------------- |
-| `pnpm db:start` / `db:stop`  | Supabase local (Docker)                                              |                                        |
-| `pnpm db:reset`              | Recrée la base locale depuis le baseline                             | Verrouillé                             |
-| `pnpm db:seed-riche`         | Contenu de la prod + 30 élèves fictifs (`eleveNN@local.test`)        | Après `db:reset`                       |
-| `pnpm db:neuf`               | Remise à neuf : `db:reset` puis `db:seed-riche`, sous un seul verrou | Rare ; demande « oui » (`--oui`)       |
-| `pnpm db:dev-accounts`       | Comptes de dev locaux                                                |                                        |
-| `pnpm db:migrate`            | `supabase db push` vers la base **EU de production**                 | Conditions : CLAUDE.md §Migrations     |
-| `pnpm db:types`              | Régénère `src/lib/types/database.ts` **depuis la production**        | Une RPC pas encore en prod n'y est pas |
-| `pnpm db:link` / `db:status` | Lie le projet / compte les profils manquants                         |                                        |
+| Commande                              | Effet                                                                | Notes                                  |
+| ------------------------------------- | -------------------------------------------------------------------- | -------------------------------------- |
+| `pnpm db:start` / `db:stop`           | Supabase local (Docker)                                              |                                        |
+| `pnpm db:reset`                       | Recrée la base locale depuis le baseline                             | Verrouillé                             |
+| `pnpm db:a-jour`                      | Base de dev : joue les migrations en attente, sans rien effacer      | Auto avant `pnpm dev`                  |
+| `pnpm db:test:stop` / `db:test:reset` | Pile de test : l'arrêter / la reconstruire                           |                                        |
+| `pnpm db:seed-riche`                  | Contenu de la prod + 30 élèves fictifs (`eleveNN@local.test`)        | Après `db:reset`                       |
+| `pnpm db:neuf`                        | Remise à neuf : `db:reset` puis `db:seed-riche`, sous un seul verrou | Rare ; demande « oui » (`--oui`)       |
+| `pnpm db:dev-accounts`                | Comptes de dev locaux                                                |                                        |
+| `pnpm db:migrate`                     | `supabase db push` vers la base **EU de production**                 | Conditions : CLAUDE.md §Migrations     |
+| `pnpm db:types`                       | Régénère `src/lib/types/database.ts` **depuis la production**        | Une RPC pas encore en prod n'y est pas |
+| `pnpm db:link` / `db:status`          | Lie le projet / compte les profils manquants                         |                                        |
 
 Pratiques : [base-de-donnees.md](base-de-donnees.md) · schéma : [../systeme/base-de-donnees.md](../systeme/base-de-donnees.md).
 
