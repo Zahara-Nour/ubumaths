@@ -25,7 +25,7 @@
 </script>
 
 <SeoHead
-	title="Chiffre de César : chiffrer, déchiffrer, décrypter — Chiphre"
+	title="Chiffre de César : chiffrer, déchiffrer, décrypter | Chiphre"
 	description="Le chiffre de César pas à pas : décalage des lettres, calcul modulo 26, force brute des 26 clés et analyse de fréquences pour décrypter sans la clé."
 />
 

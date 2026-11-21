@@ -75,7 +75,7 @@
 </script>
 
 <SeoHead
-	title="Les presques évaluations · Chiphre"
+	title="Les presques évaluations | Chiphre"
 	description="Collection de parodies d’évaluations de mathématiques, partagées par les professeurs de Chiphre."
 />
 

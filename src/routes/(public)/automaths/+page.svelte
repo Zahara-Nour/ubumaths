@@ -363,7 +363,7 @@
 {/snippet}
 
 <SeoHead
-	title="Automaths - Banque de questions | Chiphre"
+	title="Automaths : automatismes et questions flash de maths | Chiphre"
 	description="Banque de questions de mathématiques : composez une série d’exercices et lancez-la en classe, en contrôle blanc, en flash-cards ou en course aux nombres."
 />
 

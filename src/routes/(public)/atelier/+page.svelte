@@ -69,8 +69,8 @@
 </script>
 
 <SeoHead
-	title="Atelier | Chiphre"
-	description="Un atelier pour chercher : calculer, tracer et explorer des données au même endroit."
+	title="Atelier de maths en ligne : calculer, tracer, explorer des données | Chiphre"
+	description="L’Atelier de Chiphre, gratuit et sans compte : calculer, tracer des courbes et explorer des données au même endroit."
 />
 
 <div class="page">

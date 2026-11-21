@@ -75,7 +75,7 @@
 </script>
 
 <SeoHead
-	title="Chiffre de Hill : matrices et décryptage — Chiphre"
+	title="Chiffre de Hill : matrices et décryptage | Chiphre"
 	description="Le chiffre de Hill pas à pas : chiffrer par paires avec une matrice 2 × 2 modulo 26, calculer la matrice inverse pour déchiffrer, et décrypter par clair connu ou ligne par ligne."
 />
 

@@ -4,7 +4,7 @@
 </script>
 
 <SeoHead
-	title="Conditions générales d’utilisation - Chiphre"
+	title="Conditions générales d’utilisation | Chiphre"
 	description="Conditions générales d’utilisation de Chiphre : règles d’utilisation de la plateforme éducative de mathématiques."
 />
 

@@ -122,5 +122,5 @@ export function demoPage(path: DemoPath): DemoPage {
 /** Les props de `SeoHead` d'une vitrine : `<SeoHead {...demoSeo('/demo/…')} />` */
 export function demoSeo(path: DemoPath): { title: string; description: string } {
 	const { title, description } = demoPage(path);
-	return { title: `${title} — Chiphre`, description };
+	return { title: `${title} | Chiphre`, description };
 }

@@ -4,7 +4,7 @@
 </script>
 
 <SeoHead
-	title="Politique de confidentialité - Chiphre"
+	title="Politique de confidentialité | Chiphre"
 	description="Politique de confidentialité de Chiphre : comment nous collectons, utilisons et protégeons vos données personnelles."
 />
 

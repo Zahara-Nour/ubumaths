@@ -1,4 +1,5 @@
 <script lang="ts">
+	import SeoHead from '#lib/seo/SeoHead.svelte';
 	/**
 	 * 2048 Game Page
 	 * Educational math game where players combine powers of 2
@@ -15,13 +16,10 @@
 	let showRules = $state(false);
 </script>
 
-<svelte:head>
-	<title>2048 - Chiphre</title>
-	<meta
-		name="description"
-		content="Jeu 2048 éducatif - Apprenez les puissances de 2 en vous amusant !"
-	/>
-</svelte:head>
+<SeoHead
+	title="2048 : le jeu des puissances de 2 | Chiphre"
+	description="Fusionne les tuiles pour atteindre 2048 : un jeu pour apprivoiser les puissances de 2."
+/>
 
 <div class="container mx-auto max-w-3xl px-4 py-8">
 	<!-- Titre de la page pour les lecteurs d'écran (la bannière en tient lieu à l'écran) -->

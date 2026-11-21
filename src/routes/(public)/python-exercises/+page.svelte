@@ -1,4 +1,5 @@
 <script lang="ts">
+	import SeoHead from '#lib/seo/SeoHead.svelte';
 	import { lore } from '#lib/config/lore.ts';
 	import { Button } from '#lib/components/ui/button/index.ts';
 	import { Plus, BookOpen, FileCode2 } from '@lucide/svelte';
@@ -6,14 +7,10 @@
 	let { data } = $props();
 </script>
 
-<svelte:head>
-	<title>{lore.learning.exercise}s Python – Chiphre</title>
-	<meta
-		name="description"
-		content="Crée des {lore.learning
-			.exercise}s Python avec validation automatique et partage-les via un simple lien."
-	/>
-</svelte:head>
+<SeoHead
+	title={`${lore.learning.exercise}s Python : exercices à validation automatique | Chiphre`}
+	description={`Crée des ${lore.learning.exercise}s Python avec validation automatique et partage-les via un simple lien.`}
+/>
 
 <div class="container mx-auto max-w-3xl p-4 py-8">
 	<header class="mb-6">

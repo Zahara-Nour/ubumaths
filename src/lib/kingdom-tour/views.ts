@@ -78,7 +78,7 @@ function place(id: PlaceId, text?: string): ViewItem {
 
 export const STUDENT_VIEW: AudienceView = {
 	id: 'student',
-	seoTitle: 'Pour les élèves — Chiphre',
+	seoTitle: 'Pour les élèves | Chiphre',
 	seoDescription:
 		'Chiphre pour les élèves, du CM1 à la Terminale : Automaths, l’Atelier, le Cabinet Noir et des jeux, sans compte. Avec ton code de classe : ton Cabinet, Père Ubu tuteur, des révisions au bon moment.',
 	kicker: 'Pour les élèves',
@@ -143,7 +143,7 @@ export const STUDENT_VIEW: AudienceView = {
  */
 export const PARENT_VIEW: AudienceView = {
 	id: 'parent',
-	seoTitle: 'Pour les parents — Chiphre',
+	seoTitle: 'Pour les parents | Chiphre',
 	seoDescription:
 		'Chiphre pour les parents : des mathématiques rigoureuses du CM1 à la Terminale, créées par un enseignant agrégé. Sans publicité, base de données hébergée à Paris.',
 	kicker: 'Pour les parents',
@@ -213,7 +213,7 @@ export const PARENT_VIEW: AudienceView = {
 
 export const TEACHER_VIEW: AudienceView = {
 	id: 'teacher',
-	seoTitle: 'Pour les professeurs — Chiphre',
+	seoTitle: 'Pour les professeurs | Chiphre',
 	seoDescription:
 		'Chiphre pour les professeurs de mathématiques : Automaths en classe, l’Atelier, le Cabinet Noir, Upsilon, Python. En accès libre, sans compte, sans publicité.',
 	kicker: 'Pour les professeurs',

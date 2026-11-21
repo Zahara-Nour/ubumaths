@@ -8,6 +8,7 @@
   la boîte à outils, les blocs posés restent (un bloc au-dessus du niveau est refusé au lancer).
 -->
 <script lang="ts">
+	import SeoHead from '#lib/seo/SeoHead.svelte';
 	import { resolve } from '$app/paths';
 	import CalculEditeur from '#lib/components/blockly/CalculEditeur.svelte';
 	import { Button } from '#lib/components/ui/button/index.ts';
@@ -16,13 +17,10 @@
 	let niveau = $state<NiveauCalcul>('5e');
 </script>
 
-<svelte:head>
-	<title>Programmes de calcul - Chiphre</title>
-	<meta
-		name="description"
-		content="Construis un programme de calcul avec des blocs : choisis un nombre, calcule, affiche le résultat. Essaie-le sur tous les nombres que tu veux."
-	/>
-</svelte:head>
+<SeoHead
+	title="Programmes de calcul : les construire avec des blocs | Chiphre"
+	description="Construis un programme de calcul avec des blocs : choisis un nombre, calcule, affiche le résultat. Essaie-le sur tous les nombres que tu veux."
+/>
 
 <div class="mx-auto flex w-full max-w-5xl flex-col gap-4 px-4 py-6">
 	<div>

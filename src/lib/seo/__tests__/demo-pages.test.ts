@@ -105,7 +105,7 @@ describe('les vitrines', () => {
 
 	it('demoSeo : le titre de la carte, suivi du nom du site', () => {
 		expect(demoSeo('/demo/lexique')).toEqual({
-			title: 'Le lexique — Chiphre',
+			title: 'Le lexique | Chiphre',
 			description: demoPage('/demo/lexique').description
 		});
 	});

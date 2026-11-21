@@ -10,7 +10,7 @@
 </script>
 
 <SeoHead
-	title="Le carré de Polybe : chiffrer avec une grille — Chiphre"
+	title="Le carré de Polybe : chiffrer avec une grille | Chiphre"
 	description="Le carré de Polybe pas à pas : chaque lettre devient deux chiffres, sa ligne et sa colonne dans une grille de 25 cases où I et J partagent la même case."
 />
 

@@ -4,7 +4,7 @@
 </script>
 
 <SeoHead
-	title="Mentions légales - Chiphre"
+	title="Mentions légales | Chiphre"
 	description="Mentions légales de Chiphre : informations sur l’éditeur, l’hébergement et les conditions d’utilisation."
 />
 

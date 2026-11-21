@@ -13,7 +13,7 @@
 </script>
 
 <SeoHead
-	title="Chiffre Atbash : l’alphabet à l’envers — Chiphre"
+	title="Chiffre Atbash : l’alphabet à l’envers | Chiphre"
 	description="Le chiffre Atbash pas à pas : A devient Z, B devient Y. Chiffrer et déchiffrer sont la même opération, et ce chiffre sans clé se lit par qui connaît la méthode."
 />
 

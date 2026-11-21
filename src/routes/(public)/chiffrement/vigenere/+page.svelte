@@ -21,7 +21,7 @@
 </script>
 
 <SeoHead
-	title="Chiffre de Vigenère : chiffrer, déchiffrer, décrypter — Chiphre"
+	title="Chiffre de Vigenère : chiffrer, déchiffrer, décrypter | Chiphre"
 	description="Le chiffre de Vigenère pas à pas : une clé répétée, un décalage par lettre, puis le décryptage par la méthode de Kasiski, l’indice de coïncidence et un César par colonne."
 />
 

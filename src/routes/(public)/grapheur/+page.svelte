@@ -66,8 +66,8 @@
 </script>
 
 <SeoHead
-	title="Grapheur | Chiphre"
-	description="Tracer des fonctions et des suites, les dériver, étudier leurs variations : le grapheur de l’atelier."
+	title="Grapheur en ligne : tracer des fonctions et des suites | Chiphre"
+	description="Grapheur en ligne, gratuit et sans compte : tracer des fonctions et des suites, les dériver, étudier leurs variations."
 />
 
 <div class="page">
