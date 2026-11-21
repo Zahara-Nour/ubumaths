@@ -213,6 +213,32 @@ describe('ci-integration-empreinte (dépôt jetable)', () => {
 		}
 	});
 
+	it('un `**` collé à un nom (lu `*` par git) : pas d’empreinte', () => {
+		for (const motif of ['src/**server.ts', 'src/**.ts', 'src/a**/b.ts']) {
+			push({ [WORKFLOW]: WORKFLOW_JETABLE.replace("'supabase/**'", `'${motif}'`) });
+			expect(empreinte(), motif).toBe('');
+		}
+	});
+
+	it('espace après le guillemet fermant : motif lu sans elle', () => {
+		const avant = empreinte();
+		push({ [WORKFLOW]: WORKFLOW_JETABLE.replace("'supabase/**'", "'supabase/**'   ") });
+		const apres = empreinte();
+		expect(apres).not.toBe('');
+		expect(apres).not.toBe(avant); // le workflow lui-même a changé
+		const contenu = readFileSync(
+			join(racine, 'supabase/migrations/20250101000000_init.sql'),
+			'utf8'
+		);
+		push({ 'supabase/migrations/20250101000000_init.sql': `${contenu}-- x\n` });
+		expect(empreinte()).not.toBe(apres);
+	});
+
+	it('motif entre guillemets mal fermés : pas d’empreinte', () => {
+		push({ [WORKFLOW]: WORKFLOW_JETABLE.replace("'supabase/**'", "'supabase/** '") });
+		expect(empreinte()).toBe('');
+	});
+
 	it('filtre introuvable : pas d’empreinte', () => {
 		push({ [WORKFLOW]: 'name: x\non:\n  pull_request:\n' });
 		expect(empreinte()).toBe('');

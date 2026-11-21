@@ -46,12 +46,22 @@ motifs="$(awk '
 	dans_pr && /^    paths:/ { dans_paths = 1; next }
 	dans_paths && /^    [a-z_-]+:/ { dans_paths = 0 }
 	dans_paths && /^      - / {
-		sub(/^      - /, ""); sub(/[ \t]+#.*$/, ""); gsub(/^'\''|'\''$/, ""); gsub(/^"|"$/, "")
+		sub(/^      - /, ""); sub(/[ \t]+#.*$/, ""); sub(/[ \t]+$/, "")
+		gsub(/^'\''|'\''$/, ""); gsub(/^"|"$/, "")
 		print
 	}
 ' "$WORKFLOW")"
 [ -n "$motifs" ] || aucune "filtre paths introuvable"
 if grep -q '[][?+!]' <<<"$motifs"; then aucune "motif hors de la lecture glob"; fi
+# Guillemet ou espace restant : entrée mal lue, elle ne couvrirait rien sans le dire.
+if grep -q "[\"' ]" <<<"$motifs"; then aucune "motif mal lu (guillemet ou espace)"; fi
+# `**` collé à un nom (`src/**server.ts`) : « tout » chez GitHub, mais `*` pour git → refusé.
+while IFS= read -r m; do
+	IFS='/' read -ra segments <<<"$m"
+	for seg in "${segments[@]}"; do
+		if [[ "$seg" == *'**'* && "$seg" != '**' ]]; then aucune "\`**\` collé à un nom : $m"; fi
+	done
+done <<<"$motifs"
 
 pathspecs=()
 while IFS= read -r m; do pathspecs+=(":(glob)$m"); done <<<"$motifs"
@@ -63,6 +73,12 @@ trap 'rm -f "$index"' EXIT
 GIT_INDEX_FILE="$index" git read-tree HEAD || aucune "HEAD illisible"
 arbre="$(GIT_INDEX_FILE="$index" git ls-files -s -- "${pathspecs[@]}")" || aucune "arbre illisible"
 [ -n "$arbre" ] || aucune "aucun fichier couvert"
+# Motif sans aucun fichier (coquille ?) : signalé seulement, `check:integration-paths` le refuse.
+while IFS= read -r m; do
+	if [ -z "$(GIT_INDEX_FILE="$index" git ls-files -- ":(glob)$m" | head -1)" ]; then
+		echo "ci-integration-empreinte : motif sans fichier : $m" >&2
+	fi
+done <<<"$motifs"
 if [ "${LISTER:-}" = "1" ]; then
 	cut -f2- <<<"$arbre"
 	exit 0
