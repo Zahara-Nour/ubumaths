@@ -6,6 +6,7 @@
 import { describe, it, expect } from 'vitest';
 import {
 	distinctQuestionCount,
+	distinctLimit,
 	drawLineQuestions,
 	emptySeen,
 	questionFingerprints,
@@ -225,6 +226,39 @@ describe('distinctQuestionCount (panier : proposer d’abaisser la quantité)', 
 		expect(distinctQuestionCount(CINQ, 10, generate)).toBe(
 			distinctQuestionCount(CINQ, 10, generate)
 		);
+	});
+});
+
+describe('distinctLimit (avertissement du panier)', () => {
+	it('rend le nombre de questions différentes quand la quantité le dépasse', () => {
+		expect(distinctLimit(CINQ, 8, generate)).toBe(5);
+		expect(distinctLimit(AIRES, 4, generate)).toBe(3);
+	});
+
+	it('rend null quand la quantité est atteignable', () => {
+		expect(distinctLimit(CINQ, 5, generate)).toBeNull();
+		expect(distinctLimit(CINQ, 2, generate)).toBeNull();
+		expect(distinctLimit(FACTORISER, 20, generate)).toBeNull();
+	});
+
+	it('ne recompte pas un modèle déjà épuisé, et ne recompte pas en deçà du déjà vu', () => {
+		let calls = 0;
+		const counting = (template: QuestionTemplate, seed: number) => {
+			calls++;
+			return generateInstance(template, seed);
+		};
+		const cinq = model('cinq-compte', CINQ.variations);
+		expect(distinctLimit(cinq, 9, counting)).toBe(5);
+		const afterFirst = calls;
+		expect(distinctLimit(cinq, 12, counting)).toBe(5);
+		expect(distinctLimit(cinq, 3, counting)).toBeNull();
+		expect(calls).toBe(afterFirst);
+
+		const large = model('large-compte', FACTORISER.variations);
+		expect(distinctLimit(large, 10, counting)).toBeNull();
+		const afterLarge = calls;
+		expect(distinctLimit(large, 6, counting)).toBeNull();
+		expect(calls).toBe(afterLarge);
 	});
 });
 

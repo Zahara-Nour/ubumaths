@@ -11,11 +11,13 @@
 	 * rien : tout est déjà dans la flash-card. Sous la durée : la marque « Durée
 	 * sans doute trop courte » à cette durée (prof, chantier `durees-trop-courtes`),
 	 * puis la durée observée chez ses élèves, à appliquer (chantier `durees-ajustees`).
+	 * Plus de répétitions que de questions différentes (chantier `idees-format`) :
+	 * la tuile le dit et propose d'abaisser (une série ne répète jamais une question).
 	 */
 	import { Button } from '#lib/components/ui/button/index.ts';
 	import FlashCard from '#lib/components/questions/FlashCard.svelte';
 	import { TILE_CARD_HEIGHT } from '#lib/components/questions/tile-card.ts';
-	import { Clock, Minus, Plus, Repeat } from '@lucide/svelte';
+	import { Clock, CopyX, Minus, Plus, Repeat } from '@lucide/svelte';
 	import { MarkdownRenderer } from '#lib/components/markdown/index.ts';
 	import { convertLegacyLatexToMarkdown } from '#lib/utils/latex-syntax-adapter.ts';
 	import type { SeriesItem } from '#lib/validation/series.ts';
@@ -40,10 +42,12 @@
 		instance,
 		onIncrementQuantity,
 		onDecrementQuantity,
+		onUpdateQuantity,
 		onUpdateDelay,
 		onRemove,
 		tooShort = null,
-		observedDelay = null
+		observedDelay = null,
+		distinctMax = null
 	}: {
 		item: SeriesItem;
 		/** Absent : le modèle n'est plus publié */
@@ -51,12 +55,15 @@
 		instance?: QuestionInstance;
 		onIncrementQuantity: (templateId: string) => void;
 		onDecrementQuantity: (templateId: string) => void;
+		onUpdateQuantity: (templateId: string, quantity: number) => void;
 		onUpdateDelay: (templateId: string, delay: number) => void;
 		onRemove: (templateId: string) => void;
 		/** Durée courante signalée trop courte (prof seulement) ; null : rien */
 		tooShort?: QuestionTiming | null;
 		/** Durée observée à suggérer (prof seulement) ; null : rien */
 		observedDelay?: number | null;
+		/** Questions différentes du modèle, quand la quantité les dépasse ; null : rien */
+		distinctMax?: number | null;
 	} = $props();
 
 	function handleIncrementDelay() {
@@ -164,6 +171,27 @@
 			</Button>
 		</div>
 	</div>
+
+	{#if distinctMax !== null}
+		<!-- Couleur d'accent sur l'icône seule : le texte garde son contraste -->
+		<p class="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm" data-trop-de-repetitions>
+			<CopyX class="h-4 w-4 shrink-0 text-warning" aria-hidden="true" />
+			<span>
+				{distinctMax === 1
+					? "Ce modèle n'a qu'une question."
+					: `Ce modèle n'a que ${distinctMax} questions différentes.`}
+			</span>
+			<Button
+				type="button"
+				size="sm"
+				variant="outline"
+				class="h-7 px-2"
+				onclick={() => onUpdateQuantity(item.templateId, distinctMax)}
+			>
+				Passer à {distinctMax}
+			</Button>
+		</p>
+	{/if}
 
 	<TooShortMark timing={tooShort} />
 	<ObservedDelayHint

@@ -277,3 +277,26 @@ export function distinctQuestionCount(
 ): number {
 	return drawLineQuestions(template, upTo, COUNT_SEED, emptySeen(), generate).length;
 }
+
+/** Comptes déjà faits par modèle : jusqu'où on a cherché, et ce qu'on a trouvé */
+let distinctCounts = new WeakMap<QuestionTemplate, { upTo: number; count: number }>();
+
+/**
+ * Avertissement du panier : le nombre de questions différentes du modèle quand
+ * `quantity` le dépasse, `null` sinon. Mis en cache par modèle : un modèle
+ * épuisé n'est plus recompté, et une quantité déjà atteinte non plus (cliquer
+ * sur − / + ne relance un tirage que pour chercher plus loin).
+ */
+export function distinctLimit(
+	template: QuestionTemplate,
+	quantity: number,
+	generate: Generate
+): number | null {
+	let known = distinctCounts.get(template);
+	const exhausted = known !== undefined && known.count < known.upTo;
+	if (!known || (!exhausted && quantity > known.upTo)) {
+		known = { upTo: quantity, count: distinctQuestionCount(template, quantity, generate) };
+		distinctCounts.set(template, known);
+	}
+	return known.count < quantity ? known.count : null;
+}
