@@ -10,6 +10,8 @@ _Mis à jour le 2026-11-21, après #2961._
 - **Prochaine action** : mesurer C sur la première PR de code concernée (job `portee`, étape
   « Tests touchés » : durée de bout en bout, durée du job `portee` avec l'install) ; puis D
   (morceaux par durée) seulement si le plus long morceau dépasse.
+  ⚠️ La PR doit tomber dans le filtre `paths` du workflow : #2963 (composants `src/lib/components/`)
+  ne l'a pas lancé, rien à mesurer.
 - **En attente de David** : rien.
 - **Pièges en cours** : suite locale cassée au global-setup par les liens de partage du prof de dev
   (§ 3.4) ; morceaux déséquilibrés (110 à 200 s) → D si besoin ; un test instable vert une fois
