@@ -6,16 +6,16 @@ Mettre en œuvre les idées retenues dans [idees-format-exercices.md](idees-form
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-21, après #2963._
+_Mis à jour le 2026-11-21, après #2964._
 
-- **État** : idées 1 et 2 terminées. Idée 3 : moteur (#2962) et éditeur du prof (#2963) mergés,
-  pas encore en prod.
-- **Prochaine action** : PR 7, ligne « Types d'erreur » côté prof (`error-kinds.ts`) : l'erreur
-  prévue y compte sous son `label`, sinon son message.
+- **État** : idées 1, 2 et 3 terminées (idée 3 : moteur #2962, éditeur #2963, types d'erreur côté
+  prof #2964), pas encore en prod.
+- **Prochaine action** : idée 4 (case ou QCM à partir des erreurs prévues), **phase 0** à poser à
+  David (cf. `idees-format-exercices.md`, décision 4 : variations pour les deux formes ?).
 - **En attente de David** : rien (pas de `deploy:prod` demandé).
-- **Pièges en cours** : intégration locale bloquée par les données d'une autre session, la CI fait
-  foi ; fichiers de lot avec `expectedErrors` refusés en prod avant le `deploy:prod` de #2962.
-- **Worktree / branche** : aucun ; à créer pour la PR 7.
+- **Pièges en cours** : fichiers de lot avec `expectedErrors` refusés en prod avant le
+  `deploy:prod` de #2962 ; intégration locale bloquée par une autre session, la CI fait foi.
+- **Worktree / branche** : aucun ; à créer pour l'idée 4.
 
 ## Idée 1 — phase 0 validée (David, 2026-11-21)
 
