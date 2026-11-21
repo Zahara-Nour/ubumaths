@@ -34,6 +34,7 @@ Référence synthétique pour Claude : **workflow migrations**, **règle des typ
 pnpm db:start      # supabase start (stack local, Docker requis)
 pnpm db:stop       # supabase stop
 pnpm db:reset      # supabase db reset → recrée la base depuis le baseline + seed
+pnpm db:a-jour     # base LOCALE : joue les migrations en attente, sans rien effacer (--essai pour voir)
 pnpm db:migrate    # supabase db push → applique migrations en attente vers EU
 pnpm db:types      # supabase gen types typescript --project-id cnevnzsvixxpnurautls --schema public > database.ts
 pnpm db:status     # diagnostic : profiles manquants vs auth.users
@@ -41,6 +42,7 @@ pnpm db:status     # diagnostic : profiles manquants vs auth.users
 
 - ⛔ **JAMAIS modifier le schéma via le Dashboard Supabase.** Toute évolution passe par une migration versionnée (reproductible, reviewable).
 - ⚠️ **Prod / données locales** : `db:migrate` touche la prod (autonome seulement aux 4 conditions de CLAUDE.md) ; `db:reset` recrée la base locale (verrou `supabase` partagé entre worktrees).
+- **Mettre la base locale à jour = `pnpm db:a-jour`**, jamais `supabase migration up --local` (elle refuse dès que la base porte la migration d'une autre branche) ni `psql` d'un fichier à la main. `pnpm dev` la lance tout seul pour les migrations déjà sur `origin/main` ; la migration d'une branche en cours demande un `pnpm db:a-jour` explicite. Sur une base au contenu de la prod (`db:seed-riche`), une migration de contenu dont la garde refuse (« modèles déjà rangés ») est **notée comme faite sans être jouée** ; une migration qui touche le schéma n'est jamais sautée. Secours : `pnpm db:a-jour --noter <version>`. Code : `scripts/db-a-jour/`.
 - État actuel des migrations : **1 baseline** (`20260616220000_baseline_schema.sql`, ~46 k lignes, schéma EU complet) **+ correctifs** post-baseline. Les **619** anciennes migrations sont archivées dans `supabase/migrations_archive/` (ne pas les rejouer).
 
 ### Timing additif vs destructif

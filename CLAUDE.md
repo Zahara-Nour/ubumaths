@@ -27,6 +27,7 @@ pnpm lint:fast                      # lint rapide
 pnpm format <ses fichiers>          # prettier --write, jamais de glob ni format:all
 pnpm test:server <path> / test:client <path> / test:integration
 pnpm db:start / db:reset / db:migrate / db:types
+pnpm db:a-jour                      # base LOCALE : migrations en attente, sans rien effacer (auto avant `pnpm dev`)
 pnpm db:reset && pnpm db:seed-riche # base locale remplie (eleveNN@local.test / local-eleve)
 pnpm maintenance:on / :off          # mode maintenance prod
 pnpm deploy:prod                    # mise en prod + version — SUR DEMANDE DE DAVID SEULEMENT (--essai pour voir)
