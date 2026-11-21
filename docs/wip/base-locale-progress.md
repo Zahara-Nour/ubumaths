@@ -2,23 +2,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-21, après #2966._
+_Mis à jour le 2026-11-21, après #2967._
 
-- **État** : PR 1 sur 4 mergée (#2966) : `pnpm db:a-jour` met la base locale de dev à jour sans
-  rien effacer, tourne seule avant `pnpm dev`, note comme faites les migrations de contenu déjà
-  passées en prod (§ 11). Découpage du § 10 validé par David le 2026-11-21.
-- **Prochaine action** : PR 2, la **pile de test séparée** (§ 10, point 2) : `test:integration`
-  démarre et met à jour sa propre pile (autre `project_id`, autres ports, comme la copie du
-  § 9.1 mais complète), ne touche plus à la base de dev ; le global-setup ne supprime plus le prof
-  de dev et ne relance plus seed-riche. Commencer par une phase 0 courte (mémoire prise, quand la
-  pile de test démarre et s'arrête, migrations d'une branche dans une pile partagée).
+- **État** : PR 2 sur 4 mergée (#2967) : les tests d'intégration tournent sur une **pile de test**
+  à part (`ubumaths-test`, ports `5532x`), démarrée et mise d'accord avec la branche à chaque
+  lancement (§ 12) ; la base de dev n'est plus touchée. PR 1 (#2966) : `pnpm db:a-jour` (§ 11).
+- **Prochaine action** : PR 3, **versions de la CI pour la pile de dev** (§ 10, point 3) : elle
+  ignore `supabase/.temp/*-version`, en gardant `project-ref` pour `db:migrate`. Demande un
+  redémarrage de la pile de dev : prévenir David avant. Puis PR 4 : remise à neuf + doc.
 - **En attente de David** : rien.
-- **Pièges en cours** : base locale partagée (verrou `supabase`, ne jamais le contourner) ;
-  `db:reset` efface les données locales de tout le monde ; `db:migrate` = **prod**. Pour
-  expérimenter : copie isolée du § 9.1. `supabase migration up --local` est inutilisable sur la
-  base partagée (§ 11). Un fichier de `scripts/` importé par un test d'intégration doit figurer
-  dans le filtre `paths` de `nightly-integration.yml` (`pnpm check:integration-paths`).
-- **Worktree / branche** : aucun (nettoyés après #2966) ; PR 2 : `../ubumaths-wt-base-locale`.
+- **Pièges en cours** : `db:reset` efface les données de dev de tous ; `db:migrate` = **prod**.
+  Ne jamais poser `PUBLIC_SUPABASE_URL` dans l'environnement d'un vite ou vitest (§ 12).
+  Commiter avant de muter un fichier (`git checkout` efface aussi le non commité). Fichier de
+  `scripts/` importé par un test d'intégration → `pnpm check:integration-paths`.
+- **Worktree / branche** : aucun (nettoyés après #2967) ; PR 3 : `../ubumaths-wt-base-locale`.
 
 ---
 
@@ -390,7 +387,7 @@ Relevé avant de proposer :
   de dev.
 - Les clés d'API locales sont les mêmes pour toutes les piles (secret JWT par défaut de la CLI).
 
-Comportements proposés à David (en attente de sa validation) :
+Comportements proposés à David :
 
 - **Nominal** : `pnpm test:integration [fichier]` démarre la pile de test si elle est arrêtée,
   lui applique les migrations de la branche, lance les tests. La base de dev n'est jamais touchée
@@ -406,3 +403,42 @@ Comportements proposés à David (en attente de sa validation) :
 
 Questions posées : (1) la pile reste allumée après les tests, ou s'arrête ? (2) migration d'une
 autre branche dans la pile : reconstruire, ou tolérer ?
+
+Réponse de David (2026-11-21) : « Je suis tes recos » → la pile **reste allumée** après les tests,
+et elle est **reconstruite** quand elle porte la migration d'une autre branche.
+
+Ce qui a été livré (#2967) :
+
+- `scripts/pile-de-test.sh` (verrou, passe-plat en CI), `scripts/pile-de-test/` (règles pures
+  - commande). Dossier de travail de la CLI : `node_modules/.cache/pile-de-test` (config réécrite,
+    copie des migrations et des seeds de la branche). La pile note l'empreinte de chaque migration
+    jouée et celle du décor (seeds, configuration, version de la CLI, services exclus) dans
+    `supabase_migrations.pile_de_test`.
+- Reconstruction (`stop --no-backup` + `start`) quand : migration absente de la branche, migration
+  modifiée depuis son passage, empreinte manquante, décor changé. Sinon `mettreAJour` de
+  `scripts/db-a-jour` ; une migration en échec arrête tout avant les tests.
+- global-setup : refuse en local si la base visée n'est pas la pile de test (port + table
+  d'empreintes) ; plus de restauration du prof de dev ni de seed-riche en sortie.
+- La CI est reconnue à `GITHUB_ACTIONS`, pas à `CI` (un outil qui exporterait `CI` sur le poste
+  enverrait la suite sur la base de dev).
+- **Mesures** : construction de zéro 33 à 37 s ; relance après `db:test:stop` 26 s ; pile à jour,
+  surcoût négligeable ; mémoire ≈ 675 Mo (6 conteneurs) ; suite complète 586/586 fichiers,
+  7 316 tests, 12 min 36.
+- **Panne trouvée en route** : une première suite complète a eu 3 tests rouges
+  (`admin-elevation`, `modeles-publies-plafond-1000`), verts seuls. Cause : `$app/env/public` est
+  un FICHIER (`.svelte-kit/generated/dev/env/`), réécrit par tout démarrage de vite dans le
+  worktree ; un `pnpm test:server` lancé pendant la suite y a remis l'adresse de la base de dev,
+  et le code serveur des tests suivants lui a parlé. Correctif : le lanceur ne pose plus
+  `PUBLIC_SUPABASE_URL` (le disque garde toujours l'adresse de dev, un serveur de dev du worktree
+  n'est pas détourné), et `vitest.integration.config.ts` impose l'adresse de la pile de test au
+  chargement des modules générés et dans `process.env` des tests. Gardé par
+  `tests/integration/pile-de-test-adresse.test.ts` (rouge quand on coupe le correctif) ; seconde
+  suite complète verte avec un `test:server` lancé au milieu.
+- **Revue de code** : rien de bloquant ; corrigé dans la PR (en-tête de `dev_accounts.sql`,
+  `GITHUB_ACTIONS`, messages d'erreur, empreinte des migrations notées).
+- **Choix assumés** : une migration de la branche plus ancienne que la dernière jouée est
+  appliquée après les autres (la CI les joue dans l'ordre) ; `pnpm db:test:reset` remet l'ordre.
+  `test:verifs` (Playwright) reste sur la base de dev. `scripts/run-all-migration-tests.sh` vise
+  toujours `54322` en dur (script ancien, hors `package.json`).
+- **Reste pour la PR 4** : `docs/pratiques/base-de-donnees.md`, `tests.md` et `worktrees.md`
+  parlent encore d'une seule base (`environnement-de-dev.md` et `CLAUDE.md` sont à jour).
