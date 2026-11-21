@@ -10,6 +10,7 @@
 	import { Clock, Minus, Plus, Trash2 } from '@lucide/svelte';
 	import TooShortMark from '#lib/components/series/TooShortMark.svelte';
 	import ObservedDelayHint from '#lib/components/series/ObservedDelayHint.svelte';
+	import VariationPicker from '#lib/components/series/VariationPicker.svelte';
 	import { effectiveDelay, observedSuggestion, tooShortAt } from '#lib/types/duration-signals.ts';
 	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import { submitAction } from '#lib/utils/form-action.ts';
@@ -46,6 +47,12 @@
 	// Durée observée appliquée à la copie de travail : écrite à l'enregistrement
 	function handleApplyDelay(index: number, seconds: number) {
 		items[index].delay = seconds;
+	}
+
+	// Choix des variations (idées-format, idée 2) : absent = toutes, rien d'enregistré
+	function handleVariations(index: number, variations: number[] | undefined) {
+		if (variations) items[index].variations = variations;
+		else delete items[index].variations;
 	}
 
 	function handleRemove(index: number) {
@@ -178,6 +185,16 @@
 										<Trash2 class="h-4 w-4" />
 									</Button>
 								</div>
+								{#if template}
+									<!-- Sa propre ligne, comme les marques de durée -->
+									<div class="w-full">
+										<VariationPicker
+											{template}
+											selected={item.variations}
+											onchange={(variations) => handleVariations(index, variations)}
+										/>
+									</div>
+								{/if}
 								<TooShortMark
 									timing={tooShortAt(data.durationSignals, item.templateId, item.delay)}
 									class="w-full"
