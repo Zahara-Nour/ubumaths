@@ -2,18 +2,23 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-21 : découpage validé par David, PR 1 en cours._
+_Mis à jour le 2026-11-21, après #2966._
 
-- **État** : étape 1 faite (§ 9). David a validé le 2026-11-21 les comportements et le découpage
-  en 4 PR du § 10, pile de test séparée comprise. PR 1 (`pnpm db:a-jour`) codée et testée (§ 11).
-- **Prochaine action** : PR 1 → CI verte → merge ; puis PR 2 (pile de test séparée), une
-  session neuve.
+- **État** : PR 1 sur 4 mergée (#2966) : `pnpm db:a-jour` met la base locale de dev à jour sans
+  rien effacer, tourne seule avant `pnpm dev`, note comme faites les migrations de contenu déjà
+  passées en prod (§ 11). Découpage du § 10 validé par David le 2026-11-21.
+- **Prochaine action** : PR 2, la **pile de test séparée** (§ 10, point 2) : `test:integration`
+  démarre et met à jour sa propre pile (autre `project_id`, autres ports, comme la copie du
+  § 9.1 mais complète), ne touche plus à la base de dev ; le global-setup ne supprime plus le prof
+  de dev et ne relance plus seed-riche. Commencer par une phase 0 courte (mémoire prise, quand la
+  pile de test démarre et s'arrête, migrations d'une branche dans une pile partagée).
 - **En attente de David** : rien.
 - **Pièges en cours** : base locale partagée (verrou `supabase`, ne jamais le contourner) ;
   `db:reset` efface les données locales de tout le monde ; `db:migrate` = **prod**. Pour
-  expérimenter : copie isolée du § 9.1, jamais la base partagée. `supabase migration up --local`
-  est inutilisable sur la base partagée (§ 11).
-- **Worktree / branche** : `../ubumaths-wt-base-locale`, `feat/base-locale-a-jour`.
+  expérimenter : copie isolée du § 9.1. `supabase migration up --local` est inutilisable sur la
+  base partagée (§ 11). Un fichier de `scripts/` importé par un test d'intégration doit figurer
+  dans le filtre `paths` de `nightly-integration.yml` (`pnpm check:integration-paths`).
+- **Worktree / branche** : aucun (nettoyés après #2966) ; PR 2 : `../ubumaths-wt-base-locale`.
 
 ---
 
@@ -370,3 +375,4 @@ David, le 2026-11-21 : « Je valide » (comportements et découpage en 4 PR, deu
   voir disparaître en local une colonne qu'elle lit encore (comme en CI, qui teste la branche
   fusionnée à `main`). (2) La marque « contenu de la prod » reste posée si une suite d'intégration
   interrompue vide une partie du contenu ; la PR 2 (pile de test séparée) supprime ce cas.
+- 2026-11-21 : PR 1 mergée (#2966). CI rouge une fois : filtre `paths` de la suite d'intégration (deux fichiers de `scripts/db-a-jour/` non couverts), corrigé dans la PR.
