@@ -181,8 +181,13 @@ jobs:
 
       # Aucun secret ni adresse réelle dans les lignes ajoutées par la PR (données
       # d'élèves mineurs, dépôt public) : bloquant. Même garde au pre-commit.
+      # Noms interdits (la plateforme d'idées) : secret NOMS_INTERDITS, jamais écrit dans le
+      # dépôt ; Dependabot n'a pas les secrets du dépôt, lui seul s'en passe.
       - name: Guard données sensibles
         if: github.event_name == 'pull_request'
+        env:
+          NOMS_INTERDITS: ${{ secrets.NOMS_INTERDITS }}
+          NOMS_INTERDITS_FACULTATIF: ${{ github.actor == 'dependabot[bot]' && '1' || '' }}
         run: pnpm garde:donnees --depuis origin/${{ github.base_ref }}
 
       - name: Guard awaited render (vitest-browser-svelte 3)

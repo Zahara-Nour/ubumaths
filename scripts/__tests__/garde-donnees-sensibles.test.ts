@@ -138,3 +138,25 @@ describe('parseAddedLines', () => {
 		]);
 	});
 });
+
+describe('findSensitive : noms interdits', () => {
+	const RACINES = ['zorglub'];
+
+	it('bloque une ligne qui contient une racine, même avec le marqueur d’exception', () => {
+		const hits = findSensitive([line('// idées de Zorg-Lüb garde-donnees:ok (non)')], RACINES);
+		expect(hits).toHaveLength(1);
+		expect(hits[0]).toMatchObject({ kind: 'nom', lineNo: 1 });
+	});
+
+	it('bloque aussi dans un fichier exclu des autres contrôles, et le chemin du fichier', () => {
+		expect(findSensitive([line('zorglub', 'CHANGELOG.md')], RACINES)[0]?.kind).toBe('nom');
+		const hits = findSensitive([line('rien', 'extern/zorglub/x.ts')], RACINES);
+		expect(hits).toEqual([
+			{ file: 'extern/zorglub/x.ts', lineNo: 0, kind: 'nom', label: 'nom interdit n° 1 (chemin)' }
+		]);
+	});
+
+	it('sans racine, aucun contrôle de nom (comportement d’avant)', () => {
+		expect(findSensitive([line('zorglub')])).toEqual([]);
+	});
+});
