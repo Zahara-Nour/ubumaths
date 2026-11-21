@@ -127,7 +127,7 @@ connexion Google désactivée (`GOOGLE_LOGIN_ENABLED`, `src/routes/(public)/auth
 
 ## Comment un visiteur entre
 
-- **Accueil** (`src/routes/(public)/+page.svelte`, épuré le 2026-10-06) : titre, Père Ubu au
+- **Accueil** (`src/routes/(public)/+page.svelte`, épuré le 2026-10-06) : titre qui commence par le nom du site, Père Ubu au
   centre, une dépêche du Shtam tirée au hasard. Pour un visiteur **anonyme**, la
   [roue des publics](#la-roue-des-publics-et-les-trois-vues) dérive autour de Père Ubu et mène aux
   trois vues. Père Ubu mène au [Tour du Royaume](#le-tour-du-royaume-royaume) (le lien texte
