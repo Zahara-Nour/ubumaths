@@ -384,4 +384,17 @@ describe('idée 2 : la série suit le choix de chaque ligne', () => {
 		);
 		expect(draws.map((d) => d.instance.selectedVariationIndex)).toEqual([1, 1, 1, 1]);
 	});
+
+	it('deux lignes du même modèle, choix différents : chacune les siennes, sans doublon', () => {
+		const draws = drawSeriesQuestions(
+			[
+				{ templateId: 'aires', quantity: 1, delay: 20, variations: [1] },
+				{ templateId: 'aires', quantity: 2, delay: 20, variations: [0, 1] }
+			],
+			[AIRES],
+			{ generate, nextSeed: seriesSeedSequence(5) }
+		);
+		// La 2e ligne n'a plus que le disque : le triangle est déjà sorti, jamais répété
+		expect(draws.map((d) => d.instance.selectedVariationIndex)).toEqual([1, 0]);
+	});
 });

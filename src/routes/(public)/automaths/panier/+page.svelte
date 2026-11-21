@@ -102,7 +102,8 @@
 	 * Modèle et aperçu de chaque ligne du panier (graine fixe, calculé une fois
 	 * par modèle : changer une quantité ne relance aucun calcul). Modèle absent
 	 * de la liste des publiés : retiré (Q7). Variations choisies (idée 2) :
-	 * l'aperçu montre la première d'entre elles.
+	 * l'aperçu montre un exemple de la première d'entre elles, recalculé quand
+	 * le panier change (pas de cache : un tirage court, graine fixe).
 	 */
 	let cartItemsWithInstances = $derived(
 		cartItems.map((item) => {
