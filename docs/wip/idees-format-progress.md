@@ -6,18 +6,17 @@ Mettre en œuvre les idées retenues dans [idees-format-exercices.md](idees-form
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-21, après #2958._
+_Mis à jour le 2026-11-21, après #2960._
 
-- **État** : idée 1 terminée (#2954, #2955). Idée 2 : le panier propose le choix des variations
-  (#2958, mergée) ; une série enregistrée garde le choix mais son éditeur ne le propose pas encore.
-- **Prochaine action** : PR 4 de l'idée 2, choix des variations dans l'éditeur d'une série
-  enregistrée (`/dashboard/teacher/series/[id]/edit` : charger les modèles complets, réutiliser
-  `VariationPicker`). Puis idée 3.
+- **État** : idée 1 terminée (#2954, #2955). Idée 2 terminée : choix des variations dans le
+  panier (#2958) et dans l'éditeur d'une série enregistrée (#2960).
+- **Prochaine action** : idée 3, les erreurs prévues avec leur message (voir
+  [idees-format-exercices.md](idees-format-exercices.md)) : phase 0 à écrire et faire valider.
 - **En attente de David** : rien (pas de `deploy:prod` demandé).
 - **Pièges en cours** : test d'intégration local bloqué par des données d'une autre session
   (`class_journal_share_tokens`), la CI fait foi ; le worktree `automaths-serie` touche aussi le
   panier.
-- **Worktree / branche** : aucun ; à créer pour la PR 4.
+- **Worktree / branche** : aucun ; à créer pour l'idée 3.
 
 ## Idée 1 — phase 0 validée (David, 2026-11-21)
 
