@@ -6,16 +6,18 @@ Mettre en œuvre les idées retenues dans [idees-format-exercices.md](idees-form
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-21, après #2955._
+_Mis à jour le 2026-11-21, après #2958._
 
-- **État** : idée 1 terminée : tirage (#2954) et avertissement du panier (#2955), mergés.
-- **Prochaine action** : idée 2 en cours (phase 0 validée) : PR 3 (schéma, tirage, panier) sur
-  `feat/idees-format-variations`, puis PR 4 (éditeur d'une série enregistrée).
-- **En attente de David** : rien.
+- **État** : idée 1 terminée (#2954, #2955). Idée 2 : le panier propose le choix des variations
+  (#2958, mergée) ; une série enregistrée garde le choix mais son éditeur ne le propose pas encore.
+- **Prochaine action** : PR 4 de l'idée 2, choix des variations dans l'éditeur d'une série
+  enregistrée (`/dashboard/teacher/series/[id]/edit` : charger les modèles complets, réutiliser
+  `VariationPicker`). Puis idée 3.
+- **En attente de David** : rien (pas de `deploy:prod` demandé).
 - **Pièges en cours** : test d'intégration local bloqué par des données d'une autre session
   (`class_journal_share_tokens`), la CI fait foi ; le worktree `automaths-serie` touche aussi le
-  panier ; la CI d'intégration dure ~17 min (étude prévue dans une session `ci-integration`).
-- **Worktree / branche** : `../ubumaths-wt-idees-format` · `feat/idees-format-variations`.
+  panier.
+- **Worktree / branche** : aucun ; à créer pour la PR 4.
 
 ## Idée 1 — phase 0 validée (David, 2026-11-21)
 
@@ -109,7 +111,7 @@ vit déjà : série enregistrée, panier, lien partagé, évaluation.
   recherche au moins deux fois plus loin (monter de 1 à 99 recomptait à chaque pas), `role="status"`,
   bouton nommé « Passer à N répétitions ». Laissé : focus perdu après le clic (le bouton disparaît).
 
-## PR 3 — variations choisies : schéma, tirage, panier (en cours)
+## PR 3 — variations choisies : schéma, tirage, panier (#2958, mergée le 2026-11-21)
 
 - `validation/series.ts` : `variations?` sur une ligne (`itemVariationsSchema` : numéros distincts,
   1 à 200, rangés ; absent = toutes). Ni migration ni colonne : la ligne est déjà du JSON.
@@ -121,3 +123,7 @@ vit déjà : série enregistrée, panier, lien partagé, évaluation.
 - Révision espacée : rien à faire, elle ne lit que le modèle de la ligne (Q4).
 - Tests : 12 de tirage / schéma / panier vérifiés rouges avant le code ; 6 du sélecteur, 2 de la
   tuile.
+- Relecture (`code-reviewer` Sonnet + `security-auditor` Opus) : aucun bloquant. Ajouté : test de
+  deux lignes d'un même modèle à choix différents. Assumé : une fusion de panier garde le choix de
+  la ligne déjà là (comme la durée) ; l'élève qui ouvre un lien restreint ne voit pas le choix ;
+  un élève peut fabriquer un lien restreint à la variation facile (série libre, sans enjeu).
