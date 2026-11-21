@@ -14,10 +14,14 @@
  * - aucune table d'élèves ne figure dans la liste de copie.
  */
 
+import { readFileSync } from 'node:fs';
 import { describe, it, expect } from 'vitest';
 import {
 	COPIE,
+	INVENTE,
 	JAMAIS,
+	LIENS_COUPES,
+	lireSchema,
 	detecterFuite,
 	remplacerIds,
 	filtrerLignes,
@@ -129,7 +133,7 @@ describe('valeurPg', () => {
 
 describe('liste de copie', () => {
 	it('ne contient aucune table d’élèves ni d’échanges', () => {
-		for (const t of JAMAIS) expect(COPIE).not.toContain(t);
+		for (const t of [...INVENTE, ...JAMAIS]) expect(COPIE).not.toContain(t);
 	});
 
 	it('n’a pas de doublon', () => {
@@ -253,5 +257,164 @@ describe('liste de copie (après audit)', () => {
 	it('copie class_chapters, parent des chapitres, et pas chapter_decks, qui pointe vers des paquets d’élèves', () => {
 		expect(COPIE).toContain('class_chapters');
 		expect(COPIE).not.toContain('chapter_decks');
+	});
+});
+
+describe('lireSchema', () => {
+	const texte = [
+		'export type Database = {',
+		'  graphql_public: {',
+		'    Tables: {',
+		'      [_ in never]: never',
+		'    }',
+		'  }',
+		'  public: {',
+		'    Tables: {',
+		'      fiches: {',
+		'        Row: {',
+		'          id: string',
+		'        }',
+		'        Relationships: [',
+		'          {',
+		'            foreignKeyName: "fiches_classe_fkey"',
+		'            columns: ["classe_id"]',
+		'            isOneToOne: false',
+		'            referencedRelation: "classes"',
+		'            referencedColumns: ["id"]',
+		'          },',
+		'          {',
+		'            foreignKeyName: "fiches_classe_fkey"',
+		'            columns: ["classe_id"]',
+		'            isOneToOne: false',
+		'            referencedRelation: "bilan"',
+		'            referencedColumns: ["id"]',
+		'          },',
+		'          {',
+		'            foreignKeyName: "fiches_section_fkey"',
+		'            columns: ["section_id", "chapitre_id"]',
+		'            isOneToOne: false',
+		'            referencedRelation: "sections"',
+		'            referencedColumns: ["id", "chapitre_id"]',
+		'          },',
+		'        ]',
+		'      }',
+		'      classes: {',
+		'        Row: {',
+		'          id: string',
+		'        }',
+		'        Relationships: []',
+		'      }',
+		'    }',
+		'    Views: {',
+		'      bilan: {',
+		'        Row: {',
+		'          id: string',
+		'        }',
+		'      }',
+		'    }',
+		'  }',
+		'}'
+	].join('\n');
+
+	it('rend les tables du schéma public avec leurs liens, lien composé compris', () => {
+		const { tables } = lireSchema(texte);
+		expect([...tables.keys()]).toEqual(['fiches', 'classes']);
+		expect(tables.get('fiches')).toEqual([
+			{ colonnes: ['classe_id'], vers: 'classes' },
+			{ colonnes: ['classe_id'], vers: 'bilan' },
+			{ colonnes: ['section_id', 'chapitre_id'], vers: 'sections' }
+		]);
+		expect(tables.get('classes')).toEqual([]);
+	});
+
+	it('rend les vues à part : elles ne sont pas des tables à classer', () => {
+		expect([...lireSchema(texte).vues]).toEqual(['bilan']);
+	});
+
+	it('refuse un texte où il ne trouve aucune table, plutôt que de tout laisser passer', () => {
+		expect(() => lireSchema('export type Database = {}')).toThrow(/aucune table/);
+	});
+});
+
+describe('classement de toutes les tables (copier, inventer, jamais)', () => {
+	// Le schéma tel que `pnpm db:types` l'a lu en prod.
+	const { tables: schema, vues } = lireSchema(readFileSync('src/lib/types/database.ts', 'utf8'));
+	const familles = { COPIE, INVENTE, JAMAIS };
+
+	it('chaque table du schéma est dans une famille : une table nouvelle se classe avant de passer', () => {
+		const classees = new Set([...COPIE, ...INVENTE, ...JAMAIS]);
+		expect([...schema.keys()].filter((t) => !classees.has(t))).toEqual([]);
+	});
+
+	it('aucune table n’est dans deux familles', () => {
+		const toutes = [...COPIE, ...INVENTE, ...JAMAIS];
+		expect(toutes.filter((t, i) => toutes.indexOf(t) !== i)).toEqual([]);
+	});
+
+	it('aucune famille ne cite une table qui n’existe plus', () => {
+		for (const [nom, liste] of Object.entries(familles)) {
+			expect({ [nom]: liste.filter((t) => !schema.has(t)) }).toEqual({ [nom]: [] });
+		}
+	});
+
+	it('une table copiée ne pointe que vers des tables copiées, ou vers un compte', () => {
+		// Le contenu s'écrit sans vérification des liens : copier une table sans celle qu'elle
+		// désigne laisserait en local des lignes qui pointent dans le vide. La garde porte sur les
+		// TABLES ; une ligne écartée par le filtre d'auteur peut encore laisser une ligne
+		// orpheline, ce que seule une vérification sur la base voit (journal du chantier, § 7).
+		const orphelins: string[] = [];
+		for (const table of COPIE) {
+			for (const { colonnes, vers } of schema.get(table) ?? []) {
+				if (vues.has(vers)) continue; // une vue répète le lien vers la vraie table
+				if (vers === 'profiles' || COPIE.includes(vers)) continue;
+				if (colonnes.some((c) => LIENS_COUPES.includes(`${table}.${c}`))) continue;
+				orphelins.push(`${table}.${colonnes.join('+')} → ${vers}`);
+			}
+		}
+		expect(orphelins).toEqual([]);
+	});
+
+	it('un lien coupé existe encore, vers une table non copiée, et il est mis à vide à la copie', () => {
+		for (const lien of LIENS_COUPES) {
+			const [table, colonne] = lien.split('.');
+			const cibles = (schema.get(table) ?? [])
+				.filter((l) => l.colonnes.includes(colonne) && !vues.has(l.vers))
+				.map((l) => l.vers);
+			expect({ lien, cibles: cibles.length }).toEqual({ lien, cibles: 1 });
+			expect(COPIE).not.toContain(cibles[0]);
+			expect(neutraliser(table, { [colonne]: 'x' }, 0)[colonne]).toBeNull();
+		}
+	});
+
+	it('les tables de contenu ajoutées le 2026-11-21 sont copiées', () => {
+		for (const t of ['dictionary_entries', 'question_template_reviews', 'worksheet_styles']) {
+			expect(COPIE).toContain(t);
+		}
+	});
+
+	it('les modèles de messages ne sont pas copiés : la prod n’en a pas, ceux de la base locale restent', () => {
+		expect(COPIE).not.toContain('message_templates');
+		expect(COPIE).not.toContain('message_template_versions');
+	});
+
+	it('après audit : ce qui peut porter un élève sans que les gardes le voient n’est pas copié', () => {
+		// Identifiants d'inscription sans clé étrangère, nom de dossier libre, documents importés.
+		for (const t of ['school_year_closures', 'user_folders', 'rag_documents', 'rag_chunks']) {
+			expect(JAMAIS).toContain(t);
+		}
+	});
+
+	it('après audit : la description d’un tournoi, texte libre du prof, est vidée', () => {
+		const t = neutraliser(
+			'minesweeper_tournaments',
+			{ id: 1, name: 'n', description: 'Bravo Léo' },
+			0
+		);
+		expect(t).toEqual({ id: 1, name: 'n', description: null });
+	});
+
+	it('les sections de paquets de révision suivent les paquets : inventées, pas copiées', () => {
+		expect(INVENTE).toContain('srs_decks');
+		expect(INVENTE).toContain('srs_deck_sections');
 	});
 });
