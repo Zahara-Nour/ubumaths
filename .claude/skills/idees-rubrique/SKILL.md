@@ -118,7 +118,9 @@ Tout le lot part d'un coup, pas un cycle par modèle (mémoire `feedback_gros-lo
 - **Modèles neufs** : script `docs/wip/questions/<sujet>-<x>.py` → `scripts/questions/<sujet>-<x>/`.
   Chaque modèle et chaque variation ajoutée a ses **`testSpecs`** : des réponses justes sous
   plusieurs écritures (acceptées) **et** les erreurs typiques des élèves (refusées), comme dans
-  `couvrir-un-niveau.md` § 5. Une variation sans spec ne part pas. `create-questions` en
+  `couvrir-un-niveau.md` § 5, et ces erreurs typiques deviennent des **erreurs prévues** de la
+  case (réponse + message à l'élève, même §), que le prof complète ensuite. Une variation sans
+  spec ne part pas. `create-questions` en
   simulation, `question:specs`, puis essai dans la base **locale**, modèle joué dans l'aperçu
   (réponse juste acceptée, erreur typique refusée).
   ⚠️ `--publier` en local écrit les ids locaux dans les fichiers : les restaurer (`git restore`)

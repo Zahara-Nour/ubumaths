@@ -285,6 +285,32 @@ export interface BlankDefaults extends CalculusBlankFields {
 }
 
 /**
+ * Erreur prévue d'une case, écrite par l'auteur (chantier `idees-format`, idée 3).
+ *
+ * L'élève dont la réponse a la MÊME VALEUR que `answer` (quelle que soit son
+ * écriture : `8/6` pour `4/3`) lit `message` à la correction, à la place du type
+ * d'erreur deviné. La note ne change pas : faux reste faux.
+ */
+export interface ExpectedError {
+	/** Réponse fausse, écrite comme une réponse attendue (variables permises : `{{eval:a-b}}`) */
+	answer: string;
+	/** Message à l'élève (variables et `$…$` permis) */
+	message: string;
+	/** Nom court pour le prof (panneaux d'erreurs) ; absent → le message */
+	label?: string;
+}
+
+/** Erreur prévue d'un tirage : réponse et message résolus */
+export interface InstanceExpectedError {
+	/** Réponse fausse résolue, même écriture que `InstanceBlank.expectedAnswer` */
+	answer: string;
+	/** Son LaTeX (affichage, rejeu de publication) */
+	answerLatex: string;
+	message: string;
+	label?: string;
+}
+
+/**
  * Template-side blank definition (positional, index = position in blanks[])
  */
 export interface TemplateBlank extends CalculusBlankFields {
@@ -369,6 +395,12 @@ export interface TemplateBlank extends CalculusBlankFields {
 	 * simplifier perfectible, calcul non fait `\frac{\pi}{4}+2\pi` de mauvaise forme).
 	 */
 	angleModulo?: AngleModulo;
+	/**
+	 * Erreurs prévues (chantier `idees-format`, idée 3) : « si l'élève répond
+	 * `{{eval:a-b}}`, lui écrire : “Tu as soustrait au lieu d'additionner.” ».
+	 * Case à écriture mathématique ordinaire seulement. Voir `ExpectedError`.
+	 */
+	expectedErrors?: ExpectedError[];
 
 	/** Unit config (overrides blankDefaults.unit) */
 	unit?: {
@@ -865,6 +897,11 @@ export interface InstanceBlank extends CalculusBlankFields {
 	openableBounds?: boolean;
 	/** Voir `TemplateBlank.angleModulo` (fusionné avec blankDefaults, case ordinaire seulement) */
 	angleModulo?: AngleModulo;
+	/**
+	 * Erreurs prévues résolues pour ce tirage (`TemplateBlank.expectedErrors`).
+	 * Retirées de l'énoncé envoyé à l'élève en évaluation notée, comme l'attendu.
+	 */
+	expectedErrors?: InstanceExpectedError[];
 
 	/** Unit config (merged) */
 	unit?: {
@@ -1238,6 +1275,11 @@ export const COMPLEX_FORMS = [
 export interface TestSpecExpected {
 	status: ValidationStatus;
 	constraintViolations?: ConstraintId[];
+	/**
+	 * Message d'une erreur prévue que la réponse doit déclencher (tel que résolu
+	 * pour les variables de la spec) ; une case au moins doit le porter
+	 */
+	expectedErrorMessage?: string;
 }
 
 /**

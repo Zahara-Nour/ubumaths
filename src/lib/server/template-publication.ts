@@ -40,6 +40,11 @@ function circularDependencyErrors(template: QuestionTemplate): string[] {
  * doit être débarrassé des colonnes de la base (`withoutDbMetadata`) : le
  * schéma strict les refuserait comme clés inconnues.
  */
+/** Messages d'erreurs prévues obtenus, pour l'auteur */
+function formatMessages(messages: string[]): string {
+	return messages.length === 0 ? 'aucun' : messages.map((message) => `« ${message} »`).join(', ');
+}
+
 export function templatePublicationErrors(template: QuestionTemplate): string[] {
 	const report = checkTemplate(template);
 	const circularErrors = circularDependencyErrors(template);
@@ -56,9 +61,11 @@ export function templatePublicationErrors(template: QuestionTemplate): string[] 
 	);
 	const failedSpecs = report.specs
 		.filter((result) => !result.passed)
-		.map(
-			(result) =>
-				`Spec « ${result.spec.description} » : attendu ${result.spec.expected.status}, obtenu ${result.actual.status}`
+		.map((result) =>
+			result.actual.status === result.spec.expected.status &&
+			result.spec.expected.expectedErrorMessage !== undefined
+				? `Spec « ${result.spec.description} » : message d’erreur prévue attendu « ${result.spec.expected.expectedErrorMessage} », obtenu ${formatMessages(result.actual.expectedErrorMessages)}`
+				: `Spec « ${result.spec.description} » : attendu ${result.spec.expected.status}, obtenu ${result.actual.status}`
 		);
 
 	return [

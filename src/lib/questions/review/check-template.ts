@@ -30,7 +30,8 @@ import { calculusFinalAnswerLatex } from '#lib/questions/generator/correction-ge
 import { requiredFormVerdict } from '#lib/questions/required-form-validator.ts';
 import { readingOf } from '#lib/questions/formula-reading.ts';
 import type { QuestionInstance } from '#lib/questions/types.ts';
-import { isBlankValueCorrect } from '#lib/utils/answer-validator.ts';
+import { isBlankValueCorrect, validateAnswerDetailed } from '#lib/utils/answer-validator.ts';
+import { expectedErrorOf } from '#lib/questions/expected-errors.ts';
 import {
 	findUnparenthesizedNegatives,
 	type VariableDraw
@@ -149,6 +150,8 @@ function checkGeneration(
 					correctionForm.failures.push({ variationIndex, seed, errors: formErrors });
 				}
 			}
+			const replayErrors = expectedErrorReplayErrors(result.instance);
+			if (replayErrors.length > 0) failures.push({ variationIndex, seed, errors: replayErrors });
 			const figureErrors = constructionErrors(result.instance);
 			if (figureErrors !== null) {
 				figures.checked++;
@@ -167,6 +170,37 @@ function checkGeneration(
 	});
 
 	return { attempts, failures, draws, correctionForm, figures };
+}
+
+/** Statuts d'une réponse de la bonne valeur : l'erreur prévue tombe sur la bonne réponse */
+const RIGHT_VALUE_STATUSES = new Set(['correct', 'unoptimal_form', 'bad_form']);
+
+/**
+ * Erreurs prévues d'un tirage (idée 3) : chacune, répondue telle quelle, doit être
+ * jugée fausse ET déclencher son message (ou celui d'une erreur prévue de même
+ * valeur écrite avant elle). Celle qui tombe sur la bonne réponse du tirage est
+ * ignorée (erreur de signe quand le résultat vaut 0) : l'élève aurait juste.
+ */
+function expectedErrorReplayErrors(instance: QuestionInstance): string[] {
+	const blanks = instance.blanks ?? [];
+	const rightAnswers = blanks.map((blank) => blank.expectedAnswerLatex ?? blank.expectedAnswer);
+	return blanks.flatMap((blank, i) =>
+		(blank.expectedErrors ?? []).flatMap((error, k) => {
+			const where = `case ${i + 1}, erreur prévue ${k + 1} (${error.answerLatex})`;
+			const answers = rightAnswers.map((answer, j) => (j === i ? error.answerLatex : answer));
+			const verdict = validateAnswerDetailed(instance, { values: answers, latex: answers }).blanks[
+				i
+			];
+			if (!verdict) return [`${where} : case introuvable`];
+			if (RIGHT_VALUE_STATUSES.has(verdict.status)) return [];
+			if (verdict.status !== 'incorrect') return [`${where} : réponse jugée « ${verdict.status} »`];
+			const found = expectedErrorOf(instance, verdict);
+			const sameOrEarlier = (blank.expectedErrors ?? []).slice(0, k + 1);
+			return found !== null && sameOrEarlier.includes(found)
+				? []
+				: [`${where} : la réponse ne déclenche pas son message`];
+		})
+	);
 }
 
 /**
@@ -303,6 +337,14 @@ export function checkTemplate(
 	};
 }
 
+/** Message d'erreur prévue attendu par une spec, et ceux obtenus */
+function messageDetail(result: TestSpecResult): string {
+	const wanted = result.spec.expected.expectedErrorMessage;
+	if (wanted === undefined) return '';
+	const got = result.actual.expectedErrorMessages;
+	return ` ; message attendu « ${wanted} », obtenu ${got.length === 0 ? 'aucun' : got.map((m) => `« ${m} »`).join(', ')}`;
+}
+
 /** Rapport lisible (terminal), qui dit toujours combien d'éléments ont été analysés */
 export function formatCheckReport(report: TemplateCheckReport): string {
 	const lines: string[] = [];
@@ -312,7 +354,7 @@ export function formatCheckReport(report: TemplateCheckReport): string {
 		const mark = result.passed ? '✅' : '❌';
 		const detail = result.passed
 			? ''
-			: ` — attendu ${result.spec.expected.status}, obtenu ${result.actual.status}${result.error ? ` (${result.error})` : ''}`;
+			: ` — attendu ${result.spec.expected.status}, obtenu ${result.actual.status}${messageDetail(result)}${result.error ? ` (${result.error})` : ''}`;
 		lines.push(`  ${mark} ${result.spec.description}${detail}`);
 	}
 	const { attempts, failures } = report.generation;

@@ -217,6 +217,9 @@ function robotSceneImpossible(
 }
 
 /** Erreurs d'un bloc robot qui tiennent au tirage (`robotSceneImpossible`) */
+/** Décalage de graine de la source des erreurs prévues (distincte de celle de l'instance) */
+const EXPECTED_ERRORS_SEED_OFFSET = 7919;
+
 const ROBOT_TIRAGE_ERRORS = [/aucun code de/, /l’arrivée est le départ/, /est sur une case grise/];
 
 const ROBOT_RANDOM_MESSAGE =
@@ -588,6 +591,11 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 		//    variation, variables (et nouveaux essais), énoncé, réponses, choix, corrigé.
 		//    Aucun tirage n'est recalculé depuis la graine.
 		const random = createRandomSource(seed);
+		// Erreurs prévues (idée 3) : leur propre source, pour ne décaler AUCUN tirage
+		// de l'instance (une copie régénérée par sa graine reste la même, ADR 0015)
+		const errorRandom = createRandomSource(
+			seed === undefined ? undefined : seed + EXPECTED_ERRORS_SEED_OFFSET
+		);
 
 		// Select a variation
 		const variationIndex = randomIndex(template.variations.length, random);
@@ -1513,7 +1521,66 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 									? (readExpectedRobotAnswer(buildAnswer.answer)?.solution ?? buildAnswer.answer)
 									: buildAnswer.answer;
 				}
+				// Erreurs prévues : réponses résolues comme l'attendu ; messages plus bas,
+				// une fois toutes les cases connues (`{{solution}}` permis)
+				const expectedErrors = templateBlank.expectedErrors ?? [];
+				if (expectedErrors.length > 0) {
+					if (
+						resolved.type !== 'math' ||
+						resolved.construire !== undefined ||
+						resolved.rulesSuffice === true ||
+						template.options?.orderIndependent === true
+					) {
+						throw new Error(
+							`Case ${i + 1} : une erreur prévue ne va que dans une case à écriture mathématique ordinaire (ni texte, ni geste, ni case jugée par ses règles seules, ni cases appariées librement)`
+						);
+					}
+					resolved.expectedErrors = expectedErrors.map((error, k) => {
+						try {
+							const raw = resolveVariableConditionals(error.answer, resolvedVariables, {
+								strict: true
+							});
+							const normalizedError = normalizeAnswerExpression(raw, resolvedVariables);
+							const resolvedError = normalizedError.includes('{{')
+								? resolveExpression(normalizedError, resolvedVariables, errorRandom)
+								: normalizedError;
+							const answer = isCleanable
+								? cleanCoefficientsCustom(resolvedError, genericFunctions, capitalPairs)
+								: required
+									? expectedInRequiredUnit(resolvedError, required)
+									: resolvedError;
+							const answerLatex =
+								answerKind === 'intervalles'
+									? expectedIntervalsLatex(answer)
+									: answerKind === 'vecteur'
+										? expectedVectorLatex(answer)
+										: answerKind === 'matrice'
+											? expectedMatrixLatex(answer)
+											: convertToLatex(answer, genericFunctions, isCleanable, capitalPairs);
+							return {
+								answer,
+								answerLatex,
+								message: error.message,
+								...(error.label !== undefined && { label: error.label })
+							};
+						} catch (cause) {
+							const reason = cause instanceof Error ? cause.message : String(cause);
+							throw new Error(`Case ${i + 1}, erreur prévue ${k + 1} : ${reason}`);
+						}
+					});
+				}
 				return resolved;
+			});
+			// Erreur prévue sur une case sortie plus tôt (choix, figure, tableau de signes)
+			alignedBlanks.forEach((templateBlank, i) => {
+				if (
+					(templateBlank.expectedErrors?.length ?? 0) > 0 &&
+					!resolvedBlanks?.[i]?.expectedErrors
+				) {
+					throw new Error(
+						`Case ${i + 1} : une erreur prévue ne va que dans une case à écriture mathématique ordinaire (ni choix, ni figure, ni case de tableau)`
+					);
+				}
 			});
 
 			// Blocs ```choix de l'énoncé : choix dans l'ordre AFFICHÉ, `melanger:` retiré
@@ -1670,6 +1737,28 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 						capitalPairs
 					)
 				);
+			}
+		}
+
+		// 7 bis. Messages des erreurs prévues, résolus comme le corrigé (variables,
+		// `{{solution}}`), sur leur propre source de hasard
+		if (resolvedBlanks?.some((blank) => blank.expectedErrors)) {
+			const errorContext = buildCorrectionContext(resolvedBlanks, resolvedVariables);
+			for (const blank of resolvedBlanks) {
+				blank.expectedErrors = blank.expectedErrors?.map((error) => ({
+					...error,
+					message: String(
+						resolveCorrectionContent(
+							templateMarkdown(error.message),
+							resolvedVariables,
+							errorContext,
+							errorRandom,
+							genericFunctions,
+							cleanCoefficients,
+							capitalPairs
+						)
+					)
+				}));
 			}
 		}
 

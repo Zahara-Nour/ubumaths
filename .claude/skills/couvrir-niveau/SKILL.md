@@ -61,7 +61,8 @@ couvre (ce niveau et les suivants) et sa place dans l'ordre des lots. David déc
    plages, niveaux numérotés, forme de réponse, **question d'accès** de la migration. Attendre
    la validation ; consigner les décisions dans le journal.
 2. **Écrire** : script `docs/wip/questions/lot-<x>.py` (gabarit `lot-c.py`) → JSON de
-   `scripts/questions/<niveau>-<lot>/` ; `testSpecs` justes ET erreurs typiques ;
+   `scripts/questions/<niveau>-<lot>/` ; `testSpecs` justes ET erreurs typiques ; **erreurs prévues** des cases (réponse +
+   message à l'élève, `couvrir-un-niveau.md` § 5), proposées par le script, que le prof complète ;
    `create-questions` en simulation tout vert ; essai en base **locale** (`.env.local` chargé) et
    modèles joués dans l'aperçu admin. PR des fichiers (revue : aucune, contenu), merge.
 3. **Prod** : `deploy:prod` si un bloc neuf l'exige (David seul) ; **David** lance

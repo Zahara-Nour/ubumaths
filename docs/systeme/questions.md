@@ -1354,6 +1354,22 @@ d'erreur) : case hors écriture mathématique ordinaire, cases appariées librem
 n'est qu'un exemple), ambiguïté. Saisie,
 Contrôle blanc et copie corrigée montrent la phrase par ce seul chemin. La note ne change pas.
 
+Erreurs prévues (chantier `idees-format`, idée 3, `expected-errors.ts`) : une case peut porter
+`expectedErrors` (`[{ answer, message, label? }]`, 10 au plus), écrites par l'auteur. L'élève dont la
+réponse **fausse** a la même valeur qu'une erreur prévue (même juge de valeur que la correction,
+`isBlankValueCorrect`, sans forme exigée ni règles : `8/6` déclenche `4/3`) lit son message en tête
+des remarques de la case, à la place de la phrase du type deviné ; les autres remarques (unité,
+arrondi) suivent. La note ne change pas ; une mauvaise forme ou une réponse juste n'est jamais une
+erreur prévue (celle qui tombe sur la bonne réponse d'un tirage est donc ignorée) ; deux erreurs de
+même valeur : la première écrite. Le générateur résout réponses et messages (variables,
+`{{solution}}`) sur une **source de hasard à part** (graine décalée) : aucun tirage de l'instance
+ne bouge. Case autre qu'une écriture mathématique ordinaire (choix, geste, figure, tableau,
+`rulesSuffice`, `orderIndependent`) : génération refusée, message situé. Le rejeu de
+`checkTemplate` répond chaque erreur prévue de chaque tirage et refuse le modèle si elle n'est pas
+jugée fausse avec son message ; une spec peut nommer le message attendu
+(`expected.expectedErrorMessage`). La question publique d'une évaluation notée ne les porte pas
+(liste blanche de `public-question.ts`).
+
 Case « figure » : une ligne `figure` (texte du bloc, réponse brute `droite(…)`, jamais rendue en
 markdown, lue par le juge borné) au lieu de « Réponse attendue : `droite(A;B)` ». `FigureAnswer.svelte`
 la dessine en lecture seule : droites de l'élève (vertes si juste ; sinon la bonne droite en
