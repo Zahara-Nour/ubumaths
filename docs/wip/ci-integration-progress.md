@@ -2,17 +2,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-21, après #2957._
+_Mis à jour le 2026-11-21, B en cours (PR à ouvrir)._
 
-- **État** : A (#2956, 17,5 → 7,5 min) et F (#2957, 297 tests `@migration-de-donnees` hors des
-  PR, garde `check:migrations-de-donnees`) mergées. Go de David sur A → F → B → C.
-- **Prochaine action** : mesurer F sur la première PR en suite complète qui ne touche ni la règle
-  ni `supabase/` (ligne « laissés de côté : N » des morceaux, durée de bout en bout ; estimé
-  ~6,3 min) → ligne au tableau d'`environnement-de-dev.md`. Puis B (passage déjà vert).
+- **État** : A (#2956) et F (#2957) mergées. B codé (§ 8, comportements validés) sur
+  `ci/integration-passage-deja-vert`. Go de David sur A → F → B → C.
+- **Prochaine action** : PR de B, CI, merge. Puis mesurer F et B sur de vraies PR : F sur la première
+  PR en suite complète partie d'un `main` qui contient #2957 (#2958 n'en est pas une, sa base est
+  antérieure) ; B sur le premier re-push sans fichier couvert (morceaux ~1 min ?). Lignes au tableau
+  d'`environnement-de-dev.md`. Puis C.
 - **En attente de David** : rien.
 - **Pièges en cours** : suite locale cassée au global-setup par les liens de partage du prof de dev
-  (§ 3.4) ; morceaux déséquilibrés (212 à 318 s) → D si besoin.
-- **Worktree / branche** : aucun (B : nouveau worktree `ubumaths-wt-ci-integration`).
+  (§ 3.4) ; morceaux déséquilibrés (190 à 314 s) → D si besoin.
+- **Worktree / branche** : `../ubumaths-wt-ci-integration` · `ci/integration-passage-deja-vert`.
 
 ## 1. Ce que coûte la suite aujourd'hui (mesuré)
 
@@ -182,6 +183,27 @@ Mécanisme : mention `@migration-de-donnees` dans l'en-tête (posée par script,
 du gabarit dans les skills `couvrir-niveau` / `idees-rubrique`) ; garde : aucun fichier marqué
 ne cite une migration qui touche le schéma ou les règles d'accès. 4 morceaux gardés.
 Gain estimé : ~5 min de somme, ~7,5 → ~6,3 min de bout en bout.
+
+## 8. B — passage déjà vert non relancé (validé le 2026-11-21)
+
+Comportements validés :
+
+1. Push qui ne touche aucun fichier suivi, après un passage vert : morceaux verts sans relancer les
+   tests, message qui renvoie au run d'origine.
+2. Push qui touche un fichier suivi : l'empreinte change, la suite tourne.
+3. `main` a avancé sur un fichier suivi : l'empreinte change (prise sur le commit de merge).
+4. Passage rouge ou annulé : rien n'est gardé.
+5. Nuit et lancement à la main : toujours tout, la trace n'est ni lue ni écrite.
+6. Dans le doute, la suite tourne (empreinte vide).
+7. Les checks gardent leur nom et finissent en ✅, jamais « skipped ».
+
+Mécanisme : `scripts/ci-integration-empreinte.sh` (job `portee`) = hash des fichiers du filtre
+`paths` lus sur HEAD (index jetable, motifs en `:(glob)` de git ; le test compare la sélection à
+`githubPathPattern` sur le vrai dépôt) + `FICHIERS`, `EXCLURE`, `TOTAL`. `actions/cache/restore`
+sur `integration-vert-v1-<empreinte>` ; job `memoriser` (needs : filtre, portée, morceaux) qui
+l'enregistre, étapes conditionnées plutôt que le job (sinon « skipped »). Les étapes des morceaux
+sont conditionnées de même. « Re-run all jobs » d'un passage déjà vert le saute aussi : pour
+forcer, lancement à la main.
 
 ## 6. Historique
 
