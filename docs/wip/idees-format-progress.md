@@ -6,17 +6,16 @@ Mettre en œuvre les idées retenues dans [idees-format-exercices.md](idees-form
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-21, après #2962._
+_Mis à jour le 2026-11-21, après #2963._
 
-- **État** : idées 1 et 2 terminées. Idée 3 : phase 0 validée (§ Idée 3) ; moteur mergé (#2962,
-  pas encore en prod).
-- **Prochaine action** : PR 6, l'éditeur du prof : « Ajouter une erreur prévue » sous chaque case
-  (`AnswerEditor.svelte`), champs réponse / message / nom court ; puis PR 7, ligne « Types
-  d'erreur » côté prof (`error-kinds.ts`, `label` sinon message).
+- **État** : idées 1 et 2 terminées. Idée 3 : moteur (#2962) et éditeur du prof (#2963) mergés,
+  pas encore en prod.
+- **Prochaine action** : PR 7, ligne « Types d'erreur » côté prof (`error-kinds.ts`) : l'erreur
+  prévue y compte sous son `label`, sinon son message.
 - **En attente de David** : rien (pas de `deploy:prod` demandé).
 - **Pièges en cours** : intégration locale bloquée par les données d'une autre session, la CI fait
   foi ; fichiers de lot avec `expectedErrors` refusés en prod avant le `deploy:prod` de #2962.
-- **Worktree / branche** : aucun ; à créer pour la PR 6.
+- **Worktree / branche** : aucun ; à créer pour la PR 7.
 
 ## Idée 1 — phase 0 validée (David, 2026-11-21)
 
@@ -208,3 +207,12 @@ des scripts de lot (`couvrir-un-niveau.md` § 5, skills `couvrir-niveau`, `idees
 L'éditeur actuel garde les cases telles quelles : un modèle modifié par le prof garde ses erreurs
 prévues avant même la PR de l'éditeur. ⚠️ Fichiers de lot avec erreurs prévues : la prod ne les
 accepte qu'après le `deploy:prod` qui livre cette PR.
+
+## Idée 3, PR 6 — erreurs prévues : l'éditeur du prof (#2963, mergée le 2026-11-21)
+
+`ExpectedErrorsEditor.svelte` sous chaque case ordinaire d'`AnswerEditor` : « Ajouter une erreur
+prévue », champs « Si l'élève répond », « Lui écrire », « Nom court » (facultatif, clé retirée si
+vide) ; dernière erreur retirée → `expectedErrors` absent ; ligne incomplète signalée ;
+`maxlength` des plafonds du schéma. Retenu de la revue : une case devenue choix ou figure qui garde
+des erreurs prévues le dit et offre « Retirer » (sinon la génération échoue sans recours). Tests :
+`AnswerEditor-erreurs-prevues.svelte.test.ts` (7). Doc : `docs/systeme/questions.md`.
