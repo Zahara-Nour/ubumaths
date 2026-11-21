@@ -330,7 +330,7 @@ décisions R1-R4 du 2026-10-21), dans `src/lib/server/child-password.ts` :
 
 **Changement obligatoire (R3)** : tant que la marque vaut `true`, `passwordChangeHandle` renvoie
 chaque page vers `/auth/update-password` et répond 403 aux API et écritures (restent ouverts :
-`update-password`, `logout`, `/api/errors/log`). `locals.user` vient de `getUser()` : la marque se
+`update-password`, `logout`, `/api/errors/log`, `/api/web-vitals`). `locals.user` vient de `getUser()` : la marque se
 lit à jour. Le changement par l'élève la lève par la clé service (`app_metadata` ne lui est pas
 modifiable), en deux essais ; si les deux échouent, la page dit que le mot de passe est bien
 changé et d'en choisir un autre si elle revient (le même serait refusé, `same_password`). Le
@@ -356,7 +356,8 @@ mise à jour de `app_metadata` seule n'en ferme aucune.
   toute écriture** (actions de formulaire comprises). Le test porte sur `event.route.id`, jamais sur
   le chemin brut (SvelteKit route sur le chemin décodé : `/%61pi/…` atteint `/api/…`). Restent
   ouverts : déconnexion, connexion, inscription, `update-password`, `/consent/[token]`,
-  `/api/errors/log`, `/api/account/export` et `/api/account/delete` (droits RGPD).
+  `/api/errors/log`, `/api/web-vitals` (mesures de performance anonymes, la route ne lit pas la
+  session), `/api/account/export` et `/api/account/delete` (droits RGPD).
 - **La base ignore le statut, par décision** (David, 2026-10-11) : avec son jeton, un compte en
   attente garde via PostgREST ce qu'a un élève sans école ni classe — écrire ses propres données,
   écrire au prof. Aucun accès à un mineur (amitiés et conversations bornées à l'école ; données de

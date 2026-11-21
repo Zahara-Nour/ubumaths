@@ -33,6 +33,8 @@ const ALLOWED_SERVICE_ROLE_PATHS = [
 	// Server utilities that need RLS bypass
 	'rateLimiter.ts',
 	'errorMonitoring.ts',
+	// Mesures de performance : table écrite par le serveur seul, sans compte
+	'lib/server/web-vitals/reception.ts',
 	// Notifications système : la base les refuse aux comptes connectés
 	'lib/server/notifications.ts',
 	'serviceRoleClient.ts',

@@ -20,7 +20,9 @@ import { mustChangePassword } from '#lib/server/child-password.ts';
 const ROUTES_OUVERTES = new Set([
 	'/(public)/auth/update-password',
 	'/(public)/auth/logout',
-	'/api/errors/log'
+	'/api/errors/log',
+	// Mesures de performance, anonymes : la route ne lit pas la session
+	'/api/web-vitals'
 ]);
 
 const METHODES_LECTURE = new Set(['GET', 'HEAD', 'OPTIONS']);

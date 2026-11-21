@@ -65,7 +65,8 @@ describe('passwordChangeHandle', () => {
 		['/(public)/auth/update-password', 'GET'],
 		['/(public)/auth/update-password', 'POST'],
 		['/(public)/auth/logout', 'POST'],
-		['/api/errors/log', 'POST']
+		['/api/errors/log', 'POST'],
+		['/api/web-vitals', 'POST']
 	])('marque posée : %s (%s) reste ouvert', async (routeId, methode) => {
 		expect((await passe(evenement(routeId, methode, true))).passe).toBe(true);
 	});

@@ -29,6 +29,8 @@ export interface InteractionEntry {
 export interface InpResult {
 	value: number;
 	url: string;
+	/** Identifiant de route SvelteKit de cette page, `null` s'il n'est pas connu */
+	routeId: string | null;
 	eventName: string;
 	target: string | null;
 }
@@ -39,6 +41,7 @@ interface Interaction {
 	eventName: string;
 	target: string | null;
 	url: string;
+	routeId: string | null;
 }
 
 // Constantes
@@ -76,26 +79,33 @@ export function createInpTracker() {
 	let slowest: Interaction[] = [];
 	/** Interactions vues (toutes n'atteignent pas le seuil d'observation) */
 	const seenIds = new Set<number>();
-	/** Débuts d'interaction : instant (horloge des événements) et adresse */
-	const starts: { time: number; url: string }[] = [];
+	/** Débuts d'interaction : instant (horloge des événements), adresse et route */
+	const starts: { time: number; url: string; routeId: string | null }[] = [];
 
-	/** Adresse de la page au début de l'interaction qui commence à `startTime` */
-	function urlAt(startTime: number, fallback: string): string {
+	/** Page (adresse et route) au début de l'interaction qui commence à `startTime` */
+	function pageAt(
+		startTime: number,
+		fallback: { url: string; routeId: string | null }
+	): { url: string; routeId: string | null } {
 		for (let i = starts.length - 1; i >= 0; i--) {
-			if (starts[i].time <= startTime + START_TOLERANCE) return starts[i].url;
+			if (starts[i].time <= startTime + START_TOLERANCE) return starts[i];
 		}
 		return fallback;
 	}
 
 	return {
 		/** À appeler au pointerdown / keydown (phase de capture) */
-		recordStart(time: number, url: string): void {
-			starts.push({ time, url });
+		recordStart(time: number, url: string, routeId: string | null = null): void {
+			starts.push({ time, url, routeId });
 			if (starts.length > MAX_STARTS) starts.shift();
 		},
 
-		/** Ajoute des entrées `event` ; `currentUrl` sert si aucun début n'est connu */
-		add(entries: InteractionEntry[], currentUrl: string): void {
+		/** Ajoute des entrées `event` ; la page courante sert si aucun début n'est connu */
+		add(
+			entries: InteractionEntry[],
+			currentUrl: string,
+			currentRouteId: string | null = null
+		): void {
 			for (const entry of entries) {
 				const id = entry.interactionId;
 				if (!id) continue; // pas une interaction
@@ -108,12 +118,14 @@ export function createInpTracker() {
 						existing.target = describeTarget(entry.target) ?? existing.target;
 					}
 				} else {
+					const page = pageAt(entry.startTime, { url: currentUrl, routeId: currentRouteId });
 					slowest.push({
 						id,
 						duration: entry.duration,
 						eventName: entry.name,
 						target: describeTarget(entry.target),
-						url: urlAt(entry.startTime, currentUrl)
+						url: page.url,
+						routeId: page.routeId
 					});
 				}
 			}
@@ -134,6 +146,7 @@ export function createInpTracker() {
 			return {
 				value: interaction.duration,
 				url: interaction.url,
+				routeId: interaction.routeId,
 				eventName: interaction.eventName,
 				target: interaction.target
 			};
