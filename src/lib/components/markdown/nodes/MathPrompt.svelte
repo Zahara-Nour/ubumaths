@@ -139,6 +139,16 @@
 	// Extract prompt indices from the expression
 	let promptIndices = $derived(extractPromptIndices(expression, syntax, writingCapitalPairs()));
 
+	// Nom lu par un lecteur d'écran : le champ MathLive porte toutes ses cases, qui ne peuvent
+	// pas avoir chacune leur nom (elles vivent dans le champ, pas dans le DOM de la page)
+	let fieldLabel = $derived(
+		promptIndices.length === 0
+			? undefined
+			: promptIndices.length === 1
+				? 'Expression à compléter, une case'
+				: `Expression à compléter, ${promptIndices.length} cases`
+	);
+
 	let mathField: HTMLElement | undefined = $state();
 
 	// Cases justes mais de forme non optimale (R12, ambre)
@@ -301,6 +311,7 @@
 			class="math-prompt-block"
 			class:math-prompt-unoptimal={amberField}
 			data-unoptimal-prompts={unoptimalAttr}
+			aria-label={fieldLabel}
 			aria-describedby={describedBy}
 		>
 			{latex}
@@ -316,6 +327,7 @@
 		class="math-prompt-inline {className}"
 		class:math-prompt-unoptimal={amberField}
 		data-unoptimal-prompts={unoptimalAttr}
+		aria-label={fieldLabel}
 		aria-describedby={describedBy}
 	>
 		{latex}
