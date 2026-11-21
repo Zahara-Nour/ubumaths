@@ -4,7 +4,7 @@
  *
  * `scripts/ci-integration-touches.ts` choisit, pour une PR qui ne touche que du code (`src/`), de
  * la doc et des tests d'intégration, les seuls tests qui atteignent un fichier modifié.
- * Comportements validés : docs/wip/ci-integration-progress.md § 9.
+ * Comportements validés : docs/archive/wip/ci-integration-progress.md § 9.
  *
  * Dépôt jetable pour le bout en bout : git ne tourne jamais hors du dossier temporaire.
  */

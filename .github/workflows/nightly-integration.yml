@@ -290,7 +290,7 @@ jobs:
         # Seuls tournent les tests dont les imports atteignent un fichier modifié ; aucun test
         # atteint → rien à lancer (`aucun=true`). Hors de ce cas : suite complète. Sur les PR
         # `src/` seules mesurées, 0 à 20 tests au lieu de toute la suite (2026-11-21).
-        # Décision : docs/wip/ci-integration-progress.md § 9.
+        # Décision : docs/archive/wip/ci-integration-progress.md § 9.
         id: touches
         if: github.event_name == 'pull_request' && steps.portee.outputs.fichiers == ''
         run: |
@@ -308,7 +308,7 @@ jobs:
         # ~300 tests rejouent une migration qui ne fait que ranger, taguer ou corriger du
         # contenu : ils ne prouvent quelque chose qu'avant son `db:migrate` (~5 min de suite,
         # 2026-11-21). Sur une PR, seuls tournent ceux qu'elle touche (le test ou sa migration) ;
-        # la nuit et à la main, tous. Décision et tri : docs/wip/ci-integration-progress.md § 7.
+        # la nuit et à la main, tous. Décision et tri : docs/archive/wip/ci-integration-progress.md § 7.
         id: exclusions
         if: steps.selection.outputs.fichiers == '' && steps.touches.outputs.aucun != 'true'
         run: bash scripts/ci-integration-exclusions.sh >> "$GITHUB_OUTPUT" || echo "exclure=" >> "$GITHUB_OUTPUT"
@@ -333,7 +333,7 @@ jobs:
       - name: Empreinte du passage (fichiers dont dépend la suite + portée)
         # Sur 37 pushes de correction, 20 ne touchaient aucun fichier de la suite et relançaient
         # 16 à 20 min pour un résultat identique (2026-11-21). Seulement sur les PR ; vide dans
-        # le doute (la suite tourne). Décision : docs/wip/ci-integration-progress.md § 8.
+        # le doute (la suite tourne). Décision : docs/archive/wip/ci-integration-progress.md § 8.
         id: empreinte
         if: github.event_name == 'pull_request'
         env:

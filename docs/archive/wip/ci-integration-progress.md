@@ -2,20 +2,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-21, après la mesure de C sur #2964._
+_Mis à jour le 2026-11-21 : chantier clos, journal archivé._
 
-- **État** : A (#2956), F (#2957), B (#2959) et C (#2961) mergées. C mesurée sur #2964 (§ 10) :
-  2 tests retenus, workflow de bout en bout en 3 min 03 au lieu de 6 à 7 min ; le morceau unique
-  dure 2 min 18, dont 10 s de tests et 1 min 32 de démarrage de Supabase.
-- **Prochaine action** : à trancher par David. Soit D (morceaux par durée, pour la suite complète :
-  plus long morceau 5 min 42 contre 4 min 17 pour les autres), soit clore le chantier.
-  Sur une PR en sélection, ce qui reste, c'est le démarrage de Supabase, pas les tests.
-- **En attente de David** : D ou clôture.
-- **Pièges en cours** : suite locale cassée au global-setup par les liens de partage du prof de dev
-  (§ 3.4) ; morceaux déséquilibrés (110 à 200 s) → D si besoin ; un test instable vert une fois
-  reste gardé par B (nocturne = filet) ; `import.meta.glob` de code (pas `.md`/`.json`) → suite
-  complète ; job `portee` limité à 10 min (install ajoutée).
-- **Worktree / branche** : aucun.
+- **État** : clos. A (#2956), F (#2957), B (#2959), C (#2961) mergées ; C mesurée sur #2964
+  (§ 10). D écarté par David : il ne rapporterait qu'environ 1 min, et seulement sur les PR en
+  suite complète. Règles durables versées dans `docs/pratiques/tests.md` § 3.
+- **Correctif de clôture** : le global-setup efface les liens de partage créés par les profs
+  avant de les supprimer (§ 3.4 : 23503, rouge puis vert en local).
+- **Reste hors chantier** : la base locale n'a pas 96 migrations (15 → 20 novembre) ; la suite
+  locale complète échoue donc dans les tests (218 fichiers), pas au global-setup. Un
+  `pnpm db:reset` la remettrait d'accord, à décider par David (il efface les données locales).
+- **Worktree / branche** : `ubumaths-wt-ci-integration` / `chore/ci-integration-cloture`,
+  à supprimer après le merge.
 
 ## 1. Ce que coûte la suite aujourd'hui (mesuré)
 

@@ -5,7 +5,7 @@
  * Sur une PR qui ne modifie que du code (`src/`), de la doc et des tests d'intégration, seuls
  * tournent les tests dont les imports atteignent un fichier modifié. Sur les 37 PR mesurées, une
  * PR `src/` seule atteignait 0 à 20 tests (0 à 42 s) au lieu de toute la suite.
- * Comportements validés : docs/wip/ci-integration-progress.md § 9.
+ * Comportements validés : docs/archive/wip/ci-integration-progress.md § 9.
  *
  *   - fermeture des imports PAR test (`integrationClosures`, le calcul de la garde
  *     `check:integration-paths`) ;
