@@ -12,9 +12,12 @@ Chaque variation est **ajoutée à la fin** du modèle, jamais avant une variati
   Chez eux (TSA1-20) : saisie avec une touche « n'existe pas ». Chez nous : case choix (0, +∞, −∞,
   k, « la suite n'a pas de limite »), comme ea9d2de8 pour (−1)ⁿ. Variation : uₙ = k·cos n ou
   k·sin n, k de 1 à 5, signe au hasard → pas de limite.
-- **F2 — Somme 1 + q + … + qⁿ quand |q| ⩾ 1** · 708f8a08 · TSPE-383. Chez eux (TSA1-27) : QCM.
+- **F2 — Somme 1 + q + … + qⁿ quand |q| ⩾ 1** · ~~708f8a08~~ → **modèle neuf**
+  `f02-somme-geometrique-raison-hors-intervalle` (2026-11-22 : 708f8a08 porte aussi TCOMP-210,
+  borné à 0 ⩽ q < 1) · TSPE-383. Chez eux (TSA1-27) : QCM.
   Variations : (a) q de 2 à 5 → +∞, saisie ; (b) q = −1 ou q de −5 à −2 → pas de limite, choix.
-- **F3 — Gendarmes avec cos n et sin n** · 98ba277c · TSPE-578. Chez eux (TSA1-25). Variations :
+- **F3 — Gendarmes avec cos n et sin n** · ~~98ba277c~~ → **modèle neuf** `f03-gendarmes-cos-sin`
+  (2026-11-22 : 98ba277c porte aussi TCOMP-205, pas de trigonométrie en complémentaire) · TSPE-578. Chez eux (TSA1-25). Variations :
   (a) uₙ = L + a·cos n / n (ou sin n), a de 1 à 9, L de −9 à 9 → L ; (b) uₙ = (an + c·sin n)/(bn)
   → a/b. Saisie, comme les variations (−1)ⁿ publiées.
 - **F4 — Limite infinie par minoration avec cos n** · 7063979e · TSPE-385. Chez eux (TSA1-25, 48).
