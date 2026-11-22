@@ -6,18 +6,19 @@ Skill [`idees-rubrique`](../../.claude/skills/idees-rubrique/SKILL.md). Tableau 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22, lot écrit (PR à venir)._
+_Mis à jour le 2026-11-22, après #3014._
 
 - **État** : lot écrit, 6 modèles neufs (14 variations) et 16 variations de 10 modèles publiés ;
   `question:specs` vert sur les 16 fichiers ; `create-questions` en simulation vert ; `migration-contenu`
-  accepte les 10 publiés · **Prochaine action** : PR du lot mergée → David lance `create-questions
+  accepte les 10 publiés · **Prochaine action** : lot mergé (#3014) ; David lance `create-questions
 --publier` sur `scripts/questions/idees-6e-decimaux-neufs/` ; puis PR des migrations (rangement des
   6 neufs, niveau 6 ajouté à 590169c4, contenu des publiés régénéré) · **En attente de David** : le
   `--publier` des brouillons.
 - **Pièges en cours** : la migration de contenu générée par l'agent (`20261122182230_…`) reste hors de
   la PR du lot (non suivie dans le worktree), à régénérer à la PR des migrations ; ni essai en base
   locale ni jeu dans l'aperçu pour l'instant.
-- **Worktree / branche** : `ubumaths-wt-idees-6e-decimaux`, `feat/idees-6e-decimaux`.
+- **Worktree / branche** : `ubumaths-wt-idees-6e-decimaux` gardé (il porte la migration non suivie),
+  branche `feat/idees-6e-decimaux` mergée ; la PR des migrations partira d'une branche neuve.
 
 ## Décisions de David (2026-11-22)
 
