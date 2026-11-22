@@ -234,11 +234,17 @@ n'est dans aucune liste, ou quand une table copiée pointe vers une table qui ne
 `pnpm db:types` qui amène une table nouvelle, la classer** (dans le doute : `JAMAIS`). Après la copie,
 le seed vérifie lui-même chaque lien des tables copiées : une ligne orpheline annule toute la copie.
 **Ce que font les élèves fictifs** : ils sont rangés dans les classes de l'année en cours (6 par
-classe), avec le niveau de leur classe sur leur profil, et leur activité est inventée par trois plans
+classe), avec le niveau de leur classe sur leur profil, et leur activité est inventée par quatre plans
 purs, testés sans base : `activite.ts` (fiches assignées, Gidouilles, discussion, amitiés),
 `suivi.ts` (évaluations passées, entraînement, révisions, Python, devinettes, signalements,
-exercices, compétences) et `jeux.ts` (démineur et son tournoi en cours, 2048, Mathémo, succès,
-Palotins, cartes VIP dont une demande d'activation qui attend le prof). Le seed publie aussi une
+exercices, compétences), `jeux.ts` (démineur et son tournoi en cours, 2048, Mathémo, succès,
+Palotins, cartes VIP dont une demande d'activation qui attend le prof) et `echanges.ts` (messagerie
+du prof, réactions et modération de la discussion, tuteur aux réponses écrites à l'avance, annonces
+du prof, marché ouvert aux classes actives, consentements parentaux, carnet de liaison de la première
+classe avec de faux parents en `@example.test`, élèves en attente d'activation, cahier de texte,
+liens de partage dont un expiré, tableau de tâches du prof, signalements de bug). Rien n'est envoyé :
+aucune fonction de courriel n'est appelée. Un consentement accordé passe par `grant_parental_consent`,
+un échange entre amis conclu par `execute_trade` (qui déplace les cartes). Le seed publie aussi une
 devinette inventée au nom du prof local. Les points, gains et succès des jeux suivent les règles
 recopiées des fonctions de l'appli ; le journal des récompenses se remplit seul (déclencheurs). La
 mémoire des Mathoux est écrite par la vraie règle de l'appli sur les points acquis (`mathoux.ts`) :
