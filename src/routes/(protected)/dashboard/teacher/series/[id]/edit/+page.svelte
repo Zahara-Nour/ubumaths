@@ -55,6 +55,12 @@
 		else delete items[index].variations;
 	}
 
+	// Variations en QCM (idées-format, idée 4) : absent = aucune, rien d'enregistré
+	function handleChoiceVariations(index: number, choiceVariations: number[] | undefined) {
+		if (choiceVariations) items[index].choiceVariations = choiceVariations;
+		else delete items[index].choiceVariations;
+	}
+
 	function handleRemove(index: number) {
 		items.splice(index, 1);
 	}
@@ -192,6 +198,9 @@
 											{template}
 											selected={item.variations}
 											onchange={(variations) => handleVariations(index, variations)}
+											choiceSelected={item.choiceVariations}
+											onchoicechange={(choiceVariations) =>
+												handleChoiceVariations(index, choiceVariations)}
 										/>
 									</div>
 								{/if}

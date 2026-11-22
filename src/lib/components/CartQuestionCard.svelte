@@ -48,6 +48,7 @@
 		onUpdateDelay,
 		onRemove,
 		onUpdateVariations,
+		onUpdateChoiceVariations,
 		tooShort = null,
 		observedDelay = null,
 		distinctMax = null
@@ -63,6 +64,8 @@
 		onRemove: (templateId: string) => void;
 		/** Choix des variations (prof seulement) ; absent : rien */
 		onUpdateVariations?: (templateId: string, variations: number[] | undefined) => void;
+		/** Variations en QCM (prof seulement, idée 4) ; absent : pas de case « En QCM » */
+		onUpdateChoiceVariations?: (templateId: string, choiceVariations: number[] | undefined) => void;
 		/** Durée courante signalée trop courte (prof seulement) ; null : rien */
 		tooShort?: QuestionTiming | null;
 		/** Durée observée à suggérer (prof seulement) ; null : rien */
@@ -182,6 +185,10 @@
 			{template}
 			selected={item.variations}
 			onchange={(variations) => onUpdateVariations(item.templateId, variations)}
+			choiceSelected={item.choiceVariations}
+			onchoicechange={onUpdateChoiceVariations
+				? (choiceVariations) => onUpdateChoiceVariations(item.templateId, choiceVariations)
+				: undefined}
 		/>
 	{/if}
 

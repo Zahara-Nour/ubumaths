@@ -235,6 +235,28 @@ et en QCM d'un même modèle mêlées, mention « en QCM » sur chaque réponse.
   question déjà posée ; deux lignes d'un même modèle sans variables, l'une en QCM et l'autre en
   saisie, peuvent donner la même question sous les deux formes.
 
+## Idée 4, PR 4 — case « En QCM » dans le panier et l'éditeur de série (2026-11-22)
+
+Branche `feat/idees-format-qcm-panier` (worktree `ubumaths-wt-idees-format`). Phase 0 : découpage
+validé (Q1 C : case par variation, absente sans erreur prévue, à plusieurs cases ou sous veto).
+
+- `VariationPicker` : `choiceSelected` / `onchoicechange` (absent = pas de case : élève, lien) ; case
+  « En QCM » sous chaque variation où `mayBeChoice` (modèle seul) puis `canBeChoice` (exemple tiré)
+  disent oui ; désactivée si la variation est décochée ; retirer une variation retire son QCM ;
+  résumé « … · N en QCM » ; modèle à une variation : bouton « Réponse en saisie / en QCM ».
+- Panier : `addToCart(…, choiceVariations)`, `setChoiceVariations`, fusion et lien gardent le choix
+  (bug corrigé : `mergeItems` le perdait). `CartQuestionCard` : `onUpdateChoiceVariations` (prof).
+- Éditeur de série : `handleChoiceVariations` (clé retirée quand vide).
+- Tests (rouges avant le code) : `choice-eligibility` (4), `questionCart-qcm` (4),
+  `VariationPicker` (+7), éditeur `variations` (+1).
+- Relecture `code-reviewer` (Sonnet). Corrigé (tests rouges puis verts) : le pré-filtre `mayBeChoice` ne
+  voit ni le type de case ni le bloc d'opération (décidés au tirage) → bouton, résumé et cases jugés sur
+  l'exemple tiré (`choosable`, seulement pour les variations à erreurs prévues) ; retirer une variation
+  retire son QCM enregistré même invisible, et `setVariations` du panier élague `choiceVariations` ;
+  dialogue : « si un tirage ne le permet pas, reste en saisie », titre « Réponse en QCM » pour un
+  modèle à une variation. Faux : « seule l'évaluation tire en QCM » (`automaths/test` aussi). Laissé :
+  un élève qui ouvre le lien du prof garde son QCM sans le voir, comme les variations choisies.
+
 ## PR 1 — tirage (#2954, mergée le 2026-11-21)
 
 - `src/lib/questions/series-draw.ts` : `variationOfSeed`, `questionFingerprints`,

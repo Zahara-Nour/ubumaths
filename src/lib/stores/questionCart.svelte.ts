@@ -3,8 +3,9 @@
  * ===================
  *
  * Le panier est une série en cours de composition : des lignes `{ templateId,
- * quantity, delay, variations? }` (ADR 0035 ; variations choisies, chantier
- * `idees-format` idée 2), gardées dans le navigateur (localStorage).
+ * quantity, delay, variations?, choiceVariations? }` (ADR 0035 ; variations
+ * choisies et variations « en QCM », chantier `idees-format` idées 2 et 4),
+ * gardées dans le navigateur (localStorage).
  *
  * Un panier enregistré AVANT l'ADR 0035 porte des catégories (thème, domaine…) :
  * ces lignes ne sont plus relues. Au chargement elles sont retirées, le panier
@@ -118,13 +119,14 @@ export class QuestionCartStore {
 
 	/**
 	 * Ajoute un modèle ; déjà présent → sa quantité augmente (99 au plus) et il
-	 * garde sa durée et ses variations choisies.
+	 * garde sa durée, ses variations choisies et ses variations en QCM.
 	 */
 	addToCart(
 		templateId: string,
 		quantity: number = 1,
 		delay: number = DEFAULT_DELAY,
-		variations?: readonly number[]
+		variations?: readonly number[],
+		choiceVariations?: readonly number[]
 	) {
 		const existing = this.find(templateId);
 		if (existing) {
@@ -136,6 +138,8 @@ export class QuestionCartStore {
 				delay
 			};
 			if (variations && variations.length > 0) item.variations = sortedUnique(variations);
+			if (choiceVariations && choiceVariations.length > 0)
+				item.choiceVariations = sortedUnique(choiceVariations);
 			this.items.push(item);
 		}
 		this.saveToStorage();
@@ -147,8 +151,24 @@ export class QuestionCartStore {
 		if (!item) return;
 		if (variations && variations.length > 0) {
 			item.variations = sortedUnique(variations);
+			// Une variation retirée emporte son QCM (idée 4)
+			const kept = item.choiceVariations?.filter((index) => variations.includes(index));
+			if (kept && kept.length > 0) item.choiceVariations = kept;
+			else delete item.choiceVariations;
 		} else {
 			delete item.variations;
+		}
+		this.saveToStorage();
+	}
+
+	/** Variations en QCM d'une ligne (idée 4) ; `undefined` ou liste vide = aucune (le champ disparaît) */
+	setChoiceVariations(templateId: string, choiceVariations: readonly number[] | undefined) {
+		const item = this.find(templateId);
+		if (!item) return;
+		if (choiceVariations && choiceVariations.length > 0) {
+			item.choiceVariations = sortedUnique(choiceVariations);
+		} else {
+			delete item.choiceVariations;
 		}
 		this.saveToStorage();
 	}
@@ -212,11 +232,18 @@ export class QuestionCartStore {
 
 	/**
 	 * Ajoute une série au panier (Q45) : un modèle déjà présent voit sa quantité
-	 * augmenter (99 au plus) et garde sa durée et ses variations ; les autres s'ajoutent.
+	 * augmenter (99 au plus) et garde sa durée et ses variations (QCM compris) ;
+	 * les autres s'ajoutent.
 	 */
 	mergeItems(items: readonly SeriesItem[]) {
 		for (const item of items) {
-			this.addToCart(item.templateId, item.quantity, item.delay, item.variations);
+			this.addToCart(
+				item.templateId,
+				item.quantity,
+				item.delay,
+				item.variations,
+				item.choiceVariations
+			);
 		}
 	}
 
