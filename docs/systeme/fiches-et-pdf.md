@@ -959,4 +959,8 @@ texte venu de la base, posé dans une cellule `[…]` d'un gabarit, peut fermer 
 être lu comme du code Typst (audit de sécurité de la PR #2912). Corrigé pour le titre, la ligne
 sous le titre et le bas de page (`escapeTypstBrackets`) ; reste les autres textes de la fiche
 (consignes, nom de section…), écrits par le prof ou l'admin seulement. Passer chacun par
-`escapeTypstBrackets` ou `typstTextLiteral`.
+`escapeTypstBrackets` ou `typstTextLiteral`. 11. **`escapeTypst` n'échappe pas `/`** (relevé à la PR 4 du
+chantier `categorie-fiche`, 2026-11-22) : en mode contenu Typst, `//` et `/*` ouvrent un
+commentaire, et un texte venu de la base qui en contient (titre, consigne) serait coupé à cet
+endroit dans le PDF. Faible : aucun des 50 titres de fiche en prod n'en contient (mesuré le 2026-11-22). Correctif : ajouter
+`/` aux remplacements de `escapeTypst`, dans une PR à part.

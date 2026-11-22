@@ -1,7 +1,7 @@
 # 0041 — Catégorie et notions d'une fiche
 
 - **Statut** : acceptée — phase 0 du chantier `categorie-fiche` (journal
-  `docs/wip/categorie-fiche-progress.md`)
+  `docs/archive/wip/categorie-fiche-progress.md`, clos le 2026-11-22)
 - **Date** : 2026-11-19 · **Décidée par** : David
 - **Amendée** le 2026-11-19 (reprise des 50 fiches, David) : **plusieurs notions pour toute
   fiche**, la règle « une au plus, sauf Révisions et Automatismes » est retirée avec sa garde en

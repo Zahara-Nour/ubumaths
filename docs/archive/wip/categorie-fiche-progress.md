@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22, après #2985._
+_Mis à jour le 2026-11-22 : chantier **clos**._
 
-- **État** : tout le découpage est mergé (PR 1 à 4 ; #2985 = les 9 scripts `create-automatismes-*` posent catégorie + notions) ; reprise des 49 fiches vérifiée en prod le 2026-11-22 · **Prochaine action** : clôture du chantier — recompter le découpage contre les PR et le code, verser le durable dans `docs/systeme/` (ADR 0041 déjà là), archiver ce journal · **En attente de David** : son accord pour clore · **Pièges en cours** : échapper `/` dans `escapeTypst` (faible, PR à part) ; #2985 n'est pas en prod (scripts seulement, rien à déployer pour les élèves) · **Worktree** : aucun
+- **État** : clos le 2026-11-22. Découpage recompté contre les PR et le code : PR 1 #2901, 2a #2903, 2b #2912 (+ #2919), 3a #2928, branche en titre #2938, 3b #2939 (reprise des 49 fiches vérifiée en prod), 4 #2985 ; les trois migrations sont jouées en prod · **Durable** : [ADR 0041](../../adr/0041-categorie-et-notions-d-une-fiche.md), `docs/systeme/fiches-et-pdf.md`, `docs/systeme/base-de-donnees.md` · **Reste hors chantier** : `/` non échappé par `escapeTypst` (écart 11 de `fiches-et-pdf.md`) ; noms anglais des notions (chantier séparé) · **Worktree** : aucun
 
 ### 2026-11-22 — reprise vérifiée, PR 4
 
@@ -80,12 +80,12 @@ _Mis à jour le 2026-11-22, après #2985._
    Décidé en cours de route (sans changer la synthèse) : fiche d'exercices au titre composé passée
    en évaluation → titre libre (notions seules, sans catégorie) ; gabarit de prof sans
    `{{title_sub}}` → titre complet « notions · catégorie ».
-3. **PR 3a — plusieurs notions pour toute fiche** (décidé par David le 2026-11-19, au relevé
+3. ✅ **PR 3a — plusieurs notions pour toute fiche** (décidé par David le 2026-11-19, au relevé
    des 50 fiches) : migration qui retire la garde (DROP de deux déclencheurs et d'une fonction,
    sans perte), éditeur en liste seule, `allowsSeveralNotions` retiré, notions toujours sous un
-   titre libre, majuscule en tête de chaque notion (`notionLabel`), ADR 0041 amendé.
-   **PR 3b — reprise des 50 fiches** : page à cocher (relevé en bas du journal), écriture en
-   prod par David, après le `deploy:prod`.
+   titre libre, majuscule en tête de chaque notion (`notionLabel`), ADR 0041 amendé (#2928, migration `20261119222741` jouée).
+   ✅ **PR 3b — reprise des 50 fiches** : page à cocher (relevé en bas du journal), écriture en
+   prod par David, après le `deploy:prod` (#2939 ; 49 fiches vérifiées en prod le 2026-11-22).
 4. ✅ **PR 4 — script des automatismes** (ADR 0011) : pose catégorie + notions (#2985, mergée le 2026-11-22).
 
 ## L'idée (David, 2026-11-19)
