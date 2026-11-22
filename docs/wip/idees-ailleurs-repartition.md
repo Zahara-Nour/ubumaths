@@ -176,6 +176,9 @@ de contenu appliquée en prod.
 | cf51cb93 Calculer un terme d'une suite géométrique                               | `idees-1re-suites`                                          | 2026-11-22 |                                      |
 | d2943133 Reconnaître une suite arithmétique à partir de sa forme explicite       | `idees-1re-suites`                                          | 2026-11-22 |                                      |
 | e67b1cbd Terme général d'une suite géométrique                                   | `idees-1re-suites`                                          | 2026-11-22 |                                      |
+| 98f558e4 Trouver le nombre choisi                                                | `idees-6e-entiers`                                          | 2026-11-22 |                                      |
+| b9677e1f Chiffre des unités d'un produit                                         | `idees-6e-entiers`                                          | 2026-11-22 |                                      |
+| d793de49 Calculer un produit d'entiers                                           | `idees-6e-entiers`                                          | 2026-11-22 |                                      |
 
 ## Idées en attente
 
@@ -187,3 +190,5 @@ Ce sont des idées notées pour un modèle déjà réservé, ou reportées par D
   suite définie par une fonction homographique avec l'étude de f (TSA1-44) → rubrique
   « compléments sur la dérivation » ; suites avec ln, uₙ₊₁ = ln(1 + uₙ) (TSA1-48) → rubrique
   « logarithme » ; suites d'intégrales Iₙ (TSA1-48) → rubrique « intégration ».
+- `idees-6e-entiers` (plus tard, David, 2026-11-22) : la rose des sommes (6N0A-2), en attente d'un outil
+  « grille ou figure jugée par ses contraintes » (`outils-manquants.md`).
