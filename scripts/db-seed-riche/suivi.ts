@@ -48,8 +48,8 @@ export interface ContexteSuivi {
 	horsClasse: string;
 	maintenant: Date;
 	graine: number;
-	/** L'évaluation copiée, avec la composition de sa série. */
-	evaluation: { id: string; items: unknown[] } | null;
+	/** L'évaluation copiée, la composition de sa série, et quand la première classe l'a reçue. */
+	evaluation: { id: string; items: unknown[]; assigneeLe: string } | null;
 	/** Tire les questions de l'évaluation pour une graine. */
 	tirer: (graine: number) => QuestionTiree[];
 	corriger: (instance: Record<string, unknown>, valeurs: string[] | null) => Verdict;
@@ -177,7 +177,9 @@ export function planSuivi(c: ContexteSuivi) {
 		const passer = (eleve: string, joursAvant: number, niveau: number, rendue: boolean) => {
 			const tirage = c.tirer(entier(0, GRAINE_MAX));
 			if (tirage.length === 0) return;
-			const debut = t0 - joursAvant * JOUR - 180 * MINUTE;
+			// Assez tôt pour que la copie, même rendue au bout de chaque délai, soit déjà rendue.
+			const dureeMax = tirage.reduce((n, q) => n + q.delay_seconds, 0) * 1000;
+			const debut = t0 - joursAvant * JOUR - dureeMax - 10 * MINUTE;
 			const seance = {
 				id: uuid(),
 				user_id: eleve,
@@ -221,7 +223,9 @@ export function planSuivi(c: ContexteSuivi) {
 							: q.attendues.map((v) => (v === '0' ? '1' : '0'));
 				const verdict = c.corriger(q.instance, valeurs);
 				const duree =
-					valeurs === null ? q.delay_seconds : entier(3, Math.max(3, q.delay_seconds - 1));
+					valeurs === null
+						? q.delay_seconds
+						: Math.min(q.delay_seconds, entier(3, Math.max(3, q.delay_seconds - 1)));
 				ecoule += duree;
 				points += verdict.points;
 				const rendueA = iso(debut + ecoule * 1000);
@@ -273,10 +277,16 @@ export function planSuivi(c: ContexteSuivi) {
 			seance.score = seance.grade / 2;
 			seance.time_spent = ecoule;
 		};
-		for (const eleve of elevesSuivis) {
-			if (eleve === enCours) passer(eleve, 0, 0, false);
-			else passer(eleve, entier(1, 3), eleve === etoile ? 1 : 0.4 + r() * 0.4, true);
-		}
+		// Jamais avant d'avoir reçu l'évaluation : la première classe l'a depuis `assigneeLe`
+		// (`activite.ts`), la deuxième depuis 4 jours (ci-dessus).
+		const depuis = Math.floor((t0 - Date.parse(evaluation.assigneeLe)) / JOUR);
+		deuxClasses.forEach((classe, rang) => {
+			const auPlusTot = Math.max(0, (rang === 0 ? depuis : 4) - 1);
+			for (const eleve of actifs(classe)) {
+				if (eleve === enCours) passer(eleve, 0, 0, false);
+				else passer(eleve, entier(0, auPlusTot), eleve === etoile ? 1 : 0.4 + r() * 0.4, true);
+			}
+		});
 		// Une deuxième tentative, meilleure : le prof voit « meilleure note » et « 2 tentatives ».
 		const second = actifs(c.classes[0])[1];
 		if (second && second !== enCours) passer(second, 0, 0.9, true);
@@ -924,11 +934,14 @@ export function planSuivi(c: ContexteSuivi) {
 	}
 
 	// --- Dernières visites ------------------------------------------------------------------------
+	// Le jour de Paris, comme l'appli : une visite « d'aujourd'hui » ne doit pas dater d'hier.
+	const jourDeParis = (joursAvant: number) =>
+		new Date(t0 - joursAvant * JOUR).toLocaleDateString('fr-CA', { timeZone: 'Europe/Paris' });
 	const visites = c.classes.flatMap((k) =>
 		k.eleves.map((eleve) => ({
 			student_id: eleve,
 			// L'absent revient après plus de trois semaines : le Palotin fête son retour.
-			last_visit_date: quand(eleve === absent ? 25 : 0).slice(0, 10),
+			last_visit_date: jourDeParis(eleve === absent ? 25 : 0),
 			welcome_back_on: null,
 			week_celebrated_on: null
 		}))
@@ -975,32 +988,82 @@ export const ECRITURE_SUIVI: readonly {
 	partie: keyof PlanSuivi;
 	table: string;
 	tableaux?: readonly string[];
+	/** Colonnes d'une clé unique de la table (hors `id`) : le plan n'y met jamais deux fois la même. */
+	unique?: readonly string[];
 }[] = [
 	{ partie: 'evaluationsAssignees', table: 'evaluation_assignments' },
 	{ partie: 'seances', table: 'test_sessions' },
-	{ partie: 'questionsTirees', table: 'evaluation_attempt_questions' },
+	{
+		partie: 'questionsTirees',
+		table: 'evaluation_attempt_questions',
+		unique: ['test_session_id', 'position']
+	},
 	{ partie: 'reponses', table: 'test_answers' },
 	{ partie: 'traces', table: 'skill_attempts', tableaux: ['answer_parts', 'part_verdicts'] },
 	{ partie: 'paquets', table: 'srs_decks' },
-	{ partie: 'sections', table: 'srs_deck_sections' },
+	{ partie: 'sections', table: 'srs_deck_sections', unique: ['deck_id', 'name'] },
 	{ partie: 'cartes', table: 'srs_cards' },
 	{ partie: 'paquetsAssignes', table: 'srs_deck_assignments' },
-	{ partie: 'fiches', table: 'srs_card_stats' },
+	{
+		partie: 'fiches',
+		table: 'srs_card_stats',
+		unique: ['user_id', 'card_reference_type', 'card_reference_id']
+	},
 	{ partie: 'seancesRevision', table: 'srs_review_sessions' },
-	{ partie: 'pythonAssignes', table: 'python_exercise_assignments' },
-	{ partie: 'pythonSoumissions', table: 'python_exercise_submissions' },
-	{ partie: 'pythonFichiers', table: 'python_file_assignments' },
-	{ partie: 'pythonCarnets', table: 'python_notebook_assignments' },
-	{ partie: 'pythonControles', table: 'python_notebook_checkpoint_runs' },
+	{
+		partie: 'pythonAssignes',
+		table: 'python_exercise_assignments',
+		unique: ['exercise_id', 'class_id', 'student_id']
+	},
+	{
+		partie: 'pythonSoumissions',
+		table: 'python_exercise_submissions',
+		unique: ['student_id', 'exercise_id', 'attempt_number']
+	},
+	{ partie: 'pythonFichiers', table: 'python_file_assignments', unique: ['file_id', 'class_id'] },
+	{
+		partie: 'pythonCarnets',
+		table: 'python_notebook_assignments',
+		unique: ['notebook_id', 'class_id']
+	},
+	{
+		partie: 'pythonControles',
+		table: 'python_notebook_checkpoint_runs',
+		unique: ['notebook_id', 'user_id', 'cell_id']
+	},
 	{ partie: 'devinettesAssignees', table: 'riddle_assignments' },
-	{ partie: 'devinettesTentatives', table: 'riddle_attempts' },
-	{ partie: 'fichesEleves', table: 'worksheet_assignment_students' },
-	{ partie: 'reglagesCorrige', table: 'worksheet_assignment_exercise_settings' },
+	{
+		partie: 'devinettesTentatives',
+		table: 'riddle_attempts',
+		unique: ['riddle_id', 'student_id', 'attempt_number']
+	},
+	{
+		partie: 'fichesEleves',
+		table: 'worksheet_assignment_students',
+		unique: ['assignment_id', 'student_id']
+	},
+	{
+		partie: 'reglagesCorrige',
+		table: 'worksheet_assignment_exercise_settings',
+		unique: ['assignment_id', 'worksheet_exercise_id']
+	},
 	{ partie: 'signalements', table: 'worksheet_error_reports' },
-	{ partie: 'impression', table: 'student_print_settings' },
-	{ partie: 'exercicesAssignes', table: 'exercise_assignments' },
-	{ partie: 'exercicesVus', table: 'exercise_completions' },
-	{ partie: 'observablesEtats', table: 'student_observable_state' },
-	{ partie: 'competences', table: 'student_competence_level' },
-	{ partie: 'visites', table: 'student_last_visits' }
+	{ partie: 'impression', table: 'student_print_settings', unique: ['student_id'] },
+	{
+		partie: 'exercicesAssignes',
+		table: 'exercise_assignments',
+		unique: ['exercise_id', 'assigned_to_type', 'class_id', 'student_id']
+	},
+	{ partie: 'exercicesVus', table: 'exercise_completions', unique: ['exercise_id', 'student_id'] },
+	{
+		partie: 'observablesEtats',
+		table: 'student_observable_state',
+		unique: ['student_id', 'observable_id']
+	},
+	{
+		partie: 'competences',
+		table: 'student_competence_level',
+		unique: ['student_id', 'math_competence_id']
+	},
+	{ partie: 'visites', table: 'student_last_visits', unique: ['student_id'] }
 ];

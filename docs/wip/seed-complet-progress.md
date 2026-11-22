@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22, PR 2 ouverte (#NNNN)._
+_Mis à jour le 2026-11-22, PR 2 ouverte (#2980)._
 
-- **État** : PR 1 mergée (#2977). PR 2 (#NNNN, branche `feat/seed-complet-suivi`) : suivi et travail
+- **État** : PR 1 mergée (#2977). PR 2 (#2980, branche `feat/seed-complet-suivi`) : suivi et travail
   scolaire inventés (§ 8), liens vérifiés après la copie, élèves rangés dans les classes de l'année
   en cours. Prouvée sur copie isolée, pages ouvertes en prof et en élève.
 - **Prochaine action** : merger la PR 2 (CI + relectures), puis PR 3, jeux et récompenses (§ 5) :
@@ -229,10 +229,10 @@ Classement (§ 3) et découpage (§ 5) validés par David le 2026-11-21 (« go �
   11 classes) : à reprendre en PR 4. Tous les admins de prod deviennent le même compte local : une
   table à une ligne par utilisateur casserait le seed le jour où la prod a deux admins.
 
-## 8. PR 2 : suivi et travail scolaire (2026-11-22, #NNNN)
+## 8. PR 2 : suivi et travail scolaire (2026-11-22, #2980)
 
 - **Un plan pur de plus**, `scripts/db-seed-riche/suivi.ts` (tests :
-  `scripts/__tests__/db-seed-suivi.test.ts`, 35 cas, sans base ni moteur de questions), écrit dans
+  `scripts/__tests__/db-seed-suivi.test.ts`, 43 cas, sans base ni moteur de questions), écrit dans
   26 tables ; `ECRITURE_SUIVI` dit quelle partie va dans quelle table, dans l'ordre des liens (un
   test vérifie que chaque table est bien dans `INVENTE`). Ce qui est inventé :
   - **évaluations passées** : une copie par élève des deux classes les plus remplies (l'étoile a
@@ -285,6 +285,14 @@ pnpm dev --port 5176 --strictPort`), pages lues connecté (jeton pris à l'API d
   contrôle avec bilan par question, analytics de la classe : grille, points à remédier, taux de
   réussite, régularité, compétences ; suivi d'un élève ; paquets et attributions ; résultats Python
   et carnet ; validations de devinettes ; avancement d'une fiche).
+- **Relectures** : `security-auditor`, aucun finding. `code-reviewer`, rien de bloquant ; corrigé :
+  une copie n'est plus datée avant que sa classe ait reçu l'évaluation, une question sans réponse en
+  texte (choix, geste) est écartée du tirage (sinon l'étoile n'avait pas 20), copie toujours rendue
+  dans le passé et dans le délai de chaque question, visites datées du jour de Paris, liens « non
+  validés » exclus du contrôle, message clair si le suivi échoue après l'activité ; 8 tests de plus
+  (clé unique de chaque partie du plan, demi-point, tirage vide, classes d'un et de deux élèves).
+  Laissé tel quel, et écrit dans la doc : relancer le seed remplace tout ce que le prof local a
+  assigné (exercices, Python, devinettes), comme il le faisait déjà pour les fiches.
 - **Trouvé grâce au seed, hors PR** : sur « Mes révisions » de l'élève, les compteurs « À réviser »
   et « Nouvelles » valent toujours 0 : la page lit `stats.due_cards` / `new_cards`, le serveur rend
   `due_count` / `new_count` (`dashboard/revisions/+page.svelte:46`). Petite PR à part.

@@ -158,7 +158,9 @@ async function liensRompus(db: pg.Client, tables: readonly string[]) {
 		   join pg_namespace n on n.oid = t.relnamespace
 		   join pg_class tc on tc.oid = c.confrelid
 		   join pg_namespace nc on nc.oid = tc.relnamespace
-		  where c.contype = 'f' and n.nspname = 'public' and t.relname = any($1::text[])
+		  -- Un lien « non validé » tolère déjà des orphelines en prod : il n'est pas contrôlé.
+		  where c.contype = 'f' and c.convalidated and n.nspname = 'public'
+		    and t.relname = any($1::text[])
 		  order by t.relname, c.conname`,
 		[tables]
 	);
@@ -456,7 +458,14 @@ async function genererSuivi(
 		horsClasse: `5eed0000-0000-4000-8000-0000000000${String(NB_ELEVES + 1).padStart(2, '0')}`,
 		maintenant,
 		graine: 20261122,
-		evaluation: evaluationId && items ? { id: evaluationId, items } : null,
+		evaluation:
+			evaluationId && items
+				? {
+						id: evaluationId,
+						items,
+						assigneeLe: activite.plan.evaluationsAssignees[0].assigned_at as string
+					}
+				: null,
 		tirer: moteur.tirer,
 		corriger: moteur.corriger,
 		attendues: moteur.attendues,
@@ -517,7 +526,8 @@ async function genererSuivi(
 	]) {
 		await db.query(`delete from public."${table}" where ${invente}`);
 	}
-	// Notifications créées par le déclencheur des signalements, pour le prof local.
+	// Notifications créées par le déclencheur des signalements, pour le prof local (celles d'un
+	// signalement fait à la main en local partent aussi : rien ne les distingue).
 	await db.query(
 		`delete from public.notifications
 		  where is_system and system_event_type = 'error_reported' and target_user_ids = array[$1::uuid]`,
@@ -529,7 +539,9 @@ async function genererSuivi(
 		await ajouter(db, table, plan[partie], tableaux);
 	}
 
-	// Gidouilles gagnées aux devinettes : la validation du prof les ajoute au compteur de l'élève.
+	// Gidouilles gagnées aux devinettes : la validation du prof les ajoute au compteur de l'élève,
+	// sans ligne dans l'historique des Gidouilles (comme l'appli). Ne se cumule pas d'un passage à
+	// l'autre : `genererActivite` vient de recalculer le compteur.
 	for (const t of plan.devinettesTentatives.filter((x) => x.gidouilles_awarded > 0)) {
 		await db.query('update public.profiles set gidouilles = gidouilles + $1 where id = $2', [
 			t.gidouilles_awarded,
@@ -681,7 +693,12 @@ async function main() {
 		const nbClasses = await creerEleves(db);
 		const activite = await genererActivite(db);
 		const plan = activite.plan;
-		const suivi = await genererSuivi(db, activite, new Date());
+		const suivi = await genererSuivi(db, activite, new Date()).catch(async (e: unknown) => {
+			await db.query('rollback').catch(() => {});
+			throw new Error(
+				`Contenu, élèves et activité de base sont écrits, mais le suivi est annulé (${e instanceof Error ? e.message : String(e)}). Relancer \`pnpm db:seed-riche\` après correction.`
+			);
+		});
 		console.log(`\n✅ ${total} lignes de contenu copiées.`);
 		console.log(
 			`✅ ${NB_ELEVES} élèves fictifs répartis dans ${nbClasses} classe(s), plus un hors classe : eleve01…eleve${NB_ELEVES + 1}@local.test / local-eleve`

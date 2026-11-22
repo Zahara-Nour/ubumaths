@@ -67,7 +67,12 @@ function contexte(): ContexteSuivi {
 		horsClasse: HORS_CLASSE,
 		maintenant: new Date('2026-11-22T10:00:00Z'),
 		graine: 42,
-		evaluation: { id: 'eval-1', items: [{ templateId: 'm-eval-1', quantity: 1, delay: 20 }] },
+		evaluation: {
+			id: 'eval-1',
+			items: [{ templateId: 'm-eval-1', quantity: 1, delay: 20 }],
+			// Reçue par la première classe il y a deux jours.
+			assigneeLe: '2026-11-20T10:00:00.000Z'
+		},
 		tirer,
 		corriger,
 		// Un modèle sur quatre ne se génère pas : la trace devient une carte retournée.
@@ -616,5 +621,101 @@ describe('ECRITURE_SUIVI — où va le plan', () => {
 			['exercise_assignments', 'exercise_completions']
 		];
 		for (const [parent, enfant] of avant) expect(rang(parent), enfant).toBeLessThan(rang(enfant));
+	});
+});
+
+describe('planSuivi — après relecture', () => {
+	it('aucune partie du plan ne met deux fois la même clé unique', () => {
+		const p = planSuivi(contexte());
+		for (const { partie, unique } of ECRITURE_SUIVI) {
+			if (!unique) continue;
+			const cles = (p[partie] as Record<string, unknown>[]).map((l) =>
+				unique.map((col) => String(l[col])).join('|')
+			);
+			expect(new Set(cles).size, partie).toBe(cles.length);
+		}
+	});
+
+	it('une copie n’est jamais commencée avant que sa classe ait reçu l’évaluation', () => {
+		const c = contexte();
+		const p = planSuivi(c);
+		const recueLe = new Map<string, number>([
+			['classe-a', Date.parse('2026-11-20T10:00:00.000Z')],
+			['classe-b', Date.parse(p.evaluationsAssignees[0].assigned_at as string)]
+		]);
+		expect(p.seances.length).toBeGreaterThan(3);
+		for (const s of p.seances) {
+			const classe = c.classes.find((k) => k.eleves.includes(s.user_id as string));
+			expect(Date.parse(s.created_at as string)).toBeGreaterThanOrEqual(
+				recueLe.get(classe?.id ?? '') as number
+			);
+		}
+	});
+
+	it('longue évaluation : une copie rendue l’est toujours dans le passé, dans le délai de chaque question', () => {
+		const longue = (graine: number) =>
+			Array.from({ length: 30 }, (_, i) => ({
+				...tirer(graine)[i % 4],
+				delay_seconds: i % 2 ? 600 : 2
+			}));
+		const p = planSuivi({ ...contexte(), tirer: longue });
+		for (const s of p.seances.filter((x) => x.completed_at !== null)) {
+			expect(Date.parse(s.completed_at as string)).toBeLessThanOrEqual(MAINTENANT);
+		}
+		for (const t of p.traces.filter((x) => x.place === 'evaluation')) {
+			expect(t.response_ms as number).toBeLessThanOrEqual(t.allotted_ms as number);
+		}
+	});
+
+	it('demi-point : une réponse « presque juste » compte 0,5 et la note reste un multiple de 0,5', () => {
+		const presque = (instance: Record<string, unknown>, valeurs: string[] | null): Verdict => {
+			const v = corriger(instance, valeurs);
+			return v.status === 'correct' && instance.templateId === 'm-eval-2'
+				? { status: 'unoptimal_form', points: 0.5, isCorrect: false, partial: false }
+				: v;
+		};
+		const p = planSuivi({ ...contexte(), corriger: presque });
+		const etoile = p.seances.find((s) => s.user_id === ETOILE);
+		expect(etoile?.points_earned).toBe(3.5);
+		expect(etoile?.grade).toBe(17.5);
+		for (const s of p.seances) if (s.grade !== null) expect(((s.grade as number) * 2) % 1).toBe(0);
+	});
+
+	it('tirage vide (aucune question utilisable) : aucune séance, rien ne plante', () => {
+		const p = planSuivi({ ...contexte(), tirer: () => [] });
+		expect(p.seances).toHaveLength(0);
+		expect(p.traces.filter((t) => t.place === 'evaluation')).toHaveLength(0);
+	});
+
+	it('réponse attendue « 0 » : la réponse fausse inventée est « 1 », jamais « 0 »', () => {
+		const p = planSuivi({ ...contexte(), attendues: () => ['0', '5'] });
+		const fausses = p.traces.filter((t) => t.answer_parts && !t.success);
+		expect(fausses.length).toBeGreaterThan(0);
+		for (const t of fausses) {
+			expect(t.answer_parts).toEqual(['1', '0']);
+			expect(t.part_verdicts).toEqual([false, false]);
+		}
+	});
+
+	it('classes d’un et de deux élèves : le plan tient, l’absent reste sans activité', () => {
+		const c = contexte();
+		c.classes[0].eleves = [eleve(1), eleve(2)];
+		c.classes[1].eleves = [eleve(4)];
+		const p = planSuivi(c);
+		expect(p.seances.length).toBeGreaterThan(0);
+		for (const [nom, lignes] of Object.entries(p)) {
+			if (nom === 'visites') continue;
+			for (const l of lignes as Record<string, unknown>[]) {
+				expect([l.student_id, l.user_id, l.owner_id, l.assigned_to], nom).not.toContain(eleve(2));
+			}
+		}
+	});
+
+	it('une seule classe d’un seul élève : pas d’absent, l’étoile travaille', () => {
+		const c = contexte();
+		c.classes = [{ ...c.classes[0], eleves: [eleve(1)] }];
+		const p = planSuivi(c);
+		expect(p.traces.some((t) => t.student_id === ETOILE)).toBe(true);
+		expect(p.evaluationsAssignees).toHaveLength(0);
 	});
 });

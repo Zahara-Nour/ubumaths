@@ -51,13 +51,17 @@ export function creerMoteur(lignes: QuestionTemplateRow[], compositionEvaluation
 			for (const t of tirages) {
 				// Même garde que l'appli : un énoncé masqué qui dirait la réponse est écarté.
 				if (gestureAnswerLeaks(t.instance).length > 0) continue;
+				// Une question sans réponse en texte (choix, geste) est écartée : le seed ne saurait
+				// pas y répondre juste, et l'élève qui réussit tout n'aurait pas 20.
+				const attendues = reponsesAttendues(t.instance);
+				if (!attendues) continue;
 				const { seed: _seed, ...instance } = t.instance;
 				questions.push({
 					template_id: t.template.id,
 					seed: t.seed,
 					delay_seconds: t.delaySeconds,
 					instance: JSON.parse(JSON.stringify(instance)),
-					attendues: reponsesAttendues(t.instance) ?? []
+					attendues
 				});
 			}
 			return questions;
