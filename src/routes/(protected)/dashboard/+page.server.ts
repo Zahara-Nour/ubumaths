@@ -187,25 +187,19 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 	if (profile.role === 'student') {
 		// Execute queries in parallel for better performance
-		const [
-			riddleCount,
-			exercisesData,
-			achievementsData,
-			inbox,
-			notionsProgression,
-			competencesProgression
-		] = await Promise.all([
-			// Get count of successfully solved riddles
-			supabase
-				.from('riddle_attempts')
-				.select('*', { count: 'exact', head: true })
-				.eq('student_id', profile.id)
-				.eq('is_correct', true),
-			// Get recent assigned exercises (up to 5, sorted by deadline)
-			supabase
-				.from('exercises')
-				.select(
-					`
+		const [riddleCount, exercisesData, inbox, notionsProgression, competencesProgression] =
+			await Promise.all([
+				// Get count of successfully solved riddles
+				supabase
+					.from('riddle_attempts')
+					.select('*', { count: 'exact', head: true })
+					.eq('student_id', profile.id)
+					.eq('is_correct', true),
+				// Get recent assigned exercises (up to 5, sorted by deadline)
+				supabase
+					.from('exercises')
+					.select(
+						`
 				id,
 				title,
 				distribution_mode,
@@ -220,51 +214,31 @@ export const load: PageServerLoad = async ({ locals }) => {
 					last_viewed_at
 				)
 			`
-				)
-				.or(
-					`exercise_assignments.student_id.eq.${profile.id},exercise_assignments.assigned_to_type.eq.public`
-				)
-				.eq('exercise_assignments.is_active', true)
-				.limit(5)
-				.order('exercise_assignments.optional_deadline', { ascending: true, nullsFirst: false }),
-			// Get student Minesweeper achievements
-			supabase
-				.from('student_achievements')
-				.select(
-					`
-					id,
-					achievement_id,
-					unlocked_at,
-					game_achievements (
-						id,
-						name,
-						description,
-						icon,
-						difficulty,
-						game_id
 					)
-				`
-				)
-				.eq('student_id', profile.id)
-				.order('unlocked_at', { ascending: false }),
-			// Fetch unified work inbox (aggregates all 4 assignment sources)
-			getStudentWorkInbox(supabase, profile.id),
-			// Tuile « Ma progression » — même source que la page dédiée.
-			//
-			// ⚠️ Repli explicite : ces deux fonctions LÈVENT en cas d'erreur, ce qui
-			// est le bon comportement sur la page dédiée (l'élève y vient pour ça).
-			// Ici, non : le tableau de bord porte aussi l'inbox, les exercices et les
-			// récompenses. Une VIEW renommée ou un timeout ne doit pas priver les 81
-			// élèves de leur page d'accueil pour une tuile de résumé.
-			getNotionsProgression(supabase, profile.id, profile.grade).catch((err) => {
-				logger.error('[dashboard] progression notions indisponible :', err);
-				return null;
-			}),
-			getCompetencesProgression(supabase, profile.id).catch((err) => {
-				logger.error('[dashboard] progression compétences indisponible :', err);
-				return null;
-			})
-		]);
+					.or(
+						`exercise_assignments.student_id.eq.${profile.id},exercise_assignments.assigned_to_type.eq.public`
+					)
+					.eq('exercise_assignments.is_active', true)
+					.limit(5)
+					.order('exercise_assignments.optional_deadline', { ascending: true, nullsFirst: false }),
+				// Fetch unified work inbox (aggregates all 4 assignment sources)
+				getStudentWorkInbox(supabase, profile.id),
+				// Tuile « Ma progression » — même source que la page dédiée.
+				//
+				// ⚠️ Repli explicite : ces deux fonctions LÈVENT en cas d'erreur, ce qui
+				// est le bon comportement sur la page dédiée (l'élève y vient pour ça).
+				// Ici, non : le tableau de bord porte aussi l'inbox, les exercices et les
+				// récompenses. Une VIEW renommée ou un timeout ne doit pas priver les 81
+				// élèves de leur page d'accueil pour une tuile de résumé.
+				getNotionsProgression(supabase, profile.id, profile.grade).catch((err) => {
+					logger.error('[dashboard] progression notions indisponible :', err);
+					return null;
+				}),
+				getCompetencesProgression(supabase, profile.id).catch((err) => {
+					logger.error('[dashboard] progression compétences indisponible :', err);
+					return null;
+				})
+			]);
 
 		// Sans les DEUX axes, pas de tuile — plutôt qu'une tuile à moitié vraie.
 		progression =
@@ -279,43 +253,6 @@ export const load: PageServerLoad = async ({ locals }) => {
 		riddlesSolved = riddleCount.count || 0;
 		recentExercises = (exercisesData.data || []) as typeof recentExercises;
 
-		// Transform and flatten achievements data
-		type AchievementRow = {
-			id: string;
-			achievement_id: string;
-			unlocked_at: string;
-			game_achievements: {
-				id: string;
-				name: string;
-				description: string;
-				icon: string;
-				difficulty: string | null;
-				game_id: string;
-			};
-		};
-
-		const minesweeperAchievements =
-			(achievementsData.data as AchievementRow[] | null)?.map((a) => ({
-				id: a.id,
-				achievement_id: a.achievement_id,
-				name: a.game_achievements.name,
-				description: a.game_achievements.description,
-				icon: a.game_achievements.icon,
-				difficulty: a.game_achievements.difficulty,
-				unlocked_at: a.unlocked_at,
-				game_id: a.game_achievements.game_id
-			})) || [];
-
-		// Calculate achievement stats
-		const totalUnlocked = minesweeperAchievements.length;
-		const totalPossible = 10; // Total number of Minesweeper achievements
-
-		const achievementStats = {
-			total_unlocked: totalUnlocked,
-			total_possible: totalPossible,
-			progress_percentage: totalPossible > 0 ? Math.round((totalUnlocked / totalPossible) * 100) : 0
-		};
-
 		// Return profile to the client component
 		// +page.svelte will use profile.role to render the correct dashboard
 		return {
@@ -324,8 +261,6 @@ export const load: PageServerLoad = async ({ locals }) => {
 			recentExercises,
 			academicPeriods,
 			weekConfig,
-			minesweeperAchievements,
-			achievementStats,
 			inbox,
 			progression
 		};
@@ -339,8 +274,6 @@ export const load: PageServerLoad = async ({ locals }) => {
 		recentExercises,
 		academicPeriods,
 		weekConfig,
-		minesweeperAchievements: null,
-		achievementStats: null,
 		inbox: null as StudentWorkInbox | null,
 		// Les autres rôles n'ont pas de progression d'élève : la tuile ne les concerne pas.
 		progression

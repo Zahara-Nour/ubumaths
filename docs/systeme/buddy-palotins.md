@@ -682,6 +682,12 @@ avec l'identifiant de l'eleve tire de la SESSION, jamais du corps de la requete 
 `removeExploredThemes`), XP (`add_buddy_xp`). Les fonctions d'ecriture ne recoivent pas le client de
 l'eleve ; la lecture (`getStudentBuddy`) reste sur son client (sa RLS).
 
+La lecture du prof (tableau Gamification › Palotins) passe par `fetchClassMembersWithBuddies`
+(`src/lib/server/buddy-class.ts`), au client du prof : `class_members` → `profiles` →
+`student_buddies`, le Palotin embarque A TRAVERS le profil (aucun lien direct entre
+`class_members` et `student_buddies`). Preuve contre PostgREST :
+`tests/integration/palotins-vue-prof.test.ts` (2026-11-22).
+
 RLS (migration `20261017090100_palotin_constance_et_ecritures_serveur.sql`) : l'eleve n'a plus
 AUCUNE policy d'ecriture sur `student_buddies` (« Students can create their own buddy » et
 « Students can update their own buddy » retirees ; il n'y a jamais eu de DELETE). Restent les trois
