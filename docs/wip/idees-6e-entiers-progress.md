@@ -6,20 +6,23 @@ Skill [`idees-rubrique`](../../.claude/skills/idees-rubrique/SKILL.md). Tableau 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22, lot écrit, PR des fichiers en cours._
+_Mis à jour le 2026-11-22, après #2994._
 
-- **État** : lot commité (d6a626d60). 3 modèles neufs dans `scripts/questions/6e-entiers-a/` (F1, F5, F2),
-  variations ajoutées en fin de 98f558e4, b9677e1f, d793de49 dans `6e-entiers-publies/`. Simulation et
-  specs vertes. Brouillons créés en base LOCALE (0f60e07e, e30d9b3b, 082bd126), ids restaurés dans les
-  fichiers. Aperçu local pas vu : le Chrome connecté n'atteint pas `[::1]:5178` (serveur du worktree).
-- **Prochaine action** : PR des fichiers, CI, merge ; puis David lance `create-questions --publier` en
-  prod sur `6e-entiers-a` ; migrations de rangement (nœud + tag : CM2-065 ×2, CM2-003) et de contenu
-  (`migration-contenu.ts --dir scripts/questions/6e-entiers-publies`), tests d'intégration, `security-auditor`.
-- **En attente de David** : question d'accès des migrations ; regard sur l'aperçu (grille Yohaku avec
-  `\hline`, bloc trous) ; titre de b9677e1f à renommer dans l'éditeur s'il le veut.
-- **Pièges en cours** : migration-contenu refuse un titre différent de la prod ; hook pre-commit laisse
-  l'index avec une vieille copie (`git diff HEAD` vide → `git restore --staged`) ; zsh ne découpe pas `$F`.
-- **Worktree / branche** : `../ubumaths-wt-idees-6e-entiers`, `docs/idees-6e-entiers`.
+- **État** : #2994 mergée (fichiers seuls) : 3 modèles neufs dans `scripts/questions/6e-entiers-a/`
+  (égalité deux calculs, Yohaku, grand nombre en lettres), variations ajoutées en fin de 98f558e4,
+  b9677e1f, d793de49 dans `scripts/questions/6e-entiers-publies/`. Rien en prod.
+- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir
+scripts/questions/6e-entiers-a --publier` (brouillons en prod) ; je commite les ids. Puis, nouveau
+  worktree `ubumaths-wt-idees-6e-entiers-rangement` : migration de rangement (nœud + tag : 01 et 02 →
+  CM2-065, 03 → CM2-003 ; règles du tag vérifiées en base) et migration de contenu
+  (`migration-contenu.ts --dir scripts/questions/6e-entiers-publies`), tests d'intégration rouges sans
+  elles, `security-auditor`, `db:migrate` (4 conditions, `migration list --linked` d'abord).
+- **En attente de David** : question d'accès (ma réponse : personne) ; brouillons en prod ; regard sur
+  l'aperçu local non vu (grille Yohaku `\hline`, bloc trous) ; titre de b9677e1f dans l'éditeur s'il veut.
+- **Pièges en cours** : migration-contenu refuse un titre différent de la prod ; le hook pre-commit
+  laisse l'index avec une vieille copie (`git diff HEAD` vide → `git restore --staged`) ; zsh ne découpe
+  pas `$F` ; le Chrome connecté n'atteint pas `[::1]:<port>` du Mac mini.
+- **Worktree / branche** : aucun (worktree de #2994 retiré).
 
 ## Historique
 
