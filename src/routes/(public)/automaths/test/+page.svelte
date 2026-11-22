@@ -20,11 +20,15 @@
 	import FlashSeries from '#lib/components/test/FlashSeries.svelte';
 	import TypingSeries from '#lib/components/test/TypingSeries.svelte';
 	import EvaluationResults from '#lib/components/test/EvaluationResults.svelte';
+	import SeriesStartScreen from '#lib/components/test/SeriesStartScreen.svelte';
+	import { evaluationSummary } from '#lib/components/test/series-summary.ts';
 	import { resolveTestLaunch } from '#lib/utils/test-launch.ts';
 	import type { TestResult } from '#lib/types/test.ts';
-	import type {
-		EvaluationStartResponse,
-		EvaluationSubmitResponse
+	import {
+		DEFAULT_COURSE_TIME_LIMIT_SECONDS,
+		type EvaluationOverviewResponse,
+		type EvaluationStartResponse,
+		type EvaluationSubmitResponse
 	} from '#lib/types/evaluation-attempt.ts';
 	import { toSubmission, type Submission } from '#lib/questions/submission.ts';
 	import { toDisplayInstance, unitKeysOf } from '#lib/questions/public-question.ts';
@@ -61,6 +65,12 @@
 	let attemptPositions = $state<number[]>([]);
 	/** Touches d'unités de chaque question (calculées par le serveur) */
 	let attemptUnitKeys = $state<(string[] | undefined)[]>([]);
+	/**
+	 * Page d'attente d'un contrôle assigné (chantier `diaporama-reglages`, PR 2b) :
+	 * lue AVANT le démarrage ; la tentative ne démarre qu'au clic.
+	 */
+	let evaluationOverview = $state<EvaluationOverviewResponse | null>(null);
+	let isStartingEvaluation = $state(false);
 	let evaluationResult = $state<EvaluationSubmitResponse | null>(null);
 	/** Copie prête à (ré)envoyer si l'envoi a échoué */
 	let pendingSubmission = $state<Submission | null>(null);
@@ -108,8 +118,9 @@
 
 			// Évaluation assignée : forme et temps limite viennent de l'ÉVALUATION,
 			// le paramètre `mode` de l'URL est ignoré (B15). Jamais de flash-cards.
+			// Page d'attente d'abord : rien ne démarre avant « C'est parti ! »
 			if (launch.kind === 'assignment') {
-				await startEvaluation(launch.assignmentId);
+				await loadEvaluationOverview(launch.assignmentId);
 				return;
 			}
 
@@ -137,6 +148,42 @@
 			if ('message' in body && typeof body.message === 'string') return body.message;
 		}
 		return fallback;
+	}
+
+	/**
+	 * Page d'attente d'une évaluation assignée : lecture SEULE (titre, forme,
+	 * questions, temps, reprise). Un refus (date limite, tentatives) s'affiche
+	 * ici, avant tout démarrage.
+	 */
+	async function loadEvaluationOverview(id: string) {
+		assignmentId = id;
+
+		const response = await fetch(`/api/evaluations/assignments/${encodeURIComponent(id)}`);
+		const body: unknown = await response.json().catch(() => null);
+
+		if (!response.ok) {
+			throw new Error(errorMessageOf(body, "Impossible d'ouvrir le contrôle"));
+		}
+
+		evaluationOverview = body as EvaluationOverviewResponse;
+		assessmentTitle = evaluationOverview.evaluation.title;
+		isLoading = false;
+	}
+
+	/** « C'est parti ! » : le serveur démarre (ou reprend) la tentative maintenant */
+	async function handleEvaluationStart() {
+		if (!assignmentId || isStartingEvaluation) return;
+		isStartingEvaluation = true;
+		isLoading = true;
+		try {
+			await startEvaluation(assignmentId);
+		} catch (err) {
+			// Retour à la page d'attente : « C'est parti ! » réessaie
+			console.error('Error starting evaluation:', err);
+			toaster.error(err instanceof Error ? err.message : "Impossible d'ouvrir le contrôle");
+			isStartingEvaluation = false;
+			isLoading = false;
+		}
 	}
 
 	/**
@@ -203,7 +250,12 @@
 			// Course : le temps RESTANT de la tentative (reprise comprise, B9)
 			timeLimit:
 				form === 'course'
-					? Math.max(1, attempt.remainingSeconds ?? start.evaluation.time_limit ?? 300)
+					? Math.max(
+							1,
+							attempt.remainingSeconds ??
+								start.evaluation.time_limit ??
+								DEFAULT_COURSE_TIME_LIMIT_SECONDS
+						)
 					: undefined,
 			currentQuestionIndex: 0,
 			isPaused: false
@@ -564,6 +616,19 @@
 				</div>
 			</Card.Content>
 		</Card.Root>
+	{:else if evaluationOverview && !testSession}
+		<!-- Contrôle assigné : page d'attente, la tentative démarre au clic -->
+		<SeriesStartScreen
+			title={evaluationOverview.evaluation.title}
+			summary={evaluationSummary(evaluationOverview)}
+			hints={[]}
+			quitHref={evaluationOverview.preview
+				? '/dashboard/teacher/assessments'
+				: '/dashboard/student/assessments'}
+			startLabel={evaluationOverview.resumed ? 'Reprendre' : undefined}
+			starting={isStartingEvaluation}
+			onstart={handleEvaluationStart}
+		/>
 	{:else if testSession}
 		<!-- Test content -->
 		{#if testSession.mode === 'display'}

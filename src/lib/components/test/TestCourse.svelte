@@ -12,8 +12,9 @@
 	- At the end: show TestResults with score
 	- Entraînement libre : page d'attente d'abord (`SeriesStartScreen`, « 20
 	  questions · 5 min ») ; le chrono global part au clic sur « C'est parti ! »,
-	  et les durées tracées aussi. Contrôle assigné : pas de page d'attente ici
-	  (chantier `diaporama-reglages`, PR 2b)
+	  et les durées tracées aussi. Contrôle assigné : pas de page d'attente ici,
+	  la page `automaths/test` affiche la sienne AVANT que le serveur démarre la
+	  tentative (chantier `diaporama-reglages`, PR 2b)
 
 	Props:
 	- session: TestSession - Active test session

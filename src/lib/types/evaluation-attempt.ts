@@ -17,6 +17,9 @@ export interface EvaluationStartSummary {
 	title: string;
 }
 
+/** Temps d'une Course sans temps limite enregistré : même repli partout */
+export const DEFAULT_COURSE_TIME_LIMIT_SECONDS = 300;
+
 /** Réponse de `POST /api/evaluations/assignments/[id]/start` */
 export type EvaluationStartResponse =
 	| { preview: true; evaluation: EvaluationStartSummary & { items: SeriesItem[] } }
@@ -31,6 +34,25 @@ export type EvaluationStartResponse =
 				questions: PublicQuestion[];
 			};
 	  };
+
+/**
+ * Réponse de `GET /api/evaluations/assignments/[id]` : page d'attente d'un
+ * contrôle assigné, lue AVANT le démarrage (rien n'est créé).
+ */
+export interface EvaluationOverviewResponse {
+	/** Propriétaire ou admin non destinataire : aperçu, rien ne sera rattaché */
+	preview: boolean;
+	evaluation: EvaluationStartSummary;
+	/** Questions de la tentative en cours, ou que le tirage vise */
+	questionCount: number;
+	/**
+	 * Course : temps imparti, ou temps RESTANT d'une tentative en cours ;
+	 * Contrôle blanc : somme des chronos des questions
+	 */
+	durationSeconds: number;
+	/** Une tentative est déjà commencée : « C'est parti ! » la reprend */
+	resumed: boolean;
+}
 
 /**
  * Réponse de l'élève telle que la copie l'affiche : une valeur par case (case
