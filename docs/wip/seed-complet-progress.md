@@ -2,25 +2,22 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22, PR 2 ouverte (#2980)._
+_Mis à jour le 2026-11-22, après #2980._
 
-- **État** : PR 1 mergée (#2977). PR 2 (#2980, branche `feat/seed-complet-suivi`) : suivi et travail
-  scolaire inventés (§ 8), liens vérifiés après la copie, élèves rangés dans les classes de l'année
-  en cours. Prouvée sur copie isolée, pages ouvertes en prof et en élève.
-- **Prochaine action** : merger la PR 2 (CI + relectures), puis PR 3, jeux et récompenses (§ 5) :
-  jeux, succès, récompenses, boutique, Mathoux et Palotins. Même méthode : plan pur testé sans base,
-  preuve sur copie isolée, pages ouvertes.
-- **En attente de David** : (1) la prod n'a qu'UNE devinette, en brouillon : la page des devinettes
-  de l'élève reste vide tant qu'aucune n'est publiée (en publier une en prod, ou en inventer une ?) ;
-  (2) lancer `pnpm db:neuf` (ou `db:seed-riche`) sur la base de dev partagée pour recevoir le tout.
-- **Tranché le 2026-11-22** (« je te suis ») : tableau de tâches du prof et signalements de bug
-  **inventés, en PR 4** ; modèles de messages : regarder d'abord si le seed existant les recrée
-  après un `db:neuf`, sinon en inventer cinq ou six **en PR 4**.
-- **Pièges en cours** : RGPD, **jamais de donnée d'élève en local** : une table d'activité
-  s'INVENTE, elle ne se copie pas. Essais sur une copie isolée (§ 8, « Méthode »), jamais la base de
-  dev partagée. Un remplacement de texte par script dans `index.ts` : vérifier que le motif est
-  unique (`ajouter(db, 'evaluation_assignments'…` existe dans deux fonctions).
-- **Worktree / branche** : `../ubumaths-wt-seed-complet`, `feat/seed-complet-suivi`.
+- **État** : PR 1 (#2977) et PR 2 (#2980) mergées. PR 2 : suivi et travail scolaire inventés (§ 8),
+  liens vérifiés après la copie, 30 élèves rangés dans les 5 classes de l'année en cours. La base de
+  dev partagée ne reçoit le tout qu'au prochain `pnpm db:neuf` ou `pnpm db:seed-riche` (pas lancé).
+- **Prochaine action** : PR 3, jeux et récompenses (§ 5) : jeux, succès, récompenses, boutique,
+  Mathoux et Palotins. Même méthode qu'au § 8 : plan pur testé sans base, vraies règles de l'appli,
+  preuve sur copie isolée avec ses services, pages ouvertes en prof et en élève.
+- **En attente de David** : (1) la prod n'a qu'une devinette, en brouillon : la page des devinettes
+  de l'élève reste vide (en publier une en prod, ou en inventer une ?) ; (2) petite PR à part pour
+  les compteurs de « Mes révisions », toujours à 0 (§ 8, « Trouvé grâce au seed ») : go ?
+- **Tranché le 2026-11-22** : tableau de tâches du prof et signalements de bug **inventés, en
+  PR 4** ; modèles de messages : voir si le seed existant les recrée, sinon en inventer en PR 4.
+- **Pièges en cours** : RGPD, **jamais de donnée d'élève en local** (une table d'activité s'invente).
+  Essais sur copie isolée, jamais la base de dev. Remplacement par script dans `index.ts` : motif
+  unique d'abord. Worktree à recréer : `../ubumaths-wt-seed-complet`, `feat/seed-complet-jeux`.
 
 ---
 
@@ -229,7 +226,7 @@ Classement (§ 3) et découpage (§ 5) validés par David le 2026-11-21 (« go �
   11 classes) : à reprendre en PR 4. Tous les admins de prod deviennent le même compte local : une
   table à une ligne par utilisateur casserait le seed le jour où la prod a deux admins.
 
-## 8. PR 2 : suivi et travail scolaire (2026-11-22, #2980)
+## 8. PR 2 : suivi et travail scolaire (2026-11-22, #2980, mergée)
 
 - **Un plan pur de plus**, `scripts/db-seed-riche/suivi.ts` (tests :
   `scripts/__tests__/db-seed-suivi.test.ts`, 43 cas, sans base ni moteur de questions), écrit dans
