@@ -59,7 +59,11 @@ prof distribue aussi gidouilles et cartes à la main.
 
 Le compagnon virtuel (Palotins) a sa propre doc : [buddy-palotins.md](buddy-palotins.md). Le
 tableau des Palotins du prof (`teacher/gamification/buddies`) affiche la Constance Royale en
-semaines tenues d'affilée, telle que l'élève la voit (`displayedConstance`). L'onglet voisin
+semaines tenues d'affilée, telle que l'élève la voit (`displayedConstance`). Il lit chaque classe
+par `fetchClassMembersWithBuddies` (`src/lib/server/buddy-class.ts`) : le Palotin s'embarque à
+travers le profil de l'élève. Embarqué directement depuis `class_members`, PostgREST le résolvait
+vers `profiles` et la page restait vide (« Aucun Bataillon actif ») jusqu'au 2026-11-22 ; preuve
+contre PostgREST : `tests/integration/palotins-vue-prof.test.ts`. L'onglet voisin
 « Mathoux » (`teacher/gamification/mathoux`) montre les Mathoux des élèves par classe : voir
 [mathoux.md § Vue du professeur](mathoux.md#vue-du-professeur).
 Les tables, une par une : [base-de-donnees-tables.md](base-de-donnees-tables.md) (sections

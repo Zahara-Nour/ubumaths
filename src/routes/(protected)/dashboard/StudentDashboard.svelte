@@ -51,7 +51,6 @@
 		ChevronRight,
 		Puzzle
 	} from '@lucide/svelte';
-	// import AchievementsWidget from '#lib/components/game/minesweeper/AchievementsWidget.svelte';
 	// import { Button } from '#lib/components/ui/button/index.ts';
 	// import { formatDeadline, isDeadlinePassed, isDeadlineSoon } from '#lib/utils/dates.ts';
 	// import { BookOpen, FileText, Calendar, CheckCircle } from '@lucide/svelte';
@@ -348,9 +347,4 @@
 			{/if}
 		</div>
 	</div> -->
-	<!-- MINESWEEPER ACHIEVEMENTS SECTION -->
-	<!-- Display student's Minesweeper achievements progress -->
-	<!-- {#if data.minesweeperAchievements && data.achievementStats}
-		<AchievementsWidget achievements={data.minesweeperAchievements} stats={data.achievementStats} />
-	{/if} -->
 </div>
