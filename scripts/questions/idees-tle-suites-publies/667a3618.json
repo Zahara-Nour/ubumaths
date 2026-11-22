@@ -114,6 +114,58 @@
 					"Vérification : $f({{eval:k^2}})={{k}}\\sqrt{ {{eval:k^2}} }={{eval:k^2}}$. La suite semble converger vers $\\ell=\\textcolor{{{color:primary.0}}}{ {{eval:k^2}} }$."
 				]
 			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{L}}",
+					"expectedErrors": [
+						{
+							"answer": "{{u0}}",
+							"message": "Tu as donné $u_0$, le point de départ de l'escalier : la limite se lit là où les marches se resserrent.",
+							"label": "u₀"
+						},
+						{
+							"answer": "{{eval:L*(c+1)/c}}",
+							"message": "Tu as lu l'ordonnée à l'origine de $\\mathcal{C}_f$ : la limite est l'abscisse du point où $\\mathcal{C}_f$ coupe la droite $y=x$.",
+							"label": "Ordonnée à l'origine"
+						},
+						{
+							"answer": "{{eval:L-4*g/c}}",
+							"message": "Tu as donné $u_1$, la première marche : regarde vers quel point les marches se resserrent.",
+							"label": "u₁"
+						}
+					]
+				}
+			],
+			"statement": "La suite $(u_n)$ est définie par $u_0={{u0}}$ et $u_{n+1}=f(u_n)$, où $f(x)=-{{eval:1/c;d}}x+{{eval:L*(c+1)/c;d}}$. On a tracé la courbe $\\mathcal{C}_f$ (une droite), la droite d'équation $y=x$ et l'escalier qui part de $u_0$.\n\n```courbe\nx: {{eval:L-5}} ; {{eval:L+5}}\ny: {{eval:L-5}} ; {{eval:L+5}}\nu(0) = {{u0}} ; u(n+1) = -{{eval:1/c;d}}*u(n)+{{eval:L*(c+1)/c;d}} pour n de 0 à 8   rouge   escalier   nom=C_f\ntaille: moyenne\ndescription: Courbe de la fonction f, droite d'équation y = x et escalier de la suite (u_n) construit à partir de u_0 sur l'axe des abscisses.\n```\n\nLa suite $(u_n)$ semble converger. Vers quel réel $\\ell$ ?\n\n$\\ell=?$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "2|4"
+				},
+				{
+					"name": "L",
+					"expression": "1..5"
+				},
+				{
+					"name": "g",
+					"expression": "1|-1"
+				},
+				{
+					"name": "u0",
+					"expression": "eval:L+4*g"
+				}
+			],
+			"conditions": ["u0 != 0"],
+			"hint": "Suis les marches de l'escalier : vers quel point de la droite d'équation $y=x$ se resserrent-elles ? Lis son abscisse.",
+			"correction": {
+				"steps": [
+					"L'escalier tourne en spirale autour du point d'intersection de $\\mathcal{C}_f$ et de la droite $y=x$, d'abscisse ${{L}}$, et s'en rapproche : les termes sont alternativement au-dessus et au-dessous de ${{L}}$.",
+					"```courbe\nx: {{eval:L-5}} ; {{eval:L+5}}\ny: {{eval:L-5}} ; {{eval:L+5}}\nu(0) = {{u0}} ; u(n+1) = -{{eval:1/c;d}}*u(n)+{{eval:L*(c+1)/c;d}} pour n de 0 à 8   rouge   escalier termes   nom=C_f\ntaille: moyenne\ndescription: Courbe de la fonction f, droite d'équation y = x et escalier de la suite (u_n) construit à partir de u_0 sur l'axe des abscisses.\n```",
+					"Vérification : $f({{L}})=-{{eval:1/c;d}}\\times{{L}}+{{eval:L*(c+1)/c;d}}={{L}}$. La suite semble converger vers $\\ell=\\textcolor{{{color:primary.0}}}{ {{L}} }$."
+				]
+			}
 		}
 	],
 	"testSpecs": [
@@ -294,6 +346,79 @@
 			},
 			"description": "v3 3√x → 9",
 			"variationIndex": 3
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"c": "2",
+				"L": "3",
+				"g": "1",
+				"u0": "7"
+			},
+			"description": "v4 : −0,5x + 4,5, u0 = 7 → 3",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"c": "4",
+				"L": "2",
+				"g": "-1",
+				"u0": "-2"
+			},
+			"description": "v4 : −0,25x + 2,5, u0 = −2 → 2",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné $u_0$, le point de départ de l'escalier : la limite se lit là où les marches se resserrent."
+			},
+			"variables": {
+				"c": "2",
+				"L": "3",
+				"g": "1",
+				"u0": "7"
+			},
+			"description": "v4 : u0",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["4.5"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as lu l'ordonnée à l'origine de $\\mathcal{C}_f$ : la limite est l'abscisse du point où $\\mathcal{C}_f$ coupe la droite $y = x$."
+			},
+			"variables": {
+				"c": "2",
+				"L": "3",
+				"g": "1",
+				"u0": "7"
+			},
+			"description": "v4 : ordonnée à l'origine",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné $u_1$, la première marche : regarde vers quel point les marches se resserrent."
+			},
+			"variables": {
+				"c": "2",
+				"L": "3",
+				"g": "1",
+				"u0": "7"
+			},
+			"description": "v4 : u1",
+			"variationIndex": 4
 		}
 	]
 }

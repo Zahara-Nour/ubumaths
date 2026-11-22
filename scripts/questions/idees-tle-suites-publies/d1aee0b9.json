@@ -78,6 +78,74 @@
 					"Avec l'initialisation $u_0=0$, qui vérifie la formule pour $n=0$, elle est vraie pour tout $n$."
 				]
 			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "La suite $(u_n)$ est définie par $u_0={{u0}}$ et $u_{n+1}=f(u_n)$, où $f(x)={{eval:j/10;d}}x{{eval:l*(10-j)/10;d;+}}$.\n\nOn démontre par récurrence que, pour tout entier naturel $n$, $u_n\\leqslant u_{n+1}\\leqslant{{l}}$. On suppose $u_k\\leqslant u_{k+1}\\leqslant{{l}}$ pour un entier $k$.\n\nQuelle rédaction prouve l'hérédité ?\n\n```choix\n- $f$ est croissante sur $\\mathbb{R}$ (coefficient ${{eval:j/10;d}}>0$), donc $f(u_k)\\leqslant f(u_{k+1})\\leqslant f({{l}})$. Or $f({{l}})={{l}}$, donc $u_{k+1}\\leqslant u_{k+2}\\leqslant{{l}}$\n- $f$ est croissante sur $\\mathbb{R}$ (coefficient ${{eval:j/10;d}}>0$), donc elle change le sens des inégalités : $f(u_k)\\geqslant f(u_{k+1})\\geqslant f({{l}})$, c'est-à-dire $u_{k+1}\\geqslant u_{k+2}\\geqslant{{l}}$\n- On suppose $u_{k+1}\\leqslant u_{k+2}\\leqslant{{l}}$ ; comme $f$ est croissante, on en déduit $u_k\\leqslant u_{k+1}\\leqslant{{l}}$\n- $u_0={{u0}}$ et $u_1={{eval:j/10*u0+l*(10-j)/10;d}}$ vérifient $u_0\\leqslant u_1\\leqslant{{l}}$, donc $u_{k+1}\\leqslant u_{k+2}\\leqslant{{l}}$\n```",
+			"variables": [
+				{
+					"name": "j",
+					"expression": "1..9"
+				},
+				{
+					"name": "l",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "h",
+					"expression": "1..5"
+				},
+				{
+					"name": "u0",
+					"expression": "eval:l-h"
+				}
+			],
+			"hint": "Pars de l'hypothèse de récurrence et pense au sens de variation de $f$. Que vaut $f({{l}})$ ?",
+			"correction": {
+				"steps": [
+					"On part de l'hypothèse $u_k\\leqslant u_{k+1}\\leqslant{{l}}$ et on applique $f$, croissante sur $\\mathbb{R}$ car son coefficient ${{eval:j/10;d}}$ est positif : elle **conserve l'ordre**.",
+					"$f(u_k)\\leqslant f(u_{k+1})\\leqslant f({{l}})$, et $f({{l}})={{eval:j/10;d}}\\times{{eval:l;()}}{{eval:l*(10-j)/10;d;+}}={{l}}$ : $\\textcolor{{{color:primary.0}}}{u_{k+1}\\leqslant u_{k+2}\\leqslant{{l}}}$.",
+					"Les autres rédactions inversent les inégalités (une fonction croissante conserve l'ordre), partent de ce qu'on veut démontrer, ou ne regardent que les premiers termes."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "La suite $(u_n)$ est définie par $u_0={{u0}}$ et $u_{n+1}=f(u_n)$, où $f(x)={{eval:j/10;d}}x{{eval:l*(10-j)/10;d;+}}$.\n\nOn démontre par récurrence que, pour tout entier naturel $n$, ${{l}}\\leqslant u_{n+1}\\leqslant u_n$. On suppose ${{l}}\\leqslant u_{k+1}\\leqslant u_k$ pour un entier $k$.\n\nQuelle rédaction prouve l'hérédité ?\n\n```choix\n- $f$ est croissante sur $\\mathbb{R}$ (coefficient ${{eval:j/10;d}}>0$), donc $f({{l}})\\leqslant f(u_{k+1})\\leqslant f(u_k)$. Or $f({{l}})={{l}}$, donc ${{l}}\\leqslant u_{k+2}\\leqslant u_{k+1}$\n- $f$ est croissante sur $\\mathbb{R}$ (coefficient ${{eval:j/10;d}}>0$), donc elle change le sens des inégalités : $f({{l}})\\geqslant f(u_{k+1})\\geqslant f(u_k)$, c'est-à-dire ${{l}}\\geqslant u_{k+2}\\geqslant u_{k+1}$\n- On suppose ${{l}}\\leqslant u_{k+2}\\leqslant u_{k+1}$ ; comme $f$ est croissante, on en déduit ${{l}}\\leqslant u_{k+1}\\leqslant u_k$\n- $u_0={{u0}}$ et $u_1={{eval:j/10*u0+l*(10-j)/10;d}}$ vérifient ${{l}}\\leqslant u_1\\leqslant u_0$, donc ${{l}}\\leqslant u_{k+2}\\leqslant u_{k+1}$\n```",
+			"variables": [
+				{
+					"name": "j",
+					"expression": "1..9"
+				},
+				{
+					"name": "l",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "h",
+					"expression": "1..5"
+				},
+				{
+					"name": "u0",
+					"expression": "eval:l+h"
+				}
+			],
+			"hint": "Pars de l'hypothèse de récurrence et pense au sens de variation de $f$. Que vaut $f({{l}})$ ?",
+			"correction": {
+				"steps": [
+					"On part de l'hypothèse ${{l}}\\leqslant u_{k+1}\\leqslant u_k$ et on applique $f$, croissante sur $\\mathbb{R}$ car son coefficient ${{eval:j/10;d}}$ est positif : elle **conserve l'ordre**.",
+					"$f({{l}})\\leqslant f(u_{k+1})\\leqslant f(u_k)$, et $f({{l}})={{eval:j/10;d}}\\times{{eval:l;()}}{{eval:l*(10-j)/10;d;+}}={{l}}$ : $\\textcolor{{{color:primary.0}}}{{{l}}\\leqslant u_{k+2}\\leqslant u_{k+1}}$.",
+					"Les autres rédactions inversent les inégalités (une fonction croissante conserve l'ordre), partent de ce qu'on veut démontrer, ou ne regardent que les premiers termes."
+				]
+			}
 		}
 	],
 	"testSpecs": [
@@ -180,6 +248,118 @@
 			},
 			"description": "v2 : a = 1",
 			"variationIndex": 2
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"j": "5",
+				"l": "4",
+				"h": "2",
+				"u0": "2"
+			},
+			"description": "v3 : croissante majorée, f croissante et f(ℓ) = ℓ",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"j": "5",
+				"l": "4",
+				"h": "2",
+				"u0": "2"
+			},
+			"description": "v3 : croissante qui inverserait les inégalités",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"j": "5",
+				"l": "4",
+				"h": "2",
+				"u0": "2"
+			},
+			"description": "v3 : part de la conclusion",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"j": "5",
+				"l": "4",
+				"h": "2",
+				"u0": "2"
+			},
+			"description": "v3 : s'appuie sur u₁",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"j": "8",
+				"l": "-3",
+				"h": "5",
+				"u0": "2"
+			},
+			"description": "v4 : décroissante minorée, f croissante et f(ℓ) = ℓ",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"j": "8",
+				"l": "-3",
+				"h": "5",
+				"u0": "2"
+			},
+			"description": "v4 : croissante qui inverserait les inégalités",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"j": "8",
+				"l": "-3",
+				"h": "5",
+				"u0": "2"
+			},
+			"description": "v4 : part de la conclusion",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"j": "8",
+				"l": "-3",
+				"h": "5",
+				"u0": "2"
+			},
+			"description": "v4 : s'appuie sur u₁",
+			"variationIndex": 4
 		}
 	]
 }

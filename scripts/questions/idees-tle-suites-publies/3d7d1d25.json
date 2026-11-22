@@ -112,6 +112,40 @@
 					"$$\\displaystyle\\lim_{n\\to+\\infty}u_n=\\textcolor{{{color:primary.0}}}{{{if:s==0|{{if:k>0|+\\infty|-\\infty}}|0}}}$$"
 				]
 			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "4"
+				}
+			],
+			"statement": "Pour tout entier naturel $n$, on pose $u_n={{if:k==1||{{if:k==-1|-|{{k}}}}}}{{if:t==0|\\cos n|\\sin n}}$.\n\nQuelle est la limite de la suite $(u_n)$ ?\n\n```choix\n- $0$\n- $+\\infty$\n- $-\\infty$\n- ${{k}}$\n- La suite $(u_n)$ n'a pas de limite\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5"
+				},
+				{
+					"name": "s",
+					"expression": "1|-1"
+				},
+				{
+					"name": "k",
+					"expression": "eval:a*s"
+				},
+				{
+					"name": "t",
+					"expression": "0..1"
+				}
+			],
+			"hint": "Calcule à la calculatrice (en radians) les valeurs de ${{if:t==0|\\cos n|\\sin n}}$ pour $n=1$, $2$, $3$, …, $10$ : semblent-elles s'approcher d'un nombre ?",
+			"correction": {
+				"steps": [
+					"Pour tout $n$, $-1\\leqslant{{if:t==0|\\cos n|\\sin n}}\\leqslant1$ : les valeurs de ${{if:t==0|\\cos n|\\sin n}}$ restent entre $-1$ et $1$, mais reviennent sans cesse près de $1$ et près de $-1$ ; elles ne s'approchent d'aucun nombre.",
+					"Donc $u_n$ oscille entre $-{{a}}$ et ${{a}}$ sans se stabiliser : la suite $(u_n)$ $\\textcolor{{{color:primary.0}}}{\\text{n'a pas de limite}}$.",
+					"Une suite bornée n'a pas forcément de limite."
+				]
+			}
 		}
 	],
 	"testSpecs": [
@@ -258,6 +292,76 @@
 			},
 			"description": "v3 : e⁻ⁿ pris pour +∞",
 			"variationIndex": 3
+		},
+		{
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"s": "-1",
+				"k": "-3",
+				"t": "0"
+			},
+			"description": "v4 : −3 cos n, pas de limite",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "1",
+				"s": "1",
+				"k": "1",
+				"t": "1"
+			},
+			"description": "v4 : sin n, pas de limite",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"s": "-1",
+				"k": "-3",
+				"t": "0"
+			},
+			"description": "v4 : 0 refusé (borné pris pour « tend vers 0 »)",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"s": "-1",
+				"k": "-3",
+				"t": "0"
+			},
+			"description": "v4 : k refusé",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"s": "-1",
+				"k": "-3",
+				"t": "0"
+			},
+			"description": "v4 : +∞ refusé",
+			"variationIndex": 4
 		}
 	]
 }

@@ -117,6 +117,31 @@
 					"Par le théorème des gendarmes, $\\textcolor{{{color:primary.0}}}{(u_n)\\text{ converge vers }0}$."
 				]
 			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "Pour tout entier naturel $n$, on pose $u_n={{if:t==0|n^{2}+{{a}}\\cos n|\\dfrac{n}{ {{a}}+\\cos n}}}$.\n\nQue peut-on dire de la limite de $(u_n)$ ?\n\n```choix\n- $(u_n)$ tend vers $+\\infty$\n- $(u_n)$ tend vers $-\\infty$\n- $(u_n)$ converge vers $0$\n- On ne peut pas conclure sur la limite de $(u_n)$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..6"
+				},
+				{
+					"name": "t",
+					"expression": "0..1"
+				}
+			],
+			"hint": "Encadre $\\cos n$ entre $-1$ et $1$, compare $u_n$ à une suite dont tu connais la limite, puis applique un théorème de comparaison.",
+			"correction": {
+				"steps": [
+					"{{if:t==0|$\\cos n\\geqslant-1$, donc ${{a}}\\cos n\\geqslant-{{a}}$ et $u_n\\geqslant n^{2}-{{a}}$ pour tout $n$.|$\\cos n\\leqslant1$, donc $0<{{eval:a-1}}\\leqslant{{a}}+\\cos n\\leqslant{{eval:a+1}}$ ; comme $n\\geqslant0$, $u_n\\geqslant\\dfrac{n}{ {{eval:a+1}} }$ pour tout $n$.}}",
+					"$\\displaystyle\\lim_{n\\to+\\infty}{{if:t==0|\\left(n^{2}-{{a}}\\right)|\\dfrac{n}{ {{eval:a+1}} }}}=+\\infty$ : par comparaison, $\\textcolor{{{color:primary.0}}}{\\displaystyle\\lim_{n\\to+\\infty}u_n=+\\infty}$, bien que $\\cos n$ n'ait pas de limite."
+				]
+			}
 		}
 	],
 	"testSpecs": [
@@ -233,6 +258,66 @@
 			},
 			"description": "v4 : on ne peut pas conclure refusé",
 			"variationIndex": 4
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"t": "0"
+			},
+			"description": "v5 : n² + 3cos n → +∞",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"t": "1"
+			},
+			"description": "v5 : n/(2 + cos n) → +∞",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"t": "0"
+			},
+			"description": "v5 : pas de conclusion refusé (cos n sans limite)",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"t": "1"
+			},
+			"description": "v5 : 0 refusé",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"t": "0"
+			},
+			"description": "v5 : −∞ refusé",
+			"variationIndex": 5
 		}
 	]
 }
