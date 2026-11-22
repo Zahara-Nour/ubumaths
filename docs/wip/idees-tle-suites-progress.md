@@ -5,17 +5,16 @@ Idées reprises d'ailleurs, rubrique « Suites numériques » de Terminale spéc
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22, PR du lot._
+_Mis à jour le 2026-11-22, après #2993._
 
-- **État** : lot écrit, simulation et specs vertes ; essai dans l'aperçu local passé (David :
-  le Chrome relié n'atteint pas le serveur du Mac mini ; la relecture dans `/dev/modeles` le
-  remplace) · **Prochaine action** : PR des fichiers, merge, puis David lance
-  `create-questions --dir scripts/questions/idees-tle-suites-neufs --publier` (brouillons en
-  prod) ; ensuite rangement (nœud + tag) et migration de contenu des 8 publiés · **En attente de
-  David** : rien avant le merge · **Pièges en cours** : `hint` et `expectedErrors` lus par
-  la prod depuis la 0.101.0 (plus de blocage) ; ne pas toucher aux modèles 1SPE réservés par
-  `idees-1re-suites` · **Worktree / branche** : `ubumaths-wt-idees-tle-suites`,
-  `docs/idees-tle-suites`.
+- **État** : lot mergé (#2993) : 15 variations sur 8 publiés, 5 modèles neufs, rien en prod ·
+  **Prochaine action** : après la création des brouillons, commiter les ids écrits dans les
+  fichiers, puis PR de rangement (nœud + tag des 5 neufs, TSPE-385 ×2, 386, 392, 577) et
+  migration de contenu des 8 publiés (`migration-contenu.ts`) · **En attente de David** : lancer
+  `pnpm tsx scripts/create-questions.ts --dir scripts/questions/idees-tle-suites-neufs --publier`
+  depuis le worktree `ubumaths-wt-idees-tle-suites` (les ids s'écrivent dans ses fichiers) · **Pièges en cours** : `hint` et `expectedErrors` lus par la
+  prod depuis la 0.101.0 ; ne pas toucher aux modèles 1SPE réservés par `idees-1re-suites` · **Worktree / branche** : `ubumaths-wt-idees-tle-suites`,
+  `feat/idees-tle-suites-rangement`.
 
 ## Historique
 
@@ -60,3 +59,9 @@ _Mis à jour le 2026-11-22, PR du lot._
 - Choix des agents à connaître : F3 |L| ≠ a et a ± c ≠ ab (erreurs prévues distinctes) ; F7 m de
   2 à 4 (pas de nombre à 4 chiffres) ; F8 variable `g` (`e` = Euler) ; F14 bis q = 1/2 et
   q = k/10 (k de 5 à 9) ; `4×(1−1/2ⁿ)/(1−1/2)` jugé « perfectible » (signe ×).
+
+### 2026-11-22 — #2993 mergée
+
+- Essai dans l'aperçu local passé, avec l'accord de David (le Chrome relié n'atteint pas le serveur du
+  Mac mini) : la relecture dans `/dev/modeles` le remplace.
+- CI verte, mergée ; worktree et branche `docs/idees-tle-suites` supprimés.
